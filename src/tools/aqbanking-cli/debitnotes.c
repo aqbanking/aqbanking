@@ -319,7 +319,7 @@ int debitNotes(AB_BANKING *ab,
 	  AB_ImExporterContext_free(ctx);
 	  return 3;
 	}
-	rv=AB_JobSingleDebitNote_SetTransaction(j, t);
+	rv=AB_Job_SetTransaction(j, t);
 	if (rv<0) {
 	  DBG_ERROR(0, "Unable to add transaction for account %s/%s, aborting",
 		    AB_ImExporterAccountInfo_GetBankCode(iea),

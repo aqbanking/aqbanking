@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Sun Sep 21 2008
- copyright   : (C) 2008 by Martin Preuss
+ copyright   : (C) 2008-2013 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -45,7 +45,7 @@ AB_JOB *AB_JobSepaDebitNote_new(AB_ACCOUNT *a);
  * So if you want to be sure that you have the recent version of the
  * transaction you should call @ref AB_JobSepaDebitNote_GetTransaction.
  */
-AQBANKING_API 
+AQBANKING_API AQBANKING_DEPRECATED
 int AB_JobSepaDebitNote_SetTransaction(AB_JOB *j, const AB_TRANSACTION *t);
 
 /**
@@ -54,7 +54,7 @@ int AB_JobSepaDebitNote_SetTransaction(AB_JOB *j, const AB_TRANSACTION *t);
  * be a pointer to the validated replacement for the initially given
  * transaction.
  */
-AQBANKING_API 
+AQBANKING_API AQBANKING_DEPRECATED
 AB_TRANSACTION *AB_JobSepaDebitNote_GetTransaction(const AB_JOB *j);
 /*@}*/
 
@@ -70,7 +70,7 @@ AB_TRANSACTION *AB_JobSepaDebitNote_GetTransaction(const AB_JOB *j);
 /**
  * Returns the transaction field limits for this job.
  */
-AQBANKING_API 
+AQBANKING_API AQBANKING_DEPRECATED
 const AB_TRANSACTION_LIMITS *AB_JobSepaDebitNote_GetFieldLimits(AB_JOB *j);
 /*@}*/
 

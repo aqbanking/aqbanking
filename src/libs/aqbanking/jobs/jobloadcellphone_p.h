@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id: jobgetbalance_p.h 1138 2007-01-22 15:05:39Z christian $
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2004-2013 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************

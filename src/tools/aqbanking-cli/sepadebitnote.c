@@ -352,7 +352,7 @@ int sepaDebitNote(AB_BANKING *ab,
     return 3;
   }
 
-  rv=AB_JobSepaDebitNote_SetTransaction(j, t);
+  rv=AB_Job_SetTransaction(j, t);
   if (rv<0) {
     DBG_ERROR(0, "Unable to add transaction");
     AB_ImExporterContext_free(ctx);

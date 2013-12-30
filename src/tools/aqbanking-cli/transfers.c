@@ -318,15 +318,15 @@ int transfers(AB_BANKING *ab,
 	  AB_ImExporterContext_free(ctx);
 	  return 3;
 	}
-	rv=AB_JobSingleTransfer_SetTransaction(j, t);
-	if (rv<0) {
-	  DBG_ERROR(0, "Unable to add transaction for account %s/%s, aborting",
-		    AB_ImExporterAccountInfo_GetBankCode(iea),
-		    AB_ImExporterAccountInfo_GetAccountNumber(iea));
-	  AB_Transaction_List2_free(tlist);
-	  AB_ImExporterContext_free(ctx);
-	  return 3;
-	}
+	rv=AB_Job_SetTransaction(j, t);
+        if (rv<0) {
+          DBG_ERROR(0, "Unable to add transaction for account %s/%s, aborting",
+                    AB_ImExporterAccountInfo_GetBankCode(iea),
+                    AB_ImExporterAccountInfo_GetAccountNumber(iea));
+          AB_Transaction_List2_free(tlist);
+          AB_ImExporterContext_free(ctx);
+          return 3;
+        }
 	AB_Job_List2_PushBack(jobList, j);
 	t=AB_ImExporterAccountInfo_GetNextTransaction(iea);
       } /* while t */

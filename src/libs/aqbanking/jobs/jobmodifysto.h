@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2004-2013 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -50,7 +47,7 @@ AB_JOB *AB_JobModifyStandingOrder_new(AB_ACCOUNT *a);
  * transaction you should call @ref AB_JobModifyStandingOrder_GetTransaction.
  * This transaction MUST NOT contain splits.
  */
-AQBANKING_API 
+AQBANKING_API AQBANKING_DEPRECATED
 int AB_JobModifyStandingOrder_SetTransaction(AB_JOB *j,
 					     const AB_TRANSACTION *t);
 
@@ -60,7 +57,7 @@ int AB_JobModifyStandingOrder_SetTransaction(AB_JOB *j,
  * be a pointer to the validated replacement for the initially given
  * transaction.
  */
-AQBANKING_API 
+AQBANKING_API AQBANKING_DEPRECATED
 const AB_TRANSACTION *AB_JobModifyStandingOrder_GetTransaction(const AB_JOB *j);
 /*@}*/
 
@@ -76,7 +73,7 @@ const AB_TRANSACTION *AB_JobModifyStandingOrder_GetTransaction(const AB_JOB *j);
 /**
  * Returns the transaction field limits for this job.
  */
-AQBANKING_API 
+AQBANKING_API AQBANKING_DEPRECATED
 const AB_TRANSACTION_LIMITS *AB_JobModifyStandingOrder_GetFieldLimits(AB_JOB *j);
 
 /*@}*/

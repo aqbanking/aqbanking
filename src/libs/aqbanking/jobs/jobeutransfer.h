@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2004-2013 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -70,7 +67,7 @@ AB_JOB *AB_JobEuTransfer_new(AB_ACCOUNT *a);
  * This transaction MUST NOT contain splits.
  * </p>
  */
-AQBANKING_API 
+AQBANKING_API
 int AB_JobEuTransfer_SetTransaction(AB_JOB *j, const AB_TRANSACTION *t);
 
 /**
@@ -79,7 +76,7 @@ int AB_JobEuTransfer_SetTransaction(AB_JOB *j, const AB_TRANSACTION *t);
  * be a pointer to the validated replacement for the initially given
  * transaction.
  */
-AQBANKING_API 
+AQBANKING_API
 const AB_TRANSACTION *AB_JobEuTransfer_GetTransaction(const AB_JOB *j);
 /*@}*/
 

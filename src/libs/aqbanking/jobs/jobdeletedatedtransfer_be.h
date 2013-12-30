@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2004-2013 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -34,7 +31,7 @@
  * This function lets the backend specify the limits for some of the fields
  * of a @ref AB_TRANSACTION.
  */
-AQBANKING_API
+AQBANKING_API AQBANKING_DEPRECATED
 void AB_JobDeleteDatedTransfer_SetFieldLimits(AB_JOB *j,
                                               AB_TRANSACTION_LIMITS *limits);
 /*@}*/ 

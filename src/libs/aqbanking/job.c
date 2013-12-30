@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2004-2013 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -25,7 +22,6 @@
 #include "jobs/jobgettransactions_l.h"
 #include "jobs/jobgetstandingorders_l.h"
 #include "jobs/jobgetbalance_l.h"
-#include "jobs/jobtransferbase_l.h"
 #include "jobs/jobsingletransfer_l.h"
 #include "jobs/jobsingledebitnote_l.h"
 #include "jobs/jobeutransfer_l.h"

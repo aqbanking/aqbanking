@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Sun Sep 21 2008
- copyright   : (C) 2008 by Martin Preuss
+ copyright   : (C) 2008-2013 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -31,7 +31,7 @@
  * This function lets the backend specify the limits for some of the fields
  * of a @ref AB_TRANSACTION.
  */
-AQBANKING_API
+AQBANKING_API AQBANKING_DEPRECATED
 void AB_JobSepaTransfer_SetFieldLimits(AB_JOB *j,
 				       AB_TRANSACTION_LIMITS *limits);
 /*@}*/ 

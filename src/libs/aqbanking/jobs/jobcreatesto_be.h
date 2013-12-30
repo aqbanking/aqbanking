@@ -34,7 +34,7 @@
  * This function lets the backend specify the limits for some of the fields
  * of a @ref AB_TRANSACTION.
  */
-AQBANKING_API
+AQBANKING_API AQBANKING_DEPRECATED
 void AB_JobCreateStandingOrder_SetFieldLimits(AB_JOB *j,
                                               AB_TRANSACTION_LIMITS *limits);
 /*@}*/ 

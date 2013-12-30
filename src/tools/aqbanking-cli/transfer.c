@@ -402,16 +402,7 @@ int transfer(AB_BANKING *ab,
     return 3;
   }
 
-  if (transferType == 0)
-    rv=AB_JobSingleTransfer_SetTransaction(j, t);
-  else if (transferType == 1)
-    rv=AB_JobCreateDatedTransfer_SetTransaction(j, t);
-  else if (transferType == 2)
-    rv=AB_JobCreateStandingOrder_SetTransaction(j, t);
-  else {
-    DBG_ERROR(0, "Unknown transfer type: %d", transferType);
-    return 6;
-  }
+  rv=AB_Job_SetTransaction(j, t);
   if (rv<0) {
     DBG_ERROR(0, "Unable to add transaction");
     AB_ImExporterContext_free(ctx);

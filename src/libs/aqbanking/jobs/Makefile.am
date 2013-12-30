@@ -12,13 +12,11 @@ noinst_HEADERS=\
  jobgetstandingorders_p.h \
  jobgetdatedtransfers_p.h \
  jobgetbalance_p.h \
- jobtransferbase_p.h \
  jobeutransfer_p.h \
  jobcreatesto_l.h \
  jobgetbalance_l.h \
  jobgettransactions_l.h \
  jobgetstandingorders_l.h \
- jobtransferbase_l.h \
  jobsingletransfer_l.h \
  jobsingledebitnote_l.h \
  jobsepatransfer_l.h \
@@ -78,7 +76,6 @@ libjobs_la_SOURCES=\
  jobgettransactions.c \
  jobgetstandingorders.c \
  jobgetdatedtransfers.c \
- jobtransferbase.c \
  jobsingletransfer.c \
  jobsingledebitnote.c \
  jobsepatransfer.c \
