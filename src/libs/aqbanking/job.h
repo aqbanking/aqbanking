@@ -205,6 +205,7 @@ typedef enum {
 
 
 #include <aqbanking/account.h>
+#include <aqbanking/transaction.h>
 
 
 #ifdef __cplusplus
@@ -302,6 +303,27 @@ const char *AB_Job_GetResultText(const AB_JOB *j);
 
 AQBANKING_API
 const char *AB_Job_GetUsedTan(const AB_JOB *j);
+/*@}*/
+
+
+
+/** @name Transaction Functions
+ *
+ */
+/*@{*/
+
+AQBANKING_API
+int AB_Job_SetTransaction(AB_JOB *j, const AB_TRANSACTION *t);
+
+AQBANKING_API
+AB_TRANSACTION *AB_Job_GetTransaction(const AB_JOB *j);
+
+AQBANKING_API
+const AB_TRANSACTION_LIMITS *AB_Job_GetFieldLimits(AB_JOB *j);
+
+AQBANKING_API
+void AB_Job_SetFieldLimits(AB_JOB *j, AB_TRANSACTION_LIMITS *limits);
+
 /*@}*/
 
 

@@ -129,6 +129,8 @@ void AB_Job_free(AB_JOB *j){
       DBG_VERBOUS(AQBANKING_LOGDOMAIN, "Destroying AB_JOB");
       GWEN_INHERIT_FINI(AB_JOB, j);
       GWEN_LIST_FINI(AB_JOB, j);
+      AB_Transaction_free(j->transaction);
+      AB_TransactionLimits_free(j->limits);
       AB_Account_free(j->account);
       GWEN_DB_Group_free(j->dbData);
       free(j->resultText);
@@ -530,6 +532,55 @@ GWEN_STRINGLIST *AB_Job_GetLogs(const AB_JOB *j) {
   }
 
   return sl;
+}
+
+
+
+int AB_Job_SetTransaction(AB_JOB *j, const AB_TRANSACTION *t) {
+  assert(j);
+
+  AB_Transaction_free(j->transaction);
+  if (t) {
+    AB_ACCOUNT *a;
+    AB_BANKING *ba;
+
+    a=AB_Job_GetAccount(j);
+    assert(a);
+    ba=AB_Account_GetBanking(a);
+    assert(ba);
+
+    j->transaction=AB_Transaction_dup(t);
+    /* assign unique id */
+    AB_Transaction_SetUniqueId(j->transaction, AB_Banking_GetUniqueId(ba));
+  }
+  else
+    j->transaction=NULL;
+
+  return 0;
+}
+
+
+
+AB_TRANSACTION *AB_Job_GetTransaction(const AB_JOB *j) {
+  assert(j);
+  return j->transaction;
+}
+
+
+
+const AB_TRANSACTION_LIMITS *AB_Job_GetFieldLimits(AB_JOB *j) {
+  assert(j);
+  return j->limits;
+}
+
+
+
+void AB_Job_SetFieldLimits(AB_JOB *j, AB_TRANSACTION_LIMITS *limits) {
+  assert(j);
+
+  AB_TransactionLimits_free(j->limits);
+  if (limits) j->limits=AB_TransactionLimits_dup(limits);
+  else j->limits=0;
 }
 
 

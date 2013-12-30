@@ -37,6 +37,9 @@ struct AB_JOB {
   GWEN_DB_NODE *dbData;
   GWEN_TIME *lastStatusChange;
   char *usedTan;
+
+  AB_TRANSACTION *transaction;
+  AB_TRANSACTION_LIMITS *limits;
 };
 static AB_JOB *AB_Job__clearAll_cb(AB_JOB *j, void *userData);
 

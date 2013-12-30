@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2004-2013 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -19,14 +16,6 @@
 #include <aqbanking/job.h>
 #include <aqbanking/transaction.h>
 #include "jobtransferbase_l.h"
-
-typedef struct AB_JOBTRANSFERBASE AB_JOBTRANSFERBASE;
-struct AB_JOBTRANSFERBASE {
-  AB_TRANSACTION *transaction;
-  AB_TRANSACTION_LIMITS *limits;
-  int *textKeys;
-};
-static void GWENHYWFAR_CB AB_JobTransferBase_FreeData(void *bp, void *p);
 
 
 #endif
