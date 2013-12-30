@@ -215,10 +215,7 @@ int AH_Job_MultiTransfer__ValidateTransfer(AB_JOB *bj,
   aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_MULTITRANSFER, mj);
   assert(aj);
 
-  if (aj->isTransfer)
-    lim=AB_JobSingleTransfer_GetFieldLimits(bj);
-  else
-    lim=AB_JobSingleDebitNote_GetFieldLimits(bj);
+  lim=AB_Job_GetFieldLimits(bj);
 
   /* check purpose */
   if (lim) {
@@ -459,10 +456,7 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
                            1, GWEN_StringList_SortModeInt);
     }
 
-    if (aj->isTransfer)
-      AB_JobSingleTransfer_SetFieldLimits(bj, lim);
-    else
-      AB_JobSingleDebitNote_SetFieldLimits(bj, lim);
+    AB_Job_SetFieldLimits(bj, lim);
 
     return 0;
   }

@@ -183,19 +183,8 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
     AB_TransactionLimits_SetMaxLinesRemoteName(lim, 1);
     AB_TransactionLimits_SetMaxLinesPurpose(lim, 1);
 
-    switch(aj->jobType) {
-    case AB_Job_TypeSepaTransfer:
-      AB_JobSepaTransfer_SetFieldLimits(bj, lim);
-      break;
-    case AB_Job_TypeSepaDebitNote:
-      AB_JobSepaDebitNote_SetFieldLimits(bj, lim);
-      break;
-    default:
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown job type %d", aj->jobType);
-      AB_TransactionLimits_free(lim);
-      return GWEN_ERROR_INVALID;
-      break;
-    }
+    AB_Job_SetFieldLimits(bj, lim);
+
     AB_TransactionLimits_free(lim);
 
     break;
@@ -213,10 +202,11 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
     dbArgs=AH_Job_GetArguments(j);
 
     /* get limits and transaction */
+    lim=AB_Job_GetFieldLimits(bj);
+    t=AB_Job_GetTransaction(bj);
+
     switch(aj->jobType) {
     case AB_Job_TypeSepaTransfer:
-      lim=AB_JobSepaTransfer_GetFieldLimits(bj);
-      t=AB_JobSepaTransfer_GetTransaction(bj);
       /* choose from HISPAS */
       /* first check for any descriptor for pain 001.002.03 */
       s=AH_User_FindSepaDescriptor(u, "*001.002.03*");
@@ -242,9 +232,6 @@ int AH_Job_SingleSepa_Exchange(AH_JOB *j, AB_JOB *bj,
       break;
 
     case AB_Job_TypeSepaDebitNote:
-      lim=AB_JobSepaDebitNote_GetFieldLimits(bj);
-      t=AB_JobSepaDebitNote_GetTransaction(bj);
-
       /* choose from HISPAS */
       /* first check for any descriptor for pain 008.002.02 */
       s=AH_User_FindSepaDescriptor(u, "*008.002.02*");

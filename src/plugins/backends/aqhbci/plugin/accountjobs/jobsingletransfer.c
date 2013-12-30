@@ -473,39 +473,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
   aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_SINGLETRANSFER, mj);
   assert(aj);
 
-  switch(aj->jobType) {
-  case AB_Job_TypeTransfer:
-    lim=AB_JobSingleTransfer_GetFieldLimits(bj);
-    break;
-  case AB_Job_TypeDebitNote:
-    lim=AB_JobSingleDebitNote_GetFieldLimits(bj);
-    break;
-  case AB_Job_TypeCreateStandingOrder:
-    lim=AB_JobCreateStandingOrder_GetFieldLimits(bj);
-    break;
-  case AB_Job_TypeModifyStandingOrder:
-    lim=AB_JobModifyStandingOrder_GetFieldLimits(bj);
-    break;
-  case AB_Job_TypeDeleteStandingOrder:
-    lim=AB_JobDeleteStandingOrder_GetFieldLimits(bj);
-    break;
-  case AB_Job_TypeCreateDatedTransfer:
-    lim=AB_JobCreateDatedTransfer_GetFieldLimits(bj);
-    break;
-  case AB_Job_TypeModifyDatedTransfer:
-    lim=AB_JobModifyDatedTransfer_GetFieldLimits(bj);
-    break;
-  case AB_Job_TypeDeleteDatedTransfer:
-    lim=AB_JobDeleteDatedTransfer_GetFieldLimits(bj);
-    break;
-  case AB_Job_TypeInternalTransfer:
-    lim=AB_JobInternalTransfer_GetFieldLimits(bj);
-    break;
-  default:
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "Unhandled job type %d", aj->jobType);
-    return -1;
-  }
+  lim=AB_Job_GetFieldLimits(bj);
 
   /* check purpose */
   if (lim) {
@@ -1389,39 +1357,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
     }
 
     /* store field limits */
-    switch(aj->jobType) {
-    case AB_Job_TypeTransfer:
-      AB_JobSingleTransfer_SetFieldLimits(bj, lim);
-      break;
-    case AB_Job_TypeDebitNote:
-      AB_JobSingleDebitNote_SetFieldLimits(bj, lim);
-      break;
-    case AB_Job_TypeCreateStandingOrder:
-      AB_JobCreateStandingOrder_SetFieldLimits(bj, lim);
-      break;
-    case AB_Job_TypeModifyStandingOrder:
-      AB_JobModifyStandingOrder_SetFieldLimits(bj, lim);
-      break;
-    case AB_Job_TypeDeleteStandingOrder:
-      AB_JobDeleteStandingOrder_SetFieldLimits(bj, lim);
-      break;
-    case AB_Job_TypeCreateDatedTransfer:
-      AB_JobCreateDatedTransfer_SetFieldLimits(bj, lim);
-      break;
-    case AB_Job_TypeModifyDatedTransfer:
-      AB_JobModifyDatedTransfer_SetFieldLimits(bj, lim);
-      break;
-    case AB_Job_TypeDeleteDatedTransfer:
-      AB_JobDeleteDatedTransfer_SetFieldLimits(bj, lim);
-      break;
-    case AB_Job_TypeInternalTransfer:
-      AB_JobInternalTransfer_SetFieldLimits(bj, lim);
-      break;
-    default:
-      DBG_ERROR(AQHBCI_LOGDOMAIN,
-                "Unhandled job type %d", aj->jobType);
-      return -1;
-    }
+    AB_Job_SetFieldLimits(bj, lim);
 
     AB_TransactionLimits_free(lim);
     return 0;
@@ -1434,40 +1370,8 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 
     dbArgs=AH_Job_GetArguments(j);
     assert(dbArgs);
-    switch(aj->jobType) {
-    case AB_Job_TypeTransfer:
-      ot=AB_JobSingleTransfer_GetTransaction(bj);
-      break;
-    case AB_Job_TypeDebitNote:
-      ot=AB_JobSingleDebitNote_GetTransaction(bj);
-      break;
-    case AB_Job_TypeCreateStandingOrder:
-      ot=AB_JobCreateStandingOrder_GetTransaction(bj);
-      break;
-    case AB_Job_TypeModifyStandingOrder:
-      ot=AB_JobModifyStandingOrder_GetTransaction(bj);
-      break;
-    case AB_Job_TypeDeleteStandingOrder:
-      ot=AB_JobDeleteStandingOrder_GetTransaction(bj);
-      break;
-    case AB_Job_TypeCreateDatedTransfer:
-      ot=AB_JobCreateDatedTransfer_GetTransaction(bj);
-      break;
-    case AB_Job_TypeModifyDatedTransfer:
-      ot=AB_JobModifyDatedTransfer_GetTransaction(bj);
-      break;
-    case AB_Job_TypeDeleteDatedTransfer:
-      ot=AB_JobDeleteDatedTransfer_GetTransaction(bj);
-      break;
-    case AB_Job_TypeInternalTransfer:
-      ot=AB_JobInternalTransfer_GetTransaction(bj);
-      break;
-    default:
-      DBG_ERROR(AQHBCI_LOGDOMAIN,
-                "Unhandled job type %d", aj->jobType);
-      return GWEN_ERROR_INVALID;
-    }
 
+    ot=AB_Job_GetTransaction(bj);
     if (ot) {
       GWEN_DB_NODE *dbT;
       const char *p;
@@ -1485,39 +1389,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       }
       /* store the validated transaction back into application job,
        * to allow the application to recognize answers to this job later */
-      switch(aj->jobType) {
-      case AB_Job_TypeTransfer:
-        AB_JobSingleTransfer_SetTransaction(bj, t);
-        break;
-      case AB_Job_TypeDebitNote:
-        AB_JobSingleDebitNote_SetTransaction(bj, t);
-        break;
-      case AB_Job_TypeCreateStandingOrder:
-        AB_JobCreateStandingOrder_SetTransaction(bj, t);
-        break;
-      case AB_Job_TypeModifyStandingOrder:
-        AB_JobModifyStandingOrder_SetTransaction(bj, t);
-        break;
-      case AB_Job_TypeDeleteStandingOrder:
-        AB_JobDeleteStandingOrder_SetTransaction(bj, t);
-        break;
-      case AB_Job_TypeCreateDatedTransfer:
-        AB_JobCreateDatedTransfer_SetTransaction(bj, t);
-        break;
-      case AB_Job_TypeModifyDatedTransfer:
-        AB_JobModifyDatedTransfer_SetTransaction(bj, t);
-        break;
-      case AB_Job_TypeDeleteDatedTransfer:
-        AB_JobDeleteDatedTransfer_SetTransaction(bj, t);
-        break;
-      case AB_Job_TypeInternalTransfer:
-        AB_JobInternalTransfer_SetTransaction(bj, t);
-        break;
-      default:
-        DBG_ERROR(AQHBCI_LOGDOMAIN,
-                  "Unhandled job type %d", aj->jobType);
-        return GWEN_ERROR_INVALID;
-      }
+      AB_Job_SetTransaction(bj, t);
 
       /* preset challenge stuff */
       AH_Job_SetChallengeClass(j, 4);
@@ -1862,7 +1734,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 
     switch(aj->jobType) {
     case AB_Job_TypeTransfer:
-      ot=AB_JobSingleTransfer_GetTransaction(bj);
+      ot=AB_Job_GetTransaction(bj);
       if (ot) {
 	AB_TRANSACTION *t;
 
@@ -1874,7 +1746,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       break;
 
     case AB_Job_TypeDebitNote:
-      ot=AB_JobSingleDebitNote_GetTransaction(bj);
+      ot=AB_Job_GetTransaction(bj);
       if (ot) {
 	AB_TRANSACTION *t;
 
@@ -1886,44 +1758,33 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       break;
 
     case AB_Job_TypeInternalTransfer:
-      ot=AB_JobInternalTransfer_GetTransaction(bj);
+      ot=AB_Job_GetTransaction(bj);
       if (ot) {
 	AB_TRANSACTION *t;
 
 	t=AB_Transaction_dup(ot);
 	AB_Transaction_SetStatus(t, tStatus);
+        AB_Transaction_SetType(t, AB_Transaction_TypeInternalTransfer);
 	AB_ImExporterContext_AddTransfer(ctx, t);
       }
       break;
 
     case AB_Job_TypeCreateStandingOrder:
-      ot=AB_JobCreateStandingOrder_GetTransaction(bj);
-      if (ot && aj->fiid) {
-	AB_TRANSACTION *t;
-
-	t=AB_Transaction_dup(ot);
-	AB_Transaction_SetFiId(t, aj->fiid);
-	AB_Transaction_SetStatus(t, tStatus);
-	AB_JobCreateStandingOrder_SetTransaction(bj, t);
-        AB_ImExporterContext_AddStandingOrder(ctx, t);
-      }
-      break;
-
     case AB_Job_TypeModifyStandingOrder:
-      ot=AB_JobModifyStandingOrder_GetTransaction(bj);
+      ot=AB_Job_GetTransaction(bj);
       if (ot && aj->fiid) {
 	AB_TRANSACTION *t;
 
 	t=AB_Transaction_dup(ot);
 	AB_Transaction_SetFiId(t, aj->fiid);
 	AB_Transaction_SetStatus(t, tStatus);
-	AB_JobModifyStandingOrder_SetTransaction(bj, t);
+	AB_Job_SetTransaction(bj, t);
         AB_ImExporterContext_AddStandingOrder(ctx, t);
       }
       break;
 
     case AB_Job_TypeDeleteStandingOrder:
-      ot=AB_JobDeleteStandingOrder_GetTransaction(bj);
+      ot=AB_Job_GetTransaction(bj);
       if (ot) {
 	AB_TRANSACTION *t;
 
@@ -1940,39 +1801,27 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 	  /* don't modify status */
 	  break;
         }
-	AB_JobModifyStandingOrder_SetTransaction(bj, t);
+	AB_Job_SetTransaction(bj, t);
         AB_ImExporterContext_AddStandingOrder(ctx, t);
       }
       break;
 
     case AB_Job_TypeCreateDatedTransfer:
-      ot=AB_JobCreateDatedTransfer_GetTransaction(bj);
-      if (ot && aj->fiid) {
-	AB_TRANSACTION *t;
-
-	t=AB_Transaction_dup(ot);
-	AB_Transaction_SetFiId(t, aj->fiid);
-	AB_Transaction_SetStatus(t, tStatus);
-	AB_JobCreateDatedTransfer_SetTransaction(bj, t);
-        AB_ImExporterContext_AddDatedTransfer(ctx, t);
-      }
-      break;
-
     case AB_Job_TypeModifyDatedTransfer:
-      ot=AB_JobModifyDatedTransfer_GetTransaction(bj);
+      ot=AB_Job_GetTransaction(bj);
       if (ot && aj->fiid) {
 	AB_TRANSACTION *t;
 
 	t=AB_Transaction_dup(ot);
 	AB_Transaction_SetFiId(t, aj->fiid);
 	AB_Transaction_SetStatus(t, tStatus);
-	AB_JobModifyDatedTransfer_SetTransaction(bj, t);
+	AB_Job_SetTransaction(bj, t);
         AB_ImExporterContext_AddDatedTransfer(ctx, t);
       }
       break;
 
     case AB_Job_TypeDeleteDatedTransfer:
-      ot=AB_JobDeleteDatedTransfer_GetTransaction(bj);
+      ot=AB_Job_GetTransaction(bj);
       if (ot) {
 	AB_TRANSACTION *t;
 
@@ -1989,7 +1838,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 	  /* don't modify status */
 	  break;
         }
-	AB_JobModifyDatedTransfer_SetTransaction(bj, t);
+        AB_Job_SetTransaction(bj, t);
         AB_ImExporterContext_AddDatedTransfer(ctx, t);
       }
       break;
