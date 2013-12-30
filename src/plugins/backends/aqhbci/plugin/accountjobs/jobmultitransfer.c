@@ -469,10 +469,7 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
     groupIdBuf[0]=0;
     dbArgs=AH_Job_GetArguments(j);
     assert(dbArgs);
-    if (aj->isTransfer)
-      ot=AB_JobSingleTransfer_GetTransaction(bj);
-    else
-      ot=AB_JobSingleDebitNote_GetTransaction(bj);
+    ot=AB_Job_GetTransaction(bj);
     if (ot) {
       GWEN_DB_NODE *dbT;
       AB_TRANSACTION *t;
@@ -494,10 +491,7 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 
       /* store the validated transaction back into application job,
        * to allow the application to recognize answers to this job later */
-      if (aj->isTransfer)
-        AB_JobSingleTransfer_SetTransaction(bj, t);
-      else
-        AB_JobSingleDebitNote_SetTransaction(bj, t);
+      AB_Job_SetTransaction(bj, t);
 
       dbT=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT,
                            "transfers");
@@ -637,7 +631,7 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
     if (aj->isTransfer) {
       const AB_TRANSACTION *ot;
 
-      ot=AB_JobSingleTransfer_GetTransaction(bj);
+      ot=AB_Job_GetTransaction(bj);
       if (ot) {
 	AB_TRANSACTION *t;
 
@@ -650,7 +644,7 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
     else {
       const AB_TRANSACTION *ot;
 
-      ot=AB_JobSingleDebitNote_GetTransaction(bj);
+      ot=AB_Job_GetTransaction(bj);
       if (ot) {
 	AB_TRANSACTION *t;
 

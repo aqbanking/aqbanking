@@ -250,7 +250,7 @@ int EBC_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j) {
     AB_TransactionLimits_SetMaxLinesPurpose(lim, 2);
 
     AB_TransactionLimits_AddValuesTextKey(lim, "51", 0);
-    AB_JobSingleTransfer_SetFieldLimits(j, lim);
+    AB_Job_SetFieldLimits(j, lim);
     AB_TransactionLimits_free(lim);
 
     break;
@@ -266,7 +266,7 @@ int EBC_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j) {
     AB_TransactionLimits_SetMaxLinesPurpose(lim, 2);
 
     AB_TransactionLimits_AddValuesTextKey(lim, "05", 0);
-    AB_JobSingleDebitNote_SetFieldLimits(j, lim);
+    AB_Job_SetFieldLimits(j, lim);
     AB_TransactionLimits_free(lim);
 
     break;
@@ -594,10 +594,8 @@ int EBC_Provider_ExecContext__IZV(AB_PROVIDER *pro,
 
       switch(EBC_Context_GetJobType(ectx)) {
       case AB_Job_TypeTransfer:
-	t=AB_JobSingleTransfer_GetTransaction(uj);
-        break;
       case AB_Job_TypeDebitNote:
-	t=AB_JobSingleDebitNote_GetTransaction(uj);
+	t=AB_Job_GetTransaction(uj);
         break;
       default:
         t=NULL;
@@ -741,10 +739,8 @@ int EBC_Provider_ExecContext_IZV(AB_PROVIDER *pro,
 
       switch(EBC_Context_GetJobType(ectx)) {
       case AB_Job_TypeTransfer:
-	ot=AB_JobSingleTransfer_GetTransaction(uj);
-        break;
       case AB_Job_TypeDebitNote:
-	ot=AB_JobSingleDebitNote_GetTransaction(uj);
+	ot=AB_Job_GetTransaction(uj);
         break;
       default:
         ot=NULL;
