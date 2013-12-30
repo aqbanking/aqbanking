@@ -73,7 +73,8 @@ xmlfiles=\
   $(srcdir)/jobmodifydatedxfer.xml \
   $(srcdir)/jobdeletedatedxfer.xml \
   $(srcdir)/jobloadcellphone.xml \
-  $(srcdir)/jobsinglesepa.xml
+  $(srcdir)/jobsinglesepa.xml \
+  $(srcdir)/jobcreatesepasingledebit.xml
 
 EXTRA_DIST=$(xmlfiles)
 
