@@ -1143,6 +1143,7 @@ GWEN_DBIO_CHECKFILE_RESULT AHB_DTAUS__ReallyCheckFile(GWEN_BUFFER *src,
 GWEN_DBIO_CHECKFILE_RESULT AHB_DTAUS__CheckFile(GWEN_DBIO *dbio, const char *fname) {
   GWEN_BUFFER *src;
   GWEN_DBIO_CHECKFILE_RESULT rv;
+  int rv_int;
   unsigned int pos;
   GWEN_SYNCIO *sio;
 
@@ -1151,9 +1152,9 @@ GWEN_DBIO_CHECKFILE_RESULT AHB_DTAUS__CheckFile(GWEN_DBIO *dbio, const char *fna
 
   sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
   GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
-  rv=GWEN_SyncIo_Connect(sio);
-  if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+  rv_int = GWEN_SyncIo_Connect(sio);
+  if (rv_int < 0) {
+    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv_int);
     GWEN_SyncIo_free(sio);
     return GWEN_DBIO_CheckFileResultNotOk;
   }
