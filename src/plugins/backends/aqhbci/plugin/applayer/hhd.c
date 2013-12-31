@@ -526,6 +526,33 @@ int AH_HHD14_AddChallengeParams_05(AH_JOB *j,
 
 
 
+int AH_HHD14_AddChallengeParams_09(AH_JOB *j,
+                                   const AB_VALUE *vAmount,
+                                   const char *sRemoteIban) {
+  /* P1: Betrag */
+  if (vAmount) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+    AH_Job_ValueToChallengeString(vAmount, tbuf);
+    AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+
+  /* P2: IBAN Empfaenger */
+  if (sRemoteIban && *sRemoteIban)
+    AH_Job_AddChallengeParam(j, sRemoteIban);
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No remote iban");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* done */
+  return 0;
+}
+
+
+
 int AH_HHD14_AddChallengeParams_12(AH_JOB *j, int numTransfers, const AB_VALUE *vSumOfAmount,
                                    const char *sLocalAccount, const AB_VALUE *vSumOfRemoteAccounts) {
   char numbuf[16];
@@ -593,6 +620,14 @@ int AH_HHD14_AddChallengeParams_12(AH_JOB *j, int numTransfers, const AB_VALUE *
 int AH_HHD14_AddChallengeParams_13(AH_JOB *j, int numTransfers, const AB_VALUE *vSumOfAmount, const char *sLocalIban) {
   /* same as 12, but uses IBAN */
   return AH_HHD14_AddChallengeParams_12(j, numTransfers, vSumOfAmount, sLocalIban, NULL);
+}
+
+
+
+int AH_HHD14_AddChallengeParams_17(AH_JOB *j,
+                                   const AB_VALUE *vAmount,
+                                   const char *sRemoteIban) {
+  return AH_HHD14_AddChallengeParams_09(j, vAmount, sRemoteIban);
 }
 
 
