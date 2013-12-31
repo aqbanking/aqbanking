@@ -10,8 +10,8 @@
 
 
  <!-- Kundennachricht -->
- <SEGdef id="CreateSepaDatedSingleDebitNote"
-         code="HKDSE"
+ <SEGdef id="SepaTransferSingle"
+         code="HKCCS"
          version="1"
          delimiter="+" 
          terminator="'" 
@@ -27,34 +27,15 @@
  </SEGdef>
 
 
- <!-- Banknachricht -->
- <SEGdef id="CreateSepaDatedSingleDebitNoteResponse" code="HIDSE" version="1"
-         delimiter="+" terminator="'" >
-   <GROUP type="SegHead" name="head" />
-   <ELEM name="referenceId" type="AN" maxsize="99" minnum="0" />
-   <VALUES>
-     <VALUE path="head/code">%code</VALUE>
-     <VALUE path="head/version">%version</VALUE>
-   </VALUES>
- </SEGdef>
-
-
  <!-- Beschreibungssegment -->
- <SEGdef code="HIDSES" version="1"
+ <SEGdef code="HICCSS" version="1"
          delimiter=":" terminator="'" isbpdjob="1" >
    <GROUP type="BPDJob" version="2" />
-
-   <ELEM name="minDelay_FNAL_RCUR" type="num" maxsize="4" />
-   <ELEM name="maxdelay_FNAL_RCUR" type="num" maxsize="4" />
-   <ELEM name="minDelay_FRST_OOFF" type="num" maxsize="4" />
-   <ELEM name="maxdelay_FRST_OOFF" type="num" maxsize="4" />
-
    <VALUES>
      <VALUE path="head/code">%code</VALUE>
      <VALUE path="head/version">%version</VALUE>
    </VALUES>
  </SEGdef>
-
 
 
 </SEGs>
@@ -64,16 +45,15 @@
 <JOBs>
 
  <!-- Geschaeftsvorfall: SEPA Terminierte Einzellastschrift (Version 1) -->
- <JOBdef id="JobCreateSepaDatedSingleDebitNote"
-         code="HKDSE"
-         params="HIDSES"
+ <JOBdef id="JobSepaTransferSingle"
+         code="HKCCS"
+         params="HICCSS"
          version="1"
          crypt="1"
          sign="1" 
          needBPD="1"
-         response="CreateSepaDatedSingleDebitNoteResponse"
   >
-   <SEG type="CreateSepaDatedSingleDebitNote" version="1" />
+   <SEG type="SepaTransferSingle" version="1" />
    <VALUES>
      <VALUE path="head/code">%code</VALUE>
      <VALUE path="head/version">%version</VALUE>

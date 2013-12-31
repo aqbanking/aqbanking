@@ -5,6 +5,7 @@ INCLUDES = -I$(aqbanking_symlinkdir) $(all_includes) \
   -I$(srcdir)/../joblayer \
   -I$(srcdir)/../msglayer \
   -I$(srcdir)/../banking \
+  -I$(srcdir)/../applayer \
   -I$(srcdir)/..
 
 noinst_LTLIBRARIES=libhbciaccjobs.la
@@ -30,8 +31,12 @@ noinst_HEADERS=\
   jobforeignxferwh_p.h \
   jobloadcellphone_l.h \
   jobloadcellphone_p.h \
-  jobsinglesepa_l.h \
-  jobsinglesepa_p.h
+  jobsepadebitdatedsinglecreate_l.h \
+  jobsepadebitdatedsinglecreate_p.h \
+  jobsepaxfersingle_l.h \
+  jobsepaxfersingle_p.h \
+  jobsepadebitsingle_l.h \
+  jobsepadebitsingle_p.h
 
 libhbciaccjobs_la_SOURCES=\
   accountjob.c \
@@ -44,7 +49,10 @@ libhbciaccjobs_la_SOURCES=\
   jobmultitransfer.c \
   jobforeignxferwh.c \
   jobloadcellphone.c \
-  jobsinglesepa.c
+  jobsepadebitdatedsinglecreate.c \
+  jobsepaxfersingle.c \
+  jobsepadebitsingle.c
+
 
 
 sources:
@@ -73,8 +81,10 @@ xmlfiles=\
   $(srcdir)/jobmodifydatedxfer.xml \
   $(srcdir)/jobdeletedatedxfer.xml \
   $(srcdir)/jobloadcellphone.xml \
-  $(srcdir)/jobsinglesepa.xml \
-  $(srcdir)/jobcreatesepasingledebit.xml
+  $(srcdir)/jobsepadebitdatedsinglecreate.xml \
+  $(srcdir)/jobsepaxfersingle.xml \
+  $(srcdir)/jobsepadebitsingle.xml
+
 
 EXTRA_DIST=$(xmlfiles)
 
