@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: jobgetbalance_l.h 950 2006-02-22 19:39:02Z aquamaniac $
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2013 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
