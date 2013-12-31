@@ -12,6 +12,7 @@
 #endif
 
 #include "aqhbci_l.h"
+#include "job_l.h"
 
 #include "hhd_p.h"
 
@@ -430,6 +431,237 @@ int AH_HHD14_Translate(const char *code, GWEN_BUFFER *cbuf) {
   GWEN_Buffer_free(xbuf);
   return 0;
 }
+
+
+
+
+
+
+
+
+int AH_HHD14_AddChallengeParams_04(AH_JOB *j,
+                                   const AB_VALUE *vAmount,
+                                   const char *sRemoteBankCode,
+                                   const char *sRemoteAccountNumber) {
+  /* P1: Betrag */
+  if (vAmount) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+    AH_Job_ValueToChallengeString(vAmount, tbuf);
+    AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+
+  /* P2: BLZ Zahler/Empfaenger */
+  if (sRemoteBankCode && *sRemoteBankCode)
+    AH_Job_AddChallengeParam(j, sRemoteBankCode);
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No remote bank code number");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* P3: Konto Zahler/Empfaenger */
+  if (sRemoteAccountNumber && *sRemoteAccountNumber) {
+    int i;
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+    i=10-strlen(sRemoteAccountNumber);
+    if (i>0)
+      GWEN_Buffer_FillWithBytes(tbuf, '0', i);
+    GWEN_Buffer_AppendString(tbuf, sRemoteAccountNumber);
+    AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No remote account number");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* done */
+  return 0;
+}
+
+
+
+int AH_HHD14_AddChallengeParams_05(AH_JOB *j,
+                                   const AB_VALUE *vAmount,
+                                   const char *sRemoteAccountNumber) {
+  GWEN_BUFFER *tbuf;
+
+  /* P1: Betrag */
+  if (vAmount) {
+    tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+    AB_Value_toHumanReadableString2(vAmount, tbuf, 2, 0); /* TODO: currency needed?? -> apparently not */
+    AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No amount");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* P2: Konto Empfaenger */
+  if (sRemoteAccountNumber && *sRemoteAccountNumber) {
+    int i;
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+    i=10-strlen(sRemoteAccountNumber);
+    if (i>0)
+      GWEN_Buffer_FillWithBytes(tbuf, '0', i);
+    GWEN_Buffer_AppendString(tbuf, sRemoteAccountNumber);
+    AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No remote account number");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* done */
+  return 0;
+}
+
+
+
+int AH_HHD14_AddChallengeParams_12(AH_JOB *j, int numTransfers, const AB_VALUE *vSumOfAmount,
+                                   const char *sLocalAccount, const AB_VALUE *vSumOfRemoteAccounts) {
+  char numbuf[16];
+
+  /* P1: number of transfers */
+  snprintf(numbuf, sizeof(numbuf)-1, "%d", numTransfers);
+  numbuf[sizeof(numbuf)-1]=0;
+  AH_Job_AddChallengeParam(j, numbuf);
+
+  /* P2: Betrag */
+  if (vSumOfAmount) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+    AB_Value_toHumanReadableString2(vSumOfAmount, tbuf, 2, 0);
+    AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No amount");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* P3: Konto Zahler */
+  if (sLocalAccount && *sLocalAccount) {
+    int i;
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+    i=10-strlen(sLocalAccount);
+    if (i>0)
+      GWEN_Buffer_FillWithBytes(tbuf, '0', i);
+    GWEN_Buffer_AppendString(tbuf, sLocalAccount);
+    AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No local account");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* P4: Referenzzahl */
+  if (vSumOfRemoteAccounts) {
+    GWEN_BUFFER *tbuf;
+    char *p;
+
+    tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+    AB_Value_toHumanReadableString2(vSumOfRemoteAccounts, tbuf, 0, 0);
+    /* remove decimal point */
+    p=strchr(GWEN_Buffer_GetStart(tbuf), '.');
+    if (p)
+      *p=0;
+    /* only use first 10 digits */
+    GWEN_Buffer_Crop(tbuf, 0, 10);
+    AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+
+  /* done */
+  return 0;
+}
+
+
+
+int AH_HHD14_AddChallengeParams_13(AH_JOB *j, int numTransfers, const AB_VALUE *vSumOfAmount, const char *sLocalIban) {
+  /* same as 12, but uses IBAN */
+  return AH_HHD14_AddChallengeParams_12(j, numTransfers, vSumOfAmount, sLocalIban, NULL);
+}
+
+
+
+int AH_HHD14_AddChallengeParams_19(AH_JOB *j, int numTransfers, const AB_VALUE *vSumOfAmount,
+                                   const char *sLocalAccountNumber, const AB_VALUE *vSumOfRemoteAccounts) {
+  /* same as 12 */
+  return AH_HHD14_AddChallengeParams_12(j, numTransfers, vSumOfAmount, sLocalAccountNumber, vSumOfRemoteAccounts);
+}
+
+
+int AH_HHD14_AddChallengeParams_20(AH_JOB *j, int numTransfers, const AB_VALUE *vSumOfAmount, const char *sLocalIban) {
+  /* same as 12 */
+  return AH_HHD14_AddChallengeParams_12(j, numTransfers, vSumOfAmount, sLocalIban, NULL);
+}
+
+
+
+int AH_HHD14_AddChallengeParams_23(AH_JOB *j,
+                                   const AB_VALUE *vAmount,
+                                   const char *sRemoteIban,
+                                   const GWEN_TIME *ti) {
+  /* P1: Betrag */
+  if (vAmount) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+    AH_Job_ValueToChallengeString(vAmount, tbuf);
+    AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+
+  /* P2: IBAN Empfaenger */
+  if (sRemoteIban && *sRemoteIban)
+    AH_Job_AddChallengeParam(j, sRemoteIban);
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No remote iban");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* P3: Termin */
+  if (ti) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+    GWEN_Time_toString(ti, "YYYYMMDD", tbuf);
+    AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No execution date");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* done */
+  return 0;
+}
+
+
+
+int AH_HHD14_AddChallengeParams_29(AH_JOB *j,
+                                   const AB_VALUE *vAmount,
+                                   const char *sRemoteIban,
+                                   const GWEN_TIME *ti) {
+  /* same as 23 */
+  return AH_HHD14_AddChallengeParams_23(j, vAmount, sRemoteIban, ti);
+}
+
+
 
 
 

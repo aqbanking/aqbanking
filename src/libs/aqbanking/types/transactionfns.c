@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004-2010 by Martin Preuss
+ copyright   : (C) 2004-2013 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -111,9 +111,11 @@ void AB_Transaction_FillLocalFromAccount(AB_TRANSACTION *t, const AB_ACCOUNT *a)
   s=AB_Account_GetBankCode(a);
   if (s && *s)
     AB_Transaction_SetLocalBankCode(t, s);
+
   s=AB_Account_GetAccountNumber(a);
   if (s && *s)
     AB_Transaction_SetLocalAccountNumber(t, s);
+
   s=AB_Account_GetOwnerName(a);
   if (s && *s)
     AB_Transaction_SetLocalName(t, s);
