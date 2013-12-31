@@ -27,7 +27,8 @@
 #include "jobmultitransfer_l.h"
 #include "jobeutransfer_l.h"
 #include "jobloadcellphone_l.h"
-#include "jobsinglesepa_l.h"
+#include "jobsepaxfersingle_l.h"
+#include "jobsepadebitdatedsinglecreate_l.h"
 
 /* special jobs */
 #include "jobforeignxferwh_l.h"
@@ -457,7 +458,7 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
   case AB_Job_TypeSepaTransfer:
     GWEN_DB_SetIntValue(dbJob, GWEN_DB_FLAGS_OVERWRITE_VARS,
                         "isMultiJob", 0);
-    mj=AH_Job_SingleSepaTransfer_new(mu, ma);
+    mj=AH_Job_SepaTransferSingle_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return GWEN_ERROR_NOT_AVAILABLE;
@@ -465,9 +466,10 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeSepaDebitNote:
+    /* TODO: Select appropriate job */
     GWEN_DB_SetIntValue(dbJob, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                        "isMultiJob", 0);
-    mj=AH_Job_SingleSepaDebitNote_new(mu, ma);
+			"isMultiJob", 0);
+    mj=AH_Job_SepaDebitDatedSingleCreate_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return GWEN_ERROR_NOT_AVAILABLE;
@@ -715,7 +717,7 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeSepaTransfer:
-    mj=AH_Job_SingleSepaTransfer_new(mu, ma);
+    mj=AH_Job_SepaTransferSingle_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return GWEN_ERROR_NOT_AVAILABLE;
@@ -723,7 +725,8 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeSepaDebitNote:
-    mj=AH_Job_SingleSepaDebitNote_new(mu, ma);
+    /* TODO: Select appropriate job */
+    mj=AH_Job_SepaDebitDatedSingleCreate_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return GWEN_ERROR_NOT_AVAILABLE;
@@ -4384,412 +4387,6 @@ int AH_Provider_Test(AB_PROVIDER *pro) {
   return AH_Provider_Test4(pro);
 }
 
-
-
-
-int AH_Provider_ValidateTransfer(AB_TRANSACTION *t,
-				 AB_JOB *j,
-				 const AB_TRANSACTION_LIMITS *lim) {
-  const GWEN_STRINGLIST *sl;
-  int maxn;
-  int maxs;
-  int n;
-  const char *s;
-
-  /* check purpose */
-  if (lim) {
-    maxn=AB_TransactionLimits_GetMaxLinesPurpose(lim);
-    maxs=AB_TransactionLimits_GetMaxLenPurpose(lim);
-  }
-  else {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "No transaction limits");
-    maxn=0;
-    maxs=0;
-  }
-  sl=AB_Transaction_GetPurpose(t);
-  n=0;
-  if (sl) {
-    GWEN_STRINGLISTENTRY *se;
-    GWEN_STRINGLIST *nsl;
-    const char *p;
-
-    nsl=GWEN_StringList_new();
-    se=GWEN_StringList_FirstEntry(sl);
-    while(se) {
-      p=GWEN_StringListEntry_Data(se);
-      if (p && *p) {
-	char *np;
-	int l;
-	GWEN_BUFFER *tbuf;
-
-	n++;
-	if (maxn && n>maxn) {
-	  DBG_ERROR(AQHBCI_LOGDOMAIN,
-		    "Too many purpose lines (%d>%d)", n, maxn);
-	  GWEN_StringList_free(nsl);
-	  return GWEN_ERROR_INVALID;
-	}
-	tbuf=GWEN_Buffer_new(0, maxs, 0, 1);
-	AB_ImExporter_Utf8ToDta(p, -1, tbuf);
-	GWEN_Text_CondenseBuffer(tbuf);
-	l=GWEN_Buffer_GetUsedBytes(tbuf);
-	if (maxs && l>maxs) {
-	  DBG_ERROR(AQHBCI_LOGDOMAIN,
-		    "Too many chars in purpose line %d (%d>%d)", n, l, maxs);
-	  GWEN_StringList_free(nsl);
-	  return GWEN_ERROR_INVALID;
-	}
-	np=(char*)GWEN_Memory_malloc(l+1);
-	memmove(np, GWEN_Buffer_GetStart(tbuf), l+1);
-	GWEN_Buffer_free(tbuf);
-	/* let string list take the newly alllocated string */
-	GWEN_StringList_AppendString(nsl, np, 1, 0);
-      }
-      se=GWEN_StringListEntry_Next(se);
-    } /* while */
-    AB_Transaction_SetPurpose(t, nsl);
-  }
-  if (!n) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No purpose lines");
-    return GWEN_ERROR_INVALID;
-  }
-
-  /* check remote name */
-  if (lim) {
-    maxn=AB_TransactionLimits_GetMaxLinesRemoteName(lim);
-    maxs=AB_TransactionLimits_GetMaxLenRemoteName(lim);
-  }
-  else {
-    maxn=0;
-    maxs=0;
-  }
-  sl=AB_Transaction_GetRemoteName(t);
-  n=0;
-  if (sl) {
-    GWEN_STRINGLISTENTRY *se;
-    GWEN_STRINGLIST *nsl;
-    const char *p;
-
-    nsl=GWEN_StringList_new();
-    se=GWEN_StringList_FirstEntry(sl);
-    while(se) {
-      p=GWEN_StringListEntry_Data(se);
-      if (p && *p) {
-	char *np;
-	int l;
-        GWEN_BUFFER *tbuf;
-
-	n++;
-	if (maxn && n>maxn) {
-	  DBG_ERROR(AQHBCI_LOGDOMAIN,
-		    "Too many remote name lines (%d>%d)",
-		    n, maxn);
-          GWEN_StringList_free(nsl);
-	  return GWEN_ERROR_INVALID;
-	}
-	tbuf=GWEN_Buffer_new(0, maxs, 0, 1);
-        AB_ImExporter_Utf8ToDta(p, -1, tbuf);
-	GWEN_Text_CondenseBuffer(tbuf);
-	l=GWEN_Buffer_GetUsedBytes(tbuf);
-	if (l>maxs) {
-	  DBG_ERROR(AQHBCI_LOGDOMAIN,
-		   "Too many chars in remote name line %d (%d>%d)",
-		   n, l, maxs);
-          GWEN_StringList_free(nsl);
-	  return GWEN_ERROR_INVALID;
-	}
-	np=(char*)GWEN_Memory_malloc(l+1);
-	memmove(np, GWEN_Buffer_GetStart(tbuf), l+1);
-	GWEN_Buffer_free(tbuf);
-	/* let string list take the newly alllocated string */
-	GWEN_StringList_AppendString(nsl, np, 1, 0);
-      }
-      se=GWEN_StringListEntry_Next(se);
-    } /* while */
-    AB_Transaction_SetRemoteName(t, nsl);
-  }
-  if (!n) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No remote name lines");
-    return GWEN_ERROR_INVALID;
-  }
-
-  /* check local name */
-  s=AB_Transaction_GetLocalName(t);
-  if (!s) {
-    AB_ACCOUNT *a;
-
-    DBG_WARN(AQHBCI_LOGDOMAIN,
-	     "No local name, filling in");
-    a=AB_Job_GetAccount(j);
-    assert(a);
-    s=AB_Account_GetOwnerName(a);
-    if (!s) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN,
-		"No owner name in account, giving up");
-      return GWEN_ERROR_INVALID;
-    }
-    AB_Transaction_SetLocalName(t, s);
-  }
-
-  /* check local bank code */
-  s=AB_Transaction_GetLocalBankCode(t);
-  if (!s) {
-    AB_ACCOUNT *a;
-
-    DBG_WARN(AQHBCI_LOGDOMAIN,
-	     "No local bank code, filling in");
-    a=AB_Job_GetAccount(j);
-    assert(a);
-    s=AB_Account_GetBankCode(a);
-    assert(s);
-    AB_Transaction_SetLocalBankCode(t, s);
-  }
-
-  /* check local account number */
-  s=AB_Transaction_GetLocalAccountNumber(t);
-  if (!s) {
-    AB_ACCOUNT *a;
-
-    DBG_WARN(AQHBCI_LOGDOMAIN,
-	     "No local account number, filling in");
-    a=AB_Job_GetAccount(j);
-    assert(a);
-    s=AB_Account_GetAccountNumber(a);
-    assert(s);
-    AB_Transaction_SetLocalAccountNumber(t, s);
-  }
-
-  /* check local account suffix */
-  s=AB_Transaction_GetLocalSuffix(t);
-  if (!s) {
-    AB_ACCOUNT *a;
-
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-	     "No local suffix, filling in (if possible)");
-    a=AB_Job_GetAccount(j);
-    assert(a);
-    s=AB_Account_GetSubAccountId(a);
-    if (s && *s)
-      AB_Transaction_SetLocalSuffix(t, s);
-  }
-
-
- /* check text key */
-  if (lim) {
-    if (GWEN_StringList_Count(AB_TransactionLimits_GetValuesTextKey(lim))){
-      char numbuf[32];
-
-      n=AB_Transaction_GetTextKey(t);
-      if (n==0) {
-        switch(AB_Job_GetType(j)) {
-        case AB_Job_TypeDebitNote:
-        case AB_Job_TypeSepaDebitNote:
-          n=5;  /* "Lastschrift" */
-          break;
-        case AB_Job_TypeTransfer:
-        case AB_Job_TypeCreateStandingOrder:
-        case AB_Job_TypeModifyStandingOrder:
-        case AB_Job_TypeDeleteStandingOrder:
-        case AB_Job_TypeInternalTransfer:
-        case AB_Job_TypeSepaTransfer:
-        default:
-          n=51; /* "Ueberweisung" */
-          break;
-        }
-        AB_Transaction_SetTextKey(t, n);
-      }
-
-      snprintf(numbuf, sizeof(numbuf), "%d", n);
-      if (!AB_TransactionLimits_HasValuesTextKey(lim, numbuf)) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Text key \"%s\" not supported by bank",
-		  numbuf);
-	return GWEN_ERROR_INVALID;
-      }
-    }
-  }
-
-  if (lim) {
-    const GWEN_TIME *ti;
-
-    switch(AB_Job_GetType(j)) {
-    case AB_Job_TypeCreateStandingOrder:
-    case AB_Job_TypeModifyStandingOrder:
-    case AB_Job_TypeDeleteStandingOrder:
-      /* additional checks for standing orders */
-
-      /* check period */
-      if (AB_Transaction_GetPeriod(t)==AB_Transaction_PeriodMonthly) {
-        const GWEN_STRINGLIST *sl;
-
-        /* check cycle */
-        sl=AB_TransactionLimits_GetValuesCycleMonth(lim);
-        if (GWEN_StringList_Count(sl)){
-          char numbuf[32];
-
-          n=AB_Transaction_GetCycle(t);
-          if (n==0) {
-            DBG_ERROR(AQHBCI_LOGDOMAIN,
-                      "No cycle given");
-            return GWEN_ERROR_INVALID;
-          }
-
-          snprintf(numbuf, sizeof(numbuf), "%d", n);
-          if (!AB_TransactionLimits_HasValuesCycleMonth(lim, numbuf) &&
-              !AB_TransactionLimits_HasValuesCycleMonth(lim, "0")) {
-            DBG_ERROR(AQHBCI_LOGDOMAIN,
-                      "Month day \"%s\" not supported by bank",
-                      numbuf);
-            return GWEN_ERROR_INVALID;
-          }
-        }
-
-        /* check execution day */
-        sl=AB_TransactionLimits_GetValuesExecutionDayMonth(lim);
-        if (GWEN_StringList_Count(sl)){
-          char numbuf[32];
-
-          n=AB_Transaction_GetExecutionDay(t);
-          if (n==0) {
-            DBG_ERROR(AQHBCI_LOGDOMAIN,
-                      "No execution day given");
-            return GWEN_ERROR_INVALID;
-          }
-
-          snprintf(numbuf, sizeof(numbuf), "%d", n);
-          if (!AB_TransactionLimits_HasValuesExecutionDayMonth(lim, numbuf) &&
-              !AB_TransactionLimits_HasValuesExecutionDayMonth(lim, "0")) {
-            DBG_ERROR(AQHBCI_LOGDOMAIN,
-                      "Execution month day \"%s\" not supported by bank",
-                      numbuf);
-            return GWEN_ERROR_INVALID;
-          }
-        } /* if there are limits */
-      }
-      else if (AB_Transaction_GetPeriod(t)==AB_Transaction_PeriodWeekly) {
-        const GWEN_STRINGLIST *sl;
-
-        /* check cycle */
-        sl=AB_TransactionLimits_GetValuesCycleWeek(lim);
-        if (GWEN_StringList_Count(sl)) {
-          char numbuf[32];
-
-          n=AB_Transaction_GetCycle(t);
-          if (n==0) {
-            DBG_ERROR(AQHBCI_LOGDOMAIN,
-                      "No cycle given");
-            return GWEN_ERROR_INVALID;
-          }
-
-          snprintf(numbuf, sizeof(numbuf), "%d", n);
-          if (!AB_TransactionLimits_HasValuesCycleWeek(lim, numbuf) &&
-              !AB_TransactionLimits_HasValuesCycleWeek(lim, "0")) {
-            DBG_ERROR(AQHBCI_LOGDOMAIN,
-                      "Week day \"%s\" not supported by bank",
-                      numbuf);
-            return GWEN_ERROR_INVALID;
-          }
-        } /* if there are limits */
-
-        /* check execution day */
-        sl=AB_TransactionLimits_GetValuesExecutionDayWeek(lim);
-        if (GWEN_StringList_Count(sl)){
-          char numbuf[32];
-
-          n=AB_Transaction_GetExecutionDay(t);
-          if (n==0) {
-            DBG_ERROR(AQHBCI_LOGDOMAIN,
-                      "No execution day given");
-            return GWEN_ERROR_INVALID;
-          }
-
-          snprintf(numbuf, sizeof(numbuf), "%d", n);
-          if (!AB_TransactionLimits_HasValuesExecutionDayWeek(lim, numbuf) &&
-              !AB_TransactionLimits_HasValuesExecutionDayWeek(lim, "0")) {
-            DBG_ERROR(AQHBCI_LOGDOMAIN,
-                      "Execution month day \"%s\" not supported by bank",
-                      numbuf);
-            return GWEN_ERROR_INVALID;
-          }
-        } /* if there are limits */
-      }
-      else {
-        DBG_ERROR(AQHBCI_LOGDOMAIN,
-                  "Unsupported period %d", AB_Transaction_GetPeriod(t));
-        return GWEN_ERROR_INVALID;
-      }
-
-      /* check setup times */
-      ti=AB_Transaction_GetFirstExecutionDate(t);
-      if (ti && AB_Job_GetType(j)==AB_Job_TypeCreateStandingOrder) {
-	GWEN_TIME *currDate;
-        int dt;
-
-        currDate=GWEN_CurrentTime();
-        assert(currDate);
-        dt=((int)GWEN_Time_DiffSeconds(ti, currDate))/(60*60*24);
-        GWEN_Time_free(currDate);
-
-
-        /* check minimum setup time */
-        n=AB_TransactionLimits_GetMinValueSetupTime(lim);
-        if (n && dt<n) {
-          DBG_ERROR(AQHBCI_LOGDOMAIN,
-                    "Minimum setup time violated");
-          return GWEN_ERROR_INVALID;
-        }
-
-        /* check maximum setup time */
-        n=AB_TransactionLimits_GetMaxValueSetupTime(lim);
-        if (n && dt>n) {
-          DBG_ERROR(AQHBCI_LOGDOMAIN,
-                    "Maximum setup time violated");
-          return GWEN_ERROR_INVALID;
-        }
-      }
-      break;
-
-    case AB_Job_TypeCreateDatedTransfer:
-    case AB_Job_TypeModifyDatedTransfer:
-      /* check setup times */
-      ti=AB_Transaction_GetDate(t);
-      if (ti) {
-        GWEN_TIME *currDate;
-        int dt;
-
-        currDate=GWEN_CurrentTime();
-        assert(currDate);
-        dt=((int)GWEN_Time_DiffSeconds(ti, currDate))/(60*60*24);
-        GWEN_Time_free(currDate);
-
-        /* check minimum setup time */
-        n=AB_TransactionLimits_GetMinValueSetupTime(lim);
-        if (n && dt<n) {
-          DBG_ERROR(AQHBCI_LOGDOMAIN,
-                    "Minimum setup time violated");
-          return GWEN_ERROR_INVALID;
-        }
-
-        /* check maximum setup time */
-        n=AB_TransactionLimits_GetMaxValueSetupTime(lim);
-        if (n && dt>n) {
-          DBG_ERROR(AQHBCI_LOGDOMAIN,
-                    "Maximum setup time violated");
-          return GWEN_ERROR_INVALID;
-        }
-      }
-      break;
-
-    case AB_Job_TypeDeleteDatedTransfer:
-      break;
-
-      /* --------------- add more jobs here ---------------------- */
-
-    default:
-      break;
-    } /* switch */
-  }
-  return 0;
-}
 
 
 
