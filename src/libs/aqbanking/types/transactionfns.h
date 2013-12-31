@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2004-2013 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -39,6 +36,26 @@ int AB_Transaction_Compare(const AB_TRANSACTION *t1,
  */
 AQBANKING_API
 void AB_Transaction_FillLocalFromAccount(AB_TRANSACTION *t, const AB_ACCOUNT *a);
+
+
+
+AQBANKING_API
+int AB_Transaction_ValidatePurposeAgainstLimits(AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
+
+AQBANKING_API
+int AB_Transaction_ValidateNamesAgainstLimits(AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
+
+AQBANKING_API
+int AB_Transaction_ValidateTextKeyAgainstLimits(AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim, int defaultTextKey);
+
+AQBANKING_API
+int AB_Transaction_ValidateRecurrenceAgainstLimits(AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
+
+AQBANKING_API
+int AB_Transaction_CheckFirstExecutionDateAgainstLimits(AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
+
+AQBANKING_API
+int AB_Transaction_CheckDateAgainstLimits(AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
 
 
 #ifdef __cplusplus
