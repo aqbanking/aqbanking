@@ -184,7 +184,7 @@ int test3(int argc, char **argv) {
 
 int test4(int argc, char **argv) {
   int rv;
-  AB_BANKING *ab;
+//  AB_BANKING *ab;
   GWEN_GUI *gui;
   GWEN_BUFFER *tbuf;
 
@@ -197,7 +197,7 @@ int test4(int argc, char **argv) {
   gui=GWEN_Gui_CGui_new();
   GWEN_Gui_SetGui(gui);
 
-  ab=AB_Banking_new("testlib", NULL, 0);
+//  ab=AB_Banking_new("testlib", NULL, 0);
 
   if (argc<3) {
     fprintf(stderr, "Missing bank code and account number\n");
