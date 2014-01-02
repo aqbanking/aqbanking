@@ -44,10 +44,10 @@ int AHB_DTAUS__ToDTA(int c) {
   if (strchr(" .,&-+*%/$", c))
     return c;
   switch(c) {
-  case 'Ä': return 0x5b;
-  case 'Ö': return 0x5c;
-  case 'Ü': return 0x5d;
-  case 'ß': return 0x7e;
+  case 0xc4 : return 0x5b; // A umlaut
+  case 0xd6 : return 0x5c; // O umlaut
+  case 0xdc : return 0x5d; // U umlaut
+  case 0xdf : return 0x7e; // szlig
   default:
     break;
   } /* switch */
