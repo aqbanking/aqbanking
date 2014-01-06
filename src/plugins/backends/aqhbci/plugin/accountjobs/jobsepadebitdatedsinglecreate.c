@@ -253,7 +253,7 @@ int AH_Job_SepaDebitDatedSingleCreate_ExchangeArgs(AH_JOB *j, AB_JOB *bj,
 
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_SepaDebitDatedSingleCreate_ExchangeResults(AH_JOB *j, AB_JOB *bj,
-							  AB_IMEXPORTER_CONTEXT *ctx) {
+                                                      AB_IMEXPORTER_CONTEXT *ctx) {
   AH_JOB_CREATESEPASINGLEDEBIT *aj;
   AH_RESULT_LIST *rl;
   AH_RESULT *r;
@@ -280,7 +280,7 @@ int AH_Job_SepaDebitDatedSingleCreate_ExchangeResults(AH_JOB *j, AB_JOB *bj,
     int rcode;
 
     rcode=AH_Result_GetCode(r);
-    if (rcode <=19)
+    if (rcode>=10 && rcode<=19)
       has10=1;
     else if (rcode>=20 && rcode <=29)
       has20=1;
