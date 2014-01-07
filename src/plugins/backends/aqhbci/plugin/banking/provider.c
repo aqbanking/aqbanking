@@ -29,6 +29,7 @@
 #include "jobloadcellphone_l.h"
 #include "jobsepaxfersingle_l.h"
 #include "jobsepadebitdatedsinglecreate_l.h"
+#include "jobsepadebitsingle_l.h" /* deprecated job */
 
 /* special jobs */
 #include "jobforeignxferwh_l.h"
@@ -471,8 +472,12 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
 			"isMultiJob", 0);
     mj=AH_Job_SepaDebitDatedSingleCreate_new(mu, ma);
     if (!mj) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
-      return GWEN_ERROR_NOT_AVAILABLE;
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"SepaDebitDatedSingleCreate\" not supported with this account, trying old single debit");
+      mj=AH_Job_SepaDebitSingle_new(mu, ma);
+      if (!mj) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"SepaDebitSingle\" not supported with this account");
+        return GWEN_ERROR_NOT_AVAILABLE;
+      }
     }
     break;
 
@@ -728,8 +733,12 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
     /* TODO: Select appropriate job */
     mj=AH_Job_SepaDebitDatedSingleCreate_new(mu, ma);
     if (!mj) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
-      return GWEN_ERROR_NOT_AVAILABLE;
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"SepaDebitDatedSingleCreate\" not supported with this account, trying old single debit");
+      mj=AH_Job_SepaDebitSingle_new(mu, ma);
+      if (!mj) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"SepaDebitSingle\" not supported with this account");
+        return GWEN_ERROR_NOT_AVAILABLE;
+      }
     }
     break;
 
