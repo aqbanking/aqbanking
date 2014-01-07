@@ -146,6 +146,7 @@ int writeContext(const char *ctxFile, const AB_IMEXPORTER_CONTEXT *ctx) {
 
 
 AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferType) {
+  AB_BANKING *ab;
   AB_TRANSACTION *t;
   const char *s;
   int period, i;
@@ -154,9 +155,13 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferType) {
   *transferType = 0; // single transfer
   assert(a);
   assert(db);
+
+  ab=AB_Account_GetBanking(a);
+  assert(ab);
+
   t=AB_Transaction_new();
 
-  AB_Transaction_FillLocalFromAccount(t, a);
+  AB_Banking_FillGapsInTransaction(ab, a, t);
 
   s=GWEN_DB_GetCharValue(db, "name", 0, 0);
   if (s && *s)
