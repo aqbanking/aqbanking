@@ -190,8 +190,17 @@ int AH_Job_SepaDebitSingle_ExchangeArgs(AH_JOB *j, AB_JOB *bj,
   DBG_INFO(AQHBCI_LOGDOMAIN, "Using SEPA descriptor %s", descriptor);
 
 
+  /* DISABLED according to a discussion on aqbanking-user:
+   * The application should do this, not the library.
+  AB_Transaction_FillLocalFromAccount(t, a); */
+
   /* validate transaction */
-  AB_Transaction_FillLocalFromAccount(t, a);
+  rv=AB_Transaction_CheckForSepaConformity(t);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
   rv=AB_Transaction_ValidatePurposeAgainstLimits(t, lim);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
