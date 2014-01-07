@@ -569,6 +569,149 @@ int AB_Transaction_CheckDateAgainstLimits(AB_TRANSACTION *t, const AB_TRANSACTIO
 
 
 
+static int _checkStringForRestrictedSepaCharset(const char *s) {
+  assert(s);
+  while(*s) {
+    unsigned char c=*s;
+
+    if (!((c>='A' && c<='Z') ||
+          (c>='a' && c<='z') ||
+          (c>='0' && c<='9') ||
+          strchr("':?,-(+.)/ ", c)!=NULL)) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in string");
+      return GWEN_ERROR_BAD_DATA;
+    }
+    s++;
+  }
+
+  return 0;
+}
+
+
+
+/* This function does not check full UTF8, it only checks whether the given string contains characters
+ * other than "A"-"Z", "a"-"z" and "0"-"9".
+ * We don't use isalnum here because I'm not sure how that function handles UTF-8 chars with umlauts...
+ */
+static int _checkStringForAlNum(const char *s) {
+  assert(s);
+  while(*s) {
+    unsigned char c=*s;
+
+    if (!((c>='A' && c<='Z') ||
+          (c>='a' && c<='z') ||
+          (c>='0' && c<='9'))) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in string");
+      return GWEN_ERROR_BAD_DATA;
+    }
+    s++;
+  }
+
+  return 0;
+}
+
+
+
+int AB_Transaction_CheckForSepaConformity(const AB_TRANSACTION *t) {
+  if (t) {
+    const GWEN_STRINGLIST *sl;
+    const char *s;
+    int rv;
+
+    s=AB_Transaction_GetLocalIban(t);
+    if (!(s && *s)) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing or empty local IBAN in transaction");
+      return GWEN_ERROR_BAD_DATA;
+    }
+    rv=_checkStringForAlNum(s);
+    if (rv<0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in local IBAN");
+      return rv;
+    }
+
+    s=AB_Transaction_GetLocalBic(t);
+    if (!(s && *s)) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing or empty local BIC in transaction");
+      return GWEN_ERROR_BAD_DATA;
+    }
+    rv=_checkStringForAlNum(s);
+    if (rv<0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in local BIC");
+      return rv;
+    }
+
+    s=AB_Transaction_GetRemoteIban(t);
+    if (!(s && *s)) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing or empty remote IBAN in transaction");
+      return GWEN_ERROR_BAD_DATA;
+    }
+    rv=_checkStringForAlNum(s);
+    if (rv<0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in remote IBAN");
+      return rv;
+    }
+
+    s=AB_Transaction_GetRemoteBic(t);
+    if (!(s && *s)) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing or empty remote BIC in transaction");
+      return GWEN_ERROR_BAD_DATA;
+    }
+    rv=_checkStringForAlNum(s);
+    if (rv<0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in remote BIC");
+      return rv;
+    }
+
+
+    s=AB_Transaction_GetLocalName(t);
+    if (!(s && *s)) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing or empty local name in transaction");
+      return GWEN_ERROR_BAD_DATA;
+    }
+    rv=_checkStringForRestrictedSepaCharset(s);
+    if (rv<0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in local name");
+      return rv;
+    }
+
+    sl=AB_Transaction_GetRemoteName(t);
+    if (sl) {
+      GWEN_STRINGLISTENTRY *se;
+      int lines=0;
+
+      se=GWEN_StringList_FirstEntry(sl);
+      while(se) {
+        s=GWEN_StringListEntry_Data(se);
+        if (s && *s) {
+          rv=_checkStringForRestrictedSepaCharset(s);
+          if (rv<0) {
+            DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in remote name");
+            return rv;
+          }
+        }
+        else {
+          if (lines==0) {
+            DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing or empty remote name in transaction");
+            return GWEN_ERROR_BAD_DATA;
+          }
+        }
+        lines++;
+        se=GWEN_StringListEntry_Next(se);
+      } /* while */
+    }
+    else {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing or empty remote name in transaction");
+      return GWEN_ERROR_BAD_DATA;
+    }
+  }
+  else {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing transaction");
+    return GWEN_ERROR_BAD_DATA;
+  }
+
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Transaction conforms to restricted SEPA charset");
+  return 0;
+}
 
 
 
