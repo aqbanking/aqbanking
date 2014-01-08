@@ -594,7 +594,7 @@ AC_SUBST(ktoblzcheck_includes)
 # Check for Gwen
 #
 
-AC_GWENHYWFAR(4,7,0,0)
+AC_GWENHYWFAR(4,9,0,0)
 
 all_includes="$all_includes $gwenhywfar_includes"
 
