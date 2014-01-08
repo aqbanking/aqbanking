@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2013 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -30,8 +27,6 @@ AH_JOB *AH_Job_MultiDebitNote_new(AB_USER *cu,
 int AH_Job_MultiTransferBase_GetTransferCount(AH_JOB *j);
 
 int AH_Job_MultiTransferBase_GetMaxTransfers(AH_JOB *j);
-
-int AH_Job_MultiTransferBase_GetTransferCount(AH_JOB *j);
 
 
 #endif /* AH_JOBMULTITRANSFER_L_H */
