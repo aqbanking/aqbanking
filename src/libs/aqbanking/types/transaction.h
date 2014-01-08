@@ -678,6 +678,7 @@ typedef struct AB_TRANSACTION AB_TRANSACTION;
 
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/inherit.h>
+#include <gwenhywfar/misc.h>
 #include <gwenhywfar/list2.h>
 /* headers */
 #include <gwenhywfar/types.h>
@@ -816,6 +817,9 @@ AQBANKING_API const char *AB_Transaction_SequenceType_toString(AB_TRANSACTION_SE
 
 
 GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_TRANSACTION, AQBANKING_API)
+GWEN_LIST_FUNCTION_LIB_DEFS(AB_TRANSACTION, AB_Transaction, AQBANKING_API)
+AQBANKING_API AB_TRANSACTION_LIST *AB_Transaction_List_dup(const AB_TRANSACTION_LIST *stl);
+
 GWEN_LIST2_FUNCTION_LIB_DEFS(AB_TRANSACTION, AB_Transaction, AQBANKING_API)
 
 /** Destroys all objects stored in the given LIST2 and the list itself

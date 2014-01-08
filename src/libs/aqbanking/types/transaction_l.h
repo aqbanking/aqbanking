@@ -38,17 +38,12 @@ This group contains information about the remote account.</p>
 <p>
 <p>This group contains information which is used with SEPA transfers within the European Community. It is used by backends and applications but not by AqBanking itself.</p></p>
 */
-#include <gwenhywfar/misc.h>
 #include "transaction.h"
-#include <gwenhywfar/misc.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
-GWEN_LIST_FUNCTION_DEFS(AB_TRANSACTION, AB_Transaction)
-AB_TRANSACTION_LIST *AB_Transaction_List_dup(const AB_TRANSACTION_LIST *stl);
 
 
 

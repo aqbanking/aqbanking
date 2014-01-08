@@ -340,7 +340,7 @@
         access="public"
         filename="transaction"
         inherit="public" 
-        list="lib"
+        list="public"
         list2="public" >
 
     <subtypes>
