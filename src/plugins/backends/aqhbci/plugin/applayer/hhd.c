@@ -698,6 +698,59 @@ int AH_HHD14_AddChallengeParams_29(AH_JOB *j,
 
 
 
+int AH_HHD14_AddChallengeParams_32(AH_JOB *j,
+                                   int transferCount,
+                                   const AB_VALUE *vAmount,
+                                   const char *sLocalIban,
+                                   const GWEN_TIME *ti) {
+  char numBuf[32];
+
+  /* P1: Anzahl */
+  snprintf(numBuf, sizeof(numBuf)-1, "%d", transferCount);
+  numBuf[sizeof(numBuf)-1]=0;
+  AH_Job_AddChallengeParam(j, numBuf);
+
+  /* P2: Summe */
+  if (vAmount) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+    AH_Job_ValueToChallengeString(vAmount, tbuf);
+    AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+
+  /* P3: Eigene IBAN */
+  if (sLocalIban && *sLocalIban)
+    AH_Job_AddChallengeParam(j, sLocalIban);
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No local iban");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* P4: Referenzzahl */
+  AH_Job_AddChallengeParam(j, "");
+
+  /* P5: Termin */
+  if (ti) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+    GWEN_Time_toString(ti, "YYYYMMDD", tbuf);
+    AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No execution date");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* done */
+  return 0;
+}
+
+
+
 
 
 
