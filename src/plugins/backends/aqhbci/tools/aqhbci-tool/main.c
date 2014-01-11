@@ -200,6 +200,10 @@ int main(int argc, char **argv) {
                                   "    Requests account list for a "
                                   "user\n\n"));
     GWEN_Buffer_AppendString(ubuf,
+                             I18N("  getaccsepa:\n"
+                                  "    Requests SEPA account list for a "
+                                  "user\n\n"));
+    GWEN_Buffer_AppendString(ubuf,
                              I18N("  getsysid:\n"
                                   "    Requests a system id for the given "
                                   "user\n\n"));
