@@ -241,6 +241,7 @@
 
 
 
+
  <!--  Geschaeftsvorfall: SEPA-Info holen (Version 1) -->
  <JOBdef id="JobGetAccountSepaInfo" 
          code="HKSPA"
@@ -253,6 +254,35 @@
          single="0"
  >
    <SEG type="GetAccountSepaInfo" version="1" />
+ </JOBdef>
+
+
+ <!--  Geschaeftsvorfall: SEPA-Info holen (Version 2) -->
+ <JOBdef id="JobGetAccountSepaInfo" 
+         code="HKSPA"
+         params="HISPAS"
+         version="2" 
+         crypt="1" 
+         sign="1" 
+         needBPD="1" 
+         response="GetAccountSepaInfoResponse"
+         single="0"
+ >
+   <SEG type="GetAccountSepaInfo" version="2" />
+ </JOBdef>
+
+ <!--  Geschaeftsvorfall: SEPA-Info holen (Version 3) -->
+ <JOBdef id="JobGetAccountSepaInfo" 
+         code="HKSPA"
+         params="HISPAS"
+         version="3" 
+         crypt="1" 
+         sign="1" 
+         needBPD="1" 
+         response="GetAccountSepaInfoResponse"
+         single="0"
+ >
+   <SEG type="GetAccountSepaInfo" version="2" />
  </JOBdef>
 
 
