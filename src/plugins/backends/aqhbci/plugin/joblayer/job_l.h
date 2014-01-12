@@ -310,6 +310,16 @@ int AH_Job_GetMaxVersionUpUntil(const char *name, AB_USER *u, int maxVersion);
 
 int AH_Job_GetSegmentVersion(const AH_JOB *j);
 
+
+int AH_Job_GetTransferCount(AH_JOB *j);
+void AH_Job_IncTransferCount(AH_JOB *j);
+int AH_Job_GetMaxTransfers(AH_JOB *j);
+void AH_Job_SetMaxTransfers(AH_JOB *j, int i);
+
+
+
+
+
 #endif /* AH_JOB_L_H */
 
 

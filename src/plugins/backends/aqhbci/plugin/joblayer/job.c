@@ -2489,6 +2489,31 @@ void AH_Job_ValueToChallengeString(const AB_VALUE *v, GWEN_BUFFER *buf) {
 
 
 
+int AH_Job_GetTransferCount(AH_JOB *j) {
+  assert(j);
+  return j->transferCount;
+}
+
+
+
+void AH_Job_IncTransferCount(AH_JOB *j) {
+  assert(j);
+  j->transferCount++;
+}
+
+
+
+int AH_Job_GetMaxTransfers(AH_JOB *j) {
+  assert(j);
+  return j->maxTransfers;
+}
+
+
+
+void AH_Job_SetMaxTransfers(AH_JOB *j, int i) {
+  assert(j);
+  j->maxTransfers=i;
+}
 
 
 
