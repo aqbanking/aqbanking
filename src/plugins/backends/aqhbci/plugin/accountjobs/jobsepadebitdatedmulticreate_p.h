@@ -28,8 +28,6 @@ struct AH_JOB_CREATESEPAMULTIDEBIT {
   int sumFieldNeeded;
   int singleBookingAllowed;
 
-  AB_VALUE *sumRemoteAccountId;
-  AB_VALUE *sumRemoteBankCode;
   AB_VALUE *sumValues;
   char *localIban;
 

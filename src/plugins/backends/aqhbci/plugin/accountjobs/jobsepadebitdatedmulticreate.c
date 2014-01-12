@@ -100,8 +100,6 @@ void GWENHYWFAR_CB AH_Job_SepaDebitDatedMultiCreate_FreeData(void *bp, void *p){
   aj=(AH_JOB_CREATESEPAMULTIDEBIT*)p;
 
   free(aj->fiid);
-  AB_Value_free(aj->sumRemoteAccountId);
-  AB_Value_free(aj->sumRemoteBankCode);
   AB_Value_free(aj->sumValues);
 
   AB_Transaction_List_free(aj->transferList);
@@ -522,10 +520,17 @@ int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
   /* set data in job */
   ioc=AB_ImExporterContext_new();
 
-  /* add transactions to ImExporter context */
+  /* add transactions to ImExporter context, calculate sum on the fly */
+  AB_Value_free(aj->sumValues);
+  aj->sumValues=AB_Value_new();
   t=AB_Transaction_List_First(aj->transferList);
   while(t) {
     AB_TRANSACTION *cpy;
+    const AB_VALUE *v;
+
+    v=AB_Transaction_GetValue(t);
+    if (v)
+      AB_Value_AddValue(aj->sumValues, v);
 
     cpy=AB_Transaction_dup(t);
     AB_ImExporterContext_AddTransaction(ioc, cpy);
@@ -556,9 +561,6 @@ int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
                       GWEN_Buffer_GetStart(dbuf),
                       GWEN_Buffer_GetUsedBytes(dbuf));
   GWEN_Buffer_free(dbuf);
-
-  /* TODO: calculate sums */
-
 
   return 0;
 }
