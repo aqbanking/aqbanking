@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2004-2014 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -29,6 +29,7 @@
 #include "jobloadcellphone_l.h"
 #include "jobsepaxfersingle_l.h"
 #include "jobsepadebitdatedsinglecreate_l.h"
+#include "jobsepadebitdatedmulticreate_l.h"
 #include "jobsepadebitsingle_l.h" /* deprecated job */
 
 /* special jobs */
@@ -467,18 +468,34 @@ int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeSepaDebitNote:
-    /* TODO: Select appropriate job */
-    GWEN_DB_SetIntValue(dbJob, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			"isMultiJob", 0);
-    mj=AH_Job_SepaDebitDatedSingleCreate_new(mu, ma);
+    /* try multi transfer first */
+    mj=AH_Job_SepaDebitDatedMultiCreate_new(mu, ma);
+    if (mj)
+      GWEN_DB_SetIntValue(dbJob, GWEN_DB_FLAGS_OVERWRITE_VARS, "isMultiJob", 1);
+    else {
+      DBG_WARN(AQHBCI_LOGDOMAIN,
+               "Multi-job not supported with this account, "
+               "using single-job");
+    }
+
     if (!mj) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"SepaDebitDatedSingleCreate\" not supported with this account, trying old single debit");
-      mj=AH_Job_SepaDebitSingle_new(mu, ma);
+      /* try single transfer */
+      mj=AH_Job_SepaDebitDatedSingleCreate_new(mu, ma);
       if (!mj) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"SepaDebitSingle\" not supported with this account");
-        return GWEN_ERROR_NOT_AVAILABLE;
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"SepaDebitDatedSingleCreate\" not supported with this account, trying old single debit");
+        mj=AH_Job_SepaDebitSingle_new(mu, ma);
+        if (!mj) {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"SepaDebitDatedSingleCreate\" not supported with this account, trying old single debit");
+          mj=AH_Job_SepaDebitSingle_new(mu, ma);
+          if (!mj) {
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"SepaDebitSingle\" not supported with this account");
+            return GWEN_ERROR_NOT_AVAILABLE;
+          }
+        }
+        GWEN_DB_SetIntValue(dbJob, GWEN_DB_FLAGS_OVERWRITE_VARS, "isMultiJob", 0);
       }
     }
+
     break;
 
   default:
@@ -514,10 +531,13 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
   int jobIsNew=1;
   AB_JOB_STATUS jst;
   uint32_t aFlags;
+  const AB_TRANSACTION *t;
 
   assert(pro);
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
   assert(hp);
+
+  t=AB_Job_GetTransaction(j);
 
   if (hp->outbox==0)
     hp->outbox=AH_Outbox_new(hp->hbci);
@@ -730,14 +750,34 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
     break;
 
   case AB_Job_TypeSepaDebitNote:
-    /* TODO: Select appropriate job */
-    mj=AH_Job_SepaDebitDatedSingleCreate_new(mu, ma);
-    if (!mj) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"SepaDebitDatedSingleCreate\" not supported with this account, trying old single debit");
-      mj=AH_Job_SepaDebitSingle_new(mu, ma);
+    /* try multi transfer first */
+    mj=AH_Outbox_FindDatedTransferJob(hp->outbox, mu, ma, "JobSepaDebitDatedMultiCreate",
+                                      t?(AB_Transaction_GetDate(t)):NULL);
+    if (mj) {
+      /* simply add transfer to existing job */
+      jobIsNew=0;
+      DBG_DEBUG(AQHBCI_LOGDOMAIN, "No matching job found");
+    }
+    else {
+      /* create new job */
+      mj=AH_Job_SepaDebitDatedMultiCreate_new(mu, ma);
       if (!mj) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"SepaDebitSingle\" not supported with this account");
-        return GWEN_ERROR_NOT_AVAILABLE;
+        DBG_WARN(AQHBCI_LOGDOMAIN,
+                 "Multi-job not supported with this account, "
+                 "using single-job");
+      }
+    }
+
+    if (!mj) {
+      /* try single transfer */
+      mj=AH_Job_SepaDebitDatedSingleCreate_new(mu, ma);
+      if (!mj) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"SepaDebitDatedSingleCreate\" not supported with this account, trying old single debit");
+        mj=AH_Job_SepaDebitSingle_new(mu, ma);
+        if (!mj) {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"SepaDebitSingle\" not supported with this account");
+          return GWEN_ERROR_NOT_AVAILABLE;
+        }
       }
     }
     break;
@@ -814,6 +854,335 @@ AH_JOB *AH_Provider__FindMyJob(AH_JOB_LIST *mjl, uint32_t jid){
 
   return mj;
 }
+
+
+
+int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
+  AH_PROVIDER *hp;
+  GWEN_DB_NODE *dbJob;
+  AH_JOB *mj;
+  uint32_t jid;
+  AB_ACCOUNT *ma;
+  AB_USER *mu;
+  uint32_t aFlags;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  dbJob=AB_Job_GetProviderData(j, pro);
+  assert(dbJob);
+
+  ma=AB_Job_GetAccount(j);
+  assert(ma);
+
+  /* determine customer to use */
+  mu=AB_Account_GetFirstUser(ma);
+  if (!mu) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+              "No customers noted for account \"%s/%s\"",
+              AB_Account_GetBankCode(ma),
+              AB_Account_GetAccountNumber(ma));
+    return GWEN_ERROR_NOT_AVAILABLE;
+  }
+
+  aFlags=AH_Account_GetFlags(ma);
+
+  mj=0;
+  switch(AB_Job_GetType(j)) {
+
+  case AB_Job_TypeGetBalance:
+    mj=AH_Job_GetBalance_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
+  case AB_Job_TypeGetTransactions:
+    mj=AH_Job_GetTransactions_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
+  case AB_Job_TypeGetStandingOrders:
+    mj=AH_Job_GetStandingOrders_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
+  case AB_Job_TypeGetDatedTransfers:
+    mj=AH_Job_GetDatedTransfers_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
+  case AB_Job_TypeTransfer:
+    mj=0;
+    if (!(aFlags & AH_BANK_FLAGS_PREFER_SINGLE_TRANSFER)) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers multi jobs");
+      /* create new job */
+      mj=AH_Job_MultiTransfer_new(mu, ma);
+      if (!mj) {
+        DBG_WARN(AQHBCI_LOGDOMAIN,
+                 "Multi-job not supported with this account, "
+                 "using single-job");
+      }
+    }
+    if (!mj) {
+      mj=AH_Job_SingleTransfer_new(mu, ma);
+      if (!mj) {
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+	return GWEN_ERROR_NOT_AVAILABLE;
+      }
+    }
+    break;
+
+  case AB_Job_TypeDebitNote:
+    mj=0;
+    if (!(aFlags & AH_BANK_FLAGS_PREFER_SINGLE_DEBITNOTE)) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers multi jobs");
+      /* create new job */
+      mj=AH_Job_MultiDebitNote_new(mu, ma);
+      if (!mj) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN,
+                  "Multi-job not supported with this account, "
+                  "using single-job");
+      }
+    }
+    if (!mj) {
+      mj=AH_Job_SingleDebitNote_new(mu, ma);
+      if (!mj) {
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+	return GWEN_ERROR_NOT_AVAILABLE;
+      }
+    }
+    break;
+
+  case AB_Job_TypeInternalTransfer:
+    mj=AH_Job_InternalTransfer_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
+  case AB_Job_TypeEuTransfer:
+    mj=AH_Job_EuTransfer_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
+  case AB_Job_TypeCreateStandingOrder:
+    mj=AH_Job_CreateStandingOrder_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
+  case AB_Job_TypeModifyStandingOrder:
+    mj=AH_Job_ModifyStandingOrder_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
+  case AB_Job_TypeDeleteStandingOrder:
+    mj=AH_Job_DeleteStandingOrder_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
+  case AB_Job_TypeCreateDatedTransfer:
+    mj=AH_Job_CreateDatedTransfer_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
+  case AB_Job_TypeModifyDatedTransfer:
+    mj=AH_Job_ModifyDatedTransfer_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
+  case AB_Job_TypeDeleteDatedTransfer:
+    mj=AH_Job_DeleteDatedTransfer_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
+  case AB_Job_TypeLoadCellPhone:
+    mj=AH_Job_LoadCellPhone_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
+  case AB_Job_TypeSepaTransfer:
+    mj=AH_Job_SepaTransferSingle_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
+  case AB_Job_TypeSepaDebitNote:
+    /* try multi transfer first */
+    mj=AH_Job_SepaDebitDatedMultiCreate_new(mu, ma);
+    if (!mj) {
+      DBG_WARN(AQHBCI_LOGDOMAIN,
+               "Multi-job not supported with this account, "
+               "using single-job");
+    }
+
+    if (!mj) {
+      /* try single transfer */
+      mj=AH_Job_SepaDebitDatedSingleCreate_new(mu, ma);
+      if (!mj) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"SepaDebitDatedSingleCreate\" not supported with this account, trying old single debit");
+        mj=AH_Job_SepaDebitSingle_new(mu, ma);
+        if (!mj) {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"SepaDebitSingle\" not supported with this account");
+          return GWEN_ERROR_NOT_AVAILABLE;
+        }
+      }
+    }
+    break;
+
+  default:
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+              "Job not supported by AqHBCI");
+    return GWEN_ERROR_NOT_AVAILABLE;
+  } /* switch */
+  assert(mj);
+
+  /* store HBCI job, link both jobs */
+  if (AH_Job_GetId(mj)==0) {
+    jid=AB_Job_GetJobId(j);
+    assert(jid);
+    /* we now use the same id here */
+    AH_Job_SetId(mj, jid);
+  }
+  AB_Job_SetIdForProvider(j, AH_Job_GetId(mj));
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Job successfully created");
+  *pHbciJob=mj;
+  return 0;
+}
+
+
+
+int AH_Provider__GetMultiHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
+  AH_PROVIDER *hp;
+  GWEN_DB_NODE *dbJob;
+  AH_JOB *mj=NULL;
+  AB_ACCOUNT *ma;
+  AB_USER *mu;
+  const AB_TRANSACTION *t;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  t=AB_Job_GetTransaction(j);
+
+  if (hp->outbox==0)
+    hp->outbox=AH_Outbox_new(hp->hbci);
+  assert(hp->outbox);
+
+  dbJob=AB_Job_GetProviderData(j, pro);
+  assert(dbJob);
+
+  ma=AB_Job_GetAccount(j);
+  assert(ma);
+
+  /* determine customer to use */
+  mu=AB_Account_GetFirstUser(ma);
+  if (!mu) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+              "No customers noted for account \"%s/%s\"",
+              AB_Account_GetBankCode(ma),
+              AB_Account_GetAccountNumber(ma));
+    return GWEN_ERROR_NOT_AVAILABLE;
+  }
+
+  switch(AB_Job_GetType(j)) {
+  case AB_Job_TypeTransfer:
+    mj=AH_Outbox_FindTransferJob(hp->outbox, mu, ma, 1);
+    break;
+
+  case AB_Job_TypeDebitNote:
+    mj=AH_Outbox_FindTransferJob(hp->outbox, mu, ma, 0);
+    break;
+
+  case AB_Job_TypeSepaTransfer:
+    mj=AH_Outbox_FindDatedTransferJob(hp->outbox, mu, ma, "JobSepaTransferSingle",
+                                      t?(AB_Transaction_GetDate(t)):NULL);
+    break;
+
+  case AB_Job_TypeSepaDebitNote:
+    /* try multi transfer first */
+    mj=AH_Outbox_FindDatedTransferJob(hp->outbox, mu, ma, "JobSepaDebitDatedMultiCreate",
+                                      t?(AB_Transaction_GetDate(t)):NULL);
+    break;
+
+  default:
+    DBG_INFO(AQHBCI_LOGDOMAIN,
+             "No Multi jobs defined for this job type");
+    break;
+  } /* switch */
+
+  if (mj) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Multi job found");
+    AB_Job_SetIdForProvider(j, AH_Job_GetId(mj));
+    *pHbciJob=mj;
+    return 0;
+  }
+  else {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No multi job found");
+    return GWEN_ERROR_NOT_FOUND;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

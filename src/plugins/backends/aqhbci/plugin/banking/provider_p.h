@@ -88,6 +88,10 @@ static int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
 					 GWEN_BUFFER *lbuf,
 					 int nounmount);
 
+
+static int AH_Provider__GetMultiHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob);
+static int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob);
+
 /*@}*/
 
 #endif /* AH_PROVIDER_P_H */
