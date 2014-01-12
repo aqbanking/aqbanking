@@ -486,7 +486,6 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
     /* we now use the same id here */
     AH_Job_SetId(mj, jid);
   }
-  AB_Job_SetIdForProvider(j, AH_Job_GetId(mj));
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Job successfully created");
   *pHbciJob=mj;
