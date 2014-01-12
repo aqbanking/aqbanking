@@ -261,188 +261,6 @@ int AH_Provider_CheckCryptToken(AB_PROVIDER *pro,
 
 
 
-int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
-  AH_PROVIDER *hp;
-  AH_JOB *mj=NULL;
-  AB_USER *mu;
-  AB_ACCOUNT *ma;
-  int rv;
-
-  assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
-  ma=AB_Job_GetAccount(j);
-  assert(ma);
-
-  /* determine customer to use */
-  mu=AB_Account_GetFirstUser(ma);
-  if (!mu) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No customer for this account");
-    return GWEN_ERROR_NOT_AVAILABLE;
-  }
-
-  rv=AH_Provider__CreateHbciJob(pro, j, &mj);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  /* exchange parameters */
-  rv=AH_Job_Exchange(mj, j, AH_Job_ExchangeModeParams, NULL);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error exchanging params");
-    AH_Job_free(mj);
-    return rv;
-  }
-
-  /* free my job, it is no longer needed here */
-  AH_Job_free(mj);
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Job successfully updated");
-  return 0;
-}
-
-
-
-int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
-  AH_PROVIDER *hp;
-  AH_JOB *mj=NULL;
-  uint32_t jid;
-  AB_JOB_STATUS jst;
-  AB_ACCOUNT *ma;
-  AB_USER *mu;
-  int rv;
-  int sigs;
-  int jobIsNew=1;
-
-  assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
-  if (hp->outbox==0)
-    hp->outbox=AH_Outbox_new(hp->hbci);
-  assert(hp->outbox);
-
-  /* check status */
-  jst=AB_Job_GetStatus(j);
-  if (jst==AB_Job_StatusPending) {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Adding pending job for verification");
-    AH_Outbox_AddPendingJob(hp->outbox, j);
-    return 0;
-  }
-
-  /* check id */
-  jid=AB_Job_GetIdForProvider(j);
-  if (jid) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "Jobs has already been sent to this backend, rejecting");
-    return GWEN_ERROR_INVALID;
-  }
-
-  /* get account and user */
-  ma=AB_Job_GetAccount(j);
-  assert(ma);
-
-  /* determine customer to use */
-  mu=AB_Account_GetFirstUser(ma);
-  if (!mu) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No customer for this account");
-    return GWEN_ERROR_NOT_AVAILABLE;
-  }
-
-
-  /* try to get an existing multi job to add the new one to */
-  rv=AH_Provider__GetMultiHbciJob(pro, j, &mj);
-  if (rv==0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Reusing existing multi job");
-    jobIsNew=0;
-  }
-  else {
-    if (rv!=GWEN_ERROR_NOT_FOUND) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error looking for multi job (%d), ignoring", rv);
-    }
-  }
-
-  /* create new job if necessary */
-  if (mj==NULL) {
-    rv=AH_Provider__CreateHbciJob(pro, j, &mj);
-    if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
-  }
-  assert(mj);
-
-  if (jobIsNew) {
-    /* check whether we need to sign the job */
-    sigs=AH_Job_GetMinSignatures(mj);
-    if (sigs) {
-      if (sigs>1) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Multiple signatures not yet supported");
-	GWEN_Gui_ProgressLog(0,
-			     GWEN_LoggerLevel_Error,
-			     I18N("ERROR: Multiple signatures not "
-				  "yet supported"));
-	return GWEN_ERROR_GENERIC;
-      }
-      AH_Job_AddSigner(mj, AB_User_GetUserId(mu));
-    }
-  }
-
-  /* store HBCI job, link both jobs */
-  if (AH_Job_GetId(mj)==0) {
-    jid=AB_Job_GetJobId(j);
-    assert(jid);
-    /* we now use the same id here */
-    AH_Job_SetId(mj, jid);
-  }
-  AB_Job_SetIdForProvider(j, AH_Job_GetId(mj));
-
-  /* exchange arguments */
-  rv=AH_Job_Exchange(mj, j, AH_Job_ExchangeModeArgs, NULL);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error exchanging params");
-    AH_Job_free(mj);
-    return rv;
-  }
-
-  if (jobIsNew) {
-    /* prevent outbox from freeing this job */
-    AH_Job_Attach(mj);
-    /* add job to outbox */
-    AH_Outbox_AddJob(hp->outbox, mj);
-  }
-  AB_Job_Attach(j);
-  AB_Job_List2_PushBack(hp->bankingJobs, j);
-  AB_Job_SetStatus(j, AB_Job_StatusSent);
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Job successfully added");
-  return 0;
-}
-
-
-
-AH_JOB *AH_Provider__FindMyJob(AH_JOB_LIST *mjl, uint32_t jid){
-  AH_JOB *mj;
-
-  assert(mjl);
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Looking for id %08x", jid);
-  mj=AH_Job_List_First(mjl);
-  while(mj) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Comparing %08x", AH_Job_GetId(mj));
-    if (AH_Job_GetId(mj)==jid)
-      break;
-    mj=AH_Job_List_Next(mj);
-  }
-
-  return mj;
-}
-
-
-
 int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
   AH_PROVIDER *hp;
   GWEN_DB_NODE *dbJob;
@@ -751,24 +569,185 @@ int AH_Provider__GetMultiHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob)
 
 
 
+int AH_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
+  AH_PROVIDER *hp;
+  AH_JOB *mj=NULL;
+  AB_USER *mu;
+  AB_ACCOUNT *ma;
+  int rv;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  ma=AB_Job_GetAccount(j);
+  assert(ma);
+
+  /* determine customer to use */
+  mu=AB_Account_GetFirstUser(ma);
+  if (!mu) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No customer for this account");
+    return GWEN_ERROR_NOT_AVAILABLE;
+  }
+
+  rv=AH_Provider__CreateHbciJob(pro, j, &mj);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* exchange parameters */
+  rv=AH_Job_Exchange(mj, j, AH_Job_ExchangeModeParams, NULL);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error exchanging params");
+    AH_Job_free(mj);
+    return rv;
+  }
+
+  /* free my job, it is no longer needed here */
+  AH_Job_free(mj);
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Job successfully updated");
+  return 0;
+}
 
 
 
+int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
+  AH_PROVIDER *hp;
+  AH_JOB *mj=NULL;
+  uint32_t jid;
+  AB_JOB_STATUS jst;
+  AB_ACCOUNT *ma;
+  AB_USER *mu;
+  int rv;
+  int sigs;
+  int jobIsNew=1;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  if (hp->outbox==0)
+    hp->outbox=AH_Outbox_new(hp->hbci);
+  assert(hp->outbox);
+
+  /* check status */
+  jst=AB_Job_GetStatus(j);
+  if (jst==AB_Job_StatusPending) {
+    DBG_INFO(AQHBCI_LOGDOMAIN,
+             "Adding pending job for verification");
+    AH_Outbox_AddPendingJob(hp->outbox, j);
+    return 0;
+  }
+
+  /* check id */
+  jid=AB_Job_GetIdForProvider(j);
+  if (jid) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+              "Jobs has already been sent to this backend, rejecting");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* get account and user */
+  ma=AB_Job_GetAccount(j);
+  assert(ma);
+
+  /* determine customer to use */
+  mu=AB_Account_GetFirstUser(ma);
+  if (!mu) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No customer for this account");
+    return GWEN_ERROR_NOT_AVAILABLE;
+  }
+
+
+  /* try to get an existing multi job to add the new one to */
+  rv=AH_Provider__GetMultiHbciJob(pro, j, &mj);
+  if (rv==0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Reusing existing multi job");
+    jobIsNew=0;
+  }
+  else {
+    if (rv!=GWEN_ERROR_NOT_FOUND) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error looking for multi job (%d), ignoring", rv);
+    }
+  }
+
+  /* create new job if necessary */
+  if (mj==NULL) {
+    rv=AH_Provider__CreateHbciJob(pro, j, &mj);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+  assert(mj);
+
+  if (jobIsNew) {
+    /* check whether we need to sign the job */
+    sigs=AH_Job_GetMinSignatures(mj);
+    if (sigs) {
+      if (sigs>1) {
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "Multiple signatures not yet supported");
+	GWEN_Gui_ProgressLog(0,
+			     GWEN_LoggerLevel_Error,
+			     I18N("ERROR: Multiple signatures not "
+				  "yet supported"));
+	return GWEN_ERROR_GENERIC;
+      }
+      AH_Job_AddSigner(mj, AB_User_GetUserId(mu));
+    }
+  }
+
+  /* store HBCI job, link both jobs */
+  if (AH_Job_GetId(mj)==0) {
+    jid=AB_Job_GetJobId(j);
+    assert(jid);
+    /* we now use the same id here */
+    AH_Job_SetId(mj, jid);
+  }
+  AB_Job_SetIdForProvider(j, AH_Job_GetId(mj));
+
+  /* exchange arguments */
+  rv=AH_Job_Exchange(mj, j, AH_Job_ExchangeModeArgs, NULL);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error exchanging params");
+    AH_Job_free(mj);
+    return rv;
+  }
+
+  if (jobIsNew) {
+    /* prevent outbox from freeing this job */
+    AH_Job_Attach(mj);
+    /* add job to outbox */
+    AH_Outbox_AddJob(hp->outbox, mj);
+  }
+  AB_Job_Attach(j);
+  AB_Job_List2_PushBack(hp->bankingJobs, j);
+  AB_Job_SetStatus(j, AB_Job_StatusSent);
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Job successfully added");
+  return 0;
+}
 
 
 
+AH_JOB *AH_Provider__FindMyJob(AH_JOB_LIST *mjl, uint32_t jid){
+  AH_JOB *mj;
 
+  assert(mjl);
 
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Looking for id %08x", jid);
+  mj=AH_Job_List_First(mjl);
+  while(mj) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Comparing %08x", AH_Job_GetId(mj));
+    if (AH_Job_GetId(mj)==jid)
+      break;
+    mj=AH_Job_List_Next(mj);
+  }
 
-
-
-
-
-
-
-
-
-
+  return mj;
+}
 
 
 
