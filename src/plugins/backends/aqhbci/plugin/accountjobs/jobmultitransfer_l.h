@@ -24,11 +24,6 @@ AH_JOB *AH_Job_MultiDebitNote_new(AB_USER *cu,
                                   AB_ACCOUNT *account);
 
 
-int AH_Job_MultiTransferBase_GetTransferCount(AH_JOB *j);
-
-int AH_Job_MultiTransferBase_GetMaxTransfers(AH_JOB *j);
-
-
 #endif /* AH_JOBMULTITRANSFER_L_H */
 
 

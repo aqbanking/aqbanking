@@ -316,6 +316,9 @@ void AH_Job_IncTransferCount(AH_JOB *j);
 int AH_Job_GetMaxTransfers(AH_JOB *j);
 void AH_Job_SetMaxTransfers(AH_JOB *j, int i);
 
+AB_TRANSACTION_LIST *AH_Job_GetTransferList(const AH_JOB *j);
+void AH_Job_AddTransfer(AH_JOB *j, AB_TRANSACTION *t);
+AB_TRANSACTION *AH_Job_GetFirstTransfer(const AH_JOB *j);
 
 
 

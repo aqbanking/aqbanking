@@ -409,6 +409,8 @@ void AH_Job_free(AH_JOB *j) {
       AH_Result_List_free(j->segResults);
       AB_Message_List_free(j->messages);
 
+      AB_Transaction_List_free(j->transferList);
+
       GWEN_LIST_FINI(AH_JOB, j);
       GWEN_INHERIT_FINI(AH_JOB, j);
       GWEN_FREE_OBJECT(j);
@@ -2514,6 +2516,37 @@ void AH_Job_SetMaxTransfers(AH_JOB *j, int i) {
   assert(j);
   j->maxTransfers=i;
 }
+
+
+
+AB_TRANSACTION_LIST *AH_Job_GetTransferList(const AH_JOB *j) {
+  assert(j);
+  return j->transferList;
+}
+
+
+
+AB_TRANSACTION *AH_Job_GetFirstTransfer(const AH_JOB *j) {
+  assert(j);
+  if (j->transferList==NULL)
+    return NULL;
+
+  return AB_Transaction_List_First(j->transferList);
+}
+
+
+
+void AH_Job_AddTransfer(AH_JOB *j, AB_TRANSACTION *t) {
+  assert(j);
+  if (j->transferList==NULL)
+    j->transferList=AB_Transaction_List_new();
+
+  AB_Transaction_List_Add(t, j->transferList);
+  j->transferCount++;
+}
+
+
+
 
 
 

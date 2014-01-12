@@ -57,8 +57,6 @@ AH_JOB *AH_Job_SepaDebitDatedMultiCreate_new(AB_USER *u, AB_ACCOUNT *account) {
   GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_CREATESEPAMULTIDEBIT, j, aj,
                        AH_Job_SepaDebitDatedMultiCreate_FreeData);
 
-  aj->transferList=AB_Transaction_List_new();
-
   /* overwrite some virtual functions */
   AH_Job_SetPrepareFn(j, AH_Job_SepaDebitDatedMultiCreate_Prepare);
   AH_Job_SetExchangeFn(j, AH_Job_SepaDebitDatedMultiCreate_Exchange);
@@ -69,7 +67,7 @@ AH_JOB *AH_Job_SepaDebitDatedMultiCreate_new(AB_USER *u, AB_ACCOUNT *account) {
   dbParams=AH_Job_GetParams(j);
   assert(dbParams);
 
-  aj->maxTransfers=GWEN_DB_GetIntValue(dbParams, "maxTransfers", 0, 0);
+  AH_Job_SetMaxTransfers(j, GWEN_DB_GetIntValue(dbParams, "maxTransfers", 0, 0));
 
   s=GWEN_DB_GetCharValue(dbParams, "sumFieldNeeded", 0, "j");
   if (s && toupper(*s)=='J')
@@ -102,35 +100,7 @@ void GWENHYWFAR_CB AH_Job_SepaDebitDatedMultiCreate_FreeData(void *bp, void *p){
   free(aj->fiid);
   AB_Value_free(aj->sumValues);
 
-  AB_Transaction_List_free(aj->transferList);
-
   GWEN_FREE_OBJECT(aj);
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaDebitDatedMultiCreate_GetTransferCount(AH_JOB *j) {
-  AH_JOB_CREATESEPAMULTIDEBIT *aj;
-
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_CREATESEPAMULTIDEBIT, j);
-  assert(aj);
-
-  return aj->transferCount;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaDebitDatedMultiCreate_GetMaxTransfers(AH_JOB *j) {
-  AH_JOB_CREATESEPAMULTIDEBIT *aj;
-
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_CREATESEPAMULTIDEBIT, j);
-  assert(aj);
-
-  return aj->maxTransfers;
 }
 
 
@@ -250,8 +220,7 @@ int AH_Job_SepaDebitDatedMultiCreate_ExchangeArgs(AH_JOB *j, AB_JOB *bj,
   AB_Job_SetTransaction(bj, t);
 
   /* store copy of transaction for later */
-  AB_Transaction_List_Add(AB_Transaction_dup(t), aj->transferList);
-  aj->transferCount++;
+  AH_Job_AddTransfer(j, AB_Transaction_dup(t));
 
   return 0;
 }
@@ -430,7 +399,7 @@ int AH_Job_SepaDebitDatedMultiCreate_AddChallengeParams(AH_JOB *j, int hkTanVer,
   assert(aj);
 
   /* get data from first transaction */
-  t=AB_Transaction_List_First(aj->transferList);
+  t=AH_Job_GetFirstTransfer(j);
   if (t==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction");
     return GWEN_ERROR_INVALID;
@@ -447,7 +416,7 @@ int AH_Job_SepaDebitDatedMultiCreate_AddChallengeParams(AH_JOB *j, int hkTanVer,
 
     DBG_ERROR(AQHBCI_LOGDOMAIN, "TAN version is 1.4.x");
     rv=AH_HHD14_AddChallengeParams_32(j,
-                                      aj->transferCount,
+                                      AH_Job_GetTransferCount(j),
                                       aj->sumValues,
                                       AB_Transaction_GetLocalIban(t),
                                       AB_Transaction_GetDate(t));
@@ -523,7 +492,7 @@ int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
   /* add transactions to ImExporter context, calculate sum on the fly */
   AB_Value_free(aj->sumValues);
   aj->sumValues=AB_Value_new();
-  t=AB_Transaction_List_First(aj->transferList);
+  t=AH_Job_GetFirstTransfer(j);
   while(t) {
     AB_TRANSACTION *cpy;
     const AB_VALUE *v;

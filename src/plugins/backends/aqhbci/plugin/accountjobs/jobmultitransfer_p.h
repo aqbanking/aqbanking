@@ -19,8 +19,6 @@
 typedef struct AH_JOB_MULTITRANSFER AH_JOB_MULTITRANSFER;
 struct AH_JOB_MULTITRANSFER {
   int isTransfer;
-  int transferCount;
-  int maxTransfers;
 
   AB_VALUE *sumRemoteAccountId;
   AB_VALUE *sumRemoteBankCode;

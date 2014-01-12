@@ -84,6 +84,7 @@ AH_JOB *AH_Job_MultiTransferBase_new(AB_USER *u,
   GWEN_DB_NODE *dbParams;
   const char *s;
   int userMaxTrans;
+  int maxTransfers;
 
   j=AH_AccountJob_new(isTransfer?"JobMultiTransfer":"JobMultiDebitNote",
                       u, account);
@@ -136,9 +137,11 @@ AH_JOB *AH_Job_MultiTransferBase_new(AB_USER *u,
     userMaxTrans=AH_User_GetMaxTransfersPerJob(u);
   else
     userMaxTrans=AH_User_GetMaxDebitNotesPerJob(u);
-  aj->maxTransfers=GWEN_DB_GetIntValue(dbParams, "maxTransfers", 0, 0);
-  if (aj->maxTransfers==0 || aj->maxTransfers>userMaxTrans)
-    aj->maxTransfers=userMaxTrans;
+  maxTransfers=GWEN_DB_GetIntValue(dbParams, "maxTransfers", 0, 0);
+  if (maxTransfers==0 || maxTransfers>userMaxTrans)
+    AH_Job_SetMaxTransfers(j, userMaxTrans);
+  else
+    AH_Job_SetMaxTransfers(j, maxTransfers);
 
   return j;
 }
@@ -156,30 +159,6 @@ void GWENHYWFAR_CB AH_Job_MultiTransfer_FreeData(void *bp, void *p){
   AB_Value_free(aj->sumRemoteAccountId);
 
   GWEN_FREE_OBJECT(aj);
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_MultiTransferBase_GetTransferCount(AH_JOB *j){
-  AH_JOB_MULTITRANSFER *aj;
-
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_MULTITRANSFER, j);
-  assert(aj);
-  return aj->transferCount;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_MultiTransferBase_GetMaxTransfers(AH_JOB *j){
-  AH_JOB_MULTITRANSFER *aj;
-
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_MULTITRANSFER, j);
-  assert(aj);
-  return aj->maxTransfers;
 }
 
 
@@ -567,7 +546,7 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       }
       AB_Transaction_free(t);
 
-      aj->transferCount++;
+      AH_Job_IncTransferCount(j);
     }
     else {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction");
@@ -749,7 +728,7 @@ int AH_Job_MultiTransfer_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NOD
       AH_Job_SetChallengeClass(j, 19);
 
     /* P1: number of transfers */
-    snprintf(numbuf, sizeof(numbuf)-1, "%d", aj->transferCount);
+    snprintf(numbuf, sizeof(numbuf)-1, "%d", AH_Job_GetTransferCount(j));
     numbuf[sizeof(numbuf)-1]=0;
     AH_Job_AddChallengeParam(j, numbuf);
 

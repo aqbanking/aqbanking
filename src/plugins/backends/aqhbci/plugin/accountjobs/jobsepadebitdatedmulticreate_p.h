@@ -20,11 +20,8 @@
 
 typedef struct AH_JOB_CREATESEPAMULTIDEBIT AH_JOB_CREATESEPAMULTIDEBIT;
 struct AH_JOB_CREATESEPAMULTIDEBIT {
-  AB_TRANSACTION_LIST *transferList;
   char *fiid;
-  int transferCount;
 
-  int maxTransfers;
   int sumFieldNeeded;
   int singleBookingAllowed;
 

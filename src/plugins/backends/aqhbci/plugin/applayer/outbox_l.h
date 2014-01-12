@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2014 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -27,6 +24,8 @@ typedef struct AH_OUTBOX AH_OUTBOX;
 
 #include <aqbanking/imexporter.h>
 #include <gwenhywfar/inherit.h>
+#include <gwenhywfar/gwentime.h>
+
 #include "hbci_l.h"
 #include "job_l.h"
 #include <aqhbci/user.h>
@@ -67,6 +66,12 @@ AH_JOB *AH_Outbox_FindTransferJob(AH_OUTBOX *ob,
                                   AB_USER *u,
                                   AB_ACCOUNT *a,
                                   int isTransfer);
+
+AH_JOB *AH_Outbox_FindDatedTransferJob(AH_OUTBOX *ob,
+                                       AB_USER *u,
+                                       AB_ACCOUNT *a,
+                                       const char *jobName,
+                                       const GWEN_TIME *tti);
 
 
 AH_JOB_LIST *AH_Outbox_GetFinishedJobs(AH_OUTBOX *ob);
