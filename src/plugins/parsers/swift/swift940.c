@@ -151,7 +151,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
       isStructured=0;
     }
     else {
-      if (code>99 && code<200) {
+      if (code<900) {
 	AHB_SWIFT_SUBTAG *stg;
 	char identifier[6];
 	GWEN_BUFFER *tbuf=NULL;
