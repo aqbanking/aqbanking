@@ -1021,6 +1021,9 @@ GWEN_TIME *AB_ImExporter_DateFromString(const char *p,
                                         int inUtc);
 
 
+AQBANKING_API 
+int AB_ImExporterContext_WriteContext(const AB_IMEXPORTER_CONTEXT *ctx, const char *ctxFile);
+
 /*@}*/
 
 

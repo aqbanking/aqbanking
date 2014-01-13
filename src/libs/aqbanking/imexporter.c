@@ -2298,6 +2298,58 @@ void AB_ImExporterContext_AddContext(AB_IMEXPORTER_CONTEXT *iec,
 
 
 
+int AB_ImExporterContext_WriteContext(const AB_IMEXPORTER_CONTEXT *ctx, const char *ctxFile) {
+  GWEN_DB_NODE *dbCtx;
+  GWEN_SYNCIO *sio;
+  int rv;
+
+  dbCtx=GWEN_DB_Group_new("context");
+  rv=AB_ImExporterContext_toDb(ctx, dbCtx);
+  if (rv<0) {
+    DBG_ERROR(0, "Error writing context to db");
+    return rv;
+  }
+  if (ctxFile==NULL) {
+    sio=GWEN_SyncIo_File_fromStdout();
+    GWEN_SyncIo_AddFlags(sio,
+			 GWEN_SYNCIO_FLAGS_DONTCLOSE |
+			 GWEN_SYNCIO_FILE_FLAGS_WRITE);
+  }
+  else {
+    sio=GWEN_SyncIo_File_new(ctxFile, GWEN_SyncIo_File_CreationMode_CreateAlways);
+    GWEN_SyncIo_AddFlags(sio,
+			 GWEN_SYNCIO_FILE_FLAGS_READ |
+			 GWEN_SYNCIO_FILE_FLAGS_WRITE |
+			 GWEN_SYNCIO_FILE_FLAGS_UREAD |
+			 GWEN_SYNCIO_FILE_FLAGS_UWRITE |
+			 GWEN_SYNCIO_FILE_FLAGS_GREAD |
+			 GWEN_SYNCIO_FILE_FLAGS_GWRITE);
+    rv=GWEN_SyncIo_Connect(sio);
+    if (rv<0) {
+      DBG_ERROR(0, "Error selecting output file: %s",
+		strerror(errno));
+      GWEN_SyncIo_free(sio);
+      return rv;
+    }
+  }
+
+
+  rv=GWEN_DB_WriteToIo(dbCtx, sio, GWEN_DB_FLAGS_DEFAULT);
+  if (rv<0) {
+    DBG_ERROR(0, "Error writing context (%d)", rv);
+    GWEN_DB_Group_free(dbCtx);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
+    return rv;
+  }
+
+  GWEN_DB_Group_free(dbCtx);
+
+  return 0;
+}
+
+
+
 
 
 
@@ -2352,6 +2404,7 @@ void AB_Plugin_ImExporter_SetFactoryFn(GWEN_PLUGIN *pl,
 
   xpl->pluginFactoryFn=fn;
 }
+
 
 
 
