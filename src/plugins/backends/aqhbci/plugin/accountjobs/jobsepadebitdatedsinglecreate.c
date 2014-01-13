@@ -323,7 +323,7 @@ int AH_Job_SepaDebitDatedSingleCreate_ExchangeResults(AH_JOB *j, AB_JOB *bj,
     t=AB_Transaction_dup(aj->validatedTransaction);
     AB_Transaction_SetFiId(t, aj->fiid);
     AB_Transaction_SetStatus(t, tStatus);
-    AB_Transaction_SetType(t, AB_Job_TypeSepaDebitNote);
+    AB_Transaction_SetType(t, AB_Transaction_TypeSepaDebitNote);
     AB_Job_SetTransaction(bj, t);
     AB_ImExporterContext_AddTransfer(ctx, t);
   }

@@ -294,7 +294,7 @@ int AH_Job_SepaDebitDatedMultiCreate_ExchangeResults(AH_JOB *j, AB_JOB *bj,
 
     cpy=AB_Transaction_dup(t);
     AB_Transaction_SetStatus(cpy, tStatus);
-    AB_Transaction_SetType(cpy, AB_Job_TypeSepaDebitNote);
+    AB_Transaction_SetType(cpy, AB_Transaction_TypeSepaDebitNote);
     AB_ImExporterContext_AddTransfer(ctx, cpy);
   }
 
