@@ -34,6 +34,7 @@ int AH_ImExporterSEPA_Export_008_003_02(AB_IMEXPORTER *ie,
     tv=AB_Transaction_GetValue(t);
     if (tv==NULL) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "No value in transaction");
+      AB_ImExporterContext_WriteContext(ctx, NULL);
       return GWEN_ERROR_BAD_DATA;
     }
     AB_Value_AddValue(v, tv);
