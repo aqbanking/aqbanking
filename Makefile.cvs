@@ -83,7 +83,7 @@ mp:
 	  CFLAGS="$(MP_CFLAGS)" \
 	  ./configure $(MP_CONF_FLAGS) \
 	    --with-backends="aqhbci aqofxconnect aqebics"  \
-	    --prefix=/usr/local
+	    --prefix=/usr/local --enable-full-doc=yes
 	make sources
 
 clang:
