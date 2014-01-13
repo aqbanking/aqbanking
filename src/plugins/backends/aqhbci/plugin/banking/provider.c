@@ -4121,6 +4121,73 @@ int AH_Provider_GetAccountSepaInfo(AB_PROVIDER *pro,
 
 
 
+int AH_Provider_WriteValueToDb(const AB_VALUE *v, GWEN_DB_NODE *dbV) {
+  if (v) {
+    GWEN_BUFFER *nbuf;
+    char *p;
+    const char *s;
+    int l;
+  
+    nbuf=GWEN_Buffer_new(0, 32, 0, 1);
+    AH_Job_ValueToChallengeString(v, nbuf);
+    l=GWEN_Buffer_GetUsedBytes(nbuf);
+    if (!l) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error in conversion");
+      GWEN_Buffer_free(nbuf);
+      abort();
+    }
+  
+    /* replace "C" comma with "DE" comma, remove thousand's comma */
+    p=GWEN_Buffer_GetStart(nbuf);
+    s=p;
+    while(*s) {
+      if (*s=='.') {
+        *p=',';
+        p++;
+      }
+      else if (*s!=',') {
+        *p=*s;
+        p++;
+      }
+      s++;
+    } /* while */
+    *p=0;
+  
+    if (strchr(GWEN_Buffer_GetStart(nbuf), ',')) {
+      /* kill all trailing '0' behind the comma */
+      p=GWEN_Buffer_GetStart(nbuf)+l;
+      while(l--) {
+        --p;
+        if (*p=='0')
+          *p=0;
+        else
+          break;
+      }
+    }
+    else
+      GWEN_Buffer_AppendString(nbuf, ",");
+  
+    /* store value */
+    GWEN_DB_SetCharValue(dbV, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "value",
+                         GWEN_Buffer_GetStart(nbuf));
+    GWEN_Buffer_free(nbuf);
+  
+    s=AB_Value_GetCurrency(v);
+    if (!s)
+      s="EUR";
+    GWEN_DB_SetCharValue(dbV, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "currency", s);
+
+    return 0;
+  } /* if value */
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No value");
+    return GWEN_ERROR_NO_DATA;
+  }
+}
+
+
 
 
 #include "message_l.h"

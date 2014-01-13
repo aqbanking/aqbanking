@@ -156,7 +156,8 @@ int AH_Job_SepaDebitDatedMultiCreate_ExchangeArgs(AH_JOB *j, AB_JOB *bj,
   AH_JOB_CREATESEPAMULTIDEBIT *aj;
   const AB_TRANSACTION_LIMITS *lim=NULL;
   AB_BANKING *ab;
-  AB_TRANSACTION *t=NULL;
+  const AB_TRANSACTION *t=NULL;
+  AB_TRANSACTION *tCopy=NULL;
   AB_ACCOUNT *a;
   AB_USER *u;
   int rv;
@@ -195,13 +196,13 @@ int AH_Job_SepaDebitDatedMultiCreate_ExchangeArgs(AH_JOB *j, AB_JOB *bj,
     return rv;
   }
 
-  rv=AB_Transaction_ValidatePurposeAgainstLimits(t, lim);
+  rv=AB_Transaction_CheckPurposeAgainstLimits(t, lim);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
-  rv=AB_Transaction_ValidateNamesAgainstLimits(t, lim);
+  rv=AB_Transaction_CheckNamesAgainstLimits(t, lim);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -213,14 +214,16 @@ int AH_Job_SepaDebitDatedMultiCreate_ExchangeArgs(AH_JOB *j, AB_JOB *bj,
     return rv;
   }
 
+  tCopy=AB_Transaction_dup(t);
+
   /* set group id so the application can now which transfers went together in one setting */
-  AB_Transaction_SetGroupId(t, AH_Job_GetId(j));
+  AB_Transaction_SetGroupId(tCopy, AH_Job_GetId(j));
 
   /* store validated transaction in job */
-  AB_Job_SetTransaction(bj, t);
+  AB_Job_SetTransaction(bj, tCopy);
 
   /* store copy of transaction for later */
-  AH_Job_AddTransfer(j, AB_Transaction_dup(t));
+  AH_Job_AddTransfer(j, tCopy);
 
   return 0;
 }
@@ -493,6 +496,11 @@ int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
   AB_Value_free(aj->sumValues);
   aj->sumValues=AB_Value_new();
   t=AH_Job_GetFirstTransfer(j);
+  if (t==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
+    assert(t); /* debug */
+    return GWEN_ERROR_INTERNAL;
+  }
   while(t) {
     AB_TRANSACTION *cpy;
     const AB_VALUE *v;
@@ -506,7 +514,6 @@ int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
 
     t=AB_Transaction_List_Next(t);
   }
-
 
   /* export ImExporterContext to SEPA */
   dbuf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -530,6 +537,25 @@ int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
                       GWEN_Buffer_GetStart(dbuf),
                       GWEN_Buffer_GetUsedBytes(dbuf));
   GWEN_Buffer_free(dbuf);
+
+  /* set singleBookingAllowed */
+  if (aj->singleBookingAllowed)
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "singleBookingWanted", "J");
+  else
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "singleBookingWanted", "N");
+
+  /* store sum value */
+  if (aj->sumValues) {
+    GWEN_DB_NODE *dbV;
+
+    dbV=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "value");
+    assert(dbV);
+    rv=AH_Provider_WriteValueToDb(aj->sumValues, dbV);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
 
   return 0;
 }

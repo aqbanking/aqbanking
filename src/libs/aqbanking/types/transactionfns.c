@@ -18,6 +18,10 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/i18n.h>
+#include <gwenhywfar/syncio_file.h>
+
+#include <errno.h>
+
 
 
 #define I18N(msg) GWEN_I18N_Translate(PACKAGE, msg)
@@ -131,7 +135,7 @@ void AB_Transaction_FillLocalFromAccount(AB_TRANSACTION *t, const AB_ACCOUNT *a)
 
 
 
-int AB_Transaction_ValidatePurposeAgainstLimits(AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
+int AB_Transaction_CheckPurposeAgainstLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
   const GWEN_STRINGLIST *sl;
   int maxn;
   int maxs;
@@ -151,10 +155,8 @@ int AB_Transaction_ValidatePurposeAgainstLimits(AB_TRANSACTION *t, const AB_TRAN
   n=0;
   if (sl) {
     GWEN_STRINGLISTENTRY *se;
-    GWEN_STRINGLIST *nsl;
     const char *p;
 
-    nsl=GWEN_StringList_new();
     se=GWEN_StringList_FirstEntry(sl);
     while(se) {
       p=GWEN_StringListEntry_Data(se);
@@ -167,11 +169,9 @@ int AB_Transaction_ValidatePurposeAgainstLimits(AB_TRANSACTION *t, const AB_TRAN
 				GWEN_LoggerLevel_Error,
 				I18N("Too many purpose lines (%d>%d)"),
 				n, maxn);
-	  GWEN_StringList_free(nsl);
 	  return GWEN_ERROR_INVALID;
         }
         else {
-          char *np;
           int l;
           GWEN_BUFFER *tbuf;
 
@@ -186,20 +186,13 @@ int AB_Transaction_ValidatePurposeAgainstLimits(AB_TRANSACTION *t, const AB_TRAN
                                   I18N("Too many chars in purpose line %d (%d>%d)"),
                                   n, l, maxs);
             GWEN_Buffer_free(tbuf);
-            GWEN_StringList_free(nsl);
             return GWEN_ERROR_INVALID;
           }
-          np=(char*)GWEN_Memory_malloc(l+1);
-          memmove(np, GWEN_Buffer_GetStart(tbuf), l+1);
           GWEN_Buffer_free(tbuf);
-          /* let string list take the newly alllocated string */
-          GWEN_StringList_AppendString(nsl, np, 1, 0);
         }
       }
       se=GWEN_StringListEntry_Next(se);
     } /* while */
-    AB_Transaction_SetPurpose(t, nsl);
-    GWEN_StringList_free(nsl);
   }
   if (!n) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "No purpose lines");
@@ -211,7 +204,7 @@ int AB_Transaction_ValidatePurposeAgainstLimits(AB_TRANSACTION *t, const AB_TRAN
 
 
 
-int AB_Transaction_ValidateNamesAgainstLimits(AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
+int AB_Transaction_CheckNamesAgainstLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
   const GWEN_STRINGLIST *sl;
   int maxn;
   int maxs;
@@ -231,25 +224,21 @@ int AB_Transaction_ValidateNamesAgainstLimits(AB_TRANSACTION *t, const AB_TRANSA
   n=0;
   if (sl) {
     GWEN_STRINGLISTENTRY *se;
-    GWEN_STRINGLIST *nsl;
     const char *p;
 
-    nsl=GWEN_StringList_new();
     se=GWEN_StringList_FirstEntry(sl);
     while(se) {
       p=GWEN_StringListEntry_Data(se);
       if (p && *p) {
-	n++;
-	if (maxn && n>maxn) {
+        n++;
+        if (maxn && n>maxn) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
 		    "Too many remote name lines (%d>%d)",
 		    n, maxn);
-          GWEN_StringList_free(nsl);
 	  return GWEN_ERROR_INVALID;
         }
         else {
           GWEN_BUFFER *tbuf;
-          char *np;
           int l;
 
           tbuf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -261,20 +250,13 @@ int AB_Transaction_ValidateNamesAgainstLimits(AB_TRANSACTION *t, const AB_TRANSA
                       "Too many chars in remote name line %d (%d>%d)",
                       n, l, maxs);
             GWEN_Buffer_free(tbuf);
-            GWEN_StringList_free(nsl);
             return GWEN_ERROR_INVALID;
           }
-          np=(char*)GWEN_Memory_malloc(l+1);
-          memmove(np, GWEN_Buffer_GetStart(tbuf), l+1);
           GWEN_Buffer_free(tbuf);
-          /* let string list take the newly alllocated string */
-          GWEN_StringList_AppendString(nsl, np, 1, 0);
         }
       }
       se=GWEN_StringListEntry_Next(se);
     } /* while */
-    AB_Transaction_SetRemoteName(t, nsl);
-    GWEN_StringList_free(nsl);
   }
   if (!n) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "No remote name lines");
@@ -300,7 +282,6 @@ int AB_Transaction_ValidateNamesAgainstLimits(AB_TRANSACTION *t, const AB_TRANSA
       GWEN_Buffer_free(tbuf);
       return GWEN_ERROR_INVALID;
     }
-    AB_Transaction_SetLocalName(t, GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_free(tbuf);
   }
   else {
@@ -308,13 +289,12 @@ int AB_Transaction_ValidateNamesAgainstLimits(AB_TRANSACTION *t, const AB_TRANSA
     return GWEN_ERROR_INVALID;
   }
 
-
   return 0;
 }
 
 
 
-int AB_Transaction_ValidateTextKeyAgainstLimits(AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim, int defaultTextKey) {
+int AB_Transaction_CheckTextKeyAgainstLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
   int n;
 
   /* check text key */
@@ -323,11 +303,6 @@ int AB_Transaction_ValidateTextKeyAgainstLimits(AB_TRANSACTION *t, const AB_TRAN
       char numbuf[32];
 
       n=AB_Transaction_GetTextKey(t);
-      if (n==0) {
-        n=defaultTextKey;
-        AB_Transaction_SetTextKey(t, n);
-      }
-
       snprintf(numbuf, sizeof(numbuf), "%d", n);
       if (!AB_TransactionLimits_HasValuesTextKey(lim, numbuf)) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Text key \"%s\" not supported by bank", numbuf);
@@ -345,7 +320,7 @@ int AB_Transaction_ValidateTextKeyAgainstLimits(AB_TRANSACTION *t, const AB_TRAN
 
 
 
-int AB_Transaction_ValidateRecurrenceAgainstLimits(AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
+int AB_Transaction_CheckRecurrenceAgainstLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
   if (lim) {
     /* check period */
     if (AB_Transaction_GetPeriod(t)==AB_Transaction_PeriodMonthly) {
@@ -469,7 +444,7 @@ int AB_Transaction_ValidateRecurrenceAgainstLimits(AB_TRANSACTION *t, const AB_T
 
 
 
-int AB_Transaction_CheckFirstExecutionDateAgainstLimits(AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
+int AB_Transaction_CheckFirstExecutionDateAgainstLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
   if (lim) {
     const GWEN_TIME *ti;
 
@@ -519,7 +494,7 @@ int AB_Transaction_CheckFirstExecutionDateAgainstLimits(AB_TRANSACTION *t, const
 
 
 
-int AB_Transaction_CheckDateAgainstLimits(AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
+int AB_Transaction_CheckDateAgainstLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
   if (lim) {
     const GWEN_TIME *ti;
 
@@ -715,6 +690,55 @@ int AB_Transaction_CheckForSepaConformity(const AB_TRANSACTION *t) {
 
 
 
+int AB_Transaction_WriteToFile(const AB_TRANSACTION *t, const char *tFile) {
+  GWEN_DB_NODE *dbCtx;
+  GWEN_SYNCIO *sio;
+  int rv;
+
+  dbCtx=GWEN_DB_Group_new("context");
+  rv=AB_Transaction_toDb(t, dbCtx);
+  if (rv<0) {
+    DBG_ERROR(0, "Error transaction context to db");
+    return rv;
+  }
+
+  if (tFile==NULL) {
+    sio=GWEN_SyncIo_File_fromStdout();
+    GWEN_SyncIo_AddFlags(sio,
+			 GWEN_SYNCIO_FLAGS_DONTCLOSE |
+			 GWEN_SYNCIO_FILE_FLAGS_WRITE);
+  }
+  else {
+    sio=GWEN_SyncIo_File_new(tFile, GWEN_SyncIo_File_CreationMode_CreateAlways);
+    GWEN_SyncIo_AddFlags(sio,
+			 GWEN_SYNCIO_FILE_FLAGS_READ |
+			 GWEN_SYNCIO_FILE_FLAGS_WRITE |
+			 GWEN_SYNCIO_FILE_FLAGS_UREAD |
+			 GWEN_SYNCIO_FILE_FLAGS_UWRITE |
+			 GWEN_SYNCIO_FILE_FLAGS_GREAD |
+			 GWEN_SYNCIO_FILE_FLAGS_GWRITE);
+    rv=GWEN_SyncIo_Connect(sio);
+    if (rv<0) {
+      DBG_ERROR(0, "Error selecting output file: %s",
+		strerror(errno));
+      GWEN_SyncIo_free(sio);
+      return rv;
+    }
+  }
+
+  rv=GWEN_DB_WriteToIo(dbCtx, sio, GWEN_DB_FLAGS_DEFAULT);
+  if (rv<0) {
+    DBG_ERROR(0, "Error writing context (%d)", rv);
+    GWEN_DB_Group_free(dbCtx);
+    GWEN_SyncIo_Disconnect(sio);
+    GWEN_SyncIo_free(sio);
+    return rv;
+  }
+
+  GWEN_DB_Group_free(dbCtx);
+
+  return 0;
+}
 
 
 

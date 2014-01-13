@@ -40,22 +40,22 @@ void AB_Transaction_FillLocalFromAccount(AB_TRANSACTION *t, const AB_ACCOUNT *a)
 
 
 AQBANKING_API
-int AB_Transaction_ValidatePurposeAgainstLimits(AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
+int AB_Transaction_CheckPurposeAgainstLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
 
 AQBANKING_API
-int AB_Transaction_ValidateNamesAgainstLimits(AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
+int AB_Transaction_CheckNamesAgainstLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
 
 AQBANKING_API
-int AB_Transaction_ValidateTextKeyAgainstLimits(AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim, int defaultTextKey);
+int AB_Transaction_CheckTextKeyAgainstLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
 
 AQBANKING_API
-int AB_Transaction_ValidateRecurrenceAgainstLimits(AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
+int AB_Transaction_CheckRecurrenceAgainstLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
 
 AQBANKING_API
-int AB_Transaction_CheckFirstExecutionDateAgainstLimits(AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
+int AB_Transaction_CheckFirstExecutionDateAgainstLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
 
 AQBANKING_API
-int AB_Transaction_CheckDateAgainstLimits(AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
+int AB_Transaction_CheckDateAgainstLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
 
 
 /**
@@ -64,6 +64,10 @@ int AB_Transaction_CheckDateAgainstLimits(AB_TRANSACTION *t, const AB_TRANSACTIO
  */
 AQBANKING_API
 int AB_Transaction_CheckForSepaConformity(const AB_TRANSACTION *t);
+
+
+AQBANKING_API
+int AB_Transaction_WriteToFile(const AB_TRANSACTION *t, const char *tFile);
 
 
 #ifdef __cplusplus

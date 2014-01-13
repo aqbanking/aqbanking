@@ -28,5 +28,8 @@ int AH_Provider_SendDtazv(AB_PROVIDER *pro,
 			  uint32_t dataLen,
 			  int withProgress, int nounmount, int doLock);
 
+AQHBCI_API
+int AH_Provider_WriteValueToDb(const AB_VALUE *v, GWEN_DB_NODE *dbV);
+
 #endif
 

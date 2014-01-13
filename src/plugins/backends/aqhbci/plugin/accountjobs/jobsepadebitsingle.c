@@ -201,13 +201,13 @@ int AH_Job_SepaDebitSingle_ExchangeArgs(AH_JOB *j, AB_JOB *bj,
     return rv;
   }
 
-  rv=AB_Transaction_ValidatePurposeAgainstLimits(t, lim);
+  rv=AB_Transaction_CheckPurposeAgainstLimits(t, lim);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
-  rv=AB_Transaction_ValidateNamesAgainstLimits(t, lim);
+  rv=AB_Transaction_CheckNamesAgainstLimits(t, lim);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
