@@ -534,23 +534,27 @@ GWEN_STRINGLIST *AB_Job_GetLogs(const AB_JOB *j) {
 
 int AB_Job_SetTransaction(AB_JOB *j, const AB_TRANSACTION *t) {
   assert(j);
-
-  AB_Transaction_free(j->transaction);
   if (t) {
+    AB_TRANSACTION *cpy;
     AB_ACCOUNT *a;
     AB_BANKING *ba;
+
+    cpy=AB_Transaction_dup(t);
 
     a=AB_Job_GetAccount(j);
     assert(a);
     ba=AB_Account_GetBanking(a);
     assert(ba);
 
-    j->transaction=AB_Transaction_dup(t);
+    AB_Transaction_free(j->transaction);
+    j->transaction=cpy;
     /* assign unique id */
     AB_Transaction_SetUniqueId(j->transaction, AB_Banking_GetUniqueId(ba));
   }
-  else
+  else {
+    AB_Transaction_free(j->transaction);
     j->transaction=NULL;
+  }
 
   return 0;
 }
