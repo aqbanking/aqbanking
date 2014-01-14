@@ -25,6 +25,7 @@ struct AH_JOB {
   char *code;
   char *accountId;
   char *description;
+  char *responseName;
 
   int segmentVersion;
 

@@ -47,6 +47,7 @@ AH_JOB *AH_Job_new(const char *name,
   GWEN_XMLNODE *descrNode;
   const char *segCode=NULL;
   const char *paramName;
+  const char *responseName;
   int needsBPD;
   int needTAN;
   int noSysId;
@@ -113,6 +114,12 @@ AH_JOB *AH_Job_new(const char *name,
   noSysId=(atoi(GWEN_XMLNode_GetProperty(node, "nosysid", "0"))!=0);
   noItan=(atoi(GWEN_XMLNode_GetProperty(node, "noitan", "0"))!=0);
   paramName=GWEN_XMLNode_GetProperty(node, "params", "");
+  responseName=GWEN_XMLNode_GetProperty(node, "response", "");
+  free(j->responseName);
+  if (responseName)
+    j->responseName=strdup(responseName);
+  else
+    j->responseName=NULL;
 
   /* get and store segment code for later use in TAN jobs */
   segCode=GWEN_XMLNode_GetProperty(node, "code", "");
@@ -394,6 +401,7 @@ void AH_Job_free(AH_JOB *j) {
       GWEN_StringList_free(j->challengeParams);
       GWEN_StringList_free(j->log);
       GWEN_StringList_free(j->signers);
+      free(j->responseName);
       free(j->code);
       free(j->name);
       free(j->accountId);
@@ -723,6 +731,14 @@ const char *AH_Job_GetCode(const AH_JOB *j) {
   assert(j);
   assert(j->usage);
   return j->code;
+}
+
+
+
+const char *AH_Job_GetResponseName(const AH_JOB *j) {
+  assert(j);
+  assert(j->usage);
+  return j->responseName;
 }
 
 
