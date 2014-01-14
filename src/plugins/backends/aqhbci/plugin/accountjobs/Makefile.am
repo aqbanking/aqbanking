@@ -38,7 +38,8 @@ noinst_HEADERS=\
   jobsepaxfersingle_l.h \
   jobsepaxfersingle_p.h \
   jobsepadebitsingle_l.h \
-  jobsepadebitsingle_p.h
+  jobsepadebitsingle_p.h \
+  jobtransferbase_l.h jobtransferbase_p.h
 
 libhbciaccjobs_la_SOURCES=\
   accountjob.c \
@@ -54,7 +55,8 @@ libhbciaccjobs_la_SOURCES=\
   jobsepadebitdatedsinglecreate.c \
   jobsepadebitdatedmulticreate.c \
   jobsepaxfersingle.c \
-  jobsepadebitsingle.c
+  jobsepadebitsingle.c \
+  jobtransferbase.c
 
 
 
