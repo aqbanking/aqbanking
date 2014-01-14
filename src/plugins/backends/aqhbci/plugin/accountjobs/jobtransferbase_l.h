@@ -34,7 +34,7 @@ void AH_Job_TransferBase_SetExchangeResultsFn(AH_JOB *j, AH_JOB_TRANSFERBASE_EXC
 
 
 
-int AH_Job_TransferBase_ExportTransactions(AH_JOB *j, const char *profileName, const char *descriptor);
+int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, const char *profileName, GWEN_BUFFER *destBuf);
 
 
 #endif /* AH_JOBTRANSFERBASE_L_H */

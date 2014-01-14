@@ -91,7 +91,7 @@ const char *AH_Job_TransferBase_GetFiid(const AH_JOB *j) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_TransferBase_ExportTransaction(AH_JOB *j, const char *profileName, const char *descriptor) {
+int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, const char *profileName, GWEN_BUFFER *destBuf) {
   AH_JOB_TRANSFERBASE *aj;
   GWEN_DB_NODE *dbArgs;
   AB_BANKING *ab;
@@ -115,33 +115,21 @@ int AH_Job_TransferBase_ExportTransaction(AH_JOB *j, const char *profileName, co
   /* set data in job */
     AB_IMEXPORTER_CONTEXT *ioc;
     AB_TRANSACTION *cpy;
-    GWEN_BUFFER *dbuf;
 
+    /* add transfers as transactions for export (exporters only use transactions) */
     ioc=AB_ImExporterContext_new();
-    cpy=AB_Transaction_dup(t);
-    AB_ImExporterContext_AddTransaction(ioc, cpy);
+    while(t) {
+      cpy=AB_Transaction_dup(t);
+      AB_ImExporterContext_AddTransaction(ioc, cpy);
+      t=AB_Transaction_List_Next(t);
+    }
 
-    dbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    rv=AB_Banking_ExportToBuffer(ab, ioc, "sepa", profileName, dbuf);
+    rv=AB_Banking_ExportToBuffer(ab, ioc, "sepa", profileName, destBuf);
     AB_ImExporterContext_free(ioc);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      GWEN_Buffer_free(dbuf);
       return rv;
     }
-
-    /* store descriptor */
-    GWEN_DB_SetCharValue(dbArgs,
-			 GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "descriptor",
-			 descriptor);
-    /* store transfer */
-    GWEN_DB_SetBinValue(dbArgs,
-			GWEN_DB_FLAGS_OVERWRITE_VARS,
-			"transfer",
-			GWEN_Buffer_GetStart(dbuf),
-			GWEN_Buffer_GetUsedBytes(dbuf));
-    GWEN_Buffer_free(dbuf);
   }
 
   return 0;
