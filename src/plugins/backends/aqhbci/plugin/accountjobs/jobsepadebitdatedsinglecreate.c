@@ -83,7 +83,7 @@ void GWENHYWFAR_CB AH_Job_SepaDebitDatedSingleCreate_FreeData(void *bp, void *p)
 
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_SepaDebitDatedSingleCreate_ExchangeParams(AH_JOB *j, AB_JOB *bj,
-							 AB_IMEXPORTER_CONTEXT *ctx) {
+                                                     AB_IMEXPORTER_CONTEXT *ctx) {
   AH_JOB_CREATESEPASINGLEDEBIT *aj;
   AB_TRANSACTION_LIMITS *lim;
   GWEN_DB_NODE *dbParams;
@@ -128,7 +128,7 @@ int AH_Job_SepaDebitDatedSingleCreate_ExchangeParams(AH_JOB *j, AB_JOB *bj,
 
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_SepaDebitDatedSingleCreate_ExchangeArgs(AH_JOB *j, AB_JOB *bj,
-                                                       AB_IMEXPORTER_CONTEXT *ctx) {
+                                                   AB_IMEXPORTER_CONTEXT *ctx) {
   AH_JOB_CREATESEPASINGLEDEBIT *aj;
   GWEN_DB_NODE *dbArgs;
   const AB_TRANSACTION_LIMITS *lim=NULL;
@@ -335,8 +335,8 @@ int AH_Job_SepaDebitDatedSingleCreate_ExchangeResults(AH_JOB *j, AB_JOB *bj,
 
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_SepaDebitDatedSingleCreate_Exchange(AH_JOB *j, AB_JOB *bj,
-						   AH_JOB_EXCHANGE_MODE m,
-						   AB_IMEXPORTER_CONTEXT *ctx){
+                                               AH_JOB_EXCHANGE_MODE m,
+                                               AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_CREATESEPASINGLEDEBIT *aj;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);
