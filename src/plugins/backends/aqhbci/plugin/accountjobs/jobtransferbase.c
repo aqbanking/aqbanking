@@ -138,6 +138,133 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, const char *profileNam
 
 
 /* --------------------------------------------------------------- FUNCTION */
+int AH_Job_TransferBase_ExchangeArgs_SepaUndated(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx) {
+  const AB_TRANSACTION_LIMITS *lim=NULL;
+  AB_BANKING *ab;
+  const AB_TRANSACTION *t=NULL;
+  AB_TRANSACTION *tCopy=NULL;
+  int rv;
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging args");
+
+  ab=AH_Job_GetBankingApi(j);
+  assert(ab);
+
+  /* get limits and transaction */
+  lim=AB_Job_GetFieldLimits(bj);
+  t=AB_Job_GetTransaction(bj);
+  if (t==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* DISABLED according to a discussion on aqbanking-user:
+   * The application should do this, not the library.
+  AB_Transaction_FillLocalFromAccount(t, a); */
+
+  /* validate transaction */
+  rv=AB_Transaction_CheckForSepaConformity(t);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=AB_Transaction_CheckPurposeAgainstLimits(t, lim);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=AB_Transaction_CheckNamesAgainstLimits(t, lim);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  tCopy=AB_Transaction_dup(t);
+
+  /* set group id so the application can now which transfers went together in one setting */
+  AB_Transaction_SetGroupId(tCopy, AH_Job_GetId(j));
+
+  /* store validated transaction in job */
+  AB_Job_SetTransaction(bj, tCopy);
+
+  /* store copy of transaction for later */
+  AH_Job_AddTransfer(j, tCopy);
+
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+int AH_Job_TransferBase_ExchangeArgs_SepaDated(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx) {
+  const AB_TRANSACTION_LIMITS *lim=NULL;
+  AB_BANKING *ab;
+  const AB_TRANSACTION *t=NULL;
+  AB_TRANSACTION *tCopy=NULL;
+  int rv;
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging args");
+
+  ab=AH_Job_GetBankingApi(j);
+  assert(ab);
+
+  /* get limits and transaction */
+  lim=AB_Job_GetFieldLimits(bj);
+  t=AB_Job_GetTransaction(bj);
+  if (t==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* DISABLED according to a discussion on aqbanking-user:
+   * The application should do this, not the library.
+  AB_Transaction_FillLocalFromAccount(t, a); */
+
+  /* validate transaction */
+  rv=AB_Transaction_CheckForSepaConformity(t);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=AB_Transaction_CheckPurposeAgainstLimits(t, lim);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=AB_Transaction_CheckNamesAgainstLimits(t, lim);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=AB_Transaction_CheckDateAgainstLimits(t, lim);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+
+  tCopy=AB_Transaction_dup(t);
+
+  /* set group id so the application can now which transfers went together in one setting */
+  AB_Transaction_SetGroupId(tCopy, AH_Job_GetId(j));
+
+  /* store validated transaction in job */
+  AB_Job_SetTransaction(bj, tCopy);
+
+  /* store copy of transaction for later */
+  AH_Job_AddTransfer(j, tCopy);
+
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
 int AH_Job_TransferBase_ExchangeResults(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx) {
   AH_JOB_TRANSFERBASE *aj;
   AH_RESULT_LIST *rl;
@@ -233,8 +360,8 @@ int AH_Job_TransferBase_ExchangeResults(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CON
 
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_TransferBase_Exchange(AH_JOB *j, AB_JOB *bj,
-                             AH_JOB_EXCHANGE_MODE m,
-                             AB_IMEXPORTER_CONTEXT *ctx){
+                                 AH_JOB_EXCHANGE_MODE m,
+                                 AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_TRANSFERBASE *aj;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);
@@ -242,11 +369,6 @@ int AH_Job_TransferBase_Exchange(AH_JOB *j, AB_JOB *bj,
   assert(j);
   aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j);
   assert(aj);
-
-  if (AB_Job_GetType(bj)!=AB_Job_TypeSepaDebitNote) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Not a SepaDebitNote job");
-    return GWEN_ERROR_INVALID;
-  }
 
   switch(m) {
   case AH_Job_ExchangeModeParams:
@@ -339,7 +461,7 @@ int AH_Job_TransferBase_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Job_TransferBaseSetExchangeParamsFn(AH_JOB *j, AH_JOB_TRANSFERBASE_EXCHANGE_FN f){
+void AH_Job_TransferBase_SetExchangeParamsFn(AH_JOB *j, AH_JOB_TRANSFERBASE_EXCHANGE_FN f){
   AH_JOB_TRANSFERBASE *aj;
 
   assert(j);
@@ -352,7 +474,7 @@ void AH_Job_TransferBaseSetExchangeParamsFn(AH_JOB *j, AH_JOB_TRANSFERBASE_EXCHA
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Job_TransferBaseSetExchangeArgsFn(AH_JOB *j, AH_JOB_TRANSFERBASE_EXCHANGE_FN f){
+void AH_Job_TransferBase_SetExchangeArgsFn(AH_JOB *j, AH_JOB_TRANSFERBASE_EXCHANGE_FN f){
   AH_JOB_TRANSFERBASE *aj;
 
   assert(j);
@@ -365,7 +487,7 @@ void AH_Job_TransferBaseSetExchangeArgsFn(AH_JOB *j, AH_JOB_TRANSFERBASE_EXCHANG
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Job_TransferBaseSetExchangeResultsFn(AH_JOB *j, AH_JOB_TRANSFERBASE_EXCHANGE_FN f){
+void AH_Job_TransferBase_SetExchangeResultsFn(AH_JOB *j, AH_JOB_TRANSFERBASE_EXCHANGE_FN f){
   AH_JOB_TRANSFERBASE *aj;
 
   assert(j);

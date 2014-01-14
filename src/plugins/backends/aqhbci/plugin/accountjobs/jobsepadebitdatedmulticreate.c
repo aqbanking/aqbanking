@@ -14,6 +14,7 @@
 
 
 #include "jobsepadebitdatedmulticreate_p.h"
+#include "jobtransferbase_l.h"
 #include "aqhbci_l.h"
 #include "accountjob_l.h"
 #include "job_l.h"
@@ -47,7 +48,10 @@ AH_JOB *AH_Job_SepaDebitDatedMultiCreate_new(AB_USER *u, AB_ACCOUNT *account) {
   GWEN_DB_NODE *dbArgs;
   const char *s;
 
-  j=AH_AccountJob_new("JobSepaDebitDatedMultiCreate", u, account);
+  j=AH_Job_TransferBase_new("JobSepaDebitDatedMultiCreate",
+                            AB_Transaction_TypeSepaDebitNote,
+                            AB_Transaction_SubTypeStandard,
+                            u, account);
   if (!j)
     return 0;
 
@@ -59,9 +63,11 @@ AH_JOB *AH_Job_SepaDebitDatedMultiCreate_new(AB_USER *u, AB_ACCOUNT *account) {
 
   /* overwrite some virtual functions */
   AH_Job_SetPrepareFn(j, AH_Job_SepaDebitDatedMultiCreate_Prepare);
-  AH_Job_SetExchangeFn(j, AH_Job_SepaDebitDatedMultiCreate_Exchange);
-  AH_Job_SetProcessFn(j, AH_Job_SepaDebitDatedMultiCreate_Process);
   AH_Job_SetAddChallengeParamsFn(j, AH_Job_SepaDebitDatedMultiCreate_AddChallengeParams);
+
+  /* overwrite virtual functions of transferBase class */
+  AH_Job_TransferBase_SetExchangeParamsFn(j, AH_Job_SepaDebitDatedMultiCreate_ExchangeParams);
+  AH_Job_TransferBase_SetExchangeArgsFn(j, AH_Job_TransferBase_ExchangeArgs_SepaDated);
 
   /* get params */
   dbParams=AH_Job_GetParams(j);
@@ -126,10 +132,10 @@ int AH_Job_SepaDebitDatedMultiCreate_ExchangeParams(AH_JOB *j, AB_JOB *bj,
 
   /* set some default limits */
   lim=AB_TransactionLimits_new();
-  AB_TransactionLimits_SetMaxLenPurpose(lim, 140);
+  AB_TransactionLimits_SetMaxLenPurpose(lim, 35);
   AB_TransactionLimits_SetMaxLenRemoteName(lim, 70);
   AB_TransactionLimits_SetMaxLinesRemoteName(lim, 1);
-  AB_TransactionLimits_SetMaxLinesPurpose(lim, 1);
+  AB_TransactionLimits_SetMaxLinesPurpose(lim, 4);
 
   /* set info from BPD */
   i1=GWEN_DB_GetIntValue(dbParams, "minDelay_FNAL_RCUR", 0, 0);
@@ -144,244 +150,6 @@ int AH_Job_SepaDebitDatedMultiCreate_ExchangeParams(AH_JOB *j, AB_JOB *bj,
 
   AB_Job_SetFieldLimits(bj, lim);
   AB_TransactionLimits_free(lim);
-
-  return 0;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaDebitDatedMultiCreate_ExchangeArgs(AH_JOB *j, AB_JOB *bj,
-                                                  AB_IMEXPORTER_CONTEXT *ctx) {
-  AH_JOB_CREATESEPAMULTIDEBIT *aj;
-  const AB_TRANSACTION_LIMITS *lim=NULL;
-  AB_BANKING *ab;
-  const AB_TRANSACTION *t=NULL;
-  AB_TRANSACTION *tCopy=NULL;
-  AB_ACCOUNT *a;
-  AB_USER *u;
-  int rv;
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging args");
-
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_CREATESEPAMULTIDEBIT, j);
-  assert(aj);
-
-  a=AB_Job_GetAccount(bj);
-  assert(a);
-
-  ab=AB_Account_GetBanking(AB_Job_GetAccount(bj));
-  assert(ab);
-
-  u=AH_Job_GetUser(j);
-  assert(u);
-
-  /* get limits and transaction */
-  lim=AB_Job_GetFieldLimits(bj);
-  t=AB_Job_GetTransaction(bj);
-  if (t==NULL) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
-    return GWEN_ERROR_INVALID;
-  }
-
-  /* DISABLED according to a discussion on aqbanking-user:
-   * The application should do this, not the library.
-  AB_Transaction_FillLocalFromAccount(t, a); */
-
-  /* validate transaction */
-  rv=AB_Transaction_CheckForSepaConformity(t);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  rv=AB_Transaction_CheckPurposeAgainstLimits(t, lim);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  rv=AB_Transaction_CheckNamesAgainstLimits(t, lim);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  rv=AB_Transaction_CheckDateAgainstLimits(t, lim);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  tCopy=AB_Transaction_dup(t);
-
-  /* set group id so the application can now which transfers went together in one setting */
-  AB_Transaction_SetGroupId(tCopy, AH_Job_GetId(j));
-
-  /* store validated transaction in job */
-  AB_Job_SetTransaction(bj, tCopy);
-
-  /* store copy of transaction for later */
-  AH_Job_AddTransfer(j, tCopy);
-
-  return 0;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaDebitDatedMultiCreate_ExchangeResults(AH_JOB *j, AB_JOB *bj,
-                                                     AB_IMEXPORTER_CONTEXT *ctx) {
-  AH_JOB_CREATESEPAMULTIDEBIT *aj;
-  AH_RESULT_LIST *rl;
-  AH_RESULT *r;
-  int has10;
-  int has20;
-  AB_TRANSACTION_STATUS tStatus;
-  AB_TRANSACTION *t;
-
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_CREATESEPAMULTIDEBIT, j);
-  assert(aj);
-
-  rl=AH_Job_GetSegResults(j);
-  assert(rl);
-
-  r=AH_Result_List_First(rl);
-  if (!r) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No segment results");
-    AB_Job_SetStatus(bj, AB_Job_StatusError);
-    return GWEN_ERROR_NO_DATA;
-  }
-  has10=0;
-  has20=0;
-  while(r) {
-    int rcode;
-
-    rcode=AH_Result_GetCode(r);
-    if (rcode>=10 && rcode<=19)
-      has10=1;
-    else if (rcode>=20 && rcode <=29)
-      has20=1;
-    r=AH_Result_List_Next(r);
-  }
-
-  if (has20) {
-    AB_Job_SetStatus(bj, AB_Job_StatusFinished);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Job finished");
-  }
-  else if (has10) {
-    AB_Job_SetStatus(bj, AB_Job_StatusPending);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Job pending");
-  }
-  else {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-	     "Error status (neither 0010 nor 0020)");
-    AB_Job_SetStatus(bj, AB_Job_StatusError);
-  }
-
-  if (has20)
-    tStatus=AB_Transaction_StatusAccepted;
-  else if (has10)
-    tStatus=AB_Transaction_StatusPending;
-  else
-    tStatus=AB_Transaction_StatusRejected;
-
-  t=AB_Job_GetTransaction(bj);
-  if (t) {
-    AB_TRANSACTION *cpy;
-
-    cpy=AB_Transaction_dup(t);
-    AB_Transaction_SetStatus(cpy, tStatus);
-    AB_Transaction_SetType(cpy, AB_Transaction_TypeSepaDebitNote);
-    AB_ImExporterContext_AddTransfer(ctx, cpy);
-  }
-
-  return 0;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaDebitDatedMultiCreate_Exchange(AH_JOB *j, AB_JOB *bj,
-                                              AH_JOB_EXCHANGE_MODE m,
-                                              AB_IMEXPORTER_CONTEXT *ctx){
-  AH_JOB_CREATESEPAMULTIDEBIT *aj;
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);
-
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_CREATESEPAMULTIDEBIT, j);
-  assert(aj);
-
-  if (AB_Job_GetType(bj)!=AB_Job_TypeSepaDebitNote) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Not a SepaDebitNote job");
-    return GWEN_ERROR_INVALID;
-  }
-
-  switch(m) {
-  case AH_Job_ExchangeModeParams:
-    return AH_Job_SepaDebitDatedMultiCreate_ExchangeParams(j, bj, ctx);
-  case AH_Job_ExchangeModeArgs:
-    return AH_Job_SepaDebitDatedMultiCreate_ExchangeArgs(j, bj, ctx);
-  case AH_Job_ExchangeModeResults:
-    return AH_Job_SepaDebitDatedMultiCreate_ExchangeResults(j, bj, ctx);
-  default:
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Unsupported exchange mode");
-    return GWEN_ERROR_NOT_SUPPORTED;
-  } /* switch */
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaDebitDatedMultiCreate_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
-  AH_JOB_CREATESEPAMULTIDEBIT *aj;
-  GWEN_DB_NODE *dbResponses;
-  GWEN_DB_NODE *dbCurr;
-
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_CREATESEPAMULTIDEBIT, j);
-  assert(aj);
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Processing");
-  dbResponses=AH_Job_GetResponses(j);
-  assert(dbResponses);
-
-  /* search for "SepaDebitDatedMultiCreateResponse" */
-  dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
-  while(dbCurr) {
-    GWEN_DB_NODE *dbXA;
-    int rv;
-
-    rv=AH_Job_CheckEncryption(j, dbCurr);
-    if (rv) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (encryption)");
-      AH_Job_SetStatus(j, AH_JobStatusError);
-      return rv;
-    }
-    rv=AH_Job_CheckSignature(j, dbCurr);
-    if (rv) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (signature)");
-      AH_Job_SetStatus(j, AH_JobStatusError);
-      return rv;
-    }
-
-    dbXA=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-			  "data/SepaDebitDatedMultiCreateResponse");
-    if (dbXA) {
-      const char *s;
-
-      s=GWEN_DB_GetCharValue(dbXA, "referenceId", 0, 0);
-      if (s) {
-	free(aj->fiid);
-	aj->fiid=strdup(s);
-      }
-    } /* if "standingOrderResponse" */
-    dbCurr=GWEN_DB_GetNextGroup(dbCurr);
-  }
-
 
   return 0;
 }
@@ -447,7 +215,6 @@ int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
   const char *profileName="";
   const char *descriptor="";
   const char *s;
-  AB_IMEXPORTER_CONTEXT *ioc;
   AB_TRANSACTION *t;
   GWEN_BUFFER *dbuf;
 
@@ -489,9 +256,6 @@ int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
   DBG_INFO(AQHBCI_LOGDOMAIN, "Using SEPA descriptor %s", descriptor);
 
 
-  /* set data in job */
-  ioc=AB_ImExporterContext_new();
-
   /* add transactions to ImExporter context, calculate sum on the fly */
   AB_Value_free(aj->sumValues);
   aj->sumValues=AB_Value_new();
@@ -501,24 +265,10 @@ int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
     assert(t); /* debug */
     return GWEN_ERROR_INTERNAL;
   }
-  while(t) {
-    AB_TRANSACTION *cpy;
-    const AB_VALUE *v;
 
-    v=AB_Transaction_GetValue(t);
-    if (v)
-      AB_Value_AddValue(aj->sumValues, v);
-
-    cpy=AB_Transaction_dup(t);
-    AB_ImExporterContext_AddTransaction(ioc, cpy);
-
-    t=AB_Transaction_List_Next(t);
-  }
-
-  /* export ImExporterContext to SEPA */
+  /* export transfers to SEPA */
   dbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=AB_Banking_ExportToBuffer(ab, ioc, "sepa", profileName, dbuf);
-  AB_ImExporterContext_free(ioc);
+  rv=AH_Job_TransferBase_SepaExportTransactions(j, profileName, dbuf);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(dbuf);
@@ -556,7 +306,6 @@ int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
       return rv;
     }
   }
-
   return 0;
 }
 
