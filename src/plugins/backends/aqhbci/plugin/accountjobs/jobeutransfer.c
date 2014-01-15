@@ -416,6 +416,8 @@ int AH_Job_EuTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
             ei=AB_EuTransferInfo_new();
             lim=AB_TransactionLimits_new();
 
+            AB_TransactionLimits_SetNeedDate(lim, -1);
+
             AB_EuTransferInfo_SetCountryCode(ei, AB_Country_GetCode(cnt));
 
             i=GWEN_DB_GetIntValue(dbT, "MaxLenOurName", 0, -1);

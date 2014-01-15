@@ -80,6 +80,8 @@ int AH_Job_SepaDebitSingle_ExchangeParams(AH_JOB *j, AB_JOB *bj,
   AB_TransactionLimits_SetMaxLenRemoteName(lim, 27);
   AB_TransactionLimits_SetMaxLinesRemoteName(lim, 1);
 
+  AB_TransactionLimits_SetNeedDate(lim, -1);
+
   AB_Job_SetFieldLimits(bj, lim);
   AB_TransactionLimits_free(lim);
 

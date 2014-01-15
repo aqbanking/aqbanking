@@ -137,6 +137,8 @@ int AH_Job_SepaDebitDatedMultiCreate_ExchangeParams(AH_JOB *j, AB_JOB *bj,
   AB_TransactionLimits_SetMaxLinesRemoteName(lim, 1);
   AB_TransactionLimits_SetMaxLinesPurpose(lim, 4);
 
+  AB_TransactionLimits_SetNeedDate(lim, 1);
+
   /* set info from BPD */
   i1=GWEN_DB_GetIntValue(dbParams, "minDelay_FNAL_RCUR", 0, 0);
   i2=GWEN_DB_GetIntValue(dbParams, "minDelay_FRST_OOFF", 0, 0);

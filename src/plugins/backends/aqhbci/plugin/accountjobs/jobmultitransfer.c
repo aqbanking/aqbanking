@@ -415,6 +415,8 @@ int AH_Job_MultiTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
     AB_TransactionLimits_SetMaxLenRemoteName(lim, 27);
     AB_TransactionLimits_SetMaxLinesRemoteName(lim, 2);
 
+    AB_TransactionLimits_SetNeedDate(lim, -1);
+
     i=GWEN_DB_GetIntValue(dbParams, "maxpurposeLines", 0, 0);
     AB_TransactionLimits_SetMaxLinesPurpose(lim, i);
 

@@ -41,8 +41,6 @@
 AH_JOB *AH_Job_SepaTransferSingle_new(AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
 
-  j=AH_AccountJob_new("JobSepaTransferSingle", u, account);
-
   j=AH_Job_TransferBase_new("JobSepaTransferSingle",
                             AB_Transaction_TypeSepaTransfer,
                             AB_Transaction_SubTypeStandard,
@@ -78,6 +76,8 @@ int AH_Job_SepaTransferSingle_ExchangeParams(AH_JOB *j, AB_JOB *bj,
   AB_TransactionLimits_SetMaxLinesPurpose(lim, 4);
   AB_TransactionLimits_SetMaxLenRemoteName(lim, 70);
   AB_TransactionLimits_SetMaxLinesRemoteName(lim, 1);
+
+  AB_TransactionLimits_SetNeedDate(lim, -1);
 
   AB_Job_SetFieldLimits(bj, lim);
   AB_TransactionLimits_free(lim);

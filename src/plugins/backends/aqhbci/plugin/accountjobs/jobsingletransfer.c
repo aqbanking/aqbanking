@@ -1172,6 +1172,8 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
     AB_TransactionLimits_SetMaxLenRemoteName(lim, 27);
     AB_TransactionLimits_SetMaxLinesRemoteName(lim, 2);
 
+    AB_TransactionLimits_SetNeedDate(lim, -1);
+
     i=GWEN_DB_GetIntValue(dbParams, "maxpurposeLines", 0, 0);
     AB_TransactionLimits_SetMaxLinesPurpose(lim, i);
 
@@ -1345,6 +1347,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
 
     case AB_Job_TypeCreateDatedTransfer:
     case AB_Job_TypeModifyDatedTransfer:
+      AB_TransactionLimits_SetNeedDate(lim, 1);
       i=GWEN_DB_GetIntValue(dbParams, "minDelay", 0, 0);
       AB_TransactionLimits_SetMinValueSetupTime(lim, i);
 
