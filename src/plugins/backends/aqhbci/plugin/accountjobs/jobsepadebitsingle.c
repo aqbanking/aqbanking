@@ -152,17 +152,25 @@ int AH_Job_SepaDebitSingle_Prepare(AH_JOB *j) {
   dbArgs=AH_Job_GetArguments(j);
 
   /* choose from HISPAS */
-  /* first check for any descriptor for pain 001.002.03 */
-  s=AH_User_FindSepaDescriptor(u, "*001.002.03*");
+  /* first check for any descriptor for pain 008.002.02 */
+  s=AH_User_FindSepaDescriptor(u, "*008.002.02*");
   if (s) {
-    profileName="001_002_03";
+    profileName="008_002_02";
     descriptor=s;
   }
-  else {
-    /* look for pain 001.001.02 */
-    s=AH_User_FindSepaDescriptor(u, "*001.001.02*");
+  if (!(descriptor && *descriptor)) {
+    /* look for pain 008.003.02 */
+    s=AH_User_FindSepaDescriptor(u, "*008.003.02*");
     if (s) {
-      profileName="ccm";
+      profileName="008_003_02";
+      descriptor=s;
+    }
+  }
+  if (!(descriptor && *descriptor)) {
+    /* look for pain 008.001.01 */
+    s=AH_User_FindSepaDescriptor(u, "*008.001.01*");
+    if (s) {
+      profileName="008_001_01";
       descriptor=s;
     }
   }

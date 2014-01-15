@@ -212,8 +212,8 @@ int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
   AB_BANKING *ab;
   AB_USER *u;
   int rv;
-  const char *profileName="";
-  const char *descriptor="";
+  const char *profileName=NULL;
+  const char *descriptor=NULL;
   const char *s;
   AB_TRANSACTION *t;
   GWEN_BUFFER *dbuf;
@@ -236,10 +236,18 @@ int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
   /* first check for any descriptor for pain 008.002.02 */
   s=AH_User_FindSepaDescriptor(u, "*008.002.02*");
   if (s) {
-    profileName="008_003_02";
+    profileName="008_002_02";
     descriptor=s;
   }
-  else {
+  if (!(descriptor && *descriptor)) {
+    /* look for pain 008.003.02 */
+    s=AH_User_FindSepaDescriptor(u, "*008.003.02*");
+    if (s) {
+      profileName="008_003_02";
+      descriptor=s;
+    }
+  }
+  if (!(descriptor && *descriptor)) {
     /* look for pain 008.001.01 */
     s=AH_User_FindSepaDescriptor(u, "*008.001.01*");
     if (s) {
