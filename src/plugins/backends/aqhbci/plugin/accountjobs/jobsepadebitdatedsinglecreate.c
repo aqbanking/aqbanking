@@ -69,8 +69,15 @@ AH_JOB *AH_Job_SepaDebitDatedSingleCreate_new(AB_USER *u, AB_ACCOUNT *account) {
 int AH_Job_SepaDebitDatedSingleCreate_ExchangeParams(AH_JOB *j, AB_JOB *bj,
                                                      AB_IMEXPORTER_CONTEXT *ctx) {
   AB_TRANSACTION_LIMITS *lim;
+  GWEN_DB_NODE *dbParams;
+  int i, i1, i2;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging params");
+
+  dbParams=AH_Job_GetParams(j);
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Have this parameters to exchange:");
+  if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug)
+    GWEN_DB_Dump(dbParams, 2);
 
   /* set some default limits */
   lim=AB_TransactionLimits_new();
@@ -78,6 +85,20 @@ int AH_Job_SepaDebitDatedSingleCreate_ExchangeParams(AH_JOB *j, AB_JOB *bj,
   AB_TransactionLimits_SetMaxLinesPurpose(lim, 4);
   AB_TransactionLimits_SetMaxLenRemoteName(lim, 27);
   AB_TransactionLimits_SetMaxLinesRemoteName(lim, 1);
+
+  AB_TransactionLimits_SetNeedDate(lim, 1);
+
+  /* set info from BPD */
+  i1=GWEN_DB_GetIntValue(dbParams, "minDelay_FNAL_RCUR", 0, 0);
+  i2=GWEN_DB_GetIntValue(dbParams, "minDelay_FRST_OOFF", 0, 0);
+  i=(i1>i2)?i1:i2;
+  AB_TransactionLimits_SetMinValueSetupTime(lim, i);
+
+  i1=GWEN_DB_GetIntValue(dbParams, "maxDelay_FNAL_RCUR", 0, 0);
+  i2=GWEN_DB_GetIntValue(dbParams, "maxDelay_FRST_OOFF", 0, 0);
+  i=(i1<i2)?i1:i2;
+  AB_TransactionLimits_SetMaxValueSetupTime(lim, i);
+
 
   AB_Job_SetFieldLimits(bj, lim);
   AB_TransactionLimits_free(lim);
