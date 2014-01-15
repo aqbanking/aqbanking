@@ -30,7 +30,8 @@ noinst_HEADERS=\
  jobinternaltransfer_l.h \
  jobeutransfer_l.h \
  jobloadcellphone_l.h \
- jobloadcellphone_p.h
+ jobloadcellphone_p.h \
+ jobsepacreatesto.h
 
 
 
@@ -88,7 +89,9 @@ libjobs_la_SOURCES=\
  jobdeletedatedtransfer.c \
  jobinternaltransfer.c \
  jobeutransfer.c \
- jobloadcellphone.c
+ jobloadcellphone.c \
+ jobsepacreatesto.c
+
 
 
 sources:
