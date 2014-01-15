@@ -259,6 +259,19 @@
       <elem name="minLinesPurpose" type="int" />
     </group>
 
+    <group name="Date" >
+      <descr>
+        Limits for date.
+      </descr>
+      <elem name="needDate" type="int">
+        <descr>
+          Defines whether setting of the execution date (@ref AB_Transaction_SetDate)
+          is required (value=1) or forbidden (value=-1), value=0 means "unknown".
+        </descr>
+      </elem>
+    </group>
+
+
     <group name="Standing Orders And Dated Transfer" >
       <descr>
         These limits apply to standing orders and dated transfers only.

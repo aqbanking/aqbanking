@@ -104,6 +104,7 @@ AB_TRANSACTION_LIMITS *AB_TransactionLimits_dup(const AB_TRANSACTION_LIMITS *d) 
   st->minLenPurpose=d->minLenPurpose;
   st->maxLinesPurpose=d->maxLinesPurpose;
   st->minLinesPurpose=d->minLinesPurpose;
+  st->needDate=d->needDate;
   st->minValueSetupTime=d->minValueSetupTime;
   st->maxValueSetupTime=d->maxValueSetupTime;
   if (d->valuesCycleWeek)
@@ -222,6 +223,8 @@ int AB_TransactionLimits_toDb(const AB_TRANSACTION_LIMITS *st, GWEN_DB_NODE *db)
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxLinesPurpose", st->maxLinesPurpose))
     return -1;
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "minLinesPurpose", st->minLinesPurpose))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "needDate", st->needDate))
     return -1;
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "minValueSetupTime", st->minValueSetupTime))
     return -1;
@@ -387,6 +390,7 @@ int AB_TransactionLimits_ReadDb(AB_TRANSACTION_LIMITS *st, GWEN_DB_NODE *db) {
   AB_TransactionLimits_SetMinLenPurpose(st, GWEN_DB_GetIntValue(db, "minLenPurpose", 0, 0));
   AB_TransactionLimits_SetMaxLinesPurpose(st, GWEN_DB_GetIntValue(db, "maxLinesPurpose", 0, 0));
   AB_TransactionLimits_SetMinLinesPurpose(st, GWEN_DB_GetIntValue(db, "minLinesPurpose", 0, 0));
+  AB_TransactionLimits_SetNeedDate(st, GWEN_DB_GetIntValue(db, "needDate", 0, 0));
   AB_TransactionLimits_SetMinValueSetupTime(st, GWEN_DB_GetIntValue(db, "minValueSetupTime", 0, 0));
   AB_TransactionLimits_SetMaxValueSetupTime(st, GWEN_DB_GetIntValue(db, "maxValueSetupTime", 0, 0));
   if (1) {
@@ -991,6 +995,21 @@ int AB_TransactionLimits_GetMinLinesPurpose(const AB_TRANSACTION_LIMITS *st) {
 void AB_TransactionLimits_SetMinLinesPurpose(AB_TRANSACTION_LIMITS *st, int d) {
   assert(st);
   st->minLinesPurpose=d;
+  st->_modified=1;
+}
+
+
+
+
+int AB_TransactionLimits_GetNeedDate(const AB_TRANSACTION_LIMITS *st) {
+  assert(st);
+  return st->needDate;
+}
+
+
+void AB_TransactionLimits_SetNeedDate(AB_TRANSACTION_LIMITS *st, int d) {
+  assert(st);
+  st->needDate=d;
   st->_modified=1;
 }
 

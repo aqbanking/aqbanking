@@ -49,6 +49,9 @@ Limits for bank reference.</p>
 Limits for purpose (called
 <i>memo</i>
 in some apps).</p>
+<h3>Date</h3>
+<p>
+Limits for date.</p>
 <h3>Standing Orders And Dated Transfer</h3>
 <p>
 These limits apply to standing orders and dated transfers only.</p>
@@ -183,6 +186,14 @@ in some apps).*/
 
 
 
+
+
+/*@}*/
+
+/** @name Date
+ *
+Limits for date.*/
+/*@{*/
 
 
 /*@}*/

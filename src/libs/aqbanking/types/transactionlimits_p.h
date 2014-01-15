@@ -44,6 +44,7 @@ struct AB_TRANSACTION_LIMITS {
   int minLenPurpose;
   int maxLinesPurpose;
   int minLinesPurpose;
+  int needDate;
   int minValueSetupTime;
   int maxValueSetupTime;
   GWEN_STRINGLIST *valuesCycleWeek;
@@ -187,6 +188,14 @@ in some apps).*/
 
 
 
+
+
+/*@}*/
+
+/** @name Date
+ *
+Limits for date.*/
+/*@{*/
 
 
 /*@}*/

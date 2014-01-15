@@ -337,6 +337,18 @@ Set this property with @ref AB_TransactionLimits_SetMinLinesPurpose,
 get it with @ref AB_TransactionLimits_GetMinLinesPurpose
 </p>
 
+<h3>Date</h3>
+<p>
+Limits for date.</p>
+@anchor AB_TRANSACTION_LIMITS_NeedDate
+<h4>NeedDate</h4>
+<p>
+Defines whether setting of the execution date (@ref AB_Transaction_SetDate) is required (value=1) or forbidden (value=-1), value=0 means "unknown".</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetNeedDate, 
+get it with @ref AB_TransactionLimits_GetNeedDate
+</p>
+
 <h3>Standing Orders And Dated Transfer</h3>
 <p>
 These limits apply to standing orders and dated transfers only.</p>
@@ -947,6 +959,22 @@ AQBANKING_API int AB_TransactionLimits_GetMinLinesPurpose(const AB_TRANSACTION_L
 * Set the property @ref AB_TRANSACTION_LIMITS_MinLinesPurpose
 */
 AQBANKING_API void AB_TransactionLimits_SetMinLinesPurpose(AB_TRANSACTION_LIMITS *el, int d);
+
+/*@}*/
+
+/** @name Date
+ *
+Limits for date.*/
+/*@{*/
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_NeedDate
+*/
+AQBANKING_API int AB_TransactionLimits_GetNeedDate(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_NeedDate
+*/
+AQBANKING_API void AB_TransactionLimits_SetNeedDate(AB_TRANSACTION_LIMITS *el, int d);
 
 /*@}*/
 
