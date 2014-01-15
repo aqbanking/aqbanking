@@ -751,6 +751,14 @@ int AH_HHD14_AddChallengeParams_32(AH_JOB *j,
 
 
 
+int AH_HHD14_AddChallengeParams_35(AH_JOB *j,
+                                   const AB_VALUE *vAmount,
+                                   const char *sRemoteIban) {
+  /* same as 09 */
+  return AH_HHD14_AddChallengeParams_09(j, vAmount, sRemoteIban);
+}
+
+
 
 
 

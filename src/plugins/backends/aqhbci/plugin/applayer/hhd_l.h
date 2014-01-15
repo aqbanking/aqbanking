@@ -59,6 +59,9 @@ int AH_HHD14_AddChallengeParams_32(AH_JOB *j,
                                    const char *sLocalIban,
                                    const GWEN_TIME *ti);
 
+int AH_HHD14_AddChallengeParams_35(AH_JOB *j,
+                                   const AB_VALUE *vAmount,
+                                   const char *sRemoteIban);
 
 
 
