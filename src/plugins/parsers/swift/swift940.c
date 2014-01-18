@@ -993,6 +993,7 @@ int AHB_SWIFT940_Parse_NS(const AHB_SWIFT_TAG *tg,
   const char *p;
   const char *p2;
 
+  /* TODO: Use AHB_SWIFT_ParseSubTags */
   p=AHB_SWIFT_Tag_GetData(tg);
   assert(p);
 
