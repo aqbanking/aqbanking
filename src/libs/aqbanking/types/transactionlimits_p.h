@@ -47,6 +47,14 @@ struct AB_TRANSACTION_LIMITS {
   int needDate;
   int minValueSetupTime;
   int maxValueSetupTime;
+  int minValueSetupTimeFirst;
+  int maxValueSetupTimeFirst;
+  int minValueSetupTimeOnce;
+  int maxValueSetupTimeOnce;
+  int minValueSetupTimeRecurring;
+  int maxValueSetupTimeRecurring;
+  int minValueSetupTimeFinal;
+  int maxValueSetupTimeFinal;
   GWEN_STRINGLIST *valuesCycleWeek;
   GWEN_STRINGLIST *valuesCycleMonth;
   GWEN_STRINGLIST *valuesExecutionDayWeek;
@@ -204,6 +212,14 @@ Limits for date.*/
  *
 These limits apply to standing orders and dated transfers only.*/
 /*@{*/
+
+
+
+
+
+
+
+
 
 
 

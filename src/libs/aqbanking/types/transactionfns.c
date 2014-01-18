@@ -543,6 +543,80 @@ int AB_Transaction_CheckDateAgainstLimits(const AB_TRANSACTION *t, const AB_TRAN
 
 
 
+int AB_Transaction_CheckDateAgainstSequenceLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
+  if (lim) {
+    const GWEN_TIME *ti;
+
+    ti=AB_Transaction_GetDate(t);
+    if (ti) {
+      GWEN_TIME *currDate;
+      int dt;
+      int minTime=0;
+      int maxTime=0;
+
+      currDate=GWEN_CurrentTime();
+      assert(currDate);
+      dt=((int)GWEN_Time_DiffSeconds(ti, currDate))/(60*60*24);
+      GWEN_Time_free(currDate);
+
+      switch(AB_Transaction_GetSequenceType(t)) {
+      case AB_Transaction_SequenceTypeOnce:
+	minTime=AB_TransactionLimits_GetMinValueSetupTimeOnce(lim);
+	maxTime=AB_TransactionLimits_GetMaxValueSetupTimeOnce(lim);
+	break;
+      case AB_Transaction_SequenceTypeFirst:
+	minTime=AB_TransactionLimits_GetMinValueSetupTimeFirst(lim);
+	maxTime=AB_TransactionLimits_GetMaxValueSetupTimeFirst(lim);
+	break;
+      case AB_Transaction_SequenceTypeFollowing:
+	minTime=AB_TransactionLimits_GetMinValueSetupTimeRecurring(lim);
+	maxTime=AB_TransactionLimits_GetMaxValueSetupTimeRecurring(lim);
+	break;
+      case AB_Transaction_SequenceTypeFinal:
+	minTime=AB_TransactionLimits_GetMinValueSetupTimeFinal(lim);
+	maxTime=AB_TransactionLimits_GetMaxValueSetupTimeFinal(lim);
+	break;
+      case AB_Transaction_SequenceTypeUnknown:
+	break;
+      }
+
+      if (minTime==0)
+	minTime=AB_TransactionLimits_GetMinValueSetupTime(lim);
+      if (maxTime==0)
+	maxTime=AB_TransactionLimits_GetMaxValueSetupTime(lim);
+
+      /* check minimum setup time */
+      if (minTime && dt<minTime) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "Minimum setup time violated");
+        GWEN_Gui_ProgressLog2(0,
+                              GWEN_LoggerLevel_Error,
+                              I18N("Minimum setup time violated. "
+                                   "Dated transactions need to be at least %d days away"),
+			      minTime);
+        return GWEN_ERROR_INVALID;
+      }
+
+      /* check maximum setup time */
+      if (maxTime && dt>maxTime) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "Maximum setup time violated");
+        GWEN_Gui_ProgressLog2(0,
+                              GWEN_LoggerLevel_Error,
+                              I18N("Maximum setup time violated. "
+                                   "Dated transactions need to be at most %d days away"),
+                              maxTime);
+        return GWEN_ERROR_INVALID;
+      }
+    }
+
+  }
+
+  return 0;
+}
+
+
+
 
 static int _checkStringForRestrictedSepaCharset(const char *s) {
   assert(s);

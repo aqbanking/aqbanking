@@ -54,7 +54,7 @@ AH_JOB *AH_Job_SepaDebitDatedSingleCreate_new(AB_USER *u, AB_ACCOUNT *account) {
 
   /* overwrite virtual functions of transferBase class */
   AH_Job_TransferBase_SetExchangeParamsFn(j, AH_Job_SepaDebitDatedSingleCreate_ExchangeParams);
-  AH_Job_TransferBase_SetExchangeArgsFn(j, AH_Job_TransferBase_ExchangeArgs_SepaDated);
+  AH_Job_TransferBase_SetExchangeArgsFn(j, AH_Job_TransferBase_ExchangeArgs_SepaDatedDebit);
 
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);
@@ -90,15 +90,28 @@ int AH_Job_SepaDebitDatedSingleCreate_ExchangeParams(AH_JOB *j, AB_JOB *bj,
 
   /* set info from BPD */
   i1=GWEN_DB_GetIntValue(dbParams, "minDelay_FNAL_RCUR", 0, 0);
+  AB_TransactionLimits_SetMinValueSetupTimeRecurring(lim, i1);
+  AB_TransactionLimits_SetMinValueSetupTimeFinal(lim, i1);
+
   i2=GWEN_DB_GetIntValue(dbParams, "minDelay_FRST_OOFF", 0, 0);
+  AB_TransactionLimits_SetMinValueSetupTimeFirst(lim, i2);
+  AB_TransactionLimits_SetMinValueSetupTimeOnce(lim, i2);
+
+  /* combine into minimum values for older apps */
   i=(i1>i2)?i1:i2;
   AB_TransactionLimits_SetMinValueSetupTime(lim, i);
 
   i1=GWEN_DB_GetIntValue(dbParams, "maxDelay_FNAL_RCUR", 0, 0);
+  AB_TransactionLimits_SetMaxValueSetupTimeRecurring(lim, i1);
+  AB_TransactionLimits_SetMinValueSetupTimeFinal(lim, i1);
+
   i2=GWEN_DB_GetIntValue(dbParams, "maxDelay_FRST_OOFF", 0, 0);
+  AB_TransactionLimits_SetMaxValueSetupTimeFirst(lim, i2);
+  AB_TransactionLimits_SetMaxValueSetupTimeOnce(lim, i2);
+
+  /* combine into minimum values for older apps */
   i=(i1<i2)?i1:i2;
   AB_TransactionLimits_SetMaxValueSetupTime(lim, i);
-
 
   AB_Job_SetFieldLimits(bj, lim);
   AB_TransactionLimits_free(lim);

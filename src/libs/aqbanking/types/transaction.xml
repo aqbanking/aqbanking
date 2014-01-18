@@ -288,6 +288,68 @@
           first execution.
         </descr>
       </elem>
+
+      <elem name="minValueSetupTimeFirst" type="int">
+        <descr>
+          Minimum time in days between issuing of a request and its
+          first execution.
+          This is for a first request (e.g. first debit note).
+        </descr>
+      </elem>
+      <elem name="maxValueSetupTimeFirst" type="int">
+        <descr>
+          Maximum time in days between issuing of a request and its
+          first execution.
+          This is for a first request (e.g. first debit note).
+        </descr>
+      </elem>
+
+      <elem name="minValueSetupTimeOnce" type="int">
+        <descr>
+          Minimum time in days between issuing of a request and its
+          execution.
+          This is for a one time only request (e.g. onetime debit note).
+        </descr>
+      </elem>
+      <elem name="maxValueSetupTimeOnce" type="int">
+        <descr>
+          Maximum time in days between issuing of a request and its
+          execution.
+          This is for a one time only request (e.g. onetime debit note).
+        </descr>
+      </elem>
+
+      <elem name="minValueSetupTimeRecurring" type="int">
+        <descr>
+          Minimum time in days between issuing of a request and its
+          execution.
+          This is for a following request (e.g. a recurring debit note).
+        </descr>
+      </elem>
+      <elem name="maxValueSetupTimeRecurring" type="int">
+        <descr>
+          Maximum time in days between issuing of a request and its
+          first execution.
+          This is for a following request (e.g. a recurring debit note).
+        </descr>
+      </elem>
+
+      <elem name="minValueSetupTimeFinal" type="int">
+        <descr>
+          Minimum time in days between issuing of a request and its
+          execution.
+          This is for a final request (e.g. last debit note).
+        </descr>
+      </elem>
+      <elem name="maxValueSetupTimeFinal" type="int">
+        <descr>
+          Maximum time in days between issuing of a request and its
+          execution.
+          This is for a final request (e.g. last debit note).
+        </descr>
+      </elem>
+
+
       <elem name="valuesCycleWeek" type="GWEN_STRINGLIST" ptr="1" const="0">
         <descr>
           This string list contains one entry for every supported cycle. 

@@ -370,6 +370,78 @@ Set this property with @ref AB_TransactionLimits_SetMaxValueSetupTime,
 get it with @ref AB_TransactionLimits_GetMaxValueSetupTime
 </p>
 
+@anchor AB_TRANSACTION_LIMITS_MinValueSetupTimeFirst
+<h4>MinValueSetupTimeFirst</h4>
+<p>
+Minimum time in days between issuing of a request and its first execution. This is for a first request (e.g. first debit note).</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetMinValueSetupTimeFirst, 
+get it with @ref AB_TransactionLimits_GetMinValueSetupTimeFirst
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_MaxValueSetupTimeFirst
+<h4>MaxValueSetupTimeFirst</h4>
+<p>
+Maximum time in days between issuing of a request and its first execution. This is for a first request (e.g. first debit note).</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetMaxValueSetupTimeFirst, 
+get it with @ref AB_TransactionLimits_GetMaxValueSetupTimeFirst
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_MinValueSetupTimeOnce
+<h4>MinValueSetupTimeOnce</h4>
+<p>
+Minimum time in days between issuing of a request and its execution. This is for a one time only request (e.g. onetime debit note).</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetMinValueSetupTimeOnce, 
+get it with @ref AB_TransactionLimits_GetMinValueSetupTimeOnce
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_MaxValueSetupTimeOnce
+<h4>MaxValueSetupTimeOnce</h4>
+<p>
+Maximum time in days between issuing of a request and its execution. This is for a one time only request (e.g. onetime debit note).</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetMaxValueSetupTimeOnce, 
+get it with @ref AB_TransactionLimits_GetMaxValueSetupTimeOnce
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_MinValueSetupTimeRecurring
+<h4>MinValueSetupTimeRecurring</h4>
+<p>
+Minimum time in days between issuing of a request and its execution. This is for a following request (e.g. a recurring debit note).</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetMinValueSetupTimeRecurring, 
+get it with @ref AB_TransactionLimits_GetMinValueSetupTimeRecurring
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_MaxValueSetupTimeRecurring
+<h4>MaxValueSetupTimeRecurring</h4>
+<p>
+Maximum time in days between issuing of a request and its first execution. This is for a following request (e.g. a recurring debit note).</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetMaxValueSetupTimeRecurring, 
+get it with @ref AB_TransactionLimits_GetMaxValueSetupTimeRecurring
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_MinValueSetupTimeFinal
+<h4>MinValueSetupTimeFinal</h4>
+<p>
+Minimum time in days between issuing of a request and its execution. This is for a final request (e.g. last debit note).</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetMinValueSetupTimeFinal, 
+get it with @ref AB_TransactionLimits_GetMinValueSetupTimeFinal
+</p>
+
+@anchor AB_TRANSACTION_LIMITS_MaxValueSetupTimeFinal
+<h4>MaxValueSetupTimeFinal</h4>
+<p>
+Maximum time in days between issuing of a request and its execution. This is for a final request (e.g. last debit note).</p>
+<p>
+Set this property with @ref AB_TransactionLimits_SetMaxValueSetupTimeFinal, 
+get it with @ref AB_TransactionLimits_GetMaxValueSetupTimeFinal
+</p>
+
 @anchor AB_TRANSACTION_LIMITS_ValuesCycleWeek
 <h4>ValuesCycleWeek</h4>
 <p>
@@ -1000,6 +1072,78 @@ AQBANKING_API int AB_TransactionLimits_GetMaxValueSetupTime(const AB_TRANSACTION
 * Set the property @ref AB_TRANSACTION_LIMITS_MaxValueSetupTime
 */
 AQBANKING_API void AB_TransactionLimits_SetMaxValueSetupTime(AB_TRANSACTION_LIMITS *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_MinValueSetupTimeFirst
+*/
+AQBANKING_API int AB_TransactionLimits_GetMinValueSetupTimeFirst(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_MinValueSetupTimeFirst
+*/
+AQBANKING_API void AB_TransactionLimits_SetMinValueSetupTimeFirst(AB_TRANSACTION_LIMITS *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_MaxValueSetupTimeFirst
+*/
+AQBANKING_API int AB_TransactionLimits_GetMaxValueSetupTimeFirst(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_MaxValueSetupTimeFirst
+*/
+AQBANKING_API void AB_TransactionLimits_SetMaxValueSetupTimeFirst(AB_TRANSACTION_LIMITS *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_MinValueSetupTimeOnce
+*/
+AQBANKING_API int AB_TransactionLimits_GetMinValueSetupTimeOnce(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_MinValueSetupTimeOnce
+*/
+AQBANKING_API void AB_TransactionLimits_SetMinValueSetupTimeOnce(AB_TRANSACTION_LIMITS *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_MaxValueSetupTimeOnce
+*/
+AQBANKING_API int AB_TransactionLimits_GetMaxValueSetupTimeOnce(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_MaxValueSetupTimeOnce
+*/
+AQBANKING_API void AB_TransactionLimits_SetMaxValueSetupTimeOnce(AB_TRANSACTION_LIMITS *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_MinValueSetupTimeRecurring
+*/
+AQBANKING_API int AB_TransactionLimits_GetMinValueSetupTimeRecurring(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_MinValueSetupTimeRecurring
+*/
+AQBANKING_API void AB_TransactionLimits_SetMinValueSetupTimeRecurring(AB_TRANSACTION_LIMITS *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_MaxValueSetupTimeRecurring
+*/
+AQBANKING_API int AB_TransactionLimits_GetMaxValueSetupTimeRecurring(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_MaxValueSetupTimeRecurring
+*/
+AQBANKING_API void AB_TransactionLimits_SetMaxValueSetupTimeRecurring(AB_TRANSACTION_LIMITS *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_MinValueSetupTimeFinal
+*/
+AQBANKING_API int AB_TransactionLimits_GetMinValueSetupTimeFinal(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_MinValueSetupTimeFinal
+*/
+AQBANKING_API void AB_TransactionLimits_SetMinValueSetupTimeFinal(AB_TRANSACTION_LIMITS *el, int d);
+
+/**
+* Returns the property @ref AB_TRANSACTION_LIMITS_MaxValueSetupTimeFinal
+*/
+AQBANKING_API int AB_TransactionLimits_GetMaxValueSetupTimeFinal(const AB_TRANSACTION_LIMITS *el);
+/**
+* Set the property @ref AB_TRANSACTION_LIMITS_MaxValueSetupTimeFinal
+*/
+AQBANKING_API void AB_TransactionLimits_SetMaxValueSetupTimeFinal(AB_TRANSACTION_LIMITS *el, int d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_LIMITS_ValuesCycleWeek

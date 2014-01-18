@@ -107,6 +107,14 @@ AB_TRANSACTION_LIMITS *AB_TransactionLimits_dup(const AB_TRANSACTION_LIMITS *d) 
   st->needDate=d->needDate;
   st->minValueSetupTime=d->minValueSetupTime;
   st->maxValueSetupTime=d->maxValueSetupTime;
+  st->minValueSetupTimeFirst=d->minValueSetupTimeFirst;
+  st->maxValueSetupTimeFirst=d->maxValueSetupTimeFirst;
+  st->minValueSetupTimeOnce=d->minValueSetupTimeOnce;
+  st->maxValueSetupTimeOnce=d->maxValueSetupTimeOnce;
+  st->minValueSetupTimeRecurring=d->minValueSetupTimeRecurring;
+  st->maxValueSetupTimeRecurring=d->maxValueSetupTimeRecurring;
+  st->minValueSetupTimeFinal=d->minValueSetupTimeFinal;
+  st->maxValueSetupTimeFinal=d->maxValueSetupTimeFinal;
   if (d->valuesCycleWeek)
     st->valuesCycleWeek=GWEN_StringList_dup(d->valuesCycleWeek);
   if (d->valuesCycleMonth)
@@ -229,6 +237,22 @@ int AB_TransactionLimits_toDb(const AB_TRANSACTION_LIMITS *st, GWEN_DB_NODE *db)
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "minValueSetupTime", st->minValueSetupTime))
     return -1;
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxValueSetupTime", st->maxValueSetupTime))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "minValueSetupTimeFirst", st->minValueSetupTimeFirst))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxValueSetupTimeFirst", st->maxValueSetupTimeFirst))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "minValueSetupTimeOnce", st->minValueSetupTimeOnce))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxValueSetupTimeOnce", st->maxValueSetupTimeOnce))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "minValueSetupTimeRecurring", st->minValueSetupTimeRecurring))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxValueSetupTimeRecurring", st->maxValueSetupTimeRecurring))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "minValueSetupTimeFinal", st->minValueSetupTimeFinal))
+    return -1;
+  if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxValueSetupTimeFinal", st->maxValueSetupTimeFinal))
     return -1;
   if (st->valuesCycleWeek)
     {
@@ -393,6 +417,14 @@ int AB_TransactionLimits_ReadDb(AB_TRANSACTION_LIMITS *st, GWEN_DB_NODE *db) {
   AB_TransactionLimits_SetNeedDate(st, GWEN_DB_GetIntValue(db, "needDate", 0, 0));
   AB_TransactionLimits_SetMinValueSetupTime(st, GWEN_DB_GetIntValue(db, "minValueSetupTime", 0, 0));
   AB_TransactionLimits_SetMaxValueSetupTime(st, GWEN_DB_GetIntValue(db, "maxValueSetupTime", 0, 0));
+  AB_TransactionLimits_SetMinValueSetupTimeFirst(st, GWEN_DB_GetIntValue(db, "minValueSetupTimeFirst", 0, 0));
+  AB_TransactionLimits_SetMaxValueSetupTimeFirst(st, GWEN_DB_GetIntValue(db, "maxValueSetupTimeFirst", 0, 0));
+  AB_TransactionLimits_SetMinValueSetupTimeOnce(st, GWEN_DB_GetIntValue(db, "minValueSetupTimeOnce", 0, 0));
+  AB_TransactionLimits_SetMaxValueSetupTimeOnce(st, GWEN_DB_GetIntValue(db, "maxValueSetupTimeOnce", 0, 0));
+  AB_TransactionLimits_SetMinValueSetupTimeRecurring(st, GWEN_DB_GetIntValue(db, "minValueSetupTimeRecurring", 0, 0));
+  AB_TransactionLimits_SetMaxValueSetupTimeRecurring(st, GWEN_DB_GetIntValue(db, "maxValueSetupTimeRecurring", 0, 0));
+  AB_TransactionLimits_SetMinValueSetupTimeFinal(st, GWEN_DB_GetIntValue(db, "minValueSetupTimeFinal", 0, 0));
+  AB_TransactionLimits_SetMaxValueSetupTimeFinal(st, GWEN_DB_GetIntValue(db, "maxValueSetupTimeFinal", 0, 0));
   if (1) {
     int i;
 
@@ -1040,6 +1072,126 @@ int AB_TransactionLimits_GetMaxValueSetupTime(const AB_TRANSACTION_LIMITS *st) {
 void AB_TransactionLimits_SetMaxValueSetupTime(AB_TRANSACTION_LIMITS *st, int d) {
   assert(st);
   st->maxValueSetupTime=d;
+  st->_modified=1;
+}
+
+
+
+
+int AB_TransactionLimits_GetMinValueSetupTimeFirst(const AB_TRANSACTION_LIMITS *st) {
+  assert(st);
+  return st->minValueSetupTimeFirst;
+}
+
+
+void AB_TransactionLimits_SetMinValueSetupTimeFirst(AB_TRANSACTION_LIMITS *st, int d) {
+  assert(st);
+  st->minValueSetupTimeFirst=d;
+  st->_modified=1;
+}
+
+
+
+
+int AB_TransactionLimits_GetMaxValueSetupTimeFirst(const AB_TRANSACTION_LIMITS *st) {
+  assert(st);
+  return st->maxValueSetupTimeFirst;
+}
+
+
+void AB_TransactionLimits_SetMaxValueSetupTimeFirst(AB_TRANSACTION_LIMITS *st, int d) {
+  assert(st);
+  st->maxValueSetupTimeFirst=d;
+  st->_modified=1;
+}
+
+
+
+
+int AB_TransactionLimits_GetMinValueSetupTimeOnce(const AB_TRANSACTION_LIMITS *st) {
+  assert(st);
+  return st->minValueSetupTimeOnce;
+}
+
+
+void AB_TransactionLimits_SetMinValueSetupTimeOnce(AB_TRANSACTION_LIMITS *st, int d) {
+  assert(st);
+  st->minValueSetupTimeOnce=d;
+  st->_modified=1;
+}
+
+
+
+
+int AB_TransactionLimits_GetMaxValueSetupTimeOnce(const AB_TRANSACTION_LIMITS *st) {
+  assert(st);
+  return st->maxValueSetupTimeOnce;
+}
+
+
+void AB_TransactionLimits_SetMaxValueSetupTimeOnce(AB_TRANSACTION_LIMITS *st, int d) {
+  assert(st);
+  st->maxValueSetupTimeOnce=d;
+  st->_modified=1;
+}
+
+
+
+
+int AB_TransactionLimits_GetMinValueSetupTimeRecurring(const AB_TRANSACTION_LIMITS *st) {
+  assert(st);
+  return st->minValueSetupTimeRecurring;
+}
+
+
+void AB_TransactionLimits_SetMinValueSetupTimeRecurring(AB_TRANSACTION_LIMITS *st, int d) {
+  assert(st);
+  st->minValueSetupTimeRecurring=d;
+  st->_modified=1;
+}
+
+
+
+
+int AB_TransactionLimits_GetMaxValueSetupTimeRecurring(const AB_TRANSACTION_LIMITS *st) {
+  assert(st);
+  return st->maxValueSetupTimeRecurring;
+}
+
+
+void AB_TransactionLimits_SetMaxValueSetupTimeRecurring(AB_TRANSACTION_LIMITS *st, int d) {
+  assert(st);
+  st->maxValueSetupTimeRecurring=d;
+  st->_modified=1;
+}
+
+
+
+
+int AB_TransactionLimits_GetMinValueSetupTimeFinal(const AB_TRANSACTION_LIMITS *st) {
+  assert(st);
+  return st->minValueSetupTimeFinal;
+}
+
+
+void AB_TransactionLimits_SetMinValueSetupTimeFinal(AB_TRANSACTION_LIMITS *st, int d) {
+  assert(st);
+  st->minValueSetupTimeFinal=d;
+  st->_modified=1;
+}
+
+
+
+
+int AB_TransactionLimits_GetMaxValueSetupTimeFinal(const AB_TRANSACTION_LIMITS *st) {
+  assert(st);
+  return st->maxValueSetupTimeFinal;
+}
+
+
+void AB_TransactionLimits_SetMaxValueSetupTimeFinal(AB_TRANSACTION_LIMITS *st, int d) {
+  assert(st);
+  st->maxValueSetupTimeFinal=d;
   st->_modified=1;
 }
 

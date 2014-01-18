@@ -57,6 +57,9 @@ int AB_Transaction_CheckFirstExecutionDateAgainstLimits(const AB_TRANSACTION *t,
 AQBANKING_API
 int AB_Transaction_CheckDateAgainstLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
 
+AQBANKING_API
+int AB_Transaction_CheckDateAgainstSequenceLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
+
 
 /**
  * Checks whether a given transaction conforms to SEPA specs. This functions especially checks whether local and remote
