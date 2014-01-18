@@ -92,7 +92,8 @@ xmlfiles=\
   $(srcdir)/jobsepadebitdatedmulticreate.xml \
   $(srcdir)/jobsepaxfersingle.xml \
   $(srcdir)/jobsepadebitsingle.xml \
-  $(srcdir)/jobsepastandingordercreate.xml
+  $(srcdir)/jobsepastandingordercreate.xml \
+  $(srcdir)/jobsepastandingorderget.xml
 
 
 EXTRA_DIST=$(xmlfiles)

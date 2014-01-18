@@ -1,4 +1,5 @@
 
+
 <SEGs>
 
 
@@ -20,23 +21,27 @@
    <GROUP type="kti_i" version="1" />
    <ELEM name="descriptor" type="ascii" maxsize="256" />
    <ELEM name="transfer" type="bin" trustlevel="4" />
+
+   <GROUP id="SepaStoSpecial" />
+
    <VALUES>
      <VALUE path="head/code">%code</VALUE>
      <VALUE path="head/version">%version</VALUE>
    </VALUES>
  </SEGdef>
+
 
 
  <!-- Banknachricht -->
  <SEGdef id="SepaStandingOrderCreateResponse" code="HICDE" version="1"
          delimiter="+" terminator="'" >
    <GROUP type="SegHead" name="head" />
-   <ELEM name="referenceId" type="AN" maxsize="99" minnum="0" />
    <VALUES>
      <VALUE path="head/code">%code</VALUE>
      <VALUE path="head/version">%version</VALUE>
    </VALUES>
  </SEGdef>
+
 
 
  <!-- Beschreibungssegment -->

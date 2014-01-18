@@ -1,0 +1,122 @@
+
+
+<GROUPs>
+
+  <GROUPdef id="SepaStoSpecial" delimiter=":" version="1" >
+    <ELEM name="xfirstExecutionDate" type="date" minsize="8" maxsize="8" minnum="0" />
+    <ELEM name="xperiod" type="an" maxsize="1" />
+    <ELEM name="cycle" type="num" maxsize="2" />
+    <ELEM name="executionDay" type="num" maxsize="2" />
+    <ELEM name="xlastExecutionDate" type="date" minnum="0" minsize="8" maxsize="8" />
+  </GROUPdef>
+
+
+  <GROUPdef id="SepaStoSkip" delimiter=":" version="1" >
+   <ELEM name="skipYearly" type="alpha" maxsize="1" />
+   <ELEM name="skipStartDate" type="date" minsize="8" maxsize="8" minnum="0" />
+   <ELEM name="skipEndDate" type="date" minsize="8" maxsize="8" minnum="0" />
+   <ELEM name="skipNum" type="num" maxsize="2" />
+   <GROUP name="newAmount" type="btg" trustlevel="4" version="1" />
+
+  </GROUPdef>
+
+
+</GROUPs>
+
+
+
+<SEGs>
+
+ <!-- 
+  --------------------------------------------------------------------
+   Geschaeftsvorfall: Dauerauftragsabfrage (Version 1)
+  --------------------------------------------------------------------- 
+  -->
+  
+ <!-- Kundennachricht -->
+ <SEGdef id="SepaGetStandingOrders"
+         code="HKCDB"
+         version="1"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="kti_i" version="1" />
+   <GROUP name="SupportedSepaFormats" delimiter=":" terminator="" >
+     <ELEM name="Format" type="ascii" maxsize="256" minnum="0" maxnum="99" />
+   </GROUP>
+   <ELEM name="fiId" type="ascii" maxsize="99" minnum="0" />
+   <ELEM name="maxEntries" type="num" maxsize="4" minnum="0" />
+   <ELEM name="attach" type="ascii" maxsize="35" minnum="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Banknachricht -->
+ <SEGdef id="GetSepaStandingOrdersResponse"
+         code="HICDB"
+         version="1"
+         delimiter="+" terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="descriptor" type="ascii" maxsize="256" />
+   <ELEM name="transfer" type="bin" trustlevel="4" />
+   <ELEM name="fiId" type="ascii" minnum="0" />
+
+   <GROUP id="SepaStoSpecial" />
+   <GROUP id="SepaStoSkip" minnum="0" />
+   <ELEM name="changeAllowed" type="alpha" maxsize="1" minnum="0" />
+   <ELEM name="skipAllowed" type="alpha" maxsize="1" minnum="0" />
+   <ELEM name="deleteAllowed" type="alpha" maxsize="1" minnum="0" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HICDBS" version="1"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="2" />
+   <ELEM name="maxEntriesAllowed" type="alpha" maxsize="1" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+
+</SEGs>
+
+
+
+<JOBS>
+
+ <!-- 
+  --------------------------------------------------------------------
+   Geschaeftsvorfall: Dauerauftragsabfrage (Version 1)
+  --------------------------------------------------------------------- 
+  -->
+ <JOBdef id="JobSepaGetStandingOrders" 
+         code="HKCDB" params="HICDBS"
+         version="1" 
+         crypt="1" 
+         sign="1" 
+         needBPD="1"
+         response="SepaGetStandingOrdersResponse"
+         single="1"
+         attachable="1"
+ >
+   <SEG type="SepaGetStandingOrders" version="1" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </JOBdef>
+
+
