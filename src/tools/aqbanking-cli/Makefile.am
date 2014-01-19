@@ -41,7 +41,8 @@ EXTRA_DIST=\
   versions.c \
   updateconf.c \
   sepatransfer.c \
-  sepadebitnote.c
+  sepadebitnote.c \
+  separecurtransfer.c
 
 
 if IS_WINDOWS

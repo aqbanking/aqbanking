@@ -302,6 +302,7 @@ int AH_Job_SepaStandingOrderCreate_Prepare(AH_JOB *j) {
   int rv;
   const char *profileName="";
   const char *descriptor="";
+  const GWEN_TIME *ti;
   const char *s;
   AB_TRANSACTION *t;
   GWEN_BUFFER *dbuf;
@@ -369,6 +370,49 @@ int AH_Job_SepaStandingOrderCreate_Prepare(AH_JOB *j) {
                       GWEN_Buffer_GetStart(dbuf),
                       GWEN_Buffer_GetUsedBytes(dbuf));
   GWEN_Buffer_free(dbuf);
+
+  /* first execution date */
+  ti=AB_Transaction_GetFirstExecutionDate(t);
+  if (ti) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 16, 0, 1);
+    GWEN_Time_toString(ti, "YYYYMMDD", tbuf);
+    GWEN_DB_SetCharValue(dbArgs,
+                         GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "details/xfirstExecutionDate",
+                         GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing first execution date.");
+  }
+
+  /* period */
+  switch(AB_Transaction_GetPeriod(t)) {
+  case AB_Transaction_PeriodMonthly: s="M"; break;
+  case AB_Transaction_PeriodWeekly:  s="W"; break;
+  default:
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unsupported period %d",
+              AB_Transaction_GetPeriod(t));
+    return GWEN_ERROR_INVALID;
+  }
+  GWEN_DB_SetCharValue(dbArgs,
+                       GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "details/xperiod",
+                       s);
+
+  /* cycle */
+  GWEN_DB_SetIntValue(dbArgs,
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "details/cycle",
+                      AB_Transaction_GetCycle(t));
+
+  /* execution day */
+  GWEN_DB_SetIntValue(dbArgs,
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "details/executionDay",
+                      AB_Transaction_GetExecutionDay(t));
 
   return 0;
 }

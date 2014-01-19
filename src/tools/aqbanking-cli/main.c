@@ -48,6 +48,7 @@
 #include "sepatransfer.c"
 #include "addsepadebitnote.c"
 #include "sepadebitnote.c"
+#include "separecurtransfer.c"
 
 
 
@@ -361,6 +362,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "sepadebitnote")==0) {
     rv=sepaDebitNote(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "sepacreatesto")==0) {
+    rv=sepaRecurTransfer(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "fillgaps")==0) {
     rv=fillGaps(ab, db, argc, argv);

@@ -30,6 +30,8 @@
 #include "jobsepaxfersingle_l.h"
 #include "jobsepadebitdatedsinglecreate_l.h"
 #include "jobsepadebitdatedmulticreate_l.h"
+#include "jobsepastandingordercreate_l.h"
+
 #include "jobsepadebitsingle_l.h" /* deprecated job */
 
 /* special jobs */
@@ -471,6 +473,15 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
       }
     }
     break;
+
+  case AB_Job_TypeSepaCreateStandingOrder:
+    mj=AH_Job_SepaStandingOrderCreate_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
 
   default:
     DBG_ERROR(AQHBCI_LOGDOMAIN,

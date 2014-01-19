@@ -476,18 +476,23 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
 
   if (expTransferType==AB_Job_TypeSepaCreateStandingOrder ||
       expTransferType==AB_Job_TypeSepaModifyStandingOrder) {
-    int period;
+    const char *s;
+    AB_TRANSACTION_PERIOD period=AB_Transaction_PeriodUnknown;
 
     /* only needed for standing orders */
-    period=i=GWEN_DB_GetIntValue(db, "executionPeriod", 0, 0);
-    if (i <= 0 || i > 2) {
-      DBG_ERROR(0, "Invalid execution period value \"%d\"", i);
+    s=GWEN_DB_GetCharValue(db, "executionPeriod", 0, 0);
+    if (s && *s) {
+      period=AB_Transaction_Period_fromString(s);
+      if (period==AB_Transaction_PeriodUnknown) {
+        DBG_ERROR(0, "Invalid execution period value \"%s\"", s);
+        return NULL;
+      }
+    }
+    else {
+      DBG_ERROR(0, "Missing execution period value");
       return NULL;
     }
-    if (i == 1)
-      AB_Transaction_SetPeriod(t, AB_Transaction_PeriodWeekly);
-    else
-      AB_Transaction_SetPeriod(t, AB_Transaction_PeriodMonthly);
+    AB_Transaction_SetPeriod(t, period);
 
     i=GWEN_DB_GetIntValue(db, "executionCycle", 0, 1);
     if (i <= 0) {
