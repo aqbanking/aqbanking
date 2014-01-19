@@ -1539,7 +1539,7 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       case AB_Job_TypeDeleteStandingOrder:
         /* additional data for standing orders */
 
-	  /* first execution date */
+        /* first execution date */
 	ti=AB_Transaction_GetFirstExecutionDate(t);
 	if (ti) {
 	  GWEN_BUFFER *tbuf;
