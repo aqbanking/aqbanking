@@ -280,7 +280,7 @@ int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
   DBG_INFO(AQHBCI_LOGDOMAIN, "Using SEPA descriptor %s", descriptor);
 
 
-  /* add transactions to ImExporter context, calculate sum on the fly */
+  /* calculate sum */
   AB_Value_free(aj->sumValues);
   aj->sumValues=AB_Value_new();
   t=AH_Job_GetFirstTransfer(j);
@@ -288,6 +288,14 @@ int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
     assert(t); /* debug */
     return GWEN_ERROR_INTERNAL;
+  }
+  while(t) {
+    const AB_VALUE *v;
+
+    v=AB_Transaction_GetValue(t);
+    if (v)
+      AB_Value_AddValue(aj->sumValues, v);
+    t=AB_Transaction_List_Next(t);
   }
 
   /* export transfers to SEPA */
