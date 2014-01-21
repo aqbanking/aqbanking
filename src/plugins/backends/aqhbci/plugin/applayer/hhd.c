@@ -719,6 +719,10 @@ int AH_HHD14_AddChallengeParams_32(AH_JOB *j,
     AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_free(tbuf);
   }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing amount");
+    return GWEN_ERROR_INVALID;
+  }
 
   /* P3: Eigene IBAN */
   if (sLocalIban && *sLocalIban)
