@@ -283,6 +283,7 @@ int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
   /* calculate sum */
   AB_Value_free(aj->sumValues);
   aj->sumValues=AB_Value_new();
+  AB_Value_SetCurrency(aj->sumValues, "EUR");
   t=AH_Job_GetFirstTransfer(j);
   if (t==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
@@ -330,7 +331,7 @@ int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
   if (aj->sumValues) {
     GWEN_DB_NODE *dbV;
 
-    dbV=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "value");
+    dbV=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "totalSum");
     assert(dbV);
     rv=AH_Provider_WriteValueToDb(aj->sumValues, dbV);
     if (rv<0) {
