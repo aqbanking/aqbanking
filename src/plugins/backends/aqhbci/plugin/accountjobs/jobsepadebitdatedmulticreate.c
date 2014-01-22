@@ -330,14 +330,31 @@ int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
   /* store sum value */
   if (aj->sumValues) {
     GWEN_DB_NODE *dbV;
+    GWEN_BUFFER *nbuf;
+    const char *s;
 
     dbV=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "totalSum");
     assert(dbV);
-    rv=AH_Provider_WriteValueToDb(aj->sumValues, dbV);
-    if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      return rv;
+
+    nbuf=GWEN_Buffer_new(0, 32, 0, 1);
+    AH_Job_ValueToChallengeString(aj->sumValues, nbuf);
+    if (GWEN_Buffer_GetUsedBytes(nbuf)<1) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error in conversion");
+      GWEN_Buffer_free(nbuf);
+      return GWEN_ERROR_BAD_DATA;
     }
+
+    /* store value */
+    GWEN_DB_SetCharValue(dbV, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "value",
+                         GWEN_Buffer_GetStart(nbuf));
+    GWEN_Buffer_free(nbuf);
+
+    /* store currency */
+    s=AB_Value_GetCurrency(aj->sumValues);
+    if (!s)
+      s="EUR";
+    GWEN_DB_SetCharValue(dbV, GWEN_DB_FLAGS_OVERWRITE_VARS, "currency", s);
   }
   return 0;
 }
