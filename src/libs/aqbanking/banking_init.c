@@ -33,7 +33,7 @@ int AB_Banking_PluginSystemInit(void) {
     GWEN_PLUGIN_MANAGER *pm;
     int rv;
 
-    rv=GWEN_InitExtraPluginDir(GWEN_EXTRA_PLUGIN_DIR);
+    rv=GWEN_Init();
     if (rv) {
       DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, rv);
       return rv;
@@ -496,7 +496,7 @@ BOOL APIENTRY DllMain(HINSTANCE hInst,
 
   switch (reason) {
   case DLL_PROCESS_ATTACH:
-    err=GWEN_InitExtraPluginDir(GWEN_EXTRA_PLUGIN_DIR);
+    err=GWEN_Init();
     if (err) {
       fprintf(stderr, "Could not initialize Gwenhywfar, aborting\n");
       return FALSE;

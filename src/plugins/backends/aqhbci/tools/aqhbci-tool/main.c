@@ -132,7 +132,7 @@ int main(int argc, char **argv) {
   }
   };
 
-  rv=GWEN_InitExtraPluginDir(GWEN_EXTRA_PLUGIN_DIR);
+  rv=GWEN_Init();
   if (rv) {
     fprintf(stderr, "ERROR: Unable to init Gwen.\n");
     exit(2);
