@@ -1357,7 +1357,6 @@ AC_CONFIG_FILES([
   src/Makefile
   src/libs/Makefile
   src/libs/aqbanking/Makefile
-  src/libs/aqbanking/ressource.rc
   src/libs/aqbanking/jobs/Makefile
   src/libs/aqbanking/types/Makefile
   src/libs/aqbanking/gui/Makefile
@@ -1382,26 +1381,22 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/Makefile
   src/plugins/imexporters/dtaus/Makefile
   src/plugins/imexporters/dtaus/dtaus.xml
-  src/plugins/imexporters/dtaus/ressource.rc
   src/plugins/imexporters/dtaus/profiles/Makefile
   src/plugins/imexporters/dtaus/profiles/default.conf
   src/plugins/imexporters/dtaus/profiles/debitnote.conf
   src/plugins/imexporters/dtaus/profiles/transfer.conf
   src/plugins/imexporters/eri2/Makefile
   src/plugins/imexporters/eri2/eri2.xml
-  src/plugins/imexporters/eri2/ressource.rc
   src/plugins/imexporters/eri2/profiles/Makefile
   src/plugins/imexporters/eri2/profiles/default.conf
   src/plugins/imexporters/ofx/Makefile
   src/plugins/imexporters/ofx/ofx.xml
-  src/plugins/imexporters/ofx/ressource.rc
   src/plugins/imexporters/ofx/parser/Makefile
   src/plugins/imexporters/ofx/profiles/Makefile
   src/plugins/imexporters/ofx/profiles/default.conf
   src/plugins/imexporters/ofx/profiles/iso8859.conf
   src/plugins/imexporters/swift/Makefile
   src/plugins/imexporters/swift/swift.xml
-  src/plugins/imexporters/swift/ressource.rc
   src/plugins/imexporters/swift/profiles/Makefile
   src/plugins/imexporters/swift/profiles/swiftmt940.conf
   src/plugins/imexporters/swift/profiles/swiftmt942.conf
@@ -1409,7 +1404,6 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/swift/profiles/amro942.conf
   src/plugins/imexporters/csv/Makefile
   src/plugins/imexporters/csv/csv.xml
-  src/plugins/imexporters/csv/ressource.rc
   src/plugins/imexporters/csv/profiles/Makefile
   src/plugins/imexporters/csv/profiles/default.conf
   src/plugins/imexporters/csv/profiles/amex.conf
@@ -1439,27 +1433,22 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/csv/profiles/transfers.conf
   src/plugins/imexporters/openhbci1/Makefile
   src/plugins/imexporters/openhbci1/openhbci1.xml
-  src/plugins/imexporters/openhbci1/ressource.rc
   src/plugins/imexporters/openhbci1/profiles/Makefile
   src/plugins/imexporters/openhbci1/profiles/default.conf
   src/plugins/imexporters/qif/Makefile
   src/plugins/imexporters/qif/qif.xml
-  src/plugins/imexporters/qif/ressource.rc
   src/plugins/imexporters/qif/profiles/Makefile
   src/plugins/imexporters/qif/profiles/default.conf
   src/plugins/imexporters/yellownet/Makefile
   src/plugins/imexporters/yellownet/yellownet.xml
-  src/plugins/imexporters/yellownet/ressource.rc
   src/plugins/imexporters/yellownet/profiles/Makefile
   src/plugins/imexporters/yellownet/profiles/default.conf
   src/plugins/imexporters/xmldb/Makefile
   src/plugins/imexporters/xmldb/xmldb.xml
-  src/plugins/imexporters/xmldb/ressource.rc
   src/plugins/imexporters/xmldb/profiles/Makefile
   src/plugins/imexporters/xmldb/profiles/default.conf
   src/plugins/imexporters/sepa/Makefile
   src/plugins/imexporters/sepa/sepa.xml
-  src/plugins/imexporters/sepa/ressource.rc
   src/plugins/imexporters/sepa/profiles/Makefile
   src/plugins/imexporters/sepa/profiles/default.conf
   src/plugins/imexporters/sepa/profiles/ccm.conf
@@ -1469,7 +1458,6 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/sepa/profiles/008_003_02.conf
   src/plugins/imexporters/ctxfile/Makefile
   src/plugins/imexporters/ctxfile/ctxfile.xml
-  src/plugins/imexporters/ctxfile/ressource.rc
   src/plugins/imexporters/ctxfile/profiles/Makefile
   src/plugins/imexporters/ctxfile/profiles/default.conf
   src/plugins/imexporters/q43/Makefile
@@ -1479,17 +1467,14 @@ AC_CONFIG_FILES([
   src/plugins/parsers/Makefile
   src/plugins/parsers/dtaus/Makefile
   src/plugins/parsers/dtaus/dtaus.xml
-  src/plugins/parsers/dtaus/ressource.rc
   src/plugins/parsers/swift/Makefile
   src/plugins/parsers/swift/swift.xml
-  src/plugins/parsers/swift/ressource.rc
   src/plugins/backends/Makefile
   src/plugins/backends/aqhbci/Makefile
   src/plugins/backends/aqhbci/plugin/Makefile
   src/plugins/backends/aqhbci/plugin/aqhbci.xml
   src/plugins/backends/aqhbci/plugin/dialogs/Makefile
   src/plugins/backends/aqhbci/plugin/header.xml
-  src/plugins/backends/aqhbci/plugin/ressource.rc
   src/plugins/backends/aqhbci/plugin/banking/Makefile
   src/plugins/backends/aqhbci/plugin/msglayer/Makefile
   src/plugins/backends/aqhbci/plugin/joblayer/Makefile
@@ -1504,11 +1489,9 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqofxconnect/version.h
   src/plugins/backends/aqofxconnect/plugin/Makefile
   src/plugins/backends/aqofxconnect/plugin/aqofxconnect.xml
-  src/plugins/backends/aqofxconnect/plugin/ressource.rc
   src/plugins/backends/aqofxconnect/plugin/libofxhome/Makefile
   src/plugins/backends/aqnone/Makefile
   src/plugins/backends/aqnone/aqnone.xml
-  src/plugins/backends/aqnone/ressource.rc
   src/plugins/backends/aqebics/Makefile
   src/plugins/backends/aqebics/plugin/Makefile
   src/plugins/backends/aqebics/plugin/aqebics.xml
