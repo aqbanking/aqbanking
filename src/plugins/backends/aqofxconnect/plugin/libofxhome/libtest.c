@@ -26,7 +26,7 @@ int test1(int argc, char **argv) {
   GWEN_GUI *gui;
   int rv;
 
-  rv=GWEN_Init();
+  rv=GWEN_InitExtraPluginDir(GWEN_EXTRA_PLUGIN_DIR);
   if (rv) {
     fprintf(stderr, "ERROR: Unable to init Gwen.\n");
     exit(2);
@@ -59,7 +59,7 @@ int test2(int argc, char **argv) {
   GWEN_GUI *gui;
   int rv;
 
-  rv=GWEN_Init();
+  rv=GWEN_InitExtraPluginDir(GWEN_EXTRA_PLUGIN_DIR);
   if (rv) {
     fprintf(stderr, "ERROR: Unable to init Gwen.\n");
     exit(2);
@@ -93,7 +93,7 @@ int test3(int argc, char **argv) {
   int rv;
   AB_BANKING *ab;
 
-  rv=GWEN_Init();
+  rv=GWEN_InitExtraPluginDir(GWEN_EXTRA_PLUGIN_DIR);
   if (rv) {
     fprintf(stderr, "ERROR: Unable to init Gwen.\n");
     exit(2);

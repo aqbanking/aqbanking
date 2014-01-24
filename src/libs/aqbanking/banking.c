@@ -94,7 +94,7 @@ AB_BANKING *AB_Banking_new(const char *appName,
   int err;
 
   assert(appName);
-  err=GWEN_Init();
+  err=GWEN_InitExtraPluginDir(GWEN_EXTRA_PLUGIN_DIR);
   if (err) {
     DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
     abort();

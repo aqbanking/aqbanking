@@ -2,6 +2,5 @@
 *.dll
 *.lib
 dlldir
-ressource.rc
 *.exp
 testlib
