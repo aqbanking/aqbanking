@@ -11,7 +11,7 @@ noinst_HEADERS=\
   swift940_l.h \
   swift940_p.h
 
-dbioplugindir = $(gwenhywfar_plugins)/dbio
+dbioplugindir = $(aqbanking_plugindir)/dbio
 dbioplugin_DATA=swift.xml
 dbioplugin_LTLIBRARIES=swift.la
 swift_la_SOURCES=\

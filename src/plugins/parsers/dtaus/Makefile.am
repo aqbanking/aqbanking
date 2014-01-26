@@ -11,7 +11,7 @@ noinst_HEADERS=\
  dtaus-export_p.h
 
 
-dbioplugindir = $(gwenhywfar_plugins)/dbio
+dbioplugindir = $(aqbanking_plugindir)/dbio
 dbioplugin_LTLIBRARIES=dtaus.la
 dbioplugin_DATA=dtaus.xml
 dtaus_la_SOURCES=\

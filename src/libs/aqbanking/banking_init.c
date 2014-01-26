@@ -26,6 +26,9 @@ static AB_IMEXPORTER_LIST *ab_imexporters=NULL;
 static AB_BANKINFO_PLUGIN_LIST *ab_bankInfoPlugins=NULL;
 
 
+#define AB_DBIO_FOLDER "dbio"
+
+
 
 int AB_Banking_PluginSystemInit(void) {
   if (ab_plugin_init_count==0) {
@@ -239,6 +242,7 @@ int AB_Banking_PluginSystemInit(void) {
 #endif
     ab_pluginManagerProvider=pm;
 
+
     /* create imexporters plugin manager */
     DBG_INFO(AQBANKING_LOGDOMAIN, "Registering imexporters plugin manager");
     pm=GWEN_PluginManager_new("imexporter", AB_PM_LIBNAME);
@@ -269,6 +273,34 @@ int AB_Banking_PluginSystemInit(void) {
 			       AB_IMEXPORTER_FOLDER);
 #endif
     ab_pluginManagerImExporter=pm;
+
+
+    /* insert DBIO plugin folder */
+    pm=GWEN_PluginManager_FindPluginManager("dbio");
+    if (pm) {
+#if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
+      /* insert folder relative to EXE */
+      GWEN_PluginManager_InsertRelPath(pm,
+                                       AB_PM_LIBNAME,
+                                       AQBANKING_PLUGINS
+                                       DIRSEP
+                                       AB_DBIO_FOLDER,
+                                       GWEN_PathManager_RelModeExe);
+#else
+      /* add absolute folder */
+      GWEN_PluginManager_InsertPath(pm,
+                                    AB_PM_LIBNAME,
+                                    AQBANKING_PLUGINS
+                                    DIRSEP
+                                    AB_DBIO_FOLDER);
+#endif
+    }
+    else {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Could not find DBIO plugin manager, maybe GWEN_Init() was not called?");
+      return GWEN_ERROR_GENERIC;
+    }
+
 
     ab_imexporters=AB_ImExporter_List_new();
     ab_bankInfoPlugins=AB_BankInfoPlugin_List_new();
