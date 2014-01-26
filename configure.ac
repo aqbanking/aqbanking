@@ -25,7 +25,7 @@ AC_CONFIG_HEADERS([config.h])
 
 AQBANKING_VERSION_MAJOR=5
 AQBANKING_VERSION_MINOR=3
-AQBANKING_VERSION_PATCHLEVEL=4
+AQBANKING_VERSION_PATCHLEVEL=5
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="beta"
@@ -594,7 +594,7 @@ AC_SUBST(ktoblzcheck_includes)
 # Check for Gwen
 #
 
-AC_GWENHYWFAR(4,9,0,0)
+AC_GWENHYWFAR(4,10,0,0)
 
 all_includes="$all_includes $gwenhywfar_includes"
 
