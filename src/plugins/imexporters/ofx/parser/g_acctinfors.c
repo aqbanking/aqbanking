@@ -63,6 +63,9 @@ int AIO_OfxGroup_ACCTINFORS_StartTag(AIO_OFX_GROUP *g,
   else if (strcasecmp(tagName, "DTACCTUP")==0) {
     /* ignore */
   }
+  else if (strcasecmp(tagName, "ESP.XREGION")==0) {
+    /* ignore */
+  }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
 	     "Ignoring group [%s]", tagName);
