@@ -20,29 +20,7 @@ Hence, the full package is licensed under GPL.
 
 
 
-2. AqPaypal
-===========
-
-AqPaypal has its own license, see src/plugins/backends/aqpaypal/COPYING.
-
-
-
-3. Exceptions
-=============
-
-As the copyright holder of AqBanking, Martin Preuss grants the following
-license exceptions:
-
-1) Martin Preuss explicitly allows the compilation and distribution of
-   AqBanking with the OpenSSL Toolkit.
-   No developer is required to provide this exception in a derived work.
-
-2) Martin Preuss explicitly allows the compilation and distribution of
-   AqBanking with the binary-only backends AqEBICS and AqYellowNet.
-
-
-
-4. GNU GPL v2
+3. GNU GPL v2
 =============
 
 		    GNU GENERAL PUBLIC LICENSE
@@ -330,7 +308,7 @@ POSSIBILITY OF SUCH DAMAGES.
 
 
 
-5. GNU GPL v3
+4. GNU GPL v3
 =============
 
                     GNU GENERAL PUBLIC LICENSE
@@ -1010,7 +988,7 @@ Public License instead of this License.  But first, please read
 
 
 
-6. Modified BSD-License
+5. Modified BSD-License
 =======================
 
 Modified BSD-License
@@ -1038,3 +1016,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+
