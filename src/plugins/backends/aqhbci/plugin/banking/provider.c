@@ -3766,6 +3766,12 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
 	else
 	  maxServerKeySizeInBits=nbits;
       }
+      else {
+	DBG_NOTICE(AQHBCI_LOGDOMAIN, "Key info for key %d has no modulus data, using default key size (2048 bits)", (int) skeyId);
+      }
+    }
+    else {
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "No key info found for key %d", (int) skeyId);
     }
   }
 
@@ -3796,8 +3802,8 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating keys of size: %d bytes, %d bits", n, maxServerKeySizeInBits);
     }
     else {
-      GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 512);
-      GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, 4096);
+      GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 256);
+      GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, 2048);
     }
     break;
   default:
