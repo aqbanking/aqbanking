@@ -3770,12 +3770,6 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
       else {
 	DBG_NOTICE(AQHBCI_LOGDOMAIN, "Key info for key %d has no modulus data, using default key size (2048 bits)", (int) skeyId);
       }
-      else {
-	DBG_NOTICE(AQHBCI_LOGDOMAIN, "Key info for key %d has no modulus data, using default key size (2048 bits)", (int) skeyId);
-      }
-    }
-    else {
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "No key info found for key %d", (int) skeyId);
     }
     else {
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "No key info found for key %d", (int) skeyId);
