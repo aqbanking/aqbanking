@@ -661,7 +661,7 @@ static int _checkStringForAlNum(const char *s) {
 
 
 
-int AB_Transaction_CheckForSepaConformity(const AB_TRANSACTION *t) {
+int AB_Transaction_CheckForSepaConformity(const AB_TRANSACTION *t, int restricted) {
   if (t) {
     const GWEN_STRINGLIST *sl;
     const char *s;

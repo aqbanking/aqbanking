@@ -66,7 +66,7 @@ int AB_Transaction_CheckDateAgainstSequenceLimits(const AB_TRANSACTION *t, const
  * BIC and IBAN are present and whether the local and remote names conform to the retricted SEPA character set.
  */
 AQBANKING_API
-int AB_Transaction_CheckForSepaConformity(const AB_TRANSACTION *t);
+int AB_Transaction_CheckForSepaConformity(const AB_TRANSACTION *t, int restricted);
 
 
 AQBANKING_API

@@ -294,7 +294,7 @@ int sepaRecurTransfer(AB_BANKING *ab,
   AB_Transaction_SetSubType(t, AB_Transaction_SubTypeStandingOrder);
 
 
-  rv=AB_Transaction_CheckForSepaConformity(t);
+  rv=AB_Transaction_CheckForSepaConformity(t, 0);  /* TODO: determine the flag to use here */
   if (rv<0) {
     DBG_ERROR(0, "Transaction does not conform to SEPA specs (%d)", rv);
     AB_Banking_OnlineFini(ab);

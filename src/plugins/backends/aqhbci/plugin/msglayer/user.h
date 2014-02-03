@@ -73,6 +73,8 @@ extern "C" {
 
 #define AH_USER_FLAGS_TLS_ONLY_SAFE_CIPHERS     0x00000400
 
+#define AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET   0x00000800
+
     /*@}*/
 
 

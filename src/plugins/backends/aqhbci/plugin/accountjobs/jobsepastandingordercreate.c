@@ -187,11 +187,18 @@ int AH_Job_SepaStandingOrderCreate_ExchangeArgs(AH_JOB *j, AB_JOB *bj, AB_IMEXPO
   const AB_TRANSACTION *t=NULL;
   AB_TRANSACTION *tCopy=NULL;
   int rv;
+  AB_USER *u;
+  uint32_t uflags;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging args");
 
   ab=AH_Job_GetBankingApi(j);
   assert(ab);
+
+  u=AH_Job_GetUser(j);
+  assert(u);
+
+  uflags=AH_User_GetFlags(u);
 
   /* get limits and transaction */
   lim=AB_Job_GetFieldLimits(bj);
@@ -206,7 +213,7 @@ int AH_Job_SepaStandingOrderCreate_ExchangeArgs(AH_JOB *j, AB_JOB *bj, AB_IMEXPO
   AB_Transaction_FillLocalFromAccount(t, a); */
 
   /* validate transaction */
-  rv=AB_Transaction_CheckForSepaConformity(t);
+  rv=AB_Transaction_CheckForSepaConformity(t, (uflags & AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET)?1:0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
