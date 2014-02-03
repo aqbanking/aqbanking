@@ -554,7 +554,6 @@ int AH_Provider__GetMultiHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob)
     break;
 
   case AB_Job_TypeSepaDebitNote:
-    /* try multi transfer first */
     mj=AH_Outbox_FindDatedTransferJob(hp->outbox, mu, ma, "JobSepaDebitDatedMultiCreate",
                                       t?(AB_Transaction_GetDate(t)):NULL);
     break;
@@ -3712,8 +3711,10 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
     ski=GWEN_Crypt_Token_GetKeyInfo(ct, skeyId,
 				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS,
 				    0);
-    if (ski==NULL) {
-      GWEN_Gui_ProgressLog(0,
+    /* the fact that a key info exists does not mean that it contains key data (modulus and exp),
+     * so we need to check for key data explicitly */
+    if (!(ski && GWEN_Crypt_Token_KeyInfo_GetModulusData(ski) && GWEN_Crypt_Token_KeyInfo_GetModulusLen(ski))) {
+        GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Notice,
 			   I18N("Server has no sign key, using encipher key"));
       skeyId=GWEN_Crypt_Token_Context_GetEncipherKeyId(ctx);
@@ -3769,6 +3770,12 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
       else {
 	DBG_NOTICE(AQHBCI_LOGDOMAIN, "Key info for key %d has no modulus data, using default key size (2048 bits)", (int) skeyId);
       }
+      else {
+	DBG_NOTICE(AQHBCI_LOGDOMAIN, "Key info for key %d has no modulus data, using default key size (2048 bits)", (int) skeyId);
+      }
+    }
+    else {
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "No key info found for key %d", (int) skeyId);
     }
     else {
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "No key info found for key %d", (int) skeyId);
