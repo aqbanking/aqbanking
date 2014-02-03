@@ -627,7 +627,7 @@ static int _checkStringForRestrictedSepaCharset(const char *s) {
           (c>='a' && c<='z') ||
           (c>='0' && c<='9') ||
           strchr("':?,-(+.)/ ", c)!=NULL)) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in string");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in string: '%c'", c);
       return GWEN_ERROR_BAD_DATA;
     }
     s++;
@@ -650,7 +650,7 @@ static int _checkStringForAlNum(const char *s) {
     if (!((c>='A' && c<='Z') ||
           (c>='a' && c<='z') ||
           (c>='0' && c<='9'))) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in string");
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in string: '%c'", c);
       return GWEN_ERROR_BAD_DATA;
     }
     s++;
