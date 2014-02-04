@@ -947,6 +947,27 @@ void AB_Account_List2_FreeAll(AB_ACCOUNT_LIST2 *al){
 
 
 
+AB_ACCOUNT *AB_Account_List2_GetAccountByUniqueId(const AB_ACCOUNT_LIST2 *al, uint32_t aid) {
+  AB_ACCOUNT_LIST2_ITERATOR *ait;
+
+  ait=AB_Account_List2_First(al);
+  if (ait) {
+    AB_ACCOUNT *a;
+
+    a=AB_Account_List2Iterator_Data(ait);
+    assert(a);
+    while(a) {
+      if (aid==AB_Account_GetUniqueId(a)) {
+        AB_Account_List2Iterator_free(ait);
+        return a;
+      }
+      a=AB_Account_List2Iterator_Next(ait);
+    }
+    AB_Account_List2Iterator_free(ait);
+  }
+
+  return NULL;
+}
 
 
 

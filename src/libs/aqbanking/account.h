@@ -47,7 +47,13 @@ GWEN_LIST2_FUNCTION_LIB_DEFS(AB_ACCOUNT, AB_Account, AQBANKING_API)
 /* Do not terminate these lines with semicolon because they are
    macros, not functions, and ISO C89 does not allow a semicolon
    there. */
+
+AQBANKING_API
 void AB_Account_List2_FreeAll(AB_ACCOUNT_LIST2 *al);
+
+AQBANKING_API
+AB_ACCOUNT *AB_Account_List2_GetAccountByUniqueId(const AB_ACCOUNT_LIST2 *al, uint32_t aid);
+
 
 typedef enum {
   AB_AccountType_Unknown=0,
@@ -191,6 +197,8 @@ void AB_Account_SetSelectedUsers(AB_ACCOUNT *acc, const AB_USER_LIST2 *ul);
 
 AQBANKING_API
 void AB_Account_SetSelectedUser(AB_ACCOUNT *a, const AB_USER *u);
+
+
 
 
 #ifdef __cplusplus
