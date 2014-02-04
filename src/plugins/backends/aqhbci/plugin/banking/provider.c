@@ -760,6 +760,96 @@ AH_JOB *AH_Provider__FindMyJob(AH_JOB_LIST *mjl, uint32_t jid){
 
 
 
+int AH_Provider__AddAccountSepaInfoJobsToOutBox(AB_PROVIDER *pro, AH_OUTBOX *ob) {
+  AH_PROVIDER *hp;
+  AB_BANKING *ab;
+  AB_ACCOUNT_LIST2 *al;
+  AB_ACCOUNT_LIST2_ITERATOR *ait;
+  AB_JOB_LIST2_ITERATOR *jit;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  ab=AB_Provider_GetBanking(pro);
+  assert(ab);
+
+  if (hp->bankingJobs==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No job list, SNH");
+    return GWEN_ERROR_INTERNAL;
+  }
+
+  /* get list of all accounts used */
+  al=AB_Account_List2_new();
+  jit=AB_Job_List2_First(hp->bankingJobs);
+  if (jit) {
+    AB_JOB *j;
+
+    j=AB_Job_List2Iterator_Data(jit);
+    while(j) {
+      AB_ACCOUNT *a;
+
+      a=AB_Job_GetAccount(j);
+      if (a) {
+	if (AB_Account_List2_GetAccountByUniqueId(al, AB_Account_GetUniqueId(a))==NULL)
+	  AB_Account_List2_PushBack(al, a);
+      }
+      j=AB_Job_List2Iterator_Next(jit);
+    }
+    AB_Job_List2Iterator_free(jit);
+  }
+
+
+  /* add jobs */
+  ait=AB_Account_List2_First(al);
+  if (ait) {
+    AB_ACCOUNT *a;
+
+    a=AB_Account_List2Iterator_Data(ait);
+    assert(a);
+    while(a) {
+      const char *s;
+
+      s=AB_Account_GetIBAN(a);
+      if (!(s && *s)) {
+	AB_USER *u;
+
+	DBG_NOTICE(AQHBCI_LOGDOMAIN, "No IBAN for account, requesting SEPA info");
+	GWEN_Gui_ProgressLog2(0,
+			      GWEN_LoggerLevel_Info,
+			      I18N("No IBAN for account %llu, requesting SEPA info"),
+			      (unsigned long long int) AB_Account_GetUniqueId(a));
+
+	u=AB_Account_GetFirstUser(a);
+	if (!u) {
+	  DBG_ERROR(AQHBCI_LOGDOMAIN, "No user for this account");
+	}
+	else {
+	  AH_JOB *job;
+
+	  job=AH_Job_GetAccountSepaInfo_new(u, a);
+	  if (job) {
+	    AH_Job_AddSigner(job, AB_User_GetUserId(u));
+	    AH_Outbox_AddJob(ob, job);
+	  }
+	  else {
+	    DBG_WARN(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+	  }
+	}
+      }
+
+      a=AB_Account_List2Iterator_Next(ait);
+    }
+    AB_Account_List2Iterator_free(ait);
+  }
+
+  AB_Account_List2_free(al);
+
+  return 0;
+}
+
+
+
 int AH_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
   AH_PROVIDER *hp;
   int rv;
@@ -775,6 +865,11 @@ int AH_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
   if (hp->outbox==0) {
     DBG_WARN(AQHBCI_LOGDOMAIN, "Empty outbox");
     return 0;
+  }
+
+  rv=AH_Provider__AddAccountSepaInfoJobsToOutBox(pro, hp->outbox);
+  if (rv<0) {
+    DBG_WARN(AQHBCI_LOGDOMAIN, "Error adding accountSepaInfo jobs to outbox, ignoring.");
   }
 
   rv=AH_Outbox_Execute(hp->outbox, ctx, 0, 1, 1);

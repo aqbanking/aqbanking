@@ -92,6 +92,9 @@ static int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
 static int AH_Provider__GetMultiHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob);
 static int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob);
 
+
+static int AH_Provider__AddAccountSepaInfoJobsToOutBox(AB_PROVIDER *pro, AH_OUTBOX *ob);
+
 /*@}*/
 
 #endif /* AH_PROVIDER_P_H */
