@@ -224,9 +224,80 @@ int test4(int argc, char **argv) {
 
 
 
+int test5(int argc, char **argv) {
+  AB_VALUE *v1;
+  GWEN_BUFFER *tbuf;
+
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  v1=AB_Value_fromString("11,90");
+  if (v1==NULL) {
+    fprintf(stderr, "ERROR: v1\n");
+    return 1;
+  }
+  AB_Value_toHbciString(v1, tbuf);
+  if (strcmp(GWEN_Buffer_GetStart(tbuf), "11,9")!=0) {
+    fprintf(stderr, "ERROR: Bad HBCI string (%s)\n", GWEN_Buffer_GetStart(tbuf));
+    return 2;
+  }
+  GWEN_Buffer_free(tbuf);
+  AB_Value_free(v1);
+
+
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  v1=AB_Value_fromString("11,91");
+  if (v1==NULL) {
+    fprintf(stderr, "ERROR: v1\n");
+    return 1;
+  }
+  AB_Value_toHbciString(v1, tbuf);
+  if (strcmp(GWEN_Buffer_GetStart(tbuf), "11,91")!=0) {
+    fprintf(stderr, "ERROR: Bad HBCI string (%s)\n", GWEN_Buffer_GetStart(tbuf));
+    return 2;
+  }
+  GWEN_Buffer_free(tbuf);
+  AB_Value_free(v1);
+
+
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  v1=AB_Value_fromString("1190");
+  if (v1==NULL) {
+    fprintf(stderr, "ERROR: v1\n");
+    return 1;
+  }
+  AB_Value_toHbciString(v1, tbuf);
+  if (strcmp(GWEN_Buffer_GetStart(tbuf), "1190,")!=0) {
+    fprintf(stderr, "ERROR: Bad HBCI string (%s)\n", GWEN_Buffer_GetStart(tbuf));
+    return 2;
+  }
+  GWEN_Buffer_free(tbuf);
+  AB_Value_free(v1);
+
+
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  v1=AB_Value_fromString("11,00");
+  if (v1==NULL) {
+    fprintf(stderr, "ERROR: v1\n");
+    return 1;
+  }
+  AB_Value_toHbciString(v1, tbuf);
+  if (strcmp(GWEN_Buffer_GetStart(tbuf), "11,")!=0) {
+    fprintf(stderr, "ERROR: Bad HBCI string (%s)\n", GWEN_Buffer_GetStart(tbuf));
+    return 2;
+  }
+  GWEN_Buffer_free(tbuf);
+  AB_Value_free(v1);
+
+
+
+  fprintf(stderr, "Ok.\n");
+  return 0;
+}
+
+
+
 int main(int argc, char *argv[]){
 #if 1
-  return test4(argc, argv);
+  return test5(argc, argv);
 #else
   AB_BANKING *ab;
 

@@ -530,16 +530,50 @@ AB_VALUE_LIST *AB_Value_List_dup(const AB_VALUE_LIST *stl) {
 
 
 
-long int AB_Value_Num(const AB_VALUE *v)
-{
+long int AB_Value_Num(const AB_VALUE *v) {
   assert(v);
   return mpz_get_si(mpq_numref(v->value));
 }
 
-long int AB_Value_Denom(const AB_VALUE *v)
-{
+
+
+long int AB_Value_Denom(const AB_VALUE *v) {
   assert(v);
   return mpz_get_si(mpq_denref(v->value));
 }
 
+
+
+void AB_Value_toHbciString(const AB_VALUE *v, GWEN_BUFFER *buf) {
+  GWEN_BUFFER *tbuf;
+  char *p;
+  int l;
+
+  tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+  AB_Value_toHumanReadableString2(v, tbuf, 2, 0);
+
+  /* convert decimal komma */
+  p=GWEN_Buffer_GetStart(tbuf);
+  while(*p) {
+    if (*p=='.') {
+      *p=',';
+      break;
+    }
+    p++;
+  }
+
+  /* remove trailing zeroes */
+  p=GWEN_Buffer_GetStart(tbuf);
+  l=strlen(GWEN_Buffer_GetStart(tbuf));
+  if (l>0 && strchr(p, ',')!=NULL) {
+    l--;
+    while(l>0 && p[l]=='0') {
+      p[l]=0;
+      l--;
+    }
+  }
+
+  GWEN_Buffer_AppendString(buf, GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_free(tbuf);
+}
 

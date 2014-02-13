@@ -2490,19 +2490,7 @@ void AH_Job_SetChallengeValue(AH_JOB *j, const AB_VALUE *v) {
 
 
 void AH_Job_ValueToChallengeString(const AB_VALUE *v, GWEN_BUFFER *buf) {
-  char *p;
-  uint32_t pos;
-
-  pos=GWEN_Buffer_GetPos(buf);
-  AB_Value_toHumanReadableString2(v, buf, 2, 0);
-  p=GWEN_Buffer_GetStart(buf)+pos;
-  while(*p) {
-    if (*p=='.') {
-      *p=',';
-      break;
-    }
-    p++;
-  }
+  AB_Value_toHbciString(v, buf);
 }
 
 

@@ -337,7 +337,7 @@ int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
     assert(dbV);
 
     nbuf=GWEN_Buffer_new(0, 32, 0, 1);
-    AH_Job_ValueToChallengeString(aj->sumValues, nbuf);
+    AB_Value_toHbciString(aj->sumValues, nbuf);
     if (GWEN_Buffer_GetUsedBytes(nbuf)<1) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Error in conversion");
       GWEN_Buffer_free(nbuf);

@@ -139,6 +139,10 @@ AQBANKING_API long int AB_Value_Num(const AB_VALUE *v);
 AQBANKING_API long int AB_Value_Denom(const AB_VALUE *v);
 
 
+/** Write value to HBCI string (e.g. "11,90" is written as "11,9") */
+AQBANKING_API void AB_Value_toHbciString(const AB_VALUE *v, GWEN_BUFFER *buf);
+
+
 #ifdef __cplusplus
 }
 #endif
