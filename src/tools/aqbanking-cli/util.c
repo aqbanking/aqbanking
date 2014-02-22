@@ -149,8 +149,9 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferType) {
   AB_BANKING *ab;
   AB_TRANSACTION *t;
   const char *s;
-  int period, i;
+  int i;
   GWEN_TIME *d;
+  AB_TRANSACTION_PERIOD period=AB_Transaction_PeriodUnknown;
 
   *transferType = 0; // single transfer
   assert(a);
@@ -296,13 +297,15 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferType) {
     AB_Transaction_SetLastExecutionDate(t, d);
   }
 
-  period=i=GWEN_DB_GetIntValue(db, "executionPeriod", 0, 0);
-  if (i <= 0 || i > 2) {
-    DBG_ERROR(0, "Invalid execution period value \"%d\"", i);
-    return 0;
+  s=GWEN_DB_GetCharValue(db, "executionPeriod", 0, 0);
+  if (s && *s) {
+    period=AB_Transaction_Period_fromString(s);
+    if (period==AB_Transaction_PeriodUnknown) {
+      DBG_ERROR(0, "Invalid execution period value \"%s\"", s);
+      return NULL;
+    }
+    AB_Transaction_SetPeriod(t, period);
   }
-  if (i == 1) AB_Transaction_SetPeriod(t, AB_Transaction_PeriodWeekly);
-  else AB_Transaction_SetPeriod(t, AB_Transaction_PeriodMonthly);
 
   i=GWEN_DB_GetIntValue(db, "executionCycle", 0, 1);
   if (i <= 0) {
@@ -312,7 +315,7 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferType) {
   AB_Transaction_SetCycle(t, i);
 
   i=GWEN_DB_GetIntValue(db, "executionDay", 0, 1);
-  if (i <= 0 || (period == 1 && i > 7) || (period == 2 && i > 30)) {
+  if (i <= 0 || (period == AB_Transaction_PeriodWeekly && i > 7) || (period == AB_Transaction_PeriodMonthly && i > 30)) {
     DBG_ERROR(0, "Invalid execution day value \"%d\"", i);
     return 0;
   }
@@ -502,7 +505,7 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
     AB_Transaction_SetCycle(t, i);
 
     i=GWEN_DB_GetIntValue(db, "executionDay", 0, 1);
-    if (i <= 0 || (period == 1 && i > 7) || (period == 2 && i > 30)) {
+    if (i <= 0 || (period == AB_Transaction_PeriodWeekly && i > 7) || (period == AB_Transaction_PeriodMonthly && i > 30)) {
       DBG_ERROR(0, "Invalid execution day value \"%d\"", i);
       return NULL;
     }
@@ -575,7 +578,6 @@ AB_TRANSACTION *mkSepaDebitNote(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
   }
   else
     AB_Transaction_SetSequenceType(t, AB_Transaction_SequenceTypeOnce);
-
 
   return t;
 }
