@@ -329,6 +329,18 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
           GWEN_Time_free(ti);
         }
 
+        /* translate mandateDate */
+        p=GWEN_DB_GetCharValue(dbT, "mandateDate", 0, 0);
+        if (p) {
+	  GWEN_DATE *dt;
+
+	  dt=GWEN_Date_fromStringWithTemplate(p, dateFormat);
+	  if (dt) {
+	    AB_Transaction_SetMandateDate(t, dt);
+	    GWEN_Date_free(dt);
+	  }
+	}
+
         /* possibly translate value */
 	if (usePosNegField) {
           const char *s;
@@ -560,6 +572,7 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
     while(t) {
       GWEN_DB_NODE *dbTransaction;
       const GWEN_TIME *ti;
+      const GWEN_DATE *dt;
 
       dbTransaction=GWEN_DB_Group_new("transaction");
       rv=AB_Transaction_toDb(t, dbTransaction);
@@ -576,6 +589,7 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
       /* transform dates */
       GWEN_DB_DeleteGroup(dbTransaction, "date");
       GWEN_DB_DeleteGroup(dbTransaction, "valutaDate");
+      GWEN_DB_DeleteGroup(dbTransaction, "mandateDate");
 
       ti=AB_Transaction_GetDate(t);
       if (ti) {
@@ -611,6 +625,22 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
 	else
 	  GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			       "valutaDate", GWEN_Buffer_GetStart(tbuf));
+	GWEN_Buffer_free(tbuf);
+      }
+
+      dt=AB_Transaction_GetMandateDate(t);
+      if (dt) {
+	GWEN_BUFFER *tbuf;
+        int rv;
+
+	tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+	rv=GWEN_Date_toStringWithTemplate(dt, dateFormat, tbuf);
+	if (rv<0) {
+	  DBG_WARN(AQBANKING_LOGDOMAIN, "Bad date format string/date");
+	}
+	else
+	  GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			       "mandateDate", GWEN_Buffer_GetStart(tbuf));
 	GWEN_Buffer_free(tbuf);
       }
 
