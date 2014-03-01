@@ -159,8 +159,23 @@ int addsubAccountFlags(AB_BANKING *ab,
     return 3;
   }
   else {
-    uint32_t flags;
+    GWEN_DB_NODE *vn;
+    uint32_t flags, bf, c=0;
 
+    /* parse flags */
+    flags=AH_Account_Flags_fromDb(db, "flags");
+    for (bf=flags; bf; bf>>=1) {
+      if (bf&1)
+	c++;
+    }
+    vn=GWEN_DB_FindFirstVar(db, "flags");
+    if (GWEN_DB_Values_Count(vn)!=c) {
+      fprintf(stderr, "ERROR: Specified flag(s) unknown\n");
+      AB_Banking_OnlineFini(ab);
+      AB_Banking_Fini(ab);
+      return 4;
+    }
+      
     /* lock account */
     rv=AB_Banking_BeginExclUseAccount(ab, a);
     if (rv<0) {
@@ -173,7 +188,6 @@ int addsubAccountFlags(AB_BANKING *ab,
     }
 
     /* modify account */
-    flags=AH_Account_Flags_fromDb(db, "flags");
     if( is_add ) {
       fprintf(stderr, "Adding flags: %08x\n", flags);
       AH_Account_AddFlags(a, flags);

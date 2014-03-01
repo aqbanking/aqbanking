@@ -161,8 +161,23 @@ int addUserFlags(AB_BANKING *ab,
     return 3;
   }
   else {
-    uint32_t flags;
+    GWEN_DB_NODE *vn;
+    uint32_t flags, bf, c=0;
 
+    /* parse flags */
+    flags=AH_User_Flags_fromDb(db, "flags");
+    for (bf=flags; bf; bf>>=1) {
+      if (bf&1)
+	c++;
+    }
+    vn=GWEN_DB_FindFirstVar(db, "flags");
+    if (GWEN_DB_Values_Count(vn)!=c) {
+      fprintf(stderr, "ERROR: Specified flag(s) unknown\n");
+      AB_Banking_OnlineFini(ab);
+      AB_Banking_Fini(ab);
+      return 4;
+    }
+      
     /* lock user */
     rv=AB_Banking_BeginExclUseUser(ab, u);
     if (rv<0) {
@@ -175,7 +190,6 @@ int addUserFlags(AB_BANKING *ab,
     }
 
     /* modify user */
-    flags=AH_User_Flags_fromDb(db, "flags");
     fprintf(stderr, "Adding flags: %08x\n", flags);
     AH_User_AddFlags(u, flags);
 
