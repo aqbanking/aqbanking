@@ -1595,7 +1595,7 @@ msgstr ""
 
 #: src/libs/aqbanking/banking_online.c:186
 msgid "Sending jobs to the bank(s)"
-msgstr "Sende Aufträge and die Bank(en)"
+msgstr "Sende Aufträge an die Bank(en)"
 
 #: src/libs/aqbanking/banking_online.c:195
 msgid "Postprocessing jobs"
