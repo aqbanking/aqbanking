@@ -1041,12 +1041,11 @@ void AH_Outbox__CBox_HandleQueueError(AH_OUTBOX__CBOX *cbox,
 int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
 				 AH_DIALOG *dlg,
 				 AH_JOBQUEUE *jq) {
-  int jobsTodo;
   int rv;
 
-  jobsTodo=0;
   for (;;) {
     AH_JOBQUEUE *jqTodo;
+    int jobsTodo;
     uint32_t jqFlags;
     AH_JOB *j;
     AH_JOB_LIST *jl;
@@ -1066,10 +1065,8 @@ int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
     /* copy todo jobs */
     while((j=AH_Job_List_First(jl))) {
       AH_Job_List_Del(j);
-      /* prepare jobs for next message
-       * (if attachpoint or multi-message job)
-       */
       if (AH_Job_GetStatus(j)==AH_JobStatusAnswered) {
+        DBG_DEBUG(AQHBCI_LOGDOMAIN, "Message finished");
 	/* prepare job for next message
 	 * (if attachpoint or multi-message job)
 	 */
@@ -1111,9 +1108,6 @@ int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
                      "HBCI-job enqueued (2)");
 	  j=0; /* mark that this job has been dealt with */
 	}
-      }
-      else if (AH_Job_GetStatus(j)==AH_JobStatusAnswered) {
-        DBG_DEBUG(AQHBCI_LOGDOMAIN, "Message finished");
       }
       else {
 	DBG_DEBUG(AQHBCI_LOGDOMAIN, "Bad status \"%s\" (%d)",
@@ -1398,8 +1392,8 @@ int AH_Outbox__CBox_SendAndRecvSelected(AH_OUTBOX__CBOX *cbox,
                                            "selected jobs");
       cbox->todoQueues=AH_JobQueue_List_new();
       return rv;
-    } /* while */
-  }
+    }
+  } /* if matching queuees */
   else
     AH_JobQueue_List_free(jqlWanted);
   return 0;
@@ -1927,7 +1921,6 @@ void AH_Outbox_Process(AH_OUTBOX *ob){
 	snprintf(buf, sizeof(buf)-1,
 		 I18N("Error processing job %s"),
 		 AH_Job_GetName(j));
-	AH_Job_SetStatus(j, AH_JobStatusError);
 
 	GWEN_Gui_ProgressLog(
 			       0,
