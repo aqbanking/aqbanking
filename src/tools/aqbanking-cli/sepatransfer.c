@@ -276,12 +276,6 @@ int sepaTransfer(AB_BANKING *ab,
     return 3;
   }
 
-  if (!lBIC || !(*lBIC)) {
-    DBG_ERROR(0, "Missing local BIC");
-    AB_Transaction_free(t);
-    return 1;
-  }
-
 
   j=AB_JobSepaTransfer_new(a);
   rv=AB_Job_CheckAvailability(j);
