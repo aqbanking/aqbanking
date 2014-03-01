@@ -2109,7 +2109,8 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
   job=AH_Job_GetItanModes_new(u);
   if (!job) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported, should not happen");
-    AB_Banking_EndExclUseUser(ab, u, 1);
+    if (doLock)
+      AB_Banking_EndExclUseUser(ab, u, 1);
     return GWEN_ERROR_GENERIC;
   }
   AH_Job_AddSigner(job, AB_User_GetUserId(u));
@@ -4221,6 +4222,8 @@ int AH_Provider_GetAccountSepaInfo(AB_PROVIDER *pro,
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not execute outbox.\n");
     AH_Outbox_free(ob);
+    if (!nounmount)
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
   }
 
