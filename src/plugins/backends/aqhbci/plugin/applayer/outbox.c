@@ -1347,6 +1347,7 @@ int AH_Outbox__CBox_SendAndRecvDialogQueues(AH_OUTBOX__CBOX *cbox) {
 
     /* there are matching queues, handle them */
     while((jq=AH_JobQueue_List_First(jqlWanted))) {
+      AH_JobQueue_List_Del(jq);
       rv=AH_Outbox__CBox_PerformDialogQueue(cbox, jq);
       if (rv) {
 	DBG_INFO(AQHBCI_LOGDOMAIN,
