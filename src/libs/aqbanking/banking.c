@@ -668,7 +668,12 @@ int AB_Banking_CheckIban(const char *iban) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad IBAN (too short)");
     return -1;
   }
-  p=iban+4;
+  p=iban;
+  if (!(*p >= 'A' && *p++ <= 'Z' && *p >= 'A' && *p++ <= 'Z')) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad IBAN (country code not in upper case)");
+    return -1;
+  }
+  p+=2;
 
   /* convert IBAN+4 to buffer */
   if (AB_Banking__TransformIban(p, strlen(p),
@@ -690,7 +695,6 @@ int AB_Banking_CheckIban(const char *iban) {
   tmp[0]=0;
   j=0;
   while(*p) {
-    i=strlen(tmp);
     for (i=strlen(tmp); i<9;  i++) {
       if (!*p)
         break;
@@ -760,7 +764,6 @@ int AB_Banking_MakeGermanIban(const char *bankCode, const char *accountNumber, G
   tmp[0]=0;
   j=0;
   while(*p) {
-    i=strlen(tmp);
     for (i=strlen(tmp); i<9;  i++) {
       if (!*p)
         break;
