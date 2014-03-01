@@ -37,7 +37,6 @@ int test1(int argc, char **argv) {
   GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Debug);
 
   gui=GWEN_Gui_CGui_new();
-  GWEN_Gui_SetCharSet(gui, "ISO-8859-15");
   GWEN_Gui_SetGui(gui);
 
   oh=OfxHome_new("/tmp/ofx");
@@ -70,7 +69,6 @@ int test2(int argc, char **argv) {
   GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Debug);
 
   gui=GWEN_Gui_CGui_new();
-  GWEN_Gui_SetCharSet(gui, "ISO-8859-15");
   GWEN_Gui_SetGui(gui);
 
   oh=OfxHome_new("/tmp/ofx");

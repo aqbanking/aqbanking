@@ -243,8 +243,9 @@ int main(int argc, char **argv) {
 
   gui=GWEN_Gui_CGui_new();
 
-  s=GWEN_DB_GetCharValue(db, "charset", 0, "ISO-8859-15");
-  GWEN_Gui_SetCharSet(gui, s);
+  s=GWEN_DB_GetCharValue(db, "charset", 0, NULL);
+  if (s && *s)
+    GWEN_Gui_SetCharSet(gui, s);
 
   nonInteractive=GWEN_DB_GetIntValue(db, "nonInteractive", 0, 0);
   if (nonInteractive)

@@ -46,7 +46,6 @@ int check1() {
   GWEN_GUI *gui;
 
   gui=GWEN_Gui_CGui_new();
-  GWEN_Gui_CGui_SetCharSet(gui, "ISO-8859-15");
   GWEN_Gui_SetGetPasswordFn(gui, _getPin);
 
   unlink("check1.medium");
@@ -173,7 +172,6 @@ int check2() {
   fprintf(stderr, "Check2:\n");
 
   gui=GWEN_Gui_CGui_new();
-  GWEN_Gui_CGui_SetCharSet(gui, "ISO-8859-15");
   GWEN_Gui_SetGetPasswordFn(gui, _getPin);
 
   unlink("check2.medium");
