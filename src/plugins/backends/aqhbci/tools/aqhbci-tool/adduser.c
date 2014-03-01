@@ -368,6 +368,7 @@ int addUser(AB_BANKING *ab,
       rv=GWEN_Crypt_Token_Open(ct, 0, 0);
       if (rv) {
 	DBG_ERROR(0, "Could not open token (%d)", rv);
+	GWEN_Crypt_Token_free(ct);
 	return 3;
       }
 
@@ -380,6 +381,9 @@ int addUser(AB_BANKING *ab,
       cctx=GWEN_Crypt_Token_GetContext(ct, cid, 0);
       if (cctx==NULL) {
 	DBG_ERROR(0, "Context %02x not found", cid);
+	GWEN_Buffer_free(nameBuffer);
+	GWEN_Crypt_Token_Close(ct, 1, 0);
+	GWEN_Crypt_Token_free(ct);
 	return 3;
       }
       ctx=GWEN_Crypt_Token_Context_dup(cctx);
@@ -398,9 +402,12 @@ int addUser(AB_BANKING *ab,
 	keyId=GWEN_Crypt_Token_Context_GetEncipherKeyId(ctx);
       if (keyId==0)
 	keyId=GWEN_Crypt_Token_Context_GetDecipherKeyId(ctx);
+      GWEN_Crypt_Token_Context_free(ctx);
       if (keyId==0) {
 	DBG_ERROR(0, "No keys, unable to determine crypt mode");
+	GWEN_Buffer_free(nameBuffer);
 	GWEN_Crypt_Token_Close(ct, 1, 0);
+	GWEN_Crypt_Token_free(ct);
 	return 3;
       }
   
@@ -409,7 +416,9 @@ int addUser(AB_BANKING *ab,
 	DBG_ERROR(0,
 		  "Could not get keyinfo for key %d, "
 		  "unable to determine crypt mode", keyId);
+	GWEN_Buffer_free(nameBuffer);
 	GWEN_Crypt_Token_Close(ct, 1, 0);
+	GWEN_Crypt_Token_free(ct);
 	return 3;
       }
 
@@ -423,25 +432,29 @@ int addUser(AB_BANKING *ab,
 		  "Unexpected crypt algorithm \"%s\", "
 		  "unable to determine crypt mode",
 		  GWEN_Crypt_CryptAlgoId_toString(algo));
+	GWEN_Buffer_free(nameBuffer);
 	GWEN_Crypt_Token_Close(ct, 1, 0);
+	GWEN_Crypt_Token_free(ct);
 	return 3;
       }
 
       rv=GWEN_Crypt_Token_Close(ct, 0, 0);
+      GWEN_Crypt_Token_free(ct);
       if (rv) {
 	DBG_ERROR(0, "Could not close token (%d)", rv);
+	GWEN_Buffer_free(nameBuffer);
 	return 3;
       }
-
-      GWEN_Crypt_Token_free(ct);
     }
 
     if (!lbankId || !*lbankId) {
       DBG_ERROR(0, "No bank id stored and none given");
+      GWEN_Buffer_free(nameBuffer);
       return 3;
     }
     if (!luserId || !*luserId) {
       DBG_ERROR(0, "No user id (Benutzerkennung) stored and none given");
+      GWEN_Buffer_free(nameBuffer);
       return 3;
     }
 
@@ -467,6 +480,7 @@ int addUser(AB_BANKING *ab,
     AH_User_SetCryptMode(user, cm);
     if (rdhType>0)
       AH_User_SetRdhType(user, rdhType);
+    GWEN_Buffer_free(nameBuffer);
 
     if (hbciVersion==0) {
       if (cm==AH_CryptMode_Pintan)

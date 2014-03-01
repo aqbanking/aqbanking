@@ -152,6 +152,7 @@ int main(int argc, char **argv) {
 		     db);
   if (rv==GWEN_ARGS_RESULT_ERROR) {
     fprintf(stderr, "ERROR: Could not parse arguments main\n");
+    GWEN_DB_Group_free(db);
     return 1;
   }
   else if (rv==GWEN_ARGS_RESULT_HELP) {
@@ -241,6 +242,7 @@ int main(int argc, char **argv) {
 
     fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
     GWEN_Buffer_free(ubuf);
+    GWEN_DB_Group_free(db);
     return 0;
   }
   if (rv) {
@@ -252,6 +254,7 @@ int main(int argc, char **argv) {
   cmd=GWEN_DB_GetCharValue(db, "params", 0, 0);
   if (!cmd) {
     fprintf(stderr, "ERROR: Command needed.\n");
+    GWEN_DB_Group_free(db);
     return 1;
   }
 
@@ -280,6 +283,8 @@ int main(int argc, char **argv) {
 			 GWEN_DB_FLAGS_DEFAULT |
 			 GWEN_PATH_FLAGS_CREATE_GROUP)) {
       fprintf(stderr, "Error reading pinfile \"%s\"\n", pinFile);
+      GWEN_DB_Group_free(dbPins);
+      GWEN_DB_Group_free(db);
       return 2;
     }
     GWEN_Gui_SetPasswordDb(gui, dbPins, 1);
@@ -384,6 +389,7 @@ int main(int argc, char **argv) {
     rv=1;
   }
 
+  GWEN_DB_Group_free(db);
   return rv;
 }
 

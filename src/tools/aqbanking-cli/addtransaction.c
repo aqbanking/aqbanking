@@ -251,10 +251,11 @@ int addTransaction(AB_BANKING *ab,
   }
   else if (AB_Account_List2_GetSize(al)>1) {
     DBG_ERROR(0, "Ambiguous account specification");
+    AB_Account_List2_free(al);
     return 2;
   }
   a=AB_Account_List2_GetFront(al);
-  //AB_Account_List2_free(al);
+  AB_Account_List2_free(al);
 
   /* create transaction from arguments */
   t=mkTransfer(a, db, &transferType);
@@ -267,12 +268,14 @@ int addTransaction(AB_BANKING *ab,
   rv=readContext(ctxFile, &ctx, 0);
   if (rv<0) {
     DBG_ERROR(0, "Error reading context (%d)", rv);
+    AB_Transaction_free(t);
     return 4;
   }
 
   AB_ImExporterContext_AddTransaction(ctx, t);
 
   rv=writeContext(ctxFile, ctx);
+  AB_ImExporterContext_free(ctx);
   if (rv<0) {
     DBG_ERROR(0, "Error writing context (%d)", rv);
     return 4;

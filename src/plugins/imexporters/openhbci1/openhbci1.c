@@ -71,6 +71,7 @@ void GWENHYWFAR_CB AH_ImExporterOpenHBCI1_FreeData(void *bp, void *p){
   AH_IMEXPORTER_OPENHBCI1 *ieh;
 
   ieh=(AH_IMEXPORTER_OPENHBCI1*)p;
+  GWEN_DBIO_free(ieh->dbio);
   GWEN_FREE_OBJECT(ieh);
 }
 

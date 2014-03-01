@@ -387,7 +387,7 @@ void AB_EditAccountDialog_RebuildUserLists(GWEN_DIALOG *dlg) {
       }
       AB_User_List2Iterator_free(it1);
     }
-    GWEN_Buffer_Reset(tbuf);
+    GWEN_Buffer_free(tbuf);
   }
   AB_User_List2_free(users);
 

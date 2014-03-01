@@ -71,6 +71,8 @@ AB_BALANCE *AB_Balance_fromDb(GWEN_DB_NODE *db){
     t=0;
 
   b=AB_Balance_new(v, t);
+  AB_Value_free(v);
+  GWEN_Time_free(t);
   return b;
 }
 

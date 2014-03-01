@@ -902,14 +902,11 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
   for (;;) {
     AHB_SWIFT_TAG_LIST *tl;
 
-    tl=AHB_SWIFT_Tag_List_new();
-
     /* check for user abort */
     rv=GWEN_Gui_ProgressAdvance(0, GWEN_GUI_PROGRESS_NONE);
     if (rv==GWEN_ERROR_USER_ABORTED) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "User aborted");
       GWEN_FastBuffer_free(fb);
-      AHB_SWIFT_Tag_List_free(tl);
       return rv;
     }
 
@@ -933,7 +930,6 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
 		   "Error in report, aborting (%d)", err);
 	  GWEN_Buffer_free(lbuf);
 	  GWEN_FastBuffer_free(fb);
-	  AHB_SWIFT_Tag_List_free(tl);
 	  return err;
 	}
 	GWEN_Buffer_Reset(lbuf);
@@ -947,6 +943,8 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
 
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug,
 			 I18N("Parsing SWIFT data"));
+    tl=AHB_SWIFT_Tag_List_new();
+    assert(tl);
     rv=AHB_SWIFT_ReadDocument(fb, tl, 0);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Error in report, aborting");
@@ -959,12 +957,12 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
 
     if (rv==1) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "End of document reached");
+      AHB_SWIFT_Tag_List_free(tl);
       if (docsImported==0) {
 	DBG_INFO(AQBANKING_LOGDOMAIN, "Empty document, aborting");
 	GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
 			     I18N("Empty SWIFT document, aborting"));
 	GWEN_FastBuffer_free(fb);
-	AHB_SWIFT_Tag_List_free(tl);
         return GWEN_ERROR_EOF;
       }
       break;
@@ -982,6 +980,7 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
       AHB_SWIFT_Tag_List_free(tl);
       return rv;
     }
+    AHB_SWIFT_Tag_List_free(tl);
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug,
 			 I18N("Swift document successfully imported"));
     docsImported++;
@@ -1028,6 +1027,7 @@ GWEN_DBIO_CHECKFILE_RESULT AHB_SWIFT_CheckFile(GWEN_DBIO *dbio,
     /* error */
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "open(%s): %s", fname, strerror(errno));
+    GWEN_SyncIo_free(sio);
     return GWEN_DBIO_CheckFileResultNotOk;
   }
 

@@ -274,13 +274,11 @@ int sepaRecurTransfer(AB_BANKING *ab,
   }
   else if (AB_Account_List2_GetSize(al)>1) {
     DBG_ERROR(0, "Ambiguous account specification");
+    AB_Account_List2_free(al);
     return 2;
   }
   a=AB_Account_List2_GetFront(al);
-  //AB_Account_List2_free(al);
-
-  /* populate job list */
-  jobList=AB_Job_List2_new();
+  AB_Account_List2_free(al);
 
   /* create transaction from arguments */
   t=mkSepaTransfer(a, db, AB_Job_TypeSepaCreateStandingOrder);
@@ -307,7 +305,8 @@ int sepaRecurTransfer(AB_BANKING *ab,
   rv=AB_Job_CheckAvailability(j);
   if (rv<0) {
     DBG_ERROR(0, "Job not supported.");
-    AB_ImExporterContext_free(ctx);
+    AB_Job_free(j);
+    AB_Transaction_free(t);
     return 3;
   }
 
@@ -318,6 +317,8 @@ int sepaRecurTransfer(AB_BANKING *ab,
   rv=AB_Transaction_CheckPurposeAgainstLimits(t, lim);
   if (rv<0) {
     DBG_ERROR(0, "Invalid purpose length (%d)", rv);
+    AB_Job_free(j);
+    AB_Transaction_free(t);
     AB_Banking_OnlineFini(ab);
     AB_Banking_Fini(ab);
     return 2;
@@ -326,6 +327,8 @@ int sepaRecurTransfer(AB_BANKING *ab,
   rv=AB_Transaction_CheckNamesAgainstLimits(t, lim);
   if (rv<0) {
     DBG_ERROR(0, "Invalid local and/or remote name (%d)", rv);
+    AB_Job_free(j);
+    AB_Transaction_free(t);
     AB_Banking_OnlineFini(ab);
     AB_Banking_Fini(ab);
     return 2;
@@ -334,6 +337,8 @@ int sepaRecurTransfer(AB_BANKING *ab,
   rv=AB_Transaction_CheckRecurrenceAgainstLimits(t, lim);
   if (rv<0) {
     DBG_ERROR(0, "Recurrence specs violate bank paramaters (%d)", rv);
+    AB_Job_free(j);
+    AB_Transaction_free(t);
     AB_Banking_OnlineFini(ab);
     AB_Banking_Fini(ab);
     return 2;
@@ -342,6 +347,8 @@ int sepaRecurTransfer(AB_BANKING *ab,
   rv=AB_Transaction_CheckFirstExecutionDateAgainstLimits(t, lim);
   if (rv<0) {
     DBG_ERROR(0, "Setup time violated (%d)", rv);
+    AB_Job_free(j);
+    AB_Transaction_free(t);
     AB_Banking_OnlineFini(ab);
     AB_Banking_Fini(ab);
     return 2;
@@ -351,11 +358,15 @@ int sepaRecurTransfer(AB_BANKING *ab,
   rIBAN=AB_Transaction_GetRemoteIban(t);
   if (!rIBAN || !(*rIBAN)) {
     DBG_ERROR(0, "Missing remote IBAN");
+    AB_Job_free(j);
+    AB_Transaction_free(t);
     return 1;
   }
   rv=AB_Banking_CheckIban(rIBAN);
   if (rv<0) {
     DBG_ERROR(0, "Invalid remote IBAN (%s)", rIBAN);
+    AB_Job_free(j);
+    AB_Transaction_free(t);
     return 3;
   }
 
@@ -364,15 +375,22 @@ int sepaRecurTransfer(AB_BANKING *ab,
   rv=AB_Banking_CheckIban(lIBAN);
   if (rv<0) {
     DBG_ERROR(0, "Invalid local IBAN (%s)", rIBAN);
+    AB_Job_free(j);
+    AB_Transaction_free(t);
     return 3;
   }
 
   rv=AB_Job_SetTransaction(j, t);
+  AB_Transaction_free(t);
   if (rv<0) {
     DBG_ERROR(0, "Unable to add transaction");
-    AB_ImExporterContext_free(ctx);
+    AB_Job_free(j);
     return 3;
   }
+
+  /* populate job list */
+  jobList=AB_Job_List2_new();
+  assert(jobList);
   AB_Job_List2_PushBack(jobList, j);
 
 
@@ -384,9 +402,11 @@ int sepaRecurTransfer(AB_BANKING *ab,
     fprintf(stderr, "Error on executeQueue (%d)\n", rv);
     rvExec=3;
   }
+  AB_Job_List2_FreeAll(jobList);
 
   /* write result */
   rv=writeContext(ctxFile, ctx);
+  AB_ImExporterContext_free(ctx);
   if (rv<0) {
     DBG_ERROR(0, "Error writing context file (%d)", rv);
     AB_Banking_OnlineFini(ab);

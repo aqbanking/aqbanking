@@ -321,6 +321,7 @@ int sendDtazv(AB_BANKING *ab,
   dtazv=GWEN_Buffer_new(0, 1024, 0, 1);
   /* Read DTAZV file */
   if (_readFile(inFile, dtazv)) {
+    GWEN_Buffer_free(dtazv);
     return 3;
   }
 
@@ -388,6 +389,7 @@ int sendDtazv(AB_BANKING *ab,
 		    ctxFile, rv2);
 	}
       }
+      GWEN_DB_Group_free(dbCtx);
     }
 
     AB_ImExporterContext_free(ctx);

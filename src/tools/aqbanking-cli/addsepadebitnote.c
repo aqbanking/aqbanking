@@ -290,6 +290,7 @@ static int addSepaDebitNote(AB_BANKING *ab,
     return 2;
   }
   a=AB_Account_List2_GetFront(al);
+  AB_Account_List2_free(al);
 
   /* create transaction from arguments */
   t=mkSepaDebitNote(a, db);
@@ -308,12 +309,14 @@ static int addSepaDebitNote(AB_BANKING *ab,
 
   if (!rBIC || !(*rBIC)) {
     DBG_ERROR(0, "Missing remote BIC");
+    AB_Transaction_free(t);
     AB_Banking_OnlineFini(ab);
     AB_Banking_Fini(ab);
     return 1;
   }
   if (!rIBAN || !(*rIBAN)) {
     DBG_ERROR(0, "Missing remote IBAN");
+    AB_Transaction_free(t);
     AB_Banking_OnlineFini(ab);
     AB_Banking_Fini(ab);
     return 1;
@@ -321,6 +324,7 @@ static int addSepaDebitNote(AB_BANKING *ab,
   rv=AB_Banking_CheckIban(rIBAN);
   if (rv<0) {
     DBG_ERROR(0, "Invalid remote IBAN (%s)", rIBAN);
+    AB_Transaction_free(t);
     AB_Banking_OnlineFini(ab);
     AB_Banking_Fini(ab);
     return 3;
@@ -329,12 +333,14 @@ static int addSepaDebitNote(AB_BANKING *ab,
 
   if (!lBIC || !(*lBIC)) {
     DBG_ERROR(0, "Missing local BIC");
+    AB_Transaction_free(t);
     AB_Banking_OnlineFini(ab);
     AB_Banking_Fini(ab);
     return 1;
   }
   if (!lIBAN || !(*lIBAN)) {
     DBG_ERROR(0, "Missing local IBAN");
+    AB_Transaction_free(t);
     AB_Banking_OnlineFini(ab);
     AB_Banking_Fini(ab);
     return 1;
@@ -342,6 +348,7 @@ static int addSepaDebitNote(AB_BANKING *ab,
   rv=AB_Banking_CheckIban(lIBAN);
   if (rv<0) {
     DBG_ERROR(0, "Invalid local IBAN (%s)", rIBAN);
+    AB_Transaction_free(t);
     AB_Banking_OnlineFini(ab);
     AB_Banking_Fini(ab);
     return 3;
@@ -349,6 +356,7 @@ static int addSepaDebitNote(AB_BANKING *ab,
 
   if (!lBIC || !(*lBIC)) {
     DBG_ERROR(0, "Missing local BIC");
+    AB_Transaction_free(t);
     AB_Banking_OnlineFini(ab);
     AB_Banking_Fini(ab);
     return 1;
@@ -359,6 +367,7 @@ static int addSepaDebitNote(AB_BANKING *ab,
   rv=readContext(ctxFile, &ctx, 0);
   if (rv<0) {
     DBG_ERROR(0, "Error reading context (%d)", rv);
+    AB_Transaction_free(t);
     AB_Banking_OnlineFini(ab);
     AB_Banking_Fini(ab);
     return 4;
@@ -369,6 +378,7 @@ static int addSepaDebitNote(AB_BANKING *ab,
 
   /* write result back */
   rv=writeContext(ctxFile, ctx);
+  AB_ImExporterContext_free(ctx);
   if (rv<0) {
     DBG_ERROR(0, "Error writing context file (%d)", rv);
     AB_Banking_OnlineFini(ab);

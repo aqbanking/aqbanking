@@ -346,6 +346,8 @@ int AB_Banking_FindDebugger(AB_BANKING *ab,
 	rv=AB_Banking__GetDebuggerPath(ab, backend, pbuf);
 	if (rv) {
 	  DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+	  GWEN_PluginDescription_List2Iterator_free(pit);
+	  GWEN_PluginDescription_List2_freeAll(pl);
 	  return rv;
 	}
 	GWEN_Buffer_AppendString(pbuf, DIRSEP);
@@ -399,6 +401,9 @@ int AB_Banking_FindDebugger(AB_BANKING *ab,
 	  rv=AB_Banking__GetDebuggerPath(ab, backend, pbuf);
 	  if (rv) {
 	    DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+	    free(s);
+	    GWEN_PluginDescription_List2Iterator_free(pit);
+	    GWEN_PluginDescription_List2_freeAll(pl);
 	    return rv;
 	  }
 	  GWEN_Buffer_AppendString(pbuf, DIRSEP);
@@ -723,6 +728,7 @@ int AB_Banking_GetCryptToken(AB_BANKING *ab,
 	break;
       ct=GWEN_Crypt_Token_List2Iterator_Next(it);
     }
+    GWEN_Crypt_Token_List2Iterator_free(it);
   }
 
   if (ct==NULL) {
@@ -793,6 +799,7 @@ void AB_Banking_ClearCryptTokenList(AB_BANKING *ab) {
       GWEN_Crypt_Token_free(ct);
       ct=GWEN_Crypt_Token_List2Iterator_Next(it);
     }
+    GWEN_Crypt_Token_List2Iterator_free(it);
   }
   GWEN_Crypt_Token_List2_Clear(ab->cryptTokenList);
 }

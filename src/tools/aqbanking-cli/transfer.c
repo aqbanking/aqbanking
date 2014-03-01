@@ -326,13 +326,11 @@ int transfer(AB_BANKING *ab,
   }
   else if (AB_Account_List2_GetSize(al)>1) {
     DBG_ERROR(0, "Ambiguous account specification");
+    AB_Account_List2_free(al);
     return 2;
   }
   a=AB_Account_List2_GetFront(al);
-  //AB_Account_List2_free(al);
-
-  /* populate job list */
-  jobList=AB_Job_List2_new();
+  AB_Account_List2_free(al);
 
   /* create transaction from arguments */
   t=mkTransfer(a, db, &transferType);
@@ -360,12 +358,14 @@ int transfer(AB_BANKING *ab,
 	      "Invalid combination of bank code and account number "
 	      "for remote account (%s/%s)",
 	      rBankId, rAccountId);
+    AB_Transaction_free(t);
     return 3;
 
   case AB_BankInfoCheckResult_UnknownBank:
     DBG_ERROR(0, "Remote bank code is unknown (%s/%s)",
 	      rBankId, rAccountId);
     if (forceCheck) {
+      AB_Transaction_free(t);
       return 4;
     }
     break;
@@ -381,6 +381,7 @@ int transfer(AB_BANKING *ab,
 
   default:
     DBG_ERROR(0, "Unknown check result %d", res);
+    AB_Transaction_free(t);
     return 4;
   }
 
@@ -392,22 +393,29 @@ int transfer(AB_BANKING *ab,
     j=AB_JobCreateStandingOrder_new(a);
   else {
     DBG_ERROR(0, "Unknown transfer type: %d", transferType);
+    AB_Transaction_free(t);
     return 6;
   }
 
   rv=AB_Job_CheckAvailability(j);
   if (rv<0) {
     DBG_ERROR(0, "Job not supported.");
-    AB_ImExporterContext_free(ctx);
+    AB_Job_free(j);
+    AB_Transaction_free(t);
     return 3;
   }
 
   rv=AB_Job_SetTransaction(j, t);
+  AB_Transaction_free(t);
   if (rv<0) {
     DBG_ERROR(0, "Unable to add transaction");
-    AB_ImExporterContext_free(ctx);
+    AB_Job_free(j);
     return 3;
   }
+
+  /* populate job list */
+  jobList=AB_Job_List2_new();
+  assert(jobList);
   AB_Job_List2_PushBack(jobList, j);
 
   /* execute job */
@@ -418,9 +426,11 @@ int transfer(AB_BANKING *ab,
     fprintf(stderr, "Error on executeQueue (%d)\n", rv);
     rvExec=3;
   }
+  AB_Job_List2_FreeAll(jobList);
 
   /* write result */
   rv=writeContext(ctxFile, ctx);
+  AB_ImExporterContext_free(ctx);
   if (rv<0) {
     DBG_ERROR(0, "Error writing context file (%d)", rv);
     AB_Banking_OnlineFini(ab);

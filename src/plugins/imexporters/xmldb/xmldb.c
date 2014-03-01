@@ -72,6 +72,7 @@ void GWENHYWFAR_CB AH_ImExporterXMLDB_FreeData(void *bp, void *p){
   AH_IMEXPORTER_XMLDB *ieh;
 
   ieh=(AH_IMEXPORTER_XMLDB*)p;
+  GWEN_DBIO_free(ieh->dbio);
   GWEN_FREE_OBJECT(ieh);
 }
 

@@ -158,7 +158,6 @@ AH_JOB *AH_Job_SingleTransferBase_new(AB_USER *u,
                                       AB_JOB_TYPE jobType) {
   AH_JOB *j;
   AH_JOB_SINGLETRANSFER *aj;
-  GWEN_DB_NODE *dbArgs;
 
   switch(jobType) {
   case AB_Job_TypeTransfer:
@@ -204,11 +203,6 @@ AH_JOB *AH_Job_SingleTransferBase_new(AB_USER *u,
   AH_Job_SetProcessFn(j, AH_Job_SingleTransfer_Process);
   AH_Job_SetExchangeFn(j, AH_Job_SingleTransfer_Exchange);
   AH_Job_SetAddChallengeParamsFn(j, AH_Job_SingleTransfer_AddChallengeParams);
-
-  /* set some known arguments */
-  dbArgs=AH_Job_GetArguments(j);
-  assert(dbArgs);
-
 
   return j;
 }
@@ -524,6 +518,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
 				I18N("Too many chars in purpose line %d (%d>%d)"),
 				n, l, maxs);
 	  GWEN_StringList_free(nsl);
+	  GWEN_Buffer_free(tbuf);
 	  return GWEN_ERROR_INVALID;
 	}
 	np=(char*)malloc(l+1);
@@ -535,6 +530,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
       se=GWEN_StringListEntry_Next(se);
     } /* while */
     AB_Transaction_SetPurpose(t, nsl);
+    GWEN_StringList_free(nsl);
   }
   if (!n) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No purpose lines");
@@ -583,6 +579,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
 		   "Too many chars in remote name line %d (%d>%d)",
 		   n, l, maxs);
           GWEN_StringList_free(nsl);
+	  GWEN_Buffer_free(tbuf);
 	  return GWEN_ERROR_INVALID;
 	}
 	np=(char*)malloc(l+1);
@@ -594,6 +591,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
       se=GWEN_StringListEntry_Next(se);
     } /* while */
     AB_Transaction_SetRemoteName(t, nsl);
+    GWEN_StringList_free(nsl);
   }
   if (!n) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No remote name lines");
@@ -1654,7 +1652,6 @@ int AH_Job_SingleTransfer_Exchange(AH_JOB *j, AB_JOB *bj,
       } /* switch */
 
       /* store pointer to the validated transaction */
-      AB_Transaction_Attach(t);
       aj->validatedTransaction=t;
     }
     else {

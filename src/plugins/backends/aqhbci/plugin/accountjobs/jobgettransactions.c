@@ -167,10 +167,12 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
     GWEN_DB_Group_free(dbParams);
     GWEN_DB_Group_free(db);
     GWEN_SyncIo_free(sio);
+    GWEN_DBIO_free(dbio);
     return rv;
   }
   GWEN_DB_Group_free(dbParams);
   GWEN_SyncIo_free(sio);
+  GWEN_DBIO_free(dbio);
 
   /* first count the groups */
   dbDay=GWEN_DB_FindFirstGroup(db, "day");

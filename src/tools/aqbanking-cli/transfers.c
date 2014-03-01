@@ -45,7 +45,6 @@ int transfers(AB_BANKING *ab,
   AB_IMEXPORTER_CONTEXT *ctx=0;
   AB_IMEXPORTER_ACCOUNTINFO *iea;
   AB_JOB_LIST2 *jobList;
-  AB_TRANSACTION_LIST2 *tlist=NULL;
   int rvExec;
   const GWEN_ARGS args[]={
   {
@@ -245,7 +244,7 @@ int transfers(AB_BANKING *ab,
       DBG_ERROR(0, "Account %s/%s not found, aborting",
 		AB_ImExporterAccountInfo_GetBankCode(iea),
 		AB_ImExporterAccountInfo_GetAccountNumber(iea));
-      AB_Transaction_List2_free(tlist);
+      AB_Job_List2_FreeAll(jobList);
       AB_ImExporterContext_free(ctx);
       return 3;
     }
@@ -276,7 +275,7 @@ int transfers(AB_BANKING *ab,
 		    "Invalid combination of bank code and account number "
 		    "for remote account (%s/%s)",
 		    rBankId, rAccountId);
-	  AB_Transaction_List2_free(tlist);
+	  AB_Job_List2_FreeAll(jobList);
 	  AB_ImExporterContext_free(ctx);
 	  return 3;
 
@@ -284,7 +283,7 @@ int transfers(AB_BANKING *ab,
 	  DBG_ERROR(0, "Remote bank code is unknown (%s/%s)",
 		    rBankId, rAccountId);
 	  if (forceCheck) {
-	    AB_Transaction_List2_free(tlist);
+	    AB_Job_List2_FreeAll(jobList);
 	    AB_ImExporterContext_free(ctx);
 	    return 4;
 	  }
@@ -301,7 +300,7 @@ int transfers(AB_BANKING *ab,
 
 	default:
 	  DBG_ERROR(0, "Unknown check result %d", res);
-	  AB_Transaction_List2_free(tlist);
+	  AB_Job_List2_FreeAll(jobList);
 	  AB_ImExporterContext_free(ctx);
 	  return 4;
 	}
@@ -314,7 +313,8 @@ int transfers(AB_BANKING *ab,
 	rv=AB_Job_CheckAvailability(j);
 	if (rv<0) {
 	  DBG_ERROR(0, "Job not supported.");
-	  AB_Transaction_List2_free(tlist);
+	  AB_Job_free(j);
+	  AB_Job_List2_FreeAll(jobList);
 	  AB_ImExporterContext_free(ctx);
 	  return 3;
 	}
@@ -323,7 +323,8 @@ int transfers(AB_BANKING *ab,
           DBG_ERROR(0, "Unable to add transaction for account %s/%s, aborting",
                     AB_ImExporterAccountInfo_GetBankCode(iea),
                     AB_ImExporterAccountInfo_GetAccountNumber(iea));
-          AB_Transaction_List2_free(tlist);
+          AB_Job_free(j);
+          AB_Job_List2_FreeAll(jobList);
           AB_ImExporterContext_free(ctx);
           return 3;
         }
@@ -336,8 +337,6 @@ int transfers(AB_BANKING *ab,
   } /* while */
   AB_ImExporterContext_free(ctx);
 
-  AB_Transaction_List2_free(tlist);
-
   /* execute jobs */
   rvExec=0;
   ctx=AB_ImExporterContext_new();
@@ -346,6 +345,7 @@ int transfers(AB_BANKING *ab,
     fprintf(stderr, "Error on executeQueue (%d)\n", rv);
     rvExec=3;
   }
+  AB_Job_List2_FreeAll(jobList);
 
   /* write context */
   rv=writeContext(ctxFile, ctx);

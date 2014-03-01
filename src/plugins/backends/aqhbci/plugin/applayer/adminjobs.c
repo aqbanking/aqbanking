@@ -111,6 +111,7 @@ void GWENHYWFAR_CB GWENHYWFAR_CB AH_Job_GetKeys_FreeData(void *bp, void *p){
   GWEN_Crypt_Token_KeyInfo_free(jd->cryptKeyInfo);
   GWEN_Crypt_Token_KeyInfo_free(jd->authKeyInfo);
   free(jd->peerId);
+  GWEN_FREE_OBJECT(jd);
 }
 
 
@@ -628,6 +629,7 @@ void GWENHYWFAR_CB AH_Job_UpdateBank_FreeData(void *bp, void *p){
 
   jd=(AH_JOB_UPDATEBANK*)p;
   AB_Account_List2_FreeAll(jd->accountList);
+  GWEN_FREE_OBJECT(jd);
 }
 
 
@@ -1898,7 +1900,7 @@ void GWENHYWFAR_CB AH_Job_GetAccountSepaInfo_FreeData(void *bp, void *p){
   AH_JOB_GETACCSEPAINFO *jd;
 
   jd=(AH_JOB_GETACCSEPAINFO*)p;
-  jd->account=NULL;
+  GWEN_FREE_OBJECT(jd);
 }
 
 

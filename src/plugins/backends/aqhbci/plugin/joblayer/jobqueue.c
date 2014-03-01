@@ -451,6 +451,7 @@ AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg){
         AH_Job_SetStatus(j, AH_JobStatusError);
       j=AH_Job_List_Next(j);
     } /* while */
+    AH_Msg_free(msg);
     return 0;
   }
 
@@ -995,6 +996,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
 
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
   } /* while */
+  GWEN_DB_Group_free(dbSecurity);
 
   /* set usedTan status accordingly */
   j=AH_Job_List_First(jq->jobs);

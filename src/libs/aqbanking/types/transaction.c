@@ -489,8 +489,10 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->remoteSuffix=strdup(d->remoteSuffix);
   if (d->remoteIban)
     st->remoteIban=strdup(d->remoteIban);
-  if (d->remoteName)
+  if (d->remoteName) {
+    GWEN_StringList_free(st->remoteName);
     st->remoteName=GWEN_StringList_dup(d->remoteName);
+  }
   if (d->remoteBic)
     st->remoteBic=strdup(d->remoteBic);
   st->uniqueId=d->uniqueId;
@@ -527,10 +529,14 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->primanota=strdup(d->primanota);
   if (d->fiId)
     st->fiId=strdup(d->fiId);
-  if (d->purpose)
+  if (d->purpose) {
+    GWEN_StringList_free(st->purpose);
     st->purpose=GWEN_StringList_dup(d->purpose);
-  if (d->category)
+  }
+  if (d->category) {
+    GWEN_StringList_free(st->category);
     st->category=GWEN_StringList_dup(d->category);
+  }
   st->period=d->period;
   st->cycle=d->cycle;
   st->executionDay=d->executionDay;

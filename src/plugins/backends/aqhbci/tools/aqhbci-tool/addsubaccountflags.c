@@ -142,6 +142,7 @@ int addsubAccountFlags(AB_BANKING *ab,
   if (al) {
     if (AB_Account_List2_GetSize(al)!=1) {
       DBG_ERROR(0, "Ambiguous account specification");
+      AB_Account_List2_free(al);
       return 3;
     }
     else {

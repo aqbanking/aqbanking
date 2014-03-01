@@ -373,6 +373,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 	} /* while */
       }
     } /* if really structured */
+    AHB_SWIFT_SubTag_List_free(stlist);
 #else
     const char *p2;
     char *s;
@@ -600,6 +601,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
                                           "valutadate"))) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving valuta date");
   }
+  GWEN_Time_free(ti);
   p+=6;
   bleft-=6;
 
@@ -638,6 +640,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
 					    "date"))) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving date");
     }
+    GWEN_Time_free(ti);
     p+=4;
     bleft-=4;
   }
@@ -929,6 +932,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
 					  "date"))) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving date");
   }
+  GWEN_Time_free(ti);
 
   p+=6;
   bleft-=6;

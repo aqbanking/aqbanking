@@ -234,13 +234,11 @@ int sepaTransfer(AB_BANKING *ab,
   }
   else if (AB_Account_List2_GetSize(al)>1) {
     DBG_ERROR(0, "Ambiguous account specification");
+    AB_Account_List2_free(al);
     return 2;
   }
   a=AB_Account_List2_GetFront(al);
-  //AB_Account_List2_free(al);
-
-  /* populate job list */
-  jobList=AB_Job_List2_new();
+  AB_Account_List2_free(al);
 
   /* create transaction from arguments */
   t=mkSepaTransfer(a, db, AB_Job_TypeSepaTransfer);
@@ -256,35 +254,42 @@ int sepaTransfer(AB_BANKING *ab,
 
   if (!rBIC || !(*rBIC)) {
     DBG_ERROR(0, "Missing remote BIC");
+    AB_Transaction_free(t);
     return 1;
   }
   if (!rIBAN || !(*rIBAN)) {
     DBG_ERROR(0, "Missing remote IBAN");
+    AB_Transaction_free(t);
     return 1;
   }
   rv=AB_Banking_CheckIban(rIBAN);
   if (rv<0) {
     DBG_ERROR(0, "Invalid remote IBAN (%s)", rIBAN);
+    AB_Transaction_free(t);
     return 3;
   }
 
 
   if (!lBIC || !(*lBIC)) {
     DBG_ERROR(0, "Missing local BIC");
+    AB_Transaction_free(t);
     return 1;
   }
   if (!lIBAN || !(*lIBAN)) {
     DBG_ERROR(0, "Missing local IBAN");
+    AB_Transaction_free(t);
     return 1;
   }
   rv=AB_Banking_CheckIban(lIBAN);
   if (rv<0) {
     DBG_ERROR(0, "Invalid local IBAN (%s)", rIBAN);
+    AB_Transaction_free(t);
     return 3;
   }
 
   if (!lBIC || !(*lBIC)) {
     DBG_ERROR(0, "Missing local BIC");
+    AB_Transaction_free(t);
     return 1;
   }
 
@@ -293,16 +298,22 @@ int sepaTransfer(AB_BANKING *ab,
   rv=AB_Job_CheckAvailability(j);
   if (rv<0) {
     DBG_ERROR(0, "Job not supported.");
-    AB_ImExporterContext_free(ctx);
+    AB_Job_free(j);
+    AB_Transaction_free(t);
     return 3;
   }
 
   rv=AB_Job_SetTransaction(j, t);
+  AB_Transaction_free(t);
   if (rv<0) {
     DBG_ERROR(0, "Unable to add transaction");
-    AB_ImExporterContext_free(ctx);
+    AB_Job_free(j);
     return 3;
   }
+
+  /* populate job list */
+  jobList=AB_Job_List2_new();
+  assert(jobList);
   AB_Job_List2_PushBack(jobList, j);
 
 
@@ -314,9 +325,11 @@ int sepaTransfer(AB_BANKING *ab,
     fprintf(stderr, "Error on executeQueue (%d)\n", rv);
     rvExec=3;
   }
+  AB_Job_List2_FreeAll(jobList);
 
   /* write result */
   rv=writeContext(ctxFile, ctx);
+  AB_ImExporterContext_free(ctx);
   if (rv<0) {
     DBG_ERROR(0, "Error writing context file (%d)", rv);
     AB_Banking_OnlineFini(ab);

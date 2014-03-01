@@ -74,6 +74,7 @@ void GWENHYWFAR_CB AH_ImExporterCSV_FreeData(void *bp, void *p){
   AH_IMEXPORTER_CSV *ieh;
 
   ieh=(AH_IMEXPORTER_CSV*)p;
+  GWEN_DBIO_free(ieh->dbio);
   GWEN_FREE_OBJECT(ieh);
 }
 

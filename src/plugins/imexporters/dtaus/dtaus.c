@@ -73,6 +73,7 @@ void GWENHYWFAR_CB AH_ImExporterDTAUS_FreeData(void *bp, void *p){
   AH_IMEXPORTER_DTAUS *ieh;
 
   ieh=(AH_IMEXPORTER_DTAUS*)p;
+  GWEN_DBIO_free(ieh->dbio);
   GWEN_FREE_OBJECT(ieh);
 }
 

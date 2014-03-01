@@ -33,6 +33,7 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
     tv=AB_Transaction_GetValue(t);
     if (tv==NULL) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "No value in transaction");
+      AB_Value_free(v);
       return GWEN_ERROR_BAD_DATA;
     }
     AB_Value_AddValue(v, tv);
@@ -103,6 +104,7 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
     /* generate CreDtTm */
     GWEN_Time_toUtcString(ti, "YYYY-MM-DDThh:mm:ssZ", tbuf);
     GWEN_XMLNode_SetCharValue(n, "CreDtTm", GWEN_Buffer_GetStart(tbuf));
+    GWEN_Time_free(ti);
     GWEN_Buffer_Reset(tbuf);
 
     /* store NbOfTxs */
@@ -111,6 +113,7 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
     /* store sum */
     AB_Value_toHumanReadableString2(v, tbuf, 2, 0);
     GWEN_XMLNode_SetCharValue(n, "CtrlSum", GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
 
     GWEN_XMLNode_SetCharValue(n, "Grpg", "GRPD");
     //GWEN_XMLNode_SetCharValue(n, "Grpg", "MIXD");
@@ -119,21 +122,19 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
     if (nn) {
       const char *s;
 
+      GWEN_XMLNode_AddChild(n, nn);
       s=AB_ImExporterAccountInfo_GetOwner(ai);
       if (!s)
         s=AB_Transaction_GetLocalName(t);
       if (!s) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN, "No owner");
+	GWEN_XMLNode_free(root);
 	AB_Value_free(v);
 	return GWEN_ERROR_BAD_DATA;
       }
       GWEN_XMLNode_SetCharValue(nn, "Nm", s);
 
-      GWEN_XMLNode_AddChild(n, nn);
     }
-
-    GWEN_Buffer_free(tbuf);
-
   }
   AB_Value_free(v);
 
@@ -185,7 +186,7 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
         s=AB_Transaction_GetLocalName(t);
       if (!s) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "No owner");
-        AB_Value_free(v);
+        GWEN_XMLNode_free(root);
         return GWEN_ERROR_BAD_DATA;
       }
 

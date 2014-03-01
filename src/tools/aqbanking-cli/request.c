@@ -247,6 +247,7 @@ int request(AB_BANKING *ab,
     GWEN_Buffer_free(dbuf);
     if (toTime==0) {
       DBG_ERROR(0, "Invalid todate value \"%s\"", s);
+      GWEN_Time_free(fromTime);
       return 1;
     }
   }
@@ -254,12 +255,16 @@ int request(AB_BANKING *ab,
   rv=AB_Banking_Init(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
+    GWEN_Time_free(toTime);
+    GWEN_Time_free(fromTime);
     return 2;
   }
 
   rv=AB_Banking_OnlineInit(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
+    GWEN_Time_free(toTime);
+    GWEN_Time_free(fromTime);
     return 2;
   }
 
@@ -331,6 +336,11 @@ int request(AB_BANKING *ab,
 			AB_Account_GetBankCode(a),
 			AB_Account_GetAccountNumber(a),
 			rv);
+	      AB_Account_List2Iterator_free(ait);
+	      AB_Account_List2_free(al);
+	      AB_Job_List2_FreeAll(jobList);
+	      GWEN_Time_free(toTime);
+	      GWEN_Time_free(fromTime);
 	      return 3;
 	    }
             if (fromTime)
@@ -352,6 +362,11 @@ int request(AB_BANKING *ab,
 			AB_Account_GetBankCode(a),
 			AB_Account_GetAccountNumber(a),
 			rv);
+	      AB_Account_List2Iterator_free(ait);
+	      AB_Account_List2_free(al);
+	      AB_Job_List2_FreeAll(jobList);
+	      GWEN_Time_free(toTime);
+	      GWEN_Time_free(fromTime);
 	      return 3;
 	    }
             AB_Job_List2_PushBack(jobList, j);
@@ -368,6 +383,11 @@ int request(AB_BANKING *ab,
 			AB_Account_GetBankCode(a),
 			AB_Account_GetAccountNumber(a),
 			rv);
+	      AB_Account_List2Iterator_free(ait);
+	      AB_Account_List2_free(al);
+	      AB_Job_List2_FreeAll(jobList);
+	      GWEN_Time_free(toTime);
+	      GWEN_Time_free(fromTime);
 	      return 3;
 	    }
             AB_Job_List2_PushBack(jobList, j);
@@ -384,6 +404,11 @@ int request(AB_BANKING *ab,
 			AB_Account_GetBankCode(a),
 			AB_Account_GetAccountNumber(a),
 			rv);
+	      AB_Account_List2Iterator_free(ait);
+	      AB_Account_List2_free(al);
+	      AB_Job_List2_FreeAll(jobList);
+	      GWEN_Time_free(toTime);
+	      GWEN_Time_free(fromTime);
 	      return 3;
 	    }
             AB_Job_List2_PushBack(jobList, j);
@@ -394,10 +419,11 @@ int request(AB_BANKING *ab,
         a=AB_Account_List2Iterator_Next(ait);
       }
       AB_Account_List2Iterator_free(ait);
-      GWEN_Time_free(toTime);
-      GWEN_Time_free(fromTime);
     }
   }
+  AB_Account_List2_free(al);
+  GWEN_Time_free(toTime);
+  GWEN_Time_free(fromTime);
 
   if (requests) {
     AB_IMEXPORTER_CONTEXT *ctx;
@@ -405,12 +431,15 @@ int request(AB_BANKING *ab,
     DBG_INFO(0, "%d requests created", requests);
     ctx=AB_ImExporterContext_new();
     rv=AB_Banking_ExecuteJobs(ab, jobList, ctx);
+    AB_Job_List2_FreeAll(jobList);
     if (rv) {
       fprintf(stderr, "Error on executeQueue (%d)\n", rv);
+      AB_ImExporterContext_free(ctx);
       return 3;
     }
 
     rv=writeContext(ctxFile, ctx);
+    AB_ImExporterContext_free(ctx);
     if (rv<0) {
       DBG_ERROR(0, "Error writing context file (%d)", rv);
       AB_Banking_OnlineFini(ab);
@@ -420,6 +449,7 @@ int request(AB_BANKING *ab,
   }
   else {
     DBG_ERROR(0, "No requests created");
+    AB_Job_List2_FreeAll(jobList);
     AB_Banking_OnlineFini(ab);
     AB_Banking_Fini(ab);
     return 4;

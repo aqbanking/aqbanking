@@ -197,6 +197,7 @@ int listTrans(AB_BANKING *ab,
   rv=readContext(ctxFile, &ctx, 1);
   if (rv<0) {
     DBG_ERROR(0, "Error reading context (%d)", rv);
+    AB_ImExporterContext_free(ctx);
     return 4;
   }
 
@@ -241,6 +242,7 @@ int listTrans(AB_BANKING *ab,
     } /* if matches */
     iea=AB_ImExporterContext_GetNextAccountInfo(ctx);
   } /* while */
+  AB_ImExporterContext_free(ctx);
 
   /* export new context */
   rv=AB_Banking_ExportToFileWithProfile(ab, exporterName, nctx,

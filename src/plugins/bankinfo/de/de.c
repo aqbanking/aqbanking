@@ -84,14 +84,12 @@ AB_BANKINFO_PLUGIN *AB_Plugin_BankInfoDE_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab
   /* try to find the data file */
   paths=AB_Banking_GetGlobalDataDirs();
   if (paths) {
-    GWEN_DB_NODE *db;
     GWEN_BUFFER *fbuf;
     int rv;
 
     /* for debian look also in /var/lib */
     GWEN_StringList_AppendString(paths, "/var/lib", 0, 0);
 
-    db=GWEN_DB_Group_new("config");
     fbuf=GWEN_Buffer_new(0, 256, 0, 1);
     rv=GWEN_Directory_FindFileInPaths(paths,
 				      "ktoblzcheck"
@@ -127,8 +125,8 @@ AB_BANKINFO_PLUGIN *AB_Plugin_BankInfoDE_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab
 	AB_BankInfoPlugin_free(bip);
 	return 0;
       }
-      GWEN_Buffer_free(fbuf);
     }
+    GWEN_Buffer_free(fbuf);
   }
 
   if (bde->checker==NULL) {

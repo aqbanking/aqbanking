@@ -129,6 +129,7 @@ void AB_Job_free(AB_JOB *j){
       AB_TransactionLimits_free(j->limits);
       AB_Account_free(j->account);
       GWEN_DB_Group_free(j->dbData);
+      GWEN_Time_free(j->lastStatusChange);
       free(j->resultText);
       free(j->createdBy);
       free(j->usedTan);

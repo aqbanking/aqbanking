@@ -150,6 +150,7 @@ int AH_Job_GetStandingOrders_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 	assert(ti);
 	AB_Transaction_SetDate(t, ti);
 	GWEN_Time_free(ti);
+	GWEN_Buffer_free(dbuf);
       }
 
       /* firstExecutionDate */
@@ -166,6 +167,7 @@ int AH_Job_GetStandingOrders_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 	assert(ti);
 	AB_Transaction_SetFirstExecutionDate(t, ti);
         GWEN_Time_free(ti);
+	GWEN_Buffer_free(dbuf);
       }
 
       /* lastExecutionDate */
@@ -182,6 +184,7 @@ int AH_Job_GetStandingOrders_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 	assert(ti);
 	AB_Transaction_SetLastExecutionDate(t, ti);
 	GWEN_Time_free(ti);
+	GWEN_Buffer_free(dbuf);
       }
 
       /* nextExecutionDate */
@@ -198,6 +201,7 @@ int AH_Job_GetStandingOrders_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 	assert(ti);
 	AB_Transaction_SetNextExecutionDate(t, ti);
         GWEN_Time_free(ti);
+	GWEN_Buffer_free(dbuf);
       }
 
       /* period */

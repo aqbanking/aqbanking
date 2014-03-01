@@ -144,6 +144,7 @@ int addUserFlags(AB_BANKING *ab,
   if (ul) {
     if (AB_User_List2_GetSize(ul)!=1) {
       DBG_ERROR(0, "Ambiguous customer specification");
+      AB_User_List2_free(ul);
       return 3;
     }
     else {

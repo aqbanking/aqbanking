@@ -277,6 +277,7 @@ void AH_Outbox__CBox_Finish(AH_OUTBOX__CBOX *cbox){
       AH_Job_List_Del(j);
       AH_Job_List_Add(j, cbox->finishedJobs);
     } /* while */
+    AH_Job_List_free(jl);
     AH_JobQueue_free(jq);
   } /* while */
 
@@ -292,6 +293,7 @@ void AH_Outbox__CBox_Finish(AH_OUTBOX__CBOX *cbox){
       AH_Job_List_Del(j);
       AH_Job_List_Add(j, cbox->finishedJobs);
     } /* while */
+    AH_Job_List_free(jl);
     AH_JobQueue_free(jq);
   } /* while */
 
@@ -627,8 +629,6 @@ int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox){
 	AH_Job_List_Add(j, cbox->todoJobs);
 	j=jnext;
       }
-      AH_Job_List_free(retryJobs);
-      retryJobs=0;
 
       /* there are some retry jobs, retry them */
       if (AH_JobQueue_GetCount(jq)!=0) {
@@ -638,6 +638,8 @@ int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox){
 	queueCreated=1;
       }
     }
+    AH_Job_List_free(retryJobs);
+    retryJobs=NULL;
 
     /* check whether we could do something in the last loop */
     if (!jobsAdded && !queueCreated) {
@@ -708,6 +710,7 @@ int AH_Outbox__CBox_SendQueue(AH_OUTBOX__CBOX *cbox,
 		       I18N("Sending queue"));
 
   rv=AH_Dialog_SendMessage(dlg, msg);
+  AH_Msg_free(msg);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not send message");
     GWEN_Gui_ProgressLog(0,
@@ -1029,6 +1032,7 @@ void AH_Outbox__CBox_HandleQueueError(AH_OUTBOX__CBOX *cbox,
     }
     AH_Job_List_Add(j, cbox->finishedJobs);
   }
+  AH_Job_List_free(jl);
   AH_JobQueue_free(jq);
 }
 
@@ -1124,6 +1128,7 @@ int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
       }
     } /* while */
 
+    AH_Job_List_free(jl);
     AH_JobQueue_free(jq);
     jq=jqTodo;
 
@@ -1192,6 +1197,7 @@ int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
     }
     else if (rv==1) {
       AH_Dialog_Disconnect(dlg);
+      AH_Dialog_free(dlg);
       GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Info,
 			   I18N("Retrying to open dialog"));
@@ -2116,6 +2122,7 @@ int AH_Outbox_Execute(AH_OUTBOX *ob,
       GWEN_Gui_ProgressLog(pid,
 			   GWEN_LoggerLevel_Error,
 			   I18N("Unable to lock users"));
+      AB_User_List2_free(lockedUsers);
     }
   }
   else
@@ -2139,6 +2146,7 @@ int AH_Outbox_Execute(AH_OUTBOX *ob,
 			     GWEN_LoggerLevel_Error,
 			     I18N("Unable to unlock users"));
       }
+      AB_User_List2_free(lockedUsers);
       if (rv==0 && rv2!=0)
 	rv=rv2;
     }
