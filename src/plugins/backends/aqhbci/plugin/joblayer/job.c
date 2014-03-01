@@ -1430,8 +1430,6 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
   AH_HBCI *h;
   const char *p;
   int i;
-//  int modBank;
-//  int modCust;
   GWEN_MSGENGINE *e;
   int bpdDeleted;
 
@@ -1439,8 +1437,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
   assert(j);
   assert(j->usage);
 
-//  modBank=0;
-//  bpdDeleted=0;
+  bpdDeleted=0;
 
   u=j->user;
   assert(u);
@@ -1504,8 +1501,8 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
             }
             else
               break;
-          }
-        } /* for */
+          } /* for */
+        } /* if languages */
 
         /* read supported version */
         n=GWEN_DB_GetGroup(dbRd,
@@ -1525,11 +1522,9 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
             }
             else
               break;
-          }
-        } /* for */
-//        modCust=1;
+          } /* for */
+        } /* if versions */
         /* FIXME: remove this AH_Bank_SetBpd(b, AH_Bpd_dup(bpd)); */
-//	modBank=1;
 	if (!bpdDeleted) {
 	  AH_Bpd_ClearBpdJobs(bpd);
 	  AH_Bpd_ClearAddr(bpd);
@@ -1564,7 +1559,6 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 	  currService=GWEN_DB_FindNextGroup(currService, "service");
 	}
 
-//        modCust=1;
       } /* if ComData found */
 
       else if (strcasecmp(GWEN_DB_GroupName(dbRd), "PinTanBPD")==0){
@@ -1603,7 +1597,6 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
                               "needTan", needTAN);
           currJob=GWEN_DB_FindNextGroup(currJob, "job");
         } /* while */
-//        modCust=1;
       } /* if PIN/TAN extension found */
 
       else if (strcasecmp(GWEN_DB_GroupName(dbRd), "SegResult")==0){
@@ -1724,7 +1717,6 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 	    GWEN_DB_DeleteGroup(bn, "segment");
 	    DBG_INFO(AQHBCI_LOGDOMAIN, "Added BPD Job %s:%d",
                      GWEN_DB_GroupName(dbRd), segver);
-//            modCust=1;
           } /* if isbpdjob */
           else {
 	    DBG_INFO(AQHBCI_LOGDOMAIN,
@@ -1904,7 +1896,6 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 	    }
 	  }
 	}
-//        modCust=1;
       } /* if accountData */
 
       if (strcasecmp(GWEN_DB_GroupName(dbRd), "BankMsg")==0){
