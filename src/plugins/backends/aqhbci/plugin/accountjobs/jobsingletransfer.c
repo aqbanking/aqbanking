@@ -526,7 +526,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
 	  GWEN_StringList_free(nsl);
 	  return GWEN_ERROR_INVALID;
 	}
-	np=(char*)GWEN_Memory_malloc(l+1);
+	np=(char*)malloc(l+1);
 	memmove(np, GWEN_Buffer_GetStart(tbuf), l+1);
 	GWEN_Buffer_free(tbuf);
 	/* let string list take the newly alllocated string */
@@ -585,7 +585,7 @@ int AH_Job_SingleTransfer__ValidateTransfer(AB_JOB *bj,
           GWEN_StringList_free(nsl);
 	  return GWEN_ERROR_INVALID;
 	}
-	np=(char*)GWEN_Memory_malloc(l+1);
+	np=(char*)malloc(l+1);
 	memmove(np, GWEN_Buffer_GetStart(tbuf), l+1);
 	GWEN_Buffer_free(tbuf);
 	/* let string list take the newly alllocated string */

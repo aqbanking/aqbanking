@@ -76,7 +76,7 @@ int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
     AHB_SWIFT__SetCharValue(data,
                             GWEN_DB_FLAGS_OVERWRITE_VARS,
                             "localBankCode", s);
-    free(s);
+    GWEN_Memory_dealloc(s);
     p=p2+1;
   }
 
@@ -103,7 +103,7 @@ int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
       AHB_SWIFT__SetCharValue(data,
                               GWEN_DB_FLAGS_OVERWRITE_VARS,
                               "localAccountNumber", s);
-      free(s);
+      GWEN_Memory_dealloc(s);
     }
   }
   return 0;
@@ -484,7 +484,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
         } /* switch */
       }
       p=p2;
-      free(s);
+      GWEN_Memory_dealloc(s);
     } /* while */
 #endif
   } /* if structured */
@@ -702,7 +702,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   if (currency)
     AHB_SWIFT__SetCharValue(data, flags,
 			    "value/currency", currency);
-  free(s);
+  GWEN_Memory_dealloc(s);
   bleft-=p2-p;
   p=p2;
 
@@ -747,7 +747,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
       s[p2-p]=0;
       if (strcasecmp(s, "NONREF")!=0)
         AHB_SWIFT__SetCharValue(data, flags, "customerReference", s);
-      free(s);
+      GWEN_Memory_dealloc(s);
     }
     bleft-=p2-p;
     p=p2;
@@ -773,7 +773,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
       memmove(s, p, p2-p+1);
       s[p2-p]=0;
       AHB_SWIFT__SetCharValue(data, flags, "bankReference", s);
-      free(s);
+      GWEN_Memory_dealloc(s);
       bleft-=p2-p;
       p=p2;
       assert(bleft>=0);
@@ -824,7 +824,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
           memmove(s, p, p2-p+1);
           s[p2-p]=0;
           AHB_SWIFT__SetCharValue(data, flags, "origvalue/value", s);
-          free(s);
+          GWEN_Memory_dealloc(s);
           bleft-=p2-p;
           p=p2;
         }
@@ -855,7 +855,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
           memmove(s, p, p2-p+1);
           s[p2-p]=0;
           AHB_SWIFT__SetCharValue(data, flags, "charges/value", s);
-          free(s);
+          GWEN_Memory_dealloc(s);
           bleft-=p2-p;
           p=p2;
         }
@@ -977,7 +977,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
     s[p2-p]=0;
   }
   AHB_SWIFT__SetCharValue(data, flags, "value/value", s);
-  free(s);
+  GWEN_Memory_dealloc(s);
   bleft-=p2-p;
   p=p2;
 
@@ -1078,7 +1078,7 @@ int AHB_SWIFT940_Parse_NS(const AHB_SWIFT_TAG *tg,
 		   AHB_SWIFT_Tag_GetData(tg));
 	  break;
 	}
-        free(s);
+        GWEN_Memory_dealloc(s);
       }
       p=p2;
     }

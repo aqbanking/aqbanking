@@ -201,7 +201,7 @@ int AH_Job_EuTransfer__ValidateTransfer(AB_JOB *bj,
                    "Too many chars in line %d (%d>27), cutting off", n, l);
           l=maxs;
         }
-	np=(char*)GWEN_Memory_malloc(l+1);
+	np=(char*)malloc(l+1);
         memmove(np, GWEN_Buffer_GetStart(tbuf), l+1);
         GWEN_Buffer_free(tbuf);
         /* let string list take the newly alllocated string */
@@ -256,7 +256,7 @@ int AH_Job_EuTransfer__ValidateTransfer(AB_JOB *bj,
 		   "Too many chars in line %d (%d>27), cutting off", n, l);
 	  l=maxs;
 	}
-	np=(char*)GWEN_Memory_malloc(l+1);
+	np=(char*)malloc(l+1);
 	memmove(np, GWEN_Buffer_GetStart(tbuf), l+1);
 	GWEN_Buffer_free(tbuf);
 	/* let string list take the newly alllocated string */
