@@ -171,6 +171,10 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j){
     noItan|=(AH_Job_GetFlags(cj) & AH_JOB_FLAGS_NOITAN);
     cj=AH_Job_List_Next(cj);
   } /* while */
+  /* Account for new job when checking limits for thisJobTypeCount and
+   * jobTypeCount */
+  thisJobTypeCount++;
+  GWEN_StringList_AppendString(jobTypes, AH_Job_GetName(j), 0, 1);
   jobTypeCount=GWEN_StringList_Count(jobTypes);
   GWEN_StringList_free(jobTypes);
 
