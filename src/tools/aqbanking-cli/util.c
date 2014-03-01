@@ -308,7 +308,7 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferType) {
     AB_Transaction_SetPeriod(t, period);
   }
 
-  i=GWEN_DB_GetIntValue(db, "executionCycle", 0, 1);
+  i=GWEN_DB_GetIntValue(db, "executionCycle", 0, -1);
   if (i <= 0) {
     DBG_ERROR(0, "Invalid execution cycle value \"%d\"", i);
     AB_Transaction_free(t);
@@ -507,7 +507,7 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
     }
     AB_Transaction_SetPeriod(t, period);
 
-    i=GWEN_DB_GetIntValue(db, "executionCycle", 0, 1);
+    i=GWEN_DB_GetIntValue(db, "executionCycle", 0, -1);
     if (i <= 0) {
       DBG_ERROR(0, "Invalid execution cycle value \"%d\"", i);
       AB_Transaction_free(t);
