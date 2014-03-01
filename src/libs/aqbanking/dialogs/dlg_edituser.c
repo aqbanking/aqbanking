@@ -219,7 +219,7 @@ void AB_EditUserDialog_Init(GWEN_DIALOG *dlg) {
       GWEN_Buffer_free(tbuf);
       AB_Country_ConstList2Iterator_free(it);
 
-      GWEN_StringList_Sort(sl, 0, GWEN_StringList_SortModeNoCase);
+      GWEN_StringList_Sort(sl, 1, GWEN_StringList_SortModeNoCase);
       idx=-1;
       i=0;
       se=GWEN_StringList_FirstEntry(sl);

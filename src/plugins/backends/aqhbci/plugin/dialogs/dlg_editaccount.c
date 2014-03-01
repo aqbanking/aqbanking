@@ -378,12 +378,7 @@ void AH_EditAccountDialog_RebuildUserLists(GWEN_DIALOG *dlg) {
       u1=AB_User_List2Iterator_Data(it1);
       while(u1) {
 	createUserString(u1, tbuf);
-	GWEN_Dialog_SetCharProperty(dlg,
-				    "userCombo",
-				    GWEN_DialogProperty_AddValue,
-				    0,
-				    GWEN_Buffer_GetStart(tbuf),
-				    0);
+	GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(tbuf), 0, 1);
 	GWEN_Buffer_Reset(tbuf);
 	u1=AB_User_List2Iterator_Next(it1);
       }
@@ -484,7 +479,7 @@ void AH_EditAccountDialog_Init(GWEN_DIALOG *dlg) {
       GWEN_Buffer_free(tbuf);
       AB_Country_ConstList2Iterator_free(it);
 
-      GWEN_StringList_Sort(sl, 0, GWEN_StringList_SortModeNoCase);
+      GWEN_StringList_Sort(sl, 1, GWEN_StringList_SortModeNoCase);
       idx=-1;
       i=0;
       se=GWEN_StringList_FirstEntry(sl);
@@ -546,7 +541,7 @@ void AH_EditAccountDialog_Init(GWEN_DIALOG *dlg) {
       GWEN_Buffer_free(tbuf);
       AB_Country_ConstList2Iterator_free(it);
 
-      GWEN_StringList_Sort(sl, 0, GWEN_StringList_SortModeNoCase);
+      GWEN_StringList_Sort(sl, 1, GWEN_StringList_SortModeNoCase);
       idx=-1;
       i=0;
       se=GWEN_StringList_FirstEntry(sl);
