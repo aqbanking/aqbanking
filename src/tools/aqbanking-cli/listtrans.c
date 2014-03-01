@@ -215,8 +215,6 @@ int listTrans(AB_BANKING *ab,
 
     if (matches && bankName) {
       s=AB_ImExporterAccountInfo_GetBankName(iea);
-      if (!s || !*s)
-        s=AB_ImExporterAccountInfo_GetBankName(iea);
       if (!s || !*s || -1==GWEN_Text_ComparePattern(s, bankName, 0))
         matches=0;
     }
@@ -228,8 +226,6 @@ int listTrans(AB_BANKING *ab,
     }
     if (matches && accountName) {
       s=AB_ImExporterAccountInfo_GetAccountName(iea);
-      if (!s || !*s)
-        s=AB_ImExporterAccountInfo_GetAccountName(iea);
       if (!s || !*s || -1==GWEN_Text_ComparePattern(s, accountName, 0))
         matches=0;
     }
