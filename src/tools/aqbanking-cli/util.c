@@ -88,12 +88,6 @@ int writeContext(const char *ctxFile, const AB_IMEXPORTER_CONTEXT *ctx) {
   GWEN_SYNCIO *sio;
   int rv;
 
-  dbCtx=GWEN_DB_Group_new("context");
-  rv=AB_ImExporterContext_toDb(ctx, dbCtx);
-  if (rv<0) {
-    DBG_ERROR(0, "Error writing context to db");
-    return rv;
-  }
   if (ctxFile==NULL) {
     sio=GWEN_SyncIo_File_fromStdout();
     GWEN_SyncIo_AddFlags(sio,
@@ -132,15 +126,15 @@ int writeContext(const char *ctxFile, const AB_IMEXPORTER_CONTEXT *ctx) {
   rv=GWEN_DB_WriteToIo(dbCtx, sio, GWEN_DB_FLAGS_DEFAULT);
   if (rv<0) {
     DBG_ERROR(0, "Error writing context (%d)", rv);
-    GWEN_DB_Group_free(dbCtx);
-    GWEN_SyncIo_Disconnect(sio);
-    GWEN_SyncIo_free(sio);
-    return rv;
   }
+  else
+    rv=0;
 
   GWEN_DB_Group_free(dbCtx);
+  GWEN_SyncIo_Disconnect(sio);
+  GWEN_SyncIo_free(sio);
 
-  return 0;
+  return rv;
 }
 
 
