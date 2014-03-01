@@ -319,9 +319,6 @@ int AH_Dialog_TestServer_Https(AH_DIALOG *dlg) {
     GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Error preparing connection"));
-    GWEN_HttpSession_Fini(dlg->httpSession);
-    GWEN_HttpSession_free(dlg->httpSession);
-    dlg->httpSession=NULL;
     return rv;
   }
 
