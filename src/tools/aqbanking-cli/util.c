@@ -316,8 +316,10 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferType) {
   }
   AB_Transaction_SetCycle(t, i);
 
-  i=GWEN_DB_GetIntValue(db, "executionDay", 0, 1);
-  if (i <= 0 || (period == AB_Transaction_PeriodWeekly && i > 7) || (period == AB_Transaction_PeriodMonthly && i > 30)) {
+  i=GWEN_DB_GetIntValue(db, "executionDay", 0, -1);
+  if (i <= 0 || (period == AB_Transaction_PeriodWeekly && i > 7) ||
+      (period == AB_Transaction_PeriodMonthly && i > 30 &&
+       (i < 97 || i > 99))) {
     DBG_ERROR(0, "Invalid execution day value \"%d\"", i);
     AB_Transaction_free(t);
     return 0;
@@ -515,8 +517,10 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
     }
     AB_Transaction_SetCycle(t, i);
 
-    i=GWEN_DB_GetIntValue(db, "executionDay", 0, 1);
-    if (i <= 0 || (period == AB_Transaction_PeriodWeekly && i > 7) || (period == AB_Transaction_PeriodMonthly && i > 30)) {
+    i=GWEN_DB_GetIntValue(db, "executionDay", 0, -1);
+    if (i <= 0 || (period == AB_Transaction_PeriodWeekly && i > 7) ||
+        (period == AB_Transaction_PeriodMonthly && i > 30 &&
+         (i < 97 || i > 99))) {
       DBG_ERROR(0, "Invalid execution day value \"%d\"", i);
       AB_Transaction_free(t);
       return NULL;
