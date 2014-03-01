@@ -107,17 +107,6 @@ static int addSepaDebitNote(AB_BANKING *ab,
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT,  /* flags */
     GWEN_ArgsType_Char,             /* type */
-    "remoteCountry",               /* name */
-    0,                             /* minnum */
-    1,                             /* maxnum */
-    0,                             /* short option */
-    "rcountry",                    /* long option */
-    "Specify the remote country code",/* short description */
-    "Specify the remote country code" /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT,  /* flags */
-    GWEN_ArgsType_Char,             /* type */
     "remoteBIC",                /* name */
     1,                             /* minnum */
     1,                             /* maxnum */

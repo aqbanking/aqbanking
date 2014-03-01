@@ -35,7 +35,6 @@ int addTransaction(AB_BANKING *ab,
   GWEN_DB_NODE *db;
   int rv, transferType;
   const char *ctxFile;
-//  const char *country;
   const char *bankId;
   const char *accountId;
   const char *subAccountId;
@@ -87,17 +86,6 @@ int addTransaction(AB_BANKING *ab,
     "subaccount",                   /* long option */
     "Specify the sub account id (Unterkontomerkmal)",    /* short description */
     "Specify the sub account id (Unterkontomerkmal)"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT,  /* flags */
-    GWEN_ArgsType_Char,             /* type */
-    "remoteCountry",               /* name */
-    0,                             /* minnum */
-    1,                             /* maxnum */
-    0,                             /* short option */
-    "rcountry",                    /* long option */
-    "Specify the remote country code",/* short description */
-    "Specify the remote country code" /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT,  /* flags */
@@ -222,7 +210,6 @@ int addTransaction(AB_BANKING *ab,
     return 0;
   }
 
-//  country=GWEN_DB_GetCharValue(db, "country", 0, "de");
   bankId=GWEN_DB_GetCharValue(db, "bankId", 0, 0);
   accountId=GWEN_DB_GetCharValue(db, "accountId", 0, 0);
   subAccountId=GWEN_DB_GetCharValue(db, "subAccountId", 0, 0);

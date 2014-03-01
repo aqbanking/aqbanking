@@ -40,7 +40,6 @@ int debitNotes(AB_BANKING *ab,
   const char *profileFile;
   const char *bankId;
   const char *accountId;
-  const char *country;
   int forceCheck;
   int fillGaps;
   AB_IMEXPORTER_CONTEXT *ctx=0;
@@ -190,7 +189,6 @@ int debitNotes(AB_BANKING *ab,
   forceCheck=GWEN_DB_GetIntValue(db, "forceCheck", 0, 0);
   ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
   fillGaps=GWEN_DB_GetIntValue(db, "fillGaps", 0, 0);
-  country=GWEN_DB_GetCharValue(db, "country", 0, "de");
   inFile=GWEN_DB_GetCharValue(db, "inFile", 0, 0);
 
   rv=AB_Banking_Init(ab);
@@ -254,19 +252,15 @@ int debitNotes(AB_BANKING *ab,
 
       t=AB_ImExporterAccountInfo_GetFirstTransaction(iea);
       while(t) {
-	const char *rCountry;
 	const char *rBankId;
 	const char *rAccountId;
 	AB_BANKINFO_CHECKRESULT res;
 	AB_JOB *j;
 
-	rCountry=AB_Transaction_GetRemoteCountry(t);
-	if (rCountry==NULL)
-          rCountry=country;
         rBankId=AB_Transaction_GetRemoteBankCode(t);
 	rAccountId=AB_Transaction_GetRemoteAccountNumber(t);
 	res=AB_Banking_CheckAccount(ab,
-				    rCountry,
+				    "de",
 				    0,
 				    rBankId,
 				    rAccountId);
