@@ -232,7 +232,7 @@ int addTransaction(AB_BANKING *ab,
     DBG_ERROR(0, "Account not found");
     return 2;
   }
-  if (AB_Account_List2_GetSize(al)==0) {
+  if (al==NULL || AB_Account_List2_GetSize(al)==0) {
     DBG_ERROR(0, "Account not found");
     return 2;
   }

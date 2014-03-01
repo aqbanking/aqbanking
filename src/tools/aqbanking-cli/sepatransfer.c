@@ -217,7 +217,7 @@ int sepaTransfer(AB_BANKING *ab,
 
   /* get account */
   al=AB_Banking_FindAccounts(ab, "*", "*", bankId, accountId, subAccountId);
-  if (AB_Account_List2_GetSize(al)==0) {
+  if (al==NULL || AB_Account_List2_GetSize(al)==0) {
     DBG_ERROR(0, "Account not found");
     return 2;
   }
