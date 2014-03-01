@@ -1177,7 +1177,6 @@ int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
       AH_Dialog_free(dlg);
       return rv;
     }
-    assert(dlg);
   
     jq=AH_JobQueue_List_First(jql);
     jqflags=AH_JobQueue_GetFlags(jq);
@@ -1268,7 +1267,6 @@ int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox,
     AH_Dialog_free(dlg);
     return rv;
   }
-  assert(dlg);
 
   /* select iTAN mode */
   if (!(AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NOITAN)) {
