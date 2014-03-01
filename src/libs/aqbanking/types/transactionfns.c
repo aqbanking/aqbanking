@@ -618,19 +618,71 @@ int AB_Transaction_CheckDateAgainstSequenceLimits(const AB_TRANSACTION *t, const
 
 
 
-static int _checkStringForRestrictedSepaCharset(const char *s) {
+static int _checkStringForSepaCharset(const char *s, int restricted) {
+  char *ascii = "':?,-(+.)/ &*$%";
+#define DTAUSOFFSET 11
+
   assert(s);
+  if (restricted)
+    ascii[DTAUSOFFSET] = '\0';
+
   while(*s) {
-    unsigned char c=*s;
+    unsigned char c=*s++;
 
     if (!((c>='A' && c<='Z') ||
           (c>='a' && c<='z') ||
           (c>='0' && c<='9') ||
-          strchr("':?,-(+.)/ ", c)!=NULL)) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in string: '%c'", c);
-      return GWEN_ERROR_BAD_DATA;
+          strchr(ascii, c)!=NULL)) {
+      char errchr[7];
+      int i = 0;
+
+      if (c == 0xC3 && !restricted) {
+	c = *s++;
+	switch(c) {
+	case 0x84:	/* AE */
+	case 0xA4:	/* ae */
+	case 0x96:	/* OE */
+	case 0xB6:	/* oe */
+	case 0x9C:	/* UE */
+	case 0xBC:	/* ue */
+	case 0x9F:	/* ss */
+	  if ((*s & 0xC0) != 0x80)
+	    break;
+	  /* these are no umlauts, after all, so fall through */
+
+	default:
+	  errchr[i++]=0xC3;
+	  if ((c & 0xC0) == 0x80)
+	    errchr[i++]=c;
+	  else
+	    /* UTF-8 sequence ended prematurely */
+	    s--;
+	  break;
+	}
+      }
+      else
+	errchr[i++] = c;
+
+      if (i) {
+	while((*s & 0xC0) == 0x80)
+	  if (i<6)
+	    errchr[i++]=*s++;
+	  else {
+	    i++;
+	    s++;
+	  }
+
+	if (i<7 && (i>1 || !(c & 0x80))) {
+	  errchr[i] = '\0';
+	  DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in string: '%s'",
+		    errchr);
+	}
+	else {
+	  DBG_ERROR(AQBANKING_LOGDOMAIN, "String not properly UTF-8 encoded");
+	}
+	return GWEN_ERROR_BAD_DATA;
+      }
     }
-    s++;
   }
 
   return 0;
@@ -717,7 +769,7 @@ int AB_Transaction_CheckForSepaConformity(const AB_TRANSACTION *t, int restricte
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing or empty local name in transaction");
       return GWEN_ERROR_BAD_DATA;
     }
-    rv=_checkStringForRestrictedSepaCharset(s);
+    rv=_checkStringForSepaCharset(s, restricted);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in local name");
       return rv;
@@ -732,7 +784,7 @@ int AB_Transaction_CheckForSepaConformity(const AB_TRANSACTION *t, int restricte
       while(se) {
         s=GWEN_StringListEntry_Data(se);
         if (s && *s) {
-          rv=_checkStringForRestrictedSepaCharset(s);
+          rv=_checkStringForSepaCharset(s, restricted);
           if (rv<0) {
             DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in remote name");
             return rv;
