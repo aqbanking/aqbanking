@@ -39,6 +39,8 @@ noinst_HEADERS=\
   jobsepaxfersingle_p.h \
   jobsepadebitsingle_l.h \
   jobsepadebitsingle_p.h \
+  jobsepacor1datedsinglecreate_l.h \
+  jobsepacor1datedsinglecreate_p.h \
   jobtransferbase_l.h jobtransferbase_p.h \
   jobsepastandingordercreate_l.h jobsepastandingordercreate_p.h
 
@@ -57,6 +59,7 @@ libhbciaccjobs_la_SOURCES=\
   jobsepadebitdatedmulticreate.c \
   jobsepaxfersingle.c \
   jobsepadebitsingle.c \
+  jobsepacor1datedsinglecreate.c \
   jobtransferbase.c \
   jobsepastandingordercreate.c
 
@@ -92,6 +95,7 @@ xmlfiles=\
   $(srcdir)/jobsepadebitdatedmulticreate.xml \
   $(srcdir)/jobsepaxfersingle.xml \
   $(srcdir)/jobsepadebitsingle.xml \
+  $(srcdir)/jobsepacor1datedsinglecreate.xml \
   $(srcdir)/jobsepastandingordercreate.xml \
   $(srcdir)/jobsepastandingorderget.xml
 

@@ -71,6 +71,7 @@ void GWENHYWFAR_CB AH_Job_TransferBase_FreeData(void *bp, void *p){
 
   aj=(AH_JOB_TRANSFERBASE*)p;
   free(aj->fiid);
+  GWEN_StringList_free(aj->sepaDescriptors);
 
   GWEN_FREE_OBJECT(aj);
 }
@@ -587,6 +588,77 @@ void AH_Job_TransferBase_SetExchangeResultsFn(AH_JOB *j, AH_JOB_TRANSFERBASE_EXC
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
+void AH_Job_TransferBase_LoadSepaDescriptors(AH_JOB *j){
+  AH_JOB_TRANSFERBASE *aj;
+  GWEN_DB_NODE *dbParams;
+  GWEN_DB_NODE *dbT;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j);
+  assert(aj);
+
+  /* get params */
+  dbParams=AH_Job_GetParams(j);
+  assert(dbParams);
+
+  if (aj->sepaDescriptors==NULL)
+    aj->sepaDescriptors=GWEN_StringList_new();
+  else
+    GWEN_StringList_Clear(aj->sepaDescriptors);
+
+  /* read supported SEPA formats */
+  dbT=GWEN_DB_FindFirstGroup(dbParams, "SupportedSepaFormats");
+  if (!dbT) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No SEPA descriptor found");
+    GWEN_DB_Dump(dbParams, 2);
+  }
+  while(dbT) {
+    int i;
+
+    for (i=0; i<100; i++) {
+      const char *s;
+
+      s=GWEN_DB_GetCharValue(dbT, "format", i, NULL);
+      if (! (s && *s))
+        break;
+      GWEN_StringList_AppendString(aj->sepaDescriptors, s, 0, 1);
+      DBG_INFO(AQHBCI_LOGDOMAIN,
+               "Adding SEPA descriptor [%s] for GV %s",
+               s, AH_Job_GetName(j));
+    }
+
+    dbT=GWEN_DB_FindNextGroup(dbT, "SupportedSepaFormats");
+  }
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+const char *AH_Job_TransferBase_FindSepaDescriptor(AH_JOB *j, const char *tmpl) {
+  AH_JOB_TRANSFERBASE *aj;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j);
+  assert(aj);
+
+  if (aj->sepaDescriptors) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(aj->sepaDescriptors);
+    while(se) {
+      const char *s;
+
+      s=GWEN_StringListEntry_Data(se);
+      if (s && *s && -1!=GWEN_Text_ComparePattern(s, tmpl, 1))
+	return s;
+
+      se=GWEN_StringListEntry_Next(se);
+    }
+  }
+
+  return NULL;
+}
 
 
 

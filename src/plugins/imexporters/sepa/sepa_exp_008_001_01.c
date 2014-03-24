@@ -7,7 +7,8 @@
 int AH_ImExporterSEPA_Export_008_001_01(AB_IMEXPORTER *ie,
                                         AB_IMEXPORTER_CONTEXT *ctx,
                                         GWEN_SYNCIO *sio,
-                                        GWEN_DB_NODE *params){
+                                        GWEN_DB_NODE *params,
+                                        int subType){
   GWEN_XMLNODE *root;
   GWEN_XMLNODE *documentNode;
   GWEN_XMLNODE *painNode;

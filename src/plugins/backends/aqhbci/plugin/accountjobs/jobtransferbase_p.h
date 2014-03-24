@@ -25,6 +25,8 @@ struct AH_JOB_TRANSFERBASE {
   AH_JOB_TRANSFERBASE_EXCHANGE_FN exchangeArgsFn;
   AH_JOB_TRANSFERBASE_EXCHANGE_FN exchangeResultsFn;
 
+  GWEN_STRINGLIST *sepaDescriptors;
+
 };
 static void GWENHYWFAR_CB AH_Job_TransferBase_FreeData(void *bp, void *p);
 

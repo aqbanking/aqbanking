@@ -41,6 +41,27 @@ int AH_Job_TransferBase_ExchangeArgs_SepaUndated(AH_JOB *j, AB_JOB *bj, AB_IMEXP
 int AH_Job_TransferBase_ExchangeArgs_SepaDatedDebit(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx);
 
 
+/**
+ * @name SEPA Descriptors
+ * For jobs which have their own list of supported SEPA formats in their BPD those can be handled here.
+ * Those jobs MUST call @ref AH_Job_TransferBase_LoadSepaDescriptors inside the constructor.
+ */
+/*@{*/
+
+/**
+ * Load list of supported SEPA descriptors from the job's BPD.
+ */
+void AH_Job_TransferBase_LoadSepaDescriptors(AH_JOB *j);
+
+/**
+ * Find a SEPA descriptor in the internal list of supported SEPA descriptors read from the BPD.
+ */
+const char *AH_Job_TransferBase_FindSepaDescriptor(AH_JOB *j, const char *tmpl);
+
+/*@}*/
+
+
+
 #endif /* AH_JOBTRANSFERBASE_L_H */
 
 

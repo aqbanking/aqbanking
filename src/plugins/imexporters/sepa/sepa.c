@@ -104,13 +104,22 @@ int AH_ImExporterSEPA_Export(AB_IMEXPORTER *ie,
     return AH_ImExporterSEPA_Export_001_002_03(ie, ctx, sio, params);
   }
   else if (strcasecmp(s, "008_001_01")==0) {
-    return AH_ImExporterSEPA_Export_008_001_01(ie, ctx, sio, params);
+    return AH_ImExporterSEPA_Export_008_001_01(ie, ctx, sio, params, AH_ImExportSEPA_SubType_Default);
+  }
+  else if (strcasecmp(s, "008_001_01_cor1")==0) {
+    return AH_ImExporterSEPA_Export_008_001_01(ie, ctx, sio, params, AH_ImExportSEPA_SubType_Cor1);
   }
   else if (strcasecmp(s, "008_002_02")==0) {
-    return AH_ImExporterSEPA_Export_008_002_02(ie, ctx, sio, params);
+    return AH_ImExporterSEPA_Export_008_002_02(ie, ctx, sio, params, AH_ImExportSEPA_SubType_Default);
+  }
+  else if (strcasecmp(s, "008_002_02_cor1")==0) {
+    return AH_ImExporterSEPA_Export_008_002_02(ie, ctx, sio, params, AH_ImExportSEPA_SubType_Cor1);
   }
   else if (strcasecmp(s, "008_003_02")==0) {
-    return AH_ImExporterSEPA_Export_008_003_02(ie, ctx, sio, params);
+    return AH_ImExporterSEPA_Export_008_003_02(ie, ctx, sio, params, AH_ImExportSEPA_SubType_Default);
+  }
+  else if (strcasecmp(s, "008_003_02_cor1")==0) {
+    return AH_ImExporterSEPA_Export_008_003_02(ie, ctx, sio, params, AH_ImExportSEPA_SubType_Cor1);
   }
   else {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unknown SEPA type \"%s\"", s);

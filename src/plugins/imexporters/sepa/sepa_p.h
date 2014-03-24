@@ -21,6 +21,13 @@ struct AH_IMEXPORTER_SEPA {
 };
 
 
+
+enum {
+  AH_ImExportSEPA_SubType_Default=0,
+  AH_ImExportSEPA_SubType_Cor1
+};
+
+
 AQBANKING_EXPORT
 GWEN_PLUGIN *imexporter_sepa_factory(GWEN_PLUGIN_MANAGER *pm,
 				     const char *name,
@@ -67,20 +74,23 @@ static
 int AH_ImExporterSEPA_Export_008_001_01(AB_IMEXPORTER *ie,
                                         AB_IMEXPORTER_CONTEXT *ctx,
                                         GWEN_SYNCIO *sio,
-                                        GWEN_DB_NODE *params);
+                                        GWEN_DB_NODE *params,
+                                        int subType);
 
 static
 int AH_ImExporterSEPA_Export_008_002_02(AB_IMEXPORTER *ie,
                                         AB_IMEXPORTER_CONTEXT *ctx,
                                         GWEN_SYNCIO *sio,
-                                        GWEN_DB_NODE *params);
+                                        GWEN_DB_NODE *params,
+                                        int subType);
 
 
 static
 int AH_ImExporterSEPA_Export_008_003_02(AB_IMEXPORTER *ie,
                                         AB_IMEXPORTER_CONTEXT *ctx,
                                         GWEN_SYNCIO *sio,
-                                        GWEN_DB_NODE *params);
+                                        GWEN_DB_NODE *params,
+                                        int subType);
 
 
 #endif /* AQHBCI_IMEX_SEPA_P_H */

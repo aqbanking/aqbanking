@@ -7,7 +7,8 @@
 int AH_ImExporterSEPA_Export_008_002_02(AB_IMEXPORTER *ie,
                                         AB_IMEXPORTER_CONTEXT *ctx,
                                         GWEN_SYNCIO *sio,
-                                        GWEN_DB_NODE *params){
+                                        GWEN_DB_NODE *params,
+                                        int subType){
   GWEN_XMLNODE *root;
   GWEN_XMLNODE *documentNode;
   GWEN_XMLNODE *painNode;
@@ -171,7 +172,11 @@ int AH_ImExporterSEPA_Export_008_002_02(AB_IMEXPORTER *ie,
 
       nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "LclInstrm");
       if (nnn) {
-	GWEN_XMLNode_SetCharValue(nnn, "Cd", "CORE");
+        switch(subType) {
+        default:
+        case AH_ImExportSEPA_SubType_Default: GWEN_XMLNode_SetCharValue(nnn, "Cd", "CORE"); break;
+        case AH_ImExportSEPA_SubType_Cor1:    GWEN_XMLNode_SetCharValue(nnn, "Cd", "COR1"); break;
+        }
 	GWEN_XMLNode_AddChild(nn, nnn);
       }
 
