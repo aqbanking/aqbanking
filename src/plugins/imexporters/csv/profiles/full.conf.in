@@ -131,8 +131,16 @@ params {
     78="commission/value"
     79="commission/currency"
     80="bankAccountId"
-    81="groupId"               # double entry
+    81="groupId"                    # double entry
 
+    82="creditorSchemeId"           # SEPA debit notes
+    83="mandateId"
+    84="mandateDate/dateString"
+    85="mandateDebitorName"
+    86="sequenceType"
+    87="originalCreditorSchemeId"
+    88="originalMandateId"
+    89="originalCreditorName"
   } # columns
 
 } # params
