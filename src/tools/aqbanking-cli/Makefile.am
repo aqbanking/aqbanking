@@ -42,6 +42,7 @@ EXTRA_DIST=\
   updateconf.c \
   sepatransfer.c \
   sepadebitnote.c \
+  sepadebitnotes.c \
   separecurtransfer.c
 
 

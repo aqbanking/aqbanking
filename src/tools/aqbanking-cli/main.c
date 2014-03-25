@@ -48,6 +48,7 @@
 #include "sepatransfer.c"
 #include "addsepadebitnote.c"
 #include "sepadebitnote.c"
+#include "sepadebitnotes.c"
 #include "separecurtransfer.c"
 
 
@@ -246,6 +247,8 @@ int main(int argc, char **argv) {
     cmdAddHelpStr(ubuf, "sepadebitnote",
                   I18N("Issue a single SEPA debit note (data from command line)"));
 
+    cmdAddHelpStr(ubuf, "sepadebitnotes",
+                  I18N("Issue a number of SEPA debit notes (data from a file)"));
 
     cmdAddHelpStr(ubuf, "addtrans",
                   I18N("Add a transfer to an existing import context file"));
@@ -368,6 +371,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "sepadebitnote")==0) {
     rv=sepaDebitNote(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "sepadebitnotes")==0) {
+    rv=sepaDebitNotes(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "sepacreatesto")==0) {
     rv=sepaRecurTransfer(ab, db, argc, argv);
