@@ -326,7 +326,7 @@ int sepaDebitNote(AB_BANKING *ab,
   }
   rv=AB_Banking_CheckIban(lIBAN);
   if (rv<0) {
-    DBG_ERROR(0, "Invalid local IBAN (%s)", rIBAN);
+    DBG_ERROR(0, "Invalid local IBAN (%s)", lIBAN);
     AB_Transaction_free(t);
     return 3;
   }
