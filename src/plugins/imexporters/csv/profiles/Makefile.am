@@ -7,7 +7,7 @@ EXTRA_DIST=default.conf.in aqmoney1.conf.in aqmoney2.conf.in \
   diba.conf.in sparda.conf.in full.conf.in dkb.conf.in dkb-cash.conf.in \
   hypovereinsbank.conf.in postbankffm.conf.in cli-transfers.conf.in \
   sns.conf.in consors-tagesgeld.conf.in \
-  transfers.conf.in
+  transfers.conf.in sepadebitnotes.conf.in
 
 profilesdir = $(aqbanking_pkgdatadir)/imexporters/csv/profiles
 profiles_DATA=default.conf aqmoney1.conf aqmoney2.conf \
@@ -17,5 +17,5 @@ profiles_DATA=default.conf aqmoney1.conf aqmoney2.conf \
   diba.conf sparda.conf full.conf dkb.conf dkb-cash.conf \
   hypovereinsbank.conf postbankffm.conf cli-transfers.conf \
   sns.conf consors-tagesgeld.conf \
-  transfers.conf
+  transfers.conf sepadebitnotes.conf
 

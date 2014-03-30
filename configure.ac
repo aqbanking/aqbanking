@@ -1431,6 +1431,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/csv/profiles/cli-transfers.conf
   src/plugins/imexporters/csv/profiles/sns.conf
   src/plugins/imexporters/csv/profiles/transfers.conf
+  src/plugins/imexporters/csv/profiles/sepadebitnotes.conf
   src/plugins/imexporters/openhbci1/Makefile
   src/plugins/imexporters/openhbci1/openhbci1.xml
   src/plugins/imexporters/openhbci1/profiles/Makefile
