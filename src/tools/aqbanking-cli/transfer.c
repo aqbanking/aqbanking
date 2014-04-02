@@ -242,7 +242,7 @@ int transfer(AB_BANKING *ab,
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT,                
-    GWEN_ArgsType_Int,
+    GWEN_ArgsType_Char,
     "executionPeriod", 
     0,  
     1,  
