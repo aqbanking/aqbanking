@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue May 03 2005
- copyright   : (C) 2005-2010 by Martin Preuss
+ copyright   : (C) 2005-2014 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -46,6 +46,7 @@
 #include "fillgaps.c"
 #include "updateconf.c"
 #include "sepatransfer.c"
+#include "sepatransfers.c"
 #include "addsepadebitnote.c"
 #include "sepadebitnote.c"
 #include "sepadebitnotes.c"
@@ -350,6 +351,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "sepatransfer")==0) {
     rv=sepaTransfer(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "sepatransfers")==0) {
+    rv=sepaTransfers(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "listtransfers")==0) {
     rv=listTransfers(ab, db, argc, argv);
