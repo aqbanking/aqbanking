@@ -41,6 +41,12 @@ extern "C" {
 /* this account can be used with SEPA jobs */
 #define AH_BANK_FLAGS_SEPA                    0x00000008
 
+/** Prefer single transfers over multi transfers for this account (SEPA) */
+#define AH_BANK_FLAGS_SEPA_PREFER_SINGLE_TRANSFER  0x00000010
+/** Prefer single debit notes over multi debit notes for this account (SEPA) */
+#define AH_BANK_FLAGS_SEPA_PREFER_SINGLE_DEBITNOTE 0x00000020
+
+
 #define AH_BANK_FLAGS_DEFAULT 0
 
 /*@}*/

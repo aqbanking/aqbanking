@@ -452,23 +452,45 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
     break;
 
   case AB_Job_TypeSepaDebitNote:
-    /* try multi transfer first */
-    mj=AH_Job_SepaDebitDatedMultiCreate_new(mu, ma);
-    if (!mj) {
-      DBG_WARN(AQHBCI_LOGDOMAIN,
-               "Multi-job not supported with this account, "
-               "using single-job");
-    }
+    if (!(aFlags & AH_BANK_FLAGS_SEPA_PREFER_SINGLE_TRANSFER)) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers multi jobs");
 
-    if (!mj) {
-      /* try single transfer */
+      /* try multi transfer first */
+      mj=AH_Job_SepaDebitDatedMultiCreate_new(mu, ma);
+      if (!mj) {
+        DBG_WARN(AQHBCI_LOGDOMAIN, "SepaDebitDatedMultiCreate not supported with this account");
+
+        /* try single transfer */
+        mj=AH_Job_SepaDebitDatedSingleCreate_new(mu, ma);
+        if (!mj) {
+          DBG_WARN(AQHBCI_LOGDOMAIN, "Job \"SepaDebitDatedSingleCreate\" not supported with this account, trying old single debit");
+
+          /* try old singleDebit job next */
+          mj=AH_Job_SepaDebitSingle_new(mu, ma);
+          if (!mj) {
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"SepaDebitSingle\" not supported with this account");
+            return GWEN_ERROR_NOT_AVAILABLE;
+          }
+        }
+      }
+    }
+    else {
+      /* try single job first */
       mj=AH_Job_SepaDebitDatedSingleCreate_new(mu, ma);
       if (!mj) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"SepaDebitDatedSingleCreate\" not supported with this account, trying old single debit");
+        DBG_WARN(AQHBCI_LOGDOMAIN, "SepaDebitDatedSingleCreate not supported with this account");
+
+        /* try old singleDebit job next */
         mj=AH_Job_SepaDebitSingle_new(mu, ma);
         if (!mj) {
           DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"SepaDebitSingle\" not supported with this account");
-          return GWEN_ERROR_NOT_AVAILABLE;
+
+          /* try multi transfer next */
+          mj=AH_Job_SepaDebitDatedMultiCreate_new(mu, ma);
+          if (!mj) {
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "SepaDebitDatedMultiCreate not supported with this account");
+            return GWEN_ERROR_NOT_AVAILABLE;
+          }
         }
       }
     }

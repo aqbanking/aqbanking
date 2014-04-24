@@ -41,6 +41,9 @@
 
         <widget type="checkBox" name="preferSingleTransferCheck" text="Prefer Single Transfer" />
         <widget type="checkBox" name="preferSingleDebitNoteCheck" text="Prefer Single Debit Note" />
+
+        <widget type="checkBox" name="sepaPreferSingleTransferCheck" text="Prefer Single SEPA Transfer" />
+        <widget type="checkBox" name="sepaPreferSingleDebitNoteCheck" text="Prefer Single SEPA Debit Note" />
       </widget>
 
     </widget>
