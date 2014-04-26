@@ -30,6 +30,8 @@
 #include "jobsepaxfersingle_l.h"
 #include "jobsepadebitdatedsinglecreate_l.h"
 #include "jobsepadebitdatedmulticreate_l.h"
+#include "jobsepacor1datedsinglecreate_l.h"
+
 #include "jobsepastandingordercreate_l.h"
 
 #include "jobsepadebitsingle_l.h" /* deprecated job */
@@ -493,6 +495,14 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
           }
         }
       }
+    }
+    break;
+
+  case AB_Job_TypeSepaFlashDebitNote:
+    mj=AH_Job_SepaCor1DebitDatedSingleCreate_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
     }
     break;
 
