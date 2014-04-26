@@ -51,6 +51,7 @@ iheader_HEADERS= \
  jobsepatransfer_be.h \
  jobsepadebitnote.h \
  jobsepadebitnote_be.h \
+ jobsepaflashdebitnote.h \
  jobgetdatedtransfers.h \
  jobgetdatedtransfers_be.h \
  jobcreatesto.h \
@@ -81,6 +82,7 @@ libjobs_la_SOURCES=\
  jobsingledebitnote.c \
  jobsepatransfer.c \
  jobsepadebitnote.c \
+ jobsepaflashdebitnote.c \
  jobcreatesto.c \
  jobmodifysto.c \
  jobdeletesto.c \

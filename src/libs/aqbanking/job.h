@@ -193,7 +193,10 @@ typedef enum {
   /** modifies an existing standing order (SEPA) */
   AB_Job_TypeSepaModifyStandingOrder,
   /** deletes an existing standing order (SEPA) */
-  AB_Job_TypeSepaDeleteStandingOrder
+  AB_Job_TypeSepaDeleteStandingOrder,
+
+  /** SEPA debit note with shortest possible setup time */
+  AB_Job_TypeSepaFlashDebitNote
 
 } AB_JOB_TYPE;
 
