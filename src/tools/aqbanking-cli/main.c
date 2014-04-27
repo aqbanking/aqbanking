@@ -50,6 +50,7 @@
 #include "addsepadebitnote.c"
 #include "sepadebitnote.c"
 #include "sepadebitnotes.c"
+#include "sepaflashdebitnote.c"
 #include "separecurtransfer.c"
 
 
@@ -378,6 +379,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "sepadebitnotes")==0) {
     rv=sepaDebitNotes(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "sepaFlashDebitNote")==0) {
+    rv=sepaFlashDebitNote(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "sepacreatesto")==0) {
     rv=sepaRecurTransfer(ab, db, argc, argv);

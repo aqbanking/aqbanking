@@ -44,6 +44,7 @@ EXTRA_DIST=\
   sepatransfers.c \
   sepadebitnote.c \
   sepadebitnotes.c \
+  sepaflashdebitnote.c \
   separecurtransfer.c
 
 
