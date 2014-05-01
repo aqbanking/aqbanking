@@ -1301,8 +1301,16 @@ int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 	if (p && l) {
 	  GWEN_BUFFER *bbuf;
 
-	  bbuf=GWEN_Buffer_new(0, 256, 0, 1);
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Job has a challengeHHD string:");
+          GWEN_Text_LogString((const char*)p, l, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Info);
+
+          bbuf=GWEN_Buffer_new(0, 256, 0, 1);
+#if 0
           GWEN_Text_ToHexBuffer((const char*) p, l, bbuf, 0, 0, 0);
+#else
+          /* data is a string, no need to transform to hex */
+          GWEN_Buffer_AppendBytes(bbuf, (const char*) p, l);
+#endif
 	  free(aj->challengeHhd);
 	  aj->challengeHhd=strdup(GWEN_Buffer_GetStart(bbuf));
 	  GWEN_Buffer_free(bbuf);
