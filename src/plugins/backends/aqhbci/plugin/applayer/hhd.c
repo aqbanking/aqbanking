@@ -27,7 +27,9 @@
 int AH_HHD14_ReadBytesDec(const char *p, int len) {
   int r=0;
   int i;
+  const char *pSave;
 
+  pSave=p;
   for (i=0; i<len; i++) {
     uint8_t c;
 
@@ -35,7 +37,8 @@ int AH_HHD14_ReadBytesDec(const char *p, int len) {
     if (c==0)
       break;
     if (c<'0' || c>'9') {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad char in data (no decimal digit)");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad char in data (no decimal digit), pos=%d, byte=%02x", i, c);
+      GWEN_Text_LogString(pSave, len, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error);
       return GWEN_ERROR_INVALID;
     }
     c-='0';
@@ -424,7 +427,8 @@ int AH_HHD14_Translate(const char *code, GWEN_BUFFER *cbuf) {
 
   rv=AH_HHD14__Translate(GWEN_Buffer_GetStart(xbuf), cbuf);
   if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error translating HHD code (%d)", rv);
+    GWEN_Text_LogString(code, strlen(code), AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error);
     GWEN_Buffer_free(xbuf);
     return rv;
   }
