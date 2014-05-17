@@ -6,6 +6,7 @@ char longDescr="Profile for pain.008.003.02"
 int import="0"
 int export="1"
 
-char type="008_003_02"
+char type="008.003.02"
 
-
+# XML namespace of the pain messages handled by this profile
+char xmlns="urn:iso:std:iso:20022:tech:xsd:pain.008.003.02"

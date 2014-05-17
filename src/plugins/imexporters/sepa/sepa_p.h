@@ -71,26 +71,12 @@ int AH_ImExporterSEPA_Export_001_002_03(AB_IMEXPORTER *ie,
                                         GWEN_DB_NODE *params);
 
 static
-int AH_ImExporterSEPA_Export_008_001_01(AB_IMEXPORTER *ie,
-                                        AB_IMEXPORTER_CONTEXT *ctx,
-                                        GWEN_SYNCIO *sio,
-                                        GWEN_DB_NODE *params,
-                                        int subType);
-
-static
-int AH_ImExporterSEPA_Export_008_002_02(AB_IMEXPORTER *ie,
-                                        AB_IMEXPORTER_CONTEXT *ctx,
-                                        GWEN_SYNCIO *sio,
-                                        GWEN_DB_NODE *params,
-                                        int subType);
-
-
-static
-int AH_ImExporterSEPA_Export_008_003_02(AB_IMEXPORTER *ie,
-                                        AB_IMEXPORTER_CONTEXT *ctx,
-                                        GWEN_SYNCIO *sio,
-                                        GWEN_DB_NODE *params,
-                                        int subType);
+int AH_ImExporterSEPA_Export_Pain_008(AB_IMEXPORTER *ie,
+                                      AB_IMEXPORTER_CONTEXT *ctx,
+                                      GWEN_SYNCIO *sio,
+                                      uint32_t doctype[],
+                                      GWEN_DB_NODE *params,
+                                      int subType);
 
 
 #endif /* AQHBCI_IMEX_SEPA_P_H */

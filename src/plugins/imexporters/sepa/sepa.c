@@ -22,6 +22,9 @@
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/inherit.h>
 
+#include <stdlib.h>
+#include <ctype.h>
+
 
 
 GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_SEPA);
@@ -90,36 +93,50 @@ int AH_ImExporterSEPA_Export(AB_IMEXPORTER *ie,
 			     GWEN_SYNCIO *sio,
 			     GWEN_DB_NODE *params){
   AH_IMEXPORTER_SEPA *ieh;
+  uint32_t doctype[]={0, 0, 0};
   const char *s;
 
   assert(ie);
   ieh=GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AH_IMEXPORTER_SEPA, ie);
   assert(ieh);
 
-  s=GWEN_DB_GetCharValue(params, "type", 0, "ccm");
+  s=GWEN_DB_GetCharValue(params, "type", 0, 0);
+  if (s) {
+    int i, j;
+    const char *p;
+    char *tail;
+
+    /* Parse strings of the form xxx.yyy.zz */
+    p=tail=(char*)s;
+    for (i=0; i<3 && *tail; i++) {
+      j=strtol(p, &tail, 10);
+      if (!isspace(*p) &&
+	  ((*tail=='.' && tail-p==3) || (*tail=='\0' && tail-p==2)) &&
+	  j>0)
+	doctype[i]=j;
+      else
+	break;
+      p=tail+1;
+    }
+    if (i<3)
+      /* Parsing the "type" option failed, record it for later reference */
+      doctype[0]=0;
+  }
+
+  s=GWEN_DB_GetCharValue(params, "name", 0, 0);
   if (strcasecmp(s, "ccm")==0) {
     return AH_ImExporterSEPA_Export_Ccm(ie, ctx, sio, params);
   }
   else if (strcasecmp(s, "001_002_03")==0) {
     return AH_ImExporterSEPA_Export_001_002_03(ie, ctx, sio, params);
   }
-  else if (strcasecmp(s, "008_001_01")==0) {
-    return AH_ImExporterSEPA_Export_008_001_01(ie, ctx, sio, params, AH_ImExportSEPA_SubType_Default);
-  }
-  else if (strcasecmp(s, "008_001_01_cor1")==0) {
-    return AH_ImExporterSEPA_Export_008_001_01(ie, ctx, sio, params, AH_ImExportSEPA_SubType_Cor1);
-  }
-  else if (strcasecmp(s, "008_002_02")==0) {
-    return AH_ImExporterSEPA_Export_008_002_02(ie, ctx, sio, params, AH_ImExportSEPA_SubType_Default);
-  }
-  else if (strcasecmp(s, "008_002_02_cor1")==0) {
-    return AH_ImExporterSEPA_Export_008_002_02(ie, ctx, sio, params, AH_ImExportSEPA_SubType_Cor1);
-  }
-  else if (strcasecmp(s, "008_003_02")==0) {
-    return AH_ImExporterSEPA_Export_008_003_02(ie, ctx, sio, params, AH_ImExportSEPA_SubType_Default);
-  }
   else if (strcasecmp(s, "008_003_02_cor1")==0) {
-    return AH_ImExporterSEPA_Export_008_003_02(ie, ctx, sio, params, AH_ImExportSEPA_SubType_Cor1);
+    return AH_ImExporterSEPA_Export_Pain_008(ie, ctx, sio, doctype, params,
+					     AH_ImExportSEPA_SubType_Cor1);
+  }
+  else if (doctype[0]==8) {
+    return AH_ImExporterSEPA_Export_Pain_008(ie, ctx, sio, doctype, params,
+					     AH_ImExportSEPA_SubType_Default);
   }
   else {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unknown SEPA type \"%s\"", s);
@@ -153,8 +170,6 @@ int AH_ImExporterSEPA_CheckFile(AB_IMEXPORTER *ie, const char *fname){
 
 #include "sepa_exp_ccm.c"
 #include "sepa_exp_123.c"
-#include "sepa_exp_008_001_01.c"
-#include "sepa_exp_008_002_02.c"
-#include "sepa_exp_008_003_02.c"
+#include "sepa_pain_008.c"
 
 
