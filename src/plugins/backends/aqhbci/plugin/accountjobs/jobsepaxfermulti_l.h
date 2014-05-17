@@ -1,5 +1,5 @@
 /***************************************************************************
-    begin       : Tue Dec 31 2013
+    begin       : Mon Mar 01 2004
     copyright   : (C) 2004-2013 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -8,20 +8,16 @@
  ***************************************************************************/
 
 
-#ifndef AH_JOBSEPAXFERSINGLE_P_H
-#define AH_JOBSEPAXFERSINGLE_P_H
+#ifndef AH_JOBSEPAXFERMULTI_L_H
+#define AH_JOBSEPAXFERMULTI_L_H
 
 
-#include "jobsepaxfersingle_l.h"
-
-#include <gwenhywfar/db.h>
+#include "accountjob_l.h"
 
 
-static int AH_Job_SepaTransferSingle_Prepare(AH_JOB *j);
-static int AH_Job_SepaTransferSingle_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
+AH_JOB *AH_Job_SepaTransferMulti_new(AB_USER *u, AB_ACCOUNT *account);
 
 
-#endif /* AH_JOBSEPAXFERSINGLE_P_H */
-
+#endif /* AH_JOBSEPAXFERMULTI_L_H */
 
 

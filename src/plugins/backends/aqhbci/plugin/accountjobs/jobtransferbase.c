@@ -174,6 +174,30 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
 
 
 /* --------------------------------------------------------------- FUNCTION */
+int AH_Job_TransferBase_ExchangeParams_SepaUndated(AH_JOB *j, AB_JOB *bj,
+                                                   AB_IMEXPORTER_CONTEXT *ctx) {
+  AB_TRANSACTION_LIMITS *lim;
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging params");
+
+  /* set some default limits */
+  lim=AB_TransactionLimits_new();
+  AB_TransactionLimits_SetMaxLenPurpose(lim, 35);
+  AB_TransactionLimits_SetMaxLinesPurpose(lim, 4);
+  AB_TransactionLimits_SetMaxLenRemoteName(lim, 70);
+  AB_TransactionLimits_SetMaxLinesRemoteName(lim, 1);
+
+  AB_TransactionLimits_SetNeedDate(lim, -1);
+
+  AB_Job_SetFieldLimits(bj, lim);
+  AB_TransactionLimits_free(lim);
+
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
 int AH_Job_TransferBase_ExchangeArgs_SepaUndated(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx) {
   const AB_TRANSACTION_LIMITS *lim=NULL;
   AB_BANKING *ab;

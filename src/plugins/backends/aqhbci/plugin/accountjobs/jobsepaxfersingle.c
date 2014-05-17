@@ -55,34 +55,10 @@ AH_JOB *AH_Job_SepaTransferSingle_new(AB_USER *u, AB_ACCOUNT *account) {
   AH_Job_SetAddChallengeParamsFn(j, AH_Job_SepaTransferSingle_AddChallengeParams);
 
   /* overwrite virtual functions of transferBase class */
-  AH_Job_TransferBase_SetExchangeParamsFn(j, AH_Job_SepaTransferSingle_ExchangeParams);
+  AH_Job_TransferBase_SetExchangeParamsFn(j, AH_Job_TransferBase_ExchangeParams_SepaUndated);
   AH_Job_TransferBase_SetExchangeArgsFn(j, AH_Job_TransferBase_ExchangeArgs_SepaUndated);
 
   return j;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaTransferSingle_ExchangeParams(AH_JOB *j, AB_JOB *bj,
-                                             AB_IMEXPORTER_CONTEXT *ctx) {
-  AB_TRANSACTION_LIMITS *lim;
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging params");
-
-  /* set some default limits */
-  lim=AB_TransactionLimits_new();
-  AB_TransactionLimits_SetMaxLenPurpose(lim, 35);
-  AB_TransactionLimits_SetMaxLinesPurpose(lim, 4);
-  AB_TransactionLimits_SetMaxLenRemoteName(lim, 70);
-  AB_TransactionLimits_SetMaxLinesRemoteName(lim, 1);
-
-  AB_TransactionLimits_SetNeedDate(lim, -1);
-
-  AB_Job_SetFieldLimits(bj, lim);
-  AB_TransactionLimits_free(lim);
-
-  return 0;
 }
 
 

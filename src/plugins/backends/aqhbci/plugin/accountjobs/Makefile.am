@@ -35,6 +35,8 @@ noinst_HEADERS=\
   jobsepadebitdatedsinglecreate_p.h \
   jobsepadebitdatedmulticreate_l.h \
   jobsepadebitdatedmulticreate_p.h \
+  jobsepaxfermulti_l.h \
+  jobsepaxfermulti_p.h \
   jobsepaxfersingle_l.h \
   jobsepaxfersingle_p.h \
   jobsepadebitsingle_l.h \
@@ -57,6 +59,7 @@ libhbciaccjobs_la_SOURCES=\
   jobloadcellphone.c \
   jobsepadebitdatedsinglecreate.c \
   jobsepadebitdatedmulticreate.c \
+  jobsepaxfermulti.c \
   jobsepaxfersingle.c \
   jobsepadebitsingle.c \
   jobsepacor1datedsinglecreate.c \
@@ -93,6 +96,7 @@ xmlfiles=\
   $(srcdir)/jobloadcellphone.xml \
   $(srcdir)/jobsepadebitdatedsinglecreate.xml \
   $(srcdir)/jobsepadebitdatedmulticreate.xml \
+  $(srcdir)/jobsepaxfermulti.xml \
   $(srcdir)/jobsepaxfersingle.xml \
   $(srcdir)/jobsepadebitsingle.xml \
   $(srcdir)/jobsepacor1datedsinglecreate.xml \

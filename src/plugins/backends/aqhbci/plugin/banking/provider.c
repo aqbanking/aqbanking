@@ -28,6 +28,7 @@
 #include "jobeutransfer_l.h"
 #include "jobloadcellphone_l.h"
 #include "jobsepaxfersingle_l.h"
+#include "jobsepaxfermulti_l.h"
 #include "jobsepadebitdatedsinglecreate_l.h"
 #include "jobsepadebitdatedmulticreate_l.h"
 #include "jobsepacor1datedsinglecreate_l.h"
@@ -446,10 +447,35 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
     break;
 
   case AB_Job_TypeSepaTransfer:
-    mj=AH_Job_SepaTransferSingle_new(mu, ma);
-    if (!mj) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
-      return GWEN_ERROR_NOT_AVAILABLE;
+    if (!(aFlags & AH_BANK_FLAGS_SEPA_PREFER_SINGLE_TRANSFER)) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers multi jobs");
+
+      /* try multi transfer first */
+      mj=AH_Job_SepaTransferMulti_new(mu, ma);
+      if (!mj) {
+        DBG_WARN(AQHBCI_LOGDOMAIN, "Job \"SepaTransferMulti\" not supported with this account");
+
+        /* try single transfer */
+        mj=AH_Job_SepaTransferSingle_new(mu, ma);
+        if (!mj) {
+          DBG_WARN(AQHBCI_LOGDOMAIN, "Job \"SepaTransferSingle\" not supported with this account");
+          return GWEN_ERROR_NOT_AVAILABLE;
+        }
+      }
+    }
+    else {
+      /* try single job first */
+      mj=AH_Job_SepaTransferSingle_new(mu, ma);
+      if (!mj) {
+        DBG_WARN(AQHBCI_LOGDOMAIN, "Job \"SepaTransferSingle\" not supported with this account");
+
+        /* try multi transfer next */
+        mj=AH_Job_SepaTransferMulti_new(mu, ma);
+        if (!mj) {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"SepaTransferMulti\" not supported with this account");
+          return GWEN_ERROR_NOT_AVAILABLE;
+        }
+      }
     }
     break;
 
