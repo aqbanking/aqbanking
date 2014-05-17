@@ -20,6 +20,26 @@ struct AH_IMEXPORTER_SEPA {
   int dummy;
 };
 
+typedef struct AH_IMEXPORTER_SEPA_PMTINF AH_IMEXPORTER_SEPA_PMTINF;
+struct AH_IMEXPORTER_SEPA_PMTINF {
+  GWEN_LIST_ELEMENT(AH_IMEXPORTER_SEPA_PMTINF)
+  int tcount;
+  AB_VALUE *value;
+  char *ctrlsum;
+  const GWEN_TIME *date;
+  uint32_t transDate;
+  const char *localName;
+  const char *localIban;
+  const char *localBic;
+  AB_TRANSACTION_SEQUENCETYPE sequenceType;
+  const char *creditorSchemeId;
+  AB_TRANSACTION_LIST2 *transactions;
+};
+
+/* these functions are not part of the public API */
+static void AH_ImExporter_Sepa_PmtInf_free(AH_IMEXPORTER_SEPA_PMTINF *pmtinf);
+GWEN_LIST_FUNCTION_DEFS(AH_IMEXPORTER_SEPA_PMTINF, AH_ImExporter_Sepa_PmtInf)
+
 
 AQBANKING_EXPORT
 GWEN_PLUGIN *imexporter_sepa_factory(GWEN_PLUGIN_MANAGER *pm,

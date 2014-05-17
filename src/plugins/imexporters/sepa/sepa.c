@@ -15,6 +15,7 @@
 #include "i18n_l.h"
 
 #include <aqbanking/banking.h>
+#include <aqbanking/banking_be.h>
 #include <aqbanking/accstatus.h>
 
 #include <gwenhywfar/debug.h>
@@ -27,7 +28,34 @@
 
 
 
+GWEN_LIST_FUNCTIONS(AH_IMEXPORTER_SEPA_PMTINF, AH_ImExporter_Sepa_PmtInf)
 GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_SEPA);
+
+
+
+static AH_IMEXPORTER_SEPA_PMTINF*
+AH_ImExporter_Sepa_PmtInf_new() {
+  AH_IMEXPORTER_SEPA_PMTINF *pmtinf;
+
+  GWEN_NEW_OBJECT(AH_IMEXPORTER_SEPA_PMTINF, pmtinf)
+  GWEN_LIST_INIT(AH_IMEXPORTER_SEPA_PMTINF, pmtinf)
+  pmtinf->value=AB_Value_new();
+  pmtinf->transactions=AB_Transaction_List2_new();
+
+  return pmtinf;
+}
+
+
+
+static void AH_ImExporter_Sepa_PmtInf_free(AH_IMEXPORTER_SEPA_PMTINF *pmtinf) {
+  if (pmtinf) {
+    free(pmtinf->ctrlsum);
+    AB_Value_free(pmtinf->value);
+    AB_Transaction_List2_free(pmtinf->transactions);
+    GWEN_LIST_FINI(AH_IMEXPORTER_SEPA_PMTINF, pmtinf)
+    GWEN_FREE_OBJECT(pmtinf)
+  }
+}
 
 
 
@@ -84,6 +112,223 @@ int AH_ImExporterSEPA_Import(AB_IMEXPORTER *ie,
 
 
   return GWEN_ERROR_NOT_SUPPORTED;
+}
+
+
+
+static int
+AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
+				    AB_IMEXPORTER_CONTEXT *ctx,
+				    GWEN_XMLNODE *painNode,
+				    uint32_t doctype[],
+				    AH_IMEXPORTER_SEPA_PMTINF_LIST **pList) {
+  GWEN_XMLNODE *n;
+  AB_IMEXPORTER_ACCOUNTINFO *ai;
+  AB_TRANSACTION *t;
+  AH_IMEXPORTER_SEPA_PMTINF_LIST *pl;
+  AH_IMEXPORTER_SEPA_PMTINF *pmtinf;
+  int tcount=0;
+  AB_VALUE *v;
+  GWEN_BUFFER *tbuf;
+  char *ctrlsum;
+
+  ai=AB_ImExporterContext_GetFirstAccountInfo(ctx);
+  if (ai==0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No account info");
+    return GWEN_ERROR_NO_DATA;
+  }
+  else if (AB_ImExporterContext_GetNextAccountInfo(ctx)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Account info for more than one local account");
+    return GWEN_ERROR_NOT_SUPPORTED;
+  }
+
+  t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
+  if (!t) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No transactions in ImExporter context");
+    return GWEN_ERROR_NO_DATA;
+  }
+
+  /* collect matching transactions for storage in a shared PmtInf block */
+  pl=AH_ImExporter_Sepa_PmtInf_List_new();
+  pmtinf=AH_ImExporter_Sepa_PmtInf_new();
+  AH_ImExporter_Sepa_PmtInf_List_Add(pmtinf, pl);
+  while(t) {
+    const GWEN_TIME *ti;
+    int day, month, year;
+    uint32_t transDate;
+    const char *name=NULL, *iban=NULL, *bic=NULL, *cdtrSchmeId=NULL;
+    const char *s;
+    const AB_VALUE *tv;
+
+    tcount++;
+    ti=AB_Transaction_GetDate(t);
+    if (ti) {
+      GWEN_Time_GetBrokenDownDate(ti, &day, &month, &year);
+      transDate=(year<<16)+(month<<8)+(day);
+    }
+    else
+      transDate=0;
+    s=AB_ImExporterAccountInfo_GetOwner(ai);
+    if (!s || !*s) {
+      name=AB_Transaction_GetLocalName(t);
+      if (!name || !*name) {
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
+		  "Missing local name in transaction %d", tcount);
+	AH_ImExporter_Sepa_PmtInf_List_free(pl);
+	return GWEN_ERROR_BAD_DATA;
+      }
+    }
+    s=AB_ImExporterAccountInfo_GetIban(ai);
+    if (!s || !*s) {
+      iban=AB_Transaction_GetLocalIban(t);
+      if (!iban || !*iban) {
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
+		  "Missing local IBAN in transaction %d", tcount);
+	AH_ImExporter_Sepa_PmtInf_List_free(pl);
+	return GWEN_ERROR_BAD_DATA;
+      }
+    }
+    s=AB_ImExporterAccountInfo_GetBic(ai);
+    if (!s || !*s) {
+      bic=AB_Transaction_GetLocalBic(t);
+      if (!bic || !*bic) {
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
+		  "Missing local BIC in transaction %d", tcount);
+	AH_ImExporter_Sepa_PmtInf_List_free(pl);
+	return GWEN_ERROR_BAD_DATA;
+      }
+    }
+    if (doctype[0]==8) {
+      cdtrSchmeId=AB_Transaction_GetCreditorSchemeId(t);
+      if (!cdtrSchmeId || !*cdtrSchmeId) {
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
+		  "Missing creditor scheme id in transaction %d", tcount);
+	AH_ImExporter_Sepa_PmtInf_List_free(pl);
+	return GWEN_ERROR_BAD_DATA;
+      }
+    }
+
+    if (pmtinf->tcount) {
+      /* specify list of match criteria in one place */
+#define TRANSACTION_DOES_NOT_MATCH					\
+      (transDate!=pmtinf->transDate ||					\
+       (name && strcmp(name, pmtinf->localName)) ||			\
+       (iban && strcmp(iban, pmtinf->localIban)) ||			\
+       (bic && strcmp(bic, pmtinf->localBic)) ||			\
+       (doctype[0]==8 &&						\
+	 (AB_Transaction_GetSequenceType(t)!=pmtinf->sequenceType ||	\
+	  (cdtrSchmeId && strcmp(cdtrSchmeId, pmtinf->creditorSchemeId)))))
+
+      /* match against current PmtInf block */
+      if (TRANSACTION_DOES_NOT_MATCH) {
+	/* search for a fitting PmtInf block */
+	pmtinf=AH_ImExporter_Sepa_PmtInf_List_First(pl);
+	while(pmtinf && TRANSACTION_DOES_NOT_MATCH)
+	  pmtinf=AH_ImExporter_Sepa_PmtInf_List_Next(pmtinf);
+#undef TRANSACTION_DOES_NOT_MATCH
+
+	if (!pmtinf) {
+	  pmtinf=AH_ImExporter_Sepa_PmtInf_new(t);
+	  AH_ImExporter_Sepa_PmtInf_List_Add(pmtinf, pl);
+	}
+      }
+    }
+
+    if (!pmtinf->tcount) {
+      /* initialise match data for this PmtInf block */
+      pmtinf->localName = name ? name : AB_ImExporterAccountInfo_GetOwner(ai);
+      pmtinf->localIban = iban ? iban : AB_ImExporterAccountInfo_GetIban(ai);
+      pmtinf->localBic  = bic  ? bic  : AB_ImExporterAccountInfo_GetBic(ai);
+      pmtinf->date=ti;
+      pmtinf->transDate=transDate;
+      if (doctype[0]==8) {
+	pmtinf->sequenceType=AB_Transaction_GetSequenceType(t);
+	pmtinf->creditorSchemeId=cdtrSchmeId;
+      }
+    }
+
+    AB_Transaction_List2_PushBack(pmtinf->transactions, t);
+    pmtinf->tcount++;
+    tv=AB_Transaction_GetValue(t);
+    if (tv==NULL) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Missing value in transaction %d", tcount);
+      AH_ImExporter_Sepa_PmtInf_List_free(pl);
+      return GWEN_ERROR_BAD_DATA;
+    }
+    AB_Value_AddValue(pmtinf->value, tv);
+
+    t=AB_ImExporterAccountInfo_GetNextTransaction(ai);
+  }
+
+  /* construct CtrlSum for PmtInf blocks and GrpHdr */
+  v=AB_Value_new();
+  tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+  pmtinf=AH_ImExporter_Sepa_PmtInf_List_First(pl);
+  while(pmtinf) {
+    AB_Value_toHumanReadableString2(pmtinf->value, tbuf, 2, 0);
+    pmtinf->ctrlsum=strdup(GWEN_Buffer_GetStart(tbuf));
+    assert(pmtinf->ctrlsum);
+    GWEN_Buffer_Reset(tbuf);
+    AB_Value_AddValue(v, pmtinf->value);
+    pmtinf=AH_ImExporter_Sepa_PmtInf_List_Next(pmtinf);
+  }
+
+  AB_Value_toHumanReadableString2(v, tbuf, 2, 0);
+  ctrlsum=strdup(GWEN_Buffer_GetStart(tbuf));
+  assert(ctrlsum);
+  GWEN_Buffer_free(tbuf);
+  AB_Value_free(v);
+
+  /* create GrpHdr */
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "GrpHdr");
+  if (n) {
+    GWEN_TIME *ti;
+    uint32_t uid;
+    char numbuf[32];
+    GWEN_XMLNODE *nn;
+
+    GWEN_XMLNode_AddChild(painNode, n);
+    ti=GWEN_CurrentTime();
+
+    tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+
+    /* generate MsgId */
+    uid=AB_Banking_GetUniqueId(AB_ImExporter_GetBanking(ie));
+    GWEN_Time_toUtcString(ti, "YYYYMMDD-hh:mm:ss-", tbuf);
+    snprintf(numbuf, sizeof(numbuf)-1, "%08x", uid);
+    GWEN_Buffer_AppendString(tbuf, numbuf);
+    GWEN_XMLNode_SetCharValue(n, "MsgId", GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_Reset(tbuf);
+
+    /* generate CreDtTm */
+    GWEN_Time_toUtcString(ti, "YYYY-MM-DDThh:mm:ssZ", tbuf);
+    GWEN_XMLNode_SetCharValue(n, "CreDtTm", GWEN_Buffer_GetStart(tbuf));
+    GWEN_Time_free(ti);
+    GWEN_Buffer_free(tbuf);
+
+    /* store NbOfTxs */
+    GWEN_XMLNode_SetIntValue(n, "NbOfTxs", tcount);
+    /* store CtrlSum */
+    GWEN_XMLNode_SetCharValue(n, "CtrlSum", ctrlsum);
+
+    /* special treatment for pain.001.001.02 and pain.008.001.01 */
+    if (doctype[1]==1 && ((doctype[0]==1 && doctype[2]==2) ||
+			  (doctype[0]==8 && doctype[2]==1)))
+      GWEN_XMLNode_SetCharValue(n, "Grpg", "GRPD");
+
+    nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "InitgPty");
+    if (nn) {
+      GWEN_XMLNode_AddChild(n, nn);
+      pmtinf=AH_ImExporter_Sepa_PmtInf_List_First(pl);
+      GWEN_XMLNode_SetCharValue(nn, "Nm", pmtinf->localName);
+    }
+  }
+  free(ctrlsum);
+
+  *pList=pl;
+  return 0;
 }
 
 
