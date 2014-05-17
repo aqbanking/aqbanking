@@ -41,7 +41,7 @@ params {
     7="value/currency"
     8="localName"
     9="remoteName"
-    19="creditorSchemeId"           # SEPA debit notes
+    10="creditorSchemeId"           # SEPA debit notes
     11="mandateId"
     12="mandateDate/dateString"
     13="mandateDebitorName"
