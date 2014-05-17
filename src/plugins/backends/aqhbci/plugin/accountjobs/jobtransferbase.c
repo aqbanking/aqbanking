@@ -469,7 +469,7 @@ int AH_Job_TransferBase_ExchangeResults(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CON
   else
     tStatus=AB_Transaction_StatusRejected;
 
-  t=AH_Job_GetFirstTransfer(j);
+  t=AB_Job_GetTransaction(bj);
   if (t) {
     AB_TRANSACTION *cpy;
 
@@ -497,8 +497,6 @@ int AH_Job_TransferBase_ExchangeResults(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CON
         AB_ImExporterContext_AddTransfer(ctx, cpy);       /* takes over cpy */
       break;
     }
-
-    AB_Job_SetTransaction(bj, t); /* copies t */
   }
 
   return 0;
