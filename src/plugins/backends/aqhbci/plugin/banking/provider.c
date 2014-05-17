@@ -543,13 +543,10 @@ int AH_Provider__GetMultiHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob)
   AH_JOB *mj=NULL;
   AB_ACCOUNT *ma;
   AB_USER *mu;
-  const AB_TRANSACTION *t;
 
   assert(pro);
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
   assert(hp);
-
-  t=AB_Job_GetTransaction(j);
 
   if (hp->outbox==0)
     hp->outbox=AH_Outbox_new(hp->hbci);
@@ -573,21 +570,20 @@ int AH_Provider__GetMultiHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob)
 
   switch(AB_Job_GetType(j)) {
   case AB_Job_TypeTransfer:
-    mj=AH_Outbox_FindTransferJob(hp->outbox, mu, ma, 1);
+    mj=AH_Outbox_FindTransferJob(hp->outbox, mu, ma, "JobMultiTransfer");
     break;
 
   case AB_Job_TypeDebitNote:
-    mj=AH_Outbox_FindTransferJob(hp->outbox, mu, ma, 0);
+    mj=AH_Outbox_FindTransferJob(hp->outbox, mu, ma, "JobMultiDebitNote");
     break;
 
   case AB_Job_TypeSepaTransfer:
-    mj=AH_Outbox_FindDatedTransferJob(hp->outbox, mu, ma, "JobSepaTransferSingle",
-                                      t?(AB_Transaction_GetDate(t)):NULL);
+    mj=AH_Outbox_FindTransferJob(hp->outbox, mu, ma, "JobSepaTransferMulti");
     break;
 
   case AB_Job_TypeSepaDebitNote:
-    mj=AH_Outbox_FindDatedTransferJob(hp->outbox, mu, ma, "JobSepaDebitDatedMultiCreate",
-                                      t?(AB_Transaction_GetDate(t)):NULL);
+    mj=AH_Outbox_FindTransferJob(hp->outbox, mu, ma,
+                                 "JobSepaDebitDatedMultiCreate");
     break;
 
   default:

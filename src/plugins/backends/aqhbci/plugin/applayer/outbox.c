@@ -2159,7 +2159,7 @@ int AH_Outbox_Execute(AH_OUTBOX *ob,
 AH_JOB *AH_Outbox__FindTransferJobInCheckJobList(const AH_JOB_LIST *jl,
                                                  AB_USER *u,
                                                  AB_ACCOUNT *a,
-                                                 int isTransfer) {
+                                                 const char *jobName) {
   AH_JOB *j;
 
   assert(jl);
@@ -2167,12 +2167,9 @@ AH_JOB *AH_Outbox__FindTransferJobInCheckJobList(const AH_JOB_LIST *jl,
   while(j) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Checking job \"%s\"",
               AH_Job_GetName(j));
-    if (strcasecmp(AH_Job_GetName(j),
-                   isTransfer?"JobMultiTransfer":"JobMultiDebitNote")
-        ==0 &&
+    if (strcasecmp(AH_Job_GetName(j), jobName)==0 &&
         AH_AccountJob_GetAccount(j)==a) {
-      if (AH_Job_GetTransferCount(j)<
-          AH_Job_GetMaxTransfers(j))
+      if (AH_Job_GetTransferCount(j)<AH_Job_GetMaxTransfers(j))
         break;
       else {
         DBG_INFO(AQHBCI_LOGDOMAIN, "Job's already full");
@@ -2193,129 +2190,14 @@ AH_JOB *AH_Outbox__FindTransferJobInCheckJobList(const AH_JOB_LIST *jl,
 AH_JOB *AH_Outbox_FindTransferJob(AH_OUTBOX *ob,
                                   AB_USER *u,
                                   AB_ACCOUNT *a,
-                                  int isTransfer) {
+                                  const char *jobName) {
   AH_OUTBOX__CBOX *cbox;
   AH_JOB *j;
 
   assert(ob);
   assert(u);
   assert(a);
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Searching for %s job",
-            isTransfer?"transfer":"debitnote");
-  cbox=AH_Outbox__CBox_List_First(ob->userBoxes);
-  while(cbox) {
-    if (cbox->user==u) {
-      AH_JOBQUEUE *jq;
-
-      /* check jobs in lists */
-      j=AH_Outbox__FindTransferJobInCheckJobList(cbox->todoJobs,
-                                                 u, a, isTransfer);
-      if (j)
-        return j;
-
-      /* check jobs in queues */
-      jq=AH_JobQueue_List_First(cbox->todoQueues);
-      while(jq) {
-        const AH_JOB_LIST *jl;
-
-        jl=AH_JobQueue_GetJobList(jq);
-        if (jl) {
-          j=AH_Outbox__FindTransferJobInCheckJobList(jl, u, a, isTransfer);
-          if (j)
-            return j;
-        }
-        jq=AH_JobQueue_List_Next(jq);
-      } /* while */
-    }
-    else {
-      DBG_WARN(AQHBCI_LOGDOMAIN, "Customer doesn't match");
-    }
-
-    cbox=AH_Outbox__CBox_List_Next(cbox);
-  } /* while */
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "No matching multi job found");
-  return 0;
-}
-
-
-
-
-
-
-AH_JOB *AH_Outbox__FindDatedTransferJobInJobList(const AH_JOB_LIST *jl,
-                                                 AB_ACCOUNT *a,
-                                                 const char *jobName,
-                                                 const GWEN_TIME *tti) {
-  AH_JOB *j;
-  uint32_t transDate=0;
-
-  assert(jl);
-
-  if (tti) {
-    int day, month, year;
-
-    GWEN_Time_GetBrokenDownDate(tti, &day, &month, &year);
-    transDate=(year<<16)+(month<<8)+(day);
-  }
-
-  j=AH_Job_List_First(jl);
-  while(j) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Checking job \"%s\"",
-              AH_Job_GetName(j));
-    if (strcasecmp(AH_Job_GetName(j), jobName)==0 &&
-        AH_AccountJob_GetAccount(j)==a) {
-      const AB_TRANSACTION *jt=NULL;
-      uint32_t jobTransDate=0;
-
-      jt=AH_Job_GetFirstTransfer(j);
-      if (jt) {
-        const GWEN_TIME *jti=NULL;
-
-        jti=AB_Transaction_GetDate(jt);
-        if (jti) {
-          int day, month, year;
-
-          GWEN_Time_GetBrokenDownDate(jti, &day, &month, &year);
-          jobTransDate=(year<<16)+(month<<8)+(day);
-        }
-      }
-
-      if (transDate==jobTransDate || transDate==0 || jobTransDate==0) {
-        if (AH_Job_GetTransferCount(j)<AH_Job_GetMaxTransfers(j))
-          break;
-        else {
-          DBG_INFO(AQHBCI_LOGDOMAIN, "Job's already full");
-        }
-      }
-      else {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Job date doesn't match");
-      }
-    }
-    else {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Job doesn't match");
-    }
-
-    j=AH_Job_List_Next(j);
-  } /* while */
-
-  return j;
-}
-
-
-
-AH_JOB *AH_Outbox_FindDatedTransferJob(AH_OUTBOX *ob,
-                                       AB_USER *u,
-                                       AB_ACCOUNT *a,
-                                       const char *jobName,
-                                       const GWEN_TIME *tti) {
-  AH_OUTBOX__CBOX *cbox;
-  AH_JOB *j;
-
-  assert(ob);
-  assert(u);
-  assert(a);
+  assert(jobName);
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Searching for %s job", jobName);
   cbox=AH_Outbox__CBox_List_First(ob->userBoxes);
@@ -2324,7 +2206,7 @@ AH_JOB *AH_Outbox_FindDatedTransferJob(AH_OUTBOX *ob,
       AH_JOBQUEUE *jq;
 
       /* check jobs in lists */
-      j=AH_Outbox__FindDatedTransferJobInJobList(cbox->todoJobs, a, jobName, tti);
+      j=AH_Outbox__FindTransferJobInCheckJobList(cbox->todoJobs, u, a, jobName);
       if (j)
         return j;
 
@@ -2335,7 +2217,7 @@ AH_JOB *AH_Outbox_FindDatedTransferJob(AH_OUTBOX *ob,
 
         jl=AH_JobQueue_GetJobList(jq);
         if (jl) {
-          j=AH_Outbox__FindDatedTransferJobInJobList(jl, a, jobName, tti);
+          j=AH_Outbox__FindTransferJobInCheckJobList(jl, u, a, jobName);
           if (j)
             return j;
         }

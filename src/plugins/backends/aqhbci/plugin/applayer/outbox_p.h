@@ -167,7 +167,7 @@ static int AH_Outbox_SendAndRecv(AH_OUTBOX *ob);
 static AH_JOB *AH_Outbox__FindTransferJobInCheckJobList(const AH_JOB_LIST *jl,
                                                         AB_USER *u,
                                                         AB_ACCOUNT *a,
-                                                        int isTransfer);
+                                                        const char *jobName);
 
 
 static int AH_Outbox__CBox_JobToMessage(AH_JOB *j, AH_MSG *msg);

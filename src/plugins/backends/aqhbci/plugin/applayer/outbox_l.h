@@ -65,13 +65,7 @@ int AH_Outbox_Execute(AH_OUTBOX *ob,
 AH_JOB *AH_Outbox_FindTransferJob(AH_OUTBOX *ob,
                                   AB_USER *u,
                                   AB_ACCOUNT *a,
-                                  int isTransfer);
-
-AH_JOB *AH_Outbox_FindDatedTransferJob(AH_OUTBOX *ob,
-                                       AB_USER *u,
-                                       AB_ACCOUNT *a,
-                                       const char *jobName,
-                                       const GWEN_TIME *tti);
+                                  const char *jobName);
 
 
 AH_JOB_LIST *AH_Outbox_GetFinishedJobs(AH_OUTBOX *ob);
