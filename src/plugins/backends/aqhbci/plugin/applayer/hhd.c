@@ -224,7 +224,7 @@ void AH_HHD14_ExtractCode(GWEN_BUFFER *cbuf) {
 
 
 int AH_HHD14__Translate(const char *code, GWEN_BUFFER *cbuf) {
-  /*unsigned int totalLength;*/
+  /*unsigned int totalLength;*/ /*TODO: handle total length */
   unsigned int inLenAndFlags;
   unsigned int inLen;
   unsigned int outLenAndFlags;
