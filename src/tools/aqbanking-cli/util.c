@@ -372,8 +372,9 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
   s=GWEN_DB_GetCharValue(db, "remoteBic", 0, 0);
   if (s && *s)
     AB_Transaction_SetRemoteBic(t, s);
-  else {
-    DBG_ERROR(0, "No remote BIC id given");
+  else if (strncmp(AB_Transaction_GetLocalIban(t),
+                   AB_Transaction_GetRemoteIban(t), 2)) {
+    DBG_ERROR(0, "Remote BIC id required for international transaction");
     AB_Transaction_free(t);
     return NULL;
   }

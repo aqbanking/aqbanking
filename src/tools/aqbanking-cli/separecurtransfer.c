@@ -108,7 +108,7 @@ int sepaRecurTransfer(AB_BANKING *ab,
     GWEN_ARGS_FLAGS_HAS_ARGUMENT,  /* flags */
     GWEN_ArgsType_Char,             /* type */
     "remoteBIC",                /* name */
-    1,                             /* minnum */
+    0,                             /* minnum */
     1,                             /* maxnum */
     0,                             /* short option */
     "rbic",                       /* long option */

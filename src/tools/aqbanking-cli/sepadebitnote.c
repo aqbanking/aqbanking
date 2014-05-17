@@ -46,7 +46,6 @@ int sepaDebitNote(AB_BANKING *ab,
   AB_JOB *j;
   int rvExec;
   const char *rIBAN;
-  const char *rBIC;
   const char *lIBAN;
   const char *lBIC;
   const GWEN_ARGS args[]={
@@ -109,7 +108,7 @@ int sepaDebitNote(AB_BANKING *ab,
     GWEN_ARGS_FLAGS_HAS_ARGUMENT,  /* flags */
     GWEN_ArgsType_Char,             /* type */
     "remoteBIC",                /* name */
-    1,                             /* minnum */
+    0,                             /* minnum */
     1,                             /* maxnum */
     0,                             /* short option */
     "rbic",                       /* long option */
@@ -293,15 +292,9 @@ int sepaDebitNote(AB_BANKING *ab,
   AB_Transaction_SetType(t, AB_Transaction_TypeSepaDebitNote);
 
   rIBAN=AB_Transaction_GetRemoteIban(t);
-  rBIC=AB_Transaction_GetRemoteBic(t);
   lIBAN=AB_Transaction_GetLocalIban(t);
   lBIC=AB_Transaction_GetLocalBic(t);
 
-  if (!rBIC || !(*rBIC)) {
-    DBG_ERROR(0, "Missing remote BIC");
-    AB_Transaction_free(t);
-    return 1;
-  }
   if (!rIBAN || !(*rIBAN)) {
     DBG_ERROR(0, "Missing remote IBAN");
     AB_Transaction_free(t);

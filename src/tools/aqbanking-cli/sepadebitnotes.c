@@ -266,7 +266,6 @@ int sepaDebitNotes(AB_BANKING *ab,
     while(t) {
       AB_JOB *j;
       const char *rIBAN;
-      const char *rBIC;
       const char *lIBAN;
       const char *lBIC;
 
@@ -276,7 +275,6 @@ int sepaDebitNotes(AB_BANKING *ab,
       }
 
       rIBAN=AB_Transaction_GetRemoteIban(t);
-      rBIC=AB_Transaction_GetRemoteBic(t);
       lIBAN=AB_Transaction_GetLocalIban(t);
       lBIC=AB_Transaction_GetLocalBic(t);
 
@@ -288,12 +286,6 @@ int sepaDebitNotes(AB_BANKING *ab,
 	lIBAN=AB_Account_GetIBAN(a);
 
       /* check remote account */
-      if (!rBIC || !(*rBIC)) {
-	DBG_ERROR(0, "Missing remote BIC");
-	AB_Job_List2_FreeAll(jobList);
-	AB_ImExporterContext_free(ctx);
-	return 3;
-      }
       if (!rIBAN || !(*rIBAN)) {
 	DBG_ERROR(0, "Missing remote IBAN");
 	AB_Job_List2_FreeAll(jobList);

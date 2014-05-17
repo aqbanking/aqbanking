@@ -21,6 +21,7 @@
 #include <gwenhywfar/syncio_file.h>
 
 #include <errno.h>
+#include <string.h>
 
 
 
@@ -754,13 +755,18 @@ int AB_Transaction_CheckForSepaConformity(const AB_TRANSACTION *t, int restricte
 
     s=AB_Transaction_GetRemoteBic(t);
     if (!(s && *s)) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing or empty remote BIC in transaction");
-      return GWEN_ERROR_BAD_DATA;
+      if (strncmp(AB_Transaction_GetLocalIban(t),
+                  AB_Transaction_GetRemoteIban(t), 2)) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing or empty remote BIC in transaction");
+        return GWEN_ERROR_BAD_DATA;
+      }
     }
-    rv=_checkStringForAlNum(s);
-    if (rv<0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in remote BIC");
-      return rv;
+    else {
+      rv=_checkStringForAlNum(s);
+      if (rv<0) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in remote BIC");
+        return rv;
+      }
     }
 
 

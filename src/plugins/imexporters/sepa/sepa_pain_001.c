@@ -189,23 +189,14 @@ int AH_ImExporterSEPA_Export_Pain_001(AB_IMEXPORTER *ie,
 	  }
 	}
 
-	/* create "DbtrAgt" */
-	nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "CdtrAgt");
-	if (nnn) {
-	  GWEN_XMLNODE *nnnn;
-
-	  GWEN_XMLNode_AddChild(nn, nnn);
-	  s=AB_Transaction_GetRemoteBic(t);
-	  if (!s) {
-	    DBG_ERROR(AQBANKING_LOGDOMAIN, "No remote BIC");
-	    return GWEN_ERROR_BAD_DATA;
-	  }
-
-	  nnnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "FinInstnId");
-	  if (nnnn) {
-	    GWEN_XMLNode_AddChild(nnn, nnnn);
-	    GWEN_XMLNode_SetCharValue(nnnn, "BIC", s);
-	  }
+	/* create "CdtrAgt" */
+	s=AB_Transaction_GetRemoteBic(t);
+	if (s && *s)
+	  GWEN_XMLNode_SetCharValueByPath(nn, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES,
+					  "CdtrAgt/FinInstnId/BIC", s);
+	else if (doctype[1]<3) { /* BIC not required since 001.003.03 */
+	  DBG_ERROR(AQBANKING_LOGDOMAIN, "No remote BIC");
+	  return GWEN_ERROR_BAD_DATA;
 	}
 
 	/* create "Cdtr" */
