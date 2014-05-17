@@ -93,8 +93,18 @@ int AH_ImExporterSEPA_Export(AB_IMEXPORTER *ie,
 			     GWEN_SYNCIO *sio,
 			     GWEN_DB_NODE *params){
   AH_IMEXPORTER_SEPA *ieh;
+  GWEN_XMLNODE *root;
+  GWEN_XMLNODE *documentNode;
+  GWEN_XMLNODE *topNode;
+  GWEN_XMLNODE *n;
   uint32_t doctype[]={0, 0, 0};
+  int (*ctxToXml)(AB_IMEXPORTER *ie,
+		  AB_IMEXPORTER_CONTEXT *ctx,
+		  GWEN_XMLNODE *topNode,
+		  uint32_t doctype[],
+		  GWEN_DB_NODE *params);
   const char *s;
+  int rv;
 
   assert(ie);
   ieh=GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AH_IMEXPORTER_SEPA, ie);
@@ -123,23 +133,68 @@ int AH_ImExporterSEPA_Export(AB_IMEXPORTER *ie,
       doctype[0]=0;
   }
 
-  s=GWEN_DB_GetCharValue(params, "name", 0, 0);
-  if (doctype[0]==1) {
-    return AH_ImExporterSEPA_Export_Pain_001(ie, ctx, sio, doctype, params);
+  root=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
+  n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "?xml");
+  if (n) {
+    GWEN_XMLNode_AddHeader(root, n);
+    GWEN_XMLNode_SetProperty(n, "version", "1.0");
+    GWEN_XMLNode_SetProperty(n, "encoding", "UTF-8");
   }
-  else if (strcasecmp(s, "008_003_02_cor1")==0) {
-    return AH_ImExporterSEPA_Export_Pain_008(ie, ctx, sio, doctype, params);
+
+  documentNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "Document");
+  s=GWEN_DB_GetCharValue(params, "xmlns", 0, 0);
+  if (!s || !*s) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "xmlns not specified in profile \"%s\"",
+	      GWEN_DB_GetCharValue(params, "name", 0, 0));
+    GWEN_XMLNode_free(root);
+    return GWEN_ERROR_INVALID;
   }
-  else if (doctype[0]==8) {
-    return AH_ImExporterSEPA_Export_Pain_008(ie, ctx, sio, doctype, params);
-  }
-  else {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unknown SEPA type \"%s\"", s);
+  GWEN_XMLNode_SetProperty(documentNode, "xmlns", s);
+  GWEN_XMLNode_AddChild(root, documentNode);
+
+  switch(doctype[0]) {
+  case 1:
+    if (doctype[1]>1 || doctype[2]>2)
+      s="CstmrCdtTrfInitn";
+    else
+      s=strstr(s, "pain");
+    ctxToXml=AH_ImExporterSEPA_Export_Pain_001;
+    break;
+  case 8:
+    if (!(doctype[1]==1 && doctype[2]==1))
+      s="CstmrDrctDbtInitn";
+    else
+      s=strstr(s, "pain");
+    ctxToXml=AH_ImExporterSEPA_Export_Pain_008;
+    break;
+  default:
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unknown SEPA type \"%s\"",
+	      GWEN_DB_GetCharValue(params, "type", 0, 0));
+    GWEN_XMLNode_free(root);
     return GWEN_ERROR_INVALID;
   }
 
+  topNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, s);
+  GWEN_XMLNode_AddChild(documentNode, topNode);
+  rv=ctxToXml(ie, ctx, topNode, doctype, params);
+  if (rv==0) {
+    GWEN_XML_CONTEXT *xmlctx;
+
+    xmlctx=GWEN_XmlCtxStore_new(root,
+				GWEN_XML_FLAGS_INDENT |
+				GWEN_XML_FLAGS_SIMPLE |
+				GWEN_XML_FLAGS_HANDLE_HEADERS);
+
+    rv=GWEN_XMLNode_WriteToStream(root, xmlctx, sio);
+    if (rv)
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_XmlCtx_free(xmlctx);
+    GWEN_XMLNode_free(root);
+  }
+
   /* TODO */
-  return GWEN_ERROR_NOT_IMPLEMENTED;
+  return rv;
 }
 
 
