@@ -1457,7 +1457,6 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/sepa/profiles/008_001_01.conf
   src/plugins/imexporters/sepa/profiles/008_002_02.conf
   src/plugins/imexporters/sepa/profiles/008_003_02.conf
-  src/plugins/imexporters/sepa/profiles/008_003_02_cor1.conf
   src/plugins/imexporters/ctxfile/Makefile
   src/plugins/imexporters/ctxfile/ctxfile.xml
   src/plugins/imexporters/ctxfile/profiles/Makefile

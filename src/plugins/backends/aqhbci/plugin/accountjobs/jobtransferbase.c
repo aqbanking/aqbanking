@@ -71,7 +71,6 @@ void GWENHYWFAR_CB AH_Job_TransferBase_FreeData(void *bp, void *p){
 
   aj=(AH_JOB_TRANSFERBASE*)p;
   free(aj->fiid);
-  GWEN_StringList_free(aj->sepaDescriptors);
 
   GWEN_FREE_OBJECT(aj);
 }
@@ -92,11 +91,12 @@ const char *AH_Job_TransferBase_GetFiid(const AH_JOB *j) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, const char *profileName, GWEN_BUFFER *destBuf) {
+int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile) {
   AH_JOB_TRANSFERBASE *aj;
   GWEN_DB_NODE *dbArgs;
   AB_BANKING *ab;
-  const AB_TRANSACTION *t=NULL;
+  const char *descriptor;
+  const AB_TRANSACTION *t;
   int rv;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Exporting transaction");
@@ -111,11 +111,17 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, const char *profileNam
   dbArgs=AH_Job_GetArguments(j);
   assert(dbArgs);
 
+  descriptor=GWEN_DB_GetCharValue(profile, "descriptor", 0, 0);
+  assert(descriptor);
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Using SEPA descriptor %s and profile %s",
+	   descriptor, GWEN_DB_GetCharValue(profile, "name", 0, 0));
+
+  /* set data in job */
   t=AH_Job_GetFirstTransfer(j);
   if (t) {
-  /* set data in job */
     AB_IMEXPORTER_CONTEXT *ioc;
     AB_TRANSACTION *cpy;
+    AB_IMEXPORTER *ie;
 
     /* add transfers as transactions for export (exporters only use transactions) */
     ioc=AB_ImExporterContext_new();
@@ -125,12 +131,41 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, const char *profileNam
       t=AB_Transaction_List_Next(t);
     }
 
-    rv=AB_Banking_ExportToBuffer(ab, ioc, "sepa", profileName, destBuf);
-    AB_ImExporterContext_free(ioc);
-    if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      return rv;
+    ie=AB_Banking_GetImExporter(ab, "sepa");
+    if (ie) {
+      GWEN_BUFFER *dbuf;
+
+      dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      rv=AB_ImExporter_ExportToBuffer(ie, ioc, dbuf, profile);
+      AB_ImExporterContext_free(ioc);
+      if (rv<0) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+        GWEN_Buffer_free(dbuf);
+        return rv;
+      }
+
+      /* store descriptor */
+      GWEN_DB_SetCharValue(dbArgs,
+                           GWEN_DB_FLAGS_OVERWRITE_VARS,
+                       "descriptor",
+                       descriptor);
+      /* store transfer */
+      GWEN_DB_SetBinValue(dbArgs,
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "transfer",
+                          GWEN_Buffer_GetStart(dbuf),
+                          GWEN_Buffer_GetUsedBytes(dbuf));
+      GWEN_Buffer_free(dbuf);
     }
+    else {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "here");
+      AB_ImExporterContext_free(ioc);
+      return GWEN_ERROR_NO_DATA;
+    }
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
+    return GWEN_ERROR_INTERNAL;
   }
 
   return 0;
@@ -585,81 +620,3 @@ void AH_Job_TransferBase_SetExchangeResultsFn(AH_JOB *j, AH_JOB_TRANSFERBASE_EXC
 
   aj->exchangeResultsFn=f;
 }
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-void AH_Job_TransferBase_LoadSepaDescriptors(AH_JOB *j){
-  AH_JOB_TRANSFERBASE *aj;
-  GWEN_DB_NODE *dbParams;
-  GWEN_DB_NODE *dbT;
-
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j);
-  assert(aj);
-
-  /* get params */
-  dbParams=AH_Job_GetParams(j);
-  assert(dbParams);
-
-  if (aj->sepaDescriptors==NULL)
-    aj->sepaDescriptors=GWEN_StringList_new();
-  else
-    GWEN_StringList_Clear(aj->sepaDescriptors);
-
-  /* read supported SEPA formats */
-  dbT=GWEN_DB_FindFirstGroup(dbParams, "SupportedSepaFormats");
-  if (!dbT) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No SEPA descriptor found");
-    GWEN_DB_Dump(dbParams, 2);
-  }
-  while(dbT) {
-    int i;
-
-    for (i=0; i<100; i++) {
-      const char *s;
-
-      s=GWEN_DB_GetCharValue(dbT, "format", i, NULL);
-      if (! (s && *s))
-        break;
-      GWEN_StringList_AppendString(aj->sepaDescriptors, s, 0, 1);
-      DBG_INFO(AQHBCI_LOGDOMAIN,
-               "Adding SEPA descriptor [%s] for GV %s",
-               s, AH_Job_GetName(j));
-    }
-
-    dbT=GWEN_DB_FindNextGroup(dbT, "SupportedSepaFormats");
-  }
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-const char *AH_Job_TransferBase_FindSepaDescriptor(AH_JOB *j, const char *tmpl) {
-  AH_JOB_TRANSFERBASE *aj;
-
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j);
-  assert(aj);
-
-  if (aj->sepaDescriptors) {
-    GWEN_STRINGLISTENTRY *se;
-
-    se=GWEN_StringList_FirstEntry(aj->sepaDescriptors);
-    while(se) {
-      const char *s;
-
-      s=GWEN_StringListEntry_Data(se);
-      if (s && *s && -1!=GWEN_Text_ComparePattern(s, tmpl, 1))
-	return s;
-
-      se=GWEN_StringListEntry_Next(se);
-    }
-  }
-
-  return NULL;
-}
-
-
-
-

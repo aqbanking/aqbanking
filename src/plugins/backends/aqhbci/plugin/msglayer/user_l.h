@@ -102,6 +102,9 @@ int AH_User_SetPinStatus(AB_USER *u,
 			 GWEN_GUI_PASSWORD_STATUS status);
 
 
+const GWEN_STRINGLIST *AH_User_GetSepaDescriptors(AB_USER *u);
+
+
 
 #endif /* AH_USER_L_H */
 

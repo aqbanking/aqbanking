@@ -44,12 +44,14 @@ struct AH_JOB {
   uint32_t lastSegment;
 
   GWEN_STRINGLIST *signers;
+  GWEN_STRINGLIST *sepaDescriptors;
 
   GWEN_XMLNODE *xmlNode;
   GWEN_XMLNODE *msgNode;
   GWEN_DB_NODE *jobParams;
   GWEN_DB_NODE *jobArguments;
   GWEN_DB_NODE *jobResponses;
+  GWEN_DB_NODE *sepaProfile;
 
   AH_JOB_STATUS status;
   uint32_t flags;

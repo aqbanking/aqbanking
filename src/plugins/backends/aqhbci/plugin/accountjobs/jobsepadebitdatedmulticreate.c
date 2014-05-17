@@ -225,14 +225,9 @@ int AH_Job_SepaDebitDatedMultiCreate_AddChallengeParams(AH_JOB *j, int hkTanVer,
 int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
   AH_JOB_CREATESEPAMULTIDEBIT *aj;
   GWEN_DB_NODE *dbArgs;
-  AB_BANKING *ab;
-  AB_USER *u;
+  GWEN_DB_NODE *profile;
   int rv;
-  const char *profileName=NULL;
-  const char *descriptor=NULL;
-  const char *s;
   AB_TRANSACTION *t;
-  GWEN_BUFFER *dbuf;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing transfers");
 
@@ -240,45 +235,7 @@ int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
   aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_CREATESEPAMULTIDEBIT, j);
   assert(aj);
 
-  ab=AH_Job_GetBankingApi(j);
-  assert(ab);
-
-  u=AH_Job_GetUser(j);
-  assert(u);
-
   dbArgs=AH_Job_GetArguments(j);
-
-  /* choose from HISPAS */
-  /* first check for any descriptor for pain 008.002.02 */
-  s=AH_User_FindSepaDescriptor(u, "*008.002.02*");
-  if (s) {
-    profileName="008_002_02";
-    descriptor=s;
-  }
-  if (!(descriptor && *descriptor)) {
-    /* look for pain 008.003.02 */
-    s=AH_User_FindSepaDescriptor(u, "*008.003.02*");
-    if (s) {
-      profileName="008_003_02";
-      descriptor=s;
-    }
-  }
-  if (!(descriptor && *descriptor)) {
-    /* look for pain 008.001.01 */
-    s=AH_User_FindSepaDescriptor(u, "*008.001.01*");
-    if (s) {
-      profileName="008_001_01";
-      descriptor=s;
-    }
-  }
-
-  /* check for valid descriptor */
-  if (!(descriptor && *descriptor)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No SEPA descriptor found, please update your SEPA account information");
-    return GWEN_ERROR_GENERIC;
-  }
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Using SEPA descriptor %s", descriptor);
-
 
   /* calculate sum */
   AB_Value_free(aj->sumValues);
@@ -299,27 +256,19 @@ int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
     t=AB_Transaction_List_Next(t);
   }
 
-  /* export transfers to SEPA */
-  dbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=AH_Job_TransferBase_SepaExportTransactions(j, profileName, dbuf);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Buffer_free(dbuf);
-    return rv;
+  /* find the right profile to produce pain.008 messages */
+  profile=AH_Job_FindSepaProfile(j, "008*");
+  if (!profile) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No suitable profile found");
+    return GWEN_ERROR_GENERIC;
   }
 
-  /* store descriptor */
-  GWEN_DB_SetCharValue(dbArgs,
-                       GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "descriptor",
-                       descriptor);
-  /* store transfer */
-  GWEN_DB_SetBinValue(dbArgs,
-                      GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "transfer",
-                      GWEN_Buffer_GetStart(dbuf),
-                      GWEN_Buffer_GetUsedBytes(dbuf));
-  GWEN_Buffer_free(dbuf);
+  /* export transfers to SEPA */
+  rv=AH_Job_TransferBase_SepaExportTransactions(j, profile);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
 
   /* set singleBookingAllowed */
   if (aj->singleBookingAllowed)

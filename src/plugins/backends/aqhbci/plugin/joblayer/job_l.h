@@ -322,6 +322,15 @@ void AH_Job_AddTransfer(AH_JOB *j, AB_TRANSACTION *t);
 AB_TRANSACTION *AH_Job_GetFirstTransfer(const AH_JOB *j);
 
 
+/**
+ * Finds a profile of the SEPA ImExporter whose type option matches
+ * the pattern provided in the tmpl parameter. The pattern "001", for
+ * instance, will choose a profile suitable for credit transfer jobs.
+ * Specifying the NULL pointer for tmpl will return the profile
+ * selected during an earlier call to this function for the same job.
+ */
+GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *tmpl);
+
 
 
 #endif /* AH_JOB_L_H */

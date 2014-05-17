@@ -34,31 +34,11 @@ void AH_Job_TransferBase_SetExchangeResultsFn(AH_JOB *j, AH_JOB_TRANSFERBASE_EXC
 
 
 
-int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, const char *profileName, GWEN_BUFFER *destBuf);
+int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile);
 
 int AH_Job_TransferBase_ExchangeArgs_SepaDated(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx);
 int AH_Job_TransferBase_ExchangeArgs_SepaUndated(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx);
 int AH_Job_TransferBase_ExchangeArgs_SepaDatedDebit(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx);
-
-
-/**
- * @name SEPA Descriptors
- * For jobs which have their own list of supported SEPA formats in their BPD those can be handled here.
- * Those jobs MUST call @ref AH_Job_TransferBase_LoadSepaDescriptors inside the constructor.
- */
-/*@{*/
-
-/**
- * Load list of supported SEPA descriptors from the job's BPD.
- */
-void AH_Job_TransferBase_LoadSepaDescriptors(AH_JOB *j);
-
-/**
- * Find a SEPA descriptor in the internal list of supported SEPA descriptors read from the BPD.
- */
-const char *AH_Job_TransferBase_FindSepaDescriptor(AH_JOB *j, const char *tmpl);
-
-/*@}*/
 
 
 

@@ -2077,5 +2077,14 @@ const char *AH_User_FindSepaDescriptor(AB_USER *u, const char *tmpl) {
 
 
 
+const GWEN_STRINGLIST *AH_User_GetSepaDescriptors(AB_USER *u) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->sepaDescriptors;
+}
 
 
