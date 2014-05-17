@@ -1,11 +1,12 @@
 
 char name="001_002_03"
-char shortDescr="default profile"
+char shortDescr="pain.001.002.03"
 char version="@AQBANKING_VERSION_STRING@"
-char longDescr="pain.001.002.03"
+char longDescr="Profile for pain.001.002.03"
 int import="0"
 int export="1"
 
-char type="001_002_03"
+char type="001.002.03"
 
-
+# XML namespace of the pain messages handled by this profile
+char xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.002.03"

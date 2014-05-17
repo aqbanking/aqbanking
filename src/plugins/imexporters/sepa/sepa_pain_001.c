@@ -4,10 +4,11 @@
 
 
 
-int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
-				 AB_IMEXPORTER_CONTEXT *ctx,
-				 GWEN_SYNCIO *sio,
-				 GWEN_DB_NODE *params){
+int AH_ImExporterSEPA_Export_Pain_001(AB_IMEXPORTER *ie,
+                                      AB_IMEXPORTER_CONTEXT *ctx,
+                                      GWEN_SYNCIO *sio,
+                                      uint32_t doctype[],
+                                      GWEN_DB_NODE *params){
   GWEN_XMLNODE *root;
   GWEN_XMLNODE *documentNode;
   GWEN_XMLNODE *painNode;
@@ -16,7 +17,10 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
   const AB_TRANSACTION *t;
   AB_VALUE *v;
   int tcount=0;
+  int post_1_1_2=(doctype[1]>1 || doctype[2]>2);
   GWEN_XML_CONTEXT *xmlctx;
+  char *ctrlsum;
+  const char *s;
   int rv;
 
   ai=AB_ImExporterContext_GetFirstAccountInfo(ctx);
@@ -41,8 +45,24 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
 
     t=AB_ImExporterAccountInfo_GetNextTransaction(ai);
   }
-
   t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
+
+  if (tcount) {
+    GWEN_BUFFER *tbuf;
+
+    /* construct CtrlSum */
+    tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+    AB_Value_toHumanReadableString2(v, tbuf, 2, 0);
+    ctrlsum=strdup(GWEN_Buffer_GetStart(tbuf));
+    assert(ctrlsum);
+    GWEN_Buffer_free(tbuf);
+    AB_Value_free(v);
+  }
+  else {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No transactions");
+    AB_Value_free(v);
+    return GWEN_ERROR_NO_DATA;
+  }
 
   root=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
   n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "?xml");
@@ -53,18 +73,21 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
   }
 
   documentNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "Document");
-  GWEN_XMLNode_SetProperty(documentNode,
-			   "xmlns",
-			   "urn:sepade:xsd:pain.001.001.02");
-  GWEN_XMLNode_SetProperty(documentNode,
-			   "xmlns:xsi",
-			   "http://www.w3.org/2001/XMLSchema-instance");
-  GWEN_XMLNode_SetProperty(documentNode,
-			   "xsi:schemaLocation",
-                           "urn:sepade:xsd:pain.001.001.02 pain.001.001.02.xsd");
+  s=GWEN_DB_GetCharValue(params, "xmlns", 0, 0);
+  if (!s || !*s) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "xmlns not specified in profile \"%s\"",
+              GWEN_DB_GetCharValue(params, "name", 0, 0));
+    free(ctrlsum);
+    return GWEN_ERROR_INVALID;
+  }
+  GWEN_XMLNode_SetProperty(documentNode, "xmlns", s);
   GWEN_XMLNode_AddChild(root, documentNode);
-
-  painNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "pain.001.001.02");
+  if (post_1_1_2)
+    s="CstmrCdtTrfInitn";
+  else
+    s=strstr(s, "pain");
+  painNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, s);
   GWEN_XMLNode_AddChild(documentNode, painNode);
 
   /* create GrpHdr */
@@ -93,22 +116,18 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
     GWEN_Time_toUtcString(ti, "YYYY-MM-DDThh:mm:ssZ", tbuf);
     GWEN_XMLNode_SetCharValue(n, "CreDtTm", GWEN_Buffer_GetStart(tbuf));
     GWEN_Time_free(ti);
-    GWEN_Buffer_Reset(tbuf);
+    GWEN_Buffer_free(tbuf);
 
     /* store NbOfTxs */
     GWEN_XMLNode_SetIntValue(n, "NbOfTxs", tcount);
+    /* store CtrlSum */
+    GWEN_XMLNode_SetCharValue(n, "CtrlSum", ctrlsum);
 
-    /* store sum */
-    AB_Value_toHumanReadableString2(v, tbuf, 2, 0);
-    GWEN_XMLNode_SetCharValue(n, "CtrlSum", GWEN_Buffer_GetStart(tbuf));
-    GWEN_Buffer_free(tbuf);
-
-    GWEN_XMLNode_SetCharValue(n, "Grpg", "GRPD");
+    if (!post_1_1_2)
+      GWEN_XMLNode_SetCharValue(n, "Grpg", "GRPD");
 
     nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "InitgPty");
     if (nn) {
-      const char *s;
-
       GWEN_XMLNode_AddChild(n, nn);
       s=AB_ImExporterAccountInfo_GetOwner(ai);
       if (!s)
@@ -116,14 +135,12 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
       if (!s) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN, "No owner");
 	GWEN_XMLNode_free(root);
-	AB_Value_free(v);
+	free(ctrlsum);
 	return GWEN_ERROR_BAD_DATA;
       }
       GWEN_XMLNode_SetCharValue(nn, "Nm", s);
-
     }
   }
-  AB_Value_free(v);
 
   /* generate PmtInf */
   n=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "PmtInf");
@@ -132,7 +149,37 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
     GWEN_XMLNODE *nn;
 
     GWEN_XMLNode_AddChild(painNode, n);
+
+    /* generate PmtInfId */
+    if (1) {
+      GWEN_TIME *ti;
+      GWEN_BUFFER *tbuf;
+      uint32_t uid;
+      char numbuf[32];
+
+      ti=GWEN_CurrentTime();
+      tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+
+      uid=AB_Banking_GetUniqueId(AB_ImExporter_GetBanking(ie));
+      GWEN_Time_toUtcString(ti, "YYYYMMDD-hh:mm:ss-", tbuf);
+      snprintf(numbuf, sizeof(numbuf)-1, "%08x", uid);
+      GWEN_Buffer_AppendString(tbuf, numbuf);
+      GWEN_XMLNode_SetCharValue(n, "PmtInfId", GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_free(tbuf);
+      GWEN_Time_free(ti);
+    }
+
     GWEN_XMLNode_SetCharValue(n, "PmtMtd", "TRF");
+
+    if (post_1_1_2) {
+      GWEN_XMLNode_SetCharValue(n, "BtchBookg", "true");
+      /* store NbOfTxs */
+      GWEN_XMLNode_SetIntValue(n, "NbOfTxs", tcount);
+      /* store CtrlSum */
+      GWEN_XMLNode_SetCharValue(n, "CtrlSum", ctrlsum);
+    }
+    free(ctrlsum);
+
     nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "PmtTpInf");
     if (nn) {
       GWEN_XMLNODE *nnn;
@@ -163,8 +210,6 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
     /* create "Dbtr" */
     nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "Dbtr");
     if (nn) {
-      const char *s;
-
       GWEN_XMLNode_AddChild(n, nn);
 
       s=AB_ImExporterAccountInfo_GetOwner(ai);
@@ -182,7 +227,6 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
     /* create "DbtrAcct" */
     nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "DbtrAcct");
     if (nn) {
-      const char *s;
       GWEN_XMLNODE *nnn;
 
       GWEN_XMLNode_AddChild(n, nn);
@@ -205,7 +249,6 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
     /* create "DbtrAgt" */
     nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "DbtrAgt");
     if (nn) {
-      const char *s;
       GWEN_XMLNODE *nnn;
 
       GWEN_XMLNode_AddChild(n, nn);
@@ -242,8 +285,6 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
 	/* create "PmtId" */
 	nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "PmtId");
 	if (nnn) {
-	  const char *s;
-
 	  GWEN_XMLNode_AddChild(nn, nnn);
 	  s=AB_Transaction_GetEndToEndReference(t);
 	  if (!( s && *s))
@@ -269,7 +310,6 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
 	  nnnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "InstdAmt");
 	  if (nnnn) {
 	    GWEN_BUFFER *tbuf;
-	    const char *s;
 	    GWEN_XMLNODE *nnnnn;
 
 	    GWEN_XMLNode_AddChild(nnn, nnnn);
@@ -290,7 +330,6 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
 	/* create "DbtrAgt" */
 	nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "CdtrAgt");
 	if (nnn) {
-	  const char *s;
 	  GWEN_XMLNODE *nnnn;
 
 	  GWEN_XMLNode_AddChild(nn, nnn);
@@ -312,8 +351,8 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
 	nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "Cdtr");
 	if (nnn) {
 	  const GWEN_STRINGLIST *sl;
-	  const char *s=NULL;
 
+	  s=NULL;
 	  GWEN_XMLNode_AddChild(nn, nnn);
 	  sl=AB_Transaction_GetRemoteName(t);
 	  if (sl)
@@ -329,7 +368,6 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
 	/* create "CdtrAcct" */
 	nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "CdtrAcct");
 	if (nnn) {
-	  const char *s;
 	  GWEN_XMLNODE *nnnn;
 
 	  GWEN_XMLNode_AddChild(nn, nnn);
@@ -362,8 +400,6 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
 
 	    se=GWEN_StringList_FirstEntry(sl);
 	    while(se) {
-	      const char *s;
-
 	      s=GWEN_StringListEntry_Data(se);
 	      assert(s);
 	      if (GWEN_Buffer_GetUsedBytes(tbuf))
@@ -393,7 +429,7 @@ int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
   }
 
   xmlctx=GWEN_XmlCtxStore_new(root,
-			      GWEN_XML_FLAGS_DEFAULT |
+                              GWEN_XML_FLAGS_INDENT |
                               GWEN_XML_FLAGS_SIMPLE |
 			      GWEN_XML_FLAGS_HANDLE_HEADERS);
 

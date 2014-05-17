@@ -1,8 +1,8 @@
 
-char name="default"
-char shortDescr="default profile"
+char name="001_001_02"
+char shortDescr="pain.001.001.02 (sepade)"
 char version="@AQBANKING_VERSION_STRING@"
-char longDescr="This profile supports transfers"
+char longDescr="Profile for pain.001.001.02 (sepade rather than ISO version)"
 int import="0"
 int export="1"
 

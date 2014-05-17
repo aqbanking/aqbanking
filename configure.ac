@@ -1452,7 +1452,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/sepa/sepa.xml
   src/plugins/imexporters/sepa/profiles/Makefile
   src/plugins/imexporters/sepa/profiles/default.conf
-  src/plugins/imexporters/sepa/profiles/ccm.conf
+  src/plugins/imexporters/sepa/profiles/001_001_02.conf
   src/plugins/imexporters/sepa/profiles/001_002_03.conf
   src/plugins/imexporters/sepa/profiles/008_001_01.conf
   src/plugins/imexporters/sepa/profiles/008_002_02.conf

@@ -59,16 +59,11 @@ int AH_ImExporterSEPA_CheckFile(AB_IMEXPORTER *ie, const char *fname);
 
 
 static
-int AH_ImExporterSEPA_Export_Ccm(AB_IMEXPORTER *ie,
-				 AB_IMEXPORTER_CONTEXT *ctx,
-				 GWEN_SYNCIO *sio,
-				 GWEN_DB_NODE *params);
-
-static
-int AH_ImExporterSEPA_Export_001_002_03(AB_IMEXPORTER *ie,
-                                        AB_IMEXPORTER_CONTEXT *ctx,
-                                        GWEN_SYNCIO *sio,
-                                        GWEN_DB_NODE *params);
+int AH_ImExporterSEPA_Export_Pain_001(AB_IMEXPORTER *ie,
+                                      AB_IMEXPORTER_CONTEXT *ctx,
+                                      GWEN_SYNCIO *sio,
+                                      uint32_t doctype[],
+                                      GWEN_DB_NODE *params);
 
 static
 int AH_ImExporterSEPA_Export_Pain_008(AB_IMEXPORTER *ie,
