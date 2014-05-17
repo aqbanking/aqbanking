@@ -480,7 +480,7 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
     break;
 
   case AB_Job_TypeSepaDebitNote:
-    if (!(aFlags & AH_BANK_FLAGS_SEPA_PREFER_SINGLE_TRANSFER)) {
+    if (!(aFlags & AH_BANK_FLAGS_SEPA_PREFER_SINGLE_DEBITNOTE)) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers multi jobs");
 
       /* try multi transfer first */
