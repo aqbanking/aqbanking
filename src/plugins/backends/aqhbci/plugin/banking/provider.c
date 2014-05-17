@@ -775,7 +775,8 @@ int AH_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
   rv=AH_Job_Exchange(mj, j, AH_Job_ExchangeModeArgs, NULL);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error exchanging params");
-    AH_Job_free(mj);
+    if (jobIsNew)
+      AH_Job_free(mj);
     return rv;
   }
 
