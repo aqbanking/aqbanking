@@ -8,8 +8,7 @@ int AH_ImExporterSEPA_Export_Pain_008(AB_IMEXPORTER *ie,
                                       AB_IMEXPORTER_CONTEXT *ctx,
                                       GWEN_SYNCIO *sio,
                                       uint32_t doctype[],
-                                      GWEN_DB_NODE *params,
-                                      int subType){
+                                      GWEN_DB_NODE *params){
   GWEN_XMLNODE *root;
   GWEN_XMLNODE *documentNode;
   GWEN_XMLNODE *painNode;
@@ -193,13 +192,19 @@ int AH_ImExporterSEPA_Export_Pain_008(AB_IMEXPORTER *ie,
       }
 
       if (!is_8_1_1) {
-        nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "LclInstrm");
-        switch(subType) {
-        default:
-        case AH_ImExportSEPA_SubType_Default: GWEN_XMLNode_SetCharValue(nnn, "Cd", "CORE"); break;
-        case AH_ImExportSEPA_SubType_Cor1:    GWEN_XMLNode_SetCharValue(nnn, "Cd", "COR1"); break;
-        }
-	GWEN_XMLNode_AddChild(nn, nnn);
+	s=GWEN_DB_GetCharValue(params, "LocalInstrumentSEPACode", 0, "CORE");
+	if ((doctype[1]>=3 && !strcmp(s, "COR1")) || /* new in 008.003.02 */
+	    !strcmp(s, "CORE") ||
+	    !strcmp(s, "B2B"))
+	  GWEN_XMLNode_SetCharValueByPath(nn,
+					  GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES,
+					  "LclInstrm/Cd", s);
+        else {
+	  DBG_ERROR(AQBANKING_LOGDOMAIN,
+		    "Invalid Local InstrumentCode");
+	  GWEN_XMLNode_free(root);
+	  return GWEN_ERROR_BAD_DATA;
+	}
       }
 
       switch(AB_Transaction_GetSequenceType(t)) {

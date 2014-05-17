@@ -128,12 +128,10 @@ int AH_ImExporterSEPA_Export(AB_IMEXPORTER *ie,
     return AH_ImExporterSEPA_Export_Pain_001(ie, ctx, sio, doctype, params);
   }
   else if (strcasecmp(s, "008_003_02_cor1")==0) {
-    return AH_ImExporterSEPA_Export_Pain_008(ie, ctx, sio, doctype, params,
-					     AH_ImExportSEPA_SubType_Cor1);
+    return AH_ImExporterSEPA_Export_Pain_008(ie, ctx, sio, doctype, params);
   }
   else if (doctype[0]==8) {
-    return AH_ImExporterSEPA_Export_Pain_008(ie, ctx, sio, doctype, params,
-					     AH_ImExportSEPA_SubType_Default);
+    return AH_ImExporterSEPA_Export_Pain_008(ie, ctx, sio, doctype, params);
   }
   else {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unknown SEPA type \"%s\"", s);

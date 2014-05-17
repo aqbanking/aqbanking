@@ -10,3 +10,7 @@ char type="008.003.02"
 
 # XML namespace of the pain messages handled by this profile
 char xmlns="urn:iso:std:iso:20022:tech:xsd:pain.008.003.02"
+
+# Determine the type of direct debit transactions.
+# Options: CORE (default), COR1, B2B.
+#char LocalInstrumentSEPACode="CORE"
