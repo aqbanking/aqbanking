@@ -260,6 +260,7 @@ AH_JOB *AH_Job_new(const char *name,
   /* get UPD jobs (if any) */
   if (accountId) {
     GWEN_DB_NODE *updgroup;
+    GWEN_DB_NODE *updnode=NULL;
 
     updgroup=AH_User_GetUpd(u);
     assert(updgroup);
@@ -270,27 +271,31 @@ AH_JOB *AH_Job_new(const char *name,
 
       code=GWEN_XMLNode_GetProperty(jobNode, "code", 0);
       if (code) {
-        GWEN_DB_NODE *n;
-
         DBG_NOTICE(AQHBCI_LOGDOMAIN, "Code is \"%s\"", code);
-        n=GWEN_DB_GetFirstGroup(updgroup);
-        while(n) {
-          if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""),
+        updnode=GWEN_DB_GetFirstGroup(updgroup);
+        while(updnode) {
+          if (strcasecmp(GWEN_DB_GetCharValue(updnode, "job", 0, ""),
                          code)==0) {
-            GWEN_DB_NODE *dgr;
-
-            /* upd job found */
-            dgr=GWEN_DB_GetGroup(j->jobParams,
-                                 GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-                                 "upd");
-            assert(dgr);
-            GWEN_DB_AddGroupChildren(dgr, n);
             break;
           }
-          n=GWEN_DB_GetNextGroup(n);
+          updnode=GWEN_DB_GetNextGroup(updnode);
         } /* while */
       } /* if code given */
     } /* if updgroup for the given account found */
+    if (updnode) {
+      GWEN_DB_NODE *dgr;
+
+      /* upd job found */
+      dgr=GWEN_DB_GetGroup(j->jobParams, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "upd");
+      assert(dgr);
+      GWEN_DB_AddGroupChildren(dgr, updnode);
+    }
+    else if (needsBPD) {
+      DBG_INFO(AQHBCI_LOGDOMAIN,"Job \"%s\" not enabled for account \"%s\"",
+               name, accountId);
+      AH_Job_free(j);
+      return NULL;
+    }
   } /* if accountId given */
 
   /* sample flags from XML file */
