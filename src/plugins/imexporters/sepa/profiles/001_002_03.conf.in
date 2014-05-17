@@ -18,3 +18,7 @@ int priority="5"
 
 # XML namespace of the pain messages handled by this profile
 char xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.002.03"
+
+# Disable this option if transactions initiated in a batch job should
+# not be listed seperately in your account statements.
+int singleBookingWanted="1"

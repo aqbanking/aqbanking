@@ -263,18 +263,24 @@ int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
     return GWEN_ERROR_GENERIC;
   }
 
+  /* set singleBookingWanted */
+  if (aj->singleBookingAllowed &&
+      GWEN_DB_GetIntValue(profile, "singleBookingWanted", 0, 0))
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "singleBookingWanted", "J");
+  else {
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "singleBookingWanted", "N");
+    GWEN_DB_SetIntValue(profile, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "singleBookingWanted", 0);
+  }
+
   /* export transfers to SEPA */
   rv=AH_Job_TransferBase_SepaExportTransactions(j, profile);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
-
-  /* set singleBookingAllowed */
-  if (aj->singleBookingAllowed)
-    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "singleBookingWanted", "J");
-  else
-    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "singleBookingWanted", "N");
 
   /* store sum value */
   if (aj->sumValues) {

@@ -55,6 +55,12 @@ int AH_ImExporterSEPA_Export_Pain_008(AB_IMEXPORTER *ie,
     GWEN_XMLNode_SetCharValue(n, "PmtMtd", "DD");
 
     if (!is_8_1_1) {
+      /* store BtchBookg */
+      GWEN_XMLNode_SetCharValue(n, "BtchBookg",
+				GWEN_DB_GetIntValue(params,
+						    "singleBookingWanted", 0, 0)
+				? "false"
+				: "true");
       /* store NbOfTxs */
       GWEN_XMLNode_SetIntValue(n, "NbOfTxs", pmtinf->tcount);
       /* store CtrlSum */
