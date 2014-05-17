@@ -270,10 +270,12 @@ static int addSepaDebitNote(AB_BANKING *ab,
   al=AB_Banking_FindAccounts(ab, "*", "*", bankId, accountId, subAccountId);
   if (al==NULL || AB_Account_List2_GetSize(al)==0) {
     DBG_ERROR(0, "Account not found");
+    AB_Account_List2_free(al);
     return 2;
   }
   else if (AB_Account_List2_GetSize(al)>1) {
     DBG_ERROR(0, "Ambiguous account specification");
+    AB_Account_List2_free(al);
     AB_Banking_OnlineFini(ab);
     AB_Banking_Fini(ab);
     return 2;

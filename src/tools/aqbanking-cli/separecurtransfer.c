@@ -270,6 +270,7 @@ int sepaRecurTransfer(AB_BANKING *ab,
   al=AB_Banking_FindAccounts(ab, "*", "*", bankId, accountId, subAccountId);
   if (al==NULL || AB_Account_List2_GetSize(al)==0) {
     DBG_ERROR(0, "Account not found");
+    AB_Account_List2_free(al);
     return 2;
   }
   else if (AB_Account_List2_GetSize(al)>1) {
