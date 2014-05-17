@@ -695,14 +695,14 @@ static int _checkStringForSepaCharset(const char *s, int restricted) {
  * other than "A"-"Z", "a"-"z" and "0"-"9".
  * We don't use isalnum here because I'm not sure how that function handles UTF-8 chars with umlauts...
  */
-static int _checkStringForAlNum(const char *s) {
+static int _checkStringForAlNum(const char *s, int lcase) {
   assert(s);
   while(*s) {
     unsigned char c=*s;
 
-    if (!((c>='A' && c<='Z') ||
-          (c>='a' && c<='z') ||
-          (c>='0' && c<='9'))) {
+    if (!((c>='0' && c<='9') ||
+          (c>='A' && c<='Z') ||
+          (lcase && c>='a' && c<='z'))) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in string: '%c'", c);
       return GWEN_ERROR_BAD_DATA;
     }
@@ -725,7 +725,7 @@ int AB_Transaction_CheckForSepaConformity(const AB_TRANSACTION *t, int restricte
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing or empty local IBAN in transaction");
       return GWEN_ERROR_BAD_DATA;
     }
-    rv=_checkStringForAlNum(s);
+    rv=_checkStringForAlNum(s, 1);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in local IBAN");
       return rv;
@@ -736,7 +736,7 @@ int AB_Transaction_CheckForSepaConformity(const AB_TRANSACTION *t, int restricte
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing or empty local BIC in transaction");
       return GWEN_ERROR_BAD_DATA;
     }
-    rv=_checkStringForAlNum(s);
+    rv=_checkStringForAlNum(s, 0);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in local BIC");
       return rv;
@@ -747,7 +747,7 @@ int AB_Transaction_CheckForSepaConformity(const AB_TRANSACTION *t, int restricte
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing or empty remote IBAN in transaction");
       return GWEN_ERROR_BAD_DATA;
     }
-    rv=_checkStringForAlNum(s);
+    rv=_checkStringForAlNum(s, 1);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in remote IBAN");
       return rv;
@@ -762,7 +762,7 @@ int AB_Transaction_CheckForSepaConformity(const AB_TRANSACTION *t, int restricte
       }
     }
     else {
-      rv=_checkStringForAlNum(s);
+      rv=_checkStringForAlNum(s, 0);
       if (rv<0) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in remote BIC");
         return rv;
