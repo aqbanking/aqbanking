@@ -351,7 +351,6 @@ int sepaDebitNote(AB_BANKING *ab,
 
   /* populate job list */
   jobList=AB_Job_List2_new();
-  assert(jobList);
   AB_Job_List2_PushBack(jobList, j);
 
 

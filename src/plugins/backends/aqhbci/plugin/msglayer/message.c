@@ -381,7 +381,6 @@ unsigned int AH_Msg_AddNode(AH_MSG *hmsg,
   assert(node);
   assert(data);
 
-  assert(hmsg);
   e=AH_Dialog_GetMsgEngine(hmsg->dialog);
   assert(e);
 
