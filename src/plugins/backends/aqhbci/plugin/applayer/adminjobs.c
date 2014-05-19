@@ -1969,6 +1969,7 @@ int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       int useWithSepa=0;
 
       /* account data found */
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Found a GetAccountSepaInfoResponse segment");
       accountId=GWEN_DB_GetCharValue(dbXA, "accountId", 0, 0);
       accountSuffix=GWEN_DB_GetCharValue(dbXA, "accountsubid", 0, 0);
       bankCode=GWEN_DB_GetCharValue(dbXA, "bankCode", 0, 0);
@@ -1988,15 +1989,25 @@ int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
           AB_Account_SetSubAccountId(jd->account, accountSuffix);
         AH_Account_AddFlags(jd->account, AH_BANK_FLAGS_KTV2); /* we have a sub id (even if emtpy), set flag */
 
-        if (useWithSepa)
-          AH_Account_AddFlags(jd->account, AH_BANK_FLAGS_SEPA); /* we have a sub id (even if emtpy), set flag */
-        else
-          AH_Account_SubFlags(jd->account, AH_BANK_FLAGS_SEPA); /* we have a sub id (even if emtpy), set flag */
+	if (useWithSepa) {
+	  DBG_INFO(AQHBCI_LOGDOMAIN, "SEPA available with this account");
+	  AH_Account_AddFlags(jd->account, AH_BANK_FLAGS_SEPA); /* we have a sub id (even if emtpy), set flag */
+	}
+	else {
+	  DBG_INFO(AQHBCI_LOGDOMAIN, "SEPA not available with this account");
+	  AH_Account_SubFlags(jd->account, AH_BANK_FLAGS_SEPA); /* we have a sub id (even if emtpy), set flag */
+	}
 
-        if (iban && *iban && bic && *bic) {
-          DBG_NOTICE(AQHBCI_LOGDOMAIN, "Setting IBAN and BIC: %s/%s", iban, bic);
-          AB_Account_SetIBAN(jd->account, iban);
-          AB_Account_SetBIC(jd->account, bic);
+        if (iban && *iban) {
+	  if (bic && *bic) {
+	    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Setting IBAN and BIC: %s/%s", iban, bic);
+	    AB_Account_SetIBAN(jd->account, iban);
+	    AB_Account_SetBIC(jd->account, bic);
+	  }
+	  else {
+	    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Setting IBAN (no BIC): %s", iban);
+	    AB_Account_SetIBAN(jd->account, iban);
+	  }
         }
         else {
           DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing information in account: BLZ=[%s], Kto=[%s], IBAN=[%s], BIC=[%s]",
