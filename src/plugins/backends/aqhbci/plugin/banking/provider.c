@@ -3915,10 +3915,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
 	  }
 	}
 	DBG_NOTICE(AQHBCI_LOGDOMAIN, "Max Server Keysize in bits: %d", nbits);
-        if (nbits>1)
-	  maxServerKeySizeInBits=nbits-1;
-	else
-	  maxServerKeySizeInBits=nbits;
+	maxServerKeySizeInBits=nbits;
       }
       else {
 	DBG_NOTICE(AQHBCI_LOGDOMAIN, "Key info for key %d has no modulus data, using default key size (2048 bits)", (int) skeyId);
