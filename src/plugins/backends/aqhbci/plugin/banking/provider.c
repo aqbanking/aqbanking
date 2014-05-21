@@ -3914,8 +3914,13 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
             mask>>=1;
 	  }
 	}
-	DBG_NOTICE(AQHBCI_LOGDOMAIN, "Max Server Keysize in bits: %d", nbits);
-	maxServerKeySizeInBits=nbits;
+        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Max Server Keysize in bits: %d", nbits);
+	if (nbits>1)
+	  /* nbits has been calculated (length of the server key in bits), and the specs require us to use a key
+	   * no longer than that of the server, so for our key we use the size of the server key minus one bit,
+	   * so we are safely below the length and value of the server key in any case.
+	   */
+	  maxServerKeySizeInBits=nbits-1;
       }
       else {
 	DBG_NOTICE(AQHBCI_LOGDOMAIN, "Key info for key %d has no modulus data, using default key size (2048 bits)", (int) skeyId);
@@ -3946,6 +3951,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
   case 10:
     if (maxServerKeySizeInBits) {
       int n=maxServerKeySizeInBits/8;
+
       if (maxServerKeySizeInBits%8)
 	n++;
       GWEN_Crypt_CryptAlgo_SetChunkSize(algo, n);
