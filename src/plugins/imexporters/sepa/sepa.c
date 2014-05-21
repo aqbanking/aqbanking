@@ -343,11 +343,6 @@ int AH_ImExporterSEPA_Export(AB_IMEXPORTER *ie,
   GWEN_XMLNODE *topNode;
   GWEN_XMLNODE *n;
   uint32_t doctype[]={0, 0, 0};
-  int (*ctxToXml)(AB_IMEXPORTER *ie,
-		  AB_IMEXPORTER_CONTEXT *ctx,
-		  GWEN_XMLNODE *topNode,
-		  uint32_t doctype[],
-		  GWEN_DB_NODE *params);
   const char *s;
   int rv;
 
@@ -404,14 +399,18 @@ int AH_ImExporterSEPA_Export(AB_IMEXPORTER *ie,
       s="CstmrCdtTrfInitn";
     else
       s=strstr(s, "pain");
-    ctxToXml=AH_ImExporterSEPA_Export_Pain_001;
+    topNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, s);
+    GWEN_XMLNode_AddChild(documentNode, topNode);
+    rv=AH_ImExporterSEPA_Export_Pain_001(ie, ctx, topNode, doctype, params);
     break;
   case 8:
     if (!(doctype[1]==1 && doctype[2]==1))
       s="CstmrDrctDbtInitn";
     else
       s=strstr(s, "pain");
-    ctxToXml=AH_ImExporterSEPA_Export_Pain_008;
+    topNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, s);
+    GWEN_XMLNode_AddChild(documentNode, topNode);
+    rv=AH_ImExporterSEPA_Export_Pain_008(ie, ctx, topNode, doctype, params);
     break;
   default:
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unknown SEPA type \"%s\"",
@@ -420,9 +419,6 @@ int AH_ImExporterSEPA_Export(AB_IMEXPORTER *ie,
     return GWEN_ERROR_INVALID;
   }
 
-  topNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, s);
-  GWEN_XMLNode_AddChild(documentNode, topNode);
-  rv=ctxToXml(ie, ctx, topNode, doctype, params);
   if (rv==0) {
     GWEN_XML_CONTEXT *xmlctx;
 
