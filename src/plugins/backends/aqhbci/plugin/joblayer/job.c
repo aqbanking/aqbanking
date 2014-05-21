@@ -2615,7 +2615,7 @@ GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *tmpl) {
     const char *s;
 
     s=GWEN_DB_GetCharValue(j->sepaProfile, "type", 0, "");
-    if (!*tmpl || GWEN_Text_ComparePattern(s, tmpl, 1)>0)
+    if (GWEN_Text_ComparePattern(s, tmpl, 1)!=-1)
       return j->sepaProfile;
     else {
       GWEN_DB_Group_free(j->sepaProfile);
@@ -2652,7 +2652,7 @@ GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *tmpl) {
       s=GWEN_DB_GetCharValue(nn, "type", 0, 0);
 
       if (GWEN_DB_GetIntValue(nn, "priority", 0, 0)>0 &&
-          s && *s && GWEN_Text_ComparePattern(s, tmpl, 1)>0) {
+          s && GWEN_Text_ComparePattern(s, tmpl, 1)!=-1) {
         GWEN_STRINGLISTENTRY *se;
 
         /* Well formed type strings are exactly 10 characters long.
@@ -2661,7 +2661,7 @@ GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *tmpl) {
         se=GWEN_StringList_FirstEntry(descriptors);
         while(se) {
           s=GWEN_StringListEntry_Data(se);
-          if (s && *s && GWEN_Text_ComparePattern(s, pattern, 1)>0) {
+          if (s && GWEN_Text_ComparePattern(s, pattern, 1)!=-1) {
             /* record the descriptor matching this profile */
             GWEN_DB_SetCharValue(nn, GWEN_DB_FLAGS_OVERWRITE_VARS,
                                  "descriptor", s);
