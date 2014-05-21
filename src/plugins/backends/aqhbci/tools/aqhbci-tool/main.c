@@ -237,6 +237,10 @@ int main(int argc, char **argv) {
                                   "    Set the maximum number of transfers/debit notes per job \n\n"));
 
     GWEN_Buffer_AppendString(ubuf,
+                             I18N("  setsepaprofile:\n"
+                                  "    Set the SEPA profile for transfers/debit notes\n\n"));
+
+    GWEN_Buffer_AppendString(ubuf,
                              I18N("  setTanMediumId:\n"
                                   "    Set the medium id for some PIN/TAN methods (like mTAN) \n\n"));
 
@@ -375,6 +379,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "getaccsepa")==0) {
     rv=getAccSepa(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "setsepaprofile")==0) {
+    rv=setSepaProfile(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "versions")==0) {
     showVersions();

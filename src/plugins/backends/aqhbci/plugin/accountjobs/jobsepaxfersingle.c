@@ -18,6 +18,7 @@
 #include "aqhbci_l.h"
 #include "accountjob_l.h"
 #include "job_l.h"
+#include "user_l.h"
 #include "provider_l.h"
 #include "hhd_l.h"
 #include <gwenhywfar/debug.h>
@@ -112,7 +113,7 @@ int AH_Job_SepaTransferSingle_Prepare(AH_JOB *j) {
   DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing transfer");
 
   /* find the right profile to produce pain.001 messages */
-  profile=AH_Job_FindSepaProfile(j, "001*");
+  profile=AH_Job_FindSepaProfile(j, "001*", AH_User_GetSepaTransferProfile(AH_Job_GetUser(j)));
   if (!profile) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No suitable profile found");
     return GWEN_ERROR_GENERIC;

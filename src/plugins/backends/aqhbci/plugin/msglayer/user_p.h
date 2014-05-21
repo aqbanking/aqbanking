@@ -62,6 +62,8 @@ struct AH_USER {
   AH_TAN_METHOD_LIST *tanMethodDescriptions;
   char *tanMediumId;
   GWEN_STRINGLIST *sepaDescriptors;
+  char *sepaTransferProfile;
+  char *sepaDebitNoteProfile;
 
   int maxTransfersPerJob;
   int maxDebitNotesPerJob;

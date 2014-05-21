@@ -158,6 +158,11 @@ int setMaxTransfers(AB_BANKING *ab,
 		    int argc,
 		    char **argv);
 
+int setSepaProfile(AB_BANKING *ab,
+		   GWEN_DB_NODE *dbArgs,
+		   int argc,
+		   char **argv);
+
 int setTanMediumId(AB_BANKING *ab,
 		   GWEN_DB_NODE *dbArgs,
 		   int argc,

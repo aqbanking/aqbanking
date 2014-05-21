@@ -329,7 +329,8 @@ AB_TRANSACTION *AH_Job_GetFirstTransfer(const AH_JOB *j);
  * Specifying the NULL pointer for tmpl will return the profile
  * selected during an earlier call to this function for the same job.
  */
-GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *tmpl);
+GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *type,
+                                     const char *name);
 
 
 

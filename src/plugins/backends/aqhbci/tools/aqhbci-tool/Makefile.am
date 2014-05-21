@@ -37,6 +37,7 @@ aqhbci_tool4_SOURCES=main.c \
  listitanmodes.c \
  setitanmode.c \
  setmaxtransfers.c \
+ setsepaprofile.c \
  settanmediumid.c \
  logfile.c \
  getaccsepa.c

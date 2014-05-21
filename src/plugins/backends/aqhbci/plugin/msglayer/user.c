@@ -375,6 +375,14 @@ void AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
   /* read some settings */
   ue->maxTransfersPerJob=GWEN_DB_GetIntValue(db, "maxTransfersPerJob", 0, AH_USER_MAX_TRANSFERS_PER_JOB);
   ue->maxDebitNotesPerJob=GWEN_DB_GetIntValue(db, "maxDebitNotesPerJob", 0, AH_USER_MAX_DEBITNOTES_PER_JOB);
+  free(ue->sepaTransferProfile);
+  s=GWEN_DB_GetCharValue(db, "sepaTransferProfile", 0, NULL);
+  if (s) ue->sepaTransferProfile=strdup(s);
+  else ue->sepaTransferProfile=NULL;
+  free(ue->sepaDebitNoteProfile);
+  s=GWEN_DB_GetCharValue(db, "sepaDebitNoteProfile", 0, NULL);
+  if (s) ue->sepaDebitNoteProfile=strdup(s);
+  else ue->sepaDebitNoteProfile=NULL;
 
   free(ue->tanMediumId);
   s=GWEN_DB_GetCharValue(db, "tanMediumId", 0, NULL);
@@ -497,6 +505,12 @@ void AH_User_toDb(AB_USER *u, GWEN_DB_NODE *db) {
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 		      "maxDebitNotesPerJob",
 		      ue->maxDebitNotesPerJob);
+  if (ue->sepaTransferProfile)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "sepaTransferProfile", ue->sepaTransferProfile);
+  if (ue->sepaDebitNoteProfile)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "sepaDebitNoteProfile", ue->sepaDebitNoteProfile);
   if (ue->tanMediumId)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			 "tanMediumId", ue->tanMediumId);
@@ -2088,3 +2102,57 @@ const GWEN_STRINGLIST *AH_User_GetSepaDescriptors(AB_USER *u) {
 }
 
 
+
+const char *AH_User_GetSepaTransferProfile(const AB_USER *u) {
+  const AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->sepaTransferProfile;
+}
+
+
+
+void AH_User_SetSepaTransferProfile(AB_USER *u, const char *profileName) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  free(ue->sepaTransferProfile);
+  if (profileName)
+    ue->sepaTransferProfile=strdup(profileName);
+  else
+    ue->sepaTransferProfile=NULL;
+}
+
+
+
+const char *AH_User_GetSepaDebitNoteProfile(const AB_USER *u) {
+  const AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->sepaDebitNoteProfile;
+}
+
+
+
+void AH_User_SetSepaDebitNoteProfile(AB_USER *u, const char *profileName) {
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  free(ue->sepaDebitNoteProfile);
+  if (profileName)
+    ue->sepaDebitNoteProfile=strdup(profileName);
+  else
+    ue->sepaDebitNoteProfile=NULL;
+}

@@ -217,6 +217,16 @@ AQHBCI_API
 int AH_User_GetHbciVersion(const AB_USER *u);
 AQHBCI_API
 void AH_User_SetHbciVersion(AB_USER *u, int i);
+
+
+AQHBCI_API
+const char *AH_User_GetSepaTransferProfile(const AB_USER *u);
+AQHBCI_API
+void AH_User_SetSepaTransferProfile(AB_USER *u, const char *profileName);
+AQHBCI_API
+const char *AH_User_GetSepaDebitNoteProfile(const AB_USER *u);
+AQHBCI_API
+void AH_User_SetSepaDebitNoteProfile(AB_USER *u, const char *profileName);
 /*@}*/
 
 

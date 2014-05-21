@@ -2577,6 +2577,38 @@ void AH_Job_AddTransfer(AH_JOB *j, AB_TRANSACTION *t) {
 
 
 
+static int AH_Job__SepaProfileSupported(GWEN_DB_NODE *profile,
+                                        const GWEN_STRINGLIST *descriptors) {
+  GWEN_STRINGLISTENTRY *se;
+  char pattern[13];
+  const char *s;
+
+  /* patterns shall always have the form *xxx.yyy.zz* */
+  pattern[0]=pattern[11]='*';
+  pattern[12]='\0';
+
+  /* Well formed type strings are exactly 10 characters long. Others
+   * will either not match or be rejected by the exporter. */
+  strncpy(pattern+1, GWEN_DB_GetCharValue(profile, "type", 0, ""), 10);
+  se=GWEN_StringList_FirstEntry(descriptors);
+  while(se) {
+    s=GWEN_StringListEntry_Data(se);
+    if (s && GWEN_Text_ComparePattern(s, pattern, 1)!=-1) {
+      /* record the descriptor matching this profile */
+      GWEN_DB_SetCharValue(profile, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                           "descriptor", s);
+      break;
+    }
+    se=GWEN_StringListEntry_Next(se);
+  }
+  if (se)
+    return 1;
+  else
+    return 0;
+}
+
+
+
 static int AH_Job__SortSepaProfiles(const void *a, const void *b) {
   GWEN_DB_NODE **ppa=(GWEN_DB_NODE **)a;
   GWEN_DB_NODE **ppb=(GWEN_DB_NODE **)b;
@@ -2586,11 +2618,6 @@ static int AH_Job__SortSepaProfiles(const void *a, const void *b) {
 
   /* This function is supposed to return a list of profiles in order
    * of decreasing precedence. */
-  res=GWEN_DB_GetIntValue(pb, "priority", 0, 0)
-    -GWEN_DB_GetIntValue(pa, "priority", 0, 0);
-  if (res)
-    return res;
-
   res=strcmp(GWEN_DB_GetCharValue(pb, "type", 0, ""),
              GWEN_DB_GetCharValue(pa, "type", 0, ""));
   if (res)
@@ -2604,18 +2631,56 @@ static int AH_Job__SortSepaProfiles(const void *a, const void *b) {
 
 
 
-GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *tmpl) {
+GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *type,
+                                     const char *name) {
+  const GWEN_STRINGLIST *descriptors;
   GWEN_DB_NODE *dbProfiles;
 
   assert(j);
-  if (!tmpl)
+
+  if (j->sepaDescriptors)
+    descriptors=j->sepaDescriptors;
+  else
+    descriptors=AH_User_GetSepaDescriptors(j->user);
+  if (GWEN_StringList_Count(descriptors)==0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+              "No SEPA descriptor found, please update your account information");
+    return NULL;
+  }
+
+  if (name) {
+    GWEN_DB_NODE *profile;
+
+    profile=AB_Banking_GetImExporterProfile(AH_Job_GetBankingApi(j),
+                                            "sepa", name);
+    if (!profile) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN,
+                "Profile \"%s\" not available", name);
+      return NULL;
+    }
+    if (GWEN_Text_ComparePattern(GWEN_DB_GetCharValue(profile, "type", 0, ""),
+                                 type, 1)==-1) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN,
+                "Profile \"%s\" does not match type speecification (\"%s\")",
+                name, type);
+      return NULL;
+    }
+    if (!AH_Job__SepaProfileSupported(profile, descriptors)) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN,
+                "Profile \"%s\" not supported by bank server", name);
+      return NULL;
+    }
+    j->sepaProfile=profile;
+    return profile;
+  }
+
+  if (!type)
     return j->sepaProfile;
 
   if (j->sepaProfile) {
-    const char *s;
-
-    s=GWEN_DB_GetCharValue(j->sepaProfile, "type", 0, "");
-    if (GWEN_Text_ComparePattern(s, tmpl, 1)!=-1)
+    if (GWEN_Text_ComparePattern(GWEN_DB_GetCharValue(j->sepaProfile, "type",
+                                                      0, ""),
+                                 type, 1)!=-1)
       return j->sepaProfile;
     else {
       GWEN_DB_Group_free(j->sepaProfile);
@@ -2625,54 +2690,19 @@ GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *tmpl) {
 
   dbProfiles=AB_Banking_GetImExporterProfiles(AH_Job_GetBankingApi(j), "sepa");
   if (dbProfiles) {
-    const GWEN_STRINGLIST *descriptors;
     GWEN_DB_NODE *n, *nn;
     unsigned int pCount=0;
-    char pattern[13];
-    const char *s;
 
-    if (j->sepaDescriptors)
-      descriptors=j->sepaDescriptors;
-    else
-      descriptors=AH_User_GetSepaDescriptors(j->user);
-
-    if (GWEN_StringList_Count(descriptors)==0) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN,
-		"No SEPA descriptor found, please update your account information");
-      return NULL;
-    }
-
-    /* patterns shall always have the form *xxx.yyy.zz* */
-    pattern[0]=pattern[11]='*';
-    pattern[12]='\0';
     n=GWEN_DB_GetFirstGroup(dbProfiles);
     while(n) {
       nn=n;
       n=GWEN_DB_GetNextGroup(n);
-      s=GWEN_DB_GetCharValue(nn, "type", 0, 0);
 
-      if (GWEN_DB_GetIntValue(nn, "priority", 0, 0)>0 &&
-          s && GWEN_Text_ComparePattern(s, tmpl, 1)!=-1) {
-        GWEN_STRINGLISTENTRY *se;
-
-        /* Well formed type strings are exactly 10 characters long.
-         * Others will either not match or be rejected by the exporter. */
-        strncpy(pattern+1, s, 10);
-        se=GWEN_StringList_FirstEntry(descriptors);
-        while(se) {
-          s=GWEN_StringListEntry_Data(se);
-          if (s && GWEN_Text_ComparePattern(s, pattern, 1)!=-1) {
-            /* record the descriptor matching this profile */
-            GWEN_DB_SetCharValue(nn, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                                 "descriptor", s);
-            pCount++;
-            nn=NULL;
-            break;
-          }
-          se=GWEN_StringListEntry_Next(se);
-        }
-      }
-      if (nn) {
+      if (GWEN_Text_ComparePattern(GWEN_DB_GetCharValue(nn, "type", 0, ""),
+                                   type, 1)!=-1 &&
+          AH_Job__SepaProfileSupported(nn, descriptors))
+        pCount++;
+      else {
         GWEN_DB_UnlinkGroup(nn);
         GWEN_DB_Group_free(nn);
       }
@@ -2704,7 +2734,7 @@ GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *tmpl) {
   }
   else {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "No SEPA profiles enabled for automatic selection");
+              "No SEPA profiles found");
   }
 
   return j->sepaProfile;

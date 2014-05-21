@@ -8,14 +8,6 @@ int export="1"
 
 char type="001.003.03"
 
-# When choosing a SEPA format for the transmission of data via Fints,
-# AqHBCI will consider all profiles with a priority level explicitly
-# set to a non-zero value. The precedence of profiles is determined by
-# the settings of priority, type and name in that order. In all cases,
-# the higher value is given prefernce. The profiles shipped with this
-# library have either priority 5 or no setting at all.
-int priority="5"
-
 # XML namespace of the pain messages handled by this profile
 char xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.003.03"
 
