@@ -3894,33 +3894,20 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
 			    GWEN_LoggerLevel_Notice,
 			    I18N("Server key has a modulus size of %d bytes"), modLen);
       if (modPtr && modLen) {
-	int nbits;
-
-        nbits=modLen*8;
+	/* The specs require us to use a key no longer than that of the server,
+	 * so for our key we use the largest multiple of 8 smaller or equal to
+	 * the length of the server key in order to keep everyone happy.
+	 */
+	maxServerKeySizeInBits=modLen*8;
 	while(modLen && *modPtr==0) {
-          nbits-=8;
-          modLen--;
+	  maxServerKeySizeInBits-=8;
+	  modLen--;
 	  modPtr++;
 	}
-	if (modLen) {
-	  int i;
-	  uint8_t mask=0x80;
-	  uint8_t b=*modPtr;
-
-	  for (i=0; i<8; i++) {
-	    if (b & mask)
-	      break;
-	    nbits--;
-            mask>>=1;
-	  }
-	}
-        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Max Server Keysize in bits: %d", nbits);
-	if (nbits>1)
-	  /* nbits has been calculated (length of the server key in bits), and the specs require us to use a key
-	   * no longer than that of the server, so for our key we use the size of the server key minus one bit,
-	   * so we are safely below the length and value of the server key in any case.
-	   */
-	  maxServerKeySizeInBits=nbits-1;
+	if (modLen && (*modPtr&0x80)==0)
+	  maxServerKeySizeInBits-=8;
+	DBG_NOTICE(AQHBCI_LOGDOMAIN, "Max Server Keysize in bits: %d",
+		   maxServerKeySizeInBits);
       }
       else {
 	DBG_NOTICE(AQHBCI_LOGDOMAIN, "Key info for key %d has no modulus data, using default key size (2048 bits)", (int) skeyId);
@@ -3952,8 +3939,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
     if (maxServerKeySizeInBits) {
       int n=maxServerKeySizeInBits/8;
 
-      if (maxServerKeySizeInBits%8)
-	n++;
+      assert(maxServerKeySizeInBits%8==0);
       GWEN_Crypt_CryptAlgo_SetChunkSize(algo, n);
       GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, maxServerKeySizeInBits);
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating keys of size: %d bytes, %d bits", n, maxServerKeySizeInBits);
