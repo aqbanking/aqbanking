@@ -1289,6 +1289,18 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
 	    }
 	  }
 	}
+	else if (strcmp(id, "21")==0) {
+	  const char *p;
+
+	  p=AHB_SWIFT_Tag_GetData(tg);
+	  assert (p);
+	  if (0==strcmp(p, "NONREF")) {
+	    DBG_INFO(AQBANKING_LOGDOMAIN, "Ignoring related reference '%s' in document tag 21.", p);
+	  }
+	  else {
+	    DBG_WARN(AQBANKING_LOGDOMAIN, "Unexpected related reference '%s' in document tag 21 encountered.", p);
+	  }
+	}
 	else {
 	  DBG_WARN(AQBANKING_LOGDOMAIN, "Unexpected tag '%s' found.", id)
 	  DBG_WARN(AQBANKING_LOGDOMAIN, "To debug set environment variable AQBANKING_LOGLEVEL=info and rerun");
