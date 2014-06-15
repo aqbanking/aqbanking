@@ -16,6 +16,9 @@
 
 
 #include "globals.h"
+/* The code below uses the private symbol AH_Provider_SendDtazv from libaqhbci */
+#include "hbci_l.h"
+#include "provider_l.h"
 
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/fslock.h>
@@ -32,20 +35,6 @@
 #else
 # define DIRSEP "/"
 #endif
-
-
-/* this is a more or less secret job which is not declared in AqHBCI, so
- * we must do it here. The AQHBCI_API makes this file import that symbol
- * from the libaqhbci library.
- */
-AQHBCI_API
-int AH_Provider_SendDtazv(AB_PROVIDER *pro,
-			  AB_ACCOUNT *a,
-			  AB_IMEXPORTER_CONTEXT *ctx,
-			  const uint8_t *dataPtr,
-			  uint32_t dataLen,
-			  int nounmount,
-			  uint32_t guiid);
 
 
 static int _incrementUniqueId(AB_ACCOUNT *a, const char *path) {
