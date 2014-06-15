@@ -360,7 +360,7 @@ int sendDtazv(AB_BANKING *ab,
     rv=AH_Provider_SendDtazv(pro, a, ctx,
 			     (const uint8_t*)GWEN_Buffer_GetStart(dtazv),
 			     GWEN_Buffer_GetUsedBytes(dtazv),
-			     1, 0);
+			     1, 1, 0);
     /* write ctx file */
     if (ctxFile) {
       GWEN_DB_NODE *dbCtx;
