@@ -94,7 +94,6 @@ int AH_ImExporterSEPA_Export_Pain_008(AB_IMEXPORTER *ie,
       }
 
       switch(pmtinf->sequenceType) {
-      case AB_Transaction_SequenceTypeUnknown:
       case AB_Transaction_SequenceTypeOnce:
         GWEN_XMLNode_SetCharValue(nn, "SeqTp", "OOFF");
         break;
@@ -107,6 +106,10 @@ int AH_ImExporterSEPA_Export_Pain_008(AB_IMEXPORTER *ie,
       case AB_Transaction_SequenceTypeFinal:
         GWEN_XMLNode_SetCharValue(nn, "SeqTp", "FNAL");
         break;
+      default:
+	DBG_ERROR(AQBANKING_LOGDOMAIN, "Sequence type of debit note unknown");
+	AH_ImExporter_Sepa_PmtInf_List_free(pl);
+	return GWEN_ERROR_BAD_DATA;
       }
 
       GWEN_XMLNode_AddChild(n, nn);

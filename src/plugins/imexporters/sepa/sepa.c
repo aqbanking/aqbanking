@@ -158,6 +158,7 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
     int day, month, year;
     uint32_t transDate;
     const char *name=NULL, *iban=NULL, *bic=NULL, *cdtrSchmeId=NULL;
+    AB_TRANSACTION_SEQUENCETYPE sequenceType=AB_Transaction_SequenceTypeUnknown;
     const char *s;
     const AB_VALUE *tv;
 
@@ -200,6 +201,13 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
       }
     }
     if (doctype[0]==8) {
+      sequenceType=AB_Transaction_GetSequenceType(t);
+      if (sequenceType==AB_Transaction_SequenceTypeUnknown) {
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
+		  "Missing sequence type in transaction %d", tcount);
+	AH_ImExporter_Sepa_PmtInf_List_free(pl);
+	return GWEN_ERROR_BAD_DATA;
+      }
       cdtrSchmeId=AB_Transaction_GetCreditorSchemeId(t);
       if (!cdtrSchmeId || !*cdtrSchmeId) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -217,8 +225,8 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
        (iban && strcmp(iban, pmtinf->localIban)) ||			\
        (bic && strcmp(bic, pmtinf->localBic)) ||			\
        (doctype[0]==8 &&						\
-	 (AB_Transaction_GetSequenceType(t)!=pmtinf->sequenceType ||	\
-	  (cdtrSchmeId && strcmp(cdtrSchmeId, pmtinf->creditorSchemeId)))))
+	(sequenceType!=pmtinf->sequenceType ||				\
+	 (cdtrSchmeId && strcmp(cdtrSchmeId, pmtinf->creditorSchemeId)))))
 
       /* match against current PmtInf block */
       if (TRANSACTION_DOES_NOT_MATCH) {
@@ -243,7 +251,7 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
       pmtinf->date=ti;
       pmtinf->transDate=transDate;
       if (doctype[0]==8) {
-	pmtinf->sequenceType=AB_Transaction_GetSequenceType(t);
+	pmtinf->sequenceType=sequenceType;
 	pmtinf->creditorSchemeId=cdtrSchmeId;
       }
     }
