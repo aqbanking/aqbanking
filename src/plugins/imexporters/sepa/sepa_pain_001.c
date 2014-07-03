@@ -196,6 +196,8 @@ int AH_ImExporterSEPA_Export_Pain_001(AB_IMEXPORTER *ie,
 					  "CdtrAgt/FinInstnId/BIC", s);
 	else if (doctype[1]<3) { /* BIC not required since 001.003.03 */
 	  DBG_ERROR(AQBANKING_LOGDOMAIN, "No remote BIC");
+	  AB_Transaction_List2Iterator_free(it);
+	  AH_ImExporter_Sepa_PmtInf_List_free(pl);
 	  return GWEN_ERROR_BAD_DATA;
 	}
 
