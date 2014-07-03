@@ -93,7 +93,7 @@ int AH_ImExporterSEPA_Export_Pain_008(AB_IMEXPORTER *ie,
 	}
       }
 
-      switch(AB_Transaction_GetSequenceType(t)) {
+      switch(pmtinf->sequenceType) {
       case AB_Transaction_SequenceTypeUnknown:
       case AB_Transaction_SequenceTypeOnce:
         GWEN_XMLNode_SetCharValue(nn, "SeqTp", "OOFF");
