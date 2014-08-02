@@ -1093,7 +1093,7 @@
 
       <elem name="sequenceType" type="SEQUENCETYPE" >
         <descr>
-          Sequence type of the debit (on-time, first, recurring).
+          Sequence type of the debit (one-time, first, recurring).
         </descr>
       </elem>
 
