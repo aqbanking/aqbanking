@@ -73,6 +73,7 @@ pdsources
 py-compile
 qtsources
 release
+test-driver
 sl-headers
 src/frontends/qbanking/bin/helpbrowser/qb-help?
 src/frontends/qbanking/bin/helpbrowser/qb-help??
