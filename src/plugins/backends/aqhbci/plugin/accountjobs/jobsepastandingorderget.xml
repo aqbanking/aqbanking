@@ -39,7 +39,7 @@
          version="1"
          delimiter="+" terminator="'" >
    <GROUP type="SegHead" name="head" />
-   <GROUP type="kti_i" version="1" />
+   <GROUP type="kti_i_forced_sepa" version="1" />
    <GROUP name="SupportedSepaFormats" delimiter=":" terminator="" >
      <ELEM name="Format" type="ascii" maxsize="256" minnum="0" maxnum="99" />
    </GROUP>

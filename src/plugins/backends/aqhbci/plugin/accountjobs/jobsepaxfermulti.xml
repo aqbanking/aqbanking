@@ -17,7 +17,7 @@
          terminator="'" 
  >
    <GROUP type="SegHead" name="head" />
-   <GROUP type="kti_i" version="1" />
+   <GROUP type="kti_i_forced_sepa" version="1" />
    <GROUP type="btg" name="totalSum" minnum="0" version="1" />
    <ELEM name="singleBookingWanted" type="alpha" maxsize="1" />
    <ELEM name="descriptor" type="ascii" maxsize="256" />
