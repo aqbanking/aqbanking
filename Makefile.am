@@ -32,6 +32,9 @@ aqbanking-config: aqbanking-config.in
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = aqbanking.pc
 
+cmakeconfigdir = $(libdir)/cmake/aqbanking-$(AQBANKING_VERSION_MAJOR).$(AQBANKING_VERSION_MINOR)
+cmakeconfig_DATA = aqbanking-config.cmake aqbanking-config-version.cmake
+
 listdoc.h:
 	$(gwenhywfar_bindir)/mklistdoc -I $(gwenhywfar_headers) -v `find $(aqbanking_symlinkdir) -name '*.h' ` >listdoc.h
 

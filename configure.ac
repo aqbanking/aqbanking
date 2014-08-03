@@ -5,7 +5,7 @@
 # The following line makes sure that this file is always touched when a new
 # revision is checked out.
 #
-# $Rev$
+# $Rev: 2550 $
 #
 
 
@@ -594,6 +594,8 @@ AC_SUBST(ktoblzcheck_includes)
 # Check for Gwen
 #
 
+# Variable used in aqbanking-config.cmake
+AC_SUBST(GWENHYWFAR_MINIMUM_VERSION, "4.10.0.0")
 AC_GWENHYWFAR(4,10,0,0)
 
 all_includes="$all_includes $gwenhywfar_includes"
@@ -1515,6 +1517,8 @@ AC_CONFIG_FILES([
   aqbanking.iss
   version.h
   system.h
+  aqbanking-config.cmake
+  aqbanking-config-version.cmake
 ])
 AC_OUTPUT
 
