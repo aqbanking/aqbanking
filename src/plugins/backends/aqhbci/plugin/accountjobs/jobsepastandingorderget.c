@@ -38,7 +38,7 @@
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_SepaStandingOrdersGet_new(AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_SepaStandingOrderGet_new(AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
 
