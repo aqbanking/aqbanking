@@ -196,7 +196,10 @@ typedef enum {
   AB_Job_TypeSepaDeleteStandingOrder,
 
   /** SEPA debit note with shortest possible setup time */
-  AB_Job_TypeSepaFlashDebitNote
+  AB_Job_TypeSepaFlashDebitNote,
+
+  /** get SEPA standing orders */
+  AB_Job_TypeSepaGetStandingOrders,
 
 } AB_JOB_TYPE;
 

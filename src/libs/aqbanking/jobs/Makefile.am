@@ -71,7 +71,8 @@ iheader_HEADERS= \
  jobeutransfer.h \
  jobeutransfer_be.h \
  jobloadcellphone.h \
- jobloadcellphone_be.h
+ jobloadcellphone_be.h \
+ jobsepagetstandingorders.h
 
 libjobs_la_SOURCES=\
  jobgetbalance.c \
@@ -92,7 +93,8 @@ libjobs_la_SOURCES=\
  jobinternaltransfer.c \
  jobeutransfer.c \
  jobloadcellphone.c \
- jobsepacreatesto.c
+ jobsepacreatesto.c \
+ jobsepagetstandingorders.c
 
 
 

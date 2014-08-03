@@ -241,23 +241,28 @@ const char *AB_Job_Type2Char(AB_JOB_TYPE i) {
   const char *s;
 
   switch(i) {
-  case AB_Job_TypeGetBalance:          s="getbalance"; break;
-  case AB_Job_TypeGetTransactions:     s="gettransactions"; break;
-  case AB_Job_TypeTransfer:            s="transfer"; break;
-  case AB_Job_TypeDebitNote:           s="debitnote"; break;
-  case AB_Job_TypeEuTransfer:          s="eutransfer"; break;
-  case AB_Job_TypeGetStandingOrders:   s="getstandingorders"; break;
-  case AB_Job_TypeGetDatedTransfers:   s="getdatedtransfers"; break;
-  case AB_Job_TypeCreateStandingOrder: s="createstandingorder"; break;
-  case AB_Job_TypeModifyStandingOrder: s="modifystandingorder"; break;
-  case AB_Job_TypeDeleteStandingOrder: s="deletestandingorder"; break;
-  case AB_Job_TypeCreateDatedTransfer: s="createdatedtransfer"; break;
-  case AB_Job_TypeModifyDatedTransfer: s="modifydatedtransfer"; break;
-  case AB_Job_TypeDeleteDatedTransfer: s="deletedatedtransfer"; break;
-  case AB_Job_TypeInternalTransfer:    s="internaltransfer"; break;
-  case AB_Job_TypeLoadCellPhone:       s="loadCellPhone"; break;
-  case AB_Job_TypeSepaTransfer:        s="sepaTransfer"; break;
-  case AB_Job_TypeSepaDebitNote:       s="sepaDebitNote"; break;
+  case AB_Job_TypeGetBalance:              s="getbalance"; break;
+  case AB_Job_TypeGetTransactions:         s="gettransactions"; break;
+  case AB_Job_TypeTransfer:                s="transfer"; break;
+  case AB_Job_TypeDebitNote:               s="debitnote"; break;
+  case AB_Job_TypeEuTransfer:              s="eutransfer"; break;
+  case AB_Job_TypeGetStandingOrders:       s="getstandingorders"; break;
+  case AB_Job_TypeGetDatedTransfers:       s="getdatedtransfers"; break;
+  case AB_Job_TypeCreateStandingOrder:     s="createstandingorder"; break;
+  case AB_Job_TypeModifyStandingOrder:     s="modifystandingorder"; break;
+  case AB_Job_TypeDeleteStandingOrder:     s="deletestandingorder"; break;
+  case AB_Job_TypeCreateDatedTransfer:     s="createdatedtransfer"; break;
+  case AB_Job_TypeModifyDatedTransfer:     s="modifydatedtransfer"; break;
+  case AB_Job_TypeDeleteDatedTransfer:     s="deletedatedtransfer"; break;
+  case AB_Job_TypeInternalTransfer:        s="internaltransfer"; break;
+  case AB_Job_TypeLoadCellPhone:           s="loadCellPhone"; break;
+  case AB_Job_TypeSepaTransfer:            s="sepaTransfer"; break;
+  case AB_Job_TypeSepaDebitNote:           s="sepaDebitNote"; break;
+  case AB_Job_TypeSepaCreateStandingOrder: s="sepaCreateStandingOrder"; break;
+  case AB_Job_TypeSepaModifyStandingOrder: s="sepaModifyStandingOrder"; break;
+  case AB_Job_TypeSepaDeleteStandingOrder: s="sepaDeleteStandingOrder"; break;
+  case AB_Job_TypeSepaFlashDebitNote:      s="sepaFlashDebitNote"; break;
+  case AB_Job_TypeSepaGetStandingOrders:   s="sepaGetStandingOrders"; break;
   default:
   case AB_Job_TypeUnknown:             s="unknown"; break;
   }
@@ -271,23 +276,29 @@ const char *AB_Job_Type2LocalChar(AB_JOB_TYPE i) {
   const char *s;
 
   switch(i) {
-  case AB_Job_TypeGetBalance:          s=I18N("Get Balance"); break;
-  case AB_Job_TypeGetTransactions:     s=I18N("Get Transactions"); break;
-  case AB_Job_TypeTransfer:            s=I18N("Transfer"); break;
-  case AB_Job_TypeDebitNote:           s=I18N("Debit Note"); break;
-  case AB_Job_TypeEuTransfer:          s=I18N("EU Transfer"); break;
-  case AB_Job_TypeGetStandingOrders:   s=I18N("Get Standing Orders"); break;
-  case AB_Job_TypeGetDatedTransfers:   s=I18N("Get Dated Transfers"); break;
-  case AB_Job_TypeCreateStandingOrder: s=I18N("Create Standing Order"); break;
-  case AB_Job_TypeModifyStandingOrder: s=I18N("Modify Standing Order"); break;
-  case AB_Job_TypeDeleteStandingOrder: s=I18N("Delete Standing Order"); break;
-  case AB_Job_TypeCreateDatedTransfer: s=I18N("Create Dated Transfer"); break;
-  case AB_Job_TypeModifyDatedTransfer: s=I18N("Modify Dated Transfer"); break;
-  case AB_Job_TypeDeleteDatedTransfer: s=I18N("Delete Dated Transfer"); break;
-  case AB_Job_TypeInternalTransfer:    s=I18N("Internal Transfer"); break;
-  case AB_Job_TypeLoadCellPhone:       s=I18N("Load Cellphone"); break;
-  case AB_Job_TypeSepaTransfer:        s=I18N("SEPA Transfer"); break;
-  case AB_Job_TypeSepaDebitNote:       s=I18N("SEPA Debit Note"); break;
+  case AB_Job_TypeGetBalance:              s=I18N("Get Balance"); break;
+  case AB_Job_TypeGetTransactions:         s=I18N("Get Transactions"); break;
+  case AB_Job_TypeTransfer:                s=I18N("Transfer"); break;
+  case AB_Job_TypeDebitNote:               s=I18N("Debit Note"); break;
+  case AB_Job_TypeEuTransfer:              s=I18N("EU Transfer"); break;
+  case AB_Job_TypeGetStandingOrders:       s=I18N("Get Standing Orders"); break;
+  case AB_Job_TypeGetDatedTransfers:       s=I18N("Get Dated Transfers"); break;
+  case AB_Job_TypeCreateStandingOrder:     s=I18N("Create Standing Order"); break;
+  case AB_Job_TypeModifyStandingOrder:     s=I18N("Modify Standing Order"); break;
+  case AB_Job_TypeDeleteStandingOrder:     s=I18N("Delete Standing Order"); break;
+  case AB_Job_TypeCreateDatedTransfer:     s=I18N("Create Dated Transfer"); break;
+  case AB_Job_TypeModifyDatedTransfer:     s=I18N("Modify Dated Transfer"); break;
+  case AB_Job_TypeDeleteDatedTransfer:     s=I18N("Delete Dated Transfer"); break;
+  case AB_Job_TypeInternalTransfer:        s=I18N("Internal Transfer"); break;
+  case AB_Job_TypeLoadCellPhone:           s=I18N("Load Cellphone"); break;
+  case AB_Job_TypeSepaTransfer:            s=I18N("SEPA Transfer"); break;
+  case AB_Job_TypeSepaDebitNote:           s=I18N("SEPA Debit Note"); break;
+
+  case AB_Job_TypeSepaCreateStandingOrder: s=I18N("SEPA Create Standing Order"); break;
+  case AB_Job_TypeSepaModifyStandingOrder: s=I18N("SEPA Modify Standing Order"); break;
+  case AB_Job_TypeSepaDeleteStandingOrder: s=I18N("SEPA Delete Standing Order"); break;
+  case AB_Job_TypeSepaFlashDebitNote:      s=I18N("SEPA Flash Debit Note"); break;
+  case AB_Job_TypeSepaGetStandingOrders:   s=I18N("SEPA Get Standing Orders"); break;
   default:
   case AB_Job_TypeUnknown:             s=I18N("unknown"); break;
   }
