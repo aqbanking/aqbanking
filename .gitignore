@@ -36,6 +36,8 @@ aqbanking.iss
 aqbanking.spec
 aqbanking.tag
 aqbanking.creator.user
+aqbanking-config-version.cmake
+aqbanking-config.cmake
 autom4te.cache
 build*
 compile
