@@ -34,7 +34,7 @@
   -->
   
  <!-- Kundennachricht -->
- <SEGdef id="SepaGetStandingOrders"
+ <SEGdef id="SepaStandingOrderGet"
          code="HKCDB"
          version="1"
          delimiter="+" terminator="'" >
@@ -54,7 +54,7 @@
 
 
  <!-- Banknachricht -->
- <SEGdef id="GetSepaStandingOrdersResponse"
+ <SEGdef id="SepaStandingOrderGetResponse"
          code="HICDB"
          version="1"
          delimiter="+" terminator="'" 
@@ -108,11 +108,11 @@
          crypt="1" 
          sign="1" 
          needBPD="1"
-         response="SepaGetStandingOrdersResponse"
+         response="SepaStandingOrderGetResponse"
          single="1"
          attachable="1"
  >
-   <SEG type="SepaGetStandingOrders" version="1" />
+   <SEG type="SepaStandingOrderGet" version="1" />
    <VALUES>
      <VALUE path="head/code">%code</VALUE>
      <VALUE path="head/version">%version</VALUE>
