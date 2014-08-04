@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue May 03 2005
- copyright   : (C) 2005-2010 by Martin Preuss
+ copyright   : (C) 2005-2014 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -16,6 +16,7 @@
 #include <aqbanking/jobgettransactions.h>
 #include <aqbanking/jobgetbalance.h>
 #include <aqbanking/jobgetstandingorders.h>
+#include <aqbanking/jobsepagetstandingorders.h>
 #include <aqbanking/jobgetdatedtransfers.h>
 
 #include <gwenhywfar/text.h>
@@ -43,6 +44,7 @@ int request(AB_BANKING *ab,
   int reqTrans=0;
   int reqBalance=0;
   int reqSto=0;
+  int reqSepaSto=0;
   int reqDT=0;
   GWEN_TIME *fromTime=0;
   GWEN_TIME *toTime=0;
@@ -150,6 +152,17 @@ int request(AB_BANKING *ab,
   {
     0,                            /* flags */
     GWEN_ArgsType_Int,             /* type */
+    "reqSepaSto",                     /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    0,                            /* short option */
+    "sepaSto",                    /* long option */
+    "Request SEPA standing orders",    /* short description */
+    "Request SEPA standing orders"     /* long description */
+  },
+  {
+    0,                            /* flags */
+    GWEN_ArgsType_Int,             /* type */
     "reqDT",                      /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
@@ -218,6 +231,7 @@ int request(AB_BANKING *ab,
   reqTrans=GWEN_DB_GetIntValue(db, "reqTrans", 0, 0);
   reqBalance=GWEN_DB_GetIntValue(db, "reqBalance", 0, 0);
   reqSto=GWEN_DB_GetIntValue(db, "reqSto", 0, 0);
+  reqSepaSto=GWEN_DB_GetIntValue(db, "reqSepaSto", 0, 0);
   reqDT=GWEN_DB_GetIntValue(db, "reqDT", 0, 0);
   ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
   s=GWEN_DB_GetCharValue(db, "fromDate", 0, 0);
@@ -380,6 +394,27 @@ int request(AB_BANKING *ab,
 	    if (rv<0) {
 	      DBG_ERROR(0,
 			"Error requesting standing order for %s/%s: %d",
+			AB_Account_GetBankCode(a),
+			AB_Account_GetAccountNumber(a),
+			rv);
+	      AB_Account_List2Iterator_free(ait);
+	      AB_Account_List2_free(al);
+	      AB_Job_List2_FreeAll(jobList);
+	      GWEN_Time_free(toTime);
+	      GWEN_Time_free(fromTime);
+	      return 3;
+	    }
+            AB_Job_List2_PushBack(jobList, j);
+	    requests++;
+	  }
+          if (reqSepaSto) {
+            AB_JOB *j;
+
+	    j=AB_JobSepaGetStandingOrders_new(a);
+	    rv=AB_Job_CheckAvailability(j);
+	    if (rv<0) {
+	      DBG_ERROR(0,
+			"Error requesting SEPA standing order for %s/%s: %d",
 			AB_Account_GetBankCode(a),
 			AB_Account_GetAccountNumber(a),
 			rv);
