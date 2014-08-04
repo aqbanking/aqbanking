@@ -60,12 +60,13 @@
          delimiter="+" terminator="'" 
  >
    <GROUP type="SegHead" name="head" />
+   <GROUP type="kti_i" version="1" />
    <ELEM name="descriptor" type="ascii" maxsize="256" />
    <ELEM name="transfer" type="bin" trustlevel="4" />
    <ELEM name="fiId" type="ascii" minnum="0" />
 
-   <GROUP id="SepaStoSpecial" />
-   <GROUP id="SepaStoSkip" minnum="0" />
+   <GROUP type="SepaStoSpecial" />
+   <GROUP type="SepaStoSkip" minnum="0" />
    <ELEM name="changeAllowed" type="alpha" maxsize="1" minnum="0" />
    <ELEM name="skipAllowed" type="alpha" maxsize="1" minnum="0" />
    <ELEM name="deleteAllowed" type="alpha" maxsize="1" minnum="0" />
@@ -102,7 +103,7 @@
    Geschaeftsvorfall: Dauerauftragsabfrage (Version 1)
   --------------------------------------------------------------------- 
   -->
- <JOBdef id="JobSepaGetStandingOrders" 
+ <JOBdef id="JobSepaStandingOrderGet" 
          code="HKCDB" params="HICDBS"
          version="1" 
          crypt="1" 
