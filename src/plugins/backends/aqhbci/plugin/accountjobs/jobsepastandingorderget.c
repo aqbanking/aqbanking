@@ -23,6 +23,7 @@
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/dbio.h>
 #include <gwenhywfar/gui.h>
+#include <gwenhywfar/text.h>
 
 #include <aqbanking/jobgetstandingorders.h>
 #include <aqbanking/jobgetstandingorders_be.h>
@@ -62,24 +63,44 @@ AH_JOB *AH_Job_SepaStandingOrderGet_new(AB_USER *u, AB_ACCOUNT *account) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
+static const char *_findPatternInStringList(const GWEN_STRINGLIST *sl, const char *pattern){
+  GWEN_STRINGLISTENTRY *se;
+
+  se=GWEN_StringList_FirstEntry(sl);
+  while(se) {
+    const char *s;
+
+    s=GWEN_StringListEntry_Data(se);
+    if (s && *s && -1!=GWEN_Text_ComparePattern(s, pattern, 0)) {
+      return s;
+    }
+    se=GWEN_StringListEntry_Next(se);
+  }
+
+  return NULL;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
 int AH_Job_SepaStandingOrderGet_Prepare(AH_JOB *j) {
   GWEN_DB_NODE *dbArgs;
   const GWEN_STRINGLIST *descriptors;
 
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing transfer");
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing job");
 
   dbArgs=AH_Job_GetArguments(j);
 
   descriptors=AH_User_GetSepaDescriptors(AH_Job_GetUser(j));
   if (descriptors) {
-    GWEN_STRINGLISTENTRY *se;
+    const char *s;
 
-    se=GWEN_StringList_FindStringEntry(descriptors, "*pain.001.*");
-    if (se) {
+    s=_findPatternInStringList(descriptors, "*pain.001.*");
+    if (s) {
       GWEN_DB_SetCharValue(dbArgs,
-                           GWEN_DB_FLAGS_OVERWRITE_VARS,
-                           "SupportedSepaFormats/Format",
-                           GWEN_StringListEntry_Data(se));
+			   GWEN_DB_FLAGS_OVERWRITE_VARS,
+			   "SupportedSepaFormats/Format",
+			   s);
     }
     else {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "No matching SEPA descriptor found");
@@ -103,11 +124,15 @@ int AH_Job_SepaStandingOrdersGet_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
   GWEN_BUFFER *bufStandingOrders;
+  const char *responseName;
   int rv;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Processing JobSepaStandingOrdersGet");
 
   assert(j);
+
+  responseName=AH_Job_GetResponseName(j);
+
 
   bufStandingOrders=GWEN_Buffer_new(0, 1024, 0, 1);
 
@@ -117,9 +142,6 @@ int AH_Job_SepaStandingOrdersGet_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   /* search for "Transactions" */
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
   while(dbCurr) {
-    const void *p;
-    unsigned int bs;
-
     rv=AH_Job_CheckEncryption(j, dbCurr);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (encryption)");
@@ -135,16 +157,28 @@ int AH_Job_SepaStandingOrdersGet_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       return rv;
     }
 
-    p=GWEN_DB_GetBinValue(dbCurr, "data/transfer", 0, 0, 0, &bs);
-    if (p && bs)
-      GWEN_Buffer_AppendBytes(bufStandingOrders, p, bs);
+    if (responseName && *responseName) {
+      GWEN_DB_NODE *dbXA;
+
+      dbXA=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data");
+      if (dbXA)
+        dbXA=GWEN_DB_GetGroup(dbXA, GWEN_PATH_FLAGS_NAMEMUSTEXIST, responseName);
+      if (dbXA) {
+	const void *p;
+	unsigned int bs;
+
+	p=GWEN_DB_GetBinValue(dbXA, "transfer", 0, 0, 0, &bs);
+	if (p && bs)
+	  GWEN_Buffer_AppendBytes(bufStandingOrders, p, bs);
+      }
+    }
 
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
   }
 
   GWEN_Buffer_Rewind(bufStandingOrders);
 
-  /* now the buffers contain data to be parsed by DBIOs */
+  /* now the buffers contain data to be parsed by ImExporters */
   a=AH_AccountJob_GetAccount(j);
   assert(a);
   ai=AB_ImExporterContext_GetAccountInfo(ctx,
