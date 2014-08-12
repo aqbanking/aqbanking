@@ -390,10 +390,6 @@ void AB_Transaction_free(AB_TRANSACTION *st) {
     free(st->bankReference);
   if (st->endToEndReference)
     free(st->endToEndReference);
-  if (st->mandateReference)
-    free(st->mandateReference);
-  if (st->creditorIdentifier)
-    free(st->creditorIdentifier);
   if (st->originatorIdentifier)
     free(st->originatorIdentifier);
   if (st->transactionText)
@@ -489,10 +485,8 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->remoteSuffix=strdup(d->remoteSuffix);
   if (d->remoteIban)
     st->remoteIban=strdup(d->remoteIban);
-  if (d->remoteName) {
-    GWEN_StringList_free(st->remoteName);
+  if (d->remoteName)
     st->remoteName=GWEN_StringList_dup(d->remoteName);
-  }
   if (d->remoteBic)
     st->remoteBic=strdup(d->remoteBic);
   st->uniqueId=d->uniqueId;
@@ -516,10 +510,6 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->bankReference=strdup(d->bankReference);
   if (d->endToEndReference)
     st->endToEndReference=strdup(d->endToEndReference);
-  if (d->mandateReference)
-    st->mandateReference=strdup(d->mandateReference);
-  if (d->creditorIdentifier)
-    st->creditorIdentifier=strdup(d->creditorIdentifier);
   if (d->originatorIdentifier)
     st->originatorIdentifier=strdup(d->originatorIdentifier);
   st->transactionCode=d->transactionCode;
@@ -529,14 +519,10 @@ AB_TRANSACTION *AB_Transaction_dup(const AB_TRANSACTION *d) {
     st->primanota=strdup(d->primanota);
   if (d->fiId)
     st->fiId=strdup(d->fiId);
-  if (d->purpose) {
-    GWEN_StringList_free(st->purpose);
+  if (d->purpose)
     st->purpose=GWEN_StringList_dup(d->purpose);
-  }
-  if (d->category) {
-    GWEN_StringList_free(st->category);
+  if (d->category)
     st->category=GWEN_StringList_dup(d->category);
-  }
   st->period=d->period;
   st->cycle=d->cycle;
   st->executionDay=d->executionDay;
@@ -690,12 +676,6 @@ int AB_Transaction_toDb(const AB_TRANSACTION *st, GWEN_DB_NODE *db) {
       return -1;
   if (st->endToEndReference)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "endToEndReference", st->endToEndReference))
-      return -1;
-  if (st->mandateReference)
-    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "mandateReference", st->mandateReference))
-      return -1;
-  if (st->creditorIdentifier)
-    if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "creditorIdentifier", st->creditorIdentifier))
       return -1;
   if (st->originatorIdentifier)
     if (GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "originatorIdentifier", st->originatorIdentifier))
@@ -901,8 +881,6 @@ int AB_Transaction_ReadDb(AB_TRANSACTION *st, GWEN_DB_NODE *db) {
   AB_Transaction_SetCustomerReference(st, GWEN_DB_GetCharValue(db, "customerReference", 0, 0));
   AB_Transaction_SetBankReference(st, GWEN_DB_GetCharValue(db, "bankReference", 0, 0));
   AB_Transaction_SetEndToEndReference(st, GWEN_DB_GetCharValue(db, "endToEndReference", 0, 0));
-  AB_Transaction_SetMandateReference(st, GWEN_DB_GetCharValue(db, "mandateReference", 0, 0));
-  AB_Transaction_SetCreditorIdentifier(st, GWEN_DB_GetCharValue(db, "creditorIdentifier", 0, 0));
   AB_Transaction_SetOriginatorIdentifier(st, GWEN_DB_GetCharValue(db, "originatorIdentifier", 0, 0));
   AB_Transaction_SetTransactionCode(st, GWEN_DB_GetIntValue(db, "transactionCode", 0, 0));
   AB_Transaction_SetTransactionText(st, GWEN_DB_GetCharValue(db, "transactionText", 0, 0));
@@ -1657,46 +1635,6 @@ void AB_Transaction_SetEndToEndReference(AB_TRANSACTION *st, const char *d) {
     st->endToEndReference=strdup(d);
   else
     st->endToEndReference=0;
-  st->_modified=1;
-}
-
-
-
-
-const char *AB_Transaction_GetMandateReference(const AB_TRANSACTION *st) {
-  assert(st);
-  return st->mandateReference;
-}
-
-
-void AB_Transaction_SetMandateReference(AB_TRANSACTION *st, const char *d) {
-  assert(st);
-  if (st->mandateReference)
-    free(st->mandateReference);
-  if (d && *d)
-    st->mandateReference=strdup(d);
-  else
-    st->mandateReference=0;
-  st->_modified=1;
-}
-
-
-
-
-const char *AB_Transaction_GetCreditorIdentifier(const AB_TRANSACTION *st) {
-  assert(st);
-  return st->creditorIdentifier;
-}
-
-
-void AB_Transaction_SetCreditorIdentifier(AB_TRANSACTION *st, const char *d) {
-  assert(st);
-  if (st->creditorIdentifier)
-    free(st->creditorIdentifier);
-  if (d && *d)
-    st->creditorIdentifier=strdup(d);
-  else
-    st->creditorIdentifier=0;
   st->_modified=1;
 }
 

@@ -311,24 +311,6 @@ Set this property with @ref AB_Transaction_SetEndToEndReference,
 get it with @ref AB_Transaction_GetEndToEndReference
 </p>
 
-@anchor AB_TRANSACTION_MandateReference
-<h4>MandateReference</h4>
-<p>
-This is a reference provided by the issuer of a SEPA transfer.</p>
-<p>
-Set this property with @ref AB_Transaction_SetMandateReference, 
-get it with @ref AB_Transaction_GetMandateReference
-</p>
-
-@anchor AB_TRANSACTION_CreditorIdentifier
-<h4>CreditorIdentifier</h4>
-<p>
-Used for SEPA transfers.</p>
-<p>
-Set this property with @ref AB_Transaction_SetCreditorIdentifier, 
-get it with @ref AB_Transaction_GetCreditorIdentifier
-</p>
-
 @anchor AB_TRANSACTION_OriginatorIdentifier
 <h4>OriginatorIdentifier</h4>
 <p>
@@ -659,7 +641,7 @@ get it with @ref AB_Transaction_GetOriginalCreditorName
 @anchor AB_TRANSACTION_SequenceType
 <h4>SequenceType</h4>
 <p>
-Sequence type of the debit (on-time, first, recurring).</p>
+Sequence type of the debit (one-time, first, recurring).</p>
 <p>
 Set this property with @ref AB_Transaction_SetSequenceType, 
 get it with @ref AB_Transaction_GetSequenceType
@@ -1170,24 +1152,6 @@ AQBANKING_API const char *AB_Transaction_GetEndToEndReference(const AB_TRANSACTI
 * Set the property @ref AB_TRANSACTION_EndToEndReference
 */
 AQBANKING_API void AB_Transaction_SetEndToEndReference(AB_TRANSACTION *el, const char *d);
-
-/**
-* Returns the property @ref AB_TRANSACTION_MandateReference
-*/
-AQBANKING_API const char *AB_Transaction_GetMandateReference(const AB_TRANSACTION *el);
-/**
-* Set the property @ref AB_TRANSACTION_MandateReference
-*/
-AQBANKING_API void AB_Transaction_SetMandateReference(AB_TRANSACTION *el, const char *d);
-
-/**
-* Returns the property @ref AB_TRANSACTION_CreditorIdentifier
-*/
-AQBANKING_API const char *AB_Transaction_GetCreditorIdentifier(const AB_TRANSACTION *el);
-/**
-* Set the property @ref AB_TRANSACTION_CreditorIdentifier
-*/
-AQBANKING_API void AB_Transaction_SetCreditorIdentifier(AB_TRANSACTION *el, const char *d);
 
 /**
 * Returns the property @ref AB_TRANSACTION_OriginatorIdentifier

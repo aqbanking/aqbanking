@@ -44,8 +44,6 @@ struct AB_TRANSACTION {
   char *customerReference;
   char *bankReference;
   char *endToEndReference;
-  char *mandateReference;
-  char *creditorIdentifier;
   char *originatorIdentifier;
   int transactionCode;
   char *transactionText;
@@ -141,8 +139,6 @@ This group contains information about the remote account.*/
 <p>This group contains information which differ between backends.</p>
 <p>Some of this information might not even be<b>supported</b>by every backends.</p>*/
 /*@{*/
-
-
 
 
 

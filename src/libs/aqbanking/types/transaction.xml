@@ -875,6 +875,7 @@
           This is a reference provided by the issuer of a SEPA transfer.
         </descr>
       </elem>
+<!--
       <elem name="mandateReference" type="char" ptr="1" >
         <descr>
           This is a reference provided by the issuer of a SEPA transfer.
@@ -885,6 +886,7 @@
           Used for SEPA transfers.
         </descr>
       </elem>
+-->
       <elem name="originatorIdentifier" type="char" ptr="1" >
         <descr>
           Used for SEPA transfers.

@@ -199,10 +199,10 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 		  AHB_SWIFT__SetCharValue(data, flags, "customerReference", GWEN_Buffer_GetStart(tbuf));
 		}
 		else if (strcasecmp(identifier, "MREF+")==0) {
-		  AHB_SWIFT__SetCharValue(data, flags, "mandateReference", GWEN_Buffer_GetStart(tbuf));
+		  AHB_SWIFT__SetCharValue(data, flags, "mandateId", GWEN_Buffer_GetStart(tbuf));
 		}
 		else if (strcasecmp(identifier, "CRED+")==0) {
-		  AHB_SWIFT__SetCharValue(data, flags, "creditorIdentifier", GWEN_Buffer_GetStart(tbuf));
+		  AHB_SWIFT__SetCharValue(data, flags, "creditorSchemeId", GWEN_Buffer_GetStart(tbuf));
 		}
 		else if (strcasecmp(identifier, "DEBT+")==0) {
 		  AHB_SWIFT__SetCharValue(data, flags, "originatorIdentifier", GWEN_Buffer_GetStart(tbuf));
