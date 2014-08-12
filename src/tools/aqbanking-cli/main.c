@@ -246,6 +246,9 @@ int main(int argc, char **argv) {
     cmdAddHelpStr(ubuf, "sepatransfer",
                   I18N("Issue a single SEPA transfer (data from command line)"));
 
+    cmdAddHelpStr(ubuf, "sepatransfers",
+                  I18N("Issue a number of SEPA transfers (data from a file)"));
+
     cmdAddHelpStr(ubuf, "sepadebitnote",
                   I18N("Issue a single SEPA debit note (data from command line)"));
 
