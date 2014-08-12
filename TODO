@@ -1,4 +1,25 @@
 
+Mid-term
+========
+
+- types/*.xml: convert to typemaker2
+- remove job for EU transfers (no longer needed
+
+
+Long-term
+=========
+
+- very much simplify API (just jobs, accounts and probably bank info)
+- probably remove country info stuff
+- remove data storage stuff (APPS should store their info themselves)
+- remove message engine stuff, use gparser instead
+
+
+
+
+Old
+===
+
 - loganalyzer: read messages from FASTBUFFER instead from IO
 
 CAVEATS:
@@ -33,4 +54,3 @@ CAVEATS:
     - noBase64
     - omitSmsAccount
 
-TEST7
