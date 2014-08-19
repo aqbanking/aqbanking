@@ -58,7 +58,7 @@ int AH_ImExporterSEPA_Export_Pain_008(AB_IMEXPORTER *ie,
       /* store BtchBookg */
       GWEN_XMLNode_SetCharValue(n, "BtchBookg",
 				GWEN_DB_GetIntValue(params,
-						    "singleBookingWanted", 0, 0)
+						    "singleBookingWanted", 0, 1)
 				? "false"
 				: "true");
       /* store NbOfTxs */
