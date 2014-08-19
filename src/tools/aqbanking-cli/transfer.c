@@ -17,6 +17,7 @@
 #include <aqbanking/jobsingletransfer.h>
 #include <aqbanking/jobcreatedatedtransfer.h>
 #include <aqbanking/jobcreatesto.h>
+#include <aqbanking/jobdeletesto.h>
 
 #include <gwenhywfar/text.h>
 
@@ -40,7 +41,7 @@ int transfer(AB_BANKING *ab,
   const char *bankId;
   const char *accountId;
   const char *subAccountId;
-  int transferType=0;
+  AB_JOB_TYPE jobType;
   AB_IMEXPORTER_CONTEXT *ctx=0;
   AB_ACCOUNT_LIST2 *al;
   AB_ACCOUNT *a;
@@ -252,6 +253,17 @@ int transfer(AB_BANKING *ab,
     "set execution period (standing orders)"
   },
   {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,
+    GWEN_ArgsType_Char,
+    "fiId",                       /* HKDAL */
+    0,
+    1,
+    0,
+    "fiId",
+    "set the fiId (standing orders)",
+    "set the fiId (standing orders) - Auftragsidentifikation fuer HKDAL"
+  },
+  {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
     GWEN_ArgsType_Int,             /* type */
     "help",                       /* name */
@@ -320,7 +332,7 @@ int transfer(AB_BANKING *ab,
   AB_Account_List2_free(al);
 
   /* create transaction from arguments */
-  t=mkTransfer(a, db, &transferType);
+  t=mkTransfer(a, db, &jobType);
   if (t==NULL) {
     DBG_ERROR(0, "Could not create transaction from arguments");
     return 2;
@@ -369,14 +381,16 @@ int transfer(AB_BANKING *ab,
     return 4;
   }
 
-  if (transferType == 0)
+  if (jobType==AB_Job_TypeTransfer)
     j=AB_JobSingleTransfer_new(a);
-  else if (transferType == 1)
+  else if (jobType==AB_Job_TypeCreateDatedTransfer)
     j=AB_JobCreateDatedTransfer_new(a);
-  else if (transferType == 2)
+  else if (jobType==AB_Job_TypeCreateStandingOrder)
     j=AB_JobCreateStandingOrder_new(a);
+  else if (jobType==AB_Job_TypeDeleteStandingOrder)
+    j=AB_JobDeleteStandingOrder_new(a);
   else {
-    DBG_ERROR(0, "Unknown transfer type: %d", transferType);
+    DBG_ERROR(0, "Unknown job type");
     AB_Transaction_free(t);
     return 6;
   }

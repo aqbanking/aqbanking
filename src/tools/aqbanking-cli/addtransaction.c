@@ -33,7 +33,8 @@ int addTransaction(AB_BANKING *ab,
 		   int argc,
 		   char **argv) {
   GWEN_DB_NODE *db;
-  int rv, transferType;
+  int rv;
+  AB_JOB_TYPE transferType;
   const char *ctxFile;
   const char *bankId;
   const char *accountId;

@@ -139,7 +139,7 @@ int writeContext(const char *ctxFile, const AB_IMEXPORTER_CONTEXT *ctx) {
 
 
 
-AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferType) {
+AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, AB_JOB_TYPE *jobType) {
   AB_BANKING *ab;
   AB_TRANSACTION *t;
   const char *s;
@@ -147,7 +147,7 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferType) {
   GWEN_TIME *d;
   AB_TRANSACTION_PERIOD period=AB_Transaction_PeriodUnknown;
 
-  *transferType = 0; // single transfer
+  *jobType=AB_Job_TypeTransfer; // single transfer
   assert(a);
   assert(db);
 
@@ -252,7 +252,7 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferType) {
     }
     AB_Transaction_SetDate(t, d);
     GWEN_Time_free(d);
-    *transferType = 1;
+    *jobType=AB_Job_TypeCreateDatedTransfer;
     return t;
   }
 
@@ -277,7 +277,7 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferType) {
   } else
     return t; // single transfer
 
-  *transferType = 2;
+  *jobType=AB_Job_TypeCreateStandingOrder;
   s=GWEN_DB_GetCharValue(db, "lastExecutionDate", 0, 0);
   if (s && *s) {
     GWEN_BUFFER *dbuf;
@@ -325,6 +325,12 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int *transferType) {
     return 0;
   }
   AB_Transaction_SetExecutionDay(t, i);
+
+  s=GWEN_DB_GetCharValue(db, "fiId", 0, 0);
+  if (s && *s) {
+    AB_Transaction_SetFiId(t, s);
+    *jobType=AB_Job_TypeDeleteStandingOrder;
+  }
 
   return t;
 }

@@ -44,7 +44,8 @@ int debitNote(AB_BANKING *ab,
   AB_TRANSACTION *t;
   AB_JOB_LIST2 *jobList;
   AB_JOB *j;
-  int rvExec, transferType;
+  int rvExec;
+  AB_JOB_TYPE transferType;
   const char *rBankId;
   const char *rAccountId;
   int forceCheck;
