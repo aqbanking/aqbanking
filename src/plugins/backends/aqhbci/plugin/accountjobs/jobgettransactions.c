@@ -487,19 +487,25 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
 
         /* read date (Buchungsdatum) */
         p=GWEN_DB_GetCharValue(dbT, "date", 0, 0);
-        assert(p);
-        date=GWEN_Time_fromString(p, "YYYYMMDD");
+        if (p)
+          date=GWEN_Time_fromString(p, "YYYYMMDD");
+        else
+          date=NULL;
 
         /* read valutaData (Umsatzdatum) */
         p=GWEN_DB_GetCharValue(dbT, "valutaDate", 0, 0);
-        assert(p);
-        valutaDate=GWEN_Time_fromString(p, "YYYYMMDD");
+        if (p)
+          valutaDate=GWEN_Time_fromString(p, "YYYYMMDD");
+        else
+          valutaDate=NULL;
 
         /* read value */
         dbV=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
                              "value");
-        assert(dbV);
-        v1=AB_Value_fromDb(dbV);
+        if (dbV)
+          v1=AB_Value_fromDb(dbV);
+        else
+          v1=NULL;
         v2=0;
         if (!v1) {
           DBG_ERROR(AQHBCI_LOGDOMAIN, "Error parsing value from DB");
@@ -525,13 +531,15 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
 
         /* read purpose */
         p=GWEN_DB_GetCharValue(dbT, "purpose", 0, 0);
-        assert(p);
-        purpose=GWEN_StringList_fromTabString(p, 0);
+        if (p)
+          purpose=GWEN_StringList_fromTabString(p, 0);
+        else
+          purpose=NULL;
 
         /* read reference */
         p=GWEN_DB_GetCharValue(dbT, "reference", 0, 0);
-        assert(p);
-        GWEN_StringList_AppendString(purpose, p, 0, 0);
+        if (p)
+          GWEN_StringList_AppendString(purpose, p, 0, 0);
 
         t=AB_Transaction_new();
         AB_Transaction_SetLocalBankCode(t, AB_User_GetBankCode(u));
