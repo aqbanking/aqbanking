@@ -266,7 +266,7 @@ int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j) {
 
   /* set singleBookingWanted */
   if (aj->singleBookingAllowed &&
-      GWEN_DB_GetIntValue(profile, "singleBookingWanted", 0, 0))
+      GWEN_DB_GetIntValue(profile, "singleBookingWanted", 0, 1))
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "singleBookingWanted", "J");
   else {
