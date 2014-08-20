@@ -26,7 +26,7 @@ AC_CONFIG_HEADERS([config.h])
 AQBANKING_VERSION_MAJOR=5
 AQBANKING_VERSION_MINOR=5
 AQBANKING_VERSION_PATCHLEVEL=0
-AQBANKING_VERSION_BUILD=1
+AQBANKING_VERSION_BUILD=2
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="git"
 
@@ -43,7 +43,7 @@ AQBANKING_VERSION_TAG="git"
 
 AQBANKING_SO_CURRENT=39
 AQBANKING_SO_AGE=5
-AQBANKING_SO_REVISION=1
+AQBANKING_SO_REVISION=2
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 #
@@ -86,7 +86,7 @@ case "$AQBANKING_VERSION_TAG" in
      ;;
      
   git)
-     AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.${AQBANKING_VERSION_PATCHLEVEL}.${AQBANKING_VERSION_BUILD}-${AQBANKING_VERSION_TAG}"
+     AQBANKING_VERSION_FULL_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.${AQBANKING_VERSION_PATCHLEVEL}.${AQBANKING_VERSION_BUILD}"
      ;;
 esac
 
@@ -1483,7 +1483,7 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqhbci/plugin/msglayer/Makefile
   src/plugins/backends/aqhbci/plugin/joblayer/Makefile
   src/plugins/backends/aqhbci/plugin/applayer/Makefile
-  src/plugins/backends/aqhbci/plugin/accountjobs/Makefile
+  src/plugins/backends/aqhbci/plugin/ajobs/Makefile
   src/plugins/backends/aqhbci/plugin/applayer/xml/Makefile
   src/plugins/backends/aqhbci/plugin/version.h
   src/plugins/backends/aqhbci/tools/Makefile

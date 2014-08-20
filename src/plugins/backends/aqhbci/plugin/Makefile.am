@@ -1,4 +1,4 @@
-SUBDIRS=msglayer joblayer accountjobs applayer banking dialogs
+SUBDIRS=msglayer joblayer ajobs applayer banking dialogs
 
 AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 
@@ -25,8 +25,8 @@ noinst_PROGRAMS=testlib
 xmldatadir=$(aqbanking_pkgdatadir)/backends/aqhbci
 xmldata_DATA=hbci.xml
 
-hbci.xml: header.xml applayer/xml/base.xml accountjobs/accountjobs.xml
-	$(XMLMERGE) --compact --header -v header.xml applayer/xml/base.xml accountjobs/accountjobs.xml -o $@
+hbci.xml: header.xml applayer/xml/base.xml ajobs/accountjobs.xml
+	$(XMLMERGE) --compact --header -v header.xml applayer/xml/base.xml ajobs/accountjobs.xml -o $@
 
 
 sources:
@@ -46,7 +46,7 @@ libaqhbci_la_SOURCES=aqhbci.c
 libaqhbci_la_LIBADD = \
   msglayer/libhbcimsg.la \
   joblayer/libhbcijob.la \
-  accountjobs/libhbciaccjobs.la \
+  ajobs/libhbciaccjobs.la \
   applayer/libhbciapp.la \
   banking/libhbcibanking.la \
   dialogs/libaqhbci_dlgs.la \
