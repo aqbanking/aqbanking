@@ -3,7 +3,7 @@ SUBDIRS=xml
 AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 
 INCLUDES = -I$(aqbanking_symlinkdir) $(all_includes) \
-  -I$(srcdir)/../accountjobs \
+  -I$(srcdir)/../ajobs \
   -I$(srcdir)/../joblayer -I$(srcdir)/../msglayer -I$(srcdir)/..
 
 EXTRA_DIST=README itan.inc itan1.inc itan2.inc
