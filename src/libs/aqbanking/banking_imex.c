@@ -789,6 +789,14 @@ int AB_Banking_ImportWithProfile(AB_BANKING *ab,
     const char *name;
 
     name=GWEN_DB_GetCharValue(dbProfile, "name", 0, 0);
+    if (!name) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "No element \"name\" found in group \"%s\" of file \"%s\" (watch out: --profileFile most probably does not work)",
+                  GWEN_DB_GroupName(dbProfile),
+                  profileFile);
+        GWEN_DB_Group_free(dbProfiles);
+        return GWEN_ERROR_NOT_FOUND;
+    }
     assert(name);
     if (strcasecmp(name, profileName)==0)
       break;
