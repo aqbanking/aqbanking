@@ -219,6 +219,9 @@ int main(int argc, char **argv) {
     cmdAddHelpStr(ubuf, "listtrans",
                   I18N("Export transactions from a context file."));
 
+    cmdAddHelpStr(ubuf, "listtransfers",
+                  I18N("Export transactions from a context file which match certain status."));
+
     cmdAddHelpStr(ubuf, "request",
                   I18N("Requests transactions, balances, standing orders etc."));
 
@@ -237,20 +240,23 @@ int main(int argc, char **argv) {
     cmdAddHelpStr(ubuf, "transfers",
                   I18N("Issue a number of transfers (data from a file)"));
 
-    cmdAddHelpStr(ubuf, "debitnote",
-                  I18N("Issue a single debit note (data from command line)"));
-
-    cmdAddHelpStr(ubuf, "debitnotes",
-                  I18N("Issue a number of debit notes (data from a file)"));
-
     cmdAddHelpStr(ubuf, "sepatransfer",
                   I18N("Issue a single SEPA transfer (data from command line)"));
 
     cmdAddHelpStr(ubuf, "sepatransfers",
                   I18N("Issue a number of SEPA transfers (data from a file)"));
 
+    cmdAddHelpStr(ubuf, "debitnote",
+                  I18N("Issue a single debit note (data from command line)"));
+
+    cmdAddHelpStr(ubuf, "debitnotes",
+                  I18N("Issue a number of debit notes (data from a file)"));
+
     cmdAddHelpStr(ubuf, "sepadebitnote",
                   I18N("Issue a single SEPA debit note (data from command line)"));
+
+    cmdAddHelpStr(ubuf, "sepaflashdebitnote",
+                  I18N("Issue a single flash SEPA debit note COR1 (data from command line)"));
 
     cmdAddHelpStr(ubuf, "sepadebitnotes",
                   I18N("Issue a number of SEPA debit notes (data from a file)"));
@@ -258,11 +264,23 @@ int main(int argc, char **argv) {
     cmdAddHelpStr(ubuf, "addtrans",
                   I18N("Add a transfer to an existing import context file"));
 
+    cmdAddHelpStr(ubuf, "addsepadebitnote",
+                  I18N("Add a SEPA debit note to an existing import context file"));
+
+    cmdAddHelpStr(ubuf, "sepacreatesto",
+                  I18N("Create SEPA standing order"));
+
     cmdAddHelpStr(ubuf, "fillgaps",
                   I18N("Fill gaps in an import context file from configuration settings"));
 
     cmdAddHelpStr(ubuf, "updateconf",
                   I18N("Update configuration from previous AqBanking versions"));
+
+    cmdAddHelpStr(ubuf, "listprofiles",
+                  I18N("Print existing profiles"));
+
+    cmdAddHelpStr(ubuf, "versions",
+                  I18N("Print the program and library versions"));
 
     GWEN_Buffer_AppendString(ubuf, "\n");
 
@@ -335,6 +353,9 @@ int main(int argc, char **argv) {
   else if (strcasecmp(cmd, "listtrans")==0) {
     rv=listTrans(ab, db, argc, argv);
   }
+  else if (strcasecmp(cmd, "listtransfers")==0) {
+    rv=listTransfers(ab, db, argc, argv);
+  }
   else if (strcasecmp(cmd, "request")==0) {
     rv=request(ab, db, argc, argv);
   }
@@ -347,11 +368,11 @@ int main(int argc, char **argv) {
   else if (strcasecmp(cmd, "import")==0) {
     rv=import(ab, db, argc, argv);
   }
-  else if (strcasecmp(cmd, "transfers")==0) {
-    rv=transfers(ab, db, argc, argv);
-  }
   else if (strcasecmp(cmd, "transfer")==0) {
     rv=transfer(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "transfers")==0) {
+    rv=transfers(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "sepatransfer")==0) {
     rv=sepaTransfer(ab, db, argc, argv);
@@ -359,32 +380,26 @@ int main(int argc, char **argv) {
   else if (strcasecmp(cmd, "sepatransfers")==0) {
     rv=sepaTransfers(ab, db, argc, argv);
   }
-  else if (strcasecmp(cmd, "listtransfers")==0) {
-    rv=listTransfers(ab, db, argc, argv);
-  }
   else if (strcasecmp(cmd, "debitnote")==0) {
     rv=debitNote(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "debitnotes")==0) {
     rv=debitNotes(ab, db, argc, argv);
   }
-  else if (strcasecmp(cmd, "versions")==0) {
-    rv=versions(ab, db, argc, argv);
+  else if (strcasecmp(cmd, "sepadebitnote")==0) {
+    rv=sepaDebitNote(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "sepaFlashDebitNote")==0) {
+    rv=sepaFlashDebitNote(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "sepadebitnotes")==0) {
+    rv=sepaDebitNotes(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "addtrans")==0) {
     rv=addTransaction(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "addsepadebitnote")==0) {
     rv=addSepaDebitNote(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "sepadebitnote")==0) {
-    rv=sepaDebitNote(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "sepadebitnotes")==0) {
-    rv=sepaDebitNotes(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "sepaFlashDebitNote")==0) {
-    rv=sepaFlashDebitNote(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "sepacreatesto")==0) {
     rv=sepaRecurTransfer(ab, db, argc, argv);
@@ -397,6 +412,9 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "listprofiles")==0) {
     rv=listProfiles(ab, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "versions")==0) {
+    rv=versions(ab, db, argc, argv);
   }
   else {
     fprintf(stderr, "ERROR: Unknown command \"%s\".\n", cmd);
