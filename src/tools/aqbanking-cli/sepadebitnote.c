@@ -15,6 +15,7 @@
 
 #include <aqbanking/account.h>
 #include <aqbanking/jobsepadebitnote.h>
+#include <aqbanking/jobsepaflashdebitnote.h>
 
 #include <gwenhywfar/text.h>
 
@@ -31,7 +32,7 @@ static
 int sepaDebitNote(AB_BANKING *ab,
                   GWEN_DB_NODE *dbArgs,
                   int argc,
-                  char **argv) {
+                  char **argv, int use_flash_debitnote) {
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;
@@ -326,7 +327,9 @@ int sepaDebitNote(AB_BANKING *ab,
   }
 
 
-  j=AB_JobSepaDebitNote_new(a);
+  j= use_flash_debitnote
+          ? AB_JobSepaFlashDebitNote_new(a)
+          : AB_JobSepaDebitNote_new(a);
   rv=AB_Job_CheckAvailability(j);
   if (rv<0) {
     DBG_ERROR(0, "Job not supported.");
@@ -345,6 +348,7 @@ int sepaDebitNote(AB_BANKING *ab,
 
   /* populate job list */
   jobList=AB_Job_List2_new();
+  assert(jobList);
   AB_Job_List2_PushBack(jobList, j);
 
 
