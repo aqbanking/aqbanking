@@ -41,7 +41,7 @@ int sepaDebitNotes(AB_BANKING *ab,
   const char *bankId;
   const char *accountId;
   const char *subAccountId;
-  int fillGaps;
+  int fillGaps, use_flash_debitnote;
   AB_IMEXPORTER_CONTEXT *ctx=0;
   AB_IMEXPORTER_ACCOUNTINFO *iea;
   AB_ACCOUNT *forcedAccount=NULL;
@@ -148,6 +148,17 @@ int sepaDebitNotes(AB_BANKING *ab,
     "let AqBanking fill-in missing account information if possible",
   },
   {
+        0, /* flags */
+        GWEN_ArgsType_Int,           /* type */
+        "useCOR1",                /* name */
+        0,                            /* minnum */
+        1,                            /* maxnum */
+        0,                          /* short option */
+        "use-COR1",                   /* long option */
+        "If given, use COR1 variant of debit notes (faster), otherwise CORE (slower)",    /* short description */
+        "If given, use COR1 variant of debit notes (faster), otherwise CORE (slower)"     /* long description */
+  },
+  {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
     GWEN_ArgsType_Int,             /* type */
     "help",                       /* name */
@@ -191,6 +202,7 @@ int sepaDebitNotes(AB_BANKING *ab,
   ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
   fillGaps=GWEN_DB_GetIntValue(db, "fillGaps", 0, 0);
   inFile=GWEN_DB_GetCharValue(db, "inFile", 0, 0);
+  use_flash_debitnote = GWEN_DB_GetIntValue(db, "useCOR1", 0, 0);
 
   rv=AB_Banking_Init(ab);
   if (rv) {
@@ -322,7 +334,9 @@ int sepaDebitNotes(AB_BANKING *ab,
       }
 
       /* create job */
-      j=AB_JobSepaDebitNote_new(a);
+      j= use_flash_debitnote
+              ? AB_JobSepaFlashDebitNote_new(a)
+              : AB_JobSepaDebitNote_new(a);
       rv=AB_Job_CheckAvailability(j);
       if (rv<0) {
 	DBG_ERROR(0, "Job not supported.");
