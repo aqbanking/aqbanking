@@ -89,8 +89,8 @@ int sepaDebitNotes(AB_BANKING *ab,
     1,                            /* maxnum */
     0,                            /* short option */
     "profile",                    /* long option */
-    "Specify the export profile to use",   /* short description */
-    "Specify the export profile to use"      /* long description */
+    "Specify the import profile to use",   /* short description */
+    "Specify the import profile to use"      /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -100,8 +100,8 @@ int sepaDebitNotes(AB_BANKING *ab,
     1,                            /* maxnum */
     0,                            /* short option */
     "profile-file",               /* long option */
-    "Specify the file to load the export profile from",/* short description */
-    "Specify the file to load the export profile from" /* long description */
+    "Specify the file to load the import profile from (WATCH OUT: Feature might be broken)",/* short description */
+    "Specify the file to load the import profile from" /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -197,7 +197,7 @@ int sepaDebitNotes(AB_BANKING *ab,
   accountId=GWEN_DB_GetCharValue(db, "accountId", 0, 0);
   subAccountId=GWEN_DB_GetCharValue(db, "subAccountId", 0, 0);
   importerName=GWEN_DB_GetCharValue(db, "importerName", 0, "csv");
-  profileName=GWEN_DB_GetCharValue(db, "profileName", 0, "default");
+  profileName=GWEN_DB_GetCharValue(db, "profileName", 0, "sepadebitnotes");
   profileFile=GWEN_DB_GetCharValue(db, "profileFile", 0, NULL);
   ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
   fillGaps=GWEN_DB_GetIntValue(db, "fillGaps", 0, 0);

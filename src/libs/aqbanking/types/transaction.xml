@@ -631,22 +631,22 @@
         <values>
           <value value="0">once
             <descr>
-              One-time operation.
+              One-time operation, OOFF.
             </descr>
           </value>
           <value>first
             <descr>
-              First operation with more following.
+              First operation with more following, FRST.
             </descr>
           </value>
           <value>following
             <descr>
-              Following operation (not the first).
+              Following operation (not the first), RCUR.
             </descr>
           </value>
           <value>final
             <descr>
-              Final operation (last).
+              Final operation (last), FNAL. Only used if it is known that this is the final one.
             </descr>
           </value>
         </values>
