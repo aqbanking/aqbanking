@@ -94,7 +94,7 @@ int chkIban(AB_BANKING *ab,
   }
 
   res=AB_Banking_CheckIban(iban);
-  if (res) {
+  if (res != 0) {
     DBG_ERROR(0,
               "IBAN is invalid");
     return 3;

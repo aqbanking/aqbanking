@@ -293,7 +293,7 @@ int sepaTransfers(AB_BANKING *ab,
 	return 3;
       }
       rv=AB_Banking_CheckIban(rIBAN);
-      if (rv<0) {
+      if (rv != 0) {
 	DBG_ERROR(0, "Invalid remote IBAN (%s)", rIBAN);
 	AB_Job_List2_FreeAll(jobList);
 	AB_ImExporterContext_free(ctx);
@@ -314,7 +314,7 @@ int sepaTransfers(AB_BANKING *ab,
 	return 3;
       }
       rv=AB_Banking_CheckIban(lIBAN);
-      if (rv<0) {
+      if (rv != 0) {
 	DBG_ERROR(0, "Invalid local IBAN (%s)", lIBAN);
 	AB_Job_List2_FreeAll(jobList);
 	AB_ImExporterContext_free(ctx);

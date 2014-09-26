@@ -212,7 +212,7 @@ int test4(int argc, char **argv) {
   }
 
   rv=AB_Banking_CheckIban(GWEN_Buffer_GetStart(tbuf));
-  if (rv<0) {
+  if (rv != 0) {
     fprintf(stderr, "Bad IBAN (%s)\n", GWEN_Buffer_GetStart(tbuf));
     return 2;
   }

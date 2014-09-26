@@ -246,7 +246,7 @@ int sepaTransfer(AB_BANKING *ab,
     return 1;
   }
   rv=AB_Banking_CheckIban(rIBAN);
-  if (rv<0) {
+  if (rv != 0) {
     DBG_ERROR(0, "Invalid remote IBAN (%s)", rIBAN);
     AB_Transaction_free(t);
     return 3;
@@ -264,7 +264,7 @@ int sepaTransfer(AB_BANKING *ab,
     return 1;
   }
   rv=AB_Banking_CheckIban(lIBAN);
-  if (rv<0) {
+  if (rv != 0) {
     DBG_ERROR(0, "Invalid local IBAN (%s)", rIBAN);
     AB_Transaction_free(t);
     return 3;
