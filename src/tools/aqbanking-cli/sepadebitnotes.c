@@ -46,7 +46,7 @@ int sepaDebitNotes(AB_BANKING *ab,
   AB_IMEXPORTER_ACCOUNTINFO *iea;
   AB_ACCOUNT *forcedAccount=NULL;
   AB_JOB_LIST2 *jobList;
-  int rvExec;
+  int rvExec, reallyExecute = 1, transactionLine = 0;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -265,7 +265,7 @@ int sepaDebitNotes(AB_BANKING *ab,
 					     AB_ImExporterAccountInfo_GetBankCode(iea),
 					     AB_ImExporterAccountInfo_GetAccountNumber(iea));
       if (!a) {
-	DBG_ERROR(0, "Account %s/%s not found, aborting",
+    DBG_ERROR(0, "Local account %s/%s not found, aborting",
 		  AB_ImExporterAccountInfo_GetBankCode(iea),
 		  AB_ImExporterAccountInfo_GetAccountNumber(iea));
 	AB_Job_List2_FreeAll(jobList);
@@ -280,6 +280,7 @@ int sepaDebitNotes(AB_BANKING *ab,
       const char *rIBAN;
       const char *lIBAN;
       const char *lBIC;
+      transactionLine++;
 
       if (forcedAccount) {
 	AB_Transaction_SetLocalIban(t, AB_Account_GetIBAN(forcedAccount));
@@ -299,38 +300,28 @@ int sepaDebitNotes(AB_BANKING *ab,
 
       /* check remote account */
       if (!rIBAN || !(*rIBAN)) {
-	DBG_ERROR(0, "Missing remote IBAN");
-	AB_Job_List2_FreeAll(jobList);
-	AB_ImExporterContext_free(ctx);
-	return 3;
+          DBG_ERROR(0, "Missing remote IBAN, in line %d", transactionLine);
+          reallyExecute = 0;
       }
       rv=AB_Banking_CheckIban(rIBAN);
       if (rv != 0) {
-	DBG_ERROR(0, "Invalid remote IBAN (%s)", rIBAN);
-	AB_Job_List2_FreeAll(jobList);
-	AB_ImExporterContext_free(ctx);
-	return 3;
+          DBG_ERROR(0, "Invalid remote IBAN (%s), in line %d", rIBAN, transactionLine);
+          reallyExecute = 0;
       }
 
       /* check local account */
       if (!lBIC || !(*lBIC)) {
-	DBG_ERROR(0, "Missing local BIC");
-	AB_Job_List2_FreeAll(jobList);
-	AB_ImExporterContext_free(ctx);
-	return 3;
+          DBG_ERROR(0, "Missing local BIC, in line %d", transactionLine);
+          reallyExecute = 0;
       }
       if (!lIBAN || !(*lIBAN)) {
-	DBG_ERROR(0, "Missing local IBAN");
-	AB_Job_List2_FreeAll(jobList);
-	AB_ImExporterContext_free(ctx);
-	return 3;
+          DBG_ERROR(0, "Missing local IBAN, in line %d", transactionLine);
+          reallyExecute = 0;
       }
       rv=AB_Banking_CheckIban(lIBAN);
       if (rv != 0) {
-	DBG_ERROR(0, "Invalid local IBAN (%s)", lIBAN);
-	AB_Job_List2_FreeAll(jobList);
-	AB_ImExporterContext_free(ctx);
-	return 3;
+          DBG_ERROR(0, "Invalid local IBAN (%s), in line %d", lIBAN, transactionLine);
+          reallyExecute = 0;
       }
 
       /* create job */
@@ -339,21 +330,16 @@ int sepaDebitNotes(AB_BANKING *ab,
               : AB_JobSepaDebitNote_new(a);
       rv=AB_Job_CheckAvailability(j);
       if (rv<0) {
-	DBG_ERROR(0, "Job not supported.");
-	AB_Job_free(j);
-	AB_Job_List2_FreeAll(jobList);
-	AB_ImExporterContext_free(ctx);
-	return 3;
+          DBG_ERROR(0, "Job not supported, in line %d.", transactionLine);
+          reallyExecute = 0;
       }
       rv=AB_Job_SetTransaction(j, t);
       if (rv<0) {
-	DBG_ERROR(0, "Unable to add transaction for account %s/%s, aborting",
-		  AB_ImExporterAccountInfo_GetBankCode(iea),
-		  AB_ImExporterAccountInfo_GetAccountNumber(iea));
-	AB_Job_free(j);
-	AB_Job_List2_FreeAll(jobList);
-	AB_ImExporterContext_free(ctx);
-	return 3;
+          DBG_ERROR(0, "Unable to add transaction for account %s/%s, line %d, aborting",
+                    AB_ImExporterAccountInfo_GetBankCode(iea),
+                    AB_ImExporterAccountInfo_GetAccountNumber(iea),
+                    transactionLine);
+          reallyExecute = 0;
       }
       AB_Job_List2_PushBack(jobList, j);
       t=AB_ImExporterAccountInfo_GetNextTransaction(iea);
@@ -362,6 +348,13 @@ int sepaDebitNotes(AB_BANKING *ab,
     iea=AB_ImExporterContext_GetNextAccountInfo(ctx);
   } /* while */
   AB_ImExporterContext_free(ctx);
+
+  if (reallyExecute != 1)
+  {
+      AB_Job_List2_FreeAll(jobList);
+      AB_ImExporterContext_free(ctx);
+      return 3;
+  }
 
   /* execute jobs */
   rvExec=0;
@@ -383,7 +376,7 @@ int sepaDebitNotes(AB_BANKING *ab,
   }
   AB_ImExporterContext_free(ctx);
 
-  /* that's is */
+  /* that's it */
   rv=AB_Banking_OnlineFini(ab);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
