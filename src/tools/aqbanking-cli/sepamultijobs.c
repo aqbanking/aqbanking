@@ -25,12 +25,18 @@
 #include <unistd.h>
 
 
+typedef enum
+{
+    AQBANKING_TOOL_SEPA_TRANSFERS
+    , AQBANKING_TOOL_SEPA_DEBITNOTES
+} AQBANKING_TOOL_MULTISEPA_TYPE;
 
 static
-int sepaDebitNotes(AB_BANKING *ab,
+int sepaMultiJobs(AB_BANKING *ab,
                    GWEN_DB_NODE *dbArgs,
                    int argc,
-                   char **argv) {
+                   char **argv,
+                   AQBANKING_TOOL_MULTISEPA_TYPE multisepa_type) {
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;
@@ -197,7 +203,10 @@ int sepaDebitNotes(AB_BANKING *ab,
   accountId=GWEN_DB_GetCharValue(db, "accountId", 0, 0);
   subAccountId=GWEN_DB_GetCharValue(db, "subAccountId", 0, 0);
   importerName=GWEN_DB_GetCharValue(db, "importerName", 0, "csv");
-  profileName=GWEN_DB_GetCharValue(db, "profileName", 0, "sepadebitnotes");
+  profileName=GWEN_DB_GetCharValue(db, "profileName", 0,
+                                   (multisepa_type == AQBANKING_TOOL_SEPA_TRANSFERS)
+                                   ? "default"
+                                   : "sepadebitnotes");
   profileFile=GWEN_DB_GetCharValue(db, "profileFile", 0, NULL);
   ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
   fillGaps=GWEN_DB_GetIntValue(db, "fillGaps", 0, 0);
@@ -324,10 +333,16 @@ int sepaDebitNotes(AB_BANKING *ab,
           reallyExecute = 0;
       }
 
-      /* create job */
-      j= use_flash_debitnote
-              ? AB_JobSepaFlashDebitNote_new(a)
-              : AB_JobSepaDebitNote_new(a);
+      /* Create job */
+      j = (multisepa_type == AQBANKING_TOOL_SEPA_TRANSFERS)
+              // The command was sepatransfers, so we create JobSepaTransfer
+              ? AB_JobSepaTransfer_new(a)
+              // The command was sepadebitnotes, so we create some debit note
+              : (use_flash_debitnote
+                 // Did we have --use-COR1? Use this extra job type
+                 ? AB_JobSepaFlashDebitNote_new(a)
+                 // No COR1, just standard CORE debit note
+                 : AB_JobSepaDebitNote_new(a));
       rv=AB_Job_CheckAvailability(j);
       if (rv<0) {
           DBG_ERROR(0, "Job not supported, in line %d.", transactionLine);

@@ -46,10 +46,9 @@
 #include "fillgaps.c"
 #include "updateconf.c"
 #include "sepatransfer.c"
-#include "sepatransfers.c"
 #include "addsepadebitnote.c"
 #include "sepadebitnote.c"
-#include "sepadebitnotes.c"
+#include "sepamultijobs.c"
 #include "separecurtransfer.c"
 
 
@@ -377,7 +376,7 @@ int main(int argc, char **argv) {
     rv=sepaTransfer(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "sepatransfers")==0) {
-    rv=sepaTransfers(ab, db, argc, argv);
+    rv=sepaMultiJobs(ab, db, argc, argv, AQBANKING_TOOL_SEPA_TRANSFERS);
   }
   else if (strcasecmp(cmd, "debitnote")==0) {
     rv=debitNote(ab, db, argc, argv);
@@ -392,7 +391,7 @@ int main(int argc, char **argv) {
     rv=sepaDebitNote(ab, db, argc, argv, 1);
   }
   else if (strcasecmp(cmd, "sepadebitnotes")==0) {
-    rv=sepaDebitNotes(ab, db, argc, argv);
+    rv=sepaMultiJobs(ab, db, argc, argv, AQBANKING_TOOL_SEPA_DEBITNOTES);
   }
   else if (strcasecmp(cmd, "addtrans")==0) {
     rv=addTransaction(ab, db, argc, argv);
