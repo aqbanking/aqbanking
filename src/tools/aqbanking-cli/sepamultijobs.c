@@ -367,7 +367,6 @@ int sepaMultiJobs(AB_BANKING *ab,
   if (reallyExecute != 1)
   {
       AB_Job_List2_FreeAll(jobList);
-      AB_ImExporterContext_free(ctx);
       return 3;
   }
 
@@ -383,13 +382,12 @@ int sepaMultiJobs(AB_BANKING *ab,
 
   /* write context */
   rv=writeContext(ctxFile, ctx);
+  AB_ImExporterContext_free(ctx);
   if (rv<0) {
-    AB_ImExporterContext_free(ctx);
     AB_Banking_OnlineFini(ab);
     AB_Banking_Fini(ab);
     return 4;
   }
-  AB_ImExporterContext_free(ctx);
 
   /* that's it */
   rv=AB_Banking_OnlineFini(ab);
