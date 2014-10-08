@@ -31,9 +31,20 @@ int listAccounts(AB_BANKING *ab,
                  int argc,
                  char **argv) {
   GWEN_DB_NODE *db;
-  int rv;
+  int rv, verbose;
   AB_ACCOUNT_LIST2 *al;
   const GWEN_ARGS args[]={
+  {
+              0,                             /* flags */
+              GWEN_ArgsType_Int,             /* type */
+              "verbose",                        /* name */
+              0,                            /* minnum */
+              1,                            /* maxnum */
+              "v",                            /* short option */
+              "verbose",                /* long option */
+              "Show list in verbose form (with more columns)",  /* short description */
+              0
+  },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
     GWEN_ArgsType_Int,            /* type */
@@ -69,6 +80,8 @@ int listAccounts(AB_BANKING *ab,
     return 0;
   }
 
+  verbose = GWEN_DB_VariableExists(db, "verbose");
+
   rv=AB_Banking_Init(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
@@ -93,10 +106,18 @@ int listAccounts(AB_BANKING *ab,
       a=AB_Account_List2Iterator_Data(ait);
       assert(a);
       while(a) {
-        fprintf(stdout, "Account %d: Bank: %s Account Number: %s\n",
+        fprintf(stdout, "Account %d: Bank: %s Account Number: %s",
                 i++,
                 AB_Account_GetBankCode(a),
                 AB_Account_GetAccountNumber(a));
+        if (verbose)
+        {
+            const char* subAccountId = AB_Account_GetSubAccountId(a);
+            fprintf(stdout, "  SubAccountId: %s  LocalUniqueId: %d",
+                    subAccountId ? subAccountId : "(none)",
+                    AB_Account_GetUniqueId(a));
+        }
+        fprintf(stdout, "\n");
         a=AB_Account_List2Iterator_Next(ait);
       }
       AB_Account_List2Iterator_free(ait);
