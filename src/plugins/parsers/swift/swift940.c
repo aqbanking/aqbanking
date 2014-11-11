@@ -151,12 +151,15 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
     }
     else {
       if (code<900) {
+#if 1 /* this code is for banks which work according to SEPA */
 	AHB_SWIFT_SUBTAG *stg;
-	char identifier[6];
-	GWEN_BUFFER *tbuf=NULL;
+        char identifier[6];
+        GWEN_DB_NODE *dbSepaTags=NULL;
 
-	/* SEPA transaction, needs special handling */
-	identifier[0]=0;
+        /* SEPA transaction, needs special handling */
+        dbSepaTags=GWEN_DB_Group_new("sepa-tags");
+        identifier[0]=0;
+
 	stg=AHB_SWIFT_SubTag_List_First(stlist);
 	while(stg) {
 	  const char *s;
@@ -188,56 +191,21 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 	  case 62:
 	  case 63: /* Verwendungszweck */
 	    if (strlen(s)>5 && s[4]=='+') {
-	      if (identifier[0] && tbuf && GWEN_Buffer_GetUsedBytes(tbuf)) {
-		/* close previous identifier */
-		if (strcasecmp(identifier, "EREF+")==0) {
-		  AHB_SWIFT__SetCharValue(data, flags, "endToEndReference", GWEN_Buffer_GetStart(tbuf));
-		}
-		else if (strcasecmp(identifier, "KREF+")==0) {
-		  /* content of PmtInfId */
-		  AHB_SWIFT__SetCharValue(data, flags, "customerReference", GWEN_Buffer_GetStart(tbuf));
-		}
-		else if (strcasecmp(identifier, "MREF+")==0) {
-		  AHB_SWIFT__SetCharValue(data, flags, "mandateId", GWEN_Buffer_GetStart(tbuf));
-		}
-		else if (strcasecmp(identifier, "CRED+")==0) {
-		  AHB_SWIFT__SetCharValue(data, flags, "creditorSchemeId", GWEN_Buffer_GetStart(tbuf));
-		}
-		else if (strcasecmp(identifier, "DEBT+")==0) {
-		  AHB_SWIFT__SetCharValue(data, flags, "originatorIdentifier", GWEN_Buffer_GetStart(tbuf));
-		}
-		else if (strcasecmp(identifier, "SVWZ+")==0) {
-		  AHB_SWIFT__SetCharValue(data, flags, "purpose", GWEN_Buffer_GetStart(tbuf));
-		}
-		else if (strcasecmp(identifier, "ABWA+")==0) {
-		}
-	      }
-
-	      /* start of an identifier */
+	      /* new identifier */
 	      strncpy(identifier, s, 5);
 	      identifier[5]=0;
-	      if (tbuf==NULL)
-		tbuf=GWEN_Buffer_new(0, 54, 0, 1);
-	      else
-		GWEN_Buffer_Reset(tbuf);
-	      GWEN_Buffer_AppendString(tbuf, s+5);
+	      GWEN_DB_SetCharValue(dbSepaTags, GWEN_DB_FLAGS_DEFAULT, identifier, s+5);
 	    }
 	    else {
-	      /* no identifier here */
-	      if (identifier[0] && tbuf && GWEN_Buffer_GetUsedBytes(tbuf)) {
-		/* continuation of previous identifier, add to buffer */
-		if (strcasecmp(identifier, "SVWZ+")==0) {
-		  /* add a space for purpose */
-		  GWEN_Buffer_AppendString(tbuf, " ");
-		}
-		GWEN_Buffer_AppendString(tbuf, s);
+	      if (identifier[0]) {
+		GWEN_DB_SetCharValue(dbSepaTags, GWEN_DB_FLAGS_DEFAULT, identifier, s);
 	      }
-	      else {
-		AHB_SWIFT__SetCharValue(data, flags, "purpose", s);
-	      }
+	      else
+		/* store as "SVWZ+" string (i.e. "purpose") */
+		GWEN_DB_SetCharValue(dbSepaTags, GWEN_DB_FLAGS_DEFAULT, "SVWZ+", s);
 	    }
 	    break;
-      
+
 	  case 30: /* BLZ Gegenseite */
 	    AHB_SWIFT__SetCharValue(data, flags, "remoteBankCode", s);
 	    break;
@@ -273,31 +241,64 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 	  stg=AHB_SWIFT_SubTag_List_Next(stg);
 	} /* while */
 
-	/* close possibly open identifieres */
-	if (identifier[0] && tbuf && GWEN_Buffer_GetUsedBytes(tbuf)) {
-	  /* close previous identifier */
-	  if (strcasecmp(identifier, "EREF+")==0) {
-	    AHB_SWIFT__SetCharValue(data, flags, "endToEndReference", GWEN_Buffer_GetStart(tbuf));
-	  }
-	  else if (strcasecmp(identifier, "KREF+")==0) {
-	    AHB_SWIFT__SetCharValue(data, flags, "customerReference", GWEN_Buffer_GetStart(tbuf));
-	  }
-	  else if (strcasecmp(identifier, "MREF+")==0) {
-	    AHB_SWIFT__SetCharValue(data, flags, "mandateReference", GWEN_Buffer_GetStart(tbuf));
-	  }
-	  else if (strcasecmp(identifier, "CRED+")==0) {
-	    AHB_SWIFT__SetCharValue(data, flags, "creditorIdentifier", GWEN_Buffer_GetStart(tbuf));
-	  }
-	  else if (strcasecmp(identifier, "DEBT+")==0) {
-	    AHB_SWIFT__SetCharValue(data, flags, "originatorIdentifier", GWEN_Buffer_GetStart(tbuf));
-	  }
-	  else if (strcasecmp(identifier, "SVWZ+")==0) {
-	    AHB_SWIFT__SetCharValue(data, flags, "purpose", GWEN_Buffer_GetStart(tbuf));
-	  }
-	  else if (strcasecmp(identifier, "ABWA+")==0) {
+
+	/* handle SEPA tags, iterate through them and parse according to variable name */
+	if (GWEN_DB_Variables_Count(dbSepaTags)) {
+	  GWEN_DB_NODE *dbVar;
+
+	  dbVar=GWEN_DB_GetFirstVar(dbSepaTags);
+	  while(dbVar) {
+	    const char *sVarName;
+
+	    sVarName=GWEN_DB_VariableName(dbVar);
+	    if (sVarName && *sVarName) {
+	      GWEN_BUFFER *tbuf;
+	      GWEN_DB_NODE *dbValue;
+
+	      /* sample all values into a buffer and concatenate */
+	      tbuf=GWEN_Buffer_new(0, 128, 0, 1);
+	      dbValue=GWEN_DB_GetFirstValue(dbVar);
+	      while(dbValue) {
+		const char *s;
+
+		s=GWEN_DB_GetCharValueFromNode(dbValue);
+		if (s && *s)
+		  GWEN_Buffer_AppendString(tbuf, s);
+
+		dbValue=GWEN_DB_GetNextValue(dbValue);
+	      }
+
+	      if (strcasecmp(sVarName, "EREF+")==0) {
+		AHB_SWIFT__SetCharValue(data, flags, "endToEndReference", GWEN_Buffer_GetStart(tbuf));
+	      }
+	      else if (strcasecmp(sVarName, "KREF+")==0) {
+		AHB_SWIFT__SetCharValue(data, flags, "customerReference", GWEN_Buffer_GetStart(tbuf));
+	      }
+	      else if (strcasecmp(sVarName, "MREF+")==0) {
+		AHB_SWIFT__SetCharValue(data, flags, "mandateId", GWEN_Buffer_GetStart(tbuf));
+	      }
+	      else if (strcasecmp(sVarName, "CRED+")==0) {
+		AHB_SWIFT__SetCharValue(data, flags, "creditorSchemeId", GWEN_Buffer_GetStart(tbuf));
+	      }
+	      else if (strcasecmp(sVarName, "DEBT+")==0) {
+		AHB_SWIFT__SetCharValue(data, flags, "originatorIdentifier", GWEN_Buffer_GetStart(tbuf));
+	      }
+	      else if (strcasecmp(sVarName, "SVWZ+")==0) {
+		AHB_SWIFT__SetCharValue(data, flags, "purpose", GWEN_Buffer_GetStart(tbuf));
+	      }
+	      else if (strcasecmp(sVarName, "ABWA+")==0) {
+	      }
+
+	      GWEN_Buffer_free(tbuf);
+
+	    }
+
+	    dbVar=GWEN_DB_GetNextVar(dbVar);
 	  }
 	}
-	GWEN_Buffer_free(tbuf);
+
+	GWEN_DB_Group_free(dbSepaTags);
+#endif
       } /* if sepa */
       else {
 	AHB_SWIFT_SUBTAG *stg;
