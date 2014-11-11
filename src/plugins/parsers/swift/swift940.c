@@ -137,7 +137,6 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
   }
 
   if (isStructured) {
-#if 1
     AHB_SWIFT_SUBTAG_LIST *stlist;
     int rv;
 
@@ -374,120 +373,6 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
       }
     } /* if really structured */
     AHB_SWIFT_SubTag_List_free(stlist);
-#else
-    const char *p2;
-    char *s;
-    int id;
-
-    /* store code */
-    GWEN_DB_SetIntValue(data, flags, "textkey", code);
-
-    while(*p) {
-      int intVal;
-
-      if (strlen(p)<3) {
-	DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad field in :86: tag (%s)", p);
-	GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                              "SWIFT: Bad field in :86: tag");
-        return -1;
-      }
-      p++; /* skip '?' */
-      /* read field id */
-      if (*p==10)
-        p++;
-      if (!*p) {
-	DBG_ERROR(AQBANKING_LOGDOMAIN, "Partial field id");
-        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                              "SWIFT: Partial field id");
-        return -1;
-      }
-      id=((*p-'0')*10);
-      p++;
-
-      if (*p==10)
-        p++;
-      if (!*p) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Partial field id");
-        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                              "SWIFT: Partial field id");
-        return -1;
-      }
-      id+=(*p-'0');
-      p++;
-
-      p2=p;
-
-      /* find end of field/beginning of next field */
-      while(*p2 && *p2!='?') p2++;
-      s=(char*)GWEN_Memory_malloc(p2-p+1);
-      memmove(s, p, p2-p+1);
-      s[p2-p]=0;
-      AHB_SWIFT_Condense(s, keepMultipleBlanks);
-      DBG_DEBUG(AQBANKING_LOGDOMAIN, "Current field is %02d (%s)", id, s);
-      /* now id is the field id, s points to the field content */
-      if (*s) {
-        switch(id) {
-        case 0: /* Buchungstext */
-          AHB_SWIFT__SetCharValue(data, flags, "transactionText", s);
-          break;
-        case 10: /* Primanota */
-          AHB_SWIFT__SetCharValue(data, flags, "primanota", s);
-          break;
-    
-        case 20:
-        case 21:
-        case 22:
-        case 23:
-        case 24:
-        case 25:
-        case 26:
-        case 27:
-        case 28:
-        case 29:
-        case 60:
-        case 61:
-        case 62:
-        case 63: /* Verwendungszweck */
-          AHB_SWIFT__SetCharValue(data, flags, "purpose", s);
-          break;
-    
-        case 30: /* BLZ Gegenseite */
-          AHB_SWIFT__SetCharValue(data, flags, "remoteBankCode", s);
-          break;
-    
-        case 31: /* Kontonummer Gegenseite */
-          AHB_SWIFT__SetCharValue(data, flags, "remoteAccountNumber", s);
-          break;
-    
-        case 32: 
-        case 33: /* Name Auftraggeber */
-          AHB_SWIFT__SetCharValue(data, flags, "remoteName", s);
-          break;
-    
-	case 34: /* Textschluesselergaenzung */
-	  if (1==sscanf(s, "%d", &intVal)) {
-	    GWEN_DB_SetIntValue(data, flags, "textkeyExt", intVal);
-	  }
-	  else {
-	    DBG_WARN(AQBANKING_LOGDOMAIN,
-                     "Value [%s] is not a number (textkeyext)", s);
-	  }
-	  break;
-
-	case 38: /* IBAN */
-	  AHB_SWIFT__SetCharValue(data, flags, "remoteIban", s);
-          break;
-
-        default: /* ignore all other fields (if any) */
-          DBG_WARN(AQBANKING_LOGDOMAIN, "Unknown :86: field \"%02d\" (%s) (%s)", id, s,
-                   AHB_SWIFT_Tag_GetData(tg));
-          break;
-        } /* switch */
-      }
-      p=p2;
-      GWEN_Memory_dealloc(s);
-    } /* while */
-#endif
   } /* if structured */
 
   if (!isStructured) {
