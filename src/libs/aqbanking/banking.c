@@ -491,10 +491,9 @@ AB_ACCOUNT *AB_Banking__GetAccount(AB_BANKING *ab, const char *accountId){
       uniqueId=GWEN_DB_GetIntValue(db, accountId, 0, 0);
     GWEN_DB_Group_free(dbData);
     if (!uniqueId) {
-      /* should not happen anyway */
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Account has no unique id assigned to the alias [%s].",
-		accountId);
+      DBG_INFO(AQBANKING_LOGDOMAIN,
+               "Account has no unique id assigned to the alias [%s].",
+               accountId);
       return NULL;
     }
 
