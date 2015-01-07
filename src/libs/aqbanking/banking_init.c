@@ -46,6 +46,7 @@ int AB_Banking_PluginSystemInit(void) {
 		       "aqbanking", 0,
 		       GWEN_LoggerType_Console,
 		       GWEN_LoggerFacility_User);
+      GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevel_Notice);
     }
 
     s=getenv("AQBANKING_LOGLEVEL");
@@ -55,8 +56,6 @@ int AB_Banking_PluginSystemInit(void) {
       ll=GWEN_Logger_Name2Level(s);
       GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, ll);
     }
-    else
-      GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevel_Notice);
 
     DBG_INFO(AQBANKING_LOGDOMAIN,
 	     "AqBanking v"
