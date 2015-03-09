@@ -369,7 +369,7 @@ int AHB_SWIFT_ReadLine(GWEN_FAST_BUFFER *fb,
 
 
 
-int AHB_SWIFT__ReadDocument(GWEN_FAST_BUFFER *fb,
+int AHB_SWIFT_ReadTextBlock(GWEN_FAST_BUFFER *fb,
 			    AHB_SWIFT_TAG_LIST *tl,
                             unsigned int maxTags) {
   GWEN_BUFFER *lbuf;
@@ -621,7 +621,7 @@ int AHB_SWIFT_ReadDocument(GWEN_FAST_BUFFER *fb,
     } /* for */
   }
 
-  rv=AHB_SWIFT__ReadDocument(fb, tl, maxTags);
+  rv=AHB_SWIFT_ReadTextBlock(fb, tl, maxTags);
   if (rv)
     return rv;
 
@@ -761,7 +761,7 @@ int AHB_SWIFT_ReadDocument(GWEN_FAST_BUFFER *fb,
 	  if (c==GWEN_ERROR_EOF) {
 	    DBG_INFO(AQBANKING_LOGDOMAIN, "EOF met, empty block");
 	    if (subDocs>0) {
-	      DBG_INFO(AQBANKING_LOGDOMAIN, "We got %d data blocks, returning", subDocs);
+	      DBG_INFO(AQBANKING_LOGDOMAIN, "We got %d text blocks, returning", subDocs);
 	      return 0;
 	    }
 	    return 1;
@@ -794,7 +794,7 @@ int AHB_SWIFT_ReadDocument(GWEN_FAST_BUFFER *fb,
       DBG_DEBUG(0, "Reading block %d", swhead[1]-'0');
       if (swhead[1]=='4') {
 	/* read document from block 4 */
-	rv=AHB_SWIFT__ReadDocument(fb, tl, maxTags);
+	rv=AHB_SWIFT_ReadTextBlock(fb, tl, maxTags);
 	if (rv) {
 	  DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
 	  return rv;
@@ -828,7 +828,7 @@ int AHB_SWIFT_ReadDocument(GWEN_FAST_BUFFER *fb,
   }
   else {
     /* not a full swift document, just read the SWIFT document directly */
-    rv=AHB_SWIFT__ReadDocument(fb, tl, maxTags);
+    rv=AHB_SWIFT_ReadTextBlock(fb, tl, maxTags);
     if (rv)
       return rv;
   }
