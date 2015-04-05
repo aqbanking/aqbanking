@@ -323,7 +323,8 @@ This folder is used to store importer/exporter plugins.
 
 This variable stores the loglevel to be used for AqBanking.
 Possible values are: emergency, alert, critical, error, warning, notice,
-info, debug and verbous.
+info, debug and verbous. Each following log level includes the previous
+one.
 
 
 7.2. AQBANKING_STORE_JOBLOGS

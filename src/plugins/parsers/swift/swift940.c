@@ -985,7 +985,10 @@ int AHB_SWIFT940_Parse_NS(const AHB_SWIFT_TAG *tg,
 }
 
 
-
+/* Import SWIFT MT940 data.
+   @param tl input: list of tags. Tags are lines in a SWIFT data block (block 4). A tag has an
+          id and content. See the AHB_SWIFT_Tag_new function for more information.
+ */
 int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
 			GWEN_DB_NODE *data,
 			GWEN_DB_NODE *cfg,

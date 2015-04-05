@@ -85,7 +85,17 @@ int AHB_SWIFT_Condense(char *buffer, int keepMultipleBlanks) {
 
 
 
+/* Create a tag object from a tag ID and the content of the tag. Example:
+   Given the following line inside a SWIFT data block:
 
+     :28C:7/1
+
+   You'd call AHB_SWIFT_Tag_new like this:
+
+     AHB_SWIFT_Tag_new("28C", "7/1")
+
+   @return a new AHB_SWIFT_TAG
+ */
 AHB_SWIFT_TAG *AHB_SWIFT_Tag_new(const char *id,
                                  const char *content){
   AHB_SWIFT_TAG *tg;
@@ -298,7 +308,11 @@ int AHB_SWIFT_ParseSubTags(const char *s, AHB_SWIFT_SUBTAG_LIST *stlist, int kee
 
 
 
-
+/* This reads a line within a SWIFT data block (block 4)
+   @param *fb     pointer to a GWEN_FAST_BUFFER input buffer
+   @param *buffer pointer to a char* output buffer 
+   @param s       size of the output buffer
+   */
 int AHB_SWIFT_ReadLine(GWEN_FAST_BUFFER *fb,
                        char *buffer,
 		       unsigned int s){
@@ -368,7 +382,9 @@ int AHB_SWIFT_ReadLine(GWEN_FAST_BUFFER *fb,
 
 
 
-
+/* This will read the contents of a SWIFT data block ({4: ... })
+   inside of a SWIFT document
+ */
 int AHB_SWIFT_ReadTextBlock(GWEN_FAST_BUFFER *fb,
 			    AHB_SWIFT_TAG_LIST *tl,
                             unsigned int maxTags) {
