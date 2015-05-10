@@ -128,7 +128,13 @@ AQEBICS_VERSION_STRING="$AQBANKING_VERSION_STRING"
 #
 # datetime
 #
-DATETIME="`date +\"%Y%m%d%H%M%S\"`"
+AC_ARG_WITH([build-datetime],
+  [AS_HELP_STRING([--with-build-datetime=DATETIME],
+                  [use fixed datetime for build (default: current date and time)])],
+  [AS_IF([test "x$withval" = "xyes"],
+    [DATETIME="`date +\"%Y%m%d%H%M%S\"`"],
+    [DATETIME="`date +\"%Y%m%d%H%M%S\" --date=\"$withval\"`"])],
+  [DATETIME="`date +\"%Y%m%d%H%M%S\"`"])
 AC_SUBST(DATETIME)
 
 
