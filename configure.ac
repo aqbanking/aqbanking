@@ -945,7 +945,7 @@ case `basename $CC` in
      dnl parenteses are vitally important here!)
      gccversion=["` ${CC} --version | head -1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
      case $gccversion in
-       4.*)
+       4.*|5.*)
 	 # Activate -fvisibility=hidden only for explicit 4.x gcc
 	 # versions. We never now what future gcc's might do with
 	 # that argument, and we also can't be sure that other
