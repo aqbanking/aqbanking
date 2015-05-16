@@ -935,52 +935,26 @@ ACX_COMPILE_WARN()
 
 ###-------------------------------------------------------------------------
 #
-# GCC version (check for usability)
+# Compiler check for symbol visibility
 #
-AC_MSG_CHECKING(if symbol visibility is supported)
-visibility_cflags=""
-case `basename $CC` in 
-  *gcc*)
-     dnl Determine version number (watch out: the outside square
-     dnl parenteses are vitally important here!)
-     gccversion=["` ${CC} --version | head -1 | ${SED} 's/.*\([0-9]\.[0-9]\.[0-9]*\).*/\1/' `"]
-     case $gccversion in
-       4.*|5.*)
-	 # Activate -fvisibility=hidden only for explicit 4.x gcc
-	 # versions. We never now what future gcc's might do with
-	 # that argument, and we also can't be sure that other
-	 # gcc's happen to show very weird version
-	 # numbers. Therefore leave the default at non-activated.
-         visibility_supported="yes, gcc-${gccversion}"
-         AC_DEFINE(GCC_WITH_VISIBILITY_ATTRIBUTE, 1, [visibility])
-         visibility_cflags="-fvisibility=hidden"
-         ;;
-       *)
-	 # Default: -fvisibility=hidden not activated.
-         visibility_supported="no (needs gcc >=4.0, you have gcc-${gccversion})"
-         ;;
-      esac
-      ;;
-  *)
-    visibility_supported="no (needs gcc >=4.0, you use $CC)"
-    ;;
-esac
-
-# -fvisibility is at least not available on MinGW/gcc-3.4.4 (will
-# give an "unrecognized cmdline option"). Also, unfortunately I
-# don't know an easy way to ask the compiler here. Maybe
-# http://autoconf-archive.cryp.to/ax_cflags_gcc_option.html
-case "$OS_TYPE" in
-  windows)
-        visibility_supported="no (not yet on MinGW/Windows)"
-        visibility_cflags=""
-	;;
-  *)
-	;;
-esac
-
-
-AC_MSG_RESULT(${visibility_supported})
+AC_CACHE_CHECK([whether compiler supports symbol visibility],
+  ac_cv_hidden_visibility_attribute, [
+    echo 'int __attribute__ ((visibility ("hidden"))) foo (void) { return 1; }' > conftest.c
+    ac_cv_hidden_visibility_attribute=no
+    if AC_TRY_COMMAND(${CC-cc} -Werror -S conftest.c -o conftest.s 1>&AS_MESSAGE_LOG_FD);
+    then
+      if grep '\.hidden.*foo' conftest.s >/dev/null;
+      then
+        ac_cv_hidden_visibility_attribute=yes
+      fi
+    fi
+    rm -f conftest.*
+  ])
+if test $ac_cv_hidden_visibility_attribute = yes;
+then
+  AC_DEFINE(GCC_WITH_VISIBILITY_ATTRIBUTE, 1, [visibility])
+  visibility_cflags="-fvisibility=hidden"
+fi
 AC_SUBST(visibility_cflags)
 
 
