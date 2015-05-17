@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Fri Apr 02 2004
- copyright   : (C) 2004-2010 by Martin Preuss
+ copyright   : (C) 2004-2015 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -27,6 +27,11 @@
 #include <string.h>
 #include <ctype.h>
 #include <assert.h>
+
+
+
+#define ENABLE_FULL_SEPA_LOG
+
 
 
 #define CENTURY_CUTOFF_YEAR 79
@@ -111,10 +116,14 @@ int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
 
 
 
-int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
-                          uint32_t flags,
-                          GWEN_DB_NODE *data,
-                          GWEN_DB_NODE *cfg){
+#if 0
+/* code replaced below by new function, remopve this as soon as the new function
+ * is fully tested
+ */
+int AHB_SWIFT940_Parse_86_old(const AHB_SWIFT_TAG *tg,
+			      uint32_t flags,
+			      GWEN_DB_NODE *data,
+			      GWEN_DB_NODE *cfg){
   const char *p;
   int isStructured;
   int code;
@@ -390,6 +399,426 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 	*p2=0;
 	p2++;
       }
+      if (-1!=GWEN_Text_ComparePattern(p1, "*KTO/BLZ */*", 0)) {
+	char *p3;
+	char *kto;
+
+	p3=p1;
+	while(*p3) {
+	  *p3=toupper(*p3);
+          p3++;
+	}
+	kto=strstr(p1, "KTO/BLZ ");
+	if (kto) {
+	  char *blz;
+
+          kto+=8;
+	  blz=strchr(kto, '/');
+	  if (blz) {
+	    *blz=0;
+            blz++;
+	  }
+	  p3=blz;
+	  while(*p3 && isdigit(*p3))
+	    p3++;
+	  *p3=0;
+
+	  AHB_SWIFT__SetCharValue(data, flags, "remoteBankCode", blz);
+	  AHB_SWIFT__SetCharValue(data, flags, "remoteAccountNumber", kto);
+	}
+	else {
+	  AHB_SWIFT__SetCharValue(data, flags, "purpose", p1);
+	}
+      }
+      else
+	AHB_SWIFT__SetCharValue(data, flags, "purpose", p1);
+      p1=p2;
+    }
+    free(pcopy);
+  }
+
+  return 0;
+}
+#endif
+
+
+int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
+			  uint32_t flags,
+			  GWEN_DB_NODE *data,
+			  GWEN_DB_NODE *cfg){
+  const char *p;
+  int isStructured;
+  int code;
+  int keepMultipleBlanks;
+
+  keepMultipleBlanks=GWEN_DB_GetIntValue(cfg, "keepMultipleBlanks", 0, 1);
+  p=AHB_SWIFT_Tag_GetData(tg);
+  assert(p);
+  isStructured=0;
+  code=999;
+  if (strlen(p)>3) {
+    if (isdigit(p[0]) && isdigit(p[1]) && isdigit(p[2])) {
+      /* starts with a three digit number */
+      code=(((p[0]-'0')*100) + ((p[1]-'0')*10) + (p[2]-'0'));
+      if (p[3]=='?')
+	/* it is structured, get the code */
+	isStructured=1;
+      p+=3;
+    }
+  }
+
+  if (isStructured) {
+    AHB_SWIFT_SUBTAG_LIST *stlist;
+    int rv;
+
+    /* store code */
+    GWEN_DB_SetIntValue(data, flags, "transactioncode", code);
+
+    stlist=AHB_SWIFT_SubTag_List_new();
+    rv=AHB_SWIFT_ParseSubTags(p, stlist, keepMultipleBlanks);
+    if (rv<0) {
+      DBG_WARN(AQBANKING_LOGDOMAIN, "Handling tag :86: as unstructured (%d)", rv);
+      isStructured=0;
+    }
+    else {
+      if (code<900) {
+	AHB_SWIFT_SUBTAG *stg;
+	GWEN_DB_NODE *dbSepaTags=NULL;
+	GWEN_BUFFER *bufFullPurpose;
+
+	bufFullPurpose=GWEN_Buffer_new(0, 256, 0, 1);
+
+        /* SEPA transaction, needs special handling */
+        dbSepaTags=GWEN_DB_Group_new("sepa-tags");
+
+	stg=AHB_SWIFT_SubTag_List_First(stlist);
+	while(stg) {
+	  const char *s;
+          int id;
+	  int intVal;
+
+          id=AHB_SWIFT_SubTag_GetId(stg);
+	  s=AHB_SWIFT_SubTag_GetData(stg);
+	  switch(id) {
+	  case 0: /* Buchungstext */
+	    AHB_SWIFT__SetCharValue(data, flags, "transactionText", s);
+	    break;
+	  case 10: /* Primanota */
+	    AHB_SWIFT__SetCharValue(data, flags, "primanota", s);
+	    break;
+      
+	  case 20:
+	  case 21:
+	  case 22:
+	  case 23:
+	  case 24:
+	  case 25:
+	  case 26:
+	  case 27:
+	  case 28:
+	  case 29:
+	  case 60:
+	  case 61:
+	  case 62:
+	  case 63: /* Verwendungszweck */
+	    /* handle full purpose later */
+	    GWEN_Buffer_AppendString(bufFullPurpose, s);
+	    break;
+
+	  case 30: /* BLZ Gegenseite */
+	    AHB_SWIFT__SetCharValue(data, flags, "remoteBankCode", s);
+	    break;
+      
+	  case 31: /* Kontonummer Gegenseite */
+	    AHB_SWIFT__SetCharValue(data, flags, "remoteAccountNumber", s);
+	    break;
+      
+	  case 32: 
+	  case 33: /* Name Auftraggeber */
+	    AHB_SWIFT__SetCharValue(data, flags, "remoteName", s);
+	    break;
+      
+	  case 34: /* Textschluesselergaenzung */
+	    if (1==sscanf(s, "%d", &intVal)) {
+	      GWEN_DB_SetIntValue(data, flags, "textkeyExt", intVal);
+	    }
+	    else {
+	      DBG_WARN(AQBANKING_LOGDOMAIN,
+		       "Value [%s] is not a number (textkeyext)", s);
+	    }
+	    break;
+  
+	  case 38: /* IBAN */
+	    AHB_SWIFT__SetCharValue(data, flags, "remoteIban", s);
+	    break;
+  
+	  default: /* ignore all other fields (if any) */
+	    DBG_WARN(AQBANKING_LOGDOMAIN, "Unknown :86: field \"%02d\" (%s) (%s)", id, s,
+		     AHB_SWIFT_Tag_GetData(tg));
+	    break;
+	  } /* switch */
+	  stg=AHB_SWIFT_SubTag_List_Next(stg);
+	} /* while */
+
+	if (GWEN_Buffer_GetUsedBytes(bufFullPurpose)) {
+	  const char *s;
+	  const char *sLastTagStart;
+
+#ifdef ENABLE_FULL_SEPA_LOG
+	  DBG_ERROR(0, "FullPurposeBuffer:");
+	  GWEN_Buffer_Dump(bufFullPurpose, 2);
+#endif
+
+	  s=GWEN_Buffer_GetStart(bufFullPurpose);
+	  sLastTagStart=s;
+
+	  /* sample all SEPA fields from concatenated string of purpose lines */
+	  while(*s) {
+	    /* look for begin of next tag */
+	    while(*s) {
+	      if ((*s && isalpha(*s)) &&
+		  (s[1] && isalpha(s[1])) &&
+		  (s[2] && isalpha(s[2])) &&
+		  (s[3] && isalpha(s[3])) &&
+		  s[4]=='+')
+		break;
+	      /* not the beginning of a SEPA field, just skip */
+	      s++;
+	    }
+
+	    /* found begin of the next SEPA field or end of buffer */
+	    if (s > sLastTagStart) {
+	      int tagLen;
+
+	      /* we currently have a field, close that first */
+	      tagLen=s-sLastTagStart;
+
+#ifdef ENABLE_FULL_SEPA_LOG
+	      DBG_ERROR(0, "Current tag:");
+	      GWEN_Text_LogString(sLastTagStart, tagLen, 0, GWEN_LoggerLevel_Error);
+#endif
+
+	      /* check tag length (must be long enough for 'XXX+', i.e. at least 5 bytes) */
+	      if (tagLen>5 && sLastTagStart[4]=='+') {
+		char sIdentifier[6];
+		const char *sPayload;
+
+		/* ok, 5 bytes or more, 4 alphas and a plus sign, should be the begin of a SEPA tag */
+		strncpy(sIdentifier, sLastTagStart, 5);
+		sIdentifier[5]=0;
+
+		/* remove leading blanks */
+		sPayload=sLastTagStart+5;
+		tagLen-=5;
+		while(tagLen>0 && *sPayload && isblank(*sPayload)) {
+		  sPayload++;
+		  tagLen--;
+		}
+
+		/* remove trailing blanks */
+		if (tagLen>0) {
+		  while(tagLen>0) {
+		    if (!isblank(sPayload[tagLen-1]))
+		      break;
+		    tagLen--;
+		  }
+		}
+
+		/* store tag, if still data left */
+		if (tagLen>0) {
+		  char *sCopyPayload;
+
+		  sCopyPayload=strndup(sPayload, tagLen);
+		  GWEN_DB_SetCharValue(dbSepaTags, GWEN_DB_FLAGS_DEFAULT, sIdentifier, sCopyPayload);
+		  free(sCopyPayload);
+		}
+		else {
+		  DBG_WARN(GWEN_LOGDOMAIN, "Ignoring empty SEPA field \"%s\"", sIdentifier);
+		}
+	      }
+	      else {
+		/* tag is shorter than 5 bytes or pos 4 doesn't contain a plus, treat as normal purpose */
+		if (tagLen>0) {
+		  char *sCopyPayload;
+
+		  sCopyPayload=strndup(sLastTagStart, tagLen);
+		  GWEN_DB_SetCharValue(dbSepaTags, GWEN_DB_FLAGS_DEFAULT, "SVWZ+", sCopyPayload);
+		  free(sCopyPayload);
+		}
+	      }
+	    }
+
+	    if (*s) {
+	      /* save start of next tag */
+	      sLastTagStart=s;
+	      /* skip XXX+ at the beginning, otherwise we would immediately stop in next loop
+	       * we know that the next 5 bytes are valid, so it is safe to skip them */
+	      s+=5;
+	    }
+	  } /* while */
+
+	} /* if GWEN_Buffer_GetUsedBytes(bufFullPurpose) */
+	/* buffer no longer needed */
+	GWEN_Buffer_free(bufFullPurpose);
+
+	/* handle SEPA tags, iterate through them and parse according to variable name */
+	if (GWEN_DB_Variables_Count(dbSepaTags)) {
+	  GWEN_DB_NODE *dbVar;
+
+	  /* we are about to replace the purpose fields with SEPA data, so we need to clear
+	   * that variable in the data set first */
+	  GWEN_DB_DeleteVar(data, "purpose");
+
+	  dbVar=GWEN_DB_GetFirstVar(dbSepaTags);
+	  while(dbVar) {
+	    const char *sVarName;
+
+	    sVarName=GWEN_DB_VariableName(dbVar);
+	    if (sVarName && *sVarName) {
+	      GWEN_BUFFER *tbuf;
+	      GWEN_DB_NODE *dbValue;
+
+	      /* sample all values into a buffer and concatenate */
+	      tbuf=GWEN_Buffer_new(0, 128, 0, 1);
+	      dbValue=GWEN_DB_GetFirstValue(dbVar);
+	      while(dbValue) {
+		const char *s;
+
+		s=GWEN_DB_GetCharValueFromNode(dbValue);
+		if (s && *s)
+		  GWEN_Buffer_AppendString(tbuf, s);
+
+		dbValue=GWEN_DB_GetNextValue(dbValue);
+	      }
+
+	      if (strcasecmp(sVarName, "EREF+")==0) {
+		AHB_SWIFT__SetCharValue(data, flags, "endToEndReference", GWEN_Buffer_GetStart(tbuf));
+	      }
+	      else if (strcasecmp(sVarName, "KREF+")==0) {
+		AHB_SWIFT__SetCharValue(data, flags, "customerReference", GWEN_Buffer_GetStart(tbuf));
+	      }
+	      else if (strcasecmp(sVarName, "MREF+")==0) {
+		AHB_SWIFT__SetCharValue(data, flags, "mandateId", GWEN_Buffer_GetStart(tbuf));
+	      }
+	      else if (strcasecmp(sVarName, "CRED+")==0) {
+		AHB_SWIFT__SetCharValue(data, flags, "creditorSchemeId", GWEN_Buffer_GetStart(tbuf));
+	      }
+	      else if (strcasecmp(sVarName, "DEBT+")==0) {
+		AHB_SWIFT__SetCharValue(data, flags, "originatorIdentifier", GWEN_Buffer_GetStart(tbuf));
+	      }
+	      else if (strcasecmp(sVarName, "SVWZ+")==0) {
+		AHB_SWIFT__SetCharValue(data, flags, "purpose", GWEN_Buffer_GetStart(tbuf));
+	      }
+	      else if (strcasecmp(sVarName, "ABWA+")==0) {
+	      }
+
+	      GWEN_Buffer_free(tbuf);
+
+	    }
+
+	    dbVar=GWEN_DB_GetNextVar(dbVar);
+	  }
+	}
+
+#ifdef ENABLE_FULL_SEPA_LOG
+	DBG_ERROR(0, "SEPA Tags:");
+	GWEN_DB_Dump(dbSepaTags, 2);
+#endif
+
+	GWEN_DB_Group_free(dbSepaTags);
+      } /* if sepa */
+      else {
+	AHB_SWIFT_SUBTAG *stg;
+
+	/* non-sepa */
+	stg=AHB_SWIFT_SubTag_List_First(stlist);
+	while(stg) {
+          int id;
+	  const char *s;
+          int intVal;
+
+          id=AHB_SWIFT_SubTag_GetId(stg);
+	  s=AHB_SWIFT_SubTag_GetData(stg);
+	  switch(id) {
+	  case 0: /* Buchungstext */
+	    AHB_SWIFT__SetCharValue(data, flags, "transactionText", s);
+	    break;
+	  case 10: /* Primanota */
+	    AHB_SWIFT__SetCharValue(data, flags, "primanota", s);
+	    break;
+      
+	  case 20:
+	  case 21:
+	  case 22:
+	  case 23:
+	  case 24:
+	  case 25:
+	  case 26:
+	  case 27:
+	  case 28:
+	  case 29:
+	  case 60:
+	  case 61:
+	  case 62:
+	  case 63: /* Verwendungszweck */
+	    AHB_SWIFT__SetCharValue(data, flags, "purpose", s);
+	    break;
+
+	  case 30: /* BLZ Gegenseite */
+	    AHB_SWIFT__SetCharValue(data, flags, "remoteBankCode", s);
+	    break;
+      
+	  case 31: /* Kontonummer Gegenseite */
+	    AHB_SWIFT__SetCharValue(data, flags, "remoteAccountNumber", s);
+	    break;
+      
+	  case 32: 
+	  case 33: /* Name Auftraggeber */
+	    AHB_SWIFT__SetCharValue(data, flags, "remoteName", s);
+	    break;
+      
+	  case 34: /* Textschluesselergaenzung */
+	    if (1==sscanf(s, "%d", &intVal)) {
+	      GWEN_DB_SetIntValue(data, flags, "textkeyExt", intVal);
+	    }
+	    else {
+	      DBG_WARN(AQBANKING_LOGDOMAIN,
+		       "Value [%s] is not a number (textkeyext)", s);
+	    }
+	    break;
+  
+	  case 38: /* IBAN */
+	    AHB_SWIFT__SetCharValue(data, flags, "remoteIban", s);
+	    break;
+  
+	  default: /* ignore all other fields (if any) */
+	    DBG_WARN(AQBANKING_LOGDOMAIN, "Unknown :86: field \"%02d\" (%s) (%s)", id, s,
+		     AHB_SWIFT_Tag_GetData(tg));
+	    break;
+	  } /* switch */
+	  stg=AHB_SWIFT_SubTag_List_Next(stg);
+	} /* while */
+      }
+    } /* if really structured */
+    AHB_SWIFT_SubTag_List_free(stlist);
+  } /* if isStructured */
+  else {
+    char *pcopy=strdup(p);
+    char *p1;
+
+    /* unstructured :86:, simply store as mutliple purpose lines */
+    p1=pcopy;
+    while(p1 && *p1) {
+      char *p2;
+
+      p2=strchr(p1, 10);
+      if (p2) {
+	*p2=0;
+	p2++;
+      }
+
+      /* look for pattern "KTO/BLZ", if found try to extract remote account info
+       * from unstructured purpose string */
       if (-1!=GWEN_Text_ComparePattern(p1, "*KTO/BLZ */*", 0)) {
 	char *p3;
 	char *kto;
