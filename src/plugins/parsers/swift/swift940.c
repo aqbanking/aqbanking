@@ -30,7 +30,7 @@
 
 
 
-#define ENABLE_FULL_SEPA_LOG
+/* #define ENABLE_FULL_SEPA_LOG */
 
 
 
