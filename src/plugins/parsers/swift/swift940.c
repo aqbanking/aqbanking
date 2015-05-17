@@ -637,14 +637,14 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 	      }
 	      else {
 		/* tag is shorter than 5 bytes or pos 4 doesn't contain a plus, treat as normal purpose */
-		if (tagLen>0) {
+                if (tagLen>0) {
 		  char *sCopyPayload;
 
 		  sCopyPayload=strndup(sLastTagStart, tagLen);
-		  GWEN_DB_SetCharValue(dbSepaTags, GWEN_DB_FLAGS_DEFAULT, "SVWZ+", sCopyPayload);
+		  GWEN_DB_SetCharValue(dbSepaTags, GWEN_DB_FLAGS_DEFAULT, "XXXX+", sCopyPayload);
 		  free(sCopyPayload);
-		}
-	      }
+                }
+              }
 	    }
 
 	    if (*s) {
@@ -709,7 +709,21 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 		AHB_SWIFT__SetCharValue(data, flags, "purpose", GWEN_Buffer_GetStart(tbuf));
 	      }
 	      else if (strcasecmp(sVarName, "ABWA+")==0) {
-	      }
+              }
+              else if (strcasecmp(sVarName, "XXXX+")==0) {
+                /* manually added tag (i.e. data outside a tag)
+                 * only add if there was no real purpose field (i.e. no "SVWZ+") */
+#if 0
+                if (NULL==GWEN_DB_GetCharValue(dbSepaTags, "SVWZ+", 0, NULL)) {
+#endif
+#ifdef ENABLE_FULL_SEPA_LOG
+                  DBG_ERROR(0, "no SVWZ+, using XXXX+");
+#endif
+                  AHB_SWIFT__SetCharValue(data, flags, "purpose", GWEN_Buffer_GetStart(tbuf));
+#if 0
+                }
+#endif
+              }
 
 	      GWEN_Buffer_free(tbuf);
 
