@@ -160,7 +160,6 @@ int AHB_SWIFT940_Parse_86_old(const AHB_SWIFT_TAG *tg,
     }
     else {
       if (code<900) {
-#if 1 /* this code is for banks which work according to SEPA */
 	AHB_SWIFT_SUBTAG *stg;
         char identifier[6];
         GWEN_DB_NODE *dbSepaTags=NULL;
@@ -307,7 +306,6 @@ int AHB_SWIFT940_Parse_86_old(const AHB_SWIFT_TAG *tg,
 	}
 
 	GWEN_DB_Group_free(dbSepaTags);
-#endif
       } /* if sepa */
       else {
 	AHB_SWIFT_SUBTAG *stg;
