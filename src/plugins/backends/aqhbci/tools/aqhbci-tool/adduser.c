@@ -402,7 +402,6 @@ int addUser(AB_BANKING *ab,
 	keyId=GWEN_Crypt_Token_Context_GetEncipherKeyId(ctx);
       if (keyId==0)
 	keyId=GWEN_Crypt_Token_Context_GetDecipherKeyId(ctx);
-      GWEN_Crypt_Token_Context_free(ctx);
       if (keyId==0) {
 	DBG_ERROR(0, "No keys, unable to determine crypt mode");
 	GWEN_Buffer_free(nameBuffer);
