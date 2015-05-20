@@ -414,7 +414,8 @@ int addUser(AB_BANKING *ab,
       if (ki==NULL) {
 	DBG_ERROR(0,
 		  "Could not get keyinfo for key %d, "
-		  "unable to determine crypt mode", keyId);
+                  "unable to determine crypt mode", keyId);
+        GWEN_Crypt_Token_Context_free(ctx);
 	GWEN_Buffer_free(nameBuffer);
 	GWEN_Crypt_Token_Close(ct, 1, 0);
 	GWEN_Crypt_Token_free(ct);
@@ -431,6 +432,7 @@ int addUser(AB_BANKING *ab,
 		  "Unexpected crypt algorithm \"%s\", "
 		  "unable to determine crypt mode",
 		  GWEN_Crypt_CryptAlgoId_toString(algo));
+        GWEN_Crypt_Token_Context_free(ctx);
 	GWEN_Buffer_free(nameBuffer);
 	GWEN_Crypt_Token_Close(ct, 1, 0);
 	GWEN_Crypt_Token_free(ct);
@@ -441,6 +443,7 @@ int addUser(AB_BANKING *ab,
       GWEN_Crypt_Token_free(ct);
       if (rv) {
 	DBG_ERROR(0, "Could not close token (%d)", rv);
+        GWEN_Crypt_Token_Context_free(ctx);
 	GWEN_Buffer_free(nameBuffer);
 	return 3;
       }
@@ -448,11 +451,13 @@ int addUser(AB_BANKING *ab,
 
     if (!lbankId || !*lbankId) {
       DBG_ERROR(0, "No bank id stored and none given");
+      GWEN_Crypt_Token_Context_free(ctx);
       GWEN_Buffer_free(nameBuffer);
       return 3;
     }
     if (!luserId || !*luserId) {
       DBG_ERROR(0, "No user id (Benutzerkennung) stored and none given");
+      GWEN_Crypt_Token_Context_free(ctx);
       GWEN_Buffer_free(nameBuffer);
       return 3;
     }
@@ -462,6 +467,7 @@ int addUser(AB_BANKING *ab,
 			     lbankId, luserId, lcustomerId);
     if (user) {
       DBG_ERROR(0, "User %s already exists", luserId);
+      GWEN_Crypt_Token_Context_free(ctx);
       return 3;
     }
 
@@ -509,12 +515,14 @@ int addUser(AB_BANKING *ab,
       }
       if (GWEN_Buffer_GetUsedBytes(tbuf)==0) {
 	DBG_ERROR(0, "No address given and none available in internal db");
+        GWEN_Crypt_Token_Context_free(ctx);
 	return 3;
       }
       url=GWEN_Url_fromString(GWEN_Buffer_GetStart(tbuf));
       if (url==NULL) {
 	DBG_ERROR(0, "Bad URL \"%s\" in internal db",
 		  GWEN_Buffer_GetStart(tbuf));
+        GWEN_Crypt_Token_Context_free(ctx);
 	return 3;
       }
       GWEN_Buffer_free(tbuf);
@@ -524,6 +532,7 @@ int addUser(AB_BANKING *ab,
       url=GWEN_Url_fromString(lserverAddr);
       if (url==NULL) {
 	DBG_ERROR(0, "Bad URL \"%s\"", lserverAddr);
+        GWEN_Crypt_Token_Context_free(ctx);
 	return 3;
       }
     }
@@ -545,6 +554,9 @@ int addUser(AB_BANKING *ab,
       AH_User_SetStatus(user, AH_UserStatusEnabled);
 
     AB_Banking_AddUser(ab, user);
+
+    /* context no longer needed */
+    GWEN_Crypt_Token_Context_free(ctx);
   }
 
   rv=AB_Banking_OnlineFini(ab);
