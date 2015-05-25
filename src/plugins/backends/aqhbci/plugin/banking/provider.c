@@ -32,6 +32,7 @@
 #include "jobsepadebitdatedsinglecreate_l.h"
 #include "jobsepadebitdatedmulticreate_l.h"
 #include "jobsepacor1datedsinglecreate_l.h"
+#include "jobsepacor1datedmulticreate_l.h"
 
 #include "jobsepastandingordercreate_l.h"
 #include "jobsepastandingorderget_l.h"
@@ -526,10 +527,35 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
     break;
 
   case AB_Job_TypeSepaFlashDebitNote:
-    mj=AH_Job_SepaCor1DebitDatedSingleCreate_new(mu, ma);
-    if (!mj) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
-      return GWEN_ERROR_NOT_AVAILABLE;
+    if (!(aFlags & AH_BANK_FLAGS_SEPA_PREFER_SINGLE_DEBITNOTE)) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers multi jobs");
+
+      /* try multi transfer first */
+      mj=AH_Job_SepaCor1DebitDatedMultiCreate_new(mu, ma);
+      if (!mj) {
+        DBG_WARN(AQHBCI_LOGDOMAIN, "SepaCor1DebitDatedMultiCreate not supported with this account");
+
+        /* try single transfer */
+        mj=AH_Job_SepaCor1DebitDatedSingleCreate_new(mu, ma);
+        if (!mj) {
+          DBG_WARN(AQHBCI_LOGDOMAIN, "Job \"SepaCor1DebitDatedSingleCreate\" not supported with this account");
+          return GWEN_ERROR_NOT_AVAILABLE;
+        }
+      }
+    }
+    else {
+      /* try single job first */
+      mj=AH_Job_SepaCor1DebitDatedSingleCreate_new(mu, ma);
+      if (!mj) {
+        DBG_WARN(AQHBCI_LOGDOMAIN, "SepaCor1DebitDatedSingleCreate not supported with this account");
+
+        /* try multi transfer next */
+        mj=AH_Job_SepaCor1DebitDatedMultiCreate_new(mu, ma);
+        if (!mj) {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "SepaCor1DebitDatedMultiCreate not supported with this account");
+          return GWEN_ERROR_NOT_AVAILABLE;
+        }
+      }
     }
     break;
 
