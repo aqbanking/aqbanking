@@ -484,6 +484,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 	AHB_SWIFT_SUBTAG *stg;
 	GWEN_DB_NODE *dbSepaTags=NULL;
 	GWEN_BUFFER *bufFullPurpose;
+	int realSepaTagCount=0;
 
 	bufFullPurpose=GWEN_Buffer_new(0, 256, 0, 1);
 
@@ -633,6 +634,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 		  sCopyPayload=strndup(sPayload, tagLen);
 		  GWEN_DB_SetCharValue(dbSepaTags, GWEN_DB_FLAGS_DEFAULT, sIdentifier, sCopyPayload);
 		  free(sCopyPayload);
+		  realSepaTagCount++;
 		}
 		else {
 		  DBG_WARN(GWEN_LOGDOMAIN, "Ignoring empty SEPA field \"%s\"", sIdentifier);
@@ -664,12 +666,13 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 	GWEN_Buffer_free(bufFullPurpose);
 
 	/* handle SEPA tags, iterate through them and parse according to variable name */
-	if (GWEN_DB_Variables_Count(dbSepaTags)) {
+	if (realSepaTagCount>0 && GWEN_DB_Variables_Count(dbSepaTags)) {
 	  GWEN_DB_NODE *dbVar;
 
-	  /* we are about to replace the purpose fields with SEPA data, so we need to clear
-	   * that variable in the data set first */
-	  GWEN_DB_DeleteVar(data, "purpose");
+#ifdef ENABLE_FULL_SEPA_LOG
+	  DBG_ERROR(0, "Got these SEPA tags:");
+	  GWEN_DB_Dump(dbSepaTags, 2);
+#endif
 
 	  dbVar=GWEN_DB_GetFirstVar(dbSepaTags);
 	  while(dbVar) {
@@ -715,9 +718,9 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
               }
               else if (strcasecmp(sVarName, "_purpose")==0) {
                 /* manually added tag (i.e. data outside a tag)
-                 * only add if there was no real purpose field (i.e. no "SVWZ+") */
-                AHB_SWIFT__SetCharValue(data, flags, "purpose", GWEN_Buffer_GetStart(tbuf));
-              }
+		 * TODO: only add if there was no real purpose field (i.e. no "SVWZ+") */
+		AHB_SWIFT__SetCharValue(data, flags, "purpose", GWEN_Buffer_GetStart(tbuf));
+	      }
 
               GWEN_Buffer_free(tbuf);
             }
