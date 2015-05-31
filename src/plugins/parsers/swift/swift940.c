@@ -520,7 +520,10 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 	  case 61:
 	  case 62:
 	  case 63: /* Verwendungszweck */
-	    /* handle full purpose later */
+	    /* store purpose in any case, if the transaction doesn't have SEPA tags
+	     * we can just use what we produced here */
+	    AHB_SWIFT__SetCharValue(data, flags, "purpose", s);
+	    /* possibly handle full purpose later */
 	    GWEN_Buffer_AppendString(bufFullPurpose, s);
 	    break;
 
