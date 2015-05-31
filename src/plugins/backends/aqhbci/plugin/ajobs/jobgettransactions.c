@@ -476,6 +476,7 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
       GWEN_TIME *date;
       GWEN_TIME *valutaDate;
       const char *p;
+      const char *ref;
       int i;
 
       dbT=GWEN_DB_GetGroup(dbXA, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
@@ -540,11 +541,13 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
         }
 
         /* read reference */
-        p=GWEN_DB_GetCharValue(dbT, "reference", 0, 0);
-        if (p)
-          GWEN_StringList_AppendString(purpose, p, 0, 0);
+        ref=GWEN_DB_GetCharValue(dbT, "reference", 0, 0);
+        if (ref)
+          GWEN_StringList_AppendString(purpose, ref, 0, 0);
 
         t=AB_Transaction_new();
+        if(ref)
+            AB_Transaction_SetFiId(t, ref);
         AB_Transaction_SetLocalBankCode(t, AB_User_GetBankCode(u));
         AB_Transaction_SetLocalAccountNumber(t, AB_Account_GetAccountNumber(a));
         AB_Transaction_SetValutaDate(t, valutaDate);
