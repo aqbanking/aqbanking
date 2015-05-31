@@ -60,14 +60,14 @@
     <GROUP name="value" type="btg" trustlevel="4" version="1" />
     <ELEM name="debitmark" type="alpha" minsize="1" maxsize="1" />
     <ELEM name="purpose" type="an" maxsize="50" />
-    <ELEM name="unknown4" type="an" maxsize="0" />
-    <ELEM name="unknown4" type="an" maxsize="0" />
-    <ELEM name="unknown4" type="an" maxsize="0" />
-    <ELEM name="unknown4" type="an" maxsize="0" />
-    <ELEM name="unknown4" type="an" maxsize="0" />
-    <ELEM name="unknown4" type="an" maxsize="0" />
-    <ELEM name="unknown4" type="an" maxsize="0" />
-    <ELEM name="unknown4" type="an" maxsize="0" />
+    <ELEM name="purpose" type="an" maxsize="50" />
+    <ELEM name="purpose" type="an" maxsize="50" />
+    <ELEM name="purpose" type="an" maxsize="50" />
+    <ELEM name="purpose" type="an" maxsize="50" />
+    <ELEM name="purpose" type="an" maxsize="50" />
+    <ELEM name="purpose" type="an" maxsize="50" />
+    <ELEM name="purpose" type="an" maxsize="50" />
+    <ELEM name="purpose" type="an" maxsize="50" />
     <ELEM name="yesno1" type="an" maxsize="1" /> <!-- This has always been 'Y' -->
     <ELEM name="reference" type="an" maxsize="30" /> <!-- This 16-digit number is called Referenz in the web UI -->
   </GROUPdef>

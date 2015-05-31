@@ -476,6 +476,7 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
       GWEN_TIME *date;
       GWEN_TIME *valutaDate;
       const char *p;
+      int i;
 
       dbT=GWEN_DB_GetGroup(dbXA, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
                            "entries");
@@ -530,11 +531,13 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
         }
 
         /* read purpose */
-        p=GWEN_DB_GetCharValue(dbT, "purpose", 0, 0);
-        if (p)
-          purpose=GWEN_StringList_fromTabString(p, 0);
-        else
-          purpose=NULL;
+        purpose=GWEN_StringList_new();
+        for (i=0; i<10; i++) {
+            p=GWEN_DB_GetCharValue(dbT, "purpose", i, 0);
+            if (!p)
+                break;
+            GWEN_StringList_AppendString(purpose, p, 0, 0);
+        }
 
         /* read reference */
         p=GWEN_DB_GetCharValue(dbT, "reference", 0, 0);
