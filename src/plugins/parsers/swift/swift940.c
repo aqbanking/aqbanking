@@ -30,7 +30,7 @@
 
 
 
-/* #define ENABLE_FULL_SEPA_LOG */
+#define ENABLE_FULL_SEPA_LOG
 
 
 
@@ -348,6 +348,9 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 	  DBG_ERROR(0, "Got these SEPA tags:");
 	  GWEN_DB_Dump(dbSepaTags, 2);
 #endif
+
+          /* clear purpose variable, since we are about to add it back from SEPA tags */
+          GWEN_DB_DeleteVar(data, "purpose");
 
 	  dbVar=GWEN_DB_GetFirstVar(dbSepaTags);
 	  while(dbVar) {
