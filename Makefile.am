@@ -36,7 +36,7 @@ cmakeconfigdir = $(libdir)/cmake/aqbanking-$(AQBANKING_VERSION_MAJOR).$(AQBANKIN
 cmakeconfig_DATA = aqbanking-config.cmake aqbanking-config-version.cmake
 
 listdoc.h:
-	$(gwenhywfar_bindir)/mklistdoc -I $(gwenhywfar_headers) -v `find $(aqbanking_symlinkdir) -name '*.h' ` >listdoc.h
+	$(gwenhywfar_bindir)/mklistdoc -I $(gwenhywfar_headers) -v `find $(aqbanking_symlinkdir) -name '*.h' | LC_ALL=C sort ` >listdoc.h
 
 srcdoc: Doxyfile listdoc.h
 	if test -d apidoc; then rm -Rf apidoc; fi
