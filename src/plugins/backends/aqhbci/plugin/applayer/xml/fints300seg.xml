@@ -1209,7 +1209,7 @@
    <ELEM name="jobHash" type="bin" maxsize="256" minnum="0" />
    <ELEM name="jobReference" type="ascii" maxsize="35" minnum="0" />
    <ELEM name="challenge" type="ascii" minnum="0" />
-   <ELEM name="challengeHHD" type="bin" maxsize="128" minnum="0" />
+   <ELEM name="challengeHHD" type="bin" maxsize="10240" minnum="0" />
    <GROUP delimiter=":" terminator="" minnum="0">
      <ELEM name="expireDate" type="ascii" minnum="0" />
      <ELEM name="expireTime" type="ascii" minnum="0" />
