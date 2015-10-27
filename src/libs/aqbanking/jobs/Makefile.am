@@ -31,9 +31,8 @@ noinst_HEADERS=\
  jobeutransfer_l.h \
  jobloadcellphone_l.h \
  jobloadcellphone_p.h \
- jobsepacreatesto.h
-
-
+ jobsepacreatesto.h \
+ jobsepadeletesto.h
 
 iheaderdir=@aqbanking_headerdir_am@/aqbanking
 iheader_HEADERS= \
@@ -94,9 +93,8 @@ libjobs_la_SOURCES=\
  jobeutransfer.c \
  jobloadcellphone.c \
  jobsepacreatesto.c \
- jobsepagetstandingorders.c
-
-
+ jobsepagetstandingorders.c \
+ jobsepadeletesto.c
 
 sources:
 	for f in $(libjobs_la_SOURCES); do \

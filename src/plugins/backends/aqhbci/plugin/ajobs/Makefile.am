@@ -47,7 +47,8 @@ noinst_HEADERS=\
   jobsepacor1datedsinglecreate_p.h \
   jobtransferbase_l.h jobtransferbase_p.h \
   jobsepastandingordercreate_l.h jobsepastandingordercreate_p.h \
-  jobsepastandingorderget_l.h jobsepastandingorderget_p.h
+  jobsepastandingorderget_l.h jobsepastandingorderget_p.h \
+  jobsepastandingorderdelete_l.h
 
 libhbciaccjobs_la_SOURCES=\
   accountjob.c \
@@ -70,7 +71,6 @@ libhbciaccjobs_la_SOURCES=\
   jobtransferbase.c \
   jobsepastandingordercreate.c \
   jobsepastandingorderget.c
-
 
 
 sources:
@@ -107,8 +107,8 @@ xmlfiles=\
   $(srcdir)/jobsepadebitsingle.xml \
   $(srcdir)/jobsepacor1datedsinglecreate.xml \
   $(srcdir)/jobsepastandingordercreate.xml \
-  $(srcdir)/jobsepastandingorderget.xml
-
+  $(srcdir)/jobsepastandingorderget.xml \
+  $(srcdir)/jobsepastandingorderdelete.xml
 
 EXTRA_DIST=$(xmlfiles)
 

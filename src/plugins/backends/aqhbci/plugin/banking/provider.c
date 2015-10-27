@@ -34,6 +34,7 @@
 #include "jobsepacor1datedsinglecreate_l.h"
 #include "jobsepacor1datedmulticreate_l.h"
 
+#include "jobsepastandingorderdelete_l.h"  /* 26.9.15 by rw */
 #include "jobsepastandingordercreate_l.h"
 #include "jobsepastandingorderget_l.h"
 
@@ -566,6 +567,14 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
       return GWEN_ERROR_NOT_AVAILABLE;
     }
     break;
+  /* 26.9.15 by rw  AB_Job_TypeSepaDeleteStandingOrder */
+  case AB_Job_TypeSepaDeleteStandingOrder:
+    mj=AH_Job_SepaStandingOrderDelete_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
 
   case AB_Job_TypeSepaGetStandingOrders:
     mj=AH_Job_SepaStandingOrderGet_new(mu, ma);
@@ -574,7 +583,6 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
       return GWEN_ERROR_NOT_AVAILABLE;
     }
     break;
-
 
   default:
     DBG_ERROR(AQHBCI_LOGDOMAIN,

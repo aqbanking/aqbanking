@@ -15,6 +15,8 @@
 
 #include <aqbanking/account.h>
 #include <aqbanking/jobsepacreatesto.h>
+#include <aqbanking/jobsepadeletesto.h>
+                        /* ------ by rw */
 
 #include <gwenhywfar/text.h>
 
@@ -48,6 +50,7 @@ int sepaRecurTransfer(AB_BANKING *ab,
   int rvExec;
   const char *rIBAN;
   const char *lIBAN;
+  const char *s;            /* ----   01.10.15 by rw  */
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -215,6 +218,17 @@ int sepaRecurTransfer(AB_BANKING *ab,
     "set execution period"
   },
   {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,
+    GWEN_ArgsType_Char,
+    "fiId",                       /* HKCDL */
+    0,
+    1,
+    0,
+    "fiId",
+    "set the fiId (standing orders)",
+    "set the fiId (standing orders) - Auftragsidentifikation fuer HKCDL"
+  },
+  {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
     GWEN_ArgsType_Int,             /* type */
     "help",                       /* name */
@@ -301,8 +315,13 @@ int sepaRecurTransfer(AB_BANKING *ab,
     return 2;
   }
 
-  /* create job */
-  j=AB_JobSepaCreateStandingOrder_new(a);
+  /* determine the type of job and create it */
+   s=AB_Transaction_GetFiId(t);
+  if (s && *s)
+    j=AB_JobSepaDeleteStandingOrder_new(a);
+  else
+    j=AB_JobSepaCreateStandingOrder_new(a);
+
   rv=AB_Job_CheckAvailability(j);
   if (rv<0) {
     DBG_ERROR(0, "Job not supported.");

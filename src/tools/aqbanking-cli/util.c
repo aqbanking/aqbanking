@@ -533,8 +533,12 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
       return NULL;
     }
     AB_Transaction_SetExecutionDay(t, i);
-  }
 
+    /* 02.10.15 by rw  SetFiId */
+    s=GWEN_DB_GetCharValue(db, "fiId", 0, 0);
+    if (s && *s)
+      AB_Transaction_SetFiId(t, s);
+  }
   return t;
 }
 
