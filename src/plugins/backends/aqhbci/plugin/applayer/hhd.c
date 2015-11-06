@@ -260,7 +260,8 @@ int AH_HHD14__Translate(const char *code, GWEN_BUFFER *cbuf) {
   code+=2;
 
   outLen=(inLen+1)/2;
-  snprintf(numbuf, sizeof(numbuf)-1, "%02x", outLen);
+  outLenAndFlags=outLen | (inLenAndFlags & 0x80);
+  snprintf(numbuf, sizeof(numbuf)-1, "%02x", outLenAndFlags);
   numbuf[sizeof(numbuf)-1]=0;
   GWEN_Buffer_AppendString(xbuf, numbuf);
 
@@ -312,7 +313,8 @@ int AH_HHD14__Translate(const char *code, GWEN_BUFFER *cbuf) {
 
       for (i=0; i<inLen; i++) {
         if (code[i]<'0' || code[i]>'9'){
-          /* contains something other than digits, use ascii encoding */
+	  /* contains something other than digits, use ascii encoding */
+	  DBG_ERROR(AQHBCI_LOGDOMAIN, "Switched to ASCII");
           inLenAndFlags|=0x40;
           break;
         }
@@ -324,7 +326,7 @@ int AH_HHD14__Translate(const char *code, GWEN_BUFFER *cbuf) {
       /* ascii */
       //outLen=(inLen+1)/2;
       outLen=inLen;
-      outLenAndFlags=outLen | 0x10; /* add encoding flag to length */
+      outLenAndFlags=outLen | 0x40; /* add encoding flag to length (bit 6) */
       snprintf(numbuf, sizeof(numbuf)-1, "%02x", outLenAndFlags);
       numbuf[sizeof(numbuf)-1]=0;
       GWEN_Buffer_AppendString(xbuf, numbuf);
