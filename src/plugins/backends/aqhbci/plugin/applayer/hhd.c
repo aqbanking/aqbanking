@@ -120,7 +120,8 @@ int AH_HHD14_ExtractDataForLuhnSum(const char *code, GWEN_BUFFER *xbuf) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d) at [%s]", rv, code);
       return rv;
     }
-    v=((unsigned int) rv) & 0xf;
+/*    v=((unsigned int) rv) & 0xf; */
+    v=((unsigned int) rv) & 0x3f; /* as suggested by Martin Kuehn */
     code+=2;
     GWEN_Buffer_AppendBytes(xbuf, code, v*2);
     code+=v*2;
