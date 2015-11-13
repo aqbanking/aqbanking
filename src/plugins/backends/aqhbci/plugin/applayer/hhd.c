@@ -98,6 +98,10 @@ int AH_HHD14_ExtractDataForLuhnSum(const char *code, GWEN_BUFFER *xbuf) {
   int rv;
   unsigned int len;
   unsigned int i=0;
+  unsigned int LSandFlags;
+  unsigned int numCtrlBytes;
+  unsigned int moreCtrlBytes;
+  unsigned int numBytes;
 
   /* read LC */
   rv=AH_HHD14_ReadBytesHex(code, 2);
@@ -121,11 +125,11 @@ int AH_HHD14_ExtractDataForLuhnSum(const char *code, GWEN_BUFFER *xbuf) {
     return rv;
   }
   code+=2;
-  unsigned int LSandFlags = (unsigned int) rv;
 
   /* add control bytes and start code */
-  unsigned int numCtrlBytes = 0;
-  unsigned int moreCtrlBytes = LSandFlags & 0x80;
+  LSandFlags = (unsigned int) rv;
+  numCtrlBytes = 0;
+  moreCtrlBytes = LSandFlags & 0x80;
 
   while (moreCtrlBytes) {
     rv=AH_HHD14_ReadBytesHex(code+numCtrlBytes*2, 2);                 /* LS */
@@ -136,7 +140,7 @@ int AH_HHD14_ExtractDataForLuhnSum(const char *code, GWEN_BUFFER *xbuf) {
     numCtrlBytes++;
     moreCtrlBytes = (unsigned int) rv & 0x80;
   }
-  unsigned int numBytes = (LSandFlags & 0x3f) + numCtrlBytes;
+  numBytes = (LSandFlags & 0x3f) + numCtrlBytes;
   GWEN_Buffer_AppendBytes(xbuf, code, numBytes*2);
   code += numBytes*2;
   i += numBytes + 2;         /* add length of LC and LS */
