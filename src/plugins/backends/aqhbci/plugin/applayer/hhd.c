@@ -99,6 +99,7 @@ int AH_HHD14_ExtractDataForLuhnSum(const char *code, GWEN_BUFFER *xbuf) {
   unsigned int len;
   unsigned int i=0;
 
+  /* read LC */
   rv=AH_HHD14_ReadBytesHex(code, 2);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d) at [%s]", rv, code);
@@ -106,12 +107,41 @@ int AH_HHD14_ExtractDataForLuhnSum(const char *code, GWEN_BUFFER *xbuf) {
   }
   len=((unsigned int) rv);
   code+=2;
+
   if ((strlen(code)+2)<len*2) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Too few bytes in buffer (%d<%d) at [%s]",
               (int)(strlen(code)+2), len*2, code);
     return GWEN_ERROR_INVALID;
   }
 
+  /* read LS */
+  rv=AH_HHD14_ReadBytesHex(code, 2);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d) at [%s]", rv, code);
+    return rv;
+  }
+  code+=2;
+  unsigned int LSandFlags = (unsigned int) rv;
+
+  /* add control bytes and start code */
+  unsigned int numCtrlBytes = 0;
+  unsigned int moreCtrlBytes = LSandFlags & 0x80;
+
+  while (moreCtrlBytes) {
+    rv=AH_HHD14_ReadBytesHex(code+numCtrlBytes*2, 2);                 /* LS */
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d) at [%s]", rv, code);
+      return rv;
+    }
+    numCtrlBytes++;
+    moreCtrlBytes = (unsigned int) rv & 0x80;
+  }
+  unsigned int numBytes = (LSandFlags & 0x3f) + numCtrlBytes;
+  GWEN_Buffer_AppendBytes(xbuf, code, numBytes*2);
+  code += numBytes*2;
+  i += numBytes + 2;         /* add length of LC and LS */
+
+  /* read LDE1, DE1, LDE2, DE2, ... */
   while(i<len-2) {
     unsigned int v;
 
@@ -123,6 +153,10 @@ int AH_HHD14_ExtractDataForLuhnSum(const char *code, GWEN_BUFFER *xbuf) {
 /*    v=((unsigned int) rv) & 0xf; */
     v=((unsigned int) rv) & 0x3f; /* as suggested by Martin Kuehn */
     code+=2;
+    if (i+v+1 > len) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "try to read past the end of code (%d) at [%s]", v, code);
+      return GWEN_ERROR_INVALID;
+    }
     GWEN_Buffer_AppendBytes(xbuf, code, v*2);
     code+=v*2;
     i+=v+1;
