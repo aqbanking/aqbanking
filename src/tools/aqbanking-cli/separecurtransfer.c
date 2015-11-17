@@ -16,7 +16,6 @@
 #include <aqbanking/account.h>
 #include <aqbanking/jobsepacreatesto.h>
 #include <aqbanking/jobsepadeletesto.h>
-                        /* ------ by rw */
 
 #include <gwenhywfar/text.h>
 
@@ -50,7 +49,7 @@ int sepaRecurTransfer(AB_BANKING *ab,
   int rvExec;
   const char *rIBAN;
   const char *lIBAN;
-  const char *s;            /* ----   01.10.15 by rw  */
+  const char *s;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */

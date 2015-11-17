@@ -9,10 +9,10 @@
 
 
 /* --------------------------------------------------------------- FUNCTION */
-/* --- rw ---                   Delete_new                                  */
+
 AH_JOB *AH_Job_SepaStandingOrderDelete_new(AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
-  /* --- rw ---              JobSepaStandingOrderDelete */
+
   j=AH_Job_TransferBase_new("JobSepaStandingOrderDelete",
                             AB_Transaction_TypeSepaTransfer,
                             AB_Transaction_SubTypeStandingOrder,

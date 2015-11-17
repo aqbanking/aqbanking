@@ -9,8 +9,8 @@
  ***************************************************************************/
 
 
-#ifndef AQBANKING_JOBSEPADELETESTO_H    /* --- rw --- delete  */
-#define AQBANKING_JOBSEPADELETESTO_H    /* --- rw --- 27.9.15 */
+#ifndef AQBANKING_JOBSEPADELETESTO_H
+#define AQBANKING_JOBSEPADELETESTO_H
 
 
 #include <aqbanking/job.h>
@@ -30,7 +30,7 @@ extern "C" {
 
 
 AQBANKING_API
-AB_JOB *AB_JobSepaDeleteStandingOrder_new(AB_ACCOUNT *a);  /* --- rw --- */
+AB_JOB *AB_JobSepaDeleteStandingOrder_new(AB_ACCOUNT *a);
 
 
 

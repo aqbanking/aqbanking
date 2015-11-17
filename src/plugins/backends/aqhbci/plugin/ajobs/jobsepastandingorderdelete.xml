@@ -4,9 +4,9 @@
 
 
  <!--
-  ---------------------------------------------------------------------
-   Geschaeftsvorfall: SEPA Dauerauftrag loeschen (Version 1) 27.9.15
-  ---------------------------------------------------------------------
+  -------------------------------------------------------------
+    Geschaeftsvorfall: SEPA Dauerauftrag loeschen (Version 1)
+  -------------------------------------------------------------
   -->
 
 
@@ -19,39 +19,32 @@
  >
    <GROUP type="SegHead" name="head" />
    <GROUP type="kti_i_forced_sepa" version="1" />
+
    <ELEM name="descriptor" type="ascii" maxsize="256" />
    <ELEM name="transfer" type="bin" trustlevel="4" />
-
-                                                             <!-- rw -->
    <ELEM name="xnextExecutionDate" type="date" minnum="0" />
    <ELEM name="fiId" type="ascii" minnum="0" />
 
-<!--
-  <VALUES>
-      <VALUE path="fiId">88030409210401608715</VALUE>
-   </VALUES>
--->
    <GROUP type="SepaStoSpecial" name="details" />
-
    <VALUES>
      <VALUE path="head/code">%code</VALUE>
      <VALUE path="head/version">%version</VALUE>
    </VALUES>
+
  </SEGdef>
 
 
- <!-- Banknachricht -->
- <!-- HICDL gibts nicht  -->
-
+ <!-- keine Banknachricht HICDL -->
 
  <!-- Beschreibungssegment HICDLS -->
  <SEGdef code="HICDLS" version="1"
          delimiter=":" terminator="'" isbpdjob="1" >
-   <GROUP type="BPDJob" version="2" />                      <!-- rw   Maximale Anzahl der Aufträge, Min. Anzahl der Signaturen, Sicherheitsklasse -->
-   <ELEM name="mindelay"  type="num" maxsize="4" />         <!-- rw   Minimale Vorlaufzeit                             -->
-   <ELEM name="maxdelay"  type="num" maxsize="4" />         <!-- rw   Maximale Vorlaufzeit                             -->
-   <ELEM name="AllowedDate" type="an"  maxsize="1" />       <!-- rw   Löschung terminierbar                            -->
-   <ELEM name="SendJob"   type="an"  maxsize="1" />         <!-- rw   SendJob:rw Senden der Auftragsdaten erforderlich -->
+   <GROUP type="BPDJob" version="2" />                <!-- Maximale Anzahl der Auftraege, Min. Anzahl der Signaturen, Sicherheitsklasse -->
+
+   <ELEM name="mindelay" type="num" maxsize="4" />    <!-- Minimale Vorlaufzeit                             -->
+   <ELEM name="maxdelay" type="num" maxsize="4" />    <!-- Maximale Vorlaufzeit                             -->
+   <ELEM name="AllowedDate" type="an" maxsize="1" />  <!-- Löschung terminierbar                            -->
+   <ELEM name="SendJob" type="an" maxsize="1" />      <!-- SendJob: Senden der Auftragsdaten erforderlich   -->
 
    <VALUES>
      <VALUE path="head/code">%code</VALUE>
@@ -62,7 +55,8 @@
 </SEGs>
 
 
- <JOBs>
+<JOBs>
+
  <!-- Geschaeftsvorfall: SEPA Dauerauftrag loeschen (Version 1) -->
  <JOBdef id="JobSepaStandingOrderDelete"
          code="HKCDL"
@@ -71,7 +65,7 @@
          crypt="1"
          sign="1"
          needBPD="1"
- >                              <!-- rw  keine ..Response -->
+ >                            <!-- keine Response -->
 
    <SEG type="SepaStandingOrderDelete" version="1" />
    <VALUES>

@@ -34,7 +34,7 @@
 #include "jobsepacor1datedsinglecreate_l.h"
 #include "jobsepacor1datedmulticreate_l.h"
 
-#include "jobsepastandingorderdelete_l.h"  /* 26.9.15 by rw */
+#include "jobsepastandingorderdelete_l.h"
 #include "jobsepastandingordercreate_l.h"
 #include "jobsepastandingorderget_l.h"
 
@@ -567,7 +567,6 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
       return GWEN_ERROR_NOT_AVAILABLE;
     }
     break;
-  /* 26.9.15 by rw  AB_Job_TypeSepaDeleteStandingOrder */
   case AB_Job_TypeSepaDeleteStandingOrder:
     mj=AH_Job_SepaStandingOrderDelete_new(mu, ma);
     if (!mj) {

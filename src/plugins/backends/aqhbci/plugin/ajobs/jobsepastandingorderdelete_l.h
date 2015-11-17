@@ -8,13 +8,13 @@
  ***************************************************************************/
 
 
-#ifndef AH_JOBSEPASTANDINGORDERDELETE_L_H  /* --- rw --- 27.9.15 */
+#ifndef AH_JOBSEPASTANDINGORDERDELETE_L_H
 #define AH_JOBSEPASTANDINGORDERDELETE_L_H
 
 
 #include "accountjob_l.h"
 
-                  /* --- rw --- Delete_new   */
+
 AH_JOB *AH_Job_SepaStandingOrderDelete_new(AB_USER *u, AB_ACCOUNT *account);
 
 

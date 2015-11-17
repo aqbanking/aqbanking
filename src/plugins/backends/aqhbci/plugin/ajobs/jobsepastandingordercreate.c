@@ -14,7 +14,7 @@
 
 
 #include "jobsepastandingordercreate_p.h"
-#include "jobsepastandingorderdelete_l.h" /* rw okt 15 */
+#include "jobsepastandingorderdelete_l.h"
 #include "jobtransferbase_l.h"
 #include "aqhbci_l.h"
 #include "accountjob_l.h"
@@ -390,7 +390,6 @@ int AH_Job_SepaStandingOrderCreate_Prepare(AH_JOB *j) {
                        "fiId",
                        AB_Transaction_GetFiId(t));
   }
-  else printf("\n\x1b[33m FiId: no,  HKCDE \n \x1b[m");
 
   return 0;
 }

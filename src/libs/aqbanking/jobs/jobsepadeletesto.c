@@ -12,11 +12,9 @@
 # include <config.h>
 #endif
 
-/*    --- rw --- delete */
 #include "jobsepadeletesto.h"
 #include "job_l.h"
 
-/*     --- rw --- Delete 27.9.15 */
 AB_JOB *AB_JobSepaDeleteStandingOrder_new(AB_ACCOUNT *a){
   return AB_Job_new(AB_Job_TypeSepaDeleteStandingOrder, a);
 }
