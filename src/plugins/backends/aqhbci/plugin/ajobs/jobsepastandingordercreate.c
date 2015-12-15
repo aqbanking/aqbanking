@@ -13,8 +13,7 @@
 #endif
 
 
-#include "jobsepastandingordercreate_p.h"
-#include "jobsepastandingorderdelete_l.h"
+#include "jobsepastandingordercreate_l.h"
 #include "jobtransferbase_l.h"
 #include "aqhbci_l.h"
 #include "accountjob_l.h"
@@ -34,10 +33,6 @@
 #include <assert.h>
 #include <string.h>
 
-
-
-/* analog zur unten stehende FUNCTION */
-#include "jobsepastandingorderdelete.c"
 
 
 /* --------------------------------------------------------------- FUNCTION */

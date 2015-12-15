@@ -46,7 +46,7 @@ noinst_HEADERS=\
   jobsepacor1datedsinglecreate_l.h \
   jobsepacor1datedsinglecreate_p.h \
   jobtransferbase_l.h jobtransferbase_p.h \
-  jobsepastandingordercreate_l.h jobsepastandingordercreate_p.h \
+  jobsepastandingordercreate_l.h  \
   jobsepastandingorderget_l.h jobsepastandingorderget_p.h \
   jobsepastandingorderdelete_l.h
 
@@ -70,7 +70,8 @@ libhbciaccjobs_la_SOURCES=\
   jobsepacor1datedsinglecreate.c \
   jobtransferbase.c \
   jobsepastandingordercreate.c \
-  jobsepastandingorderget.c
+  jobsepastandingorderget.c \
+  jobsepastandingorderdelete.c
 
 
 sources:

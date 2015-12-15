@@ -7,6 +7,17 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+
+#include "jobsepastandingorderdelete_l.h"
+#include "jobsepastandingordercreate_l.h"
+#include "jobtransferbase_l.h"
+
+
+
 
 /* --------------------------------------------------------------- FUNCTION */
 
@@ -22,7 +33,7 @@ AH_JOB *AH_Job_SepaStandingOrderDelete_new(AB_USER *u, AB_ACCOUNT *account) {
 
   AH_Job_SetChallengeClass(j, 35);
 
-  /* overwrite some virtual functions */
+  /* overwrite some virtual functions (use those from AH_Job_SepaStandingOrderCreate)  */
   AH_Job_SetPrepareFn(j, AH_Job_SepaStandingOrderCreate_Prepare);
   AH_Job_SetAddChallengeParamsFn(j, AH_Job_SepaStandingOrderCreate_AddChallengeParams);
 
