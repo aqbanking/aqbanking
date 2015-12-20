@@ -43,7 +43,7 @@
 
    <ELEM name="mindelay" type="num" maxsize="4" />    <!-- Minimale Vorlaufzeit                             -->
    <ELEM name="maxdelay" type="num" maxsize="4" />    <!-- Maximale Vorlaufzeit                             -->
-   <ELEM name="AllowedDate" type="an" maxsize="1" />  <!-- Löschung terminierbar                            -->
+   <ELEM name="AllowedDate" type="an" maxsize="1" />  <!-- Loeschung terminierbar                           -->
    <ELEM name="SendJob" type="an" maxsize="1" />      <!-- SendJob: Senden der Auftragsdaten erforderlich   -->
 
    <VALUES>
