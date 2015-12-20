@@ -118,12 +118,55 @@ int AH_Job_SepaStandingOrderGet_Prepare(AH_JOB *j) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaStandingOrdersGet_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
-  AB_ACCOUNT *a;
+int AH_Job_SepaStandingOrdersGet__ReadSto(AH_JOB *j,
+					  AB_IMEXPORTER_CONTEXT *ctx,
+					  const uint8_t *ptr,
+					  uint32_t len,
+					  const char *fiId){
+  int rv;
+  AB_IMEXPORTER_CONTEXT *tmpCtx;
+  GWEN_BUFFER *tbuf;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
+
+  tmpCtx=AB_ImExporterContext_new();
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendBytes(tbuf, (const char*) ptr, len);
+
+  rv=AB_Banking_ImportBuffer(AH_Job_GetBankingApi(j),
+			     tmpCtx,
+			     "sepa",
+			     "default",
+			     tbuf);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(tbuf);
+    AB_ImExporterContext_free(tmpCtx);
+    return rv;
+  }
+  GWEN_Buffer_free(tbuf);
+
+  ai=AB_ImExporterContext_GetFirstAccountInfo(tmpCtx);
+  if (ai) {
+    AB_TRANSACTION *t;
+
+    while( (t=AB_ImExporterAccountInfo_GetFirstTransaction(ai)) ) {
+      AB_Transaction_List_Del(t);
+      AB_Transaction_SetFiId(t, fiId);
+      /* add to real im/exporter context */
+      AB_ImExporterContext_AddTransaction(ctx, t);
+    }
+  }
+  AB_ImExporterContext_free(tmpCtx);
+
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+int AH_Job_SepaStandingOrdersGet_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
-  GWEN_BUFFER *bufStandingOrders;
   const char *responseName;
   int rv;
 
@@ -134,8 +177,6 @@ int AH_Job_SepaStandingOrdersGet_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   responseName=AH_Job_GetResponseName(j);
 
 
-  bufStandingOrders=GWEN_Buffer_new(0, 1024, 0, 1);
-
   dbResponses=AH_Job_GetResponses(j);
   assert(dbResponses);
 
@@ -145,14 +186,12 @@ int AH_Job_SepaStandingOrdersGet_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
     rv=AH_Job_CheckEncryption(j, dbCurr);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (encryption)");
-      GWEN_Buffer_free(bufStandingOrders);
       AH_Job_SetStatus(j, AH_JobStatusError);
       return rv;
     }
     rv=AH_Job_CheckSignature(j, dbCurr);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (signature)");
-      GWEN_Buffer_free(bufStandingOrders);
       AH_Job_SetStatus(j, AH_JobStatusError);
       return rv;
     }
@@ -166,48 +205,23 @@ int AH_Job_SepaStandingOrdersGet_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       if (dbXA) {
 	const void *p;
 	unsigned int bs;
+	const char *fiId;
 
+	fiId=GWEN_DB_GetCharValue(dbXA, "fiId", 0, NULL);
 	p=GWEN_DB_GetBinValue(dbXA, "transfer", 0, 0, 0, &bs);
-	if (p && bs)
-	  GWEN_Buffer_AppendBytes(bufStandingOrders, p, bs);
+	if (p && bs) {
+	  rv=AH_Job_SepaStandingOrdersGet__ReadSto(j, ctx, p, bs, fiId);
+	  if (rv<0) {
+	    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+	    DBG_WARN(AQHBCI_LOGDOMAIN, "Error reading standing order from data, ignoring (%d)", rv);
+	  }
+	}
       }
     }
 
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
   }
 
-  GWEN_Buffer_Rewind(bufStandingOrders);
-
-  /* now the buffers contain data to be parsed by ImExporters */
-  a=AH_AccountJob_GetAccount(j);
-  assert(a);
-  ai=AB_ImExporterContext_GetAccountInfo(ctx,
-                                         AB_Account_GetBankCode(a),
-                                         AB_Account_GetAccountNumber(a));
-  assert(ai);
-  AB_ImExporterAccountInfo_SetAccountId(ai, AB_Account_GetUniqueId(a));
-
-  /* read booked transactions */
-  if (GWEN_Buffer_GetUsedBytes(bufStandingOrders)) {
-    if (getenv("AQHBCI_LOGBOOKED")) {
-      FILE *f;
-
-      f=fopen("/tmp/standingOrders.pain", "w+");
-      if (f) {
-        if (fwrite(GWEN_Buffer_GetStart(bufStandingOrders),
-                   GWEN_Buffer_GetUsedBytes(bufStandingOrders), 1, f)!=1) {
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "fwrite: %s", strerror(errno));
-        }
-        if (fclose(f)) {
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "fclose: %s", strerror(errno));
-        }
-      }
-    }
-
-    /* TODO: parse data */
-  }
-
-  GWEN_Buffer_free(bufStandingOrders);
   return 0;
 }
 
