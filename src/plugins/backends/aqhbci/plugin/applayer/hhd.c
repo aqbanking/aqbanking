@@ -146,7 +146,7 @@ int AH_HHD14_ExtractDataForLuhnSum(const char *code, GWEN_BUFFER *xbuf) {
   i += numBytes + 2;         /* add length of LC and LS */
 
   /* read LDE1, DE1, LDE2, DE2, ... */
-  while(i<len-2) {
+  while(i<len-1) {
     unsigned int v;
 
     rv=AH_HHD14_ReadBytesHex(code, 2);
