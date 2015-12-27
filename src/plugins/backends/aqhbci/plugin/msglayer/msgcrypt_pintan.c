@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: msgcrypt.inc 1109 2007-01-10 14:30:14Z martin $
     begin       : Mon Mar 01 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
@@ -86,13 +83,15 @@ int AH_MsgPinTan_PrepareCryptoSeg(AH_MSG *hmsg,
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
 		       "secProfile/code",
 		       "PIN");
+  /*
   if (crypt)
     GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-			"secProfile/version", 1);
+                        "secProfile/version", 1);
   else
-    GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-			"secProfile/version",
-			(hmsg->itanMethod==999)?1:2);
+                        */
+  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
+                      "secProfile/version",
+                      (hmsg->itanMethod==999)?1:2);
 
   return 0;
 }

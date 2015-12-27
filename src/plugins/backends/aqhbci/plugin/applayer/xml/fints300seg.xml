@@ -338,6 +338,7 @@
       <VALUE path="head/code">%code</VALUE>
       <VALUE path="head/version">%version</VALUE>
       <VALUE path="head/seq">998</VALUE>
+      <VALUE path="secProfile/version">2</VALUE>      <!-- preset with "2" -->
       <VALUE path="function">998</VALUE>
       <VALUE path="role">1</VALUE>
       <VALUE path="secstamp/stampcode">1</VALUE>
