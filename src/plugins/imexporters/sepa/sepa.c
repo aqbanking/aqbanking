@@ -248,8 +248,8 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
       pmtinf->localName = name ? name : AB_ImExporterAccountInfo_GetOwner(ai);
       pmtinf->localIban = iban ? iban : AB_ImExporterAccountInfo_GetIban(ai);
       pmtinf->localBic  = bic  ? bic  : AB_ImExporterAccountInfo_GetBic(ai);
-      pmtinf->date=ti;
-      pmtinf->transDate=transDate;
+      pmtinf->date=ti;               /* transaction date (AB_Transaction_GetDate()) */
+      pmtinf->transDate=transDate;   /* transaction date short representation ((year<<16)+(month<<8)+(day)) */
       if (doctype[0]==8) {
 	pmtinf->sequenceType=sequenceType;
 	pmtinf->creditorSchemeId=cdtrSchmeId;
