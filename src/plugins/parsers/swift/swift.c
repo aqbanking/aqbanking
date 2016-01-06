@@ -479,14 +479,19 @@ int AHB_SWIFT_ReadTextBlock(GWEN_FAST_BUFFER *fb,
       if (buffer[0]==':') {
 	const char *s;
 
-	s=buffer+1;
-	while(*s && isdigit(*s))
-	  s++;
-	if (isalpha(*s))
-	  s++;
-	if (*s==':') {
-	  DBG_DEBUG(AQBANKING_LOGDOMAIN, "End of tag reached");
+	if (strncasecmp(buffer, ":NS:", 4)==0) {
 	  break;
+	}
+        else {
+	  s=buffer+1;
+	  while(*s && isdigit(*s))
+	    s++;
+	  if (isalpha(*s))
+	    s++;
+	  if (*s==':') {
+	    DBG_DEBUG(AQBANKING_LOGDOMAIN, "End of tag reached");
+	    break;
+	  }
 	}
       }
 
