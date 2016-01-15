@@ -16,12 +16,24 @@ macro(check_required_components _NAME)
   endforeach()
 endmacro()
 
-find_package(Gwenhywfar "@GWENHYWFAR_MINIMUM_VERSION@" REQUIRED)
+include(CMakeFindDependencyMacro)
+find_dependency(gwenhywfar "@GWENHYWFAR_MINIMUM_VERSION@")
 
 set_and_check(prefix "@prefix@")
 set_and_check(exec_prefix "@exec_prefix@")
 set_and_check(AQBANKING_INCLUDE_DIRS "@includedir@/aqbanking@AQBANKING_VERSION_MAJOR@")
 set_and_check(AQBANKING_LIBRARIES "@libdir@/libaqbanking.so")
-set(AQBANKING_LIBRARIES ${AQBANKING_LIBRARIES} ${GWENHYWFAR_LIBRARIES})
+set(AQBANKING_FOUND true)
 
+# The target is available since aqbanking 5.6.5
+if(AQBANKING_FOUND AND NOT TARGET aqbanking::aqbanking)
+  add_library(aqbanking::aqbanking UNKNOWN IMPORTED)
+  set_target_properties(aqbanking::aqbanking PROPERTIES
+    IMPORTED_LOCATION "${AQBANKING_LIBRARIES}"
+    INTERFACE_INCLUDE_DIRECTORIES "${AQBANKING_INCLUDE_DIRS}"
+    INTERFACE_LINK_LIBRARIES gwenhywfar::core
+  )
+endif()
+
+set(AQBANKING_LIBRARIES ${AQBANKING_LIBRARIES} ${GWENHYWFAR_LIBRARIES})
 mark_as_advanced( AQBANKING_INCLUDE_DIRS AQBANKING_LIBRARIES )
