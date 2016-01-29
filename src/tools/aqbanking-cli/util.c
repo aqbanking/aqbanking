@@ -462,7 +462,24 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
   }
 
   /* standing orders */
-  s=GWEN_DB_GetCharValue(db, "firstExecutionDate", 0, 0);
+  if (expTransferType==AB_Job_TypeSepaCreateStandingOrder) {
+     s=GWEN_DB_GetCharValue(db, "firstExecutionDate", 0, 0);
+     if (!(s && *s)) {
+       DBG_ERROR(0, "Missing first execution date");
+       return NULL;
+     }
+  }
+
+  if (expTransferType==AB_Job_TypeSepaModifyStandingOrder ||
+      expTransferType==AB_Job_TypeSepaDeleteStandingOrder) {
+     /*  not in the Specs, but the banks ask it)    */
+     s=GWEN_DB_GetCharValue(db, "nextExecutionDate", 0, 0);
+     if (!(s && *s)) {
+       DBG_ERROR(0, "Missing next execution date");
+       return NULL;
+     }
+  }
+
   if (s && *s) {
     GWEN_BUFFER *dbuf;
 
@@ -473,11 +490,11 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
                                      "YYYYMMDD-hh:mm");
     GWEN_Buffer_free(dbuf);
     if (d==0) {
-      DBG_ERROR(0, "Invalid first execution date value \"%s\"", s);
+      DBG_ERROR(0, "Invalid first or next execution date value \"%s\"", s);
       AB_Transaction_free(t);
       return NULL;
     }
-    AB_Transaction_SetFirstExecutionDate(t, d);
+    AB_Transaction_SetFirstExecutionDate(t, d); /*next execution date, too */
     GWEN_Time_free(d);
   }
 
@@ -501,7 +518,8 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
   }
 
   if (expTransferType==AB_Job_TypeSepaCreateStandingOrder ||
-      expTransferType==AB_Job_TypeSepaModifyStandingOrder) {
+      expTransferType==AB_Job_TypeSepaModifyStandingOrder ||
+      expTransferType==AB_Job_TypeSepaDeleteStandingOrder) {
     const char *s;
     AB_TRANSACTION_PERIOD period=AB_Transaction_PeriodUnknown;
 
