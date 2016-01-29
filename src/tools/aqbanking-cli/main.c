@@ -265,8 +265,8 @@ int main(int argc, char **argv) {
     cmdAddHelpStr(ubuf, "addsepadebitnote",
                   I18N("Add a SEPA debit note to an existing import context file"));
 
-    cmdAddHelpStr(ubuf, "sepacreatesto",
-                  I18N("Create SEPA standing order"));
+    cmdAddHelpStr(ubuf, "sepasto",
+                  I18N("Create and Delete SEPA standing order"));
 
     cmdAddHelpStr(ubuf, "fillgaps",
                   I18N("Fill gaps in an import context file from configuration settings"));
@@ -399,7 +399,7 @@ int main(int argc, char **argv) {
   else if (strcasecmp(cmd, "addsepadebitnote")==0) {
     rv=addSepaDebitNote(ab, db, argc, argv);
   }
-  else if (strcasecmp(cmd, "sepacreatesto")==0) {
+  else if (strcasecmp(cmd, "sepasto")==0) {
     rv=sepaRecurTransfer(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "fillgaps")==0) {

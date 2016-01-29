@@ -47,149 +47,197 @@ int sepaRecurTransfer(AB_BANKING *ab,
   AB_JOB *j;
   const AB_TRANSACTION_LIMITS *lim;
   int rvExec;
+  int createSto=0;
+  int modifySto=0;
+  int deleteSto=0;
+  int jobType;
   const char *rIBAN;
   const char *lIBAN;
   const char *s;
   const GWEN_ARGS args[]={
   {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "ctxFile",                    /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "c",                          /* short option */
-    "ctxfile",                    /* long option */
-    "Specify the file to store the context in",   /* short description */
-    "Specify the file to store the context in"      /* long description */
+    0,
+    GWEN_ArgsType_Int,
+    "createSto",
+    0,
+    1,
+    0,
+    "create",
+    "Create standing orders",
+    "Create standing orders"
   },
   {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "bankId",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "b",                          /* short option */
-    "bank",                       /* long option */
+    0,
+    GWEN_ArgsType_Int,
+    "modifySto",
+    0,
+    1,
+    0,
+    "modify",
+    "Modify standing orders (TODO)",
+    "Modify standing orders (TODO)"
+  },
+  {
+    0,
+    GWEN_ArgsType_Int,
+    "deleteSto",
+    0,
+    1,
+    0,
+    "delete",
+    "Delete standing orders",
+    "Delete standing orders"
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,   /* flags */
+    GWEN_ArgsType_Char,             /* type */
+    "ctxFile",                      /* name */
+    0,                              /* minnum */
+    1,                              /* maxnum */
+    "c",                            /* short option */
+    "ctxfile",                      /* long option */
+    "Specify the file to store the context in",    /* short description */
+    "Specify the file to store the context in"    /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,   /* flags */
+    GWEN_ArgsType_Char,             /* type */
+    "bankId",                       /* name */
+    0,                              /* minnum */
+    1,                              /* maxnum */
+    "b",                            /* short option */
+    "bank",                         /* long option */
     "overwrite the bank code",      /* short description */
     "overwrite the bank code"       /* long description */
   },
   {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "accountId",                  /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "a",                          /* short option */
-    "account",                    /* long option */
-    "overwrite the account number",     /* short description */
-    "overwrite the account number"      /* long description */
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,   /* flags */
+    GWEN_ArgsType_Char,             /* type */
+    "accountId",                    /* name */
+    0,                              /* minnum */
+    1,                              /* maxnum */
+    "a",                            /* short option */
+    "account",                      /* long option */
+    "overwrite the account number", /* short description */
+    "overwrite the account number"  /* long description */
   },
   {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "name",                 /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "name",                      /* long option */
-    "Specify your name",    /* short description */
-    "Specify your name"     /* long description */
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,   /* flags */
+    GWEN_ArgsType_Char,             /* type */
+    "name",                         /* name */
+    0,                              /* minnum */
+    1,                              /* maxnum */
+    0,                              /* short option */
+    "name",                         /* long option */
+    "Specify your name",            /* short description */
+    "Specify your name"             /* long description */
   },
   {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "subAccountId",                /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "aa",                          /* short option */
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,   /* flags */
+    GWEN_ArgsType_Char,             /* type */
+    "subAccountId",                 /* name */
+    0,                              /* minnum */
+    1,                              /* maxnum */
+    "aa",                           /* short option */
     "subaccount",                   /* long option */
     "Specify the sub account id (Unterkontomerkmal)",    /* short description */
     "Specify the sub account id (Unterkontomerkmal)"     /* long description */
   },
   {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT,  /* flags */
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,   /* flags */
     GWEN_ArgsType_Char,             /* type */
-    "remoteBIC",                /* name */
-    0,                             /* minnum */
-    1,                             /* maxnum */
-    0,                             /* short option */
-    "rbic",                       /* long option */
-    "Specify the remote SWIFT BIC",/* short description */
-    "Specify the remote SWIFT BIC" /* long description */
+    "remoteBIC",                    /* name */
+    0,                              /* minnum */
+    1,                              /* maxnum */
+    0,                              /* short option */
+    "rbic",                         /* long option */
+    "Specify the remote SWIFT BIC", /* short description */
+    "Specify the remote SWIFT BIC"  /* long description */
   },
   {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "remoteIBAN",                  /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "riban",                      /* long option */
-    "Specify the remote IBAN",    /* short description */
-    "Specify the remote IBAN"     /* long description */
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,   /* flags */
+    GWEN_ArgsType_Char,             /* type */
+    "remoteIBAN",                   /* name */
+    1,                              /* minnum */
+    1,                              /* maxnum */
+    0,                              /* short option */
+    "riban",                        /* long option */
+    "Specify the remote IBAN",      /* short description */
+    "Specify the remote IBAN"       /* long description */
   },
   {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "value",                      /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "v",                          /* short option */
-    "value",                      /* long option */
-    "Specify the transfer amount",     /* short description */
-    "Specify the transfer amount"      /* long description */
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,   /* flags */
+    GWEN_ArgsType_Char,             /* type */
+    "value",                        /* name */
+    1,                              /* minnum */
+    1,                              /* maxnum */
+    "v",                            /* short option */
+    "value",                        /* long option */
+    "Specify the transfer amount",  /* short description */
+    "Specify the transfer amount"   /* long description */
   },
   {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "remoteName",                 /* name */
-    1,                            /* minnum */
-    2,                            /* maxnum */
-    0,                            /* short option */
-    "rname",                      /* long option */
-    "Specify the remote name",    /* short description */
-    "Specify the remote name"     /* long description */
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,   /* flags */
+    GWEN_ArgsType_Char,             /* type */
+    "remoteName",                   /* name */
+    1,                              /* minnum */
+    2,                              /* maxnum */
+    0,                              /* short option */
+    "rname",                        /* long option */
+    "Specify the remote name",      /* short description */
+    "Specify the remote name"       /* long description */
   },
   {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "purpose",                    /* name */
-    1,                            /* minnum */
-    6,                            /* maxnum */
-    "p",                          /* short option */
-    "purpose",                    /* long option */
-    "Specify the purpose",        /* short description */
-    "Specify the purpose"         /* long description */
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,   /* flags */
+    GWEN_ArgsType_Char,             /* type */
+    "purpose",                      /* name */
+    1,                              /* minnum */
+    6,                              /* maxnum */
+    "p",                            /* short option */
+    "purpose",                      /* long option */
+    "Specify the purpose",          /* short description */
+    "Specify the purpose"           /* long description */
   },
   {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "endToEndReference",          /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "E",                          /* short option */
-    "endtoendid",                 /* long option */
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,   /* flags */
+    GWEN_ArgsType_Char,             /* type */
+    "endToEndReference",            /* name */
+    0,                              /* minnum */
+    1,                              /* maxnum */
+    "E",                            /* short option */
+    "endtoendid",                   /* long option */
     "Specify the SEPA End-to-end-reference",        /* short description */
     "Specify the SEPA End-to-end-reference"         /* long description */
   },
   {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT,                
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,
     GWEN_ArgsType_Char,
-    "firstExecutionDate", 
+    "firstExecutionDate",
+    0,
     1,
-    1,  
-    0, 
+    0,
     "firstExecutionDate",
     "set date of first execution",
     "set date of first execution"
   },
   {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT,                
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,
     GWEN_ArgsType_Char,
-    "lastExecutionDate", 
+    "nextExecutionDate",            /* HKCDL and HKCDN only */
     0,
-    1,  
-    0, 
+    1,
+    0,
+    "nextExecutionDate",
+    "set date of next execution",
+    "set date of next execution instead of firstExecutionDate (delete and modify sto only)"
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,
+    GWEN_ArgsType_Char,
+    "lastExecutionDate",
+    0,
+    1,
+    0,
     "lastExecutionDate",
     "set date of last execution",
     "set date of last execution"
@@ -230,24 +278,24 @@ int sepaRecurTransfer(AB_BANKING *ab,
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT,
     GWEN_ArgsType_Char,
-    "fiId",                       /* HKCDL */
+    "fiId",                         /* HKCDL */
     0,
     1,
     0,
     "fiId",
     "set the fiId (standing orders)",
-    "set the fiId (standing orders) - Auftragsidentifikation fuer HKCDL"
+    "set the fiId (standing orders) - Auftragsidentifikation for HKCDL or HKCDN"
   },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
+    GWEN_ArgsType_Int,              /* type */
+    "help",                         /* name */
+    0,                              /* minnum */
+    0,                              /* maxnum */
+    "h",                            /* short option */
+    "help",                         /* long option */
+    "Show this help screen",        /* short description */
+    "Show this help screen"         /* long description */
   }
   };
 
@@ -305,8 +353,30 @@ int sepaRecurTransfer(AB_BANKING *ab,
   a=AB_Account_List2_GetFront(al);
   AB_Account_List2_free(al);
 
+  createSto=GWEN_DB_GetIntValue(db, "createSto", 0, 0);
+  modifySto=GWEN_DB_GetIntValue(db, "modifySto", 0, 0);
+  deleteSto=GWEN_DB_GetIntValue(db, "deleteSto", 0, 0);
+  s=GWEN_DB_GetCharValue(db, "fiId", 0, 0);
+
+  if (createSto)
+    jobType=AB_Job_TypeSepaCreateStandingOrder;
+  else if (modifySto)
+    jobType=AB_Job_TypeSepaModifyStandingOrder; // TODO
+  else if (deleteSto) {
+    if (s && *s)
+      jobType=AB_Job_TypeSepaDeleteStandingOrder;
+    else {
+      DBG_ERROR(0, "Missing fiId");
+      return 2;
+    }
+  }
+  else {
+    DBG_ERROR(0, "Missing Option: '--create', '--delete' or '--modify(TODO)'");
+    return 2;
+  }
+
   /* create transaction from arguments */
-  t=mkSepaTransfer(a, db, AB_Job_TypeSepaCreateStandingOrder);
+  t=mkSepaTransfer(a, db, jobType);
   if (t==NULL) {
     DBG_ERROR(0, "Could not create SEPA transaction from arguments");
     AB_Banking_OnlineFini(ab);
@@ -326,11 +396,12 @@ int sepaRecurTransfer(AB_BANKING *ab,
   }
 
   /* determine the type of job and create it */
-   s=AB_Transaction_GetFiId(t);
-  if (s && *s)
-    j=AB_JobSepaDeleteStandingOrder_new(a);
-  else
+  if (jobType==AB_Job_TypeSepaCreateStandingOrder)
     j=AB_JobSepaCreateStandingOrder_new(a);
+/* else if (jobType=AB_Job_TypeSepaModifyStandingOrder)
+    j=AB_JobSepaModifyStandingOrder_new(a); TODO */
+  else
+    j=AB_JobSepaDeleteStandingOrder_new(a);
 
   rv=AB_Job_CheckAvailability(j);
   if (rv<0) {
@@ -468,9 +539,4 @@ int sepaRecurTransfer(AB_BANKING *ab,
   else
     return 0;
 }
-
-
-
-
-
 
