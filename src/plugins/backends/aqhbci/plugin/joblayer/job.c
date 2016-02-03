@@ -40,6 +40,7 @@ GWEN_INHERIT_FUNCTIONS(AH_JOB);
 AH_JOB *AH_Job_new(const char *name,
 		   AB_USER *u,
 		   const char *accountId,
+		   const char *accountSuffix,
 		   int jobVersion) {
   AH_JOB *j;
   GWEN_XMLNODE *node;
@@ -258,14 +259,22 @@ AH_JOB *AH_Job_new(const char *name,
   } /* if paramName */
 
   /* get UPD jobs (if any) */
-  if (accountId) {
+  if (accountId && *accountId) {
     GWEN_DB_NODE *updgroup;
     GWEN_DB_NODE *updnode=NULL;
 
     updgroup=AH_User_GetUpd(u);
     assert(updgroup);
-    updgroup=GWEN_DB_GetGroup(updgroup, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                              accountId);
+    updgroup=GWEN_DB_GetGroup(updgroup, GWEN_PATH_FLAGS_NAMEMUSTEXIST, accountId);
+    /* take into account the "Unterkontomerkmal", don't rely solely on account id */
+    if (accountSuffix && *accountSuffix) {
+      GWEN_DB_NODE *dbSuffix;
+
+      dbSuffix=GWEN_DB_GetGroup(updgroup, GWEN_PATH_FLAGS_NAMEMUSTEXIST, accountSuffix);
+      if (dbSuffix)
+	updgroup=dbSuffix;
+    }
+
     if (updgroup) {
       const char *code;
 
@@ -1850,7 +1859,9 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 	    mayModifyAcc=1;
 	}
         else {
-          DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating account \"%s\"", accountId);
+	  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating account \"%s\" (%s)",
+		     accountId,
+		     accountSuffix?accountSuffix:"no suffix");
 	  accCreated=1;
 	  mayModifyAcc=1;
           acc=AB_Banking_CreateAccount(ab, AH_PROVIDER_NAME);
@@ -1858,10 +1869,12 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
           AB_Account_SetCountry(acc, "de");
           AB_Account_SetBankCode(acc, bankCode);
 	  AB_Account_SetAccountNumber(acc, accountId);
+          AB_Account_SetSubAccountId(acc, accountSuffix);
           DBG_NOTICE(AQHBCI_LOGDOMAIN,
-                     "Setting user \"%s\" for account \"%s\"",
+                     "Setting user \"%s\" for account \"%s\" (%s)",
                      AB_User_GetUserId(u),
-                     accountId);
+                     accountId,
+                     accountSuffix?accountSuffix:"no suffix");
           AB_Account_SetUser(acc, j->user);
           AB_Account_SetSelectedUser(acc, j->user);
         }
@@ -1906,9 +1919,12 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 	  /* get UPD jobs */
 	  dbUpd=AH_User_GetUpd(j->user);
 	  assert(dbUpd);
-	  dbUpd=GWEN_DB_GetGroup(dbUpd, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-				 accountId);
+          dbUpd=GWEN_DB_GetGroup(dbUpd, GWEN_DB_FLAGS_OVERWRITE_GROUPS, accountId);
 	  assert(dbUpd);
+	  if (accountSuffix && *accountSuffix) {
+	    dbUpd=GWEN_DB_GetGroup(dbUpd, GWEN_DB_FLAGS_OVERWRITE_GROUPS, accountSuffix);
+	    assert(dbUpd);
+	  }
 	  gr=GWEN_DB_GetFirstGroup(dbRd);
 	  while(gr) {
 	    if (strcasecmp(GWEN_DB_GroupName(gr), "updjob")==0) {

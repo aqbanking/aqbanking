@@ -114,6 +114,7 @@ typedef int (*AH_JOB_NEXTMSG_FN)(AH_JOB *j);
 AH_JOB *AH_Job_new(const char *name,
                    AB_USER *u,
 		   const char *accountId,
+		   const char *accountSuffix,
 		   int jobVersion);
 void AH_Job_free(AH_JOB *j);
 void AH_Job_Attach(AH_JOB *j);

@@ -863,7 +863,7 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox,
     /* sign and crypt, not anonymous */
     DBG_NOTICE(AQHBCI_LOGDOMAIN,
                "Creating non-anonymous dialog open request");
-    jDlgOpen=AH_Job_new("JobDialogInit", cbox->user, 0, 0);
+    jDlgOpen=AH_Job_new("JobDialogInit", cbox->user, 0, 0, 0);
     if (!jDlgOpen) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create job JobDialogInit");
       return GWEN_ERROR_GENERIC;
@@ -890,7 +890,7 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox,
   else {
     /* neither sign nor crypt, use anonymous dialog */
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating anonymous dialog open request");
-    jDlgOpen=AH_Job_new("JobDialogInitAnon", cbox->user, 0, 0);
+    jDlgOpen=AH_Job_new("JobDialogInitAnon", cbox->user, 0, 0, 0);
     if (!jDlgOpen) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create job JobDialogInitAnon");
       return GWEN_ERROR_GENERIC;
@@ -961,7 +961,7 @@ int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox,
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Sending dialog close request (flags=%08x)",
 	     jqFlags);
   dlgFlags=AH_Dialog_GetFlags(dlg);
-  jDlgClose=AH_Job_new("JobDialogEnd", cbox->user, 0, 0);
+  jDlgClose=AH_Job_new("JobDialogEnd", cbox->user, 0, 0, 0);
   if (!jDlgClose) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create job JobDialogEnd");
     return GWEN_ERROR_GENERIC;
