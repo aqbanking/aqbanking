@@ -211,9 +211,42 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
         GWEN_DB_Dump(dbT, 2);
       }
       else {
+	const char *s;
+
         AB_Transaction_SetLocalBankCode(t, AB_User_GetBankCode(u));
         AB_Transaction_SetLocalAccountNumber(t,
                                              AB_Account_GetAccountNumber(a));
+
+	/* some translations */
+	s=AB_Transaction_GetRemoteIban(t);
+	if (!(s && *s)) {
+	  const char *sAid;
+
+	  /* no remote IBAN set, check whether the bank sends this info in the
+	   * fields for national account specifications (instead of the SWIFT
+	   * field "?38" which was specified for this case) */
+	  sAid=AB_Transaction_GetRemoteAccountNumber(t);
+	  if (sAid && *sAid && AB_Banking_CheckIban(sAid)==0) {
+	    /* there is a remote account number specification, and that is an IBAN,
+	     * so we set that accordingly */
+	    DBG_INFO(AQBANKING_LOGDOMAIN, "Setting remote IBAN from account number");
+	    AB_Transaction_SetRemoteIban(t, sAid);
+
+	    /* set remote BIC if it not already is */
+	    s=AB_Transaction_GetRemoteBic(t);
+	    if (!(s && *s)) {
+	      const char *sBid;
+
+	      sBid=AB_Transaction_GetRemoteBankCode(t);
+	      if (sBid && *sBid) {
+		DBG_INFO(AQBANKING_LOGDOMAIN, "Setting remote BIC from bank code");
+		AB_Transaction_SetRemoteBic(t, sBid);
+	      }
+	    }
+	  }
+	}
+
+
         DBG_INFO(AQHBCI_LOGDOMAIN, "Adding transaction");
         if (noted)
 	  AB_ImExporterAccountInfo_AddNotedTransaction(ai, t);

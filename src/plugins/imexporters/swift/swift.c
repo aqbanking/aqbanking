@@ -171,6 +171,7 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
     if (matches) {
       AB_TRANSACTION *t;
+      const char *s;
 
       t=AB_Transaction_fromDb(dbT);
       if (!t) {
@@ -179,6 +180,37 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 			     I18N("Error in config file"));
 	return GWEN_ERROR_GENERIC;
       }
+
+      /* some translations */
+      s=AB_Transaction_GetRemoteIban(t);
+      if (!(s && *s)) {
+	const char *sAid;
+
+	/* no remote IBAN set, check whether the bank sends this info in the
+	 * fields for national account specifications (instead of the SWIFT
+	 * field "?38" which was specified for this case) */
+	sAid=AB_Transaction_GetRemoteAccountNumber(t);
+	if (sAid && *sAid && AB_Banking_CheckIban(sAid)==0) {
+	  /* there is a remote account number specification, and that is an IBAN,
+	   * so we set that accordingly */
+	  DBG_INFO(AQBANKING_LOGDOMAIN, "Setting remote IBAN from account number");
+	  AB_Transaction_SetRemoteIban(t, sAid);
+
+	  /* set remote BIC if it not already is */
+	  s=AB_Transaction_GetRemoteBic(t);
+	  if (!(s && *s)) {
+	    const char *sBid;
+
+	    sBid=AB_Transaction_GetRemoteBankCode(t);
+	    if (sBid && *sBid) {
+	      DBG_INFO(AQBANKING_LOGDOMAIN, "Setting remote BIC from bank code");
+	      AB_Transaction_SetRemoteBic(t, sBid);
+	    }
+	  }
+	}
+      }
+
+
       DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding transaction");
       GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug,
 			   I18N("Adding transaction"));
