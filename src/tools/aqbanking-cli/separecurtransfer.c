@@ -162,6 +162,17 @@ int sepaRecurTransfer(AB_BANKING *ab,
     "Specify the purpose"         /* long description */
   },
   {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
+    "endToEndReference",          /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    "E",                          /* short option */
+    "endtoendid",                 /* long option */
+    "Specify the SEPA End-to-end-reference",        /* short description */
+    "Specify the SEPA End-to-end-reference"         /* long description */
+  },
+  {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT,                
     GWEN_ArgsType_Char,
     "firstExecutionDate", 

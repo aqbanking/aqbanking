@@ -234,6 +234,11 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, AB_JOB_TYPE *jobType
     return 0;
   }
 
+  s=GWEN_DB_GetCharValue(db, "endToEndReference", 0, 0);
+  if (s && *s)
+    AB_Transaction_SetEndToEndReference(t, s);
+
+
   // dated transfer
   s=GWEN_DB_GetCharValue(db, "executionDate", 0, 0);
   if (s && *s) {
