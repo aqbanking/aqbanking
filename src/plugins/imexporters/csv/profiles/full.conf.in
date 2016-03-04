@@ -141,6 +141,7 @@ params {
     87="originalCreditorSchemeId"
     88="originalMandateId"
     89="originalCreditorName"
+    90="endToEndReference"
   } # columns
 
 } # params
