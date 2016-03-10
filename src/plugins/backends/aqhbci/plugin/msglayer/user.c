@@ -730,6 +730,9 @@ GWEN_DB_NODE *AH_User_GetUpdForAccount(const AB_USER *u, const AB_ACCOUNT *acc){
       else
 	db=dbAccount;
     }
+    else {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "No account suffix, using main account group");
+    }
   }
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "No account number in account.");
