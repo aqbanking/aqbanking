@@ -692,18 +692,16 @@ GWEN_DB_NODE *AH_User_GetUpd(const AB_USER *u){
 
 
 
-GWEN_DB_NODE *AH_User_GetUpdForAccount(const AB_USER *u, const AB_ACCOUNT *acc){
+GWEN_DB_NODE *AH_User_GetUpdForAccountIdAndSuffix(const AB_USER *u,
+                                                  const char *sAccountNumber,
+                                                  const char *sAccountSuffix) {
   AH_USER *ue;
   GWEN_DB_NODE *db;
-  const char *sAccountNumber;
-  const char *sAccountSuffix;
+  GWEN_BUFFER *tbuf;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
-
-  sAccountNumber=AB_Account_GetAccountNumber(acc);
-  sAccountSuffix=AB_Account_GetSubAccountId(acc);
 
   db=AH_User_GetUpd(u);
   if (db==NULL) {
@@ -711,35 +709,37 @@ GWEN_DB_NODE *AH_User_GetUpdForAccount(const AB_USER *u, const AB_ACCOUNT *acc){
     return NULL;
   }
 
-  if (sAccountNumber && *sAccountNumber) {
-    GWEN_DB_NODE *dbAccount;
+  tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+  GWEN_Buffer_AppendString(tbuf, sAccountNumber);
+  GWEN_Buffer_AppendString(tbuf, "-");
+  /* take into account the "Unterkontomerkmal", don't rely solely on account id */
+  if (sAccountSuffix && *sAccountSuffix)
+    GWEN_Buffer_AppendString(tbuf, sAccountSuffix);
+  else
+    GWEN_Buffer_AppendString(tbuf, "none");
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Checking upd for account \"%s\"", GWEN_Buffer_GetStart(tbuf));
+  db=GWEN_DB_GetGroup(db,
+                      GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                      GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_free(tbuf);
 
-    dbAccount=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, sAccountNumber);
-    if (dbAccount==NULL) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "No upd for account \"%s\"", sAccountNumber);
-      return NULL;
-    }
-    db=dbAccount;
-
-    if (sAccountSuffix && *sAccountSuffix) {
-      dbAccount=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, sAccountNumber);
-      if (dbAccount==NULL) {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "No upd for sub account id \"%s\", using account \"%s\"",
-		 sAccountSuffix, sAccountNumber);
-      }
-      else
-	db=dbAccount;
-    }
-    else {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "No account suffix, using main account group");
-    }
-  }
-  else {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "No account number in account.");
-    return NULL;
+  if (db==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Falling back to old storage of UPD for account \"%s\"", sAccountNumber);
+    db=AH_User_GetUpd(u);
+    db=GWEN_DB_GetGroup(db,
+                        GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                        sAccountNumber);
   }
 
   return db;
+}
+
+
+
+GWEN_DB_NODE *AH_User_GetUpdForAccount(const AB_USER *u, const AB_ACCOUNT *acc){
+  return AH_User_GetUpdForAccountIdAndSuffix(u,
+                                             AB_Account_GetAccountNumber(acc),
+                                             AB_Account_GetSubAccountId(acc));
 }
 
 

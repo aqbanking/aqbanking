@@ -263,17 +263,7 @@ AH_JOB *AH_Job_new(const char *name,
     GWEN_DB_NODE *updgroup;
     GWEN_DB_NODE *updnode=NULL;
 
-    updgroup=AH_User_GetUpd(u);
-    assert(updgroup);
-    updgroup=GWEN_DB_GetGroup(updgroup, GWEN_PATH_FLAGS_NAMEMUSTEXIST, accountId);
-    /* take into account the "Unterkontomerkmal", don't rely solely on account id */
-    if (accountSuffix && *accountSuffix) {
-      GWEN_DB_NODE *dbSuffix;
-
-      dbSuffix=GWEN_DB_GetGroup(updgroup, GWEN_PATH_FLAGS_NAMEMUSTEXIST, accountSuffix);
-      if (dbSuffix)
-	updgroup=dbSuffix;
-    }
+    updgroup=AH_User_GetUpdForAccountIdAndSuffix(u, accountId, accountSuffix);
 
     if (updgroup) {
       const char *code;
@@ -1918,13 +1908,25 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 
 	  /* get UPD jobs */
 	  dbUpd=AH_User_GetUpd(j->user);
-	  assert(dbUpd);
-          dbUpd=GWEN_DB_GetGroup(dbUpd, GWEN_DB_FLAGS_OVERWRITE_GROUPS, accountId);
-	  assert(dbUpd);
-	  if (accountSuffix && *accountSuffix) {
-	    dbUpd=GWEN_DB_GetGroup(dbUpd, GWEN_DB_FLAGS_OVERWRITE_GROUPS, accountSuffix);
-	    assert(dbUpd);
+          assert(dbUpd);
+
+	  /* create and clear group for each account (check subaccount id) */
+	  if (dbUpd) {
+	    GWEN_BUFFER *tbuf;
+
+	    tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+	    GWEN_Buffer_AppendString(tbuf, accountId);
+	    GWEN_Buffer_AppendString(tbuf, "-");
+	    if (accountSuffix && *accountSuffix)
+	      GWEN_Buffer_AppendString(tbuf, accountSuffix);
+	    else
+	      GWEN_Buffer_AppendString(tbuf, "none");
+	    dbUpd=GWEN_DB_GetGroup(dbUpd,
+				   GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+				   GWEN_Buffer_GetStart(tbuf));
+	    GWEN_Buffer_free(tbuf);
 	  }
+
 	  gr=GWEN_DB_GetFirstGroup(dbRd);
 	  while(gr) {
 	    if (strcasecmp(GWEN_DB_GroupName(gr), "updjob")==0) {
