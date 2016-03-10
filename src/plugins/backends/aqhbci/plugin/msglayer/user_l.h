@@ -58,6 +58,9 @@ void AH_User_SetBpd(AB_USER *u, AH_BPD *bpd);
 GWEN_DB_NODE *AH_User_GetUpd(const AB_USER *u);
 void AH_User_SetUpd(AB_USER *u, GWEN_DB_NODE *n);
 
+GWEN_DB_NODE *AH_User_GetUpdForAccount(const AB_USER *u, const AB_ACCOUNT *acc);
+
+
 
 int AH_User_GetUpdVersion(const AB_USER *u);
 void AH_User_SetUpdVersion(AB_USER *u, int i);

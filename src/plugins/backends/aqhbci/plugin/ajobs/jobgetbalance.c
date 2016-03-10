@@ -45,10 +45,7 @@ AH_JOB *AH_Job_GetBalance_new(AB_USER *u, AB_ACCOUNT *account) {
   GWEN_DB_NODE *updgroup;
 
   //Check if we should use DKKKS
-  updgroup=AH_User_GetUpd(u);
-  assert(updgroup);
-  updgroup=GWEN_DB_GetGroup(updgroup, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                            AB_Account_GetAccountNumber(account));
+  updgroup=AH_User_GetUpdForAccount(u, account);
   if (updgroup) {
     GWEN_DB_NODE *n;
 

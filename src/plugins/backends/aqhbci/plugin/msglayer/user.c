@@ -692,6 +692,55 @@ GWEN_DB_NODE *AH_User_GetUpd(const AB_USER *u){
 
 
 
+GWEN_DB_NODE *AH_User_GetUpdForAccount(const AB_USER *u, const AB_ACCOUNT *acc){
+  AH_USER *ue;
+  GWEN_DB_NODE *db;
+  const char *sAccountNumber;
+  const char *sAccountSuffix;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  sAccountNumber=AB_Account_GetAccountNumber(acc);
+  sAccountSuffix=AB_Account_GetSubAccountId(acc);
+
+  db=AH_User_GetUpd(u);
+  if (db==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No upd");
+    return NULL;
+  }
+
+  if (sAccountNumber && *sAccountNumber) {
+    GWEN_DB_NODE *dbAccount;
+
+    dbAccount=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, sAccountNumber);
+    if (dbAccount==NULL) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "No upd for account \"%s\"", sAccountNumber);
+      return NULL;
+    }
+    db=dbAccount;
+
+    if (sAccountSuffix && *sAccountSuffix) {
+      dbAccount=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, sAccountNumber);
+      if (dbAccount==NULL) {
+	DBG_INFO(AQHBCI_LOGDOMAIN, "No upd for sub account id \"%s\", using account \"%s\"",
+		 sAccountSuffix, sAccountNumber);
+      }
+      else
+	db=dbAccount;
+    }
+  }
+  else {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No account number in account.");
+    return NULL;
+  }
+
+  return db;
+}
+
+
+
 void AH_User_SetUpd(AB_USER *u, GWEN_DB_NODE *n){
   AH_USER *ue;
 

@@ -47,15 +47,12 @@ AH_JOB *AH_Job_GetTransactions_new(AB_USER *u,
   AH_JOB *j;
   AH_JOB_GETTRANSACTIONS *aj;
   GWEN_DB_NODE *dbArgs;
+  GWEN_DB_NODE *updgroup;
 
   int useCreditCardJob = 0;
 
   //Check if we should use DKKKU
-  GWEN_DB_NODE *updgroup;
-  updgroup=AH_User_GetUpd(u);
-  assert(updgroup);
-  updgroup=GWEN_DB_GetGroup(updgroup, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                            AB_Account_GetAccountNumber(account));
+  updgroup=AH_User_GetUpdForAccount(u, account);
   if (updgroup) {
      GWEN_DB_NODE *n;
       n=GWEN_DB_GetFirstGroup(updgroup);
