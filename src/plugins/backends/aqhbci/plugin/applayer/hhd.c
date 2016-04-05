@@ -102,6 +102,8 @@ int AH_HHD14_ExtractDataForLuhnSum(const char *code, GWEN_BUFFER *xbuf) {
   unsigned int numCtrlBytes;
   unsigned int moreCtrlBytes;
   unsigned int numBytes;
+  /* preset bit masks for HHD 1.4 */
+  unsigned int maskLen = 0x3f;
 
   /* read LC */
   rv=AH_HHD14_ReadBytesHex(code, 2);
@@ -132,7 +134,7 @@ int AH_HHD14_ExtractDataForLuhnSum(const char *code, GWEN_BUFFER *xbuf) {
   moreCtrlBytes = LSandFlags & 0x80;
 
   while (moreCtrlBytes) {
-    rv=AH_HHD14_ReadBytesHex(code+numCtrlBytes*2, 2);                 /* LS */
+    rv=AH_HHD14_ReadBytesHex(code+numCtrlBytes*2, 2);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d) at [%s]", rv, code);
       return rv;
@@ -140,7 +142,11 @@ int AH_HHD14_ExtractDataForLuhnSum(const char *code, GWEN_BUFFER *xbuf) {
     numCtrlBytes++;
     moreCtrlBytes = (unsigned int) rv & 0x80;
   }
-  numBytes = (LSandFlags & 0x3f) + numCtrlBytes;
+  if (numCtrlBytes == 0) {
+    /* set bit mask for HHD 1.3.2 */
+    maskLen = 0x0f;
+  }
+  numBytes = (LSandFlags & maskLen) + numCtrlBytes;
   GWEN_Buffer_AppendBytes(xbuf, code, numBytes*2);
   code += numBytes*2;
   i += numBytes + 2;         /* add length of LC and LS */
@@ -155,7 +161,7 @@ int AH_HHD14_ExtractDataForLuhnSum(const char *code, GWEN_BUFFER *xbuf) {
       return rv;
     }
 /*    v=((unsigned int) rv) & 0xf; */
-    v=((unsigned int) rv) & 0x3f; /* as suggested by Martin Kuehn */
+    v=((unsigned int) rv) & maskLen;
     code+=2;
     if (i+v+1 > len) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "try to read past the end of code (%d) at [%s]", v, code);
@@ -268,6 +274,11 @@ int AH_HHD14__Translate(const char *code, GWEN_BUFFER *cbuf) {
   unsigned int inLen;
   unsigned int outLenAndFlags;
   unsigned int outLen;
+  /* preset bit masks for HHD 1.4 */
+  unsigned int maskLen = 0x3f;
+  unsigned int maskAscFlag = 0x40;
+  unsigned int maskCtlFlag = 0x80;
+
   int rv;
   GWEN_BUFFER *xbuf;
   char numbuf[16];
@@ -295,17 +306,17 @@ int AH_HHD14__Translate(const char *code, GWEN_BUFFER *cbuf) {
     return rv;
   }
   inLenAndFlags=(unsigned int) rv;
-  inLen=inLenAndFlags & 0x3f;
+  inLen=inLenAndFlags & maskLen;
   code+=2;
 
   outLen=(inLen+1)/2;
-  outLenAndFlags=outLen | (inLenAndFlags & 0x80);
+  outLenAndFlags=outLen | (inLenAndFlags & maskCtlFlag);
   snprintf(numbuf, sizeof(numbuf)-1, "%02x", outLenAndFlags);
   numbuf[sizeof(numbuf)-1]=0;
   GWEN_Buffer_AppendString(xbuf, numbuf);
 
   /* copy control bytes, if necessary */
-  if (inLenAndFlags & 0x80) {
+  if (inLenAndFlags & maskCtlFlag) {
     unsigned int ctrl=0;
 
     do {
@@ -322,7 +333,12 @@ int AH_HHD14__Translate(const char *code, GWEN_BUFFER *cbuf) {
       numbuf[sizeof(numbuf)-1]=0;
       GWEN_Buffer_AppendString(xbuf, numbuf);
       code+=2;
-    } while (ctrl & 0x80);
+    } while (ctrl & maskCtlFlag);
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "no control bytes fallback to HHD 1.3.2");
+    maskLen = 0xf;
+    maskAscFlag = 0x10;
   }
 
   if (inLen) {
@@ -335,7 +351,7 @@ int AH_HHD14__Translate(const char *code, GWEN_BUFFER *cbuf) {
 
   /* read DE's */
   while (*code) {
-    /* length is in dec and contains flags */
+    /* input length is in dec usually no AscFlag for DE's is provided */
     rv=AH_HHD14_ReadBytesDec(code, 2);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -343,29 +359,28 @@ int AH_HHD14__Translate(const char *code, GWEN_BUFFER *cbuf) {
       return rv;
     }
     inLenAndFlags=(unsigned int) rv;
-    inLen=inLenAndFlags & 0x3f;
+    inLen=inLenAndFlags & maskLen;
     code+=2;
 
-    /* check whether we need to switch to ASC */
-    if ((inLenAndFlags & 0x40)==0) {
+    /* so we have to check whether we need to switch to ASC */
+    if ((inLenAndFlags & maskAscFlag)==0) {
       int i;
 
       for (i=0; i<inLen; i++) {
         if (code[i]<'0' || code[i]>'9'){
-	  /* contains something other than digits, use ascii encoding */
-	  DBG_ERROR(AQHBCI_LOGDOMAIN, "Switched to ASCII");
-          inLenAndFlags|=0x40;
+	        /* contains something other than digits, use ascii encoding */
+	        DBG_ERROR(AQHBCI_LOGDOMAIN, "Switched to ASCII");
+          inLenAndFlags|=maskAscFlag;
           break;
         }
       }
     }
 
     /* write to outbuffer */
-    if (inLenAndFlags & 0x40) {
+    if (inLenAndFlags & maskAscFlag) {
       /* ascii */
-      //outLen=(inLen+1)/2;
       outLen=inLen;
-      outLenAndFlags=outLen | 0x40; /* add encoding flag to length (bit 6) */
+      outLenAndFlags=outLen | maskAscFlag; /* add encoding flag to length (bit 6 or 4) */
       snprintf(numbuf, sizeof(numbuf)-1, "%02x", outLenAndFlags);
       numbuf[sizeof(numbuf)-1]=0;
       GWEN_Buffer_AppendString(xbuf, numbuf);
@@ -375,7 +390,7 @@ int AH_HHD14__Translate(const char *code, GWEN_BUFFER *cbuf) {
       code+=inLen;
     }
     else {
-      /* bcd */
+      /* bcd, pack 2 digits into 1 Byte */
       outLen=(inLen+1)/2;
       outLenAndFlags=outLen;
       snprintf(numbuf, sizeof(numbuf)-1, "%02x", outLenAndFlags);
