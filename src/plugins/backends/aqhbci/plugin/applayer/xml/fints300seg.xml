@@ -440,7 +440,7 @@
    <ELEM name="version" type="num" maxsize="3" />
    <ELEM name="ignoreUPDJobs" type="num" maxsize="1" />
    <ELEM name="userName" type="ascii" maxsize="35" minnum="0" />
-   <ELEM name="genericExt" type="ascii" maxsize="2048" minnum="0" />
+   <ELEM name="genericExt" type="an" maxsize="2048" minnum="0" />
 
    <VALUES>
      <VALUE path="head/code">%code</VALUE>
@@ -489,8 +489,8 @@
    <ELEM name="customer" type="ascii" maxsize="65" trustlevel="3" />
    <ELEM name="type" type="num" maxsize="2" minnum="0" />
    <ELEM name="currency" type="an" maxsize="65" minnum="0" />
-   <ELEM name="name1" type="an" maxsize="27" />
-   <ELEM name="name2" type="an" maxsize="27" minnum="0" />
+   <ELEM name="name1" type="an" maxsize="35" />
+   <ELEM name="name2" type="an" maxsize="35" minnum="0" />
    <ELEM name="account/name" type="an" maxsize="30" minnum="0" />
    <GROUP type="limit" name="limit" minnum="0" trustlevel="4" version="1" />
    <GROUP type="updjob" name="updjob" minnum="0" maxnum="999" version="1" />
