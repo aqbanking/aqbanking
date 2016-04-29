@@ -7,7 +7,6 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
@@ -33,8 +32,27 @@
 /* #define ENABLE_FULL_SEPA_LOG */
 
 
-
 #define CENTURY_CUTOFF_YEAR 79
+
+
+
+static char *my_strndup(const char *src, size_t n) {
+  int len;
+
+  len=strlen(src);
+  if (len<n)
+    return strdup(src);
+  else {
+    char *cpy;
+
+    cpy=(char*) malloc(n+1);
+    assert(cpy);
+    memmove(cpy, src, n);
+    cpy[n]=0;
+    return cpy;
+  }
+}
+
 
 
 int AHB_SWIFT__SetCharValue(GWEN_DB_NODE *db,
@@ -306,7 +324,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 		if (tagLen>0) {
 		  char *sCopyPayload;
 
-		  sCopyPayload=strndup(sPayload, tagLen);
+		  sCopyPayload=my_strndup(sPayload, tagLen);
 		  GWEN_DB_SetCharValue(dbSepaTags, GWEN_DB_FLAGS_DEFAULT, sIdentifier, sCopyPayload);
 		  free(sCopyPayload);
 		  realSepaTagCount++;
@@ -320,7 +338,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
                 if (tagLen>0) {
 		  char *sCopyPayload;
 
-		  sCopyPayload=strndup(sLastTagStart, tagLen);
+		  sCopyPayload=my_strndup(sLastTagStart, tagLen);
                   GWEN_DB_SetCharValue(dbSepaTags, GWEN_DB_FLAGS_DEFAULT, "_purpose", sCopyPayload);
 		  free(sCopyPayload);
                 }
@@ -1331,11 +1349,4 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
 
   return 0;
 }
-
-
-
-
-
-
-
 
