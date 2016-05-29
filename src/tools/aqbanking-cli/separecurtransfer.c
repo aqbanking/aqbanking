@@ -75,8 +75,8 @@ int sepaRecurTransfer(AB_BANKING *ab,
     1,
     0,
     "modify",
-    "Modify standing orders (TODO)",
-    "Modify standing orders (TODO)"
+    "Modify standing orders",
+    "Modify standing orders"
   },
   {
     0,
@@ -363,7 +363,7 @@ int sepaRecurTransfer(AB_BANKING *ab,
     jobType=AB_Job_TypeSepaCreateStandingOrder;
   else if (modifySto)
     if (s && *s)
-      jobType=AB_Job_TypeSepaModifyStandingOrder; // TODO
+      jobType=AB_Job_TypeSepaModifyStandingOrder;
     else {
       DBG_ERROR(0, "Missing fiId");
       return 2;
@@ -372,7 +372,7 @@ int sepaRecurTransfer(AB_BANKING *ab,
     jobType=AB_Job_TypeSepaDeleteStandingOrder;
   }
   else {
-    DBG_ERROR(0, "Missing Option: '--create', '--delete' or '--modify(TODO)'");
+    DBG_ERROR(0, "Missing Option: '--create', '--delete' or '--modify'");
     return 2;
   }
 
@@ -390,8 +390,8 @@ int sepaRecurTransfer(AB_BANKING *ab,
   /* determine the type of job and create it */
   if (jobType==AB_Job_TypeSepaCreateStandingOrder)
     j=AB_JobSepaCreateStandingOrder_new(a);
-/* else if (jobType=AB_Job_TypeSepaModifyStandingOrder)
-    j=AB_JobSepaModifyStandingOrder_new(a); TODO */
+  else if (jobType==AB_Job_TypeSepaModifyStandingOrder)
+    j=AB_JobSepaModifyStandingOrder_new(a);
   else
     j=AB_JobSepaDeleteStandingOrder_new(a);
 
