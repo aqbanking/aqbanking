@@ -14,7 +14,9 @@
 #include "globals.h"
 
 #include <aqbanking/account.h>
+#include <aqbanking/job.h>
 #include <aqbanking/jobsepacreatesto.h>
+#include <aqbanking/jobsepamodifysto.h>
 #include <aqbanking/jobsepadeletesto.h>
 
 #include <gwenhywfar/text.h>
@@ -50,7 +52,7 @@ int sepaRecurTransfer(AB_BANKING *ab,
   int createSto=0;
   int modifySto=0;
   int deleteSto=0;
-  int jobType;
+  AB_JOB_TYPE jobType;
   const char *rIBAN;
   const char *lIBAN;
   const char *s;
@@ -361,14 +363,14 @@ int sepaRecurTransfer(AB_BANKING *ab,
   if (createSto)
     jobType=AB_Job_TypeSepaCreateStandingOrder;
   else if (modifySto)
-    jobType=AB_Job_TypeSepaModifyStandingOrder; // TODO
-  else if (deleteSto) {
     if (s && *s)
-      jobType=AB_Job_TypeSepaDeleteStandingOrder;
+      jobType=AB_Job_TypeSepaModifyStandingOrder; // TODO
     else {
       DBG_ERROR(0, "Missing fiId");
       return 2;
     }
+  else if (deleteSto) {
+    jobType=AB_Job_TypeSepaDeleteStandingOrder;
   }
   else {
     DBG_ERROR(0, "Missing Option: '--create', '--delete' or '--modify(TODO)'");
