@@ -47,7 +47,6 @@ int sepaRecurTransfer(AB_BANKING *ab,
   AB_TRANSACTION *t;
   AB_JOB_LIST2 *jobList;
   AB_JOB *j;
-  const AB_TRANSACTION_LIMITS *lim;
   int rvExec;
   int createSto=0;
   int modifySto=0;
@@ -388,15 +387,6 @@ int sepaRecurTransfer(AB_BANKING *ab,
   AB_Transaction_SetType(t, AB_Transaction_TypeSepaTransfer);
   AB_Transaction_SetSubType(t, AB_Transaction_SubTypeStandingOrder);
 
-
-  rv=AB_Transaction_CheckForSepaConformity(t, 0);  /* TODO: determine the flag to use here */
-  if (rv<0) {
-    DBG_ERROR(0, "Transaction does not conform to SEPA specs (%d)", rv);
-    AB_Banking_OnlineFini(ab);
-    AB_Banking_Fini(ab);
-    return 2;
-  }
-
   /* determine the type of job and create it */
   if (jobType==AB_Job_TypeSepaCreateStandingOrder)
     j=AB_JobSepaCreateStandingOrder_new(a);
@@ -411,50 +401,6 @@ int sepaRecurTransfer(AB_BANKING *ab,
     AB_Job_free(j);
     AB_Transaction_free(t);
     return 3;
-  }
-
-  lim=AB_Job_GetFieldLimits(j);
-  assert(lim);
-
-  /* check transaction */
-  rv=AB_Transaction_CheckPurposeAgainstLimits(t, lim);
-  if (rv<0) {
-    DBG_ERROR(0, "Invalid purpose length (%d)", rv);
-    AB_Job_free(j);
-    AB_Transaction_free(t);
-    AB_Banking_OnlineFini(ab);
-    AB_Banking_Fini(ab);
-    return 2;
-  }
-
-  rv=AB_Transaction_CheckNamesAgainstLimits(t, lim);
-  if (rv<0) {
-    DBG_ERROR(0, "Invalid local and/or remote name (%d)", rv);
-    AB_Job_free(j);
-    AB_Transaction_free(t);
-    AB_Banking_OnlineFini(ab);
-    AB_Banking_Fini(ab);
-    return 2;
-  }
-
-  rv=AB_Transaction_CheckRecurrenceAgainstLimits(t, lim);
-  if (rv<0) {
-    DBG_ERROR(0, "Recurrence specs violate bank paramaters (%d)", rv);
-    AB_Job_free(j);
-    AB_Transaction_free(t);
-    AB_Banking_OnlineFini(ab);
-    AB_Banking_Fini(ab);
-    return 2;
-  }
-
-  rv=AB_Transaction_CheckFirstExecutionDateAgainstLimits(t, lim);
-  if (rv<0) {
-    DBG_ERROR(0, "Setup time violated (%d)", rv);
-    AB_Job_free(j);
-    AB_Transaction_free(t);
-    AB_Banking_OnlineFini(ab);
-    AB_Banking_Fini(ab);
-    return 2;
   }
 
   /* check remote IBAN */
