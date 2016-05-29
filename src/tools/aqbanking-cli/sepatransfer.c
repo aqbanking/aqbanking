@@ -14,10 +14,8 @@
 #include "globals.h"
 
 #include <aqbanking/account.h>
-#include <aqbanking/jobsingletransfer.h>
+#include <aqbanking/job.h>
 #include <aqbanking/jobsepatransfer.h>
-#include <aqbanking/jobcreatedatedtransfer.h>
-#include <aqbanking/jobcreatesto.h>
 
 #include <gwenhywfar/text.h>
 

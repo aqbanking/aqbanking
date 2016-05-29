@@ -266,7 +266,7 @@ int main(int argc, char **argv) {
                   I18N("Add a SEPA debit note to an existing import context file"));
 
     cmdAddHelpStr(ubuf, "sepasto",
-                  I18N("Create and Delete SEPA standing order"));
+                  I18N("Manage SEPA standing orders"));
 
     cmdAddHelpStr(ubuf, "fillgaps",
                   I18N("Fill gaps in an import context file from configuration settings"));
