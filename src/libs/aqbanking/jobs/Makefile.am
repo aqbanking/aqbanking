@@ -32,6 +32,7 @@ noinst_HEADERS=\
  jobloadcellphone_l.h \
  jobloadcellphone_p.h \
  jobsepacreatesto.h \
+ jobsepamodifysto.h \
  jobsepadeletesto.h
 
 iheaderdir=@aqbanking_headerdir_am@/aqbanking
@@ -94,6 +95,7 @@ libjobs_la_SOURCES=\
  jobloadcellphone.c \
  jobsepacreatesto.c \
  jobsepagetstandingorders.c \
+ jobsepamodifysto.c \
  jobsepadeletesto.c
 
 sources:
