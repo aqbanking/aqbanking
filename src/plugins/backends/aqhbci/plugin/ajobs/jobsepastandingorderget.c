@@ -63,39 +63,24 @@ AH_JOB *AH_Job_SepaStandingOrderGet_new(AB_USER *u, AB_ACCOUNT *account) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-static const char *_findPatternInStringList(const GWEN_STRINGLIST *sl, const char *pattern){
-  GWEN_STRINGLISTENTRY *se;
-
-  se=GWEN_StringList_FirstEntry(sl);
-  while(se) {
-    const char *s;
-
-    s=GWEN_StringListEntry_Data(se);
-    if (s && *s && -1!=GWEN_Text_ComparePattern(s, pattern, 0)) {
-      return s;
-    }
-    se=GWEN_StringListEntry_Next(se);
-  }
-
-  return NULL;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
 int AH_Job_SepaStandingOrderGet_Prepare(AH_JOB *j) {
   GWEN_DB_NODE *dbArgs;
-  const GWEN_STRINGLIST *descriptors;
+  GWEN_DB_NODE *profile;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing job");
 
   dbArgs=AH_Job_GetArguments(j);
 
-  descriptors=AH_User_GetSepaDescriptors(AH_Job_GetUser(j));
-  if (descriptors) {
+  /* find the right profile to produce pain.001 messages */
+  profile=AH_Job_FindSepaProfile(j, "001*", AH_User_GetSepaTransferProfile(AH_Job_GetUser(j)));
+  if (!profile) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No suitable profile found");
+    return GWEN_ERROR_GENERIC;
+  }
+  else {
     const char *s;
 
-    s=_findPatternInStringList(descriptors, "*pain.001.*");
+    s=GWEN_DB_GetCharValue(profile, "descriptor", 0, 0);
     if (s) {
       GWEN_DB_SetCharValue(dbArgs,
 			   GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -106,10 +91,6 @@ int AH_Job_SepaStandingOrderGet_Prepare(AH_JOB *j) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "No matching SEPA descriptor found");
       return GWEN_ERROR_GENERIC;
     }
-  }
-  else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No list of supported SEPA descriptor found");
-    return GWEN_ERROR_GENERIC;
   }
 
   return 0;
