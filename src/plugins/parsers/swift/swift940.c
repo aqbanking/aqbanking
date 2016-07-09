@@ -370,6 +370,19 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
           /* clear purpose variable, since we are about to add it back from SEPA tags */
           GWEN_DB_DeleteVar(data, "purpose");
 
+	  /* check for "abweichender SEPPA Auftraggeber" SEPA tag */
+	  if (GWEN_DB_VariableExists(dbSepaTags, "ABWA+")==0) {
+	    /* field exists, use it later instead of remote name */
+	    GWEN_DB_DeleteVar(data, "remoteName");
+	  }
+
+	  /* check for "abweichender SEPA Empfaenger" SEPA tag */
+	  if (GWEN_DB_VariableExists(dbSepaTags, "ABWE+")==0) {
+	    /* field exists, use it later instead of remote name */
+	    GWEN_DB_DeleteVar(data, "localName");
+	  }
+
+
 	  dbVar=GWEN_DB_GetFirstVar(dbSepaTags);
 	  while(dbVar) {
 	    const char *sVarName;
@@ -411,6 +424,12 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 		AHB_SWIFT__SetCharValue(data, flags, "purpose", GWEN_Buffer_GetStart(tbuf));
 	      }
 	      else if (strcasecmp(sVarName, "ABWA+")==0) {
+		/* "abweichender Auftraggeber" */
+		AHB_SWIFT__SetCharValue(data, flags, "remoteName", GWEN_Buffer_GetStart(tbuf));
+              }
+	      else if (strcasecmp(sVarName, "ABWE+")==0) {
+		/* "abweichender Empfaenger" */
+		AHB_SWIFT__SetCharValue(data, flags, "localName", GWEN_Buffer_GetStart(tbuf));
               }
               else if (strcasecmp(sVarName, "_purpose")==0) {
                 /* manually added tag (i.e. data outside a tag)
