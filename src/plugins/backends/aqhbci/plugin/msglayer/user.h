@@ -75,7 +75,9 @@ extern "C" {
 
 #define AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET   0x00000800
 
-    /*@}*/
+/* ignore error "GNUTLS_E_PREMATURE_TERMINATION" */
+#define AH_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE   0x00001000
+/*@}*/
 
 
 
