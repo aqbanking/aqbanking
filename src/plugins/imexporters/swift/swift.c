@@ -210,7 +210,28 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 	}
       }
 
+      /* ABWA+: replace remote name with ABWA+ content */
+      s=GWEN_DB_GetCharValue(dbT, "sepa/ABWA", 0, NULL);
+      if (s && *s) {
+	int i;
 
+	AB_Transaction_ClearRemoteName(t);
+	for (i=0; i<2; i++) {
+	  s=GWEN_DB_GetCharValue(dbT, "sepa/ABWA", i, NULL);
+	  if (s && *s) {
+	    AB_Transaction_AddRemoteName(t, s, 0);
+	  }
+	}
+      }
+
+      /* ABWE+: replace local name with ABWE+ content */
+      s=GWEN_DB_GetCharValue(dbT, "sepa/ABWE", 0, NULL);
+      if (s && *s) {
+	AB_Transaction_SetLocalName(t, s);
+      }
+
+
+      /* add transaction */
       DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding transaction");
       GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug,
 			   I18N("Adding transaction"));
