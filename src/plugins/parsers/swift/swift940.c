@@ -231,6 +231,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
       
 	  case 32: 
 	  case 33: /* Name Auftraggeber */
+	    //DBG_ERROR(AQBANKING_LOGDOMAIN, "Setting remote name: [%s]", s);
 	    AHB_SWIFT__SetCharValue(data, flags, "remoteName", s);
 	    break;
       
