@@ -647,6 +647,8 @@ int AH_Job_UpdateBank_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   jd=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_UPDATEBANK, j);
   assert(jd);
 
+  /* TODO: Do we really need this? We already have this kind of code in AH_Job */
+
   if (jd->scanned)
     return 0;
 

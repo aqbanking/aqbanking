@@ -1781,6 +1781,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
         const char *bankCode;
 	const char *custId;
         const char *iban;
+        int accountType;
         AB_ACCOUNT *acc;
         GWEN_DB_NODE *gr;
         AH_BPD *bpd;
@@ -1807,6 +1808,8 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
         assert(bankCode);
         custId=GWEN_DB_GetCharValue(dbRd, "customer", 0, 0);
         assert(custId);
+        accountType=GWEN_DB_GetIntValue(dbRd, "type", 0, 1);
+
 	if (1) {
           GWEN_BUFFER *mbuf;
 
@@ -1829,6 +1832,16 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 			       GWEN_Buffer_GetStart(mbuf));
 	  GWEN_Buffer_free(mbuf);
         }
+
+        /* TODO: read list of accounts and check which of those we already have
+         * Note to self:
+         * We have one example, where there are 3 accounts reported by the bank:
+         * - ACCID+SUFFIX+COUNTRY+BLZ+    +CUSTOMERID+TYPE+CURRENCY -> Wertpapier
+         * - ACCID+SUFFIX+COUNTRY+BLZ+IBAN+CUSTOMERID+TYPE+CURRENCY -> Giro
+         * -      +      +       +   +    +CUSTOMERID+    +         -> no name, no real account
+         * so we need to figure out from such a list what accounts to import.
+         * We also can't use AB_Banking_FindAccount() for this because it lacks the special TYPE information...
+         */
 
         acc=AB_Banking_FindAccount(ab, AH_PROVIDER_NAME,
                                    "de", /* TODO: get country */
