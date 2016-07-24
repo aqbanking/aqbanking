@@ -20,6 +20,7 @@ typedef struct AH_ACCOUNT AH_ACCOUNT;
 struct AH_ACCOUNT {
   AH_HBCI *hbci;
   uint32_t flags;
+  GWEN_DB_NODE *dbTempUpd;
 };
 
 static void GWENHYWFAR_CB AH_Account_freeData(void *bp, void *p);

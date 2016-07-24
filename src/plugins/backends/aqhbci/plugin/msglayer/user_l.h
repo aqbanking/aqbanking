@@ -59,11 +59,7 @@ GWEN_DB_NODE *AH_User_GetUpd(const AB_USER *u);
 void AH_User_SetUpd(AB_USER *u, GWEN_DB_NODE *n);
 
 GWEN_DB_NODE *AH_User_GetUpdForAccount(const AB_USER *u, const AB_ACCOUNT *acc);
-
-GWEN_DB_NODE *AH_User_GetUpdForAccountIdAndSuffix(const AB_USER *u,
-                                                  const char *sAccountNumber,
-                                                  const char *sAccountSuffix);
-
+GWEN_DB_NODE *AH_User_GetUpdForAccountUniqueId(const AB_USER *u, uint32_t uid);
 
 
 int AH_User_GetUpdVersion(const AB_USER *u);

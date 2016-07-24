@@ -81,6 +81,11 @@ static void AH_User_LoadSepaDescriptors(AB_USER *u);
 static int AH_User_AddTextWithoutTags(const char *s, GWEN_BUFFER *obuf);
 
 
+static GWEN_DB_NODE *AH_User_GetUpdForAccountIdAndSuffix(const AB_USER *u,
+                                                         const char *sAccountNumber,
+                                                         const char *sAccountSuffix);
+
+
 #endif /* AH_USER_P_H */
 
 

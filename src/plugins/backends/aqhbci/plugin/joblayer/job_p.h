@@ -23,7 +23,6 @@ struct AH_JOB {
 
   char *name;
   char *code;
-  char *accountId;
   char *description;
   char *responseName;
 

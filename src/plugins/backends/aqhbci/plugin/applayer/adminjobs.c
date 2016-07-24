@@ -54,7 +54,7 @@ AH_JOB *AH_Job_GetKeys_new(AB_USER *u){
   int version;
 
   assert(u);
-  j=AH_Job_new("JobGetKeys", u, 0, 0, 0);
+  j=AH_Job_new("JobGetKeys", u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "JobGetKeys not supported, should not happen");
@@ -351,9 +351,9 @@ AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
   assert(u);
 
   if (authKeyInfo)
-    j=AH_Job_new("JobSendKeysWithAuthKey", u, 0, 0, 0);
+    j=AH_Job_new("JobSendKeysWithAuthKey", u, 0, 0);
   else
-    j=AH_Job_new("JobSendKeys", u, 0, 0, 0);
+    j=AH_Job_new("JobSendKeys", u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "JobSendKeys not supported, should not happen");
     return NULL;
@@ -597,7 +597,7 @@ AH_JOB *AH_Job_UpdateBank_new(AB_USER *u) {
   AH_JOB_UPDATEBANK *jd;
 
   assert(u);
-  j=AH_Job_new("JobUpdateBankInfo", u, 0, 0, 0);
+  j=AH_Job_new("JobUpdateBankInfo", u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "JobUpdateBankInfo not supported, should not happen");
     return 0;
@@ -647,7 +647,8 @@ int AH_Job_UpdateBank_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   jd=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_UPDATEBANK, j);
   assert(jd);
 
-  /* TODO: Do we really need this? We already have this kind of code in AH_Job */
+  /* This function is just for informational purposes, the real account handling is done in
+   * AH_Job_CommitSystemData() */
 
   if (jd->scanned)
     return 0;
@@ -665,13 +666,9 @@ int AH_Job_UpdateBank_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
   /* search for "AccountData" */
   accs=0;
-  dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
+  dbCurr=GWEN_DB_FindFirstGroup(dbResponses, "AccountData");
   while(dbCurr) {
-    dbAccountData=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-				   "data/AccountData2");
-    if (dbAccountData==NULL)
-      dbAccountData=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-				     "data/AccountData");
+    dbAccountData=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/AccountData");
     if (dbAccountData) {
       const char *accountId;
       const char *userName;
@@ -679,7 +676,7 @@ int AH_Job_UpdateBank_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       const char *bankCode;
       const char *accountSuffix;
       AB_ACCOUNT *acc;
-  
+
       DBG_INFO(AQHBCI_LOGDOMAIN, "Found an account candidate");
 
       /* account data found */
@@ -690,35 +687,35 @@ int AH_Job_UpdateBank_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       bankCode=GWEN_DB_GetCharValue(dbAccountData, "bankCode", 0, 0);
 
       if (accountId && *accountId &&
-	  bankCode && *bankCode) {
-	acc=AB_Banking_CreateAccount(ab, AH_PROVIDER_NAME);
-	assert(acc);
-        if (strcasecmp(GWEN_DB_GroupName(dbAccountData), "AccountData2")==0)
+          bankCode && *bankCode) {
+        acc=AB_Banking_CreateAccount(ab, AH_PROVIDER_NAME);
+        assert(acc);
+        if (GWEN_DB_GetIntValue(dbAccountData, "head/version", 0, 1)>=4)
           /* KTV in version 2 available */
           AH_Account_AddFlags(acc, AH_BANK_FLAGS_KTV2);
         else
           AH_Account_SubFlags(acc, AH_BANK_FLAGS_KTV2);
-	AB_Account_SetBankCode(acc, bankCode);
-	AB_Account_SetAccountNumber(acc, accountId);
+        AB_Account_SetBankCode(acc, bankCode);
+        AB_Account_SetAccountNumber(acc, accountId);
 
-	if (accountName)
-	  AB_Account_SetAccountName(acc, accountName);
+        if (accountName)
+          AB_Account_SetAccountName(acc, accountName);
         if (accountSuffix)
           AB_Account_SetSubAccountId(acc, accountSuffix);
         if (userName)
-	  AB_Account_SetOwnerName(acc, userName);
+          AB_Account_SetOwnerName(acc, userName);
 
         accs++;
-	AB_Account_List2_PushBack(jd->accountList, acc);
+        AB_Account_List2_PushBack(jd->accountList, acc);
       }
       else {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing information in account: BLZ=[%s], Kto=[%s], AccName=[%s]",
-		  bankCode?bankCode:"",
-		  accountId?accountId:"",
-		  accountName?accountName:"");
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing information in account: BLZ=[%s], Kto=[%s], AccName=[%s]",
+                  bankCode?bankCode:"",
+                  accountId?accountId:"",
+                  accountName?accountName:"");
       }
     }
-    dbCurr=GWEN_DB_GetNextGroup(dbCurr);
+    dbCurr=GWEN_DB_FindNextGroup(dbCurr, "AccountData");
   }
   if (!accs) {
     DBG_WARN(AQHBCI_LOGDOMAIN, "No accounts found");
@@ -773,7 +770,7 @@ AH_JOB *AH_Job_GetSysId_new(AB_USER *u){
   AH_JOB_GETSYSID *jd;
 
   assert(u);
-  j=AH_Job_new("JobSync", u, 0, 0, 0);
+  j=AH_Job_new("JobSync", u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "JobSync not supported, should not happen");
     return 0;
@@ -932,9 +929,9 @@ AH_JOB *AH_Job_TestVersion_new(AB_USER *u, int anon){
 
   assert(u);
   if (anon)
-    j=AH_Job_new("JobDialogInitAnon", u, 0, 0, 0);
+    j=AH_Job_new("JobDialogInitAnon", u, 0, 0);
   else
-    j=AH_Job_new("JobDialogInit", u, 0, 0, 0);
+    j=AH_Job_new("JobDialogInit", u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "JobTestVersion not supported, should not happen");
@@ -1084,7 +1081,7 @@ AH_JOB *AH_Job_GetStatus_new(AB_USER *u,
   AH_JOB_GETSTATUS *aj;
   GWEN_DB_NODE *dbArgs;
 
-  j=AH_Job_new("JobGetStatus", u, 0, 0, 0);
+  j=AH_Job_new("JobGetStatus", u, 0, 0);
   if (!j)
     return 0;
 
@@ -1199,7 +1196,7 @@ AH_JOB *AH_Job_Tan_new(AB_USER *u, int process, int jobVersion) {
   const char *s;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Looking for TAN job in version %d", jobVersion);
-  j=AH_Job_new("JobTan", u, 0, 0, jobVersion);
+  j=AH_Job_new("JobTan", u, 0, jobVersion);
   if (!j) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "TAN job in version %d not found", jobVersion);
     return NULL;
@@ -1683,7 +1680,7 @@ AH_JOB *AH_Job_GetItanModes_new(AB_USER *u){
   AH_JOB_GETITANMODES *jd;
 
   assert(u);
-  j=AH_Job_new("JobGetItanModes", u, 0, 0, 0);
+  j=AH_Job_new("JobGetItanModes", u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "JobGetItanModes not supported, should not happen");
@@ -1815,7 +1812,7 @@ AH_JOB *AH_Job_ChangePin_new(AB_USER *u, const char *newPin){
   GWEN_DB_NODE *dbArgs;
 
   assert(u);
-  j=AH_Job_new("JobChangePin", u, 0, 0, 0);
+  j=AH_Job_new("JobChangePin", u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "JobChangePin not supported, should not happen");
     return 0;
@@ -1859,7 +1856,7 @@ AH_JOB *AH_Job_GetAccountSepaInfo_new(AB_USER *u, AB_ACCOUNT *acc) {
   const char *s;
 
   assert(u);
-  j=AH_Job_new("JobGetAccountSepaInfo", u, 0, 0, 0);
+  j=AH_Job_new("JobGetAccountSepaInfo", u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "JobGetAccountSepaInfo not supported, should not happen");
     return 0;

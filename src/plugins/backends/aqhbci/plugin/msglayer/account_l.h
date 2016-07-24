@@ -27,6 +27,10 @@ int AH_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
 AH_HBCI *AH_Account_GetHbci(const AB_ACCOUNT *a);
 
 
+GWEN_DB_NODE *AH_Account_GetDbTempUpd(const AB_ACCOUNT *a);
+void AH_Account_SetDbTempUpd(AB_ACCOUNT *a, GWEN_DB_NODE *db);
+
+
 #endif /* AH_ACCOUNT_L_H */
 
 

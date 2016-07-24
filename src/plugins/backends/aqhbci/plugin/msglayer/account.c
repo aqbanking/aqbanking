@@ -87,6 +87,10 @@ void GWENHYWFAR_CB AH_Account_freeData(void *bp, void *p) {
   AH_ACCOUNT *ae;
 
   ae=(AH_ACCOUNT*) p;
+
+  if (ae->dbTempUpd)
+    GWEN_DB_Group_free(ae->dbTempUpd);
+
   GWEN_FREE_OBJECT(ae);
 }
 
@@ -239,6 +243,31 @@ void AH_Account_SubFlags(AB_ACCOUNT *a, uint32_t flags) {
   ae->flags&=~flags;
 }
 
+
+
+GWEN_DB_NODE *AH_Account_GetDbTempUpd(const AB_ACCOUNT *a) {
+  AH_ACCOUNT *ae;
+
+  assert(a);
+  ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
+  assert(ae);
+
+  return ae->dbTempUpd;
+}
+
+
+
+void AH_Account_SetDbTempUpd(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+  AH_ACCOUNT *ae;
+
+  assert(a);
+  ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
+  assert(ae);
+
+  if (ae->dbTempUpd)
+    GWEN_DB_Group_free(ae->dbTempUpd);
+  ae->dbTempUpd=db;
+}
 
 
 

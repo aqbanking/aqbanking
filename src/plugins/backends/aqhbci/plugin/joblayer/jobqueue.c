@@ -748,7 +748,8 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
     DBG_INFO(AQHBCI_LOGDOMAIN, "Handling response \"%s\"",
              GWEN_DB_GroupName(dbCurr));
 
-    dbResponse=GWEN_DB_Group_new("response");
+    /* use same name for main response group */
+    dbResponse=GWEN_DB_Group_new(GWEN_DB_GroupName(dbCurr));
     /* add security group */
     GWEN_DB_AddGroup(dbResponse, GWEN_DB_Group_dup(dbSecurity));
     /* create data group */

@@ -737,9 +737,48 @@ GWEN_DB_NODE *AH_User_GetUpdForAccountIdAndSuffix(const AB_USER *u,
 
 
 GWEN_DB_NODE *AH_User_GetUpdForAccount(const AB_USER *u, const AB_ACCOUNT *acc){
-  return AH_User_GetUpdForAccountIdAndSuffix(u,
-                                             AB_Account_GetAccountNumber(acc),
-                                             AB_Account_GetSubAccountId(acc));
+  GWEN_DB_NODE *db=NULL;
+
+  db=AH_User_GetUpdForAccountUniqueId(u, AB_Account_GetUniqueId(acc));
+  if (db==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN,
+             "Falling back to previous storage of UPD for account \"%u\"",
+             AB_Account_GetUniqueId(acc));
+    db=AH_User_GetUpdForAccountIdAndSuffix(u,
+                                           AB_Account_GetAccountNumber(acc),
+                                           AB_Account_GetSubAccountId(acc));
+  }
+
+  return db;
+}
+
+
+
+GWEN_DB_NODE *AH_User_GetUpdForAccountUniqueId(const AB_USER *u, uint32_t uid) {
+  AH_USER *ue;
+  GWEN_DB_NODE *db;
+  char numbuf[32];
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  db=AH_User_GetUpd(u);
+  if (db==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No upd");
+    return NULL;
+  }
+
+  snprintf(numbuf, sizeof(numbuf)-1, "uaid-%08llx",
+           (unsigned long long int) uid);
+  numbuf[sizeof(numbuf)-1]=0;
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Checking upd for \"%s\"", numbuf);
+  db=GWEN_DB_GetGroup(db,
+                      GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                      numbuf);
+
+  return db;
 }
 
 

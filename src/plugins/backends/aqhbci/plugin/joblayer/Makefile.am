@@ -6,8 +6,6 @@ INCLUDES = -I$(aqbanking_symlinkdir) $(all_includes) \
 
 typefiles=tanmethod.xml
 
-EXTRA_DIST=$(typefiles)
-
 noinst_LTLIBRARIES=libhbcijob.la
 
 noinst_HEADERS=\
@@ -29,6 +27,11 @@ libhbcijob_la_SOURCES=\
   jobqueue.c \
   result.c \
   tanmethod.c
+
+
+EXTRA_DIST=$(typefiles) \
+  job_commit.c
+
 
 
 types: $(typefiles)
