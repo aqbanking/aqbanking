@@ -80,7 +80,7 @@ mp:
 	autoconf
 	PKG_CONFIG_PATH="$(PKG_CONFIG_PATH):./m4" \
 	  CXXFLAGS="-ggdb -Wall" \
-	  CFLAGS="$(MP_CFLAGS)" \
+	  CFLAGS="-ggdb -Wall" \
 	  ./configure $(MP_CONF_FLAGS) \
 	    --with-backends="aqhbci aqofxconnect aqebics"  \
 	    --prefix=/usr/local --enable-full-doc=yes
@@ -97,7 +97,7 @@ clang:
 	  CC=clang \
 	  CXX=clang \
 	  CXXFLAGS="-ggdb -Wall" \
-	  CFLAGS="$(MP_CFLAGS)" \
+	  CFLAGS="-ggdb -Wall" \
 	  ./configure $(MP_CONF_FLAGS) \
 	    --with-backends="aqhbci aqofxconnect aqebics"
 	make sources
@@ -111,7 +111,7 @@ mp-priv:
 	autoconf
 	PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./m4" \
 	  CXXFLAGS="-ggdb -Wall" \
-	  CFLAGS="$(MP_CFLAGS)" \
+	  CFLAGS="-ggdb -Wall" \
           LIBOFX_CFLAGS="-I/opt/devel/4/include" \
 	  LIBOFX_LIBS="-L/opt/devel/4/lib -lofx" \
 	  ./configure $(MP_CONF_FLAGS) \
