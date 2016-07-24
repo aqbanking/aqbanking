@@ -355,6 +355,8 @@ int AH_Job__Commit_Accounts(AH_JOB *j){
 	  if (s && *s)
 	    AB_Account_SetCurrency(storedAcc, s);
 
+	  AB_Account_SetAccountType(storedAcc, AB_Account_GetAccountType(acc));
+
 	  /* use flags from new account */
 	  AH_Account_AddFlags(storedAcc, AH_Account_GetFlags(acc));
 
