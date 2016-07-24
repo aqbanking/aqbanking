@@ -63,7 +63,9 @@ typedef enum {
   AB_AccountType_Savings,
   AB_AccountType_Investment,
   AB_AccountType_Cash,
-  AB_AccountType_MoneyMarket
+  AB_AccountType_MoneyMarket,
+  AB_AccountType_Credit,
+  AB_AccountType_Last
 } AB_ACCOUNT_TYPE;
 
 #ifdef __cplusplus
@@ -180,6 +182,9 @@ AQBANKING_API
 AB_USER *AB_Account_GetFirstUser(const AB_ACCOUNT *acc);
 
 AQBANKING_API
+int AB_Account_HasUser(const AB_ACCOUNT *a, uint32_t uid);
+
+AQBANKING_API
 void AB_Account_SetUsers(AB_ACCOUNT *acc, const AB_USER_LIST2 *ul);
 
 AQBANKING_API
@@ -191,6 +196,9 @@ AB_USER_LIST2 *AB_Account_GetSelectedUsers(const AB_ACCOUNT *acc);
 
 AQBANKING_API
 AB_USER *AB_Account_GetFirstSelectedUser(const AB_ACCOUNT *acc);
+
+AQBANKING_API
+int AB_Account_HasSelectedUser(const AB_ACCOUNT *a, uint32_t uid);
 
 AQBANKING_API
 void AB_Account_SetSelectedUsers(AB_ACCOUNT *acc, const AB_USER_LIST2 *ul);

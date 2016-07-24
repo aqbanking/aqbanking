@@ -320,6 +320,35 @@ AB_USER *AB_Account_GetFirstUser(const AB_ACCOUNT *a) {
 
 
 
+int AB_Account_HasUser(const AB_ACCOUNT *a, uint32_t uid) {
+  GWEN_STRINGLISTENTRY *se;
+
+  assert(a);
+  assert(a->usage);
+
+  se=GWEN_StringList_FirstEntry(a->userIds);
+  while(se) {
+    const char *s;
+
+    s=GWEN_StringListEntry_Data(se);
+    if (s) {
+      unsigned int id;
+
+      if (1==sscanf(s, "%u", &id)) {
+        if (id==uid)
+          return 0;
+      }
+    }
+
+    se=GWEN_StringListEntry_Next(se);
+  }
+
+  DBG_INFO(AQBANKING_LOGDOMAIN, "User with id \"%u\" not found", uid);
+  return GWEN_ERROR_NOT_FOUND;
+}
+
+
+
 void AB_Account_SetUsers(AB_ACCOUNT *a, const AB_USER_LIST2 *ul) {
   assert(a);
   assert(a->usage);
@@ -437,6 +466,35 @@ AB_USER *AB_Account_GetFirstSelectedUser(const AB_ACCOUNT *a) {
   }
 
   return NULL;
+}
+
+
+
+int AB_Account_HasSelectedUser(const AB_ACCOUNT *a, uint32_t uid) {
+  GWEN_STRINGLISTENTRY *se;
+
+  assert(a);
+  assert(a->usage);
+
+  se=GWEN_StringList_FirstEntry(a->selectedUserIds);
+  while(se) {
+    const char *s;
+
+    s=GWEN_StringListEntry_Data(se);
+    if (s) {
+      unsigned int id;
+
+      if (1==sscanf(s, "%u", &id)) {
+        if (id==uid)
+          return 0;
+      }
+    }
+
+    se=GWEN_StringListEntry_Next(se);
+  }
+
+  DBG_INFO(AQBANKING_LOGDOMAIN, "User with id \"%u\" not found", uid);
+  return GWEN_ERROR_NOT_FOUND;
 }
 
 

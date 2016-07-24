@@ -262,6 +262,46 @@ AB_ACCOUNT_LIST2 *AB_Banking_FindAccounts(const AB_BANKING *ab,
                                           const char *accountId,
                                           const char *subAccountId);
 
+
+/**
+ * This function returns the first account which matches the given parameters.
+ * For all parameters wildcards ("*") and joker ("?") are allowed.
+ * This function also takes the account type into account.
+ */
+AQBANKING_API
+AB_ACCOUNT *AB_Banking_FindAccount2(const AB_BANKING *ab,
+                                    const char *backendName,
+                                    const char *country,
+                                    const char *bankId,
+                                    const char *accountId,
+                                    const char *subAccountId,
+                                    const char *iban,
+                                    AB_ACCOUNT_TYPE ty);
+
+
+/**
+ * This function returns a list of accounts which match the given
+ * parameters.
+ * For all parameters wildcards ("*") and joker ("?") are allowed.
+ * If no account matches (or there simply are no accounts) then NULL is
+ * returned.
+ * The caller is responsible for freeing the list returned (ifany) by calling
+ * @ref AB_Account_List2_free.
+ * AqBanking still remains the owner of every account reported via this
+ * function, so you MUST NOT call @ref AB_Account_List2_FreeAll.
+ * This function also takes the account type into account.
+ */
+AQBANKING_API
+AB_ACCOUNT_LIST2 *AB_Banking_FindAccounts2(const AB_BANKING *ab,
+                                           const char *backendName,
+                                           const char *country,
+                                           const char *bankId,
+                                           const char *accountId,
+                                           const char *subAccountId,
+                                           const char *iban,
+                                           AB_ACCOUNT_TYPE ty);
+
+
 /**
  * Creates an account and shows it to the backend (which might want to extend
  * the newly created account in order to associate some data with it).

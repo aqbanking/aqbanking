@@ -22,7 +22,7 @@ extern "C" {
 #include <aqbanking/account.h>
 
 
-GWEN_LIST_FUNCTION_DEFS(AB_ACCOUNT, AB_Account)
+GWEN_LIST_FUNCTION_LIB_DEFS(AB_ACCOUNT, AB_Account, AQBANKING_API)
 
 
 /**
