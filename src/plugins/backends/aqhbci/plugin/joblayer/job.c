@@ -264,6 +264,7 @@ AH_JOB *AH_Job_new(const char *name,
     GWEN_DB_NODE *updgroup;
     GWEN_DB_NODE *updnode=NULL;
 
+    /* TODO: try unique id, then try old approach (blz/accnum) */
     updgroup=AH_User_GetUpdForAccountUniqueId(u, auid);
     if (updgroup) {
       const char *code;
