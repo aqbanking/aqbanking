@@ -137,11 +137,12 @@ int AH_Job__Commit_Accounts(AH_JOB *j){
     dbCurr=GWEN_DB_FindNextGroup(dbCurr, "AccountData");
   }
 
+#if 0
   if (AB_Account_List_GetCount(accList)<1) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Found no accounts");
     GWEN_DB_Dump(dbJob, 2);
   }
-
+#endif
 
   /* only keep accounts which have at least IBAN or bankcode and account number */
   DBG_INFO(AQHBCI_LOGDOMAIN, "Checking for empty accounts");
