@@ -21,7 +21,6 @@
 #include "hbci_l.h"
 #include "adminjobs_l.h"
 #include "dialog_l.h"
-#include "jobmultitransfer_l.h"
 #include <aqhbci/provider.h>
 #include <aqbanking/job_be.h>
 #include <aqbanking/banking_be.h>

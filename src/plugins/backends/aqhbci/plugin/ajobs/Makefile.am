@@ -17,16 +17,6 @@ noinst_HEADERS=\
   jobgetbalance_p.h \
   jobgettransactions_l.h \
   jobgettransactions_p.h \
-  jobgetstandingorders_l.h \
-  jobgetstandingorders_p.h \
-  jobgetdatedxfers_l.h \
-  jobgetdatedxfers_p.h \
-  jobsingletransfer_l.h \
-  jobsingletransfer_p.h \
-  jobeutransfer_l.h \
-  jobeutransfer_p.h \
-  jobmultitransfer_l.h \
-  jobmultitransfer_p.h \
   jobforeignxferwh_l.h \
   jobforeignxferwh_p.h \
   jobloadcellphone_l.h \
@@ -55,11 +45,6 @@ libhbciaccjobs_la_SOURCES=\
   accountjob.c \
   jobgetbalance.c \
   jobgettransactions.c \
-  jobgetdatedxfers.c \
-  jobgetstandingorders.c \
-  jobsingletransfer.c \
-  jobeutransfer.c \
-  jobmultitransfer.c \
   jobforeignxferwh.c \
   jobloadcellphone.c \
   jobsepadebitdatedsinglecreate.c \
@@ -87,20 +72,7 @@ sources:
 xmlfiles=\
   $(srcdir)/jobgetbalance.xml \
   $(srcdir)/jobgettransactions.xml \
-  $(srcdir)/jobgetstandingorders.xml \
-  $(srcdir)/jobsingletransfer.xml \
-  $(srcdir)/jobsingledebitnote.xml \
-  $(srcdir)/jobinternaltransfer.xml \
-  $(srcdir)/jobeutransfer.xml \
-  $(srcdir)/jobmultitransfer.xml \
   $(srcdir)/jobforeignxferwh.xml \
-  $(srcdir)/jobcreatesto.xml \
-  $(srcdir)/jobmodifysto.xml \
-  $(srcdir)/jobdeletesto.xml \
-  $(srcdir)/jobgetdatedxfers.xml \
-  $(srcdir)/jobcreatedatedxfer.xml \
-  $(srcdir)/jobmodifydatedxfer.xml \
-  $(srcdir)/jobdeletedatedxfer.xml \
   $(srcdir)/jobloadcellphone.xml \
   $(srcdir)/jobsepadebitdatedsinglecreate.xml \
   $(srcdir)/jobsepadebitdatedmulticreate.xml \
