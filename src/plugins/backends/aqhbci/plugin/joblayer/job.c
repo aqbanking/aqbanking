@@ -43,8 +43,8 @@ GWEN_INHERIT_FUNCTIONS(AH_JOB);
 
 AH_JOB *AH_Job_new(const char *name,
 		   AB_USER *u,
-                   uint32_t auid,
-		   int jobVersion) {
+                   AB_ACCOUNT *acc,
+                   int jobVersion) {
   AH_JOB *j;
   GWEN_XMLNODE *node;
   GWEN_XMLNODE *jobNode=0;
@@ -260,12 +260,11 @@ AH_JOB *AH_Job_new(const char *name,
   } /* if paramName */
 
   /* get UPD jobs (if any) */
-  if (auid>0) {
+  if (acc) {
     GWEN_DB_NODE *updgroup;
     GWEN_DB_NODE *updnode=NULL;
 
-    /* TODO: try unique id, then try old approach (blz/accnum) */
-    updgroup=AH_User_GetUpdForAccountUniqueId(u, auid);
+    updgroup=AH_User_GetUpdForAccount(u, acc);
     if (updgroup) {
       const char *code;
 
@@ -292,7 +291,7 @@ AH_JOB *AH_Job_new(const char *name,
     }
     else if (needsBPD) {
       DBG_INFO(AQHBCI_LOGDOMAIN,"Job \"%s\" not enabled for account \"%u\"",
-               name, auid);
+               name, AB_Account_GetUniqueId(acc));
       AH_Job_free(j);
       return NULL;
     }

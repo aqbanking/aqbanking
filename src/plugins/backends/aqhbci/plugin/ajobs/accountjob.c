@@ -103,7 +103,7 @@ AH_JOB *AH_AccountJob_new(const char *name,
     }
   }
 
-  j=AH_Job_new(name, u, AB_Account_GetUniqueId(account), jobVersion);
+  j=AH_Job_new(name, u, account, jobVersion);
   if (!j)
     return 0;
 

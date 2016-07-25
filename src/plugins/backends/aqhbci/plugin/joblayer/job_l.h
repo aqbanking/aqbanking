@@ -113,7 +113,7 @@ typedef int (*AH_JOB_NEXTMSG_FN)(AH_JOB *j);
 /*@{*/
 AH_JOB *AH_Job_new(const char *name,
                    AB_USER *u,
-                   uint32_t auid,
+                   AB_ACCOUNT *acc,
                    int jobVersion);
 void AH_Job_free(AH_JOB *j);
 void AH_Job_Attach(AH_JOB *j);
