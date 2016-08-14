@@ -68,6 +68,8 @@ int AH_Job__Commit_Accounts(AH_JOB *j){
       /* account data found */
       acc=AB_Banking_CreateAccount(ab, AH_PROVIDER_NAME);
       assert(acc);
+      /* AB_Banking_CreateAccount() already assigns a unique id, we don't want that just yet */
+      AB_Account_SetUniqueId(acc, 0);
 
       AB_Account_SetBankCode(acc, GWEN_DB_GetCharValue(dbAccountData, "bankCode", 0, 0));
       AB_Account_SetAccountNumber(acc, GWEN_DB_GetCharValue(dbAccountData, "accountId", 0, 0));
