@@ -218,11 +218,7 @@ GWEN_TIME *AB_ImExporterYN__ReadTime(AB_IMEXPORTER *ie,
 
 AB_TRANSACTION *AB_ImExporterYN__ReadLNE_LNS(AB_IMEXPORTER *ie,
                                              AB_IMEXPORTER_ACCOUNTINFO *ai,
-                                             GWEN_XMLNODE *node) {
-  GWEN_XMLNODE *n;
-
-  n=GWEN_XMLNode_FindFirstTag(node, "SG6", 0, 0);
-  if (n) {
+                                             GWEN_XMLNODE *n) {
     AB_TRANSACTION *t;
     GWEN_XMLNODE *nn;
     GWEN_TIME *ti=0;
@@ -291,9 +287,6 @@ AB_TRANSACTION *AB_ImExporterYN__ReadLNE_LNS(AB_IMEXPORTER *ie,
     }
 
     return t;
-  }
-
-  return 0;
 }
 
 
@@ -317,17 +310,20 @@ int AB_ImExporterYN__ReadTransactions(AB_IMEXPORTER *ie,
           (strcasecmp(s, "LNE")==0 ||
            strcasecmp(s, "LNS")==0)
          ) {
-	AB_TRANSACTION *t;
 
-	t=AB_ImExporterYN__ReadLNE_LNS(ie, ai, n);
-	if (t) {
+	nn = GWEN_XMLNode_FindFirstTag(n, "SG6", 0, 0);
+	while (nn) {
+	  AB_TRANSACTION *t;
 	  const char *s;
 
+	  t=AB_ImExporterYN__ReadLNE_LNS(ie, ai, n);
 	  s=AB_ImExporterAccountInfo_GetAccountNumber(ai);
 	  AB_Transaction_SetLocalAccountNumber(t, s);
 	  s=AB_ImExporterAccountInfo_GetIban(ai);
 	  AB_Transaction_SetLocalIban(t, s);
 	  AB_ImExporterAccountInfo_AddTransaction(ai, t);
+	  
+	  nn=GWEN_XMLNode_FindNextTag(nn, "SG6", 0, 0);
 	}
       }
     }
