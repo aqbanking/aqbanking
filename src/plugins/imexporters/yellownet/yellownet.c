@@ -219,10 +219,6 @@ GWEN_TIME *AB_ImExporterYN__ReadTime(AB_IMEXPORTER *ie,
 AB_TRANSACTION *AB_ImExporterYN__ReadLNE_LNS(AB_IMEXPORTER *ie,
                                              AB_IMEXPORTER_ACCOUNTINFO *ai,
                                              GWEN_XMLNODE *node) {
-  GWEN_XMLNODE *n;
-
-  n=GWEN_XMLNode_FindFirstTag(node, "SG6", 0, 0);
-  if (n) {
     AB_TRANSACTION *t;
     GWEN_XMLNODE *nn;
     GWEN_TIME *ti=0;
@@ -231,7 +227,7 @@ AB_TRANSACTION *AB_ImExporterYN__ReadLNE_LNS(AB_IMEXPORTER *ie,
     t=AB_Transaction_new();
 
     /* get date */
-    nn=GWEN_XMLNode_FindFirstTag(n, "DTM", 0, 0);
+    nn=GWEN_XMLNode_FindFirstTag(node, "DTM", 0, 0);
     if (nn)
       ti=AB_ImExporterYN__ReadTime(ie, nn, 209);
     AB_Transaction_SetValutaDate(t, ti);
@@ -239,7 +235,7 @@ AB_TRANSACTION *AB_ImExporterYN__ReadLNE_LNS(AB_IMEXPORTER *ie,
     ti=0;
 
     /* read amount */
-    nn=GWEN_XMLNode_FindFirstTag(n, "MOA", 0, 0);
+    nn=GWEN_XMLNode_FindFirstTag(node, "MOA", 0, 0);
     if (nn) {
       /* Gutschrift */
       val=AB_ImExporterYN__ReadValue(ie, nn, 210);
@@ -263,7 +259,7 @@ AB_TRANSACTION *AB_ImExporterYN__ReadLNE_LNS(AB_IMEXPORTER *ie,
     val=0;
 
     /* read purpose */
-    nn=GWEN_XMLNode_GetNodeByXPath(n, "FTX/C108",
+    nn=GWEN_XMLNode_GetNodeByXPath(node, "FTX/C108",
 				   GWEN_PATH_FLAGS_NAMEMUSTEXIST);
     if (nn) {
       GWEN_XMLNODE *nnn;
@@ -291,9 +287,6 @@ AB_TRANSACTION *AB_ImExporterYN__ReadLNE_LNS(AB_IMEXPORTER *ie,
     }
 
     return t;
-  }
-
-  return 0;
 }
 
 
@@ -317,17 +310,19 @@ int AB_ImExporterYN__ReadTransactions(AB_IMEXPORTER *ie,
           (strcasecmp(s, "LNE")==0 ||
            strcasecmp(s, "LNS")==0)
          ) {
-	AB_TRANSACTION *t;
-
-	t=AB_ImExporterYN__ReadLNE_LNS(ie, ai, n);
-	if (t) {
+	nn = GWEN_XMLNode_FindFirstTag(n, "SG6", 0, 0);
+	while(nn) {
+	  AB_TRANSACTION *t;
 	  const char *s;
 
+	  t=AB_ImExporterYN__ReadLNE_LNS(ie, ai, nn);
 	  s=AB_ImExporterAccountInfo_GetAccountNumber(ai);
 	  AB_Transaction_SetLocalAccountNumber(t, s);
 	  s=AB_ImExporterAccountInfo_GetIban(ai);
 	  AB_Transaction_SetLocalIban(t, s);
 	  AB_ImExporterAccountInfo_AddTransaction(ai, t);
+
+	  nn=GWEN_XMLNode_FindNextTag(nn, "SG6", 0, 0);
 	}
       }
     }
