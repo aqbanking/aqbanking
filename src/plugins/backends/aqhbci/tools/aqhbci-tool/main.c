@@ -233,6 +233,10 @@ int main(int argc, char **argv) {
                                   "    Deletes account \n\n"));
 
     GWEN_Buffer_AppendString(ubuf,
+                             I18N("  sethbciversion:\n"
+                                  "    Set the HBCI protocol version to be used\n\n"));
+
+    GWEN_Buffer_AppendString(ubuf,
                              I18N("  setMaxTransfers:\n"
                                   "    Set the maximum number of transfers/debit notes per job \n\n"));
 
