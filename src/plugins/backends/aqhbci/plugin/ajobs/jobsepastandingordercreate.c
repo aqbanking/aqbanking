@@ -187,6 +187,7 @@ int AH_Job_SepaStandingOrderCreate_ExchangeArgs(AH_JOB *j, AB_JOB *bj, AB_IMEXPO
   int rv;
   AB_USER *u;
   uint32_t uflags;
+  const char *s;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging args");
 
@@ -235,10 +236,18 @@ int AH_Job_SepaStandingOrderCreate_ExchangeArgs(AH_JOB *j, AB_JOB *bj, AB_IMEXPO
     return rv;
   }
 
-  rv=AB_Transaction_CheckFirstExecutionDateAgainstLimits(t, lim);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
+  /* CheckFirstExecutionDateAgainstLimits for standingordercreate only */
+  s=AB_Transaction_GetFiId(t);
+  if (s) {
+    DBG_INFO(AQHBCI_LOGDOMAIN,
+           "Check FirstExecutionDate for delete or modify DISABLED");
+  }
+  else {
+    rv=AB_Transaction_CheckFirstExecutionDateAgainstLimits(t, lim);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
   }
 
 
