@@ -100,7 +100,7 @@ void AH_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
 			 "useStrictSepaCharset");
   if (flags & AH_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-			 "ignPrematureClose");
+			 "tlsIgnPrematureClose");
 }
 
 
@@ -136,7 +136,7 @@ uint32_t AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
       fl|=AH_USER_FLAGS_TLS_ONLY_SAFE_CIPHERS;
     else if (strcasecmp(s, "useStrictSepaCharset")==0)
       fl|=AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET;
-    else if (strcasecmp(s, "ignPrematureClose")==0)
+    else if (strcasecmp(s, "tlsIgnPrematureClose")==0)
       fl|=AH_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE;
     else {
       DBG_WARN(AQHBCI_LOGDOMAIN, "Unknown user flag \"%s\"", s);
