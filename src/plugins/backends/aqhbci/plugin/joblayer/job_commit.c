@@ -389,8 +389,8 @@ int AH_Job__Commit_Accounts(AH_JOB *j){
       else {
 	/* account is new, add it (CAVEAT: takes over account!) */
 	DBG_INFO(AQHBCI_LOGDOMAIN, "Account is new, adding");
-	AB_Account_SetUser(storedAcc, j->user);
-	AB_Account_SetSelectedUser(storedAcc, j->user);
+	AB_Account_SetUser(acc, j->user);
+	AB_Account_SetSelectedUser(acc, j->user);
 	rv=AB_Banking_AddAccount(ab, acc);
 	if (rv<0) {
 	  DBG_ERROR(AQHBCI_LOGDOMAIN, "Coud not add account (%d)", rv);
