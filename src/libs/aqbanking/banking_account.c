@@ -286,9 +286,17 @@ int AB_Banking_AddAccount(AB_BANKING *ab, AB_ACCOUNT *a) {
   char groupName[32];
   GWEN_DB_NODE *db;
   GWEN_DB_NODE *dbP;
+  uint32_t uid;
 
   assert(ab);
   assert(a);
+
+  uid=AB_Banking_GetUniqueId(ab);
+  assert(uid);
+  AB_Account_SetUniqueId(a, uid);
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Assigning unique id %lu to added account", (unsigned long int) uid);
+
+
   rv=AB_Provider_ExtendAccount(AB_Account_GetProvider(a), a,
 			       AB_ProviderExtendMode_Add,
 			       NULL);

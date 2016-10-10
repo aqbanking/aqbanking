@@ -284,8 +284,11 @@ int AH_Job__Commit_Accounts(AH_JOB *j){
       }
 
       if (storedAcc) {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "Found a matching account");
-	AB_Account_SetUniqueId(acc, AB_Account_GetUniqueId(storedAcc));
+	uint32_t uniqueId;
+
+	uniqueId=AB_Account_GetUniqueId(storedAcc);
+	DBG_INFO(AQHBCI_LOGDOMAIN, "Found a matching account (%x)", uniqueId);
+	AB_Account_SetUniqueId(acc, uniqueId);
       }
 
       acc=AB_Account_List_Next(acc);
@@ -453,7 +456,8 @@ int AH_Job__Commit_Bpd(AH_JOB *j){
   int rv;
   GWEN_MSGENGINE *e;
 
-  dbJob=GWEN_DB_GetFirstGroup(j->jobResponses);
+  //dbJob=GWEN_DB_GetFirstGroup(j->jobResponses);
+  dbJob=j->jobResponses;
 
   rv=AH_Job__GetJobGroup(dbJob, "bpd", &dbRd);
   if (rv<0) {
@@ -461,7 +465,8 @@ int AH_Job__Commit_Bpd(AH_JOB *j){
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
-    DBG_INFO(AQHBCI_LOGDOMAIN, "No BPD in response");
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No BPD in response for job %s", AH_Job_GetName(j));
+    GWEN_DB_Dump(j->jobResponses, 2);
     return 0;
   }
 
@@ -660,6 +665,14 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 
   /* GWEN_DB_Dump(j->jobResponses, 2); */
 
+  /* try to extract accounts */
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Committing accounts");
+  rv=AH_Job__Commit_Accounts(j);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
   /* try to extract bank parameter data */
   DBG_INFO(AQHBCI_LOGDOMAIN, "Committing BPD");
   rv=AH_Job__Commit_Bpd(j);
@@ -668,13 +681,6 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
     return rv;
   }
 
-  /* try to extract accounts */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Committing accounts");
-  rv=AH_Job__Commit_Accounts(j);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
 
   dbCurr=GWEN_DB_GetFirstGroup(j->jobResponses);
   while(dbCurr) {
