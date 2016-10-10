@@ -649,7 +649,20 @@ int AB_Banking_LoadAllAccounts(AB_BANKING *ab) {
 	  if (a) {
 	    const char *s;
 	    AB_PROVIDER *pro;
-  
+            uint32_t uid;
+
+            /* assign id to newly added accounts. This is needed to correct
+             * a bug in a previous version where accounts were stored without
+             * a unique id.
+             */
+            uid=AB_Account_GetUniqueId(a);
+            if (uid==0) {
+              DBG_WARN(AQBANKING_LOGDOMAIN, "Setting unique account id (was missing)");
+              uid=AB_Banking_GetUniqueId(ab);
+              assert(uid);
+              AB_Account_SetUniqueId(a, uid);
+            }
+
 	    AB_Account_SetDbId(a, t);
 	    s=AB_Account_GetBackendName(a);
 	    assert(s && *s);
