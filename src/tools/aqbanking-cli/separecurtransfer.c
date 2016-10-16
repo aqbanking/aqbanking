@@ -230,7 +230,7 @@ int sepaRecurTransfer(AB_BANKING *ab,
     0,
     "nextExecutionDate",
     "set date of next execution",
-    "set date of next execution instead of firstExecutionDate (delete and modify sto only)"
+    "set this date given from the command request --sepaSto   (delete and modify sto only)"
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT,
