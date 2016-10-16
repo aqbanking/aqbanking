@@ -202,8 +202,8 @@ int request(AB_BANKING *ab,
     1,                            /* maxnum */
     0,                            /* short option */
     "todate",                     /* long option */
-    "Specify the first date for which transactions are wanted (YYYYMMDD)", /* short */
-    "Specify the first date for which transactions are wanted (YYYYMMDD)" /* long */
+    "Specify the last date for which transactions are wanted (YYYYMMDD)", /* short */
+    "Specify the last date for which transactions are wanted (YYYYMMDD)" /* long */
   },
 
   {
