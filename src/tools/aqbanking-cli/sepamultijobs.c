@@ -345,7 +345,8 @@ int sepaMultiJobs(AB_BANKING *ab,
                  : AB_JobSepaDebitNote_new(a));
       rv=AB_Job_CheckAvailability(j);
       if (rv<0) {
-          DBG_ERROR(0, "Job not supported, in line %d.", transactionLine);
+          const char* jobtype = AB_Job_Type2Char(AB_Job_GetType(j));
+          DBG_ERROR(0, "Job %s not supported, in line %d.", jobtype, transactionLine);
           reallyExecute = 0;
       }
       rv=AB_Job_SetTransaction(j, t);

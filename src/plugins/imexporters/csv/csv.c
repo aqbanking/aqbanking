@@ -455,7 +455,7 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
         AB_ImExporterContext_AddTransaction(ctx, t);
       }
       else {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Empty group");
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Empty group (i.e. empty line in imported file)");
       }
     }
     else {
