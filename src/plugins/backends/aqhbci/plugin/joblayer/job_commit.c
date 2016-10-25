@@ -337,6 +337,10 @@ int AH_Job__Commit_Accounts(AH_JOB *j){
 	  if (s && *s)
 	    AB_Account_SetBankCode(storedAcc, s);
 
+	  s=AB_Account_GetBankName(acc);
+	  if (s && *s)
+	    AB_Account_SetBankName(storedAcc, s);
+
 	  s=AB_Account_GetAccountNumber(acc);
 	  if (s && *s)
 	    AB_Account_SetAccountNumber(storedAcc, s);
