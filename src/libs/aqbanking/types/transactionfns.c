@@ -465,7 +465,7 @@ int AB_Transaction_CheckFirstExecutionDateAgainstLimits(const AB_TRANSACTION *t,
       n=AB_TransactionLimits_GetMinValueSetupTime(lim);
       if (n && dt<n) {
         DBG_ERROR(AQBANKING_LOGDOMAIN,
-                  "Minimum setup time violated");
+                  "Minimum setup time violated (given %d but required min=%d)", dt, n);
         GWEN_Gui_ProgressLog2(0,
                               GWEN_LoggerLevel_Error,
                               I18N("Minimum setup time violated. "
@@ -478,7 +478,7 @@ int AB_Transaction_CheckFirstExecutionDateAgainstLimits(const AB_TRANSACTION *t,
       n=AB_TransactionLimits_GetMaxValueSetupTime(lim);
       if (n && dt>n) {
         DBG_ERROR(AQBANKING_LOGDOMAIN,
-                  "Maximum setup time violated");
+                  "Maximum setup time violated (given %d but allowed max=%d)", dt, n);
         GWEN_Gui_ProgressLog2(0,
                               GWEN_LoggerLevel_Error,
                               I18N("Maximum setup time violated. "
@@ -514,7 +514,7 @@ int AB_Transaction_CheckDateAgainstLimits(const AB_TRANSACTION *t, const AB_TRAN
       n=AB_TransactionLimits_GetMinValueSetupTime(lim);
       if (n && dt<n) {
         DBG_ERROR(AQBANKING_LOGDOMAIN,
-                  "Minimum setup time violated");
+                  "Minimum setup time violated (given %d but required min=%d)", dt, n);
         GWEN_Gui_ProgressLog2(0,
                               GWEN_LoggerLevel_Error,
                               I18N("Minimum setup time violated. "
@@ -527,7 +527,7 @@ int AB_Transaction_CheckDateAgainstLimits(const AB_TRANSACTION *t, const AB_TRAN
       n=AB_TransactionLimits_GetMaxValueSetupTime(lim);
       if (n && dt>n) {
         DBG_ERROR(AQBANKING_LOGDOMAIN,
-                  "Maximum setup time violated");
+                  "Maximum setup time violated (given %d but allowed max=%d)", dt, n);
         GWEN_Gui_ProgressLog2(0,
                               GWEN_LoggerLevel_Error,
                               I18N("Maximum setup time violated. "
@@ -589,24 +589,26 @@ int AB_Transaction_CheckDateAgainstSequenceLimits(const AB_TRANSACTION *t, const
       /* check minimum setup time */
       if (minTime && dt<minTime) {
         DBG_ERROR(AQBANKING_LOGDOMAIN,
-                  "Minimum setup time violated");
+                  "Minimum setup time violated (given %d but required min=%d for sequence type=%s)",
+                  dt, minTime, AB_Transaction_SequenceType_toString(AB_Transaction_GetSequenceType(t)));
         GWEN_Gui_ProgressLog2(0,
                               GWEN_LoggerLevel_Error,
                               I18N("Minimum setup time violated. "
-                                   "Dated transactions need to be at least %d days away"),
-			      minTime);
+                                   "Dated transactions need to be at least %d days away but %d days are requested"),
+                              minTime, dt);
         return GWEN_ERROR_INVALID;
       }
 
       /* check maximum setup time */
       if (maxTime && dt>maxTime) {
         DBG_ERROR(AQBANKING_LOGDOMAIN,
-                  "Maximum setup time violated");
+                  "Maximum setup time violated (given %d but allowed max=%d for sequence type=%s)",
+                  dt, maxTime, AB_Transaction_SequenceType_toString(AB_Transaction_GetSequenceType(t)));
         GWEN_Gui_ProgressLog2(0,
                               GWEN_LoggerLevel_Error,
                               I18N("Maximum setup time violated. "
-                                   "Dated transactions need to be at most %d days away"),
-                              maxTime);
+                                   "Dated transactions need to be at most %d days away but %d days are requested"),
+                              maxTime, dt);
         return GWEN_ERROR_INVALID;
       }
     }
