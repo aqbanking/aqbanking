@@ -1969,22 +1969,32 @@ int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       if (dbAccount) {
         /* there is account info, are there multiple accounts returned? */
         if (NULL!=GWEN_DB_FindNextGroup(dbAccount, "account")) {
+          const char *reqAccountId;
+          const char *reqBankCode;
+          const char *reqAccountSuffix;
+
+          /* yes, multiple accounts, find the one we requested */
           DBG_INFO(AQHBCI_LOGDOMAIN, "Multiple accounts returned in GetAccountSepaInfoResponse");
+          /* GWEN_DB_Dump(dbXA, 2); */
+
+          reqAccountId=AB_Account_GetAccountNumber(jd->account);
+          reqBankCode=AB_Account_GetBankCode(jd->account);
+          reqAccountSuffix=AB_Account_GetSubAccountId(jd->account);
+          if (reqAccountSuffix==NULL)
+            reqAccountSuffix="";
+
           while(dbAccount) {
-            const char *reqAccountId;
-            const char *reqBankCode;
-            const char *reqAccountSuffix;
-
-            /* yes, multiple accounts, find the one we requested */
-            reqAccountId=AB_Account_GetAccountNumber(jd->account);
-            reqBankCode=AB_Account_GetBankCode(jd->account);
-            reqAccountSuffix=AB_Account_GetSubAccountId(jd->account);
-
             accountId=GWEN_DB_GetCharValue(dbAccount, "accountId", 0, 0);
             accountSuffix=GWEN_DB_GetCharValue(dbAccount, "accountsubid", 0, 0);
+            if (accountSuffix==NULL)
+              accountSuffix="";
             bankCode=GWEN_DB_GetCharValue(dbAccount, "bankCode", 0, 0);
             sSepa=GWEN_DB_GetCharValue(dbAccount, "sepa", 0, "n");
 
+            DBG_DEBUG(AQHBCI_LOGDOMAIN,
+                      "- checking this account: bc=%s, an=%s, as=%s, sepa=%s (searching bc=%s, an=%s, as=%s)",
+                      bankCode, accountId, accountSuffix, sSepa,
+                      reqBankCode, reqAccountId, reqAccountSuffix);
             if (
                 (bankCode && reqBankCode && 0==strcasecmp(bankCode, reqBankCode)) &&
                 (accountId && reqAccountId && 0==strcasecmp(accountId, reqAccountId)) &&
