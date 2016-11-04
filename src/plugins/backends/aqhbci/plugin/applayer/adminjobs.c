@@ -1959,68 +1959,106 @@ int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
     dbXA=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
                           "data/GetAccountSepaInfoResponse");
     if (dbXA) {
+      GWEN_DB_NODE *dbAccount;
       const char *accountId;
       const char *bankCode;
       const char *accountSuffix;
-      const char *iban;
-      const char *bic;
       const char *sSepa;
-      int useWithSepa=0;
 
-      /* account data found */
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Found a GetAccountSepaInfoResponse segment");
-      accountId=GWEN_DB_GetCharValue(dbXA, "accountId", 0, 0);
-      accountSuffix=GWEN_DB_GetCharValue(dbXA, "accountsubid", 0, 0);
-      bankCode=GWEN_DB_GetCharValue(dbXA, "bankCode", 0, 0);
-      sSepa=GWEN_DB_GetCharValue(dbXA, "sepa", 0, "n");
-      if (strcasecmp(sSepa, "j")==0)
-        useWithSepa=1;
+      dbAccount=GWEN_DB_FindFirstGroup(dbXA, "account");
+      if (dbAccount) {
+        /* there is account info, are there multiple accounts returned? */
+        if (NULL!=GWEN_DB_FindNextGroup(dbAccount, "account")) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Multiple accounts returned in GetAccountSepaInfoResponse");
+          while(dbAccount) {
+            const char *reqAccountId;
+            const char *reqBankCode;
+            const char *reqAccountSuffix;
 
-      iban=GWEN_DB_GetCharValue(dbXA, "iban", 0, 0);
-      bic=GWEN_DB_GetCharValue(dbXA, "bic", 0, 0);
+            /* yes, multiple accounts, find the one we requested */
+            reqAccountId=AB_Account_GetAccountNumber(jd->account);
+            reqBankCode=AB_Account_GetBankCode(jd->account);
+            reqAccountSuffix=AB_Account_GetSubAccountId(jd->account);
 
-      rv=AB_Banking_BeginExclUseAccount(ab, jd->account);
-      if (rv<0) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Unable to lock account");
-      }
-      else {
-        if (accountSuffix)
-          AB_Account_SetSubAccountId(jd->account, accountSuffix);
-        AH_Account_AddFlags(jd->account, AH_BANK_FLAGS_KTV2); /* we have a sub id (even if emtpy), set flag */
+            accountId=GWEN_DB_GetCharValue(dbAccount, "accountId", 0, 0);
+            accountSuffix=GWEN_DB_GetCharValue(dbAccount, "accountsubid", 0, 0);
+            bankCode=GWEN_DB_GetCharValue(dbAccount, "bankCode", 0, 0);
+            sSepa=GWEN_DB_GetCharValue(dbAccount, "sepa", 0, "n");
 
-	if (useWithSepa) {
-	  DBG_INFO(AQHBCI_LOGDOMAIN, "SEPA available with this account");
-	  AH_Account_AddFlags(jd->account, AH_BANK_FLAGS_SEPA); /* we have a sub id (even if emtpy), set flag */
-	}
-	else {
-	  DBG_INFO(AQHBCI_LOGDOMAIN, "SEPA not available with this account");
-	  AH_Account_SubFlags(jd->account, AH_BANK_FLAGS_SEPA); /* we have a sub id (even if emtpy), set flag */
-	}
-
-        if (iban && *iban) {
-	  if (bic && *bic) {
-	    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Setting IBAN and BIC: %s/%s", iban, bic);
-	    AB_Account_SetIBAN(jd->account, iban);
-	    AB_Account_SetBIC(jd->account, bic);
-	  }
-	  else {
-	    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Setting IBAN (no BIC): %s", iban);
-	    AB_Account_SetIBAN(jd->account, iban);
-	  }
+            if (
+                (bankCode && reqBankCode && 0==strcasecmp(bankCode, reqBankCode)) &&
+                (accountId && reqAccountId && 0==strcasecmp(accountId, reqAccountId)) &&
+                (accountSuffix && reqAccountSuffix && 0==strcasecmp(accountSuffix, reqAccountSuffix)) &&
+                (strcasecmp(sSepa, "j")==0)
+               ) {
+              /* matching account found, break */
+              DBG_INFO(AQHBCI_LOGDOMAIN, "Found matching account in GetAccountSepaInfoResponse");
+              break;
+            }
+            dbAccount=GWEN_DB_FindNextGroup(dbAccount, "account");
+          } /* while */
         }
-        else {
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing information in account: BLZ=[%s], Kto=[%s], IBAN=[%s], BIC=[%s]",
-                    bankCode?bankCode:"",
-                    accountId?accountId:"",
-                    iban?iban:"",
-                    bic?bic:"");
-        }
-        AB_Banking_EndExclUseAccount(ab, jd->account, 0);
-      }
-    }
 
+        if (dbAccount) {
+          const char *iban;
+          const char *bic;
+          int useWithSepa=0;
+
+          /* account data found */
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Found a GetAccountSepaInfoResponse segment");
+          accountId=GWEN_DB_GetCharValue(dbAccount, "accountId", 0, 0);
+          accountSuffix=GWEN_DB_GetCharValue(dbAccount, "accountsubid", 0, 0);
+          bankCode=GWEN_DB_GetCharValue(dbAccount, "bankCode", 0, 0);
+          sSepa=GWEN_DB_GetCharValue(dbAccount, "sepa", 0, "n");
+          if (strcasecmp(sSepa, "j")==0)
+            useWithSepa=1;
+
+          iban=GWEN_DB_GetCharValue(dbAccount, "iban", 0, 0);
+          bic=GWEN_DB_GetCharValue(dbAccount, "bic", 0, 0);
+
+          rv=AB_Banking_BeginExclUseAccount(ab, jd->account);
+          if (rv<0) {
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "Unable to lock account");
+          }
+          else {
+            if (accountSuffix)
+              AB_Account_SetSubAccountId(jd->account, accountSuffix);
+            AH_Account_AddFlags(jd->account, AH_BANK_FLAGS_KTV2); /* we have a sub id (even if emtpy), set flag */
+
+            if (useWithSepa) {
+              DBG_INFO(AQHBCI_LOGDOMAIN, "SEPA available with this account");
+              AH_Account_AddFlags(jd->account, AH_BANK_FLAGS_SEPA); /* we have a sub id (even if emtpy), set flag */
+            }
+            else {
+              DBG_INFO(AQHBCI_LOGDOMAIN, "SEPA not available with this account");
+              AH_Account_SubFlags(jd->account, AH_BANK_FLAGS_SEPA); /* we have a sub id (even if emtpy), set flag */
+            }
+
+            if (iban && *iban) {
+              if (bic && *bic) {
+                DBG_NOTICE(AQHBCI_LOGDOMAIN, "Setting IBAN and BIC: %s/%s", iban, bic);
+                AB_Account_SetIBAN(jd->account, iban);
+                AB_Account_SetBIC(jd->account, bic);
+              }
+              else {
+                DBG_NOTICE(AQHBCI_LOGDOMAIN, "Setting IBAN (no BIC): %s", iban);
+                AB_Account_SetIBAN(jd->account, iban);
+              }
+            }
+            else {
+              DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing information in account: BLZ=[%s], Kto=[%s], IBAN=[%s], BIC=[%s]",
+                        bankCode?bankCode:"",
+                        accountId?accountId:"",
+                        iban?iban:"",
+                        bic?bic:"");
+            }
+            AB_Banking_EndExclUseAccount(ab, jd->account, 0);
+          }
+        }
+      } /* if dbAccount */
+    } /* if (dbXA) */
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
-  }
+  } /* while dbCurr */
 
   return 0;
 }
