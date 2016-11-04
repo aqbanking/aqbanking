@@ -470,7 +470,7 @@ int AH_Job__Commit_Bpd(AH_JOB *j){
       return rv;
     }
     DBG_INFO(AQHBCI_LOGDOMAIN, "No BPD in response for job %s", AH_Job_GetName(j));
-    GWEN_DB_Dump(j->jobResponses, 2);
+    /*GWEN_DB_Dump(j->jobResponses, 2);*/
     return 0;
   }
 
