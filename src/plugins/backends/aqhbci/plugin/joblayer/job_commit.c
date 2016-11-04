@@ -760,7 +760,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
         AH_User_SetUpdVersion(j->user, GWEN_DB_GetIntValue(dbRd, "version", 0, 0));
       }
 
-      if (strcasecmp(GWEN_DB_GroupName(dbRd), "BankMsg")==0){
+      else if (strcasecmp(GWEN_DB_GroupName(dbRd), "BankMsg")==0){
         const char *subject;
         const char *text;
 
