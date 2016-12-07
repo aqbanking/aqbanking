@@ -250,8 +250,7 @@ void GWENHYWFAR_CB AH_User_freeData(void *bp, void *p) {
   free(ue->prompt);
   GWEN_Url_free(ue->serverUrl);
   GWEN_DB_Group_free(ue->dbUpd);
-  // hm: fix! GWEN_Crypt_KeyRsa_freeData(NULL, ue->bankPubKey);
-  free(ue->bankPubKey);
+  GWEN_Crypt_Key_free(ue->bankPubKey);
   AH_Bpd_free(ue->bpd);
   GWEN_MsgEngine_free(ue->msgEngine);
   AH_TanMethod_List_free(ue->tanMethodDescriptions);
