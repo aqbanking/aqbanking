@@ -13,6 +13,7 @@
 #include "user_l.h"
 
 #include <gwenhywfar/buffer.h>
+#include <gwenhywfar/cryptkeyrsa.h>
 
 #define AH_USER_MAX_TANMETHODS 16
 
@@ -67,6 +68,8 @@ struct AH_USER {
 
   int maxTransfersPerJob;
   int maxDebitNotesPerJob;
+
+  GWEN_CRYPT_KEY * bankPubKey;
 };
 
 static void GWENHYWFAR_CB AH_User_freeData(void *bp, void *p);

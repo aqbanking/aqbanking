@@ -26,6 +26,7 @@
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/stringlist.h>
+#include <gwenhywfar/cryptkeyrsa.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -1664,15 +1665,12 @@ int AH_Job_CheckEncryption(AH_JOB *j, GWEN_DB_NODE *dbRsp) {
 		 "(exp: \"%s\", is: \"%s\"",
 		 j->expectedCrypter, s);
 	/*
-	GWEN_Gui_ProgressLog(
-			       0,
-			       GWEN_LoggerLevel_Error,
-			       I18N("Response not encrypted with expected key"));
-	return AB_ERROR_SECURITY;
-	*/
-      }
-      else {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "Encrypted as expected");
+	 GWEN_Gui_ProgressLog(
+	                      0,
+	                      GWEN_LoggerLevel_Error,
+	                      I18N("Response not encrypted with expected key"));
+	 return AB_ERROR_SECURITY;
+	 */
       }
     }
     else {

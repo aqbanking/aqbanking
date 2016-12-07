@@ -17,6 +17,7 @@ noinst_HEADERS=\
   dlg_pintan_special_l.h dlg_pintan_special_p.h \
   dlg_newuser_l.h dlg_newuser_p.h \
   dlg_ddvcard_l.h dlg_ddvcard_p.h \
+  dlg_zkacard_l.h dlg_zkacard_p.h \
   dlg_ddvcard_special_l.h dlg_ddvcard_special_p.h \
   dlg_newkeyfile_l.h dlg_newkeyfile_p.h \
   dlg_rdh_special_l.h dlg_rdh_special_p.h \
@@ -32,6 +33,7 @@ libaqhbci_dlgs_la_SOURCES=\
   dlg_pintan_special.c \
   dlg_newuser.c \
   dlg_ddvcard.c \
+  dlg_zkacard.c \
   dlg_ddvcard_special.c \
   dlg_newkeyfile.c \
   dlg_rdh_special.c \
@@ -46,6 +48,7 @@ dlgdata_DATA=\
   dlg_edituserpintan.dlg \
   dlg_edituserrdh.dlg \
   dlg_ddvcard.dlg \
+  dlg_zkacard.dlg \
   dlg_ddvcard_special.dlg \
   dlg_pintan.dlg \
   dlg_pintan_special.dlg \

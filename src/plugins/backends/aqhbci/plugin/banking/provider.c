@@ -42,6 +42,7 @@
 #include "dlg_newuser_l.h"
 #include "dlg_pintan_l.h"
 #include "dlg_ddvcard_l.h"
+#include "dlg_zkacard_l.h"
 #include "dlg_newkeyfile_l.h"
 #include "dlg_importkeyfile_l.h"
 #include "dlg_edituserpintan_l.h"
@@ -1101,7 +1102,7 @@ GWEN_DIALOG *AH_Provider_GetNewCardUserDialog(AB_PROVIDER *pro) {
   if (strcasecmp(GWEN_Buffer_GetStart(mtypeName), "ddvcard")==0) {
     GWEN_DIALOG *dlg2;
 
-    DBG_ERROR(0, "DDV card");
+    DBG_WARN(0, "DDV card");
     dlg2=AH_DdvCardDialog_new(AB_Provider_GetBanking(pro), ct);
     if (dlg2==NULL) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (no dialog)");
@@ -1118,6 +1119,23 @@ GWEN_DIALOG *AH_Provider_GetNewCardUserDialog(AB_PROVIDER *pro) {
   else if (strcasecmp(GWEN_Buffer_GetStart(mtypeName), "starcoscard")==0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "STARCOS RSA card currently not supported by this dialog");
     // TODO
+  }
+  else if (strcasecmp(GWEN_Buffer_GetStart(mtypeName), "zkacard")==0) {
+    GWEN_DIALOG *dlg2;
+
+    DBG_WARN(0, "ZKA RSA card");
+    dlg2=AH_ZkaCardDialog_new(AB_Provider_GetBanking(pro), ct);
+    if (dlg2==NULL) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (no dialog)");
+      GWEN_Buffer_free(mediumName);
+      GWEN_Buffer_free(mtypeName);
+      return NULL;
+    }
+
+    GWEN_Dialog_SetWidgetText(dlg2, "", I18N("Create HBCI/FinTS ZKA RSA User"));
+    GWEN_Buffer_free(mediumName);
+    GWEN_Buffer_free(mtypeName);
+    return dlg2;
   }
   else {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Card type \"%s\" not yet supported",
@@ -1553,6 +1571,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
   AH_Outbox_AddJob(ob, job);
 
   rv=AH_Outbox_Execute(ob, ctx, withProgress, 1, doLock);
+
   AH_Outbox_free(ob);
   if (rv) {
     GWEN_Gui_ProgressLog(0,

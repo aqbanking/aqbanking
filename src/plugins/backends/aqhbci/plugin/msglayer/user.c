@@ -250,6 +250,8 @@ void GWENHYWFAR_CB AH_User_freeData(void *bp, void *p) {
   free(ue->prompt);
   GWEN_Url_free(ue->serverUrl);
   GWEN_DB_Group_free(ue->dbUpd);
+  // hm: fix! GWEN_Crypt_KeyRsa_freeData(NULL, ue->bankPubKey);
+  free(ue->bankPubKey);
   AH_Bpd_free(ue->bpd);
   GWEN_MsgEngine_free(ue->msgEngine);
   AH_TanMethod_List_free(ue->tanMethodDescriptions);
@@ -297,6 +299,15 @@ void AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
   else
     ue->serverUrl=NULL;
 
+  /* load bankPubKey */
+  gr=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "bankPubKey");
+  if (gr) {
+    ue->bankPubKey=GWEN_Crypt_KeyRsa_fromDb(gr);
+    assert(ue->bankPubKey);
+  }
+  //else
+  //  ue->bankPubKey=GWEN_Crypt_KeyRsa_new();
+  
   /* load BPD */
   AH_Bpd_free(ue->bpd);
   gr=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "bpd");
@@ -445,6 +456,16 @@ void AH_User_toDb(AB_USER *u, GWEN_DB_NODE *db) {
 			 "server", GWEN_Buffer_GetStart(nbuf));
     GWEN_Buffer_free(nbuf);
   } /* if serverUrl */
+  
+  /* save bankPubKey */
+  if (ue->bankPubKey) {
+    assert(ue->bankPubKey);
+    gr=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "bankPubKey");
+    assert(gr);
+    GWEN_Crypt_KeyRsa_toDb(ue->bankPubKey, gr, 1);
+  }
+  else
+    GWEN_DB_DeleteVar(db, "bankPubKey");
   
   /* save BPD */
   assert(ue->bpd);
@@ -811,6 +832,31 @@ void AH_User_SetUpd(AB_USER *u, GWEN_DB_NODE *n){
 
 
 
+GWEN_CRYPT_KEY * AH_User_GetBankPubKey(const AB_USER *u){
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->bankPubKey;
+}
+
+void AH_User_SetBankPubKey(AB_USER *u, GWEN_CRYPT_KEY *bankPubKey){
+  AH_USER *ue;
+
+  assert(bankPubKey);
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  if (ue->bankPubKey!=bankPubKey) {
+    //GWEN_Crypt_KeyRsa_free(ue->bankPubKey);
+    ue->bankPubKey=GWEN_Crypt_KeyRsa_dup(bankPubKey);
+  }
+}
+
+
 AH_BPD *AH_User_GetBpd(const AB_USER *u){
   AH_USER *ue;
 
@@ -820,8 +866,6 @@ AH_BPD *AH_User_GetBpd(const AB_USER *u){
 
   return ue->bpd;
 }
-
-
 
 void AH_User_SetBpd(AB_USER *u, AH_BPD *bpd){
   AH_USER *ue;

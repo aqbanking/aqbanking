@@ -123,6 +123,12 @@ static int AH_Msg_DecryptRdh5(AH_MSG *hmsg, GWEN_DB_NODE *gr);
 static int AH_Msg_VerifyRdh5(AH_MSG *hmsg, GWEN_DB_NODE *gr);
 
 
+static int AH_Msg_SignRdh9(AH_MSG *hmsg, AB_USER *su, GWEN_BUFFER *rawBuf, const char *signer);
+static int AH_Msg_EncryptRdh9(AH_MSG *hmsg);
+static int AH_Msg_DecryptRdh9(AH_MSG *hmsg, GWEN_DB_NODE *gr);
+static int AH_Msg_VerifyRdh9(AH_MSG *hmsg, GWEN_DB_NODE *gr);
+
+
 static int AH_Msg__AnonHnsha(const char *psegment,
 			     unsigned int slen,
 			     GWEN_SYNCIO *sio);

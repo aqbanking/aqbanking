@@ -14,6 +14,7 @@
 #include <aqhbci/tanmethod.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/stringlist.h>
+#include <gwenhywfar/cryptkeyrsa.h>
 
 
 /** @defgroup G_AB_BE_AQHBCI_USER HBCI User Extensions
@@ -302,6 +303,8 @@ AQHBCI_API void AH_User_SetMaxTransfersPerJob(AB_USER *u, int i);
 AQHBCI_API int AH_User_GetMaxDebitNotesPerJob(const AB_USER *u);
 AQHBCI_API void AH_User_SetMaxDebitNotesPerJob(AB_USER *u, int i);
 
+AQHBCI_API void AH_User_SetBankPubKey(AB_USER *u, GWEN_CRYPT_KEY *bankPubKey);
+AQHBCI_API GWEN_CRYPT_KEY * AH_User_GetBankPubKey(const AB_USER *u);
 
 
 AQHBCI_API const char *AH_User_FindSepaDescriptor(AB_USER *u, const char *tmpl);

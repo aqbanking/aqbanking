@@ -1805,6 +1805,7 @@ const char *AH_Msg_GetCrypterId(const AH_MSG *hmsg) {
 #include "msgcrypt_rdh2.c"
 #include "msgcrypt_rdh3.c"
 #include "msgcrypt_rdh5.c"
+#include "msgcrypt_rdh9.c"
 #include "msgcrypt_rdh10.c"
 #include "msgcrypt_rdh.c"
 #include "msgcrypt_pintan.c"

@@ -204,8 +204,8 @@ int addUser(AB_BANKING *ab,
     1,             
     0,             
     "rdhtype",
-    "Select the RDH profile type (1, 2, 3, 5, 10)",
-    "Select the RDH profile type (1, 2, 3, 5, 10)"
+    "Select the RDH profile type (1, 2, 3, 5, 9, 10)",
+    "Select the RDH profile type (1, 2, 3, 5, 9, 10)"
   },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
@@ -296,6 +296,7 @@ int addUser(AB_BANKING *ab,
     switch(rdhType) {
     case 1:
     case 2:
+    case 9:
     case 10:
       /* supported */
       break;
@@ -306,7 +307,6 @@ int addUser(AB_BANKING *ab,
     case 6:
     case 7:
     case 8:
-    case 9:
     default:
       DBG_ERROR(0, "RDH type %d not supported", rdhType);
       return 1;
@@ -390,7 +390,7 @@ int addUser(AB_BANKING *ab,
       lbankId=bankId?bankId:GWEN_Crypt_Token_Context_GetServiceId(ctx);
 
       luserId=userId?userId:GWEN_Crypt_Token_Context_GetUserId(ctx);
-      lcustomerId=customerId?customerId:luserId;
+      lcustomerId=customerId?customerId:GWEN_Crypt_Token_Context_GetCustomerId(ctx);;
 
       lserverAddr=server?server:GWEN_Crypt_Token_Context_GetAddress(ctx);
 

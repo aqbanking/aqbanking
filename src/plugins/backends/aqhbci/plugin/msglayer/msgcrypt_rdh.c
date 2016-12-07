@@ -16,6 +16,7 @@ int AH_Msg_SignRdh(AH_MSG *hmsg,
   int rv;
 
   assert(hmsg);
+
   su=AB_Banking_FindUser(AH_HBCI_GetBankingApi(AH_Dialog_GetHbci(hmsg->dialog)),
 			 AH_PROVIDER_NAME,
 			 "de", "*",
@@ -40,6 +41,9 @@ int AH_Msg_SignRdh(AH_MSG *hmsg,
     break;
   case 5:
     rv=AH_Msg_SignRdh5(hmsg, su, rawBuf, signer);
+    break;
+  case 9:
+    rv=AH_Msg_SignRdh9(hmsg, su, rawBuf, signer);
     break;
   case 10:
     rv=AH_Msg_SignRdh10(hmsg, su, rawBuf, signer);
@@ -74,6 +78,9 @@ int AH_Msg_EncryptRdh(AH_MSG *hmsg) {
     break;
   case 5:
     rv=AH_Msg_EncryptRdh5(hmsg);
+    break;
+  case 9:
+    rv=AH_Msg_EncryptRdh9(hmsg);
     break;
   case 10:
     rv=AH_Msg_EncryptRdh10(hmsg);
@@ -110,6 +117,9 @@ int AH_Msg_DecryptRdh(AH_MSG *hmsg, GWEN_DB_NODE *gr){
   case 5:
     rv=AH_Msg_DecryptRdh5(hmsg, gr);
     break;
+  case 9:
+    rv=AH_Msg_DecryptRdh9(hmsg, gr);
+    break;
   case 10:
     rv=AH_Msg_DecryptRdh10(hmsg, gr);
     break;
@@ -144,6 +154,9 @@ int AH_Msg_VerifyRdh(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
   case 5:
     rv=AH_Msg_VerifyRdh5(hmsg, gr);
     break;
+  case 9:
+    rv=AH_Msg_VerifyRdh9(hmsg, gr);
+    break;
   case 10:
     rv=AH_Msg_VerifyRdh10(hmsg, gr);
     break;
@@ -154,19 +167,3 @@ int AH_Msg_VerifyRdh(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
 
   return rv;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

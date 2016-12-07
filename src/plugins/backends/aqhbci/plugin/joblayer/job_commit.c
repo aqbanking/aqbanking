@@ -731,7 +731,16 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
         } /* while */
       }
       else if (strcasecmp(GWEN_DB_GroupName(dbRd), "GetKeyResponse")==0){
-	/* TODO: Read the key received and ask the user to accept it */
+        /* TODO: Read the key received and ask the user to accept it */
+	GWEN_CRYPT_KEY * bpk;
+	const void *expp, *modp;
+	unsigned int expl, modl;
+	
+	DBG_INFO(AQHBCI_LOGDOMAIN, "GetKeyResponse not yet processed!");
+	modp=GWEN_DB_GetBinValue(dbRd, "key/modulus",  0, NULL, 0, &modl);
+	expp=GWEN_DB_GetBinValue(dbRd, "key/exponent", 0, NULL, 0, &expl);
+	bpk=GWEN_Crypt_KeyRsa_fromModExp(256, modp, modl, expp, expl);
+	AH_User_SetBankPubKey(u, bpk);
       }
 
       else if (strcasecmp(GWEN_DB_GroupName(dbRd), "SecurityMethods")==0){
