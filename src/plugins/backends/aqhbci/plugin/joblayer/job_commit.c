@@ -118,6 +118,11 @@ int AH_Job__Commit_Accounts(AH_JOB *j){
 	  AB_Account_SetBankName(acc, s);
       }
 
+      // Fixes a bug where the bank sends an account with no bank & account name
+      if(!AB_Account_GetBankName(acc))
+	AB_Account_SetBankName(acc, "dummy");
+      if(!AB_Account_GetAccountName(acc))
+	AB_Account_SetAccountName(acc, "dummy");
 
       /* temporarily store UPD jobs */
       dbUpd=GWEN_DB_Group_new("tmpUpd");
