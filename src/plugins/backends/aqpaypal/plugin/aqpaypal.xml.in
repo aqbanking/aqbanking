@@ -1,0 +1,9 @@
+<plugin name="aqpaypal" type="provider" i18n="aqbanking" >
+  <version>@AQPAYPAL_VERSION_STRING@</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>Paypal</short>
+  <descr>
+    This backend provides support for Paypal.
+  </descr>
+</plugin>
+
