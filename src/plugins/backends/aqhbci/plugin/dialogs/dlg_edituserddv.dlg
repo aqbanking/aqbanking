@@ -32,6 +32,9 @@
               <widget type="lineEdit" name="bankCodeEdit" flags="fillX" />
               <widget type="pushButton" name="bankCodeButton" text="Select" />
             </widget>
+
+            <widget type="label" text="Server URL" />
+            <widget type="lineEdit" name="urlEdit" columns="40" flags="fillX" />
     
             <widget type="label" text="User Id" />
             <widget type="lineEdit" name="userIdEdit" columns="20" flags="fillX" />
