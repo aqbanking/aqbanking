@@ -35,6 +35,7 @@
                7.6.   AQOFX_LOG_COMM
                8 .  Using Your Own Profiles for Im-/Exporters
                9.   Thanks
+               10.  Translation
 
 
 
@@ -388,5 +389,22 @@ making AqBanking work:
 - and of course the many people who submitted bug reports !!
 
 
-Martin Preuss, Hamburg/Germany, 2010/08/26
+
+10. Translation
+===============
+
+To work on translation of this project you need the folowing packages on
+Debian based systems:
+- po4edit 
+- translate-toolkit (for "msghack")
+
+You can then create the necessary files with:
+- make catalogs
+- make merge
+
+This will create the necessary *.pot and *.po files, the latter should then be
+translated.
+
+
+Martin Preuss, Wilhelmshaven/Germany, 2016/12/11
 
