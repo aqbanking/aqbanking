@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aqbanking\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
-"POT-Creation-Date: 2016-03-08 22:02+0100\n"
+"POT-Creation-Date: 2016-12-11 16:17+0100\n"
 "PO-Revision-Date: 2016-03-08 22:09+0100\n"
 "Last-Translator: Mechtilde <ooo@mechtilde.de>\n"
 "Language-Team: Deutsch <kde-i18n-de@kde.org>\n"
@@ -1599,12 +1599,12 @@ msgid "unknown"
 msgstr "unbekannt"
 
 #: src/libs/aqbanking/banking_online.c:180
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:2096
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:2095
 msgid "Executing Jobs"
 msgstr "Aufträge werden ausgeführt"
 
 #: src/libs/aqbanking/banking_online.c:181
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:2097
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:2096
 msgid "Now the jobs are send via their backends to the credit institutes."
 msgstr ""
 "Die Aufträge werden durch die zuständigen Module zu den Kreditinstituten "
@@ -1662,48 +1662,38 @@ msgid "Connection ok, certificate probably received"
 msgstr "Verbindung ok, Zertifikat vermutlich empfangen"
 
 #: src/libs/aqbanking/types/transactionfns.c:171
-#: src/plugins/backends/aqhbci/plugin/ajobs/jobsingletransfer.c:504
 #, c-format
 msgid "Too many purpose lines (%d>%d)"
 msgstr "Zu viele Zeichen im Verwendungszweck (%d>%d)"
 
 #: src/libs/aqbanking/types/transactionfns.c:187
-#: src/plugins/backends/aqhbci/plugin/ajobs/jobsingletransfer.c:518
 #, c-format
 msgid "Too many chars in purpose line %d (%d>%d)"
 msgstr "Zu viele Zeichen in Zeile %d des Verwendungszwecks (%d>%d) "
 
 #: src/libs/aqbanking/types/transactionfns.c:312
-#: src/plugins/backends/aqhbci/plugin/ajobs/jobsingletransfer.c:690
 #, c-format
 msgid "Text key \"%d\" not supported by the bank"
 msgstr "Der Textschlüssel \"%d\" wird von der Bank nicht unterstützt"
 
 #: src/libs/aqbanking/types/transactionfns.c:349
-#: src/plugins/backends/aqhbci/plugin/ajobs/jobsingletransfer.c:730
 #, c-format
 msgid "Month day \"%d\" not supported by bank"
 msgstr "Monatstag \"%d\" wird von der Bank nicht unterstützt"
 
 #: src/libs/aqbanking/types/transactionfns.c:376
 #: src/libs/aqbanking/types/transactionfns.c:430
-#: src/plugins/backends/aqhbci/plugin/ajobs/jobsingletransfer.c:756
-#: src/plugins/backends/aqhbci/plugin/ajobs/jobsingletransfer.c:811
 #, c-format
 msgid "Execution month day \"%d\" not supported by bank"
 msgstr "Ausführungs-Monatstag \"%d\" wird von der Bank nicht unterstützt"
 
 #: src/libs/aqbanking/types/transactionfns.c:405
-#: src/plugins/backends/aqhbci/plugin/ajobs/jobsingletransfer.c:785
 #, c-format
 msgid "Week day \"%d\" not supported by bank"
 msgstr "Wochentag \"%d\" wird von der Bank nicht unterstützt"
 
 #: src/libs/aqbanking/types/transactionfns.c:471
 #: src/libs/aqbanking/types/transactionfns.c:520
-#: src/libs/aqbanking/types/transactionfns.c:595
-#: src/plugins/backends/aqhbci/plugin/ajobs/jobsingletransfer.c:842
-#: src/plugins/backends/aqhbci/plugin/ajobs/jobsingletransfer.c:883
 #, c-format
 msgid ""
 "Minimum setup time violated. Dated transactions need to be at least %d days "
@@ -1714,13 +1704,28 @@ msgstr ""
 
 #: src/libs/aqbanking/types/transactionfns.c:484
 #: src/libs/aqbanking/types/transactionfns.c:533
-#: src/libs/aqbanking/types/transactionfns.c:607
-#: src/plugins/backends/aqhbci/plugin/ajobs/jobsingletransfer.c:855
-#: src/plugins/backends/aqhbci/plugin/ajobs/jobsingletransfer.c:896
 #, c-format
 msgid ""
 "Maximum setup time violated. Dated transactions need to be at most %d days "
 "away"
+msgstr ""
+"Maximale Vorlaufzeit überschritten. Datierte Überweisungen dürfen nicht mehr "
+"als %d Tage in der Zukunft liegen"
+
+#: src/libs/aqbanking/types/transactionfns.c:596
+#, fuzzy, c-format
+msgid ""
+"Minimum setup time violated. Dated transactions need to be at least %d days "
+"away but %d days are requested"
+msgstr ""
+"Vorlaufzeit unterschritten. Datierte Überweisungen benötigen mindestens %d "
+"Tage Vorlaufzeit"
+
+#: src/libs/aqbanking/types/transactionfns.c:609
+#, fuzzy, c-format
+msgid ""
+"Maximum setup time violated. Dated transactions need to be at most %d days "
+"away but %d days are requested"
 msgstr ""
 "Maximale Vorlaufzeit überschritten. Datierte Überweisungen dürfen nicht mehr "
 "als %d Tage in der Zukunft liegen"
@@ -1849,16 +1854,18 @@ msgstr "Nein"
 #: src/libs/aqbanking/dialogs/dlg_editaccount.c:909
 #: src/libs/aqbanking/dialogs/dlg_edituser.c:449
 #: src/libs/aqbanking/dialogs/dlg_edituser.c:470
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:421
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:476
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:497
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:587
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:651
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:706
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:727
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:487
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:542
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:563
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:359
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:460
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:515
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:536
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:591
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:657
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:712
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:733
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:402
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:528
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:583
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:604
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_ddvcard.c:101
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_ddvcard.c:112
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_ddvcard.c:757
@@ -2020,12 +2027,12 @@ msgstr ""
 #: src/libs/aqbanking/dialogs/dlg_editaccount.c:911
 #: src/libs/aqbanking/dialogs/dlg_edituser.c:451
 #: src/libs/aqbanking/dialogs/dlg_edituser.c:472
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:478
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:499
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:708
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:729
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:544
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:565
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:517
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:538
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:714
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:735
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:585
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:606
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_editaccount.c:923
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_editaccount.c:944
 #: src/plugins/backends/aqebics/plugin/dialogs/dlg_edituser.c:659
@@ -2039,17 +2046,17 @@ msgid "Unable to unlock account."
 msgstr "Exklusiver Zugriff auf das Konto konnte nicht freigegeben werden."
 
 #: src/libs/aqbanking/dialogs/dlg_edituser.c:178
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:182
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:183
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:307
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:183
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:184
 #: src/plugins/backends/aqebics/plugin/dialogs/dlg_edituser.c:187
 msgid "Edit User"
 msgstr "Benutzer bearbeiten"
 
 #: src/libs/aqbanking/dialogs/dlg_edituser.c:450
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:477
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:707
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:543
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:516
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:713
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:584
 #: src/plugins/backends/aqebics/plugin/dialogs/dlg_edituser.c:658
 msgid "Unable to lock user. Maybe already in use?"
 msgstr ""
@@ -2057,9 +2064,9 @@ msgstr ""
 "Eventuell ist er schon in Benutzung?"
 
 #: src/libs/aqbanking/dialogs/dlg_edituser.c:471
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:498
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:728
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:564
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:537
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:734
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:605
 #: src/plugins/backends/aqebics/plugin/dialogs/dlg_edituser.c:679
 msgid "Unable to unlock user."
 msgstr "Exklusiver Zugriff auf den Benutzer konnte nicht freigegeben werden."
@@ -2132,13 +2139,13 @@ msgstr "Fehler beim Importieren der SWIFT-Daten"
 msgid "Swift document successfully imported"
 msgstr "SWIFT-Dokument erfolgreich importiert"
 
-#: src/plugins/parsers/swift/swift940.c:1135
+#: src/plugins/parsers/swift/swift940.c:1160
 msgid "Importing SWIFT tags..."
 msgstr "Importiere SWIFT-Elemente..."
 
-#: src/plugins/parsers/swift/swift940.c:1320
+#: src/plugins/parsers/swift/swift940.c:1345
 #: src/plugins/imexporters/csv/csv.c:477
-#: src/plugins/imexporters/swift/swift.c:275
+#: src/plugins/imexporters/swift/swift.c:297
 msgid "Aborted by user"
 msgstr "Die Aktion wurde durch den Benutzer abgebrochen."
 
@@ -2516,7 +2523,7 @@ msgstr "Bitte geben Sie einen Namen für das Profil ein."
 #: src/plugins/imexporters/csv/csv_editprofile.c:694
 #: src/plugins/imexporters/csv/csv_editprofile.c:708
 #: src/plugins/imexporters/csv/csv_editprofile.c:737
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1185
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1059
 msgid "Continue"
 msgstr "Fortsetzen"
 
@@ -3320,7 +3327,9 @@ msgid "The server was unable to send mail to the specified Internet address."
 msgstr ""
 
 #: src/plugins/imexporters/ofx/parser/g_status.c:130
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:587
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:359
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:591
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:402
 msgid "Invalid URL"
 msgstr "Ungültige URL"
 
@@ -3447,7 +3456,7 @@ msgstr "Fehler beim Importieren der Daten"
 msgid "Error in config file"
 msgstr "Fehler in der Konfigurationsdatei"
 
-#: src/plugins/imexporters/swift/swift.c:216
+#: src/plugins/imexporters/swift/swift.c:238
 msgid "Adding transaction"
 msgstr "Buchung wird hinzugefügt"
 
@@ -3458,15 +3467,15 @@ msgstr "Fehler beim Exportieren der Daten"
 
 #: src/plugins/backends/aqhbci/plugin/msglayer/account.c:57
 #: src/plugins/backends/aqhbci/plugin/msglayer/account.c:67
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:187
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:200
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:197
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:210
 msgid "AqBanking Settings Database Error"
 msgstr "AqBanking-Datenbankfehler"
 
 #: src/plugins/backends/aqhbci/plugin/msglayer/account.c:58
 #: src/plugins/backends/aqhbci/plugin/msglayer/account.c:68
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:188
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:201
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:198
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:211
 msgid "Your settings database might be in an inconsistent state!"
 msgstr "Ihre AqBanking-Konfiguration ist möglicherweise inkonsistent! "
 
@@ -3486,12 +3495,12 @@ msgstr "Fehlerhafte Nachrichtenreferenz (ignoriert)"
 msgid "No message reference found, ignoring"
 msgstr "Keine Nachrichtenreferenz (ignoriert)"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1197
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1285
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1341
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1429
 msgid " You must only enter numbers, not letters."
 msgstr " Es dürfen nur Zahlen eingegeben werden, keine Buchstaben."
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1201
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1345
 #, c-format
 msgid ""
 "Please enter a new PIN for \n"
@@ -3506,7 +3515,7 @@ msgstr ""
 "eine neue PIN für Benutzer <i>%s</i> bei <i>%s</i> ein.</p><p>Die PIN muß "
 "mindestens %d Zeichen lang sein.%s</p></html>"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1222
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1366
 #, c-format
 msgid ""
 "Please enter the PIN for \n"
@@ -3518,11 +3527,11 @@ msgstr ""
 "ein.%s<html>Bitte geben Sie die PIN für Benutzer <i>%s</i> bei <i>%s</i> ein."
 "<br>%s</html>"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1244
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1388
 msgid "Enter PIN"
 msgstr "PIN-Eingabe"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1289
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1433
 #, c-format
 msgid ""
 "Please enter a new password for \n"
@@ -3537,7 +3546,7 @@ msgstr ""
 "Sie ein neues Passwort für Benutzer <i>%s</i> bei <i>%s</i> ein.</p><p>Das "
 "Passwort muß mindestens %d Zeichen lang sein.%s</p></html>"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1310
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1454
 #, c-format
 msgid ""
 "Please enter the password for \n"
@@ -3550,11 +3559,11 @@ msgstr ""
 "ein.%s<html>Bitte geben Sie das Passwort für Benutzer <i>%s</i> bei <i>%s</"
 "i> ein.<br>%s</html>"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1332
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1476
 msgid "Enter Password"
 msgstr "Passwort eingeben"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1371
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1515
 #, c-format
 msgid ""
 "Please enter the next TAN\n"
@@ -3565,15 +3574,15 @@ msgstr ""
 "für Benutzer %s bei %s ein <html> Bitte geben Sie die nächste TAN für "
 "Benutzer <i>%s</i> bei <i>%s</i> ein. </html>"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1388
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1471
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:2053
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1532
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1615
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:2197
 msgid "Enter TAN"
 msgstr "TAN-Eingabe"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1433
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1991
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:2022
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1577
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:2135
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:2166
 #, c-format
 msgid ""
 "Please enter the TAN\n"
@@ -3582,20 +3591,20 @@ msgstr ""
 "Bitte geben Sie die TAN für \n"
 "Benutzer %s bei %s ein.\n"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1438
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1454
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:2043
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1582
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1598
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:2187
 msgid "The server provided the following challenge:"
 msgstr "Die Bank sendet folgende Angaben als Aufforderung:"
 
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1448
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:1592
 #, c-format
 msgid "Please enter the TAN for user <i>%s</i> at <i>%s</i>."
 msgstr "Bitte geben Sie die TAN für Benutzer <i>%s</i> bei <i>%s</i> ein."
 
 #. create own text
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:2000
-#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:2037
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:2144
+#: src/plugins/backends/aqhbci/plugin/msglayer/user.c:2181
 msgid "Please enter the TAN from the device."
 msgstr "Bitet geben Sie die TAN vom Gerät ein."
 
@@ -3668,59 +3677,33 @@ msgstr "Verbindung vorbereiten"
 msgid "Error preparing connection"
 msgstr "Fehler beim Vorbereiten der Verbindung"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1809
-msgid "AH_JOB|-- no account id --"
-msgstr "-- keine Kontonummer --"
-
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1816
-msgid "AH_JOB|-- no bank code --"
-msgstr "-- keine Bankleitzahl --"
-
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1824
-msgid "Received account:"
-msgstr "Empfangenes Konto:"
-
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1899
-msgid "Extended account information available"
-msgstr "Erweiterte Konteninformationen vorhanden"
-
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1906
-msgid "Extended account information is not available, some jobs might not work"
-msgstr ""
-"Erweiterte Konteninformationen nicht vorhanden. Manche Aufträge sind nicht "
-"verfügbar."
-
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1959
-msgid "Bank message received"
-msgstr "Banknachricht erhalten"
-
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:2222
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:2300
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1634
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1709
 msgid "Response without security info (internal)"
 msgstr ""
 "Empfangene Antwort hat keine Sicherheitsinformationen (interne Nachricht)"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:2234
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1646
 msgid "Response encrypted with invalid key"
 msgstr "Empfangene Antwort ist mit ungültigem Schlüssel verschlüsselt"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:2245
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1657
 msgid "Response is not encrypted as expected"
 msgstr "Empfangene Antwort ist auf unerwartete Art verschlüsselt"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:2316
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1725
 msgid "Invalid bank signature"
 msgstr "Ungültige Banksignatur"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:2332
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1741
 msgid "Response not signed by the bank"
 msgstr "Empfangene Antwort ist von der Bank nicht signiert"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:2340
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1749
 msgid "Security Warning"
 msgstr "Sicherheitswarnung"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:2342
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1751
 msgid ""
 "The HBCI response of the bank has not been signed by the bank, \n"
 "contrary to what has been expected. This can be the case because the \n"
@@ -3775,27 +3758,27 @@ msgstr ""
 "Wollen Sie trotzdem die Antwort dieses Mal oder für immer akzeptieren?\n"
 "</p></html>"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:2367
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1776
 msgid "Accept this time"
 msgstr "Dieses Mal akzeptieren"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:2368
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1777
 msgid "Accept always"
 msgstr "Für immer akzeptieren"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:2369
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1778
 msgid "Abort"
 msgstr "Abbrechen"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:2373
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1782
 msgid "User accepts this unsigned response"
 msgstr "Benutzer hat die unsignierte Antwort akzeptiert"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:2381
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1790
 msgid "User accepts all further unsigned responses"
 msgstr "Benutzer akzeptiert unsignierte Antworten dauerhaft"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:2390
+#: src/plugins/backends/aqhbci/plugin/joblayer/job.c:1799
 msgid "Aborted"
 msgstr "Abgebrochen"
 
@@ -3808,11 +3791,11 @@ msgstr "Die TAN \"%s\" wurde benutzt, Sie können sie streichen."
 msgid "PIN seems to be invalid"
 msgstr "Die PIN scheint ungültig zu sein"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/jobqueue.c:1038
+#: src/plugins/backends/aqhbci/plugin/joblayer/jobqueue.c:1039
 msgid "Dialog aborted by bank, assuming bad PIN"
 msgstr "Dialog wurde von der Bank abgebrochen. PIN scheint ungültig zu sein"
 
-#: src/plugins/backends/aqhbci/plugin/joblayer/jobqueue.c:1058
+#: src/plugins/backends/aqhbci/plugin/joblayer/jobqueue.c:1059
 msgid "Dialog not aborted, assuming PIN is ok"
 msgstr "Dialog wurde nicht abgebrochen, PIN scheint gültig zu sein"
 
@@ -3828,141 +3811,141 @@ msgstr ""
 "Dieses Problem wird mitunter dadurch gelöst, dass Sie in den "
 "Benutzereinstellungen eine höhere HBCI-Version auswählen."
 
-#: src/plugins/backends/aqhbci/plugin/ajobs/jobgettransactions.c:142
+#: src/plugins/backends/aqhbci/plugin/ajobs/jobgettransactions.c:139
 msgid "Plugin \"SWIFT\" not found."
 msgstr ""
 
-#: src/plugins/backends/aqhbci/plugin/ajobs/jobgettransactions.c:194
+#: src/plugins/backends/aqhbci/plugin/ajobs/jobgettransactions.c:191
 msgid "Importing transactions..."
 msgstr "Buchungen importieren..."
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:698
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:697
 msgid "Encoding queue"
 msgstr "Aufträge werden kodiert"
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:704
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:703
 msgid "Unable to encode"
 msgstr "Antwort konnte nicht kodiert werden"
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:710
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:709
 msgid "Sending queue"
 msgstr "Aufträge werden gesendet"
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:718
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:717
 msgid "Unable to send (network error)"
 msgstr "Fehler beim Senden (Netzwerk-Fehler)"
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:738
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:737
 msgid "Waiting for response"
 msgstr "Warte auf Antwort"
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:748
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:747
 #, c-format
 msgid "Error receiving response (%d)"
 msgstr "Fehler beim Empfangen der Antwort (%d)"
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:755
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:754
 msgid "Response received"
 msgstr "Antwort erhalten"
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:765
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:764
 msgid "Bad response (unable to decode)"
 msgstr "Fehlerhafte Antwort (konnte nicht dekodiert werden)"
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:781
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:780
 msgid "Bad response (bad message reference)"
 msgstr "Fehlerhafte Antwort (falsche Nachrichtenreferenz)"
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:791
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:790
 msgid "Dialog aborted by server"
 msgstr "Dialog-Abbruch durch den Server."
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:797
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:796
 msgid "Bad response (unable to dispatch)"
 msgstr "Fehlerhafte Antwort (konnte nicht den Aufträgen zugeordnet werden)"
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:903
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:902
 msgid "Opening dialog"
 msgstr "Öffne Dialog mit dem Server"
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:928
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1537
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:927
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1428
 msgid "Adjusting to iTAN modes of the server"
 msgstr "Anpassung an die iTAN-Methoden des Servers"
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:960
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:959
 msgid "Closing dialog"
 msgstr "Beende Dialog mit dem Server"
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:1196
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:1195
 msgid "Retrying to open dialog"
 msgstr "Versuche erneut den Dialog zu eröffnen"
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:1571
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:1570
 #: src/plugins/backends/aqofxconnect/plugin/provider.c:977
 #, c-format
 msgid "Locking user %s"
 msgstr "Exklusiver Zugriff auf Benutzer %s"
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:1583
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2199
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:1582
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2091
 #: src/plugins/backends/aqofxconnect/plugin/provider.c:989
 #, c-format
 msgid "Could not lock user %s (%d)"
 msgstr "Für Benutzer %s konnte kein exklusiver Zugriff erreicht werden (%d)"
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:1763
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:1922
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:1762
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:1921
 #, c-format
 msgid "Error processing job %s"
 msgstr "Fehler bei der Bearbeitung des Jobs %s"
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:1789
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:1788
 #: src/plugins/backends/aqofxconnect/plugin/provider.c:1013
 #, c-format
 msgid "Unlocking user %s"
 msgstr "Exklusiver Zugriff auf Benutzer %s freigeben"
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:2053
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:2052
 msgid "AqHBCI started"
 msgstr "AqHBCI gestartet"
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:2076
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:2075
 msgid "AqHBCI finished."
 msgstr "AqHBCI abgeschlossen."
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:2108
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:2107
 msgid "Locking users"
 msgstr "Exklusiver Zugriff auf Benutzer"
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:2115
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:2114
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_pintan.c:819
 #: src/plugins/backends/aqofxconnect/plugin/dlg_newuser.c:979
 msgid "Unable to lock users"
 msgstr "Für die Benutzer konnte kein exklusiver Zugriff erreicht werden"
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:2125
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:2124
 msgid "Executing HBCI jobs"
 msgstr "HBCI-Aufträge werden ausgeführt"
 
-#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:2138
+#: src/plugins/backends/aqhbci/plugin/applayer/outbox.c:2137
 msgid "Unable to unlock users"
 msgstr "Für die Benutzer konnte der exklusive Zugriff nicht freigegeben werden"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:799
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:673
 msgid "ERROR: Multiple signatures not yet supported"
 msgstr "Fehler: Mehrfachsignaturen sind bisher noch nicht unterstützt"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:916
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:790
 #, c-format
 msgid "No IBAN for account %llu, requesting SEPA info"
 msgstr ""
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1160
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1034
 msgid "AqHBCI-Notice"
 msgstr "AqHBCI-Anmerkung"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1162
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1036
 msgid ""
 "The version of AqBanking/AqHBCI previously used is too old to be\n"
 "upgraded automatically.\n"
@@ -3988,11 +3971,11 @@ msgstr ""
 "$HOME/.banking</i> entfernen und AqBanking vollstaendig neu einrichten.</p> "
 "</html>"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1209
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1083
 msgid "Chipcard Error"
 msgstr "Chipkartenfehler"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1210
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1084
 #, c-format
 msgid ""
 "Error checking chip card (%d).\n"
@@ -4001,22 +3984,27 @@ msgstr ""
 "Fehler beim Prüfen der Chipkarte (%d).\n"
 "Ist die Bibliothek libchipcard oder deren Plugins nicht installiert?"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1240
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1114
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_newuser.c:243
 msgid "Create HBCI/FinTS DDV User"
 msgstr "Neuen DDV-Chipkarten-Benutzer erstellen"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1563
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1135
+#, fuzzy
+msgid "Create HBCI/FinTS ZKA RSA User"
+msgstr "Neuen DDV-Chipkarten-Benutzer erstellen"
+
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1454
 msgid "Retrying to get system id."
 msgstr "Versuche erneut die Systemkennung abzurufen"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1586
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1477
 msgid "Could not get system id after multiple trials"
 msgstr ""
 "Die Systemkennung konnte auch nach mehreren Versuchen nicht abgerufen werden."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1627
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2271
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1518
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2163
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_pintan.c:916
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_ddvcard.c:857
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_newkeyfile.c:1041
@@ -4030,128 +4018,128 @@ msgstr ""
 "Für den Benutzer %s konnte der exklusive Zugriff nicht freigegeben werden "
 "(%d)"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1687
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2059
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1579
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1951
 msgid "Could not execute outbox."
 msgstr "Der Ausgangskorb konnte nicht ausgeführt werden."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1698
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1590
 msgid "No crypt key received."
 msgstr "Kein Chiffrierschlüssel empfangen."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1710
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2083
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1602
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1975
 msgid "Could not commit result"
 msgstr "Das Ergebnis der Aufträge konnte nicht verarbeitet werden."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1721
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1613
 msgid "Bank does not use a sign key."
 msgstr "Die Bank benutzt keinen Signaturschlüssel."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1742
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1634
 #, c-format
 msgid "Setting peer ID to \"%s\")"
 msgstr "Setze Bankschlüsselkennung auf \"%s\""
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1760
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1935
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2555
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2855
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3176
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3516
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1652
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1827
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2447
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2747
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3068
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3408
 msgid "Error getting crypt token"
 msgstr "Das zuständige CryptToken konnte nicht ermittelt werden."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1775
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1947
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2567
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2867
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3188
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3528
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1667
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1839
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2459
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2759
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3080
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3420
 msgid "Error opening crypt token"
 msgstr "Das zuständige CryptToken konnte nicht geöffnet werden."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1790
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1959
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2579
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2879
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3200
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3540
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1682
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1851
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2471
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2771
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3092
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3432
 msgid "User context not found on crypt token"
 msgstr "Der Benutzerkontext wurd auf dem CryptToken nicht gefunden."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1814
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1706
 msgid "Error saving sign key"
 msgstr "Fehler beim Speichern des Signierschlüssels"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1837
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1729
 msgid "Error saving crypt key"
 msgstr "Fehler beim Speichern des Crypto-Schlüssels"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1860
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1752
 msgid "Error saving auth key"
 msgstr "Fehler beim Speichern des Authentifizierungs-Schlüssels"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1875
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1767
 msgid "Keys saved."
 msgstr "Schlüssel gespeichert."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1978
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1870
 msgid "Sign key info not found on crypt token"
 msgstr "Signaturschlüssel wurde auf dem CryptToken nicht gefunden."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2001
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1893
 msgid "Crypt key info not found on crypt token"
 msgstr "Crypto-Schlüssel wurde auf dem CryptToken nicht gefunden."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2025
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1917
 msgid "Auth key info not found on crypt token"
 msgstr "Authentifizierungsschlüssel wurde auf dem CryptToken nicht gefunden."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2042
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1934
 msgid "Job not supported, should not happen"
 msgstr ""
 "Auftrag nicht unterstützt. Dieser interne Fehler sollte nicht vorkommen."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2071
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1963
 msgid "Job contains errors."
 msgstr "Auftrag enthält Fehler."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2093
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:1985
 msgid "Keys sent"
 msgstr "Schlüssel übermittelt."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2137
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2029
 #: src/plugins/backends/aqofxconnect/plugin/provider.c:1130
 msgid "Getting Certificate"
 msgstr "Abruf des Zertifikats"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2138
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2030
 #: src/plugins/backends/aqofxconnect/plugin/provider.c:1131
 msgid "We are now asking the server for its SSL certificate"
 msgstr "Jetzt wird das SSL-Zertifikat vom Server abgerufen."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2153
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2045
 msgid "Could not connect to server"
 msgstr "Konnte keine Verbindung zum Server herstellen"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2160
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2052
 msgid "Got certificate"
 msgstr "Zertifikat erhalten"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2237
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2129
 msgid "No iTAN modes reported."
 msgstr "Der Server meldet keine iTAN-Methoden."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2255
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2147
 msgid "Could not commit result to the system"
 msgstr "Das Ergebnis der Aufträge konnte nicht verarbeitet werden."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2321
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2213
 msgid "Enter New Banking PIN"
 msgstr "Neue Banking-PIN eingeben"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2322
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2214
 msgid ""
 "Please enter a new banking PIN.\n"
 "You must only enter numbers, not letters.\n"
@@ -4163,22 +4151,22 @@ msgstr ""
 "<html><p>Bitte geben Sie eine neue Banking-PIN ein.</p><p>Sie dürfen nur "
 "Zahlen eingeben, keine Buchstaben.</p></html>"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2617
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2917
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3238
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3578
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2509
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2809
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3130
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3470
 msgid "Server keys missing, please get them first"
 msgstr "Der Serverschlüssel fehlt, diesen bitte zuerst abrufen."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2641
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2941
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3262
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3602
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2533
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2833
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3154
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3494
 msgid "User keys missing, please generate them first"
 msgstr "Die Schlüssel des Benutzers fehlen, bitte erst generieren."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2652
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3279
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2544
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3171
 msgid ""
 "\n"
 "\n"
@@ -4192,103 +4180,103 @@ msgstr ""
 "Ini-Brief\n"
 "\n"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2654
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3281
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2546
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3173
 msgid "Date           : "
 msgstr "Datum          : "
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2657
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2959
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3284
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3627
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2549
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2851
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3176
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3519
 msgid "YYYY/MM/DD"
 msgstr "DD.MM.YYYY"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2660
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3287
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2552
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3179
 msgid "Time           : "
 msgstr "Uhrzeit        : "
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2661
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2965
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3288
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3633
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2553
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2857
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3180
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3525
 msgid "hh:mm:ss"
 msgstr "hh:mm:ss"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2666
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3293
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2558
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3185
 msgid "Bank Code      : "
 msgstr "Bankleitzahl    : "
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2671
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3298
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2563
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3190
 msgid "User           : "
 msgstr "Benutzerkennung : "
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2677
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3304
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2569
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3196
 msgid "Key number     : "
 msgstr "Schlüsselnummer : "
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2684
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3311
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2576
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3203
 msgid "Key version    : "
 msgstr "Schlüsselversion : "
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2692
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3319
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2584
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3211
 msgid "Customer system: "
 msgstr "Kundensystem : "
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2699
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3009
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3326
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3677
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2591
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2901
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3218
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3569
 msgid "Public key for electronic signature"
 msgstr "Öffentlicher Schlüssel für die elektronische Signatur"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2704
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3013
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3331
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3681
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2596
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2905
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3223
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3573
 msgid "Exponent"
 msgstr "Exponent"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2713
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2749
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3022
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3060
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3340
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3379
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3690
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3731
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2605
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2641
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2914
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2952
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3232
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3271
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3582
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3623
 msgid "Bad key"
 msgstr "Ungültiger Schlüssel"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2742
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3053
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3372
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3724
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2634
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2945
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3264
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3616
 msgid "Modulus"
 msgstr "Modulus"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2777
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3089
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2669
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2981
 msgid "Hash"
 msgstr "Hash"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2798
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3112
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3459
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3805
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2690
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3004
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3351
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3697
 msgid "I confirm that I created the above key for my electronic signature.\n"
 msgstr ""
 "Ich bestätige hiermit den obigen öffentlichen Schlüssel für meine "
 "elektronische Signatur.\n"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2802
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3463
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2694
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3355
 msgid ""
 "____________________________  ____________________________\n"
 "Place, date                   Signature\n"
@@ -4296,132 +4284,132 @@ msgstr ""
 "____________________________  ____________________________\n"
 "Ort, Datum                    Unterschrift\n"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2951
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3619
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2843
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3511
 msgid "INI-Letter"
 msgstr "Ini-Brief"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2955
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3623
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2847
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3515
 msgid "Date"
 msgstr "Datum"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2963
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3631
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2855
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3523
 msgid "Time"
 msgstr "Uhrzeit"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2970
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3638
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2862
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3530
 msgid "Bank Code"
 msgstr "Bankleitzahl (BLZ)"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2977
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3645
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2869
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3537
 msgid "User"
 msgstr "Benutzerkennung"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2984
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3652
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2876
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3544
 msgid "Key number"
 msgstr "Schlüsselnummer"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2992
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3660
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2884
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3552
 msgid "Key version"
 msgstr "Schlüsselversion"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3001
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3669
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:2893
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3561
 msgid "Customer system"
 msgstr "Kundensystem"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3121
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3814
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3013
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3706
 msgid "Place, date"
 msgstr "Ort, Datum"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3123
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3816
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3015
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3708
 msgid "Signature"
 msgstr "Unterschrift"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3408
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3761
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3300
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3653
 msgid "Hash (RMD-160)"
 msgstr "Hash (RMD-160)"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3433
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3781
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3325
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3673
 msgid "Hash (SHA-256)"
 msgstr "Hash (SHA-256)"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3914
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3806
 msgid "Server has no sign key, using encipher key"
 msgstr ""
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3937
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3829
 #, c-format
 msgid "Server key has a modulus size of %d bytes"
 msgstr ""
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:4001
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3893
 #, c-format
 msgid "Creating keys with %d bits (%d bytes), please wait..."
 msgstr "Schlüssel mit %d Bits (%d Bytes) werden erstellt, bitte warten..."
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:4021
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3913
 #, c-format
 msgid "Error creating cipher key (%d)"
 msgstr "Fehler beim Erstellen des Crypto-Schlüssels (%d)"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:4070
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:3962
 #, c-format
 msgid "Error creating sign key (%d)"
 msgstr "Fehler beim Erstellen des Signierschlüssels (%d)"
 
-#: src/plugins/backends/aqhbci/plugin/banking/provider.c:4117
+#: src/plugins/backends/aqhbci/plugin/banking/provider.c:4009
 #, c-format
 msgid "Error creating auth key (%d)"
 msgstr "Fehler beim Erstellen des Authentifizierungs-Schlüssels (%d)"
 
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:421
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:651
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:487
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.c:460
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:657
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:528
 #: src/plugins/backends/aqebics/plugin/dialogs/dlg_edituser.c:602
 msgid "Could create dialog, maybe incomplete installation?"
 msgstr ""
 "Dialog konnte nicht erzeugt werden, eventuell unvollständige Installation?"
 
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.c:420
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_pintan_special.c:292
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_pintan_special.c:296
 msgid ""
 "For smsTAN or mTAN this is your mobile phone number. Please ask your bank "
 "for the necessary format of this number."
 msgstr "Bei smsTAN oder mTAN verwenden Sie hier Ihre Handynummer."
 
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:268
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:279
 msgid "HBCIUserStatus|new"
 msgstr "new"
 
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:269
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:280
 msgid "HBCIUserStatus|enabled"
 msgstr "aktiviert"
 
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:270
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:281
 msgid "HBCIUserStatus|pending"
 msgstr "wartend auf Freischaltung"
 
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:271
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:282
 msgid "HBCIUserStatus|disabled"
 msgstr "deaktiviert"
 
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:282
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:293
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_rdh_special.c:226
 msgid "(auto)"
 msgstr "(auto)"
 
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:674
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:715
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_newkeyfile.c:1357
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_importkeyfile.c:1351
 #: src/plugins/backends/aqebics/plugin/dialogs/dlg_edituser.c:808
@@ -4429,7 +4417,7 @@ msgstr "(auto)"
 msgid "INI Letter"
 msgstr "Ini-Brief"
 
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:676
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.c:717
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_newkeyfile.c:1359
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_importkeyfile.c:1353
 msgid "INI Letter for HBCI"
@@ -5927,7 +5915,7 @@ msgstr "Eine Datei in eine Import-Kontextdatei importieren"
 
 #: src/tools/aqbanking-cli/main.c:269
 #, fuzzy
-msgid "Create SEPA standing order"
+msgid "Manage SEPA standing orders"
 msgstr "Dauerauftrag erstellen"
 
 #: src/tools/aqbanking-cli/main.c:272
@@ -6428,35 +6416,35 @@ msgstr "Erste Datenzeile"
 msgid "General Settings"
 msgstr "Allgemeine Einstellungen"
 
+#. type: Attribute 'text' of: <dialog><widget><widget><widget><widget><widget><widget>
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.dlg:36
+#, no-wrap
+msgid "Server URL"
+msgstr "Server-URL"
+
 #. type: Attribute 'text' of: <dialog><widget><widget>
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.dlg:49
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.dlg:52
 #, no-wrap
 msgid "HBCI Settings"
 msgstr "HBCI-Einstellungen"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget><widget><widget>
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.dlg:54
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.dlg:57
 #, no-wrap
 msgid "HBCI Version"
 msgstr "HBCI-Version"
 
 #. type: Attribute 'text' of: <dialog><widget><widget>
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.dlg:63
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.dlg:66
 #, no-wrap
 msgid "Special Actions"
 msgstr "Spezielle Aktionen"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget><widget>
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.dlg:65
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserddv.dlg:68
 #, no-wrap
 msgid "Get Accounts"
 msgstr "Kontenliste abrufen"
-
-#. type: Attribute 'text' of: <dialog><widget><widget><widget><widget><widget>
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.dlg:54
-#, no-wrap
-msgid "Server URL"
-msgstr "Server-URL"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget><widget><widget>
 #: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.dlg:60
@@ -6483,55 +6471,61 @@ msgid "Force SSLv3"
 msgstr "SSLv3 erzwingen"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget><widget><widget>
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.dlg:75
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.dlg:76
+#, no-wrap
+msgid "TLS: Ignore Premature Close"
+msgstr ""
+
+#. type: Attribute 'text' of: <dialog><widget><widget><widget><widget><widget>
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.dlg:81
 #, no-wrap
 msgid "Disable Base64 Encoding"
 msgstr "Nicht BASE64 kodieren"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget><widget><widget>
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.dlg:79
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.dlg:85
 #, no-wrap
 msgid "Omit SMS Account"
 msgstr "SMS-Konto überspringen"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget><widget>
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.dlg:89
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.dlg:95
 #, no-wrap
 msgid "Get Certificate"
 msgstr "Abruf des Zertifikats "
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget><widget>
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.dlg:90
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.dlg:96
 #, no-wrap
 msgid "Get System Id"
 msgstr "Systemkennung abrufen"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget><widget>
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.dlg:91
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserpintan.dlg:97
 #, no-wrap
 msgid "Get iTAN Modes"
 msgstr "iTAN-Modi abrufen"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget><widget><widget>
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.dlg:57
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.dlg:60
 #, no-wrap
 msgid "RDH Version"
 msgstr "RDH-Version"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget><widget>
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.dlg:65
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.dlg:68
 #, no-wrap
 msgid "Bank does not sign messages"
 msgstr "Bank signiert ihre Nachrichten nicht"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget><widget>
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.dlg:66
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.dlg:69
 #, no-wrap
 msgid "Bank uses own signature counter"
 msgstr "Bank verwendet Signaturzähler"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget><widget>
-#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.dlg:76
+#: src/plugins/backends/aqhbci/plugin/dialogs/dlg_edituserrdh.dlg:79
 #, no-wrap
 msgid "Ini Letter"
 msgstr "Ini-Brief"
@@ -7029,3 +7023,24 @@ msgstr "Offline-Backend"
 #: src/plugins/backends/aqnone/aqnone.xml:6
 msgid "This backend allows using offline accounts."
 msgstr ""
+
+#~ msgid "AH_JOB|-- no account id --"
+#~ msgstr "-- keine Kontonummer --"
+
+#~ msgid "AH_JOB|-- no bank code --"
+#~ msgstr "-- keine Bankleitzahl --"
+
+#~ msgid "Received account:"
+#~ msgstr "Empfangenes Konto:"
+
+#~ msgid "Extended account information available"
+#~ msgstr "Erweiterte Konteninformationen vorhanden"
+
+#~ msgid ""
+#~ "Extended account information is not available, some jobs might not work"
+#~ msgstr ""
+#~ "Erweiterte Konteninformationen nicht vorhanden. Manche Aufträge sind "
+#~ "nicht verfügbar."
+
+#~ msgid "Bank message received"
+#~ msgstr "Banknachricht erhalten"
