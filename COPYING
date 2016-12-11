@@ -6,16 +6,24 @@ Licenses
 
 AqBanking is licensed under the GPLv2 or GPLv3 (see below).
 
-All contributions from Christian Stimming,  Patrick Prasse, Stephen R. 
-Besch, G. Paul Ziemba, Tomas Pospisek, Paul Conrady and Matthias Gehre are 
-licensed under the "Modified BSD-License" (see at the end of this document).
+All contributions from the following authors are licensed under
+the "Modified BSD-License" (see at the end of this document):
+
+- Christian Stimming
+- Patrick Prasse
+- Stephen R. Besch
+- G. Paul Ziemba
+- Tomas Pospisek
+- Paul Conrady
+- Matthias Gehre
+- Holger Magnussen
 
 All contributions from Micha Lenk are licensed either under the terms
 of the GPL in the version AqBanking is released with, or under the terms
 of the "Modified BSD-License" (see at the end of this document), at your
 choice.
 
-All contributions from Martin Preuss are licensed under GPL.
+All contributions from Martin Preuss are licensed under the GPL.
 Hence, the full package is licensed under GPL. 
 
 
