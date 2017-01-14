@@ -155,6 +155,17 @@
    </VALUES>
  </SEGdef>
 
+ <SEGdef id="GetBalanceInvestment" code="HKWPD" version="6"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="ktv" version="2" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
 
  <!-- Banknachricht -->
  <SEGdef id="Balance" code="HISAL" version="5"
@@ -185,6 +196,18 @@
          <ELEM name="accountNumber" type="AN" maxsize="30" />
          <ELEM name="unknown" type="AN" />
          <GROUP type="saldo" name="booked" minnum="0" version="1" />
+  <VALUES>
+          <VALUE path="head/code">%code</VALUE>
+          <VALUE path="head/version">%version</VALUE>
+  </VALUES>
+  </SEGdef>
+
+ <SEGdef id="BalanceInvestment" code="HIWPD" version="6" delimiter="+" terminator="'" >
+         <GROUP type="SegHead" name="head" />
+	 <ELEM name="booked" 
+               type="bin" bintype="swift" binsubtype="mt535"
+               trustlevel="2" 
+               readbin="0" />
   <VALUES>
           <VALUE path="head/code">%code</VALUE>
           <VALUE path="head/version">%version</VALUE>
@@ -332,6 +355,18 @@
          attachable="1" 
          single="1" >
    <SEG type="GetBalanceCreditCard" version="3" />
+ </JOBdef>
+
+ <JOBdef id="JobGetBalanceInvestment" 
+         code="HKWPD" 
+         version="6" 
+         crypt="1" 
+         sign="1" 
+         needBPD="1" 
+         response="BalanceInvestment" 
+         attachable="1" 
+         single="1" >
+   <SEG type="GetBalanceInvestment" version="6" />
  </JOBdef>
 
  <!--  Geschaeftsvorfall: Saldenabfrage (Version 6) -->

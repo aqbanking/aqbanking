@@ -1453,6 +1453,7 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/swift/profiles/Makefile
   src/plugins/imexporters/swift/profiles/swiftmt940.conf
   src/plugins/imexporters/swift/profiles/swiftmt942.conf
+  src/plugins/imexporters/swift/profiles/swiftmt535.conf
   src/plugins/imexporters/swift/profiles/amro940.conf
   src/plugins/imexporters/swift/profiles/amro942.conf
   src/plugins/imexporters/csv/Makefile

@@ -3,6 +3,6 @@
   <author>Martin Preuss(martin@libchipcard.de)</author>
   <short>Im-/exporter for SWIFT</short>
   <descr>
-    This plugin imports SWIFT MT940 and MT942 data.
+    This plugin imports SWIFT MT940, MT942 and MT535 data.
   </descr>
 </plugin>

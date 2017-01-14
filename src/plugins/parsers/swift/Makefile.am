@@ -9,14 +9,17 @@ noinst_HEADERS=\
   swift_l.h \
   swift_p.h \
   swift940_l.h \
-  swift940_p.h
+  swift940_p.h \
+  swift535_l.h \
+  swift535_p.h
 
 dbioplugindir = $(aqbanking_plugindir)/dbio
 dbioplugin_DATA=swift.xml
 dbioplugin_LTLIBRARIES=swift.la
 swift_la_SOURCES=\
  swift.c \
- swift940.c
+ swift940.c \
+ swift535.c
 
 swift_la_LIBADD = $(aqbanking_internal_libs) $(gwenhywfar_libs) 
 swift_la_LDFLAGS = -no-undefined $(STRIPALL) -module -avoid-version

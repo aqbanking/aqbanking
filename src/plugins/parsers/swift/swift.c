@@ -14,6 +14,7 @@
 
 #include "swift_p.h"
 #include "swift940_l.h"
+#include "swift535_l.h"
 #include "i18n_l.h"
 #include <aqbanking/banking.h>
 #include <gwenhywfar/text.h>
@@ -873,7 +874,8 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
 
   p=GWEN_DB_GetCharValue(cfg, "type", 0, "mt940");
   if (strcasecmp(p, "mt940")!=0 &&
-      strcasecmp(p, "mt942")!=0) {
+      strcasecmp(p, "mt942")!=0 &&
+      strcasecmp(p, "mt535")!=0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
               "Type \"%s\" not supported by plugin \"%s\"",
               p,
@@ -992,9 +994,16 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
     /* now all tags have been read, transform them */
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug,
 			 I18N("Importing SWIFT data"));
-    rv=AHB_SWIFT940_Import(tl, data, cfg, flags);
+
+    DBG_INFO(AQBANKING_LOGDOMAIN, "*** before branching ***");
+    if(strcasecmp(p, "mt940")==0 || strcasecmp(p, "mt942")==0)
+      rv=AHB_SWIFT940_Import(tl, data, cfg, flags);
+    if(strcasecmp(p, "mt535")==0)
+      rv=AHB_SWIFT535_Import(tl, data, cfg, flags);
+
+    
     if (rv) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Error importing SWIFT MT940");
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Error importing SWIFT MT940/942/535");
       GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
 			   I18N("Error importing SWIFT data"));
       GWEN_FastBuffer_free(fb);
@@ -1008,7 +1017,7 @@ int AHB_SWIFT_Import(GWEN_DBIO *dbio,
   } /* for */
 
   GWEN_FastBuffer_free(fb);
-  DBG_INFO(AQBANKING_LOGDOMAIN, "SWIFT MT940 successfully imported");
+  DBG_INFO(AQBANKING_LOGDOMAIN, "SWIFT MT940/942/535 successfully imported");
 
   return 0;
 }

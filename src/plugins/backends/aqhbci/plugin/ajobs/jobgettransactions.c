@@ -433,6 +433,25 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
     }
   }
 
+  if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug) {
+    GWEN_DB_NODE *gn;
+    AB_TRANSACTION *ttmp;
+
+    DBG_INFO(AQHBCI_LOGDOMAIN, "*** Dumping transactions *******************");
+    ttmp=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
+    while (ttmp) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "*** --------------------------------------");
+      gn=GWEN_DB_Group_new("transaction");
+      AB_Transaction_toDb(ttmp, gn);
+      GWEN_DB_Dump(gn, 2);
+      if (gn) GWEN_DB_Group_free(gn);
+      ttmp=AB_ImExporterAccountInfo_GetNextTransaction(ai);
+    }
+    AB_Transaction_free(ttmp);
+
+    DBG_INFO(AQHBCI_LOGDOMAIN, "*** End dumping transactions ***************");
+  }
+
   GWEN_Buffer_free(tbooked);
   GWEN_Buffer_free(tnoted);
   return 0;

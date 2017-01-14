@@ -702,6 +702,36 @@ void AB_ImExporterAccountInfo_ClearTransactions(AB_IMEXPORTER_ACCOUNTINFO *iea);
 /*@}*/
 
 
+/** @name Security
+ *
+ */
+/*@{*/
+/**
+ * Takes over ownership of the given security.
+ */
+AQBANKING_API 
+void AB_ImExporterAccountInfo_AddSecurity(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                               AB_SECURITY *sec);
+/**
+ * Returns the first security stored within the context and removes
+ * it.
+ * The context remains the owner of the object returned.
+ */
+AQBANKING_API 
+AB_SECURITY*
+AB_ImExporterAccountInfo_GetFirstSecurity(AB_IMEXPORTER_ACCOUNTINFO *iea);
+
+/**
+ * Returns the next security stored within the context and removes it
+ * The context remains the owner of the object returned.
+ */
+AQBANKING_API 
+AB_SECURITY*
+AB_ImExporterAccountInfo_GetNextSecurity(AB_IMEXPORTER_ACCOUNTINFO *iea);
+
+/*@}*/
+
+
 /** @name Account Status
  *
  */

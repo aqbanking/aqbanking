@@ -94,6 +94,9 @@ struct AB_IMEXPORTER_ACCOUNTINFO {
   AB_TRANSACTION_LIST *transfers;
   AB_TRANSACTION *nextTransfer;
 
+  AB_SECURITY_LIST *securityList;
+  AB_SECURITY *nextSecurity;
+
 };
 
 
