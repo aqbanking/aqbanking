@@ -1,14 +1,5 @@
 # Process this file with autoconf to produce a configure script.
 
-###-------------------------------------------------------------------------
-#
-# The following line makes sure that this file is always touched when a new
-# revision is checked out.
-#
-# $Rev: 2550 $
-#
-
-
 AC_PREREQ(2.56)
 AC_INIT
 AC_CANONICAL_BUILD
@@ -25,7 +16,7 @@ AC_CONFIG_HEADERS([config.h])
 
 AQBANKING_VERSION_MAJOR=5
 AQBANKING_VERSION_MINOR=7
-AQBANKING_VERSION_PATCHLEVEL=4
+AQBANKING_VERSION_PATCHLEVEL=5
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="beta"
@@ -43,7 +34,7 @@ AQBANKING_VERSION_TAG="beta"
 
 AQBANKING_SO_CURRENT=41
 AQBANKING_SO_AGE=6
-AQBANKING_SO_REVISION=4
+AQBANKING_SO_REVISION=5
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 #
