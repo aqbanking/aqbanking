@@ -12,11 +12,12 @@ folder "data":
 
 German Banks:
 - blz.csv 
-  The CSV file of the Deutsche Bundesbank containing information about German
-  banks (http://www.bundesbank.de/zahlungsverkehr/zahlungsverkehr_bankleitzahlen_download.php)
+  The most recent CSV file of the Deutsche Bundesbank containing information about German
+  banks from https://www.bundesbank.de/Redaktion/DE/Standardartikel/Aufgaben/Unbarer_Zahlungsverkehr/bankleitzahlen_download.html
+  (quarterly updates)
 - fints_institute.csv
-  CSV file containing information about banks supporting FinTS (see 
-  homepage of FinTS)
+  CSV file containing information about banks supporting FinTS. This requires a registration via 
+  https://www.hbci-zka.de/dokumente/Registrierung_fuer_bankenliste.ZIP
 
 Austrian Banks:
 - blz-at.csv
@@ -27,7 +28,7 @@ Austrian Banks:
 
 Swiss Banks:
 - 
-  http://www.sic.ch/de/tkicch_index/tkicch_onlineservices/tkicch_onlineservices_downloadbcbankmasterdata.htm
+  https://www.six-interbank-clearing.com/de/home/bank-master-data/download-bc-bank-master.html
 
 
 US Banks:
