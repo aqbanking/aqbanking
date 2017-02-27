@@ -1,5 +1,5 @@
 SUBDIRS = $(aqbanking_plugins_backends_dirs)
-DIST_SUBDIRS = aqhbci aqofxconnect aqnone aqebics
+DIST_SUBDIRS = aqhbci aqofxconnect aqnone aqebics aqpaypal
 
 noinst_LTLIBRARIES=libbackends.la
 libbackends_la_SOURCES=dummy.c
