@@ -1,7 +1,5 @@
 SUBDIRS=plugin tools
 
-EXTRA_DIST=COPYING
-
 
 sources:
 	for d in $(SUBDIRS); do \
