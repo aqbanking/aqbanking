@@ -40,10 +40,9 @@ int AH_Dialog_CreateIoLayer_Https(AH_DIALOG *dlg) {
 
   /* setup session */
   flags=AH_User_GetFlags(dlg->dialogOwner);
-  if (flags & AH_USER_FLAGS_FORCE_SSL3)
-    GWEN_HttpSession_AddFlags(sess, GWEN_HTTP_SESSION_FLAGS_FORCE_SSL3);
-  if (flags & AH_USER_FLAGS_TLS_ONLY_SAFE_CIPHERS)
-      GWEN_HttpSession_AddFlags(sess, GWEN_HTTP_SESSION_FLAGS_TLS_ONLY_SAFE_CIPHERS);
+  if (flags & AH_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE)
+    GWEN_HttpSession_AddFlags(sess, GWEN_HTTP_SESSION_FLAGS_TLS_IGN_PREMATURE_CLOSE);
+
 
   GWEN_HttpSession_AddFlags(sess, GWEN_HTTP_SESSION_FLAGS_NO_CACHE);
 
