@@ -210,7 +210,7 @@ int main(int argc, char **argv) {
       return 2;
     }
     /* set argument "persistent" to one in non-interactive mode */
-    GWEN_Gui_CGui_SetPasswordDb(gui, dbPins, nonInteractive);
+    GWEN_Gui_SetPasswordDb(gui, dbPins, nonInteractive);
   }
   GWEN_Gui_SetGui(gui);
 
