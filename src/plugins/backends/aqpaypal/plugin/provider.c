@@ -1088,6 +1088,7 @@ int APY_Provider_ExecGetBal(AB_PROVIDER *pro,
   int vminor;
   int rv;
   GWEN_DB_NODE *dbResponse;
+  GWEN_DB_NODE *dbCurr;
 
   sess=AB_HttpSession_new(pro, u,
 			  APY_User_GetServerUrl(u),
@@ -1292,8 +1293,6 @@ int APY_Provider_ExecGetBal(AB_PROVIDER *pro,
   }
 
   /* now get the transactions */
-  GWEN_DB_NODE *dbCurr;
-
   dbCurr=GWEN_DB_GetFirstGroup(dbResponse);
   while(dbCurr) {
     AB_ACCOUNT_STATUS *acst;
