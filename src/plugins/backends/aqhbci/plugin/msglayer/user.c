@@ -1389,7 +1389,8 @@ int AH_User_InputPin(AB_USER *u,
                           buffer,
 			  pwbuffer,
 			  minLen,
-			  maxLen,
+                          maxLen,
+			  GWEN_Gui_PasswordMethod_Text, NULL,
 			  0);
   GWEN_Buffer_free(nbuf);
 
@@ -1478,6 +1479,7 @@ int AH_User_InputPasswd(AB_USER *u,
 			  pwbuffer,
 			  minLen,
 			  maxLen,
+			  GWEN_Gui_PasswordMethod_Text, NULL, 
 			  0);
   GWEN_Buffer_free(nbuf);
 
@@ -1534,6 +1536,7 @@ int AH_User_InputTan(AB_USER *u,
 			  pwbuffer,
 			  minLen,
 			  maxLen,
+			  GWEN_Gui_PasswordMethod_Text, NULL,
 			  0);
   GWEN_Buffer_free(nbuf);
   AB_BankInfo_free(bi);
@@ -1617,6 +1620,7 @@ int AH_User_InputTanWithChallenge(AB_USER *u,
                           pwbuffer,
 			  minLen,
 			  maxLen,
+			  GWEN_Gui_PasswordMethod_Text, NULL,
 			  0);
   GWEN_Buffer_free(xbuf);
   GWEN_Buffer_free(nbuf);
@@ -2198,7 +2202,8 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
 			  GWEN_Buffer_GetStart(xbuf),
 			  pwbuffer,
 			  minLen,
-			  maxLen,
+                          maxLen,
+                          GWEN_Gui_PasswordMethod_Text, NULL,
 			  0);
   GWEN_Buffer_free(xbuf);
   GWEN_Buffer_free(nbuf);

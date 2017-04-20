@@ -110,7 +110,8 @@ int AO_Provider__AddSignOn(AB_PROVIDER *pro,
 			    msgbuf,
 			    userpass,
 			    4,
-			    sizeof(userpass),
+                            sizeof(userpass),
+                            GWEN_Gui_PasswordMethod_Text, NULL,
 			    0);
     GWEN_Buffer_free(nbuf);
     if (rv<0) {
