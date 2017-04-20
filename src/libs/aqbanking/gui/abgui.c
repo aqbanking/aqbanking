@@ -218,7 +218,7 @@ int AB_Gui_CheckCert(GWEN_GUI *gui,
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Saving certs");
     rv=AB_Banking_SaveSharedConfig(xgui->banking, "certs", dbCerts);
     if (rv<0) {
-      DBG_WARN(AQBANKING_LOGDOMAIN, "Could not unlock certs db (%d)", rv);
+      DBG_WARN(AQBANKING_LOGDOMAIN, "Could not write certs db (%d)", rv);
     }
 
     /* unlock certs */
