@@ -27,8 +27,6 @@ extern "C" {
 AQBANKING_API void AB_SioTlsExt_Extend(GWEN_SYNCIO *sio, AB_USER *u);
 AQBANKING_API void AB_SioTlsExt_Unextend(GWEN_SYNCIO *sio);
 
-AQBANKING_API AB_USER *AB_SioTlsExt_GetUser(const GWEN_SYNCIO *sio);
-
 
 #ifdef __cplusplus
 }

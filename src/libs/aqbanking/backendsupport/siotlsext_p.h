@@ -28,6 +28,9 @@ static void GWENHYWFAR_CB AB_SioTlsExt_FreeData(void *bp, void *p);
 static int  GWENHYWFAR_CB AB_SioTlsExt_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert);
 
 
+/* static AB_USER *AB_SioTlsExt_GetUser(const GWEN_SYNCIO *sio); */
+
+
 
 #endif /* AQBANKING_SIOTLSEXT_P_H */
 

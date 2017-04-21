@@ -67,6 +67,7 @@ void GWENHYWFAR_CB AB_SioTlsExt_FreeData(void *bp, void *p) {
 
 
 
+/*
 AB_USER *AB_SioTlsExt_GetUser(const GWEN_SYNCIO *sio) {
   AB_SIOTLS_EXT *xsio;
 
@@ -76,7 +77,7 @@ AB_USER *AB_SioTlsExt_GetUser(const GWEN_SYNCIO *sio) {
 
   return xsio->user;
 }
-
+*/
 
 
 
