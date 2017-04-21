@@ -92,14 +92,10 @@ AB_TRANSACTION_LIMITS *AB_TransactionLimits_dup(const AB_TRANSACTION_LIMITS *d) 
   st->minLenRemoteIban=d->minLenRemoteIban;
   st->maxLenTextKey=d->maxLenTextKey;
   st->minLenTextKey=d->minLenTextKey;
-  if (d->valuesTextKey) {
-    GWEN_StringList_free(st->valuesTextKey);
+  if (d->valuesTextKey)
     st->valuesTextKey=GWEN_StringList_dup(d->valuesTextKey);
-  }
-  if (d->textKeys) {
-    AB_TextKeyDescr_List_free(st->textKeys);
+  if (d->textKeys)
     st->textKeys=AB_TextKeyDescr_List_dup(d->textKeys);
-  }
   st->maxLenCustomerReference=d->maxLenCustomerReference;
   st->minLenCustomerReference=d->minLenCustomerReference;
   st->maxLenBankReference=d->maxLenBankReference;
@@ -119,22 +115,14 @@ AB_TRANSACTION_LIMITS *AB_TransactionLimits_dup(const AB_TRANSACTION_LIMITS *d) 
   st->maxValueSetupTimeRecurring=d->maxValueSetupTimeRecurring;
   st->minValueSetupTimeFinal=d->minValueSetupTimeFinal;
   st->maxValueSetupTimeFinal=d->maxValueSetupTimeFinal;
-  if (d->valuesCycleWeek) {
-    GWEN_StringList_free(st->valuesCycleWeek);
+  if (d->valuesCycleWeek)
     st->valuesCycleWeek=GWEN_StringList_dup(d->valuesCycleWeek);
-  }
-  if (d->valuesCycleMonth) {
-    GWEN_StringList_free(st->valuesCycleMonth);
+  if (d->valuesCycleMonth)
     st->valuesCycleMonth=GWEN_StringList_dup(d->valuesCycleMonth);
-  }
-  if (d->valuesExecutionDayWeek) {
-    GWEN_StringList_free(st->valuesExecutionDayWeek);
+  if (d->valuesExecutionDayWeek)
     st->valuesExecutionDayWeek=GWEN_StringList_dup(d->valuesExecutionDayWeek);
-  }
-  if (d->valuesExecutionDayMonth) {
-    GWEN_StringList_free(st->valuesExecutionDayMonth);
+  if (d->valuesExecutionDayMonth)
     st->valuesExecutionDayMonth=GWEN_StringList_dup(d->valuesExecutionDayMonth);
-  }
   st->allowMonthly=d->allowMonthly;
   st->allowWeekly=d->allowWeekly;
   st->allowChangeRecipientAccount=d->allowChangeRecipientAccount;
