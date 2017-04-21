@@ -21,12 +21,14 @@ struct AB_USER {
   char *country;
   char *bankCode;
   uint32_t lastSessionId;
+  GWEN_DB_NODE *certDb;
   GWEN_FSLOCK *fileLock;
   AB_BANKING *banking;
   char *dbId;
 };
 
 AB_USER *AB_User__new(void);
+
 
 
 

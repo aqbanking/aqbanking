@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004-2011 by Martin Preuss
+ copyright   : (C) 2004-2017 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -28,6 +28,16 @@ AB_USER *AB_User_new(AB_BANKING *ab) {
   AB_User_SetBanking(u, ab);
 
   return u;
+}
+
+
+
+int AB_User_copyDb(GWEN_DB_NODE *dbSrc, GWEN_DB_NODE *dbDst) {
+  if (dbSrc && dbDst)
+    return GWEN_DB_AddGroupChildren(dbDst, dbSrc);
+
+  /* empty group, nothing to do */
+  return 0;
 }
 
 

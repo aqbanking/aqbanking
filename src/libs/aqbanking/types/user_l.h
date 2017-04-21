@@ -47,6 +47,7 @@ GWEN_LIST_FUNCTION_DEFS(AB_USER, AB_User)
 
 
 
+
 /**
 * Returns the property @ref AB_USER_FileLock
 */

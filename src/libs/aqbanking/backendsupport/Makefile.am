@@ -49,7 +49,13 @@ iheaderdir=@aqbanking_headerdir_am@/aqbanking
 iheader_HEADERS=$(built_headers_pub)\
   ab_accountqueuefns.h \
   ab_userqueuefns.h \
-  ab_queuefns.h
+  ab_queuefns.h \
+  siotlsext.h
+
+
+noinst_HEADERS=\
+  siotlsext_p.h
+
 
 extra_sources=\
   ab_accountqueuefns.c \
@@ -65,7 +71,9 @@ MAINTAINERCLEANFILES = $(typedata_sources) $(built_headers) $(dist_typedata_DATA
 
 
 noinst_LTLIBRARIES=libabbesupport.la
-libabbesupport_la_SOURCES=$(typedata_sources)
+libabbesupport_la_SOURCES=$(typedata_sources) \
+  siotlsext.c
+
 
 built_sources: $(typedata_sources)
 

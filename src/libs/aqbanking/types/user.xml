@@ -3,7 +3,7 @@
   
   <type id="GWEN_DB_NODE">
     <functions>
-      <function type="todb" name="AB_User__dbToDb" />
+      <function type="todb" name="AB_User_copyDb" />
       <function type="fromdb" name="GWEN_DB_Group_dup" />
       <function type="dup" name="GWEN_DB_Group_dup" />
       <function type="free" name="GWEN_DB_Group_free" />
@@ -66,6 +66,10 @@
     <elem name="bankCode" type="char" ptr="1" />
 
     <elem name="lastSessionId" type="uint32_t" />
+
+    <elem name="certDb" type="GWEN_DB_NODE" ptr="1" volatile="0" 
+          access="public" takeOver="1" copy="0" const="0" />
+
 
     <elem name="fileLock" type="GWEN_FSLOCK" ptr="1" volatile="1" 
           access="lib" takeOver="1" copy="0" const="0" />

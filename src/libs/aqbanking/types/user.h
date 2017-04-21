@@ -78,6 +78,15 @@ Set this property with @ref AB_User_SetLastSessionId,
 get it with @ref AB_User_GetLastSessionId
 </p>
 
+@anchor AB_USER_CertDb
+<h3>CertDb</h3>
+<p>
+</p>
+<p>
+Set this property with @ref AB_User_SetCertDb, 
+get it with @ref AB_User_GetCertDb
+</p>
+
 @anchor AB_USER_Banking
 <h3>Banking</h3>
 <p>
@@ -215,6 +224,15 @@ AQBANKING_API uint32_t AB_User_GetLastSessionId(const AB_USER *el);
 * Set the property @ref AB_USER_LastSessionId
 */
 AQBANKING_API void AB_User_SetLastSessionId(AB_USER *el, uint32_t d);
+
+/**
+* Returns the property @ref AB_USER_CertDb
+*/
+AQBANKING_API GWEN_DB_NODE *AB_User_GetCertDb(const AB_USER *el);
+/**
+* Set the property @ref AB_USER_CertDb
+*/
+AQBANKING_API void AB_User_SetCertDb(AB_USER *el, GWEN_DB_NODE *d);
 
 
 /**

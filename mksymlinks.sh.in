@@ -84,6 +84,7 @@ ln -s "${bprefix}/src/libs/aqbanking/backendsupport/ab_jobqueue.h" aqbanking5/aq
 ln -s "${bprefix}/src/libs/aqbanking/backendsupport/ab_accountqueue.h" aqbanking5/aqbanking
 ln -s "${bprefix}/src/libs/aqbanking/backendsupport/ab_userqueue.h" aqbanking5/aqbanking
 ln -s "${bprefix}/src/libs/aqbanking/backendsupport/ab_queue.h" aqbanking5/aqbanking
+ln -s "${bprefix}/src/libs/aqbanking/backendsupport/siotlsext.h" aqbanking5/aqbanking
 
 # symlink all headers from src/lib/aqbankingpp
 mkdir -p aqbanking5/aqbankingpp
