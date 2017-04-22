@@ -123,9 +123,7 @@ int GWENHYWFAR_CB AB_SioTlsExt_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDES
   }
 
   /* find group which contains the certificate with the given fingerprint */
-  dbC=GWEN_DB_GetGroup(dbCerts,
-                       GWEN_PATH_FLAGS_PATHMUSTEXIST | GWEN_PATH_FLAGS_TOLERANT_ESCAPE,
-                       sFingerprint);
+  dbC=GWEN_DB_GetGroup(dbCerts, GWEN_PATH_FLAGS_PATHMUSTEXIST, sFingerprint);
   if (dbC) {
     GWEN_SSLCERTDESCR *storedCert;
     uint32_t iStoredStatus;
@@ -227,7 +225,7 @@ int GWENHYWFAR_CB AB_SioTlsExt_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDES
 
       /* store certificate in database */
       dbC=GWEN_DB_GetGroup(dbCerts,
-                           GWEN_DB_FLAGS_OVERWRITE_GROUPS | GWEN_PATH_FLAGS_TOLERANT_ESCAPE,
+                           GWEN_DB_FLAGS_OVERWRITE_GROUPS,
                            sFingerprint);
       assert(dbC);
       GWEN_SslCertDescr_toDb(cert, dbC);
@@ -248,7 +246,7 @@ int GWENHYWFAR_CB AB_SioTlsExt_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDES
     } /* if oldCheckCertFn */
     else {
       DBG_NOTICE(AQBANKING_LOGDOMAIN,
-                 "Internal error: No previous checkCert function which checking cert \"%s\"",
+                 "Internal error: No previous checkCert function while checking cert \"%s\"",
                  sFingerprint);
       return GWEN_ERROR_INTERNAL;
     }
