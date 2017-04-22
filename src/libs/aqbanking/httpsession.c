@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2004-2017 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -14,10 +14,12 @@
 
 #include "httpsession_p.h"
 #include "i18n_l.h"
+#include <aqbanking/siotlsext.h>
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gui.h>
+#include <gwenhywfar/syncio_tls.h>
 
 #ifdef OS_WIN32
 # define DIRSEP "\\"
@@ -51,6 +53,9 @@ GWEN_HTTP_SESSION *AB_HttpSession_new(AB_PROVIDER *pro,
   xsess->provider=pro;
   xsess->user=u;
   xsess->logs=GWEN_Buffer_new(0, 256, 0, 1);
+
+  /* set virtual functions */
+  GWEN_HttpSession_SetInitSyncIoFn(sess, AB_HttpSession_InitSyncIo);
 
   return sess;
 }
@@ -134,6 +139,30 @@ void AB_HttpSession_ClearLog(GWEN_HTTP_SESSION *sess) {
   assert(xsess);
 
   GWEN_Buffer_Reset(xsess->logs);
+}
+
+
+
+
+int GWENHYWFAR_CB AB_HttpSession_InitSyncIo(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio) {
+  AB_HTTP_SESSION *xsess;
+  GWEN_SYNCIO *sioTls;
+
+  assert(sess);
+  xsess=GWEN_INHERIT_GETDATA(GWEN_HTTP_SESSION, AB_HTTP_SESSION, sess);
+  assert(xsess);
+
+  /* modify TLS layer */
+  sioTls=GWEN_SyncIo_GetBaseIoByTypeName(sio, GWEN_SYNCIO_TLS_TYPE);
+  if (sioTls) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Extending TLS SyncIo");
+    AB_SioTlsExt_Extend(sioTls, xsess->user);
+  }
+  else {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No TLS SyncIo, not extending");
+  }
+
+  return 0;
 }
 
 

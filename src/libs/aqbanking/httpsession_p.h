@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2004-2017 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -30,6 +27,7 @@ struct AB_HTTP_SESSION {
 
 
 static void GWENHYWFAR_CB AB_HttpSession_FreeData(void *bp, void *p);
+static int GWENHYWFAR_CB AB_HttpSession_InitSyncIo(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio);
 
 
 
