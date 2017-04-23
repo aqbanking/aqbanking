@@ -2102,6 +2102,8 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
   GWEN_BUFFER *xbuf;
   AB_BANKINFO *bi;
   uint32_t iflags=0;
+  GWEN_GUI_PASSWORD_METHOD methodId=GWEN_Gui_PasswordMethod_Text;
+  GWEN_DB_NODE *dbMethodParams;
 
   assert(u);
   un=AB_User_GetUserId(u);
@@ -2115,6 +2117,8 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
   if (!bn)
     AB_User_GetBankCode(u);
 
+  dbMethodParams=GWEN_DB_Group_new("methodParams");
+
   iflags=GWEN_GUI_INPUT_FLAGS_TAN | GWEN_GUI_INPUT_FLAGS_SHOW;
 
   buffer[0]=0;
@@ -2123,16 +2127,22 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
   xbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
   if (challengeHhd && *challengeHhd) {
+    GWEN_BUFFER *cbuf;
+
     DBG_ERROR(AQHBCI_LOGDOMAIN, "ChallengeHHD is [%s]", challengeHhd);
-    GWEN_Buffer_AppendString(xbuf, "$OBEGIN$");
-    rv=AH_HHD14_Translate(challengeHhd, xbuf);
+    cbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    rv=AH_HHD14_Translate(challengeHhd, cbuf);
     if (rv<0) {
+      GWEN_Buffer_free(cbuf);
       GWEN_Buffer_free(xbuf);
+      GWEN_DB_Group_free(dbMethodParams);
       AB_BankInfo_free(bi);
       return rv;
     }
-    GWEN_Buffer_AppendString(xbuf, "$OEND$");
-    iflags|=GWEN_GUI_INPUT_FLAGS_OPTICAL;
+    GWEN_DB_SetCharValue(dbMethodParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			 "challenge", GWEN_Buffer_GetStart(cbuf));
+    GWEN_Buffer_free(cbuf);
+    methodId=GWEN_Gui_PasswordMethod_OpticalHHD;
 
     /* text version */
     snprintf(buffer, sizeof(buffer)-1,
@@ -2154,16 +2164,22 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
     /* look for "CHLGUC" */
     s=GWEN_Text_StrCaseStr(challenge, "CHLGUC");
     if (s) {
+      GWEN_BUFFER *cbuf;
+  
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Challenge contains CHLGUC");
-      GWEN_Buffer_AppendString(xbuf, "$OBEGIN$");
-      rv=AH_HHD14_Translate(s, xbuf);
+      cbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      rv=AH_HHD14_Translate(challengeHhd, cbuf);
       if (rv<0) {
+	GWEN_Buffer_free(cbuf);
 	GWEN_Buffer_free(xbuf);
+	GWEN_DB_Group_free(dbMethodParams);
 	AB_BankInfo_free(bi);
 	return rv;
       }
-      GWEN_Buffer_AppendString(xbuf, "$OEND$");
-      iflags|=GWEN_GUI_INPUT_FLAGS_OPTICAL;
+      GWEN_DB_SetCharValue(dbMethodParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			   "challenge", GWEN_Buffer_GetStart(cbuf));
+      GWEN_Buffer_free(cbuf);
+      methodId=GWEN_Gui_PasswordMethod_OpticalHHD;
 
       /* text version */
       snprintf(buffer, sizeof(buffer)-1,
@@ -2203,11 +2219,13 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
 			  pwbuffer,
 			  minLen,
                           maxLen,
-                          GWEN_Gui_PasswordMethod_Text, NULL,
+			  methodId, dbMethodParams,
 			  0);
   GWEN_Buffer_free(xbuf);
   GWEN_Buffer_free(nbuf);
+  GWEN_DB_Group_free(dbMethodParams);
   AB_BankInfo_free(bi);
+
   return rv;
 }
 
