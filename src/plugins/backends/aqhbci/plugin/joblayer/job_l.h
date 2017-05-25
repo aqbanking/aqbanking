@@ -333,6 +333,9 @@ GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *type,
 
 
 
+void AH_Job_ReadAccountDataSeg(AB_ACCOUNT *acc, GWEN_DB_NODE *dbAccountData);
+
+
 #endif /* AH_JOB_L_H */
 
 
