@@ -79,6 +79,8 @@ AB_JOB *AB_Job_new(AB_JOB_TYPE jt, AB_ACCOUNT *a){
   if (!bankCode || !*bankCode)
     bankCode="[no bankcode]";
   accountNumber=AB_Account_GetAccountNumber(a);
+  if (!accountNumber || !*accountNumber)
+    accountNumber="[no account number]";
 
   lbuf=GWEN_Buffer_new(0, 32, 0, 1);
   GWEN_Buffer_AppendString(lbuf, "Created job for account \"");
