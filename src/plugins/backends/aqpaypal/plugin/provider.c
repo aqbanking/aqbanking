@@ -1776,7 +1776,6 @@ int APY_Provider_ReadUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, GWEN_BUF
 			  pw,
 			  4,
 			  sizeof(pw)-1,
-			  GWEN_Gui_PasswordMethod_Text, NULL,
 			  0);
   if (rv<0) {
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
@@ -1868,7 +1867,6 @@ int APY_Provider_WriteUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, const c
 			  pw,
 			  4,
 			  sizeof(pw)-1,
-			  GWEN_Gui_PasswordMethod_Text, NULL,
 			  0);
   if (rv<0) {
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
