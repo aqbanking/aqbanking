@@ -114,7 +114,7 @@ int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
     p2 = p + strlen(p) - 1;
 
     /* Remove trailing whitespaces. */
-    while(*p2 == 32)
+    while( (*p2 == 32) && (p2>p) )
       p2--;
 
     s=(char*)GWEN_Memory_malloc(p2-p+1);
