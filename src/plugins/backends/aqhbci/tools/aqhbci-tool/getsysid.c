@@ -1,6 +1,9 @@
 /***************************************************************************
+ $RCSfile$
+ -------------------
+ cvs         : $Id$
  begin       : Tue May 03 2005
- copyright   : (C) 2017 by Martin Preuss
+ copyright   : (C) 2005 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -146,15 +149,6 @@ int getSysId(AB_BANKING *ab,
   }
   else {
     AB_IMEXPORTER_CONTEXT *ctx;
-
-    if (1) {
-      rv=AH_Provider_GetCert(pro, u, 1, 0, 1);
-      if (rv<0) {
-        DBG_ERROR(0, "Error getting certificate (%d)", rv);
-        AB_Banking_Fini(ab);
-        return 3;
-      }
-    }
 
     ctx=AB_ImExporterContext_new();
     rv=AH_Provider_GetSysId(pro, u, ctx, 1, 0, 1);
