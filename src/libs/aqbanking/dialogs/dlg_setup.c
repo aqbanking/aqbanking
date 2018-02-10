@@ -911,7 +911,7 @@ int AB_SetupDialog_AddAccount(GWEN_DIALOG *dlg) {
   }
 
   flags=AB_Provider_GetFlags(pro);
-  if (flags & AB_PROVIDER_FLAGS_HAS_NEWACCOUNT_DIALOG) {
+  if (flags & AB_PROVIDER_FLAGS_HAS_EDITACCOUNT_DIALOG) {
     GWEN_DIALOG *dlg2;
     int rv;
 
