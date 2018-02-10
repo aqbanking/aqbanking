@@ -1390,7 +1390,6 @@ int AH_User_InputPin(AB_USER *u,
 			  pwbuffer,
 			  minLen,
 			  maxLen,
-			  GWEN_Gui_PasswordMethod_Text, NULL,
 			  0);
   GWEN_Buffer_free(nbuf);
 
@@ -1479,7 +1478,6 @@ int AH_User_InputPasswd(AB_USER *u,
 			  pwbuffer,
 			  minLen,
 			  maxLen,
-			  GWEN_Gui_PasswordMethod_Text, NULL,
 			  0);
   GWEN_Buffer_free(nbuf);
 
@@ -1536,7 +1534,6 @@ int AH_User_InputTan(AB_USER *u,
 			  pwbuffer,
 			  minLen,
 			  maxLen,
-			  GWEN_Gui_PasswordMethod_Text, NULL,
 			  0);
   GWEN_Buffer_free(nbuf);
   AB_BankInfo_free(bi);
@@ -1620,7 +1617,6 @@ int AH_User_InputTanWithChallenge(AB_USER *u,
                           pwbuffer,
 			  minLen,
 			  maxLen,
-			  GWEN_Gui_PasswordMethod_Text, NULL,
 			  0);
   GWEN_Buffer_free(xbuf);
   GWEN_Buffer_free(nbuf);
@@ -2094,7 +2090,6 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
 				   char *pwbuffer,
 				   int minLen,
 				   int maxLen){
-#if 0
   int rv;
   char buffer[1024];
   const char *un;
@@ -2209,142 +2204,6 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
   GWEN_Buffer_free(nbuf);
   AB_BankInfo_free(bi);
   return rv;
-#else
-  int rv;
-  char buffer[1024];
-  const char *un;
-  const char *bn=NULL;
-  GWEN_BUFFER *nbuf;
-  GWEN_BUFFER *xbuf;
-  AB_BANKINFO *bi;
-  uint32_t iflags=0;
-  GWEN_GUI_PASSWORD_METHOD methodId=GWEN_Gui_PasswordMethod_Text;
-  GWEN_DB_NODE *dbMethodParams;
-
-  assert(u);
-  un=AB_User_GetUserId(u);
-  /* find bank name */
-  bi=AB_Banking_GetBankInfo(AB_User_GetBanking(u),
-			    "de",
-                            "*",
-			    AB_User_GetBankCode(u));
-  if (bi)
-    bn=AB_BankInfo_GetBankName(bi);
-  if (!bn)
-    AB_User_GetBankCode(u);
-
-  dbMethodParams=GWEN_DB_Group_new("methodParams");
-
-  iflags=GWEN_GUI_INPUT_FLAGS_TAN | GWEN_GUI_INPUT_FLAGS_SHOW;
-
-  buffer[0]=0;
-  buffer[sizeof(buffer)-1]=0;
-
-  xbuf=GWEN_Buffer_new(0, 256, 0, 1);
-
-  if (challengeHhd && *challengeHhd) {
-    GWEN_BUFFER *cbuf;
-
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "ChallengeHHD is [%s]", challengeHhd);
-    cbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    rv=AH_HHD14_Translate(challengeHhd, cbuf);
-    if (rv<0) {
-      GWEN_Buffer_free(cbuf);
-      GWEN_Buffer_free(xbuf);
-      GWEN_DB_Group_free(dbMethodParams);
-      AB_BankInfo_free(bi);
-      return rv;
-    }
-    GWEN_DB_SetCharValue(dbMethodParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "challenge", GWEN_Buffer_GetStart(cbuf));
-    GWEN_Buffer_free(cbuf);
-    methodId=GWEN_Gui_PasswordMethod_OpticalHHD;
-
-    /* text version */
-    snprintf(buffer, sizeof(buffer)-1,
-	     I18N("Please enter the TAN\n"
-		  "for user %s at %s.\n"), un, bn);
-    buffer[sizeof(buffer)-1]=0;
-    GWEN_Buffer_AppendString(xbuf, buffer);
-    if (challenge && *challenge) {
-      GWEN_Buffer_AppendString(xbuf, challenge);
-      GWEN_Buffer_AppendString(xbuf, "\n");
-    }
-    else {
-      GWEN_Buffer_AppendString(xbuf, I18N("Please enter the TAN from the device."));
-    }
-  }
-  else if (challenge && *challenge) {
-    const char *s;
-
-    /* look for "CHLGUC" */
-    s=GWEN_Text_StrCaseStr(challenge, "CHLGUC");
-    if (s) {
-      GWEN_BUFFER *cbuf;
-  
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Challenge contains CHLGUC");
-      cbuf=GWEN_Buffer_new(0, 256, 0, 1);
-      rv=AH_HHD14_Translate(challengeHhd, cbuf);
-      if (rv<0) {
-	GWEN_Buffer_free(cbuf);
-	GWEN_Buffer_free(xbuf);
-	GWEN_DB_Group_free(dbMethodParams);
-	AB_BankInfo_free(bi);
-	return rv;
-      }
-      GWEN_DB_SetCharValue(dbMethodParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			   "challenge", GWEN_Buffer_GetStart(cbuf));
-      GWEN_Buffer_free(cbuf);
-      methodId=GWEN_Gui_PasswordMethod_OpticalHHD;
-
-      /* text version */
-      snprintf(buffer, sizeof(buffer)-1,
-               I18N("Please enter the TAN\n"
-                    "for user %s at %s.\n"), un, bn);
-      buffer[sizeof(buffer)-1]=0;
-      GWEN_Buffer_AppendString(xbuf, buffer);
-
-      /* extract text */
-      s=GWEN_Text_StrCaseStr(challenge, "CHLGTEXT");
-      if (s) {
-	/* skip "CHLGTEXT" and 4 digits */
-	s+=12;
-	/* add rest of the message (replace HTML tags, if any) */
-	AH_User_AddTextWithoutTags(s, xbuf);
-      }
-      else {
-	/* create own text */
-	GWEN_Buffer_AppendString(xbuf, I18N("Please enter the TAN from the device."));
-      }
-    }
-    else {
-      /* no optical challenge */
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Challenge contains no optical data");
-      GWEN_Buffer_AppendString(xbuf, I18N("The server provided the following challenge:"));
-      GWEN_Buffer_AppendString(xbuf, "\n");
-      GWEN_Buffer_AppendString(xbuf, challenge);
-    }
-  }
-
-  nbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
-  AH_User_MkTanName(u, challenge, nbuf);
-  rv=GWEN_Gui_GetPassword(iflags,
-			  GWEN_Buffer_GetStart(nbuf),
-			  I18N("Enter TAN"),
-			  GWEN_Buffer_GetStart(xbuf),
-			  pwbuffer,
-			  minLen,
-                          maxLen,
-			  methodId, dbMethodParams,
-			  0);
-  GWEN_Buffer_free(xbuf);
-  GWEN_Buffer_free(nbuf);
-  GWEN_DB_Group_free(dbMethodParams);
-  AB_BankInfo_free(bi);
-
-  return rv;
-
-#endif
 }
 
 
