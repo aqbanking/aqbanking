@@ -103,32 +103,36 @@ int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
     p=p2+1;
   }
 
+  /* Skip leading whitespaces */
   while(*p && *p==32)
     p++;
 
   if (*p) {
-    p2=p;
-    while(*p2 && isdigit(*p2))
-      p2++;
-    if (p2==p) {
+    char *s;
+
+    /* Reaching this point, the remainder is at least 1 byte long. */
+    p2 = p + strlen(p) - 1;
+
+    /* Remove trailing whitespaces. */
+    while( (*p2 == 32) && (p2>p) )
+      p2--;
+
+    s=(char*)GWEN_Memory_malloc(p2-p+1);
+    memmove(s, p, p2-p+1);
+    s[p2-p]=0;
+    AHB_SWIFT__SetCharValue(data,
+                            GWEN_DB_FLAGS_OVERWRITE_VARS,
+                            "localAccountNumber", s);
+    GWEN_Memory_dealloc(s);
+  }
+  else {
       DBG_INFO(AQBANKING_LOGDOMAIN,
-               "LocalAccountNumber starts with nondigits (%s)", p);
+               "LocalAccountNumber is empty (%s)", p);
       AHB_SWIFT__SetCharValue(data,
                               GWEN_DB_FLAGS_OVERWRITE_VARS,
                               "localAccountNumber", p);
-    }
-    else {
-      char *s;
-
-      s=(char*)GWEN_Memory_malloc(p2-p+1);
-      memmove(s, p, p2-p+1);
-      s[p2-p]=0;
-      AHB_SWIFT__SetCharValue(data,
-                              GWEN_DB_FLAGS_OVERWRITE_VARS,
-                              "localAccountNumber", s);
-      GWEN_Memory_dealloc(s);
-    }
   }
+
   return 0;
 }
 

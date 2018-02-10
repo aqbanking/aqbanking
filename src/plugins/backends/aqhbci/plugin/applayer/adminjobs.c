@@ -670,50 +670,19 @@ int AH_Job_UpdateBank_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   while(dbCurr) {
     dbAccountData=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/AccountData");
     if (dbAccountData) {
-      const char *accountId;
-      const char *userName;
-      const char *accountName;
-      const char *bankCode;
-      const char *accountSuffix;
       AB_ACCOUNT *acc;
 
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Found an account candidate");
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Found an account");
 
-      /* account data found */
-      accountId=GWEN_DB_GetCharValue(dbAccountData, "accountId", 0, 0);
-      accountSuffix=GWEN_DB_GetCharValue(dbAccountData, "accountsubid", 0, 0);
-      accountName=GWEN_DB_GetCharValue(dbAccountData, "account/name", 0, 0);
-      userName=GWEN_DB_GetCharValue(dbAccountData, "name1", 0, 0);
-      bankCode=GWEN_DB_GetCharValue(dbAccountData, "bankCode", 0, 0);
+      acc=AB_Banking_CreateAccount(ab, AH_PROVIDER_NAME);
+      assert(acc);
+      /* AB_Banking_CreateAccount() already assigns a unique id, we don't want that just yet */
+      AB_Account_SetUniqueId(acc, 0);
 
-      if (accountId && *accountId &&
-          bankCode && *bankCode) {
-        acc=AB_Banking_CreateAccount(ab, AH_PROVIDER_NAME);
-        assert(acc);
-        if (GWEN_DB_GetIntValue(dbAccountData, "head/version", 0, 1)>=4)
-          /* KTV in version 2 available */
-          AH_Account_AddFlags(acc, AH_BANK_FLAGS_KTV2);
-        else
-          AH_Account_SubFlags(acc, AH_BANK_FLAGS_KTV2);
-        AB_Account_SetBankCode(acc, bankCode);
-        AB_Account_SetAccountNumber(acc, accountId);
+      AH_Job_ReadAccountDataSeg(acc, dbAccountData);
 
-        if (accountName)
-          AB_Account_SetAccountName(acc, accountName);
-        if (accountSuffix)
-          AB_Account_SetSubAccountId(acc, accountSuffix);
-        if (userName)
-          AB_Account_SetOwnerName(acc, userName);
-
-        accs++;
-        AB_Account_List2_PushBack(jd->accountList, acc);
-      }
-      else {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing information in account: BLZ=[%s], Kto=[%s], AccName=[%s]",
-                  bankCode?bankCode:"",
-                  accountId?accountId:"",
-                  accountName?accountName:"");
-      }
+      accs++;
+      AB_Account_List2_PushBack(jd->accountList, acc);
     }
     dbCurr=GWEN_DB_FindNextGroup(dbCurr, "AccountData");
   }

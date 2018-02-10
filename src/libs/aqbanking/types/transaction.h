@@ -784,13 +784,13 @@ AQBANKING_API const char *AB_Transaction_Charge_toString(AB_TRANSACTION_CHARGE v
 
 typedef enum {
   AB_Transaction_SequenceTypeUnknown=-1,
-  /** One-time operation.  */
+  /** One-time operation, OOFF.  */
   AB_Transaction_SequenceTypeOnce=0,
-  /** First operation with more following.  */
+  /** First operation with more following, FRST.  */
   AB_Transaction_SequenceTypeFirst,
-  /** Following operation (not the first).  */
+  /** Following operation (not the first), RCUR.  */
   AB_Transaction_SequenceTypeFollowing,
-  /** Final operation (last).  */
+  /** Final operation (last), FNAL. Only used if it is known that this is the final one.  */
   AB_Transaction_SequenceTypeFinal
 } AB_TRANSACTION_SEQUENCETYPE;
 

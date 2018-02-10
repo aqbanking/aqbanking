@@ -51,6 +51,8 @@ void AB_User_free(AB_USER *st) {
     free(st->country);
   if (st->bankCode)
     free(st->bankCode);
+  if (st->certDb)
+    GWEN_DB_Group_free(st->certDb);
   if (st->fileLock)
     GWEN_FSLock_free(st->fileLock);
   if (st->dbId)
@@ -90,6 +92,9 @@ int AB_User_toDb(const AB_USER *st, GWEN_DB_NODE *db) {
       return -1;
   if (GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "lastSessionId", st->lastSessionId))
     return -1;
+  if (st->certDb)
+    if (AB_User_copyDb(st->certDb, GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "certDb")))
+      return -1;
   return 0;
 }
 
@@ -105,6 +110,16 @@ int AB_User_ReadDb(AB_USER *st, GWEN_DB_NODE *db) {
   AB_User_SetCountry(st, GWEN_DB_GetCharValue(db, "country", 0, "de"));
   AB_User_SetBankCode(st, GWEN_DB_GetCharValue(db, "bankCode", 0, 0));
   AB_User_SetLastSessionId(st, GWEN_DB_GetIntValue(db, "lastSessionId", 0, 0));
+  if (1) { /* for local vars */
+    GWEN_DB_NODE *dbT;
+
+    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "certDb");
+    if (dbT) {
+  if (st->certDb)
+    GWEN_DB_Group_free(st->certDb);
+  st->certDb=GWEN_DB_Group_dup(dbT);
+}
+  }
   return 0;
 }
 
@@ -257,6 +272,26 @@ uint32_t AB_User_GetLastSessionId(const AB_USER *st) {
 void AB_User_SetLastSessionId(AB_USER *st, uint32_t d) {
   assert(st);
   st->lastSessionId=d;
+  st->_modified=1;
+}
+
+
+
+
+GWEN_DB_NODE *AB_User_GetCertDb(const AB_USER *st) {
+  assert(st);
+  return st->certDb;
+}
+
+
+void AB_User_SetCertDb(AB_USER *st, GWEN_DB_NODE *d) {
+  assert(st);
+  if (st->certDb)
+    GWEN_DB_Group_free(st->certDb);
+  if (d)
+    st->certDb=d;
+  else
+    st->certDb=0;
   st->_modified=1;
 }
 

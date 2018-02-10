@@ -61,7 +61,6 @@ int AH_Job__Commit_Accounts(AH_JOB *j){
       AB_ACCOUNT *acc;
       GWEN_DB_NODE *dbUpd;
       GWEN_DB_NODE *gr;
-      int t;
 
       DBG_INFO(AQHBCI_LOGDOMAIN, "Found an account");
 
@@ -71,43 +70,8 @@ int AH_Job__Commit_Accounts(AH_JOB *j){
       /* AB_Banking_CreateAccount() already assigns a unique id, we don't want that just yet */
       AB_Account_SetUniqueId(acc, 0);
 
-      AB_Account_SetBankCode(acc, GWEN_DB_GetCharValue(dbAccountData, "bankCode", 0, 0));
-      AB_Account_SetAccountNumber(acc, GWEN_DB_GetCharValue(dbAccountData, "accountId", 0, 0));
-      AB_Account_SetIBAN(acc, GWEN_DB_GetCharValue(dbAccountData, "iban", 0, 0));
-      AB_Account_SetAccountName(acc, GWEN_DB_GetCharValue(dbAccountData, "account/name", 0, 0));
-      AB_Account_SetSubAccountId(acc, GWEN_DB_GetCharValue(dbAccountData, "accountsubid", 0, 0));
-      AB_Account_SetOwnerName(acc, GWEN_DB_GetCharValue(dbAccountData, "name1", 0, 0));
-
-      if (GWEN_DB_GetIntValue(dbAccountData, "head/version", 0, 1)>=4)
-	/* KTV in version 2 available */
-	AH_Account_AddFlags(acc, AH_BANK_FLAGS_KTV2);
-      else
-	AH_Account_SubFlags(acc, AH_BANK_FLAGS_KTV2);
-
-      /* account type (from FinTS_3.0_Formals) */
-      t=GWEN_DB_GetIntValue(dbAccountData, "type", 0, 1);
-      if (t>=1 && t<=9)          /* Kontokorrent-/Girokonto */
-	AB_Account_SetAccountType(acc, AB_AccountType_Bank);
-      else if (t>=10 && t<=19)   /* Sparkonto */
-	AB_Account_SetAccountType(acc, AB_AccountType_Savings);
-      else if (t>=20 && t<=29)   /* Festgeldkonto/Termineinlagen */
-	AB_Account_SetAccountType(acc, AB_AccountType_MoneyMarket);
-      else if (t>=30 && t<=39)   /* Wertpapierdepot */
-	AB_Account_SetAccountType(acc, AB_AccountType_Investment);
-      else if (t>=40 && t<=49)   /* Kredit-/Darlehenskonto */
-	AB_Account_SetAccountType(acc, AB_AccountType_Credit);
-      else if (t>=50 && t<=59)   /* Kreditkartenkonto */
-	AB_Account_SetAccountType(acc, AB_AccountType_CreditCard);
-      else if (t>=60 && t<=69)   /* Fonds-Depot bei einer Kapitalanlagengesellschaft */
-	AB_Account_SetAccountType(acc, AB_AccountType_Investment);
-      else if (t>=70 && t<=79)   /* Bausparvertrag */
-	AB_Account_SetAccountType(acc, AB_AccountType_Savings);
-      else if (t>=80 && t<=89)   /* Versicherungsvertrag */
-	AB_Account_SetAccountType(acc, AB_AccountType_Savings);
-      else if (t>=90 && t<=99)   /* sonstige */
-	AB_Account_SetAccountType(acc, AB_AccountType_Unknown);
-      else
-	AB_Account_SetAccountType(acc, AB_AccountType_Unknown);
+      /* read info from "AccountData" segment */
+      AH_Job_ReadAccountDataSeg(acc, dbAccountData);
 
       /* set bank name */
       if (bpd) {
@@ -196,13 +160,15 @@ int AH_Job__Commit_Accounts(AH_JOB *j){
       bankCode=AB_Account_GetBankCode(acc);
       iban=AB_Account_GetIBAN(acc);
 
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Checking account [blz=%s, acc=%s, iban=%s]",
-	       bankCode?bankCode:"<none>",
-	       accountNum?accountNum:"<none>",
-	       iban?iban:"<none>");
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Checking account [blz=%s, acc=%s, iban=%s, type=%d]",
+               bankCode?bankCode:"<none>",
+               accountNum?accountNum:"<none>",
+               iban?iban:"<none>",
+               AB_Account_GetAccountType(acc));
 
       /* first look for that specific combination of given iban / bankcode+account number */
       if ((iban && *iban) || (accountNum && *accountNum && bankCode && *bankCode)) {
+	DBG_INFO(AQHBCI_LOGDOMAIN, "Comparing IBAN and old account specs");
 	/* both spec given */
 	storedAcc=AB_Banking_FindAccount2(ab, AH_PROVIDER_NAME,
 					  AB_Account_GetCountry(acc),
@@ -222,7 +188,9 @@ int AH_Job__Commit_Accounts(AH_JOB *j){
 					    AB_AccountType_Unknown);
 	}
       }
+      /* then look for old account specs with empty IBAN */
       else if (!(iban && *iban) || (accountNum && *accountNum && bankCode && *bankCode)) {
+	DBG_INFO(AQHBCI_LOGDOMAIN, "Comparing old account specs only");
 	storedAcc=AB_Banking_FindAccount2(ab, AH_PROVIDER_NAME,
 					  AB_Account_GetCountry(acc),
 					  AB_Account_GetBankCode(acc),
@@ -241,7 +209,9 @@ int AH_Job__Commit_Accounts(AH_JOB *j){
 					    AB_AccountType_Unknown);
 	}
       }
+      /* then look for IBAN with empty old account specs */
       else if ((iban && *iban) || !(accountNum && *accountNum && bankCode && *bankCode)) {
+	DBG_INFO(AQHBCI_LOGDOMAIN, "Comparing IBAN only");
 	storedAcc=AB_Banking_FindAccount2(ab, AH_PROVIDER_NAME,
 					  NULL,
 					  "", /* empty bank code */
@@ -262,6 +232,7 @@ int AH_Job__Commit_Accounts(AH_JOB *j){
       }
       else {
 	/* neither iban nor bank code/account number, should not happen... */
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Account not found, neither IBAN nor account number given, SNH!");
       }
 
 
@@ -310,7 +281,7 @@ int AH_Job__Commit_Accounts(AH_JOB *j){
       GWEN_DB_NODE *dbTempUpd=NULL;
 
       /* remove from list. if this is a new account it will be added to AqBanking's internal
-       * list, by which AqBanking takes over the object. It is is a known account, it will be
+       * list, by which AqBanking takes over the object. If it is a known account, it will be
        * freed later */
       AB_Account_List_Del(acc);
 
@@ -862,3 +833,51 @@ int AH_Job_CommitSystemData(AH_JOB *j, int doLock) {
 
   return rv2;
 }
+
+
+
+void AH_Job_ReadAccountDataSeg(AB_ACCOUNT *acc, GWEN_DB_NODE *dbAccountData) {
+  int t;
+
+  assert(acc);
+
+  AB_Account_SetBankCode(acc, GWEN_DB_GetCharValue(dbAccountData, "bankCode", 0, 0));
+  AB_Account_SetAccountNumber(acc, GWEN_DB_GetCharValue(dbAccountData, "accountId", 0, 0));
+  AB_Account_SetIBAN(acc, GWEN_DB_GetCharValue(dbAccountData, "iban", 0, 0));
+  AB_Account_SetAccountName(acc, GWEN_DB_GetCharValue(dbAccountData, "account/name", 0, 0));
+  AB_Account_SetSubAccountId(acc, GWEN_DB_GetCharValue(dbAccountData, "accountsubid", 0, 0));
+  AB_Account_SetOwnerName(acc, GWEN_DB_GetCharValue(dbAccountData, "name1", 0, 0));
+
+  if (GWEN_DB_GetIntValue(dbAccountData, "head/version", 0, 1)>=4)
+    /* KTV in version 2 available */
+    AH_Account_AddFlags(acc, AH_BANK_FLAGS_KTV2);
+  else
+    AH_Account_SubFlags(acc, AH_BANK_FLAGS_KTV2);
+
+  /* account type (from FinTS_3.0_Formals) */
+  t=GWEN_DB_GetIntValue(dbAccountData, "type", 0, 1);
+  if (t>=1 && t<=9)          /* Kontokorrent-/Girokonto */
+    AB_Account_SetAccountType(acc, AB_AccountType_Bank);
+  else if (t>=10 && t<=19)   /* Sparkonto */
+    AB_Account_SetAccountType(acc, AB_AccountType_Savings);
+  else if (t>=20 && t<=29)   /* Festgeldkonto/Termineinlagen */
+    AB_Account_SetAccountType(acc, AB_AccountType_MoneyMarket);
+  else if (t>=30 && t<=39)   /* Wertpapierdepot */
+    AB_Account_SetAccountType(acc, AB_AccountType_Investment);
+  else if (t>=40 && t<=49)   /* Kredit-/Darlehenskonto */
+    AB_Account_SetAccountType(acc, AB_AccountType_Credit);
+  else if (t>=50 && t<=59)   /* Kreditkartenkonto */
+    AB_Account_SetAccountType(acc, AB_AccountType_CreditCard);
+  else if (t>=60 && t<=69)   /* Fonds-Depot bei einer Kapitalanlagengesellschaft */
+    AB_Account_SetAccountType(acc, AB_AccountType_Investment);
+  else if (t>=70 && t<=79)   /* Bausparvertrag */
+    AB_Account_SetAccountType(acc, AB_AccountType_Savings);
+  else if (t>=80 && t<=89)   /* Versicherungsvertrag */
+    AB_Account_SetAccountType(acc, AB_AccountType_Savings);
+  else if (t>=90 && t<=99)   /* sonstige */
+    AB_Account_SetAccountType(acc, AB_AccountType_Unknown);
+  else
+    AB_Account_SetAccountType(acc, AB_AccountType_Unknown);
+}
+
+
