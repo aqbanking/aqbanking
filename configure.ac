@@ -15,7 +15,7 @@ AC_CONFIG_HEADERS([config.h])
 #
 
 AQBANKING_VERSION_MAJOR=5
-AQBANKING_VERSION_MINOR=8
+AQBANKING_VERSION_MINOR=99
 AQBANKING_VERSION_PATCHLEVEL=0
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
@@ -1403,6 +1403,7 @@ AC_CONFIG_FILES([
   src/libs/aqbanking/Makefile
   src/libs/aqbanking/jobs/Makefile
   src/libs/aqbanking/types/Makefile
+  src/libs/aqbanking/types2/Makefile
   src/libs/aqbanking/gui/Makefile
   src/libs/aqbanking/dialogs/Makefile
   src/libs/aqbanking/typemaker2/Makefile
