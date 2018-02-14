@@ -1,0 +1,490 @@
+<?xml?>
+
+<tm2>
+  <type id="AB_TRANSACTION_LIMITS" type="pointer">
+    <descr>
+      This type describes the limits for fields of an @ref AB_TRANSACTION.
+      The limits have the following meanings:
+      <ul>
+        <li>
+          maxLenSOMETHING: if 0 then this limit is unknown, if -1 then the
+          described element is not allowed to be set in the transaction.
+          All other values represent the maximum length of the described
+          field.
+        </li>
+        <li>
+          minLenSOMETHING: if 0 then this limit is unknown.
+          All other values represent the minimum length of the described
+          field.
+        </li>
+        <li>
+          maxLinesSOMETHING: if 0 then this limit is unknown
+          All other values represent the maximum number of lines for the 
+          described field.
+        </li>
+        <li>
+          minLinesSOMETHING: if 0 then this limit is unknown.
+          All other values represent the minimum number of lines for the 
+          described field.
+        </li>
+        <li>
+          valuesSOMETHING: A list of allowed values (as string). If this list
+          is empty then there all values are allowed (those lists @b exist in
+          any case, so the appropriate getter function will never return NULL).
+        </li>
+        <li>
+          allowSOMETHING: If SOMETHING is allowed then the value is "1".
+          If SOMETHING is NOT allowed then the value is "-1". If it is
+          unknown whether SOMETHING is allowed or not then this value is "0".
+        </li>
+      </ul>
+      So if you want to check whether an given field is at all allowed you
+      must check whether "maxLenSOMETHING" has a value of "-1".
+    </descr>
+
+    <lang id="c">
+      <identifier>AB_TRANSACTION_LIMITS</identifier>
+      <prefix>AB_TransactionLimits</prefix>
+      
+      <baseFileName>transaction_limits</baseFileName>
+      
+      <flags>
+        with_xml
+        with_db
+        with_list1
+        with_list2
+        with_refcount
+      </flags>
+      
+      <headers>
+        <header type="sys" loc="pre">aqbanking/error.h</header>
+
+      </headers>
+
+      <inlines>
+      </inlines>
+
+    </lang>
+
+    <enums>
+    </enums>
+
+    <defines>
+    </defines>
+
+
+    <members>
+
+
+      <group name="Transaction Type Specification" >
+
+        <member name="command" type="int" maxlen="32" >
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <descr>
+            Command to which these hints apply (see @ref AB_Transaction_CommandGetBalance and others).
+          </descr>
+        </member>
+
+      </group>
+
+
+      <group name="Issuer Name" >
+        <descr>
+          Limits for the issuer name.
+        </descr>
+
+        <member name="maxLenLocalName" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+        
+        <member name="minLenLocalName" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+
+      </group>
+
+
+      <group name="Payee Name" >
+        <descr>
+          Limits for the payee name.
+        </descr>
+        <member name="maxLenRemoteName" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+
+        <member name="minLenRemoteName" type="int" >
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+        
+        
+        <member name="maxLinesRemoteName" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+
+        <member name="minLinesRemoteName" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+      </group>
+
+
+      <group name="Customer Reference" >
+        <descr>
+          Limits for customer reference.
+        </descr>
+
+        <member name="maxLenCustomerReference" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+        
+        <member name="minLenCustomerReference" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+      </group>
+
+
+      <group name="Bank Reference" >
+        <descr>
+          Limits for bank reference.
+        </descr>
+        
+        <member name="maxLenBankReference" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+
+        <member name="minLenBankReference" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+      </group>
+
+
+      <group name="Purpose" >
+        <descr>
+          Limits for purpose (called <i>memo</i> in some apps).
+        </descr>
+
+        <member name="maxLenPurpose" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+
+        <member name="minLenPurpose" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+        
+        <member name="maxLinesPurpose" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+
+        <member name="minLinesPurpose" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+      </group>
+
+
+      <group name="Date" >
+        <descr>
+          Limits for date.
+        </descr>
+        
+        <member name="needDate" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <descr>
+            Defines whether setting of the execution date (@ref AB_Transaction_SetDate)
+            is required (value=1) or forbidden (value=-1), value=0 means "unknown".
+          </descr>
+        </member>
+      </group>
+
+
+      <group name="Standing Orders And Dated Transfer" >
+        <descr>
+          These limits apply to standing orders and dated transfers only.
+        </descr>
+
+        <member name="minValueSetupTime" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <descr>
+            Minimum time in days between issuing of a request and its
+            first execution.
+          </descr>
+        </member>
+
+        <member name="maxValueSetupTime" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <descr>
+            Maximum time in days between issuing of a request and its
+            first execution.
+          </descr>
+        </member>
+  
+        <member name="minValueSetupTimeFirst" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <descr>
+            Minimum time in days between issuing of a request and its
+            first execution.
+            This is for a first request (e.g. first debit note).
+          </descr>
+        </member>
+
+        <member name="maxValueSetupTimeFirst" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <descr>
+            Maximum time in days between issuing of a request and its
+            first execution.
+            This is for a first request (e.g. first debit note).
+          </descr>
+        </member>
+  
+        <member name="minValueSetupTimeOnce" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <descr>
+            Minimum time in days between issuing of a request and its
+            execution.
+            This is for a one time only request (e.g. onetime debit note).
+          </descr>
+        </member>
+
+        <member name="maxValueSetupTimeOnce" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <descr>
+            Maximum time in days between issuing of a request and its
+            execution.
+            This is for a one time only request (e.g. onetime debit note).
+          </descr>
+        </member>
+  
+        <member name="minValueSetupTimeRecurring" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <descr>
+            Minimum time in days between issuing of a request and its
+            execution.
+            This is for a following request (e.g. a recurring debit note).
+          </descr>
+        </member>
+
+        <member name="maxValueSetupTimeRecurring" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <descr>
+            Maximum time in days between issuing of a request and its
+            first execution.
+            This is for a following request (e.g. a recurring debit note).
+          </descr>
+        </member>
+  
+        <member name="minValueSetupTimeFinal" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <descr>
+            Minimum time in days between issuing of a request and its
+            execution.
+            This is for a final request (e.g. last debit note).
+          </descr>
+        </member>
+
+        <member name="maxValueSetupTimeFinal" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <descr>
+            Maximum time in days between issuing of a request and its
+            execution.
+            This is for a final request (e.g. last debit note).
+          </descr>
+        </member>
+
+
+        <member name="valuesCycleWeek" type="uint8_t_array" maxlen="64">
+          <!-- <setflags>const dup</setflags> -->
+          <setflags>omit</setflags>
+          <getflags>const</getflags>
+          <dupflags>const</dupflags>
+          <access>public</access>
+          <descr>
+            This array contains one entry for every supported cycle.
+            These value are accepted when "period" is "weekly".
+            The first entry is the number of used entries following.
+            Allowed values are "0" (all cycles possible) and "1"-"52".
+          </descr>
+        </member>
+        
+        <member name="valuesCycleMonth" type="uint8_t_array" maxlen="64">
+          <!-- <setflags>const dup</setflags> -->
+          <setflags>omit</setflags>
+          <getflags>const</getflags>
+          <dupflags>const</dupflags>
+          <access>public</access>
+          <descr>
+            This array contains one entry for every supported cycle.
+            These value are accepted when "period" is "monthly".
+            The first entry is the number of used entries following.
+            Allowed values are "0" (all cycles possible) and "1"-"12".
+          </descr>
+        </member>
+
+        <member name="valuesExecutionDayWeek" type="uint8_t_array" maxlen="16">
+          <!-- <setflags>const dup</setflags> -->
+          <setflags>omit</setflags>
+          <getflags>const</getflags>
+          <dupflags>const</dupflags>
+          <access>public</access>
+          <descr>
+            This array contains one entry for every supported day of the
+            week.
+            These value are accepted when "period" is "weekly".
+            The first entry is the number of used entries following.
+            Allowed values are "0" (all days allowed) and "1"-"7".
+          </descr>
+        </member>
+
+        <member name="valuesExecutionDayMonth" type="uint8_t_array" maxlen="64">
+          <!-- <setflags>const dup</setflags> -->
+          <setflags>omit</setflags>
+          <getflags>const</getflags>
+          <dupflags>const</dupflags>
+          <access>public</access>
+          <descr>
+            This list contains one entry for every supported monthly 
+            cycle.
+            These value are accepted when "period" is "monthly".
+            The first entry is the number of used entries following.
+            Allowed are "0" (all days possible), "1"-"30", "97" (ultimo-2), 
+            "98" (ultimo-1) and "99" (ultimo).
+          </descr>
+        </member>
+
+        <member name="allowMonthly" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+        
+        <member name="allowWeekly" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+  
+        <member name="allowChangeRecipientAccount" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+
+        <member name="allowChangeRecipientName" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+
+        <member name="allowChangeValue" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+
+        <member name="allowChangeTextKey" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+
+        <member name="allowChangePurpose" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+
+        <member name="allowChangeFirstExecutionDate" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+
+        <member name="allowChangeLastExecutionDate" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+
+        <member name="allowChangeCycle" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+
+        <member name="allowChangePeriod" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+
+        <member name="allowChangeExecutionDay" type="int">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+
+
+      </group>
+
+
+
+
+
+
+
+    </members>
+
+    
+  </type>
+  
+</tm2>
+

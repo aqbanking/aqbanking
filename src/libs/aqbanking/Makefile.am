@@ -1,4 +1,4 @@
-SUBDIRS=types jobs gui dialogs backendsupport typemaker2
+SUBDIRS=types types2 jobs gui dialogs backendsupport typemaker2
 
 INCLUDES = \
   -I$(aqbanking_symlinkdir) \

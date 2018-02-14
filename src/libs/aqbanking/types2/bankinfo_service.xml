@@ -1,0 +1,205 @@
+<?xml?>
+
+<tm2>
+  <type id="AB_BANKINFO_SERVICE" type="pointer">
+    <descr>
+    </descr>
+
+    <lang id="c">
+      <identifier>AB_BANKINFO_SERVICE</identifier>
+      <prefix>AB_BankInfoService</prefix>
+      
+      <baseFileName>bankinfo_service</baseFileName>
+      
+      <flags>
+        with_xml
+        with_db
+        with_list1
+        with_list2
+        with_refcount
+      </flags>
+      
+      <headers>
+        <header type="sys" loc="pre">aqbanking/error.h</header>
+
+        <header type="sys" loc="pre">gwenhywfar/types.h</header>
+      </headers>
+
+
+    </lang>
+
+    <enums>
+
+    </enums>
+
+    <defines>
+
+    </defines>
+
+
+    <members>
+
+      <member name="type" type="char_ptr" maxlen="32" >
+        <descr>
+          The following types have been registered with AqBanking:            \n
+          <ul>                                                                \n
+            <li><b>HBCI</b> - German homebanking protocol</li>                \n
+            <li><b>EBICS</b> - German and French homebanking protocol</li>    \n
+            <li><b>OFX</b>  - OFX direct connect protocol</li>                \n
+          </ul>                                                               \n
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="address" type="char_ptr" maxlen="128" >
+        <descr>
+          For most services this is the URL or hostname of the server.
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="suffix" type="char_ptr" maxlen="32" >
+        <descr>
+          For IP based services this is the port to be used (if omitted
+          a default value suitable for the service is chosen).
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="pversion" type="char_ptr" maxlen="32" >
+        <descr>
+          The content of this field depends on the service type.    \n
+          For <b>HBCI</b> this is the protocol version to be used:  \n
+          <ul>                                                      \n
+            <li>2.01</li>                                           \n
+            <li>2.10</li>                                           \n
+            <li>2.20</li>                                           \n
+          </ul>                                                     \n
+                                                                    \n
+          For <b>EBICS</b> this is also the protocol version:       \n
+          <ul>                                                      \n
+            <li>H002</li>                                           \n
+            <li>H003</li>                                           \n
+          </ul>                                                     \n
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="hversion" type="char_ptr" maxlen="32" >
+        <descr>
+          For HTTP-based protocols this is the HTTP version to be  \n
+          used:                                                    \n
+          <ul>                                                     \n
+            <li>1.0</li>                                           \n
+            <li>1.1</li>                                           \n
+          </ul>                                                    \n
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="mode" type="char_ptr" maxlen="32" >
+        <descr>
+          The content of this field depends on the service type. \n
+          For <b>HBCI</b> the following values are used:         \n
+          <ul>                                                   \n
+            <li>DDV</li>                                         \n
+            <li>RDH1</li>                                        \n
+            <li>RDH2</li>                                        \n
+            <li>RDH3</li>                                        \n
+            <li>RDH4</li>                                        \n
+            <li>RDH5</li>                                        \n
+            <li>RDH6</li>                                        \n
+            <li>RDH7</li>                                        \n
+            <li>RDH8</li>                                        \n
+            <li>RDH9</li>                                        \n
+            <li>RDH10</li>                                       \n
+            <li>PINTAN</li>                                      \n
+          </ul>                                                  \n
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="aux1" type="char_ptr" maxlen="128" >
+        <descr>
+          This is a multi purpose field to be used by a bankinfo plugin as
+          it sees fit.
+          OFX uses this to store the FID from the bankinfo file.
+          EBICS stores the HOSTID here.
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="aux2" type="char_ptr" maxlen="128" >
+        <descr>
+          This is a multi purpose field to be used by a bankinfo plugin as
+          it sees fit.
+          OFX uses this to store the ORG field from the bankinfo file.
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="aux3" type="char_ptr" maxlen="128" >
+        <descr>
+          This is a multi purpose field to be used by a bankinfo plugin as
+          it sees fit.
+          OFX uses this to store the APPID field from the bankinfo file.
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="aux4" type="char_ptr" maxlen="128" >
+        <descr>
+          This is a multi purpose field to be used by a bankinfo plugin as
+          it sees fit.
+          OFX uses this to store the APPVER field from the bankinfo file.
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+      <member name="userFlags" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>with_flags</flags>
+        <access>public</access>
+      </member>
+
+
+
+    </members>
+
+    
+  </type>
+  
+</tm2>
+
