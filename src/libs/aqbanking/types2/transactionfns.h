@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004-2013 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -44,9 +44,6 @@ int AB_Transaction_CheckPurposeAgainstLimits(const AB_TRANSACTION *t, const AB_T
 
 AQBANKING_API
 int AB_Transaction_CheckNamesAgainstLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
-
-AQBANKING_API
-int AB_Transaction_CheckTextKeyAgainstLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
 
 AQBANKING_API
 int AB_Transaction_CheckRecurrenceAgainstLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);

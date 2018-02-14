@@ -9,7 +9,7 @@
       <identifier>AB_BANKINFO_SERVICE</identifier>
       <prefix>AB_BankInfoService</prefix>
       
-      <baseFileName>bankinfo_service</baseFileName>
+      <baseFileName>bankinfoservice</baseFileName>
       
       <flags>
         with_xml

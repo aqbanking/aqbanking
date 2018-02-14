@@ -8,9 +8,9 @@ bankinfo_p.h
 ab_bankinfo_service.tm2
 ab_bankinfo_service_list.tm2
 ab_bankinfo_service_list2.tm2
-bankinfo_service.c
-bankinfo_service.h
-bankinfo_service_p.h
+bankinfoservice.c
+bankinfoservice.h
+bankinfoservice_p.h
 
 ab_transaction.tm2
 ab_transaction_list.tm2
@@ -22,6 +22,6 @@ transaction_p.h
 ab_transaction_limits.tm2
 ab_transaction_limits_list.tm2
 ab_transaction_limits_list2.tm2
-transaction_limits.c
-transaction_limits.h
-transaction_limits_p.h
+transactionlimits.c
+transactionlimits.h
+transactionlimits_p.h
