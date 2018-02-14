@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004-2013 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -137,10 +137,10 @@ void AB_Transaction_FillLocalFromAccount(AB_TRANSACTION *t, const AB_ACCOUNT *a)
 
 
 int AB_Transaction_CheckPurposeAgainstLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
-  const GWEN_STRINGLIST *sl;
   int maxn;
   int maxs;
   int n;
+  const char *sPurpose;
 
   /* check purpose */
   if (lim) {
@@ -152,51 +152,64 @@ int AB_Transaction_CheckPurposeAgainstLimits(const AB_TRANSACTION *t, const AB_T
     maxn=0;
     maxs=0;
   }
-  sl=AB_Transaction_GetPurpose(t);
-  n=0;
-  if (sl) {
-    GWEN_STRINGLISTENTRY *se;
-    const char *p;
+  sPurpose=AB_Transaction_GetPurpose(t);
+  if (sPurpose && *sPurpose) {
+    GWEN_STRINGLIST *sl;
 
-    se=GWEN_StringList_FirstEntry(sl);
-    while(se) {
-      p=GWEN_StringListEntry_Data(se);
-      if (p && *p) {
-	n++;
-	if (maxn && n>maxn) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN,
-		    "Too many purpose lines (%d>%d)", n, maxn);
-	  GWEN_Gui_ProgressLog2(0,
-				GWEN_LoggerLevel_Error,
-				I18N("Too many purpose lines (%d>%d)"),
-				n, maxn);
-	  return GWEN_ERROR_INVALID;
-        }
-        else {
-          int l;
-          GWEN_BUFFER *tbuf;
+    n=0;
+    sl=GWEN_StringList_fromString(sPurpose, "\n", 0);
+    if (sl) {
+      GWEN_STRINGLISTENTRY *se;
+      const char *p;
 
-          tbuf=GWEN_Buffer_new(0, maxs, 0, 1);
-          AB_ImExporter_Utf8ToDta(p, -1, tbuf);
-          GWEN_Text_CondenseBuffer(tbuf);
-          l=GWEN_Buffer_GetUsedBytes(tbuf);
-          if (maxs && l>maxs) {
-            DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many chars in purpose line %d (%d>%d)", n, l, maxs);
+      se=GWEN_StringList_FirstEntry(sl);
+      while(se) {
+        p=GWEN_StringListEntry_Data(se);
+        if (p && *p) {
+          n++;
+          if (maxn && n>maxn) {
+            DBG_ERROR(AQBANKING_LOGDOMAIN,
+                      "Too many purpose lines (%d>%d)", n, maxn);
             GWEN_Gui_ProgressLog2(0,
                                   GWEN_LoggerLevel_Error,
-                                  I18N("Too many chars in purpose line %d (%d>%d)"),
-                                  n, l, maxs);
-            GWEN_Buffer_free(tbuf);
+                                  I18N("Too many purpose lines (%d>%d)"),
+                                  n, maxn);
+            GWEN_StringList_free(sl);
             return GWEN_ERROR_INVALID;
           }
-          GWEN_Buffer_free(tbuf);
+          else {
+            int l;
+            GWEN_BUFFER *tbuf;
+
+            tbuf=GWEN_Buffer_new(0, maxs, 0, 1);
+            AB_ImExporter_Utf8ToDta(p, -1, tbuf);
+            GWEN_Text_CondenseBuffer(tbuf);
+            l=GWEN_Buffer_GetUsedBytes(tbuf);
+            if (maxs && l>maxs) {
+              DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many chars in purpose line %d (%d>%d)", n, l, maxs);
+              GWEN_Gui_ProgressLog2(0,
+                                    GWEN_LoggerLevel_Error,
+                                    I18N("Too many chars in purpose line %d (%d>%d)"),
+                                    n, l, maxs);
+              GWEN_Buffer_free(tbuf);
+              GWEN_StringList_free(sl);
+              return GWEN_ERROR_INVALID;
+            }
+            GWEN_Buffer_free(tbuf);
+          }
         }
-      }
-      se=GWEN_StringListEntry_Next(se);
-    } /* while */
+        se=GWEN_StringListEntry_Next(se);
+      } /* while */
+    }
+    GWEN_StringList_free(sl);
+
+    if (!n) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "No purpose lines");
+      return GWEN_ERROR_INVALID;
+    }
   }
-  if (!n) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "No purpose lines");
+  else {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Empty purpose");
     return GWEN_ERROR_INVALID;
   }
 
@@ -206,63 +219,35 @@ int AB_Transaction_CheckPurposeAgainstLimits(const AB_TRANSACTION *t, const AB_T
 
 
 int AB_Transaction_CheckNamesAgainstLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
-  const GWEN_STRINGLIST *sl;
-  int maxn;
   int maxs;
-  int n;
   const char *s;
 
   /* check remote name */
-  if (lim) {
-    maxn=AB_TransactionLimits_GetMaxLinesRemoteName(lim);
+  if (lim)
     maxs=AB_TransactionLimits_GetMaxLenRemoteName(lim);
+  else
+    maxs=0;
+  s=AB_Transaction_GetRemoteName(t);
+  if (s && *s) {
+    int l;
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    AB_ImExporter_Utf8ToDta(s, -1, tbuf);
+    GWEN_Text_CondenseBuffer(tbuf);
+    l=GWEN_Buffer_GetUsedBytes(tbuf);
+    if (maxs>0 && l>maxs) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many chars in remote name (%d>%d)", l, maxs);
+      GWEN_Buffer_free(tbuf);
+      return GWEN_ERROR_INVALID;
+    }
+    GWEN_Buffer_free(tbuf);
   }
   else {
-    maxn=0;
-    maxs=0;
-  }
-  sl=AB_Transaction_GetRemoteName(t);
-  n=0;
-  if (sl) {
-    GWEN_STRINGLISTENTRY *se;
-    const char *p;
-
-    se=GWEN_StringList_FirstEntry(sl);
-    while(se) {
-      p=GWEN_StringListEntry_Data(se);
-      if (p && *p) {
-        n++;
-        if (maxn && n>maxn) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN,
-		    "Too many remote name lines (%d>%d)",
-		    n, maxn);
-	  return GWEN_ERROR_INVALID;
-        }
-        else {
-          GWEN_BUFFER *tbuf;
-          int l;
-
-          tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-          AB_ImExporter_Utf8ToDta(p, -1, tbuf);
-          GWEN_Text_CondenseBuffer(tbuf);
-          l=GWEN_Buffer_GetUsedBytes(tbuf);
-          if (maxs>0 && l>maxs) {
-            DBG_ERROR(AQBANKING_LOGDOMAIN,
-                      "Too many chars in remote name line %d (%d>%d)",
-                      n, l, maxs);
-            GWEN_Buffer_free(tbuf);
-            return GWEN_ERROR_INVALID;
-          }
-          GWEN_Buffer_free(tbuf);
-        }
-      }
-      se=GWEN_StringListEntry_Next(se);
-    } /* while */
-  }
-  if (!n) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "No remote name lines");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing remote name");
     return GWEN_ERROR_INVALID;
   }
+
 
   /* check local name */
   if (lim)
@@ -295,143 +280,122 @@ int AB_Transaction_CheckNamesAgainstLimits(const AB_TRANSACTION *t, const AB_TRA
 
 
 
-int AB_Transaction_CheckTextKeyAgainstLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
-  int n;
-
-  /* check text key */
-  if (lim) {
-    if (GWEN_StringList_Count(AB_TransactionLimits_GetValuesTextKey(lim))){
-      char numbuf[32];
-
-      n=AB_Transaction_GetTextKey(t);
-      snprintf(numbuf, sizeof(numbuf), "%d", n);
-      if (!AB_TransactionLimits_HasValuesTextKey(lim, numbuf)) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Text key \"%s\" not supported by bank", numbuf);
-        GWEN_Gui_ProgressLog2(0,
-                              GWEN_LoggerLevel_Error,
-                              I18N("Text key \"%d\" not supported by the bank"),
-                              n);
-        return GWEN_ERROR_INVALID;
-      }
-    }
-  }
-
-  return 0;
-}
-
-
-
 int AB_Transaction_CheckRecurrenceAgainstLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
   if (lim) {
+    int n;
+    const uint8_t *aptr;
+    int alen;
+
     /* check period */
     if (AB_Transaction_GetPeriod(t)==AB_Transaction_PeriodMonthly) {
-      const GWEN_STRINGLIST *sl;
-
       /* check cycle */
-      sl=AB_TransactionLimits_GetValuesCycleMonth(lim);
-      if (GWEN_StringList_Count(sl)){
-        char numbuf[32];
-        int n;
+      n=AB_Transaction_GetCycle(t);
+      if (n==0) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "No cycle given");
+        return GWEN_ERROR_INVALID;
+      }
 
-        n=AB_Transaction_GetCycle(t);
-        if (n==0) {
-          DBG_ERROR(AQBANKING_LOGDOMAIN, "No cycle given");
-          return GWEN_ERROR_INVALID;
+      alen=AB_TransactionLimits_GetValuesCycleMonthArraySize();
+      aptr=AB_TransactionLimits_GetValuesCycleMonth(lim);
+      if (alen && aptr) {
+        int i;
+
+        for (i=0; i<alen; i++) {
+          if (aptr[i]==n)
+            break;
         }
-
-        snprintf(numbuf, sizeof(numbuf), "%d", n);
-        if (!AB_TransactionLimits_HasValuesCycleMonth(lim, numbuf) &&
-            !AB_TransactionLimits_HasValuesCycleMonth(lim, "0")) {
+        if (i>=alen) {
           DBG_ERROR(AQBANKING_LOGDOMAIN,
-                    "Month day \"%s\" not supported by bank", numbuf);
+                    "Month day \"%d\" not supported by bank", n);
           GWEN_Gui_ProgressLog2(0,
                                 GWEN_LoggerLevel_Error,
                                 I18N("Month day \"%d\" not supported by bank"),
                                 n);
           return GWEN_ERROR_INVALID;
         }
-      }
+      } /* if limits available */
 
       /* check execution day */
-      sl=AB_TransactionLimits_GetValuesExecutionDayMonth(lim);
-      if (GWEN_StringList_Count(sl)){
-        char numbuf[32];
-        int n;
+      n=AB_Transaction_GetExecutionDay(t);
+      if (n==0) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "No execution day given");
+        return GWEN_ERROR_INVALID;
+      }
 
-        n=AB_Transaction_GetExecutionDay(t);
-        if (n==0) {
-          DBG_ERROR(AQBANKING_LOGDOMAIN,
-                    "No execution day given");
-          return GWEN_ERROR_INVALID;
+      aptr=AB_TransactionLimits_GetValuesExecutionDayMonth(lim);
+      alen=AB_TransactionLimits_GetValuesExecutionDayMonthArraySize();
+      if (alen && aptr) {
+        int i;
+
+        for (i=0; i<alen; i++) {
+          if (aptr[i]==n)
+            break;
         }
-
-        snprintf(numbuf, sizeof(numbuf), "%d", n);
-        if (!AB_TransactionLimits_HasValuesExecutionDayMonth(lim, numbuf) &&
-            !AB_TransactionLimits_HasValuesExecutionDayMonth(lim, "0")) {
-          DBG_ERROR(AQBANKING_LOGDOMAIN,
-                    "Execution month day \"%s\" not supported by bank",
-                    numbuf);
+        if (i>=alen) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Execution month day \"%d\" not supported by bank", n);
           GWEN_Gui_ProgressLog2(0,
                                 GWEN_LoggerLevel_Error,
                                 I18N("Execution month day \"%d\" not supported by bank"),
                                 n);
           return GWEN_ERROR_INVALID;
         }
-      } /* if there are limits */
+      } /* if limits available */
     }
     else if (AB_Transaction_GetPeriod(t)==AB_Transaction_PeriodWeekly) {
-      const GWEN_STRINGLIST *sl;
-
       /* check cycle */
-      sl=AB_TransactionLimits_GetValuesCycleWeek(lim);
-      if (GWEN_StringList_Count(sl)) {
-        char numbuf[32];
-        int n;
+      n=AB_Transaction_GetCycle(t);
+      if (n==0) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "No cycle given");
+        return GWEN_ERROR_INVALID;
+      }
 
-        n=AB_Transaction_GetCycle(t);
-        if (n==0) {
-          DBG_ERROR(AQBANKING_LOGDOMAIN, "No cycle given");
-          return GWEN_ERROR_INVALID;
+      alen=AB_TransactionLimits_GetValuesCycleWeekArraySize();
+      aptr=AB_TransactionLimits_GetValuesCycleWeek(lim);
+      if (alen && aptr) {
+        int i;
+
+        for (i=0; i<alen; i++) {
+          if (aptr[i]==n)
+            break;
         }
-
-        snprintf(numbuf, sizeof(numbuf), "%d", n);
-        if (!AB_TransactionLimits_HasValuesCycleWeek(lim, numbuf) &&
-            !AB_TransactionLimits_HasValuesCycleWeek(lim, "0")) {
+        if (i>=alen) {
           DBG_ERROR(AQBANKING_LOGDOMAIN,
-                    "Week day \"%s\" not supported by bank",
-                    numbuf);
+                    "Week day \"%d\" not supported by bank", n);
           GWEN_Gui_ProgressLog2(0,
                                 GWEN_LoggerLevel_Error,
                                 I18N("Week day \"%d\" not supported by bank"),
                                 n);
           return GWEN_ERROR_INVALID;
         }
-      } /* if there are limits */
+      } /* if limits available */
 
       /* check execution day */
-      sl=AB_TransactionLimits_GetValuesExecutionDayWeek(lim);
-      if (GWEN_StringList_Count(sl)){
-        char numbuf[32];
-        int n;
+      n=AB_Transaction_GetExecutionDay(t);
+      if (n==0) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "No execution day given");
+        return GWEN_ERROR_INVALID;
+      }
 
-        n=AB_Transaction_GetExecutionDay(t);
-        if (n==0) {
-          DBG_ERROR(AQBANKING_LOGDOMAIN, "No execution day given");
-          return GWEN_ERROR_INVALID;
+      aptr=AB_TransactionLimits_GetValuesExecutionDayWeek(lim);
+      alen=AB_TransactionLimits_GetValuesExecutionDayWeekArraySize();
+      if (alen && aptr) {
+        int i;
+
+        for (i=0; i<alen; i++) {
+          if (aptr[i]==n)
+            break;
         }
-
-        snprintf(numbuf, sizeof(numbuf), "%d", n);
-        if (!AB_TransactionLimits_HasValuesExecutionDayWeek(lim, numbuf) &&
-            !AB_TransactionLimits_HasValuesExecutionDayWeek(lim, "0")) {
-          DBG_ERROR(AQBANKING_LOGDOMAIN,
-                    "Execution month day \"%s\" not supported by bank", numbuf);
+        if (i>=alen) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Execution week day \"%d\" not supported by bank", n);
           GWEN_Gui_ProgressLog2(0,
                                 GWEN_LoggerLevel_Error,
-                                I18N("Execution month day \"%d\" not supported by bank"),
+                                I18N("Execution week day \"%d\" not supported by bank"),
                                 n);
           return GWEN_ERROR_INVALID;
         }
-      } /* if there are limits */
+      } /* if limits available */
     }
     else {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -447,25 +411,25 @@ int AB_Transaction_CheckRecurrenceAgainstLimits(const AB_TRANSACTION *t, const A
 
 int AB_Transaction_CheckFirstExecutionDateAgainstLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
   if (lim) {
-    const GWEN_TIME *ti;
+    const GWEN_DATE *dt;
 
     /* check setup times */
-    ti=AB_Transaction_GetFirstExecutionDate(t);
-    if (ti) {
-      GWEN_TIME *currDate;
-      int dt;
+    dt=AB_Transaction_GetFirstDate(t);
+    if (dt) {
+      GWEN_DATE *currDate;
+      int diff;
       int n;
   
-      currDate=GWEN_CurrentTime();
+      currDate=GWEN_Date_CurrentDate();
       assert(currDate);
-      dt=((int)GWEN_Time_DiffSeconds(ti, currDate))/(60*60*24);
-      GWEN_Time_free(currDate);
-  
+      diff=GWEN_Date_Diff(dt, currDate);
+      GWEN_Date_free(currDate);
+
       /* check minimum setup time */
       n=AB_TransactionLimits_GetMinValueSetupTime(lim);
-      if (n && dt<n) {
+      if (n && diff<n) {
         DBG_ERROR(AQBANKING_LOGDOMAIN,
-                  "Minimum setup time violated (given %d but required min=%d)", dt, n);
+                  "Minimum setup time violated (given %d but required min=%d)", diff, n);
         GWEN_Gui_ProgressLog2(0,
                               GWEN_LoggerLevel_Error,
                               I18N("Minimum setup time violated. "
@@ -476,9 +440,9 @@ int AB_Transaction_CheckFirstExecutionDateAgainstLimits(const AB_TRANSACTION *t,
   
       /* check maximum setup time */
       n=AB_TransactionLimits_GetMaxValueSetupTime(lim);
-      if (n && dt>n) {
+      if (n && diff>n) {
         DBG_ERROR(AQBANKING_LOGDOMAIN,
-                  "Maximum setup time violated (given %d but allowed max=%d)", dt, n);
+                  "Maximum setup time violated (given %d but allowed max=%d)", diff, n);
         GWEN_Gui_ProgressLog2(0,
                               GWEN_LoggerLevel_Error,
                               I18N("Maximum setup time violated. "
@@ -497,18 +461,18 @@ int AB_Transaction_CheckFirstExecutionDateAgainstLimits(const AB_TRANSACTION *t,
 
 int AB_Transaction_CheckDateAgainstLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
   if (lim) {
-    const GWEN_TIME *ti;
+    const GWEN_DATE *da;
 
-    ti=AB_Transaction_GetDate(t);
-    if (ti) {
-      GWEN_TIME *currDate;
+    da=AB_Transaction_GetDate(t);
+    if (da) {
+      GWEN_DATE *currDate;
       int dt;
       int n;
 
-      currDate=GWEN_CurrentTime();
+      currDate=GWEN_Date_CurrentDate();
       assert(currDate);
-      dt=((int)GWEN_Time_DiffSeconds(ti, currDate))/(60*60*24);
-      GWEN_Time_free(currDate);
+      dt=GWEN_Date_Diff(da, currDate);
+      GWEN_Date_free(currDate);
 
       /* check minimum setup time */
       n=AB_TransactionLimits_GetMinValueSetupTime(lim);
@@ -546,38 +510,38 @@ int AB_Transaction_CheckDateAgainstLimits(const AB_TRANSACTION *t, const AB_TRAN
 
 int AB_Transaction_CheckDateAgainstSequenceLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
   if (lim) {
-    const GWEN_TIME *ti;
+    const GWEN_DATE *da;
 
-    ti=AB_Transaction_GetDate(t);
-    if (ti) {
-      GWEN_TIME *currDate;
+    da=AB_Transaction_GetDate(t);
+    if (da) {
+      GWEN_DATE *currDate;
       int dt;
       int minTime=0;
       int maxTime=0;
 
-      currDate=GWEN_CurrentTime();
+      currDate=GWEN_Date_CurrentDate();
       assert(currDate);
-      dt=((int)GWEN_Time_DiffSeconds(ti, currDate))/(60*60*24);
-      GWEN_Time_free(currDate);
+      dt=GWEN_Date_Diff(da, currDate);
+      GWEN_Date_free(currDate);
 
-      switch(AB_Transaction_GetSequenceType(t)) {
-      case AB_Transaction_SequenceTypeOnce:
+      switch(AB_Transaction_GetSequence(t)) {
+      case AB_Transaction_SequenceOnce:
 	minTime=AB_TransactionLimits_GetMinValueSetupTimeOnce(lim);
 	maxTime=AB_TransactionLimits_GetMaxValueSetupTimeOnce(lim);
 	break;
-      case AB_Transaction_SequenceTypeFirst:
+      case AB_Transaction_SequenceFirst:
 	minTime=AB_TransactionLimits_GetMinValueSetupTimeFirst(lim);
 	maxTime=AB_TransactionLimits_GetMaxValueSetupTimeFirst(lim);
 	break;
-      case AB_Transaction_SequenceTypeFollowing:
+      case AB_Transaction_SequenceFollowing:
 	minTime=AB_TransactionLimits_GetMinValueSetupTimeRecurring(lim);
 	maxTime=AB_TransactionLimits_GetMaxValueSetupTimeRecurring(lim);
 	break;
-      case AB_Transaction_SequenceTypeFinal:
+      case AB_Transaction_SequenceFinal:
 	minTime=AB_TransactionLimits_GetMinValueSetupTimeFinal(lim);
 	maxTime=AB_TransactionLimits_GetMaxValueSetupTimeFinal(lim);
 	break;
-      case AB_Transaction_SequenceTypeUnknown:
+      case AB_Transaction_SequenceUnknown:
 	break;
       }
 
@@ -590,7 +554,7 @@ int AB_Transaction_CheckDateAgainstSequenceLimits(const AB_TRANSACTION *t, const
       if (minTime && dt<minTime) {
         DBG_ERROR(AQBANKING_LOGDOMAIN,
                   "Minimum setup time violated (given %d but required min=%d for sequence type=%s)",
-                  dt, minTime, AB_Transaction_SequenceType_toString(AB_Transaction_GetSequenceType(t)));
+                  dt, minTime, AB_Transaction_Sequence_toString(AB_Transaction_GetSequence(t)));
         GWEN_Gui_ProgressLog2(0,
                               GWEN_LoggerLevel_Error,
                               I18N("Minimum setup time violated. "
@@ -603,7 +567,7 @@ int AB_Transaction_CheckDateAgainstSequenceLimits(const AB_TRANSACTION *t, const
       if (maxTime && dt>maxTime) {
         DBG_ERROR(AQBANKING_LOGDOMAIN,
                   "Maximum setup time violated (given %d but allowed max=%d for sequence type=%s)",
-                  dt, maxTime, AB_Transaction_SequenceType_toString(AB_Transaction_GetSequenceType(t)));
+                  dt, maxTime, AB_Transaction_Sequence_toString(AB_Transaction_GetSequence(t)));
         GWEN_Gui_ProgressLog2(0,
                               GWEN_LoggerLevel_Error,
                               I18N("Maximum setup time violated. "
@@ -635,6 +599,7 @@ static int _checkStringForSepaCharset(const char *s, int restricted) {
     if (!((c>='A' && c<='Z') ||
           (c>='a' && c<='z') ||
           (c>='0' && c<='9') ||
+          (c=='\n') ||
           strchr(ascii, c)!=NULL)) {
       char errchr[7];
       int i = 0;
@@ -718,7 +683,6 @@ static int _checkStringForAlNum(const char *s, int lcase) {
 
 int AB_Transaction_CheckForSepaConformity(const AB_TRANSACTION *t, int restricted) {
   if (t) {
-    const GWEN_STRINGLIST *sl;
     const char *s;
     int rv;
 
@@ -783,34 +747,28 @@ int AB_Transaction_CheckForSepaConformity(const AB_TRANSACTION *t, int restricte
       return rv;
     }
 
-    sl=AB_Transaction_GetRemoteName(t);
-    if (sl) {
-      GWEN_STRINGLISTENTRY *se;
-      int lines=0;
-
-      se=GWEN_StringList_FirstEntry(sl);
-      while(se) {
-        s=GWEN_StringListEntry_Data(se);
-        if (s && *s) {
-          rv=_checkStringForSepaCharset(s, restricted);
-          if (rv<0) {
-            DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in remote name");
-            return rv;
-          }
-        }
-        else {
-          if (lines==0) {
-            DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing or empty remote name in transaction");
-            return GWEN_ERROR_BAD_DATA;
-          }
-        }
-        lines++;
-        se=GWEN_StringListEntry_Next(se);
-      } /* while */
-    }
-    else {
+    s=AB_Transaction_GetRemoteName(t);
+    if (!(s && *s)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing or empty remote name in transaction");
       return GWEN_ERROR_BAD_DATA;
+    }
+    rv=_checkStringForSepaCharset(s, restricted);
+    if (rv<0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in remote name");
+      return rv;
+    }
+
+    /* check purpose, if any */
+    s=AB_Transaction_GetPurpose(t);
+    if (!(s && *s)) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing or empty purpose in transaction, ignoring");
+    }
+    else {
+      rv=_checkStringForSepaCharset(s, restricted);
+      if (rv<0) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in remote name");
+        return rv;
+      }
     }
   }
   else {

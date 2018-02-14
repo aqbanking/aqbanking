@@ -13,7 +13,7 @@ noinst_LTLIBRARIES=libabtypes2.la
 
 typefiles=\
   transaction.xml \
-  transaction_limits.xml \
+  transactionlimits.xml \
   bankinfoservice.xml \
   bankinfo.xml
 
@@ -28,22 +28,22 @@ dist_typedata_DATA=\
 
 built_sources=  \
   transaction.c \
-  transaction_limits.c \
-  bankinfo_service.c \
+  transactionlimits.c \
+  bankinfoservice.c \
   bankinfo.c
 
 
 build_headers_priv= \
   transaction_p.h   \
-  transaction_limits_p.h \
-  bankinfo_service_p.h \
+  transactionlimits_p.h \
+  bankinfoservice_p.h \
   bankinfo_p.h
 
 
 build_headers_pub= \
   transaction.h    \
-  transaction_limits.h \
-  bankinfo_service.h \
+  transactionlimits.h \
+  bankinfoservice.h \
   bankinfo.h
 
 
@@ -51,7 +51,9 @@ build_headers_pub= \
 build_headers=$(build_headers_priv) $(build_headers_pub)
 
 
-libabtypes2_la_SOURCES=$(built_sources)
+libabtypes2_la_SOURCES=$(built_sources) \
+  transactionfns.c \
+  transactionfns.h
 
 
 iheaderdir=${includedir}/aqbanking
@@ -63,7 +65,6 @@ noinst_HEADERS=$(build_headers_priv)
 
 
 EXTRA_DIST=$(typefiles) $(built_sources) $(build_headers)
-
 
 
 

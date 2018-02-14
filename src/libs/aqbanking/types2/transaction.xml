@@ -33,7 +33,11 @@
         <header type="sys" loc="pre">gwenhywfar/buffer.h</header>
         <header type="sys" loc="pre">gwenhywfar/db.h</header>
         <header type="sys" loc="pre">gwenhywfar/debug.h</header>
-        
+
+<!--    
+        <header type="sys" loc="post">aqbanking/transactionfns.h</header>
+        <header type="local" loc="codeEnd">transactionfns.c</header>
+-->        
       </headers>
 
       <inlines>
@@ -214,8 +218,8 @@
                  t=$(struct_prefix)_List_First(tl);
                  while(t) {
                    if ( (ty==AB_Transaction_TypeNone || $(struct_prefix)_GetType(t)==ty) &amp;&amp;
-                        (ns==NULL || 0==GWEN_Text_Compare(ns, t->nameSpace, 1))  &amp;&amp;
-                        (n==NULL || 0==GWEN_Text_Compare(n, t->name, 1)) )
+                        (ns==NULL || 0==GWEN_Text_Compare(ns, t->unitIdNameSpace, 1))  &amp;&amp;
+                        (n==NULL || 0==GWEN_Text_Compare(n, t->unitId, 1)) )
                      return t;
 
                    t=$(struct_prefix)_List_Next(t);
@@ -342,6 +346,83 @@
         </inline>
 
 
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_SetPurposeFromStringList($(struct_type) *t, const GWEN_STRINGLIST *sl);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             void $(struct_prefix)_SetPurposeFromStringList($(struct_type) *t, const GWEN_STRINGLIST *sl) {
+               assert(t);
+               if (sl) {
+                 GWEN_STRINGLISTENTRY *se;
+                 GWEN_BUFFER *tbuf;
+                 
+                 tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+                 se=GWEN_StringList_FirstEntry(sl);
+                 while(se) {
+                   const char *s;
+                   
+                   s=GWEN_StringListEntry_Data(se);
+                   if (s &amp;&amp; *s) {
+                     if (GWEN_Buffer_GetUsedBytes(tbuf))
+                       GWEN_Buffer_AppendString(tbuf, "\\n");
+                     GWEN_Buffer_AppendString(tbuf, s);
+                   }
+                   se=GWEN_StringListEntry_Next(se);
+                 }
+               
+                 $(struct_prefix)_SetPurpose(t, GWEN_Buffer_GetStart(tbuf));
+                 GWEN_Buffer_free(tbuf);
+               }
+               else {
+                 $(struct_prefix)_SetPurpose(t, NULL);
+               }
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list2</typeFlagsMask>
+          <typeFlagsValue>with_list2</typeFlagsValue>
+          <content>
+             $(api) int $(struct_prefix)_List2_freeAll($(struct_type)_LIST2 *tl);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask>with_list2</typeFlagsMask>
+          <typeFlagsValue>with_list2</typeFlagsValue>
+          <content>
+
+             static $(struct_type) *$(struct_prefix)_List2__freeAll_cb($(struct_type) *t, void *user_data) {
+               $(struct_prefix)_free(t);
+               return NULL;
+             }
+
+
+             int $(struct_prefix)_List2_freeAll($(struct_type)_LIST2 *tl) {
+               if (tl) {
+                 $(struct_prefix)_List2_ForEach(tl, $(struct_prefix)_List2__freeAll_cb, NULL);
+                 $(struct_prefix)_List2_free(tl); 
+               }
+               else {
+                 DBG_ERROR(AQBANKING_LOGDOMAIN, "List missing");
+                 return GWEN_ERROR_INVALID;
+               }
+               return 0;
+             }
+          </content>
+        </inline>
+
+
       </inlines>
       
     </lang>
@@ -359,10 +440,12 @@
         <item name="transfer"            value="256"/>
         <item name="debitNote"/>
         <item name="standingOrder"/>
+        <item name="internalTransfer"/>
 
         <item name="sepaTransfer"/>
         <item name="sepaDebitNote"/>
         <item name="sepaStandingOrder"/>
+        <item name="internalSepaTransfer"/>
 
         <!-- double entry bookkeeping -->
         <item name="transaction"         value="2048"/>
@@ -377,6 +460,23 @@
         <item name="message"/>
 
 
+      </enum>
+
+
+      <enum id="AB_TRANSACTION_SUBTYPE" prefix="AB_Transaction_SubType" type="AB_TRANSACTION_SUBTYPE">
+        <item name="none"                value="0" />
+        <item name="standard"/>
+        <item name="check"/>
+        <item name="bookedDebitNote"/>
+        <item name="drawnDebitNote"/>
+        <item name="standingOrder"/>
+        <item name="loan"/>
+        <item name="euStandard"/>
+        <item name="euASAP"/>
+        <item name="buy"/>
+        <item name="sell"/>
+        <item name="reinvest"/>
+        <item name="dividend"/>
       </enum>
 
 
@@ -476,6 +576,15 @@
         <member name="type" type="int" maxlen="32" enum="AB_TRANSACTION_TYPE" >
           <default>AB_Transaction_TypeUnknown</default>
           <preset>AB_Transaction_TypeUnknown</preset>
+          <access>public</access>
+          <flags>enum</flags>
+          <setflags>none</setflags>
+          <getflags>none</getflags>
+        </member>
+
+        <member name="subType" type="int" maxlen="32" enum="AB_TRANSACTION_SUBTYPE" >
+          <default>AB_Transaction_SubTypeNone</default>
+          <preset>AB_Transaction_SubTypeNone</preset>
           <access>public</access>
           <flags>enum</flags>
           <setflags>none</setflags>
@@ -987,7 +1096,7 @@
             </descr>
           </member>
     
-          <member name="sequenceType" type="int" maxlen="32" enum="AB_TRANSACTION_SEQUENCE" >
+          <member name="sequence" type="int" maxlen="32" enum="AB_TRANSACTION_SEQUENCE" >
             <default>AB_Transaction_SequenceUnknown</default>
             <preset>AB_Transaction_SequenceUnknown</preset>
             <access>public</access>
@@ -1156,7 +1265,7 @@
           </p>
         </descr>
 
-        <member name="name" type="char_ptr" maxlen="128" >
+        <member name="unitId" type="char_ptr" maxlen="128" >
           <access>public</access>
           <flags>own</flags>
           <setflags>const dup</setflags>
@@ -1167,7 +1276,7 @@
         </member>
   
   
-        <member name="nameSpace" type="char_ptr" maxlen="128" >
+        <member name="unitIdNameSpace" type="char_ptr" maxlen="128" >
           <access>public</access>
           <flags>own</flags>
           <setflags>const dup</setflags>
@@ -1218,6 +1327,16 @@
             For standing orders this is the next date the transaction is executed.
           </descr>
         </member>
+
+        <member name="commissionValue" type="AB_VALUE" maxlen="256" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <default>NULL</default>
+          <preset>NULL</preset>
+        </member>
+
 
       </group>
 

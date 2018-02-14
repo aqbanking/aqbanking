@@ -46,7 +46,7 @@
       <identifier>AB_TRANSACTION_LIMITS</identifier>
       <prefix>AB_TransactionLimits</prefix>
       
-      <baseFileName>transaction_limits</baseFileName>
+      <baseFileName>transactionlimits</baseFileName>
       
       <flags>
         with_xml
@@ -126,18 +126,6 @@
           <access>public</access>
         </member>
         
-        
-        <member name="maxLinesRemoteName" type="int">
-          <default>0</default>
-          <preset>0</preset>
-          <access>public</access>
-        </member>
-
-        <member name="minLinesRemoteName" type="int">
-          <default>0</default>
-          <preset>0</preset>
-          <access>public</access>
-        </member>
       </group>
 
 
