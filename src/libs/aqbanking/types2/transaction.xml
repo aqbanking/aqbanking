@@ -1,0 +1,1285 @@
+<?xml?>
+
+<tm2>
+  <type id="AB_TRANSACTION" type="pointer">
+    <descr>
+      This type contains all important information about transactions.
+      All text fields are in UTF-8.
+    </descr>
+
+    <lang id="c">
+      <identifier>AB_TRANSACTION</identifier>
+      <prefix>AB_Transaction</prefix>
+      
+      <baseFileName>transaction</baseFileName>
+      
+      <flags>
+        with_hash
+        with_xml
+        with_db
+        with_list1
+        with_list2
+        with_refcount
+      </flags>
+      
+      <headers>
+        <header type="sys" loc="pre">aqbanking/error.h</header>
+        <header type="sys" loc="pre">aqbanking/value.h</header>
+
+        <header type="sys" loc="pre">gwenhywfar/gwendate.h</header>
+
+        <header type="sys" loc="pre">gwenhywfar/mdigest.h</header>
+        <header type="sys" loc="pre">gwenhywfar/text.h</header>
+        <header type="sys" loc="pre">gwenhywfar/buffer.h</header>
+        <header type="sys" loc="pre">gwenhywfar/db.h</header>
+        <header type="sys" loc="pre">gwenhywfar/debug.h</header>
+        
+      </headers>
+
+      <inlines>
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>  with_hash </typeFlagsMask>
+          <typeFlagsValue> with_hash </typeFlagsValue>
+          <content>
+             $(api) int $(struct_prefix)_GenerateHash($(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask>  with_hash </typeFlagsMask>
+          <typeFlagsValue> with_hash </typeFlagsValue>
+          <content>
+             int $(struct_prefix)_GenerateHash($(struct_type) *st){
+               GWEN_BUFFER *buf;
+               int rv;
+               GWEN_MDIGEST *md;
+             
+               assert(st);
+             
+               buf=GWEN_Buffer_new(0, 256, 0, 1);
+               $(struct_prefix)_toHashString(st, buf);
+             
+               md=GWEN_MDigest_Rmd160_new();
+             
+               rv=GWEN_MDigest_Begin(md);
+               if (rv&lt;0) {
+                 DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+                 GWEN_MDigest_free(md);
+                 GWEN_Buffer_free(buf);
+                 return rv;
+               }
+             
+               rv=GWEN_MDigest_Update(md,
+                    (const uint8_t*)GWEN_Buffer_GetStart(buf),
+                    GWEN_Buffer_GetUsedBytes(buf));
+               if (rv&lt;0) {
+                 DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+                 GWEN_MDigest_free(md);
+                 GWEN_Buffer_free(buf);
+                 return rv;
+               }
+             
+               rv=GWEN_MDigest_End(md);
+               if (rv&lt;0) {
+                 DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+                 GWEN_MDigest_free(md);
+                 GWEN_Buffer_free(buf);
+                 return rv;
+               }
+             
+               GWEN_Buffer_Reset(buf);
+             
+               rv=GWEN_Text_ToHexBuffer((const char*)GWEN_MDigest_GetDigestPtr(md),
+                                        GWEN_MDigest_GetDigestSize(md),
+                                        buf,
+                                        0, 0, 0);
+               if (rv&lt;0) {
+                 DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+                 GWEN_MDigest_free(md);
+                 GWEN_Buffer_free(buf);
+                 return rv;
+               }
+               GWEN_MDigest_free(md);
+             
+               $(struct_prefix)_SetHash(st, GWEN_Buffer_GetStart(buf));
+               GWEN_Buffer_free(buf);
+             
+               return 0;
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list</typeFlagsMask>
+          <typeFlagsValue>with_list</typeFlagsValue>
+          <content>
+             $(api) $(struct_type) * $(struct_prefix)_List_FindFirstByType(const $(struct_type)_LIST *tl, int ty, int cmd);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask>with_list</typeFlagsMask>
+          <typeFlagsValue>with_list</typeFlagsValue>
+          <content>
+             $(struct_type) * $(struct_prefix)_List_FindFirstByType(const $(struct_type)_LIST *tl, int ty, int cmd) {
+               if (tl) {
+                 $(struct_type) *t;
+  
+                 t=$(struct_prefix)_List_First(tl);
+                 while(t) {
+                   int match=1;
+                   
+                   if (match) {
+                     if ((ty &gt; AB_Transaction_TypeNone)  &amp;&amp; ($(struct_prefix)_GetType(t)!=ty))
+                       match=0;
+                   }
+                   
+                   if (match) {
+                     if ((cmd &gt; AB_Transaction_CommandNone) &amp;&amp; ($(struct_prefix)_GetCommand(t)!=cmd))
+                       match=0;
+                   }
+                   
+                   if (match)
+                     return t;
+
+                   t=$(struct_prefix)_List_Next(t);
+                 }
+               }
+               return NULL;
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list</typeFlagsMask>
+          <typeFlagsValue>with_list</typeFlagsValue>
+          <content>
+             $(api) $(struct_type) * $(struct_prefix)_List_FindNextByType(const $(struct_type) *t, int ty, int cmd);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask>with_list</typeFlagsMask>
+          <typeFlagsValue>with_list</typeFlagsValue>
+          <content>
+             $(struct_type) * $(struct_prefix)_List_FindNextByType(const $(struct_type) *tPrev, int ty, int cmd) {
+               if (tPrev) {
+                 $(struct_type) *t;
+                 
+                 t=$(struct_prefix)_List_Next(tPrev);
+                 while(t) {
+                   int match=1;
+                   
+                   if (match) {
+                     if ((ty &gt; AB_Transaction_TypeNone)  &amp;&amp; ($(struct_prefix)_GetType(t)!=ty))
+                       match=0;
+                   }
+                   
+                   if (match) {
+                     if ((cmd &gt; AB_Transaction_CommandNone) &amp;&amp; ($(struct_prefix)_GetCommand(t)!=cmd))
+                       match=0;
+                   }
+                   
+                   if (match)
+                     return t;
+
+                   t=$(struct_prefix)_List_Next(t);
+                 }
+               }
+               return NULL;
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list</typeFlagsMask>
+          <typeFlagsValue>with_list</typeFlagsValue>
+          <content>
+             $(api) $(struct_type) * $(struct_prefix)_List_FindName(const $(struct_type)_LIST *tl, int ty, const char *ns, const char *n);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask>with_list</typeFlagsMask>
+          <typeFlagsValue>with_list</typeFlagsValue>
+          <content>
+             $(struct_type) * $(struct_prefix)_List_FindName(const $(struct_type)_LIST *tl, int ty, const char *ns, const char *n) {
+               if (tl) {
+                 $(struct_type) *t;
+  
+                 t=$(struct_prefix)_List_First(tl);
+                 while(t) {
+                   if ( (ty==AB_Transaction_TypeNone || $(struct_prefix)_GetType(t)==ty) &amp;&amp;
+                        (ns==NULL || 0==GWEN_Text_Compare(ns, t->nameSpace, 1))  &amp;&amp;
+                        (n==NULL || 0==GWEN_Text_Compare(n, t->name, 1)) )
+                     return t;
+
+                   t=$(struct_prefix)_List_Next(t);
+                 }
+               }
+               return NULL;
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list</typeFlagsMask>
+          <typeFlagsValue>with_list</typeFlagsValue>
+          <content>
+             $(api) int $(struct_prefix)_List_WriteDb(const $(struct_type)_LIST *tl, GWEN_DB_NODE *db);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask>with_list</typeFlagsMask>
+          <typeFlagsValue>with_list</typeFlagsValue>
+          <content>
+             int $(struct_prefix)_List_WriteDb(const $(struct_type)_LIST *tl, GWEN_DB_NODE *db) {
+               if (tl) {
+                 const $(struct_type) *t;
+  
+                 t=$(struct_prefix)_List_First(tl);
+                 while(t) {
+                   GWEN_DB_NODE *dbT;
+                   int rv;
+                   
+                   dbT=GWEN_DB_Group_new("transaction");
+                   rv=AB_Transaction_WriteDb(t, dbT);
+                   if (rv &lt; 0) {
+                     DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+                     GWEN_DB_Group_free(dbT);
+                     return rv;
+                   }
+                   else {
+                     GWEN_DB_AddGroup(db, dbT);
+                   }
+                   
+                   t=$(struct_prefix)_List_Next(t);
+                 }
+               }
+               return 0;
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list</typeFlagsMask>
+          <typeFlagsValue>with_list</typeFlagsValue>
+          <content>
+             $(api) int $(struct_prefix)_List_ReadDb($(struct_type)_LIST *tl, GWEN_DB_NODE *db);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask>with_list</typeFlagsMask>
+          <typeFlagsValue>with_list</typeFlagsValue>
+          <content>
+             int $(struct_prefix)_List_ReadDb($(struct_type)_LIST *tl, GWEN_DB_NODE *db) {
+               if (tl &amp;&amp; db) {
+                 GWEN_DB_NODE *dbT;
+                 
+                 dbT=GWEN_DB_GetFirstGroup(db);
+                 while(dbT) {
+                   $(struct_type) *t;
+                   
+                   t=$(struct_prefix)_fromDb(dbT);
+                   if (t) {
+                     $(struct_prefix)_List_Add(t, tl);
+                   }
+                  
+                   dbT=GWEN_DB_GetNextGroup(dbT);
+                 }
+               }
+               else {
+                 DBG_ERROR(AQBANKING_LOGDOMAIN, "Either list or db missing");
+                 return GWEN_ERROR_INVALID;
+               }
+               return 0;
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_AddPurposeLine($(struct_type) *t, const char *s);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             void $(struct_prefix)_AddPurposeLine($(struct_type) *t, const char *s) {
+               assert(t);
+               if (s &amp;&amp; *s) {
+                 if (t->purpose &amp;&amp; *(t->purpose)) {
+                   GWEN_BUFFER *tbuf;
+                 
+                   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+                   GWEN_Buffer_AppendString(tbuf, t->purpose);
+                   GWEN_Buffer_AppendString(tbuf, "\\n");
+                   GWEN_Buffer_AppendString(tbuf, s);
+                   $(struct_prefix)_SetPurpose(t, GWEN_Buffer_GetStart(tbuf));
+                   GWEN_Buffer_free(tbuf);
+                 }
+                 else
+                   $(struct_prefix)_SetPurpose(t, s);
+               }
+               else {
+                 DBG_ERROR(AQBANKING_LOGDOMAIN, "Not adding empty string");
+               }
+             }
+          </content>
+        </inline>
+
+
+      </inlines>
+      
+    </lang>
+
+    <enums>
+
+      <enum id="AB_TRANSACTION_TYPE" prefix="AB_Transaction_Type" type="AB_TRANSACTION_TYPE">
+        <item name="none"                value="0" />
+
+        <!-- bank statements, balances, account specs etc -->
+        <item name="statement"           value="128"/>
+        <item name="notedStatement"/>
+
+        <!-- transfers, debit notes, standing orders -->
+        <item name="transfer"            value="256"/>
+        <item name="debitNote"/>
+        <item name="standingOrder"/>
+
+        <item name="sepaTransfer"/>
+        <item name="sepaDebitNote"/>
+        <item name="sepaStandingOrder"/>
+
+        <!-- double entry bookkeeping -->
+        <item name="transaction"         value="2048"/>
+        <item name="split"/>
+
+        <!-- special transactions which aren't real transactions -->
+        <item name="accountSpec"         value="4096"/>
+        <item name="security" />
+        <item name="bookedBalance" />
+        <item name="notedBalance"/>
+        <item name="creditLine"/>
+        <item name="message"/>
+
+
+      </enum>
+
+
+      <enum id="AB_TRANSACTION_COMMAND" prefix="AB_Transaction_Command" type="AB_TRANSACTION_COMMAND">
+        <item name="none"                value="0"/>
+
+        <item name="getBalance"/>
+        <item name="getTransactions"/>
+        <item name="getStandingOrders"/>
+        <item name="getDatedTransfers"/>
+        <item name="sepaGetStandingOrders"/>
+
+        <item name="loadCellPhone"/>
+        
+
+        <!-- Bit 8 set: transfer jobs, bit 9 cleared: non-SEPA -->
+        <item name="transfer"            value="512"/>
+        <item name="debitNote"/>
+        
+        <item name="createStandingOrder"/>
+        <item name="modifyStandingOrder"/>
+        <item name="deleteStandingOrder"/>
+
+        <item name="createDatedTransfer"/>
+        <item name="modifyDatedTransfer"/>
+        <item name="deleteDatedTransfer"/>
+
+        <item name="internalTransfer"/>
+        
+        <!-- Bit 8 set: transfer jobs, bit 9 set: SEPA -->
+        <item name="sepaTransfer"        value="1536"/>
+        <item name="sepaDebitNote"/>
+
+        <item name="sepaFlashDebitNote"/>
+        <item name="sepaCreateStandingOrder"/>
+        <item name="sepaModifyStandingOrder"/>
+        <item name="sepaDeleteStandingOrder"/>
+
+        <item name="sepaCreateDatedTransfer"/>
+        <item name="sepaModifyDatedTransfer"/>
+        <item name="sepaDeleteDatedTransfer"/>
+
+        <item name="sepaInternalTransfer"/>
+
+      </enum>
+
+
+      <enum id="AB_TRANSACTION_STATUS" prefix="AB_Transaction_Status" type="AB_TRANSACTION_STATUS">
+        <item name="none" value="0"/>
+        <item name="enqueued"/>
+        <item name="sending"/>
+        <item name="accepted"/>
+        <item name="rejected"/>
+        <item name="pending"/>
+        <item name="revoked"/>
+        <item name="aborted"/>
+        <item name="error"/>
+      </enum>
+
+      <enum id="AB_TRANSACTION_PERIOD" prefix="AB_Transaction_Period" type="AB_TRANSACTION_PERIOD">
+        <item name="none" value="0"/>
+        <item name="monthly"/>
+        <item name="weekly"/>
+      </enum>
+
+      <enum id="AB_TRANSACTION_CHARGE" prefix="AB_Transaction_Charge" type="AB_TRANSACTION_CHARGE">
+        <item name="nobody" value="0"/>
+        <item name="local"/>
+        <item name="remote"/>
+        <item name="share"/>
+      </enum>
+
+      <enum id="AB_TRANSACTION_SEQUENCE" prefix="AB_Transaction_Sequence" type="AB_TRANSACTION_SEQUENCE">
+        <item name="once" value="0"/>
+        <item name="first"/>
+        <item name="following"/>
+        <item name="final"/>
+      </enum>
+
+    </enums>
+
+    <defines>
+
+    </defines>
+
+  <!--
+    <typedefs>
+      <typedef id="AE_STATEMENT_FLAGS" prefix="AE_Statement_Flags">
+     </typedef>
+    </typedefs>
+   --> 
+
+    <members>
+
+      <group title="Type, Command, Status" >
+
+        <member name="type" type="int" maxlen="32" enum="AB_TRANSACTION_TYPE" >
+          <default>AB_Transaction_TypeUnknown</default>
+          <preset>AB_Transaction_TypeUnknown</preset>
+          <access>public</access>
+          <flags>enum</flags>
+          <setflags>none</setflags>
+          <getflags>none</getflags>
+        </member>
+  
+        <member name="command" type="int" maxlen="4" >
+          <default>AB_Transaction_CommandUnknown</default>
+          <preset>AB_Transaction_CommandUnknown</preset>
+          <access>public</access>
+          <flags>none</flags>
+          <setflags>none</setflags>
+          <getflags>none</getflags>
+        </member>
+  
+        <member name="status" type="int" maxlen="32" enum="AB_TRANSACTION_STATUS" >
+          <default>AB_Transaction_StatusUnknown</default>
+          <preset>AB_Transaction_StatusUnknown</preset>
+          <access>public</access>
+          <flags>enum</flags>
+          <setflags>none</setflags>
+          <getflags>none</getflags>
+        </member>
+
+        <member name="uniqueAccountId" type="uint32_t" maxlen="4">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <descr>
+            This is a unique id of the local account for banking commands.
+          </descr>
+        </member>
+
+      </group>
+
+
+      <group title="Identifiers" >
+        <member name="uniqueId" type="uint32_t" maxlen="4">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <descr>
+            This is a unique id assigned by the application. However, when
+            adding a transaction to a job (like JobTransfer) this id is
+            assigned by AqBanking to make sure that this id is unique across
+            all applications.
+          </descr>
+        </member>
+
+        <member name="refUniqueId" type="uint32_t" maxlen="4">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <descr>
+            This id is only used in splits to refer to the transaction id the split
+            belongs to.
+          </descr>
+        </member>
+
+        <member name="idForApplication" type="uint32_t" >
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <descr>
+            This is an id assigned by the application only.
+            This id is never changed by AqBanking.
+          </descr>
+        </member>
+
+        <member name="refIdForApplication" type="uint32_t" >
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <descr>
+            If this transaction is a response to a command send to a bank server then the idForApplication from
+            that reference command is stored here.
+          </descr>
+        </member>
+    
+        <member name="groupId" type="uint32_t" >
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <descr>
+            This id is assigned by a backend when sending multiple transfer 
+            jobs in one backend request (e.g. AqHBCI uses DTAUS files when sending
+            multi-transfer requests; in this case every transfer which goes
+            into the same DTAUS file receives the same id).
+          </descr>
+        </member>
+  
+        <member name="fiId" type="char_ptr" maxlen="32" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <descr>
+            <p>
+              This id is assigned by the bank. As for the moment only OFX servers actually do 
+              assign unique ids to statements.
+            </p>
+            <p>
+              However, HBCI servers at least assign unique ids to standing orders and dated transfers.
+            </p>
+          </descr>
+        </member>
+
+      </group>
+
+
+
+      <group title="Local Account Specification" >
+        <descr>
+          <p>
+            Properties of this group specify the local account to be used for
+            this transaction.
+          </p>
+          <p>
+            Accounts are usually specified in one of two ways:
+          </p>
+          <ul>
+            <li>SEPA: IBAN and BIC</li>
+            <li>non-SEPA: Bank account and Account number</li>
+          </ul>
+        </descr>
+
+        <group title="SEPA">
+          <member name="localIban" type="char_ptr" maxlen="32" >
+            <access>public</access>
+            <flags>own with_hash</flags>
+            <setflags>const dup</setflags>
+            <getflags>const</getflags>
+          </member>
+    
+          <member name="localBic" type="char_ptr" maxlen="16" >
+            <access>public</access>
+            <flags>own with_hash</flags>
+            <setflags>const dup</setflags>
+            <getflags>const</getflags>
+          </member>
+        </group>
+
+        <group title="Non-SEPA">
+          <member name="localCountry" type="char_ptr" maxlen="16" >
+            <access>public</access>
+            <flags>own with_hash</flags>
+            <setflags>const dup</setflags>
+            <getflags>const</getflags>
+          </member>
+    
+          <member name="localBankCode" type="char_ptr" maxlen="16" >
+            <access>public</access>
+            <flags>own with_hash</flags>
+            <setflags>const dup</setflags>
+            <getflags>const</getflags>
+          </member>
+    
+          <member name="localBranchId" type="char_ptr" maxlen="32">
+            <access>public</access>
+            <flags>own with_hash</flags>
+            <setflags>const dup</setflags>
+            <getflags>const</getflags>
+            <descr>
+             This is the branch id of the local bank (OFX only)
+            </descr>
+          </member>
+    
+          <member name="localAccountNumber" type="char_ptr" maxlen="32" >
+            <access>public</access>
+            <flags>own with_hash</flags>
+            <setflags>const dup</setflags>
+            <getflags>const</getflags>
+          </member>
+    
+          <member name="localSuffix" type="char_ptr" maxlen="16" >
+            <access>public</access>
+            <flags>own with_hash</flags>
+            <setflags>const dup</setflags>
+            <getflags>const</getflags>
+            <descr>
+              If your account has subaccounts which are distinguished by
+              different suffixes, then this is that suffix. Otherwise it's
+              empty. (HBCI only)
+            </descr>
+          </member>
+          
+        </group>
+        
+        <member name="localName" type="char_ptr" maxlen="64" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+
+      </group>
+
+
+      <group title="Remote Account Specification" >
+        <descr>
+          <p>
+            Properties of this group specify the remote account to be used for
+            this transaction.
+          </p>
+        </descr>
+
+        <member name="remoteCountry" type="char_ptr" maxlen="16" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="remoteBankCode" type="char_ptr" maxlen="16" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="remoteBranchId" type="char_ptr" maxlen="32">
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <descr>
+           This is the branch id of the remote bank (OFX only)
+          </descr>
+        </member>
+  
+        <member name="remoteAccountNumber" type="char_ptr" maxlen="32" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="remoteSuffix" type="char_ptr" maxlen="16" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <descr>
+            Same as localSuffix, except for remote account (HBCI only).
+          </descr>
+        </member>
+  
+        <member name="remoteIban" type="char_ptr" maxlen="32" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="remoteBic" type="char_ptr" maxlen="16" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="remoteName" type="char_ptr" maxlen="64" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+      </group>
+
+      
+      
+      <group title="Dates" >
+        <member name="date" type="gwen_date" maxlen="16" >
+          <aqdb_type>AQDB_DataType_String</aqdb_type>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <default>NULL</default>
+          <preset>NULL</preset>
+        </member>
+  
+        <member name="valutaDate" type="gwen_date" maxlen="16" >
+          <aqdb_type>AQDB_DataType_String</aqdb_type>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <default>NULL</default>
+          <preset>NULL</preset>
+        </member>
+      </group>
+
+
+      <group title="Amount">
+        <member name="value" type="AB_VALUE" maxlen="256" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <default>NULL</default>
+          <preset>NULL</preset>
+        </member>
+
+        <member name="fees" type="AB_VALUE" maxlen="256" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <default>NULL</default>
+          <preset>NULL</preset>
+        </member>
+
+      </group>
+
+
+      <group title="Info Texts and Codes">
+
+        <member name="transactionCode" type="int" >
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <descr>
+            A 3 digit numerical transaction code, defined for all kinds of
+            different actions. (Geschaeftsvorfallcode)
+          </descr>
+        </member>
+        
+        <member name="transactionText" type="char_ptr" maxlen="32" >
+          <access>public</access>
+          <flags>own</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <descr>
+            Transaction text (e.g. STANDING ORDER) (Buchungstext)
+          </descr>
+        </member>
+
+        <member name="transactionKey" type="char_ptr" maxlen="32" >
+          <access>public</access>
+          <flags>own</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <descr>
+            this is the transaction id that tells you more about the type
+            of transaction (3 character code) (Buchungsschluessel)
+            (HBCI only)
+          </descr>
+        </member>
+
+        <member name="textKey" type="int" >
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <descr>
+            <p>
+              A numerical transaction code, defined for all kinds of
+              different actions. (Textschluessel)
+            </p>
+            <p>
+              For a normal transfer you should set it to 51. For debit notes
+              the values 04 or 05 may be used. For other values please refer to
+              your credit institute. (HBCI only)
+            </p>
+          </descr>
+        </member>
+  
+        <member name="primanota" type="char_ptr" maxlen="32">
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <descr>
+            Used for SEPA transfers.
+          </descr>
+        </member>
+  
+        <member name="purpose" type="char_ptr" maxlen="256" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+      </group>
+
+
+
+
+      <group title="References">
+        <member name="customerReference" type="char_ptr" maxlen="32" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <descr>
+            Reference string, if the customer (you) has specified
+            one. (E.g. the cheque number.) Otherwise "NONREF" or empty
+            (Kundenreferenz)
+          </descr>
+        </member>
+  
+        <member name="bankReference" type="char_ptr" maxlen="32" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <descr>
+            Reference string for this transaction given by the bank, if it
+            has given one. Otherwise empty. (Bankreferenz)
+          </descr>
+        </member>
+      </group>
+
+
+
+      <group title="Additional Data for SEPA Transactions">
+
+        <descr>
+          <p>These properties are only used in SEPA statements or transactions.</p>
+        </descr>
+
+        <member name="endToEndReference" type="char_ptr" maxlen="64" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <descr>
+            This is a reference provided by the issuer of a SEPA transfer.
+          </descr>
+        </member>
+
+
+        <group title="Additional Data for SEPA Debit Notes">
+  
+          <descr>
+            <p>These properties are only used in SEPA statements or transactions.</p>
+          </descr>
+  
+          <member name="creditorSchemeId" type="char_ptr" maxlen="32">
+            <access>public</access>
+            <flags>own with_hash</flags>
+            <setflags>const dup</setflags>
+            <getflags>const</getflags>
+            <descr>
+              Creditor Scheme Identification" ("Glaeubiger-ID", assigned by Deutsche Bundesbank).
+            </descr>
+          </member>
+    
+          <member name="mandateId" type="char_ptr" maxlen="32">
+            <access>public</access>
+            <flags>own with_hash</flags>
+            <setflags>const dup</setflags>
+            <getflags>const</getflags>
+            <descr>
+              SEPA Direct debit mandate id.
+            </descr>
+          </member>
+    
+          <member name="mandateDate" type="gwen_date" maxlen="16" >
+            <aqdb_type>AQDB_DataType_String</aqdb_type>
+            <access>public</access>
+            <flags>own</flags>
+            <setflags>const dup</setflags>
+            <getflags>const</getflags>
+            <default>NULL</default>
+            <preset>NULL</preset>
+            <descr>
+              Issue date of the direct debit mandate.
+            </descr>
+          </member>
+    
+          <member name="mandateDebitorName" type="char_ptr" maxlen="32">
+            <access>public</access>
+            <flags>own</flags>
+            <setflags>const dup</setflags>
+            <getflags>const</getflags>
+            <descr>
+              Debitor name for direct debit mandate if given by the debitor.
+            </descr>
+          </member>
+    
+          <member name="originalCreditorSchemeId" type="char_ptr" maxlen="32">
+            <access>public</access>
+            <flags>own with_hash</flags>
+            <setflags>const dup</setflags>
+            <getflags>const</getflags>
+            <descr>
+              Original value for "Creditor Scheme Identification", in case that value changed over time.
+            </descr>
+          </member>
+    
+          <member name="originalMandateId" type="char_ptr" maxlen="32">
+            <access>public</access>
+            <flags>own with_hash</flags>
+            <setflags>const dup</setflags>
+            <getflags>const</getflags>
+            <descr>
+              Original SEPA Direct debit mandate id, in case that changed over time.
+            </descr>
+          </member>
+    
+          <member name="originalCreditorName" type="char_ptr" maxlen="32">
+            <access>public</access>
+            <flags>own</flags>
+            <setflags>const dup</setflags>
+            <getflags>const</getflags>
+            <descr>
+              Original SEPA Direct debit creditor name, in case that changed over time.
+            </descr>
+          </member>
+    
+          <member name="sequenceType" type="int" maxlen="32" enum="AB_TRANSACTION_SEQUENCE" >
+            <default>AB_Transaction_SequenceUnknown</default>
+            <preset>AB_Transaction_SequenceUnknown</preset>
+            <access>public</access>
+            <flags>enum</flags>
+            <setflags>none</setflags>
+            <getflags>none</getflags>
+          </member>
+        </group>
+        
+        <member name="charge" type="int" maxlen="32" enum="AB_TRANSACTION_CHARGE" >
+          <default>AB_Transaction_ChargeUnknown</default>
+          <preset>AB_Transaction_ChargeUnknown</preset>
+          <access>public</access>
+          <flags>enum</flags>
+          <setflags>none</setflags>
+          <getflags>none</getflags>
+        </member>
+      </group>
+
+      <group title="Additional Information for Foreign Transfers" >
+        <descr>
+          <p>
+            This group contains information which is used with transfers to
+            other countries in the world.
+            It is used by backends and applications but not by AqBanking itself.
+          </p>
+        </descr>
+
+          <member name="remoteAddrStreet" type="char_ptr" maxlen="64">
+            <access>public</access>
+            <flags>own with_hash</flags>
+            <setflags>const dup</setflags>
+            <getflags>const</getflags>
+            <descr>
+              Street and number.
+            </descr>
+          </member>
+
+          <member name="remoteAddrZipcode" type="char_ptr" maxlen="16">
+            <access>public</access>
+            <flags>own with_hash</flags>
+            <setflags>const dup</setflags>
+            <getflags>const</getflags>
+            <descr>
+              Zipcode.
+            </descr>
+          </member>
+
+          <member name="remoteAddrCity" type="char_ptr" maxlen="64">
+            <access>public</access>
+            <flags>own with_hash</flags>
+            <setflags>const dup</setflags>
+            <getflags>const</getflags>
+            <descr>
+              City.
+            </descr>
+          </member>
+
+          <member name="remoteAddrPhone" type="char_ptr" maxlen="64">
+            <access>public</access>
+            <flags>own with_hash</flags>
+            <setflags>const dup</setflags>
+            <getflags>const</getflags>
+            <descr>
+              Phone number.
+            </descr>
+          </member>
+
+      </group>
+
+
+      <group title="Additional Data for Standing Orders">
+
+        <descr>
+          <p>
+            These properties are used with standing orders, i.e. orders which are regularily
+            repeated by the bank.
+          </p>
+        </descr>
+        
+        <member name="period" type="int" maxlen="32" enum="AB_TRANSACTION_PERIOD" >
+          <default>AB_Transaction_PeriodUnknown</default>
+          <preset>AB_Transaction_PeriodUnknown</preset>
+          <access>public</access>
+          <flags>enum</flags>
+          <setflags>none</setflags>
+          <getflags>none</getflags>
+        </member>
+  
+        <member name="cycle" type="uint32_t" maxlen="4">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <descr>
+            The standing order is executed every <i>cycle</i> x <i>period</i>.
+            So if <i>period</i> is <i>weekly</i> and <i>cycle</i> is <i>2</i> 
+            then the standing order is executed every 2 weeks.
+          </descr>
+        </member>
+  
+        <member name="executionDay" type="uint32_t" maxlen="4">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <descr>
+            The execution day. The meaning of this variable depends on the
+            content of <i>period</i>:
+            <ul>
+              <li>monthly: day of the month (starting with <i>1</i>)</li>
+              <li>weekly: day of the week (starting with <i>1</i>=Monday)</li>
+            </ul>
+          </descr>
+        </member>
+  
+        <member name="firstDate" type="gwen_date" maxlen="16" >
+          <aqdb_type>AQDB_DataType_String</aqdb_type>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <default>NULL</default>
+          <preset>NULL</preset>
+          <descr>
+            For standing orders this is the first date the transaction is to be executed.
+            For jobs which use date span parameters this is the first date 
+            (e.g. "get statements from FIRSTDATE to LASTDATE)"
+          </descr>
+        </member>
+  
+        <member name="lastDate" type="gwen_date" maxlen="16" >
+          <aqdb_type>AQDB_DataType_String</aqdb_type>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <default>NULL</default>
+          <preset>NULL</preset>
+          <descr>
+            For standing orders this is the last date the transaction is to be executed.
+            For jobs which use date span parameters this is the last date 
+            (e.g. "get statements from FIRSTDATE to LASTDATE)"
+          </descr>
+        </member>
+  
+        <member name="nextDate" type="gwen_date" maxlen="16" >
+          <aqdb_type>AQDB_DataType_String</aqdb_type>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <default>NULL</default>
+          <preset>NULL</preset>
+          <descr>
+            For standing orders this is the next date the transaction is executed.
+          </descr>
+        </member>
+
+      </group>
+
+
+      <group title="Additional Data for Securites">
+
+        <descr>
+          <p>
+            These properties are used with securities.
+          </p>
+        </descr>
+
+        <member name="name" type="char_ptr" maxlen="128" >
+          <access>public</access>
+          <flags>own</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <descr>
+            Unique id of the security within the namespace. This field is also used with accounts.
+          </descr>
+        </member>
+  
+  
+        <member name="nameSpace" type="char_ptr" maxlen="128" >
+          <access>public</access>
+          <flags>own</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <descr>
+            Namespace for name (e.g. CUSIP for North America)
+          </descr>
+        </member>
+  
+        <member name="tickerSymbol" type="char_ptr" maxlen="128" >
+          <access>public</access>
+          <flags>own</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <descr>
+            Unique id of the security within the namespace.
+          </descr>
+        </member>
+
+        <member name="units" type="AB_VALUE" maxlen="256" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <default>NULL</default>
+          <preset>NULL</preset>
+        </member>
+
+        <member name="unitPriceValue" type="AB_VALUE" maxlen="256" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <default>NULL</default>
+          <preset>NULL</preset>
+        </member>
+
+
+        <member name="unitPriceDate" type="gwen_date" maxlen="16" >
+          <aqdb_type>AQDB_DataType_String</aqdb_type>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <default>NULL</default>
+          <preset>NULL</preset>
+          <descr>
+            For standing orders this is the next date the transaction is executed.
+          </descr>
+        </member>
+
+      </group>
+
+
+      <group title="Additional Data for Account Specs">
+
+        <descr>
+          <p>
+            These properties are used with account specs, so they contain information
+            about a bank account.
+          </p>
+        </descr>
+
+        <member name="accountCurrency" type="char_ptr" maxlen="256">
+          <default>NULL</default>
+          <preset>NULL</preset>
+          <access>public</access>
+          <flags>own</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <descr>
+            Currency used by the account.
+          </descr>
+        </member>
+
+
+        <member name="accountType" type="int" maxlen="4" >
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+
+      </group>
+
+
+
+
+      <member name="memo" type="char_ptr" maxlen="1024" >
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+        <descr>
+          User-defined memo.
+        </descr>
+      </member>
+
+
+
+
+      <member name="hash" type="char_ptr" maxlen="64" >
+        <access>public</access>
+        <flags>own volatile</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+    </members>
+
+    
+  </type>
+  
+</tm2>
+
