@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Tue Dec 31 2013
-    copyright   : (C) 2004-2013 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,7 +26,7 @@
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/text.h>
 
-#include <aqbanking/jobsepatransfer_be.h>
+#include <aqbanking/jobsepatransfer.h>
 #include <aqbanking/job_be.h>
 
 #include <stdlib.h>

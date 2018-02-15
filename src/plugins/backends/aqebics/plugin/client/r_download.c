@@ -16,8 +16,8 @@ int EBC_Provider_XchgDownloadRequest(AB_PROVIDER *pro,
 				     const char *requestType,
 				     GWEN_BUFFER *targetBuffer,
 				     int withReceipt,
-				     const GWEN_TIME *fromTime,
-				     const GWEN_TIME *toTime) {
+				     const GWEN_DATE *fromDate,
+				     const GWEN_DATE *toDate) {
   EBC_PROVIDER *dp;
   const char *s;
 
@@ -31,11 +31,11 @@ int EBC_Provider_XchgDownloadRequest(AB_PROVIDER *pro,
   if (strcasecmp(s, "H002")==0)
     return EBC_Provider_XchgDownloadRequest_H002(pro, sess, u, requestType, targetBuffer,
 						 withReceipt,
-						 fromTime, toTime);
+						 fromDate, toDate);
   else if (strcasecmp(s, "H003")==0)
     return EBC_Provider_XchgDownloadRequest_H003(pro, sess, u, requestType, targetBuffer,
 						 withReceipt,
-						 fromTime, toTime);
+						 fromDate, toDate);
   else {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Proto version [%s] not supported", s);
     return GWEN_ERROR_INTERNAL;

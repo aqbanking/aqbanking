@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004-2013 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -14,7 +14,6 @@
 
 
 #include <aqbanking/job.h>
-#include <aqbanking/transaction.h>
 
 /** @addtogroup G_AB_JOBS_STO_GET
  *
@@ -33,12 +32,6 @@ extern "C" {
  */
 AQBANKING_API
 AB_JOB *AB_JobGetStandingOrders_new(AB_ACCOUNT *a);
-
-/** @deprecated */
-AQBANKING_API AQBANKING_DEPRECATED
-AB_TRANSACTION_LIST2*
-  AB_JobGetStandingOrders_GetStandingOrders(const AB_JOB *j);
-
 
 
 #ifdef __cplusplus

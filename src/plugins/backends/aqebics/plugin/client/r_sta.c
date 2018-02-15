@@ -13,8 +13,8 @@
 
 int EBC_Provider_XchgStaRequest(AB_PROVIDER *pro,
 				GWEN_HTTP_SESSION *sess,
-				const GWEN_TIME *fromTime,
-				const GWEN_TIME *toTime,
+				const GWEN_DATE *fromDate,
+				const GWEN_DATE *toDate,
 				AB_IMEXPORTER_CONTEXT *ctx) {
   AB_BANKING *ab;
   int rv;
@@ -29,7 +29,7 @@ int EBC_Provider_XchgStaRequest(AB_PROVIDER *pro,
   GWEN_Buffer_SetHardLimit(buf, EBICS_BUFFER_MAX_HARD_LIMIT);
 
   /* TODO: get RECEIPT flag from account settings */
-  rv=EBC_Provider_XchgDownloadRequest(pro, sess, u, "STA", buf, 1, fromTime, toTime);
+  rv=EBC_Provider_XchgDownloadRequest(pro, sess, u, "STA", buf, 1, fromDate, toDate);
   if (rv<0 || rv>=300) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(buf);

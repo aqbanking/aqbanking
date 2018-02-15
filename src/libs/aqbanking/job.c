@@ -18,21 +18,6 @@
 #include "account_l.h"
 #include "banking_l.h"
 #include "provider_l.h"
-#include "jobs/jobgetdatedtransfers_l.h"
-#include "jobs/jobgettransactions_l.h"
-#include "jobs/jobgetstandingorders_l.h"
-#include "jobs/jobgetbalance_l.h"
-#include "jobs/jobsingletransfer_l.h"
-#include "jobs/jobsingledebitnote_l.h"
-#include "jobs/jobsepatransfer_l.h"
-#include "jobs/jobcreatesto_l.h"
-#include "jobs/jobmodifysto_l.h"
-#include "jobs/jobdeletesto_l.h"
-#include "jobs/jobcreatedatedtransfer_l.h"
-#include "jobs/jobmodifydatedtransfer_l.h"
-#include "jobs/jobdeletedatedtransfer_l.h"
-#include "jobs/jobinternaltransfer_l.h"
-#include "jobs/jobloadcellphone_l.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>

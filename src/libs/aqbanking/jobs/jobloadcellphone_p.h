@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004-2013 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -13,7 +13,7 @@
 #define AQBANKING_JOBLOADCELLPHONE_P_H
 
 
-#include "jobloadcellphone_l.h"
+#include "jobloadcellphone_be.h"
 
 
 typedef struct AB_JOBLOADCELLPHONE AB_JOBLOADCELLPHONE;

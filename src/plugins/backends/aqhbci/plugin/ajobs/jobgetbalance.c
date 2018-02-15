@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -25,7 +25,6 @@
 #include <gwenhywfar/syncio_memory.h>
 
 #include <aqbanking/jobgetbalance.h>
-#include <aqbanking/jobgetbalance_be.h>
 
 #include <stdlib.h>
 #include <assert.h>

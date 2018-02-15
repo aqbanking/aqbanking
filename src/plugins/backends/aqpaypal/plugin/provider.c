@@ -707,7 +707,7 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
   GWEN_HTTP_SESSION *sess;
   GWEN_BUFFER *tbuf;
   const char *s;
-  const GWEN_TIME *ti;
+  const GWEN_DATE *da;
   int vmajor;
   int vminor;
   int rv;
@@ -778,8 +778,8 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
 
   GWEN_Buffer_AppendString(tbuf, "&method=transactionSearch");
 
-  ti=AB_JobGetTransactions_GetFromTime(j);
-  if (ti==NULL) {
+  da=AB_JobGetTransactions_GetFromDate(j);
+  if (da==NULL) {
     DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Missing start date");
     GWEN_Buffer_free(tbuf);
     GWEN_HttpSession_free(sess);
@@ -788,7 +788,7 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
   }
 
   GWEN_Buffer_AppendString(tbuf, "&startdate=");
-  GWEN_Time_toUtcString(ti, "YYYY-MM-DDThh:mm:ssZ", tbuf);
+  GWEN_Date_toStringWithTemplate(da, "YYYY-MM-DDT00:00:00Z", tbuf);
   //testing: GWEN_Buffer_AppendString(tbuf, "&enddate=2016-01-01T00:00:00Z");
 
   /* init session */

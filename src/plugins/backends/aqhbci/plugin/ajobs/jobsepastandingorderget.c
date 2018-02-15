@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Sat Aug 03 2014
-    copyright   : (C) 2014 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,7 +26,6 @@
 #include <gwenhywfar/text.h>
 
 #include <aqbanking/jobgetstandingorders.h>
-#include <aqbanking/jobgetstandingorders_be.h>
 #include <aqbanking/job_be.h>
 
 #include <stdlib.h>

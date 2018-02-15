@@ -644,45 +644,37 @@ int AH_Job_GetTransactions_Exchange(AH_JOB *j, AB_JOB *bj,
     GWEN_DB_NODE *dbParams;
 
     dbParams=AH_Job_GetParams(j);
-    AB_JobGetTransactions_SetMaxStoreDays(bj,
-					  GWEN_DB_GetIntValue(dbParams,
-							      "storeDays",
-							      0, 0)
-                                         );
+    AB_JobGetTransactions_SetMaxStoreDays(bj, GWEN_DB_GetIntValue(dbParams, "storeDays", 0, 0));
     return 0;
   }
 
   case AH_Job_ExchangeModeArgs: {
-    const GWEN_TIME *ti;
+    const GWEN_DATE *da;
 
-    ti=AB_JobGetTransactions_GetFromTime(bj);
-    if (ti) {
-      int year, month, day;
+    da=AB_JobGetTransactions_GetFromDate(bj);
+    if (da) {
       char dbuf[16];
       GWEN_DB_NODE *dbArgs;
 
       dbArgs=AH_Job_GetArguments(j);
-      if (GWEN_Time_GetBrokenDownDate(ti, &day, &month, &year)) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Internal error: bad fromTime");
-	return GWEN_ERROR_INVALID;
-      }
-      snprintf(dbuf, sizeof(dbuf), "%04d%02d%02d", year, month+1, day);
+      snprintf(dbuf, sizeof(dbuf), "%04d%02d%02d",
+               GWEN_Date_GetYear(da),
+               GWEN_Date_GetMonth(da),
+               GWEN_Date_GetDay(da));
       GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
                            "fromDate", dbuf);
     }
 
-    ti=AB_JobGetTransactions_GetToTime(bj);
-    if (ti) {
-      int year, month, day;
+    da=AB_JobGetTransactions_GetToDate(bj);
+    if (da) {
       char dbuf[16];
       GWEN_DB_NODE *dbArgs;
 
       dbArgs=AH_Job_GetArguments(j);
-      if (GWEN_Time_GetBrokenDownDate(ti, &day, &month, &year)) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Internal error: bad toTime");
-	return GWEN_ERROR_INVALID;
-      }
-      snprintf(dbuf, sizeof(dbuf), "%04d%02d%02d", year, month+1, day);
+      snprintf(dbuf, sizeof(dbuf), "%04d%02d%02d",
+               GWEN_Date_GetYear(da),
+               GWEN_Date_GetMonth(da),
+               GWEN_Date_GetDay(da));
       GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
                            "toDate", dbuf);
     }

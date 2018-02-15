@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004-2013 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -14,7 +14,7 @@
 
 
 #include <aqbanking/job.h>
-#include "jobgettransactions_l.h"
+#include "jobgettransactions_be.h"
 
 
 #ifdef __cplusplus
@@ -25,15 +25,11 @@ extern "C" {
 typedef struct AB_JOB_GETTRANSACTIONS AB_JOB_GETTRANSACTIONS;
 struct AB_JOB_GETTRANSACTIONS {
   /* arguments */
-  GWEN_TIME *fromTime;
-  GWEN_TIME *toTime;
+  GWEN_DATE *fromDate;
+  GWEN_DATE *toDate;
 
   /* parameters */
   int maxStoreDays;
-
-  /* responses */
-  AB_TRANSACTION_LIST2 *transactions;
-  AB_ACCOUNT_STATUS_LIST2 *accountStatusList;
 };
 
 static void GWENHYWFAR_CB AB_JobGetTransactions_FreeData(void *bp, void *p);

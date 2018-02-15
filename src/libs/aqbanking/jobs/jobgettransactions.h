@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004-2013 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -14,8 +14,6 @@
 
 
 #include <aqbanking/job.h>
-#include <aqbanking/transaction.h>
-#include <aqbanking/accstatus.h>
 
 
 /** @addtogroup G_AB_JOBS_GETTRANSACTIONS
@@ -37,17 +35,6 @@ extern "C" {
 AQBANKING_API
 AB_JOB *AB_JobGetTransactions_new(AB_ACCOUNT *a);
 
-/** @deprecated */
-AQBANKING_API AQBANKING_DEPRECATED
-AB_TRANSACTION_LIST2*
-  AB_JobGetTransactions_GetTransactions(const AB_JOB *j);
-
-
-/** @deprecated */
-AQBANKING_API AQBANKING_DEPRECATED
-AB_ACCOUNT_STATUS_LIST2*
-  AB_JobGetTransactions_GetAccountStatusList(const AB_JOB *j);
-
 
 /** @name Arguments
  *
@@ -66,7 +53,7 @@ AB_ACCOUNT_STATUS_LIST2*
  * @param t "from" date
  */
 AQBANKING_API 
-  void AB_JobGetTransactions_SetFromTime(AB_JOB *j, const GWEN_TIME *t);
+  void AB_JobGetTransactions_SetFromDate(AB_JOB *j, const GWEN_DATE *dt);
 
 /**
  * Sets the last date for which you want the reports (the time doesn't
@@ -76,13 +63,13 @@ AQBANKING_API
  * @param t "to" date
  */
 AQBANKING_API 
-void AB_JobGetTransactions_SetToTime(AB_JOB *j, const GWEN_TIME *t);
+void AB_JobGetTransactions_SetToDate(AB_JOB *j, const GWEN_DATE *dt);
 
 AQBANKING_API 
-const GWEN_TIME *AB_JobGetTransactions_GetFromTime(const AB_JOB *j);
+const GWEN_DATE *AB_JobGetTransactions_GetFromDate(const AB_JOB *j);
 
 AQBANKING_API
-const GWEN_TIME *AB_JobGetTransactions_GetToTime(const AB_JOB *j);
+const GWEN_DATE *AB_JobGetTransactions_GetToDate(const AB_JOB *j);
 /*@}*/
 
 

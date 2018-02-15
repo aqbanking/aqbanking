@@ -14,8 +14,8 @@ static int EBC_Provider_MkDownloadInitRequest_H002(AB_PROVIDER *pro,
 						   GWEN_HTTP_SESSION *sess,
 						   AB_USER *u,
 						   const char *requestType,
-						   const GWEN_TIME *fromTime,
-						   const GWEN_TIME *toTime,
+						   const GWEN_DATE *fromDate,
+						   const GWEN_DATE *toDate,
 						   EB_MSG **pMsg) {
   EBC_PROVIDER *dp;
   int rv;
@@ -132,21 +132,21 @@ static int EBC_Provider_MkDownloadInitRequest_H002(AB_PROVIDER *pro,
 		  BAD_CAST "OrderAttribute",
 		  BAD_CAST "DZHNN");
   nodeXXX=xmlNewChild(nodeXX, NULL, BAD_CAST "StandardOrderParams", NULL);
-  if (fromTime || toTime) {
+  if (fromDate || toDate) {
     xmlNodePtr nodeXXXX;
-    GWEN_TIME *tempTime=NULL;
-    const GWEN_TIME *t1;
-    const GWEN_TIME *t2;
+    GWEN_DATE *tempTime=NULL;
+    const GWEN_DATE *t1;
+    const GWEN_DATE *t2;
 
-    t1=fromTime;
-    t2=toTime;
+    t1=fromDate;
+    t2=toDate;
 
     if (t1==NULL)
       /* no fromDate, use toDate for both */
       t1=t2;
     if (t2==NULL) {
       /* no toDate, use current date */
-      tempTime=GWEN_CurrentTime();
+      tempTime=GWEN_Date_CurrentDate();
       t2=tempTime;
     }
 
@@ -155,7 +155,7 @@ static int EBC_Provider_MkDownloadInitRequest_H002(AB_PROVIDER *pro,
       GWEN_BUFFER *tbuf;
 
       tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-      GWEN_Time_toString(t1, "YYYY-MM-DD", tbuf);
+      GWEN_Date_toStringWithTemplate(t1, "YYYY-MM-DD", tbuf);
       xmlNewTextChild(nodeXXXX, NULL,
 		      BAD_CAST "Start",
 		      BAD_CAST GWEN_Buffer_GetStart(tbuf));
@@ -166,14 +166,14 @@ static int EBC_Provider_MkDownloadInitRequest_H002(AB_PROVIDER *pro,
       GWEN_BUFFER *tbuf;
 
       tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-      GWEN_Time_toString(t2, "YYYY-MM-DD", tbuf);
+      GWEN_Date_toStringWithTemplate(t2, "YYYY-MM-DD", tbuf);
       xmlNewTextChild(nodeXXXX, NULL,
 		      BAD_CAST "End",
 		      BAD_CAST GWEN_Buffer_GetStart(tbuf));
       GWEN_Buffer_free(tbuf);
     }
     if (tempTime)
-      GWEN_Time_free(tempTime);
+      GWEN_Date_free(tempTime);
   }
 
   /* bank pubkey digests */
@@ -422,8 +422,8 @@ int EBC_Provider_XchgDownloadRequest_H002(AB_PROVIDER *pro,
 					  const char *requestType,
 					  GWEN_BUFFER *targetBuffer,
 					  int withReceipt,
-					  const GWEN_TIME *fromTime,
-					  const GWEN_TIME *toTime) {
+					  const GWEN_DATE *fromDate,
+					  const GWEN_DATE *toDate) {
   EBC_PROVIDER *dp;
   int rv;
   GWEN_CRYPT_TOKEN *ct;
@@ -445,7 +445,7 @@ int EBC_Provider_XchgDownloadRequest_H002(AB_PROVIDER *pro,
 
   /* create initialisation request */
   rv=EBC_Provider_MkDownloadInitRequest_H002(pro, sess, u, requestType,
-					     fromTime, toTime,
+                                             fromDate, toDate,
 					     &msg);
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);

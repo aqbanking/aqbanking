@@ -519,8 +519,8 @@ int EBC_Provider_Download(AB_PROVIDER *pro, AB_USER *u,
                           const char *rtype,
 			  GWEN_BUFFER *targetBuffer,
 			  int withReceipt,
-			  const GWEN_TIME *fromTime,
-                          const GWEN_TIME *toTime,
+			  const GWEN_DATE *fromDate,
+                          const GWEN_DATE *toDate,
                           int doLock) {
   EBC_PROVIDER *dp;
   GWEN_HTTP_SESSION *sess;
@@ -565,7 +565,7 @@ int EBC_Provider_Download(AB_PROVIDER *pro, AB_USER *u,
   /* exchange request and response */
   rv=EBC_Provider_XchgDownloadRequest(pro, sess, u,
 				      rtype, targetBuffer, withReceipt,
-				      fromTime, toTime);
+                                      fromDate, toDate);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
 	      "Error exchanging download request (%d)", rv);

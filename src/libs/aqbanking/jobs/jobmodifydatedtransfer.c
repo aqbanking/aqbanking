@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004-2013 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -14,7 +14,6 @@
 
 
 #include "jobmodifydatedtransfer.h"
-#include "jobmodifydatedtransfer_be.h"
 #include "job_l.h"
 
 #include <stdlib.h>
@@ -26,31 +25,6 @@
 
 AB_JOB *AB_JobModifyDatedTransfer_new(AB_ACCOUNT *a){
   return AB_Job_new(AB_Job_TypeModifyDatedTransfer, a);
-}
-
-
-
-void AB_JobModifyDatedTransfer_SetFieldLimits(AB_JOB *j,
-                                              AB_TRANSACTION_LIMITS *limits){
-  AB_Job_SetFieldLimits(j, limits);
-}
-
-
-
-const AB_TRANSACTION_LIMITS *AB_JobModifyDatedTransfer_GetFieldLimits(AB_JOB *j) {
-  return AB_Job_GetFieldLimits(j);
-}
-
-
-
-int AB_JobModifyDatedTransfer_SetTransaction(AB_JOB *j, const AB_TRANSACTION *t){
-  return AB_Job_SetTransaction(j, t);
-}
-
-
-
-const AB_TRANSACTION *AB_JobModifyDatedTransfer_GetTransaction(const AB_JOB *j){
-  return AB_Job_GetTransaction(j);
 }
 
 

@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue May 03 2005
- copyright   : (C) 2005-2014 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -47,8 +47,8 @@ int request(AB_BANKING *ab,
   int reqSepaSto=0;
   int reqDT=0;
   int ignoreUnsupported=0;
-  GWEN_TIME *fromTime=0;
-  GWEN_TIME *toTime=0;
+  GWEN_DATE *fromDate=0;
+  GWEN_DATE *toDate=0;
   AB_JOB_LIST2 *jobList;
   const GWEN_ARGS args[]={
   {
@@ -250,32 +250,18 @@ int request(AB_BANKING *ab,
   ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
   s=GWEN_DB_GetCharValue(db, "fromDate", 0, 0);
   if (s && *s) {
-    GWEN_BUFFER *dbuf;
-
-    dbuf=GWEN_Buffer_new(0, 32, 0, 1);
-    GWEN_Buffer_AppendString(dbuf, s);
-    GWEN_Buffer_AppendString(dbuf, "-12:00");
-    fromTime=GWEN_Time_fromUtcString(GWEN_Buffer_GetStart(dbuf),
-                                     "YYYYMMDD-hh:mm");
-    GWEN_Buffer_free(dbuf);
-    if (fromTime==0) {
+    fromDate=GWEN_Date_fromStringWithTemplate(s, "YYYYMMDD");
+    if (fromDate==NULL) {
       DBG_ERROR(0, "Invalid fromdate value \"%s\"", s);
       return 1;
     }
   }
   s=GWEN_DB_GetCharValue(db, "toDate", 0, 0);
   if (s && *s) {
-    GWEN_BUFFER *dbuf;
-
-    dbuf=GWEN_Buffer_new(0, 32, 0, 1);
-    GWEN_Buffer_AppendString(dbuf, s);
-    GWEN_Buffer_AppendString(dbuf, "-12:00");
-    toTime=GWEN_Time_fromUtcString(GWEN_Buffer_GetStart(dbuf),
-                                   "YYYYMMDD-hh:mm");
-    GWEN_Buffer_free(dbuf);
-    if (toTime==0) {
+    toDate=GWEN_Date_fromStringWithTemplate(s, "YYYYMMDD");
+    if (toDate==NULL) {
       DBG_ERROR(0, "Invalid todate value \"%s\"", s);
-      GWEN_Time_free(fromTime);
+      GWEN_Date_free(fromDate);
       return 1;
     }
   }
@@ -283,16 +269,16 @@ int request(AB_BANKING *ab,
   rv=AB_Banking_Init(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
-    GWEN_Time_free(toTime);
-    GWEN_Time_free(fromTime);
+    GWEN_Date_free(toDate);
+    GWEN_Date_free(fromDate);
     return 2;
   }
 
   rv=AB_Banking_OnlineInit(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
-    GWEN_Time_free(toTime);
-    GWEN_Time_free(fromTime);
+    GWEN_Date_free(toDate);
+    GWEN_Date_free(fromDate);
     return 2;
   }
 
@@ -394,10 +380,10 @@ int request(AB_BANKING *ab,
 	    j=AB_JobGetTransactions_new(a);
 	    rv=AB_Job_CheckAvailability(j);
             if (rv>=0) {
-              if (fromTime)
-                AB_JobGetTransactions_SetFromTime(j, fromTime);
-              if (toTime)
-                AB_JobGetTransactions_SetToTime(j, toTime);
+              if (fromDate)
+                AB_JobGetTransactions_SetFromDate(j, fromDate);
+              if (toDate)
+                AB_JobGetTransactions_SetToDate(j, toDate);
               AB_Job_List2_PushBack(jobList, j);
               requests++;
             }
@@ -418,8 +404,8 @@ int request(AB_BANKING *ab,
                 AB_Account_List2Iterator_free(ait);
                 AB_Account_List2_free(al);
                 AB_Job_List2_FreeAll(jobList);
-                GWEN_Time_free(toTime);
-                GWEN_Time_free(fromTime);
+                GWEN_Date_free(toDate);
+                GWEN_Date_free(fromDate);
                 return 3;
               }
 	    }
@@ -451,8 +437,8 @@ int request(AB_BANKING *ab,
                 AB_Account_List2Iterator_free(ait);
                 AB_Account_List2_free(al);
                 AB_Job_List2_FreeAll(jobList);
-                GWEN_Time_free(toTime);
-                GWEN_Time_free(fromTime);
+                GWEN_Date_free(toDate);
+                GWEN_Date_free(fromDate);
                 return 3;
               }
 	    }
@@ -483,8 +469,8 @@ int request(AB_BANKING *ab,
                 AB_Account_List2Iterator_free(ait);
                 AB_Account_List2_free(al);
                 AB_Job_List2_FreeAll(jobList);
-                GWEN_Time_free(toTime);
-                GWEN_Time_free(fromTime);
+                GWEN_Date_free(toDate);
+                GWEN_Date_free(fromDate);
                 return 3;
               }
 	    }
@@ -515,8 +501,8 @@ int request(AB_BANKING *ab,
                 AB_Account_List2Iterator_free(ait);
                 AB_Account_List2_free(al);
                 AB_Job_List2_FreeAll(jobList);
-                GWEN_Time_free(toTime);
-                GWEN_Time_free(fromTime);
+                GWEN_Date_free(toDate);
+                GWEN_Date_free(fromDate);
                 return 3;
               }
 	    }
@@ -547,8 +533,8 @@ int request(AB_BANKING *ab,
                 AB_Account_List2Iterator_free(ait);
                 AB_Account_List2_free(al);
                 AB_Job_List2_FreeAll(jobList);
-                GWEN_Time_free(toTime);
-                GWEN_Time_free(fromTime);
+                GWEN_Date_free(toDate);
+                GWEN_Date_free(fromDate);
                 return 3;
               }
 	    }
@@ -563,8 +549,8 @@ int request(AB_BANKING *ab,
     }
   }
   AB_Account_List2_free(al);
-  GWEN_Time_free(toTime);
-  GWEN_Time_free(fromTime);
+  GWEN_Date_free(toDate);
+  GWEN_Date_free(fromDate);
 
   if (requests) {
     AB_IMEXPORTER_CONTEXT *ctx;

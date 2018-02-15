@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -22,10 +22,7 @@
 
 #include <aqbanking/account_be.h>
 #include <aqbanking/job_be.h>
-#include <aqbanking/jobgetbalance_be.h>
-#include <aqbanking/jobgettransactions_be.h>
-#include <aqbanking/jobsingletransfer_be.h>
-#include <aqbanking/jobsingledebitnote_be.h>
+#include <aqbanking/jobgettransactions.h>
 #include <aqbanking/value.h>
 
 #include <gwenhywfar/debug.h>
@@ -334,11 +331,11 @@ int AO_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
   }
   else if (AB_Job_GetType(j)==AB_Job_TypeGetTransactions) {
     AB_JOB_LIST2_ITERATOR *jit;
-    const GWEN_TIME *tnew;
+    const GWEN_DATE *dtnew;
 
     /* check whether a getTransactions job already exists. If it does then
      * we don't have to send this job again, once is enough. */
-    tnew=AB_JobGetTransactions_GetFromTime(j);
+    dtnew=AB_JobGetTransactions_GetFromDate(j);
     jit=AB_Job_List2_First(AO_UserQueue_GetJobs(uq));
     if (jit) {
       AB_JOB *uj;
@@ -356,13 +353,13 @@ int AO_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
 	    dbCurrJob=AB_Job_GetProviderData(uj, pro);
 	    assert(dbCurrJob);
 
-	    if (tnew) {
-	      const GWEN_TIME *tcurr;
+	    if (dtnew) {
+	      const GWEN_DATE *dtcurr;
 
-	      tcurr=AB_JobGetTransactions_GetFromTime(uj);
-	      if (tcurr) {
+	      dtcurr=AB_JobGetTransactions_GetFromDate(uj);
+	      if (dtcurr) {
 		/* current job has a time */
-		if (GWEN_Time_Diff(tcurr, tnew)>0.0) {
+		if (GWEN_Date_Diff(dtcurr, dtnew)>0) {
 		  /* new time is before that of current job, replace */
 		  GWEN_DB_SetIntValue(dbCurrJob,
 				      GWEN_DB_FLAGS_OVERWRITE_VARS,

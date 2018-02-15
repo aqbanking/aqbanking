@@ -48,8 +48,8 @@ int EBC_Provider_XchgHtdRequest(AB_PROVIDER *pro,
 
 int EBC_Provider_XchgStaRequest(AB_PROVIDER *pro,
 				GWEN_HTTP_SESSION *sess,
-				const GWEN_TIME *fromTime,
-				const GWEN_TIME *toTime,
+				const GWEN_DATE *fromDate,
+				const GWEN_DATE *toDate,
 				AB_IMEXPORTER_CONTEXT *ctx);
 
 
@@ -129,8 +129,8 @@ int EBC_Provider_XchgDownloadRequest(AB_PROVIDER *pro,
 				     const char *requestType,
 				     GWEN_BUFFER *targetBuffer,
 				     int withReceipt,
-				     const GWEN_TIME *fromTime,
-				     const GWEN_TIME *toTime);
+				     const GWEN_DATE *fromDate,
+				     const GWEN_DATE *toDate);
 
 
 int EBC_Provider_MkUploadInitRequest(AB_PROVIDER *pro,

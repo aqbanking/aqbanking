@@ -58,8 +58,8 @@ AQEBICS_API int EBC_Provider_Download(AB_PROVIDER *pro, AB_USER *u,
 				      const char *rtype,
 				      GWEN_BUFFER *targetBuffer,
 				      int withReceipt,
-				      const GWEN_TIME *fromTime,
-				      const GWEN_TIME *toTime,
+				      const GWEN_DATE *fromDate,
+				      const GWEN_DATE *toDate,
 				      int doLock);
 
 AQEBICS_API int EBC_Provider_Upload(AB_PROVIDER *pro, AB_USER *u,

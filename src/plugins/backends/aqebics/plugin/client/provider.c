@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,10 +26,7 @@
 #include <aqbanking/banking_be.h>
 #include <aqbanking/account_be.h>
 #include <aqbanking/job_be.h>
-#include <aqbanking/jobgetbalance_be.h>
-#include <aqbanking/jobgettransactions_be.h>
-#include <aqbanking/jobsingletransfer_be.h>
-#include <aqbanking/jobsingledebitnote_be.h>
+#include <aqbanking/jobgettransactions.h>
 #include <aqbanking/value.h>
 #include <aqbanking/httpsession.h>
 
@@ -452,8 +449,8 @@ int EBC_Provider_ExecContext_STA(AB_PROVIDER *pro,
 
       /* exchange STA request */
       rv=EBC_Provider_XchgStaRequest(pro, sess,
-				     AB_JobGetTransactions_GetFromTime(uj),
-				     AB_JobGetTransactions_GetToTime(uj),
+				     AB_JobGetTransactions_GetFromDate(uj),
+				     AB_JobGetTransactions_GetToDate(uj),
 				     ctx);
       if (!rv) {
 	oks++;

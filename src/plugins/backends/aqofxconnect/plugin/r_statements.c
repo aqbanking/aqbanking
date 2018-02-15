@@ -68,24 +68,24 @@ int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_JOB *j,
   /* add INCTRAN element */
   GWEN_Buffer_AppendString(buf, "<INCTRAN>");
   if (AB_Job_GetType(j)==AB_Job_TypeGetTransactions) {
-    const GWEN_TIME *ti;
+    const GWEN_DATE *da;
 
-    ti=AB_JobGetTransactions_GetFromTime(j);
-    if (ti) {
+    da=AB_JobGetTransactions_GetFromDate(j);
+    if (da) {
       GWEN_Buffer_AppendString(buf, "<DTSTART>");
       if (AO_User_GetFlags(u) & AO_USER_FLAGS_SEND_SHORT_DATE)
-	GWEN_Time_toString(ti, "YYYYMMDDhhmmss", buf);
+	GWEN_Date_toStringWithTemplate(da, "YYYYMMDD000000", buf);
       else
-	GWEN_Time_toString(ti, "YYYYMMDDhhmmss.000", buf);
+	GWEN_Date_toStringWithTemplate(da, "YYYYMMDD000000.000", buf);
     }
 
-    ti=AB_JobGetTransactions_GetToTime(j);
-    if (ti) {
+    da=AB_JobGetTransactions_GetToDate(j);
+    if (da) {
       GWEN_Buffer_AppendString(buf, "<DTEND>");
       if (AO_User_GetFlags(u) & AO_USER_FLAGS_SEND_SHORT_DATE)
-	GWEN_Time_toString(ti, "YYYYMMDDhhmmss", buf);
+        GWEN_Date_toStringWithTemplate(da, "YYYYMMDD000000", buf);
       else
-	GWEN_Time_toString(ti, "YYYYMMDDhhmmss.000", buf);
+        GWEN_Date_toStringWithTemplate(da, "YYYYMMDD000000.000", buf);
     }
     GWEN_Buffer_AppendString(buf, "<INCLUDE>Y");
   }
@@ -132,18 +132,18 @@ int AO_Provider__AddCreditCardStatementReq(AB_PROVIDER *pro, AB_JOB *j,
   /* add INCTRAN element */
   GWEN_Buffer_AppendString(buf, "<INCTRAN>");
   if (AB_Job_GetType(j)==AB_Job_TypeGetTransactions) {
-    const GWEN_TIME *ti;
+    const GWEN_DATE *da;
 
-    ti=AB_JobGetTransactions_GetFromTime(j);
-    if (ti) {
+    da=AB_JobGetTransactions_GetFromDate(j);
+    if (da) {
       GWEN_Buffer_AppendString(buf, "<DTSTART>");
-      GWEN_Time_toString(ti, "YYYYMMDDhhmmss", buf);
+      GWEN_Date_toStringWithTemplate(da, "YYYYMMDD000000", buf);
     }
 
-    ti=AB_JobGetTransactions_GetToTime(j);
-    if (ti) {
+    da=AB_JobGetTransactions_GetToDate(j);
+    if (da) {
       GWEN_Buffer_AppendString(buf, "<DTEND>");
-      GWEN_Time_toString(ti, "YYYYMMDDhhmmss", buf);
+      GWEN_Date_toStringWithTemplate(da, "YYYYMMDD000000", buf);
     }
     GWEN_Buffer_AppendString(buf, "<INCLUDE>Y");
   }
@@ -195,18 +195,18 @@ int AO_Provider__AddInvStatementReq(AB_PROVIDER *pro, AB_JOB *j,
   /* add INCTRAN element */
   GWEN_Buffer_AppendString(buf, "<INCTRAN>");
   if (AB_Job_GetType(j)==AB_Job_TypeGetTransactions) {
-    const GWEN_TIME *ti;
+    const GWEN_DATE *da;
 
-    ti=AB_JobGetTransactions_GetFromTime(j);
-    if (ti) {
+    da=AB_JobGetTransactions_GetFromDate(j);
+    if (da) {
       GWEN_Buffer_AppendString(buf, "<DTSTART>");
-      GWEN_Time_toString(ti, "YYYYMMDD", buf);
+      GWEN_Date_toStringWithTemplate(da, "YYYYMMDD", buf);
     }
 
-    ti=AB_JobGetTransactions_GetToTime(j);
-    if (ti) {
+    da=AB_JobGetTransactions_GetToDate(j);
+    if (da) {
       GWEN_Buffer_AppendString(buf, "<DTEND>");
-      GWEN_Time_toString(ti, "YYYYMMDD", buf);
+      GWEN_Date_toStringWithTemplate(da, "YYYYMMDD", buf);
     }
     GWEN_Buffer_AppendString(buf, "<INCLUDE>Y");
   }
