@@ -719,15 +719,9 @@ int AB_Transaction_CheckForSepaConformity(const AB_TRANSACTION *t, int restricte
       return rv;
     }
 
+    /* no longer enforce remote BIC */
     s=AB_Transaction_GetRemoteBic(t);
-    if (!(s && *s)) {
-      if (strncmp(AB_Transaction_GetLocalIban(t),
-                  AB_Transaction_GetRemoteIban(t), 2)) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing or empty remote BIC in transaction");
-        return GWEN_ERROR_BAD_DATA;
-      }
-    }
-    else {
+    if (s && *s) {
       rv=_checkStringForAlNum(s, 0);
       if (rv<0) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in remote BIC");
