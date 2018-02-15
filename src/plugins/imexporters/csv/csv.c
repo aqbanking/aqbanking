@@ -187,7 +187,6 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 				      GWEN_DB_NODE *dbParams) {
   GWEN_DB_NODE *dbT;
   const char *dateFormat;
-  int inUtc;
   int usePosNegField;
   int splitValueInOut;
   int defaultIsPositive;
@@ -200,7 +199,6 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
   const char *s;
 
   dateFormat=GWEN_DB_GetCharValue(dbParams, "dateFormat", 0, "YYYY/MM/DD");
-  inUtc=GWEN_DB_GetIntValue(dbParams, "utc", 0, 0);
   usePosNegField=GWEN_DB_GetIntValue(dbParams, "usePosNegField", 0, 0);
   defaultIsPositive=GWEN_DB_GetIntValue(dbParams, "defaultIsPositive", 0, 1);
   posNegFieldName=GWEN_DB_GetCharValue(dbParams, "posNegFieldName", 0,
@@ -311,23 +309,23 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
         /* translate date */
         p=GWEN_DB_GetCharValue(dbT, "date", 0, 0);
         if (p) {
-          GWEN_TIME *ti;
+          GWEN_DATE *da;
   
-          ti=AB_ImExporter_DateFromString(p, dateFormat, inUtc);
-          if (ti)
-            AB_Transaction_SetDate(t, ti);
-          GWEN_Time_free(ti);
+          da=GWEN_Date_fromStringWithTemplate(p, dateFormat);
+          if (da)
+            AB_Transaction_SetDate(t, da);
+          GWEN_Date_free(da);
         }
   
         /* translate valutaDate */
         p=GWEN_DB_GetCharValue(dbT, "valutaDate", 0, 0);
         if (p) {
-          GWEN_TIME *ti;
+          GWEN_DATE *da;
   
-          ti=AB_ImExporter_DateFromString(p, dateFormat, inUtc);
-          if (ti)
-            AB_Transaction_SetValutaDate(t, ti);
-          GWEN_Time_free(ti);
+          da=GWEN_Date_fromStringWithTemplate(p, dateFormat);
+          if (da)
+            AB_Transaction_SetValutaDate(t, da);
+          GWEN_Date_free(da);
         }
 
         /* translate mandateDate */
@@ -418,33 +416,30 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 	  pv=AB_Transaction_GetValue(t);
 	  if (pv) {
 	    if (!(AB_Value_IsNegative(pv) ^ (switchOnNegative!=0))) {
-	      const GWEN_STRINGLIST *csl;
-	      GWEN_BUFFER *b1;
-	      GWEN_BUFFER *b2;
+              const char *s;
+              GWEN_BUFFER *b1;
+              GWEN_BUFFER *b2;
 
 	      /* need to switch local/remote name */
 	      b1=GWEN_Buffer_new(0, 64, 0, 1);
 	      b2=GWEN_Buffer_new(0, 64, 0, 1);
 
-	      /* get data */
-	      csl=AB_Transaction_GetRemoteName(t);
-	      if (csl && GWEN_StringList_Count(csl))
-		GWEN_Buffer_AppendString(b1, GWEN_StringList_FirstString(csl));
-	      if (AB_Transaction_GetLocalName(t))
-		GWEN_Buffer_AppendString(b2, AB_Transaction_GetLocalName(t));
+              /* get data */
+              s=AB_Transaction_GetLocalName(t);
+              if (s && *s)
+                GWEN_Buffer_AppendString(b1, s);
+              s=AB_Transaction_GetRemoteName(t);
+              if (s && *s)
+                GWEN_Buffer_AppendString(b2, s);
 
-              /* clear */
-	      AB_Transaction_ClearRemoteName(t);
-	      AB_Transaction_SetLocalName(t, NULL);
+              /* set reverse */
+              if (GWEN_Buffer_GetUsedBytes(b1))
+                AB_Transaction_SetRemoteName(t, GWEN_Buffer_GetStart(b1));
 
-              /* set reversed */
-	      if (GWEN_Buffer_GetUsedBytes(b2))
-		AB_Transaction_AddRemoteName(t, GWEN_Buffer_GetStart(b2), 0);
+              if (GWEN_Buffer_GetUsedBytes(b2))
+                AB_Transaction_SetLocalName(t, GWEN_Buffer_GetStart(b2));
 
-	      if (GWEN_Buffer_GetUsedBytes(b1))
-		AB_Transaction_SetLocalName(t, GWEN_Buffer_GetStart(b1));
-
-	      /* cleanup */
+              /* cleanup */
               GWEN_Buffer_free(b2);
 	      GWEN_Buffer_free(b1);
 	    }
@@ -520,7 +515,6 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
   GWEN_DB_NODE *dbSubParams;
   int rv;
   const char *dateFormat;
-  int inUtc;
   int usePosNegField;
   //int defaultIsPositive;
   int splitValueInOut;
@@ -536,7 +530,6 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
                                "params");
   dateFormat=GWEN_DB_GetCharValue(params, "dateFormat", 0,
 				  "YYYY/MM/DD");
-  inUtc=GWEN_DB_GetIntValue(params, "utc", 0, 0);
   usePosNegField=GWEN_DB_GetIntValue(params, "usePosNegField", 0, 0);
   //defaultIsPositive=GWEN_DB_GetIntValue(params, "defaultIsPositive", 0, 1);
   posNegFieldName=GWEN_DB_GetCharValue(params, "posNegFieldName", 0,
@@ -572,7 +565,6 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
 
     while(t) {
       GWEN_DB_NODE *dbTransaction;
-      const GWEN_TIME *ti;
       const GWEN_DATE *dt;
 
       dbTransaction=GWEN_DB_Group_new("transaction");
@@ -592,41 +584,36 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
       GWEN_DB_DeleteGroup(dbTransaction, "valutaDate");
       GWEN_DB_DeleteGroup(dbTransaction, "mandateDate");
 
-      ti=AB_Transaction_GetDate(t);
-      if (ti) {
+      dt=AB_Transaction_GetDate(t);
+      if (dt) {
 	GWEN_BUFFER *tbuf;
         int rv;
 
 	tbuf=GWEN_Buffer_new(0, 32, 0, 1);
-	if (inUtc)
-	  rv=GWEN_Time_toUtcString(ti, dateFormat, tbuf);
-	else
-	  rv=GWEN_Time_toString(ti, dateFormat, tbuf);
-	if (rv) {
+	rv=GWEN_Date_toStringWithTemplate(dt, dateFormat, tbuf);
+	if (rv<0) {
 	  DBG_WARN(AQBANKING_LOGDOMAIN, "Bad date format string/date");
 	}
 	else
 	  GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			       "date", GWEN_Buffer_GetStart(tbuf));
+                               "date", GWEN_Buffer_GetStart(tbuf));
         GWEN_Buffer_free(tbuf);
       }
 
-      ti=AB_Transaction_GetValutaDate(t);
-      if (ti) {
+      dt=AB_Transaction_GetValutaDate(t);
+      if (dt) {
 	GWEN_BUFFER *tbuf;
+        int rv;
 
 	tbuf=GWEN_Buffer_new(0, 32, 0, 1);
-	if (inUtc)
-	  rv=GWEN_Time_toUtcString(ti, dateFormat, tbuf);
-	else
-	  rv=GWEN_Time_toString(ti, dateFormat, tbuf);
-	if (rv) {
+	rv=GWEN_Date_toStringWithTemplate(dt, dateFormat, tbuf);
+	if (rv<0) {
 	  DBG_WARN(AQBANKING_LOGDOMAIN, "Bad date format string/date");
 	}
 	else
 	  GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			       "valutaDate", GWEN_Buffer_GetStart(tbuf));
-	GWEN_Buffer_free(tbuf);
+                               "valutaDate", GWEN_Buffer_GetStart(tbuf));
+        GWEN_Buffer_free(tbuf);
       }
 
       dt=AB_Transaction_GetMandateDate(t);

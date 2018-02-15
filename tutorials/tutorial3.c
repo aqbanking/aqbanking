@@ -135,17 +135,10 @@ int main(int argc, char **argv) {
 
           v=AB_Transaction_GetValue(t);
           if (v) {
-            const GWEN_STRINGLIST *sl;
             const char *purpose;
 
-            /* The purpose (memo field) might contain multiple lines.
-             * Therefore AqBanking stores the purpose in a string list
-             * of which the first entry is used in this tutorial */
-            sl=AB_Transaction_GetPurpose(t);
-            if (sl)
-              purpose=GWEN_StringList_FirstString(sl);
-            else
-              purpose="";
+            /* The purpose (memo field) might contain multiple lines. */
+            purpose=AB_Transaction_GetPurpose(t);
 
             fprintf(stderr, " %-32s (%.2f %s)\n",
                     purpose,

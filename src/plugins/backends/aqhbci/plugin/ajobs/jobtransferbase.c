@@ -25,6 +25,7 @@
 #include <gwenhywfar/text.h>
 
 #include <aqbanking/job_be.h>
+#include <aqbanking/transactionfns.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -185,7 +186,6 @@ int AH_Job_TransferBase_ExchangeParams_SepaUndated(AH_JOB *j, AB_JOB *bj,
   AB_TransactionLimits_SetMaxLenPurpose(lim, 35);
   AB_TransactionLimits_SetMaxLinesPurpose(lim, 4);
   AB_TransactionLimits_SetMaxLenRemoteName(lim, 70);
-  AB_TransactionLimits_SetMaxLinesRemoteName(lim, 1);
 
   AB_TransactionLimits_SetNeedDate(lim, -1);
 
@@ -487,7 +487,6 @@ int AH_Job_TransferBase_ExchangeResults(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CON
 
     case AB_Transaction_TypeTransfer:
     case AB_Transaction_TypeDebitNote:
-    case AB_Transaction_TypeEuTransfer:
     case AB_Transaction_TypeSepaTransfer:
     case AB_Transaction_TypeSepaDebitNote:
     case AB_Transaction_TypeInternalTransfer:

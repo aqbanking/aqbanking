@@ -154,18 +154,20 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
   pmtinf=AH_ImExporter_Sepa_PmtInf_new();
   AH_ImExporter_Sepa_PmtInf_List_Add(pmtinf, pl);
   while(t) {
-    const GWEN_TIME *ti;
+    const GWEN_DATE *da;
     int day, month, year;
     uint32_t transDate;
     const char *name=NULL, *iban=NULL, *bic=NULL, *cdtrSchmeId=NULL;
-    AB_TRANSACTION_SEQUENCETYPE sequenceType=AB_Transaction_SequenceTypeUnknown;
+    AB_TRANSACTION_SEQUENCE sequenceType=AB_Transaction_SequenceUnknown;
     const char *s;
     const AB_VALUE *tv;
 
     tcount++;
-    ti=AB_Transaction_GetDate(t);
-    if (ti) {
-      GWEN_Time_GetBrokenDownDate(ti, &day, &month, &year);
+    da=AB_Transaction_GetDate(t);
+    if (da) {
+      year=GWEN_Date_GetYear(da);
+      month=GWEN_Date_GetMonth(da)-1;
+      day=GWEN_Date_GetDay(da);
       transDate=(year<<16)+(month<<8)+(day);
     }
     else
@@ -201,8 +203,8 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
       }
     }
     if (doctype[0]==8) {
-      sequenceType=AB_Transaction_GetSequenceType(t);
-      if (sequenceType==AB_Transaction_SequenceTypeUnknown) {
+      sequenceType=AB_Transaction_GetSequence(t);
+      if (sequenceType==AB_Transaction_SequenceUnknown) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN,
 		  "Missing sequence type in transaction %d", tcount);
 	AH_ImExporter_Sepa_PmtInf_List_free(pl);
@@ -248,7 +250,7 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
       pmtinf->localName = name ? name : AB_ImExporterAccountInfo_GetOwner(ai);
       pmtinf->localIban = iban ? iban : AB_ImExporterAccountInfo_GetIban(ai);
       pmtinf->localBic  = bic  ? bic  : AB_ImExporterAccountInfo_GetBic(ai);
-      pmtinf->date=ti;               /* transaction date (AB_Transaction_GetDate()) */
+      pmtinf->date=da;               /* transaction date (AB_Transaction_GetDate()) */
       pmtinf->transDate=transDate;   /* transaction date short representation ((year<<16)+(month<<8)+(day)) */
       if (doctype[0]==8) {
 	pmtinf->sequenceType=sequenceType;

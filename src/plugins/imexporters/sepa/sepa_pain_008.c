@@ -25,7 +25,7 @@ int AH_ImExporterSEPA_Export_Pain_008(AB_IMEXPORTER *ie,
   /* generate PmtInf blocks */
   pmtinf=AH_ImExporter_Sepa_PmtInf_List_First(pl);
   while(pmtinf) {
-    const GWEN_TIME *tti;
+    const GWEN_DATE *tda;
     GWEN_XMLNODE *nn;
     AB_TRANSACTION *t;
     AB_TRANSACTION_LIST2_ITERATOR *it;
@@ -95,16 +95,16 @@ int AH_ImExporterSEPA_Export_Pain_008(AB_IMEXPORTER *ie,
       }
 
       switch(pmtinf->sequenceType) {
-      case AB_Transaction_SequenceTypeOnce:
+      case AB_Transaction_SequenceOnce:
         GWEN_XMLNode_SetCharValue(nn, "SeqTp", "OOFF");
         break;
-      case AB_Transaction_SequenceTypeFirst:
+      case AB_Transaction_SequenceFirst:
         GWEN_XMLNode_SetCharValue(nn, "SeqTp", "FRST");
         break;
-      case AB_Transaction_SequenceTypeFollowing:
+      case AB_Transaction_SequenceFollowing:
         GWEN_XMLNode_SetCharValue(nn, "SeqTp", "RCUR");
         break;
-      case AB_Transaction_SequenceTypeFinal:
+      case AB_Transaction_SequenceFinal:
         GWEN_XMLNode_SetCharValue(nn, "SeqTp", "FNAL");
         break;
       default:
@@ -117,12 +117,12 @@ int AH_ImExporterSEPA_Export_Pain_008(AB_IMEXPORTER *ie,
     }
 
     /* create "ReqdColltnDt" */
-    tti=pmtinf->date;
-    if (tti) {
+    tda=pmtinf->date;
+    if (tda) {
       GWEN_BUFFER *tbuf;
 
       tbuf=GWEN_Buffer_new(0, 64, 0, 1);
-      GWEN_Time_toString(tti, "YYYY-MM-DD", tbuf);
+      GWEN_Date_toStringWithTemplate(tda, "YYYY-MM-DD", tbuf);
       GWEN_XMLNode_SetCharValue(n, "ReqdColltnDt", GWEN_Buffer_GetStart(tbuf));
       GWEN_Buffer_free(tbuf);
     }
@@ -342,21 +342,18 @@ int AH_ImExporterSEPA_Export_Pain_008(AB_IMEXPORTER *ie,
 	/* create "Dbtr" */
 	nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "Dbtr");
 	if (nnn) {
-	  const GWEN_STRINGLIST *sl;
-	  const char *s=NULL;
+          const char *s;
 
 	  GWEN_XMLNode_AddChild(nn, nnn);
-	  sl=AB_Transaction_GetRemoteName(t);
-	  if (sl)
-	    s=GWEN_StringList_FirstString(sl);
-	  if (!s) {
-	    DBG_ERROR(AQBANKING_LOGDOMAIN, "No remote name");
-	    AB_Transaction_List2Iterator_free(it);
-	    AH_ImExporter_Sepa_PmtInf_List_free(pl);
-	    return GWEN_ERROR_BAD_DATA;
-	  }
-	  GWEN_XMLNode_SetCharValue(nnn, "Nm", s);
-	}
+	  s=AB_Transaction_GetRemoteName(t);
+          if (!(s && *s)) {
+            DBG_ERROR(AQBANKING_LOGDOMAIN, "No remote name");
+            AB_Transaction_List2Iterator_free(it);
+            AH_ImExporter_Sepa_PmtInf_List_free(pl);
+            return GWEN_ERROR_BAD_DATA;
+          }
+          GWEN_XMLNode_SetCharValue(nnn, "Nm", s);
+        }
 
 	/* create "DbtrAcct" */
 	nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "DbtrAcct");
@@ -387,36 +384,22 @@ int AH_ImExporterSEPA_Export_Pain_008(AB_IMEXPORTER *ie,
 	/* create "RmtInf" */
 	nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "RmtInf");
 	if (nnn) {
-	  const GWEN_STRINGLIST *sl;
 	  GWEN_BUFFER *tbuf;
 
 	  GWEN_XMLNode_AddChild(nn, nnn);
 
-	  tbuf=GWEN_Buffer_new(0, 140, 0, 1);
-	  sl=AB_Transaction_GetPurpose(t);
-	  if (sl) {
-	    GWEN_STRINGLISTENTRY *se;
+          s=AB_Transaction_GetPurpose(t);
+          if (!(s && *s)) {
+            DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing purpose in transaction");
+            AB_Transaction_List2Iterator_free(it);
+            AH_ImExporter_Sepa_PmtInf_List_free(pl);
+            return GWEN_ERROR_BAD_DATA;
+          }
 
-	    se=GWEN_StringList_FirstEntry(sl);
-	    while(se) {
-	      s=GWEN_StringListEntry_Data(se);
-	      assert(s);
-	      if (GWEN_Buffer_GetUsedBytes(tbuf))
-		GWEN_Buffer_AppendByte(tbuf, ' ');
-	      GWEN_Buffer_AppendString(tbuf, s);
-	      se=GWEN_StringListEntry_Next(se);
-	    }
-	    if (GWEN_Buffer_GetUsedBytes(tbuf)>140)
-	      GWEN_Buffer_Crop(tbuf, 0, 140);
-	  }
-
-	  if (GWEN_Buffer_GetUsedBytes(tbuf)<1) {
-	    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing purpose in transaction");
-	    GWEN_Buffer_free(tbuf);
-	    AB_Transaction_List2Iterator_free(it);
-	    AH_ImExporter_Sepa_PmtInf_List_free(pl);
-	    return GWEN_ERROR_BAD_DATA;
-	  }
+          tbuf=GWEN_Buffer_new(0, 140, 0, 1);
+          GWEN_Buffer_AppendString(tbuf, s);
+          if (GWEN_Buffer_GetUsedBytes(tbuf)>140)
+            GWEN_Buffer_Crop(tbuf, 0, 140);
 
 	  GWEN_XMLNode_SetCharValue(nnn, "Ustrd", GWEN_Buffer_GetStart(tbuf));
 

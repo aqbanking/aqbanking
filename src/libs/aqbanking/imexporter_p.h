@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -20,8 +17,9 @@
 
 #include "imexporter_l.h"
 #include "account_l.h"
-#include "transaction_l.h"
 #include "accstatus_l.h"
+
+#include <aqbanking/transaction.h>
 
 #include <gwenhywfar/misc.h>
 

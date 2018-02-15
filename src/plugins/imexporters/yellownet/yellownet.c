@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: openhbci1.c 566 2005-08-23 06:25:03Z aquamaniac $
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -216,23 +213,50 @@ GWEN_TIME *AB_ImExporterYN__ReadTime(AB_IMEXPORTER *ie,
 
 
 
+GWEN_DATE *AB_ImExporterYN__ReadDate(AB_IMEXPORTER *ie, GWEN_XMLNODE *node, int value) {
+  GWEN_XMLNODE *n;
+  GWEN_DATE *da=NULL;
+
+  n=GWEN_XMLNode_GetNodeByXPath(node, "C507", GWEN_PATH_FLAGS_NAMEMUSTEXIST);
+  if (n) {
+    GWEN_XMLNODE *nn;
+    int v=0;
+
+    nn=GWEN_XMLNode_FindFirstTag(n, "D_2005", 0, 0);
+    if (nn)
+      v=atoi(GWEN_XMLNode_GetProperty(nn, "Value", "0"));
+
+    if (value==0 || v==value) {
+      const char *s;
+
+      s=GWEN_XMLNode_GetCharValue(n, "D_2380", 0);
+      if (s)
+	da=GWEN_Date_fromStringWithTemplate(s, "YYYYMMDD");
+    }
+  }
+
+  return da;
+}
+
+
+
 AB_TRANSACTION *AB_ImExporterYN__ReadLNE_LNS(AB_IMEXPORTER *ie,
                                              AB_IMEXPORTER_ACCOUNTINFO *ai,
                                              GWEN_XMLNODE *node) {
     AB_TRANSACTION *t;
     GWEN_XMLNODE *nn;
-    GWEN_TIME *ti=0;
-    AB_VALUE *val=0;
+    GWEN_DATE *da=NULL;
+    AB_VALUE *val=NULL;
 
     t=AB_Transaction_new();
 
     /* get date */
     nn=GWEN_XMLNode_FindFirstTag(node, "DTM", 0, 0);
     if (nn)
-      ti=AB_ImExporterYN__ReadTime(ie, nn, 209);
-    AB_Transaction_SetValutaDate(t, ti);
-    GWEN_Time_free(ti);
-    ti=0;
+      da=AB_ImExporterYN__ReadDate(ie, nn, 209);
+    AB_Transaction_SetValutaDate(t, da);
+    GWEN_Date_free(da);
+    da=NULL;
 
     /* read amount */
     nn=GWEN_XMLNode_FindFirstTag(node, "MOA", 0, 0);
@@ -278,7 +302,7 @@ AB_TRANSACTION *AB_ImExporterYN__ReadLNE_LNS(AB_IMEXPORTER *ie,
 
             xbuf=GWEN_Buffer_new(0, 256, 0, 1);
             AB_ImExporter_Iso8859_1ToUtf8(s, strlen(s), xbuf);
-            AB_Transaction_AddPurpose(t, GWEN_Buffer_GetStart(xbuf), 0);
+            AB_Transaction_AddPurposeLine(t, GWEN_Buffer_GetStart(xbuf));
             GWEN_Buffer_free(xbuf);
           }
         }

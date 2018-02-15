@@ -1,8 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
  begin       : Mon Jan 07 2008
- copyright   : (C) 2008 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
  copyright   : (C) 2013 by Paul Conrady
  email       : c.p.conrady@gmail.com
@@ -23,7 +21,8 @@
 #include "g_ignore_l.h"
 #include "g_invtran_l.h"
 #include "g_secid_l.h"
-#include "types/transaction.h"
+
+#include <aqbanking/transaction.h>
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
@@ -167,7 +166,7 @@ int AIO_OfxGroup_REINVEST_AddData(AIO_OFX_GROUP *g, const char *data) {
           GWEN_Buffer_free(buf);
           return GWEN_ERROR_BAD_DATA;
         }
-        AB_Transaction_SetUnitPrice(xg->transaction, v);
+        AB_Transaction_SetUnitPriceValue(xg->transaction, v);
         AB_Value_free(v);
       }
       else if (strcasecmp(xg->currentElement, "TOTAL")==0) {

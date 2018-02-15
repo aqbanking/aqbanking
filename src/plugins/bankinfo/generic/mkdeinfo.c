@@ -21,7 +21,7 @@
 #include <gwenhywfar/fastbuffer.h>
 #include <gwenhywfar/syncio_file.h>
 
-#include "../../../libs/aqbanking/types/bankinfo_l.h"
+#include <aqbanking/bankinfo.h>
 
 #ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQOFXCONNECT
 # include <aqofxconnect/user.h>

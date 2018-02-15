@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,12 +26,12 @@ struct AH_IMEXPORTER_SEPA_PMTINF {
   int tcount;
   AB_VALUE *value;
   char *ctrlsum;
-  const GWEN_TIME *date;
+  const GWEN_DATE *date;
   uint32_t transDate;
   const char *localName;
   const char *localIban;
   const char *localBic;
-  AB_TRANSACTION_SEQUENCETYPE sequenceType;
+  AB_TRANSACTION_SEQUENCE sequenceType;
   const char *creditorSchemeId;
   AB_TRANSACTION_LIST2 *transactions;
 };

@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -54,6 +54,9 @@ static
 GWEN_TIME *AB_ImExporterYN__ReadTime(AB_IMEXPORTER *ie,
                                      GWEN_XMLNODE *node,
                                      int value);
+
+static
+GWEN_DATE *AB_ImExporterYN__ReadDate(AB_IMEXPORTER *ie, GWEN_XMLNODE *node, int value);
 
 static
 AB_IMEXPORTER_ACCOUNTINFO*
