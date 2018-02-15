@@ -32,6 +32,8 @@ sources:
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 
+built_sources:
+
 
 # Build and link a test program to verify the linker flags
 noinst_PROGRAMS = testlibcc
