@@ -36,6 +36,7 @@
                8 .  Using Your Own Profiles for Im-/Exporters
                9.   Thanks
                10.  Translation
+               11.  Changes from AqBanking 5.x to 6.x
 
 
 
@@ -406,5 +407,41 @@ This will create the necessary *.pot and *.po files, the latter should then be
 translated.
 
 
-Martin Preuss, Wilhelmshaven/Germany, 2016/12/11
+
+11.  Changes from AqBanking 5.x to 6.x
+======================================
+
+These are the major changes which need to be followed by applications when using
+AqBanking 6:
+- AB_TRANSACTION:
+  - remoteName:                changed type from GWEN_STRINGLIST to simple char*
+  - purpose:                   changed type from GWEN_STRINGLIST to simple char* (lines separated by "\n")
+  - date:                      changed type from GWEN_TIME to GWEN_DATE
+  - valutaDate:                changed type from GWEN_TIME to GWEN_DATE
+  - firstExecutionDate:        renamed to firstDate (usd in a more generic way)
+  - lastExecutionDate:         renamed to lastDate (usd in a more generic way)
+  - unitPrice:                 renamed to unitPriceValue (because there is also unitPriceDate)
+  - commission:                renamed to commissionValue
+  - sequenceType:              renamed to sequence
+
+  - addPurpose():              changed to addPurposeLine()
+  - addRemoteName():           removed -> use AB_Transaction_SetRemoteName()
+  
+
+- AB_TRANSACTION_LIMITS
+  - valuesTextKey:             removed
+  - maxLinesRemoteName:        removed
+  - valuesCycleMonth:          changed type from GWEN_STRINGLIST to array of uint8_t
+  - valuesExecutionDayMonth:   changed type from GWEN_STRINGLIST to array of uint8_t
+  - valuesCycleWeek:           changed type from GWEN_STRINGLIST to array of uint8_t
+  - valuesExecutionDayWeek:    changed type from GWEN_STRINGLIST to array of uint8_t
+
+- AB_TRANSACTION_TYPE
+  - euTransfer:                removed
+
+- AB_TRANSACTION_SEQUENCETYPE: renamed to AB_TRANSACTION_SEQUENCE
+
+
+Martin Preuss, Wilhelmshaven/Germany, 2018/02/15
+
 
