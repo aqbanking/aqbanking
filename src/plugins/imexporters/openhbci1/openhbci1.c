@@ -139,10 +139,8 @@ int AH_ImExporterOpenHBCI1__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 					    GWEN_DB_NODE *dbParams) {
   GWEN_DB_NODE *dbBanks;
   const char *dateFormat;
-  int inUtc;
 
   dateFormat=GWEN_DB_GetCharValue(dbParams, "dateFormat", 0, "YYYYMMDD");
-  inUtc=GWEN_DB_GetIntValue(dbParams, "utc", 0, 0);
 
   dbBanks=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "bank");
   if (dbBanks) {
@@ -201,14 +199,14 @@ int AH_ImExporterOpenHBCI1__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 	      p=GWEN_DB_GetCharValue(dbT, "description", i, 0);
 	      if (!p)
 		break;
-	      AB_Transaction_AddPurpose(t, p, 0);
+	      AB_Transaction_AddPurposeLine(t, p);
 	    }
 
 	    for (i=0; ; i++) {
 	      p=GWEN_DB_GetCharValue(dbT, "otherName", i, 0);
 	      if (!p)
 		break;
-	      AB_Transaction_AddRemoteName(t, p, 0);
+	      AB_Transaction_SetRemoteName(t, p);
 	    }
 
 	    p=GWEN_DB_GetCharValue(dbT, "customerReference", 0, 0);
@@ -234,23 +232,23 @@ int AH_ImExporterOpenHBCI1__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 	    /* translate date */
 	    p=GWEN_DB_GetCharValue(dbT, "date", 0, 0);
 	    if (p) {
-	      GWEN_TIME *ti;
+	      GWEN_DATE *da;
 
-              ti=AB_ImExporter_DateFromString(p, dateFormat, inUtc);
-              if (ti)
-		AB_Transaction_SetDate(t, ti);
-	      GWEN_Time_free(ti);
+              da=GWEN_Date_fromStringWithTemplate(p, dateFormat);
+              if (da)
+		AB_Transaction_SetDate(t, da);
+	      GWEN_Date_free(da);
 	    }
       
 	    /* translate valutaDate */
 	    p=GWEN_DB_GetCharValue(dbT, "valutaDate", 0, 0);
 	    if (p) {
-	      GWEN_TIME *ti;
-      
-              ti=AB_ImExporter_DateFromString(p, dateFormat, inUtc);
-              if (ti)
-		AB_Transaction_SetValutaDate(t, ti);
-	      GWEN_Time_free(ti);
+	      GWEN_DATE *da;
+
+              da=GWEN_Date_fromStringWithTemplate(p, dateFormat);
+              if (da)
+		AB_Transaction_SetValutaDate(t, da);
+	      GWEN_Date_free(da);
 	    }
       
 	    DBG_NOTICE(AQBANKING_LOGDOMAIN, "Adding transaction");
@@ -308,7 +306,6 @@ int AH_ImExporterOpenHBCI1_Export(AB_IMEXPORTER *ie,
   GWEN_DB_NODE *dbSubParams;
   int rv;
   const char *dateFormat;
-  int inUtc;
 
   assert(ie);
   ieh=GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AH_IMEXPORTER_OPENHBCI1, ie);
@@ -319,7 +316,6 @@ int AH_ImExporterOpenHBCI1_Export(AB_IMEXPORTER *ie,
                                "params");
   dateFormat=GWEN_DB_GetCharValue(params, "dateFormat", 0,
 				  "YYYY/MM/DD");
-  inUtc=GWEN_DB_GetIntValue(params, "utc", 0, 0);
 
   /* create db, store transactions in it */
   dbData=GWEN_DB_Group_new("transactions");
@@ -330,7 +326,7 @@ int AH_ImExporterOpenHBCI1_Export(AB_IMEXPORTER *ie,
     t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
     while(t) {
       GWEN_DB_NODE *dbTransaction;
-      const GWEN_TIME *ti;
+      const GWEN_DATE *da;
 
       dbTransaction=GWEN_DB_Group_new("transaction");
       rv=AB_Transaction_toDb(t, dbTransaction);
@@ -348,17 +344,14 @@ int AH_ImExporterOpenHBCI1_Export(AB_IMEXPORTER *ie,
       GWEN_DB_DeleteGroup(dbTransaction, "date");
       GWEN_DB_DeleteGroup(dbTransaction, "valutaDate");
 
-      ti=AB_Transaction_GetDate(t);
-      if (ti) {
+      da=AB_Transaction_GetDate(t);
+      if (da) {
 	GWEN_BUFFER *tbuf;
         int rv;
 
 	tbuf=GWEN_Buffer_new(0, 32, 0, 1);
-	if (inUtc)
-	  rv=GWEN_Time_toUtcString(ti, dateFormat, tbuf);
-	else
-	  rv=GWEN_Time_toString(ti, dateFormat, tbuf);
-	if (rv) {
+        rv=GWEN_Date_toStringWithTemplate(da, dateFormat, tbuf);
+        if (rv) {
 	  DBG_WARN(AQBANKING_LOGDOMAIN, "Bad date format string/date");
 	}
 	else
@@ -367,22 +360,19 @@ int AH_ImExporterOpenHBCI1_Export(AB_IMEXPORTER *ie,
         GWEN_Buffer_free(tbuf);
       }
 
-      ti=AB_Transaction_GetValutaDate(t);
-      if (ti) {
+      da=AB_Transaction_GetValutaDate(t);
+      if (da) {
 	GWEN_BUFFER *tbuf;
 
 	tbuf=GWEN_Buffer_new(0, 32, 0, 1);
-	if (inUtc)
-	  rv=GWEN_Time_toUtcString(ti, dateFormat, tbuf);
-	else
-	  rv=GWEN_Time_toString(ti, dateFormat, tbuf);
-	if (rv) {
-	  DBG_WARN(AQBANKING_LOGDOMAIN, "Bad date format string/date");
-	}
-	else
-	  GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			       "valutaDate", GWEN_Buffer_GetStart(tbuf));
-	GWEN_Buffer_free(tbuf);
+        rv=GWEN_Date_toStringWithTemplate(da, dateFormat, tbuf);
+        if (rv) {
+          DBG_WARN(AQBANKING_LOGDOMAIN, "Bad date format string/date");
+        }
+        else
+          GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                               "valutaDate", GWEN_Buffer_GetStart(tbuf));
+        GWEN_Buffer_free(tbuf);
       }
 
       /* add transaction db */

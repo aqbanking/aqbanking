@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Sat Dec 10 2011
-    copyright   : (C) 2011 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -709,7 +709,7 @@ int AH_HHD14_AddChallengeParams_20(AH_JOB *j, int numTransfers, const AB_VALUE *
 int AH_HHD14_AddChallengeParams_23(AH_JOB *j,
                                    const AB_VALUE *vAmount,
                                    const char *sRemoteIban,
-                                   const GWEN_TIME *ti) {
+                                   const GWEN_DATE *da) {
   /* P1: Betrag */
   if (vAmount) {
     GWEN_BUFFER *tbuf;
@@ -729,11 +729,11 @@ int AH_HHD14_AddChallengeParams_23(AH_JOB *j,
   }
 
   /* P3: Termin */
-  if (ti) {
+  if (da) {
     GWEN_BUFFER *tbuf;
 
     tbuf=GWEN_Buffer_new(0, 64, 0, 1);
-    GWEN_Time_toString(ti, "YYYYMMDD", tbuf);
+    GWEN_Date_toStringWithTemplate(da, "YYYYMMDD", tbuf);
     AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_free(tbuf);
   }
@@ -751,9 +751,9 @@ int AH_HHD14_AddChallengeParams_23(AH_JOB *j,
 int AH_HHD14_AddChallengeParams_29(AH_JOB *j,
                                    const AB_VALUE *vAmount,
                                    const char *sRemoteIban,
-                                   const GWEN_TIME *ti) {
+                                   const GWEN_DATE *da) {
   /* same as 23 */
-  return AH_HHD14_AddChallengeParams_23(j, vAmount, sRemoteIban, ti);
+  return AH_HHD14_AddChallengeParams_23(j, vAmount, sRemoteIban, da);
 }
 
 
@@ -762,7 +762,7 @@ int AH_HHD14_AddChallengeParams_32(AH_JOB *j,
                                    int transferCount,
                                    const AB_VALUE *vAmount,
                                    const char *sLocalIban,
-                                   const GWEN_TIME *ti) {
+                                   const GWEN_DATE *da) {
   char numBuf[32];
 
   /* P1: Anzahl */
@@ -796,11 +796,11 @@ int AH_HHD14_AddChallengeParams_32(AH_JOB *j,
   AH_Job_AddChallengeParam(j, "");
 
   /* P5: Termin */
-  if (ti) {
+  if (da) {
     GWEN_BUFFER *tbuf;
 
     tbuf=GWEN_Buffer_new(0, 64, 0, 1);
-    GWEN_Time_toString(ti, "YYYYMMDD", tbuf);
+    GWEN_Date_toStringWithTemplate(da, "YYYYMMDD", tbuf);
     AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_free(tbuf);
   }

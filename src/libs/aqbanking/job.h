@@ -212,6 +212,7 @@ typedef enum {
 
 #include <aqbanking/account.h>
 #include <aqbanking/transaction.h>
+#include <aqbanking/transactionlimits.h>
 
 
 #ifdef __cplusplus

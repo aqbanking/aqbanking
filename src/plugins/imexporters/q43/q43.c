@@ -217,7 +217,7 @@ int AH_ImExporterQ43_ReadDocument(AB_IMEXPORTER *ie,
       }
 
       case 22: {
-	GWEN_TIME *ti;
+	GWEN_DATE *da;
         AB_VALUE *v;
 	int y, m, d;
 	char amount[32];
@@ -253,13 +253,13 @@ int AH_ImExporterQ43_ReadDocument(AB_IMEXPORTER *ie,
 	  y+=1900;
 	else
           y+=2000;
-	ti=GWEN_Time_new(y, m-1, d, 12, 0, 0, 1);
-	if (ti==NULL) {
+        da=GWEN_Date_fromGregorian(y, m, d);
+        if (da==NULL) {
 	  DBG_WARN(AQBANKING_LOGDOMAIN, "Invalid booking date in record %02d, ignoring", code);
 	}
 	else {
-	  AB_Transaction_SetDate(t, ti);
-	  GWEN_Time_free(ti);
+	  AB_Transaction_SetDate(t, da);
+          GWEN_Date_free(da);
 	}
 
 	/* extract valuta date */
@@ -270,13 +270,13 @@ int AH_ImExporterQ43_ReadDocument(AB_IMEXPORTER *ie,
 	  y+=1900;
 	else
           y+=2000;
-	ti=GWEN_Time_new(y, m-1, d, 12, 0, 0, 1);
-	if (ti==NULL) {
+        da=GWEN_Date_fromGregorian(y, m, d);
+	if (da==NULL) {
 	  DBG_WARN(AQBANKING_LOGDOMAIN, "Invalid valuta date in record %02d, ignoring", code);
 	}
 	else {
-	  AB_Transaction_SetValutaDate(t, ti);
-	  GWEN_Time_free(ti);
+	  AB_Transaction_SetValutaDate(t, da);
+          GWEN_Date_free(da);
 	}
 
 	/* get amount */
@@ -336,14 +336,14 @@ int AH_ImExporterQ43_ReadDocument(AB_IMEXPORTER *ie,
 	GWEN_Buffer_AppendBytes(tbuf, p+4, 38);
 	GWEN_Text_CondenseBuffer(tbuf);
         if (GWEN_Buffer_GetUsedBytes(tbuf))
-	  AB_Transaction_AddPurpose(t, GWEN_Buffer_GetStart(tbuf), 0);
+	  AB_Transaction_AddPurposeLine(t, GWEN_Buffer_GetStart(tbuf));
 	GWEN_Buffer_Reset(tbuf);
 
 	/* comment 2 */
 	GWEN_Buffer_AppendBytes(tbuf, p+42, 38);
 	GWEN_Text_CondenseBuffer(tbuf);
 	if (GWEN_Buffer_GetUsedBytes(tbuf))
-	  AB_Transaction_AddPurpose(t, GWEN_Buffer_GetStart(tbuf), 0);
+	  AB_Transaction_AddPurposeLine(t, GWEN_Buffer_GetStart(tbuf));
         GWEN_Buffer_free(tbuf);
 	break;
       }

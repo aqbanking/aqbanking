@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -24,6 +24,7 @@
 #include <aqbanking/banking_be.h>
 #include <aqbanking/msgengine.h>
 #include <aqbanking/banking_be.h>
+#include <aqbanking/transaction.h>
 #include "i18n_l.h"
 
 #include <sys/types.h>
@@ -240,10 +241,8 @@ int AB_ImExporterERI2__HandleRec1(GWEN_DB_NODE *dbT,
                                   AB_TRANSACTION *t) {
   const char *p;
   const char *dateFormat;
-  int inUtc;
 
   dateFormat = GWEN_DB_GetCharValue(dbParams, "dateFormat", 0, "YYMMDD");
-  inUtc = GWEN_DB_GetIntValue(dbParams, "utc", 0, 0);
 
   /* strip leading zeroes from localaccountnumber
      can be removed when lfiller="48" does what I expect from i */
@@ -283,23 +282,23 @@ int AB_ImExporterERI2__HandleRec1(GWEN_DB_NODE *dbT,
   /* translate date */
   p = GWEN_DB_GetCharValue(dbT, "date", 0, 0);
   if (p) {
-    GWEN_TIME *ti;
+    GWEN_DATE *da;
 
-    ti = AB_ImExporter_DateFromString(p, dateFormat, inUtc);
-    if (ti)
-      AB_Transaction_SetDate(t, ti);
-    GWEN_Time_free(ti);
+    da = GWEN_Date_fromStringWithTemplate(p, dateFormat);
+    if (da)
+      AB_Transaction_SetDate(t, da);
+    GWEN_Date_free(da);
   }
   
   /* translate valutaDate */
   p = GWEN_DB_GetCharValue(dbT, "valutaDate", 0, 0);
   if (p) {
-    GWEN_TIME *ti;
+    GWEN_DATE *da;
   
-    ti = AB_ImExporter_DateFromString(p, dateFormat, inUtc);
-    if (ti)
-      AB_Transaction_SetValutaDate(t, ti);
-    GWEN_Time_free(ti);
+    da = GWEN_Date_fromStringWithTemplate(p, dateFormat);
+    if (da)
+      AB_Transaction_SetValutaDate(t, da);
+    GWEN_Date_free(da);
   }
   
   /* possibly translate value */
@@ -367,7 +366,7 @@ int AB_ImExporterERI2__HandleRec1(GWEN_DB_NODE *dbT,
 void AB_ImExporterERI2__AddPurpose(AB_TRANSACTION *t, const char *s) {
 
   if (strlen(s) > 0)
-    AB_Transaction_AddPurpose(t, s, 0);
+    AB_Transaction_AddPurposeLine(t, s);
 
 }
 

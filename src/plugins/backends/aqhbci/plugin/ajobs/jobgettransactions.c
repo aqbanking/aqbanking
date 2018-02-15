@@ -522,8 +522,8 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
     if (dbXA) {
       GWEN_DB_NODE *dbT;
       GWEN_DB_NODE *dbV;
-      GWEN_TIME *date;
-      GWEN_TIME *valutaDate;
+      GWEN_DATE *date;
+      GWEN_DATE *valutaDate;
       const char *p;
       const char *ref;
       int i;
@@ -539,14 +539,14 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
         /* read date (Buchungsdatum) */
         p=GWEN_DB_GetCharValue(dbT, "date", 0, 0);
         if (p)
-          date=GWEN_Time_fromString(p, "YYYYMMDD");
+          date=GWEN_Date_fromStringWithTemplate(p, "YYYYMMDD");
         else
           date=NULL;
 
         /* read valutaData (Umsatzdatum) */
         p=GWEN_DB_GetCharValue(dbT, "valutaDate", 0, 0);
         if (p)
-          valutaDate=GWEN_Time_fromString(p, "YYYYMMDD");
+          valutaDate=GWEN_Date_fromStringWithTemplate(p, "YYYYMMDD");
         else
           valutaDate=NULL;
 
@@ -602,14 +602,14 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
         AB_Transaction_SetValutaDate(t, valutaDate);
         AB_Transaction_SetDate(t, date);
         AB_Transaction_SetValue(t, v2);
-        AB_Transaction_SetPurpose(t, purpose);
+        AB_Transaction_SetPurposeFromStringList(t, purpose);
         DBG_INFO(AQHBCI_LOGDOMAIN, "Adding transaction");
         AB_ImExporterAccountInfo_AddTransaction(ai, t);
 
         GWEN_StringList_free(purpose);
         AB_Value_free(v2);
-        GWEN_Time_free(date);
-        GWEN_Time_free(valutaDate);
+        GWEN_Date_free(date);
+        GWEN_Date_free(valutaDate);
 
         dbT = GWEN_DB_FindNextGroup(dbT, "entries");
       } //while (dbT)

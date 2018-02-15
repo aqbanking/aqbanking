@@ -246,10 +246,8 @@ int EBC_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j) {
     lim=AB_TransactionLimits_new();
     AB_TransactionLimits_SetMaxLenPurpose(lim, 27);
     AB_TransactionLimits_SetMaxLenRemoteName(lim, 27);
-    AB_TransactionLimits_SetMaxLinesRemoteName(lim, 1);
     AB_TransactionLimits_SetMaxLinesPurpose(lim, 2);
 
-    AB_TransactionLimits_AddValuesTextKey(lim, "51", 0);
     AB_Job_SetFieldLimits(j, lim);
     AB_TransactionLimits_free(lim);
 
@@ -262,10 +260,8 @@ int EBC_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j) {
     lim=AB_TransactionLimits_new();
     AB_TransactionLimits_SetMaxLenPurpose(lim, 27);
     AB_TransactionLimits_SetMaxLenRemoteName(lim, 27);
-    AB_TransactionLimits_SetMaxLinesRemoteName(lim, 1);
     AB_TransactionLimits_SetMaxLinesPurpose(lim, 2);
 
-    AB_TransactionLimits_AddValuesTextKey(lim, "05", 0);
     AB_Job_SetFieldLimits(j, lim);
     AB_TransactionLimits_free(lim);
 
@@ -588,7 +584,6 @@ int EBC_Provider_ExecContext__IZV(AB_PROVIDER *pro,
     assert(uj);
     while(uj) {
       AB_TRANSACTION *t;
-      const GWEN_STRINGLIST *sl;
       const char *s;
       const AB_VALUE *v;
 
@@ -608,10 +603,7 @@ int EBC_Provider_ExecContext__IZV(AB_PROVIDER *pro,
       AB_Transaction_SetGroupId(t, groupId);
 
       AB_ImExporterAccountInfo_AddTransaction(ai, AB_Transaction_dup(t));
-      sl=AB_Transaction_GetRemoteName(t);
-      s=NULL;
-      if (sl)
-	s=GWEN_StringList_FirstString(sl);
+      s=AB_Transaction_GetRemoteName(t);
       if (!s)
 	s=I18N("unknown");
       GWEN_Buffer_AppendString(logbuf, s);
@@ -626,10 +618,7 @@ int EBC_Provider_ExecContext__IZV(AB_PROVIDER *pro,
 	s="??????????";
       GWEN_Buffer_AppendString(logbuf, s);
       GWEN_Buffer_AppendString(logbuf, "\t");
-      sl=AB_Transaction_GetPurpose(t);
-      s=NULL;
-      if (sl)
-	s=GWEN_StringList_FirstString(sl);
+      s=AB_Transaction_GetPurpose(t);
       if (!s)
 	s="";
       GWEN_Buffer_AppendString(logbuf, s);

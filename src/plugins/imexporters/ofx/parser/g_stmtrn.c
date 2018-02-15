@@ -258,30 +258,30 @@ int AIO_OfxGroup_STMTRN_AddData(AIO_OFX_GROUP *g, const char *data) {
 	}
       }
       else if (strcasecmp(xg->currentElement, "DTPOSTED")==0) {
-	GWEN_TIME *ti;
+	GWEN_DATE *da;
 
-	ti=GWEN_Time_fromString(s, "YYYYMMDD");
-	if (ti==NULL) {
+        da=GWEN_Date_fromStringWithTemplate(s, "YYYYMMDD");
+        if (da==NULL) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
-		    "Invalid data for DTPOSTED: [%s]", s);
+                    "Invalid data for DTPOSTED: [%s]", s);
 	  GWEN_Buffer_free(buf);
           return GWEN_ERROR_BAD_DATA;
 	}
-	AB_Transaction_SetValutaDate(xg->transaction, ti);
-        GWEN_Time_free(ti);
+	AB_Transaction_SetValutaDate(xg->transaction, da);
+        GWEN_Date_free(da);
       }
       else if (strcasecmp(xg->currentElement, "DTUSER")==0) {
-	GWEN_TIME *ti;
+        GWEN_DATE *da;
 
-	ti=GWEN_Time_fromString(s, "YYYYMMDD");
-	if (ti==NULL) {
+        da=GWEN_Date_fromStringWithTemplate(s, "YYYYMMDD");
+	if (da==NULL) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
 		    "Invalid data for DTUSER: [%s]", s);
 	  GWEN_Buffer_free(buf);
 	  return GWEN_ERROR_BAD_DATA;
 	}
-	AB_Transaction_SetDate(xg->transaction, ti);
-	GWEN_Time_free(ti);
+	AB_Transaction_SetDate(xg->transaction, da);
+        GWEN_Date_free(da);
       }
       else if (strcasecmp(xg->currentElement, "DTAVAIL")==0) {
         /* ignore */
@@ -314,11 +314,11 @@ int AIO_OfxGroup_STMTRN_AddData(AIO_OFX_GROUP *g, const char *data) {
         /* ignore */
       }
       else if (strcasecmp(xg->currentElement, "NAME")==0) {
-	AB_Transaction_AddRemoteName(xg->transaction, s, 1);
+        AB_Transaction_SetRemoteName(xg->transaction, s);
       }
       else if (strcasecmp(xg->currentElement, "MEMO")==0 ||
 	       strcasecmp(xg->currentElement, "MEMO2")==0) {
-	AB_Transaction_AddPurpose(xg->transaction, s, 1);
+	AB_Transaction_AddPurposeLine(xg->transaction, s);
       }
       else if (strcasecmp(xg->currentElement, "SRVRTID")==0 ||
 	       strcasecmp(xg->currentElement, "SRVRTID2")==0) {

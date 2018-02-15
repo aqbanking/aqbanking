@@ -144,7 +144,7 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, AB_JOB_TYPE *jobType
   AB_TRANSACTION *t;
   const char *s;
   int i;
-  GWEN_TIME *d;
+  GWEN_DATE *d;
   AB_TRANSACTION_PERIOD period=AB_Transaction_PeriodUnknown;
 
   *jobType=AB_Job_TypeTransfer; // single transfer
@@ -188,7 +188,7 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, AB_JOB_TYPE *jobType
     if (!s)
       break;
     if (*s)
-      AB_Transaction_AddRemoteName(t, s, 0);
+      AB_Transaction_SetRemoteName(t, s);
   }
   if (i<1) {
     DBG_ERROR(0, "No remote name given");
@@ -202,7 +202,7 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, AB_JOB_TYPE *jobType
     if (!s)
       break;
     if (*s)
-      AB_Transaction_AddPurpose(t, s, 0);
+      AB_Transaction_AddPurposeLine(t, s);
   }
   if (i<1) {
     DBG_ERROR(0, "No purpose given");
@@ -243,16 +243,15 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, AB_JOB_TYPE *jobType
     dbuf=GWEN_Buffer_new(0, 32, 0, 1);
     GWEN_Buffer_AppendString(dbuf, s);
     GWEN_Buffer_AppendString(dbuf, "-00:00");
-    d=GWEN_Time_fromUtcString(GWEN_Buffer_GetStart(dbuf),
-                                     "YYYYMMDD-hh:mm");
+    d=GWEN_Date_fromStringWithTemplate(GWEN_Buffer_GetStart(dbuf), "YYYYMMDD");
     GWEN_Buffer_free(dbuf);
-    if (d==0) {
+    if (d==NULL) {
       DBG_ERROR(0, "Invalid execution date value \"%s\"", s);
       AB_Transaction_free(t);
       return 0;
     }
     AB_Transaction_SetDate(t, d);
-    GWEN_Time_free(d);
+    GWEN_Date_free(d);
     *jobType=AB_Job_TypeCreateDatedTransfer;
     return t;
   }
@@ -265,16 +264,15 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, AB_JOB_TYPE *jobType
     dbuf=GWEN_Buffer_new(0, 32, 0, 1);
     GWEN_Buffer_AppendString(dbuf, s);
     GWEN_Buffer_AppendString(dbuf, "-00:00");
-    d=GWEN_Time_fromUtcString(GWEN_Buffer_GetStart(dbuf),
-                                     "YYYYMMDD-hh:mm");
+    d=GWEN_Date_fromStringWithTemplate(GWEN_Buffer_GetStart(dbuf), "YYYYMMDD");
     GWEN_Buffer_free(dbuf);
     if (d==0) {
       DBG_ERROR(0, "Invalid first execution date value \"%s\"", s);
       AB_Transaction_free(t);
       return 0;
     }
-    AB_Transaction_SetFirstExecutionDate(t, d);
-    GWEN_Time_free(d);
+    AB_Transaction_SetFirstDate(t, d);
+    GWEN_Date_free(d);
   } else
     return t; // single transfer
 
@@ -286,16 +284,15 @@ AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, AB_JOB_TYPE *jobType
     dbuf=GWEN_Buffer_new(0, 32, 0, 1);
     GWEN_Buffer_AppendString(dbuf, s);
     GWEN_Buffer_AppendString(dbuf, "-00:00");
-    d=GWEN_Time_fromUtcString(GWEN_Buffer_GetStart(dbuf),
-                                     "YYYYMMDD-hh:mm");
+    d=GWEN_Date_fromStringWithTemplate(GWEN_Buffer_GetStart(dbuf), "YYYYMMDD");
     GWEN_Buffer_free(dbuf);
     if (d==0) {
       DBG_ERROR(0, "Invalid last execution date value \"%s\"", s);
       AB_Transaction_free(t);
       return 0;
     }
-    AB_Transaction_SetLastExecutionDate(t, d);
-    GWEN_Time_free(d);
+    AB_Transaction_SetLastDate(t, d);
+    GWEN_Date_free(d);
   }
 
   s=GWEN_DB_GetCharValue(db, "executionPeriod", 0, 0);
@@ -343,7 +340,7 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
   AB_TRANSACTION *t;
   const char *s;
   int i;
-  GWEN_TIME *d;
+  GWEN_DATE *d;
 
   assert(a);
   assert(db);
@@ -391,7 +388,7 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
     if (!s)
       break;
     if (*s)
-      AB_Transaction_AddRemoteName(t, s, 0);
+      AB_Transaction_SetRemoteName(t, s);
   }
   if (i<1) {
     DBG_ERROR(0, "No remote name given");
@@ -405,7 +402,7 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
     if (!s)
       break;
     if (*s)
-      AB_Transaction_AddPurpose(t, s, 0);
+      AB_Transaction_AddPurposeLine(t, s);
   }
   if (i<1) {
     DBG_ERROR(0, "No purpose given");
@@ -449,8 +446,7 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
     dbuf=GWEN_Buffer_new(0, 32, 0, 1);
     GWEN_Buffer_AppendString(dbuf, s);
     GWEN_Buffer_AppendString(dbuf, "-00:00");
-    d=GWEN_Time_fromUtcString(GWEN_Buffer_GetStart(dbuf),
-                                     "YYYYMMDD-hh:mm");
+    d=GWEN_Date_fromStringWithTemplate(GWEN_Buffer_GetStart(dbuf), "YYYYMMDD");
     GWEN_Buffer_free(dbuf);
     if (d==0) {
       DBG_ERROR(0, "Invalid execution date value \"%s\"", s);
@@ -458,7 +454,7 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
       return NULL;
     }
     AB_Transaction_SetDate(t, d);
-    GWEN_Time_free(d);
+    GWEN_Date_free(d);
   }
 
   /* standing orders */
@@ -486,16 +482,15 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
     dbuf=GWEN_Buffer_new(0, 32, 0, 1);
     GWEN_Buffer_AppendString(dbuf, s);
     GWEN_Buffer_AppendString(dbuf, "-00:00");
-    d=GWEN_Time_fromUtcString(GWEN_Buffer_GetStart(dbuf),
-                                     "YYYYMMDD-hh:mm");
+    d=GWEN_Date_fromStringWithTemplate(GWEN_Buffer_GetStart(dbuf), "YYYYMMDD");
     GWEN_Buffer_free(dbuf);
     if (d==0) {
       DBG_ERROR(0, "Invalid first or next execution date value \"%s\"", s);
       AB_Transaction_free(t);
       return NULL;
     }
-    AB_Transaction_SetFirstExecutionDate(t, d); /*next execution date, too */
-    GWEN_Time_free(d);
+    AB_Transaction_SetFirstDate(t, d); /*next execution date, too */
+    GWEN_Date_free(d);
   }
 
   s=GWEN_DB_GetCharValue(db, "lastExecutionDate", 0, 0);
@@ -505,16 +500,15 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
     dbuf=GWEN_Buffer_new(0, 32, 0, 1);
     GWEN_Buffer_AppendString(dbuf, s);
     GWEN_Buffer_AppendString(dbuf, "-00:00");
-    d=GWEN_Time_fromUtcString(GWEN_Buffer_GetStart(dbuf),
-                                     "YYYYMMDD-hh:mm");
+    d=GWEN_Date_fromStringWithTemplate(GWEN_Buffer_GetStart(dbuf), "YYYYMMDD");
     GWEN_Buffer_free(dbuf);
     if (d==0) {
       DBG_ERROR(0, "Invalid last execution date value \"%s\"", s);
       AB_Transaction_free(t);
       return NULL;
     }
-    AB_Transaction_SetLastExecutionDate(t, d);
-    GWEN_Time_free(d);
+    AB_Transaction_SetLastDate(t, d);
+    GWEN_Date_free(d);
   }
 
   if (expTransferType==AB_Job_TypeSepaCreateStandingOrder ||
@@ -615,11 +609,11 @@ AB_TRANSACTION *mkSepaDebitNote(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
 
   s=GWEN_DB_GetCharValue(db, "sequenceType", 0, "once");
   if (s && *s) {
-    AB_TRANSACTION_SEQUENCETYPE st;
+    AB_TRANSACTION_SEQUENCE st;
 
-    st=AB_Transaction_SequenceType_fromString(s);
-    if (st!=AB_Transaction_SequenceTypeUnknown)
-      AB_Transaction_SetSequenceType(t, st);
+    st=AB_Transaction_Sequence_fromString(s);
+    if (st!=AB_Transaction_SequenceUnknown)
+      AB_Transaction_SetSequence(t, st);
     else {
       DBG_ERROR(0, "Unknown sequence type [%s]", s);
       AB_Transaction_free(t);
@@ -627,7 +621,7 @@ AB_TRANSACTION *mkSepaDebitNote(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
     }
   }
   else
-    AB_Transaction_SetSequenceType(t, AB_Transaction_SequenceTypeOnce);
+    AB_Transaction_SetSequence(t, AB_Transaction_SequenceOnce);
 
   return t;
 }

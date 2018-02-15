@@ -28,6 +28,7 @@
 
 #include <aqbanking/jobsepatransfer_be.h>
 #include <aqbanking/job_be.h>
+#include <aqbanking/transactionfns.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -81,15 +82,19 @@ int AH_Job_SepaStandingOrderCreate_ExchangeParams(AH_JOB *j, AB_JOB *bj,
   AB_TransactionLimits_SetMaxLenPurpose(lim, 35);
   AB_TransactionLimits_SetMaxLinesPurpose(lim, 4);
   AB_TransactionLimits_SetMaxLenRemoteName(lim, 70);
-  AB_TransactionLimits_SetMaxLinesRemoteName(lim, 1);
 
   /* get specific limits for creation of standing orders */
+  AB_TransactionLimits_PresetValuesCycleMonth(lim, 0);
   s=GWEN_DB_GetCharValue(dbParams, "AllowedTurnusMonths", 0, 0);
   if (s && *s) {
+    int j=0;
+
     AB_TransactionLimits_SetAllowMonthly(lim, 1);
     while(*s) {
       char buf[3];
       const char *x;
+      int rv;
+      int d;
 
       buf[2]=0;
       strncpy(buf, s, 2);
@@ -97,70 +102,100 @@ int AH_Job_SepaStandingOrderCreate_ExchangeParams(AH_JOB *j, AB_JOB *bj,
       if (*x=='0')
         x++;
 
-      AB_TransactionLimits_AddValuesCycleMonth(lim, x, 0);
+      rv=sscanf(x, "%d", &d);
+      if (rv!=1) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
+      }
+      else
+        AB_TransactionLimits_SetValuesCycleMonthAt(lim, j++, d);
       s+=2;
     } /* while */
-    GWEN_StringList_Sort(AB_TransactionLimits_GetValuesCycleMonth(lim),
-                         1, GWEN_StringList_SortModeInt);
   }
   else
     AB_TransactionLimits_SetAllowMonthly(lim, -1);
 
+  AB_TransactionLimits_PresetValuesExecutionDayMonth(lim, 0);
   s=GWEN_DB_GetCharValue(dbParams, "AllowedMonthDays", 0, 0);
   if (s && *s) {
+    int j=0;
+
     while(*s) {
       char buf[3];
       const char *x;
+      int rv;
+      int d;
 
       buf[2]=0;
       strncpy(buf, s, 2);
       x=buf;
       if (*x=='0')
         x++;
-      AB_TransactionLimits_AddValuesExecutionDayMonth(lim, x, 0);
+
+      rv=sscanf(x, "%d", &d);
+      if (rv!=1) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
+      }
+      else
+        AB_TransactionLimits_SetValuesExecutionDayMonthAt(lim, j++, d);
       s+=2;
     } /* while */
-    GWEN_StringList_Sort(AB_TransactionLimits_GetValuesExecutionDayMonth(lim),
-                         1, GWEN_StringList_SortModeInt);
   }
 
+  AB_TransactionLimits_PresetValuesCycleWeek(lim, 0);
   s=GWEN_DB_GetCharValue(dbParams, "AllowedTurnusWeeks", 0, 0);
   if (s && *s) {
+    int j=0;
+
     AB_TransactionLimits_SetAllowWeekly(lim, 1);
     while(*s) {
       char buf[3];
       const char *x;
+      int rv;
+      int d;
 
       buf[2]=0;
       strncpy(buf, s, 2);
       x=buf;
       if (*x=='0')
         x++;
-      AB_TransactionLimits_AddValuesCycleWeek(lim, x, 0);
+
+      rv=sscanf(x, "%d", &d);
+      if (rv!=1) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
+      }
+      else
+        AB_TransactionLimits_SetValuesCycleWeekAt(lim, j++, d);
       s+=2;
     } /* while */
-    GWEN_StringList_Sort(AB_TransactionLimits_GetValuesCycleWeek(lim),
-                         1, GWEN_StringList_SortModeInt);
   }
   else
     AB_TransactionLimits_SetAllowWeekly(lim, -1);
 
+  AB_TransactionLimits_PresetValuesExecutionDayWeek(lim, 0);
   s=GWEN_DB_GetCharValue(dbParams, "AllowedWeekDays", 0, 0);
   if (s && *s) {
+    int j=0;
+
     while(*s) {
       char buf[2];
       const char *x;
+      int rv;
+      int d;
 
       buf[0]=*s;
       buf[1]=0;
       x=buf;
       if (*x=='0')
         x++;
-      AB_TransactionLimits_AddValuesExecutionDayWeek(lim, x, 0);
+
+      rv=sscanf(x, "%d", &d);
+      if (rv!=1) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
+      }
+      else
+        AB_TransactionLimits_SetValuesExecutionDayWeekAt(lim, j++, d);
       s++;
     } /* while */
-    GWEN_StringList_Sort(AB_TransactionLimits_GetValuesExecutionDayWeek(lim),
-                         1, GWEN_StringList_SortModeInt);
   }
 
   i=GWEN_DB_GetIntValue(dbParams, "minDelay", 0, 0);
@@ -313,7 +348,7 @@ int AH_Job_SepaStandingOrderCreate_Prepare(AH_JOB *j) {
   GWEN_DB_NODE *dbArgs;
   GWEN_DB_NODE *profile;
   int rv;
-  const GWEN_TIME *ti;
+  const GWEN_DATE *da;
   const char *s;
   AB_TRANSACTION *t;
 
@@ -343,12 +378,12 @@ int AH_Job_SepaStandingOrderCreate_Prepare(AH_JOB *j) {
   }
 
   /* first execution date */
-  ti=AB_Transaction_GetFirstExecutionDate(t);
-  if (ti) {
+  da=AB_Transaction_GetFirstDate(t);
+  if (da) {
     GWEN_BUFFER *tbuf;
 
     tbuf=GWEN_Buffer_new(0, 16, 0, 1);
-    GWEN_Time_toString(ti, "YYYYMMDD", tbuf);
+    GWEN_Date_toStringWithTemplate(da, "YYYYMMDD", tbuf);
     GWEN_DB_SetCharValue(dbArgs,
                          GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "details/xfirstExecutionDate",

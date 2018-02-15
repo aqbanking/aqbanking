@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2009 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -13,59 +13,46 @@
 
 
 void AB_Banking__fillTransactionRemoteInfo(AB_TRANSACTION *t) {
-  const GWEN_STRINGLIST *sl;
+    const char *s;
 
-  sl=AB_Transaction_GetPurpose(t);
-  if (sl) {
-    GWEN_STRINGLISTENTRY *se;
+  s=AB_Transaction_GetPurpose(t);
+  if (s && *s) {
+    if (-1!=GWEN_Text_ComparePattern(s, "KTO* BLZ*", 0)) {
+      char *cpy;
+      char *p;
+      char *kto;
+      char *blz;
 
-    se=GWEN_StringList_FirstEntry(sl);
-    while(se) {
-      const char *s;
+      cpy=strdup(s);
+      p=cpy;
 
-      s=GWEN_StringListEntry_Data(se);
-      if (-1!=GWEN_Text_ComparePattern(s, "KTO* BLZ*", 0)) {
-	char *cpy;
-	char *p;
-	char *kto;
-	char *blz;
+      /* skip "KTO", position to account number */
+      while(*p && !isdigit(*p))
+	p++;
+      kto=p;
 
-	cpy=strdup(s);
-	p=cpy;
+      /* skip account number */
+      while(*p && isdigit(*p))
+	p++;
+      /* terminate account number */
+      *(p++)=0;
 
-	/* skip "KTO", position to account number */
-	while(*p && !isdigit(*p))
-	  p++;
-	kto=p;
+      /* skip "BLZ", position to account number */
+      while(*p && !isdigit(*p))
+	p++;
+      blz=p;
 
-	/* skip account number */
-	while(*p && isdigit(*p))
-	  p++;
-	/* terminate account number */
-	*(p++)=0;
+      /* skip bank code */
+      while(*p && isdigit(*p))
+	p++;
+      /* terminate bank code */
+      *p=0;
 
-	/* skip "BLZ", position to account number */
-	while(*p && !isdigit(*p))
-	  p++;
-	blz=p;
-
-	/* skip bank code */
-	while(*p && isdigit(*p))
-	  p++;
-	/* terminate bank code */
-	*p=0;
-
-	if (*kto && *blz) {
-	  AB_Transaction_SetRemoteAccountNumber(t, kto);
-	  AB_Transaction_SetRemoteBankCode(t, blz);
-	  free(cpy);
-	  break;
-	}
-	else
-	  free(cpy);
+      if (*kto && *blz) {
+	AB_Transaction_SetRemoteAccountNumber(t, kto);
+	AB_Transaction_SetRemoteBankCode(t, blz);
       }
-
-      se=GWEN_StringListEntry_Next(se);
+      free(cpy);
     }
   }
 }

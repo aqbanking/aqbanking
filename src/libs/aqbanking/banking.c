@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004-2013 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -23,6 +23,8 @@
 #include "i18n_l.h"
 #include "country_l.h"
 #include "userfns_l.h"
+
+#include <aqbanking/transactionfns.h>
 
 #include <gwenhywfar/version.h>
 #include <gwenhywfar/gwenhywfar.h>

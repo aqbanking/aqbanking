@@ -685,7 +685,7 @@ int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
 
     }
 
-    AB_Transaction_AddPurpose(t, GWEN_Buffer_GetStart(pbuf), 0);
+    AB_Transaction_AddPurposeLine(t, GWEN_Buffer_GetStart(pbuf));
     GWEN_Buffer_free(pbuf);
 
     dbT=GWEN_DB_GetNextGroup(dbT);
@@ -949,13 +949,13 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
     t=AB_Transaction_new();
     s=GWEN_DB_GetCharValue(dbT, "L_TIMESTAMP", 0, NULL);
     if (s && *s) {
-      GWEN_TIME *ti;
+      GWEN_DATE *da;
 
-      ti=GWEN_Time_fromUtcString(s, "YYYY-MM-DDThh:mm:ssZ");
-      if (ti) {
-        AB_Transaction_SetDate(t, ti);
-	AB_Transaction_SetValutaDate(t, ti);
-	GWEN_Time_free(ti);
+      da=GWEN_Date_fromStringWithTemplate(s, "YYYY-MM-DD");
+      if (da) {
+        AB_Transaction_SetDate(t, da);
+        AB_Transaction_SetValutaDate(t, da);
+        GWEN_Date_free(da);
       }
       else {
 	DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Invalid timespec [%s]", s);
@@ -985,7 +985,7 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
 
     s=GWEN_DB_GetCharValue(dbT, "L_NAME", 0, NULL);
     if (s && *s)
-      AB_Transaction_AddRemoteName(t, s, 0);
+      AB_Transaction_SetRemoteName(t, s);
 
     s=GWEN_DB_GetCharValue(dbT, "L_TRANSACTIONID", 0, NULL);
     if (s && *s)

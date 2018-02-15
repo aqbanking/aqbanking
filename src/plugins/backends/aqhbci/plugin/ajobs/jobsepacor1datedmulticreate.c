@@ -135,7 +135,6 @@ int AH_Job_SepaCor1DebitDatedMultiCreate_ExchangeParams(AH_JOB *j, AB_JOB *bj,
   lim=AB_TransactionLimits_new();
   AB_TransactionLimits_SetMaxLenPurpose(lim, 35);
   AB_TransactionLimits_SetMaxLenRemoteName(lim, 70);
-  AB_TransactionLimits_SetMaxLinesRemoteName(lim, 1);
   AB_TransactionLimits_SetMaxLinesPurpose(lim, 4);
 
   AB_TransactionLimits_SetNeedDate(lim, 1);

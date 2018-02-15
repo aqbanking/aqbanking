@@ -128,33 +128,33 @@ int AIO_OfxGroup_INVTRAN_AddData(AIO_OFX_GROUP *g, const char *data) {
         AB_Transaction_SetFiId(xg->transaction, s);
       }  
       else if (strcasecmp(xg->currentElement, "DTTRADE")==0) {
-        GWEN_TIME *ti;
+        GWEN_DATE *da;
 
-        ti=GWEN_Time_fromString(s, "YYYYMMDD");
-        if (ti==NULL) {
+        da=GWEN_Date_fromStringWithTemplate(s, "YYYYMMDD");
+        if (da==NULL) {
           DBG_ERROR(AQBANKING_LOGDOMAIN,
                     "Invalid data for DTTRADE: [%s]", s);
           GWEN_Buffer_free(buf);
           return GWEN_ERROR_BAD_DATA;
         }
-        AB_Transaction_SetValutaDate(xg->transaction, ti);
-        GWEN_Time_free(ti);
+        AB_Transaction_SetValutaDate(xg->transaction, da);
+        GWEN_Date_free(da);
       }
       else if (strcasecmp(xg->currentElement, "DTSETTLE")==0) {
-        GWEN_TIME *ti;
+        GWEN_DATE *da;
 
-        ti=GWEN_Time_fromString(s, "YYYYMMDD");
-        if (ti==NULL) {
+        da=GWEN_Date_fromStringWithTemplate(s, "YYYYMMDD");
+        if (da==NULL) {
           DBG_ERROR(AQBANKING_LOGDOMAIN,
                     "Invalid data for DTSETTLE: [%s]", s);
           GWEN_Buffer_free(buf);
           return GWEN_ERROR_BAD_DATA;
         }
-        AB_Transaction_SetDate(xg->transaction, ti);
-        GWEN_Time_free(ti);
+        AB_Transaction_SetDate(xg->transaction, da);
+        GWEN_Date_free(da);
       }
       else if (strcasecmp(xg->currentElement, "MEMO")==0) {
-        AB_Transaction_AddPurpose(xg->transaction, s, 1);
+        AB_Transaction_AddPurposeLine(xg->transaction, s);
       }
       else {
         DBG_INFO(AQBANKING_LOGDOMAIN,

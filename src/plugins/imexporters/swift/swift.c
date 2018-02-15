@@ -216,11 +216,10 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 	int i;
 
         //DBG_ERROR(AQBANKING_LOGDOMAIN, "Replacing remote name with ABWA value [%s]", s);
-	AB_Transaction_ClearRemoteName(t);
 	for (i=0; i<2; i++) {
 	  s=GWEN_DB_GetCharValue(dbT, "sepa/ABWA", i, NULL);
 	  if (s && *s) {
-	    AB_Transaction_AddRemoteName(t, s, 0);
+	    AB_Transaction_SetRemoteName(t, s);
 	  }
 	}
       }

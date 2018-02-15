@@ -1,8 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
  begin       : Mon Jan 07 2008
- copyright   : (C) 2008 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
  copyright   : (C) 2013 by Paul Conrady
  email       : c.p.conrady@gmail.com
@@ -23,7 +21,8 @@
 #include "g_ignore_l.h"
 #include "g_invtran_l.h"
 #include "g_secid_l.h"
-#include "types/transaction.h"
+
+#include <aqbanking/transaction.h>
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
