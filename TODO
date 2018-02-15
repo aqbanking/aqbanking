@@ -3,7 +3,7 @@ Mid-term
 ========
 
 - types/*.xml: convert to typemaker2
-- remove job for EU transfers (no longer needed
+- remove job for EU transfers (no longer needed)
 
 
 Long-term
@@ -53,6 +53,10 @@ CAVEATS:
     - forceSslv3
     - noBase64
     - omitSmsAccount
+
+
+- send a local branch under the same name to server:
+  "git push -u origin HEAD"
 
 
 Test
