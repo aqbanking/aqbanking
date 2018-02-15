@@ -782,7 +782,6 @@ int EBC_Provider_ExecContext(AB_PROVIDER *pro,
   case AB_Job_TypeDebitNote:
     rv=EBC_Provider_ExecContext_IZV(pro, ctx, u, a, sess, ectx);
     break;
-  case AB_Job_TypeEuTransfer:
   case AB_Job_TypeInternalTransfer:
   default:
       rv=GWEN_ERROR_NOT_IMPLEMENTED;

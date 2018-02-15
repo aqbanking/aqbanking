@@ -161,8 +161,6 @@ typedef enum {
   AB_Job_TypeTransfer,
   /** issue a debit note (Lastschrift) */
   AB_Job_TypeDebitNote,
-  /** EU transfer (transfer within the EMU zone) */
-  AB_Job_TypeEuTransfer,
   /** retrieve list of standing orders for an online account */
   AB_Job_TypeGetStandingOrders,
   /** retrieve list of dated transfers for an online account */

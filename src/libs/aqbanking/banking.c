@@ -60,7 +60,6 @@
 #include "jobgetstandingorders.h"
 #include "jobsingletransfer.h"
 #include "jobsingledebitnote.h"
-#include "jobeutransfer.h"
 #include "jobgetdatedtransfers.h"
 
 

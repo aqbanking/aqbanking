@@ -12,7 +12,6 @@ noinst_HEADERS=\
  jobgetstandingorders_p.h \
  jobgetdatedtransfers_p.h \
  jobgetbalance_p.h \
- jobeutransfer_p.h \
  jobcreatesto_l.h \
  jobgetbalance_l.h \
  jobgettransactions_l.h \
@@ -28,7 +27,6 @@ noinst_HEADERS=\
  jobmodifydatedtransfer_l.h \
  jobdeletedatedtransfer_l.h \
  jobinternaltransfer_l.h \
- jobeutransfer_l.h \
  jobloadcellphone_l.h \
  jobloadcellphone_p.h \
  jobsepacreatesto.h \
@@ -68,8 +66,6 @@ iheader_HEADERS= \
  jobdeletedatedtransfer_be.h \
  jobinternaltransfer.h \
  jobinternaltransfer_be.h \
- jobeutransfer.h \
- jobeutransfer_be.h \
  jobloadcellphone.h \
  jobloadcellphone_be.h \
  jobsepagetstandingorders.h
@@ -91,7 +87,6 @@ libjobs_la_SOURCES=\
  jobmodifydatedtransfer.c \
  jobdeletedatedtransfer.c \
  jobinternaltransfer.c \
- jobeutransfer.c \
  jobloadcellphone.c \
  jobsepacreatesto.c \
  jobsepagetstandingorders.c \

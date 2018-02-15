@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004-2013 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -24,7 +24,6 @@
 #include "jobs/jobgetbalance_l.h"
 #include "jobs/jobsingletransfer_l.h"
 #include "jobs/jobsingledebitnote_l.h"
-#include "jobs/jobeutransfer_l.h"
 #include "jobs/jobsepatransfer_l.h"
 #include "jobs/jobcreatesto_l.h"
 #include "jobs/jobmodifysto_l.h"
@@ -245,7 +244,6 @@ const char *AB_Job_Type2Char(AB_JOB_TYPE i) {
   case AB_Job_TypeGetTransactions:         s="gettransactions"; break;
   case AB_Job_TypeTransfer:                s="transfer"; break;
   case AB_Job_TypeDebitNote:               s="debitnote"; break;
-  case AB_Job_TypeEuTransfer:              s="eutransfer"; break;
   case AB_Job_TypeGetStandingOrders:       s="getstandingorders"; break;
   case AB_Job_TypeGetDatedTransfers:       s="getdatedtransfers"; break;
   case AB_Job_TypeCreateStandingOrder:     s="createstandingorder"; break;
@@ -280,7 +278,6 @@ const char *AB_Job_Type2LocalChar(AB_JOB_TYPE i) {
   case AB_Job_TypeGetTransactions:         s=I18N("Get Transactions"); break;
   case AB_Job_TypeTransfer:                s=I18N("Transfer"); break;
   case AB_Job_TypeDebitNote:               s=I18N("Debit Note"); break;
-  case AB_Job_TypeEuTransfer:              s=I18N("EU Transfer"); break;
   case AB_Job_TypeGetStandingOrders:       s=I18N("Get Standing Orders"); break;
   case AB_Job_TypeGetDatedTransfers:       s=I18N("Get Dated Transfers"); break;
   case AB_Job_TypeCreateStandingOrder:     s=I18N("Create Standing Order"); break;
@@ -318,8 +315,6 @@ AB_JOB_TYPE AB_Job_Char2Type(const char *s) {
     i=AB_Job_TypeTransfer;
   else if (strcasecmp(s, "debitnote")==0)
     i=AB_Job_TypeDebitNote;
-  else if (strcasecmp(s, "eutransfer")==0)
-    i=AB_Job_TypeEuTransfer;
   else if (strcasecmp(s, "getstandingorders")==0)
     i=AB_Job_TypeGetStandingOrders;
   else if (strcasecmp(s, "getdatedtransfers")==0)
@@ -340,8 +335,10 @@ AB_JOB_TYPE AB_Job_Char2Type(const char *s) {
     i=AB_Job_TypeInternalTransfer;
   else if (strcasecmp(s, "loadCellPhone")==0)
     i=AB_Job_TypeLoadCellPhone;
-  else if (strcasecmp(s, "sepaTransfer")==0) i=AB_Job_TypeSepaTransfer;
-  else if (strcasecmp(s, "sepaDebitNote")==0) i=AB_Job_TypeSepaDebitNote;
+  else if (strcasecmp(s, "sepaTransfer")==0)
+    i=AB_Job_TypeSepaTransfer;
+  else if (strcasecmp(s, "sepaDebitNote")==0)
+    i=AB_Job_TypeSepaDebitNote;
 
   else i=AB_Job_TypeUnknown;
 
