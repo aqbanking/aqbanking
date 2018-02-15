@@ -53,6 +53,7 @@ debug
 depcomp
 headers
 aqbanking5
+aqbanking6
 i18nsources
 index.lokalize
 install-sh

@@ -722,12 +722,12 @@ AC_SUBST(gmp_libs)
 aqbanking_internal_libs="${abs_top_builddir}/src/libs/aqbanking/libaqbanking.la"
 aqbanking_ldflags="-L\${libdir}"
 aqbanking_libs="-laqbanking"
-aqbanking_includes="-I\${includedir}/aqbanking5"
-aqbanking_headerdir_am="\$(includedir)/aqbanking5"
-aqbanking_headerdir="\${includedir}/aqbanking5"
+aqbanking_includes="-I\${includedir}/aqbanking6"
+aqbanking_headerdir_am="\$(includedir)/aqbanking6"
+aqbanking_headerdir="\${includedir}/aqbanking6"
 aqbanking_plugindir="\${libdir}/aqbanking/plugins/${AQBANKING_SO_EFFECTIVE}"
 aqbanking_pkgdatadir="\${datadir}/aqbanking"
-aqbanking_symlinkdir="\$(top_builddir)/aqbanking5"
+aqbanking_symlinkdir="\$(top_builddir)/aqbanking6"
 
 case "$OS_TYPE" in
     posix)
@@ -1072,7 +1072,7 @@ if test "$enable_fulldoc" = "yes"; then
         DOXYGEN_FILE_PATTERNS="*.h *.hpp *.c *.cpp"
 else
 	DOXYGEN_DEFINE="DOXYGEN_HIDE"
-	DOXYGEN_INPUT="listdoc.h aqbanking5"
+	DOXYGEN_INPUT="listdoc.h aqbanking6"
         DOXYGEN_FILE_PATTERNS="*.h *.hpp"
 fi
 AC_SUBST(DOXYGEN_INPUT)
