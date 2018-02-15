@@ -441,6 +441,9 @@ AqBanking 6:
 
 - AB_TRANSACTION_SEQUENCETYPE: renamed to AB_TRANSACTION_SEQUENCE
 
+- AB_JobGetTransactions:
+  - setFromTime():             renamed to setFromDate(), changed arg type from GWEN_TIME to GWEN_DATE
+  - setToTime():               renamed to setToDate(), changed arg type from GWEN_TIME to GWEN_DATE
 
 Martin Preuss, Wilhelmshaven/Germany, 2018/02/15
 
