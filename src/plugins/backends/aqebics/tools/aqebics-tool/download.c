@@ -209,22 +209,22 @@ int download(AB_BANKING *ab,
     return 3;
   }
   else {
-    GWEN_TIME *tiFrom=NULL;
-    GWEN_TIME *tiTo=NULL;
+    GWEN_DATE *daFrom=NULL;
+    GWEN_DATE *daTo=NULL;
     GWEN_BUFFER *destBuffer;
 
     if (fromTime) {
-      tiFrom=GWEN_Time_fromString(fromTime, "YYYYMMDD-hh:mm");
-      if (tiFrom==NULL) {
-	fprintf(stderr, "ERROR: Invalid fromDate (use \"YYYYMMDD-hh:mm\")\n");
+      daFrom=GWEN_Date_fromStringWithTemplate(fromTime, "YYYYMMDD");
+      if (daFrom==NULL) {
+	fprintf(stderr, "ERROR: Invalid fromDate (use \"YYYYMMDD\")\n");
 	return 1;
       }
     }
 
     if (toTime) {
-      tiTo=GWEN_Time_fromString(toTime, "YYYYMMDD-hh:mm");
-      if (tiTo==NULL) {
-	fprintf(stderr, "ERROR: Invalid toDate (use \"YYYYMMDD-hh:mm\")\n");
+      daTo=GWEN_Date_fromStringWithTemplate(toTime, "YYYYMMDD");
+      if (daTo==NULL) {
+	fprintf(stderr, "ERROR: Invalid toDate (use \"YYYYMMDD\")\n");
 	return 1;
       }
     }
@@ -248,8 +248,8 @@ int download(AB_BANKING *ab,
 			     requestType,
 			     destBuffer,
 			     receipt,
-			     tiFrom,
-                             tiTo,
+			     daFrom,
+                             daTo,
                              1);
     if (rv==GWEN_ERROR_NO_DATA) {
       GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Warning,
@@ -289,8 +289,8 @@ int download(AB_BANKING *ab,
     }
 
     GWEN_Buffer_free(destBuffer);
-    GWEN_Time_free(tiTo);
-    GWEN_Time_free(tiFrom);
+    GWEN_Date_free(daTo);
+    GWEN_Date_free(daFrom);
   }
 
   rv=AB_Banking_OnlineFini(ab);
