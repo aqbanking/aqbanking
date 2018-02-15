@@ -394,7 +394,7 @@ making AqBanking work:
 10. Translation
 ===============
 
-To work on translation of this project you need the folowing packages on
+To work on translation of this project you need the following packages on
 Debian based systems:
 - po4edit 
 - translate-toolkit (for "msghack")
@@ -444,6 +444,8 @@ AqBanking 6:
 - AB_JobGetTransactions:
   - setFromTime():             renamed to setFromDate(), changed arg type from GWEN_TIME to GWEN_DATE
   - setToTime():               renamed to setToDate(), changed arg type from GWEN_TIME to GWEN_DATE
+
+
 
 Martin Preuss, Wilhelmshaven/Germany, 2018/02/15
 
