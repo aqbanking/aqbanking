@@ -526,13 +526,16 @@
 
       <enum id="AB_TRANSACTION_STATUS" prefix="AB_Transaction_Status" type="AB_TRANSACTION_STATUS">
         <item name="none" value="0"/>
-        <item name="enqueued"/>
-        <item name="sending"/>
         <item name="accepted"/>
         <item name="rejected"/>
         <item name="pending"/>
+        <item name="sending"/>
+        <item name="autoReconciled"/>
+        <item name="manuallyReconciled"/>
         <item name="revoked"/>
         <item name="aborted"/>
+
+        <item name="enqueued"/>
         <item name="error"/>
       </enum>
 
