@@ -81,6 +81,7 @@ int AH_Job_SepaStandingOrderGet_Prepare(AH_JOB *j) {
 
     s=GWEN_DB_GetCharValue(profile, "descriptor", 0, 0);
     if (s) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Using SEPA format \"%s\"", s);
       GWEN_DB_SetCharValue(dbArgs,
 			   GWEN_DB_FLAGS_OVERWRITE_VARS,
 			   "SupportedSepaFormats/Format",
