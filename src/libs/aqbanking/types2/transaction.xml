@@ -390,6 +390,85 @@
 
 
         <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_AddCategory($(struct_type) *t, const char *s);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             void $(struct_prefix)_AddCategory($(struct_type) *t, const char *s) {
+               assert(t);
+               if (s &amp;&amp; *s) {
+                 if (t->category &amp;&amp; *(t->category)) {
+                   GWEN_BUFFER *tbuf;
+                 
+                   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+                   GWEN_Buffer_AppendString(tbuf, t->category);
+                   GWEN_Buffer_AppendString(tbuf, "\\n");
+                   GWEN_Buffer_AppendString(tbuf, s);
+                   $(struct_prefix)_SetPurpose(t, GWEN_Buffer_GetStart(tbuf));
+                   GWEN_Buffer_free(tbuf);
+                 }
+                 else
+                   $(struct_prefix)_SetCategory(t, s);
+               }
+               else {
+                 DBG_ERROR(AQBANKING_LOGDOMAIN, "Not adding empty string");
+               }
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_SetCategoryFromStringList($(struct_type) *t, const GWEN_STRINGLIST *sl);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             void $(struct_prefix)_SetCategoryFromStringList($(struct_type) *t, const GWEN_STRINGLIST *sl) {
+               assert(t);
+               if (sl) {
+                 GWEN_STRINGLISTENTRY *se;
+                 GWEN_BUFFER *tbuf;
+                 
+                 tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+                 se=GWEN_StringList_FirstEntry(sl);
+                 while(se) {
+                   const char *s;
+                   
+                   s=GWEN_StringListEntry_Data(se);
+                   if (s &amp;&amp; *s) {
+                     if (GWEN_Buffer_GetUsedBytes(tbuf))
+                       GWEN_Buffer_AppendString(tbuf, "\\n");
+                     GWEN_Buffer_AppendString(tbuf, s);
+                   }
+                   se=GWEN_StringListEntry_Next(se);
+                 }
+               
+                 $(struct_prefix)_SetCategory(t, GWEN_Buffer_GetStart(tbuf));
+                 GWEN_Buffer_free(tbuf);
+               }
+               else {
+                 $(struct_prefix)_SetCategory(t, NULL);
+               }
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
           <typeFlagsMask>with_list2</typeFlagsMask>
           <typeFlagsValue>with_list2</typeFlagsValue>
           <content>
@@ -970,9 +1049,22 @@
           <flags>own with_hash</flags>
           <setflags>const dup</setflags>
           <getflags>const</getflags>
+          <descr>
+            A list of purpose lines, separated by newline characters.
+          </descr>
         </member>
-      </group>
 
+        <member name="category" type="char_ptr" maxlen="256" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <descr>
+            A list of categories assigned to this transaction, separated by newline characters.
+          </descr>
+        </member>
+
+      </group>
 
 
 
