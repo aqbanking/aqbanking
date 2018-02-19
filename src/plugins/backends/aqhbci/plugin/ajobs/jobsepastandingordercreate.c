@@ -85,10 +85,9 @@ int AH_Job_SepaStandingOrderCreate_ExchangeParams(AH_JOB *j, AB_JOB *bj,
 
   /* get specific limits for creation of standing orders */
   AB_TransactionLimits_PresetValuesCycleMonth(lim, 0);
+  AB_TransactionLimits_SetValuesCycleMonthUsed(lim, 0);
   s=GWEN_DB_GetCharValue(dbParams, "AllowedTurnusMonths", 0, 0);
   if (s && *s) {
-    int j=0;
-
     AB_TransactionLimits_SetAllowMonthly(lim, 1);
     while(*s) {
       char buf[3];
@@ -107,7 +106,7 @@ int AH_Job_SepaStandingOrderCreate_ExchangeParams(AH_JOB *j, AB_JOB *bj,
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
       }
       else
-        AB_TransactionLimits_SetValuesCycleMonthAt(lim, j++, d);
+        AB_TransactionLimits_ValuesCycleMonthAdd(lim, d);
       s+=2;
     } /* while */
   }
@@ -115,10 +114,9 @@ int AH_Job_SepaStandingOrderCreate_ExchangeParams(AH_JOB *j, AB_JOB *bj,
     AB_TransactionLimits_SetAllowMonthly(lim, -1);
 
   AB_TransactionLimits_PresetValuesExecutionDayMonth(lim, 0);
+  AB_TransactionLimits_SetValuesExecutionDayMonthUsed(lim, 0);
   s=GWEN_DB_GetCharValue(dbParams, "AllowedMonthDays", 0, 0);
   if (s && *s) {
-    int j=0;
-
     while(*s) {
       char buf[3];
       const char *x;
@@ -136,16 +134,15 @@ int AH_Job_SepaStandingOrderCreate_ExchangeParams(AH_JOB *j, AB_JOB *bj,
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
       }
       else
-        AB_TransactionLimits_SetValuesExecutionDayMonthAt(lim, j++, d);
+        AB_TransactionLimits_ValuesExecutionDayMonthAdd(lim, d);
       s+=2;
     } /* while */
   }
 
   AB_TransactionLimits_PresetValuesCycleWeek(lim, 0);
+  AB_TransactionLimits_SetValuesCycleWeekUsed(lim, 0);
   s=GWEN_DB_GetCharValue(dbParams, "AllowedTurnusWeeks", 0, 0);
   if (s && *s) {
-    int j=0;
-
     AB_TransactionLimits_SetAllowWeekly(lim, 1);
     while(*s) {
       char buf[3];
@@ -164,7 +161,7 @@ int AH_Job_SepaStandingOrderCreate_ExchangeParams(AH_JOB *j, AB_JOB *bj,
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
       }
       else
-        AB_TransactionLimits_SetValuesCycleWeekAt(lim, j++, d);
+        AB_TransactionLimits_ValuesCycleWeekAdd(lim, d);
       s+=2;
     } /* while */
   }
@@ -172,10 +169,9 @@ int AH_Job_SepaStandingOrderCreate_ExchangeParams(AH_JOB *j, AB_JOB *bj,
     AB_TransactionLimits_SetAllowWeekly(lim, -1);
 
   AB_TransactionLimits_PresetValuesExecutionDayWeek(lim, 0);
+  AB_TransactionLimits_SetValuesExecutionDayWeekUsed(lim, 0);
   s=GWEN_DB_GetCharValue(dbParams, "AllowedWeekDays", 0, 0);
   if (s && *s) {
-    int j=0;
-
     while(*s) {
       char buf[2];
       const char *x;
@@ -193,7 +189,7 @@ int AH_Job_SepaStandingOrderCreate_ExchangeParams(AH_JOB *j, AB_JOB *bj,
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
       }
       else
-        AB_TransactionLimits_SetValuesExecutionDayWeekAt(lim, j++, d);
+        AB_TransactionLimits_ValuesExecutionDayWeekAdd(lim, d);
       s++;
     } /* while */
   }
