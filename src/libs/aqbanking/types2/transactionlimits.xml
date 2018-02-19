@@ -62,6 +62,115 @@
       </headers>
 
       <inlines>
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) int $(struct_prefix)_ValuesCycleWeekAdd($(struct_type) *t, uint8_t v);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             int $(struct_prefix)_ValuesCycleWeekAdd($(struct_type) *t, uint8_t v) {
+               assert(t);
+               if (t->valuesCycleWeekUsed &lt; $(struct_prefix)_GetValuesCycleWeekArraySize()) {
+                 t->valuesCycleWeek[t->valuesCycleWeekUsed++]=v;
+                 return 0;
+               }
+               else {
+                 DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many entries (%d)", t->valuesCycleWeekUsed);
+                 return GWEN_ERROR_BUFFER_OVERFLOW;
+               }
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) int $(struct_prefix)_ValuesCycleMonthAdd($(struct_type) *t, uint8_t v);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             int $(struct_prefix)_ValuesCycleMonthAdd($(struct_type) *t, uint8_t v) {
+               assert(t);
+               if (t->valuesCycleMonthUsed &lt; $(struct_prefix)_GetValuesCycleMonthArraySize()) {
+                 t->valuesCycleMonth[t->valuesCycleMonthUsed++]=v;
+                 return 0;
+               }
+               else {
+                 DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many entries (%d)", t->valuesCycleMonthUsed);
+                 return GWEN_ERROR_BUFFER_OVERFLOW;
+               }
+             }
+          </content>
+        </inline>
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) int $(struct_prefix)_ValuesExecutionDayWeekAdd($(struct_type) *t, uint8_t v);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             int $(struct_prefix)_ValuesExecutionDayWeekAdd($(struct_type) *t, uint8_t v) {
+               assert(t);
+               if (t->valuesExecutionDayWeekUsed &lt; $(struct_prefix)_GetValuesExecutionDayWeekArraySize()) {
+                 t->valuesExecutionDayWeek[t->valuesExecutionDayWeekUsed++]=v;
+                 return 0;
+               }
+               else {
+                 DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many entries (%d)", t->valuesExecutionDayWeekUsed);
+                 return GWEN_ERROR_BUFFER_OVERFLOW;
+               }
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) int $(struct_prefix)_ValuesExecutionDayMonthAdd($(struct_type) *t, uint8_t v);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             int $(struct_prefix)_ValuesExecutionDayMonthAdd($(struct_type) *t, uint8_t v) {
+               assert(t);
+               if (t->valuesExecutionDayMonthUsed &lt; $(struct_prefix)_GetValuesExecutionDayMonthArraySize()) {
+                 t->valuesExecutionDayMonth[t->valuesExecutionDayMonthUsed++]=v;
+                 return 0;
+               }
+               else {
+                 DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many entries (%d)", t->valuesExecutionDayMonthUsed);
+                 return GWEN_ERROR_BUFFER_OVERFLOW;
+               }
+             }
+          </content>
+        </inline>
+
+
+
       </inlines>
 
     </lang>
@@ -342,6 +451,13 @@
             Allowed values are "0" (all cycles possible) and "1"-"52".
           </descr>
         </member>
+
+        <member name="valuesCycleWeekUsed" type="int" maxlen="8">
+          <access>public</access>
+          <descr>
+            Number of bytes actually stored in the array valuesCycleWeek.
+          </descr>
+        </member>
         
         <member name="valuesCycleMonth" type="uint8_t_array" maxlen="64">
           <!-- <setflags>const dup</setflags> -->
@@ -354,6 +470,13 @@
             These value are accepted when "period" is "monthly".
             The first entry is the number of used entries following.
             Allowed values are "0" (all cycles possible) and "1"-"12".
+          </descr>
+        </member>
+
+        <member name="valuesCycleMonthUsed" type="int" maxlen="8">
+          <access>public</access>
+          <descr>
+            Number of bytes actually stored in the array valuesCycleMonth.
           </descr>
         </member>
 
@@ -372,6 +495,13 @@
           </descr>
         </member>
 
+        <member name="valuesExecutionDayWeekUsed" type="int" maxlen="8">
+          <access>public</access>
+          <descr>
+            Number of bytes actually stored in the array valuesExecutionDayWeek.
+          </descr>
+        </member>
+
         <member name="valuesExecutionDayMonth" type="uint8_t_array" maxlen="64">
           <!-- <setflags>const dup</setflags> -->
           <setflags>omit</setflags>
@@ -385,6 +515,13 @@
             The first entry is the number of used entries following.
             Allowed are "0" (all days possible), "1"-"30", "97" (ultimo-2), 
             "98" (ultimo-1) and "99" (ultimo).
+          </descr>
+        </member>
+
+        <member name="valuesExecutionDayMonthUsed" type="int" maxlen="8">
+          <access>public</access>
+          <descr>
+            Number of bytes actually stored in the array valuesExecutionDayMonth.
           </descr>
         </member>
 
