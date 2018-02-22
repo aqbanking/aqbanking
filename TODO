@@ -3,6 +3,9 @@ Mid-term
 ========
 
 - types/*.xml: convert to typemaker2 (partially done)
+- CSV exporter:
+  - setting to replace control characters
+  - translate purpose string into multiple lines (for purpose[x])
 
 
 Long-term
@@ -58,4 +61,3 @@ CAVEATS:
   "git push -u origin HEAD"
 
 
-test5.
