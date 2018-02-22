@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004,2012 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -306,6 +306,20 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
           return GWEN_ERROR_GENERIC;
         }
 
+        /* possibly translate purpose */
+        p=GWEN_DB_GetCharValue(dbT, "purpose", 1, 0); /* "1" is correct here! */
+        if (p) {
+          int i;
+
+          /* there are multiple purpose lines, read them properly */
+          AB_Transaction_SetPurpose(t, NULL);
+          for (i=0; i<99; i++) {
+            p=GWEN_DB_GetCharValue(dbT, "purpose", i, 0);
+            if (p && *p)
+              AB_Transaction_AddPurposeLine(t, p);
+          }
+        }
+
         /* translate value */
 	dbV=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "value");
 	if (dbV) {
@@ -573,6 +587,7 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
     while(t) {
       GWEN_DB_NODE *dbTransaction;
       const GWEN_DATE *dt;
+      const char *s;
 
       dbTransaction=GWEN_DB_Group_new("transaction");
       rv=AB_Transaction_toDb(t, dbTransaction);
@@ -584,6 +599,29 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
         GWEN_DB_Group_free(dbData);
         GWEN_DB_Group_free(dbTransaction);
         return GWEN_ERROR_GENERIC;
+      }
+
+      /* translate purpose */
+      s=AB_Transaction_GetPurpose(t);
+      if (s && *s) {
+        GWEN_STRINGLIST *sl;
+
+        sl=GWEN_StringList_fromString(s, "\n", 0);
+        if (sl) {
+          GWEN_STRINGLISTENTRY *se;
+
+          GWEN_DB_DeleteVar(dbTransaction, "purpose");
+          se=GWEN_StringList_FirstEntry(sl);
+          while(se) {
+            const char *p;
+
+            p=GWEN_StringListEntry_Data(se);
+            if (p && *p)
+              GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_DEFAULT, "purpose", p);
+            se=GWEN_StringListEntry_Next(se);
+          }
+          GWEN_StringList_free(sl);
+        }
       }
 
       /* transform dates */
