@@ -32,6 +32,9 @@ iheader_HEADERS= \
  jobinternaltransfer.h \
  jobloadcellphone.h \
  jobloadcellphone_be.h \
+ jobsepacreatesto.h \
+ jobsepamodifysto.h \
+ jobsepadeletesto.h \
  jobsepagetstandingorders.h
 
 libjobs_la_SOURCES=\
