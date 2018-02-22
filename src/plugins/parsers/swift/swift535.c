@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Fri Apr 02 2004
- copyright   : (C) 2004-2015 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -37,9 +37,9 @@
 
 
 int AHB_SWIFT__SetCharValue535(GWEN_DB_NODE *db,
-                            uint32_t flags,
-                            const char *name,
-                            const char *s) {
+                               uint32_t flags,
+                               const char *name,
+                               const char *s) {
   GWEN_BUFFER *vbuf;
   int rv;
 
@@ -53,9 +53,9 @@ int AHB_SWIFT__SetCharValue535(GWEN_DB_NODE *db,
 
 
 int AHB_SWIFT535_Parse_97A(const AHB_SWIFT_TAG *tg,
-                          uint32_t flags,
-                          GWEN_DB_NODE *data,
-                          GWEN_DB_NODE *cfg){
+                           uint32_t flags,
+                           GWEN_DB_NODE *data,
+                           GWEN_DB_NODE *cfg){
   const char *p;
   const char *p2;
 
@@ -236,7 +236,7 @@ int AHB_SWIFT535_Parse_98A(const AHB_SWIFT_TAG *tg,
                           GWEN_DB_NODE *cfg){
   char *p;
   int year, month, day;
-  GWEN_TIME *ti;
+  GWEN_DATE *dt;
 
   p=(char *)AHB_SWIFT_Tag_GetData(tg);
   assert(p);
@@ -255,15 +255,11 @@ int AHB_SWIFT535_Parse_98A(const AHB_SWIFT_TAG *tg,
       DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 98A: Cannot read date");
       return 0;
     }
-    ti=GWEN_Time_new(year, month-1, day, 12, 0, 0, 1);
-    assert(ti);
+    dt=GWEN_Date_fromGregorian(year, month, day);
+    assert(dt);
 
-    if (GWEN_Time_toDb(ti, GWEN_DB_GetGroup(data,
-					    GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-					    "unitPriceDate"))) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Tag 98A: Error saving unitPriceDate");
-    }
-    GWEN_Time_free(ti);
+    GWEN_DB_SetCharValue(data, GWEN_DB_FLAGS_DEFAULT, "unitPriceDate", GWEN_Date_GetString(dt));
+    GWEN_Date_free(dt);
   }
 
   return 0;

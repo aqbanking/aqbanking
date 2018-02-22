@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Fri Apr 02 2004
- copyright   : (C) 2004-2015 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -29,7 +29,7 @@
 
 
 
-/* #define ENABLE_FULL_SEPA_LOG */
+/*#define ENABLE_FULL_SEPA_LOG*/
 
 
 #define CENTURY_CUTOFF_YEAR 79
@@ -219,8 +219,8 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 	  case 62:
 	  case 63: /* Verwendungszweck */
 	    /* store purpose in any case, if the transaction doesn't have SEPA tags
-	     * we can just use what we produced here */
-	    AHB_SWIFT__SetCharValue(data, flags, "purpose", s);
+             * we can just use what we produced here. */
+            GWEN_DB_SetCharValue(data, GWEN_DB_FLAGS_DEFAULT, "purpose", s);
 	    /* possibly handle full purpose later */
 	    GWEN_Buffer_AppendString(bufFullPurpose, s);
 	    break;
@@ -234,7 +234,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 	    break;
       
 	  case 32: 
-	  case 33: /* Name Auftraggeber */
+          case 33: /* Name Auftraggeber */
 	    //DBG_ERROR(AQBANKING_LOGDOMAIN, "Setting remote name: [%s]", s);
 	    AHB_SWIFT__SetCharValue(data, flags, "remoteName", s);
 	    break;
@@ -261,6 +261,29 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 	  stg=AHB_SWIFT_SubTag_List_Next(stg);
 	} /* while */
 
+        /* create real purpose string from data */
+        if (GWEN_Buffer_GetUsedBytes(bufFullPurpose)) {
+          GWEN_BUFFER *tbuf;
+          int i;
+
+          tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+          for (i=0; i<99; i++) {
+            const char *s;
+
+            s=GWEN_DB_GetCharValue(data, "purpose", i, 0);
+            if (s && *s) {
+              if (GWEN_Buffer_GetUsedBytes(tbuf))
+                GWEN_Buffer_AppendString(tbuf, "\n");
+              GWEN_Buffer_AppendString(tbuf, s);
+            }
+          }
+
+          GWEN_DB_DeleteVar(data, "purpose");
+          GWEN_DB_SetCharValue(data, GWEN_DB_FLAGS_DEFAULT, "purpose", GWEN_Buffer_GetStart(tbuf));
+          GWEN_Buffer_free(tbuf);
+        }
+
+        /* check for SEPA tags */
 	if (GWEN_Buffer_GetUsedBytes(bufFullPurpose)) {
 	  const char *s;
 	  const char *sLastTagStart;
@@ -590,9 +613,8 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   int d1a, d2a, d3a;
   int d1b, d2b, d3b;
   int neg;
-  GWEN_TIME *ti;
+  GWEN_DATE *dt;
   //char curr3=0;
-  const char *currency;
 
   p=AHB_SWIFT_Tag_GetData(tg);
   assert(p);
@@ -614,25 +636,26 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
   d3a=((p[4]-'0')*10) + (p[5]-'0');
 
   if (d3a==30 && d2a==2) {
+    int ju;
+
     /* date is Feb 30, this date is invalid. However, some banks use this
      * to indicate the last day of February, so we move along */
     d3a=1;
     d2a=3;
-    ti=GWEN_Time_new(d1a, d2a-1, d3a, 12, 0, 0, 1);
-    assert(ti);
+    dt=GWEN_Date_fromGregorian(d1a, d2a, d3a);
+    assert(dt);
+    ju=GWEN_Date_GetJulian(dt);
     /* subtract a day to get the last day in FEB */
-    GWEN_Time_SubSeconds(ti, 60*60*24);
+    ju--;
+    GWEN_Date_free(dt);
+    dt=GWEN_Date_fromJulian(ju);
   }
   else {
-    ti=GWEN_Time_new(d1a, d2a-1, d3a, 12, 0, 0, 1);
-    assert(ti);
+    dt=GWEN_Date_fromGregorian(d1a, d2a, d3a);
+    assert(dt);
   }
-  if (GWEN_Time_toDb(ti, GWEN_DB_GetGroup(data,
-                                          GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-                                          "valutadate"))) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving valuta date");
-  }
-  GWEN_Time_free(ti);
+  GWEN_DB_SetCharValue(data, GWEN_DB_FLAGS_DEFAULT, "valutaDate", GWEN_Date_GetString(dt));
+  GWEN_Date_free(dt);
   p+=6;
   bleft-=6;
 
@@ -664,14 +687,10 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
     else
       d1b=d1a;
 
-    ti=GWEN_Time_new(d1b, d2b-1, d3b, 12, 0, 0, 1);
-    assert(ti);
-    if (GWEN_Time_toDb(ti, GWEN_DB_GetGroup(data,
-					    GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-					    "date"))) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving date");
-    }
-    GWEN_Time_free(ti);
+    dt=GWEN_Date_fromGregorian(d1b, d2b, d3b);
+    assert(dt);
+    GWEN_DB_SetCharValue(data, GWEN_DB_FLAGS_DEFAULT, "date", GWEN_Date_GetString(dt));
+    GWEN_Date_free(dt);
     p+=4;
     bleft-=4;
   }
@@ -731,11 +750,20 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
     memmove(s, p, p2-p+1);
     s[p2-p]=0;
   }
-  AHB_SWIFT__SetCharValue(data, flags, "value/value", s);
-  currency=GWEN_DB_GetCharValue(cfg, "currency", 0, 0);
-  if (currency)
-    AHB_SWIFT__SetCharValue(data, flags,
-			    "value/currency", currency);
+  if (1) {
+    GWEN_BUFFER *tbuf;
+    const char *cu;
+
+    tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+    GWEN_Buffer_AppendString(tbuf, s);
+    cu=GWEN_DB_GetCharValue(cfg, "currency", 0, 0);
+    if (cu) {
+      GWEN_Buffer_AppendString(tbuf, ":");
+      GWEN_Buffer_AppendString(tbuf, cu);
+    }
+    AHB_SWIFT__SetCharValue(data, flags, "value", GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
   GWEN_Memory_dealloc(s);
   bleft-=p2-p;
   p=p2;
@@ -857,7 +885,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
           s=(char*)GWEN_Memory_malloc(p2-p+1);
           memmove(s, p, p2-p+1);
           s[p2-p]=0;
-          AHB_SWIFT__SetCharValue(data, flags, "origvalue/value", s);
+          AHB_SWIFT__SetCharValue(data, flags, "origvalue", s);
           GWEN_Memory_dealloc(s);
           bleft-=p2-p;
           p=p2;
@@ -888,7 +916,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
 	  s=(char*)GWEN_Memory_malloc(p2-p+1);
           memmove(s, p, p2-p+1);
           s[p2-p]=0;
-          AHB_SWIFT__SetCharValue(data, flags, "charges/value", s);
+          AHB_SWIFT__SetCharValue(data, flags, "charges", s);
           GWEN_Memory_dealloc(s);
           bleft-=p2-p;
           p=p2;
@@ -1011,7 +1039,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
     memmove(s, p, p2-p+1);
     s[p2-p]=0;
   }
-  AHB_SWIFT__SetCharValue(data, flags, "value/value", s);
+  AHB_SWIFT__SetCharValue(data, flags, "value", s);
   GWEN_Memory_dealloc(s);
   bleft-=p2-p;
   p=p2;
