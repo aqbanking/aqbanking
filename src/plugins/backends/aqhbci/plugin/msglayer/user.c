@@ -2168,7 +2168,7 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
   
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Challenge contains CHLGUC");
       cbuf=GWEN_Buffer_new(0, 256, 0, 1);
-      rv=AH_HHD14_Translate(challengeHhd, cbuf);
+      rv=AH_HHD14_Translate(challenge, cbuf);
       if (rv<0) {
 	GWEN_Buffer_free(cbuf);
 	GWEN_Buffer_free(xbuf);
@@ -2207,14 +2207,15 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
       GWEN_Buffer_AppendString(xbuf, I18N("The server provided the following challenge:"));
       GWEN_Buffer_AppendString(xbuf, "\n");
       GWEN_Buffer_AppendString(xbuf, challenge);
+      methodId=GWEN_Gui_PasswordMethod_Text;
     }
   }
 
   nbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
   AH_User_MkTanName(u, challenge, nbuf);
   rv=GWEN_Gui_GetPassword(iflags,
-			  GWEN_Buffer_GetStart(nbuf),
-			  I18N("Enter TAN"),
+                          GWEN_Buffer_GetStart(nbuf),
+                          I18N("Enter TAN"),
 			  GWEN_Buffer_GetStart(xbuf),
 			  pwbuffer,
 			  minLen,

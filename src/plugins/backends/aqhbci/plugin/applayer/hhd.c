@@ -286,6 +286,8 @@ int AH_HHD14__Translate(const char *code, GWEN_BUFFER *cbuf) {
   uint32_t cBufEndPos;
   unsigned int checkSum;
 
+  assert(code);
+
   xbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
   /* read length */
