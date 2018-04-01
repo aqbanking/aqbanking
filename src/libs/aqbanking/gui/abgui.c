@@ -238,10 +238,10 @@ int AB_Gui_CheckCert(GWEN_GUI *gui,
 
 
 
-int AB_Gui_ReadDialogPrefs(GWEN_GUI *gui,
-			   const char *groupName,
-			   const char *altName,
-			   GWEN_DB_NODE **pDb) {
+int GWENHYWFAR_CB AB_Gui_ReadDialogPrefs(GWEN_GUI *gui,
+                                         const char *groupName,
+                                         const char *altName,
+                                         GWEN_DB_NODE **pDb) {
   AB_GUI *xgui;
 
   assert(gui);
@@ -282,9 +282,9 @@ int AB_Gui_ReadDialogPrefs(GWEN_GUI *gui,
 
 
 
-int AB_Gui_WriteDialogPrefs(GWEN_GUI *gui,
-			    const char *groupName,
-			    GWEN_DB_NODE *db) {
+int GWENHYWFAR_CB AB_Gui_WriteDialogPrefs(GWEN_GUI *gui,
+                                          const char *groupName,
+                                          GWEN_DB_NODE *db) {
   AB_GUI *xgui;
 
   assert(gui);
