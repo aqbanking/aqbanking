@@ -575,6 +575,7 @@ AB_IMEXPORTER_ACCOUNTINFO *AB_ImExporterAccountInfo_new(void) {
   iea->transfers=AB_Transaction_List_new();
   iea->datedTransfers=AB_Transaction_List_new();
   iea->notedTransactions=AB_Transaction_List_new();
+  iea->eStatementList=AB_Document_List_new();
   return iea;
 }
 
@@ -598,6 +599,7 @@ void AB_ImExporterAccountInfo_free(AB_IMEXPORTER_ACCOUNTINFO *iea){
     AB_Transaction_List_free(iea->transactions);
     AB_AccountStatus_List_free(iea->accStatusList);
     AB_Security_List_free(iea->securityList);
+    AB_Document_List_free(iea->eStatementList);
     GWEN_LIST_FINI(AB_IMEXPORTER_ACCOUNTINFO, iea);
     GWEN_FREE_OBJECT(iea);
   }
@@ -673,6 +675,7 @@ AB_ImExporterAccountInfo_dup(const AB_IMEXPORTER_ACCOUNTINFO *oi) {
   iea->transfers=AB_Transaction_List_dup(oi->transfers);
   iea->datedTransfers=AB_Transaction_List_dup(oi->datedTransfers);
   iea->notedTransactions=AB_Transaction_List_dup(oi->notedTransactions);
+  iea->eStatementList=AB_Document_List_dup(oi->eStatementList);
   return iea;
 }
 
@@ -873,8 +876,33 @@ int AB_ImExporterAccountInfo_toDb(const AB_IMEXPORTER_ACCOUNTINFO *iea,
     }
   }
 
+  if (iea->eStatementList) {
+    AB_DOCUMENT *est;
+
+    est=AB_Document_List_First(iea->eStatementList);
+    if (est) {
+      GWEN_DB_NODE *dbG;
+
+      dbG=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "eStatementList");
+      assert(dbG);
+
+      while(est) {
+	GWEN_DB_NODE *dbT;
+
+        dbT=GWEN_DB_GetGroup(dbG, GWEN_PATH_FLAGS_CREATE_GROUP, "eStatement");
+        assert(dbT);
+        if (AB_Document_toDb(est, dbT))
+	  return -1;
+
+	est=AB_Document_List_Next(est);
+      }
+    }
+  }
+
+
   return 0;
 }
+
 
 
 AB_IMEXPORTER_ACCOUNTINFO*
@@ -999,6 +1027,19 @@ AB_ImExporterAccountInfo_fromDb(GWEN_DB_NODE *db){
       assert(t);
       AB_Transaction_List_Add(t, iea->notedTransactions);
       dbT=GWEN_DB_FindNextGroup(dbT, "notedTransaction");
+    }
+  }
+
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "eStatementList");
+  if (dbT) {
+    dbT=GWEN_DB_FindFirstGroup(dbT, "eStatement");
+    while(dbT) {
+      AB_DOCUMENT *est;
+
+      est=AB_Document_fromDb(dbT);
+      assert(est);
+      AB_Document_List_Add(est, iea->eStatementList);
+      dbT=GWEN_DB_FindNextGroup(dbT, "eStatement");
     }
   }
 
@@ -1561,6 +1602,44 @@ AB_ImExporterAccountInfo_GetNextAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea){
 
 
 
+void AB_ImExporterAccountInfo_AddEStatement(AB_IMEXPORTER_ACCOUNTINFO *iea, AB_DOCUMENT *est) {
+  assert(iea);
+  assert(est);
+  AB_Document_List_Add(est, iea->eStatementList);
+}
+
+
+
+AB_DOCUMENT *AB_ImExporterAccountInfo_GetFirstEStatement(AB_IMEXPORTER_ACCOUNTINFO *iea) {
+  AB_DOCUMENT *est;
+
+  assert(iea);
+  est=AB_Document_List_First(iea->eStatementList);
+  if (est) {
+    iea->nextEStatement=AB_Document_List_Next(est);
+    return est;
+  }
+  iea->nextEStatement=NULL;
+  return NULL;
+}
+
+
+
+AB_DOCUMENT *AB_ImExporterAccountInfo_GetNextEStatement(AB_IMEXPORTER_ACCOUNTINFO *iea) {
+  AB_DOCUMENT *est;
+
+  assert(iea);
+  est=iea->nextEStatement;
+  if (est) {
+    iea->nextEStatement=AB_Document_List_Next(est);
+    return est;
+  }
+  iea->nextEStatement=NULL;
+  return NULL;
+}
+
+
+
 
 
 
@@ -1887,6 +1966,23 @@ AB_ImExporterContext_FindAccountInfoByIban(AB_IMEXPORTER_CONTEXT *iec, const cha
     iea=AB_ImExporterAccountInfo_List_Next(iea);
   }
   return 0;
+}
+
+
+
+AB_IMEXPORTER_ACCOUNTINFO*
+AB_ImExporterContext_FindAccountInfoByUniqueId(AB_IMEXPORTER_CONTEXT *iec, uint32_t uaid) {
+  AB_IMEXPORTER_ACCOUNTINFO *iea;
+
+  assert(iec);
+  iea=AB_ImExporterAccountInfo_List_First(iec->accountInfoList);
+  while(iea) {
+    if (AB_ImExporterAccountInfo_GetAccountId(iea)==uaid) {
+      return iea;
+    }
+    iea=AB_ImExporterAccountInfo_List_Next(iea);
+  }
+  return NULL;
 }
 
 

@@ -95,6 +95,9 @@ struct AB_IMEXPORTER_ACCOUNTINFO {
   AB_SECURITY_LIST *securityList;
   AB_SECURITY *nextSecurity;
 
+  AB_DOCUMENT_LIST *eStatementList;
+  AB_DOCUMENT *nextEStatement;
+
 };
 
 

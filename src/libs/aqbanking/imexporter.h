@@ -75,6 +75,7 @@ typedef struct AB_IMEXPORTER_ACCOUNTINFO AB_IMEXPORTER_ACCOUNTINFO;
 #include <aqbanking/transaction.h>
 #include <aqbanking/security.h>
 #include <aqbanking/message.h>
+#include <aqbanking/document.h>
 
 
 #ifdef __cplusplus
@@ -331,6 +332,16 @@ AB_ImExporterContext_FindAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
 AQBANKING_API 
 AB_IMEXPORTER_ACCOUNTINFO*
 AB_ImExporterContext_FindAccountInfoByIban(AB_IMEXPORTER_CONTEXT *iec, const char *iban);
+
+/**
+ * Looks for account info for the given account. If it is not found 0 is
+ * returned.
+ * The context remains the owner of the returned object.
+ */
+AQBANKING_API 
+AB_IMEXPORTER_ACCOUNTINFO*
+AB_ImExporterContext_FindAccountInfoByUniqueId(AB_IMEXPORTER_CONTEXT *iec,
+                                               uint32_t uaid);
 
 /**
  * Looks for account info for the given account. If there is none it will
@@ -1004,6 +1015,37 @@ AB_ImExporterAccountInfo_GetNextNotedTransaction(AB_IMEXPORTER_ACCOUNTINFO *iea)
 
 AQBANKING_API 
 int AB_ImExporterAccountInfo_GetNotedTransactionCount(const AB_IMEXPORTER_ACCOUNTINFO *iea);
+
+/*@}*/
+
+
+
+
+/** @name Electronic Statements
+ *
+ */
+/*@{*/
+/**
+ * Takes over ownership of the given object.
+ */
+AQBANKING_API 
+void AB_ImExporterAccountInfo_AddEStatement(AB_IMEXPORTER_ACCOUNTINFO *iea,
+                                            AB_DOCUMENT *est);
+/**
+ * Returns the first e-statement stored within the context.
+ * The context remains the owner of the object returned.
+ */
+AQBANKING_API 
+AB_DOCUMENT*
+AB_ImExporterAccountInfo_GetFirstEStatement(AB_IMEXPORTER_ACCOUNTINFO *iea);
+
+/**
+ * Returns the next security stored within the context.
+ * The context remains the owner of the object returned.
+ */
+AQBANKING_API 
+AB_DOCUMENT*
+AB_ImExporterAccountInfo_GetNextEStatement(AB_IMEXPORTER_ACCOUNTINFO *iea);
 
 /*@}*/
 
