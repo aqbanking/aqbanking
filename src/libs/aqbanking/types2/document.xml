@@ -1,0 +1,128 @@
+<?xml?>
+
+<tm2>
+  <type id="AB_DOCUMENT" type="pointer">
+    <descr>
+    </descr>
+
+    <lang id="c">
+      <identifier>AB_DOCUMENT</identifier>
+      <prefix>AB_Document</prefix>
+      
+      <baseFileName>document</baseFileName>
+      
+      <flags>
+        with_xml
+        with_db
+        with_list1
+        with_list2
+        with_refcount
+      </flags>
+      
+      <headers>
+        <header type="sys" loc="pre">aqbanking/error.h</header>
+        <header type="sys" loc="pre">gwenhywfar/types.h</header>
+        <header type="sys" loc="pre">gwenhywfar/bindata.h</header>
+        <header type="sys" loc="pre">gwenhywfar/base64.h</header>
+      </headers>
+
+
+
+      <inlines>
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list2</typeFlagsMask>
+          <typeFlagsValue>with_list2</typeFlagsValue>
+          <content>
+             $(api) int $(struct_prefix)_List2_freeAll($(struct_type)_LIST2 *tl);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask>with_list2</typeFlagsMask>
+          <typeFlagsValue>with_list2</typeFlagsValue>
+          <content>
+
+             static $(struct_type) *$(struct_prefix)_List2__freeAll_cb($(struct_type) *t, void *user_data) {
+               $(struct_prefix)_free(t);
+               return NULL;
+             }
+
+
+             int $(struct_prefix)_List2_freeAll($(struct_type)_LIST2 *tl) {
+               if (tl) {
+                 $(struct_prefix)_List2_ForEach(tl, $(struct_prefix)_List2__freeAll_cb, NULL);
+                 $(struct_prefix)_List2_free(tl); 
+               }
+               else {
+                 DBG_ERROR(AQBANKING_LOGDOMAIN, "List missing");
+                 return GWEN_ERROR_INVALID;
+               }
+               return 0;
+             }
+          </content>
+        </inline>
+
+      </inlines>
+
+
+    </lang>
+
+    <enums>
+
+    </enums>
+
+    <defines>
+
+    </defines>
+
+
+    <members>
+
+      <member name="id" type="char_ptr" maxlen="32" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+      <member name="ownerId" type="uint32_t" maxlen="8">
+        <descr>
+          The meaning of this field depends on the type of document.
+          For electronic statements this is the unique id of the account this statement belongs to.
+        </descr>
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+
+      <member name="mimeType" type="char_ptr" maxlen="32" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="data" type="gwen_bindata" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+    </members>
+
+    
+  </type>
+  
+</tm2>
+

@@ -15,14 +15,16 @@ typefiles=\
   transaction.xml \
   transactionlimits.xml \
   bankinfoservice.xml \
-  bankinfo.xml
+  bankinfo.xml \
+  document.xml
 
 
 typedatadir=$(datadir)/aqbanking/typemaker2/c
 dist_typedata_DATA=\
   ab_transaction.tm2 ab_transaction_list.tm2 ab_transaction_list2.tm2 \
   ab_bankinfo_service.tm2 ab_bankinfo_service_list.tm2 ab_bankinfo_service_list2.tm2 \
-  ab_bankinfo.tm2 ab_bankinfo_list.tm2 ab_bankinfo_list2.tm2
+  ab_bankinfo.tm2 ab_bankinfo_list.tm2 ab_bankinfo_list2.tm2 \
+  ab_document.tm2 ab_document_list.tm2 ab_document_list2.tm2
 
 
 
@@ -30,21 +32,24 @@ built_sources=  \
   transaction.c \
   transactionlimits.c \
   bankinfoservice.c \
-  bankinfo.c
+  bankinfo.c \
+  document.c
 
 
 build_headers_priv= \
   transaction_p.h   \
   transactionlimits_p.h \
   bankinfoservice_p.h \
-  bankinfo_p.h
+  bankinfo_p.h \
+  document_p.h
 
 
 build_headers_pub= \
   transaction.h    \
   transactionlimits.h \
   bankinfoservice.h \
-  bankinfo.h
+  bankinfo.h \
+  document.h
 
 
 
