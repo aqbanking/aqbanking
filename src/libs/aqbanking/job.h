@@ -199,6 +199,9 @@ typedef enum {
   /** get SEPA standing orders */
   AB_Job_TypeSepaGetStandingOrders,
 
+  /** get eStatements */
+  AB_Job_TypeGetEStatements,
+
 } AB_JOB_TYPE;
 
 

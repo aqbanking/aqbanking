@@ -35,7 +35,8 @@ iheader_HEADERS= \
  jobsepacreatesto.h \
  jobsepamodifysto.h \
  jobsepadeletesto.h \
- jobsepagetstandingorders.h
+ jobsepagetstandingorders.h \
+ jobgetestatements.h
 
 libjobs_la_SOURCES=\
  jobgetbalance.c \
@@ -58,7 +59,8 @@ libjobs_la_SOURCES=\
  jobsepacreatesto.c \
  jobsepagetstandingorders.c \
  jobsepamodifysto.c \
- jobsepadeletesto.c
+ jobsepadeletesto.c \
+ jobgetestatements.c
 
 sources:
 	for f in $(libjobs_la_SOURCES); do \
