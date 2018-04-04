@@ -31,6 +31,7 @@
          delimiter="+"   terminator="'" >
    <GROUP type="SegHead"       name="head" />
    <ELEM  name="eStatement"    type="bin" trustlevel="2" />
+   <ELEM  name="ackCode"       type="bin" minnum="0" />
 
    <VALUES>
      <VALUE path="head/code">%code</VALUE>
