@@ -18,6 +18,7 @@
 #include <aqbanking/jobgetstandingorders.h>
 #include <aqbanking/jobsepagetstandingorders.h>
 #include <aqbanking/jobgetdatedtransfers.h>
+#include <aqbanking/jobgetestatements.h>
 
 #include <gwenhywfar/text.h>
 
@@ -46,6 +47,7 @@ int request(AB_BANKING *ab,
   int reqSto=0;
   int reqSepaSto=0;
   int reqDT=0;
+  int reqEStatements=0;
   int ignoreUnsupported=0;
   GWEN_DATE *fromDate=0;
   GWEN_DATE *toDate=0;
@@ -173,6 +175,17 @@ int request(AB_BANKING *ab,
     "Request dated transfers"     /* long description */
   },
   {
+    0,                            /* flags */
+    GWEN_ArgsType_Int,             /* type */
+    "reqEStatements",             /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    0,                            /* short option */
+    "estatements",                   /* long option */
+    "Request electronic statements", /* short description */
+    "Request electronic statements"  /* long description */
+  },
+  {
     0,                
     GWEN_ArgsType_Int,
     "ignoreUnsupported",
@@ -247,6 +260,7 @@ int request(AB_BANKING *ab,
   reqSto=GWEN_DB_GetIntValue(db, "reqSto", 0, 0);
   reqSepaSto=GWEN_DB_GetIntValue(db, "reqSepaSto", 0, 0);
   reqDT=GWEN_DB_GetIntValue(db, "reqDT", 0, 0);
+  reqEStatements=GWEN_DB_GetIntValue(db, "reqEStatements", 0, 0);
   ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
   s=GWEN_DB_GetCharValue(db, "fromDate", 0, 0);
   if (s && *s) {
@@ -527,6 +541,38 @@ int request(AB_BANKING *ab,
               else {
                 DBG_ERROR(0,
                           "Error requesting dated transfers for %s: %d",
+                          GWEN_Buffer_GetStart(accNameBuf),
+                          rv);
+                GWEN_Buffer_free(accNameBuf);
+                AB_Account_List2Iterator_free(ait);
+                AB_Account_List2_free(al);
+                AB_Job_List2_FreeAll(jobList);
+                GWEN_Date_free(toDate);
+                GWEN_Date_free(fromDate);
+                return 3;
+              }
+	    }
+          }
+          if (reqEStatements) {
+            AB_JOB *j;
+
+	    j=AB_JobGetEStatements_new(a);
+	    rv=AB_Job_CheckAvailability(j);
+            if (rv>=0) {
+              AB_Job_List2_PushBack(jobList, j);
+              requests++;
+            }
+            else {
+              if (ignoreUnsupported) {
+                DBG_ERROR(0,
+                          "Ignoring request for electronic statements for %s: %d",
+                          GWEN_Buffer_GetStart(accNameBuf),
+                          rv);
+                AB_Job_free(j);
+              }
+              else {
+                DBG_ERROR(0,
+                          "Error requesting electronic statements for %s: %d",
                           GWEN_Buffer_GetStart(accNameBuf),
                           rv);
                 GWEN_Buffer_free(accNameBuf);
