@@ -29,6 +29,6 @@ transactionlimits_p.h
 ab_document.tm2
 ab_document_list.tm2
 ab_document_list2.tm2
-ab_document.c
-ab_document.h
-ab_document_p.h
+document.c
+document.h
+document_p.h
