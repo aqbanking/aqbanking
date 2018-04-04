@@ -15,11 +15,7 @@
 #include "jobgetestatements_l.h"
 
 
-static int AH_Job_GetEStatements_Prepare(AH_JOB *j);
 static int AH_Job_GetEStatements_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
-static int AH_Job_GetEStatements_Exchange(AH_JOB *j, AB_JOB *bj,
-                                          AH_JOB_EXCHANGE_MODE m,
-                                          AB_IMEXPORTER_CONTEXT *ctx);
 
 
 

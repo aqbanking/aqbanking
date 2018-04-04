@@ -33,6 +33,7 @@
 #include "jobsepastandingordercreate_l.h"
 #include "jobsepastandingordermodify_l.h"
 #include "jobsepastandingorderget_l.h"
+#include "jobgetestatements_l.h"
 
 #include "jobsepadebitsingle_l.h" /* deprecated job */
 
@@ -459,6 +460,14 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
 
   case AB_Job_TypeSepaGetStandingOrders:
     mj=AH_Job_SepaStandingOrderGet_new(mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
+  case AB_Job_TypeGetEStatements:
+    mj=AH_Job_GetEStatements_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return GWEN_ERROR_NOT_AVAILABLE;

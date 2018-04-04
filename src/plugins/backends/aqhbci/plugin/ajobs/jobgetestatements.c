@@ -25,8 +25,9 @@
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/text.h>
 
-#include <aqbanking/jobgetstandingorders.h> /* TODO: use new class */
+#include <aqbanking/jobgetestatements.h>
 #include <aqbanking/job_be.h>
+#include <aqbanking/document.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -40,37 +41,15 @@
 /* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_GetEStatements_new(AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
-  GWEN_DB_NODE *dbArgs;
 
   j=AH_AccountJob_new("JobGetEStatements", u, account);
   if (!j)
-    return 0;
+    return NULL;
 
   /* overwrite some virtual functions */
-  AH_Job_SetPrepareFn(j, AH_Job_GetEStatements_Prepare);
   AH_Job_SetProcessFn(j, AH_Job_GetEStatements_Process);
-  AH_Job_SetExchangeFn(j, AH_Job_GetEStatements_Exchange);
 
-  /* set some known arguments */
-  dbArgs=AH_Job_GetArguments(j);
-  assert(dbArgs);
-  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
-                       "allAccounts", "N");
   return j;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetEStatements_Prepare(AH_JOB *j) {
-  GWEN_DB_NODE *dbArgs;
-  GWEN_DB_NODE *profile;
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing job");
-
-  dbArgs=AH_Job_GetArguments(j);
-
-  return 0;
 }
 
 
@@ -80,11 +59,16 @@ int AH_Job_GetEStatements_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
   const char *responseName;
+  AB_ACCOUNT *acc;
   int rv;
+  AB_IMEXPORTER_ACCOUNTINFO *iea=NULL;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Processing JobGetEStatements");
 
   assert(j);
+
+  acc=AH_AccountJob_GetAccount(j);
+  assert(acc);
 
   responseName=AH_Job_GetResponseName(j);
 
@@ -115,15 +99,36 @@ int AH_Job_GetEStatements_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       if (dbXA)
         dbXA=GWEN_DB_GetGroup(dbXA, GWEN_PATH_FLAGS_NAMEMUSTEXIST, responseName);
       if (dbXA) {
-	const void *p;
+        const void *p;
 	unsigned int bs;
-	const char *fiId;
 
-	fiId=GWEN_DB_GetCharValue(dbXA, "fiId", 0, NULL);
-	p=GWEN_DB_GetBinValue(dbXA, "eStatement", 0, 0, 0, &bs);
-	if (p && bs) {
-	  /* TODO: add eStatement (PDF) to imExporterContext */
-	}
+        p=GWEN_DB_GetBinValue(dbXA, "eStatement", 0, 0, 0, &bs);
+        if (p && bs) {
+          AB_DOCUMENT *doc;
+
+          /* TODO: base64-decode if necessary */
+
+          /* add eStatement (PDF) to imExporterContext */
+          doc=AB_Document_new();
+          AB_Document_SetOwnerId(doc, AB_Account_GetUniqueId(acc));
+
+          AB_Document_SetData(doc, p, bs);
+
+          p=GWEN_DB_GetBinValue(dbXA, "ackCode", 0, 0, 0, &bs);
+          if (p && bs) {
+            AB_Document_SetAcknowledgeCode(doc, p, bs);
+          }
+
+          /* get account info for this account */
+          if (iea==NULL) {
+            /* not set yet, find or create it */
+            iea=AB_ImExporterContext_GetAccountInfoForAccount(ctx, acc);
+            assert(iea);
+          }
+
+          /* add document to imexporter context */
+          AB_ImExporterAccountInfo_AddEStatement(iea, doc);
+        }
       }
     }
 
@@ -132,44 +137,6 @@ int AH_Job_GetEStatements_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
   return 0;
 }
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetEStatements_Exchange(AH_JOB *j, AB_JOB *bj,
-                                   AH_JOB_EXCHANGE_MODE m,
-                                   AB_IMEXPORTER_CONTEXT *ctx){
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);
-
-  assert(j);
-
-  if (AB_Job_GetType(bj)!=AB_Job_TypeGetEStatements) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Not a GetStandingOrders job");
-    return GWEN_ERROR_INVALID;
-  }
-
-  switch(m) {
-  case AH_Job_ExchangeModeParams:
-    return 0;
-
-  case AH_Job_ExchangeModeArgs:
-    return 0;
-
-  case AH_Job_ExchangeModeResults:
-    return 0;
-
-  default:
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Unsupported exchange mode");
-    return GWEN_ERROR_NOT_SUPPORTED;
-  } /* switch */
-}
-
-
-
-
-
-
-
 
 
 
