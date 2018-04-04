@@ -63,6 +63,168 @@
           </content>
         </inline>
 
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_SetData($(struct_type) *st, const uint8_t *p, uint32_t len);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+
+             void $(struct_prefix)_SetData($(struct_type) *st, const uint8_t *p, uint32_t len) {
+               assert(st);
+               if (st->data.length &amp;&amp; st->data.pointer)
+                 free(st->data.pointer);
+               if (p &amp;&amp; len) {
+                 st->data.pointer=(uint8_t*) malloc(len); 
+                 if (st->data.pointer) { 
+                   st->data.length=len;
+                   memmove(st->data.pointer, p, len); 
+                 } 
+                 else {
+                   st->data.pointer=NULL;
+                   st->data.length=0; 
+                 } 
+               }
+               else {
+                 st->data.length=0;
+                 st->data.pointer=NULL;
+               }
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) const uint8_t* $(struct_prefix)_GetDataPtr(const $(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+
+             const uint8_t* $(struct_prefix)_GetDataPtr(const $(struct_type) *st) {
+               assert(st);
+               return st->data.pointer;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) uint32_t $(struct_prefix)_GetDataLen(const $(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             uint32_t $(struct_prefix)_GetDataLen(const $(struct_type) *st) {
+               assert(st);
+               return st->data.length;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_SetAcknowledgeCode($(struct_type) *st, const uint8_t *p, uint32_t len);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+
+             void $(struct_prefix)_SetAcknowledgeCode($(struct_type) *st, const uint8_t *p, uint32_t len) {
+               assert(st);
+               if (st->acknowledgeCode.length &amp;&amp; st->acknowledgeCode.pointer)
+                 free(st->acknowledgeCode.pointer);
+               if (p &amp;&amp; len) {
+                 st->acknowledgeCode.pointer=(uint8_t*) malloc(len); 
+                 if (st->acknowledgeCode.pointer) { 
+                   st->acknowledgeCode.length=len;
+                   memmove(st->acknowledgeCode.pointer, p, len); 
+                 } 
+                 else {
+                   st->acknowledgeCode.pointer=NULL;
+                   st->acknowledgeCode.length=0; 
+                 } 
+               }
+               else {
+                 st->acknowledgeCode.length=0;
+                 st->acknowledgeCode.pointer=NULL;
+               }
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) const uint8_t* $(struct_prefix)_GetAcknowledgeCodePtr(const $(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+
+             const uint8_t* $(struct_prefix)_GetAcknowledgeCodePtr(const $(struct_type) *st) {
+               assert(st);
+               return st->acknowledgeCode.pointer;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) uint32_t $(struct_prefix)_GetAcknowledgeCodeLen(const $(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             uint32_t $(struct_prefix)_GetAcknowledgeCodeLen(const $(struct_type) *st) {
+               assert(st);
+               return st->acknowledgeCode.length;
+             }
+          </content>
+        </inline>
+
       </inlines>
 
 
@@ -114,8 +276,18 @@
         <preset>NULL</preset>
         <access>public</access>
         <flags>own</flags>
-        <setflags>const dup</setflags>
-        <getflags>const</getflags>
+        <setflags>omit</setflags>
+        <getflags>omit</getflags>
+      </member>
+
+
+      <member name="acknowledgeCode" type="gwen_bindata" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>omit</setflags>
+        <getflags>omit</getflags>
       </member>
 
 
