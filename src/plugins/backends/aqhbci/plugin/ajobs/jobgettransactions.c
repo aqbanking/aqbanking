@@ -375,11 +375,8 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   /* now the buffers contain data to be parsed by DBIOs */
   a=AH_AccountJob_GetAccount(j);
   assert(a);
-  ai=AB_ImExporterContext_GetAccountInfo(ctx,
-                                         AB_Account_GetBankCode(a),
-                                         AB_Account_GetAccountNumber(a));
+  ai=AB_ImExporterContext_GetAccountInfoForAccount(ctx, a);
   assert(ai);
-  AB_ImExporterAccountInfo_SetAccountId(ai, AB_Account_GetUniqueId(a));
 
   /* read booked transactions */
   if (GWEN_Buffer_GetUsedBytes(tbooked)) {
