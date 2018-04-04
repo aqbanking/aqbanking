@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004-2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -343,6 +343,16 @@ AB_IMEXPORTER_ACCOUNTINFO*
 AB_ImExporterContext_FindAccountInfoByUniqueId(AB_IMEXPORTER_CONTEXT *iec,
                                                uint32_t uaid);
 
+
+/**
+ * Looks for account info for the given account. If it is not found NULL is
+ * returned.
+ * The context remains the owner of the returned object.
+ */
+AQBANKING_API 
+AB_IMEXPORTER_ACCOUNTINFO*
+AB_ImExporterContext_FindAccountInfoForAccount(AB_IMEXPORTER_CONTEXT *iec, const AB_ACCOUNT *acc);
+
 /**
  * Looks for account info for the given account. If there is none it will
  * be created and added to the context.
@@ -363,6 +373,16 @@ AB_ImExporterContext_GetAccountInfo(AB_IMEXPORTER_CONTEXT *iec,
 AQBANKING_API
 AB_IMEXPORTER_ACCOUNTINFO*
 AB_ImExporterContext_GetAccountInfoByIban(AB_IMEXPORTER_CONTEXT *iec, const char *iban);
+
+
+/**
+ * Looks for account info for the given account. If it is not it will be created
+ * and filled with infor from the given account...
+ * The context remains the owner of the returned object.
+ */
+AQBANKING_API 
+AB_IMEXPORTER_ACCOUNTINFO*
+AB_ImExporterContext_GetAccountInfoForAccount(AB_IMEXPORTER_CONTEXT *iec, const AB_ACCOUNT *acc);
 
 
 AQBANKING_API

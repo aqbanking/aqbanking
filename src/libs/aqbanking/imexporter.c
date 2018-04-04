@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004-2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -1983,6 +1983,67 @@ AB_ImExporterContext_FindAccountInfoByUniqueId(AB_IMEXPORTER_CONTEXT *iec, uint3
     iea=AB_ImExporterAccountInfo_List_Next(iea);
   }
   return NULL;
+}
+
+
+
+AB_IMEXPORTER_ACCOUNTINFO*
+AB_ImExporterContext_FindAccountInfoForAccount(AB_IMEXPORTER_CONTEXT *iec, const AB_ACCOUNT *acc) {
+  AB_IMEXPORTER_ACCOUNTINFO *ai=NULL;
+  uint32_t uaid;
+  const char *s1;
+  const char *s2;
+
+  assert(acc);
+
+  /* find by unique account id */
+  uaid=AB_Account_GetUniqueId(acc);
+  if (uaid) {
+    ai=AB_ImExporterContext_FindAccountInfoByUniqueId(iec, uaid);
+    if (ai)
+      return ai;
+  }
+
+  /* find by IBAN */
+  s1=AB_Account_GetIBAN(acc);
+  if (s1 && *s1) {
+    ai=AB_ImExporterContext_FindAccountInfoByIban(iec, s1);
+    if (ai)
+      return ai;
+  }
+
+  /* find by bank code and account number */
+  s1=AB_Account_GetAccountNumber(acc);
+  s2=AB_Account_GetBankCode(acc);
+  if (s1 && *s1) {
+    ai=AB_ImExporterContext_FindAccountInfo(iec, s2, s1);
+    if (ai)
+      return ai;
+  }
+
+  /* not found */
+  return NULL;
+}
+
+
+
+AB_IMEXPORTER_ACCOUNTINFO*
+AB_ImExporterContext_GetAccountInfoForAccount(AB_IMEXPORTER_CONTEXT *iec, const AB_ACCOUNT *acc) {
+  AB_IMEXPORTER_ACCOUNTINFO *iea;
+
+  iea=AB_ImExporterContext_FindAccountInfoForAccount(iec, acc);
+  if (!iea) {
+    /* not found, append it */
+    iea=AB_ImExporterAccountInfo_new();
+    AB_ImExporterAccountInfo_SetAccountId(iea, AB_Account_GetUniqueId(acc));
+    AB_ImExporterAccountInfo_SetIban(iea, AB_Account_GetIBAN(acc));
+    AB_ImExporterAccountInfo_SetBankCode(iea, AB_Account_GetBankCode(acc));
+    AB_ImExporterAccountInfo_SetAccountNumber(iea, AB_Account_GetAccountNumber(acc));
+    /* add to list */
+    AB_ImExporterAccountInfo_List_Add(iea, iec->accountInfoList);
+  }
+
+  return iea;
 }
 
 
