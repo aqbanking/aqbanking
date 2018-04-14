@@ -1088,16 +1088,18 @@ AC_MSG_RESULT($enable_fulldoc)
 #
 AC_MSG_CHECKING(doxygen tag files)
 DOXYGEN_TAGFILES=""
+DOXYGEN_TAGFILEPATHS=""
 if test -d "${docpath}"; then
-  DOXYGEN_TAGFILES="`cd ${docpath} && ls *.tag`"
-  if test -n "${DOXYGEN_TAGFILES}"; then
-   DOXYGEN_TAGFILES="`echo ${DOXYGEN_TAGFILES} | ${SED} -e s/${PACKAGE}.tag//`"
+  tagfiles="`cd ${docpath} && ls *.tag`"
+  if test -n "${tagfiles}"; then
+    # remove own package from list
+    tagfiles="`echo ${tagfiles} | ${SED} -e s/${PACKAGE}.tag//`"
+
+    # add every remaining tag file
+    for ff in ${tagfiles}; do
+      DOXYGEN_TAGFILES="${DOXYGEN_TAGFILES} ${docpath}/${ff}=${docpath}/`basename -s .tag ${ff}`"
+    done
   fi
-  realfiles=""
-  for ff in ${DOXYGEN_TAGFILES}; do
-    realfiles="${realfiles} ${docpath}/${ff}"
-  done
-  DOXYGEN_TAGFILES="${realfiles}"
 fi
 if test -z "${DOXYGEN_TAGFILES}"; then
   AC_MSG_RESULT(none)

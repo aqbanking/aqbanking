@@ -47,19 +47,9 @@ install-srcdoc: srcdoc
 	test -d "$(DESTDIR)@docpath@/$(PACKAGE)" || \
 	  mkdir -p "$(DESTDIR)@docpath@/$(PACKAGE)"
 	for f in apidoc/html/aqbanking-@AQBANKING_VERSION_RELEASE_STRING@/*; do \
-	  cp $$f "$(DESTDIR)@docpath@/$(PACKAGE)/"; \
+	  cp -dR $$f "$(DESTDIR)@docpath@/$(PACKAGE)/"; \
 	done
 	cp "apidoc/$(PACKAGE).tag" "$(DESTDIR)@docpath@/"
-	if test -x "$(DESTDIR)@docpath@/$(PACKAGE)/installdox"; then \
-	  cd "$(DESTDIR)@docpath@/$(PACKAGE)" && \
-	   ID_OPT="-q" ; \
-	   for ff in ${DOXYGEN_TAGFILES}; do \
-	    ID_OPT="$$ID_OPT -l `basename $$ff`@../`basename $$ff | $(SED) -e s/.tag//`";\
-	   done ;\
-	   ( cd "$(DESTDIR)@docpath@/$(PACKAGE)" && \
-	      ./installdox -q $$ID_OPT \
-	   ); \
-	fi
 
 
 rpm:    $(PACKAGE).spec dist
