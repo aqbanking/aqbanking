@@ -44,10 +44,11 @@
  <SEGdef code="HIEKPS" version="1" isbpdjob="1"
          delimiter="+" terminator="'" >
    <GROUP type="BPDJob"               version="2" />
-   <ELEM  name="eStatementNumAllowed" type="alpha" maxsize="1" />
-   <ELEM  name="ackNeeded"            type="alpha" maxsize="1" />
-   <ELEM  name="maxEntriesAllowed"    type="alpha" maxsize="1" />
-
+   <GROUP delimiter=":" >
+     <ELEM  name="eStatementNumAllowed" type="alpha" maxsize="1" />
+     <ELEM  name="ackNeeded"            type="alpha" maxsize="1" />
+     <ELEM  name="maxEntriesAllowed"    type="alpha" maxsize="1" />
+   </GROUP>
 
    <VALUES>
      <VALUE path="head/code">%code</VALUE>
@@ -117,11 +118,12 @@
  <SEGdef code="HIEKPS" version="1" isbpdjob="1"
          delimiter="+" terminator="'" >
    <GROUP type="BPDJob" version="2" />
-   <ELEM name="eStatementNumAllowed" type="alpha" maxsize="1" />
-   <ELEM name="ackNeeded"            type="alpha" maxsize="1" />
-   <ELEM name="maxEntriesAllowed"    type="alpha" maxsize="1" />
-   <ELEM name="isBase64Encoded"      type="alpha" maxsize="1" />
-
+   <GROUP delimiter=":" >
+     <ELEM name="eStatementNumAllowed" type="alpha" maxsize="1" />
+     <ELEM name="ackNeeded"            type="alpha" maxsize="1" />
+     <ELEM name="maxEntriesAllowed"    type="alpha" maxsize="1" />
+     <ELEM name="isBase64Encoded"      type="alpha" maxsize="1" />
+   </GROUP>
 
    <VALUES>
      <VALUE path="head/code">%code</VALUE>
@@ -141,7 +143,7 @@
  <!--  Geschaeftsvorfall: Kontoauszug PDF (Version 1) -->
  <JOBdef  id="JobGetEStatements" 
           code="HKEKP"
-          params="HIEPKS"
+          params="HIEKPS"
           version="1" 
           crypt="1" 
           sign="1" 
@@ -157,7 +159,7 @@
  <!--  Geschaeftsvorfall: Kontoauszug PDF (Version 2) -->
  <JOBdef  id="JobGetEStatements" 
           code="HKEKP"
-          params="HIEPKS"
+          params="HIEKPS"
           version="2" 
           crypt="1" 
           sign="1" 
