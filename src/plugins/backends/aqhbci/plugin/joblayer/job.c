@@ -1170,7 +1170,8 @@ int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj,
     return j->exchangeFn(j, bj, m, ctx);
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "No exchangeFn set");
-    return GWEN_ERROR_NOT_SUPPORTED;
+    /*return GWEN_ERROR_NOT_SUPPORTED;*/
+    return 0;
   }
 }
 
