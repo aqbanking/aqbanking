@@ -1265,5 +1265,30 @@
  </SEGdef>
 
 
+
+  <SEGdef id="ComData" 
+          code="HIKOM" 
+          version="4"
+          delimiter="+"
+          terminator="'"
+  >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="kik" version="1" />
+   <ELEM name="language" type="num" maxsize="3" />
+   <GROUP name="service" minnum="1" maxnum="9" delimiter=":" >
+     <ELEM name="type" type="num" maxsize="2" />
+     <ELEM name="address" type="ascii" maxsize="512" />
+     <ELEM name="suffix" type="an" minnum="0" maxsize="512" />
+     <ELEM name="filter" type="an" minnum="0" maxsize="3" />
+     <ELEM name="fversion" type="num" minnum="0" maxsize="3" />
+   </GROUP>
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+  </SEGdef>
+
+
 </SEGs>
 
