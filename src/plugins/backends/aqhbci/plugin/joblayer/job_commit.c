@@ -520,8 +520,65 @@ int AH_Job__Commit_Bpd(AH_JOB *j){
 
       ba=AH_BpdAddr_FromDb(currService);
       if (ba) {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "Adding service");
-	AH_Bpd_AddAddr(bpd, ba);
+	if (1) { /* dump info */
+	  GWEN_BUFFER *tbuf;
+	  const char *s;
+  
+	  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  
+	  switch (AH_BpdAddr_GetType(ba)) {
+	  case AH_BPD_AddrTypeTCP:
+	    GWEN_Buffer_AppendString(tbuf, "TCP: ");
+	    break;
+	  case AH_BPD_AddrTypeBTX:
+	    GWEN_Buffer_AppendString(tbuf, "BTX: ");
+	    break;
+	  case AH_BPD_AddrTypeSSL:
+	    GWEN_Buffer_AppendString(tbuf, "SSL: ");
+	    break;
+	  default:
+	    GWEN_Buffer_AppendString(tbuf, "<UNK>: ");
+	    break;
+	  }
+  
+	  s=AH_BpdAddr_GetAddr(ba);
+	  if (s && *s)
+	    GWEN_Buffer_AppendString(tbuf, s);
+	  else
+	    GWEN_Buffer_AppendString(tbuf, "<empty>");
+  
+	  s=AH_BpdAddr_GetSuffix(ba);
+	  if (s && *s) {
+	    GWEN_Buffer_AppendString(tbuf, ", ");
+	    GWEN_Buffer_AppendString(tbuf, s);
+	  }
+  
+	  GWEN_Buffer_AppendString(tbuf, ", ");
+	  switch(AH_BpdAddr_GetFType(ba)) {
+	  case AH_BPD_FilterTypeNone:
+	    GWEN_Buffer_AppendString(tbuf, "none");
+	    break;
+	  case AH_BPD_FilterTypeBase64:
+	    GWEN_Buffer_AppendString(tbuf, "base64");
+	    break;
+	  case AH_BPD_FilterTypeUUE:
+	    GWEN_Buffer_AppendString(tbuf, "uue");
+	    break;
+	  default:
+	    GWEN_Buffer_AppendString(tbuf, "<unk>");
+	    break;
+	  }
+  
+	  DBG_INFO(AQHBCI_LOGDOMAIN, "Server address found: %s", GWEN_Buffer_GetStart(tbuf));
+	  GWEN_Gui_ProgressLog2(0,
+				GWEN_LoggerLevel_Info,
+				I18N("Server address found: %s"),
+				GWEN_Buffer_GetStart(tbuf));
+	  GWEN_Buffer_free(tbuf);
+	}
+
+	/* add service */
+        AH_Bpd_AddAddr(bpd, ba);
       }
       currService=GWEN_DB_FindNextGroup(currService, "service");
     }
