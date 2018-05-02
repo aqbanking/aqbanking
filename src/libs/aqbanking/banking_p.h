@@ -128,10 +128,6 @@ static int AB_Banking__ExecuteQueue(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
 static AB_ACCOUNT *AB_Banking__GetAccount(AB_BANKING *ab,
 					  const char *accountId);
 
-static int AB_Banking__GetDebuggerPath(AB_BANKING *ab,
-                                       const char *backend,
-                                       GWEN_BUFFER *pbuf);
-
 static int AB_Banking__TransformIban(const char *iban, int len,
                                      char *newIban, int maxLen);
 

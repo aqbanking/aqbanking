@@ -253,44 +253,6 @@ GWEN_DIALOG *AB_Banking_GetNewUserDialog(AB_BANKING *ab,
 
 
 
-/** @name Working With Backends (Deprecated)
- *
- * <p>
- *   These functions are now deprecated and will be removed prior to the release
- *   of AqBanking5.
- * </p>
- * <p>
- *   Since AqBanking5 configuration dialogs
- *   and assistents are implemented using GWEN's Dialog Framework. This framework
- *   allows for platform-independent dialogs (see @ref AB_ImporterDialog_new).
- * </p>
- */
-/*@{*/
-
-
-/**
- * This function is deprecated and will be removed for the final release
- * of AqBanking5.
- * You can use @ref AB_SetupDialog_new to create the new setup dialog within your
- * application and run it via @ref GWEN_Dialog_Exec().
- */
-AQBANKING_API AQBANKING_DEPRECATED
-int AB_Banking_FindWizard(AB_BANKING *ab,
-                          const char *backend,
-                          const char *frontends,
-                          GWEN_BUFFER *pbuf);
-
-AQBANKING_API AQBANKING_DEPRECATED
-int AB_Banking_FindDebugger(AB_BANKING *ab,
-			    const char *backend,
-			    const char *frontends,
-                            GWEN_BUFFER *pbuf);
-
-
-/*@}*/
-
-
-
 /** @name Application Data
  *
  * Applications may let AqBanking store global application specific data.
@@ -376,26 +338,6 @@ void AB_Banking_SetUserData(AB_BANKING *ab, void *user_data);
 
 /*@}*/
 
-
-
-
-
-
-/** @name Plugin Handling
- *
- * These functions are also obsolete and will be removed for AqBanking5.
- */
-/*@{*/
-
-
-AQBANKING_API AQBANKING_DEPRECATED
-GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetWizardDescrs(AB_BANKING *ab);
-
-
-AQBANKING_API AQBANKING_DEPRECATED
-GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetDebuggerDescrs(AB_BANKING *ab,
-                                                            const char *pn);
-/*@}*/
 
 
 
