@@ -13,7 +13,7 @@
 #endif
 
 /* don't warn about our own deprecated functions */
-#define AQBANKING_NOWARN_DEPRECATED 
+//#define AQBANKING_NOWARN_DEPRECATED
 
 
 #include "banking_p.h"
@@ -427,24 +427,6 @@ AB_Banking_CheckAccount(AB_BANKING *ab,
 
 
 
-int AB_Banking__GetDebuggerPath(AB_BANKING *ab,
-                                const char *backend,
-                                GWEN_BUFFER *pbuf){
-  const char *s;
-
-  GWEN_Buffer_AppendString(pbuf,
-                           AQBANKING_PLUGINS
-			   DIRSEP
-			   AB_PROVIDER_DEBUGGER_FOLDER
-                           DIRSEP);
-  s=backend;
-  while(*s) GWEN_Buffer_AppendByte(pbuf, tolower(*(s++)));
-
-  return 0;
-}
-
-
-
 void *AB_Banking_GetUserData(AB_BANKING *ab) {
   assert(ab);
   return ab->user_data;
@@ -665,12 +647,12 @@ int AB_Banking_CheckIban(const char *iban) {
   char *s;
 
   if (strlen(iban)<5) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad IBAN (too short)");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Bad IBAN (too short) [%s]", iban);
     return -1;
   }
   p=iban;
   if (!(*p >= 'A' && *p++ <= 'Z' && *p >= 'A' && *p++ <= 'Z')) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad IBAN (country code not in upper case)");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Bad IBAN (country code not in upper case) [%s]", iban);
     return -1;
   }
   p+=2;
@@ -702,7 +684,7 @@ int AB_Banking_CheckIban(const char *iban) {
     }
     tmp[i]=0;
     if (1!=sscanf(tmp, "%u", &j)) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad IBAN (bad char)");
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Bad IBAN (bad char) [%s]", iban);
       return -1;
     }
     j=j%97; /* modulo 97 */
@@ -710,11 +692,11 @@ int AB_Banking_CheckIban(const char *iban) {
   } /* while */
 
   if (j!=1) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad IBAN (bad checksum)");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Bad IBAN (bad checksum) [%s]", iban);
     return 1;
   }
 
-  DBG_INFO(AQBANKING_LOGDOMAIN, "IBAN is valid");
+  DBG_DEBUG(AQBANKING_LOGDOMAIN, "IBAN is valid [%s]", iban);
   return 0;
 }
 
