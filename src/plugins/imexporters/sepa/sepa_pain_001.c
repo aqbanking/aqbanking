@@ -146,7 +146,7 @@ int AH_ImExporterSEPA_Export_Pain_001(AB_IMEXPORTER *ie,
 	  s=AB_Transaction_GetEndToEndReference(t);
 	  if (!( s && *s))
 	    s=AB_Transaction_GetCustomerReference(t);
-	  if (!s)
+	  if (!(s && *s))
 	    s="NOTPROVIDED";
 	  GWEN_XMLNode_SetCharValue(nnn, "EndToEndId", s);
 	}

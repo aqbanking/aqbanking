@@ -189,8 +189,8 @@ int AH_ImExporterSEPA_Export_Pain_008(AB_IMEXPORTER *ie,
 	s=AB_Transaction_GetEndToEndReference(t);
 	if (!( s && *s))
 	  s=AB_Transaction_GetCustomerReference(t);
-	if (!s)
-	  s="NOTPROVIDED";
+        if (!(s && *s))
+          s="NOTPROVIDED";
         GWEN_XMLNode_SetCharValueByPath(nn, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "PmtId/EndToEndId", s);
 
 	tv=AB_Transaction_GetValue(t);
