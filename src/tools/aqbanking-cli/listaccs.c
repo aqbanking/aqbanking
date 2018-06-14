@@ -188,7 +188,7 @@ int listAccs(AB_BANKING *ab,
           if (!s)
             s="";
           fprintf(stdout, "%s\t", s);          /* IBAN */
-          fprintf(stdout, "%lud\t", (unsigned long int)AB_Account_GetUniqueId(a)); /* unique account id */
+          fprintf(stdout, "%lu\t", (unsigned long int)AB_Account_GetUniqueId(a)); /* unique account id */
           fprintf(stdout, "%s\n", AB_AccountType_toChar(AB_Account_GetAccountType(a))); /* account type */
         }
 
