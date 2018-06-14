@@ -56,6 +56,7 @@ AB_ACCOUNT *AB_Account_List2_GetAccountByUniqueId(const AB_ACCOUNT_LIST2 *al, ui
 
 
 typedef enum {
+  AB_AccountType_Invalid=-1,
   AB_AccountType_Unknown=0,
   AB_AccountType_Bank,
   AB_AccountType_CreditCard,
@@ -82,6 +83,22 @@ typedef enum {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+
+/**
+ * Translate account type to a string (e.g. AB_AccountType_CreditCard -> "creditcard").
+ */
+AQBANKING_API 
+const char *AB_AccountType_toChar(AB_ACCOUNT_TYPE ty);
+
+
+/**
+ * Translate account type from a string (e.g. "creditcard" -> AB_AccountType_CreditCard).
+ * @return account type (or AB_AccountType_Invalid on error).
+ */
+AQBANKING_API 
+AB_ACCOUNT_TYPE AB_AccountType_fromChar(const char *s);
+
 
 AQBANKING_API 
 void AB_Account_free(AB_ACCOUNT *acc);
