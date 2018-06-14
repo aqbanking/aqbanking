@@ -167,19 +167,29 @@ int listAccs(AB_BANKING *ab,
           s=AB_Account_GetBankCode(a);
           if (!s)
             s="";
-          fprintf(stdout, "%s\t", s);
+          fprintf(stdout, "%s\t", s);          /* bank code */
           s=AB_Account_GetAccountNumber(a);
           if (!s)
             s="";
-          fprintf(stdout, "%s\t", s);
+          fprintf(stdout, "%s\t", s);          /* account number */
           s=AB_Account_GetBankName(a);
           if (!s)
             s="";
-          fprintf(stdout, "%s\t", s);
+          fprintf(stdout, "%s\t", s);          /* bank name */
           s=AB_Account_GetAccountName(a);
           if (!s)
             s="";
-          fprintf(stdout, "%s\n", s);
+          fprintf(stdout, "%s\t", s);          /* account name */
+          s=AB_Account_GetBIC(a);
+          if (!s)
+            s="";
+          fprintf(stdout, "%s\t", s);          /* SWIFT BIC */
+          s=AB_Account_GetIBAN(a);
+          if (!s)
+            s="";
+          fprintf(stdout, "%s\t", s);          /* IBAN */
+          fprintf(stdout, "%lud\t", (unsigned long int)AB_Account_GetUniqueId(a)); /* unique account id */
+          fprintf(stdout, "%s\n", AB_AccountType_toChar(AB_Account_GetAccountType(a))); /* account type */
         }
 
         a=AB_Account_List2Iterator_Next(ait);
