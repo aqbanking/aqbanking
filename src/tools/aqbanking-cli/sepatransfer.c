@@ -35,10 +35,13 @@ int sepaTransfer(AB_BANKING *ab,
                  char **argv) {
   GWEN_DB_NODE *db;
   int rv;
+  const char *s;
   const char *ctxFile;
   const char *bankId;
   const char *accountId;
   const char *subAccountId;
+  const char *iban;
+  AB_ACCOUNT_TYPE accountType=AB_AccountType_Unknown;
   AB_IMEXPORTER_CONTEXT *ctx=0;
   AB_ACCOUNT_LIST2 *al;
   AB_ACCOUNT *a;
@@ -104,6 +107,28 @@ int sepaTransfer(AB_BANKING *ab,
     "subaccount",                   /* long option */
     "Specify the sub account id (Unterkontomerkmal)",    /* short description */
     "Specify the sub account id (Unterkontomerkmal)"     /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
+    "accountType",                /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    "at",                         /* short option */
+    "accounttype",                /* long option */
+    "Specify the account type",    /* short description */
+    "Specify the account type"     /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
+    "localIBAN",                  /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    0,                            /* short option */
+    "iban",                       /* long option */
+    "specify local account by IBAN",     /* short description */
+    "specify local account by IBAN"      /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT,  /* flags */
@@ -209,6 +234,18 @@ int sepaTransfer(AB_BANKING *ab,
   bankId=GWEN_DB_GetCharValue(db, "bankId", 0, 0);
   accountId=GWEN_DB_GetCharValue(db, "accountId", 0, 0);
   subAccountId=GWEN_DB_GetCharValue(db, "subAccountId", 0, 0);
+  iban=GWEN_DB_GetCharValue(db, "localIBAN", 0, NULL);
+  s=GWEN_DB_GetCharValue(db, "accountType", 0, NULL);
+  if (s && *s) {
+    AB_ACCOUNT_TYPE ty;
+
+    ty=AB_AccountType_fromChar(s);
+    if (ty==AB_AccountType_Invalid) {
+      fprintf(stderr, "ERROR: Invalid account type \"%s\"\n", s);
+      return 2;
+    }
+    accountType=ty;
+  }
   ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
 
   rv=AB_Banking_Init(ab);
@@ -224,7 +261,14 @@ int sepaTransfer(AB_BANKING *ab,
   }
 
   /* get account */
-  al=AB_Banking_FindAccounts(ab, "*", "*", bankId, accountId, subAccountId);
+  al=AB_Banking_FindAccounts2(ab,
+			      "*",                       /* backend */
+			      "*",                       /* country */
+			      bankId,                    /* bankId */
+			      accountId,                 /* accountId */
+			      subAccountId,              /* subAccountId */
+			      (iban && *iban)?iban:"*",  /* local IBAN */
+			      accountType);              /* accountType */
   if (al==NULL || AB_Account_List2_GetSize(al)==0) {
     DBG_ERROR(0, "Account not found");
     AB_Account_List2_free(al);
