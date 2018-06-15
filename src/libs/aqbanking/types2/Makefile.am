@@ -16,7 +16,8 @@ typefiles=\
   transactionlimits.xml \
   bankinfoservice.xml \
   bankinfo.xml \
-  document.xml
+  document.xml \
+  message.xml
 
 
 typedatadir=$(datadir)/aqbanking/typemaker2/c
@@ -33,7 +34,8 @@ built_sources=  \
   transactionlimits.c \
   bankinfoservice.c \
   bankinfo.c \
-  document.c
+  document.c \
+  message.c
 
 
 build_headers_priv= \
@@ -41,7 +43,8 @@ build_headers_priv= \
   transactionlimits_p.h \
   bankinfoservice_p.h \
   bankinfo_p.h \
-  document_p.h
+  document_p.h \
+  message_p.h
 
 
 build_headers_pub= \
@@ -49,7 +52,8 @@ build_headers_pub= \
   transactionlimits.h \
   bankinfoservice.h \
   bankinfo.h \
-  document.h
+  document.h \
+  message.h
 
 
 

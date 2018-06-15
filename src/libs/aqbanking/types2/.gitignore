@@ -32,3 +32,10 @@ ab_document_list2.tm2
 document.c
 document.h
 document_p.h
+
+ab_message.tm2
+ab_message_list.tm2
+ab_message_list2.tm2
+message.c
+message.h
+message_p.h
