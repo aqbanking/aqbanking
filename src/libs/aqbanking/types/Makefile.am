@@ -6,7 +6,6 @@ noinst_LTLIBRARIES=libtypes.la
 
 typefiles=\
   pin.xml \
-  eutransferinfo.xml \
   user.xml \
   cellphone.xml \
   security.xml
@@ -16,8 +15,6 @@ noinst_HEADERS=\
   accstatus_p.h \
   accstatus_l.h \
   balance_p.h \
-  eutransferinfo_l.h \
-  eutransferinfo_p.h \
   pin_l.h \
   pin_p.h \
   user_l.h \
@@ -34,7 +31,6 @@ iheaderdir=@aqbanking_headerdir_am@/aqbanking
 iheader_HEADERS=\
   accstatus.h \
   balance.h \
-  eutransferinfo.h \
   user.h \
   userfns.h \
   value.h \
@@ -44,7 +40,6 @@ iheader_HEADERS=\
 libtypes_la_SOURCES=\
   accstatus.c \
   balance.c \
-  eutransferinfo.c \
   pin.c \
   user.c \
   userfns.c \
