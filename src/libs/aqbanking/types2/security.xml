@@ -81,6 +81,7 @@
 
       <member name="name" type="char_ptr" maxlen="64" >
         <descr>
+          Full name of the security.
         </descr>
         <access>public</access>
         <flags>own</flags>
@@ -90,6 +91,7 @@
 
       <member name="uniqueId" type="char_ptr" maxlen="64" >
         <descr>
+          Unique id of the security within the namespace.
         </descr>
         <access>public</access>
         <flags>own</flags>
@@ -99,6 +101,7 @@
 
       <member name="nameSpace" type="char_ptr" maxlen="64" >
         <descr>
+          Namespace for uniqueId (e.g. CUSIP for North America)
         </descr>
         <access>public</access>
         <flags>own</flags>
@@ -108,7 +111,8 @@
 
       <member name="tickerSymbol" type="char_ptr" maxlen="64" >
         <descr>
-        </descr>
+          Ticker symbol of the security.
+      </descr>
         <access>public</access>
         <flags>own</flags>
         <setflags>const dup</setflags>
@@ -116,6 +120,9 @@
       </member>
 
       <member name="units" type="AB_VALUE" maxlen="256" >
+        <descr>
+          Number of units held (e.g. number of stock units etc)
+        </descr>
         <access>public</access>
         <flags>own</flags>
         <setflags>const dup</setflags>
@@ -125,6 +132,9 @@
       </member>
 
       <member name="unitPriceValue" type="AB_VALUE" maxlen="256" >
+        <descr>
+          Price of a unit as of unitPriceDate.
+        </descr>
         <access>public</access>
         <flags>own</flags>
         <setflags>const dup</setflags>
@@ -134,6 +144,9 @@
       </member>
 
       <member name="unitPriceDate" type="gwen_time" maxlen="32" >
+        <descr>
+          Date for the unitPriceValue
+        </descr>
         <aqdb_type>AQDB_DataType_String</aqdb_type>
         <access>public</access>
         <flags>own</flags>
