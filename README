@@ -204,7 +204,6 @@ but they cannot be used unless "ctypes" is installed.
 
 These applications fully or partially support AqBanking:
  - AqFinance (http://www2.aquamaniac.de/sites/aqfinance/index.php)
- - QBankManager (http://www.aquamaniac.de/qbanking/, discontinued)
  - Gnucash (http://www.gnucash.org/)
  - KMyMoney (http://www.kmymoney.org/)
  - OrgaMon (http://orgamon.org/)
@@ -250,8 +249,8 @@ Compilation hints for specific platforms:
   ./configure qt3_libs="-L/opt/qt/lib -lqt-mt"
 
 
-5.2. Building from CVS/SVN
---------------------------
+5.2. Building from GIT
+----------------------
 
 #>make -fMakefile.cvs
 
