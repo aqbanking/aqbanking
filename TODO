@@ -4,6 +4,24 @@ Mid-term
 
 - types/*.xml: convert to typemaker2 (partially done)
 
+- internal:
+  - AB_ACCOUNT and AB_USER should be handled by the backends only
+      - these structures are currently way to fat for applications because
+        they also contain internal info for the backends which are absolutely
+        not needed by applications. They also make it very conplicated to manage
+        users and accounts.
+  - backend functions to be used by setup apps:
+    - getAccounts()
+    - getUsers()
+  - simplify backend-api:
+    - updateAccountSpecs(): called upon AB_Banking_Init(), if there are no account specs
+    - executeJobs():
+        - Temporary loads necessary accounts and user
+        - executes the jobs
+        - updates account specs
+        - unloads accounts and users
+
+
 
 Long-term
 =========
