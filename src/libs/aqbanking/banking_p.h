@@ -53,7 +53,6 @@
 #include "account_l.h"
 #include "job_l.h"
 #include "imexporter_l.h"
-#include "pin_l.h"
 #include "bankinfoplugin_l.h"
 #include "user_l.h"
 
