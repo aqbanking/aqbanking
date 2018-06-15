@@ -54,9 +54,9 @@ balance.c
 balance.h
 balance_p.h
 
-ab_accstatus.tm2
-ab_accstatus_list.tm2
-ab_accstatus_list2.tm2
+ab_account_status.tm2
+ab_account_status_list.tm2
+ab_account_status_list2.tm2
 accstatus.c
 accstatus.h
 accstatus_p.h
