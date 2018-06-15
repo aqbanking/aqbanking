@@ -264,7 +264,9 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
           AB_IMEXPORTER_ACCOUNTINFO *iea;
           AB_ACCOUNT_STATUS *as;
 
-          bal=AB_Balance_new(v, ti);
+          bal=AB_Balance_new();
+          AB_Balance_SetTime(bal, ti);
+          AB_Balance_SetValue(bal, v);
           AB_Value_free(v);
           as=AB_AccountStatus_new();
           if (ti)

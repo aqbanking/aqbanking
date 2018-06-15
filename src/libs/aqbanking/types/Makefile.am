@@ -10,9 +10,6 @@ typefiles=\
 
 
 noinst_HEADERS=\
-  accstatus_p.h \
-  accstatus_l.h \
-  balance_p.h \
   user_l.h \
   user_p.h \
   userfns_l.h \
@@ -23,16 +20,12 @@ noinst_HEADERS=\
 
 iheaderdir=@aqbanking_headerdir_am@/aqbanking
 iheader_HEADERS=\
-  accstatus.h \
-  balance.h \
   user.h \
   userfns.h \
   value.h \
   cellphoneproduct.h
 
 libtypes_la_SOURCES=\
-  accstatus.c \
-  balance.c \
   user.c \
   userfns.c \
   value.c \

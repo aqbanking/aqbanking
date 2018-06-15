@@ -1,0 +1,110 @@
+<?xml?>
+
+<tm2>
+  <type id="AB_BALANCE" type="pointer">
+    <descr>
+      This class holds time and amount of an account balance.
+    </descr>
+
+    <lang id="c">
+      <identifier>AB_BALANCE</identifier>
+      <prefix>AB_Balance</prefix>
+      
+      <baseFileName>balance</baseFileName>
+      
+      <flags>
+        with_db
+        with_refcount
+      </flags>
+      
+      <headers>
+        <header type="sys" loc="pre">aqbanking/error.h</header>
+        <header type="sys" loc="pre">gwenhywfar/types.h</header>
+        <header type="sys" loc="pre">gwenhywfar/gwentime.h</header>
+
+        <header type="sys" loc="post">aqbanking/value.h</header>
+      </headers>
+
+
+
+      <inlines>
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list2</typeFlagsMask>
+          <typeFlagsValue>with_list2</typeFlagsValue>
+          <content>
+             $(api) int $(struct_prefix)_List2_freeAll($(struct_type)_LIST2 *tl);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask>with_list2</typeFlagsMask>
+          <typeFlagsValue>with_list2</typeFlagsValue>
+          <content>
+
+             static $(struct_type) *$(struct_prefix)_List2__freeAll_cb($(struct_type) *t, void *user_data) {
+               $(struct_prefix)_free(t);
+               return NULL;
+             }
+
+
+             int $(struct_prefix)_List2_freeAll($(struct_type)_LIST2 *tl) {
+               if (tl) {
+                 $(struct_prefix)_List2_ForEach(tl, $(struct_prefix)_List2__freeAll_cb, NULL);
+                 $(struct_prefix)_List2_free(tl); 
+               }
+               else {
+                 DBG_ERROR(AQBANKING_LOGDOMAIN, "List missing");
+                 return GWEN_ERROR_INVALID;
+               }
+               return 0;
+             }
+          </content>
+        </inline>
+
+      </inlines>
+
+
+    </lang>
+
+    <enums>
+
+    </enums>
+
+    <defines>
+
+    </defines>
+
+
+    <members>
+
+      <member name="time" type="gwen_time" maxlen="32" >
+        <descr>
+        </descr>
+        <aqdb_type>AQDB_DataType_String</aqdb_type>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+        <default>NULL</default>
+        <preset>NULL</preset>
+      </member>
+
+      <member name="value" type="AB_VALUE" maxlen="256" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+        <default>NULL</default>
+        <preset>NULL</preset>
+      </member>
+
+    </members>
+
+    
+  </type>
+  
+</tm2>
+

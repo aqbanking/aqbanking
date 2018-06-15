@@ -271,7 +271,9 @@ int AIO_OfxGroup_STMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
       ast=AB_AccountStatus_new();
       AB_AccountStatus_SetTime(ast, ti);
 
-      bal=AB_Balance_new(v, ti);
+      bal=AB_Balance_new();
+      AB_Balance_SetTime(bal, ti);
+      AB_Balance_SetValue(bal, v);
       if (xg->currency && AB_Value_GetCurrency(v)==NULL) {
 	AB_VALUE *v2;
 
@@ -300,7 +302,9 @@ int AIO_OfxGroup_STMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
       ast=AB_AccountStatus_new();
       AB_AccountStatus_SetTime(ast, ti);
 
-      bal=AB_Balance_new(v, ti);
+      bal=AB_Balance_new();
+      AB_Balance_SetTime(bal, ti);
+      AB_Balance_SetValue(bal, v);
       if (xg->currency && AB_Value_GetCurrency(v)==NULL) {
 	AB_VALUE *v2;
 

@@ -163,10 +163,13 @@ AB_BALANCE *AH_Job_GetBalance__ReadBalance(GWEN_DB_NODE *dbT) {
 	v2=0;
       }
     }
-    if (v2)
-      bal=AB_Balance_new(v2, t);
+    if (v2) {
+      bal=AB_Balance_new();
+      AB_Balance_SetTime(bal, t);
+      AB_Balance_SetValue(bal, v2);
+    }
     else
-      bal=0;
+      bal=NULL;
   }
 
   AB_Value_free(v2);

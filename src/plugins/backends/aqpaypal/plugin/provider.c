@@ -1327,7 +1327,9 @@ int APY_Provider_ExecGetBal(AB_PROVIDER *pro,
       DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Invalid timespec [%s]", p);
     }
     
-    bal=AB_Balance_new(vc, t);
+    bal=AB_Balance_new();
+    AB_Balance_SetTime(bal, t);
+    AB_Balance_SetValue(bal, vc);
     
     AB_Value_free(vc);
     GWEN_Time_free(t);

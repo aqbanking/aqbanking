@@ -32,8 +32,8 @@ private:
   wrapped_type* m_ptr;
 public:
 
-  Balance(const Value& v, const Time& t)
-	: m_ptr(AB_Balance_new(v, t))
+  Balance()
+	: m_ptr(AB_Balance_new())
   {}
   AB_CXXWRAP_CONSTRUCTORS(Balance, AB_Balance);
   Value AB_CXXWRAP_GET0_CONST(getValue, AB_Balance_GetValue);

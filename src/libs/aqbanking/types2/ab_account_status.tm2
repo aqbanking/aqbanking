@@ -1,0 +1,8 @@
+<?xml?>
+
+<tm2>
+  <typedef id="AB_ACCOUNT_STATUS" type="pointer" lang="c" extends="struct_base">
+    <identifier>AB_ACCOUNT_STATUS</identifier>
+    <prefix>AB_AccountStatus</prefix>
+  </typedef>
+</tm2>

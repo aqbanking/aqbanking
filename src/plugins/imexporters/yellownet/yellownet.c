@@ -397,7 +397,9 @@ int AB_ImExporterYN__ReadAccountStatus(AB_IMEXPORTER *ie,
 
           AB_Value_SetCurrency(val, AB_ImExporterAccountInfo_GetCurrency(ai));
 	  ast=AB_AccountStatus_new();
-	  bal=AB_Balance_new(val, ti);
+          bal=AB_Balance_new();
+          AB_Balance_SetTime(bal, ti);
+          AB_Balance_SetValue(bal, val);
 
 	  AB_AccountStatus_SetBookedBalance(ast, bal);
 	  AB_Balance_free(bal);
