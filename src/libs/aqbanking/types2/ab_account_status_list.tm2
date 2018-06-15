@@ -1,8 +1,0 @@
-<?xml?>
-
-<tm2>
-  <typedef id="AB_ACCOUNT_STATUS_LIST" type="pointer" lang="c" extends="list1_base" basetype="AB_ACCOUNT_STATUS">
-    <identifier>AB_ACCOUNT_STATUS_LIST</identifier>
-    <prefix>AB_AccountStatus_List</prefix>
-  </typedef>
-</tm2>
