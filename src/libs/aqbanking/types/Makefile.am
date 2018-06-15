@@ -20,8 +20,6 @@ noinst_HEADERS=\
   eutransferinfo_p.h \
   pin_l.h \
   pin_p.h \
-  textkeydescr_l.h \
-  textkeydescr_p.h \
   user_l.h \
   user_p.h \
   userfns_l.h \
@@ -36,7 +34,6 @@ iheaderdir=@aqbanking_headerdir_am@/aqbanking
 iheader_HEADERS=\
   accstatus.h \
   balance.h \
-  textkeydescr.h \
   eutransferinfo.h \
   user.h \
   userfns.h \
@@ -49,7 +46,6 @@ libtypes_la_SOURCES=\
   balance.c \
   eutransferinfo.c \
   pin.c \
-  textkeydescr.c \
   user.c \
   userfns.c \
   value.c \
