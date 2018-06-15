@@ -332,90 +332,6 @@ AH_JOB_LIST *AH_Outbox__CBox_TakeFinishedJobs(AH_OUTBOX__CBOX *cbox){
 
 
 
-GWEN_TIME *AH_Outbox__CBox_GetEarliestPendingDate(AH_OUTBOX__CBOX *cbox) {
-  AB_JOB_LIST2_ITERATOR *it;
-  GWEN_TIME *ti;
-
-  assert(cbox);
-  assert(cbox->pendingJobs);
-  ti=0;
-  it=AB_Job_List2_First(cbox->pendingJobs);
-  if (it) {
-    AB_JOB *bj;
-
-    bj=AB_Job_List2Iterator_Data(it);
-    while(bj) {
-      GWEN_DB_NODE *db;
-      GWEN_TIME *tti;
-
-      db=AB_Job_GetProviderData(bj, AH_HBCI_GetProvider(cbox->hbci));
-      assert(db);
-
-      tti=AB_Job_DateFromDb(db, "sendtime");
-      if (tti) {
-        if (!ti)
-          ti=tti;
-        else {
-          if (GWEN_Time_Diff(tti, ti)>0) {
-            GWEN_Time_free(ti);
-            ti=tti;
-          }
-          else
-            GWEN_Time_free(tti);
-        }
-      }
-
-      bj=AB_Job_List2Iterator_Next(it);
-    }
-    AB_Job_List2Iterator_free(it);
-  }
-
-  return ti;
-}
-
-
-
-GWEN_TIME *AH_Outbox__CBox_GetLatestPendingDate(AH_OUTBOX__CBOX *cbox) {
-  AB_JOB_LIST2_ITERATOR *it;
-  GWEN_TIME *ti;
-
-  assert(cbox);
-  assert(cbox->pendingJobs);
-  ti=0;
-  it=AB_Job_List2_First(cbox->pendingJobs);
-  if (it) {
-    AB_JOB *bj;
-
-    bj=AB_Job_List2Iterator_Data(it);
-    while(bj) {
-      GWEN_DB_NODE *db;
-      GWEN_TIME *tti;
-
-      db=AB_Job_GetProviderData(bj, AH_HBCI_GetProvider(cbox->hbci));
-      assert(db);
-      tti=AB_Job_DateFromDb(db, "sendtime");
-      if (tti) {
-        if (!ti)
-          ti=tti;
-        else {
-          if (GWEN_Time_Diff(ti, tti)>0) {
-            GWEN_Time_free(ti);
-            ti=tti;
-          }
-          else
-            GWEN_Time_free(tti);
-        }
-      }
-      bj=AB_Job_List2Iterator_Next(it);
-    }
-    AB_Job_List2Iterator_free(it);
-  }
-
-  return ti;
-}
-
-
-
 int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox){
   AH_JOB *j;
   unsigned int errors;
@@ -456,30 +372,6 @@ int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox){
     j=next;
   } /* while */
 
-
-  /* add JobGetStatus if there are any pending jobs for this customer */
-  if (AB_Job_List2_GetSize(cbox->pendingJobs)) {
-    AH_JOB *sj;
-    GWEN_TIME *t1;
-    GWEN_TIME *t2;
-
-    /* have some pending jobs, add status call */
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Will ask for status reports");
-    t1=AH_Outbox__CBox_GetEarliestPendingDate(cbox);
-    t2=AH_Outbox__CBox_GetLatestPendingDate(cbox);
-    sj=AH_Job_GetStatus_new(cbox->user, t1, t2);
-    GWEN_Time_free(t2);
-    GWEN_Time_free(t1);
-    if (sj) {
-      AH_Job_AddFlags(sj, AH_JOB_FLAGS_OUTBOX);
-      AH_Job_AddSigner(sj, AB_User_GetUserId(cbox->user));
-      AH_Outbox__CBox_AddTodoJob(cbox, sj);
-    }
-    else {
-      DBG_WARN(AQHBCI_LOGDOMAIN,
-               "JobGetStatus not available, cannot check pending jobs");
-    }
-  } /* if attached jobs */
 
   /* move all dialog jobs to new queues or to the list of finished jobs */
   DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing dialog jobs");

@@ -397,30 +397,9 @@ uint32_t AB_Job_GetJobId(const AB_JOB *j) {
 
 
 
-const char *AB_Job_GetCreatedBy(const AB_JOB *j) {
-  assert(j);
-  return j->createdBy;
-}
-
-
-
 void AB_Job_SetUniqueId(AB_JOB *j, uint32_t jid){
   assert(j);
   j->jobId=jid;
-}
-
-
-
-GWEN_DB_NODE *AB_Job_GetAppData(AB_JOB *j){
-  const char *s;
-  GWEN_DB_NODE *db;
-
-  assert(j);
-  s=AB_Banking_GetEscapedAppName(AB_Account_GetBanking(AB_Job_GetAccount(j)));
-  assert(s);
-  db=GWEN_DB_GetGroup(j->dbData, GWEN_DB_FLAGS_DEFAULT, "apps");
-  assert(db);
-  return GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, s);
 }
 
 
@@ -576,108 +555,6 @@ void AB_Job_SetFieldLimits(AB_JOB *j, AB_TRANSACTION_LIMITS *limits) {
   if (limits) j->limits=AB_TransactionLimits_dup(limits);
   else j->limits=0;
 }
-
-
-
-void AB_Job_DateToDb(const GWEN_TIME *ti, GWEN_DB_NODE *db, const char *name){
-  if (ti) {
-    GWEN_BUFFER *dbuf;
-    int rv;
-
-    dbuf=GWEN_Buffer_new(0, 32, 0, 1);
-    rv=GWEN_Time_toUtcString(ti, "YYYYMMDD hh:mm:ss", dbuf);
-    assert(rv==0);
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         name, GWEN_Buffer_GetStart(dbuf));
-    GWEN_Buffer_free(dbuf);
-  }
-}
-
-
-
-GWEN_TIME *AB_Job_DateFromDb(GWEN_DB_NODE *db, const char *name) {
-  const char *p;
-
-  p=GWEN_DB_GetCharValue(db, name, 0, 0);
-  if (p) {
-    GWEN_TIME *ti;
-
-    ti=GWEN_Time_fromUtcString(p, "YYYYMMDD hh:mm:ss");
-    assert(ti);
-    return ti;
-  }
-  else {
-    GWEN_DB_NODE *dbT;
-
-    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, name);
-    if (dbT) {
-      GWEN_TIME *ti;
-
-      ti=GWEN_Time_fromDb(dbT);
-      assert(ti);
-      return ti;
-    }
-  }
-
-  return 0;
-}
-
-
-
-void AB_Job_DateOnlyToDb(const GWEN_TIME *ti,
-                         GWEN_DB_NODE *db,
-                         const char *name){
-  if (ti) {
-    GWEN_BUFFER *tbuf;
-    int rv;
-
-    tbuf=GWEN_Buffer_new(0, 32, 0, 1);
-    rv=GWEN_Time_toUtcString(ti, "YYYYMMDD", tbuf);
-    assert(rv==0);
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         name, GWEN_Buffer_GetStart(tbuf));
-    GWEN_Buffer_free(tbuf);
-  }
-}
-
-
-
-GWEN_TIME *AB_Job_DateOnlyFromDb(GWEN_DB_NODE *db, const char *name) {
-  const char *p;
-
-  p=GWEN_DB_GetCharValue(db, name, 0, 0);
-  if (p) {
-    GWEN_TIME *ti;
-    GWEN_BUFFER *dbuf;
-
-    dbuf=GWEN_Buffer_new(0, 32, 0, 1);
-    GWEN_Buffer_AppendString(dbuf, p);
-    GWEN_Buffer_AppendString(dbuf, "-12:00");
-
-    ti=GWEN_Time_fromUtcString(GWEN_Buffer_GetStart(dbuf), "YYYYMMDD-hh:mm");
-    assert(ti);
-    GWEN_Buffer_free(dbuf);
-    return ti;
-  }
-  else {
-    GWEN_DB_NODE *dbT;
-
-    dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, name);
-    if (dbT) {
-      GWEN_TIME *ti;
-
-      ti=GWEN_Time_fromDb(dbT);
-      assert(ti);
-      return ti;
-    }
-  }
-  return 0;
-}
-
-
-
-
-
 
 
 

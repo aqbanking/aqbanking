@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -248,23 +245,6 @@ AQBANKING_API
 uint32_t AB_Job_GetJobId(const AB_JOB *j);
 
 /**
- * Returns the name of the application which created this job.
- */
-AQBANKING_API
-const char *AB_Job_GetCreatedBy(const AB_JOB *j);
-
-
-/**
- * Returns a GWEN_DB_NODE which can be used to store/retrieve data for
- * the currently running application. The group returned MUST NOT be
- * freed !
- * AqBanking is able to separate and store the data for every application.
- */
-AQBANKING_API 
-GWEN_DB_NODE *AB_Job_GetAppData(AB_JOB *j);
-
-
-/**
  * Not all jobs have to be supported by every backend. The application needs
  * to know whether a job actually @b is supported, and this is done by calling
  * this function. It returns the error code (see @ref AB_ERROR) returned
@@ -286,7 +266,7 @@ void  AB_Job_SetStatus(AB_JOB *j, AB_JOB_STATUS st);
 /**
  * Returns the time when the status of this job changed last.
  */
-AQBANKING_API
+AQBANKING_API AQBANKING_DEPRECATED 
 const GWEN_TIME *AB_Job_GetLastStatusChange(const AB_JOB *j);
 
 /**
@@ -370,21 +350,6 @@ AB_JOB_TYPE AB_Job_Char2Type(const char *s);
  */
 AQBANKING_API
 const char *AB_Job_Type2LocalChar(AB_JOB_TYPE i);
-
-AQBANKING_API
-GWEN_TIME *AB_Job_DateFromDb(GWEN_DB_NODE *db, const char *name);
-
-AQBANKING_API
-void AB_Job_DateOnlyToDb(const GWEN_TIME *ti,
-                         GWEN_DB_NODE *db,
-                         const char *name);
-
-AQBANKING_API
-GWEN_TIME *AB_Job_DateOnlyFromDb(GWEN_DB_NODE *db, const char *name);
-
-AQBANKING_API
-void AB_Job_DateToDb(const GWEN_TIME *ti, GWEN_DB_NODE *db, const char *name);
-
 
 /*@}*/
 

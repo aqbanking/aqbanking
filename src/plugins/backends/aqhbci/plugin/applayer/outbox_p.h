@@ -77,11 +77,6 @@ static AH_JOB_LIST*
   AH_Outbox__CBox_TakeFinishedJobs(AH_OUTBOX__CBOX *cbox);
 
 
-static GWEN_TIME*
-  AH_Outbox__CBox_GetEarliestPendingDate(AH_OUTBOX__CBOX *cbox);
-static GWEN_TIME *AH_Outbox__CBox_GetLatestPendingDate(AH_OUTBOX__CBOX *cbox);
-
-
 static int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox);
 
 static int AH_Outbox__CBox__Hash(int mode,
