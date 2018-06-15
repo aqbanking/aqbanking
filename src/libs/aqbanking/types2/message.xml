@@ -116,15 +116,15 @@
         <getflags>const</getflags>
       </member>
 
-        <member name="dateReceived" type="gwen_time" maxlen="32" >
-          <aqdb_type>AQDB_DataType_String</aqdb_type>
-          <access>public</access>
-          <flags>own with_hash</flags>
-          <setflags>const dup</setflags>
-          <getflags>const</getflags>
-          <default>NULL</default>
-          <preset>NULL</preset>
-        </member>
+      <member name="dateReceived" type="gwen_time" maxlen="32" >
+        <aqdb_type>AQDB_DataType_String</aqdb_type>
+        <access>public</access>
+        <flags>own with_hash</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+        <default>NULL</default>
+        <preset>NULL</preset>
+      </member>
 
     </members>
 
