@@ -6,8 +6,7 @@ noinst_LTLIBRARIES=libtypes.la
 
 typefiles=\
   user.xml \
-  cellphone.xml \
-  security.xml
+  cellphone.xml
 
 
 noinst_HEADERS=\
@@ -19,9 +18,7 @@ noinst_HEADERS=\
   userfns_l.h \
   value_p.h \
   cellphoneproduct_l.h \
-  cellphoneproduct_p.h \
-  security_l.h \
-  security_p.h
+  cellphoneproduct_p.h
 
 
 iheaderdir=@aqbanking_headerdir_am@/aqbanking
@@ -31,8 +28,7 @@ iheader_HEADERS=\
   user.h \
   userfns.h \
   value.h \
-  cellphoneproduct.h \
-  security.h
+  cellphoneproduct.h
 
 libtypes_la_SOURCES=\
   accstatus.c \
@@ -40,8 +36,7 @@ libtypes_la_SOURCES=\
   user.c \
   userfns.c \
   value.c \
-  cellphoneproduct.c \
-  security.c
+  cellphoneproduct.c
 
 
 types: $(typefiles)

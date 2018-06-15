@@ -25,7 +25,9 @@ dist_typedata_DATA=\
   ab_transaction.tm2 ab_transaction_list.tm2 ab_transaction_list2.tm2 \
   ab_bankinfo_service.tm2 ab_bankinfo_service_list.tm2 ab_bankinfo_service_list2.tm2 \
   ab_bankinfo.tm2 ab_bankinfo_list.tm2 ab_bankinfo_list2.tm2 \
-  ab_document.tm2 ab_document_list.tm2 ab_document_list2.tm2
+  ab_document.tm2 ab_document_list.tm2 ab_document_list2.tm2 \
+  ab_message.tm2 ab_message_list.tm2 ab_message_list2.tm2 \
+  ab_security.tm2 ab_security_list.tm2 ab_security_list2.tm2
 
 
 
@@ -35,7 +37,8 @@ built_sources=  \
   bankinfoservice.c \
   bankinfo.c \
   document.c \
-  message.c
+  message.c \
+  security.c
 
 
 build_headers_priv= \
@@ -44,7 +47,8 @@ build_headers_priv= \
   bankinfoservice_p.h \
   bankinfo_p.h \
   document_p.h \
-  message_p.h
+  message_p.h \
+  security_p.h
 
 
 build_headers_pub= \
@@ -53,7 +57,8 @@ build_headers_pub= \
   bankinfoservice.h \
   bankinfo.h \
   document.h \
-  message.h
+  message.h \
+  security.h
 
 
 
