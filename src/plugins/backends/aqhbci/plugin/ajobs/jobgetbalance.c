@@ -183,7 +183,7 @@ AB_BALANCE *AH_Job_GetBalance__ReadBalance(GWEN_DB_NODE *dbT) {
 
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_GetBalance__ReadSecurities(AH_JOB *j,
-				      AB_IMEXPORTER_ACCOUNTINFO *ai,
+				      AB_IMEXPORTER_CONTEXT *ctx,
 				      const char *docType,
 				      int noted,
 				      GWEN_BUFFER *buf){
@@ -309,7 +309,7 @@ int AH_Job_GetBalance__ReadSecurities(AH_JOB *j,
       AB_Security_SetUnitPriceDate(asec, gt);
     }
     
-    AB_ImExporterAccountInfo_AddSecurity(ai, asec);
+    AB_ImExporterContext_AddSecurity(ctx, asec);
 
     GWEN_Time_free(gt);
 
@@ -510,7 +510,7 @@ int AH_Job_GetBalanceInvestment_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   /* read received securities */
   if (GWEN_Buffer_GetUsedBytes(tbooked)) {
 
-    if (AH_Job_GetBalance__ReadSecurities(j, ai, "mt535", 0, tbooked)){
+    if (AH_Job_GetBalance__ReadSecurities(j, ctx, "mt535", 0, tbooked)){
       GWEN_Buffer_free(tbooked);
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error parsing received securities");
       AH_Job_SetStatus(j, AH_JobStatusError);
@@ -523,14 +523,14 @@ int AH_Job_GetBalanceInvestment_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
     AB_SECURITY *stmp;
 
     DBG_INFO(AQHBCI_LOGDOMAIN, "*** Dumping securities *********************");
-    stmp=AB_ImExporterAccountInfo_GetFirstSecurity(ai);
+    stmp=AB_ImExporterContext_GetFirstSecurity(ctx);
     while (stmp) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "*** --------------------------------------");
       gn=GWEN_DB_Group_new("security");
       AB_Security_toDb(stmp, gn);
       GWEN_DB_Dump(gn, 2);
       if (gn) GWEN_DB_Group_free(gn);
-      stmp=AB_ImExporterAccountInfo_GetNextSecurity(ai);
+      stmp=AB_ImExporterContext_GetNextSecurity(ctx);
     }
     AB_Security_free(stmp);
 

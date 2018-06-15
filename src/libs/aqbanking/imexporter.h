@@ -436,19 +436,19 @@ void AB_ImExporterContext_AddDatedTransfer(AB_IMEXPORTER_CONTEXT *iec,
  * These functions handle stocks, mutual funds etc.
  */
 /**@{*/
-AQBANKING_API 
+AQBANKING_API
 void AB_ImExporterContext_AddSecurity(AB_IMEXPORTER_CONTEXT *iec,
 				      AB_SECURITY *sec);
 
-AQBANKING_API 
+AQBANKING_API
 AB_SECURITY*
 AB_ImExporterContext_GetFirstSecurity(AB_IMEXPORTER_CONTEXT *iec);
 
-AQBANKING_API 
+AQBANKING_API
 AB_SECURITY*
 AB_ImExporterContext_GetNextSecurity(AB_IMEXPORTER_CONTEXT *iec);
 
-AQBANKING_API 
+AQBANKING_API
 AB_SECURITY*
 AB_ImExporterContext_FindSecurity(AB_IMEXPORTER_CONTEXT *iec,
 				  const char *nameSpace,
@@ -729,36 +729,6 @@ int AB_ImExporterAccountInfo_GetTransactionCount(const AB_IMEXPORTER_ACCOUNTINFO
  */
 AQBANKING_API 
 void AB_ImExporterAccountInfo_ClearTransactions(AB_IMEXPORTER_ACCOUNTINFO *iea);
-
-/*@}*/
-
-
-/** @name Security
- *
- */
-/*@{*/
-/**
- * Takes over ownership of the given security.
- */
-AQBANKING_API 
-void AB_ImExporterAccountInfo_AddSecurity(AB_IMEXPORTER_ACCOUNTINFO *iea,
-                                               AB_SECURITY *sec);
-/**
- * Returns the first security stored within the context and removes
- * it.
- * The context remains the owner of the object returned.
- */
-AQBANKING_API 
-AB_SECURITY*
-AB_ImExporterAccountInfo_GetFirstSecurity(AB_IMEXPORTER_ACCOUNTINFO *iea);
-
-/**
- * Returns the next security stored within the context and removes it
- * The context remains the owner of the object returned.
- */
-AQBANKING_API 
-AB_SECURITY*
-AB_ImExporterAccountInfo_GetNextSecurity(AB_IMEXPORTER_ACCOUNTINFO *iea);
 
 /*@}*/
 
@@ -1060,7 +1030,7 @@ AB_DOCUMENT*
 AB_ImExporterAccountInfo_GetFirstEStatement(AB_IMEXPORTER_ACCOUNTINFO *iea);
 
 /**
- * Returns the next security stored within the context.
+ * Returns the next e-statement stored within the context.
  * The context remains the owner of the object returned.
  */
 AQBANKING_API 
