@@ -65,7 +65,7 @@ libabtypes2_la_SOURCES=$(built_sources) \
   transactionfns.h
 
 
-iheaderdir=${includedir}/aqbanking
+iheaderdir=@aqbanking_headerdir_am@/aqbanking
 iheader_HEADERS=$(build_headers_pub)
 
 
