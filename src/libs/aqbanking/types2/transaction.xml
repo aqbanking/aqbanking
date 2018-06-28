@@ -19,6 +19,7 @@
         with_db
         with_list1
         with_list2
+        with_constlist2
         with_refcount
       </flags>
       
@@ -521,23 +522,14 @@
         <item name="standingOrder"/>
         <item name="internalTransfer"/>
 
-        <item name="sepaTransfer"/>
+        <item name="sepaTransfer"/>                 <!-- TODO: remove these -->
         <item name="sepaDebitNote"/>
         <item name="sepaStandingOrder"/>
-        <item name="internalSepaTransfer"/>
-
+        <item name="sepaInternalTransfer"/>
+        
         <!-- double entry bookkeeping -->
         <item name="transaction"         value="2048"/>
         <item name="split"/>
-
-        <!-- special transactions which aren't real transactions -->
-        <item name="accountSpec"         value="4096"/>
-        <item name="security" />
-        <item name="bookedBalance" />
-        <item name="notedBalance"/>
-        <item name="creditLine"/>
-        <item name="message"/>
-
 
       </enum>
 
