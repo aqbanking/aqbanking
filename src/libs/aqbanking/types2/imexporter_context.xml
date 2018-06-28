@@ -200,6 +200,54 @@
 
         <inline loc="end" access="public">
           <content>
+             $(api) AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_GetOrAddAccountInfo($(struct_type) *st,
+                                                                                    uint32_t uniqueId,
+                                                                                    const char *iban,
+                                                                                    const char *bankCode,
+                                                                                    const char *accountNumber,
+                                                                                    int accountType);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_GetOrAddAccountInfo($(struct_type) *st,
+                                                                             uint32_t uniqueId,
+                                                                             const char *iban,
+                                                                             const char *bankCode,
+                                                                             const char *accountNumber,
+                                                                             int accountType) {
+               assert(st);
+               if (NULL==st->accountInfoList)
+                 st->accountInfoList=AB_ImExporter_AccountInfo_List_new();
+               return AB_ImExporter_AccountInfo_List_GetOrAdd(st->accountInfoList, uniqueId, iban, bankCode, accountNumber, accountType);
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_GetOrAddAccountInfoForAccount($(struct_type) *st, const AB_ACCOUNT *a);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_GetOrAddAccountInfoForAccount($(struct_type) *st, const AB_ACCOUNT *a) {
+               assert(st);
+               if (NULL==st->accountInfoList)
+                 st->accountInfoList=AB_ImExporter_AccountInfo_List_new();
+               return AB_ImExporter_AccountInfo_List_GetOrAddByAccount(st->accountInfoList, a);
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
              $(api) AB_SECURITY *$(struct_prefix)_GetFirstSecurity(const $(struct_type) *st);
           </content>
         </inline>
@@ -312,6 +360,65 @@
                  if (NULL==st->messageList)
                    st->messageList=AB_Message_List_new();
                  AB_Message_List_Add(msg, st->messageList);
+               }
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) void $(struct_prefix)_AddTransaction($(struct_type) *st, AB_TRANSACTION *t);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             void $(struct_prefix)_AddTransaction($(struct_type) *st, AB_TRANSACTION *t) {
+               assert(st);
+               if (t) {
+                 AB_IMEXPORTER_ACCOUNTINFO *ai=NULL;
+                 
+                 if (NULL==st->accountInfoList) {
+                   /* no account info list, nothing to search, just create the list */
+                   st->accountInfoList=AB_ImExporter_AccountInfo_List_new();
+                 }
+                 else {
+                   /* first try to get by unique account id */
+                   if (AB_Transaction_GetUniqueAccountId(t))
+                     ai=AB_ImExporter_AccountInfo_List_GetByAccountId(st->accountInfoList, AB_Transaction_GetUniqueAccountId(t));
+                     
+                   /* next try by IBAN */
+                   if (ai==NULL) {
+                     const char *s;
+                     
+                     s=AB_Transaction_GetLocalIban(t);
+                     if (s &amp;&amp; *s)
+                       ai=AB_ImExporter_AccountInfo_List_GetByIban(st->accountInfoList, s);
+                   }
+                   
+                   /* then try by account number and bank code */
+                   if (ai==NULL)
+                     ai=AB_ImExporter_AccountInfo_List_GetByBankCodeAndAccountNumber(st->accountInfoList,
+                                                                                     AB_Transaction_GetLocalBankCode(t),
+                                                                                     AB_Transaction_GetLocalAccountNumber(t),
+                                                                                     AB_AccountType_Unknown);
+                 }
+                 
+                 /* create account info if not found */
+                 if (ai==NULL) {
+                   /* create account info */
+                   ai=AB_ImExporter_AccountInfo_new();
+                   AB_ImExporter_AccountInfo_FillFromTransaction(ai, t);
+                 }
+
+                 /* set transaction type if none set */
+                 if (AB_Transaction_GetType(t)&lt;=AB_Transaction_TypeNone)
+                   AB_Transaction_SetType(t, AB_Transaction_TypeStatement);
+                 
+                 /* finally add transaction */
+                 AB_ImExporter_AccountInfo_AddTransaction(ai, t);
                }
              }
           </content>

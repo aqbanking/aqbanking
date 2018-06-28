@@ -2,13 +2,17 @@ INCLUDES = -I$(aqbanking_symlinkdir) $(all_includes) $(GWENGUI_GTK2_CFLAGS) $(GT
 
 
 if WITH_GWENGUI_GTK2
-noinst_PROGRAMS=abtest test-dlg-setup
+noinst_PROGRAMS=abtest imptest test-dlg-setup
 else
-noinst_PROGRAMS=abtest
+noinst_PROGRAMS=abtest imptest
 endif
 
 abtest_SOURCES=abtest.c
 abtest_LDADD = $(aqbanking_internal_libs) $(gwenhywfar_libs)
+
+imptest_SOURCES=imptest.c
+imptest_LDADD = $(aqbanking_internal_libs) $(gwenhywfar_libs)
+
 
 if WITH_GWENGUI_GTK2
 test_dlg_setup_SOURCES = test-dlg-setup.c

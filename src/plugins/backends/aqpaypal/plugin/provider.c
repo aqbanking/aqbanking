@@ -1064,7 +1064,8 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
     /* but only if L_TYPE neither Authorization nor Order */
     s=GWEN_DB_GetCharValue(dbT, "L_TYPE", 0, NULL);
     if (s && *s ) {
-     if (!dontKeep) AB_ImExporterAccountInfo_AddTransaction(ai, t);
+      if (!dontKeep)
+        AB_ImExporter_AccountInfo_AddTransaction(ai, t);
     }
 
     dbT=GWEN_DB_GetNextGroup(dbT);
@@ -1342,7 +1343,7 @@ int APY_Provider_ExecGetBal(AB_PROVIDER *pro,
     assert(a);
 
     /* add new account status */
-    AB_ImExporterAccountInfo_AddAccountStatus(ai, acst);
+    AB_ImExporter_AccountInfo_AddAccountStatus(ai, acst);
     break; /* break loop, we found the balance */
 
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
@@ -1440,9 +1441,12 @@ int APY_Provider_ExecAccountQueue(AB_PROVIDER *pro,
   a=AB_AccountQueue_GetAccount(aq);
   assert(a);
 
-  ai=AB_ImExporterContext_GetAccountInfo(ctx,
-                                         AB_Account_GetBankCode(a),
-					 AB_Account_GetAccountNumber(a));
+  ai=AB_ImExporter_Context_GetOrAddAccountInfo(ctx,
+                                               AB_Account_GetUniqueId(a),
+                                               AB_Account_GetIBAN(a),
+                                               AB_Account_GetBankCode(a),
+                                               AB_Account_GetAccountNumber(a),
+                                               AB_Transaction_TypeNone);
   if (ai==NULL) {
     DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Could not create account info");
     return GWEN_ERROR_GENERIC;

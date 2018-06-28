@@ -191,19 +191,19 @@ int AIO_OfxGroup_STMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
 	     "Importing account %s/%s",
 	     AIO_OfxGroup_BANKACC_GetBankId(sg),
 	     AIO_OfxGroup_BANKACC_GetAccId(sg));
-    ai=AB_ImExporterAccountInfo_new();
+    ai=AB_ImExporter_AccountInfo_new();
     assert(ai);
 
     s=AIO_OfxGroup_BANKACC_GetBankId(sg);
     if (s)
-      AB_ImExporterAccountInfo_SetBankCode(ai, s);
+      AB_ImExporter_AccountInfo_SetBankCode(ai, s);
     s=AIO_OfxGroup_BANKACC_GetAccId(sg);
     if (s)
-      AB_ImExporterAccountInfo_SetAccountNumber(ai, s);
+      AB_ImExporter_AccountInfo_SetAccountNumber(ai, s);
 
     /* set currency */
     if (xg->currency)
-      AB_ImExporterAccountInfo_SetCurrency(ai, xg->currency);
+      AB_ImExporter_AccountInfo_SetCurrency(ai, xg->currency);
 
     /* set account type, if known */
     s=AIO_OfxGroup_BANKACC_GetAccType(sg);
@@ -213,11 +213,11 @@ int AIO_OfxGroup_STMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
       AB_ACCOUNT_TYPE t;
 
       t=AIO_OfxGroup_Generic_AccountTypeFromString(s);
-      AB_ImExporterAccountInfo_SetType(ai, t);
+      AB_ImExporter_AccountInfo_SetAccountType(ai, t);
     }
 
     DBG_INFO(AQBANKING_LOGDOMAIN, "Adding account");
-    AB_ImExporterContext_AddAccountInfo(AIO_OfxXmlCtx_GetIoContext(ctx), ai);
+    AB_ImExporter_Context_AddAccountInfo(AIO_OfxXmlCtx_GetIoContext(ctx), ai);
     xg->accountInfo=ai;
   }
   else if (strcasecmp(s, "BANKTRANLIST")==0) {
@@ -248,7 +248,7 @@ int AIO_OfxGroup_STMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
               AB_Value_free(v2);
 	    }
 	  }
-	  AB_ImExporterAccountInfo_AddTransaction(xg->accountInfo, t);
+	  AB_ImExporter_AccountInfo_AddTransaction(xg->accountInfo, t);
 	  t=AB_Transaction_List2Iterator_Next(it);
 	}
 	AB_Transaction_List2Iterator_free(it);
@@ -286,7 +286,7 @@ int AIO_OfxGroup_STMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
       AB_Balance_free(bal);
 
       DBG_INFO(AQBANKING_LOGDOMAIN, "Adding account status");
-      AB_ImExporterAccountInfo_AddAccountStatus(xg->accountInfo, ast);
+      AB_ImExporter_AccountInfo_AddAccountStatus(xg->accountInfo, ast);
     }
   }
   else if (strcasecmp(s, "AVAILBAL")==0) {
@@ -317,7 +317,7 @@ int AIO_OfxGroup_STMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
       AB_Balance_free(bal);
 
       DBG_INFO(AQBANKING_LOGDOMAIN, "Adding account status");
-      AB_ImExporterAccountInfo_AddAccountStatus(xg->accountInfo, ast);
+      AB_ImExporter_AccountInfo_AddAccountStatus(xg->accountInfo, ast);
     }
   }
 

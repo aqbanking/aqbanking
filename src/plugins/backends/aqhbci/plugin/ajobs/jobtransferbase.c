@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Tue Dec 31 2013
-    copyright   : (C) 2004-2013 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -99,6 +99,7 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
   const char *descriptor;
   const AB_TRANSACTION *t;
   int rv;
+  AB_ACCOUNT *a;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Exporting transaction");
 
@@ -111,6 +112,9 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
 
   dbArgs=AH_Job_GetArguments(j);
   assert(dbArgs);
+
+  a=AH_AccountJob_GetAccount(j);
+  assert(a);
 
   descriptor=GWEN_DB_GetCharValue(profile, "descriptor", 0, 0);
   assert(descriptor);
@@ -125,10 +129,11 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
     AB_IMEXPORTER *ie;
 
     /* add transfers as transactions for export (exporters only use transactions) */
-    ioc=AB_ImExporterContext_new();
+    ioc=AB_ImExporter_Context_new();
     while(t) {
       cpy=AB_Transaction_dup(t);
-      AB_ImExporterContext_AddTransaction(ioc, cpy);
+      AB_Transaction_SetUniqueAccountId(cpy, AB_Account_GetUniqueId(a));
+      AB_ImExporter_Context_AddTransaction(ioc, cpy);
       t=AB_Transaction_List_Next(t);
     }
 
@@ -138,7 +143,7 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
 
       dbuf=GWEN_Buffer_new(0, 256, 0, 1);
       rv=AB_ImExporter_ExportToBuffer(ie, ioc, dbuf, profile);
-      AB_ImExporterContext_free(ioc);
+      AB_ImExporter_Context_free(ioc);
       if (rv<0) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
         GWEN_Buffer_free(dbuf);
@@ -160,7 +165,7 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
     }
     else {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "here");
-      AB_ImExporterContext_free(ioc);
+      AB_ImExporter_Context_free(ioc);
       return GWEN_ERROR_NO_DATA;
     }
   }
@@ -421,10 +426,14 @@ int AH_Job_TransferBase_ExchangeResults(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CON
   int has20;
   AB_TRANSACTION_STATUS tStatus;
   const AB_TRANSACTION *t;
+  AB_ACCOUNT *a;
 
   assert(j);
   aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j);
   assert(aj);
+
+  a=AH_AccountJob_GetAccount(j);
+  assert(a);
 
   rl=AH_Job_GetSegResults(j);
   assert(rl);
@@ -479,23 +488,10 @@ int AH_Job_TransferBase_ExchangeResults(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CON
     AB_Transaction_SetType(cpy, aj->transactionType);
     AB_Transaction_SetSubType(cpy, aj->transactionSubType);
 
-    switch(aj->transactionType) {
-    case AB_Transaction_TypeUnknown:
-    case AB_Transaction_TypeTransaction:
-      AB_ImExporterContext_AddTransaction(ctx, cpy);      /* takes over cpy */
-      break;
+    AB_Transaction_SetUniqueAccountId(cpy, AB_Account_GetUniqueId(a));
 
-    case AB_Transaction_TypeTransfer:
-    case AB_Transaction_TypeDebitNote:
-    case AB_Transaction_TypeSepaTransfer:
-    case AB_Transaction_TypeSepaDebitNote:
-    case AB_Transaction_TypeInternalTransfer:
-      if (aj->transactionSubType==AB_Transaction_SubTypeStandingOrder)
-        AB_ImExporterContext_AddStandingOrder(ctx, cpy);  /* takes over cpy */
-      else
-        AB_ImExporterContext_AddTransfer(ctx, cpy);       /* takes over cpy */
-      break;
-    }
+    /* just add to single list (no longer need to decide to which list to add as there is only one now) */
+    AB_ImExporter_Context_AddTransaction(ctx, cpy);      /* takes over cpy */
   }
 
   return 0;

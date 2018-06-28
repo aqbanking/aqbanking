@@ -470,8 +470,13 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 	  }
 	}
 
+        /* set transaction type if none set */
+        if (AB_Transaction_GetType(t)<=AB_Transaction_TypeNone)
+          AB_Transaction_SetType(t, AB_Transaction_TypeStatement);
+
+        /* add transaction */
         DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding transaction");
-        AB_ImExporterContext_AddTransaction(ctx, t);
+        AB_ImExporter_Context_AddTransaction(ctx, t);
       }
       else {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Empty group (i.e. empty line in imported file)");
@@ -532,7 +537,7 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
 					 AB_IMEXPORTER_CONTEXT *ctx,
 					 GWEN_SYNCIO *sio,
 					 GWEN_DB_NODE *params,
-					 int notedOrTransfers){
+					 int transactionType){
   AH_IMEXPORTER_CSV *ieh;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
   GWEN_DB_NODE *dbData;
@@ -561,249 +566,216 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
 
   /* create db, store transactions in it */
   dbData=GWEN_DB_Group_new("transactions");
-  ai=AB_ImExporterContext_GetFirstAccountInfo(ctx);
+  ai=AB_ImExporter_Context_GetFirstAccountInfo(ctx);
   while(ai) {
-    const AB_TRANSACTION *t;
+    const AB_TRANSACTION_LIST *tl;
 
-    switch(notedOrTransfers) {
-    case AH_IMEXPORTERCSV_SUBJECT_TRANSACTIONS:
-      t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
-      break;
-    case AH_IMEXPORTERCSV_SUBJECT_NOTEDTRANSACTIONS:
-      t=AB_ImExporterAccountInfo_GetFirstNotedTransaction(ai);
-      break;
-    case AH_IMEXPORTERCSV_SUBJECT_TRANSFERS:
-      t=AB_ImExporterAccountInfo_GetFirstTransfer(ai);
-      break;
-    default:
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Invalid subject type %d", notedOrTransfers);
-      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Error,
-			    "Invalid subject type %d", notedOrTransfers);
-      GWEN_DB_Group_free(dbData);
-      return GWEN_ERROR_GENERIC;
-    }
+    tl=AB_ImExporter_AccountInfo_GetTransactionList(ai);
+    if (tl) {
+      const AB_TRANSACTION *t;
 
-    while(t) {
-      GWEN_DB_NODE *dbTransaction;
-      const GWEN_DATE *dt;
-      const char *s;
+      t=AB_Transaction_List_FindFirstByType(tl, transactionType, AB_Transaction_CommandNone);
 
-      dbTransaction=GWEN_DB_Group_new("transaction");
-      rv=AB_Transaction_toDb(t, dbTransaction);
-      if (rv) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN,
-                  "Could not transform transaction to db");
-        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-			     "Error transforming data to db");
-        GWEN_DB_Group_free(dbData);
-        GWEN_DB_Group_free(dbTransaction);
-        return GWEN_ERROR_GENERIC;
-      }
-
-      /* translate purpose */
-      s=AB_Transaction_GetPurpose(t);
-      if (s && *s) {
-        GWEN_STRINGLIST *sl;
-
-        sl=GWEN_StringList_fromString(s, "\n", 0);
-        if (sl) {
-          GWEN_STRINGLISTENTRY *se;
-
-          GWEN_DB_DeleteVar(dbTransaction, "purpose");
-          se=GWEN_StringList_FirstEntry(sl);
-          while(se) {
-            const char *p;
-
-            p=GWEN_StringListEntry_Data(se);
-            if (p && *p)
-              GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_DEFAULT, "purpose", p);
-            se=GWEN_StringListEntry_Next(se);
-          }
-          GWEN_StringList_free(sl);
-        }
-      }
-
-      /* transform dates */
-      GWEN_DB_DeleteGroup(dbTransaction, "date");
-      GWEN_DB_DeleteGroup(dbTransaction, "valutaDate");
-      GWEN_DB_DeleteGroup(dbTransaction, "mandateDate");
-
-      dt=AB_Transaction_GetDate(t);
-      if (dt) {
-	GWEN_BUFFER *tbuf;
-        int rv;
-
-	tbuf=GWEN_Buffer_new(0, 32, 0, 1);
-	rv=GWEN_Date_toStringWithTemplate(dt, dateFormat, tbuf);
-	if (rv<0) {
-	  DBG_WARN(AQBANKING_LOGDOMAIN, "Bad date format string/date");
-	}
-	else
-	  GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                               "date", GWEN_Buffer_GetStart(tbuf));
-        GWEN_Buffer_free(tbuf);
-      }
-
-      dt=AB_Transaction_GetValutaDate(t);
-      if (dt) {
-	GWEN_BUFFER *tbuf;
-        int rv;
-
-	tbuf=GWEN_Buffer_new(0, 32, 0, 1);
-	rv=GWEN_Date_toStringWithTemplate(dt, dateFormat, tbuf);
-	if (rv<0) {
-	  DBG_WARN(AQBANKING_LOGDOMAIN, "Bad date format string/date");
-	}
-	else
-	  GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                               "valutaDate", GWEN_Buffer_GetStart(tbuf));
-        GWEN_Buffer_free(tbuf);
-      }
-
-      dt=AB_Transaction_GetMandateDate(t);
-      if (dt) {
-	GWEN_BUFFER *tbuf;
-        int rv;
-
-	tbuf=GWEN_Buffer_new(0, 32, 0, 1);
-	rv=GWEN_Date_toStringWithTemplate(dt, dateFormat, tbuf);
-	if (rv<0) {
-	  DBG_WARN(AQBANKING_LOGDOMAIN, "Bad date format string/date");
-	}
-	else
-	  GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			       "mandateDate", GWEN_Buffer_GetStart(tbuf));
-	GWEN_Buffer_free(tbuf);
-      }
-
-      /* possibly transform value */
-      if (usePosNegField) {
-	const AB_VALUE *v;
+      while(t) {
+        GWEN_DB_NODE *dbTransaction;
+        const GWEN_DATE *dt;
         const char *s;
-
-	v=AB_Transaction_GetValue(t);
-	if (v) {
-          if (!AB_Value_IsNegative(v)) {
-	    s=GWEN_DB_GetCharValue(params, "positiveValues", 0, 0);
-	    if (s) {
-	      GWEN_DB_SetCharValue(dbTransaction,
-				   GWEN_DB_FLAGS_OVERWRITE_VARS,
-				   posNegFieldName,
-				   s);
-	    }
-	    else {
-	      DBG_ERROR(AQBANKING_LOGDOMAIN,
-                        "No value for \"positiveValues\" in params");
-	      GWEN_DB_Group_free(dbData);
-	      return GWEN_ERROR_GENERIC;
-	    }
-	  }
-	  else {
-	    s=GWEN_DB_GetCharValue(params, "negativeValues", 0, 0);
-	    if (s) {
-	      AB_VALUE *nv;
-              GWEN_DB_NODE *dbV;
-
-	      GWEN_DB_SetCharValue(dbTransaction,
-				   GWEN_DB_FLAGS_OVERWRITE_VARS,
-				   posNegFieldName,
-				   s);
-	      nv=AB_Value_dup(v);
-	      AB_Value_Negate(nv);
-	      dbV=GWEN_DB_GetGroup(dbTransaction,
-				   GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-				   "value");
-	      assert(dbV);
-	      if (AB_Value_toDb(nv, dbV)) {
-		DBG_ERROR(AQBANKING_LOGDOMAIN,
-			  "Could not store value to DB");
-		GWEN_DB_Group_free(dbData);
-		return GWEN_ERROR_GENERIC;
-	      }
-	    }
-	    else {
-	      DBG_ERROR(AQBANKING_LOGDOMAIN,
-			"No value for \"negativeValues\" in params");
-	      GWEN_DB_Group_free(dbData);
-	      return GWEN_ERROR_GENERIC;
-	    }
-	  }
-	}
-      }
-      else if (splitValueInOut) {
-	const AB_VALUE *v;
-
-	v=AB_Transaction_GetValue(t);
-	if (v) {
-	  const char *gn;
-	  GWEN_DB_NODE *dbV;
-
-	  if (AB_Value_IsNegative(v))
-	    gn="valueOut";
+  
+        dbTransaction=GWEN_DB_Group_new("transaction");
+        rv=AB_Transaction_toDb(t, dbTransaction);
+        if (rv) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN,
+                    "Could not transform transaction to db");
+          GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
+                               "Error transforming data to db");
+          GWEN_DB_Group_free(dbData);
+          GWEN_DB_Group_free(dbTransaction);
+          return GWEN_ERROR_GENERIC;
+        }
+  
+        /* translate purpose */
+        s=AB_Transaction_GetPurpose(t);
+        if (s && *s) {
+          GWEN_STRINGLIST *sl;
+  
+          sl=GWEN_StringList_fromString(s, "\n", 0);
+          if (sl) {
+            GWEN_STRINGLISTENTRY *se;
+  
+            GWEN_DB_DeleteVar(dbTransaction, "purpose");
+            se=GWEN_StringList_FirstEntry(sl);
+            while(se) {
+              const char *p;
+  
+              p=GWEN_StringListEntry_Data(se);
+              if (p && *p)
+                GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_DEFAULT, "purpose", p);
+              se=GWEN_StringListEntry_Next(se);
+            }
+            GWEN_StringList_free(sl);
+          }
+        }
+  
+        /* transform dates */
+        GWEN_DB_DeleteGroup(dbTransaction, "date");
+        GWEN_DB_DeleteGroup(dbTransaction, "valutaDate");
+        GWEN_DB_DeleteGroup(dbTransaction, "mandateDate");
+  
+        dt=AB_Transaction_GetDate(t);
+        if (dt) {
+          GWEN_BUFFER *tbuf;
+          int rv;
+  
+          tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+          rv=GWEN_Date_toStringWithTemplate(dt, dateFormat, tbuf);
+          if (rv<0) {
+            DBG_WARN(AQBANKING_LOGDOMAIN, "Bad date format string/date");
+          }
           else
-	    gn="valueIn";
-	  dbV=GWEN_DB_GetGroup(dbTransaction,
-			       GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-			       gn);
-	  assert(dbV);
-	  if (strcasecmp(valueFormat, "float")==0)
-	    AB_Value_toDbFloat(v, dbV);
-	  else
-	    AB_Value_toDb(v, dbV);
+            GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                                 "date", GWEN_Buffer_GetStart(tbuf));
+          GWEN_Buffer_free(tbuf);
+        }
+  
+        dt=AB_Transaction_GetValutaDate(t);
+        if (dt) {
+          GWEN_BUFFER *tbuf;
+          int rv;
+  
+          tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+          rv=GWEN_Date_toStringWithTemplate(dt, dateFormat, tbuf);
+          if (rv<0) {
+            DBG_WARN(AQBANKING_LOGDOMAIN, "Bad date format string/date");
+          }
+          else
+            GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                                 "valutaDate", GWEN_Buffer_GetStart(tbuf));
+          GWEN_Buffer_free(tbuf);
+        }
+  
+        dt=AB_Transaction_GetMandateDate(t);
+        if (dt) {
+          GWEN_BUFFER *tbuf;
+          int rv;
+  
+          tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+          rv=GWEN_Date_toStringWithTemplate(dt, dateFormat, tbuf);
+          if (rv<0) {
+            DBG_WARN(AQBANKING_LOGDOMAIN, "Bad date format string/date");
+          }
+          else
+            GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                                 "mandateDate", GWEN_Buffer_GetStart(tbuf));
+          GWEN_Buffer_free(tbuf);
+        }
+  
+        /* possibly transform value */
+        if (usePosNegField) {
+          const AB_VALUE *v;
+          const char *s;
+  
+          v=AB_Transaction_GetValue(t);
+          if (v) {
+            if (!AB_Value_IsNegative(v)) {
+              s=GWEN_DB_GetCharValue(params, "positiveValues", 0, 0);
+              if (s) {
+                GWEN_DB_SetCharValue(dbTransaction,
+                                     GWEN_DB_FLAGS_OVERWRITE_VARS,
+                                     posNegFieldName,
+                                     s);
+              }
+              else {
+                DBG_ERROR(AQBANKING_LOGDOMAIN,
+                          "No value for \"positiveValues\" in params");
+                GWEN_DB_Group_free(dbData);
+                return GWEN_ERROR_GENERIC;
+              }
+            }
+            else {
+              s=GWEN_DB_GetCharValue(params, "negativeValues", 0, 0);
+              if (s) {
+                AB_VALUE *nv;
+                GWEN_DB_NODE *dbV;
+  
+                GWEN_DB_SetCharValue(dbTransaction,
+                                     GWEN_DB_FLAGS_OVERWRITE_VARS,
+                                     posNegFieldName,
+                                     s);
+                nv=AB_Value_dup(v);
+                AB_Value_Negate(nv);
+                dbV=GWEN_DB_GetGroup(dbTransaction,
+                                     GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+                                     "value");
+                assert(dbV);
+                if (AB_Value_toDb(nv, dbV)) {
+                  DBG_ERROR(AQBANKING_LOGDOMAIN,
+                            "Could not store value to DB");
+                  GWEN_DB_Group_free(dbData);
+                  return GWEN_ERROR_GENERIC;
+                }
+              }
+              else {
+                DBG_ERROR(AQBANKING_LOGDOMAIN,
+                          "No value for \"negativeValues\" in params");
+                GWEN_DB_Group_free(dbData);
+                return GWEN_ERROR_GENERIC;
+              }
+            }
+          }
+        }
+        else if (splitValueInOut) {
+          const AB_VALUE *v;
+  
+          v=AB_Transaction_GetValue(t);
+          if (v) {
+            const char *gn;
+            GWEN_DB_NODE *dbV;
+  
+            if (AB_Value_IsNegative(v))
+              gn="valueOut";
+            else
+              gn="valueIn";
+            dbV=GWEN_DB_GetGroup(dbTransaction,
+                                 GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+                                 gn);
+            assert(dbV);
+            if (strcasecmp(valueFormat, "float")==0)
+              AB_Value_toDbFloat(v, dbV);
+            else
+              AB_Value_toDb(v, dbV);
+  
+            GWEN_DB_ClearGroup(dbTransaction, "value");
+          }
+        }
+        else {
+          const AB_VALUE *v;
+  
+          v=AB_Transaction_GetValue(t);
+          if (v) {
+            GWEN_DB_NODE *dbV;
+  
+            GWEN_DB_DeleteVar(dbTransaction, "value");
+            dbV=GWEN_DB_GetGroup(dbTransaction,
+                                 GWEN_DB_FLAGS_OVERWRITE_GROUPS,
+                                 "value");
+            assert(dbV);
+            if (strcasecmp(valueFormat, "float")==0)
+              AB_Value_toDbFloat(v, dbV);
+            else
+              AB_Value_toDb(v, dbV);
+          }
+        }
+  
+        /* add transaction db */
+        GWEN_DB_AddGroup(dbData, dbTransaction);
 
-	  GWEN_DB_ClearGroup(dbTransaction, "value");
-	}
-      }
-      else {
-	const AB_VALUE *v;
+        t=AB_Transaction_List_FindNextByType(t, transactionType, AB_Transaction_CommandNone);
+      } /* while t */
+    } /* if tl */
+    ai=AB_ImExporter_AccountInfo_List_Next(ai);
+  } /* while ai */
 
-	v=AB_Transaction_GetValue(t);
-	if (v) {
-	  GWEN_DB_NODE *dbV;
-
-	  GWEN_DB_DeleteVar(dbTransaction, "value");
-	  dbV=GWEN_DB_GetGroup(dbTransaction,
-			       GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-			       "value");
-	  assert(dbV);
-	  if (strcasecmp(valueFormat, "float")==0)
-	    AB_Value_toDbFloat(v, dbV);
-	  else
-	    AB_Value_toDb(v, dbV);
-	}
-      }
-
-      /* add transaction db */
-      GWEN_DB_AddGroup(dbData, dbTransaction);
-
-      switch(notedOrTransfers) {
-      case AH_IMEXPORTERCSV_SUBJECT_TRANSACTIONS:
-	t=AB_ImExporterAccountInfo_GetNextTransaction(ai);
-	break;
-      case AH_IMEXPORTERCSV_SUBJECT_NOTEDTRANSACTIONS:
-	t=AB_ImExporterAccountInfo_GetNextNotedTransaction(ai);
-	break;
-      case AH_IMEXPORTERCSV_SUBJECT_TRANSFERS:
-	t=AB_ImExporterAccountInfo_GetNextTransfer(ai);
-	break;
-      default:
-	DBG_ERROR(AQBANKING_LOGDOMAIN,
-		  "Invalid subject type %d", notedOrTransfers);
-	GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Error,
-			      "Invalid subject type %d", notedOrTransfers);
-	GWEN_DB_Group_free(dbData);
-	return GWEN_ERROR_GENERIC;
-      }
-    }
-    ai=AB_ImExporterContext_GetNextAccountInfo(ctx);
-  }
-
-  rv=GWEN_DBIO_Export(ieh->dbio,
-		      sio,
-		      dbData,
-		      dbSubParams,
-		      GWEN_DB_FLAGS_DEFAULT);
+  rv=GWEN_DBIO_Export(ieh->dbio, sio, dbData, dbSubParams, GWEN_DB_FLAGS_DEFAULT);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error exporting data (%d)", rv);
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
@@ -832,11 +804,11 @@ int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
 
   subject=GWEN_DB_GetCharValue(params, "subject", 0, "transactions");
   if (strcasecmp(subject, "transactions")==0)
-    return AH_ImExporterCSV__ExportTransactions(ie, ctx, sio, params, AH_IMEXPORTERCSV_SUBJECT_TRANSACTIONS);
+    return AH_ImExporterCSV__ExportTransactions(ie, ctx, sio, params, AB_Transaction_TypeStatement);
   else if (strcasecmp(subject, "notedTransactions")==0)
-    return AH_ImExporterCSV__ExportTransactions(ie, ctx, sio, params, AH_IMEXPORTERCSV_SUBJECT_NOTEDTRANSACTIONS);
+    return AH_ImExporterCSV__ExportTransactions(ie, ctx, sio, params, AB_Transaction_TypeNotedStatement);
   else if (strcasecmp(subject, "transfers")==0)
-    return AH_ImExporterCSV__ExportTransactions(ie, ctx, sio, params, AH_IMEXPORTERCSV_SUBJECT_TRANSFERS);
+    return AH_ImExporterCSV__ExportTransactions(ie, ctx, sio, params, AB_Transaction_TypeTransfer);
   else {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Unable to export unknown subject \"%s\"", subject);

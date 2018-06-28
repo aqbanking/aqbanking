@@ -233,9 +233,8 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
       /* add transaction */
       DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding transaction");
-      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug,
-			   I18N("Adding transaction"));
-      AB_ImExporterContext_AddTransaction(ctx, t);
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug, I18N("Adding transaction"));
+      AB_ImExporter_Context_AddTransaction(ctx, t);
     }
     else if (strcasecmp(GWEN_DB_GroupName(dbT), "startSaldo")==0) {
       /* ignore start saldo, but since the existence of this group shows
@@ -247,9 +246,11 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
       GWEN_TIME *ti=0;
       const char *bankCode;
       const char *accountNumber;
+      const char *iban;
 
       bankCode=GWEN_DB_GetCharValue(dbT, "localBankCode", 0, 0);
       accountNumber=GWEN_DB_GetCharValue(dbT, "localAccountNumber", 0, 0);
+      iban=GWEN_DB_GetCharValue(dbT, "localIban", 0, 0);
 
       dbX=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "date");
       if (dbX)
@@ -273,10 +274,9 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
             AB_AccountStatus_SetTime(as, ti);
           AB_AccountStatus_SetNotedBalance(as, bal);
           AB_Balance_free(bal);
-          iea=AB_ImExporterContext_GetAccountInfo(ctx,
-                                                  bankCode,
-                                                  accountNumber);
-          AB_ImExporterAccountInfo_AddAccountStatus(iea, as);
+
+          iea=AB_ImExporter_Context_GetOrAddAccountInfo(ctx, 0, iban, bankCode, accountNumber, 0);
+          AB_ImExporter_AccountInfo_AddAccountStatus(iea, as);
         }
       }
       GWEN_Time_free(ti);

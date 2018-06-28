@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue May 03 2005
- copyright   : (C) 2005-2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -257,10 +257,10 @@ int addTransaction(AB_BANKING *ab,
     return 4;
   }
 
-  AB_ImExporterContext_AddTransaction(ctx, t);
+  AB_ImExporter_Context_AddTransaction(ctx, t);
 
   rv=writeContext(ctxFile, ctx);
-  AB_ImExporterContext_free(ctx);
+  AB_ImExporter_Context_free(ctx);
   if (rv<0) {
     DBG_ERROR(0, "Error writing context (%d)", rv);
     return 4;

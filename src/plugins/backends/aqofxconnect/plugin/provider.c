@@ -567,7 +567,7 @@ int AO_Provider__ProcessImporterContext(AB_PROVIDER *pro,
   assert(pro);
   assert(ictx);
 
-  ai=AB_ImExporterContext_GetFirstAccountInfo(ictx);
+  ai=AB_ImExporter_Context_GetFirstAccountInfo(ictx);
   if (!ai) {
     DBG_INFO(0, "No accounts");
   }
@@ -579,10 +579,10 @@ int AO_Provider__ProcessImporterContext(AB_PROVIDER *pro,
     country=AB_User_GetCountry(u);
     if (!country)
       country="us";
-    bankCode=AB_ImExporterAccountInfo_GetBankCode(ai);
+    bankCode=AB_ImExporter_AccountInfo_GetBankCode(ai);
     if (!bankCode || !*bankCode)
       bankCode=AB_User_GetBankCode(u);
-    accountNumber=AB_ImExporterAccountInfo_GetAccountNumber(ai);
+    accountNumber=AB_ImExporter_AccountInfo_GetAccountNumber(ai);
     if (bankCode && accountNumber) {
       AB_ACCOUNT *a;
       const char *s;
@@ -605,11 +605,11 @@ int AO_Provider__ProcessImporterContext(AB_PROVIDER *pro,
         AB_Account_SetBankCode(a, bankCode);
         AB_Account_SetAccountNumber(a, accountNumber);
         AB_Account_SetUser(a, u);
-        s=AB_ImExporterAccountInfo_GetBankName(ai);
+        s=AB_ImExporter_AccountInfo_GetBankName(ai);
         if (!s)
           s=bankCode;
         AB_Account_SetBankName(a, s);
-        AB_Account_SetAccountType(a, AB_ImExporterAccountInfo_GetType(ai));
+        AB_Account_SetAccountType(a, AB_ImExporter_AccountInfo_GetAccountType(ai));
 
         snprintf(msgbuf, sizeof(msgbuf), I18N(msg),
                  accountNumber, bankCode);
@@ -624,11 +624,11 @@ int AO_Provider__ProcessImporterContext(AB_PROVIDER *pro,
                   accountNumber, bankCode);
       }
       /* update existing account */
-      s=AB_ImExporterAccountInfo_GetBankName(ai);
+      s=AB_ImExporter_AccountInfo_GetBankName(ai);
       if (s) {
         AB_Account_SetBankName(a, s);
       }
-      s=AB_ImExporterAccountInfo_GetAccountName(ai);
+      s=AB_ImExporter_AccountInfo_GetAccountName(ai);
       if (s)
         AB_Account_SetAccountName(a, s);
     }
@@ -637,7 +637,7 @@ int AO_Provider__ProcessImporterContext(AB_PROVIDER *pro,
                 "BankCode or AccountNumber missing (%s/%s)",
                 bankCode, accountNumber);
     }
-    ai=AB_ImExporterContext_GetNextAccountInfo(ictx);
+    ai=AB_ImExporter_AccountInfo_List_Next(ai);
   } /* while accounts */
 
   return 0;
@@ -675,7 +675,7 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, int keepOpen) {
 				  "</html>"),
 			     1,
                              0);
-  ictx=AB_ImExporterContext_new();
+  ictx=AB_ImExporter_Context_new();
 
   reqbuf=GWEN_Buffer_new(0, 2048, 0, 1);
   GWEN_Buffer_ReserveBytes(reqbuf, 1024);
@@ -686,7 +686,7 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, int keepOpen) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 	      "Error adding request element (%d)", rv);
     GWEN_Buffer_free(reqbuf);
-    AB_ImExporterContext_free(ictx);
+    AB_ImExporter_Context_free(ictx);
     GWEN_Gui_ProgressEnd(pid);
     return rv;
   }
@@ -697,7 +697,7 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, int keepOpen) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 	      "Error adding request element (%d)", rv);
     GWEN_Buffer_free(reqbuf);
-    AB_ImExporterContext_free(ictx);
+    AB_ImExporter_Context_free(ictx);
     GWEN_Gui_ProgressEnd(pid);
     return rv;
   }
@@ -711,7 +711,7 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, int keepOpen) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 	      "Error exchanging getAccounts-request (%d)", rv);
     GWEN_Buffer_free(reqbuf);
-    AB_ImExporterContext_free(ictx);
+    AB_ImExporter_Context_free(ictx);
     GWEN_Gui_ProgressEnd(pid);
     return rv;
   }
@@ -731,7 +731,7 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, int keepOpen) {
       DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 		"OFX import module not found");
       GWEN_Buffer_free(rbuf);
-      AB_ImExporterContext_free(ictx);
+      AB_ImExporter_Context_free(ictx);
       GWEN_Gui_ProgressEnd(pid);
       return GWEN_ERROR_NOT_FOUND;
     }
@@ -748,7 +748,7 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, int keepOpen) {
       GWEN_Gui_ProgressLog(pid,
 			   GWEN_LoggerLevel_Error,
 			   I18N("Error parsing response"));
-      AB_ImExporterContext_free(ictx);
+      AB_ImExporter_Context_free(ictx);
       GWEN_Gui_ProgressEnd(pid);
       return rv;
     }
@@ -761,13 +761,13 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, int keepOpen) {
       GWEN_Gui_ProgressLog(pid,
 			   GWEN_LoggerLevel_Error,
 			   I18N("Error importing accounts"));
-      AB_ImExporterContext_free(ictx);
+      AB_ImExporter_Context_free(ictx);
       GWEN_Gui_ProgressEnd(pid);
       return rv;
     }
   }
 
-  AB_ImExporterContext_free(ictx);
+  AB_ImExporter_Context_free(ictx);
   GWEN_Gui_ProgressEnd(pid);
   return rv;
 }

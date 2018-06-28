@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue May 03 2005
- copyright   : (C) 2005-2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -172,13 +172,13 @@ int import(AB_BANKING *ab,
   }
 
   /* import new context */
-  ctx=AB_ImExporterContext_new();
+  ctx=AB_ImExporter_Context_new();
   rv=AB_Banking_ImportFileWithProfile(ab, importerName, ctx,
 				      profileName, profileFile,
                                       inFile);
   if (rv<0) {
     DBG_ERROR(0, "Error reading file: %d", rv);
-    AB_ImExporterContext_free(ctx);
+    AB_ImExporter_Context_free(ctx);
     return 4;
   }
 
@@ -186,13 +186,13 @@ int import(AB_BANKING *ab,
   if (bankId || accountId) {
     AB_IMEXPORTER_ACCOUNTINFO *iea;
 
-    iea=AB_ImExporterContext_GetFirstAccountInfo(ctx);
+    iea=AB_ImExporter_Context_GetFirstAccountInfo(ctx);
     while(iea) {
       if (bankId)
-	AB_ImExporterAccountInfo_SetBankCode(iea, bankId);
+	AB_ImExporter_AccountInfo_SetBankCode(iea, bankId);
       if (accountId)
-	AB_ImExporterAccountInfo_SetAccountNumber(iea, accountId);
-      iea=AB_ImExporterContext_GetNextAccountInfo(ctx);
+	AB_ImExporter_AccountInfo_SetAccountNumber(iea, accountId);
+      iea=AB_ImExporter_AccountInfo_List_Next(iea);
     } /* while */
   }
 
@@ -203,7 +203,7 @@ int import(AB_BANKING *ab,
     AB_Banking_Fini(ab);
     return 4;
   }
-  AB_ImExporterContext_free(ctx);
+  AB_ImExporter_Context_free(ctx);
 
   /* that's is */
   rv=AB_Banking_OnlineFini(ab);

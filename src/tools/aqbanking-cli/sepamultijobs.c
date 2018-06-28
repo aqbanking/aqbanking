@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue Mar 25 2014
- copyright   : (C) 2014 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -246,13 +246,13 @@ int sepaMultiJobs(AB_BANKING *ab,
   }
 
   /* import new context */
-  ctx=AB_ImExporterContext_new();
+  ctx=AB_ImExporter_Context_new();
   rv=AB_Banking_ImportFileWithProfile(ab, importerName, ctx,
 				      profileName, profileFile,
 				      inFile);
   if (rv<0) {
     DBG_ERROR(0, "Error reading file: %d", rv);
-    AB_ImExporterContext_free(ctx);
+    AB_ImExporter_Context_free(ctx);
     return 4;
   }
 
@@ -262,7 +262,7 @@ int sepaMultiJobs(AB_BANKING *ab,
 
   /* populate job list */
   jobList=AB_Job_List2_new();
-  iea=AB_ImExporterContext_GetFirstAccountInfo(ctx);
+  iea=AB_ImExporter_Context_GetFirstAccountInfo(ctx);
   while(iea) {
     AB_ACCOUNT *a;
     AB_TRANSACTION *t;
@@ -270,20 +270,29 @@ int sepaMultiJobs(AB_BANKING *ab,
     if (forcedAccount)
       a=forcedAccount;
     else {
-      a=AB_Banking_GetAccountByCodeAndNumber(ab,
-					     AB_ImExporterAccountInfo_GetBankCode(iea),
-					     AB_ImExporterAccountInfo_GetAccountNumber(iea));
+      a=NULL;
+      if (AB_ImExporter_AccountInfo_GetAccountId(iea))
+        a=AB_Banking_GetAccount(ab, AB_ImExporter_AccountInfo_GetAccountId(iea));
+      if (a==NULL)
+        a=AB_Banking_FindAccount2(ab,
+                                  "*",
+                                  "*",
+                                  AB_ImExporter_AccountInfo_GetBankCode(iea),
+                                  AB_ImExporter_AccountInfo_GetAccountNumber(iea),
+                                  AB_ImExporter_AccountInfo_GetSubAccountId(iea),
+                                  AB_ImExporter_AccountInfo_GetIban(iea),
+                                  AB_ImExporter_AccountInfo_GetAccountType(iea));
       if (!a) {
-    DBG_ERROR(0, "Local account %s/%s not found, aborting",
-		  AB_ImExporterAccountInfo_GetBankCode(iea),
-		  AB_ImExporterAccountInfo_GetAccountNumber(iea));
-	AB_Job_List2_FreeAll(jobList);
-	AB_ImExporterContext_free(ctx);
+        DBG_ERROR(0, "Local account %s/%s not found, aborting",
+                  AB_ImExporter_AccountInfo_GetBankCode(iea),
+                  AB_ImExporter_AccountInfo_GetAccountNumber(iea));
+        AB_Job_List2_FreeAll(jobList);
+        AB_ImExporter_Context_free(ctx);
 	return 3;
       }
     }
 
-    t=AB_ImExporterAccountInfo_GetFirstTransaction(iea);
+    t=AB_ImExporter_AccountInfo_GetFirstTransaction(iea);
     while(t) {
       AB_JOB *j;
       const char *rIBAN;
@@ -292,8 +301,8 @@ int sepaMultiJobs(AB_BANKING *ab,
       transactionLine++;
 
       if (forcedAccount) {
-	AB_Transaction_SetLocalIban(t, AB_Account_GetIBAN(forcedAccount));
-	AB_Transaction_SetLocalBic(t, AB_Account_GetBIC(forcedAccount));
+        AB_Transaction_SetLocalIban(t, AB_Account_GetIBAN(forcedAccount));
+        AB_Transaction_SetLocalBic(t, AB_Account_GetBIC(forcedAccount));
       }
 
       rIBAN=AB_Transaction_GetRemoteIban(t);
@@ -352,18 +361,18 @@ int sepaMultiJobs(AB_BANKING *ab,
       rv=AB_Job_SetTransaction(j, t);
       if (rv<0) {
           DBG_ERROR(0, "Unable to add transaction for account %s/%s, line %d, aborting",
-                    AB_ImExporterAccountInfo_GetBankCode(iea),
-                    AB_ImExporterAccountInfo_GetAccountNumber(iea),
+                    AB_ImExporter_AccountInfo_GetBankCode(iea),
+                    AB_ImExporter_AccountInfo_GetAccountNumber(iea),
                     transactionLine);
           reallyExecute = 0;
       }
       AB_Job_List2_PushBack(jobList, j);
-      t=AB_ImExporterAccountInfo_GetNextTransaction(iea);
+      t=AB_Transaction_List_Next(t);
     } /* while t */
 
-    iea=AB_ImExporterContext_GetNextAccountInfo(ctx);
+    iea=AB_ImExporter_AccountInfo_List_Next(iea);
   } /* while */
-  AB_ImExporterContext_free(ctx);
+  AB_ImExporter_Context_free(ctx);
 
   if (reallyExecute != 1)
   {
@@ -373,7 +382,7 @@ int sepaMultiJobs(AB_BANKING *ab,
 
   /* execute jobs */
   rvExec=0;
-  ctx=AB_ImExporterContext_new();
+  ctx=AB_ImExporter_Context_new();
   rv=AB_Banking_ExecuteJobs(ab, jobList, ctx);
   if (rv) {
     fprintf(stderr, "Error on executeQueue (%d)\n", rv);
@@ -383,7 +392,7 @@ int sepaMultiJobs(AB_BANKING *ab,
 
   /* write context */
   rv=writeContext(ctxFile, ctx);
-  AB_ImExporterContext_free(ctx);
+  AB_ImExporter_Context_free(ctx);
   if (rv<0) {
     AB_Banking_OnlineFini(ab);
     AB_Banking_Fini(ab);

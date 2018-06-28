@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -243,12 +243,13 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
 	  }
 	}
 
+        if (noted)
+          AB_Transaction_SetType(t, AB_Transaction_TypeNotedStatement);
+        else
+          AB_Transaction_SetType(t, AB_Transaction_TypeStatement);
 
         DBG_INFO(AQHBCI_LOGDOMAIN, "Adding transaction");
-        if (noted)
-	  AB_ImExporterAccountInfo_AddNotedTransaction(ai, t);
-	else
-          AB_ImExporterAccountInfo_AddTransaction(ai, t);
+        AB_ImExporter_AccountInfo_AddTransaction(ai, t);
       }
 
       if (GWEN_ERROR_USER_ABORTED==
@@ -288,7 +289,7 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
 	      AB_AccountStatus_SetTime(as, ti);
 	    AB_AccountStatus_SetNotedBalance(as, bal);
 	    AB_Balance_free(bal);
-	    AB_ImExporterAccountInfo_AddAccountStatus(ai, as);
+	    AB_ImExporter_AccountInfo_AddAccountStatus(ai, as);
 	  }
 	}
 	GWEN_Time_free(ti);
@@ -377,7 +378,7 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   /* now the buffers contain data to be parsed by DBIOs */
   a=AH_AccountJob_GetAccount(j);
   assert(a);
-  ai=AB_ImExporterContext_GetAccountInfoForAccount(ctx, a);
+  ai=AB_ImExporter_Context_GetOrAddAccountInfoForAccount(ctx, a);
   assert(ai);
 
   /* read booked transactions */
@@ -437,16 +438,15 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
     AB_TRANSACTION *ttmp;
 
     DBG_INFO(AQHBCI_LOGDOMAIN, "*** Dumping transactions *******************");
-    ttmp=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
+    ttmp=AB_ImExporter_AccountInfo_GetFirstTransaction(ai);
     while (ttmp) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "*** --------------------------------------");
       gn=GWEN_DB_Group_new("transaction");
       AB_Transaction_toDb(ttmp, gn);
       GWEN_DB_Dump(gn, 2);
-      if (gn) GWEN_DB_Group_free(gn);
-      ttmp=AB_ImExporterAccountInfo_GetNextTransaction(ai);
+      GWEN_DB_Group_free(gn);
+      ttmp=AB_Transaction_List_Next(ttmp);
     }
-    AB_Transaction_free(ttmp);
 
     DBG_INFO(AQHBCI_LOGDOMAIN, "*** End dumping transactions ***************");
   }
@@ -455,6 +455,8 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   GWEN_Buffer_free(tnoted);
   return 0;
 }
+
+
 
 int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   AH_JOB_GETTRANSACTIONS *aj;
@@ -485,11 +487,9 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
 
   a=AH_AccountJob_GetAccount(j);
   assert(a);
-  ai=AB_ImExporterContext_GetAccountInfo(ctx,
-                                         AB_Account_GetBankCode(a),
-                                         AB_Account_GetAccountNumber(a));
+  ai=AB_ImExporter_Context_GetOrAddAccountInfoForAccount(ctx, a);
   assert(ai);
-  AB_ImExporterAccountInfo_SetAccountId(ai, AB_Account_GetUniqueId(a));
+  AB_ImExporter_AccountInfo_SetAccountId(ai, AB_Account_GetUniqueId(a));
 
   u=AH_Job_GetUser(j);
   assert(u);
@@ -595,7 +595,8 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
 
         t=AB_Transaction_new();
         if(ref)
-            AB_Transaction_SetFiId(t, ref);
+          AB_Transaction_SetFiId(t, ref);
+        AB_Transaction_SetUniqueAccountId(t, AB_Account_GetUniqueId(a));
         AB_Transaction_SetLocalBankCode(t, AB_User_GetBankCode(u));
         AB_Transaction_SetLocalAccountNumber(t, AB_Account_GetAccountNumber(a));
         AB_Transaction_SetValutaDate(t, valutaDate);
@@ -603,7 +604,7 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
         AB_Transaction_SetValue(t, v2);
         AB_Transaction_SetPurposeFromStringList(t, purpose);
         DBG_INFO(AQHBCI_LOGDOMAIN, "Adding transaction");
-        AB_ImExporterAccountInfo_AddTransaction(ai, t);
+        AB_ImExporter_AccountInfo_AddTransaction(ai, t);
 
         GWEN_StringList_free(purpose);
         AB_Value_free(v2);

@@ -27,6 +27,7 @@
         <header type="sys" loc="post">aqbanking/transaction.h</header>
         <header type="sys" loc="post">aqbanking/accstatus.h</header>
         <header type="sys" loc="post">aqbanking/document.h</header>
+        <header type="sys" loc="post">aqbanking/account.h</header>
       </headers>
 
 
@@ -207,6 +208,273 @@
 
 
 
+        <inline loc="end" access="public">
+          <content>
+             $(api) void $(struct_prefix)_FillFromAccount($(struct_type) *st, const AB_ACCOUNT *a);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             void $(struct_prefix)_FillFromAccount($(struct_type) *st, const AB_ACCOUNT *a) {
+               const char *s;
+               AB_ACCOUNT_TYPE at;
+             
+               assert(st);
+               assert(a);
+             
+               s=AB_Account_GetBankCode(a);
+               AB_ImExporter_AccountInfo_SetBankCode(st, s);
+             
+               s=AB_Account_GetBankName(a);
+               AB_ImExporter_AccountInfo_SetBankName(st, s);
+             
+               s=AB_Account_GetAccountNumber(a);
+               AB_ImExporter_AccountInfo_SetAccountNumber(st, s);
+
+               s=AB_Account_GetSubAccountId(a);
+               AB_ImExporter_AccountInfo_SetSubAccountId(st, s);
+             
+               s=AB_Account_GetAccountName(a);
+               AB_ImExporter_AccountInfo_SetAccountName(st, s);
+             
+               s=AB_Account_GetIBAN(a);
+               AB_ImExporter_AccountInfo_SetIban(st, s);
+             
+               s=AB_Account_GetBIC(a);
+               AB_ImExporter_AccountInfo_SetBic(st, s);
+             
+               s=AB_Account_GetCurrency(a);
+               AB_ImExporter_AccountInfo_SetCurrency(st, s);
+             
+               s=AB_Account_GetOwnerName(a);
+               AB_ImExporter_AccountInfo_SetOwner(st, s);
+             
+               at=AB_Account_GetAccountType(a);
+               AB_ImExporter_AccountInfo_SetAccountType(st, at);
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) void $(struct_prefix)_FillFromTransaction($(struct_type) *st, const AB_TRANSACTION *t);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             void $(struct_prefix)_FillFromTransaction($(struct_type) *st, const AB_TRANSACTION *t) {
+               const char *s;
+
+               assert(st);
+               assert(t);
+             
+               s=AB_Transaction_GetLocalBankCode(t);
+               AB_ImExporter_AccountInfo_SetBankCode(st, s);
+             
+               s=AB_Transaction_GetLocalAccountNumber(t);
+               AB_ImExporter_AccountInfo_SetAccountNumber(st, s);
+
+               s=AB_Transaction_GetLocalSuffix(t);
+               AB_ImExporter_AccountInfo_SetSubAccountId(st, s);
+             
+               s=AB_Transaction_GetLocalIban(t);
+               AB_ImExporter_AccountInfo_SetIban(st, s);
+             
+               s=AB_Transaction_GetLocalBic(t);
+               AB_ImExporter_AccountInfo_SetBic(st, s);
+             
+               s=AB_Transaction_GetLocalName(t);
+               AB_ImExporter_AccountInfo_SetOwner(st, s);
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_GetByBankCodeAndAccountNumber($(struct_type)_LIST *l, 
+                                                                                                   const char *bankCode,
+                                                                                                   const char *accountNumber,
+                                                                                                   int accountType);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_GetByBankCodeAndAccountNumber($(struct_type)_LIST *l, 
+                                                                                            const char *bankCode,
+                                                                                            const char *accountNumber,
+                                                                                            int accountType) {
+               AB_IMEXPORTER_ACCOUNTINFO *iea;
+             
+               assert(l);
+               
+               if (!bankCode)
+                 bankCode="";
+               if (!accountNumber)
+                 accountNumber="";
+             
+               iea=AB_ImExporter_AccountInfo_List_First(l);
+               while(iea) {
+                 const char *sBankCode;
+                 const char *sAccountNumber;
+             
+                 sBankCode=AB_ImExporter_AccountInfo_GetBankCode(iea);
+                 if (sBankCode==NULL)
+                   sBankCode="";
+                 sAccountNumber=AB_ImExporter_AccountInfo_GetAccountNumber(iea);
+                 if (sAccountNumber==NULL)
+                   sAccountNumber="";
+
+                 if ((strcasecmp(sBankCode, bankCode)==0) &amp;&amp;
+                     (strcasecmp(sAccountNumber, accountNumber)==0) &amp;&amp;
+                     ((accountType&lt;=AB_AccountType_Unknown) || (accountType==AB_ImExporter_AccountInfo_GetAccountType(iea)))
+                    )
+                   return iea;
+                 
+                 iea=AB_ImExporter_AccountInfo_List_Next(iea);
+               }
+               
+               return NULL;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_Find($(struct_type)_LIST *l,
+                                                                          uint32_t uniqueId,
+                                                                          const char *iban,
+                                                                          const char *bankCode,
+                                                                          const char *accountNumber,
+                                                                          int accountType);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_Find($(struct_type)_LIST *l,
+                                                                   uint32_t uniqueId,
+                                                                   const char *iban,
+                                                                   const char *bankCode,
+                                                                   const char *accountNumber,
+                                                                   int accountType) {
+               AB_IMEXPORTER_ACCOUNTINFO *iea=NULL;
+             
+               assert(l);
+               
+               if (uniqueId)
+                 iea=AB_ImExporter_AccountInfo_List_GetByAccountId(l, uniqueId);
+               
+               if (iea==NULL &amp;&amp; iban &amp;&amp; *iban)
+                 AB_ImExporter_AccountInfo_List_GetByIban(l, iban);
+               
+               if (iea==NULL)
+                 iea=AB_ImExporter_AccountInfo_List_GetByBankCodeAndAccountNumber(l, bankCode, accountNumber, accountType);
+               
+               return iea;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_GetByAccount($(struct_type)_LIST *l, const AB_ACCOUNT *a);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_GetByAccount($(struct_type)_LIST *l, const AB_ACCOUNT *a) {
+               assert(l);
+               assert(a);
+               
+               return $(struct_prefix)_List_Find(l,
+                                                 AB_Account_GetUniqueId(a),
+                                                 AB_Account_GetIBAN(a),
+                                                 AB_Account_GetBankCode(a),
+                                                 AB_Account_GetAccountNumber(a),
+                                                 AB_Account_GetAccountType(a));
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_GetOrAddByAccount($(struct_type)_LIST *l, const AB_ACCOUNT *a);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_GetOrAddByAccount($(struct_type)_LIST *l, const AB_ACCOUNT *a) {
+               AB_IMEXPORTER_ACCOUNTINFO *iea=NULL;
+             
+               assert(l);
+               
+               iea=$(struct_prefix)_List_GetByAccount(l, a);
+               if (iea==NULL) {
+                 iea=$(struct_prefix)_new();
+                 $(struct_prefix)_FillFromAccount(iea, a);
+                 $(struct_prefix)_List_Add(iea, l);
+               }
+               return iea;
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_GetOrAdd($(struct_type)_LIST *l,
+                                                                              uint32_t uniqueId,
+                                                                              const char *iban,
+                                                                              const char *bankCode,
+                                                                              const char *accountNumber,
+                                                                              int accountType);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_GetOrAdd($(struct_type)_LIST *l,
+                                                                       uint32_t uniqueId,
+                                                                       const char *iban,
+                                                                       const char *bankCode,
+                                                                       const char *accountNumber,
+                                                                       int accountType) {
+               AB_IMEXPORTER_ACCOUNTINFO *iea=NULL;
+             
+               assert(l);
+               
+               iea=$(struct_prefix)_List_Find(l, uniqueId, iban, bankCode, accountNumber, accountType);
+               if (iea==NULL) {
+                 iea=$(struct_prefix)_new();
+                 $(struct_prefix)_SetAccountId(iea, uniqueId);
+                 $(struct_prefix)_SetIban(iea, iban);
+                 $(struct_prefix)_SetBankCode(iea, bankCode);
+                 $(struct_prefix)_SetAccountNumber(iea, accountNumber);
+                 $(struct_prefix)_SetAccountType(iea, accountType);
+                 
+                 $(struct_prefix)_List_Add(iea, l);
+               }
+               return iea;
+             }
+          </content>
+        </inline>
+
+
+
       </inlines>
 
 
@@ -250,6 +518,15 @@
         <getflags>const</getflags>
       </member>
 
+      <member name="subAccountId" type="char_ptr" maxlen="32" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
       <member name="accountName" type="char_ptr" maxlen="64" >
         <descr>
         </descr>
@@ -263,7 +540,7 @@
         <descr>
         </descr>
         <access>public</access>
-        <flags>own</flags>
+        <flags>own with_getbyMember</flags>
         <setflags>const dup</setflags>
         <getflags>const</getflags>
       </member>

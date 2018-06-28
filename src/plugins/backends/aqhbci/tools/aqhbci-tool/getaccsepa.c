@@ -204,7 +204,7 @@ int getAccSepa(AB_BANKING *ab,
   else {
     AB_IMEXPORTER_CONTEXT *ctx;
 
-    ctx=AB_ImExporterContext_new();
+    ctx=AB_ImExporter_Context_new();
 
     rv=AH_Provider_GetAccountSepaInfo(pro, matches, ctx, 1, 0, 1);
     if (rv<0) {
@@ -214,7 +214,7 @@ int getAccSepa(AB_BANKING *ab,
       return 4;
     }
 
-    AB_ImExporterContext_free(ctx);
+    AB_ImExporter_Context_free(ctx);
   }
   AB_Account_List2_free(matches);
 

@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue May 03 2005
- copyright   : (C) 2005-2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -365,11 +365,12 @@ static int addSepaDebitNote(AB_BANKING *ab,
   }
 
   /* add transfer to */
-  AB_ImExporterContext_AddTransfer(ctx, t);
+
+  AB_ImExporter_Context_AddTransaction(ctx, t);
 
   /* write result back */
   rv=writeContext(ctxFile, ctx);
-  AB_ImExporterContext_free(ctx);
+  AB_ImExporter_Context_free(ctx);
   if (rv<0) {
     DBG_ERROR(0, "Error writing context file (%d)", rv);
     AB_Banking_OnlineFini(ab);

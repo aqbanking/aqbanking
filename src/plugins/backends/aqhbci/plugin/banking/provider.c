@@ -932,7 +932,7 @@ int AH_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
 
 	msg=AB_Message_List_First(ml);
 	while(msg) {
-	  AB_ImExporterContext_AddMessage(ctx, AB_Message_dup(msg));
+	  AB_ImExporter_Context_AddMessage(ctx, AB_Message_dup(msg));
 	  msg=AB_Message_List_Next(msg);
 	}
       }

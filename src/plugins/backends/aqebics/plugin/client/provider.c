@@ -569,9 +569,9 @@ int EBC_Provider_ExecContext__IZV(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(logbuf, "Transactions\n");
 
   DBG_INFO(AQEBICS_LOGDOMAIN, "Sampling transactions from jobs");
-  exCtx=AB_ImExporterContext_new();
-  ai=AB_ImExporterAccountInfo_new();
-  AB_ImExporterAccountInfo_FillFromAccount(ai, a);
+  exCtx=AB_ImExporter_Context_new();
+  ai=AB_ImExporter_AccountInfo_new();
+  AB_ImExporter_AccountInfo_FillFromAccount(ai, a);
 
   jit=AB_Job_List2_First(EBC_Context_GetJobs(ectx));
   if (jit) {
@@ -599,7 +599,7 @@ int EBC_Provider_ExecContext__IZV(AB_PROVIDER *pro,
 	groupId=AB_Job_GetJobId(uj);
       AB_Transaction_SetGroupId(t, groupId);
 
-      AB_ImExporterAccountInfo_AddTransaction(ai, AB_Transaction_dup(t));
+      AB_ImExporter_AccountInfo_AddTransaction(ai, AB_Transaction_dup(t));
       s=AB_Transaction_GetRemoteName(t);
       if (!s)
 	s=I18N("unknown");
@@ -631,7 +631,7 @@ int EBC_Provider_ExecContext__IZV(AB_PROVIDER *pro,
     } /* while */
     AB_Job_List2Iterator_free(jit);
   }
-  AB_ImExporterContext_AddAccountInfo(exCtx, ai);
+  AB_ImExporter_Context_AddAccountInfo(exCtx, ai);
 
   GWEN_Buffer_AppendString(logbuf, I18N("Results:\n"));
 
@@ -653,7 +653,6 @@ int EBC_Provider_ExecContext__IZV(AB_PROVIDER *pro,
     GWEN_Buffer_AppendString(logbuf, I18N("Error while exporting to DTAUS\n"));
     GWEN_Buffer_AppendString(logbuf, "END\n");
 
-    AB_ImExporterContext_AddLog(ctx, GWEN_Buffer_GetStart(logbuf));
     GWEN_Buffer_free(logbuf);
     return rv;
   }
@@ -686,7 +685,6 @@ int EBC_Provider_ExecContext__IZV(AB_PROVIDER *pro,
     GWEN_Buffer_AppendString(logbuf, s);
   GWEN_Buffer_AppendString(logbuf, "END\n");
 
-  AB_ImExporterContext_AddLog(ctx, GWEN_Buffer_GetStart(logbuf));
   GWEN_Buffer_free(logbuf);
 
   EBC_Provider_SetJobListStatus(EBC_Context_GetJobs(ectx), js);
@@ -744,8 +742,11 @@ int EBC_Provider_ExecContext_IZV(AB_PROVIDER *pro,
 	}
 
 	t=AB_Transaction_dup(ot);
-	AB_Transaction_SetStatus(t, tStatus);
-	AB_ImExporterContext_AddTransfer(ctx, t);
+        AB_Transaction_SetStatus(t, tStatus);
+        AB_Transaction_SetUniqueAccountId(t, AB_Account_GetUniqueId(a));
+        if (AB_Transaction_GetType(t)<=AB_Transaction_TypeNone)
+          AB_Transaction_SetType(t, AB_Transaction_TypeTransfer);
+        AB_ImExporter_Context_AddTransaction(ctx, t);
       }
 
       uj=AB_Job_List2Iterator_Next(jit);

@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue May 03 2005
- copyright   : (C) 2005-2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -215,35 +215,35 @@ int listTransfers(AB_BANKING *ab,
     return 4;
   }
 
-  nctx=AB_ImExporterContext_new();
-  iea=AB_ImExporterContext_GetFirstAccountInfo(ctx);
+  nctx=AB_ImExporter_Context_new();
+  iea=AB_ImExporter_Context_GetFirstAccountInfo(ctx);
   while(iea) {
     int matches=1;
     const char *s;
 
     if (matches && bankId) {
-      s=AB_ImExporterAccountInfo_GetBankCode(iea);
+      s=AB_ImExporter_AccountInfo_GetBankCode(iea);
       if (!s || !*s || -1==GWEN_Text_ComparePattern(s, bankId, 0))
         matches=0;
     }
 
     if (matches && bankName) {
-      s=AB_ImExporterAccountInfo_GetBankName(iea);
+      s=AB_ImExporter_AccountInfo_GetBankName(iea);
       if (!s || !*s)
-        s=AB_ImExporterAccountInfo_GetBankName(iea);
+        s=AB_ImExporter_AccountInfo_GetBankName(iea);
       if (!s || !*s || -1==GWEN_Text_ComparePattern(s, bankName, 0))
         matches=0;
     }
 
     if (matches && accountId) {
-      s=AB_ImExporterAccountInfo_GetAccountNumber(iea);
+      s=AB_ImExporter_AccountInfo_GetAccountNumber(iea);
       if (!s || !*s || -1==GWEN_Text_ComparePattern(s, accountId, 0))
         matches=0;
     }
     if (matches && accountName) {
-      s=AB_ImExporterAccountInfo_GetAccountName(iea);
+      s=AB_ImExporter_AccountInfo_GetAccountName(iea);
       if (!s || !*s)
-        s=AB_ImExporterAccountInfo_GetAccountName(iea);
+        s=AB_ImExporter_AccountInfo_GetAccountName(iea);
       if (!s || !*s || -1==GWEN_Text_ComparePattern(s, accountName, 0))
         matches=0;
     }
@@ -251,23 +251,27 @@ int listTransfers(AB_BANKING *ab,
     if (matches) {
       AB_IMEXPORTER_ACCOUNTINFO *nai;
       const AB_TRANSACTION *t;
+      AB_TRANSACTION_LIST *tl;
 
-      nai=AB_ImExporterAccountInfo_new();
-      t=AB_ImExporterAccountInfo_GetFirstTransfer(iea);
+      tl=AB_ImExporter_AccountInfo_GetTransactionList(iea);
+      assert(tl);
+      nai=AB_ImExporter_AccountInfo_new();
+      t=AB_Transaction_List_FindFirstByType(tl, AB_Transaction_TypeTransfer, AB_Transaction_CommandNone);
       while(t) {
 	if ((tStatus==AB_Transaction_StatusNone) ||
 	    (tStatus==AB_Transaction_GetStatus(t))) {
 	  AB_TRANSACTION *nt;
 
-	  nt=AB_Transaction_dup(t);
-	  AB_ImExporterAccountInfo_AddTransaction(nai, nt);
+          nt=AB_Transaction_dup(t);
+          AB_Transaction_SetType(nt, AB_Transaction_TypeStatement);
+	  AB_ImExporter_AccountInfo_AddTransaction(nai, nt);
 	}
-	t=AB_ImExporterAccountInfo_GetNextTransfer(iea);
+        t=AB_Transaction_List_FindNextByType(t, AB_Transaction_TypeTransfer, AB_Transaction_CommandNone);
       }
 
-      AB_ImExporterContext_AddAccountInfo(nctx, nai);
+      AB_ImExporter_Context_AddAccountInfo(nctx, nai);
     } /* if matches */
-    iea=AB_ImExporterContext_GetNextAccountInfo(ctx);
+    iea=AB_ImExporter_AccountInfo_List_Next(iea);
   } /* while */
 
   /* export new context */
@@ -276,10 +280,10 @@ int listTransfers(AB_BANKING *ab,
 					outFile);
   if (rv<0) {
     DBG_ERROR(0, "Error exporting (%d).", rv);
-    AB_ImExporterContext_free(nctx);
+    AB_ImExporter_Context_free(nctx);
     return 4;
   }
-  AB_ImExporterContext_free(nctx);
+  AB_ImExporter_Context_free(nctx);
 
   rv=AB_Banking_Fini(ab);
   if (rv) {

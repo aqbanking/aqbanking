@@ -151,7 +151,7 @@ int main(int argc, char **argv) {
      * data returned by the server will be stored within an ImExporter
      * context.
      */
-    ctx=AB_ImExporterContext_new();
+    ctx=AB_ImExporter_Context_new();
 
     /* execute the queue. This effectivly sends all jobs which have been
      * enqueued to the respective backends/banks.

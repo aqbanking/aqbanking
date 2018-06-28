@@ -58,7 +58,7 @@ void AB_Banking__fillTransactionRemoteInfo(AB_TRANSACTION *t) {
 }
 
 
-
+/*
 void AB_Banking__fillTransactionRemoteSepaInfo(AB_BANKING *ab, AB_TRANSACTION *t) {
   const char *sRemoteCountry;
 
@@ -113,13 +113,13 @@ void AB_Banking__fillTransactionRemoteSepaInfo(AB_BANKING *ab, AB_TRANSACTION *t
     }
   }
 }
-
+*/
 
 
 void AB_Banking_FillGapsInTransaction(AB_BANKING *ab, AB_ACCOUNT *a, AB_TRANSACTION *t) {
   if (a)
     AB_Transaction_FillLocalFromAccount(t, a);
-  AB_Banking__fillTransactionRemoteSepaInfo(ab, t);
+  /*AB_Banking__fillTransactionRemoteSepaInfo(ab, t); don't create IBANs */
 }
 
 
@@ -129,65 +129,39 @@ int AB_Banking_FillGapsInImExporterContext(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT
   int notFounds=0;
 
   assert(iec);
-  iea=AB_ImExporterContext_GetFirstAccountInfo(iec);
+  iea=AB_ImExporter_Context_GetFirstAccountInfo(iec);
   while(iea) {
-    AB_ACCOUNT *a;
+    AB_ACCOUNT *a=NULL;
 
-    a=AB_Banking_GetAccountByCodeAndNumber(ab,
-					   AB_ImExporterAccountInfo_GetBankCode(iea),
-					   AB_ImExporterAccountInfo_GetAccountNumber(iea));
+    if (AB_ImExporter_AccountInfo_GetAccountId(iea))
+      a=AB_Banking_GetAccount(ab, AB_ImExporter_AccountInfo_GetAccountId(iea));
     if (!a)
-      a=AB_Banking_GetAccountByIban(ab, AB_ImExporterAccountInfo_GetIban(iea));
+      a=AB_Banking_GetAccountByIban(ab, AB_ImExporter_AccountInfo_GetIban(iea));
+    if (!a)
+      a=AB_Banking_GetAccountByCodeAndNumber(ab,
+					     AB_ImExporter_AccountInfo_GetBankCode(iea),
+					     AB_ImExporter_AccountInfo_GetAccountNumber(iea));
     if (a) {
       AB_TRANSACTION *t;
 
-      AB_ImExporterAccountInfo_FillFromAccount(iea, a);
+      AB_ImExporter_AccountInfo_FillFromAccount(iea, a);
 
       /* fill transactions */
-      t=AB_ImExporterAccountInfo_GetFirstTransaction(iea);
+      t=AB_ImExporter_AccountInfo_GetFirstTransaction(iea);
       while(t) {
 	AB_Transaction_FillLocalFromAccount(t, a);
+	if (AB_Transaction_GetUniqueAccountId(t)==0)
+	  AB_Transaction_SetUniqueAccountId(t, AB_Account_GetUniqueId(a));
 	if (AB_Transaction_GetRemoteBankCode(t)==NULL &&
 	    AB_Transaction_GetRemoteAccountNumber(t)==NULL)
 	  AB_Banking__fillTransactionRemoteInfo(t);
-	t=AB_ImExporterAccountInfo_GetNextTransaction(iea);
-      }
-
-      /* fill standing orders */
-      t=AB_ImExporterAccountInfo_GetFirstStandingOrder(iea);
-      while(t) {
-        AB_Banking_FillGapsInTransaction(ab, a, t);
-	t=AB_ImExporterAccountInfo_GetNextStandingOrder(iea);
-      }
-
-      /* fill transfers */
-      t=AB_ImExporterAccountInfo_GetFirstTransfer(iea);
-      while(t) {
-	AB_Banking_FillGapsInTransaction(ab, a, t);
-	t=AB_ImExporterAccountInfo_GetNextTransfer(iea);
-      }
-
-      /* fill dated transfers */
-      t=AB_ImExporterAccountInfo_GetFirstDatedTransfer(iea);
-      while(t) {
-	AB_Banking_FillGapsInTransaction(ab, a, t);
-	t=AB_ImExporterAccountInfo_GetNextDatedTransfer(iea);
-      }
-
-      /* fill noted transactions */
-      t=AB_ImExporterAccountInfo_GetFirstNotedTransaction(iea);
-      while(t) {
-	AB_Transaction_FillLocalFromAccount(t, a);
-	if (AB_Transaction_GetRemoteBankCode(t)==NULL &&
-	    AB_Transaction_GetRemoteAccountNumber(t)==NULL)
-	  AB_Banking__fillTransactionRemoteInfo(t);
-	t=AB_ImExporterAccountInfo_GetNextNotedTransaction(iea);
+	t=AB_Transaction_List_Next(t);
       }
     }
     else
       notFounds++;
 
-    iea=AB_ImExporterContext_GetNextAccountInfo(iec);
+    iea=AB_ImExporter_AccountInfo_List_Next(iea);
   }
 
   return (notFounds==0)?0:1;

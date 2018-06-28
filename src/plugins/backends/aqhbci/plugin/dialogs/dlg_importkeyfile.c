@@ -977,8 +977,9 @@ int AH_ImportKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   GWEN_Gui_ProgressLog(pid,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Retrieving server keys"));
-  ctx=AB_ImExporterContext_new();
+  ctx=AB_ImExporter_Context_new();
   rv=AH_Provider_GetServerKeys(pro, u, ctx, 0, 1, 0);
+  AB_ImExporter_Context_free(ctx);
   if (rv<0) {
     AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -1005,8 +1006,9 @@ int AH_ImportKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   GWEN_Gui_ProgressLog(pid,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Retrieving system id"));
-  ctx=AB_ImExporterContext_new();
+  ctx=AB_ImExporter_Context_new();
   rv=AH_Provider_GetSysId(pro, u, ctx, 0, 1, 0);
+  AB_ImExporter_Context_free(ctx);
   if (rv<0) {
     AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);

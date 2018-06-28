@@ -132,6 +132,9 @@ void AB_Transaction_FillLocalFromAccount(AB_TRANSACTION *t, const AB_ACCOUNT *a)
   s=AB_Account_GetIBAN(a);
   if (s && *s)
     AB_Transaction_SetLocalIban(t, s);
+
+  AB_Transaction_SetUniqueAccountId(t, AB_Account_GetUniqueId(a));
+
 }
 
 

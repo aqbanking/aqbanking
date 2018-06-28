@@ -179,7 +179,7 @@ int AH_ImExporterDTAUS__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 	AB_Transaction_SetType(t, AB_Transaction_TypeTransfer);
 
       DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding transaction");
-      AB_ImExporterContext_AddTransaction(ctx, t);
+      AB_ImExporter_Context_AddTransaction(ctx, t);
     }
     else {
       int rv;
@@ -238,7 +238,7 @@ int AH_ImExporterDTAUS_Export(AB_IMEXPORTER *ie,
 
   groupName=GWEN_DB_GetCharValue(params, "groupNames", 0, "transfer");
 
-  ai=AB_ImExporterContext_GetFirstAccountInfo(ctx);
+  ai=AB_ImExporter_Context_GetFirstAccountInfo(ctx);
   while(ai) {
     GWEN_DB_NODE *dbTransfers;
     const char *aiBankCode;
@@ -249,14 +249,14 @@ int AH_ImExporterDTAUS_Export(AB_IMEXPORTER *ie,
     const char *localAccountNumber=NULL;
     const char *localName=NULL;
 
-    aiBankCode=AB_ImExporterAccountInfo_GetBankCode(ai);
-    aiAccNum=AB_ImExporterAccountInfo_GetAccountNumber(ai);
+    aiBankCode=AB_ImExporter_AccountInfo_GetBankCode(ai);
+    aiAccNum=AB_ImExporter_AccountInfo_GetAccountNumber(ai);
 
     localBankCode=aiBankCode;
     localAccountNumber=aiAccNum;
 
     /* get values for dbCfg from transactions, check for deviations */
-    t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
+    t=AB_ImExporter_AccountInfo_GetFirstTransaction(ai);
     while(t) {
       const char *tlocalBankCode;
       const char *tlocalAccountNumber;
@@ -306,7 +306,7 @@ int AH_ImExporterDTAUS_Export(AB_IMEXPORTER *ie,
 	return GWEN_ERROR_BAD_DATA;
       }
 
-      t=AB_ImExporterAccountInfo_GetNextTransaction(ai);
+      t=AB_Transaction_List_Next(t);
     }
 
     if (!localBankCode || !localAccountNumber || !localName) {
@@ -329,14 +329,14 @@ int AH_ImExporterDTAUS_Export(AB_IMEXPORTER *ie,
 
     /* export transactions to DB */
     dbTransfers=GWEN_DB_Group_new("transfers");
-    t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
+    t=AB_ImExporter_AccountInfo_GetFirstTransaction(ai);
     while(t) {
       GWEN_DB_NODE *dbTransfer;
 
       dbTransfer=GWEN_DB_Group_new(groupName);
       AB_Transaction_toDb(t, dbTransfer);
       GWEN_DB_AddGroup(dbTransfers, dbTransfer);
-      t=AB_ImExporterAccountInfo_GetNextTransaction(ai);
+      t=AB_Transaction_List_Next(t);
     }
 
     /* export transactions to IO */
@@ -352,11 +352,10 @@ int AH_ImExporterDTAUS_Export(AB_IMEXPORTER *ie,
 
     GWEN_DB_Group_free(dbTransfers);
     GWEN_DB_Group_free(dbCfg);
-    ai=AB_ImExporterContext_GetNextAccountInfo(ctx);
+    ai=AB_ImExporter_AccountInfo_List_Next(ai);
   } /* while ai */
 
   return 0;
-
 }
 
 

@@ -80,7 +80,7 @@ AB_ImExporterYN__ReadAccountInfo(AB_IMEXPORTER *ie,
   GWEN_XMLNODE *n;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
 
-  ai=AB_ImExporterAccountInfo_new();
+  ai=AB_ImExporter_AccountInfo_new();
 
   n=GWEN_XMLNode_FindFirstTag(doc, "SG2", 0, 0);
   if (n)
@@ -96,24 +96,24 @@ AB_ImExporterYN__ReadAccountInfo(AB_IMEXPORTER *ie,
       /* account number */
       s=GWEN_XMLNode_GetCharValue(nn, "D_3194", 0);
       if (s)
-	AB_ImExporterAccountInfo_SetAccountNumber(ai, s);
+	AB_ImExporter_AccountInfo_SetAccountNumber(ai, s);
       /* IBAN */
       s=GWEN_XMLNode_GetCharValue(nn, "D_3192", 0);
       if (s)
-	AB_ImExporterAccountInfo_SetIban(ai, s);
+	AB_ImExporter_AccountInfo_SetIban(ai, s);
       /* currency */
       nnn=GWEN_XMLNode_FindFirstTag(nn, "D_6345", 0, 0);
       if (nnn) {
         s=GWEN_XMLNode_GetProperty(nnn, "value", 0);
         if (s)
-          AB_ImExporterAccountInfo_SetCurrency(ai, s);
+          AB_ImExporter_AccountInfo_SetCurrency(ai, s);
       }
     }
 
     /* account number */
     s=GWEN_XMLNode_GetCharValue(n, "PF:D_5388", 0);
     if (s)
-      AB_ImExporterAccountInfo_SetAccountName(ai, s);
+      AB_ImExporter_AccountInfo_SetAccountName(ai, s);
   }
 
   /* owner name */
@@ -136,7 +136,7 @@ AB_ImExporterYN__ReadAccountInfo(AB_IMEXPORTER *ie,
 
             xbuf=GWEN_Buffer_new(0, 256, 0, 1);
             AB_ImExporter_Iso8859_1ToUtf8(s, strlen(s), xbuf);
-            AB_ImExporterAccountInfo_SetOwner(ai, GWEN_Buffer_GetStart(xbuf));
+            AB_ImExporter_AccountInfo_SetOwner(ai, GWEN_Buffer_GetStart(xbuf));
             GWEN_Buffer_free(xbuf);
           }
         }
@@ -277,7 +277,7 @@ AB_TRANSACTION *AB_ImExporterYN__ReadLNE_LNS(AB_IMEXPORTER *ie,
     }
     if (val==NULL)
       val=AB_Value_new();
-    AB_Value_SetCurrency(val, AB_ImExporterAccountInfo_GetCurrency(ai));
+    AB_Value_SetCurrency(val, AB_ImExporter_AccountInfo_GetCurrency(ai));
     AB_Transaction_SetValue(t, val);
     AB_Value_free(val);
     val=0;
@@ -340,11 +340,11 @@ int AB_ImExporterYN__ReadTransactions(AB_IMEXPORTER *ie,
 	  const char *s;
 
 	  t=AB_ImExporterYN__ReadLNE_LNS(ie, ai, nn);
-	  s=AB_ImExporterAccountInfo_GetAccountNumber(ai);
+	  s=AB_ImExporter_AccountInfo_GetAccountNumber(ai);
 	  AB_Transaction_SetLocalAccountNumber(t, s);
-	  s=AB_ImExporterAccountInfo_GetIban(ai);
+	  s=AB_ImExporter_AccountInfo_GetIban(ai);
 	  AB_Transaction_SetLocalIban(t, s);
-	  AB_ImExporterAccountInfo_AddTransaction(ai, t);
+	  AB_ImExporter_AccountInfo_AddTransaction(ai, t);
 
 	  nn=GWEN_XMLNode_FindNextTag(nn, "SG6", 0, 0);
 	}
@@ -395,7 +395,7 @@ int AB_ImExporterYN__ReadAccountStatus(AB_IMEXPORTER *ie,
 	  AB_ACCOUNT_STATUS *ast;
 	  AB_BALANCE *bal;
 
-          AB_Value_SetCurrency(val, AB_ImExporterAccountInfo_GetCurrency(ai));
+          AB_Value_SetCurrency(val, AB_ImExporter_AccountInfo_GetCurrency(ai));
 	  ast=AB_AccountStatus_new();
           bal=AB_Balance_new();
           AB_Balance_SetTime(bal, ti);
@@ -404,7 +404,7 @@ int AB_ImExporterYN__ReadAccountStatus(AB_IMEXPORTER *ie,
 	  AB_AccountStatus_SetBookedBalance(ast, bal);
 	  AB_Balance_free(bal);
 
-	  AB_ImExporterAccountInfo_AddAccountStatus(ai, ast);
+	  AB_ImExporter_AccountInfo_AddAccountStatus(ai, ast);
 	}
 	AB_Value_free(val);
         GWEN_Time_free(ti);
@@ -466,12 +466,12 @@ int AB_ImExporterYN_Import(AB_IMEXPORTER *ie,
     if (rv==0)
       rv=AB_ImExporterYN__ReadTransactions(ie, ai, node);
     if (rv) {
-      AB_ImExporterAccountInfo_free(ai);
+      AB_ImExporter_AccountInfo_free(ai);
       GWEN_XMLNode_free(doc);
       return rv;
     }
 
-    AB_ImExporterContext_AddAccountInfo(ctx, ai);
+    AB_ImExporter_Context_AddAccountInfo(ctx, ai);
     node=GWEN_XMLNode_FindNextTag(node, "KONAUS", 0, 0);
   }
 

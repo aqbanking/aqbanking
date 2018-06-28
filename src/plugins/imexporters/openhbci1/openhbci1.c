@@ -252,7 +252,7 @@ int AH_ImExporterOpenHBCI1__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 	    }
       
 	    DBG_NOTICE(AQBANKING_LOGDOMAIN, "Adding transaction");
-	    AB_ImExporterContext_AddTransaction(ctx, t);
+	    AB_ImExporter_Context_AddTransaction(ctx, t);
 
 	    dbT=GWEN_DB_FindNextGroup(dbT, "transaction");
 	  } /* while dbT */
@@ -319,11 +319,11 @@ int AH_ImExporterOpenHBCI1_Export(AB_IMEXPORTER *ie,
 
   /* create db, store transactions in it */
   dbData=GWEN_DB_Group_new("transactions");
-  ai=AB_ImExporterContext_GetFirstAccountInfo(ctx);
+  ai=AB_ImExporter_Context_GetFirstAccountInfo(ctx);
   while(ai) {
     const AB_TRANSACTION *t;
 
-    t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
+    t=AB_ImExporter_AccountInfo_GetFirstTransaction(ai);
     while(t) {
       GWEN_DB_NODE *dbTransaction;
       const GWEN_DATE *da;
@@ -377,9 +377,9 @@ int AH_ImExporterOpenHBCI1_Export(AB_IMEXPORTER *ie,
 
       /* add transaction db */
       GWEN_DB_AddGroup(dbData, dbTransaction);
-      t=AB_ImExporterAccountInfo_GetNextTransaction(ai);
+      t=AB_Transaction_List_Next(t);
     }
-    ai=AB_ImExporterContext_GetNextAccountInfo(ctx);
+    ai=AB_ImExporter_AccountInfo_List_Next(ai);
   }
 
 
