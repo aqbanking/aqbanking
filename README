@@ -413,39 +413,75 @@ translated.
 These are the major changes which need to be followed by applications when using
 AqBanking 6:
 - AB_TRANSACTION:
-  - remoteName:                changed type from GWEN_STRINGLIST to simple char*
-  - purpose:                   changed type from GWEN_STRINGLIST to simple char* (lines separated by "\n")
-  - date:                      changed type from GWEN_TIME to GWEN_DATE
-  - valutaDate:                changed type from GWEN_TIME to GWEN_DATE
-  - firstExecutionDate:        renamed to firstDate (usd in a more generic way)
-  - lastExecutionDate:         renamed to lastDate (usd in a more generic way)
-  - unitPrice:                 renamed to unitPriceValue (because there is also unitPriceDate)
-  - commission:                renamed to commissionValue
-  - sequenceType:              renamed to sequence
+  - remoteName:                - changed type from GWEN_STRINGLIST to simple char*
+  - purpose:                   - changed type from GWEN_STRINGLIST to simple char* (lines separated by "\n")
+  - date:                      - changed type from GWEN_TIME to GWEN_DATE
+  - valutaDate:                - changed type from GWEN_TIME to GWEN_DATE
+  - firstExecutionDate:        - renamed to firstDate (usd in a more generic way)
+  - lastExecutionDate:         - renamed to lastDate (usd in a more generic way)
+  - unitPrice:                 - renamed to unitPriceValue (because there is also unitPriceDate)
+  - commission:                - renamed to commissionValue
+  - sequenceType:              - renamed to sequence
 
-  - addPurpose():              changed to addPurposeLine()
-  - addRemoteName():           removed -> use AB_Transaction_SetRemoteName()
+  - addPurpose():              - changed to addPurposeLine()
+  - addRemoteName():           - removed -> use AB_Transaction_SetRemoteName()
   
 
 - AB_TRANSACTION_LIMITS
-  - valuesTextKey:             removed
-  - maxLinesRemoteName:        removed
-  - valuesCycleMonth:          changed type from GWEN_STRINGLIST to array of uint8_t
-  - valuesExecutionDayMonth:   changed type from GWEN_STRINGLIST to array of uint8_t
-  - valuesCycleWeek:           changed type from GWEN_STRINGLIST to array of uint8_t
-  - valuesExecutionDayWeek:    changed type from GWEN_STRINGLIST to array of uint8_t
+  - valuesTextKey:             - removed
+  - maxLinesRemoteName:        - removed
+  - valuesCycleMonth:          - changed type from GWEN_STRINGLIST to array of uint8_t
+  - valuesExecutionDayMonth:   - changed type from GWEN_STRINGLIST to array of uint8_t
+  - valuesCycleWeek:           - changed type from GWEN_STRINGLIST to array of uint8_t
+  - valuesExecutionDayWeek:    - changed type from GWEN_STRINGLIST to array of uint8_t
 
 - AB_TRANSACTION_TYPE
-  - euTransfer:                removed
+  - euTransfer:                - removed
 
-- AB_TRANSACTION_SEQUENCETYPE: renamed to AB_TRANSACTION_SEQUENCE
+- AB_TRANSACTION_SEQUENCETYPE: - renamed to AB_TRANSACTION_SEQUENCE
 
 - AB_JobGetTransactions:
-  - setFromTime():             renamed to setFromDate(), changed arg type from GWEN_TIME to GWEN_DATE
-  - setToTime():               renamed to setToDate(), changed arg type from GWEN_TIME to GWEN_DATE
+  - setFromTime():             - renamed to setFromDate(), changed arg type from GWEN_TIME to GWEN_DATE
+  - setToTime():               - renamed to setToDate(), changed arg type from GWEN_TIME to GWEN_DATE
 
+- AB_IMEXPORTER_CONTEXT:
+- AB_IMEXPORTER_ACCOUNTINFO:   - renamed functions from AB_ImExporterContext_* to AB_ImExporter_Context_*
+                               - renamed functions from AB_ImExporterAccountInfo_* to AB_ImExporter_AccountInfo_*
+                               - all kind of transactions are now in a single AB_TRANSACTION_LIST, removing
+                                 the previously dedicated lists for notedTransactions, transfers, debitNotes etc.
+                                 You can now distinguish the type of transaction by inspecting the field
+                                 "type" of AB_TRANSACTION.
+                                 Normally only one type of transaction is in use at any time anyway, e.g. when sending
+                                 debit note requests the AB_IMEXPORTER_CONTEXT will only contain debitNotes anyway.
+                               - changed list traversal methods.
+                                 Previously you would iterate through the list of transactions like this:
+                                 -------------------------------------------------------------------------X8
+                                 t=AB_ImExporterAccountInfo_GetFirstTransaction(iea);
+                                 ...
+                                 t=AB_ImExporterAccountInfo_GetNextTransaction(iea);
+                                 -------------------------------------------------------------------------X8
+                                 This made it necessary to hold internal pointers to keep track of the last transaction
+                                 returned.
+                                 
+                                 Since AqBanking6 only the lists are stored inside a AB_IMEXPORTER_ACCOUNTINFO.
+                                 You can now freely iterate through a transaction list like this:
+                                 -------------------------------------------------------------------------X8
+                                 t=AB_ImExporterAccountInfo_GetFirstTransaction(iea);
+                                 ...
+                                 t=AB_Transaction_List_Next(t);
+                                 ...
+                                 t=AB_Transaction_List_Previous(t);
+                                 -------------------------------------------------------------------------X8
+                                 So you can now use all list functions on the lists stored.
+                                 This is true for all list handled by a AB_IMEXPORTER_CONTEXT and AB_IMEXPORTER_ACCOUNTINFO,
+                                 especially:
+                                 - list of account infos objects (AB_IMEXPORTER_ACCOUNTINFO)
+                                 - list of transactions
+                                 - list of account status
+                                 - list of messages
+                                 - list of electronic banking statements
+                            
 
-
-Martin Preuss, Wilhelmshaven/Germany, 2018/02/15
+Martin Preuss, Wilhelmshaven/Germany, 2018/06/29
 
 
