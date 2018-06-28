@@ -109,6 +109,7 @@ int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
 
   if (*p) {
     char *s;
+    int ll;
 
     /* Reaching this point, the remainder is at least 1 byte long. */
     p2 = p + strlen(p) - 1;
@@ -117,9 +118,13 @@ int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
     while( (*p2 == 32) && (p2>p) )
       p2--;
 
-    s=(char*)GWEN_Memory_malloc(p2-p+1);
-    memmove(s, p, p2-p+1);
-    s[p2-p]=0;
+    /* p2 now points to the last non-space character (or the beginning of the string),
+     * so the total size without the trailing zero is (p2-p)+1
+     */
+    ll=(p2-p)+1;
+    s=(char*)GWEN_Memory_malloc(ll+1); /* account for trailing zero */
+    memmove(s, p, ll);                 /* copy string without trailing zero */
+    s[ll]=0;                           /* ensure terminating zero */
     AHB_SWIFT__SetCharValue(data,
                             GWEN_DB_FLAGS_OVERWRITE_VARS,
                             "localAccountNumber", s);
