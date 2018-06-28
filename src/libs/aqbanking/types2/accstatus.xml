@@ -14,6 +14,7 @@
       
       <flags>
         with_db
+        with_xml
         with_list1
         with_list2
         with_refcount
@@ -32,7 +33,7 @@
 
       <inlines>
 
-        <inline loc="end" access="public">
+        <inline id="list2_freeall" loc="end" access="public">
           <typeFlagsMask>with_list2</typeFlagsMask>
           <typeFlagsValue>with_list2</typeFlagsValue>
           <content>
@@ -40,7 +41,7 @@
           </content>
         </inline>
 
-        <inline loc="code">
+        <inline id="list2_freeall" loc="code">
           <typeFlagsMask>with_list2</typeFlagsMask>
           <typeFlagsValue>with_list2</typeFlagsValue>
           <content>

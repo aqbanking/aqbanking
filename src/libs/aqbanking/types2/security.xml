@@ -13,6 +13,7 @@
       
       <flags>
         with_db
+        with_xml
         with_list1
         with_list2
         with_refcount

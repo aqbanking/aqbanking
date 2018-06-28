@@ -14,6 +14,7 @@
       
       <flags>
         with_db
+        with_xml
         with_refcount
       </flags>
       
