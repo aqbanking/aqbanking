@@ -19,7 +19,9 @@ typefiles=\
   document.xml \
   message.xml \
   balance.xml \
-  accstatus.xml
+  accstatus.xml \
+  imexporter_accountinfo.xml \
+  imexporter_context.xml
 
 
 typedatadir=$(datadir)/aqbanking/typemaker2/c
@@ -31,7 +33,9 @@ dist_typedata_DATA=\
   ab_message.tm2 ab_message_list.tm2 ab_message_list2.tm2 \
   ab_security.tm2 ab_security_list.tm2 ab_security_list2.tm2 \
   ab_balance.tm2 \
-  ab_account_status.tm2 ab_account_status_list.tm2 ab_account_status_list2.tm2
+  ab_account_status.tm2 ab_account_status_list.tm2 ab_account_status_list2.tm2 \
+  ab_imexporter_accountinfo.tm2 ab_imexporter_accountinfo_list.tm2 ab_imexporter_accountinfo_list2.tm2 \
+  ab_imexporter_context.tm2 ab_imexporter_context_list.tm2 ab_imexporter_context_list2.tm2
 
 
 
@@ -44,7 +48,9 @@ built_sources=  \
   message.c \
   security.c \
   balance.c \
-  accstatus.c
+  accstatus.c \
+  imexporter_accountinfo.c \
+  imexporter_context.c
 
 
 build_headers_priv= \
@@ -56,7 +62,9 @@ build_headers_priv= \
   message_p.h \
   security_p.h \
   balance_p.h \
-  accstatus_p.h
+  accstatus_p.h \
+  imexporter_accountinfo_p.h \
+  imexporter_context_p.h
 
 
 build_headers_pub= \
@@ -68,7 +76,9 @@ build_headers_pub= \
   message.h \
   security.h \
   balance.h \
-  accstatus.h
+  accstatus.h \
+  imexporter_accountinfo.h \
+  imexporter_context.h
 
 
 

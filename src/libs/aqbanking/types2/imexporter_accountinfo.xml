@@ -1,0 +1,369 @@
+<?xml?>
+
+<tm2>
+  <type id="AB_IMEXPORTER_ACCOUNTINFO" type="pointer">
+    <descr>
+    </descr>
+
+    <lang id="c">
+      <identifier>AB_IMEXPORTER_ACCOUNTINFO</identifier>
+      <prefix>AB_ImExporter_AccountInfo</prefix>
+      
+      <baseFileName>imexporter_accountInfo</baseFileName>
+      
+      <flags>
+        with_db
+        with_xml
+        with_list1
+        with_list2
+        with_refcount
+      </flags>
+      
+      <headers>
+        <header type="sys" loc="pre">aqbanking/error.h</header>
+        <header type="sys" loc="pre">gwenhywfar/types.h</header>
+        <header type="sys" loc="pre">gwenhywfar/gwentime.h</header>
+
+        <header type="sys" loc="post">aqbanking/transaction.h</header>
+        <header type="sys" loc="post">aqbanking/accstatus.h</header>
+        <header type="sys" loc="post">aqbanking/document.h</header>
+      </headers>
+
+
+
+      <inlines>
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list2</typeFlagsMask>
+          <typeFlagsValue>with_list2</typeFlagsValue>
+          <content>
+             $(api) int $(struct_prefix)_List2_freeAll($(struct_type)_LIST2 *tl);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask>with_list2</typeFlagsMask>
+          <typeFlagsValue>with_list2</typeFlagsValue>
+          <content>
+
+             static $(struct_type) *$(struct_prefix)_List2__freeAll_cb($(struct_type) *t, void *user_data) {
+               $(struct_prefix)_free(t);
+               return NULL;
+             }
+
+
+             int $(struct_prefix)_List2_freeAll($(struct_type)_LIST2 *tl) {
+               if (tl) {
+                 $(struct_prefix)_List2_ForEach(tl, $(struct_prefix)_List2__freeAll_cb, NULL);
+                 $(struct_prefix)_List2_free(tl); 
+               }
+               else {
+                 DBG_ERROR(AQBANKING_LOGDOMAIN, "List missing");
+                 return GWEN_ERROR_INVALID;
+               }
+               return 0;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) AB_TRANSACTION *$(struct_prefix)_GetFirstTransaction(const $(struct_type) *t);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             AB_TRANSACTION *$(struct_prefix)_GetFirstTransaction(const $(struct_type) *st) {
+               assert(st);
+               if (st->transactionList)
+                 return AB_Transaction_List_First(st->transactionList);
+               return NULL;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) void $(struct_prefix)_AddTransaction($(struct_type) *st, AB_TRANSACTION *t);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             void $(struct_prefix)_AddTransaction($(struct_type) *st, AB_TRANSACTION *t) {
+               assert(st);
+               if (NULL==st->transactionList)
+                 st->transactionList=AB_Transaction_List_new();
+               AB_Transaction_List_Add(t, st->transactionList);
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) AB_ACCOUNT_STATUS *$(struct_prefix)_GetFirstAccountStatus(const $(struct_type) *as);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             AB_ACCOUNT_STATUS *$(struct_prefix)_GetFirstAccountStatus(const $(struct_type) *as) {
+               assert(as);
+               if (as->accountStatusList)
+                 return AB_AccountStatus_List_First(as->accountStatusList);
+               return NULL;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) void $(struct_prefix)_AddAccountStatus($(struct_type) *st, AB_ACCOUNT_STATUS *as);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             void $(struct_prefix)_AddAccountStatus($(struct_type) *st, AB_ACCOUNT_STATUS *as) {
+               assert(as);
+               if (NULL==st->accountStatusList)
+                 st->accountStatusList=AB_AccountStatus_List_new();
+               AB_AccountStatus_List_Add(as, st->accountStatusList);
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) AB_DOCUMENT *$(struct_prefix)_GetFirstEStatement(const $(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             AB_DOCUMENT *$(struct_prefix)_GetFirstEStatement(const $(struct_type) *st) {
+               assert(st);
+               if (st->eStatementList)
+                 return AB_Document_List_First(st->eStatementList);
+               return NULL;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) void $(struct_prefix)_AddEStatement($(struct_type) *st, AB_DOCUMENT *d);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             void $(struct_prefix)_AddEStatement($(struct_type) *st, AB_DOCUMENT *d) {
+               assert(d);
+               if (NULL==st->eStatementList)
+                 st->eStatementList=AB_Document_List_new();
+               AB_Document_List_Add(d, st->eStatementList);
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             /** \n
+              * This function clears the account info (e.g. removes all transactions etc). \n
+              */ \n
+             $(api) void $(struct_prefix)_Clear($(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             void $(struct_prefix)_Clear($(struct_type) *st) {
+               assert(st);
+               if (st->transactionList)
+                 AB_Transaction_List_Clear(st->transactionList);
+               if (st->accountStatusList)
+                 AB_AccountStatus_List_Clear(st->accountStatusList);
+               if (st->eStatementList)
+                 AB_Document_List_Clear(st->eStatementList);
+             }
+          </content>
+        </inline>
+
+
+
+      </inlines>
+
+
+    </lang>
+
+    <enums>
+
+    </enums>
+
+    <defines>
+
+    </defines>
+
+
+    <members>
+
+      <member name="bankCode" type="char_ptr" maxlen="16" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="bankName" type="char_ptr" maxlen="64" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="accountNumber" type="char_ptr" maxlen="32" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="accountName" type="char_ptr" maxlen="64" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="iban" type="char_ptr" maxlen="32" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="bic" type="char_ptr" maxlen="32" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="owner" type="char_ptr" maxlen="64" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="currency" type="char_ptr" maxlen="16" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="description" type="char_ptr" maxlen="64" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="accountType" type="int" maxlen="4" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+        <flags>none</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+      <member name="accountId" type="uint32_t" maxlen="4">
+        <flags>with_getbyMember</flags>
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+        <descr>
+        </descr>
+      </member>
+
+      <member name="accountStatusList" type="AB_ACCOUNT_STATUS_LIST" elementName="status">
+        <descr>
+        </descr>
+        <default>NULL</default>
+        <preset>AB_AccountStatus_List_new()</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>nodup</setflags>
+        <getflags>none</getflags>
+      </member>
+
+
+      <member name="transactionList" type="AB_TRANSACTION_LIST" elementName="transaction">
+        <descr>
+          List of transactions.
+          This list contains any kind of transactions all in one list. You can differentiate the type
+          of the transaction (e.g. bank statement, debit note, transfer etc) by looking at the transaction type
+          (see @ref AB_Transaction_GetType).
+        </descr>
+        <default>NULL</default>
+        <preset>AB_Transaction_List_new()</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>nodup</setflags>
+        <getflags>none</getflags>
+      </member>
+
+      <member name="eStatementList" type="AB_DOCUMENT_LIST" elementName="eStatement">
+        <descr>
+        </descr>
+        <default>NULL</default>
+        <preset>AB_Document_List_new()</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>nodup</setflags>
+        <getflags>none</getflags>
+      </member>
+
+    </members>
+
+    
+  </type>
+  
+</tm2>
+

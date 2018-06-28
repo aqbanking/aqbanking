@@ -1,0 +1,378 @@
+<?xml?>
+
+<tm2>
+  <type id="AB_IMEXPORTER_CONTEXT" type="pointer">
+    <descr>
+    </descr>
+
+    <lang id="c">
+      <identifier>AB_IMEXPORTER_CONTEXT</identifier>
+      <prefix>AB_ImExporter_Context</prefix>
+      
+      <baseFileName>imexporter_context</baseFileName>
+      
+      <flags>
+        with_db
+        with_xml
+        with_list1
+        with_list2
+        with_refcount
+      </flags>
+      
+      <headers>
+        <header type="sys" loc="pre">aqbanking/error.h</header>
+        <header type="sys" loc="pre">gwenhywfar/types.h</header>
+        <header type="sys" loc="pre">gwenhywfar/gwentime.h</header>
+
+        <header type="sys" loc="post">aqbanking/value.h</header>
+        <header type="sys" loc="post">aqbanking/security.h</header>
+        <header type="sys" loc="post">aqbanking/message.h</header>
+        <header type="sys" loc="post">aqbanking/imexporter_accountinfo.h</header>
+      </headers>
+
+
+
+      <inlines>
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list2</typeFlagsMask>
+          <typeFlagsValue>with_list2</typeFlagsValue>
+          <content>
+             $(api) int $(struct_prefix)_List2_freeAll($(struct_type)_LIST2 *tl);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask>with_list2</typeFlagsMask>
+          <typeFlagsValue>with_list2</typeFlagsValue>
+          <content>
+
+             static $(struct_type) *$(struct_prefix)_List2__freeAll_cb($(struct_type) *t, void *user_data) {
+               $(struct_prefix)_free(t);
+               return NULL;
+             }
+
+
+             int $(struct_prefix)_List2_freeAll($(struct_type)_LIST2 *tl) {
+               if (tl) {
+                 $(struct_prefix)_List2_ForEach(tl, $(struct_prefix)_List2__freeAll_cb, NULL);
+                 $(struct_prefix)_List2_free(tl); 
+               }
+               else {
+                 DBG_ERROR(AQBANKING_LOGDOMAIN, "List missing");
+                 return GWEN_ERROR_INVALID;
+               }
+               return 0;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             /** \n
+              * This function clears the context (e.g. removes all transactions etc). \n
+              */ \n
+             $(api) void $(struct_prefix)_Clear($(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             void $(struct_prefix)_Clear($(struct_type) *st) {
+               assert(st);
+               if (st->accountInfoList)
+                 AB_ImExporter_AccountInfo_List_Clear(st->accountInfoList);
+               if (st->securityList)
+                 AB_Security_List_Clear(st->securityList);
+               if (st->messageList)
+                 AB_Message_List_Clear(st->messageList);
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             /** \n
+              * Adds the content of the second context to the first one. \n
+              * Frees the second context. \n
+              */\n
+             $(api) void $(struct_prefix)_AddContext($(struct_type) *st, $(struct_type) *stSrc);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             void $(struct_prefix)_AddContext($(struct_type) *st, $(struct_type) *stSrc) {
+               assert(st);
+
+               if (stSrc->accountInfoList) {
+                 AB_IMEXPORTER_ACCOUNTINFO *iea;
+                 
+                 iea=AB_ImExporter_AccountInfo_List_First(stSrc->accountInfoList);
+                 while(iea) {
+                   AB_IMEXPORTER_ACCOUNTINFO *ieaNext;
+               
+                   ieaNext=AB_ImExporter_AccountInfo_List_Next(iea);
+                   AB_ImExporter_AccountInfo_List_Del(iea);
+                   AB_ImExporter_AccountInfo_List_Add(iea, st->accountInfoList);
+                   iea=ieaNext;
+                 }
+               }
+
+               if (stSrc->securityList) {
+                 AB_SECURITY *sec;
+                 
+                 sec=AB_Security_List_First(stSrc->securityList);
+                 while(sec) {
+                   AB_SECURITY *secNext;
+                   
+                   secNext=AB_Security_List_Next(sec);
+                   AB_Security_List_Del(sec);
+                   AB_Security_List_Add(sec, st->securityList);
+                   sec=secNext;
+                 }
+               }
+               
+               if (stSrc->messageList) {
+                 AB_MESSAGE *msg;
+                 
+                 msg=AB_Message_List_First(stSrc->messageList);
+                 while(msg) {
+                   AB_MESSAGE *msgNext;
+                   
+                   msgNext=AB_Message_List_Next(msg);
+                   AB_Message_List_Del(msg);
+                   AB_Message_List_Add(msg, st->messageList);
+                   msg=msgNext;
+                 }
+               }
+
+               AB_ImExporter_Context_free(stSrc);
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_GetFirstAccountInfo(const $(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_GetFirstAccountInfo(const $(struct_type) *st) {
+               assert(st);
+               if (st->accountInfoList)
+                 return AB_ImExporter_AccountInfo_List_First(st->accountInfoList);
+               return NULL;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) void $(struct_prefix)_AddAccountInfo($(struct_type) *st, AB_IMEXPORTER_ACCOUNTINFO *ai);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             void $(struct_prefix)_AddAccountInfo($(struct_type) *st, AB_IMEXPORTER_ACCOUNTINFO *ai) {
+               assert(st);
+               if (ai) {
+                 if (NULL==st->accountInfoList)
+                   st->accountInfoList=AB_ImExporter_AccountInfo_List_new();
+                 AB_ImExporter_AccountInfo_List_Add(ai, st->accountInfoList);
+               }
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) AB_SECURITY *$(struct_prefix)_GetFirstSecurity(const $(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             AB_SECURITY *$(struct_prefix)_GetFirstSecurity(const $(struct_type) *st) {
+               assert(st);
+               if (st->securityList)
+                 return AB_Security_List_First(st->securityList);
+               return NULL;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) AB_SECURITY *$(struct_prefix)_FindSecurity(const $(struct_type) *st, const char *nameSpace, const char *id);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             AB_SECURITY *$(struct_prefix)_FindSecurity(const $(struct_type) *st, const char *nameSpace, const char *id) {
+               assert(st);
+               if (st->securityList) {
+                 AB_SECURITY *sec;
+               
+                 assert(st);
+                 if (nameSpace==NULL)
+                   nameSpace="";
+                 if (id==NULL)
+                   id="";
+                 sec=AB_Security_List_First(st->securityList);
+                 while(sec) {
+                   const char *s1, *s2;
+               
+                   s1=AB_Security_GetUniqueId(sec);
+                   if (s1==NULL)
+                     s1="";
+                   s2=AB_Security_GetNameSpace(sec);
+                   if (s2==NULL)
+                     s2="";
+                   if (strcasecmp(s2, nameSpace)==0 &amp;&amp;
+                   strcasecmp(s1, id)==0)
+                     return sec;
+                   sec=AB_Security_List_Next(sec);
+                 }
+               }
+               return NULL;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) void $(struct_prefix)_AddSecurity($(struct_type) *st, AB_SECURITY *sec);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             void $(struct_prefix)_AddSecurity($(struct_type) *st, AB_SECURITY *sec) {
+               assert(st);
+               if (sec) {
+                 if (NULL==st->securityList)
+                   st->securityList=AB_Security_List_new();
+                 AB_Security_List_Add(sec, st->securityList);
+               }
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) AB_MESSAGE *$(struct_prefix)_GetFirstMessage(const $(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             AB_MESSAGE *$(struct_prefix)_GetFirstMessage(const $(struct_type) *st) {
+               assert(st);
+               if (st->messageList)
+                 return AB_Message_List_First(st->messageList);
+               return NULL;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) void $(struct_prefix)_AddMessage($(struct_type) *st, AB_MESSAGE *msg);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             void $(struct_prefix)_AddMessage($(struct_type) *st, AB_MESSAGE *msg) {
+               assert(st);
+               if (msg) {
+                 if (NULL==st->messageList)
+                   st->messageList=AB_Message_List_new();
+                 AB_Message_List_Add(msg, st->messageList);
+               }
+             }
+          </content>
+        </inline>
+
+
+
+      </inlines>
+
+
+    </lang>
+
+    <enums>
+
+    </enums>
+
+    <defines>
+
+    </defines>
+
+
+    <members>
+
+      <member name="accountInfoList" type="AB_IMEXPORTER_ACCOUNTINFO_LIST" elementName="accountInfo">
+        <descr>
+        </descr>
+        <default>NULL</default>
+        <preset>AB_ImExporter_AccountInfo_List_new()</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>nodup</setflags>
+        <getflags>none</getflags>
+      </member>
+
+
+      <member name="securityList" type="AB_SECURITY_LIST" elementName="security">
+        <descr>
+        </descr>
+        <default>NULL</default>
+        <preset>AB_Security_List_new()</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>nodup</setflags>
+        <getflags>none</getflags>
+      </member>
+
+      <member name="messageList" type="AB_MESSAGE_LIST" elementName="message">
+        <descr>
+        </descr>
+        <default>NULL</default>
+        <preset>AB_Message_List_new()</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>nodup</setflags>
+        <getflags>none</getflags>
+      </member>
+
+    </members>
+
+    
+  </type>
+  
+</tm2>
+
