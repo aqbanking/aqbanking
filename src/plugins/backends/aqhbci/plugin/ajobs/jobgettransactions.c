@@ -249,7 +249,7 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
           AB_Transaction_SetType(t, AB_Transaction_TypeStatement);
 
         DBG_INFO(AQHBCI_LOGDOMAIN, "Adding transaction");
-        AB_ImExporter_AccountInfo_AddTransaction(ai, t);
+        AB_ImExporterAccountInfo_AddTransaction(ai, t);
       }
 
       if (GWEN_ERROR_USER_ABORTED==
@@ -289,7 +289,7 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
 	      AB_AccountStatus_SetTime(as, ti);
 	    AB_AccountStatus_SetNotedBalance(as, bal);
 	    AB_Balance_free(bal);
-	    AB_ImExporter_AccountInfo_AddAccountStatus(ai, as);
+	    AB_ImExporterAccountInfo_AddAccountStatus(ai, as);
 	  }
 	}
 	GWEN_Time_free(ti);
@@ -378,7 +378,7 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   /* now the buffers contain data to be parsed by DBIOs */
   a=AH_AccountJob_GetAccount(j);
   assert(a);
-  ai=AB_ImExporter_Context_GetOrAddAccountInfoForAccount(ctx, a);
+  ai=AB_ImExporterContext_GetOrAddAccountInfoForAccount(ctx, a);
   assert(ai);
 
   /* read booked transactions */
@@ -438,7 +438,7 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
     AB_TRANSACTION *ttmp;
 
     DBG_INFO(AQHBCI_LOGDOMAIN, "*** Dumping transactions *******************");
-    ttmp=AB_ImExporter_AccountInfo_GetFirstTransaction(ai);
+    ttmp=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
     while (ttmp) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "*** --------------------------------------");
       gn=GWEN_DB_Group_new("transaction");
@@ -487,9 +487,9 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
 
   a=AH_AccountJob_GetAccount(j);
   assert(a);
-  ai=AB_ImExporter_Context_GetOrAddAccountInfoForAccount(ctx, a);
+  ai=AB_ImExporterContext_GetOrAddAccountInfoForAccount(ctx, a);
   assert(ai);
-  AB_ImExporter_AccountInfo_SetAccountId(ai, AB_Account_GetUniqueId(a));
+  AB_ImExporterAccountInfo_SetAccountId(ai, AB_Account_GetUniqueId(a));
 
   u=AH_Job_GetUser(j);
   assert(u);
@@ -604,7 +604,7 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
         AB_Transaction_SetValue(t, v2);
         AB_Transaction_SetPurposeFromStringList(t, purpose);
         DBG_INFO(AQHBCI_LOGDOMAIN, "Adding transaction");
-        AB_ImExporter_AccountInfo_AddTransaction(ai, t);
+        AB_ImExporterAccountInfo_AddTransaction(ai, t);
 
         GWEN_StringList_free(purpose);
         AB_Value_free(v2);

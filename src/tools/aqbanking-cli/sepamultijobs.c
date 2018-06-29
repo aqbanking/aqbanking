@@ -246,13 +246,13 @@ int sepaMultiJobs(AB_BANKING *ab,
   }
 
   /* import new context */
-  ctx=AB_ImExporter_Context_new();
+  ctx=AB_ImExporterContext_new();
   rv=AB_Banking_ImportFileWithProfile(ab, importerName, ctx,
 				      profileName, profileFile,
 				      inFile);
   if (rv<0) {
     DBG_ERROR(0, "Error reading file: %d", rv);
-    AB_ImExporter_Context_free(ctx);
+    AB_ImExporterContext_free(ctx);
     return 4;
   }
 
@@ -262,7 +262,7 @@ int sepaMultiJobs(AB_BANKING *ab,
 
   /* populate job list */
   jobList=AB_Job_List2_new();
-  iea=AB_ImExporter_Context_GetFirstAccountInfo(ctx);
+  iea=AB_ImExporterContext_GetFirstAccountInfo(ctx);
   while(iea) {
     AB_ACCOUNT *a;
     AB_TRANSACTION *t;
@@ -271,28 +271,28 @@ int sepaMultiJobs(AB_BANKING *ab,
       a=forcedAccount;
     else {
       a=NULL;
-      if (AB_ImExporter_AccountInfo_GetAccountId(iea))
-        a=AB_Banking_GetAccount(ab, AB_ImExporter_AccountInfo_GetAccountId(iea));
+      if (AB_ImExporterAccountInfo_GetAccountId(iea))
+        a=AB_Banking_GetAccount(ab, AB_ImExporterAccountInfo_GetAccountId(iea));
       if (a==NULL)
         a=AB_Banking_FindAccount2(ab,
                                   "*",
                                   "*",
-                                  AB_ImExporter_AccountInfo_GetBankCode(iea),
-                                  AB_ImExporter_AccountInfo_GetAccountNumber(iea),
-                                  AB_ImExporter_AccountInfo_GetSubAccountId(iea),
-                                  AB_ImExporter_AccountInfo_GetIban(iea),
-                                  AB_ImExporter_AccountInfo_GetAccountType(iea));
+                                  AB_ImExporterAccountInfo_GetBankCode(iea),
+                                  AB_ImExporterAccountInfo_GetAccountNumber(iea),
+                                  AB_ImExporterAccountInfo_GetSubAccountId(iea),
+                                  AB_ImExporterAccountInfo_GetIban(iea),
+                                  AB_ImExporterAccountInfo_GetAccountType(iea));
       if (!a) {
         DBG_ERROR(0, "Local account %s/%s not found, aborting",
-                  AB_ImExporter_AccountInfo_GetBankCode(iea),
-                  AB_ImExporter_AccountInfo_GetAccountNumber(iea));
+                  AB_ImExporterAccountInfo_GetBankCode(iea),
+                  AB_ImExporterAccountInfo_GetAccountNumber(iea));
         AB_Job_List2_FreeAll(jobList);
-        AB_ImExporter_Context_free(ctx);
+        AB_ImExporterContext_free(ctx);
 	return 3;
       }
     }
 
-    t=AB_ImExporter_AccountInfo_GetFirstTransaction(iea);
+    t=AB_ImExporterAccountInfo_GetFirstTransaction(iea);
     while(t) {
       AB_JOB *j;
       const char *rIBAN;
@@ -361,8 +361,8 @@ int sepaMultiJobs(AB_BANKING *ab,
       rv=AB_Job_SetTransaction(j, t);
       if (rv<0) {
           DBG_ERROR(0, "Unable to add transaction for account %s/%s, line %d, aborting",
-                    AB_ImExporter_AccountInfo_GetBankCode(iea),
-                    AB_ImExporter_AccountInfo_GetAccountNumber(iea),
+                    AB_ImExporterAccountInfo_GetBankCode(iea),
+                    AB_ImExporterAccountInfo_GetAccountNumber(iea),
                     transactionLine);
           reallyExecute = 0;
       }
@@ -370,9 +370,9 @@ int sepaMultiJobs(AB_BANKING *ab,
       t=AB_Transaction_List_Next(t);
     } /* while t */
 
-    iea=AB_ImExporter_AccountInfo_List_Next(iea);
+    iea=AB_ImExporterAccountInfo_List_Next(iea);
   } /* while */
-  AB_ImExporter_Context_free(ctx);
+  AB_ImExporterContext_free(ctx);
 
   if (reallyExecute != 1)
   {
@@ -382,7 +382,7 @@ int sepaMultiJobs(AB_BANKING *ab,
 
   /* execute jobs */
   rvExec=0;
-  ctx=AB_ImExporter_Context_new();
+  ctx=AB_ImExporterContext_new();
   rv=AB_Banking_ExecuteJobs(ab, jobList, ctx);
   if (rv) {
     fprintf(stderr, "Error on executeQueue (%d)\n", rv);
@@ -392,7 +392,7 @@ int sepaMultiJobs(AB_BANKING *ab,
 
   /* write context */
   rv=writeContext(ctxFile, ctx);
-  AB_ImExporter_Context_free(ctx);
+  AB_ImExporterContext_free(ctx);
   if (rv<0) {
     AB_Banking_OnlineFini(ab);
     AB_Banking_Fini(ab);

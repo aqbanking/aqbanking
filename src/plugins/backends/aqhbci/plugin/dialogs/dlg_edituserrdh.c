@@ -625,7 +625,7 @@ static int AH_EditUserRdhDialog_HandleActivatedGetSysId(GWEN_DIALOG *dlg) {
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_RDH_DIALOG, dlg);
   assert(xdlg);
 
-  ctx=AB_ImExporter_Context_new();
+  ctx=AB_ImExporterContext_new();
   rv=AH_Provider_GetSysId(AB_User_GetProvider(xdlg->user),
 			  xdlg->user,
                           ctx,
@@ -636,7 +636,7 @@ static int AH_EditUserRdhDialog_HandleActivatedGetSysId(GWEN_DIALOG *dlg) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
   }
 
-  AB_ImExporter_Context_free(ctx);
+  AB_ImExporterContext_free(ctx);
   return GWEN_DialogEvent_ResultHandled;
 }
 
@@ -651,7 +651,7 @@ static int AH_EditUserRdhDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg) {
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_RDH_DIALOG, dlg);
   assert(xdlg);
 
-  ctx=AB_ImExporter_Context_new();
+  ctx=AB_ImExporterContext_new();
   rv=AH_Provider_GetAccounts(AB_User_GetProvider(xdlg->user),
 			     xdlg->user,
 			     ctx,
@@ -662,7 +662,7 @@ static int AH_EditUserRdhDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
   }
 
-  AB_ImExporter_Context_free(ctx);
+  AB_ImExporterContext_free(ctx);
   return GWEN_DialogEvent_ResultHandled;
 }
 

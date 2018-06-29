@@ -348,7 +348,7 @@ int sepaTransfer(AB_BANKING *ab,
 
   /* execute job */
   rvExec=0;
-  ctx=AB_ImExporter_Context_new();
+  ctx=AB_ImExporterContext_new();
   rv=AB_Banking_ExecuteJobs(ab, jobList, ctx);
   if (rv) {
     fprintf(stderr, "Error on executeQueue (%d)\n", rv);
@@ -358,7 +358,7 @@ int sepaTransfer(AB_BANKING *ab,
 
   /* write result */
   rv=writeContext(ctxFile, ctx);
-  AB_ImExporter_Context_free(ctx);
+  AB_ImExporterContext_free(ctx);
   if (rv<0) {
     DBG_ERROR(0, "Error writing context file (%d)", rv);
     AB_Banking_OnlineFini(ab);

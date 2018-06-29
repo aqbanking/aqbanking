@@ -167,9 +167,9 @@ int sendKeys(AB_BANKING *ab,
   else {
     AB_IMEXPORTER_CONTEXT *ctx;
 
-    ctx=AB_ImExporter_Context_new();
+    ctx=AB_ImExporterContext_new();
     rv=AH_Provider_SendUserKeys2(pro, u, ctx, withAuthKey, 1, 0, 1);
-    AB_ImExporter_Context_free(ctx);
+    AB_ImExporterContext_free(ctx);
     if (rv) {
       DBG_ERROR(0, "Error sending user keys (%d)", rv);
       AB_Banking_Fini(ab);

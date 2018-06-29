@@ -113,7 +113,7 @@ int AH_Job_SepaStandingOrdersGet__ReadSto(AH_JOB *j,
   a=AH_AccountJob_GetAccount(j);
   assert(a);
 
-  tmpCtx=AB_ImExporter_Context_new();
+  tmpCtx=AB_ImExporterContext_new();
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Buffer_AppendBytes(tbuf, (const char*) ptr, len);
 
@@ -125,28 +125,28 @@ int AH_Job_SepaStandingOrdersGet__ReadSto(AH_JOB *j,
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(tbuf);
-    AB_ImExporter_Context_free(tmpCtx);
+    AB_ImExporterContext_free(tmpCtx);
     return rv;
   }
   GWEN_Buffer_free(tbuf);
 
-  ai=AB_ImExporter_Context_GetFirstAccountInfo(tmpCtx);
+  ai=AB_ImExporterContext_GetFirstAccountInfo(tmpCtx);
   if (ai) {
     AB_TRANSACTION *t;
 
-    while( (t=AB_ImExporter_AccountInfo_GetFirstTransaction(ai)) ) {
+    while( (t=AB_ImExporterAccountInfo_GetFirstTransaction(ai)) ) {
       AB_Transaction_List_Del(t);
       AB_Transaction_SetFiId(t, fiId);
       AB_Transaction_SetUniqueAccountId(t, AB_Account_GetUniqueId(a));
       /* add to real im/exporter context */
-      AB_ImExporter_Context_AddTransaction(ctx, t);
+      AB_ImExporterContext_AddTransaction(ctx, t);
     }
 
-    if (AB_ImExporter_AccountInfo_List_Next(ai)) {
+    if (AB_ImExporterAccountInfo_List_Next(ai)) {
       DBG_WARN(AQHBCI_LOGDOMAIN, "Multiple account infos returned by import!");
     }
   }
-  AB_ImExporter_Context_free(tmpCtx);
+  AB_ImExporterContext_free(tmpCtx);
 
   return 0;
 }

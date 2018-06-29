@@ -94,12 +94,12 @@ int AIO_OfxGroup_STOCKINFO_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
     uid=AIO_OfxGroup_SECINFO_GetUniqueId(sg);
     ns=AIO_OfxGroup_SECINFO_GetNameSpace(sg);
     if (uid && ns)
-      sec=AB_ImExporter_Context_FindSecurity(AIO_OfxXmlCtx_GetIoContext(ctx), ns, uid);
+      sec=AB_ImExporterContext_FindSecurity(AIO_OfxXmlCtx_GetIoContext(ctx), ns, uid);
     if (sec==NULL) {
       sec=AB_Security_new();
       AB_Security_SetUniqueId(sec, uid);
       AB_Security_SetNameSpace(sec, ns);
-      AB_ImExporter_Context_AddSecurity(AIO_OfxXmlCtx_GetIoContext(ctx), sec);
+      AB_ImExporterContext_AddSecurity(AIO_OfxXmlCtx_GetIoContext(ctx), sec);
     }
 
     AB_Security_SetName(sec, AIO_OfxGroup_SECINFO_GetSecurityName(sg));

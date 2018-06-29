@@ -129,11 +129,11 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
     AB_IMEXPORTER *ie;
 
     /* add transfers as transactions for export (exporters only use transactions) */
-    ioc=AB_ImExporter_Context_new();
+    ioc=AB_ImExporterContext_new();
     while(t) {
       cpy=AB_Transaction_dup(t);
       AB_Transaction_SetUniqueAccountId(cpy, AB_Account_GetUniqueId(a));
-      AB_ImExporter_Context_AddTransaction(ioc, cpy);
+      AB_ImExporterContext_AddTransaction(ioc, cpy);
       t=AB_Transaction_List_Next(t);
     }
 
@@ -143,7 +143,7 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
 
       dbuf=GWEN_Buffer_new(0, 256, 0, 1);
       rv=AB_ImExporter_ExportToBuffer(ie, ioc, dbuf, profile);
-      AB_ImExporter_Context_free(ioc);
+      AB_ImExporterContext_free(ioc);
       if (rv<0) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
         GWEN_Buffer_free(dbuf);
@@ -165,7 +165,7 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
     }
     else {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "here");
-      AB_ImExporter_Context_free(ioc);
+      AB_ImExporterContext_free(ioc);
       return GWEN_ERROR_NO_DATA;
     }
   }
@@ -491,7 +491,7 @@ int AH_Job_TransferBase_ExchangeResults(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CON
     AB_Transaction_SetUniqueAccountId(cpy, AB_Account_GetUniqueId(a));
 
     /* just add to single list (no longer need to decide to which list to add as there is only one now) */
-    AB_ImExporter_Context_AddTransaction(ctx, cpy);      /* takes over cpy */
+    AB_ImExporterContext_AddTransaction(ctx, cpy);      /* takes over cpy */
   }
 
   return 0;

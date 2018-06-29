@@ -411,14 +411,14 @@ translated.
 ======================================
 
 These are the major changes which need to be followed by applications when using
-AqBanking 6:
+AqBanking6:
 - AB_TRANSACTION:
   - remoteName:                - changed type from GWEN_STRINGLIST to simple char*
   - purpose:                   - changed type from GWEN_STRINGLIST to simple char* (lines separated by "\n")
   - date:                      - changed type from GWEN_TIME to GWEN_DATE
   - valutaDate:                - changed type from GWEN_TIME to GWEN_DATE
-  - firstExecutionDate:        - renamed to firstDate (usd in a more generic way)
-  - lastExecutionDate:         - renamed to lastDate (usd in a more generic way)
+  - firstExecutionDate:        - renamed to firstDate (used in a more generic way)
+  - lastExecutionDate:         - renamed to lastDate (used in a more generic way)
   - unitPrice:                 - renamed to unitPriceValue (because there is also unitPriceDate)
   - commission:                - renamed to commissionValue
   - sequenceType:              - renamed to sequence
@@ -445,9 +445,7 @@ AqBanking 6:
   - setToTime():               - renamed to setToDate(), changed arg type from GWEN_TIME to GWEN_DATE
 
 - AB_IMEXPORTER_CONTEXT:
-- AB_IMEXPORTER_ACCOUNTINFO:   - renamed functions from AB_ImExporterContext_* to AB_ImExporter_Context_*
-                               - renamed functions from AB_ImExporterAccountInfo_* to AB_ImExporter_AccountInfo_*
-                               - all kind of transactions are now in a single AB_TRANSACTION_LIST, removing
+- AB_IMEXPORTER_ACCOUNTINFO:   - all kind of transactions are now in a single AB_TRANSACTION_LIST, removing
                                  the previously dedicated lists for notedTransactions, transfers, debitNotes etc.
                                  You can now distinguish the type of transaction by inspecting the field
                                  "type" of AB_TRANSACTION.

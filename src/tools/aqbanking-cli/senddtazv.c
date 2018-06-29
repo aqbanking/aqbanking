@@ -356,7 +356,7 @@ int sendDtazv(AB_BANKING *ab,
 
     _incrementUniqueId(a, cpath);
 
-    ctx=AB_ImExporter_Context_new();
+    ctx=AB_ImExporterContext_new();
     rv=AH_Provider_SendDtazv(pro, a, ctx,
 			     (const uint8_t*)GWEN_Buffer_GetStart(dtazv),
 			     GWEN_Buffer_GetUsedBytes(dtazv),
@@ -366,7 +366,7 @@ int sendDtazv(AB_BANKING *ab,
       GWEN_DB_NODE *dbCtx;
 
       dbCtx=GWEN_DB_Group_new("context");
-      rv2=AB_ImExporter_Context_toDb(ctx, dbCtx);
+      rv2=AB_ImExporterContext_toDb(ctx, dbCtx);
       if (rv2) {
 	DBG_ERROR(0, "Error writing context to DB (%d)", rv2);
       }
@@ -381,7 +381,7 @@ int sendDtazv(AB_BANKING *ab,
       GWEN_DB_Group_free(dbCtx);
     }
 
-    AB_ImExporter_Context_free(ctx);
+    AB_ImExporterContext_free(ctx);
     if (rv) {
       DBG_ERROR(0, "Error sending DTAZV (%d)", rv);
       AB_Banking_Fini(ab);

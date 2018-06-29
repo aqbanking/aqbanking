@@ -813,9 +813,9 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
 			     0);
 
   /* get public bank server key */
-  ctx=AB_ImExporter_Context_new();
+  ctx=AB_ImExporterContext_new();
   rv=AH_Provider_GetServerKeys(pro, u, ctx, 1, 0, 1);
-  AB_ImExporter_Context_free(ctx);
+  AB_ImExporterContext_free(ctx);
   if (rv) {
     AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting server keys (%d)", rv);
@@ -825,9 +825,9 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
   }
 
   /* get Kundensystem-ID */
-  ctx=AB_ImExporter_Context_new();
+  ctx=AB_ImExporterContext_new();
   rv=AH_Provider_GetSysId(pro, u, ctx, 1, 0, 1);
-  AB_ImExporter_Context_free(ctx);
+  AB_ImExporterContext_free(ctx);
   if (rv) {
     AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting Kundensystem ID (%d)", rv);
@@ -852,9 +852,9 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
   GWEN_Gui_ProgressLog(pid,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Retrieving account list"));
-  ctx=AB_ImExporter_Context_new();
+  ctx=AB_ImExporterContext_new();
   rv=AH_Provider_GetAccounts(pro, u, ctx, 0, 1, 0);
-  AB_ImExporter_Context_free(ctx);
+  AB_ImExporterContext_free(ctx);
   if (rv<0) {
     AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting accounts (%d)", rv);

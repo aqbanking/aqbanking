@@ -309,7 +309,7 @@ int AH_Job_GetBalance__ReadSecurities(AH_JOB *j,
       AB_Security_SetUnitPriceDate(asec, gt);
     }
     
-    AB_ImExporter_Context_AddSecurity(ctx, asec);
+    AB_ImExporterContext_AddSecurity(ctx, asec);
 
     GWEN_Time_free(gt);
 
@@ -421,12 +421,12 @@ int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
       a=AH_AccountJob_GetAccount(j);
       assert(a);
-      ai=AB_ImExporter_Context_GetOrAddAccountInfoForAccount(ctx, a);
+      ai=AB_ImExporterContext_GetOrAddAccountInfoForAccount(ctx, a);
 
       assert(ai);
 
       /* add new account status */
-      AB_ImExporter_AccountInfo_AddAccountStatus(ai, acst);
+      AB_ImExporterAccountInfo_AddAccountStatus(ai, acst);
       break; /* break loop, we found the balance */
     } /* if "Balance" */
 
@@ -505,7 +505,7 @@ int AH_Job_GetBalanceInvestment_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   /* now the buffers contain data to be parsed by DBIOs */
   a=AH_AccountJob_GetAccount(j);
   assert(a);
-  ai=AB_ImExporter_Context_GetOrAddAccountInfoForAccount(ctx, a);
+  ai=AB_ImExporterContext_GetOrAddAccountInfoForAccount(ctx, a);
   assert(ai);
 
   /* read received securities */
@@ -524,7 +524,7 @@ int AH_Job_GetBalanceInvestment_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
     AB_SECURITY *stmp;
 
     DBG_INFO(AQHBCI_LOGDOMAIN, "*** Dumping securities *********************");
-    stmp=AB_ImExporter_Context_GetFirstSecurity(ctx);
+    stmp=AB_ImExporterContext_GetFirstSecurity(ctx);
     while (stmp) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "*** --------------------------------------");
       gn=GWEN_DB_Group_new("security");

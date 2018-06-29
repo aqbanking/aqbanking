@@ -122,7 +122,7 @@ int AH_ImExporterQ43_ReadDocument(AB_IMEXPORTER *ie,
   int hadSome=0;
   int records=0;
 
-  ieaList=AB_ImExporter_Context_GetAccountInfoList(ctx);
+  ieaList=AB_ImExporterContext_GetAccountInfoList(ctx);
   assert(ieaList);
 
   lbuf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -206,12 +206,12 @@ int AH_ImExporterQ43_ReadDocument(AB_IMEXPORTER *ie,
 	accountNumber[10]=0;
 
         /* get account info (or create it if necessary) */
-        iea=AB_ImExporter_AccountInfo_List_GetByBankCodeAndAccountNumber(ieaList, bankCode, accountNumber, AB_AccountType_Unknown);
+        iea=AB_ImExporterAccountInfo_List_GetByBankCodeAndAccountNumber(ieaList, bankCode, accountNumber, AB_AccountType_Unknown);
         if (iea==NULL) {
-          iea=AB_ImExporter_AccountInfo_new();
-          AB_ImExporter_AccountInfo_SetBankCode(iea, bankCode);
-          AB_ImExporter_AccountInfo_SetAccountNumber(iea, accountNumber);
-          AB_ImExporter_Context_AddAccountInfo(ctx, iea);
+          iea=AB_ImExporterAccountInfo_new();
+          AB_ImExporterAccountInfo_SetBankCode(iea, bankCode);
+          AB_ImExporterAccountInfo_SetAccountNumber(iea, accountNumber);
+          AB_ImExporterContext_AddAccountInfo(ctx, iea);
         }
 
 	cy=((p[47]-'0')*100)+((p[48]-'0')*10)+(p[49]-'0');
@@ -251,7 +251,7 @@ int AH_ImExporterQ43_ReadDocument(AB_IMEXPORTER *ie,
 	}
 
 	if (t)
-	  AB_ImExporter_AccountInfo_AddTransaction(iea, t);
+	  AB_ImExporterAccountInfo_AddTransaction(iea, t);
 	t=AB_Transaction_new();
 
 	/* extract booking date */
@@ -312,9 +312,9 @@ int AH_ImExporterQ43_ReadDocument(AB_IMEXPORTER *ie,
 	}
 
         /* copy local account info */
-	s=AB_ImExporter_AccountInfo_GetAccountNumber(iea);
+	s=AB_ImExporterAccountInfo_GetAccountNumber(iea);
         AB_Transaction_SetLocalAccountNumber(t, s);
-	s=AB_ImExporter_AccountInfo_GetBankCode(iea);
+	s=AB_ImExporterAccountInfo_GetBankCode(iea);
 	AB_Transaction_SetLocalBankCode(t, s);
         break;
       }
@@ -360,7 +360,7 @@ int AH_ImExporterQ43_ReadDocument(AB_IMEXPORTER *ie,
       case 33: { /* end of accunt record */
 	/* store current transaction if any */
 	if (t) {
-	  AB_ImExporter_AccountInfo_AddTransaction(iea, t);
+	  AB_ImExporterAccountInfo_AddTransaction(iea, t);
 	  t=NULL;
 	}
 

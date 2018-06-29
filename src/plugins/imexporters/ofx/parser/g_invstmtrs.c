@@ -191,18 +191,18 @@ int AIO_OfxGroup_INVSTMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
     AB_IMEXPORTER_ACCOUNTINFO *ai;
     const char *s;
     DBG_INFO(AQBANKING_LOGDOMAIN, "Importing account %s/%s", AIO_OfxGroup_INVACC_GetBrokerId(sg), AIO_OfxGroup_INVACC_GetAccId(sg));
-    ai=AB_ImExporter_AccountInfo_new();                        /*Create the AccountInfo Structure*/
+    ai=AB_ImExporterAccountInfo_new();                        /*Create the AccountInfo Structure*/
     assert(ai);                                               /*Validate creation*/
     s=AIO_OfxGroup_INVACC_GetBrokerId(sg);
     if (s)
-      AB_ImExporter_AccountInfo_SetBankCode(ai, s);       /*Install Broker ID*/
+      AB_ImExporterAccountInfo_SetBankCode(ai, s);       /*Install Broker ID*/
     s=AIO_OfxGroup_INVACC_GetAccId(sg);
     if (s)
-      AB_ImExporter_AccountInfo_SetAccountNumber(ai, s);  /*And account number*/
+      AB_ImExporterAccountInfo_SetAccountNumber(ai, s);  /*And account number*/
 
 /* and set currency if there is one */
 
-    if (xg->currency) AB_ImExporter_AccountInfo_SetCurrency(ai, xg->currency);
+    if (xg->currency) AB_ImExporterAccountInfo_SetCurrency(ai, xg->currency);
 
 /* set account type, if known */
 
@@ -211,11 +211,11 @@ int AIO_OfxGroup_INVSTMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
     if (s) {
       AB_ACCOUNT_TYPE t;
       t=AIO_OfxGroup_Generic_AccountTypeFromString(s);
-      AB_ImExporter_AccountInfo_SetAccountType(ai, t);
+      AB_ImExporterAccountInfo_SetAccountType(ai, t);
     }
 
     DBG_INFO(AQBANKING_LOGDOMAIN, "Adding investment account");
-    AB_ImExporter_Context_AddAccountInfo(AIO_OfxXmlCtx_GetIoContext(ctx), ai);
+    AB_ImExporterContext_AddAccountInfo(AIO_OfxXmlCtx_GetIoContext(ctx), ai);
     xg->accountInfo=ai;
   }
 
@@ -254,7 +254,7 @@ int AIO_OfxGroup_INVSTMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
         AB_Transaction_SetCustomerReference(t,st);
         transactionCount++; */
 
-        AB_ImExporter_AccountInfo_AddTransaction(xg->accountInfo, t);
+        AB_ImExporterAccountInfo_AddTransaction(xg->accountInfo, t);
         t=AB_Transaction_List2Iterator_Next(it);
       }
       AB_Transaction_List2Iterator_free(it);

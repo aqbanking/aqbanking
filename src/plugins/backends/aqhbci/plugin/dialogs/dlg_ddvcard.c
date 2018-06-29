@@ -824,17 +824,17 @@ int AH_DdvCardDialog_DoIt(GWEN_DIALOG *dlg) {
   GWEN_Gui_ProgressLog(pid,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Retrieving account list"));
-  ctx=AB_ImExporter_Context_new();
+  ctx=AB_ImExporterContext_new();
   rv=AH_Provider_GetAccounts(pro, u, ctx, 0, 1, 0);
   if (rv<0) {
     AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
-    AB_ImExporter_Context_free(ctx);
+    AB_ImExporterContext_free(ctx);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
-  AB_ImExporter_Context_free(ctx);
+  AB_ImExporterContext_free(ctx);
 
   rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
   if (rv==GWEN_ERROR_USER_ABORTED) {

@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
      * data returned by the server will be stored within an ImExporter
      * context.
      */
-    ctx=AB_ImExporter_Context_new();
+    ctx=AB_ImExporterContext_new();
 
     /* execute the jobs which are in the given list (well, for this tutorial
      * there is only one job in the list, but the number is not limited).
@@ -125,11 +125,11 @@ int main(int argc, char **argv) {
     else {
       AB_IMEXPORTER_ACCOUNTINFO *ai;
 
-      ai=AB_ImExporter_Context_GetFirstAccountInfo(ctx);
+      ai=AB_ImExporterContext_GetFirstAccountInfo(ctx);
       while(ai) {
         const AB_TRANSACTION *t;
 
-        t=AB_ImExporter_AccountInfo_GetFirstTransaction(ai);
+        t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
         while(t) {
           const AB_VALUE *v;
 
@@ -147,7 +147,7 @@ int main(int argc, char **argv) {
           }
           t=AB_Transaction_List_Next(t);
         } /* while transactions */
-        ai=AB_ImExporter_AccountInfo_List_Next(ai);
+        ai=AB_ImExporterAccountInfo_List_Next(ai);
       } /* while ai */
     } /* if executeQueue successfull */
     /* free the job to avoid memory leaks */

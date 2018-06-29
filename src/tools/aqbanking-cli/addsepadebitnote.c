@@ -366,11 +366,11 @@ static int addSepaDebitNote(AB_BANKING *ab,
 
   /* add transfer to */
 
-  AB_ImExporter_Context_AddTransaction(ctx, t);
+  AB_ImExporterContext_AddTransaction(ctx, t);
 
   /* write result back */
   rv=writeContext(ctxFile, ctx);
-  AB_ImExporter_Context_free(ctx);
+  AB_ImExporterContext_free(ctx);
   if (rv<0) {
     DBG_ERROR(0, "Error writing context file (%d)", rv);
     AB_Banking_OnlineFini(ab);

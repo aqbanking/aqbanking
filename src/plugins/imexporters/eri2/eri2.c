@@ -461,23 +461,23 @@ void AB_ImExporterERI2__AddTransaction(AB_IMEXPORTER_CONTEXT *ctx,
 
   /* Search if account number is already in context
      If so add transaction there, else make new account number in context. */
-  iea = AB_ImExporter_Context_GetFirstAccountInfo(ctx);
+  iea = AB_ImExporterContext_GetFirstAccountInfo(ctx);
   la = AB_Transaction_GetLocalAccountNumber(t);
   assert(la);
   while(iea) {
-    if (strcmp(AB_ImExporter_AccountInfo_GetAccountNumber(iea),
+    if (strcmp(AB_ImExporterAccountInfo_GetAccountNumber(iea),
                AB_Transaction_GetLocalAccountNumber(t))==0)
       break;
-    iea = AB_ImExporter_AccountInfo_List_Next(iea);
+    iea = AB_ImExporterAccountInfo_List_Next(iea);
   }
 
   if (!iea) {
     /* Not found, add it */
-    iea = AB_ImExporter_AccountInfo_new();
-    AB_ImExporter_Context_AddAccountInfo(ctx, iea);
-    AB_ImExporter_AccountInfo_SetAccountType(iea, AB_AccountType_Bank);
-    AB_ImExporter_AccountInfo_SetBankName(iea, bankName);
-    AB_ImExporter_AccountInfo_SetAccountNumber(iea, la);
+    iea = AB_ImExporterAccountInfo_new();
+    AB_ImExporterContext_AddAccountInfo(ctx, iea);
+    AB_ImExporterAccountInfo_SetAccountType(iea, AB_AccountType_Bank);
+    AB_ImExporterAccountInfo_SetBankName(iea, bankName);
+    AB_ImExporterAccountInfo_SetAccountNumber(iea, la);
   }
 
   /* set transaction type if none set */
@@ -485,7 +485,7 @@ void AB_ImExporterERI2__AddTransaction(AB_IMEXPORTER_CONTEXT *ctx,
     AB_Transaction_SetType(t, AB_Transaction_TypeStatement);
 
   /* Add it to the AccountInfo List */
-  AB_ImExporter_AccountInfo_AddTransaction(iea, t);
+  AB_ImExporterAccountInfo_AddTransaction(iea, t);
 }
 
 

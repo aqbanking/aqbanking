@@ -964,7 +964,7 @@ int AH_EditAccountDialog_HandleActivatedSepa(GWEN_DIALOG *dlg) {
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_ACCOUNT_DIALOG, dlg);
   assert(xdlg);
 
-  ctx=AB_ImExporter_Context_new();
+  ctx=AB_ImExporterContext_new();
   al=AB_Account_List2_new();
   AB_Account_List2_PushBack(al, xdlg->account);
   rv=AH_Provider_GetAccountSepaInfo(AB_Account_GetProvider(xdlg->account),
@@ -974,7 +974,7 @@ int AH_EditAccountDialog_HandleActivatedSepa(GWEN_DIALOG *dlg) {
 				    0,   /* nounmount */
 				    xdlg->doLock);
   AB_Account_List2_free(al);
-  AB_ImExporter_Context_free(ctx);
+  AB_ImExporterContext_free(ctx);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
   }

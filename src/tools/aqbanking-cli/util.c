@@ -44,7 +44,7 @@ int readContext(const char *ctxFile,
     rv=GWEN_SyncIo_Connect(sio);
     if (rv<0) {
       if (!mustExist) {
-	ctx=AB_ImExporter_Context_new();
+	ctx=AB_ImExporterContext_new();
 	*pCtx=ctx;
 	GWEN_SyncIo_free(sio);
 	return 0;
@@ -69,7 +69,7 @@ int readContext(const char *ctxFile,
   GWEN_SyncIo_Disconnect(sio);
   GWEN_SyncIo_free(sio);
 
-  ctx=AB_ImExporter_Context_fromDb(dbCtx);
+  ctx=AB_ImExporterContext_fromDb(dbCtx);
   if (!ctx) {
     DBG_ERROR(0, "No context in input data");
     GWEN_DB_Group_free(dbCtx);
@@ -114,7 +114,7 @@ int writeContext(const char *ctxFile, const AB_IMEXPORTER_CONTEXT *ctx) {
 
 
   dbCtx=GWEN_DB_Group_new("context");
-  rv=AB_ImExporter_Context_toDb(ctx, dbCtx);
+  rv=AB_ImExporterContext_toDb(ctx, dbCtx);
   if (rv<0) {
     DBG_ERROR(0, "Error writing context to db (%d)", rv);
     GWEN_DB_Group_free(dbCtx);

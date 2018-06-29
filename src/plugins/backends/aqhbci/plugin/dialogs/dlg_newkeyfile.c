@@ -937,9 +937,9 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   GWEN_Gui_ProgressLog(pid,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Retrieving server keys"));
-  ctx=AB_ImExporter_Context_new();
+  ctx=AB_ImExporterContext_new();
   rv=AH_Provider_GetServerKeys(pro, u, ctx, 0, 1, 0);
-  AB_ImExporter_Context_free(ctx);
+  AB_ImExporterContext_free(ctx);
   if (rv<0) {
     AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -1006,9 +1006,9 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   GWEN_Gui_ProgressLog(pid,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Sending user keys"));
-  ctx=AB_ImExporter_Context_new();
+  ctx=AB_ImExporterContext_new();
   rv=AH_Provider_SendUserKeys2(pro, u, ctx, 0, 0, 1, 0); /* withAuthKey, withProgress, nounmount, doLock */
-  AB_ImExporter_Context_free(ctx);
+  AB_ImExporterContext_free(ctx);
   if (rv<0) {
     AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);

@@ -767,7 +767,7 @@ int AB_ImporterDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
 	if (rv<0) {
 	  /* TODO: show error message */
 	  DBG_ERROR(0, "Error importing file: %d", rv);
-	  AB_ImExporter_Context_Clear(xdlg->context);
+	  AB_ImExporterContext_Clear(xdlg->context);
 	}
 	else {
 	  DBG_NOTICE(0, "Import ok.");

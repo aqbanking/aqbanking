@@ -257,10 +257,10 @@ int addTransaction(AB_BANKING *ab,
     return 4;
   }
 
-  AB_ImExporter_Context_AddTransaction(ctx, t);
+  AB_ImExporterContext_AddTransaction(ctx, t);
 
   rv=writeContext(ctxFile, ctx);
-  AB_ImExporter_Context_free(ctx);
+  AB_ImExporterContext_free(ctx);
   if (rv<0) {
     DBG_ERROR(0, "Error writing context (%d)", rv);
     return 4;

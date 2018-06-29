@@ -329,7 +329,7 @@ int debitNote(AB_BANKING *ab,
 
   /* execute job */
   rvExec=0;
-  ctx=AB_ImExporter_Context_new();
+  ctx=AB_ImExporterContext_new();
   rv=AB_Banking_ExecuteJobs(ab, jobList, ctx);
   if (rv) {
     fprintf(stderr, "Error on executeQueue (%d)\n", rv);
@@ -340,12 +340,12 @@ int debitNote(AB_BANKING *ab,
   /* write context */
   rv=writeContext(ctxFile, ctx);
   if (rv<0) {
-    AB_ImExporter_Context_free(ctx);
+    AB_ImExporterContext_free(ctx);
     AB_Banking_OnlineFini(ab);
     AB_Banking_Fini(ab);
     return 4;
   }
-  AB_ImExporter_Context_free(ctx);
+  AB_ImExporterContext_free(ctx);
 
   /* that's it */
   rv=AB_Banking_OnlineFini(ab);

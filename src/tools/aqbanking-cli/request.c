@@ -602,17 +602,17 @@ int request(AB_BANKING *ab,
     AB_IMEXPORTER_CONTEXT *ctx;
 
     DBG_INFO(0, "%d requests created", requests);
-    ctx=AB_ImExporter_Context_new();
+    ctx=AB_ImExporterContext_new();
     rv=AB_Banking_ExecuteJobs(ab, jobList, ctx);
     AB_Job_List2_FreeAll(jobList);
     if (rv) {
       fprintf(stderr, "Error on executeQueue (%d)\n", rv);
-      AB_ImExporter_Context_free(ctx);
+      AB_ImExporterContext_free(ctx);
       return 3;
     }
 
     rv=writeContext(ctxFile, ctx);
-    AB_ImExporter_Context_free(ctx);
+    AB_ImExporterContext_free(ctx);
     if (rv<0) {
       DBG_ERROR(0, "Error writing context file (%d)", rv);
       AB_Banking_OnlineFini(ab);

@@ -7,7 +7,7 @@
 
     <lang id="c">
       <identifier>AB_IMEXPORTER_ACCOUNTINFO</identifier>
-      <prefix>AB_ImExporter_AccountInfo</prefix>
+      <prefix>AB_ImExporterAccountInfo</prefix>
       
       <baseFileName>imexporter_accountInfo</baseFileName>
       
@@ -224,34 +224,34 @@
                assert(a);
              
                s=AB_Account_GetBankCode(a);
-               AB_ImExporter_AccountInfo_SetBankCode(st, s);
+               $(struct_prefix)_SetBankCode(st, s);
              
                s=AB_Account_GetBankName(a);
-               AB_ImExporter_AccountInfo_SetBankName(st, s);
+               $(struct_prefix)_SetBankName(st, s);
              
                s=AB_Account_GetAccountNumber(a);
-               AB_ImExporter_AccountInfo_SetAccountNumber(st, s);
+               $(struct_prefix)_SetAccountNumber(st, s);
 
                s=AB_Account_GetSubAccountId(a);
-               AB_ImExporter_AccountInfo_SetSubAccountId(st, s);
+               $(struct_prefix)_SetSubAccountId(st, s);
              
                s=AB_Account_GetAccountName(a);
-               AB_ImExporter_AccountInfo_SetAccountName(st, s);
+               $(struct_prefix)_SetAccountName(st, s);
              
                s=AB_Account_GetIBAN(a);
-               AB_ImExporter_AccountInfo_SetIban(st, s);
+               $(struct_prefix)_SetIban(st, s);
              
                s=AB_Account_GetBIC(a);
-               AB_ImExporter_AccountInfo_SetBic(st, s);
+               $(struct_prefix)_SetBic(st, s);
              
                s=AB_Account_GetCurrency(a);
-               AB_ImExporter_AccountInfo_SetCurrency(st, s);
+               $(struct_prefix)_SetCurrency(st, s);
              
                s=AB_Account_GetOwnerName(a);
-               AB_ImExporter_AccountInfo_SetOwner(st, s);
+               $(struct_prefix)_SetOwner(st, s);
              
                at=AB_Account_GetAccountType(a);
-               AB_ImExporter_AccountInfo_SetAccountType(st, at);
+               $(struct_prefix)_SetAccountType(st, at);
              }
           </content>
         </inline>
@@ -272,22 +272,22 @@
                assert(t);
              
                s=AB_Transaction_GetLocalBankCode(t);
-               AB_ImExporter_AccountInfo_SetBankCode(st, s);
+               $(struct_prefix)_SetBankCode(st, s);
              
                s=AB_Transaction_GetLocalAccountNumber(t);
-               AB_ImExporter_AccountInfo_SetAccountNumber(st, s);
+               $(struct_prefix)_SetAccountNumber(st, s);
 
                s=AB_Transaction_GetLocalSuffix(t);
-               AB_ImExporter_AccountInfo_SetSubAccountId(st, s);
+               $(struct_prefix)_SetSubAccountId(st, s);
              
                s=AB_Transaction_GetLocalIban(t);
-               AB_ImExporter_AccountInfo_SetIban(st, s);
+               $(struct_prefix)_SetIban(st, s);
              
                s=AB_Transaction_GetLocalBic(t);
-               AB_ImExporter_AccountInfo_SetBic(st, s);
+               $(struct_prefix)_SetBic(st, s);
              
                s=AB_Transaction_GetLocalName(t);
-               AB_ImExporter_AccountInfo_SetOwner(st, s);
+               $(struct_prefix)_SetOwner(st, s);
              }
           </content>
         </inline>
@@ -318,25 +318,25 @@
                if (!accountNumber)
                  accountNumber="";
              
-               iea=AB_ImExporter_AccountInfo_List_First(l);
+               iea=$(struct_prefix)_List_First(l);
                while(iea) {
                  const char *sBankCode;
                  const char *sAccountNumber;
              
-                 sBankCode=AB_ImExporter_AccountInfo_GetBankCode(iea);
+                 sBankCode=$(struct_prefix)_GetBankCode(iea);
                  if (sBankCode==NULL)
                    sBankCode="";
-                 sAccountNumber=AB_ImExporter_AccountInfo_GetAccountNumber(iea);
+                 sAccountNumber=$(struct_prefix)_GetAccountNumber(iea);
                  if (sAccountNumber==NULL)
                    sAccountNumber="";
 
                  if ((strcasecmp(sBankCode, bankCode)==0) &amp;&amp;
                      (strcasecmp(sAccountNumber, accountNumber)==0) &amp;&amp;
-                     ((accountType&lt;=AB_AccountType_Unknown) || (accountType==AB_ImExporter_AccountInfo_GetAccountType(iea)))
+                     ((accountType&lt;=AB_AccountType_Unknown) || (accountType==$(struct_prefix)_GetAccountType(iea)))
                     )
                    return iea;
                  
-                 iea=AB_ImExporter_AccountInfo_List_Next(iea);
+                 iea=$(struct_prefix)_List_Next(iea);
                }
                
                return NULL;
@@ -370,13 +370,13 @@
                assert(l);
                
                if (uniqueId)
-                 iea=AB_ImExporter_AccountInfo_List_GetByAccountId(l, uniqueId);
+                 iea=$(struct_prefix)_List_GetByAccountId(l, uniqueId);
                
                if (iea==NULL &amp;&amp; iban &amp;&amp; *iban)
-                 AB_ImExporter_AccountInfo_List_GetByIban(l, iban);
+                 $(struct_prefix)_List_GetByIban(l, iban);
                
                if (iea==NULL)
-                 iea=AB_ImExporter_AccountInfo_List_GetByBankCodeAndAccountNumber(l, bankCode, accountNumber, accountType);
+                 iea=$(struct_prefix)_List_GetByBankCodeAndAccountNumber(l, bankCode, accountNumber, accountType);
                
                return iea;
              }

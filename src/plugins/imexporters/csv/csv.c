@@ -476,7 +476,7 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
         /* add transaction */
         DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding transaction");
-        AB_ImExporter_Context_AddTransaction(ctx, t);
+        AB_ImExporterContext_AddTransaction(ctx, t);
       }
       else {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Empty group (i.e. empty line in imported file)");
@@ -566,11 +566,11 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
 
   /* create db, store transactions in it */
   dbData=GWEN_DB_Group_new("transactions");
-  ai=AB_ImExporter_Context_GetFirstAccountInfo(ctx);
+  ai=AB_ImExporterContext_GetFirstAccountInfo(ctx);
   while(ai) {
     const AB_TRANSACTION_LIST *tl;
 
-    tl=AB_ImExporter_AccountInfo_GetTransactionList(ai);
+    tl=AB_ImExporterAccountInfo_GetTransactionList(ai);
     if (tl) {
       const AB_TRANSACTION *t;
 
@@ -772,7 +772,7 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
         t=AB_Transaction_List_FindNextByType(t, transactionType, AB_Transaction_CommandNone);
       } /* while t */
     } /* if tl */
-    ai=AB_ImExporter_AccountInfo_List_Next(ai);
+    ai=AB_ImExporterAccountInfo_List_Next(ai);
   } /* while ai */
 
   rv=GWEN_DBIO_Export(ieh->dbio, sio, dbData, dbSubParams, GWEN_DB_FLAGS_DEFAULT);

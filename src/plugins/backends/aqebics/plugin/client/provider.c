@@ -569,9 +569,9 @@ int EBC_Provider_ExecContext__IZV(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(logbuf, "Transactions\n");
 
   DBG_INFO(AQEBICS_LOGDOMAIN, "Sampling transactions from jobs");
-  exCtx=AB_ImExporter_Context_new();
-  ai=AB_ImExporter_AccountInfo_new();
-  AB_ImExporter_AccountInfo_FillFromAccount(ai, a);
+  exCtx=AB_ImExporterContext_new();
+  ai=AB_ImExporterAccountInfo_new();
+  AB_ImExporterAccountInfo_FillFromAccount(ai, a);
 
   jit=AB_Job_List2_First(EBC_Context_GetJobs(ectx));
   if (jit) {
@@ -599,7 +599,7 @@ int EBC_Provider_ExecContext__IZV(AB_PROVIDER *pro,
 	groupId=AB_Job_GetJobId(uj);
       AB_Transaction_SetGroupId(t, groupId);
 
-      AB_ImExporter_AccountInfo_AddTransaction(ai, AB_Transaction_dup(t));
+      AB_ImExporterAccountInfo_AddTransaction(ai, AB_Transaction_dup(t));
       s=AB_Transaction_GetRemoteName(t);
       if (!s)
 	s=I18N("unknown");
@@ -631,7 +631,7 @@ int EBC_Provider_ExecContext__IZV(AB_PROVIDER *pro,
     } /* while */
     AB_Job_List2Iterator_free(jit);
   }
-  AB_ImExporter_Context_AddAccountInfo(exCtx, ai);
+  AB_ImExporterContext_AddAccountInfo(exCtx, ai);
 
   GWEN_Buffer_AppendString(logbuf, I18N("Results:\n"));
 
@@ -746,7 +746,7 @@ int EBC_Provider_ExecContext_IZV(AB_PROVIDER *pro,
         AB_Transaction_SetUniqueAccountId(t, AB_Account_GetUniqueId(a));
         if (AB_Transaction_GetType(t)<=AB_Transaction_TypeNone)
           AB_Transaction_SetType(t, AB_Transaction_TypeTransfer);
-        AB_ImExporter_Context_AddTransaction(ctx, t);
+        AB_ImExporterContext_AddTransaction(ctx, t);
       }
 
       uj=AB_Job_List2Iterator_Next(jit);

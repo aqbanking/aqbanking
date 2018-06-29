@@ -129,25 +129,25 @@ int AB_Banking_FillGapsInImExporterContext(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT
   int notFounds=0;
 
   assert(iec);
-  iea=AB_ImExporter_Context_GetFirstAccountInfo(iec);
+  iea=AB_ImExporterContext_GetFirstAccountInfo(iec);
   while(iea) {
     AB_ACCOUNT *a=NULL;
 
-    if (AB_ImExporter_AccountInfo_GetAccountId(iea))
-      a=AB_Banking_GetAccount(ab, AB_ImExporter_AccountInfo_GetAccountId(iea));
+    if (AB_ImExporterAccountInfo_GetAccountId(iea))
+      a=AB_Banking_GetAccount(ab, AB_ImExporterAccountInfo_GetAccountId(iea));
     if (!a)
-      a=AB_Banking_GetAccountByIban(ab, AB_ImExporter_AccountInfo_GetIban(iea));
+      a=AB_Banking_GetAccountByIban(ab, AB_ImExporterAccountInfo_GetIban(iea));
     if (!a)
       a=AB_Banking_GetAccountByCodeAndNumber(ab,
-					     AB_ImExporter_AccountInfo_GetBankCode(iea),
-					     AB_ImExporter_AccountInfo_GetAccountNumber(iea));
+					     AB_ImExporterAccountInfo_GetBankCode(iea),
+					     AB_ImExporterAccountInfo_GetAccountNumber(iea));
     if (a) {
       AB_TRANSACTION *t;
 
-      AB_ImExporter_AccountInfo_FillFromAccount(iea, a);
+      AB_ImExporterAccountInfo_FillFromAccount(iea, a);
 
       /* fill transactions */
-      t=AB_ImExporter_AccountInfo_GetFirstTransaction(iea);
+      t=AB_ImExporterAccountInfo_GetFirstTransaction(iea);
       while(t) {
 	AB_Transaction_FillLocalFromAccount(t, a);
 	if (AB_Transaction_GetUniqueAccountId(t)==0)
@@ -161,7 +161,7 @@ int AB_Banking_FillGapsInImExporterContext(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT
     else
       notFounds++;
 
-    iea=AB_ImExporter_AccountInfo_List_Next(iea);
+    iea=AB_ImExporterAccountInfo_List_Next(iea);
   }
 
   return (notFounds==0)?0:1;

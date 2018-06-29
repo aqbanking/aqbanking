@@ -115,7 +115,7 @@ int AH_ImExporterXMLDB_Import(AB_IMEXPORTER *ie,
   /* transform DB to transactions */
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
                        "Data imported, transforming to transactions");
-  AB_ImExporter_Context_ReadDb(ctx, dbData);
+  AB_ImExporterContext_ReadDb(ctx, dbData);
 
   GWEN_DB_Group_free(dbData);
   return 0;
@@ -141,7 +141,7 @@ int AH_ImExporterXMLDB_Export(AB_IMEXPORTER *ie,
                                "params");
 
   dbData=GWEN_DB_Group_new("GWEN_DB");
-  rv=AB_ImExporter_Context_toDb(ctx, dbData);
+  rv=AB_ImExporterContext_toDb(ctx, dbData);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error exporting data");
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,

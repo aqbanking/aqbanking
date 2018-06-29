@@ -7,7 +7,7 @@
 
     <lang id="c">
       <identifier>AB_IMEXPORTER_CONTEXT</identifier>
-      <prefix>AB_ImExporter_Context</prefix>
+      <prefix>AB_ImExporterContext</prefix>
       
       <baseFileName>imexporter_context</baseFileName>
       
@@ -83,7 +83,7 @@
              void $(struct_prefix)_Clear($(struct_type) *st) {
                assert(st);
                if (st->accountInfoList)
-                 AB_ImExporter_AccountInfo_List_Clear(st->accountInfoList);
+                 AB_ImExporterAccountInfo_List_Clear(st->accountInfoList);
                if (st->securityList)
                  AB_Security_List_Clear(st->securityList);
                if (st->messageList)
@@ -112,13 +112,13 @@
                if (stSrc->accountInfoList) {
                  AB_IMEXPORTER_ACCOUNTINFO *iea;
                  
-                 iea=AB_ImExporter_AccountInfo_List_First(stSrc->accountInfoList);
+                 iea=AB_ImExporterAccountInfo_List_First(stSrc->accountInfoList);
                  while(iea) {
                    AB_IMEXPORTER_ACCOUNTINFO *ieaNext;
                
-                   ieaNext=AB_ImExporter_AccountInfo_List_Next(iea);
-                   AB_ImExporter_AccountInfo_List_Del(iea);
-                   AB_ImExporter_AccountInfo_List_Add(iea, st->accountInfoList);
+                   ieaNext=AB_ImExporterAccountInfo_List_Next(iea);
+                   AB_ImExporterAccountInfo_List_Del(iea);
+                   AB_ImExporterAccountInfo_List_Add(iea, st->accountInfoList);
                    iea=ieaNext;
                  }
                }
@@ -151,7 +151,7 @@
                  }
                }
 
-               AB_ImExporter_Context_free(stSrc);
+               $(struct_prefix)_free(stSrc);
              }
           </content>
         </inline>
@@ -169,7 +169,7 @@
              AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_GetFirstAccountInfo(const $(struct_type) *st) {
                assert(st);
                if (st->accountInfoList)
-                 return AB_ImExporter_AccountInfo_List_First(st->accountInfoList);
+                 return AB_ImExporterAccountInfo_List_First(st->accountInfoList);
                return NULL;
              }
           </content>
@@ -189,8 +189,8 @@
                assert(st);
                if (ai) {
                  if (NULL==st->accountInfoList)
-                   st->accountInfoList=AB_ImExporter_AccountInfo_List_new();
-                 AB_ImExporter_AccountInfo_List_Add(ai, st->accountInfoList);
+                   st->accountInfoList=AB_ImExporterAccountInfo_List_new();
+                 AB_ImExporterAccountInfo_List_Add(ai, st->accountInfoList);
                }
              }
           </content>
@@ -219,8 +219,8 @@
                                                                              int accountType) {
                assert(st);
                if (NULL==st->accountInfoList)
-                 st->accountInfoList=AB_ImExporter_AccountInfo_List_new();
-               return AB_ImExporter_AccountInfo_List_GetOrAdd(st->accountInfoList, uniqueId, iban, bankCode, accountNumber, accountType);
+                 st->accountInfoList=AB_ImExporterAccountInfo_List_new();
+               return AB_ImExporterAccountInfo_List_GetOrAdd(st->accountInfoList, uniqueId, iban, bankCode, accountNumber, accountType);
              }
           </content>
         </inline>
@@ -238,8 +238,8 @@
              AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_GetOrAddAccountInfoForAccount($(struct_type) *st, const AB_ACCOUNT *a) {
                assert(st);
                if (NULL==st->accountInfoList)
-                 st->accountInfoList=AB_ImExporter_AccountInfo_List_new();
-               return AB_ImExporter_AccountInfo_List_GetOrAddByAccount(st->accountInfoList, a);
+                 st->accountInfoList=AB_ImExporterAccountInfo_List_new();
+               return AB_ImExporterAccountInfo_List_GetOrAddByAccount(st->accountInfoList, a);
              }
           </content>
         </inline>
@@ -382,12 +382,12 @@
                  
                  if (NULL==st->accountInfoList) {
                    /* no account info list, nothing to search, just create the list */
-                   st->accountInfoList=AB_ImExporter_AccountInfo_List_new();
+                   st->accountInfoList=AB_ImExporterAccountInfo_List_new();
                  }
                  else {
                    /* first try to get by unique account id */
                    if (AB_Transaction_GetUniqueAccountId(t))
-                     ai=AB_ImExporter_AccountInfo_List_GetByAccountId(st->accountInfoList, AB_Transaction_GetUniqueAccountId(t));
+                     ai=AB_ImExporterAccountInfo_List_GetByAccountId(st->accountInfoList, AB_Transaction_GetUniqueAccountId(t));
                      
                    /* next try by IBAN */
                    if (ai==NULL) {
@@ -395,12 +395,12 @@
                      
                      s=AB_Transaction_GetLocalIban(t);
                      if (s &amp;&amp; *s)
-                       ai=AB_ImExporter_AccountInfo_List_GetByIban(st->accountInfoList, s);
+                       ai=AB_ImExporterAccountInfo_List_GetByIban(st->accountInfoList, s);
                    }
                    
                    /* then try by account number and bank code */
                    if (ai==NULL)
-                     ai=AB_ImExporter_AccountInfo_List_GetByBankCodeAndAccountNumber(st->accountInfoList,
+                     ai=AB_ImExporterAccountInfo_List_GetByBankCodeAndAccountNumber(st->accountInfoList,
                                                                                      AB_Transaction_GetLocalBankCode(t),
                                                                                      AB_Transaction_GetLocalAccountNumber(t),
                                                                                      AB_AccountType_Unknown);
@@ -409,8 +409,8 @@
                  /* create account info if not found */
                  if (ai==NULL) {
                    /* create account info */
-                   ai=AB_ImExporter_AccountInfo_new();
-                   AB_ImExporter_AccountInfo_FillFromTransaction(ai, t);
+                   ai=AB_ImExporterAccountInfo_new();
+                   AB_ImExporterAccountInfo_FillFromTransaction(ai, t);
                  }
 
                  /* set transaction type if none set */
@@ -418,7 +418,7 @@
                    AB_Transaction_SetType(t, AB_Transaction_TypeStatement);
                  
                  /* finally add transaction */
-                 AB_ImExporter_AccountInfo_AddTransaction(ai, t);
+                 AB_ImExporterAccountInfo_AddTransaction(ai, t);
                }
              }
           </content>
@@ -446,7 +446,7 @@
         <descr>
         </descr>
         <default>NULL</default>
-        <preset>AB_ImExporter_AccountInfo_List_new()</preset>
+        <preset>AB_ImExporterAccountInfo_List_new()</preset>
         <access>public</access>
         <flags>own</flags>
         <setflags>nodup</setflags>

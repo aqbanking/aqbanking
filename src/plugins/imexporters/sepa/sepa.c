@@ -132,18 +132,18 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
   GWEN_BUFFER *tbuf;
   char *ctrlsum;
 
-  ai=AB_ImExporter_Context_GetFirstAccountInfo(ctx);
+  ai=AB_ImExporterContext_GetFirstAccountInfo(ctx);
   if (ai==0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "No account info");
     return GWEN_ERROR_NO_DATA;
   }
-  else if (AB_ImExporter_AccountInfo_List_Next(ai)) {
+  else if (AB_ImExporterAccountInfo_List_Next(ai)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "Account info for more than one local account");
     return GWEN_ERROR_NOT_SUPPORTED;
   }
 
-  t=AB_ImExporter_AccountInfo_GetFirstTransaction(ai);
+  t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
   if (!t) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "No transactions in ImExporter context");
     return GWEN_ERROR_NO_DATA;
@@ -172,7 +172,7 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
     }
     else
       transDate=0;
-    s=AB_ImExporter_AccountInfo_GetOwner(ai);
+    s=AB_ImExporterAccountInfo_GetOwner(ai);
     if (!s || !*s) {
       name=AB_Transaction_GetLocalName(t);
       if (!name || !*name) {
@@ -182,7 +182,7 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
 	return GWEN_ERROR_BAD_DATA;
       }
     }
-    s=AB_ImExporter_AccountInfo_GetIban(ai);
+    s=AB_ImExporterAccountInfo_GetIban(ai);
     if (!s || !*s) {
       iban=AB_Transaction_GetLocalIban(t);
       if (!iban || !*iban) {
@@ -192,7 +192,7 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
 	return GWEN_ERROR_BAD_DATA;
       }
     }
-    s=AB_ImExporter_AccountInfo_GetBic(ai);
+    s=AB_ImExporterAccountInfo_GetBic(ai);
     if (!s || !*s) {
       bic=AB_Transaction_GetLocalBic(t);
       if (!bic || !*bic) {
@@ -247,9 +247,9 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
 
     if (!pmtinf->tcount) {
       /* initialise match data for this PmtInf block */
-      pmtinf->localName = name ? name : AB_ImExporter_AccountInfo_GetOwner(ai);
-      pmtinf->localIban = iban ? iban : AB_ImExporter_AccountInfo_GetIban(ai);
-      pmtinf->localBic  = bic  ? bic  : AB_ImExporter_AccountInfo_GetBic(ai);
+      pmtinf->localName = name ? name : AB_ImExporterAccountInfo_GetOwner(ai);
+      pmtinf->localIban = iban ? iban : AB_ImExporterAccountInfo_GetIban(ai);
+      pmtinf->localBic  = bic  ? bic  : AB_ImExporterAccountInfo_GetBic(ai);
       pmtinf->date=da;               /* transaction date (AB_Transaction_GetDate()) */
       pmtinf->transDate=transDate;   /* transaction date short representation ((year<<16)+(month<<8)+(day)) */
       if (doctype[0]==8) {

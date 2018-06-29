@@ -203,25 +203,25 @@ int transfers(AB_BANKING *ab,
   }
 
   /* import new context */
-  ctx=AB_ImExporter_Context_new();
+  ctx=AB_ImExporterContext_new();
   rv=AB_Banking_ImportFileWithProfile(ab, importerName, ctx,
 				      profileName, profileFile,
                                       inFile);
   if (rv<0) {
     DBG_ERROR(0, "Error reading file: %d", rv);
-    AB_ImExporter_Context_free(ctx);
+    AB_ImExporterContext_free(ctx);
     return 4;
   }
 
   /* adjust local account id if requested */
   if (bankId || accountId) {
-    iea=AB_ImExporter_Context_GetFirstAccountInfo(ctx);
+    iea=AB_ImExporterContext_GetFirstAccountInfo(ctx);
     while(iea) {
       if (bankId)
-	AB_ImExporter_AccountInfo_SetBankCode(iea, bankId);
+	AB_ImExporterAccountInfo_SetBankCode(iea, bankId);
       if (accountId)
-        AB_ImExporter_AccountInfo_SetAccountNumber(iea, accountId);
-      iea=AB_ImExporter_AccountInfo_List_Next(iea);
+        AB_ImExporterAccountInfo_SetAccountNumber(iea, accountId);
+      iea=AB_ImExporterAccountInfo_List_Next(iea);
     } /* while */
   }
 
@@ -231,25 +231,25 @@ int transfers(AB_BANKING *ab,
 
   /* populate job list */
   jobList=AB_Job_List2_new();
-  iea=AB_ImExporter_Context_GetFirstAccountInfo(ctx);
+  iea=AB_ImExporterContext_GetFirstAccountInfo(ctx);
   while(iea) {
     AB_ACCOUNT *a;
 
     a=AB_Banking_GetAccountByCodeAndNumber(ab,
-					   AB_ImExporter_AccountInfo_GetBankCode(iea),
-					   AB_ImExporter_AccountInfo_GetAccountNumber(iea));
+					   AB_ImExporterAccountInfo_GetBankCode(iea),
+					   AB_ImExporterAccountInfo_GetAccountNumber(iea));
     if (!a) {
       DBG_ERROR(0, "Account %s/%s not found, aborting",
-		AB_ImExporter_AccountInfo_GetBankCode(iea),
-		AB_ImExporter_AccountInfo_GetAccountNumber(iea));
+		AB_ImExporterAccountInfo_GetBankCode(iea),
+		AB_ImExporterAccountInfo_GetAccountNumber(iea));
       AB_Job_List2_FreeAll(jobList);
-      AB_ImExporter_Context_free(ctx);
+      AB_ImExporterContext_free(ctx);
       return 3;
     }
     else {
       AB_TRANSACTION *t;
 
-      t=AB_ImExporter_AccountInfo_GetFirstTransaction(iea);
+      t=AB_ImExporterAccountInfo_GetFirstTransaction(iea);
       while(t) {
 	const char *rBankId;
 	const char *rAccountId;
@@ -270,7 +270,7 @@ int transfers(AB_BANKING *ab,
 		    "for remote account (%s/%s)",
 		    rBankId, rAccountId);
 	  AB_Job_List2_FreeAll(jobList);
-	  AB_ImExporter_Context_free(ctx);
+	  AB_ImExporterContext_free(ctx);
 	  return 3;
 
 	case AB_BankInfoCheckResult_UnknownBank:
@@ -278,7 +278,7 @@ int transfers(AB_BANKING *ab,
 		    rBankId, rAccountId);
 	  if (forceCheck) {
 	    AB_Job_List2_FreeAll(jobList);
-	    AB_ImExporter_Context_free(ctx);
+	    AB_ImExporterContext_free(ctx);
 	    return 4;
 	  }
           break;
@@ -295,7 +295,7 @@ int transfers(AB_BANKING *ab,
 	default:
 	  DBG_ERROR(0, "Unknown check result %d", res);
 	  AB_Job_List2_FreeAll(jobList);
-	  AB_ImExporter_Context_free(ctx);
+	  AB_ImExporterContext_free(ctx);
 	  return 4;
 	}
 
@@ -309,17 +309,17 @@ int transfers(AB_BANKING *ab,
 	  DBG_ERROR(0, "Job not supported.");
 	  AB_Job_free(j);
 	  AB_Job_List2_FreeAll(jobList);
-	  AB_ImExporter_Context_free(ctx);
+	  AB_ImExporterContext_free(ctx);
 	  return 3;
 	}
 	rv=AB_Job_SetTransaction(j, t);
         if (rv<0) {
           DBG_ERROR(0, "Unable to add transaction for account %s/%s, aborting",
-                    AB_ImExporter_AccountInfo_GetBankCode(iea),
-                    AB_ImExporter_AccountInfo_GetAccountNumber(iea));
+                    AB_ImExporterAccountInfo_GetBankCode(iea),
+                    AB_ImExporterAccountInfo_GetAccountNumber(iea));
           AB_Job_free(j);
           AB_Job_List2_FreeAll(jobList);
-          AB_ImExporter_Context_free(ctx);
+          AB_ImExporterContext_free(ctx);
           return 3;
         }
 	AB_Job_List2_PushBack(jobList, j);
@@ -327,13 +327,13 @@ int transfers(AB_BANKING *ab,
       } /* while t */
     }
 
-    iea=AB_ImExporter_AccountInfo_List_Next(iea);
+    iea=AB_ImExporterAccountInfo_List_Next(iea);
   } /* while */
-  AB_ImExporter_Context_free(ctx);
+  AB_ImExporterContext_free(ctx);
 
   /* execute jobs */
   rvExec=0;
-  ctx=AB_ImExporter_Context_new();
+  ctx=AB_ImExporterContext_new();
   rv=AB_Banking_ExecuteJobs(ab, jobList, ctx);
   if (rv) {
     fprintf(stderr, "Error on executeQueue (%d)\n", rv);
@@ -345,12 +345,12 @@ int transfers(AB_BANKING *ab,
   rv=writeContext(ctxFile, ctx);
   if (rv<0) {
     DBG_ERROR(0, "Error writing context file (%d)", rv);
-    AB_ImExporter_Context_free(ctx);
+    AB_ImExporterContext_free(ctx);
     AB_Banking_OnlineFini(ab);
     AB_Banking_Fini(ab);
     return 4;
   }
-  AB_ImExporter_Context_free(ctx);
+  AB_ImExporterContext_free(ctx);
 
   /* that's it */
   rv=AB_Banking_OnlineFini(ab);

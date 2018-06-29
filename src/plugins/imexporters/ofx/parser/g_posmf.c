@@ -94,7 +94,7 @@ int AIO_OfxGroup_POSMF_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
 
       ioCtx=AIO_OfxXmlCtx_GetIoContext(ctx);
       DBG_INFO(AQBANKING_LOGDOMAIN, "Adding security");
-      AB_ImExporter_Context_AddSecurity(ioCtx, sec);
+      AB_ImExporterContext_AddSecurity(ioCtx, sec);
     }
   }
 
