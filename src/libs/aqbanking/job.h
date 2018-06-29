@@ -291,6 +291,18 @@ const char *AB_Job_GetResultText(const AB_JOB *j);
 
 AQBANKING_API
 const char *AB_Job_GetUsedTan(const AB_JOB *j);
+
+
+/**
+ * This id can be used by applications to group jobs. It is not used by AqBanking.
+ */
+AQBANKING_API
+uint32_t AB_Job_GetSessionId(const AB_JOB *j);
+
+
+AQBANKING_API
+void AB_Job_SetSessionId(AB_JOB *j, uint32_t sessionId);
+
 /*@}*/
 
 

@@ -558,3 +558,14 @@ void AB_Job_SetFieldLimits(AB_JOB *j, AB_TRANSACTION_LIMITS *limits) {
 
 
 
+uint32_t AB_Job_GetSessionId(const AB_JOB *j) {
+  assert(j);
+  return j->sessionId;
+}
+
+
+void AB_Job_SetSessionId(AB_JOB *j, uint32_t sessionId) {
+  assert(j);
+  j->sessionId=sessionId;
+}
+

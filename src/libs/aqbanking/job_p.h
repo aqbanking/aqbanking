@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -37,6 +34,8 @@ struct AB_JOB {
   GWEN_DB_NODE *dbData;
   GWEN_TIME *lastStatusChange;
   char *usedTan;
+
+  uint32_t sessionId;
 
   AB_TRANSACTION *transaction;
   AB_TRANSACTION_LIMITS *limits;
