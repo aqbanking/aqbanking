@@ -1,0 +1,228 @@
+
+
+
+
+<importtest importer="csv" profile="full">
+
+  <testdata>
+    ImxvY2FsQ291bnRyeSI7ImxvY2FsQmFua0NvZGUiOyJsb2NhbEJyYW5jaElkIjsibG9jYWxBY2Nv
+    dW50TnVtYmVyIjsibG9jYWxTdWZmaXgiOyJsb2NhbEliYW4iOyJsb2NhbE5hbWUiOyJsb2NhbEJp
+    YyI7InJlbW90ZUNvdW50cnkiOyJyZW1vdGVCYW5rTmFtZSI7InJlbW90ZUJhbmtMb2NhdGlvbiI7
+    InJlbW90ZUJhbmtDb2RlIjsicmVtb3RlQnJhbmNoSWQiOyJyZW1vdGVBY2NvdW50TnVtYmVyIjsi
+    cmVtb3RlU3VmZml4IjsicmVtb3RlSWJhbiI7InJlbW90ZU5hbWUiOyJyZW1vdGVOYW1lMSI7InJl
+    bW90ZUJpYyI7InVuaXF1ZUlkIjsiaWRGb3JBcHBsaWNhdGlvbiI7Imdyb3VwSWQiOyJ2YWx1dGFE
+    YXRlIjsiZGF0ZSI7InZhbHVlX3ZhbHVlIjsidmFsdWVfY3VycmVuY3kiOyJmZWVzX3ZhbHVlIjsi
+    ZmVlc19jdXJyZW5jeSI7InRleHRLZXkiOyJ0ZXh0S2V5RXh0IjsidHJhbnNhY3Rpb25LZXkiOyJj
+    dXN0b21lclJlZmVyZW5jZSI7ImJhbmtSZWZlcmVuY2UiOyJ0cmFuc2FjdGlvbkNvZGUiOyJ0cmFu
+    c2FjdGlvblRleHQiOyJwcmltYW5vdGEiOyJmaUlkIjsicHVycG9zZSI7InB1cnBvc2UxIjsicHVy
+    cG9zZTIiOyJwdXJwb3NlMyI7InB1cnBvc2U0IjsicHVycG9zZTUiOyJwdXJwb3NlNiI7InB1cnBv
+    c2U3IjsicHVycG9zZTgiOyJwdXJwb3NlOSI7InB1cnBvc2UxMCI7InB1cnBvc2UxMSI7ImNhdGVn
+    b3J5IjsiY2F0ZWdvcnkxIjsiY2F0ZWdvcnkyIjsiY2F0ZWdvcnkzIjsiY2F0ZWdvcnk0IjsiY2F0
+    ZWdvcnk1IjsiY2F0ZWdvcnk2IjsiY2F0ZWdvcnk3IjsicGVyaW9kIjsiY3ljbGUiOyJleGVjdXRp
+    b25EYXkiOyJmaXJzdEV4ZWN1dGlvbkRhdGUiOyJsYXN0RXhlY3V0aW9uRGF0ZSI7Im5leHRFeGVj
+    dXRpb25EYXRlIjsidHlwZSI7InN1YlR5cGUiOyJzdGF0dXMiOyJjaGFyZ2UiOyJyZW1vdGVBZGRy
+    U3RyZWV0IjsicmVtb3RlQWRkclppcGNvZGUiOyJyZW1vdGVBZGRyQ2l0eSI7InJlbW90ZVBob25l
+    IjsidW5pdElkIjsidW5pdElkTmFtZVNwYWNlIjsidW5pdHNfdmFsdWUiOyJ1bml0c19jdXJyZW5j
+    eSI7InVuaXRwcmljZV92YWx1ZSI7InVuaXRwcmljZV9jdXJyZW5jeSI7ImNvbW1pc3Npb25fdmFs
+    dWUiOyJjb21taXNzaW9uX2N1cnJlbmN5IjsiYmFua0FjY291bnRJZCI7Imdyb3VwSWQiOyJjcmVk
+    aXRvclNjaGVtZUlkIjsibWFuZGF0ZUlkIjsibWFuZGF0ZURhdGVfZGF0ZVN0cmluZyI7Im1hbmRh
+    dGVEZWJpdG9yTmFtZSI7InNlcXVlbmNlVHlwZSI7Im9yaWdpbmFsQ3JlZGl0b3JTY2hlbWVJZCI7
+    Im9yaWdpbmFsTWFuZGF0ZUlkIjsib3JpZ2luYWxDcmVkaXRvck5hbWUiOyJlbmRUb0VuZFJlZmVy
+    ZW5jZSIKIiI7IjExMjIzMzQ0IjsiIjsiNTU2Njc3ODg5OSI7IiI7IiI7IkRlbmhvbG0gUmV5bmhv
+    bG0iOyIiOyIiOyIiOyIiOyIiOyIiOyIiOyIiOyJERTExMjIzMzQ0NTU2Njc3ODg5OTAwIjsiSGFl
+    bmRsZXIxIjsiIjsiREVVVERFREVYWFgiOyIwIjsiMTAwIjsiMCI7IjIwMTgvMDEvMDUiOyIyMDE4
+    LzAxLzA0IjsiLTEyMzQvMTAwIjsiIjsiIjsiIjsiMCI7IiI7IjAzNyI7IiI7IiI7IjEwNiI7IktB
+    UlRFTlpBSExVTkciOyI5OTg4IjsiIjsiVHJhbnNhY3Rpb24xIFB1cnBvc2UiOyIiOyIiOyIiOyIi
+    OyIiOyIiOyIiOyIiOyIiOyIiOyIiOyIiOyIiOyIiOyIiOyIiOyIiOyIiOyIiOyJ1bmtub3duIjsi
+    MCI7IjAiOyIiOyIiOyIiOyJzdGF0ZW1lbnQiOyJub25lIjsidW5rbm93biI7InVua25vd24iOyIi
+    OyIiOyIiOyIiOyIiOyIiOyIiOyIiOyIiOyIiOyIiOyIiOyIiOyIwIjsiIjsiIjsiIjsiIjsiIjsi
+    IjsiIjsiIjsiIgoiIjsiOTk4ODc3NjYiOyIiOyIxMTIyMzM0NDU1IjsiIjsiIjsiTWF1cmljZSBN
+    b3NzIjsiIjsiIjsiIjsiIjsiMTEyMjMzNDQiOyIiOyI5ODc2NTQzMjEwIjsiIjsiIjsiSGFlbmRs
+    ZXIyIjsiIjsiIjsiMCI7IjIwMCI7IjAiOyIyMDE4LzAxLzEwIjsiMjAxOC8wMS8xMSI7Ii01Njc4
+    LzEwMCI7IiI7IiI7IiI7IjAiOyIiOyIwMzciOyIiOyIiOyIxMDYiOyJLQVJURU5aQUhMVU5HIjsi
+    Nzc2NiI7IiI7IlRyYW5zYWN0aW9uMiBQdXJwb3NlIjsiIjsiIjsiIjsiIjsiIjsiIjsiIjsiIjsi
+    IjsiIjsiIjsiIjsiIjsiIjsiIjsiIjsiIjsiIjsiIjsidW5rbm93biI7IjAiOyIwIjsiIjsiIjsi
+    Ijsic3RhdGVtZW50Ijsibm9uZSI7InVua25vd24iOyJ1bmtub3duIjsiIjsiIjsiIjsiIjsiIjsi
+    IjsiIjsiIjsiIjsiIjsiIjsiIjsiIjsiMCI7IiI7IiI7IiI7IiI7IiI7IiI7IiI7IiI7IiIK
+  </testdata>
+
+  <testprofile>
+  </testprofile>
+  
+  <expectedresult>
+    accountInfoList {
+      accountInfo {
+        char bankCode="11223344"
+        char accountNumber="5566778899"
+        char subAccountId=""
+        char iban=""
+        char bic=""
+        char owner="Denholm Reynholm"
+        int  accountType="0"
+        int  accountId="0"
+    
+        accountStatusList {
+        } #accountStatusList
+    
+        transactionList {
+          transaction {
+            char type="statement"
+            char subType="none"
+            int  command="-1"
+            char status="unknown"
+            int  uniqueAccountId="0"
+            int  uniqueId="0"
+            int  refUniqueId="0"
+            int  idForApplication="100"
+            int  refIdForApplication="0"
+            int  groupId="0"
+            char fiId=""
+            char localIban=""
+            char localBic=""
+            char localCountry=""
+            char localBankCode="11223344"
+            char localBranchId=""
+            char localAccountNumber="5566778899"
+            char localSuffix=""
+            char localName="Denholm Reynholm"
+            char remoteCountry=""
+            char remoteBankCode=""
+            char remoteBranchId=""
+            char remoteAccountNumber=""
+            char remoteSuffix=""
+            char remoteIban="DE11223344556677889900"
+            char remoteBic="DEUTDEDEXXX"
+            char remoteName="Haendler1"
+            char date="20180104"
+            char valutaDate="20180105"
+            char value="-1234%2F100"
+            char fees="0"
+            int  transactionCode="106"
+            char transactionText="KARTENZAHLUNG"
+            char transactionKey="037"
+            int  textKey="0"
+            char primanota="9988"
+            char purpose="Transaction1 Purpose"
+            char category=""
+            char customerReference=""
+            char bankReference=""
+            char endToEndReference=""
+            char creditorSchemeId=""
+            char mandateId=""
+            char mandateDebitorName=""
+            char originalCreditorSchemeId=""
+            char originalMandateId=""
+            char originalCreditorName=""
+            char sequence="unknown"
+            char charge="unknown"
+            char remoteAddrStreet=""
+            char remoteAddrZipcode=""
+            char remoteAddrCity=""
+            char period="unknown"
+            int  cycle="0"
+            int  executionDay="0"
+            char unitId=""
+            char unitIdNameSpace=""
+            char units="0"
+            char unitPriceValue="0"
+            char commissionValue="0"
+          } #transaction
+        } #transactionList
+    
+        eStatementList {
+        } #eStatementList
+      } #accountInfo
+    
+      accountInfo {
+        char bankCode="99887766"
+        char accountNumber="1122334455"
+        char subAccountId=""
+        char iban=""
+        char bic=""
+        char owner="Maurice Moss"
+        int  accountType="0"
+        int  accountId="0"
+    
+        accountStatusList {
+        } #accountStatusList
+    
+        transactionList {
+          transaction {
+            char type="statement"
+            char subType="none"
+            int  command="-1"
+            char status="unknown"
+            int  uniqueAccountId="0"
+            int  uniqueId="0"
+            int  refUniqueId="0"
+            int  idForApplication="200"
+            int  refIdForApplication="0"
+            int  groupId="0"
+            char fiId=""
+            char localIban=""
+            char localBic=""
+            char localCountry=""
+            char localBankCode="99887766"
+            char localBranchId=""
+            char localAccountNumber="1122334455"
+            char localSuffix=""
+            char localName="Maurice Moss"
+            char remoteCountry=""
+            char remoteBankCode="11223344"
+            char remoteBranchId=""
+            char remoteAccountNumber="9876543210"
+            char remoteSuffix=""
+            char remoteIban=""
+            char remoteBic=""
+            char remoteName="Haendler2"
+            char date="20180111"
+            char valutaDate="20180110"
+            char value="-5678%2F100"
+            char fees="0"
+            int  transactionCode="106"
+            char transactionText="KARTENZAHLUNG"
+            char transactionKey="037"
+            int  textKey="0"
+            char primanota="7766"
+            char purpose="Transaction2 Purpose"
+            char category=""
+            char customerReference=""
+            char bankReference=""
+            char endToEndReference=""
+            char creditorSchemeId=""
+            char mandateId=""
+            char mandateDebitorName=""
+            char originalCreditorSchemeId=""
+            char originalMandateId=""
+            char originalCreditorName=""
+            char sequence="unknown"
+            char charge="unknown"
+            char remoteAddrStreet=""
+            char remoteAddrZipcode=""
+            char remoteAddrCity=""
+            char period="unknown"
+            int  cycle="0"
+            int  executionDay="0"
+            char unitId=""
+            char unitIdNameSpace=""
+            char units="0"
+            char unitPriceValue="0"
+            char commissionValue="0"
+          } #transaction
+        } #transactionList
+    
+        eStatementList {
+        } #eStatementList
+      } #accountInfo
+    } #accountInfoList
+    
+    securityList {
+    } #securityList
+    
+    messageList {
+    } #messageList
+  </expectedresult>
+
+</importtest>
+
+
