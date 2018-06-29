@@ -651,7 +651,7 @@
           <default>AB_Transaction_TypeUnknown</default>
           <preset>AB_Transaction_TypeUnknown</preset>
           <access>public</access>
-          <flags>enum</flags>
+          <flags>enum with_hash</flags>
           <setflags>none</setflags>
           <getflags>none</getflags>
         </member>
@@ -660,7 +660,7 @@
           <default>AB_Transaction_SubTypeNone</default>
           <preset>AB_Transaction_SubTypeNone</preset>
           <access>public</access>
-          <flags>enum</flags>
+          <flags>enum with_hash</flags>
           <setflags>none</setflags>
           <getflags>none</getflags>
         </member>
@@ -669,7 +669,7 @@
           <default>AB_Transaction_CommandUnknown</default>
           <preset>AB_Transaction_CommandUnknown</preset>
           <access>public</access>
-          <flags>none</flags>
+          <flags>with_hash</flags>
           <setflags>none</setflags>
           <getflags>none</getflags>
         </member>
@@ -678,7 +678,7 @@
           <default>AB_Transaction_StatusUnknown</default>
           <preset>AB_Transaction_StatusUnknown</preset>
           <access>public</access>
-          <flags>enum</flags>
+          <flags>enum with_hash</flags>
           <setflags>none</setflags>
           <getflags>none</getflags>
         </member>
@@ -687,6 +687,7 @@
           <default>0</default>
           <preset>0</preset>
           <access>public</access>
+          <flags>with_hash</flags>
           <descr>
             This is a unique id of the local account for banking commands.
           </descr>
@@ -700,6 +701,7 @@
           <default>0</default>
           <preset>0</preset>
           <access>public</access>
+          <flags>with_hash</flags>
           <descr>
             This is a unique id assigned by the application. However, when
             adding a transaction to a job (like JobTransfer) this id is
@@ -712,6 +714,7 @@
           <default>0</default>
           <preset>0</preset>
           <access>public</access>
+          <flags>with_hash</flags>
           <descr>
             This id is only used in splits to refer to the transaction id the split
             belongs to.
@@ -732,6 +735,7 @@
           <default>0</default>
           <preset>0</preset>
           <access>public</access>
+          <flags>with_hash</flags>
           <descr>
             If this transaction is a response to a command send to a bank server then the idForApplication from
             that reference command is stored here.
@@ -742,6 +746,7 @@
           <default>0</default>
           <preset>0</preset>
           <access>public</access>
+          <flags>with_hash</flags>
           <descr>
             This id is assigned by a backend when sending multiple transfer 
             jobs in one backend request (e.g. AqHBCI uses DTAUS files when sending
@@ -981,6 +986,7 @@
           <default>0</default>
           <preset>0</preset>
           <access>public</access>
+          <flags>with_hash</flags>
           <descr>
             A 3 digit numerical transaction code, defined for all kinds of
             different actions. (Geschaeftsvorfallcode)
@@ -989,7 +995,7 @@
         
         <member name="transactionText" type="char_ptr" maxlen="32" >
           <access>public</access>
-          <flags>own</flags>
+          <flags>own with_hash</flags>
           <setflags>const dup</setflags>
           <getflags>const</getflags>
           <descr>
@@ -999,7 +1005,7 @@
 
         <member name="transactionKey" type="char_ptr" maxlen="32" >
           <access>public</access>
-          <flags>own</flags>
+          <flags>own with_hash</flags>
           <setflags>const dup</setflags>
           <getflags>const</getflags>
           <descr>
@@ -1013,6 +1019,7 @@
           <default>0</default>
           <preset>0</preset>
           <access>public</access>
+          <flags>with_hash</flags>
           <descr>
             <p>
               A numerical transaction code, defined for all kinds of
@@ -1133,7 +1140,7 @@
           <member name="mandateDate" type="gwen_date" maxlen="16" >
             <aqdb_type>AQDB_DataType_String</aqdb_type>
             <access>public</access>
-            <flags>own</flags>
+            <flags>own with_hash</flags>
             <setflags>const dup</setflags>
             <getflags>const</getflags>
             <default>NULL</default>
@@ -1145,7 +1152,7 @@
     
           <member name="mandateDebitorName" type="char_ptr" maxlen="32">
             <access>public</access>
-            <flags>own</flags>
+            <flags>own with_hash</flags>
             <setflags>const dup</setflags>
             <getflags>const</getflags>
             <descr>
@@ -1175,7 +1182,7 @@
     
           <member name="originalCreditorName" type="char_ptr" maxlen="32">
             <access>public</access>
-            <flags>own</flags>
+            <flags>own with_hash</flags>
             <setflags>const dup</setflags>
             <getflags>const</getflags>
             <descr>
@@ -1187,7 +1194,7 @@
             <default>AB_Transaction_SequenceUnknown</default>
             <preset>AB_Transaction_SequenceUnknown</preset>
             <access>public</access>
-            <flags>enum</flags>
+            <flags>enum with_hash</flags>
             <setflags>none</setflags>
             <getflags>none</getflags>
           </member>
@@ -1197,7 +1204,7 @@
           <default>AB_Transaction_ChargeUnknown</default>
           <preset>AB_Transaction_ChargeUnknown</preset>
           <access>public</access>
-          <flags>enum</flags>
+          <flags>enum with_hash</flags>
           <setflags>none</setflags>
           <getflags>none</getflags>
         </member>
@@ -1268,7 +1275,7 @@
           <default>AB_Transaction_PeriodUnknown</default>
           <preset>AB_Transaction_PeriodUnknown</preset>
           <access>public</access>
-          <flags>enum</flags>
+          <flags>enum with_hash</flags>
           <setflags>none</setflags>
           <getflags>none</getflags>
         </member>
@@ -1277,6 +1284,7 @@
           <default>0</default>
           <preset>0</preset>
           <access>public</access>
+          <flags>with_hash</flags>
           <descr>
             The standing order is executed every <i>cycle</i> x <i>period</i>.
             So if <i>period</i> is <i>weekly</i> and <i>cycle</i> is <i>2</i> 
@@ -1288,6 +1296,7 @@
           <default>0</default>
           <preset>0</preset>
           <access>public</access>
+          <flags>with_hash</flags>
           <descr>
             The execution day. The meaning of this variable depends on the
             content of <i>period</i>:
@@ -1354,7 +1363,7 @@
 
         <member name="unitId" type="char_ptr" maxlen="128" >
           <access>public</access>
-          <flags>own</flags>
+          <flags>own with_hash</flags>
           <setflags>const dup</setflags>
           <getflags>const</getflags>
           <descr>
@@ -1365,7 +1374,7 @@
   
         <member name="unitIdNameSpace" type="char_ptr" maxlen="128" >
           <access>public</access>
-          <flags>own</flags>
+          <flags>own with_hash</flags>
           <setflags>const dup</setflags>
           <getflags>const</getflags>
           <descr>
@@ -1375,7 +1384,7 @@
   
         <member name="tickerSymbol" type="char_ptr" maxlen="128" >
           <access>public</access>
-          <flags>own</flags>
+          <flags>own with_hash</flags>
           <setflags>const dup</setflags>
           <getflags>const</getflags>
           <descr>
@@ -1428,42 +1437,9 @@
       </group>
 
 
-      <group title="Additional Data for Account Specs">
-
-        <descr>
-          <p>
-            These properties are used with account specs, so they contain information
-            about a bank account.
-          </p>
-        </descr>
-
-        <member name="accountCurrency" type="char_ptr" maxlen="256">
-          <default>NULL</default>
-          <preset>NULL</preset>
-          <access>public</access>
-          <flags>own</flags>
-          <setflags>const dup</setflags>
-          <getflags>const</getflags>
-          <descr>
-            Currency used by the account.
-          </descr>
-        </member>
-
-
-        <member name="accountType" type="int" maxlen="4" >
-          <default>0</default>
-          <preset>0</preset>
-          <access>public</access>
-        </member>
-
-      </group>
-
-
-
-
       <member name="memo" type="char_ptr" maxlen="1024" >
         <access>public</access>
-        <flags>own</flags>
+        <flags>own with_hash</flags>
         <setflags>const dup</setflags>
         <getflags>const</getflags>
         <descr>

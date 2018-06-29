@@ -17,6 +17,7 @@
         with_list1
         with_list2
         with_refcount
+        with_hash
       </flags>
       
       <headers>
@@ -85,7 +86,7 @@
           Full name of the security.
         </descr>
         <access>public</access>
-        <flags>own</flags>
+        <flags>own with_hash</flags>
         <setflags>const dup</setflags>
         <getflags>const</getflags>
       </member>
@@ -95,7 +96,7 @@
           Unique id of the security within the namespace.
         </descr>
         <access>public</access>
-        <flags>own</flags>
+        <flags>own with_hash</flags>
         <setflags>const dup</setflags>
         <getflags>const</getflags>
       </member>
@@ -105,7 +106,7 @@
           Namespace for uniqueId (e.g. CUSIP for North America)
         </descr>
         <access>public</access>
-        <flags>own</flags>
+        <flags>own with_hash</flags>
         <setflags>const dup</setflags>
         <getflags>const</getflags>
       </member>
@@ -115,7 +116,7 @@
           Ticker symbol of the security.
       </descr>
         <access>public</access>
-        <flags>own</flags>
+        <flags>own with_hash</flags>
         <setflags>const dup</setflags>
         <getflags>const</getflags>
       </member>
@@ -125,7 +126,7 @@
           Number of units held (e.g. number of stock units etc)
         </descr>
         <access>public</access>
-        <flags>own</flags>
+        <flags>own with_hash</flags>
         <setflags>const dup</setflags>
         <getflags>const</getflags>
         <default>NULL</default>
@@ -137,7 +138,7 @@
           Price of a unit as of unitPriceDate.
         </descr>
         <access>public</access>
-        <flags>own</flags>
+        <flags>own with_hash</flags>
         <setflags>const dup</setflags>
         <getflags>const</getflags>
         <default>NULL</default>
@@ -150,7 +151,7 @@
         </descr>
         <aqdb_type>AQDB_DataType_String</aqdb_type>
         <access>public</access>
-        <flags>own</flags>
+        <flags>own with_hash</flags>
         <setflags>const dup</setflags>
         <getflags>const</getflags>
         <default>NULL</default>
