@@ -254,6 +254,8 @@
 
                s=AB_Account_GetSubAccountId(a);
                $(struct_prefix)_SetSubAccountId(st, s);
+
+               $(struct_prefix)_SetAccountId(st, AB_Account_GetUniqueId(a));
              
                s=AB_Account_GetAccountName(a);
                $(struct_prefix)_SetAccountName(st, s);
