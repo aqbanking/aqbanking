@@ -292,7 +292,7 @@ int sepaMultiJobs(AB_BANKING *ab,
       }
     }
 
-    t=AB_ImExporterAccountInfo_GetFirstTransaction(iea);
+    t=AB_ImExporterAccountInfo_GetFirstTransaction(iea, 0, 0);
     while(t) {
       AB_JOB *j;
       const char *rIBAN;

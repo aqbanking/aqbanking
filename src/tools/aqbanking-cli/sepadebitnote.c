@@ -301,7 +301,7 @@ int sepaDebitNote(AB_BANKING *ab,
     AB_Banking_Fini(ab);
     return 2;
   }
-  AB_Transaction_SetType(t, AB_Transaction_TypeSepaDebitNote);
+  AB_Transaction_SetType(t, AB_Transaction_TypeDebitNote);
 
   rIBAN=AB_Transaction_GetRemoteIban(t);
   lIBAN=AB_Transaction_GetLocalIban(t);

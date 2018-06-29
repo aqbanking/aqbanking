@@ -250,7 +250,7 @@ int debitNotes(AB_BANKING *ab,
     else {
       AB_TRANSACTION *t;
 
-      t=AB_ImExporterAccountInfo_GetFirstTransaction(iea);
+      t=AB_ImExporterAccountInfo_GetFirstTransaction(iea, 0, 0);
       while(t) {
 	const char *rBankId;
 	const char *rAccountId;

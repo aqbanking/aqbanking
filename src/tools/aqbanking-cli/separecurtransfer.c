@@ -384,7 +384,7 @@ int sepaRecurTransfer(AB_BANKING *ab,
     AB_Banking_Fini(ab);
     return 2;
   }
-  AB_Transaction_SetType(t, AB_Transaction_TypeSepaTransfer);
+  AB_Transaction_SetType(t, AB_Transaction_TypeTransfer);
   AB_Transaction_SetSubType(t, AB_Transaction_SubTypeStandingOrder);
 
   /* determine the type of job and create it */

@@ -147,7 +147,7 @@ int AB_Banking_FillGapsInImExporterContext(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT
       AB_ImExporterAccountInfo_FillFromAccount(iea, a);
 
       /* fill transactions */
-      t=AB_ImExporterAccountInfo_GetFirstTransaction(iea);
+      t=AB_ImExporterAccountInfo_GetFirstTransaction(iea, 0, 0);
       while(t) {
 	AB_Transaction_FillLocalFromAccount(t, a);
 	if (AB_Transaction_GetUniqueAccountId(t)==0)

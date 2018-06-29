@@ -129,7 +129,7 @@ int main(int argc, char **argv) {
       while(ai) {
         const AB_TRANSACTION *t;
 
-        t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
+        t=AB_ImExporterAccountInfo_GetFirstTransaction(ai, 0, 0);
         while(t) {
           const AB_VALUE *v;
 

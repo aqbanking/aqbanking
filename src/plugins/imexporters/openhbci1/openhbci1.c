@@ -323,7 +323,7 @@ int AH_ImExporterOpenHBCI1_Export(AB_IMEXPORTER *ie,
   while(ai) {
     const AB_TRANSACTION *t;
 
-    t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
+    t=AB_ImExporterAccountInfo_GetFirstTransaction(ai, 0, 0);
     while(t) {
       GWEN_DB_NODE *dbTransaction;
       const GWEN_DATE *da;

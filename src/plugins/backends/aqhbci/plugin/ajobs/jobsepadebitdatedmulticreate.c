@@ -50,7 +50,7 @@ AH_JOB *AH_Job_SepaDebitDatedMultiCreate_new(AB_USER *u, AB_ACCOUNT *account) {
   const char *s;
 
   j=AH_Job_TransferBase_new("JobSepaDebitDatedMultiCreate",
-                            AB_Transaction_TypeSepaDebitNote,
+                            AB_Transaction_TypeDebitNote,
                             AB_Transaction_SubTypeStandard,
                             u, account);
   if (!j)

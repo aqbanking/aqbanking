@@ -200,6 +200,25 @@
 
         <inline loc="end" access="public">
           <content>
+             $(api) int $(struct_prefix)_GetAccountInfoCount(const $(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             int $(struct_prefix)_GetAccountInfoCount(const $(struct_type) *st) {
+               assert(st);
+               if (st->accountInfoList)
+                 return AB_ImExporterAccountInfo_List_GetCount(st->accountInfoList);
+               return 0;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
              $(api) AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_GetOrAddAccountInfo($(struct_type) *st,
                                                                                     uint32_t uniqueId,
                                                                                     const char *iban,

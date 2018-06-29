@@ -41,7 +41,7 @@ AH_JOB *AH_Job_SepaDebitDatedSingleCreate_new(AB_USER *u, AB_ACCOUNT *account) {
   GWEN_DB_NODE *dbArgs;
 
   j=AH_Job_TransferBase_new("JobSepaDebitDatedSingleCreate",
-                            AB_Transaction_TypeSepaDebitNote,
+                            AB_Transaction_TypeDebitNote,
                             AB_Transaction_SubTypeStandard,
                             u, account);
   if (!j)

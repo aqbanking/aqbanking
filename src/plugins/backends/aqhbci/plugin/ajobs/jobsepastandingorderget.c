@@ -134,7 +134,7 @@ int AH_Job_SepaStandingOrdersGet__ReadSto(AH_JOB *j,
   if (ai) {
     AB_TRANSACTION *t;
 
-    while( (t=AB_ImExporterAccountInfo_GetFirstTransaction(ai)) ) {
+    while( (t=AB_ImExporterAccountInfo_GetFirstTransaction(ai, 0, 0)) ) {
       AB_Transaction_List_Del(t);
       AB_Transaction_SetFiId(t, fiId);
       AB_Transaction_SetUniqueAccountId(t, AB_Account_GetUniqueId(a));

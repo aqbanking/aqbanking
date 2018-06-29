@@ -403,7 +403,7 @@ int AH_Job_TransferBase_ExchangeArgs_SepaDatedDebit(AH_JOB *j, AB_JOB *bj, AB_IM
 
   tCopy=AB_Transaction_dup(t);
 
-  /* set group id so the application can now which transfers went together in one setting */
+  /* set group id so the application can know which transfers went together in one setting */
   AB_Transaction_SetGroupId(tCopy, AH_Job_GetId(j));
 
   /* store validated transaction in job */

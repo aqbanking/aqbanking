@@ -350,7 +350,7 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
 
   t=AB_Transaction_new();
 
-  AB_Transaction_SetType(t, AB_Transaction_TypeSepaTransfer);
+  AB_Transaction_SetType(t, AB_Transaction_TypeTransfer);
 
   AB_Banking_FillGapsInTransaction(ab, a, t);
 
@@ -567,13 +567,13 @@ AB_TRANSACTION *mkSepaDebitNote(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
   AB_TRANSACTION *t;
   const char *s;
 
-  t=mkSepaTransfer(a, db, AB_Job_TypeSepaDebitNote);
+  t=mkSepaTransfer(a, db, AB_Job_TypeDebitNote);
   if (t==NULL) {
     DBG_INFO(0, "here");
     return NULL;
   }
 
-  AB_Transaction_SetType(t, AB_Transaction_TypeSepaDebitNote);
+  AB_Transaction_SetType(t, AB_Transaction_TypeDebitNote);
   
   /* read some additional fields */
   s=GWEN_DB_GetCharValue(db, "creditorSchemeId", 0, 0);

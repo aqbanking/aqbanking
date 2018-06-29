@@ -72,16 +72,16 @@
 
         <inline loc="end" access="public">
           <content>
-             $(api) AB_TRANSACTION *$(struct_prefix)_GetFirstTransaction(const $(struct_type) *t);
+             $(api) AB_TRANSACTION *$(struct_prefix)_GetFirstTransaction(const $(struct_type) *t, int ty, int cmd);
           </content>
         </inline>
 
         <inline loc="code">
           <content>
-             AB_TRANSACTION *$(struct_prefix)_GetFirstTransaction(const $(struct_type) *st) {
+             AB_TRANSACTION *$(struct_prefix)_GetFirstTransaction(const $(struct_type) *st, int ty, int cmd) {
                assert(st);
                if (st->transactionList)
-                 return AB_Transaction_List_First(st->transactionList);
+                 return AB_Transaction_List_FindFirstByType(st->transactionList, ty, cmd);
                return NULL;
              }
           </content>
@@ -102,6 +102,25 @@
                if (NULL==st->transactionList)
                  st->transactionList=AB_Transaction_List_new();
                AB_Transaction_List_Add(t, st->transactionList);
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) int $(struct_prefix)_GetTransactionCount(const $(struct_type) *t, int ty, int cmd);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             int $(struct_prefix)_GetTransactionCount(const $(struct_type) *st, int ty, int cmd) {
+               assert(st);
+               if (st->transactionList)
+                 return AB_Transaction_List_CountByType(st->transactionList, ty, cmd);
+               return 0;
              }
           </content>
         </inline>

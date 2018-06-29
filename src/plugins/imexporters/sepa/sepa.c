@@ -143,7 +143,7 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
     return GWEN_ERROR_NOT_SUPPORTED;
   }
 
-  t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
+  t=AB_ImExporterAccountInfo_GetFirstTransaction(ai, 0, 0);
   if (!t) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "No transactions in ImExporter context");
     return GWEN_ERROR_NO_DATA;

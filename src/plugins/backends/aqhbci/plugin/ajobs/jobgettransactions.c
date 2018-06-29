@@ -438,7 +438,7 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
     AB_TRANSACTION *ttmp;
 
     DBG_INFO(AQHBCI_LOGDOMAIN, "*** Dumping transactions *******************");
-    ttmp=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
+    ttmp=AB_ImExporterAccountInfo_GetFirstTransaction(ai, 0, 0);
     while (ttmp) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "*** --------------------------------------");
       gn=GWEN_DB_Group_new("transaction");

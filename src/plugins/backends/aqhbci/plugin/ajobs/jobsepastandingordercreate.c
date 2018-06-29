@@ -41,7 +41,7 @@ AH_JOB *AH_Job_SepaStandingOrderCreate_new(AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
 
   j=AH_Job_TransferBase_new("JobSepaStandingOrderCreate",
-                            AB_Transaction_TypeSepaTransfer,
+                            AB_Transaction_TypeTransfer,
                             AB_Transaction_SubTypeStandingOrder,
                             u, account);
   if (!j)

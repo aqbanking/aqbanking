@@ -200,6 +200,42 @@
         </inline>
 
 
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list</typeFlagsMask>
+          <typeFlagsValue>with_list</typeFlagsValue>
+          <content>
+             $(api) int $(struct_prefix)_List_CountByType(const $(struct_type)_LIST *tl, int ty, int cmd);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask>with_list</typeFlagsMask>
+          <typeFlagsValue>with_list</typeFlagsValue>
+          <content>
+             int $(struct_prefix)_List_CountByType(const $(struct_type)_LIST *tl, int ty, int cmd) {
+               int count=0;
+               
+               if (tl) {
+                 $(struct_type) *t;
+  
+                 t=$(struct_prefix)_List_First(tl);
+                 while(t) {
+                   if (
+                       ((ty  &lt;=AB_Transaction_TypeNone)    || ($(struct_prefix)_GetType(t)==ty)) &amp;&amp;
+                       ((cmd &lt;=AB_Transaction_CommandNone) || ($(struct_prefix)_GetCommand(t)==cmd))
+                      )
+                     count++;
+                   t=$(struct_prefix)_List_Next(t);
+                 }
+               }
+               return count;
+             }
+          </content>
+        </inline>
+
+
+
         <inline loc="end" access="public">
           <typeFlagsMask>with_list</typeFlagsMask>
           <typeFlagsValue>with_list</typeFlagsValue>
@@ -522,11 +558,6 @@
         <item name="standingOrder"/>
         <item name="internalTransfer"/>
 
-        <item name="sepaTransfer"/>                 <!-- TODO: remove these -->
-        <item name="sepaDebitNote"/>
-        <item name="sepaStandingOrder"/>
-        <item name="sepaInternalTransfer"/>
-        
         <!-- double entry bookkeeping -->
         <item name="transaction"         value="2048"/>
         <item name="split"/>

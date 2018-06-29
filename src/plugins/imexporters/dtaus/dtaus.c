@@ -256,7 +256,7 @@ int AH_ImExporterDTAUS_Export(AB_IMEXPORTER *ie,
     localAccountNumber=aiAccNum;
 
     /* get values for dbCfg from transactions, check for deviations */
-    t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
+    t=AB_ImExporterAccountInfo_GetFirstTransaction(ai, 0, 0);
     while(t) {
       const char *tlocalBankCode;
       const char *tlocalAccountNumber;
@@ -329,7 +329,7 @@ int AH_ImExporterDTAUS_Export(AB_IMEXPORTER *ie,
 
     /* export transactions to DB */
     dbTransfers=GWEN_DB_Group_new("transfers");
-    t=AB_ImExporterAccountInfo_GetFirstTransaction(ai);
+    t=AB_ImExporterAccountInfo_GetFirstTransaction(ai, 0, 0);
     while(t) {
       GWEN_DB_NODE *dbTransfer;
 

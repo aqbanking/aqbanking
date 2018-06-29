@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Wed Jan 15 2014
- copyright   : (C) 2014 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -25,7 +25,7 @@ AH_JOB *AH_Job_SepaStandingOrderDelete_new(AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
 
   j=AH_Job_TransferBase_new("JobSepaStandingOrderDelete",
-                            AB_Transaction_TypeSepaTransfer,
+                            AB_Transaction_TypeTransfer,
                             AB_Transaction_SubTypeStandingOrder,
                             u, account);
   if (!j)
