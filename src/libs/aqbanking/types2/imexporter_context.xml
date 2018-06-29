@@ -411,6 +411,7 @@
                    /* create account info */
                    ai=AB_ImExporterAccountInfo_new();
                    AB_ImExporterAccountInfo_FillFromTransaction(ai, t);
+                   AB_ImExporterAccountInfo_List_Add(ai, st->accountInfoList);
                  }
 
                  /* set transaction type if none set */
