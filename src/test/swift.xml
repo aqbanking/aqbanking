@@ -1,0 +1,110 @@
+
+<importtest importer="swift" profile="SWIFT-MT940">
+
+  <testdata>
+    DQo6MjA6U1RBUlRVTVNFDQo6MjU6MTEyMjMzNDQvNTU2Njc3ODg5OQ0KOjI4QzowMDAwMC8wMDEN
+    Cjo2MEY6QzE4MDYxOUVVUjEsMjMNCjo2MToxODAxMDIwMTAzRFIzMyw0NE4wMzdOT05SRUYNCjo4
+    NjoxMDY/MDBLQVJURU5aQUhMVU5HPzEwOTI0OD8yMFNWV1orMjAxOC0wMS0wMlQwMy40NS4wMCBL
+    YT8yMXJ0DQplMSAyMDExLTAxPzIyQUJXQStIQUVORExFUjEgLSBXQVJFMTEvL0VsPzIzbXNob3Ju
+    L0RFPzMwREVVVERFREVYWA0KWD8zMURFMTkxMjM0MTIzNDEyMzQxMjM0MTI/MzJIQUVORExFUjEg
+    V0FSRTExPzM0MDExDQo6NjE6MTgwMTAzMDEwNERSNDQsNTVOMDM3Tk9OUkVGDQo6ODY6MTA2PzAw
+    S0FSVEVOWkFITFVORz8xMDkyNDg/MjBTVldaKzIwMTgtMDEtMDNUMDQuNTYuMDAgS2E/MjFydA0K
+    ZTIgMjAxMi0wMT8yMkFCV0ErSEFFTkRMRVIyIC0gV0FSRTIyLy9FbD8yM21zaG9ybi9ERT8zMERF
+    VVRERURFWFgNClg/MzFERTE5MTIzNDEyMzQxMjM0MTIzNDEyPzMySEFFTkRMRVIyIFdBUkUyMj8z
+    NDAxMQ0KOjYyRjpDMTgwMTAyRVVSMiwzNA0KLQ0K
+  </testdata>
+  
+  <testprofile>
+  </testprofile>
+  
+  <expectedresult>
+    accountInfoList {
+      accountInfo {
+        char bankCode="11223344"
+        char accountNumber="5566778899"
+        int  accountType="0"
+        int  accountId="0"
+    
+        transactionList {
+          transaction {
+            char type="statement"
+            char subType="none"
+            int  command="-1"
+            char status="unknown"
+            int  uniqueAccountId="0"
+            int  uniqueId="0"
+            int  refUniqueId="0"
+            int  idForApplication="0"
+            int  refIdForApplication="0"
+            int  groupId="0"
+            char localBankCode="11223344"
+            char localAccountNumber="5566778899"
+            char remoteBankCode="DEUTDEDEXXX"
+            char remoteAccountNumber="DE19123412341234123412"
+            char remoteName="HAENDLER1 - WARE11%2F%2FElmshorn%2FDE"
+            char date="20180103"
+            char valutaDate="20180102"
+            char value="-3344%2F100"
+            char fees="0"
+            int  transactionCode="106"
+            char transactionText="KARTENZAHLUNG"
+            char transactionKey="037"
+            int  textKey="0"
+            char primanota="9248"
+            char purpose="2018-01-02T03.45.00 Karte1 2011-01"
+            char sequence="unknown"
+            char charge="unknown"
+            char period="unknown"
+            int  cycle="0"
+            int  executionDay="0"
+            char units="0"
+            char unitPriceValue="0"
+            char commissionValue="0"
+            int  accountType="0"
+          } #transaction
+    
+          transaction {
+            char type="statement"
+            char subType="none"
+            int  command="-1"
+            char status="unknown"
+            int  uniqueAccountId="0"
+            int  uniqueId="0"
+            int  refUniqueId="0"
+            int  idForApplication="0"
+            int  refIdForApplication="0"
+            int  groupId="0"
+            char localBankCode="11223344"
+            char localAccountNumber="5566778899"
+            char remoteBankCode="DEUTDEDEXXX"
+            char remoteAccountNumber="DE19123412341234123412"
+            char remoteName="HAENDLER2 - WARE22%2F%2FElmshorn%2FDE"
+            char date="20180104"
+            char valutaDate="20180103"
+            char value="-4455%2F100"
+            char fees="0"
+            int  transactionCode="106"
+            char transactionText="KARTENZAHLUNG"
+            char transactionKey="037"
+            int  textKey="0"
+            char primanota="9248"
+            char purpose="2018-01-03T04.56.00 Karte2 2012-01"
+            char sequence="unknown"
+            char charge="unknown"
+            char period="unknown"
+            int  cycle="0"
+            int  executionDay="0"
+            char units="0"
+            char unitPriceValue="0"
+            char commissionValue="0"
+            int  accountType="0"
+          } #transaction
+        } #transactionList
+      } #accountInfo
+    } #accountInfoList
+
+  </expectedresult>
+
+</importtest>
+
+
