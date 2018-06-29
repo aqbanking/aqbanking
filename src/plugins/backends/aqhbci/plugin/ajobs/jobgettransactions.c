@@ -211,8 +211,8 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
 	const char *s;
 
         AB_Transaction_SetLocalBankCode(t, AB_User_GetBankCode(u));
-        AB_Transaction_SetLocalAccountNumber(t,
-                                             AB_Account_GetAccountNumber(a));
+        AB_Transaction_SetLocalAccountNumber(t, AB_Account_GetAccountNumber(a));
+        AB_Transaction_SetUniqueAccountId(t, AB_Account_GetUniqueId(a));
 
 	/* some translations */
 	s=AB_Transaction_GetRemoteIban(t);
