@@ -78,16 +78,16 @@ libabbesupport_la_SOURCES=$(typedata_sources) \
 built_sources: $(typedata_sources)
 
 .xml.c:
-	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(builddir) --destfolder="$(builddir)" -D AQBANKING_API  $<
+	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types2 -I $(builddir) --destfolder="$(builddir)" -D AQBANKING_API  $<
 
 .xml.h:
-	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(builddir) --destfolder="$(builddir)" -D AQBANKING_API  $<
+	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types2 -I $(builddir) --destfolder="$(builddir)" -D AQBANKING_API  $<
 
 SUFFIXES = .xml .c
 
 
 types: $(typefiles)
-	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" -D AQBANKING_API $(typefiles)
+	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types2 --destfolder="$(srcdir)" -D AQBANKING_API $(typefiles)
 
 
 sources: $(typedata_sources)

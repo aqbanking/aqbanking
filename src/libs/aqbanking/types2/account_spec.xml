@@ -1,0 +1,397 @@
+<?xml?>
+
+<tm2>
+  <type id="AB_ACCOUNT_SPEC" type="pointer">
+    <descr>
+      This type contains all important information about accounts.
+      All text fields are in UTF-8.
+    </descr>
+
+    <lang id="c">
+      <identifier>AB_ACCOUNT_SPEC</identifier>
+      <prefix>AB_AccountSpec</prefix>
+      
+      <baseFileName>account_spec</baseFileName>
+      
+      <flags>
+        with_xml
+        with_db
+        with_list1
+        with_list2
+        with_refcount
+      </flags>
+      
+      <headers>
+        <header type="sys" loc="pre">aqbanking/error.h</header>
+        <header type="sys" loc="post">aqbanking/account_type.h</header>
+
+        <header type="sys" loc="pre">gwenhywfar/gwendate.h</header>
+
+        <header type="sys" loc="pre">gwenhywfar/mdigest.h</header>
+        <header type="sys" loc="pre">gwenhywfar/text.h</header>
+        <header type="sys" loc="pre">gwenhywfar/buffer.h</header>
+
+        <header type="sys" loc="post">aqbanking/transaction.h</header>
+        <header type="sys" loc="post">aqbanking/transactionlimits.h</header>
+
+      </headers>
+
+
+      <inlines>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             /** \n
+              * Find an account info object in a list of account info objects.                   \n
+              * @param al list of account info objects among to search                           \n
+              * @param backendName name of the banking backend (wildcards and jokers allowed)    \n
+              * @param country ISO code of the country (wildcards and jokers allowed)            \n
+              * @param bankId bank code to search for (wildcards and jokers allowed)             \n
+              * @param accountNumber account number to search for (wildcards and jokers allowed) \n
+              * @param subAccountId sub account number (wildcards and jokers allowed)            \n
+              * @param iban IBAN to search for (wildcards and jokers allowed)                    \n
+              * @param currency currecny the account uses (wildcards and jokers allowed)         \n
+              * @param ty account type (use AB_AccountType_Unknown as wildcard)          \n
+              */                                                                                 \n
+             $(api) $(struct_type) *$(struct_prefix)_List_Find($(struct_type)_LIST *al,
+                                                               const char *backendName,
+                                                               const char *country,
+                                                               const char *bankId,
+                                                               const char *accountNumber,
+                                                               const char *subAccountId,
+                                                               const char *iban,
+                                                               const char *currency,
+                                                               int ty);
+          </content>
+        </inline>
+
+
+
+        <inline loc="code">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             $(struct_type) *$(struct_prefix)_List_Find($(struct_type)_LIST *al,
+                                                        const char *backendName,
+                                                        const char *country,
+                                                        const char *bankId,
+                                                        const char *accountNumber,
+                                                        const char *subAccountId,
+                                                        const char *iban,
+                                                        const char *currency,
+                                                        int ty) {
+               $(struct_type) *a;
+             
+               if ($(struct_prefix)_List_GetCount(al)==0) {
+                 DBG_INFO(AQBANKING_LOGDOMAIN, "No accounts");
+                 return NULL;
+               }
+               a=$(struct_prefix)_List_First(al);
+               assert(a);
+             
+               if (!backendName) backendName="*";
+               if (!country) country="*";
+               if (!bankId) bankId="*";
+               if (!accountNumber) accountNumber="*";
+               if (!subAccountId) subAccountId="*";
+               if (!iban) iban="*";
+               if (!currency) currency="*";
+               if (ty>=AB_AccountType_Last) ty=AB_AccountType_Unknown;
+             
+               while(a) {
+                 const char *lbackendName;
+             
+                 lbackendName=$(struct_prefix)_GetBackendName(a);
+                 if (! (lbackendName && *lbackendName) ) {
+                   DBG_ERROR(AQBANKING_LOGDOMAIN,
+                             "Account: %s/%s/%s: No backend, ignoring",
+                             $(struct_prefix)_GetCountry(a),
+                             $(struct_prefix)_GetBankCode(a),
+                             $(struct_prefix)_GetAccountNumber(a));
+                 }
+                 else {
+                   const char *lcountry;
+                   const char *lbankId;
+                   const char *laccountNumber;
+                   const char *lsubAccountId;
+                   const char *liban;
+                   const char *lcurrency;
+                   int lty;
+             
+                   lcountry=$(struct_prefix)_GetCountry(a);
+                   lbankId=$(struct_prefix)_GetBankCode(a);
+                   laccountNumber=$(struct_prefix)_GetAccountNumber(a);
+                   lsubAccountId=$(struct_prefix)_GetSubAccountNumber(a);
+                   liban=$(struct_prefix)_GetIban(a);
+                   lcurrency=$(struct_prefix)_GetCurrency(a);
+                   lty=$(struct_prefix)_GetType(a);
+               
+                   if (!lcountry) lcountry="";
+                   if (!lbankId) lbankId="";
+                   if (!laccountNumber) laccountNumber="";
+                   if (!lsubAccountId) lsubAccountId="";
+                   if (!liban) liban="";
+                   if (!lcurrency) lcurrency="";
+                   if (lty>=AB_AccountType_Last || lty &lt;=AB_AccountType_Unknown) lty=AB_AccountType_Unknown;
+               
+                   if ((-1!=GWEN_Text_ComparePattern(lbackendName, backendName, 0)) &amp;&amp;
+                       (-1!=GWEN_Text_ComparePattern(lcountry, country, 0)) &amp;&amp;
+                       (-1!=GWEN_Text_ComparePattern(lbankId, bankId, 0)) &amp;&amp;
+                       (-1!=GWEN_Text_ComparePattern(laccountNumber, accountNumber, 0)) &amp;&amp;
+                       (-1!=GWEN_Text_ComparePattern(lsubAccountId, subAccountId, 0)) &amp;&amp;
+                       (-1!=GWEN_Text_ComparePattern(liban, iban, 0)) &amp;&amp;
+                       (-1!=GWEN_Text_ComparePattern(lcurrency, currency, 0)) &amp;&amp;
+                       ((ty==AB_AccountType_Unknown) || (ty==lty)))
+                     break;
+                 }
+                 a=$(struct_prefix)_List_Next(a);
+               } /* while */
+             
+               return a;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) AB_TRANSACTION_LIMITS *$(struct_prefix)_GetTransactionLimitsForCommand(const $(struct_type) *st, int cmd);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             AB_TRANSACTION_LIMITS *$(struct_prefix)_GetTransactionLimitsForCommand(const $(struct_type) *st, int cmd) {
+               assert(st);
+               if (st->transactionLimitsList)
+                 return AB_TransactionLimits_List_GetByCommand(st->transactionLimitsList, cmd);
+               return NULL;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) void $(struct_prefix)_AddTransactionLimits($(struct_type) *st, AB_TRANSACTION_LIMITS *l);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             void $(struct_prefix)_AddTransactionLimits($(struct_type) *st, AB_TRANSACTION_LIMITS *l) {
+               assert(st);
+               assert(l);
+               if (NULL==st->transactionLimitsList)
+                 st->transactionLimitsList=AB_TransactionLimits_List_new();
+               AB_TransactionLimits_List_Add(l, st->transactionLimitsList);
+             }
+          </content>
+        </inline>
+
+
+
+      </inlines>
+
+
+    </lang>
+
+    <enums>
+
+    </enums>
+
+    <defines>
+
+    </defines>
+
+
+    <members>
+
+      <group title="Type" >
+
+        <member name="type" type="int" maxlen="4" >
+          <default>AB_AccountType_Unknown</default>
+          <preset>AB_AccountType_Unknown</preset>
+          <access>public</access>
+        </member>
+  
+      </group>
+
+
+      <group title="Identifiers" >
+        <member name="uniqueId" type="uint32_t" maxlen="4">
+          <descr>
+            This is a unique id assigned by AqBanking.
+          </descr>
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+    
+      </group>
+
+      <group title="Common Information" >
+
+        <member name="backendName" type="char_ptr" maxlen="32" >
+          <descr>
+            Name of the banking backend this account belongs to.
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="ownerName" type="char_ptr" maxlen="64" >
+          <descr>
+            Name of the account owner as it is stored with the bank.
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="accountName" type="char_ptr" maxlen="64" >
+          <descr>
+            Name of the account.
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="currency" type="char_ptr" maxlen="8" >
+          <descr>
+            Currency used with this account.
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="memo" type="char_ptr" maxlen="128" >
+          <descr>
+            Optional additional info.
+          </descr>
+          <access>public</access>
+          <flags>own</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+
+      </group>
+
+
+
+      <group title="SEPA Account Specification">
+        <member name="iban" type="char_ptr" maxlen="32" >
+          <descr>
+            Internation bank account number as specified by the SEPA specs.
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="bic" type="char_ptr" maxlen="16" >
+          <descr>
+            SWIFT code of the bank at which this account is registered.
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+      </group>
+
+
+      <group title="Non-SEPA Account Specification">
+        <member name="country" type="char_ptr" maxlen="16" >
+          <descr>
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="bankCode" type="char_ptr" maxlen="64" >
+          <descr>
+            National bank code (e.g. BLZ in Germany, routing number in other countries).
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="branchId" type="char_ptr" maxlen="64">
+          <descr>
+           This is the branch id of the local bank (OFX only)
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="accountNumber" type="char_ptr" maxlen="64" >
+          <descr>
+            Account number in national account specification.
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="subAccountNumber" type="char_ptr" maxlen="64" >
+          <descr>
+            If your account has subaccounts which are distinguished by
+            different suffixes, then this is that suffix. Otherwise it's
+            empty. (HBCI only)
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+      </group>
+
+
+
+      <group title="Transaction Limits">
+      
+        <member name="transactionLimitsList" type="AB_TRANSACTION_LIMITS_LIST">
+          <descr>
+            This list contains one ABS_TRANSACTION_HINTS object per command allowed with this account.
+            Not every backend supports transaction hints, so this list might be entirely empty or missing some
+            entries.
+          </descr>
+          <default>NULL</default>
+          <preset>AB_TransactionLimits_List_new()</preset>
+          <access>public</access>
+          <flags>own</flags>
+          <setflags>nodup</setflags>
+          <getflags>none</getflags>
+        </member>
+
+      </group>
+
+
+    </members>
+
+    
+  </type>
+  
+</tm2>
+

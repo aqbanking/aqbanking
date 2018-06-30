@@ -191,6 +191,7 @@
           <default>0</default>
           <preset>0</preset>
           <access>public</access>
+          <flags>with_getbymember</flags>
           <descr>
             Command to which these hints apply (see @ref AB_Transaction_CommandGetBalance and others).
           </descr>

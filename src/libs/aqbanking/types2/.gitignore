@@ -75,3 +75,10 @@ imexporter_context.c
 imexporter_context.h
 imexporter_context_p.h
 
+ab_account_spec.tm2
+ab_account_spec_list.tm2
+ab_account_spec_list2.tm2
+account_spec.c
+account_spec.h
+account_spec_p.h
+

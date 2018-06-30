@@ -17,6 +17,7 @@
       
       <headers>
         <header type="sys" loc="pre">aqbanking/job.h</header>
+        <header type="sys" loc="pre">aqbanking/transaction.h</header>
       </headers>
       
     </lang>
@@ -37,6 +38,15 @@
         <preset>AB_Job_TypeUnknown</preset>
         <access>public</access>
         <flags>volatile</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+      <member name="transactionList" type="AB_TRANSACTION_LIST2">
+        <default>NULL</default>
+        <preset>AB_Transaction_List2_new()</preset>
+        <access>public</access>
+        <flags>volatile own</flags>
         <setflags>none</setflags>
         <getflags>none</getflags>
       </member>
