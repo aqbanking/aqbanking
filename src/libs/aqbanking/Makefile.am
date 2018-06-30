@@ -50,6 +50,7 @@ noinst_HEADERS=\
 
 iheaderdir=@aqbanking_headerdir_am@/aqbanking
 iheader_HEADERS=\
+ account_type.h \
  account.h \
  account_be.h \
  banking.h \
@@ -75,6 +76,7 @@ iheader_HEADERS=\
 
 
 libaqbanking_la_SOURCES=\
+ account_type.c \
  account.c \
  bankinfoplugin.c \
  banking.c \

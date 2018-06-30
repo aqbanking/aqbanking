@@ -37,6 +37,7 @@ typedef struct AB_BANKING AB_BANKING;
 
 #include <aqbanking/error.h> /* for AQBANKING_API */
 #include <aqbanking/version.h>
+#include <aqbanking/account_type.h>
 
 /* outsourced */
 #include <aqbanking/banking_virt.h>
@@ -81,6 +82,8 @@ extern "C" {
  * </p>
  */
 /*@{*/
+
+
 
 /** @name Extensions supported by the application
  *
@@ -337,7 +340,6 @@ AQBANKING_API
 void AB_Banking_SetUserData(AB_BANKING *ab, void *user_data);
 
 /*@}*/
-
 
 
 
