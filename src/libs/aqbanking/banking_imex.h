@@ -175,7 +175,6 @@ int AB_Banking_FillGapsInImExporterContext(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT
 /**
  * This function tries to fill missing fields in a given transaction.
  * It tries to fill missing data from the given local account (IBAN, BIC, owner name etc).
- * It also fills in remote IBAN and BIC if the remote account is located in Germany.
  *
  * @param ab pointer to the AB_BANKING object
  * @param localAccount account from which local info is copied (may be NULL)
