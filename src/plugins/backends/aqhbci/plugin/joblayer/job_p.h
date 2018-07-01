@@ -73,6 +73,9 @@ struct AH_JOB {
 
   AH_JOB_ADDCHALLENGEPARAMS_FN addChallengeParamsFn;
 
+  AH_JOB_GETLIMITS_FN getLimitsFn;
+  AH_JOB_HANDLECOMMAND_FN handleCommandFn;
+
   AH_RESULT_LIST *segResults;
   AH_RESULT_LIST *msgResults;
 

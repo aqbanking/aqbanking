@@ -4810,12 +4810,91 @@ void AH_Provider__FreeUsersAndAccountsFromUserQueueList(AB_PROVIDER *pro, AB_USE
 
 
 int AH_Provider__AddCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *t, AH_OUTBOX *outbox) {
+  int rv;
+  int cmd;
+  AH_JOB *mj=NULL;
+  int sigs;
+  int jobIsNew=1;
+  AB_TRANSACTION *tCopy;
 
+  cmd=AB_Transaction_GetCommand(t);
+
+  /* try to get an existing multi job to add the new one to */
+  rv=AH_Provider__GetMultiHbciJob2(pro, outbox, u, a, cmd, &mj);
+  if (rv==0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Reusing existing multi job");
+    jobIsNew=0;
+  }
+  else {
+    if (rv!=GWEN_ERROR_NOT_FOUND) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error looking for multi job (%d), ignoring", rv);
+    }
+  }
+
+  /* create new job if necessary */
+  if (mj==NULL) {
+    rv=AH_Provider__CreateHbciJob2(pro, u, a, cmd, &mj);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+  assert(mj);
+
+  if (jobIsNew) {
+    /* check whether we need to sign the job */
+    sigs=AH_Job_GetMinSignatures(mj);
+    if (sigs) {
+      if (sigs>1) {
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "Multiple signatures not yet supported");
+	GWEN_Gui_ProgressLog(0,
+			     GWEN_LoggerLevel_Error,
+			     I18N("ERROR: Multiple signatures not "
+                                  "yet supported"));
+        AH_Job_free(mj);
+	return GWEN_ERROR_GENERIC;
+      }
+      AH_Job_AddSigner(mj, AB_User_GetUserId(u));
+    }
+  }
+
+  /* store HBCI job, link both jobs */
+  if (AH_Job_GetId(mj)==0) {
+    int jid;
+
+    jid=AB_Banking_GetNamedUniqueId(AB_Provider_GetBanking(pro), "job", 1);
+    assert(jid);
+    AH_Job_SetId(mj, jid);
+  }
+
+  /* exchange arguments */
+  tCopy=AB_Transaction_dup(t);
+
+  /* set group id so the application can know which transfers went together in one setting */
+  AB_Transaction_SetGroupId(tCopy, AH_Job_GetId(mj));
+  AB_Transaction_SetStatus(tCopy, AB_Transaction_StatusEnqueued);
+
+  rv=AH_Job_HandleCommand(mj, tCopy);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_Transaction_free(tCopy);
+    AH_Job_free(mj);
+    return rv;
+  }
+
+  if (jobIsNew) {
+    /* add job to outbox */
+    AH_Outbox_AddJob(outbox, mj);
+    AH_Job_free(mj);
+  }
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Job successfully added");
+  return 0;
 }
 
 
 
-int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, AH_OUTBOX *outbox) {
+int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, AB_IMEXPORTER_CONTEXT *ctx, AH_OUTBOX *outbox) {
   AH_PROVIDER *hp;
   AB_USERQUEUE *uq;
 
@@ -4855,8 +4934,14 @@ int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, A
 
               rv=AH_Provider__AddCommandToOutbox(pro, u, a, t, outbox);
               if (rv<0) {
+                AB_TRANSACTION *tCopy;
+
                 DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-                AB_Transaction_SetStatus(t, AB_Transaction_StatusError);
+
+                /* error, add a transaction copy with error status to the context */
+                tCopy=AB_Transaction_dup(t);
+                AB_Transaction_SetStatus(tCopy, AB_Transaction_StatusError);
+                AB_ImExporterContext_AddTransaction(ctx, tCopy);
               }
               t=AB_Transaction_List2Iterator_Next(it);
             }
@@ -4903,7 +4988,7 @@ int AH_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORT
 
   /* add users to outbox */
   outbox=AH_Outbox_new(hp->hbci);
-  rv=AH_Provider__AddCommandsToOutbox(pro, uql, outbox);
+  rv=AH_Provider__AddCommandsToOutbox(pro, uql, ctx, outbox);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Provider__FreeUsersAndAccountsFromUserQueueList(pro, uql);

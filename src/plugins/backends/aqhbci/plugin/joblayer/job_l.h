@@ -93,6 +93,9 @@ typedef int (*AH_JOB_PREPARE_FN)(AH_JOB *j);
 
 typedef int (*AH_JOB_ADDCHALLENGEPARAMS_FN)(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
 
+typedef int (*AH_JOB_GETLIMITS_FN)(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
+typedef int (*AH_JOB_HANDLECOMMAND_FN)(AH_JOB *j, AB_TRANSACTION *t);
+
 
 /**
  * This function is called on multi-message jobs and should return:
@@ -214,6 +217,20 @@ int AH_Job_Prepare(AH_JOB *j);
  */
 int AH_Job_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
 
+/**
+ * Get transaction limits for a given job.
+ */
+int AH_Job_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
+
+/**
+ * Handle a given command transaction.
+ * The transaction contains the command and parameters for a given job.
+ * The job should test the given transaction. If the transaction is not acceptable an
+ * error code should be returned.
+ * If zero is returned the given transaction is taken over by the job (otherwise it is not).
+ */
+int AH_Job_HandleCommand(AH_JOB *j, AB_TRANSACTION *t);
+
 /*@}*/
 
 
@@ -227,6 +244,9 @@ void AH_Job_SetExchangeFn(AH_JOB *j, AH_JOB_EXCHANGE_FN f);
 void AH_Job_SetNextMsgFn(AH_JOB *j, AH_JOB_NEXTMSG_FN f);
 void AH_Job_SetPrepareFn(AH_JOB *j, AH_JOB_PREPARE_FN f);
 void AH_Job_SetAddChallengeParamsFn(AH_JOB *j, AH_JOB_ADDCHALLENGEPARAMS_FN f);
+void AH_Job_SetGetLimitsFn(AH_JOB *j, AH_JOB_GETLIMITS_FN f);
+void AH_Job_SetHandleCommandFn(AH_JOB *j, AH_JOB_HANDLECOMMAND_FN f);
+
 /*@}*/
 
 

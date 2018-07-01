@@ -1,3 +1,19 @@
+Next:
+=====
+- AH_JOB:
+  - implement handleCommand() and getLimits() in the various account jobs
+  - remove exchange functions
+  - process(): add code from exchange(results)
+- AH_PROVIDER:
+  - remove functions of old API
+  - start adapting the account/user setup dialogs
+- AB_BANKING: remove old exec code
+
+
+- split AqBanking into two libraries: One for direct use by applications, the other shall contain
+  functions needed by backends and plugins. This should reduce the number symbols exported to applications
+
+
 
 Mid-term
 ========

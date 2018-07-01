@@ -1203,6 +1203,32 @@ int AH_Job_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod) {
 
 
 
+int AH_Job_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits) {
+  assert(j);
+  assert(j->usage);
+  if (j->getLimitsFn)
+    return j->getLimitsFn(j, pLimits);
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No getLimitsFn set");
+    return GWEN_ERROR_NOT_SUPPORTED;
+  }
+}
+
+
+
+int AH_Job_HandleCommand(AH_JOB *j, AB_TRANSACTION *t) {
+  assert(j);
+  assert(j->usage);
+  if (j->handleCommandFn)
+    return j->handleCommandFn(j, t);
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No handleCommandFn set");
+    return GWEN_ERROR_NOT_SUPPORTED;
+  }
+}
+
+
+
 void AH_Job_SetProcessFn(AH_JOB *j, AH_JOB_PROCESS_FN f){
   assert(j);
   assert(j->usage);
@@ -1247,6 +1273,22 @@ void AH_Job_SetAddChallengeParamsFn(AH_JOB *j, AH_JOB_ADDCHALLENGEPARAMS_FN f) {
   assert(j);
   assert(j->usage);
   j->addChallengeParamsFn=f;
+}
+
+
+
+void AH_Job_SetGetLimitsFn(AH_JOB *j, AH_JOB_GETLIMITS_FN f) {
+  assert(j);
+  assert(j->usage);
+  j->getLimitsFn=fn;
+}
+
+
+
+void AH_Job_SetHandleCommandFn(AH_JOB *j, AH_JOB_HANDLECOMMAND_FN f) {
+  assert(j);
+  assert(j->usage);
+  j->handleCommandFn=f;
 }
 
 
