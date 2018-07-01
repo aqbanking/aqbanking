@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -41,11 +38,14 @@
 #define AB_BANKING_OLD_CONFIGFILE ".aqbanking.conf"
 
 
-#define AB_CFG_GROUP_USERS    "users"
-#define AB_CFG_GROUP_ACCOUNTS "accounts"
-#define AB_CFG_GROUP_MAIN     "aqbanking"
-#define AB_CFG_GROUP_APPS     "apps"
-#define AB_CFG_GROUP_SHARED   "shared"
+#define AB_CFG_GROUP_USERS        "users"
+#define AB_CFG_GROUP_ACCOUNTS     "accounts"
+#define AB_CFG_GROUP_MAIN         "aqbanking"
+#define AB_CFG_GROUP_APPS         "apps"
+#define AB_CFG_GROUP_SHARED       "shared"
+#define AB_CFG_GROUP_ACCOUNTSPECS "accountspecs"
+#define AB_CFG_GROUP_USERSPECS    "userspecs"
+
 
 
 #include "banking_l.h"

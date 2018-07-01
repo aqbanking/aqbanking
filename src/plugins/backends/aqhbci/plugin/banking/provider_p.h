@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -18,6 +15,9 @@
 #include "provider_l.h"
 #include "job_l.h"
 #include "outbox_l.h"
+
+
+#include <aqbanking/ab_userqueue.h>
 
 
 typedef struct AH_PROVIDER AH_PROVIDER;
@@ -65,6 +65,8 @@ static GWEN_DIALOG *AH_Provider_GetUserTypeDialog(AB_PROVIDER *pro);
 
 static GWEN_DIALOG *AH_Provider_GetEditAccountDialog(AB_PROVIDER *pro, AB_ACCOUNT *a);
 
+static int AH_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx);
+
 
 static int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
 					AB_USER *u,
@@ -88,12 +90,23 @@ static int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
 					 GWEN_BUFFER *lbuf,
 					 int nounmount);
 
+static int AH_Provider__JobTypeToCommand(int jt);
 
 static int AH_Provider__GetMultiHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob);
 static int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob);
 
+static int AH_Provider__CreateHbciJob2(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, int cmd, AH_JOB **pHbciJob);
+static int AH_Provider__GetMultiHbciJob2(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_USER *mu, AB_ACCOUNT *ma, int cmd, AH_JOB **pHbciJob);
+
 
 static int AH_Provider__AddAccountSepaInfoJobsToOutBox(AB_PROVIDER *pro, AH_OUTBOX *ob);
+
+
+static int AH_Provider__SortProviderQueueIntoUserQueueList(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_USERQUEUE_LIST *uql);
+static void AH_Provider__FreeUsersAndAccountsFromUserQueueList(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql);
+static int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, AH_OUTBOX *outbox);
+static int AH_Provider__AddCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *t, AH_OUTBOX *outbox);
+
 
 /*@}*/
 

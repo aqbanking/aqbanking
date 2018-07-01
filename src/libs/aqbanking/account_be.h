@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -23,6 +20,15 @@ extern "C" {
 
 
 GWEN_LIST_FUNCTION_LIB_DEFS(AB_ACCOUNT, AB_Account, AQBANKING_API)
+
+
+AQBANKING_API AB_ACCOUNT *AB_Account_new(AB_BANKING *ab, AB_PROVIDER *pro);
+AQBANKING_API void AB_Account_Attach(AB_ACCOUNT *acc);
+
+
+AQBANKING_API AB_ACCOUNT *AB_Account_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db);
+AQBANKING_API int AB_Account_toDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db);
+AQBANKING_API int AB_Account_ReadDb(AB_ACCOUNT *a, GWEN_DB_NODE *db);
 
 
 /**

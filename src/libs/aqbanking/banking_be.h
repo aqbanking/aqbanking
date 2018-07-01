@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -16,7 +16,10 @@
 #ifndef AQBANKING_BANKING_BE_H
 #define AQBANKING_BANKING_BE_H
 
+#include <gwenhywfar/db.h>
+
 #include <aqbanking/banking.h>
+#include <aqbanking/banking6_be.h>
 
 #include <gwenhywfar/httpsession.h>
 
@@ -137,6 +140,16 @@ int AB_Banking_ExecutionProgress(AB_BANKING *ab);
 
 AQBANKING_API
 int AB_Banking_GetUniqueId(AB_BANKING *ab);
+
+/**
+ * Get a named unique id.
+ * Previously there was only one source for unique ids which was used for everything, fastly increasing that id.
+ * Now new id counters can be incremented separately.
+ * @param ab pointer to AB_BANKING object
+ * @param idName name of the id to get (e.g. "account", "user", "job" etc)
+ * @param startAtStdUniqueId if the given id is zero and this var is !=0 start with the current standard uniqueId
+ */
+AQBANKING_API int AB_Banking_GetNamedUniqueId(AB_BANKING *ab, const char *idName, int startAtStdUniqueId);
 
 
 AQBANKING_API

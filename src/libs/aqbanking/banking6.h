@@ -12,6 +12,10 @@
 #define AQBANKING_BANKING6_H
 
 
+#include <aqbanking/error.h>
+#include <aqbanking/account_spec.h>
+
+
 
 #ifdef __cplusplus
 extern "C" {

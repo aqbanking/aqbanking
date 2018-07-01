@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -19,6 +19,7 @@
 #include <aqhbci/provider.h>
 
 #include <aqbanking/banking_be.h>
+#include <aqbanking/account_be.h>
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -33,7 +34,7 @@ GWEN_INHERIT(AB_ACCOUNT, AH_ACCOUNT)
 
 int AH_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
                       AB_PROVIDER_EXTEND_MODE em,
-                      GWEN_DB_NODE *dbBackend) {
+                      GWEN_DB_NODE *dbBackend) { /* TODO: remove later */
   AH_ACCOUNT *ae;
 
   assert(a);
@@ -58,7 +59,7 @@ int AH_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
                            I18N("Your settings database might be in an inconsistent state!"));
         return rv;
       }
-      AH_Account_ReadDb(a, dbBackend);
+      AH_Account__ReadDb(a, dbBackend);
       if (rv==1) {
 	/* updated config, write it now */
 	rv=AB_Banking_SaveAccountConfig(AB_Provider_GetBanking(pro), a, 1);
@@ -72,13 +73,97 @@ int AH_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
     }
   }
   else if (em==AB_ProviderExtendMode_Reload) {
-    AH_Account_ReadDb(a, dbBackend);
+    AH_Account__ReadDb(a, dbBackend);
   }
   else if (em==AB_ProviderExtendMode_Save) {
-    AH_Account_toDb(a, dbBackend);
+    AH_Account__WriteDb(a, dbBackend);
   }
 
   return 0;
+}
+
+
+
+AB_ACCOUNT *AH_Account_new(AB_BANKING *ab, AB_PROVIDER *pro) {
+  AB_ACCOUNT *a;
+  AH_ACCOUNT *ae;
+
+  a=AB_Account_new(ab, pro);
+  assert(a);
+  GWEN_NEW_OBJECT(AH_ACCOUNT, ae);
+  GWEN_INHERIT_SETDATA(AB_ACCOUNT, AH_ACCOUNT, a, ae, AH_Account_freeData);
+  ae->flags=AH_BANK_FLAGS_DEFAULT;
+  ae->hbci=AH_Provider_GetHbci(pro);
+
+  return a;
+}
+
+
+
+int AH_Account_ReadDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+  AH_ACCOUNT *ae;
+  int rv;
+  GWEN_DB_NODE *dbP;
+
+  assert(a);
+  ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
+  assert(ae);
+
+  /* read data for base class */
+  rv=AB_Account_ReadDb(a, db);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return NULL;
+  }
+
+  /* read data for provider */
+  dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");
+  AH_Account__ReadDb(a, dbP);
+
+  return 0;
+}
+
+
+
+int AH_Account_toDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+  AH_ACCOUNT *ae;
+  int rv;
+  GWEN_DB_NODE *dbP;
+
+  assert(a);
+  ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
+  assert(ae);
+
+  /* write data for base class */
+  rv=AB_Account_toDb(a, db);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return NULL;
+  }
+
+  /* read data for provider */
+  dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");
+  AH_Account__WriteDb(a, dbP);
+
+  return 0;
+}
+
+
+
+AB_ACCOUNT *AH_Account_fromDb(AB_BANKING *ab, AB_PROVIDER *pro, GWEN_DB_NODE *db) {
+  AB_ACCOUNT *a;
+  int rv;
+
+  a=AH_Account_new(ab, pro);
+  assert(a);
+  rv=AH_Account_ReadDb(a, db);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_Account_free(a);
+    return NULL;
+  }
+
+  return a;
 }
 
 
@@ -96,7 +181,7 @@ void GWENHYWFAR_CB AH_Account_freeData(void *bp, void *p) {
 
 
 
-void AH_Account_ReadDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+void AH_Account__ReadDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
   AH_ACCOUNT *ae;
   const char *s;
 
@@ -116,7 +201,7 @@ void AH_Account_ReadDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
 
 
 
-void AH_Account_toDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+void AH_Account__WriteDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db) {
   AH_ACCOUNT *ae;
 
   assert(a);

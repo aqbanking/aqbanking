@@ -592,6 +592,8 @@
         <item name="sepaGetStandingOrders"/>
 
         <item name="loadCellPhone"/>
+
+        <item name="getEStatements"/>
         
 
         <!-- Bit 8 set: transfer jobs, bit 9 cleared: non-SEPA -->

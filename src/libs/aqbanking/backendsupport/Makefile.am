@@ -7,6 +7,7 @@ typefiles= \
   ab_accountqueue.xml \
   ab_jobqueue.xml \
   ab_userqueue.xml \
+  ab_providerqueue.xml \
   ab_queue.xml
 
 
@@ -16,6 +17,8 @@ dist_typedata_DATA=\
   ab_accountqueue_list.tm2 \
   ab_userqueue.tm2 \
   ab_userqueue_list.tm2 \
+  ab_providerqueue.tm2 \
+  ab_providerqueue_list.tm2 \
   ab_queue.tm2 \
   ab_jobqueue.tm2 \
   ab_jobqueue_list.tm2
@@ -26,18 +29,21 @@ typedata_sources= \
   ab_jobqueue.c \
   ab_accountqueue.c \
   ab_userqueue.c \
+  ab_providerqueue.c \
   ab_queue.c
 
 built_headers_priv= \
   ab_accountqueue_p.h \
   ab_jobqueue_p.h \
   ab_userqueue_p.h \
+  ab_providerqueue_p.h \
   ab_queue_p.h
 
 built_headers_pub= \
   ab_accountqueue.h \
   ab_jobqueue.h \
   ab_userqueue.h \
+  ab_providerqueue.h \
   ab_queue.h
 
 
@@ -47,9 +53,6 @@ built_headers=$(built_headers_priv) $(built_headers_pub)
 
 iheaderdir=@aqbanking_headerdir_am@/aqbanking
 iheader_HEADERS=$(built_headers_pub)\
-  ab_accountqueuefns.h \
-  ab_userqueuefns.h \
-  ab_queuefns.h \
   siotlsext.h
 
 
@@ -57,10 +60,7 @@ noinst_HEADERS=\
   siotlsext_p.h
 
 
-extra_sources=\
-  ab_accountqueuefns.c \
-  ab_userqueuefns.c \
-  ab_queuefns.c
+extra_sources=
 
 
 EXTRA_DIST=$(typefiles) $(typedata_sources) $(built_headers) $(extra_sources)
@@ -88,6 +88,12 @@ SUFFIXES = .xml .c
 
 types: $(typefiles)
 	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types2 --destfolder="$(srcdir)" -D AQBANKING_API $(typefiles)
+
+
+format_build_files:
+	for f in $(typedata_sources) $(built_headers); do \
+	  astyle --style=linux -s2 --min-conditional-indent=0 --indent-labels --pad-oper --suffix=none $$f; \
+	done
 
 
 sources: $(typedata_sources)

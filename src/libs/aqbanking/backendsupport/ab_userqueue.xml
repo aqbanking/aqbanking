@@ -17,14 +17,114 @@
       
       <headers>
         <header type="sys" loc="pre">aqbanking/banking.h</header>
-        <header type="sys" loc="pre">aqbanking/ab_accountqueue.h</header>
-        <header type="sys" loc="post">aqbanking/ab_userqueuefns.h</header>
-        <header type="local" loc="code">ab_userqueuefns.c</header>
+        <header type="sys" loc="post">aqbanking/ab_accountqueue.h</header>
       </headers>
+
+      <inlines>
+        <inline loc="end" access="public">
+          <content>
+            $(api) AB_ACCOUNTQUEUE *$(struct_prefix)_FindAccountQueue(const $(struct_type) *uq, AB_ACCOUNT *acc);
+          </content>
+        </inline>
+
+        <inline loc="code" access="public">
+          <content>
+            AB_ACCOUNTQUEUE *$(struct_prefix)_FindAccountQueue(const $(struct_type) *uq, AB_ACCOUNT *acc) {
+              AB_ACCOUNTQUEUE *aq;
+            
+              aq=AB_AccountQueue_List_First(uq->accountQueueList);
+              while(aq) {
+                if (AB_AccountQueue_GetAccount(aq)==acc)
+                  return aq;
+                aq=AB_AccountQueue_List_Next(aq);
+              }
+            
+              return NULL;
+            }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+            $(api) void $(struct_prefix)_AddAccountQueue($(struct_type) *up, AB_ACCOUNTQUEUE *aq);
+          </content>
+        </inline>
+
+        <inline loc="code" access="public">
+          <content>
+            void $(struct_prefix)_AddAccountQueue($(struct_type) *up, AB_ACCOUNTQUEUE *aq) {
+              if (up->accountQueueList==NULL)
+                up->accountQueueList=AB_AccountQueue_List_new();
+              AB_AccountQueue_List_Add(aq, up->accountQueueList);
+            }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+            $(api) AB_ACCOUNTQUEUE *$(struct_prefix)_GetFirstAccountQueue(const $(struct_type) *up);
+          </content>
+        </inline>
+
+        <inline loc="code" access="public">
+          <content>
+            AB_ACCOUNTQUEUE *$(struct_prefix)_GetFirstAccountQueue(const $(struct_type) *up) {
+              if (up->accountQueueList==NULL)
+                return NULL;
+              return AB_AccountQueue_List_First(up->accountQueueList);
+            }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+            $(api) void $(struct_prefix)_AddJob($(struct_type) *uq, AB_JOB *j);
+          </content>
+        </inline>
+
+        <inline loc="code" access="public">
+          <content>
+            void $(struct_prefix)_AddJob($(struct_type) *uq, AB_JOB *j) {
+              AB_ACCOUNT *a;
+              AB_ACCOUNTQUEUE *aq;
+            
+              a=AB_Job_GetAccount(j);
+              assert(a);
+            
+              aq=AB_UserQueue_FindAccountQueue(uq, a);
+              if (aq==NULL) {
+                aq=AB_AccountQueue_new();
+                AB_AccountQueue_SetAccount(aq, a);
+                AB_AccountQueue_List_Add(aq, uq->accountQueueList);
+              }
+            
+              AB_AccountQueue_AddJob(aq, j);
+            }
+          </content>
+        </inline>
+
+
+      </inlines>
+
       
     </lang>
 
     <members>
+
+      <member name="userId" type="uint32_t" maxlen="4">
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+        <flags>with_getbymember</flags>
+        <descr>
+        </descr>
+      </member>
 
       <member name="user" type="AB_USER">
         <default>NULL</default>

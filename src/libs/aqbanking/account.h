@@ -172,6 +172,10 @@ AQBANKING_API
 AB_USER *AB_Account_GetFirstUser(const AB_ACCOUNT *acc);
 
 AQBANKING_API
+const char *AB_Account_GetFirstUserId(const AB_ACCOUNT *a);
+
+
+AQBANKING_API
 int AB_Account_HasUser(const AB_ACCOUNT *a, uint32_t uid);
 
 AQBANKING_API

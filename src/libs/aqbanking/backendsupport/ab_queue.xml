@@ -14,11 +14,89 @@
       </flags>
       
       <headers>
-        <header type="sys" loc="pre">aqbanking/banking.h</header>
-        <header type="sys" loc="pre">aqbanking/ab_userqueue.h</header>
-        <header type="sys" loc="post">aqbanking/ab_queuefns.h</header>
-        <header type="local" loc="code">ab_queuefns.c</header>
+        <header type="sys" loc="pre">aqbanking/error.h</header>
+        <header type="sys" loc="post">aqbanking/ab_userqueue.h</header>
       </headers>
+
+      <inlines>
+        <inline loc="end" access="public">
+          <content>
+            $(api) AB_USERQUEUE *$(struct_prefix)_FindUserQueue(const $(struct_type) *q, AB_USER *u);
+          </content>
+        </inline>
+
+        <inline loc="code" access="public">
+          <content>
+            AB_USERQUEUE *$(struct_prefix)_FindUserQueue(const $(struct_type) *q, AB_USER *u) {
+              AB_USERQUEUE *uq;
+            
+              uq=AB_UserQueue_List_First(q->userQueueList);
+              while(uq) {
+                if (AB_UserQueue_GetUser(uq)==u)
+                  return uq;
+                uq=AB_UserQueue_List_Next(uq);
+              }
+            
+              return NULL;
+            }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+            $(api) void $(struct_prefix)_AddJob($(struct_type) *q, AB_USER *u, AB_JOB *j);
+          </content>
+        </inline>
+
+        <inline loc="code" access="public">
+          <content>
+            void $(struct_prefix)_AddJob($(struct_type) *q, AB_USER *u, AB_JOB *j) {
+              AB_USERQUEUE *uq;
+            
+              uq=AB_Queue_FindUserQueue(q, u);
+              if (uq==NULL) {
+                uq=AB_UserQueue_new();
+                AB_UserQueue_SetUser(uq, u);
+                AB_UserQueue_List_Add(uq, q->userQueueList);
+              }
+            
+              AB_UserQueue_AddJob(uq, j);
+            }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+            $(api) AB_JOB *$(struct_prefix)_FindFirstJobLikeThis($(struct_type) *q, AB_USER *u, AB_JOB *bj);
+          </content>
+        </inline>
+
+        <inline loc="code" access="public">
+          <content>
+            AB_JOB *$(struct_prefix)_FindFirstJobLikeThis($(struct_type) *q, AB_USER *u, AB_JOB *bj) {
+              AB_USERQUEUE *uq=AB_Queue_FindUserQueue(q, u);
+              if (uq) {
+                AB_ACCOUNTQUEUE *aq=AB_UserQueue_FindAccountQueue(uq, AB_Job_GetAccount(bj));
+                if (aq) {
+                  AB_JOBQUEUE *jq=AB_AccountQueue_FindJobQueue(aq, AB_Job_GetType(bj));
+                  if (jq)
+                return AB_Job_List2_GetFront(AB_JobQueue_GetJobList(jq));
+                }
+              }
+            
+              return NULL;
+            }
+          </content>
+        </inline>
+
+
+      </inlines>
+
+
       
     </lang>
 

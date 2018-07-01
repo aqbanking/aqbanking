@@ -13,6 +13,11 @@ ab_userqueue_p.h
 ab_userqueue.h
 ab_userqueue.tm2
 ab_userqueue_list.tm2
+ab_providerqueue.c
+ab_providerqueue_p.h
+ab_providerqueue.h
+ab_providerqueue.tm2
+ab_providerqueue_list.tm2
 ab_queue.c
 ab_queue_p.h
 ab_queue.h

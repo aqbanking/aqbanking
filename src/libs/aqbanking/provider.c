@@ -337,6 +337,13 @@ void AB_Provider_SetGetUserTypeDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_USERTY
 
 
 
+void AB_Provider_SetSendCommandsFn(AB_PROVIDER *pro, AB_PROVIDER_SENDCOMMANDS_FN f) {
+  assert(pro);
+  pro->sendCommandsFn=f;
+}
+
+
+
 
 
 
@@ -501,6 +508,16 @@ GWEN_DIALOG *AB_ProviderGetUserTypeDialog(AB_PROVIDER *pro) {
   assert(pro);
   if (pro->getUserTypeDialogFn)
     return pro->getUserTypeDialogFn(pro);
+  else
+    return NULL;
+}
+
+
+
+int AB_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx) {
+  assert(pro);
+  if (pro->sendCommandsFn)
+    return pro->sendCommandsFn(pro, pq, ctx);
   else
     return NULL;
 }

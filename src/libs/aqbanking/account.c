@@ -244,6 +244,15 @@ const char *AB_Account_GetBackendName(const AB_ACCOUNT *a) {
 
 
 
+const char *AB_Account_GetFirstUserId(const AB_ACCOUNT *a) {
+  assert(a);
+  assert(a->usage);
+
+  return GWEN_StringList_FirstString(a->userIds);
+}
+
+
+
 AB_USER_LIST2 *AB_Account_GetUsers(const AB_ACCOUNT *a) {
   AB_USER_LIST2 *ul;
   GWEN_STRINGLISTENTRY *se;

@@ -38,6 +38,7 @@ typedef struct AB_BANKING AB_BANKING;
 #include <aqbanking/error.h> /* for AQBANKING_API */
 #include <aqbanking/version.h>
 #include <aqbanking/account_type.h>
+#include <aqbanking/ab_providerqueue.h>
 
 /* outsourced */
 #include <aqbanking/banking_virt.h>
@@ -46,8 +47,10 @@ typedef struct AB_BANKING AB_BANKING;
 #include <aqbanking/banking_ob.h>
 #include <aqbanking/banking_simple.h>
 #include <aqbanking/banking_cfg.h>
+#include <aqbanking/banking6.h>
 
 #include <aqbanking/provider.h>
+
 
 #define AB_PM_LIBNAME    "aqbanking"
 #define AB_PM_SYSCONFDIR "sysconfdir"

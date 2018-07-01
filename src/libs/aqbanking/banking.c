@@ -82,6 +82,7 @@ GWEN_INHERIT_FUNCTIONS(AB_BANKING)
 #include "banking_deprec.c"
 #include "banking_cfg.c"
 #include "banking_imex.c"
+#include "banking6.c"
 
 
 
@@ -184,7 +185,7 @@ void AB_Banking_free(AB_BANKING *ab){
 
 
 
-int AB_Banking_GetUniqueId(AB_BANKING *ab){
+int AB_Banking_GetNamedUniqueId(AB_BANKING *ab, const char *idName, int startAtStdUniqueId){
   int rv;
   int uid=0;
   GWEN_DB_NODE *dbConfig=NULL;
@@ -206,10 +207,33 @@ int AB_Banking_GetUniqueId(AB_BANKING *ab){
     return rv;
   }
 
-  uid=GWEN_DB_GetIntValue(dbConfig, "uniqueId", 0, 0);
-  uid++;
-  GWEN_DB_SetIntValue(dbConfig, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "uniqueId", uid);
+  if (idName && *idName) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(tbuf, "uniqueid-");
+    GWEN_Buffer_AppendString(tbuf, idName);
+
+    uid=GWEN_DB_GetIntValue(dbConfig, GWEN_Buffer_GetStart(tbuf), 0, 0);
+    if (uid==0 && startAtStdUniqueId) {
+      /* not set yet, start with a unique id from standard source */
+      uid=GWEN_DB_GetIntValue(dbConfig, "uniqueId", 0, 0);
+      uid++;
+      GWEN_DB_SetIntValue(dbConfig, GWEN_DB_FLAGS_OVERWRITE_VARS, "uniqueId", uid);
+      GWEN_DB_SetIntValue(dbConfig, GWEN_DB_FLAGS_OVERWRITE_VARS, GWEN_Buffer_GetStart(tbuf), uid);
+    }
+    else {
+      uid++;
+      GWEN_DB_SetIntValue(dbConfig, GWEN_DB_FLAGS_OVERWRITE_VARS, GWEN_Buffer_GetStart(tbuf), uid);
+    }
+    GWEN_Buffer_free(tbuf);
+  }
+  else {
+    uid=GWEN_DB_GetIntValue(dbConfig, "uniqueId", 0, 0);
+    uid++;
+    GWEN_DB_SetIntValue(dbConfig, GWEN_DB_FLAGS_OVERWRITE_VARS, "uniqueId", uid);
+  }
+
   rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
 			     AB_CFG_GROUP_MAIN,
 			     "uniqueId",
@@ -234,6 +258,12 @@ int AB_Banking_GetUniqueId(AB_BANKING *ab){
   }
 
   return uid;
+}
+
+
+
+int AB_Banking_GetUniqueId(AB_BANKING *ab){
+  return AB_Banking_GetNamedUniqueId(ab, NULL, 0);
 }
 
 

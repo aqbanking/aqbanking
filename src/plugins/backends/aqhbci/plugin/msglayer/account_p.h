@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -25,8 +25,8 @@ struct AH_ACCOUNT {
 
 static void GWENHYWFAR_CB AH_Account_freeData(void *bp, void *p);
 
-static void AH_Account_ReadDb(AB_ACCOUNT *a, GWEN_DB_NODE *db);
-static void AH_Account_toDb(AB_ACCOUNT *a, GWEN_DB_NODE *db);
+static void AH_Account__ReadDb(AB_ACCOUNT *a, GWEN_DB_NODE *db);
+static void AH_Account__WriteDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db);
 
 
 #endif /* AH_ACCOUNT_P_H */

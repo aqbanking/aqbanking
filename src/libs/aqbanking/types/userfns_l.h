@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004-2017 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -14,12 +14,6 @@
 #define AQBANKING_USERFNS_L_H
 
 #include "userfns.h"
-
-
-AB_USER *AB_User_new(AB_BANKING *ab);
-AB_USER *AB_User_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db);
-
-int AB_User_copyDb(GWEN_DB_NODE *dbSrc, GWEN_DB_NODE *dbDst);
 
 
 

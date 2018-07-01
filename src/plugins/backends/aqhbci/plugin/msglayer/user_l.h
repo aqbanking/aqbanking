@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2011 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -22,6 +22,12 @@
 int AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
                    AB_PROVIDER_EXTEND_MODE em,
                    GWEN_DB_NODE *db);
+
+AB_USER *AH_User_new(AB_BANKING *ab, AB_PROVIDER *pro);
+
+int AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db);
+int AH_User_toDb(const AB_USER *u, GWEN_DB_NODE *db);
+
 
 AH_HBCI *AH_User_GetHbci(const AB_USER *u);
 GWEN_MSGENGINE *AH_User_GetMsgEngine(const AB_USER *u);

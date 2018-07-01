@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004-2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -17,6 +17,7 @@
 #define AQBANKING_PROVIDER_BE_H
 
 #include <aqbanking/provider.h>
+#include <aqbanking/ab_providerqueue.h>
 #include <aqbanking/user.h>
 
 #include <gwenhywfar/plugin.h>
@@ -141,6 +142,10 @@ typedef GWEN_DIALOG* (*AB_PROVIDER_GET_NEWACCOUNT_DIALOG_FN)(AB_PROVIDER *pro);
 typedef GWEN_DIALOG* (*AB_PROVIDER_GET_EDITACCOUNT_DIALOG_FN)(AB_PROVIDER *pro, AB_ACCOUNT *a);
 
 typedef GWEN_DIALOG* (*AB_PROVIDER_GET_USERTYPE_DIALOG_FN)(AB_PROVIDER *pro);
+
+
+
+typedef int (*AB_PROVIDER_SENDCOMMANDS_FN)(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx);
 
 
 /*@}*/
@@ -304,6 +309,18 @@ AQBANKING_API
 GWEN_DIALOG *AB_ProviderGetUserTypeDialog(AB_PROVIDER *pro);
 
 
+
+/**
+ * Send commands to backends.
+ * The given queue can be modified by the provider in this function as it will be deleted upon return from this function.
+ * @return 0 if okay, error code otherwise
+ * @param pro pointer to the provider
+ * @param pq provider queue which contains the commands to send, sorted by account (may be modified by provider)
+ * @param ctx context to receive results
+ */
+AQBANKING_API int AB_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx);
+
+
 /*@}*/
 
 
@@ -351,6 +368,9 @@ void AB_Provider_SetGetEditAccountDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_EDI
 
 AQBANKING_API
 void AB_Provider_SetGetUserTypeDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_USERTYPE_DIALOG_FN f);
+
+
+AQBANKING_API void AB_Provider_SetSendCommandsFn(AB_PROVIDER *pro, AB_PROVIDER_SENDCOMMANDS_FN f);
 
 /*@}*/
 

@@ -257,6 +257,16 @@ int AH_Provider_Test(AB_PROVIDER *pro);
 /*@}*/
 
 
+
+
+AQHBCI_API int AH_Provider_ReadAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_ACCOUNT *account);
+AQHBCI_API int AH_Provider_WriteAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, const AB_ACCOUNT *account);
+
+AQHBCI_API int AH_Provider_ReadUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_USER *user);
+AQHBCI_API int AH_Provider_WriteUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, const AB_USER *user);
+
+
+
 #ifdef __cplusplus
 }
 #endif

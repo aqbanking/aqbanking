@@ -8,8 +8,8 @@
  * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
-#ifndef AQBANKING_BANKING6_H
-#define AQBANKING_BANKING6_H
+#ifndef AQBANKING_BANKING6_BE_H
+#define AQBANKING_BANKING6_BE_H
 
 
 
@@ -34,8 +34,11 @@ AQBANKING_API int AB_Banking6_WriteAccountSpec(AB_BANKING *ab, const AB_ACCOUNT_
 
 
 
-AQBANKING_API int AB_Banking6_LockAndRead_AccountConfig(AB_BANKING *ab, uint32_t uid, GWEN_DB_GROUP **pDb);
-AQBANKING_API int AB_Banking6_WriteAndUnlock_AccountConfig(AB_BANKING *ab, uint32_t uid, GWEN_DB_GROUP *db);
+AQBANKING_API int AB_Banking6_Read_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb);
+AQBANKING_API int AB_Banking6_Write_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE *db);
+
+AQBANKING_API int AB_Banking6_Read_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb);
+AQBANKING_API int AB_Banking6_Write_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE *db);
 
 
 
@@ -44,7 +47,7 @@ AQBANKING_API int AB_Banking6_ReadConfigGroup(AB_BANKING *ab,
                                               const char *groupName,
                                               uint32_t uniqueId,
                                               int doLock,
-                                              int doUnlock
+                                              int doUnlock,
                                               GWEN_DB_NODE **pDb);
 
 

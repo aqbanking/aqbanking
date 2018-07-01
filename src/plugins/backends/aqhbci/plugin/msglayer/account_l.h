@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -23,6 +20,14 @@
 int AH_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
                       AB_PROVIDER_EXTEND_MODE um,
                       GWEN_DB_NODE *db);
+
+AB_ACCOUNT *AH_Account_new(AB_BANKING *ab, AB_PROVIDER *pro);
+
+AB_ACCOUNT *AH_Account_fromDb(AB_BANKING *ab, AB_PROVIDER *pro, GWEN_DB_NODE *db);
+int AH_Account_toDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db);
+
+int AH_Account_ReadDb(AB_ACCOUNT *a, GWEN_DB_NODE *db);
+
 
 AH_HBCI *AH_Account_GetHbci(const AB_ACCOUNT *a);
 

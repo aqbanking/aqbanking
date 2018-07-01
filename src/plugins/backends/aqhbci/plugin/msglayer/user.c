@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2011 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -198,7 +198,7 @@ int AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
                            I18N("Your settings database might be in an inconsistent state!"));
         return rv;
       }
-      AH_User_ReadDb(u, db);
+      AH_User__ReadDb(u, db);
       AH_User_LoadTanMethods(u);
       AH_User_LoadSepaDescriptors(u);
       if (rv==1) {
@@ -216,7 +216,7 @@ int AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
   }
   else if (em==AB_ProviderExtendMode_Reload) {
     /* just reload user */
-    AH_User_ReadDb(u, db);
+    AH_User__ReadDb(u, db);
     AH_User_LoadTanMethods(u);
     AH_User_LoadSepaDescriptors(u);
   }
@@ -229,12 +229,48 @@ int AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
     if (em==AB_ProviderExtendMode_Add) {
     }
     else if (em==AB_ProviderExtendMode_Save) {
-      AH_User_toDb(u, db);
+      AH_User__WriteDb(u, db);
     } /* if save */
   }
 
   return 0;
 }
+
+
+
+AB_USER *AH_User_new(AB_BANKING *ab, AB_PROVIDER *pro) {
+  AB_USER *u;
+  AH_USER *ue;
+
+  u=AB_User_new(ab);
+  assert(u);
+  GWEN_NEW_OBJECT(AH_USER, ue);
+  GWEN_INHERIT_SETDATA(AB_USER, AH_USER, u, ue, AH_User_freeData);
+
+  ue->tanMethodList[0]=-1;
+  ue->tanMethodCount=0;
+
+  ue->hbci=AH_Provider_GetHbci(pro);
+  ue->tanMethodDescriptions=AH_TanMethod_List_new();
+  ue->sepaDescriptors=GWEN_StringList_new();
+
+  AB_User_SetCountry(u, "de");
+
+  ue->msgEngine=AH_MsgEngine_new();
+  GWEN_MsgEngine_SetEscapeChar(ue->msgEngine, '?');
+  GWEN_MsgEngine_SetCharsToEscape(ue->msgEngine, ":+\'");
+  AH_MsgEngine_SetUser(ue->msgEngine, u);
+  GWEN_MsgEngine_SetDefinitions(ue->msgEngine, AH_HBCI_GetDefinitions(ue->hbci), 0);
+
+  ue->hbciVersion=210;
+  ue->bpd=AH_Bpd_new();
+  ue->dbUpd=GWEN_DB_Group_new("upd");
+  ue->maxTransfersPerJob=AH_USER_MAX_TRANSFERS_PER_JOB;
+  ue->maxDebitNotesPerJob=AH_USER_MAX_DEBITNOTES_PER_JOB;
+
+  return u;
+}
+
 
 
 void GWENHYWFAR_CB AH_User_freeData(void *bp, void *p) {
@@ -260,7 +296,60 @@ void GWENHYWFAR_CB AH_User_freeData(void *bp, void *p) {
 
 
 
-void AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
+int AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
+  AH_USER *ue;
+  int rv;
+  GWEN_DB_NODE *dbP;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  /* read data for base class */
+  rv=AB_User_ReadDb(u, db);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return NULL;
+  }
+
+  /* read data for provider */
+  dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");
+  AH_User__ReadDb(u, dbP);
+
+  AH_User_LoadTanMethods(u);
+  AH_User_LoadSepaDescriptors(u);
+
+  return 0;
+}
+
+
+
+int AH_User_toDb(const AB_USER *u, GWEN_DB_NODE *db) {
+  AH_USER *ue;
+  int rv;
+  GWEN_DB_NODE *dbP;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  /* write data for base class */
+  rv=AB_User_toDb(u, db);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return NULL;
+  }
+
+  /* read data for provider */
+  dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");
+  AH_User__WriteDb(u, dbP);
+
+  return 0;
+}
+
+
+
+void AH_User__ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
   AH_USER *ue;
   const char *s;
   GWEN_DB_NODE *gr;
@@ -299,14 +388,15 @@ void AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
     ue->serverUrl=NULL;
 
   /* load bankPubKey */
+  GWEN_Crypt_Key_free(ue->bankPubKey);
   gr=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "bankPubKey");
   if (gr) {
     ue->bankPubKey=GWEN_Crypt_KeyRsa_fromDb(gr);
     assert(ue->bankPubKey);
   }
-  //else
-  //  ue->bankPubKey=GWEN_Crypt_KeyRsa_new();
-  
+  else
+    ue->bankPubKey=NULL;
+
   /* load BPD */
   AH_Bpd_free(ue->bpd);
   gr=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "bpd");
@@ -395,25 +485,33 @@ void AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
   /* read some settings */
   ue->maxTransfersPerJob=GWEN_DB_GetIntValue(db, "maxTransfersPerJob", 0, AH_USER_MAX_TRANSFERS_PER_JOB);
   ue->maxDebitNotesPerJob=GWEN_DB_GetIntValue(db, "maxDebitNotesPerJob", 0, AH_USER_MAX_DEBITNOTES_PER_JOB);
+
   free(ue->sepaTransferProfile);
   s=GWEN_DB_GetCharValue(db, "sepaTransferProfile", 0, NULL);
-  if (s) ue->sepaTransferProfile=strdup(s);
-  else ue->sepaTransferProfile=NULL;
+  if (s)
+    ue->sepaTransferProfile=strdup(s);
+  else
+    ue->sepaTransferProfile=NULL;
+
   free(ue->sepaDebitNoteProfile);
   s=GWEN_DB_GetCharValue(db, "sepaDebitNoteProfile", 0, NULL);
-  if (s) ue->sepaDebitNoteProfile=strdup(s);
-  else ue->sepaDebitNoteProfile=NULL;
+  if (s)
+    ue->sepaDebitNoteProfile=strdup(s);
+  else
+    ue->sepaDebitNoteProfile=NULL;
 
   free(ue->tanMediumId);
   s=GWEN_DB_GetCharValue(db, "tanMediumId", 0, NULL);
-  if (s) ue->tanMediumId=strdup(s);
-  else ue->tanMediumId=NULL;
+  if (s)
+    ue->tanMediumId=strdup(s);
+  else
+    ue->tanMediumId=NULL;
 }
 
 
 
-void AH_User_toDb(AB_USER *u, GWEN_DB_NODE *db) {
-  AH_USER *ue;
+void AH_User__WriteDb(const AB_USER *u, GWEN_DB_NODE *db) {
+  const AH_USER *ue;
   int i;
   GWEN_DB_NODE *gr;
   const char *s;

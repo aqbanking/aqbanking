@@ -49,6 +49,8 @@ struct AB_PROVIDER {
 
   AB_PROVIDER_GET_USERTYPE_DIALOG_FN getUserTypeDialogFn;
 
+  AB_PROVIDER_SENDCOMMANDS_FN sendCommandsFn;
+
   GWEN_PLUGIN *plugin;
 
   uint32_t usage;

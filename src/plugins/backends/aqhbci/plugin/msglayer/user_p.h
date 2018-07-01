@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -74,8 +74,8 @@ struct AH_USER {
 
 static void GWENHYWFAR_CB AH_User_freeData(void *bp, void *p);
 
-static void AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db);
-static void AH_User_toDb(AB_USER *u, GWEN_DB_NODE *db);
+static void AH_User__ReadDb(AB_USER *u, GWEN_DB_NODE *db);
+static void AH_User__WriteDb(const AB_USER *u, GWEN_DB_NODE *db);
 
 static void AH_User_LoadTanMethods(AB_USER *u);
 static void AH_User_LoadSepaDescriptors(AB_USER *u);

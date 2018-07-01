@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2014 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -59,6 +59,7 @@
 #include <aqbanking/account_be.h>
 #include <aqbanking/provider_be.h>
 #include <aqbanking/job_be.h>
+#include <aqbanking/ab_userqueue.h>
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
@@ -106,6 +107,8 @@ AB_PROVIDER *AH_Provider_new(AB_BANKING *ab, const char *name){
   AB_Provider_SetGetEditUserDialogFn(pro, AH_Provider_GetEditUserDialog);
   AB_Provider_SetGetUserTypeDialogFn(pro, AH_Provider_GetUserTypeDialog);
   AB_Provider_SetGetEditAccountDialogFn(pro, AH_Provider_GetEditAccountDialog);
+
+  AB_Provider_SetSendCommandsFn(pro, AH_Provider_SendCommands);
 
   AB_Provider_AddFlags(pro,
 		       AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG |
@@ -267,41 +270,57 @@ int AH_Provider_CheckCryptToken(AB_PROVIDER *pro,
 
 
 
-int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
+int AH_Provider__JobTypeToCommand(int jt){
+  int cmd;
+
+  switch(jt) {
+  case AB_Job_TypeGetBalance:                cmd=AB_Transaction_CommandGetBalance;              break;
+  case AB_Job_TypeGetTransactions:           cmd=AB_Transaction_CommandGetTransactions;         break;
+  case AB_Job_TypeTransfer:                  cmd=AB_Transaction_CommandTransfer;                break;
+  case AB_Job_TypeDebitNote:                 cmd=AB_Transaction_CommandDebitNote;               break;
+  case AB_Job_TypeGetStandingOrders:         cmd=AB_Transaction_CommandGetStandingOrders;       break;
+  case AB_Job_TypeGetDatedTransfers:         cmd=AB_Transaction_CommandGetDatedTransfers;       break;
+  case AB_Job_TypeCreateStandingOrder:       cmd=AB_Transaction_CommandCreateStandingOrder;     break;
+  case AB_Job_TypeModifyStandingOrder:       cmd=AB_Transaction_CommandModifyStandingOrder;     break;
+  case AB_Job_TypeDeleteStandingOrder:       cmd=AB_Transaction_CommandDeleteStandingOrder;     break;
+  case AB_Job_TypeCreateDatedTransfer:       cmd=AB_Transaction_CommandCreateDatedTransfer;     break;
+  case AB_Job_TypeModifyDatedTransfer:       cmd=AB_Transaction_CommandModifyDatedTransfer;     break;
+  case AB_Job_TypeDeleteDatedTransfer:       cmd=AB_Transaction_CommandDeleteDatedTransfer;     break;
+  case AB_Job_TypeInternalTransfer:          cmd=AB_Transaction_CommandInternalTransfer;        break;
+  case AB_Job_TypeLoadCellPhone:             cmd=AB_Transaction_CommandLoadCellPhone;           break;
+  case AB_Job_TypeSepaTransfer:              cmd=AB_Transaction_CommandSepaTransfer;            break;
+  case AB_Job_TypeSepaDebitNote:             cmd=AB_Transaction_CommandSepaDebitNote;           break;
+  case AB_Job_TypeSepaCreateStandingOrder:   cmd=AB_Transaction_CommandSepaCreateStandingOrder; break;
+  case AB_Job_TypeSepaModifyStandingOrder:   cmd=AB_Transaction_CommandSepaModifyStandingOrder; break;
+  case AB_Job_TypeSepaDeleteStandingOrder:   cmd=AB_Transaction_CommandSepaDeleteStandingOrder; break;
+  case AB_Job_TypeSepaFlashDebitNote:        cmd=AB_Transaction_CommandSepaFlashDebitNote;      break;
+  case AB_Job_TypeSepaGetStandingOrders:     cmd=AB_Transaction_CommandSepaGetStandingOrders;   break;
+  case AB_Job_TypeGetEStatements:            cmd=AB_Transaction_CommandGetEStatements;          break;
+  default:
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown job type %d", jt);
+    cmd=AB_Transaction_CommandUnknown;
+  }
+
+  return cmd;
+}
+
+
+
+int AH_Provider__CreateHbciJob2(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, int cmd, AH_JOB **pHbciJob){
   AH_PROVIDER *hp;
-  GWEN_DB_NODE *dbJob;
   AH_JOB *mj;
-  uint32_t jid;
-  AB_ACCOUNT *ma;
-  AB_USER *mu;
   uint32_t aFlags;
 
   assert(pro);
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
   assert(hp);
 
-  dbJob=AB_Job_GetProviderData(j, pro);
-  assert(dbJob);
-
-  ma=AB_Job_GetAccount(j);
-  assert(ma);
-
-  /* determine customer to use */
-  mu=AB_Account_GetFirstUser(ma);
-  if (!mu) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "No customers noted for account \"%s/%s\"",
-              AB_Account_GetBankCode(ma),
-              AB_Account_GetAccountNumber(ma));
-    return GWEN_ERROR_NOT_AVAILABLE;
-  }
-
   aFlags=AH_Account_GetFlags(ma);
 
   mj=0;
-  switch(AB_Job_GetType(j)) {
+  switch(cmd) {
 
-  case AB_Job_TypeGetBalance:
+  case AB_Transaction_CommandGetBalance:
     mj=AH_Job_GetBalance_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
@@ -309,7 +328,7 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
     }
     break;
 
-  case AB_Job_TypeGetTransactions:
+  case AB_Transaction_CommandGetTransactions:
     mj=AH_Job_GetTransactions_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
@@ -317,7 +336,7 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
     }
     break;
 
-  case AB_Job_TypeLoadCellPhone:
+  case AB_Transaction_CommandLoadCellPhone:
     mj=AH_Job_LoadCellPhone_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
@@ -325,7 +344,7 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
     }
     break;
 
-  case AB_Job_TypeSepaTransfer:
+  case AB_Transaction_CommandSepaTransfer:
     if (!(aFlags & AH_BANK_FLAGS_SEPA_PREFER_SINGLE_TRANSFER)) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers multi jobs");
 
@@ -358,7 +377,7 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
     }
     break;
 
-  case AB_Job_TypeSepaDebitNote:
+  case AB_Transaction_CommandSepaDebitNote:
     if (!(aFlags & AH_BANK_FLAGS_SEPA_PREFER_SINGLE_DEBITNOTE)) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers multi jobs");
 
@@ -403,7 +422,7 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
     }
     break;
 
-  case AB_Job_TypeSepaFlashDebitNote:
+  case AB_Transaction_CommandSepaFlashDebitNote:
     if (!(aFlags & AH_BANK_FLAGS_SEPA_PREFER_SINGLE_DEBITNOTE)) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers multi jobs");
 
@@ -436,21 +455,21 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
     }
     break;
 
-  case AB_Job_TypeSepaCreateStandingOrder:
+  case AB_Transaction_CommandSepaCreateStandingOrder:
     mj=AH_Job_SepaStandingOrderCreate_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return GWEN_ERROR_NOT_AVAILABLE;
     }
     break;
-  case AB_Job_TypeSepaModifyStandingOrder:
+  case AB_Transaction_CommandSepaModifyStandingOrder:
     mj=AH_Job_SepaStandingOrderModify_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return GWEN_ERROR_NOT_AVAILABLE;
     }
     break;
-  case AB_Job_TypeSepaDeleteStandingOrder:
+  case AB_Transaction_CommandSepaDeleteStandingOrder:
     mj=AH_Job_SepaStandingOrderDelete_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
@@ -458,7 +477,7 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
     }
     break;
 
-  case AB_Job_TypeSepaGetStandingOrders:
+  case AB_Transaction_CommandSepaGetStandingOrders:
     mj=AH_Job_SepaStandingOrderGet_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
@@ -466,7 +485,7 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
     }
     break;
 
-  case AB_Job_TypeGetEStatements:
+  case AB_Transaction_CommandGetEStatements:
     mj=AH_Job_GetEStatements_new(mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
@@ -481,14 +500,6 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
   } /* switch */
   assert(mj);
 
-  /* store HBCI job, link both jobs */
-  if (AH_Job_GetId(mj)==0) {
-    jid=AB_Job_GetJobId(j);
-    assert(jid);
-    /* we now use the same id here */
-    AH_Job_SetId(mj, jid);
-  }
-
   DBG_INFO(AQHBCI_LOGDOMAIN, "Job successfully created");
   *pHbciJob=mj;
   return 0;
@@ -496,23 +507,64 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
 
 
 
-int AH_Provider__GetMultiHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
+int AH_Provider__GetMultiHbciJob2(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_USER *mu, AB_ACCOUNT *ma, int cmd, AH_JOB **pHbciJob){
   AH_PROVIDER *hp;
-  GWEN_DB_NODE *dbJob;
   AH_JOB *mj=NULL;
-  AB_ACCOUNT *ma;
-  AB_USER *mu;
 
   assert(pro);
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
   assert(hp);
 
-  if (hp->outbox==0)
-    hp->outbox=AH_Outbox_new(hp->hbci);
-  assert(hp->outbox);
+  /* determine customer to use */
+  mu=AB_Account_GetFirstUser(ma);
+  if (!mu) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+              "No customers noted for account \"%s/%s\"",
+              AB_Account_GetBankCode(ma),
+              AB_Account_GetAccountNumber(ma));
+    return GWEN_ERROR_NOT_AVAILABLE;
+  }
 
-  dbJob=AB_Job_GetProviderData(j, pro);
-  assert(dbJob);
+  switch(cmd) {
+  case AB_Transaction_CommandSepaTransfer:
+    mj=AH_Outbox_FindTransferJob(outbox, mu, ma, "JobSepaTransferMulti");
+    break;
+
+  case AB_Transaction_CommandSepaDebitNote:
+    mj=AH_Outbox_FindTransferJob(outbox, mu, ma, "JobSepaDebitDatedMultiCreate");
+    break;
+
+  default:
+    DBG_INFO(AQHBCI_LOGDOMAIN,
+             "No Multi jobs defined for this job type");
+    break;
+  } /* switch */
+
+  if (mj) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Multi job found");
+    *pHbciJob=mj;
+    return 0;
+  }
+  else {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No multi job found");
+    return GWEN_ERROR_NOT_FOUND;
+  }
+}
+
+
+
+int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
+  AH_PROVIDER *hp;
+  AH_JOB *mj=NULL;
+  uint32_t jid;
+  AB_ACCOUNT *ma;
+  AB_USER *mu;
+  int cmd;
+  int rv;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
 
   ma=AB_Job_GetAccount(j);
   assert(ma);
@@ -527,32 +579,77 @@ int AH_Provider__GetMultiHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob)
     return GWEN_ERROR_NOT_AVAILABLE;
   }
 
-  switch(AB_Job_GetType(j)) {
-  case AB_Job_TypeSepaTransfer:
-    mj=AH_Outbox_FindTransferJob(hp->outbox, mu, ma, "JobSepaTransferMulti");
-    break;
-
-  case AB_Job_TypeSepaDebitNote:
-    mj=AH_Outbox_FindTransferJob(hp->outbox, mu, ma,
-                                 "JobSepaDebitDatedMultiCreate");
-    break;
-
-  default:
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-             "No Multi jobs defined for this job type");
-    break;
-  } /* switch */
-
-  if (mj) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Multi job found");
-    AB_Job_SetIdForProvider(j, AH_Job_GetId(mj));
-    *pHbciJob=mj;
-    return 0;
+  cmd=AH_Provider__JobTypeToCommand(AB_Job_GetType(j));
+  if (cmd==AB_Transaction_CommandUnknown) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown job type %d", AB_Job_GetType(j));
+    return GWEN_ERROR_INVALID;
   }
-  else {
+
+  rv=AH_Provider__CreateHbciJob2(pro, mu, ma, cmd, &mj);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* store HBCI job, link both jobs */
+  if (AH_Job_GetId(mj)==0) {
+    jid=AB_Job_GetJobId(j);
+    assert(jid);
+    /* we now use the same id here */
+    AH_Job_SetId(mj, jid);
+  }
+
+  *pHbciJob=mj;
+
+  return 0;
+}
+
+
+
+int AH_Provider__GetMultiHbciJob(AB_PROVIDER *pro, AB_JOB *j, AH_JOB **pHbciJob){
+  AH_PROVIDER *hp;
+  AH_JOB *mj=NULL;
+  AB_ACCOUNT *ma;
+  AB_USER *mu;
+  int cmd;
+  int rv;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  if (hp->outbox==0)
+    hp->outbox=AH_Outbox_new(hp->hbci);
+  assert(hp->outbox);
+
+  ma=AB_Job_GetAccount(j);
+  assert(ma);
+
+  /* determine customer to use */
+  mu=AB_Account_GetFirstUser(ma);
+  if (!mu) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+              "No customers noted for account \"%s/%s\"",
+              AB_Account_GetBankCode(ma),
+              AB_Account_GetAccountNumber(ma));
+    return GWEN_ERROR_NOT_AVAILABLE;
+  }
+
+  cmd=AH_Provider__JobTypeToCommand(AB_Job_GetType(j));
+  if (cmd==AB_Transaction_CommandUnknown) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown job type %d", AB_Job_GetType(j));
+    return GWEN_ERROR_INVALID;
+  }
+
+  rv=AH_Provider__GetMultiHbciJob2(pro, hp->outbox, mu, ma, cmd, &mj);
+  if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "No multi job found");
     return GWEN_ERROR_NOT_FOUND;
   }
+
+  AB_Job_SetIdForProvider(j, AH_Job_GetId(mj));
+  *pHbciJob=mj;
+  return 0;
 }
 
 
@@ -4502,6 +4599,329 @@ static int AH_Provider_Test4(AB_PROVIDER *pro) {
 
 int AH_Provider_Test(AB_PROVIDER *pro) {
   return AH_Provider_Test4(pro);
+}
+
+
+
+
+
+
+
+
+
+int AH_Provider_ReadAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_ACCOUNT *account) {
+  int rv;
+  GWEN_DB_NODE *db=NULL;
+
+  rv=AB_Banking6_Read_AccountConfig(AB_Provider_GetBanking(pro), uid, doLock, doUnlock, &db);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=AH_Account_ReadDb(account, db);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+int AH_Provider_WriteAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, const AB_ACCOUNT *account) {
+  int rv;
+  GWEN_DB_NODE *db;
+
+  db=GWEN_DB_Group_new("account");
+  rv=AH_Account_toDb(account, db);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=AB_Banking6_Write_AccountConfig(AB_Provider_GetBanking(pro), uid, doLock, doUnlock, db);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    GWEN_DB_Group_free(db);
+    return rv;
+  }
+  GWEN_DB_Group_free(db);
+
+  return 0;
+}
+
+
+
+int AH_Provider_ReadUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_USER *user) {
+  int rv;
+  GWEN_DB_NODE *db=NULL;
+
+  rv=AB_Banking6_Read_UserConfig(AB_Provider_GetBanking(pro), uid, doLock, doUnlock, &db);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=AH_User_ReadDb(user, db);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+int AH_Provider_WriteUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, const AB_USER *user) {
+  int rv;
+  GWEN_DB_NODE *db;
+
+  db=GWEN_DB_Group_new("user");
+  rv=AH_User_toDb(user, db);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=AB_Banking6_Write_UserConfig(AB_Provider_GetBanking(pro), uid, doLock, doUnlock, db);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    GWEN_DB_Group_free(db);
+    return rv;
+  }
+  GWEN_DB_Group_free(db);
+
+  return 0;
+}
+
+
+
+int AH_Provider__SortProviderQueueIntoUserQueueList(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_USERQUEUE_LIST *uql) {
+  AH_PROVIDER *hp;
+  AB_ACCOUNTQUEUE_LIST *aql;
+  AB_ACCOUNTQUEUE *aq;
+  int rv;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  aql=AB_ProviderQueue_GetAccountQueueList(pq);
+  if (aql==NULL) {
+    return GWEN_ERROR_NO_DATA;
+  }
+
+  while( (aq=AB_AccountQueue_List_First(aql)) ) {
+    uint32_t uid;
+    AB_ACCOUNT *a;
+    const char *s;
+    AB_USERQUEUE *uq=NULL;
+
+    uid=AB_AccountQueue_GetAccountId(aq);
+    a=AH_Account_new(AB_Provider_GetBanking(pro), pro);
+    rv=AH_Provider_ReadAccount(pro, uid, 1, 1, a);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    AB_AccountQueue_SetAccount(aq, a);
+
+    /* determine user */
+    s=AB_Account_GetFirstUserId(a);
+    if (!(s && *s)) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "No first user in account %lu, SNH!", (unsigned long int) uid);
+      return GWEN_ERROR_INTERNAL;
+    }
+    else {
+      unsigned long int id;
+
+      if (1!=sscanf(s, "%lu", &id)) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid id of first account user (%s), SNH!", s);
+        AB_UserQueue_List_free(uql);
+        return GWEN_ERROR_INTERNAL;
+      }
+
+      uq=AB_UserQueue_List_GetByUserId(uql, id);
+      if (uq==NULL) {
+        AB_USER *u;
+
+        u=AH_User_new(AB_Provider_GetBanking(pro), pro);
+
+        rv=AH_Provider_ReadUser(pro, id, 1, 1, u);
+        if (rv<0) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+          return rv;
+        }
+        AB_UserQueue_SetUser(uq, u);
+
+        AB_UserQueue_List_Add(uq, uql);
+      }
+    }
+
+    AB_AccountQueue_List_Del(aq);
+    AB_UserQueue_AddAccountQueue(uq, aq);
+  }
+
+  return 0;
+}
+
+
+
+void AH_Provider__FreeUsersAndAccountsFromUserQueueList(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql) {
+  AH_PROVIDER *hp;
+  AB_USERQUEUE *uq;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  uq=AB_UserQueue_List_First(uql);
+  while(uql) {
+    AB_ACCOUNTQUEUE_LIST *aql;
+    AB_USER *u;
+
+    u=AB_UserQueue_GetUser(uq);
+    aql=AB_UserQueue_GetAccountQueueList(uq);
+    if (aql) {
+      AB_ACCOUNTQUEUE *aq;
+
+      aq=AB_AccountQueue_List_First(aql);
+      while(aq) {
+        AB_ACCOUNT *a;
+
+        a=AB_AccountQueue_GetAccount(aq);
+        AB_AccountQueue_SetAccount(aq, NULL);
+        AB_Account_free(a);
+        aq=AB_AccountQueue_List_Next(aq);
+      }
+
+    }
+
+    AB_UserQueue_SetUser(uq, NULL);
+    AB_User_free(u);
+
+    uq=AB_UserQueue_List_Next(uq);
+  }
+}
+
+
+
+int AH_Provider__AddCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *t, AH_OUTBOX *outbox) {
+
+}
+
+
+
+int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, AH_OUTBOX *outbox) {
+  AH_PROVIDER *hp;
+  AB_USERQUEUE *uq;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  uq=AB_UserQueue_List_First(uql);
+  while(uql) {
+    AB_ACCOUNTQUEUE_LIST *aql;
+    AB_USER *u;
+
+    u=AB_UserQueue_GetUser(uq);
+    aql=AB_UserQueue_GetAccountQueueList(uq);
+    if (aql) {
+      AB_ACCOUNTQUEUE *aq;
+
+      aq=AB_AccountQueue_List_First(aql);
+      while(aq) {
+        AB_ACCOUNT *a;
+        AB_TRANSACTION_LIST2 *tl2;
+
+        a=AB_AccountQueue_GetAccount(aq);
+
+        /* read transactions */
+        tl2=AB_AccountQueue_GetTransactionList(aq);
+        if (tl2) {
+          AB_TRANSACTION_LIST2_ITERATOR *it;
+
+          it=AB_Transaction_List2_First(tl2);
+          if (it) {
+            AB_TRANSACTION *t;
+
+            t=AB_Transaction_List2Iterator_Data(it);
+            while(t) {
+              int rv;
+
+              rv=AH_Provider__AddCommandToOutbox(pro, u, a, t, outbox);
+              if (rv<0) {
+                DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+                AB_Transaction_SetStatus(t, AB_Transaction_StatusError);
+              }
+              t=AB_Transaction_List2Iterator_Next(it);
+            }
+
+            AB_Transaction_List2Iterator_free(it);
+          }
+        }
+
+        aq=AB_AccountQueue_List_Next(aq);
+      }
+
+      u=AB_UserQueue_GetUser(uq);
+      AB_UserQueue_SetUser(uq, NULL);
+      AB_User_free(u);
+    }
+
+    uq=AB_UserQueue_List_Next(uq);
+  }
+
+  return 0;
+}
+
+
+
+int AH_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx) {
+  AH_PROVIDER *hp;
+  AB_USERQUEUE_LIST *uql;
+  int rv;
+  AH_OUTBOX *outbox;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  /* sort into user queue list */
+  uql=AB_UserQueue_List_new();
+  rv=AH_Provider__SortProviderQueueIntoUserQueueList(pro, pq, uql);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AH_Provider__FreeUsersAndAccountsFromUserQueueList(pro, uql);
+    AB_UserQueue_List_free(uql);
+    return rv;
+  }
+
+  /* add users to outbox */
+  outbox=AH_Outbox_new(hp->hbci);
+  rv=AH_Provider__AddCommandsToOutbox(pro, uql, outbox);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AH_Provider__FreeUsersAndAccountsFromUserQueueList(pro, uql);
+    AB_UserQueue_List_free(uql);
+    return rv;
+  }
+
+  /* actually send commands */
+  rv=AH_Outbox_Execute(hp->outbox, ctx, 0, 1, 1);
+  if (rv<0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error executing outbox (%d).", rv);
+    rv=GWEN_ERROR_GENERIC;
+  }
+
+  /* release accounts and users we loaded */
+  AH_Provider__FreeUsersAndAccountsFromUserQueueList(pro, uql);
+
+  return rv;
 }
 
 
