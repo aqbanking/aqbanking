@@ -1070,14 +1070,17 @@ if test "$enable_fulldoc" = "yes"; then
 	DOXYGEN_INPUT="listdoc.h src"
         DOXYGEN_DEFINE=""
         DOXYGEN_FILE_PATTERNS="*.h *.hpp *.c *.cpp"
+        DOXYGEN_EXCLUDE_PATTERNS=""
 else
 	DOXYGEN_DEFINE="DOXYGEN_HIDE"
 	DOXYGEN_INPUT="listdoc.h aqbanking6"
         DOXYGEN_FILE_PATTERNS="*.h *.hpp"
+        DOXYGEN_EXCLUDE_PATTERNS="*_p.h"
 fi
 AC_SUBST(DOXYGEN_INPUT)
 AC_SUBST(DOXYGEN_DEFINE)
 AC_SUBST(DOXYGEN_FILE_PATTERNS)
+AC_SUBST(DOXYGEN_EXCLUDE_PATTERNS)
 AC_MSG_RESULT($enable_fulldoc)
 
 
