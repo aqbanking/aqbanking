@@ -4815,7 +4815,6 @@ int AH_Provider__AddCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a,
   AH_JOB *mj=NULL;
   int sigs;
   int jobIsNew=1;
-  AB_TRANSACTION *tCopy;
 
   cmd=AB_Transaction_GetCommand(t);
 
@@ -4868,16 +4867,9 @@ int AH_Provider__AddCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a,
   }
 
   /* exchange arguments */
-  tCopy=AB_Transaction_dup(t);
-
-  /* set group id so the application can know which transfers went together in one setting */
-  AB_Transaction_SetGroupId(tCopy, AH_Job_GetId(mj));
-  AB_Transaction_SetStatus(tCopy, AB_Transaction_StatusEnqueued);
-
-  rv=AH_Job_HandleCommand(mj, tCopy);
+  rv=AH_Job_HandleCommand(mj, t);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_Transaction_free(tCopy);
     AH_Job_free(mj);
     return rv;
   }
@@ -5002,6 +4994,8 @@ int AH_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORT
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error executing outbox (%d).", rv);
     rv=GWEN_ERROR_GENERIC;
   }
+
+  /* TODO: gather results */
 
   /* release accounts and users we loaded */
   AH_Provider__FreeUsersAndAccountsFromUserQueueList(pro, uql);

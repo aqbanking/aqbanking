@@ -1491,8 +1491,7 @@ int AH_Outbox_LockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers){
 
 
 
-int AH_Outbox_UnlockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers,
-			  int abandon){
+int AH_Outbox_UnlockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers, int abandon){
   int errors=0;
   AB_BANKING *ab;
   AB_USER_LIST2_ITERATOR *it;
