@@ -17,7 +17,6 @@
 
 
 
-static int AH_Job_SepaCor1DebitDatedSingleCreate_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
 static int AH_Job_SepaCor1DebitDatedSingleCreate_Prepare(AH_JOB *j);
 
 

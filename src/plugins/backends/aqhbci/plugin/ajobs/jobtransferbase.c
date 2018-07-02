@@ -180,29 +180,6 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_TransferBase_ExchangeParams_SepaUndated(AH_JOB *j, AB_JOB *bj,
-                                                   AB_IMEXPORTER_CONTEXT *ctx) {
-  AB_TRANSACTION_LIMITS *lim;
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging params");
-
-  /* set some default limits */
-  lim=AB_TransactionLimits_new();
-  AB_TransactionLimits_SetMaxLenPurpose(lim, 35);
-  AB_TransactionLimits_SetMaxLinesPurpose(lim, 4);
-  AB_TransactionLimits_SetMaxLenRemoteName(lim, 70);
-
-  AB_TransactionLimits_SetNeedDate(lim, -1);
-
-  AB_Job_SetFieldLimits(bj, lim);
-  AB_TransactionLimits_free(lim);
-
-  return 0;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
 int AH_Job_TransferBase_GetLimits_SepaUndated(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits) {
   AB_TRANSACTION_LIMITS *lim;
 
@@ -631,6 +608,88 @@ int AH_Job_TransferBase_ExchangeArgs_SepaDatedDebit(AH_JOB *j, AB_JOB *bj, AB_IM
   return 0;
 }
 
+
+
+/* --------------------------------------------------------------- FUNCTION */
+int AH_Job_TransferBase_AddChallengeParams29(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod) {
+  const AB_TRANSACTION *t;
+  const char *s;
+  int tanVer=AH_JOB_TANVER_1_4;
+
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "AddChallengeParams function called");
+
+  t=AH_Job_GetFirstTransfer(j);
+  if (t==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No validated transaction");
+    return GWEN_ERROR_INVALID;
+  }
+
+  s=GWEN_DB_GetCharValue(dbMethod, "zkaTanVersion", 0, NULL);
+  if (s && *s && strncasecmp(s, "1.3", 3)==0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "TAN version is 1.3 (%s)", s);
+    tanVer=AH_JOB_TANVER_1_3;
+  }
+
+  if (tanVer==AH_JOB_TANVER_1_4) {
+    int rv;
+
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "TAN version is 1.4.x");
+    rv=AH_HHD14_AddChallengeParams_29(j,
+                                      AB_Transaction_GetValue(t),
+                                      AB_Transaction_GetRemoteIban(t),
+                                      AB_Transaction_GetDate(t));
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unhandled tan version %d for now", tanVer);
+    return GWEN_ERROR_INTERNAL;
+  }
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+int AH_Job_TransferBase_AddChallengeParams35(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod) {
+  const AB_TRANSACTION *t;
+  const char *s;
+  int tanVer=AH_JOB_TANVER_1_4;
+
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "AddChallengeParams function called");
+
+  t=AH_Job_GetFirstTransfer(j);
+  if (t==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No validated transaction");
+    return GWEN_ERROR_INVALID;
+  }
+
+  s=GWEN_DB_GetCharValue(dbMethod, "zkaTanVersion", 0, NULL);
+  if (s && *s && strncasecmp(s, "1.3", 3)==0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "TAN version is 1.3 (%s)", s);
+    tanVer=AH_JOB_TANVER_1_3;
+  }
+
+  if (tanVer==AH_JOB_TANVER_1_4) {
+    int rv;
+
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "TAN version is 1.4.x");
+    rv=AH_HHD14_AddChallengeParams_35(j,
+                                      AB_Transaction_GetValue(t),
+                                      AB_Transaction_GetRemoteIban(t));
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unhandled tan version %d for now", tanVer);
+    return GWEN_ERROR_INTERNAL;
+  }
+  return 0;
+}
 
 
 /* --------------------------------------------------------------- FUNCTION */

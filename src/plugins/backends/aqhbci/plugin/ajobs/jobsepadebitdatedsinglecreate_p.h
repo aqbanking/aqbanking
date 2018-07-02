@@ -16,7 +16,6 @@
 #include <gwenhywfar/db.h>
 
 
-static int AH_Job_SepaDebitDatedSingleCreate_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
 static int AH_Job_SepaDebitDatedSingleCreate_Prepare(AH_JOB *j);
 
 

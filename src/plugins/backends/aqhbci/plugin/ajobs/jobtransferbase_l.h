@@ -35,16 +35,39 @@ void AH_Job_TransferBase_SetExchangeResultsFn(AH_JOB *j, AH_JOB_TRANSFERBASE_EXC
 
 int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile);
 
-int AH_Job_TransferBase_ExchangeParams_SepaUndated(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx);
 int AH_Job_TransferBase_ExchangeArgs_SepaDated(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx);
 int AH_Job_TransferBase_ExchangeArgs_SepaUndated(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx);
 int AH_Job_TransferBase_ExchangeArgs_SepaDatedDebit(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx);
 
 
+/**
+ * Returns AB_TRANSACTION_LIMITS for undated SEPA transfers and debit notes.
+ */
 int AH_Job_TransferBase_GetLimits_SepaUndated(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
+
+/**
+ * Returns AB_TRANSACTION_LIMITS for dated SEPA transfers and debit notes.
+ */
 int AH_Job_TransferBase_GetLimits_SepaDated(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
+
+/**
+ * Returns AB_TRANSACTION_LIMITS for SEPA standing order jobs.
+ */
 int AH_Job_TransferBase_GetLimits_SepaStandingOrder(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
 
+
+
+/**
+ * Add challenge parameters type 29 (used in dated transfers/debit notes).
+ */
+int AH_Job_TransferBase_AddChallengeParams29(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
+
+
+
+/**
+ * Add challenge parameters type 35 (used in SEPA standing orders).
+ */
+int AH_Job_TransferBase_AddChallengeParams35(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
 
 
 #endif /* AH_JOBTRANSFERBASE_L_H */
