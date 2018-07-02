@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -29,6 +26,8 @@ static int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CON
 static int AH_Job_GetTransactions_Exchange(AH_JOB *j, AB_JOB *bj,
 					   AH_JOB_EXCHANGE_MODE m,
 					   AB_IMEXPORTER_CONTEXT *ctx);
+static int AH_Job_GetTransactions_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
+
 
 static int
   AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,

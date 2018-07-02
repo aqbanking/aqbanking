@@ -61,12 +61,14 @@ AH_JOB *AH_Job_SepaTransferMulti_new(AB_USER *u, AB_ACCOUNT *account) {
   GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_SEPAXFERMULTI, j, aj,
                        AH_Job_SepaTransferMulti_FreeData);
 
+  AH_Job_SetSupportedCommand(j, AB_Transaction_CommandSepaTransfer);
+
   /* overwrite some virtual functions */
   AH_Job_SetPrepareFn(j, AH_Job_SepaTransferMulti_Prepare);
+  AH_Job_SetGetLimitsFn(j, AH_Job_TransferBase_GetLimits_SepaUndated);
   AH_Job_SetAddChallengeParamsFn(j, AH_Job_SepaTransferMulti_AddChallengeParams);
 
   /* overwrite virtual functions of transferBase class */
-  AH_Job_TransferBase_SetExchangeParamsFn(j, AH_Job_TransferBase_ExchangeParams_SepaUndated);
   AH_Job_TransferBase_SetExchangeArgsFn(j, AH_Job_TransferBase_ExchangeArgs_SepaUndated);
 
   /* get params */

@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -29,6 +26,7 @@ static int AH_Job_GetBalanceInvestment_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT 
 static int AH_Job_GetBalance_Exchange(AH_JOB *j, AB_JOB *bj,
 				      AH_JOB_EXCHANGE_MODE m,
 				      AB_IMEXPORTER_CONTEXT *ctx);
+
 
 static AB_BALANCE *AH_Job_GetBalance__ReadBalance(GWEN_DB_NODE *dbT);
 

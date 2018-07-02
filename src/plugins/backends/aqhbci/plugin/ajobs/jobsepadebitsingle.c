@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Tue Dec 31 2013
-    copyright   : (C) 2004-2013 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -49,13 +49,14 @@ AH_JOB *AH_Job_SepaDebitSingle_new(AB_USER *u, AB_ACCOUNT *account) {
     return 0;
 
   AH_Job_SetChallengeClass(j, 17);
+  AH_Job_SetSupportedCommand(j, AB_Transaction_CommandSepaDebitNote);
 
   /* overwrite some virtual functions */
   AH_Job_SetPrepareFn(j, AH_Job_SepaDebitSingle_Prepare);
   AH_Job_SetAddChallengeParamsFn(j, AH_Job_SepaDebitSingle_AddChallengeParams);
+  AH_Job_SetGetLimitsFn(j, AH_Job_TransferBase_GetLimits_SepaUndated);
 
   /* overwrite virtual functions of transferBase class */
-  AH_Job_TransferBase_SetExchangeParamsFn(j, AH_Job_SepaDebitSingle_ExchangeParams);
   AH_Job_TransferBase_SetExchangeArgsFn(j, AH_Job_TransferBase_ExchangeArgs_SepaUndated);
 
   /* set some known arguments */
@@ -63,29 +64,6 @@ AH_JOB *AH_Job_SepaDebitSingle_new(AB_USER *u, AB_ACCOUNT *account) {
   assert(dbArgs);
 
   return j;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaDebitSingle_ExchangeParams(AH_JOB *j, AB_JOB *bj,
-                                          AB_IMEXPORTER_CONTEXT *ctx) {
-  AB_TRANSACTION_LIMITS *lim;
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging params");
-
-  /* set some default limits */
-  lim=AB_TransactionLimits_new();
-  AB_TransactionLimits_SetMaxLenPurpose(lim, 35);
-  AB_TransactionLimits_SetMaxLinesPurpose(lim, 4);
-  AB_TransactionLimits_SetMaxLenRemoteName(lim, 27);
-
-  AB_TransactionLimits_SetNeedDate(lim, -1);
-
-  AB_Job_SetFieldLimits(bj, lim);
-  AB_TransactionLimits_free(lim);
-
-  return 0;
 }
 
 

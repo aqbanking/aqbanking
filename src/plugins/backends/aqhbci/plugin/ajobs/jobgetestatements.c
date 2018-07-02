@@ -46,8 +46,11 @@ AH_JOB *AH_Job_GetEStatements_new(AB_USER *u, AB_ACCOUNT *account) {
   if (!j)
     return NULL;
 
+  AH_Job_SetSupportedCommand(j, AB_Transaction_CommandGetEStatements);
+
   /* overwrite some virtual functions */
   AH_Job_SetProcessFn(j, AH_Job_GetEStatements_Process);
+  AH_Job_SetGetLimitsFn(j, AH_Job_GetLimits_EmptyLimits);
 
   return j;
 }

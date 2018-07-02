@@ -91,6 +91,8 @@ struct AH_JOB {
   int maxTransfers;
   int transferCount;
   AB_TRANSACTION_LIST *transferList;
+
+  AB_TRANSACTION_COMMAND supportedCommand;
 };
 
 

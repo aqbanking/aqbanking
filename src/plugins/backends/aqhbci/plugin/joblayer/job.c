@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2011 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -1177,6 +1177,17 @@ int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj,
 
 
 
+int AH_Job_GetLimits_EmptyLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits) {
+  AB_TRANSACTION_LIMITS *tl;
+
+  tl=AB_TransactionLimits_new();
+  AB_TransactionLimits_SetCommand(tl, AH_Job_GetSupportedCommand(j));
+  *pLimits=tl;
+  return 0;
+}
+
+
+
 int AH_Job_Prepare(AH_JOB *j){
   assert(j);
   assert(j->usage);
@@ -1280,7 +1291,7 @@ void AH_Job_SetAddChallengeParamsFn(AH_JOB *j, AH_JOB_ADDCHALLENGEPARAMS_FN f) {
 void AH_Job_SetGetLimitsFn(AH_JOB *j, AH_JOB_GETLIMITS_FN f) {
   assert(j);
   assert(j->usage);
-  j->getLimitsFn=fn;
+  j->getLimitsFn=f;
 }
 
 
@@ -2207,6 +2218,24 @@ GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *type,
 
   return j->sepaProfile;
 }
+
+
+
+AB_TRANSACTION_COMMAND AH_Job_GetSupportedCommand(const AH_JOB *j) {
+  assert(j);
+  assert(j->usage);
+  return j->supportedCommand;
+}
+
+
+
+void AH_Job_SetSupportedCommand(AH_JOB *j, AB_TRANSACTION_COMMAND tc) {
+  assert(j);
+  assert(j->usage);
+  j->supportedCommand=tc;
+}
+
+
 
 
 

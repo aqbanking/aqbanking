@@ -46,16 +46,18 @@ AH_JOB *AH_Job_SepaStandingOrderGet_new(AB_USER *u, AB_ACCOUNT *account) {
   if (!j)
     return 0;
 
+  AH_Job_SetSupportedCommand(j, AB_Transaction_CommandSepaGetStandingOrders);
+
   /* overwrite some virtual functions */
   AH_Job_SetPrepareFn(j, AH_Job_SepaStandingOrderGet_Prepare);
   AH_Job_SetProcessFn(j, AH_Job_SepaStandingOrdersGet_Process);
   AH_Job_SetExchangeFn(j, AH_Job_SepaStandingOrdersGet_Exchange);
+  AH_Job_SetGetLimitsFn(j, AH_Job_GetLimits_EmptyLimits);
 
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);
   assert(dbArgs);
-  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
-                       "allAccounts", "N");
+  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "allAccounts", "N");
   return j;
 }
 
@@ -245,11 +247,6 @@ int AH_Job_SepaStandingOrdersGet_Exchange(AH_JOB *j, AB_JOB *bj,
     return GWEN_ERROR_NOT_SUPPORTED;
   } /* switch */
 }
-
-
-
-
-
 
 
 

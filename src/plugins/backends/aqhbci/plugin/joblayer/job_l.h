@@ -340,6 +340,16 @@ AB_TRANSACTION_LIST *AH_Job_GetTransferList(const AH_JOB *j);
 void AH_Job_AddTransfer(AH_JOB *j, AB_TRANSACTION *t);
 AB_TRANSACTION *AH_Job_GetFirstTransfer(const AH_JOB *j);
 
+AB_TRANSACTION_COMMAND AH_Job_GetSupportedCommand(const AH_JOB *j);
+void AH_Job_SetSupportedCommand(AH_JOB *j, AB_TRANSACTION_COMMAND tc);
+
+
+/**
+ * This is a simple implementation of the GetLimits-callback which just creates
+ * an empty transaction limits object with just the command field set.
+ */
+int AH_Job_GetLimits_EmptyLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
+
 
 /**
  * Finds a profile of the SEPA ImExporter whose type option matches
@@ -354,6 +364,7 @@ GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *type,
 
 
 void AH_Job_ReadAccountDataSeg(AB_ACCOUNT *acc, GWEN_DB_NODE *dbAccountData);
+
 
 
 #endif /* AH_JOB_L_H */

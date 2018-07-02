@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: jobmultitransfer.c 1309 2007-10-24 01:48:05Z martin $
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -50,6 +47,7 @@ AH_JOB *AH_Job_ForeignTransferWH_new(AB_USER *u, AB_ACCOUNT *account) {
     return 0;
 
   AH_Job_SetChallengeClass(j, 60);
+  AH_Job_SetSupportedCommand(j, AB_Transaction_CommandNone);
 
   GWEN_NEW_OBJECT(AH_JOB_FOREIGNXFERWH, aj);
   GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_FOREIGNXFERWH, j, aj,

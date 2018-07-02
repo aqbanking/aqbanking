@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Wed Jan 15 2014
- copyright   : (C) 2014 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************

@@ -76,6 +76,9 @@ AH_JOB *AH_Job_GetTransactions_new(AB_USER *u,
   GWEN_NEW_OBJECT(AH_JOB_GETTRANSACTIONS, aj);
   GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_GETTRANSACTIONS, j, aj,
                        AH_Job_GetTransactions_FreeData);
+
+  AH_Job_SetSupportedCommand(j, AB_Transaction_CommandGetTransactions);
+
   /* overwrite some virtual functions */
   if(useCreditCardJob)
     AH_Job_SetProcessFn(j, AH_Job_GetTransactionsCreditCard_Process);
@@ -83,6 +86,7 @@ AH_JOB *AH_Job_GetTransactions_new(AB_USER *u,
     AH_Job_SetProcessFn(j, AH_Job_GetTransactions_Process);
 
   AH_Job_SetExchangeFn(j, AH_Job_GetTransactions_Exchange);
+  AH_Job_SetGetLimitsFn(j, AH_Job_GetTransactions_GetLimits);
 
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);
@@ -694,6 +698,20 @@ int AH_Job_GetTransactions_Exchange(AH_JOB *j, AB_JOB *bj,
 
 
 
+/* --------------------------------------------------------------- FUNCTION */
+int AH_Job_GetTransactions_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits) {
+  AB_TRANSACTION_LIMITS *tl;
+  GWEN_DB_NODE *dbParams;
+
+  dbParams=AH_Job_GetParams(j);
+
+  tl=AB_TransactionLimits_new();
+  AB_TransactionLimits_SetCommand(tl, AH_Job_GetSupportedCommand(j));
+  AB_TransactionLimits_SetMaxValueSetupTime(tl, GWEN_DB_GetIntValue(dbParams, "storeDays", 0, 0));
+  /* nothing more to set for this kind of job */
+  *pLimits=tl;
+  return 0;
+}
 
 
 

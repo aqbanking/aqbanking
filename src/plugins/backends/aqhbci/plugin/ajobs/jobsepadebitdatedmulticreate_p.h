@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Tue Dec 31 2013
-    copyright   : (C) 2004-2013 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -31,8 +31,6 @@ struct AH_JOB_CREATESEPAMULTIDEBIT {
 };
 static void GWENHYWFAR_CB AH_Job_SepaDebitDatedMultiCreate_FreeData(void *bp, void *p);
 
-static int AH_Job_SepaDebitDatedMultiCreate_ExchangeParams(AH_JOB *j, AB_JOB *bj,
-                                                           AB_IMEXPORTER_CONTEXT *ctx);
 static int AH_Job_SepaDebitDatedMultiCreate_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
 
 static int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j);

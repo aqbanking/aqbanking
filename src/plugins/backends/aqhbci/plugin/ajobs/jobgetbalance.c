@@ -79,12 +79,16 @@ AH_JOB *AH_Job_GetBalance_new(AB_USER *u, AB_ACCOUNT *account) {
 
   GWEN_NEW_OBJECT(AH_JOB_GETBALANCE, aj);
   GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_GETBALANCE, j, aj, AH_Job_GetBalance_FreeData);
+
+  AH_Job_SetSupportedCommand(j, AB_Transaction_CommandGetBalance);
+
   /* overwrite some virtual functions */
   if(useInvestmentJob)
     AH_Job_SetProcessFn(j, AH_Job_GetBalanceInvestment_Process);
   else
     AH_Job_SetProcessFn(j, AH_Job_GetBalance_Process);
   AH_Job_SetExchangeFn(j, AH_Job_GetBalance_Exchange);
+  AH_Job_SetGetLimitsFn(j, AH_Job_GetLimits_EmptyLimits);
 
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);

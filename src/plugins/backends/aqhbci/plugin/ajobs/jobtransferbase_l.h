@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2013 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -16,18 +16,17 @@
 
 
 typedef int (*AH_JOB_TRANSFERBASE_EXCHANGE_FN)(AH_JOB *j, AB_JOB *bj,
-                                                 AB_IMEXPORTER_CONTEXT *ctx);
+                                               AB_IMEXPORTER_CONTEXT *ctx);
 
 
 AH_JOB *AH_Job_TransferBase_new(const char *jobName,
-                                  AB_TRANSACTION_TYPE tt,
-                                  AB_TRANSACTION_SUBTYPE tst,
-                                  AB_USER *u, AB_ACCOUNT *account);
+                                AB_TRANSACTION_TYPE tt,
+                                AB_TRANSACTION_SUBTYPE tst,
+                                AB_USER *u, AB_ACCOUNT *account);
 
 const char *AH_Job_TransferBase_GetFiid(const AH_JOB *j);
 
 
-void AH_Job_TransferBase_SetExchangeParamsFn(AH_JOB *j, AH_JOB_TRANSFERBASE_EXCHANGE_FN f);
 void AH_Job_TransferBase_SetExchangeArgsFn(AH_JOB *j, AH_JOB_TRANSFERBASE_EXCHANGE_FN f);
 void AH_Job_TransferBase_SetExchangeResultsFn(AH_JOB *j, AH_JOB_TRANSFERBASE_EXCHANGE_FN f);
 
@@ -40,6 +39,11 @@ int AH_Job_TransferBase_ExchangeParams_SepaUndated(AH_JOB *j, AB_JOB *bj, AB_IME
 int AH_Job_TransferBase_ExchangeArgs_SepaDated(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx);
 int AH_Job_TransferBase_ExchangeArgs_SepaUndated(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx);
 int AH_Job_TransferBase_ExchangeArgs_SepaDatedDebit(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx);
+
+
+int AH_Job_TransferBase_GetLimits_SepaUndated(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
+int AH_Job_TransferBase_GetLimits_SepaDated(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
+int AH_Job_TransferBase_GetLimits_SepaStandingOrder(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
 
 
 

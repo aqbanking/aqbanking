@@ -40,9 +40,9 @@ GWEN_INHERIT(AH_JOB, AH_JOB_TRANSFERBASE);
 
 /* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_TransferBase_new(const char *jobName,
-                                  AB_TRANSACTION_TYPE tt,
-                                  AB_TRANSACTION_SUBTYPE tst,
-                                  AB_USER *u, AB_ACCOUNT *account) {
+                                AB_TRANSACTION_TYPE tt,
+                                AB_TRANSACTION_SUBTYPE tst,
+                                AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
   AH_JOB_TRANSFERBASE *aj;
 
@@ -197,6 +197,222 @@ int AH_Job_TransferBase_ExchangeParams_SepaUndated(AH_JOB *j, AB_JOB *bj,
   AB_Job_SetFieldLimits(bj, lim);
   AB_TransactionLimits_free(lim);
 
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+int AH_Job_TransferBase_GetLimits_SepaUndated(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits) {
+  AB_TRANSACTION_LIMITS *lim;
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging params");
+
+  /* set some default limits */
+  lim=AB_TransactionLimits_new();
+  AB_TransactionLimits_SetCommand(lim, AH_Job_GetSupportedCommand(j));
+
+  AB_TransactionLimits_SetMaxLenPurpose(lim, 35);
+  AB_TransactionLimits_SetMaxLinesPurpose(lim, 4);
+  AB_TransactionLimits_SetMaxLenRemoteName(lim, 70);
+
+  AB_TransactionLimits_SetNeedDate(lim, -1);
+
+  *pLimits=lim;
+
+  return 0;
+}
+
+
+
+int AH_Job_TransferBase_GetLimits_SepaDated(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits) {
+  AB_TRANSACTION_LIMITS *lim;
+  GWEN_DB_NODE *dbParams;
+  int i, i1, i2;
+
+  dbParams=AH_Job_GetParams(j);
+
+  lim=AB_TransactionLimits_new();
+  AB_TransactionLimits_SetCommand(lim, AH_Job_GetSupportedCommand(j));
+
+  AB_TransactionLimits_SetMaxLenPurpose(lim, 35);
+  AB_TransactionLimits_SetMaxLinesPurpose(lim, 4);
+  AB_TransactionLimits_SetMaxLenRemoteName(lim, 70);
+
+  AB_TransactionLimits_SetNeedDate(lim, 1);
+
+  /* set info from BPD */
+  i1=GWEN_DB_GetIntValue(dbParams, "minDelay_FNAL_RCUR", 0, 0);
+  AB_TransactionLimits_SetMinValueSetupTimeRecurring(lim, i1);
+  AB_TransactionLimits_SetMinValueSetupTimeFinal(lim, i1);
+
+  i2=GWEN_DB_GetIntValue(dbParams, "minDelay_FRST_OOFF", 0, 0);
+  AB_TransactionLimits_SetMinValueSetupTimeFirst(lim, i2);
+  AB_TransactionLimits_SetMinValueSetupTimeOnce(lim, i2);
+
+  /* combine into minimum values for older apps */
+  i=(i1>i2)?i1:i2;
+  AB_TransactionLimits_SetMinValueSetupTime(lim, i);
+
+  i1=GWEN_DB_GetIntValue(dbParams, "maxDelay_FNAL_RCUR", 0, 0);
+  AB_TransactionLimits_SetMaxValueSetupTimeRecurring(lim, i1);
+  AB_TransactionLimits_SetMinValueSetupTimeFinal(lim, i1);
+
+  i2=GWEN_DB_GetIntValue(dbParams, "maxDelay_FRST_OOFF", 0, 0);
+  AB_TransactionLimits_SetMaxValueSetupTimeFirst(lim, i2);
+  AB_TransactionLimits_SetMaxValueSetupTimeOnce(lim, i2);
+
+  /* combine into minimum values for older apps */
+  i=(i1<i2)?i1:i2;
+  AB_TransactionLimits_SetMaxValueSetupTime(lim, i);
+
+  /* nothing more to set for this kind of job */
+  *pLimits=lim;
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+int AH_Job_TransferBase_GetLimits_SepaStandingOrder(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits) {
+  AB_TRANSACTION_LIMITS *lim;
+  GWEN_DB_NODE *dbParams;
+  const char *s;
+  int i;
+
+  dbParams=AH_Job_GetParams(j);
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Have this parameters to exchange:");
+  if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug)
+    GWEN_DB_Dump(dbParams, 2);
+
+  /* set some default limits */
+  lim=AB_TransactionLimits_new();
+  AB_TransactionLimits_SetCommand(lim, AH_Job_GetSupportedCommand(j));
+
+  AB_TransactionLimits_SetMaxLenPurpose(lim, 35);
+  AB_TransactionLimits_SetMaxLinesPurpose(lim, 4);
+  AB_TransactionLimits_SetMaxLenRemoteName(lim, 70);
+
+  /* get specific limits for creation of standing orders */
+  AB_TransactionLimits_PresetValuesCycleMonth(lim, 0);
+  AB_TransactionLimits_SetValuesCycleMonthUsed(lim, 0);
+  s=GWEN_DB_GetCharValue(dbParams, "AllowedTurnusMonths", 0, 0);
+  if (s && *s) {
+    AB_TransactionLimits_SetAllowMonthly(lim, 1);
+    while(*s) {
+      char buf[3];
+      const char *x;
+      int rv;
+      int d;
+
+      buf[2]=0;
+      strncpy(buf, s, 2);
+      x=buf;
+      if (*x=='0')
+        x++;
+
+      rv=sscanf(x, "%d", &d);
+      if (rv!=1) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
+      }
+      else
+        AB_TransactionLimits_ValuesCycleMonthAdd(lim, d);
+      s+=2;
+    } /* while */
+  }
+  else
+    AB_TransactionLimits_SetAllowMonthly(lim, -1);
+
+  AB_TransactionLimits_PresetValuesExecutionDayMonth(lim, 0);
+  AB_TransactionLimits_SetValuesExecutionDayMonthUsed(lim, 0);
+  s=GWEN_DB_GetCharValue(dbParams, "AllowedMonthDays", 0, 0);
+  if (s && *s) {
+    while(*s) {
+      char buf[3];
+      const char *x;
+      int rv;
+      int d;
+
+      buf[2]=0;
+      strncpy(buf, s, 2);
+      x=buf;
+      if (*x=='0')
+        x++;
+
+      rv=sscanf(x, "%d", &d);
+      if (rv!=1) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
+      }
+      else
+        AB_TransactionLimits_ValuesExecutionDayMonthAdd(lim, d);
+      s+=2;
+    } /* while */
+  }
+
+  AB_TransactionLimits_PresetValuesCycleWeek(lim, 0);
+  AB_TransactionLimits_SetValuesCycleWeekUsed(lim, 0);
+  s=GWEN_DB_GetCharValue(dbParams, "AllowedTurnusWeeks", 0, 0);
+  if (s && *s) {
+    AB_TransactionLimits_SetAllowWeekly(lim, 1);
+    while(*s) {
+      char buf[3];
+      const char *x;
+      int rv;
+      int d;
+
+      buf[2]=0;
+      strncpy(buf, s, 2);
+      x=buf;
+      if (*x=='0')
+        x++;
+
+      rv=sscanf(x, "%d", &d);
+      if (rv!=1) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
+      }
+      else
+        AB_TransactionLimits_ValuesCycleWeekAdd(lim, d);
+      s+=2;
+    } /* while */
+  }
+  else
+    AB_TransactionLimits_SetAllowWeekly(lim, -1);
+
+  AB_TransactionLimits_PresetValuesExecutionDayWeek(lim, 0);
+  AB_TransactionLimits_SetValuesExecutionDayWeekUsed(lim, 0);
+  s=GWEN_DB_GetCharValue(dbParams, "AllowedWeekDays", 0, 0);
+  if (s && *s) {
+    while(*s) {
+      char buf[2];
+      const char *x;
+      int rv;
+      int d;
+
+      buf[0]=*s;
+      buf[1]=0;
+      x=buf;
+      if (*x=='0')
+        x++;
+
+      rv=sscanf(x, "%d", &d);
+      if (rv!=1) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
+      }
+      else
+        AB_TransactionLimits_ValuesExecutionDayWeekAdd(lim, d);
+      s++;
+    } /* while */
+  }
+
+  i=GWEN_DB_GetIntValue(dbParams, "minDelay", 0, 0);
+  AB_TransactionLimits_SetMinValueSetupTime(lim, i);
+
+  i=GWEN_DB_GetIntValue(dbParams, "maxDelay", 0, 0);
+  AB_TransactionLimits_SetMaxValueSetupTime(lim, i);
+
+
+  /* nothing more to set for this kind of job */
+  *pLimits=lim;
   return 0;
 }
 
@@ -512,10 +728,21 @@ int AH_Job_TransferBase_Exchange(AH_JOB *j, AB_JOB *bj,
   assert(aj);
 
   switch(m) {
-  case AH_Job_ExchangeModeParams:
-    if (aj->exchangeParamsFn)
-      return aj->exchangeParamsFn(j, bj, ctx);
-    break;
+  case AH_Job_ExchangeModeParams: {
+    AB_TRANSACTION_LIMITS *lim=NULL;
+    int rv;
+  
+    rv=AH_Job_GetLimits(j, &lim);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  
+    AB_Job_SetFieldLimits(bj, lim);
+    AB_TransactionLimits_free(lim);
+  
+    return 0;
+  }
 
   case AH_Job_ExchangeModeArgs:
     if (aj->exchangeArgsFn)
@@ -597,19 +824,6 @@ int AH_Job_TransferBase_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
 
 
   return 0;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-void AH_Job_TransferBase_SetExchangeParamsFn(AH_JOB *j, AH_JOB_TRANSFERBASE_EXCHANGE_FN f){
-  AH_JOB_TRANSFERBASE *aj;
-
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j);
-  assert(aj);
-
-  aj->exchangeParamsFn=f;
 }
 
 

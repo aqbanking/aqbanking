@@ -50,13 +50,13 @@ AH_JOB *AH_Job_SepaTransferSingle_new(AB_USER *u, AB_ACCOUNT *account) {
     return 0;
 
   AH_Job_SetChallengeClass(j, 9);
+  AH_Job_SetSupportedCommand(j, AB_Transaction_CommandSepaTransfer);
 
   /* overwrite some virtual functions */
   AH_Job_SetPrepareFn(j, AH_Job_SepaTransferSingle_Prepare);
   AH_Job_SetAddChallengeParamsFn(j, AH_Job_SepaTransferSingle_AddChallengeParams);
 
   /* overwrite virtual functions of transferBase class */
-  AH_Job_TransferBase_SetExchangeParamsFn(j, AH_Job_TransferBase_ExchangeParams_SepaUndated);
   AH_Job_TransferBase_SetExchangeArgsFn(j, AH_Job_TransferBase_ExchangeArgs_SepaUndated);
 
   return j;

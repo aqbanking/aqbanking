@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2013 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -47,6 +47,7 @@ AH_JOB *AH_Job_LoadCellPhone_new(AB_USER *u, AB_ACCOUNT *account) {
     return 0;
 
   AH_Job_SetChallengeClass(j, 41);
+  AH_Job_SetSupportedCommand(j, AB_Transaction_CommandLoadCellPhone);
 
   GWEN_NEW_OBJECT(AH_JOB_LOADCELLPHONE, aj);
   GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_LOADCELLPHONE, j, aj,

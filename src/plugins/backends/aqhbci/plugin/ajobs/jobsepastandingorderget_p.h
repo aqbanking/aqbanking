@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Wed Jan 15 2014
- copyright   : (C) 2014 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -20,6 +20,7 @@ static int AH_Job_SepaStandingOrdersGet_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT
 static int AH_Job_SepaStandingOrdersGet_Exchange(AH_JOB *j, AB_JOB *bj,
                                                  AH_JOB_EXCHANGE_MODE m,
                                                  AB_IMEXPORTER_CONTEXT *ctx);
+static int AH_Job_SepaStandingOrdersGet_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
 
 
 

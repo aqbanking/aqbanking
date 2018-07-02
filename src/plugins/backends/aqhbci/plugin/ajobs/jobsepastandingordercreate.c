@@ -48,163 +48,17 @@ AH_JOB *AH_Job_SepaStandingOrderCreate_new(AB_USER *u, AB_ACCOUNT *account) {
     return 0;
 
   AH_Job_SetChallengeClass(j, 35);
+  AH_Job_SetSupportedCommand(j, AB_Transaction_CommandSepaCreateStandingOrder);
 
   /* overwrite some virtual functions */
   AH_Job_SetPrepareFn(j, AH_Job_SepaStandingOrderCreate_Prepare);
   AH_Job_SetAddChallengeParamsFn(j, AH_Job_SepaStandingOrderCreate_AddChallengeParams);
+  AH_Job_SetGetLimitsFn(j, AH_Job_TransferBase_GetLimits_SepaStandingOrder);
 
   /* overwrite virtual functions of transferBase class */
-  AH_Job_TransferBase_SetExchangeParamsFn(j, AH_Job_SepaStandingOrderCreate_ExchangeParams);
   AH_Job_TransferBase_SetExchangeArgsFn(j, AH_Job_SepaStandingOrderCreate_ExchangeArgs);
 
   return j;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaStandingOrderCreate_ExchangeParams(AH_JOB *j, AB_JOB *bj,
-                                                  AB_IMEXPORTER_CONTEXT *ctx) {
-  AB_TRANSACTION_LIMITS *lim;
-  GWEN_DB_NODE *dbParams;
-  const char *s;
-  int i;
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging params");
-
-  dbParams=AH_Job_GetParams(j);
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Have this parameters to exchange:");
-  if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug)
-    GWEN_DB_Dump(dbParams, 2);
-
-  /* set some default limits */
-  lim=AB_TransactionLimits_new();
-  AB_TransactionLimits_SetMaxLenPurpose(lim, 35);
-  AB_TransactionLimits_SetMaxLinesPurpose(lim, 4);
-  AB_TransactionLimits_SetMaxLenRemoteName(lim, 70);
-
-  /* get specific limits for creation of standing orders */
-  AB_TransactionLimits_PresetValuesCycleMonth(lim, 0);
-  AB_TransactionLimits_SetValuesCycleMonthUsed(lim, 0);
-  s=GWEN_DB_GetCharValue(dbParams, "AllowedTurnusMonths", 0, 0);
-  if (s && *s) {
-    AB_TransactionLimits_SetAllowMonthly(lim, 1);
-    while(*s) {
-      char buf[3];
-      const char *x;
-      int rv;
-      int d;
-
-      buf[2]=0;
-      strncpy(buf, s, 2);
-      x=buf;
-      if (*x=='0')
-        x++;
-
-      rv=sscanf(x, "%d", &d);
-      if (rv!=1) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
-      }
-      else
-        AB_TransactionLimits_ValuesCycleMonthAdd(lim, d);
-      s+=2;
-    } /* while */
-  }
-  else
-    AB_TransactionLimits_SetAllowMonthly(lim, -1);
-
-  AB_TransactionLimits_PresetValuesExecutionDayMonth(lim, 0);
-  AB_TransactionLimits_SetValuesExecutionDayMonthUsed(lim, 0);
-  s=GWEN_DB_GetCharValue(dbParams, "AllowedMonthDays", 0, 0);
-  if (s && *s) {
-    while(*s) {
-      char buf[3];
-      const char *x;
-      int rv;
-      int d;
-
-      buf[2]=0;
-      strncpy(buf, s, 2);
-      x=buf;
-      if (*x=='0')
-        x++;
-
-      rv=sscanf(x, "%d", &d);
-      if (rv!=1) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
-      }
-      else
-        AB_TransactionLimits_ValuesExecutionDayMonthAdd(lim, d);
-      s+=2;
-    } /* while */
-  }
-
-  AB_TransactionLimits_PresetValuesCycleWeek(lim, 0);
-  AB_TransactionLimits_SetValuesCycleWeekUsed(lim, 0);
-  s=GWEN_DB_GetCharValue(dbParams, "AllowedTurnusWeeks", 0, 0);
-  if (s && *s) {
-    AB_TransactionLimits_SetAllowWeekly(lim, 1);
-    while(*s) {
-      char buf[3];
-      const char *x;
-      int rv;
-      int d;
-
-      buf[2]=0;
-      strncpy(buf, s, 2);
-      x=buf;
-      if (*x=='0')
-        x++;
-
-      rv=sscanf(x, "%d", &d);
-      if (rv!=1) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
-      }
-      else
-        AB_TransactionLimits_ValuesCycleWeekAdd(lim, d);
-      s+=2;
-    } /* while */
-  }
-  else
-    AB_TransactionLimits_SetAllowWeekly(lim, -1);
-
-  AB_TransactionLimits_PresetValuesExecutionDayWeek(lim, 0);
-  AB_TransactionLimits_SetValuesExecutionDayWeekUsed(lim, 0);
-  s=GWEN_DB_GetCharValue(dbParams, "AllowedWeekDays", 0, 0);
-  if (s && *s) {
-    while(*s) {
-      char buf[2];
-      const char *x;
-      int rv;
-      int d;
-
-      buf[0]=*s;
-      buf[1]=0;
-      x=buf;
-      if (*x=='0')
-        x++;
-
-      rv=sscanf(x, "%d", &d);
-      if (rv!=1) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
-      }
-      else
-        AB_TransactionLimits_ValuesExecutionDayWeekAdd(lim, d);
-      s++;
-    } /* while */
-  }
-
-  i=GWEN_DB_GetIntValue(dbParams, "minDelay", 0, 0);
-  AB_TransactionLimits_SetMinValueSetupTime(lim, i);
-
-  i=GWEN_DB_GetIntValue(dbParams, "maxDelay", 0, 0);
-  AB_TransactionLimits_SetMaxValueSetupTime(lim, i);
-
-
-  AB_Job_SetFieldLimits(bj, lim);
-  AB_TransactionLimits_free(lim);
-
-  return 0;
 }
 
 

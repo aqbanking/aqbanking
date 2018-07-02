@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Tue Dec 31 2013
-    copyright   : (C) 2004-2013 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -21,7 +21,6 @@ struct AH_JOB_TRANSFERBASE {
   AB_TRANSACTION_TYPE transactionType;
   AB_TRANSACTION_SUBTYPE transactionSubType;
   char *fiid;
-  AH_JOB_TRANSFERBASE_EXCHANGE_FN exchangeParamsFn;
   AH_JOB_TRANSFERBASE_EXCHANGE_FN exchangeArgsFn;
   AH_JOB_TRANSFERBASE_EXCHANGE_FN exchangeResultsFn;
 };
@@ -31,8 +30,8 @@ static int AH_Job_TransferBase_ExchangeResults(AH_JOB *j, AB_JOB *bj,
                                            AB_IMEXPORTER_CONTEXT *ctx);
 
 static int AH_Job_TransferBase_Exchange(AH_JOB *j, AB_JOB *bj,
-                                    AH_JOB_EXCHANGE_MODE m,
-                                    AB_IMEXPORTER_CONTEXT *ctx);
+                                        AH_JOB_EXCHANGE_MODE m,
+                                        AB_IMEXPORTER_CONTEXT *ctx);
 
 static int AH_Job_TransferBase_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 
