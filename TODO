@@ -1,7 +1,7 @@
 Next:
 =====
 - AH_JOB:
-  - implement handleCommand() and getLimits() in the various account jobs
+  - add virtual function AH_Job_HandleResult and implement it
   - remove exchange functions
   - process(): add code from exchange(results)
 - AH_PROVIDER:
