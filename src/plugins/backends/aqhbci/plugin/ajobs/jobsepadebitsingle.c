@@ -55,9 +55,7 @@ AH_JOB *AH_Job_SepaDebitSingle_new(AB_USER *u, AB_ACCOUNT *account) {
   AH_Job_SetPrepareFn(j, AH_Job_SepaDebitSingle_Prepare);
   AH_Job_SetAddChallengeParamsFn(j, AH_Job_SepaDebitSingle_AddChallengeParams);
   AH_Job_SetGetLimitsFn(j, AH_Job_TransferBase_GetLimits_SepaUndated);
-
-  /* overwrite virtual functions of transferBase class */
-  AH_Job_TransferBase_SetExchangeArgsFn(j, AH_Job_TransferBase_ExchangeArgs_SepaUndated);
+  AH_Job_SetHandleCommandFn(j, AH_Job_TransferBase_HandleCommand_SepaUndated);
 
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);

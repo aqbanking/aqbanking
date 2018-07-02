@@ -42,8 +42,7 @@ GWEN_INHERIT(AH_JOB, AH_JOB_GETTRANSACTIONS);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_GetTransactions_new(AB_USER *u,
-                                   AB_ACCOUNT *account) {
+AH_JOB *AH_Job_GetTransactions_new(AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
   AH_JOB_GETTRANSACTIONS *aj;
   GWEN_DB_NODE *dbArgs;
@@ -74,8 +73,7 @@ AH_JOB *AH_Job_GetTransactions_new(AB_USER *u,
     return 0;
 
   GWEN_NEW_OBJECT(AH_JOB_GETTRANSACTIONS, aj);
-  GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_GETTRANSACTIONS, j, aj,
-                       AH_Job_GetTransactions_FreeData);
+  GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_GETTRANSACTIONS, j, aj, AH_Job_GetTransactions_FreeData);
 
   AH_Job_SetSupportedCommand(j, AB_Transaction_CommandGetTransactions);
 
@@ -87,6 +85,7 @@ AH_JOB *AH_Job_GetTransactions_new(AB_USER *u,
 
   AH_Job_SetExchangeFn(j, AH_Job_GetTransactions_Exchange);
   AH_Job_SetGetLimitsFn(j, AH_Job_GetTransactions_GetLimits);
+  AH_Job_SetHandleCommandFn(j, AH_Job_GetTransactions_HandleCommand);
 
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);
@@ -710,6 +709,41 @@ int AH_Job_GetTransactions_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits)
   AB_TransactionLimits_SetMaxValueSetupTime(tl, GWEN_DB_GetIntValue(dbParams, "storeDays", 0, 0));
   /* nothing more to set for this kind of job */
   *pLimits=tl;
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+int AH_Job_GetTransactions_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t) {
+  const GWEN_DATE *da;
+  
+  da=AB_Transaction_GetFirstDate(t);
+  if (da) {
+    char dbuf[16];
+    GWEN_DB_NODE *dbArgs;
+  
+    dbArgs=AH_Job_GetArguments(j);
+    snprintf(dbuf, sizeof(dbuf), "%04d%02d%02d",
+             GWEN_Date_GetYear(da),
+             GWEN_Date_GetMonth(da),
+             GWEN_Date_GetDay(da));
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "fromDate", dbuf);
+  }
+  
+  da=AB_Transaction_GetLastDate(t);
+  if (da) {
+    char dbuf[16];
+    GWEN_DB_NODE *dbArgs;
+  
+    dbArgs=AH_Job_GetArguments(j);
+    snprintf(dbuf, sizeof(dbuf), "%04d%02d%02d",
+             GWEN_Date_GetYear(da),
+             GWEN_Date_GetMonth(da),
+             GWEN_Date_GetDay(da));
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "toDate", dbuf);
+  }
+  
   return 0;
 }
 

@@ -94,7 +94,7 @@ typedef int (*AH_JOB_PREPARE_FN)(AH_JOB *j);
 typedef int (*AH_JOB_ADDCHALLENGEPARAMS_FN)(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
 
 typedef int (*AH_JOB_GETLIMITS_FN)(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
-typedef int (*AH_JOB_HANDLECOMMAND_FN)(AH_JOB *j, AB_TRANSACTION *t);
+typedef int (*AH_JOB_HANDLECOMMAND_FN)(AH_JOB *j, const AB_TRANSACTION *t);
 
 
 /**
@@ -229,7 +229,7 @@ int AH_Job_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
  * error code should be returned.
  * If zero is returned the given transaction is taken over by the job (otherwise it is not).
  */
-int AH_Job_HandleCommand(AH_JOB *j, AB_TRANSACTION *t);
+int AH_Job_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t);
 
 /*@}*/
 
@@ -349,6 +349,14 @@ void AH_Job_SetSupportedCommand(AH_JOB *j, AB_TRANSACTION_COMMAND tc);
  * an empty transaction limits object with just the command field set.
  */
 int AH_Job_GetLimits_EmptyLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
+
+
+/**
+ * Implementation of AH_Job_HandleCommand which just accepts the command
+ * and does nothing else.
+ */
+int AH_Job_HandleCommand_Accept(AH_JOB *j, const AB_TRANSACTION *t);
+
 
 
 /**

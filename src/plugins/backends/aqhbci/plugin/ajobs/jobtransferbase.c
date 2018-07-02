@@ -395,11 +395,13 @@ int AH_Job_TransferBase_GetLimits_SepaStandingOrder(AH_JOB *j, AB_TRANSACTION_LI
 
 
 
+
+
+
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_TransferBase_ExchangeArgs_SepaUndated(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx) {
-  const AB_TRANSACTION_LIMITS *lim=NULL;
+int AH_Job_TransferBase_HandleCommand_SepaUndated(AH_JOB *j, const AB_TRANSACTION *t) {
+  AB_TRANSACTION_LIMITS *lim=NULL;
   AB_BANKING *ab;
-  const AB_TRANSACTION *t=NULL;
   AB_TRANSACTION *tCopy=NULL;
   int rv;
   AB_USER *u;
@@ -416,43 +418,43 @@ int AH_Job_TransferBase_ExchangeArgs_SepaUndated(AH_JOB *j, AB_JOB *bj, AB_IMEXP
   uflags=AH_User_GetFlags(u);
 
   /* get limits and transaction */
-  lim=AB_Job_GetFieldLimits(bj);
-  t=AB_Job_GetTransaction(bj);
   if (t==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
     return GWEN_ERROR_INVALID;
   }
-
-  /* DISABLED according to a discussion on aqbanking-user:
-   * The application should do this, not the library.
-  AB_Transaction_FillLocalFromAccount(t, a); */
+  rv=AH_Job_GetLimits(j, &lim);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
 
   /* validate transaction */
   rv=AB_Transaction_CheckForSepaConformity(t, (uflags & AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET)?1:0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_TransactionLimits_free(lim);
     return rv;
   }
 
   rv=AB_Transaction_CheckPurposeAgainstLimits(t, lim);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_TransactionLimits_free(lim);
     return rv;
   }
 
   rv=AB_Transaction_CheckNamesAgainstLimits(t, lim);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_TransactionLimits_free(lim);
     return rv;
   }
+  AB_TransactionLimits_free(lim);
 
   tCopy=AB_Transaction_dup(t);
 
-  /* set group id so the application can now which transfers went together in one setting */
+  /* set group id so the application can know which transfers went together in one setting */
   AB_Transaction_SetGroupId(tCopy, AH_Job_GetId(j));
-
-  /* store validated transaction in job */
-  AB_Job_SetTransaction(bj, tCopy);
 
   /* store copy of transaction for later */
   AH_Job_AddTransfer(j, tCopy);
@@ -463,10 +465,9 @@ int AH_Job_TransferBase_ExchangeArgs_SepaUndated(AH_JOB *j, AB_JOB *bj, AB_IMEXP
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_TransferBase_ExchangeArgs_SepaDated(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx) {
-  const AB_TRANSACTION_LIMITS *lim=NULL;
+int AH_Job_TransferBase_HandleCommand_SepaDated(AH_JOB *j, const AB_TRANSACTION *t) {
+  AB_TRANSACTION_LIMITS *lim=NULL;
   AB_BANKING *ab;
-  const AB_TRANSACTION *t=NULL;
   AB_TRANSACTION *tCopy=NULL;
   int rv;
   AB_USER *u;
@@ -483,115 +484,45 @@ int AH_Job_TransferBase_ExchangeArgs_SepaDated(AH_JOB *j, AB_JOB *bj, AB_IMEXPOR
   uflags=AH_User_GetFlags(u);
 
   /* get limits and transaction */
-  lim=AB_Job_GetFieldLimits(bj);
-  t=AB_Job_GetTransaction(bj);
   if (t==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
     return GWEN_ERROR_INVALID;
   }
-
-  /* DISABLED according to a discussion on aqbanking-user:
-   * The application should do this, not the library.
-  AB_Transaction_FillLocalFromAccount(t, a); */
+  rv=AH_Job_GetLimits(j, &lim);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
 
   /* validate transaction */
   rv=AB_Transaction_CheckForSepaConformity(t, (uflags & AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET)?1:0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_TransactionLimits_free(lim);
     return rv;
   }
 
   rv=AB_Transaction_CheckPurposeAgainstLimits(t, lim);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_TransactionLimits_free(lim);
     return rv;
   }
 
   rv=AB_Transaction_CheckNamesAgainstLimits(t, lim);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_TransactionLimits_free(lim);
     return rv;
   }
 
   rv=AB_Transaction_CheckDateAgainstLimits(t, lim);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_TransactionLimits_free(lim);
     return rv;
   }
-
-
-  tCopy=AB_Transaction_dup(t);
-
-  /* set group id so the application can now which transfers went together in one setting */
-  AB_Transaction_SetGroupId(tCopy, AH_Job_GetId(j));
-
-  /* store validated transaction in job */
-  AB_Job_SetTransaction(bj, tCopy);
-
-  /* store copy of transaction for later */
-  AH_Job_AddTransfer(j, tCopy);
-
-  return 0;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_TransferBase_ExchangeArgs_SepaDatedDebit(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx) {
-  const AB_TRANSACTION_LIMITS *lim=NULL;
-  AB_BANKING *ab;
-  const AB_TRANSACTION *t=NULL;
-  AB_TRANSACTION *tCopy=NULL;
-  int rv;
-  AB_USER *u;
-  uint32_t uflags;
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging args");
-
-  ab=AH_Job_GetBankingApi(j);
-  assert(ab);
-
-  u=AH_Job_GetUser(j);
-  assert(u);
-
-  uflags=AH_User_GetFlags(u);
-
-  /* get limits and transaction */
-  lim=AB_Job_GetFieldLimits(bj);
-  t=AB_Job_GetTransaction(bj);
-  if (t==NULL) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
-    return GWEN_ERROR_INVALID;
-  }
-
-  /* DISABLED according to a discussion on aqbanking-user:
-   * The application should do this, not the library.
-  AB_Transaction_FillLocalFromAccount(t, a); */
-
-  /* validate transaction */
-  rv=AB_Transaction_CheckForSepaConformity(t, (uflags & AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET)?1:0);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  rv=AB_Transaction_CheckPurposeAgainstLimits(t, lim);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  rv=AB_Transaction_CheckNamesAgainstLimits(t, lim);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  rv=AB_Transaction_CheckDateAgainstSequenceLimits(t, lim);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
+  AB_TransactionLimits_free(lim);
 
 
   tCopy=AB_Transaction_dup(t);
@@ -599,8 +530,166 @@ int AH_Job_TransferBase_ExchangeArgs_SepaDatedDebit(AH_JOB *j, AB_JOB *bj, AB_IM
   /* set group id so the application can know which transfers went together in one setting */
   AB_Transaction_SetGroupId(tCopy, AH_Job_GetId(j));
 
-  /* store validated transaction in job */
-  AB_Job_SetTransaction(bj, tCopy);
+  /* store copy of transaction for later */
+  AH_Job_AddTransfer(j, tCopy);
+
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+int AH_Job_TransferBase_HandleCommand_SepaDatedDebit(AH_JOB *j, const AB_TRANSACTION *t) {
+  AB_TRANSACTION_LIMITS *lim=NULL;
+  AB_BANKING *ab;
+  AB_TRANSACTION *tCopy=NULL;
+  int rv;
+  AB_USER *u;
+  uint32_t uflags;
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging args");
+
+  ab=AH_Job_GetBankingApi(j);
+  assert(ab);
+
+  u=AH_Job_GetUser(j);
+  assert(u);
+
+  uflags=AH_User_GetFlags(u);
+
+  /* get limits and transaction */
+  if (t==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
+    return GWEN_ERROR_INVALID;
+  }
+  rv=AH_Job_GetLimits(j, &lim);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* validate transaction */
+  rv=AB_Transaction_CheckForSepaConformity(t, (uflags & AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET)?1:0);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_TransactionLimits_free(lim);
+    return rv;
+  }
+
+  rv=AB_Transaction_CheckPurposeAgainstLimits(t, lim);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_TransactionLimits_free(lim);
+    return rv;
+  }
+
+  rv=AB_Transaction_CheckNamesAgainstLimits(t, lim);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_TransactionLimits_free(lim);
+    return rv;
+  }
+
+  rv=AB_Transaction_CheckDateAgainstSequenceLimits(t, lim);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_TransactionLimits_free(lim);
+    return rv;
+  }
+  AB_TransactionLimits_free(lim);
+
+
+  tCopy=AB_Transaction_dup(t);
+
+  /* set group id so the application can know which transfers went together in one setting */
+  AB_Transaction_SetGroupId(tCopy, AH_Job_GetId(j));
+
+  /* store copy of transaction for later */
+  AH_Job_AddTransfer(j, tCopy);
+
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+int AH_Job_TransferBase_HandleCommand_SepaStandingOrder(AH_JOB *j, const AB_TRANSACTION *t) {
+  AB_TRANSACTION_LIMITS *lim=NULL;
+  AB_BANKING *ab;
+  AB_TRANSACTION *tCopy=NULL;
+  int rv;
+  AB_USER *u;
+  uint32_t uflags;
+  const char *s;
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging args");
+
+  ab=AH_Job_GetBankingApi(j);
+  assert(ab);
+
+  u=AH_Job_GetUser(j);
+  assert(u);
+
+  uflags=AH_User_GetFlags(u);
+
+  /* get limits and transaction */
+  if (t==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
+    return GWEN_ERROR_INVALID;
+  }
+  rv=AH_Job_GetLimits(j, &lim);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* validate transaction */
+  rv=AB_Transaction_CheckForSepaConformity(t, (uflags & AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET)?1:0);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_TransactionLimits_free(lim);
+    return rv;
+  }
+
+  rv=AB_Transaction_CheckPurposeAgainstLimits(t, lim);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_TransactionLimits_free(lim);
+    return rv;
+  }
+
+  rv=AB_Transaction_CheckNamesAgainstLimits(t, lim);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_TransactionLimits_free(lim);
+    return rv;
+  }
+
+  rv=AB_Transaction_CheckRecurrenceAgainstLimits(t, lim);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* CheckFirstExecutionDateAgainstLimits for standingordercreate only */
+  s=AB_Transaction_GetFiId(t);
+  if (s) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Check FirstExecutionDate for delete or modify DISABLED");
+  }
+  else {
+    rv=AB_Transaction_CheckFirstExecutionDateAgainstLimits(t, lim);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+  AB_TransactionLimits_free(lim);
+
+
+  tCopy=AB_Transaction_dup(t);
+
+  /* set group id so the application can know which transfers went together in one setting */
+  AB_Transaction_SetGroupId(tCopy, AH_Job_GetId(j));
 
   /* store copy of transaction for later */
   AH_Job_AddTransfer(j, tCopy);
@@ -803,11 +892,6 @@ int AH_Job_TransferBase_Exchange(AH_JOB *j, AB_JOB *bj,
     return 0;
   }
 
-  case AH_Job_ExchangeModeArgs:
-    if (aj->exchangeArgsFn)
-      return aj->exchangeArgsFn(j, bj, ctx);
-    break;
-
   case AH_Job_ExchangeModeResults:
     if (aj->exchangeResultsFn)
       return aj->exchangeResultsFn(j, bj, ctx);
@@ -883,19 +967,6 @@ int AH_Job_TransferBase_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
 
 
   return 0;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-void AH_Job_TransferBase_SetExchangeArgsFn(AH_JOB *j, AH_JOB_TRANSFERBASE_EXCHANGE_FN f){
-  AH_JOB_TRANSFERBASE *aj;
-
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j);
-  assert(aj);
-
-  aj->exchangeArgsFn=f;
 }
 
 

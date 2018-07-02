@@ -66,10 +66,8 @@ AH_JOB *AH_Job_SepaTransferMulti_new(AB_USER *u, AB_ACCOUNT *account) {
   /* overwrite some virtual functions */
   AH_Job_SetPrepareFn(j, AH_Job_SepaTransferMulti_Prepare);
   AH_Job_SetGetLimitsFn(j, AH_Job_TransferBase_GetLimits_SepaUndated);
+  AH_Job_SetHandleCommandFn(j, AH_Job_TransferBase_HandleCommand_SepaUndated);
   AH_Job_SetAddChallengeParamsFn(j, AH_Job_SepaTransferMulti_AddChallengeParams);
-
-  /* overwrite virtual functions of transferBase class */
-  AH_Job_TransferBase_SetExchangeArgsFn(j, AH_Job_TransferBase_ExchangeArgs_SepaUndated);
 
   /* get params */
   dbParams=AH_Job_GetParams(j);

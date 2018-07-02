@@ -20,7 +20,6 @@ static int AH_Job_SepaStandingOrdersGet_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT
 static int AH_Job_SepaStandingOrdersGet_Exchange(AH_JOB *j, AB_JOB *bj,
                                                  AH_JOB_EXCHANGE_MODE m,
                                                  AB_IMEXPORTER_CONTEXT *ctx);
-static int AH_Job_SepaStandingOrdersGet_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
 
 
 

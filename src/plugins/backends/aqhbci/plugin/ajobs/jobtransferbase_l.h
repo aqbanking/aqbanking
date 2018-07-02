@@ -27,18 +27,12 @@ AH_JOB *AH_Job_TransferBase_new(const char *jobName,
 const char *AH_Job_TransferBase_GetFiid(const AH_JOB *j);
 
 
-void AH_Job_TransferBase_SetExchangeArgsFn(AH_JOB *j, AH_JOB_TRANSFERBASE_EXCHANGE_FN f);
 void AH_Job_TransferBase_SetExchangeResultsFn(AH_JOB *j, AH_JOB_TRANSFERBASE_EXCHANGE_FN f);
 
 
 
 
 int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile);
-
-int AH_Job_TransferBase_ExchangeArgs_SepaDated(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx);
-int AH_Job_TransferBase_ExchangeArgs_SepaUndated(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx);
-int AH_Job_TransferBase_ExchangeArgs_SepaDatedDebit(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx);
-
 
 /**
  * Returns AB_TRANSACTION_LIMITS for undated SEPA transfers and debit notes.
@@ -54,6 +48,54 @@ int AH_Job_TransferBase_GetLimits_SepaDated(AH_JOB *j, AB_TRANSACTION_LIMITS **p
  * Returns AB_TRANSACTION_LIMITS for SEPA standing order jobs.
  */
 int AH_Job_TransferBase_GetLimits_SepaStandingOrder(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
+
+
+
+/**
+ * Implementation of AH_Job_HandleCommand() for undated SEPA jobs.
+ * It checks the given transaction and adds it to the internal list of transfers for the given job.
+ * Checks performed here are:
+ * - @ref AB_Transaction_CheckForSepaConformity
+ * - @ref AB_Transaction_CheckPurposeAgainstLimits
+ * - @ref AB_Transaction_CheckNamesAgainstLimits
+ */
+int AH_Job_TransferBase_HandleCommand_SepaUndated(AH_JOB *j, const AB_TRANSACTION *t);
+
+/**
+ * Implementation of AH_Job_HandleCommand() for dated SEPA jobs.
+ * It checks the given transaction and adds it to the internal list of transfers for the given job.
+ * Checks performed here are:
+ * - @ref AB_Transaction_CheckForSepaConformity
+ * - @ref AB_Transaction_CheckPurposeAgainstLimits
+ * - @ref AB_Transaction_CheckNamesAgainstLimits
+ * - @ref AB_Transaction_CheckDateAgainstLimits
+ */
+int AH_Job_TransferBase_HandleCommand_SepaDated(AH_JOB *j, const AB_TRANSACTION *t);
+
+/**
+ * Implementation of AH_Job_HandleCommand() for dated SEPA debit noted jobs.
+ * It checks the given transaction and adds it to the internal list of transfers for the given job.
+ * Checks performed here are:
+ * - @ref AB_Transaction_CheckForSepaConformity
+ * - @ref AB_Transaction_CheckPurposeAgainstLimits
+ * - @ref AB_Transaction_CheckNamesAgainstLimits
+ * - @ref AB_Transaction_CheckDateAgainstSequenceLimits
+ */
+int AH_Job_TransferBase_HandleCommand_SepaDatedDebit(AH_JOB *j, const AB_TRANSACTION *t);
+
+/**
+ * Implementation of AH_Job_HandleCommand() for SEPA standing order jobs.
+ * It checks the given transaction and adds it to the internal list of transfers for the given job.
+ * Checks performed here are:
+ * - @ref AB_Transaction_CheckForSepaConformity
+ * - @ref AB_Transaction_CheckPurposeAgainstLimits
+ * - @ref AB_Transaction_CheckNamesAgainstLimits
+ * - @ref AB_Transaction_CheckRecurrenceAgainstLimits
+ * - @ref AB_Transaction_CheckFirstExecutionDateAgainstLimits (only for CreateStandingOrder)
+ */
+int AH_Job_TransferBase_HandleCommand_SepaStandingOrder(AH_JOB *j, const AB_TRANSACTION *t);
+
+
 
 
 

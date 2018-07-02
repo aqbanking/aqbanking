@@ -21,7 +21,6 @@ struct AH_JOB_TRANSFERBASE {
   AB_TRANSACTION_TYPE transactionType;
   AB_TRANSACTION_SUBTYPE transactionSubType;
   char *fiid;
-  AH_JOB_TRANSFERBASE_EXCHANGE_FN exchangeArgsFn;
   AH_JOB_TRANSFERBASE_EXCHANGE_FN exchangeResultsFn;
 };
 static void GWENHYWFAR_CB AH_Job_TransferBase_FreeData(void *bp, void *p);

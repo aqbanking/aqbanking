@@ -27,6 +27,7 @@ static int AH_Job_GetTransactions_Exchange(AH_JOB *j, AB_JOB *bj,
 					   AH_JOB_EXCHANGE_MODE m,
 					   AB_IMEXPORTER_CONTEXT *ctx);
 static int AH_Job_GetTransactions_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
+static int AH_Job_GetTransactions_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t);
 
 
 static int

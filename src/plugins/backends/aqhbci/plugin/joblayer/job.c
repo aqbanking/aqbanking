@@ -1188,6 +1188,12 @@ int AH_Job_GetLimits_EmptyLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits) {
 
 
 
+int AH_Job_HandleCommand_Accept(AH_JOB *j, const AB_TRANSACTION *t) {
+  return 0;
+}
+
+
+
 int AH_Job_Prepare(AH_JOB *j){
   assert(j);
   assert(j->usage);
@@ -1227,7 +1233,7 @@ int AH_Job_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits) {
 
 
 
-int AH_Job_HandleCommand(AH_JOB *j, AB_TRANSACTION *t) {
+int AH_Job_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t) {
   assert(j);
   assert(j->usage);
   if (j->handleCommandFn)

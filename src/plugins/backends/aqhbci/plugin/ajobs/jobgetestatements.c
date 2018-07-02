@@ -51,6 +51,7 @@ AH_JOB *AH_Job_GetEStatements_new(AB_USER *u, AB_ACCOUNT *account) {
   /* overwrite some virtual functions */
   AH_Job_SetProcessFn(j, AH_Job_GetEStatements_Process);
   AH_Job_SetGetLimitsFn(j, AH_Job_GetLimits_EmptyLimits);
+  AH_Job_SetHandleCommandFn(j, AH_Job_HandleCommand_Accept);
 
   return j;
 }

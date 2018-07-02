@@ -37,9 +37,7 @@ AH_JOB *AH_Job_SepaStandingOrderModify_new(AB_USER *u, AB_ACCOUNT *account) {
   AH_Job_SetPrepareFn(j, AH_Job_SepaStandingOrderCreate_Prepare);
   AH_Job_SetAddChallengeParamsFn(j, AH_Job_TransferBase_AddChallengeParams35);
   AH_Job_SetGetLimitsFn(j, AH_Job_TransferBase_GetLimits_SepaStandingOrder);
-
-  /* overwrite virtual functions of transferBase class */
-  AH_Job_TransferBase_SetExchangeArgsFn(j, AH_Job_SepaStandingOrderCreate_ExchangeArgs);
+  AH_Job_SetHandleCommandFn(j, AH_Job_TransferBase_HandleCommand_SepaStandingOrder);
 
   return j;
 }
