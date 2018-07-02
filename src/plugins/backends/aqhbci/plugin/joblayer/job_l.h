@@ -310,8 +310,6 @@ void AH_Job_Log(AH_JOB *j, GWEN_LOGGER_LEVEL ll, const char *txt);
 GWEN_STRINGLIST *AH_Job_GetChallengeParams(const AH_JOB *j);
 void AH_Job_AddChallengeParam(AH_JOB *j, const char *s);
 void AH_Job_ClearChallengeParams(AH_JOB *j);
-const AB_VALUE *AH_Job_GetChallengeValue(const AH_JOB *j);
-void AH_Job_SetChallengeValue(AH_JOB *j, const AB_VALUE *v);
 int AH_Job_GetChallengeClass(const AH_JOB *j);
 void AH_Job_SetChallengeClass(AH_JOB *j, int i);
 

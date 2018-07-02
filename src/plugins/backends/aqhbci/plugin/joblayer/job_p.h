@@ -86,7 +86,6 @@ struct AH_JOB {
   GWEN_STRINGLIST *log;
 
   GWEN_STRINGLIST *challengeParams;
-  AB_VALUE *challengeValue;
 
   int maxTransfers;
   int transferCount;

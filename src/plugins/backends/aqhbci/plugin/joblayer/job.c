@@ -430,7 +430,6 @@ void AH_Job_free(AH_JOB *j) {
   if (j) {
     assert(j->usage);
     if (--(j->usage)==0) {
-      AB_Value_free(j->challengeValue);
       GWEN_StringList_free(j->challengeParams);
       GWEN_StringList_free(j->log);
       GWEN_StringList_free(j->signers);
@@ -1980,22 +1979,6 @@ void AH_Job_ClearChallengeParams(AH_JOB *j) {
 void AH_Job_AddChallengeParam(AH_JOB *j, const char *s) {
   assert(j);
   GWEN_StringList_AppendString(j->challengeParams, s, 0, 0);
-}
-
-
-
-const AB_VALUE *AH_Job_GetChallengeValue(const AH_JOB *j) {
-  assert(j);
-  return j->challengeValue;
-}
-
-
-
-void AH_Job_SetChallengeValue(AH_JOB *j, const AB_VALUE *v) {
-  assert(j);
-  AB_Value_free(j->challengeValue);
-  if (v) j->challengeValue=AB_Value_dup(v);
-  else j->challengeValue=NULL;
 }
 
 
