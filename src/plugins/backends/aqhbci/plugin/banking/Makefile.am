@@ -24,6 +24,18 @@ iheader_HEADERS=\
 libhbcibanking_la_SOURCES=\
  provider.c
 
+
+
+EXTRA_DIST=\
+  provider_b6.c \
+  provider_dtazv.c \
+  provider_iniletter.c \
+  provider_keys.c \
+  provider_online.c \
+  provider_dialogs.c
+
+
+
 sources:
 	for f in $(libhbcibanking_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
