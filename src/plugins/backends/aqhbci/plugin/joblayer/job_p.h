@@ -1,11 +1,14 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2011 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
+
+/** @file src/plugins/backends/aqhbci/plugin/joblayer/job_p.h
+ */
 
 
 #ifndef AH_JOB_P_H
@@ -75,6 +78,7 @@ struct AH_JOB {
 
   AH_JOB_GETLIMITS_FN getLimitsFn;
   AH_JOB_HANDLECOMMAND_FN handleCommandFn;
+  AH_JOB_HANDLERESULTS_FN handleResultsFn;
 
   AH_RESULT_LIST *segResults;
   AH_RESULT_LIST *msgResults;

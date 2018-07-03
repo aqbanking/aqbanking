@@ -4958,10 +4958,75 @@ int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, A
 
 
 
+
+int AH_Provider__SampleResults(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_IMEXPORTER_CONTEXT *ctx) {
+  AH_PROVIDER *hp;
+  int rv;
+  AH_JOB_LIST *mjl;
+  AH_JOB *j;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  assert(outbox);
+
+  mjl=AH_Outbox_GetFinishedJobs(outbox);
+  assert(mjl);
+
+  j=AH_Job_List_First(mjl);
+  while(j) {
+    AB_MESSAGE_LIST *ml;
+
+    if (0) {
+      const GWEN_STRINGLIST *sl;
+      GWEN_STRINGLISTENTRY *se;
+
+      /* exchange logs */
+      sl=AH_Job_GetLogs(j);
+      assert(sl);
+      se=GWEN_StringList_FirstEntry(sl);
+      while(se) {
+        const char *s;
+
+        s=GWEN_StringListEntry_Data(se);
+        assert(s);
+        //AB_Job_LogRaw(bj, s);
+        se=GWEN_StringListEntry_Next(se);
+      }
+    }
+
+    /* get remaining results */
+    rv=AH_Job_HandleResults(j, ctx);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    }
+
+    /* copy messages from AH_JOB to imexporter context */
+    ml=AH_Job_GetMessages(j);
+    if (ml) {
+      AB_MESSAGE *msg;
+  
+      msg=AB_Message_List_First(ml);
+      while(msg) {
+        AB_ImExporterContext_AddMessage(ctx, AB_Message_dup(msg));
+        msg=AB_Message_List_Next(msg);
+      }
+    }
+  
+    j=AH_Job_List_Next(j);
+  } /* while j */
+
+  return 0;
+}
+
+
+
 int AH_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx) {
   AH_PROVIDER *hp;
   AB_USERQUEUE_LIST *uql;
   int rv;
+  int rv2;
   AH_OUTBOX *outbox;
 
   assert(pro);
@@ -4989,16 +5054,27 @@ int AH_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORT
   }
 
   /* actually send commands */
-  rv=AH_Outbox_Execute(hp->outbox, ctx, 0, 1, 1);
+  rv=AH_Outbox_Execute(outbox, ctx, 0, 1, 1);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error executing outbox (%d).", rv);
     rv=GWEN_ERROR_GENERIC;
   }
 
-  /* TODO: gather results */
+  /* gather results */
+  rv2=AH_Provider__SampleResults(pro, outbox, ctx);
+  if (rv2<0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error sampling results (%d)", rv2);
+  }
+
+  AH_Outbox_free(outbox);
+
 
   /* release accounts and users we loaded */
   AH_Provider__FreeUsersAndAccountsFromUserQueueList(pro, uql);
+
+  /* error code from AH_Outbox_Execute is more important than that from AH_Provider__SampleResults */
+  if (rv>=0)
+    rv=rv2;
 
   return rv;
 }

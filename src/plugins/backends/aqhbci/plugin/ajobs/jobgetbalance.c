@@ -53,14 +53,12 @@ AH_JOB *AH_Job_GetBalance_new(AB_USER *u, AB_ACCOUNT *account) {
 
     n=GWEN_DB_GetFirstGroup(updgroup);
     while(n) {
-      if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""),
-		     "DKKKS")==0) {
+      if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "DKKKS")==0) {
 	useCreditCardJob = 1;
 	break;
       }
 
-      if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""),
-		     "HKWPD")==0) {
+      if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKWPD")==0) {
 	useInvestmentJob = 1;
 	break;
       }
@@ -87,19 +85,17 @@ AH_JOB *AH_Job_GetBalance_new(AB_USER *u, AB_ACCOUNT *account) {
     AH_Job_SetProcessFn(j, AH_Job_GetBalanceInvestment_Process);
   else
     AH_Job_SetProcessFn(j, AH_Job_GetBalance_Process);
-  AH_Job_SetExchangeFn(j, AH_Job_GetBalance_Exchange);
   AH_Job_SetGetLimitsFn(j, AH_Job_GetLimits_EmptyLimits);
   AH_Job_SetHandleCommandFn(j, AH_Job_HandleCommand_Accept);
+  AH_Job_SetHandleResultsFn(j, AH_Job_HandleResults_Empty);
 
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);
   assert(dbArgs);
-  if(useCreditCardJob || useInvestmentJob)
-    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
-			 "accountNumber", AB_Account_GetAccountNumber(account));
+  if (useCreditCardJob || useInvestmentJob)
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountNumber", AB_Account_GetAccountNumber(account));
   else
-    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
-			 "allAccounts", "N");
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "allAccounts", "N");
 
   return j;
 }
@@ -547,47 +543,6 @@ int AH_Job_GetBalanceInvestment_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   GWEN_Buffer_free(tbooked);
   return 0;
 }
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetBalance_Exchange(AH_JOB *j, AB_JOB *bj,
-			       AH_JOB_EXCHANGE_MODE m,
-			       AB_IMEXPORTER_CONTEXT *ctx){
-  AH_JOB_GETBALANCE *aj;
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);
-
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETBALANCE, j);
-  assert(aj);
-
-  if (AB_Job_GetType(bj)!=AB_Job_TypeGetBalance) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Not a GetBalance job");
-    return GWEN_ERROR_INVALID;
-  }
-
-  switch(m) {
-  case AH_Job_ExchangeModeParams:
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "No params to exchange");
-    return 0;
-  case AH_Job_ExchangeModeArgs:
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "No arguments to exchange");
-    return 0;
-  case AH_Job_ExchangeModeResults:
-    return 0;
-  default:
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Unsupported exchange mode");
-    return GWEN_ERROR_NOT_SUPPORTED;
-  } /* switch */
-}
-
-
-
-
-
-
-
 
 
 

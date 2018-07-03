@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -95,6 +95,7 @@ typedef int (*AH_JOB_ADDCHALLENGEPARAMS_FN)(AH_JOB *j, int hkTanVer, GWEN_DB_NOD
 
 typedef int (*AH_JOB_GETLIMITS_FN)(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
 typedef int (*AH_JOB_HANDLECOMMAND_FN)(AH_JOB *j, const AB_TRANSACTION *t);
+typedef int (*AH_JOB_HANDLERESULTS_FN)(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 
 
 /**
@@ -231,6 +232,13 @@ int AH_Job_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
  */
 int AH_Job_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t);
 
+/**
+ * Let the job transfer remaining results to the imExporter context.
+ * Some jobs already add their results to the context upon @ref AH_Job_Process.
+ * This function is for those jobs which don't.
+ */
+int AH_Job_HandleResults(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
+
 /*@}*/
 
 
@@ -246,6 +254,8 @@ void AH_Job_SetPrepareFn(AH_JOB *j, AH_JOB_PREPARE_FN f);
 void AH_Job_SetAddChallengeParamsFn(AH_JOB *j, AH_JOB_ADDCHALLENGEPARAMS_FN f);
 void AH_Job_SetGetLimitsFn(AH_JOB *j, AH_JOB_GETLIMITS_FN f);
 void AH_Job_SetHandleCommandFn(AH_JOB *j, AH_JOB_HANDLECOMMAND_FN f);
+void AH_Job_SetHandleResultsFn(AH_JOB *j, AH_JOB_HANDLERESULTS_FN f);
+
 
 /*@}*/
 
@@ -356,6 +366,12 @@ int AH_Job_GetLimits_EmptyLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
 int AH_Job_HandleCommand_Accept(AH_JOB *j, const AB_TRANSACTION *t);
 
 
+/**
+ * Implementation of AH_Job_HandleResults which does nothing.
+ */
+int AH_Job_HandleResults_Empty(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
+
+
 
 /**
  * Finds a profile of the SEPA ImExporter whose type option matches
@@ -364,8 +380,7 @@ int AH_Job_HandleCommand_Accept(AH_JOB *j, const AB_TRANSACTION *t);
  * Specifying the NULL pointer for tmpl will return the profile
  * selected during an earlier call to this function for the same job.
  */
-GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *type,
-                                     const char *name);
+GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *type, const char *name);
 
 
 

@@ -56,8 +56,7 @@ AH_JOB *AH_Job_GetTransactions_new(AB_USER *u, AB_ACCOUNT *account) {
      GWEN_DB_NODE *n;
       n=GWEN_DB_GetFirstGroup(updgroup);
       while(n) {
-        if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""),
-                       "DKKKU")==0) {
+        if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "DKKKU")==0) {
           useCreditCardJob = 1;
           break;
         }
@@ -83,9 +82,9 @@ AH_JOB *AH_Job_GetTransactions_new(AB_USER *u, AB_ACCOUNT *account) {
   else
     AH_Job_SetProcessFn(j, AH_Job_GetTransactions_Process);
 
-  AH_Job_SetExchangeFn(j, AH_Job_GetTransactions_Exchange);
   AH_Job_SetGetLimitsFn(j, AH_Job_GetTransactions_GetLimits);
   AH_Job_SetHandleCommandFn(j, AH_Job_GetTransactions_HandleCommand);
+  AH_Job_SetHandleResultsFn(j, AH_Job_HandleResults_Empty);
 
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);
@@ -622,78 +621,6 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
 
   return 0;
 }
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetTransactions_Exchange(AH_JOB *j, AB_JOB *bj,
-				    AH_JOB_EXCHANGE_MODE m,
-				    AB_IMEXPORTER_CONTEXT *ctx){
-  AH_JOB_GETTRANSACTIONS *aj;
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);
-
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETTRANSACTIONS, j);
-  assert(aj);
-
-  if (AB_Job_GetType(bj)!=AB_Job_TypeGetTransactions) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Not a GetTransactions job");
-    return GWEN_ERROR_INVALID;
-  }
-
-  switch(m) {
-  case AH_Job_ExchangeModeParams: {
-    GWEN_DB_NODE *dbParams;
-
-    dbParams=AH_Job_GetParams(j);
-    AB_JobGetTransactions_SetMaxStoreDays(bj, GWEN_DB_GetIntValue(dbParams, "storeDays", 0, 0));
-    return 0;
-  }
-
-  case AH_Job_ExchangeModeArgs: {
-    const GWEN_DATE *da;
-
-    da=AB_JobGetTransactions_GetFromDate(bj);
-    if (da) {
-      char dbuf[16];
-      GWEN_DB_NODE *dbArgs;
-
-      dbArgs=AH_Job_GetArguments(j);
-      snprintf(dbuf, sizeof(dbuf), "%04d%02d%02d",
-               GWEN_Date_GetYear(da),
-               GWEN_Date_GetMonth(da),
-               GWEN_Date_GetDay(da));
-      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                           "fromDate", dbuf);
-    }
-
-    da=AB_JobGetTransactions_GetToDate(bj);
-    if (da) {
-      char dbuf[16];
-      GWEN_DB_NODE *dbArgs;
-
-      dbArgs=AH_Job_GetArguments(j);
-      snprintf(dbuf, sizeof(dbuf), "%04d%02d%02d",
-               GWEN_Date_GetYear(da),
-               GWEN_Date_GetMonth(da),
-               GWEN_Date_GetDay(da));
-      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                           "toDate", dbuf);
-    }
-
-    return 0;
-  }
-
-  case AH_Job_ExchangeModeResults:
-    return 0;
-
-  default:
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Unsupported exchange mode");
-    return GWEN_ERROR_NOT_SUPPORTED;
-  } /* switch */
-}
-
 
 
 

@@ -27,11 +27,6 @@ AH_JOB *AH_Job_TransferBase_new(const char *jobName,
 const char *AH_Job_TransferBase_GetFiid(const AH_JOB *j);
 
 
-void AH_Job_TransferBase_SetExchangeResultsFn(AH_JOB *j, AH_JOB_TRANSFERBASE_EXCHANGE_FN f);
-
-
-
-
 int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile);
 
 /**

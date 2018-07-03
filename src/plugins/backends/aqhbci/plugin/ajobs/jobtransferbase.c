@@ -19,6 +19,7 @@
 #include "job_l.h"
 #include "provider_l.h"
 #include "hhd_l.h"
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
@@ -42,7 +43,8 @@ GWEN_INHERIT(AH_JOB, AH_JOB_TRANSFERBASE);
 AH_JOB *AH_Job_TransferBase_new(const char *jobName,
                                 AB_TRANSACTION_TYPE tt,
                                 AB_TRANSACTION_SUBTYPE tst,
-                                AB_USER *u, AB_ACCOUNT *account) {
+                                AB_USER *u,
+                                AB_ACCOUNT *account) {
   AH_JOB *j;
   AH_JOB_TRANSFERBASE *aj;
 
@@ -51,15 +53,14 @@ AH_JOB *AH_Job_TransferBase_new(const char *jobName,
     return 0;
 
   GWEN_NEW_OBJECT(AH_JOB_TRANSFERBASE, aj);
-  GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j, aj,
-                       AH_Job_TransferBase_FreeData);
+  GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j, aj, AH_Job_TransferBase_FreeData);
 
   aj->transactionType=tt;
   aj->transactionSubType=tst;
 
   /* overwrite some virtual functions */
-  AH_Job_SetExchangeFn(j, AH_Job_TransferBase_Exchange);
   AH_Job_SetProcessFn(j, AH_Job_TransferBase_Process);
+  AH_Job_SetHandleResultsFn(j, AH_Job_TransferBase_HandleResults);
 
   return j;
 }
@@ -151,16 +152,9 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
       }
 
       /* store descriptor */
-      GWEN_DB_SetCharValue(dbArgs,
-                           GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "descriptor",
-                       descriptor);
+      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "descriptor", descriptor);
       /* store transfer */
-      GWEN_DB_SetBinValue(dbArgs,
-                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "transfer",
-                          GWEN_Buffer_GetStart(dbuf),
-                          GWEN_Buffer_GetUsedBytes(dbuf));
+      GWEN_DB_SetBinValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "transfer", GWEN_Buffer_GetStart(dbuf), GWEN_Buffer_GetUsedBytes(dbuf));
       GWEN_Buffer_free(dbuf);
     }
     else {
@@ -864,48 +858,82 @@ int AH_Job_TransferBase_ExchangeResults(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CON
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_TransferBase_Exchange(AH_JOB *j, AB_JOB *bj,
-                                 AH_JOB_EXCHANGE_MODE m,
-                                 AB_IMEXPORTER_CONTEXT *ctx){
+void AH_Job_TransferBase_SetStatusOnTransfersAndAddToCtx(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx, AB_TRANSACTION_STATUS status) {
   AH_JOB_TRANSFERBASE *aj;
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);
+  const AB_TRANSACTION *t;
+  AB_ACCOUNT *a;
 
   assert(j);
   aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j);
   assert(aj);
 
-  switch(m) {
-  case AH_Job_ExchangeModeParams: {
-    AB_TRANSACTION_LIMITS *lim=NULL;
-    int rv;
-  
-    rv=AH_Job_GetLimits(j, &lim);
-    if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      return rv;
+  a=AH_AccountJob_GetAccount(j);
+  assert(a);
+
+  t=AH_Job_GetFirstTransfer(j);
+  while (t) {
+    AB_TRANSACTION *cpy;
+
+    cpy=AB_Transaction_dup(t);
+    AB_Transaction_SetFiId(cpy, aj->fiid);
+    AB_Transaction_SetStatus(cpy, status);
+    AB_Transaction_SetType(cpy, aj->transactionType);
+    AB_Transaction_SetSubType(cpy, aj->transactionSubType);
+
+    AB_Transaction_SetUniqueAccountId(cpy, AB_Account_GetUniqueId(a));
+
+    AB_ImExporterContext_AddTransaction(ctx, cpy);      /* takes over cpy */
+
+    t=AB_Transaction_List_Next(t);
+  }
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+int AH_Job_TransferBase_HandleResults(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
+  AH_JOB_TRANSFERBASE *aj;
+  AH_RESULT_LIST *rl;
+  AH_RESULT *r;
+  AB_TRANSACTION_STATUS tStatus;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j);
+  assert(aj);
+
+  rl=AH_Job_GetSegResults(j);
+  assert(rl);
+
+  r=AH_Result_List_First(rl);
+  if (!r) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No segment results");
+    tStatus=AB_Transaction_StatusError;
+  }
+  else {
+    int has10=0;
+    int has20=0;
+
+    while(r) {
+      int rcode;
+
+      rcode=AH_Result_GetCode(r);
+      if (rcode>=10 && rcode<=19)
+        has10=1;
+      else if (rcode>=20 && rcode <=29)
+        has20=1;
+      r=AH_Result_List_Next(r);
     }
-  
-    AB_Job_SetFieldLimits(bj, lim);
-    AB_TransactionLimits_free(lim);
-  
-    return 0;
+
+    if (has20)
+      tStatus=AB_Transaction_StatusAccepted;
+    else if (has10)
+      tStatus=AB_Transaction_StatusPending;
+    else
+      tStatus=AB_Transaction_StatusRejected;
   }
 
-  case AH_Job_ExchangeModeResults:
-    if (aj->exchangeResultsFn)
-      return aj->exchangeResultsFn(j, bj, ctx);
-    else
-      return AH_Job_TransferBase_ExchangeResults(j, bj, ctx);
-    break;
+  AH_Job_TransferBase_SetStatusOnTransfersAndAddToCtx(j, ctx, tStatus);
 
-  default:
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Unsupported exchange mode");
-    return GWEN_ERROR_NOT_SUPPORTED;
-  } /* switch */
-
-  /* just ignore */
-  DBG_ERROR(AQHBCI_LOGDOMAIN, "Exchange mode %d not implemented", m);
   return 0;
 }
 
@@ -971,13 +999,3 @@ int AH_Job_TransferBase_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-void AH_Job_TransferBase_SetExchangeResultsFn(AH_JOB *j, AH_JOB_TRANSFERBASE_EXCHANGE_FN f){
-  AH_JOB_TRANSFERBASE *aj;
-
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j);
-  assert(aj);
-
-  aj->exchangeResultsFn=f;
-}

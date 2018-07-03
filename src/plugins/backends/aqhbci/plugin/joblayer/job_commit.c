@@ -8,6 +8,11 @@
  ***************************************************************************/
 
 
+/*
+ * This file is included by job.c
+ */
+
+
 
 int AH_Job__GetJobGroup(GWEN_DB_NODE *dbJob, const char *groupName, GWEN_DB_NODE **pResult) {
   GWEN_DB_NODE *dbRd;

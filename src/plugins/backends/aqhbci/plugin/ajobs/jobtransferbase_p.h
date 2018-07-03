@@ -21,18 +21,18 @@ struct AH_JOB_TRANSFERBASE {
   AB_TRANSACTION_TYPE transactionType;
   AB_TRANSACTION_SUBTYPE transactionSubType;
   char *fiid;
-  AH_JOB_TRANSFERBASE_EXCHANGE_FN exchangeResultsFn;
 };
 static void GWENHYWFAR_CB AH_Job_TransferBase_FreeData(void *bp, void *p);
 
-static int AH_Job_TransferBase_ExchangeResults(AH_JOB *j, AB_JOB *bj,
-                                           AB_IMEXPORTER_CONTEXT *ctx);
-
-static int AH_Job_TransferBase_Exchange(AH_JOB *j, AB_JOB *bj,
-                                        AH_JOB_EXCHANGE_MODE m,
-                                        AB_IMEXPORTER_CONTEXT *ctx);
-
 static int AH_Job_TransferBase_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
+
+static int AH_Job_TransferBase_HandleResults(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
+
+/**
+ * Set given status on all transfers and add copies of them to the given context.
+ */
+static void AH_Job_TransferBase_SetStatusOnTransfersAndAddToCtx(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx, AB_TRANSACTION_STATUS status);
+
 
 
 #endif /* AH_JOBTRANSFERBASE_P_H */
