@@ -82,7 +82,7 @@ mp:
 	  CXXFLAGS="-ggdb -Wall" \
 	  CFLAGS="-ggdb -Wall" \
 	  ./configure $(MP_CONF_FLAGS) \
-	    --with-backends="aqhbci aqofxconnect aqebics aqpaypal"  \
+	    --with-backends="aqhbci"  \
 	    --prefix=/usr/local --enable-full-doc=yes
 	make sources
 
