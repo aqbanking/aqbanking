@@ -106,6 +106,108 @@ int AH_Provider_WriteUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlo
 
 
 
+
+int AH_Provider_BeginExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a) {
+  int rv;
+  uint32_t uid;
+
+  uid=AB_Account_GetUniqueId(a);
+  if (uid==0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No unique id!");
+    return GWEN_ERROR_INVALID;
+  }
+
+  rv=AH_Provider_ReadAccount(pro, uid, 1, 0, a);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+  return 0;
+}
+
+
+
+int AH_Provider_EndExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a, int abandon) {
+  int rv;
+  uint32_t uid;
+
+  uid=AB_Account_GetUniqueId(a);
+  if (uid==0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No unique id!");
+    return GWEN_ERROR_INVALID;
+  }
+
+  if (!abandon) {
+    rv=AB_Banking6_Unlock_AccountConfig(AB_Provider_GetBanking(pro), uid);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+  else {
+    rv=AH_Provider_WriteAccount(pro, uid, 0, 1, a);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
+  return 0;
+}
+
+
+
+int AH_Provider_BeginExclUseUser(AB_PROVIDER *pro, AB_USER *u) {
+  int rv;
+  uint32_t uid;
+
+  uid=AB_User_GetUniqueId(u);
+  if (uid==0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No unique id!");
+    return GWEN_ERROR_INVALID;
+  }
+  rv=AH_Provider_ReadUser(pro, uid, 1, 0, u);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+  return 0;
+}
+
+
+
+int AH_Provider_EndExclUseUser(AB_PROVIDER *pro, AB_USER *u, int abandon) {
+  int rv;
+  uint32_t uid;
+
+  uid=AB_User_GetUniqueId(u);
+  if (uid==0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No unique id!");
+    return GWEN_ERROR_INVALID;
+  }
+
+  if (!abandon) {
+    rv=AB_Banking6_Unlock_UserConfig(AB_Provider_GetBanking(pro), uid);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+  else {
+    rv=AH_Provider_WriteUser(pro, uid, 0, 1, u);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
+  return 0;
+}
+
+
+
+
+
 int AH_Provider__SortProviderQueueIntoUserQueueList(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_USERQUEUE_LIST *uql) {
   AH_PROVIDER *hp;
   AB_ACCOUNTQUEUE_LIST *aql;
@@ -485,6 +587,9 @@ int AH_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORT
 
   return rv;
 }
+
+
+
 
 
 

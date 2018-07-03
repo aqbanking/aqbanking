@@ -134,6 +134,38 @@ int AB_Banking6_WriteConfigGroup(AB_BANKING *ab,
 
 
 
+int AB_Banking6_UnlockConfigGroup(AB_BANKING *ab, const char *groupName, uint32_t uniqueId) {
+  int rv;
+  char idBuf[256];
+
+  assert(ab);
+
+  /* check for config manager (created by AB_Banking_Init) */
+  if (ab->configMgr==NULL) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No config manager (maybe the gwenhywfar plugins are not installed?");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  /* make config manager id from given unique id */
+  rv=GWEN_ConfigMgr_MkUniqueIdFromId(ab->configMgr, groupName, uniqueId, 0, idBuf, sizeof(idBuf)-1);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to create a unique id for config group (%d)", rv);
+    return rv;
+  }
+  idBuf[sizeof(idBuf)-1]=0;
+
+  /* unlock group */
+  rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_ACCOUNTSPECS, idBuf);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to unlock config group (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
 int AB_Banking6_ReadConfigGroups(AB_BANKING *ab,
                                  const char *groupName,
                                  const char *uidField,
@@ -326,6 +358,20 @@ int AB_Banking6_Write_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, in
 
 
 
+int AB_Banking6_Unlock_AccountConfig(AB_BANKING *ab, uint32_t uid) {
+  int rv;
+
+  rv=AB_Banking6_UnlockConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
 int AB_Banking6_Read_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb) {
   int rv;
 
@@ -344,6 +390,20 @@ int AB_Banking6_Write_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int d
   int rv;
 
   rv=AB_Banking6_WriteConfigGroup(ab, AB_CFG_GROUP_USERS, uid, doLock, doUnlock, db);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+int AB_Banking6_Unlock_UserConfig(AB_BANKING *ab, uint32_t uid) {
+  int rv;
+
+  rv=AB_Banking6_UnlockConfigGroup(ab, AB_CFG_GROUP_USERS, uid);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;

@@ -36,9 +36,11 @@ AQBANKING_API int AB_Banking6_WriteAccountSpec(AB_BANKING *ab, const AB_ACCOUNT_
 
 AQBANKING_API int AB_Banking6_Read_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb);
 AQBANKING_API int AB_Banking6_Write_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE *db);
+AQBANKING_API int AB_Banking6_Unlock_AccountConfig(AB_BANKING *ab, uint32_t uid);
 
 AQBANKING_API int AB_Banking6_Read_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb);
 AQBANKING_API int AB_Banking6_Write_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE *db);
+AQBANKING_API int AB_Banking6_Unlock_UserConfig(AB_BANKING *ab, uint32_t uid);
 
 
 
@@ -57,6 +59,9 @@ AQBANKING_API int AB_Banking6_WriteConfigGroup(AB_BANKING *ab,
                                                int doLock,
                                                int doUnlock,
                                                GWEN_DB_NODE *db);
+
+AQBANKING_API int AB_Banking6_UnlockConfigGroup(AB_BANKING *ab, const char *groupName, uint32_t uniqueId);
+
 
 /**
  * @return 0 if there are some groups, error code otherwise (especially GWEN_ERROR_PARTIAL if some groups couldn't be read
