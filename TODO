@@ -1,13 +1,13 @@
 Next:
 =====
-- AH_JOB:
-  - add virtual function AH_Job_HandleResult and implement it
-  - remove exchange functions
-  - process(): add code from exchange(results)
-- AH_PROVIDER:
-  - remove functions of old API
+- AB_BANKING:
+  - remove old exec code
+  - declare a backend function to setup account_specs and user_specs in case there are none (e.g. because of 1st update)
+- AqHBCI:
+  - replace use of AB_Banking_Begin/EndExclUseAccount
+  - replace use of AB_Banking_Begin/EndExclUseUser
   - start adapting the account/user setup dialogs
-- AB_BANKING: remove old exec code
+
 
 
 - split AqBanking into two libraries: One for direct use by applications, the other shall contain
