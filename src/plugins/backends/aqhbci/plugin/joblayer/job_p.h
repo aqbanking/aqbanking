@@ -70,8 +70,6 @@ struct AH_JOB {
   AH_JOB_COMMIT_FN commitFn;
   AH_JOB_PREPARE_FN prepareFn;
 
-  AH_JOB_EXCHANGE_FN exchangeFn;
-
   AH_JOB_NEXTMSG_FN nextMsgFn;
 
   AH_JOB_ADDCHALLENGEPARAMS_FN addChallengeParamsFn;

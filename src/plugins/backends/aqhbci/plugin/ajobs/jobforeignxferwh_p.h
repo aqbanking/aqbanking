@@ -24,15 +24,10 @@ struct AH_JOB_FOREIGNXFERWH {
   int maxTransfers;
 };
 
-static void GWENHYWFAR_CB AH_Job_ForeignTransferWH_FreeData(void *bp,
-							    void *p);
+static void GWENHYWFAR_CB AH_Job_ForeignTransferWH_FreeData(void *bp, void *p);
 
 static int AH_Job_ForeignTransferWH_Process(AH_JOB *j,
 					    AB_IMEXPORTER_CONTEXT *ctx);
-
-static int AH_Job_ForeignTransferWH_Exchange(AH_JOB *j, AB_JOB *bj,
-					     AH_JOB_EXCHANGE_MODE m,
-					     AB_IMEXPORTER_CONTEXT *ctx);
 
 
 

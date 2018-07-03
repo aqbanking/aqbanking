@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -1066,7 +1066,6 @@ AH_JOB *AH_Job_GetStatus_new(AB_USER *u,
 
   /* overwrite some virtual functions */
   AH_Job_SetProcessFn(j, AH_Job_GetStatus_Process);
-  AH_Job_SetExchangeFn(j, AH_Job_GetStatus_Exchange);
 
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);
@@ -1132,21 +1131,6 @@ int AH_Job_GetStatus_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
 
 
-int AH_Job_GetStatus_Exchange(AH_JOB *j, AB_JOB *bj,
-			      AH_JOB_EXCHANGE_MODE m,
-			      AB_IMEXPORTER_CONTEXT *ctx){
-  AH_JOB_GETSTATUS *aj;
-
-  DBG_WARN(AQHBCI_LOGDOMAIN, "Exchanging (%d), should not happen...", m);
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETSTATUS, j);
-  assert(aj);
-
-  return 0;
-}
-
-
-
 /* __________________________________________________________________________
  * AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
  *                             AH_Job_Tan
@@ -1176,7 +1160,6 @@ AH_JOB *AH_Job_Tan_new(AB_USER *u, int process, int jobVersion) {
                        AH_Job_Tan_FreeData);
   /* overwrite some virtual functions */
   AH_Job_SetProcessFn(j, AH_Job_Tan_Process);
-  AH_Job_SetExchangeFn(j, AH_Job_Tan_Exchange);
 
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);
@@ -1321,33 +1304,6 @@ void AH_Job_Tan_SetTanMethod(AH_JOB *j, int i) {
   assert(aj);
 
   aj->tanMethod=i;
-}
-
-
-
-int AH_Job_Tan_Exchange(AH_JOB *j, AB_JOB *bj,
-			AH_JOB_EXCHANGE_MODE m,
-			AB_IMEXPORTER_CONTEXT *ctx){
-  AH_JOB_TAN *aj;
-
-  DBG_WARN(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TAN, j);
-  assert(aj);
-
-  switch(m) {
-  case AH_Job_ExchangeModeParams:
-    break;
-  case AH_Job_ExchangeModeArgs:
-    break;
-  case AH_Job_ExchangeModeResults:
-    break;
-  default:
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Unsupported exchange mode");
-    return GWEN_ERROR_NOT_SUPPORTED;
-  } /* switch */
-
-  return 0;
 }
 
 

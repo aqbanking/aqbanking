@@ -72,13 +72,6 @@ typedef enum {
 } AH_JOB_STATUS;
 
 
-typedef enum {
-  AH_Job_ExchangeModeParams=0,
-  AH_Job_ExchangeModeArgs,
-  AH_Job_ExchangeModeResults
-} AH_JOB_EXCHANGE_MODE;
-
-
 /** @name Prototypes For Virtual Functions
  *
  */
@@ -86,9 +79,6 @@ typedef enum {
 typedef int (*AH_JOB_PROCESS_FN)(AH_JOB *j,
 				 AB_IMEXPORTER_CONTEXT *ctx);
 typedef int (*AH_JOB_COMMIT_FN)(AH_JOB *j, int doLock);
-typedef int (*AH_JOB_EXCHANGE_FN)(AH_JOB *j, AB_JOB *bj,
-				  AH_JOB_EXCHANGE_MODE m,
-				  AB_IMEXPORTER_CONTEXT *ctx);
 typedef int (*AH_JOB_PREPARE_FN)(AH_JOB *j);
 
 typedef int (*AH_JOB_ADDCHALLENGEPARAMS_FN)(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
@@ -173,11 +163,6 @@ AB_MESSAGE_LIST *AH_Job_GetMessages(const AH_JOB *j);
 /*@{*/
 int AH_Job_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 int AH_Job_Commit(AH_JOB *j, int doLock);
-/** exchanges data between the HBCI job and the banking job
- */
-int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj,
-		    AH_JOB_EXCHANGE_MODE m,
-		    AB_IMEXPORTER_CONTEXT *ctx);
 
 /**
  * Check whether the results for this job contain warning 3920. In this
@@ -248,10 +233,10 @@ int AH_Job_HandleResults(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 /*@{*/
 void AH_Job_SetProcessFn(AH_JOB *j, AH_JOB_PROCESS_FN f);
 void AH_Job_SetCommitFn(AH_JOB *j, AH_JOB_COMMIT_FN f);
-void AH_Job_SetExchangeFn(AH_JOB *j, AH_JOB_EXCHANGE_FN f);
 void AH_Job_SetNextMsgFn(AH_JOB *j, AH_JOB_NEXTMSG_FN f);
 void AH_Job_SetPrepareFn(AH_JOB *j, AH_JOB_PREPARE_FN f);
 void AH_Job_SetAddChallengeParamsFn(AH_JOB *j, AH_JOB_ADDCHALLENGEPARAMS_FN f);
+
 void AH_Job_SetGetLimitsFn(AH_JOB *j, AH_JOB_GETLIMITS_FN f);
 void AH_Job_SetHandleCommandFn(AH_JOB *j, AH_JOB_HANDLECOMMAND_FN f);
 void AH_Job_SetHandleResultsFn(AH_JOB *j, AH_JOB_HANDLERESULTS_FN f);

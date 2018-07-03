@@ -54,7 +54,6 @@ AH_JOB *AH_Job_ForeignTransferWH_new(AB_USER *u, AB_ACCOUNT *account) {
                        AH_Job_ForeignTransferWH_FreeData);
   /* overwrite some virtual functions */
   AH_Job_SetProcessFn(j, AH_Job_ForeignTransferWH_Process);
-  AH_Job_SetExchangeFn(j, AH_Job_ForeignTransferWH_Exchange);
 
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);
@@ -97,16 +96,6 @@ int AH_Job_ForeignTransferWH_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   assert(aj);
   DBG_INFO(AQHBCI_LOGDOMAIN, "Processing JobForeignTransferWH");
 
-  return 0;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_ForeignTransferWH_Exchange(AH_JOB *j, AB_JOB *bj,
-				      AH_JOB_EXCHANGE_MODE m,
-				      AB_IMEXPORTER_CONTEXT *ctx){
-  /* this function is not needed since there is no AB_Job for this */
   return 0;
 }
 

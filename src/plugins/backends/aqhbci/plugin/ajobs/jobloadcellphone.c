@@ -52,8 +52,6 @@ AH_JOB *AH_Job_LoadCellPhone_new(AB_USER *u, AB_ACCOUNT *account) {
   GWEN_NEW_OBJECT(AH_JOB_LOADCELLPHONE, aj);
   GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_LOADCELLPHONE, j, aj,
                        AH_Job_LoadCellPhone_FreeData);
-  /* overwrite some virtual functions */
-  AH_Job_SetExchangeFn(j, AH_Job_LoadCellPhone_Exchange);
 
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);
@@ -76,9 +74,9 @@ void GWENHYWFAR_CB AH_Job_LoadCellPhone_FreeData(void *bp, void *p){
 
 
 
+#if 0
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_LoadCellPhone_ExchangeParams(AH_JOB *j, AB_JOB *bj,
-					AB_IMEXPORTER_CONTEXT *ctx) {
+int AH_Job_LoadCellPhone_ExchangeParams(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx) {
   AH_JOB_LOADCELLPHONE *aj;
   GWEN_DB_NODE *dbParams;
   GWEN_DB_NODE *dbProduct;
@@ -191,12 +189,12 @@ int AH_Job_LoadCellPhone_ExchangeParams(AH_JOB *j, AB_JOB *bj,
 
   return 0;
 }
+#endif
 
 
-
+# if 0
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_LoadCellPhone_ExchangeArgs(AH_JOB *j, AB_JOB *bj,
-				      AB_IMEXPORTER_CONTEXT *ctx) {
+int AH_Job_LoadCellPhone_ExchangeArgs(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx) {
   AH_JOB_LOADCELLPHONE *aj;
   GWEN_DB_NODE *dbArgs;
   const AB_CELLPHONE_PRODUCT *cp;
@@ -314,45 +312,7 @@ int AH_Job_LoadCellPhone_ExchangeArgs(AH_JOB *j, AB_JOB *bj,
 
   return 0;
 }
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_LoadCellPhone_Exchange(AH_JOB *j, AB_JOB *bj,
-				  AH_JOB_EXCHANGE_MODE m,
-				  AB_IMEXPORTER_CONTEXT *ctx){
-  AH_JOB_LOADCELLPHONE *aj;
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);
-
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_LOADCELLPHONE, j);
-  assert(aj);
-
-  if (AB_Job_GetType(bj)!=AB_Job_TypeLoadCellPhone) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Not a GetLoadCellPhone job");
-    return GWEN_ERROR_INVALID;
-  }
-
-  switch(m) {
-  case AH_Job_ExchangeModeParams:
-    return AH_Job_LoadCellPhone_ExchangeParams(j, bj, ctx);
-  case AH_Job_ExchangeModeArgs:
-    return AH_Job_LoadCellPhone_ExchangeArgs(j, bj, ctx);
-  case AH_Job_ExchangeModeResults:
-    return 0;
-  default:
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Unsupported exchange mode");
-    return GWEN_ERROR_NOT_SUPPORTED;
-  } /* switch */
-}
-
-
-
-
-
-
-
+#endif
 
 
 

@@ -51,7 +51,6 @@ AH_JOB *AH_Job_SepaStandingOrderGet_new(AB_USER *u, AB_ACCOUNT *account) {
   /* overwrite some virtual functions */
   AH_Job_SetPrepareFn(j, AH_Job_SepaStandingOrderGet_Prepare);
   AH_Job_SetProcessFn(j, AH_Job_SepaStandingOrdersGet_Process);
-  AH_Job_SetExchangeFn(j, AH_Job_SepaStandingOrdersGet_Exchange);
   AH_Job_SetGetLimitsFn(j, AH_Job_GetLimits_EmptyLimits);
   AH_Job_SetHandleCommandFn(j, AH_Job_HandleCommand_Accept);
 
@@ -217,39 +216,6 @@ int AH_Job_SepaStandingOrdersGet_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
   return 0;
 }
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaStandingOrdersGet_Exchange(AH_JOB *j, AB_JOB *bj,
-                                          AH_JOB_EXCHANGE_MODE m,
-                                          AB_IMEXPORTER_CONTEXT *ctx){
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging (%d)", m);
-
-  assert(j);
-
-  if (AB_Job_GetType(bj)!=AB_Job_TypeSepaGetStandingOrders) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Not a GetStandingOrders job");
-    return GWEN_ERROR_INVALID;
-  }
-
-  switch(m) {
-  case AH_Job_ExchangeModeParams:
-    return 0;
-
-  case AH_Job_ExchangeModeArgs:
-    return 0;
-
-  case AH_Job_ExchangeModeResults:
-    return 0;
-
-  default:
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Unsupported exchange mode");
-    return GWEN_ERROR_NOT_SUPPORTED;
-  } /* switch */
-}
-
-
 
 
 

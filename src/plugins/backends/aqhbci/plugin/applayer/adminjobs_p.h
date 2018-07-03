@@ -117,9 +117,6 @@ struct AH_JOB_GETSTATUS {
 };
 static void GWENHYWFAR_CB AH_Job_GetStatus_FreeData(void *bp, void *p);
 static int AH_Job_GetStatus_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
-static int AH_Job_GetStatus_Exchange(AH_JOB *j, AB_JOB *bj,
-				     AH_JOB_EXCHANGE_MODE m,
-				     AB_IMEXPORTER_CONTEXT *ctx);
 
 
 
@@ -138,9 +135,6 @@ struct AH_JOB_TAN {
 };
 static void GWENHYWFAR_CB AH_Job_Tan_FreeData(void *bp, void *p);
 static int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
-static int AH_Job_Tan_Exchange(AH_JOB *j, AB_JOB *bj,
-			       AH_JOB_EXCHANGE_MODE m,
-			       AB_IMEXPORTER_CONTEXT *ctx);
 
 
 

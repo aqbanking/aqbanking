@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -22,14 +22,10 @@ struct AH_JOB_LOADCELLPHONE {
 };
 static void GWENHYWFAR_CB AH_Job_LoadCellPhone_FreeData(void *bp, void *p);
 
-static int AH_Job_LoadCellPhone_ExchangeParams(AH_JOB *j, AB_JOB *bj,
-					       AB_IMEXPORTER_CONTEXT *ctx);
-static int AH_Job_LoadCellPhone_ExchangeArgs(AH_JOB *j, AB_JOB *bj,
-					     AB_IMEXPORTER_CONTEXT *ctx);
-
-static int AH_Job_LoadCellPhone_Exchange(AH_JOB *j, AB_JOB *bj,
-					 AH_JOB_EXCHANGE_MODE m,
-					 AB_IMEXPORTER_CONTEXT *ctx);
+#if 0
+static int AH_Job_LoadCellPhone_ExchangeParams(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx);
+static int AH_Job_LoadCellPhone_ExchangeArgs(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx);
+#endif
 
 
 #endif /* AH_JOBLOADCELLPHONE_P_H */

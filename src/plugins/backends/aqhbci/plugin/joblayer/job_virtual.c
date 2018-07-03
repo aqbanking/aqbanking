@@ -51,77 +51,6 @@ int AH_Job_Commit(AH_JOB *j, int doLock){
 
 
 
-int AH_Job_Exchange(AH_JOB *j, AB_JOB *bj,
-		    AH_JOB_EXCHANGE_MODE m,
-		    AB_IMEXPORTER_CONTEXT *ctx){
-  GWEN_DB_NODE *db;
-
-  assert(j);
-  assert(j->usage);
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging %d (%s)", m, j->name);
-
-  db=AB_Job_GetProviderData(bj, AH_HBCI_GetProvider(AH_Job_GetHbci(j)));
-  assert(db);
-
-  switch(m) {
-  case AH_Job_ExchangeModeParams: {
-    AB_USER *u;
-
-    u=AH_Job_GetUser(j);
-    assert(u);
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "customerId",
-                         AB_User_GetCustomerId(u));
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "bankId",
-                         AB_User_GetBankCode(u));
-    break;
-  }
-  case AH_Job_ExchangeModeArgs:
-    /* no generic action here */
-    break;
-  case AH_Job_ExchangeModeResults:
-    if (GWEN_DB_GetCharValue(db, "msgref/dialogId", 0, 0)==0) {
-      const char *s;
-      GWEN_DB_NODE *dbT;
-
-      /* don't overwrite existing msgref */
-
-      dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "msgref");
-      assert(dbT);
-      s=AH_Job_GetDialogId(j);
-      if (s)
-        GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                             "dialogId", s);
-      GWEN_DB_SetIntValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "msgnum", AH_Job_GetMsgNum(j));
-      GWEN_DB_SetIntValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "firstseg",
-                          AH_Job_GetFirstSegment(j));
-      GWEN_DB_SetIntValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "lastseg",
-                          AH_Job_GetLastSegment(j));
-    }
-    break;
-
-  default:
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown exchange mode %d", m);
-    return GWEN_ERROR_NOT_SUPPORTED;
-  } /* switch */
-
-  if (j->exchangeFn)
-    return j->exchangeFn(j, bj, m, ctx);
-  else {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "No exchangeFn set");
-    /*return GWEN_ERROR_NOT_SUPPORTED;*/
-    return 0;
-  }
-}
-
-
-
-
 int AH_Job_Prepare(AH_JOB *j){
   assert(j);
   assert(j->usage);
@@ -207,14 +136,6 @@ void AH_Job_SetCommitFn(AH_JOB *j, AH_JOB_COMMIT_FN f){
   assert(j);
   assert(j->usage);
   j->commitFn=f;
-}
-
-
-
-void AH_Job_SetExchangeFn(AH_JOB *j, AH_JOB_EXCHANGE_FN f){
-  assert(j);
-  assert(j->usage);
-  j->exchangeFn=f;
 }
 
 
