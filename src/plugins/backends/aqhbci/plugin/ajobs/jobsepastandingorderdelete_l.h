@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Wed Jan 15 2014
- copyright   : (C) 2014 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -15,7 +15,7 @@
 #include "accountjob_l.h"
 
 
-AH_JOB *AH_Job_SepaStandingOrderDelete_new(AB_USER *u, AB_ACCOUNT *account);
+AH_JOB *AH_Job_SepaStandingOrderDelete_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account);
 
 
 #endif /* AH_JOBSEPASTANDINGORDERDELETE_L_H  */

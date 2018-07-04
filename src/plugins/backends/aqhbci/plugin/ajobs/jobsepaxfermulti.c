@@ -42,7 +42,7 @@ GWEN_INHERIT(AH_JOB, AH_JOB_SEPAXFERMULTI);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_SepaTransferMulti_new(AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_SepaTransferMulti_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
   AH_JOB_SEPAXFERMULTI *aj;
   GWEN_DB_NODE *dbParams;
@@ -51,7 +51,7 @@ AH_JOB *AH_Job_SepaTransferMulti_new(AB_USER *u, AB_ACCOUNT *account) {
   j=AH_Job_TransferBase_new("JobSepaTransferMulti",
                             AB_Transaction_TypeTransfer,
                             AB_Transaction_SubTypeStandard,
-                            u, account);
+                            pro, u, account);
   if (!j)
     return 0;
 

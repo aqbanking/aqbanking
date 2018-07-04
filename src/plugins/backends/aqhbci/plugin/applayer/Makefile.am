@@ -6,7 +6,11 @@ INCLUDES = -I$(aqbanking_symlinkdir) $(all_includes) \
   -I$(srcdir)/../ajobs \
   -I$(srcdir)/../joblayer -I$(srcdir)/../msglayer -I$(srcdir)/..
 
-EXTRA_DIST=README itan.inc itan1.inc itan2.inc
+EXTRA_DIST=\
+  README \
+  itan.c \
+  itan1.c \
+  itan2.c
 
 noinst_LTLIBRARIES=libhbciapp.la
 

@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -32,6 +32,7 @@ GWEN_INHERIT(AH_JOB, AH_ACCOUNTJOB);
 
 /* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_AccountJob_new(const char *name,
+                          AB_PROVIDER *pro,
                           AB_USER *u,
                           AB_ACCOUNT *account){
   AH_ACCOUNTJOB *aj;
@@ -103,7 +104,7 @@ AH_JOB *AH_AccountJob_new(const char *name,
     }
   }
 
-  j=AH_Job_new(name, u, account, jobVersion);
+  j=AH_Job_new(name, pro, u, account, jobVersion);
   if (!j)
     return 0;
 

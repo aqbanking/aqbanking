@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -21,6 +18,7 @@
 
 
 AH_JOB *AH_AccountJob_new(const char *name,
+                          AB_PROVIDER *pro,
                           AB_USER *u,
                           AB_ACCOUNT *account);
 int AH_AccountJob_IsAccountJob(const AH_JOB *j);

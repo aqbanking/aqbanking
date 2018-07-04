@@ -553,7 +553,7 @@ int AH_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORT
   }
 
   /* add users to outbox */
-  outbox=AH_Outbox_new(hp->hbci);
+  outbox=AH_Outbox_new(pro);
   rv=AH_Provider__AddCommandsToOutbox(pro, uql, ctx, outbox);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);

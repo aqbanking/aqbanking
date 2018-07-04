@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -46,7 +46,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   assert(u);
 
   /* prepare HKTAN (process type 4) */
-  jTan1=AH_Job_Tan_new(u, 4, AH_Dialog_GetTanJobVersion(dlg));
+  jTan1=AH_Job_Tan_new(cbox->provider, u, 4, AH_Dialog_GetTanJobVersion(dlg));
   if (!jTan1) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
     return -1;
@@ -195,7 +195,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   }
 
   /* prepare HKTAN (process type 2) */
-  jTan2=AH_Job_Tan_new(u, 2, AH_Dialog_GetTanJobVersion(dlg));
+  jTan2=AH_Job_Tan_new(cbox->provider, u, 2, AH_Dialog_GetTanJobVersion(dlg));
   if (!jTan2) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
     AH_Job_free(jTan2);

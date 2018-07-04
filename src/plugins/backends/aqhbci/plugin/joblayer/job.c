@@ -43,6 +43,7 @@ GWEN_INHERIT_FUNCTIONS(AH_JOB);
 
 
 AH_JOB *AH_Job_new(const char *name,
+		   AB_PROVIDER *pro,
 		   AB_USER *u,
                    AB_ACCOUNT *acc,
                    int jobVersion) {
@@ -72,6 +73,7 @@ AH_JOB *AH_Job_new(const char *name,
   GWEN_INHERIT_INIT(AH_JOB, j);
   j->name=strdup(name);
   j->user=u;
+  j->provider=pro;
   j->signers=GWEN_StringList_new();
   j->log=GWEN_StringList_new();
 
@@ -1959,6 +1961,14 @@ void AH_Job_SetSupportedCommand(AH_JOB *j, AB_TRANSACTION_COMMAND tc) {
   assert(j);
   assert(j->usage);
   j->supportedCommand=tc;
+}
+
+
+
+AB_PROVIDER *AH_Job_GetProvider(const AH_JOB *j) {
+  assert(j);
+  assert(j->usage);
+  return j->provider;
 }
 
 

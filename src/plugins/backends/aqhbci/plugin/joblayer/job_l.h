@@ -106,6 +106,7 @@ typedef int (*AH_JOB_NEXTMSG_FN)(AH_JOB *j);
  */
 /*@{*/
 AH_JOB *AH_Job_new(const char *name,
+		   AB_PROVIDER *pro,
                    AB_USER *u,
                    AB_ACCOUNT *acc,
                    int jobVersion);
@@ -371,6 +372,9 @@ GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *type, const char *na
 
 void AH_Job_ReadAccountDataSeg(AB_ACCOUNT *acc, GWEN_DB_NODE *dbAccountData);
 
+
+
+AB_PROVIDER *AH_Job_GetProvider(const AH_JOB *j);
 
 
 #endif /* AH_JOB_L_H */

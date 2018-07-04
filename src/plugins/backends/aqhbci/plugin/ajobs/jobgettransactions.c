@@ -42,7 +42,7 @@ GWEN_INHERIT(AH_JOB, AH_JOB_GETTRANSACTIONS);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_GetTransactions_new(AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_GetTransactions_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
   AH_JOB_GETTRANSACTIONS *aj;
   GWEN_DB_NODE *dbArgs;
@@ -65,9 +65,9 @@ AH_JOB *AH_Job_GetTransactions_new(AB_USER *u, AB_ACCOUNT *account) {
   } /* if updgroup for the given account found */
 
   if(useCreditCardJob)
-    j=AH_AccountJob_new("JobGetTransactionsCreditCard", u, account);
+    j=AH_AccountJob_new("JobGetTransactionsCreditCard", pro, u, account);
   else
-    j=AH_AccountJob_new("JobGetTransactions", u, account);
+    j=AH_AccountJob_new("JobGetTransactions", pro, u, account);
   if (!j)
     return 0;
 

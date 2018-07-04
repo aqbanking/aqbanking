@@ -39,14 +39,14 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
   h=AH_Provider_GetHbci(pro);
   assert(h);
 
-  job=AH_Job_UpdateBank_new(u);
+  job=AH_Job_UpdateBank_new(pro, u);
   if (!job) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported, should not happen");
     return GWEN_ERROR_GENERIC;
   }
   AH_Job_AddSigner(job, AB_User_GetUserId(u));
 
-  ob=AH_Outbox_new(h);
+  ob=AH_Outbox_new(pro);
   AH_Outbox_AddJob(ob, job);
 
   rv=AH_Outbox_Execute(ob, ctx, withProgress, 1, doLock);
@@ -126,14 +126,14 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
   for (i=0; ; i++) {
     AH_OUTBOX *ob;
 
-    job=AH_Job_GetSysId_new(u);
+    job=AH_Job_GetSysId_new(pro, u);
     if (!job) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported, should not happen");
       return GWEN_ERROR_GENERIC;
     }
     AH_Job_AddSigner(job, AB_User_GetUserId(u));
 
-    ob=AH_Outbox_new(h);
+    ob=AH_Outbox_new(pro);
     AH_Outbox_AddJob(ob, job);
 
     rv=AH_Outbox_Execute(ob, ctx, withProgress, 1, doLock);
@@ -300,13 +300,13 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
   h=AH_Provider_GetHbci(pro);
   assert(h);
 
-  job=AH_Job_GetKeys_new(u);
+  job=AH_Job_GetKeys_new(pro, u);
   if (!job) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported, should not happen");
     return GWEN_ERROR_GENERIC;
   }
 
-  ob=AH_Outbox_new(h);
+  ob=AH_Outbox_new(pro);
   AH_Outbox_AddJob(ob, job);
 
   rv=AH_Outbox_Execute(ob, ctx, withProgress, 1, doLock);
@@ -665,7 +665,7 @@ int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
   }
 
   /* create job */
-  job=AH_Job_SendKeys_new(u, cryptKeyInfo, signKeyInfo, authKeyInfo);
+  job=AH_Job_SendKeys_new(pro, u, cryptKeyInfo, signKeyInfo, authKeyInfo);
   if (!job) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported, should not happen");
     GWEN_Gui_ProgressLog(0,
@@ -678,7 +678,7 @@ int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
   AH_Job_AddSigner(job, AB_User_GetUserId(u));
 
   /* enqueue job */
-  ob=AH_Outbox_new(h);
+  ob=AH_Outbox_new(pro);
   AH_Outbox_AddJob(ob, job);
 
   /* execute queue */
@@ -837,7 +837,7 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
     }
   }
 
-  job=AH_Job_GetItanModes_new(u);
+  job=AH_Job_GetItanModes_new(pro, u);
   if (!job) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported, should not happen");
     if (doLock)
@@ -846,7 +846,7 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
   }
   AH_Job_AddSigner(job, AB_User_GetUserId(u));
 
-  ob=AH_Outbox_new(h);
+  ob=AH_Outbox_new(pro);
   AH_Outbox_AddJob(ob, job);
   rv=AH_Outbox_Execute(ob, ctx, withProgress, 1, 0);
   AH_Outbox_free(ob);
@@ -963,14 +963,14 @@ int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
 		       pwbuf,
 		       0, 8, 0);
 
-  job=AH_Job_ChangePin_new(u, pwbuf);
+  job=AH_Job_ChangePin_new(pro, u, pwbuf);
   if (!job) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported, should not happen");
     return GWEN_ERROR_GENERIC;
   }
   AH_Job_AddSigner(job, AB_User_GetUserId(u));
 
-  ob=AH_Outbox_new(h);
+  ob=AH_Outbox_new(pro);
   AH_Outbox_AddJob(ob, job);
 
   rv=AH_Outbox_Execute(ob, ctx, withProgress, nounmount, doLock);
@@ -1034,7 +1034,7 @@ int AH_Provider_GetAccountSepaInfo(AB_PROVIDER *pro,
   assert(h);
 
 
-  ob=AH_Outbox_new(h);
+  ob=AH_Outbox_new(pro);
 
   /* sample jobs */
   ait=AB_Account_List2_First(al);
@@ -1052,7 +1052,7 @@ int AH_Provider_GetAccountSepaInfo(AB_PROVIDER *pro,
         DBG_ERROR(AQHBCI_LOGDOMAIN, "No user for this account");
       }
       else {
-        job=AH_Job_GetAccountSepaInfo_new(u, a);
+        job=AH_Job_GetAccountSepaInfo_new(pro, u, a);
         if (!job) {
           DBG_WARN(AQHBCI_LOGDOMAIN, "Job not supported with this account");
           AB_Account_List2Iterator_free(ait);

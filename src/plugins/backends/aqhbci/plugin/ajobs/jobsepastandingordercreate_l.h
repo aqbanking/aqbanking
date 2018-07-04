@@ -15,7 +15,7 @@
 #include "accountjob_l.h"
 
 
-AH_JOB *AH_Job_SepaStandingOrderCreate_new(AB_USER *u, AB_ACCOUNT *account);
+AH_JOB *AH_Job_SepaStandingOrderCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account);
 
 
 int AH_Job_SepaStandingOrderCreate_ExchangeArgs(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx);

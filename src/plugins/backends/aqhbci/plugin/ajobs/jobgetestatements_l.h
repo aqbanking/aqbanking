@@ -15,7 +15,7 @@
 #include "accountjob_l.h"
 
 
-AH_JOB *AH_Job_GetEStatements_new(AB_USER *u, AB_ACCOUNT *account);
+AH_JOB *AH_Job_GetEStatements_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account);
 
 
 #endif /* AH_JOB_GETESTATEMENTS_L_H */

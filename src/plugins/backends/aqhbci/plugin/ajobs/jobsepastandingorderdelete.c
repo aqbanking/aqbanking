@@ -21,13 +21,13 @@
 
 /* --------------------------------------------------------------- FUNCTION */
 
-AH_JOB *AH_Job_SepaStandingOrderDelete_new(AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_SepaStandingOrderDelete_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
 
   j=AH_Job_TransferBase_new("JobSepaStandingOrderDelete",
                             AB_Transaction_TypeTransfer,
                             AB_Transaction_SubTypeStandingOrder,
-                            u, account);
+                            pro, u, account);
   if (!j)
     return 0;
 

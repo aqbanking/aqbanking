@@ -242,7 +242,7 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, in
   switch(cmd) {
 
   case AB_Transaction_CommandGetBalance:
-    mj=AH_Job_GetBalance_new(mu, ma);
+    mj=AH_Job_GetBalance_new(pro, mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return GWEN_ERROR_NOT_AVAILABLE;
@@ -250,7 +250,7 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, in
     break;
 
   case AB_Transaction_CommandGetTransactions:
-    mj=AH_Job_GetTransactions_new(mu, ma);
+    mj=AH_Job_GetTransactions_new(pro, mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return GWEN_ERROR_NOT_AVAILABLE;
@@ -258,7 +258,7 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, in
     break;
 
   case AB_Transaction_CommandLoadCellPhone:
-    mj=AH_Job_LoadCellPhone_new(mu, ma);
+    mj=AH_Job_LoadCellPhone_new(pro, mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return GWEN_ERROR_NOT_AVAILABLE;
@@ -270,12 +270,12 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, in
       DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers multi jobs");
 
       /* try multi transfer first */
-      mj=AH_Job_SepaTransferMulti_new(mu, ma);
+      mj=AH_Job_SepaTransferMulti_new(pro, mu, ma);
       if (!mj) {
         DBG_WARN(AQHBCI_LOGDOMAIN, "Job \"SepaTransferMulti\" not supported with this account");
 
         /* try single transfer */
-        mj=AH_Job_SepaTransferSingle_new(mu, ma);
+        mj=AH_Job_SepaTransferSingle_new(pro, mu, ma);
         if (!mj) {
           DBG_WARN(AQHBCI_LOGDOMAIN, "Job \"SepaTransferSingle\" not supported with this account");
           return GWEN_ERROR_NOT_AVAILABLE;
@@ -284,12 +284,12 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, in
     }
     else {
       /* try single job first */
-      mj=AH_Job_SepaTransferSingle_new(mu, ma);
+      mj=AH_Job_SepaTransferSingle_new(pro, mu, ma);
       if (!mj) {
         DBG_WARN(AQHBCI_LOGDOMAIN, "Job \"SepaTransferSingle\" not supported with this account");
 
         /* try multi transfer next */
-        mj=AH_Job_SepaTransferMulti_new(mu, ma);
+        mj=AH_Job_SepaTransferMulti_new(pro, mu, ma);
         if (!mj) {
           DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"SepaTransferMulti\" not supported with this account");
           return GWEN_ERROR_NOT_AVAILABLE;
@@ -303,17 +303,17 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, in
       DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers multi jobs");
 
       /* try multi transfer first */
-      mj=AH_Job_SepaDebitDatedMultiCreate_new(mu, ma);
+      mj=AH_Job_SepaDebitDatedMultiCreate_new(pro, mu, ma);
       if (!mj) {
         DBG_WARN(AQHBCI_LOGDOMAIN, "SepaDebitDatedMultiCreate not supported with this account");
 
         /* try single transfer */
-        mj=AH_Job_SepaDebitDatedSingleCreate_new(mu, ma);
+        mj=AH_Job_SepaDebitDatedSingleCreate_new(pro, mu, ma);
         if (!mj) {
           DBG_WARN(AQHBCI_LOGDOMAIN, "Job \"SepaDebitDatedSingleCreate\" not supported with this account, trying old single debit");
 
           /* try old singleDebit job next */
-          mj=AH_Job_SepaDebitSingle_new(mu, ma);
+          mj=AH_Job_SepaDebitSingle_new(pro, mu, ma);
           if (!mj) {
             DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"SepaDebitSingle\" not supported with this account");
             return GWEN_ERROR_NOT_AVAILABLE;
@@ -323,17 +323,17 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, in
     }
     else {
       /* try single job first */
-      mj=AH_Job_SepaDebitDatedSingleCreate_new(mu, ma);
+      mj=AH_Job_SepaDebitDatedSingleCreate_new(pro, mu, ma);
       if (!mj) {
         DBG_WARN(AQHBCI_LOGDOMAIN, "SepaDebitDatedSingleCreate not supported with this account");
 
         /* try old singleDebit job next */
-        mj=AH_Job_SepaDebitSingle_new(mu, ma);
+        mj=AH_Job_SepaDebitSingle_new(pro, mu, ma);
         if (!mj) {
           DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"SepaDebitSingle\" not supported with this account");
 
           /* try multi transfer next */
-          mj=AH_Job_SepaDebitDatedMultiCreate_new(mu, ma);
+          mj=AH_Job_SepaDebitDatedMultiCreate_new(pro, mu, ma);
           if (!mj) {
             DBG_ERROR(AQHBCI_LOGDOMAIN, "SepaDebitDatedMultiCreate not supported with this account");
             return GWEN_ERROR_NOT_AVAILABLE;
@@ -348,12 +348,12 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, in
       DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers multi jobs");
 
       /* try multi transfer first */
-      mj=AH_Job_SepaCor1DebitDatedMultiCreate_new(mu, ma);
+      mj=AH_Job_SepaCor1DebitDatedMultiCreate_new(pro, mu, ma);
       if (!mj) {
         DBG_WARN(AQHBCI_LOGDOMAIN, "SepaCor1DebitDatedMultiCreate not supported with this account");
 
         /* try single transfer */
-        mj=AH_Job_SepaCor1DebitDatedSingleCreate_new(mu, ma);
+        mj=AH_Job_SepaCor1DebitDatedSingleCreate_new(pro, mu, ma);
         if (!mj) {
           DBG_WARN(AQHBCI_LOGDOMAIN, "Job \"SepaCor1DebitDatedSingleCreate\" not supported with this account");
           return GWEN_ERROR_NOT_AVAILABLE;
@@ -362,12 +362,12 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, in
     }
     else {
       /* try single job first */
-      mj=AH_Job_SepaCor1DebitDatedSingleCreate_new(mu, ma);
+      mj=AH_Job_SepaCor1DebitDatedSingleCreate_new(pro, mu, ma);
       if (!mj) {
         DBG_WARN(AQHBCI_LOGDOMAIN, "SepaCor1DebitDatedSingleCreate not supported with this account");
 
         /* try multi transfer next */
-        mj=AH_Job_SepaCor1DebitDatedMultiCreate_new(mu, ma);
+        mj=AH_Job_SepaCor1DebitDatedMultiCreate_new(pro, mu, ma);
         if (!mj) {
           DBG_ERROR(AQHBCI_LOGDOMAIN, "SepaCor1DebitDatedMultiCreate not supported with this account");
           return GWEN_ERROR_NOT_AVAILABLE;
@@ -377,21 +377,21 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, in
     break;
 
   case AB_Transaction_CommandSepaCreateStandingOrder:
-    mj=AH_Job_SepaStandingOrderCreate_new(mu, ma);
+    mj=AH_Job_SepaStandingOrderCreate_new(pro, mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return GWEN_ERROR_NOT_AVAILABLE;
     }
     break;
   case AB_Transaction_CommandSepaModifyStandingOrder:
-    mj=AH_Job_SepaStandingOrderModify_new(mu, ma);
+    mj=AH_Job_SepaStandingOrderModify_new(pro, mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return GWEN_ERROR_NOT_AVAILABLE;
     }
     break;
   case AB_Transaction_CommandSepaDeleteStandingOrder:
-    mj=AH_Job_SepaStandingOrderDelete_new(mu, ma);
+    mj=AH_Job_SepaStandingOrderDelete_new(pro, mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return GWEN_ERROR_NOT_AVAILABLE;
@@ -399,7 +399,7 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, in
     break;
 
   case AB_Transaction_CommandSepaGetStandingOrders:
-    mj=AH_Job_SepaStandingOrderGet_new(mu, ma);
+    mj=AH_Job_SepaStandingOrderGet_new(pro, mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return GWEN_ERROR_NOT_AVAILABLE;
@@ -407,7 +407,7 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, in
     break;
 
   case AB_Transaction_CommandGetEStatements:
-    mj=AH_Job_GetEStatements_new(mu, ma);
+    mj=AH_Job_GetEStatements_new(pro, mu, ma);
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return GWEN_ERROR_NOT_AVAILABLE;

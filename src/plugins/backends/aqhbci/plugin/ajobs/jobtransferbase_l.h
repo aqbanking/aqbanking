@@ -22,6 +22,7 @@ typedef int (*AH_JOB_TRANSFERBASE_EXCHANGE_FN)(AH_JOB *j, AB_JOB *bj,
 AH_JOB *AH_Job_TransferBase_new(const char *jobName,
                                 AB_TRANSACTION_TYPE tt,
                                 AB_TRANSACTION_SUBTYPE tst,
+                                AB_PROVIDER *pro,
                                 AB_USER *u, AB_ACCOUNT *account);
 
 const char *AH_Job_TransferBase_GetFiid(const AH_JOB *j);

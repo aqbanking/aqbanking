@@ -29,7 +29,7 @@ extern "C" {
  */
 
 
-AH_JOB *AH_Job_GetKeys_new(AB_USER *u);
+AH_JOB *AH_Job_GetKeys_new(AB_PROVIDER *pro, AB_USER *u);
 GWEN_CRYPT_TOKEN_KEYINFO *AH_Job_GetKeys_GetSignKeyInfo(const AH_JOB *j);
 GWEN_CRYPT_TOKEN_KEYINFO *AH_Job_GetKeys_GetCryptKeyInfo(const AH_JOB *j);
 GWEN_CRYPT_TOKEN_KEYINFO *AH_Job_GetKeys_GetAuthKeyInfo(const AH_JOB *j);
@@ -45,7 +45,7 @@ const char *AH_Job_GetKeys_GetPeerId(const AH_JOB *j);
  */
 
 
-AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
+AH_JOB *AH_Job_SendKeys_new(AB_PROVIDER *pro, AB_USER *u,
 			    const GWEN_CRYPT_TOKEN_KEYINFO *cryptKeyInfo,
 			    const GWEN_CRYPT_TOKEN_KEYINFO *signKeyInfo,
 			    const GWEN_CRYPT_TOKEN_KEYINFO *authKeyInfo);
@@ -61,7 +61,7 @@ AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
  * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
  */
 
-AH_JOB *AH_Job_GetSysId_new(AB_USER *u);
+AH_JOB *AH_Job_GetSysId_new(AB_PROVIDER *pro, AB_USER *u);
 
 const char *AH_Job_GetSysId_GetSysId(AH_JOB *j);
 
@@ -76,7 +76,7 @@ const char *AH_Job_GetSysId_GetSysId(AH_JOB *j);
  * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
  */
 
-AH_JOB *AH_Job_UpdateBank_new(AB_USER *u);
+AH_JOB *AH_Job_UpdateBank_new(AB_PROVIDER *pro, AB_USER *u);
 
 /**
  * Returns a list of accounts found by this job. This list might be empty
@@ -120,7 +120,7 @@ typedef enum {
 } AH_JOB_TESTVERSION_RESULT;
 
 
-AH_JOB *AH_Job_TestVersion_new(AB_USER *u, int anon);
+AH_JOB *AH_Job_TestVersion_new(AB_PROVIDER *pro, AB_USER *u, int anon);
 AH_JOB_TESTVERSION_RESULT AH_Job_TestVersion_GetResult(const AH_JOB *j);
 
 
@@ -131,7 +131,7 @@ AH_JOB_TESTVERSION_RESULT AH_Job_TestVersion_GetResult(const AH_JOB *j);
  * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
  */
 
-AH_JOB *AH_Job_GetStatus_new(AB_USER *u,
+AH_JOB *AH_Job_GetStatus_new(AB_PROVIDER *pro, AB_USER *u,
                              const GWEN_TIME *fromDate,
                              const GWEN_TIME *toDate);
 AH_RESULT_LIST *AH_Job_GetStatus_GetResults(const AH_JOB *j);
@@ -148,7 +148,7 @@ AH_RESULT_LIST *AH_Job_GetStatus_GetResults(const AH_JOB *j);
  * This is an internal job. It is only used to present a TAN using a
  * two-step mechanism (iTAN).
  */
-AH_JOB *AH_Job_Tan_new(AB_USER *u, int process, int jobVersion);
+AH_JOB *AH_Job_Tan_new(AB_PROVIDER *pro, AB_USER *u, int process, int jobVersion);
 void AH_Job_Tan_SetHash(AH_JOB *j,
                         const unsigned char *p,
                         unsigned int len);
@@ -185,7 +185,7 @@ int AH_Job_Tan_FinishSetup(AH_JOB *j, AH_JOB *accJob);
  * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
  */
 
-AH_JOB *AH_Job_GetItanModes_new(AB_USER *u);
+AH_JOB *AH_Job_GetItanModes_new(AB_PROVIDER *pro, AB_USER *u);
 const int *AH_Job_GetItanModes_GetModes(const AH_JOB *j);
 
 
@@ -197,7 +197,7 @@ const int *AH_Job_GetItanModes_GetModes(const AH_JOB *j);
  * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
  */
 
-AH_JOB *AH_Job_ChangePin_new(AB_USER *u, const char *newPin);
+AH_JOB *AH_Job_ChangePin_new(AB_PROVIDER *pro, AB_USER *u, const char *newPin);
 
 
 
@@ -208,7 +208,7 @@ AH_JOB *AH_Job_ChangePin_new(AB_USER *u, const char *newPin);
  * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
  */
 
-AH_JOB *AH_Job_GetAccountSepaInfo_new(AB_USER *u, AB_ACCOUNT *acc);
+AH_JOB *AH_Job_GetAccountSepaInfo_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc);
 
 
 

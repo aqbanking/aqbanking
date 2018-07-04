@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -44,12 +41,10 @@ GWEN_LIST_FUNCTION_DEFS(AH_OUTBOX__CBOX, AH_Outbox__CBox);
 struct AH_OUTBOX__CBOX {
   GWEN_LIST_ELEMENT(AH_OUTBOX__CBOX);
   AH_OUTBOX *outbox;
-  AH_HBCI *hbci;
+  AB_PROVIDER *provider;
   AB_USER *user;
   AH_JOBQUEUE_LIST *todoQueues;
   AH_JOBQUEUE_LIST *finishedQueues;
-
-  AB_JOB_LIST2 *pendingJobs;
 
   AH_JOB_LIST *todoJobs;
   AH_JOB_LIST *finishedJobs;
@@ -60,7 +55,7 @@ struct AH_OUTBOX__CBOX {
 };
 
 
-static AH_OUTBOX__CBOX *AH_Outbox__CBox_new(AH_HBCI *hbci,
+static AH_OUTBOX__CBOX *AH_Outbox__CBox_new(AB_PROVIDER *pro, 
                                             AB_USER *u,
                                             AH_OUTBOX *ob);
 static void AH_Outbox__CBox_free(AH_OUTBOX__CBOX *cbox);
@@ -68,7 +63,6 @@ static void AH_Outbox__CBox_free(AH_OUTBOX__CBOX *cbox);
 static void AH_Outbox__CBox_Finish(AH_OUTBOX__CBOX *cbox);
 
 static void AH_Outbox__CBox_AddTodoJob(AH_OUTBOX__CBOX *cbox, AH_JOB *j);
-static void AH_Outbox__CBox_AddPendingJob(AH_OUTBOX__CBOX *cbox, AB_JOB *bj);
 
 static AB_USER*
   AH_Outbox__CBox_GetUser(const AH_OUTBOX__CBOX *cbox);
@@ -88,7 +82,7 @@ static int AH_Outbox__CBox__Hash(int mode,
 
 struct AH_OUTBOX {
   GWEN_INHERIT_ELEMENT(AH_OUTBOX);
-  AH_HBCI *hbci;
+  AB_PROVIDER *provider;
   AH_OUTBOX__CBOX_LIST *userBoxes;
   AH_JOB_LIST *finishedJobs;
   AB_IMEXPORTER_CONTEXT *context;
@@ -100,8 +94,7 @@ struct AH_OUTBOX {
 
 static int AH_Outbox_Prepare(AH_OUTBOX *ob);
 
-static void AH_Outbox__FinishCBox(AH_OUTBOX *ob,
-				  AH_OUTBOX__CBOX *cbox);
+static void AH_Outbox__FinishCBox(AH_OUTBOX *ob, AH_OUTBOX__CBOX *cbox);
 
 static int AH_Outbox__Execute(AH_OUTBOX *ob);
 

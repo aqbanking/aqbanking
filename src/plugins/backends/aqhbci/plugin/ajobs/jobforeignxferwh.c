@@ -36,13 +36,13 @@ GWEN_INHERIT(AH_JOB, AH_JOB_FOREIGNXFERWH);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_ForeignTransferWH_new(AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_ForeignTransferWH_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
   AH_JOB_FOREIGNXFERWH *aj;
   GWEN_DB_NODE *dbArgs;
   GWEN_DB_NODE *dbParams;
 
-  j=AH_AccountJob_new("JobForeignTransferWH", u, account);
+  j=AH_AccountJob_new("JobForeignTransferWH", pro, u, account);
   if (!j)
     return 0;
 

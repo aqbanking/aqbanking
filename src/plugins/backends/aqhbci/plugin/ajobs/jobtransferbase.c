@@ -43,12 +43,13 @@ GWEN_INHERIT(AH_JOB, AH_JOB_TRANSFERBASE);
 AH_JOB *AH_Job_TransferBase_new(const char *jobName,
                                 AB_TRANSACTION_TYPE tt,
                                 AB_TRANSACTION_SUBTYPE tst,
+                                AB_PROVIDER *pro, 
                                 AB_USER *u,
                                 AB_ACCOUNT *account) {
   AH_JOB *j;
   AH_JOB_TRANSFERBASE *aj;
 
-  j=AH_AccountJob_new(jobName, u, account);
+  j=AH_AccountJob_new(jobName, pro, u, account);
   if (!j)
     return 0;
 

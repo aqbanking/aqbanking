@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -67,7 +67,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   }
 
   /* prepare HKTAN */
-  jTan=AH_Job_Tan_new(u, 1, AH_Dialog_GetTanJobVersion(dlg));
+  jTan=AH_Job_Tan_new(cbox->provider, u, 1, AH_Dialog_GetTanJobVersion(dlg));
   if (!jTan) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
     return -1;

@@ -94,6 +94,8 @@ struct AH_JOB {
   AB_TRANSACTION_LIST *transferList;
 
   AB_TRANSACTION_COMMAND supportedCommand;
+
+  AB_PROVIDER *provider;
 };
 
 

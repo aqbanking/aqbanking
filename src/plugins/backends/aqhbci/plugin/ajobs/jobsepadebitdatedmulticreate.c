@@ -42,7 +42,7 @@ GWEN_INHERIT(AH_JOB, AH_JOB_CREATESEPAMULTIDEBIT);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_SepaDebitDatedMultiCreate_new(AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_SepaDebitDatedMultiCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
   AH_JOB_CREATESEPAMULTIDEBIT *aj;
   GWEN_DB_NODE *dbParams;
@@ -52,7 +52,7 @@ AH_JOB *AH_Job_SepaDebitDatedMultiCreate_new(AB_USER *u, AB_ACCOUNT *account) {
   j=AH_Job_TransferBase_new("JobSepaDebitDatedMultiCreate",
                             AB_Transaction_TypeDebitNote,
                             AB_Transaction_SubTypeStandard,
-                            u, account);
+                            pro, u, account);
   if (!j)
     return 0;
 

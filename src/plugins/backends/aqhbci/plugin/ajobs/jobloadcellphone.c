@@ -37,12 +37,12 @@ GWEN_INHERIT(AH_JOB, AH_JOB_LOADCELLPHONE);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_LoadCellPhone_new(AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_LoadCellPhone_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
   AH_JOB_LOADCELLPHONE *aj;
   GWEN_DB_NODE *dbArgs;
 
-  j=AH_AccountJob_new("JobLoadCellPhone", u, account);
+  j=AH_AccountJob_new("JobLoadCellPhone", pro, u, account);
   if (!j)
     return 0;
 

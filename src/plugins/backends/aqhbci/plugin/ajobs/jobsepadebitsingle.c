@@ -37,14 +37,14 @@
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_SepaDebitSingle_new(AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_SepaDebitSingle_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
 
   j=AH_Job_TransferBase_new("JobSepaDebitSingle",
                             AB_Transaction_TypeDebitNote,
                             AB_Transaction_SubTypeStandard,
-                            u, account);
+                            pro, u, account);
   if (!j)
     return 0;
 

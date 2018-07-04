@@ -38,7 +38,7 @@ GWEN_INHERIT(AH_JOB, AH_JOB_GETBALANCE);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_GetBalance_new(AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_GetBalance_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
   AH_JOB_GETBALANCE *aj;
   GWEN_DB_NODE *dbArgs;
@@ -67,11 +67,11 @@ AH_JOB *AH_Job_GetBalance_new(AB_USER *u, AB_ACCOUNT *account) {
   } /* if updgroup for the given account found */
 
   if(useCreditCardJob)
-    j=AH_AccountJob_new("JobGetBalanceCreditCard", u, account);
+    j=AH_AccountJob_new("JobGetBalanceCreditCard", pro, u, account);
   else if(useInvestmentJob)
-    j=AH_AccountJob_new("JobGetBalanceInvestment", u, account);
+    j=AH_AccountJob_new("JobGetBalanceInvestment", pro, u, account);
   else
-    j=AH_AccountJob_new("JobGetBalance", u, account);
+    j=AH_AccountJob_new("JobGetBalance", pro, u, account);
   if (!j)
     return 0;
 

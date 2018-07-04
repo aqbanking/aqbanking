@@ -47,14 +47,14 @@ GWEN_INHERIT(AH_JOB, AH_JOB_GETKEYS);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_GetKeys_new(AB_USER *u){
+AH_JOB *AH_Job_GetKeys_new(AB_PROVIDER *pro, AB_USER *u){
   AH_JOB *j;
   AH_JOB_GETKEYS *jd;
   GWEN_DB_NODE *args;
   int version;
 
   assert(u);
-  j=AH_Job_new("JobGetKeys", u, 0, 0);
+  j=AH_Job_new("JobGetKeys", pro, u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "JobGetKeys not supported, should not happen");
@@ -339,7 +339,8 @@ const char *AH_Job_GetKeys_GetPeerId(const AH_JOB *j) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
+AH_JOB *AH_Job_SendKeys_new(AB_PROVIDER *pro,
+                            AB_USER *u,
 			    const GWEN_CRYPT_TOKEN_KEYINFO *cryptKeyInfo,
 			    const GWEN_CRYPT_TOKEN_KEYINFO *signKeyInfo,
 			    const GWEN_CRYPT_TOKEN_KEYINFO *authKeyInfo) {
@@ -351,9 +352,9 @@ AH_JOB *AH_Job_SendKeys_new(AB_USER *u,
   assert(u);
 
   if (authKeyInfo)
-    j=AH_Job_new("JobSendKeysWithAuthKey", u, 0, 0);
+    j=AH_Job_new("JobSendKeysWithAuthKey", pro, u, 0, 0);
   else
-    j=AH_Job_new("JobSendKeys", u, 0, 0);
+    j=AH_Job_new("JobSendKeys", pro, u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "JobSendKeys not supported, should not happen");
     return NULL;
@@ -591,13 +592,13 @@ int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
 GWEN_INHERIT(AH_JOB, AH_JOB_UPDATEBANK)
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_UpdateBank_new(AB_USER *u) {
+AH_JOB *AH_Job_UpdateBank_new(AB_PROVIDER *pro, AB_USER *u) {
   AH_JOB *j;
   GWEN_DB_NODE *args;
   AH_JOB_UPDATEBANK *jd;
 
   assert(u);
-  j=AH_Job_new("JobUpdateBankInfo", u, 0, 0);
+  j=AH_Job_new("JobUpdateBankInfo", pro, u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "JobUpdateBankInfo not supported, should not happen");
     return 0;
@@ -733,13 +734,13 @@ AB_ACCOUNT_LIST2 *AH_Job_UpdateBank_TakeAccountList(AH_JOB *j){
 
 GWEN_INHERIT(AH_JOB, AH_JOB_GETSYSID)
 
-AH_JOB *AH_Job_GetSysId_new(AB_USER *u){
+AH_JOB *AH_Job_GetSysId_new(AB_PROVIDER *pro, AB_USER *u){
   AH_JOB *j;
   GWEN_DB_NODE *args;
   AH_JOB_GETSYSID *jd;
 
   assert(u);
-  j=AH_Job_new("JobSync", u, 0, 0);
+  j=AH_Job_new("JobSync", pro, u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "JobSync not supported, should not happen");
     return 0;
@@ -891,16 +892,16 @@ int AH_Job_GetSysId_NextMsg(AH_JOB *j) {
 GWEN_INHERIT(AH_JOB, AH_JOB_TESTVERSION);
 
 
-AH_JOB *AH_Job_TestVersion_new(AB_USER *u, int anon){
+AH_JOB *AH_Job_TestVersion_new(AB_PROVIDER *pro, AB_USER *u, int anon){
   AH_JOB *j;
   GWEN_DB_NODE *args;
   AH_JOB_TESTVERSION *jd;
 
   assert(u);
   if (anon)
-    j=AH_Job_new("JobDialogInitAnon", u, 0, 0);
+    j=AH_Job_new("JobDialogInitAnon", pro, u, 0, 0);
   else
-    j=AH_Job_new("JobDialogInit", u, 0, 0);
+    j=AH_Job_new("JobDialogInit", pro, u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "JobTestVersion not supported, should not happen");
@@ -1043,14 +1044,15 @@ AH_JOB_TESTVERSION_RESULT AH_Job_TestVersion_GetResult(const AH_JOB *j){
 GWEN_INHERIT(AH_JOB, AH_JOB_GETSTATUS);
 
 
-AH_JOB *AH_Job_GetStatus_new(AB_USER *u,
+AH_JOB *AH_Job_GetStatus_new(AB_PROVIDER *pro,
+                             AB_USER *u,
                              const GWEN_TIME *fromDate,
                              const GWEN_TIME *toDate) {
   AH_JOB *j;
   AH_JOB_GETSTATUS *aj;
   GWEN_DB_NODE *dbArgs;
 
-  j=AH_Job_new("JobGetStatus", u, 0, 0);
+  j=AH_Job_new("JobGetStatus", pro, u, 0, 0);
   if (!j)
     return 0;
 
@@ -1141,7 +1143,7 @@ int AH_Job_GetStatus_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 GWEN_INHERIT(AH_JOB, AH_JOB_TAN);
 
 
-AH_JOB *AH_Job_Tan_new(AB_USER *u, int process, int jobVersion) {
+AH_JOB *AH_Job_Tan_new(AB_PROVIDER *pro, AB_USER *u, int process, int jobVersion) {
   AH_JOB *j;
   AH_JOB_TAN *aj;
   GWEN_DB_NODE *dbArgs;
@@ -1149,7 +1151,7 @@ AH_JOB *AH_Job_Tan_new(AB_USER *u, int process, int jobVersion) {
   const char *s;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Looking for TAN job in version %d", jobVersion);
-  j=AH_Job_new("JobTan", u, 0, jobVersion);
+  j=AH_Job_new("JobTan", pro, u, 0, jobVersion);
   if (!j) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "TAN job in version %d not found", jobVersion);
     return NULL;
@@ -1599,13 +1601,13 @@ int AH_Job_Tan_FinishSetup(AH_JOB *j, AH_JOB *accJob) {
 GWEN_INHERIT(AH_JOB, AH_JOB_GETITANMODES);
 
 
-AH_JOB *AH_Job_GetItanModes_new(AB_USER *u){
+AH_JOB *AH_Job_GetItanModes_new(AB_PROVIDER *pro, AB_USER *u){
   AH_JOB *j;
   GWEN_DB_NODE *args;
   AH_JOB_GETITANMODES *jd;
 
   assert(u);
-  j=AH_Job_new("JobGetItanModes", u, 0, 0);
+  j=AH_Job_new("JobGetItanModes", pro, u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "JobGetItanModes not supported, should not happen");
@@ -1732,12 +1734,12 @@ const int *AH_Job_GetItanModes_GetModes(const AH_JOB *j){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_ChangePin_new(AB_USER *u, const char *newPin){
+AH_JOB *AH_Job_ChangePin_new(AB_PROVIDER *pro, AB_USER *u, const char *newPin){
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
 
   assert(u);
-  j=AH_Job_new("JobChangePin", u, 0, 0);
+  j=AH_Job_new("JobChangePin", pro, u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "JobChangePin not supported, should not happen");
     return 0;
@@ -1774,14 +1776,14 @@ AH_JOB *AH_Job_ChangePin_new(AB_USER *u, const char *newPin){
 GWEN_INHERIT(AH_JOB, AH_JOB_GETACCSEPAINFO)
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_GetAccountSepaInfo_new(AB_USER *u, AB_ACCOUNT *acc) {
+AH_JOB *AH_Job_GetAccountSepaInfo_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc) {
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
   AH_JOB_GETACCSEPAINFO *jd;
   const char *s;
 
   assert(u);
-  j=AH_Job_new("JobGetAccountSepaInfo", u, 0, 0);
+  j=AH_Job_new("JobGetAccountSepaInfo", pro, u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "JobGetAccountSepaInfo not supported, should not happen");
     return 0;

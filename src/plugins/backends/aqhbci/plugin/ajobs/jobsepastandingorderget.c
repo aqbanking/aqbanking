@@ -38,11 +38,11 @@
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_SepaStandingOrderGet_new(AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_SepaStandingOrderGet_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
 
-  j=AH_AccountJob_new("JobSepaStandingOrderGet", u, account);
+  j=AH_AccountJob_new("JobSepaStandingOrderGet", pro, u, account);
   if (!j)
     return 0;
 

@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2014 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -31,7 +31,7 @@ typedef struct AH_OUTBOX AH_OUTBOX;
 #include <aqhbci/user.h>
 
 
-AH_OUTBOX *AH_Outbox_new(AH_HBCI *hbci);
+AH_OUTBOX *AH_Outbox_new(AB_PROVIDER *pro);
 void AH_Outbox_free(AH_OUTBOX *ob);
 void AH_Outbox_Attach(AH_OUTBOX *ob);
 

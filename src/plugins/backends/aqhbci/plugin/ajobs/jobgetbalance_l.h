@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -19,7 +16,7 @@
 #include <aqbanking/accstatus.h>
 
 
-AH_JOB *AH_Job_GetBalance_new(AB_USER *u, AB_ACCOUNT *account);
+AH_JOB *AH_Job_GetBalance_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account);
 
 
 #endif /* AH_JOBGETBALANCE_L_H */

@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -40,12 +40,12 @@ GWEN_LIST_FUNCTIONS(AH_OUTBOX__CBOX, AH_Outbox__CBox);
 
 
 
-AH_OUTBOX__CBOX *AH_Outbox__CBox_new(AH_HBCI *hbci,
+AH_OUTBOX__CBOX *AH_Outbox__CBox_new(AB_PROVIDER *pro, 
 				     AB_USER *u,
 				     AH_OUTBOX *ob) {
   AH_OUTBOX__CBOX *cbox;
 
-  assert(hbci);
+  assert(pro);
   assert(u);
   GWEN_NEW_OBJECT(AH_OUTBOX__CBOX, cbox);
   cbox->usage=1;
@@ -55,8 +55,7 @@ AH_OUTBOX__CBOX *AH_Outbox__CBox_new(AH_HBCI *hbci,
   cbox->finishedQueues=AH_JobQueue_List_new();
   cbox->todoJobs=AH_Job_List_new();
   cbox->finishedJobs=AH_Job_List_new();
-  cbox->pendingJobs=AB_Job_List2_new();
-  cbox->hbci=hbci;
+  cbox->provider=pro;
   cbox->outbox=ob;
 
   return cbox;
@@ -69,7 +68,6 @@ void AH_Outbox__CBox_free(AH_OUTBOX__CBOX *cbox){
     assert(cbox->usage);
     if (--(cbox->usage)==0) {
       GWEN_LIST_FINI(AH_OUTBOX__CBOX, cbox);
-      AB_Job_List2_free(cbox->pendingJobs);
       AH_JobQueue_List_free(cbox->todoQueues);
       AH_JobQueue_List_free(cbox->finishedQueues);
       AH_Job_List_free(cbox->todoJobs);
@@ -88,171 +86,6 @@ void AH_Outbox__CBox_AddTodoJob(AH_OUTBOX__CBOX *cbox, AH_JOB *j) {
 
   AH_Job_SetStatus(j, AH_JobStatusToDo);
   AH_Job_List_Add(j, cbox->todoJobs);
-}
-
-
-
-void AH_Outbox__CBox_AddPendingJob(AH_OUTBOX__CBOX *cbox, AB_JOB *bj) {
-  assert(cbox);
-  assert(bj);
-
-  AB_Job_List2_PushBack(cbox->pendingJobs, bj);
-}
-
-
-
-int AH_Outbox__CBox_CheckPending(AH_OUTBOX__CBOX *cbox) {
-  AH_JOB *j;
-
-  if (AB_Job_List2_GetSize(cbox->pendingJobs)==0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "No pending jobs to check");
-    return 0;
-  }
-
-  j=AH_Job_List_First(cbox->finishedJobs);
-  while(j) {
-    if (AH_Job_GetStatus(j)!=AH_JobStatusError) {
-      const char *s;
-  
-      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Got a job without errors");
-      s=AH_Job_GetName(j);
-      assert(s);
-      if (strcasecmp(s, "JobGetStatus")==0) {
-        GWEN_DB_NODE *dbResponses;
-        GWEN_DB_NODE *dbCurr;
-
-        DBG_DEBUG(AQHBCI_LOGDOMAIN, "Got a GetStatus job");
-        dbResponses=AH_Job_GetResponses(j);
-        assert(dbResponses);
-        dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
-        while (dbCurr) {
-          GWEN_DB_NODE *dbResult;
-          int rv;
-
-          rv=AH_Job_CheckEncryption(j, dbCurr);
-          if (rv) {
-            DBG_WARN(AQHBCI_LOGDOMAIN, "Compromised security (encryption)");
-            return rv;
-          }
-          rv=AH_Job_CheckSignature(j, dbCurr);
-          if (rv) {
-            DBG_WARN(AQHBCI_LOGDOMAIN, "Compromised security (signature)");
-            return rv;
-          }
-
-          dbResult=GWEN_DB_GetGroup(dbCurr,
-                                    GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                                    "data/GetStatusResponse");
-          if (dbResult) {
-            const char *rDialogId;
-            uint32_t rMsgNum;
-            uint32_t rSegNum;
-            int rCode;
-  
-            DBG_DEBUG(AQHBCI_LOGDOMAIN, "Checking status response");
-            rDialogId=GWEN_DB_GetCharValue(dbResult, "msgref/dialogId", 0, 0);
-            rMsgNum=GWEN_DB_GetIntValue(dbResult, "msgref/msgNum", 0, 0);
-            rSegNum=GWEN_DB_GetIntValue(dbResult, "refSegNum", 0, 0);
-            rCode=GWEN_DB_GetIntValue(dbResult, "result/resultcode", 0, 0);
-
-            if (rDialogId && rMsgNum && rSegNum && rCode) {
-              AB_JOB_LIST2_ITERATOR *it;
-    
-              /* find pending job for this result */
-              it=AB_Job_List2_First(cbox->pendingJobs);
-              if (it) {
-                AB_JOB *bj;
-    
-                bj=AB_Job_List2Iterator_Data(it);
-                while(bj) {
-                  GWEN_DB_NODE *dbJ;
-
-                  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Checking pending job");
-                  dbJ=AB_Job_GetProviderData(bj,
-                                             AH_HBCI_GetProvider(cbox->hbci));
-                  assert(dbJ);
-                  dbJ=GWEN_DB_GetGroup(dbJ, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                                       "msgRef");
-                  if (dbJ) {
-                    const char *jDialogId;
-                    uint32_t jMsgNum;
-                    uint32_t jFirstSeg;
-                    uint32_t jLastSeg;
-  
-                    DBG_DEBUG(AQHBCI_LOGDOMAIN,
-                             "Pending job has a message reference");
-                    jDialogId=GWEN_DB_GetCharValue(dbJ, "dialogId", 0, 0);
-                    jMsgNum=GWEN_DB_GetIntValue(dbJ, "msgnum", 0, 0);
-                    jFirstSeg=GWEN_DB_GetIntValue(dbJ, "firstSeg", 0, 0);
-                    jLastSeg=GWEN_DB_GetIntValue(dbJ, "lastSeg", 0, 0);
-                    if (jDialogId && jMsgNum && jFirstSeg && jLastSeg) {
-                      if ((rMsgNum==jMsgNum) &&
-                          ((rSegNum>=jFirstSeg &&
-                            rSegNum<=jLastSeg)) &&
-                          (strcasecmp(rDialogId, jDialogId)==0)) {
-                        /* result matches */
-                        if (rCode>=9000 && rCode<=9999) {
-                          DBG_INFO(AQHBCI_LOGDOMAIN,
-                                   "Error result for pending job");
-                          AB_Job_SetStatus(bj, AB_Job_StatusError);
-                        }
-                        else {
-                          if (AB_Job_GetStatus(bj)==AB_Job_StatusPending) {
-                            /* only modify status here if job is still
-                             * pending. So if some result flagged an error
-                             * the result will not be changed
-                             */
-                            if (rCode==10) {
-                              DBG_INFO(AQHBCI_LOGDOMAIN,
-                                       "Job is still pending");
-                            }
-                            else {
-                              DBG_INFO(AQHBCI_LOGDOMAIN,
-                                       "Pending job now finished");
-                              AB_Job_SetStatus(bj, AB_Job_StatusFinished);
-                            }
-                          } /* if status is pending */
-                          else {
-                            DBG_INFO(AQHBCI_LOGDOMAIN,
-                                     "Status is not \"pending\"");
-                          }
-                        } /* if non-error response */
-                        break;
-                      } /* if result is for this job */
-                      else {
-                        DBG_DEBUG(AQHBCI_LOGDOMAIN,
-                                 "Result is not for this pending job");
-                      }
-                    } /* if all needed fields in job are valid */
-                    else {
-                      DBG_WARN(AQHBCI_LOGDOMAIN,
-                               "Pending job is incomplete");
-                    }
-                  } /* if job has a message reference */
-                  else {
-                    DBG_WARN(AQHBCI_LOGDOMAIN,
-                             "Pending job has no message reference");
-                  }
-                  bj=AB_Job_List2Iterator_Next(it);
-                } /* while */
-                AB_Job_List2Iterator_free(it);
-              } /* if there are pending jobs */
-            } /* if all needed fields in result are valid */
-          } /* if current response group is a result */
-          else {
-            DBG_DEBUG(AQHBCI_LOGDOMAIN, "Not a status response");
-          }
-          dbCurr=GWEN_DB_GetNextGroup(dbCurr);
-        } /* while */
-      } /* if jobGetStatus */
-    } /* if job is ok */
-    else {
-      DBG_WARN(AQHBCI_LOGDOMAIN, "Skipping job, it has errors");
-    }
-    j=AH_Job_List_Next(j);
-  } /* while jobs */
-
-  return 0;
 }
 
 
@@ -306,10 +139,6 @@ void AH_Outbox__CBox_Finish(AH_OUTBOX__CBOX *cbox){
       AH_Job_List_Add(j, cbox->finishedJobs);
     } /* while */
   }
-
-
-  /* check for results for pending jobs */
-  AH_Outbox__CBox_CheckPending(cbox);
 }
 
 
@@ -754,14 +583,13 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox,
     /* sign and crypt, not anonymous */
     DBG_NOTICE(AQHBCI_LOGDOMAIN,
                "Creating non-anonymous dialog open request");
-    jDlgOpen=AH_Job_new("JobDialogInit", cbox->user, 0, 0);
+    jDlgOpen=AH_Job_new("JobDialogInit", cbox->provider, cbox->user, 0, 0);
     if (!jDlgOpen) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create job JobDialogInit");
       return GWEN_ERROR_GENERIC;
     }
     if (jqFlags & AH_JOBQUEUE_FLAGS_SIGN)
-      AH_Job_AddSigner(jDlgOpen,
-                       AB_User_GetUserId(cbox->user));
+      AH_Job_AddSigner(jDlgOpen, AB_User_GetUserId(cbox->user));
     AH_Dialog_SubFlags(dlg, AH_DIALOG_FLAGS_ANONYMOUS);
 
     if (AH_User_GetCryptMode(cbox->user)==AH_CryptMode_Pintan) {
@@ -781,7 +609,7 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox,
   else {
     /* neither sign nor crypt, use anonymous dialog */
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating anonymous dialog open request");
-    jDlgOpen=AH_Job_new("JobDialogInitAnon", cbox->user, 0, 0);
+    jDlgOpen=AH_Job_new("JobDialogInitAnon", cbox->provider, cbox->user, 0, 0);
     if (!jDlgOpen) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create job JobDialogInitAnon");
       return GWEN_ERROR_GENERIC;
@@ -789,9 +617,7 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox,
     AH_Dialog_AddFlags(dlg, AH_DIALOG_FLAGS_ANONYMOUS);
   }
 
-  GWEN_Gui_ProgressLog(0,
-		       GWEN_LoggerLevel_Notice,
-		       I18N("Opening dialog"));
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("Opening dialog"));
   jqDlgOpen=AH_JobQueue_new(cbox->user);
   AH_JobQueue_AddFlags(jqDlgOpen, AH_JOBQUEUE_FLAGS_OUTBOX);
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Enqueueing dialog open request");
@@ -852,7 +678,7 @@ int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox,
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Sending dialog close request (flags=%08x)",
 	     jqFlags);
   dlgFlags=AH_Dialog_GetFlags(dlg);
-  jDlgClose=AH_Job_new("JobDialogEnd", cbox->user, 0, 0);
+  jDlgClose=AH_Job_new("JobDialogEnd", cbox->provider, cbox->user, 0, 0);
   if (!jDlgClose) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create job JobDialogEnd");
     return GWEN_ERROR_GENERIC;
@@ -1369,14 +1195,14 @@ int AH_Outbox__CBox_SendAndRecvBox(AH_OUTBOX__CBOX *cbox){
 
 
 
-AH_OUTBOX *AH_Outbox_new(AH_HBCI *hbci) {
+AH_OUTBOX *AH_Outbox_new(AB_PROVIDER *pro) {
   AH_OUTBOX *ob;
 
-  assert(hbci);
+  assert(pro);
   GWEN_NEW_OBJECT(AH_OUTBOX, ob);
   GWEN_INHERIT_INIT(AH_OUTBOX, ob);
 
-  ob->hbci=hbci;
+  ob->provider=pro;
   ob->userBoxes=AH_Outbox__CBox_List_new();
   ob->finishedJobs=AH_Job_List_new();
   ob->usage=1;
@@ -1449,7 +1275,7 @@ int AH_Outbox_LockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers){
 
   assert(ob);
 
-  ab=AH_HBCI_GetBankingApi(ob->hbci);
+  ab=AB_Provider_GetBanking(ob->provider);
 
   cbox=AH_Outbox__CBox_List_First(ob->userBoxes);
   while(cbox) {
@@ -1498,7 +1324,7 @@ int AH_Outbox_UnlockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers, int abandon
 
   assert(ob);
 
-  ab=AH_HBCI_GetBankingApi(ob->hbci);
+  ab=AB_Provider_GetBanking(ob->provider);
   it=AB_User_List2_First(lockedUsers);
   if (it) {
     AB_USER *u;
@@ -1565,54 +1391,13 @@ void AH_Outbox_AddJob(AH_OUTBOX *ob, AH_JOB *j){
 
   cbox=AH_Outbox__FindCBox(ob, u);
   if (!cbox) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating CBox for customer \"%s\"",
-               AB_User_GetCustomerId(u));
-    cbox=AH_Outbox__CBox_new(ob->hbci, u, ob);
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating CBox for customer \"%s\"", AB_User_GetCustomerId(u));
+    cbox=AH_Outbox__CBox_new(ob->provider, u, ob);
     AH_Outbox__CBox_List_Add(cbox, ob->userBoxes);
   }
   /* attach to job so that it will never be destroyed from me */
   AH_Job_Attach(j);
   AH_Outbox__CBox_AddTodoJob(cbox, j);
-}
-
-
-
-void AH_Outbox_AddPendingJob(AH_OUTBOX *ob, AB_JOB *bj){
-  AB_USER *u;
-  AH_OUTBOX__CBOX *cbox;
-  GWEN_DB_NODE *db;
-  const char *customerId;
-  const char *bankId;
-
-  assert(ob);
-  assert(bj);
-
-  db=AB_Job_GetProviderData(bj, AH_HBCI_GetProvider(ob->hbci));
-  assert(db);
-  customerId=GWEN_DB_GetCharValue(db, "customerId", 0, 0);
-  bankId=GWEN_DB_GetCharValue(db, "bankId", 0, 0);
-  if (!customerId || !bankId) {
-    DBG_WARN(AQHBCI_LOGDOMAIN, "Job has never been sent by AqHBCI");
-    return;
-  }
-
-  u=AB_Banking_FindUser(AH_HBCI_GetBankingApi(ob->hbci),
-                        AH_PROVIDER_NAME, 0, bankId, "*", customerId);
-  if (!u) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "Customer %s at bank %s not found",
-              customerId, bankId);
-    return;
-  }
-
-  cbox=AH_Outbox__FindCBox(ob, u);
-  if (!cbox) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating CBox for customer \"%s\"",
-               AB_User_GetCustomerId(u));
-    cbox=AH_Outbox__CBox_new(ob->hbci, u, ob);
-    AH_Outbox__CBox_List_Add(cbox, ob->userBoxes);
-  }
-  AH_Outbox__CBox_AddPendingJob(cbox, bj);
 }
 
 
@@ -1938,9 +1723,7 @@ int AH_Outbox__Execute(AH_OUTBOX *ob){
     return 0;
   }
 
-  GWEN_Gui_ProgressLog(0,
-		       GWEN_LoggerLevel_Notice,
-		       I18N("AqHBCI started"));
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("AqHBCI started"));
 
   rv=AH_Outbox_StartSending(ob);
   if (rv) {
@@ -1954,16 +1737,14 @@ int AH_Outbox__Execute(AH_OUTBOX *ob){
     return rv;
   }
 
-  rv=AB_Banking_ExecutionProgress(AH_HBCI_GetBankingApi(ob->hbci));
+  rv=AB_Banking_ExecutionProgress(AB_Provider_GetBanking(ob->provider));
   if (rv==GWEN_ERROR_USER_ABORTED) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "User aborted (%d)", rv);
     AH_Outbox__FinishOutbox(ob);
     return rv;
   }
 
-  GWEN_Gui_ProgressLog(0,
-		       GWEN_LoggerLevel_Notice,
-		       I18N("AqHBCI finished."));
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("AqHBCI finished."));
   return 0;
 }
 
@@ -2035,7 +1816,7 @@ int AH_Outbox_Execute(AH_OUTBOX *ob,
 
   /* unmount currently mounted medium */
   if (!nounmount)
-    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(ob->hbci));
+    AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(ob->provider));
   if (withProgress) {
     GWEN_Gui_ProgressEnd(pid);
   }
@@ -2127,9 +1908,9 @@ AH_JOB *AH_Outbox_FindTransferJob(AH_OUTBOX *ob,
 
 
 
-#include "itan.inc"
-#include "itan1.inc"
-#include "itan2.inc"
+#include "itan.c"
+#include "itan1.c"
+#include "itan2.c"
 
 
 

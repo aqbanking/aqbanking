@@ -50,7 +50,7 @@ int AH_Provider_SendDtazv(AB_PROVIDER *pro,
   h=AH_Provider_GetHbci(pro);
   assert(h);
 
-  job=AH_Job_ForeignTransferWH_new(u, a);
+  job=AH_Job_ForeignTransferWH_new(pro, u, a);
   if (!job) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported, should not happen");
     return GWEN_ERROR_GENERIC;
@@ -65,7 +65,7 @@ int AH_Provider_SendDtazv(AB_PROVIDER *pro,
 
   AH_Job_AddSigner(job, AB_User_GetUserId(u));
 
-  ob=AH_Outbox_new(h);
+  ob=AH_Outbox_new(pro);
   AH_Outbox_AddJob(ob, job);
 
   rv=AH_Outbox_Execute(ob, ctx, withProgress, 1, doLock);

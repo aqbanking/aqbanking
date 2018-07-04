@@ -39,10 +39,10 @@
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_GetEStatements_new(AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_GetEStatements_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
 
-  j=AH_AccountJob_new("JobGetEStatements", u, account);
+  j=AH_AccountJob_new("JobGetEStatements", pro, u, account);
   if (!j)
     return NULL;
 
