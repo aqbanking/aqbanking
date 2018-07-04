@@ -6,6 +6,7 @@ Next:
 - AqHBCI:
   - replace use of AB_Banking_Begin/EndExclUseAccount
   - replace use of AB_Banking_Begin/EndExclUseUser
+  - add functions to find users and accounts (like before in AqBanking)
   - start adapting the account/user setup dialogs
 
 
