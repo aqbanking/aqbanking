@@ -483,6 +483,7 @@ int AH_Msg_EncryptRdh9(AH_MSG *hmsg) {
   }
 
   ek=AH_User_GetBankPubCryptKey(u);
+
   if(!ek) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bank Public Crypt Key not downloaded, please get it!");
     return GWEN_ERROR_INTERNAL;

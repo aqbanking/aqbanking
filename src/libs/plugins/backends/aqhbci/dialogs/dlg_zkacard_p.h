@@ -35,6 +35,8 @@ struct AH_ZKACARD_DIALOG {
   int hbciVersion;
 
   int rdhVersion;
+  /* RDH7 */
+  int keyStatus;
 
   uint32_t flags;
 

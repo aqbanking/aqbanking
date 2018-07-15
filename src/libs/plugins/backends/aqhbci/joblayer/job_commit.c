@@ -387,14 +387,39 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
           const void *expp, *modp;
           unsigned int expl, modl;
           int keynum, keyver;
+          /**** RDH7 Block Start******/
+          int keySize;
+          const char *s;
+          /**** RDH7 Block End******/
 
           /* TODO: Ask the user to accept the key received */
           DBG_WARN(AQHBCI_LOGDOMAIN, "GetKeyResponse not yet processed!");
           keynum=GWEN_DB_GetIntValue(dbRd, "key/keynum",  0, -1);
           keyver=GWEN_DB_GetIntValue(dbRd, "key/keyversion",  0, -1);
           modp=GWEN_DB_GetBinValue(dbRd, "key/modulus",  0, NULL, 0, &modl);
+          /* skip zero bytes if any */
+          while(modl && *((uint8_t*)modp)==0) {
+              modp++;
+              modl--;
+          }
+
+          /* calculate key size in bytes */
+          if (modl<=96)
+              keySize=96;
+          else {
+              keySize=modl;
+          }
           expp=GWEN_DB_GetBinValue(dbRd, "key/exponent", 0, NULL, 0, &expl);
-          bpk=GWEN_Crypt_KeyRsa_fromModExp(256, modp, modl, expp, expl);
+          bpk=GWEN_Crypt_KeyRsa_fromModExp(keySize, modp, modl, expp, expl);
+          GWEN_Crypt_Key_SetKeyNumber(bpk,
+                  GWEN_DB_GetIntValue(dbRd,
+                          "keyname/keynum",
+                          0, 0));
+          GWEN_Crypt_Key_SetKeyVersion(bpk,
+                  GWEN_DB_GetIntValue(dbRd,
+                          "keyname/keyversion",
+                          0, 0));
+
           if (strcasecmp(keytype, "S")==0) {
             DBG_WARN(AQHBCI_LOGDOMAIN, "Received new server sign key, please verify! (num: %d, version: %d)", keynum, keyver);
             GWEN_Gui_ProgressLog2(0,

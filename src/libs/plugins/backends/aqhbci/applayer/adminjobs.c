@@ -493,6 +493,12 @@ int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
       GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			  "key/opmode", 2);
       break;
+      /**** RDH7 Block Start******/
+    case 7:
+    	GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
+    			"key/opmode", 18);
+    	break;
+    	/**** RDH7 Block End***/
     case 5:
       GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			  "key/opmode", 18);
@@ -528,6 +534,12 @@ int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
       GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			  "key/opmode", 19);
       break;
+      /**** RDH7 Block Start******/
+    case 7:
+    	GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
+    			"key/opmode", 19);
+    	break;
+    	/**** RDH7 Block End***/
     case 5:
       GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS,
 			  "key/opmode", 18);

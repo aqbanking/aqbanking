@@ -39,6 +39,11 @@ int AH_Msg_SignRdh(AH_MSG *hmsg,
   case 5:
     rv=AH_Msg_SignRdh5(hmsg, su, rawBuf, signer);
     break;
+    /**** RDH7 Block Start******/
+  case 7:
+	rv=AH_Msg_SignRdh7(hmsg, su, rawBuf, signer);
+    break;
+    /**** RDH7 Block End******/
   case 9:
     rv=AH_Msg_SignRdh9(hmsg, su, rawBuf, signer);
     break;
@@ -76,6 +81,11 @@ int AH_Msg_EncryptRdh(AH_MSG *hmsg) {
   case 5:
     rv=AH_Msg_EncryptRdh5(hmsg);
     break;
+    /**** RDH7 Block Start******/
+  case 7:
+    rv=AH_Msg_EncryptRdh7(hmsg);
+    break;
+    /**** RDH7 Block End******/
   case 9:
     rv=AH_Msg_EncryptRdh9(hmsg);
     break;
@@ -114,6 +124,11 @@ int AH_Msg_DecryptRdh(AH_MSG *hmsg, GWEN_DB_NODE *gr){
   case 5:
     rv=AH_Msg_DecryptRdh5(hmsg, gr);
     break;
+    /**** RDH7 Block Start******/
+  case 7:
+    rv=AH_Msg_DecryptRdh7(hmsg, gr);
+    break;
+    /**** RDH7 Block End******/
   case 9:
     rv=AH_Msg_DecryptRdh9(hmsg, gr);
     break;
@@ -151,6 +166,11 @@ int AH_Msg_VerifyRdh(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
   case 5:
     rv=AH_Msg_VerifyRdh5(hmsg, gr);
     break;
+    /**** RDH7 Block Start******/
+  case 7:
+    rv=AH_Msg_VerifyRdh7(hmsg, gr);
+    break;
+    /**** RDH7 Block End******/
   case 9:
     rv=AH_Msg_VerifyRdh9(hmsg, gr);
     break;

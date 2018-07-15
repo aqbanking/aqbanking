@@ -818,7 +818,28 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
     return GWEN_DialogEvent_ResultHandled;
   }
 
+  /* send user keys */
+  if ( xdlg->keyStatus & 0x01 )
+  {
+      int withAuthKey=0;
+      if ( xdlg->rdhVersion == 7 )
+      {
+          withAuthKey=1;
+      }
+      ctx=AB_ImExporterContext_new();
+      rv=AH_Provider_SendUserKeys2(pro, u, ctx, withAuthKey, 1, 0, 1);
+      AB_ImExporterContext_free(ctx);
+      if (rv) {
+        AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting server keys (%d)", rv);
+        AB_Banking_DeleteUser(xdlg->banking, u);
+        GWEN_Gui_ProgressEnd(pid);
+        return GWEN_DialogEvent_ResultHandled;
+      }
+  }
   /* get Kundensystem-ID */
+  /* FIXME the SysID of the zkacard is the CID, so this should not be necessary */
+#if 0
   ctx=AB_ImExporterContext_new();
   rv=AH_Provider_GetSysId(xdlg->provider, u, ctx, 1, 0, 1);
   AB_ImExporterContext_free(ctx);
@@ -829,7 +850,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
-
+#endif
     /* lock new user */
   rv=AB_Provider_BeginExclUseUser(xdlg->provider, u);
   if (rv<0) {
@@ -1136,6 +1157,9 @@ int AH_ZkaCardDialog_FromContext(GWEN_DIALOG *dlg, int i) {
 				  (s && *s)?s:"",
 				  0);
 
+      /* RDH7 */
+      xdlg->rdhVersion = GWEN_Crypt_Token_Context_GetRdhVersion(ctx);
+      xdlg->keyStatus  = GWEN_Crypt_Token_Context_GetKeyStatus(ctx);
     }
   }
 

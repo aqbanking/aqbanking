@@ -488,7 +488,7 @@ void AH_User__WriteDb(const AB_USER *u, GWEN_DB_NODE *db) {
     GWEN_Buffer_free(nbuf);
   } /* if serverUrl */
   
-  /* save bankPubKey */
+  /* save bankPubCryptKey */
   if (ue->bankPubCryptKey) {
     assert(ue->bankPubCryptKey);
     gr=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "bankPubCryptKey");
@@ -496,8 +496,8 @@ void AH_User__WriteDb(const AB_USER *u, GWEN_DB_NODE *db) {
     GWEN_Crypt_KeyRsa_toDb(ue->bankPubCryptKey, gr, 1);
   }
   else
-    GWEN_DB_DeleteVar(db, "bankPubKey");
-
+    GWEN_DB_DeleteVar(db, "bankPubCryptKey");
+  
   /* save bankPubSignKey */
   if (ue->bankPubSignKey) {
     assert(ue->bankPubSignKey);
@@ -871,8 +871,6 @@ void AH_User_SetUpd(AB_USER *u, GWEN_DB_NODE *n){
     ue->dbUpd=GWEN_DB_Group_new("upd");
 }
 
-
-
 GWEN_CRYPT_KEY * AH_User_GetBankPubCryptKey(const AB_USER *u){
   AH_USER *ue;
 
@@ -883,23 +881,19 @@ GWEN_CRYPT_KEY * AH_User_GetBankPubCryptKey(const AB_USER *u){
   return ue->bankPubCryptKey;
 }
 
-
-
-void AH_User_SetBankPubCryptKey(AB_USER *u, GWEN_CRYPT_KEY *bankPubKey){
+void AH_User_SetBankPubCryptKey(AB_USER *u, GWEN_CRYPT_KEY *bankPubCryptKey){
   AH_USER *ue;
 
-  assert(bankPubKey);
+  assert(bankPubCryptKey);
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  if (ue->bankPubCryptKey!=bankPubKey) {
+  if (ue->bankPubCryptKey!=bankPubCryptKey) {
     //GWEN_Crypt_KeyRsa_free(ue->bankPubKey);
-    ue->bankPubCryptKey=GWEN_Crypt_KeyRsa_dup(bankPubKey);
+    ue->bankPubCryptKey=GWEN_Crypt_KeyRsa_dup(bankPubCryptKey);
   }
 }
-
-
 
 GWEN_CRYPT_KEY * AH_User_GetBankPubSignKey(const AB_USER *u){
   AH_USER *ue;
@@ -911,22 +905,19 @@ GWEN_CRYPT_KEY * AH_User_GetBankPubSignKey(const AB_USER *u){
   return ue->bankPubSignKey;
 }
 
-
-
-void AH_User_SetBankPubSignKey(AB_USER *u, GWEN_CRYPT_KEY *bankPubKey){
+void AH_User_SetBankPubSignKey(AB_USER *u, GWEN_CRYPT_KEY *bankPubSignKey){
   AH_USER *ue;
 
-  assert(bankPubKey);
+  assert(bankPubSignKey);
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  if (ue->bankPubSignKey!=bankPubKey) {
+  if (ue->bankPubSignKey!=bankPubSignKey) {
     //GWEN_Crypt_KeyRsa_free(ue->bankPubKey);
-    ue->bankPubSignKey=GWEN_Crypt_KeyRsa_dup(bankPubKey);
+    ue->bankPubSignKey=GWEN_Crypt_KeyRsa_dup(bankPubSignKey);
   }
 }
-
 
 AH_BPD *AH_User_GetBpd(const AB_USER *u){
   AH_USER *ue;
