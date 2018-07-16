@@ -407,11 +407,27 @@ int AH_MsgRdh7__PrepareCryptoSeg7(AH_MSG *hmsg,
 		GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "cryptAlgo/mode", 18);  /* RSAES-PKCS1-v1_5 [PKCS1] */
 	}
 	else {
+	    int secProfile = AH_Msg_GetSecurityProfile(hmsg);
 		GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "function", 2);        /* sign with signature key */
 		GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "signAlgo/algo", 10);  /* RSA */
 		GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "signAlgo/mode", 19);  /* RSASSA-PSS */
-		GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "hashAlgo/algo", 6);   /* SHA-256/SHA-256 */
-	}
+		if (secProfile > 2)
+		{
+		    GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "hashAlgo/algo", 3);   /* SHA-256 */
+		}
+		else
+		{
+		    GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "hashAlgo/algo", 6);   /* SHA-256/SHA-256 */
+		}
+		if ( secProfile > 1)
+		{
+		    /* add certificate */
+		    int certLen = GWEN_Crypt_Token_KeyInfo_GetCertificateLen(ki);
+		    const uint8_t *certData = GWEN_Crypt_Token_KeyInfo_GetCertificateData(ki);
+		    GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "cert/type", 3); /* X.509 */
+		    GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT, "cert/cert", certData, certLen);
+		}
+    }
 
 	return 0;
 }
@@ -439,6 +455,7 @@ int AH_Msg_SignRdh7(AH_MSG *hmsg,
 	const GWEN_CRYPT_TOKEN_KEYINFO *ki;
 	uint32_t keyId;
 	uint32_t gid;
+	int secProfile;
 
 	assert(hmsg);
 	h=AH_Dialog_GetHbci(hmsg->dialog);
@@ -446,7 +463,7 @@ int AH_Msg_SignRdh7(AH_MSG *hmsg,
 	e=AH_Dialog_GetMsgEngine(hmsg->dialog);
 	assert(e);
 	GWEN_MsgEngine_SetMode(e, "rdh");
-
+	secProfile = AH_Msg_GetSecurityProfile(hmsg);
 	gid=0;
 
 	uFlags=AH_User_GetFlags(su);
@@ -488,10 +505,14 @@ int AH_Msg_SignRdh7(AH_MSG *hmsg,
 		return GWEN_ERROR_NOT_FOUND;
 	}
 
-	/* :TODO: replace with approbriate call to the correct key, either 2 for signing or 4 for digital
-	 * signature
-	 */
-	keyId=GWEN_Crypt_Token_Context_GetSignKeyId(ctx);
+	if ( secProfile > 2)
+	{
+	    keyId=GWEN_Crypt_Token_Context_GetAuthSignKeyId(ctx);
+	}
+	else
+	{
+	    keyId=GWEN_Crypt_Token_Context_GetSignKeyId(ctx);
+	}
 	ki=GWEN_Crypt_Token_GetKeyInfo(ct,
 			keyId,
 			0xffffffff,
