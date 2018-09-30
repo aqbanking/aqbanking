@@ -120,6 +120,14 @@
           <typeFlagsMask>with_list</typeFlagsMask>
           <typeFlagsValue>with_list</typeFlagsValue>
           <content>
+             /**                                                                                              \n
+              * Find first transaction in a list which matches the given type and command.                    \n
+              *                                                                                               \n
+              * @return Entry matching the description (or NULL if none)                                      \n
+              * @param tl pointer to the list to search                                                       \n
+              * @param ty transaction type, if 0 then this is not checked                                     \n
+              * @param cmd command, if -1 then any non-zero command matches, if 0 then this is not checked    \n
+             */                                                                                               \n
              $(api) $(struct_type) * $(struct_prefix)_List_FindFirstByType(const $(struct_type)_LIST *tl, int ty, int cmd);
           </content>
         </inline>
@@ -145,6 +153,11 @@
                      if ((cmd &gt; AB_Transaction_CommandNone) &amp;&amp; ($(struct_prefix)_GetCommand(t)!=cmd))
                        match=0;
                    }
+
+                   if (match) {
+                     if ((cmd &lt; AB_Transaction_CommandNone) &amp;&amp; ($(struct_prefix)_GetCommand(t) &lt;= AB_Transaction_CommandNone))
+                       match=0;
+                   }
                    
                    if (match)
                      return t;
@@ -162,6 +175,14 @@
           <typeFlagsMask>with_list</typeFlagsMask>
           <typeFlagsValue>with_list</typeFlagsValue>
           <content>
+             /**                                                                                              \n
+              * Find next transaction in a list which matches the given type and command.                     \n
+              *                                                                                               \n
+              * @return Entry matching the description (or NULL if none)                                      \n
+              * @param t pointer to the previous match (as returned by $(struct_prefix)_List_FindFirstByType) \n
+              * @param ty transaction type, if 0 then this is not checked                                     \n
+              * @param cmd command, if -1 then any non-zero command matches, if 0 then this is not checked    \n
+             */                                                                                               \n
              $(api) $(struct_type) * $(struct_prefix)_List_FindNextByType(const $(struct_type) *t, int ty, int cmd);
           </content>
         </inline>
@@ -185,6 +206,11 @@
                    
                    if (match) {
                      if ((cmd &gt; AB_Transaction_CommandNone) &amp;&amp; ($(struct_prefix)_GetCommand(t)!=cmd))
+                       match=0;
+                   }
+
+                   if (match) {
+                     if ((cmd &lt; AB_Transaction_CommandNone) &amp;&amp; ($(struct_prefix)_GetCommand(t) &lt;= AB_Transaction_CommandNone))
                        match=0;
                    }
                    
