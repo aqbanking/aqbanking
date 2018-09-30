@@ -16,15 +16,21 @@
 
 
 GWEN_DIALOG *AH_Provider_GetNewCardUserDialog(AB_PROVIDER *pro) {
+/*
   int rv;
   GWEN_BUFFER *mtypeName;
   GWEN_BUFFER *mediumName;
   GWEN_CRYPT_TOKEN *ct;
+  AB_BANKING *ab;
+
+  assert(pro);
+  ab=AB_Provider_GetBanking(pro);
+  assert(ab);
 
   mtypeName=GWEN_Buffer_new(0, 64, 0, 1);
   mediumName=GWEN_Buffer_new(0, 64, 0, 1);
 
-  rv=AB_Banking_CheckCryptToken(AB_Provider_GetBanking(pro),
+  rv=AB_Banking_CheckCryptToken(ab,
 				GWEN_Crypt_Token_Device_Card,
 				mtypeName,
 				mediumName);
@@ -53,7 +59,7 @@ GWEN_DIALOG *AH_Provider_GetNewCardUserDialog(AB_PROVIDER *pro) {
     GWEN_DIALOG *dlg2;
 
     DBG_WARN(0, "DDV card");
-    dlg2=AH_DdvCardDialog_new(AB_Provider_GetBanking(pro), ct);
+    dlg2=AH_DdvCardDialog_new(pro, ct);
     if (dlg2==NULL) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (no dialog)");
       GWEN_Buffer_free(mediumName);
@@ -74,7 +80,7 @@ GWEN_DIALOG *AH_Provider_GetNewCardUserDialog(AB_PROVIDER *pro) {
     GWEN_DIALOG *dlg2;
 
     DBG_WARN(0, "ZKA RSA card");
-    dlg2=AH_ZkaCardDialog_new(AB_Provider_GetBanking(pro), ct);
+    dlg2=AH_ZkaCardDialog_new(pro, ct);
     if (dlg2==NULL) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (no dialog)");
       GWEN_Buffer_free(mediumName);
@@ -94,13 +100,14 @@ GWEN_DIALOG *AH_Provider_GetNewCardUserDialog(AB_PROVIDER *pro) {
   GWEN_Buffer_free(mediumName);
   GWEN_Buffer_free(mtypeName);
   AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(pro));
-
+*/
   return NULL;
 }
 
 
 
 GWEN_DIALOG *AH_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
+/*
   AH_PROVIDER *hp;
   GWEN_DIALOG *dlg;
 
@@ -110,13 +117,13 @@ GWEN_DIALOG *AH_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
 
   switch(AH_User_GetCryptMode(u)) {
   case AH_CryptMode_Pintan:
-    dlg=AH_EditUserPinTanDialog_new(AB_Provider_GetBanking(pro), u, 1);
+    dlg=AH_EditUserPinTanDialog_new(pro, u, 1);
     break;
   case AH_CryptMode_Ddv:
-    dlg=AH_EditUserDdvDialog_new(AB_Provider_GetBanking(pro), u, 1);
+    dlg=AH_EditUserDdvDialog_new(pro, u, 1);
     break;
   case AH_CryptMode_Rdh:
-    dlg=AH_EditUserRdhDialog_new(AB_Provider_GetBanking(pro), u, 1);
+    dlg=AH_EditUserRdhDialog_new(pro, u, 1);
     break;
   default:
     dlg=NULL;
@@ -129,11 +136,14 @@ GWEN_DIALOG *AH_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
   }
 
   return dlg;
+*/
+  return NULL;
 }
 
 
 
 GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
+/*
   AH_PROVIDER *hp;
   GWEN_DIALOG *dlg;
 
@@ -145,7 +155,7 @@ GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
 
   switch(i) {
   case AqHBCI_NewUserDialog_CodeExistingPinTan:
-    dlg=AH_PinTanDialog_new(AB_Provider_GetBanking(pro));
+    dlg=AH_PinTanDialog_new(pro);
     break;
 
   case AqHBCI_NewUserDialog_CodeExistingChipcard:
@@ -153,17 +163,17 @@ GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
     break;
 
   case AqHBCI_NewUserDialog_CodeCreateKeyFile:
-    dlg=AH_NewKeyFileDialog_new(AB_Provider_GetBanking(pro));
+    dlg=AH_NewKeyFileDialog_new(pro);
     break;
 
   case AqHBCI_NewUserDialog_CodeExistingKeyFile:
-    dlg=AH_ImportKeyFileDialog_new(AB_Provider_GetBanking(pro));
+    dlg=AH_ImportKeyFileDialog_new(pro);
     break;
   case AqHBCI_NewUserDialog_CodeCreateChipcard:
 
   case AqHBCI_NewUserDialog_CodeGeneric:
   default:
-    dlg=AH_NewUserDialog_new(AB_Provider_GetBanking(pro));
+    dlg=AH_NewUserDialog_new(pro);
     break;
   }
 
@@ -173,11 +183,14 @@ GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
   }
 
   return dlg;
+*/
+  return NULL;
 }
 
 
 
 GWEN_DIALOG *AH_Provider_GetEditAccountDialog(AB_PROVIDER *pro, AB_ACCOUNT *a) {
+/*
   AH_PROVIDER *hp;
   GWEN_DIALOG *dlg;
 
@@ -185,18 +198,21 @@ GWEN_DIALOG *AH_Provider_GetEditAccountDialog(AB_PROVIDER *pro, AB_ACCOUNT *a) {
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
   assert(hp);
 
-  dlg=AH_EditAccountDialog_new(AB_Provider_GetBanking(pro), a, 1);
+  dlg=AH_EditAccountDialog_new(pro, a, 1);
   if (dlg==NULL) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (no dialog)");
     return NULL;
   }
 
   return dlg;
+*/
+  return NULL;
 }
 
 
 
 GWEN_DIALOG *AH_Provider_GetUserTypeDialog(AB_PROVIDER *pro) {
+/*
   AH_PROVIDER *hp;
   GWEN_DIALOG *dlg;
 
@@ -204,13 +220,15 @@ GWEN_DIALOG *AH_Provider_GetUserTypeDialog(AB_PROVIDER *pro) {
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
   assert(hp);
 
-  dlg=AH_ChooseUserTypeDialog_new(AB_Provider_GetBanking(pro));
+  dlg=AH_ChooseUserTypeDialog_new(pro);
   if (dlg==NULL) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (no dialog)");
     return NULL;
   }
 
   return dlg;
+*/
+  return NULL;
 }
 
 

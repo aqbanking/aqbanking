@@ -19,6 +19,7 @@ AH_HBCI *AH_Provider_GetHbci(const AB_PROVIDER *pro);
 
 AQHBCI_API
 int AH_Provider_SendDtazv(AB_PROVIDER *pro,
+                          AB_USER *u,
 			  AB_ACCOUNT *a,
 			  AB_IMEXPORTER_CONTEXT *ctx,
 			  const uint8_t *dataPtr,
@@ -30,43 +31,47 @@ int AH_Provider_WriteValueToDb(const AB_VALUE *v, GWEN_DB_NODE *dbV);
 
 
 /**
- * Begin exclusively using the given account.
- * This function locks the configuration for the given account, reads the configuration and
- * leaves the configuration locked upon return.
- * Therefore you MUST call @ref AH_Provider_EndExclUseAccount() to unlock it later.
- */
-int AH_Provider_BeginExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);
-
-
-/**
- * End exclusive use of the given account.
- * This function writes the still locked configuration of the account and unlocks it afterwards.
+ * Read an account from the configuration database.
+ * When reading the account object it will be locked and/or unlocked as requestd.
+ * If both the parameters doLock and doUnlock are !=0 you can later call @ref AH_Provider_EndExclUseAccount on the
+ * account object returned (if any).
  *
  * @param pro pointer to provider object
- * @param a pointer to account
- * @param abandon if !=0 the configuration is just unlocked, not written
+ * @param uid unique id of the account to read
+ * @param doLock if !0 0 the config group for the given object will be locked before reading
+ * @param doUnlock if !0 0 the config group for the given object will be unlocked after reading
+ * @param account pointer to a variable to receive the data read
  */
-int AH_Provider_EndExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a, int abandon);
+AQHBCI_API int AH_Provider_ReadAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_ACCOUNT *account);
 
 
-/**
- * Begin exclusively using the given user.
- * This function locks the configuration for the given user, reads the configuration and
- * leaves the configuration locked upon return.
- * Therefore you MUST call @ref AH_Provider_EndExclUseUser() to unlock it later.
- */
-int AH_Provider_BeginExclUseUser(AB_PROVIDER *pro, AB_USER *u);
-
-
-/**
- * End exclusive use of the given user.
- * This function writes the still locked configuration of the user and unlocks it afterwards.
+/*
+ * Write an account to the configuration database.
+ * When writing the account object it will be locked and/or unlocked as requested.
+ * If both the parameters doLock and doUnlock are !=0 you can later call @ref AH_Provider_EndExclUseAccount on the
+ * account object returned (if any).
  *
  * @param pro pointer to provider object
- * @param u pointer to user
- * @param abandon if !=0 the configuration is just unlocked, not written
+ * @param uid unique id of the account to read
+ * @param doLock if !0 0 the config group for the given object will be locked before reading
+ * @param doUnlock if !0 0 the config group for the given object will be unlocked after reading
+ * @param account pointer to the account whose data is to be written
  */
-int AH_Provider_EndExclUseUser(AB_PROVIDER *pro, AB_USER *u, int abandon);
+AQHBCI_API int AH_Provider_WriteAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, const AB_ACCOUNT *account);
+
+
+/**
+ * Create an AB_ACCOUNT_SPEC structure for the given account and write it to the database.
+ *
+ * If there already is an account spec it will get overwritten.
+ *
+ * @return 0 on sucess, error code otherwise
+ * @param pro pointer to provider object
+ * @param u user to which the corresponding account belongs
+ * @param acc account for which an AB_ACCOUNT_SPEC object is to be writtem
+ *
+ */
+AQHBCI_API int AH_Provider_WriteAccountSpecForAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc);
 
 
 #endif

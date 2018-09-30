@@ -150,94 +150,6 @@ uint32_t AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
 
 
 
-int AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
-                   AB_PROVIDER_EXTEND_MODE em,
-                   GWEN_DB_NODE *db) {
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Extending user with mode %d", em);
-  if (em==AB_ProviderExtendMode_Create ||
-      em==AB_ProviderExtendMode_Extend) {
-    AH_USER *ue;
-    const char *s;
-    int rv;
-
-    GWEN_NEW_OBJECT(AH_USER, ue);
-    GWEN_INHERIT_SETDATA(AB_USER, AH_USER, u, ue, AH_User_freeData);
-
-    ue->tanMethodList[0]=-1;
-    ue->tanMethodCount=0;
-
-    ue->hbci=AH_Provider_GetHbci(pro);
-    ue->tanMethodDescriptions=AH_TanMethod_List_new();
-    ue->sepaDescriptors=GWEN_StringList_new();
-
-    s=AB_User_GetCountry(u);
-    if (!s || !*s)
-      AB_User_SetCountry(u, "de");
-
-    ue->msgEngine=AH_MsgEngine_new();
-    GWEN_MsgEngine_SetEscapeChar(ue->msgEngine, '?');
-    GWEN_MsgEngine_SetCharsToEscape(ue->msgEngine, ":+\'");
-    AH_MsgEngine_SetUser(ue->msgEngine, u);
-    GWEN_MsgEngine_SetDefinitions(ue->msgEngine,
-                                  AH_HBCI_GetDefinitions(ue->hbci),
-                                  0);
-
-    if (em==AB_ProviderExtendMode_Create) {
-      ue->hbciVersion=210;
-      ue->bpd=AH_Bpd_new();
-      ue->dbUpd=GWEN_DB_Group_new("upd");
-      ue->maxTransfersPerJob=AH_USER_MAX_TRANSFERS_PER_JOB;
-      ue->maxDebitNotesPerJob=AH_USER_MAX_DEBITNOTES_PER_JOB;
-    }
-    else {
-      /* update db to latest version */
-      rv=AH_HBCI_UpdateDbUser(ue->hbci, db);
-      if (rv<0) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not update user db (%d)", rv);
-        GWEN_Gui_ShowError(I18N("AqBanking Settings Database Error"),
-                           I18N("Your settings database might be in an inconsistent state!"));
-        return rv;
-      }
-      AH_User__ReadDb(u, db);
-      AH_User_LoadTanMethods(u);
-      AH_User_LoadSepaDescriptors(u);
-      if (rv==1) {
-	/* updated config, write it now */
-        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Writing back updated HBCI user %d", AB_User_GetUniqueId(u));
-	rv=AB_Banking_SaveUserConfig(AB_Provider_GetBanking(pro), u, 1);
-	if (rv<0) {
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not save user db (%d)", rv);
-          GWEN_Gui_ShowError(I18N("AqBanking Settings Database Error"),
-                             I18N("Your settings database might be in an inconsistent state!"));
-          return rv;
-	}
-      }
-    }
-  }
-  else if (em==AB_ProviderExtendMode_Reload) {
-    /* just reload user */
-    AH_User__ReadDb(u, db);
-    AH_User_LoadTanMethods(u);
-    AH_User_LoadSepaDescriptors(u);
-  }
-  else {
-    AH_USER *ue;
-
-    ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
-    assert(ue);
-
-    if (em==AB_ProviderExtendMode_Add) {
-    }
-    else if (em==AB_ProviderExtendMode_Save) {
-      AH_User__WriteDb(u, db);
-    } /* if save */
-  }
-
-  return 0;
-}
-
-
-
 AB_USER *AH_User_new(AB_BANKING *ab, AB_PROVIDER *pro) {
   AB_USER *u;
   AH_USER *ue;
@@ -309,7 +221,7 @@ int AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
   rv=AB_User_ReadDb(u, db);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return NULL;
+    return rv;
   }
 
   /* read data for provider */
@@ -337,7 +249,7 @@ int AH_User_toDb(const AB_USER *u, GWEN_DB_NODE *db) {
   rv=AB_User_toDb(u, db);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return NULL;
+    return rv;
   }
 
   /* read data for provider */

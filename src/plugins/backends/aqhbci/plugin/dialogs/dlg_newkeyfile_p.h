@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Sat Jun 26 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -19,6 +19,7 @@
 typedef struct AH_NEWKEYFILE_DIALOG AH_NEWKEYFILE_DIALOG;
 struct AH_NEWKEYFILE_DIALOG {
   AB_BANKING *banking;
+  AB_PROVIDER *provider;
 
   char *fileName;
 

@@ -6,7 +6,7 @@
 
 /** @page P_AB_USER_LIB AB_User (lib)
 This page describes the properties of AB_USER
-This group represents a user within AqBanking. Please note: Changing any of the attributes of a user permanently requires calling @ref AB_Banking_BeginExclUseAccount() before the modifications and @ref AB_Banking_EndExclUseAccount() afterwards. This locking makes sure that concurrent access to the settings doesn't corrupt the configuration database.@anchor AB_USER_FileLock
+This group represents a user within AqBanking. Please note: Changing any of the attributes of a user permanently requires calling @ref AB_Banking_BeginExclUseUser() before the modifications and @ref AB_Banking_EndExclUseUser() afterwards. This locking makes sure that concurrent access to the settings doesn't corrupt the configuration database.@anchor AB_USER_FileLock
 <h3>FileLock</h3>
 <p>
 </p>
@@ -25,16 +25,13 @@ get it with @ref AB_User_GetDbId
 </p>
 
 */
-#include <gwenhywfar/misc.h>
 #include "user.h"
-#include <gwenhywfar/misc.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
-GWEN_LIST_FUNCTION_DEFS(AB_USER, AB_User)
 
 
 

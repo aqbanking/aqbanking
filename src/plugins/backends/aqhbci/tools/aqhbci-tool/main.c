@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -361,10 +358,10 @@ int main(int argc, char **argv) {
     rv=setHbciVersion(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "adduserflags")==0) {
-    rv=addUserFlags(ab, db, argc, argv);
+    rv=addsubUserFlags(ab, db, argc, argv, 1);
   }
   else if (strcasecmp(cmd, "subuserflags")==0) {
-    rv=subUserFlags(ab, db, argc, argv);
+    rv=addsubUserFlags(ab, db, argc, argv, 0);
   }
   else if (strcasecmp(cmd, "addaccountflags")==0) {
     rv=addsubAccountFlags(ab, db, argc, argv, 1);

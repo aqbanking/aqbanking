@@ -32,58 +32,6 @@
 GWEN_INHERIT(AB_ACCOUNT, AH_ACCOUNT)
 
 
-int AH_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
-                      AB_PROVIDER_EXTEND_MODE em,
-                      GWEN_DB_NODE *dbBackend) { /* TODO: remove later */
-  AH_ACCOUNT *ae;
-
-  assert(a);
-
-  if (em==AB_ProviderExtendMode_Create ||
-      em==AB_ProviderExtendMode_Extend) {
-    int rv;
-
-    GWEN_NEW_OBJECT(AH_ACCOUNT, ae);
-    GWEN_INHERIT_SETDATA(AB_ACCOUNT, AH_ACCOUNT, a, ae,
-                         AH_Account_freeData);
-    ae->hbci=AH_Provider_GetHbci(pro);
-
-    if (em==AB_ProviderExtendMode_Create)
-      ae->flags=AH_BANK_FLAGS_DEFAULT;
-    else {
-      /* update db to latest version */
-      rv=AH_HBCI_UpdateDbAccount(ae->hbci, dbBackend);
-      if (rv<0) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not update account db (%d)", rv);
-        GWEN_Gui_ShowError(I18N("AqBanking Settings Database Error"),
-                           I18N("Your settings database might be in an inconsistent state!"));
-        return rv;
-      }
-      AH_Account__ReadDb(a, dbBackend);
-      if (rv==1) {
-	/* updated config, write it now */
-	rv=AB_Banking_SaveAccountConfig(AB_Provider_GetBanking(pro), a, 1);
-	if (rv<0) {
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not save account db (%d)", rv);
-          GWEN_Gui_ShowError(I18N("AqBanking Settings Database Error"),
-                             I18N("Your settings database might be in an inconsistent state!"));
-          return rv;
-        }
-      }
-    }
-  }
-  else if (em==AB_ProviderExtendMode_Reload) {
-    AH_Account__ReadDb(a, dbBackend);
-  }
-  else if (em==AB_ProviderExtendMode_Save) {
-    AH_Account__WriteDb(a, dbBackend);
-  }
-
-  return 0;
-}
-
-
-
 AB_ACCOUNT *AH_Account_new(AB_BANKING *ab, AB_PROVIDER *pro) {
   AB_ACCOUNT *a;
   AH_ACCOUNT *ae;
@@ -113,7 +61,7 @@ int AH_Account_ReadDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
   rv=AB_Account_ReadDb(a, db);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return NULL;
+    return rv;
   }
 
   /* read data for provider */
@@ -138,7 +86,7 @@ int AH_Account_toDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db) {
   rv=AB_Account_toDb(a, db);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return NULL;
+    return rv;
   }
 
   /* read data for provider */

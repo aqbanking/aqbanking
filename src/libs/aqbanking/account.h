@@ -43,6 +43,7 @@ extern "C" {
 
 typedef struct AB_ACCOUNT AB_ACCOUNT;
 GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_ACCOUNT, AQBANKING_API)
+GWEN_LIST_FUNCTION_LIB_DEFS(AB_ACCOUNT, AB_Account, AQBANKING_API)
 GWEN_LIST2_FUNCTION_LIB_DEFS(AB_ACCOUNT, AB_Account, AQBANKING_API)
 /* Do not terminate these lines with semicolon because they are
    macros, not functions, and ISO C89 does not allow a semicolon
@@ -160,46 +161,18 @@ const char *AB_Account_GetCountry(const AB_ACCOUNT *acc);
 AQBANKING_API
 void AB_Account_SetCountry(AB_ACCOUNT *acc, const char *s);
 
-/**
- * Returns a stringlist containing the unique ids of the users assigned to
- * this account. The caller is responsible for freeing the list returned
- * (if any).
- */
-AQBANKING_API
-AB_USER_LIST2 *AB_Account_GetUsers(const AB_ACCOUNT *acc);
-
-AQBANKING_API
-AB_USER *AB_Account_GetFirstUser(const AB_ACCOUNT *acc);
 
 AQBANKING_API
 const char *AB_Account_GetFirstUserId(const AB_ACCOUNT *a);
 
+AQBANKING_API
+uint32_t AB_Account_GetFirstUserIdAsInt(const AB_ACCOUNT *a);
 
 AQBANKING_API
-int AB_Account_HasUser(const AB_ACCOUNT *a, uint32_t uid);
+void AB_Account_SetUserId(AB_ACCOUNT *a, uint32_t uid);
 
 AQBANKING_API
-void AB_Account_SetUsers(AB_ACCOUNT *acc, const AB_USER_LIST2 *ul);
-
-AQBANKING_API
-void AB_Account_SetUser(AB_ACCOUNT *acc, const AB_USER *u);
-
-
-AQBANKING_API
-AB_USER_LIST2 *AB_Account_GetSelectedUsers(const AB_ACCOUNT *acc);
-
-AQBANKING_API
-AB_USER *AB_Account_GetFirstSelectedUser(const AB_ACCOUNT *acc);
-
-AQBANKING_API
-int AB_Account_HasSelectedUser(const AB_ACCOUNT *a, uint32_t uid);
-
-AQBANKING_API
-void AB_Account_SetSelectedUsers(AB_ACCOUNT *acc, const AB_USER_LIST2 *ul);
-
-AQBANKING_API
-void AB_Account_SetSelectedUser(AB_ACCOUNT *a, const AB_USER *u);
-
+int AB_Account_HasUserId(const AB_ACCOUNT *a, uint32_t uid);
 
 
 

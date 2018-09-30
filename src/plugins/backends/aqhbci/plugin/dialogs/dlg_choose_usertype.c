@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Fri Jul 30 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -33,12 +33,12 @@
 
 
 
-GWEN_DIALOG *AH_ChooseUserTypeDialog_new(AB_BANKING *ab) {
+GWEN_DIALOG *AH_ChooseUserTypeDialog_new(AB_PROVIDER *pro) {
   GWEN_DIALOG *dlg;
   GWEN_BUFFER *fbuf;
   int rv;
 
-  dlg=AB_UserTypePageDialog_new(ab, "ah_choose_usertype");
+  dlg=AB_UserTypePageDialog_new(AB_Provider_GetBanking(pro), "ah_choose_usertype");
   GWEN_Dialog_SetSignalHandler(dlg, AH_ChooseUserTypeDialog_SignalHandler);
 
   /* get path of dialog description file */

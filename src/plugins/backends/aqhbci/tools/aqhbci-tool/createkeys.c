@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -33,45 +30,20 @@ int createKeys(AB_BANKING *ab,
                char **argv) {
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
-  AB_USER_LIST2 *ul;
-  AB_USER *u=0;
+  uint32_t uid;
+  AB_USER *u=NULL;
   int rv;
-  const char *bankId;
-  const char *userId;
-  const char *customerId;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "bankId",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "b",                          /* short option */
-    "bank",                       /* long option */
-    "Specify the bank code",      /* short description */
-    "Specify the bank code"       /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
+    GWEN_ArgsType_Int,            /* type */
     "userId",                     /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
     "u",                          /* short option */
     "user",                       /* long option */
-    "Specify the user id (Benutzerkennung)",    /* short description */
-    "Specify the user id (Benutzerkennung)"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "customerId",                 /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "c",                          /* short option */
-    "customer",                   /* long option */
-    "Specify the customer id (Kundennummer)",    /* short description */
-    "Specify the customer id (Kundennummer)"     /* long description */
+    "Specify the unique user id",    /* short description */
+    "Specify the unique user id"     /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
@@ -108,62 +80,41 @@ int createKeys(AB_BANKING *ab,
     return 0;
   }
 
+
+  /* doit */
   rv=AB_Banking_Init(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
-  }
-
-  pro=AB_Banking_GetProvider(ab, "aqhbci");
+  pro=AB_Banking_BeginUseProvider(ab, "aqhbci");
   assert(pro);
 
-  bankId=GWEN_DB_GetCharValue(db, "bankId", 0, "*");
-  userId=GWEN_DB_GetCharValue(db, "userId", 0, "*");
-  customerId=GWEN_DB_GetCharValue(db, "customerId", 0, "*");
-
-  ul=AB_Banking_FindUsers(ab, AH_PROVIDER_NAME,
-                          "de", bankId, userId, customerId);
-  if (ul) {
-    if (AB_User_List2_GetSize(ul)!=1) {
-      DBG_ERROR(0, "Ambiguous customer specification");
-      AB_Banking_Fini(ab);
-      return 3;
-    }
-    else {
-      AB_USER_LIST2_ITERATOR *cit;
-
-      cit=AB_User_List2_First(ul);
-      assert(cit);
-      u=AB_User_List2Iterator_Data(cit);
-      AB_User_List2Iterator_free(cit);
-    }
-    AB_User_List2_free(ul);
+  uid=(uint32_t) GWEN_DB_GetIntValue(db, "userId", 0, 0);
+  if (uid==0) {
+    fprintf(stderr, "ERROR: Invalid or missing unique user id\n");
+    return 1;
   }
-  if (!u) {
-    DBG_ERROR(0, "No matching customer");
+
+  rv=AH_Provider_GetUser(pro, uid, 1, 1, &u);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) uid);
+    AB_Banking_EndUseProvider(ab, pro);
     AB_Banking_Fini(ab);
-    return 3;
+    return 2;
   }
   else {
     rv=AH_Provider_CreateKeys(pro, u, 0);
     if (rv) {
-      DBG_ERROR(0, "Error creating keys (%d)", rv);
+      DBG_ERROR(0, "Error getting system id (%d)", rv);
+      AB_Banking_EndUseProvider(ab, pro);
       AB_Banking_Fini(ab);
       return 3;
     }
   }
 
-  rv=AB_Banking_OnlineFini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    return 5;
-  }
+  AB_Banking_EndUseProvider(ab, pro);
 
   rv=AB_Banking_Fini(ab);
   if (rv) {
@@ -173,7 +124,4 @@ int createKeys(AB_BANKING *ab,
 
   return 0;
 }
-
-
-
 

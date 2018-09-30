@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Thu Apr 15 2010
- copyright   : (C) 2010-2011 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -19,6 +19,8 @@
 typedef struct AH_EDIT_ACCOUNT_DIALOG AH_EDIT_ACCOUNT_DIALOG;
 struct AH_EDIT_ACCOUNT_DIALOG {
   AB_BANKING *banking;
+  AB_PROVIDER *provider;
+
   AB_ACCOUNT *account;
   int doLock;
 

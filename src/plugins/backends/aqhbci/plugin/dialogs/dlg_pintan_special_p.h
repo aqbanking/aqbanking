@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Wed Apr 14 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -19,6 +19,7 @@
 typedef struct AH_PINTAN_SPECIAL_DIALOG AH_PINTAN_SPECIAL_DIALOG;
 struct AH_PINTAN_SPECIAL_DIALOG {
   AB_BANKING *banking;
+  AB_PROVIDER *provider;
 
   int httpVMajor;
   int httpVMinor;

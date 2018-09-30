@@ -42,6 +42,7 @@
 /* special jobs */
 #include "jobforeignxferwh_l.h"
 
+/*
 #include "dlg_newuser_l.h"
 #include "dlg_pintan_l.h"
 #include "dlg_ddvcard_l.h"
@@ -53,11 +54,13 @@
 #include "dlg_edituserrdh_l.h"
 #include "dlg_choose_usertype_l.h"
 #include "dlg_editaccount_l.h"
+*/
 
 #include "adminjobs_l.h"
 #include <aqhbci/user.h>
 
 #include <aqbanking/banking_be.h>
+#include <aqbanking/banking6_be.h>
 #include <aqbanking/account_be.h>
 #include <aqbanking/provider_be.h>
 #include <aqbanking/job_be.h>
@@ -102,7 +105,6 @@ AB_PROVIDER *AH_Provider_new(AB_BANKING *ab, const char *name){
 
   AB_Provider_SetInitFn(pro, AH_Provider_Init);
   AB_Provider_SetFiniFn(pro, AH_Provider_Fini);
-  AB_Provider_SetUpdateFn(pro, AH_Provider_Update);
 
   AB_Provider_SetGetNewUserDialogFn(pro, AH_Provider_GetNewUserDialog);
   AB_Provider_SetGetEditUserDialogFn(pro, AH_Provider_GetEditUserDialog);
@@ -150,6 +152,8 @@ int AH_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   AH_PROVIDER *hp;
   int rv;
   const char *logLevelName;
+  uint32_t currentVersion;
+  uint32_t lastVersion;
 
   if (!GWEN_Logger_IsOpen(AQHBCI_LOGDOMAIN)) {
     GWEN_Logger_Open(AQHBCI_LOGDOMAIN, "aqhbci", 0, GWEN_LoggerType_Console, GWEN_LoggerFacility_User);
@@ -177,6 +181,23 @@ int AH_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
 
   GWEN_DB_ClearGroup(hp->dbTempConfig, 0);
 
+  /* check whether we need to update */
+  currentVersion=
+    (AQHBCI_VERSION_MAJOR<<24) |
+    (AQHBCI_VERSION_MINOR<<16) |
+    (AQHBCI_VERSION_PATCHLEVEL<<8) |
+    AQHBCI_VERSION_BUILD;
+  lastVersion=GWEN_DB_GetIntValue(dbData, "lastVersion", 0, 0);
+  if (lastVersion<currentVersion) {
+    DBG_WARN(AQHBCI_LOGDOMAIN, "Updating configuration for AqHBCI");
+    rv=AH_Provider_Update(pro, lastVersion, currentVersion);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
+  /* HBCI init */
   rv=AH_HBCI_Init(hp->hbci, dbData);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -436,15 +457,7 @@ int AH_Provider__GetMultiHbciJob(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_USER *m
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
   assert(hp);
 
-  /* determine customer to use */
-  mu=AB_Account_GetFirstUser(ma);
-  if (!mu) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "No customers noted for account \"%s/%s\"",
-              AB_Account_GetBankCode(ma),
-              AB_Account_GetAccountNumber(ma));
-    return GWEN_ERROR_NOT_AVAILABLE;
-  }
+  assert(mu);
 
   switch(cmd) {
   case AB_Transaction_CommandSepaTransfer:
@@ -471,52 +484,6 @@ int AH_Provider__GetMultiHbciJob(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_USER *m
     return GWEN_ERROR_NOT_FOUND;
   }
 }
-
-
-
-int AH_Provider_Update(AB_PROVIDER *pro,
-                       uint32_t lastVersion,
-		       uint32_t currentVersion) {
-  if (lastVersion<((1<<24) | (8<<16) | (1<<8) | 3)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Version is too old, can't autoupgrade");
-
-    GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_INFO |
-			GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
-			GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
-			I18N("AqHBCI-Notice"),
-			I18N(
-    "The version of AqBanking/AqHBCI previously used is too old to be\n"
-    "upgraded automatically.\n"
-    "Therefore you should delete the settings file and setup AqBanking\n"
-    "completely from scratch.\n"
-    "The settings file usually is\n"
-     "  $HOME/.banking/settings.conf\n"
-     "<html>"
-    "<p>"
-    "The version of AqBanking/AqHBCI previously used is too old to be\n"
-    "upgraded automatically.\n"
-    "</p>"
-    "<p>"
-    "Therefore you should delete the settings file and setup AqBanking\n"
-    "completely from scratch.\n"
-    "</p>"
-    "<p>"
-    "The settings file usually is: \n"
-    "<i>"
-    "$HOME/.banking/settings.conf\n"
-    "</i>.\n"
-     "</p>"
-     "</html>"
-			    ),
-			I18N("Continue"), 0, 0, 0);
-    return GWEN_ERROR_INTERNAL;
-  }
-
-  return 0;
-}
-
-
-
 
 
 
@@ -663,164 +630,8 @@ int AH_Provider_WriteValueToDb(const AB_VALUE *v, GWEN_DB_NODE *dbV) {
 
 
 
-
-#if 0
-static int AH_Provider_Test1(AB_PROVIDER *pro) {
-  AB_BANKING *ab;
-  FILE *f;
-
-  ab=AB_Provider_GetBanking(pro);
-  assert(ab);
-
-  f=fopen("test.msg", "r");
-  if (f) {
-    GWEN_BUFFER *tbuf;
-    AB_USER *u;
-    AH_DIALOG *dlg;
-    AH_MSG *msg;
-    GWEN_DB_NODE *rsp;
-
-    tbuf=GWEN_Buffer_new(0, 1024, 0, 1);
-    while(!feof(f)) {
-      char buffer[256];
-      ssize_t i;
-
-      i=fread(buffer, 1, sizeof(buffer), f);
-      if (i<1) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Error on read: %d (%s)",
-		  errno, strerror(errno));
-        return -1;
-      }
-      GWEN_Buffer_AppendBytes(tbuf, buffer, i);
-    }
-    fclose(f);
-    GWEN_Buffer_Rewind(tbuf);
-
-    u=AB_Banking_FindUser(ab, "aqhbci", "de", "28250110", "*", "*");
-    assert(u);
-    dlg=AH_Dialog_new(u, 0);
-    assert(dlg);
-    AH_Dialog_AddFlags(dlg, AH_DIALOG_FLAGS_INITIATOR);
-    msg=AH_Msg_new(dlg);
-    assert(msg);
-    AH_Msg_SetBuffer(msg, tbuf);
-
-    rsp=GWEN_DB_Group_new("response");
-    if (AH_Msg_DecodeMsg(msg, rsp, GWEN_MSGENGINE_READ_FLAGS_DEFAULT)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not decode this message:");
-      AH_Msg_Dump(msg, stderr, 2);
-      return -1;
-    }
-
-    fprintf(stderr, "Response is:\n");
-    AH_Msg_Dump(msg, stderr, 2);
-  }
-
-  return 0;
-}
-
-
-
-static int AH_Provider_Test2(AB_PROVIDER *pro) {
-  AB_BANKING *ab;
-  AB_USER *u;
-  AH_DIALOG *dlg;
-  AH_MSG *msg;
-  GWEN_BUFFER *tbuf;
-
-  ab=AB_Provider_GetBanking(pro);
-  assert(ab);
-
-  tbuf=GWEN_Buffer_new(0, 1024, 0, 1);
-  GWEN_Buffer_AppendString(tbuf, "(Test-String)");
-  GWEN_Buffer_Rewind(tbuf);
-
-  u=AB_Banking_FindUser(ab, "aqhbci", "de", "28250110", "*", "*");
-  assert(u);
-  dlg=AH_Dialog_new(u, 0);
-  assert(dlg);
-  AH_Dialog_AddFlags(dlg, AH_DIALOG_FLAGS_INITIATOR);
-  msg=AH_Msg_new(dlg);
-  assert(msg);
-  AH_Msg_SetBuffer(msg, tbuf);
-
-  AH_Msg_AddSignerId(msg, AB_User_GetUserId(u));
-  AH_Msg_SetCrypterId(msg, AB_User_GetUserId(u));
-
-  if (AH_Msg_EncodeMsg(msg)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not decode this message:");
-    AH_Msg_Dump(msg, stderr, 2);
-    return -1;
-  }
-
-  fprintf(stderr, "Message is:\n");
-  AH_Msg_Dump(msg, stderr, 2);
-
-  return 0;
-}
-
-
-
-static int AH_Provider_Test3(AB_PROVIDER *pro) {
-  AB_BANKING *ab;
-  FILE *f;
-
-  ab=AB_Provider_GetBanking(pro);
-  assert(ab);
-
-  f=fopen("test.msg", "r");
-  if (f) {
-    GWEN_BUFFER *tbuf;
-    AB_USER *u;
-    AH_DIALOG *dlg;
-    AH_MSG *msg;
-    int rv;
-    GWEN_DB_NODE *rsp;
-
-    tbuf=GWEN_Buffer_new(0, 1024, 0, 1);
-    while(!feof(f)) {
-      char buffer[256];
-      ssize_t i;
-
-      i=fread(buffer, 1, sizeof(buffer), f);
-      if (i<1) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Error on read: %d (%s)",
-		  errno, strerror(errno));
-        return -1;
-      }
-      GWEN_Buffer_AppendBytes(tbuf, buffer, i);
-    }
-    fclose(f);
-    GWEN_Buffer_Rewind(tbuf);
-
-    u=AB_Banking_FindUser(ab, "aqhbci", "de", "20090500", "*", "*");
-    assert(u);
-    dlg=AH_Dialog_new(u, 0);
-    assert(dlg);
-    AH_Dialog_AddFlags(dlg, AH_DIALOG_FLAGS_INITIATOR);
-    msg=AH_Msg_new(dlg);
-    assert(msg);
-    AH_Msg_SetBuffer(msg, tbuf);
-
-    rsp=GWEN_DB_Group_new("response");
-    rv=AH_Msg_DecodeMsg(msg, rsp, GWEN_MSGENGINE_READ_FLAGS_DEFAULT);
-    if (rv<0) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not decode this message: (%d)", rv);
-      AH_Msg_Dump(msg, stderr, 2);
-      return -1;
-    }
-
-    fprintf(stderr, "Response is:\n");
-    AH_Msg_Dump(msg, stderr, 2);
-  }
-
-  return 0;
-}
-#endif
-
-
-
 static int AH_Provider_Test4(AB_PROVIDER *pro) {
+#if 0
   AB_BANKING *ab;
   AB_USER *u;
   AH_DIALOG *dlg;
@@ -855,7 +666,7 @@ static int AH_Provider_Test4(AB_PROVIDER *pro) {
 
   fprintf(stderr, "Message is:\n");
   AH_Msg_Dump(msg, 2);
-
+#endif
   return 0;
 }
 
@@ -875,7 +686,8 @@ int AH_Provider_Test(AB_PROVIDER *pro) {
 #include "provider_keys.c"
 #include "provider_online.c"
 #include "provider_dialogs.c"
-
+#include "provider_accspec.c"
+#include "provider_update.c"
 
 
 

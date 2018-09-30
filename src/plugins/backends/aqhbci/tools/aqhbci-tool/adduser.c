@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -17,6 +14,7 @@
 
 #include "globals.h"
 #include <aqhbci/user.h>
+#include <aqhbci/provider.h>
 
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/url.h>
@@ -248,13 +246,7 @@ int addUser(AB_BANKING *ab,
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
-  }
-
-  pro=AB_Banking_GetProvider(ab, "aqhbci");
+  pro=AB_Banking_BeginUseProvider(ab, "aqhbci");
   assert(pro);
 
   tokenType=GWEN_DB_GetCharValue(db, "tokenType", 0, 0);
@@ -462,6 +454,8 @@ int addUser(AB_BANKING *ab,
       return 3;
     }
 
+    /* TODO: Check for existing users to avoid duplicates */
+#if 0
     user=AB_Banking_FindUser(ab, AH_PROVIDER_NAME,
 			     "de",
 			     lbankId, luserId, lcustomerId);
@@ -470,8 +464,9 @@ int addUser(AB_BANKING *ab,
       GWEN_Crypt_Token_Context_free(ctx);
       return 3;
     }
+#endif
 
-    user=AB_Banking_CreateUser(ab, AH_PROVIDER_NAME);
+    user=AB_User_new(ab);
     assert(user);
 
     AB_User_SetUserName(user, userName);
@@ -506,10 +501,7 @@ int addUser(AB_BANKING *ab,
       GWEN_BUFFER *tbuf;
 
       tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-      if (getBankUrl(ab,
-                     cm,
-                     lbankId,
-		     tbuf)) {
+      if (getBankUrl(ab, cm, lbankId, tbuf)) {
 	DBG_INFO(0, "Could not find server address for \"%s\"",
 		 lbankId);
       }
@@ -520,8 +512,7 @@ int addUser(AB_BANKING *ab,
       }
       url=GWEN_Url_fromString(GWEN_Buffer_GetStart(tbuf));
       if (url==NULL) {
-	DBG_ERROR(0, "Bad URL \"%s\" in internal db",
-		  GWEN_Buffer_GetStart(tbuf));
+	DBG_ERROR(0, "Bad URL \"%s\" in internal db", GWEN_Buffer_GetStart(tbuf));
         GWEN_Crypt_Token_Context_free(ctx);
 	return 3;
       }
@@ -553,17 +544,22 @@ int addUser(AB_BANKING *ab,
     if (cm==AH_CryptMode_Ddv)
       AH_User_SetStatus(user, AH_UserStatusEnabled);
 
-    AB_Banking_AddUser(ab, user);
+    rv=AH_Provider_AddUser(pro, user);
+    if (rv<0) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Coud not add new user (%d)", rv);
+      AB_User_free(user);
+      GWEN_Crypt_Token_Context_free(ctx);
+      AB_Banking_EndUseProvider(ab, pro);
+      AB_Banking_Fini(ab);
+      return 4;
+    }
+    AB_User_free(user);
 
     /* context no longer needed */
     GWEN_Crypt_Token_Context_free(ctx);
   }
 
-  rv=AB_Banking_OnlineFini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    return 5;
-  }
+  AB_Banking_EndUseProvider(ab, pro);
 
 
   rv=AB_Banking_Fini(ab);

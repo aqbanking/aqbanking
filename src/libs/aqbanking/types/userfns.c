@@ -63,6 +63,7 @@ AB_USER *AB_User_fromDb(AB_BANKING *ab, GWEN_DB_NODE *db) {
 
 
 AB_PROVIDER *AB_User_GetProvider(const AB_USER *u) {
+#if 0
   const char *s;
   AB_PROVIDER *pro;
 
@@ -73,6 +74,8 @@ AB_PROVIDER *AB_User_GetProvider(const AB_USER *u) {
   assert(pro);
 
   return pro;
+#endif
+  return NULL;
 }
 
 

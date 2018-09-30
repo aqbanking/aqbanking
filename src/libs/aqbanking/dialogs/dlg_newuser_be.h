@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Wed Apr 14 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -24,9 +24,10 @@ extern "C" {
 
 
 
-AQBANKING_API GWEN_DIALOG *AB_NewUserDialog_new(AB_BANKING *ab, const char *dname);
+AQBANKING_API GWEN_DIALOG *AB_NewUserDialog_new(AB_BANKING *ab, AB_PROVIDER *pro, const char *dname);
 
 AQBANKING_API AB_BANKING *AB_NewUserDialog_GetBanking(const GWEN_DIALOG *dlg);
+AQBANKING_API AB_PROVIDER *AB_NewUserDialog_GetProvider(const GWEN_DIALOG *dlg);
 
 AQBANKING_API AB_USER *AB_NewUserDialog_GetUser(const GWEN_DIALOG *dlg);
 AQBANKING_API void AB_NewUserDialog_SetUser(GWEN_DIALOG *dlg, AB_USER *u);

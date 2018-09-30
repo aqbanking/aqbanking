@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id: msgcrypt.inc 1109 2007-01-10 14:30:14Z martin $
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -129,13 +126,10 @@ int AH_Msg_SignDdv(AH_MSG *hmsg,
 
   gid=0;
 
-  su=AB_Banking_FindUser(AH_HBCI_GetBankingApi(h),
-			 AH_PROVIDER_NAME,
-			 "de", "*",
-			 signer, "*");
+  su=AH_Msg_GetUser(hmsg, signer);
   if (!su) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
-	      "Unknown user \"%s\"",
+              "Unknown user \"%s\"",
 	      signer);
     return GWEN_ERROR_NOT_FOUND;
   }
@@ -703,9 +697,9 @@ int AH_Msg_DecryptDdv(AH_MSG *hmsg, GWEN_DB_NODE *gr){
 
   /* get crypt token of signer */
   rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),
-			   AH_User_GetTokenType(u),
-			   AH_User_GetTokenName(u),
-			   &ct);
+                              AH_User_GetTokenType(u),
+                              AH_User_GetTokenName(u),
+                              &ct);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
 	     "Could not get crypt token for user \"%s\" (%d)",

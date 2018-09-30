@@ -32,7 +32,9 @@ EXTRA_DIST=\
   provider_iniletter.c \
   provider_keys.c \
   provider_online.c \
-  provider_dialogs.c
+  provider_dialogs.c \
+  provider_accspec.c \
+  provider_update.c
 
 
 

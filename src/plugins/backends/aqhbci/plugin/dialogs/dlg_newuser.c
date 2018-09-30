@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Apr 19 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -39,12 +39,12 @@
 
 
 
-GWEN_DIALOG *AH_NewUserDialog_new(AB_BANKING *ab) {
+GWEN_DIALOG *AH_NewUserDialog_new(AB_PROVIDER *pro) {
   GWEN_DIALOG *dlg;
   GWEN_BUFFER *fbuf;
   int rv;
 
-  dlg=AB_NewUserDialog_new(ab, "ah_new_user");
+  dlg=AB_NewUserDialog_new(AB_Provider_GetBanking(pro), pro, "ah_new_user");
   GWEN_Dialog_SetSignalHandler(dlg, AH_NewUserDialog_SignalHandler);
 
   /* get path of dialog description file */
@@ -165,7 +165,7 @@ static int AH_NewUserDialog_HandleActivatedPinTan(GWEN_DIALOG *dlg) {
   GWEN_DIALOG *dlg2;
   int rv;
 
-  dlg2=AH_PinTanDialog_new(AB_NewUserDialog_GetBanking(dlg));
+  dlg2=AH_PinTanDialog_new(AB_NewUserDialog_GetProvider(dlg));
   if (dlg2==NULL) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (no dialog)");
     return GWEN_DialogEvent_ResultHandled;
@@ -232,7 +232,7 @@ static int AH_NewUserDialog_HandleActivatedUseCard(GWEN_DIALOG *dlg) {
     GWEN_DIALOG *dlg2;
 
     DBG_NOTICE(0, "DDV card");
-    dlg2=AH_DdvCardDialog_new(AB_NewUserDialog_GetBanking(dlg), ct);
+    dlg2=AH_DdvCardDialog_new(AB_NewUserDialog_GetProvider(dlg), ct);
     if (dlg2==NULL) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (no dialog)");
       GWEN_Buffer_free(mediumName);
@@ -277,7 +277,7 @@ static int AH_NewUserDialog_HandleActivatedNewKeyFile(GWEN_DIALOG *dlg) {
   GWEN_DIALOG *dlg2;
   int rv;
 
-  dlg2=AH_NewKeyFileDialog_new(AB_NewUserDialog_GetBanking(dlg));
+  dlg2=AH_NewKeyFileDialog_new(AB_NewUserDialog_GetProvider(dlg));
   if (dlg2==NULL) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (no dialog)");
     return GWEN_DialogEvent_ResultHandled;

@@ -6,7 +6,7 @@
 
 /** @page P_AB_USER_PUBLIC AB_User (public)
 This page describes the properties of AB_USER
-This group represents a user within AqBanking. Please note: Changing any of the attributes of a user permanently requires calling @ref AB_Banking_BeginExclUseAccount() before the modifications and @ref AB_Banking_EndExclUseAccount() afterwards. This locking makes sure that concurrent access to the settings doesn't corrupt the configuration database.@anchor AB_USER_UniqueId
+This group represents a user within AqBanking. Please note: Changing any of the attributes of a user permanently requires calling @ref AB_Banking_BeginExclUseUser() before the modifications and @ref AB_Banking_EndExclUseUser() afterwards. This locking makes sure that concurrent access to the settings doesn't corrupt the configuration database.@anchor AB_USER_UniqueId
 <h3>UniqueId</h3>
 <p>
 </p>
@@ -109,6 +109,7 @@ typedef struct AB_USER AB_USER;
 
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/inherit.h>
+#include <gwenhywfar/misc.h>
 #include <gwenhywfar/list2.h>
 /* pre-headers */
 #include <gwenhywfar/types.h>
@@ -121,6 +122,7 @@ extern "C" {
 
 
 GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_USER, AQBANKING_API)
+GWEN_LIST_FUNCTION_LIB_DEFS(AB_USER, AB_User, AQBANKING_API)
 GWEN_LIST2_FUNCTION_LIB_DEFS(AB_USER, AB_User, AQBANKING_API)
 
 /** Destroys all objects stored in the given LIST2 and the list itself

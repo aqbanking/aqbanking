@@ -135,21 +135,17 @@ int setHbciVersion(AB_BANKING *ab,
 		   int argc,
 		   char **argv);
 
-int addUserFlags(AB_BANKING *ab,
-		 GWEN_DB_NODE *dbArgs,
-		 int argc,
-		 char **argv);
-
-int subUserFlags(AB_BANKING *ab,
-		 GWEN_DB_NODE *dbArgs,
-		 int argc,
-		 char **argv);
+int addsubUserFlags(AB_BANKING *ab,
+                    GWEN_DB_NODE *dbArgs,
+                    int argc,
+                    char **argv,
+                    int is_add);
 
 int addsubAccountFlags(AB_BANKING *ab,
 		       GWEN_DB_NODE *dbArgs,
 		       int argc,
 		       char **argv,
-		       int is_add );
+		       int is_add);
 
 
 

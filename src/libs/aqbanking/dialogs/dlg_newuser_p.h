@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Wed Apr 14 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -19,6 +19,7 @@
 typedef struct AB_NEWUSER_DIALOG AB_NEWUSER_DIALOG;
 struct AB_NEWUSER_DIALOG {
   AB_BANKING *banking;
+  AB_PROVIDER *provider;
   AB_USER *user;
 };
 

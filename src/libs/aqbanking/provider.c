@@ -519,7 +519,7 @@ int AB_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORT
   if (pro->sendCommandsFn)
     return pro->sendCommandsFn(pro, pq, ctx);
   else
-    return NULL;
+    return GWEN_ERROR_NOT_SUPPORTED;
 }
 
 

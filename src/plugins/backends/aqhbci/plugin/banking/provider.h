@@ -191,7 +191,7 @@ int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
  */
 AQHBCI_API
 int AH_Provider_GetAccountSepaInfo(AB_PROVIDER *pro,
-                                   AB_ACCOUNT_LIST2 *al,
+                                   AB_ACCOUNT *a,
                                    AB_IMEXPORTER_CONTEXT *ctx,
                                    int withProgress, int nounmount, int doLock);
 
@@ -245,7 +245,13 @@ int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
 /*@}*/
 
 
-
+/**
+ * Creates user keys for RDH type users.
+ *
+ * @param pro provider
+ * @param u user for which the keys are to be created
+ * @param nounmount if !=0 the CryptToken will not be unmounted after use
+ */
 AQHBCI_API
 int AH_Provider_CreateKeys(AB_PROVIDER *pro, AB_USER *u, int nounmount);
 
@@ -259,11 +265,163 @@ int AH_Provider_Test(AB_PROVIDER *pro);
 
 
 
-AQHBCI_API int AH_Provider_ReadAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_ACCOUNT *account);
-AQHBCI_API int AH_Provider_WriteAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, const AB_ACCOUNT *account);
+/** @name Account Management Functions
+ *
+ */
+/*@{*/
 
-AQHBCI_API int AH_Provider_ReadUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_USER *user);
-AQHBCI_API int AH_Provider_WriteUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, const AB_USER *user);
+/**
+ * Read an account from the configuration database.
+ * When reading the account object it will be locked and/or unlocked as requestd.
+ * If both the parameters doLock and doUnlock are !=0 you can later call @ref AH_Provider_EndExclUseAccount on the
+ * account object returned (if any).
+ *
+ * @param pro pointer to provider object
+ * @param uid unique id of the account to read
+ * @param doLock if !0 0 the config group for the given object will be locked before reading
+ * @param doUnlock if !0 0 the config group for the given object will be unlocked after reading
+ * @param pAccount pointer to a variable to receive the account read
+ */
+AQHBCI_API int AH_Provider_GetAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_ACCOUNT **pAccount);
+
+
+
+/**
+ * Read all accounts of this backend.
+ *
+ * The caller is responsible for releasing the list and the contained accounts (if any),
+ * e.g. by calling @ref AB_Account_List_free().
+ *
+ * @return 0 on success, error code otherwise
+ * @param pro pointer to provider object
+ * @param accountList pointer to a list to receive the users.
+ */
+AQHBCI_API int AH_Provider_ReadAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accountList);
+
+
+
+/**
+ * Begin exclusively using the given account.
+ * This function locks the configuration for the given account, reads the configuration and
+ * leaves the configuration locked upon return.
+ * Therefore you MUST call @ref AH_Provider_EndExclUseAccount() to unlock it later.
+ */
+AQHBCI_API int AH_Provider_BeginExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);
+
+
+/**
+ * End exclusive use of the given account.
+ * This function writes the still locked configuration of the account and unlocks it afterwards.
+ *
+ * @param pro pointer to provider object
+ * @param a pointer to account
+ * @param abandon if !=0 the configuration is just unlocked, not written
+ */
+AQHBCI_API int AH_Provider_EndExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a, int abandon);
+
+
+/**
+ * Add the given account. It gets assigned a unique id.
+ *
+ * @return 0 on success, error code otherwise
+ * @param pro pointer to provider object
+ * @param u user to which the account belongs
+ * @param a pointer to account
+ * @param withAccountSpec if !=0 then an account spec will also be created and written
+ */
+AQHBCI_API int AH_Provider_AddAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, int withAccountSpec);
+
+/**
+ * Delete the given account.
+ *
+ * @param pro pointer to provider object
+ * @param a pointer to account
+ */
+AQHBCI_API int AH_Provider_DeleteAccount(AB_PROVIDER *pro, uint32_t uid);
+
+
+/*@}*/
+
+
+
+/** @name User Management Functions
+ *
+ */
+/*@{*/
+
+/**
+ * This functions reads a user from the configuration database.
+ * When reading the user object it will be locked and/or unlocked as requestd.
+ * If both the parameters doLock and doUnlock are !=0 you can later call @ref AH_Provider_EndExclUseUser on the
+ * user object returned (if any).
+ *
+ * @param pro pointer to provider object
+ * @param uid unique id of the user to read
+ * @param doLock if !0 0 the config group for the given object will be locked before reading
+ * @param doUnlock if !0 0 the config group for the given object will be unlocked after reading
+ * @param pUser pointer to a variable to receive the user read
+ */
+AQHBCI_API int AH_Provider_GetUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_USER **pUser);
+
+
+/**
+ * Read all users of this backend.
+ *
+ * The caller is responsible for releasing the list and the contained users (if any),
+ * e.g. by calling @ref AB_User_List_free().
+ *
+ * @return 0 on success, error code otherwise
+ * @param pro pointer to provider object
+ * @param userList pointer to a list to receive the users.
+ */
+AQHBCI_API int AH_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList);
+
+/**
+ * Begin exclusively using the given user.
+ * This function locks the configuration for the given user, reads the configuration and
+ * leaves the configuration locked upon return.
+ * Therefore you MUST call @ref AH_Provider_EndExclUseUser() to unlock it later.
+ */
+AQHBCI_API int AH_Provider_BeginExclUseUser(AB_PROVIDER *pro, AB_USER *u);
+
+
+/**
+ * End exclusive use of the given user.
+ * This function writes the still locked configuration of the user and unlocks it afterwards.
+ *
+ * @param pro pointer to provider object
+ * @param u pointer to user
+ * @param abandon if !=0 the configuration is just unlocked, not written
+ */
+AQHBCI_API int AH_Provider_EndExclUseUser(AB_PROVIDER *pro, AB_USER *u, int abandon);
+
+
+/**
+ * Add the given user. It gets assigned a unique id.
+ *
+ * @return 0 on success, error code otherwise
+ * @param pro pointer to provider object
+ * @param u pointer to user
+ */
+AQHBCI_API int AH_Provider_AddUser(AB_PROVIDER *pro, AB_USER *u);
+
+
+/**
+ * Delete the given user.
+ *
+ * The user will not be deleted if any account refers to it. In that case the
+ * accounts need to be removed first.
+ *
+ * @return 0 on success, error code otherwise
+ * @param pro pointer to provider object
+ * @param uid unique id of the user to remove
+ */
+AQHBCI_API int AH_Provider_DeleteUser(AB_PROVIDER *pro, uint32_t uid);
+
+
+/*@}*/
+
+
 
 
 

@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -34,6 +31,8 @@ int AH_Msg_IsSignedBy(const AH_MSG *hmsg, const char *s);
 const char *AH_Msg_GetCrypterId(const AH_MSG *hmsg);
 void AH_Msg_SetCrypterId(AH_MSG *hmsg, const char *s);
 
+
+AB_USER *AH_Msg_GetUser(const AH_MSG *hmsg, const char *userId);
 
 GWEN_BUFFER *AH_Msg_GetBuffer(AH_MSG *hmsg);
 GWEN_BUFFER *AH_Msg_TakeBuffer(AH_MSG *hmsg);

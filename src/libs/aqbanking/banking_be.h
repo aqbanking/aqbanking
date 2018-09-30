@@ -28,6 +28,9 @@
 #define AB_CFG_GROUP_BANKINFO   "bankinfo"
 #define AB_CFG_GROUP_IMEXPORTER "imexporter"
 
+#define AB_CFG_GROUP_USERS      "users"
+#define AB_CFG_GROUP_ACCOUNTS   "accounts"
+
 
 
 /** @addtogroup G_AB_BE_BANKING
@@ -44,15 +47,6 @@ extern "C" {
  *
  */
 /*@{*/
-
-/**
- * Loads a backend with the given name. You can use
- * @ref AB_Banking_GetProviderDescrs to retrieve a list of available
- * backends.
- */
-AQBANKING_API 
-AB_PROVIDER *AB_Banking_GetProvider(AB_BANKING *ab, const char *name);
-
 
 /**
  * Returns the list of global data folders. In most cases this is something
@@ -172,6 +166,18 @@ AQBANKING_API
 int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab,
                                       const char *name,
                                       GWEN_BUFFER *buf);
+
+
+
+
+AQBANKING_API
+AB_PROVIDER *AB_Banking_BeginUseProvider(AB_BANKING *ab, const char *modname);
+
+AQBANKING_API
+int AB_Banking_EndUseProvider(AB_BANKING *ab, AB_PROVIDER *pro);
+
+
+
 
 #ifdef __cplusplus
 }

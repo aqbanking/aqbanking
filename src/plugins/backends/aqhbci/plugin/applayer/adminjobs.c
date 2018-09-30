@@ -18,9 +18,10 @@
 #include "job_l.h"
 #include "jobqueue_l.h"
 #include "hbci_l.h"
-#include <aqhbci/provider.h>
+#include "provider_l.h"
 
 #include <aqbanking/banking_be.h>
+#include <aqbanking/account_be.h>
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -675,11 +676,8 @@ int AH_Job_UpdateBank_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
       DBG_INFO(AQHBCI_LOGDOMAIN, "Found an account");
 
-      acc=AB_Banking_CreateAccount(ab, AH_PROVIDER_NAME);
+      acc=AB_Account_new(ab, AH_Job_GetProvider(j));
       assert(acc);
-      /* AB_Banking_CreateAccount() already assigns a unique id, we don't want that just yet */
-      AB_Account_SetUniqueId(acc, 0);
-
       AH_Job_ReadAccountDataSeg(acc, dbAccountData);
 
       accs++;
@@ -1845,6 +1843,7 @@ int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   GWEN_DB_NODE *dbCurr;
   AB_USER *u;
   AB_BANKING *ab;
+  AB_PROVIDER *pro;
 
   assert(j);
   jd=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETACCSEPAINFO, j);
@@ -1863,6 +1862,9 @@ int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
   ab=AH_Job_GetBankingApi(j);
   assert(ab);
+
+  pro=AH_Job_GetProvider(j);
+  assert(pro);
 
   /* search for "GetAccountSepaInfoResponse" */
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
@@ -1953,7 +1955,7 @@ int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
           iban=GWEN_DB_GetCharValue(dbAccount, "iban", 0, 0);
           bic=GWEN_DB_GetCharValue(dbAccount, "bic", 0, 0);
 
-          rv=AB_Banking_BeginExclUseAccount(ab, jd->account);
+          rv=AH_Provider_BeginExclUseAccount(pro, jd->account);
           if (rv<0) {
             DBG_ERROR(AQHBCI_LOGDOMAIN, "Unable to lock account");
           }
@@ -1989,7 +1991,7 @@ int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
                         iban?iban:"",
                         bic?bic:"");
             }
-            AB_Banking_EndExclUseAccount(ab, jd->account, 0);
+            AH_Provider_EndExclUseAccount(pro, jd->account, 0);
           }
         }
       } /* if dbAccount */

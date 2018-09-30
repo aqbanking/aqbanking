@@ -52,6 +52,9 @@ extern "C" {
 /*@}*/
 
 
+
+AQHBCI_API AB_ACCOUNT *AH_Account_new(AB_BANKING *ab, AB_PROVIDER *pro);
+
 /** @name Flag Manipulation Functions
  *
  * See @ref AH_BANK_FLAGS_PREFER_SINGLE_TRANSFER and following.

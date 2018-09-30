@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Wed Apr 14 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -20,7 +20,7 @@ GWEN_INHERIT(GWEN_DIALOG, AB_NEWUSER_DIALOG)
 
 
 
-GWEN_DIALOG *AB_NewUserDialog_new(AB_BANKING *ab, const char *dname) {
+GWEN_DIALOG *AB_NewUserDialog_new(AB_BANKING *ab, AB_PROVIDER *pro, const char *dname) {
   GWEN_DIALOG *dlg;
   AB_NEWUSER_DIALOG *xdlg;
 
@@ -30,6 +30,7 @@ GWEN_DIALOG *AB_NewUserDialog_new(AB_BANKING *ab, const char *dname) {
 		       AB_NewUserDialog_FreeData);
 
   xdlg->banking=ab;
+  xdlg->provider=pro;
   return dlg;
 }
 
@@ -76,6 +77,18 @@ AB_BANKING *AB_NewUserDialog_GetBanking(const GWEN_DIALOG *dlg) {
   assert(xdlg);
 
   return xdlg->banking;
+}
+
+
+
+AB_PROVIDER *AB_NewUserDialog_GetProvider(const GWEN_DIALOG *dlg) {
+  AB_NEWUSER_DIALOG *xdlg;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_NEWUSER_DIALOG, dlg);
+  assert(xdlg);
+
+  return xdlg->provider;
 }
 
 

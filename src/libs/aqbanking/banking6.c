@@ -122,11 +122,43 @@ int AB_Banking6_WriteConfigGroup(AB_BANKING *ab,
 
   /* unlock group */
   if (doUnlock) {
-    rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_ACCOUNTSPECS, idBuf);
+    rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, groupName, idBuf);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to unlock accountspec config group (%d)", rv);
       return rv;
     }
+  }
+
+  return 0;
+}
+
+
+
+int AB_Banking6_DeleteConfigGroup(AB_BANKING *ab, const char *groupName, uint32_t uniqueId) {
+  int rv;
+  char idBuf[256];
+
+  assert(ab);
+
+  /* check for config manager (created by AB_Banking_Init) */
+  if (ab->configMgr==NULL) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No config manager (maybe the gwenhywfar plugins are not installed?");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  /* make config manager id from given unique id */
+  rv=GWEN_ConfigMgr_MkUniqueIdFromId(ab->configMgr, groupName, uniqueId, 0, idBuf, sizeof(idBuf)-1);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to create a unique id for config group (%d)", rv);
+    return rv;
+  }
+  idBuf[sizeof(idBuf)-1]=0;
+
+  /* unlock group */
+  rv=GWEN_ConfigMgr_DeleteGroup(ab->configMgr, groupName, idBuf);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to delete config group (%d)", rv);
+    return rv;
   }
 
   return 0;
@@ -155,7 +187,7 @@ int AB_Banking6_UnlockConfigGroup(AB_BANKING *ab, const char *groupName, uint32_
   idBuf[sizeof(idBuf)-1]=0;
 
   /* unlock group */
-  rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_ACCOUNTSPECS, idBuf);
+  rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, groupName, idBuf);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to unlock config group (%d)", rv);
     return rv;
@@ -220,6 +252,7 @@ int AB_Banking6_ReadConfigGroups(AB_BANKING *ab,
           }
 
           assert(db);
+          GWEN_DB_GroupRename(db, t);
           if (doAdd && uidField && *uidField) {
             int v;
   
@@ -330,6 +363,22 @@ int AB_Banking6_WriteAccountSpec(AB_BANKING *ab, const AB_ACCOUNT_SPEC *accountS
 
 
 
+int AB_Banking6_DeleteAccountSpec(AB_BANKING *ab, uint32_t uid) {
+  int rv;
+
+  rv=AB_Banking6_DeleteConfigGroup(ab, AB_CFG_GROUP_ACCOUNTSPECS, uid);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+
+
 int AB_Banking6_Read_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb) {
   int rv;
 
@@ -348,6 +397,20 @@ int AB_Banking6_Write_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, in
   int rv;
 
   rv=AB_Banking6_WriteConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid, doLock, doUnlock, db);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+int AB_Banking6_Delete_AccountConfig(AB_BANKING *ab, uint32_t uid) {
+  int rv;
+
+  rv=AB_Banking6_DeleteConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -390,6 +453,20 @@ int AB_Banking6_Write_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int d
   int rv;
 
   rv=AB_Banking6_WriteConfigGroup(ab, AB_CFG_GROUP_USERS, uid, doLock, doUnlock, db);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+int AB_Banking6_Delete_UserConfig(AB_BANKING *ab, uint32_t uid) {
+  int rv;
+
+  rv=AB_Banking6_DeleteConfigGroup(ab, AB_CFG_GROUP_USERS, uid);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -539,18 +616,8 @@ int AB_Banking6_SendCommands(AB_BANKING *ab, const AB_TRANSACTION_LIST* commandL
 
     pq=AB_ProviderQueue_List_GetByProviderName(pql, s);
     if (pq==NULL) {
-      AB_PROVIDER *pro;
-
       pq=AB_ProviderQueue_new();
       AB_ProviderQueue_SetProviderName(pq, s);
-      pro=AB_Banking_GetProvider(ab, s);
-      if (pro==NULL) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Backend \"%s\" not found", s);
-        AB_ProviderQueue_List_free(pql);
-        AB_AccountQueue_List_free(aql);
-        return GWEN_ERROR_BAD_DATA;
-      }
-      AB_ProviderQueue_SetProvider(pq, pro);
 
       AB_ProviderQueue_List_Add(pq, pql);
     }
@@ -562,20 +629,32 @@ int AB_Banking6_SendCommands(AB_BANKING *ab, const AB_TRANSACTION_LIST* commandL
   /* send to each backend */
   pq=AB_ProviderQueue_List_First(pql);
   while(pq) {
-    AB_PROVIDER *pro;
     AB_PROVIDERQUEUE *pqNext;
-    AB_IMEXPORTER_CONTEXT *localCtx;
+    const char *providerName;
 
     pqNext=AB_ProviderQueue_List_Next(pq);
     AB_ProviderQueue_List_Del(pq);
 
-    pro=AB_ProviderQueue_GetProvider(pq);
-    localCtx=AB_ImExporterContext_new();
-    rv=AB_Provider_SendCommands(pro, pq, localCtx);
-    if (rv<0) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Error sending commands to provider \"%s\" (%d)", AB_Provider_GetName(pro), rv);
+    providerName=AB_ProviderQueue_GetProviderName(pq);
+    if (providerName && *providerName) {
+      AB_PROVIDER *pro;
+
+      pro=AB_Banking_BeginUseProvider(ab, providerName);
+      if (pro) {
+        AB_IMEXPORTER_CONTEXT *localCtx;
+
+        localCtx=AB_ImExporterContext_new();
+        rv=AB_Provider_SendCommands(pro, pq, localCtx);
+        if (rv<0) {
+          DBG_INFO(AQBANKING_LOGDOMAIN, "Error sending commands to provider \"%s\" (%d)", AB_Provider_GetName(pro), rv);
+        }
+        AB_ImExporterContext_AddContext(ctx, localCtx);
+        AB_Banking_EndUseProvider(ab, pro);
+      }
+      else {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not start using provider \"%s\"", providerName);
+      }
     }
-    AB_ImExporterContext_AddContext(ctx, localCtx);
     AB_ProviderQueue_free(pq);
 
     pq=pqNext;

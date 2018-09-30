@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Thu Jul 08 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -15,6 +15,7 @@
 
 
 #include "dlg_edituserrdh_p.h"
+#include "banking/provider_l.h"
 #include "i18n_l.h"
 
 #include <aqhbci/user.h>
@@ -42,7 +43,7 @@ GWEN_INHERIT(GWEN_DIALOG, AH_EDIT_USER_RDH_DIALOG)
 
 
 
-GWEN_DIALOG *AH_EditUserRdhDialog_new(AB_BANKING *ab, AB_USER *u, int doLock) {
+GWEN_DIALOG *AH_EditUserRdhDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock) {
   GWEN_DIALOG *dlg;
   AH_EDIT_USER_RDH_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -77,7 +78,8 @@ GWEN_DIALOG *AH_EditUserRdhDialog_new(AB_BANKING *ab, AB_USER *u, int doLock) {
   GWEN_Buffer_free(fbuf);
 
   /* preset */
-  xdlg->banking=ab;
+  xdlg->provider=pro;
+  xdlg->banking=AB_Provider_GetBanking(pro);
   xdlg->user=u;
   xdlg->doLock=doLock;
 
@@ -574,7 +576,7 @@ int AH_EditUserRdhDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
   if (xdlg->doLock) {
     int rv;
 
-    rv=AB_Banking_BeginExclUseUser(xdlg->banking, xdlg->user);
+    rv=AH_Provider_BeginExclUseUser(xdlg->provider, xdlg->user);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
@@ -595,7 +597,7 @@ int AH_EditUserRdhDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
   if (xdlg->doLock) {
     int rv;
 
-    rv=AB_Banking_EndExclUseUser(xdlg->banking, xdlg->user, 0);
+    rv=AH_Provider_EndExclUseUser(xdlg->provider, xdlg->user, 0);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
@@ -626,7 +628,7 @@ static int AH_EditUserRdhDialog_HandleActivatedGetSysId(GWEN_DIALOG *dlg) {
   assert(xdlg);
 
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetSysId(AB_User_GetProvider(xdlg->user),
+  rv=AH_Provider_GetSysId(xdlg->provider,
 			  xdlg->user,
                           ctx,
 			  1,   /* withProgress */
@@ -652,7 +654,7 @@ static int AH_EditUserRdhDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg) {
   assert(xdlg);
 
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetAccounts(AB_User_GetProvider(xdlg->user),
+  rv=AH_Provider_GetAccounts(xdlg->provider,
 			     xdlg->user,
 			     ctx,
 			     1,   /* withProgress */
@@ -681,7 +683,7 @@ static int AH_EditUserRdhDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg) {
 
   /* add HTML version of the INI letter */
   GWEN_Buffer_AppendString(tbuf, "<html>");
-  rv=AH_Provider_GetIniLetterHtml(AB_User_GetProvider(xdlg->user),
+  rv=AH_Provider_GetIniLetterHtml(xdlg->provider,
 				  xdlg->user,
 				  0,
 				  0,
@@ -698,7 +700,7 @@ static int AH_EditUserRdhDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg) {
 
 
   /* add ASCII version of the INI letter for frontends which don't support HTML */
-  rv=AH_Provider_GetIniLetterTxt(AB_User_GetProvider(xdlg->user),
+  rv=AH_Provider_GetIniLetterTxt(xdlg->provider,
 				 xdlg->user,
 				 0,
 				 0,

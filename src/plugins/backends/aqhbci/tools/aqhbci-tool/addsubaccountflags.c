@@ -1,6 +1,7 @@
 /***************************************************************************
  begin       : Tue Sep 20 2008
  copyright   : (C) 2008 by Patrick Prasse
+ copyright   : (C) 2018 by Martin Preuss
  email       : patrick-oss@prasse.info
 
  ***************************************************************************
@@ -27,50 +28,29 @@
 
 
 int addsubAccountFlags(AB_BANKING *ab,
-		 GWEN_DB_NODE *dbArgs,
-		 int argc,
-		 char **argv, int is_add ) {
+                       GWEN_DB_NODE *dbArgs,
+                       int argc,
+                       char **argv, int is_add ) {
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
-  AB_ACCOUNT_LIST2 *al;
-  AB_ACCOUNT *a=0;
+  AB_ACCOUNT *a=NULL;
   int rv;
-  const char *bankId;
-  const char *accountId;
-  const char *subAccountId;
+  uint32_t aid;
+  GWEN_DB_NODE *vn;
+  uint32_t flags;
+  uint32_t bf;
+  uint32_t c=0;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "bankId",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "b",                          /* short option */
-    "bank",                       /* long option */
-    "Specify the bank code",      /* short description */
-    "Specify the bank code"       /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
+    GWEN_ArgsType_Int,           /* type */
     "accountId",                 /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
     "a",                          /* short option */
     "account",                   /* long option */
-    "Specify the account id (Kontonummer)",    /* short description */
-    "Specify the account id (Kontonummer)"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "subAccountId",                /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "aa",                          /* short option */
-    "subaccount",                   /* long option */
-    "Specify the sub account id (Unterkontomerkmal)",    /* short description */
-    "Specify the sub account id (Unterkontomerkmal)"     /* long description */
+    "Specify the unique id of the account",    /* short description */
+    "Specify the unique id of the account"     /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -118,103 +98,70 @@ int addsubAccountFlags(AB_BANKING *ab,
     return 0;
   }
 
+  /* check aid */
+  aid=(uint32_t) GWEN_DB_GetIntValue(db, "accountId", 0, 0);
+  if (aid==0) {
+    fprintf(stderr, "ERROR: Invalid or missing unique account id\n");
+    return 1;
+  }
+
+  /* parse and check flags */
+  flags=AH_Account_Flags_fromDb(db, "flags");
+  for (bf=flags; bf; bf>>=1) {
+    if (bf&1)
+      c++;
+  }
+  vn=GWEN_DB_FindFirstVar(db, "flags");
+  if (GWEN_DB_Values_Count(vn)!=c) {
+    fprintf(stderr, "ERROR: Specified flag(s) unknown\n");
+    return 4;
+  }
+
+  /* init aqbanking */
   rv=AB_Banking_Init(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
+  /* get provider (provider gets loaded and stays in memory until AB_Banking_EndUseProvider()) */
+  pro=AB_Banking_BeginUseProvider(ab, "aqhbci");
+  if (pro==NULL) {
+    fprintf(stderr, "ERROR: Backend AqHBCI not available\n");
+    return 3;
+  }
+
+  /* get account (lock, don't unlock, so we can later call AH_Provider_EndExclUseAccount */
+  rv=AH_Provider_GetAccount(pro, aid, 1, 0, &a);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: Account with id %lu not found\n", (unsigned long int) aid);
+    AB_Banking_EndUseProvider(ab, pro);
+    AB_Banking_Fini(ab);
     return 2;
   }
 
-  pro=AB_Banking_GetProvider(ab, "aqhbci");
-  assert(pro);
-
-  bankId=GWEN_DB_GetCharValue(db, "bankId", 0, "*");
-  accountId=GWEN_DB_GetCharValue(db, "accountId", 0, "*");
-  subAccountId=GWEN_DB_GetCharValue(db, "subAccountId", 0, "*");
-
-  al=AB_Banking_FindAccounts(ab, AH_PROVIDER_NAME, "de",
-                             bankId, accountId, subAccountId);
-  if (al) {
-    if (AB_Account_List2_GetSize(al)!=1) {
-      DBG_ERROR(0, "Ambiguous account specification");
-      AB_Account_List2_free(al);
-      return 3;
-    }
-    else {
-      AB_ACCOUNT_LIST2_ITERATOR *ait;
-
-      ait=AB_Account_List2_First(al);
-      assert(ait);
-      a=AB_Account_List2Iterator_Data(ait);
-      AB_Account_List2Iterator_free(ait);
-    }
-    AB_Account_List2_free(al);
-  }
-  if (!a) {
-    DBG_ERROR(0, "No matching customer");
-    return 3;
+  /* modify account */
+  if (is_add) {
+    fprintf(stderr, "Adding flags: %08x\n", flags);
+    AH_Account_AddFlags(a, flags);
   }
   else {
-    GWEN_DB_NODE *vn;
-    uint32_t flags, bf, c=0;
-
-    /* parse flags */
-    flags=AH_Account_Flags_fromDb(db, "flags");
-    for (bf=flags; bf; bf>>=1) {
-      if (bf&1)
-	c++;
-    }
-    vn=GWEN_DB_FindFirstVar(db, "flags");
-    if (GWEN_DB_Values_Count(vn)!=c) {
-      fprintf(stderr, "ERROR: Specified flag(s) unknown\n");
-      AB_Banking_OnlineFini(ab);
-      AB_Banking_Fini(ab);
-      return 4;
-    }
-      
-    /* lock account */
-    rv=AB_Banking_BeginExclUseAccount(ab, a);
-    if (rv<0) {
-      fprintf(stderr,
-	      "ERROR: Could not lock account, maybe it is used in another application? (%d)\n",
-	      rv);
-      AB_Banking_OnlineFini(ab);
-      AB_Banking_Fini(ab);
-      return 4;
-    }
-
-    /* modify account */
-    if( is_add ) {
-      fprintf(stderr, "Adding flags: %08x\n", flags);
-      AH_Account_AddFlags(a, flags);
-    }
-    else {
-      fprintf(stderr, "Removing flags: %08x\n", flags);
-      AH_Account_SubFlags(a, flags);
-    }
-
-    /* unlock account */
-    rv=AB_Banking_EndExclUseAccount(ab, a, 0);
-    if (rv<0) {
-      fprintf(stderr,
-	      "ERROR: Could not unlock account (%d)\n",
-	      rv);
-      AB_Banking_OnlineFini(ab);
-      AB_Banking_Fini(ab);
-      return 4;
-    }
+    fprintf(stderr, "Removing flags: %08x\n", flags);
+    AH_Account_SubFlags(a, flags);
   }
 
-  rv=AB_Banking_OnlineFini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    return 5;
+  /* unlock account */
+  rv=AH_Provider_EndExclUseAccount(pro, a, 0);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: Could not unlock account (%d)\n", rv);
+    AB_Account_free(a);
+    AB_Banking_EndUseProvider(ab, pro);
+    AB_Banking_Fini(ab);
+    return 4;
   }
+  AB_Account_free(a);
+
+  AB_Banking_EndUseProvider(ab, pro);
 
   rv=AB_Banking_Fini(ab);
   if (rv) {

@@ -18,6 +18,8 @@
 #include "hbci_l.h"
 #include "user_l.h"
 #include "account_l.h"
+#include "banking/provider_l.h"
+
 #include <aqhbci/provider.h>
 #include <aqbanking/job_be.h>
 #include <aqbanking/account_be.h>
@@ -1977,6 +1979,7 @@ AB_PROVIDER *AH_Job_GetProvider(const AH_JOB *j) {
 
 
 #include "job_commit.c"
+#include "job_commit_account.c"
 #include "job_virtual.c"
 
 

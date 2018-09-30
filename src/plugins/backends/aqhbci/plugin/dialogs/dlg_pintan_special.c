@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Apr 12 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -40,7 +40,7 @@ GWEN_INHERIT(GWEN_DIALOG, AH_PINTAN_SPECIAL_DIALOG)
 
 
 
-GWEN_DIALOG *AH_PinTanSpecialDialog_new(AB_BANKING *ab) {
+GWEN_DIALOG *AH_PinTanSpecialDialog_new(AB_PROVIDER *pro) {
   GWEN_DIALOG *dlg;
   AH_PINTAN_SPECIAL_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -74,7 +74,8 @@ GWEN_DIALOG *AH_PinTanSpecialDialog_new(AB_BANKING *ab) {
   }
   GWEN_Buffer_free(fbuf);
 
-  xdlg->banking=ab;
+  xdlg->banking=AB_Provider_GetBanking(pro);
+  xdlg->provider=pro;
 
   /* preset */
   xdlg->hbciVersion=300;

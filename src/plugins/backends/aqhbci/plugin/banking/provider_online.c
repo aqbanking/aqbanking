@@ -222,7 +222,7 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
 
   /* lock user */
   if (doLock) {
-    rv=AB_Banking_BeginExclUseUser(ab, u);
+    rv=AH_Provider_BeginExclUseUser(pro, u);
     if (rv) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not lock user (%d)\n", rv);
       AH_Job_free(job);
@@ -236,7 +236,7 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
   if (!s) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No system id");
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AH_Provider_EndExclUseUser(pro, u, 1);
     AH_Job_free(job);
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
@@ -248,7 +248,7 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
 
   /* unlock user */
   if (doLock) {
-    rv=AB_Banking_EndExclUseUser(ab, u, 0);
+    rv=AH_Provider_EndExclUseUser(pro, u, 0);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN,
 	       "Could not unlock customer [%s] (%d)",
@@ -260,7 +260,7 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
       GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
 			   tbuf);
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AH_Provider_EndExclUseUser(pro, u, 1);
       if (!nounmount)
 	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       return rv;
@@ -354,7 +354,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
 
   /* lock user */
   if (doLock) {
-    rv=AB_Banking_BeginExclUseUser(ab, u);
+    rv=AH_Provider_BeginExclUseUser(pro, u);
     if (rv) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not lock user (%d)\n", rv);
       AH_Job_free(job);
@@ -390,7 +390,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Error getting crypt token"));
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 0);
+      AH_Provider_EndExclUseUser(pro, u, 0);
     AH_Job_free(job);
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
@@ -405,7 +405,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Error opening crypt token"));
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 0);
+      AH_Provider_EndExclUseUser(pro, u, 0);
     AH_Job_free(job);
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
@@ -420,7 +420,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
 			 GWEN_LoggerLevel_Error,
 			 I18N("User context not found on crypt token"));
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 0);
+      AH_Provider_EndExclUseUser(pro, u, 0);
     AH_Job_free(job);
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
@@ -444,7 +444,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
 			     GWEN_LoggerLevel_Error,
 			     I18N("Error saving sign key"));
 	if (doLock)
-	  AB_Banking_EndExclUseUser(ab, u, 0);
+	  AH_Provider_EndExclUseUser(pro, u, 0);
 	AH_Job_free(job);
 	if (!nounmount)
 	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
@@ -467,7 +467,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
 			     GWEN_LoggerLevel_Error,
 			     I18N("Error saving crypt key"));
 	if (doLock)
-	  AB_Banking_EndExclUseUser(ab, u, 0);
+	  AH_Provider_EndExclUseUser(pro, u, 0);
 	AH_Job_free(job);
 	if (!nounmount)
 	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
@@ -490,7 +490,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
 			     GWEN_LoggerLevel_Error,
 			     I18N("Error saving auth key"));
 	if (doLock)
-	  AB_Banking_EndExclUseUser(ab, u, 0);
+	  AH_Provider_EndExclUseUser(pro, u, 0);
 	AH_Job_free(job);
 	if (!nounmount)
 	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
@@ -507,7 +507,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
 
   /* unlock user */
   if (doLock) {
-    rv=AB_Banking_EndExclUseUser(ab, u, 0);
+    rv=AH_Provider_EndExclUseUser(pro, u, 0);
     if (rv) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not unlock user (%d)\n", rv);
       if (!nounmount)
@@ -821,7 +821,7 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
   assert(h);
 
   if (doLock) {
-    rv=AB_Banking_BeginExclUseUser(ab, u);
+    rv=AH_Provider_BeginExclUseUser(pro, u);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN,
 	       "Could not lock customer [%s] (%d)",
@@ -841,7 +841,7 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
   if (!job) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported, should not happen");
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AH_Provider_EndExclUseUser(pro, u, 1);
     return GWEN_ERROR_GENERIC;
   }
   AH_Job_AddSigner(job, AB_User_GetUserId(u));
@@ -853,7 +853,7 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not execute outbox.");
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AH_Provider_EndExclUseUser(pro, u, 1);
     AH_Job_free(job);
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
@@ -867,7 +867,7 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
 			 GWEN_LoggerLevel_Error,
 			 I18N("No iTAN modes reported."));
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AH_Provider_EndExclUseUser(pro, u, 1);
     AH_Job_free(job);
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
@@ -885,7 +885,7 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Could not commit result to the system"));
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AH_Provider_EndExclUseUser(pro, u, 1);
     AH_Job_free(job);
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
@@ -893,7 +893,7 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
   }
 
   if (doLock) {
-    rv=AB_Banking_EndExclUseUser(ab, u, 0);
+    rv=AH_Provider_EndExclUseUser(pro, u, 0);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN,
 	       "Could not unlock customer [%s] (%d)",
@@ -905,7 +905,7 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
       GWEN_Gui_ProgressLog(0,
 			   GWEN_LoggerLevel_Error,
 			   tbuf);
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AH_Provider_EndExclUseUser(pro, u, 1);
       AH_Job_free(job);
       if (!nounmount)
 	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
@@ -1013,14 +1013,14 @@ int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
 
 
 int AH_Provider_GetAccountSepaInfo(AB_PROVIDER *pro,
-                                   AB_ACCOUNT_LIST2 *al,
+                                   AB_ACCOUNT *a,
                                    AB_IMEXPORTER_CONTEXT *ctx,
                                    int withProgress, int nounmount, int doLock) {
   AH_PROVIDER *hp;
   AB_BANKING *ab;
   AH_HBCI *h;
   AH_OUTBOX *ob;
-  AB_ACCOUNT_LIST2_ITERATOR *ait;
+  uint32_t uid;
   int rv;
 
   assert(pro);
@@ -1036,37 +1036,31 @@ int AH_Provider_GetAccountSepaInfo(AB_PROVIDER *pro,
 
   ob=AH_Outbox_new(pro);
 
-  /* sample jobs */
-  ait=AB_Account_List2_First(al);
-  if (ait) {
-    AB_ACCOUNT *a;
+  uid=AB_Account_GetFirstUserIdAsInt(a);
+  if (uid==0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No user for this account");
+  }
+  else {
+    AB_USER *u;
 
-    a=AB_Account_List2Iterator_Data(ait);
-    assert(a);
-    while(a) {
-      AB_USER *u;
+    rv=AH_Provider_GetUser(pro, uid, 1, 1, &u);
+    if (rv<0) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown user for this account");
+    }
+    else {
       AH_JOB *job;
 
-      u=AB_Account_GetFirstUser(a);
-      if (!u) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "No user for this account");
+      /* TODO: store user to free it later */
+      job=AH_Job_GetAccountSepaInfo_new(pro, u, a);
+      if (!job) {
+        DBG_WARN(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+        AH_Outbox_free(ob);
+        return GWEN_ERROR_GENERIC;
       }
-      else {
-        job=AH_Job_GetAccountSepaInfo_new(pro, u, a);
-        if (!job) {
-          DBG_WARN(AQHBCI_LOGDOMAIN, "Job not supported with this account");
-          AB_Account_List2Iterator_free(ait);
-          AH_Outbox_free(ob);
-          return GWEN_ERROR_GENERIC;
-        }
-        AH_Job_AddSigner(job, AB_User_GetUserId(u));
-        AH_Outbox_AddJob(ob, job);
-        AH_Job_free(job);
-      }
-
-      a=AB_Account_List2Iterator_Next(ait);
+      AH_Job_AddSigner(job, AB_User_GetUserId(u));
+      AH_Outbox_AddJob(ob, job);
+      AH_Job_free(job);
     }
-    AB_Account_List2Iterator_free(ait);
   }
 
   rv=AH_Outbox_Execute(ob, ctx, withProgress, nounmount, doLock);

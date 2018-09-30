@@ -4,7 +4,10 @@ AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 
 INCLUDES = -I$(aqbanking_symlinkdir) $(all_includes) \
   -I$(srcdir)/../ajobs \
-  -I$(srcdir)/../joblayer -I$(srcdir)/../msglayer -I$(srcdir)/..
+  -I$(srcdir)/../banking \
+  -I$(srcdir)/../joblayer \
+  -I$(srcdir)/../msglayer \
+  -I$(srcdir)/..
 
 EXTRA_DIST=\
   README \

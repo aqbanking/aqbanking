@@ -41,396 +41,6 @@ int AH_Job__GetJobGroup(GWEN_DB_NODE *dbJob, const char *groupName, GWEN_DB_NODE
 
 
 
-int AH_Job__Commit_Accounts(AH_JOB *j){
-  GWEN_DB_NODE *dbJob;
-  GWEN_DB_NODE *dbCurr=NULL;
-  int rv;
-  AB_ACCOUNT_LIST *accList;
-  AB_BANKING *ab;
-  AH_BPD *bpd;
-
-  ab=AH_Job_GetBankingApi(j);
-  assert(ab);
-
-  bpd=AH_User_GetBpd(j->user);
-
-  dbJob=j->jobResponses;
-  accList=AB_Account_List_new();
-
-  dbCurr=GWEN_DB_FindFirstGroup(dbJob, "AccountData");
-  while(dbCurr) {
-    GWEN_DB_NODE *dbAccountData;
-
-    dbAccountData=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/AccountData");
-    if (dbAccountData) {
-      AB_ACCOUNT *acc;
-      GWEN_DB_NODE *dbUpd;
-      GWEN_DB_NODE *gr;
-
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Found an account");
-
-      /* account data found */
-      acc=AB_Banking_CreateAccount(ab, AH_PROVIDER_NAME);
-      assert(acc);
-      /* AB_Banking_CreateAccount() already assigns a unique id, we don't want that just yet */
-      AB_Account_SetUniqueId(acc, 0);
-
-      /* read info from "AccountData" segment */
-      AH_Job_ReadAccountDataSeg(acc, dbAccountData);
-
-      /* set bank name */
-      if (bpd) {
-	const char *s;
-
-	s=AH_Bpd_GetBankName(bpd);
-	if (s && *s)
-	  AB_Account_SetBankName(acc, s);
-      }
-
-      // Fixes a bug where the bank sends an account with no bank & account name
-      if(!AB_Account_GetBankName(acc))
-	AB_Account_SetBankName(acc, "dummy");
-      if(!AB_Account_GetAccountName(acc))
-	AB_Account_SetAccountName(acc, "dummy");
-
-      /* temporarily store UPD jobs */
-      dbUpd=GWEN_DB_Group_new("tmpUpd");
-      assert(dbUpd);
-
-      gr=GWEN_DB_GetFirstGroup(dbAccountData);
-      while(gr) {
-	if (strcasecmp(GWEN_DB_GroupName(gr), "updjob")==0) {
-	  /* found an upd job */
-	  GWEN_DB_AddGroup(dbUpd, GWEN_DB_Group_dup(gr));
-	}
-	gr=GWEN_DB_GetNextGroup(gr);
-      } /* while */
-      AH_Account_SetDbTempUpd(acc, dbUpd);
-
-      /* add to list */
-      AB_Account_List_Add(acc, accList);
-    }
-    dbCurr=GWEN_DB_FindNextGroup(dbCurr, "AccountData");
-  }
-
-#if 0
-  if (AB_Account_List_GetCount(accList)<1) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Found no accounts");
-    GWEN_DB_Dump(dbJob, 2);
-  }
-#endif
-
-  /* only keep accounts which have at least IBAN or bankcode and account number */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Checking for empty accounts");
-  if (AB_Account_List_GetCount(accList)) {
-    AB_ACCOUNT *acc;
-    AB_ACCOUNT_LIST *accList2;
-
-    accList2=AB_Account_List_new();
-    while( (acc=AB_Account_List_First(accList)) ) {
-      const char *accountNum;
-      const char *bankCode;
-      const char *iban;
-
-      AB_Account_List_Del(acc);
-      accountNum=AB_Account_GetAccountNumber(acc);
-      bankCode=AB_Account_GetBankCode(acc);
-      iban=AB_Account_GetIBAN(acc);
-
-      if ((iban && *iban) || (accountNum && *accountNum && bankCode && *bankCode)) {
-	AB_Account_List_Add(acc, accList2);
-      }
-      else {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "Removing empty account from import list");
-	AB_Account_free(acc);
-      }
-    }
-    AB_Account_List_free(accList);
-    accList=accList2;
-  }
-
-  /* find out which of the accounts are new */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Checking for existing or to be added accounts");
-  if (AB_Account_List_GetCount(accList)) {
-    AB_ACCOUNT *acc;
-
-    acc=AB_Account_List_First(accList);
-    while(acc) {
-      AB_ACCOUNT *storedAcc=NULL;
-      const char *accountNum;
-      const char *bankCode;
-      const char *iban;
-
-      accountNum=AB_Account_GetAccountNumber(acc);
-      bankCode=AB_Account_GetBankCode(acc);
-      iban=AB_Account_GetIBAN(acc);
-
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Checking account [blz=%s, acc=%s, iban=%s, type=%d]",
-               bankCode?bankCode:"<none>",
-               accountNum?accountNum:"<none>",
-               iban?iban:"<none>",
-               AB_Account_GetAccountType(acc));
-
-      /* first look for that specific combination of given iban / bankcode+account number */
-      if ((iban && *iban) || (accountNum && *accountNum && bankCode && *bankCode)) {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "Comparing IBAN and old account specs");
-	/* both spec given */
-	storedAcc=AB_Banking_FindAccount2(ab, AH_PROVIDER_NAME,
-					  AB_Account_GetCountry(acc),
-					  AB_Account_GetBankCode(acc),
-					  AB_Account_GetAccountNumber(acc),
-					  AB_Account_GetSubAccountId(acc),
-					  AB_Account_GetIBAN(acc),
-					  AB_Account_GetAccountType(acc));
-	if (storedAcc==NULL) {
-	  DBG_INFO(AQHBCI_LOGDOMAIN, "Not found, trying with unspecific account type");
-	  storedAcc=AB_Banking_FindAccount2(ab, AH_PROVIDER_NAME,
-					    AB_Account_GetCountry(acc),
-					    AB_Account_GetBankCode(acc),
-					    AB_Account_GetAccountNumber(acc),
-					    AB_Account_GetSubAccountId(acc),
-					    AB_Account_GetIBAN(acc),
-					    AB_AccountType_Unknown);
-	}
-      }
-      /* then look for old account specs with empty IBAN */
-      else if (!(iban && *iban) || (accountNum && *accountNum && bankCode && *bankCode)) {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "Comparing old account specs only");
-	storedAcc=AB_Banking_FindAccount2(ab, AH_PROVIDER_NAME,
-					  AB_Account_GetCountry(acc),
-					  AB_Account_GetBankCode(acc),
-					  AB_Account_GetAccountNumber(acc),
-					  AB_Account_GetSubAccountId(acc),
-					  "", /* empty IBAN (not "*"!) */
-					  AB_Account_GetAccountType(acc));
-	if (storedAcc==NULL) {
-	  DBG_INFO(AQHBCI_LOGDOMAIN, "Not found, trying with unspecific account type");
-	  storedAcc=AB_Banking_FindAccount2(ab, AH_PROVIDER_NAME,
-					    AB_Account_GetCountry(acc),
-					    AB_Account_GetBankCode(acc),
-					    AB_Account_GetAccountNumber(acc),
-					    AB_Account_GetSubAccountId(acc),
-					    "", /* empty IBAN (not "*"!) */
-					    AB_AccountType_Unknown);
-	}
-      }
-      /* then look for IBAN with empty old account specs */
-      else if ((iban && *iban) || !(accountNum && *accountNum && bankCode && *bankCode)) {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "Comparing IBAN only");
-	storedAcc=AB_Banking_FindAccount2(ab, AH_PROVIDER_NAME,
-					  NULL,
-					  "", /* empty bank code */
-					  "", /* empty account number */
-					  AB_Account_GetSubAccountId(acc),
-					  AB_Account_GetIBAN(acc),
-					  AB_Account_GetAccountType(acc));
-	if (storedAcc==NULL) {
-	  DBG_INFO(AQHBCI_LOGDOMAIN, "Not found, trying with unspecific account type");
-	  storedAcc=AB_Banking_FindAccount2(ab, AH_PROVIDER_NAME,
-					    NULL,
-					    "", /* empty bank code */
-					    "", /* empty account number */
-					    AB_Account_GetSubAccountId(acc),
-					    AB_Account_GetIBAN(acc),
-					    AB_AccountType_Unknown);
-	}
-      }
-      else {
-	/* neither iban nor bank code/account number, should not happen... */
-          DBG_INFO(AQHBCI_LOGDOMAIN, "Account not found, neither IBAN nor account number given, SNH!");
-      }
-
-
-      /* if no stored account try a more generic approach */
-      if (storedAcc==NULL) {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "Not found, trying unspecific approach");
-	storedAcc=AB_Banking_FindAccount2(ab, AH_PROVIDER_NAME,
-					  AB_Account_GetCountry(acc),
-					  AB_Account_GetBankCode(acc),
-					  AB_Account_GetAccountNumber(acc),
-					  AB_Account_GetSubAccountId(acc),
-					  AB_Account_GetIBAN(acc),
-					  AB_Account_GetAccountType(acc));
-      }
-      /* if still no stored account try again with unspecific account type */
-      if (storedAcc==NULL) {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "Not found, trying with unspecific account type");
-	storedAcc=AB_Banking_FindAccount2(ab, AH_PROVIDER_NAME,
-					  AB_Account_GetCountry(acc),
-					  AB_Account_GetBankCode(acc),
-					  AB_Account_GetAccountNumber(acc),
-					  AB_Account_GetSubAccountId(acc),
-					  AB_Account_GetIBAN(acc),
-					  AB_AccountType_Unknown);
-      }
-
-      if (storedAcc) {
-	uint32_t uniqueId;
-
-	uniqueId=AB_Account_GetUniqueId(storedAcc);
-	DBG_INFO(AQHBCI_LOGDOMAIN, "Found a matching account (%x)", uniqueId);
-	AB_Account_SetUniqueId(acc, uniqueId);
-      }
-
-      acc=AB_Account_List_Next(acc);
-    }
-  }
-
-  /* now either add new accounts or modify existing ones */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding new or modifying existing accounts");
-  if (AB_Account_List_GetCount(accList)) {
-    AB_ACCOUNT *acc;
-
-    while( (acc=AB_Account_List_First(accList)) ) {
-      AB_ACCOUNT *storedAcc=NULL;
-      GWEN_DB_NODE *dbTempUpd=NULL;
-
-      /* remove from list. if this is a new account it will be added to AqBanking's internal
-       * list, by which AqBanking takes over the object. If it is a known account, it will be
-       * freed later */
-      AB_Account_List_Del(acc);
-
-      dbTempUpd=AH_Account_GetDbTempUpd(acc);
-      if (dbTempUpd)
-	dbTempUpd=GWEN_DB_Group_dup(dbTempUpd);
-
-      if (AB_Account_GetUniqueId(acc)) {
-	/* account already exists, needs update */
-	DBG_INFO(AQHBCI_LOGDOMAIN, "Account exists, modifying");
-
-	storedAcc=AB_Banking_GetAccount(ab, AB_Account_GetUniqueId(acc));
-	assert(storedAcc);
-
-	rv=AB_Banking_BeginExclUseAccount(ab, storedAcc);
-	if (rv<0) {
-	  DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-	}
-	else {
-	  const char *s;
-
-	  /* locking ok, apply changes */
-
-	  s=AB_Account_GetCountry(acc);
-	  if (s && *s)
-	    AB_Account_SetCountry(storedAcc, s);
-
-	  s=AB_Account_GetBankCode(acc);
-	  if (s && *s)
-	    AB_Account_SetBankCode(storedAcc, s);
-
-	  s=AB_Account_GetBankName(acc);
-	  if (s && *s)
-	    AB_Account_SetBankName(storedAcc, s);
-
-	  s=AB_Account_GetAccountNumber(acc);
-	  if (s && *s)
-	    AB_Account_SetAccountNumber(storedAcc, s);
-
-	  s=AB_Account_GetSubAccountId(acc);
-	  if (s && *s)
-	    AB_Account_SetSubAccountId(storedAcc, s);
-
-	  s=AB_Account_GetIBAN(acc);
-	  if (s && *s)
-	    AB_Account_SetIBAN(storedAcc, s);
-
-	  s=AB_Account_GetBIC(acc);
-	  if (s && *s)
-	    AB_Account_SetBIC(storedAcc, s);
-
-	  s=AB_Account_GetOwnerName(acc);
-	  if (s && *s)
-	    AB_Account_SetOwnerName(storedAcc, s);
-
-	  s=AB_Account_GetCurrency(acc);
-	  if (s && *s)
-	    AB_Account_SetCurrency(storedAcc, s);
-
-	  AB_Account_SetAccountType(storedAcc, AB_Account_GetAccountType(acc));
-
-	  /* use flags from new account */
-	  AH_Account_AddFlags(storedAcc, AH_Account_GetFlags(acc));
-
-
-	  /* handle users */
-	  if (AB_Account_HasUser(storedAcc, AB_User_GetUniqueId(j->user))==GWEN_ERROR_NOT_FOUND) {
-	    DBG_INFO(AQHBCI_LOGDOMAIN, "Adding this job's owber as user to account");
-	    AB_Account_SetUser(storedAcc, j->user);
-	  }
-
-	  /* handle selected users */
-	  if (AB_Account_HasSelectedUser(storedAcc, AB_User_GetUniqueId(j->user))==GWEN_ERROR_NOT_FOUND) {
-	    DBG_INFO(AQHBCI_LOGDOMAIN, "Adding this job's owber as selected user to account");
-	    AB_Account_SetSelectedUser(storedAcc, j->user);
-	  }
-
-	  /* unlock account */
-	  rv=AB_Banking_EndExclUseAccount(ab, storedAcc, 0);
-	  if (rv<0) {
-	    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-	    AB_Banking_EndExclUseAccount(ab, acc, 1); /* abort */
-	  }
-	}
-	/* free local representation */
-	AB_Account_free(acc);
-      }
-      else {
-	/* account is new, add it (CAVEAT: takes over account!) */
-	DBG_INFO(AQHBCI_LOGDOMAIN, "Account is new, adding");
-	AB_Account_SetUser(acc, j->user);
-	AB_Account_SetSelectedUser(acc, j->user);
-	rv=AB_Banking_AddAccount(ab, acc);
-	if (rv<0) {
-	  DBG_ERROR(AQHBCI_LOGDOMAIN, "Coud not add account (%d)", rv);
-	}
-	else {
-	  DBG_INFO(AQHBCI_LOGDOMAIN, "Reading back added account");
-	  storedAcc=AB_Banking_GetAccount(ab, AB_Account_GetUniqueId(acc));
-	  assert(storedAcc);
-	}
-      }
-
-      /* replace UPD jobs for this account inside user */
-      if (storedAcc && dbTempUpd) {
-	GWEN_DB_NODE *dbUpd;
-	GWEN_DB_NODE *gr;
-	char numbuf[32];
-
-	DBG_INFO(AQHBCI_LOGDOMAIN, "Setting UPD jobs for this account in user");
-
-	/* get UPD jobs */
-	dbUpd=AH_User_GetUpd(j->user);
-	assert(dbUpd);
-  
-	/* create and clear group for each account (check subaccount id) */
-	snprintf(numbuf, sizeof(numbuf)-1, "uaid-%08llx",
-		 (unsigned long long int) AB_Account_GetUniqueId(storedAcc));
-	numbuf[sizeof(numbuf)-1]=0;
-
-	dbUpd=GWEN_DB_GetGroup(dbUpd, GWEN_DB_FLAGS_OVERWRITE_GROUPS, numbuf);
-
-	gr=GWEN_DB_GetFirstGroup(dbTempUpd);
-	while(gr) {
-	  if (strcasecmp(GWEN_DB_GroupName(gr), "updjob")==0) {
-	    /* found an upd job */
-	    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Adding UPD job");
-	    GWEN_DB_AddGroup(dbUpd, GWEN_DB_Group_dup(gr));
-	  }
-	  gr=GWEN_DB_GetNextGroup(gr);
-	} /* while */
-      }
-
-      GWEN_DB_Group_free(dbTempUpd); /* is a copy, we need to free it */
-    } /* while */
-  } /* if accounts */
-  AB_Account_List_free(accList);
-
-  /* done */
-  return 0;
-}
-
-
-
 int AH_Job__Commit_Bpd(AH_JOB *j){
   GWEN_DB_NODE *dbJob    ;
   GWEN_DB_NODE *dbRd=NULL;
@@ -528,9 +138,9 @@ int AH_Job__Commit_Bpd(AH_JOB *j){
 	if (1) { /* dump info */
 	  GWEN_BUFFER *tbuf;
 	  const char *s;
-  
+
 	  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  
+
 	  switch (AH_BpdAddr_GetType(ba)) {
 	  case AH_BPD_AddrTypeTCP:
 	    GWEN_Buffer_AppendString(tbuf, "TCP: ");
@@ -545,19 +155,19 @@ int AH_Job__Commit_Bpd(AH_JOB *j){
 	    GWEN_Buffer_AppendString(tbuf, "<UNK>: ");
 	    break;
 	  }
-  
+
 	  s=AH_BpdAddr_GetAddr(ba);
 	  if (s && *s)
 	    GWEN_Buffer_AppendString(tbuf, s);
 	  else
 	    GWEN_Buffer_AppendString(tbuf, "<empty>");
-  
+
 	  s=AH_BpdAddr_GetSuffix(ba);
 	  if (s && *s) {
 	    GWEN_Buffer_AppendString(tbuf, ", ");
 	    GWEN_Buffer_AppendString(tbuf, s);
 	  }
-  
+
 	  GWEN_Buffer_AppendString(tbuf, ", ");
 	  switch(AH_BpdAddr_GetFType(ba)) {
 	  case AH_BPD_FilterTypeNone:
@@ -573,7 +183,7 @@ int AH_Job__Commit_Bpd(AH_JOB *j){
 	    GWEN_Buffer_AppendString(tbuf, "<unk>");
 	    break;
 	  }
-  
+
 	  DBG_INFO(AQHBCI_LOGDOMAIN, "Server address found: %s", GWEN_Buffer_GetStart(tbuf));
 	  GWEN_Gui_ProgressLog2(0,
 				GWEN_LoggerLevel_Info,
@@ -742,7 +352,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
           if (strcasecmp(GWEN_DB_GroupName(dbRes), "result")==0) {
             int code;
 //            const char *text;
-  
+
             code=GWEN_DB_GetIntValue(dbRes, "resultcode", 0, 0);
 //            text=GWEN_DB_GetCharValue(dbRes, "text", 0, 0);
             if (code==3920) {
@@ -773,7 +383,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 	GWEN_CRYPT_KEY * bpk;
 	const void *expp, *modp;
 	unsigned int expl, modl;
-	
+
 	DBG_INFO(AQHBCI_LOGDOMAIN, "GetKeyResponse not yet processed!");
 	modp=GWEN_DB_GetBinValue(dbRd, "key/modulus",  0, NULL, 0, &modl);
 	expp=GWEN_DB_GetBinValue(dbRd, "key/exponent", 0, NULL, 0, &expl);
@@ -788,7 +398,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 	while(dbT) {
 	  const char *code;
           int version;
-  
+
 	  code=GWEN_DB_GetCharValue(dbT, "code", 0, NULL);
 	  version=GWEN_DB_GetIntValue(dbT, "version", 0, -1);
 	  if (code && (version>0)) {
@@ -863,6 +473,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 int AH_Job_CommitSystemData(AH_JOB *j, int doLock) {
   AB_USER *u;
   AB_BANKING *ab;
+  AB_PROVIDER *pro;
   int rv, rv2;
 
   u=j->user;
@@ -870,10 +481,12 @@ int AH_Job_CommitSystemData(AH_JOB *j, int doLock) {
 
   ab=AH_Job_GetBankingApi(j);
   assert(ab);
+  pro=AH_Job_GetProvider(j);
+  assert(pro);
 
   /* lock user */
   if (doLock) {
-    rv=AB_Banking_BeginExclUseUser(ab, u);
+    rv=AH_Provider_BeginExclUseUser(pro, u);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -885,10 +498,10 @@ int AH_Job_CommitSystemData(AH_JOB *j, int doLock) {
 
   if (doLock) {
     /* unlock user */
-    rv=AB_Banking_EndExclUseUser(ab, u, 0);
+    rv=AH_Provider_EndExclUseUser(pro, u, 0);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      AB_Banking_EndExclUseUser(ab, u, 1); /* abandon */
+      AH_Provider_EndExclUseUser(pro, u, 1); /* abandon */
       return rv;
     }
   }

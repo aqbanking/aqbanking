@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue Apr 20 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -16,6 +16,7 @@
 
 #include "dlg_zkacard_p.h"
 #include "i18n_l.h"
+#include "provider_l.h"
 
 #include <aqbanking/dlg_selectbankinfo.h>
 #include <aqbanking/user.h>
@@ -51,7 +52,7 @@ GWEN_INHERIT(GWEN_DIALOG, AH_ZKACARD_DIALOG)
 
 
 
-GWEN_DIALOG *AH_ZkaCardDialog_new(AB_BANKING *ab, GWEN_CRYPT_TOKEN *ct) {
+GWEN_DIALOG *AH_ZkaCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct) {
   GWEN_DIALOG *dlg;
   AH_ZKACARD_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -85,7 +86,8 @@ GWEN_DIALOG *AH_ZkaCardDialog_new(AB_BANKING *ab, GWEN_CRYPT_TOKEN *ct) {
   }
   GWEN_Buffer_free(fbuf);
 
-  xdlg->banking=ab;
+  xdlg->provider=pro;
+  xdlg->banking=AB_Provider_GetBanking(pro);
   xdlg->cryptToken=ct;
   xdlg->contextList=GWEN_Crypt_Token_Context_List_new();
 
@@ -817,7 +819,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
   rv=AH_Provider_GetServerKeys(pro, u, ctx, 1, 0, 1);
   AB_ImExporterContext_free(ctx);
   if (rv) {
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+    AH_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting server keys (%d)", rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
     GWEN_Gui_ProgressEnd(pid);
@@ -829,7 +831,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
   rv=AH_Provider_GetSysId(pro, u, ctx, 1, 0, 1);
   AB_ImExporterContext_free(ctx);
   if (rv) {
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+    AH_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting Kundensystem ID (%d)", rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
     GWEN_Gui_ProgressEnd(pid);
@@ -837,7 +839,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
   }
 
     /* lock new user */
-  rv=AB_Banking_BeginExclUseUser(xdlg->banking, u);
+  rv=AH_Provider_BeginExclUseUser(xdlg->provider, u);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not lock user (%d)", rv);
     GWEN_Gui_ProgressLog2(pid,
@@ -856,7 +858,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
   rv=AH_Provider_GetAccounts(pro, u, ctx, 0, 1, 0);
   AB_ImExporterContext_free(ctx);
   if (rv<0) {
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+    AH_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting accounts (%d)", rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
     GWEN_Gui_ProgressEnd(pid);
@@ -865,7 +867,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
 
   rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
   if (rv==GWEN_ERROR_USER_ABORTED) {
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+    AH_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
     GWEN_Gui_ProgressLog(pid,
@@ -876,7 +878,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
   }
 
   /* unlock user */
-  rv=AB_Banking_EndExclUseUser(xdlg->banking, u, 0);
+  rv=AH_Provider_EndExclUseUser(xdlg->provider, u, 0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
 	     "Could not unlock customer [%s] (%d)",
@@ -885,7 +887,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
 			  GWEN_LoggerLevel_Error,
 			  I18N("Could not unlock user %s (%d)"),
 			  AB_User_GetUserId(u), rv);
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+    AH_Provider_EndExclUseUser(xdlg->provider, u, 1);
     AB_Banking_DeleteUser(xdlg->banking, u);
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
@@ -1062,7 +1064,7 @@ int AH_ZkaCardDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_ZKACARD_DIALOG, dlg);
   assert(xdlg);
 
-  dlg2=AH_RdhSpecialDialog_new(xdlg->banking);
+  dlg2=AH_RdhSpecialDialog_new(xdlg->provider);
   if (dlg2==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create dialog");
     GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Could not create dialog, maybe an installation error?"));

@@ -16,6 +16,8 @@
 
 #include <gwenhywfar/text.h>
 
+#include <aqhbci/user.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -23,14 +25,19 @@
 #include <errno.h>
 
 
-int getAccounts(AB_BANKING *ab,
-		GWEN_DB_NODE *dbArgs,
-		int argc,
-		char **argv) {
+int addsubUserFlags(AB_BANKING *ab,
+                    GWEN_DB_NODE *dbArgs,
+                    int argc,
+                    char **argv,
+                    int is_add) {
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
   uint32_t uid;
   AB_USER *u=NULL;
+  GWEN_DB_NODE *vn;
+  uint32_t flags;
+  uint32_t bf;
+  uint32_t c=0;
   int rv;
   const GWEN_ARGS args[]={
   {
@@ -43,6 +50,17 @@ int getAccounts(AB_BANKING *ab,
     "user",                       /* long option */
     "Specify the unique user id",    /* short description */
     "Specify the unique user id"     /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
+    "flags",                      /* name */
+    1,                            /* minnum */
+    99,                            /* maxnum */
+    "f",                          /* short option */
+    "flags",                   /* long option */
+    "Specify the user flags",    /* short description */
+    "Specify the user flags"     /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
@@ -79,6 +97,18 @@ int getAccounts(AB_BANKING *ab,
     return 0;
   }
 
+  /* parse flags */
+  flags=AH_User_Flags_fromDb(db, "flags");
+  for (bf=flags; bf; bf>>=1) {
+    if (bf&1)
+      c++;
+  }
+  vn=GWEN_DB_FindFirstVar(db, "flags");
+  if (GWEN_DB_Values_Count(vn)!=c) {
+    fprintf(stderr, "ERROR: Specified flag(s) unknown\n");
+    return 4;
+  }
+
 
   /* doit */
   rv=AB_Banking_Init(ab);
@@ -96,7 +126,7 @@ int getAccounts(AB_BANKING *ab,
     return 1;
   }
 
-  rv=AH_Provider_GetUser(pro, uid, 1, 1, &u);
+  rv=AH_Provider_GetUser(pro, uid, 1, 0, &u); /* don't lock to allow for AH_Provider_EndExclUseUser */
   if (rv<0) {
     fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) uid);
     AB_Banking_EndUseProvider(ab, pro);
@@ -104,17 +134,25 @@ int getAccounts(AB_BANKING *ab,
     return 2;
   }
   else {
-    AB_IMEXPORTER_CONTEXT *ctx;
+    /* modify */
+    if (is_add) {
+      fprintf(stderr, "Adding flags: %08x\n", flags);
+      AH_User_AddFlags(u, flags);
+    }
+    else {
+      fprintf(stderr, "Removing flags: %08x\n", flags);
+      AH_User_SubFlags(u, flags);
+    }
 
-    ctx=AB_ImExporterContext_new();
-    rv=AH_Provider_GetAccounts(pro, u, ctx, 1, 0, 1);
-    AB_ImExporterContext_free(ctx);
-    if (rv) {
-      DBG_ERROR_ERR(0, rv);
+    /* unlock user */
+    rv=AH_Provider_EndExclUseUser(pro, u, 0);
+    if (rv<0) {
+      fprintf(stderr, "ERROR: Could not unlock user (%d)\n", rv);
+      AH_Provider_EndExclUseUser(pro, u, 1); /* abort */
       AB_User_free(u);
       AB_Banking_EndUseProvider(ab, pro);
       AB_Banking_Fini(ab);
-      return 3;
+      return 4;
     }
   }
   AB_User_free(u);

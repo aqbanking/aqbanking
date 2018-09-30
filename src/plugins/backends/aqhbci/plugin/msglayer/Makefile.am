@@ -9,7 +9,7 @@ INCLUDES = -I$(srcdir) -I$(srcdir)/.. -I$(srcdir)/../banking \
 
 
 EXTRA_DIST=\
-  msgcrypt.inc \
+  msgcrypt.c \
   msgcrypt_ddv.c \
   msgcrypt_rdh.c \
   msgcrypt_rdh1.c \

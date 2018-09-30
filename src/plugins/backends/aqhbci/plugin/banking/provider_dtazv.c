@@ -18,6 +18,7 @@
 
 
 int AH_Provider_SendDtazv(AB_PROVIDER *pro,
+                          AB_USER *u,
 			  AB_ACCOUNT *a,
 			  AB_IMEXPORTER_CONTEXT *ctx,
 			  const uint8_t *dataPtr,
@@ -26,7 +27,6 @@ int AH_Provider_SendDtazv(AB_PROVIDER *pro,
   AH_PROVIDER *hp;
   AB_BANKING *ab;
   AH_HBCI *h;
-  AB_USER *u;
   AH_JOB *job;
   AH_OUTBOX *ob;
   int rv;
@@ -35,15 +35,10 @@ int AH_Provider_SendDtazv(AB_PROVIDER *pro,
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
   assert(hp);
 
+  assert(u);
   assert(a);
 
   /* gather all objects */
-  u=AB_Account_GetFirstUser(a);
-  if (!u) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No user for this account");
-    return GWEN_ERROR_NOT_AVAILABLE;
-  }
-
   ab=AB_Provider_GetBanking(pro);
   assert(ab);
 

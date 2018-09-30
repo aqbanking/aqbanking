@@ -1,4 +1,4 @@
-SUBDIRS=types2 types jobs gui dialogs backendsupport typemaker2
+SUBDIRS=types2 types jobs gui backendsupport typemaker2
 
 INCLUDES = \
   -I$(aqbanking_symlinkdir) \
@@ -15,7 +15,10 @@ EXTRA_DIST=\
  banking_init.c \
  banking_online.c \
  banking_user.c \
- banking_imex.c
+ banking_imex.c \
+ banking6.c \
+ banking6_update.c
+
 
 
 # We define those here because within the configure script the variables 
@@ -93,8 +96,7 @@ libaqbanking_la_LIBADD= $(gwenhywfar_libs) $(gmp_libs) $(i18n_libs) \
  jobs/libjobs.la \
  types2/libabtypes2.la \
  types/libtypes.la \
- gui/libabgui.la \
- dialogs/libabdialogs.la
+ gui/libabgui.la
 
 libaqbanking_la_LDFLAGS = -no-undefined \
   -version-info @AQBANKING_SO_CURRENT@:@AQBANKING_SO_REVISION@:@AQBANKING_SO_AGE@

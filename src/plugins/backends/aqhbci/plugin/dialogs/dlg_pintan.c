@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Apr 12 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -15,6 +15,7 @@
 
 
 #include "dlg_pintan_p.h"
+#include "banking/provider_l.h"
 #include "i18n_l.h"
 
 #include <aqbanking/dlg_selectbankinfo.h>
@@ -50,7 +51,7 @@ GWEN_INHERIT(GWEN_DIALOG, AH_PINTAN_DIALOG)
 
 
 
-GWEN_DIALOG *AH_PinTanDialog_new(AB_BANKING *ab) {
+GWEN_DIALOG *AH_PinTanDialog_new(AB_PROVIDER *pro) {
   GWEN_DIALOG *dlg;
   AH_PINTAN_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -84,7 +85,8 @@ GWEN_DIALOG *AH_PinTanDialog_new(AB_BANKING *ab) {
   }
   GWEN_Buffer_free(fbuf);
 
-  xdlg->banking=ab;
+  xdlg->banking=AB_Provider_GetBanking(pro);
+  xdlg->provider=pro;
 
   /* preset */
   xdlg->hbciVersion=300;
@@ -811,7 +813,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
 			     0);
   /* lock new user */
   DBG_NOTICE(0, "Locking user");
-  rv=AB_Banking_BeginExclUseUser(xdlg->banking, u);
+  rv=AH_Provider_BeginExclUseUser(xdlg->provider, u);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not lock user (%d)", rv);
     GWEN_Gui_ProgressLog(pid,
@@ -830,7 +832,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
   rv=AH_Provider_GetCert(pro, u, 0, 1, 0);
   if (rv<0) {
     // TODO: retry with SSLv3 if necessary
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+    AH_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
     GWEN_Gui_ProgressEnd(pid);
@@ -839,7 +841,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
 
   rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
   if (rv==GWEN_ERROR_USER_ABORTED) {
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+    AH_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
     GWEN_Gui_ProgressLog(pid,
@@ -857,7 +859,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
   ctx=AB_ImExporterContext_new();
   rv=AH_Provider_GetSysId(pro, u, ctx, 0, 1, 0);
   if (rv<0) {
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+    AH_Provider_EndExclUseUser(xdlg->provider, u, 1);
     AB_ImExporterContext_free(ctx);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
@@ -868,7 +870,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
 
   rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
   if (rv==GWEN_ERROR_USER_ABORTED) {
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+    AH_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
     GWEN_Gui_ProgressLog(pid,
@@ -886,7 +888,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
   ctx=AB_ImExporterContext_new();
   rv=AH_Provider_GetAccounts(pro, u, ctx, 0, 1, 0);
   if (rv<0) {
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+    AH_Provider_EndExclUseUser(xdlg->provider, u, 1);
     AB_ImExporterContext_free(ctx);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
@@ -897,7 +899,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
 
   rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
   if (rv==GWEN_ERROR_USER_ABORTED) {
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+    AH_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
     GWEN_Gui_ProgressLog(pid,
@@ -909,7 +911,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
 
   /* unlock user */
   DBG_NOTICE(0, "Unlocking user");
-  rv=AB_Banking_EndExclUseUser(xdlg->banking, u, 0);
+  rv=AH_Provider_EndExclUseUser(xdlg->provider, u, 0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
 	     "Could not unlock customer [%s] (%d)",
@@ -918,7 +920,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
 			  GWEN_LoggerLevel_Error,
 			  I18N("Could not unlock user %s (%d)"),
 			  AB_User_GetUserId(u), rv);
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+    AH_Provider_EndExclUseUser(xdlg->provider, u, 1);
     AB_Banking_DeleteUser(xdlg->banking, u);
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;

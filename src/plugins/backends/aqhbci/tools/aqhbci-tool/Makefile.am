@@ -14,33 +14,32 @@ noinst_HEADERS=globals.h
 
 aqhbci_tool4_SOURCES=main.c \
  mkpinlist.c \
- adduser.c \
- deluser.c \
+ listusers.c \
+ listaccounts.c \
  addsubaccountflags.c \
+ addsubuserflags.c \
  getsysid.c \
  getkeys.c \
  createkeys.c \
  sendkeys.c \
  getaccounts.c \
- listusers.c \
- listaccounts.c \
  iniletter.c \
  getitanmodes.c \
  changepin.c \
  test.c \
- addaccount.c \
- delaccount.c \
  getcert.c \
  sethbciversion.c \
- adduserflags.c \
- subuserflags.c \
  listitanmodes.c \
  setitanmode.c \
  setmaxtransfers.c \
  setsepaprofile.c \
  settanmediumid.c \
  logfile.c \
- getaccsepa.c
+ getaccsepa.c \
+ adduser.c \
+ deluser.c \
+ addaccount.c \
+ delaccount.c
 
 
 aqhbci_tool4_LDADD = \

@@ -386,7 +386,45 @@ int AB_Banking_Init(AB_BANKING *ab) {
   ab_init_count++;
 
   if (ab_init_count==0) {
-    /* nothing to do extra here right now */
+    int rv;
+    uint32_t currentVersion;
+    GWEN_DB_NODE *db=NULL;
+
+    currentVersion=
+      (AQHBCI_VERSION_MAJOR<<24) |
+      (AQHBCI_VERSION_MINOR<<16) |
+      (AQHBCI_VERSION_PATCHLEVEL<<8) |
+      AQHBCI_VERSION_BUILD;
+
+    /* check for config manager (created by AB_Banking_Init) */
+    if (ab->configMgr==NULL) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                "No config manager. Maybe the gwenhywfar plugins are not installed correctly?");
+      AB_Banking_PluginSystemFini();
+      return GWEN_ERROR_GENERIC;
+    }
+  
+    /* load main group, check version */
+    rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config", &db);
+    if (rv<0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load main config group (%d)", rv);
+      AB_Banking_PluginSystemFini();
+      return rv;
+    }
+    ab->lastVersion=GWEN_DB_GetIntValue(db, "lastVersion", 0, 0);
+    GWEN_DB_Group_free(db);
+
+    /* check whether we need to update */
+    if (ab->lastVersion<currentVersion) {
+      int rv;
+
+      rv=AB_Banking6_Update(ab, ab->lastVersion, currentVersion);
+      if (rv<0) {
+        DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+        AB_Banking_PluginSystemFini();
+        return rv;
+      }
+    }
   }
   ab->initCount++;
 
@@ -404,8 +442,61 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   }
 
   if (--(ab->initCount)==0) {
-    /* nothing to do for banking objects here */
-  }
+    GWEN_DB_NODE *db=NULL;
+    int rv;
+
+    /* check for config manager (created by AB_Banking_Init) */
+    if (ab->configMgr==NULL) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                "No config manager (maybe the gwenhywfar plugins are not installed?");
+      return GWEN_ERROR_GENERIC;
+    }
+  
+    /* lock group */
+    rv=GWEN_ConfigMgr_LockGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config");
+    if (rv<0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock main config group (%d)", rv);
+      return rv;
+    }
+  
+    /* load group (is locked now) */
+    rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config", &db);
+    if (rv<0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load main config group (%d)", rv);
+      GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config");
+      return rv;
+    }
+  
+    /* modify group */
+    GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                        "lastVersion",
+                        (AQBANKING_VERSION_MAJOR<<24) |
+                        (AQBANKING_VERSION_MINOR<<16) |
+                        (AQBANKING_VERSION_PATCHLEVEL<<8) |
+                        AQBANKING_VERSION_BUILD);
+  
+    /* save group (still locked) */
+    rv=GWEN_ConfigMgr_SetGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config", db);
+    if (rv<0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not save main config group (%d)", rv);
+      GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config");
+      GWEN_DB_Group_free(db);
+      return rv;
+    }
+  
+    /* unlock group */
+    rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config");
+    if (rv<0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not unlock main config group (%d)", rv);
+      GWEN_DB_Group_free(db);
+      return rv;
+    }
+  
+    GWEN_DB_Group_free(db);
+
+    /* clear all active crypt token */
+    AB_Banking_ClearCryptTokenList(ab);
+  } /* if (--(ab->initCount)==0) */
 
   /* deinit global stuff */
   if (ab_init_count<1) {
@@ -424,97 +515,6 @@ int AB_Banking_Fini(AB_BANKING *ab) {
   }
 
   return 0;
-}
-
-
-
-int AB_Banking_OnlineInit(AB_BANKING *ab) {
-
-  assert(ab);
-
-  if (ab->initCount==0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Object not initialised");
-    return GWEN_ERROR_INVALID;
-  }
-
-  if (ab->onlineInitCount==0) {
-    int rv;
-
-    rv=AB_Banking_LoadConfig(ab);
-    if (rv<0) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-      AB_Banking_UnloadConfig(ab);
-      return rv;
-    }
-  } /* if first init */
-
-  ab->onlineInitCount++;
-
-  return 0;
-}
-
-
-
-int AB_Banking_OnlineFini(AB_BANKING *ab) {
-  int rv=0;
-  assert(ab);
-
-  if (ab->onlineInitCount<1) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Online part of AqBanking not initialized!");
-    return GWEN_ERROR_INVALID;
-  }
-
-  if (ab->onlineInitCount==1) {
-    rv=AB_Banking_SaveConfig(ab);
-    AB_Banking_UnloadConfig(ab);
-  }
-  ab->onlineInitCount--;
-
-  return rv;
-}
-
-
-
-void AB_Banking_ActivateAllProviders(AB_BANKING *ab){
-  GWEN_PLUGIN_DESCRIPTION_LIST2 *descrs;
-  GWEN_PLUGIN_MANAGER *pm;
-
-  pm=GWEN_PluginManager_FindPluginManager("provider");
-  if (!pm) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Could not find plugin manager for \"%s\"",
-	      "provider");
-    return;
-  }
-
-  descrs=GWEN_PluginManager_GetPluginDescrs(pm);
-  if (descrs) {
-    GWEN_PLUGIN_DESCRIPTION_LIST2_ITERATOR *it;
-    GWEN_PLUGIN_DESCRIPTION *pd;
-
-    it=GWEN_PluginDescription_List2_First(descrs);
-    assert(it);
-    pd=GWEN_PluginDescription_List2Iterator_Data(it);
-    assert(pd);
-    while(pd) {
-      const char *pname=GWEN_PluginDescription_GetName(pd);
-      AB_PROVIDER *pro;
-
-      pro=AB_Banking_GetProvider(ab, pname);
-      if (!pro) {
-	DBG_WARN(AQBANKING_LOGDOMAIN,
-		 "Could not load backend \"%s\", ignoring", pname);
-      }
-      else {
-	GWEN_StringList_AppendString(ab->activeProviders, pname, 0, 1);
-      }
-
-      pd=GWEN_PluginDescription_List2Iterator_Next(it);
-    } /* while */
-    GWEN_PluginDescription_List2Iterator_free(it);
-    GWEN_PluginDescription_List2_freeAll(descrs);
-  }
 }
 
 

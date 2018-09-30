@@ -83,6 +83,7 @@ GWEN_INHERIT_FUNCTIONS(AB_BANKING)
 #include "banking_cfg.c"
 #include "banking_imex.c"
 #include "banking6.c"
+#include "banking6_update.c"
 
 
 
@@ -124,15 +125,11 @@ AB_BANKING *AB_Banking_new(const char *appName,
 
   GWEN_NEW_OBJECT(AB_BANKING, ab);
   GWEN_INHERIT_INIT(AB_BANKING, ab);
-  ab->providers=AB_Provider_List_new();
   ab->users=AB_User_List_new();
   ab->accounts=AB_Account_List_new();
   ab->appEscName=strdup(GWEN_Buffer_GetStart(nbuf));
   ab->appName=strdup(appName);
-  ab->activeProviders=GWEN_StringList_new();
   ab->cryptTokenList=GWEN_Crypt_Token_List2_new();
-
-  GWEN_StringList_SetSenseCase(ab->activeProviders, 0);
 
   GWEN_Buffer_free(nbuf);
 
@@ -171,8 +168,6 @@ void AB_Banking_free(AB_BANKING *ab){
     GWEN_Crypt_Token_List2_free(ab->cryptTokenList);
     AB_Account_List_free(ab->accounts);
     AB_User_List_free(ab->users);
-    AB_Provider_List_free(ab->providers);
-    GWEN_StringList_free(ab->activeProviders);
     GWEN_ConfigMgr_free(ab->configMgr);
     free(ab->startFolder);
     free(ab->appName);
@@ -481,94 +476,6 @@ void AB_Banking_SetUserData(AB_BANKING *ab, void *user_data) {
 
 
 
-AB_ACCOUNT *AB_Banking__GetAccount(AB_BANKING *ab, const char *accountId){
-  int rv;
-  GWEN_DB_NODE *dbData=NULL;
-
-  rv=AB_Banking_LoadAppConfig(ab, &dbData);
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Unable to load app config");
-    return NULL;
-  }
-  else {
-    uint32_t uniqueId;
-    AB_ACCOUNT *a;
-    GWEN_DB_NODE *db;
-
-    assert(dbData);
-    uniqueId=0;
-    db=GWEN_DB_GetGroup(dbData, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-			"banking/aliases");
-    if (db)
-      uniqueId=GWEN_DB_GetIntValue(db, accountId, 0, 0);
-    GWEN_DB_Group_free(dbData);
-    if (!uniqueId) {
-      DBG_INFO(AQBANKING_LOGDOMAIN,
-               "Account has no unique id assigned to the alias [%s].",
-               accountId);
-      return NULL;
-    }
-
-    a=AB_Banking_GetAccount(ab, uniqueId);
-    if (!a) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Account with alias \"%s\" not found",
-		accountId);
-      return NULL;
-    }
-
-    return a;
-  }
-}
-
-
-
-AB_ACCOUNT *AB_Banking_GetAccountByAlias(AB_BANKING *ab,
-					 const char *accountId){
-  return AB_Banking__GetAccount(ab, accountId);
-}
-
-
-
-void AB_Banking_SetAccountAlias(AB_BANKING *ab, AB_ACCOUNT *a, const char *alias){
-  int rv;
-  GWEN_DB_NODE *dbConfig=NULL;
-  GWEN_DB_NODE *db;
-
-  rv=AB_Banking_LockAppConfig(ab);
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    return;
-  }
-
-  rv=AB_Banking_LoadAppConfig(ab, &dbConfig);
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    AB_Banking_UnlockAppConfig(ab);
-    return;
-  }
-
-  db=GWEN_DB_GetGroup(dbConfig, GWEN_DB_FLAGS_DEFAULT, "banking/aliases");
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      alias,
-		      AB_Account_GetUniqueId(a));
-
-  rv=AB_Banking_SaveAppConfig(ab, dbConfig);
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    AB_Banking_UnlockAppConfig(ab);
-    return;
-  }
-
-  rv=AB_Banking_UnlockAppConfig(ab);
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    return;
-  }
-}
-
-
-
 const AB_COUNTRY *AB_Banking_FindCountryByName(AB_BANKING *ab,
                                                const char *name){
   assert(ab);
@@ -851,6 +758,7 @@ void AB_Banking_GetVersion(int *major,
 GWEN_DIALOG *AB_Banking_GetNewUserDialog(AB_BANKING *ab,
 					 const char *backend,
 					 int mode) {
+/*
   AB_PROVIDER *pro;
   GWEN_DIALOG *dlg;
 
@@ -870,6 +778,8 @@ GWEN_DIALOG *AB_Banking_GetNewUserDialog(AB_BANKING *ab,
   }
 
   return dlg;
+*/
+  return NULL;
 }
 
 

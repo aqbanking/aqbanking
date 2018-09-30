@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id: getsysid.c 1288 2007-08-11 16:53:57Z martin $
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -34,46 +31,24 @@ int setSepaProfile(AB_BANKING *ab,
 		   char **argv) {
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
-  AB_USER_LIST2 *ul;
-  AB_USER *u=0;
+  uint32_t uid;
+  AB_USER *u=NULL;
   int rv;
-  const char *bankId;
-  const char *userId;
-  const char *customerId;
-  const char *tProfile, *dProfile;
+  const char *tProfile;
+  const char *dProfile;
+  GWEN_DB_NODE *profile;
+  const char *s;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "bankId",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "b",                          /* short option */
-    "bank",                       /* long option */
-    "Specify the bank code",      /* short description */
-    "Specify the bank code"       /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
+    GWEN_ArgsType_Int,            /* type */
     "userId",                     /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
     "u",                          /* short option */
     "user",                       /* long option */
-    "Specify the user id (Benutzerkennung)",    /* short description */
-    "Specify the user id (Benutzerkennung)"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "customerId",                 /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "c",                          /* short option */
-    "customer",                   /* long option */
-    "Specify the customer id (Kundennummer)",    /* short description */
-    "Specify the customer id (Kundennummer)"     /* long description */
+    "Specify the unique user id",    /* short description */
+    "Specify the unique user id"     /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -132,104 +107,75 @@ int setSepaProfile(AB_BANKING *ab,
     return 0;
   }
 
+  /* get and check params */
+  uid=(uint32_t) GWEN_DB_GetIntValue(db, "userId", 0, 0);
+  if (uid==0) {
+    fprintf(stderr, "ERROR: Invalid or missing unique user id\n");
+    return 1;
+  }
+
+  tProfile=GWEN_DB_GetCharValue(db, "transferProfile", 0, NULL);
+  dProfile=GWEN_DB_GetCharValue(db, "debitNoteProfile", 0, NULL);
+  if (!tProfile && !dProfile) {
+    DBG_ERROR(0, "No action specified");
+    return 1;
+  }
+
+
+  /* doit */
   rv=AB_Banking_Init(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
-  }
-
-  pro=AB_Banking_GetProvider(ab, "aqhbci");
-  assert(pro);
-
-  bankId=GWEN_DB_GetCharValue(db, "bankId", 0, "*");
-  userId=GWEN_DB_GetCharValue(db, "userId", 0, "*");
-  customerId=GWEN_DB_GetCharValue(db, "customerId", 0, "*");
-
-  tProfile=GWEN_DB_GetCharValue(db, "transferProfile", 0, NULL);
-  dProfile=GWEN_DB_GetCharValue(db, "debitNoteProfile", 0, NULL);
-
-  ul=AB_Banking_FindUsers(ab, AH_PROVIDER_NAME, "de",
-                          bankId, userId, customerId);
-  if (ul) {
-    if (AB_User_List2_GetSize(ul)!=1) {
-      DBG_ERROR(0, "Ambiguous customer specification");
-      return 3;
-    }
-    else {
-      AB_USER_LIST2_ITERATOR *uit;
-
-      uit=AB_User_List2_First(ul);
-      assert(uit);
-      u=AB_User_List2Iterator_Data(uit);
-      AB_User_List2Iterator_free(uit);
-    }
-    AB_User_List2_free(ul);
-  }
-  if (!u) {
-    DBG_ERROR(0, "No matching customer");
-    return 3;
-  }
-  else {
-    GWEN_DB_NODE *profile;
-    const char *s;
-
-    if (!tProfile && !dProfile) {
-      DBG_ERROR(0, "No action specified");
+  if (tProfile && *tProfile) {
+    /* check whether given profile is supported by AqBankings SEPA im-/exporter */
+    profile=AB_Banking_GetImExporterProfile(ab, "sepa", tProfile);
+    if (!profile) {
+      DBG_ERROR(0, "Profile \"%s\" not found", tProfile);
+      AB_Banking_Fini(ab);
       return 1;
     }
-    if (tProfile && *tProfile) {
-      profile=AB_Banking_GetImExporterProfile(ab, "sepa", tProfile);
-      if (!profile) {
-	DBG_ERROR(0,
-		  "Profile \"%s\" not found", tProfile);
-	return 1;
-      }
-      s=GWEN_DB_GetCharValue(profile, "type", 0, "");
-      if (GWEN_Text_ComparePattern(s, "001.*", 1)==-1) {
-	DBG_ERROR(0,
-		  "Profile \"%s\" is of type \"%s\" but should match \"001.*\"",
-		  tProfile, s);
-	return 1;
-      }
-    }
-    if (dProfile && *dProfile) {
-      profile=AB_Banking_GetImExporterProfile(ab, "sepa", dProfile);
-      if (!profile) {
-	DBG_ERROR(0,
-		  "Profile \"%s\" not found", dProfile);
-	return 1;
-      }
-      s=GWEN_DB_GetCharValue(profile, "type", 0, "");
-      if (GWEN_Text_ComparePattern(s, "008.*", 1)==-1) {
-	DBG_ERROR(0,
-		  "Profile \"%s\" is of type \"%s\" but should match \"008.*\"",
-		  dProfile, s);
-	return 1;
-      }
-    }
-
-    /* lock user */
-    rv=AB_Banking_BeginExclUseUser(ab, u);
-    if (rv<0) {
-      fprintf(stderr,
-	      "ERROR: Could not lock user, maybe it is used in another application? (%d)\n",
-	      rv);
-      AB_Banking_OnlineFini(ab);
+    s=GWEN_DB_GetCharValue(profile, "type", 0, "");
+    if (GWEN_Text_ComparePattern(s, "001.*", 1)==-1) {
+      DBG_ERROR(0, "Profile \"%s\" is of type \"%s\" but should match \"001.*\"", tProfile, s);
       AB_Banking_Fini(ab);
-      return 4;
+      return 1;
     }
+  }
 
+  if (dProfile && *dProfile) {
+    /* check whether given profile is supported by AqBankings SEPA im-/exporter */
+    profile=AB_Banking_GetImExporterProfile(ab, "sepa", dProfile);
+    if (!profile) {
+      DBG_ERROR(0, "Profile \"%s\" not found", dProfile);
+      AB_Banking_Fini(ab);
+      return 1;
+    }
+    s=GWEN_DB_GetCharValue(profile, "type", 0, "");
+    if (GWEN_Text_ComparePattern(s, "008.*", 1)==-1) {
+      DBG_ERROR(0, "Profile \"%s\" is of type \"%s\" but should match \"008.*\"", dProfile, s);
+      AB_Banking_Fini(ab);
+      return 1;
+    }
+  }
+
+  pro=AB_Banking_BeginUseProvider(ab, "aqhbci");
+  assert(pro);
+
+  rv=AH_Provider_GetUser(pro, uid, 1, 0, &u); /* don't lock to allow for AH_Provider_EndExclUseUser */
+  if (rv<0) {
+    fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) uid);
+    AB_Banking_EndUseProvider(ab, pro);
+    AB_Banking_Fini(ab);
+    return 2;
+  }
+  else {
     /* modify user */
     if (tProfile) {
       if (*tProfile) {
-	fprintf(stderr, "Setting SEPA profile for transfers to \"%s\"\n",
-		tProfile);
+        fprintf(stderr, "Setting SEPA profile for transfers to \"%s\"\n", tProfile);
       }
       else {
 	fprintf(stderr, "Resetting default SEPA profile for transfers\n");
@@ -240,33 +186,29 @@ int setSepaProfile(AB_BANKING *ab,
 
     if (dProfile) {
       if (*dProfile) {
-	fprintf(stderr, "Setting SEPA profile for debit notes to \"%s\"\n",
-		dProfile);
+        fprintf(stderr, "Setting SEPA profile for debit notes to \"%s\"\n", dProfile);
       }
       else {
-	fprintf(stderr, "Resetting default SEPA profile for debit notes\n");
-	dProfile=NULL;
+        fprintf(stderr, "Resetting default SEPA profile for debit notes\n");
+        dProfile=NULL;
       }
       AH_User_SetSepaDebitNoteProfile(u, dProfile);
     }
 
     /* unlock user */
-    rv=AB_Banking_EndExclUseUser(ab, u, 0);
+    rv=AH_Provider_EndExclUseUser(pro, u, 0);
     if (rv<0) {
-      fprintf(stderr,
-	      "ERROR: Could not unlock user (%d)\n",
-	      rv);
-      AB_Banking_OnlineFini(ab);
+      fprintf(stderr, "ERROR: Could not unlock user (%d)\n", rv);
+      AH_Provider_EndExclUseUser(pro, u, 1); /* abort */
+      AB_User_free(u);
+      AB_Banking_EndUseProvider(ab, pro);
       AB_Banking_Fini(ab);
       return 4;
     }
   }
+  AB_User_free(u);
 
-  rv=AB_Banking_OnlineFini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    return 5;
-  }
+  AB_Banking_EndUseProvider(ab, pro);
 
   rv=AB_Banking_Fini(ab);
   if (rv) {

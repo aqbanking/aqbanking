@@ -30,7 +30,7 @@
         dup-access="none"
         filename="user"
         inherit="public"
-        list="lib"
+        list="public"
         list2="public" >
     <descr>
       This group represents a user within AqBanking.

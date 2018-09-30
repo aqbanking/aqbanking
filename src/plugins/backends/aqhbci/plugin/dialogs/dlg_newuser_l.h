@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Apr 19 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -21,7 +21,7 @@ extern "C" {
 #endif
 
 
-GWEN_DIALOG *AH_NewUserDialog_new(AB_BANKING *ab);
+GWEN_DIALOG *AH_NewUserDialog_new(AB_PROVIDER *pro);
 
 
 #ifdef __cplusplus

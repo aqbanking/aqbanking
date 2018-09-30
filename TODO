@@ -3,6 +3,8 @@ Next:
 - AB_BANKING:
   - remove old exec code
   - declare a backend function to setup account_specs and user_specs in case there are none (e.g. because of 1st update)
+  - remove libs/aqbanking/dialogs/dlg_editaccount*
+  - change account/user edit/create dialogs to use user/account specs
 - AqHBCI:
   - replace use of AB_Banking_Begin/EndExclUseAccount
   - replace use of AB_Banking_Begin/EndExclUseUser

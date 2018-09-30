@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue Apr 20 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -26,7 +26,7 @@ extern "C" {
 
 
 
-GWEN_DIALOG *AH_DdvCardDialog_new(AB_BANKING *ab, GWEN_CRYPT_TOKEN *ct);
+GWEN_DIALOG *AH_DdvCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct);
 
 GWEN_CRYPT_TOKEN *AH_DdvCardDialog_GetCryptToken(const GWEN_DIALOG *dlg);
 

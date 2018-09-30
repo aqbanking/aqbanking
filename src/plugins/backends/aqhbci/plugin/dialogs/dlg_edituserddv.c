@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Thu Jul 08 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -16,6 +16,7 @@
 
 #include "dlg_edituserddv_p.h"
 #include "i18n_l.h"
+#include "provider_l.h"
 
 #include <aqhbci/user.h>
 #include <aqhbci/provider.h>
@@ -42,7 +43,7 @@ GWEN_INHERIT(GWEN_DIALOG, AH_EDIT_USER_DDV_DIALOG)
 
 
 
-GWEN_DIALOG *AH_EditUserDdvDialog_new(AB_BANKING *ab, AB_USER *u, int doLock) {
+GWEN_DIALOG *AH_EditUserDdvDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock) {
   GWEN_DIALOG *dlg;
   AH_EDIT_USER_DDV_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -77,7 +78,8 @@ GWEN_DIALOG *AH_EditUserDdvDialog_new(AB_BANKING *ab, AB_USER *u, int doLock) {
   GWEN_Buffer_free(fbuf);
 
   /* preset */
-  xdlg->banking=ab;
+  xdlg->provider=pro;
+  xdlg->banking=AB_Provider_GetBanking(pro);
   xdlg->user=u;
   xdlg->doLock=doLock;
 
@@ -506,7 +508,7 @@ int AH_EditUserDdvDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
   if (xdlg->doLock) {
     int rv;
 
-    rv=AB_Banking_BeginExclUseUser(xdlg->banking, xdlg->user);
+    rv=AH_Provider_BeginExclUseUser(xdlg->provider, xdlg->user);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
@@ -527,7 +529,7 @@ int AH_EditUserDdvDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
   if (xdlg->doLock) {
     int rv;
 
-    rv=AB_Banking_EndExclUseUser(xdlg->banking, xdlg->user, 0);
+    rv=AH_Provider_EndExclUseUser(xdlg->provider, xdlg->user, 0);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |

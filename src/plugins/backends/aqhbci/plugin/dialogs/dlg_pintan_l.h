@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Apr 12 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -25,7 +25,7 @@ extern "C" {
 
 
 
-GWEN_DIALOG *AH_PinTanDialog_new(AB_BANKING *ab);
+GWEN_DIALOG *AH_PinTanDialog_new(AB_PROVIDER *pro);
 
 const char *AH_PinTanDialog_GetBankCode(const GWEN_DIALOG *dlg);
 void AH_PinTanDialog_SetBankCode(GWEN_DIALOG *dlg, const char *s);

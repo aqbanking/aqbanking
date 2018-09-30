@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id: getaccounts.c 964 2006-03-17 10:35:21Z cstim $
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -16,6 +13,8 @@
 
 
 #include "globals.h"
+
+#include <aqhbci/account.h>
 
 #include <gwenhywfar/text.h>
 
@@ -32,14 +31,12 @@ int addAccount(AB_BANKING *ab,
 	       char **argv) {
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
-  AB_USER_LIST2 *ul;
   AB_USER *u=0;
   int rv;
+  uint32_t userId;
   const char *bankId;
-  const char *userId;
   const char *accountName;
   const char *accountId;
-  const char *customerId;
   const char *ownerName;
   const GWEN_ARGS args[]={
   {
@@ -55,25 +52,14 @@ int addAccount(AB_BANKING *ab,
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
+    GWEN_ArgsType_Int,           /* type */
     "userId",                     /* name */
-    0,                            /* minnum */
+    1,                            /* minnum */
     1,                            /* maxnum */
     "u",                          /* short option */
     "user",                       /* long option */
-    "Specify the user id (Benutzerkennung)",    /* short description */
-    "Specify the user id (Benutzerkennung)"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "customerId",                 /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "c",                          /* short option */
-    "customer",                   /* long option */
-    "Specify the customer id (Kundennummer)",    /* short description */
-    "Specify the customer id (Kundennummer)"     /* long description */
+    "Specify the unique user id",    /* short description */
+    "Specify the unique user id"     /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -143,53 +129,34 @@ int addAccount(AB_BANKING *ab,
     return 0;
   }
 
+
+  userId=GWEN_DB_GetIntValue(db, "userId", 0, 0);
+  if (userId<1) {
+    fprintf(stderr, "ERROR: Invalid user id\n");
+    return 1;
+  }
+  bankId=GWEN_DB_GetCharValue(db, "bankId", 0, "*");
+  accountId=GWEN_DB_GetCharValue(db, "accountId", 0, "*");
+  accountName=GWEN_DB_GetCharValue(db, "accountName", 0, "Account");
+  ownerName=GWEN_DB_GetCharValue(db, "ownerName", 0, NULL);
+
   rv=AB_Banking_Init(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
-  }
-
-  pro=AB_Banking_GetProvider(ab, "aqhbci");
+  pro=AB_Banking_BeginUseProvider(ab, "aqhbci");
   assert(pro);
 
-  bankId=GWEN_DB_GetCharValue(db, "bankId", 0, "*");
-  userId=GWEN_DB_GetCharValue(db, "userId", 0, "*");
-  accountId=GWEN_DB_GetCharValue(db, "accountId", 0, "*");
-  accountName=GWEN_DB_GetCharValue(db, "accountName", 0, "Account");
-  customerId=GWEN_DB_GetCharValue(db, "customerId", 0, "*");
-  ownerName=GWEN_DB_GetCharValue(db, "ownerName", 0, NULL);
-
-  ul=AB_Banking_FindUsers(ab, AH_PROVIDER_NAME,
-                          "de", bankId, userId, customerId);
-  if (ul) {
-    if (AB_User_List2_GetSize(ul)!=1) {
-      DBG_ERROR(0, "Ambiguous customer specification");
-      AB_Banking_Fini(ab);
-      return 3;
-    }
-    else {
-      AB_USER_LIST2_ITERATOR *cit;
-
-      cit=AB_User_List2_First(ul);
-      assert(cit);
-      u=AB_User_List2Iterator_Data(cit);
-      AB_User_List2Iterator_free(cit);
-    }
-    AB_User_List2_free(ul);
-  }
-  if (!u) {
-    DBG_ERROR(0, "No matching user");
+  rv=AH_Provider_GetUser(pro, userId, 1, 1, &u);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) userId);
+    AB_Banking_EndUseProvider(ab, pro);
     AB_Banking_Fini(ab);
-    return 3;
+    return 2;
   }
   else {
-
     AB_ACCOUNT *account;
     AB_BANKINFO_LIST2 *bl;
     AB_BANKINFO_LIST2_ITERATOR *bit;
@@ -203,6 +170,9 @@ int addAccount(AB_BANKING *ab,
     rv=AB_Banking_GetBankInfoByTemplate(ab, "de", tbi, bl);
     if (rv) {
       fprintf(stderr, "Error looking for bank info: %d\n", rv);
+      AB_User_free(u);
+      AB_Banking_EndUseProvider(ab, pro);
+      AB_Banking_Fini(ab);
       return 3;
     }
 
@@ -219,7 +189,7 @@ int addAccount(AB_BANKING *ab,
     AB_BankInfo_List2_free(bl);
 
 
-    account=AB_Banking_CreateAccount(ab, "aqhbci");
+    account=AH_Account_new(ab, pro);
     assert(account);
 
     if (!ownerName)
@@ -233,23 +203,27 @@ int addAccount(AB_BANKING *ab,
     AB_Account_SetBankCode(account, bankId);
     if (bi)
       AB_Account_SetBankName(account, AB_BankInfo_GetBankName(bi));
-    AB_Account_SetUser(account, u);
-    AB_Account_SetSelectedUser(account, u);
 
+    AB_Account_SetUserId(account, userId);
 
-    rv=AB_Banking_AddAccount(ab, account);
-    if (rv) {
+    /* add account to system */
+    rv=AH_Provider_AddAccount(pro, u, account, 1);
+    if (rv<0) {
       DBG_ERROR(0, "Error adding account (%d)", rv);
+      AB_Account_free(account);
+      AB_User_free(u);
+      AB_Banking_EndUseProvider(ab, pro);
       AB_Banking_Fini(ab);
       return 3;
     }
+
+    AB_Account_free(account);
+
+    AB_User_free(u);
   }
 
-  rv=AB_Banking_OnlineFini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    return 5;
-  }
+  AB_Banking_EndUseProvider(ab, pro);
+
 
   rv=AB_Banking_Fini(ab);
   if (rv) {

@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Sat Jun 26 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -25,7 +25,7 @@ extern "C" {
 
 
 
-GWEN_DIALOG *AH_RdhSpecialDialog_new(AB_BANKING *ab);
+GWEN_DIALOG *AH_RdhSpecialDialog_new(AB_PROVIDER *pro);
 
 int AH_RdhSpecialDialog_GetHbciVersion(const GWEN_DIALOG *dlg);
 void AH_RdhSpecialDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i);

@@ -184,6 +184,26 @@ void AH_Msg_free(AH_MSG *hmsg){
 
 
 /* --------------------------------------------------------------- FUNCTION */
+AB_USER *AH_Msg_GetUser(const AH_MSG *hmsg, const char *userId) {
+  assert(hmsg);
+  if (hmsg->dialog) {
+    AB_USER *u;
+
+    u=AH_Dialog_GetDialogOwner(hmsg->dialog);
+    if (u) {
+      const char *s;
+
+      s=AB_User_GetUserId(u);
+      if (s && *s && userId && *userId && strcasecmp(userId, s)==0)
+        return u;
+    }
+  }
+  return NULL;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
 int AH_Msg_GetSecurityProfile(const AH_MSG *hmsg) {
   assert(hmsg);
   return hmsg->secProfile;
@@ -1809,7 +1829,7 @@ const char *AH_Msg_GetCrypterId(const AH_MSG *hmsg) {
 #include "msgcrypt_rdh10.c"
 #include "msgcrypt_rdh.c"
 #include "msgcrypt_pintan.c"
-#include "msgcrypt.inc"
+#include "msgcrypt.c"
 
 
 

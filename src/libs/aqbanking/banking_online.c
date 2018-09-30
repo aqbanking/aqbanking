@@ -41,253 +41,7 @@ int AB_Banking_ExecutionProgress(AB_BANKING *ab) {
 
 
 
-int AB_Banking__ExecuteQueue(AB_BANKING *ab,
-                             AB_JOB_LIST2 *jl,
-                             AB_IMEXPORTER_CONTEXT *ctx){
-  AB_PROVIDER *pro;
-  int succ;
-
-  assert(ab);
-  pro=AB_Provider_List_First(ab->providers);
-  succ=0;
-
-  ab->currentJobs=jl;
-
-  while(pro) {
-    AB_JOB_LIST2_ITERATOR *jit;
-    int jobs=0;
-    int rv;
-
-    jit=AB_Job_List2_First(jl);
-    if (jit) {
-      AB_JOB *j;
-
-      j=AB_Job_List2Iterator_Data(jit);
-      while(j) {
-	AB_JOB_STATUS jst;
-
-	jst=AB_Job_GetStatus(j);
-	DBG_INFO(AQBANKING_LOGDOMAIN, "Checking job...");
-	if (jst==AB_Job_StatusEnqueued ||
-	    jst==AB_Job_StatusPending) {
-	  AB_ACCOUNT *a;
-
-	  a=AB_Job_GetAccount(j);
-	  assert(a);
-	  if (AB_Account_GetProvider(a)==pro) {
-	    DBG_INFO(AQBANKING_LOGDOMAIN, "Same provider, adding job");
-	    /* same provider, add job */
-	    AB_Job_Log(j, GWEN_LoggerLevel_Info, "aqbanking",
-		       "Adding job to backend");
-	    rv=AB_Provider_AddJob(pro, j);
-	    if (rv) {
-	      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not add job (%d)", rv);
-	      AB_Job_SetStatus(j, AB_Job_StatusError);
-	      AB_Job_SetResultText(j, "Refused by backend");
-	      AB_Job_Log(j, GWEN_LoggerLevel_Error, "aqbanking",
-			 "Adding job: Refused by backend");
-	    }
-	    else {
-	      jobs++;
-	      if (AB_Job_GetStatus(j)!=AB_Job_StatusPending) {
-		AB_Job_SetStatus(j, AB_Job_StatusSent);
-	      }
-	    }
-	  }
-	} /* if job enqueued */
-	else {
-          DBG_DEBUG(AQBANKING_LOGDOMAIN,
-                    "Job %08x in queue with status \"%s\"",
-                    AB_Job_GetJobId(j),
-                    AB_Job_Status2Char(AB_Job_GetStatus(j)));
-        }
-        j=AB_Job_List2Iterator_Next(jit);
-      } /* while */
-      AB_Job_List2Iterator_free(jit);
-    }
-
-    if (jobs) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Letting backend \"%s\" work",
-                 AB_Provider_GetName(pro));
-      rv=AB_Provider_Execute(pro, ctx);
-      if (rv<0) {
-	if (rv==GWEN_ERROR_USER_ABORTED) {
-          DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
-          ab->currentJobs=0;
-          return rv;
-        }
-        DBG_NOTICE(AQBANKING_LOGDOMAIN, "Error executing backend's queue");
-      }
-      else {
-	rv=AB_Banking_ExecutionProgress(ab);
-	if (rv==GWEN_ERROR_USER_ABORTED) {
-	  DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
-	  ab->currentJobs=0;
-	  return rv;
-	}
-	succ++;
-      }
-    } /* if jobs in backend's queue */
-
-    pro=AB_Provider_List_Next(pro);
-  } /* while */
-  ab->currentJobs=0;
-
-  if (!succ) {
-    DBG_WARN(AQBANKING_LOGDOMAIN, "Not a single job successfully executed");
-    /* don't return an error here, because at least when retrieving the
-     * list of allowed iTAN modes there will most definately be an error with
-     * the only job in the queue
-     */
-    /*return GWEN_ERROR_GENERIC;*/
-  }
-
-  return 0;
-}
-
-
-
-
-int AB_Banking_ExecuteJobs(AB_BANKING *ab, AB_JOB_LIST2 *jl2,
-			   AB_IMEXPORTER_CONTEXT *ctx){
-  int rv;
-  uint32_t pid;
-  AB_JOB_LIST2_ITERATOR *jit;
-  AB_PROVIDER *pro=0;
-
-  assert(ab);
-
-  DBG_DEBUG(AQBANKING_LOGDOMAIN, "Attaching to jobs, dequeing them");
-  jit=AB_Job_List2_First(jl2);
-  if (jit) {
-    AB_JOB *j;
-
-    j=AB_Job_List2Iterator_Data(jit);
-    while(j) {
-      AB_Job_SetStatus(j, AB_Job_StatusEnqueued);
-      j=AB_Job_List2Iterator_Next(jit);
-    } /* while */
-    AB_Job_List2Iterator_free(jit);
-  }
-
-  /* execute jobs */
-  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
-			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-			     GWEN_GUI_PROGRESS_SHOW_LOG |
-			     GWEN_GUI_PROGRESS_ALWAYS_SHOW_LOG |
-			     GWEN_GUI_PROGRESS_KEEP_OPEN |
-			     GWEN_GUI_PROGRESS_SHOW_ABORT,
-			     I18N("Executing Jobs"),
-			     I18N("Now the jobs are send via their "
-				  "backends to the credit institutes."),
-			     AB_Job_List2_GetSize(jl2),
-			     0);
-  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice, "AqBanking v"AQBANKING_VERSION_FULL_STRING);
-  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice,
-		       I18N("Sending jobs to the bank(s)"));
-  rv=AB_Banking__ExecuteQueue(ab, jl2, ctx);
-  AB_Banking_ClearCryptTokenList(ab);
-  if (rv) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-  }
-
-  /* clear queue */
-  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice,
-		       I18N("Postprocessing jobs"));
-  jit=AB_Job_List2_First(jl2);
-  if (jit) {
-    AB_JOB *j;
-
-    j=AB_Job_List2Iterator_Data(jit);
-    while(j) {
-      switch(AB_Job_GetStatus(j)) {
-      case AB_Job_StatusEnqueued:
-	/* job still enqueued, so it has never been sent */
-	GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Error,
-			      I18N("Job %s: never been sent"),
-			      AB_Job_Type2LocalChar(AB_Job_GetType(j)));
-	AB_Job_SetStatus(j, AB_Job_StatusError);
-	AB_Job_SetResultText(j, "Job has never been sent");
-	AB_Job_Log(j, GWEN_LoggerLevel_Error, "aqbanking",
-		   "Job has never been sent");
-	break;
-  
-      case AB_Job_StatusPending:
-	GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Warning,
-			      I18N("Job %s: pending"),
-			      AB_Job_Type2LocalChar(AB_Job_GetType(j)));
-	AB_Job_Log(j, GWEN_LoggerLevel_Notice, "aqbanking",
-		   "Job is still pending");
-	break;
-
-      case AB_Job_StatusSent:
-	GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Notice,
-			      I18N("Job %s: sent"),
-			      AB_Job_Type2LocalChar(AB_Job_GetType(j)));
-	AB_Job_Log(j, GWEN_LoggerLevel_Info, "aqbanking",
-		   "Job finished");
-	break;
-
-      case AB_Job_StatusFinished:
-	GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Notice,
-			      I18N("Job %s: finished"),
-			      AB_Job_Type2LocalChar(AB_Job_GetType(j)));
-	AB_Job_Log(j, GWEN_LoggerLevel_Info, "aqbanking",
-		   "Job finished");
-	break;
-
-      case AB_Job_StatusError:
-	GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Error,
-			      I18N("Job %s: error"),
-			      AB_Job_Type2LocalChar(AB_Job_GetType(j)));
-	AB_Job_Log(j, GWEN_LoggerLevel_Info, "aqbanking",
-		   "Job finished");
-	break;
-          
-      default:
-	AB_Job_Log(j, GWEN_LoggerLevel_Info, "aqbanking",
-		   "Job finished");
-	break;
-      }
-
-      j=AB_Job_List2Iterator_Next(jit);
-    } /* while */
-    AB_Job_List2Iterator_free(jit);
-  }
-
-  /* reset all provider queues, this makes sure no job remains in any queue */
-  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice,
-		       I18N("Resetting provider queues"));
-  pro=AB_Provider_List_First(ab->providers);
-  while(pro) {
-    int lrv;
-
-    lrv=AB_Provider_ResetQueue(pro);
-    if (lrv) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Error resetting providers queue (%d)",
-               lrv);
-    }
-    pro=AB_Provider_List_Next(pro);
-  } /* while */
-
-  GWEN_Gui_ProgressEnd(pid);
-
-  return rv;
-}
-
-
-
-const GWEN_STRINGLIST *AB_Banking_GetActiveProviders(const AB_BANKING *ab) {
-  assert(ab);
-  if (GWEN_StringList_Count(ab->activeProviders)==0)
-    return 0;
-  return ab->activeProviders;
-}
-
-
-
-AB_PROVIDER *AB_Banking__LoadProviderPlugin(AB_BANKING *ab,
-                                            const char *modname){
+AB_PROVIDER *AB_Banking_BeginUseProvider(AB_BANKING *ab, const char *modname){
   GWEN_PLUGIN *pl;
 
   pl=GWEN_PluginManager_GetPlugin(ab_pluginManagerProvider, modname);
@@ -296,9 +50,7 @@ AB_PROVIDER *AB_Banking__LoadProviderPlugin(AB_BANKING *ab,
 
     pro=AB_Plugin_Provider_Factory(pl, ab);
     if (!pro) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Error in plugin [%s]: No provider created",
-		modname);
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in plugin [%s]: No provider created", modname);
       return NULL;
     }
     return pro;
@@ -307,6 +59,23 @@ AB_PROVIDER *AB_Banking__LoadProviderPlugin(AB_BANKING *ab,
     DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] not found", modname);
     return NULL;
   }
+}
+
+
+
+int AB_Banking_EndUseProvider(AB_BANKING *ab, AB_PROVIDER *pro){
+  int rv;
+
+  assert(pro);
+  rv=AB_Provider_Fini(pro);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    AB_Provider_free(pro);
+    return rv;
+  }
+  AB_Provider_free(pro);
+
+  return 0;
 }
 
 
@@ -333,75 +102,13 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab){
     pd=GWEN_PluginDescription_List2Iterator_Data(it);
     assert(pd);
     while(pd) {
-      if (GWEN_StringList_HasString(ab->activeProviders,
-                                    GWEN_PluginDescription_GetName(pd)))
-        GWEN_PluginDescription_SetIsActive(pd, 1);
-      else
-        GWEN_PluginDescription_SetIsActive(pd, 0);
+      GWEN_PluginDescription_SetIsActive(pd, 1);
       pd=GWEN_PluginDescription_List2Iterator_Next(it);
     }
     GWEN_PluginDescription_List2Iterator_free(it);
   }
 
   return l;
-}
-
-
-
-int AB_Banking_InitProvider(AB_BANKING *ab, AB_PROVIDER *pro) {
-  return AB_Provider_Init(pro);
-}
-
-
-
-int AB_Banking_FiniProvider(AB_BANKING *ab, AB_PROVIDER *pro) {
-  int rv;
-
-  rv=AB_Provider_Fini(pro);
-  if (rv) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Error deinit backend (%d)", rv);
-  }
-  return rv;
-}
-
-
-
-AB_PROVIDER *AB_Banking_FindProvider(AB_BANKING *ab, const char *name) {
-  AB_PROVIDER *pro;
-
-  assert(ab);
-  assert(name);
-  pro=AB_Provider_List_First(ab->providers);
-  while(pro) {
-    if (strcasecmp(AB_Provider_GetName(pro), name)==0)
-      break;
-    pro=AB_Provider_List_Next(pro);
-  } /* while */
-
-  return pro;
-}
-
-
-
-AB_PROVIDER *AB_Banking_GetProvider(AB_BANKING *ab, const char *name) {
-  AB_PROVIDER *pro;
-
-  assert(ab);
-  assert(name);
-  pro=AB_Banking_FindProvider(ab, name);
-  if (pro)
-    return pro;
-  pro=AB_Banking__LoadProviderPlugin(ab, name);
-  if (pro) {
-    if (AB_Banking_InitProvider(ab, pro)) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not init provider \"%s\"", name);
-      AB_Provider_free(pro);
-      return 0;
-    }
-    AB_Provider_List_Add(pro, ab->providers);
-  }
-
-  return pro;
 }
 
 

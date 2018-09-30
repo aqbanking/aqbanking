@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Apr 12 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -25,7 +25,7 @@ extern "C" {
 
 
 
-GWEN_DIALOG *AH_PinTanSpecialDialog_new(AB_BANKING *ab);
+GWEN_DIALOG *AH_PinTanSpecialDialog_new(AB_PROVIDER *pro);
 
 int AH_PinTanSpecialDialog_GetHttpVMajor(const GWEN_DIALOG *dlg);
 int AH_PinTanSpecialDialog_GetHttpVMinor(const GWEN_DIALOG *dlg);

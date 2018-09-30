@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Tue Nov 25 2008
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -17,10 +17,7 @@ int AH_Msg_SignRdh(AH_MSG *hmsg,
 
   assert(hmsg);
 
-  su=AB_Banking_FindUser(AH_HBCI_GetBankingApi(AH_Dialog_GetHbci(hmsg->dialog)),
-			 AH_PROVIDER_NAME,
-			 "de", "*",
-			 signer, "*");
+  su=AH_Msg_GetUser(hmsg, signer);
   if (!su) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
 	      "Unknown user \"%s\"",

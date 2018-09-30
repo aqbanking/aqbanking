@@ -21,7 +21,7 @@
 #include "hbci_l.h"
 #include "adminjobs_l.h"
 #include "dialog_l.h"
-#include <aqhbci/provider.h>
+#include "provider_l.h"
 #include <aqbanking/job_be.h>
 #include <aqbanking/banking_be.h>
 #include <aqbanking/imexporter.h>
@@ -1271,11 +1271,8 @@ int AH_Outbox_Prepare(AH_OUTBOX *ob){
 
 int AH_Outbox_LockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers){
   AH_OUTBOX__CBOX *cbox;
-  AB_BANKING *ab;
 
   assert(ob);
-
-  ab=AB_Provider_GetBanking(ob->provider);
 
   cbox=AH_Outbox__CBox_List_First(ob->userBoxes);
   while(cbox) {
@@ -1291,7 +1288,7 @@ int AH_Outbox_LockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers){
     GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Info,
 			 tbuf);
-    rv=AB_Banking_BeginExclUseUser(ab, cbox->user);
+    rv=AH_Provider_BeginExclUseUser(ob->provider, cbox->user);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN,
 	       "Could not lock customer [%s] (%d)",
@@ -1319,12 +1316,10 @@ int AH_Outbox_LockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers){
 
 int AH_Outbox_UnlockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers, int abandon){
   int errors=0;
-  AB_BANKING *ab;
   AB_USER_LIST2_ITERATOR *it;
 
   assert(ob);
 
-  ab=AB_Provider_GetBanking(ob->provider);
   it=AB_User_List2_First(lockedUsers);
   if (it) {
     AB_USER *u;
@@ -1335,7 +1330,7 @@ int AH_Outbox_UnlockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers, int abandon
 
       DBG_INFO(AQHBCI_LOGDOMAIN, "Unlocking customer \"%s\"",
 	       AB_User_GetCustomerId(u));
-      rv=AB_Banking_EndExclUseUser(ab, u, abandon);
+      rv=AH_Provider_EndExclUseUser(ob->provider, u, abandon);
       if (rv<0) {
 	DBG_WARN(AQHBCI_LOGDOMAIN,
 		 "Could not unlock customer [%s] (%d)",

@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Sat Aug 07 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -25,7 +25,7 @@ extern "C" {
 
 
 
-GWEN_DIALOG *AH_ImportKeyFileDialog_new(AB_BANKING *ab);
+GWEN_DIALOG *AH_ImportKeyFileDialog_new(AB_PROVIDER *pro);
 
 const char *AH_ImportKeyFileDialog_GetFileName(const GWEN_DIALOG *dlg);
 void AH_ImportKeyFileDialog_SetFileName(GWEN_DIALOG *dlg, const char *s);

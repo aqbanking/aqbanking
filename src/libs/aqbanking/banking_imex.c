@@ -125,6 +125,7 @@ void AB_Banking_FillGapsInTransaction(AB_BANKING *ab, AB_ACCOUNT *a, AB_TRANSACT
 
 
 int AB_Banking_FillGapsInImExporterContext(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT *iec) {
+#if 0
   AB_IMEXPORTER_ACCOUNTINFO *iea;
   int notFounds=0;
 
@@ -165,6 +166,8 @@ int AB_Banking_FillGapsInImExporterContext(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT
   }
 
   return (notFounds==0)?0:1;
+#endif
+  return 0;
 }
 
 
@@ -616,8 +619,7 @@ AB_IMEXPORTER *AB_Banking_GetImExporter(AB_BANKING *ab, const char *name){
 
 
 
-AB_IMEXPORTER *AB_Banking__LoadImExporterPlugin(AB_BANKING *ab,
-                                                const char *modname){
+AB_IMEXPORTER *AB_Banking__LoadImExporterPlugin(AB_BANKING *ab, const char *modname){
   GWEN_PLUGIN *pl;
 
   pl=GWEN_PluginManager_GetPlugin(ab_pluginManagerImExporter, modname);

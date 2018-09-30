@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -30,7 +30,10 @@ int listUsers(AB_BANKING *ab,
   GWEN_DB_NODE *db;
   int rv;
   int xml=0;
-  AB_USER_LIST2 *ul;
+  AB_PROVIDER *pro;
+  AB_USER_LIST *ul;
+  AB_USER *u;
+  int i=0;
 
   const GWEN_ARGS args[]={
   {
@@ -85,75 +88,60 @@ int listUsers(AB_BANKING *ab,
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
-  }
-
   xml=GWEN_DB_VariableExists(db, "xml");
 
-  if( xml ) {
-    fprintf( stdout, "<?xml version=\"1.0\"?>\n" );
-    fprintf( stdout, "<users>\n" );
+  if (xml) {
+    fprintf(stdout, "<?xml version=\"1.0\"?>\n");
+    fprintf(stdout, "<users>\n");
   }
 
-  ul=AB_Banking_FindUsers(ab, AH_PROVIDER_NAME, "*", "*", "*", "*");
-  if (ul) {
-    AB_USER_LIST2_ITERATOR *uit;
+  pro=AB_Banking_BeginUseProvider(ab, "aqhbci");
+  assert(pro);
 
-    uit=AB_User_List2_First(ul);
-    if (uit) {
-      AB_USER *u;
-      int i=0;
+  ul=AB_User_List_new();
+  rv=AH_Provider_ReadUsers(pro, ul);
+  if (rv<0) {
+    DBG_ERROR_ERR(0, rv);
+    AB_User_List_free(ul);
+    AB_Banking_EndUseProvider(ab, pro);
+    return 3;
+  }
 
-      u=AB_User_List2Iterator_Data(uit);
-      assert(u);
-      while(u) {
-        if( !xml ) {
-          fprintf(stdout, "User %d: Bank: %s/%s User Id: %s Customer Id: %s\n",
-                  i++,
-                  AB_User_GetCountry(u),
-                  AB_User_GetBankCode(u),
-                  AB_User_GetUserId(u),
-                  AB_User_GetCustomerId(u));
-        }
-        else {
-          const char *name = AB_User_GetUserName(u);
-          fprintf( stdout, "  <user>\n" );
-          fprintf( stdout, "    <userUniqueId>%d</userUniqueId>\n", AB_User_GetUniqueId(u) );
-          if( !name )
-            fprintf( stdout, "    <UserName></UserName>\n" );
-          else
-            fprintf( stdout, "    <UserName><![CDATA[%s]]></UserName>\n", name );
-          fprintf( stdout, "    <UserId>%s</UserId>\n", AB_User_GetUserId(u) );
-          fprintf( stdout, "    <CustomerId>%s</CustomerId>\n", AB_User_GetCustomerId(u) );
-          fprintf( stdout, "    <BankCode>%s</BankCode>\n", AB_User_GetBankCode(u) );
-          fprintf( stdout, "    <Country>%s</Country>\n", AB_User_GetCountry(u) );
-          fprintf( stdout, "    <LastSessionId>%d</LastSessionId>\n", AB_User_GetLastSessionId(u) );
-          fprintf( stdout, "  </user>\n\n" );
-        }
-        u=AB_User_List2Iterator_Next(uit);
-      }
-      AB_User_List2Iterator_free(uit);
+  u=AB_User_List_First(ul);
+  while(u) {
+    if(!xml) {
+      fprintf(stdout, "User %d: Bank: %s/%s User Id: %s Customer Id: %s Unique Id: %lu\n",
+              i++,
+              AB_User_GetCountry(u),
+              AB_User_GetBankCode(u),
+              AB_User_GetUserId(u),
+              AB_User_GetCustomerId(u),
+              (unsigned long int) AB_User_GetUniqueId(u));
     }
-    AB_User_List2_free(ul);
+    else {
+      const char *name = AB_User_GetUserName(u);
+      fprintf(stdout, "  <user>\n");
+      fprintf(stdout, "    <userUniqueId>%lu</userUniqueId>\n", (unsigned long int) AB_User_GetUniqueId(u));
+      if(!name)
+        fprintf(stdout, "    <UserName></UserName>\n");
+      else
+        fprintf(stdout, "    <UserName><![CDATA[%s]]></UserName>\n", name);
+      fprintf(stdout, "    <UserId>%s</UserId>\n", AB_User_GetUserId(u));
+      fprintf(stdout, "    <CustomerId>%s</CustomerId>\n", AB_User_GetCustomerId(u));
+      fprintf(stdout, "    <BankCode>%s</BankCode>\n", AB_User_GetBankCode(u));
+      fprintf(stdout, "    <Country>%s</Country>\n", AB_User_GetCountry(u));
+      fprintf(stdout, "    <LastSessionId>%d</LastSessionId>\n", AB_User_GetLastSessionId(u));
+      fprintf(stdout, "  </user>\n\n");
+    }
+    u=AB_User_List_Next(u);
   }
-  else {
-    fprintf(stderr, "No users found.\n");
+  AB_User_List_free(ul);
+
+  if (xml) {
+    fprintf(stdout, "</users>\n");
   }
 
-
-  if( xml ) {
-    fprintf( stdout, "</users>\n" );
-  }
-
-
-  rv=AB_Banking_OnlineFini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    return 5;
-  }
+  AB_Banking_EndUseProvider(ab, pro);
 
   rv=AB_Banking_Fini(ab);
   if (rv) {

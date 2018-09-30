@@ -193,29 +193,6 @@ AQBANKING_API
 int AB_Banking_Fini(AB_BANKING *ab);
 
 
-/**
- * Setup the online banking part of AqBanking. This function actually loads
- * the users and accounts.
- *
- * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
- *
- * @param ab banking interface
- */
-AQBANKING_API 
-int AB_Banking_OnlineInit(AB_BANKING *ab);
-
-
-/**
- * Uninitialize the online banking part of AqBanking.
- *
- * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
- *
- * @param ab banking interface
- */
-AQBANKING_API 
-int AB_Banking_OnlineFini(AB_BANKING *ab);
-
-
 /*@}*/
 
 
@@ -224,12 +201,6 @@ int AB_Banking_OnlineFini(AB_BANKING *ab);
  *
  */
 /*@{*/
-
-/**
- * Returns a list of the names of currently active providers.
- */
-AQBANKING_API
-const GWEN_STRINGLIST *AB_Banking_GetActiveProviders(const AB_BANKING *ab);
 
 AQBANKING_API
 GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab);

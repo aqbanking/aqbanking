@@ -19,10 +19,6 @@
 #include <gwenhywfar/gui.h>
 
 
-int AH_User_Extend(AB_USER *u, AB_PROVIDER *pro,
-                   AB_PROVIDER_EXTEND_MODE em,
-                   GWEN_DB_NODE *db);
-
 AB_USER *AH_User_new(AB_BANKING *ab, AB_PROVIDER *pro);
 
 int AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db);

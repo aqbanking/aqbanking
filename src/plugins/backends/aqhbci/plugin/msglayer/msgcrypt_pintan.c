@@ -122,10 +122,7 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg,
   assert(e);
   GWEN_MsgEngine_SetMode(e, "pintan");
 
-  su=AB_Banking_FindUser(AH_HBCI_GetBankingApi(h),
-			 AH_PROVIDER_NAME,
-			 "de", "*",
-			 signer, "*");
+  su=AH_Msg_GetUser(hmsg, signer);
   if (!su) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
 	      "Unknown user \"%s\"",

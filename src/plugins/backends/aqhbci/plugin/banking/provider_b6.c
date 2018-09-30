@@ -15,7 +15,6 @@
 
 
 
-
 int AH_Provider_ReadAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_ACCOUNT *account) {
   int rv;
   GWEN_DB_NODE *db=NULL;
@@ -34,6 +33,60 @@ int AH_Provider_ReadAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUn
 
   return 0;
 }
+
+
+
+int AH_Provider_GetAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_ACCOUNT **pAccount) {
+  int rv;
+  AB_ACCOUNT *a;
+
+  a=AH_Account_new(AB_Provider_GetBanking(pro), pro);
+  assert(a);
+  rv=AH_Provider_ReadAccount(pro, uid, doLock, doUnlock, a);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_Account_free(a);
+    return rv;
+  }
+  *pAccount=a;
+
+  return 0;
+}
+
+
+
+int AH_Provider_ReadAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accountList) {
+  int rv;
+  GWEN_DB_NODE *dbAll=NULL;
+  GWEN_DB_NODE *db;
+
+  /* read all config groups for accounts which have a unique id and which belong to AqHBCI */
+  rv=AB_Banking6_ReadConfigGroups(AB_Provider_GetBanking(pro), AB_CFG_GROUP_ACCOUNTS, "uniqueId", "provider", "AQHBCI", &dbAll);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  db=GWEN_DB_GetFirstGroup(dbAll);
+  while(db) {
+    AB_ACCOUNT *a=NULL;
+
+    a=AH_Account_new(AB_Provider_GetBanking(pro), pro);
+    rv=AH_Account_ReadDb(a, db);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Error reading account (%d), ignoring", rv);
+      AB_Account_free(a);
+    }
+    else
+      AB_Account_List_Add(a, accountList);
+
+    /* next */
+    db=GWEN_DB_GetNextGroup(db);
+  }
+
+  return 0;
+}
+
 
 
 
@@ -61,6 +114,52 @@ int AH_Provider_WriteAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doU
 
 
 
+int AH_Provider_AddAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, int withAccountSpec) {
+  uint32_t uid;
+  int rv;
+
+  uid=AB_Banking_GetNamedUniqueId(AB_Provider_GetBanking(pro), "account", 1); /* startAtStdUniqueId=1 */
+  AB_Account_SetUniqueId(a, uid);
+  rv=AH_Provider_WriteAccount(pro, uid, 1, 1, a); /* lock, unlock */
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=AH_Provider_WriteAccountSpecForAccount(pro, u, a);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+int AH_Provider_DeleteAccount(AB_PROVIDER *pro, uint32_t uid) {
+  int rv1;
+  int rv2;
+
+  rv1=AB_Banking6_Delete_AccountConfig(AB_Provider_GetBanking(pro), uid);
+  if (rv1<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv1);
+  }
+
+  rv2=AB_Banking6_DeleteAccountSpec(AB_Provider_GetBanking(pro), uid);
+  if (rv2<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv2);
+  }
+
+  if (rv1>0)
+    return rv1;
+  if (rv2>0)
+    return rv2;
+  return 0;
+}
+
+
+
 int AH_Provider_ReadUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_USER *user) {
   int rv;
   GWEN_DB_NODE *db=NULL;
@@ -79,6 +178,61 @@ int AH_Provider_ReadUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnloc
 
   return 0;
 }
+
+
+
+int AH_Provider_GetUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_USER **pUser) {
+  int rv;
+  AB_USER *u;
+
+  u=AB_User_new(AB_Provider_GetBanking(pro));
+  assert(u);
+  rv=AH_Provider_ReadUser(pro, uid, doLock, doUnlock, u);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_User_free(u);
+    return rv;
+  }
+
+  *pUser=u;
+
+  return 0;
+}
+
+
+
+int AH_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList) {
+  int rv;
+  GWEN_DB_NODE *dbAll=NULL;
+  GWEN_DB_NODE *db;
+
+  /* read all config groups for users which have a unique id and which belong to AqHBCI */
+  rv=AB_Banking6_ReadConfigGroups(AB_Provider_GetBanking(pro), AB_CFG_GROUP_USERS, "uniqueId", "backendName", "AQHBCI", &dbAll);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  db=GWEN_DB_GetFirstGroup(dbAll);
+  while(db) {
+    AB_USER *u=NULL;
+
+    u=AH_User_new(AB_Provider_GetBanking(pro), pro);
+    rv=AH_User_ReadDb(u, db);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Error reading user (%d), ignoring", rv);
+      AB_User_free(u);
+    }
+    else
+      AB_User_List_Add(u, userList);
+
+    /* next */
+    db=GWEN_DB_GetNextGroup(db);
+  }
+
+  return 0;
+}
+
 
 
 
@@ -103,6 +257,66 @@ int AH_Provider_WriteUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlo
 
   return 0;
 }
+
+
+
+int AH_Provider_AddUser(AB_PROVIDER *pro, AB_USER *u) {
+  uint32_t uid;
+  int rv;
+
+  uid=AB_Banking_GetNamedUniqueId(AB_Provider_GetBanking(pro), "user", 1); /* startAtStdUniqueId=1 */
+  AB_User_SetUniqueId(u, uid);
+  rv=AH_Provider_WriteUser(pro, uid, 1, 1, u); /* lock, unlock */
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+  return 0;
+}
+
+
+
+int AH_Provider_DeleteUser(AB_PROVIDER *pro, uint32_t uid) {
+  int rv;
+  AB_ACCOUNT_LIST *al;
+
+  al=AB_Account_List_new();
+  rv=AH_Provider_ReadAccounts(pro, al);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_Account_List_free(al);
+    return rv;
+  }
+  else {
+    AB_ACCOUNT *a;
+    int cnt=0;
+
+    a=AB_Account_List_First(al);
+    while(a) {
+      if (AB_Account_HasUserId(a, uid)) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Account %lu still uses this user", (unsigned long int) AB_Account_GetUniqueId(a));
+        cnt++;
+      }
+      a=AB_Account_List_Next(a);
+    }
+    if (cnt>0) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "%d accounts using this user",cnt);
+      AB_Account_List_free(al);
+      return GWEN_ERROR_INVALID;
+    }
+  }
+  AB_Account_List_free(al);
+
+  rv=AB_Banking6_Delete_UserConfig(AB_Provider_GetBanking(pro), uid);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+  return 0;
+}
+
+
+
 
 
 
@@ -212,7 +426,6 @@ int AH_Provider__SortProviderQueueIntoUserQueueList(AB_PROVIDER *pro, AB_PROVIDE
   AH_PROVIDER *hp;
   AB_ACCOUNTQUEUE_LIST *aql;
   AB_ACCOUNTQUEUE *aq;
-  int rv;
 
   assert(pro);
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
@@ -224,14 +437,14 @@ int AH_Provider__SortProviderQueueIntoUserQueueList(AB_PROVIDER *pro, AB_PROVIDE
   }
 
   while( (aq=AB_AccountQueue_List_First(aql)) ) {
+    uint32_t aid;
     uint32_t uid;
-    AB_ACCOUNT *a;
-    const char *s;
+    AB_ACCOUNT *a=NULL;
     AB_USERQUEUE *uq=NULL;
+    int rv;
 
-    uid=AB_AccountQueue_GetAccountId(aq);
-    a=AH_Account_new(AB_Provider_GetBanking(pro), pro);
-    rv=AH_Provider_ReadAccount(pro, uid, 1, 1, a);
+    aid=AB_AccountQueue_GetAccountId(aq);
+    rv=AH_Provider_GetAccount(pro, aid, 1, 1, &a);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -239,27 +452,17 @@ int AH_Provider__SortProviderQueueIntoUserQueueList(AB_PROVIDER *pro, AB_PROVIDE
     AB_AccountQueue_SetAccount(aq, a);
 
     /* determine user */
-    s=AB_Account_GetFirstUserId(a);
-    if (!(s && *s)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "No first user in account %lu, SNH!", (unsigned long int) uid);
+    uid=AB_Account_GetFirstUserIdAsInt(a);
+    if (uid==0) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "No first user in account %lu, SNH!", (unsigned long int) aid);
       return GWEN_ERROR_INTERNAL;
     }
     else {
-      unsigned long int id;
-
-      if (1!=sscanf(s, "%lu", &id)) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid id of first account user (%s), SNH!", s);
-        AB_UserQueue_List_free(uql);
-        return GWEN_ERROR_INTERNAL;
-      }
-
-      uq=AB_UserQueue_List_GetByUserId(uql, id);
+      uq=AB_UserQueue_List_GetByUserId(uql, uid);
       if (uq==NULL) {
-        AB_USER *u;
+        AB_USER *u=NULL;
 
-        u=AH_User_new(AB_Provider_GetBanking(pro), pro);
-
-        rv=AH_Provider_ReadUser(pro, id, 1, 1, u);
+        rv=AH_Provider_GetUser(pro, uid, 1, 1, &u);
         if (rv<0) {
           DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
           return rv;
@@ -322,7 +525,6 @@ int AH_Provider__AddCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a,
   int rv;
   int cmd;
   AH_JOB *mj=NULL;
-  int sigs;
   int jobIsNew=1;
 
   cmd=AB_Transaction_GetCommand(t);
@@ -350,17 +552,18 @@ int AH_Provider__AddCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a,
   assert(mj);
 
   if (jobIsNew) {
+    int sigs;
+    
     /* check whether we need to sign the job */
     sigs=AH_Job_GetMinSignatures(mj);
     if (sigs) {
       if (sigs>1) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Multiple signatures not yet supported");
-	GWEN_Gui_ProgressLog(0,
-			     GWEN_LoggerLevel_Error,
-			     I18N("ERROR: Multiple signatures not "
-                                  "yet supported"));
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Multiple signatures not yet supported");
+                  GWEN_Gui_ProgressLog(0,
+                  GWEN_LoggerLevel_Error,
+                  I18N("ERROR: Multiple signatures not yet supported"));
         AH_Job_free(mj);
-	return GWEN_ERROR_GENERIC;
+        return GWEN_ERROR_GENERIC;
       }
       AH_Job_AddSigner(mj, AB_User_GetUserId(u));
     }
@@ -470,7 +673,6 @@ int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, A
 
 int AH_Provider__SampleResults(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_IMEXPORTER_CONTEXT *ctx) {
   AH_PROVIDER *hp;
-  int rv;
   AH_JOB_LIST *mjl;
   AH_JOB *j;
 
@@ -486,6 +688,7 @@ int AH_Provider__SampleResults(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_IMEXPORTE
   j=AH_Job_List_First(mjl);
   while(j) {
     AB_MESSAGE_LIST *ml;
+    int rv;
 
     if (0) {
       const GWEN_STRINGLIST *sl;

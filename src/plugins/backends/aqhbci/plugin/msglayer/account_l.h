@@ -17,12 +17,6 @@
 #include <aqbanking/provider_be.h>
 
 
-int AH_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
-                      AB_PROVIDER_EXTEND_MODE um,
-                      GWEN_DB_NODE *db);
-
-AB_ACCOUNT *AH_Account_new(AB_BANKING *ab, AB_PROVIDER *pro);
-
 AB_ACCOUNT *AH_Account_fromDb(AB_BANKING *ab, AB_PROVIDER *pro, GWEN_DB_NODE *db);
 int AH_Account_toDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db);
 

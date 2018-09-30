@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Sat Aug 07 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -20,6 +20,7 @@
 typedef struct AH_IMPORTKEYFILE_DIALOG AH_IMPORTKEYFILE_DIALOG;
 struct AH_IMPORTKEYFILE_DIALOG {
   AB_BANKING *banking;
+  AB_PROVIDER *provider;
 
   char *fileName;
 
