@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -32,7 +32,7 @@ int readContext(const char *ctxFile,
 		AB_IMEXPORTER_CONTEXT **pCtx,
 		int mustExist);
 int writeContext(const char *ctxFile, const AB_IMEXPORTER_CONTEXT *ctx);
-AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, AB_JOB_TYPE *jobType);
+AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, AB_TRANSACTION_COMMAND *jobType);
 AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferType);
 AB_TRANSACTION *mkSepaDebitNote(AB_ACCOUNT *a, GWEN_DB_NODE *db);
 

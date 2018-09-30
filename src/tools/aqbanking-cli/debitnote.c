@@ -14,7 +14,6 @@
 #include "globals.h"
 
 #include <aqbanking/account.h>
-#include <aqbanking/jobsingledebitnote.h>
 
 #include <gwenhywfar/text.h>
 
@@ -42,10 +41,10 @@ int debitNote(AB_BANKING *ab,
   AB_ACCOUNT_LIST2 *al;
   AB_ACCOUNT *a;
   AB_TRANSACTION *t;
-  AB_JOB_LIST2 *jobList;
+  AB_TRANSACTION_LIST *jobList;
   AB_JOB *j;
   int rvExec;
-  AB_JOB_TYPE transferType;
+  AB_TRANSACTION_COMMAND cmd;
   const char *rBankId;
   const char *rAccountId;
   int forceCheck;
