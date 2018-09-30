@@ -385,7 +385,7 @@ int AB_Banking_Init(AB_BANKING *ab) {
   }
   ab_init_count++;
 
-  if (ab_init_count==0) {
+  if (ab->initCount==0) {
     int rv;
     uint32_t currentVersion;
     GWEN_DB_NODE *db=NULL;
