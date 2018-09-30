@@ -112,11 +112,23 @@ int AB_Banking6_UpdateAccountList(AB_BANKING *ab) {
 
 
 int AB_Banking6_Update(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion) {
-  if (lastVersion<((5<<24) | (99<<16) | (1<<8) | 0)) {
+  if (lastVersion<((5<<24) | (99<<16) | (2<<8) | 0)) {
     int rv;
 
+    rv=AB_Banking6_UpdateAccountList(ab);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+
+    rv=AB_Banking6_UpdateUserList(ab);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+
     /* need to create account specs */
-    rv=AB_Banking6_Update_5_99_1_0(ab, lastVersion, currentVersion);
+    rv=AB_Banking6_Update_5_99_2_0(ab, lastVersion, currentVersion);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -129,7 +141,7 @@ int AB_Banking6_Update(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVer
 
 
 
-int AB_Banking6_Update_5_99_1_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion) {
+int AB_Banking6_Update_5_99_2_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion) {
   GWEN_PLUGIN_DESCRIPTION_LIST2 *descrs;
   GWEN_PLUGIN_MANAGER *pm;
 

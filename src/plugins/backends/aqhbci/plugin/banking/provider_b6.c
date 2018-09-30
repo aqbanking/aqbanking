@@ -185,7 +185,7 @@ int AH_Provider_GetUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock
   int rv;
   AB_USER *u;
 
-  u=AB_User_new(AB_Provider_GetBanking(pro));
+  u=AH_User_new(AB_Provider_GetBanking(pro), pro);
   assert(u);
   rv=AH_Provider_ReadUser(pro, uid, doLock, doUnlock, u);
   if (rv<0) {

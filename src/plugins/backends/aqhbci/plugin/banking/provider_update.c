@@ -24,7 +24,7 @@ int AH_Provider_Update(AB_PROVIDER *pro,
            (lastVersion>>24) & 0xff, (lastVersion>>16) & 0xff, (lastVersion>>8) & 0xff, lastVersion & 0xff,
            (currentVersion>>24) & 0xff, (currentVersion>>16) & 0xff, (currentVersion>>8) & 0xff, currentVersion & 0xff);
 
-  if (lastVersion<((5<<24) | (99<<16) | (1<<8) | 0)) {
+  if (lastVersion<((5<<24) | (99<<16) | (2<<8) | 0)) {
     /* change from previous versions:
      * - create account spec objects
      */
