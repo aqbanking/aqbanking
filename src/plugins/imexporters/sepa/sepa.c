@@ -305,7 +305,7 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
     tbuf=GWEN_Buffer_new(0, 64, 0, 1);
 
     /* generate MsgId */
-    uid=AB_Banking_GetUniqueId(AB_ImExporter_GetBanking(ie));
+    uid=AB_Banking_GetNamedUniqueId(AB_ImExporter_GetBanking(ie), "sepamsg", 1);
     GWEN_Time_toUtcString(ti, "YYYYMMDD-hh:mm:ss-", tbuf);
     snprintf(numbuf, sizeof(numbuf)-1, "%08x", uid);
     GWEN_Buffer_AppendString(tbuf, numbuf);
