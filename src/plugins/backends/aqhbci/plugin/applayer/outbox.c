@@ -22,9 +22,10 @@
 #include "adminjobs_l.h"
 #include "dialog_l.h"
 #include "provider_l.h"
-#include <aqbanking/job_be.h>
+
 #include <aqbanking/banking_be.h>
 #include <aqbanking/imexporter.h>
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/gui.h>
@@ -1729,13 +1730,6 @@ int AH_Outbox__Execute(AH_OUTBOX *ob){
   rv=AH_Outbox_SendAndRecv(ob);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error while sending outbox.");
-    return rv;
-  }
-
-  rv=AB_Banking_ExecutionProgress(AB_Provider_GetBanking(ob->provider));
-  if (rv==GWEN_ERROR_USER_ABORTED) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "User aborted (%d)", rv);
-    AH_Outbox__FinishOutbox(ob);
     return rv;
   }
 

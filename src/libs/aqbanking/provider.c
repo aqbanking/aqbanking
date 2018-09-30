@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -251,57 +248,6 @@ void AB_Provider_SetFiniFn(AB_PROVIDER *pro, AB_PROVIDER_FINI_FN f){
 
 
 
-void AB_Provider_SetUpdateJobFn(AB_PROVIDER *pro, AB_PROVIDER_UPDATEJOB_FN f){
-  assert(pro);
-  pro->updateJobFn=f;
-}
-
-
-
-void AB_Provider_SetAddJobFn(AB_PROVIDER *pro, AB_PROVIDER_ADDJOB_FN f){
-  assert(pro);
-  pro->addJobFn=f;
-}
-
-
-
-void AB_Provider_SetExecuteFn(AB_PROVIDER *pro, AB_PROVIDER_EXECUTE_FN f){
-  assert(pro);
-  pro->executeFn=f;
-}
-
-
-
-void AB_Provider_SetResetQueueFn(AB_PROVIDER *pro, AB_PROVIDER_RESETQUEUE_FN f){
-  assert(pro);
-  pro->resetQueueFn=f;
-}
-
-
-
-void AB_Provider_SetExtendUserFn(AB_PROVIDER *pro,
-                                 AB_PROVIDER_EXTEND_USER_FN f){
-  assert(pro);
-  pro->extendUserFn=f;
-}
-
-
-
-void AB_Provider_SetExtendAccountFn(AB_PROVIDER *pro,
-                                    AB_PROVIDER_EXTEND_ACCOUNT_FN f){
-  assert(pro);
-  pro->extendAccountFn=f;
-}
-
-
-
-void AB_Provider_SetUpdateFn(AB_PROVIDER *pro, AB_PROVIDER_UPDATE_FN f) {
-  assert(pro);
-  pro->updateFn=f;
-}
-
-
-
 void AB_Provider_SetGetNewUserDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_NEWUSER_DIALOG_FN f) {
   assert(pro);
   pro->getNewUserDialogFn=f;
@@ -346,121 +292,6 @@ void AB_Provider_SetSendCommandsFn(AB_PROVIDER *pro, AB_PROVIDER_SENDCOMMANDS_FN
 
 
 
-
-
-
-int AB_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
-  assert(pro);
-  if (pro->isInit==0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
-    return GWEN_ERROR_INVALID;
-  }
-  if (pro->updateJobFn) {
-    return pro->updateJobFn(pro, j);
-  }
-  DBG_ERROR(AQBANKING_LOGDOMAIN, "No updateJob function set");
-  return GWEN_ERROR_NOT_IMPLEMENTED;
-}
-
-
-
-int AB_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
-  assert(pro);
-  if (pro->isInit==0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
-    return GWEN_ERROR_INVALID;
-  }
-  if (pro->addJobFn) {
-    return pro->addJobFn(pro, j);
-  }
-  DBG_ERROR(AQBANKING_LOGDOMAIN, "No addJob function set");
-  return GWEN_ERROR_NOT_IMPLEMENTED;
-}
-
-
-
-int AB_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
-  assert(pro);
-  if (pro->isInit==0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
-    return GWEN_ERROR_INVALID;
-  }
-  if (pro->executeFn) {
-    return pro->executeFn(pro, ctx);
-  }
-  DBG_ERROR(AQBANKING_LOGDOMAIN, "No execute function set");
-  return GWEN_ERROR_NOT_IMPLEMENTED;
-}
-
-
-
-int AB_Provider_ResetQueue(AB_PROVIDER *pro){
-  assert(pro);
-  if (pro->isInit==0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
-    return GWEN_ERROR_INVALID;
-  }
-  if (pro->resetQueueFn) {
-    return pro->resetQueueFn(pro);
-  }
-  DBG_ERROR(AQBANKING_LOGDOMAIN, "No resetQueue function set");
-  return GWEN_ERROR_NOT_IMPLEMENTED;
-}
-
-
-
-int AB_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
-			   AB_PROVIDER_EXTEND_MODE em,
-			   GWEN_DB_NODE *db) {
-  assert(pro);
-  assert(u);
-  if (em!=AB_ProviderExtendMode_Save && pro->isInit==0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
-    return AB_ERROR_NOT_INIT;
-  }
-
-  if (pro->extendUserFn)
-    return pro->extendUserFn(pro, u, em, db);
-  DBG_INFO(AQBANKING_LOGDOMAIN, "No extendUser function set");
-  return 0;
-}
-
-
-
-int AB_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
-			      AB_PROVIDER_EXTEND_MODE em,
-			      GWEN_DB_NODE *db) {
-  assert(pro);
-  assert(a);
-  if (em!=AB_ProviderExtendMode_Save && pro->isInit==0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
-    return AB_ERROR_NOT_INIT;
-  }
-
-  if (pro->extendAccountFn)
-    return pro->extendAccountFn(pro, a, em, db);
-  DBG_INFO(AQBANKING_LOGDOMAIN, "No extendAccount function set");
-  return 0;
-}
-
-
-
-int AB_Provider_Update(AB_PROVIDER *pro,
-                       uint32_t lastVersion,
-                       uint32_t currentVersion) {
-  assert(pro);
-  if (pro->isInit==0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Provider \"%s\" is not initialized",
-              AB_Provider_GetName(pro));
-    return AB_ERROR_NOT_INIT;
-  }
-
-  if (pro->updateFn)
-    return pro->updateFn(pro, lastVersion, currentVersion);
-  DBG_INFO(AQBANKING_LOGDOMAIN, "No update function set");
-  return 0;
-}
 
 
 

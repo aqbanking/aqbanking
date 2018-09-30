@@ -25,7 +25,6 @@
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/text.h>
 
-#include <aqbanking/job_be.h>
 #include <aqbanking/transactionfns.h>
 
 #include <stdlib.h>
@@ -772,87 +771,6 @@ int AH_Job_TransferBase_AddChallengeParams35(AH_JOB *j, int hkTanVer, GWEN_DB_NO
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Unhandled tan version %d for now", tanVer);
     return GWEN_ERROR_INTERNAL;
   }
-  return 0;
-}
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_TransferBase_ExchangeResults(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx) {
-  AH_JOB_TRANSFERBASE *aj;
-  AH_RESULT_LIST *rl;
-  AH_RESULT *r;
-  int has10;
-  int has20;
-  AB_TRANSACTION_STATUS tStatus;
-  const AB_TRANSACTION *t;
-  AB_ACCOUNT *a;
-
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j);
-  assert(aj);
-
-  a=AH_AccountJob_GetAccount(j);
-  assert(a);
-
-  rl=AH_Job_GetSegResults(j);
-  assert(rl);
-
-  r=AH_Result_List_First(rl);
-  if (!r) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No segment results");
-    AB_Job_SetStatus(bj, AB_Job_StatusError);
-    return GWEN_ERROR_NO_DATA;
-  }
-  has10=0;
-  has20=0;
-  while(r) {
-    int rcode;
-
-    rcode=AH_Result_GetCode(r);
-    if (rcode>=10 && rcode<=19)
-      has10=1;
-    else if (rcode>=20 && rcode <=29)
-      has20=1;
-    r=AH_Result_List_Next(r);
-  }
-
-  if (has20) {
-    AB_Job_SetStatus(bj, AB_Job_StatusFinished);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Job finished");
-  }
-  else if (has10) {
-    AB_Job_SetStatus(bj, AB_Job_StatusPending);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Job pending");
-  }
-  else {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-	     "Error status (neither 0010 nor 0020)");
-    AB_Job_SetStatus(bj, AB_Job_StatusError);
-  }
-
-  if (has20)
-    tStatus=AB_Transaction_StatusAccepted;
-  else if (has10)
-    tStatus=AB_Transaction_StatusPending;
-  else
-    tStatus=AB_Transaction_StatusRejected;
-
-  t=AB_Job_GetTransaction(bj);
-  if (t) {
-    AB_TRANSACTION *cpy;
-
-    cpy=AB_Transaction_dup(t);
-    AB_Transaction_SetFiId(cpy, aj->fiid);
-    AB_Transaction_SetStatus(cpy, tStatus);
-    AB_Transaction_SetType(cpy, aj->transactionType);
-    AB_Transaction_SetSubType(cpy, aj->transactionSubType);
-
-    AB_Transaction_SetUniqueAccountId(cpy, AB_Account_GetUniqueId(a));
-
-    /* just add to single list (no longer need to decide to which list to add as there is only one now) */
-    AB_ImExporterContext_AddTransaction(ctx, cpy);      /* takes over cpy */
-  }
-
   return 0;
 }
 

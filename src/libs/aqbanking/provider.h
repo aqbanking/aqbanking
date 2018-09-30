@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -48,7 +48,6 @@ GWEN_LIST2_FUNCTION_LIB_DEFS(AB_PROVIDER_DESCRIPTION, AB_ProviderDescription,
 
 #include <aqbanking/banking.h>
 #include <aqbanking/error.h>
-#include <aqbanking/job.h>
 #include <aqbanking/account.h>
 #include <aqbanking/transaction.h>
 

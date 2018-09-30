@@ -18,60 +18,13 @@
       <headers>
         <header type="sys" loc="pre">aqbanking/error.h</header>
 
-        <header type="sys" loc="post">aqbanking/ab_jobqueue.h</header>
         <header type="sys" loc="post">aqbanking/account_spec.h</header>
+        <header type="sys" loc="post">aqbanking/account.h</header>
 
         <header type="sys" loc="post">aqbanking/transaction.h</header>
       </headers>
 
       <inlines>
-        <inline loc="end" access="public">
-          <content>
-            $(api) AB_JOBQUEUE *$(struct_prefix)_FindJobQueue(const $(struct_type) *aq, AB_JOB_TYPE jt);
-          </content>
-        </inline>
-
-        <inline loc="code" access="public">
-          <content>
-            AB_JOBQUEUE *$(struct_prefix)_FindJobQueue(const $(struct_type) *aq, AB_JOB_TYPE jt) {
-              AB_JOBQUEUE *jq;
-            
-              jq=AB_JobQueue_List_First(aq->jobQueueList);
-              while(jq) {
-                if (AB_JobQueue_GetJobType(jq)==jt)
-                  return jq;
-                jq=AB_JobQueue_List_Next(jq);
-              }
-            
-              return NULL;
-            }
-          </content>
-        </inline>
-
-
-
-        <inline loc="end" access="public">
-          <content>
-            $(api) void $(struct_prefix)_AddJob($(struct_type) *aq, AB_JOB *j);
-          </content>
-        </inline>
-
-        <inline loc="code" access="public">
-          <content>
-            void $(struct_prefix)_AddJob($(struct_type) *aq, AB_JOB *j) {
-              AB_JOBQUEUE *jq;
-            
-              jq=AB_AccountQueue_FindJobQueue(aq, AB_Job_GetType(j));
-              if (jq==NULL) {
-                jq=AB_JobQueue_new();
-                AB_JobQueue_List_Add(jq, aq->jobQueueList);
-              }
-            
-              AB_Job_List2_PushBack(AB_JobQueue_GetJobList(jq), j);
-            }
-          </content>
-        </inline>
-
 
         <inline loc="end" access="public">
           <content>
@@ -122,15 +75,6 @@
         <preset>NULL</preset>
         <access>public</access>
         <flags>volatile own</flags>
-        <setflags>none</setflags>
-        <getflags>none</getflags>
-      </member>
-
-      <member name="jobQueueList" type="AB_JOBQUEUE_LIST">
-        <default>NULL</default>
-        <preset>AB_JobQueue_List_new()</preset>
-        <access>public</access>
-        <flags>volatile own dup</flags>
         <setflags>none</setflags>
         <getflags>none</getflags>
       </member>

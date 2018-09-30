@@ -18,15 +18,13 @@
 #include "accountjob_l.h"
 #include "job_l.h"
 #include "user_l.h"
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/dbio.h>
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/text.h>
-
-#include <aqbanking/jobgetstandingorders.h>
-#include <aqbanking/job_be.h>
 
 #include <stdlib.h>
 #include <assert.h>

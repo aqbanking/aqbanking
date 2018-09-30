@@ -41,7 +41,6 @@ typedef struct AB_BANKING AB_BANKING;
 #include <aqbanking/ab_providerqueue.h>
 
 /* outsourced */
-#include <aqbanking/banking_virt.h>
 #include <aqbanking/banking_imex.h>
 #include <aqbanking/banking_info.h>
 #include <aqbanking/banking_ob.h>

@@ -21,7 +21,6 @@
 #include "banking/provider_l.h"
 
 #include <aqhbci/provider.h>
-#include <aqbanking/job_be.h>
 #include <aqbanking/account_be.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>

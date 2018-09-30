@@ -82,34 +82,6 @@
 
 
 
-        <inline loc="end" access="public">
-          <content>
-            $(api) void $(struct_prefix)_AddJob($(struct_type) *uq, AB_JOB *j);
-          </content>
-        </inline>
-
-        <inline loc="code" access="public">
-          <content>
-            void $(struct_prefix)_AddJob($(struct_type) *uq, AB_JOB *j) {
-              AB_ACCOUNT *a;
-              AB_ACCOUNTQUEUE *aq;
-            
-              a=AB_Job_GetAccount(j);
-              assert(a);
-            
-              aq=AB_UserQueue_FindAccountQueue(uq, a);
-              if (aq==NULL) {
-                aq=AB_AccountQueue_new();
-                AB_AccountQueue_SetAccount(aq, a);
-                AB_AccountQueue_List_Add(aq, uq->accountQueueList);
-              }
-            
-              AB_AccountQueue_AddJob(aq, j);
-            }
-          </content>
-        </inline>
-
-
       </inlines>
 
       

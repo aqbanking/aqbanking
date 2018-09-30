@@ -21,13 +21,11 @@
 #include "user_l.h"
 #include "provider_l.h"
 #include "hhd_l.h"
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/text.h>
-
-#include <aqbanking/jobsepatransfer.h>
-#include <aqbanking/job_be.h>
 
 #include <stdlib.h>
 #include <assert.h>

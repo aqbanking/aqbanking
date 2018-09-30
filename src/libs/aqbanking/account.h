@@ -64,7 +64,6 @@ AB_ACCOUNT *AB_Account_List2_GetAccountByUniqueId(const AB_ACCOUNT_LIST2 *al, ui
 #include <aqbanking/banking.h>
 #include <aqbanking/account_type.h>
 #include <aqbanking/provider.h>
-#include <aqbanking/job.h>
 #include <aqbanking/user.h>
 
 

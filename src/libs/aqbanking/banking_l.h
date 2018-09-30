@@ -26,4 +26,32 @@ int AB_Banking_PluginSystemFini(void);
 GWEN_CONFIGMGR *AB_Banking_GetConfigMgr(AB_BANKING *ab);
 
 
+
+/** @name Configuration Data Handling for Plugins
+ *
+ */
+/*@{*/
+
+int AB_Banking_LoadPluginConfig(AB_BANKING *ab,
+				const char *pluginName,
+				const char *name,
+				GWEN_DB_NODE **pDb);
+
+int AB_Banking_SavePluginConfig(AB_BANKING *ab,
+				const char *pluginName,
+				const char *name,
+				GWEN_DB_NODE *db);
+
+int AB_Banking_LockPluginConfig(AB_BANKING *ab,
+				const char *pluginName,
+				const char *name);
+
+int AB_Banking_UnlockPluginConfig(AB_BANKING *ab,
+				  const char *pluginName,
+				  const char *name);
+
+/*@}*/
+
+
+
 #endif /* AQBANKING_BANKING_L_H */

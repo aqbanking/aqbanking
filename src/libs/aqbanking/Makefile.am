@@ -1,8 +1,8 @@
-SUBDIRS=types2 types jobs gui backendsupport typemaker2
+SUBDIRS=types2 types gui backendsupport typemaker2
 
 INCLUDES = \
   -I$(aqbanking_symlinkdir) \
-  -I$(srcdir)/types -I$(srcdir)/jobs $(gwenhywfar_includes)
+  -I$(srcdir)/types $(gwenhywfar_includes)
 
 lib_LTLIBRARIES=libaqbanking.la
 
@@ -11,10 +11,8 @@ AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 EXTRA_DIST=\
  banking_account.c \
  banking_cfg.c \
- banking_deprec.c \
  banking_init.c \
  banking_online.c \
- banking_user.c \
  banking_imex.c \
  banking6.c \
  banking6_update.c
@@ -43,8 +41,6 @@ noinst_HEADERS=\
  i18n_l.h \
  imexporter_l.h \
  imexporter_p.h \
- job_l.h \
- job_p.h \
  provider_l.h \
  provider_p.h \
  msgengine_p.h \
@@ -63,15 +59,12 @@ iheader_HEADERS=\
  banking_info.h \
  banking_ob.h \
  banking_simple.h \
- banking_virt.h \
  bankinfoplugin.h \
  bankinfoplugin_be.h \
  country.h \
  error.h \
  imexporter.h \
  imexporter_be.h \
- job.h \
- job_be.h \
  provider.h \
  provider_be.h\
  msgengine.h \
@@ -85,7 +78,6 @@ libaqbanking_la_SOURCES=\
  banking.c \
  country.c \
  imexporter.c \
- job.c \
  provider.c \
  msgengine.c \
  httpsession.c
@@ -93,7 +85,6 @@ libaqbanking_la_SOURCES=\
 
 libaqbanking_la_LIBADD= $(gwenhywfar_libs) $(gmp_libs) $(i18n_libs) \
  backendsupport/libabbesupport.la \
- jobs/libjobs.la \
  types2/libabtypes2.la \
  types/libtypes.la \
  gui/libabgui.la

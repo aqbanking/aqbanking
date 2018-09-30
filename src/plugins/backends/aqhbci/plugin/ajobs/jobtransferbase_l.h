@@ -15,9 +15,6 @@
 #include "accountjob_l.h"
 
 
-typedef int (*AH_JOB_TRANSFERBASE_EXCHANGE_FN)(AH_JOB *j, AB_JOB *bj,
-                                               AB_IMEXPORTER_CONTEXT *ctx);
-
 
 AH_JOB *AH_Job_TransferBase_new(const char *jobName,
                                 AB_TRANSACTION_TYPE tt,

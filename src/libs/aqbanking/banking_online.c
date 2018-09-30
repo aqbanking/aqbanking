@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -11,48 +11,27 @@
 /* This file is included by banking.c */
 
 
-int AB_Banking_ExecutionProgress(AB_BANKING *ab) {
-  if (!ab->currentJobs)
-    return 0;
-  else {
-    AB_JOB_LIST2_ITERATOR *jit;
-    uint32_t count=0;
-
-    jit=AB_Job_List2_First(ab->currentJobs);
-    if (jit) {
-      AB_JOB *j;
-
-      j=AB_Job_List2Iterator_Data(jit);
-      while(j) {
-        AB_JOB_STATUS jst;
-
-        jst=AB_Job_GetStatus(j);
-        if (jst==AB_Job_StatusFinished ||
-            jst==AB_Job_StatusPending ||
-            jst==AB_Job_StatusError)
-          count++;
-        j=AB_Job_List2Iterator_Next(jit);
-      } /* while */
-      AB_Job_List2Iterator_free(jit);
-    }
-    return GWEN_Gui_ProgressAdvance(0, count);
-  }
-}
-
-
-
 AB_PROVIDER *AB_Banking_BeginUseProvider(AB_BANKING *ab, const char *modname){
   GWEN_PLUGIN *pl;
 
   pl=GWEN_PluginManager_GetPlugin(ab_pluginManagerProvider, modname);
   if (pl) {
     AB_PROVIDER *pro;
+    int rv;
 
     pro=AB_Plugin_Provider_Factory(pl, ab);
     if (!pro) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in plugin [%s]: No provider created", modname);
       return NULL;
     }
+
+    rv=AB_Provider_Init(pro);
+    if (rv<0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      AB_Provider_free(pro);
+      return NULL;
+    }
+
     return pro;
   }
   else {

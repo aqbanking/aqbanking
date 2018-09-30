@@ -54,14 +54,6 @@
 #include <ctype.h>
 #include <stdio.h>
 
-/* includes for high level API */
-#include "jobgetbalance.h"
-#include "jobgettransactions.h"
-#include "jobgetstandingorders.h"
-#include "jobsingletransfer.h"
-#include "jobsingledebitnote.h"
-#include "jobgetdatedtransfers.h"
-
 
 #ifdef OS_WIN32
 # define ftruncate chsize
@@ -77,9 +69,7 @@ GWEN_INHERIT_FUNCTIONS(AB_BANKING)
 
 #include "banking_init.c"
 #include "banking_account.c"
-#include "banking_user.c"
 #include "banking_online.c"
-#include "banking_deprec.c"
 #include "banking_cfg.c"
 #include "banking_imex.c"
 #include "banking6.c"
@@ -125,8 +115,6 @@ AB_BANKING *AB_Banking_new(const char *appName,
 
   GWEN_NEW_OBJECT(AB_BANKING, ab);
   GWEN_INHERIT_INIT(AB_BANKING, ab);
-  ab->users=AB_User_List_new();
-  ab->accounts=AB_Account_List_new();
   ab->appEscName=strdup(GWEN_Buffer_GetStart(nbuf));
   ab->appName=strdup(appName);
   ab->cryptTokenList=GWEN_Crypt_Token_List2_new();
@@ -166,8 +154,6 @@ void AB_Banking_free(AB_BANKING *ab){
 
     AB_Banking_ClearCryptTokenList(ab);
     GWEN_Crypt_Token_List2_free(ab->cryptTokenList);
-    AB_Account_List_free(ab->accounts);
-    AB_User_List_free(ab->users);
     GWEN_ConfigMgr_free(ab->configMgr);
     free(ab->startFolder);
     free(ab->appName);
@@ -259,57 +245,6 @@ int AB_Banking_GetNamedUniqueId(AB_BANKING *ab, const char *idName, int startAtS
 
 int AB_Banking_GetUniqueId(AB_BANKING *ab){
   return AB_Banking_GetNamedUniqueId(ab, NULL, 0);
-}
-
-
-
-int AB_Banking_SetUniqueId(AB_BANKING *ab, uint32_t uid){
-  int rv;
-  GWEN_DB_NODE *dbConfig=NULL;
-
-  rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
-			      AB_CFG_GROUP_MAIN,
-			      "uniqueId");
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock main config (%d)", rv);
-    return rv;
-  }
-
-  rv=GWEN_ConfigMgr_GetGroup(ab->configMgr,
-			     AB_CFG_GROUP_MAIN,
-			     "uniqueId",
-			     &dbConfig);
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to read main config (%d)", rv);
-    return rv;
-  }
-
-  GWEN_DB_SetIntValue(dbConfig, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "uniqueId", uid);
-  rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
-			     AB_CFG_GROUP_MAIN,
-			     "uniqueId",
-			     dbConfig);
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to write main config (%d)", rv);
-    GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
-			       AB_CFG_GROUP_MAIN,
-			       "uniqueId");
-    GWEN_DB_Group_free(dbConfig);
-    return rv;
-  }
-  GWEN_DB_Group_free(dbConfig);
-
-  /* unlock */
-  rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
-				AB_CFG_GROUP_MAIN,
-				"uniqueId");
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to unlock main config (%d)", rv);
-    return rv;
-  }
-
-  return 0;
 }
 
 

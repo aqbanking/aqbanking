@@ -63,7 +63,6 @@
 #include <aqbanking/banking6_be.h>
 #include <aqbanking/account_be.h>
 #include <aqbanking/provider_be.h>
-#include <aqbanking/job_be.h>
 #include <aqbanking/ab_userqueue.h>
 
 #include <gwenhywfar/misc.h>

@@ -16,7 +16,7 @@ AC_CONFIG_HEADERS([config.h])
 
 AQBANKING_VERSION_MAJOR=5
 AQBANKING_VERSION_MINOR=99
-AQBANKING_VERSION_PATCHLEVEL=1
+AQBANKING_VERSION_PATCHLEVEL=2
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="beta"
@@ -34,7 +34,7 @@ AQBANKING_VERSION_TAG="beta"
 
 AQBANKING_SO_CURRENT=43
 AQBANKING_SO_AGE=0
-AQBANKING_SO_REVISION=0
+AQBANKING_SO_REVISION=2
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 #
@@ -1031,7 +1031,7 @@ AC_SUBST(ADD_ACLOCAL_FLAGS)
 # AqBanking modules
 #
 
-aqbanking_modules=". jobs types"
+aqbanking_modules=". types"
 aqbankingpp_modules="."
 
 AC_SUBST(aqbanking_modules)
@@ -1406,7 +1406,6 @@ AC_CONFIG_FILES([
   src/Makefile
   src/libs/Makefile
   src/libs/aqbanking/Makefile
-  src/libs/aqbanking/jobs/Makefile
   src/libs/aqbanking/types/Makefile
   src/libs/aqbanking/types2/Makefile
   src/libs/aqbanking/gui/Makefile

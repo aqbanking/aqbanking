@@ -18,6 +18,7 @@
 #include "accountjob_l.h"
 #include "job_l.h"
 #include "user_l.h"
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
@@ -25,8 +26,6 @@
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/text.h>
 
-#include <aqbanking/jobgetestatements.h>
-#include <aqbanking/job_be.h>
 #include <aqbanking/document.h>
 
 #include <stdlib.h>

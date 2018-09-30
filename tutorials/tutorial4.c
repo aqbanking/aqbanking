@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -28,8 +28,9 @@
 # include <config.h>
 #endif
 
+#include <aqbanking/banking.h>
 #include <gwenhywfar/cgui.h>
-#include <aqbanking/jobloadcellphone.h>
+#include <aqbanking/transaction.h>
 
 
 
@@ -37,146 +38,133 @@
 int main(int argc, char **argv) {
   AB_BANKING *ab;
   int rv;
-  AB_ACCOUNT *a;
-  AB_VALUE *v;
+  AB_ACCOUNT_SPEC_LIST *accs=NULL;
+  AB_ACCOUNT_SPEC *as;
   GWEN_GUI *gui;
-  const char *accNr;
-  const char *number;
-  const char *vstring;
-  AB_JOB_LIST2 *jl;
-
-  if (argc<4) {
-    fprintf(stderr,
-	    "Usage:\n"
-	    "%s ACCOUNT_ID PHONE_NUMBER VALUE\n",
-            argv[0]);
-    return 1;
-  }
-
-  accNr=argv[1];
-  number=argv[2];
-  vstring=argv[3];
 
   gui=GWEN_Gui_CGui_new();
-  assert(gui);
   GWEN_Gui_SetGui(gui);
 
   ab=AB_Banking_new("tutorial4", 0, 0);
 
+  /* This is the basic init function. It only initializes the minimum (like
+   * setting up plugin and data paths). After this function successfully
+   * returns you may freely use any non-online function. To use online
+   * banking functions (like getting the list of managed accounts, users
+   * etc) you will have to call AB_Banking_OnlineInit().
+   */
   rv=AB_Banking_Init(ab);
   if (rv) {
     fprintf(stderr, "Error on init (%d)\n", rv);
     return 2;
   }
-
-  rv=AB_Banking_OnlineInit(ab);
-  if (rv) {
-    fprintf(stderr, "Error on OnlineInit (%d)\n", rv);
-    return 2;
-  }
   fprintf(stderr, "AqBanking successfully initialized.\n");
 
-  /* Any type of job needs an account to operate on. The following function
-   * allows wildcards (*) and jokers (?) in any of the arguments. */
-  a=AB_Banking_FindAccount(ab,
-                           "aqhbci", /* backend name */
-                           "de",     /* two-char ISO country code */
-			   "*",      /* bank code (with wildcard) */
-                           accNr,    /* account number (wildcard) */
-                           "*");     /* sub account id (Unterkontomerkmal) */
-  if (a) {
-    AB_JOB *j;
+
+  /* get the list of known accounts */
+  rv=AB_Banking6_GetAccountSpecList(ab, &accs);
+  if (rv<0) {
+    fprintf(stderr, "Unable to get the list of accounts (%d: %s)\n", rv, GWEN_Error_SimpleToString(rv));
+    return 3;
+  }
+
+  /* find a matching account within the given list */
+  as=AB_AccountSpec_List_Find(accs,
+                              "aqhbci",                /* backendName */
+                              "de",                    /* country */
+                              "28*",                   /* bankId bank */
+                              "*",                     /* accountNumber */
+                              "*",                     /* subAccountId */
+                              "*",                     /* iban */
+                              "*",                     /* currency */
+                              AB_AccountType_Unknown); /* ty */
+  if (as==NULL) {
+    fprintf(stderr, "No matching account found.\n");
+    return 3;
+  } /* if (as==NULL) */
+
+  if (as) {
+    AB_TRANSACTION_LIST *cmdList;
+    AB_TRANSACTION *t;
     AB_IMEXPORTER_CONTEXT *ctx;
-    const AB_CELLPHONE_PRODUCT_LIST *pl;
 
-    /* create a job which loads a prepaid card for cell phones. */
-    j=AB_JobLoadCellPhone_new(a);
+    /* create a list to which banking commands are added */
+    cmdList=AB_Transaction_List_new();
 
-    /* This function checks whether the given job is available with the
-     * backend/provider to which the account involved is assigned.
-     * The corresponding provider/backend might also check whether this job
-     * is available with the given account.
-     * If the job is available then 0 is returned, otherwise the error code
-     * might give you a hint why the job is not supported. */
-    rv=AB_Job_CheckAvailability(j);
-    if (rv) {
-      fprintf(stderr, "Job is not available (%d)\n", rv);
-      return 2;
-    }
+    /* create an online banking command */
+    t=AB_Transaction_new();
+    AB_Transaction_SetCommand(t, AB_Transaction_CommandGetTransactions);
+    AB_Transaction_SetUniqueAccountId(t, AB_AccountSpec_GetUniqueId(as));
 
-    /* select correct product */
-    pl=AB_JobLoadCellPhone_GetCellPhoneProductList(j);
-    if (pl==NULL) {
-      fprintf(stderr, "No products supported\n");
-      return 2;
-    }
-    else {
-      AB_CELLPHONE_PRODUCT *cp;
+    /* add command to the list */
+    AB_Transaction_List_Add(t, cmdList);
 
-      cp=AB_CellPhoneProduct_List_First(pl);
-      while(cp) {
-        const char *s;
+    /* we could now add any number of commands here */
 
-	s=AB_CellPhoneProduct_GetProviderName(cp);
-	fprintf(stderr, "Provider: [%s]\n", s);
-	if (s && strcasecmp(s, "T-Mobile")==0)
-          break;
-	cp=AB_CellPhoneProduct_List_Next(cp);
-      }
-
-      if (cp==NULL) {
-	fprintf(stderr, "Provider not found\n");
-        return 2;
-      }
-      AB_JobLoadCellPhone_SetCellPhoneProduct(j, cp);
-    }
-
-    /* set number */
-    AB_JobLoadCellPhone_SetPhoneNumber(j, number);
-
-    /* set value */
-    v=AB_Value_fromString(vstring);
-    if (v==NULL) {
-      fprintf(stderr, "Bad value\n");
-      return 2;
-    }
-    AB_JobLoadCellPhone_SetValue(j, v);
-    AB_Value_free(v);
-
-    /* enqueue this job so that AqBanking knows we want it executed. */
-    jl=AB_Job_List2_new();
-    AB_Job_List2_PushBack(jl, j);
-
-    /* When executing a list of enqueued jobs (as we will do below) all the
+    /* When sending a list of commands (as we will do below) all the
      * data returned by the server will be stored within an ImExporter
      * context.
      */
     ctx=AB_ImExporterContext_new();
 
-    /* execute the queue. This effectivly sends all jobs which have been
-     * enqueued to the respective backends/banks.
-     * It only returns an error code (!=0) if not a single job could be
-     * executed successfully. */
-    rv=AB_Banking_ExecuteJobs(ab, jl, ctx);
-    if (rv) {
+    /* execute the jobs which are in the given list (well, for this tutorial
+     * there is only one job in the list, but the number is not limited).
+     * This effectivly sends all jobs to the respective backends/banks.
+     * It only returns an error code (!=0) if there has been a problem
+     * sending the jobs. */
+    rv=AB_Banking6_SendCommands(ab, cmdList, ctx);
+    if (rv<0) {
       fprintf(stderr, "Error on executeQueue (%d)\n", rv);
+      /* clean up */
+      AB_ImExporterContext_free(ctx);
+      AB_Banking_Fini(ab);
+      AB_Banking_free(ab);
       return 2;
     }
     else {
+      AB_IMEXPORTER_ACCOUNTINFO *ai;
 
+      ai=AB_ImExporterContext_GetFirstAccountInfo(ctx);
+      while(ai) {
+        const AB_TRANSACTION *t;
+
+        t=AB_ImExporterAccountInfo_GetFirstTransaction(ai, 0, 0);
+        while(t) {
+          const AB_VALUE *v;
+
+          v=AB_Transaction_GetValue(t);
+          if (v) {
+            const char *purpose;
+
+            /* The purpose (memo field) might contain multiple lines. */
+            purpose=AB_Transaction_GetPurpose(t);
+
+            fprintf(stderr, " %-32s (%.2f %s)\n",
+                    purpose,
+		    AB_Value_GetValueAsDouble(v),
+                    AB_Value_GetCurrency(v));
+          }
+          t=AB_Transaction_List_Next(t);
+        } /* while transactions */
+        ai=AB_ImExporterAccountInfo_List_Next(ai);
+      } /* while ai */
     } /* if executeQueue successfull */
-    /* free the job to avoid memory leaks */
-    AB_Job_free(j);
-  } /* if account found */
-  else {
-    fprintf(stderr, "No account found.\n");
-  }
 
+    /* free im-/exporter context */
+    AB_ImExporterContext_free(ctx);
+  } /* if (as) */
+
+  /* This function deinitializes AqBanking. It undoes the effects of
+   * AB_Banking_Init() and should be called before destroying an AB_BANKING
+   * object.
+   */
   rv=AB_Banking_Fini(ab);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
     return 3;
   }
+
+  /* free AqBanking object */
   AB_Banking_free(ab);
 
   return 0;

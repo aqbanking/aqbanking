@@ -49,7 +49,6 @@
 #include "banking_l.h"
 #include "provider_l.h"
 #include "account_l.h"
-#include "job_l.h"
 #include "imexporter_l.h"
 #include "bankinfoplugin_l.h"
 #include "user_l.h"
@@ -68,16 +67,11 @@ struct AB_BANKING {
 
   char *dataDir;
 
-  AB_USER_LIST *users;
-  AB_ACCOUNT_LIST *accounts;
-
   char *startFolder;
 
   GWEN_DB_NODE *dbProfiles;
 
   void *user_data;
-
-  AB_JOB_LIST2 *currentJobs;
 
   GWEN_CRYPT_TOKEN_LIST2 *cryptTokenList;
 
@@ -92,11 +86,8 @@ static AB_IMEXPORTER *AB_Banking_FindImExporter(AB_BANKING *ab,
                                                 const char *name);
 
 
-static AB_BANKINFO_PLUGIN*
-  AB_Banking__LoadBankInfoPlugin(AB_BANKING *ab,
-                                 const char *modname);
-static AB_BANKINFO_PLUGIN *AB_Banking__GetBankInfoPlugin(AB_BANKING *ab,
-                                                         const char *country);
+static AB_BANKINFO_PLUGIN *AB_Banking__LoadBankInfoPlugin(AB_BANKING *ab, const char *modname);
+static AB_BANKINFO_PLUGIN *AB_Banking__GetBankInfoPlugin(AB_BANKING *ab, const char *country);
 
 
 static int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,
@@ -115,24 +106,9 @@ static void AB_Banking__fillTransactionRemoteInfo(AB_TRANSACTION *t);
 /* static void AB_Banking__fillTransactionRemoteSepaInfo(AB_BANKING *ab, AB_TRANSACTION *t); */
 
 
-/* only for import of older configurations */
-static int AB_Banking_SetUniqueId(AB_BANKING *ab, uint32_t uid);
-
-static int AB_Banking__ImportConfDir(AB_BANKING *ab,
-				     const char *path,
-				     const char *groupName);
-
-/**
- * Write the settings of the user while in exclusive use. This is also called
- * internally by @ref AB_Banking_EndExclUseUser.
- * Please note that the user must be locked with @ref AB_Banking_BeginExclUseUser.
- */
-static int AB_Banking_SaveUser(AB_BANKING *ab, AB_USER *u);
-
-
-
 int AB_Banking6_Update(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion);
-static int AB_Banking6_Update_5_99_1_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion);
+static int AB_Banking6_Update_5_99_2_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion);
+
 
 
 

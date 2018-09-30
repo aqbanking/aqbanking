@@ -88,51 +88,7 @@ int AB_Banking_CheckCryptToken(AB_BANKING *ab,
 /*@}*/
 
 
-/** @name Configuration Data Handling for Plugins
- *
- */
-/*@{*/
-
-AQBANKING_API 
-int AB_Banking_LoadPluginConfig(AB_BANKING *ab,
-				const char *pluginName,
-				const char *name,
-				GWEN_DB_NODE **pDb);
-
-AQBANKING_API 
-int AB_Banking_SavePluginConfig(AB_BANKING *ab,
-				const char *pluginName,
-				const char *name,
-				GWEN_DB_NODE *db);
-
-AQBANKING_API 
-int AB_Banking_LockPluginConfig(AB_BANKING *ab,
-				const char *pluginName,
-				const char *name);
-
-AQBANKING_API 
-int AB_Banking_UnlockPluginConfig(AB_BANKING *ab,
-				  const char *pluginName,
-				  const char *name);
-
-AQBANKING_API 
-int AB_Banking_SaveAccountConfig(AB_BANKING *ab, AB_ACCOUNT *a, int doLock);
-
-AQBANKING_API 
-int AB_Banking_SaveUserConfig(AB_BANKING *ab, AB_USER *u, int doLock);
-
-
-/*@}*/
-
-
-
-
-
-
-AQBANKING_API
-int AB_Banking_ExecutionProgress(AB_BANKING *ab);
-
-AQBANKING_API
+AQBANKING_API DEPRECATED
 int AB_Banking_GetUniqueId(AB_BANKING *ab);
 
 /**

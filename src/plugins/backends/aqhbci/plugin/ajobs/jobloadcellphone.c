@@ -17,13 +17,11 @@
 #include "aqhbci_l.h"
 #include "accountjob_l.h"
 #include "job_l.h"
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/text.h>
-
-#include <aqbanking/jobloadcellphone_be.h>
-#include <aqbanking/job_be.h>
 
 #include <stdlib.h>
 #include <assert.h>

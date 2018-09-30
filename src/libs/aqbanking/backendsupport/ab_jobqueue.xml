@@ -18,7 +18,6 @@
       <headers>
         <header type="sys" loc="pre">aqbanking/error.h</header>
         
-        <header type="sys" loc="post">aqbanking/job.h</header>
         <header type="sys" loc="post">aqbanking/transaction.h</header>
       </headers>
       
@@ -26,18 +25,9 @@
 
     <members>
 
-      <member name="jobList" type="AB_JOB_LIST2">
-        <default>NULL</default>
-        <preset>AB_Job_List2_new()</preset>
-        <access>public</access>
-        <flags>volatile own</flags>
-        <setflags>none</setflags>
-        <getflags>none</getflags>
-      </member>
-
       <member name="jobType" type="int" >
-        <default>AB_Job_TypeUnknown</default>
-        <preset>AB_Job_TypeUnknown</preset>
+        <default>0</default>
+        <preset>0</preset>
         <access>public</access>
         <flags>volatile</flags>
         <setflags>none</setflags>

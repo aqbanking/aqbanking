@@ -23,6 +23,16 @@ iterators.
 Tutorial3
 =========
 
-This tutorial shows how to use jobs in AqBanking.
+This tutorial shows how to use online banking in AqBanking.
 In this example we retrieve transaction statements for a given account.
 
+No error checking for a quick overview.
+
+
+Tutorial4
+=========
+
+This tutorial shows how to use online banking in AqBanking.
+In this example we retrieve transaction statements for a given account.
+
+Example with full error checking.

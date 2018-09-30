@@ -37,18 +37,24 @@ int AH_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u,
 
     rv=AH_Provider__CreateHbciJob(pro, u, acc, jobList[i], &j);
     if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      return rv;
+      if (rv==GWEN_ERROR_NOT_AVAILABLE) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Job is not available");
+      }
+      else {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
     }
-
-    rv=AH_Job_GetLimits(j, &limits);
-    if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    else {
+      rv=AH_Job_GetLimits(j, &limits);
+      if (rv<0) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+        AH_Job_free(j);
+        return rv;
+      }
+      AB_TransactionLimits_List_Add(limits, tll);
       AH_Job_free(j);
-      return rv;
     }
-    AB_TransactionLimits_List_Add(limits, tll);
-    AH_Job_free(j);
   } /* for i */
 
   return 0;

@@ -22,13 +22,14 @@
 
 typedef struct AH_OUTBOX AH_OUTBOX;
 
-#include <aqbanking/imexporter.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/gwentime.h>
 
 #include "hbci_l.h"
 #include "job_l.h"
+
 #include <aqhbci/user.h>
+#include <aqbanking/imexporter.h>
 
 
 AH_OUTBOX *AH_Outbox_new(AB_PROVIDER *pro);
@@ -36,7 +37,6 @@ void AH_Outbox_free(AH_OUTBOX *ob);
 void AH_Outbox_Attach(AH_OUTBOX *ob);
 
 void AH_Outbox_AddJob(AH_OUTBOX *ob, AH_JOB *j);
-void AH_Outbox_AddPendingJob(AH_OUTBOX *ob, AB_JOB *bj);
 
 /* makes all jobs commit their data */
 void AH_Outbox_Commit(AH_OUTBOX *ob, int doLock);
