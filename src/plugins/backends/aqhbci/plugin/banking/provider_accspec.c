@@ -20,7 +20,7 @@ int AH_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u,
   int jobList[]={
     AB_Transaction_CommandGetBalance,
     AB_Transaction_CommandGetTransactions,
-    AB_Transaction_CommandLoadCellPhone,
+    /*AB_Transaction_CommandLoadCellPhone, */
     AB_Transaction_CommandSepaTransfer,
     AB_Transaction_CommandSepaDebitNote,
     AB_Transaction_CommandSepaFlashDebitNote,
@@ -35,10 +35,12 @@ int AH_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u,
     AH_JOB *j=NULL;
     AB_TRANSACTION_LIMITS *limits=NULL;
 
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Handling job \"%s\"", AB_Transaction_Command_toString(jobList[i]));
+    DBG_INFO(AQHBCI_LOGDOMAIN, "- creating job");
     rv=AH_Provider__CreateHbciJob(pro, u, acc, jobList[i], &j);
     if (rv<0) {
       if (rv==GWEN_ERROR_NOT_AVAILABLE) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Job is not available");
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" is not available", AB_Transaction_Command_toString(jobList[i]));
       }
       else {
         DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -46,12 +48,14 @@ int AH_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u,
       }
     }
     else {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "- getting limits");
       rv=AH_Job_GetLimits(j, &limits);
       if (rv<0) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting limits for job \"%s\": %d", AB_Transaction_Command_toString(jobList[i]), rv);
         AH_Job_free(j);
         return rv;
       }
+      DBG_INFO(AQHBCI_LOGDOMAIN, "- adding limits");
       AB_TransactionLimits_List_Add(limits, tll);
       AH_Job_free(j);
     }
@@ -74,14 +78,14 @@ int AH_Provider_AccountToAccountSpecWithUser(AB_PROVIDER *pro, AB_USER *u, AB_AC
   AB_AccountSpec_SetUniqueId(as, AB_Account_GetUniqueId(acc));
   AB_AccountSpec_SetBackendName(as, AB_Account_GetBackendName(acc));
   AB_AccountSpec_SetOwnerName(as, AB_Account_GetOwnerName(acc));
-  AB_AccountSpec_SetAccountName(as, AB_Account_GetAccountNumber(acc));
+  AB_AccountSpec_SetAccountName(as, AB_Account_GetAccountName(acc));
   AB_AccountSpec_SetCurrency(as, AB_Account_GetCurrency(acc));
   AB_AccountSpec_SetIban(as, AB_Account_GetIBAN(acc));
   AB_AccountSpec_SetBic(as, AB_Account_GetBIC(acc));
 
   AB_AccountSpec_SetCountry(as, AB_Account_GetCountry(acc));
   AB_AccountSpec_SetBankCode(as, AB_Account_GetBankCode(acc));
-  AB_AccountSpec_SetAccountNumber(as, AB_Account_GetAccountName(acc));
+  AB_AccountSpec_SetAccountNumber(as, AB_Account_GetAccountNumber(acc));
   AB_AccountSpec_SetSubAccountNumber(as, AB_Account_GetSubAccountId(acc));
 
   /* create and set limits */
