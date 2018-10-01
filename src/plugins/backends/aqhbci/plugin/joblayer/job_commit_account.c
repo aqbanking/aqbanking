@@ -93,30 +93,27 @@ static void AH_Job__Commit_Accounts_RemoveEmpty(AH_JOB *j, AB_ACCOUNT_LIST *accL
   DBG_INFO(AQHBCI_LOGDOMAIN, "Checking for empty accounts");
   if (AB_Account_List_GetCount(accList)) {
     AB_ACCOUNT *acc;
-    AB_ACCOUNT_LIST *accList2;
 
-    accList2=AB_Account_List_new();
-    while( (acc=AB_Account_List_First(accList)) ) {
+    acc=AB_Account_List_First(accList);
+    while(acc) {
+      AB_ACCOUNT *accNext;
       const char *accountNum;
       const char *bankCode;
       const char *iban;
 
-      AB_Account_List_Del(acc);
+      accNext=AB_Account_List_Next(acc);
       accountNum=AB_Account_GetAccountNumber(acc);
       bankCode=AB_Account_GetBankCode(acc);
       iban=AB_Account_GetIBAN(acc);
 
-      if ((iban && *iban) || (accountNum && *accountNum && bankCode && *bankCode)) {
-	AB_Account_List_Add(acc, accList2);
+      if (!((iban && *iban) || (accountNum && *accountNum && bankCode && *bankCode))) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Removing empty account from import list");
+        AB_Account_List_Del(acc);
+        AB_Account_free(acc);
       }
-      else {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "Removing empty account from import list");
-	AB_Account_free(acc);
-      }
-    }
-    AB_Account_List_free(accList);
-    accList=accList2;
-  }
+      acc=accNext;
+    } /* while(acc) */
+  } /* if (AB_Account_List_GetCount(accList)) */
 }
 
 
