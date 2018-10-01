@@ -139,220 +139,17 @@ int writeContext(const char *ctxFile, const AB_IMEXPORTER_CONTEXT *ctx) {
 
 
 
-AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, AB_JOB_TYPE *jobType) {
-  AB_BANKING *ab;
-  AB_TRANSACTION *t;
-  const char *s;
-  int i;
-  GWEN_DATE *d;
-  AB_TRANSACTION_PERIOD period=AB_Transaction_PeriodUnknown;
-
-  *jobType=AB_Job_TypeTransfer; // single transfer
-  assert(a);
-  assert(db);
-
-  ab=AB_Account_GetBanking(a);
-  assert(ab);
-
-  t=AB_Transaction_new();
-
-  AB_Banking_FillGapsInTransaction(ab, a, t);
-
-  s=GWEN_DB_GetCharValue(db, "name", 0, 0);
-  if (s && *s)
-    AB_Transaction_SetLocalName(t, s);
-
-  /* remote account */
-  s=GWEN_DB_GetCharValue(db, "remoteBankId", 0, 0);
-  if (s && *s)
-    AB_Transaction_SetRemoteBankCode(t, s);
-  else {
-    DBG_ERROR(0, "No remote bank id given");
-    AB_Transaction_free(t);
-    return 0;
-  }
-  s=GWEN_DB_GetCharValue(db, "remoteAccountId", 0, 0);
-  if (s && *s)
-    AB_Transaction_SetRemoteAccountNumber(t, s);
-
-  s=GWEN_DB_GetCharValue(db, "remoteIban", 0, 0);
-  if (s && *s)
-    AB_Transaction_SetRemoteIban(t, s);
-
-  s=GWEN_DB_GetCharValue(db, "remoteBic", 0, 0);
-  if (s && *s)
-    AB_Transaction_SetRemoteBic(t, s);
-
-  for (i=0; i<10; i++) {
-    s=GWEN_DB_GetCharValue(db, "remoteName", i, 0);
-    if (!s)
-      break;
-    if (*s)
-      AB_Transaction_SetRemoteName(t, s);
-  }
-  if (i<1) {
-    DBG_ERROR(0, "No remote name given");
-    AB_Transaction_free(t);
-    return 0;
-  }
-
-  /* transfer data */
-  for (i=0; i<20; i++) {
-    s=GWEN_DB_GetCharValue(db, "purpose", i, 0);
-    if (!s)
-      break;
-    if (*s)
-      AB_Transaction_AddPurposeLine(t, s);
-  }
-  if (i<1) {
-    DBG_ERROR(0, "No purpose given");
-    AB_Transaction_free(t);
-    return 0;
-  }
-
-  i=GWEN_DB_GetIntValue(db, "textkey", 0, -1);
-  if (i>0)
-    AB_Transaction_SetTextKey(t, i);
-
-  s=GWEN_DB_GetCharValue(db, "value", 0, 0);
-  if (s && *s) {
-    AB_VALUE *v;
-
-    v=AB_Value_fromString(s);
-    assert(v);
-    if (AB_Value_IsNegative(v) || AB_Value_IsZero(v)) {
-      DBG_ERROR(0, "Only positive non-zero amount allowed");
-      AB_Transaction_free(t);
-      return 0;
-    }
-    AB_Transaction_SetValue(t, v);
-    AB_Value_free(v);
-  }
-  else {
-    DBG_ERROR(0, "No value given");
-    AB_Transaction_free(t);
-    return 0;
-  }
-
-
-  // dated transfer
-  s=GWEN_DB_GetCharValue(db, "executionDate", 0, 0);
-  if (s && *s) {
-    GWEN_BUFFER *dbuf;
-
-    dbuf=GWEN_Buffer_new(0, 32, 0, 1);
-    GWEN_Buffer_AppendString(dbuf, s);
-    GWEN_Buffer_AppendString(dbuf, "-00:00");
-    d=GWEN_Date_fromStringWithTemplate(GWEN_Buffer_GetStart(dbuf), "YYYYMMDD");
-    GWEN_Buffer_free(dbuf);
-    if (d==NULL) {
-      DBG_ERROR(0, "Invalid execution date value \"%s\"", s);
-      AB_Transaction_free(t);
-      return 0;
-    }
-    AB_Transaction_SetDate(t, d);
-    GWEN_Date_free(d);
-    *jobType=AB_Job_TypeCreateDatedTransfer;
-    return t;
-  }
-
-  // standing orders
-  s=GWEN_DB_GetCharValue(db, "firstExecutionDate", 0, 0);
-  if (s && *s) {
-    GWEN_BUFFER *dbuf;
-
-    dbuf=GWEN_Buffer_new(0, 32, 0, 1);
-    GWEN_Buffer_AppendString(dbuf, s);
-    GWEN_Buffer_AppendString(dbuf, "-00:00");
-    d=GWEN_Date_fromStringWithTemplate(GWEN_Buffer_GetStart(dbuf), "YYYYMMDD");
-    GWEN_Buffer_free(dbuf);
-    if (d==0) {
-      DBG_ERROR(0, "Invalid first execution date value \"%s\"", s);
-      AB_Transaction_free(t);
-      return 0;
-    }
-    AB_Transaction_SetFirstDate(t, d);
-    GWEN_Date_free(d);
-  } else
-    return t; // single transfer
-
-  *jobType=AB_Job_TypeCreateStandingOrder;
-  s=GWEN_DB_GetCharValue(db, "lastExecutionDate", 0, 0);
-  if (s && *s) {
-    GWEN_BUFFER *dbuf;
-
-    dbuf=GWEN_Buffer_new(0, 32, 0, 1);
-    GWEN_Buffer_AppendString(dbuf, s);
-    GWEN_Buffer_AppendString(dbuf, "-00:00");
-    d=GWEN_Date_fromStringWithTemplate(GWEN_Buffer_GetStart(dbuf), "YYYYMMDD");
-    GWEN_Buffer_free(dbuf);
-    if (d==0) {
-      DBG_ERROR(0, "Invalid last execution date value \"%s\"", s);
-      AB_Transaction_free(t);
-      return 0;
-    }
-    AB_Transaction_SetLastDate(t, d);
-    GWEN_Date_free(d);
-  }
-
-  s=GWEN_DB_GetCharValue(db, "executionPeriod", 0, 0);
-  if (s && *s) {
-    period=AB_Transaction_Period_fromString(s);
-    if (period==AB_Transaction_PeriodUnknown) {
-      DBG_ERROR(0, "Invalid execution period value \"%s\"", s);
-      AB_Transaction_free(t);
-      return NULL;
-    }
-    AB_Transaction_SetPeriod(t, period);
-  }
-
-  i=GWEN_DB_GetIntValue(db, "executionCycle", 0, -1);
-  if (i <= 0) {
-    DBG_ERROR(0, "Invalid execution cycle value \"%d\"", i);
-    AB_Transaction_free(t);
-    return 0;
-  }
-  AB_Transaction_SetCycle(t, i);
-
-  i=GWEN_DB_GetIntValue(db, "executionDay", 0, -1);
-  if (i <= 0 || (period == AB_Transaction_PeriodWeekly && i > 7) ||
-      (period == AB_Transaction_PeriodMonthly && i > 30 &&
-       (i < 97 || i > 99))) {
-    DBG_ERROR(0, "Invalid execution day value \"%d\"", i);
-    AB_Transaction_free(t);
-    return 0;
-  }
-  AB_Transaction_SetExecutionDay(t, i);
-
-  s=GWEN_DB_GetCharValue(db, "fiId", 0, 0);
-  if (s && *s) {
-    AB_Transaction_SetFiId(t, s);
-    *jobType=AB_Job_TypeDeleteStandingOrder;
-  }
-
-  return t;
-}
-
-
-
-AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferType) {
-  AB_BANKING *ab;
+AB_TRANSACTION *mkSepaTransfer(GWEN_DB_NODE *db, int cmd) {
   AB_TRANSACTION *t;
   const char *s;
   int i;
   GWEN_DATE *d;
 
-  assert(a);
   assert(db);
-
-  ab=AB_Account_GetBanking(a);
-  assert(ab);
 
   t=AB_Transaction_new();
 
   AB_Transaction_SetType(t, AB_Transaction_TypeTransfer);
-
-  AB_Banking_FillGapsInTransaction(ab, a, t);
 
   s=GWEN_DB_GetCharValue(db, "name", 0, 0);
   if (s && *s)
@@ -385,14 +182,10 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
     return NULL;
   }
 
-  for (i=0; i<10; i++) {
-    s=GWEN_DB_GetCharValue(db, "remoteName", i, 0);
-    if (!s)
-      break;
-    if (*s)
-      AB_Transaction_SetRemoteName(t, s);
-  }
-  if (i<1) {
+  s=GWEN_DB_GetCharValue(db, "remoteName", 0, 0);
+  if (*s && *s)
+    AB_Transaction_SetRemoteName(t, s);
+  else {
     DBG_ERROR(0, "No remote name given");
     AB_Transaction_free(t);
     return NULL;
@@ -411,10 +204,6 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
     AB_Transaction_free(t);
     return NULL;
   }
-
-  i=GWEN_DB_GetIntValue(db, "textkey", 0, -1);
-  if (i>0)
-    AB_Transaction_SetTextKey(t, i);
 
   s=GWEN_DB_GetCharValue(db, "value", 0, 0);
   if (s && *s) {
@@ -460,7 +249,7 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
   }
 
   /* standing orders */
-  if (expTransferType==AB_Job_TypeSepaCreateStandingOrder) {
+  if (cmd==AB_Transaction_CommandCreateStandingOrder) {
      s=GWEN_DB_GetCharValue(db, "firstExecutionDate", 0, 0);
      if (!(s && *s)) {
        DBG_ERROR(0, "Missing first execution date");
@@ -468,9 +257,9 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
      }
   }
 
-  if (expTransferType==AB_Job_TypeSepaModifyStandingOrder ||
-      expTransferType==AB_Job_TypeSepaDeleteStandingOrder) {
-     /*  not in the Specs, but the banks ask it)    */
+  if (cmd==AB_Transaction_CommandModifyStandingOrder ||
+      cmd==AB_Transaction_CommandDeleteStandingOrder) {
+     /*  not in the Specs, but the banks ask for it)    */
      s=GWEN_DB_GetCharValue(db, "nextExecutionDate", 0, 0);
      if (!(s && *s)) {
        DBG_ERROR(0, "Missing next execution date");
@@ -513,9 +302,9 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
     GWEN_Date_free(d);
   }
 
-  if (expTransferType==AB_Job_TypeSepaCreateStandingOrder ||
-      expTransferType==AB_Job_TypeSepaModifyStandingOrder ||
-      expTransferType==AB_Job_TypeSepaDeleteStandingOrder) {
+  if (cmd==AB_Transaction_CommandCreateStandingOrder ||
+      cmd==AB_Transaction_CommandModifyStandingOrder ||
+      cmd==AB_Transaction_CommandDeleteStandingOrder) {
     const char *s;
     AB_TRANSACTION_PERIOD period=AB_Transaction_PeriodUnknown;
 
@@ -563,11 +352,11 @@ AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferT
 
 
 
-AB_TRANSACTION *mkSepaDebitNote(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+AB_TRANSACTION *mkSepaDebitNote(GWEN_DB_NODE *db) {
   AB_TRANSACTION *t;
   const char *s;
 
-  t=mkSepaTransfer(a, db, AB_Job_TypeDebitNote);
+  t=mkSepaTransfer(db, AB_Transaction_CommandSepaDebitNote);
   if (t==NULL) {
     DBG_INFO(0, "here");
     return NULL;
@@ -631,6 +420,90 @@ AB_TRANSACTION *mkSepaDebitNote(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
 }
 
 
+
+int getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db, AB_ACCOUNT_SPEC_LIST **pAccountSpecList) {
+  AB_ACCOUNT_SPEC_LIST *asl=NULL;
+  uint32_t uniqueAccountId;
+  int rv;
+
+  asl=AB_AccountSpec_List_new();
+
+  uniqueAccountId=(uint32_t) GWEN_DB_GetIntValue(db, "uniqueAccountId", 0, 0);
+  if (uniqueAccountId) {
+    AB_ACCOUNT_SPEC *as=NULL;
+
+    /* specific unique id given, use that exclusively */
+    rv=AB_Banking6_GetAccountSpecByUniqueId(ab, uniqueAccountId, &as);
+    if (rv<0) {
+      DBG_ERROR(0, "Could not load account spec %lu (%d)", (unsigned long int) uniqueAccountId, rv);
+      AB_AccountSpec_List_free(asl);
+      return rv;
+    }
+    AB_AccountSpec_List_Add(as, asl);
+  }
+  else {
+    /* no unique account id given, try match parameters */
+    rv=AB_Banking6_GetAccountSpecList(ab, &asl);
+    if (rv<0) {
+      DBG_ERROR(0, "Could not load account specs (%d)", rv);
+      AB_AccountSpec_List_free(asl);
+      return rv;
+    }
+    else {
+      const char *backendName;
+      const char *country;
+      const char *bankId;
+      const char *accountId;
+      const char *subAccountId;
+      const char *iban;
+      const char *s;
+      AB_ACCOUNT_TYPE aType=AB_AccountType_Unknown;
+      AB_ACCOUNT_SPEC *as;
+
+      backendName=GWEN_DB_GetCharValue(db, "backendName", 0, "*");
+      country=GWEN_DB_GetCharValue(db, "country", 0, "*");
+      bankId=GWEN_DB_GetCharValue(db, "bankId", 0, "*");
+      country=GWEN_DB_GetCharValue(db, "country", 0, "*");
+      accountId=GWEN_DB_GetCharValue(db, "accountId", 0, "*");
+      subAccountId=GWEN_DB_GetCharValue(db, "subAccountId", 0, "*");
+      iban=GWEN_DB_GetCharValue(db, "iban", 0, "*");
+      s=GWEN_DB_GetCharValue(db, "accountType", 0, NULL);
+      if (s && *s)
+        aType=AB_AccountType_fromChar(s);
+      if (aType==AB_AccountType_Invalid) {
+        DBG_ERROR(0, "Invalid Could not load account specs (%d)", rv);
+        AB_AccountSpec_List_free(asl);
+        return GWEN_ERROR_INVALID;
+      }
+
+      as=AB_AccountSpec_List_First(asl);
+      while(as) {
+        AB_ACCOUNT_SPEC *asNext;
+
+        asNext=AB_AccountSpec_List_Next(as);
+        if (AB_AccountSpec_Matches(as, backendName,
+                                   country, bankId, accountId, subAccountId,
+                                   iban,
+                                   "*", /* currency */
+                                   aType)<1) {
+          /* doesn't match, remove from list */
+          AB_AccountSpec_List_Del(as);
+          AB_AccountSpec_free(as);
+        }
+        as=asNext;
+      }
+    }
+  }
+
+  if (AB_AccountSpec_List_GetCount(asl))
+    *pAccountSpecList=asl;
+  else {
+    AB_AccountSpec_List_free(asl);
+    *pAccountSpecList=NULL;
+    return GWEN_ERROR_NOT_FOUND;
+  }
+  return 0;
+}
 
 
 

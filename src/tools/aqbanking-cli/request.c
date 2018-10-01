@@ -13,12 +13,7 @@
 
 #include "globals.h"
 
-#include <aqbanking/jobgettransactions.h>
-#include <aqbanking/jobgetbalance.h>
-#include <aqbanking/jobgetstandingorders.h>
-#include <aqbanking/jobsepagetstandingorders.h>
-#include <aqbanking/jobgetdatedtransfers.h>
-#include <aqbanking/jobgetestatements.h>
+#include <aqbanking/transaction.h>
 
 #include <gwenhywfar/text.h>
 
@@ -36,8 +31,9 @@ int request(AB_BANKING *ab,
             GWEN_DB_NODE *dbArgs,
             int argc,
             char **argv) {
-  AB_ACCOUNT_LIST2 *al;
   GWEN_DB_NODE *db;
+  AB_ACCOUNT_SPEC_LIST *al=NULL;
+  AB_ACCOUNT_SPEC *as;
   const char *s;
   int rv;
   const char *ctxFile;
@@ -46,13 +42,45 @@ int request(AB_BANKING *ab,
   int reqBalance=0;
   int reqSto=0;
   int reqSepaSto=0;
-  int reqDT=0;
   int reqEStatements=0;
   int ignoreUnsupported=0;
   GWEN_DATE *fromDate=0;
   GWEN_DATE *toDate=0;
-  AB_JOB_LIST2 *jobList;
+  AB_TRANSACTION_LIST *jobList;
   const GWEN_ARGS args[]={
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Int,            /* type */
+    "uniqueAccountId",             /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    NULL,                         /* short option */
+    "aid",                        /* long option */
+    "Specify the unique account id",      /* short description */
+    "Specify the unique account id"       /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,            /* type */
+    "backendName",                     /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    NULL,                          /* short option */
+    "backend",                       /* long option */
+    "Specify the name of the backend for your account",      /* short description */
+    "Specify the name of the backend for your account"       /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,            /* type */
+    "country",                     /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    NULL,                          /* short option */
+    "country",                       /* long option */
+    "Specify the country for your account (e.g. \"de\")",      /* short description */
+    "Specify the country for your account (e.g. \"de\")"       /* long description */
+  },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsType_Char,            /* type */
@@ -89,24 +117,24 @@ int request(AB_BANKING *ab,
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsType_Char,            /* type */
-    "bankName",                   /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "N",                          /* short option */
-    "bankname",                   /* long option */
-    "Specify the bank name",      /* short description */
-    "Specify the bank name"       /* long description */
+    "iban",                        /* name */
+    0,                             /* minnum */
+    1,                             /* maxnum */
+    "A",                           /* short option */
+    "iban",                       /* long option */
+    "Specify the iban of your account",      /* short description */
+    "Specify the iban of your account"       /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsType_Char,            /* type */
-    "accountName",                /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "n",                          /* short option */
-    "accountname",                    /* long option */
-    "Specify the account name",     /* short description */
-    "Specify the account name"      /* long description */
+    "accountType",                 /* name */
+    0,                             /* minnum */
+    1,                             /* maxnum */
+    "t",                           /* short option */
+    "accounttype",                       /* long option */
+    "Specify the type of your account",      /* short description */
+    "Specify the type of your account"       /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -162,17 +190,6 @@ int request(AB_BANKING *ab,
     "sepaSto",                    /* long option */
     "Request SEPA standing orders",    /* short description */
     "Request SEPA standing orders"     /* long description */
-  },
-  {
-    0,                            /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "reqDT",                      /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "dated",                      /* long option */
-    "Request dated transfers",    /* short description */
-    "Request dated transfers"     /* long description */
   },
   {
     0,                            /* flags */
@@ -259,7 +276,6 @@ int request(AB_BANKING *ab,
   reqBalance=GWEN_DB_GetIntValue(db, "reqBalance", 0, 0);
   reqSto=GWEN_DB_GetIntValue(db, "reqSto", 0, 0);
   reqSepaSto=GWEN_DB_GetIntValue(db, "reqSepaSto", 0, 0);
-  reqDT=GWEN_DB_GetIntValue(db, "reqDT", 0, 0);
   reqEStatements=GWEN_DB_GetIntValue(db, "reqEStatements", 0, 0);
   ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
   s=GWEN_DB_GetCharValue(db, "fromDate", 0, 0);
@@ -288,313 +304,176 @@ int request(AB_BANKING *ab,
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
+  rv=getSelectedAccounts(ab, db, &al);
+  if (rv<0) {
+    if (rv==GWEN_ERROR_NOT_FOUND) {
+      DBG_ERROR(0, "No matching accounts");
+    }
+    else {
+      DBG_ERROR(0, "Error getting selected accounts (%d)", rv);
+    }
     GWEN_Date_free(toDate);
     GWEN_Date_free(fromDate);
+    AB_Banking_Fini(ab);
     return 2;
   }
 
-  jobList=AB_Job_List2_new();
-  al=AB_Banking_GetAccounts(ab);
-  if (al) {
-    AB_ACCOUNT_LIST2_ITERATOR *ait;
+  jobList=AB_Transaction_List_new();
 
-    ait=AB_Account_List2_First(al);
-    if (ait) {
-      AB_ACCOUNT *a;
-      const char *bankId;
-      const char *accountId;
-      const char *subAccountId;
-      const char *bankName;
-      const char *accountName;
-      const char *s;
+  as=AB_AccountSpec_List_First(al);
+  while(as) {
+    uint32_t aid;
 
-      bankId=GWEN_DB_GetCharValue(db, "bankId", 0, 0);
-      bankName=GWEN_DB_GetCharValue(db, "bankName", 0, 0);
-      accountId=GWEN_DB_GetCharValue(db, "accountId", 0, 0);
-      subAccountId=GWEN_DB_GetCharValue(db, "subAccountId", 0, 0);
-      accountName=GWEN_DB_GetCharValue(db, "accountName", 0, 0);
+    aid=AB_AccountSpec_GetUniqueId(as);
 
-      a=AB_Account_List2Iterator_Data(ait);
-      assert(a);
-      while(a) {
-	int matches=1;
-        GWEN_BUFFER *accNameBuf;
-
-        accNameBuf=GWEN_Buffer_new(0, 256, 0, 1);
-
-        s=AB_Account_GetBankName(a);
-        if (s) {
-          GWEN_Buffer_AppendString(accNameBuf, " Bank Name: ");
-          GWEN_Buffer_AppendString(accNameBuf, s);
-        }
-
-        s=AB_Account_GetBankCode(a);
-        if (s) {
-          GWEN_Buffer_AppendString(accNameBuf, " Bank Code: ");
-          GWEN_Buffer_AppendString(accNameBuf, s);
-        }
-
-        s=AB_Account_GetAccountName(a);
-        if (s) {
-          GWEN_Buffer_AppendString(accNameBuf, " Account Name: ");
-          GWEN_Buffer_AppendString(accNameBuf, s);
-        }
-
-        s=AB_Account_GetAccountNumber(a);
-        if (s) {
-          GWEN_Buffer_AppendString(accNameBuf, " Account Num: ");
-          GWEN_Buffer_AppendString(accNameBuf, s);
-        }
-
-        s=AB_Account_GetSubAccountId(a);
-        if (s) {
-          GWEN_Buffer_AppendString(accNameBuf, " Account Suffix: ");
-          GWEN_Buffer_AppendString(accNameBuf, s);
-        }
-
-
-        if (matches && bankId) {
-          s=AB_Account_GetBankCode(a);
-          if (!s || !*s || -1==GWEN_Text_ComparePattern(s, bankId, 0))
-            matches=0;
-        }
-
-        if (matches && bankName) {
-          s=AB_Account_GetBankName(a);
-          if (!s || !*s || -1==GWEN_Text_ComparePattern(s, bankName, 0))
-            matches=0;
-        }
-
-        if (matches && accountId) {
-          s=AB_Account_GetAccountNumber(a);
-          if (!s || !*s || -1==GWEN_Text_ComparePattern(s, accountId, 0))
-            matches=0;
-        }
-
-        if (matches && subAccountId) {
-          s=AB_Account_GetSubAccountId(a);
-          if (!s || !*s || -1==GWEN_Text_ComparePattern(s, subAccountId, 0))
-            matches=0;
-        }
-
-        if (matches && accountName) {
-          s=AB_Account_GetAccountName(a);
-          if (!s || !*s || -1==GWEN_Text_ComparePattern(s, accountName, 0))
-            matches=0;
-        }
-
-        if (matches) {
-
-          if (reqTrans) {
-            AB_JOB *j;
-
-	    j=AB_JobGetTransactions_new(a);
-	    rv=AB_Job_CheckAvailability(j);
-            if (rv>=0) {
-              if (fromDate)
-                AB_JobGetTransactions_SetFromDate(j, fromDate);
-              if (toDate)
-                AB_JobGetTransactions_SetToDate(j, toDate);
-              AB_Job_List2_PushBack(jobList, j);
-              requests++;
-            }
-            else {
-              if (ignoreUnsupported) {
-                DBG_ERROR(0,
-                          "Ignoring transfer request for %s: %d",
-                          GWEN_Buffer_GetStart(accNameBuf),
-                          rv);
-                AB_Job_free(j);
-              }
-              else {
-                DBG_ERROR(0,
-                          "Error requesting transfers for %s: %d",
-                          GWEN_Buffer_GetStart(accNameBuf),
-                          rv);
-                GWEN_Buffer_free(accNameBuf);
-                AB_Account_List2Iterator_free(ait);
-                AB_Account_List2_free(al);
-                AB_Job_List2_FreeAll(jobList);
-                GWEN_Date_free(toDate);
-                GWEN_Date_free(fromDate);
-                return 3;
-              }
-	    }
-          }
-
-	  if (reqBalance) {
-            AB_JOB *j;
-
-	    j=AB_JobGetBalance_new(a);
-	    rv=AB_Job_CheckAvailability(j);
-            if (rv>=0) {
-              AB_Job_List2_PushBack(jobList, j);
-              requests++;
-            }
-            else {
-              if (ignoreUnsupported) {
-                DBG_ERROR(0,
-                          "Ignoring balance request for %s: %d",
-                          GWEN_Buffer_GetStart(accNameBuf),
-                          rv);
-                AB_Job_free(j);
-              }
-              else {
-                DBG_ERROR(0,
-                          "Error requesting balance for %s: %d",
-                          GWEN_Buffer_GetStart(accNameBuf),
-                          rv);
-                GWEN_Buffer_free(accNameBuf);
-                AB_Account_List2Iterator_free(ait);
-                AB_Account_List2_free(al);
-                AB_Job_List2_FreeAll(jobList);
-                GWEN_Date_free(toDate);
-                GWEN_Date_free(fromDate);
-                return 3;
-              }
-	    }
-          }
-          if (reqSto) {
-            AB_JOB *j;
-
-	    j=AB_JobGetStandingOrders_new(a);
-	    rv=AB_Job_CheckAvailability(j);
-            if (rv>=0) {
-              AB_Job_List2_PushBack(jobList, j);
-              requests++;
-            }
-            else {
-              if (ignoreUnsupported) {
-                DBG_ERROR(0,
-                          "Ignoring standing order request for %s: %d",
-                          GWEN_Buffer_GetStart(accNameBuf),
-                          rv);
-                AB_Job_free(j);
-              }
-              else {
-                DBG_ERROR(0,
-                          "Error requesting standing orders for %s: %d",
-                          GWEN_Buffer_GetStart(accNameBuf),
-                          rv);
-                GWEN_Buffer_free(accNameBuf);
-                AB_Account_List2Iterator_free(ait);
-                AB_Account_List2_free(al);
-                AB_Job_List2_FreeAll(jobList);
-                GWEN_Date_free(toDate);
-                GWEN_Date_free(fromDate);
-                return 3;
-              }
-	    }
-	  }
-          if (reqSepaSto) {
-            AB_JOB *j;
-
-	    j=AB_JobSepaGetStandingOrders_new(a);
-	    rv=AB_Job_CheckAvailability(j);
-            if (rv>=0) {
-              AB_Job_List2_PushBack(jobList, j);
-              requests++;
-            }
-            else {
-              if (ignoreUnsupported) {
-                DBG_ERROR(0,
-                          "Ignoring SEPA standing order request for %s: %d",
-                          GWEN_Buffer_GetStart(accNameBuf),
-                          rv);
-                AB_Job_free(j);
-              }
-              else {
-                DBG_ERROR(0,
-                          "Error requesting SEPA standing orders for %s: %d",
-                          GWEN_Buffer_GetStart(accNameBuf),
-                          rv);
-                GWEN_Buffer_free(accNameBuf);
-                AB_Account_List2Iterator_free(ait);
-                AB_Account_List2_free(al);
-                AB_Job_List2_FreeAll(jobList);
-                GWEN_Date_free(toDate);
-                GWEN_Date_free(fromDate);
-                return 3;
-              }
-	    }
-	  }
-	  if (reqDT) {
-            AB_JOB *j;
-
-	    j=AB_JobGetDatedTransfers_new(a);
-	    rv=AB_Job_CheckAvailability(j);
-            if (rv>=0) {
-              AB_Job_List2_PushBack(jobList, j);
-              requests++;
-            }
-            else {
-              if (ignoreUnsupported) {
-                DBG_ERROR(0,
-                          "Ignoring dated transfers request for %s: %d",
-                          GWEN_Buffer_GetStart(accNameBuf),
-                          rv);
-                AB_Job_free(j);
-              }
-              else {
-                DBG_ERROR(0,
-                          "Error requesting dated transfers for %s: %d",
-                          GWEN_Buffer_GetStart(accNameBuf),
-                          rv);
-                GWEN_Buffer_free(accNameBuf);
-                AB_Account_List2Iterator_free(ait);
-                AB_Account_List2_free(al);
-                AB_Job_List2_FreeAll(jobList);
-                GWEN_Date_free(toDate);
-                GWEN_Date_free(fromDate);
-                return 3;
-              }
-	    }
-          }
-          if (reqEStatements) {
-            AB_JOB *j;
-
-	    j=AB_JobGetEStatements_new(a);
-	    rv=AB_Job_CheckAvailability(j);
-            if (rv>=0) {
-              AB_Job_List2_PushBack(jobList, j);
-              requests++;
-            }
-            else {
-              if (ignoreUnsupported) {
-                DBG_ERROR(0,
-                          "Ignoring request for electronic statements for %s: %d",
-                          GWEN_Buffer_GetStart(accNameBuf),
-                          rv);
-                AB_Job_free(j);
-              }
-              else {
-                DBG_ERROR(0,
-                          "Error requesting electronic statements for %s: %d",
-                          GWEN_Buffer_GetStart(accNameBuf),
-                          rv);
-                GWEN_Buffer_free(accNameBuf);
-                AB_Account_List2Iterator_free(ait);
-                AB_Account_List2_free(al);
-                AB_Job_List2_FreeAll(jobList);
-                GWEN_Date_free(toDate);
-                GWEN_Date_free(fromDate);
-                return 3;
-              }
-	    }
-          }
-	}
-
-        GWEN_Buffer_free(accNameBuf);
-
-        a=AB_Account_List2Iterator_Next(ait);
+    if (reqTrans) {
+      AB_TRANSACTION *j;
+  
+      j=AB_Transaction_new();
+      AB_Transaction_SetUniqueAccountId(j, aid);
+      AB_Transaction_SetCommand(j, AB_Transaction_CommandGetTransactions);
+      if (1) { /* TODO: check availability */
+        if (fromDate)
+          AB_Transaction_SetFirstDate(j, fromDate);
+        if (toDate)
+          AB_Transaction_SetLastDate(j, toDate);
+        AB_Transaction_List_Add(j, jobList);
+        requests++;
       }
-      AB_Account_List2Iterator_free(ait);
+      else {
+        if (ignoreUnsupported) {
+          DBG_ERROR(0, "Ignoring transfer request for %lu: Not supported.", (unsigned long int) aid);
+          AB_Transaction_free(j);
+        }
+        else {
+          DBG_ERROR(0, "Error requesting transfers for account %lu: Not supported.", (unsigned long int) aid);
+          AB_Transaction_free(j);
+          AB_Transaction_List_free(jobList);
+          AB_AccountSpec_List_free(al);
+          GWEN_Date_free(toDate);
+          GWEN_Date_free(fromDate);
+          AB_Banking_Fini(ab);
+          return 3;
+        }
+      }
     }
-  }
-  AB_Account_List2_free(al);
+
+    if (reqBalance) {
+      AB_TRANSACTION *j;
+  
+      j=AB_Transaction_new();
+      AB_Transaction_SetUniqueAccountId(j, aid);
+      AB_Transaction_SetCommand(j, AB_Transaction_CommandGetBalance);
+      if (1) { /* TODO: check availability */
+        AB_Transaction_List_Add(j, jobList);
+        requests++;
+      }
+      else {
+        if (ignoreUnsupported) {
+          DBG_ERROR(0, "Ignoring balance request for %lu: Not supported.", (unsigned long int) aid);
+          AB_Transaction_free(j);
+        }
+        else {
+          DBG_ERROR(0, "Error requesting balance for account %lu: Not supported.", (unsigned long int) aid);
+          AB_Transaction_free(j);
+          AB_Transaction_List_free(jobList);
+          AB_AccountSpec_List_free(al);
+          GWEN_Date_free(toDate);
+          GWEN_Date_free(fromDate);
+          AB_Banking_Fini(ab);
+          return 3;
+        }
+      }
+    }
+
+    if (reqSto) {
+      AB_TRANSACTION *j;
+  
+      j=AB_Transaction_new();
+      AB_Transaction_SetUniqueAccountId(j, aid);
+      AB_Transaction_SetCommand(j, AB_Transaction_CommandGetStandingOrders);
+      if (1) { /* TODO: check availability */
+        AB_Transaction_List_Add(j, jobList);
+        requests++;
+      }
+      else {
+        if (ignoreUnsupported) {
+          DBG_ERROR(0, "Ignoring standing order request for %lu: Not supported.", (unsigned long int) aid);
+          AB_Transaction_free(j);
+        }
+        else {
+          DBG_ERROR(0, "Error requesting standing orders for account %lu: Not supported.", (unsigned long int) aid);
+          AB_Transaction_free(j);
+          AB_Transaction_List_free(jobList);
+          AB_AccountSpec_List_free(al);
+          GWEN_Date_free(toDate);
+          GWEN_Date_free(fromDate);
+          AB_Banking_Fini(ab);
+          return 3;
+        }
+      }
+    }
+
+    if (reqSepaSto) {
+      AB_TRANSACTION *j;
+  
+      j=AB_Transaction_new();
+      AB_Transaction_SetUniqueAccountId(j, aid);
+      AB_Transaction_SetCommand(j, AB_Transaction_CommandSepaGetStandingOrders);
+      if (1) { /* TODO: check availability */
+        AB_Transaction_List_Add(j, jobList);
+        requests++;
+      }
+      else {
+        if (ignoreUnsupported) {
+          DBG_ERROR(0, "Ignoring SEPA standing order request for %lu: Not supported.", (unsigned long int) aid);
+          AB_Transaction_free(j);
+        }
+        else {
+          DBG_ERROR(0, "Error requesting SEPA standing orders for account %lu: Not supported.", (unsigned long int) aid);
+          AB_Transaction_free(j);
+          AB_Transaction_List_free(jobList);
+          AB_AccountSpec_List_free(al);
+          GWEN_Date_free(toDate);
+          GWEN_Date_free(fromDate);
+          AB_Banking_Fini(ab);
+          return 3;
+        }
+      }
+    }
+
+    if (reqEStatements) {
+      AB_TRANSACTION *j;
+  
+      j=AB_Transaction_new();
+      AB_Transaction_SetUniqueAccountId(j, aid);
+      AB_Transaction_SetCommand(j, AB_Transaction_CommandGetEStatements);
+      if (1) { /* TODO: check availability */
+        AB_Transaction_List_Add(j, jobList);
+        requests++;
+      }
+      else {
+        if (ignoreUnsupported) {
+          DBG_ERROR(0, "Ignoring electronic statement request for %lu: Not supported.", (unsigned long int) aid);
+          AB_Transaction_free(j);
+        }
+        else {
+          DBG_ERROR(0, "Error requesting electronic statements for account %lu: Not supported.", (unsigned long int) aid);
+          AB_Transaction_free(j);
+          AB_Transaction_List_free(jobList);
+          AB_AccountSpec_List_free(al);
+          GWEN_Date_free(toDate);
+          GWEN_Date_free(fromDate);
+          AB_Banking_Fini(ab);
+          return 3;
+        }
+      }
+    }
+
+    as=AB_AccountSpec_List_Next(as);
+  } /* while (as) */
+
+  AB_AccountSpec_List_free(al);
   GWEN_Date_free(toDate);
   GWEN_Date_free(fromDate);
 
@@ -603,10 +482,10 @@ int request(AB_BANKING *ab,
 
     DBG_INFO(0, "%d requests created", requests);
     ctx=AB_ImExporterContext_new();
-    rv=AB_Banking_ExecuteJobs(ab, jobList, ctx);
-    AB_Job_List2_FreeAll(jobList);
+    rv=AB_Banking6_SendCommands(ab, jobList, ctx);
+    AB_Transaction_List_free(jobList);
     if (rv) {
-      fprintf(stderr, "Error on executeQueue (%d)\n", rv);
+      fprintf(stderr, "Error on sendCommands (%d)\n", rv);
       AB_ImExporterContext_free(ctx);
       return 3;
     }
@@ -615,24 +494,15 @@ int request(AB_BANKING *ab,
     AB_ImExporterContext_free(ctx);
     if (rv<0) {
       DBG_ERROR(0, "Error writing context file (%d)", rv);
-      AB_Banking_OnlineFini(ab);
       AB_Banking_Fini(ab);
       return 4;
     }
   }
   else {
     DBG_ERROR(0, "No requests created");
-    AB_Job_List2_FreeAll(jobList);
-    AB_Banking_OnlineFini(ab);
+    AB_Transaction_List_free(jobList);
     AB_Banking_Fini(ab);
     return 4;
-  }
-
-  rv=AB_Banking_OnlineFini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    AB_Banking_Fini(ab);
-    return 5;
   }
 
   rv=AB_Banking_Fini(ab);

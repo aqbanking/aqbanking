@@ -44,7 +44,6 @@
 #include "versions.c"
 #include "addtransaction.c"
 #include "fillgaps.c"
-#include "updateconf.c"
 #include "sepatransfer.c"
 #include "addsepadebitnote.c"
 #include "sepadebitnote.c"
@@ -271,9 +270,6 @@ int main(int argc, char **argv) {
     cmdAddHelpStr(ubuf, "fillgaps",
                   I18N("Fill gaps in an import context file from configuration settings"));
 
-    cmdAddHelpStr(ubuf, "updateconf",
-                  I18N("Update configuration from previous AqBanking versions"));
-
     cmdAddHelpStr(ubuf, "listprofiles",
                   I18N("Print existing profiles"));
 
@@ -404,9 +400,6 @@ int main(int argc, char **argv) {
   }
   else if (strcasecmp(cmd, "fillgaps")==0) {
     rv=fillGaps(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "updateconf")==0) {
-    rv=updateConf(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "listprofiles")==0) {
     rv=listProfiles(ab, db, argc, argv);

@@ -13,7 +13,6 @@
 
 
 #include <aqbanking/banking.h>
-#include <aqbanking/banking_be.h>
 #include <aqhbci/provider.h>
 
 #include <gwenhywfar/args.h>
@@ -32,9 +31,15 @@ int readContext(const char *ctxFile,
 		AB_IMEXPORTER_CONTEXT **pCtx,
 		int mustExist);
 int writeContext(const char *ctxFile, const AB_IMEXPORTER_CONTEXT *ctx);
-AB_TRANSACTION *mkTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, AB_TRANSACTION_COMMAND *jobType);
-AB_TRANSACTION *mkSepaTransfer(AB_ACCOUNT *a, GWEN_DB_NODE *db, int expTransferType);
-AB_TRANSACTION *mkSepaDebitNote(AB_ACCOUNT *a, GWEN_DB_NODE *db);
+AB_TRANSACTION *mkSepaTransfer(GWEN_DB_NODE *db, int cmd);
+
+AB_TRANSACTION *mkSepaDebitNote(GWEN_DB_NODE *db);
+
+
+/**
+ * Get selected AqBanking account sepcs matching the user given parameters in command line db.
+ */
+int getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db, AB_ACCOUNT_SPEC_LIST **pAccountSpecList);
 
 
 
