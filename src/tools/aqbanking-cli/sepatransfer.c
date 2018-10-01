@@ -13,9 +13,7 @@
 
 #include "globals.h"
 
-#include <aqbanking/account.h>
-#include <aqbanking/job.h>
-#include <aqbanking/jobsepatransfer.h>
+#include <aqbanking/transaction.h>
 
 #include <gwenhywfar/text.h>
 
@@ -33,6 +31,8 @@ int sepaTransfer(AB_BANKING *ab,
                  GWEN_DB_NODE *dbArgs,
                  int argc,
                  char **argv) {
+#pragma message "Need to implement this"
+#if 0
   GWEN_DB_NODE *db;
   int rv;
   const char *s;
@@ -390,6 +390,8 @@ int sepaTransfer(AB_BANKING *ab,
     return rvExec;
   else
     return 0;
+#endif
+  return 0;
 }
 
 

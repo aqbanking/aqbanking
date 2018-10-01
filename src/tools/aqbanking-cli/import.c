@@ -165,12 +165,6 @@ int import(AB_BANKING *ab,
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
-  }
-
   /* import new context */
   ctx=AB_ImExporterContext_new();
   rv=AB_Banking_ImportFileWithProfile(ab, importerName, ctx,
@@ -199,20 +193,12 @@ int import(AB_BANKING *ab,
   /* write context */
   rv=writeContext(ctxFile, ctx);
   if (rv<0) {
-    AB_Banking_OnlineFini(ab);
     AB_Banking_Fini(ab);
     return 4;
   }
   AB_ImExporterContext_free(ctx);
 
   /* that's is */
-  rv=AB_Banking_OnlineFini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    AB_Banking_Fini(ab);
-    return 5;
-  }
-
   rv=AB_Banking_Fini(ab);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);

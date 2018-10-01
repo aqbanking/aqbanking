@@ -29,6 +29,8 @@ int fillGaps(AB_BANKING *ab,
 	     GWEN_DB_NODE *dbArgs,
 	     int argc,
 	     char **argv) {
+#pragma message "Need to implement this"
+#if 0
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;
@@ -121,6 +123,7 @@ int fillGaps(AB_BANKING *ab,
     return 5;
   }
 
+#endif
   return 0;
 }
 

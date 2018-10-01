@@ -13,9 +13,7 @@
 
 #include "globals.h"
 
-#include <aqbanking/account.h>
-#include <aqbanking/jobsepadebitnote.h>
-#include <aqbanking/jobsepaflashdebitnote.h>
+#include <aqbanking/transaction.h>
 
 #include <gwenhywfar/text.h>
 
@@ -33,6 +31,8 @@ int sepaDebitNote(AB_BANKING *ab,
                   GWEN_DB_NODE *dbArgs,
                   int argc,
                   char **argv, int use_flash_debitnote) {
+#pragma message "Need to implement this"
+#if 0
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;
@@ -407,6 +407,8 @@ int sepaDebitNote(AB_BANKING *ab,
     return rvExec;
   else
     return 0;
+#endif
+  return 0;
 }
 
 

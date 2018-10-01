@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue May 03 2005
- copyright   : (C) 2005-2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -14,10 +14,6 @@
 #include "globals.h"
 
 #include <aqbanking/account.h>
-#include <aqbanking/jobsingletransfer.h>
-#include <aqbanking/jobcreatedatedtransfer.h>
-#include <aqbanking/jobcreatesto.h>
-#include <aqbanking/jobdeletesto.h>
 
 #include <gwenhywfar/text.h>
 
@@ -35,6 +31,8 @@ int transfer(AB_BANKING *ab,
 	     GWEN_DB_NODE *dbArgs,
 	     int argc,
 	     char **argv) {
+#pragma message "Need to implement this"
+#if 0
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;
@@ -459,6 +457,8 @@ int transfer(AB_BANKING *ab,
     return rvExec;
   else
     return 0;
+#endif
+  return 0;
 }
 
 

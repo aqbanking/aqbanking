@@ -13,8 +13,6 @@
 
 #include "globals.h"
 
-#include <aqbanking/jobsingledebitnote.h>
-
 #include <gwenhywfar/text.h>
 
 #include <sys/types.h>
@@ -31,6 +29,8 @@ int debitNotes(AB_BANKING *ab,
                GWEN_DB_NODE *dbArgs,
                int argc,
                char **argv) {
+#pragma message "Need to implement this"
+#if 0
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;
@@ -376,6 +376,8 @@ int debitNotes(AB_BANKING *ab,
     return rvExec;
   else
     return 0;
+#endif
+  return 0;
 }
 
 

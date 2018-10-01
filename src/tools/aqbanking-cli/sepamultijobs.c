@@ -13,7 +13,7 @@
 
 #include "globals.h"
 
-#include <aqbanking/jobsepadebitnote.h>
+#include <aqbanking/transaction.h>
 
 #include <gwenhywfar/text.h>
 
@@ -37,6 +37,8 @@ int sepaMultiJobs(AB_BANKING *ab,
                    int argc,
                    char **argv,
                    AQBANKING_TOOL_MULTISEPA_TYPE multisepa_type) {
+#pragma message "Need to implement this"
+#if 0
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;
@@ -423,6 +425,8 @@ int sepaMultiJobs(AB_BANKING *ab,
     return rvExec;
   else
     return 0;
+#endif
+  return 0;
 }
 
 

@@ -13,11 +13,7 @@
 
 #include "globals.h"
 
-#include <aqbanking/account.h>
-#include <aqbanking/job.h>
-#include <aqbanking/jobsepacreatesto.h>
-#include <aqbanking/jobsepamodifysto.h>
-#include <aqbanking/jobsepadeletesto.h>
+#include <aqbanking/transaction.h>
 
 #include <gwenhywfar/text.h>
 
@@ -35,6 +31,8 @@ int sepaRecurTransfer(AB_BANKING *ab,
                       GWEN_DB_NODE *dbArgs,
                       int argc,
                       char **argv) {
+#pragma message "Need to implement this"
+#if 0
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;
@@ -486,5 +484,7 @@ int sepaRecurTransfer(AB_BANKING *ab,
     return rvExec;
   else
     return 0;
+#endif
+  return 0;
 }
 

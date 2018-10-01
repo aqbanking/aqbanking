@@ -13,7 +13,7 @@
 
 #include "globals.h"
 
-#include <aqbanking/jobsingletransfer.h>
+#include <aqbanking/transaction.h>
 
 #include <gwenhywfar/text.h>
 
@@ -30,6 +30,8 @@ int transfers(AB_BANKING *ab,
 	      GWEN_DB_NODE *dbArgs,
 	      int argc,
 	      char **argv) {
+#pragma message "Need to implement this"
+#if 0
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;
@@ -376,6 +378,8 @@ int transfers(AB_BANKING *ab,
     return rvExec;
   else
     return 0;
+#endif
+  return 0;
 }
 
 

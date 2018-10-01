@@ -13,11 +13,7 @@
 
 #include "globals.h"
 
-#include <aqbanking/account.h>
-#include <aqbanking/jobsingletransfer.h>
-#include <aqbanking/jobsepatransfer.h>
-#include <aqbanking/jobcreatedatedtransfer.h>
-#include <aqbanking/jobcreatesto.h>
+#include <aqbanking/transaction.h>
 
 #include <gwenhywfar/text.h>
 
@@ -34,6 +30,8 @@ static int addSepaDebitNote(AB_BANKING *ab,
                             GWEN_DB_NODE *dbArgs,
                             int argc,
                             char **argv) {
+#pragma message "Need to implement this"
+#if 0
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;
@@ -259,13 +257,6 @@ static int addSepaDebitNote(AB_BANKING *ab,
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    AB_Banking_Fini(ab);
-    return 2;
-  }
-
   /* get account */
   al=AB_Banking_FindAccounts(ab, "*", "*", bankId, accountId, subAccountId);
   if (al==NULL || AB_Account_List2_GetSize(al)==0) {
@@ -284,7 +275,7 @@ static int addSepaDebitNote(AB_BANKING *ab,
   AB_Account_List2_free(al);
 
   /* create transaction from arguments */
-  t=mkSepaDebitNote(a, db);
+  t=mkSepaDebitNote(db);
   if (t==NULL) {
     DBG_ERROR(0, "Could not create SEPA transaction from arguments");
     AB_Banking_OnlineFini(ab);
@@ -392,6 +383,7 @@ static int addSepaDebitNote(AB_BANKING *ab,
     return 5;
   }
 
+#endif
   return 0;
 }
 

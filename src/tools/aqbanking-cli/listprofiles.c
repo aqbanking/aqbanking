@@ -87,13 +87,6 @@ int listProfiles(AB_BANKING *ab,
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
-  }
-
-
   dbProfiles=AB_Banking_GetImExporterProfiles(ab, importerName);
   if (dbProfiles) {
     GWEN_DB_NODE *dbT;
@@ -126,13 +119,6 @@ int listProfiles(AB_BANKING *ab,
   }
 
   /* that's is */
-  rv=AB_Banking_OnlineFini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    AB_Banking_Fini(ab);
-    return 5;
-  }
-
   rv=AB_Banking_Fini(ab);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);

@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id: getsysid.c 1288 2007-08-11 16:53:57Z martin $
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -185,6 +182,8 @@ int sendDtazv(AB_BANKING *ab,
 	      GWEN_DB_NODE *dbArgs,
 	      int argc,
 	      char **argv) {
+#pragma message "Need to implement this"
+#if 0
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
   AB_ACCOUNT_LIST2 *al;
@@ -409,6 +408,7 @@ int sendDtazv(AB_BANKING *ab,
     return 6;
   }
 
+#endif
   return 0;
 }
 
