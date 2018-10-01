@@ -54,6 +54,7 @@ AH_JOB *AH_Job_SepaTransferSingle_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *
   AH_Job_SetPrepareFn(j, AH_Job_SepaTransferSingle_Prepare);
   AH_Job_SetAddChallengeParamsFn(j, AH_Job_SepaTransferSingle_AddChallengeParams);
   AH_Job_SetHandleCommandFn(j, AH_Job_TransferBase_HandleCommand_SepaUndated);
+  AH_Job_SetGetLimitsFn(j, AH_Job_TransferBase_GetLimits_SepaUndated);
 
   return j;
 }

@@ -51,6 +51,9 @@ AH_JOB *AH_Job_LoadCellPhone_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *accou
   GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_LOADCELLPHONE, j, aj,
                        AH_Job_LoadCellPhone_FreeData);
 
+  AH_Job_SetGetLimitsFn(j, AH_Job_GetLimits_EmptyLimits);
+
+
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);
   assert(dbArgs);
