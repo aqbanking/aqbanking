@@ -467,6 +467,7 @@ int AH_Provider__SortProviderQueueIntoUserQueueList(AB_PROVIDER *pro, AB_PROVIDE
           DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
           return rv;
         }
+        uq=AB_UserQueue_new();
         AB_UserQueue_SetUser(uq, u);
 
         AB_UserQueue_List_Add(uq, uql);
@@ -491,7 +492,7 @@ void AH_Provider__FreeUsersAndAccountsFromUserQueueList(AB_PROVIDER *pro, AB_USE
   assert(hp);
 
   uq=AB_UserQueue_List_First(uql);
-  while(uql) {
+  while(uq) {
     AB_ACCOUNTQUEUE_LIST *aql;
     AB_USER *u;
 
@@ -607,11 +608,13 @@ int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, A
   assert(hp);
 
   uq=AB_UserQueue_List_First(uql);
-  while(uql) {
+  while(uq) {
     AB_ACCOUNTQUEUE_LIST *aql;
     AB_USER *u;
 
     u=AB_UserQueue_GetUser(uq);
+    assert(u);
+    DBG_ERROR(0, "Handling user \"%s\"", AB_User_GetUserId(u));
     aql=AB_UserQueue_GetAccountQueueList(uq);
     if (aql) {
       AB_ACCOUNTQUEUE *aq;
@@ -622,6 +625,7 @@ int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, A
         AB_TRANSACTION_LIST2 *tl2;
 
         a=AB_AccountQueue_GetAccount(aq);
+        assert(a);
 
         /* read transactions */
         tl2=AB_AccountQueue_GetTransactionList(aq);
@@ -656,10 +660,6 @@ int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, A
 
         aq=AB_AccountQueue_List_Next(aq);
       }
-
-      u=AB_UserQueue_GetUser(uq);
-      AB_UserQueue_SetUser(uq, NULL);
-      AB_User_free(u);
     }
 
     uq=AB_UserQueue_List_Next(uq);
