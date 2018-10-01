@@ -69,15 +69,15 @@ int main(int argc, char **argv) {
   }
 
   /* find a matching account within the given list */
-  as=AB_AccountSpec_List_Find(accs,
-                              "aqhbci",                /* backendName */
-                              "de",                    /* country */
-                              "28*",                   /* bankId bank */
-                              "*",                     /* accountNumber */
-                              "*",                     /* subAccountId */
-                              "*",                     /* iban */
-                              "*",                     /* currency */
-                              AB_AccountType_Unknown); /* ty */
+  as=AB_AccountSpec_List_FindFirst(accs,
+                                   "aqhbci",                /* backendName */
+                                   "de",                    /* country */
+                                   "28*",                   /* bankId bank */
+                                   "*",                     /* accountNumber */
+                                   "*",                     /* subAccountId */
+                                   "*",                     /* iban */
+                                   "*",                     /* currency */
+                                   AB_AccountType_Unknown); /* ty */
   if (as==NULL) {
     fprintf(stderr, "No matching account found.\n");
     return 3;

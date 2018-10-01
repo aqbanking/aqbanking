@@ -55,15 +55,15 @@ int main(int argc, char **argv) {
   AB_Banking6_GetAccountSpecList(ab, &accs);
 
   /* find a matching account within the given list */
-  as=AB_AccountSpec_List_Find(accs,
-                              "aqhbci",                /* backendName */
-                              "de",                    /* country */
-                              "28*",                   /* bankId bank */
-                              "*",                     /* accountNumber */
-                              "*",                     /* subAccountId */
-                              "*",                     /* iban */
-                              "*",                     /* currency */
-                              AB_AccountType_Unknown); /* ty */
+  as=AB_AccountSpec_List_FindFirst(accs,
+                                   "aqhbci",                /* backendName */
+                                   "de",                    /* country */
+                                   "28*",                   /* bankId bank */
+                                   "*",                     /* accountNumber */
+                                   "*",                     /* subAccountId */
+                                   "*",                     /* iban */
+                                   "*",                     /* currency */
+                                   AB_AccountType_Unknown); /* ty */
   if (as) {
     AB_TRANSACTION_LIST *cmdList;
     AB_TRANSACTION *t;
