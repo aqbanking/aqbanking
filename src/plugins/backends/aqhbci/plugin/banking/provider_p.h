@@ -38,9 +38,8 @@ static int AH_Provider__HashSha256(const uint8_t *p, unsigned int l, uint8_t *bu
 /*@{*/
 static int AH_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
 static int AH_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
-static int AH_Provider_Update(AB_PROVIDER *pro,
-                              uint32_t lastVersion,
-                              uint32_t currentVersion);
+static int AH_Provider_UpdatePreInit(AB_PROVIDER *pro, uint32_t lastVersion, uint32_t currentVersion);
+static int AH_Provider_UpdatePostInit(AB_PROVIDER *pro, uint32_t lastVersion, uint32_t currentVersion);
 
 static GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i);
 static GWEN_DIALOG *AH_Provider_GetNewCardUserDialog(AB_PROVIDER *pro);

@@ -15,12 +15,28 @@
 
 
 
-int AH_Provider_Update(AB_PROVIDER *pro,
-                       uint32_t lastVersion,
-                       uint32_t currentVersion) {
+int AH_Provider_UpdatePreInit(AB_PROVIDER *pro,
+                              uint32_t lastVersion,
+                              uint32_t currentVersion) {
+#if 0 /* no preinit for now */
   int rv;
 
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Update: Previous version %d.%d.%d.%d, new version %d.%d.%d.%d",
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Update (pre init): Previous version %d.%d.%d.%d, new version %d.%d.%d.%d",
+           (lastVersion>>24) & 0xff, (lastVersion>>16) & 0xff, (lastVersion>>8) & 0xff, lastVersion & 0xff,
+           (currentVersion>>24) & 0xff, (currentVersion>>16) & 0xff, (currentVersion>>8) & 0xff, currentVersion & 0xff);
+
+#endif
+  return 0;
+}
+
+
+
+int AH_Provider_UpdatePostInit(AB_PROVIDER *pro,
+                               uint32_t lastVersion,
+                               uint32_t currentVersion) {
+  int rv;
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Update (post init): Previous version %d.%d.%d.%d, new version %d.%d.%d.%d",
            (lastVersion>>24) & 0xff, (lastVersion>>16) & 0xff, (lastVersion>>8) & 0xff, lastVersion & 0xff,
            (currentVersion>>24) & 0xff, (currentVersion>>16) & 0xff, (currentVersion>>8) & 0xff, currentVersion & 0xff);
 

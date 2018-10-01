@@ -187,9 +187,10 @@ int AH_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
     (AQHBCI_VERSION_PATCHLEVEL<<8) |
     AQHBCI_VERSION_BUILD;
   lastVersion=GWEN_DB_GetIntValue(dbData, "lastVersion", 0, 0);
+
   if (lastVersion<currentVersion) {
-    DBG_WARN(AQHBCI_LOGDOMAIN, "Updating configuration for AqHBCI");
-    rv=AH_Provider_Update(pro, lastVersion, currentVersion);
+    DBG_WARN(AQHBCI_LOGDOMAIN, "Updating configuration for AqHBCI (before init)");
+    rv=AH_Provider_UpdatePreInit(pro, lastVersion, currentVersion);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -200,6 +201,15 @@ int AH_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   rv=AH_HBCI_Init(hp->hbci, dbData);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+  }
+
+  if (lastVersion<currentVersion) {
+    DBG_WARN(AQHBCI_LOGDOMAIN, "Updating configuration for AqHBCI (after init)");
+    rv=AH_Provider_UpdatePostInit(pro, lastVersion, currentVersion);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
   }
 
   return rv;
