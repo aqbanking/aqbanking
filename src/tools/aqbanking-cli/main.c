@@ -37,7 +37,6 @@
 #include "listtrans.c"
 #include "listtransfers.c"
 #include "request.c"
-#include "senddtazv.c"
 #include "transfer.c"
 #include "transfers.c"
 #include "util.c"
@@ -204,9 +203,6 @@ int main(int argc, char **argv) {
     }
     GWEN_Buffer_AppendString(ubuf,
                              I18N("\nCommands:\n"));
-    cmdAddHelpStr(ubuf, "senddtazv",
-                  I18N("Sends a DTAZV file to the bank"));
-
     cmdAddHelpStr(ubuf, "listaccs",
                   I18N("Prints the list of accounts"));
 
@@ -335,10 +331,7 @@ int main(int argc, char **argv) {
   ab=AB_Banking_new("aqbanking-cli", cfgDir, 0);
   AB_Gui_Extend(gui, ab);
 
-  if (strcasecmp(cmd, "senddtazv")==0) {
-    rv=sendDtazv(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "listaccs")==0) {
+  if (strcasecmp(cmd, "listaccs")==0) {
     rv=listAccs(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "listbal")==0) {

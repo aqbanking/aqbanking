@@ -36,7 +36,6 @@ EXTRA_DIST=\
   listtrans.c \
   listtransfers.c \
   request.c \
-  senddtazv.c \
   transfer.c \
   transfers.c \
   util.c \
