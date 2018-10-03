@@ -10,9 +10,9 @@
     <lang id="c">
       <identifier>AB_TRANSACTION</identifier>
       <prefix>AB_Transaction</prefix>
-      
+
       <baseFileName>transaction</baseFileName>
-      
+
       <flags>
         with_hash
         with_xml
@@ -22,7 +22,7 @@
         with_constlist2
         with_refcount
       </flags>
-      
+
       <headers>
         <header type="sys" loc="pre">aqbanking/error.h</header>
         <header type="sys" loc="pre">aqbanking/value.h</header>
@@ -35,10 +35,10 @@
         <header type="sys" loc="pre">gwenhywfar/db.h</header>
         <header type="sys" loc="pre">gwenhywfar/debug.h</header>
 
-<!--    
+<!--
         <header type="sys" loc="post">aqbanking/transactionfns.h</header>
         <header type="local" loc="codeEnd">transactionfns.c</header>
--->        
+-->
       </headers>
 
       <inlines>
@@ -59,14 +59,14 @@
                GWEN_BUFFER *buf;
                int rv;
                GWEN_MDIGEST *md;
-             
+
                assert(st);
-             
+
                buf=GWEN_Buffer_new(0, 256, 0, 1);
                $(struct_prefix)_toHashString(st, buf);
-             
+
                md=GWEN_MDigest_Rmd160_new();
-             
+
                rv=GWEN_MDigest_Begin(md);
                if (rv&lt;0) {
                  DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
@@ -74,7 +74,7 @@
                  GWEN_Buffer_free(buf);
                  return rv;
                }
-             
+
                rv=GWEN_MDigest_Update(md,
                     (const uint8_t*)GWEN_Buffer_GetStart(buf),
                     GWEN_Buffer_GetUsedBytes(buf));
@@ -84,7 +84,7 @@
                  GWEN_Buffer_free(buf);
                  return rv;
                }
-             
+
                rv=GWEN_MDigest_End(md);
                if (rv&lt;0) {
                  DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
@@ -92,9 +92,9 @@
                  GWEN_Buffer_free(buf);
                  return rv;
                }
-             
+
                GWEN_Buffer_Reset(buf);
-             
+
                rv=GWEN_Text_ToHexBuffer((const char*)GWEN_MDigest_GetDigestPtr(md),
                                         GWEN_MDigest_GetDigestSize(md),
                                         buf,
@@ -106,14 +106,64 @@
                  return rv;
                }
                GWEN_MDigest_free(md);
-             
+
                $(struct_prefix)_SetHash(st, GWEN_Buffer_GetStart(buf));
                GWEN_Buffer_free(buf);
-             
+
                return 0;
              }
           </content>
         </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             /**                                                                                              \n
+              * Check whether a transaction matches the given type and command.                               \n
+              *                                                                                               \n
+              * @return 1 if match, 0 otherwise                                                               \n
+              * @param tl pointer to the list to search                                                       \n
+              * @param ty transaction type, if 0 then this is not checked                                     \n
+              * @param cmd command, if -1 then any non-zero command matches, if 0 then this is not checked    \n
+             */                                                                                               \n
+             $(api) int $(struct_prefix)_MatchTypeAndCommand(const $(struct_type) *t, int ty, int cmd);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             int $(struct_prefix)_MatchTypeAndCommand(const $(struct_type) *t, int ty, int cmd) {
+               int match=1;
+  
+               if (match) {
+                 if ((ty &gt; AB_Transaction_TypeNone)  &amp;&amp; (t-&gt;type!=ty)) {
+                   return 0;
+                 }
+               }
+  
+               if (match) {
+                 if ((cmd &gt; AB_Transaction_CommandNone) &amp;&amp; (t-&gt;command!=cmd)) {
+                   return 0;
+                 }
+               }
+  
+               if (match) {
+                 if ((cmd &lt; AB_Transaction_CommandNone) &amp;&amp; (t-&gt;command &lt;= AB_Transaction_CommandNone)) {
+                   return 0;
+                 }
+               }
+               /* matches */
+               return 1;
+             }
+          </content>
+        </inline>
+
+
+
 
 
         <inline loc="end" access="public">
@@ -139,29 +189,11 @@
              $(struct_type) * $(struct_prefix)_List_FindFirstByType(const $(struct_type)_LIST *tl, int ty, int cmd) {
                if (tl) {
                  $(struct_type) *t;
-  
+
                  t=$(struct_prefix)_List_First(tl);
                  while(t) {
-                   int match=1;
-                   
-                   if (match) {
-                     if ((ty &gt; AB_Transaction_TypeNone)  &amp;&amp; ($(struct_prefix)_GetType(t)!=ty))
-                       match=0;
-                   }
-                   
-                   if (match) {
-                     if ((cmd &gt; AB_Transaction_CommandNone) &amp;&amp; ($(struct_prefix)_GetCommand(t)!=cmd))
-                       match=0;
-                   }
-
-                   if (match) {
-                     if ((cmd &lt; AB_Transaction_CommandNone) &amp;&amp; ($(struct_prefix)_GetCommand(t) &lt;= AB_Transaction_CommandNone))
-                       match=0;
-                   }
-                   
-                   if (match)
+                   if ($(struct_prefix)_MatchTypeAndCommand(t, ty, cmd))
                      return t;
-
                    t=$(struct_prefix)_List_Next(t);
                  }
                }
@@ -194,33 +226,111 @@
              $(struct_type) * $(struct_prefix)_List_FindNextByType(const $(struct_type) *tPrev, int ty, int cmd) {
                if (tPrev) {
                  $(struct_type) *t;
-                 
+
                  t=$(struct_prefix)_List_Next(tPrev);
                  while(t) {
-                   int match=1;
-                   
-                   if (match) {
-                     if ((ty &gt; AB_Transaction_TypeNone)  &amp;&amp; ($(struct_prefix)_GetType(t)!=ty))
-                       match=0;
-                   }
-                   
-                   if (match) {
-                     if ((cmd &gt; AB_Transaction_CommandNone) &amp;&amp; ($(struct_prefix)_GetCommand(t)!=cmd))
-                       match=0;
-                   }
-
-                   if (match) {
-                     if ((cmd &lt; AB_Transaction_CommandNone) &amp;&amp; ($(struct_prefix)_GetCommand(t) &lt;= AB_Transaction_CommandNone))
-                       match=0;
-                   }
-                   
-                   if (match)
+                   if ($(struct_prefix)_MatchTypeAndCommand(t, ty, cmd))
                      return t;
-
                    t=$(struct_prefix)_List_Next(t);
                  }
                }
                return NULL;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list</typeFlagsMask>
+          <typeFlagsValue>with_list</typeFlagsValue>
+          <content>
+             /**                                                                                              \n
+              * Remove matching transactions from the given list                                              \n
+              *                                                                                               \n
+              * @return Number of transactions removed from the list                                          \n
+              * @param tl pointer to the list to search                                                       \n
+              * @param ty transaction type, if 0 then this is not checked                                     \n
+              * @param cmd command, if -1 then any non-zero command matches, if 0 then this is not checked    \n
+             */                                                                                               \n
+             $(api) int $(struct_prefix)_List_RemoveByType($(struct_type)_LIST *tl, int ty, int cmd);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask>with_list</typeFlagsMask>
+          <typeFlagsValue>with_list</typeFlagsValue>
+          <content>
+             int $(struct_prefix)_List_RemoveByType($(struct_type)_LIST *tl, int ty, int cmd) {
+               int cntRemoved=0;
+
+               if (tl) {
+                 $(struct_type) *t;
+
+                 t=$(struct_prefix)_List_First(tl);
+                 while(t) {
+                   $(struct_type) *tNext;
+
+                   tNext=$(struct_prefix)_List_Next(t);
+
+                   if ($(struct_prefix)_MatchTypeAndCommand(t, ty, cmd)) {
+                     $(struct_prefix)_List_Del(t);
+                     $(struct_prefix)_free(t);
+                     cntRemoved++;
+                   }
+
+                   t=tNext;
+                 }
+               }
+               return cntRemoved;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list</typeFlagsMask>
+          <typeFlagsValue>with_list</typeFlagsValue>
+          <content>
+             /**                                                                                              \n
+              * Keep matching transactions in the given list and delete others.                               \n
+              *                                                                                               \n
+              * @return Number of transactions removed from the list                                          \n
+              * @param tl pointer to the list to search                                                       \n
+              * @param ty transaction type, if 0 then this is not checked                                     \n
+              * @param cmd command, if -1 then any non-zero command matches, if 0 then this is not checked    \n
+             */                                                                                               \n
+             $(api) int $(struct_prefix)_List_KeepByType($(struct_type)_LIST *tl, int ty, int cmd);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask>with_list</typeFlagsMask>
+          <typeFlagsValue>with_list</typeFlagsValue>
+          <content>
+             int $(struct_prefix)_List_KeepByType($(struct_type)_LIST *tl, int ty, int cmd) {
+               int cntRemoved=0;
+
+               if (tl) {
+                 $(struct_type) *t;
+
+                 t=$(struct_prefix)_List_First(tl);
+                 while(t) {
+                   $(struct_type) *tNext;
+
+                   tNext=$(struct_prefix)_List_Next(t);
+
+                   if (! $(struct_prefix)_MatchTypeAndCommand(t, ty, cmd)) {
+                     $(struct_prefix)_List_Del(t);
+                     $(struct_prefix)_free(t);
+                     cntRemoved++;
+                   }
+
+                   t=tNext;
+                 }
+               }
+               return cntRemoved;
              }
           </content>
         </inline>
@@ -241,16 +351,13 @@
           <content>
              int $(struct_prefix)_List_CountByType(const $(struct_type)_LIST *tl, int ty, int cmd) {
                int count=0;
-               
+
                if (tl) {
                  $(struct_type) *t;
-  
+
                  t=$(struct_prefix)_List_First(tl);
                  while(t) {
-                   if (
-                       ((ty  &lt;=AB_Transaction_TypeNone)    || ($(struct_prefix)_GetType(t)==ty)) &amp;&amp;
-                       ((cmd &lt;=AB_Transaction_CommandNone) || ($(struct_prefix)_GetCommand(t)==cmd))
-                      )
+                   if ($(struct_prefix)_MatchTypeAndCommand(t, ty, cmd))
                      count++;
                    t=$(struct_prefix)_List_Next(t);
                  }
@@ -277,7 +384,7 @@
              $(struct_type) * $(struct_prefix)_List_FindName(const $(struct_type)_LIST *tl, int ty, const char *ns, const char *n) {
                if (tl) {
                  $(struct_type) *t;
-  
+
                  t=$(struct_prefix)_List_First(tl);
                  while(t) {
                    if ( (ty==AB_Transaction_TypeNone || $(struct_prefix)_GetType(t)==ty) &amp;&amp;
@@ -309,12 +416,12 @@
              int $(struct_prefix)_List_WriteDb(const $(struct_type)_LIST *tl, GWEN_DB_NODE *db) {
                if (tl) {
                  const $(struct_type) *t;
-  
+
                  t=$(struct_prefix)_List_First(tl);
                  while(t) {
                    GWEN_DB_NODE *dbT;
                    int rv;
-                   
+
                    dbT=GWEN_DB_Group_new("transaction");
                    rv=AB_Transaction_WriteDb(t, dbT);
                    if (rv &lt; 0) {
@@ -325,7 +432,7 @@
                    else {
                      GWEN_DB_AddGroup(db, dbT);
                    }
-                   
+
                    t=$(struct_prefix)_List_Next(t);
                  }
                }
@@ -350,16 +457,16 @@
              int $(struct_prefix)_List_ReadDb($(struct_type)_LIST *tl, GWEN_DB_NODE *db) {
                if (tl &amp;&amp; db) {
                  GWEN_DB_NODE *dbT;
-                 
+
                  dbT=GWEN_DB_GetFirstGroup(db);
                  while(dbT) {
                    $(struct_type) *t;
-                   
+
                    t=$(struct_prefix)_fromDb(dbT);
                    if (t) {
                      $(struct_prefix)_List_Add(t, tl);
                    }
-                  
+
                    dbT=GWEN_DB_GetNextGroup(dbT);
                  }
                }
@@ -390,7 +497,7 @@
                if (s &amp;&amp; *s) {
                  if (t->purpose &amp;&amp; *(t->purpose)) {
                    GWEN_BUFFER *tbuf;
-                 
+
                    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
                    GWEN_Buffer_AppendString(tbuf, t->purpose);
                    GWEN_Buffer_AppendString(tbuf, "\\n");
@@ -426,12 +533,12 @@
                if (sl) {
                  GWEN_STRINGLISTENTRY *se;
                  GWEN_BUFFER *tbuf;
-                 
+
                  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
                  se=GWEN_StringList_FirstEntry(sl);
                  while(se) {
                    const char *s;
-                   
+
                    s=GWEN_StringListEntry_Data(se);
                    if (s &amp;&amp; *s) {
                      if (GWEN_Buffer_GetUsedBytes(tbuf))
@@ -440,7 +547,7 @@
                    }
                    se=GWEN_StringListEntry_Next(se);
                  }
-               
+
                  $(struct_prefix)_SetPurpose(t, GWEN_Buffer_GetStart(tbuf));
                  GWEN_Buffer_free(tbuf);
                }
@@ -469,7 +576,7 @@
                if (s &amp;&amp; *s) {
                  if (t->category &amp;&amp; *(t->category)) {
                    GWEN_BUFFER *tbuf;
-                 
+
                    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
                    GWEN_Buffer_AppendString(tbuf, t->category);
                    GWEN_Buffer_AppendString(tbuf, "\\n");
@@ -505,12 +612,12 @@
                if (sl) {
                  GWEN_STRINGLISTENTRY *se;
                  GWEN_BUFFER *tbuf;
-                 
+
                  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
                  se=GWEN_StringList_FirstEntry(sl);
                  while(se) {
                    const char *s;
-                   
+
                    s=GWEN_StringListEntry_Data(se);
                    if (s &amp;&amp; *s) {
                      if (GWEN_Buffer_GetUsedBytes(tbuf))
@@ -519,7 +626,7 @@
                    }
                    se=GWEN_StringListEntry_Next(se);
                  }
-               
+
                  $(struct_prefix)_SetCategory(t, GWEN_Buffer_GetStart(tbuf));
                  GWEN_Buffer_free(tbuf);
                }
@@ -553,7 +660,7 @@
              int $(struct_prefix)_List2_freeAll($(struct_type)_LIST2 *tl) {
                if (tl) {
                  $(struct_prefix)_List2_ForEach(tl, $(struct_prefix)_List2__freeAll_cb, NULL);
-                 $(struct_prefix)_List2_free(tl); 
+                 $(struct_prefix)_List2_free(tl);
                }
                else {
                  DBG_ERROR(AQBANKING_LOGDOMAIN, "List missing");
@@ -566,7 +673,7 @@
 
 
       </inlines>
-      
+
     </lang>
 
     <enums>
@@ -620,12 +727,12 @@
         <item name="loadCellPhone"/>
 
         <item name="getEStatements"/>
-        
+
 
         <!-- Bit 8 set: transfer jobs, bit 9 cleared: non-SEPA -->
         <item name="transfer"            value="512"/>
         <item name="debitNote"/>
-        
+
         <item name="createStandingOrder"/>
         <item name="modifyStandingOrder"/>
         <item name="deleteStandingOrder"/>
@@ -635,7 +742,7 @@
         <item name="deleteDatedTransfer"/>
 
         <item name="internalTransfer"/>
-        
+
         <!-- Bit 8 set: transfer jobs, bit 9 set: SEPA -->
         <item name="sepaTransfer"        value="1536"/>
         <item name="sepaDebitNote"/>
@@ -700,7 +807,7 @@
       <typedef id="AE_STATEMENT_FLAGS" prefix="AE_Statement_Flags">
      </typedef>
     </typedefs>
-   --> 
+   -->
 
     <members>
 
@@ -723,16 +830,16 @@
           <setflags>none</setflags>
           <getflags>none</getflags>
         </member>
-  
-        <member name="command" type="int" maxlen="4" >
-          <default>AB_Transaction_CommandUnknown</default>
-          <preset>AB_Transaction_CommandUnknown</preset>
+
+        <member name="command" type="int" maxlen="32" enum="AB_TRANSACTION_COMMAND" >
+          <default>AB_Transaction_CommandNone</default>
+          <preset>AB_Transaction_CommandNone</preset>
           <access>public</access>
-          <flags>with_hash</flags>
+          <flags>enum with_hash</flags>
           <setflags>none</setflags>
           <getflags>none</getflags>
         </member>
-  
+
         <member name="status" type="int" maxlen="32" enum="AB_TRANSACTION_STATUS" >
           <default>AB_Transaction_StatusUnknown</default>
           <preset>AB_Transaction_StatusUnknown</preset>
@@ -800,20 +907,20 @@
             that reference command is stored here.
           </descr>
         </member>
-    
+
         <member name="groupId" type="uint32_t" >
           <default>0</default>
           <preset>0</preset>
           <access>public</access>
           <flags>with_hash</flags>
           <descr>
-            This id is assigned by a backend when sending multiple transfer 
+            This id is assigned by a backend when sending multiple transfer
             jobs in one backend request (e.g. AqHBCI uses DTAUS files when sending
             multi-transfer requests; in this case every transfer which goes
             into the same DTAUS file receives the same id).
           </descr>
         </member>
-  
+
         <member name="fiId" type="char_ptr" maxlen="32" >
           <access>public</access>
           <flags>own with_hash</flags>
@@ -821,7 +928,7 @@
           <getflags>const</getflags>
           <descr>
             <p>
-              This id is assigned by the bank. As for the moment only OFX servers actually do 
+              This id is assigned by the bank. As for the moment only OFX servers actually do
               assign unique ids to statements.
             </p>
             <p>
@@ -856,7 +963,7 @@
             <setflags>const dup</setflags>
             <getflags>const</getflags>
           </member>
-    
+
           <member name="localBic" type="char_ptr" maxlen="16" >
             <access>public</access>
             <flags>own with_hash</flags>
@@ -872,14 +979,14 @@
             <setflags>const dup</setflags>
             <getflags>const</getflags>
           </member>
-    
+
           <member name="localBankCode" type="char_ptr" maxlen="16" >
             <access>public</access>
             <flags>own with_hash</flags>
             <setflags>const dup</setflags>
             <getflags>const</getflags>
           </member>
-    
+
           <member name="localBranchId" type="char_ptr" maxlen="32">
             <access>public</access>
             <flags>own with_hash</flags>
@@ -889,14 +996,14 @@
              This is the branch id of the local bank (OFX only)
             </descr>
           </member>
-    
+
           <member name="localAccountNumber" type="char_ptr" maxlen="32" >
             <access>public</access>
             <flags>own with_hash</flags>
             <setflags>const dup</setflags>
             <getflags>const</getflags>
           </member>
-    
+
           <member name="localSuffix" type="char_ptr" maxlen="16" >
             <access>public</access>
             <flags>own with_hash</flags>
@@ -908,9 +1015,9 @@
               empty. (HBCI only)
             </descr>
           </member>
-          
+
         </group>
-        
+
         <member name="localName" type="char_ptr" maxlen="64" >
           <access>public</access>
           <flags>own with_hash</flags>
@@ -935,14 +1042,14 @@
           <setflags>const dup</setflags>
           <getflags>const</getflags>
         </member>
-  
+
         <member name="remoteBankCode" type="char_ptr" maxlen="16" >
           <access>public</access>
           <flags>own with_hash</flags>
           <setflags>const dup</setflags>
           <getflags>const</getflags>
         </member>
-  
+
         <member name="remoteBranchId" type="char_ptr" maxlen="32">
           <access>public</access>
           <flags>own with_hash</flags>
@@ -952,14 +1059,14 @@
            This is the branch id of the remote bank (OFX only)
           </descr>
         </member>
-  
+
         <member name="remoteAccountNumber" type="char_ptr" maxlen="32" >
           <access>public</access>
           <flags>own with_hash</flags>
           <setflags>const dup</setflags>
           <getflags>const</getflags>
         </member>
-  
+
         <member name="remoteSuffix" type="char_ptr" maxlen="16" >
           <access>public</access>
           <flags>own with_hash</flags>
@@ -969,21 +1076,21 @@
             Same as localSuffix, except for remote account (HBCI only).
           </descr>
         </member>
-  
+
         <member name="remoteIban" type="char_ptr" maxlen="32" >
           <access>public</access>
           <flags>own with_hash</flags>
           <setflags>const dup</setflags>
           <getflags>const</getflags>
         </member>
-  
+
         <member name="remoteBic" type="char_ptr" maxlen="16" >
           <access>public</access>
           <flags>own with_hash</flags>
           <setflags>const dup</setflags>
           <getflags>const</getflags>
         </member>
-  
+
         <member name="remoteName" type="char_ptr" maxlen="64" >
           <access>public</access>
           <flags>own with_hash</flags>
@@ -992,8 +1099,8 @@
         </member>
       </group>
 
-      
-      
+
+
       <group title="Dates" >
         <member name="date" type="gwen_date" maxlen="16" >
           <aqdb_type>AQDB_DataType_String</aqdb_type>
@@ -1004,7 +1111,7 @@
           <default>NULL</default>
           <preset>NULL</preset>
         </member>
-  
+
         <member name="valutaDate" type="gwen_date" maxlen="16" >
           <aqdb_type>AQDB_DataType_String</aqdb_type>
           <access>public</access>
@@ -1051,7 +1158,7 @@
             different actions. (Geschaeftsvorfallcode)
           </descr>
         </member>
-        
+
         <member name="transactionText" type="char_ptr" maxlen="32" >
           <access>public</access>
           <flags>own with_hash</flags>
@@ -1091,7 +1198,7 @@
             </p>
           </descr>
         </member>
-  
+
         <member name="primanota" type="char_ptr" maxlen="32">
           <access>public</access>
           <flags>own with_hash</flags>
@@ -1101,7 +1208,7 @@
             Used for SEPA transfers.
           </descr>
         </member>
-  
+
         <member name="purpose" type="char_ptr" maxlen="256" >
           <access>public</access>
           <flags>own with_hash</flags>
@@ -1138,7 +1245,7 @@
             (Kundenreferenz)
           </descr>
         </member>
-  
+
         <member name="bankReference" type="char_ptr" maxlen="32" >
           <access>public</access>
           <flags>own with_hash</flags>
@@ -1171,11 +1278,11 @@
 
 
         <group title="Additional Data for SEPA Debit Notes">
-  
+
           <descr>
             <p>These properties are only used in SEPA statements or transactions.</p>
           </descr>
-  
+
           <member name="creditorSchemeId" type="char_ptr" maxlen="32">
             <access>public</access>
             <flags>own with_hash</flags>
@@ -1185,7 +1292,7 @@
               Creditor Scheme Identification" ("Glaeubiger-ID", assigned by Deutsche Bundesbank).
             </descr>
           </member>
-    
+
           <member name="mandateId" type="char_ptr" maxlen="32">
             <access>public</access>
             <flags>own with_hash</flags>
@@ -1195,7 +1302,7 @@
               SEPA Direct debit mandate id.
             </descr>
           </member>
-    
+
           <member name="mandateDate" type="gwen_date" maxlen="16" >
             <aqdb_type>AQDB_DataType_String</aqdb_type>
             <access>public</access>
@@ -1208,7 +1315,7 @@
               Issue date of the direct debit mandate.
             </descr>
           </member>
-    
+
           <member name="mandateDebitorName" type="char_ptr" maxlen="32">
             <access>public</access>
             <flags>own with_hash</flags>
@@ -1218,7 +1325,7 @@
               Debitor name for direct debit mandate if given by the debitor.
             </descr>
           </member>
-    
+
           <member name="originalCreditorSchemeId" type="char_ptr" maxlen="32">
             <access>public</access>
             <flags>own with_hash</flags>
@@ -1228,7 +1335,7 @@
               Original value for "Creditor Scheme Identification", in case that value changed over time.
             </descr>
           </member>
-    
+
           <member name="originalMandateId" type="char_ptr" maxlen="32">
             <access>public</access>
             <flags>own with_hash</flags>
@@ -1238,7 +1345,7 @@
               Original SEPA Direct debit mandate id, in case that changed over time.
             </descr>
           </member>
-    
+
           <member name="originalCreditorName" type="char_ptr" maxlen="32">
             <access>public</access>
             <flags>own with_hash</flags>
@@ -1248,7 +1355,7 @@
               Original SEPA Direct debit creditor name, in case that changed over time.
             </descr>
           </member>
-    
+
           <member name="sequence" type="int" maxlen="32" enum="AB_TRANSACTION_SEQUENCE" >
             <default>AB_Transaction_SequenceUnknown</default>
             <preset>AB_Transaction_SequenceUnknown</preset>
@@ -1258,7 +1365,7 @@
             <getflags>none</getflags>
           </member>
         </group>
-        
+
         <member name="charge" type="int" maxlen="32" enum="AB_TRANSACTION_CHARGE" >
           <default>AB_Transaction_ChargeUnknown</default>
           <preset>AB_Transaction_ChargeUnknown</preset>
@@ -1329,7 +1436,7 @@
             repeated by the bank.
           </p>
         </descr>
-        
+
         <member name="period" type="int" maxlen="32" enum="AB_TRANSACTION_PERIOD" >
           <default>AB_Transaction_PeriodUnknown</default>
           <preset>AB_Transaction_PeriodUnknown</preset>
@@ -1338,7 +1445,7 @@
           <setflags>none</setflags>
           <getflags>none</getflags>
         </member>
-  
+
         <member name="cycle" type="uint32_t" maxlen="4">
           <default>0</default>
           <preset>0</preset>
@@ -1346,11 +1453,11 @@
           <flags>with_hash</flags>
           <descr>
             The standing order is executed every <i>cycle</i> x <i>period</i>.
-            So if <i>period</i> is <i>weekly</i> and <i>cycle</i> is <i>2</i> 
+            So if <i>period</i> is <i>weekly</i> and <i>cycle</i> is <i>2</i>
             then the standing order is executed every 2 weeks.
           </descr>
         </member>
-  
+
         <member name="executionDay" type="uint32_t" maxlen="4">
           <default>0</default>
           <preset>0</preset>
@@ -1365,7 +1472,7 @@
             </ul>
           </descr>
         </member>
-  
+
         <member name="firstDate" type="gwen_date" maxlen="16" >
           <aqdb_type>AQDB_DataType_String</aqdb_type>
           <access>public</access>
@@ -1376,11 +1483,11 @@
           <preset>NULL</preset>
           <descr>
             For standing orders this is the first date the transaction is to be executed.
-            For jobs which use date span parameters this is the first date 
+            For jobs which use date span parameters this is the first date
             (e.g. "get statements from FIRSTDATE to LASTDATE)"
           </descr>
         </member>
-  
+
         <member name="lastDate" type="gwen_date" maxlen="16" >
           <aqdb_type>AQDB_DataType_String</aqdb_type>
           <access>public</access>
@@ -1391,11 +1498,11 @@
           <preset>NULL</preset>
           <descr>
             For standing orders this is the last date the transaction is to be executed.
-            For jobs which use date span parameters this is the last date 
+            For jobs which use date span parameters this is the last date
             (e.g. "get statements from FIRSTDATE to LASTDATE)"
           </descr>
         </member>
-  
+
         <member name="nextDate" type="gwen_date" maxlen="16" >
           <aqdb_type>AQDB_DataType_String</aqdb_type>
           <access>public</access>
@@ -1429,8 +1536,8 @@
             Unique id of the security within the namespace. This field is also used with accounts.
           </descr>
         </member>
-  
-  
+
+
         <member name="unitIdNameSpace" type="char_ptr" maxlen="128" >
           <access>public</access>
           <flags>own with_hash</flags>
@@ -1440,7 +1547,7 @@
             Namespace for name (e.g. CUSIP for North America)
           </descr>
         </member>
-  
+
         <member name="tickerSymbol" type="char_ptr" maxlen="128" >
           <access>public</access>
           <flags>own with_hash</flags>
@@ -1519,8 +1626,8 @@
 
     </members>
 
-    
+
   </type>
-  
+
 </tm2>
 
