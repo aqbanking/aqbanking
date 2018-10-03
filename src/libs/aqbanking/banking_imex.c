@@ -125,6 +125,7 @@ void AB_Banking_FillGapsInTransaction(AB_BANKING *ab, AB_ACCOUNT *a, AB_TRANSACT
 
 
 int AB_Banking_FillGapsInImExporterContext(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT *iec) {
+#pragma message "Need to implement this"
 #if 0
   AB_IMEXPORTER_ACCOUNTINFO *iea;
   int notFounds=0;

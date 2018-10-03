@@ -19,7 +19,7 @@ int AH_Provider_ReadAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUn
   int rv;
   GWEN_DB_NODE *db=NULL;
 
-  rv=AB_Banking6_Read_AccountConfig(AB_Provider_GetBanking(pro), uid, doLock, doUnlock, &db);
+  rv=AB_Banking_Read_AccountConfig(AB_Provider_GetBanking(pro), uid, doLock, doUnlock, &db);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -61,7 +61,7 @@ int AH_Provider_ReadAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accountList) {
   GWEN_DB_NODE *db;
 
   /* read all config groups for accounts which have a unique id and which belong to AqHBCI */
-  rv=AB_Banking6_ReadConfigGroups(AB_Provider_GetBanking(pro), AB_CFG_GROUP_ACCOUNTS, "uniqueId", "provider", "AQHBCI", &dbAll);
+  rv=AB_Banking_ReadConfigGroups(AB_Provider_GetBanking(pro), AB_CFG_GROUP_ACCOUNTS, "uniqueId", "provider", "AQHBCI", &dbAll);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -101,7 +101,7 @@ int AH_Provider_WriteAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doU
     return rv;
   }
 
-  rv=AB_Banking6_Write_AccountConfig(AB_Provider_GetBanking(pro), uid, doLock, doUnlock, db);
+  rv=AB_Banking_Write_AccountConfig(AB_Provider_GetBanking(pro), uid, doLock, doUnlock, db);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_DB_Group_free(db);
@@ -141,12 +141,12 @@ int AH_Provider_DeleteAccount(AB_PROVIDER *pro, uint32_t uid) {
   int rv1;
   int rv2;
 
-  rv1=AB_Banking6_Delete_AccountConfig(AB_Provider_GetBanking(pro), uid);
+  rv1=AB_Banking_Delete_AccountConfig(AB_Provider_GetBanking(pro), uid);
   if (rv1<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv1);
   }
 
-  rv2=AB_Banking6_DeleteAccountSpec(AB_Provider_GetBanking(pro), uid);
+  rv2=AB_Banking_DeleteAccountSpec(AB_Provider_GetBanking(pro), uid);
   if (rv2<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv2);
   }
@@ -164,7 +164,7 @@ int AH_Provider_ReadUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnloc
   int rv;
   GWEN_DB_NODE *db=NULL;
 
-  rv=AB_Banking6_Read_UserConfig(AB_Provider_GetBanking(pro), uid, doLock, doUnlock, &db);
+  rv=AB_Banking_Read_UserConfig(AB_Provider_GetBanking(pro), uid, doLock, doUnlock, &db);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -207,7 +207,7 @@ int AH_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList) {
   GWEN_DB_NODE *db;
 
   /* read all config groups for users which have a unique id and which belong to AqHBCI */
-  rv=AB_Banking6_ReadConfigGroups(AB_Provider_GetBanking(pro), AB_CFG_GROUP_USERS, "uniqueId", "backendName", "AQHBCI", &dbAll);
+  rv=AB_Banking_ReadConfigGroups(AB_Provider_GetBanking(pro), AB_CFG_GROUP_USERS, "uniqueId", "backendName", "AQHBCI", &dbAll);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -247,7 +247,7 @@ int AH_Provider_WriteUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlo
     return rv;
   }
 
-  rv=AB_Banking6_Write_UserConfig(AB_Provider_GetBanking(pro), uid, doLock, doUnlock, db);
+  rv=AB_Banking_Write_UserConfig(AB_Provider_GetBanking(pro), uid, doLock, doUnlock, db);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_DB_Group_free(db);
@@ -307,7 +307,7 @@ int AH_Provider_DeleteUser(AB_PROVIDER *pro, uint32_t uid) {
   }
   AB_Account_List_free(al);
 
-  rv=AB_Banking6_Delete_UserConfig(AB_Provider_GetBanking(pro), uid);
+  rv=AB_Banking_Delete_UserConfig(AB_Provider_GetBanking(pro), uid);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -352,7 +352,7 @@ int AH_Provider_EndExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a, int abandon) 
   }
 
   if (!abandon) {
-    rv=AB_Banking6_Unlock_AccountConfig(AB_Provider_GetBanking(pro), uid);
+    rv=AB_Banking_Unlock_AccountConfig(AB_Provider_GetBanking(pro), uid);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -401,7 +401,7 @@ int AH_Provider_EndExclUseUser(AB_PROVIDER *pro, AB_USER *u, int abandon) {
   }
 
   if (!abandon) {
-    rv=AB_Banking6_Unlock_UserConfig(AB_Provider_GetBanking(pro), uid);
+    rv=AB_Banking_Unlock_UserConfig(AB_Provider_GetBanking(pro), uid);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;

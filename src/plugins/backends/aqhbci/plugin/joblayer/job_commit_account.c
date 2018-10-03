@@ -432,7 +432,7 @@ int AH_Job__Commit_Accounts(AH_JOB *j){
     AB_ACCOUNT_SPEC_LIST *accountSpecList=NULL;
 
     accountSpecList=AB_AccountSpec_List_new();
-    rv=AB_Banking6_GetAccountSpecList(ab, &accountSpecList);
+    rv=AB_Banking_GetAccountSpecList(ab, &accountSpecList);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "No account spec list");
     }

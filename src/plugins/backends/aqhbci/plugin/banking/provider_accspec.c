@@ -154,7 +154,7 @@ int AH_Provider_WriteAccountSpecForAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCO
     return rv;
   }
 
-  rv=AB_Banking6_WriteAccountSpec(AB_Provider_GetBanking(pro), as);
+  rv=AB_Banking_WriteAccountSpec(AB_Provider_GetBanking(pro), as);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_AccountSpec_free(as);
@@ -176,7 +176,7 @@ int AH_Provider_CreateInitialAccountSpecs(AB_PROVIDER *pro) {
    * NOTE: we use the fixed value "accounts" for the group name here, since that is where all
    * previous versions of AqBanking store the account settings. This might change in later versions, though.
    */
-  rv=AB_Banking6_ReadConfigGroups(AB_Provider_GetBanking(pro), "accounts", "uniqueId", "provider", "AQHBCI", &dbAll);
+  rv=AB_Banking_ReadConfigGroups(AB_Provider_GetBanking(pro), "accounts", "uniqueId", "provider", "AQHBCI", &dbAll);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -209,7 +209,7 @@ int AH_Provider_CreateInitialAccountSpecs(AB_PROVIDER *pro) {
     AB_Account_free(acc);
   
     /* write account spec */
-    rv=AB_Banking6_WriteAccountSpec(AB_Provider_GetBanking(pro), as);
+    rv=AB_Banking_WriteAccountSpec(AB_Provider_GetBanking(pro), as);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       AB_AccountSpec_free(as);

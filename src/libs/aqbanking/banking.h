@@ -46,7 +46,6 @@ typedef struct AB_BANKING AB_BANKING;
 #include <aqbanking/banking_ob.h>
 #include <aqbanking/banking_simple.h>
 #include <aqbanking/banking_cfg.h>
-#include <aqbanking/banking6.h>
 
 #include <aqbanking/provider.h>
 
@@ -75,7 +74,7 @@ extern "C" {
  * </p>
  * After that you may call any other function of this group (most likely
  * the program will request a list of managed account via
- * @ref AB_Banking_GetAccounts).
+ * @ref AB_Banking_GetAccountSpecs).
  * </p>
  * <p>
  * When the program has finished its work it should call @ref AB_Banking_Fini
@@ -122,8 +121,7 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
  * </p>
  * <p>
  * This function does not actually load the configuration file or setup
- * AqBanking, that is performed by @ref AB_Banking_Init and
- * @ref AB_Banking_OnlineInit, respectively.
+ * AqBanking, that is performed by @ref AB_Banking_Init.
  * </p>
  *
  * @return new instance of AB_BANKING
@@ -296,7 +294,7 @@ int AB_Banking_GetSharedDataDir(const AB_BANKING *ab,
  *
  * @param ab Pointer to the AB_BANKING object
  */
-AQBANKING_API
+AQBANKING_API DEPRECATED
 void *AB_Banking_GetUserData(AB_BANKING *ab);
 
 /** Save the void pointer that can be retrieved by
@@ -309,7 +307,7 @@ void *AB_Banking_GetUserData(AB_BANKING *ab);
  * @param ab Pointer to the AB_BANKING object
  * @param user_data Arbitrary pointer to be stored in the AB_BANKING
  */
-AQBANKING_API
+AQBANKING_API DEPRECATED
 void AB_Banking_SetUserData(AB_BANKING *ab, void *user_data);
 
 /*@}*/

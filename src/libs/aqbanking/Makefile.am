@@ -10,6 +10,8 @@ AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
 EXTRA_DIST=\
  banking_account.c \
+ banking_bankinfo.c \
+ banking_country.c \
  banking_cfg.c \
  banking_init.c \
  banking_online.c \

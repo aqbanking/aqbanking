@@ -22,6 +22,7 @@
 #include <aqbanking/banking6_be.h>
 
 #include <gwenhywfar/httpsession.h>
+#include <gwenhywfar/ct.h>
 
 
 #define AB_CFG_GROUP_BACKENDS   "backends"
@@ -88,9 +89,6 @@ int AB_Banking_CheckCryptToken(AB_BANKING *ab,
 /*@}*/
 
 
-AQBANKING_API DEPRECATED
-int AB_Banking_GetUniqueId(AB_BANKING *ab);
-
 /**
  * Get a named unique id.
  * Previously there was only one source for unique ids which was used for everything, fastly increasing that id.
@@ -113,9 +111,13 @@ int AB_Banking_GetCert(AB_BANKING *ab,
 
 /**
  * This copies the name of the folder for AqBanking's backend data into
- * the given GWEN_Buffer (not including the provider's name).
- * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
+ * the given GWEN_Buffer.
+ *
+ * An example path would be "/home/USER/.aqbanking/backends/aqhbci/data".
+ *
+ * @return 0 if ok, error code otherwise (see @ref GWEN_ERROR)
  * @param ab pointer to the AB_BANKING object
+ * @param name name of the online banking provider (e.g. "aqhbci")
  * @param buf buffer to append the path name to
  */
 AQBANKING_API
@@ -125,10 +127,29 @@ int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab,
 
 
 
-
+/**
+ * Loads the given provider and initializes it.
+ * Only after calling this function the provider can be used.
+ * You need to call @ref AB_Banking_EndUseProvider() if you're done.
+ *
+ * @return 0 if ok, error code otherwise
+ *
+ * @param ab pointer to the AB_BANKING object (needs to be initialized, i.e. @ref AB_Banking_Init called).
+ * @param modname (e.g. "aqhbci")
+ */
 AQBANKING_API
 AB_PROVIDER *AB_Banking_BeginUseProvider(AB_BANKING *ab, const char *modname);
 
+/**
+ * Call this as soon as the provider isn't actually needed anymore.
+ * This probably unloads the plugin, at least it is deinitialized.
+ *
+ * @return 0 if ok, error code otherwise
+ *
+ * @param ab pointer to the AB_BANKING object (needs to be initialized, i.e. @ref AB_Banking_Init called).
+ * @param pro pointer to provider object returned by @ref AB_Banking_BeginUseProvider
+ *
+ */
 AQBANKING_API
 int AB_Banking_EndUseProvider(AB_BANKING *ab, AB_PROVIDER *pro);
 

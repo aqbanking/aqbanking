@@ -130,16 +130,18 @@ void AB_Provider_AddFlags(AB_PROVIDER *pro, uint32_t fl);
 /**
  * Allow the backend to initialize itself.
  * @param pro backend object
+ * @param db db of the config group for this backend
  */
 AQBANKING_API
-int AB_Provider_Init(AB_PROVIDER *pro);
+int AB_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *db);
 
 /**
  * Allow the backend to deinitialize itself.
  * @param pro backend object
+ * @param db db of the config group for this backend
  */
 AQBANKING_API
-int AB_Provider_Fini(AB_PROVIDER *pro);
+int AB_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *db);
 
 
 

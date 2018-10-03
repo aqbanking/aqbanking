@@ -38,7 +38,6 @@
 int main(int argc, char **argv) {
   GWEN_GUI *gui;
   AB_BANKING *ab;
-  int rv;
   AB_ACCOUNT_SPEC_LIST *accs=NULL;
   AB_ACCOUNT_SPEC *as;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
@@ -52,7 +51,7 @@ int main(int argc, char **argv) {
 
 
   /* get the list of known accounts */
-  AB_Banking6_GetAccountSpecList(ab, &accs);
+  AB_Banking_GetAccountSpecList(ab, &accs);
 
   /* find a matching account within the given list */
   as=AB_AccountSpec_List_FindFirst(accs,
@@ -78,7 +77,7 @@ int main(int argc, char **argv) {
     AB_Transaction_List_Add(t, cmdList);
 
     ctx=AB_ImExporterContext_new();
-    AB_Banking6_SendCommands(ab, cmdList, ctx);
+    AB_Banking_SendCommands(ab, cmdList, ctx);
 
     ai=AB_ImExporterContext_GetFirstAccountInfo(ctx);
     while(ai) {

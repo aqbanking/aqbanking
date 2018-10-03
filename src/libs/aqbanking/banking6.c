@@ -12,15 +12,14 @@
 
 
 
-int AB_Banking6_ReadConfigGroup(AB_BANKING *ab,
-                                const char *groupName,
-                                uint32_t uniqueId,
-                                int doLock,
-                                int doUnlock,
-                                GWEN_DB_NODE **pDb) {
+int AB_Banking_ReadNamedConfigGroup(AB_BANKING *ab,
+                                     const char *groupName,
+                                     const char *subGroupName,
+                                     int doLock,
+                                     int doUnlock,
+                                     GWEN_DB_NODE **pDb) {
   GWEN_DB_NODE *db=NULL;
   int rv;
-  char idBuf[256];
 
   assert(ab);
 
@@ -28,6 +27,108 @@ int AB_Banking6_ReadConfigGroup(AB_BANKING *ab,
   if (ab->configMgr==NULL) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
 	      "No config manager (maybe the gwenhywfar plugins are not installed?");
+    return GWEN_ERROR_GENERIC;
+  }
+
+
+  /* lock group if requested */
+  if (doLock) {
+    rv=GWEN_ConfigMgr_LockGroup(ab->configMgr, groupName, subGroupName);
+    if (rv<0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock config group (%d)", rv);
+      return rv;
+    }
+  }
+
+  /* load group */
+  rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, groupName, subGroupName, &db);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load config group (%d)", rv);
+    if (doLock)
+      GWEN_ConfigMgr_UnlockGroup(ab->configMgr, groupName, subGroupName);
+    return rv;
+  }
+
+  /* unlock group */
+  if (doUnlock) {
+    rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, groupName, subGroupName);
+    if (rv<0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to unlock config group (%d)", rv);
+      GWEN_DB_Group_free(db);
+      return rv;
+    }
+  }
+
+  *pDb=db;
+  return 0;
+}
+
+
+
+int AB_Banking_WriteNamedConfigGroup(AB_BANKING *ab,
+                                      const char *groupName,
+                                      const char *subGroupName,
+                                      int doLock,
+                                      int doUnlock,
+                                      GWEN_DB_NODE *db) {
+  int rv;
+
+  assert(ab);
+  assert(db);
+
+  /* check for config manager (created by AB_Banking_Init) */
+  if (ab->configMgr==NULL) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No config manager (maybe the gwenhywfar plugins are not installed?");
+    return GWEN_ERROR_GENERIC;
+  }
+
+
+  /* lock group */
+  if (doLock) {
+    rv=GWEN_ConfigMgr_LockGroup(ab->configMgr, groupName, subGroupName);
+    if (rv<0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock config group (%d)", rv);
+      return rv;
+    }
+  }
+
+  /* store group (is locked now) */
+  rv=GWEN_ConfigMgr_SetGroup(ab->configMgr, groupName, subGroupName, db);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load config group (%d)", rv);
+    if (doLock)
+      GWEN_ConfigMgr_UnlockGroup(ab->configMgr, groupName, subGroupName);
+    return rv;
+  }
+
+  /* unlock group */
+  if (doUnlock) {
+    rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, groupName, subGroupName);
+    if (rv<0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to unlock config group (%d)", rv);
+      return rv;
+    }
+  }
+
+  return 0;
+}
+
+
+
+int AB_Banking_ReadConfigGroup(AB_BANKING *ab,
+                                const char *groupName,
+                                uint32_t uniqueId,
+                                int doLock,
+                                int doUnlock,
+                                GWEN_DB_NODE **pDb) {
+  int rv;
+  char idBuf[256];
+
+  assert(ab);
+
+  /* check for config manager (created by AB_Banking_Init) */
+  if (ab->configMgr==NULL) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No config manager (maybe the gwenhywfar plugins are not installed?");
     return GWEN_ERROR_GENERIC;
   }
 
@@ -40,42 +141,18 @@ int AB_Banking6_ReadConfigGroup(AB_BANKING *ab,
   }
   idBuf[sizeof(idBuf)-1]=0;
 
-
-  /* lock group if requested */
-  if (doLock) {
-    rv=GWEN_ConfigMgr_LockGroup(ab->configMgr, groupName, idBuf);
-    if (rv<0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock config group (%d)", rv);
-      return rv;
-    }
-  }
-
-  /* load group */
-  rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, groupName, idBuf, &db);
+  rv=AB_Banking_ReadNamedConfigGroup(ab, groupName, idBuf, doLock, doUnlock, pDb);
   if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load config group (%d)", rv);
-    if (doLock)
-      GWEN_ConfigMgr_UnlockGroup(ab->configMgr, groupName, idBuf);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
-  /* unlock group */
-  if (doUnlock) {
-    rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, groupName, idBuf);
-    if (rv<0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to unlock accountspec config group (%d)", rv);
-      GWEN_DB_Group_free(db);
-      return rv;
-    }
-  }
-
-  *pDb=db;
-  return 0;
+  return rv;
 }
 
 
 
-int AB_Banking6_WriteConfigGroup(AB_BANKING *ab,
+int AB_Banking_WriteConfigGroup(AB_BANKING *ab,
                                  const char *groupName,
                                  uint32_t uniqueId,
                                  int doLock,
@@ -102,39 +179,18 @@ int AB_Banking6_WriteConfigGroup(AB_BANKING *ab,
   }
   idBuf[sizeof(idBuf)-1]=0;
 
-  /* lock group */
-  if (doLock) {
-    rv=GWEN_ConfigMgr_LockGroup(ab->configMgr, groupName, idBuf);
-    if (rv<0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock accountspec config group (%d)", rv);
-      return rv;
-    }
-  }
-
-  /* store group (is locked now) */
-  rv=GWEN_ConfigMgr_SetGroup(ab->configMgr, groupName, idBuf, db);
+  rv=AB_Banking_WriteNamedConfigGroup(ab, groupName, idBuf, doLock, doUnlock, db);
   if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load config group (%d)", rv);
-    if (doLock)
-      GWEN_ConfigMgr_UnlockGroup(ab->configMgr, groupName, idBuf);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
-  /* unlock group */
-  if (doUnlock) {
-    rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, groupName, idBuf);
-    if (rv<0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to unlock accountspec config group (%d)", rv);
-      return rv;
-    }
-  }
-
-  return 0;
+  return rv;
 }
 
 
 
-int AB_Banking6_DeleteConfigGroup(AB_BANKING *ab, const char *groupName, uint32_t uniqueId) {
+int AB_Banking_DeleteConfigGroup(AB_BANKING *ab, const char *groupName, uint32_t uniqueId) {
   int rv;
   char idBuf[256];
 
@@ -166,7 +222,7 @@ int AB_Banking6_DeleteConfigGroup(AB_BANKING *ab, const char *groupName, uint32_
 
 
 
-int AB_Banking6_UnlockConfigGroup(AB_BANKING *ab, const char *groupName, uint32_t uniqueId) {
+int AB_Banking_UnlockConfigGroup(AB_BANKING *ab, const char *groupName, uint32_t uniqueId) {
   int rv;
   char idBuf[256];
 
@@ -198,7 +254,7 @@ int AB_Banking6_UnlockConfigGroup(AB_BANKING *ab, const char *groupName, uint32_
 
 
 
-int AB_Banking6_ReadConfigGroups(AB_BANKING *ab,
+int AB_Banking_ReadConfigGroups(AB_BANKING *ab,
                                  const char *groupName,
                                  const char *uidField,
                                  const char *matchVar,
@@ -311,14 +367,14 @@ int AB_Banking6_ReadConfigGroups(AB_BANKING *ab,
 
 
 
-int AB_Banking6_ReadAccountSpec(AB_BANKING *ab, uint32_t uniqueId, AB_ACCOUNT_SPEC **pAccountSpec) {
+int AB_Banking_ReadAccountSpec(AB_BANKING *ab, uint32_t uniqueId, AB_ACCOUNT_SPEC **pAccountSpec) {
   AB_ACCOUNT_SPEC *accountSpec;
   GWEN_DB_NODE *db=NULL;
   int rv;
 
   assert(ab);
 
-  rv=AB_Banking6_ReadConfigGroup(ab, AB_CFG_GROUP_ACCOUNTSPECS, uniqueId, 1, 1, &db);
+  rv=AB_Banking_ReadConfigGroup(ab, AB_CFG_GROUP_ACCOUNTSPECS, uniqueId, 1, 1, &db);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -337,7 +393,7 @@ int AB_Banking6_ReadAccountSpec(AB_BANKING *ab, uint32_t uniqueId, AB_ACCOUNT_SP
 
 
 
-int AB_Banking6_WriteAccountSpec(AB_BANKING *ab, const AB_ACCOUNT_SPEC *accountSpec) {
+int AB_Banking_WriteAccountSpec(AB_BANKING *ab, const AB_ACCOUNT_SPEC *accountSpec) {
   GWEN_DB_NODE *db=NULL;
   int rv;
   uint32_t uniqueId;
@@ -350,7 +406,7 @@ int AB_Banking6_WriteAccountSpec(AB_BANKING *ab, const AB_ACCOUNT_SPEC *accountS
   db=GWEN_DB_Group_new("accountSpec");
   AB_AccountSpec_toDb(accountSpec, db);
 
-  rv=AB_Banking6_WriteConfigGroup(ab, AB_CFG_GROUP_ACCOUNTSPECS, uniqueId, 1, 1, db);
+  rv=AB_Banking_WriteConfigGroup(ab, AB_CFG_GROUP_ACCOUNTSPECS, uniqueId, 1, 1, db);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     GWEN_DB_Group_free(db);
@@ -363,10 +419,10 @@ int AB_Banking6_WriteAccountSpec(AB_BANKING *ab, const AB_ACCOUNT_SPEC *accountS
 
 
 
-int AB_Banking6_DeleteAccountSpec(AB_BANKING *ab, uint32_t uid) {
+int AB_Banking_DeleteAccountSpec(AB_BANKING *ab, uint32_t uid) {
   int rv;
 
-  rv=AB_Banking6_DeleteConfigGroup(ab, AB_CFG_GROUP_ACCOUNTSPECS, uid);
+  rv=AB_Banking_DeleteConfigGroup(ab, AB_CFG_GROUP_ACCOUNTSPECS, uid);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -379,10 +435,10 @@ int AB_Banking6_DeleteAccountSpec(AB_BANKING *ab, uint32_t uid) {
 
 
 
-int AB_Banking6_Read_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb) {
+int AB_Banking_Read_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb) {
   int rv;
 
-  rv=AB_Banking6_ReadConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid, doLock, doUnlock, pDb);
+  rv=AB_Banking_ReadConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid, doLock, doUnlock, pDb);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -393,10 +449,10 @@ int AB_Banking6_Read_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, int
 
 
 
-int AB_Banking6_Write_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE *db){
+int AB_Banking_Write_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE *db){
   int rv;
 
-  rv=AB_Banking6_WriteConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid, doLock, doUnlock, db);
+  rv=AB_Banking_WriteConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid, doLock, doUnlock, db);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -407,10 +463,10 @@ int AB_Banking6_Write_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, in
 
 
 
-int AB_Banking6_Delete_AccountConfig(AB_BANKING *ab, uint32_t uid) {
+int AB_Banking_Delete_AccountConfig(AB_BANKING *ab, uint32_t uid) {
   int rv;
 
-  rv=AB_Banking6_DeleteConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid);
+  rv=AB_Banking_DeleteConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -421,10 +477,10 @@ int AB_Banking6_Delete_AccountConfig(AB_BANKING *ab, uint32_t uid) {
 
 
 
-int AB_Banking6_Unlock_AccountConfig(AB_BANKING *ab, uint32_t uid) {
+int AB_Banking_Unlock_AccountConfig(AB_BANKING *ab, uint32_t uid) {
   int rv;
 
-  rv=AB_Banking6_UnlockConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid);
+  rv=AB_Banking_UnlockConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -435,10 +491,10 @@ int AB_Banking6_Unlock_AccountConfig(AB_BANKING *ab, uint32_t uid) {
 
 
 
-int AB_Banking6_Read_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb) {
+int AB_Banking_Read_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb) {
   int rv;
 
-  rv=AB_Banking6_ReadConfigGroup(ab, AB_CFG_GROUP_USERS, uid, doLock, doUnlock, pDb);
+  rv=AB_Banking_ReadConfigGroup(ab, AB_CFG_GROUP_USERS, uid, doLock, doUnlock, pDb);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -449,10 +505,10 @@ int AB_Banking6_Read_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int do
 
 
 
-int AB_Banking6_Write_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE *db){
+int AB_Banking_Write_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE *db){
   int rv;
 
-  rv=AB_Banking6_WriteConfigGroup(ab, AB_CFG_GROUP_USERS, uid, doLock, doUnlock, db);
+  rv=AB_Banking_WriteConfigGroup(ab, AB_CFG_GROUP_USERS, uid, doLock, doUnlock, db);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -463,10 +519,10 @@ int AB_Banking6_Write_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int d
 
 
 
-int AB_Banking6_Delete_UserConfig(AB_BANKING *ab, uint32_t uid) {
+int AB_Banking_Delete_UserConfig(AB_BANKING *ab, uint32_t uid) {
   int rv;
 
-  rv=AB_Banking6_DeleteConfigGroup(ab, AB_CFG_GROUP_USERS, uid);
+  rv=AB_Banking_DeleteConfigGroup(ab, AB_CFG_GROUP_USERS, uid);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -477,10 +533,10 @@ int AB_Banking6_Delete_UserConfig(AB_BANKING *ab, uint32_t uid) {
 
 
 
-int AB_Banking6_Unlock_UserConfig(AB_BANKING *ab, uint32_t uid) {
+int AB_Banking_Unlock_UserConfig(AB_BANKING *ab, uint32_t uid) {
   int rv;
 
-  rv=AB_Banking6_UnlockConfigGroup(ab, AB_CFG_GROUP_USERS, uid);
+  rv=AB_Banking_UnlockConfigGroup(ab, AB_CFG_GROUP_USERS, uid);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -496,11 +552,11 @@ int AB_Banking6_Unlock_UserConfig(AB_BANKING *ab, uint32_t uid) {
 
 
 
-int AB_Banking6_GetAccountSpecList(AB_BANKING *ab, AB_ACCOUNT_SPEC_LIST** pAccountSpecList) {
+int AB_Banking_GetAccountSpecList(AB_BANKING *ab, AB_ACCOUNT_SPEC_LIST** pAccountSpecList) {
   GWEN_DB_NODE *dbAll=NULL;
   int rv;
 
-  rv=AB_Banking6_ReadConfigGroups(ab, AB_CFG_GROUP_ACCOUNTSPECS, "uniqueId", NULL, NULL, &dbAll);
+  rv=AB_Banking_ReadConfigGroups(ab, AB_CFG_GROUP_ACCOUNTSPECS, "uniqueId", NULL, NULL, &dbAll);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -542,10 +598,10 @@ int AB_Banking6_GetAccountSpecList(AB_BANKING *ab, AB_ACCOUNT_SPEC_LIST** pAccou
 
 
 
-int AB_Banking6_GetAccountSpecByUniqueId(AB_BANKING *ab, uint32_t uniqueAccountId, AB_ACCOUNT_SPEC** pAccountSpec) {
+int AB_Banking_GetAccountSpecByUniqueId(AB_BANKING *ab, uint32_t uniqueAccountId, AB_ACCOUNT_SPEC** pAccountSpec) {
   int rv;
 
-  rv=AB_Banking6_ReadAccountSpec(ab, uniqueAccountId, pAccountSpec);
+  rv=AB_Banking_ReadAccountSpec(ab, uniqueAccountId, pAccountSpec);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -558,7 +614,7 @@ int AB_Banking6_GetAccountSpecByUniqueId(AB_BANKING *ab, uint32_t uniqueAccountI
 
 
 
-int AB_Banking6_SendCommands(AB_BANKING *ab, const AB_TRANSACTION_LIST* commandList, AB_IMEXPORTER_CONTEXT *ctx) {
+int AB_Banking_SendCommands(AB_BANKING *ab, const AB_TRANSACTION_LIST* commandList, AB_IMEXPORTER_CONTEXT *ctx) {
   AB_ACCOUNTQUEUE_LIST *aql;
   AB_PROVIDERQUEUE_LIST *pql;
   AB_TRANSACTION *t;
@@ -597,7 +653,7 @@ int AB_Banking6_SendCommands(AB_BANKING *ab, const AB_TRANSACTION_LIST* commandL
     const char *s;
 
     uid=AB_AccountQueue_GetAccountId(aq);
-    rv=AB_Banking6_GetAccountSpecByUniqueId(ab, uid, &as);
+    rv=AB_Banking_GetAccountSpecByUniqueId(ab, uid, &as);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to load account spec for account %lu (%d)", (unsigned long int)uid, rv);
       AB_ProviderQueue_List_free(pql);

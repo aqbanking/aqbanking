@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
    * The rest of this tutorial shows how lists are generally used by
    * AqBanking.
    */
-  rv=AB_Banking6_GetAccountSpecList(ab, &accs);
+  rv=AB_Banking_GetAccountSpecList(ab, &accs);
   if (rv<0) {
     fprintf(stderr, "Unable to get the list of accounts (%d: %s)\n", rv, GWEN_Error_SimpleToString(rv));
     return 3;

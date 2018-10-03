@@ -433,7 +433,7 @@ int getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db, AB_ACCOUNT_SPEC_LIST *
     AB_ACCOUNT_SPEC *as=NULL;
 
     /* specific unique id given, use that exclusively */
-    rv=AB_Banking6_GetAccountSpecByUniqueId(ab, uniqueAccountId, &as);
+    rv=AB_Banking_GetAccountSpecByUniqueId(ab, uniqueAccountId, &as);
     if (rv<0) {
       DBG_ERROR(0, "Could not load account spec %lu (%d)", (unsigned long int) uniqueAccountId, rv);
       AB_AccountSpec_List_free(asl);
@@ -443,7 +443,7 @@ int getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db, AB_ACCOUNT_SPEC_LIST *
   }
   else {
     /* no unique account id given, try match parameters */
-    rv=AB_Banking6_GetAccountSpecList(ab, &asl);
+    rv=AB_Banking_GetAccountSpecList(ab, &asl);
     if (rv<0) {
       DBG_ERROR(0, "Could not load account specs (%d)", rv);
       AB_AccountSpec_List_free(asl);

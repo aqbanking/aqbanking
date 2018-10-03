@@ -17,6 +17,7 @@ AB_PROVIDER *AB_Banking_BeginUseProvider(AB_BANKING *ab, const char *modname){
   pl=GWEN_PluginManager_GetPlugin(ab_pluginManagerProvider, modname);
   if (pl) {
     AB_PROVIDER *pro;
+    GWEN_DB_NODE *db=NULL;
     int rv;
 
     pro=AB_Plugin_Provider_Factory(pl, ab);
@@ -25,12 +26,21 @@ AB_PROVIDER *AB_Banking_BeginUseProvider(AB_BANKING *ab, const char *modname){
       return NULL;
     }
 
-    rv=AB_Provider_Init(pro);
+    rv=AB_Banking_ReadNamedConfigGroup(ab, AB_CFG_GROUP_BACKENDS, modname, 1, 1, &db);
     if (rv<0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       AB_Provider_free(pro);
       return NULL;
     }
+
+    rv=AB_Provider_Init(pro, db);
+    if (rv<0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      GWEN_DB_Group_free(db);
+      AB_Provider_free(pro);
+      return NULL;
+    }
+    GWEN_DB_Group_free(db);
 
     return pro;
   }
@@ -44,14 +54,35 @@ AB_PROVIDER *AB_Banking_BeginUseProvider(AB_BANKING *ab, const char *modname){
 
 int AB_Banking_EndUseProvider(AB_BANKING *ab, AB_PROVIDER *pro){
   int rv;
+  GWEN_DB_NODE *db=NULL;
 
   assert(pro);
-  rv=AB_Provider_Fini(pro);
+
+  rv=AB_Banking_ReadNamedConfigGroup(ab, AB_CFG_GROUP_BACKENDS, AB_Provider_GetName(pro), 1, 0, &db);
   if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     AB_Provider_free(pro);
     return rv;
   }
+
+  rv=AB_Provider_Fini(pro, db);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_BACKENDS, AB_Provider_GetName(pro));
+    GWEN_DB_Group_free(db);
+    AB_Provider_free(pro);
+    return rv;
+  }
+
+  rv=AB_Banking_WriteNamedConfigGroup(ab, AB_CFG_GROUP_BACKENDS, AB_Provider_GetName(pro), 0, 1, db);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_BACKENDS, AB_Provider_GetName(pro));
+    GWEN_DB_Group_free(db);
+    AB_Provider_free(pro);
+    return rv;
+  }
+  GWEN_DB_Group_free(db);
   AB_Provider_free(pro);
 
   return 0;

@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
 
 
   /* get the list of known accounts */
-  rv=AB_Banking6_GetAccountSpecList(ab, &accs);
+  rv=AB_Banking_GetAccountSpecList(ab, &accs);
   if (rv<0) {
     fprintf(stderr, "Unable to get the list of accounts (%d: %s)\n", rv, GWEN_Error_SimpleToString(rv));
     return 3;
@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
      * This effectivly sends all jobs to the respective backends/banks.
      * It only returns an error code (!=0) if there has been a problem
      * sending the jobs. */
-    rv=AB_Banking6_SendCommands(ab, cmdList, ctx);
+    rv=AB_Banking_SendCommands(ab, cmdList, ctx);
     if (rv<0) {
       fprintf(stderr, "Error on executeQueue (%d)\n", rv);
       /* clean up */

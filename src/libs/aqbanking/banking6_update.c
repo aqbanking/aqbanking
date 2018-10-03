@@ -13,12 +13,12 @@
 
 
 
-int AB_Banking6_UpdateConfList(AB_BANKING *ab, const char *groupName) {
+int AB_Banking_UpdateConfList(AB_BANKING *ab, const char *groupName) {
   GWEN_DB_NODE *dbAll=NULL;
   int rv;
 
   /* read all config groups which have a variable called "uniqueId" */
-  rv=AB_Banking6_ReadConfigGroups(ab, groupName, "uniqueId", NULL, NULL, &dbAll);
+  rv=AB_Banking_ReadConfigGroups(ab, groupName, "uniqueId", NULL, NULL, &dbAll);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -56,7 +56,7 @@ int AB_Banking6_UpdateConfList(AB_BANKING *ab, const char *groupName) {
 	  DBG_WARN(AQBANKING_LOGDOMAIN,
 		   "%s: Groupname not derived from unique id (%s != %s), creating new group (%lu)",
 		   groupName, subGroupName, idBuf, (unsigned long int)uid);
-	  rv=AB_Banking6_WriteConfigGroup(ab, groupName, uid, 1, 1, db);
+	  rv=AB_Banking_WriteConfigGroup(ab, groupName, uid, 1, 1, db);
 	  if (rv<0) {
 	    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
 	    GWEN_DB_Group_free(dbAll);
@@ -83,10 +83,10 @@ int AB_Banking6_UpdateConfList(AB_BANKING *ab, const char *groupName) {
 
 
 
-int AB_Banking6_UpdateUserList(AB_BANKING *ab) {
+int AB_Banking_UpdateUserList(AB_BANKING *ab) {
   int rv;
 
-  rv=AB_Banking6_UpdateConfList(ab, AB_CFG_GROUP_USERS);
+  rv=AB_Banking_UpdateConfList(ab, AB_CFG_GROUP_USERS);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -97,10 +97,10 @@ int AB_Banking6_UpdateUserList(AB_BANKING *ab) {
 
 
 
-int AB_Banking6_UpdateAccountList(AB_BANKING *ab) {
+int AB_Banking_UpdateAccountList(AB_BANKING *ab) {
   int rv;
 
-  rv=AB_Banking6_UpdateConfList(ab, AB_CFG_GROUP_ACCOUNTS);
+  rv=AB_Banking_UpdateConfList(ab, AB_CFG_GROUP_ACCOUNTS);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -111,24 +111,24 @@ int AB_Banking6_UpdateAccountList(AB_BANKING *ab) {
 
 
 
-int AB_Banking6_Update(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion) {
+int AB_Banking_Update(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion) {
   if (lastVersion<((5<<24) | (99<<16) | (2<<8) | 0)) {
     int rv;
 
-    rv=AB_Banking6_UpdateAccountList(ab);
+    rv=AB_Banking_UpdateAccountList(ab);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
 
-    rv=AB_Banking6_UpdateUserList(ab);
+    rv=AB_Banking_UpdateUserList(ab);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
 
     /* need to create account specs */
-    rv=AB_Banking6_Update_5_99_2_0(ab, lastVersion, currentVersion);
+    rv=AB_Banking_Update_5_99_2_0(ab, lastVersion, currentVersion);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -141,7 +141,7 @@ int AB_Banking6_Update(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVer
 
 
 
-int AB_Banking6_Update_5_99_2_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion) {
+int AB_Banking_Update_5_99_2_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion) {
   GWEN_PLUGIN_DESCRIPTION_LIST2 *descrs;
   GWEN_PLUGIN_MANAGER *pm;
 

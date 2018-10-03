@@ -26,9 +26,9 @@
 #define AB_WIZARD_FOLDER "wizards"
 
 #ifdef OS_WIN32
-# define AB_BANKING_USERDATADIR "aqbanking6"  /* temporarily changed to aqbanking6 for testing purposes */
+# define AB_BANKING_USERDATADIR "aqbanking"  
 #else
-# define AB_BANKING_USERDATADIR ".aqbanking6"
+# define AB_BANKING_USERDATADIR ".aqbanking"
 #endif
 
 /**
@@ -37,6 +37,7 @@
 #define AB_BANKING_CONFIGFILE     "settings.conf"
 #define AB_BANKING_OLD_CONFIGFILE ".aqbanking.conf"
 
+#define AB_BANKING_SETTINGS_DIR   "settings6" /* temporarily changed to settings6 for testing purposes */
 
 #define AB_CFG_GROUP_MAIN         "aqbanking"
 #define AB_CFG_GROUP_APPS         "apps"
@@ -59,7 +60,6 @@
 struct AB_BANKING {
   GWEN_INHERIT_ELEMENT(AB_BANKING)
   int initCount;
-  int onlineInitCount;
   char *appName;
   char *appEscName;
   int appExtensions;
@@ -82,8 +82,7 @@ struct AB_BANKING {
 static int AB_Banking__GetConfigManager(AB_BANKING *ab, const char *dname);
 
 
-static AB_IMEXPORTER *AB_Banking_FindImExporter(AB_BANKING *ab,
-                                                const char *name);
+static AB_IMEXPORTER *AB_Banking_FindImExporter(AB_BANKING *ab, const char *name);
 
 
 static AB_BANKINFO_PLUGIN *AB_Banking__LoadBankInfoPlugin(AB_BANKING *ab, const char *modname);
@@ -98,17 +97,32 @@ static int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,
 static AB_IMEXPORTER *AB_Banking__LoadImExporterPlugin(AB_BANKING *ab, const char *modname);
 
 
-static int AB_Banking__TransformIban(const char *iban, int len,
-                                     char *newIban, int maxLen);
+static int AB_Banking__TransformIban(const char *iban, int len, char *newIban, int maxLen);
 
 
 static void AB_Banking__fillTransactionRemoteInfo(AB_TRANSACTION *t);
 /* static void AB_Banking__fillTransactionRemoteSepaInfo(AB_BANKING *ab, AB_TRANSACTION *t); */
 
 
-int AB_Banking6_Update(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion);
-static int AB_Banking6_Update_5_99_2_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion);
+/**
+ * This functions changes the GWEN_ConfigMgr id of configuration groups to match the AqBanking-ID.
+ *
+ * GWEN_ConfigMgr has its own scheme to assign unique ids to configuration groups (see @ref GWEN_ConfigMgr_GetUniqueId).
+ * However, since version 6 AqBanking needs to directly access configuration groups (e.g. when a backend wants to
+ * use an AB_USER object it just loads it in time). Fo this to work there needs to be a way to derive the config manager
+ * id to the id assigned by AqBanking.
+ * For this we use @ref GWEN_ConfigMgr_MkUniqueIdFromId() to make the config manager derive a static unique id from the
+ * given AqBanking-assigned id.
+ * This function checks every config group and checks whether its id has been created by GWEN_ConfigMgr_MkUniqueIdFromId.
+ * If it is not a new config group will be created with the new id and the old group is deleted.
+ */
+static int AB_Banking_UpdateConfList(AB_BANKING *ab, const char *groupName);
+static int AB_Banking_UpdateUserList(AB_BANKING *ab);
+static int AB_Banking_UpdateAccountList(AB_BANKING *ab);
 
+
+int AB_Banking_Update(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion);
+static int AB_Banking_Update_5_99_2_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion);
 
 
 

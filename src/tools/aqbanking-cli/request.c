@@ -482,7 +482,7 @@ int request(AB_BANKING *ab,
 
     DBG_INFO(0, "%d requests created", requests);
     ctx=AB_ImExporterContext_new();
-    rv=AB_Banking6_SendCommands(ab, jobList, ctx);
+    rv=AB_Banking_SendCommands(ab, jobList, ctx);
     AB_Transaction_List_free(jobList);
     if (rv) {
       fprintf(stderr, "Error on sendCommands (%d)\n", rv);

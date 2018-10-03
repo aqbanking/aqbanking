@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Sat Sep 27 2008
- copyright   : (C) 2008 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -58,7 +58,7 @@ int AB_Banking__GetConfigManager(AB_BANKING *ab, const char *dname) {
 
     /* continue with settings folder */
     GWEN_Buffer_AppendString(buf, DIRSEP);
-    GWEN_Buffer_AppendString(buf, "settings");
+    GWEN_Buffer_AppendString(buf, AB_BANKING_SETTINGS_DIR);
 
   }
 
@@ -270,119 +270,6 @@ int AB_Banking_UnlockSharedConfig(AB_BANKING *ab, const char *name) {
 
 
 
-int AB_Banking_LoadPluginConfig(AB_BANKING *ab,
-				const char *pluginName,
-				const char *name,
-				GWEN_DB_NODE **pDb) {
-  assert(ab);
-  assert(pluginName);
-  assert(name);
-  if (pluginName && name) {
-    int rv;
-
-    rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, pluginName, name, pDb);
-    if (rv<0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Could not load plugin group [%s] (%d)",
-		name, rv);
-      return rv;
-    }
-    return 0;
-  }
-  else {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Name of plugin group missing");
-    return GWEN_ERROR_GENERIC;
-  }
-}
-
-
-
-int AB_Banking_SavePluginConfig(AB_BANKING *ab,
-				const char *pluginName,
-				const char *name,
-				GWEN_DB_NODE *db) {
-  assert(ab);
-  assert(pluginName);
-  assert(name);
-  if (pluginName && name) {
-    int rv;
-
-    rv=GWEN_ConfigMgr_SetGroup(ab->configMgr, pluginName, name, db);
-    if (rv<0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Could not save plugin group [%s] (%d)",
-		name, rv);
-      return rv;
-    }
-    return 0;
-  }
-  else {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Name of plugin group missing");
-    return GWEN_ERROR_GENERIC;
-  }
-}
-
-
-
-int AB_Banking_LockPluginConfig(AB_BANKING *ab,
-				const char *pluginName,
-				const char *name) {
-  assert(ab);
-  assert(pluginName);
-  assert(name);
-  if (pluginName && name) {
-    int rv;
-
-    /* check for config manager (created by AB_Banking_Init) */
-    if (ab->configMgr==NULL) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-                "No config manager. Maybe the gwenhywfar plugins are not installed correctly?");
-      return GWEN_ERROR_GENERIC;
-    }
-
-    rv=GWEN_ConfigMgr_LockGroup(ab->configMgr, pluginName, name);
-    if (rv<0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Could not lock plugin group [%s] (%d)",
-		name, rv);
-      return rv;
-    }
-    return 0;
-  }
-  else {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Name of plugin group missing");
-    return GWEN_ERROR_GENERIC;
-  }
-}
-
-
-
-int AB_Banking_UnlockPluginConfig(AB_BANKING *ab,
-				  const char *pluginName,
-				  const char *name) {
-  assert(ab);
-  assert(pluginName);
-  assert(name);
-  if (pluginName && name) {
-    int rv;
-
-    rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, pluginName, name);
-    if (rv<0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Could not unlock plugin group [%s] (%d)",
-		name, rv);
-      return rv;
-    }
-    return 0;
-  }
-  else {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Name of plugin group missing");
-    return GWEN_ERROR_GENERIC;
-  }
-}
-
-
-
 int AB_Banking_GetUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf){
   if (ab->dataDir) {
     GWEN_Buffer_AppendString(buf, ab->dataDir);
@@ -459,5 +346,35 @@ int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab,
   return 0;
 }
 
+
+
+void *AB_Banking_GetUserData(AB_BANKING *ab) {
+  assert(ab);
+  return ab->user_data;
+}
+
+
+void AB_Banking_SetUserData(AB_BANKING *ab, void *user_data) {
+  assert(ab);
+  ab->user_data = user_data;
+}
+
+
+
+GWEN_STRINGLIST *AB_Banking_GetGlobalDataDirs(void) {
+  GWEN_STRINGLIST *sl;
+
+  sl=GWEN_PathManager_GetPaths(AB_PM_LIBNAME, AB_PM_DATADIR);
+  return sl;
+}
+
+
+
+GWEN_STRINGLIST *AB_Banking_GetGlobalSysconfDirs(void) {
+  GWEN_STRINGLIST *sl;
+
+  sl=GWEN_PathManager_GetPaths(AB_PM_LIBNAME, AB_PM_SYSCONFDIR);
+  return sl;
+}
 
 

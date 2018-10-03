@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Sat Sep 27 2008
- copyright   : (C) 2008-2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -20,31 +20,27 @@ extern "C" {
 
 
 
-AQBANKING_API
+AQBANKING_API DEPRECATED
 int AB_Banking_LoadAppConfig(AB_BANKING *ab, GWEN_DB_NODE **pDb);
 
-AQBANKING_API
+AQBANKING_API DEPRECATED
 int AB_Banking_SaveAppConfig(AB_BANKING *ab, GWEN_DB_NODE *db);
 
 
-AQBANKING_API
+AQBANKING_API DEPRECATED
 int AB_Banking_LockAppConfig(AB_BANKING *ab);
 
-AQBANKING_API
+AQBANKING_API DEPRECATED
 int AB_Banking_UnlockAppConfig(AB_BANKING *ab);
 
 
 
 
 AQBANKING_API
-int AB_Banking_LoadSharedConfig(AB_BANKING *ab,
-				const char *name,
-				GWEN_DB_NODE **pDb);
+int AB_Banking_LoadSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE **pDb);
 
 AQBANKING_API
-int AB_Banking_SaveSharedConfig(AB_BANKING *ab,
-				const char *name,
-				GWEN_DB_NODE *db);
+int AB_Banking_SaveSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE *db);
 
 
 AQBANKING_API
