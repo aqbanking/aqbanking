@@ -248,17 +248,17 @@
 
         <inline loc="end" access="public">
           <content>
-             $(api) AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_GetOrAddAccountInfoForAccountSpec($(struct_type) *st, const AB_ACCOUNT_SPEC *a);
+             $(api) AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_GetOrAddAccountInfoForAccount($(struct_type) *st, const AB_ACCOUNT *a);
           </content>
         </inline>
 
         <inline loc="code">
           <content>
-             AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_GetOrAddAccountInfoForAccountSpec($(struct_type) *st, const AB_ACCOUNT_SPEC *a) {
+             AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_GetOrAddAccountInfoForAccount($(struct_type) *st, const AB_ACCOUNT *a) {
                assert(st);
                if (NULL==st->accountInfoList)
                  st->accountInfoList=AB_ImExporterAccountInfo_List_new();
-               return AB_ImExporterAccountInfo_List_GetOrAddByAccountSpec(st->accountInfoList, a);
+               return AB_ImExporterAccountInfo_List_GetOrAddByAccount(st->accountInfoList, a);
              }
           </content>
         </inline>

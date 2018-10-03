@@ -48,23 +48,23 @@
           <typeFlagsValue>with_list2</typeFlagsValue>
           <content>
 
-             static $(struct_type) *$(struct_prefix)_List2__freeAll_cb($(struct_type) *t, void *user_data) {  \n
-               $(struct_prefix)_free(t);                                                                      \n
-               return NULL;                                                                                   \n
-             }                                                                                                \n
-                                                                                                              \n
-                                                                                                              \n
-             int $(struct_prefix)_List2_freeAll($(struct_type)_LIST2 *tl) {                                   \n
-               if (tl) {                                                                                      \n
-                 $(struct_prefix)_List2_ForEach(tl, $(struct_prefix)_List2__freeAll_cb, NULL);                \n
-                 $(struct_prefix)_List2_free(tl);                                                             \n
-               }                                                                                              \n
-               else {                                                                                         \n
-                 DBG_ERROR(AQBANKING_LOGDOMAIN, "List missing");                                              \n
-                 return GWEN_ERROR_INVALID;                                                                   \n
-               }                                                                                              \n
-               return 0;                                                                                      \n
-             }                                                                                               
+             static $(struct_type) *$(struct_prefix)_List2__freeAll_cb($(struct_type) *t, void *user_data) {
+               $(struct_prefix)_free(t);
+               return NULL;
+             }
+
+
+             int $(struct_prefix)_List2_freeAll($(struct_type)_LIST2 *tl) {
+               if (tl) {
+                 $(struct_prefix)_List2_ForEach(tl, $(struct_prefix)_List2__freeAll_cb, NULL);
+                 $(struct_prefix)_List2_free(tl); 
+               }
+               else {
+                 DBG_ERROR(AQBANKING_LOGDOMAIN, "List missing");
+                 return GWEN_ERROR_INVALID;
+               }
+               return 0;
+             }
           </content>
         </inline>
 
@@ -78,11 +78,11 @@
 
         <inline loc="code">
           <content>
-             AB_TRANSACTION *$(struct_prefix)_GetFirstTransaction(const $(struct_type) *st, int ty, int cmd) { \n
-               assert(st);                                                                                     \n
-               if (st->transactionList)                                                                        \n
-                 return AB_Transaction_List_FindFirstByType(st->transactionList, ty, cmd);                     \n
-               return NULL;                                                                                    \n
+             AB_TRANSACTION *$(struct_prefix)_GetFirstTransaction(const $(struct_type) *st, int ty, int cmd) {
+               assert(st);
+               if (st->transactionList)
+                 return AB_Transaction_List_FindFirstByType(st->transactionList, ty, cmd);
+               return NULL;
              }
           </content>
         </inline>
@@ -97,11 +97,11 @@
 
         <inline loc="code">
           <content>
-             void $(struct_prefix)_AddTransaction($(struct_type) *st, AB_TRANSACTION *t) {                    \n
-               assert(st);                                                                                    \n
-               if (NULL==st->transactionList)                                                                 \n
-                 st->transactionList=AB_Transaction_List_new();                                               \n
-               AB_Transaction_List_Add(t, st->transactionList);                                               \n
+             void $(struct_prefix)_AddTransaction($(struct_type) *st, AB_TRANSACTION *t) {
+               assert(st);
+               if (NULL==st->transactionList)
+                 st->transactionList=AB_Transaction_List_new();
+               AB_Transaction_List_Add(t, st->transactionList);
              }
           </content>
         </inline>
@@ -116,11 +116,11 @@
 
         <inline loc="code">
           <content>
-             int $(struct_prefix)_GetTransactionCount(const $(struct_type) *st, int ty, int cmd) {           \n
-               assert(st);                                                                                   \n
-               if (st->transactionList)                                                                      \n
-                 return AB_Transaction_List_CountByType(st->transactionList, ty, cmd);                       \n
-               return 0;                                                                                     \n
+             int $(struct_prefix)_GetTransactionCount(const $(struct_type) *st, int ty, int cmd) {
+               assert(st);
+               if (st->transactionList)
+                 return AB_Transaction_List_CountByType(st->transactionList, ty, cmd);
+               return 0;
              }
           </content>
         </inline>
@@ -135,11 +135,11 @@
 
         <inline loc="code">
           <content>
-             AB_ACCOUNT_STATUS *$(struct_prefix)_GetFirstAccountStatus(const $(struct_type) *as) {          \n
-               assert(as);                                                                                  \n
-               if (as->accountStatusList)                                                                   \n
-                 return AB_AccountStatus_List_First(as->accountStatusList);                                 \n
-               return NULL;                                                                                 \n
+             AB_ACCOUNT_STATUS *$(struct_prefix)_GetFirstAccountStatus(const $(struct_type) *as) {
+               assert(as);
+               if (as->accountStatusList)
+                 return AB_AccountStatus_List_First(as->accountStatusList);
+               return NULL;
              }
           </content>
         </inline>
@@ -154,11 +154,11 @@
 
         <inline loc="code">
           <content>
-             void $(struct_prefix)_AddAccountStatus($(struct_type) *st, AB_ACCOUNT_STATUS *as) {           \n
-               assert(as);                                                                                 \n
-               if (NULL==st->accountStatusList)                                                            \n
-                 st->accountStatusList=AB_AccountStatus_List_new();                                        \n
-               AB_AccountStatus_List_Add(as, st->accountStatusList);                                       \n
+             void $(struct_prefix)_AddAccountStatus($(struct_type) *st, AB_ACCOUNT_STATUS *as) {
+               assert(as);
+               if (NULL==st->accountStatusList)
+                 st->accountStatusList=AB_AccountStatus_List_new();
+               AB_AccountStatus_List_Add(as, st->accountStatusList);
              }
           </content>
         </inline>
@@ -173,11 +173,11 @@
 
         <inline loc="code">
           <content>
-             AB_DOCUMENT *$(struct_prefix)_GetFirstEStatement(const $(struct_type) *st) {                 \n
-               assert(st);                                                                                \n
-               if (st->eStatementList)                                                                    \n
-                 return AB_Document_List_First(st->eStatementList);                                       \n
-               return NULL;                                                                               \n
+             AB_DOCUMENT *$(struct_prefix)_GetFirstEStatement(const $(struct_type) *st) {
+               assert(st);
+               if (st->eStatementList)
+                 return AB_Document_List_First(st->eStatementList);
+               return NULL;
              }
           </content>
         </inline>
@@ -192,12 +192,12 @@
 
         <inline loc="code">
           <content>
-             void $(struct_prefix)_AddEStatement($(struct_type) *st, AB_DOCUMENT *d) {                   \n
-               assert(d);                                                                                \n
-               if (NULL==st->eStatementList)                                                             \n
-                 st->eStatementList=AB_Document_List_new();                                              \n
-               AB_Document_List_Add(d, st->eStatementList);                                              \n
-             }                                                                                          
+             void $(struct_prefix)_AddEStatement($(struct_type) *st, AB_DOCUMENT *d) {
+               assert(d);
+               if (NULL==st->eStatementList)
+                 st->eStatementList=AB_Document_List_new();
+               AB_Document_List_Add(d, st->eStatementList);
+             }
           </content>
         </inline>
 
@@ -214,14 +214,14 @@
 
         <inline loc="code">
           <content>
-             void $(struct_prefix)_Clear($(struct_type) *st) {                                          \n
-               assert(st);                                                                              \n
-               if (st->transactionList)                                                                 \n
-                 AB_Transaction_List_Clear(st->transactionList);                                        \n
-               if (st->accountStatusList)                                                               \n
-                 AB_AccountStatus_List_Clear(st->accountStatusList);                                    \n
-               if (st->eStatementList)                                                                  \n
-                 AB_Document_List_Clear(st->eStatementList);                                            \n
+             void $(struct_prefix)_Clear($(struct_type) *st) {
+               assert(st);
+               if (st->transactionList)
+                 AB_Transaction_List_Clear(st->transactionList);
+               if (st->accountStatusList)
+                 AB_AccountStatus_List_Clear(st->accountStatusList);
+               if (st->eStatementList)
+                 AB_Document_List_Clear(st->eStatementList);
              }
           </content>
         </inline>
@@ -230,47 +230,50 @@
 
         <inline loc="end" access="public">
           <content>
-             $(api) void $(struct_prefix)_FillFromAccountSpec($(struct_type) *st, const AB_ACCOUNT_SPEC *a);
+             $(api) void $(struct_prefix)_FillFromAccount($(struct_type) *st, const AB_ACCOUNT *a);
           </content>
         </inline>
 
         <inline loc="code">
           <content>
-             void $(struct_prefix)_FillFromAccountSpec($(struct_type) *st, const AB_ACCOUNT_SPEC *a) {  \n
-               const char *s;                                                                           \n
-               AB_ACCOUNT_TYPE at;                                                                      \n
-                                                                                                        \n
-               assert(st);                                                                              \n
-               assert(a);                                                                               \n
-                                                                                                        \n
-               s=AB_AccountSpec_GetBankCode(a);                                                         \n
-               $(struct_prefix)_SetBankCode(st, s);                                                     \n
-                                                                                                        \n
-               s=AB_AccountSpec_GetAccountNumber(a);                                                    \n
-               $(struct_prefix)_SetAccountNumber(st, s);                                                \n
-                                                                                                        \n
-               s=AB_AccountSpec_GetSubAccountNumber(a);                                                 \n
-               $(struct_prefix)_SetSubAccountId(st, s);                                                 \n
-                                                                                                        \n
-               $(struct_prefix)_SetAccountId(st, AB_AccountSpec_GetUniqueId(a));                        \n
-                                                                                                        \n
-               s=AB_AccountSpec_GetAccountName(a);                                                      \n
-               $(struct_prefix)_SetAccountName(st, s);                                                  \n
-                                                                                                        \n
-               s=AB_AccountSpec_GetIban(a);                                                             \n
-               $(struct_prefix)_SetIban(st, s);                                                         \n
-                                                                                                        \n
-               s=AB_AccountSpec_GetBic(a);                                                              \n
-               $(struct_prefix)_SetBic(st, s);                                                          \n
-                                                                                                        \n
-               s=AB_AccountSpec_GetCurrency(a);                                                         \n
-               $(struct_prefix)_SetCurrency(st, s);                                                     \n
-                                                                                                        \n
-               s=AB_AccountSpec_GetOwnerName(a);                                                        \n
-               $(struct_prefix)_SetOwner(st, s);                                                        \n
-                                                                                                        \n
-               at=AB_AccountSpec_GetType(a);                                                            \n
-               $(struct_prefix)_SetAccountType(st, at);                                                 \n
+             void $(struct_prefix)_FillFromAccount($(struct_type) *st, const AB_ACCOUNT *a) {
+               const char *s;
+               AB_ACCOUNT_TYPE at;
+             
+               assert(st);
+               assert(a);
+             
+               s=AB_Account_GetBankCode(a);
+               $(struct_prefix)_SetBankCode(st, s);
+             
+               s=AB_Account_GetBankName(a);
+               $(struct_prefix)_SetBankName(st, s);
+             
+               s=AB_Account_GetAccountNumber(a);
+               $(struct_prefix)_SetAccountNumber(st, s);
+
+               s=AB_Account_GetSubAccountId(a);
+               $(struct_prefix)_SetSubAccountId(st, s);
+
+               $(struct_prefix)_SetAccountId(st, AB_Account_GetUniqueId(a));
+             
+               s=AB_Account_GetAccountName(a);
+               $(struct_prefix)_SetAccountName(st, s);
+             
+               s=AB_Account_GetIBAN(a);
+               $(struct_prefix)_SetIban(st, s);
+             
+               s=AB_Account_GetBIC(a);
+               $(struct_prefix)_SetBic(st, s);
+             
+               s=AB_Account_GetCurrency(a);
+               $(struct_prefix)_SetCurrency(st, s);
+             
+               s=AB_Account_GetOwnerName(a);
+               $(struct_prefix)_SetOwner(st, s);
+             
+               at=AB_Account_GetAccountType(a);
+               $(struct_prefix)_SetAccountType(st, at);
              }
           </content>
         </inline>
@@ -284,29 +287,29 @@
 
         <inline loc="code">
           <content>
-             void $(struct_prefix)_FillFromTransaction($(struct_type) *st, const AB_TRANSACTION *t) {   \n
-               const char *s;                                                                           \n
-                                                                                                        \n
-               assert(st);                                                                              \n
-               assert(t);                                                                               \n
-                                                                                                        \n
-               s=AB_Transaction_GetLocalBankCode(t);                                                    \n
-               $(struct_prefix)_SetBankCode(st, s);                                                     \n
-                                                                                                        \n
-               s=AB_Transaction_GetLocalAccountNumber(t);                                               \n
-               $(struct_prefix)_SetAccountNumber(st, s);                                                \n
-                                                                                                        \n
-               s=AB_Transaction_GetLocalSuffix(t);                                                      \n
-               $(struct_prefix)_SetSubAccountId(st, s);                                                 \n
-                                                                                                        \n
-               s=AB_Transaction_GetLocalIban(t);                                                        \n
-               $(struct_prefix)_SetIban(st, s);                                                         \n
-                                                                                                        \n
-               s=AB_Transaction_GetLocalBic(t);                                                         \n
-               $(struct_prefix)_SetBic(st, s);                                                          \n
-                                                                                                        \n
-               s=AB_Transaction_GetLocalName(t);                                                        \n
-               $(struct_prefix)_SetOwner(st, s);                                                        \n
+             void $(struct_prefix)_FillFromTransaction($(struct_type) *st, const AB_TRANSACTION *t) {
+               const char *s;
+
+               assert(st);
+               assert(t);
+             
+               s=AB_Transaction_GetLocalBankCode(t);
+               $(struct_prefix)_SetBankCode(st, s);
+             
+               s=AB_Transaction_GetLocalAccountNumber(t);
+               $(struct_prefix)_SetAccountNumber(st, s);
+
+               s=AB_Transaction_GetLocalSuffix(t);
+               $(struct_prefix)_SetSubAccountId(st, s);
+             
+               s=AB_Transaction_GetLocalIban(t);
+               $(struct_prefix)_SetIban(st, s);
+             
+               s=AB_Transaction_GetLocalBic(t);
+               $(struct_prefix)_SetBic(st, s);
+             
+               s=AB_Transaction_GetLocalName(t);
+               $(struct_prefix)_SetOwner(st, s);
              }
           </content>
         </inline>
@@ -324,41 +327,41 @@
 
         <inline loc="code">
           <content>
-             AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_GetByBankCodeAndAccountNumber($(struct_type)_LIST *l,       \n
-                                                                                            const char *bankCode,         \n
-                                                                                            const char *accountNumber,    \n
-                                                                                            int accountType) {            \n
-               AB_IMEXPORTER_ACCOUNTINFO *iea;                                                                            \n
-                                                                                                                          \n
-               assert(l);                                                                                                 \n
-                                                                                                                          \n
-               if (!bankCode)                                                                                             \n
-                 bankCode="";                                                                                             \n
-               if (!accountNumber)                                                                                        \n
-                 accountNumber="";                                                                                        \n
-                                                                                                                          \n
-               iea=$(struct_prefix)_List_First(l);                                                                        \n
-               while(iea) {                                                                                               \n
-                 const char *sBankCode;                                                                                   \n
-                 const char *sAccountNumber;                                                                              \n
-                                                                                                                          \n
-                 sBankCode=$(struct_prefix)_GetBankCode(iea);                                                             \n
-                 if (sBankCode==NULL)                                                                                     \n
-                   sBankCode="";                                                                                          \n
-                 sAccountNumber=$(struct_prefix)_GetAccountNumber(iea);                                                   \n
-                 if (sAccountNumber==NULL)                                                                                \n
-                   sAccountNumber="";                                                                                     \n
-                                                                                                                          \n
-                 if ((strcasecmp(sBankCode, bankCode)==0) &amp;&amp;                                                      \n
-                     (strcasecmp(sAccountNumber, accountNumber)==0) &amp;&amp;                                            \n
-                     ((accountType&lt;=AB_AccountType_Unknown) || (accountType==$(struct_prefix)_GetAccountType(iea)))    \n
-                    )                                                                                                     \n
-                   return iea;                                                                                            \n
-                                                                                                                          \n
-                 iea=$(struct_prefix)_List_Next(iea);                                                                     \n
-               }                                                                                                          \n
-                                                                                                                          \n
-               return NULL;                                                                                               \n
+             AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_GetByBankCodeAndAccountNumber($(struct_type)_LIST *l, 
+                                                                                            const char *bankCode,
+                                                                                            const char *accountNumber,
+                                                                                            int accountType) {
+               AB_IMEXPORTER_ACCOUNTINFO *iea;
+             
+               assert(l);
+               
+               if (!bankCode)
+                 bankCode="";
+               if (!accountNumber)
+                 accountNumber="";
+             
+               iea=$(struct_prefix)_List_First(l);
+               while(iea) {
+                 const char *sBankCode;
+                 const char *sAccountNumber;
+             
+                 sBankCode=$(struct_prefix)_GetBankCode(iea);
+                 if (sBankCode==NULL)
+                   sBankCode="";
+                 sAccountNumber=$(struct_prefix)_GetAccountNumber(iea);
+                 if (sAccountNumber==NULL)
+                   sAccountNumber="";
+
+                 if ((strcasecmp(sBankCode, bankCode)==0) &amp;&amp;
+                     (strcasecmp(sAccountNumber, accountNumber)==0) &amp;&amp;
+                     ((accountType&lt;=AB_AccountType_Unknown) || (accountType==$(struct_prefix)_GetAccountType(iea)))
+                    )
+                   return iea;
+                 
+                 iea=$(struct_prefix)_List_Next(iea);
+               }
+               
+               return NULL;
              }
           </content>
         </inline>
@@ -378,50 +381,26 @@
 
         <inline loc="code">
           <content>
-             AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_Find($(struct_type)_LIST *l,                               \n
-                                                                   uint32_t uniqueId,                                    \n
-                                                                   const char *iban,                                     \n
-                                                                   const char *bankCode,                                 \n
-                                                                   const char *accountNumber,                            \n
-                                                                   int accountType) {                                    \n
-               AB_IMEXPORTER_ACCOUNTINFO *iea=NULL;                                                                      \n
-                                                                                                                         \n
-               assert(l);                                                                                                \n
-                                                                                                                         \n
-               if (uniqueId)                                                                                             \n
-                 iea=$(struct_prefix)_List_GetByAccountId(l, uniqueId);                                                  \n
-                                                                                                                         \n
-               if (iea==NULL &amp;&amp; iban &amp;&amp; *iban)                                                           \n
-                 $(struct_prefix)_List_GetByIban(l, iban);                                                               \n
-                                                                                                                         \n
-               if (iea==NULL)                                                                                            \n
-                 iea=$(struct_prefix)_List_GetByBankCodeAndAccountNumber(l, bankCode, accountNumber, accountType);       \n
-                                                                                                                         \n
-               return iea;                                                                                               \n
-             }                                                                                                           
-          </content>
-        </inline>
-
-
-
-        <inline loc="end" access="public">
-          <content>
-             $(api) AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_GetByAccountSpec($(struct_type)_LIST *l, const AB_ACCOUNT_SPEC *a);
-          </content>
-        </inline>
-
-        <inline loc="code">
-          <content>
-             AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_GetByAccountSpec($(struct_type)_LIST *l, const AB_ACCOUNT_SPEC *a) { \n
-               assert(l);                                                                                                          \n
-               assert(a);                                                                                                          \n
-                                                                                                                                   \n
-               return $(struct_prefix)_List_Find(l,                                                                                \n
-                                                 AB_AccountSpec_GetUniqueId(a),                                                    \n
-                                                 AB_AccountSpec_GetIban(a),                                                        \n
-                                                 AB_AccountSpec_GetBankCode(a),                                                    \n
-                                                 AB_AccountSpec_GetAccountNumber(a),                                               \n
-                                                 AB_AccountSpec_GetType(a));                                                       \n
+             AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_Find($(struct_type)_LIST *l,
+                                                                   uint32_t uniqueId,
+                                                                   const char *iban,
+                                                                   const char *bankCode,
+                                                                   const char *accountNumber,
+                                                                   int accountType) {
+               AB_IMEXPORTER_ACCOUNTINFO *iea=NULL;
+             
+               assert(l);
+               
+               if (uniqueId)
+                 iea=$(struct_prefix)_List_GetByAccountId(l, uniqueId);
+               
+               if (iea==NULL &amp;&amp; iban &amp;&amp; *iban)
+                 $(struct_prefix)_List_GetByIban(l, iban);
+               
+               if (iea==NULL)
+                 iea=$(struct_prefix)_List_GetByBankCodeAndAccountNumber(l, bankCode, accountNumber, accountType);
+               
+               return iea;
              }
           </content>
         </inline>
@@ -430,24 +409,48 @@
 
         <inline loc="end" access="public">
           <content>
-             $(api) AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_GetOrAddByAccountSpec($(struct_type)_LIST *l, const AB_ACCOUNT_SPEC *a);
+             $(api) AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_GetByAccount($(struct_type)_LIST *l, const AB_ACCOUNT *a);
           </content>
         </inline>
 
         <inline loc="code">
           <content>
-             AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_GetOrAddByAccountSpec($(struct_type)_LIST *l, const AB_ACCOUNT_SPEC *a) {\n
-               AB_IMEXPORTER_ACCOUNTINFO *iea=NULL;                                                                                    \n
-                                                                                                                                       \n
-               assert(l);                                                                                                              \n
-                                                                                                                                       \n
-               iea=$(struct_prefix)_List_GetByAccountSpec(l, a);                                                                       \n
-               if (iea==NULL) {                                                                                                        \n
-                 iea=$(struct_prefix)_new();                                                                                           \n
-                 $(struct_prefix)_FillFromAccountSpec(iea, a);                                                                         \n
-                 $(struct_prefix)_List_Add(iea, l);                                                                                    \n
-               }                                                                                                                       \n
-               return iea;                                                                                                             \n
+             AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_GetByAccount($(struct_type)_LIST *l, const AB_ACCOUNT *a) {
+               assert(l);
+               assert(a);
+               
+               return $(struct_prefix)_List_Find(l,
+                                                 AB_Account_GetUniqueId(a),
+                                                 AB_Account_GetIBAN(a),
+                                                 AB_Account_GetBankCode(a),
+                                                 AB_Account_GetAccountNumber(a),
+                                                 AB_Account_GetAccountType(a));
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+             $(api) AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_GetOrAddByAccount($(struct_type)_LIST *l, const AB_ACCOUNT *a);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_GetOrAddByAccount($(struct_type)_LIST *l, const AB_ACCOUNT *a) {
+               AB_IMEXPORTER_ACCOUNTINFO *iea=NULL;
+             
+               assert(l);
+               
+               iea=$(struct_prefix)_List_GetByAccount(l, a);
+               if (iea==NULL) {
+                 iea=$(struct_prefix)_new();
+                 $(struct_prefix)_FillFromAccount(iea, a);
+                 $(struct_prefix)_List_Add(iea, l);
+               }
+               return iea;
              }
           </content>
         </inline>
@@ -466,28 +469,28 @@
 
         <inline loc="code">
           <content>
-             AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_GetOrAdd($(struct_type)_LIST *l,                            \n
-                                                                       uint32_t uniqueId,                                 \n
-                                                                       const char *iban,                                  \n
-                                                                       const char *bankCode,                              \n
-                                                                       const char *accountNumber,                         \n
-                                                                       int accountType) {                                 \n
-               AB_IMEXPORTER_ACCOUNTINFO *iea=NULL;                                                                       \n
-                                                                                                                          \n
-               assert(l);                                                                                                 \n
-                                                                                                                          \n
-               iea=$(struct_prefix)_List_Find(l, uniqueId, iban, bankCode, accountNumber, accountType);                   \n
-               if (iea==NULL) {                                                                                           \n
-                 iea=$(struct_prefix)_new();                                                                              \n
-                 $(struct_prefix)_SetAccountId(iea, uniqueId);                                                            \n
-                 $(struct_prefix)_SetIban(iea, iban);                                                                     \n
-                 $(struct_prefix)_SetBankCode(iea, bankCode);                                                             \n
-                 $(struct_prefix)_SetAccountNumber(iea, accountNumber);                                                   \n
-                 $(struct_prefix)_SetAccountType(iea, accountType);                                                       \n
-                                                                                                                          \n
-                 $(struct_prefix)_List_Add(iea, l);                                                                       \n
-               }                                                                                                          \n
-               return iea;                                                                                                \n
+             AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_GetOrAdd($(struct_type)_LIST *l,
+                                                                       uint32_t uniqueId,
+                                                                       const char *iban,
+                                                                       const char *bankCode,
+                                                                       const char *accountNumber,
+                                                                       int accountType) {
+               AB_IMEXPORTER_ACCOUNTINFO *iea=NULL;
+             
+               assert(l);
+               
+               iea=$(struct_prefix)_List_Find(l, uniqueId, iban, bankCode, accountNumber, accountType);
+               if (iea==NULL) {
+                 iea=$(struct_prefix)_new();
+                 $(struct_prefix)_SetAccountId(iea, uniqueId);
+                 $(struct_prefix)_SetIban(iea, iban);
+                 $(struct_prefix)_SetBankCode(iea, bankCode);
+                 $(struct_prefix)_SetAccountNumber(iea, accountNumber);
+                 $(struct_prefix)_SetAccountType(iea, accountType);
+                 
+                 $(struct_prefix)_List_Add(iea, l);
+               }
+               return iea;
              }
           </content>
         </inline>
