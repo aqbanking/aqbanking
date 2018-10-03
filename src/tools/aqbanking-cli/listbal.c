@@ -112,20 +112,30 @@ int listBal(AB_BANKING *ab,
             GWEN_DB_NODE *dbArgs,
             int argc,
             char **argv) {
-#pragma message "Need to implement this"
-#if 0
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;
   const char *outFile;
   AB_IMEXPORTER_CONTEXT *ctx=0;
   AB_IMEXPORTER_ACCOUNTINFO *iea=0;
+  uint32_t aid;
   const char *bankId;
   const char *accountId;
   const char *bankName;
   const char *accountName;
   FILE *f;
   const GWEN_ARGS args[]={
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Int,            /* type */
+    "uniqueAccountId",             /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    NULL,                         /* short option */
+    "aid",                        /* long option */
+    "Specify the unique account id",      /* short description */
+    "Specify the unique account id"       /* long description */
+  },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsType_Char,            /* type */
@@ -227,6 +237,7 @@ int listBal(AB_BANKING *ab,
     return 0;
   }
 
+  aid=(uint32_t)GWEN_DB_GetIntValue(db, "uniqueAccountId", 0, 0);
   bankId=GWEN_DB_GetCharValue(db, "bankId", 0, 0);
   bankName=GWEN_DB_GetCharValue(db, "bankName", 0, 0);
   accountId=GWEN_DB_GetCharValue(db, "accountId", 0, 0);
@@ -252,8 +263,7 @@ int listBal(AB_BANKING *ab,
   else
     f=fopen(outFile, "w+");
   if (f==0) {
-    DBG_ERROR(0, "Error selecting output file: %s",
-	      strerror(errno));
+    DBG_ERROR(0, "Error selecting output file: %s", strerror(errno));
     return 4;
   }
 
@@ -273,6 +283,14 @@ int listBal(AB_BANKING *ab,
       if (!s || !*s)
         s=AB_ImExporterAccountInfo_GetBankName(iea);
       if (!s || !*s || -1==GWEN_Text_ComparePattern(s, bankName, 0))
+        matches=0;
+    }
+
+    if (matches && aid) {
+      uint32_t id;
+
+      id=AB_ImExporterAccountInfo_GetAccountId(iea);
+      if (aid!=id)
         matches=0;
     }
 
@@ -339,7 +357,6 @@ int listBal(AB_BANKING *ab,
     return 5;
   }
 
-#endif
   return 0;
 }
 
