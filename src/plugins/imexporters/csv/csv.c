@@ -533,11 +533,10 @@ int AH_ImExporterCSV_CheckFile(AB_IMEXPORTER *ie, const char *fname){
 
 
 
-int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
-					 AB_IMEXPORTER_CONTEXT *ctx,
-					 GWEN_SYNCIO *sio,
-					 GWEN_DB_NODE *params,
-					 int transactionType){
+int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
+                            AB_IMEXPORTER_CONTEXT *ctx,
+                            GWEN_SYNCIO *sio,
+                            GWEN_DB_NODE *params){
   AH_IMEXPORTER_CSV *ieh;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
   GWEN_DB_NODE *dbData;
@@ -574,8 +573,7 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
     if (tl) {
       const AB_TRANSACTION *t;
 
-      t=AB_Transaction_List_FindFirstByType(tl, transactionType, AB_Transaction_CommandNone);
-
+      t=AB_Transaction_List_First(tl);
       while(t) {
         GWEN_DB_NODE *dbTransaction;
         const GWEN_DATE *dt;
@@ -769,7 +767,7 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
         /* add transaction db */
         GWEN_DB_AddGroup(dbData, dbTransaction);
 
-        t=AB_Transaction_List_FindNextByType(t, transactionType, AB_Transaction_CommandNone);
+        t=AB_Transaction_List_Next(t);
       } /* while t */
     } /* if tl */
     ai=AB_ImExporterAccountInfo_List_Next(ai);
@@ -786,34 +784,6 @@ int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
   GWEN_DB_Group_free(dbData);
 
   return 0;
-}
-
-
-
-int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
-                            AB_IMEXPORTER_CONTEXT *ctx,
-                            GWEN_SYNCIO *sio,
-			    GWEN_DB_NODE *params){
-  AH_IMEXPORTER_CSV *ieh;
-  const char *subject;
-
-  assert(ie);
-  ieh=GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AH_IMEXPORTER_CSV, ie);
-  assert(ieh);
-  assert(ieh->dbio);
-
-  subject=GWEN_DB_GetCharValue(params, "subject", 0, "transactions");
-  if (strcasecmp(subject, "transactions")==0)
-    return AH_ImExporterCSV__ExportTransactions(ie, ctx, sio, params, AB_Transaction_TypeStatement);
-  else if (strcasecmp(subject, "notedTransactions")==0)
-    return AH_ImExporterCSV__ExportTransactions(ie, ctx, sio, params, AB_Transaction_TypeNotedStatement);
-  else if (strcasecmp(subject, "transfers")==0)
-    return AH_ImExporterCSV__ExportTransactions(ie, ctx, sio, params, AB_Transaction_TypeTransfer);
-  else {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Unable to export unknown subject \"%s\"", subject);
-    return GWEN_ERROR_INVALID;
-  }
 }
 
 

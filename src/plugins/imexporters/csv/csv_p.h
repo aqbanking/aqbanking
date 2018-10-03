@@ -21,12 +21,6 @@ struct AH_IMEXPORTER_CSV {
 };
 
 
-#define AH_IMEXPORTERCSV_SUBJECT_TRANSACTIONS      0
-#define AH_IMEXPORTERCSV_SUBJECT_NOTEDTRANSACTIONS 1
-#define AH_IMEXPORTERCSV_SUBJECT_TRANSFERS         2
-
-
-
 AQBANKING_EXPORT
 GWEN_PLUGIN *imexporter_csv_factory(GWEN_PLUGIN_MANAGER *pm,
 				    const char *name,
@@ -65,13 +59,6 @@ static
 int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
                                       GWEN_DB_NODE *db,
 				      GWEN_DB_NODE *dbParams);
-
-static
-int AH_ImExporterCSV__ExportTransactions(AB_IMEXPORTER *ie,
-					 AB_IMEXPORTER_CONTEXT *ctx,
-					 GWEN_SYNCIO *sio,
-                                         GWEN_DB_NODE *params,
-                                         int noted);
 
 static AB_VALUE *AH_ImExporterCSV__ValueFromDb(GWEN_DB_NODE *dbV,
 					       int commaThousands,

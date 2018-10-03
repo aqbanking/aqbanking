@@ -11,12 +11,6 @@ char groupNames="transaction", "transfer", "debitnote", "line"
 char dateFormat="DD.MM.YYYY"
 int utc="0"
 
-# Valid subjects are:
-# - transactions: This exports booked transactions (default)
-# - notedTransactions: Exports noted transactions
-#
-char subject="transactions"
-
 # The following vars are used when there is an additional field within a
 # record which defines the sign of the amount.
 # Some banks use "C" (positive) and "D" (negative) or "Af" (negative) and
@@ -52,7 +46,7 @@ params {
 
 
   # title of DKB CSV files
-  #"Umsatz abgerechnet";"Buchungstag";"Belegdatum";"Umsatzbeschreibung";"Betrag (EUR)";"Ursprünglicher Betrag";
+  #"Umsatz abgerechnet";"Buchungstag";"Belegdatum";"Umsatzbeschreibung";"Betrag (EUR)";"Urspruenglicher Betrag";
 
   # example entry of a DKB CSV file:
   #"Nein";"17.02.2009";"15.02.2009";"SOME PURPOSE";"-41,37";"-456,00 SEK";

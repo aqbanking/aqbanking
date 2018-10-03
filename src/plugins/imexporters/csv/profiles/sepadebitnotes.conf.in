@@ -11,8 +11,6 @@ char groupNames="transaction", "transfer", "debitnote", "line"
 char dateFormat="YYYY/MM/DD"
 int utc="0"
 
-char subject="transactions"
-
 params {
   # if 1 then values are quoted
   quote="1"

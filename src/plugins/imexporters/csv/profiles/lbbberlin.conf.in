@@ -33,14 +33,14 @@ params {
   # up in the data given to GWEN_CSV_WriteA
 
 #example entry:
-#Kreditkartennr;Buchungsdatum;Kaufdatum;Zweck;Betrag Währung;Wechselkurs;Betrag in EUR
+#Kreditkartennr;Buchungsdatum;Kaufdatum;Zweck;Betrag Waehrung;Wechselkurs;Betrag in EUR
 #4344123412341234;07.07.2008;05.07.2008;TRAVELEX London (2) / London;60,00 GBP;0,78930;-76,02
   columns {
     1="localAccountNumber" # Kreditkartennummer
     2="valutadate" # Buchungsdatum
     3="date"       # Kaufdatum
     4="purpose[0]" # Zweck
-    5="purpose[1]" # Betrag in Fremdwährung (e.g.: 60,00 GBP)
+    5="purpose[1]" # Betrag in Fremdwaehrung (e.g.: 60,00 GBP)
     6="purpose[2]" # Wechselkurs (e.g.: 0,78930)
     7="value/value" # Betrag in EUR (e.g.: -76,02)
   } # columns
