@@ -28,8 +28,6 @@ int listTrans(AB_BANKING *ab,
               GWEN_DB_NODE *dbArgs,
               int argc,
               char **argv) {
-#pragma message "Need to implement this"
-#if 0
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;
@@ -40,11 +38,26 @@ int listTrans(AB_BANKING *ab,
   AB_IMEXPORTER_CONTEXT *ctx=0;
   AB_IMEXPORTER_CONTEXT *nctx=0;
   AB_IMEXPORTER_ACCOUNTINFO *iea=0;
+  uint32_t aid;
   const char *bankId;
   const char *accountId;
   const char *bankName;
   const char *accountName;
+  int transactionType=0;
+  int transactionCommand=0;
+  const char *s;
   const GWEN_ARGS args[]={
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Int,            /* type */
+    "uniqueAccountId",             /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    NULL,                         /* short option */
+    "aid",                        /* long option */
+    "Specify the unique account id",      /* short description */
+    "Specify the unique account id"       /* long description */
+  },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsType_Char,            /* type */
@@ -88,6 +101,28 @@ int listTrans(AB_BANKING *ab,
     "accountname",                    /* long option */
     "Specify the account name",     /* short description */
     "Specify the account name"      /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
+    "transactionType",            /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    "tt",                         /* short option */
+    "transactiontype",            /* long option */
+    "Specify the transaction type to filter",      /* short description */
+    "Specify the transaction type to filter"       /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,           /* type */
+    "transactionCommand",         /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    "tc",                         /* short option */
+    "transactioncommand",         /* long option */
+    "Specify the transaction command to filter",      /* short description */
+    "Specify the transaction command to filter"       /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -182,11 +217,30 @@ int listTrans(AB_BANKING *ab,
   exporterName=GWEN_DB_GetCharValue(db, "exporterName", 0, "csv");
   profileName=GWEN_DB_GetCharValue(db, "profileName", 0, "default");
   profileFile=GWEN_DB_GetCharValue(db, "profileFile", 0, NULL);
+  aid=(uint32_t)GWEN_DB_GetIntValue(db, "uniqueAccountId", 0, 0);
   bankId=GWEN_DB_GetCharValue(db, "bankId", 0, 0);
   bankName=GWEN_DB_GetCharValue(db, "bankName", 0, 0);
   accountId=GWEN_DB_GetCharValue(db, "accountId", 0, 0);
   accountName=GWEN_DB_GetCharValue(db, "accountName", 0, 0);
   outFile=GWEN_DB_GetCharValue(db, "outFile", 0, 0);
+
+  s=GWEN_DB_GetCharValue(db, "transactionType", 0, NULL);
+  if (s && *s) {
+    transactionType=AB_Transaction_Type_fromString(s);
+    if (transactionType==AB_Transaction_TypeUnknown) {
+      fprintf(stderr, "ERROR: Invalid transaction type \"%s\"\n", s);
+      return 1;
+    }
+  }
+
+  s=GWEN_DB_GetCharValue(db, "transactionCommand", 0, NULL);
+  if (s && *s) {
+    transactionCommand=AB_Transaction_Command_fromString(s);
+    if (transactionCommand==AB_Transaction_CommandUnknown) {
+      fprintf(stderr, "ERROR: Invalid transaction command \"%s\"\n", s);
+      return 1;
+    }
+  }
 
   rv=AB_Banking_Init(ab);
   if (rv) {
@@ -221,6 +275,14 @@ int listTrans(AB_BANKING *ab,
         matches=0;
     }
 
+    if (matches && aid) {
+      uint32_t id;
+
+      id=AB_ImExporterAccountInfo_GetAccountId(iea);
+      if (aid!=id)
+        matches=0;
+    }
+
     if (matches && accountId) {
       s=AB_ImExporterAccountInfo_GetAccountNumber(iea);
       if (!s || !*s || -1==GWEN_Text_ComparePattern(s, accountId, 0))
@@ -234,8 +296,13 @@ int listTrans(AB_BANKING *ab,
 
     if (matches) {
       AB_IMEXPORTER_ACCOUNTINFO *nai;
+      AB_TRANSACTION_LIST *tl;
 
       nai=AB_ImExporterAccountInfo_dup(iea);
+      tl=AB_ImExporterAccountInfo_GetTransactionList(nai);
+      if (tl)
+        AB_Transaction_List_KeepByType(tl, transactionType, transactionCommand);
+
       AB_ImExporterContext_AddAccountInfo(nctx, nai);
     } /* if matches */
     iea=AB_ImExporterAccountInfo_List_Next(iea);
@@ -259,7 +326,6 @@ int listTrans(AB_BANKING *ab,
     return 5;
   }
 
-#endif
   return 0;
 }
 
