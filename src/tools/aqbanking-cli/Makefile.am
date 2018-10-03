@@ -26,18 +26,13 @@ EXTRA_DIST=\
   addtransaction.c \
   chkacc.c \
   chkiban.c \
-  debitnote.c \
-  debitnotes.c \
   fillgaps.c \
   import.c \
   listaccs.c \
   listbal.c \
   listprofiles.c \
   listtrans.c \
-  listtransfers.c \
   request.c \
-  transfer.c \
-  transfers.c \
   util.c \
   versions.c \
   updateconf.c \

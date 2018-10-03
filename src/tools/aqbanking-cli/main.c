@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue May 03 2005
- copyright   : (C) 2005-2014 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -28,17 +28,12 @@
 
 #include "chkacc.c"
 #include "chkiban.c"
-#include "debitnote.c"
-#include "debitnotes.c"
 #include "import.c"
 #include "listaccs.c"
 #include "listbal.c"
 #include "listprofiles.c"
 #include "listtrans.c"
-#include "listtransfers.c"
 #include "request.c"
-#include "transfer.c"
-#include "transfers.c"
 #include "util.c"
 #include "versions.c"
 #include "addtransaction.c"
@@ -341,7 +336,9 @@ int main(int argc, char **argv) {
     rv=listTrans(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "listtransfers")==0) {
-    rv=listTransfers(ab, db, argc, argv);
+    fprintf(stderr, "ERROR: Please use the command \"listtrans\" and specify the transaction type via \"-tt TYPE\"\n");
+    GWEN_DB_Group_free(db);
+    return 1;
   }
   else if (strcasecmp(cmd, "request")==0) {
     rv=request(ab, db, argc, argv);
@@ -355,23 +352,11 @@ int main(int argc, char **argv) {
   else if (strcasecmp(cmd, "import")==0) {
     rv=import(ab, db, argc, argv);
   }
-  else if (strcasecmp(cmd, "transfer")==0) {
-    rv=transfer(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "transfers")==0) {
-    rv=transfers(ab, db, argc, argv);
-  }
   else if (strcasecmp(cmd, "sepatransfer")==0) {
     rv=sepaTransfer(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "sepatransfers")==0) {
     rv=sepaMultiJobs(ab, db, argc, argv, AQBANKING_TOOL_SEPA_TRANSFERS);
-  }
-  else if (strcasecmp(cmd, "debitnote")==0) {
-    rv=debitNote(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "debitnotes")==0) {
-    rv=debitNotes(ab, db, argc, argv);
   }
   else if (strcasecmp(cmd, "sepadebitnote")==0) {
     rv=sepaDebitNote(ab, db, argc, argv, 0);
