@@ -478,8 +478,15 @@ AqBanking6:
                                  - list of account status
                                  - list of messages
                                  - list of electronic banking statements
-                            
+- AB_JOB:                      - removed (now taken over by AB_TRANSACTION)
+- AB_BANKING:                  - removed handling of AB_USER and AB_ACCOUNT completely, introduced AB_ACCOUNT_SPEC:
+                                 - added AB_Banking_GetAccountSpecList()
+                                 - added AB_Banking_GetAccountSpecByUniqueId()
+                               - replaced AB_Banking_ExecuteJobs() with AB_Banking_SendCommands()
+                                 - this function takes a list of jobs in AB_TRANSACTIONs and sends them, no longer needs AB_JOB
+- AB_COUNTRY:                  - deprecated, will be removed before release
 
-Martin Preuss, Wilhelmshaven/Germany, 2018/06/29
+
+Martin Preuss, Wilhelmshaven/Germany, 2018/10/03
 
 

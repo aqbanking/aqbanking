@@ -1,0 +1,86 @@
+
+This file describes the key concepts behind the API changes in AqBanking6.
+
+
+==================================================================================================================
+PLEASE NOTE: AqBanking6 is work in progress, it is by no means stable or fit for use in production environments!!
+==================================================================================================================
+
+
+
+Init, Account Information
+=========================
+
+In previous versions AqBanking loaded a list of AB_USER and AB_ACCOUNT objects upon AB_Banking_OnlineInit(). These objects
+contained some internal objects created by the backends, and they were shared with application. This made working with
+accounts a bit more complicated than necessary. E.g. you couldn't properly copy AB_ACCOUNT objects.
+
+Also, AqBanking needed to load and initialize all online banking backends upon AB_Banking_OnlineInit() even to just get a list
+of supported accounts.
+
+This is now much easier.
+
+AqBanking only has a single init function now (AB_Banking_Init) which only initializes the plugin system but doesn't do much else.
+
+Information about supported accounts is now stored in simple objects of type AB_ACCOUNT_SPEC. These objects are owned by the
+application and can be freely copied and modified by the application (however, the underlying data on disk is only changed by the 
+online banking providers which maintain these objects).
+
+The types AB_USER and AB_ACCOUNT are now exclusively used by the online banking providers (e.g. AqHBCI). They also handle reading
+and writing those objects themselves. In fact, AqBanking itself doen't even know much about those objects anymore.
+
+These objects are only loaded by the online banking providers when needed, e.g. when sending jobs to a bank.
+
+AB_PROVIDER objects are also now only initialized immediately before use (e.g. before the new function AB_Banking_SendCommands
+sends commands via a provider) and deinitialized immediately after use.
+
+
+Online banking jobs
+===================
+Online banking jobs are now stored in AB_TRANSACTION objects. Since the previously used type AB_JOB was only a wrapper around
+AB_TRANSACTION objects anyway we could easily get rid of that extra layer.
+
+
+AB_IMEXPORTER_CONTEXT
+=====================
+
+Previously there were multiple different lists for all kinds of transactions: transfers, statements, noted statements, debit notes
+etc. Every list had its internal iterator (e.g. AB_ImExporterAccountInfo_GetFirstTransfer, AB_ImExporterAccountInfo_GetNextTransfer).
+This made working on an AB_IMEXPORTER_CONTEXT from inside multiple functions problematic, since a list could only be traversed by
+one function at a time.
+
+This has also been simplified.
+
+Now there is only a single list for all kind of AB_TRANSACTION types. AB_IMEXPORTER_CONTEXT exposes this list in its API so that
+the user can freely operate on it.
+
+Every transaction has a "type" field (see AB_Transaction_GetType) which distinguishes all the transaction types. There a a few
+functions which help you with accessing specific types (e.g. you can search/filter by transaction type).
+
+This makes it very much easier to work with in im- and exporters, since you have no longer to specify within the im-/exporter
+which transaction list to work with.
+
+In fact, the CSV exporter no longer differentiates the type to be exported. It exports every transaction in its input. It is now
+the job of the application to filter the transactions to be exported, and the exporter should just doe what its told.
+
+
+
+AB_COUNTRY
+==========
+
+This function complex will be removed. It wasn't  used much anyway.
+
+
+
+Trying the GIT Version of AqBanking6
+====================================
+
+You can checkout AqBanking6 without interfering with your stable version. The current version in GIT temporarily uses the settings
+folder $HOME/.aqbanking/settings6 (as opposed to $HOME/.aqbanking/settings), so you can just copy your "settings" folder to
+"settings6" and issue a first "aqbanking-cli listaccs" command. You will then see how AqBanking6 changes the configuration files
+only in "settings6".
+
+To see how to use the new API have a look at the updated tutorials or at aqbanking-cli.
+
+
+Martin Preuss, Wilhelmshaven/Germany, 2018/10/03
