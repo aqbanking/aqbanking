@@ -432,7 +432,6 @@ int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
   const uint8_t *p;
   AB_USER *u;
   const char *userId;
-  const AB_COUNTRY *pcountry;
   int country;
   int hbciVersion;
 
@@ -448,12 +447,7 @@ int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
   assert(*userId);
 
   /* set keyname */
-  pcountry=AB_Banking_FindCountryByName(AH_Job_GetBankingApi(j),
-					AB_User_GetCountry(u));
-  if (pcountry)
-    country=AB_Country_GetNumericCode(pcountry);
-  else
-    country=280;
+  country=280; /* fixed value for "Germany", since HBCI is only used here */
 
   hbciVersion=AH_User_GetHbciVersion(u);
   if (hbciVersion==0)

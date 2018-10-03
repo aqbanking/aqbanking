@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -19,6 +16,7 @@
 #include "aqhbci_l.h"
 #include "hbci_l.h"
 #include "user_l.h"
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
@@ -414,14 +412,12 @@ int AH_MsgEngine_GetIntValue(GWEN_MSGENGINE *e,
 
   if (strcasecmp(name, "country")==0) {
     const char *s;
-    const AB_COUNTRY *cnt;
 
     s=AB_User_GetCountry(x->user);
     if (!s || !*s)
       return defValue;
-    cnt=AB_Banking_FindCountryByName(AB_User_GetBanking(x->user), s);
-    if (cnt)
-      return AB_Country_GetNumericCode(cnt);
+    if (strcasecmp(s, "de")==0)
+      return 280; /* HBCI is only used in Germany, so we only check for DE here */
     return defValue;
   }
   else if (strcasecmp(name, "updversion")==0)
