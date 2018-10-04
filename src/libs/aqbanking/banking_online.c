@@ -313,4 +313,3 @@ int AB_Banking_GetCert(AB_BANKING *ab,
 
 
 
-
