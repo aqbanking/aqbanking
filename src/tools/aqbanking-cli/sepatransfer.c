@@ -31,23 +31,16 @@ int sepaTransfer(AB_BANKING *ab,
                  GWEN_DB_NODE *dbArgs,
                  int argc,
                  char **argv) {
-#pragma message "Need to implement this"
-#if 0
   GWEN_DB_NODE *db;
+  AB_ACCOUNT_SPEC_LIST *al=NULL;
+  AB_ACCOUNT_SPEC *as;
   int rv;
   const char *s;
   const char *ctxFile;
-  const char *bankId;
-  const char *accountId;
-  const char *subAccountId;
-  const char *iban;
-  AB_ACCOUNT_TYPE accountType=AB_AccountType_Unknown;
   AB_IMEXPORTER_CONTEXT *ctx=0;
-  AB_ACCOUNT_LIST2 *al;
-  AB_ACCOUNT *a;
   AB_TRANSACTION *t;
-  AB_JOB_LIST2 *jobList;
-  AB_JOB *j;
+  AB_TRANSACTION_LIST *jobList;
+  AB_TRANSACTION_LIMITS *lim;
   int rvExec;
   const char *rIBAN;
   const char *lIBAN;
@@ -63,6 +56,39 @@ int sepaTransfer(AB_BANKING *ab,
     "ctxfile",                    /* long option */
     "Specify the file to store the context in",   /* short description */
     "Specify the file to store the context in"      /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Int,            /* type */
+    "uniqueAccountId",             /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    NULL,                         /* short option */
+    "aid",                        /* long option */
+    "Specify the unique account id",      /* short description */
+    "Specify the unique account id"       /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,            /* type */
+    "backendName",                     /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    NULL,                          /* short option */
+    "backend",                       /* long option */
+    "Specify the name of the backend for your account",      /* short description */
+    "Specify the name of the backend for your account"       /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,            /* type */
+    "country",                     /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    NULL,                          /* short option */
+    "country",                       /* long option */
+    "Specify the country for your account (e.g. \"de\")",      /* short description */
+    "Specify the country for your account (e.g. \"de\")"       /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -88,17 +114,6 @@ int sepaTransfer(AB_BANKING *ab,
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "name",                 /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "name",                      /* long option */
-    "Specify your name",    /* short description */
-    "Specify your name"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsType_Char,           /* type */
     "subAccountId",                /* name */
     0,                            /* minnum */
@@ -121,14 +136,14 @@ int sepaTransfer(AB_BANKING *ab,
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "localIBAN",                  /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
+    GWEN_ArgsType_Char,            /* type */
+    "iban",                        /* name */
+    0,                             /* minnum */
+    1,                             /* maxnum */
+    "A",                           /* short option */
     "iban",                       /* long option */
-    "specify local account by IBAN",     /* short description */
-    "specify local account by IBAN"      /* long description */
+    "Specify the iban of your account",      /* short description */
+    "Specify the iban of your account"       /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT,  /* flags */
@@ -162,6 +177,17 @@ int sepaTransfer(AB_BANKING *ab,
     "value",                      /* long option */
     "Specify the transfer amount",     /* short description */
     "Specify the transfer amount"      /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,            /* type */
+    "name",                 /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    0,                            /* short option */
+    "name",                      /* long option */
+    "Specify your name",    /* short description */
+    "Specify your name"     /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -231,21 +257,7 @@ int sepaTransfer(AB_BANKING *ab,
     return 0;
   }
 
-  bankId=GWEN_DB_GetCharValue(db, "bankId", 0, 0);
-  accountId=GWEN_DB_GetCharValue(db, "accountId", 0, 0);
-  subAccountId=GWEN_DB_GetCharValue(db, "subAccountId", 0, 0);
-  iban=GWEN_DB_GetCharValue(db, "localIBAN", 0, NULL);
-  s=GWEN_DB_GetCharValue(db, "accountType", 0, NULL);
-  if (s && *s) {
-    AB_ACCOUNT_TYPE ty;
 
-    ty=AB_AccountType_fromChar(s);
-    if (ty==AB_AccountType_Invalid) {
-      fprintf(stderr, "ERROR: Invalid account type \"%s\"\n", s);
-      return 2;
-    }
-    accountType=ty;
-  }
   ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
 
   rv=AB_Banking_Init(ab);
@@ -254,41 +266,43 @@ int sepaTransfer(AB_BANKING *ab,
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
+  /* find account */
+  rv=getSelectedAccounts(ab, db, &al);
+  if (rv<0) {
+    if (rv==GWEN_ERROR_NOT_FOUND) {
+      DBG_ERROR(0, "No matching accounts");
+    }
+    else {
+      DBG_ERROR(0, "Error getting selected accounts (%d)", rv);
+    }
+    AB_Banking_Fini(ab);
     return 2;
   }
 
-  /* get account */
-  al=AB_Banking_FindAccounts2(ab,
-			      "*",                       /* backend */
-			      "*",                       /* country */
-			      bankId,                    /* bankId */
-			      accountId,                 /* accountId */
-			      subAccountId,              /* subAccountId */
-			      (iban && *iban)?iban:"*",  /* local IBAN */
-			      accountType);              /* accountType */
-  if (al==NULL || AB_Account_List2_GetSize(al)==0) {
-    DBG_ERROR(0, "Account not found");
-    AB_Account_List2_free(al);
-    return 2;
-  }
-  else if (AB_Account_List2_GetSize(al)>1) {
+  if (AB_AccountSpec_List_GetCount(al)>1) {
     DBG_ERROR(0, "Ambiguous account specification");
-    AB_Account_List2_free(al);
+    AB_AccountSpec_List_free(al);
+    AB_Banking_Fini(ab);
     return 2;
   }
-  a=AB_Account_List2_GetFront(al);
-  AB_Account_List2_free(al);
 
-  /* create transaction from arguments */
-  t=mkSepaTransfer(a, db, AB_Job_TypeSepaTransfer);
+  as=AB_AccountSpec_List_First(al);
+  assert(as);
+  AB_AccountSpec_List_Del(as);
+  AB_AccountSpec_List_free(al);
+  al=NULL;
+
+    /* create transaction from arguments */
+  t=mkSepaTransfer(db, AB_Transaction_CommandSepaTransfer);
   if (t==NULL) {
     DBG_ERROR(0, "Could not create SEPA transaction from arguments");
     return 2;
   }
 
+  /* set local account info */
+  AB_Banking_FillTransactionFromAccountSpec(t, as);
+
+  /* some checks */
   rIBAN=AB_Transaction_GetRemoteIban(t);
   lIBAN=AB_Transaction_GetLocalIban(t);
   lBIC=AB_Transaction_GetLocalBic(t);
@@ -296,87 +310,105 @@ int sepaTransfer(AB_BANKING *ab,
   if (!rIBAN || !(*rIBAN)) {
     DBG_ERROR(0, "Missing remote IBAN");
     AB_Transaction_free(t);
+    AB_AccountSpec_free(as);
+    AB_Banking_Fini(ab);
     return 1;
   }
   rv=AB_Banking_CheckIban(rIBAN);
   if (rv != 0) {
     DBG_ERROR(0, "Invalid remote IBAN (%s)", rIBAN);
     AB_Transaction_free(t);
+    AB_AccountSpec_free(as);
     return 3;
   }
-
 
   if (!lBIC || !(*lBIC)) {
     DBG_ERROR(0, "Missing local BIC");
     AB_Transaction_free(t);
+    AB_AccountSpec_free(as);
     return 1;
   }
   if (!lIBAN || !(*lIBAN)) {
     DBG_ERROR(0, "Missing local IBAN");
     AB_Transaction_free(t);
+    AB_AccountSpec_free(as);
     return 1;
   }
   rv=AB_Banking_CheckIban(lIBAN);
   if (rv != 0) {
     DBG_ERROR(0, "Invalid local IBAN (%s)", rIBAN);
     AB_Transaction_free(t);
+    AB_AccountSpec_free(as);
     return 3;
   }
 
+  AB_Transaction_SetCommand(t, AB_Transaction_CommandSepaTransfer);
+  AB_Transaction_SetUniqueAccountId(t, AB_AccountSpec_GetUniqueId(as));
 
-  j=AB_JobSepaTransfer_new(a);
-  rv=AB_Job_CheckAvailability(j);
+  /* check limits */
+  lim=AB_AccountSpec_GetTransactionLimitsForCommand(as, AB_Transaction_GetCommand(t));
+  if (lim==NULL) {
+    fprintf(stderr, "ERROR: Job not supported with this account.\n");
+    AB_Transaction_free(t);
+    AB_AccountSpec_free(as);
+    return 3;
+  }
+
+  if (AB_Banking_CheckTransactionAgainstLimits_Purpose(t, lim)) {
+    fprintf(stderr, "ERROR: Purpose violates job limits.\n");
+    AB_Transaction_free(t);
+    AB_AccountSpec_free(as);
+    return 3;
+  }
+
+  if (AB_Banking_CheckTransactionAgainstLimits_Names(t, lim)) {
+    fprintf(stderr, "ERROR: Names violate job limits.\n");
+    AB_Transaction_free(t);
+    AB_AccountSpec_free(as);
+    return 3;
+  }
+
+  if (AB_Banking_CheckTransactionForSepaConformity(t, 0)) {
+    fprintf(stderr, "ERROR: Names or account specs violate job limits.\n");
+    AB_Transaction_free(t);
+    AB_AccountSpec_free(as);
+    return 3;
+  }
+
+#if 0
   if (rv<0) {
     DBG_ERROR(0, "Job not supported.");
     AB_Job_free(j);
     AB_Transaction_free(t);
     return 3;
   }
-
-  rv=AB_Job_SetTransaction(j, t);
-  AB_Transaction_free(t);
-  if (rv<0) {
-    DBG_ERROR(0, "Unable to add transaction");
-    AB_Job_free(j);
-    return 3;
-  }
+#endif
 
   /* populate job list */
-  jobList=AB_Job_List2_new();
-  AB_Job_List2_PushBack(jobList, j);
-
+  jobList=AB_Transaction_List_new();
+  AB_Transaction_List_Add(t, jobList);
 
   /* execute job */
   rvExec=0;
   ctx=AB_ImExporterContext_new();
-  rv=AB_Banking_ExecuteJobs(ab, jobList, ctx);
+  rv=AB_Banking_SendCommands(ab, jobList, ctx);
   if (rv) {
     fprintf(stderr, "Error on executeQueue (%d)\n", rv);
     rvExec=3;
   }
-  AB_Job_List2_FreeAll(jobList);
+  AB_Transaction_List_free(jobList);
+  AB_AccountSpec_free(as);
 
   /* write result */
   rv=writeContext(ctxFile, ctx);
   AB_ImExporterContext_free(ctx);
   if (rv<0) {
     DBG_ERROR(0, "Error writing context file (%d)", rv);
-    AB_Banking_OnlineFini(ab);
     AB_Banking_Fini(ab);
     return 4;
   }
 
   /* that's it */
-  rv=AB_Banking_OnlineFini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    AB_Banking_Fini(ab);
-    if (rvExec)
-      return rvExec;
-    else
-      return 5;
-  }
-
   rv=AB_Banking_Fini(ab);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
@@ -390,7 +422,6 @@ int sepaTransfer(AB_BANKING *ab,
     return rvExec;
   else
     return 0;
-#endif
   return 0;
 }
 
