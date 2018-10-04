@@ -16,6 +16,7 @@ EXTRA_DIST=\
  banking_init.c \
  banking_online.c \
  banking_imex.c \
+ banking_transaction.c \
  banking6.c \
  banking6_update.c
 

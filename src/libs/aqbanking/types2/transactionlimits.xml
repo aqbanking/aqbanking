@@ -90,6 +90,34 @@
         </inline>
 
 
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) int $(struct_prefix)_ValuesCycleWeekHas(const $(struct_type) *t, uint8_t v);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             int $(struct_prefix)_ValuesCycleWeekHas(const $(struct_type) *t, uint8_t v) {
+               int j;
+               
+               assert(t);
+               for (j=0; j&lt;t->valuesCycleWeekUsed; j++) {
+                 if (t->valuesCycleWeek[j]==v)
+                   return 1;
+               }
+               return 0;
+             }
+          </content>
+        </inline>
+
+
+
         <inline loc="end" access="public">
           <typeFlagsMask></typeFlagsMask>
           <typeFlagsValue></typeFlagsValue>
@@ -115,6 +143,35 @@
              }
           </content>
         </inline>
+
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) int $(struct_prefix)_ValuesCycleMonthHas(const $(struct_type) *t, uint8_t v);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             int $(struct_prefix)_ValuesCycleMonthHas(const $(struct_type) *t, uint8_t v) {
+               int j;
+               
+               assert(t);
+               for (j=0; j&lt;t->valuesCycleMonthUsed; j++) {
+                 if (t->valuesCycleMonth[j]==v)
+                   return 1;
+               }
+               return 0;
+             }
+          </content>
+        </inline>
+
+
 
         <inline loc="end" access="public">
           <typeFlagsMask></typeFlagsMask>
@@ -143,6 +200,34 @@
         </inline>
 
 
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) int $(struct_prefix)_ValuesExecutionDayWeekHas(const $(struct_type) *t, uint8_t v);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             int $(struct_prefix)_ValuesExecutionDayWeekHas(const $(struct_type) *t, uint8_t v) {
+               int j;
+               
+               assert(t);
+               for (j=0; j&lt;t->valuesExecutionDayWeekUsed; j++) {
+                 if (t->valuesExecutionDayWeek[j]==v)
+                   return 1;
+               }
+               return 0;
+             }
+          </content>
+        </inline>
+
+
+
         <inline loc="end" access="public">
           <typeFlagsMask></typeFlagsMask>
           <typeFlagsValue></typeFlagsValue>
@@ -165,6 +250,33 @@
                  DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many entries (%d)", t->valuesExecutionDayMonthUsed);
                  return GWEN_ERROR_BUFFER_OVERFLOW;
                }
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) int $(struct_prefix)_ValuesExecutionDayMonthHas(const $(struct_type) *t, uint8_t v);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             int $(struct_prefix)_ValuesExecutionDayMonthHas(const $(struct_type) *t, uint8_t v) {
+               int j;
+               
+               assert(t);
+               for (j=0; j&lt;t->valuesExecutionDayMonthUsed; j++) {
+                 if (t->valuesExecutionDayMonth[j]==v)
+                   return 1;
+               }
+               return 0;
              }
           </content>
         </inline>

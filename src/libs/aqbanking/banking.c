@@ -74,6 +74,7 @@ GWEN_INHERIT_FUNCTIONS(AB_BANKING)
 #include "banking_imex.c"
 #include "banking_bankinfo.c"
 #include "banking_country.c"
+#include "banking_transaction.c"
 #include "banking6.c"
 #include "banking6_update.c"
 
