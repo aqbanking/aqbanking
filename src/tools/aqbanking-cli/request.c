@@ -131,7 +131,7 @@ int request(AB_BANKING *ab,
     "accountType",                 /* name */
     0,                             /* minnum */
     1,                             /* maxnum */
-    "t",                           /* short option */
+    "at",                          /* short option */
     "accounttype",                       /* long option */
     "Specify the type of your account",      /* short description */
     "Specify the type of your account"       /* long description */
