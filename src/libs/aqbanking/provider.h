@@ -21,6 +21,7 @@
 #include <gwenhywfar/list2.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/xml.h>
+
 #include <aqbanking/error.h> /* for AQBANKING_API */
 
 
@@ -47,9 +48,6 @@ GWEN_LIST2_FUNCTION_LIB_DEFS(AB_PROVIDER_DESCRIPTION, AB_ProviderDescription,
 
 
 #include <aqbanking/banking.h>
-#include <aqbanking/error.h>
-#include <aqbanking/account.h>
-#include <aqbanking/transaction.h>
 
 
 #ifdef __cplusplus
