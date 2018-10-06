@@ -46,7 +46,7 @@ int request(AB_BANKING *ab,
   int ignoreUnsupported=0;
   GWEN_DATE *fromDate=0;
   GWEN_DATE *toDate=0;
-  AB_TRANSACTION_LIST *jobList;
+  AB_TRANSACTION_LIST2 *jobList;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -318,7 +318,7 @@ int request(AB_BANKING *ab,
     return 2;
   }
 
-  jobList=AB_Transaction_List_new();
+  jobList=AB_Transaction_List2_new();
 
   as=AB_AccountSpec_List_First(al);
   while(as) {
@@ -337,7 +337,7 @@ int request(AB_BANKING *ab,
           AB_Transaction_SetFirstDate(j, fromDate);
         if (toDate)
           AB_Transaction_SetLastDate(j, toDate);
-        AB_Transaction_List_Add(j, jobList);
+        AB_Transaction_List2_PushBack(jobList, j);
         requests++;
       }
       else {
@@ -348,7 +348,7 @@ int request(AB_BANKING *ab,
         else {
           DBG_ERROR(0, "Error requesting transfers for account %lu: Not supported.", (unsigned long int) aid);
           AB_Transaction_free(j);
-          AB_Transaction_List_free(jobList);
+          AB_Transaction_List2_free(jobList);
           AB_AccountSpec_List_free(al);
           GWEN_Date_free(toDate);
           GWEN_Date_free(fromDate);
@@ -365,7 +365,7 @@ int request(AB_BANKING *ab,
       AB_Transaction_SetUniqueAccountId(j, aid);
       AB_Transaction_SetCommand(j, AB_Transaction_CommandGetBalance);
       if (1) { /* TODO: check availability */
-        AB_Transaction_List_Add(j, jobList);
+        AB_Transaction_List2_PushBack(jobList, j);
         requests++;
       }
       else {
@@ -376,7 +376,7 @@ int request(AB_BANKING *ab,
         else {
           DBG_ERROR(0, "Error requesting balance for account %lu: Not supported.", (unsigned long int) aid);
           AB_Transaction_free(j);
-          AB_Transaction_List_free(jobList);
+          AB_Transaction_List2_free(jobList);
           AB_AccountSpec_List_free(al);
           GWEN_Date_free(toDate);
           GWEN_Date_free(fromDate);
@@ -393,7 +393,7 @@ int request(AB_BANKING *ab,
       AB_Transaction_SetUniqueAccountId(j, aid);
       AB_Transaction_SetCommand(j, AB_Transaction_CommandGetStandingOrders);
       if (1) { /* TODO: check availability */
-        AB_Transaction_List_Add(j, jobList);
+        AB_Transaction_List2_PushBack(jobList, j);
         requests++;
       }
       else {
@@ -404,7 +404,7 @@ int request(AB_BANKING *ab,
         else {
           DBG_ERROR(0, "Error requesting standing orders for account %lu: Not supported.", (unsigned long int) aid);
           AB_Transaction_free(j);
-          AB_Transaction_List_free(jobList);
+          AB_Transaction_List2_free(jobList);
           AB_AccountSpec_List_free(al);
           GWEN_Date_free(toDate);
           GWEN_Date_free(fromDate);
@@ -421,7 +421,7 @@ int request(AB_BANKING *ab,
       AB_Transaction_SetUniqueAccountId(j, aid);
       AB_Transaction_SetCommand(j, AB_Transaction_CommandSepaGetStandingOrders);
       if (1) { /* TODO: check availability */
-        AB_Transaction_List_Add(j, jobList);
+        AB_Transaction_List2_PushBack(jobList, j);
         requests++;
       }
       else {
@@ -432,7 +432,7 @@ int request(AB_BANKING *ab,
         else {
           DBG_ERROR(0, "Error requesting SEPA standing orders for account %lu: Not supported.", (unsigned long int) aid);
           AB_Transaction_free(j);
-          AB_Transaction_List_free(jobList);
+          AB_Transaction_List2_free(jobList);
           AB_AccountSpec_List_free(al);
           GWEN_Date_free(toDate);
           GWEN_Date_free(fromDate);
@@ -449,7 +449,7 @@ int request(AB_BANKING *ab,
       AB_Transaction_SetUniqueAccountId(j, aid);
       AB_Transaction_SetCommand(j, AB_Transaction_CommandGetEStatements);
       if (1) { /* TODO: check availability */
-        AB_Transaction_List_Add(j, jobList);
+        AB_Transaction_List2_PushBack(jobList, j);
         requests++;
       }
       else {
@@ -460,7 +460,7 @@ int request(AB_BANKING *ab,
         else {
           DBG_ERROR(0, "Error requesting electronic statements for account %lu: Not supported.", (unsigned long int) aid);
           AB_Transaction_free(j);
-          AB_Transaction_List_free(jobList);
+          AB_Transaction_List2_free(jobList);
           AB_AccountSpec_List_free(al);
           GWEN_Date_free(toDate);
           GWEN_Date_free(fromDate);
@@ -483,7 +483,7 @@ int request(AB_BANKING *ab,
     DBG_INFO(0, "%d requests created", requests);
     ctx=AB_ImExporterContext_new();
     rv=AB_Banking_SendCommands(ab, jobList, ctx);
-    AB_Transaction_List_free(jobList);
+    AB_Transaction_List2_free(jobList);
     if (rv) {
       fprintf(stderr, "Error on sendCommands (%d)\n", rv);
       AB_ImExporterContext_free(ctx);
@@ -500,7 +500,7 @@ int request(AB_BANKING *ab,
   }
   else {
     DBG_ERROR(0, "No requests created");
-    AB_Transaction_List_free(jobList);
+    AB_Transaction_List2_free(jobList);
     AB_Banking_Fini(ab);
     return 4;
   }

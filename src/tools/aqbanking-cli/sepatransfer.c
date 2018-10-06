@@ -35,11 +35,10 @@ int sepaTransfer(AB_BANKING *ab,
   AB_ACCOUNT_SPEC_LIST *al=NULL;
   AB_ACCOUNT_SPEC *as;
   int rv;
-  const char *s;
   const char *ctxFile;
   AB_IMEXPORTER_CONTEXT *ctx=0;
   AB_TRANSACTION *t;
-  AB_TRANSACTION_LIST *jobList;
+  AB_TRANSACTION_LIST2 *jobList;
   AB_TRANSACTION_LIMITS *lim;
   int rvExec;
   const char *rIBAN;
@@ -375,18 +374,9 @@ int sepaTransfer(AB_BANKING *ab,
     return 3;
   }
 
-#if 0
-  if (rv<0) {
-    DBG_ERROR(0, "Job not supported.");
-    AB_Job_free(j);
-    AB_Transaction_free(t);
-    return 3;
-  }
-#endif
-
   /* populate job list */
-  jobList=AB_Transaction_List_new();
-  AB_Transaction_List_Add(t, jobList);
+  jobList=AB_Transaction_List2_new();
+  AB_Transaction_List2_PushBack(jobList, t);
 
   /* execute job */
   rvExec=0;
@@ -396,7 +386,7 @@ int sepaTransfer(AB_BANKING *ab,
     fprintf(stderr, "Error on executeQueue (%d)\n", rv);
     rvExec=3;
   }
-  AB_Transaction_List_free(jobList);
+  AB_Transaction_List2_free(jobList);
   AB_AccountSpec_free(as);
 
   /* write result */

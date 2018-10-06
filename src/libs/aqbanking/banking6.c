@@ -386,7 +386,10 @@ int AB_Banking_ReadAccountSpec(AB_BANKING *ab, uint32_t uniqueId, AB_ACCOUNT_SPE
 
   GWEN_DB_Group_free(db);
 
-  *pAccountSpec=accountSpec;
+  if (pAccountSpec)
+    *pAccountSpec=accountSpec;
+  else
+    AB_AccountSpec_free(accountSpec);
   return 0;
 }
 
@@ -614,36 +617,42 @@ int AB_Banking_GetAccountSpecByUniqueId(AB_BANKING *ab, uint32_t uniqueAccountId
 
 
 
-int AB_Banking_SendCommands(AB_BANKING *ab, const AB_TRANSACTION_LIST* commandList, AB_IMEXPORTER_CONTEXT *ctx) {
+int AB_Banking_SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2* commandList, AB_IMEXPORTER_CONTEXT *ctx) {
   AB_ACCOUNTQUEUE_LIST *aql;
   AB_PROVIDERQUEUE_LIST *pql;
-  AB_TRANSACTION *t;
+  AB_TRANSACTION_LIST2_ITERATOR *jit;
   AB_ACCOUNTQUEUE *aq;
   AB_PROVIDERQUEUE *pq;
   int rv;
 
   /* sort commands by account */
   aql=AB_AccountQueue_List_new();
-  t=AB_Transaction_List_First(commandList);
-  while(t) {
-    uint32_t uid;
+  jit=AB_Transaction_List2_First(commandList);
+  if (jit) {
+    AB_TRANSACTION *t;
 
-    uid=AB_Transaction_GetUniqueAccountId(t);
-    if (uid==0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "No unique account id given in transaction, aborting");
-      AB_AccountQueue_List_free(aql);
-      return GWEN_ERROR_BAD_DATA;
-    }
-    aq=AB_AccountQueue_List_GetByAccountId(aql, uid);
-    if (aq==NULL) {
-      aq=AB_AccountQueue_new();
-      AB_AccountQueue_SetAccountId(aq, uid);
-      AB_AccountQueue_List_Add(aq, aql);
-    }
-    AB_AccountQueue_AddTransaction(aq, t);
+    t=AB_Transaction_List2Iterator_Data(jit);
+    while(t) {
+      uint32_t uid;
 
-    t=AB_Transaction_List_Next(t);
-  }
+      uid=AB_Transaction_GetUniqueAccountId(t);
+      if (uid==0) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "No unique account id given in transaction, aborting");
+        AB_AccountQueue_List_free(aql);
+        return GWEN_ERROR_BAD_DATA;
+      }
+      aq=AB_AccountQueue_List_GetByAccountId(aql, uid);
+      if (aq==NULL) {
+        aq=AB_AccountQueue_new();
+        AB_AccountQueue_SetAccountId(aq, uid);
+        AB_AccountQueue_List_Add(aq, aql);
+      }
+      AB_AccountQueue_AddTransaction(aq, t);
+
+      t=AB_Transaction_List2Iterator_Next(jit);
+    }
+    AB_Transaction_List2Iterator_free(jit);
+  } /* if (jit) */
 
   /* sort account queues by provider */
   pql=AB_ProviderQueue_List_new();

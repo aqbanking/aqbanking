@@ -76,7 +76,7 @@ AQBANKING_API int AB_Banking_GetAccountSpecByUniqueId(AB_BANKING *ab, uint32_t u
  * @param ctx im-/exporter context to receive the results
  */
 AQBANKING_API int AB_Banking_SendCommands(AB_BANKING *ab,
-                                          const AB_TRANSACTION_LIST* commandList,
+                                          AB_TRANSACTION_LIST2* commandList,
                                           AB_IMEXPORTER_CONTEXT *ctx);
 
 /*@}*/
