@@ -908,6 +908,16 @@
           </descr>
         </member>
 
+        <member name="sessionId" type="uint32_t" maxlen="4">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <flags>with_hash</flags>
+          <descr>
+            This id can be used by applications, e.g. to group jobs into sessions.
+          </descr>
+        </member>
+
         <member name="groupId" type="uint32_t" >
           <default>0</default>
           <preset>0</preset>
