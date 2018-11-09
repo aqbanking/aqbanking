@@ -1,20 +1,20 @@
 Next:
 =====
+- AqHBCI:
+ - set correct job status after job execution (also use status "send" etc).
+
+
 - AB_BANKING:
-  - remove old exec code
-  - declare a backend function to setup account_specs and user_specs in case there are none (e.g. because of 1st update)
   - remove libs/aqbanking/dialogs/dlg_editaccount*
   - change account/user edit/create dialogs to use user/account specs
 - AqHBCI:
-  - replace use of AB_Banking_Begin/EndExclUseAccount
-  - replace use of AB_Banking_Begin/EndExclUseUser
   - add functions to find users and accounts (like before in AqBanking)
   - start adapting the account/user setup dialogs
 
 
 
 - split AqBanking into two libraries: One for direct use by applications, the other shall contain
-  functions needed by backends and plugins. This should reduce the number symbols exported to applications
+  functions needed by backends and plugins. This should reduce the number of symbols exported to applications
 
 - fix apidoc for provider.h
 
