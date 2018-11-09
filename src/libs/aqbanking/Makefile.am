@@ -57,6 +57,7 @@ iheader_HEADERS=\
  account_be.h \
  banking.h \
  banking_be.h \
+ banking6_be.h \
  banking_cfg.h \
  banking_imex.h \
  banking_info.h \
