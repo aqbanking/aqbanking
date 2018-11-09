@@ -454,6 +454,7 @@ void AH_Job_free(AH_JOB *j) {
       AB_Message_List_free(j->messages);
 
       AB_Transaction_List_free(j->transferList);
+      AB_Transaction_List2_free(j->commandList);
 
       GWEN_LIST_FINI(AH_JOB, j);
       GWEN_INHERIT_FINI(AH_JOB, j);
@@ -951,10 +952,39 @@ void AH_Job_SetStatus(AH_JOB *j, AH_JOB_STATUS st){
     GWEN_Buffer_AppendString(lbuf, AH_Job_StatusName(st));
     GWEN_Buffer_AppendString(lbuf, "\"");
 
-    AH_Job_Log(j, GWEN_LoggerLevel_Info,
-               GWEN_Buffer_GetStart(lbuf));
+    AH_Job_Log(j, GWEN_LoggerLevel_Info, GWEN_Buffer_GetStart(lbuf));
     GWEN_Buffer_free(lbuf);
     j->status=st;
+
+    /* set status to original command */
+    if (j->commandList) {
+      AB_TRANSACTION_LIST2_ITERATOR *jit;
+
+      jit=AB_Transaction_List2_First(j->commandList);
+      if (jit) {
+	AB_TRANSACTION *t;
+	AB_TRANSACTION_STATUS ts=AB_Transaction_StatusUnknown;
+
+	switch(st) {
+	case AH_JobStatusUnknown:  ts=AB_Transaction_StatusUnknown;  break;
+	case AH_JobStatusToDo:     ts=AB_Transaction_StatusEnqueued; break;
+	case AH_JobStatusEnqueued: ts=AB_Transaction_StatusEnqueued; break;
+	case AH_JobStatusEncoded:  ts=AB_Transaction_StatusSending;  break;
+	case AH_JobStatusSent:     ts=AB_Transaction_StatusSending;  break;
+	case AH_JobStatusAnswered: ts=AB_Transaction_StatusAccepted; break;
+	case AH_JobStatusError:    ts=AB_Transaction_StatusError;    break;
+
+	case AH_JobStatusAll:      ts=AB_Transaction_StatusUnknown;  break;
+	}
+
+	t=AB_Transaction_List2Iterator_Data(jit);
+	while(t) {
+	  AB_Transaction_SetStatus(t, ts);
+	  t=AB_Transaction_List2Iterator_Next(jit);
+	}
+	AB_Transaction_List2Iterator_free(jit);
+      } /* if (jit) */
+    } /* if (j->commandList) */
   }
 }
 
@@ -1970,6 +2000,43 @@ AB_PROVIDER *AH_Job_GetProvider(const AH_JOB *j) {
   assert(j);
   assert(j->usage);
   return j->provider;
+}
+
+
+
+void AH_Job_AddCommand(AH_JOB *j, AB_TRANSACTION *t) {
+  assert(j);
+  assert(j->usage);
+
+  if (j->commandList==NULL)
+    j->commandList=AB_Transaction_List2_new();
+  AB_Transaction_List2_PushBack(j->commandList, t);
+}
+
+
+
+AB_TRANSACTION_LIST2 *AH_Job_GetCommandList(const AH_JOB *j) {
+  assert(j);
+  assert(j->usage);
+
+  return j->commandList;
+}
+
+
+
+AH_JOB *AH_Job_List_GetById(AH_JOB_LIST *jl, uint32_t id) {
+  if (jl) {
+    AH_JOB *j;
+
+    j=AH_Job_List_First(jl);
+    while(j) {
+      if (AH_Job_GetId(j)==id)
+	return j;
+      j=AH_Job_List_Next (j );
+    }
+  }
+
+  return NULL;
 }
 
 

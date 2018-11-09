@@ -95,6 +95,9 @@ struct AH_JOB {
 
   AB_TRANSACTION_COMMAND supportedCommand;
 
+  AB_TRANSACTION_LIST2 *commandList;
+
+
   AB_PROVIDER *provider;
 };
 

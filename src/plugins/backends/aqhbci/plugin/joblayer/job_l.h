@@ -155,6 +155,12 @@ AH_RESULT_LIST *AH_Job_GetMsgResults(const AH_JOB *j);
 
 AB_MESSAGE_LIST *AH_Job_GetMessages(const AH_JOB *j);
 
+/**
+ * Add command to job for later reference.
+ */
+void AH_Job_AddCommand(AH_JOB *j, AB_TRANSACTION *t);
+AB_TRANSACTION_LIST2 *AH_Job_GetCommandList(const AH_JOB *j);
+
 /*@}*/
 
 
@@ -376,6 +382,9 @@ void AH_Job_ReadAccountDataSeg(AB_ACCOUNT *acc, GWEN_DB_NODE *dbAccountData);
 
 AB_PROVIDER *AH_Job_GetProvider(const AH_JOB *j);
 
+
+/* Get job from list by id */
+AH_JOB *AH_Job_List_GetById(AH_JOB_LIST *jl, uint32_t id);
 
 #endif /* AH_JOB_L_H */
 

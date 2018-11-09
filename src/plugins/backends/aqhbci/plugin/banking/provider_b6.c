@@ -587,6 +587,10 @@ int AH_Provider__AddCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a,
     return rv;
   }
 
+  /* set job id in command, add command to job */
+  AB_Transaction_SetUniqueId(t, AH_Job_GetId(mj));
+  AH_Job_AddCommand(mj, t);
+
   if (jobIsNew) {
     /* add job to outbox */
     AH_Outbox_AddJob(outbox, mj);
