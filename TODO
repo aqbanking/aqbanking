@@ -8,7 +8,6 @@ Next:
   - add functions to find users and accounts (like before in AqBanking)
   - start adapting the account/user setup dialogs
 
-
 - split AqBanking into two libraries: One for direct use by applications, the other shall contain
   functions needed by backends and plugins. This should reduce the number of symbols exported to applications
 
