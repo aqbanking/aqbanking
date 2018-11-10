@@ -21,8 +21,7 @@ extern "C" {
 #endif
 
 
-AQBANKING_API
-AB_PROVIDER *AB_User_GetProvider(const AB_USER *u);
+/* AQBANKING_API AB_PROVIDER *AB_User_GetProvider(const AB_USER *u); */
 
 
 AQBANKING_API AB_USER *AB_User_new(AB_BANKING *ab);

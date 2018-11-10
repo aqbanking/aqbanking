@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -31,7 +31,7 @@ int AH_Dialog_CreateIoLayer_Https(AH_DIALOG *dlg) {
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Url_toString(url, tbuf);
 
-  sess=AB_HttpSession_new(AB_User_GetProvider(dlg->dialogOwner),
+  sess=AB_HttpSession_new(dlg->provider,
 			  dlg->dialogOwner,
 			  GWEN_Buffer_GetStart(tbuf),
 			  "https",

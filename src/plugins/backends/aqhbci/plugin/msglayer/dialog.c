@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -44,7 +41,7 @@
 #endif
 
 
-AH_DIALOG *AH_Dialog_new(AB_USER *u) {
+AH_DIALOG *AH_Dialog_new(AB_USER *u, AB_PROVIDER *pro) {
   AH_DIALOG *dlg;
   AH_HBCI *h;
   GWEN_BUFFER *pbuf;
@@ -61,6 +58,7 @@ AH_DIALOG *AH_Dialog_new(AB_USER *u) {
   dlg->msgEngine=AH_User_GetMsgEngine(u);
   GWEN_MsgEngine_Attach(dlg->msgEngine);
 
+  dlg->provider=pro;
   dlg->dialogOwner=u;
 
   /* create path */

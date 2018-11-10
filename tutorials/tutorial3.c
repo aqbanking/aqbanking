@@ -64,17 +64,17 @@ int main(int argc, char **argv) {
                                    "*",                     /* currency */
                                    AB_AccountType_Unknown); /* ty */
   if (as) {
-    AB_TRANSACTION_LIST *cmdList;
+    AB_TRANSACTION_LIST2 *cmdList;
     AB_TRANSACTION *t;
     AB_IMEXPORTER_CONTEXT *ctx;
 
-    cmdList=AB_Transaction_List_new();
+    cmdList=AB_Transaction_List2_new();
 
     t=AB_Transaction_new();
     AB_Transaction_SetCommand(t, AB_Transaction_CommandGetTransactions);
     AB_Transaction_SetUniqueAccountId(t, AB_AccountSpec_GetUniqueId(as));
 
-    AB_Transaction_List_Add(t, cmdList);
+    AB_Transaction_List2_PushBack(cmdList, t);
 
     ctx=AB_ImExporterContext_new();
     AB_Banking_SendCommands(ab, cmdList, ctx);

@@ -771,7 +771,7 @@ int AH_Provider_GetCert(AB_PROVIDER *pro,
 			     GWEN_GUI_PROGRESS_NONE,
 			     0);
   /* first try */
-  dialog=AH_Dialog_new(u);
+  dialog=AH_Dialog_new(u, pro);
   assert(dialog);
   rv=AH_Dialog_TestServer_Https(dialog);
   AH_Dialog_Disconnect(dialog);

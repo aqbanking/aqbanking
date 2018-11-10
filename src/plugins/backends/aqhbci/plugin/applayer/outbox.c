@@ -877,7 +877,7 @@ int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
   }
 
   for(i=0; i<2; i++) {
-    dlg=AH_Dialog_new(cbox->user);
+    dlg=AH_Dialog_new(cbox->user, cbox->provider);
     rv=AH_Dialog_Connect(dlg);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN,
@@ -967,7 +967,7 @@ int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox,
   int rv;
 
   /* open connection */
-  dlg=AH_Dialog_new(cbox->user);
+  dlg=AH_Dialog_new(cbox->user, cbox->provider);
   rv=AH_Dialog_Connect(dlg);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN,

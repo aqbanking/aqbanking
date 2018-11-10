@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -23,6 +23,7 @@ struct AH_DIALOG {
   uint32_t lastMsgNum;
   uint32_t lastReceivedMsgNum;
   char *dialogId;
+  AB_PROVIDER *provider;
   AB_USER *dialogOwner;
 
   GWEN_MSGENGINE *msgEngine;

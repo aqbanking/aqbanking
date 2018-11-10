@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -39,7 +36,7 @@ typedef struct AH_DIALOG AH_DIALOG;
 
 
 
-AH_DIALOG *AH_Dialog_new(AB_USER *owner);
+AH_DIALOG *AH_Dialog_new(AB_USER *owner, AB_PROVIDER *pro);
 void AH_Dialog_free(AH_DIALOG *dlg);
 
 void AH_Dialog_Attach(AH_DIALOG *dlg);
