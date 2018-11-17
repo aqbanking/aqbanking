@@ -125,5 +125,8 @@ int AB_Banking_Update(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVers
 static int AB_Banking_Update_5_99_2_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion);
 
 
+static int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2* commandList, AB_IMEXPORTER_CONTEXT *ctx, uint32_t pid);
+
+
 
 #endif /* AQBANKING_BANKING_P_H */
