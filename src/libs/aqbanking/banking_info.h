@@ -14,7 +14,6 @@
 
 #include <aqbanking/bankinfo.h>
 #include <aqbanking/bankinfoplugin.h>
-#include <aqbanking/country.h>
 
 
 #ifdef __cplusplus
@@ -103,70 +102,6 @@ AQBANKING_API int AB_Banking_CheckIban(const char *iban);
  */
 AQBANKING_API int AB_Banking_MakeGermanIban(const char *bankCode, const char *accountNumber, GWEN_BUFFER *ibanBuf);
 
-/*@}*/
-
-
-/** @name Getting Country Information
- *
- * Functions in this group retrieve information about countries (name,
- * code, numeric code).
- */
-/*@{*/
-
-/**
- * Searches for information about a country by its international name
- * (in English).
- * The name may contain jokers ("?") and wildcards ("*") and is case
- * insensitive.
- */
-AQBANKING_API AQBANKING_DEPRECATED const AB_COUNTRY *AB_Banking_FindCountryByName(AB_BANKING *ab, const char *name);
-
-
-/**
- * Searches for information about a country by its local name
- * (in the currently selected language).
- * The name may contain jokers ("?") and wildcards ("*") and is case
- * insensitive.
- */
-AQBANKING_API AQBANKING_DEPRECATED const AB_COUNTRY *AB_Banking_FindCountryByLocalName(AB_BANKING *ab, const char *name);
-
-
-/**
- * Searches for information about a country by its ISO country code
- * (e.g. "DE"=Germany, "AT"=Austria etc).
- * The code may contain jokers ("?") and wildcards ("*") and is case
- * insensitive.
- */
-AQBANKING_API AQBANKING_DEPRECATED const AB_COUNTRY *AB_Banking_FindCountryByCode(AB_BANKING *ab, const char *code);
-
-
-/**
- * Searches for information about a country by its ISO numeric code
- * (e.g. 280=Germany etc).
- */
-AQBANKING_API AQBANKING_DEPRECATED const AB_COUNTRY *AB_Banking_FindCountryByNumeric(AB_BANKING *ab, int numid);
-
-
-/**
- * Returns a list of informations about countries whose international name
- * (in English) matches the given argument.
- * The list returned must be freed using @ref AB_Country_ConstList2_free()
- * by the caller. The elements of that list are all const.
- * The name may contain jokers ("?") and wildcards ("*") and is case
- * insensitive.
- */
-AQBANKING_API AQBANKING_DEPRECATED AB_COUNTRY_CONSTLIST2 *AB_Banking_ListCountriesByName(AB_BANKING *ab, const char *name);
-
-
-/**
- * Returns a list of informations about countries whose local name
- * (in the currently selected language) matches the given argument.
- * The list returned must be freed using @ref AB_Country_ConstList2_free()
- * by the caller. The elements of that list are all const.
- * The name may contain jokers ("?") and wildcards ("*") and is case
- * insensitive.
- */
-AQBANKING_API AQBANKING_DEPRECATED AB_COUNTRY_CONSTLIST2 *AB_Banking_ListCountriesByLocalName(AB_BANKING *ab, const char *name);
 /*@}*/
 
 

@@ -71,12 +71,16 @@ struct AB_BANKING {
 
   GWEN_DB_NODE *dbProfiles;
 
-  void *user_data;
-
   GWEN_CRYPT_TOKEN_LIST2 *cryptTokenList;
 
   GWEN_CONFIGMGR *configMgr;
 };
+
+
+int AB_Banking_PluginSystemInit(void);
+int AB_Banking_PluginSystemFini(void);
+
+GWEN_CONFIGMGR *AB_Banking_GetConfigMgr(AB_BANKING *ab);
 
 
 static int AB_Banking__GetConfigManager(AB_BANKING *ab, const char *dname);

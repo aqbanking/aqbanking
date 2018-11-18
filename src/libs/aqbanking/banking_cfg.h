@@ -20,22 +20,6 @@ extern "C" {
 
 
 
-AQBANKING_API DEPRECATED
-int AB_Banking_LoadAppConfig(AB_BANKING *ab, GWEN_DB_NODE **pDb);
-
-AQBANKING_API DEPRECATED
-int AB_Banking_SaveAppConfig(AB_BANKING *ab, GWEN_DB_NODE *db);
-
-
-AQBANKING_API DEPRECATED
-int AB_Banking_LockAppConfig(AB_BANKING *ab);
-
-AQBANKING_API DEPRECATED
-int AB_Banking_UnlockAppConfig(AB_BANKING *ab);
-
-
-
-
 AQBANKING_API
 int AB_Banking_LoadSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE **pDb);
 

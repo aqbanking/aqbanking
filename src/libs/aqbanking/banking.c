@@ -21,7 +21,6 @@
 #include "imexporter_l.h"
 #include "bankinfoplugin_l.h"
 #include "i18n_l.h"
-#include "country_l.h"
 #include "userfns_l.h"
 
 #include <aqbanking/transactionfns.h>
@@ -32,7 +31,6 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/directory.h>
 #include <gwenhywfar/libloader.h>
-//#include <gwenhywfar/bio_file.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/xml.h>
 #include <gwenhywfar/pathmanager.h>
@@ -73,7 +71,6 @@ GWEN_INHERIT_FUNCTIONS(AB_BANKING)
 #include "banking_cfg.c"
 #include "banking_imex.c"
 #include "banking_bankinfo.c"
-#include "banking_country.c"
 #include "banking_transaction.c"
 #include "banking6.c"
 #include "banking6_update.c"

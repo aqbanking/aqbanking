@@ -11,7 +11,6 @@ AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 EXTRA_DIST=\
  banking_account.c \
  banking_bankinfo.c \
- banking_country.c \
  banking_cfg.c \
  banking_init.c \
  banking_online.c \
@@ -39,8 +38,6 @@ noinst_HEADERS=\
  banking_p.h \
  bankinfoplugin_l.h \
  bankinfoplugin_p.h \
- country_l.h \
- country_p.h \
  i18n_l.h \
  imexporter_l.h \
  imexporter_p.h \
@@ -65,7 +62,6 @@ iheader_HEADERS=\
  banking_simple.h \
  bankinfoplugin.h \
  bankinfoplugin_be.h \
- country.h \
  error.h \
  imexporter.h \
  imexporter_be.h \
@@ -80,7 +76,6 @@ libaqbanking_la_SOURCES=\
  account.c \
  bankinfoplugin.c \
  banking.c \
- country.c \
  imexporter.c \
  provider.c \
  msgengine.c \

@@ -86,98 +86,6 @@ int AB_Banking__GetConfigManager(AB_BANKING *ab, const char *dname) {
 
 
 
-int AB_Banking_LoadAppConfig(AB_BANKING *ab, GWEN_DB_NODE **pDb) {
-  assert(ab);
-  assert(ab->appName);
-  if (ab->appName) {
-    int rv;
-
-    rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_APPS, ab->appName, pDb);
-    if (rv<0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Could not load app group [%s] (%d)",
-		ab->appName, rv);
-      return rv;
-    }
-    return 0;
-  }
-  else {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "No application name");
-    return GWEN_ERROR_GENERIC;
-  }
-}
-
-
-
-int AB_Banking_SaveAppConfig(AB_BANKING *ab, GWEN_DB_NODE *db) {
-  assert(ab);
-  assert(ab->appName);
-  if (ab->appName) {
-    int rv;
-
-    rv=GWEN_ConfigMgr_SetGroup(ab->configMgr, AB_CFG_GROUP_APPS, ab->appName, db);
-    if (rv<0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Could not save app group [%s] (%d)",
-		ab->appName, rv);
-      return rv;
-    }
-    return 0;
-  }
-  else {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "No application name");
-    return GWEN_ERROR_GENERIC;
-  }
-}
-
-
-
-int AB_Banking_LockAppConfig(AB_BANKING *ab) {
-  assert(ab);
-  assert(ab->appName);
-  if (ab->appName) {
-    int rv;
-
-    rv=GWEN_ConfigMgr_LockGroup(ab->configMgr, AB_CFG_GROUP_APPS, ab->appName);
-    if (rv<0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Could not lock app group [%s] (%d)",
-		ab->appName, rv);
-      return rv;
-    }
-    return 0;
-  }
-  else {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "No application name");
-    return GWEN_ERROR_GENERIC;
-  }
-}
-
-
-
-int AB_Banking_UnlockAppConfig(AB_BANKING *ab) {
-  assert(ab);
-  assert(ab->appName);
-  if (ab->appName) {
-    int rv;
-
-    rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_APPS, ab->appName);
-    if (rv<0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Could not unlock app group [%s] (%d)",
-		ab->appName, rv);
-      return rv;
-    }
-    return 0;
-  }
-  else {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "No application name");
-    return GWEN_ERROR_GENERIC;
-  }
-}
-
-
-
 int AB_Banking_LoadSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE **pDb) {
   assert(ab);
   assert(name);
@@ -344,19 +252,6 @@ int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab,
   GWEN_Buffer_AppendString(buf, name);
   GWEN_Buffer_AppendString(buf, DIRSEP "data");
   return 0;
-}
-
-
-
-void *AB_Banking_GetUserData(AB_BANKING *ab) {
-  assert(ab);
-  return ab->user_data;
-}
-
-
-void AB_Banking_SetUserData(AB_BANKING *ab, void *user_data) {
-  assert(ab);
-  ab->user_data = user_data;
 }
 
 

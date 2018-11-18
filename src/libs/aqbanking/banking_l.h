@@ -20,12 +20,6 @@
 #include <gwenhywfar/configmgr.h>
 
 
-int AB_Banking_PluginSystemInit(void);
-int AB_Banking_PluginSystemFini(void);
-
-GWEN_CONFIGMGR *AB_Banking_GetConfigMgr(AB_BANKING *ab);
-
-
 
 
 

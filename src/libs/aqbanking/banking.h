@@ -285,31 +285,6 @@ int AB_Banking_GetSharedDataDir(const AB_BANKING *ab,
                                 const char *name,
                                 GWEN_BUFFER *buf);
 
-/** Returns the void pointer that was stored by
- * AB_Banking_SetUserData(). This might be useful for passing data to
- * the callback functions.
- *
- * On the other hand, we strongly encourage using the GWEN_INHERIT
- * macros to store non-trivial data structures in this object. 
- *
- * @param ab Pointer to the AB_BANKING object
- */
-AQBANKING_API DEPRECATED
-void *AB_Banking_GetUserData(AB_BANKING *ab);
-
-/** Save the void pointer that can be retrieved by
- * AB_Banking_GetUserData(). This might be useful for passing data to
- * the callback functions.
- *
- * On the other hand, we strongly encourage using the GWEN_INHERIT
- * macros to store non-trivial data structures in this object. 
- *
- * @param ab Pointer to the AB_BANKING object
- * @param user_data Arbitrary pointer to be stored in the AB_BANKING
- */
-AQBANKING_API DEPRECATED
-void AB_Banking_SetUserData(AB_BANKING *ab, void *user_data);
-
 /*@}*/
 
 
