@@ -38,7 +38,7 @@ extern "C" {
  * @param a online account of AqBanking you wish to map your account to
  * @param alias unique id of your application's own account structure
  */
-AQBANKING_API 
+AQBANKING_API AQBANKING_DEPRECATED
 void AB_Banking_SetAccountAlias(AB_BANKING *ab, AB_ACCOUNT *a, const char *alias);
 
 /**
@@ -57,7 +57,7 @@ void AB_Banking_SetAccountAlias(AB_BANKING *ab, AB_ACCOUNT *a, const char *alias
  * @param ab AqBanking main object
  * @param alias unique id of your application's own account structure
  */
-AQBANKING_API 
+AQBANKING_API AQBANKING_DEPRECATED 
 AB_ACCOUNT *AB_Banking_GetAccountByAlias(AB_BANKING *ab, const char *alias);
 
 
