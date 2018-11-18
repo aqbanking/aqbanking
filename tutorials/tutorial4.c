@@ -84,12 +84,12 @@ int main(int argc, char **argv) {
   } /* if (as==NULL) */
 
   if (as) {
-    AB_TRANSACTION_LIST *cmdList;
+    AB_TRANSACTION_LIST2 *cmdList;
     AB_TRANSACTION *t;
     AB_IMEXPORTER_CONTEXT *ctx;
 
     /* create a list to which banking commands are added */
-    cmdList=AB_Transaction_List_new();
+    cmdList=AB_Transaction_List2_new();
 
     /* create an online banking command */
     t=AB_Transaction_new();
@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
     AB_Transaction_SetUniqueAccountId(t, AB_AccountSpec_GetUniqueId(as));
 
     /* add command to the list */
-    AB_Transaction_List_Add(t, cmdList);
+    AB_Transaction_List2_PushBack(cmdList, t);
 
     /* we could now add any number of commands here */
 
