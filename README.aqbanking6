@@ -68,14 +68,14 @@ This has also been simplified.
 Now there is only a single list for all kind of AB_TRANSACTION types. AB_IMEXPORTER_CONTEXT exposes this list in its API so that
 the user can freely operate on it.
 
-Every transaction has a "type" field (see AB_Transaction_GetType) which distinguishes all the transaction types. There a a few
+Every transaction has a "type" field (see AB_Transaction_GetType) which distinguishes all the transaction types. There are a few
 functions which help you with accessing specific types (e.g. you can search/filter by transaction type).
 
 This makes it very much easier to work with in im- and exporters, since you have no longer to specify within the im-/exporter
 which transaction list to work with.
 
 In fact, the CSV exporter no longer differentiates the type to be exported. It exports every transaction in its input. It is now
-the job of the application to filter the transactions to be exported, and the exporter should just doe what its told.
+the job of the application to filter the transactions to be exported, and the exporter should just do what its told.
 
 
 
