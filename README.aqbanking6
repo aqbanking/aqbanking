@@ -8,6 +8,18 @@ PLEASE NOTE: AqBanking6 is work in progress, it is by no means stable or fit for
 
 
 
+Trying the GIT Version of AqBanking6
+====================================
+
+You can checkout AqBanking6 without interfering with your stable version. The current version in GIT temporarily uses the settings
+folder $HOME/.aqbanking/settings6 (as opposed to $HOME/.aqbanking/settings), so you can just copy your "settings" folder to
+"settings6" and issue a first "aqbanking-cli listaccs" command. You will then see how AqBanking6 changes the configuration files
+only in "settings6".
+
+To see how to use the new API have a look at the updated tutorials or at aqbanking-cli.
+
+
+
 Init, Account Information
 =========================
 
@@ -27,7 +39,7 @@ application and can be freely copied and modified by the application (however, t
 online banking providers which maintain these objects).
 
 The types AB_USER and AB_ACCOUNT are now exclusively used by the online banking providers (e.g. AqHBCI). They also handle reading
-and writing those objects themselves. In fact, AqBanking itself doen't even know much about those objects anymore.
+and writing those objects themselves. In fact, AqBanking itself doesn't even know much about those objects anymore.
 
 These objects are only loaded by the online banking providers when needed, e.g. when sending jobs to a bank.
 
@@ -35,10 +47,12 @@ AB_PROVIDER objects are also now only initialized immediately before use (e.g. b
 sends commands via a provider) and deinitialized immediately after use.
 
 
+
 Online banking jobs
 ===================
 Online banking jobs are now stored in AB_TRANSACTION objects. Since the previously used type AB_JOB was only a wrapper around
 AB_TRANSACTION objects anyway we could easily get rid of that extra layer.
+
 
 
 AB_IMEXPORTER_CONTEXT
@@ -72,15 +86,7 @@ This function complex will be removed. It wasn't  used much anyway.
 
 
 
-Trying the GIT Version of AqBanking6
-====================================
-
-You can checkout AqBanking6 without interfering with your stable version. The current version in GIT temporarily uses the settings
-folder $HOME/.aqbanking/settings6 (as opposed to $HOME/.aqbanking/settings), so you can just copy your "settings" folder to
-"settings6" and issue a first "aqbanking-cli listaccs" command. You will then see how AqBanking6 changes the configuration files
-only in "settings6".
-
-To see how to use the new API have a look at the updated tutorials or at aqbanking-cli.
 
 
-Martin Preuss, Wilhelmshaven/Germany, 2018/10/03
+----------
+2018/11/24

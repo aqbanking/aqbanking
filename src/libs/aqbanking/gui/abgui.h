@@ -36,7 +36,7 @@
  *   <li>basic setup of your application</li>
  *   <li>create a GUI, set it as the application's GUI (GWEN_Gui_SetGui())</li>
  *   <li>create the AqBanking object (AB_Banking_new())</li>
- *   <li>init the AqBanking object (just AB_Banking_Init(), no need for AB_Banking_Online_Init() here)</li>
+ *   <li>init the AqBanking object (just AB_Banking_Init())</li>
  *   <li>call @ref AB_Gui_Extend() to extend the GUI (regardless of the heritage if the GUI, this works
  *       with every GUI implementation, even on console)</li>
  * </ol>
