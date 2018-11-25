@@ -260,10 +260,10 @@
                s=AB_Account_GetAccountName(a);
                $(struct_prefix)_SetAccountName(st, s);
              
-               s=AB_Account_GetIBAN(a);
+               s=AB_Account_GetIban(a);
                $(struct_prefix)_SetIban(st, s);
              
-               s=AB_Account_GetBIC(a);
+               s=AB_Account_GetBic(a);
                $(struct_prefix)_SetBic(st, s);
              
                s=AB_Account_GetCurrency(a);
@@ -421,7 +421,7 @@
                
                return $(struct_prefix)_List_Find(l,
                                                  AB_Account_GetUniqueId(a),
-                                                 AB_Account_GetIBAN(a),
+                                                 AB_Account_GetIban(a),
                                                  AB_Account_GetBankCode(a),
                                                  AB_Account_GetAccountNumber(a),
                                                  AB_Account_GetAccountType(a));

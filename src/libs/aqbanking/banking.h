@@ -37,7 +37,6 @@ typedef struct AB_BANKING AB_BANKING;
 
 #include <aqbanking/error.h> /* for AQBANKING_API */
 #include <aqbanking/version.h>
-#include <aqbanking/account_type.h>
 #include <aqbanking/ab_providerqueue.h>
 
 /* outsourced */

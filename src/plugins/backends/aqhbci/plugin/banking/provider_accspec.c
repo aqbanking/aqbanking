@@ -80,8 +80,8 @@ int AH_Provider_AccountToAccountSpecWithUser(AB_PROVIDER *pro, AB_USER *u, AB_AC
   AB_AccountSpec_SetOwnerName(as, AB_Account_GetOwnerName(acc));
   AB_AccountSpec_SetAccountName(as, AB_Account_GetAccountName(acc));
   AB_AccountSpec_SetCurrency(as, AB_Account_GetCurrency(acc));
-  AB_AccountSpec_SetIban(as, AB_Account_GetIBAN(acc));
-  AB_AccountSpec_SetBic(as, AB_Account_GetBIC(acc));
+  AB_AccountSpec_SetIban(as, AB_Account_GetIban(acc));
+  AB_AccountSpec_SetBic(as, AB_Account_GetBic(acc));
 
   AB_AccountSpec_SetCountry(as, AB_Account_GetCountry(acc));
   AB_AccountSpec_SetBankCode(as, AB_Account_GetBankCode(acc));
@@ -104,25 +104,19 @@ int AH_Provider_AccountToAccountSpecWithUser(AB_PROVIDER *pro, AB_USER *u, AB_AC
 
 
 int AH_Provider_AccountToAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT *acc, AB_ACCOUNT_SPEC *as) {
-  const char *s;
-  unsigned long int id;
+  uint32_t uid;
   AB_USER *u=NULL;
   int rv;
 
   /* determine user */
-  s=AB_Account_GetFirstUserId(acc);
-  if (!(s && *s)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No first user in account %lu, SNH!", (unsigned long int) id);
-    return GWEN_ERROR_INTERNAL;
-  }
-
-  if (1!=sscanf(s, "%lu", &id)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid id of first account user (%s), SNH!", s);
+  uid=AB_Account_GetUserId(acc);
+  if (uid==0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No user in account %lu, SNH!", (unsigned long int) AB_Account_GetUniqueId(acc));
     return GWEN_ERROR_INTERNAL;
   }
 
   /* get user */
-  rv=AH_Provider_GetUser(pro, id, 1, 1, &u);
+  rv=AH_Provider_GetUser(pro, uid, 1, 1, &u);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;

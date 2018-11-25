@@ -21,7 +21,7 @@
 #include "provider_l.h"
 
 #include <aqbanking/banking_be.h>
-#include <aqbanking/account_be.h>
+#include <aqbanking/account.h>
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -604,8 +604,6 @@ AH_JOB *AH_Job_UpdateBank_new(AB_PROVIDER *pro, AB_USER *u) {
                        AH_Job_UpdateBank_FreeData)
   AH_Job_SetProcessFn(j, AH_Job_UpdateBank_Process);
 
-  jd->accountList=AB_Account_List2_new();
-
   /* set arguments */
   args=AH_Job_GetArguments(j);
   assert(args);
@@ -624,7 +622,6 @@ void GWENHYWFAR_CB AH_Job_UpdateBank_FreeData(void *bp, void *p){
   AH_JOB_UPDATEBANK *jd;
 
   jd=(AH_JOB_UPDATEBANK*)p;
-  AB_Account_List2_FreeAll(jd->accountList);
   GWEN_FREE_OBJECT(jd);
 }
 
@@ -666,16 +663,8 @@ int AH_Job_UpdateBank_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   while(dbCurr) {
     dbAccountData=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/AccountData");
     if (dbAccountData) {
-      AB_ACCOUNT *acc;
-
       DBG_INFO(AQHBCI_LOGDOMAIN, "Found an account");
-
-      acc=AB_Account_new(ab, AH_Job_GetProvider(j));
-      assert(acc);
-      AH_Job_ReadAccountDataSeg(acc, dbAccountData);
-
       accs++;
-      AB_Account_List2_PushBack(jd->accountList, acc);
     }
     dbCurr=GWEN_DB_FindNextGroup(dbCurr, "AccountData");
   }
@@ -685,34 +674,6 @@ int AH_Job_UpdateBank_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
   return 0;
 }
-
-
-
-AB_ACCOUNT_LIST2 *AH_Job_UpdateBank_GetAccountList(const AH_JOB *j){
-  AH_JOB_UPDATEBANK *jd;
-
-  assert(j);
-  jd=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_UPDATEBANK, j);
-  assert(jd);
-
-  return jd->accountList;
-}
-
-
-
-AB_ACCOUNT_LIST2 *AH_Job_UpdateBank_TakeAccountList(AH_JOB *j){
-  AH_JOB_UPDATEBANK *jd;
-  AB_ACCOUNT_LIST2 *tal;
-
-  assert(j);
-  jd=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_UPDATEBANK, j);
-  assert(jd);
-
-  tal=jd->accountList;
-  jd->accountList=0;
-  return tal;
-}
-
 
 
 
@@ -1807,11 +1768,11 @@ AH_JOB *AH_Job_GetAccountSepaInfo_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *
   GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
                       "country", 280);
 
-  s=AB_Account_GetIBAN(jd->account);
+  s=AB_Account_GetIban(jd->account);
   if (s && *s)
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "iban", s);
 
-  s=AB_Account_GetBIC(jd->account);
+  s=AB_Account_GetBic(jd->account);
   if (s && *s)
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "bic", s);
 
@@ -1970,12 +1931,12 @@ int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
             if (iban && *iban) {
               if (bic && *bic) {
                 DBG_NOTICE(AQHBCI_LOGDOMAIN, "Setting IBAN and BIC: %s/%s", iban, bic);
-                AB_Account_SetIBAN(jd->account, iban);
-                AB_Account_SetBIC(jd->account, bic);
+                AB_Account_SetIban(jd->account, iban);
+                AB_Account_SetBic(jd->account, bic);
               }
               else {
                 DBG_NOTICE(AQHBCI_LOGDOMAIN, "Setting IBAN (no BIC): %s", iban);
-                AB_Account_SetIBAN(jd->account, iban);
+                AB_Account_SetIban(jd->account, iban);
               }
             }
             else {

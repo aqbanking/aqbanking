@@ -104,7 +104,7 @@ static void AH_Job__Commit_Accounts_RemoveEmpty(AH_JOB *j, AB_ACCOUNT_LIST *accL
       accNext=AB_Account_List_Next(acc);
       accountNum=AB_Account_GetAccountNumber(acc);
       bankCode=AB_Account_GetBankCode(acc);
-      iban=AB_Account_GetIBAN(acc);
+      iban=AB_Account_GetIban(acc);
 
       if (!((iban && *iban) || (accountNum && *accountNum && bankCode && *bankCode))) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "Removing empty account from import list");
@@ -126,7 +126,7 @@ static uint32_t AH_Job__Commit_Accounts_FindStored(AH_JOB *j, const AB_ACCOUNT *
   
   accountNum=AB_Account_GetAccountNumber(acc);
   bankCode=AB_Account_GetBankCode(acc);
-  iban=AB_Account_GetIBAN(acc);
+  iban=AB_Account_GetIban(acc);
   
   DBG_INFO(AQHBCI_LOGDOMAIN, "Checking account [blz=%s, acc=%s, iban=%s, type=%d]",
            bankCode?bankCode:"<none>",
@@ -144,7 +144,7 @@ static uint32_t AH_Job__Commit_Accounts_FindStored(AH_JOB *j, const AB_ACCOUNT *
                                      AB_Account_GetBankCode(acc),
                                      AB_Account_GetAccountNumber(acc),
                                      AB_Account_GetSubAccountId(acc),
-                                     AB_Account_GetIBAN(acc),
+                                     AB_Account_GetIban(acc),
                                      "*", /* any currency */
                                      AB_Account_GetAccountType(acc));
     if (as==NULL) {
@@ -155,7 +155,7 @@ static uint32_t AH_Job__Commit_Accounts_FindStored(AH_JOB *j, const AB_ACCOUNT *
                                        AB_Account_GetBankCode(acc),
                                        AB_Account_GetAccountNumber(acc),
                                        AB_Account_GetSubAccountId(acc),
-                                       AB_Account_GetIBAN(acc),
+                                       AB_Account_GetIban(acc),
                                        "*", /* any currency */
                                        AB_AccountType_Unknown);
     }
@@ -194,7 +194,7 @@ static uint32_t AH_Job__Commit_Accounts_FindStored(AH_JOB *j, const AB_ACCOUNT *
                                      "", /* empty bank code */
                                      "", /* empty account number */
                                      AB_Account_GetSubAccountId(acc),
-                                     AB_Account_GetIBAN(acc),
+                                     AB_Account_GetIban(acc),
                                      "*", /* any currency */
                                      AB_Account_GetAccountType(acc));
     if (as==NULL) {
@@ -205,7 +205,7 @@ static uint32_t AH_Job__Commit_Accounts_FindStored(AH_JOB *j, const AB_ACCOUNT *
 				       "", /* empty bank code */
 				       "", /* empty account number */
 				       AB_Account_GetSubAccountId(acc),
-				       AB_Account_GetIBAN(acc),
+				       AB_Account_GetIban(acc),
 				       "*", /* any currency */
 				       AB_AccountType_Unknown);
     }
@@ -225,7 +225,7 @@ static uint32_t AH_Job__Commit_Accounts_FindStored(AH_JOB *j, const AB_ACCOUNT *
 				     AB_Account_GetBankCode(acc),
 				     AB_Account_GetAccountNumber(acc),
 				     AB_Account_GetSubAccountId(acc),
-				     AB_Account_GetIBAN(acc),
+				     AB_Account_GetIban(acc),
 				     "*", /* any currency */
 				     AB_Account_GetAccountType(acc));
   }
@@ -238,7 +238,7 @@ static uint32_t AH_Job__Commit_Accounts_FindStored(AH_JOB *j, const AB_ACCOUNT *
 				     AB_Account_GetBankCode(acc),
 				     AB_Account_GetAccountNumber(acc),
 				     AB_Account_GetSubAccountId(acc),
-				     AB_Account_GetIBAN(acc),
+				     AB_Account_GetIban(acc),
 				     "*", /* any currency */
 				     AB_AccountType_Unknown);
   }
@@ -305,13 +305,13 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
       if (s && *s)
         AB_Account_SetSubAccountId(storedAcc, s);
   
-      s=AB_Account_GetIBAN(acc);
+      s=AB_Account_GetIban(acc);
       if (s && *s)
-        AB_Account_SetIBAN(storedAcc, s);
+        AB_Account_SetIban(storedAcc, s);
   
-      s=AB_Account_GetBIC(acc);
+      s=AB_Account_GetBic(acc);
       if (s && *s)
-        AB_Account_SetBIC(storedAcc, s);
+        AB_Account_SetBic(storedAcc, s);
   
       s=AB_Account_GetOwnerName(acc);
       if (s && *s)

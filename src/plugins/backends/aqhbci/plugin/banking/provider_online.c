@@ -23,7 +23,6 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
   AH_HBCI *h;
   AH_JOB *job;
   AH_OUTBOX *ob;
-  AB_ACCOUNT_LIST2 *accs;
   int rv;
   AH_PROVIDER *hp;
 
@@ -76,17 +75,6 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
 	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       return rv;
     }
-  }
-
-  /* check whether we got some accounts */
-  accs=AH_Job_UpdateBank_GetAccountList(job);
-  assert(accs);
-  if (AB_Account_List2_GetSize(accs)==0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "No accounts found");
-    AH_Job_free(job);
-    if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-    return GWEN_ERROR_NO_DATA;
   }
 
   AH_Job_free(job);
@@ -1036,7 +1024,7 @@ int AH_Provider_GetAccountSepaInfo(AB_PROVIDER *pro,
 
   ob=AH_Outbox_new(pro);
 
-  uid=AB_Account_GetFirstUserIdAsInt(a);
+  uid=AB_Account_GetUserId(a);
   if (uid==0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No user for this account");
   }

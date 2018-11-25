@@ -293,7 +293,7 @@ int AH_Provider_DeleteUser(AB_PROVIDER *pro, uint32_t uid) {
 
     a=AB_Account_List_First(al);
     while(a) {
-      if (AB_Account_HasUserId(a, uid)) {
+      if (AB_Account_GetUserId(a)==uid) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Account %lu still uses this user", (unsigned long int) AB_Account_GetUniqueId(a));
         cnt++;
       }
@@ -452,7 +452,7 @@ int AH_Provider__SortProviderQueueIntoUserQueueList(AB_PROVIDER *pro, AB_PROVIDE
     AB_AccountQueue_SetAccount(aq, a);
 
     /* determine user */
-    uid=AB_Account_GetFirstUserIdAsInt(a);
+    uid=AB_Account_GetUserId(a);
     if (uid==0) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "No first user in account %lu, SNH!", (unsigned long int) aid);
       return GWEN_ERROR_INTERNAL;

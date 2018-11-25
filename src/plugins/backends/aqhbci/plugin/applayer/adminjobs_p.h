@@ -79,7 +79,6 @@ static int AH_Job_GetSysId_ExtractSysId(AH_JOB *j);
 
 typedef struct AH_JOB_UPDATEBANK AH_JOB_UPDATEBANK;
 struct AH_JOB_UPDATEBANK {
-  AB_ACCOUNT_LIST2 *accountList;
   int scanned;
 };
 static void GWENHYWFAR_CB AH_Job_UpdateBank_FreeData(void *bp, void *p);

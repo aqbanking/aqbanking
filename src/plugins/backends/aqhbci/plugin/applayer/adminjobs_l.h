@@ -78,31 +78,6 @@ const char *AH_Job_GetSysId_GetSysId(AH_JOB *j);
 
 AH_JOB *AH_Job_UpdateBank_new(AB_PROVIDER *pro, AB_USER *u);
 
-/**
- * Returns a list of accounts found by this job. This list might be empty
- * (meaning the server did not send an account list).
- * The jobs remains the owner of that list and all its members.
- * Please note that the accounts returned are just local copies to be
- * inspected by the application (most likely the setup wizard).
- * You can not use any of these accounts directly for account jobs !
- */
-AB_ACCOUNT_LIST2 *AH_Job_UpdateBank_GetAccountList(const AH_JOB *j);
-
-/**
- * Returns a list of accounts found by this job. This list might be empty
- * (meaning the server did not send an account list).
- * The jobs is no longer the owner of that list and all its members, instead
- * the caller becomes the new owner thus leaving him responsible for
- * calling @ref AB_Account_List2_FreeAll on that list.
- * Please note that the accounts returned are just local copies to be
- * inspected by the application (most likely the setup wizard).
- * You can not use any of these accounts directly for account jobs !
- */
-AB_ACCOUNT_LIST2 *AH_Job_UpdateBank_TakeAccountList(AH_JOB *j);
-
-
-
-
 
 
 /* __________________________________________________________________________

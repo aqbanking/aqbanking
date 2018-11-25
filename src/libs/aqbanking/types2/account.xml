@@ -1,0 +1,577 @@
+<?xml?>
+
+<tm2>
+  <type id="AB_ACCOUNT" type="pointer">
+    <descr>
+      This type contains all important information about accounts.
+      All text fields are in UTF-8.
+    </descr>
+
+    <lang id="c">
+      <identifier>AB_ACCOUNT</identifier>
+      <prefix>AB_Account</prefix>
+      
+      <baseFileName>account</baseFileName>
+      
+      <flags>
+        with_inherit
+        with_xml
+        with_db
+        with_list1
+        with_list2
+        with_refcount
+        noCopy
+        noDup
+      </flags>
+      
+      <headers>
+        <header type="sys" loc="pre">aqbanking/error.h</header>
+
+        <header type="sys" loc="pre">gwenhywfar/mdigest.h</header>
+        <header type="sys" loc="pre">gwenhywfar/text.h</header>
+        <header type="sys" loc="pre">gwenhywfar/buffer.h</header>
+
+        <header type="sys" loc="post">aqbanking/account_type.h</header>
+        <header type="sys" loc="post">aqbanking/provider.h</header>
+
+      </headers>
+
+
+      <inlines>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             /** \n
+              * Check whether a given account info object matches the given criteria.            \n
+              * @param a account info object to match                                            \n
+              * @param backendName name of the banking backend (wildcards and jokers allowed)    \n
+              * @param country ISO code of the country (wildcards and jokers allowed)            \n
+              * @param bankId bank code to search for (wildcards and jokers allowed)             \n
+              * @param accountNumber account number to search for (wildcards and jokers allowed) \n
+              * @param subAccountId sub account number (wildcards and jokers allowed)            \n
+              * @param iban IBAN to search for (wildcards and jokers allowed)                    \n
+              * @param currency currecny the account uses (wildcards and jokers allowed)         \n
+              * @param ty account type (use AB_AccountType_Unknown as wildcard)                  \n
+              */                                                                                 \n
+             $(api) int $(struct_prefix)_Matches(const $(struct_type) *a,
+                                                 const char *backendName,
+                                                 const char *country,
+                                                 const char *bankId,
+                                                 const char *accountNumber,
+                                                 const char *subAccountId,
+                                                 const char *iban,
+                                                 const char *currency,
+                                                 int ty);
+          </content>
+        </inline>
+
+
+
+        <inline loc="code">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             int $(struct_prefix)_Matches(const $(struct_type) *a,
+                                          const char *backendName,
+                                          const char *country,
+                                          const char *bankId,
+                                          const char *accountNumber,
+                                          const char *subAccountId,
+                                          const char *iban,
+                                          const char *currency,
+                                          int ty) {
+               const char *lbackendName;
+               const char *lcountry;
+               const char *lbankId;
+               const char *laccountNumber;
+               const char *lsubAccountId;
+               const char *liban;
+               const char *lcurrency;
+               int lty;
+  
+               if (!backendName) backendName="*";
+               if (!country) country="*";
+               if (!bankId) bankId="*";
+               if (!accountNumber) accountNumber="*";
+               if (!subAccountId) subAccountId="*";
+               if (!iban) iban="*";
+               if (!currency) currency="*";
+               if (ty>=AB_AccountType_Last) ty=AB_AccountType_Unknown;
+             
+           
+               lbackendName=$(struct_prefix)_GetBackendName(a);
+               lcountry=$(struct_prefix)_GetCountry(a);
+               lbankId=$(struct_prefix)_GetBankCode(a);
+               laccountNumber=$(struct_prefix)_GetAccountNumber(a);
+               lsubAccountId=$(struct_prefix)_GetSubAccountId(a);
+               liban=$(struct_prefix)_GetIban(a);
+               lcurrency=$(struct_prefix)_GetCurrency(a);
+               lty=$(struct_prefix)_GetAccountType(a);
+           
+               if (!lcountry) lcountry="";
+               if (!lbankId) lbankId="";
+               if (!laccountNumber) laccountNumber="";
+               if (!lsubAccountId) lsubAccountId="";
+               if (!liban) liban="";
+               if (!lcurrency) lcurrency="";
+               if (lty>=AB_AccountType_Last || lty &lt;=AB_AccountType_Unknown) lty=AB_AccountType_Unknown;
+           
+               if ((-1!=GWEN_Text_ComparePattern(lbackendName, backendName, 0)) &amp;&amp;
+                   (-1!=GWEN_Text_ComparePattern(lcountry, country, 0)) &amp;&amp;
+                   (-1!=GWEN_Text_ComparePattern(lbankId, bankId, 0)) &amp;&amp;
+                   (-1!=GWEN_Text_ComparePattern(laccountNumber, accountNumber, 0)) &amp;&amp;
+                   (-1!=GWEN_Text_ComparePattern(lsubAccountId, subAccountId, 0)) &amp;&amp;
+                   (-1!=GWEN_Text_ComparePattern(liban, iban, 0)) &amp;&amp;
+                   (-1!=GWEN_Text_ComparePattern(lcurrency, currency, 0)) &amp;&amp;
+                   ((ty==AB_AccountType_Unknown) || (ty==lty)))
+                 return 1;
+             
+               return 0;
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="private">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             /** \n
+              * Find an account info object in a list of account info objects.                   \n
+              * @param a account info object with which to start searching                       \n
+              * @param backendName name of the banking backend (wildcards and jokers allowed)    \n
+              * @param country ISO code of the country (wildcards and jokers allowed)            \n
+              * @param bankId bank code to search for (wildcards and jokers allowed)             \n
+              * @param accountNumber account number to search for (wildcards and jokers allowed) \n
+              * @param subAccountId sub account number (wildcards and jokers allowed)            \n
+              * @param iban IBAN to search for (wildcards and jokers allowed)                    \n
+              * @param currency currecny the account uses (wildcards and jokers allowed)         \n
+              * @param ty account type (use AB_AccountType_Unknown as wildcard)                  \n
+              */                                                                                 \n
+             $(struct_type) *$(struct_prefix)_List__FindInternal($(struct_type) *a,
+                                                                 const char *backendName,
+                                                                 const char *country,
+                                                                 const char *bankId,
+                                                                 const char *accountNumber,
+                                                                 const char *subAccountId,
+                                                                 const char *iban,
+                                                                 const char *currency,
+                                                                 int ty);
+          </content>
+        </inline>
+
+
+
+        <inline loc="code">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             $(struct_type) *$(struct_prefix)_List__FindInternal($(struct_type) *a,
+                                                                const char *backendName,
+                                                                const char *country,
+                                                                const char *bankId,
+                                                                const char *accountNumber,
+                                                                const char *subAccountId,
+                                                                const char *iban,
+                                                                const char *currency,
+                                                                int ty) {
+
+
+               if (!backendName) backendName="*";
+               if (!country) country="*";
+               if (!bankId) bankId="*";
+               if (!accountNumber) accountNumber="*";
+               if (!subAccountId) subAccountId="*";
+               if (!iban) iban="*";
+               if (!currency) currency="*";
+               if (ty>=AB_AccountType_Last) ty=AB_AccountType_Unknown;
+             
+               while(a) {
+                 const char *lbackendName;
+             
+                 lbackendName=$(struct_prefix)_GetBackendName(a);
+                 if (! (lbackendName && *lbackendName) ) {
+                   DBG_ERROR(AQBANKING_LOGDOMAIN,
+                             "Account: %s/%s/%s: No backend, ignoring",
+                             $(struct_prefix)_GetCountry(a),
+                             $(struct_prefix)_GetBankCode(a),
+                             $(struct_prefix)_GetAccountNumber(a));
+                 }
+                 else {
+                   int rv;
+                   
+                   rv=$(struct_prefix)_Matches(a,
+                                               backendName,
+                                               country,
+                                               bankId,
+                                               accountNumber,
+                                               subAccountId,
+                                               iban,
+                                               currency,
+                                               ty);
+                   if (rv==1)
+                     break;
+                 }
+                 a=$(struct_prefix)_List_Next(a);
+               } /* while */
+             
+               return a;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             /** \n
+              * Find the first matching account object in a list of account info objects.        \n
+              * @param al list of account objects among to search                                \n
+              * @param backendName name of the banking backend (wildcards and jokers allowed)    \n
+              * @param country ISO code of the country (wildcards and jokers allowed)            \n
+              * @param bankId bank code to search for (wildcards and jokers allowed)             \n
+              * @param accountNumber account number to search for (wildcards and jokers allowed) \n
+              * @param subAccountId sub account number (wildcards and jokers allowed)            \n
+              * @param iban IBAN to search for (wildcards and jokers allowed)                    \n
+              * @param currency currecny the account uses (wildcards and jokers allowed)         \n
+              * @param ty account type (use AB_AccountType_Unknown as wildcard)          \n
+              */                                                                                 \n
+             $(api) $(struct_type) *$(struct_prefix)_List_FindFirst($(struct_type)_LIST *al,
+                                                                    const char *backendName,
+                                                                    const char *country,
+                                                                    const char *bankId,
+                                                                    const char *accountNumber,
+                                                                    const char *subAccountId,
+                                                                    const char *iban,
+                                                                    const char *currency,
+                                                                    int ty);
+          </content>
+        </inline>
+
+
+
+        <inline loc="code">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             $(struct_type) *$(struct_prefix)_List_FindFirst($(struct_type)_LIST *al,
+                                                             const char *backendName,
+                                                             const char *country,
+                                                             const char *bankId,
+                                                             const char *accountNumber,
+                                                             const char *subAccountId,
+                                                             const char *iban,
+                                                             const char *currency,
+                                                             int ty) {
+               $(struct_type) *a;
+             
+               if ($(struct_prefix)_List_GetCount(al)==0) {
+                 DBG_INFO(AQBANKING_LOGDOMAIN, "No accounts");
+                 return NULL;
+               }
+               a=$(struct_prefix)_List_First(al);
+               assert(a);
+
+               return $(struct_prefix)_List__FindInternal(a, 
+                                                          backendName,
+                                                          country,
+                                                          bankId,
+                                                          accountNumber,
+                                                          subAccountId,
+                                                          iban,
+                                                          currency,
+                                                          ty);
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             /** \n
+              * Find the next matching account object in a list of account info objects.         \n
+              * @param a previous matching account objects among to search                       \n
+              * @param backendName name of the banking backend (wildcards and jokers allowed)    \n
+              * @param country ISO code of the country (wildcards and jokers allowed)            \n
+              * @param bankId bank code to search for (wildcards and jokers allowed)             \n
+              * @param accountNumber account number to search for (wildcards and jokers allowed) \n
+              * @param subAccountId sub account number (wildcards and jokers allowed)            \n
+              * @param iban IBAN to search for (wildcards and jokers allowed)                    \n
+              * @param currency currecny the account uses (wildcards and jokers allowed)         \n
+              * @param ty account type (use AB_AccountType_Unknown as wildcard)          \n
+              */                                                                                 \n
+             $(api) $(struct_type) *$(struct_prefix)_List_FindNext($(struct_type) *a,
+                                                                     const char *backendName,
+                                                                     const char *country,
+                                                                     const char *bankId,
+                                                                     const char *accountNumber,
+                                                                     const char *subAccountId,
+                                                                     const char *iban,
+                                                                     const char *currency,
+                                                                     int ty);
+          </content>
+        </inline>
+
+
+
+        <inline loc="code">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             $(struct_type) *$(struct_prefix)_List_FindNext($(struct_type) *a,
+                                                              const char *backendName,
+                                                              const char *country,
+                                                              const char *bankId,
+                                                              const char *accountNumber,
+                                                              const char *subAccountId,
+                                                              const char *iban,
+                                                              const char *currency,
+                                                              int ty) {
+               assert(a);
+
+               a=$(struct_prefix)_List_Next(a);
+               if (a==NULL) {
+                 DBG_INFO(AQBANKING_LOGDOMAIN, "No more account specs");
+                 return NULL;
+               }
+               return $(struct_prefix)_List__FindInternal(a, 
+                                                          backendName,
+                                                          country,
+                                                          bankId,
+                                                          accountNumber,
+                                                          subAccountId,
+                                                          iban,
+                                                          currency,
+                                                          ty);
+             }
+          </content>
+        </inline>
+
+
+
+
+      </inlines>
+
+
+    </lang>
+
+    <enums>
+
+    </enums>
+
+    <defines>
+
+    </defines>
+
+
+    <members>
+
+      <group title="Type" >
+
+        <member name="accountType" type="int" maxlen="4" >
+          <default>AB_AccountType_Unknown</default>
+          <preset>AB_AccountType_Unknown</preset>
+          <access>public</access>
+        </member>
+  
+      </group>
+
+
+      <group title="Identifiers" >
+        <member name="uniqueId" type="uint32_t" maxlen="4">
+          <descr>
+            This is a unique id assigned by AqBanking.
+          </descr>
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <flags>with_getbymember</flags>
+        </member>
+    
+      </group>
+
+      <group title="Common Information" >
+
+        <member name="backendName" type="char_ptr" maxlen="32" >
+          <descr>
+            Name of the banking backend this account belongs to.
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="ownerName" type="char_ptr" maxlen="64" >
+          <descr>
+            Name of the account owner as it is stored with the bank.
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+
+        <member name="bankName" type="char_ptr" maxlen="64" >
+          <descr>
+            Name of the bank the account belongs to.
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="accountName" type="char_ptr" maxlen="64" >
+          <descr>
+            Name of the account.
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="currency" type="char_ptr" maxlen="8" >
+          <descr>
+            Currency used with this account.
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="memo" type="char_ptr" maxlen="128" >
+          <descr>
+            Optional additional info.
+          </descr>
+          <access>public</access>
+          <flags>own</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+
+      </group>
+
+
+
+      <group title="SEPA Account Specification">
+        <member name="iban" type="char_ptr" maxlen="32" >
+          <descr>
+            Internation bank account number as specified by the SEPA specs.
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="bic" type="char_ptr" maxlen="16" >
+          <descr>
+            SWIFT code of the bank at which this account is registered.
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+      </group>
+
+
+      <group title="Non-SEPA Account Specification">
+        <member name="country" type="char_ptr" maxlen="16" >
+          <descr>
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="bankCode" type="char_ptr" maxlen="64" >
+          <descr>
+            National bank code (e.g. BLZ in Germany, routing number in other countries).
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="branchId" type="char_ptr" maxlen="64">
+          <descr>
+           This is the branch id of the local bank (OFX only)
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="accountNumber" type="char_ptr" maxlen="64" >
+          <descr>
+            Account number in national account specification.
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="subAccountId" type="char_ptr" maxlen="64" >
+          <descr>
+            If your account has subaccounts which are distinguished by
+            different suffixes, then this is that suffix. Otherwise it's
+            empty. (HBCI only)
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+
+      </group>
+
+
+
+      <group title="Internal Data">
+      
+        <member name="userId" type="uint32_t" maxlen="4">
+          <descr>
+            Id of the user to whom this account is assigned.
+          </descr>
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+
+        <member name="provider" type="AB_PROVIDER">
+          <descr>
+          </descr>
+          <default>NULL</default>
+          <preset>NULL</preset>
+          <access>public</access>
+          <flags>volatile</flags>
+          <setflags>none</setflags>
+          <getflags>none</getflags>
+        </member>
+
+      </group>
+
+
+    </members>
+
+    
+  </type>
+  
+</tm2>
+

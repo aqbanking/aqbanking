@@ -18,6 +18,7 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/i18n.h>
+#include <gwenhywfar/gui.h>
 #include <gwenhywfar/syncio_file.h>
 
 #include <errno.h>
@@ -125,11 +126,11 @@ void AB_Transaction_FillLocalFromAccount(AB_TRANSACTION *t, const AB_ACCOUNT *a)
   if (s && *s)
     AB_Transaction_SetLocalName(t, s);
 
-  s=AB_Account_GetBIC(a);
+  s=AB_Account_GetBic(a);
   if (s && *s)
     AB_Transaction_SetLocalBic(t, s);
 
-  s=AB_Account_GetIBAN(a);
+  s=AB_Account_GetIban(a);
   if (s && *s)
     AB_Transaction_SetLocalIban(t, s);
 

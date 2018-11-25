@@ -135,6 +135,17 @@ int AB_Banking_Update(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVers
     }
   }
 
+  if (lastVersion<((5<<24) | (99<<16) | (3<<8) | 0)) {
+    int rv;
+
+    /* need to update userId in accounts */
+    rv=AB_Banking_Update_5_99_3_0(ab, lastVersion, currentVersion);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
   return 0;
 }
 
@@ -192,6 +203,58 @@ int AB_Banking_Update_5_99_2_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t cu
 
 
 
+int AB_Banking_Update_5_99_3_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion) {
+  GWEN_DB_NODE *dbAll=NULL;
+  int rv;
+
+  /* read all config groups which have a variable called "uniqueId" */
+  rv=AB_Banking_ReadConfigGroups(ab, AB_CFG_GROUP_ACCOUNTS, "uniqueId", NULL, NULL, &dbAll);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+  else {
+    GWEN_DB_NODE *db;
+
+    db=GWEN_DB_GetFirstGroup(dbAll);
+    while(db) {
+      uint32_t uid;
+      const char *subGroupName;
+
+      /* get groupName (uid assigned by previous versions of AqBanking) */
+      subGroupName=GWEN_DB_GroupName(db);
+      assert(subGroupName);
+
+      uid=GWEN_DB_GetIntValue(db, "uniqueId", 0, 0);
+      if (uid==0) {
+	DBG_WARN(AQBANKING_LOGDOMAIN, "%s: Unique id is ZERO (%s), ignoring group", AB_CFG_GROUP_ACCOUNTS, subGroupName);
+      }
+      else {
+	int d;
+
+	/* create new var */
+	d=GWEN_DB_GetIntValue(db, "user", 0, 0);
+	GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "userId", d);
+	/* delete old vars */
+	GWEN_DB_DeleteVar(db, "user");
+	GWEN_DB_DeleteVar(db, "selectedUser");
+
+        /* write back */
+        rv=AB_Banking_WriteConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid, 1, 1, db);
+        if (rv<0) {
+            DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+            GWEN_DB_Group_free(dbAll);
+            return rv;
+        }
+      }
+
+      db=GWEN_DB_GetNextGroup(db);
+    } /* while(db) */
+    GWEN_DB_Group_free(dbAll);
+  } /* else */
+
+  return 0;
+}
 
 
 

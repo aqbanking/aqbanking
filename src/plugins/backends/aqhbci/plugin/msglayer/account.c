@@ -19,7 +19,7 @@
 #include <aqhbci/provider.h>
 
 #include <aqbanking/banking_be.h>
-#include <aqbanking/account_be.h>
+#include <aqbanking/account.h>
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -36,8 +36,9 @@ AB_ACCOUNT *AH_Account_new(AB_BANKING *ab, AB_PROVIDER *pro) {
   AB_ACCOUNT *a;
   AH_ACCOUNT *ae;
 
-  a=AB_Account_new(ab, pro);
+  a=AB_Account_new();
   assert(a);
+  AB_Account_SetProvider(a, pro);
   GWEN_NEW_OBJECT(AH_ACCOUNT, ae);
   GWEN_INHERIT_SETDATA(AB_ACCOUNT, AH_ACCOUNT, a, ae, AH_Account_freeData);
   ae->flags=AH_BANK_FLAGS_DEFAULT;
@@ -50,7 +51,6 @@ AB_ACCOUNT *AH_Account_new(AB_BANKING *ab, AB_PROVIDER *pro) {
 
 int AH_Account_ReadDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
   AH_ACCOUNT *ae;
-  int rv;
   GWEN_DB_NODE *dbP;
 
   assert(a);
@@ -58,11 +58,7 @@ int AH_Account_ReadDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
   assert(ae);
 
   /* read data for base class */
-  rv=AB_Account_ReadDb(a, db);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
+  AB_Account_ReadDb(a, db);
 
   /* read data for provider */
   dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");
