@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -22,10 +22,6 @@
 #include <gwenhywfar/syncio_file.h>
 
 #include <aqbanking/bankinfo.h>
-
-#ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQOFXCONNECT
-# include <aqofxconnect/user.h>
-#endif
 
 #include <time.h>
 #include <stdio.h>
@@ -1034,15 +1030,6 @@ int readMSMFiles(const char *path,
 	    b=GWEN_XMLNode_FindFirstTag(b, "ProviderSettings", 0, 0);
 	  if (b) {
 	    const char *s;
-	    int i;
-	    uint32_t uflags;
-
-	    uflags=0;
-	    i=GWEN_XMLNode_GetIntValue(b, "AcctListAvail", 0);
-#ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQOFXCONNECT
-            if (i>0)
-	      uflags|=AO_USER_FLAGS_ACCOUNT_LIST;
-#endif
 
 	    s=readCharValueXml(b, "country", dbuf);
 	    if (s && *s) {
