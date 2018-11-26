@@ -189,7 +189,7 @@ int addAccount(AB_BANKING *ab,
     AB_BankInfo_List2_free(bl);
 
 
-    account=AH_Account_new(ab, pro);
+    account=AB_Provider_CreateAccountObject(pro);
     assert(account);
 
     if (!ownerName)

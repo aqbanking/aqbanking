@@ -92,7 +92,7 @@ int listAccounts(AB_BANKING *ab,
   assert(pro);
 
   al=AB_Account_List_new();
-  rv=AH_Provider_ReadAccounts(pro, al);
+  rv=AB_Provider_ReadAccounts(pro, al);
   if (rv<0) {
     DBG_ERROR_ERR(0, rv);
     AB_Account_List_free(al);

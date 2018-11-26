@@ -111,6 +111,8 @@ AB_PROVIDER *AH_Provider_new(AB_BANKING *ab, const char *name){
   AB_Provider_SetGetEditAccountDialogFn(pro, AH_Provider_GetEditAccountDialog);
 
   AB_Provider_SetSendCommandsFn(pro, AH_Provider_SendCommands);
+  AB_Provider_SetCreateAccountObjectsFn(pro, AH_Provider_CreateAccountObject);
+  AB_Provider_SetCreateUserObjectsFn(pro, AH_Provider_CreateUserObject);
 
   AB_Provider_AddFlags(pro,
 		       AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG |

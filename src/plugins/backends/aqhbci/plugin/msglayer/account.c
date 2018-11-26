@@ -32,7 +32,7 @@
 GWEN_INHERIT(AB_ACCOUNT, AH_ACCOUNT)
 
 
-AB_ACCOUNT *AH_Account_new(AB_BANKING *ab, AB_PROVIDER *pro) {
+AB_ACCOUNT *AH_Account_new(AB_PROVIDER *pro) {
   AB_ACCOUNT *a;
   AH_ACCOUNT *ae;
 
@@ -44,42 +44,25 @@ AB_ACCOUNT *AH_Account_new(AB_BANKING *ab, AB_PROVIDER *pro) {
   ae->flags=AH_BANK_FLAGS_DEFAULT;
   ae->hbci=AH_Provider_GetHbci(pro);
 
+  ae->readFromDbFn=AB_Account_SetReadFromDbFn(a, AH_Account_ReadFromDb);
+  ae->writeToDbFn=AB_Account_SetWriteToDbFn(a, AH_Account_WriteToDb);
+
   return a;
 }
 
 
 
-int AH_Account_ReadDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+int AH_Account_ReadFromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
   AH_ACCOUNT *ae;
   GWEN_DB_NODE *dbP;
-
-  assert(a);
-  ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
-  assert(ae);
-
-  /* read data for base class */
-  AB_Account_ReadDb(a, db);
-
-  /* read data for provider */
-  dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");
-  AH_Account__ReadDb(a, dbP);
-
-  return 0;
-}
-
-
-
-int AH_Account_toDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db) {
-  AH_ACCOUNT *ae;
   int rv;
-  GWEN_DB_NODE *dbP;
+  const char *s;
 
   assert(a);
   ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
   assert(ae);
 
-  /* write data for base class */
-  rv=AB_Account_toDb(a, db);
+  rv=(ae->readFromDbFn)(a, db);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -87,27 +70,43 @@ int AH_Account_toDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db) {
 
   /* read data for provider */
   dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");
-  AH_Account__WriteDb(a, dbP);
+
+  ae->flags=AH_Account_Flags_fromDb(dbP, "accountFlags");
+
+  s=GWEN_DB_GetCharValue(dbP, "suffix", 0, NULL);
+  if (s && *s) {
+    ae->flags|=AH_BANK_FLAGS_KTV2;
+    if (strcasecmp(s, "<empty>")!=0)
+      AB_Account_SetSubAccountId(a, s);
+  }
 
   return 0;
 }
 
 
 
-AB_ACCOUNT *AH_Account_fromDb(AB_BANKING *ab, AB_PROVIDER *pro, GWEN_DB_NODE *db) {
-  AB_ACCOUNT *a;
+int AH_Account_WriteToDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+  AH_ACCOUNT *ae;
+  GWEN_DB_NODE *dbP;
   int rv;
 
-  a=AH_Account_new(ab, pro);
   assert(a);
-  rv=AH_Account_ReadDb(a, db);
+  ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
+  assert(ae);
+
+  rv=(ae->writeToDbFn)(a, db);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_Account_free(a);
-    return NULL;
+    return rv;
   }
 
-  return a;
+  /* write data for provider */
+  dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");
+
+  AH_Account_Flags_toDb(dbP, "accountFlags", ae->flags);
+  GWEN_DB_DeleteVar(dbP, "suffix");
+
+  return 0;
 }
 
 
@@ -121,39 +120,6 @@ void GWENHYWFAR_CB AH_Account_freeData(void *bp, void *p) {
     GWEN_DB_Group_free(ae->dbTempUpd);
 
   GWEN_FREE_OBJECT(ae);
-}
-
-
-
-void AH_Account__ReadDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
-  AH_ACCOUNT *ae;
-  const char *s;
-
-  assert(a);
-  ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
-  assert(ae);
-
-  ae->flags=AH_Account_Flags_fromDb(db, "accountFlags");
-  
-  s=GWEN_DB_GetCharValue(db, "suffix", 0, NULL);
-  if (s && *s) {
-    ae->flags|=AH_BANK_FLAGS_KTV2;
-    if (strcasecmp(s, "<empty>")!=0)
-      AB_Account_SetSubAccountId(a, s);
-  }
-}
-
-
-
-void AH_Account__WriteDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db) {
-  AH_ACCOUNT *ae;
-
-  assert(a);
-  ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
-  assert(ae);
-
-  AH_Account_Flags_toDb(db, "accountFlags", ae->flags);
-  GWEN_DB_DeleteVar(db, "suffix");
 }
 
 

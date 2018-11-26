@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -269,56 +269,6 @@ int AH_Provider_Test(AB_PROVIDER *pro);
  *
  */
 /*@{*/
-
-/**
- * Read an account from the configuration database.
- * When reading the account object it will be locked and/or unlocked as requestd.
- * If both the parameters doLock and doUnlock are !=0 you can later call @ref AH_Provider_EndExclUseAccount on the
- * account object returned (if any).
- *
- * @param pro pointer to provider object
- * @param uid unique id of the account to read
- * @param doLock if !0 0 the config group for the given object will be locked before reading
- * @param doUnlock if !0 0 the config group for the given object will be unlocked after reading
- * @param pAccount pointer to a variable to receive the account read
- */
-AQHBCI_API int AH_Provider_GetAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_ACCOUNT **pAccount);
-
-
-
-/**
- * Read all accounts of this backend.
- *
- * The caller is responsible for releasing the list and the contained accounts (if any),
- * e.g. by calling @ref AB_Account_List_free().
- *
- * @return 0 on success, error code otherwise
- * @param pro pointer to provider object
- * @param accountList pointer to a list to receive the users.
- */
-AQHBCI_API int AH_Provider_ReadAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accountList);
-
-
-
-/**
- * Begin exclusively using the given account.
- * This function locks the configuration for the given account, reads the configuration and
- * leaves the configuration locked upon return.
- * Therefore you MUST call @ref AH_Provider_EndExclUseAccount() to unlock it later.
- */
-AQHBCI_API int AH_Provider_BeginExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);
-
-
-/**
- * End exclusive use of the given account.
- * This function writes the still locked configuration of the account and unlocks it afterwards.
- *
- * @param pro pointer to provider object
- * @param a pointer to account
- * @param abandon if !=0 the configuration is just unlocked, not written
- */
-AQHBCI_API int AH_Provider_EndExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a, int abandon);
-
 
 /**
  * Add the given account. It gets assigned a unique id.

@@ -1910,7 +1910,7 @@ int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
           iban=GWEN_DB_GetCharValue(dbAccount, "iban", 0, 0);
           bic=GWEN_DB_GetCharValue(dbAccount, "bic", 0, 0);
 
-          rv=AH_Provider_BeginExclUseAccount(pro, jd->account);
+          rv=AB_Provider_BeginExclUseAccount(pro, jd->account);
           if (rv<0) {
             DBG_ERROR(AQHBCI_LOGDOMAIN, "Unable to lock account");
           }
@@ -1946,7 +1946,7 @@ int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
                         iban?iban:"",
                         bic?bic:"");
             }
-            AH_Provider_EndExclUseAccount(pro, jd->account, 0);
+            AB_Provider_EndExclUseAccount(pro, jd->account, 0);
           }
         }
       } /* if dbAccount */

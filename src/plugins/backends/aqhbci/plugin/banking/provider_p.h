@@ -94,6 +94,11 @@ int AH_Provider_AccountToAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT *acc, AB_ACCOU
 int AH_Provider_CreateInitialAccountSpecs(AB_PROVIDER *pro);
 
 
+/* provider_account.c */
+static AB_ACCOUNT *AH_Provider_CreateAccountObject(AB_PROVIDER *pro);
+static AB_USER *AH_Provider_CreateUserObject(AB_PROVIDER *pro);
+
+
 /*@}*/
 
 #endif /* AH_PROVIDER_P_H */

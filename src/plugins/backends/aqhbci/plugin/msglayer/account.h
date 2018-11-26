@@ -53,7 +53,7 @@ extern "C" {
 
 
 
-AQHBCI_API AB_ACCOUNT *AH_Account_new(AB_BANKING *ab, AB_PROVIDER *pro);
+AQHBCI_API AB_ACCOUNT *AH_Account_new(AB_PROVIDER *pro);
 
 /** @name Flag Manipulation Functions
  *

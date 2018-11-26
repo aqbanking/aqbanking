@@ -132,7 +132,7 @@ int addsubAccountFlags(AB_BANKING *ab,
   }
 
   /* get account (lock, don't unlock, so we can later call AH_Provider_EndExclUseAccount */
-  rv=AH_Provider_GetAccount(pro, aid, 1, 0, &a);
+  rv=AB_Provider_GetAccount(pro, aid, 1, 0, &a);
   if (rv<0) {
     fprintf(stderr, "ERROR: Account with id %lu not found\n", (unsigned long int) aid);
     AB_Banking_EndUseProvider(ab, pro);
@@ -151,7 +151,7 @@ int addsubAccountFlags(AB_BANKING *ab,
   }
 
   /* unlock account */
-  rv=AH_Provider_EndExclUseAccount(pro, a, 0);
+  rv=AB_Provider_EndExclUseAccount(pro, a, 0);
   if (rv<0) {
     fprintf(stderr, "ERROR: Could not unlock account (%d)\n", rv);
     AB_Account_free(a);

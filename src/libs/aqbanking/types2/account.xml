@@ -358,6 +358,58 @@
 
 
 
+        <inline loc="end" access="private">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             /** \n
+              */                                                                                 \n
+             int $(struct_prefix)__ReadFromDb($(struct_type) *a, GWEN_DB_NODE *db);
+          </content>
+        </inline>
+
+
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             int $(struct_prefix)__ReadFromDb($(struct_type) *a, GWEN_DB_NODE *db) {
+               assert(a);
+               $(struct_prefix)_ReadDb(a, db);
+               return 0;
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="private">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             /** \n
+              */                                                                                 \n
+             int $(struct_prefix)__WriteToDb(const $(struct_type) *a, GWEN_DB_NODE *db);
+          </content>
+        </inline>
+
+
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             int $(struct_prefix)__WriteToDb(const $(struct_type) *a, GWEN_DB_NODE *db) {
+               assert(a);
+               $(struct_prefix)_WriteDb(a, db);
+               return 0;
+             }
+          </content>
+        </inline>
+
+
+
+
       </inlines>
 
 
@@ -569,6 +621,49 @@
 
 
     </members>
+
+
+
+    <virtualFns>
+
+      <fn name="readFromDb" location="post" >
+        <descr>
+          Read an account from a GWEN_DB_NODE.
+        </descr>
+        <access>public</access>
+        <preset>AB_Account__ReadFromDb</preset>
+        <returnType>int</returnType>
+        <defaultReturnValue>GWEN_ERROR_NOT_IMPLEMENTED</defaultReturnValue>
+        <params>
+          <param type="GWEN_DB_NODE*"               name="dbData" >
+            <descr>
+              Profile data to read from.
+            </descr>
+          </param>
+        </params>
+      </fn>
+
+
+      <fn name="writeToDb" location="post" >
+        <descr>
+          Write an account to a GWEN_DB_NODE.
+        </descr>
+        <access>public</access>
+        <preset>AB_Account__WriteToDb</preset>
+        <flags>const</flags>
+        <returnType>int</returnType>
+        <defaultReturnValue>GWEN_ERROR_NOT_IMPLEMENTED</defaultReturnValue>
+        <params>
+          <param type="GWEN_DB_NODE*"               name="dbData" >
+            <descr>
+              Profile data to read from.
+            </descr>
+          </param>
+        </params>
+      </fn>
+
+
+    </virtualFns>
 
     
   </type>

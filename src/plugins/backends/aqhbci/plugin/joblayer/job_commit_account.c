@@ -42,7 +42,7 @@ static int AH_Job__Commit_Accounts_ReadAccounts(AH_JOB *j, AB_ACCOUNT_LIST *accL
       DBG_INFO(AQHBCI_LOGDOMAIN, "Found an account");
 
       /* account data found */
-      acc=AH_Account_new(ab, pro);
+      acc=AB_Provider_CreateAccountObject(pro);
       assert(acc);
 
       /* read info from "AccountData" segment */
@@ -275,7 +275,7 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
 
     /* account already exists, needs update */
     DBG_INFO(AQHBCI_LOGDOMAIN, "Account exists, modifying");
-    rv=AH_Provider_GetAccount(pro, AB_Account_GetUniqueId(acc), 1, 0, &storedAcc); /* lock, don't unlock */
+    rv=AB_Provider_GetAccount(pro, AB_Account_GetUniqueId(acc), 1, 0, &storedAcc); /* lock, don't unlock */
     if (rv<0) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Error getting referred account (%d)", rv);
     }
@@ -336,10 +336,10 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
       }
 
       /* unlock account */
-      rv=AH_Provider_EndExclUseAccount(pro, storedAcc, 0);
+      rv=AB_Provider_EndExclUseAccount(pro, storedAcc, 0);
       if (rv<0) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-        AH_Provider_EndExclUseAccount(pro, acc, 1); /* abort */
+        AB_Provider_EndExclUseAccount(pro, acc, 1); /* abort */
       }
     }
   }
@@ -355,7 +355,7 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
     }
     else {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Reading back added account");
-      rv=AH_Provider_GetAccount(pro, AB_Account_GetUniqueId(acc), 0, 0, &storedAcc); /* no-lock, no-unlock */
+      rv=AB_Provider_GetAccount(pro, AB_Account_GetUniqueId(acc), 0, 0, &storedAcc); /* no-lock, no-unlock */
       if (rv<0) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Error getting referred account (%d)", rv);
       }

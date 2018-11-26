@@ -120,7 +120,7 @@ int delAccount(AB_BANKING *ab,
     return 3;
   }
 
-  rv=AH_Provider_GetAccount(pro, aid, 1, 1, &a);
+  rv=AB_Provider_GetAccount(pro, aid, 1, 1, &a);
   if (rv<0) {
     fprintf(stderr, "ERROR: Account with id %lu not found\n", (unsigned long int) aid);
     AB_Banking_EndUseProvider(ab, pro);

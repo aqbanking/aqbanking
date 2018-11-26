@@ -181,8 +181,8 @@ int AH_Provider_CreateInitialAccountSpecs(AB_PROVIDER *pro) {
     AB_ACCOUNT *acc=NULL;
     AB_ACCOUNT_SPEC *as;
 
-    acc=AH_Account_new(AB_Provider_GetBanking(pro), pro);
-    rv=AH_Account_ReadDb(acc, db);
+    acc=AB_Provider_CreateAccountObject(pro);
+    rv=AB_Account_ReadFromDb(acc, db);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_DB_Group_free(dbAll);

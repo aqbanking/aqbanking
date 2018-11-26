@@ -231,6 +231,42 @@ void AB_Provider_SetSendCommandsFn(AB_PROVIDER *pro, AB_PROVIDER_SENDCOMMANDS_FN
 
 
 
+void AB_Provider_SetCreateAccountObjectsFn(AB_PROVIDER *pro, AB_PROVIDER_CREATEACCOUNTOBJECT_FN f) {
+  assert(pro);
+  pro->createAccountObjectFn=f;
+}
+
+
+
+void AB_Provider_SetCreateUserObjectsFn(AB_PROVIDER *pro, AB_PROVIDER_CREATEUSEROBJECT_FN f) {
+  assert(pro);
+  pro->createUserObjectFn=f;
+}
+
+
+
+
+
+
+AB_ACCOUNT *AB_Provider_CreateAccountObject(AB_PROVIDER *pro) {
+  assert(pro);
+  if (pro->createAccountObjectFn)
+    return pro->createAccountObjectFn(pro);
+  else
+    return NULL;
+}
+
+
+
+AB_USER *AB_Provider_CreateUserObject(AB_PROVIDER *pro) {
+  assert(pro);
+  if (pro->createUserObjectFn)
+    return pro->createUserObjectFn(pro);
+  else
+    return NULL;
+}
+
+
 
 
 
@@ -380,6 +416,7 @@ void AB_Plugin_Provider_SetFactoryFn(GWEN_PLUGIN *pl,
 
 
 
+#include "provider_account.c"
 
 
 

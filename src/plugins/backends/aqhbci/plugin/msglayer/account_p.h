@@ -21,12 +21,16 @@ struct AH_ACCOUNT {
   AH_HBCI *hbci;
   uint32_t flags;
   GWEN_DB_NODE *dbTempUpd;
+
+  AB_ACCOUNT_READFROMDB_FN readFromDbFn;
+  AB_ACCOUNT_WRITETODB_FN writeToDbFn;
 };
 
 static void GWENHYWFAR_CB AH_Account_freeData(void *bp, void *p);
 
-static void AH_Account__ReadDb(AB_ACCOUNT *a, GWEN_DB_NODE *db);
-static void AH_Account__WriteDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db);
+
+static int AH_Account_ReadFromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db);
+static int AH_Account_WriteToDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db);
 
 
 #endif /* AH_ACCOUNT_P_H */

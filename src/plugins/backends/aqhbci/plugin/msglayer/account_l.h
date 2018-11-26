@@ -17,12 +17,6 @@
 #include <aqbanking/provider_be.h>
 
 
-AB_ACCOUNT *AH_Account_fromDb(AB_BANKING *ab, AB_PROVIDER *pro, GWEN_DB_NODE *db);
-int AH_Account_toDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db);
-
-int AH_Account_ReadDb(AB_ACCOUNT *a, GWEN_DB_NODE *db);
-
-
 AH_HBCI *AH_Account_GetHbci(const AB_ACCOUNT *a);
 
 
