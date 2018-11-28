@@ -39,6 +39,8 @@ AB_ACCOUNT *AH_Account_new(AB_PROVIDER *pro) {
   a=AB_Account_new();
   assert(a);
   AB_Account_SetProvider(a, pro);
+  AB_Account_SetBackendName(a, "aqhbci");
+
   GWEN_NEW_OBJECT(AH_ACCOUNT, ae);
   GWEN_INHERIT_SETDATA(AB_ACCOUNT, AH_ACCOUNT, a, ae, AH_Account_freeData);
   ae->flags=AH_BANK_FLAGS_DEFAULT;
@@ -57,16 +59,24 @@ int AH_Account_ReadFromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
   GWEN_DB_NODE *dbP;
   int rv;
   const char *s;
+  AB_PROVIDER *pro;
 
   assert(a);
   ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
   assert(ae);
 
+  /* save provider, because AB_Account_ReadFromDb clears it */
+  pro=AB_Account_GetProvider(a);
+
+  /* read data for base class */
   rv=(ae->readFromDbFn)(a, db);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
+
+  /* set provider again */
+  AB_Account_SetProvider(a, pro);
 
   /* read data for provider */
   dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");

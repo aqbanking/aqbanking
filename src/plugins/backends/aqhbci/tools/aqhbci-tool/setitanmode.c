@@ -119,7 +119,7 @@ int setItanMode(AB_BANKING *ab,
     return 1;
   }
 
-  rv=AH_Provider_GetUser(pro, uid, 1, 0, &u); /* don't unlock to allow for AH_Provider_EndExclUseUser */
+  rv=AB_Provider_GetUser(pro, uid, 1, 0, &u); /* don't unlock to allow for AH_Provider_EndExclUseUser */
   if (rv<0) {
     fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) uid);
     AB_Banking_EndUseProvider(ab, pro);
@@ -130,7 +130,7 @@ int setItanMode(AB_BANKING *ab,
     /* modify */
     if (!AH_User_HasTanMethod(u, itanMethodFunction)) {
       fprintf(stderr, "ERROR: iTAN method not allowed for this user (try \"getitanmodes\" first)\n");
-      AH_Provider_EndExclUseUser(pro, u, 1); /* abort */
+      AB_Provider_EndExclUseUser(pro, u, 1); /* abort */
       AB_User_free(u);
       AB_Banking_EndUseProvider(ab, pro);
       AB_Banking_Fini(ab);
@@ -139,10 +139,10 @@ int setItanMode(AB_BANKING *ab,
     AH_User_SetSelectedTanMethod(u, itanMethod);
 
     /* unlock user */
-    rv=AH_Provider_EndExclUseUser(pro, u, 0);
+    rv=AB_Provider_EndExclUseUser(pro, u, 0);
     if (rv<0) {
       fprintf(stderr, "ERROR: Could not unlock user (%d)\n", rv);
-      AH_Provider_EndExclUseUser(pro, u, 1); /* abort */
+      AB_Provider_EndExclUseUser(pro, u, 1); /* abort */
       AB_User_free(u);
       AB_Banking_EndUseProvider(ab, pro);
       AB_Banking_Fini(ab);

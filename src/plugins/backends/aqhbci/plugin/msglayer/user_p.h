@@ -70,6 +70,10 @@ struct AH_USER {
   int maxDebitNotesPerJob;
 
   GWEN_CRYPT_KEY * bankPubKey;
+
+  AB_USER_READFROMDB_FN readFromDbFn;
+  AB_USER_WRITETODB_FN writeToDbFn;
+
 };
 
 static void GWENHYWFAR_CB AH_User_freeData(void *bp, void *p);
@@ -87,6 +91,10 @@ static int AH_User_AddTextWithoutTags(const char *s, GWEN_BUFFER *obuf);
 static GWEN_DB_NODE *AH_User_GetUpdForAccountIdAndSuffix(const AB_USER *u,
                                                          const char *sAccountNumber,
                                                          const char *sAccountSuffix);
+
+
+static int AH_User_ReadFromDb(AB_USER *u, GWEN_DB_NODE *db);
+static int AH_User_WriteToDb(const AB_USER *u, GWEN_DB_NODE *db);
 
 
 #endif /* AH_USER_P_H */

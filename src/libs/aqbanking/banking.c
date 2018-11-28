@@ -21,7 +21,6 @@
 #include "imexporter_l.h"
 #include "bankinfoplugin_l.h"
 #include "i18n_l.h"
-#include "userfns_l.h"
 
 #include <aqbanking/transactionfns.h>
 

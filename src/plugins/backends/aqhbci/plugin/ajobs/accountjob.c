@@ -20,6 +20,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/gwentime.h>
+#include <gwenhywfar/gui.h>
 
 #include <stdlib.h>
 #include <assert.h>

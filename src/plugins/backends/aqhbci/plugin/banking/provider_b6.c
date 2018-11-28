@@ -62,103 +62,6 @@ int AH_Provider_DeleteAccount(AB_PROVIDER *pro, uint32_t uid) {
 
 
 
-int AH_Provider_ReadUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_USER *user) {
-  int rv;
-  GWEN_DB_NODE *db=NULL;
-
-  rv=AB_Banking_Read_UserConfig(AB_Provider_GetBanking(pro), uid, doLock, doUnlock, &db);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  rv=AH_User_ReadDb(user, db);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  return 0;
-}
-
-
-
-int AH_Provider_GetUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_USER **pUser) {
-  int rv;
-  AB_USER *u;
-
-  u=AH_User_new(AB_Provider_GetBanking(pro), pro);
-  assert(u);
-  rv=AH_Provider_ReadUser(pro, uid, doLock, doUnlock, u);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_User_free(u);
-    return rv;
-  }
-
-  *pUser=u;
-
-  return 0;
-}
-
-
-
-int AH_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList) {
-  int rv;
-  GWEN_DB_NODE *dbAll=NULL;
-  GWEN_DB_NODE *db;
-
-  /* read all config groups for users which have a unique id and which belong to AqHBCI */
-  rv=AB_Banking_ReadConfigGroups(AB_Provider_GetBanking(pro), AB_CFG_GROUP_USERS, "uniqueId", "backendName", "AQHBCI", &dbAll);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  db=GWEN_DB_GetFirstGroup(dbAll);
-  while(db) {
-    AB_USER *u=NULL;
-
-    u=AH_User_new(AB_Provider_GetBanking(pro), pro);
-    rv=AH_User_ReadDb(u, db);
-    if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Error reading user (%d), ignoring", rv);
-      AB_User_free(u);
-    }
-    else
-      AB_User_List_Add(u, userList);
-
-    /* next */
-    db=GWEN_DB_GetNextGroup(db);
-  }
-
-  return 0;
-}
-
-
-
-
-int AH_Provider_WriteUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, const AB_USER *user) {
-  int rv;
-  GWEN_DB_NODE *db;
-
-  db=GWEN_DB_Group_new("user");
-  rv=AH_User_toDb(user, db);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  rv=AB_Banking_Write_UserConfig(AB_Provider_GetBanking(pro), uid, doLock, doUnlock, db);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    GWEN_DB_Group_free(db);
-    return rv;
-  }
-  GWEN_DB_Group_free(db);
-
-  return 0;
-}
 
 
 
@@ -168,7 +71,7 @@ int AH_Provider_AddUser(AB_PROVIDER *pro, AB_USER *u) {
 
   uid=AB_Banking_GetNamedUniqueId(AB_Provider_GetBanking(pro), "user", 1); /* startAtStdUniqueId=1 */
   AB_User_SetUniqueId(u, uid);
-  rv=AH_Provider_WriteUser(pro, uid, 1, 1, u); /* lock, unlock */
+  rv=AB_Provider_WriteUser(pro, uid, 1, 1, u); /* lock, unlock */
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -220,60 +123,6 @@ int AH_Provider_DeleteUser(AB_PROVIDER *pro, uint32_t uid) {
 
 
 
-
-
-
-int AH_Provider_BeginExclUseUser(AB_PROVIDER *pro, AB_USER *u) {
-  int rv;
-  uint32_t uid;
-
-  uid=AB_User_GetUniqueId(u);
-  if (uid==0) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No unique id!");
-    return GWEN_ERROR_INVALID;
-  }
-  rv=AH_Provider_ReadUser(pro, uid, 1, 0, u);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-  return 0;
-}
-
-
-
-int AH_Provider_EndExclUseUser(AB_PROVIDER *pro, AB_USER *u, int abandon) {
-  int rv;
-  uint32_t uid;
-
-  uid=AB_User_GetUniqueId(u);
-  if (uid==0) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No unique id!");
-    return GWEN_ERROR_INVALID;
-  }
-
-  if (!abandon) {
-    rv=AB_Banking_Unlock_UserConfig(AB_Provider_GetBanking(pro), uid);
-    if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
-  }
-  else {
-    rv=AH_Provider_WriteUser(pro, uid, 0, 1, u);
-    if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
-  }
-
-  return 0;
-}
-
-
-
-
-
 int AH_Provider__SortProviderQueueIntoUserQueueList(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_USERQUEUE_LIST *uql) {
   AH_PROVIDER *hp;
   AB_ACCOUNTQUEUE_LIST *aql;
@@ -314,7 +163,7 @@ int AH_Provider__SortProviderQueueIntoUserQueueList(AB_PROVIDER *pro, AB_PROVIDE
       if (uq==NULL) {
         AB_USER *u=NULL;
 
-        rv=AH_Provider_GetUser(pro, uid, 1, 1, &u);
+        rv=AB_Provider_GetUser(pro, uid, 1, 1, &u);
         if (rv<0) {
           DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
           return rv;
@@ -656,7 +505,7 @@ AB_ACCOUNT *AH_Provider_CreateAccountObject(AB_PROVIDER *pro) {
 
 
 AB_USER *AH_Provider_CreateUserObject(AB_PROVIDER *pro) {
-  return AH_User_new(AB_Provider_GetBanking(pro), pro);
+  return AH_User_new(pro);
 }
 
 

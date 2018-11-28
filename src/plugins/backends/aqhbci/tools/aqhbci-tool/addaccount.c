@@ -149,7 +149,7 @@ int addAccount(AB_BANKING *ab,
   pro=AB_Banking_BeginUseProvider(ab, "aqhbci");
   assert(pro);
 
-  rv=AH_Provider_GetUser(pro, userId, 1, 1, &u);
+  rv=AB_Provider_GetUser(pro, userId, 1, 1, &u);
   if (rv<0) {
     fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) userId);
     AB_Banking_EndUseProvider(ab, pro);

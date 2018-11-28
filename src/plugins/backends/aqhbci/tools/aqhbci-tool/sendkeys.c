@@ -110,7 +110,7 @@ int sendKeys(AB_BANKING *ab,
     return 1;
   }
 
-  rv=AH_Provider_GetUser(pro, uid, 1, 1, &u);
+  rv=AB_Provider_GetUser(pro, uid, 1, 1, &u);
   if (rv<0) {
     fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) uid);
     AB_Banking_EndUseProvider(ab, pro);

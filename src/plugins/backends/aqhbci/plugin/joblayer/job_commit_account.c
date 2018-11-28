@@ -274,7 +274,7 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
     int rv;
 
     /* account already exists, needs update */
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Account exists, modifying");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Account exists, modifying");
     rv=AB_Provider_GetAccount(pro, AB_Account_GetUniqueId(acc), 1, 0, &storedAcc); /* lock, don't unlock */
     if (rv<0) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Error getting referred account (%d)", rv);
@@ -282,9 +282,9 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
     else {
       const char *s;
 
-      /* account is locked now, apply changed */
+      /* account is locked now, apply changes */
       assert(storedAcc);
-  
+
       s=AB_Account_GetCountry(acc);
       if (s && *s)
         AB_Account_SetCountry(storedAcc, s);
@@ -347,7 +347,7 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
     int rv;
 
     /* account is new, add it */
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Account is new, adding");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Account is new, adding");
     AB_Account_SetUserId(acc, AB_User_GetUniqueId(j->user));
     rv=AH_Provider_AddAccount(pro, j->user, acc, 1);
     if (rv<0) {

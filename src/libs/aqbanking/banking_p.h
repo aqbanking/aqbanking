@@ -51,7 +51,6 @@
 #include "provider_l.h"
 #include "imexporter_l.h"
 #include "bankinfoplugin_l.h"
-#include "user_l.h"
 
 #include <gwenhywfar/plugin.h>
 
@@ -127,6 +126,7 @@ static int AB_Banking_UpdateAccountList(AB_BANKING *ab);
 int AB_Banking_Update(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion);
 static int AB_Banking_Update_5_99_2_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion);
 static int AB_Banking_Update_5_99_3_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion);
+static int AB_Banking_Update_5_99_4_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion);
 
 
 static int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2* commandList, AB_IMEXPORTER_CONTEXT *ctx, uint32_t pid);

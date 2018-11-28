@@ -1289,7 +1289,7 @@ int AH_Outbox_LockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers){
     GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Info,
 			 tbuf);
-    rv=AH_Provider_BeginExclUseUser(ob->provider, cbox->user);
+    rv=AB_Provider_BeginExclUseUser(ob->provider, cbox->user);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN,
 	       "Could not lock customer [%s] (%d)",
@@ -1331,7 +1331,7 @@ int AH_Outbox_UnlockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers, int abandon
 
       DBG_INFO(AQHBCI_LOGDOMAIN, "Unlocking customer \"%s\"",
 	       AB_User_GetCustomerId(u));
-      rv=AH_Provider_EndExclUseUser(ob->provider, u, abandon);
+      rv=AB_Provider_EndExclUseUser(ob->provider, u, abandon);
       if (rv<0) {
 	DBG_WARN(AQHBCI_LOGDOMAIN,
 		 "Could not unlock customer [%s] (%d)",

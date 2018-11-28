@@ -18,7 +18,8 @@ EXTRA_DIST=\
  banking_transaction.c \
  banking6.c \
  banking6_update.c \
- provider_account.c
+ provider_account.c \
+ provider_user.c
 
 
 

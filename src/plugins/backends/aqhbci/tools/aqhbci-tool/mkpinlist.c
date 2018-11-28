@@ -123,7 +123,7 @@ int mkPinList(AB_BANKING *ab,
 			"for the users below");
 
   ul=AB_User_List_new();
-  rv=AH_Provider_ReadUsers(pro, ul);
+  rv=AB_Provider_ReadUsers(pro, ul);
   if (rv<0) {
     DBG_ERROR_ERR(0, rv);
     AB_User_List_free(ul);

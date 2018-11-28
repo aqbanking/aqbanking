@@ -486,7 +486,7 @@ int AH_Job_CommitSystemData(AH_JOB *j, int doLock) {
 
   /* lock user */
   if (doLock) {
-    rv=AH_Provider_BeginExclUseUser(pro, u);
+    rv=AB_Provider_BeginExclUseUser(pro, u);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -498,10 +498,10 @@ int AH_Job_CommitSystemData(AH_JOB *j, int doLock) {
 
   if (doLock) {
     /* unlock user */
-    rv=AH_Provider_EndExclUseUser(pro, u, 0);
+    rv=AB_Provider_EndExclUseUser(pro, u, 0);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      AH_Provider_EndExclUseUser(pro, u, 1); /* abandon */
+      AB_Provider_EndExclUseUser(pro, u, 1); /* abandon */
       return rv;
     }
   }

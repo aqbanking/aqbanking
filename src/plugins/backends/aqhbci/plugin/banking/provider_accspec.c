@@ -116,7 +116,7 @@ int AH_Provider_AccountToAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT *acc, AB_ACCOU
   }
 
   /* get user */
-  rv=AH_Provider_GetUser(pro, uid, 1, 1, &u);
+  rv=AB_Provider_GetUser(pro, uid, 1, 1, &u);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;

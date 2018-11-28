@@ -299,52 +299,6 @@ AQHBCI_API int AH_Provider_DeleteAccount(AB_PROVIDER *pro, uint32_t uid);
  */
 /*@{*/
 
-/**
- * This functions reads a user from the configuration database.
- * When reading the user object it will be locked and/or unlocked as requestd.
- * If both the parameters doLock and doUnlock are !=0 you can later call @ref AH_Provider_EndExclUseUser on the
- * user object returned (if any).
- *
- * @param pro pointer to provider object
- * @param uid unique id of the user to read
- * @param doLock if !0 0 the config group for the given object will be locked before reading
- * @param doUnlock if !0 0 the config group for the given object will be unlocked after reading
- * @param pUser pointer to a variable to receive the user read
- */
-AQHBCI_API int AH_Provider_GetUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_USER **pUser);
-
-
-/**
- * Read all users of this backend.
- *
- * The caller is responsible for releasing the list and the contained users (if any),
- * e.g. by calling @ref AB_User_List_free().
- *
- * @return 0 on success, error code otherwise
- * @param pro pointer to provider object
- * @param userList pointer to a list to receive the users.
- */
-AQHBCI_API int AH_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList);
-
-/**
- * Begin exclusively using the given user.
- * This function locks the configuration for the given user, reads the configuration and
- * leaves the configuration locked upon return.
- * Therefore you MUST call @ref AH_Provider_EndExclUseUser() to unlock it later.
- */
-AQHBCI_API int AH_Provider_BeginExclUseUser(AB_PROVIDER *pro, AB_USER *u);
-
-
-/**
- * End exclusive use of the given user.
- * This function writes the still locked configuration of the user and unlocks it afterwards.
- *
- * @param pro pointer to provider object
- * @param u pointer to user
- * @param abandon if !=0 the configuration is just unlocked, not written
- */
-AQHBCI_API int AH_Provider_EndExclUseUser(AB_PROVIDER *pro, AB_USER *u, int abandon);
-
 
 /**
  * Add the given user. It gets assigned a unique id.

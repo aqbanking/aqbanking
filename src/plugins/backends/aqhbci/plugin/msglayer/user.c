@@ -150,14 +150,21 @@ uint32_t AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
 
 
 
-AB_USER *AH_User_new(AB_BANKING *ab, AB_PROVIDER *pro) {
+AB_USER *AH_User_new(AB_PROVIDER *pro) {
   AB_USER *u;
   AH_USER *ue;
 
-  u=AB_User_new(ab);
+  assert(pro);
+  u=AB_User_new();
   assert(u);
   GWEN_NEW_OBJECT(AH_USER, ue);
   GWEN_INHERIT_SETDATA(AB_USER, AH_USER, u, ue, AH_User_freeData);
+
+  AB_User_SetProvider(u, pro);
+  AB_User_SetBackendName(u, "aqhbci");
+
+  ue->readFromDbFn=AB_User_SetReadFromDbFn(u, AH_User_ReadFromDb);
+  ue->writeToDbFn=AB_User_SetWriteToDbFn(u, AH_User_WriteToDb);
 
   ue->tanMethodList[0]=-1;
   ue->tanMethodCount=0;
@@ -208,21 +215,28 @@ void GWENHYWFAR_CB AH_User_freeData(void *bp, void *p) {
 
 
 
-int AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
+int AH_User_ReadFromDb(AB_USER *u, GWEN_DB_NODE *db) {
   AH_USER *ue;
   int rv;
   GWEN_DB_NODE *dbP;
+  AB_PROVIDER *pro;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
+  /* save provider, because AB_User_ReadFromDb clears it */
+  pro=AB_User_GetProvider(u);
+
   /* read data for base class */
-  rv=AB_User_ReadDb(u, db);
+  rv=(ue->readFromDbFn)(u, db);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
+
+  /* set provider again */
+  AB_User_SetProvider(u, pro);
 
   /* read data for provider */
   dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");
@@ -236,7 +250,7 @@ int AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
 
 
 
-int AH_User_toDb(const AB_USER *u, GWEN_DB_NODE *db) {
+int AH_User_WriteToDb(const AB_USER *u, GWEN_DB_NODE *db) {
   AH_USER *ue;
   int rv;
   GWEN_DB_NODE *dbP;
@@ -246,13 +260,14 @@ int AH_User_toDb(const AB_USER *u, GWEN_DB_NODE *db) {
   assert(ue);
 
   /* write data for base class */
-  rv=AB_User_toDb(u, db);
+  rv=(ue->writeToDbFn)(u, db);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
-  /* read data for provider */
+
+  /* write data for provider */
   dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");
   AH_User__WriteDb(u, dbP);
 
@@ -1324,6 +1339,8 @@ int AH_User_InputPin(AB_USER *u,
 		     char *pwbuffer,
 		     int minLen, int maxLen,
                      int flags){
+  AB_PROVIDER *pro;
+  AB_BANKING *ab;
   GWEN_BUFFER *nbuf;
   int rv;
   const char *numeric_warning = "";
@@ -1335,11 +1352,13 @@ int AH_User_InputPin(AB_USER *u,
   assert(u);
   un=AB_User_GetUserId(u);
 
+  pro=AB_User_GetProvider(u);
+  assert(pro);
+  ab=AB_Provider_GetBanking(pro);
+  assert(ab);
+
   /* find bank name */
-  bi=AB_Banking_GetBankInfo(AB_User_GetBanking(u),
-			    "de",
-                            "*",
-			    AB_User_GetBankCode(u));
+  bi=AB_Banking_GetBankInfo(ab, "de", "*", AB_User_GetBankCode(u));
   if (bi)
     bn=AB_BankInfo_GetBankName(bi);
   if (!bn)
@@ -1413,6 +1432,8 @@ int AH_User_InputPasswd(AB_USER *u,
 			char *pwbuffer,
 			int minLen, int maxLen,
                         int flags){
+  AB_PROVIDER *pro;
+  AB_BANKING *ab;
   GWEN_BUFFER *nbuf;
   int rv;
   const char *numeric_warning = "";
@@ -1424,11 +1445,13 @@ int AH_User_InputPasswd(AB_USER *u,
   assert(u);
   un=AB_User_GetUserId(u);
 
+  pro=AB_User_GetProvider(u);
+  assert(pro);
+  ab=AB_Provider_GetBanking(pro);
+  assert(ab);
+
   /* find bank name */
-  bi=AB_Banking_GetBankInfo(AB_User_GetBanking(u),
-			    "de",
-                            "*",
-			    AB_User_GetBankCode(u));
+  bi=AB_Banking_GetBankInfo(ab, "de", "*", AB_User_GetBankCode(u));
   if (bi)
     bn=AB_BankInfo_GetBankName(bi);
   if (!bn)
@@ -1502,6 +1525,8 @@ int AH_User_InputTan(AB_USER *u,
 		     char *pwbuffer,
 		     int minLen,
                      int maxLen){
+  AB_PROVIDER *pro;
+  AB_BANKING *ab;
   int rv;
   char buffer[512];
   const char *un;
@@ -1511,11 +1536,14 @@ int AH_User_InputTan(AB_USER *u,
 
   assert(u);
   un=AB_User_GetUserId(u);
+
+  pro=AB_User_GetProvider(u);
+  assert(pro);
+  ab=AB_Provider_GetBanking(pro);
+  assert(ab);
+
   /* find bank name */
-  bi=AB_Banking_GetBankInfo(AB_User_GetBanking(u),
-			    "de",
-                            "*",
-			    AB_User_GetBankCode(u));
+  bi=AB_Banking_GetBankInfo(ab,  "de", "*", AB_User_GetBankCode(u));
   if (bi)
     bn=AB_BankInfo_GetBankName(bi);
   if (!bn)
@@ -1560,6 +1588,8 @@ int AH_User_InputTanWithChallenge(AB_USER *u,
 				  char *pwbuffer,
 				  int minLen,
                                   int maxLen){
+  AB_PROVIDER *pro;
+  AB_BANKING *ab;
   int rv;
   char buffer[1024];
   const char *un;
@@ -1570,11 +1600,14 @@ int AH_User_InputTanWithChallenge(AB_USER *u,
 
   assert(u);
   un=AB_User_GetUserId(u);
+
+  pro=AB_User_GetProvider(u);
+  assert(pro);
+  ab=AB_Provider_GetBanking(pro);
+  assert(ab);
+
   /* find bank name */
-  bi=AB_Banking_GetBankInfo(AB_User_GetBanking(u),
-			    "de",
-                            "*",
-			    AB_User_GetBankCode(u));
+  bi=AB_Banking_GetBankInfo(ab, "de", "*", AB_User_GetBankCode(u));
   if (bi)
     bn=AB_BankInfo_GetBankName(bi);
   if (!bn)
@@ -2104,6 +2137,8 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
 				   char *pwbuffer,
 				   int minLen,
 				   int maxLen){
+  AB_PROVIDER *pro;
+  AB_BANKING *ab;
   int rv;
   char buffer[1024];
   const char *un;
@@ -2117,11 +2152,14 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
 
   assert(u);
   un=AB_User_GetUserId(u);
+
+  pro=AB_User_GetProvider(u);
+  assert(pro);
+  ab=AB_Provider_GetBanking(pro);
+  assert(ab);
+
   /* find bank name */
-  bi=AB_Banking_GetBankInfo(AB_User_GetBanking(u),
-			    "de",
-                            "*",
-			    AB_User_GetBankCode(u));
+  bi=AB_Banking_GetBankInfo(ab, "de", "*", AB_User_GetBankCode(u));
   if (bi)
     bn=AB_BankInfo_GetBankName(bi);
   if (!bn)

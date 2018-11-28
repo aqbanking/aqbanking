@@ -15,68 +15,54 @@
 
 
 
-
-int AB_Provider_ReadAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_ACCOUNT *account) {
+int AB_Provider_ReadUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_USER *user) {
   int rv;
   GWEN_DB_NODE *db=NULL;
 
-  rv=AB_Banking_Read_AccountConfig(AB_Provider_GetBanking(pro), uid, doLock, doUnlock, &db);
+  rv=AB_Banking_Read_UserConfig(AB_Provider_GetBanking(pro), uid, doLock, doUnlock, &db);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
-  rv=AB_Account_ReadFromDb(account, db);
+  rv=AB_User_ReadFromDb(user, db);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    GWEN_DB_Group_free(db);
     return rv;
   }
-
-  if (1) {
-    const char *s;
-
-    s=AB_Account_GetBackendName(account);
-    if (!(s && *s)) {
-      DBG_ERROR(0, "Account has no backend name!! SNH!!!");
-      GWEN_DB_Dump(db, 2);
-      assert(0);
-    }
-  }
-
-  GWEN_DB_Group_free(db);
 
   return 0;
 }
 
 
 
-int AB_Provider_GetAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_ACCOUNT **pAccount) {
+int AB_Provider_GetUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_USER **pUser) {
   int rv;
-  AB_ACCOUNT *a;
+  AB_USER *u;
 
-  a=AB_Provider_CreateAccountObject(pro);
-  assert(a);
-  rv=AB_Provider_ReadAccount(pro, uid, doLock, doUnlock, a);
+  u=AB_Provider_CreateUserObject(pro);
+  assert(u);
+  rv=AB_Provider_ReadUser(pro, uid, doLock, doUnlock, u);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    AB_Account_free(a);
+    AB_User_free(u);
     return rv;
   }
-  *pAccount=a;
+
+  *pUser=u;
 
   return 0;
 }
 
 
 
-int AB_Provider_ReadAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accountList) {
+int AB_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList) {
   int rv;
   GWEN_DB_NODE *dbAll=NULL;
   GWEN_DB_NODE *db;
 
-  /* read all config groups for accounts which have a unique id and which belong to this provider */
-  rv=AB_Banking_ReadConfigGroups(AB_Provider_GetBanking(pro), AB_CFG_GROUP_ACCOUNTS, "uniqueId", "provider", pro->name, &dbAll);
+  /* read all config groups for users which have a unique id and which belong to AqHBCI */
+  rv=AB_Banking_ReadConfigGroups(AB_Provider_GetBanking(pro), AB_CFG_GROUP_USERS, "uniqueId", "backendName", "AQHBCI", &dbAll);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -84,17 +70,16 @@ int AB_Provider_ReadAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accountList) {
 
   db=GWEN_DB_GetFirstGroup(dbAll);
   while(db) {
-    AB_ACCOUNT *a=NULL;
+    AB_USER *u=NULL;
 
-    a=AB_Provider_CreateAccountObject(pro);
-    assert(a);
-    rv=AB_Account_ReadFromDb(a, db);
+    u=AB_Provider_CreateUserObject(pro);
+    rv=AB_User_ReadFromDb(u, db);
     if (rv<0) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading account (%d), ignoring", rv);
-      AB_Account_free(a);
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading user (%d), ignoring", rv);
+      AB_User_free(u);
     }
     else
-      AB_Account_List_Add(a, accountList);
+      AB_User_List_Add(u, userList);
 
     /* next */
     db=GWEN_DB_GetNextGroup(db);
@@ -105,18 +90,19 @@ int AB_Provider_ReadAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accountList) {
 
 
 
-int AB_Provider_WriteAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, const AB_ACCOUNT *account) {
+
+int AB_Provider_WriteUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, const AB_USER *user) {
   int rv;
   GWEN_DB_NODE *db;
 
-  db=GWEN_DB_Group_new("account");
-  rv=AB_Account_WriteToDb(account, db);
+  db=GWEN_DB_Group_new("user");
+  rv=AB_User_WriteToDb(user, db);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
-  rv=AB_Banking_Write_AccountConfig(AB_Provider_GetBanking(pro), uid, doLock, doUnlock, db);
+  rv=AB_Banking_Write_UserConfig(AB_Provider_GetBanking(pro), uid, doLock, doUnlock, db);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     GWEN_DB_Group_free(db);
@@ -129,17 +115,16 @@ int AB_Provider_WriteAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doU
 
 
 
-int AB_Provider_BeginExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a) {
+int AB_Provider_BeginExclUseUser(AB_PROVIDER *pro, AB_USER *u) {
   int rv;
   uint32_t uid;
 
-  uid=AB_Account_GetUniqueId(a);
+  uid=AB_User_GetUniqueId(u);
   if (uid==0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "No unique id!");
     return GWEN_ERROR_INVALID;
   }
-
-  rv=AB_Provider_ReadAccount(pro, uid, 1, 0, a);
+  rv=AB_Provider_ReadUser(pro, uid, 1, 0, u);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -149,25 +134,25 @@ int AB_Provider_BeginExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a) {
 
 
 
-int AB_Provider_EndExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a, int abandon) {
+int AB_Provider_EndExclUseUser(AB_PROVIDER *pro, AB_USER *u, int abandon) {
   int rv;
   uint32_t uid;
 
-  uid=AB_Account_GetUniqueId(a);
+  uid=AB_User_GetUniqueId(u);
   if (uid==0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "No unique id!");
     return GWEN_ERROR_INVALID;
   }
 
   if (!abandon) {
-    rv=AB_Banking_Unlock_AccountConfig(AB_Provider_GetBanking(pro), uid);
+    rv=AB_Banking_Unlock_UserConfig(AB_Provider_GetBanking(pro), uid);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
   }
   else {
-    rv=AB_Provider_WriteAccount(pro, uid, 0, 1, a);
+    rv=AB_Provider_WriteUser(pro, uid, 0, 1, u);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -176,7 +161,6 @@ int AB_Provider_EndExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a, int abandon) 
 
   return 0;
 }
-
 
 
 

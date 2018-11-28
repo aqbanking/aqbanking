@@ -19,7 +19,7 @@
 #include <gwenhywfar/gui.h>
 
 
-AB_USER *AH_User_new(AB_BANKING *ab, AB_PROVIDER *pro);
+AB_USER *AH_User_new(AB_PROVIDER *pro);
 
 int AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db);
 int AH_User_toDb(const AB_USER *u, GWEN_DB_NODE *db);

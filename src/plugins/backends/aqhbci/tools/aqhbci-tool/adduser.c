@@ -466,7 +466,7 @@ int addUser(AB_BANKING *ab,
     }
 #endif
 
-    user=AB_User_new(ab);
+    user=AB_Provider_CreateUserObject(pro);
     assert(user);
 
     AB_User_SetUserName(user, userName);

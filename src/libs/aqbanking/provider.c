@@ -417,6 +417,7 @@ void AB_Plugin_Provider_SetFactoryFn(GWEN_PLUGIN *pl,
 
 
 #include "provider_account.c"
+#include "provider_user.c"
 
 
 
