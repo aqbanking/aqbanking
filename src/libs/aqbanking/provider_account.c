@@ -99,6 +99,7 @@ int AB_Provider_ReadAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accountList) {
     /* next */
     db=GWEN_DB_GetNextGroup(db);
   }
+  GWEN_DB_Group_free(dbAll);
 
   return 0;
 }

@@ -28,8 +28,10 @@ int AB_Provider_ReadUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnloc
   rv=AB_User_ReadFromDb(user, db);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_DB_Group_free(db);
     return rv;
   }
+  GWEN_DB_Group_free(db);
 
   return 0;
 }
@@ -84,6 +86,7 @@ int AB_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList) {
     /* next */
     db=GWEN_DB_GetNextGroup(db);
   }
+  GWEN_DB_Group_free(dbAll);
 
   return 0;
 }
