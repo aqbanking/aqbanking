@@ -7,8 +7,6 @@ Next:
   - change account/user edit/create dialogs to use user/account specs
 
 - AqHBCI:
-  - check whether BPD/UPD updates come through (I have the feeling they don't)
-  - add functions to find users and accounts (like before in AqBanking)
   - start adapting the account/user setup dialogs
 
 - split AqBanking into two libraries: One for direct use by applications, the other shall contain
@@ -32,21 +30,12 @@ Mid-term
   - backend functions to be used by setup apps:
     - getAccounts()
     - getUsers()
-  - simplify backend-api:
-    - updateAccountSpecs(): called upon AB_Banking_Init(), if there are no account specs
-    - executeJobs():
-        - Temporary loads necessary accounts and user
-        - executes the jobs
-        - updates account specs
-        - unloads accounts and users
 
 
 
 Long-term
 =========
 
-- very much simplify API (just jobs, accounts and probably bank info)
-- probably remove country info stuff
 - remove data storage stuff (APPS should store their info themselves)
 - remove message engine stuff, use gparser instead
 
