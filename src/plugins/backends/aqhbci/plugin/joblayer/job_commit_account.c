@@ -362,7 +362,7 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
     }
   }
 
-  /* replace UPD jobs for this account inside user (use should be locked outside this function) */
+  /* replace UPD jobs for this account inside user (user should be locked outside this function) */
   if (storedAcc && dbTempUpd) {
     GWEN_DB_NODE *dbUpd;
     GWEN_DB_NODE *gr;

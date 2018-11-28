@@ -160,7 +160,7 @@ int AB_Provider_EndExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a, int abandon) 
     return GWEN_ERROR_INVALID;
   }
 
-  if (!abandon) {
+  if (abandon) {
     rv=AB_Banking_Unlock_AccountConfig(AB_Provider_GetBanking(pro), uid);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
