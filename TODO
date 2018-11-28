@@ -1,18 +1,13 @@
 Next:
 =====
 - AB_BANKING:
-  - AB_USER/ACCOUNT:
-    - add virtual functions _readDb, _writeDb
-    - move functions from aqhbci/provider6.c to aqbanking/backendsupport
-    - let typemaker2 create AB_ACCOUNT (as it does for AB_USER already)
-  
   - maybe compile-in plugins to reduce number of exported symbols
 
   - remove libs/aqbanking/dialogs/dlg_editaccount*
   - change account/user edit/create dialogs to use user/account specs
 
 - AqHBCI:
-  - set correct job status after job execution (also use status "send" etc).
+  - check whether BPD/UPD updates come through (I have the feeling they don't)
   - add functions to find users and accounts (like before in AqBanking)
   - start adapting the account/user setup dialogs
 
