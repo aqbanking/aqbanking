@@ -130,6 +130,36 @@ int AB_Provider_WriteAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doU
 
 
 
+int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a) {
+  uint32_t uid;
+  int rv;
+
+  uid=AB_Banking_GetNamedUniqueId(AB_Provider_GetBanking(pro), "account", 1); /* startAtStdUniqueId=1 */
+  AB_Account_SetUniqueId(a, uid);
+  rv=AB_Provider_WriteAccount(pro, uid, 1, 1, a); /* lock, unlock */
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+int AB_Provider_DeleteAccount(AB_PROVIDER *pro, uint32_t uid) {
+  int rv;
+
+  rv=AB_Banking_Delete_AccountConfig(AB_Provider_GetBanking(pro), uid);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+  }
+  return rv;
+}
+
+
+
+
 int AB_Provider_BeginExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a) {
   int rv;
   uint32_t uid;

@@ -18,14 +18,18 @@ int AH_Provider_AddAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, int with
   uint32_t uid;
   int rv;
 
+  /* add account */
   uid=AB_Banking_GetNamedUniqueId(AB_Provider_GetBanking(pro), "account", 1); /* startAtStdUniqueId=1 */
-  AB_Account_SetUniqueId(a, uid);
-  rv=AB_Provider_WriteAccount(pro, uid, 1, 1, a); /* lock, unlock */
+  rv=AB_Provider_AddAccount(pro, a);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
+  uid=AB_Account_GetUniqueId(a);
+  assert(uid);
+
+  /* write account spec */
   rv=AH_Provider_WriteAccountSpecForAccount(pro, u, a);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -41,12 +45,12 @@ int AH_Provider_DeleteAccount(AB_PROVIDER *pro, uint32_t uid) {
   int rv1;
   int rv2;
 
-  rv1=AB_Banking_Delete_AccountConfig(AB_Provider_GetBanking(pro), uid);
+  rv1=AB_Banking_DeleteAccountSpec(AB_Provider_GetBanking(pro), uid);
   if (rv1<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv1);
   }
 
-  rv2=AB_Banking_DeleteAccountSpec(AB_Provider_GetBanking(pro), uid);
+  rv2=AB_Provider_DeleteAccount(pro, uid);
   if (rv2<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv2);
   }
@@ -112,7 +116,7 @@ int AH_Provider_DeleteUser(AB_PROVIDER *pro, uint32_t uid) {
   }
   AB_Account_List_free(al);
 
-  rv=AB_Banking_Delete_UserConfig(AB_Provider_GetBanking(pro), uid);
+  rv=AB_Provider_DeleteUser(pro, uid);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;

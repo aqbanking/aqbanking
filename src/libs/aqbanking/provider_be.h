@@ -69,7 +69,6 @@ typedef int (*AB_PROVIDER_SENDCOMMANDS_FN)(AB_PROVIDER *pro, AB_PROVIDERQUEUE *p
 typedef AB_ACCOUNT* (*AB_PROVIDER_CREATEACCOUNTOBJECT_FN)(AB_PROVIDER *pro);
 typedef AB_USER* (*AB_PROVIDER_CREATEUSEROBJECT_FN)(AB_PROVIDER *pro);
 
-
 /*@}*/
 
 
@@ -281,6 +280,33 @@ AQBANKING_API int AB_Provider_WriteAccount(AB_PROVIDER *pro, uint32_t uid, int d
 
 
 /**
+ * Add an account to the configuration. Assigns a unique id to the new account.
+ *
+ * Please note that you have to also create an AB_ACCOUNT_SPEC object to make the account available to
+ * applications.
+ *
+ * @return 0 on success, error code otherwise
+ * @param pro provider (THIS in C++ speak)
+ * @param a account to add
+ *
+ */
+AQBANKING_API int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);
+
+
+/**
+ * Remove an account from the configuration.
+ *
+ * Please note that you have to also have to remove the matching AB_ACCOUNT_SPEC object to not confuse
+ * applications about the accounts available.
+ *
+ * @return 0 on success, error code otherwise
+ * @param pro provider (THIS in C++ speak)
+ * @param uid unique id of the account to remove
+ */
+AQBANKING_API int AB_Provider_DeleteAccount(AB_PROVIDER *pro, uint32_t uid);
+
+
+/**
  * Begin exclusively using the given account.
  * This function locks the configuration for the given account, reads the configuration and
  * leaves the configuration locked upon return.
@@ -353,6 +379,29 @@ AQBANKING_API int AB_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList
  * @param user pointer to the object to be written to the configuration
  */
 AQBANKING_API int AB_Provider_WriteUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, const AB_USER *user);
+
+
+/**
+ * Add a user to the configuration. Assigns a unique id to the new user.
+ *
+ * @return 0 on success, error code otherwise
+ * @param pro provider (THIS in C++ speak)
+ * @param u user to add
+ *
+ */
+AQBANKING_API int AB_Provider_AddUser(AB_PROVIDER *pro, AB_USER *u);
+
+
+/**
+ * Remove a user from the configuration.
+ *
+ * @return 0 on success, error code otherwise
+ * @param pro provider (THIS in C++ speak)
+ * @param uid unique id of the account to remove
+ */
+AQBANKING_API int AB_Provider_DeleteUser(AB_PROVIDER *pro, uint32_t uid);
+
+
 
 /**
  * Begin exclusively using the given user.

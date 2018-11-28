@@ -21,6 +21,30 @@
 
 
 
+/* ========================================================================================================================
+ *                                                banking_account.c
+ * ========================================================================================================================
+ */
+
+int AB_Banking_Read_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb);
+int AB_Banking_Write_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE *db);
+int AB_Banking_Delete_AccountConfig(AB_BANKING *ab, uint32_t uid);
+int AB_Banking_Unlock_AccountConfig(AB_BANKING *ab, uint32_t uid);
+
+
+/* ========================================================================================================================
+ *                                                banking_user.c
+ * ========================================================================================================================
+ */
+
+int AB_Banking_Read_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb);
+int AB_Banking_Write_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE *db);
+int AB_Banking_Delete_UserConfig(AB_BANKING *ab, uint32_t uid);
+int AB_Banking_Unlock_UserConfig(AB_BANKING *ab, uint32_t uid);
+
+
+
+
 
 
 #endif /* AQBANKING_BANKING_L_H */

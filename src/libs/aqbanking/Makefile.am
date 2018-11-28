@@ -10,14 +10,15 @@ AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
 EXTRA_DIST=\
  banking_account.c \
+ banking_accspec.c \
  banking_bankinfo.c \
  banking_cfg.c \
+ banking_imex.c \
  banking_init.c \
  banking_online.c \
- banking_imex.c \
  banking_transaction.c \
- banking6.c \
- banking6_update.c \
+ banking_update.c \
+ banking_user.c \
  provider_account.c \
  provider_user.c
 
@@ -53,12 +54,11 @@ iheader_HEADERS=\
  account_type.h \
  banking.h \
  banking_be.h \
- banking6_be.h \
  banking_cfg.h \
  banking_imex.h \
- banking_info.h \
- banking_ob.h \
- banking_simple.h \
+ banking_bankinfo.h \
+ banking_online.h \
+ banking_transaction.h \
  bankinfoplugin.h \
  bankinfoplugin_be.h \
  error.h \

@@ -12,24 +12,11 @@
 /* This file is included by banking.c */
 
 
-int AB_Banking_Read_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb) {
+
+int AB_Banking_Read_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb) {
   int rv;
 
-  rv=AB_Banking_ReadConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid, doLock, doUnlock, pDb);
-  if (rv<0) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  return rv;
-}
-
-
-
-int AB_Banking_Write_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE *db){
-  int rv;
-
-  rv=AB_Banking_WriteConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid, doLock, doUnlock, db);
+  rv=AB_Banking_ReadConfigGroup(ab, AB_CFG_GROUP_USERS, uid, doLock, doUnlock, pDb);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -40,10 +27,10 @@ int AB_Banking_Write_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, int
 
 
 
-int AB_Banking_Delete_AccountConfig(AB_BANKING *ab, uint32_t uid) {
+int AB_Banking_Write_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE *db){
   int rv;
 
-  rv=AB_Banking_DeleteConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid);
+  rv=AB_Banking_WriteConfigGroup(ab, AB_CFG_GROUP_USERS, uid, doLock, doUnlock, db);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -54,10 +41,10 @@ int AB_Banking_Delete_AccountConfig(AB_BANKING *ab, uint32_t uid) {
 
 
 
-int AB_Banking_Unlock_AccountConfig(AB_BANKING *ab, uint32_t uid) {
+int AB_Banking_Delete_UserConfig(AB_BANKING *ab, uint32_t uid) {
   int rv;
 
-  rv=AB_Banking_UnlockConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid);
+  rv=AB_Banking_DeleteConfigGroup(ab, AB_CFG_GROUP_USERS, uid);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -66,6 +53,19 @@ int AB_Banking_Unlock_AccountConfig(AB_BANKING *ab, uint32_t uid) {
   return 0;
 }
 
+
+
+int AB_Banking_Unlock_UserConfig(AB_BANKING *ab, uint32_t uid) {
+  int rv;
+
+  rv=AB_Banking_UnlockConfigGroup(ab, AB_CFG_GROUP_USERS, uid);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
 
 
 

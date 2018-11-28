@@ -118,6 +118,36 @@ int AB_Provider_WriteUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlo
 
 
 
+int AB_Provider_AddUser(AB_PROVIDER *pro, AB_USER *u) {
+  uint32_t uid;
+  int rv;
+
+  uid=AB_Banking_GetNamedUniqueId(AB_Provider_GetBanking(pro), "user", 1); /* startAtStdUniqueId=1 */
+  AB_User_SetUniqueId(u, uid);
+  rv=AB_Provider_WriteUser(pro, uid, 1, 1, u); /* lock, unlock */
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+int AB_Provider_DeleteUser(AB_PROVIDER *pro, uint32_t uid) {
+  int rv;
+
+  rv=AB_Banking_Delete_UserConfig(AB_Provider_GetBanking(pro), uid);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+  }
+  return rv;
+}
+
+
+
+
 int AB_Provider_BeginExclUseUser(AB_PROVIDER *pro, AB_USER *u) {
   int rv;
   uint32_t uid;

@@ -65,14 +65,17 @@ GWEN_INHERIT_FUNCTIONS(AB_BANKING)
 
 
 #include "banking_init.c"
-#include "banking_account.c"
-#include "banking_online.c"
 #include "banking_cfg.c"
+#include "banking_update.c"
+
+#include "banking_accspec.c"
+#include "banking_account.c"
+#include "banking_user.c"
+#include "banking_transaction.c"
+
+#include "banking_online.c"
 #include "banking_imex.c"
 #include "banking_bankinfo.c"
-#include "banking_transaction.c"
-#include "banking6.c"
-#include "banking6_update.c"
 
 
 

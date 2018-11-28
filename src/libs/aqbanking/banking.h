@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -41,10 +41,10 @@ typedef struct AB_BANKING AB_BANKING;
 
 /* outsourced */
 #include <aqbanking/banking_imex.h>
-#include <aqbanking/banking_info.h>
-#include <aqbanking/banking_ob.h>
-#include <aqbanking/banking_simple.h>
+#include <aqbanking/banking_bankinfo.h>
+#include <aqbanking/banking_online.h>
 #include <aqbanking/banking_cfg.h>
+#include <aqbanking/banking_transaction.h>
 
 #include <aqbanking/provider.h>
 

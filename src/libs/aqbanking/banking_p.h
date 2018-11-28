@@ -106,6 +106,12 @@ static void AB_Banking__fillTransactionRemoteInfo(AB_TRANSACTION *t);
 /* static void AB_Banking__fillTransactionRemoteSepaInfo(AB_BANKING *ab, AB_TRANSACTION *t); */
 
 
+
+/* ========================================================================================================================
+ *                                                banking_update.c
+ * ========================================================================================================================
+ */
+
 /**
  * This functions changes the GWEN_ConfigMgr id of configuration groups to match the AqBanking-ID.
  *
@@ -127,6 +133,51 @@ int AB_Banking_Update(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVers
 static int AB_Banking_Update_5_99_2_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion);
 static int AB_Banking_Update_5_99_3_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion);
 static int AB_Banking_Update_5_99_4_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion);
+
+
+
+
+/* ========================================================================================================================
+ *                                                banking_cfg.c
+ * ========================================================================================================================
+ */
+
+static int AB_Banking_ReadNamedConfigGroup(AB_BANKING *ab,
+                                           const char *groupName,
+                                           const char *subGroupName,
+                                           int doLock,
+                                           int doUnlock,
+                                           GWEN_DB_NODE **pDb);
+
+static int AB_Banking_WriteNamedConfigGroup(AB_BANKING *ab,
+                                            const char *groupName,
+                                            const char *subGroupName,
+                                            int doLock,
+                                            int doUnlock,
+                                            GWEN_DB_NODE *db);
+
+
+static int AB_Banking_ReadConfigGroup(AB_BANKING *ab,
+                                      const char *groupName,
+                                      uint32_t uniqueId,
+                                      int doLock,
+                                      int doUnlock,
+                                      GWEN_DB_NODE **pDb);
+
+
+static int AB_Banking_WriteConfigGroup(AB_BANKING *ab,
+                                       const char *groupName,
+                                       uint32_t uniqueId,
+                                       int doLock,
+                                       int doUnlock,
+                                       GWEN_DB_NODE *db);
+
+static int AB_Banking_DeleteConfigGroup(AB_BANKING *ab, const char *groupName, uint32_t uniqueId);
+
+static int AB_Banking_UnlockConfigGroup(AB_BANKING *ab, const char *groupName, uint32_t uniqueId);
+
+
+
 
 
 static int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2* commandList, AB_IMEXPORTER_CONTEXT *ctx, uint32_t pid);
