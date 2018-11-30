@@ -20,7 +20,8 @@ EXTRA_DIST=\
  banking_update.c \
  banking_user.c \
  provider_account.c \
- provider_user.c
+ provider_user.c \
+ provider_queues.c
 
 
 

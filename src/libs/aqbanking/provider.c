@@ -401,8 +401,7 @@ AB_PROVIDER *AB_Plugin_Provider_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab) {
 
 
 
-void AB_Plugin_Provider_SetFactoryFn(GWEN_PLUGIN *pl,
-				     AB_PLUGIN_PROVIDER_FACTORY_FN fn) {
+void AB_Plugin_Provider_SetFactoryFn(GWEN_PLUGIN *pl, AB_PLUGIN_PROVIDER_FACTORY_FN fn) {
   AB_PLUGIN_PROVIDER *xpl;
 
   assert(pl);
@@ -418,6 +417,7 @@ void AB_Plugin_Provider_SetFactoryFn(GWEN_PLUGIN *pl,
 
 #include "provider_account.c"
 #include "provider_user.c"
+#include "provider_queues.c"
 
 
 

@@ -127,106 +127,6 @@ int AH_Provider_DeleteUser(AB_PROVIDER *pro, uint32_t uid) {
 
 
 
-int AH_Provider__SortProviderQueueIntoUserQueueList(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_USERQUEUE_LIST *uql) {
-  AH_PROVIDER *hp;
-  AB_ACCOUNTQUEUE_LIST *aql;
-  AB_ACCOUNTQUEUE *aq;
-
-  assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
-  aql=AB_ProviderQueue_GetAccountQueueList(pq);
-  if (aql==NULL) {
-    return GWEN_ERROR_NO_DATA;
-  }
-
-  while( (aq=AB_AccountQueue_List_First(aql)) ) {
-    uint32_t aid;
-    uint32_t uid;
-    AB_ACCOUNT *a=NULL;
-    AB_USERQUEUE *uq=NULL;
-    int rv;
-
-    aid=AB_AccountQueue_GetAccountId(aq);
-    rv=AB_Provider_GetAccount(pro, aid, 1, 1, &a);
-    if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
-    AB_AccountQueue_SetAccount(aq, a);
-
-    /* determine user */
-    uid=AB_Account_GetUserId(a);
-    if (uid==0) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "No first user in account %lu, SNH!", (unsigned long int) aid);
-      return GWEN_ERROR_INTERNAL;
-    }
-    else {
-      uq=AB_UserQueue_List_GetByUserId(uql, uid);
-      if (uq==NULL) {
-        AB_USER *u=NULL;
-
-        rv=AB_Provider_GetUser(pro, uid, 1, 1, &u);
-        if (rv<0) {
-          DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-          return rv;
-        }
-        uq=AB_UserQueue_new();
-        AB_UserQueue_SetUser(uq, u);
-
-        AB_UserQueue_List_Add(uq, uql);
-      }
-    }
-
-    AB_AccountQueue_List_Del(aq);
-    AB_UserQueue_AddAccountQueue(uq, aq);
-  }
-
-  return 0;
-}
-
-
-
-void AH_Provider__FreeUsersAndAccountsFromUserQueueList(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql) {
-  AH_PROVIDER *hp;
-  AB_USERQUEUE *uq;
-
-  assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
-  uq=AB_UserQueue_List_First(uql);
-  while(uq) {
-    AB_ACCOUNTQUEUE_LIST *aql;
-    AB_USER *u;
-
-    u=AB_UserQueue_GetUser(uq);
-    aql=AB_UserQueue_GetAccountQueueList(uq);
-    if (aql) {
-      AB_ACCOUNTQUEUE *aq;
-
-      aq=AB_AccountQueue_List_First(aql);
-      while(aq) {
-        AB_ACCOUNT *a;
-
-        a=AB_AccountQueue_GetAccount(aq);
-        AB_AccountQueue_SetAccount(aq, NULL);
-        AB_Account_free(a);
-        aq=AB_AccountQueue_List_Next(aq);
-      }
-
-    }
-
-    AB_UserQueue_SetUser(uq, NULL);
-    AB_User_free(u);
-
-    uq=AB_UserQueue_List_Next(uq);
-  }
-}
-
-
-
 int AH_Provider__AddCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *t, AH_OUTBOX *outbox) {
   int rv;
   int cmd;
@@ -456,10 +356,10 @@ int AH_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORT
 
   /* sort into user queue list */
   uql=AB_UserQueue_List_new();
-  rv=AH_Provider__SortProviderQueueIntoUserQueueList(pro, pq, uql);
+  rv=AB_Provider_SortProviderQueueIntoUserQueueList(pro, pq, uql);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AH_Provider__FreeUsersAndAccountsFromUserQueueList(pro, uql);
+    AB_Provider_FreeUsersAndAccountsFromUserQueueList(pro, uql);
     AB_UserQueue_List_free(uql);
     return rv;
   }
@@ -469,7 +369,7 @@ int AH_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORT
   rv=AH_Provider__AddCommandsToOutbox(pro, uql, ctx, outbox);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AH_Provider__FreeUsersAndAccountsFromUserQueueList(pro, uql);
+    AB_Provider_FreeUsersAndAccountsFromUserQueueList(pro, uql);
     AB_UserQueue_List_free(uql);
     return rv;
   }
@@ -491,7 +391,7 @@ int AH_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORT
 
 
   /* release accounts and users we loaded */
-  AH_Provider__FreeUsersAndAccountsFromUserQueueList(pro, uql);
+  AB_Provider_FreeUsersAndAccountsFromUserQueueList(pro, uql);
 
   /* error code from AH_Outbox_Execute is more important than that from AH_Provider__SampleResults */
   if (rv>=0)

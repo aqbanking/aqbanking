@@ -119,130 +119,13 @@ static void AH_Job__Commit_Accounts_RemoveEmpty(AH_JOB *j, AB_ACCOUNT_LIST *accL
 
 
 static uint32_t AH_Job__Commit_Accounts_FindStored(AH_JOB *j, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC_LIST *asl){
-  const char *accountNum;
-  const char *bankCode;
-  const char *iban;
   AB_ACCOUNT_SPEC *as=NULL;
-  
-  accountNum=AB_Account_GetAccountNumber(acc);
-  bankCode=AB_Account_GetBankCode(acc);
-  iban=AB_Account_GetIban(acc);
-  
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Checking account [blz=%s, acc=%s, iban=%s, type=%d]",
-           bankCode?bankCode:"<none>",
-           accountNum?accountNum:"<none>",
-           iban?iban:"<none>",
-           AB_Account_GetAccountType(acc));
-  
-  /* first look for that specific combination of given iban / bankcode+account number */
-  if ((iban && *iban) || (accountNum && *accountNum && bankCode && *bankCode)) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Comparing IBAN and old account specs");
-    /* both spec given */
-    as=AB_AccountSpec_List_FindFirst(asl,
-                                     AH_PROVIDER_NAME,
-                                     AB_Account_GetCountry(acc),
-                                     AB_Account_GetBankCode(acc),
-                                     AB_Account_GetAccountNumber(acc),
-                                     AB_Account_GetSubAccountId(acc),
-                                     AB_Account_GetIban(acc),
-                                     "*", /* any currency */
-                                     AB_Account_GetAccountType(acc));
-    if (as==NULL) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Not found, trying with unspecific account type");
-      as=AB_AccountSpec_List_FindFirst(asl,
-                                       AH_PROVIDER_NAME,
-                                       AB_Account_GetCountry(acc),
-                                       AB_Account_GetBankCode(acc),
-                                       AB_Account_GetAccountNumber(acc),
-                                       AB_Account_GetSubAccountId(acc),
-                                       AB_Account_GetIban(acc),
-                                       "*", /* any currency */
-                                       AB_AccountType_Unknown);
-    }
-  }
-  /* then look for old account specs with empty IBAN */
-  else if (!(iban && *iban) || (accountNum && *accountNum && bankCode && *bankCode)) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Comparing old account specs only");
-    as=AB_AccountSpec_List_FindFirst(asl,
-                                     AH_PROVIDER_NAME,
-                                     AB_Account_GetCountry(acc),
-                                     AB_Account_GetBankCode(acc),
-                                     AB_Account_GetAccountNumber(acc),
-                                     AB_Account_GetSubAccountId(acc),
-                                     "", /* empty IBAN (not "*"!) */
-                                     "*", /* any currency */
-                                     AB_Account_GetAccountType(acc));
-    if (as==NULL) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Not found, trying with unspecific account type");
-      as=AB_AccountSpec_List_FindFirst(asl,
-                                       AH_PROVIDER_NAME,
-                                       AB_Account_GetCountry(acc),
-                                       AB_Account_GetBankCode(acc),
-                                       AB_Account_GetAccountNumber(acc),
-                                       AB_Account_GetSubAccountId(acc),
-                                       "", /* empty IBAN (not "*"!) */
-                                       "*", /* any currency */
-                                       AB_AccountType_Unknown);
-    }
-  }
-  /* then look for IBAN with empty old account specs */
-  else if ((iban && *iban) || !(accountNum && *accountNum && bankCode && *bankCode)) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Comparing IBAN only");
-    as=AB_AccountSpec_List_FindFirst(asl,
-                                     AH_PROVIDER_NAME,
-                                     NULL,
-                                     "", /* empty bank code */
-                                     "", /* empty account number */
-                                     AB_Account_GetSubAccountId(acc),
-                                     AB_Account_GetIban(acc),
-                                     "*", /* any currency */
-                                     AB_Account_GetAccountType(acc));
-    if (as==NULL) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Not found, trying with unspecific account type");
-      as=AB_AccountSpec_List_FindFirst(asl,
-				       AH_PROVIDER_NAME,
-				       NULL,
-				       "", /* empty bank code */
-				       "", /* empty account number */
-				       AB_Account_GetSubAccountId(acc),
-				       AB_Account_GetIban(acc),
-				       "*", /* any currency */
-				       AB_AccountType_Unknown);
-    }
-  }
-  else {
-    /* neither iban nor bank code/account number, should not happen... */
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Account not found, neither IBAN nor account number given, SNH!");
-  }
-  
-  
-  /* if no stored account try a more generic approach */
-  if (as==NULL) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Not found, trying unspecific approach");
-    as=AB_AccountSpec_List_FindFirst(asl,
-				     AH_PROVIDER_NAME,
-				     AB_Account_GetCountry(acc),
-				     AB_Account_GetBankCode(acc),
-				     AB_Account_GetAccountNumber(acc),
-				     AB_Account_GetSubAccountId(acc),
-				     AB_Account_GetIban(acc),
-				     "*", /* any currency */
-				     AB_Account_GetAccountType(acc));
-  }
-  /* if still no stored account try again with unspecific account type */
-  if (as==NULL) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Not found, trying with unspecific account type");
-    as=AB_AccountSpec_List_FindFirst(asl,
-				     AH_PROVIDER_NAME,
-				     AB_Account_GetCountry(acc),
-				     AB_Account_GetBankCode(acc),
-				     AB_Account_GetAccountNumber(acc),
-				     AB_Account_GetSubAccountId(acc),
-				     AB_Account_GetIban(acc),
-				     "*", /* any currency */
-				     AB_AccountType_Unknown);
-  }
+  AB_PROVIDER *pro;
 
+  pro=AH_Job_GetProvider(j);
+  assert(pro);
+
+  as=AB_Provider_FindMatchingAccountSpec(pro, acc, asl);
   if (as) {
     uint32_t uniqueId;
 
@@ -393,6 +276,7 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
   }
   
   GWEN_DB_Group_free(dbTempUpd); /* is a copy, we need to free it */
+  AB_Account_free(storedAcc);
 }
 
 

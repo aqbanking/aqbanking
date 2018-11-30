@@ -79,22 +79,34 @@ static int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT 
 static int AH_Provider__GetMultiHbciJob(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_USER *mu, AB_ACCOUNT *ma, int cmd, AH_JOB **pHbciJob);
 
 
-static int AH_Provider__SortProviderQueueIntoUserQueueList(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_USERQUEUE_LIST *uql);
-static void AH_Provider__FreeUsersAndAccountsFromUserQueueList(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql);
 static int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, AB_IMEXPORTER_CONTEXT *ctx, AH_OUTBOX *outbox);
 static int AH_Provider__AddCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *t, AH_OUTBOX *outbox);
 
 static int AH_Provider__SampleResults(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_IMEXPORTER_CONTEXT *ctx);
 
 
-/* provider_accspec.c */
+
+/* ***************************************************************************************************************
+ *
+ *                                                provider_accspec.c
+ *
+ * ***************************************************************************************************************/
+
+
 static int AH_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc, AB_TRANSACTION_LIMITS_LIST *tll);
 int AH_Provider_AccountToAccountSpecWithUser(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc, AB_ACCOUNT_SPEC *as);
 int AH_Provider_AccountToAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT *acc, AB_ACCOUNT_SPEC *as);
 int AH_Provider_CreateInitialAccountSpecs(AB_PROVIDER *pro);
 
 
-/* provider_account.c */
+
+/* ***************************************************************************************************************
+ *
+ *                                                provider_account.c
+ *
+ * ***************************************************************************************************************/
+
+
 static AB_ACCOUNT *AH_Provider_CreateAccountObject(AB_PROVIDER *pro);
 static AB_USER *AH_Provider_CreateUserObject(AB_PROVIDER *pro);
 

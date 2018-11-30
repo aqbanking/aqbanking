@@ -214,6 +214,7 @@ int AH_Provider_CreateInitialAccountSpecs(AB_PROVIDER *pro) {
     /* next */
     db=GWEN_DB_GetNextGroup(db);
   }
+  GWEN_DB_Group_free(dbAll);
 
   return 0;
 }

@@ -18,6 +18,7 @@
 
 #include <aqbanking/provider.h>
 #include <aqbanking/ab_providerqueue.h>
+#include <aqbanking/ab_userqueue.h>
 #include <aqbanking/user.h>
 
 #include <gwenhywfar/plugin.h>
@@ -326,6 +327,18 @@ AQBANKING_API int AB_Provider_BeginExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *
 AQBANKING_API int AB_Provider_EndExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a, int abandon);
 
 
+/**
+ * Find an account spec from a list which matches the given account.
+ * Only checks against account specs from the same provider as the called one (i.e. if this is the AqHBCI
+ * provider only AqHBCI account specs are checked against).
+ *
+ * @return pointer to matching account spec from the given list, NULL if none found
+ * @param acc account to look for
+ * @param asl account spec list to check against
+ */
+AQBANKING_API AB_ACCOUNT_SPEC *AB_Provider_FindMatchingAccountSpec(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC_LIST *asl);
+
+
 /*@}*/
 
 
@@ -424,6 +437,32 @@ AQBANKING_API int AB_Provider_EndExclUseUser(AB_PROVIDER *pro, AB_USER *u, int a
 
 
 /*@}*/
+
+
+
+
+/** @name Queue Management Functions
+ *
+ */
+/*@{*/
+
+
+/**
+ * Sort jobs in provider queues (AB_PROVIDERQUEUE) into a list of AB_USERQUEUEs.
+ * This function makes use of the field @ref AB_ACCOUNT_userId.
+ */
+AQBANKING_API int AB_Provider_SortProviderQueueIntoUserQueueList(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_USERQUEUE_LIST *uql);
+
+
+/**
+ * Frees all users and accounts mentioned in the given AB_USERQUEUE list.
+ */
+AQBANKING_API void AB_Provider_FreeUsersAndAccountsFromUserQueueList(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql);
+
+
+
+/*@}*/
+
 
 
 
