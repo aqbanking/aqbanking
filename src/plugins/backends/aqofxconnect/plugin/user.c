@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -98,91 +95,91 @@ void AO_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
 
 
 
-void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro,
-		    AB_PROVIDER_EXTEND_MODE em,
-		    GWEN_DB_NODE *db) {
-  if (em==AB_ProviderExtendMode_Create ||
-      em==AB_ProviderExtendMode_Extend) {
-    AO_USER *ue;
+AB_USER *AO_User_new(AB_PROVIDER *pro) {
+  AB_USER *u;
+  AO_USER *ue;
 
-    GWEN_NEW_OBJECT(AO_USER, ue);
-    GWEN_INHERIT_SETDATA(AB_USER, AO_USER, u, ue, AO_User_FreeData);
+  assert(pro);
+  u=AB_User_new();
+  assert(u);
+  GWEN_NEW_OBJECT(AO_USER, ue);
+  GWEN_INHERIT_SETDATA(AB_USER, AO_USER, u, ue, AO_User_freeData);
 
-    if (em==AB_ProviderExtendMode_Create) {
-      ue->httpVMajor=1;
-      ue->httpVMinor=0;
-    }
-    else {
-      AO_User_ReadDb(u, db);
-    }
-  }
-  else if (em==AB_ProviderExtendMode_Reload) {
-    /* just reload user */
-    AO_User_ReadDb(u, db);
-  }
-  else {
-    AO_USER *ue;
+  AB_User_SetProvider(u, pro);
+  AB_User_SetBackendName(u, "aqhbci");
 
-    ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
-    assert(ue);
+  ue->readFromDbFn=AB_User_SetReadFromDbFn(u, AO_User_ReadFromDb);
+  ue->writeToDbFn=AB_User_SetWriteToDbFn(u, AO_User_WriteToDb);
 
-    if (em==AB_ProviderExtendMode_Save) {
-      AO_User_Flags_toDb(db, "flags", ue->flags);
+  ue->httpVMajor=1;
+  ue->httpVMinor=0;
 
-      if (ue->bankName)
-	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			     "bankName", ue->bankName);
-
-      if (ue->brokerId)
-	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			     "brokerId", ue->brokerId);
-
-      if (ue->org)
-	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			     "org", ue->org);
-
-      if (ue->fid)
-	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			     "fid", ue->fid);
-
-      if (ue->serverAddr)
-	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			     "serverAddr", ue->serverAddr);
-
-      if (ue->appId)
-	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			     "appId", ue->appId);
-
-      if (ue->appVer)
-	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			     "appVer", ue->appVer);
-
-      if (ue->headerVer)
-	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			     "headerVer", ue->headerVer);
-      if (ue->clientUid)
-	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			     "clientUid", ue->clientUid);
-
-      if (ue->securityType)
-	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			     "securityType", ue->securityType);
-
-      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  "httpVMajor", ue->httpVMajor);
-      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  "httpVMinor", ue->httpVMinor);
-
-      if (ue->httpUserAgent)
-	GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			     "httpUserAgent", ue->httpUserAgent);
-    }
-  }
+  return u;
 }
 
 
 
-void GWENHYWFAR_CB AO_User_FreeData(void *bp, void *p) {
+int AO_User_ReadFromDb(AB_USER *u, GWEN_DB_NODE *db) {
+  AO_USER *ue;
+  int rv;
+  GWEN_DB_NODE *dbP;
+  AB_PROVIDER *pro;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
+  assert(ue);
+
+  /* save provider, because AB_User_ReadFromDb clears it */
+  pro=AB_User_GetProvider(u);
+
+  /* read data for base class */
+  rv=(ue->readFromDbFn)(u, db);
+  if (rv<0) {
+    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* set provider again */
+  AB_User_SetProvider(u, pro);
+
+  /* read data for provider */
+  dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");
+  AO_User__ReadDb(u, dbP);
+
+  return 0;
+}
+
+
+
+int AO_User_WriteToDb(const AB_USER *u, GWEN_DB_NODE *db) {
+  AO_USER *ue;
+  int rv;
+  GWEN_DB_NODE *dbP;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
+  assert(ue);
+
+  /* write data for base class */
+  rv=(ue->writeToDbFn)(u, db);
+  if (rv<0) {
+    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* write data for provider */
+  dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");
+  AO_User__WriteDb(u, dbP);
+
+  return 0;
+}
+
+
+
+
+
+
+void GWENHYWFAR_CB AO_User_freeData(void *bp, void *p) {
   AO_USER *ue;
 
   ue=(AO_USER*)p;
@@ -203,7 +200,7 @@ void GWENHYWFAR_CB AO_User_FreeData(void *bp, void *p) {
 
 
 
-void AO_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
+void AO_User__ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
   AO_USER *ue;
   const char *s;
 
@@ -298,6 +295,58 @@ void AO_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
     ue->httpUserAgent=NULL;
 
 }
+
+
+
+void AO_User__WriteDb(const AB_USER *u, GWEN_DB_NODE *db) {
+  AO_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
+  assert(ue);
+
+  AO_User_Flags_toDb(db, "flags", ue->flags);
+
+  if (ue->bankName)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "bankName", ue->bankName);
+
+  if (ue->brokerId)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "brokerId", ue->brokerId);
+
+  if (ue->org)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "org", ue->org);
+
+  if (ue->fid)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "fid", ue->fid);
+
+  if (ue->serverAddr)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "serverAddr", ue->serverAddr);
+
+  if (ue->appId)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "appId", ue->appId);
+
+  if (ue->appVer)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "appVer", ue->appVer);
+
+  if (ue->headerVer)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "headerVer", ue->headerVer);
+  if (ue->clientUid)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "clientUid", ue->clientUid);
+
+  if (ue->securityType)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "securityType", ue->securityType);
+
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "httpVMajor", ue->httpVMajor);
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "httpVMinor", ue->httpVMinor);
+
+  if (ue->httpUserAgent)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "httpUserAgent", ue->httpUserAgent);
+
+  /* done */
+}
+
+
+
 
 
 

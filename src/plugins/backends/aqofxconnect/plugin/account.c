@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -27,45 +24,88 @@
 GWEN_INHERIT(AB_ACCOUNT, AO_ACCOUNT)
 
 
-void AO_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
-		       AB_PROVIDER_EXTEND_MODE em,
-		       GWEN_DB_NODE *db) {
+AB_ACCOUNT *AO_Account_new(AB_PROVIDER *pro) {
+  AB_ACCOUNT *a;
   AO_ACCOUNT *ae;
+
+  a=AB_Account_new();
   assert(a);
+  AB_Account_SetProvider(a, pro);
+  AB_Account_SetBackendName(a, "aqofxconnect");
 
-  if (em==AB_ProviderExtendMode_Create ||
-      em==AB_ProviderExtendMode_Extend) {
+  GWEN_NEW_OBJECT(AO_ACCOUNT, ae);
+  GWEN_INHERIT_SETDATA(AB_ACCOUNT, AO_ACCOUNT, a, ae, AO_Account_freeData);
 
-    GWEN_NEW_OBJECT(AO_ACCOUNT, ae);
-    GWEN_INHERIT_SETDATA(AB_ACCOUNT, AO_ACCOUNT, a, ae,
-			 AO_Account_freeData);
+  ae->maxPurposeLines=1;
+  ae->debitAllowed=0;
 
-    if (em==AB_ProviderExtendMode_Create) {
-      /* setup defaults */
-      ae->maxPurposeLines=1;
-      ae->debitAllowed=0;
-    }
-    else {
-      ae->maxPurposeLines=GWEN_DB_GetIntValue(db, "maxPurposeLines", 0, 1);
-      ae->debitAllowed=GWEN_DB_GetIntValue(db, "debitAllowed", 0, 1);
-    }
+  ae->readFromDbFn=AB_Account_SetReadFromDbFn(a, AO_Account_ReadFromDb);
+  ae->writeToDbFn=AB_Account_SetWriteToDbFn(a, AO_Account_WriteToDb);
 
-  }
-  else if (em==AB_ProviderExtendMode_Reload) {
-    ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AO_ACCOUNT, a);
-    assert(ae);
-    ae->maxPurposeLines=GWEN_DB_GetIntValue(db, "maxPurposeLines", 0, 1);
-    ae->debitAllowed=GWEN_DB_GetIntValue(db, "debitAllowed", 0, 1);
-  }
-  else if (em==AB_ProviderExtendMode_Save) {
-    ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AO_ACCOUNT, a);
-    assert(ae);
-    GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			"maxPurposeLines", ae->maxPurposeLines);
-    GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                        "debitAllowed", ae->debitAllowed);
-  }
+  return a;
 }
+
+
+
+int AO_Account_ReadFromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+  AO_ACCOUNT *ae;
+  GWEN_DB_NODE *dbP;
+  int rv;
+  const char *s;
+  AB_PROVIDER *pro;
+
+  assert(a);
+  ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AO_ACCOUNT, a);
+  assert(ae);
+
+  /* save provider, because AB_Account_ReadFromDb clears it */
+  pro=AB_Account_GetProvider(a);
+
+  /* read data for base class */
+  rv=(ae->readFromDbFn)(a, db);
+  if (rv<0) {
+    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* set provider again */
+  AB_Account_SetProvider(a, pro);
+
+  /* read data for provider */
+  dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");
+
+  ae->maxPurposeLines=GWEN_DB_GetIntValue(dbP, "maxPurposeLines", 0, 1);
+  ae->debitAllowed=GWEN_DB_GetIntValue(dbP, "debitAllowed", 0, 1);
+
+  return 0;
+}
+
+
+
+int AO_Account_WriteToDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+  AO_ACCOUNT *ae;
+  GWEN_DB_NODE *dbP;
+  int rv;
+
+  assert(a);
+  ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AO_ACCOUNT, a);
+  assert(ae);
+
+  rv=(ae->writeToDbFn)(a, db);
+  if (rv<0) {
+    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* write data for provider */
+  dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");
+
+  GWEN_DB_SetIntValue(dbP, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxPurposeLines", ae->maxPurposeLines);
+  GWEN_DB_SetIntValue(dbP, GWEN_DB_FLAGS_OVERWRITE_VARS, "debitAllowed", ae->debitAllowed);
+
+  return 0;
+}
+
 
 
 

@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue Aug 24 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -13,6 +13,7 @@
 
 #include <aqofxconnect/aqofxconnect.h>
 #include <aqbanking/banking.h>
+#include <aqbanking/user.h>
 
 #include <gwenhywfar/dialog.h>
 #include <gwenhywfar/db.h>

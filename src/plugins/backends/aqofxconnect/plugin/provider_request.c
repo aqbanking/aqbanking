@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Wed Jan 09 2008
- copyright   : (C) 2008 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -9,9 +9,7 @@
 
 
 
-int AO_Provider__AddHeaders(AB_PROVIDER *pro,
-			    AB_USER *u,
-			    GWEN_BUFFER *buf) {
+int AO_Provider__AddHeaders(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf) {
   GWEN_TIME *ti;
   const char *s;
 
@@ -56,9 +54,7 @@ int AO_Provider__AddHeaders(AB_PROVIDER *pro,
 
 
 
-int AO_Provider__AddSignOn(AB_PROVIDER *pro,
-			   AB_USER *u,
-			   GWEN_BUFFER *buf) {
+int AO_Provider__AddSignOn(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf) {
   GWEN_TIME *ti;
   const char *s;
   char userpass[64];
@@ -179,11 +175,7 @@ int AO_Provider__AddSignOn(AB_PROVIDER *pro,
 
 
 
-int AO_Provider__WrapRequest(AB_PROVIDER *pro,
-                             AB_USER *u,
-			     const char *mTypeName,
-			     const char *tTypeName,
-			     GWEN_BUFFER *buf) {
+int AO_Provider__WrapRequest(AB_PROVIDER *pro, AB_USER *u, const char *mTypeName, const char *tTypeName, GWEN_BUFFER *buf) {
   GWEN_BUFFER *tbuf;
   GWEN_TIME *ti;
 
@@ -232,9 +224,7 @@ int AO_Provider__WrapRequest(AB_PROVIDER *pro,
 
 
 
-int AO_Provider__WrapMessage(AB_PROVIDER *pro,
-                             AB_USER *u,
-			     GWEN_BUFFER *buf) {
+int AO_Provider__WrapMessage(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf) {
   GWEN_BUFFER *tbuf;
   int rv;
 
@@ -275,13 +265,5 @@ int AO_Provider__WrapMessage(AB_PROVIDER *pro,
 }
 
 
-
-
-
-
-
-
-#include "r_statements.c"
-#include "r_accountinfo.c"
 
 

@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004-2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -15,9 +15,7 @@
 
 
 
-int AO_Provider_CreateConnection(AB_PROVIDER *pro,
-				 AB_USER *u,
-				 GWEN_HTTP_SESSION **pSess) {
+int AO_Provider_CreateConnection(AB_PROVIDER *pro, AB_USER *u, GWEN_HTTP_SESSION **pSess) {
   int rv;
   GWEN_HTTP_SESSION *sess;
   uint32_t flags;
@@ -61,11 +59,7 @@ int AO_Provider_CreateConnection(AB_PROVIDER *pro,
 
 
 
-int AO_Provider_SendAndReceive(AB_PROVIDER *pro,
-			       AB_USER *u,
-                               const uint8_t *p,
-                               unsigned int plen,
-			       GWEN_BUFFER **pRbuf) {
+int AO_Provider_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_t *p, unsigned int plen, GWEN_BUFFER **pRbuf) {
   AO_PROVIDER *dp;
   GWEN_HTTP_SESSION *sess=NULL;
   GWEN_BUFFER *rbuf;

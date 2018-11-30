@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -37,14 +37,11 @@ AQOFXCONNECT_API
 uint32_t AO_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name);
 
 AQOFXCONNECT_API
-void AO_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
-                        uint32_t fl);
+void AO_User_Flags_toDb(GWEN_DB_NODE *db, const char *name, uint32_t fl);
 
 
 AQOFXCONNECT_API
-void AO_User_Extend(AB_USER *u, AB_PROVIDER *pro,
-		    AB_PROVIDER_EXTEND_MODE em,
-		    GWEN_DB_NODE *dbBackend);
+AB_USER *AO_User_new(AB_PROVIDER *pro);
 
 AQOFXCONNECT_API
 const char *AO_User_GetBankName(const AB_USER *u);

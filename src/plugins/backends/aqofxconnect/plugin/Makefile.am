@@ -21,8 +21,6 @@ noinst_HEADERS=\
   aqofxconnect_l.h \
   provider_p.h \
   user_p.h \
-  queues_l.h \
-  queues_p.h \
   dlg_edituser_p.h dlg_edituser_l.h \
   dlg_newuser_p.h dlg_newuser_l.h \
   dlg_ofx_special_p.h dlg_ofx_special_l.h
@@ -39,12 +37,13 @@ iheader_HEADERS=\
 lib_LTLIBRARIES=libaqofxconnect.la 
 libaqofxconnect_la_SOURCES= \
   account.c \
-  provider.c \
-  queues.c \
   user.c \
-  dlg_edituser.c \
-  dlg_newuser.c \
-  dlg_ofx_special.c
+  provider.c
+
+#  dlg_edituser.c \
+#  dlg_newuser.c \
+#  dlg_ofx_special.c
+
 
 libaqofxconnect_la_LIBADD= \
   libofxhome/libofxhome.la \
@@ -77,10 +76,14 @@ aqofxconnect_la_LDFLAGS = -no-undefined -module -avoid-version
 
 EXTRA_DIST= $(dlgdata_DATA) $(dlgimage_DATA) \
   aqofxconnect.xml.in \
-  network.c \
-  request.c \
-  r_statements.c \
-  r_accountinfo.c
+  provider_account.c \
+  provider_accspec.c \
+  provider_cmd_accinfo.c \
+  provider_cmd_stm.c \
+  provider_network.c \
+  provider_request.c \
+  provider_sendcmd.c \
+  provider_update.c
 
 
 sources:
