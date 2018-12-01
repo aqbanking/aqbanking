@@ -220,6 +220,7 @@ int AH_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
 
 int AH_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   AH_PROVIDER *hp;
+  uint32_t currentVersion;
   int rv;
 
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Deinitializing AqHBCI backend");
@@ -228,6 +229,17 @@ int AH_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
   assert(hp);
 
+  currentVersion=
+    (AQHBCI_VERSION_MAJOR<<24) |
+    (AQHBCI_VERSION_MINOR<<16) |
+    (AQHBCI_VERSION_PATCHLEVEL<<8) |
+    AQHBCI_VERSION_BUILD;
+
+  /* save version */
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Setting version %08x", currentVersion);
+  GWEN_DB_SetIntValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS, "lastVersion", currentVersion);
+
+  /* save configuration */
   rv=AH_HBCI_Fini(hp->hbci, dbData);
   GWEN_DB_ClearGroup(hp->dbTempConfig, 0);
 

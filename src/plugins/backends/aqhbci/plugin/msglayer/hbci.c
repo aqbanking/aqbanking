@@ -161,22 +161,8 @@ int AH_HBCI_Init(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 
 
 int AH_HBCI_Fini(AH_HBCI *hbci, GWEN_DB_NODE *db) {
-  uint32_t currentVersion;
-
   DBG_INFO(AQHBCI_LOGDOMAIN, "Deinitializing AH_HBCI");
   assert(hbci);
-
-  currentVersion=
-    (AQHBCI_VERSION_MAJOR<<24) |
-    (AQHBCI_VERSION_MINOR<<16) |
-    (AQHBCI_VERSION_PATCHLEVEL<<8) |
-    AQHBCI_VERSION_BUILD;
-
-  /* save configuration */
-  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Setting version %08x",
-             currentVersion);
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "lastVersion", currentVersion);
 
   GWEN_DB_SetIntValue(db,
                       GWEN_DB_FLAGS_OVERWRITE_VARS,
