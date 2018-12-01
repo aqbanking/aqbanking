@@ -867,7 +867,7 @@
           <default>0</default>
           <preset>0</preset>
           <access>public</access>
-          <flags>with_hash</flags>
+          <flags>with_hash with_getbymember</flags>
           <descr>
             This is a unique id assigned by the application. However, when
             adding a transaction to a job (like JobTransfer) this id is
@@ -891,6 +891,7 @@
           <default>0</default>
           <preset>0</preset>
           <access>public</access>
+          <flags>with_hash with_getbymember</flags>
           <descr>
             This is an id assigned by the application only.
             This id is never changed by AqBanking.
@@ -905,6 +906,28 @@
           <descr>
             If this transaction is a response to a command send to a bank server then the idForApplication from
             that reference command is stored here.
+          </descr>
+        </member>
+
+        <member name="queueId" type="uint32_t" >
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <flags>with_hash with_getbymember</flags>
+          <descr>
+            This is an id assigned by AqBanking just prior to sending jobs.
+            Applications should not have any expectations about this value, it should especially not assume this id to be unique.
+          </descr>
+        </member>
+
+        <member name="refQueueId" type="uint32_t" >
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <flags>with_hash</flags>
+          <descr>
+            This is an id assigned by some backends. e.g. when grouping jobs.
+            Applications should not have any expectations about this value, it should especially not assume this id to be unique.
           </descr>
         </member>
 
@@ -927,7 +950,7 @@
             This id is assigned by a backend when sending multiple transfer
             jobs in one backend request (e.g. AqHBCI uses DTAUS files when sending
             multi-transfer requests; in this case every transfer which goes
-            into the same DTAUS file receives the same id).
+            into the same DTAUS file receives the same group id).
           </descr>
         </member>
 

@@ -321,9 +321,25 @@ int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2* commandList, 
   AB_ACCOUNTQUEUE *aq;
   AB_PROVIDERQUEUE *pq;
   int rv;
+  uint32_t queueId=0;
+
+  /* assign queue ids to each job */
+  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Info, I18N("Assigning queue ids to jobs"));
+  jit=AB_Transaction_List2_First(commandList);
+  if (jit) {
+    AB_TRANSACTION *t;
+
+    t=AB_Transaction_List2Iterator_Data(jit);
+    while(t) {
+      AB_Transaction_SetQueueId(t, ++queueId);
+      AB_Transaction_SetRefQueueId(t, 0);
+      t=AB_Transaction_List2Iterator_Next(jit);
+    }
+    AB_Transaction_List2Iterator_free(jit);
+  } /* if (jit) */
+
 
   /* sort commands by account */
-
   GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Info, I18N("Sorting commands by account"));
   aql=AB_AccountQueue_List_new();
   jit=AB_Transaction_List2_First(commandList);
