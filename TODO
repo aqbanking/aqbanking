@@ -1,7 +1,8 @@
 Next:
 =====
 - AB_BANKING:
-  - maybe compile-in plugins to reduce number of exported symbols
+  - compile-in plugins to reduce number of exported symbols
+  - remove DTAUS im-/exporter
 
   - remove libs/aqbanking/dialogs/dlg_editaccount*
   - change account/user edit/create dialogs to use user/account specs
