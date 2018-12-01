@@ -27,14 +27,16 @@ libhbcibanking_la_SOURCES=\
 
 
 EXTRA_DIST=\
-  provider_b6.c \
+  provider_account.c \
+  provider_accspec.c \
+  provider_dialogs.c \
   provider_dtazv.c \
   provider_iniletter.c \
   provider_keys.c \
   provider_online.c \
-  provider_dialogs.c \
-  provider_accspec.c \
-  provider_update.c
+  provider_sendcmd.c \
+  provider_update.c \
+  provider_user.c
 
 
 

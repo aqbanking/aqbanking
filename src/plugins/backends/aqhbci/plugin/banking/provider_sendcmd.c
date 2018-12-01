@@ -14,119 +14,6 @@
 
 
 
-int AH_Provider_AddAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, int withAccountSpec) {
-  uint32_t uid;
-  int rv;
-
-  /* add account */
-  uid=AB_Banking_GetNamedUniqueId(AB_Provider_GetBanking(pro), "account", 1); /* startAtStdUniqueId=1 */
-  rv=AB_Provider_AddAccount(pro, a);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  uid=AB_Account_GetUniqueId(a);
-  assert(uid);
-
-  /* write account spec */
-  rv=AH_Provider_WriteAccountSpecForAccount(pro, u, a);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  return 0;
-}
-
-
-
-int AH_Provider_DeleteAccount(AB_PROVIDER *pro, uint32_t uid) {
-  int rv1;
-  int rv2;
-
-  rv1=AB_Banking_DeleteAccountSpec(AB_Provider_GetBanking(pro), uid);
-  if (rv1<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv1);
-  }
-
-  rv2=AB_Provider_DeleteAccount(pro, uid);
-  if (rv2<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv2);
-  }
-
-  if (rv1>0)
-    return rv1;
-  if (rv2>0)
-    return rv2;
-  return 0;
-}
-
-
-
-
-
-
-
-
-int AH_Provider_AddUser(AB_PROVIDER *pro, AB_USER *u) {
-  uint32_t uid;
-  int rv;
-
-  uid=AB_Banking_GetNamedUniqueId(AB_Provider_GetBanking(pro), "user", 1); /* startAtStdUniqueId=1 */
-  AB_User_SetUniqueId(u, uid);
-  rv=AB_Provider_WriteUser(pro, uid, 1, 1, u); /* lock, unlock */
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-  return 0;
-}
-
-
-
-int AH_Provider_DeleteUser(AB_PROVIDER *pro, uint32_t uid) {
-  int rv;
-  AB_ACCOUNT_LIST *al;
-
-  al=AB_Account_List_new();
-  rv=AB_Provider_ReadAccounts(pro, al);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_Account_List_free(al);
-    return rv;
-  }
-  else {
-    AB_ACCOUNT *a;
-    int cnt=0;
-
-    a=AB_Account_List_First(al);
-    while(a) {
-      if (AB_Account_GetUserId(a)==uid) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Account %lu still uses this user", (unsigned long int) AB_Account_GetUniqueId(a));
-        cnt++;
-      }
-      a=AB_Account_List_Next(a);
-    }
-    if (cnt>0) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "%d accounts using this user",cnt);
-      AB_Account_List_free(al);
-      return GWEN_ERROR_INVALID;
-    }
-  }
-  AB_Account_List_free(al);
-
-  rv=AB_Provider_DeleteUser(pro, uid);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-  return 0;
-}
-
-
-
-
 int AH_Provider__AddCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *t, AH_OUTBOX *outbox) {
   int rv;
   int cmd;
@@ -192,8 +79,7 @@ int AH_Provider__AddCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a,
     return rv;
   }
 
-  /* set job id in command, add command to job */
-  AB_Transaction_SetUniqueId(t, AH_Job_GetId(mj));
+  /* add command to job */
   AH_Job_AddCommand(mj, t);
 
   if (jobIsNew) {

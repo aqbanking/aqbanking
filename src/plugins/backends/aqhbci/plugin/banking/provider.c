@@ -690,7 +690,7 @@ int AH_Provider_Test(AB_PROVIDER *pro) {
 
 
 
-#include "provider_b6.c"
+#include "provider_sendcmd.c"
 #include "provider_dtazv.c"
 #include "provider_iniletter.c"
 #include "provider_keys.c"
@@ -698,9 +698,8 @@ int AH_Provider_Test(AB_PROVIDER *pro) {
 #include "provider_dialogs.c"
 #include "provider_accspec.c"
 #include "provider_update.c"
-
-
-
+#include "provider_account.c"
+#include "provider_user.c"
 
 
 
