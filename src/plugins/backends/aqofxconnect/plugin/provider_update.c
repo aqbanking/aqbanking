@@ -8,6 +8,9 @@
  ***************************************************************************/
 
 
+/* included by provider.c */
+
+
 
 int AO_Provider_UpdatePreInit(AB_PROVIDER *pro, uint32_t lastVersion, uint32_t currentVersion) {
 #if 0 /* no preinit for now */

@@ -8,6 +8,9 @@
  ***************************************************************************/
 
 
+/* included by provider.c */
+
+
 int AO_Provider_AddAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a) {
   uint32_t uid;
   int rv;

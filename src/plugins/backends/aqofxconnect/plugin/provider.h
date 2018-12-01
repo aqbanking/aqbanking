@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -41,8 +41,8 @@ AQOFXCONNECT_API int AO_Provider_GetCert(AB_PROVIDER *pro, AB_USER *u);
 AQOFXCONNECT_API int AO_Provider_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, int keepOpen);
 
 
-int AO_Provider_AddAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a);
-int AO_Provider_DeleteAccount(AB_PROVIDER *pro, uint32_t uid);
+AQOFXCONNECT_API int AO_Provider_AddAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a);
+AQOFXCONNECT_API int AO_Provider_DeleteAccount(AB_PROVIDER *pro, uint32_t uid);
 
 
 AQOFXCONNECT_API int AO_Provider_AddUser(AB_PROVIDER *pro, AB_USER *u);

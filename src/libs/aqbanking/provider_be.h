@@ -90,7 +90,7 @@ AQBANKING_API int AB_Provider_IsInit(const AB_PROVIDER *pro);
 AQBANKING_API void AB_Provider_AddFlags(AB_PROVIDER *pro, uint32_t fl);
 
 
-/** @name Virtual Functions
+/** @name Virtual Functions - Minimally Required Functions
  *
  */
 /*@{*/
@@ -124,6 +124,14 @@ AQBANKING_API int AB_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *db);
  */
 AQBANKING_API int AB_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx);
 
+/*@}*/
+
+
+
+/** @name Virtual Functions - Functions Required When Working with AB_ACCOUNT/AB_USER
+ *
+ */
+/*@{*/
 
 /**
  * Create an empty AB_ACCOUNT object.
@@ -144,10 +152,15 @@ AQBANKING_API AB_ACCOUNT *AB_Provider_CreateAccountObject(AB_PROVIDER *pro);
  */
 AQBANKING_API AB_USER *AB_Provider_CreateUserObject(AB_PROVIDER *pro);
 
+/*@}*/
 
 
 
 
+/** @name Virtual Functions - Functions Providing Graphical Dialogs
+ *
+ */
+/*@{*/
 
 /**
  * Create a dialog which allows to create a new user.

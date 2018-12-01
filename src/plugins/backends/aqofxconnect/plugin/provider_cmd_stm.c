@@ -8,6 +8,9 @@
  ***************************************************************************/
 
 
+/* included by provider.c */
+
+
 
 int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j, GWEN_BUFFER *buf) {
   const char *s;

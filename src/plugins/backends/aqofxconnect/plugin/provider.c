@@ -22,6 +22,7 @@
 #include <aqbanking/account.h>
 #include <aqbanking/transaction.h>
 #include <aqbanking/value.h>
+#include <aqbanking/httpsession.h>
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/inherit.h>
@@ -33,6 +34,7 @@
 #include <gwenhywfar/gwentime.h>
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/i18n.h>
+#include <gwenhywfar/url.h>
 
 #include <unistd.h>
 #include <ctype.h>

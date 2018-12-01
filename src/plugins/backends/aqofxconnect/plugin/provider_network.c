@@ -8,10 +8,7 @@
  ***************************************************************************/
 
 
-#include <aqbanking/httpsession.h>
-
-#include <gwenhywfar/url.h>
-
+/* included by provider.c */
 
 
 

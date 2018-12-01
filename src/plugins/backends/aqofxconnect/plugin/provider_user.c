@@ -8,6 +8,9 @@
  ***************************************************************************/
 
 
+/* included by provider.c */
+
+
 
 
 int AO_Provider_AddUser(AB_PROVIDER *pro, AB_USER *u) {
