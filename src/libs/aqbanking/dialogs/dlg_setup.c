@@ -244,7 +244,7 @@ AB_USER *AB_SetupDialog_GetCurrentUser(GWEN_DIALOG *dlg) {
 }
 
 
-
+/* TODO: read id from combo string (first column) and return that instead of AB_ACCOUNT */
 AB_ACCOUNT *AB_SetupDialog_GetCurrentAccount(GWEN_DIALOG *dlg) {
   AB_SETUP_DIALOG *xdlg;
   AB_ACCOUNT_LIST2 *al;
