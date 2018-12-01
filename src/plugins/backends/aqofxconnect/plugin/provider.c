@@ -212,6 +212,7 @@ int AO_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
 
 int AO_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
   AO_PROVIDER *dp;
+  uint32_t currentVersion;
   int errors=0;
 
   assert(pro);
@@ -220,14 +221,21 @@ int AO_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
 
   DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Deinitializing AqOFXDC backend");
 
-  GWEN_DB_SetIntValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "lastJobId", dp->lastJobId);
-  GWEN_DB_SetIntValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "connectTimeout", dp->connectTimeout);
-  GWEN_DB_SetIntValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "sendTimeout", dp->sendTimeout);
-  GWEN_DB_SetIntValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "recvTimeout", dp->recvTimeout);
+  currentVersion=
+    (AQOFXCONNECT_VERSION_MAJOR<<24) |
+    (AQOFXCONNECT_VERSION_MINOR<<16) |
+    (AQOFXCONNECT_VERSION_PATCHLEVEL<<8) |
+    AQOFXCONNECT_VERSION_BUILD;
+
+  /* save version */
+  DBG_NOTICE(AQOFXCONNECT_LOGDOMAIN, "Setting version %08x", currentVersion);
+  GWEN_DB_SetIntValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS, "lastVersion", currentVersion);
+
+  /* save vars */
+  GWEN_DB_SetIntValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS, "lastJobId", dp->lastJobId);
+  GWEN_DB_SetIntValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS, "connectTimeout", dp->connectTimeout);
+  GWEN_DB_SetIntValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS, "sendTimeout", dp->sendTimeout);
+  GWEN_DB_SetIntValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS, "recvTimeout", dp->recvTimeout);
 
   dp->dbConfig=0;
 
