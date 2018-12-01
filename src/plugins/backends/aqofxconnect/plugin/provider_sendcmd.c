@@ -504,7 +504,7 @@ void AO_Provider__AddOrModifyAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a
     /* account is new, add it */
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Account is new, adding");
     AB_Account_SetUserId(acc, AB_User_GetUniqueId(u));
-    rv=AO_Provider_AddAccount(pro, u, acc, 1);
+    rv=AO_Provider_AddAccount(pro, u, acc);
     if (rv<0) {
       DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Coud not write new account (%d)", rv);
     }

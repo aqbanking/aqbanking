@@ -24,7 +24,7 @@ extern "C" {
 #endif
 
 
-GWEN_DIALOG *AO_EditUserDialog_new(AB_BANKING *ab, AB_USER *u, int doLock);
+GWEN_DIALOG *AO_EditUserDialog_new(AB_PROVIDER *ab, AB_USER *u, int doLock);
 
 
 

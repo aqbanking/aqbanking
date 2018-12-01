@@ -38,11 +38,10 @@ lib_LTLIBRARIES=libaqofxconnect.la
 libaqofxconnect_la_SOURCES= \
   account.c \
   user.c \
-  provider.c
-
-#  dlg_edituser.c \
-#  dlg_newuser.c \
-#  dlg_ofx_special.c
+  provider.c \
+  dlg_edituser.c \
+  dlg_newuser.c \
+  dlg_ofx_special.c
 
 
 libaqofxconnect_la_LIBADD= \

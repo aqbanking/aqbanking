@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Thu Aug 19 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -25,7 +25,7 @@ extern "C" {
 
 
 
-GWEN_DIALOG *AO_OfxSpecialDialog_new(AB_BANKING *ab);
+GWEN_DIALOG *AO_OfxSpecialDialog_new(AB_PROVIDER *pro);
 
 int AO_OfxSpecialDialog_GetHttpVMajor(const GWEN_DIALOG *dlg);
 int AO_OfxSpecialDialog_GetHttpVMinor(const GWEN_DIALOG *dlg);

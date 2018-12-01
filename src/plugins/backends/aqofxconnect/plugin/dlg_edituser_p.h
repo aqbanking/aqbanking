@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Thu Aug 19 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -18,6 +18,7 @@
 
 typedef struct AO_EDITUSER_DIALOG AO_EDITUSER_DIALOG;
 struct AO_EDITUSER_DIALOG {
+  AB_PROVIDER *provider;
   AB_BANKING *banking;
 
   int doLock;

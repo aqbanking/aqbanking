@@ -40,7 +40,7 @@ GWEN_INHERIT(GWEN_DIALOG, AO_OFX_SPECIAL_DIALOG)
 
 
 
-GWEN_DIALOG *AO_OfxSpecialDialog_new(AB_BANKING *ab) {
+GWEN_DIALOG *AO_OfxSpecialDialog_new(AB_PROVIDER *pro) {
   GWEN_DIALOG *dlg;
   AO_OFX_SPECIAL_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -74,7 +74,8 @@ GWEN_DIALOG *AO_OfxSpecialDialog_new(AB_BANKING *ab) {
   }
   GWEN_Buffer_free(fbuf);
 
-  xdlg->banking=ab;
+  xdlg->provider=pro;
+  xdlg->banking=AB_Provider_GetBanking(pro);
 
   /* preset */
   xdlg->httpVMajor=1;

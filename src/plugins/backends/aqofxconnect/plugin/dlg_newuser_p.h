@@ -18,6 +18,7 @@
 
 typedef struct AO_NEWUSER_DIALOG AO_NEWUSER_DIALOG;
 struct AO_NEWUSER_DIALOG {
+  AB_PROVIDER *provider;
   AB_BANKING *banking;
 
   char *userName;

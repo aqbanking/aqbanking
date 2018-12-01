@@ -51,7 +51,6 @@ int AO_Account_ReadFromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
   AO_ACCOUNT *ae;
   GWEN_DB_NODE *dbP;
   int rv;
-  const char *s;
   AB_PROVIDER *pro;
 
   assert(a);

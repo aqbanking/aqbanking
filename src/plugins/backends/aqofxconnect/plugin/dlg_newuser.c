@@ -52,7 +52,7 @@ GWEN_INHERIT(GWEN_DIALOG, AO_NEWUSER_DIALOG)
 
 
 
-GWEN_DIALOG *AO_NewUserDialog_new(AB_BANKING *ab) {
+GWEN_DIALOG *AO_NewUserDialog_new(AB_PROVIDER *pro) {
   GWEN_DIALOG *dlg;
   AO_NEWUSER_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -79,14 +79,15 @@ GWEN_DIALOG *AO_NewUserDialog_new(AB_BANKING *ab) {
   /* read dialog from dialog description file */
   rv=GWEN_Dialog_ReadXmlFile(dlg, GWEN_Buffer_GetStart(fbuf));
   if (rv<0) {
-    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d).", rv);
+    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(fbuf);
     GWEN_Dialog_free(dlg);
     return NULL;
   }
   GWEN_Buffer_free(fbuf);
 
-  xdlg->banking=ab;
+  xdlg->provider=pro;
+  xdlg->banking=AB_Provider_GetBanking(pro);
 
   /* preset */
   xdlg->httpVMajor=1;
@@ -507,18 +508,13 @@ void AO_NewUserDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 void AO_NewUserDialog_Init(GWEN_DIALOG *dlg) {
   AO_NEWUSER_DIALOG *xdlg;
-  AB_PROVIDER *pro;
   GWEN_DB_NODE *dbPrefs;
   int i;
+  const AO_APPINFO *ai;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AO_NEWUSER_DIALOG, dlg);
   assert(xdlg);
-
-  pro=AB_Banking_GetProvider(xdlg->banking, "aqofxconnect");
-  if (pro==NULL) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Could not find backend, maybe some plugins are not installed?");
-  }
 
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
@@ -604,26 +600,23 @@ void AO_NewUserDialog_Init(GWEN_DIALOG *dlg) {
 
   GWEN_Dialog_SetIntProperty(dlg, "wiz_app_combo", GWEN_DialogProperty_ClearValues, 0, 0, 0);
   GWEN_Dialog_SetCharProperty(dlg, "wiz_app_combo", GWEN_DialogProperty_AddValue, 0, I18N("-- select --"), 0);
-  if (pro) {
-    const AO_APPINFO *ai;
 
-    ai=AO_Provider_GetAppInfos(pro);
-    if (ai) {
-      const AO_APPINFO *first;
+  ai=AO_Provider_GetAppInfos(xdlg->provider);
+  if (ai) {
+    const AO_APPINFO *first;
 
-      first=ai;
-      while(ai->appName) {
-        GWEN_Dialog_SetCharProperty(dlg, "wiz_app_combo", GWEN_DialogProperty_AddValue, 0, I18N(ai->appName), 0);
-        ai++;
-      }
+    first=ai;
+    while(ai->appName) {
+      GWEN_Dialog_SetCharProperty(dlg, "wiz_app_combo", GWEN_DialogProperty_AddValue, 0, I18N(ai->appName), 0);
+      ai++;
+    }
 
-      if (first->appName) {
-        GWEN_Dialog_SetIntProperty(dlg, "wiz_app_combo", GWEN_DialogProperty_Value, 0, 1, 0);
-        if (first->appId)
-          GWEN_Dialog_SetCharProperty(dlg, "wiz_appid_edit", GWEN_DialogProperty_Value, 0, first->appId, 0);
-        if (first->appVer)
-          GWEN_Dialog_SetCharProperty(dlg, "wiz_appver_edit", GWEN_DialogProperty_Value, 0, first->appVer, 0);
-      }
+    if (first->appName) {
+      GWEN_Dialog_SetIntProperty(dlg, "wiz_app_combo", GWEN_DialogProperty_Value, 0, 1, 0);
+      if (first->appId)
+        GWEN_Dialog_SetCharProperty(dlg, "wiz_appid_edit", GWEN_DialogProperty_Value, 0, first->appId, 0);
+      if (first->appVer)
+        GWEN_Dialog_SetCharProperty(dlg, "wiz_appver_edit", GWEN_DialogProperty_Value, 0, first->appVer, 0);
     }
   }
 
@@ -908,22 +901,14 @@ int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
   AB_USER *u;
   int rv;
   uint32_t pid;
-  AB_PROVIDER *pro;
 
   DBG_ERROR(0, "Doit");
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AO_NEWUSER_DIALOG, dlg);
   assert(xdlg);
 
-  pro=AB_Banking_GetProvider(xdlg->banking, "aqofxconnect");
-  if (pro==NULL) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Could not find backend, maybe some plugins are not installed?");
-    // TODO: show error message
-    return GWEN_DialogEvent_ResultHandled;
-  }
-
   DBG_ERROR(0, "Creating user");
-  u=AB_Banking_CreateUser(xdlg->banking, "aqofxconnect");
+  u=AB_Provider_CreateUserObject(xdlg->provider);
   if (u==NULL) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Could not create user, maybe backend missing?");
     // TODO: show error message
@@ -954,7 +939,7 @@ int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
   AO_User_SetHttpVMinor(u, xdlg->httpVMinor);
 
   DBG_ERROR(0, "Adding user");
-  rv=AB_Banking_AddUser(xdlg->banking, u);
+  rv=AO_Provider_AddUser(xdlg->provider, u);
   if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Could not add user (%d)", rv);
     AB_User_free(u);
@@ -971,13 +956,13 @@ int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
 			     0);
   /* lock new user */
   DBG_ERROR(0, "Locking user");
-  rv=AB_Banking_BeginExclUseUser(xdlg->banking, u);
+  rv=AB_Provider_BeginExclUseUser(xdlg->provider, u);
   if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Could not lock user (%d)", rv);
     GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Unable to lock users"));
-    AB_Banking_DeleteUser(xdlg->banking, u);
+    AO_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -985,20 +970,20 @@ int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
   GWEN_Gui_ProgressLog(pid,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Retrieving SSL certificate"));
-  rv=AO_Provider_GetCert(pro, u);
+  rv=AO_Provider_GetCert(xdlg->provider, u);
   if (rv<0) {
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
-    AB_Banking_DeleteUser(xdlg->banking, u);
+    AO_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
 
   rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
   if (rv==GWEN_ERROR_USER_ABORTED) {
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
-    AB_Banking_DeleteUser(xdlg->banking, u);
+    AO_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Aborted by user."));
@@ -1008,7 +993,7 @@ int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
 
   /* unlock user */
   DBG_ERROR(0, "Unlocking user");
-  rv=AB_Banking_EndExclUseUser(xdlg->banking, u, 0);
+  rv=AB_Provider_EndExclUseUser(xdlg->provider, u, 0);
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
 	     "Could not unlock user [%s] (%d)",
@@ -1017,8 +1002,8 @@ int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
 			  GWEN_LoggerLevel_Error,
 			  I18N("Could not unlock user %s (%d)"),
 			  AB_User_GetUserId(u), rv);
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
-    AB_Banking_DeleteUser(xdlg->banking, u);
+    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
+    AO_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -1044,15 +1029,32 @@ int AO_NewUserDialog_UndoIt(GWEN_DIALOG *dlg) {
 
   u=xdlg->user;
   if (u) {
-    AB_ACCOUNT *a;
+    AB_ACCOUNT_LIST *accountList;
+    int rv;
 
     /* delete all accounts created for this user */
-    while ( (a=AB_Banking_FindFirstAccountOfUser(xdlg->banking, u)) ) {
-      AB_Banking_DeleteAccount(xdlg->banking, a);
+    accountList=AB_Account_List_new();
+    rv=AB_Provider_ReadAccounts(xdlg->provider, accountList);
+    if (rv<0) {
+      DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
     }
+    else {
+      uint32_t uid;
+      AB_ACCOUNT *a;
+
+      uid=AB_User_GetUniqueId(u);
+      a=AB_Account_List_First(accountList);
+      while(a) {
+        AB_Account_List_Del(a);
+        if (AB_Account_GetUserId(a)==uid)
+          AO_Provider_DeleteAccount(xdlg->provider, AB_Account_GetUniqueId(a));
+        a=AB_Account_List_Next(a);
+      } /* while a */
+    }
+    AB_Account_List_free(accountList);
 
     /* delete the user itself */
-    AB_Banking_DeleteUser(xdlg->banking, u);
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     xdlg->user=NULL;
   }
   return GWEN_DialogEvent_ResultHandled;
@@ -1112,7 +1114,7 @@ int AO_NewUserDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AO_NEWUSER_DIALOG, dlg);
   assert(xdlg);
 
-  dlg2=AO_OfxSpecialDialog_new(xdlg->banking);
+  dlg2=AO_OfxSpecialDialog_new(xdlg->provider);
   if (dlg2==NULL) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
     return GWEN_DialogEvent_ResultHandled;
@@ -1231,35 +1233,27 @@ int AO_NewUserDialog_HandleActivatedBankSelect(GWEN_DIALOG *dlg) {
 
 int AO_NewUserDialog_HandleActivatedApp(GWEN_DIALOG *dlg) {
   AO_NEWUSER_DIALOG *xdlg;
-  AB_PROVIDER *pro;
+  int idx;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AO_NEWUSER_DIALOG, dlg);
   assert(xdlg);
 
-  pro=AB_Banking_GetProvider(xdlg->banking, "aqofxconnect");
-  if (pro==NULL) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Could not find backend, maybe some plugins are not installed?");
-    return GWEN_DialogEvent_ResultHandled;
-  }
-  else {
-    int idx;
 
-    idx=GWEN_Dialog_GetIntProperty(dlg, "wiz_app_combo", GWEN_DialogProperty_Value, 0, -1);
-    if (idx>0) {
-      const AO_APPINFO *ai;
+  idx=GWEN_Dialog_GetIntProperty(dlg, "wiz_app_combo", GWEN_DialogProperty_Value, 0, -1);
+  if (idx>0) {
+    const AO_APPINFO *ai;
 
-      ai=AO_Provider_GetAppInfos(pro);
-      if (ai) {
-        while(ai->appName && --idx) {
-          ai++;
-        }
-        if (ai->appName) {
-          if (ai->appId)
-            GWEN_Dialog_SetCharProperty(dlg, "wiz_appid_edit", GWEN_DialogProperty_Value, 0, ai->appId, 0);
-          if (ai->appVer)
-            GWEN_Dialog_SetCharProperty(dlg, "wiz_appver_edit", GWEN_DialogProperty_Value, 0, ai->appVer, 0);
-        }
+    ai=AO_Provider_GetAppInfos(xdlg->provider);
+    if (ai) {
+      while(ai->appName && --idx) {
+        ai++;
+      }
+      if (ai->appName) {
+        if (ai->appId)
+          GWEN_Dialog_SetCharProperty(dlg, "wiz_appid_edit", GWEN_DialogProperty_Value, 0, ai->appId, 0);
+        if (ai->appVer)
+          GWEN_Dialog_SetCharProperty(dlg, "wiz_appver_edit", GWEN_DialogProperty_Value, 0, ai->appVer, 0);
       }
     }
   }
@@ -1271,24 +1265,15 @@ int AO_NewUserDialog_HandleActivatedApp(GWEN_DIALOG *dlg) {
 
 int AO_NewUserDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg) {
   AO_NEWUSER_DIALOG *xdlg;
-  AB_PROVIDER *pro;
+  int rv;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AO_NEWUSER_DIALOG, dlg);
   assert(xdlg);
 
-  pro=AB_Banking_GetProvider(xdlg->banking, "aqofxconnect");
-  if (pro==NULL) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Could not find backend, maybe some plugins are not installed?");
-    return GWEN_DialogEvent_ResultHandled;
-  }
-  else {
-    int rv;
-
-    rv=AO_Provider_RequestAccounts(pro, xdlg->user, 1);
-    if (rv<0) {
-      DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here");
-    }
+  rv=AO_Provider_RequestAccounts(xdlg->provider, xdlg->user, 1);
+  if (rv<0) {
+    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here");
   }
 
   return GWEN_DialogEvent_ResultHandled;

@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Thu Aug 19 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -14,6 +14,7 @@
 
 #include <aqofxconnect/aqofxconnect.h>
 #include <aqbanking/banking.h>
+#include <aqbanking/user.h>
 
 #include <gwenhywfar/dialog.h>
 #include <gwenhywfar/db.h>
@@ -25,7 +26,7 @@ extern "C" {
 
 
 
-GWEN_DIALOG *AO_NewUserDialog_new(AB_BANKING *ab);
+GWEN_DIALOG *AO_NewUserDialog_new(AB_PROVIDER *pro);
 
 const char *AO_NewUserDialog_GetUserName(const GWEN_DIALOG *dlg);
 void AO_NewUserDialog_SetUserName(GWEN_DIALOG *dlg, const char *s);
