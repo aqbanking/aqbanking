@@ -26,7 +26,6 @@ struct AH_EDIT_USER_PINTAN_DIALOG {
   AB_USER *user;
   int doLock;
 
-  AB_COUNTRY_CONSTLIST2 *countryList;
   AH_TAN_METHOD_LIST *tanMethodList;
 };
 

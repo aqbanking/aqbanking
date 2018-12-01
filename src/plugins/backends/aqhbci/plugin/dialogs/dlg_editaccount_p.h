@@ -23,8 +23,6 @@ struct AH_EDIT_ACCOUNT_DIALOG {
 
   AB_ACCOUNT *account;
   int doLock;
-
-  AB_COUNTRY_CONSTLIST2 *countryList;
 };
 
 

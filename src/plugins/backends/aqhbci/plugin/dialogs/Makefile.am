@@ -29,17 +29,17 @@ noinst_HEADERS=\
 
 libaqhbci_dlgs_la_SOURCES=\
   dlg_edituserddv.c \
+  dlg_ddvcard_special.c \
   dlg_edituserpintan.c \
   dlg_edituserrdh.c \
   dlg_pintan.c \
   dlg_pintan_special.c \
-  dlg_newuser.c \
   dlg_ddvcard.c \
   dlg_zkacard.c \
-  dlg_ddvcard_special.c \
   dlg_newkeyfile.c \
   dlg_rdh_special.c \
   dlg_importkeyfile.c \
+  dlg_newuser.c \
   dlg_choose_usertype.c \
   dlg_editaccount.c
 

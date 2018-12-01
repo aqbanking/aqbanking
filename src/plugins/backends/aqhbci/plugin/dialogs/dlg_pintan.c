@@ -745,22 +745,14 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
   int rv;
   uint32_t pid;
   AB_IMEXPORTER_CONTEXT *ctx;
-  AB_PROVIDER *pro;
 
   DBG_NOTICE(0, "Doit");
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_PINTAN_DIALOG, dlg);
   assert(xdlg);
 
-  pro=AB_Banking_GetProvider(xdlg->banking, "aqhbci");
-  if (pro==NULL) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not find backend, maybe some plugins are not installed?");
-    // TODO: show error message
-    return GWEN_DialogEvent_ResultHandled;
-  }
-
   DBG_NOTICE(0, "Creating user");
-  u=AB_Banking_CreateUser(xdlg->banking, "aqhbci");
+  u=AB_Provider_CreateUserObject(xdlg->provider);
   if (u==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create user, maybe backend missing?");
     // TODO: show error message
@@ -796,7 +788,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
   AH_User_SetFlags(u, xdlg->flags);
 
   DBG_NOTICE(0, "Adding user");
-  rv=AB_Banking_AddUser(xdlg->banking, u);
+  rv=AH_Provider_AddUser(xdlg->provider, u);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not add user (%d)", rv);
     AB_User_free(u);
@@ -813,13 +805,13 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
 			     0);
   /* lock new user */
   DBG_NOTICE(0, "Locking user");
-  rv=AH_Provider_BeginExclUseUser(xdlg->provider, u);
+  rv=AB_Provider_BeginExclUseUser(xdlg->provider, u);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not lock user (%d)", rv);
     GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Unable to lock users"));
-    AB_Banking_DeleteUser(xdlg->banking, u);
+    AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -829,21 +821,21 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
   GWEN_Gui_ProgressLog(pid,
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Retrieving SSL certificate"));
-  rv=AH_Provider_GetCert(pro, u, 0, 1, 0);
+  rv=AH_Provider_GetCert(xdlg->provider, u, 0, 1, 0);
   if (rv<0) {
     // TODO: retry with SSLv3 if necessary
-    AH_Provider_EndExclUseUser(xdlg->provider, u, 1);
+    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_Banking_DeleteUser(xdlg->banking, u);
+    AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
 
   rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
   if (rv==GWEN_ERROR_USER_ABORTED) {
-    AH_Provider_EndExclUseUser(xdlg->provider, u, 1);
+    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_Banking_DeleteUser(xdlg->banking, u);
+    AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Aborted by user."));
@@ -857,12 +849,12 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Retrieving system id"));
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetSysId(pro, u, ctx, 0, 1, 0);
+  rv=AH_Provider_GetSysId(xdlg->provider, u, ctx, 0, 1, 0);
   if (rv<0) {
-    AH_Provider_EndExclUseUser(xdlg->provider, u, 1);
+    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     AB_ImExporterContext_free(ctx);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_Banking_DeleteUser(xdlg->banking, u);
+    AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -870,9 +862,9 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
 
   rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
   if (rv==GWEN_ERROR_USER_ABORTED) {
-    AH_Provider_EndExclUseUser(xdlg->provider, u, 1);
+    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_Banking_DeleteUser(xdlg->banking, u);
+    AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Aborted by user."));
@@ -886,12 +878,12 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
 		       GWEN_LoggerLevel_Notice,
 		       I18N("Retrieving account list"));
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetAccounts(pro, u, ctx, 0, 1, 0);
+  rv=AH_Provider_GetAccounts(xdlg->provider, u, ctx, 0, 1, 0);
   if (rv<0) {
     AH_Provider_EndExclUseUser(xdlg->provider, u, 1);
     AB_ImExporterContext_free(ctx);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_Banking_DeleteUser(xdlg->banking, u);
+    AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -901,7 +893,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
   if (rv==GWEN_ERROR_USER_ABORTED) {
     AH_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_Banking_DeleteUser(xdlg->banking, u);
+    AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Aborted by user."));
@@ -911,7 +903,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
 
   /* unlock user */
   DBG_NOTICE(0, "Unlocking user");
-  rv=AH_Provider_EndExclUseUser(xdlg->provider, u, 0);
+  rv=AB_Provider_EndExclUseUser(xdlg->provider, u, 0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
 	     "Could not unlock customer [%s] (%d)",
@@ -920,8 +912,8 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
 			  GWEN_LoggerLevel_Error,
 			  I18N("Could not unlock user %s (%d)"),
 			  AB_User_GetUserId(u), rv);
-    AH_Provider_EndExclUseUser(xdlg->provider, u, 1);
-    AB_Banking_DeleteUser(xdlg->banking, u);
+    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
+    AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -1096,7 +1088,7 @@ int AH_PinTanDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_PINTAN_DIALOG, dlg);
   assert(xdlg);
 
-  dlg2=AH_PinTanSpecialDialog_new(xdlg->banking);
+  dlg2=AH_PinTanSpecialDialog_new(xdlg->provider);
   if (dlg2==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create dialog");
     return GWEN_DialogEvent_ResultHandled;

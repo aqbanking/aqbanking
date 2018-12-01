@@ -14,6 +14,7 @@
 
 #include <aqhbci/aqhbci.h>
 #include <aqbanking/banking.h>
+#include <aqbanking/user.h>
 
 #include <gwenhywfar/dialog.h>
 #include <gwenhywfar/db.h>

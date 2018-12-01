@@ -1,5 +1,5 @@
 DIST_SUBDIRS=msglayer joblayer ajobs applayer banking dialogs
-SUBDIRS=msglayer joblayer ajobs applayer banking
+SUBDIRS=msglayer joblayer ajobs applayer banking dialogs
 
 AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 

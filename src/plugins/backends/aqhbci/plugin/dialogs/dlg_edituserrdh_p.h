@@ -25,8 +25,6 @@ struct AH_EDIT_USER_RDH_DIALOG {
 
   AB_USER *user;
   int doLock;
-
-  AB_COUNTRY_CONSTLIST2 *countryList;
 };
 
 

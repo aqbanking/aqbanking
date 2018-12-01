@@ -98,70 +98,6 @@ void GWENHYWFAR_CB AH_EditUserDdvDialog_FreeData(void *bp, void *p) {
 
 
 
-static int createCountryString(const AB_COUNTRY *c, GWEN_BUFFER *tbuf) {
-  const char *s;
-
-  s=AB_Country_GetLocalName(c);
-  if (s && *s) {
-    GWEN_Buffer_AppendString(tbuf, s);
-    s=AB_Country_GetCode(c);
-    if (s && *s) {
-      GWEN_Buffer_AppendString(tbuf, " (");
-      GWEN_Buffer_AppendString(tbuf, s);
-      GWEN_Buffer_AppendString(tbuf, ")");
-    }
-    return 0;
-  }
-  DBG_INFO(AQHBCI_LOGDOMAIN, "No local name");
-  return GWEN_ERROR_NO_DATA;
-}
-
-
-
-const AB_COUNTRY *AH_EditUserDdvDialog_GetCurrentCountry(GWEN_DIALOG *dlg) {
-  AH_EDIT_USER_DDV_DIALOG *xdlg;
-  int idx;
-
-  assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_DDV_DIALOG, dlg);
-  assert(xdlg);
-
-  idx=GWEN_Dialog_GetIntProperty(dlg, "countryCombo", GWEN_DialogProperty_Value, 0, -1);
-  if (idx>=0) {
-    const char *currentText;
-
-    currentText=GWEN_Dialog_GetCharProperty(dlg, "countryCombo", GWEN_DialogProperty_Value, idx, NULL);
-    if (currentText && *currentText && xdlg->countryList) {
-      AB_COUNTRY_CONSTLIST2_ITERATOR *it;
-
-      it=AB_Country_ConstList2_First(xdlg->countryList);
-      if (it) {
-	const AB_COUNTRY *c;
-	GWEN_BUFFER *tbuf;
-
-	tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	c=AB_Country_ConstList2Iterator_Data(it);
-	while(c) {
-	  if (createCountryString(c, tbuf)==0 &&
-	      strcasecmp(GWEN_Buffer_GetStart(tbuf), currentText)==0) {
-	    GWEN_Buffer_free(tbuf);
-	    AB_Country_ConstList2Iterator_free(it);
-            return c;
-	  }
-	  GWEN_Buffer_Reset(tbuf);
-	  c=AB_Country_ConstList2Iterator_Next(it);
-	}
-	GWEN_Buffer_free(tbuf);
-	AB_Country_ConstList2Iterator_free(it);
-      }
-    }
-  }
-
-  return NULL;
-}
-
-
-
 void AH_EditUserDdvDialog_Init(GWEN_DIALOG *dlg) {
   AH_EDIT_USER_DDV_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
@@ -176,76 +112,12 @@ void AH_EditUserDdvDialog_Init(GWEN_DIALOG *dlg) {
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   /* init */
-  xdlg->countryList=AB_Banking_ListCountriesByName(xdlg->banking, "*");
-
   GWEN_Dialog_SetCharProperty(dlg,
 			      "",
 			      GWEN_DialogProperty_Title,
 			      0,
 			      I18N("Edit User"),
 			      0);
-
-  /* setup country */
-  if (xdlg->countryList) {
-    AB_COUNTRY_CONSTLIST2_ITERATOR *it;
-    int idx=-1;
-    const char *selectedCountry;
-
-    selectedCountry=AB_User_GetCountry(xdlg->user);
-    it=AB_Country_ConstList2_First(xdlg->countryList);
-    if (it) {
-      const AB_COUNTRY *c;
-      GWEN_BUFFER *tbuf;
-      GWEN_STRINGLIST *sl;
-      GWEN_STRINGLISTENTRY *se;
-      int i=0;
-
-      sl=GWEN_StringList_new();
-      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-      c=AB_Country_ConstList2Iterator_Data(it);
-      while(c) {
-	GWEN_Buffer_AppendByte(tbuf, '1');
-	if (createCountryString(c, tbuf)==0) {
-	  const char *s;
-
-          s=AB_Country_GetCode(c);
-	  if (idx==-1 && selectedCountry && s && strcasecmp(s, selectedCountry)==0) {
-	    char *p;
-
-	    p=GWEN_Buffer_GetStart(tbuf);
-	    if (p)
-	      *p='0';
-	    idx=i;
-	  }
-	  GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(tbuf), 0, 1);
-          i++;
-	}
-        GWEN_Buffer_Reset(tbuf);
-	c=AB_Country_ConstList2Iterator_Next(it);
-      }
-      GWEN_Buffer_free(tbuf);
-      AB_Country_ConstList2Iterator_free(it);
-
-      GWEN_StringList_Sort(sl, 1, GWEN_StringList_SortModeNoCase);
-      idx=-1;
-      i=0;
-      se=GWEN_StringList_FirstEntry(sl);
-      while(se) {
-	const char *s;
-
-	s=GWEN_StringListEntry_Data(se);
-	if (*s=='0')
-          idx=i;
-	GWEN_Dialog_SetCharProperty(dlg, "countryCombo", GWEN_DialogProperty_AddValue, 0, s+1, 0);
-        i++;
-	se=GWEN_StringListEntry_Next(se);
-      }
-      GWEN_StringList_free(sl);
-    }
-    if (idx>=0)
-      /* chooses selected entry in combo box */
-      GWEN_Dialog_SetIntProperty(dlg, "countryCombo", GWEN_DialogProperty_Value, 0, idx, 0);
-  }
 
   s=AB_User_GetUserName(xdlg->user);
   GWEN_Dialog_SetCharProperty(dlg, "userNameEdit", GWEN_DialogProperty_Value, 0, s, 0);
@@ -313,7 +185,6 @@ static void removeAllSpaces(uint8_t *s) {
 int AH_EditUserDdvDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
   AH_EDIT_USER_DDV_DIALOG *xdlg;
   const char *s;
-  const AB_COUNTRY *c;
   int i;
 
   assert(dlg);
@@ -399,11 +270,8 @@ int AH_EditUserDdvDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
   }
 
   /*  get country */
-  c=AH_EditUserDdvDialog_GetCurrentCountry(dlg);
-  if (c) {
-    if (u)
-      AB_User_SetCountry(u, AB_Country_GetCode(c));
-  }
+  if (u)
+    AB_User_SetCountry(u, "de");
 
   i=GWEN_Dialog_GetIntProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_Value, 0, -1);
   switch(i) {
@@ -508,7 +376,7 @@ int AH_EditUserDdvDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
   if (xdlg->doLock) {
     int rv;
 
-    rv=AH_Provider_BeginExclUseUser(xdlg->provider, xdlg->user);
+    rv=AB_Provider_BeginExclUseUser(xdlg->provider, xdlg->user);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
@@ -529,7 +397,7 @@ int AH_EditUserDdvDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
   if (xdlg->doLock) {
     int rv;
 
-    rv=AH_Provider_EndExclUseUser(xdlg->provider, xdlg->user, 0);
+    rv=AB_Provider_EndExclUseUser(xdlg->provider, xdlg->user, 0);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
@@ -560,7 +428,7 @@ static int AH_EditUserDdvDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg) {
   assert(xdlg);
 
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetAccounts(AB_User_GetProvider(xdlg->user),
+  rv=AH_Provider_GetAccounts(xdlg->provider,
 			     xdlg->user,
 			     ctx,
 			     1,   /* withProgress */
