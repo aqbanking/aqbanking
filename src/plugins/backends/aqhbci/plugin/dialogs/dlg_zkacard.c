@@ -837,7 +837,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
     GWEN_Gui_ProgressLog2(pid,
 			  GWEN_LoggerLevel_Error,
 			  I18N("Unable to lock users (%d)"), rv);
-    AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
