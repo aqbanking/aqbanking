@@ -120,34 +120,6 @@ int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab,
 
 
 
-/**
- * Loads the given provider and initializes it.
- * Only after calling this function the provider can be used.
- * You need to call @ref AB_Banking_EndUseProvider() if you're done.
- *
- * @return 0 if ok, error code otherwise
- *
- * @param ab pointer to the AB_BANKING object (needs to be initialized, i.e. @ref AB_Banking_Init called).
- * @param modname (e.g. "aqhbci")
- */
-AQBANKING_API
-AB_PROVIDER *AB_Banking_BeginUseProvider(AB_BANKING *ab, const char *modname);
-
-/**
- * Call this as soon as the provider isn't actually needed anymore.
- * This probably unloads the plugin, at least it is deinitialized.
- *
- * @return 0 if ok, error code otherwise
- *
- * @param ab pointer to the AB_BANKING object (needs to be initialized, i.e. @ref AB_Banking_Init called).
- * @param pro pointer to provider object returned by @ref AB_Banking_BeginUseProvider
- *
- */
-AQBANKING_API
-int AB_Banking_EndUseProvider(AB_BANKING *ab, AB_PROVIDER *pro);
-
-
-
 
 /** @name Account Spec Management Functions
  *
