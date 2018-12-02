@@ -60,9 +60,7 @@ static AB_USER *AO_Provider_CreateUserObject(AB_PROVIDER *pro);
 
 
 static int AO_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB_TRANSACTION_LIMITS_LIST *tll);
-static int AO_Provider_AccountToAccountSpec(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC *as);
-static int AO_Provider_WriteAccountSpecForAccount(AB_PROVIDER *pro, const AB_ACCOUNT *acc);
-static int AO_Provider_CreateInitialAccountSpecs(AB_PROVIDER *pro);
+static int AO_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doLock);
 
 
 

@@ -129,7 +129,6 @@ int AB_Provider_AddUser(AB_PROVIDER *pro, AB_USER *u) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
-
   return 0;
 }
 
@@ -137,13 +136,43 @@ int AB_Provider_AddUser(AB_PROVIDER *pro, AB_USER *u) {
 
 int AB_Provider_DeleteUser(AB_PROVIDER *pro, uint32_t uid) {
   int rv;
+  AB_ACCOUNT_LIST *al;
+
+  al=AB_Account_List_new();
+  rv=AB_Provider_ReadAccounts(pro, al);
+  if (rv<0 && rv!=GWEN_ERROR_NOT_FOUND) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    AB_Account_List_free(al);
+    return rv;
+  }
+  else {
+    AB_ACCOUNT *a;
+    int cnt=0;
+
+    a=AB_Account_List_First(al);
+    while(a) {
+      if (AB_Account_GetUserId(a)==uid) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Account %lu still uses this user", (unsigned long int) AB_Account_GetUniqueId(a));
+        cnt++;
+      }
+      a=AB_Account_List_Next(a);
+    }
+    if (cnt>0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "%d accounts using this user",cnt);
+      AB_Account_List_free(al);
+      return GWEN_ERROR_INVALID;
+    }
+  }
+  AB_Account_List_free(al);
 
   rv=AB_Banking_Delete_UserConfig(AB_Provider_GetBanking(pro), uid);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
   }
-  return rv;
+  return 0;
 }
+
 
 
 

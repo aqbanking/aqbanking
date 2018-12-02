@@ -42,6 +42,11 @@ static GWEN_DIALOG *APY_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u)
 
 static int APY_Provider_ParseResponse(AB_PROVIDER *pro, const char *s, GWEN_DB_NODE *db);
 
+static int APY_Provider_ExecGetBal(AB_PROVIDER *pro,
+                                   AB_IMEXPORTER_ACCOUNTINFO *ai,
+                                   AB_USER *u,
+                                   AB_TRANSACTION *j);
+
 static int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
 				     AB_IMEXPORTER_ACCOUNTINFO *ai,
 				     AB_USER *u,

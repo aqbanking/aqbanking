@@ -41,7 +41,7 @@ int APY_Provider_UpdatePostInit(AB_PROVIDER *pro, uint32_t lastVersion, uint32_t
      * - create account spec objects
      */
     DBG_NOTICE(AQPAYPAL_LOGDOMAIN, "Creating account specs for accounts");
-    rv=APY_Provider_CreateInitialAccountSpecs(pro);
+    rv=AB_Provider_CreateInitialAccountSpecs(pro);
     if (rv<0) {
       DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
       return rv;

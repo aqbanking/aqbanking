@@ -113,6 +113,8 @@ AB_PROVIDER *AH_Provider_new(AB_BANKING *ab, const char *name){
   AB_Provider_SetCreateAccountObjectsFn(pro, AH_Provider_CreateAccountObject);
   AB_Provider_SetCreateUserObjectsFn(pro, AH_Provider_CreateUserObject);
 
+  AB_Provider_SetUpdateAccountSpecFn(pro, AH_Provider_UpdateAccountSpec);
+
   AB_Provider_AddFlags(pro,
 		       AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG |
 		       AB_PROVIDER_FLAGS_HAS_EDITUSER_DIALOG |

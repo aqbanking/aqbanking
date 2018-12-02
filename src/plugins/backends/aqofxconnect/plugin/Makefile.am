@@ -75,7 +75,6 @@ aqofxconnect_la_LDFLAGS = -no-undefined -module -avoid-version
 
 EXTRA_DIST= $(dlgdata_DATA) $(dlgimage_DATA) \
   aqofxconnect.xml.in \
-  provider_account.c \
   provider_accspec.c \
   provider_cmd_accinfo.c \
   provider_cmd_stm.c \

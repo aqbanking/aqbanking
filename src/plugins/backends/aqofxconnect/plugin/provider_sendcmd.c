@@ -488,7 +488,7 @@ void AO_Provider__AddOrModifyAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a
       AB_Account_SetUserId(storedAcc, AB_User_GetUniqueId(u));
 
       /* update and write account spec */
-      rv=AO_Provider_WriteAccountSpecForAccount(pro, storedAcc);
+      rv=AB_Provider_WriteAccountSpecForAccount(pro, storedAcc, 0); /* don't lock, account already is locked */
       if (rv<0) {
         DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
       }

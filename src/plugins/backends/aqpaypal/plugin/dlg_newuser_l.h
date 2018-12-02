@@ -26,7 +26,7 @@ extern "C" {
 
 
 
-GWEN_DIALOG *APY_NewUserDialog_new(AB_BANKING *ab);
+GWEN_DIALOG *APY_NewUserDialog_new(AB_PROVIDER *pro);
 
 const char *APY_NewUserDialog_GetUserName(const GWEN_DIALOG *dlg);
 void APY_NewUserDialog_SetUserName(GWEN_DIALOG *dlg, const char *s);

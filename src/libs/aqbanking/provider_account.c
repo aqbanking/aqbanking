@@ -134,27 +134,45 @@ int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a) {
   uint32_t uid;
   int rv;
 
+  /* add account */
   uid=AB_Banking_GetNamedUniqueId(AB_Provider_GetBanking(pro), "account", 1); /* startAtStdUniqueId=1 */
-  AB_Account_SetUniqueId(a, uid);
   rv=AB_Provider_WriteAccount(pro, uid, 1, 1, a); /* lock, unlock */
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+  /* write account spec */
+  rv=AB_Provider_WriteAccountSpecForAccount(pro, a);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
   return 0;
+
 }
 
 
 
 int AB_Provider_DeleteAccount(AB_PROVIDER *pro, uint32_t uid) {
-  int rv;
+  int rv1;
+  int rv2;
 
-  rv=AB_Banking_Delete_AccountConfig(AB_Provider_GetBanking(pro), uid);
-  if (rv<0) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+  rv1=AB_Banking_DeleteAccountSpec(AB_Provider_GetBanking(pro), uid);
+  if (rv1<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv1);
   }
-  return rv;
+
+  rv2=AB_Banking_Delete_AccountConfig(AB_Provider_GetBanking(pro), uid);
+  if (rv2<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv2);
+  }
+
+  if (rv1>0)
+    return rv1;
+  if (rv2>0)
+    return rv2;
+  return 0;
 }
 
 

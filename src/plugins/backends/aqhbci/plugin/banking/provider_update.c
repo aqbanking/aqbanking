@@ -45,7 +45,7 @@ int AH_Provider_UpdatePostInit(AB_PROVIDER *pro,
      * - create account spec objects
      */
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating account specs for accounts");
-    rv=AH_Provider_CreateInitialAccountSpecs(pro);
+    rv=AB_Provider_CreateInitialAccountSpecs(pro);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;

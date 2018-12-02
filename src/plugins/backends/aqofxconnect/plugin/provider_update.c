@@ -38,7 +38,7 @@ int AO_Provider_UpdatePostInit(AB_PROVIDER *pro, uint32_t lastVersion, uint32_t 
      * - create account spec objects
      */
     DBG_NOTICE(AQOFXCONNECT_LOGDOMAIN, "Creating account specs for accounts");
-    rv=AO_Provider_CreateInitialAccountSpecs(pro);
+    rv=AB_Provider_CreateInitialAccountSpecs(pro);
     if (rv<0) {
       DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
       return rv;

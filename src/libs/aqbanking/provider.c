@@ -245,6 +245,13 @@ void AB_Provider_SetCreateUserObjectsFn(AB_PROVIDER *pro, AB_PROVIDER_CREATEUSER
 
 
 
+void AB_Provider_SetUpdateAccountSpecFn(AB_PROVIDER *pro, AB_PROVIDER_UPDATEACCOUNTSPEC_FN f) {
+  assert(pro);
+  pro->updateAccountSpecFn=f;
+}
+
+
+
 
 
 
@@ -265,6 +272,17 @@ AB_USER *AB_Provider_CreateUserObject(AB_PROVIDER *pro) {
   else
     return NULL;
 }
+
+
+
+int AB_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as) {
+  assert(pro);
+  if (pro->updateAccountSpecFn)
+    return pro->updateAccountSpecFn(pro, as);
+  else
+    return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
 
 
 
@@ -416,6 +434,7 @@ void AB_Plugin_Provider_SetFactoryFn(GWEN_PLUGIN *pl, AB_PLUGIN_PROVIDER_FACTORY
 
 
 #include "provider_account.c"
+#include "provider_accspec.c"
 #include "provider_user.c"
 #include "provider_queues.c"
 

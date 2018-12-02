@@ -68,7 +68,10 @@ typedef int (*AB_PROVIDER_SENDCOMMANDS_FN)(AB_PROVIDER *pro, AB_PROVIDERQUEUE *p
 
 
 typedef AB_ACCOUNT* (*AB_PROVIDER_CREATEACCOUNTOBJECT_FN)(AB_PROVIDER *pro);
+
 typedef AB_USER* (*AB_PROVIDER_CREATEUSEROBJECT_FN)(AB_PROVIDER *pro);
+
+typedef int (*AB_PROVIDER_UPDATEACCOUNTSPEC_FN)(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doLock);
 
 /*@}*/
 
@@ -137,6 +140,7 @@ AQBANKING_API int AB_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *p
  * Create an empty AB_ACCOUNT object.
  * This function only needs to be implemented by backends which use AB_ACCOUNT objects internally and which
  * want to use AqBankings convenience functions for loading and saving AB_ACCOUNT objects.
+ *
  * @return AB_ACCOUNT object created, NULL on error
  * @param pro provider which is to create the object
  */
@@ -147,10 +151,23 @@ AQBANKING_API AB_ACCOUNT *AB_Provider_CreateAccountObject(AB_PROVIDER *pro);
  * Create an empty AB_USER object.
  * This function only needs to be implemented by backends which use AB_USER objects internally and which
  * want to use AqBankings convenience functions for loading and saving AB_USER objects.
+ *
  * @return AB_USER object created, NULL on error
  * @param pro provider which is to create the object
  */
 AQBANKING_API AB_USER *AB_Provider_CreateUserObject(AB_PROVIDER *pro);
+
+
+/**
+ * Update the given account spec.
+ *
+ * This callback gives a provider the means to set the transaction limits and other stuff.
+ * This function only needs to be implemented in the backend if it has some specials things to
+ * setup (like transaction limits).
+ *
+ * @return 0 if okay, error code otherwise
+ */
+AQBANKING_API int AB_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doLock);
 
 /*@}*/
 
@@ -207,6 +224,15 @@ AQBANKING_API void AB_Provider_SetInitFn(AB_PROVIDER *pro, AB_PROVIDER_INIT_FN f
 
 AQBANKING_API void AB_Provider_SetFiniFn(AB_PROVIDER *pro, AB_PROVIDER_FINI_FN f);
 
+AQBANKING_API void AB_Provider_SetSendCommandsFn(AB_PROVIDER *pro, AB_PROVIDER_SENDCOMMANDS_FN f);
+
+AQBANKING_API void AB_Provider_SetCreateAccountObjectsFn(AB_PROVIDER *pro, AB_PROVIDER_CREATEACCOUNTOBJECT_FN f);
+
+AQBANKING_API void AB_Provider_SetCreateUserObjectsFn(AB_PROVIDER *pro, AB_PROVIDER_CREATEUSEROBJECT_FN f);
+
+AQBANKING_API void AB_Provider_SetUpdateAccountSpecFn(AB_PROVIDER *pro, AB_PROVIDER_UPDATEACCOUNTSPEC_FN f);
+
+
 AQBANKING_API void AB_Provider_SetGetNewUserDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_NEWUSER_DIALOG_FN f);
 
 AQBANKING_API void AB_Provider_SetGetEditUserDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_EDITUSER_DIALOG_FN f);
@@ -217,11 +243,6 @@ AQBANKING_API void AB_Provider_SetGetEditAccountDialogFn(AB_PROVIDER *pro, AB_PR
 
 AQBANKING_API void AB_Provider_SetGetUserTypeDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_USERTYPE_DIALOG_FN f);
 
-AQBANKING_API void AB_Provider_SetSendCommandsFn(AB_PROVIDER *pro, AB_PROVIDER_SENDCOMMANDS_FN f);
-
-AQBANKING_API void AB_Provider_SetCreateAccountObjectsFn(AB_PROVIDER *pro, AB_PROVIDER_CREATEACCOUNTOBJECT_FN f);
-
-AQBANKING_API void AB_Provider_SetCreateUserObjectsFn(AB_PROVIDER *pro, AB_PROVIDER_CREATEUSEROBJECT_FN f);
 /*@}*/
 
 
@@ -296,8 +317,8 @@ AQBANKING_API int AB_Provider_WriteAccount(AB_PROVIDER *pro, uint32_t uid, int d
 /**
  * Add an account to the configuration. Assigns a unique id to the new account.
  *
- * Please note that you have to also create an AB_ACCOUNT_SPEC object to make the account available to
- * applications.
+ * Also creates and adds a AB_ACCOUNT_SPEC object for applications.
+ * Internally calls the callback function @ref AB_Provider_UpdateAccountSpec().
  *
  * @return 0 on success, error code otherwise
  * @param pro provider (THIS in C++ speak)
@@ -310,8 +331,7 @@ AQBANKING_API int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);
 /**
  * Remove an account from the configuration.
  *
- * Please note that you have to also have to remove the matching AB_ACCOUNT_SPEC object to not confuse
- * applications about the accounts available.
+ * Also removes the corresponding AB_ACCOUNT_SPEC object for applications.
  *
  * @return 0 on success, error code otherwise
  * @param pro provider (THIS in C++ speak)
@@ -450,6 +470,23 @@ AQBANKING_API int AB_Provider_EndExclUseUser(AB_PROVIDER *pro, AB_USER *u, int a
 
 
 /*@}*/
+
+
+
+/** @name Account Spec Management Functions
+ *
+ */
+/*@{*/
+
+
+AQBANKING_API int AB_Provider_AccountToAccountSpec(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC *as, int doLock);
+AQBANKING_API int AB_Provider_WriteAccountSpecForAccount(AB_PROVIDER *pro, const AB_ACCOUNT *acc, int doLock);
+AQBANKING_API int AB_Provider_CreateInitialAccountSpecs(AB_PROVIDER *pro);
+
+
+/*@}*/
+
+
 
 
 

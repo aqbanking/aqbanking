@@ -21,7 +21,7 @@ GWEN_DIALOG *APY_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
   xp=GWEN_INHERIT_GETDATA(AB_PROVIDER, APY_PROVIDER, pro);
   assert(xp);
 
-  dlg=APY_NewUserDialog_new(AB_Provider_GetBanking(pro));
+  dlg=APY_NewUserDialog_new(pro);
   if (dlg==NULL) {
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (no dialog)");
     return NULL;
@@ -40,7 +40,7 @@ GWEN_DIALOG *APY_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
   xp=GWEN_INHERIT_GETDATA(AB_PROVIDER, APY_PROVIDER, pro);
   assert(xp);
 
-  dlg=APY_EditUserDialog_new(AB_Provider_GetBanking(pro), u, 1);
+  dlg=APY_EditUserDialog_new(pro, u, 1);
   if (dlg==NULL) {
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (no dialog)");
     return NULL;

@@ -45,10 +45,6 @@ AQOFXCONNECT_API int AO_Provider_AddAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACC
 AQOFXCONNECT_API int AO_Provider_DeleteAccount(AB_PROVIDER *pro, uint32_t uid);
 
 
-AQOFXCONNECT_API int AO_Provider_AddUser(AB_PROVIDER *pro, AB_USER *u);
-AQOFXCONNECT_API int AO_Provider_DeleteUser(AB_PROVIDER *pro, uint32_t uid);
-
-
 #ifdef __cplusplus
 }
 #endif

@@ -313,6 +313,7 @@ int APY_Provider_ParseResponse(AB_PROVIDER *pro, const char *s, GWEN_DB_NODE *db
 }
 
 
+#include "provider_accspec.c"
 #include "provider_update.c"
 #include "provider_credentials.c"
 #include "provider_dialogs.c"

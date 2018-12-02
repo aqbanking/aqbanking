@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Apr 12 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -18,6 +18,7 @@
 
 typedef struct APY_NEWUSER_DIALOG APY_NEWUSER_DIALOG;
 struct APY_NEWUSER_DIALOG {
+  AB_PROVIDER *provider;
   AB_BANKING *banking;
 
   char *userName;

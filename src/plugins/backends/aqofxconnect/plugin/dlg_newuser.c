@@ -939,7 +939,7 @@ int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
   AO_User_SetHttpVMinor(u, xdlg->httpVMinor);
 
   DBG_ERROR(0, "Adding user");
-  rv=AO_Provider_AddUser(xdlg->provider, u);
+  rv=AB_Provider_AddUser(xdlg->provider, u);
   if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Could not add user (%d)", rv);
     AB_User_free(u);
@@ -962,7 +962,7 @@ int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
     GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Unable to lock users"));
-    AO_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -974,7 +974,7 @@ int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
   if (rv<0) {
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
-    AO_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -983,7 +983,7 @@ int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
   if (rv==GWEN_ERROR_USER_ABORTED) {
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
-    AO_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Aborted by user."));
@@ -1003,7 +1003,7 @@ int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
 			  I18N("Could not unlock user %s (%d)"),
 			  AB_User_GetUserId(u), rv);
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
-    AO_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }

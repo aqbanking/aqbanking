@@ -113,6 +113,7 @@ AB_PROVIDER *AO_Provider_new(AB_BANKING *ab){
   AB_Provider_SetCreateAccountObjectsFn(pro, AO_Provider_CreateAccountObject);
   AB_Provider_SetCreateUserObjectsFn(pro, AO_Provider_CreateUserObject);
 
+  AB_Provider_SetUpdateAccountSpecFn(pro, AO_Provider_UpdateAccountSpec);
 
   AB_Provider_SetGetNewUserDialogFn(pro, AO_Provider_GetNewUserDialog);
   AB_Provider_AddFlags(pro, AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG);
@@ -367,8 +368,6 @@ int AO_Provider_GetCert(AB_PROVIDER *pro, AB_USER *u) {
 
 
 #include "provider_accspec.c"
-#include "provider_account.c"
-#include "provider_user.c"
 #include "provider_network.c"
 #include "provider_cmd_accinfo.c"
 #include "provider_cmd_stm.c"

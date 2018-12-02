@@ -43,7 +43,7 @@ GWEN_INHERIT(GWEN_DIALOG, APY_EDITUSER_DIALOG)
 
 
 
-GWEN_DIALOG *APY_EditUserDialog_new(AB_BANKING *ab, AB_USER *u, int doLock) {
+GWEN_DIALOG *APY_EditUserDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock) {
   GWEN_DIALOG *dlg;
   APY_EDITUSER_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -52,8 +52,7 @@ GWEN_DIALOG *APY_EditUserDialog_new(AB_BANKING *ab, AB_USER *u, int doLock) {
 
   dlg=GWEN_Dialog_new("apy_edituser");
   GWEN_NEW_OBJECT(APY_EDITUSER_DIALOG, xdlg);
-  GWEN_INHERIT_SETDATA(GWEN_DIALOG, APY_EDITUSER_DIALOG, dlg, xdlg,
-		       APY_EditUserDialog_FreeData);
+  GWEN_INHERIT_SETDATA(GWEN_DIALOG, APY_EDITUSER_DIALOG, dlg, xdlg, APY_EditUserDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, APY_EditUserDialog_SignalHandler);
 
   /* get path of dialog description file */
@@ -78,7 +77,8 @@ GWEN_DIALOG *APY_EditUserDialog_new(AB_BANKING *ab, AB_USER *u, int doLock) {
   }
   GWEN_Buffer_free(fbuf);
 
-  xdlg->banking=ab;
+  xdlg->provider=pro;
+  xdlg->banking=AB_Provider_GetBanking(pro);
 
   /* preset */
   xdlg->doLock=doLock;
@@ -501,7 +501,7 @@ int APY_EditUserDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
   if (xdlg->doLock) {
     int rv;
 
-    rv=AB_Banking_BeginExclUseUser(xdlg->banking, xdlg->user);
+    rv=AB_Provider_BeginExclUseUser(xdlg->provider, xdlg->user);
     if (rv<0) {
       DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
@@ -527,7 +527,7 @@ int APY_EditUserDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
   if (xdlg->doLock) {
     int rv;
 
-    rv=AB_Banking_EndExclUseUser(xdlg->banking, xdlg->user, 0);
+    rv=AB_Provider_EndExclUseUser(xdlg->provider, xdlg->user, 0);
     if (rv<0) {
       DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |

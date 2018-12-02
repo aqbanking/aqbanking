@@ -20,6 +20,12 @@ int APY_Provider_ReadUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, GWEN_BUF
 int APY_Provider_WriteUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, const char *sec);
 
 
+int APY_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);
+int APY_Provider_DeleteAccount(AB_PROVIDER *pro, uint32_t uid);
+
+
+
+
 #endif
 
 

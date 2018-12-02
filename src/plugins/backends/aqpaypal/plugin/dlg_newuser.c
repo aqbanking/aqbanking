@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Apr 12 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -48,7 +48,7 @@ GWEN_INHERIT(GWEN_DIALOG, APY_NEWUSER_DIALOG)
 
 
 
-GWEN_DIALOG *APY_NewUserDialog_new(AB_BANKING *ab) {
+GWEN_DIALOG *APY_NewUserDialog_new(AB_PROVIDER *pro) {
   GWEN_DIALOG *dlg;
   APY_NEWUSER_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -56,8 +56,7 @@ GWEN_DIALOG *APY_NewUserDialog_new(AB_BANKING *ab) {
 
   dlg=GWEN_Dialog_new("apy_newuser");
   GWEN_NEW_OBJECT(APY_NEWUSER_DIALOG, xdlg);
-  GWEN_INHERIT_SETDATA(GWEN_DIALOG, APY_NEWUSER_DIALOG, dlg, xdlg,
-		       APY_NewUserDialog_FreeData);
+  GWEN_INHERIT_SETDATA(GWEN_DIALOG, APY_NEWUSER_DIALOG, dlg, xdlg, APY_NewUserDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, APY_NewUserDialog_SignalHandler);
 
   /* get path of dialog description file */
@@ -82,7 +81,8 @@ GWEN_DIALOG *APY_NewUserDialog_new(AB_BANKING *ab) {
   }
   GWEN_Buffer_free(fbuf);
 
-  xdlg->banking=ab;
+  xdlg->provider=pro;
+  xdlg->banking=AB_Provider_GetBanking(pro);
 
   /* preset */
   xdlg->httpVMajor=1;
@@ -106,6 +106,7 @@ void GWENHYWFAR_CB APY_NewUserDialog_FreeData(void *bp, void *p) {
   free(xdlg->userName);
   free(xdlg->userId);
   free(xdlg->url);
+  AB_User_free(xdlg->user);
   GWEN_FREE_OBJECT(xdlg);
 }
 
@@ -674,22 +675,14 @@ int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
   AB_USER *u;
   int rv;
   uint32_t pid;
-  AB_PROVIDER *pro;
 
   DBG_INFO(0, "Doit");
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, APY_NEWUSER_DIALOG, dlg);
   assert(xdlg);
 
-  pro=AB_Banking_GetProvider(xdlg->banking, "aqpaypal");
-  if (pro==NULL) {
-    DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Could not find backend, maybe some plugins are not installed?");
-    // TODO: show error message
-    return GWEN_DialogEvent_ResultHandled;
-  }
-
   DBG_INFO(0, "Creating user");
-  u=AB_Banking_CreateUser(xdlg->banking, "aqpaypal");
+  u=AB_Provider_CreateUserObject(xdlg->provider);
   if (u==NULL) {
     DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Could not create user, maybe backend missing?");
     // TODO: show error message
@@ -708,7 +701,7 @@ int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
   APY_User_SetHttpVMinor(u, xdlg->httpVMinor);
 
   DBG_INFO(0, "Adding user");
-  rv=AB_Banking_AddUser(xdlg->banking, u);
+  rv=APY_Provider_AddUser(xdlg->provider, u);
   if (rv<0) {
     DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Could not add user (%d)", rv);
     AB_User_free(u);
@@ -725,13 +718,13 @@ int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
 			     0);
   /* lock new user */
   DBG_INFO(0, "Locking user");
-  rv=AB_Banking_BeginExclUseUser(xdlg->banking, u);
+  rv=AB_Provider_BeginExclUseUser(xdlg->provider, u);
   if (rv<0) {
     DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Could not lock user (%d)", rv);
     GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Unable to lock users"));
-    AB_Banking_DeleteUser(xdlg->banking, u);
+    APY_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -764,17 +757,13 @@ int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
   }
 #endif
 
-  GWEN_Gui_ProgressLog(pid,
-		       GWEN_LoggerLevel_Notice,
-		       I18N("Creating API credentials file"));
+  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice, I18N("Creating API credentials file"));
   rv=APY_User_SetApiSecrets(u, xdlg->apiPassword, xdlg->apiSignature, xdlg->apiUserId);
   if (rv<0) {
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
-    AB_Banking_DeleteUser(xdlg->banking, u);
-    GWEN_Gui_ProgressLog(pid,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Aborted by user."));
+    APY_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+    GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Error, I18N("Aborted by user."));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -782,7 +771,7 @@ int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
 
   /* unlock user */
   DBG_INFO(0, "Unlocking user");
-  rv=AB_Banking_EndExclUseUser(xdlg->banking, u, 0);
+  rv=AB_Provider_EndExclUseUser(xdlg->provider, u, 0);
   if (rv<0) {
     DBG_INFO(AQPAYPAL_LOGDOMAIN,
 	     "Could not unlock user [%s] (%d)",
@@ -792,7 +781,7 @@ int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
 			  I18N("Could not unlock user %s (%d)"),
 			  AB_User_GetUserId(u), rv);
     AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
-    AB_Banking_DeleteUser(xdlg->banking, u);
+    APY_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -802,7 +791,7 @@ int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
     int rv;
     static char accountname[256];
 
-    account=AB_Banking_CreateAccount(xdlg->banking, APY_PROVIDER_NAME);
+    account=AB_Provider_CreateAccountObject(xdlg->provider);
     assert(account);
 #if 0
     AB_User_SetUserName(u, xdlg->userName);
@@ -815,14 +804,13 @@ int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
     strcpy(accountname, "PP ");
     strcat(accountname, AB_User_GetUserName(u));
     AB_Account_SetAccountName(account, accountname);
-    AB_Account_SetUser(account, u);
-    AB_Account_SetSelectedUser(account, u);
+    AB_Account_SetUserId(account, AB_User_GetUniqueId(u));
 
-    rv=AB_Banking_AddAccount(xdlg->banking, account);
+    rv=APY_Provider_AddAccount(xdlg->banking, account);
     if (rv<0) {
       DBG_INFO(AQPAYPAL_LOGDOMAIN, "Error adding account (%d)", rv);
       AB_Account_free(account);
-      AB_Banking_DeleteUser(xdlg->banking, u);
+      APY_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
       GWEN_Gui_ProgressEnd(pid);
       return GWEN_DialogEvent_ResultHandled;
     }
