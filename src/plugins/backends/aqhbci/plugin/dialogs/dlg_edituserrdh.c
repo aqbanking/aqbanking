@@ -460,12 +460,12 @@ int AH_EditUserRdhDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
     }
   }
 
-  AB_EditUserRdhDialog_fromGui(dlg, xdlg->user, 1);
+  AH_EditUserRdhDialog_fromGui(dlg, xdlg->user, 1);
 
   if (xdlg->doLock) {
     int rv;
 
-    rv=AH_Provider_EndExclUseUser(xdlg->provider, xdlg->user, 0);
+    rv=AB_Provider_EndExclUseUser(xdlg->provider, xdlg->user, 0);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |

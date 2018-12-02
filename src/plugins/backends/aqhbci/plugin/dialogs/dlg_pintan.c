@@ -880,7 +880,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
   ctx=AB_ImExporterContext_new();
   rv=AH_Provider_GetAccounts(xdlg->provider, u, ctx, 0, 1, 0);
   if (rv<0) {
-    AH_Provider_EndExclUseUser(xdlg->provider, u, 1);
+    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     AB_ImExporterContext_free(ctx);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
@@ -891,7 +891,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
 
   rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
   if (rv==GWEN_ERROR_USER_ABORTED) {
-    AH_Provider_EndExclUseUser(xdlg->provider, u, 1);
+    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressLog(pid,
