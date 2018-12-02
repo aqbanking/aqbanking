@@ -28,33 +28,27 @@ GWEN_INHERIT(AB_USER, APY_USER)
 
 
 
-void APY_User_Extend(AB_USER *u, AB_PROVIDER *pro,
-		     AB_PROVIDER_EXTEND_MODE em,
-		     GWEN_DB_NODE *db) {
-  if (em==AB_ProviderExtendMode_Create ||
-      em==AB_ProviderExtendMode_Extend) {
-    APY_USER *ue;
-    const char *s;
+AB_USER *APY_User_new(AB_PROVIDER *pro) {
+  AB_USER *u;
+  APY_USER *ue;
 
-    GWEN_NEW_OBJECT(APY_USER, ue);
-    GWEN_INHERIT_SETDATA(AB_USER, APY_USER, u, ue, APY_User_freeData);
+  u=AB_User_new();
+  assert(u);
+  GWEN_NEW_OBJECT(APY_USER, ue);
+  GWEN_INHERIT_SETDATA(AB_USER, APY_USER, u, ue, APY_User_freeData);
 
-    if (em==AB_ProviderExtendMode_Create) {
-      s=AB_User_GetCountry(u);
-      if (!s || !*s)
-	AB_User_SetCountry(u, "de");
-    }
-    else {
-      APY_User_ReadDb(u, db);
-    }
-  }
-  else {
-    if (em==AB_ProviderExtendMode_Add) {
-    }
-    else if (em==AB_ProviderExtendMode_Save)
-      APY_User_toDb(u, db);
-  }
+  AB_User_SetProvider(u, pro);
+  AB_User_SetBackendName(u, "aqpaypal");
+
+  ue->readFromDbFn=AB_User_SetReadFromDbFn(u, APY_User_ReadFromDb);
+  ue->writeToDbFn=AB_User_SetWriteToDbFn(u, APY_User_WriteToDb);
+
+  AB_User_SetCountry(u, "de");
+
+  return u;
 }
+
+
 
 
 
@@ -71,47 +65,79 @@ void GWENHYWFAR_CB APY_User_freeData(void *bp, void *p) {
 
 
 
-void APY_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
+int APY_User_ReadFromDb(AB_USER *u, GWEN_DB_NODE *db) {
   APY_USER *ue;
+  AB_PROVIDER *pro;
+  GWEN_DB_NODE *dbP;
+  int rv;
   const char *s;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, APY_USER, u);
   assert(ue);
 
+  /* save provider, because AB_User_ReadFromDb clears it */
+  pro=AB_User_GetProvider(u);
+
+  /* read data for base class */
+  rv=(ue->readFromDbFn)(u, db);
+  if (rv<0) {
+    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* set provider again */
+  AB_User_SetProvider(u, pro);
+
+  /* read data for provider */
+  dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");
+
   /* get server address */
   free(ue->serverUrl);
-  s=GWEN_DB_GetCharValue(db, "server", 0, 0);
+  s=GWEN_DB_GetCharValue(dbP, "server", 0, 0);
   if (s && *s) ue->serverUrl=strdup(s);
   else ue->serverUrl=NULL;
 
   /* setup HTTP version */
-  ue->httpVMajor=GWEN_DB_GetIntValue(db, "httpVMajor", 0, -1);
-  ue->httpVMinor=GWEN_DB_GetIntValue(db, "httpVMinor", 0, -1);
+  ue->httpVMajor=GWEN_DB_GetIntValue(dbP, "httpVMajor", 0, -1);
+  ue->httpVMinor=GWEN_DB_GetIntValue(dbP, "httpVMinor", 0, -1);
   if (ue->httpVMajor==-1 || ue->httpVMinor==-1) {
     ue->httpVMajor=1;
     ue->httpVMinor=1;
   }
+
+  return 0;
 }
 
 
 
-void APY_User_toDb(AB_USER *u, GWEN_DB_NODE *db) {
+int APY_User_WriteToDb(const AB_USER *u, GWEN_DB_NODE *db) {
   APY_USER *ue;
+  int rv;
+  GWEN_DB_NODE *dbP;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, APY_USER, u);
   assert(ue);
 
+  /* write data for base class */
+  rv=(ue->writeToDbFn)(u, db);
+  if (rv<0) {
+    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* write data for provider */
+  dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");
+
   if (ue->serverUrl)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "server", ue->serverUrl);
+    GWEN_DB_SetCharValue(dbP, GWEN_DB_FLAGS_OVERWRITE_VARS, "server", ue->serverUrl);
 
   /* save http settings */
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "httpVMajor", ue->httpVMajor);
-  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "httpVMinor", ue->httpVMinor);
+  GWEN_DB_SetIntValue(dbP, GWEN_DB_FLAGS_OVERWRITE_VARS, "httpVMajor", ue->httpVMajor);
+  GWEN_DB_SetIntValue(dbP, GWEN_DB_FLAGS_OVERWRITE_VARS, "httpVMinor", ue->httpVMinor);
+
+  return 0;
 }
 
 

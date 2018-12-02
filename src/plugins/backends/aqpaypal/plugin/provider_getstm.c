@@ -24,10 +24,7 @@ int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
   GWEN_DB_NODE *dbResponse;
   GWEN_DB_NODE *dbT;
 
-  sess=AB_HttpSession_new(pro, u,
-			  APY_User_GetServerUrl(u),
-			  "https",
-			  443);
+  sess=AB_HttpSession_new(pro, u, APY_User_GetServerUrl(u), "https", 443);
   if (sess==NULL) {
     DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Could not create http session for user [%s]",
 	      AB_User_GetUserId(u));
@@ -329,7 +326,7 @@ int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
 int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
 			      AB_IMEXPORTER_ACCOUNTINFO *ai,
 			      AB_USER *u,
-			      AB_JOB *j) {
+                              AB_TRANSACTION *j) {
   GWEN_HTTP_SESSION *sess;
   GWEN_BUFFER *tbuf;
   const char *s;
@@ -340,14 +337,10 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
   GWEN_DB_NODE *dbResponse;
   GWEN_DB_NODE *dbT;
 
-  sess=AB_HttpSession_new(pro, u,
-			  APY_User_GetServerUrl(u),
-			  "https",
-			  443);
+  sess=AB_HttpSession_new(pro, u, APY_User_GetServerUrl(u), "https", 443);
   if (sess==NULL) {
-    DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Could not create http session for user [%s]",
-	      AB_User_GetUserId(u));
-    AB_Job_SetStatus(j, AB_Job_StatusError);
+    DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Could not create http session for user [%s]", AB_User_GetUserId(u));
+    AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
     return GWEN_ERROR_GENERIC;
   }
 
@@ -371,7 +364,7 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
     DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Missing user id");
     GWEN_Buffer_free(tbuf);
     GWEN_HttpSession_free(sess);
-    AB_Job_SetStatus(j, AB_Job_StatusError);
+    AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
     return GWEN_ERROR_INVALID;
   }
 
@@ -383,7 +376,7 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
     DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Missing API password");
     GWEN_Buffer_free(tbuf);
     GWEN_HttpSession_free(sess);
-    AB_Job_SetStatus(j, AB_Job_StatusError);
+    AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
     return GWEN_ERROR_INVALID;
   }
 
@@ -395,7 +388,7 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
     DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Missing API signature");
     GWEN_Buffer_free(tbuf);
     GWEN_HttpSession_free(sess);
-    AB_Job_SetStatus(j, AB_Job_StatusError);
+    AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
     return GWEN_ERROR_INVALID;
   }
 
@@ -404,12 +397,12 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
 
   GWEN_Buffer_AppendString(tbuf, "&method=transactionSearch");
 
-  da=AB_JobGetTransactions_GetFromDate(j);
+  da=AB_Transaction_GetFirstDate(j);
   if (da==NULL) {
     DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Missing start date");
     GWEN_Buffer_free(tbuf);
     GWEN_HttpSession_free(sess);
-    AB_Job_SetStatus(j, AB_Job_StatusError);
+    AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
     return GWEN_ERROR_INVALID;
   }
 
@@ -423,7 +416,7 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(tbuf);
     GWEN_HttpSession_free(sess);
-    AB_Job_SetStatus(j, AB_Job_StatusError);
+    AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
     return rv;
   }
 
@@ -463,7 +456,7 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
   GWEN_HttpSession_Fini(sess);
   GWEN_Buffer_free(tbuf);
   GWEN_HttpSession_free(sess);
-  AB_Job_SetStatus(j, AB_Job_StatusError);
+  AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
   return GWEN_ERROR_INTERNAL;
 #endif
 
@@ -476,10 +469,10 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
     GWEN_HttpSession_Fini(sess);
     GWEN_Buffer_free(tbuf);
     GWEN_HttpSession_free(sess);
-    AB_Job_SetStatus(j, AB_Job_StatusError);
+    AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
     return rv;
   }
-  AB_Job_SetStatus(j, AB_Job_StatusSent);
+  AB_Transaction_SetStatus(j, AB_Transaction_StatusSending);
 
   /* get response */
   GWEN_Buffer_Reset(tbuf);
@@ -489,7 +482,7 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
     GWEN_HttpSession_Fini(sess);
     GWEN_Buffer_free(tbuf);
     GWEN_HttpSession_free(sess);
-    AB_Job_SetStatus(j, AB_Job_StatusError);
+    AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
     return rv;
   }
 
@@ -537,7 +530,7 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
     GWEN_DB_Group_free(dbResponse);
     GWEN_Buffer_free(tbuf);
-    AB_Job_SetStatus(j, AB_Job_StatusError);
+    AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
     return rv;
   }
 
@@ -552,7 +545,7 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
       DBG_INFO(AQPAYPAL_LOGDOMAIN, "No positive response from server");
       GWEN_DB_Group_free(dbResponse);
       GWEN_Buffer_free(tbuf);
-      AB_Job_SetStatus(j, AB_Job_StatusError);
+      AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
       return GWEN_ERROR_BAD_DATA;
     }
   }
@@ -560,7 +553,7 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "No ACK response from server");
     GWEN_DB_Group_free(dbResponse);
     GWEN_Buffer_free(tbuf);
-    AB_Job_SetStatus(j, AB_Job_StatusError);
+    AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
     return GWEN_ERROR_BAD_DATA;
   }
 
@@ -699,7 +692,7 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
 
   GWEN_DB_Group_free(dbResponse);
   GWEN_Buffer_free(tbuf);
-  AB_Job_SetStatus(j, AB_Job_StatusFinished);
+  AB_Transaction_SetStatus(j, AB_Transaction_StatusAccepted);
   return 0;
 }
 

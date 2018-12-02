@@ -25,8 +25,8 @@ noinst_HEADERS=\
 lib_LTLIBRARIES=libaqpaypal.la
 libaqpaypal_la_LIBADD=$(gwenhywfar_libs) $(aqbanking_internal_libs)
 libaqpaypal_la_SOURCES=\
-  provider.c \
   user.c \
+  provider.c \
   dlg_newuser.c \
   dlg_edituser.c \
   dlg_editsecret.c

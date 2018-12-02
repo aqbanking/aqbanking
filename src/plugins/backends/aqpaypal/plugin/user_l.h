@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Sat May 08 2010
-    copyright   : (C) 2010 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -15,9 +15,7 @@
 #include <aqbanking/provider_be.h>
 
 
-void APY_User_Extend(AB_USER *u, AB_PROVIDER *pro,
-		     AB_PROVIDER_EXTEND_MODE em,
-		     GWEN_DB_NODE *db);
+AB_USER *APY_User_new(AB_PROVIDER *pro);
 
 /* internal function, called from APY_Provider */
 void APY_User_SetApiSecrets_l(AB_USER *u, const char *password, const char *signature, const char *userid);

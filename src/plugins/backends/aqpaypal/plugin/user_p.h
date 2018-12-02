@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Sat May 08 2010
-    copyright   : (C) 2010 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -27,12 +27,16 @@ struct APY_USER {
 
   int httpVMajor;
   int httpVMinor;
+
+  AB_USER_READFROMDB_FN readFromDbFn;
+  AB_USER_WRITETODB_FN writeToDbFn;
 };
 
 static void GWENHYWFAR_CB APY_User_freeData(void *bp, void *p);
 
-static void APY_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db);
-static void APY_User_toDb(AB_USER *u, GWEN_DB_NODE *db);
+
+int APY_User_ReadFromDb(AB_USER *u, GWEN_DB_NODE *db);
+int APY_User_WriteToDb(const AB_USER *u, GWEN_DB_NODE *db);
 
 
 

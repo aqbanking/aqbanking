@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Sat May 08 2010
-    copyright   : (C) 2010 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -18,7 +18,7 @@
 
 typedef struct APY_PROVIDER APY_PROVIDER;
 struct APY_PROVIDER {
-  AB_QUEUE *queue;
+  int dummy;
 };
 
 static void GWENHYWFAR_CB APY_Provider_FreeData(void *bp, void *p);
@@ -26,16 +26,15 @@ static void GWENHYWFAR_CB APY_Provider_FreeData(void *bp, void *p);
 
 static int APY_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
 static int APY_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
-static int APY_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j);
-static int APY_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j);
-static int APY_Provider_ResetQueue(AB_PROVIDER *pro);
-static int APY_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx);
-static int APY_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
-				   AB_PROVIDER_EXTEND_MODE em,
-				   GWEN_DB_NODE *dbBackend);
-static int APY_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
-				      AB_PROVIDER_EXTEND_MODE em,
-				      GWEN_DB_NODE *dbBackend);
+
+static AB_ACCOUNT *APY_Provider_CreateAccountObject(AB_PROVIDER *pro);
+static AB_USER *APY_Provider_CreateUserObject(AB_PROVIDER *pro);
+
+
+static int APY_Provider_UpdatePreInit(AB_PROVIDER *pro, uint32_t lastVersion, uint32_t currentVersion);
+static int APY_Provider_UpdatePostInit(AB_PROVIDER *pro, uint32_t lastVersion, uint32_t currentVersion);
+
+
 
 static GWEN_DIALOG *APY_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i);
 static GWEN_DIALOG *APY_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u);
@@ -46,22 +45,7 @@ static int APY_Provider_ParseResponse(AB_PROVIDER *pro, const char *s, GWEN_DB_N
 static int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
 				     AB_IMEXPORTER_ACCOUNTINFO *ai,
 				     AB_USER *u,
-				     AB_JOB *j);
-
-static int APY_Provider_ExecJobQueue(AB_PROVIDER *pro,
-				     AB_IMEXPORTER_ACCOUNTINFO *ai,
-				     AB_USER *u,
-				     AB_ACCOUNT *a,
-				     AB_JOBQUEUE *jq);
-
-static int APY_Provider_ExecAccountQueue(AB_PROVIDER *pro,
-					 AB_IMEXPORTER_CONTEXT *ctx,
-					 AB_USER *u,
-					 AB_ACCOUNTQUEUE *aq);
-
-static int APY_Provider_ExecUserQueue(AB_PROVIDER *pro,
-				      AB_IMEXPORTER_CONTEXT *ctx,
-				      AB_USERQUEUE *uq);
+				     AB_TRANSACTION *j);
 
 static int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
 				    AB_USER *u,

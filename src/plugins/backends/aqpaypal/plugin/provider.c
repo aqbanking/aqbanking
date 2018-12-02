@@ -17,9 +17,8 @@
 #include "dlg_newuser_l.h"
 #include "dlg_edituser_l.h"
 
-#include <aqbanking/job_be.h>
 #include <aqbanking/httpsession.h>
-#include <aqbanking/jobgettransactions.h>
+#include <aqbanking/transaction.h>
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
@@ -28,6 +27,7 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/smalltresor.h>
 #include <gwenhywfar/directory.h>
+#include <gwenhywfar/gui.h>
 
 #include <ctype.h>
 #include <stdio.h>
@@ -64,12 +64,10 @@ AB_PROVIDER *APY_Provider_new(AB_BANKING *ab){
 
   AB_Provider_SetInitFn(pro, APY_Provider_Init);
   AB_Provider_SetFiniFn(pro, APY_Provider_Fini);
-  AB_Provider_SetUpdateJobFn(pro, APY_Provider_UpdateJob);
-  AB_Provider_SetAddJobFn(pro, APY_Provider_AddJob);
-  AB_Provider_SetExecuteFn(pro, APY_Provider_Execute);
-  AB_Provider_SetResetQueueFn(pro, APY_Provider_ResetQueue);
-  AB_Provider_SetExtendUserFn(pro, APY_Provider_ExtendUser);
-  AB_Provider_SetExtendAccountFn(pro, APY_Provider_ExtendAccount);
+
+  AB_Provider_SetCreateAccountObjectsFn(pro, APY_Provider_CreateAccountObject);
+  AB_Provider_SetCreateUserObjectsFn(pro, APY_Provider_CreateUserObject);
+
 
   AB_Provider_SetGetNewUserDialogFn(pro, APY_Provider_GetNewUserDialog);
   AB_Provider_SetGetEditUserDialogFn(pro, APY_Provider_GetEditUserDialog);
@@ -96,6 +94,8 @@ void GWENHYWFAR_CB APY_Provider_FreeData(void *bp, void *p) {
 int APY_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   APY_PROVIDER *dp;
   const char *logLevelName;
+  uint32_t currentVersion;
+  uint32_t lastVersion;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, APY_PROVIDER, pro);
@@ -115,21 +115,54 @@ int APY_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
     ll=GWEN_Logger_Name2Level(logLevelName);
     if (ll!=GWEN_LoggerLevel_Unknown) {
       GWEN_Logger_SetLevel(AQPAYPAL_LOGDOMAIN, ll);
-      DBG_WARN(AQPAYPAL_LOGDOMAIN,
-               "Overriding loglevel for AqPAYPAL with \"%s\"",
-               logLevelName);
+      DBG_WARN(AQPAYPAL_LOGDOMAIN, "Overriding loglevel for AqPAYPAL with \"%s\"", logLevelName);
     }
     else {
-      DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Unknown loglevel \"%s\"",
-                logLevelName);
+      DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Unknown loglevel \"%s\"", logLevelName);
     }
   }
 
-  if (1) {
-    GWEN_STRINGLIST *sl=GWEN_PathManager_GetPaths(AB_PM_LIBNAME,
-						  AB_PM_LOCALEDIR);
-    const char *localedir=GWEN_StringList_FirstString(sl);
+  /* check whether we need to update */
+  currentVersion=
+    (AQPAYPAL_VERSION_MAJOR<<24) |
+    (AQPAYPAL_VERSION_MINOR<<16) |
+    (AQPAYPAL_VERSION_PATCHLEVEL<<8) |
+    AQPAYPAL_VERSION_BUILD;
+  lastVersion=GWEN_DB_GetIntValue(dbData, "lastVersion", 0, 0);
+
+  if (lastVersion<currentVersion) {
     int rv;
+
+    DBG_WARN(AQPAYPAL_LOGDOMAIN, "Updating configuration for AqPaypal (before init)");
+    rv=APY_Provider_UpdatePreInit(pro, lastVersion, currentVersion);
+    if (rv<0) {
+      DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
+  /* do some init (currently: none needed) */
+
+  /* update post-init */
+  if (lastVersion<currentVersion) {
+    int rv;
+
+    DBG_WARN(AQPAYPAL_LOGDOMAIN, "Updating configuration for AqPaypal (after init)");
+    rv=APY_Provider_UpdatePostInit(pro, lastVersion, currentVersion);
+    if (rv<0) {
+      DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
+
+  if (1) {
+    GWEN_STRINGLIST *sl;
+    const char *localedir;
+    int rv;
+
+    sl=GWEN_PathManager_GetPaths(AB_PM_LIBNAME, AB_PM_LOCALEDIR);
+    localedir=GWEN_StringList_FirstString(sl);
 
     rv=GWEN_I18N_BindTextDomain_Dir(PACKAGE, localedir);
     if (rv) {
@@ -169,128 +202,35 @@ int APY_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
     AQPAYPAL_VERSION_BUILD;
 
   /* save configuration */
-  DBG_NOTICE(AQPAYPAL_LOGDOMAIN, "Setting version %08x",
-             currentVersion);
-  GWEN_DB_SetIntValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "lastVersion", currentVersion);
+  DBG_NOTICE(AQPAYPAL_LOGDOMAIN, "Setting version %08x", currentVersion);
+  GWEN_DB_SetIntValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS, "lastVersion", currentVersion);
+
+  DBG_INFO(AQPAYPAL_LOGDOMAIN, "Deinit done");
 
   return 0;
 }
 
 
 
-
-
-
-
-
-int APY_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
-  APY_PROVIDER *dp;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, APY_PROVIDER, pro);
-  assert(dp);
-
-  switch(AB_Job_GetType(j)) {
-  case AB_Job_TypeGetTransactions:
-    break;
-  case AB_Job_TypeGetBalance:
-     break;
-  case AB_Job_TypeTransfer:
-  case AB_Job_TypeDebitNote:
-  default:
-    DBG_INFO(AQPAYPAL_LOGDOMAIN,
-	     "Job not yet supported (%d)",
-	     AB_Job_GetType(j));
-    return GWEN_ERROR_NOT_SUPPORTED;
-  } /* switch */
-
-  return 0;
-}
-
-
-
-int APY_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
-  APY_PROVIDER *xp;
+AB_ACCOUNT *APY_Provider_CreateAccountObject(AB_PROVIDER *pro) {
   AB_ACCOUNT *a;
-  AB_USER *u;
-  int doAdd=1;
 
-  assert(pro);
-  xp=GWEN_INHERIT_GETDATA(AB_PROVIDER, APY_PROVIDER, pro);
-  assert(xp);
-
-  switch(AB_Job_GetType(j)) {
-  case AB_Job_TypeGetTransactions:
-    break;
-  case AB_Job_TypeGetBalance:
-    break;
-  case AB_Job_TypeTransfer:
-  case AB_Job_TypeDebitNote:
-  default:
-    DBG_INFO(AQPAYPAL_LOGDOMAIN,
-	     "Job not supported (%d)",
-	     AB_Job_GetType(j));
-    return GWEN_ERROR_NOT_SUPPORTED;
-  } /* switch */
-
-  a=AB_Job_GetAccount(j);
-  if (a==NULL) {
-    DBG_ERROR(AQPAYPAL_LOGDOMAIN, "No account for job");
-    return GWEN_ERROR_GENERIC;
-  }
-
-  u=AB_Account_GetFirstUser(a);
-  if (u==NULL) {
-    DBG_ERROR(AQPAYPAL_LOGDOMAIN, "No user for account");
-    return GWEN_ERROR_GENERIC;
-  }
-
-  if (xp->queue==NULL)
-    xp->queue=AB_Queue_new();
-
-  if (AB_Job_GetType(j)==AB_Job_TypeGetTransactions) {
-    AB_JOB *firstJob;
-
-    firstJob=AB_Queue_FindFirstJobLikeThis(xp->queue, u, j);
-    if (firstJob) {
-      GWEN_DB_NODE *dbCurrJob;
-
-      /* this job is just a copy of the firstJob, reference it */
-      dbCurrJob=AB_Job_GetProviderData(j, pro);
-      assert(dbCurrJob);
-
-      GWEN_DB_SetIntValue(dbCurrJob,
-			  GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  "refJob",
-			  AB_Job_GetJobId(firstJob));
-      /* don't add to queues */
-      doAdd=0;
-    }
-  }
-
-  if (doAdd)
-    AB_Queue_AddJob(xp->queue, u, j);
-
-  return 0;
+  a=AB_Account_new();
+  assert(a);
+  AB_Account_SetProvider(a, pro);
+  AB_Account_SetBackendName(a, APY_PROVIDER_NAME);
+  return a;
 }
 
 
 
-int APY_Provider_ExtendUser(AB_PROVIDER *pro, AB_USER *u,
-			    AB_PROVIDER_EXTEND_MODE em,
-			    GWEN_DB_NODE *dbBackend) {
-  APY_User_Extend(u, pro, em, dbBackend);
-  return 0;
+AB_USER *APY_Provider_CreateUserObject(AB_PROVIDER *pro) {
+  return APY_User_new(pro);
 }
 
 
 
-int APY_Provider_ExtendAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
-			       AB_PROVIDER_EXTEND_MODE em,
-			       GWEN_DB_NODE *dbBackend){
-  return 0;
-}
+
 
 
 
@@ -372,6 +312,13 @@ int APY_Provider_ParseResponse(AB_PROVIDER *pro, const char *s, GWEN_DB_NODE *db
   return 0;
 }
 
+
+#include "provider_update.c"
+#include "provider_credentials.c"
+#include "provider_dialogs.c"
+#include "provider_getbalance.c"
+#include "provider_getstm.c"
+#include "provider_sendcmd.c"
 
 
 

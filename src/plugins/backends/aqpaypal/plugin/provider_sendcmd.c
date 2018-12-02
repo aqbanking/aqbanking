@@ -10,7 +10,7 @@
 
 /* included from provider.c */
 
-
+#if 0
 
 int APY_Provider_ExecJobQueue(AB_PROVIDER *pro,
                               AB_IMEXPORTER_ACCOUNTINFO *ai,
@@ -279,5 +279,101 @@ int APY_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
   return 0;
 }
 
+
+
+int APY_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
+  APY_PROVIDER *dp;
+
+  assert(pro);
+  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, APY_PROVIDER, pro);
+  assert(dp);
+
+  switch(AB_Job_GetType(j)) {
+  case AB_Job_TypeGetTransactions:
+    break;
+  case AB_Job_TypeGetBalance:
+     break;
+  case AB_Job_TypeTransfer:
+  case AB_Job_TypeDebitNote:
+  default:
+    DBG_INFO(AQPAYPAL_LOGDOMAIN,
+	     "Job not yet supported (%d)",
+	     AB_Job_GetType(j));
+    return GWEN_ERROR_NOT_SUPPORTED;
+  } /* switch */
+
+  return 0;
+}
+
+
+
+int APY_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
+  APY_PROVIDER *xp;
+  AB_ACCOUNT *a;
+  AB_USER *u;
+  int doAdd=1;
+
+  assert(pro);
+  xp=GWEN_INHERIT_GETDATA(AB_PROVIDER, APY_PROVIDER, pro);
+  assert(xp);
+
+  switch(AB_Job_GetType(j)) {
+  case AB_Job_TypeGetTransactions:
+    break;
+  case AB_Job_TypeGetBalance:
+    break;
+  case AB_Job_TypeTransfer:
+  case AB_Job_TypeDebitNote:
+  default:
+    DBG_INFO(AQPAYPAL_LOGDOMAIN,
+	     "Job not supported (%d)",
+	     AB_Job_GetType(j));
+    return GWEN_ERROR_NOT_SUPPORTED;
+  } /* switch */
+
+  a=AB_Job_GetAccount(j);
+  if (a==NULL) {
+    DBG_ERROR(AQPAYPAL_LOGDOMAIN, "No account for job");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  u=AB_Account_GetFirstUser(a);
+  if (u==NULL) {
+    DBG_ERROR(AQPAYPAL_LOGDOMAIN, "No user for account");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  if (xp->queue==NULL)
+    xp->queue=AB_Queue_new();
+
+  if (AB_Job_GetType(j)==AB_Job_TypeGetTransactions) {
+    AB_JOB *firstJob;
+
+    firstJob=AB_Queue_FindFirstJobLikeThis(xp->queue, u, j);
+    if (firstJob) {
+      GWEN_DB_NODE *dbCurrJob;
+
+      /* this job is just a copy of the firstJob, reference it */
+      dbCurrJob=AB_Job_GetProviderData(j, pro);
+      assert(dbCurrJob);
+
+      GWEN_DB_SetIntValue(dbCurrJob,
+			  GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "refJob",
+			  AB_Job_GetJobId(firstJob));
+      /* don't add to queues */
+      doAdd=0;
+    }
+  }
+
+  if (doAdd)
+    AB_Queue_AddJob(xp->queue, u, j);
+
+  return 0;
+}
+
+
+
+#endif
 
 
