@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Fri Sep 18 2009
- copyright   : (C) 2009 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -13,6 +13,8 @@
 
 
 #include "globals.h"
+
+#include <aqbanking/provider_be.h>
 
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/args.h>
@@ -30,9 +32,23 @@ int listAccounts(AB_BANKING *ab,
                  int argc,
                  char **argv) {
   GWEN_DB_NODE *db;
-  int rv;
-  AB_ACCOUNT_LIST2 *al;
+  int rv, verbose;
+  AB_PROVIDER *pro;
+  AB_ACCOUNT_LIST *al;
+  AB_ACCOUNT *a;
+  int i=0;
   const GWEN_ARGS args[]={
+  {
+              0,                             /* flags */
+              GWEN_ArgsType_Int,             /* type */
+              "verbose",                        /* name */
+              0,                            /* minnum */
+              1,                            /* maxnum */
+              "v",                            /* short option */
+              "verbose",                /* long option */
+              "Show list in verbose form (with more columns)",  /* short description */
+              0
+  },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
     GWEN_ArgsType_Int,            /* type */
@@ -68,46 +84,44 @@ int listAccounts(AB_BANKING *ab,
     return 0;
   }
 
+  verbose = GWEN_DB_VariableExists(db, "verbose");
+
   rv=AB_Banking_Init(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
+  pro=AB_Banking_BeginUseProvider(ab, "aqpaypal");
+  assert(pro);
+
+  al=AB_Account_List_new();
+  rv=AB_Provider_ReadAccounts(pro, al);
+  if (rv<0) {
+    DBG_ERROR_ERR(0, rv);
+    AB_Account_List_free(al);
+    AB_Banking_EndUseProvider(ab, pro);
+    return 3;
   }
 
-  al=AB_Banking_FindAccounts(ab, APY_PROVIDER_NAME, "*", "*", "*", "*");
-  if (al) {
-    AB_ACCOUNT_LIST2_ITERATOR *ait;
-
-    ait=AB_Account_List2_First(al);
-    if (ait) {
-      AB_ACCOUNT *a;
-      int i=0;
-
-      a=AB_Account_List2Iterator_Data(ait);
-      assert(a);
-      while(a) {
-        fprintf(stdout, "Account %d: Bank: %s Account Name: %s\n",
-                i++,
-                AB_Account_GetBankCode(a),
-                AB_Account_GetAccountNumber(a));
-        a=AB_Account_List2Iterator_Next(ait);
-      }
-      AB_Account_List2Iterator_free(ait);
+  a=AB_Account_List_First(al);
+  while(a) {
+    fprintf(stdout, "Account %d: Bank: %s Account Number: %s",
+            i++,
+            AB_Account_GetBankCode(a),
+            AB_Account_GetAccountNumber(a));
+    if (verbose) {
+      const char* subAccountId = AB_Account_GetSubAccountId(a);
+      fprintf(stdout, "  SubAccountId: %s  LocalUniqueId: %d",
+              subAccountId ? subAccountId : "(none)",
+              AB_Account_GetUniqueId(a));
     }
-    AB_Account_List2_free(al);
+    fprintf(stdout, "\n");
+    a=AB_Account_List_Next(a);
   }
+  AB_Account_List_free(al);
 
-  rv=AB_Banking_OnlineFini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    return 5;
-  }
+  AB_Banking_EndUseProvider(ab, pro);
 
   rv=AB_Banking_Fini(ab);
   if (rv) {

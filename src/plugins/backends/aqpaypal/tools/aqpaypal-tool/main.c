@@ -228,9 +228,6 @@ int main(int argc, char **argv) {
   else if (strcasecmp(cmd, "adduser")==0) {
     rv=addUser(ab, db, argc, argv);
   }
-  else if (strcasecmp(cmd, "addaccount")==0) {
-    rv=addAccount(ab, db, argc, argv);
-  }
   else if (strcasecmp(cmd, "setsecrets")==0) {
     rv=setSecrets(ab, db, argc, argv);
   }

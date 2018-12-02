@@ -15,7 +15,6 @@ aqpaypal_tool_SOURCES=main.c \
  listusers.c \
  listaccounts.c \
  adduser.c \
- addaccount.c \
  setsecrets.c
 
 
