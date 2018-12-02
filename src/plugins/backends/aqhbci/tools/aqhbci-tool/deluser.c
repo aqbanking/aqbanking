@@ -132,7 +132,7 @@ int delUser(AB_BANKING *ab,
             (unsigned long int) AB_User_GetUniqueId(u));
   }
   else {
-    rv=AH_Provider_DeleteUser(pro, uid);
+    rv=AB_Provider_DeleteUser(pro, uid);
     if (rv<0) {
       fprintf(stderr, "ERROR: Could not delete user %lu (%d)\n", (unsigned long int) uid, rv);
       AB_User_free(u);

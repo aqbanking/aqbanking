@@ -712,8 +712,6 @@ int AH_Provider_Test(AB_PROVIDER *pro) {
 #include "provider_dialogs.c"
 #include "provider_accspec.c"
 #include "provider_update.c"
-#include "provider_account.c"
-#include "provider_user.c"
 
 
 

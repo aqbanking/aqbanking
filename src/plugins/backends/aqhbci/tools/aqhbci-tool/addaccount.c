@@ -207,7 +207,7 @@ int addAccount(AB_BANKING *ab,
     AB_Account_SetUserId(account, userId);
 
     /* add account to system */
-    rv=AH_Provider_AddAccount(pro, u, account, 1);
+    rv=AB_Provider_AddAccount(pro, account);
     if (rv<0) {
       DBG_ERROR(0, "Error adding account (%d)", rv);
       AB_Account_free(account);

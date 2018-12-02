@@ -213,7 +213,7 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
       AB_Account_SetUserId(storedAcc, AB_User_GetUniqueId(j->user));
 
       /* update and write account spec */
-      rv=AH_Provider_WriteAccountSpecForAccount(pro, j->user, storedAcc);
+      rv=AB_Provider_WriteAccountSpecForAccount(pro, storedAcc, 0); /* do not lock */
       if (rv<0) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       }
@@ -232,7 +232,7 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
     /* account is new, add it */
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Account is new, adding");
     AB_Account_SetUserId(acc, AB_User_GetUniqueId(j->user));
-    rv=AH_Provider_AddAccount(pro, j->user, acc, 1);
+    rv=AB_Provider_AddAccount(pro, acc);
     if (rv<0) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Coud not write new account (%d)", rv);
     }

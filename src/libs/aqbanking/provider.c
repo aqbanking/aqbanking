@@ -275,10 +275,10 @@ AB_USER *AB_Provider_CreateUserObject(AB_PROVIDER *pro) {
 
 
 
-int AB_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as) {
+int AB_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doLock) {
   assert(pro);
   if (pro->updateAccountSpecFn)
-    return pro->updateAccountSpecFn(pro, as);
+    return pro->updateAccountSpecFn(pro, as, doLock);
   else
     return GWEN_ERROR_NOT_IMPLEMENTED;
 }

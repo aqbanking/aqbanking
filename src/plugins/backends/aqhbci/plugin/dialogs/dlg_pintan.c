@@ -788,7 +788,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
   AH_User_SetFlags(u, xdlg->flags);
 
   DBG_NOTICE(0, "Adding user");
-  rv=AH_Provider_AddUser(xdlg->provider, u);
+  rv=AB_Provider_AddUser(xdlg->provider, u);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not add user (%d)", rv);
     AB_User_free(u);
@@ -811,7 +811,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
     GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Unable to lock users"));
-    AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -826,7 +826,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
     // TODO: retry with SSLv3 if necessary
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -835,7 +835,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
   if (rv==GWEN_ERROR_USER_ABORTED) {
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Aborted by user."));
@@ -854,7 +854,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     AB_ImExporterContext_free(ctx);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -864,7 +864,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
   if (rv==GWEN_ERROR_USER_ABORTED) {
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Aborted by user."));
@@ -883,7 +883,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     AB_ImExporterContext_free(ctx);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -893,7 +893,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
   if (rv==GWEN_ERROR_USER_ABORTED) {
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Aborted by user."));
@@ -913,7 +913,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg) {
 			  I18N("Could not unlock user %s (%d)"),
 			  AB_User_GetUserId(u), rv);
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
-    AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }

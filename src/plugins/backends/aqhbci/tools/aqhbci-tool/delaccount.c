@@ -138,7 +138,7 @@ int delAccount(AB_BANKING *ab,
   }
   else {
     /* delete account */
-    rv=AH_Provider_DeleteAccount(pro, aid);
+    rv=AB_Provider_DeleteAccount(pro, aid);
     if (rv<0) {
       fprintf(stderr, "ERROR: Could not delete account (%d)\n", rv);
       AB_Account_free(a);

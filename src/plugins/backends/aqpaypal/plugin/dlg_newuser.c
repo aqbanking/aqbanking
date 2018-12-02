@@ -701,7 +701,7 @@ int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
   APY_User_SetHttpVMinor(u, xdlg->httpVMinor);
 
   DBG_INFO(0, "Adding user");
-  rv=APY_Provider_AddUser(xdlg->provider, u);
+  rv=AB_Provider_AddUser(xdlg->provider, u);
   if (rv<0) {
     DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Could not add user (%d)", rv);
     AB_User_free(u);
@@ -724,7 +724,7 @@ int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
     GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Unable to lock users"));
-    APY_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -762,7 +762,7 @@ int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
   if (rv<0) {
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
-    APY_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Error, I18N("Aborted by user."));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
@@ -780,8 +780,8 @@ int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
 			  GWEN_LoggerLevel_Error,
 			  I18N("Could not unlock user %s (%d)"),
 			  AB_User_GetUserId(u), rv);
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
-    APY_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -806,11 +806,11 @@ int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
     AB_Account_SetAccountName(account, accountname);
     AB_Account_SetUserId(account, AB_User_GetUniqueId(u));
 
-    rv=APY_Provider_AddAccount(xdlg->banking, account);
+    rv=AB_Provider_AddAccount(xdlg->provider, account);
     if (rv<0) {
       DBG_INFO(AQPAYPAL_LOGDOMAIN, "Error adding account (%d)", rv);
       AB_Account_free(account);
-      APY_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+      AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
       GWEN_Gui_ProgressEnd(pid);
       return GWEN_DialogEvent_ResultHandled;
     }

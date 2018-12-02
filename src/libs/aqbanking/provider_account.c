@@ -142,7 +142,7 @@ int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a) {
     return rv;
   }
   /* write account spec */
-  rv=AB_Provider_WriteAccountSpecForAccount(pro, a);
+  rv=AB_Provider_WriteAccountSpecForAccount(pro, a, 1); /* doLock */
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;

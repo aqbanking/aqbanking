@@ -789,7 +789,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
   AH_User_SetRdhType(u, xdlg->rdhVersion);
   AH_User_AddFlags(u, xdlg->flags);
  
-  rv=AH_Provider_AddUser(xdlg->provider, u);
+  rv=AB_Provider_AddUser(xdlg->provider, u);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not add user (%d)", rv);
     AB_User_free(u);
@@ -813,7 +813,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
   if (rv) {
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting server keys (%d)", rv);
-    AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -825,7 +825,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
   if (rv) {
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting Kundensystem ID (%d)", rv);
-    AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -852,7 +852,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
   if (rv<0) {
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting accounts (%d)", rv);
-    AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -861,7 +861,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
   if (rv==GWEN_ERROR_USER_ABORTED) {
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Error,
 			 I18N("Aborted by user."));
@@ -880,7 +880,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
 			  I18N("Could not unlock user %s (%d)"),
 			  AB_User_GetUserId(u), rv);
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
-    AH_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }

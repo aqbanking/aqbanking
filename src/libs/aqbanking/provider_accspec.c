@@ -50,13 +50,13 @@ int AB_Provider_WriteAccountSpecForAccount(AB_PROVIDER *pro, const AB_ACCOUNT *a
   int rv;
 
   as=AB_AccountSpec_new();
-  rv=AB_Provider_AccountToAccountSpec(pro, acc, as);
+  rv=AB_Provider_AccountToAccountSpec(pro, acc, as, doLock);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
-  rv=AB_Banking_WriteAccountSpec(AB_Provider_GetBanking(pro), as, doLock);
+  rv=AB_Banking_WriteAccountSpec(AB_Provider_GetBanking(pro), as);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     AB_AccountSpec_free(as);
@@ -97,7 +97,7 @@ int AB_Provider_CreateInitialAccountSpecs(AB_PROVIDER *pro) {
 
     /* create account spec */
     as=AB_AccountSpec_new();
-    rv=AB_Provider_AccountToAccountSpec(pro, acc, as);
+    rv=AB_Provider_AccountToAccountSpec(pro, acc, as, 1); /* doLock */
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       AB_AccountSpec_free(as);
@@ -109,7 +109,7 @@ int AB_Provider_CreateInitialAccountSpecs(AB_PROVIDER *pro) {
     AB_Account_free(acc);
   
     /* write account spec */
-    rv=AB_Banking_WriteAccountSpec(AB_Provider_GetBanking(pro), as, 1); /* doLock */
+    rv=AB_Banking_WriteAccountSpec(AB_Provider_GetBanking(pro), as);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       AB_AccountSpec_free(as);

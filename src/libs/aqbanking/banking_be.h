@@ -55,12 +55,10 @@ extern "C" {
  * of using the compile time fixed values. This way it is easier under
  * windows to find data.
  */
-AQBANKING_API
-GWEN_STRINGLIST *AB_Banking_GetGlobalDataDirs(void);
+AQBANKING_API GWEN_STRINGLIST *AB_Banking_GetGlobalDataDirs(void);
 
 
-AQBANKING_API
-GWEN_STRINGLIST *AB_Banking_GetGlobalSysconfDirs(void);
+AQBANKING_API GWEN_STRINGLIST *AB_Banking_GetGlobalSysconfDirs(void);
 
 /*@}*/
 
@@ -70,20 +68,17 @@ GWEN_STRINGLIST *AB_Banking_GetGlobalSysconfDirs(void);
  *
  */
 /*@{*/
-AQBANKING_API
-int AB_Banking_GetCryptToken(AB_BANKING *ab,
-			     const char *tname,
-			     const char *cname,
-			     GWEN_CRYPT_TOKEN **pCt);
+AQBANKING_API int AB_Banking_GetCryptToken(AB_BANKING *ab,
+                                           const char *tname,
+                                           const char *cname,
+                                           GWEN_CRYPT_TOKEN **pCt);
 
-AQBANKING_API 
-void AB_Banking_ClearCryptTokenList(AB_BANKING *ab);
+AQBANKING_API  void AB_Banking_ClearCryptTokenList(AB_BANKING *ab);
 
-AQBANKING_API 
-int AB_Banking_CheckCryptToken(AB_BANKING *ab,
-			       GWEN_CRYPT_TOKEN_DEVICE devt,
-			       GWEN_BUFFER *typeName,
-			       GWEN_BUFFER *tokenName);
+AQBANKING_API  int AB_Banking_CheckCryptToken(AB_BANKING *ab,
+                                              GWEN_CRYPT_TOKEN_DEVICE devt,
+                                              GWEN_BUFFER *typeName,
+                                              GWEN_BUFFER *tokenName);
 
 /*@}*/
 
@@ -99,13 +94,12 @@ int AB_Banking_CheckCryptToken(AB_BANKING *ab,
 AQBANKING_API int AB_Banking_GetNamedUniqueId(AB_BANKING *ab, const char *idName, int startAtStdUniqueId);
 
 
-AQBANKING_API
-int AB_Banking_GetCert(AB_BANKING *ab,
-                       const char *url,
-                       const char *defaultProto,
-                       int defaultPort,
-                       uint32_t *httpFlags,
-                       uint32_t pid);
+AQBANKING_API int AB_Banking_GetCert(AB_BANKING *ab,
+                                     const char *url,
+                                     const char *defaultProto,
+                                     int defaultPort,
+                                     uint32_t *httpFlags,
+                                     uint32_t pid);
 
 
 /**

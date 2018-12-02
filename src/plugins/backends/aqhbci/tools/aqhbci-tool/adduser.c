@@ -544,7 +544,7 @@ int addUser(AB_BANKING *ab,
     if (cm==AH_CryptMode_Ddv)
       AH_User_SetStatus(user, AH_UserStatusEnabled);
 
-    rv=AH_Provider_AddUser(pro, user);
+    rv=AB_Provider_AddUser(pro, user);
     if (rv<0) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Coud not add new user (%d)", rv);
       AB_User_free(user);
