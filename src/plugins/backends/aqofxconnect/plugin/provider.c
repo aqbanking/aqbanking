@@ -178,7 +178,7 @@ int AO_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   if (lastVersion<currentVersion) {
     int rv;
 
-    DBG_WARN(AQOFXCONNECT_LOGDOMAIN, "Updating configuration for AqHBCI (before init)");
+    DBG_WARN(AQOFXCONNECT_LOGDOMAIN, "Updating configuration for AqOdxConnect (before init)");
     rv=AO_Provider_UpdatePreInit(pro, lastVersion, currentVersion);
     if (rv<0) {
       DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
@@ -196,7 +196,7 @@ int AO_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   if (lastVersion<currentVersion) {
     int rv;
 
-    DBG_WARN(AQOFXCONNECT_LOGDOMAIN, "Updating configuration for AqHBCI (after init)");
+    DBG_WARN(AQOFXCONNECT_LOGDOMAIN, "Updating configuration for AqOfxConnect (after init)");
     rv=AO_Provider_UpdatePostInit(pro, lastVersion, currentVersion);
     if (rv<0) {
       DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
@@ -213,7 +213,6 @@ int AO_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
 int AO_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
   AO_PROVIDER *dp;
   uint32_t currentVersion;
-  int errors=0;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
@@ -240,9 +239,6 @@ int AO_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
   dp->dbConfig=0;
 
   DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Deinit done");
-
-  if (errors)
-    return GWEN_ERROR_GENERIC;
 
   return 0;
 }
