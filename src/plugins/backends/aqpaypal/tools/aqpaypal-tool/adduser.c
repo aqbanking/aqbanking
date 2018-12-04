@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon May 10 2010
-    copyright   : (C) 2010 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -17,6 +17,7 @@
 #include <aqpaypal/user.h>
 
 #include <aqbanking/banking_be.h>
+#include <aqbanking/provider_be.h>
 
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/url.h>
@@ -153,13 +154,7 @@ int addUser(AB_BANKING *ab,
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
-  }
-
-  pro=AB_Banking_GetProvider(ab, APY_PROVIDER_NAME);
+  pro=AB_Banking_BeginUseProvider(ab, APY_PROVIDER_NAME);
   assert(pro);
 
   userId=GWEN_DB_GetCharValue(db, "userId", 0, NULL);
@@ -169,15 +164,7 @@ int addUser(AB_BANKING *ab,
   userName=GWEN_DB_GetCharValue(db, "userName", 0, NULL);
   server=GWEN_DB_GetCharValue(db, "serverAddr", 0, "https://api-3t.paypal.com/nvp");
 
-  user=AB_Banking_FindUser(ab, APY_PROVIDER_NAME,
-			   "*",
-			   "PAYPAL", userId, "*");
-  if (user) {
-    DBG_ERROR(0, "User %s already exists", userId);
-    return 3;
-  }
-
-  user=AB_Banking_CreateUser(ab, APY_PROVIDER_NAME);
+  user=AB_Provider_CreateUserObject(pro);
   assert(user);
 
   AB_User_SetCountry(user, "de");
@@ -188,45 +175,49 @@ int addUser(AB_BANKING *ab,
   APY_User_SetServerUrl(user, server);
 
   /* add user */
-  rv=AB_Banking_AddUser(ab, user);
+  rv=AB_Provider_AddUser(pro, user);
   if (rv<0) {
-    fprintf(stderr, "ERROR: Error on AB_Banking_AddUser (%d)\n", rv);
-    AB_Banking_OnlineFini(ab);
+    fprintf(stderr, "ERROR: Error on AB_Provider_AddUser (%d)\n", rv);
+    AB_User_free(user);
+    AB_Banking_EndUseProvider(ab, pro);
     AB_Banking_Fini(ab);
     return 3;
   }
 
-  rv=AB_Banking_BeginExclUseUser(ab, user);
+  rv=AB_Provider_BeginExclUseUser(pro, user);
   if (rv<0) {
     fprintf(stderr, "ERROR: Could not lock user (%d)\n", rv);
+    AB_User_free(user);
+    AB_Banking_EndUseProvider(ab, pro);
+    AB_Banking_Fini(ab);
     return 3;
   }
 
   rv=APY_User_SetApiSecrets(user, apiPassword, apiSignature, apiUserId);
   if (rv<0) {
     fprintf(stderr, "ERROR: Error on APY_User_SetApiSecrets (%d)\n", rv);
-    AB_Banking_EndExclUseUser(ab, user, 1);
+    AB_Provider_EndExclUseUser(pro, user, 1);
+    AB_User_free(user);
+    AB_Banking_EndUseProvider(ab, pro);
     AB_Banking_Fini(ab);
     return 3;
   }
 
-  rv=AB_Banking_EndExclUseUser(ab, user, 0);
+  rv=AB_Provider_EndExclUseUser(pro, user, 0);
   if (rv<0) {
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
-    AB_Banking_EndExclUseUser(ab, user, 1);
+    AB_Provider_EndExclUseUser(pro, user, 1);
+    AB_User_free(user);
+    AB_Banking_EndUseProvider(ab, pro);
+    AB_Banking_Fini(ab);
     return rv;
   }
 
-  rv=AB_Banking_OnlineFini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    AB_Banking_Fini(ab);
-    return 5;
-  }
-
+  AB_User_free(user);
+  AB_Banking_EndUseProvider(ab, pro);
 
   rv=AB_Banking_Fini(ab);
-  if (rv) {
+  if (rv<0) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
     return 5;
   }
