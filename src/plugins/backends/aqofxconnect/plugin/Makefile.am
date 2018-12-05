@@ -33,9 +33,10 @@ iheader_HEADERS=\
   provider.h \
   user.h
 
-# library
-lib_LTLIBRARIES=libaqofxconnect.la 
-libaqofxconnect_la_SOURCES= \
+# static plugin library
+noinst_LTLIBRARIES=libaqofxconnectplugin.la 
+libaqofxconnectplugin_la_SOURCES= \
+  aqofxconnect-plugin.c \
   account.c \
   user.c \
   provider.c \
@@ -43,31 +44,24 @@ libaqofxconnect_la_SOURCES= \
   dlg_newuser.c \
   dlg_ofx_special.c
 
-
-libaqofxconnect_la_LIBADD= \
+libaqofxconnectplugin_la_LIBADD= \
   libofxhome/libofxhome.la \
   $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
-libaqofxconnect_la_LDFLAGS = -no-undefined \
-  -version-info $(AQOFXCONNECT_SO_CURRENT):$(AQOFXCONNECT_SO_REVISION):$(AQOFXCONNECT_SO_AGE)
-
-
-# static plugin library
-noinst_LTLIBRARIES=libaqofxconnectplugin.la 
-libaqofxconnectplugin_la_SOURCES= \
-  aqofxconnect-plugin.c
-libaqofxconnectplugin_la_LIBADD= \
-  libaqofxconnect.la \
-  $(aqbanking_internal_libs) \
-  $(gwenhywfar_libs)
-libaqofxconnectplugin_la_LDFLAGS = -no-undefined
 
 
 # dynamic plugin
 plugin_LTLIBRARIES = aqofxconnect.la
-aqofxconnect_la_SOURCES=dummy.c
+aqofxconnect_la_SOURCES=\
+  aqofxconnect-plugin.c \
+  account.c \
+  user.c \
+  provider.c \
+  dlg_edituser.c \
+  dlg_newuser.c \
+  dlg_ofx_special.c
+
 aqofxconnect_la_LIBADD = \
-  libaqofxconnectplugin.la \
   $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
 aqofxconnect_la_LDFLAGS = -no-undefined -module -avoid-version
