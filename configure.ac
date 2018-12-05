@@ -1542,8 +1542,7 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqpaypal/Makefile
   src/plugins/backends/aqpaypal/plugin/Makefile
   src/plugins/backends/aqpaypal/plugin/aqpaypal.xml
-  src/plugins/backends/aqpaypal/tools/Makefile
-  src/plugins/backends/aqpaypal/tools/aqpaypal-tool/Makefile
+  src/plugins/backends/aqpaypal/plugin/control/Makefile
   src/plugins/backends/aqnone/Makefile
   src/plugins/backends/aqnone/aqnone.xml
   src/plugins/backends/aqebics/Makefile
