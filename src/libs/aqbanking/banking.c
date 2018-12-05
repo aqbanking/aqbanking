@@ -22,8 +22,6 @@
 #include "bankinfoplugin_l.h"
 #include "i18n_l.h"
 
-#include <aqbanking/transactionfns.h>
-
 #include <gwenhywfar/version.h>
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/debug.h>
