@@ -1058,9 +1058,11 @@ int AB_SetupDialog_AddAccount(GWEN_DIALOG *dlg) {
     if (rv==0) {
       /* rejected */
       GWEN_Dialog_free(dlg2);
+      AB_Banking_EndUseProvider(xdlg->banking, pro);
       return GWEN_DialogEvent_ResultHandled;
     }
     GWEN_Dialog_free(dlg2);
+    AB_Banking_EndUseProvider(xdlg->banking, pro);
     AB_SetupDialog_Reload(dlg);
   }
   else {
@@ -1072,6 +1074,7 @@ int AB_SetupDialog_AddAccount(GWEN_DIALOG *dlg) {
     a=AB_Provider_CreateAccountObject(pro);
     if (a==NULL) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "No account created.");
+      AB_Banking_EndUseProvider(xdlg->banking, pro);
       return GWEN_DialogEvent_ResultHandled;
     }
 
@@ -1091,6 +1094,7 @@ int AB_SetupDialog_AddAccount(GWEN_DIALOG *dlg) {
     if (dlg2==NULL) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Could not create dialog");
       AB_Account_free(a);
+      AB_Banking_EndUseProvider(xdlg->banking, pro);
       return GWEN_DialogEvent_ResultHandled;
     }
 
@@ -1099,6 +1103,7 @@ int AB_SetupDialog_AddAccount(GWEN_DIALOG *dlg) {
       /* rejected */
       GWEN_Dialog_free(dlg2);
       AB_Account_free(a);
+      AB_Banking_EndUseProvider(xdlg->banking, pro);
       return GWEN_DialogEvent_ResultHandled;
     }
     GWEN_Dialog_free(dlg2);
@@ -1110,6 +1115,8 @@ int AB_SetupDialog_AddAccount(GWEN_DIALOG *dlg) {
       return GWEN_DialogEvent_ResultHandled;
     }
     AB_Account_free(a);
+
+    AB_Banking_EndUseProvider(xdlg->banking, pro);
 
     AB_SetupDialog_Reload(dlg);
   }

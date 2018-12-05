@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Sat Jan 13 2010
-    copyright   : (C) 2010 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -14,6 +14,8 @@
 
 #include "csv_editprofile_p.h"
 #include "i18n_l.h"
+
+#include <aqbanking/banking_be.h>
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>

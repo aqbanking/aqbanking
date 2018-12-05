@@ -19,6 +19,7 @@
 
 #include <aqbanking/httpsession.h>
 #include <aqbanking/transaction.h>
+#include <aqbanking/banking_be.h>
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>

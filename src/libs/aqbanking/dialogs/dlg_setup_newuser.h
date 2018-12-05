@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Fri Jul 30 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -39,7 +39,7 @@ extern "C" {
  * @param banking pointer to the AqBanking object
 
  */
-AQBANKING_API GWEN_DIALOG *AB_SetupNewUserDialog_new(AB_BANKING *ab);
+GWEN_DIALOG *AB_SetupNewUserDialog_new(AB_BANKING *ab);
 
 
 const char *AB_SetupNewUserDialog_GetSelectedBackend(const GWEN_DIALOG *dlg);

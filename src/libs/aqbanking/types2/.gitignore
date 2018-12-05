@@ -82,24 +82,3 @@ account_spec.c
 account_spec.h
 account_spec_p.h
 
-ab_user_spec.tm2
-ab_user_spec_list.tm2
-ab_user_spec_list2.tm2
-user_spec.c
-user_spec.h
-user_spec_p.h
-
-ab_account.tm2
-ab_account_list.tm2
-ab_account_list2.tm2
-account.c
-account.h
-account_p.h
-
-ab_user.tm2
-ab_user_list.tm2
-ab_user_list2.tm2
-user.c
-user.h
-user_p.h
-

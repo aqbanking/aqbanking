@@ -42,14 +42,14 @@ extern "C" {
  *   "Please select the backend to create a new user for").
  * @return pointer to the selected backend (or NULL on error)
  */
-AQBANKING_API AB_PROVIDER *AB_SelectBackend(AB_BANKING *ab, const char *initial, const char *text);
+AB_PROVIDER *AB_SelectBackend(AB_BANKING *ab, const char *initial, const char *text);
 
 
 
-AQBANKING_API GWEN_DIALOG *AB_SelectBackendDialog_new(AB_BANKING *ab, const char *text);
+GWEN_DIALOG *AB_SelectBackendDialog_new(AB_BANKING *ab, const char *text);
 
-AQBANKING_API const char *AB_SelectBackendDialog_GetSelectedProvider(const GWEN_DIALOG *dlg);
-AQBANKING_API void AB_SelectBackendDialog_SetSelectedProvider(GWEN_DIALOG *dlg, const char *s);
+const char *AB_SelectBackendDialog_GetSelectedProvider(const GWEN_DIALOG *dlg);
+void AB_SelectBackendDialog_SetSelectedProvider(GWEN_DIALOG *dlg, const char *s);
 
 
 

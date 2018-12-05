@@ -24,7 +24,7 @@ extern "C" {
 
 
 
-AQBANKING_API GWEN_DIALOG *AB_EditUserDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock);
+GWEN_DIALOG *AB_EditUserDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock);
 
 
 

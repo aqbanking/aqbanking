@@ -1,8 +1,11 @@
 SUBDIRS=types2 types gui backendsupport typemaker2 dialogs
 
 INCLUDES = \
+  $(gwenhywfar_includes) \
   -I$(aqbanking_symlinkdir) \
-  -I$(srcdir)/types $(gwenhywfar_includes)
+  -I$(srcdir)/types \
+  -I$(srcdir)/dialogs \
+  -I$(srcdir)/backendsupport
 
 lib_LTLIBRARIES=libaqbanking.la
 
@@ -13,15 +16,13 @@ EXTRA_DIST=\
  banking_accspec.c \
  banking_bankinfo.c \
  banking_cfg.c \
+ banking_dialogs.c \
  banking_imex.c \
  banking_init.c \
  banking_online.c \
  banking_transaction.c \
  banking_update.c \
- banking_user.c \
- provider_account.c \
- provider_user.c \
- provider_queues.c
+ banking_user.c
 
 
 
@@ -43,11 +44,7 @@ noinst_HEADERS=\
  bankinfoplugin_p.h \
  i18n_l.h \
  imexporter_l.h \
- imexporter_p.h \
- provider_l.h \
- provider_p.h \
- msgengine_p.h \
- httpsession_p.h
+ imexporter_p.h
 
 
 iheaderdir=@aqbanking_headerdir_am@/aqbanking
@@ -56,6 +53,7 @@ iheader_HEADERS=\
  banking.h \
  banking_be.h \
  banking_cfg.h \
+ banking_dialogs.h \
  banking_imex.h \
  banking_bankinfo.h \
  banking_online.h \
@@ -64,28 +62,22 @@ iheader_HEADERS=\
  bankinfoplugin_be.h \
  error.h \
  imexporter.h \
- imexporter_be.h \
- provider.h \
- provider_be.h\
- msgengine.h \
- httpsession.h
+ imexporter_be.h
 
 
 libaqbanking_la_SOURCES=\
  account_type.c \
  bankinfoplugin.c \
  banking.c \
- imexporter.c \
- provider.c \
- msgengine.c \
- httpsession.c
+ imexporter.c
 
 
 libaqbanking_la_LIBADD= $(gwenhywfar_libs) $(gmp_libs) $(i18n_libs) \
  backendsupport/libabbesupport.la \
  types2/libabtypes2.la \
  types/libtypes.la \
- gui/libabgui.la
+ gui/libabgui.la \
+ dialogs/libabdialogs.la
 
 libaqbanking_la_LDFLAGS = -no-undefined \
   -version-info @AQBANKING_SO_CURRENT@:@AQBANKING_SO_REVISION@:@AQBANKING_SO_AGE@

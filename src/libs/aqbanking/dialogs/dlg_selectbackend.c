@@ -409,7 +409,7 @@ AB_PROVIDER *AB_SelectBackend(AB_BANKING *ab, const char *initial, const char *t
     if (s && *s) {
       AB_PROVIDER *pro;
 
-      pro=AB_Banking_GetProvider(ab, s);
+      pro=AB_Banking_BeginUseProvider(ab, s);
       if (pro==NULL) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider [%s] not found", s);
 	GWEN_Dialog_free(dlg);

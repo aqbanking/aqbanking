@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue Apr 13 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -30,12 +30,10 @@ extern "C" {
 /*@{*/
 
 
-AQBANKING_API 
 GWEN_DIALOG *AB_SelectBankInfoDialog_new(AB_BANKING *ab,
 					 const char *country,
 					 const char *bankCode);
 
-AQBANKING_API 
 const AB_BANKINFO *AB_SelectBankInfoDialog_GetSelectedBankInfo(GWEN_DIALOG *dlg);
 
 

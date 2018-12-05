@@ -16,6 +16,8 @@
 #include <aqbanking/account.h>
 #include <aqbanking/transaction.h>
 
+#include <gwenhywfar/plugindescr.h>
+
 
 #ifdef __cplusplus
 extern "C" {

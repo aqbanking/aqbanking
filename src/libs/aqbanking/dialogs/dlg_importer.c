@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue Feb 10 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -14,6 +14,8 @@
 
 #include "dlg_importer_p.h"
 #include "i18n_l.h"
+
+#include <aqbanking/banking_be.h>
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>

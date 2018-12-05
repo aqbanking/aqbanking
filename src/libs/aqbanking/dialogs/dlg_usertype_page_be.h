@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Fri Jul 30 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -29,12 +29,12 @@ extern "C" {
  * For HBCI there are many options (like PinTan, chipcard, keyfile etc). For others
  * there might be only one option.
  */
-AQBANKING_API GWEN_DIALOG *AB_UserTypePageDialog_new(AB_BANKING *ab, const char *dname);
+GWEN_DIALOG *AB_UserTypePageDialog_new(AB_BANKING *ab, const char *dname);
 
-AQBANKING_API AB_BANKING *AB_UserTypePageDialog_GetBanking(const GWEN_DIALOG *dlg);
+AB_BANKING *AB_UserTypePageDialog_GetBanking(const GWEN_DIALOG *dlg);
 
-AQBANKING_API int AB_UserTypePageDialog_GetSelectedType(const GWEN_DIALOG *dlg);
-AQBANKING_API void AB_UserTypePageDialog_SetSelectedType(GWEN_DIALOG *dlg, int t);
+int AB_UserTypePageDialog_GetSelectedType(const GWEN_DIALOG *dlg);
+void AB_UserTypePageDialog_SetSelectedType(GWEN_DIALOG *dlg, int t);
 
 
 #ifdef __cplusplus

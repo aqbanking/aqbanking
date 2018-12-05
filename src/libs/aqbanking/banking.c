@@ -21,6 +21,8 @@
 #include "imexporter_l.h"
 #include "bankinfoplugin_l.h"
 #include "i18n_l.h"
+#include "banking_dialogs.h"
+
 
 #include <gwenhywfar/version.h>
 #include <gwenhywfar/gwenhywfar.h>
@@ -74,6 +76,7 @@ GWEN_INHERIT_FUNCTIONS(AB_BANKING)
 #include "banking_online.c"
 #include "banking_imex.c"
 #include "banking_bankinfo.c"
+#include "banking_dialogs.c"
 
 
 

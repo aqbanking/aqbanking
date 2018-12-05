@@ -16,13 +16,15 @@
 #include "dlg_getinst_p.h"
 #include "i18n_l.h"
 
+#include <aqbanking/banking.h>
+#include <aqbanking/banking_be.h>
+
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/pathmanager.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/text.h>
-#include <aqbanking/banking.h>
 
 
 #define DIALOG_MINWIDTH  400

@@ -22,6 +22,7 @@
 
 #include <gwenhywfar/httpsession.h>
 #include <gwenhywfar/ct.h>
+#include <gwenhywfar/plugindescr.h>
 
 
 #define AB_CFG_GROUP_BACKENDS   "backends"
@@ -30,6 +31,12 @@
 
 #define AB_CFG_GROUP_USERS      "users"
 #define AB_CFG_GROUP_ACCOUNTS   "accounts"
+
+#define AB_PM_LIBNAME           "aqbanking"
+#define AB_PM_SYSCONFDIR        "sysconfdir"
+#define AB_PM_DATADIR           "datadir"
+#define AB_PM_WIZARDDIR         "wizarddir"
+#define AB_PM_LOCALEDIR         "localedir"
 
 
 
@@ -59,6 +66,40 @@ AQBANKING_API GWEN_STRINGLIST *AB_Banking_GetGlobalDataDirs(void);
 
 
 AQBANKING_API GWEN_STRINGLIST *AB_Banking_GetGlobalSysconfDirs(void);
+
+
+/**
+ * Loads the given provider and initializes it.
+ * Only after calling this function the provider can be used.
+ * You need to call @ref AB_Banking_EndUseProvider() if you're done.
+ *
+ * @return 0 if ok, error code otherwise
+ *
+ * @param ab pointer to the AB_BANKING object (needs to be initialized, i.e. @ref AB_Banking_Init called).
+ * @param modname (e.g. "aqhbci")
+ */
+AQBANKING_API
+AB_PROVIDER *AB_Banking_BeginUseProvider(AB_BANKING *ab, const char *modname);
+
+/**
+ * Call this as soon as the provider isn't actually needed anymore.
+ * This probably unloads the plugin, at least it is deinitialized.
+ *
+ * @return 0 if ok, error code otherwise
+ *
+ * @param ab pointer to the AB_BANKING object (needs to be initialized, i.e. @ref AB_Banking_Init called).
+ * @param pro pointer to provider object returned by @ref AB_Banking_BeginUseProvider
+ *
+ */
+AQBANKING_API
+int AB_Banking_EndUseProvider(AB_BANKING *ab, AB_PROVIDER *pro);
+
+
+/**
+ * Create a list of available online banking providers.
+ */
+AQBANKING_API GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab);
+
 
 /*@}*/
 
@@ -118,6 +159,20 @@ int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab,
                                       const char *name,
                                       GWEN_BUFFER *buf);
 
+
+/**
+ * Returns the name of the user folder for application data.
+ * Normally this is something like "/home/me/.aqbanking/apps".
+ * Your application may choose to create folders below this one to store
+ * user data. If you only add AqBanking to an existing program to add
+ * home banking support you will most likely use your own folders and thus
+ * won't need this function.
+ * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
+ * @param ab pointer to the AB_BANKING object
+ * @param buf GWEN_BUFFER to append the path name to
+ */
+AQBANKING_API 
+int AB_Banking_GetAppUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
 
 
 
