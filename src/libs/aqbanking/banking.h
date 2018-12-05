@@ -193,39 +193,6 @@ int AB_Banking_Fini(AB_BANKING *ab);
 
 
 
-/** @name Working With Backends
- *
- */
-/*@{*/
-
-AQBANKING_API
-GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab);
-
-/**
- * Create a dialog which allows to create a new user.
- *
- * @return dialog
- *
- * @param ab pointer to the AqBanking object
- *
- * @param backend name of the backend for which a user is to be created
- *   (e.g. "aqhbci", "aqebics" etc)
- *
- * @param mode additional parameter depending on the backend. it can be used
- *   to specify the user type to be created (e.g. for HBCI those values
- *   specify whether PIN/TAN, keyfile or chipcard users are to be created,
- *   see @ref AqHBCI_NewUserDialog_CodeGeneric and following).
- *   Use value 0 for the generic dialog.
- */
-AQBANKING_API 
-GWEN_DIALOG *AB_Banking_GetNewUserDialog(AB_BANKING *ab,
-					 const char *backend,
-					 int mode);
-
-/*@}*/
-
-
-
 /** @name Application Data
  *
  * Applications may let AqBanking store global application specific data.
@@ -325,6 +292,33 @@ int AB_Banking_EndUseProvider(AB_BANKING *ab, AB_PROVIDER *pro);
  * Load the given backend (if necessary) and call the control function with the given arguments.
  */
 AQBANKING_API int AB_Banking_ProviderControl(AB_BANKING *ab, const char *backendName, int argc, char **argv);
+
+
+/**
+ * Create a list of available online banking providers.
+ */
+AQBANKING_API GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab);
+
+/**
+ * Create a dialog which allows to create a new user.
+ *
+ * @return dialog
+ *
+ * @param ab pointer to the AqBanking object
+ *
+ * @param backend name of the backend for which a user is to be created
+ *   (e.g. "aqhbci", "aqebics" etc)
+ *
+ * @param mode additional parameter depending on the backend. it can be used
+ *   to specify the user type to be created (e.g. for HBCI those values
+ *   specify whether PIN/TAN, keyfile or chipcard users are to be created,
+ *   see @ref AqHBCI_NewUserDialog_CodeGeneric and following).
+ *   Use value 0 for the generic dialog.
+ */
+AQBANKING_API 
+GWEN_DIALOG *AB_Banking_GetNewUserDialog(AB_BANKING *ab,
+					 const char *backend,
+					 int mode);
 
 /*@}*/
 
