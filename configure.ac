@@ -482,16 +482,13 @@ AC_ARG_WITH(imexporters,
 )
 
 if test "$aqbanking_imexporters" = "all"; then
-  aqbanking_imexporters="csv dtaus eri2 ofx openhbci1 swift xmldb yellownet sepa ctxfile q43"
+  aqbanking_imexporters="csv eri2 ofx openhbci1 swift xmldb yellownet sepa ctxfile q43"
 fi
 
 for f in ${aqbanking_imexporters}; do
   case "$f" in
     csv)
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs csv"
-      ;;
-    dtaus)
-      aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs dtaus"
       ;;
     eri2)
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs eri2"
@@ -542,14 +539,11 @@ AC_ARG_WITH(parsers,
 )
 
 if test "$aqbanking_parsers" = "all"; then
-  aqbanking_parsers="dtaus swift"
+  aqbanking_parsers="swift"
 fi
 
 for f in ${aqbanking_parsers}; do
   case "$f" in
-    dtaus)
-      aqbanking_plugins_parsers_dirs="$aqbanking_plugins_parsers_dirs dtaus"
-      ;;
     swift)
       aqbanking_plugins_parsers_dirs="$aqbanking_plugins_parsers_dirs swift"
       ;;
@@ -1419,12 +1413,6 @@ AC_CONFIG_FILES([
   src/plugins/bankinfo/de/de.xml
   src/plugins/bankinfo/generic/Makefile
   src/plugins/imexporters/Makefile
-  src/plugins/imexporters/dtaus/Makefile
-  src/plugins/imexporters/dtaus/dtaus.xml
-  src/plugins/imexporters/dtaus/profiles/Makefile
-  src/plugins/imexporters/dtaus/profiles/default.conf
-  src/plugins/imexporters/dtaus/profiles/debitnote.conf
-  src/plugins/imexporters/dtaus/profiles/transfer.conf
   src/plugins/imexporters/eri2/Makefile
   src/plugins/imexporters/eri2/eri2.xml
   src/plugins/imexporters/eri2/profiles/Makefile
@@ -1508,8 +1496,6 @@ AC_CONFIG_FILES([
   src/plugins/imexporters/q43/profiles/Makefile
   src/plugins/imexporters/q43/profiles/default.conf
   src/plugins/parsers/Makefile
-  src/plugins/parsers/dtaus/Makefile
-  src/plugins/parsers/dtaus/dtaus.xml
   src/plugins/parsers/swift/Makefile
   src/plugins/parsers/swift/swift.xml
   src/plugins/backends/Makefile

@@ -1,5 +1,5 @@
 SUBDIRS=$(aqbanking_plugins_parsers_dirs)
-DIST_SUBDIRS=dtaus swift
+DIST_SUBDIRS=swift
 
 
 sources:
