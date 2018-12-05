@@ -477,6 +477,7 @@ int AH_EditUserRdhDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
 			  NULL,
 			  NULL,
 			  0);
+      AB_Provider_EndExclUseUser(xdlg->provider, xdlg->user, 1);
       return GWEN_DialogEvent_ResultHandled;
     }
   }

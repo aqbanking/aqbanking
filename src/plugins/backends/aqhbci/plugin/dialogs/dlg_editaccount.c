@@ -294,6 +294,12 @@ void AH_EditAccountDialog_Init(GWEN_DIALOG *dlg) {
   s=AB_Account_GetOwnerName(xdlg->account);
   GWEN_Dialog_SetCharProperty(dlg, "ownerNameEdit", GWEN_DialogProperty_Value, 0, s, 0);
 
+  s=AB_Account_GetCurrency(xdlg->account);
+  GWEN_Dialog_SetCharProperty(dlg, "currencyEdit", GWEN_DialogProperty_Value, 0, s, 0);
+
+  s=AB_Account_GetCountry(xdlg->account);
+  GWEN_Dialog_SetCharProperty(dlg, "countryEdit", GWEN_DialogProperty_Value, 0, s, 0);
+
   /* setup account type */
   GWEN_Dialog_SetCharProperty(dlg, "accountTypeCombo", GWEN_DialogProperty_AddValue, 0,
 			      I18N("unknown"),
@@ -441,16 +447,18 @@ int AH_EditAccountDialog_fromGui(GWEN_DIALOG *dlg, AB_ACCOUNT *a, int quiet) {
   }
 
   /* get currency */
-  if (a)
-    AB_Account_SetCurrency(a, "EUR");
+  s=GWEN_Dialog_GetCharProperty(dlg, "currencyEdit", GWEN_DialogProperty_Value, 0, NULL);
+  if (a && s && *s)
+    AB_Account_SetCurrency(a, s);
 
   i=GWEN_Dialog_GetIntProperty(dlg, "accountTypeCombo", GWEN_DialogProperty_Value, 0, 0);
   if (a)
     AB_Account_SetAccountType(a, i);
 
   /*  get country */
-  if (a)
-    AB_Account_SetCountry(a, "de");
+  s=GWEN_Dialog_GetCharProperty(dlg, "countryEdit", GWEN_DialogProperty_Value, 0, NULL);
+  if (a && s && *s)
+    AB_Account_SetCountry(a, s);
 
   s=GWEN_Dialog_GetCharProperty(dlg, "bankCodeEdit", GWEN_DialogProperty_Value, 0, NULL);
   if (s && *s) {
@@ -656,6 +664,7 @@ int AH_EditAccountDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
 			  NULL,
 			  NULL,
 			  0);
+      AB_Provider_EndExclUseAccount(xdlg->provider, xdlg->account, 1);
       return GWEN_DialogEvent_ResultHandled;
     }
   }

@@ -31,6 +31,9 @@
           <widget type="label" text="Owner Name" flags="noWordWrap" />
           <widget type="lineEdit" name="ownerNameEdit" columns="20" flags="fillX" />
     
+          <widget type="label" text="Currency" flags="noWordWrap" />
+          <widget type="lineEdit" name="currencyEdit"  columns="20" flags="fillX readOnly" />
+    
           <widget type="label" text="Account Type" flags="noWordWrap" />
           <widget type="comboBox" name="accountTypeCombo"  columns="20" flags="fillX readOnly" />
   
@@ -48,6 +51,9 @@
     <widget type="groupBox" text="Bank Info" flags="fillX" >
 
       <widget type="gridLayout" columns="2" flags="fillX" >
+
+        <widget type="label" text="Country" />
+        <widget type="lineEdit" name="countryEdit"  columns="20" flags="fillX readOnly" />
 
         <widget type="label" text="Bank Code" flags="noWordWrap" />
         <widget type="hlayout" flags="fillX" >
