@@ -9,7 +9,6 @@ AM_CFLAGS=@visibility_cflags@
 bin_PROGRAMS=aqbanking-cli
 
 aqbanking_cli_LDADD= \
-  $(aqhbci_internal_libs) \
   $(aqbanking_internal_libs) \
   $(gwenhywfar_libs) -lstdc++
 

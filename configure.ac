@@ -1534,8 +1534,6 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqhbci/plugin/applayer/xml/Makefile
   src/plugins/backends/aqhbci/plugin/control/Makefile
   src/plugins/backends/aqhbci/plugin/version.h
-  src/plugins/backends/aqhbci/tools/Makefile
-  src/plugins/backends/aqhbci/tools/hbcixml/Makefile
   src/plugins/backends/aqofxconnect/Makefile
   src/plugins/backends/aqofxconnect/version.h
   src/plugins/backends/aqofxconnect/plugin/Makefile

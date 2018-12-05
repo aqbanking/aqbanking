@@ -41,10 +41,10 @@ sources:
 	  $(MAKE) -C $$d sources; \
 	done
 
-# libaqhbci
-lib_LTLIBRARIES=libaqhbci.la
-libaqhbci_la_SOURCES=aqhbci.c
-libaqhbci_la_LIBADD = \
+# AqHBCI plugin library
+noinst_LTLIBRARIES=libaqhbci.la
+libaqhbci_la_SOURCES=aqhbci.c aqhbci-plugin.c
+libaqhbci_la_LIBADD=\
   msglayer/libhbcimsg.la \
   joblayer/libhbcijob.la \
   ajobs/libhbciaccjobs.la \
@@ -53,29 +53,24 @@ libaqhbci_la_LIBADD = \
   control/libhbcicontrol.la \
   $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
-libaqhbci_la_LDFLAGS = -no-undefined \
-  -version-info @AQHBCI_SO_CURRENT@:@AQHBCI_SO_REVISION@:@AQHBCI_SO_AGE@
-
-# AqHBCI plugin library
-noinst_LTLIBRARIES=libaqhbciplugin.la
-libaqhbciplugin_la_SOURCES=aqhbci-plugin.c
-libaqhbciplugin_la_LIBADD=\
-  libaqhbci.la \
-  $(aqbanking_internal_libs) \
-  $(gwenhywfar_libs) 
 
 # AqHBCI module
-aqhbci_la_SOURCES=dummy.c
+aqhbci_la_SOURCES=aqhbci.c aqhbci-plugin.c
 aqhbci_la_LIBADD = \
-  libaqhbciplugin.la \
+  msglayer/libhbcimsg.la \
+  joblayer/libhbcijob.la \
+  ajobs/libhbciaccjobs.la \
+  applayer/libhbciapp.la \
+  banking/libhbcibanking.la \
+  control/libhbcicontrol.la \
   $(aqbanking_internal_libs) \
-  $(gwenhywfar_libs) 
+  $(gwenhywfar_libs)
 aqhbci_la_LDFLAGS = -no-undefined -module -avoid-version
 
 
 testlib_SOURCES=testlib.c
 testlib_LDADD = \
-  $(aqhbci_internal_libs) \
+  libaqhbci.la \
   $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
 

@@ -13,6 +13,8 @@
 
 #include <aqbanking/system.h>
 
+/* ___________________________________________________________________________*/
+#if 0
 
 #ifdef BUILDING_AQHBCI
 # /* building AqHBCI */
@@ -45,6 +47,13 @@
 #   define AQHBCI_API
 # endif
 #endif
+
+#endif
+/* ___________________________________________________________________________*/
+
+
+/* no longer export symbols */
+#define AQHBCI_API
 
 
 #define AH_PROVIDER_NAME "AQHBCI"
