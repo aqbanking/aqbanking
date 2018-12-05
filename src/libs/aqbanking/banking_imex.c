@@ -117,9 +117,12 @@ void AB_Banking__fillTransactionRemoteSepaInfo(AB_BANKING *ab, AB_TRANSACTION *t
 
 
 void AB_Banking_FillGapsInTransaction(AB_BANKING *ab, AB_ACCOUNT *a, AB_TRANSACTION *t) {
+#pragma message "Need to implement this"
+#if 0
   if (a)
     AB_Transaction_FillLocalFromAccount(t, a);
   /*AB_Banking__fillTransactionRemoteSepaInfo(ab, t); don't create IBANs */
+#endif
 }
 
 
