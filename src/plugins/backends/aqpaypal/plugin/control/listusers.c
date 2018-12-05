@@ -12,7 +12,7 @@
 #endif
 
 
-#include "globals.h"
+#include "globals_l.h"
 
 #include <aqbanking/banking.h>
 #include <aqbanking/user.h>
@@ -29,14 +29,13 @@
 #include <errno.h>
 
 
-int listUsers(AB_BANKING *ab,
+int listUsers(AB_PROVIDER *pro,
               GWEN_DB_NODE *dbArgs,
               int argc,
               char **argv) {
   GWEN_DB_NODE *db;
   int rv;
   int xml=0;
-  AB_PROVIDER *pro;
   AB_USER_LIST *ul;
   AB_USER *u;
   int i=0;
@@ -88,12 +87,6 @@ int listUsers(AB_BANKING *ab,
     return 0;
   }
 
-  rv=AB_Banking_Init(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
-  }
-
   xml=GWEN_DB_VariableExists(db, "xml");
 
   if( xml ) {
@@ -101,16 +94,11 @@ int listUsers(AB_BANKING *ab,
     fprintf( stdout, "<users>\n" );
   }
 
-  pro=AB_Banking_BeginUseProvider(ab, "aqpaypal");
-  assert(pro);
-
-
   ul=AB_User_List_new();
   rv=AB_Provider_ReadUsers(pro, ul);
   if (rv<0 && rv!=GWEN_ERROR_NOT_FOUND) {
     DBG_ERROR_ERR(0, rv);
     AB_User_List_free(ul);
-    AB_Banking_EndUseProvider(ab, pro);
     return 3;
   }
 
@@ -147,12 +135,6 @@ int listUsers(AB_BANKING *ab,
 
   if (xml) {
     fprintf( stdout, "</users>\n" );
-  }
-
-  rv=AB_Banking_Fini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    return 5;
   }
 
   return 0;

@@ -1,3 +1,5 @@
+SUBDIRS=control
+
 INCLUDES=-I$(aqbanking_symlinkdir) $(gwenhywfar_includes) -I$(top_srcdir)/src/libs/aqbanking
 
 DEFS += -DBUILDING_AQPAYPAL
@@ -22,8 +24,11 @@ noinst_HEADERS=\
 
 
 # library
-lib_LTLIBRARIES=libaqpaypal.la
-libaqpaypal_la_LIBADD=$(gwenhywfar_libs) $(aqbanking_internal_libs)
+noinst_LTLIBRARIES=libaqpaypal.la
+libaqpaypal_la_LIBADD=\
+ $(gwenhywfar_libs) $(aqbanking_internal_libs) \
+ control/libpaypalcontrol.la
+
 libaqpaypal_la_SOURCES=\
   user.c \
   provider.c \
@@ -34,9 +39,18 @@ libaqpaypal_la_SOURCES=\
 
 # plugin
 plugin_LTLIBRARIES=aqpaypal.la
-aqpaypal_la_SOURCES=aqpaypal-plugin.c
-aqpaypal_la_LDFLAGS=-module -avoid-version
-aqpaypal_la_LIBADD=libaqpaypal.la $(gwenhywfar_libs) $(aqbanking_internal_libs)
+aqpaypal_la_SOURCES=\
+  aqpaypal-plugin.c \
+  user.c \
+  provider.c \
+  dlg_newuser.c \
+  dlg_edituser.c \
+  dlg_editsecret.c
+  
+aqpaypal_la_LDFLAGS=-module -avoid-version -no-undefined
+aqpaypal_la_LIBADD=\
+  $(gwenhywfar_libs) $(aqbanking_internal_libs) \
+   control/libpaypalcontrol.la
 
 
 dlgdatadir=$(aqbanking_pkgdatadir)/backends/aqpaypal/dialogs

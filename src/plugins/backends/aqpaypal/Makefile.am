@@ -1,4 +1,4 @@
-SUBDIRS=plugin tools
+SUBDIRS=plugin
 
 
 sources:

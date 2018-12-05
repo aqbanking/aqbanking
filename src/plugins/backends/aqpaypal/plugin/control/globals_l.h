@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Sat May 08 2010
-    copyright   : (C) 2010 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -17,29 +17,32 @@
 #include <gwenhywfar/db.h>
 
 
+#include "control_l.h"
 
-int listUsers(AB_BANKING *ab,
+
+
+int listUsers(AB_PROVIDER *pro,
               GWEN_DB_NODE *dbArgs,
               int argc,
               char **argv);
 
 
-int listAccounts(AB_BANKING *ab,
+int listAccounts(AB_PROVIDER *pro,
                  GWEN_DB_NODE *dbArgs,
                  int argc,
 		 char **argv);
 
-int addUser(AB_BANKING *ab,
+int addUser(AB_PROVIDER *pro,
             GWEN_DB_NODE *dbArgs,
             int argc,
             char **argv);
 
-int addAccount(AB_BANKING *ab,
+int addAccount(AB_PROVIDER *pro,
 	       GWEN_DB_NODE *dbArgs,
 	       int argc,
 	       char **argv);
 
-int setSecrets(AB_BANKING *ab,
+int setSecrets(AB_PROVIDER *pro,
 	       GWEN_DB_NODE *dbArgs,
 	       int argc,
 	       char **argv);

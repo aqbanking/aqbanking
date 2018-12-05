@@ -16,6 +16,8 @@
 #include <aqbanking/system.h>
 #include <gwenhywfar/types.h>
 
+/* ___________________________________________________________________________*/
+#if 0
 
 #ifdef BUILDING_AQPAYPAL
 # /* building AqEBICS */
@@ -48,6 +50,13 @@
 #   define AQPAYPAL_API
 # endif
 #endif
+
+#endif
+/* ___________________________________________________________________________*/
+
+
+/* no longer export symbols */
+#define AQPAYPAL_API
 
 
 #define APY_PROVIDER_NAME "AQPAYPAL"
