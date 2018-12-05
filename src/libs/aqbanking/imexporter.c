@@ -521,7 +521,7 @@ void AB_ImExporter_Iso8859_1ToUtf8(const char *p,
 
 
 
-int AH_ImExporter__Transform_Var(GWEN_DB_NODE *db, int level) {
+int AB_ImExporter__Transform_Var(GWEN_DB_NODE *db, int level) {
   GWEN_DB_NODE *dbC;
 
   dbC=GWEN_DB_GetFirstValue(db);
@@ -550,7 +550,7 @@ int AH_ImExporter__Transform_Var(GWEN_DB_NODE *db, int level) {
 
 
 
-int AH_ImExporter__Transform_Group(GWEN_DB_NODE *db, int level) {
+int AB_ImExporter__Transform_Group(GWEN_DB_NODE *db, int level) {
   GWEN_DB_NODE *dbC;
   int rv;
 
@@ -561,7 +561,7 @@ int AH_ImExporter__Transform_Group(GWEN_DB_NODE *db, int level) {
 
   dbC=GWEN_DB_GetFirstGroup(db);
   while(dbC) {
-    rv=AH_ImExporter__Transform_Group(dbC, level+1);
+    rv=AB_ImExporter__Transform_Group(dbC, level+1);
     if (rv)
       return rv;
     dbC=GWEN_DB_GetNextGroup(dbC);
@@ -569,7 +569,7 @@ int AH_ImExporter__Transform_Group(GWEN_DB_NODE *db, int level) {
 
   dbC=GWEN_DB_GetFirstVar(db);
   while(dbC) {
-    rv=AH_ImExporter__Transform_Var(dbC, level+1);
+    rv=AB_ImExporter__Transform_Var(dbC, level+1);
     if (rv)
       return rv;
     dbC=GWEN_DB_GetNextVar(dbC);
@@ -580,14 +580,8 @@ int AH_ImExporter__Transform_Group(GWEN_DB_NODE *db, int level) {
 
 
 
-int AH_ImExporter_DbFromIso8859_1ToUtf8(GWEN_DB_NODE *db) {
-  return AH_ImExporter__Transform_Group(db, 0);
-}
-
-
-
 int AB_ImExporter_DbFromIso8859_1ToUtf8(GWEN_DB_NODE *db) {
-  return AH_ImExporter__Transform_Group(db, 0);
+  return AB_ImExporter__Transform_Group(db, 0);
 }
 
 
