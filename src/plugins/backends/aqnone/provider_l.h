@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -13,6 +13,9 @@
 #include <aqbanking/provider_be.h>
 
 #include <aqbanking/system.h>
+
+/* ___________________________________________________________________________*/
+#if 0
 
 #ifdef BUILDING_AQNONE
 # /* building AqNONE */
@@ -45,6 +48,13 @@
 #   define AQNONE_API
 # endif
 #endif
+
+#endif
+/* ___________________________________________________________________________*/
+
+
+/* no longer export symbols */
+#define AQNONE_API
 
 
 #define AQNONE_BACKENDNAME "aqnone"
