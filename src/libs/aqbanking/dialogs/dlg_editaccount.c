@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Thu Apr 15 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -18,7 +18,9 @@
 #include "i18n_l.h"
 
 #include <aqbanking/account.h>
+#include <aqbanking/user.h>
 #include <aqbanking/banking_be.h>
+#include <aqbanking/provider_be.h>
 #include <aqbanking/dlg_selectbankinfo.h>
 
 #include <gwenhywfar/gwenhywfar.h>
@@ -41,7 +43,7 @@ GWEN_INHERIT(GWEN_DIALOG, AB_EDIT_ACCOUNT_DIALOG)
 
 
 
-GWEN_DIALOG *AB_EditAccountDialog_new(AB_BANKING *ab, AB_ACCOUNT *a, int doLock) {
+GWEN_DIALOG *AB_EditAccountDialog_new(AB_PROVIDER *pro, AB_ACCOUNT *a, int doLock) {
   GWEN_DIALOG *dlg;
   AB_EDIT_ACCOUNT_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -75,7 +77,8 @@ GWEN_DIALOG *AB_EditAccountDialog_new(AB_BANKING *ab, AB_ACCOUNT *a, int doLock)
   }
   GWEN_Buffer_free(fbuf);
 
-  xdlg->banking=ab;
+  xdlg->provider=pro;
+  xdlg->banking=AB_Provider_GetBanking(pro);
   xdlg->account=a;
   xdlg->doLock=doLock;
 
@@ -90,46 +93,6 @@ void GWENHYWFAR_CB AB_EditAccountDialog_FreeData(void *bp, void *p) {
 
   xdlg=(AB_EDIT_ACCOUNT_DIALOG*) p;
   GWEN_FREE_OBJECT(xdlg);
-}
-
-
-
-static int createCountryString(const AB_COUNTRY *c, GWEN_BUFFER *tbuf) {
-  const char *s;
-
-  s=AB_Country_GetLocalName(c);
-  if (s && *s) {
-    GWEN_Buffer_AppendString(tbuf, s);
-    s=AB_Country_GetCode(c);
-    if (s && *s) {
-      GWEN_Buffer_AppendString(tbuf, " (");
-      GWEN_Buffer_AppendString(tbuf, s);
-      GWEN_Buffer_AppendString(tbuf, ")");
-    }
-    return 0;
-  }
-  DBG_INFO(AQBANKING_LOGDOMAIN, "No local name");
-  return GWEN_ERROR_NO_DATA;
-}
-
-
-
-static int createCurrencyString(const AB_COUNTRY *c, GWEN_BUFFER *tbuf) {
-  const char *s;
-
-  s=AB_Country_GetLocalCurrencyName(c);
-  if (s && *s) {
-    GWEN_Buffer_AppendString(tbuf, s);
-    s=AB_Country_GetCurrencyCode(c);
-    if (s && *s) {
-      GWEN_Buffer_AppendString(tbuf, " (");
-      GWEN_Buffer_AppendString(tbuf, s);
-      GWEN_Buffer_AppendString(tbuf, ")");
-    }
-    return 0;
-  }
-  DBG_INFO(AQBANKING_LOGDOMAIN, "No local name");
-  return GWEN_ERROR_NO_DATA;
 }
 
 
@@ -168,73 +131,31 @@ static void createUserString(const AB_USER *u, GWEN_BUFFER *tbuf) {
 
 
 
-AB_USER *AB_EditAccountDialog_GetCurrentUser(GWEN_DIALOG *dlg) {
-  AB_EDIT_ACCOUNT_DIALOG *xdlg;
-  AB_USER_LIST2 *ul;
+uint32_t AB_EditAccountDialog_GetCurrentUserId(GWEN_DIALOG *dlg) {
+  int idx;
 
-  assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_EDIT_ACCOUNT_DIALOG, dlg);
-  assert(xdlg);
+  idx=GWEN_Dialog_GetIntProperty(dlg, "userCombo",  GWEN_DialogProperty_Value, 0, -1);
+  if (idx>=0) {
+    const char *currentText;
 
-  /* user list */
-  ul=AB_Banking_GetUsers(xdlg->banking);
-  if (ul) {
-    int idx;
+    currentText=GWEN_Dialog_GetCharProperty(dlg, "userCombo", GWEN_DialogProperty_Value, idx, NULL);
+    if (currentText && *currentText) {
+      unsigned long int id;
 
-    idx=GWEN_Dialog_GetIntProperty(dlg, "userCombo",  GWEN_DialogProperty_Value, 0, -1);
-    if (idx>=0) {
-      const char *currentText;
-  
-      currentText=GWEN_Dialog_GetCharProperty(dlg, "userCombo", GWEN_DialogProperty_Value, idx, NULL);
-      if (currentText && *currentText) {
-	AB_USER_LIST2_ITERATOR *it;
-    
-	it=AB_User_List2_First(ul);
-	if (it) {
-	  AB_USER *u;
-	  GWEN_BUFFER *tbuf;
-    
-	  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	  u=AB_User_List2Iterator_Data(it);
-	  while(u) {
-	    createUserString(u, tbuf);
-	    if (strcasecmp(currentText, GWEN_Buffer_GetStart(tbuf))==0) {
-	      GWEN_Buffer_free(tbuf);
-	      AB_User_List2Iterator_free(it);
-	      AB_User_List2_free(ul);
-	      return u;
-	    }
-	    GWEN_Buffer_Reset(tbuf);
-	    u=AB_User_List2Iterator_Next(it);
-	  }
-	  GWEN_Buffer_free(tbuf);
-
-	  AB_User_List2Iterator_free(it);
-	}
-	AB_User_List2_free(ul);
+      if (sscanf(currentText, "%lu", &id)==1) {
+        return (uint32_t) id;
       }
     }
   }
 
-  return NULL;
+  return 0;
 }
 
 
 
-int AB_EditAccountDialog_FindUserEntry(GWEN_DIALOG *dlg, AB_USER *u) {
-  AB_EDIT_ACCOUNT_DIALOG *xdlg;
-  GWEN_BUFFER *tbuf;
+int AB_EditAccountDialog_FindUserEntry(GWEN_DIALOG *dlg, uint32_t userId) {
   int i;
   int num;
-  const char *s;
-
-  assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_EDIT_ACCOUNT_DIALOG, dlg);
-  assert(xdlg);
-
-  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  createUserString(u, tbuf);
-  s=GWEN_Buffer_GetStart(tbuf);
 
   /* user list */
   num=GWEN_Dialog_GetIntProperty(dlg, "userCombo", GWEN_DialogProperty_ValueCount, 0, 0);
@@ -242,110 +163,25 @@ int AB_EditAccountDialog_FindUserEntry(GWEN_DIALOG *dlg, AB_USER *u) {
     const char *t;
 
     t=GWEN_Dialog_GetCharProperty(dlg, "userCombo", GWEN_DialogProperty_Value, i, NULL);
-    if (t && *t && strcasecmp(s, t)==0) {
-      GWEN_Buffer_free(tbuf);
-      return i;
+    if (t && *t) {
+      unsigned long int id;
+
+      if (sscanf(t, "%lu", &id)==1) {
+        return i;
+      }
     }
-  }
-  GWEN_Buffer_free(tbuf);
+  } /* for i */
 
   return -1;
 }
 
 
 
-const AB_COUNTRY *AB_EditAccountDialog_GetCurrentCountry(GWEN_DIALOG *dlg) {
-  AB_EDIT_ACCOUNT_DIALOG *xdlg;
-  int idx;
-
-  assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_EDIT_ACCOUNT_DIALOG, dlg);
-  assert(xdlg);
-
-  idx=GWEN_Dialog_GetIntProperty(dlg, "countryCombo", GWEN_DialogProperty_Value, 0, -1);
-  if (idx>=0) {
-    const char *currentText;
-
-    currentText=GWEN_Dialog_GetCharProperty(dlg, "countryCombo", GWEN_DialogProperty_Value, idx, NULL);
-    if (currentText && *currentText && xdlg->countryList) {
-      AB_COUNTRY_CONSTLIST2_ITERATOR *it;
-
-      it=AB_Country_ConstList2_First(xdlg->countryList);
-      if (it) {
-	const AB_COUNTRY *c;
-	GWEN_BUFFER *tbuf;
-
-	tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	c=AB_Country_ConstList2Iterator_Data(it);
-	while(c) {
-	  if (createCountryString(c, tbuf)==0 &&
-	      strcasecmp(GWEN_Buffer_GetStart(tbuf), currentText)==0) {
-	    GWEN_Buffer_free(tbuf);
-	    AB_Country_ConstList2Iterator_free(it);
-            return c;
-	  }
-	  GWEN_Buffer_Reset(tbuf);
-	  c=AB_Country_ConstList2Iterator_Next(it);
-	}
-	GWEN_Buffer_free(tbuf);
-	AB_Country_ConstList2Iterator_free(it);
-      }
-    }
-  }
-
-  return NULL;
-}
-
-
-
-const AB_COUNTRY *AB_EditAccountDialog_GetCurrentCurrency(GWEN_DIALOG *dlg) {
-  AB_EDIT_ACCOUNT_DIALOG *xdlg;
-  int idx;
-
-  assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_EDIT_ACCOUNT_DIALOG, dlg);
-  assert(xdlg);
-
-  idx=GWEN_Dialog_GetIntProperty(dlg, "countryCombo", GWEN_DialogProperty_Value, 0, -1);
-  if (idx>=0) {
-    const char *currentText;
-
-    currentText=GWEN_Dialog_GetCharProperty(dlg, "countryCombo", GWEN_DialogProperty_Value, idx, NULL);
-    if (currentText && *currentText && xdlg->countryList) {
-      AB_COUNTRY_CONSTLIST2_ITERATOR *it;
-
-      it=AB_Country_ConstList2_First(xdlg->countryList);
-      if (it) {
-	const AB_COUNTRY *c;
-	GWEN_BUFFER *tbuf;
-
-	tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	c=AB_Country_ConstList2Iterator_Data(it);
-	while(c) {
-	  if (createCurrencyString(c, tbuf)==0 &&
-	      strcasecmp(GWEN_Buffer_GetStart(tbuf), currentText)==0) {
-	    GWEN_Buffer_free(tbuf);
-	    AB_Country_ConstList2Iterator_free(it);
-            return c;
-	  }
-	  GWEN_Buffer_Reset(tbuf);
-	  c=AB_Country_ConstList2Iterator_Next(it);
-	}
-	GWEN_Buffer_free(tbuf);
-	AB_Country_ConstList2Iterator_free(it);
-      }
-    }
-  }
-
-  return NULL;
-}
-
-
-
 void AB_EditAccountDialog_RebuildUserLists(GWEN_DIALOG *dlg) {
   AB_EDIT_ACCOUNT_DIALOG *xdlg;
-  AB_USER_LIST2 *users;
+  AB_USER_LIST *users;
   GWEN_STRINGLIST *sl;
+  int rv;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_EDIT_ACCOUNT_DIALOG, dlg);
@@ -361,30 +197,27 @@ void AB_EditAccountDialog_RebuildUserLists(GWEN_DIALOG *dlg) {
 
   /* setup lists of available and selected users */
   sl=GWEN_StringList_new();
-  users=AB_Banking_FindUsers(xdlg->banking,
-			     AB_Account_GetBackendName(xdlg->account),
-			     "*", "*", "*", "*");
-  if (users) {
-    AB_USER_LIST2_ITERATOR *it1;
+  users=AB_User_List_new();
+  rv=AB_Provider_ReadUsers(xdlg->provider, users);
+  if (rv<0) {
+
+  }
+  else {
     GWEN_BUFFER *tbuf;
+    AB_USER *u;
 
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    it1=AB_User_List2_First(users);
-    if (it1) {
-      AB_USER *u1;
 
-      u1=AB_User_List2Iterator_Data(it1);
-      while(u1) {
-	createUserString(u1, tbuf);
-	GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(tbuf), 0, 1);
-	GWEN_Buffer_Reset(tbuf);
-	u1=AB_User_List2Iterator_Next(it1);
-      }
-      AB_User_List2Iterator_free(it1);
+    u=AB_User_List_First(users);
+    while(u) {
+      createUserString(u, tbuf);
+      GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(tbuf), 0, 1);
+      GWEN_Buffer_Reset(tbuf);
+      u=AB_User_List_Next(u);
     }
     GWEN_Buffer_free(tbuf);
   }
-  AB_User_List2_free(users);
+  AB_User_List_free(users);
 
   if (GWEN_StringList_Count(sl)) {
     GWEN_STRINGLISTENTRY *se;
@@ -417,7 +250,7 @@ void AB_EditAccountDialog_Init(GWEN_DIALOG *dlg) {
   int i;
   const char *s;
   AB_ACCOUNT_TYPE t;
-  AB_USER *u;
+  uint32_t uid;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_EDIT_ACCOUNT_DIALOG, dlg);
@@ -426,8 +259,6 @@ void AB_EditAccountDialog_Init(GWEN_DIALOG *dlg) {
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   /* init */
-  xdlg->countryList=AB_Banking_ListCountriesByName(xdlg->banking, "*");
-
   GWEN_Dialog_SetCharProperty(dlg,
 			      "",
 			      GWEN_DialogProperty_Title,
@@ -435,137 +266,13 @@ void AB_EditAccountDialog_Init(GWEN_DIALOG *dlg) {
 			      I18N("Edit Account"),
 			      0);
 
-  /* setup country */
-  if (xdlg->countryList) {
-    AB_COUNTRY_CONSTLIST2_ITERATOR *it;
-    int idx=-1;
-    const char *selectedCountry;
-
-    selectedCountry=AB_Account_GetCountry(xdlg->account);
-    it=AB_Country_ConstList2_First(xdlg->countryList);
-    if (it) {
-      const AB_COUNTRY *c;
-      GWEN_BUFFER *tbuf;
-      GWEN_STRINGLIST *sl;
-      GWEN_STRINGLISTENTRY *se;
-      int i=0;
-
-      sl=GWEN_StringList_new();
-      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-      c=AB_Country_ConstList2Iterator_Data(it);
-      while(c) {
-	GWEN_Buffer_AppendByte(tbuf, '1');
-	if (createCountryString(c, tbuf)==0) {
-	  const char *s;
-
-          s=AB_Country_GetCode(c);
-	  if (idx==-1 && selectedCountry && s && strcasecmp(s, selectedCountry)==0) {
-	    char *p;
-
-	    p=GWEN_Buffer_GetStart(tbuf);
-	    if (p)
-	      *p='0';
-	    idx=i;
-	  }
-	  GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(tbuf), 0, 1);
-          i++;
-	}
-        GWEN_Buffer_Reset(tbuf);
-	c=AB_Country_ConstList2Iterator_Next(it);
-      }
-      GWEN_Buffer_free(tbuf);
-      AB_Country_ConstList2Iterator_free(it);
-
-      GWEN_StringList_Sort(sl, 1, GWEN_StringList_SortModeNoCase);
-      idx=-1;
-      i=0;
-      se=GWEN_StringList_FirstEntry(sl);
-      while(se) {
-	const char *s;
-
-	s=GWEN_StringListEntry_Data(se);
-	if (*s=='0')
-          idx=i;
-	GWEN_Dialog_SetCharProperty(dlg, "countryCombo", GWEN_DialogProperty_AddValue, 0, s+1, 0);
-        i++;
-	se=GWEN_StringListEntry_Next(se);
-      }
-      GWEN_StringList_free(sl);
-    }
-    if (idx>=0)
-      /* chooses selected entry in combo box */
-      GWEN_Dialog_SetIntProperty(dlg, "countryCombo", GWEN_DialogProperty_Value, 0, idx, 0);
-  }
-
-  /* setup currency */
-  if (xdlg->countryList) {
-    AB_COUNTRY_CONSTLIST2_ITERATOR *it;
-    int idx=-1;
-    const char *selectedCurrency;
-
-    selectedCurrency=AB_Account_GetCurrency(xdlg->account);
-    it=AB_Country_ConstList2_First(xdlg->countryList);
-    if (it) {
-      const AB_COUNTRY *c;
-      GWEN_BUFFER *tbuf;
-      GWEN_STRINGLIST *sl;
-      GWEN_STRINGLISTENTRY *se;
-      int i=0;
-
-      sl=GWEN_StringList_new();
-      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-      c=AB_Country_ConstList2Iterator_Data(it);
-      while(c) {
-	GWEN_Buffer_AppendByte(tbuf, '1');
-	if (createCurrencyString(c, tbuf)==0) {
-	  const char *s;
-
-          s=AB_Country_GetCurrencyCode(c);
-	  if (idx==-1 && selectedCurrency && s && strcasecmp(s, selectedCurrency)==0) {
-	    char *p;
-
-	    p=GWEN_Buffer_GetStart(tbuf);
-	    if (p)
-              *p='0';
-	    idx=i;
-	  }
-	  GWEN_StringList_AppendString(sl, GWEN_Buffer_GetStart(tbuf), 0, 1);
-          i++;
-	}
-        GWEN_Buffer_Reset(tbuf);
-	c=AB_Country_ConstList2Iterator_Next(it);
-      }
-      GWEN_Buffer_free(tbuf);
-      AB_Country_ConstList2Iterator_free(it);
-
-      GWEN_StringList_Sort(sl, 1, GWEN_StringList_SortModeNoCase);
-      idx=-1;
-      i=0;
-      se=GWEN_StringList_FirstEntry(sl);
-      while(se) {
-	const char *s;
-
-	s=GWEN_StringListEntry_Data(se);
-	if (*s=='0')
-	  idx=i;
-	GWEN_Dialog_SetCharProperty(dlg, "currencyCombo", GWEN_DialogProperty_AddValue, 0, s+1, 0);
-        i++;
-	se=GWEN_StringListEntry_Next(se);
-      }
-      GWEN_StringList_free(sl);
-    }
-    if (idx>=0)
-      /* chooses selected entry in combo box */
-      GWEN_Dialog_SetIntProperty(dlg, "currencyCombo", GWEN_DialogProperty_Value, 0, idx, 0);
-  }
-
   s=AB_Account_GetBankCode(xdlg->account);
   GWEN_Dialog_SetCharProperty(dlg, "bankCodeEdit", GWEN_DialogProperty_Value, 0, s, 0);
 
   s=AB_Account_GetBankName(xdlg->account);
   GWEN_Dialog_SetCharProperty(dlg, "bankNameEdit", GWEN_DialogProperty_Value, 0, s, 0);
 
-  s=AB_Account_GetBIC(xdlg->account);
+  s=AB_Account_GetBic(xdlg->account);
   GWEN_Dialog_SetCharProperty(dlg, "bicEdit", GWEN_DialogProperty_Value, 0, s, 0);
 
   s=AB_Account_GetAccountNumber(xdlg->account);
@@ -574,11 +281,17 @@ void AB_EditAccountDialog_Init(GWEN_DIALOG *dlg) {
   s=AB_Account_GetAccountName(xdlg->account);
   GWEN_Dialog_SetCharProperty(dlg, "accountNameEdit", GWEN_DialogProperty_Value, 0, s, 0);
 
-  s=AB_Account_GetIBAN(xdlg->account);
+  s=AB_Account_GetIban(xdlg->account);
   GWEN_Dialog_SetCharProperty(dlg, "ibanEdit", GWEN_DialogProperty_Value, 0, s, 0);
 
   s=AB_Account_GetOwnerName(xdlg->account);
   GWEN_Dialog_SetCharProperty(dlg, "ownerNameEdit", GWEN_DialogProperty_Value, 0, s, 0);
+
+  s=AB_Account_GetCurrency(xdlg->account);
+  GWEN_Dialog_SetCharProperty(dlg, "currencyEdit", GWEN_DialogProperty_Value, 0, s, 0);
+
+  s=AB_Account_GetCountry(xdlg->account);
+  GWEN_Dialog_SetCharProperty(dlg, "countryEdit", GWEN_DialogProperty_Value, 0, s, 0);
 
   /* setup account type */
   GWEN_Dialog_SetCharProperty(dlg, "accountTypeCombo", GWEN_DialogProperty_AddValue, 0,
@@ -611,14 +324,15 @@ void AB_EditAccountDialog_Init(GWEN_DIALOG *dlg) {
     GWEN_Dialog_SetIntProperty(dlg, "accountTypeCombo", GWEN_DialogProperty_Value, 0, t, 0);
 
   AB_EditAccountDialog_RebuildUserLists(dlg);
-  u=AB_Account_GetFirstSelectedUser(xdlg->account);
-  if (u) {
+  uid=AB_Account_GetUserId(xdlg->account);
+  if (uid) {
     int idx;
 
-    idx=AB_EditAccountDialog_FindUserEntry(dlg, u);
+    idx=AB_EditAccountDialog_FindUserEntry(dlg, uid);
     if (idx>=0)
       GWEN_Dialog_SetIntProperty(dlg, "userCombo", GWEN_DialogProperty_Value, 0, idx, 0);
   }
+
 
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
@@ -651,7 +365,6 @@ int AB_EditAccountDialog_fromGui(GWEN_DIALOG *dlg, AB_ACCOUNT *a, int quiet) {
   AB_EDIT_ACCOUNT_DIALOG *xdlg;
   int i;
   const char *s;
-  const AB_COUNTRY *c;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_EDIT_ACCOUNT_DIALOG, dlg);
@@ -693,7 +406,7 @@ int AB_EditAccountDialog_fromGui(GWEN_DIALOG *dlg, AB_ACCOUNT *a, int quiet) {
     GWEN_Text_CondenseBuffer(tbuf);
     removeAllSpaces((uint8_t*)GWEN_Buffer_GetStart(tbuf));
     if (a)
-      AB_Account_SetIBAN(a, GWEN_Buffer_GetStart(tbuf));
+      AB_Account_SetIban(a, GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_free(tbuf);
   }
 
@@ -710,20 +423,19 @@ int AB_EditAccountDialog_fromGui(GWEN_DIALOG *dlg, AB_ACCOUNT *a, int quiet) {
   }
 
   /* get currency */
-  c=AB_EditAccountDialog_GetCurrentCurrency(dlg);
-  if (c)
-    AB_Account_SetCurrency(a, AB_Country_GetCurrencyCode(c));
+  s=GWEN_Dialog_GetCharProperty(dlg, "currencyEdit", GWEN_DialogProperty_Value, 0, NULL);
+  if (a && s && *s)
+    AB_Account_SetCurrency(a, s);
+
 
   i=GWEN_Dialog_GetIntProperty(dlg, "accountTypeCombo", GWEN_DialogProperty_Value, 0, 0);
   if (a)
     AB_Account_SetAccountType(a, i);
 
   /*  get country */
-  c=AB_EditAccountDialog_GetCurrentCountry(dlg);
-  if (c) {
-    if (a)
-      AB_Account_SetCountry(a, AB_Country_GetCode(c));
-  }
+  s=GWEN_Dialog_GetCharProperty(dlg, "countryEdit", GWEN_DialogProperty_Value, 0, NULL);
+  if (a && s && *s)
+    AB_Account_SetCountry(a, s);
 
   s=GWEN_Dialog_GetCharProperty(dlg, "bankCodeEdit", GWEN_DialogProperty_Value, 0, NULL);
   if (s && *s) {
@@ -759,15 +471,20 @@ int AB_EditAccountDialog_fromGui(GWEN_DIALOG *dlg, AB_ACCOUNT *a, int quiet) {
     GWEN_Text_CondenseBuffer(tbuf);
     removeAllSpaces((uint8_t*)GWEN_Buffer_GetStart(tbuf));
     if (a)
-      AB_Account_SetBIC(a, GWEN_Buffer_GetStart(tbuf));
+      AB_Account_SetBic(a, GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_free(tbuf);
   }
 
   if (a) {
-    AB_USER *u;
+    uint32_t uid;
 
-    u=AB_EditAccountDialog_GetCurrentUser(dlg);
-    AB_Account_SetSelectedUser(a, u);
+    uid=AB_EditAccountDialog_GetCurrentUserId(dlg);
+    if (uid)
+      AB_Account_SetUserId(a, uid);
+    else {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "No user selected.");
+      return GWEN_ERROR_INVALID;
+    }
   }
 
   return 0;
@@ -879,7 +596,7 @@ int AB_EditAccountDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
   if (xdlg->doLock) {
     int rv;
 
-    rv=AB_Banking_BeginExclUseAccount(xdlg->banking, xdlg->account);
+    rv=AB_Provider_BeginExclUseAccount(xdlg->provider, xdlg->account);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
@@ -900,7 +617,7 @@ int AB_EditAccountDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
   if (xdlg->doLock) {
     int rv;
 
-    rv=AB_Banking_EndExclUseAccount(xdlg->banking, xdlg->account, 0);
+    rv=AB_Provider_EndExclUseAccount(xdlg->provider, xdlg->account, 0);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
@@ -912,6 +629,7 @@ int AB_EditAccountDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
 			  NULL,
 			  NULL,
 			  0);
+      AB_Provider_EndExclUseAccount(xdlg->provider, xdlg->account, 1);
       return GWEN_DialogEvent_ResultHandled;
     }
   }

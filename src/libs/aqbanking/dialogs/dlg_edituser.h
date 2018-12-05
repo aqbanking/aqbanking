@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Fri Apr 16 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -24,7 +24,7 @@ extern "C" {
 
 
 
-AQBANKING_API GWEN_DIALOG *AB_EditUserDialog_new(AB_BANKING *ab, AB_USER *u, int doLock);
+AQBANKING_API GWEN_DIALOG *AB_EditUserDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock);
 
 
 

@@ -1,4 +1,4 @@
-SUBDIRS=types2 types gui backendsupport typemaker2
+SUBDIRS=types2 types gui backendsupport typemaker2 dialogs
 
 INCLUDES = \
   -I$(aqbanking_symlinkdir) \

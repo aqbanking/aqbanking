@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Wed Apr 14 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -14,11 +14,19 @@
 
 #include "dlg_setup.h"
 
+#include <aqbanking/user.h>
+#include <aqbanking/account.h>
+
 
 
 typedef struct AB_SETUP_DIALOG AB_SETUP_DIALOG;
 struct AB_SETUP_DIALOG {
   AB_BANKING *banking;
+
+  AB_PROVIDER_LIST2 *providersInUse;
+
+  AB_USER_LIST *currentUserList;
+  AB_ACCOUNT_LIST *currentAccountList;
 };
 
 

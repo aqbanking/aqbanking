@@ -124,8 +124,8 @@ GWEN_DIALOG *AB_SetupNewUserDialog_new(AB_BANKING *ab) {
 	  if (name && *name) {
 	    AB_PROVIDER *pro;
 
-	    pro=AB_Banking_GetProvider(ab, name);
-	    if (pro) {
+	    pro=AB_Banking_BeginUseProvider(ab, name);
+            if (pro) {
 	      GWEN_DIALOG *cdlg;
 	      GWEN_BUFFER *tbuf;
 	      GWEN_XMLNODE *wn;
@@ -161,8 +161,10 @@ GWEN_DIALOG *AB_SetupNewUserDialog_new(AB_BANKING *ab) {
 	      GWEN_XMLNode_SetProperty(wn, "flags", "fillX justifyLeft");
     
 	      GWEN_XMLNode_AddChild(nBackendRadioWidget, wn);
-	      GWEN_Dialog_List_Add(cdlg, subDialogs);
-	    }
+              GWEN_Dialog_List_Add(cdlg, subDialogs);
+
+              AB_Banking_EndUseProvider(ab, pro);
+            }
 	    else {
 	      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not activate backend [%s]", name);
 	    }

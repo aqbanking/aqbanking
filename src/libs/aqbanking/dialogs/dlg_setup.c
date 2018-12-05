@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Wed Apr 14 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -93,6 +93,11 @@ void GWENHYWFAR_CB AB_SetupDialog_FreeData(void *bp, void *p) {
   AB_SETUP_DIALOG *xdlg;
 
   xdlg=(AB_SETUP_DIALOG*) p;
+
+  AB_User_List_free(xdlg->currentUserList);
+  AB_Account_List_free(xdlg->currentAccountList);
+  AB_Provider_List2_free(xdlg->providersInUse);
+
   GWEN_FREE_OBJECT(xdlg);
 }
 
@@ -192,108 +197,38 @@ static void createAccountListBoxString(const AB_ACCOUNT *a, GWEN_BUFFER *tbuf) {
 
 
 
-AB_USER *AB_SetupDialog_GetCurrentUser(GWEN_DIALOG *dlg) {
-  AB_SETUP_DIALOG *xdlg;
-  AB_USER_LIST2 *ul;
+uint32_t AB_SetupDialog_GetCurrentId(GWEN_DIALOG *dlg, const char *comboBoxName) {
+  int idx;
 
-  assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
-  assert(xdlg);
+  idx=GWEN_Dialog_GetIntProperty(dlg, comboBoxName, GWEN_DialogProperty_Value, 0, -1);
+  if (idx>=0) {
+    const char *currentText;
 
-  /* user list */
-  ul=AB_Banking_GetUsers(xdlg->banking);
-  if (ul) {
-    int idx;
+    currentText=GWEN_Dialog_GetCharProperty(dlg, comboBoxName, GWEN_DialogProperty_Value, idx, NULL);
+    if (currentText && *currentText) {
+      unsigned long int uid=0;
 
-    idx=GWEN_Dialog_GetIntProperty(dlg, "userListBox", GWEN_DialogProperty_Value, 0, -1);
-    if (idx>=0) {
-      const char *currentText;
-  
-      currentText=GWEN_Dialog_GetCharProperty(dlg, "userListBox", GWEN_DialogProperty_Value, idx, NULL);
-      if (currentText && *currentText) {
-	AB_USER_LIST2_ITERATOR *it;
-    
-	it=AB_User_List2_First(ul);
-	if (it) {
-	  AB_USER *u;
-	  GWEN_BUFFER *tbuf;
-    
-	  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	  u=AB_User_List2Iterator_Data(it);
-	  while(u) {
-	    createUserListBoxString(u, tbuf);
-	    if (strcasecmp(currentText, GWEN_Buffer_GetStart(tbuf))==0) {
-	      GWEN_Buffer_free(tbuf);
-	      AB_User_List2Iterator_free(it);
-	      AB_User_List2_free(ul);
-	      return u;
-	    }
-	    GWEN_Buffer_Reset(tbuf);
-	    u=AB_User_List2Iterator_Next(it);
-	  }
-	  GWEN_Buffer_free(tbuf);
-
-	  AB_User_List2Iterator_free(it);
-	}
-	AB_User_List2_free(ul);
+      if (1==sscanf(currentText, "%lu\t", &uid)) {
+        return (uint32_t) uid;
+      }
+      else {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "No id found in \"%s\"", currentText);
       }
     }
   }
 
-  return NULL;
+  return 0;
 }
 
 
-/* TODO: read id from combo string (first column) and return that instead of AB_ACCOUNT */
-AB_ACCOUNT *AB_SetupDialog_GetCurrentAccount(GWEN_DIALOG *dlg) {
-  AB_SETUP_DIALOG *xdlg;
-  AB_ACCOUNT_LIST2 *al;
+uint32_t AB_SetupDialog_GetCurrentUserId(GWEN_DIALOG *dlg) {
+  return AB_SetupDialog_GetCurrentId(dlg, "userListBox");
+}
 
-  assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
-  assert(xdlg);
 
-  /* user list */
-  al=AB_Banking_GetAccounts(xdlg->banking);
-  if (al) {
-    int idx;
 
-    idx=GWEN_Dialog_GetIntProperty(dlg, "accountListBox", GWEN_DialogProperty_Value, 0, -1);
-    if (idx>=0) {
-      const char *currentText;
-  
-      currentText=GWEN_Dialog_GetCharProperty(dlg, "accountListBox", GWEN_DialogProperty_Value, idx, NULL);
-      if (currentText && *currentText) {
-	AB_ACCOUNT_LIST2_ITERATOR *it;
-    
-	it=AB_Account_List2_First(al);
-	if (it) {
-	  AB_ACCOUNT *a;
-	  GWEN_BUFFER *tbuf;
-    
-	  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	  a=AB_Account_List2Iterator_Data(it);
-	  while(a) {
-	    createAccountListBoxString(a, tbuf);
-	    if (strcasecmp(currentText, GWEN_Buffer_GetStart(tbuf))==0) {
-	      GWEN_Buffer_free(tbuf);
-	      AB_Account_List2Iterator_free(it);
-	      AB_Account_List2_free(al);
-	      return a;
-	    }
-	    GWEN_Buffer_Reset(tbuf);
-	    a=AB_Account_List2Iterator_Next(it);
-	  }
-	  GWEN_Buffer_free(tbuf);
-
-	  AB_Account_List2Iterator_free(it);
-	}
-	AB_Account_List2_free(al);
-      }
-    }
-  }
-
-  return NULL;
+uint32_t AB_SetupDialog_GetCurrentAccountId(GWEN_DIALOG *dlg) {
+  return AB_SetupDialog_GetCurrentId(dlg, "accountListBox");
 }
 
 
@@ -322,10 +257,181 @@ int AB_SetupDialog_AccountChanged(GWEN_DIALOG *dlg) {
 
 
 
-void AB_SetupDialog_Reload(GWEN_DIALOG *dlg) {
+static void AB_SetupDialog_ActivateProviders(GWEN_DIALOG *dlg) {
   AB_SETUP_DIALOG *xdlg;
-  AB_USER_LIST2 *ul;
-  AB_ACCOUNT_LIST2 *al;
+  GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
+  assert(xdlg);
+
+  if (xdlg->providersInUse)
+    AB_Provider_List2_free(xdlg->providersInUse);
+  xdlg->providersInUse=AB_Provider_List2_new();
+
+  pdl=AB_Banking_GetProviderDescrs(xdlg->banking);
+  if (pdl) {
+    GWEN_PLUGIN_DESCRIPTION_LIST2_ITERATOR *it;
+
+    it=GWEN_PluginDescription_List2_First(pdl);
+    if (it) {
+      GWEN_PLUGIN_DESCRIPTION *pd;
+
+      pd=GWEN_PluginDescription_List2Iterator_Data(it);
+      while(pd) {
+        const char *pName;
+
+        pName=GWEN_PluginDescription_GetName(pd);
+        if (pName && *pName) {
+          AB_PROVIDER *pro;
+
+          pro=AB_Banking_BeginUseProvider(xdlg->banking, pName);
+          if (pro) {
+            DBG_INFO(AQBANKING_LOGDOMAIN, "Adding provider %s", pName);
+            AB_Provider_List2_PushBack(xdlg->providersInUse, pro);
+          }
+          else {
+            DBG_INFO(AQBANKING_LOGDOMAIN, "Provider %s not available", pName);
+          }
+        }
+        pd=GWEN_PluginDescription_List2Iterator_Next(it);
+      }
+      GWEN_PluginDescription_List2Iterator_free(it);
+    }
+    GWEN_PluginDescription_List2_free(pdl);
+  }
+}
+
+
+
+static void AB_SetupDialog_DeactivateProviders(GWEN_DIALOG *dlg) {
+  AB_SETUP_DIALOG *xdlg;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
+  assert(xdlg);
+
+  if (xdlg->providersInUse) {
+    AB_PROVIDER_LIST2_ITERATOR *it;
+
+    it=AB_Provider_List2_First(xdlg->providersInUse);
+    if (it) {
+      AB_PROVIDER *pro;
+
+      pro=AB_Provider_List2Iterator_Data(it);
+      while(pro) {
+        AB_Banking_EndUseProvider(xdlg->banking, pro);
+        pro=AB_Provider_List2Iterator_Next(it);
+      }
+      AB_Provider_List2Iterator_free(it);
+    }
+    AB_Provider_List2_free(xdlg->providersInUse);
+    xdlg->providersInUse=NULL;
+  }
+}
+
+
+
+static AB_PROVIDER *AB_SetupDialog_GetProviderByName(GWEN_DIALOG *dlg, const char *pName) {
+  AB_SETUP_DIALOG *xdlg;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
+  assert(xdlg);
+
+  if (xdlg->providersInUse) {
+    AB_PROVIDER_LIST2_ITERATOR *it;
+
+    it=AB_Provider_List2_First(xdlg->providersInUse);
+    if (it) {
+      AB_PROVIDER *pro;
+
+      pro=AB_Provider_List2Iterator_Data(it);
+      while(pro) {
+        const char *s;
+
+        s=AB_Provider_GetName(pro);
+        if (s && *s && strcasecmp(pName, s)==0) {
+          AB_Provider_List2Iterator_free(it);
+          return pro;
+        }
+        pro=AB_Provider_List2Iterator_Next(it);
+      }
+      AB_Provider_List2Iterator_free(it);
+    }
+  }
+
+  return NULL;
+}
+
+
+
+static void AB_SetupDialog_LoadUsers(GWEN_DIALOG *dlg, AB_USER_LIST *ul) {
+  AB_SETUP_DIALOG *xdlg;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
+  assert(xdlg);
+
+  if (xdlg->providersInUse) {
+    AB_PROVIDER_LIST2_ITERATOR *it;
+
+    it=AB_Provider_List2_First(xdlg->providersInUse);
+    if (it) {
+      AB_PROVIDER *pro;
+
+      pro=AB_Provider_List2Iterator_Data(it);
+      while(pro) {
+        int rv;
+
+        rv=AB_Provider_ReadUsers(pro, ul);
+        if (rv<0) {
+          DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading users from backends \"%s\": %d", AB_Provider_GetName(pro), rv);
+        }
+        pro=AB_Provider_List2Iterator_Next(it);
+      }
+      AB_Provider_List2Iterator_free(it);
+    }
+  }
+}
+
+
+
+static void AB_SetupDialog_LoadAccounts(GWEN_DIALOG *dlg, AB_ACCOUNT_LIST *al) {
+  AB_SETUP_DIALOG *xdlg;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
+  assert(xdlg);
+
+  if (xdlg->providersInUse) {
+    AB_PROVIDER_LIST2_ITERATOR *it;
+
+    it=AB_Provider_List2_First(xdlg->providersInUse);
+    if (it) {
+      AB_PROVIDER *pro;
+
+      pro=AB_Provider_List2Iterator_Data(it);
+      while(pro) {
+        int rv;
+
+        rv=AB_Provider_ReadAccounts(pro, al);
+        if (rv<0) {
+          DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading accounts from backends \"%s\": %d", AB_Provider_GetName(pro), rv);
+        }
+        pro=AB_Provider_List2Iterator_Next(it);
+      }
+      AB_Provider_List2Iterator_free(it);
+    }
+  }
+}
+
+
+
+static void AB_SetupDialog_Reload(GWEN_DIALOG *dlg) {
+  AB_SETUP_DIALOG *xdlg;
+  AB_USER *u;
+  AB_ACCOUNT *a;
   int i;
 
   assert(dlg);
@@ -335,35 +441,31 @@ void AB_SetupDialog_Reload(GWEN_DIALOG *dlg) {
   /* user list */
   i=0;
   GWEN_Dialog_SetIntProperty(dlg, "userListBox", GWEN_DialogProperty_ClearValues, 0, 0, 0);
-  ul=AB_Banking_GetUsers(xdlg->banking);
-  if (ul) {
-    AB_USER_LIST2_ITERATOR *it;
+  if (xdlg->currentUserList)
+    AB_User_List_free(xdlg->currentUserList);
+  xdlg->currentUserList=AB_User_List_new();
+  AB_SetupDialog_LoadUsers(dlg, xdlg->currentUserList);
+  if (AB_User_List_GetCount(xdlg->currentUserList)) {
+    GWEN_BUFFER *tbuf;
 
-    it=AB_User_List2_First(ul);
-    if (it) {
-      AB_USER *u;
-      GWEN_BUFFER *tbuf;
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-      u=AB_User_List2Iterator_Data(it);
-      while(u) {
-	createUserListBoxString(u, tbuf);
-	GWEN_Dialog_SetCharProperty(dlg,
-				    "userListBox",
-				    GWEN_DialogProperty_AddValue,
-				    0,
-				    GWEN_Buffer_GetStart(tbuf),
-				    0);
-        i++;
-        GWEN_Buffer_Reset(tbuf);
-	u=AB_User_List2Iterator_Next(it);
-      }
-      GWEN_Buffer_free(tbuf);
+    u=AB_User_List_First(xdlg->currentUserList);
+    while(u) {
+      createUserListBoxString(u, tbuf);
+      GWEN_Dialog_SetCharProperty(dlg,
+                                  "userListBox",
+                                  GWEN_DialogProperty_AddValue,
+                                  0,
+                                  GWEN_Buffer_GetStart(tbuf),
+                                  0);
+      i++;
+      GWEN_Buffer_Reset(tbuf);
 
-      AB_User_List2Iterator_free(it);
+      u=AB_User_List_Next(u);
     }
-    AB_User_List2_free(ul);
-  }
+    GWEN_Buffer_free(tbuf);
+  } /* if user list not empty */
   GWEN_Dialog_SetIntProperty(dlg, "userListBox", GWEN_DialogProperty_Sort, 0, 0, 0);
   if (i)
     GWEN_Dialog_SetIntProperty(dlg, "userListBox", GWEN_DialogProperty_Value, 0, 0, 0);
@@ -371,39 +473,34 @@ void AB_SetupDialog_Reload(GWEN_DIALOG *dlg) {
   /* account list */
   i=0;
   GWEN_Dialog_SetIntProperty(dlg, "accountListBox", GWEN_DialogProperty_ClearValues, 0, 0, 0);
-  al=AB_Banking_GetAccounts(xdlg->banking);
-  if (al) {
-    AB_ACCOUNT_LIST2_ITERATOR *it;
+  if (xdlg->currentAccountList)
+    AB_Account_List_free(xdlg->currentAccountList);
+  xdlg->currentAccountList=AB_Account_List_new();
+  AB_SetupDialog_LoadAccounts(dlg, xdlg->currentAccountList);
+  if (AB_Account_List_GetCount(xdlg->currentAccountList)) {
+    GWEN_BUFFER *tbuf;
 
-    it=AB_Account_List2_First(al);
-    if (it) {
-      AB_ACCOUNT *a;
-      GWEN_BUFFER *tbuf;
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-      a=AB_Account_List2Iterator_Data(it);
-      while(a) {
-	createAccountListBoxString(a, tbuf);
-	GWEN_Dialog_SetCharProperty(dlg,
-				    "accountListBox",
-				    GWEN_DialogProperty_AddValue,
-				    0,
-				    GWEN_Buffer_GetStart(tbuf),
-				    0);
-	i++;
-        GWEN_Buffer_Reset(tbuf);
-	a=AB_Account_List2Iterator_Next(it);
-      }
-      GWEN_Buffer_free(tbuf);
+    a=AB_Account_List_First(xdlg->currentAccountList);
+    while(a) {
+      createAccountListBoxString(a, tbuf);
+      GWEN_Dialog_SetCharProperty(dlg,
+                                  "accountListBox",
+                                  GWEN_DialogProperty_AddValue,
+                                  0,
+                                  GWEN_Buffer_GetStart(tbuf),
+                                  0);
+      i++;
+      GWEN_Buffer_Reset(tbuf);
 
-      AB_Account_List2Iterator_free(it);
+      a=AB_Account_List_Next(a);
     }
-    AB_Account_List2_free(al);
-  }
+    GWEN_Buffer_free(tbuf);
+  } /* if account list not empty */
   GWEN_Dialog_SetIntProperty(dlg, "accountListBox", GWEN_DialogProperty_Sort, 0, 0, 0);
   if (i)
     GWEN_Dialog_SetIntProperty(dlg, "accountListBox", GWEN_DialogProperty_Value, 0, 0, 0);
-
 
   AB_SetupDialog_UserChanged(dlg);
   AB_SetupDialog_AccountChanged(dlg);
@@ -494,6 +591,10 @@ void AB_SetupDialog_Init(GWEN_DIALOG *dlg) {
   if (i>=0 && j>=0)
     GWEN_Dialog_SetIntProperty(dlg, "accountListBox", GWEN_DialogProperty_SortDirection, i, j, 0);
 
+  /* activate providers */
+  AB_SetupDialog_ActivateProviders(dlg);
+
+  /* reload accounts and users */
   AB_SetupDialog_Reload(dlg);
 }
 
@@ -507,6 +608,9 @@ void AB_SetupDialog_Fini(GWEN_DIALOG *dlg) {
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
   assert(xdlg);
+
+  /* deactivate providers */
+  AB_SetupDialog_DeactivateProviders(dlg);
 
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
@@ -601,40 +705,52 @@ void AB_SetupDialog_Fini(GWEN_DIALOG *dlg) {
 
 int AB_SetupDialog_EditUser(GWEN_DIALOG *dlg) {
   AB_SETUP_DIALOG *xdlg;
-  AB_USER *u;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
   assert(xdlg);
 
-  u=AB_SetupDialog_GetCurrentUser(dlg);
-  if (u) {
-    AB_PROVIDER *pro;
-    uint32_t flags=0;
-    GWEN_DIALOG *dlg2;
-    int rv;
+  if (xdlg->currentUserList) {
+    uint32_t uid;
 
-    pro=AB_User_GetProvider(u);
-    assert(pro);
-    flags=AB_Provider_GetFlags(pro);
-    if (flags & AB_PROVIDER_FLAGS_HAS_EDITUSER_DIALOG)
-      dlg2=AB_Provider_GetEditUserDialog(pro, u);
-    else
-      dlg2=AB_EditUserDialog_new(xdlg->banking, u, 1);
-    if (dlg2==NULL) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
-      return GWEN_DialogEvent_ResultHandled;
-    }
+    uid=AB_SetupDialog_GetCurrentUserId(dlg);
+    if (uid) {
+      AB_USER *u;
 
-    rv=GWEN_Gui_ExecDialog(dlg2, 0);
-    if (rv==0) {
-      /* rejected */
-      GWEN_Dialog_free(dlg2);
-      return GWEN_DialogEvent_ResultHandled;
-    }
-    GWEN_Dialog_free(dlg2);
-    AB_SetupDialog_Reload(dlg);
-  }
+      u=AB_User_List_GetByUniqueId(xdlg->currentUserList, uid);
+      if (u) {
+        AB_PROVIDER *pro;
+        uint32_t flags=0;
+        GWEN_DIALOG *dlg2;
+        int rv;
+
+        pro=AB_User_GetProvider(u);
+        assert(pro);
+
+        /* get EditUser dialog */
+        flags=AB_Provider_GetFlags(pro);
+        if (flags & AB_PROVIDER_FLAGS_HAS_EDITUSER_DIALOG)
+          dlg2=AB_Provider_GetEditUserDialog(pro, u);
+        else
+          dlg2=AB_EditUserDialog_new(pro, u, 1);
+        if (dlg2==NULL) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
+          return GWEN_DialogEvent_ResultHandled;
+        }
+
+        rv=GWEN_Gui_ExecDialog(dlg2, 0);
+        if (rv==0) {
+          /* rejected */
+          GWEN_Dialog_free(dlg2);
+          return GWEN_DialogEvent_ResultHandled;
+        }
+        GWEN_Dialog_free(dlg2);
+
+        /* reload */
+        AB_SetupDialog_Reload(dlg);
+      } /* if u */
+    } /* if uid */
+  } /* if xdlg->currentUserList */
   return GWEN_DialogEvent_ResultHandled;
 }
 
@@ -669,7 +785,7 @@ int AB_SetupDialog_AddUser(GWEN_DIALOG *dlg) {
       int selectedType;
       uint32_t flags;
 
-      pro=AB_Banking_GetProvider(xdlg->banking, s);
+      pro=AB_SetupDialog_GetProviderByName(dlg, s);
       if (pro==NULL) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider [%s] not found", s);
 	GWEN_Dialog_free(dlg2);
@@ -701,29 +817,24 @@ int AB_SetupDialog_AddUser(GWEN_DIALOG *dlg) {
       else {
 	GWEN_DIALOG *dlg3;
 	AB_USER *u;
-	const AB_COUNTRY *c=NULL;
 	const char *s;
 	int rv;
     
-	u=AB_Banking_CreateUser(xdlg->banking, AB_Provider_GetName(pro));
-	if (u==NULL) {
+        u=AB_Provider_CreateUserObject(pro);
+        if (u==NULL) {
 	  DBG_INFO(AQBANKING_LOGDOMAIN, "No user created.");
-	  AB_User_free(u);
-	  return GWEN_DialogEvent_ResultHandled;
-	}
-    
+          return GWEN_DialogEvent_ResultHandled;
+        }
+
 	s=GWEN_I18N_GetCurrentLocale();
 	if (s && *s) {
-	  if (strstr(s, "de_"))
-	    c=AB_Banking_FindCountryByCode(xdlg->banking, "de");
-	  else if (strstr(s, "us_"))
-	    c=AB_Banking_FindCountryByCode(xdlg->banking, "us");
-	}
-	if (c) {
-	  AB_User_SetCountry(u, AB_Country_GetCode(c));
-	}
+          if (strstr(s, "de_"))
+            AB_User_SetCountry(u, "de");
+          else if (strstr(s, "us_"))
+            AB_User_SetCountry(u, "us");
+        }
     
-	dlg3=AB_EditUserDialog_new(xdlg->banking, u, 0);
+        dlg3=AB_EditUserDialog_new(pro, u, 0);
 	if (dlg3==NULL) {
 	  DBG_INFO(AQBANKING_LOGDOMAIN, "Could not create dialog");
 	  AB_User_free(u);
@@ -734,16 +845,19 @@ int AB_SetupDialog_AddUser(GWEN_DIALOG *dlg) {
 	if (rv==0) {
 	  /* rejected */
 	  GWEN_Dialog_free(dlg3);
+          AB_User_free(u);
 	  return GWEN_DialogEvent_ResultHandled;
 	}
 	GWEN_Dialog_free(dlg3);
     
-	rv=AB_Banking_AddUser(xdlg->banking, u);
-	if (rv<0) {
+        rv=AB_Provider_AddUser(pro, u);
+        if (rv<0) {
 	  DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
 	  AB_User_free(u);
 	  return GWEN_DialogEvent_ResultHandled;
 	}
+        AB_User_free(u);
+
 	AB_SetupDialog_Reload(dlg);
       }
     }
@@ -760,83 +874,94 @@ int AB_SetupDialog_AddUser(GWEN_DIALOG *dlg) {
 
 int AB_SetupDialog_DelUser(GWEN_DIALOG *dlg) {
   AB_SETUP_DIALOG *xdlg;
-  AB_USER *u;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
   assert(xdlg);
 
-  u=AB_SetupDialog_GetCurrentUser(dlg);
-  if (u) {
-    AB_ACCOUNT *a;
-    int rv;
-    char nbuf[512];
+  if (xdlg->currentUserList) {
+    uint32_t uid;
 
-    snprintf(nbuf, sizeof(nbuf)-1,
-	     I18N("<html>"
-		  "<p>Do you really want to delete the user <i>%s</i>?"
-		  "</html>"
-		  "Do you really want to delete the user \"%s\"?"),
-	     AB_User_GetUserId(u), AB_User_GetUserId(u));
-    nbuf[sizeof(nbuf)-1]=0;
+    uid=AB_SetupDialog_GetCurrentUserId(dlg);
+    if (uid) {
+      AB_USER *u;
 
-    rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN |
-			   GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
-			   I18N("Delete User"),
-			   nbuf,
-			   I18N("Yes"),
-			   I18N("No"),
-			   NULL,
-			   0);
-    if (rv!=1) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
-      return GWEN_DialogEvent_ResultHandled;
-    }
+      u=AB_User_List_GetByUniqueId(xdlg->currentUserList, uid);
 
-    a=AB_Banking_FindFirstAccountOfUser(xdlg->banking, u);
-    if (a) {
-      int i;
+      if (u) {
+        /* AB_ACCOUNT *a; */
+        int rv;
+        char nbuf[512];
 
-      rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
-			     GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
-			     I18N("Error"),
-			     I18N("<html>"
-				  "<p>There is at least one account assigned to the selected user.</p>"
-				  "<p>Do you want to remove the account(s) and continue removing the user?</p>"
-				  "</html>"
-				  "There is at least one account assigned to the selected user.\n"
-				  "Do you want to remove the account(s) and continue removing the user?"),
-			     I18N("Yes"),
-			     I18N("No"),
-			     NULL,
-			     0);
-      if (rv!=1) {
-	DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
-	return GWEN_DialogEvent_ResultHandled;
-      }
+        snprintf(nbuf, sizeof(nbuf)-1,
+                 I18N("<html>"
+                      "<p>Do you really want to delete the user <i>%s</i>?"
+                      "</html>"
+                      "Do you really want to delete the user \"%s\"?"),
+                 AB_User_GetUserId(u), AB_User_GetUserId(u));
+        nbuf[sizeof(nbuf)-1]=0;
 
-      i=0;
-      while( (a=AB_Banking_FindFirstAccountOfUser(xdlg->banking, u)) ) {
-	rv=AB_Banking_DeleteAccount(xdlg->banking, a);
-	if (rv<0) {
-	  GWEN_Gui_ShowError(I18N("Error"), I18N("Error deleting account: %d (%d deleted)"), rv, i);
-	  AB_SetupDialog_Reload(dlg);
-	  return GWEN_DialogEvent_ResultHandled;
-	}
-	i++;
-      }
-    }
+        rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN |
+                               GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
+                               I18N("Delete User"),
+                               nbuf,
+                               I18N("Yes"),
+                               I18N("No"),
+                               NULL,
+                               0);
+        if (rv!=1) {
+          DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
+          return GWEN_DialogEvent_ResultHandled;
+        }
 
-    /* now delete the user */
-    rv=AB_Banking_DeleteUser(xdlg->banking, u);
-    if (rv<0) {
-      GWEN_Gui_ShowError(I18N("Error"), I18N("Error deleting user: %d"), rv);
-      AB_SetupDialog_Reload(dlg);
-      return GWEN_DialogEvent_ResultHandled;
-    }
+#pragma message "Need to implement this"
+#if 0
+        a=AB_Banking_FindFirstAccountOfUser(xdlg->banking, u);
+        if (a) {
+          int i;
 
+          rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+                                 GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
+                                 I18N("Error"),
+                                 I18N("<html>"
+                                      "<p>There is at least one account assigned to the selected user.</p>"
+                                      "<p>Do you want to remove the account(s) and continue removing the user?</p>"
+                                      "</html>"
+                                      "There is at least one account assigned to the selected user.\n"
+                                      "Do you want to remove the account(s) and continue removing the user?"),
+                                 I18N("Yes"),
+                                 I18N("No"),
+                                 NULL,
+                                 0);
+          if (rv!=1) {
+            DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
+            return GWEN_DialogEvent_ResultHandled;
+          }
+
+          i=0;
+          while( (a=AB_Banking_FindFirstAccountOfUser(xdlg->banking, u)) ) {
+            rv=AB_Banking_DeleteAccount(xdlg->banking, a);
+            if (rv<0) {
+              GWEN_Gui_ShowError(I18N("Error"), I18N("Error deleting account: %d (%d deleted)"), rv, i);
+              AB_SetupDialog_Reload(dlg);
+              return GWEN_DialogEvent_ResultHandled;
+            }
+            i++;
+          }
+        }
+#endif
+
+        /* now delete the user */
+        rv=AB_Provider_DeleteUser(AB_User_GetProvider(u), uid);
+        if (rv<0) {
+          GWEN_Gui_ShowError(I18N("Error"), I18N("Error deleting user: %d"), rv);
+          AB_SetupDialog_Reload(dlg);
+          return GWEN_DialogEvent_ResultHandled;
+        }
+      } /* if u */
+    } /* if uid */
     AB_SetupDialog_Reload(dlg);
-  }
+  } /* if currentUserList */
   return GWEN_DialogEvent_ResultHandled;
 }
 
@@ -844,40 +969,48 @@ int AB_SetupDialog_DelUser(GWEN_DIALOG *dlg) {
 
 int AB_SetupDialog_EditAccount(GWEN_DIALOG *dlg) {
   AB_SETUP_DIALOG *xdlg;
-  AB_ACCOUNT *a;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
   assert(xdlg);
 
-  a=AB_SetupDialog_GetCurrentAccount(dlg);
-  if (a) {
-    AB_PROVIDER *pro;
-    uint32_t flags=0;
-    GWEN_DIALOG *dlg2;
-    int rv;
+  if (xdlg->currentAccountList) {
+    uint32_t aid;
 
-    pro=AB_Account_GetProvider(a);
-    assert(pro);
-    flags=AB_Provider_GetFlags(pro);
-    if (flags & AB_PROVIDER_FLAGS_HAS_EDITACCOUNT_DIALOG)
-      dlg2=AB_Provider_GetEditAccountDialog(pro, a);
-    else
-      dlg2=AB_EditAccountDialog_new(xdlg->banking, a, 1);
-    if (dlg2==NULL) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
-      return GWEN_DialogEvent_ResultHandled;
-    }
+    aid=AB_SetupDialog_GetCurrentAccountId(dlg);
+    if (aid) {
+      AB_ACCOUNT *a;
 
-    rv=GWEN_Gui_ExecDialog(dlg2, 0);
-    if (rv==0) {
-      /* rejected */
-      GWEN_Dialog_free(dlg2);
-      return GWEN_DialogEvent_ResultHandled;
-    }
-    GWEN_Dialog_free(dlg2);
-    AB_SetupDialog_Reload(dlg);
-  }
+      a=AB_Account_List_GetByUniqueId(xdlg->currentAccountList, aid);
+      if (a) {
+        AB_PROVIDER *pro;
+        uint32_t flags=0;
+        GWEN_DIALOG *dlg2;
+        int rv;
+
+        pro=AB_Account_GetProvider(a);
+        assert(pro);
+        flags=AB_Provider_GetFlags(pro);
+        if (flags & AB_PROVIDER_FLAGS_HAS_EDITACCOUNT_DIALOG)
+          dlg2=AB_Provider_GetEditAccountDialog(pro, a);
+        else
+          dlg2=AB_EditAccountDialog_new(pro, a, 1);
+        if (dlg2==NULL) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
+          return GWEN_DialogEvent_ResultHandled;
+        }
+
+        rv=GWEN_Gui_ExecDialog(dlg2, 0);
+        if (rv==0) {
+          /* rejected */
+          GWEN_Dialog_free(dlg2);
+          return GWEN_DialogEvent_ResultHandled;
+        }
+        GWEN_Dialog_free(dlg2);
+        AB_SetupDialog_Reload(dlg);
+      } /* if a */
+    } /* if aid */
+  } /* if xdlg->currentAccountList */
   return GWEN_DialogEvent_ResultHandled;
 }
 
@@ -933,31 +1066,28 @@ int AB_SetupDialog_AddAccount(GWEN_DIALOG *dlg) {
   else {
     GWEN_DIALOG *dlg2;
     AB_ACCOUNT *a;
-    const AB_COUNTRY *c=NULL;
     const char *s;
     int rv;
 
-    a=AB_Banking_CreateAccount(xdlg->banking, AB_Provider_GetName(pro));
+    a=AB_Provider_CreateAccountObject(pro);
     if (a==NULL) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "No account created.");
-      AB_Account_free(a);
       return GWEN_DialogEvent_ResultHandled;
     }
 
     s=GWEN_I18N_GetCurrentLocale();
     if (s && *s) {
-      if (strstr(s, "de_"))
-	c=AB_Banking_FindCountryByCode(xdlg->banking, "de");
-      else if (strstr(s, "us_"))
-	c=AB_Banking_FindCountryByCode(xdlg->banking, "us");
-    }
-    if (c) {
-      AB_Account_SetCountry(a, AB_Country_GetCode(c));
-      AB_Account_SetCurrency(a, AB_Country_GetCurrencyCode(c));
+      if (strstr(s, "de_")) {
+        AB_Account_SetCountry(a, "de");
+        AB_Account_SetCurrency(a, "EUR");
+      }
+      else if (strstr(s, "us_")) {
+        AB_Account_SetCountry(a, "us");
+        AB_Account_SetCurrency(a, "USD");
+      }
     }
 
-
-    dlg2=AB_EditAccountDialog_new(xdlg->banking, a, 0);
+    dlg2=AB_EditAccountDialog_new(pro, a, 0);
     if (dlg2==NULL) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Could not create dialog");
       AB_Account_free(a);
@@ -968,16 +1098,19 @@ int AB_SetupDialog_AddAccount(GWEN_DIALOG *dlg) {
     if (rv==0) {
       /* rejected */
       GWEN_Dialog_free(dlg2);
+      AB_Account_free(a);
       return GWEN_DialogEvent_ResultHandled;
     }
     GWEN_Dialog_free(dlg2);
 
-    rv=AB_Banking_AddAccount(xdlg->banking, a);
+    rv=AB_Provider_AddAccount(pro, a);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       AB_Account_free(a);
       return GWEN_DialogEvent_ResultHandled;
     }
+    AB_Account_free(a);
+
     AB_SetupDialog_Reload(dlg);
   }
 
@@ -988,58 +1121,66 @@ int AB_SetupDialog_AddAccount(GWEN_DIALOG *dlg) {
 
 int AB_SetupDialog_DelAccount(GWEN_DIALOG *dlg) {
   AB_SETUP_DIALOG *xdlg;
-  AB_ACCOUNT *a;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
   assert(xdlg);
 
-  a=AB_SetupDialog_GetCurrentAccount(dlg);
-  if (a) {
-    int rv;
-    char nbuf[512];
-    char ibuf[32];
-    const char *an;
+  if (xdlg->currentAccountList) {
+    uint32_t aid;
 
-    an=AB_Account_GetAccountName(a);
-    if (!(an && *an))
-      an=AB_Account_GetAccountNumber(a);
-    if (!(an && *an)) {
-      snprintf(ibuf, sizeof(ibuf)-1, "%d", (int) AB_Account_GetUniqueId(a));
-      ibuf[sizeof(ibuf)-1]=0;
-      an=ibuf;
-    }
+    aid=AB_SetupDialog_GetCurrentAccountId(dlg);
+    if (aid) {
+      AB_ACCOUNT *a;
 
-    snprintf(nbuf, sizeof(nbuf)-1,
-	     I18N("<html>"
-		  "<p>Do you really want to delete the account <i>%s</i>?"
-		  "</html>"
-		  "Do you really want to delete the account \"%s\"?"),
-	     an, an);
-    nbuf[sizeof(nbuf)-1]=0;
+      a=AB_Account_List_GetByUniqueId(xdlg->currentAccountList, aid);
+      if (a) {
+        int rv;
+        char nbuf[512];
+        char ibuf[32];
+        const char *an;
 
-    rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN |
-			   GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
-			   I18N("Delete Account"),
-			   nbuf,
-			   I18N("Yes"),
-			   I18N("No"),
-			   NULL,
-			   0);
-    if (rv!=1) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
-      return GWEN_DialogEvent_ResultHandled;
-    }
+        an=AB_Account_GetAccountName(a);
+        if (!(an && *an))
+          an=AB_Account_GetAccountNumber(a);
+        if (!(an && *an)) {
+          snprintf(ibuf, sizeof(ibuf)-1, "%d", (int) AB_Account_GetUniqueId(a));
+          ibuf[sizeof(ibuf)-1]=0;
+          an=ibuf;
+        }
 
-    rv=AB_Banking_DeleteAccount(xdlg->banking, a);
-    if (rv<0) {
-      GWEN_Gui_ShowError(I18N("Error"), I18N("Error deleting account: %d"), rv);
-      AB_SetupDialog_Reload(dlg);
-      return GWEN_DialogEvent_ResultHandled;
-    }
+        snprintf(nbuf, sizeof(nbuf)-1,
+                 I18N("<html>"
+                      "<p>Do you really want to delete the account <i>%s</i>?"
+                      "</html>"
+                      "Do you really want to delete the account \"%s\"?"),
+                 an, an);
+        nbuf[sizeof(nbuf)-1]=0;
 
-    AB_SetupDialog_Reload(dlg);
-  }
+        rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN |
+                               GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
+                               I18N("Delete Account"),
+                               nbuf,
+                               I18N("Yes"),
+                               I18N("No"),
+                               NULL,
+                               0);
+        if (rv!=1) {
+          DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
+          return GWEN_DialogEvent_ResultHandled;
+        }
+
+        rv=AB_Provider_DeleteAccount(AB_Account_GetProvider(a), aid);
+        if (rv<0) {
+          GWEN_Gui_ShowError(I18N("Error"), I18N("Error deleting account: %d"), rv);
+          AB_SetupDialog_Reload(dlg);
+          return GWEN_DialogEvent_ResultHandled;
+        }
+
+        AB_SetupDialog_Reload(dlg);
+      } /* if a */
+    } /* if aid */
+  } /* if xdlg->currentAccountList */
   return GWEN_DialogEvent_ResultHandled;
 }
 
