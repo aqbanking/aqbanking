@@ -16,7 +16,7 @@ AC_CONFIG_HEADERS([config.h])
 
 AQBANKING_VERSION_MAJOR=5
 AQBANKING_VERSION_MINOR=99
-AQBANKING_VERSION_PATCHLEVEL=4
+AQBANKING_VERSION_PATCHLEVEL=5
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="beta"
@@ -1532,6 +1532,7 @@ AC_CONFIG_FILES([
   src/plugins/backends/aqhbci/plugin/applayer/Makefile
   src/plugins/backends/aqhbci/plugin/ajobs/Makefile
   src/plugins/backends/aqhbci/plugin/applayer/xml/Makefile
+  src/plugins/backends/aqhbci/plugin/control/Makefile
   src/plugins/backends/aqhbci/plugin/version.h
   src/plugins/backends/aqhbci/tools/Makefile
   src/plugins/backends/aqhbci/tools/hbcixml/Makefile

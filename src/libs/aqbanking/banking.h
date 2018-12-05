@@ -320,6 +320,12 @@ AB_PROVIDER *AB_Banking_BeginUseProvider(AB_BANKING *ab, const char *modname);
 AQBANKING_API
 int AB_Banking_EndUseProvider(AB_BANKING *ab, AB_PROVIDER *pro);
 
+
+/**
+ * Load the given backend (if necessary) and call the control function with the given arguments.
+ */
+AQBANKING_API int AB_Banking_ProviderControl(AB_BANKING *ab, const char *backendName, int argc, char **argv);
+
 /*@}*/
 
 

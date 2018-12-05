@@ -43,6 +43,7 @@
 #include "sepadebitnote.c"
 #include "sepamultijobs.c"
 #include "separecurtransfer.c"
+#include "control.c"
 
 
 
@@ -67,6 +68,7 @@ int main(int argc, char **argv) {
   int rv;
   AB_BANKING *ab;
   GWEN_GUI *gui;
+  const char *ctrlBackend=NULL;
   int nonInteractive=0;
   int acceptValidCerts=0;
   const char *pinFile;
@@ -129,6 +131,17 @@ int main(int argc, char **argv) {
     "pinfile",                    /* long option */
     "Specify the PIN file",       /* short description */
     "Specify the PIN file"        /* long description */
+  },
+  {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT,   /* flags */
+    GWEN_ArgsType_Char,             /* type */
+    "control",                      /* name */
+    0,                              /* minnum */
+    1,                              /* maxnum */
+    0,                              /* short option */
+    "control",                      /* long option */
+    "backend for control function", /* short description */
+    "Call the CONTROL function of the given backend"          /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
@@ -282,13 +295,7 @@ int main(int argc, char **argv) {
   nonInteractive=GWEN_DB_GetIntValue(db, "nonInteractive", 0, 0);
   acceptValidCerts=GWEN_DB_GetIntValue(db, "acceptValidCerts", 0, 0);
   cfgDir=GWEN_DB_GetCharValue(db, "cfgdir", 0, 0);
-
-  cmd=GWEN_DB_GetCharValue(db, "params", 0, 0);
-  if (!cmd) {
-    fprintf(stderr, "ERROR: Command needed.\n");
-    GWEN_DB_Group_free(db);
-    return 1;
-  }
+  ctrlBackend=GWEN_DB_GetCharValue(db, "control", 0, 0);
 
   gui=GWEN_Gui_CGui_new();
   s=GWEN_DB_GetCharValue(db, "charset", 0, NULL);
@@ -311,8 +318,8 @@ int main(int argc, char **argv) {
 
     dbPins=GWEN_DB_Group_new("pins");
     if (GWEN_DB_ReadFile(dbPins, pinFile,
-			 GWEN_DB_FLAGS_DEFAULT |
-			 GWEN_PATH_FLAGS_CREATE_GROUP)) {
+                         GWEN_DB_FLAGS_DEFAULT |
+                         GWEN_PATH_FLAGS_CREATE_GROUP)) {
       fprintf(stderr, "Error reading pinfile \"%s\"\n", pinFile);
       GWEN_DB_Group_free(dbPins);
       GWEN_DB_Group_free(db);
@@ -320,74 +327,86 @@ int main(int argc, char **argv) {
     }
     GWEN_Gui_SetPasswordDb(gui, dbPins, 1);
   }
-				    
+
   GWEN_Gui_SetGui(gui);
 
   ab=AB_Banking_new("aqbanking-cli", cfgDir, 0);
   AB_Gui_Extend(gui, ab);
 
-  if (strcasecmp(cmd, "listaccs")==0) {
-    rv=listAccs(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "listbal")==0) {
-    rv=listBal(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "listtrans")==0) {
-    rv=listTrans(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "listtransfers")==0) {
-    fprintf(stderr, "ERROR: Please use the command \"listtrans\" and specify the transaction type via \"-tt TYPE\"\n");
-    GWEN_DB_Group_free(db);
-    return 1;
-  }
-  else if (strcasecmp(cmd, "request")==0) {
-    rv=request(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "chkacc")==0) {
-    rv=chkAcc(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "chkiban")==0) {
-    rv=chkIban(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "import")==0) {
-    rv=import(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "sepatransfer")==0) {
-    rv=sepaTransfer(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "sepatransfers")==0) {
-    rv=sepaMultiJobs(ab, db, argc, argv, AQBANKING_TOOL_SEPA_TRANSFERS);
-  }
-  else if (strcasecmp(cmd, "sepadebitnote")==0) {
-    rv=sepaDebitNote(ab, db, argc, argv, 0);
-  }
-  else if (strcasecmp(cmd, "sepaFlashDebitNote")==0) {
-    rv=sepaDebitNote(ab, db, argc, argv, 1);
-  }
-  else if (strcasecmp(cmd, "sepadebitnotes")==0) {
-    rv=sepaMultiJobs(ab, db, argc, argv, AQBANKING_TOOL_SEPA_DEBITNOTES);
-  }
-  else if (strcasecmp(cmd, "addtrans")==0) {
-    rv=addTransaction(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "addsepadebitnote")==0) {
-    rv=addSepaDebitNote(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "sepasto")==0) {
-    rv=sepaRecurTransfer(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "fillgaps")==0) {
-    rv=fillGaps(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "listprofiles")==0) {
-    rv=listProfiles(ab, db, argc, argv);
-  }
-  else if (strcasecmp(cmd, "versions")==0) {
-    rv=versions(ab, db, argc, argv);
+  if (ctrlBackend && *ctrlBackend) {
+    rv=control(ab, ctrlBackend, db, argc, argv);
   }
   else {
-    fprintf(stderr, "ERROR: Unknown command \"%s\".\n", cmd);
-    rv=1;
+    cmd=GWEN_DB_GetCharValue(db, "params", 0, 0);
+    if (!cmd) {
+      fprintf(stderr, "ERROR: Command needed.\n");
+      GWEN_DB_Group_free(db);
+      return 1;
+    }
+
+    if (strcasecmp(cmd, "listaccs")==0) {
+      rv=listAccs(ab, db, argc, argv);
+    }
+    else if (strcasecmp(cmd, "listbal")==0) {
+      rv=listBal(ab, db, argc, argv);
+    }
+    else if (strcasecmp(cmd, "listtrans")==0) {
+      rv=listTrans(ab, db, argc, argv);
+    }
+    else if (strcasecmp(cmd, "listtransfers")==0) {
+      fprintf(stderr, "ERROR: Please use the command \"listtrans\" and specify the transaction type via \"-tt TYPE\"\n");
+      GWEN_DB_Group_free(db);
+      return 1;
+    }
+    else if (strcasecmp(cmd, "request")==0) {
+      rv=request(ab, db, argc, argv);
+    }
+    else if (strcasecmp(cmd, "chkacc")==0) {
+      rv=chkAcc(ab, db, argc, argv);
+    }
+    else if (strcasecmp(cmd, "chkiban")==0) {
+      rv=chkIban(ab, db, argc, argv);
+    }
+    else if (strcasecmp(cmd, "import")==0) {
+      rv=import(ab, db, argc, argv);
+    }
+    else if (strcasecmp(cmd, "sepatransfer")==0) {
+      rv=sepaTransfer(ab, db, argc, argv);
+    }
+    else if (strcasecmp(cmd, "sepatransfers")==0) {
+      rv=sepaMultiJobs(ab, db, argc, argv, AQBANKING_TOOL_SEPA_TRANSFERS);
+    }
+    else if (strcasecmp(cmd, "sepadebitnote")==0) {
+      rv=sepaDebitNote(ab, db, argc, argv, 0);
+    }
+    else if (strcasecmp(cmd, "sepaFlashDebitNote")==0) {
+      rv=sepaDebitNote(ab, db, argc, argv, 1);
+    }
+    else if (strcasecmp(cmd, "sepadebitnotes")==0) {
+      rv=sepaMultiJobs(ab, db, argc, argv, AQBANKING_TOOL_SEPA_DEBITNOTES);
+    }
+    else if (strcasecmp(cmd, "addtrans")==0) {
+      rv=addTransaction(ab, db, argc, argv);
+    }
+    else if (strcasecmp(cmd, "addsepadebitnote")==0) {
+      rv=addSepaDebitNote(ab, db, argc, argv);
+    }
+    else if (strcasecmp(cmd, "sepasto")==0) {
+      rv=sepaRecurTransfer(ab, db, argc, argv);
+    }
+    else if (strcasecmp(cmd, "fillgaps")==0) {
+      rv=fillGaps(ab, db, argc, argv);
+    }
+    else if (strcasecmp(cmd, "listprofiles")==0) {
+      rv=listProfiles(ab, db, argc, argv);
+    }
+    else if (strcasecmp(cmd, "versions")==0) {
+      rv=versions(ab, db, argc, argv);
+    }
+    else {
+      fprintf(stderr, "ERROR: Unknown command \"%s\".\n", cmd);
+      rv=1;
+    }
   }
 
   GWEN_DB_Group_free(db);

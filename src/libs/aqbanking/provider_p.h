@@ -39,6 +39,8 @@ struct AB_PROVIDER {
 
   AB_PROVIDER_UPDATEACCOUNTSPEC_FN updateAccountSpecFn;
 
+  AB_PROVIDER_CONTROL_FN controlFn;
+
   AB_PROVIDER_GET_NEWUSER_DIALOG_FN getNewUserDialogFn;
   AB_PROVIDER_GET_EDITUSER_DIALOG_FN getEditUserDialogFn;
 
@@ -51,7 +53,7 @@ struct AB_PROVIDER {
 
   uint32_t usage;
   uint32_t flags;
-  int isInit;
+  int initCounter;
 };
 
 

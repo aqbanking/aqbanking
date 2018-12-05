@@ -39,7 +39,9 @@ EXTRA_DIST=\
   sepatransfer.c \
   sepadebitnote.c \
   sepamultijobs.c \
-  separecurtransfer.c
+  separecurtransfer.c \
+  control.c
+
 
 
 if IS_WINDOWS

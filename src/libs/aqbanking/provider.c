@@ -106,21 +106,25 @@ void AB_Provider_SetPlugin(AB_PROVIDER *pro, GWEN_PLUGIN *pl) {
 
 int AB_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *db){
   assert(pro);
-  if (pro->isInit) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider already is initialized");
-    return GWEN_ERROR_INVALID;
-  }
-  if (pro->initFn) {
-    int rv;
+  if (pro->initCounter==0) {
+    if (pro->initFn) {
+      int rv;
 
-    rv=pro->initFn(pro, db);
-    if (!rv)
-      pro->isInit=1;
-    return rv;
+      rv=pro->initFn(pro, db);
+      if (!rv) {
+        pro->initCounter++;
+      }
+      return rv;
+    }
+    else {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "No init function set");
+      return GWEN_ERROR_NOT_IMPLEMENTED;
+    }
   }
   else {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "No init function set");
-    return GWEN_ERROR_NOT_IMPLEMENTED;
+    pro->initCounter++;
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Backend already initialised, increasing counter to %d", pro->initCounter);
+    return 0;
   }
 }
 
@@ -128,25 +132,33 @@ int AB_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *db){
 
 int AB_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *db){
   assert(pro);
-  if (pro->isInit==0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
-    return GWEN_ERROR_INVALID;
-  }
-  if (pro->finiFn) {
-    int rv;
 
-    rv=pro->finiFn(pro, db);
-    pro->isInit=0;
-    if (rv<0) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+  if (pro->initCounter==1) {
+    if (pro->finiFn) {
+      int rv;
+  
+      rv=pro->finiFn(pro, db);
+      pro->initCounter=0;
+      if (rv<0) {
+        DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
       return rv;
     }
-    return rv;
+    else {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "No fini function set");
+      pro->initCounter=0;
+      return GWEN_ERROR_NOT_IMPLEMENTED;
+    }
+  }
+  else if (pro->initCounter>0) {
+    pro->initCounter--;
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Backend still initialised, decreasing counter to %d", pro->initCounter);
+    return 0;
   }
   else {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "No fini function set");
-    pro->isInit=0;
-    return GWEN_ERROR_NOT_IMPLEMENTED;
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider is not initialized");
+    return GWEN_ERROR_INVALID;
   }
 }
 
@@ -252,6 +264,13 @@ void AB_Provider_SetUpdateAccountSpecFn(AB_PROVIDER *pro, AB_PROVIDER_UPDATEACCO
 
 
 
+void AB_Provider_SetControlFn(AB_PROVIDER *pro, AB_PROVIDER_CONTROL_FN f) {
+  assert(pro);
+  pro->controlFn=f;
+}
+
+
+
 
 
 
@@ -279,6 +298,16 @@ int AB_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doL
   assert(pro);
   if (pro->updateAccountSpecFn)
     return pro->updateAccountSpecFn(pro, as, doLock);
+  else
+    return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
+int AB_Provider_Control(AB_PROVIDER *pro, int argc, char **argv) {
+  assert(pro);
+  if (pro->controlFn)
+    return pro->controlFn(pro, argc, argv);
   else
     return GWEN_ERROR_NOT_IMPLEMENTED;
 }
@@ -355,7 +384,7 @@ int AB_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORT
 
 int AB_Provider_IsInit(const AB_PROVIDER *pro){
   assert(pro);
-  return (pro->isInit!=0);
+  return (pro->initCounter>0);
 }
 
 

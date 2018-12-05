@@ -18,6 +18,7 @@
 #include "dialog_l.h"
 #include "outbox_l.h"
 #include "user_l.h"
+#include "control_l.h"
 
 #include "message_l.h" /* for test4 */
 
@@ -114,6 +115,7 @@ AB_PROVIDER *AH_Provider_new(AB_BANKING *ab, const char *name){
   AB_Provider_SetCreateUserObjectsFn(pro, AH_Provider_CreateUserObject);
 
   AB_Provider_SetUpdateAccountSpecFn(pro, AH_Provider_UpdateAccountSpec);
+  AB_Provider_SetControlFn(pro, AH_Control);
 
   AB_Provider_AddFlags(pro,
 		       AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG |

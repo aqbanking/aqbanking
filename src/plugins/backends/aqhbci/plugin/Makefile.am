@@ -1,5 +1,5 @@
-DIST_SUBDIRS=msglayer joblayer ajobs applayer banking dialogs
-SUBDIRS=msglayer joblayer ajobs applayer banking dialogs
+DIST_SUBDIRS=msglayer joblayer ajobs applayer banking dialogs control
+SUBDIRS=msglayer joblayer ajobs applayer banking dialogs control
 
 AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 
@@ -50,6 +50,7 @@ libaqhbci_la_LIBADD = \
   ajobs/libhbciaccjobs.la \
   applayer/libhbciapp.la \
   banking/libhbcibanking.la \
+  control/libhbcicontrol.la \
   $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
 libaqhbci_la_LDFLAGS = -no-undefined \

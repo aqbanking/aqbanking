@@ -73,6 +73,8 @@ typedef AB_USER* (*AB_PROVIDER_CREATEUSEROBJECT_FN)(AB_PROVIDER *pro);
 
 typedef int (*AB_PROVIDER_UPDATEACCOUNTSPEC_FN)(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doLock);
 
+typedef int (*AB_PROVIDER_CONTROL_FN)(AB_PROVIDER *pro, int argc, char **argv);
+
 /*@}*/
 
 
@@ -173,6 +175,18 @@ AQBANKING_API int AB_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPE
 
 
 
+/** @name Virtual Functions - Special Functions
+ *
+ */
+/*@{*/
+
+AQBANKING_API int AB_Provider_Control(AB_PROVIDER *pro, int argc, char **argv);
+
+
+/*@}*/
+
+
+
 
 /** @name Virtual Functions - Functions Providing Graphical Dialogs
  *
@@ -231,6 +245,8 @@ AQBANKING_API void AB_Provider_SetCreateAccountObjectsFn(AB_PROVIDER *pro, AB_PR
 AQBANKING_API void AB_Provider_SetCreateUserObjectsFn(AB_PROVIDER *pro, AB_PROVIDER_CREATEUSEROBJECT_FN f);
 
 AQBANKING_API void AB_Provider_SetUpdateAccountSpecFn(AB_PROVIDER *pro, AB_PROVIDER_UPDATEACCOUNTSPEC_FN f);
+
+AQBANKING_API void AB_Provider_SetControlFn(AB_PROVIDER *pro, AB_PROVIDER_CONTROL_FN f);
 
 
 AQBANKING_API void AB_Provider_SetGetNewUserDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_NEWUSER_DIALOG_FN f);

@@ -90,6 +90,31 @@ int AB_Banking_EndUseProvider(AB_BANKING *ab, AB_PROVIDER *pro){
 
 
 
+int AB_Banking_ProviderControl(AB_BANKING *ab, const char *backendName, int argc, char **argv) {
+  AB_PROVIDER *pro;
+
+  pro=AB_Banking_BeginUseProvider(ab, backendName);
+  if (pro==NULL) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Provider \"%s\" not available", backendName?backendName:"<no name>");
+    return GWEN_ERROR_NOT_FOUND;
+  }
+  else {
+    int rv;
+
+    rv=AB_Provider_Control(pro, argc, argv);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    }
+    else if (rv>0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Error in provider control function (%d)", rv);
+    }
+    AB_Banking_EndUseProvider(ab, pro);
+    return rv;
+  }
+}
+
+
+
 GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab){
   GWEN_PLUGIN_DESCRIPTION_LIST2 *l;
   GWEN_PLUGIN_MANAGER *pm;
