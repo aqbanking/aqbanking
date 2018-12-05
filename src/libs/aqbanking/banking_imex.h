@@ -184,6 +184,84 @@ AQBANKING_API
 void AB_Banking_FillGapsInTransaction(AB_BANKING *ab, AB_ACCOUNT *localAccount, AB_TRANSACTION *t);
 
 
+#if 0
+int AB_Banking_Export(AB_BANKING *ab,
+                      const char *exporterName,
+                      AB_IMEXPORTER_CONTEXT *ctx,
+                      GWEN_DB_NODE *dbProfile,
+                      GWEN_SYNCIO *sio);
+#endif
+
+
+
+
+AQBANKING_API 
+int AB_Banking_ExportWithProfile(AB_BANKING *ab,
+				 const char *exporterName,
+				 AB_IMEXPORTER_CONTEXT *ctx,
+				 const char *profileName,
+				 const char *profileFile,
+				 GWEN_SYNCIO *sio);
+
+
+
+/**
+ * Imports data using a profile.
+ *
+ * @param ab banking API object
+ * @param ctx import context to receive the imported accounts, transactions etc
+ * @param importerName name of the importer module (e.g. "csv", "swift", "ofx" etc)
+ * @param profileName name of the importer settings profile stored in the file whose name
+ *   is given in @b profileFile
+ * @param profileFile name of the file to load the exporter settings profile from. This should
+ *  contain at least one profile in a "profile" group. If you want to use profiles installed with
+ *  AqBanking you can specify its name via @b profileName and use NULL here
+ * @param sio IO from which to import
+ *
+ * Example for a profile file:
+ * @code
+ * profile {
+ *   char name="test"
+ *   char shortDescr="Test"
+ *   char version="5.0.4"
+ *   char longDescr="Test Profile"
+ *   int import="1"
+ *   int export="1"
+ *   char type="csv"
+ *   char groupNames="transaction", "transfer", "debitnote", "line"
+ *   char dateFormat="DD.MM.YYYY"
+ *   int utc="0"
+ *   char subject="transactions"
+ *   int usePosNegField="0"
+ *   char posNegFieldName="posNeg"
+ *   int defaultIsPositive="1"
+ *   char valueFormat="float"
+ *   params {
+ *     quote="0"
+ *     title="1"
+ *     delimiter=";"
+ *     group="transaction"
+ *     columns {
+ *       1="remoteBankCode"
+ *       2="remoteAccountNumber"
+ *       3="remoteName[0]"
+ *       4="value/value"
+ *       5="purpose[0]"
+ *       6="purpose[1]"
+ *     } # columns
+ *   } # params
+ *  } # profile
+ * @endcode
+ */
+AQBANKING_API 
+int AB_Banking_ImportWithProfile(AB_BANKING *ab,
+				 const char *importerName,
+				 AB_IMEXPORTER_CONTEXT *ctx,
+				 const char *profileName,
+				 const char *profileFile,
+				 GWEN_SYNCIO *sio);
+
+
 /**
  * This function loads the given im/exporter plugin (if necessary) and also loads the given
  * im/exporter settings profile. The resulting data is written to a GWEN_BUFFER (which is basically
@@ -244,14 +322,6 @@ int AB_Banking_ExportToFileWithProfile(AB_BANKING *ab,
 				       const char *outputFileName);
 
 
-AQBANKING_API 
-int AB_Banking_ExportWithProfile(AB_BANKING *ab,
-				 const char *exporterName,
-				 AB_IMEXPORTER_CONTEXT *ctx,
-				 const char *profileName,
-				 const char *profileFile,
-				 GWEN_SYNCIO *sio);
-
 
 AQBANKING_API
 int AB_Banking_ImportBuffer(AB_BANKING *ab,
@@ -269,62 +339,6 @@ int AB_Banking_ImportFileWithProfile(AB_BANKING *ab,
 				     const char *profileFile,
                                      const char *inputFileName);
 
-
-/**
- * Imports data using a profile.
- *
- * @param ab banking API object
- * @param ctx import context to receive the imported accounts, transactions etc
- * @param importerName name of the importer module (e.g. "csv", "swift", "ofx" etc)
- * @param profileName name of the importer settings profile stored in the file whose name
- *   is given in @b profileFile
- * @param profileFile name of the file to load the exporter settings profile from. This should
- *  contain at least one profile in a "profile" group. If you want to use profiles installed with
- *  AqBanking you can specify its name via @b profileName and use NULL here
- * @param sio IO from which to import
- *
- * Example for a profile file:
- * @code
- * profile {
- *   char name="test"
- *   char shortDescr="Test"
- *   char version="5.0.4"
- *   char longDescr="Test Profile"
- *   int import="1"
- *   int export="1"
- *   char type="csv"
- *   char groupNames="transaction", "transfer", "debitnote", "line"
- *   char dateFormat="DD.MM.YYYY"
- *   int utc="0"
- *   char subject="transactions"
- *   int usePosNegField="0"
- *   char posNegFieldName="posNeg"
- *   int defaultIsPositive="1"
- *   char valueFormat="float"
- *   params {
- *     quote="0"
- *     title="1"
- *     delimiter=";"
- *     group="transaction"
- *     columns {
- *       1="remoteBankCode"
- *       2="remoteAccountNumber"
- *       3="remoteName[0]"
- *       4="value/value"
- *       5="purpose[0]"
- *       6="purpose[1]"
- *     } # columns
- *   } # params
- *  } # profile
- * @endcode
- */
-AQBANKING_API 
-int AB_Banking_ImportWithProfile(AB_BANKING *ab,
-				 const char *importerName,
-				 AB_IMEXPORTER_CONTEXT *ctx,
-				 const char *profileName,
-				 const char *profileFile,
-				 GWEN_SYNCIO *sio);
 
 /**
  * Another convenience function to import a given file.
