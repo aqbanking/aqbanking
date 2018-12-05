@@ -20,8 +20,6 @@ all_includes=@all_includes@
 aqbanking_libs=@aqbanking_ldflags@ @aqbanking_libs@
 aqbanking_includes=@aqbanking_includes@
 aqbanking_plugindir=@aqbanking_plugindir@
-aqhbci_includes=@aqhbci_includes@
-aqhbci_libs=@aqhbci_ldflags@ @aqhbci_libs@
 
 # Human-readable name
 Name: AqBanking
