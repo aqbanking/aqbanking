@@ -8,7 +8,8 @@ INCLUDES = -I$(aqbanking_symlinkdir) $(gwenhywfar_includes) \
 
 localedir = $(datadir)/locale
 DEFS += -DLOCALEDIR=\"$(localedir)\" \
-  -DAQHBCI_PLUGINS=\"$(aqhbci_plugindir)\"
+  -DAQHBCI_PLUGINS=\"$(aqhbci_plugindir)\" \
+  -DXMLDATA_DIR=\"$(aqbanking_pkgdatadir)/backends/aqhbci\"
 
 noinst_LTLIBRARIES=libhbcicontrol.la
 
@@ -22,7 +23,36 @@ iheaderdir=@aqbanking_headerdir_am@/aqhbci
 
 libhbcicontrol_la_SOURCES=\
  main.c \
- mkpinlist.c
+ addaccount.c \
+ addsubaccountflags.c \
+ addsubuserflags.c \
+ adduser.c \
+ changepin.c \
+ createkeys.c \
+ delaccount.c \
+ deluser.c \
+ getaccounts.c \
+ getaccsepa.c \
+ getcert.c \
+ getitanmodes.c \
+ getkeys.c \
+ getsysid.c \
+ iniletter.c \
+ listaccounts.c \
+ listitanmodes.c \
+ listusers.c \
+ mkpinlist.c \
+ logfile.c \
+ resetkeys.c \
+ sendkeys.c \
+ sethbciversion.c \
+ setitanmode.c \
+ setmaxtransfers.c \
+ setsepaprofile.c \
+ settanmediumid.c \
+ test.c
+
+
 
 
 

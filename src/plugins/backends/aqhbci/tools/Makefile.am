@@ -1,4 +1,4 @@
-SUBDIRS = hbcixml aqhbci-tool # aqhbci hbcisadmin
+SUBDIRS = hbcixml # aqhbci hbcisadmin
 
 sources:
 

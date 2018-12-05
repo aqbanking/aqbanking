@@ -12,7 +12,7 @@
 #endif
 
 
-#include "globals.h"
+#include "globals_l.h"
 #include <aqhbci/user.h>
 #include <aqhbci/msgengine.h>
 
@@ -160,7 +160,7 @@ static int dumpMsg(GWEN_SYNCIO *sio,
 
 
 
-int logFile(AB_BANKING *ab,
+int logFile(AB_PROVIDER *pro,
             GWEN_DB_NODE *dbArgs,
             int argc,
             char **argv) {

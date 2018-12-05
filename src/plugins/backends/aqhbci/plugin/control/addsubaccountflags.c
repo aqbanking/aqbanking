@@ -13,7 +13,7 @@
 #endif
 
 
-#include "globals.h"
+#include "globals_l.h"
 
 #include <gwenhywfar/text.h>
 
@@ -27,12 +27,11 @@
 #include <errno.h>
 
 
-int addsubAccountFlags(AB_BANKING *ab,
+int addsubAccountFlags(AB_PROVIDER *pro,
                        GWEN_DB_NODE *dbArgs,
                        int argc,
                        char **argv, int is_add ) {
   GWEN_DB_NODE *db;
-  AB_PROVIDER *pro;
   AB_ACCOUNT *a=NULL;
   int rv;
   uint32_t aid;
@@ -117,26 +116,10 @@ int addsubAccountFlags(AB_BANKING *ab,
     return 4;
   }
 
-  /* init aqbanking */
-  rv=AB_Banking_Init(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
-  }
-
-  /* get provider (provider gets loaded and stays in memory until AB_Banking_EndUseProvider()) */
-  pro=AB_Banking_BeginUseProvider(ab, "aqhbci");
-  if (pro==NULL) {
-    fprintf(stderr, "ERROR: Backend AqHBCI not available\n");
-    return 3;
-  }
-
   /* get account (lock, don't unlock, so we can later call AH_Provider_EndExclUseAccount */
   rv=AB_Provider_GetAccount(pro, aid, 1, 0, &a);
   if (rv<0) {
     fprintf(stderr, "ERROR: Account with id %lu not found\n", (unsigned long int) aid);
-    AB_Banking_EndUseProvider(ab, pro);
-    AB_Banking_Fini(ab);
     return 2;
   }
 
@@ -155,19 +138,9 @@ int addsubAccountFlags(AB_BANKING *ab,
   if (rv<0) {
     fprintf(stderr, "ERROR: Could not unlock account (%d)\n", rv);
     AB_Account_free(a);
-    AB_Banking_EndUseProvider(ab, pro);
-    AB_Banking_Fini(ab);
     return 4;
   }
   AB_Account_free(a);
-
-  AB_Banking_EndUseProvider(ab, pro);
-
-  rv=AB_Banking_Fini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    return 5;
-  }
 
   return 0;
 }

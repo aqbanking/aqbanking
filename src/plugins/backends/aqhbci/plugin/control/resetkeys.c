@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id$
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -15,7 +12,7 @@
 #endif
 
 
-#include "globals.h"
+#include "globals_l.h"
 #include <aqhbci/user.h>
 
 #include <gwenhywfar/text.h>
@@ -27,14 +24,13 @@
 #include <errno.h>
 
 
-int resetKeys(AB_BANKING *ab,
+int resetKeys(AB_PROVIDER *pro,
               GWEN_DB_NODE *dbArgs,
               int argc,
 	      char **argv) {
 #warning "TODO"
 #if 0
   GWEN_DB_NODE *db;
-  AB_PROVIDER *pro;
   AB_USER_LIST2 *ul;
   AB_USER *u=0;
   int rv;
@@ -121,21 +117,6 @@ int resetKeys(AB_BANKING *ab,
     return 0;
   }
 
-  rv=AB_Banking_Init(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
-  }
-
-  rv=AB_Banking_OnlineInit(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
-  }
-
-  pro=AB_Banking_GetProvider(ab, "aqhbci");
-  assert(pro);
-
   bankId=GWEN_DB_GetCharValue(db, "bankId", 0, "*");
   userId=GWEN_DB_GetCharValue(db, "userId", 0, "*");
   customerId=GWEN_DB_GetCharValue(db, "customerId", 0, "*");
@@ -160,7 +141,6 @@ int resetKeys(AB_BANKING *ab,
   }
   if (!u) {
     DBG_ERROR(0, "No matching customer");
-    AB_Banking_Fini(ab);
     return 3;
   }
   else {
@@ -172,7 +152,6 @@ int resetKeys(AB_BANKING *ab,
     rv=AH_Medium_Mount(m);
     if (rv) {
       DBG_ERROR(0, "Could not mount medium (%d)", rv);
-      AB_Banking_Fini(ab);
       return 3;
     }
 
@@ -180,7 +159,6 @@ int resetKeys(AB_BANKING *ab,
     if (rv) {
       DBG_ERROR(0, "Could not select context %d (%d)",
                 AH_User_GetContextId(u), rv);
-      AB_Banking_Fini(ab);
       return 3;
     }
 
@@ -191,30 +169,16 @@ int resetKeys(AB_BANKING *ab,
       rv=AH_Medium_ResetServerKeys(m);
     if (rv) {
       DBG_ERROR(0, "Could not reset keys (%d)", rv);
-      AB_Banking_Fini(ab);
       return 3;
     }
 
     rv=AH_Medium_Unmount(m, 1);
     if (rv) {
       DBG_ERROR(0, "Could not unmount medium (%d)", rv);
-      AB_Banking_Fini(ab);
       return 3;
     }
   }
 
-
-  rv=AB_Banking_OnlineFini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    return 5;
-  }
-
-  rv=AB_Banking_Fini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    return 5;
-  }
 
 #endif
   return 0;

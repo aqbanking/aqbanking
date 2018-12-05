@@ -12,7 +12,7 @@
 #endif
 
 
-#include "globals.h"
+#include "globals_l.h"
 
 #include <gwenhywfar/text.h>
 
@@ -25,12 +25,11 @@
 #include <errno.h>
 
 
-int setSepaProfile(AB_BANKING *ab,
+int setSepaProfile(AB_PROVIDER *pro,
 		   GWEN_DB_NODE *dbArgs,
 		   int argc,
 		   char **argv) {
   GWEN_DB_NODE *db;
-  AB_PROVIDER *pro;
   uint32_t uid;
   AB_USER *u=NULL;
   int rv;
@@ -123,52 +122,37 @@ int setSepaProfile(AB_BANKING *ab,
 
 
   /* doit */
-  rv=AB_Banking_Init(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
-  }
-
   if (tProfile && *tProfile) {
     /* check whether given profile is supported by AqBankings SEPA im-/exporter */
-    profile=AB_Banking_GetImExporterProfile(ab, "sepa", tProfile);
+    profile=AB_Banking_GetImExporterProfile(AB_Provider_GetBanking(pro), "sepa", tProfile);
     if (!profile) {
       DBG_ERROR(0, "Profile \"%s\" not found", tProfile);
-      AB_Banking_Fini(ab);
       return 1;
     }
     s=GWEN_DB_GetCharValue(profile, "type", 0, "");
     if (GWEN_Text_ComparePattern(s, "001.*", 1)==-1) {
       DBG_ERROR(0, "Profile \"%s\" is of type \"%s\" but should match \"001.*\"", tProfile, s);
-      AB_Banking_Fini(ab);
       return 1;
     }
   }
 
   if (dProfile && *dProfile) {
     /* check whether given profile is supported by AqBankings SEPA im-/exporter */
-    profile=AB_Banking_GetImExporterProfile(ab, "sepa", dProfile);
+    profile=AB_Banking_GetImExporterProfile(AB_Provider_GetBanking(pro), "sepa", dProfile);
     if (!profile) {
       DBG_ERROR(0, "Profile \"%s\" not found", dProfile);
-      AB_Banking_Fini(ab);
       return 1;
     }
     s=GWEN_DB_GetCharValue(profile, "type", 0, "");
     if (GWEN_Text_ComparePattern(s, "008.*", 1)==-1) {
       DBG_ERROR(0, "Profile \"%s\" is of type \"%s\" but should match \"008.*\"", dProfile, s);
-      AB_Banking_Fini(ab);
       return 1;
     }
   }
 
-  pro=AB_Banking_BeginUseProvider(ab, "aqhbci");
-  assert(pro);
-
   rv=AB_Provider_GetUser(pro, uid, 1, 0, &u); /* don't lock to allow for AH_Provider_EndExclUseUser */
   if (rv<0) {
     fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) uid);
-    AB_Banking_EndUseProvider(ab, pro);
-    AB_Banking_Fini(ab);
     return 2;
   }
   else {
@@ -201,20 +185,10 @@ int setSepaProfile(AB_BANKING *ab,
       fprintf(stderr, "ERROR: Could not unlock user (%d)\n", rv);
       AB_Provider_EndExclUseUser(pro, u, 1); /* abort */
       AB_User_free(u);
-      AB_Banking_EndUseProvider(ab, pro);
-      AB_Banking_Fini(ab);
       return 4;
     }
   }
   AB_User_free(u);
-
-  AB_Banking_EndUseProvider(ab, pro);
-
-  rv=AB_Banking_Fini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    return 5;
-  }
 
   return 0;
 }

@@ -12,7 +12,7 @@
 #endif
 
 
-#include "globals.h"
+#include "globals_l.h"
 
 #include <gwenhywfar/text.h>
 
@@ -23,12 +23,11 @@
 #include <errno.h>
 
 
-int getAccSepa(AB_BANKING *ab,
+int getAccSepa(AB_PROVIDER *pro,
                GWEN_DB_NODE *dbArgs,
                int argc,
                char **argv) {
   GWEN_DB_NODE *db;
-  AB_PROVIDER *pro;
   AB_ACCOUNT *a=NULL;
   int rv;
   uint32_t aid;
@@ -97,26 +96,10 @@ int getAccSepa(AB_BANKING *ab,
     return 1;
   }
 
-  /* init aqbanking */
-  rv=AB_Banking_Init(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
-  }
-
-  /* get provider (provider gets loaded and stays in memory until AB_Banking_EndUseProvider()) */
-  pro=AB_Banking_BeginUseProvider(ab, "aqhbci");
-  if (pro==NULL) {
-    fprintf(stderr, "ERROR: Backend AqHBCI not available\n");
-    return 3;
-  }
-
   /* get account */
   rv=AB_Provider_GetAccount(pro, aid, 1, 1, &a);
   if (rv<0) {
     fprintf(stderr, "ERROR: Account with id %lu not found\n", (unsigned long int) aid);
-    AB_Banking_EndUseProvider(ab, pro);
-    AB_Banking_Fini(ab);
     return 2;
   }
   else {
@@ -127,20 +110,10 @@ int getAccSepa(AB_BANKING *ab,
     if (rv<0) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not execute outbox.\n");
       AB_Account_free(a);
-      AB_Banking_EndUseProvider(ab, pro);
-      AB_Banking_Fini(ab);
       return 4;
     }
   }
   AB_Account_free(a);
-
-  AB_Banking_EndUseProvider(ab, pro);
-
-  rv=AB_Banking_Fini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    return 5;
-  }
 
   return 0;
 }

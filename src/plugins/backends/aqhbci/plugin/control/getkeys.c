@@ -12,7 +12,7 @@
 #endif
 
 
-#include "globals.h"
+#include "globals_l.h"
 
 #include <gwenhywfar/text.h>
 
@@ -23,12 +23,11 @@
 #include <errno.h>
 
 
-int getKeys(AB_BANKING *ab,
+int getKeys(AB_PROVIDER *pro,
             GWEN_DB_NODE *dbArgs,
             int argc,
             char **argv) {
   GWEN_DB_NODE *db;
-  AB_PROVIDER *pro;
   uint32_t uid;
   AB_USER *u=NULL;
   int rv;
@@ -81,15 +80,6 @@ int getKeys(AB_BANKING *ab,
 
 
   /* doit */
-  rv=AB_Banking_Init(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
-  }
-
-  pro=AB_Banking_BeginUseProvider(ab, "aqhbci");
-  assert(pro);
-
   uid=(uint32_t) GWEN_DB_GetIntValue(db, "userId", 0, 0);
   if (uid==0) {
     fprintf(stderr, "ERROR: Invalid or missing unique user id\n");
@@ -99,8 +89,6 @@ int getKeys(AB_BANKING *ab,
   rv=AB_Provider_GetUser(pro, uid, 1, 1, &u);
   if (rv<0) {
     fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) uid);
-    AB_Banking_EndUseProvider(ab, pro);
-    AB_Banking_Fini(ab);
     return 2;
   }
   else {
@@ -112,20 +100,10 @@ int getKeys(AB_BANKING *ab,
     if (rv) {
       DBG_ERROR_ERR(0, rv);
       AB_User_free(u);
-      AB_Banking_EndUseProvider(ab, pro);
-      AB_Banking_Fini(ab);
       return 3;
     }
   }
   AB_User_free(u);
-
-  AB_Banking_EndUseProvider(ab, pro);
-
-  rv=AB_Banking_Fini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    return 5;
-  }
 
   return 0;
 }

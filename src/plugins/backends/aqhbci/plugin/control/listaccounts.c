@@ -12,7 +12,7 @@
 #endif
 
 
-#include "globals.h"
+#include "globals_l.h"
 
 #include <gwenhywfar/text.h>
 
@@ -23,25 +23,24 @@
 #include <errno.h>
 
 
-int listAccounts(AB_BANKING *ab,
+int listAccounts(AB_PROVIDER *pro,
                  GWEN_DB_NODE *dbArgs,
                  int argc,
                  char **argv) {
   GWEN_DB_NODE *db;
   int rv, verbose;
-  AB_PROVIDER *pro;
   AB_ACCOUNT_LIST *al;
   AB_ACCOUNT *a;
   int i=0;
   const GWEN_ARGS args[]={
   {
-              0,                             /* flags */
-              GWEN_ArgsType_Int,             /* type */
-              "verbose",                        /* name */
-              0,                            /* minnum */
-              1,                            /* maxnum */
-              "v",                            /* short option */
-              "verbose",                /* long option */
+              0,                  /* flags */
+              GWEN_ArgsType_Int,  /* type */
+              "verbose",          /* name */
+              0,                  /* minnum */
+              1,                  /* maxnum */
+              "v",                /* short option */
+              "verbose",          /* long option */
               "Show list in verbose form (with more columns)",  /* short description */
               0
   },
@@ -82,21 +81,11 @@ int listAccounts(AB_BANKING *ab,
 
   verbose = GWEN_DB_VariableExists(db, "verbose");
 
-  rv=AB_Banking_Init(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
-  }
-
-  pro=AB_Banking_BeginUseProvider(ab, "aqhbci");
-  assert(pro);
-
   al=AB_Account_List_new();
   rv=AB_Provider_ReadAccounts(pro, al);
   if (rv<0) {
     DBG_ERROR_ERR(0, rv);
     AB_Account_List_free(al);
-    AB_Banking_EndUseProvider(ab, pro);
     return 3;
   }
 
@@ -116,14 +105,6 @@ int listAccounts(AB_BANKING *ab,
     a=AB_Account_List_Next(a);
   }
   AB_Account_List_free(al);
-
-  AB_Banking_EndUseProvider(ab, pro);
-
-  rv=AB_Banking_Fini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    return 5;
-  }
 
   return 0;
 }

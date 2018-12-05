@@ -13,7 +13,7 @@
 #endif
 
 
-#include "globals.h"
+#include "globals_l.h"
 #include <aqhbci/user.h>
 
 #include <gwenhywfar/text.h>
@@ -29,12 +29,11 @@
 
 
 
-int delUser(AB_BANKING *ab,
+int delUser(AB_PROVIDER *pro,
             GWEN_DB_NODE *dbArgs,
             int argc,
             char **argv) {
   GWEN_DB_NODE *db;
-  AB_PROVIDER *pro;
   AB_USER *u=NULL;
   uint32_t uid;
   int rv;
@@ -105,21 +104,9 @@ int delUser(AB_BANKING *ab,
 
   pretend=GWEN_DB_GetIntValue(db, "pretend", 0, 0);
 
-  rv=AB_Banking_Init(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
-  }
-
-  pro=AB_Banking_BeginUseProvider(ab, "aqhbci");
-  assert(pro);
-
-
   rv=AB_Provider_GetUser(pro, uid, 1, 1, &u);
   if (rv<0) {
     fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) uid);
-    AB_Banking_EndUseProvider(ab, pro);
-    AB_Banking_Fini(ab);
     return 2;
   }
 
@@ -136,20 +123,10 @@ int delUser(AB_BANKING *ab,
     if (rv<0) {
       fprintf(stderr, "ERROR: Could not delete user %lu (%d)\n", (unsigned long int) uid, rv);
       AB_User_free(u);
-      AB_Banking_EndUseProvider(ab, pro);
-      AB_Banking_Fini(ab);
       return 2;
     }
   }
   AB_User_free(u);
-
-  AB_Banking_EndUseProvider(ab, pro);
-
-  rv=AB_Banking_Fini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    return 5;
-  }
 
   return 0;
 }

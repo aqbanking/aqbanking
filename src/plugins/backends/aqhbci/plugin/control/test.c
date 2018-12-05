@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
- cvs         : $Id: iniletter.c 964 2006-03-17 10:35:21Z cstim $
  begin       : Tue May 03 2005
- copyright   : (C) 2005 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -15,7 +12,7 @@
 #endif
 
 
-#include "globals.h"
+#include "globals_l.h"
 #include <aqhbci/user.h>
 
 #include <gwenhywfar/text.h>
@@ -27,7 +24,7 @@
 #include <errno.h>
 
 
-int test1(AB_BANKING *ab,
+int test1(AB_PROVIDER *pro,
           GWEN_DB_NODE *dbArgs,
           int argc,
           char **argv) {

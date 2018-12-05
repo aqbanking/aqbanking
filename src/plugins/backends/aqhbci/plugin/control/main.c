@@ -148,7 +148,6 @@ int AH_Control(AB_PROVIDER *pro, int argc, char **argv) {
   if (strcasecmp(cmd, "mkpinlist")==0) {
     rv=mkPinList(pro, db, argc, argv);
   }
-#if 0
   else if (strcasecmp(cmd, "adduser")==0) {
     rv=addUser(pro, db, argc, argv);
   }
@@ -230,16 +229,13 @@ int AH_Control(AB_PROVIDER *pro, int argc, char **argv) {
   else if (strcasecmp(cmd, "setsepaprofile")==0) {
     rv=setSepaProfile(pro, db, argc, argv);
   }
-#endif
   else if (strcasecmp(cmd, "versions")==0) {
     showVersions();
     rv=0;
   }
-#if 0
   else if (strcasecmp(cmd, "test1")==0) {
-    rv=test1(ab, db, argc, argv);
+    rv=test1(pro, db, argc, argv);
   }
-#endif
   else {
     fprintf(stderr, "ERROR: Unknown command \"%s\".\n", cmd);
     rv=1;

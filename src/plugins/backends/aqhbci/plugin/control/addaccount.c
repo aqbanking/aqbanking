@@ -12,7 +12,7 @@
 #endif
 
 
-#include "globals.h"
+#include "globals_l.h"
 
 #include <aqhbci/account.h>
 
@@ -25,12 +25,11 @@
 #include <errno.h>
 
 
-int addAccount(AB_BANKING *ab,
+int addAccount(AB_PROVIDER *pro,
 	       GWEN_DB_NODE *dbArgs,
 	       int argc,
 	       char **argv) {
   GWEN_DB_NODE *db;
-  AB_PROVIDER *pro;
   AB_USER *u=0;
   int rv;
   uint32_t userId;
@@ -140,20 +139,9 @@ int addAccount(AB_BANKING *ab,
   accountName=GWEN_DB_GetCharValue(db, "accountName", 0, "Account");
   ownerName=GWEN_DB_GetCharValue(db, "ownerName", 0, NULL);
 
-  rv=AB_Banking_Init(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
-  }
-
-  pro=AB_Banking_BeginUseProvider(ab, "aqhbci");
-  assert(pro);
-
   rv=AB_Provider_GetUser(pro, userId, 1, 1, &u);
   if (rv<0) {
     fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) userId);
-    AB_Banking_EndUseProvider(ab, pro);
-    AB_Banking_Fini(ab);
     return 2;
   }
   else {
@@ -167,12 +155,10 @@ int addAccount(AB_BANKING *ab,
     bl=AB_BankInfo_List2_new();
     tbi=AB_BankInfo_new();
     AB_BankInfo_SetBankId( tbi, bankId );
-    rv=AB_Banking_GetBankInfoByTemplate(ab, "de", tbi, bl);
+    rv=AB_Banking_GetBankInfoByTemplate(AB_Provider_GetBanking(pro), "de", tbi, bl);
     if (rv) {
       fprintf(stderr, "Error looking for bank info: %d\n", rv);
       AB_User_free(u);
-      AB_Banking_EndUseProvider(ab, pro);
-      AB_Banking_Fini(ab);
       return 3;
     }
 
@@ -212,23 +198,12 @@ int addAccount(AB_BANKING *ab,
       DBG_ERROR(0, "Error adding account (%d)", rv);
       AB_Account_free(account);
       AB_User_free(u);
-      AB_Banking_EndUseProvider(ab, pro);
-      AB_Banking_Fini(ab);
       return 3;
     }
 
     AB_Account_free(account);
 
     AB_User_free(u);
-  }
-
-  AB_Banking_EndUseProvider(ab, pro);
-
-
-  rv=AB_Banking_Fini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    return 5;
   }
 
   return 0;
