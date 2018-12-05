@@ -575,7 +575,7 @@ AC_ARG_WITH(bankinfos,
 )
 
 if test "$aqbanking_bankinfos" = "all"; then
-  aqbanking_bankinfos="at ca ch de us"
+  aqbanking_bankinfos="de"
 fi
 
 for f in ${aqbanking_bankinfos}; do
@@ -1415,16 +1415,8 @@ AC_CONFIG_FILES([
   src/libs/aqbankingpp/Makefile
   src/plugins/Makefile
   src/plugins/bankinfo/Makefile
-  src/plugins/bankinfo/at/Makefile
-  src/plugins/bankinfo/at/at.xml
-  src/plugins/bankinfo/ca/Makefile
-  src/plugins/bankinfo/ca/ca.xml
-  src/plugins/bankinfo/ch/Makefile
-  src/plugins/bankinfo/ch/ch.xml
   src/plugins/bankinfo/de/Makefile
   src/plugins/bankinfo/de/de.xml
-  src/plugins/bankinfo/us/Makefile
-  src/plugins/bankinfo/us/us.xml
   src/plugins/bankinfo/generic/Makefile
   src/plugins/imexporters/Makefile
   src/plugins/imexporters/dtaus/Makefile

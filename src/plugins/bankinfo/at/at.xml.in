@@ -1,9 +1,0 @@
-<plugin name="at" type="bankinfo" i18n="aqbanking" >
-  <version>@AQBANKING_VERSION_STRING@</version>
-  <author>Martin Preuss(martin@libchipcard.de)</author>
-  <short>Bank info provider for Austria</short>
-  <descr>
-    This plugin handles Austrian banks.
-  </descr>
-</plugin>
-

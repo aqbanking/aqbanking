@@ -26,20 +26,20 @@ de_files=de/blz.idx de/bic.idx de/namloc.idx de/banks.data
 us_files=us/blz.idx us/bic.idx us/namloc.idx us/banks.data
 ca_files=ca/blz.idx ca/bic.idx ca/namloc.idx ca/banks.data
 
-atbankdatadir = $(bankinfodatadir)/at
-atbankdata_DATA = $(at_files)
+#atbankdatadir = $(bankinfodatadir)/at
+#atbankdata_DATA = $(at_files)
 
 debankdatadir = $(bankinfodatadir)/de
 debankdata_DATA = $(de_files)
 
-chbankdatadir = $(bankinfodatadir)/ch
-chbankdata_DATA = $(ch_files)
+#chbankdatadir = $(bankinfodatadir)/ch
+#chbankdata_DATA = $(ch_files)
 
-usbankdatadir = $(bankinfodatadir)/us
-usbankdata_DATA = $(us_files)
+#usbankdatadir = $(bankinfodatadir)/us
+#usbankdata_DATA = $(us_files)
 
-cabankdatadir = $(bankinfodatadir)/ca
-cabankdata_DATA = $(ca_files)
+#cabankdatadir = $(bankinfodatadir)/ca
+#cabankdata_DATA = $(ca_files)
 
 at.tar.bz2:
 	./mkdeinfo build-at data/at/kidaten.csv.utf8 tmp.banks
@@ -138,7 +138,7 @@ bankdata: $(at_files) $(ch_files) $(de_files) $(us_files) $(ca_files)
 
 all-local: bankdata
 
-dist-local: at.tar.bz2 ch.tar.bz2 de.tar.bz2 us.tar.bz2 ca.tar.bz2
+dist-local: de.tar.bz2
 
 CLEANFILES = $(at_files) $(ch_files) $(de_files) $(ca_files) $(us_files)
 

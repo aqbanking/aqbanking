@@ -1,9 +1,0 @@
-<plugin name="us" type="bankinfo" i18n="aqbanking" >
-  <version>@AQBANKING_VERSION_STRING@</version>
-  <author>Martin Preuss(martin@libchipcard.de)</author>
-  <short>Bank info provider for the United States of America</short>
-  <descr>
-    This plugin handles US banks.
-  </descr>
-</plugin>
-

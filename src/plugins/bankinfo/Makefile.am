@@ -1,4 +1,4 @@
-DIST_SUBDIRS=generic at ca ch de us
+DIST_SUBDIRS=generic de
 SUBDIRS=generic $(aqbanking_plugins_bankinfo_dirs)
 
 
