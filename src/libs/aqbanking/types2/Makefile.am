@@ -105,9 +105,7 @@ build_headers_pub= \
 build_headers=$(build_headers_priv) $(build_headers_pub)
 
 
-libabtypes2_la_SOURCES=$(built_sources) \
-  transactionfns.c \
-  transactionfns.h
+libabtypes2_la_SOURCES=$(built_sources)
 
 
 iheaderdir=@aqbanking_headerdir_am@/aqbanking

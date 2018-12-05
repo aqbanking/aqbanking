@@ -25,7 +25,7 @@
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/text.h>
 
-#include <aqbanking/transactionfns.h>
+#include <aqbanking/transaction.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -423,21 +423,21 @@ int AH_Job_TransferBase_HandleCommand_SepaUndated(AH_JOB *j, const AB_TRANSACTIO
   }
 
   /* validate transaction */
-  rv=AB_Transaction_CheckForSepaConformity(t, (uflags & AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET)?1:0);
+  rv=AB_Banking_CheckTransactionForSepaConformity(t, (uflags & AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET)?1:0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_TransactionLimits_free(lim);
     return rv;
   }
 
-  rv=AB_Transaction_CheckPurposeAgainstLimits(t, lim);
+  rv=AB_Banking_CheckTransactionAgainstLimits_Purpose(t, lim);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_TransactionLimits_free(lim);
     return rv;
   }
 
-  rv=AB_Transaction_CheckNamesAgainstLimits(t, lim);
+  rv=AB_Banking_CheckTransactionAgainstLimits_Names(t, lim);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_TransactionLimits_free(lim);
@@ -489,28 +489,28 @@ int AH_Job_TransferBase_HandleCommand_SepaDated(AH_JOB *j, const AB_TRANSACTION 
   }
 
   /* validate transaction */
-  rv=AB_Transaction_CheckForSepaConformity(t, (uflags & AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET)?1:0);
+  rv=AB_Banking_CheckTransactionForSepaConformity(t, (uflags & AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET)?1:0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_TransactionLimits_free(lim);
     return rv;
   }
 
-  rv=AB_Transaction_CheckPurposeAgainstLimits(t, lim);
+  rv=AB_Banking_CheckTransactionAgainstLimits_Purpose(t, lim);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_TransactionLimits_free(lim);
     return rv;
   }
 
-  rv=AB_Transaction_CheckNamesAgainstLimits(t, lim);
+  rv=AB_Banking_CheckTransactionAgainstLimits_Names(t, lim);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_TransactionLimits_free(lim);
     return rv;
   }
 
-  rv=AB_Transaction_CheckDateAgainstLimits(t, lim);
+  rv=AB_Banking_CheckTransactionAgainstLimits_Date(t, lim);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_TransactionLimits_free(lim);
@@ -563,28 +563,28 @@ int AH_Job_TransferBase_HandleCommand_SepaDatedDebit(AH_JOB *j, const AB_TRANSAC
   }
 
   /* validate transaction */
-  rv=AB_Transaction_CheckForSepaConformity(t, (uflags & AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET)?1:0);
+  rv=AB_Banking_CheckTransactionForSepaConformity(t, (uflags & AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET)?1:0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_TransactionLimits_free(lim);
     return rv;
   }
 
-  rv=AB_Transaction_CheckPurposeAgainstLimits(t, lim);
+  rv=AB_Banking_CheckTransactionAgainstLimits_Purpose(t, lim);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_TransactionLimits_free(lim);
     return rv;
   }
 
-  rv=AB_Transaction_CheckNamesAgainstLimits(t, lim);
+  rv=AB_Banking_CheckTransactionAgainstLimits_Names(t, lim);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_TransactionLimits_free(lim);
     return rv;
   }
 
-  rv=AB_Transaction_CheckDateAgainstSequenceLimits(t, lim);
+  rv=AB_Banking_CheckTransactionAgainstLimits_Date(t, lim);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_TransactionLimits_free(lim);
@@ -638,28 +638,28 @@ int AH_Job_TransferBase_HandleCommand_SepaStandingOrder(AH_JOB *j, const AB_TRAN
   }
 
   /* validate transaction */
-  rv=AB_Transaction_CheckForSepaConformity(t, (uflags & AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET)?1:0);
+  rv=AB_Banking_CheckTransactionForSepaConformity(t, (uflags & AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET)?1:0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_TransactionLimits_free(lim);
     return rv;
   }
 
-  rv=AB_Transaction_CheckPurposeAgainstLimits(t, lim);
+  rv=AB_Banking_CheckTransactionAgainstLimits_Purpose(t, lim);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_TransactionLimits_free(lim);
     return rv;
   }
 
-  rv=AB_Transaction_CheckNamesAgainstLimits(t, lim);
+  rv=AB_Banking_CheckTransactionAgainstLimits_Names(t, lim);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_TransactionLimits_free(lim);
     return rv;
   }
 
-  rv=AB_Transaction_CheckRecurrenceAgainstLimits(t, lim);
+  rv=AB_Banking_CheckTransactionAgainstLimits_Recurrence(t, lim);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -671,7 +671,7 @@ int AH_Job_TransferBase_HandleCommand_SepaStandingOrder(AH_JOB *j, const AB_TRAN
     DBG_INFO(AQHBCI_LOGDOMAIN, "Check FirstExecutionDate for delete or modify DISABLED");
   }
   else {
-    rv=AB_Transaction_CheckFirstExecutionDateAgainstLimits(t, lim);
+    rv=AB_Banking_CheckTransactionAgainstLimits_ExecutionDate(t, lim);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
