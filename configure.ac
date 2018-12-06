@@ -442,6 +442,7 @@ for f in ${aqbanking_backends}; do
   case "$f" in
     aqhbci)
       aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqhbci"
+      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqhbci/libaqhbci.la"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQHBCI, 1, [plugin availability])
       ;;
     aqebics)
@@ -450,14 +451,17 @@ for f in ${aqbanking_backends}; do
       ;;
     aqnone)
       aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqnone"
+      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqnone/libaqnone.la"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQNONE, 1, [plugin availability])
       ;;
     aqofxconnect)
       aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqofxconnect"
+      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqofxconnect/libaqofxconnect.la"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQOFXCONNECT, 1, [plugin availability])
       ;;
     aqpaypal)
       aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqpaypal"
+      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqpaypal/libaqpaypal.la"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQPAYPAL, 1, [plugin availability])
       ;;
     *)
@@ -467,6 +471,7 @@ for f in ${aqbanking_backends}; do
 done
 
 AC_SUBST(aqbanking_plugins_backends_dirs)
+AC_SUBST(aqbanking_plugins_backends_libs)
 
 
 

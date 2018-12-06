@@ -34,9 +34,8 @@ iheader_HEADERS=\
   user.h
 
 # static plugin library
-noinst_LTLIBRARIES=libaqofxconnectplugin.la 
-libaqofxconnectplugin_la_SOURCES= \
-  aqofxconnect-plugin.c \
+noinst_LTLIBRARIES=libaqofxconnect.la 
+libaqofxconnect_la_SOURCES= \
   account.c \
   user.c \
   provider.c \
@@ -44,7 +43,7 @@ libaqofxconnectplugin_la_SOURCES= \
   dlg_newuser.c \
   dlg_ofx_special.c
 
-libaqofxconnectplugin_la_LIBADD= \
+libaqofxconnect_la_LIBADD= \
   libofxhome/libofxhome.la \
   $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)

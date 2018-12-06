@@ -43,7 +43,7 @@ sources:
 
 # AqHBCI plugin library
 noinst_LTLIBRARIES=libaqhbci.la
-libaqhbci_la_SOURCES=aqhbci.c aqhbci-plugin.c
+libaqhbci_la_SOURCES=aqhbci.c
 libaqhbci_la_LIBADD=\
   msglayer/libhbcimsg.la \
   joblayer/libhbcijob.la \

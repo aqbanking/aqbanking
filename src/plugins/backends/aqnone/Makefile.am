@@ -15,14 +15,14 @@ plugin_DATA=aqnone.xml
 noinst_HEADERS=provider_l.h provider_p.h
 
 # static plugin library
-noinst_LTLIBRARIES=libaqnoneplugin.la 
-libaqnoneplugin_la_SOURCES=provider.c aqnone-plugin.c
-libaqnoneplugin_la_LIBADD = $(aqbanking_internal_libs) $(gwenhywfar_libs) 
+noinst_LTLIBRARIES=libaqnone.la 
+libaqnone_la_SOURCES=provider.c
+libaqnone_la_LIBADD = $(aqbanking_internal_libs) $(gwenhywfar_libs) 
 
 # dynamic plugin
 plugin_LTLIBRARIES=aqnone.la
-aqnone_la_SOURCES=dummy.c
-aqnone_la_LIBADD = libaqnoneplugin.la $(aqbanking_internal_libs) $(gwenhywfar_libs) 
+aqnone_la_SOURCES=provider.c aqnone-plugin.c
+aqnone_la_LIBADD = $(aqbanking_internal_libs) $(gwenhywfar_libs) 
 aqnone_la_LDFLAGS = -no-undefined -module -avoid-version
 
 sources:
