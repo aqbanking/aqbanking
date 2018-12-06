@@ -1,2 +1,8 @@
-aqhbci-config
-aqhbci-config.in
+aqhbci.xml
+version.h
+hbci.xml
+header.xml
+*.dll
+*.def
+*.lib
+testlib

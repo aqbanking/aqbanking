@@ -1,0 +1,9 @@
+<plugin name="aqhbci" type="provider" i18n="aqbanking" >
+  <version>5.99.5</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>HBCI backend using AqHBCI</short>
+  <descr>
+    This backend provides support for HBCI using AqHBCI.
+  </descr>
+</plugin>
+

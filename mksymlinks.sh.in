@@ -94,16 +94,16 @@ symlinkFolder "src/libs/aqbankingpp" "aqbanking6/aqbankingpp"
 dirlist='@aqbanking_backends@'  # list might be empty
 for backend in ${dirlist} ; do
   mkdir -p aqbanking6/${backend}
-  if [ -d "src/plugins/backends/${backend}/plugin" ] ; then
-    symlinkFolder "src/plugins/backends/${backend}/plugin" "aqbanking6/${backend}"
+  if [ -d "src/plugins/backends/${backend}" ] ; then
+    symlinkFolder "src/plugins/backends/${backend}" "aqbanking6/${backend}"
     # symlink all subfolders
-    for f in src/plugins/backends/${backend}/plugin/*; do
-      if [ -d "src/plugins/backends/${backend}/plugin/$f" ] ; then
+    for f in src/plugins/backends/${backend}/*; do
+      if [ -d "src/plugins/backends/${backend}/$f" ] ; then
         case $f in
           .libs | .deps)
             ;;
           *)
-            symlinkFolder "src/plugins/backends/${backend}/plugin/$f" "aqbanking6/${backend}"
+            symlinkFolder "src/plugins/backends/${backend}/$f" "aqbanking6/${backend}"
             ;;
         esac
       fi
@@ -113,8 +113,8 @@ for backend in ${dirlist} ; do
 done
 
 if [ -d aqbanking6/aqofxconnect ] ; then
-  ln -s "${bprefix}/src/plugins/backends/aqofxconnect/plugin/libofxhome/oh_institute_data.h" aqbanking6/aqofxconnect
-  ln -s "${bprefix}/src/plugins/backends/aqofxconnect/plugin/libofxhome/oh_institute_spec.h" aqbanking6/aqofxconnect
+  ln -s "${bprefix}/src/plugins/backends/aqofxconnect/libofxhome/oh_institute_data.h" aqbanking6/aqofxconnect
+  ln -s "${bprefix}/src/plugins/backends/aqofxconnect/libofxhome/oh_institute_spec.h" aqbanking6/aqofxconnect
 fi
 
 

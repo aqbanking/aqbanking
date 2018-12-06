@@ -1122,7 +1122,7 @@ dependencies_ok="yes"
 #
 
 # Common settings; can be overridden per-OS below.
-aqhbci_internal_libs="${abs_top_builddir}/src/plugins/backends/aqhbci/plugin/libaqhbci.la"
+aqhbci_internal_libs="${abs_top_builddir}/src/plugins/backends/aqhbci/libaqhbci.la"
 aqhbci_ldflags="-L\${libdir}"
 aqhbci_includes="${aqbanking_includes}"
 aqhbci_libs="-laqhbci"
@@ -1168,7 +1168,7 @@ AC_MSG_RESULT($aqhbci_datadir)
 #
 
 # Common settings
-aqofxconnect_internal_libs="${abs_top_builddir}/src/plugins/backends/aqofxconnect/plugin/libaqofxconnect.la"
+aqofxconnect_internal_libs="${abs_top_builddir}/src/plugins/backends/aqofxconnect/libaqofxconnect.la"
 aqofxconnect_includes="${aqbanking_includes}"
 aqofxconnect_libs="-L\${libdir} -laqofxconnect"
 
@@ -1196,7 +1196,7 @@ AC_SUBST(aqofxconnect_libs)
 #
 
 # Common settings
-aqpaypal_internal_libs="${abs_top_builddir}/src/plugins/backends/aqpaypal/plugin/libaqpaypal.la"
+aqpaypal_internal_libs="${abs_top_builddir}/src/plugins/backends/aqpaypal/libaqpaypal.la"
 aqpaypal_includes="${aqbanking_includes}"
 aqpaypal_libs="-L\${libdir} -laqpaypal"
 
@@ -1501,27 +1501,23 @@ AC_CONFIG_FILES([
   src/plugins/parsers/swift/swift.xml
   src/plugins/backends/Makefile
   src/plugins/backends/aqhbci/Makefile
-  src/plugins/backends/aqhbci/plugin/Makefile
-  src/plugins/backends/aqhbci/plugin/aqhbci.xml
-  src/plugins/backends/aqhbci/plugin/dialogs/Makefile
-  src/plugins/backends/aqhbci/plugin/header.xml
-  src/plugins/backends/aqhbci/plugin/banking/Makefile
-  src/plugins/backends/aqhbci/plugin/msglayer/Makefile
-  src/plugins/backends/aqhbci/plugin/joblayer/Makefile
-  src/plugins/backends/aqhbci/plugin/applayer/Makefile
-  src/plugins/backends/aqhbci/plugin/ajobs/Makefile
-  src/plugins/backends/aqhbci/plugin/applayer/xml/Makefile
-  src/plugins/backends/aqhbci/plugin/control/Makefile
-  src/plugins/backends/aqhbci/plugin/version.h
+  src/plugins/backends/aqhbci/aqhbci.xml
+  src/plugins/backends/aqhbci/dialogs/Makefile
+  src/plugins/backends/aqhbci/header.xml
+  src/plugins/backends/aqhbci/banking/Makefile
+  src/plugins/backends/aqhbci/msglayer/Makefile
+  src/plugins/backends/aqhbci/joblayer/Makefile
+  src/plugins/backends/aqhbci/applayer/Makefile
+  src/plugins/backends/aqhbci/ajobs/Makefile
+  src/plugins/backends/aqhbci/applayer/xml/Makefile
+  src/plugins/backends/aqhbci/control/Makefile
+  src/plugins/backends/aqhbci/version.h
   src/plugins/backends/aqofxconnect/Makefile
-  src/plugins/backends/aqofxconnect/version.h
-  src/plugins/backends/aqofxconnect/plugin/Makefile
-  src/plugins/backends/aqofxconnect/plugin/aqofxconnect.xml
-  src/plugins/backends/aqofxconnect/plugin/libofxhome/Makefile
+  src/plugins/backends/aqofxconnect/aqofxconnect.xml
+  src/plugins/backends/aqofxconnect/libofxhome/Makefile
   src/plugins/backends/aqpaypal/Makefile
-  src/plugins/backends/aqpaypal/plugin/Makefile
-  src/plugins/backends/aqpaypal/plugin/aqpaypal.xml
-  src/plugins/backends/aqpaypal/plugin/control/Makefile
+  src/plugins/backends/aqpaypal/aqpaypal.xml
+  src/plugins/backends/aqpaypal/control/Makefile
   src/plugins/backends/aqnone/Makefile
   src/plugins/backends/aqnone/aqnone.xml
   src/plugins/backends/aqebics/Makefile
