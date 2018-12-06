@@ -22,8 +22,10 @@ static uint32_t ab_plugin_init_count=0;
 static GWEN_PLUGIN_MANAGER *ab_pluginManagerBankInfo=NULL;
 static GWEN_PLUGIN_MANAGER *ab_pluginManagerProvider=NULL;
 static GWEN_PLUGIN_MANAGER *ab_pluginManagerImExporter=NULL;
-static AB_IMEXPORTER_LIST *ab_imexporters=NULL;
 static AB_BANKINFO_PLUGIN_LIST *ab_bankInfoPlugins=NULL;
+
+static AB_IMEXPORTER_LIST *ab_imexporters=NULL;
+static AB_PROVIDER_LIST *ab_providers=NULL;
 
 
 #define AB_DBIO_FOLDER "dbio"
@@ -302,6 +304,7 @@ int AB_Banking_PluginSystemInit(void) {
 
 
     ab_imexporters=AB_ImExporter_List_new();
+    ab_providers=AB_Provider_List_new();
     ab_bankInfoPlugins=AB_BankInfoPlugin_List_new();
   }
   ab_plugin_init_count++;
@@ -315,6 +318,8 @@ int AB_Banking_PluginSystemFini(void) {
     if (--ab_plugin_init_count==0) {
       AB_BankInfoPlugin_List_free(ab_bankInfoPlugins);
       ab_bankInfoPlugins=NULL;
+      AB_Provider_List_free(ab_providers);
+      ab_providers=NULL;
       AB_ImExporter_List_free(ab_imexporters);
       ab_imexporters=NULL;
 

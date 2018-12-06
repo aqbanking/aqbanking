@@ -11,20 +11,71 @@
 /* This file is included by banking.c */
 
 
-AB_PROVIDER *AB_Banking_BeginUseProvider(AB_BANKING *ab, const char *modname){
+AB_PROVIDER *AB_Banking__FindProvider(AB_BANKING *ab, const char *name) {
+  AB_PROVIDER *pro;
+
+  assert(ab);
+  assert(name);
+  pro=AB_Provider_List_First(ab_providers);
+  while(pro) {
+    if (strcasecmp(AB_Provider_GetName(pro), name)==0)
+      break;
+    pro=AB_Provider_List_Next(pro);
+  } /* while */
+
+  return pro;
+}
+
+
+
+AB_PROVIDER *AB_Banking__LoadProvider(AB_BANKING *ab, const char *modname) {
   GWEN_PLUGIN *pl;
 
   pl=GWEN_PluginManager_GetPlugin(ab_pluginManagerProvider, modname);
   if (pl) {
     AB_PROVIDER *pro;
-    GWEN_DB_NODE *db=NULL;
-    int rv;
 
     pro=AB_Plugin_Provider_Factory(pl, ab);
     if (!pro) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in plugin [%s]: No provider created", modname);
       return NULL;
     }
+
+    return pro;
+  }
+  else {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] not found", modname);
+    return NULL;
+  }
+}
+
+
+
+AB_PROVIDER *AB_Banking__GetProvider(AB_BANKING *ab, const char *name) {
+  AB_PROVIDER *pro;
+
+  assert(ab);
+  assert(name);
+
+  pro=AB_Banking__FindProvider(ab, name);
+  if (pro)
+    return pro;
+  pro=AB_Banking__LoadProvider(ab, name);
+  if (pro)
+    AB_Provider_List_Add(pro, ab_providers);
+
+  return pro;
+}
+
+
+
+AB_PROVIDER *AB_Banking_BeginUseProvider(AB_BANKING *ab, const char *modname){
+  AB_PROVIDER *pro;
+
+  pro=AB_Banking__GetProvider(ab, modname);
+  if (pro) {
+    GWEN_DB_NODE *db=NULL;
+    int rv;
 
     rv=AB_Banking_ReadNamedConfigGroup(ab, AB_CFG_GROUP_BACKENDS, modname, 1, 1, &db);
     if (rv<0) {
@@ -83,7 +134,6 @@ int AB_Banking_EndUseProvider(AB_BANKING *ab, AB_PROVIDER *pro){
     return rv;
   }
   GWEN_DB_Group_free(db);
-  AB_Provider_free(pro);
 
   return 0;
 }

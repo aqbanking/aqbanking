@@ -184,4 +184,12 @@ static int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2* comman
 
 
 
+
+static AB_PROVIDER *AB_Banking__FindProvider(AB_BANKING *ab, const char *name);
+static AB_PROVIDER *AB_Banking__LoadProvider(AB_BANKING *ab, const char *modname);
+static AB_PROVIDER *AB_Banking__GetProvider(AB_BANKING *ab, const char *name);
+
+
+
+
 #endif /* AQBANKING_BANKING_P_H */
