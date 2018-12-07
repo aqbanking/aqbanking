@@ -79,9 +79,10 @@ GWEN_DBIO_CHECKFILE_RESULT AHB_SWIFT_CheckFile(GWEN_DBIO *dbio,
                                                const char *fname);
 
 GWEN_DBIO *GWEN_DBIO_SWIFT_Factory(GWEN_PLUGIN *pl);
-GWEN_PLUGIN *dbio_swift_factory(GWEN_PLUGIN_MANAGER *pm,
-                                const char *modName,
-                                const char *fileName);
+
+GWENHYWFAR_EXPORT GWEN_PLUGIN *dbio_swift_factory(GWEN_PLUGIN_MANAGER *pm,
+                                                  const char *modName,
+                                                  const char *fileName);
 
 
 
