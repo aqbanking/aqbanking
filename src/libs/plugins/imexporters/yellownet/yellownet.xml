@@ -1,0 +1,8 @@
+<plugin name="yellownet" type="imexporter" import="1" export="0" i18n="aqbanking" >
+  <version>5.99.5</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>YellowNet XML Data</short>
+  <descr>
+    This plugin imports YellowNet XML files.
+  </descr>
+</plugin>

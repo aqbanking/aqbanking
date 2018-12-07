@@ -7,7 +7,7 @@ INCLUDES = \
   -I$(srcdir)/dialogs \
   -I$(srcdir)/backendsupport
 
-lib_LTLIBRARIES=libaqbanking.la
+noinst_LTLIBRARIES=libaqbanking_base.la
 
 AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
@@ -65,25 +65,23 @@ iheader_HEADERS=\
  imexporter_be.h
 
 
-libaqbanking_la_SOURCES=\
+libaqbanking_base_la_SOURCES=\
  account_type.c \
  bankinfoplugin.c \
  banking.c \
  imexporter.c
 
 
-libaqbanking_la_LIBADD= $(gwenhywfar_libs) $(gmp_libs) $(i18n_libs) \
+libaqbanking_base_la_LIBADD= \
  backendsupport/libabbesupport.la \
  types2/libabtypes2.la \
  types/libtypes.la \
  gui/libabgui.la \
  dialogs/libabdialogs.la
 
-libaqbanking_la_LDFLAGS = -no-undefined \
-  -version-info @AQBANKING_SO_CURRENT@:@AQBANKING_SO_REVISION@:@AQBANKING_SO_AGE@
 
 sources:
-	for f in $(libaqbanking_la_SOURCES) $(EXTRA_DIST); do \
+	for f in $(libaqbanking_base_la_SOURCES) $(EXTRA_DIST); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 	for d in $(SUBDIRS); do \
@@ -95,12 +93,3 @@ built_sources:
 	  $(MAKE) -C $$d built_sources; \
 	done ;
 
-# Build and link a test program to verify the linker flags
-noinst_PROGRAMS = testlib ab_value_test
-testlib_SOURCES = testlib.c
-testlib_LDADD = libaqbanking.la $(gwenhywfar_libs)
-
-# Another test program to verify the parsing of decimal numbers
-ab_value_test_SOURCES = ab-value-test.c
-ab_value_test_LDADD = libaqbanking.la $(gwenhywfar_libs)
-TESTS = testlib ab_value_test

@@ -494,33 +494,53 @@ for f in ${aqbanking_imexporters}; do
   case "$f" in
     csv)
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs csv"
+      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs csv/libabimexporters_csv.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_CSV, 1, [plugin availability])
       ;;
     eri2)
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs eri2"
+      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs eri2/libabimexporters_eri2.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_ERI2, 1, [plugin availability])
       ;;
     ofx)
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs ofx"
+      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs ofx/libabimexporters_ofx.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_OFX, 1, [plugin availability])
       ;;
     openhbci1)
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs openhbci1"
+      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs openhbci1/libabimexporters_openhbci1.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_OPENHBCI1, 1, [plugin availability])
       ;;
     swift)
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs swift"
+      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs swift/libabimexporters_swift.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_SWIFT, 1, [plugin availability])
       ;;
     xmldb)
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs xmldb"
+      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs xmldb/libabimexporters_xmldb.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_XMLDB, 1, [plugin availability])
       ;;
     yellownet)
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs yellownet"
+      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs yellownet/libabimexporters_yellownet.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_YELLOWNET, 1, [plugin availability])
       ;;
     sepa)
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs sepa"
+      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs sepa/libabimexporters_sepa.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_SEPA, 1, [plugin availability])
       ;;
     ctxfile)
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs ctxfile"
+      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs ctxfile/libabimexporters_ctxfile.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_CTXFILE, 1, [plugin availability])
       ;;
     q43)
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs q43"
+      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs q43/libabimexporters_q43.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_Q43, 1, [plugin availability])
       ;;
     *)
       AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
@@ -529,6 +549,7 @@ for f in ${aqbanking_imexporters}; do
 done
 
 AC_SUBST(aqbanking_plugins_imexporters_dirs)
+AC_SUBST(aqbanking_plugins_imexporters_libs)
 
 
 
@@ -579,20 +600,9 @@ fi
 
 for f in ${aqbanking_bankinfos}; do
   case "$f" in
-    at)
-      aqbanking_plugins_bankinfo_dirs="$aqbanking_plugins_bankinfo_dirs at"
-      ;;
-    ca)
-      aqbanking_plugins_bankinfo_dirs="$aqbanking_plugins_bankinfo_dirs ca"
-      ;;
-    ch)
-      aqbanking_plugins_bankinfo_dirs="$aqbanking_plugins_bankinfo_dirs ch"
-      ;;
     de)
       aqbanking_plugins_bankinfo_dirs="$aqbanking_plugins_bankinfo_dirs de"
-      ;;
-    us)
-      aqbanking_plugins_bankinfo_dirs="$aqbanking_plugins_bankinfo_dirs us"
+      aqbanking_plugins_bankinfo_libs="$aqbanking_plugins_bankinfo_libs de/libbankinfo_de.la"
       ;;
     *)
       AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
@@ -601,6 +611,7 @@ for f in ${aqbanking_bankinfos}; do
 done
 
 AC_SUBST(aqbanking_plugins_bankinfo_dirs)
+AC_SUBST(aqbanking_plugins_bankinfo_libs)
 
 
 
@@ -718,7 +729,7 @@ AC_SUBST(gmp_libs)
 #
 
 # Common settings; can be overridden per-OS below.
-aqbanking_internal_libs="${abs_top_builddir}/src/libs/aqbanking/libaqbanking.la"
+aqbanking_internal_libs="${abs_top_builddir}/src/libs/libaqbanking.la"
 aqbanking_ldflags="-L\${libdir}"
 aqbanking_libs="-laqbanking"
 aqbanking_includes="-I\${includedir}/aqbanking6"
@@ -1127,7 +1138,7 @@ dependencies_ok="yes"
 #
 
 # Common settings; can be overridden per-OS below.
-aqhbci_internal_libs="${abs_top_builddir}/src/plugins/backends/aqhbci/libaqhbci.la"
+aqhbci_internal_libs="${abs_top_builddir}/src/libs/plugins/backends/aqhbci/libaqhbci.la"
 aqhbci_ldflags="-L\${libdir}"
 aqhbci_includes="${aqbanking_includes}"
 aqhbci_libs="-laqhbci"
@@ -1173,7 +1184,7 @@ AC_MSG_RESULT($aqhbci_datadir)
 #
 
 # Common settings
-aqofxconnect_internal_libs="${abs_top_builddir}/src/plugins/backends/aqofxconnect/libaqofxconnect.la"
+aqofxconnect_internal_libs="${abs_top_builddir}/src/libs/plugins/backends/aqofxconnect/libaqofxconnect.la"
 aqofxconnect_includes="${aqbanking_includes}"
 aqofxconnect_libs="-L\${libdir} -laqofxconnect"
 
@@ -1201,7 +1212,7 @@ AC_SUBST(aqofxconnect_libs)
 #
 
 # Common settings
-aqpaypal_internal_libs="${abs_top_builddir}/src/plugins/backends/aqpaypal/libaqpaypal.la"
+aqpaypal_internal_libs="${abs_top_builddir}/src/libs/plugins/backends/aqpaypal/libaqpaypal.la"
 aqpaypal_includes="${aqbanking_includes}"
 aqpaypal_libs="-L\${libdir} -laqpaypal"
 
@@ -1229,7 +1240,7 @@ AC_SUBST(aqpaypal_libs)
 #
 
 # Common settings; can be overridden per-OS below.
-aqebics_internal_libs="${abs_top_builddir}/src/plugins/backends/aqebics/plugin/libaqebics.la"
+aqebics_internal_libs="${abs_top_builddir}/src/libs/plugins/backends/aqebics/plugin/libaqebics.la"
 aqebics_ldflags="-L\${libdir}"
 aqebics_includes="${aqbanking_includes}"
 aqebics_libs="-laqebics"
@@ -1413,126 +1424,126 @@ AC_CONFIG_FILES([
   src/libs/aqbanking/typemaker2/c/Makefile
   src/libs/aqbanking/backendsupport/Makefile
   src/libs/aqbankingpp/Makefile
-  src/plugins/Makefile
-  src/plugins/bankinfo/Makefile
-  src/plugins/bankinfo/de/Makefile
-  src/plugins/bankinfo/de/de.xml
-  src/plugins/bankinfo/generic/Makefile
-  src/plugins/imexporters/Makefile
-  src/plugins/imexporters/eri2/Makefile
-  src/plugins/imexporters/eri2/eri2.xml
-  src/plugins/imexporters/eri2/profiles/Makefile
-  src/plugins/imexporters/eri2/profiles/default.conf
-  src/plugins/imexporters/ofx/Makefile
-  src/plugins/imexporters/ofx/ofx.xml
-  src/plugins/imexporters/ofx/parser/Makefile
-  src/plugins/imexporters/ofx/profiles/Makefile
-  src/plugins/imexporters/ofx/profiles/default.conf
-  src/plugins/imexporters/ofx/profiles/iso8859.conf
-  src/plugins/imexporters/swift/Makefile
-  src/plugins/imexporters/swift/swift.xml
-  src/plugins/imexporters/swift/profiles/Makefile
-  src/plugins/imexporters/swift/profiles/swiftmt940.conf
-  src/plugins/imexporters/swift/profiles/swiftmt942.conf
-  src/plugins/imexporters/swift/profiles/swiftmt535.conf
-  src/plugins/imexporters/swift/profiles/amro940.conf
-  src/plugins/imexporters/swift/profiles/amro942.conf
-  src/plugins/imexporters/csv/Makefile
-  src/plugins/imexporters/csv/csv.xml
-  src/plugins/imexporters/csv/profiles/Makefile
-  src/plugins/imexporters/csv/profiles/default.conf
-  src/plugins/imexporters/csv/profiles/amex.conf
-  src/plugins/imexporters/csv/profiles/aqmoney1.conf
-  src/plugins/imexporters/csv/profiles/aqmoney2.conf
-  src/plugins/imexporters/csv/profiles/comdirect.conf
-  src/plugins/imexporters/csv/profiles/consors-tagesgeld.conf
-  src/plugins/imexporters/csv/profiles/mijnpostbank.conf
-  src/plugins/imexporters/csv/profiles/oko.conf
-  src/plugins/imexporters/csv/profiles/spk-aachen.conf
-  src/plugins/imexporters/csv/profiles/spk-steiermark.conf
-  src/plugins/imexporters/csv/profiles/tonline-banking.conf
-  src/plugins/imexporters/csv/profiles/test.conf
-  src/plugins/imexporters/csv/profiles/vrnetworld.conf
-  src/plugins/imexporters/csv/profiles/lbbberlin.conf
-  src/plugins/imexporters/csv/profiles/bankaustria.conf
-  src/plugins/imexporters/csv/profiles/psk.conf
-  src/plugins/imexporters/csv/profiles/diba.conf
-  src/plugins/imexporters/csv/profiles/dkb.conf
-  src/plugins/imexporters/csv/profiles/dkb-cash.conf
-  src/plugins/imexporters/csv/profiles/sparda.conf
-  src/plugins/imexporters/csv/profiles/full.conf
-  src/plugins/imexporters/csv/profiles/hypovereinsbank.conf
-  src/plugins/imexporters/csv/profiles/postbankffm.conf
-  src/plugins/imexporters/csv/profiles/cli-transfers.conf
-  src/plugins/imexporters/csv/profiles/sns.conf
-  src/plugins/imexporters/csv/profiles/transfers.conf
-  src/plugins/imexporters/csv/profiles/sepadebitnotes.conf
-  src/plugins/imexporters/openhbci1/Makefile
-  src/plugins/imexporters/openhbci1/openhbci1.xml
-  src/plugins/imexporters/openhbci1/profiles/Makefile
-  src/plugins/imexporters/openhbci1/profiles/default.conf
-  src/plugins/imexporters/qif/Makefile
-  src/plugins/imexporters/qif/qif.xml
-  src/plugins/imexporters/qif/profiles/Makefile
-  src/plugins/imexporters/qif/profiles/default.conf
-  src/plugins/imexporters/yellownet/Makefile
-  src/plugins/imexporters/yellownet/yellownet.xml
-  src/plugins/imexporters/yellownet/profiles/Makefile
-  src/plugins/imexporters/yellownet/profiles/default.conf
-  src/plugins/imexporters/xmldb/Makefile
-  src/plugins/imexporters/xmldb/xmldb.xml
-  src/plugins/imexporters/xmldb/profiles/Makefile
-  src/plugins/imexporters/xmldb/profiles/default.conf
-  src/plugins/imexporters/sepa/Makefile
-  src/plugins/imexporters/sepa/sepa.xml
-  src/plugins/imexporters/sepa/profiles/Makefile
-  src/plugins/imexporters/sepa/profiles/default.conf
-  src/plugins/imexporters/sepa/profiles/001_001_02.conf
-  src/plugins/imexporters/sepa/profiles/001_002_03.conf
-  src/plugins/imexporters/sepa/profiles/001_003_03.conf
-  src/plugins/imexporters/sepa/profiles/008_001_01.conf
-  src/plugins/imexporters/sepa/profiles/008_002_02.conf
-  src/plugins/imexporters/sepa/profiles/008_003_02.conf
-  src/plugins/imexporters/ctxfile/Makefile
-  src/plugins/imexporters/ctxfile/ctxfile.xml
-  src/plugins/imexporters/ctxfile/profiles/Makefile
-  src/plugins/imexporters/ctxfile/profiles/default.conf
-  src/plugins/imexporters/q43/Makefile
-  src/plugins/imexporters/q43/q43.xml
-  src/plugins/imexporters/q43/profiles/Makefile
-  src/plugins/imexporters/q43/profiles/default.conf
-  src/plugins/parsers/Makefile
-  src/plugins/parsers/swift/Makefile
-  src/plugins/parsers/swift/swift.xml
-  src/plugins/backends/Makefile
-  src/plugins/backends/aqhbci/Makefile
-  src/plugins/backends/aqhbci/aqhbci.xml
-  src/plugins/backends/aqhbci/dialogs/Makefile
-  src/plugins/backends/aqhbci/header.xml
-  src/plugins/backends/aqhbci/banking/Makefile
-  src/plugins/backends/aqhbci/msglayer/Makefile
-  src/plugins/backends/aqhbci/joblayer/Makefile
-  src/plugins/backends/aqhbci/applayer/Makefile
-  src/plugins/backends/aqhbci/ajobs/Makefile
-  src/plugins/backends/aqhbci/applayer/xml/Makefile
-  src/plugins/backends/aqhbci/control/Makefile
-  src/plugins/backends/aqhbci/version.h
-  src/plugins/backends/aqofxconnect/Makefile
-  src/plugins/backends/aqofxconnect/aqofxconnect.xml
-  src/plugins/backends/aqofxconnect/libofxhome/Makefile
-  src/plugins/backends/aqpaypal/Makefile
-  src/plugins/backends/aqpaypal/aqpaypal.xml
-  src/plugins/backends/aqpaypal/control/Makefile
-  src/plugins/backends/aqnone/Makefile
-  src/plugins/backends/aqnone/aqnone.xml
-  src/plugins/backends/aqebics/Makefile
-  src/plugins/backends/aqebics/plugin/Makefile
-  src/plugins/backends/aqebics/plugin/aqebics.xml
-  src/plugins/backends/aqebics/plugin/client/Makefile
-  src/plugins/backends/aqebics/plugin/dialogs/Makefile
-  src/plugins/backends/aqebics/plugin/msg/Makefile
-  src/plugins/backends/aqebics/tools/Makefile
-  src/plugins/backends/aqebics/tools/aqebics-tool/Makefile
+  src/libs/plugins/Makefile
+  src/libs/plugins/bankinfo/Makefile
+  src/libs/plugins/bankinfo/de/Makefile
+  src/libs/plugins/bankinfo/de/de.xml
+  src/libs/plugins/bankinfo/generic/Makefile
+  src/libs/plugins/imexporters/Makefile
+  src/libs/plugins/imexporters/eri2/Makefile
+  src/libs/plugins/imexporters/eri2/eri2.xml
+  src/libs/plugins/imexporters/eri2/profiles/Makefile
+  src/libs/plugins/imexporters/eri2/profiles/default.conf
+  src/libs/plugins/imexporters/ofx/Makefile
+  src/libs/plugins/imexporters/ofx/ofx.xml
+  src/libs/plugins/imexporters/ofx/parser/Makefile
+  src/libs/plugins/imexporters/ofx/profiles/Makefile
+  src/libs/plugins/imexporters/ofx/profiles/default.conf
+  src/libs/plugins/imexporters/ofx/profiles/iso8859.conf
+  src/libs/plugins/imexporters/swift/Makefile
+  src/libs/plugins/imexporters/swift/swift.xml
+  src/libs/plugins/imexporters/swift/profiles/Makefile
+  src/libs/plugins/imexporters/swift/profiles/swiftmt940.conf
+  src/libs/plugins/imexporters/swift/profiles/swiftmt942.conf
+  src/libs/plugins/imexporters/swift/profiles/swiftmt535.conf
+  src/libs/plugins/imexporters/swift/profiles/amro940.conf
+  src/libs/plugins/imexporters/swift/profiles/amro942.conf
+  src/libs/plugins/imexporters/csv/Makefile
+  src/libs/plugins/imexporters/csv/csv.xml
+  src/libs/plugins/imexporters/csv/profiles/Makefile
+  src/libs/plugins/imexporters/csv/profiles/default.conf
+  src/libs/plugins/imexporters/csv/profiles/amex.conf
+  src/libs/plugins/imexporters/csv/profiles/aqmoney1.conf
+  src/libs/plugins/imexporters/csv/profiles/aqmoney2.conf
+  src/libs/plugins/imexporters/csv/profiles/comdirect.conf
+  src/libs/plugins/imexporters/csv/profiles/consors-tagesgeld.conf
+  src/libs/plugins/imexporters/csv/profiles/mijnpostbank.conf
+  src/libs/plugins/imexporters/csv/profiles/oko.conf
+  src/libs/plugins/imexporters/csv/profiles/spk-aachen.conf
+  src/libs/plugins/imexporters/csv/profiles/spk-steiermark.conf
+  src/libs/plugins/imexporters/csv/profiles/tonline-banking.conf
+  src/libs/plugins/imexporters/csv/profiles/test.conf
+  src/libs/plugins/imexporters/csv/profiles/vrnetworld.conf
+  src/libs/plugins/imexporters/csv/profiles/lbbberlin.conf
+  src/libs/plugins/imexporters/csv/profiles/bankaustria.conf
+  src/libs/plugins/imexporters/csv/profiles/psk.conf
+  src/libs/plugins/imexporters/csv/profiles/diba.conf
+  src/libs/plugins/imexporters/csv/profiles/dkb.conf
+  src/libs/plugins/imexporters/csv/profiles/dkb-cash.conf
+  src/libs/plugins/imexporters/csv/profiles/sparda.conf
+  src/libs/plugins/imexporters/csv/profiles/full.conf
+  src/libs/plugins/imexporters/csv/profiles/hypovereinsbank.conf
+  src/libs/plugins/imexporters/csv/profiles/postbankffm.conf
+  src/libs/plugins/imexporters/csv/profiles/cli-transfers.conf
+  src/libs/plugins/imexporters/csv/profiles/sns.conf
+  src/libs/plugins/imexporters/csv/profiles/transfers.conf
+  src/libs/plugins/imexporters/csv/profiles/sepadebitnotes.conf
+  src/libs/plugins/imexporters/openhbci1/Makefile
+  src/libs/plugins/imexporters/openhbci1/openhbci1.xml
+  src/libs/plugins/imexporters/openhbci1/profiles/Makefile
+  src/libs/plugins/imexporters/openhbci1/profiles/default.conf
+  src/libs/plugins/imexporters/qif/Makefile
+  src/libs/plugins/imexporters/qif/qif.xml
+  src/libs/plugins/imexporters/qif/profiles/Makefile
+  src/libs/plugins/imexporters/qif/profiles/default.conf
+  src/libs/plugins/imexporters/yellownet/Makefile
+  src/libs/plugins/imexporters/yellownet/yellownet.xml
+  src/libs/plugins/imexporters/yellownet/profiles/Makefile
+  src/libs/plugins/imexporters/yellownet/profiles/default.conf
+  src/libs/plugins/imexporters/xmldb/Makefile
+  src/libs/plugins/imexporters/xmldb/xmldb.xml
+  src/libs/plugins/imexporters/xmldb/profiles/Makefile
+  src/libs/plugins/imexporters/xmldb/profiles/default.conf
+  src/libs/plugins/imexporters/sepa/Makefile
+  src/libs/plugins/imexporters/sepa/sepa.xml
+  src/libs/plugins/imexporters/sepa/profiles/Makefile
+  src/libs/plugins/imexporters/sepa/profiles/default.conf
+  src/libs/plugins/imexporters/sepa/profiles/001_001_02.conf
+  src/libs/plugins/imexporters/sepa/profiles/001_002_03.conf
+  src/libs/plugins/imexporters/sepa/profiles/001_003_03.conf
+  src/libs/plugins/imexporters/sepa/profiles/008_001_01.conf
+  src/libs/plugins/imexporters/sepa/profiles/008_002_02.conf
+  src/libs/plugins/imexporters/sepa/profiles/008_003_02.conf
+  src/libs/plugins/imexporters/ctxfile/Makefile
+  src/libs/plugins/imexporters/ctxfile/ctxfile.xml
+  src/libs/plugins/imexporters/ctxfile/profiles/Makefile
+  src/libs/plugins/imexporters/ctxfile/profiles/default.conf
+  src/libs/plugins/imexporters/q43/Makefile
+  src/libs/plugins/imexporters/q43/q43.xml
+  src/libs/plugins/imexporters/q43/profiles/Makefile
+  src/libs/plugins/imexporters/q43/profiles/default.conf
+  src/libs/plugins/parsers/Makefile
+  src/libs/plugins/parsers/swift/Makefile
+  src/libs/plugins/parsers/swift/swift.xml
+  src/libs/plugins/backends/Makefile
+  src/libs/plugins/backends/aqhbci/Makefile
+  src/libs/plugins/backends/aqhbci/aqhbci.xml
+  src/libs/plugins/backends/aqhbci/dialogs/Makefile
+  src/libs/plugins/backends/aqhbci/header.xml
+  src/libs/plugins/backends/aqhbci/banking/Makefile
+  src/libs/plugins/backends/aqhbci/msglayer/Makefile
+  src/libs/plugins/backends/aqhbci/joblayer/Makefile
+  src/libs/plugins/backends/aqhbci/applayer/Makefile
+  src/libs/plugins/backends/aqhbci/ajobs/Makefile
+  src/libs/plugins/backends/aqhbci/applayer/xml/Makefile
+  src/libs/plugins/backends/aqhbci/control/Makefile
+  src/libs/plugins/backends/aqhbci/version.h
+  src/libs/plugins/backends/aqofxconnect/Makefile
+  src/libs/plugins/backends/aqofxconnect/aqofxconnect.xml
+  src/libs/plugins/backends/aqofxconnect/libofxhome/Makefile
+  src/libs/plugins/backends/aqpaypal/Makefile
+  src/libs/plugins/backends/aqpaypal/aqpaypal.xml
+  src/libs/plugins/backends/aqpaypal/control/Makefile
+  src/libs/plugins/backends/aqnone/Makefile
+  src/libs/plugins/backends/aqnone/aqnone.xml
+  src/libs/plugins/backends/aqebics/Makefile
+  src/libs/plugins/backends/aqebics/plugin/Makefile
+  src/libs/plugins/backends/aqebics/plugin/aqebics.xml
+  src/libs/plugins/backends/aqebics/plugin/client/Makefile
+  src/libs/plugins/backends/aqebics/plugin/dialogs/Makefile
+  src/libs/plugins/backends/aqebics/plugin/msg/Makefile
+  src/libs/plugins/backends/aqebics/tools/Makefile
+  src/libs/plugins/backends/aqebics/tools/aqebics-tool/Makefile
   src/test/Makefile
   src/tools/Makefile
   src/tools/aqbanking-cli/Makefile

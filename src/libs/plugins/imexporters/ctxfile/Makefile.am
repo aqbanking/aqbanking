@@ -1,0 +1,24 @@
+SUBDIRS=profiles
+
+INCLUDES = -I$(aqbanking_symlinkdir) -I$(top_srcdir)/src/libs/aqbanking $(all_includes)
+
+AM_CFLAGS=@visibility_cflags@
+
+EXTRA_DIST=README
+
+imexporterplugindir = $(aqbanking_plugindir)/imexporters
+noinst_LTLIBRARIES=libabimexporters_ctxfile.la
+imexporterplugin_DATA=ctxfile.xml
+
+noinst_HEADERS=ctxfile_p.h ctxfile.h
+
+
+libabimexporters_ctxfile_la_SOURCES=ctxfile.c
+
+sources:
+	for f in $(ctxfile_la_SOURCES); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
+	done
+	for f in $(imexporterplugin_DATA); do \
+	  echo $(subdir)/$$f >>$(top_srcdir)/pdsources; \
+	done

@@ -1,0 +1,9 @@
+<plugin name="q43" type="imexporter" import="1" export="1" i18n="aqbanking" >
+  <version>5.99.5</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>This plugin reads and writes Spanish Q43 files.</short>
+  <descr>
+    This plugin imports Q43 files.
+  </descr>
+</plugin>
+

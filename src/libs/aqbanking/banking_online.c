@@ -11,20 +11,72 @@
 /* This file is included by banking.c */
 
 
-AB_PROVIDER *AB_Banking__FindProvider(AB_BANKING *ab, const char *name) {
-  AB_PROVIDER *pro;
+#ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQNONE
+# include "src/libs/plugins/backends/aqnone/provider_l.h"
+#endif
 
-  assert(ab);
-  assert(name);
-  pro=AB_Provider_List_First(ab_providers);
-  while(pro) {
-    if (strcasecmp(AB_Provider_GetName(pro), name)==0)
-      break;
-    pro=AB_Provider_List_Next(pro);
-  } /* while */
+#ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQHBCI
+# include "src/libs/plugins/backends/aqhbci/banking/provider.h"
+#endif
 
-  return pro;
+#ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQOFXCONNECT
+# include "src/libs/plugins/backends/aqofxconnect/provider.h"
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQPAYPAL
+# include "src/libs/plugins/backends/aqpaypal/provider_l.h"
+#endif
+
+
+
+
+AB_PROVIDER *AB_Banking__CreateInternalProvider(AB_BANKING *ab, const char *modname) {
+  if (modname && *modname) {
+#ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQHBCI
+    if (strcasecmp(modname, "aqhbci")==0) {
+      AB_PROVIDER *pro;
+
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] compiled-in", modname);
+      pro=AH_Provider_new(ab, modname);
+      return pro;
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQNONE
+      if (strcasecmp(modname, "aqnone")==0) {
+	AB_PROVIDER *pro;
+
+	DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] compiled-in", modname);
+	pro=AN_Provider_new(ab);
+	return pro;
+      }
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQOFXCONNECT
+      if (strcasecmp(modname, "aqofxconnect")==0) {
+	AB_PROVIDER *pro;
+
+	DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] compiled-in", modname);
+	pro=AO_Provider_new(ab);
+	return pro;
+      }
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQPAYPAL
+      if (strcasecmp(modname, "aqofxconnect")==0) {
+	AB_PROVIDER *pro;
+
+	DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] compiled-in", modname);
+	pro=APY_Provider_new(ab);
+	return pro;
+      }
+#endif
+    }
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Plugin [%s] not compiled-in", modname);
+  }
+  return NULL;
 }
+
+
 
 
 
@@ -51,6 +103,24 @@ AB_PROVIDER *AB_Banking__LoadProvider(AB_BANKING *ab, const char *modname) {
 
 
 
+
+AB_PROVIDER *AB_Banking__FindProvider(AB_BANKING *ab, const char *name) {
+  AB_PROVIDER *pro;
+
+  assert(ab);
+  assert(name);
+  pro=AB_Provider_List_First(ab_providers);
+  while(pro) {
+    if (strcasecmp(AB_Provider_GetName(pro), name)==0)
+      break;
+    pro=AB_Provider_List_Next(pro);
+  } /* while */
+
+  return pro;
+}
+
+
+
 AB_PROVIDER *AB_Banking__GetProvider(AB_BANKING *ab, const char *name) {
   AB_PROVIDER *pro;
 
@@ -60,6 +130,10 @@ AB_PROVIDER *AB_Banking__GetProvider(AB_BANKING *ab, const char *name) {
   pro=AB_Banking__FindProvider(ab, name);
   if (pro)
     return pro;
+  pro=AB_Banking__CreateInternalProvider(ab, name);
+  if (pro)
+    return pro;
+
   pro=AB_Banking__LoadProvider(ab, name);
   if (pro)
     AB_Provider_List_Add(pro, ab_providers);

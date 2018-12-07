@@ -1,0 +1,10 @@
+<plugin name="aqnone" type="provider" i18n="aqbanking" >
+  <version>5.99.5</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>Offline backend</short>
+  <descr>
+    This backend allows using offline accounts.
+  </descr>
+</plugin>
+
+

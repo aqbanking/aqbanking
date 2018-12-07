@@ -11,6 +11,167 @@
 /* This file is included by banking.c */
 
 
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_CSV
+# include "src/libs/plugins/imexporters/csv/csv.h"
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_ERI2
+# include "src/libs/plugins/imexporters/eri2/eri2.h"
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_OFX
+# include "src/libs/plugins/imexporters/ofx/ofx.h"
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_OPENHBCI1
+# include "src/libs/plugins/imexporters/openhbci1/openhbci1.h"
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_SWIFT
+# include "src/libs/plugins/imexporters/swift/swift.h"
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_XMLDB
+# include "src/libs/plugins/imexporters/xmldb/xmldb.h"
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_YELLOWNET
+# include "src/libs/plugins/imexporters/yellownet/yellownet.h"
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_SEPA
+# include "src/libs/plugins/imexporters/sepa/sepa.h"
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_CTXFILE
+# include "src/libs/plugins/imexporters/ctxfile/ctxfile.h"
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_Q43
+# include "src/libs/plugins/imexporters/q43/q43.h"
+#endif
+
+
+
+AB_IMEXPORTER *AB_Banking__CreateImExporterPlugin(AB_BANKING *ab, const char *modname){
+  if (modname && *modname) {
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_CSV
+    if (strcasecmp(modname, "csv")==0)
+      return AB_ImExporterCSV_new(ab);
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_ERI2
+    if (strcasecmp(modname, "eri2")==0)
+      return AB_ImExporterERI2_new(ab);
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_OFX
+    if (strcasecmp(modname, "ofx")==0)
+      return AB_ImExporterOFX_new(ab);
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_OPENHBCI1
+    if (strcasecmp(modname, "ofx")==0)
+      return AB_ImExporterOpenHBCI1_new(ab);
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_SWIFT
+    if (strcasecmp(modname, "swift")==0)
+      return AB_ImExporterSWIFT_new(ab);
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_XMLDB
+    if (strcasecmp(modname, "xmldb")==0)
+      return AB_ImExporterXMLDB_new(ab);
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_YELLOWNET
+    if (strcasecmp(modname, "yellownet")==0)
+      return AB_ImExporterYellowNet_new(ab);
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_SEPA
+    if (strcasecmp(modname, "sepa")==0)
+      return AB_ImExporterSEPA_new(ab);
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_CTXFILE
+    if (strcasecmp(modname, "ctxfile")==0)
+      return AB_ImExporterCtxFile_new(ab);
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_Q43
+    if (strcasecmp(modname, "q43")==0)
+      return AB_ImExporterQ43_new(ab);
+#endif
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Plugin [%s] not compiled-in", modname);
+  }
+
+  return NULL;
+}
+
+
+
+AB_IMEXPORTER *AB_Banking__LoadImExporterPlugin(AB_BANKING *ab, const char *modname){
+  GWEN_PLUGIN *pl;
+
+  pl=GWEN_PluginManager_GetPlugin(ab_pluginManagerImExporter, modname);
+  if (pl) {
+    AB_IMEXPORTER *ie;
+
+    ie=AB_Plugin_ImExporter_Factory(pl, ab);
+    if (!ie) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"Error in plugin [%s]: No im/exporter created",
+		modname);
+      return NULL;
+    }
+    return ie;
+  }
+  else {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] not found", modname);
+    return NULL;
+  }
+}
+
+
+
+AB_IMEXPORTER *AB_Banking_FindImExporter(AB_BANKING *ab, const char *name) {
+  AB_IMEXPORTER *ie;
+
+  assert(ab);
+  assert(name);
+  ie=AB_ImExporter_List_First(ab_imexporters);
+  while(ie) {
+    if (strcasecmp(AB_ImExporter_GetName(ie), name)==0)
+      break;
+    ie=AB_ImExporter_List_Next(ie);
+  } /* while */
+
+  return ie;
+}
+
+
+
+AB_IMEXPORTER *AB_Banking_GetImExporter(AB_BANKING *ab, const char *name){
+  AB_IMEXPORTER *ie;
+
+  assert(ab);
+  assert(name);
+
+  ie=AB_Banking_FindImExporter(ab, name);
+  if (ie)
+    return ie;
+  ie=AB_Banking__LoadImExporterPlugin(ab, name);
+  if (ie) {
+    AB_ImExporter_List_Add(ie, ab_imexporters);
+  }
+
+  return ie;
+}
+
+
+
 
 void AB_Banking__fillTransactionRemoteInfo(AB_TRANSACTION *t) {
     const char *s;
@@ -586,64 +747,6 @@ int AB_Banking_SaveLocalImExporterProfile(AB_BANKING *ab,
 }
 
 
-
-AB_IMEXPORTER *AB_Banking_FindImExporter(AB_BANKING *ab, const char *name) {
-  AB_IMEXPORTER *ie;
-
-  assert(ab);
-  assert(name);
-  ie=AB_ImExporter_List_First(ab_imexporters);
-  while(ie) {
-    if (strcasecmp(AB_ImExporter_GetName(ie), name)==0)
-      break;
-    ie=AB_ImExporter_List_Next(ie);
-  } /* while */
-
-  return ie;
-}
-
-
-
-AB_IMEXPORTER *AB_Banking_GetImExporter(AB_BANKING *ab, const char *name){
-  AB_IMEXPORTER *ie;
-
-  assert(ab);
-  assert(name);
-
-  ie=AB_Banking_FindImExporter(ab, name);
-  if (ie)
-    return ie;
-  ie=AB_Banking__LoadImExporterPlugin(ab, name);
-  if (ie) {
-    AB_ImExporter_List_Add(ie, ab_imexporters);
-  }
-
-  return ie;
-}
-
-
-
-AB_IMEXPORTER *AB_Banking__LoadImExporterPlugin(AB_BANKING *ab, const char *modname){
-  GWEN_PLUGIN *pl;
-
-  pl=GWEN_PluginManager_GetPlugin(ab_pluginManagerImExporter, modname);
-  if (pl) {
-    AB_IMEXPORTER *ie;
-
-    ie=AB_Plugin_ImExporter_Factory(pl, ab);
-    if (!ie) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Error in plugin [%s]: No im/exporter created",
-		modname);
-      return NULL;
-    }
-    return ie;
-  }
-  else {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] not found", modname);
-    return NULL;
-  }
-}
 
 
 

@@ -33,15 +33,13 @@ extern "C" {
 #endif
 
 typedef struct AB_PROVIDER AB_PROVIDER;
-GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_PROVIDER, AQBANKING_API)
-GWEN_LIST2_FUNCTION_LIB_DEFS(AB_PROVIDER, AB_Provider, AQBANKING_API)
+GWEN_INHERIT_FUNCTION_DEFS(AB_PROVIDER)
+GWEN_LIST2_FUNCTION_DEFS(AB_PROVIDER, AB_Provider)
 
 typedef struct AB_PROVIDER_DESCRIPTION AB_PROVIDER_DESCRIPTION;
-GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_PROVIDER_DESCRIPTION, AQBANKING_API)
-GWEN_LIST_FUNCTION_LIB_DEFS(AB_PROVIDER_DESCRIPTION, AB_ProviderDescription,
-                            AQBANKING_API)
-GWEN_LIST2_FUNCTION_LIB_DEFS(AB_PROVIDER_DESCRIPTION, AB_ProviderDescription,
-                             AQBANKING_API)
+GWEN_INHERIT_FUNCTION_DEFS(AB_PROVIDER_DESCRIPTION)
+GWEN_LIST_FUNCTION_DEFS(AB_PROVIDER_DESCRIPTION, AB_ProviderDescription)
+GWEN_LIST2_FUNCTION_DEFS(AB_PROVIDER_DESCRIPTION, AB_ProviderDescription)
 
 #ifdef __cplusplus
 }
@@ -111,23 +109,19 @@ extern "C" {
 /**
  * Returns the name of the backend (e.g. "aqhbci").
  */
-AQBANKING_API
 const char *AB_Provider_GetName(const AB_PROVIDER *pro);
 
 /**
  * Returns the escaped name of the backend. This is needed when using the
  * name of the backend to form a file path.
  */
-AQBANKING_API
 const char *AB_Provider_GetEscapedName(const AB_PROVIDER *pro);
 /** 
  * Returns the Banking object that this Provider belongs to. 
  */
-AQBANKING_API
 AB_BANKING *AB_Provider_GetBanking(const AB_PROVIDER *pro);
 
 
-AQBANKING_API
 uint32_t AB_Provider_GetFlags(const AB_PROVIDER *pro);
 
 /**
@@ -139,7 +133,6 @@ uint32_t AB_Provider_GetFlags(const AB_PROVIDER *pro);
  * @param pro pointer to the provider object
  * @param buf buffer to append the path name to
  */
-AQBANKING_API
 int AB_Provider_GetUserDataDir(const AB_PROVIDER *pro, GWEN_BUFFER *buf);
 
 

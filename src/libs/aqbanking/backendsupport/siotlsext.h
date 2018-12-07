@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Fri Apr 21 2017
-    copyright   : (C) 2017 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -24,8 +24,8 @@ extern "C" {
 #endif
 
 
-AQBANKING_API void AB_SioTlsExt_Extend(GWEN_SYNCIO *sio, AB_USER *u);
-AQBANKING_API void AB_SioTlsExt_Unextend(GWEN_SYNCIO *sio);
+void AB_SioTlsExt_Extend(GWEN_SYNCIO *sio, AB_USER *u);
+void AB_SioTlsExt_Unextend(GWEN_SYNCIO *sio);
 
 
 #ifdef __cplusplus

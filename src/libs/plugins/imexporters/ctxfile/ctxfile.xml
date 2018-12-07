@@ -1,0 +1,10 @@
+<plugin name="ctxfile" type="imexporter" import="1" export="1" i18n="aqbanking" >
+  <version>5.99.5</version>
+  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <short>This plugin directly reads and writes context files.</short>
+  <descr>
+    This plugin imports/exports CTX files.
+  </descr>
+</plugin>
+
+

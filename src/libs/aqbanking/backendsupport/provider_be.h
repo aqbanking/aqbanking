@@ -81,18 +81,18 @@ typedef int (*AB_PROVIDER_CONTROL_FN)(AB_PROVIDER *pro, int argc, char **argv);
 
 
 
-AQBANKING_API AB_PROVIDER *AB_Provider_new(AB_BANKING *ab, const char *name);
+AB_PROVIDER *AB_Provider_new(AB_BANKING *ab, const char *name);
 
 
 
 /**
  * @return 0 if the backend is not initialized, !=0 if it is
  */
-AQBANKING_API int AB_Provider_IsInit(const AB_PROVIDER *pro);
+int AB_Provider_IsInit(const AB_PROVIDER *pro);
 
 
 
-AQBANKING_API void AB_Provider_AddFlags(AB_PROVIDER *pro, uint32_t fl);
+void AB_Provider_AddFlags(AB_PROVIDER *pro, uint32_t fl);
 
 
 /** @name Virtual Functions - Minimally Required Functions
@@ -106,7 +106,7 @@ AQBANKING_API void AB_Provider_AddFlags(AB_PROVIDER *pro, uint32_t fl);
  * @param pro backend object
  * @param db db of the config group for this backend
  */
-AQBANKING_API int AB_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *db);
+int AB_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *db);
 
 
 
@@ -115,7 +115,7 @@ AQBANKING_API int AB_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *db);
  * @param pro backend object
  * @param db db of the config group for this backend
  */
-AQBANKING_API int AB_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *db);
+int AB_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *db);
 
 
 
@@ -127,7 +127,7 @@ AQBANKING_API int AB_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *db);
  * @param pq provider queue which contains the commands to send, sorted by account (may be modified by provider)
  * @param ctx context to receive results
  */
-AQBANKING_API int AB_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx);
+int AB_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx);
 
 /*@}*/
 
@@ -146,7 +146,7 @@ AQBANKING_API int AB_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *p
  * @return AB_ACCOUNT object created, NULL on error
  * @param pro provider which is to create the object
  */
-AQBANKING_API AB_ACCOUNT *AB_Provider_CreateAccountObject(AB_PROVIDER *pro);
+AB_ACCOUNT *AB_Provider_CreateAccountObject(AB_PROVIDER *pro);
 
 
 /**
@@ -157,7 +157,7 @@ AQBANKING_API AB_ACCOUNT *AB_Provider_CreateAccountObject(AB_PROVIDER *pro);
  * @return AB_USER object created, NULL on error
  * @param pro provider which is to create the object
  */
-AQBANKING_API AB_USER *AB_Provider_CreateUserObject(AB_PROVIDER *pro);
+AB_USER *AB_Provider_CreateUserObject(AB_PROVIDER *pro);
 
 
 /**
@@ -169,7 +169,7 @@ AQBANKING_API AB_USER *AB_Provider_CreateUserObject(AB_PROVIDER *pro);
  *
  * @return 0 if okay, error code otherwise
  */
-AQBANKING_API int AB_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doLock);
+int AB_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doLock);
 
 /*@}*/
 
@@ -180,7 +180,7 @@ AQBANKING_API int AB_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPE
  */
 /*@{*/
 
-AQBANKING_API int AB_Provider_Control(AB_PROVIDER *pro, int argc, char **argv);
+int AB_Provider_Control(AB_PROVIDER *pro, int argc, char **argv);
 
 
 /*@}*/
@@ -202,11 +202,11 @@ AQBANKING_API int AB_Provider_Control(AB_PROVIDER *pro, int argc, char **argv);
  *   specify whether PIN/TAN, keyfile or chipcard users are to be created).
  *   Use value 0 for the generic dialog.
  */
-AQBANKING_API GWEN_DIALOG *AB_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i);
+GWEN_DIALOG *AB_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i);
 
 
 
-AQBANKING_API GWEN_DIALOG *AB_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u);
+GWEN_DIALOG *AB_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u);
 
 
 
@@ -214,15 +214,15 @@ AQBANKING_API GWEN_DIALOG *AB_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_US
  * Create a dialog which allows to create a new account.
  * The dialog returned (if any) must be derived via @ref AB_NewAccountDialog_new().
  */
-AQBANKING_API GWEN_DIALOG *AB_Provider_GetNewAccountDialog(AB_PROVIDER *pro);
+GWEN_DIALOG *AB_Provider_GetNewAccountDialog(AB_PROVIDER *pro);
 
 
 
-AQBANKING_API GWEN_DIALOG *AB_Provider_GetEditAccountDialog(AB_PROVIDER *pro, AB_ACCOUNT *a);
+GWEN_DIALOG *AB_Provider_GetEditAccountDialog(AB_PROVIDER *pro, AB_ACCOUNT *a);
 
 
 
-AQBANKING_API GWEN_DIALOG *AB_ProviderGetUserTypeDialog(AB_PROVIDER *pro);
+GWEN_DIALOG *AB_ProviderGetUserTypeDialog(AB_PROVIDER *pro);
 
 
 
@@ -234,30 +234,30 @@ AQBANKING_API GWEN_DIALOG *AB_ProviderGetUserTypeDialog(AB_PROVIDER *pro);
  *
  */
 /*@{*/
-AQBANKING_API void AB_Provider_SetInitFn(AB_PROVIDER *pro, AB_PROVIDER_INIT_FN f);
+void AB_Provider_SetInitFn(AB_PROVIDER *pro, AB_PROVIDER_INIT_FN f);
 
-AQBANKING_API void AB_Provider_SetFiniFn(AB_PROVIDER *pro, AB_PROVIDER_FINI_FN f);
+void AB_Provider_SetFiniFn(AB_PROVIDER *pro, AB_PROVIDER_FINI_FN f);
 
-AQBANKING_API void AB_Provider_SetSendCommandsFn(AB_PROVIDER *pro, AB_PROVIDER_SENDCOMMANDS_FN f);
+void AB_Provider_SetSendCommandsFn(AB_PROVIDER *pro, AB_PROVIDER_SENDCOMMANDS_FN f);
 
-AQBANKING_API void AB_Provider_SetCreateAccountObjectsFn(AB_PROVIDER *pro, AB_PROVIDER_CREATEACCOUNTOBJECT_FN f);
+void AB_Provider_SetCreateAccountObjectsFn(AB_PROVIDER *pro, AB_PROVIDER_CREATEACCOUNTOBJECT_FN f);
 
-AQBANKING_API void AB_Provider_SetCreateUserObjectsFn(AB_PROVIDER *pro, AB_PROVIDER_CREATEUSEROBJECT_FN f);
+void AB_Provider_SetCreateUserObjectsFn(AB_PROVIDER *pro, AB_PROVIDER_CREATEUSEROBJECT_FN f);
 
-AQBANKING_API void AB_Provider_SetUpdateAccountSpecFn(AB_PROVIDER *pro, AB_PROVIDER_UPDATEACCOUNTSPEC_FN f);
+void AB_Provider_SetUpdateAccountSpecFn(AB_PROVIDER *pro, AB_PROVIDER_UPDATEACCOUNTSPEC_FN f);
 
-AQBANKING_API void AB_Provider_SetControlFn(AB_PROVIDER *pro, AB_PROVIDER_CONTROL_FN f);
+void AB_Provider_SetControlFn(AB_PROVIDER *pro, AB_PROVIDER_CONTROL_FN f);
 
 
-AQBANKING_API void AB_Provider_SetGetNewUserDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_NEWUSER_DIALOG_FN f);
+void AB_Provider_SetGetNewUserDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_NEWUSER_DIALOG_FN f);
 
-AQBANKING_API void AB_Provider_SetGetEditUserDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_EDITUSER_DIALOG_FN f);
+void AB_Provider_SetGetEditUserDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_EDITUSER_DIALOG_FN f);
 
-AQBANKING_API void AB_Provider_SetGetNewAccountDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_NEWACCOUNT_DIALOG_FN f);
+void AB_Provider_SetGetNewAccountDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_NEWACCOUNT_DIALOG_FN f);
 
-AQBANKING_API void AB_Provider_SetGetEditAccountDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_EDITACCOUNT_DIALOG_FN f);
+void AB_Provider_SetGetEditAccountDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_EDITACCOUNT_DIALOG_FN f);
 
-AQBANKING_API void AB_Provider_SetGetUserTypeDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_USERTYPE_DIALOG_FN f);
+void AB_Provider_SetGetUserTypeDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_USERTYPE_DIALOG_FN f);
 
 /*@}*/
 
@@ -284,7 +284,7 @@ AQBANKING_API void AB_Provider_SetGetUserTypeDialogFn(AB_PROVIDER *pro, AB_PROVI
  * @param doUnlock do unlock the objects configuration after reading
  * @param account pointer to the object to read the configuration into
  */
-AQBANKING_API int AB_Provider_ReadAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_ACCOUNT *account);
+int AB_Provider_ReadAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_ACCOUNT *account);
 
 
 /**
@@ -301,7 +301,7 @@ AQBANKING_API int AB_Provider_ReadAccount(AB_PROVIDER *pro, uint32_t uid, int do
  * @param doUnlock do unlock the objects configuration after reading
  * @param pAccount pointer to a pointer to receive the object created and read
  */
-AQBANKING_API int AB_Provider_GetAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_ACCOUNT **pAccount);
+int AB_Provider_GetAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_ACCOUNT **pAccount);
 
 
 /**
@@ -310,7 +310,7 @@ AQBANKING_API int AB_Provider_GetAccount(AB_PROVIDER *pro, uint32_t uid, int doL
  * @param pro provider (THIS in C++ speak)
  * @param accountList list to receive all objects read
  */
-AQBANKING_API int AB_Provider_ReadAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accountList);
+int AB_Provider_ReadAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accountList);
 
 
 /**
@@ -327,7 +327,7 @@ AQBANKING_API int AB_Provider_ReadAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *ac
  * @param doUnlock do unlock the objects configuration after reading
  * @param account pointer to the object to be written to the configuration
  */
-AQBANKING_API int AB_Provider_WriteAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, const AB_ACCOUNT *account);
+int AB_Provider_WriteAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, const AB_ACCOUNT *account);
 
 
 /**
@@ -341,7 +341,7 @@ AQBANKING_API int AB_Provider_WriteAccount(AB_PROVIDER *pro, uint32_t uid, int d
  * @param a account to add
  *
  */
-AQBANKING_API int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);
+int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);
 
 
 /**
@@ -353,7 +353,7 @@ AQBANKING_API int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);
  * @param pro provider (THIS in C++ speak)
  * @param uid unique id of the account to remove
  */
-AQBANKING_API int AB_Provider_DeleteAccount(AB_PROVIDER *pro, uint32_t uid);
+int AB_Provider_DeleteAccount(AB_PROVIDER *pro, uint32_t uid);
 
 
 /**
@@ -362,7 +362,7 @@ AQBANKING_API int AB_Provider_DeleteAccount(AB_PROVIDER *pro, uint32_t uid);
  * leaves the configuration locked upon return.
  * Therefore you MUST call @ref AH_Provider_EndExclUseAccount() to unlock it later.
  */
-AQBANKING_API int AB_Provider_BeginExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);
+int AB_Provider_BeginExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);
 
 
 /**
@@ -373,7 +373,7 @@ AQBANKING_API int AB_Provider_BeginExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *
  * @param a pointer to account
  * @param abandon if !=0 the configuration is just unlocked, not written
  */
-AQBANKING_API int AB_Provider_EndExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a, int abandon);
+int AB_Provider_EndExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a, int abandon);
 
 
 /**
@@ -385,7 +385,7 @@ AQBANKING_API int AB_Provider_EndExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a,
  * @param acc account to look for
  * @param asl account spec list to check against
  */
-AQBANKING_API AB_ACCOUNT_SPEC *AB_Provider_FindMatchingAccountSpec(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC_LIST *asl);
+AB_ACCOUNT_SPEC *AB_Provider_FindMatchingAccountSpec(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC_LIST *asl);
 
 
 /*@}*/
@@ -410,7 +410,7 @@ AQBANKING_API AB_ACCOUNT_SPEC *AB_Provider_FindMatchingAccountSpec(AB_PROVIDER *
  * @param doUnlock if !0 0 the config group for the given object will be unlocked after reading
  * @param pUser pointer to a variable to receive the user read
  */
-AQBANKING_API int AB_Provider_GetUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_USER **pUser);
+int AB_Provider_GetUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_USER **pUser);
 
 
 /**
@@ -423,7 +423,7 @@ AQBANKING_API int AB_Provider_GetUser(AB_PROVIDER *pro, uint32_t uid, int doLock
  * @param pro pointer to provider object
  * @param userList pointer to a list to receive the users.
  */
-AQBANKING_API int AB_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList);
+int AB_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList);
 
 
 /**
@@ -440,7 +440,7 @@ AQBANKING_API int AB_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList
  * @param doUnlock do unlock the objects configuration after reading
  * @param user pointer to the object to be written to the configuration
  */
-AQBANKING_API int AB_Provider_WriteUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, const AB_USER *user);
+int AB_Provider_WriteUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, const AB_USER *user);
 
 
 /**
@@ -451,7 +451,7 @@ AQBANKING_API int AB_Provider_WriteUser(AB_PROVIDER *pro, uint32_t uid, int doLo
  * @param u user to add
  *
  */
-AQBANKING_API int AB_Provider_AddUser(AB_PROVIDER *pro, AB_USER *u);
+int AB_Provider_AddUser(AB_PROVIDER *pro, AB_USER *u);
 
 
 /**
@@ -461,7 +461,7 @@ AQBANKING_API int AB_Provider_AddUser(AB_PROVIDER *pro, AB_USER *u);
  * @param pro provider (THIS in C++ speak)
  * @param uid unique id of the account to remove
  */
-AQBANKING_API int AB_Provider_DeleteUser(AB_PROVIDER *pro, uint32_t uid);
+int AB_Provider_DeleteUser(AB_PROVIDER *pro, uint32_t uid);
 
 
 
@@ -471,7 +471,7 @@ AQBANKING_API int AB_Provider_DeleteUser(AB_PROVIDER *pro, uint32_t uid);
  * leaves the configuration locked upon return.
  * Therefore you MUST call @ref AH_Provider_EndExclUseUser() to unlock it later.
  */
-AQBANKING_API int AB_Provider_BeginExclUseUser(AB_PROVIDER *pro, AB_USER *u);
+int AB_Provider_BeginExclUseUser(AB_PROVIDER *pro, AB_USER *u);
 
 
 /**
@@ -482,7 +482,7 @@ AQBANKING_API int AB_Provider_BeginExclUseUser(AB_PROVIDER *pro, AB_USER *u);
  * @param u pointer to user
  * @param abandon if !=0 the configuration is just unlocked, not written
  */
-AQBANKING_API int AB_Provider_EndExclUseUser(AB_PROVIDER *pro, AB_USER *u, int abandon);
+int AB_Provider_EndExclUseUser(AB_PROVIDER *pro, AB_USER *u, int abandon);
 
 
 /*@}*/
@@ -495,9 +495,9 @@ AQBANKING_API int AB_Provider_EndExclUseUser(AB_PROVIDER *pro, AB_USER *u, int a
 /*@{*/
 
 
-AQBANKING_API int AB_Provider_AccountToAccountSpec(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC *as, int doLock);
-AQBANKING_API int AB_Provider_WriteAccountSpecForAccount(AB_PROVIDER *pro, const AB_ACCOUNT *acc, int doLock);
-AQBANKING_API int AB_Provider_CreateInitialAccountSpecs(AB_PROVIDER *pro);
+int AB_Provider_AccountToAccountSpec(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC *as, int doLock);
+int AB_Provider_WriteAccountSpecForAccount(AB_PROVIDER *pro, const AB_ACCOUNT *acc, int doLock);
+int AB_Provider_CreateInitialAccountSpecs(AB_PROVIDER *pro);
 
 
 /*@}*/
@@ -517,13 +517,13 @@ AQBANKING_API int AB_Provider_CreateInitialAccountSpecs(AB_PROVIDER *pro);
  * Sort jobs in provider queues (AB_PROVIDERQUEUE) into a list of AB_USERQUEUEs.
  * This function makes use of the field @ref AB_ACCOUNT_userId.
  */
-AQBANKING_API int AB_Provider_SortProviderQueueIntoUserQueueList(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_USERQUEUE_LIST *uql);
+int AB_Provider_SortProviderQueueIntoUserQueueList(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_USERQUEUE_LIST *uql);
 
 
 /**
  * Frees all users and accounts mentioned in the given AB_USERQUEUE list.
  */
-AQBANKING_API void AB_Provider_FreeUsersAndAccountsFromUserQueueList(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql);
+void AB_Provider_FreeUsersAndAccountsFromUserQueueList(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql);
 
 
 
@@ -536,14 +536,14 @@ AQBANKING_API void AB_Provider_FreeUsersAndAccountsFromUserQueueList(AB_PROVIDER
 typedef AB_PROVIDER* (*AB_PLUGIN_PROVIDER_FACTORY_FN)(GWEN_PLUGIN *pl, AB_BANKING *ab);
 
 
-AQBANKING_API GWEN_PLUGIN *AB_Plugin_Provider_new(GWEN_PLUGIN_MANAGER *pm,
-                                                  const char *name,
-                                                  const char *fileName);
+GWEN_PLUGIN *AB_Plugin_Provider_new(GWEN_PLUGIN_MANAGER *pm,
+                                    const char *name,
+                                    const char *fileName);
 
 
-AQBANKING_API AB_PROVIDER *AB_Plugin_Provider_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab);
+AB_PROVIDER *AB_Plugin_Provider_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab);
 
-AQBANKING_API void AB_Plugin_Provider_SetFactoryFn(GWEN_PLUGIN *pl, AB_PLUGIN_PROVIDER_FACTORY_FN fn);
+void AB_Plugin_Provider_SetFactoryFn(GWEN_PLUGIN *pl, AB_PLUGIN_PROVIDER_FACTORY_FN fn);
 
 
 
