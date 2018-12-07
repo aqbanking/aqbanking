@@ -9,8 +9,27 @@
  ***************************************************************************/
 
 
+#ifdef AQBANKING_WITH_PLUGIN_BANKINFO_DE
+# include "src/libs/plugins/bankinfo/de/de.h"
+#endif
 
-AB_BANKINFO_PLUGIN *AB_Banking__LoadBankInfoPlugin(AB_BANKING *ab, const char *modname){
+
+
+AB_BANKINFO_PLUGIN *AB_Banking_CreateImBankInfoPlugin(AB_BANKING *ab, const char *modname){
+  if (modname && *modname) {
+#ifdef AQBANKING_WITH_PLUGIN_BANKINFO_DE
+    if (strcasecmp(modname, "de")==0)
+      return AB_BankInfoPluginDE_new(ab);
+#endif
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Plugin [%s] not compiled-in", modname);
+  }
+
+  return NULL;
+}
+
+
+
+AB_BANKINFO_PLUGIN *AB_Banking_LoadBankInfoPlugin(AB_BANKING *ab, const char *modname){
   GWEN_PLUGIN *pl;
 
   pl=GWEN_PluginManager_GetPlugin(ab_pluginManagerBankInfo, modname);
@@ -32,25 +51,37 @@ AB_BANKINFO_PLUGIN *AB_Banking__LoadBankInfoPlugin(AB_BANKING *ab, const char *m
 
 
 
-AB_BANKINFO_PLUGIN *AB_Banking__GetBankInfoPlugin(AB_BANKING *ab, const char *country) {
+AB_BANKINFO_PLUGIN *AB_Banking_FindBankInfoPlugin(AB_BANKING *ab, const char *country){
+  AB_BANKINFO_PLUGIN *bip;
+
+  bip=AB_BankInfoPlugin_List_First(ab_bankInfoPlugins);
+  while(bip) {
+    if (strcasecmp(AB_BankInfoPlugin_GetCountry(bip), country)==0)
+      break;
+    bip=AB_BankInfoPlugin_List_Next(bip);
+  }
+
+  return bip;
+}
+
+
+
+AB_BANKINFO_PLUGIN *AB_Banking_GetBankInfoPlugin(AB_BANKING *ab, const char *country) {
   AB_BANKINFO_PLUGIN *bip;
 
   assert(ab);
   assert(country);
 
-  bip=AB_BankInfoPlugin_List_First(ab_bankInfoPlugins);
-  while(bip) {
-    if (strcasecmp(AB_BankInfoPlugin_GetCountry(bip), country)==0)
-      return bip;
-    bip=AB_BankInfoPlugin_List_Next(bip);
-  }
+  bip=AB_Banking_FindBankInfoPlugin(ab, country);
+  if (bip)
+    return bip;
+  bip=AB_Banking_CreateImBankInfoPlugin(ab, country);
+  if (bip)
+    return bip;
+  bip=AB_Banking_LoadBankInfoPlugin(ab, country);
+  if (bip)
+    AB_BankInfoPlugin_List_Add(bip, ab_bankInfoPlugins);
 
-  bip=AB_Banking__LoadBankInfoPlugin(ab, country);
-  if (!bip) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "BankInfo plugin for country \"%s\" not found", country);
-    return 0;
-  }
-  AB_BankInfoPlugin_List_Add(bip, ab_bankInfoPlugins);
   return bip;
 }
 
@@ -64,7 +95,7 @@ AB_BANKINFO *AB_Banking_GetBankInfo(AB_BANKING *ab,
 
   assert(ab);
   assert(country);
-  bip=AB_Banking__GetBankInfoPlugin(ab, country);
+  bip=AB_Banking_GetBankInfoPlugin(ab, country);
   if (!bip) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "BankInfo plugin for country \"%s\" not found", country);
     return 0;
@@ -83,7 +114,7 @@ int AB_Banking_GetBankInfoByTemplate(AB_BANKING *ab,
 
   assert(ab);
   assert(country);
-  bip=AB_Banking__GetBankInfoPlugin(ab, country);
+  bip=AB_Banking_GetBankInfoPlugin(ab, country);
   if (!bip) {
     DBG_INFO(AQBANKING_LOGDOMAIN,
              "BankInfo plugin for country \"%s\" not found",
@@ -106,7 +137,7 @@ AB_Banking_CheckAccount(AB_BANKING *ab,
 
   assert(ab);
   assert(country);
-  bip=AB_Banking__GetBankInfoPlugin(ab, country);
+  bip=AB_Banking_GetBankInfoPlugin(ab, country);
   if (!bip) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "BankInfo plugin for country \"%s\" not found", country);
     return AB_BankInfoCheckResult_UnknownResult;

@@ -87,8 +87,10 @@ static int AB_Banking__GetConfigManager(AB_BANKING *ab, const char *dname);
 static AB_IMEXPORTER *AB_Banking_FindImExporter(AB_BANKING *ab, const char *name);
 
 
-static AB_BANKINFO_PLUGIN *AB_Banking__LoadBankInfoPlugin(AB_BANKING *ab, const char *modname);
-static AB_BANKINFO_PLUGIN *AB_Banking__GetBankInfoPlugin(AB_BANKING *ab, const char *country);
+static AB_BANKINFO_PLUGIN *AB_Banking_CreateImBankInfoPlugin(AB_BANKING *ab, const char *modname);
+static AB_BANKINFO_PLUGIN *AB_Banking_LoadBankInfoPlugin(AB_BANKING *ab, const char *modname);
+static AB_BANKINFO_PLUGIN *AB_Banking_FindBankInfoPlugin(AB_BANKING *ab, const char *country);
+static AB_BANKINFO_PLUGIN *AB_Banking_GetBankInfoPlugin(AB_BANKING *ab, const char *country);
 
 
 static int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,

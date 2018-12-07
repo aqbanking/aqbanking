@@ -46,5 +46,4 @@ int AB_Banking_Unlock_UserConfig(AB_BANKING *ab, uint32_t uid);
 
 
 
-
 #endif /* AQBANKING_BANKING_L_H */
