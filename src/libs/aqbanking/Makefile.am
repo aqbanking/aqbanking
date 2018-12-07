@@ -40,8 +40,6 @@ DEFS += \
 noinst_HEADERS=\
  banking_l.h \
  banking_p.h \
- bankinfoplugin_l.h \
- bankinfoplugin_p.h \
  i18n_l.h \
  imexporter_l.h \
  imexporter_p.h
@@ -58,8 +56,6 @@ iheader_HEADERS=\
  banking_bankinfo.h \
  banking_online.h \
  banking_transaction.h \
- bankinfoplugin.h \
- bankinfoplugin_be.h \
  error.h \
  imexporter.h \
  imexporter_be.h
@@ -67,7 +63,6 @@ iheader_HEADERS=\
 
 libaqbanking_base_la_SOURCES=\
  account_type.c \
- bankinfoplugin.c \
  banking.c \
  imexporter.c
 

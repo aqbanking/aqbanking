@@ -63,7 +63,9 @@ iheader_HEADERS=$(built_headers_pub)\
   httpsession.h \
   msgengine.h \
   provider.h \
-  provider_be.h
+  provider_be.h \
+  bankinfoplugin.h \
+  bankinfoplugin_be.h
 
 
 noinst_HEADERS=\
@@ -73,7 +75,9 @@ noinst_HEADERS=\
   httpsession_p.h \
   msgengine_p.h \
   provider_l.h \
-  provider_p.h
+  provider_p.h \
+  bankinfoplugin_l.h \
+  bankinfoplugin_p.h
 
 
 noinst_LTLIBRARIES=libabbesupport.la
@@ -83,7 +87,8 @@ libabbesupport_la_SOURCES=$(typedata_sources) \
   dlg_newuser.c \
   httpsession.c \
   msgengine.c \
-  provider.c
+  provider.c \
+  bankinfoplugin.c
 
 
 extra_sources=\
