@@ -1,17 +1,8 @@
 Next:
 =====
 - AB_BANKING:
-  - compile-in plugins to reduce number of exported symbols
-  - remove DTAUS im-/exporter
-
-  - remove libs/aqbanking/dialogs/dlg_editaccount*
-  - change account/user edit/create dialogs to use user/account specs
-
-- AqHBCI:
-  - start adapting the account/user setup dialogs
-
-- split AqBanking into two libraries: One for direct use by applications, the other shall contain
-  functions needed by backends and plugins. This should reduce the number of symbols exported to applications
+  - test libs/aqbanking/dialogs/dlg_editaccount*
+  - move non-app-api stuff into backendsupport (or some other folder)
 
 - fix apidoc for provider.h
 
@@ -20,24 +11,10 @@ Next:
 Mid-term
 ========
 
-- types/*.xml: convert to typemaker2 (partially done)
-
-- internal:
-  - AB_ACCOUNT and AB_USER should be handled by the backends only
-      - these structures are currently way to fat for applications because
-        they also contain internal info for the backends which are absolutely
-        not needed by applications. They also make it very conplicated to manage
-        users and accounts.
-  - backend functions to be used by setup apps:
-    - getAccounts()
-    - getUsers()
-
-
 
 Long-term
 =========
 
-- remove data storage stuff (APPS should store their info themselves)
 - remove message engine stuff, use gparser instead
 
 
