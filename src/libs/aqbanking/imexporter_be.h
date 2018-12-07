@@ -39,10 +39,7 @@ typedef AB_IMEXPORTER* (*AB_IMEXPORTER_FACTORY_FN)(AB_BANKING *ab);
  *
  */
 /*@{*/
-AQBANKING_API 
-AB_IMEXPORTER *AB_ImExporter_new(AB_BANKING *ab,
-                                 const char *name);
-AQBANKING_API 
+AB_IMEXPORTER *AB_ImExporter_new(AB_BANKING *ab, const char *name);
 void AB_ImExporter_free(AB_IMEXPORTER *ie);
 
 
@@ -54,13 +51,10 @@ void AB_ImExporter_free(AB_IMEXPORTER *ie);
  *
  */
 /*@{*/
-AQBANKING_API
 void AB_ImExporter_SetFlags(AB_IMEXPORTER *ie, uint32_t flags);
 
-AQBANKING_API 
 void AB_ImExporter_AddFlags(AB_IMEXPORTER *ie, uint32_t flags);
 
-AQBANKING_API 
 void AB_ImExporter_SubFlags(AB_IMEXPORTER *ie, uint32_t flags);
 /*@}*/
 
@@ -106,21 +100,13 @@ typedef int (*AB_IMEXPORTER_GET_EDITPROFILE_DIALOG_FN)(AB_IMEXPORTER *ie,
  *
  */
 /*@{*/
-AQBANKING_API 
-void AB_ImExporter_SetImportFn(AB_IMEXPORTER *ie,
-                               AB_IMEXPORTER_IMPORT_FN f);
+void AB_ImExporter_SetImportFn(AB_IMEXPORTER *ie, AB_IMEXPORTER_IMPORT_FN f);
 
-AQBANKING_API 
-void AB_ImExporter_SetExportFn(AB_IMEXPORTER *ie,
-                               AB_IMEXPORTER_EXPORT_FN f);
+void AB_ImExporter_SetExportFn(AB_IMEXPORTER *ie, AB_IMEXPORTER_EXPORT_FN f);
 
-AQBANKING_API
-void AB_ImExporter_SetCheckFileFn(AB_IMEXPORTER *ie,
-                                  AB_IMEXPORTER_CHECKFILE_FN f);
+void AB_ImExporter_SetCheckFileFn(AB_IMEXPORTER *ie, AB_IMEXPORTER_CHECKFILE_FN f);
 
-AQBANKING_API
-void AB_ImExporter_SetGetEditProfileDialogFn(AB_IMEXPORTER *ie,
-					     AB_IMEXPORTER_GET_EDITPROFILE_DIALOG_FN f);
+void AB_ImExporter_SetGetEditProfileDialogFn(AB_IMEXPORTER *ie, AB_IMEXPORTER_GET_EDITPROFILE_DIALOG_FN f);
 /*@}*/
 
 
@@ -131,22 +117,16 @@ void AB_ImExporter_SetGetEditProfileDialogFn(AB_IMEXPORTER *ie,
  */
 /*@{*/
 
-typedef AB_IMEXPORTER* (*AB_PLUGIN_IMEXPORTER_FACTORY_FN)(GWEN_PLUGIN *pl,
-							  AB_BANKING *ab);
+typedef AB_IMEXPORTER* (*AB_PLUGIN_IMEXPORTER_FACTORY_FN)(GWEN_PLUGIN *pl, AB_BANKING *ab);
 
 
-AQBANKING_API
 GWEN_PLUGIN *AB_Plugin_ImExporter_new(GWEN_PLUGIN_MANAGER *pm,
 				      const char *name,
 				      const char *fileName);
 
-AQBANKING_API
-AB_IMEXPORTER *AB_Plugin_ImExporter_Factory(GWEN_PLUGIN *pl,
-					    AB_BANKING *ab);
+AB_IMEXPORTER *AB_Plugin_ImExporter_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab);
 
-AQBANKING_API
-void AB_Plugin_ImExporter_SetFactoryFn(GWEN_PLUGIN *pl,
-				       AB_PLUGIN_IMEXPORTER_FACTORY_FN fn);
+void AB_Plugin_ImExporter_SetFactoryFn(GWEN_PLUGIN *pl, AB_PLUGIN_IMEXPORTER_FACTORY_FN fn);
 
 /*@}*/
 

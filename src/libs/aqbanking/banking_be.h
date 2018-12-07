@@ -62,10 +62,10 @@ extern "C" {
  * of using the compile time fixed values. This way it is easier under
  * windows to find data.
  */
-AQBANKING_API GWEN_STRINGLIST *AB_Banking_GetGlobalDataDirs(void);
+GWEN_STRINGLIST *AB_Banking_GetGlobalDataDirs(void);
 
 
-AQBANKING_API GWEN_STRINGLIST *AB_Banking_GetGlobalSysconfDirs(void);
+GWEN_STRINGLIST *AB_Banking_GetGlobalSysconfDirs(void);
 
 
 /**
@@ -78,7 +78,6 @@ AQBANKING_API GWEN_STRINGLIST *AB_Banking_GetGlobalSysconfDirs(void);
  * @param ab pointer to the AB_BANKING object (needs to be initialized, i.e. @ref AB_Banking_Init called).
  * @param modname (e.g. "aqhbci")
  */
-AQBANKING_API
 AB_PROVIDER *AB_Banking_BeginUseProvider(AB_BANKING *ab, const char *modname);
 
 /**
@@ -91,14 +90,13 @@ AB_PROVIDER *AB_Banking_BeginUseProvider(AB_BANKING *ab, const char *modname);
  * @param pro pointer to provider object returned by @ref AB_Banking_BeginUseProvider
  *
  */
-AQBANKING_API
 int AB_Banking_EndUseProvider(AB_BANKING *ab, AB_PROVIDER *pro);
 
 
 /**
  * Create a list of available online banking providers.
  */
-AQBANKING_API GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab);
+GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab);
 
 
 /*@}*/
@@ -109,17 +107,17 @@ AQBANKING_API GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BAN
  *
  */
 /*@{*/
-AQBANKING_API int AB_Banking_GetCryptToken(AB_BANKING *ab,
-                                           const char *tname,
-                                           const char *cname,
-                                           GWEN_CRYPT_TOKEN **pCt);
+int AB_Banking_GetCryptToken(AB_BANKING *ab,
+                             const char *tname,
+                             const char *cname,
+                             GWEN_CRYPT_TOKEN **pCt);
 
-AQBANKING_API  void AB_Banking_ClearCryptTokenList(AB_BANKING *ab);
+void AB_Banking_ClearCryptTokenList(AB_BANKING *ab);
 
-AQBANKING_API  int AB_Banking_CheckCryptToken(AB_BANKING *ab,
-                                              GWEN_CRYPT_TOKEN_DEVICE devt,
-                                              GWEN_BUFFER *typeName,
-                                              GWEN_BUFFER *tokenName);
+int AB_Banking_CheckCryptToken(AB_BANKING *ab,
+                               GWEN_CRYPT_TOKEN_DEVICE devt,
+                               GWEN_BUFFER *typeName,
+                               GWEN_BUFFER *tokenName);
 
 /*@}*/
 
@@ -132,15 +130,15 @@ AQBANKING_API  int AB_Banking_CheckCryptToken(AB_BANKING *ab,
  * @param idName name of the id to get (e.g. "account", "user", "job" etc)
  * @param startAtStdUniqueId if the given id is zero and this var is !=0 start with the current standard uniqueId
  */
-AQBANKING_API int AB_Banking_GetNamedUniqueId(AB_BANKING *ab, const char *idName, int startAtStdUniqueId);
+int AB_Banking_GetNamedUniqueId(AB_BANKING *ab, const char *idName, int startAtStdUniqueId);
 
 
-AQBANKING_API int AB_Banking_GetCert(AB_BANKING *ab,
-                                     const char *url,
-                                     const char *defaultProto,
-                                     int defaultPort,
-                                     uint32_t *httpFlags,
-                                     uint32_t pid);
+int AB_Banking_GetCert(AB_BANKING *ab,
+                       const char *url,
+                       const char *defaultProto,
+                       int defaultPort,
+                       uint32_t *httpFlags,
+                       uint32_t pid);
 
 
 /**
@@ -154,7 +152,6 @@ AQBANKING_API int AB_Banking_GetCert(AB_BANKING *ab,
  * @param name name of the online banking provider (e.g. "aqhbci")
  * @param buf buffer to append the path name to
  */
-AQBANKING_API
 int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab,
                                       const char *name,
                                       GWEN_BUFFER *buf);
@@ -171,7 +168,6 @@ int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab,
  * @param ab pointer to the AB_BANKING object
  * @param buf GWEN_BUFFER to append the path name to
  */
-AQBANKING_API 
 int AB_Banking_GetAppUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
 
 
@@ -181,9 +177,9 @@ int AB_Banking_GetAppUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
  */
 /*@{*/
 
-AQBANKING_API int AB_Banking_ReadAccountSpec(AB_BANKING *ab, uint32_t uniqueId, AB_ACCOUNT_SPEC **pAccountSpec);
-AQBANKING_API int AB_Banking_WriteAccountSpec(AB_BANKING *ab, const AB_ACCOUNT_SPEC *accountSpec);
-AQBANKING_API int AB_Banking_DeleteAccountSpec(AB_BANKING *ab, uint32_t uid);
+int AB_Banking_ReadAccountSpec(AB_BANKING *ab, uint32_t uniqueId, AB_ACCOUNT_SPEC **pAccountSpec);
+int AB_Banking_WriteAccountSpec(AB_BANKING *ab, const AB_ACCOUNT_SPEC *accountSpec);
+int AB_Banking_DeleteAccountSpec(AB_BANKING *ab, uint32_t uid);
 
 /*@}*/
 
@@ -201,12 +197,12 @@ AQBANKING_API int AB_Banking_DeleteAccountSpec(AB_BANKING *ab, uint32_t uid);
  * @param matchVal value to match the matchVar variable (NULL for empty value)
  * @param pDb pointer to a variable to receive the newly created DB, each subgroup contains a config group
  */
-AQBANKING_API int AB_Banking_ReadConfigGroups(AB_BANKING *ab,
-                                              const char *groupName,
-                                              const char *uidField,
-                                              const char *matchVar,
-                                              const char *matchVal,
-                                              GWEN_DB_NODE **pDb);
+int AB_Banking_ReadConfigGroups(AB_BANKING *ab,
+                                const char *groupName,
+                                const char *uidField,
+                                const char *matchVar,
+                                const char *matchVal,
+                                GWEN_DB_NODE **pDb);
 
 
 

@@ -186,16 +186,6 @@ AQBANKING_API
 void AB_Banking_FillGapsInTransaction(AB_BANKING *ab, AB_ACCOUNT *localAccount, AB_TRANSACTION *t);
 
 
-#if 0
-int AB_Banking_Export(AB_BANKING *ab,
-                      const char *exporterName,
-                      AB_IMEXPORTER_CONTEXT *ctx,
-                      GWEN_DB_NODE *dbProfile,
-                      GWEN_SYNCIO *sio);
-#endif
-
-
-
 
 AQBANKING_API 
 int AB_Banking_ExportWithProfile(AB_BANKING *ab,
