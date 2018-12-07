@@ -12,6 +12,9 @@
 #ifndef AQBANKING_BANKING_TRANSACTION_H
 #define AQBANKING_BANKING_TRANSACTION_H
 
+#include <aqbanking/error.h>
+#include <aqbanking/transaction.h>
+#include <aqbanking/transactionlimits.h>
 
 
 #ifdef __cplusplus

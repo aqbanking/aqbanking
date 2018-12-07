@@ -38,7 +38,6 @@ typedef struct AB_BANKING AB_BANKING;
 #include <aqbanking/banking_imex.h>
 #include <aqbanking/banking_bankinfo.h>
 #include <aqbanking/banking_online.h>
-#include <aqbanking/banking_cfg.h>
 #include <aqbanking/banking_transaction.h>
 
 
@@ -151,8 +150,6 @@ void AB_Banking_GetVersion(int *major,
 /**
  * Initializes AqBanking.
  * This sets up the plugins, plugin managers and path managers.
- * If you want to use online banking tasks you must also call
- * @ref AB_Banking_OnlineInit afterwards.
  *
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
  *
@@ -164,8 +161,6 @@ int AB_Banking_Init(AB_BANKING *ab);
 /**
  * Deinitializes AqBanking thus allowing it to save its data and to unload
  * backends.
- * Please remember to call @ref AB_Banking_OnlineFini before this function
- * if you have used online banking functions.
  *
  * @return 0 if ok, error code otherwise (see @ref AB_ERROR)
  *
@@ -222,6 +217,64 @@ AQBANKING_API
 int AB_Banking_GetSharedDataDir(const AB_BANKING *ab,
                                 const char *name,
                                 GWEN_BUFFER *buf);
+
+
+/**
+ * Load the given configuration subgroup from the shared application data database.
+ *
+ * This configuration database is used to store dialog sizes and other things that might
+ * be shared among applications using AqBanking.
+ *
+ * @return 0 on success, error code otherwise
+ * @param ab pointer to the AB_BANKING object
+ * @param name name of the configuration subgroup
+ * @param pDb pointer to a variable to receive the configuration loaded
+ */
+AQBANKING_API
+int AB_Banking_LoadSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE **pDb);
+
+
+/**
+ * Save the given configuration subgroup to the shared application data database.
+ *
+ * This configuration database is used to store dialog sizes and other things that might
+ * be shared among applications using AqBanking.
+ *
+ * @return 0 on success, error code otherwise
+ * @param ab pointer to the AB_BANKING object
+ * @param name name of the configuration subgroup
+ * @param db pointer to the configuration to store
+ */
+AQBANKING_API
+int AB_Banking_SaveSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE *db);
+
+
+/**
+ * Exclusively lock the given configuration subgroup of the shared application data database.
+ *
+ * This configuration database is used to store dialog sizes and other things that might
+ * be shared among applications using AqBanking.
+ *
+ * @return 0 on success, error code otherwise
+ * @param ab pointer to the AB_BANKING object
+ * @param name name of the configuration subgroup
+ */
+AQBANKING_API
+int AB_Banking_LockSharedConfig(AB_BANKING *ab, const char *name);
+
+
+/**
+ * Unlock the given configuration subgroup of the shared application data database.
+ *
+ * This configuration database is used to store dialog sizes and other things that might
+ * be shared among applications using AqBanking.
+ *
+ * @return 0 on success, error code otherwise
+ * @param ab pointer to the AB_BANKING object
+ * @param name name of the configuration subgroup
+ */
+AQBANKING_API
+int AB_Banking_UnlockSharedConfig(AB_BANKING *ab, const char *name);
 
 /*@}*/
 

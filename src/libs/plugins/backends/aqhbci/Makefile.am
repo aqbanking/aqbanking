@@ -15,10 +15,12 @@ CLEANFILES = $(BUILT_SOURCES) hbci.xml
 plugindir= $(aqbanking_plugindir)/providers
 plugin_DATA=aqhbci.xml
 
-iheaderdir=@aqbanking_headerdir_am@/aqhbci
-iheader_HEADERS=aqhbci.h
+#iheaderdir=@aqbanking_headerdir_am@/aqhbci
+#iheader_HEADERS=
 
-noinst_HEADERS = aqhbci_l.h
+noinst_HEADERS = \
+  aqhbci.h \
+  aqhbci_l.h
 
 xmldatadir=$(aqbanking_pkgdatadir)/backends/aqhbci
 xmldata_DATA=hbci.xml

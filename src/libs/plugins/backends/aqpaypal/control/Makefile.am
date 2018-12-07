@@ -16,7 +16,7 @@ noinst_HEADERS=\
  control_l.h
 
 
-iheaderdir=@aqbanking_headerdir_am@/aqpaypal
+#iheaderdir=@aqbanking_headerdir_am@/aqpaypal
 #iheader_HEADERS=
 
 libpaypalcontrol_la_SOURCES=\

@@ -6,17 +6,17 @@ AM_CFLAGS=@visibility_cflags@
 
 DEFS += -DBUILDING_AQPAYPAL
 
-iheaderdir=${includedir}/aqpaypal
-iheader_HEADERS=\
- aqpaypal.h \
- provider.h \
- user.h
+#iheaderdir=${includedir}/aqpaypal
+#iheader_HEADERS=
 
 plugindir= $(aqbanking_plugindir)/providers
 plugin_DATA=aqpaypal.xml
 
 
 noinst_HEADERS=\
+ aqpaypal.h \
+ provider.h \
+ user.h \
  aqpaypal_l.h \
  provider_l.h provider_p.h \
  user_p.h user_l.h \

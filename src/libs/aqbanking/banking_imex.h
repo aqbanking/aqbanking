@@ -13,7 +13,6 @@
 #define AQBANKING_BANKING_IMEX_H
 
 #include <aqbanking/imexporter.h>
-#include <aqbanking/account.h>
 #include <aqbanking/transaction.h>
 
 #include <gwenhywfar/plugindescr.h>

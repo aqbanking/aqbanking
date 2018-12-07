@@ -70,7 +70,6 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_IMEXPORTER, AQBANKING_API)
 #include <aqbanking/imexporter_context.h>
 #include <aqbanking/imexporter_accountinfo.h>
 #include <aqbanking/banking.h>
-#include <aqbanking/account.h>
 
 
 #ifdef __cplusplus

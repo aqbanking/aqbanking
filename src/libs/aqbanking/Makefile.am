@@ -50,7 +50,6 @@ iheader_HEADERS=\
  account_type.h \
  banking.h \
  banking_be.h \
- banking_cfg.h \
  banking_dialogs.h \
  banking_imex.h \
  banking_bankinfo.h \
