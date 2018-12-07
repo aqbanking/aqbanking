@@ -603,6 +603,7 @@ for f in ${aqbanking_bankinfos}; do
     de)
       aqbanking_plugins_bankinfo_dirs="$aqbanking_plugins_bankinfo_dirs de"
       aqbanking_plugins_bankinfo_libs="$aqbanking_plugins_bankinfo_libs de/libbankinfo_de.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_BANKINFO_DE, 1, [plugin availability])
       ;;
     *)
       AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
