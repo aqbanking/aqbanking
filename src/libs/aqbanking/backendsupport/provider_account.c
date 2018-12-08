@@ -87,14 +87,18 @@ int AB_Provider_ReadAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accountList) {
     AB_ACCOUNT *a=NULL;
 
     a=AB_Provider_CreateAccountObject(pro);
-    assert(a);
-    rv=AB_Account_ReadFromDb(a, db);
-    if (rv<0) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading account (%d), ignoring", rv);
-      AB_Account_free(a);
+    if (a==NULL) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error creating account for backend [%s], ignoring", pro->name);
     }
-    else
-      AB_Account_List_Add(a, accountList);
+    else {
+      rv=AB_Account_ReadFromDb(a, db);
+      if (rv<0) {
+        DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading account (%d), ignoring", rv);
+        AB_Account_free(a);
+      }
+      else
+        AB_Account_List_Add(a, accountList);
+    }
 
     /* next */
     db=GWEN_DB_GetNextGroup(db);
