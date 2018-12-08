@@ -126,9 +126,14 @@ int AH_Job_GetEStatements_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
           /* get account info for this account */
           if (iea==NULL) {
             /* not set yet, find or create it */
-            iea=AB_ImExporterContext_GetOrAddAccountInfoForAccount(ctx, acc);
-            assert(iea);
-          }
+	    iea=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
+							 AB_Account_GetUniqueId(acc),
+							 AB_Account_GetIban(acc),
+							 AB_Account_GetBankCode(acc),
+							 AB_Account_GetAccountNumber(acc),
+							 AB_Account_GetAccountType(acc));
+	    assert(iea);
+	  }
 
           /* add document to imexporter context */
           AB_ImExporterAccountInfo_AddEStatement(iea, doc);

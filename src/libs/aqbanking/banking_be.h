@@ -19,6 +19,7 @@
 #include <gwenhywfar/db.h>
 
 #include <aqbanking/banking.h>
+#include <aqbanking/provider_be.h>
 
 #include <gwenhywfar/httpsession.h>
 #include <gwenhywfar/ct.h>
@@ -177,7 +178,7 @@ int AB_Banking_GetAppUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
  */
 /*@{*/
 
-int AB_Banking_ReadAccountSpec(AB_BANKING *ab, uint32_t uniqueId, AB_ACCOUNT_SPEC **pAccountSpec);
+int AB_Banking_ReadAccountSpec(const AB_BANKING *ab, uint32_t uniqueId, AB_ACCOUNT_SPEC **pAccountSpec);
 int AB_Banking_WriteAccountSpec(AB_BANKING *ab, const AB_ACCOUNT_SPEC *accountSpec);
 int AB_Banking_DeleteAccountSpec(AB_BANKING *ab, uint32_t uid);
 
@@ -197,7 +198,7 @@ int AB_Banking_DeleteAccountSpec(AB_BANKING *ab, uint32_t uid);
  * @param matchVal value to match the matchVar variable (NULL for empty value)
  * @param pDb pointer to a variable to receive the newly created DB, each subgroup contains a config group
  */
-int AB_Banking_ReadConfigGroups(AB_BANKING *ab,
+int AB_Banking_ReadConfigGroups(const AB_BANKING *ab,
                                 const char *groupName,
                                 const char *uidField,
                                 const char *matchVar,
@@ -205,6 +206,17 @@ int AB_Banking_ReadConfigGroups(AB_BANKING *ab,
                                 GWEN_DB_NODE **pDb);
 
 
+
+
+/**
+ * This function tries to fill missing fields in a given transaction.
+ * It tries to fill missing data from the given local account (IBAN, BIC, owner name etc).
+ *
+ * @param ab pointer to the AB_BANKING object
+ * @param localAccount account from which local info is copied (may be NULL)
+ * @param t transaction to fill
+ */
+void AB_Banking_FillGapsInTransaction(AB_BANKING *ab, AB_ACCOUNT *localAccount, AB_TRANSACTION *t);
 
 
 #ifdef __cplusplus

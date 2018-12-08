@@ -274,12 +274,12 @@ GWEN_STRINGLIST *AB_Banking_GetGlobalSysconfDirs(void) {
 
 
 
-int AB_Banking_ReadNamedConfigGroup(AB_BANKING *ab,
-                                     const char *groupName,
-                                     const char *subGroupName,
-                                     int doLock,
-                                     int doUnlock,
-                                     GWEN_DB_NODE **pDb) {
+int AB_Banking_ReadNamedConfigGroup(const AB_BANKING *ab,
+                                    const char *groupName,
+                                    const char *subGroupName,
+                                    int doLock,
+                                    int doUnlock,
+                                    GWEN_DB_NODE **pDb) {
   GWEN_DB_NODE *db=NULL;
   int rv;
 
@@ -377,12 +377,12 @@ int AB_Banking_WriteNamedConfigGroup(AB_BANKING *ab,
 
 
 
-int AB_Banking_ReadConfigGroup(AB_BANKING *ab,
-                                const char *groupName,
-                                uint32_t uniqueId,
-                                int doLock,
-                                int doUnlock,
-                                GWEN_DB_NODE **pDb) {
+int AB_Banking_ReadConfigGroup(const AB_BANKING *ab,
+                               const char *groupName,
+                               uint32_t uniqueId,
+                               int doLock,
+                               int doUnlock,
+                               GWEN_DB_NODE **pDb) {
   int rv;
   char idBuf[256];
 
@@ -516,12 +516,12 @@ int AB_Banking_UnlockConfigGroup(AB_BANKING *ab, const char *groupName, uint32_t
 
 
 
-int AB_Banking_ReadConfigGroups(AB_BANKING *ab,
-                                 const char *groupName,
-                                 const char *uidField,
-                                 const char *matchVar,
-                                 const char *matchVal,
-                                 GWEN_DB_NODE **pDb) {
+int AB_Banking_ReadConfigGroups(const AB_BANKING *ab,
+                                const char *groupName,
+                                const char *uidField,
+                                const char *matchVar,
+                                const char *matchVal,
+                                GWEN_DB_NODE **pDb) {
   GWEN_STRINGLIST *sl;
   int rv;
 

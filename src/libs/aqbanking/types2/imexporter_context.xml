@@ -245,7 +245,7 @@
         </inline>
 
 
-
+<!--
         <inline loc="end" access="public">
           <content>
              $(api) AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_GetOrAddAccountInfoForAccount($(struct_type) *st, const AB_ACCOUNT *a);
@@ -262,7 +262,7 @@
              }
           </content>
         </inline>
-
+-->
 
 
         <inline loc="end" access="public">

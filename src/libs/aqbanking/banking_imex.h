@@ -173,20 +173,7 @@ AQBANKING_API
 int AB_Banking_FillGapsInImExporterContext(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT *iec);
 
 
-/**
- * This function tries to fill missing fields in a given transaction.
- * It tries to fill missing data from the given local account (IBAN, BIC, owner name etc).
- *
- * @param ab pointer to the AB_BANKING object
- * @param localAccount account from which local info is copied (may be NULL)
- * @param t transaction to fill
- */
 AQBANKING_API
-void AB_Banking_FillGapsInTransaction(AB_BANKING *ab, AB_ACCOUNT *localAccount, AB_TRANSACTION *t);
-
-
-
-AQBANKING_API 
 int AB_Banking_ExportWithProfile(AB_BANKING *ab,
 				 const char *exporterName,
 				 AB_IMEXPORTER_CONTEXT *ctx,

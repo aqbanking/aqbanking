@@ -13,7 +13,15 @@
 #define AQBANKING_BANKING_INFO_H
 
 #include <aqbanking/bankinfo.h>
-#include <aqbanking/bankinfoplugin.h>
+
+
+typedef enum {
+  AB_BankInfoCheckResult_Ok=0,
+  AB_BankInfoCheckResult_NotOk,
+  AB_BankInfoCheckResult_UnknownBank,
+  AB_BankInfoCheckResult_UnknownResult
+} AB_BANKINFO_CHECKRESULT;
+
 
 
 #ifdef __cplusplus

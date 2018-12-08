@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2004 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -13,15 +13,6 @@
 #define AQBANKING_BANKINFOPLUGIN_H
 
 #include <aqbanking/bankinfo.h>
-
-
-typedef enum {
-  AB_BankInfoCheckResult_Ok=0,
-  AB_BankInfoCheckResult_NotOk,
-  AB_BankInfoCheckResult_UnknownBank,
-  AB_BankInfoCheckResult_UnknownResult
-} AB_BANKINFO_CHECKRESULT;
-
 
 
 

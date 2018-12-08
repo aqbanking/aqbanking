@@ -144,7 +144,7 @@ static int AB_Banking_Update_5_99_4_0(AB_BANKING *ab, uint32_t lastVersion, uint
  * ========================================================================================================================
  */
 
-static int AB_Banking_ReadNamedConfigGroup(AB_BANKING *ab,
+static int AB_Banking_ReadNamedConfigGroup(const AB_BANKING *ab,
                                            const char *groupName,
                                            const char *subGroupName,
                                            int doLock,
@@ -159,7 +159,7 @@ static int AB_Banking_WriteNamedConfigGroup(AB_BANKING *ab,
                                             GWEN_DB_NODE *db);
 
 
-static int AB_Banking_ReadConfigGroup(AB_BANKING *ab,
+static int AB_Banking_ReadConfigGroup(const AB_BANKING *ab,
                                       const char *groupName,
                                       uint32_t uniqueId,
                                       int doLock,

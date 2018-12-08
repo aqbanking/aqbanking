@@ -39,6 +39,7 @@ typedef struct AB_BANKING AB_BANKING;
 #include <aqbanking/banking_bankinfo.h>
 #include <aqbanking/banking_online.h>
 #include <aqbanking/banking_transaction.h>
+#include <aqbanking/banking_dialogs.h>
 
 
 

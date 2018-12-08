@@ -11,6 +11,10 @@
 #ifndef AQBANKING_BANKING_DIALOGS_H
 #define AQBANKING_BANKING_DIALOGS_H
 
+#include <aqbanking/error.h>
+
+#include <gwenhywfar/dialog.h>
+
 
 #ifdef __cplusplus
 extern "C" {

@@ -38,7 +38,7 @@ extern "C" {
  * @param ab pointer to the AB_BANKING object
  * @param pAccountSpecList Pointer to a variable receiving the list of account specs.
  */
-AQBANKING_API int AB_Banking_GetAccountSpecList(AB_BANKING *ab, AB_ACCOUNT_SPEC_LIST** pAccountSpecList);
+AQBANKING_API int AB_Banking_GetAccountSpecList(const AB_BANKING *ab, AB_ACCOUNT_SPEC_LIST** pAccountSpecList);
 
 
 /**
@@ -49,7 +49,7 @@ AQBANKING_API int AB_Banking_GetAccountSpecList(AB_BANKING *ab, AB_ACCOUNT_SPEC_
  * @param uniqueAccountId Unique account id
  * @param pAccountSpec Pointer to a variable to receive the matching account spec.
  */
-AQBANKING_API int AB_Banking_GetAccountSpecByUniqueId(AB_BANKING *ab, uint32_t uniqueAccountId, AB_ACCOUNT_SPEC** pAccountSpec);
+AQBANKING_API int AB_Banking_GetAccountSpecByUniqueId(const AB_BANKING *ab, uint32_t uniqueAccountId, AB_ACCOUNT_SPEC** pAccountSpec);
 
 
 /*@}*/

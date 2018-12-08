@@ -28,7 +28,7 @@
         <header type="sys" loc="post">aqbanking/transaction.h</header>
         <header type="sys" loc="post">aqbanking/accstatus.h</header>
         <header type="sys" loc="post">aqbanking/document.h</header>
-        <header type="sys" loc="post">aqbanking/account.h</header>
+        <header type="sys" loc="post">aqbanking/account_type.h</header>
       </headers>
 
 
@@ -227,8 +227,8 @@
         </inline>
 
 
-
-        <inline loc="end" access="public">
+<!--
+        <inline loc="end" access="protected">
           <content>
              $(api) void $(struct_prefix)_FillFromAccount($(struct_type) *st, const AB_ACCOUNT *a);
           </content>
@@ -277,6 +277,7 @@
              }
           </content>
         </inline>
+-->
 
 
         <inline loc="end" access="public">
@@ -407,6 +408,7 @@
 
 
 
+<!--
         <inline loc="end" access="public">
           <content>
              $(api) AB_IMEXPORTER_ACCOUNTINFO *$(struct_prefix)_List_GetByAccount($(struct_type)_LIST *l, const AB_ACCOUNT *a);
@@ -428,7 +430,6 @@
              }
           </content>
         </inline>
-
 
 
         <inline loc="end" access="public">
@@ -454,7 +455,7 @@
              }
           </content>
         </inline>
-
+-->
 
         <inline loc="end" access="public">
           <content>

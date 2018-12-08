@@ -12,7 +12,7 @@
 /* This file is included by banking.c */
 
 
-int AB_Banking_Read_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb) {
+int AB_Banking_Read_AccountConfig(const AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb) {
   int rv;
 
   rv=AB_Banking_ReadConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid, doLock, doUnlock, pDb);

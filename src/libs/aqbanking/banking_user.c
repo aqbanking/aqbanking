@@ -13,7 +13,7 @@
 
 
 
-int AB_Banking_Read_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb) {
+int AB_Banking_Read_UserConfig(const AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb) {
   int rv;
 
   rv=AB_Banking_ReadConfigGroup(ab, AB_CFG_GROUP_USERS, uid, doLock, doUnlock, pDb);

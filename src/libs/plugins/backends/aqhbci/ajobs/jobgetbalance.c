@@ -421,8 +421,12 @@ int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
       a=AH_AccountJob_GetAccount(j);
       assert(a);
-      ai=AB_ImExporterContext_GetOrAddAccountInfoForAccount(ctx, a);
-
+      ai=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
+                                                  AB_Account_GetUniqueId(a),
+                                                  AB_Account_GetIban(a),
+                                                  AB_Account_GetBankCode(a),
+                                                  AB_Account_GetAccountNumber(a),
+                                                  AB_Account_GetAccountType(a));
       assert(ai);
 
       /* add new account status */
@@ -505,7 +509,12 @@ int AH_Job_GetBalanceInvestment_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   /* now the buffers contain data to be parsed by DBIOs */
   a=AH_AccountJob_GetAccount(j);
   assert(a);
-  ai=AB_ImExporterContext_GetOrAddAccountInfoForAccount(ctx, a);
+  ai=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
+                                              AB_Account_GetUniqueId(a),
+                                              AB_Account_GetIban(a),
+                                              AB_Account_GetBankCode(a),
+                                              AB_Account_GetAccountNumber(a),
+                                              AB_Account_GetAccountType(a));
   assert(ai);
 
   /* read received securities */

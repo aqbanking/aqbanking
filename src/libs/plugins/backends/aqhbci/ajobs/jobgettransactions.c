@@ -377,7 +377,12 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   /* now the buffers contain data to be parsed by DBIOs */
   a=AH_AccountJob_GetAccount(j);
   assert(a);
-  ai=AB_ImExporterContext_GetOrAddAccountInfoForAccount(ctx, a);
+  ai=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
+                                              AB_Account_GetUniqueId(a),
+                                              AB_Account_GetIban(a),
+                                              AB_Account_GetBankCode(a),
+                                              AB_Account_GetAccountNumber(a),
+                                              AB_Account_GetAccountType(a));
   assert(ai);
 
   /* read booked transactions */
@@ -486,7 +491,12 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
 
   a=AH_AccountJob_GetAccount(j);
   assert(a);
-  ai=AB_ImExporterContext_GetOrAddAccountInfoForAccount(ctx, a);
+  ai=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
+                                              AB_Account_GetUniqueId(a),
+                                              AB_Account_GetIban(a),
+                                              AB_Account_GetBankCode(a),
+                                              AB_Account_GetAccountNumber(a),
+                                              AB_Account_GetAccountType(a));
   assert(ai);
   AB_ImExporterAccountInfo_SetAccountId(ai, AB_Account_GetUniqueId(a));
 
