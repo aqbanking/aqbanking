@@ -13,10 +13,25 @@
  */
 
 
+#include "dlg_edituserpintan_l.h"
+#include "dlg_edituserddv_l.h"
+#include "dlg_edituserrdh_l.h"
+
+#include "dlg_editaccount_l.h"
+
+#include "dlg_newuser_l.h"
+#include "dlg_ddvcard_l.h"
+#include "dlg_zkacard_l.h"
+#include "dlg_pintan_l.h"
+#include "dlg_newkeyfile_l.h"
+#include "dlg_importkeyfile_l.h"
+
+#include "dlg_choose_usertype_l.h"
+
+
 
 
 GWEN_DIALOG *AH_Provider_GetNewCardUserDialog(AB_PROVIDER *pro) {
-/*
   int rv;
   GWEN_BUFFER *mtypeName;
   GWEN_BUFFER *mediumName;
@@ -100,16 +115,16 @@ GWEN_DIALOG *AH_Provider_GetNewCardUserDialog(AB_PROVIDER *pro) {
   GWEN_Buffer_free(mediumName);
   GWEN_Buffer_free(mtypeName);
   AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(pro));
-*/
   return NULL;
 }
 
 
 
 GWEN_DIALOG *AH_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
-/*
   AH_PROVIDER *hp;
   GWEN_DIALOG *dlg;
+
+  DBG_ERROR(AQBANKING_LOGDOMAIN, "GetEditUserDialog");
 
   assert(pro);
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
@@ -126,6 +141,7 @@ GWEN_DIALOG *AH_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
     dlg=AH_EditUserRdhDialog_new(pro, u, 1);
     break;
   default:
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown crypt mode %d)", AH_User_GetCryptMode(u));
     dlg=NULL;
     break;
   }
@@ -136,14 +152,11 @@ GWEN_DIALOG *AH_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
   }
 
   return dlg;
-*/
-  return NULL;
 }
 
 
 
 GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
-/*
   AH_PROVIDER *hp;
   GWEN_DIALOG *dlg;
 
@@ -183,14 +196,11 @@ GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
   }
 
   return dlg;
-*/
-  return NULL;
 }
 
 
 
 GWEN_DIALOG *AH_Provider_GetEditAccountDialog(AB_PROVIDER *pro, AB_ACCOUNT *a) {
-/*
   AH_PROVIDER *hp;
   GWEN_DIALOG *dlg;
 
@@ -205,16 +215,15 @@ GWEN_DIALOG *AH_Provider_GetEditAccountDialog(AB_PROVIDER *pro, AB_ACCOUNT *a) {
   }
 
   return dlg;
-*/
-  return NULL;
 }
 
 
 
 GWEN_DIALOG *AH_Provider_GetUserTypeDialog(AB_PROVIDER *pro) {
-/*
   AH_PROVIDER *hp;
   GWEN_DIALOG *dlg;
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "AH_Provider_GetUserTypeDialog called");
 
   assert(pro);
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
@@ -227,8 +236,6 @@ GWEN_DIALOG *AH_Provider_GetUserTypeDialog(AB_PROVIDER *pro) {
   }
 
   return dlg;
-*/
-  return NULL;
 }
 
 

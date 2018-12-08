@@ -179,7 +179,7 @@ int AO_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   if (lastVersion<currentVersion) {
     int rv;
 
-    DBG_WARN(AQOFXCONNECT_LOGDOMAIN, "Updating configuration for AqOdxConnect (before init)");
+    DBG_WARN(AQOFXCONNECT_LOGDOMAIN, "Updating configuration for AqOfxConnect (before init)");
     rv=AO_Provider_UpdatePreInit(pro, lastVersion, currentVersion);
     if (rv<0) {
       DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);

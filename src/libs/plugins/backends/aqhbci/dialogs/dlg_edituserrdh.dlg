@@ -21,9 +21,6 @@
     
           <widget type="gridLayout" columns="2" flags="fillX" >
     
-            <widget type="label" text="Country" />
-            <widget type="comboBox" name="countryCombo"  columns="20" flags="fillX readOnly" />
-    
             <widget type="label" text="User Name" />
             <widget type="lineEdit" name="userNameEdit" columns="20" flags="fillX" />
     

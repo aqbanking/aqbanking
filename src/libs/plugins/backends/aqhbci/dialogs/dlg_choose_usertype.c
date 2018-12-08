@@ -38,6 +38,8 @@ GWEN_DIALOG *AH_ChooseUserTypeDialog_new(AB_PROVIDER *pro) {
   GWEN_BUFFER *fbuf;
   int rv;
 
+  DBG_INFO(AQHBCI_LOGDOMAIN, "AH_ChooseUserTypeDialog_new called");
+
   dlg=AB_UserTypePageDialog_new(AB_Provider_GetBanking(pro), "ah_choose_usertype");
   GWEN_Dialog_SetSignalHandler(dlg, AH_ChooseUserTypeDialog_SignalHandler);
 

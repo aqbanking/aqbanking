@@ -332,10 +332,14 @@ GWEN_DIALOG *AB_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
 
 GWEN_DIALOG *AB_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
   assert(pro);
-  if (pro->getEditUserDialogFn)
+  if (pro->getEditUserDialogFn) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "calling pro->getEditUserDialogFn");
     return pro->getEditUserDialogFn(pro, u);
-  else
+  }
+  else {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No getEditUserDialogFn set");
     return NULL;
+  }
 }
 
 

@@ -472,27 +472,6 @@ int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2* commandList, 
   AB_ACCOUNTQUEUE *aq;
   AB_PROVIDERQUEUE *pq;
   int rv;
-  uint32_t queueId=0;
-
-  /* assign queue ids to each job */
-  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Info, I18N("Assigning queue ids to jobs"));
-  jit=AB_Transaction_List2_First(commandList);
-  if (jit) {
-    AB_TRANSACTION *t;
-
-    t=AB_Transaction_List2Iterator_Data(jit);
-    while(t) {
-      AB_Transaction_SetQueueId(t, ++queueId);
-      AB_Transaction_SetRefQueueId(t, 0);
-
-      /* assign unique id to job */
-      AB_Transaction_SetUniqueId(t, AB_Banking_GetNamedUniqueId(ab, "jobid", 1));
-
-      t=AB_Transaction_List2Iterator_Next(jit);
-    }
-    AB_Transaction_List2Iterator_free(jit);
-  } /* if (jit) */
-
 
   /* sort commands by account */
   GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Info, I18N("Sorting commands by account"));
@@ -503,21 +482,39 @@ int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2* commandList, 
 
     t=AB_Transaction_List2Iterator_Data(jit);
     while(t) {
-      uint32_t uid;
+      AB_TRANSACTION_STATUS tStatus;
 
-      uid=AB_Transaction_GetUniqueAccountId(t);
-      if (uid==0) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "No unique account id given in transaction, aborting");
-        AB_AccountQueue_List_free(aql);
-        return GWEN_ERROR_BAD_DATA;
+      tStatus=AB_Transaction_GetStatus(t);
+      if (tStatus==AB_Transaction_StatusUnknown || tStatus==AB_Transaction_StatusNone) {
+        uint32_t uid;
+
+        uid=AB_Transaction_GetUniqueAccountId(t);
+        if (uid==0) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "No unique account id given in transaction, aborting");
+          AB_AccountQueue_List_free(aql);
+          return GWEN_ERROR_BAD_DATA;
+        }
+
+        /* get or create account queue */
+        aq=AB_AccountQueue_List_GetByAccountId(aql, uid);
+        if (aq==NULL) {
+          aq=AB_AccountQueue_new();
+          AB_AccountQueue_SetAccountId(aq, uid);
+          AB_AccountQueue_List_Add(aq, aql);
+        }
+
+        /* assign unique id to job */
+        AB_Transaction_SetUniqueId(t, AB_Banking_GetNamedUniqueId(ab, "jobid", 1));
+        AB_Transaction_SetRefUniqueId(t, 0);
+        /* set status */
+        AB_Transaction_SetStatus(t, AB_Transaction_StatusEnqueued);
+        /* add to queue */
+        AB_AccountQueue_AddTransaction(aq, t);
+      } /* if status matches */
+      else {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Transaction with bad status, not enqueuing");
+        /* TODO: change status, add to im-/export context */
       }
-      aq=AB_AccountQueue_List_GetByAccountId(aql, uid);
-      if (aq==NULL) {
-        aq=AB_AccountQueue_new();
-        AB_AccountQueue_SetAccountId(aq, uid);
-        AB_AccountQueue_List_Add(aq, aql);
-      }
-      AB_AccountQueue_AddTransaction(aq, t);
 
       t=AB_Transaction_List2Iterator_Next(jit);
     }

@@ -432,7 +432,8 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
           GWEN_TIME *ti;
 
           ti=GWEN_CurrentTime();
-	  amsg=AB_Message_new();
+          amsg=AB_Message_new();
+          AB_Message_SetSource(amsg, AB_Message_SourceBank);
 	  AB_Message_SetSubject(amsg, subject);
 	  AB_Message_SetText(amsg, text);
 	  AB_Message_SetDateReceived(amsg, ti);

@@ -49,7 +49,9 @@ libaqhbci_la_LIBADD=\
   ajobs/libhbciaccjobs.la \
   applayer/libhbciapp.la \
   banking/libhbcibanking.la \
-  control/libhbcicontrol.la
+  control/libhbcicontrol.la \
+  dialogs/libaqhbci_dlgs.la
+
 
 built_sources: $(BUILT_SOURCES)
 

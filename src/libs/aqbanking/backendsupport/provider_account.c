@@ -76,7 +76,7 @@ int AB_Provider_ReadAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accountList) {
   GWEN_DB_NODE *db;
 
   /* read all config groups for accounts which have a unique id and which belong to this provider */
-  rv=AB_Banking_ReadConfigGroups(AB_Provider_GetBanking(pro), AB_CFG_GROUP_ACCOUNTS, "uniqueId", "provider", pro->name, &dbAll);
+  rv=AB_Banking_ReadConfigGroups(AB_Provider_GetBanking(pro), AB_CFG_GROUP_ACCOUNTS, "uniqueId", "backendName", pro->name, &dbAll);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;

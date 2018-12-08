@@ -824,16 +824,20 @@
 
       <enum id="AB_TRANSACTION_STATUS" prefix="AB_Transaction_Status" type="AB_TRANSACTION_STATUS">
         <item name="none" value="0"/>
+        <item name="enqueued"/>
+        <item name="sending"/>
+        <item name="sent"/>
+
         <item name="accepted"/>
         <item name="rejected"/>
         <item name="pending"/>
-        <item name="sending"/>
+        
         <item name="autoReconciled"/>
         <item name="manuallyReconciled"/>
+        
         <item name="revoked"/>
         <item name="aborted"/>
 
-        <item name="enqueued"/>
         <item name="error"/>
       </enum>
 
@@ -943,8 +947,9 @@
           <access>public</access>
           <flags>with_hash</flags>
           <descr>
-            This id is only used in splits to refer to the transaction id the split
+            This id is used in splits to refer to the transaction id the split
             belongs to.
+            It is also used internally by backends when on job is linked to another one.
           </descr>
         </member>
 
@@ -967,28 +972,6 @@
           <descr>
             If this transaction is a response to a command send to a bank server then the idForApplication from
             that reference command is stored here.
-          </descr>
-        </member>
-
-        <member name="queueId" type="uint32_t" >
-          <default>0</default>
-          <preset>0</preset>
-          <access>public</access>
-          <flags>with_hash with_getbymember</flags>
-          <descr>
-            This is an id assigned by AqBanking just prior to sending jobs.
-            Applications should not have any expectations about this value, it should especially not assume this id to be unique.
-          </descr>
-        </member>
-
-        <member name="refQueueId" type="uint32_t" >
-          <default>0</default>
-          <preset>0</preset>
-          <access>public</access>
-          <flags>with_hash</flags>
-          <descr>
-            This is an id assigned by some backends. e.g. when grouping jobs.
-            Applications should not have any expectations about this value, it should especially not assume this id to be unique.
           </descr>
         </member>
 

@@ -22,7 +22,7 @@ AB_TRANSACTION *AO_Provider_FindJobById(AB_TRANSACTION_LIST2 *jl, uint32_t jid) 
     j=AB_Transaction_List2Iterator_Data(jit);
     assert(j);
     while(j) {
-      if (AB_Transaction_GetQueueId(j)==jid) {
+      if (AB_Transaction_GetUniqueId(j)==jid) {
 	AB_Transaction_List2Iterator_free(jit);
         return j;
       }
@@ -80,7 +80,7 @@ int AO_Provider__AddJobToList2(AB_PROVIDER *pro, AB_TRANSACTION *j, AB_TRANSACTI
 	    jt==AB_Transaction_CommandGetTransactions) {
           if (AB_Transaction_GetUniqueAccountId(uj)==aid) {
             /* let new job refer to the only already in queue */
-            AB_Transaction_SetRefQueueId(j, AB_Transaction_GetQueueId(uj));
+            AB_Transaction_SetRefUniqueId(j, AB_Transaction_GetUniqueId(uj));
             doAdd=0;
             break;
           }
@@ -117,7 +117,7 @@ int AO_Provider__AddJobToList2(AB_PROVIDER *pro, AB_TRANSACTION *j, AB_TRANSACTI
 		/* current job has a time */
 		if (GWEN_Date_Diff(dtcurr, dtnew)>0) {
 		  /* new time is before that of current job, replace */
-                  AB_Transaction_SetRefQueueId(uj, AB_Transaction_GetQueueId(j));
+                  AB_Transaction_SetRefUniqueId(uj, AB_Transaction_GetUniqueId(j));
                   AB_Transaction_List2_Erase(jobList, jit);
                   doAdd=1;
                   break;
@@ -125,7 +125,7 @@ int AO_Provider__AddJobToList2(AB_PROVIDER *pro, AB_TRANSACTION *j, AB_TRANSACTI
               }
 	      else {
 		/* current job has no time, so replace by job with time */
-                AB_Transaction_SetRefQueueId(uj, AB_Transaction_GetQueueId(j));
+                AB_Transaction_SetRefUniqueId(uj, AB_Transaction_GetUniqueId(j));
                 AB_Transaction_List2_Erase(jobList, jit);
                 doAdd=1;
                 break;
@@ -133,7 +133,7 @@ int AO_Provider__AddJobToList2(AB_PROVIDER *pro, AB_TRANSACTION *j, AB_TRANSACTI
             }
             else {
 	      /* new job has no time, so don't add it */
-              AB_Transaction_SetRefQueueId(j, AB_Transaction_GetQueueId(uj));
+              AB_Transaction_SetRefUniqueId(j, AB_Transaction_GetUniqueId(uj));
 	      doAdd=0;
               break;
             }
@@ -176,6 +176,7 @@ int AO_Provider__SendJobList(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRA
       if (jt==AB_Transaction_CommandGetBalance ||
           jt==AB_Transaction_CommandGetTransactions) {
         AB_Transaction_SetStatus(uj, AB_Transaction_StatusSending);
+        /* request statements */
         rv=AO_Provider_RequestStatements(pro, u, a, uj, ctx);
         if (rv==GWEN_ERROR_USER_ABORTED) {
           DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "User aborted");
@@ -231,7 +232,7 @@ void AO_Provider__FinishJobs(AB_PROVIDER *pro, AB_TRANSACTION_LIST2 *jobList, AB
     while(t) {
       uint32_t gid;
 
-      gid=AB_Transaction_GetRefQueueId(t);
+      gid=AB_Transaction_GetRefUniqueId(t);
       if (gid!=0) {
         AB_TRANSACTION *tOrig;
 

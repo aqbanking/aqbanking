@@ -302,10 +302,12 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, A
   }
 
   /* exchange messages (might also return HTTP code!) */
+  AB_Transaction_SetStatus(j, AB_Transaction_StatusSending);
   rv=AO_Provider_SendAndReceive(pro, u,
 				(const uint8_t*)GWEN_Buffer_GetStart(reqbuf),
 				GWEN_Buffer_GetUsedBytes(reqbuf),
 				&rbuf);
+  AB_Transaction_SetStatus(j, AB_Transaction_StatusSent);
   if (rv) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
 	      "Error exchanging getStatements-request (%d)", rv);

@@ -208,7 +208,8 @@ uint32_t AB_SetupDialog_GetCurrentId(GWEN_DIALOG *dlg, const char *comboBoxName)
     if (currentText && *currentText) {
       unsigned long int uid=0;
 
-      if (1==sscanf(currentText, "%lu\t", &uid)) {
+      if (1==sscanf(currentText, "%06lu", &uid)) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Got id \"%lu id from \"%s\"", uid, currentText);
         return (uint32_t) uid;
       }
       else {
@@ -729,10 +730,14 @@ int AB_SetupDialog_EditUser(GWEN_DIALOG *dlg) {
 
         /* get EditUser dialog */
         flags=AB_Provider_GetFlags(pro);
-        if (flags & AB_PROVIDER_FLAGS_HAS_EDITUSER_DIALOG)
+        if (flags & AB_PROVIDER_FLAGS_HAS_EDITUSER_DIALOG) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Letting backend \"%s\" create dialog", AB_Provider_GetName(pro));
           dlg2=AB_Provider_GetEditUserDialog(pro, u);
-        else
+        }
+        else {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Letting AqBanking create dialog");
           dlg2=AB_EditUserDialog_new(pro, u, 1);
+        }
         if (dlg2==NULL) {
           DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
           return GWEN_DialogEvent_ResultHandled;
@@ -750,6 +755,9 @@ int AB_SetupDialog_EditUser(GWEN_DIALOG *dlg) {
         AB_SetupDialog_Reload(dlg);
       } /* if u */
     } /* if uid */
+    else {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "No current user");
+    }
   } /* if xdlg->currentUserList */
   return GWEN_DialogEvent_ResultHandled;
 }
@@ -1010,6 +1018,9 @@ int AB_SetupDialog_EditAccount(GWEN_DIALOG *dlg) {
         AB_SetupDialog_Reload(dlg);
       } /* if a */
     } /* if aid */
+    else {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "No current account");
+    }
   } /* if xdlg->currentAccountList */
   return GWEN_DialogEvent_ResultHandled;
 }

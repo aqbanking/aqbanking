@@ -78,6 +78,10 @@ int AB_Provider_CreateInitialAccountSpecs(AB_PROVIDER *pro) {
   rv=AB_Banking_ReadConfigGroups(AB_Provider_GetBanking(pro), "accounts", "uniqueId", "provider",
                                  AB_Provider_GetName(pro), &dbAll);
   if (rv<0) {
+    if (rv==GWEN_ERROR_NOT_FOUND) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "No accounts for backend [%s]", AB_Provider_GetName(pro));
+      return 0;
+    }
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }

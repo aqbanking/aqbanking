@@ -70,6 +70,12 @@
 
     <enums>
 
+      <enum id="AB_MESSAGE_SOURCE" prefix="AB_Message_Source" type="AB_MESSAGE_SOURCE">
+        <item name="none"                value="0" />
+        <item name="system"/>
+        <item name="bank"/>
+      </enum>
+
     </enums>
 
     <defines>
@@ -78,6 +84,15 @@
 
 
     <members>
+
+      <member name="source" type="int" maxlen="32" enum="AB_MESSAGE_SOURCE" >
+        <default>AB_Message_SourceUnknown</default>
+        <preset>AB_Message_SourceUnknown</preset>
+        <access>public</access>
+        <flags>enum with_hash</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
 
       <member name="userId" type="uint32_t" maxlen="8">
         <descr>
