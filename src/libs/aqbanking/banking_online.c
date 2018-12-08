@@ -482,6 +482,10 @@ int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2* commandList, 
     while(t) {
       AB_Transaction_SetQueueId(t, ++queueId);
       AB_Transaction_SetRefQueueId(t, 0);
+
+      /* assign unique id to job */
+      AB_Transaction_SetUniqueId(t, AB_Banking_GetNamedUniqueId(ab, "jobid", 1));
+
       t=AB_Transaction_List2Iterator_Next(jit);
     }
     AB_Transaction_List2Iterator_free(jit);
