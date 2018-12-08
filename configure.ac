@@ -435,7 +435,7 @@ AC_ARG_WITH(backends,
 )
 
 if test "$aqbanking_backends" = "all"; then
-  aqbanking_backends="aqhbci aqnone aqofxconnect aqebics aqpaypal"
+  aqbanking_backends="aqhbci aqofxconnect aqebics aqpaypal"
 fi
 
 for f in ${aqbanking_backends}; do
@@ -449,11 +449,6 @@ for f in ${aqbanking_backends}; do
       aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqebics"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQEBICS, 1, [plugin availability])
       ;;
-    aqnone)
-      aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqnone"
-      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqnone/libaqnone.la"
-      AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQNONE, 1, [plugin availability])
-      ;;
     aqofxconnect)
       aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqofxconnect"
       aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqofxconnect/libaqofxconnect.la"
@@ -464,11 +459,16 @@ for f in ${aqbanking_backends}; do
       aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqpaypal/libaqpaypal.la"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQPAYPAL, 1, [plugin availability])
       ;;
+    aqnone)
+      ;;
     *)
-      AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
+      AC_MSG_ERROR("ERROR: Unknown plugin $f")
       ;;
   esac
 done
+
+# always define this
+AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQNONE, 1, [plugin availability])
 
 AC_SUBST(aqbanking_plugins_backends_dirs)
 AC_SUBST(aqbanking_plugins_backends_libs)
