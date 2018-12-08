@@ -39,6 +39,7 @@ AB_PROVIDER *AB_Banking__CreateInternalProvider(AB_BANKING *ab, const char *modn
       DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] compiled-in", modname);
       pro=AH_Provider_new(ab, modname);
       return pro;
+    }
 #endif
 
 #ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQNONE
@@ -62,15 +63,16 @@ AB_PROVIDER *AB_Banking__CreateInternalProvider(AB_BANKING *ab, const char *modn
 #endif
 
 #ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQPAYPAL
-      if (strcasecmp(modname, "aqofxconnect")==0) {
+      if (strcasecmp(modname, "aqpaypal")==0) {
 	AB_PROVIDER *pro;
 
 	DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] compiled-in", modname);
-	pro=APY_Provider_new(ab);
-	return pro;
+        pro=APY_Provider_new(ab);
+        return pro;
       }
 #endif
-    }
+  }
+  else {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Plugin [%s] not compiled-in", modname);
   }
   return NULL;

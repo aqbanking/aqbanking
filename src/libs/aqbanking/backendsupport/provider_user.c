@@ -63,8 +63,9 @@ int AB_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList) {
   GWEN_DB_NODE *dbAll=NULL;
   GWEN_DB_NODE *db;
 
-  /* read all config groups for users which have a unique id and which belong to AqHBCI */
-  rv=AB_Banking_ReadConfigGroups(AB_Provider_GetBanking(pro), AB_CFG_GROUP_USERS, "uniqueId", "backendName", "AQHBCI", &dbAll);
+  /* read all config groups for users which have a unique id and which belong to this backend */
+  rv=AB_Banking_ReadConfigGroups(AB_Provider_GetBanking(pro), AB_CFG_GROUP_USERS, "uniqueId",
+                                 "backendName", pro->name, &dbAll);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -75,14 +76,18 @@ int AB_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList) {
     AB_USER *u=NULL;
 
     u=AB_Provider_CreateUserObject(pro);
-    rv=AB_User_ReadFromDb(u, db);
-    if (rv<0) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading user (%d), ignoring", rv);
-      AB_User_free(u);
+    if (u==NULL) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error creating user for backend [%s], ignoring", pro->name);
     }
-    else
-      AB_User_List_Add(u, userList);
-
+    else {
+      rv=AB_User_ReadFromDb(u, db);
+      if (rv<0) {
+	DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading user (%d), ignoring", rv);
+	AB_User_free(u);
+      }
+      else
+	AB_User_List_Add(u, userList);
+    }
     /* next */
     db=GWEN_DB_GetNextGroup(db);
   }
