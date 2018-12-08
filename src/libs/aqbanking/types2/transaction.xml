@@ -368,6 +368,67 @@
         </inline>
 
 
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list</typeFlagsMask>
+          <typeFlagsValue>with_list</typeFlagsValue>
+          <content>
+             /**                                                                                             \n
+             * Definition of the callback function for @ref $(struct_prefix)_List_ForEachByType().           \n
+             */                                                                                              \n
+             typedef const $(struct_type)* ($(struct_type)_LIST_FOREACHBYTYPE_CB)(const $(struct_type) *element, void *user_data);
+          </content>
+        </inline>
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list</typeFlagsMask>
+          <typeFlagsValue>with_list</typeFlagsValue>
+          <content>
+             /**                                                                                                       \n
+              * Call the given callback function for every entry of the list which matches the given type and command. \n
+              *                                                                                                        \n
+              * @return Entry matching the description (or NULL if none)                                               \n
+              * @param fn callback function to be called for every element of the given list                           \n
+              * @param user_data user data forwarded to the callback function                                          \n
+              * @param tl pointer to the list to search                                                                \n
+              * @param ty transaction type, if 0 then this is not checked                                              \n
+              * @param cmd command, if -1 then any non-zero command matches, if 0 then this is not checked             \n
+             */                                                                                                        \n
+             $(api) const $(struct_type) * $(struct_prefix)_List_ForEachByType(const $(struct_type)_LIST *tl,       
+                                                                              $(struct_type)_LIST_FOREACHBYTYPE_CB fn,  
+                                                                              void *user_data,                     
+                                                                              int ty, int cmd);                    
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask>with_list</typeFlagsMask>
+          <typeFlagsValue>with_list</typeFlagsValue>
+          <content>
+             const $(struct_type) * $(struct_prefix)_List_ForEachByType(const $(struct_type)_LIST *tl,
+                                                                        $(struct_type)_LIST_FOREACHBYTYPE_CB fn,
+                                                                        void *user_data,                     
+                                                                        int ty, int cmd) {
+               if (tl) {
+                 const $(struct_type) *t;
+
+                 t=$(struct_prefix)_List_First(tl);
+                 while(t) {
+                   if ($(struct_prefix)_MatchTypeAndCommand(t, ty, cmd)) {
+                     const $(struct_type) *tReturned;
+                     
+                     tReturned=fn(t, user_data);
+                     if (tReturned)
+                       return tReturned;
+                   }
+                   t=$(struct_prefix)_List_Next(t);
+                 }
+               }
+               return NULL;
+             }
+          </content>
+        </inline>
+
+
 
         <inline loc="end" access="public">
           <typeFlagsMask>with_list</typeFlagsMask>
