@@ -6,8 +6,10 @@ AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
 noinst_LTLIBRARIES=libabdialogs.la
 
-iheaderdir=@aqbanking_headerdir_am@/aqbanking
-iheader_HEADERS=\
+#iheaderdir=@aqbanking_headerdir_am@/aqbanking
+#iheader_HEADERS=
+
+noinst_HEADERS=\
   dlg_importer.h \
   dlg_selectbankinfo.h \
   dlg_setup.h \
@@ -15,9 +17,7 @@ iheader_HEADERS=\
   dlg_editaccount.h \
   dlg_edituser.h \
   dlg_usertype_page_be.h \
-  dlg_setup_newuser.h
-
-noinst_HEADERS=\
+  dlg_setup_newuser.h \
   dlg_importer_p.h \
   dlg_selectbankinfo_p.h \
   dlg_setup_p.h \

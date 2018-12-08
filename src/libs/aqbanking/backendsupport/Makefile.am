@@ -55,8 +55,11 @@ built_headers_pub= \
 built_headers=$(built_headers_priv) $(built_headers_pub)
 
 
-iheaderdir=@aqbanking_headerdir_am@/aqbanking
-iheader_HEADERS=$(built_headers_pub)\
+#iheaderdir=@aqbanking_headerdir_am@/aqbanking
+#iheader_HEADERS=$(built_headers_pub)
+
+
+noinst_HEADERS= $(built_headers_pub)\
   siotlsext.h \
   dlg_newaccount_be.h \
   dlg_newuser_be.h \
@@ -65,10 +68,7 @@ iheader_HEADERS=$(built_headers_pub)\
   provider.h \
   provider_be.h \
   bankinfoplugin.h \
-  bankinfoplugin_be.h
-
-
-noinst_HEADERS=\
+  bankinfoplugin_be.h \
   siotlsext_p.h \
   dlg_newaccount_p.h \
   dlg_newuser_p.h \
