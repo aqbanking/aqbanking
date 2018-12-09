@@ -43,7 +43,6 @@ libhbcicontrol_la_SOURCES=\
  listusers.c \
  mkpinlist.c \
  logfile.c \
- resetkeys.c \
  sendkeys.c \
  sethbciversion.c \
  setitanmode.c \
