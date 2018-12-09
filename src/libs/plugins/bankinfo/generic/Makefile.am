@@ -5,7 +5,7 @@ AM_CFLAGS=@visibility_cflags@
 
 EXTRA_DIST=\
   dbb.conf hbci.conf atblz.conf fedachdir.conf bcbankenstamm.conf \
-  kidaten.conf README at.tar.bz2 ch.tar.bz2 de.tar.bz2 us.tar.bz2 ca.tar.bz2
+  kidaten.conf README de.tar.bz2
 
 bankinfoplugindir = $(aqbanking_plugindir)/bankinfo
 bankinfodatadir = $(aqbanking_pkgdatadir)/bankinfo
@@ -22,11 +22,7 @@ noinst_HEADERS=\
 
 libbankinfo_generic_la_SOURCES=generic.c
 
-at_files=at/blz.idx at/bic.idx at/namloc.idx at/banks.data
-ch_files=ch/blz.idx ch/bic.idx ch/namloc.idx ch/banks.data
 de_files=de/blz.idx de/bic.idx de/namloc.idx de/banks.data
-us_files=us/blz.idx us/bic.idx us/namloc.idx us/banks.data
-ca_files=ca/blz.idx ca/bic.idx ca/namloc.idx ca/banks.data
 
 #atbankdatadir = $(bankinfodatadir)/at
 #atbankdata_DATA = $(at_files)
@@ -42,44 +38,6 @@ debankdata_DATA = $(de_files)
 
 #cabankdatadir = $(bankinfodatadir)/ca
 #cabankdata_DATA = $(ca_files)
-
-at.tar.bz2:
-	$MKDEINFO build-at data/at/kidaten.csv.utf8 tmp.banks
-	test -d at || mkdir -p at
-	if test -f data/at/aux.conf; then \
-	  $MKDEINFO update tmp.banks data/at/aux.conf tmp.banks; \
-	fi
-	$MKDEINFO install tmp.banks at
-	tar cf at.tar at && bzip2 -9 at.tar
-	rm -rf tmp.banks
-
-$(at_files): at_files_tmp
-
-at_files_tmp: at.tar.bz2
-	test -d at || mkdir -p at
-	bunzip2 -k -c $< | tar xmf -
-	touch $@
-
-at-daten: data/at/kidaten.csv
-	$(SED) s/\"//g <data/at/kidaten.csv >data/at/kidaten.csv.out
-	iconv -f iso8859-15 -t utf-8 data/at/kidaten.csv.out -o data/at/kidaten.csv.utf8
-
-ch.tar.bz2:
-	$MKDEINFO build-ch data/ch/bcbankenstamm.csv tmp.banks
-	test -d ch || mkdir -p ch
-	if test -f data/ch/aux.conf; then \
-	  $MKDEINFO update tmp.banks data/ch/aux.conf tmp.banks; \
-	fi
-	$MKDEINFO install tmp.banks ch
-	tar cf ch.tar ch && bzip2 -9 ch.tar
-	rm -rf tmp.banks
-
-$(ch_files): ch_files_tmp
-
-ch_files_tmp: ch.tar.bz2
-	test -d ch || mkdir -p ch
-	bunzip2 -k -c $< | tar xmf -
-	touch $@
 
 de.tar.bz2:
 	$MKDEINFO build data/de/blz.csv data/de/fints_institute.csv tmp.banks
@@ -98,45 +56,9 @@ de_files_tmp: de.tar.bz2
 	bunzip2 -k -c $< | tar xmf -
 	touch $@
 
-us.tar.bz2:
-	$MKDEINFO build-am data/us/fidata.UTF-8 us data/us/FedACHdir.txt tmp.banks
-	test -d us || mkdir -p us
-	if test -f data/us/aux.conf; then \
-	  $MKDEINFO update tmp.banks data/us/aux.conf tmp.banks; \
-	fi
-	$MKDEINFO install tmp.banks us
-	tar cf us.tar us && bzip2 -9 us.tar
-	rm -rf tmp.banks
+.INTERMEDIATE: de_files_tmp
 
-$(us_files): us_files_tmp
-
-us_files_tmp: us.tar.bz2
-	test -d us || mkdir -p us
-	bunzip2 -k -c $< | tar xmf -
-	touch $@
-
-
-ca.tar.bz2:
-	$MKDEINFO build-am data/us/fidata.UTF-8 ca data/us/FedACHdir.txt tmp.banks
-	test -d ca || mkdir -p ca
-	if test -f data/ca/aux.conf; then \
-	  $MKDEINFO update tmp.banks data/ca/aux.conf tmp.banks; \
-	fi
-	$MKDEINFO install tmp.banks ca
-	tar cf ca.tar ca && bzip2 -9 ca.tar
-	rm -rf tmp.banks
-
-$(ca_files): ca_files_tmp
-
-ca_files_tmp: ca.tar.bz2
-	test -d ca || mkdir -p ca
-	bunzip2 -k -c $< | tar xmf -
-	touch $@
-
-
-.INTERMEDIATE: at_files_tmp ch_files_tmp de_files_tmp us_files_tmp ca_files_tmp
-
-bankdata: $(at_files) $(ch_files) $(de_files) $(us_files) $(ca_files)
+bankdata: $(de_files)
 
 all-local: bankdata
 
