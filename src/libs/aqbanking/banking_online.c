@@ -485,7 +485,7 @@ int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2* commandList, 
       AB_TRANSACTION_STATUS tStatus;
 
       tStatus=AB_Transaction_GetStatus(t);
-      if (tStatus==AB_Transaction_StatusUnknown || tStatus==AB_Transaction_StatusNone) {
+      if (tStatus==AB_Transaction_StatusUnknown || tStatus==AB_Transaction_StatusNone || tStatus==AB_Transaction_StatusEnqueued) {
         uint32_t uid;
 
         uid=AB_Transaction_GetUniqueAccountId(t);
@@ -512,7 +512,8 @@ int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2* commandList, 
         AB_AccountQueue_AddTransaction(aq, t);
       } /* if status matches */
       else {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Transaction with bad status, not enqueuing");
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Transaction with bad status, not enqueuing (%d: %s)",
+                  tStatus, AB_Transaction_Status_toString(tStatus));
         /* TODO: change status, add to im-/export context */
       }
 
