@@ -1,8 +1,6 @@
 Next:
 =====
 - AB_BANKING:
-  - test libs/aqbanking/dialogs/dlg_editaccount*
-  - move non-app-api stuff into backendsupport (or some other folder)
 
 - fix apidoc for provider.h
 
