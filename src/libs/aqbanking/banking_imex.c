@@ -172,167 +172,39 @@ AB_IMEXPORTER *AB_Banking_GetImExporter(AB_BANKING *ab, const char *name){
 
 
 
+void AB_Banking_FillGapsInTransaction(AB_BANKING *ab, AB_ACCOUNT *a, AB_TRANSACTION *t) {
+  assert(t);
 
-void AB_Banking__fillTransactionRemoteInfo(AB_TRANSACTION *t) {
+  if (a) {
     const char *s;
 
-  s=AB_Transaction_GetPurpose(t);
-  if (s && *s) {
-    if (-1!=GWEN_Text_ComparePattern(s, "KTO* BLZ*", 0)) {
-      char *cpy;
-      char *p;
-      char *kto;
-      char *blz;
-
-      cpy=strdup(s);
-      p=cpy;
-
-      /* skip "KTO", position to account number */
-      while(*p && !isdigit(*p))
-	p++;
-      kto=p;
-
-      /* skip account number */
-      while(*p && isdigit(*p))
-	p++;
-      /* terminate account number */
-      *(p++)=0;
-
-      /* skip "BLZ", position to account number */
-      while(*p && !isdigit(*p))
-	p++;
-      blz=p;
-
-      /* skip bank code */
-      while(*p && isdigit(*p))
-	p++;
-      /* terminate bank code */
-      *p=0;
-
-      if (*kto && *blz) {
-	AB_Transaction_SetRemoteAccountNumber(t, kto);
-	AB_Transaction_SetRemoteBankCode(t, blz);
-      }
-      free(cpy);
-    }
+    /* local account */
+    s=AB_Account_GetCountry(a);
+    if (!s || !*s)
+      s="de";
+    AB_Transaction_SetLocalCountry(t, s);
+    AB_Transaction_SetRemoteCountry(t, s);
+  
+    s=AB_Account_GetBankCode(a);
+    if (s && *s)
+      AB_Transaction_SetLocalBankCode(t, s);
+  
+    s=AB_Account_GetAccountNumber(a);
+    if (s && *s)
+      AB_Transaction_SetLocalAccountNumber(t, s);
+  
+    s=AB_Account_GetOwnerName(a);
+    if (s && *s)
+      AB_Transaction_SetLocalName(t, s);
+  
+    s=AB_Account_GetBic(a);
+    if (s && *s)
+      AB_Transaction_SetLocalBic(t, s);
+  
+    s=AB_Account_GetIban(a);
+    if (s && *s)
+      AB_Transaction_SetLocalIban(t, s);
   }
-}
-
-
-/*
-void AB_Banking__fillTransactionRemoteSepaInfo(AB_BANKING *ab, AB_TRANSACTION *t) {
-  const char *sRemoteCountry;
-
-  sRemoteCountry=AB_Transaction_GetRemoteCountry(t);
-  if (!(sRemoteCountry && *sRemoteCountry)) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "No remote country info, assuming \"de\"");
-    sRemoteCountry="de";
-  }
-
-  if (strcasecmp(sRemoteCountry, "de")==0) {
-    const char *sRemoteBankCode;
-    const char *sRemoteAccountNumber;
-    const char *sRemoteBic;
-    const char *sRemoteIban;
-
-    sRemoteBankCode=AB_Transaction_GetRemoteBankCode(t);
-    sRemoteAccountNumber=AB_Transaction_GetRemoteAccountNumber(t);
-    sRemoteBic=AB_Transaction_GetRemoteBic(t);
-    sRemoteIban=AB_Transaction_GetRemoteIban(t);
-
-    if (!(sRemoteBic && *sRemoteBic) && (sRemoteBankCode && *sRemoteBankCode)) {
-      AB_BANKINFO *bi;
-
-      bi=AB_Banking_GetBankInfo(ab, sRemoteCountry, "*", sRemoteBankCode);
-      if (bi) {
-	const char *s;
-
-	s=AB_BankInfo_GetBic(bi);
-	if (s && *s) {
-	  DBG_INFO(AQBANKING_LOGDOMAIN, "Setting remote BIC for [%s] to [%s]", sRemoteBankCode, s);
-	  AB_Transaction_SetRemoteBic(t, s);
-        }
-	AB_BankInfo_free(bi);
-      }
-    }
-
-    if (!(sRemoteIban && *sRemoteIban) && (sRemoteBankCode && *sRemoteBankCode) && (sRemoteAccountNumber && *sRemoteAccountNumber)) {
-      GWEN_BUFFER *tbuf;
-      int rv;
-
-      tbuf=GWEN_Buffer_new(0, 32, 0, 1);
-      rv=AB_Banking_MakeGermanIban(sRemoteBankCode, sRemoteAccountNumber, tbuf);
-      if (rv<0) {
-	DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-      }
-      else {
-	DBG_INFO(AQBANKING_LOGDOMAIN, "Setting remote IBAN for [%s/%s] to [%s]",
-		 sRemoteBankCode, sRemoteAccountNumber, GWEN_Buffer_GetStart(tbuf));
-	AB_Transaction_SetRemoteIban(t, GWEN_Buffer_GetStart(tbuf));
-      }
-      GWEN_Buffer_free(tbuf);
-    }
-  }
-}
-*/
-
-
-void AB_Banking_FillGapsInTransaction(AB_BANKING *ab, AB_ACCOUNT *a, AB_TRANSACTION *t) {
-#pragma message "Need to implement this"
-#if 0
-  if (a)
-    AB_Transaction_FillLocalFromAccount(t, a);
-  /*AB_Banking__fillTransactionRemoteSepaInfo(ab, t); don't create IBANs */
-#endif
-}
-
-
-
-int AB_Banking_FillGapsInImExporterContext(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT *iec) {
-#pragma message "Need to implement this"
-#if 0
-  AB_IMEXPORTER_ACCOUNTINFO *iea;
-  int notFounds=0;
-
-  assert(iec);
-  iea=AB_ImExporterContext_GetFirstAccountInfo(iec);
-  while(iea) {
-    AB_ACCOUNT *a=NULL;
-
-    if (AB_ImExporterAccountInfo_GetAccountId(iea))
-      a=AB_Banking_GetAccount(ab, AB_ImExporterAccountInfo_GetAccountId(iea));
-    if (!a)
-      a=AB_Banking_GetAccountByIban(ab, AB_ImExporterAccountInfo_GetIban(iea));
-    if (!a)
-      a=AB_Banking_GetAccountByCodeAndNumber(ab,
-					     AB_ImExporterAccountInfo_GetBankCode(iea),
-					     AB_ImExporterAccountInfo_GetAccountNumber(iea));
-    if (a) {
-      AB_TRANSACTION *t;
-
-      AB_ImExporterAccountInfo_FillFromAccount(iea, a);
-
-      /* fill transactions */
-      t=AB_ImExporterAccountInfo_GetFirstTransaction(iea, 0, 0);
-      while(t) {
-	AB_Transaction_FillLocalFromAccount(t, a);
-	if (AB_Transaction_GetUniqueAccountId(t)==0)
-	  AB_Transaction_SetUniqueAccountId(t, AB_Account_GetUniqueId(a));
-	if (AB_Transaction_GetRemoteBankCode(t)==NULL &&
-	    AB_Transaction_GetRemoteAccountNumber(t)==NULL)
-	  AB_Banking__fillTransactionRemoteInfo(t);
-	t=AB_Transaction_List_Next(t);
-      }
-    }
-    else
-      notFounds++;
-
-    iea=AB_ImExporterAccountInfo_List_Next(iea);
-  }
-
-  return (notFounds==0)?0:1;
-#endif
-  return 0;
 }
 
 

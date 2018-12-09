@@ -104,9 +104,6 @@ static AB_IMEXPORTER *AB_Banking__LoadImExporterPlugin(AB_BANKING *ab, const cha
 static int AB_Banking__TransformIban(const char *iban, int len, char *newIban, int maxLen);
 
 
-static void AB_Banking__fillTransactionRemoteInfo(AB_TRANSACTION *t);
-/* static void AB_Banking__fillTransactionRemoteSepaInfo(AB_BANKING *ab, AB_TRANSACTION *t); */
-
 
 
 /* ========================================================================================================================
