@@ -79,6 +79,10 @@ extern "C" {
 /* ignore error "GNUTLS_E_PREMATURE_TERMINATION" */
 #define AH_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE   0x00001000
 
+/**
+ * This flag is set when there is no public sign key of the bank
+ * and the user has been informed about it.
+ */
 #define AH_USER_FLAGS_VERIFY_NO_BANKSIGNKEY     0x00002000
 
   /*@}*/
