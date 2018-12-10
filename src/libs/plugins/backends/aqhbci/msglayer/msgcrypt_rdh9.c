@@ -482,9 +482,9 @@ int AH_Msg_EncryptRdh9(AH_MSG *hmsg) {
     return GWEN_ERROR_NOT_FOUND;
   }
 
-  ek=AH_User_GetBankPubKey(u);
+  ek=AH_User_GetBankPubCryptKey(u);
   if(!ek) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Bank Public Key not downloaded, please get it!");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Bank Public Crypt Key not downloaded, please get it!");
     return GWEN_ERROR_INTERNAL;
   }
 

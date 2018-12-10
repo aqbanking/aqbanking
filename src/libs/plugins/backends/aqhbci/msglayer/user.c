@@ -205,7 +205,8 @@ void GWENHYWFAR_CB AH_User_freeData(void *bp, void *p) {
   free(ue->prompt);
   GWEN_Url_free(ue->serverUrl);
   GWEN_DB_Group_free(ue->dbUpd);
-  GWEN_Crypt_Key_free(ue->bankPubKey);
+  GWEN_Crypt_Key_free(ue->bankPubSignKey);
+  GWEN_Crypt_Key_free(ue->bankPubCryptKey);
   AH_Bpd_free(ue->bpd);
   GWEN_MsgEngine_free(ue->msgEngine);
   AH_TanMethod_List_free(ue->tanMethodDescriptions);
@@ -314,15 +315,27 @@ void AH_User__ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
   else
     ue->serverUrl=NULL;
 
-  /* load bankPubKey */
-  GWEN_Crypt_Key_free(ue->bankPubKey);
-  gr=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "bankPubKey");
+  /* load bankPubCryptKey */
+  GWEN_Crypt_Key_free(ue->bankPubCryptKey);
+  gr=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "bankPubCryptKey");
+  if (gr==NULL)
+    gr=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "bankPubKey");
   if (gr) {
-    ue->bankPubKey=GWEN_Crypt_KeyRsa_fromDb(gr);
-    assert(ue->bankPubKey);
+    ue->bankPubCryptKey=GWEN_Crypt_KeyRsa_fromDb(gr);
+    assert(ue->bankPubCryptKey);
   }
   else
-    ue->bankPubKey=NULL;
+    ue->bankPubCryptKey=NULL;
+
+  /* load bankPubKey */
+  GWEN_Crypt_Key_free(ue->bankPubSignKey);
+  gr=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "bankPubSignKey");
+  if (gr) {
+    ue->bankPubSignKey=GWEN_Crypt_KeyRsa_fromDb(gr);
+    assert(ue->bankPubSignKey);
+  }
+  else
+    ue->bankPubSignKey=NULL;
 
   /* load BPD */
   AH_Bpd_free(ue->bpd);
@@ -482,15 +495,25 @@ void AH_User__WriteDb(const AB_USER *u, GWEN_DB_NODE *db) {
   } /* if serverUrl */
   
   /* save bankPubKey */
-  if (ue->bankPubKey) {
-    assert(ue->bankPubKey);
-    gr=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "bankPubKey");
+  if (ue->bankPubCryptKey) {
+    assert(ue->bankPubCryptKey);
+    gr=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "bankPubCryptKey");
     assert(gr);
-    GWEN_Crypt_KeyRsa_toDb(ue->bankPubKey, gr, 1);
+    GWEN_Crypt_KeyRsa_toDb(ue->bankPubCryptKey, gr, 1);
   }
   else
     GWEN_DB_DeleteVar(db, "bankPubKey");
-  
+
+  /* save bankPubSignKey */
+  if (ue->bankPubSignKey) {
+    assert(ue->bankPubSignKey);
+    gr=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "bankPubSignKey");
+    assert(gr);
+    GWEN_Crypt_KeyRsa_toDb(ue->bankPubSignKey, gr, 1);
+  }
+  else
+    GWEN_DB_DeleteVar(db, "bankPubSignKey");
+
   /* save BPD */
   assert(ue->bpd);
   gr=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "bpd");
@@ -856,15 +879,17 @@ void AH_User_SetUpd(AB_USER *u, GWEN_DB_NODE *n){
 
 
 
-GWEN_CRYPT_KEY * AH_User_GetBankPubKey(const AB_USER *u){
+GWEN_CRYPT_KEY * AH_User_GetBankPubCryptKey(const AB_USER *u){
   AH_USER *ue;
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  return ue->bankPubKey;
+  return ue->bankPubCryptKey;
 }
+
+
 
 void AH_User_SetBankPubKey(AB_USER *u, GWEN_CRYPT_KEY *bankPubKey){
   AH_USER *ue;
@@ -874,9 +899,37 @@ void AH_User_SetBankPubKey(AB_USER *u, GWEN_CRYPT_KEY *bankPubKey){
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  if (ue->bankPubKey!=bankPubKey) {
+  if (ue->bankPubCryptKey!=bankPubKey) {
     //GWEN_Crypt_KeyRsa_free(ue->bankPubKey);
-    ue->bankPubKey=GWEN_Crypt_KeyRsa_dup(bankPubKey);
+    ue->bankPubCryptKey=GWEN_Crypt_KeyRsa_dup(bankPubKey);
+  }
+}
+
+
+
+GWEN_CRYPT_KEY * AH_User_GetBankPubSignKey(const AB_USER *u){
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->bankPubSignKey;
+}
+
+
+
+void AH_User_SetBankPubSignKey(AB_USER *u, GWEN_CRYPT_KEY *bankPubKey){
+  AH_USER *ue;
+
+  assert(bankPubKey);
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  if (ue->bankPubSignKey!=bankPubKey) {
+    //GWEN_Crypt_KeyRsa_free(ue->bankPubKey);
+    ue->bankPubSignKey=GWEN_Crypt_KeyRsa_dup(bankPubKey);
   }
 }
 

@@ -379,16 +379,46 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
         } /* while */
       }
       else if (strcasecmp(GWEN_DB_GroupName(dbRd), "GetKeyResponse")==0){
-        /* TODO: Read the key received and ask the user to accept it */
-	GWEN_CRYPT_KEY * bpk;
-	const void *expp, *modp;
-	unsigned int expl, modl;
+        const char *keytype;
 
-	DBG_INFO(AQHBCI_LOGDOMAIN, "GetKeyResponse not yet processed!");
-	modp=GWEN_DB_GetBinValue(dbRd, "key/modulus",  0, NULL, 0, &modl);
-	expp=GWEN_DB_GetBinValue(dbRd, "key/exponent", 0, NULL, 0, &expl);
-	bpk=GWEN_Crypt_KeyRsa_fromModExp(256, modp, modl, expp, expl);
-	AH_User_SetBankPubKey(u, bpk);
+        keytype=GWEN_DB_GetCharValue(dbRd, "key/keyType",  0, NULL);
+        if (keytype && *keytype) {
+          GWEN_CRYPT_KEY * bpk;
+          const void *expp, *modp;
+          unsigned int expl, modl;
+          int keynum, keyver;
+
+          /* TODO: Ask the user to accept the key received */
+          DBG_WARN(AQHBCI_LOGDOMAIN, "GetKeyResponse not yet processed!");
+          keynum=GWEN_DB_GetIntValue(dbRd, "key/keynum",  0, -1);
+          keyver=GWEN_DB_GetIntValue(dbRd, "key/keyversion",  0, -1);
+          modp=GWEN_DB_GetBinValue(dbRd, "key/modulus",  0, NULL, 0, &modl);
+          expp=GWEN_DB_GetBinValue(dbRd, "key/exponent", 0, NULL, 0, &expl);
+          bpk=GWEN_Crypt_KeyRsa_fromModExp(256, modp, modl, expp, expl);
+          if (strcasecmp(keytype, "S")==0) {
+            DBG_WARN(AQHBCI_LOGDOMAIN, "Received new server sign key, please verify! (num: %d, version: %d)", keynum, keyver);
+            GWEN_Gui_ProgressLog2(0,
+                                  GWEN_LoggerLevel_Warning,
+                                  I18N("Received new server sign key, please verify! (num: %d, version: %d)"),
+                                  keynum, keyver);
+            AH_User_SetBankPubSignKey(u, bpk);
+          }
+          else if (strcasecmp(keytype, "V")==0) {
+            DBG_WARN(AQHBCI_LOGDOMAIN, "Received new server crypt key, please verify! (num: %d, version: %d)", keynum, keyver);
+            GWEN_Gui_ProgressLog2(0,
+                                  GWEN_LoggerLevel_Warning,
+                                  I18N("Received new server crypt key, please verify! (num: %d, version: %d)"),
+                                  keynum, keyver);
+            AH_User_SetBankPubCryptKey(u, bpk);
+          }
+          else {
+            DBG_WARN(AQHBCI_LOGDOMAIN, "Received unknown server key: type=%s, num=%d, version=%d", keytype, keynum, keyver);
+            GWEN_Gui_ProgressLog2(0,
+                                  GWEN_LoggerLevel_Warning,
+                                  I18N("Received unknown server key: type=%s, num=%d, version=%d"),
+                                  keytype, keynum, keyver);
+          }
+        }
       }
 
       else if (strcasecmp(GWEN_DB_GroupName(dbRd), "SecurityMethods")==0){

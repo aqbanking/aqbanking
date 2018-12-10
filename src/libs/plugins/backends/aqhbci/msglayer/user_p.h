@@ -69,7 +69,8 @@ struct AH_USER {
   int maxTransfersPerJob;
   int maxDebitNotesPerJob;
 
-  GWEN_CRYPT_KEY * bankPubKey;
+  GWEN_CRYPT_KEY * bankPubCryptKey;
+  GWEN_CRYPT_KEY * bankPubSignKey;
 
   AB_USER_READFROMDB_FN readFromDbFn;
   AB_USER_WRITETODB_FN writeToDbFn;
