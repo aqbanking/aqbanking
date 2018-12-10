@@ -893,6 +893,7 @@ int AH_Msg_VerifyRdh9(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
   int ksize;
   int rv;
   uint32_t gid;
+  GWEN_CRYPT_KEY *bsk=NULL;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "===> hm: called AH_Msg_VerifyRdh9 - hmsg, gr");
 
@@ -981,6 +982,38 @@ int AH_Msg_VerifyRdh9(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
   }
 
   /* only now we need the verify key */
+  bsk=AH_User_GetBankPubSignKey(u);
+  if(!bsk) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Bank public sign key not downloaded, please get it!");
+    GWEN_Gui_ProgressLog(gid,
+                         GWEN_LoggerLevel_Warning,
+                         I18N("Bank public signature key not yet downloaded/installed, cannot verify signature."));
+    if (!(AH_User_GetFlags(u) & AH_USER_FLAGS_VERIFY_NO_BANKSIGNKEY)) {
+      int rv;
+
+      rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN | GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
+                             I18N("No Public Bank Sign Key"),
+                             I18N("We do not have the public signature key of the bank, so we can not verify "
+                                  "possible signatures."
+                                  "You can ignore this message if you are already retrieving the bank keys in this "
+                                  "dialog."),
+                             I18N("Continue"), I18N("Abort"), NULL, 0);
+      if (rv!=1) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Aborted by user.");
+        GWEN_List_free(sigheads);
+        return GWEN_ERROR_USER_ABORTED;
+      }
+      AH_User_AddFlags(u, AH_USER_FLAGS_VERIFY_NO_BANKSIGNKEY);
+      GWEN_List_free(sigheads);
+      return 0;
+    }
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Message about missing bank public sign key already shown, ignore.");
+      return 0;
+    }
+  }
+
+  /* TODO: replace the following code with code which verifies the signature using the stored key in "bsk" */
   keyId=GWEN_Crypt_Token_Context_GetVerifyKeyId(ctx);
   if (keyId==0) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
