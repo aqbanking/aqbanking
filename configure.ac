@@ -435,7 +435,7 @@ AC_ARG_WITH(backends,
 )
 
 if test "$aqbanking_backends" = "all"; then
-  aqbanking_backends="aqhbci aqofxconnect aqebics aqpaypal"
+  aqbanking_backends="aqhbci aqofxconnect aqpaypal"
 fi
 
 for f in ${aqbanking_backends}; do
