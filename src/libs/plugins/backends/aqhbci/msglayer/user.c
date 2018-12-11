@@ -891,7 +891,7 @@ GWEN_CRYPT_KEY * AH_User_GetBankPubCryptKey(const AB_USER *u){
 
 
 
-void AH_User_SetBankPubKey(AB_USER *u, GWEN_CRYPT_KEY *bankPubKey){
+void AH_User_SetBankPubCryptKey(AB_USER *u, GWEN_CRYPT_KEY *bankPubKey){
   AH_USER *ue;
 
   assert(bankPubKey);
