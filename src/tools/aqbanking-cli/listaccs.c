@@ -25,6 +25,7 @@ int listAccs(AB_BANKING *ab,
   AB_ACCOUNT_SPEC_LIST *al=NULL;
   AB_ACCOUNT_SPEC *as;
   int rv;
+  const char *tmplString;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -115,6 +116,17 @@ int listAccs(AB_BANKING *ab,
     "Specify the type of your account"       /* long description */
   },
   {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,            /* type */
+    "template",                    /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    "T",                          /* short option */
+    "template",                       /* long option */
+    "Specify the template for the account list output",      /* short description */
+    "Specify the template for the account list output"       /* long description */
+  },
+  {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
     GWEN_ArgsType_Int,             /* type */
     "help",                       /* name */
@@ -168,43 +180,32 @@ int listAccs(AB_BANKING *ab,
     return 2;
   }
 
+  tmplString=GWEN_DB_GetCharValue(db, "template", 0, "Account\t$(bankcode)\t$(accountnumber)\t$(bic)\t$(iban)\t$(uniqueId)\t$(type)");
 
   as=AB_AccountSpec_List_First(al);
-  while(as) {
-    uint32_t aid;
-    const char *s;
+  if (as) {
+    GWEN_BUFFER *dbuf;
 
-    aid=AB_AccountSpec_GetUniqueId(as);
+    dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    while(as) {
+      GWEN_DB_NODE *dbAccountSpec;
 
-    fprintf(stdout, "Account\t");
-    s=AB_AccountSpec_GetBankCode(as);
-    if (!s)
-      s="";
-    fprintf(stdout, "%s\t", s);          /* bank code */
-    s=AB_AccountSpec_GetAccountNumber(as);
-    if (!s)
-      s="";
-    fprintf(stdout, "%s\t", s);          /* account number */
-    s="";                                /* empty */
-    fprintf(stdout, "%s\t", s);          /* bank name */
-    s=AB_AccountSpec_GetAccountName(as);
-    if (!s)
-      s="";
-    fprintf(stdout, "%s\t", s);          /* account name */
-    s=AB_AccountSpec_GetBic(as);
-    if (!s)
-      s="";
-    fprintf(stdout, "%s\t", s);          /* SWIFT BIC */
-    s=AB_AccountSpec_GetIban(as);
-    if (!s)
-      s="";
-    fprintf(stdout, "%s\t", s);          /* IBAN */
-    fprintf(stdout, "%lu\t", (unsigned long int)aid); /* unique account id */
-    fprintf(stdout, "%s\n", AB_AccountType_toChar(AB_AccountSpec_GetType(as))); /* account type */
+      dbAccountSpec=GWEN_DB_Group_new("accountSpec");
+      AB_AccountSpec_toDb(as, dbAccountSpec);
+      GWEN_DB_SetCharValue(dbAccountSpec, GWEN_DB_FLAGS_OVERWRITE_VARS, "typeAsString",
+			   AB_AccountType_toChar(AB_AccountSpec_GetType(as)));
 
-    as=AB_AccountSpec_List_Next(as);
-  } /* while (as) */
+      replaceVars(tmplString, dbAccountSpec, dbuf);
+      fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(dbuf));
+      GWEN_Buffer_Reset(dbuf);
 
+      GWEN_DB_Group_free(dbAccountSpec);
+
+      as=AB_AccountSpec_List_Next(as);
+    } /* while (as) */
+
+    GWEN_Buffer_free(dbuf);
+  }
   AB_AccountSpec_List_free(al);
 
 

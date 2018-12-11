@@ -42,6 +42,13 @@ AB_TRANSACTION *mkSepaDebitNote(GWEN_DB_NODE *db);
 int getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db, AB_ACCOUNT_SPEC_LIST **pAccountSpecList);
 
 
+/**
+ * Replace variables in the given text.
+ * Variables are used like this: "$(VAR1)".
+ */
+int replaceVars(const char *s, GWEN_DB_NODE *db, GWEN_BUFFER *dbuf);
+
+
 
 
 #endif
