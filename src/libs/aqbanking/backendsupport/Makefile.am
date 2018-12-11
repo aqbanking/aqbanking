@@ -93,6 +93,7 @@ libabbesupport_la_SOURCES=$(typedata_sources) \
 
 extra_sources=\
   provider_account.c \
+  provider_accspec.c \
   provider_user.c \
   provider_queues.c
 

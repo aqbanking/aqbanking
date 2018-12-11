@@ -59,7 +59,15 @@ sources:
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 
-EXTRA_DIST=aqpaypal.xml.in $(dlgdata_DATA) $(dlgimage_DATA)
+EXTRA_DIST=aqpaypal.xml.in $(dlgdata_DATA) $(dlgimage_DATA) \
+  provider_accspec.c \
+  provider_credentials.c \
+  provider_dialogs.c \
+  provider_getbalance.c \
+  provider_getstm.c \
+  provider_sendcmd.c \
+  provider_update.c
+
 
 built_sources:
 
