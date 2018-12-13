@@ -26,11 +26,7 @@
 
 
 
-static
-int sepaRecurTransfer(AB_BANKING *ab,
-                      GWEN_DB_NODE *dbArgs,
-                      int argc,
-                      char **argv) {
+int sepaRecurTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
 #pragma message "Need to implement this"
 #if 0
   GWEN_DB_NODE *db;

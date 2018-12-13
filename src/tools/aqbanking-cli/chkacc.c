@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue May 03 2005
- copyright   : (C) 2005-2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -15,11 +15,7 @@
 #include <gwenhywfar/text.h>
 
 
-static
-int chkAcc(AB_BANKING *ab,
-           GWEN_DB_NODE *dbArgs,
-           int argc,
-           char **argv) {
+int chkAcc(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   GWEN_DB_NODE *db;
   int rv;
   AB_BANKINFO_CHECKRESULT res;

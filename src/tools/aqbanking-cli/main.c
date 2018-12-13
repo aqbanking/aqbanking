@@ -26,26 +26,6 @@
 #include "globals.h"
 
 
-#include "chkacc.c"
-#include "chkiban.c"
-#include "import.c"
-#include "listaccs.c"
-#include "listbal.c"
-#include "listprofiles.c"
-#include "listtrans.c"
-#include "request.c"
-#include "util.c"
-#include "versions.c"
-#include "addtransaction.c"
-#include "fillgaps.c"
-#include "sepatransfer.c"
-#include "addsepadebitnote.c"
-#include "sepadebitnote.c"
-#include "sepamultijobs.c"
-#include "separecurtransfer.c"
-#include "control.c"
-
-
 
 static void cmdAddHelpStr(GWEN_BUFFER *ubuf,
                           const char* cmdname,

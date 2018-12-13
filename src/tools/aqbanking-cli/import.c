@@ -23,11 +23,7 @@
 
 
 
-static
-int import(AB_BANKING *ab,
-	   GWEN_DB_NODE *dbArgs,
-	   int argc,
-	   char **argv) {
+int import(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;

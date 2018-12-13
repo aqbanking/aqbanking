@@ -25,6 +25,11 @@
 
 
 
+/* ========================================================================================================================
+ *                                                readContext
+ * ========================================================================================================================
+ */
+
 int readContext(const char *ctxFile,
 		AB_IMEXPORTER_CONTEXT **pCtx,
 		int mustExist) {
@@ -84,6 +89,11 @@ int readContext(const char *ctxFile,
 
 
 
+/* ========================================================================================================================
+ *                                                writeContext
+ * ========================================================================================================================
+ */
+
 int writeContext(const char *ctxFile, const AB_IMEXPORTER_CONTEXT *ctx) {
   GWEN_DB_NODE *dbCtx;
   GWEN_SYNCIO *sio;
@@ -140,6 +150,10 @@ int writeContext(const char *ctxFile, const AB_IMEXPORTER_CONTEXT *ctx) {
 
 
 
+/* ========================================================================================================================
+ *                                                mkSepaTransfer
+ * ========================================================================================================================
+ */
 AB_TRANSACTION *mkSepaTransfer(GWEN_DB_NODE *db, int cmd) {
   AB_TRANSACTION *t;
   const char *s;
@@ -353,6 +367,11 @@ AB_TRANSACTION *mkSepaTransfer(GWEN_DB_NODE *db, int cmd) {
 
 
 
+/* ========================================================================================================================
+ *                                                mkSepaDebitNote
+ * ========================================================================================================================
+ */
+
 AB_TRANSACTION *mkSepaDebitNote(GWEN_DB_NODE *db, int cmd) {
   AB_TRANSACTION *t;
   const char *s;
@@ -421,6 +440,11 @@ AB_TRANSACTION *mkSepaDebitNote(GWEN_DB_NODE *db, int cmd) {
 }
 
 
+
+/* ========================================================================================================================
+ *                                                getSelectedAccounts
+ * ========================================================================================================================
+ */
 
 int getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db, AB_ACCOUNT_SPEC_LIST **pAccountSpecList) {
   AB_ACCOUNT_SPEC_LIST *asl=NULL;
@@ -507,6 +531,46 @@ int getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db, AB_ACCOUNT_SPEC_LIST *
 }
 
 
+
+/* ========================================================================================================================
+ *                                                getSingleSelectedAccount
+ * ========================================================================================================================
+ */
+
+
+AB_ACCOUNT_SPEC *getSingleSelectedAccount(AB_BANKING *ab, GWEN_DB_NODE *db) {
+  int rv;
+  AB_ACCOUNT_SPEC_LIST *al=NULL;
+  AB_ACCOUNT_SPEC *as;
+
+  rv=getSelectedAccounts(ab, db, &al);
+  if (rv<0) {
+    if (rv==GWEN_ERROR_NOT_FOUND)
+      fprintf(stderr, "No matching accounts\n");
+    else
+      fprintf(stderr, "Error getting selected accounts (%d)\n", rv);
+    return NULL;
+  }
+
+  if (AB_AccountSpec_List_GetCount(al)>1) {
+    fprintf(stderr, "Ambiguous account specification (%d accounts matching)\n", AB_AccountSpec_List_GetCount(al));
+    AB_AccountSpec_List_free(al);
+    return NULL;
+  }
+
+  as=AB_AccountSpec_List_First(al);
+  assert(as);
+  AB_AccountSpec_List_Del(as);
+  AB_AccountSpec_List_free(al);
+  return as;
+}
+
+
+
+/* ========================================================================================================================
+ *                                                replaceVars
+ * ========================================================================================================================
+ */
 
 int replaceVars(const char *s, GWEN_DB_NODE *db, GWEN_BUFFER *dbuf) {
     const char *p;
@@ -626,6 +690,309 @@ int replaceVars(const char *s, GWEN_DB_NODE *db, GWEN_BUFFER *dbuf) {
 
   return 0;
 }
+
+
+
+/* ========================================================================================================================
+ *                                                checkTransactionIbans
+ * ========================================================================================================================
+ */
+
+int checkTransactionIbans(const AB_TRANSACTION *t) {
+  const char *rIBAN;
+  const char *lIBAN;
+  const char *lBIC;
+  int rv;
+
+  assert(t);
+
+  /* some checks */
+  rIBAN=AB_Transaction_GetRemoteIban(t);
+  lIBAN=AB_Transaction_GetLocalIban(t);
+  lBIC=AB_Transaction_GetLocalBic(t);
+
+  if (!rIBAN || !(*rIBAN)) {
+    fprintf(stderr, "Missing remote IBAN\n");
+    return 1;
+  }
+  rv=AB_Banking_CheckIban(rIBAN);
+  if (rv != 0) {
+    fprintf(stderr, "Invalid remote IBAN (%s)\n", rIBAN);
+    return 3;
+  }
+
+  if (!lBIC || !(*lBIC)) {
+    fprintf(stderr, "Missing local BIC\n");
+    return 1;
+  }
+  if (!lIBAN || !(*lIBAN)) {
+    fprintf(stderr, "Missing local IBAN\n");
+    return 1;
+  }
+  rv=AB_Banking_CheckIban(lIBAN);
+  if (rv != 0) {
+    fprintf(stderr, "Invalid local IBAN (%s)\n", rIBAN);
+    return 3;
+  }
+
+  return 0;
+}
+
+
+
+/* ========================================================================================================================
+ *                                                checkTransactionLimits
+ * ========================================================================================================================
+ */
+
+int checkTransactionLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim, uint32_t flags) {
+  if (lim==NULL) {
+    fprintf(stderr, "ERROR: Job not supported with this account.\n");
+    return 3;
+  }
+
+  if (flags & AQBANKING_TOOL_LIMITFLAGS_PURPOSE)
+    if (AB_Banking_CheckTransactionAgainstLimits_Purpose(t, lim)) {
+      fprintf(stderr, "ERROR: Purpose violates job limits.\n");
+      return 3;
+    }
+
+  if (flags & AQBANKING_TOOL_LIMITFLAGS_NAMES)
+    if (AB_Banking_CheckTransactionAgainstLimits_Names(t, lim)) {
+      fprintf(stderr, "ERROR: Names violate job limits.\n");
+      return 3;
+    }
+
+  if (flags & AQBANKING_TOOL_LIMITFLAGS_SEQUENCE)
+    if (AB_Banking_CheckTransactionAgainstLimits_Sequence(t, lim)) {
+      fprintf(stderr, "ERROR: Sequence violate job limits.\n");
+      return 3;
+    }
+
+  if (flags & AQBANKING_TOOL_LIMITFLAGS_DATE)
+    if (AB_Banking_CheckTransactionAgainstLimits_Date(t, lim)) {
+      fprintf(stderr, "ERROR: Date violate job limits.\n");
+      return 3;
+    }
+
+  if (flags & AQBANKING_TOOL_LIMITFLAGS_SEPA)
+    if (AB_Banking_CheckTransactionForSepaConformity(t, 0)) {
+      fprintf(stderr, "ERROR: Transaction fails SEPA conformity check.\n");
+      return 3;
+    }
+
+  return 0;
+}
+
+
+
+/* ========================================================================================================================
+ *                                                addTransactionToContextFile
+ * ========================================================================================================================
+ */
+
+int addTransactionToContextFile(const AB_TRANSACTION *t, const char *ctxFile) {
+  int rv;
+  AB_IMEXPORTER_CONTEXT *ctx=NULL;
+
+  /* load ctx file */
+  rv=readContext(ctxFile, &ctx, 0);
+  if (rv<0) {
+    DBG_ERROR(0, "Error reading context (%d)", rv);
+    return 4;
+  }
+
+  /* add transaction to */
+  AB_ImExporterContext_AddTransaction(ctx, AB_Transaction_dup(t));
+
+  /* write result back */
+  rv=writeContext(ctxFile, ctx);
+  AB_ImExporterContext_free(ctx);
+  if (rv<0) {
+    DBG_ERROR(0, "Error writing context file (%d)", rv);
+    return 4;
+  }
+
+  /* write result */
+  rv=writeContext(ctxFile, ctx);
+  AB_ImExporterContext_free(ctx);
+  if (rv<0) {
+    DBG_ERROR(0, "Error writing context file (%d)", rv);
+    AB_ImExporterContext_free(ctx);
+    return 4;
+  }
+  AB_ImExporterContext_free(ctx);
+
+  return 0;
+}
+
+
+
+/* ========================================================================================================================
+ *                                                execBankingJobs
+ * ========================================================================================================================
+ */
+
+int execBankingJobs(AB_BANKING *ab, AB_TRANSACTION_LIST2 *tList, const char *ctxFile) {
+  int rv;
+  int rvExec=0;
+  AB_IMEXPORTER_CONTEXT *ctx=NULL;
+
+  /* execute job */
+  ctx=AB_ImExporterContext_new();
+  rv=AB_Banking_SendCommands(ab, tList, ctx);
+  if (rv) {
+    fprintf(stderr, "Error on executeQueue (%d)\n", rv);
+    rvExec=3;
+  }
+
+  /* write result */
+  rv=writeContext(ctxFile, ctx);
+  AB_ImExporterContext_free(ctx);
+  if (rv<0) {
+    DBG_ERROR(0, "Error writing context file (%d)", rv);
+    if (rvExec==0)
+      return 4;
+  }
+
+  return rvExec;
+}
+
+
+
+/* ========================================================================================================================
+ *                                                execSingleBankingJob
+ * ========================================================================================================================
+ */
+
+int execSingleBankingJob(AB_BANKING *ab, AB_TRANSACTION *t, const char *ctxFile) {
+  AB_TRANSACTION_LIST2 *jobList;
+  int rv;
+
+  jobList=AB_Transaction_List2_new();
+  AB_Transaction_List2_PushBack(jobList, t);
+  rv=execBankingJobs(ab, jobList, ctxFile);
+  AB_Transaction_List2_free(jobList);
+
+  return rv;
+}
+
+
+
+/* ========================================================================================================================
+ *                                                createAndCheckRequest
+ * ========================================================================================================================
+ */
+
+AB_TRANSACTION *createAndCheckRequest(AB_BANKING *ab, AB_ACCOUNT_SPEC *as, AB_TRANSACTION_COMMAND cmd) {
+  if (AB_AccountSpec_GetTransactionLimitsForCommand(as, cmd)) {
+    AB_TRANSACTION *j;
+
+    j=AB_Transaction_new();
+    AB_Transaction_SetUniqueAccountId(j, AB_AccountSpec_GetUniqueId(as));
+    AB_Transaction_SetCommand(j, cmd);
+    return j;
+  }
+  else {
+    return NULL;
+  }
+}
+
+
+
+/* ========================================================================================================================
+ *                                                createAndAddRequest
+ * ========================================================================================================================
+ */
+
+int createAndAddRequest(AB_BANKING *ab,
+			AB_TRANSACTION_LIST2 *tList,
+			AB_ACCOUNT_SPEC *as,
+			AB_TRANSACTION_COMMAND cmd,
+			const GWEN_DATE *fromDate,
+			const GWEN_DATE *toDate,
+			int ignoreUnsupported) {
+  uint32_t aid;
+  AB_TRANSACTION *j;
+
+  assert(as);
+  aid=AB_AccountSpec_GetUniqueId(as);
+
+  j=createAndCheckRequest(ab, as, cmd);
+  if (j) {
+    if (cmd==AB_Transaction_CommandGetTransactions) {
+      if (fromDate)
+	AB_Transaction_SetFirstDate(j, fromDate);
+      if (toDate)
+	AB_Transaction_SetLastDate(j, toDate);
+    }
+    AB_Transaction_List2_PushBack(tList, j);
+    return 0;
+  }
+  else {
+    if (ignoreUnsupported) {
+      fprintf(stderr, "Warning: Ignoring request \"%s\" for %lu, not supported.\n",
+	      AB_Transaction_Command_toString(cmd),
+	      (unsigned long int) aid);
+      return 0;
+    }
+    else {
+      fprintf(stderr, "Error: Request \"%s\" for %lu not supported.\n",
+	      AB_Transaction_Command_toString(cmd),
+	      (unsigned long int) aid);
+      return GWEN_ERROR_GENERIC;
+    }
+  }
+}
+
+
+
+/* ========================================================================================================================
+ *                                                createAndAddRequests
+ * ========================================================================================================================
+ */
+
+int createAndAddRequests(AB_BANKING *ab,
+			 AB_TRANSACTION_LIST2 *tList,
+			 AB_ACCOUNT_SPEC *as,
+			 const GWEN_DATE *fromDate,
+			 const GWEN_DATE *toDate,
+			 uint32_t requestFlags) {
+  int ignoreUnsupported=requestFlags & AQBANKING_TOOL_REQUEST_IGNORE_UNSUP;
+  int rv;
+
+  assert(ab);
+  assert(tList);
+  assert(as);
+
+  /* create and add requests */
+  if (requestFlags & AQBANKING_TOOL_REQUEST_BALANCE) {
+    rv=createAndAddRequest(ab, tList, as, AB_Transaction_CommandGetBalance, fromDate, toDate, ignoreUnsupported);
+    if (rv)
+      return rv;
+  }
+
+  if (requestFlags & AQBANKING_TOOL_REQUEST_STATEMENTS) {
+    rv=createAndAddRequest(ab, tList, as, AB_Transaction_CommandGetTransactions, fromDate, toDate, ignoreUnsupported);
+    if (rv)
+      return rv;
+  }
+
+  if (requestFlags & AQBANKING_TOOL_REQUEST_SEPASTO) {
+    rv=createAndAddRequest(ab, tList, as, AB_Transaction_CommandSepaGetStandingOrders, fromDate, toDate, ignoreUnsupported);
+    if (rv)
+      return rv;
+  }
+
+  if (requestFlags & AQBANKING_TOOL_REQUEST_ESTATEMENTS) {
+    rv=createAndAddRequest(ab, tList, as, AB_Transaction_CommandGetEStatements, fromDate, toDate, ignoreUnsupported);
+    if (rv)
+      return rv;
+  }
+
+  return 0;
+}
+
 
 
 

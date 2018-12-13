@@ -13,14 +13,7 @@ aqbanking_cli_LDADD= \
   $(gwenhywfar_libs) -lstdc++
 
 aqbanking_cli_SOURCES= \
-  main.c
-aqbanking_cli_LDFLAGS=
-#-Wl,-static
-
-DEFS += -DLOCALEDIR=\"$(localedir)\" -DAQBANKING_CLI_VERSION_STRING=\"@AQBANKING_CLI_VERSION_STRING@\"
-
-noinst_HEADERS=globals.h
-EXTRA_DIST=\
+  main.c \
   addsepadebitnote.c \
   addtransaction.c \
   chkacc.c \
@@ -34,12 +27,20 @@ EXTRA_DIST=\
   request.c \
   util.c \
   versions.c \
-  updateconf.c \
   sepatransfer.c \
   sepadebitnote.c \
   sepamultijobs.c \
   separecurtransfer.c \
+  updateconf.c \
   control.c
+
+aqbanking_cli_LDFLAGS=
+#-Wl,-static
+
+DEFS += -DLOCALEDIR=\"$(localedir)\" -DAQBANKING_CLI_VERSION_STRING=\"@AQBANKING_CLI_VERSION_STRING@\"
+
+noinst_HEADERS=globals.h
+#EXTRA_DIST=
 
 
 

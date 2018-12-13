@@ -11,42 +11,183 @@
 # include <config.h>
 #endif
 
+
+/* tool includes */
 #include "globals.h"
 
+/* aqbanking includes */
 #include <aqbanking/transaction.h>
 
+/* gwenhywfar includes */
 #include <gwenhywfar/text.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <string.h>
-#include <errno.h>
-#include <unistd.h>
+
+/* forward declarations */
+static GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv);
+
+static int _createAndAndSendRequests(AB_BANKING *ab,
+                                     AB_ACCOUNT_SPEC_LIST *asl,
+                                     const GWEN_DATE *fromDate,
+                                     const GWEN_DATE *toDate,
+                                     uint32_t requestFlags,
+                                     const char *ctxFile);
 
 
 
-static
-int request(AB_BANKING *ab,
-            GWEN_DB_NODE *dbArgs,
-            int argc,
-            char **argv) {
+
+int request(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   GWEN_DB_NODE *db;
   AB_ACCOUNT_SPEC_LIST *al=NULL;
-  AB_ACCOUNT_SPEC *as;
+  uint32_t requestFlags=0;
   const char *s;
   int rv;
   const char *ctxFile;
-  int requests=0;
-  int reqTrans=0;
-  int reqBalance=0;
-  int reqSto=0;
-  int reqSepaSto=0;
-  int reqEStatements=0;
-  int ignoreUnsupported=0;
   GWEN_DATE *fromDate=0;
   GWEN_DATE *toDate=0;
+
+  /* parse command line */
+  db=_readCommandLine(dbArgs, argc, argv);
+  if (db==NULL) {
+    fprintf(stderr, "ERROR: Could not parse arguments\n");
+    return 1;
+  }
+
+  /* read arguments */
+  if (GWEN_DB_GetIntValue(db, "reqTrans", 0, 0))
+    requestFlags|=AQBANKING_TOOL_REQUEST_STATEMENTS;
+  if (GWEN_DB_GetIntValue(db, "reqBalance", 0, 0))
+    requestFlags|=AQBANKING_TOOL_REQUEST_BALANCE;
+  if (GWEN_DB_GetIntValue(db, "reqSepaSto", 0, 0))
+    requestFlags|=AQBANKING_TOOL_REQUEST_SEPASTO;
+  if (GWEN_DB_GetIntValue(db, "reqEStatements", 0, 0))
+    requestFlags|=AQBANKING_TOOL_REQUEST_ESTATEMENTS;
+  if (GWEN_DB_GetIntValue(db, "ignoreUnsupported", 0, 0))
+    requestFlags|=AQBANKING_TOOL_REQUEST_IGNORE_UNSUP;
+
+  /* read command line arguments */
+  ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
+  s=GWEN_DB_GetCharValue(db, "fromDate", 0, 0);
+  if (s && *s) {
+    fromDate=GWEN_Date_fromStringWithTemplate(s, "YYYYMMDD");
+    if (fromDate==NULL) {
+      DBG_ERROR(0, "Invalid fromdate value \"%s\"", s);
+      return 1;
+    }
+  }
+  s=GWEN_DB_GetCharValue(db, "toDate", 0, 0);
+  if (s && *s) {
+    toDate=GWEN_Date_fromStringWithTemplate(s, "YYYYMMDD");
+    if (toDate==NULL) {
+      DBG_ERROR(0, "Invalid todate value \"%s\"", s);
+      GWEN_Date_free(fromDate);
+      return 1;
+    }
+  }
+
+  /* init AqBanking */
+  rv=AB_Banking_Init(ab);
+  if (rv) {
+    DBG_ERROR(0, "Error on init (%d)", rv);
+    GWEN_Date_free(toDate);
+    GWEN_Date_free(fromDate);
+    return 2;
+  }
+
+  /* get accounts */
+  rv=getSelectedAccounts(ab, db, &al);
+  if (rv<0) {
+    if (rv==GWEN_ERROR_NOT_FOUND) {
+      DBG_ERROR(0, "No matching accounts");
+    }
+    else {
+      DBG_ERROR(0, "Error getting selected accounts (%d)", rv);
+    }
+    GWEN_Date_free(toDate);
+    GWEN_Date_free(fromDate);
+    AB_Banking_Fini(ab);
+    return 2;
+  }
+
+  /* create requests for every account spec and send them */
+  rv=_createAndAndSendRequests(ab, al, fromDate, toDate, requestFlags, ctxFile);
+  if (rv) {
+    AB_AccountSpec_List_free(al);
+    GWEN_Date_free(toDate);
+    GWEN_Date_free(fromDate);
+    AB_Banking_Fini(ab);
+    return 3;
+  }
+
+  /* cleanup */
+  AB_AccountSpec_List_free(al);
+  GWEN_Date_free(toDate);
+  GWEN_Date_free(fromDate);
+
+  /* deinit */
+  rv=AB_Banking_Fini(ab);
+  if (rv) {
+    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
+    return 5;
+  }
+
+  return 0;
+}
+
+
+
+int _createAndAndSendRequests(AB_BANKING *ab,
+                              AB_ACCOUNT_SPEC_LIST *asl,
+                              const GWEN_DATE *fromDate,
+                              const GWEN_DATE *toDate,
+                              uint32_t requestFlags,
+                              const char *ctxFile) {
+  AB_ACCOUNT_SPEC *as;
   AB_TRANSACTION_LIST2 *jobList;
+
+  /* sample jobs */
+  jobList=AB_Transaction_List2_new();
+
+  as=AB_AccountSpec_List_First(asl);
+  while(as) {
+    int rv;
+
+    rv=createAndAddRequests(ab, jobList, as, fromDate, toDate, requestFlags);
+    if (rv) {
+      AB_Transaction_List2_free(jobList);
+      return 3;
+    }
+
+    /* next */
+    as=AB_AccountSpec_List_Next(as);
+  } /* while (as) */
+
+  /* send jobs */
+  if (AB_Transaction_List2_GetSize(jobList)) {
+    int rv;
+
+    rv=execBankingJobs(ab, jobList, ctxFile);
+    AB_Transaction_List2_free(jobList);
+    if (rv) {
+      fprintf(stderr, "Error on sendCommands (%d)\n", rv);
+      return 3;
+    }
+  }
+  else {
+    DBG_ERROR(0, "No requests created");
+    AB_Transaction_List2_free(jobList);
+    return 4;
+  }
+
+  AB_Transaction_List2_free(jobList);
+  return 0;
+}
+
+
+
+/* parse command line */
+GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+  GWEN_DB_NODE *db;
+  int rv;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -256,7 +397,7 @@ int request(AB_BANKING *ab,
                      db);
   if (rv==GWEN_ARGS_RESULT_ERROR) {
     fprintf(stderr, "ERROR: Could not parse arguments\n");
-    return 1;
+    return NULL;
   }
   else if (rv==GWEN_ARGS_RESULT_HELP) {
     GWEN_BUFFER *ubuf;
@@ -264,258 +405,14 @@ int request(AB_BANKING *ab,
     ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
     if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutType_Txt)) {
       fprintf(stderr, "ERROR: Could not create help string\n");
-      return 1;
+      return NULL;
     }
     fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
     GWEN_Buffer_free(ubuf);
-    return 0;
+    return NULL;
   }
 
-  ignoreUnsupported=GWEN_DB_GetIntValue(db, "ignoreUnsupported", 0, 0);
-  reqTrans=GWEN_DB_GetIntValue(db, "reqTrans", 0, 0);
-  reqBalance=GWEN_DB_GetIntValue(db, "reqBalance", 0, 0);
-  reqSto=GWEN_DB_GetIntValue(db, "reqSto", 0, 0);
-  reqSepaSto=GWEN_DB_GetIntValue(db, "reqSepaSto", 0, 0);
-  reqEStatements=GWEN_DB_GetIntValue(db, "reqEStatements", 0, 0);
-  ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
-  s=GWEN_DB_GetCharValue(db, "fromDate", 0, 0);
-  if (s && *s) {
-    fromDate=GWEN_Date_fromStringWithTemplate(s, "YYYYMMDD");
-    if (fromDate==NULL) {
-      DBG_ERROR(0, "Invalid fromdate value \"%s\"", s);
-      return 1;
-    }
-  }
-  s=GWEN_DB_GetCharValue(db, "toDate", 0, 0);
-  if (s && *s) {
-    toDate=GWEN_Date_fromStringWithTemplate(s, "YYYYMMDD");
-    if (toDate==NULL) {
-      DBG_ERROR(0, "Invalid todate value \"%s\"", s);
-      GWEN_Date_free(fromDate);
-      return 1;
-    }
-  }
-
-  rv=AB_Banking_Init(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    GWEN_Date_free(toDate);
-    GWEN_Date_free(fromDate);
-    return 2;
-  }
-
-  rv=getSelectedAccounts(ab, db, &al);
-  if (rv<0) {
-    if (rv==GWEN_ERROR_NOT_FOUND) {
-      DBG_ERROR(0, "No matching accounts");
-    }
-    else {
-      DBG_ERROR(0, "Error getting selected accounts (%d)", rv);
-    }
-    GWEN_Date_free(toDate);
-    GWEN_Date_free(fromDate);
-    AB_Banking_Fini(ab);
-    return 2;
-  }
-
-  jobList=AB_Transaction_List2_new();
-
-  as=AB_AccountSpec_List_First(al);
-  while(as) {
-    uint32_t aid;
-
-    aid=AB_AccountSpec_GetUniqueId(as);
-
-    if (reqTrans) {
-      AB_TRANSACTION *j;
-  
-      j=AB_Transaction_new();
-      AB_Transaction_SetUniqueAccountId(j, aid);
-      AB_Transaction_SetCommand(j, AB_Transaction_CommandGetTransactions);
-      if (1) { /* TODO: check availability */
-        if (fromDate)
-          AB_Transaction_SetFirstDate(j, fromDate);
-        if (toDate)
-          AB_Transaction_SetLastDate(j, toDate);
-        AB_Transaction_List2_PushBack(jobList, j);
-        requests++;
-      }
-      else {
-        if (ignoreUnsupported) {
-          DBG_ERROR(0, "Ignoring transfer request for %lu: Not supported.", (unsigned long int) aid);
-          AB_Transaction_free(j);
-        }
-        else {
-          DBG_ERROR(0, "Error requesting transfers for account %lu: Not supported.", (unsigned long int) aid);
-          AB_Transaction_free(j);
-          AB_Transaction_List2_free(jobList);
-          AB_AccountSpec_List_free(al);
-          GWEN_Date_free(toDate);
-          GWEN_Date_free(fromDate);
-          AB_Banking_Fini(ab);
-          return 3;
-        }
-      }
-    }
-
-    if (reqBalance) {
-      AB_TRANSACTION *j;
-  
-      j=AB_Transaction_new();
-      AB_Transaction_SetUniqueAccountId(j, aid);
-      AB_Transaction_SetCommand(j, AB_Transaction_CommandGetBalance);
-      if (1) { /* TODO: check availability */
-        AB_Transaction_List2_PushBack(jobList, j);
-        requests++;
-      }
-      else {
-        if (ignoreUnsupported) {
-          DBG_ERROR(0, "Ignoring balance request for %lu: Not supported.", (unsigned long int) aid);
-          AB_Transaction_free(j);
-        }
-        else {
-          DBG_ERROR(0, "Error requesting balance for account %lu: Not supported.", (unsigned long int) aid);
-          AB_Transaction_free(j);
-          AB_Transaction_List2_free(jobList);
-          AB_AccountSpec_List_free(al);
-          GWEN_Date_free(toDate);
-          GWEN_Date_free(fromDate);
-          AB_Banking_Fini(ab);
-          return 3;
-        }
-      }
-    }
-
-    if (reqSto) {
-      AB_TRANSACTION *j;
-  
-      j=AB_Transaction_new();
-      AB_Transaction_SetUniqueAccountId(j, aid);
-      AB_Transaction_SetCommand(j, AB_Transaction_CommandGetStandingOrders);
-      if (1) { /* TODO: check availability */
-        AB_Transaction_List2_PushBack(jobList, j);
-        requests++;
-      }
-      else {
-        if (ignoreUnsupported) {
-          DBG_ERROR(0, "Ignoring standing order request for %lu: Not supported.", (unsigned long int) aid);
-          AB_Transaction_free(j);
-        }
-        else {
-          DBG_ERROR(0, "Error requesting standing orders for account %lu: Not supported.", (unsigned long int) aid);
-          AB_Transaction_free(j);
-          AB_Transaction_List2_free(jobList);
-          AB_AccountSpec_List_free(al);
-          GWEN_Date_free(toDate);
-          GWEN_Date_free(fromDate);
-          AB_Banking_Fini(ab);
-          return 3;
-        }
-      }
-    }
-
-    if (reqSepaSto) {
-      AB_TRANSACTION *j;
-  
-      j=AB_Transaction_new();
-      AB_Transaction_SetUniqueAccountId(j, aid);
-      AB_Transaction_SetCommand(j, AB_Transaction_CommandSepaGetStandingOrders);
-      if (1) { /* TODO: check availability */
-        AB_Transaction_List2_PushBack(jobList, j);
-        requests++;
-      }
-      else {
-        if (ignoreUnsupported) {
-          DBG_ERROR(0, "Ignoring SEPA standing order request for %lu: Not supported.", (unsigned long int) aid);
-          AB_Transaction_free(j);
-        }
-        else {
-          DBG_ERROR(0, "Error requesting SEPA standing orders for account %lu: Not supported.", (unsigned long int) aid);
-          AB_Transaction_free(j);
-          AB_Transaction_List2_free(jobList);
-          AB_AccountSpec_List_free(al);
-          GWEN_Date_free(toDate);
-          GWEN_Date_free(fromDate);
-          AB_Banking_Fini(ab);
-          return 3;
-        }
-      }
-    }
-
-    if (reqEStatements) {
-      AB_TRANSACTION *j;
-  
-      j=AB_Transaction_new();
-      AB_Transaction_SetUniqueAccountId(j, aid);
-      AB_Transaction_SetCommand(j, AB_Transaction_CommandGetEStatements);
-      if (1) { /* TODO: check availability */
-        AB_Transaction_List2_PushBack(jobList, j);
-        requests++;
-      }
-      else {
-        if (ignoreUnsupported) {
-          DBG_ERROR(0, "Ignoring electronic statement request for %lu: Not supported.", (unsigned long int) aid);
-          AB_Transaction_free(j);
-        }
-        else {
-          DBG_ERROR(0, "Error requesting electronic statements for account %lu: Not supported.", (unsigned long int) aid);
-          AB_Transaction_free(j);
-          AB_Transaction_List2_free(jobList);
-          AB_AccountSpec_List_free(al);
-          GWEN_Date_free(toDate);
-          GWEN_Date_free(fromDate);
-          AB_Banking_Fini(ab);
-          return 3;
-        }
-      }
-    }
-
-    as=AB_AccountSpec_List_Next(as);
-  } /* while (as) */
-
-  AB_AccountSpec_List_free(al);
-  GWEN_Date_free(toDate);
-  GWEN_Date_free(fromDate);
-
-  if (requests) {
-    AB_IMEXPORTER_CONTEXT *ctx;
-
-    DBG_INFO(0, "%d requests created", requests);
-    ctx=AB_ImExporterContext_new();
-    rv=AB_Banking_SendCommands(ab, jobList, ctx);
-    AB_Transaction_List2_free(jobList);
-    if (rv) {
-      fprintf(stderr, "Error on sendCommands (%d)\n", rv);
-      AB_ImExporterContext_free(ctx);
-      return 3;
-    }
-
-    rv=writeContext(ctxFile, ctx);
-    AB_ImExporterContext_free(ctx);
-    if (rv<0) {
-      DBG_ERROR(0, "Error writing context file (%d)", rv);
-      AB_Banking_Fini(ab);
-      return 4;
-    }
-  }
-  else {
-    DBG_ERROR(0, "No requests created");
-    AB_Transaction_List2_free(jobList);
-    AB_Banking_Fini(ab);
-    return 4;
-  }
-
-  rv=AB_Banking_Fini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    return 5;
-  }
-
-  return 0;
+  return db;
 }
-
-
-
-
 
 

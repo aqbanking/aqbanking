@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue May 03 2005
- copyright   : (C) 2005-2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -24,11 +24,7 @@
 
 
 
-static
-int fillGaps(AB_BANKING *ab,
-	     GWEN_DB_NODE *dbArgs,
-	     int argc,
-	     char **argv) {
+int fillGaps(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
 #pragma message "Need to implement this"
 #if 0
   GWEN_DB_NODE *db;

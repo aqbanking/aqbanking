@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue May 03 2005
- copyright   : (C) 2005-2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -23,11 +23,7 @@
 
 
 
-static
-int listProfiles(AB_BANKING *ab,
-                 GWEN_DB_NODE *dbArgs,
-                 int argc,
-                 char **argv) {
+int listProfiles(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   GWEN_DB_NODE *db;
   GWEN_DB_NODE *dbProfiles;
   int rv;

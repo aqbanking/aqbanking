@@ -25,18 +25,8 @@
 #include <unistd.h>
 
 
-typedef enum
-{
-    AQBANKING_TOOL_SEPA_TRANSFERS
-    , AQBANKING_TOOL_SEPA_DEBITNOTES
-} AQBANKING_TOOL_MULTISEPA_TYPE;
 
-static
-int sepaMultiJobs(AB_BANKING *ab,
-                   GWEN_DB_NODE *dbArgs,
-                   int argc,
-                   char **argv,
-                   AQBANKING_TOOL_MULTISEPA_TYPE multisepa_type) {
+int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv, AQBANKING_TOOL_MULTISEPA_TYPE multisepa_type) {
 #pragma message "Need to implement this"
 #if 0
   GWEN_DB_NODE *db;

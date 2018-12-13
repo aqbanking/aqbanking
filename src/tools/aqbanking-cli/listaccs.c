@@ -16,11 +16,7 @@
 
 
 
-static
-int listAccs(AB_BANKING *ab,
-             GWEN_DB_NODE *dbArgs,
-             int argc,
-             char **argv) {
+int listAccs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   GWEN_DB_NODE *db;
   AB_ACCOUNT_SPEC_LIST *al=NULL;
   AB_ACCOUNT_SPEC *as;

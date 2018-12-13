@@ -107,11 +107,7 @@ void _dumpBal(const AB_BALANCE *bal,
 
 
 
-static
-int listBal(AB_BANKING *ab,
-            GWEN_DB_NODE *dbArgs,
-            int argc,
-            char **argv) {
+int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;
