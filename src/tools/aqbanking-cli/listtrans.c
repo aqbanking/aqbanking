@@ -27,20 +27,16 @@ int listTrans(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;
-  const char *outFile;
-  const char *exporterName;
-  const char *profileName;
-  const char *profileFile;
   AB_IMEXPORTER_CONTEXT *ctx=0;
-  AB_IMEXPORTER_CONTEXT *nctx=0;
   AB_IMEXPORTER_ACCOUNTINFO *iea=0;
   uint32_t aid;
   const char *bankId;
   const char *accountId;
-  const char *bankName;
-  const char *accountName;
+  const char *subAccountId;
+  const char *iban;
   int transactionType=0;
   int transactionCommand=0;
+  const char *tmplString;
   const char *s;
   const GWEN_ARGS args[]={
   {
@@ -78,25 +74,25 @@ int listTrans(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "bankName",                   /* name */
+    GWEN_ArgsType_Char,           /* type */
+    "subAccountId",                /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
-    "N",                          /* short option */
-    "bankname",                   /* long option */
-    "Specify the bank name",      /* short description */
-    "Specify the bank name"       /* long description */
+    "aa",                          /* short option */
+    "subaccount",                   /* long option */
+    "Specify the sub account id (Unterkontomerkmal)",    /* short description */
+    "Specify the sub account id (Unterkontomerkmal)"     /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "accountName",                /* name */
+    GWEN_ArgsType_Char,           /* type */
+    "iban",                       /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
-    "n",                          /* short option */
-    "accountname",                    /* long option */
-    "Specify the account name",     /* short description */
-    "Specify the account name"      /* long description */
+    "A",                          /* short option */
+    "iban",                    /* long option */
+    "Specify the iban of your account",      /* short description */
+    "Specify the iban of your account"       /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -134,46 +130,13 @@ int listTrans(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsType_Char,            /* type */
-    "outFile",                    /* name */
+    "template",                    /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
-    "o",                          /* short option */
-    "outfile",                    /* long option */
-    "Specify the file to store the data in",   /* short description */
-    "Specify the file to store the data in"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "exporterName",               /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "exporter",                    /* long option */
-    "Specify the exporter to use",   /* short description */
-    "Specify the exporter to use"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "profileName",                /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "profile",                    /* long option */
-    "Specify the export profile to use",   /* short description */
-    "Specify the export profile to use"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "profileFile",                /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "profile-file",               /* long option */
-    "Specify the file to load the export profile from",/* short description */
-    "Specify the file to load the export profile from" /* long description */
+    "T",                          /* short option */
+    "template",                       /* long option */
+    "Specify the template for the transaction list output",      /* short description */
+    "Specify the template for the transaction list output"       /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
@@ -210,15 +173,21 @@ int listTrans(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     return 0;
   }
 
-  exporterName=GWEN_DB_GetCharValue(db, "exporterName", 0, "csv");
-  profileName=GWEN_DB_GetCharValue(db, "profileName", 0, "default");
-  profileFile=GWEN_DB_GetCharValue(db, "profileFile", 0, NULL);
+  /* read command line arguments */
   aid=(uint32_t)GWEN_DB_GetIntValue(db, "uniqueAccountId", 0, 0);
   bankId=GWEN_DB_GetCharValue(db, "bankId", 0, 0);
-  bankName=GWEN_DB_GetCharValue(db, "bankName", 0, 0);
   accountId=GWEN_DB_GetCharValue(db, "accountId", 0, 0);
-  accountName=GWEN_DB_GetCharValue(db, "accountName", 0, 0);
-  outFile=GWEN_DB_GetCharValue(db, "outFile", 0, 0);
+  subAccountId=GWEN_DB_GetCharValue(db, "subAccountId", 0, 0);
+  iban=GWEN_DB_GetCharValue(db, "iban", 0, 0);
+  tmplString=GWEN_DB_GetCharValue(db, "template", 0,
+				  "$(dateOrValutaDateAsString)\t"
+				  "$(valueAsString)\t"
+				  "$(localBankcode)\t"
+				  "$(localAccountNumber)\t"
+				  "$(localIban)\t"
+				  "$(remoteName)\t"
+				  "$(remoteIban)\t"
+				  "$(purpose)");
 
   s=GWEN_DB_GetCharValue(db, "transactionType", 0, NULL);
   if (s && *s) {
@@ -238,6 +207,7 @@ int listTrans(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     }
   }
 
+  /* init AqBanking */
   rv=AB_Banking_Init(ab);
   if (rv) {
     DBG_ERROR(0, "Error on init (%d)", rv);
@@ -253,69 +223,92 @@ int listTrans(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     return 4;
   }
 
-  nctx=AB_ImExporterContext_new();
+  /* copy context, but only keep wanted accounts and transactions */
   iea=AB_ImExporterContext_GetFirstAccountInfo(ctx);
   while(iea) {
-    int matches=1;
-    const char *s;
-
-    if (matches && bankId) {
-      s=AB_ImExporterAccountInfo_GetBankCode(iea);
-      if (!s || !*s || -1==GWEN_Text_ComparePattern(s, bankId, 0))
-        matches=0;
-    }
-
-    if (matches && bankName) {
-      s=AB_ImExporterAccountInfo_GetBankName(iea);
-      if (!s || !*s || -1==GWEN_Text_ComparePattern(s, bankName, 0))
-        matches=0;
-    }
-
-    if (matches && aid) {
-      uint32_t id;
-
-      id=AB_ImExporterAccountInfo_GetAccountId(iea);
-      if (aid!=id)
-        matches=0;
-    }
-
-    if (matches && accountId) {
-      s=AB_ImExporterAccountInfo_GetAccountNumber(iea);
-      if (!s || !*s || -1==GWEN_Text_ComparePattern(s, accountId, 0))
-        matches=0;
-    }
-    if (matches && accountName) {
-      s=AB_ImExporterAccountInfo_GetAccountName(iea);
-      if (!s || !*s || -1==GWEN_Text_ComparePattern(s, accountName, 0))
-        matches=0;
-    }
-
-    if (matches) {
-      AB_IMEXPORTER_ACCOUNTINFO *nai;
+    if (AB_ImExporterAccountInfo_Matches(iea,
+                                         aid,  /* unique account id */
+                                         "*",
+                                         bankId,
+                                         accountId,
+                                         subAccountId,
+                                         iban,
+                                         "*", /* currency */
+                                         AB_AccountType_Unknown)) {
       AB_TRANSACTION_LIST *tl;
 
-      nai=AB_ImExporterAccountInfo_dup(iea);
-      tl=AB_ImExporterAccountInfo_GetTransactionList(nai);
-      if (tl)
-        AB_Transaction_List_KeepByType(tl, transactionType, transactionCommand);
+      tl=AB_ImExporterAccountInfo_GetTransactionList(iea);
+      if (tl) {
+	const AB_TRANSACTION *t;
+	GWEN_BUFFER *dbuf;
 
-      AB_ImExporterContext_AddAccountInfo(nctx, nai);
-    } /* if matches */
+	dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+	t=AB_Transaction_List_FindFirstByType(tl, transactionType, transactionCommand);
+	while(t) {
+	  GWEN_DB_NODE *dbTransaction;
+	  const AB_VALUE *v;
+	  const GWEN_DATE *dt;
+
+	  dbTransaction=GWEN_DB_Group_new("transaction");
+	  AB_Transaction_toDb(t, dbTransaction);
+
+	  /* translate value */
+	  v=AB_Transaction_GetValue(t);
+	  if (v) {
+	    AB_Value_toHumanReadableString(v, dbuf, 2);
+	    GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS, "valueAsString", GWEN_Buffer_GetStart(dbuf));
+	    GWEN_Buffer_Reset(dbuf);
+	  }
+
+	  /* translate date */
+	  dt=AB_Transaction_GetDate(t);
+	  if (dt) {
+	    rv=GWEN_Date_toStringWithTemplate(dt, I18N("DD.MM.YYYY"), dbuf);
+	    if (rv>=0) {
+	      GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS, "dateAsString", GWEN_Buffer_GetStart(dbuf));
+	    }
+	    GWEN_Buffer_Reset(dbuf);
+	  }
+
+	  /* translate valuta date */
+	  dt=AB_Transaction_GetValutaDate(t);
+	  if (dt) {
+	    rv=GWEN_Date_toStringWithTemplate(dt, I18N("DD.MM.YYYY"), dbuf);
+	    if (rv>=0) {
+	      GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS, "valutaDateAsString", GWEN_Buffer_GetStart(dbuf));
+	    }
+	    GWEN_Buffer_Reset(dbuf);
+	  }
+
+	  /* translate date or valuta date */
+	  dt=AB_Transaction_GetDate(t);
+	  if (dt==NULL)
+	    dt=AB_Transaction_GetValutaDate(t);
+	  if (dt) {
+	    rv=GWEN_Date_toStringWithTemplate(dt, I18N("DD.MM.YYYY"), dbuf);
+	    if (rv>=0) {
+	      GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS, "dateOrValutaDateAsString", GWEN_Buffer_GetStart(dbuf));
+	    }
+	    GWEN_Buffer_Reset(dbuf);
+	  }
+
+
+	  replaceVars(tmplString, dbTransaction, dbuf);
+	  fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(dbuf));
+	  GWEN_Buffer_Reset(dbuf);
+
+	  t=AB_Transaction_List_FindNextByType(t, transactionType, transactionCommand);
+	}
+	GWEN_Buffer_free(dbuf);
+      }
+    }
+
     iea=AB_ImExporterAccountInfo_List_Next(iea);
   } /* while */
   AB_ImExporterContext_free(ctx);
 
-  /* export new context */
-  rv=AB_Banking_ExportToFileWithProfile(ab, exporterName, nctx,
-					profileName, profileFile,
-                                        outFile);
-  if (rv<0) {
-    DBG_ERROR(0, "Error exporting (%d).", rv);
-    AB_ImExporterContext_free(nctx);
-    return 4;
-  }
-  AB_ImExporterContext_free(nctx);
-
+  /* deinit */
   rv=AB_Banking_Fini(ab);
   if (rv) {
     fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
