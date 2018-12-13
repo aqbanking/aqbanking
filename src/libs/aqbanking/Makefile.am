@@ -22,7 +22,8 @@ EXTRA_DIST=\
  banking_online.c \
  banking_transaction.c \
  banking_update.c \
- banking_user.c
+ banking_user.c \
+ banking_compat.c
 
 
 

@@ -77,6 +77,7 @@ GWEN_INHERIT_FUNCTIONS(AB_BANKING)
 #include "banking_imex.c"
 #include "banking_bankinfo.c"
 #include "banking_dialogs.c"
+#include "banking_compat.c"
 
 
 

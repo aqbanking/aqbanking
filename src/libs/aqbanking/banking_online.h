@@ -83,6 +83,16 @@ AQBANKING_API int AB_Banking_SendCommands(AB_BANKING *ab,
 
 
 
+/** @name Compatibility Functions for KMyMoney
+ *
+ */
+/*@{*/
+
+AQBANKING_API int AB_Banking_SetAccountSpecAlias(AB_BANKING *ab, const AB_ACCOUNT_SPEC *as, const char *alias);
+AQBANKING_API AB_ACCOUNT_SPEC *AB_Banking_GetAccountSpecByAlias(AB_BANKING *ab, const char *alias);
+
+/*@}*/
+
 
 
 #ifdef __cplusplus
