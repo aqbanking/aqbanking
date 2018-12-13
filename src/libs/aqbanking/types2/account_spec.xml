@@ -71,8 +71,8 @@
 
 
         <inline loc="code">
-          <typeFlagsMask>with_list1</typeFlagsMask>
-          <typeFlagsValue>with_list1</typeFlagsValue>
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
           <content>
              int $(struct_prefix)_Matches(const $(struct_type) *a,
                                           const char *backendName,
@@ -193,7 +193,7 @@
                  const char *lbackendName;
              
                  lbackendName=$(struct_prefix)_GetBackendName(a);
-                 if (! (lbackendName && *lbackendName) ) {
+                 if (! (lbackendName &amp;&amp; *lbackendName) ) {
                    DBG_ERROR(AQBANKING_LOGDOMAIN,
                              "Account: %s/%s/%s: No backend, ignoring",
                              $(struct_prefix)_GetCountry(a),
