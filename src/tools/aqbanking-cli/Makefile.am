@@ -16,7 +16,6 @@ aqbanking_cli_SOURCES= \
   main.c \
   addsepadebitnote.c \
   addtransaction.c \
-  chkacc.c \
   chkiban.c \
   fillgaps.c \
   import.c \

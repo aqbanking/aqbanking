@@ -324,7 +324,8 @@ int main(int argc, char **argv) {
       return 1;
     }
 
-    if (strcasecmp(cmd, "listaccs")==0) {
+    if (strcasecmp(cmd, "listaccs")==0 ||
+        strcasecmp(cmd, "listaccounts")==0) {
       rv=listAccs(ab, db, argc, argv);
     }
     else if (strcasecmp(cmd, "listbal")==0) {
@@ -334,15 +335,12 @@ int main(int argc, char **argv) {
       rv=listTrans(ab, db, argc, argv);
     }
     else if (strcasecmp(cmd, "listtransfers")==0) {
-      fprintf(stderr, "ERROR: Please use the command \"listtrans\" and specify the transaction type via \"-tt TYPE\"\n");
+      fprintf(stderr, "ERROR: Please use the commands \"listtrans\" or \"export\" and specify the transaction type via \"-tt TYPE\"\n");
       GWEN_DB_Group_free(db);
       return 1;
     }
     else if (strcasecmp(cmd, "request")==0) {
       rv=request(ab, db, argc, argv);
-    }
-    else if (strcasecmp(cmd, "chkacc")==0) {
-      rv=chkAcc(ab, db, argc, argv);
     }
     else if (strcasecmp(cmd, "chkiban")==0) {
       rv=chkIban(ab, db, argc, argv);
