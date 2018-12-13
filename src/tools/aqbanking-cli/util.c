@@ -353,17 +353,17 @@ AB_TRANSACTION *mkSepaTransfer(GWEN_DB_NODE *db, int cmd) {
 
 
 
-AB_TRANSACTION *mkSepaDebitNote(GWEN_DB_NODE *db) {
+AB_TRANSACTION *mkSepaDebitNote(GWEN_DB_NODE *db, int cmd) {
   AB_TRANSACTION *t;
   const char *s;
 
-  t=mkSepaTransfer(db, AB_Transaction_CommandSepaDebitNote);
+  t=mkSepaTransfer(db, cmd);
   if (t==NULL) {
     DBG_INFO(0, "here");
     return NULL;
   }
 
-  AB_Transaction_SetType(t, AB_Transaction_TypeDebitNote);
+  AB_Transaction_SetType(t, cmd);
   
   /* read some additional fields */
   s=GWEN_DB_GetCharValue(db, "creditorSchemeId", 0, 0);

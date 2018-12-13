@@ -389,7 +389,10 @@ int main(int argc, char **argv) {
       rv=addTransaction(ab, db, argc, argv);
     }
     else if (strcasecmp(cmd, "addsepadebitnote")==0) {
-      rv=addSepaDebitNote(ab, db, argc, argv);
+      rv=addSepaDebitNote(ab, db, argc, argv, 0);
+    }
+    else if (strcasecmp(cmd, "addFlashSepadebitnote")==0) {
+      rv=addSepaDebitNote(ab, db, argc, argv, 1);
     }
     else if (strcasecmp(cmd, "sepasto")==0) {
       rv=sepaRecurTransfer(ab, db, argc, argv);
