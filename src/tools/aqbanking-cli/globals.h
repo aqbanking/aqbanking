@@ -135,6 +135,7 @@ int chkIban(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int control(AB_BANKING *ab, const char *ctrlBackend, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int fillGaps(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int import(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
+int exportCtx(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int listAccs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int listTrans(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);

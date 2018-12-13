@@ -198,7 +198,7 @@ int main(int argc, char **argv) {
                   I18N("Export balances from a context file."));
 
     cmdAddHelpStr(ubuf, "listtrans",
-                  I18N("Export transactions from a context file."));
+                  I18N("List transactions or transfers from a context file."));
 
     cmdAddHelpStr(ubuf, "listtransfers",
                   I18N("Export transactions from a context file which match certain status."));
@@ -206,14 +206,14 @@ int main(int argc, char **argv) {
     cmdAddHelpStr(ubuf, "request",
                   I18N("Requests transactions, balances, standing orders etc."));
 
-    cmdAddHelpStr(ubuf, "chkacc",
-                  I18N("Check a combination of bank id and account number"));
-
     cmdAddHelpStr(ubuf, "chkiban",
                   I18N("Check an IBAN"));
 
     cmdAddHelpStr(ubuf, "import",
                   I18N("Import a file into an import context file"));
+
+    cmdAddHelpStr(ubuf, "export",
+                  I18N("Export an import context file into a file (previously \"listtrans\")"));
 
     cmdAddHelpStr(ubuf, "transfer",
                   I18N("Issue a single transfer (data from command line)"));
@@ -242,7 +242,7 @@ int main(int argc, char **argv) {
     cmdAddHelpStr(ubuf, "sepadebitnotes",
                   I18N("Issue a number of SEPA debit notes (data from a file)"));
 
-    cmdAddHelpStr(ubuf, "addtrans",
+    cmdAddHelpStr(ubuf, "addtransfer",
                   I18N("Add a transfer to an existing import context file"));
 
     cmdAddHelpStr(ubuf, "addsepadebitnote",
@@ -349,6 +349,9 @@ int main(int argc, char **argv) {
     }
     else if (strcasecmp(cmd, "import")==0) {
       rv=import(ab, db, argc, argv);
+    }
+    else if (strcasecmp(cmd, "export")==0) {
+      rv=exportCtx(ab, db, argc, argv);
     }
     else if (strcasecmp(cmd, "sepatransfer")==0) {
       rv=sepaTransfer(ab, db, argc, argv);

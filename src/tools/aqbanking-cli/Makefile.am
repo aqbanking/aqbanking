@@ -20,6 +20,7 @@ aqbanking_cli_SOURCES= \
   chkiban.c \
   fillgaps.c \
   import.c \
+  export.c \
   listaccs.c \
   listbal.c \
   listprofiles.c \
