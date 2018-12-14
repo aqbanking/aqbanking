@@ -604,14 +604,15 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 	  if (blz) {
 	    *blz=0;
             blz++;
-	  }
-	  p3=blz;
-	  while(*p3 && isdigit(*p3))
-	    p3++;
-	  *p3=0;
 
-	  AHB_SWIFT__SetCharValue(data, flags, "remoteBankCode", blz);
-	  AHB_SWIFT__SetCharValue(data, flags, "remoteAccountNumber", kto);
+	    p3=blz;
+	    while(*p3 && isdigit(*p3))
+	      p3++;
+	    *p3=0;
+
+	    AHB_SWIFT__SetCharValue(data, flags, "remoteBankCode", blz);
+	    AHB_SWIFT__SetCharValue(data, flags, "remoteAccountNumber", kto);
+	  }
 	}
 	else {
 	  AHB_SWIFT__SetCharValue(data, flags, "purpose", p1);
@@ -1069,8 +1070,8 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
   }
   AHB_SWIFT__SetCharValue(data, flags, "value", s);
   GWEN_Memory_dealloc(s);
-  bleft-=p2-p;
-  p=p2;
+  /*bleft-=p2-p;*/
+  /*p=p2;*/
 
   return 0;
 }

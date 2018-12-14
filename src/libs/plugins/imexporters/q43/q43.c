@@ -276,9 +276,9 @@ int AH_ImExporterQ43_ReadDocument(AB_IMEXPORTER *ie,
 	/* get amount */
 	strncpy(amount, p+28, 14);
 	amount[14]=0;
-	strncat(amount, "/100:", sizeof(amount)-1);
+	strncat(amount, "/100:", sizeof(amount)-strlen(amount)-1);
         if (currency)
-	  strncat(amount, currency, sizeof(amount)-1);
+	  strncat(amount, currency, sizeof(amount)-strlen(amount)-1);
 	amount[sizeof(amount)-1]=0;
 	v=AB_Value_fromString(amount);
 	if (v==NULL) {

@@ -950,7 +950,10 @@ int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
 			    "</html>"),
 		       pwbuf,
 		       0, 8, 0);
-
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
   job=AH_Job_ChangePin_new(pro, u, pwbuf);
   if (!job) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported, should not happen");

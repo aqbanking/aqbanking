@@ -241,7 +241,7 @@ int AHB_SWIFT535_Parse_90B(const AHB_SWIFT_TAG *tg,
       GWEN_Memory_dealloc(s);
       return 0;
     }
-    p+=strlen(s);
+    /*p+=strlen(s); */
     AHB_SWIFT__SetCharValue535(data, flags, "unitPrice", s);
 
     GWEN_Memory_dealloc(s);

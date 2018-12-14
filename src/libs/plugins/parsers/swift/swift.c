@@ -247,7 +247,7 @@ int AHB_SWIFT_GetNextSubTag(const char **sptr, AHB_SWIFT_SUBTAG **tptr) {
 	if (*t==0x0a)
 	  t++;
 	if (*t && isdigit(*t)) {
-	  nextId+=*(t++)-'0';
+	  /*nextId+=*(t++)-'0';*/
 	  /* TODO: check nextId */
 	  /* s is the beginning of a new subtag, so the end has been found */
 	  break;

@@ -403,7 +403,6 @@ int AH_EditAccountDialog_fromGui(GWEN_DIALOG *dlg, AB_ACCOUNT *a, int quiet) {
     GWEN_Buffer_AppendString(tbuf, s);
     GWEN_Text_CondenseBuffer(tbuf);
     removeAllSpaces((uint8_t*)GWEN_Buffer_GetStart(tbuf));
-    s=GWEN_Buffer_GetStart(tbuf);
     if (a)
       AB_Account_SetAccountNumber(a, GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_free(tbuf);

@@ -488,7 +488,6 @@ int getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db, AB_ACCOUNT_SPEC_LIST *
       backendName=GWEN_DB_GetCharValue(db, "backendName", 0, "*");
       country=GWEN_DB_GetCharValue(db, "country", 0, "*");
       bankId=GWEN_DB_GetCharValue(db, "bankId", 0, "*");
-      country=GWEN_DB_GetCharValue(db, "country", 0, "*");
       accountId=GWEN_DB_GetCharValue(db, "accountId", 0, "*");
       subAccountId=GWEN_DB_GetCharValue(db, "subAccountId", 0, "*");
       iban=GWEN_DB_GetCharValue(db, "iban", 0, "*");

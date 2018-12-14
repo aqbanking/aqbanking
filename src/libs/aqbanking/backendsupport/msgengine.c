@@ -205,13 +205,13 @@ int AB_MsgEngine_TypeRead(GWEN_MSGENGINE *e,
   else if (strcasecmp(type, "dword")==0) {
     int bigEndian;
     int isBCD;
-    uint32_t value;
+    uint32_t value=0;
     int c;
     char numbuf[32];
 
     bigEndian=atoi(GWEN_XMLNode_GetProperty(node, "bigEndian", "1"));
     isBCD=atoi(GWEN_XMLNode_GetProperty(node, "bcd", "0"));
-    value=0;
+
     if (bigEndian) {
       c=GWEN_Buffer_ReadByte(msgbuf);
       if (c==-1)

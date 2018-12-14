@@ -595,7 +595,6 @@ int APY_EditUserDialog_HandleActivatedSecret(GWEN_DIALOG *dlg) {
     GWEN_Text_UnescapeToBufferTolerant(GWEN_Buffer_GetStart(xbuf), sbuf1);
     if (t) {
       GWEN_Text_UnescapeToBufferTolerant(t, sbuf2);
-      t=GWEN_Buffer_GetStart(sbuf2);
       if (t2) {
 	GWEN_Text_UnescapeToBufferTolerant(t2, sbuf3);
       }
