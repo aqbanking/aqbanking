@@ -15,8 +15,6 @@
 # include <windows.h>
 #endif
 
-static uint32_t ab_init_count=0;
-
 static uint32_t ab_plugin_init_count=0;
 
 static GWEN_PLUGIN_MANAGER *ab_pluginManagerBankInfo=NULL;
@@ -376,19 +374,17 @@ int AB_Banking_PluginSystemFini(void) {
 
 
 int AB_Banking_Init(AB_BANKING *ab) {
+  int rv;
+
   assert(ab);
   /* do basic initialisation for all AB_BANKING objects */
-  if (ab_init_count==0) {
-    int rv;
 
-    rv=AB_Banking_PluginSystemInit();
-    if (rv) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-      AB_Banking_PluginSystemFini();
-      return rv;
-    }
+  rv=AB_Banking_PluginSystemInit();
+  if (rv) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    AB_Banking_PluginSystemFini();
+    return rv;
   }
-  ab_init_count++;
 
   if (ab->initCount==0) {
     int rv;
@@ -396,10 +392,10 @@ int AB_Banking_Init(AB_BANKING *ab) {
     GWEN_DB_NODE *db=NULL;
 
     currentVersion=
-      (AQHBCI_VERSION_MAJOR<<24) |
-      (AQHBCI_VERSION_MINOR<<16) |
-      (AQHBCI_VERSION_PATCHLEVEL<<8) |
-      AQHBCI_VERSION_BUILD;
+      (AQBANKING_VERSION_MAJOR<<24) |
+      (AQBANKING_VERSION_MINOR<<16) |
+      (AQBANKING_VERSION_PATCHLEVEL<<8) |
+      AQBANKING_VERSION_BUILD;
 
     /* check for config manager (created by AB_Banking_Init) */
     if (ab->configMgr==NULL) {
@@ -439,6 +435,8 @@ int AB_Banking_Init(AB_BANKING *ab) {
 
 
 int AB_Banking_Fini(AB_BANKING *ab) {
+  int rv;
+
   /* deinit local stuff */
   if (ab->initCount<1) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -448,7 +446,6 @@ int AB_Banking_Fini(AB_BANKING *ab) {
 
   if (--(ab->initCount)==0) {
     GWEN_DB_NODE *db=NULL;
-    int rv;
 
     /* check for config manager (created by AB_Banking_Init) */
     if (ab->configMgr==NULL) {
@@ -503,20 +500,10 @@ int AB_Banking_Fini(AB_BANKING *ab) {
     AB_Banking_ClearCryptTokenList(ab);
   } /* if (--(ab->initCount)==0) */
 
-  /* deinit global stuff */
-  if (ab_init_count<1) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "AqBanking not initialized, internal error");
-    return GWEN_ERROR_INVALID;
-  }
-
-  if (--(ab_init_count)==0) {
-    int rv;
-
-    rv=AB_Banking_PluginSystemFini();
-    if (rv) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-    }
+  /* deinit global stuff (keeps its own counter) */
+  rv=AB_Banking_PluginSystemFini();
+  if (rv) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
   }
 
   return 0;
