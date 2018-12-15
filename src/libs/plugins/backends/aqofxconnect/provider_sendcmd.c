@@ -353,11 +353,11 @@ int AO_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTER
     AB_ACCOUNTQUEUE *aq;
     int rv;
 
-    GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info, I18N("Locking user %s"), AB_User_GetUserId(u));
+    GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info, "Locking customer \"%lu\"", (unsigned long int) AB_User_GetUniqueId(u));
     rv=AB_Provider_BeginExclUseUser(pro, u);
     if (rv<0) {
-      DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Could not lock customer [%s] (%d)", AB_User_GetCustomerId(u), rv);
-      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Error, I18N("Could not lock user %s (%d)"), AB_User_GetUserId(u), rv);
+      DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Could not lock user [%lu] (%d)", (unsigned long int) AB_User_GetUniqueId(u), rv);
+      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Error, I18N("Could not lock user \"%lu\""), (unsigned long int) AB_User_GetUniqueId(u));
       AB_Provider_EndExclUseUser(pro, u, 1);  /* abandon */
       return rv;
     }
@@ -374,10 +374,11 @@ int AO_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTER
       aq=AB_AccountQueue_List_Next(aq);
     } /* while aq */
 
-    GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info, I18N("Unlocking user %s"), AB_User_GetUserId(u));
+    GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info, I18N("Unlocking customer \"%lu\""), (unsigned long int) AB_User_GetUniqueId(u));
     rv=AB_Provider_EndExclUseUser(pro, u, 0);
     if (rv<0) {
-      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Error, I18N("Could not unlock user %s (%d)"), AB_User_GetUserId(u), rv);
+      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Error, I18N("Could not unlock user \"%lu\""), (unsigned long int) AB_User_GetUniqueId(u));
+      AB_Provider_EndExclUseUser(pro, u, 1); /* abandon */
       return rv;
     }
   }

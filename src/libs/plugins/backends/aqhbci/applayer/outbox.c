@@ -1278,29 +1278,22 @@ int AH_Outbox_LockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers){
   cbox=AH_Outbox__CBox_List_First(ob->userBoxes);
   while(cbox) {
     int rv;
-    char tbuf[256];
 
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Locking customer \"%s\"",
-	     AB_User_GetCustomerId(cbox->user));
-    snprintf(tbuf, sizeof(tbuf)-1,
-	     I18N("Locking user %s"),
-	     AB_User_GetUserId(cbox->user));
-    tbuf[sizeof(tbuf)-1]=0;
-    GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Info,
-			 tbuf);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Locking customer \"%lu\"",
+             (unsigned long int) AB_User_GetUniqueId(cbox->user));
+    GWEN_Gui_ProgressLog2(0,
+                          GWEN_LoggerLevel_Info,
+                          "Locking customer \"%lu\"",
+                          (unsigned long int) AB_User_GetUniqueId(cbox->user));
     rv=AB_Provider_BeginExclUseUser(ob->provider, cbox->user);
     if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN,
-	       "Could not lock customer [%s] (%d)",
-	       AB_User_GetCustomerId(cbox->user), rv);
-      snprintf(tbuf, sizeof(tbuf)-1,
-	       I18N("Could not lock user %s (%d)"),
-	       AB_User_GetUserId(cbox->user), rv);
-      tbuf[sizeof(tbuf)-1]=0;
-      GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
-			   tbuf);
+      DBG_ERROR(AQHBCI_LOGDOMAIN,
+               "Could not lock customer [%lu] (%d)", (unsigned long int) AB_User_GetUniqueId(cbox->user), rv);
+      GWEN_Gui_ProgressLog2(0,
+                            GWEN_LoggerLevel_Error,
+                            I18N("Could not lock user %lu (%d)"),
+                            (unsigned long int) AB_User_GetUniqueId(cbox->user),
+                            rv);
       AH_Outbox_UnlockUsers(ob, lockedUsers, 1); /* abandon */
       return rv;
     }
@@ -1329,14 +1322,24 @@ int AH_Outbox_UnlockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers, int abandon
     while(u) {
       int rv;
 
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Unlocking customer \"%s\"",
-	       AB_User_GetCustomerId(u));
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Unlocking customer \"%lu\"",
+               (unsigned long int) AB_User_GetUniqueId(u));
+      GWEN_Gui_ProgressLog2(0,
+                            GWEN_LoggerLevel_Info,
+                            "Unlocking customer \"%lu\"",
+                            (unsigned long int) AB_User_GetUniqueId(u));
       rv=AB_Provider_EndExclUseUser(ob->provider, u, abandon);
       if (rv<0) {
-	DBG_WARN(AQHBCI_LOGDOMAIN,
-		 "Could not unlock customer [%s] (%d)",
-		 AB_User_GetCustomerId(u), rv);
-	errors++;
+	DBG_ERROR(AQHBCI_LOGDOMAIN,
+                  "Could not unlock user %lu (%d)",
+                  (unsigned long int) AB_User_GetUniqueId(u),
+                  rv);
+        GWEN_Gui_ProgressLog2(0,
+                              GWEN_LoggerLevel_Error,
+                              I18N("Could not unlock user %lu (%d)"),
+                              (unsigned long int) AB_User_GetUniqueId(u),
+                              rv);
+        errors++;
       }
       u=AB_User_List2Iterator_Next(it);
     }
@@ -1423,21 +1426,13 @@ void AH_Outbox__FinishCBox(AH_OUTBOX *ob, AH_OUTBOX__CBOX *cbox){
     if (st==AH_JobStatusAnswered) {
       rv=AH_Job_Process(j, ob->context);
       if (rv) {
-        char buf[256];
-
-	DBG_ERROR(AQHBCI_LOGDOMAIN,
-		  "Error in job \"%s\": %d",
-		  AH_Job_GetName(j), rv);
-	buf[0]=0;
-        buf[sizeof(buf)-1]=0;
-        snprintf(buf, sizeof(buf)-1,
-                 I18N("Error processing job %s"),
-                 AH_Job_GetName(j));
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "Error in job \"%s\": %d", AH_Job_GetName(j), rv);
 	AH_Job_SetStatus(j, AH_JobStatusError);
 
-        GWEN_Gui_ProgressLog(0,
-			     GWEN_LoggerLevel_Error,
-			     buf);
+        GWEN_Gui_ProgressLog2(0,
+                              GWEN_LoggerLevel_Error,
+                              I18N("Error processing job %s"),
+                              AH_Job_GetName(j));
       }
     }
     else {
@@ -1448,32 +1443,6 @@ void AH_Outbox__FinishCBox(AH_OUTBOX *ob, AH_OUTBOX__CBOX *cbox){
     AH_Job_List_Add(j, ob->finishedJobs);
   } /* while */
   AH_Job_List_free(jl);
-
-#if 0
-  /* unlock customer if necessary */
-  if (cbox->isLocked) {
-    if (cbox->isLocked) {
-      int rv;
-
-      GWEN_Gui_ProgressLog2(0,
-			    GWEN_LoggerLevel_Info,
-			    I18N("Unlocking user %s"),
-			    AB_User_GetUserId(cbox->user));
-      DBG_INFO(AQHBCI_LOGDOMAIN,
-	       "Unlocking customer \"%s\"",
-	       AB_User_GetCustomerId(cbox->user));
-      rv=AB_Banking_EndExclUseUser(AH_HBCI_GetBankingApi(cbox->hbci),
-				   cbox->user,
-				   0);
-      cbox->isLocked=0;
-      if (rv<0) {
-	DBG_WARN(AQHBCI_LOGDOMAIN,
-		 "Could not unlock customer [%s] (%d)",
-		 AB_User_GetCustomerId(cbox->user), rv);
-      }
-    }
-  }
-#endif
 }
 
 
@@ -1576,27 +1545,15 @@ void AH_Outbox_Process(AH_OUTBOX *ob){
       int rv;
 
       /* only process answered jobs */
-      DBG_DEBUG(AQHBCI_LOGDOMAIN,
-		"Processing job \"%s\"", AH_Job_GetName(j));
+      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Processing job \"%s\"", AH_Job_GetName(j));
       rv=AH_Job_Process(j, ob->context);
       if (rv) {
-	char buf[256];
-
-	DBG_INFO(AQHBCI_LOGDOMAIN,
-		 "Error processing job \"%s\": %d",
-		 AH_Job_GetName(j), rv);
+	DBG_INFO(AQHBCI_LOGDOMAIN, "Error processing job \"%s\": %d", AH_Job_GetName(j), rv);
 	AH_Job_SetStatus(j, AH_JobStatusError);
-
-	buf[0]=0;
-	buf[sizeof(buf)-1]=0;
-	snprintf(buf, sizeof(buf)-1,
-		 I18N("Error processing job %s"),
-		 AH_Job_GetName(j));
-
-	GWEN_Gui_ProgressLog(
-			       0,
-			       GWEN_LoggerLevel_Error,
-			       buf);
+        GWEN_Gui_ProgressLog2(0,
+                              GWEN_LoggerLevel_Error,
+                              I18N("Error processing job %s"),
+                              AH_Job_GetName(j));
       }
     }
     j=AH_Job_List_Next(j);
@@ -1754,7 +1711,7 @@ int AH_Outbox_Execute(AH_OUTBOX *ob,
 			       GWEN_GUI_PROGRESS_SHOW_PROGRESS |
 			       GWEN_GUI_PROGRESS_SHOW_ABORT,
 			       I18N("Executing Jobs"),
-			       I18N("Now the jobs are send via their "
+			       I18N("Now the jobs are sent via their "
 				    "backends to the credit institutes."),
 			       AH_Outbox_CountTodoJobs(ob),
 			       0);
