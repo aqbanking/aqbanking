@@ -953,7 +953,7 @@
           </descr>
         </member>
 
-        <member name="idForApplication" type="uint32_t" >
+        <member name="idForApplication" type="uint32_t">
           <default>0</default>
           <preset>0</preset>
           <access>public</access>
@@ -964,14 +964,15 @@
           </descr>
         </member>
 
-        <member name="refIdForApplication" type="uint32_t" >
+
+        <member name="stringIdForApplication" type="char_ptr" maxlen="64">
           <default>0</default>
           <preset>0</preset>
           <access>public</access>
-          <flags>with_hash</flags>
+          <flags>with_hash with_getbymember</flags>
           <descr>
-            If this transaction is a response to a command send to a bank server then the idForApplication from
-            that reference command is stored here.
+            This is an id assigned by the application only.
+            This id is never changed by AqBanking.
           </descr>
         </member>
 
@@ -1367,6 +1368,15 @@
             <getflags>const</getflags>
             <descr>
               Creditor Scheme Identification" ("Glaeubiger-ID", assigned by Deutsche Bundesbank).
+            </descr>
+          </member>
+
+          <member name="originatorId" type="char_ptr" maxlen="32">
+            <access>public</access>
+            <flags>own with_hash</flags>
+            <setflags>const dup</setflags>
+            <getflags>const</getflags>
+            <descr>
             </descr>
           </member>
 
