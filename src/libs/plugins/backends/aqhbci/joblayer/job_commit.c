@@ -49,7 +49,7 @@ int AH_Job__Commit_Bpd(AH_JOB *j){
   const char *p;
   int i;
   int rv;
-  GWEN_MSGENGINE *e;
+  GWEN_MSGENGINE *msgEngine;
 
   //dbJob=GWEN_DB_GetFirstGroup(j->jobResponses);
   dbJob=j->jobResponses;
@@ -67,8 +67,8 @@ int AH_Job__Commit_Bpd(AH_JOB *j){
 
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Found BPD, replacing existing");
 
-  e=AH_User_GetMsgEngine(j->user);
-  assert(e);
+  msgEngine=AH_User_GetMsgEngine(j->user);
+  assert(msgEngine);
 
   /* create new BPD */
   bpd=AH_Bpd_new();
@@ -206,7 +206,7 @@ int AH_Job__Commit_Bpd(AH_JOB *j){
     GWEN_DB_NODE *bn;
     GWEN_DB_NODE *currJob;
 
-    bn=AH_Bpd_GetBpdJobs(bpd, GWEN_MsgEngine_GetProtocolVersion(e));
+    bn=AH_Bpd_GetBpdJobs(bpd, GWEN_MsgEngine_GetProtocolVersion(msgEngine));
     assert(bn);
 
     currJob=GWEN_DB_FindFirstGroup(dbRd, "job");
@@ -240,9 +240,9 @@ int AH_Job__Commit_Bpd(AH_JOB *j){
       DBG_INFO(AQHBCI_LOGDOMAIN, "Checking whether \"%s\" is a BPD job", GWEN_DB_GroupName(dbRd));
       segver=GWEN_DB_GetIntValue(dbRd, "head/version", 0, 0);
       /* get segment description (first try id, then code) */
-      bpdn=GWEN_MsgEngine_FindNodeByProperty(e, "SEG", "id", segver, GWEN_DB_GroupName(dbRd));
+      bpdn=GWEN_MsgEngine_FindNodeByProperty(msgEngine, "SEG", "id", segver, GWEN_DB_GroupName(dbRd));
       if (!bpdn)
-	bpdn=GWEN_MsgEngine_FindNodeByProperty(e, "SEG", "code", segver, GWEN_DB_GroupName(dbRd));
+	bpdn=GWEN_MsgEngine_FindNodeByProperty(msgEngine, "SEG", "code", segver, GWEN_DB_GroupName(dbRd));
       if (bpdn) {
 	DBG_DEBUG(AQHBCI_LOGDOMAIN, "Found a candidate");
 	if (atoi(GWEN_XMLNode_GetProperty(bpdn, "isbpdjob", "0"))) {
@@ -251,7 +251,7 @@ int AH_Job__Commit_Bpd(AH_JOB *j){
 	  char numbuffer[32];
 
 	  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Found BPD job \"%s\"", GWEN_DB_GroupName(dbRd));
-	  bn=AH_Bpd_GetBpdJobs(bpd, GWEN_MsgEngine_GetProtocolVersion(e));
+	  bn=AH_Bpd_GetBpdJobs(bpd, GWEN_MsgEngine_GetProtocolVersion(msgEngine));
 	  assert(bn);
 	  bn=GWEN_DB_GetGroup(bn, GWEN_DB_FLAGS_DEFAULT,
 			      GWEN_DB_GroupName(dbRd));
