@@ -410,12 +410,16 @@ int AB_Banking_CheckTransactionAgainstLimits_Sequence(const AB_TRANSACTION *t, c
 
 
 static int _checkStringForSepaCharset(const char *s, int restricted) {
-  char *ascii = "':?,-(+.)/ &*$%";
-#define DTAUSOFFSET 11
+  char ascii_chars[]="'&*$%:?,-(+.)/ "; /* last is a blank! */
+  const char *ascii;
+
+#define RESTRICTED_CHARS_OFFSET 3
 
   assert(s);
+
+  ascii=ascii_chars;
   if (restricted)
-    ascii[DTAUSOFFSET] = '\0';
+    ascii+=RESTRICTED_CHARS_OFFSET;
 
   while(*s) {
     unsigned char c=*s++;

@@ -27,7 +27,8 @@ int APY_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, const AB_A
     /* AB_Transaction_CommandGetEStatements,            */
     AB_Transaction_CommandUnknown};
 
-  for (i=0; (i<100) && (jobList[i]!=AB_Transaction_CommandUnknown); i++) {
+  i=0;
+  while(jobList[i]!=AB_Transaction_CommandUnknown) {
     AB_TRANSACTION_LIMITS *limits=NULL;
 
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "Handling job \"%s\"", AB_Transaction_Command_toString(jobList[i]));
@@ -38,7 +39,8 @@ int APY_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, const AB_A
 
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "- adding limits");
     AB_TransactionLimits_List_Add(limits, tll);
-  } /* for i */
+    i++;
+  } /* while */
 
   return 0;
 }

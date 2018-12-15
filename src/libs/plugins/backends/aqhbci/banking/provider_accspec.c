@@ -31,7 +31,8 @@ int AH_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u,
     AB_Transaction_CommandGetEStatements,
     AB_Transaction_CommandUnknown};
 
-  for (i=0; (i<100) && (jobList[i]!=AB_Transaction_CommandUnknown); i++) {
+  i=0;
+  while(jobList[i]!=AB_Transaction_CommandUnknown) {
     AH_JOB *j=NULL;
     AB_TRANSACTION_LIMITS *limits=NULL;
 
@@ -59,7 +60,8 @@ int AH_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u,
       AB_TransactionLimits_List_Add(limits, tll);
       AH_Job_free(j);
     }
-  } /* for i */
+    i++;
+  } /* while i */
 
   return 0;
 }
