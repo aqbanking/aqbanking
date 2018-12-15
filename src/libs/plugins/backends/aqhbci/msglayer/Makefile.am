@@ -73,3 +73,14 @@ sources:
 types: $(typefiles)
 	typemaker -d AQHBCI_API $(typefiles)
 
+
+
+cppcheck:
+	for f in $(libhbcimsg_la_SOURCES); do \
+	  cppcheck --force $$f ; \
+	done
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d cppcheck; \
+	done
+
+

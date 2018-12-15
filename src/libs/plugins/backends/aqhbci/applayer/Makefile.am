@@ -36,3 +36,12 @@ sources:
 	done
 
 CLEANFILES = $(xmldata_DATA) tmp.xml
+
+
+
+cppcheck:
+	for f in $(libhbciapp_la_SOURCES); do \
+	  cppcheck --force $$f ; \
+	done
+
+

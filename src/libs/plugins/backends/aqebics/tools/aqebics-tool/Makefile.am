@@ -54,3 +54,13 @@ sources:
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 
+
+cppcheck:
+	for f in $(aqebics_tool_SOURCES); do \
+	  cppcheck --force $$f ; \
+	done
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d cppcheck; \
+	done
+
+

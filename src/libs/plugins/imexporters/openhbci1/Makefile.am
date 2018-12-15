@@ -16,9 +16,18 @@ noinst_HEADERS=openhbci1_p.h openhbci1.h
 libabimexporters_openhbci1_la_SOURCES=openhbci1.c
 
 sources:
-	for f in $(openhbci1_la_SOURCES); do \
+	for f in $(libabimexporters_openhbci1_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 	for f in $(imexporterplugin_DATA); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/pdsources; \
 	done
+
+
+cppcheck:
+	for f in $(libabimexporters_openhbci1_la_SOURCES); do \
+	  cppcheck --force $$f ; \
+	done
+
+
+

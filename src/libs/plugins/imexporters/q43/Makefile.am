@@ -16,9 +16,16 @@ noinst_HEADERS=q43_p.h q43.h
 libabimexporters_q43_la_SOURCES=q43.c
 
 sources:
-	for f in $(q43_la_SOURCES); do \
+	for f in $(libabimexporters_q43_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 	for f in $(imexporterplugin_DATA); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/pdsources; \
 	done
+
+
+cppcheck:
+	for f in $(libabimexporters_q43_la_SOURCES); do \
+	  cppcheck --force $$f ; \
+	done
+

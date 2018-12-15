@@ -72,3 +72,13 @@ EXTRA_DIST=aqpaypal.xml.in $(dlgdata_DATA) $(dlgimage_DATA) \
 built_sources:
 
 
+cppcheck:
+	for f in $(libaqpaypal_la_SOURCES); do \
+	  cppcheck --force $$f ; \
+	done
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d cppcheck; \
+	done
+
+
+

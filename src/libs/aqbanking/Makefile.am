@@ -94,3 +94,14 @@ types:
 	  $(MAKE) -C $$d types; \
 	done
 
+
+
+cppcheck:
+	for f in $(libaqbanking_base_la_SOURCES); do \
+	  cppcheck --force $$f ; \
+	done
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d cppcheck; \
+	done
+
+

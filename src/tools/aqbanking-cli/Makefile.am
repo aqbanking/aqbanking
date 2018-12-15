@@ -61,3 +61,13 @@ built_sources:
 	  $(MAKE) -C $$d built_sources; \
 	done ;
 
+
+cppcheck:
+	for f in $(aqbanking_cli_SOURCES); do \
+	  cppcheck --force $$f ; \
+	done
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d cppcheck; \
+	done
+
+

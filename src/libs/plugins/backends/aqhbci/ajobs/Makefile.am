@@ -97,3 +97,12 @@ accountjobs.xml: $(xmlfiles)
 all-local: accountjobs.xml
 
 CLEANFILES = accountjobs.xml
+
+
+cppcheck:
+	for f in $(libhbciaccjobs_la_SOURCES); do \
+	  cppcheck --force $$f ; \
+	done
+
+
+

@@ -99,3 +99,13 @@ sources:
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 
+
+
+cppcheck:
+	for f in $(libofxparser_la_SOURCES); do \
+	  cppcheck --force $$f ; \
+	done
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d cppcheck; \
+	done
+

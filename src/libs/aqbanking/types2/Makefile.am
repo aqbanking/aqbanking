@@ -146,3 +146,10 @@ typedefs: $(typefiles)
 	typemaker2 --defs-only -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(top_srcdir)/src/libs/aqbanking/types2 -I $(srcdir) -I $(AQDATABASE_TYPEMAKERDIR)/c --destfolder="$(srcdir)" -D AQBANKING_API $(typefiles)
 
 
+
+cppcheck:
+	for f in $(libabtypes2_la_SOURCES); do \
+	  cppcheck --force $$f ; \
+	done
+
+

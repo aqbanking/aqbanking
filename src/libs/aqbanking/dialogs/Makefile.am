@@ -72,3 +72,10 @@ sources:
 
 types:
 
+
+
+cppcheck:
+	for f in $(libabdialogs_la_SOURCES); do \
+	  cppcheck --force $$f ; \
+	done
+

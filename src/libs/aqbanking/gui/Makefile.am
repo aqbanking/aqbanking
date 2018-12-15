@@ -25,3 +25,11 @@ sources:
 
 types:
 
+
+
+
+cppcheck:
+	for f in $(libabgui_la_SOURCES); do \
+	  cppcheck --force $$f ; \
+	done
+

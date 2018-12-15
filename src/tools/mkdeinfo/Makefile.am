@@ -18,3 +18,12 @@ endif
 
 sources:
 
+
+cppcheck:
+	for f in $(mkdeinfo_SOURCES); do \
+	  cppcheck --force $$f ; \
+	done
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d cppcheck; \
+	done
+

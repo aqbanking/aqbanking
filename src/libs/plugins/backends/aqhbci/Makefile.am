@@ -55,3 +55,13 @@ libaqhbci_la_LIBADD=\
 
 built_sources: $(BUILT_SOURCES)
 
+
+cppcheck:
+	for f in $(libaqhbci_la_SOURCES); do \
+	  cppcheck --force $$f ; \
+	done
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d cppcheck; \
+	done
+
+

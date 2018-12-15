@@ -43,3 +43,7 @@ testlibcc_SOURCES = testlibcc.cpp
 testlibcc_LDADD = $(aqbanking_internal_libs) $(gwenhywfar_libs)
 
 TESTS = testlibcc
+
+
+
+cppcheck:

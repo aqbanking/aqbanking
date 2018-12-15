@@ -34,3 +34,14 @@ sources:
 	for f in $(dbioplugin_DATA); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/pdsources; \
 	done
+
+
+cppcheck:
+	for f in $(swift_la_SOURCES); do \
+	  cppcheck --force $$f ; \
+	done
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d cppcheck; \
+	done
+
+

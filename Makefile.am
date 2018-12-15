@@ -235,7 +235,11 @@ code-cleanup:
 	-admin/glade-fixup
 
 cppcheck:
-	for f in `find . -name \*.c -o -name \*.cpp`; do cppcheck $$f; done
+	  $(MAKE) -C src cppcheck
+
+clang-check:
+	scan-build $(MAKE)
+
 
 ChangeLog:
 	git log -n 100 --pretty="format:------------------------------------------------------------------%n%ai %an%n%s%n%b" >ChangeLog

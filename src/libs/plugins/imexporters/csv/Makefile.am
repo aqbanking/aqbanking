@@ -25,7 +25,7 @@ EXTRA_DIST=README $(dialogdata_DATA)
 
 
 sources:
-	for f in $(csv_la_SOURCES); do \
+	for f in $(libabimexporters_csv_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 	for f in $(dialogdata_DATA); do \
@@ -34,3 +34,12 @@ sources:
 	for f in $(imexporterplugin_DATA); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/pdsources; \
 	done
+
+
+cppcheck:
+	for f in $(libabimexporters_csv_la_SOURCES); do \
+	  cppcheck --force $$f ; \
+	done
+
+
+

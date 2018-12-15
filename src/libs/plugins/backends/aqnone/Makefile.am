@@ -30,3 +30,14 @@ sources:
 	done
 
 built_sources:
+
+
+cppcheck:
+	for f in $(libaqnone_la_SOURCES); do \
+	  cppcheck --force $$f ; \
+	done
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d cppcheck; \
+	done
+
+

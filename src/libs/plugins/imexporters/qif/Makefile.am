@@ -16,9 +16,17 @@ libabimexporters_qif_la_SOURCES=\
 
 
 sources:
-	for f in $(qif_la_SOURCES); do \
+	for f in $(libabimexporters_qif_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 	for f in $(imexporterplugin_DATA); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/pdsources; \
 	done
+
+
+cppcheck:
+	for f in $(libabimexporters_qif_la_SOURCES); do \
+	  cppcheck --force $$f ; \
+	done
+
+

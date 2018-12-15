@@ -48,3 +48,13 @@ sources:
 	  $(MAKE) -C $$d sources; \
 	done
 
+
+cppcheck:
+	for f in $(libhbcijob_la_SOURCES); do \
+	  cppcheck --force $$f ; \
+	done
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d cppcheck; \
+	done
+
+
