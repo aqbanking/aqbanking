@@ -244,3 +244,10 @@ dist-hook:
 	rm -f ChangeLog 2>/dev/null
 	$(MAKE) ChangeLog
 
+
+types:
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d types; \
+	done
+
+

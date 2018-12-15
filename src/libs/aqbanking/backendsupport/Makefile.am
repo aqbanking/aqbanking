@@ -109,17 +109,20 @@ MAINTAINERCLEANFILES = $(typedata_sources) $(built_headers) $(dist_typedata_DATA
 
 built_sources: $(typedata_sources)
 
-.xml.c:
-	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types2 -I $(builddir) --destfolder="$(builddir)"  $<
+#.xml.c:
+#	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types2 -I $(builddir) --destfolder="$(builddir)"  $<
 
-.xml.h:
-	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types2 -I $(builddir) --destfolder="$(builddir)"  $<
+#.xml.h:
+#	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types2 -I $(builddir) --destfolder="$(builddir)"  $<
 
-SUFFIXES = .xml .c
+#SUFFIXES = .xml .c
 
 
 types: $(typefiles)
 	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types2 --destfolder="$(srcdir)" $(typefiles)
+
+typedefs: $(typefiles)
+	$(typemaker2_exe) --defs-only -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types2 --destfolder="$(srcdir)" $(typefiles)
 
 
 format_build_files:

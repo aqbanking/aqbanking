@@ -38,3 +38,10 @@ built_sources:
 	for d in $(SUBDIRS); do \
 	  $(MAKE) -C $$d built_sources; \
 	done ;
+
+
+types:
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d types; \
+	done
+
