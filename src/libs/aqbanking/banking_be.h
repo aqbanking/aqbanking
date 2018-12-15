@@ -94,12 +94,6 @@ AB_PROVIDER *AB_Banking_BeginUseProvider(AB_BANKING *ab, const char *modname);
 int AB_Banking_EndUseProvider(AB_BANKING *ab, AB_PROVIDER *pro);
 
 
-/**
- * Create a list of available online banking providers.
- */
-GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab);
-
-
 /*@}*/
 
 

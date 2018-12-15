@@ -287,6 +287,11 @@ int AB_Banking_UnlockSharedConfig(AB_BANKING *ab, const char *name);
  */
 /*@{*/
 
+/**
+ * Create a list of available online banking providers.
+ */
+AQBANKING_API GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab);
+
 
 /**
  * Load the given backend (if necessary), call the control function with the given arguments and unload the backend.
