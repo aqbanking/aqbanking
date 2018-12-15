@@ -115,11 +115,13 @@ int AB_Banking_GetAccountSpecList(const AB_BANKING *ab, AB_ACCOUNT_SPEC_LIST** p
 
     if (AB_AccountSpec_List_GetCount(accountSpecList)) {
       *pAccountSpecList=accountSpecList;
+      GWEN_DB_Group_free(dbAll);
       return 0;
     }
     else {
       DBG_WARN(AQBANKING_LOGDOMAIN, "No valid account specs found");
       AB_AccountSpec_List_free(accountSpecList);
+      GWEN_DB_Group_free(dbAll);
       return GWEN_ERROR_NOT_FOUND;
     }
   }
