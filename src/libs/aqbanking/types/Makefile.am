@@ -10,14 +10,14 @@ typefiles=\
 
 noinst_HEADERS=\
   value_p.h \
+  cellphoneproduct.h \
   cellphoneproduct_l.h \
   cellphoneproduct_p.h
 
 
 iheaderdir=@aqbanking_headerdir_am@/aqbanking
 iheader_HEADERS=\
-  value.h \
-  cellphoneproduct.h
+  value.h
 
 libtypes_la_SOURCES=\
   value.c \
