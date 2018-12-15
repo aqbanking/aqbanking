@@ -83,7 +83,7 @@ src/frontends/qbanking/bin/helpbrowser/qb-help??
 src/frontends/qbanking/bin/wizard/qt3-wizard
 src/frontends/qbanking/bin/wizard/qt3_wizard.xml
 src/frontends/qbanking/lib/checklib
-src/libs/aqbanking/ab_value_test
+src/libs/ab_value_test
 src/libs/aqbankingpp/testlibcc
 src/libs/plugins/backends/aqhbci/ajobs/accountjobs.xml
 src/libs/plugins/backends/aqhbci/applayer/xml/base.xml
