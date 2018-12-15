@@ -39,9 +39,11 @@ DEFS += \
  -DCOMPILE_DATETIME=\"@DATETIME@\"
 
 noinst_HEADERS=\
+ banking_be.h \
  banking_l.h \
  banking_p.h \
  i18n_l.h \
+ imexporter_be.h \
  imexporter_l.h \
  imexporter_p.h
 
@@ -50,15 +52,13 @@ iheaderdir=@aqbanking_headerdir_am@/aqbanking
 iheader_HEADERS=\
  account_type.h \
  banking.h \
- banking_be.h \
  banking_dialogs.h \
  banking_imex.h \
  banking_bankinfo.h \
  banking_online.h \
  banking_transaction.h \
  error.h \
- imexporter.h \
- imexporter_be.h
+ imexporter.h
 
 
 libaqbanking_base_la_SOURCES=\
