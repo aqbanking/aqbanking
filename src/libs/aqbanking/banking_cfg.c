@@ -604,13 +604,16 @@ int AB_Banking_ReadConfigGroups(const AB_BANKING *ab,
 
     if (GWEN_DB_Groups_Count(dbAll)) {
       *pDb=dbAll;
-      if (ignoredGroups)
-        return GWEN_ERROR_PARTIAL;
+      if (ignoredGroups) {
+	GWEN_StringList_free(sl);
+	return GWEN_ERROR_PARTIAL;
+      }
       return 0;
     }
     else {
       DBG_WARN(AQBANKING_LOGDOMAIN, "No matching config groups found");
       GWEN_DB_Group_free(dbAll);
+      GWEN_StringList_free(sl);
       return GWEN_ERROR_NOT_FOUND;
     }
   }
