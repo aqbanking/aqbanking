@@ -1,8 +1,0 @@
-<plugin name="csv" type="imexporter" import="1" export="1" i18n="aqbanking" >
-  <version>5.99.5</version>
-  <author>Martin Preuss(martin@libchipcard.de)</author>
-  <short>Im-/exporter for CSV</short>
-  <descr>
-    This plugin imports/exports CSV data.
-  </descr>
-</plugin>

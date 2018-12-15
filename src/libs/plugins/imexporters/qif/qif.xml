@@ -1,8 +1,0 @@
-<plugin name="qif" type="imexporter.inactive" import="1" export="1" i18n="aqbanking" >
-  <version>5.99.5</version>
-  <author>Martin Preuss(martin@libchipcard.de)</author>
-  <short>QIF</short>
-  <descr>
-    This plugin imports QIF data. (Export currently unimplemented.)
-  </descr>
-</plugin>

@@ -1,8 +1,0 @@
-<plugin name="sepa" type="imexporter" import="0" export="1" i18n="aqbanking" >
-  <version>5.99.5</version>
-  <author>Martin Preuss(martin@libchipcard.de)</author>
-  <short>SEPA</short>
-  <descr>
-    This plugin exports SEPA data.
-  </descr>
-</plugin>

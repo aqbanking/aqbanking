@@ -1,8 +1,0 @@
-<plugin name="swift" type="imexporter" import="1" export="0" i18n="aqbanking" >
-  <version>5.99.5</version>
-  <author>Martin Preuss(martin@libchipcard.de)</author>
-  <short>Im-/exporter for SWIFT</short>
-  <descr>
-    This plugin imports SWIFT MT940, MT942 and MT535 data.
-  </descr>
-</plugin>
