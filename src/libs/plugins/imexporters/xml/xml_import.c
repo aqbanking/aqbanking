@@ -213,7 +213,6 @@ const char *AB_ImExporterXML_Import_GetCharValueByPath(GWEN_XMLNODE *xmlNode, co
 
     if (*cpyOfPath) {
       n=GWEN_XMLNode_GetNodeByXPath(xmlNode, cpyOfPath, GWEN_PATH_FLAGS_PATHMUSTEXIST);
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Looking for path \"%s\" (%s)", cpyOfPath, n?"found":"not found");
     }
     else
       n=xmlNode;
@@ -253,8 +252,6 @@ int AB_ImExporterXML_Import_Handle_Enter(AB_IMEXPORTER_XML_CONTEXT *ctx, GWEN_XM
     return GWEN_ERROR_INVALID;
   }
 
-  DBG_INFO(AQBANKING_LOGDOMAIN, "Entering node \"%s\"", path);
-
   /* enter given document node */
   AB_ImExporterXML_Context_EnterDocNode(ctx, n);
 
@@ -263,8 +260,6 @@ int AB_ImExporterXML_Import_Handle_Enter(AB_IMEXPORTER_XML_CONTEXT *ctx, GWEN_XM
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
-
-  DBG_INFO(AQBANKING_LOGDOMAIN, "Leaving node \"%s\"", path);
 
   /* leave given document node, re-select previously active one, thus restoring status from the beginning */
   AB_ImExporterXML_Context_LeaveDocNode(ctx);
@@ -285,17 +280,17 @@ int AB_ImExporterXML_Import_Handle_ForEvery(AB_IMEXPORTER_XML_CONTEXT *ctx, GWEN
   }
 
   n=GWEN_XMLNode_FindFirstTag(ctx->currentDocNode, path, NULL, NULL);
+  if (n==NULL) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Path \"%s\" not found", path);
+    GWEN_XMLNode_Dump(ctx->currentDocNode, 2);
+  }
   while (n){
-
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Entering node \"%s\"", path);
 
     /* enter given document node */
     AB_ImExporterXML_Context_EnterDocNode(ctx, n);
 
     /* handle all children of this parser XML node with the current document node */
     rv=AB_ImExporterXML_Import_HandleChildren(ctx, xmlNode);
-
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Leaving node \"%s\"", path);
 
     /* leave given document node, re-select previously active one, thus restoring status from the beginning */
     AB_ImExporterXML_Context_LeaveDocNode(ctx);
@@ -391,22 +386,16 @@ int AB_ImExporterXML_Import_Handle_SetCharValue(AB_IMEXPORTER_XML_CONTEXT *ctx, 
 
   doTrim=GWEN_XMLNode_GetIntProperty(xmlNode, "trim", 0);
 
-  DBG_INFO(AQBANKING_LOGDOMAIN, "SetCharValue entered.");
-
   name=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
   if (!(name && *name)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing or empty name in \"SetCharValue\"");
     return GWEN_ERROR_INVALID;
   }
 
-  DBG_INFO(AQBANKING_LOGDOMAIN, "Name of dbVar: \"%s\"", name);
-
   value=GWEN_XMLNode_GetProperty(xmlNode, "value", NULL);
   if (value) {
     GWEN_BUFFER *dbuf;
     int rv;
-
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Value for dbVar \"%s\" is \"%s\"", name, value);
 
     dbuf=GWEN_Buffer_new(0, 256, 0, 1);
     rv=AB_ImExporterXML_Import_ReplaceVars(value, ctx->currentTempDbGroup, dbuf);
@@ -415,6 +404,7 @@ int AB_ImExporterXML_Import_Handle_SetCharValue(AB_IMEXPORTER_XML_CONTEXT *ctx, 
       GWEN_Buffer_free(dbuf);
       return rv;
     }
+    GWEN_DB_SetCharValue(ctx->currentDbGroup, GWEN_DB_FLAGS_DEFAULT, name, GWEN_Buffer_GetStart(dbuf));
     GWEN_Buffer_free(dbuf);
   }
   else {
@@ -434,12 +424,10 @@ int AB_ImExporterXML_Import_Handle_SetCharValue(AB_IMEXPORTER_XML_CONTEXT *ctx, 
         dbuf=GWEN_Buffer_new(0, 256, 0, 1);
         GWEN_Buffer_AppendString(dbuf, value);
         GWEN_Text_CondenseBuffer(dbuf);
-        DBG_INFO(AQBANKING_LOGDOMAIN, "Setting dbVar %s = %s", name, GWEN_Buffer_GetStart(dbuf));
         GWEN_DB_SetCharValue(ctx->currentDbGroup, GWEN_DB_FLAGS_DEFAULT, name, GWEN_Buffer_GetStart(dbuf));
         GWEN_Buffer_free(dbuf);
       }
       else {
-        DBG_INFO(AQBANKING_LOGDOMAIN, "Setting dbVar %s = %s", name, value);
         GWEN_DB_SetCharValue(ctx->currentDbGroup, GWEN_DB_FLAGS_DEFAULT, name, value);
       }
     }
@@ -469,22 +457,16 @@ int AB_ImExporterXML_Import_Handle_SetTempCharValue(AB_IMEXPORTER_XML_CONTEXT *c
 
   doTrim=GWEN_XMLNode_GetIntProperty(xmlNode, "trim", 0);
 
-  DBG_INFO(AQBANKING_LOGDOMAIN, "SetCharValue entered.");
-
   name=GWEN_XMLNode_GetProperty(xmlNode, "name", NULL);
   if (!(name && *name)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing or empty name in \"SetCharValue\"");
     return GWEN_ERROR_INVALID;
   }
 
-  DBG_INFO(AQBANKING_LOGDOMAIN, "Name of dbVar: \"%s\"", name);
-
   value=GWEN_XMLNode_GetProperty(xmlNode, "value", NULL);
   if (value) {
     GWEN_BUFFER *dbuf;
     int rv;
-
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Value for dbVar \"%s\" is \"%s\"", name, value);
 
     dbuf=GWEN_Buffer_new(0, 256, 0, 1);
     rv=AB_ImExporterXML_Import_ReplaceVars(value, ctx->currentTempDbGroup, dbuf);
@@ -493,6 +475,7 @@ int AB_ImExporterXML_Import_Handle_SetTempCharValue(AB_IMEXPORTER_XML_CONTEXT *c
       GWEN_Buffer_free(dbuf);
       return rv;
     }
+    GWEN_DB_SetCharValue(ctx->currentDbGroup, GWEN_DB_FLAGS_DEFAULT, name, GWEN_Buffer_GetStart(dbuf));
     GWEN_Buffer_free(dbuf);
   }
   else {
@@ -512,12 +495,10 @@ int AB_ImExporterXML_Import_Handle_SetTempCharValue(AB_IMEXPORTER_XML_CONTEXT *c
         dbuf=GWEN_Buffer_new(0, 256, 0, 1);
         GWEN_Buffer_AppendString(dbuf, value);
         GWEN_Text_CondenseBuffer(dbuf);
-        DBG_INFO(AQBANKING_LOGDOMAIN, "Setting dbVar %s = %s", name, GWEN_Buffer_GetStart(dbuf));
         GWEN_DB_SetCharValue(ctx->currentTempDbGroup, GWEN_DB_FLAGS_DEFAULT, name, GWEN_Buffer_GetStart(dbuf));
         GWEN_Buffer_free(dbuf);
       }
       else {
-        DBG_INFO(AQBANKING_LOGDOMAIN, "Setting dbVar %s = %s", name, value);
         GWEN_DB_SetCharValue(ctx->currentTempDbGroup, GWEN_DB_FLAGS_DEFAULT, name, value);
       }
     }
@@ -620,6 +601,9 @@ int AB_ImExporterXML_Import_Handle_IfHasCharData(AB_IMEXPORTER_XML_CONTEXT *ctx,
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
+  }
+  else {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No value for path \"%s\"", path);
   }
 
   return 0;
