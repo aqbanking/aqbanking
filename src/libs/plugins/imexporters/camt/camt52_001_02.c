@@ -333,6 +333,11 @@ static int _import_052_001_02_read_transaction(AB_IMEXPORTER *ie,
   if (s && *s)
     AB_Transaction_SetBankReference(t, s);
 
+  s=GWEN_XMLNode_GetCharValueByPath(xmlNode, "AddtlNtryInf", NULL);
+  if (s && *s)
+    AB_Transaction_SetTransactionText(t, s);
+  
+
   /* read transaction details */
   n=GWEN_XMLNode_GetNodeByXPath(xmlNode, "NtryDtls/TxDtls", GWEN_PATH_FLAGS_NAMEMUSTEXIST);
   if (n) {
