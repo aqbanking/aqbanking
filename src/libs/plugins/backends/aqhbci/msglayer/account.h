@@ -45,6 +45,8 @@ extern "C" {
 #define AH_BANK_FLAGS_SEPA_PREFER_SINGLE_TRANSFER  0x00000010
 /** Prefer single debit notes over multi debit notes for this account (SEPA) */
 #define AH_BANK_FLAGS_SEPA_PREFER_SINGLE_DEBITNOTE 0x00000020
+/** prefer download of transactions as CAMT 052.001.02 (as opposed to SWIFT MT94x) */
+#define AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD         0x00000040
 
 
 #define AH_BANK_FLAGS_DEFAULT 0

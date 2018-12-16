@@ -298,15 +298,19 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, in
     break;
 
   case AB_Transaction_CommandGetTransactions:
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Trying CAMT job");
-    mj=AH_Job_GetTransactionsCAMT_new(pro, mu, ma);
-    if (!mj) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "CAMT job not supported with this account, falling back to SWIFT");
-      mj=AH_Job_GetTransactions_new(pro, mu, ma);
+    if (!(aFlags & AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD)) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers CAMT download");
+      mj=AH_Job_GetTransactionsCAMT_new(pro, mu, ma);
+      if (!mj) {
+        DBG_WARN(AQHBCI_LOGDOMAIN, "CAMT download job not supported with this account, falling back to SWIFT");
+      }
     }
     if (!mj) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
-      return GWEN_ERROR_NOT_AVAILABLE;
+      mj=AH_Job_GetTransactions_new(pro, mu, ma);
+      if (!mj) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+        return GWEN_ERROR_NOT_AVAILABLE;
+      }
     }
     break;
 

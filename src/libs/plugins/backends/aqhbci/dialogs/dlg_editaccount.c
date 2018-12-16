@@ -355,6 +355,9 @@ void AH_EditAccountDialog_Init(GWEN_DIALOG *dlg) {
   GWEN_Dialog_SetIntProperty(dlg, "sepaPreferSingleDebitNoteCheck", GWEN_DialogProperty_Value, 0,
                              (aflags & AH_BANK_FLAGS_SEPA_PREFER_SINGLE_DEBITNOTE)?1:0,
                              0);
+  GWEN_Dialog_SetIntProperty(dlg, "preferCamtDownloadCheck", GWEN_DialogProperty_Value, 0,
+                             (aflags & AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD)?1:0,
+                             0);
 
 
   /* read width */
@@ -506,6 +509,8 @@ int AH_EditAccountDialog_fromGui(GWEN_DIALOG *dlg, AB_ACCOUNT *a, int quiet) {
     aflags|=AH_BANK_FLAGS_SEPA_PREFER_SINGLE_TRANSFER;
   if (GWEN_Dialog_GetIntProperty(dlg, "sepaPreferSingleDebitNoteCheck", GWEN_DialogProperty_Value, 0, 0))
     aflags|=AH_BANK_FLAGS_SEPA_PREFER_SINGLE_DEBITNOTE;
+  if (GWEN_Dialog_GetIntProperty(dlg, "preferCamtDownloadCheck", GWEN_DialogProperty_Value, 0, 0))
+    aflags|=AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD;
   if (a)
     AH_Account_SetFlags(a, aflags);
 

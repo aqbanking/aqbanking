@@ -72,35 +72,27 @@ void AH_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
   if (flags & AH_USER_FLAGS_BANK_DOESNT_SIGN)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "bankDoesntSign");
   if (flags & AH_USER_FLAGS_BANK_USES_SIGNSEQ)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "bankUsesSignSeq");
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "bankUsesSignSeq");
   if (flags & AH_USER_FLAGS_KEEPALIVE)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "keepAlive");
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "keepAlive");
   if (flags & AH_USER_FLAGS_IGNORE_UPD)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "ignoreUpd");
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "ignoreUpd");
   if (flags & AH_USER_FLAGS_FORCE_SSL3)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-			 "forceSsl3");
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "forceSsl3");
   if (flags & AH_USER_FLAGS_NO_BASE64)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-			 "noBase64");
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "noBase64");
   if (flags & AH_USER_FLAGS_KEEP_MULTIPLE_BLANKS)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-			 "keepMultipleBlanks");
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "keepMultipleBlanks");
   if (flags & AH_USER_FLAGS_TAN_OMIT_SMS_ACCOUNT)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "omitSmsAccount");
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "omitSmsAccount");
   if (flags & AH_USER_FLAGS_TLS_ONLY_SAFE_CIPHERS)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "tlsOnlySafeCiphers");
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "tlsOnlySafeCiphers");
   if (flags & AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-			 "useStrictSepaCharset");
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "useStrictSepaCharset");
   if (flags & AH_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-			 "tlsIgnPrematureClose");
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "tlsIgnPrematureClose");
+  if (flags & AH_USER_FLAGS_VERIFY_NO_BANKSIGNKEY)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "verifyNoBankSignKey");
 }
 
 
@@ -138,6 +130,8 @@ uint32_t AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
       fl|=AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET;
     else if (strcasecmp(s, "tlsIgnPrematureClose")==0)
       fl|=AH_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE;
+    else if (strcasecmp(s, "verifyNoBankSignKey")==0)
+      fl|=AH_USER_FLAGS_VERIFY_NO_BANKSIGNKEY;
     else {
       DBG_WARN(AQHBCI_LOGDOMAIN, "Unknown user flag \"%s\"", s);
     }

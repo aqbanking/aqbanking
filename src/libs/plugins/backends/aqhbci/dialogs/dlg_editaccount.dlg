@@ -44,6 +44,8 @@
 
         <widget type="checkBox" name="sepaPreferSingleTransferCheck" text="Prefer Single SEPA Transfer" />
         <widget type="checkBox" name="sepaPreferSingleDebitNoteCheck" text="Prefer Single SEPA Debit Note" />
+
+        <widget type="checkBox" name="preferCamtDownloadCheck" text="Prefer Statement Download as CAMT" />
       </widget>
 
     </widget>

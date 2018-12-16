@@ -149,23 +149,19 @@ void AH_Account_Flags_toDb(GWEN_DB_NODE *db, const char *name,
                            uint32_t flags) {
   GWEN_DB_DeleteVar(db, name);
   if (flags & AH_BANK_FLAGS_PREFER_SINGLE_TRANSFER)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "preferSingleTransfer");
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "preferSingleTransfer");
   if (flags & AH_BANK_FLAGS_PREFER_SINGLE_DEBITNOTE)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "preferSingleDebitNote");
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "preferSingleDebitNote");
   if (flags & AH_BANK_FLAGS_KTV2)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "ktv2");
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "ktv2");
   if (flags & AH_BANK_FLAGS_SEPA)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "sepa");
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "sepa");
   if (flags & AH_BANK_FLAGS_SEPA_PREFER_SINGLE_TRANSFER)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "sepaPreferSingleTransfer");
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "sepaPreferSingleTransfer");
   if (flags & AH_BANK_FLAGS_SEPA_PREFER_SINGLE_DEBITNOTE)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-                         "sepaPreferSingleDebitNote");
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "sepaPreferSingleDebitNote");
+  if (flags & AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "preferCamtDownload");
 }
 
 
@@ -192,6 +188,8 @@ uint32_t AH_Account_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
       fl|=AH_BANK_FLAGS_SEPA_PREFER_SINGLE_TRANSFER;
     else if (strcasecmp(s, "sepaPreferSingleDebitNote")==0)
       fl|=AH_BANK_FLAGS_SEPA_PREFER_SINGLE_DEBITNOTE;
+    else if (strcasecmp(s, "preferCamtDownload")==0)
+      fl|=AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD;
     else {
       DBG_WARN(AQHBCI_LOGDOMAIN, "Unknown account flag \"%s\"", s);
     }
