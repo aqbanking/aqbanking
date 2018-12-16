@@ -1,0 +1,84 @@
+
+This is a very simple parser for XML files.
+
+The following XML elements can be used inside a Schema file.
+
+<IfPathExists path="path">
+
+
+1. <Enter path="path">
+----------------------
+
+Enter the given path inside the source document. Iterate through all children of the schema node.
+
+
+2. <ForEvery name="path">
+--------------------------
+
+Enter the given path inside the source document and iterate through all children of the schema node
+with every matching source document node.
+
+
+3. <CreateAndEnterDbGroup name="group">
+---------------------------------------
+
+Create a GWEN_DB node and make it the current node for iteration through all children of the schema node.
+
+
+4. <CreateAndEnterTempDbGroup name="group">
+-------------------------------------------
+
+Create a GWEN_DB group in the temporary DB and make it the current node for iteration through all children of the schema node.
+After all chidren have been handled the temporary group is deleted.
+
+
+5. <SetCharValue name="varname" path="path" >
+---------------------------------------------
+
+Set a variable in the current GWEN_DB_NODE using the text inside the given source document XML node.
+
+
+6. <SetCharValue name="varname" value="$(tempVariable1) - $(tempVariable2)" >
+-----------------------------------------------------------------------------
+
+Set a variable in the current GWEN_DB_NODE the given "value" specification. This specification may contain references 
+to variables in the current temporary GWEN_DB group. This can be used to compose a value from multiple XML nodes
+(see camt_052_001_02.xml)
+
+
+7. <SetTempCharValue name="varname" path="path" >
+-------------------------------------------------
+
+Set a variable in the current temporary GWEN_DB_NODE using the text inside the given source document XML node.
+
+
+8. <IfCharDataMatches path="path" pattern="pattern">
+----------------------------------------------------
+
+Iterate through all children of the schema node if the data from the given path matches the given pattern. Jokers and
+wildcards are allowed in pattern.
+
+
+9. <IfNotCharDataMatches path="path" pattern="pattern">
+-------------------------------------------------------
+
+Same as <IfCharDataMatches> but reversed.
+
+
+10. <IfHasCharData path="path">
+-------------------------------
+
+Iterate through all children of the schema node if the path contains data.
+
+
+11. <IfNotHasCharData path="path">
+----------------------------------
+
+Same as <IfHasCharData> but reversed.
+
+
+12. <IfPathExists path="path">
+------------------------------
+
+Iterate through all children of the schema node if the given path exists in the source document.
+

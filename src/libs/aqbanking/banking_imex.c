@@ -56,6 +56,11 @@
 #endif
 
 
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_XML
+# include "src/libs/plugins/imexporters/xml/xml.h"
+#endif
+
+
 
 AB_IMEXPORTER *AB_Banking__CreateImExporterPlugin(AB_BANKING *ab, const char *modname){
   if (modname && *modname) {
@@ -112,6 +117,11 @@ AB_IMEXPORTER *AB_Banking__CreateImExporterPlugin(AB_BANKING *ab, const char *mo
 #ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_CAMT
     if (strcasecmp(modname, "camt")==0)
       return AB_ImExporterCAMT_new(ab);
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_XML
+    if (strcasecmp(modname, "xml")==0)
+      return AB_ImExporterXML_new(ab);
 #endif
 
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Plugin [%s] not compiled-in", modname);
@@ -626,6 +636,57 @@ int AB_Banking_SaveLocalImExporterProfile(AB_BANKING *ab,
   GWEN_Buffer_free(buf);
 
   return 0;
+}
+
+
+
+int AB_Banking_FindDataFileForImExporter(AB_BANKING *ab, const char *imExpName, const char *fileName, GWEN_BUFFER *fullPathBuffer){
+  GWEN_BUFFER *buf;
+  int rv;
+  GWEN_STRINGLIST *sl;
+
+  buf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(buf,
+                           DIRSEP
+                           "aqbanking"
+                           DIRSEP
+                           AB_IMEXPORTER_FOLDER
+                           DIRSEP);
+  GWEN_Buffer_AppendString(buf, imExpName);
+  GWEN_Buffer_AppendString(buf, DIRSEP "data" DIRSEP);
+  GWEN_Buffer_AppendString(buf, fileName);
+
+
+  sl=AB_Banking_GetGlobalDataDirs();
+  assert(sl);
+
+  rv=GWEN_Directory_FindFileInPaths(sl, GWEN_Buffer_GetStart(buf), fullPathBuffer);
+  if (rv==0) {
+    GWEN_Buffer_free(buf);
+    return rv;
+  }
+  GWEN_Buffer_Reset(buf);
+
+  /* try local storage */
+  if (AB_Banking_GetUserDataDir(ab, buf)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Could not get user data dir");
+    GWEN_Buffer_free(buf);
+    return GWEN_ERROR_NOT_FOUND;
+  }
+  GWEN_Buffer_AppendString(buf, DIRSEP AB_IMEXPORTER_FOLDER DIRSEP);
+  GWEN_Buffer_AppendString(buf, fileName);
+
+  rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(buf), GWEN_PATH_FLAGS_PATHMUSTEXIST);
+  if (rv==0) {
+    GWEN_Buffer_AppendString(fullPathBuffer, GWEN_Buffer_GetStart(buf));
+    GWEN_Buffer_free(buf);
+    return 0;
+  }
+
+  GWEN_Buffer_free(buf);
+
+  return GWEN_ERROR_NOT_FOUND;
 }
 
 

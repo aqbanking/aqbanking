@@ -16,7 +16,7 @@ AC_CONFIG_HEADERS([config.h])
 
 AQBANKING_VERSION_MAJOR=5
 AQBANKING_VERSION_MINOR=99
-AQBANKING_VERSION_PATCHLEVEL=6
+AQBANKING_VERSION_PATCHLEVEL=7
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="beta"
@@ -34,7 +34,7 @@ AQBANKING_VERSION_TAG="beta"
 
 AQBANKING_SO_CURRENT=43
 AQBANKING_SO_AGE=0
-AQBANKING_SO_REVISION=6
+AQBANKING_SO_REVISION=7
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 #
@@ -487,7 +487,7 @@ AC_ARG_WITH(imexporters,
 )
 
 if test "$aqbanking_imexporters" = "all"; then
-  aqbanking_imexporters="csv eri2 ofx openhbci1 swift xmldb yellownet sepa ctxfile q43 camt"
+  aqbanking_imexporters="csv eri2 ofx openhbci1 swift xmldb yellownet sepa ctxfile q43 camt xml"
 fi
 
 for f in ${aqbanking_imexporters}; do
@@ -546,6 +546,11 @@ for f in ${aqbanking_imexporters}; do
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs camt"
       aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs camt/libabimexporters_camt.la"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_CAMT, 1, [plugin availability])
+      ;;
+    xml)
+      aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs xml"
+      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs xml/libabimexporters_xml.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_XML, 1, [plugin availability])
       ;;
     *)
       AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
@@ -1089,7 +1094,27 @@ if test "$enable_fulldoc" = "yes"; then
         DOXYGEN_EXCLUDE_PATTERNS=""
 else
 	DOXYGEN_DEFINE="DOXYGEN_HIDE"
-	DOXYGEN_INPUT="listdoc.h aqbanking6"
+	DOXYGEN_INPUT="listdoc.h \
+                       aqbanking6/banking.h \
+                       aqbanking6/banking_bankinfo.h \
+                       aqbanking6/banking_dialogs.h \
+                       aqbanking6/banking_online.h \
+                       aqbanking6/banking_transaction.h \
+                       aqbanking6/error.h \
+                       aqbanking6/account_type.h \
+                       aqbanking6/value.h \
+                       aqbanking6/account_spec.h \
+                       aqbanking6/balance.h \
+                       aqbanking6/bankinfo.h \
+                       aqbanking6/bankinfoservice.h \
+                       aqbanking6/document.h \
+                       aqbanking6/imexporter_accountinfo.h \
+                       aqbanking6/imexporter_context.h \
+                       aqbanking6/message.h \
+                       aqbanking6/security.h \
+                       aqbanking6/transaction.h \
+                       aqbanking6/transactionlimits.h\
+                      "
         DOXYGEN_FILE_PATTERNS="*.h *.hpp"
         DOXYGEN_EXCLUDE_PATTERNS="*_p.h"
 fi
@@ -1523,6 +1548,12 @@ AC_CONFIG_FILES([
   src/libs/plugins/imexporters/camt/profiles/Makefile
   src/libs/plugins/imexporters/camt/profiles/default.conf
   src/libs/plugins/imexporters/camt/profiles/052_001_02.conf
+  src/libs/plugins/imexporters/xml/Makefile
+  src/libs/plugins/imexporters/xml/xml.xml
+  src/libs/plugins/imexporters/xml/data/Makefile
+  src/libs/plugins/imexporters/xml/profiles/Makefile
+  src/libs/plugins/imexporters/xml/profiles/default.conf
+  src/libs/plugins/imexporters/xml/profiles/camt_052_001_02.conf
   src/libs/plugins/parsers/Makefile
   src/libs/plugins/parsers/swift/Makefile
   src/libs/plugins/parsers/swift/swift.xml

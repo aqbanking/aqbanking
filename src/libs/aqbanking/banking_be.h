@@ -94,6 +94,18 @@ AB_PROVIDER *AB_Banking_BeginUseProvider(AB_BANKING *ab, const char *modname);
 int AB_Banking_EndUseProvider(AB_BANKING *ab, AB_PROVIDER *pro);
 
 
+/**
+ * Find the path of a given datafile for an im-/exporter.
+ *
+ * @return 0 if okay, error code otherwise
+ * @param ab pointer to the AB_BANKING object (needs to be initialized, i.e. @ref AB_Banking_Init called).
+ * @param imExpName name of the im-/exporter
+ * @param fileNAme to look for
+ * @param fullPathBuffer buffer to receive the complete path to the given file (if found)
+ */
+int AB_Banking_FindDataFileForImExporter(AB_BANKING *ab, const char *imExpName, const char *fileName, GWEN_BUFFER *fullPathBuffer);
+
+
 /*@}*/
 
 

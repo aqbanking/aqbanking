@@ -1,0 +1,101 @@
+
+<!--
+/***************************************************************************
+    begin       : Sun Dec 16 2018
+    copyright   : (C) 2018 by Martin Preuss
+    email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+-->
+
+
+<ImportSchema>
+
+  <IfPathExists path="Document/BkToCstmrAcctRpt">
+
+    <enter path="Document/BkToCstmrAcctRpt">
+
+      <ForEvery name="Rpt">
+    
+        <ForEvery name="Ntry">
+
+         <IfHasCharData path="Amt">
+
+    
+            <CreateAndEnterDbGroup name="transaction">
+      
+              <IfHasCharData path="BookgDt/Dt">
+                <SetCharValue name="date" path="BookgDt/Dt" />
+              </IfHasCharData>
+      
+              <IfHasCharData path="ValDt/Dt">
+                <SetCharValue name="valutaDate" path="ValDt/Dt"/>
+              </IfHasCharData>
+      
+              <SetCharValue name="endToEndReference" path="NtryDtls/TxDtls/Refs/EndToEndId"/>
+      
+              <IfCharDataMatches path="NtryDtls/TxDtls/Refs/Prtry/Tp" pattern="FI-UMSATZ-ID">
+                <SetCharValue name="fiId" path="NtryDtls/TxDtls/Refs/Prtry/Ref"/>
+              </IfCharDataMatches>
+              
+              <IfCharDataMatches path="CdtDbtInd" pattern="DBIT">
+                <!-- Debit -->
+              
+                <SetCharValue name="localName" path="NtryDtls/TxDtls/RltdPties/Dbtr/Nm"/>
+                <SetCharValue name="localIban" path="NtryDtls/TxDtls/RltdPties/DbtrAcct/Id/IBAN"/>
+      
+                <SetCharValue name="remoteName" path="NtryDtls/TxDtls/RltdPties/Cdtr/Nm"/>
+                <SetCharValue name="remoteIban" path="NtryDtls/TxDtls/RltdPties/CdtrAcct/Id/IBAN"/>
+      
+                <IfHasCharData path="Amt">
+                  <IfHasCharData path="Amt@Ccy">
+                    <CreateAndEnterTempDbGroup name="amount" >
+                      <SetTempCharValue name="value"    path="Amt" />
+                      <SetTempCharValue name="currency" path="Amt@Ccy" />
+                      <SetCharValue name="value" value="$(value):$(currency)" />
+                    </CreateAndEnterTempDbGroup> <!-- amount -->
+                  </IfHasCharData> <!-- Amt@Ccy -->
+                </IfHasCharData>   <!-- Amt -->
+              
+              </IfCharDataMatches> <!-- CdtDbtInd == DBIT -->
+      
+              
+              <IfCharDataMatches path="CdtDbtInd" pattern="CRDT">
+                <!-- Credit -->
+      
+                <SetCharValue name="remoteName" path="NtryDtls/TxDtls/RltdPties/Dbtr/Nm"/>
+                <SetCharValue name="remoteIban" path="NtryDtls/TxDtls/RltdPties/DbtrAcct/Id/IBAN"/>
+      
+                <SetCharValue name="localName" path="NtryDtls/TxDtls/RltdPties/Cdtr/Nm"/>
+                <SetCharValue name="localIban" path="NtryDtls/TxDtls/RltdPties/CdtrAcct/Id/IBAN"/>
+      
+                <IfHasCharData path="Amt">
+                  <IfHasCharData path="Amt@Ccy">
+                    <CreateAndEnterTempDbGroup name="amount" >
+                      <SetTempCharValue name="value"    path="Amt" />
+                      <SetTempCharValue name="currency" path="Amt@Ccy" />
+                      <SetCharValue name="value" value="-$(value):$(currency)" />
+                    </CreateAndEnterTempDbGroup>
+                  </IfHasCharData>
+                </IfHasCharData>
+  
+              </IfCharDataMatches> <!-- CdtDbtInd == CRDT- -->
+              
+              
+            </CreateAndEnterDbGroup> <!-- transaction --> 
+         
+         </IfHasCharData> <!-- if there is an amount -->
+
+        </ForEvery> <!-- Ntry -->
+  
+      </ForEvery>   <!-- Rpt -->
+    
+    </enter> <!-- Document/BkToCstmrAcctRpt -->
+
+  </IfPathExists> <!-- Document/BkToCstmrAcctRpt -->
+
+</ImportSchema>
+
+
