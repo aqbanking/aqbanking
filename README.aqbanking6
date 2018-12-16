@@ -82,7 +82,27 @@ the job of the application to filter the transactions to be exported, and the ex
 AB_COUNTRY
 ==========
 
-This function complex will be removed. It wasn't  used much anyway.
+This function complex has been removed. It wasn't used much anyway.
+
+
+
+AB_ACCOUNT_STATUS
+=================
+
+Older versions of AqBanking had objects of this type to store booked balance, noted balance, credit line etc.
+However, at least when downloading transaction statements in CAMT format those balance can appear independent of each other,
+so to account for that AB_ACCOUNT_STATUS has been removed. The previously in this class stored AB_BALANCE objects are now
+stored directly in a list inside the AB_ImExport_AccountInfo object.
+
+
+
+AB_BALANCE
+==========
+
+The date is now stored as a GWEN_DATE. Most sources of balance data already used dates, hardly any source could really
+provide a time. Storing a date in a GWEN_TIME object has many problems, especially regarding time zones.
+Using GWEN_DATE is much easier.
+Also, AB_BALANCE now has a "type" field (e.g. "Booked", "Noted", "Temporary" etc).
 
 
 
@@ -103,5 +123,7 @@ Maybe we will add wrappers with the same names as the old tools to keep the chan
 
 
 
+
 ----------
-2018/12/05
+2018/12/16
+
