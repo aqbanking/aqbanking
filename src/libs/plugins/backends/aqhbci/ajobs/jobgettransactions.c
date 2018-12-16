@@ -265,11 +265,19 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
       dbT=GWEN_DB_FindFirstGroup(dbDay, "endSaldo");
       while (dbT) {
 	GWEN_DB_NODE *dbX;
-	GWEN_TIME *ti=0;
-  
-	dbX=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "date");
-	if (dbX)
-	  ti=GWEN_Time_fromDb(dbX);
+        const char *s;
+	GWEN_DATE *dt=0;
+
+        /* read date */
+        s=GWEN_DB_GetCharValue(dbT, "date", 0, NULL);
+        if (s && *s) {
+          dt=GWEN_Date_fromString(s);
+          if (dt==NULL) {
+            DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad date in saldo");
+          }
+        }
+
+        /* read value */
 	dbX=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "value");
 	if (dbX) {
 	  AB_VALUE *v;
@@ -277,21 +285,16 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
 	  v=AB_Value_fromDb(dbX);
 	  if (v) {
 	    AB_BALANCE *bal;
-	    AB_ACCOUNT_STATUS *as;
   
             bal=AB_Balance_new();
-            AB_Balance_SetTime(bal, ti);
+            AB_Balance_SetType(bal, AB_Balance_TypeNoted);
+            AB_Balance_SetDate(bal, dt);
             AB_Balance_SetValue(bal, v);
-	    AB_Value_free(v);
-	    as=AB_AccountStatus_new();
-	    if (ti)
-	      AB_AccountStatus_SetTime(as, ti);
-	    AB_AccountStatus_SetNotedBalance(as, bal);
-	    AB_Balance_free(bal);
-	    AB_ImExporterAccountInfo_AddAccountStatus(ai, as);
+            AB_Value_free(v);
+	    AB_ImExporterAccountInfo_AddBalance(ai, bal);
 	  }
 	}
-	GWEN_Time_free(ti);
+        GWEN_Date_free(dt);
   
 	dbT=GWEN_DB_FindNextGroup(dbT, "endSaldo");
       } /* while */

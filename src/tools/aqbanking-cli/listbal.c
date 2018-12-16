@@ -25,50 +25,18 @@
 #include <errno.h>
 
 
-static
-AB_ACCOUNT_STATUS *_getLastAccountStatus(AB_IMEXPORTER_ACCOUNTINFO *iea) {
-  AB_ACCOUNT_STATUS *lastAst=0;
-  const GWEN_TIME *lastTi=0;
-  AB_ACCOUNT_STATUS *ast=0;
 
-  ast=AB_ImExporterAccountInfo_GetFirstAccountStatus(iea);
-  while(ast) {
-    const GWEN_TIME *ti;
-
-    if (lastAst && lastTi && (ti=AB_AccountStatus_GetTime(ast))) {
-      if (GWEN_Time_Diff(ti, lastTi)>0) {
-	lastAst=ast;
-        lastTi=ti;
-      }
-    }
-    else {
-      lastAst=ast;
-      lastTi=AB_AccountStatus_GetTime(ast);
-    }
-    ast=AB_AccountStatus_List_Next(ast);
-  }
-
-  return lastAst;
-}
-
-
-
-static
-void _dumpBal(const AB_BALANCE *bal,
-	      const GWEN_TIME *ti,
-	      FILE *fd) {
+static void _dumpBal(const AB_BALANCE *bal, FILE *fd) {
   if (bal) {
-    const GWEN_TIME *bti;
+    const GWEN_DATE *bdt;
     const AB_VALUE *val;
   
-    bti=AB_Balance_GetTime(bal);
-    if (bti==0)
-      bti=ti;
-    if (bti) {
+    bdt=AB_Balance_GetDate(bal);
+    if (bdt) {
       GWEN_BUFFER *tbuf;
 
       tbuf=GWEN_Buffer_new(0, 24, 0, 1);
-      GWEN_Time_toString(bti, "DD.MM.YYYY\thh:mm", tbuf);
+      GWEN_Date_toStringWithTemplate(bdt, "DD.MM.YYYY", tbuf);
       fprintf(fd, "%s\t", GWEN_Buffer_GetStart(tbuf));
       GWEN_Buffer_free(tbuf);
     }
@@ -304,11 +272,11 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     }
 
     if (matches) {
-      AB_ACCOUNT_STATUS *ast;
+      AB_BALANCE *bal;
 
-      ast=_getLastAccountStatus(iea);
-      if (ast) {
-	const GWEN_TIME *ti;
+      bal=AB_Balance_List_GetLatestByType(AB_ImExporterAccountInfo_GetBalanceList(iea),
+                                          AB_Balance_TypeBooked);
+      if (bal) {
         const char *s;
 
 	fprintf(f, "Account\t");
@@ -329,9 +297,7 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
 	  s="";
 	fprintf(f, "%s\t", s);
 
-	ti=AB_AccountStatus_GetTime(ast);
-	_dumpBal(AB_AccountStatus_GetBookedBalance(ast), ti, f);
-	_dumpBal(AB_AccountStatus_GetNotedBalance(ast), ti, f);
+	_dumpBal(bal, f);
 
         fprintf(f, "\n");
       }

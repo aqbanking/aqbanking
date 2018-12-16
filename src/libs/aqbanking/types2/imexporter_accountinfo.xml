@@ -126,39 +126,37 @@
         </inline>
 
 
-
         <inline loc="end" access="public">
           <content>
-             $(api) AB_ACCOUNT_STATUS *$(struct_prefix)_GetFirstAccountStatus(const $(struct_type) *as);
+             $(api) AB_BALANCE *$(struct_prefix)_GetFirstBalance(const $(struct_type) *as);
           </content>
         </inline>
 
         <inline loc="code">
           <content>
-             AB_ACCOUNT_STATUS *$(struct_prefix)_GetFirstAccountStatus(const $(struct_type) *as) {
-               assert(as);
-               if (as->accountStatusList)
-                 return AB_AccountStatus_List_First(as->accountStatusList);
+             AB_BALANCE *$(struct_prefix)_GetFirstBalance(const $(struct_type) *st) {
+               assert(st);
+               if (st->balanceList)
+                 return AB_Balance_List_First(st->balanceList);
                return NULL;
              }
           </content>
         </inline>
 
 
-
         <inline loc="end" access="public">
           <content>
-             $(api) void $(struct_prefix)_AddAccountStatus($(struct_type) *st, AB_ACCOUNT_STATUS *as);
+             $(api) void $(struct_prefix)_AddBalance($(struct_type) *st, AB_BALANCE *bal);
           </content>
         </inline>
 
         <inline loc="code">
           <content>
-             void $(struct_prefix)_AddAccountStatus($(struct_type) *st, AB_ACCOUNT_STATUS *as) {
-               assert(as);
-               if (NULL==st->accountStatusList)
-                 st->accountStatusList=AB_AccountStatus_List_new();
-               AB_AccountStatus_List_Add(as, st->accountStatusList);
+             void $(struct_prefix)_AddBalance($(struct_type) *st, AB_BALANCE *bal) {
+               assert(bal);
+               if (NULL==st->balanceList)
+                 st->balanceList=AB_Balance_List_new();
+               AB_Balance_List_Add(bal, st->balanceList);
              }
           </content>
         </inline>
@@ -218,8 +216,8 @@
                assert(st);
                if (st->transactionList)
                  AB_Transaction_List_Clear(st->transactionList);
-               if (st->accountStatusList)
-                 AB_AccountStatus_List_Clear(st->accountStatusList);
+               if (st->balanceList)
+                 AB_Balance_List_Clear(st->balanceList);
                if (st->eStatementList)
                  AB_Document_List_Clear(st->eStatementList);
              }
@@ -934,11 +932,11 @@
         </descr>
       </member>
 
-      <member name="accountStatusList" type="AB_ACCOUNT_STATUS_LIST" elementName="status">
+      <member name="balanceList" type="AB_BALANCE_LIST" elementName="balance">
         <descr>
         </descr>
         <default>NULL</default>
-        <preset>AB_AccountStatus_List_new()</preset>
+        <preset>AB_Balance_List_new()</preset>
         <access>public</access>
         <flags>own</flags>
         <setflags>nodup</setflags>

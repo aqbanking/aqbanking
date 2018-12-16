@@ -51,6 +51,10 @@
 # include "src/libs/plugins/imexporters/q43/q43.h"
 #endif
 
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_CAMT
+# include "src/libs/plugins/imexporters/camt/camt.h"
+#endif
+
 
 
 AB_IMEXPORTER *AB_Banking__CreateImExporterPlugin(AB_BANKING *ab, const char *modname){
@@ -104,6 +108,12 @@ AB_IMEXPORTER *AB_Banking__CreateImExporterPlugin(AB_BANKING *ab, const char *mo
     if (strcasecmp(modname, "q43")==0)
       return AB_ImExporterQ43_new(ab);
 #endif
+
+#ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_CAMT
+    if (strcasecmp(modname, "camt")==0)
+      return AB_ImExporterCAMT_new(ab);
+#endif
+
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Plugin [%s] not compiled-in", modname);
   }
 

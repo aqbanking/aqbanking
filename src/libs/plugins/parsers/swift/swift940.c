@@ -979,7 +979,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
   unsigned int bleft;
   int d1, d2, d3;
   int neg;
-  GWEN_TIME *ti;
+  GWEN_DATE *dt;
 
   p=AHB_SWIFT_Tag_GetData(tg);
   assert(p);
@@ -1013,14 +1013,10 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
   d2=((p[2]-'0')*10) + (p[3]-'0');
   d3=((p[4]-'0')*10) + (p[5]-'0');
 
-  ti=GWEN_Time_new(d1, d2-1, d3, 12, 0, 0, 1);
-  assert(ti);
-  if (GWEN_Time_toDb(ti, GWEN_DB_GetGroup(data,
-                                          GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-					  "date"))) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error saving date");
-  }
-  GWEN_Time_free(ti);
+  dt=GWEN_Date_fromGregorian(d1, d2, d3);
+  assert(dt);
+  GWEN_DB_SetCharValue(data, GWEN_DB_FLAGS_OVERWRITE_VARS, "date", GWEN_Date_GetString(dt));
+  GWEN_Date_free(dt);
 
   p+=6;
   bleft-=6;

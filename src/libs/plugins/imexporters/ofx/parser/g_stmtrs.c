@@ -259,20 +259,17 @@ int AIO_OfxGroup_STMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
     }
   }
   else if (strcasecmp(s, "LEDGERBAL")==0) {
-    const GWEN_TIME *ti;
+    const GWEN_DATE *dt;
     const AB_VALUE *v;
 
-    ti=AIO_OfxGroup_BAL_GetDate(sg);
+    dt=AIO_OfxGroup_BAL_GetDate(sg);
     v=AIO_OfxGroup_BAL_GetValue(sg);
     if (v) {
-      AB_ACCOUNT_STATUS *ast;
       AB_BALANCE *bal;
 
-      ast=AB_AccountStatus_new();
-      AB_AccountStatus_SetTime(ast, ti);
-
       bal=AB_Balance_new();
-      AB_Balance_SetTime(bal, ti);
+      AB_Balance_SetType(bal, AB_Balance_TypeBooked);
+      AB_Balance_SetDate(bal, dt);
       AB_Balance_SetValue(bal, v);
       if (xg->currency && AB_Value_GetCurrency(v)==NULL) {
 	AB_VALUE *v2;
@@ -282,42 +279,34 @@ int AIO_OfxGroup_STMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
 	AB_Balance_SetValue(bal, v2);
 	AB_Value_free(v2);
       }
-      AB_AccountStatus_SetBookedBalance(ast, bal);
-      AB_Balance_free(bal);
-
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Adding account status");
-      AB_ImExporterAccountInfo_AddAccountStatus(xg->accountInfo, ast);
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Adding balance");
+      AB_ImExporterAccountInfo_AddBalance(xg->accountInfo, bal);
     }
   }
   else if (strcasecmp(s, "AVAILBAL")==0) {
-    const GWEN_TIME *ti;
+    const GWEN_DATE *dt;
     const AB_VALUE *v;
 
-    ti=AIO_OfxGroup_BAL_GetDate(sg);
+    dt=AIO_OfxGroup_BAL_GetDate(sg);
     v=AIO_OfxGroup_BAL_GetValue(sg);
     if (v) {
-      AB_ACCOUNT_STATUS *ast;
       AB_BALANCE *bal;
 
-      ast=AB_AccountStatus_new();
-      AB_AccountStatus_SetTime(ast, ti);
-
       bal=AB_Balance_new();
-      AB_Balance_SetTime(bal, ti);
+      AB_Balance_SetType(bal, AB_Balance_TypeNoted);
+      AB_Balance_SetDate(bal, dt);
       AB_Balance_SetValue(bal, v);
       if (xg->currency && AB_Value_GetCurrency(v)==NULL) {
-	AB_VALUE *v2;
+        AB_VALUE *v2;
 
-	v2=AB_Value_dup(v);
-	AB_Value_SetCurrency(v2, xg->currency);
-	AB_Balance_SetValue(bal, v2);
-	AB_Value_free(v2);
+        v2=AB_Value_dup(v);
+        AB_Value_SetCurrency(v2, xg->currency);
+        AB_Balance_SetValue(bal, v2);
+        AB_Value_free(v2);
       }
-      AB_AccountStatus_SetNotedBalance(ast, bal);
-      AB_Balance_free(bal);
 
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Adding account status");
-      AB_ImExporterAccountInfo_AddAccountStatus(xg->accountInfo, ast);
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Adding balance");
+      AB_ImExporterAccountInfo_AddBalance(xg->accountInfo, bal);
     }
   }
 

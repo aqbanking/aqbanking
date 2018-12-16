@@ -16,12 +16,13 @@
         with_db
         with_xml
         with_refcount
+        with_list1
       </flags>
       
       <headers>
         <header type="sys" loc="pre">aqbanking/error.h</header>
         <header type="sys" loc="pre">gwenhywfar/types.h</header>
-        <header type="sys" loc="pre">gwenhywfar/gwentime.h</header>
+        <header type="sys" loc="pre">gwenhywfar/gwendate.h</header>
 
         <header type="sys" loc="post">aqbanking/value.h</header>
       </headers>
@@ -63,12 +64,120 @@
           </content>
         </inline>
 
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             $(api) AB_BALANCE *$(struct_prefix)_List_FindFirstByType(const $(struct_type)_LIST *bl, int ty);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             AB_BALANCE *$(struct_prefix)_List_FindFirstByType(const $(struct_type)_LIST *bl, int ty) {
+               AB_BALANCE *bal;
+               
+               assert(bl);
+               bal=AB_Balance_List_First(bl);
+               while(bal) {
+                 if (ty==AB_Balance_TypeNone || ty==bal->type)
+                   return bal;
+                 bal=AB_Balance_List_Next(bal);
+               }
+               
+               return NULL;
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             $(api) AB_BALANCE *$(struct_prefix)_List_FindNextByType($(struct_type) *bal, int ty);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             AB_BALANCE *$(struct_prefix)_List_FindNextByType($(struct_type) *bal, int ty) {
+               assert(bal);
+               bal=AB_Balance_List_Next(bal);
+               while(bal) {
+                 if (ty==AB_Balance_TypeNone || ty==bal->type)
+                   return bal;
+                 bal=AB_Balance_List_Next(bal);
+               }
+               
+               return NULL;
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             $(api) AB_BALANCE *$(struct_prefix)_List_GetLatestByType(const $(struct_type)_LIST *bl, int ty);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             AB_BALANCE *$(struct_prefix)_List_GetLatestByType(const $(struct_type)_LIST *bl, int ty) {
+               AB_BALANCE *lastBal=NULL;
+               const GWEN_DATE *lastDt=NULL;
+               AB_BALANCE *bal=NULL;
+             
+               bal=AB_Balance_List_First(bl);
+               while(bal) {
+                 if (ty==0 || (AB_Balance_GetType(bal)==ty)) {
+                   const GWEN_DATE *dt;
+             
+                   if (lastBal && lastDt && (dt=AB_Balance_GetDate(bal))) {
+                     if (GWEN_Date_Compare(dt, lastDt)>0) {
+                       lastBal=bal;
+                       lastDt=dt;
+                     }
+                   }
+                   else {
+                     lastBal=bal;
+                     lastDt=AB_Balance_GetDate(bal);
+                   }
+                 }
+                 bal=AB_Balance_List_Next(bal);
+               }
+
+               return lastBal;
+             }
+          </content>
+        </inline>
+
+
       </inlines>
 
 
     </lang>
 
     <enums>
+
+      <enum id="AB_BALANCE_TYPE" prefix="AB_Balance_Type" type="AB_BALANCE_TYPE">
+        <item name="none" value="0"/>
+        <item name="noted"/>
+        <item name="booked"/>
+        <item name="bankLine"/>
+        <item name="disposable"/>
+        <item name="temporary"/>
+      </enum>
 
     </enums>
 
@@ -79,12 +188,10 @@
 
     <members>
 
-      <member name="time" type="gwen_time" maxlen="32" >
-        <descr>
-        </descr>
+      <member name="date" type="gwen_date" maxlen="16" >
         <aqdb_type>AQDB_DataType_String</aqdb_type>
         <access>public</access>
-        <flags>own</flags>
+        <flags>own with_hash</flags>
         <setflags>const dup</setflags>
         <getflags>const</getflags>
         <default>NULL</default>
@@ -100,6 +207,15 @@
         <getflags>const</getflags>
         <default>NULL</default>
         <preset>NULL</preset>
+      </member>
+
+      <member name="type" type="int" maxlen="32" enum="AB_BALANCE_TYPE" >
+        <default>AB_Balance_TypeUnknown</default>
+        <preset>AB_Balance_TypeUnknown</preset>
+        <access>public</access>
+        <flags>enum with_getbymember</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
       </member>
 
     </members>

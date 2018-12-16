@@ -167,36 +167,6 @@ AB_VALUE *AB_ImExporterYN__ReadValue(AB_IMEXPORTER *ie,
 
 
 
-GWEN_TIME *AB_ImExporterYN__ReadTime(AB_IMEXPORTER *ie,
-				     GWEN_XMLNODE *node,
-				     int value) {
-  GWEN_XMLNODE *n;
-  GWEN_TIME *ti=0;
-
-  n=GWEN_XMLNode_GetNodeByXPath(node, "C507",
-				GWEN_PATH_FLAGS_NAMEMUSTEXIST);
-  if (n) {
-    GWEN_XMLNODE *nn;
-    int v=0;
-
-    nn=GWEN_XMLNode_FindFirstTag(n, "D_2005", 0, 0);
-    if (nn)
-      v=atoi(GWEN_XMLNode_GetProperty(nn, "Value", "0"));
-
-    if (value==0 || v==value) {
-      const char *s;
-
-      s=GWEN_XMLNode_GetCharValue(n, "D_2380", 0);
-      if (s)
-	ti=AB_ImExporter_DateFromString(s, "YYYYMMDD", 0);
-    }
-  }
-
-  return ti;
-}
-
-
-
 GWEN_DATE *AB_ImExporterYN__ReadDate(AB_IMEXPORTER *ie, GWEN_XMLNODE *node, int value) {
   GWEN_XMLNODE *n;
   GWEN_DATE *da=NULL;
@@ -360,14 +330,13 @@ int AB_ImExporterYN__ReadAccountStatus(AB_IMEXPORTER *ie,
       s=GWEN_XMLNode_GetProperty(nn, "Value", 0);
       if (s && strcasecmp(s, "LEN")==0) {
 	GWEN_XMLNODE *nnn;
-	GWEN_TIME *ti=0;
+        GWEN_DATE *dt=0;
         AB_VALUE *val=0;
 
         /* read time */
-	nnn=GWEN_XMLNode_GetNodeByXPath(n, "SG5/DTM",
-					GWEN_PATH_FLAGS_NAMEMUSTEXIST);
+	nnn=GWEN_XMLNode_GetNodeByXPath(n, "SG5/DTM", GWEN_PATH_FLAGS_NAMEMUSTEXIST);
 	if (nnn)
-	  ti=AB_ImExporterYN__ReadTime(ie, nnn, 202);
+          dt=AB_ImExporterYN__ReadDate(ie, nnn, 202);
 
 	/* read value */
 	nnn=GWEN_XMLNode_GetNodeByXPath(n, "SG5/MOA",
@@ -376,22 +345,17 @@ int AB_ImExporterYN__ReadAccountStatus(AB_IMEXPORTER *ie,
 	  val=AB_ImExporterYN__ReadValue(ie, nnn, 343);
 
 	if (val) {
-	  AB_ACCOUNT_STATUS *ast;
 	  AB_BALANCE *bal;
 
           AB_Value_SetCurrency(val, AB_ImExporterAccountInfo_GetCurrency(ai));
-	  ast=AB_AccountStatus_new();
           bal=AB_Balance_new();
-          AB_Balance_SetTime(bal, ti);
+          AB_Balance_SetType(bal, AB_Balance_TypeBooked);
+          AB_Balance_SetDate(bal, dt);
           AB_Balance_SetValue(bal, val);
-
-	  AB_AccountStatus_SetBookedBalance(ast, bal);
-	  AB_Balance_free(bal);
-
-	  AB_ImExporterAccountInfo_AddAccountStatus(ai, ast);
-	}
+          AB_ImExporterAccountInfo_AddBalance(ai, bal);
+        }
 	AB_Value_free(val);
-        GWEN_Time_free(ti);
+        GWEN_Date_free(dt);
       }
     }
 

@@ -1,8 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
  begin       : Mon Jan 07 2008
- copyright   : (C) 2008 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -20,7 +18,7 @@
 typedef struct AIO_OFX_GROUP_BAL AIO_OFX_GROUP_BAL;
 struct AIO_OFX_GROUP_BAL {
   AB_VALUE *value;
-  GWEN_TIME *date;
+  GWEN_DATE *date;
 
   char *currentElement;
 };

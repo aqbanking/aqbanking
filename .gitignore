@@ -112,6 +112,7 @@ src/libs/plugins/imexporters/yellownet/yellownet.xml
 src/libs/plugins/imexporters/q43/q43.xml
 src/libs/plugins/parsers/dtaus/dtaus.xml
 src/libs/plugins/parsers/swift/swift.xml
+src/libs/plugins/imexporters/camt/camt.xml
 src/test/abtest
 src/test/test-dlg-setup
 src/tools/aqbanking-cli/aqbanking-cli

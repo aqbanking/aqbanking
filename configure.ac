@@ -487,7 +487,7 @@ AC_ARG_WITH(imexporters,
 )
 
 if test "$aqbanking_imexporters" = "all"; then
-  aqbanking_imexporters="csv eri2 ofx openhbci1 swift xmldb yellownet sepa ctxfile q43"
+  aqbanking_imexporters="csv eri2 ofx openhbci1 swift xmldb yellownet sepa ctxfile q43 camt"
 fi
 
 for f in ${aqbanking_imexporters}; do
@@ -541,6 +541,11 @@ for f in ${aqbanking_imexporters}; do
       aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs q43"
       aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs q43/libabimexporters_q43.la"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_Q43, 1, [plugin availability])
+      ;;
+    camt)
+      aqbanking_plugins_imexporters_dirs="$aqbanking_plugins_imexporters_dirs camt"
+      aqbanking_plugins_imexporters_libs="$aqbanking_plugins_imexporters_libs camt/libabimexporters_camt.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_CAMT, 1, [plugin availability])
       ;;
     *)
       AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
@@ -1513,6 +1518,11 @@ AC_CONFIG_FILES([
   src/libs/plugins/imexporters/q43/q43.xml
   src/libs/plugins/imexporters/q43/profiles/Makefile
   src/libs/plugins/imexporters/q43/profiles/default.conf
+  src/libs/plugins/imexporters/camt/Makefile
+  src/libs/plugins/imexporters/camt/camt.xml
+  src/libs/plugins/imexporters/camt/profiles/Makefile
+  src/libs/plugins/imexporters/camt/profiles/default.conf
+  src/libs/plugins/imexporters/camt/profiles/052_001_02.conf
   src/libs/plugins/parsers/Makefile
   src/libs/plugins/parsers/swift/Makefile
   src/libs/plugins/parsers/swift/swift.xml

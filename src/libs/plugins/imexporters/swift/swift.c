@@ -227,7 +227,8 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
     }
     else if (strcasecmp(GWEN_DB_GroupName(dbT), "endSaldo")==0) {
       GWEN_DB_NODE *dbX;
-      GWEN_TIME *ti=0;
+      GWEN_DATE *dt=0;
+      const char *s;
       const char *bankCode;
       const char *accountNumber;
       const char *iban;
@@ -236,9 +237,15 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
       accountNumber=GWEN_DB_GetCharValue(dbT, "localAccountNumber", 0, 0);
       iban=GWEN_DB_GetCharValue(dbT, "localIban", 0, 0);
 
-      dbX=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "date");
-      if (dbX)
-        ti=GWEN_Time_fromDb(dbX);
+      /* read date */
+      s=GWEN_DB_GetCharValue(dbT, "date", 0, NULL);
+      if (s && *s) {
+        dt=GWEN_Date_fromString(s);
+        if (dt==NULL) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad date in saldo");
+        }
+      }
+
       dbX=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "value");
       if (dbX) {
         AB_VALUE *v;
@@ -247,23 +254,18 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
         if (v) {
           AB_BALANCE *bal;
           AB_IMEXPORTER_ACCOUNTINFO *iea;
-          AB_ACCOUNT_STATUS *as;
 
           bal=AB_Balance_new();
-          AB_Balance_SetTime(bal, ti);
+          AB_Balance_SetDate(bal, dt);
           AB_Balance_SetValue(bal, v);
           AB_Value_free(v);
-          as=AB_AccountStatus_new();
-          if (ti)
-            AB_AccountStatus_SetTime(as, ti);
-          AB_AccountStatus_SetNotedBalance(as, bal);
-          AB_Balance_free(bal);
+          AB_Balance_SetType(bal, AB_Balance_TypeNoted); /* TODO: maybe use "booked" here? */
 
           iea=AB_ImExporterContext_GetOrAddAccountInfo(ctx, 0, iban, bankCode, accountNumber, 0);
-          AB_ImExporterAccountInfo_AddAccountStatus(iea, as);
+          AB_ImExporterAccountInfo_AddBalance(iea, bal);
         }
       }
-      GWEN_Time_free(ti);
+      GWEN_Date_free(dt);
     }
     else {
       int rv;

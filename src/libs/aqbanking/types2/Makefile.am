@@ -33,7 +33,7 @@ dist_typedata_DATA=\
   ab_document.tm2 ab_document_list.tm2 ab_document_list2.tm2 \
   ab_message.tm2 ab_message_list.tm2 ab_message_list2.tm2 \
   ab_security.tm2 ab_security_list.tm2 ab_security_list2.tm2 \
-  ab_balance.tm2 \
+  ab_balance.tm2 ab_balance_list.tm2 \
   ab_account_status.tm2 ab_account_status_list.tm2 ab_account_status_list2.tm2 \
   ab_imexporter_accountinfo.tm2 ab_imexporter_accountinfo_list.tm2 ab_imexporter_accountinfo_list2.tm2 \
   ab_imexporter_context.tm2 ab_imexporter_context_list.tm2 ab_imexporter_context_list2.tm2 \

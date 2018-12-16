@@ -113,68 +113,70 @@ void GWENHYWFAR_CB AH_Job_GetBalance_FreeData(void *bp, void *p){
 
 /* --------------------------------------------------------------- FUNCTION */
 AB_BALANCE *AH_Job_GetBalance__ReadBalance(GWEN_DB_NODE *dbT) {
-  GWEN_BUFFER *buf;
-  GWEN_TIME *t;
-  AB_VALUE *v1, *v2;
-  AB_BALANCE *bal;
+  AB_VALUE *v;
   const char *p;
+  AB_BALANCE *bal;
+  int isCredit=0;
 
-  bal=0;
+  bal=AB_Balance_new();
 
-  /* read date and time */
-  buf=GWEN_Buffer_new(0, 32, 0, 1);
+  /* get isCredit */
+  p=GWEN_DB_GetCharValue(dbT, "debitMark", 0, 0);
+  if (p) {
+    if (strcasecmp(p, "D")==0 ||
+	strcasecmp(p, "RC")==0) {
+      isCredit=0;
+    }
+    else if (strcasecmp(p, "C")==0 ||
+	     strcasecmp(p, "RD")==0)
+      isCredit=1;
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad debit mark \"%s\"", p);
+      AB_Balance_free(bal);
+      return NULL;
+    }
+  }
+
+  /* read date */
   p=GWEN_DB_GetCharValue(dbT, "date", 0, 0);
-  if (p)
-    GWEN_Buffer_AppendString(buf, p);
-  else {
-    AH_AccountJob_AddCurrentDate(buf);
-  }
-  p=GWEN_DB_GetCharValue(dbT, "time", 0, 0);
-  if (p)
-    GWEN_Buffer_AppendString(buf, p);
-  else {
-    AH_AccountJob_AddCurrentTime(buf);
-  }
-  t=GWEN_Time_fromString(GWEN_Buffer_GetStart(buf), "YYYYMMDDhhmmss");
-  if (!t) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error parsing date and time");
-  }
-  GWEN_Buffer_free(buf);
+  if (p) {
+    GWEN_DATE *dt;
 
-  /* read value */
-  v1=AB_Value_fromDb(dbT);
-  v2=0;
-  if (!v1) {
+    dt=GWEN_Date_fromStringWithTemplate(p, "YYYYMMDD");
+    if (dt) {
+      AB_Balance_SetDate(bal, dt);
+      GWEN_Date_free(dt);
+    }
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad date \"%s\"", p);
+      AB_Balance_free(bal);
+      return NULL;
+    }
+  }
+  else {
+    GWEN_DATE *dt;
+
+    DBG_WARN(AQHBCI_LOGDOMAIN, "No date, using current date");
+    dt=GWEN_Date_CurrentDate();
+    assert(dt);
+    AB_Balance_SetDate(bal, dt);
+    GWEN_Date_free(dt);
+  }
+
+  /* get value */
+  v=AB_Value_fromDb(dbT);
+  if (!v) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error parsing value from DB");
+    AB_Balance_free(bal);
+    return NULL;
   }
   else {
-    p=GWEN_DB_GetCharValue(dbT, "debitMark", 0, 0);
-    if (p) {
-      if (strcasecmp(p, "D")==0 ||
-	  strcasecmp(p, "RC")==0) {
-	v2=AB_Value_dup(v1);
-	AB_Value_Negate(v2);
-      }
-      else if (strcasecmp(p, "C")==0 ||
-               strcasecmp(p, "RD")==0)
-	v2=AB_Value_dup(v1);
-      else {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad debit mark \"%s\"", p);
-	v2=0;
-      }
-    }
-    if (v2) {
-      bal=AB_Balance_new();
-      AB_Balance_SetTime(bal, t);
-      AB_Balance_SetValue(bal, v2);
-    }
-    else
-      bal=NULL;
-  }
+    if (!isCredit)
+      AB_Value_Negate(v);
 
-  AB_Value_free(v2);
-  AB_Value_free(v1);
-  GWEN_Time_free(t);
+    AB_Balance_SetValue(bal, v);
+    AB_Value_free(v);
+  }
 
   return bal;
 }
@@ -357,13 +359,10 @@ int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       return rv;
     }
 
-    dbBalance=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                               "data/balance");
+    dbBalance=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/balance");
     if (!dbBalance)
-      dbBalance=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                                         "data/balancecreditcard");
+      dbBalance=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/balancecreditcard");
     if (dbBalance) {
-      AB_ACCOUNT_STATUS *acst;
       GWEN_DB_NODE *dbT;
       AB_ACCOUNT *a;
       AB_IMEXPORTER_ACCOUNTINFO *ai;
@@ -372,40 +371,44 @@ int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
         GWEN_DB_Dump(dbBalance, 2);
 
-      acst=AB_AccountStatus_new();
+      a=AH_AccountJob_GetAccount(j);
+      assert(a);
+      ai=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
+						  AB_Account_GetUniqueId(a),
+						  AB_Account_GetIban(a),
+						  AB_Account_GetBankCode(a),
+						  AB_Account_GetAccountNumber(a),
+						  AB_Account_GetAccountType(a));
+      assert(ai);
+
 
       /* read booked balance */
-      dbT=GWEN_DB_GetGroup(dbBalance, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                           "booked");
+      dbT=GWEN_DB_GetGroup(dbBalance, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "booked");
       if (dbT) {
         AB_BALANCE *bal;
 
         bal=AH_Job_GetBalance__ReadBalance(dbT);
         if (bal) {
-	  AB_AccountStatus_SetBookedBalance(acst, bal);
-	  AB_AccountStatus_SetTime(acst, AB_Balance_GetTime(bal));
-          AB_Balance_free(bal);
+	  AB_Balance_SetType(bal, AB_Balance_TypeBooked);
+	  AB_ImExporterAccountInfo_AddBalance(ai, bal);
         }
       }
 
       /* read noted balance */
-      dbT=GWEN_DB_GetGroup(dbBalance, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                           "noted");
+      dbT=GWEN_DB_GetGroup(dbBalance, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "noted");
       if (dbT) {
         AB_BALANCE *bal;
 
         bal=AH_Job_GetBalance__ReadBalance(dbT);
         if (bal) {
-	  AB_AccountStatus_SetNotedBalance(acst, bal);
-	  if (AB_AccountStatus_GetTime(acst)==NULL)
-	    AB_AccountStatus_SetTime(acst, AB_Balance_GetTime(bal));
-          AB_Balance_free(bal);
-        }
+	  AB_Balance_SetType(bal, AB_Balance_TypeNoted);
+	  AB_ImExporterAccountInfo_AddBalance(ai, bal);
+	}
       }
 
+#if 0
       /* read credit Line */
-      dbT=GWEN_DB_GetGroup(dbBalance, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                           "creditLine");
+      dbT=GWEN_DB_GetGroup(dbBalance, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "creditLine");
       if (dbT) {
         AB_VALUE *v;
 
@@ -418,19 +421,8 @@ int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
         }
         AB_Value_free(v);
       }
+#endif
 
-      a=AH_AccountJob_GetAccount(j);
-      assert(a);
-      ai=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
-                                                  AB_Account_GetUniqueId(a),
-                                                  AB_Account_GetIban(a),
-                                                  AB_Account_GetBankCode(a),
-                                                  AB_Account_GetAccountNumber(a),
-                                                  AB_Account_GetAccountType(a));
-      assert(ai);
-
-      /* add new account status */
-      AB_ImExporterAccountInfo_AddAccountStatus(ai, acst);
       break; /* break loop, we found the balance */
     } /* if "Balance" */
 

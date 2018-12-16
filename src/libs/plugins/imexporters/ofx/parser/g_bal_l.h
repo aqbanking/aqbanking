@@ -29,8 +29,8 @@ AIO_OFX_GROUP *AIO_OfxGroup_BAL_new(const char *groupName,
 const AB_VALUE *AIO_OfxGroup_BAL_GetValue(const AIO_OFX_GROUP *g);
 void AIO_OfxGroup_BAL_SetValue(AIO_OFX_GROUP *g, const AB_VALUE *v);
 
-const GWEN_TIME *AIO_OfxGroup_BAL_GetDate(const AIO_OFX_GROUP *g);
-void AIO_OfxGroup_BAL_SetDate(AIO_OFX_GROUP *g, const GWEN_TIME *ti);
+const GWEN_DATE *AIO_OfxGroup_BAL_GetDate(const AIO_OFX_GROUP *g);
+void AIO_OfxGroup_BAL_SetDate(AIO_OFX_GROUP *g, const GWEN_DATE *dt);
 
 
 

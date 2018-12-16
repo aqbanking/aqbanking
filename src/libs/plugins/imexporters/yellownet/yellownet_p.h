@@ -38,10 +38,6 @@ static AB_VALUE *AB_ImExporterYN__ReadValue(AB_IMEXPORTER *ie,
                                             GWEN_XMLNODE *node,
                                             int value);
 
-static GWEN_TIME *AB_ImExporterYN__ReadTime(AB_IMEXPORTER *ie,
-                                            GWEN_XMLNODE *node,
-                                            int value);
-
 static GWEN_DATE *AB_ImExporterYN__ReadDate(AB_IMEXPORTER *ie, GWEN_XMLNODE *node, int value);
 
 static AB_IMEXPORTER_ACCOUNTINFO *AB_ImExporterYN__ReadAccountInfo(AB_IMEXPORTER *ie,

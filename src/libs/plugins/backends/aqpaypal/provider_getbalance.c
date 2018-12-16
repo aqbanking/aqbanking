@@ -227,15 +227,12 @@ int APY_Provider_ExecGetBal(AB_PROVIDER *pro,
   /* now get the transactions */
   dbCurr=GWEN_DB_GetFirstGroup(dbResponse);
   while(dbCurr) {
-    AB_ACCOUNT_STATUS *acst;
     AB_BALANCE *bal;
-    GWEN_TIME *t=NULL;
+    GWEN_DATE *t=NULL;
     AB_VALUE *vc;
     const char *p;
     
     DBG_NOTICE(AQPAYPAL_LOGDOMAIN, "Got a balance");
-    
-    acst=AB_AccountStatus_new();
     
     /* read and parse value */
     p=GWEN_DB_GetCharValue(dbCurr, "L_AMT", 0, 0);
@@ -252,25 +249,26 @@ int APY_Provider_ExecGetBal(AB_PROVIDER *pro,
     
     p=GWEN_DB_GetCharValue(dbResponse, "TIMESTAMP", 0, NULL);
     if (p && *p) {
-      t=GWEN_Time_fromUtcString(p, "YYYY-MM-DDThh:mm:ssZ");
+      /*t=GWEN_Time_fromUtcString(p, "YYYY-MM-DDThh:mm:ssZ");*/
+      t=GWEN_Date_fromStringWithTemplate(p, "YYYY-MM-DD");
+      if (t==NULL) {
+        DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Invalid timespec [%s]", p);
+      }
     }
     else {
-      DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Invalid timespec [%s]", p);
+      DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Missing timespec");
     }
-    
+
     bal=AB_Balance_new();
-    AB_Balance_SetTime(bal, t);
+    AB_Balance_SetType(bal, AB_Balance_TypeBooked);
+    AB_Balance_SetDate(bal, t);
     AB_Balance_SetValue(bal, vc);
-    
+
     AB_Value_free(vc);
-    GWEN_Time_free(t);
+    GWEN_Date_free(t);
     
-    AB_AccountStatus_SetBookedBalance(acst, bal);
-    AB_AccountStatus_SetTime(acst, AB_Balance_GetTime(bal));
-    AB_Balance_free(bal);
-    
-    /* add new account status */
-    AB_ImExporterAccountInfo_AddAccountStatus(ai, acst);
+    /* add new balance */
+    AB_ImExporterAccountInfo_AddBalance(ai, bal);
     break; /* break loop, we found the balance */
 
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);

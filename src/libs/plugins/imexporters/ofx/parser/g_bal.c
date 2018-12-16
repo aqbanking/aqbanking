@@ -64,7 +64,7 @@ void AIO_OfxGroup_BAL_FreeData(void *bp, void *p) {
   xg=(AIO_OFX_GROUP_BAL*)p;
   assert(xg);
   free(xg->currentElement);
-  GWEN_Time_free(xg->date);
+  GWEN_Date_free(xg->date);
   AB_Value_free(xg->value);
   GWEN_FREE_OBJECT(xg);
 }
@@ -97,7 +97,7 @@ void AIO_OfxGroup_BAL_SetValue(AIO_OFX_GROUP *g, const AB_VALUE *v) {
 
 
 
-const GWEN_TIME *AIO_OfxGroup_BAL_GetDate(const AIO_OFX_GROUP *g) {
+const GWEN_DATE *AIO_OfxGroup_BAL_GetDate(const AIO_OFX_GROUP *g) {
   AIO_OFX_GROUP_BAL *xg;
 
   assert(g);
@@ -109,23 +109,22 @@ const GWEN_TIME *AIO_OfxGroup_BAL_GetDate(const AIO_OFX_GROUP *g) {
 
 
 
-void AIO_OfxGroup_BAL_SetDate(AIO_OFX_GROUP *g, const GWEN_TIME *ti) {
+void AIO_OfxGroup_BAL_SetDate(AIO_OFX_GROUP *g, const GWEN_DATE *dt) {
   AIO_OFX_GROUP_BAL *xg;
 
   assert(g);
   xg=GWEN_INHERIT_GETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_BAL, g);
   assert(xg);
 
-  GWEN_Time_free(xg->date);
-  if (ti) xg->date=GWEN_Time_dup(ti);
+  GWEN_Date_free(xg->date);
+  if (dt) xg->date=GWEN_Date_dup(dt);
   else xg->date=NULL;
 }
 
 
 
 
-int AIO_OfxGroup_BAL_StartTag(AIO_OFX_GROUP *g,
-				 const char *tagName) {
+int AIO_OfxGroup_BAL_StartTag(AIO_OFX_GROUP *g, const char *tagName) {
   AIO_OFX_GROUP_BAL *xg;
   //GWEN_XML_CONTEXT *ctx;
 
@@ -187,17 +186,17 @@ int AIO_OfxGroup_BAL_AddData(AIO_OFX_GROUP *g, const char *data) {
 	xg->value=v;
       }
       else if (strcasecmp(xg->currentElement, "DTASOF")==0) {
-	GWEN_TIME *ti;
+	GWEN_DATE *dt;
 
-	ti=GWEN_Time_fromString(s, "YYYYMMDD");
-	if (ti==NULL) {
+        dt=GWEN_Date_fromStringWithTemplate(s, "YYYYMMDD");
+	if (dt==NULL) {
 	  DBG_ERROR(AQBANKING_LOGDOMAIN,
-		    "Invalid data for DTASOF: [%s]", s);
+                    "Invalid data for DTASOF: [%s]", s);
 	  GWEN_Buffer_free(buf);
 	  return GWEN_ERROR_BAD_DATA;
 	}
-	GWEN_Time_free(xg->date);
-        xg->date=ti;
+	GWEN_Date_free(xg->date);
+        xg->date=dt;
       }
       else {
 	DBG_INFO(AQBANKING_LOGDOMAIN,
