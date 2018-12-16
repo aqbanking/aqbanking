@@ -54,7 +54,7 @@
                     <CreateAndEnterTempDbGroup name="amount" >
                       <SetTempCharValue name="value"    path="Amt" />
                       <SetTempCharValue name="currency" path="Amt@Ccy" />
-                      <SetCharValue name="value" value="$(value):$(currency)" />
+                      <SetCharValue name="value" value="-$(value):$(currency)" />
                     </CreateAndEnterTempDbGroup> <!-- amount -->
                   </IfHasCharData> <!-- Amt@Ccy -->
                 </IfHasCharData>   <!-- Amt -->
@@ -76,13 +76,44 @@
                     <CreateAndEnterTempDbGroup name="amount" >
                       <SetTempCharValue name="value"    path="Amt" />
                       <SetTempCharValue name="currency" path="Amt@Ccy" />
-                      <SetCharValue name="value" value="-$(value):$(currency)" />
+                      <SetCharValue name="value" value="$(value):$(currency)" />
                     </CreateAndEnterTempDbGroup>
                   </IfHasCharData>
                 </IfHasCharData>
   
               </IfCharDataMatches> <!-- CdtDbtInd == CRDT- -->
+
+              <IfPathExists path="NtryDtls/TxDtls/BkTxCd/Domn">
+
+                <enter path="NtryDtls/TxDtls/BkTxCd/Domn">
+
+                    <CreateAndEnterTempDbGroup name="code" >
+
+                      <SetTempCharValue name="code"    path="Cd" />
+                      <SetTempCharValue name="family" path="Fmly/Cd" />
+                      <SetTempCharValue name="subfamily" path="Fmly/SubFmlyCd" />
+                      <SetCharValue     name="transactionKey" value="$(code)-$(family)-$(subfamily)" />
+                    
+                    </CreateAndEnterTempDbGroup>
+
+                </enter> <!-- NtryDtls/TxDtls/BkTxCd/Domn -->
+              </IfPathExists>
               
+              
+              <!-- read purpose lines -->
+              <IfPathExists path="NtryDtls/TxDtls/RmtInf">
+
+                <enter path="NtryDtls/TxDtls/RmtInf">
+
+                  <ForEvery name="Ustrd">
+                    
+                    <SetCharValue name="purpose" path="."/>
+                    
+                  </ForEvery>
+
+                </enter> <!-- RmtInf -->
+              </IfPathExists>
+
               
             </CreateAndEnterDbGroup> <!-- transaction --> 
          
