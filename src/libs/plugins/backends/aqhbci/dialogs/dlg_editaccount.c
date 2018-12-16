@@ -107,26 +107,33 @@ static void createUserString(const AB_USER *u, GWEN_BUFFER *tbuf) {
   uid=AB_User_GetUniqueId(u);
   snprintf(numbuf, sizeof(numbuf)-1, "%d", uid);
   numbuf[sizeof(numbuf)-1]=0;
-
-  s=AB_User_GetUserName(u);
-  if (s && *s)
-    GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, numbuf);
   GWEN_Buffer_AppendString(tbuf, "-");
 
+  /* column 2 */
   s=AB_User_GetBankCode(u);
   if (s && *s)
     GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, "-");
-  
+
+  /* column 3 */
+  s=AB_User_GetBankCode(u);
+  if (s && *s)
+    GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "-");
+
+  /* column 4 */
   s=AB_User_GetCustomerId(u);
   if (!(s && *s))
     s=AB_User_GetUserId(u);
   if (s && *s)
     GWEN_Buffer_AppendString(tbuf, s);
+  GWEN_Buffer_AppendString(tbuf, "-");
 
-  GWEN_Buffer_AppendString(tbuf, " (");
-  GWEN_Buffer_AppendString(tbuf, numbuf);
-  GWEN_Buffer_AppendString(tbuf, ")");
+  /* column 5 */
+  s=AB_User_GetUserName(u);
+  if (s && *s)
+    GWEN_Buffer_AppendString(tbuf, s);
 
 }
 
