@@ -15,7 +15,7 @@
 #include "i18n_l.h"
 
 #include <aqbanking/banking.h>
-#include <aqbanking/accstatus.h>
+#include <aqbanking/balance.h>
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>

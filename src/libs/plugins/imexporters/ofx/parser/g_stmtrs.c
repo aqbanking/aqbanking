@@ -1,6 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
  begin       : Mon Jan 07 2008
  copyright   : (C) 2008 by Martin Preuss
  email       : martin@libchipcard.de
@@ -24,7 +22,7 @@
 #include "g_banktranlist_l.h"
 #include "g_bal_l.h"
 
-#include <aqbanking/accstatus.h>
+#include <aqbanking/balance.h>
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>

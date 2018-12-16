@@ -26,9 +26,9 @@
         <header type="sys" loc="pre">gwenhywfar/gwentime.h</header>
 
         <header type="sys" loc="post">aqbanking/transaction.h</header>
-        <header type="sys" loc="post">aqbanking/accstatus.h</header>
         <header type="sys" loc="post">aqbanking/document.h</header>
         <header type="sys" loc="post">aqbanking/account_type.h</header>
+        <header type="sys" loc="post">aqbanking/balance.h</header>
       </headers>
 
 

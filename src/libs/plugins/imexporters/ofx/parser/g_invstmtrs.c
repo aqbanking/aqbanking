@@ -1,6 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
  begin       : Mon Jan 07 2008
  copyright   : (C) 2008 by Martin Preuss
  email       : martin@libchipcard.de
@@ -27,7 +25,7 @@
 #include "g_invacc_l.h"               /*SRB 4/22/09*/
 #include "g_invposlist_l.h"
 #include "g_invtranlist_l.h"          /*SRB 4/22/09*/
-#include <aqbanking/accstatus.h>
+#include <aqbanking/balance.h>
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>

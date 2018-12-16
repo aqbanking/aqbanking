@@ -13,7 +13,7 @@
 
 
 #include "accountjob_l.h"
-#include <aqbanking/accstatus.h>
+#include <aqbanking/balance.h>
 
 
 AH_JOB *AH_Job_GetBalance_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account);

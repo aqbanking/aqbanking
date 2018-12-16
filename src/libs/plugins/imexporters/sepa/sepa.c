@@ -16,7 +16,7 @@
 
 #include <aqbanking/banking.h>
 #include <aqbanking/banking_be.h>
-#include <aqbanking/accstatus.h>
+#include <aqbanking/balance.h>
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
