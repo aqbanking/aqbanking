@@ -219,6 +219,16 @@ static int _import_052_001_02_read_transaction_details(AB_IMEXPORTER *ie,
     GWEN_Buffer_free(tbuf);
   }
 
+  /* read FI id (if any) */
+  s=GWEN_XMLNode_GetCharValueByPath(xmlNode, "Refs/Prtry/Tp", NULL);
+  if (s && *s) {
+    if (strcasecmp(s, "FI-UMSATZ-ID")==0) {
+      s=GWEN_XMLNode_GetCharValueByPath(xmlNode, "Refs/Prtry/Ref", NULL);
+      if (s && *s)
+        AB_Transaction_SetFiId(t, s);
+    }
+  }
+
 
   /* read purpose */
   n=GWEN_XMLNode_FindFirstTag(xmlNode, "RmtInf", NULL, NULL);
