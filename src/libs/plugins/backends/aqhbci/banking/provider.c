@@ -24,6 +24,7 @@
 
 #include "jobgetbalance_l.h"
 #include "jobgettransactions_l.h"
+#include "jobgettrans_camt_l.h"
 #include "jobloadcellphone_l.h"
 #include "jobsepaxfersingle_l.h"
 #include "jobsepaxfermulti_l.h"
@@ -297,7 +298,12 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, in
     break;
 
   case AB_Transaction_CommandGetTransactions:
-    mj=AH_Job_GetTransactions_new(pro, mu, ma);
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Trying CAMT job");
+    mj=AH_Job_GetTransactionsCAMT_new(pro, mu, ma);
+    if (!mj) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "CAMT job not supported with this account, falling back to SWIFT");
+      mj=AH_Job_GetTransactions_new(pro, mu, ma);
+    }
     if (!mj) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Job not supported with this account");
       return GWEN_ERROR_NOT_AVAILABLE;

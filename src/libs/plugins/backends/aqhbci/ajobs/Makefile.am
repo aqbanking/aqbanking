@@ -17,6 +17,8 @@ noinst_HEADERS=\
   jobgetbalance_p.h \
   jobgettransactions_l.h \
   jobgettransactions_p.h \
+  jobgettrans_camt_l.h \
+  jobgettrans_camt_p.h \
   jobforeignxferwh_l.h \
   jobforeignxferwh_p.h \
   jobloadcellphone_l.h \
@@ -46,6 +48,7 @@ libhbciaccjobs_la_SOURCES=\
   accountjob.c \
   jobgetbalance.c \
   jobgettransactions.c \
+  jobgettrans_camt.c \
   jobforeignxferwh.c \
   jobloadcellphone.c \
   jobsepadebitdatedsinglecreate.c \
@@ -74,6 +77,7 @@ sources:
 xmlfiles=\
   $(srcdir)/jobgetbalance.xml \
   $(srcdir)/jobgettransactions.xml \
+  $(srcdir)/jobgettrans_camt.xml \
   $(srcdir)/jobforeignxferwh.xml \
   $(srcdir)/jobloadcellphone.xml \
   $(srcdir)/jobsepadebitdatedsinglecreate.xml \
