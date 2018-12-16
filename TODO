@@ -3,6 +3,7 @@ Next:
 - AB_BANKING:
 
 - fix apidoc for provider.h
+- AqHBCI: Fix EditAccount dialog (doesn't select set user)
 
 
 
