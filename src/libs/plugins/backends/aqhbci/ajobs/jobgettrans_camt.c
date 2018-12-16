@@ -73,7 +73,7 @@ AH_JOB *AH_Job_GetTransactionsCAMT_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT 
   dbArgs=AH_Job_GetArguments(j);
   assert(dbArgs);
 
-  GWEN_DB_Dump(dbParams, 2);
+  /*GWEN_DB_Dump(dbParams, 2); */
 
   for (i=0; i<10; i++) {
     const char *s;
@@ -185,7 +185,7 @@ int AH_Job_GetTransactionsCAMT_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   GWEN_DB_NODE *dbCurr;
   int rv;
 
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Processing JobGetTransactions");
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Processing JobGetTransactionsCAMT");
 
   assert(j);
   aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETTRANS_CAMT, j);
@@ -224,34 +224,45 @@ int AH_Job_GetTransactionsCAMT_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       return rv;
     }
 
-    dbXA=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/transactions");
+    dbXA=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/transactionsCAMT");
     if (dbXA) {
       const void *p;
       unsigned int bs;
-      int i=0;
+      GWEN_DB_NODE *dbBooked;
+
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Found response group");
 
       if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
         GWEN_DB_Dump(dbXA, 2);
 
-      /* get booked transactions (daily reports!) */
-      for (i=0; ; i++) {
-        p=GWEN_DB_GetBinValue(dbXA, "booked", i, 0, 0, &bs);
-        if (p && bs) {
-          rv=AH_Job_GetTransCAMT__ReadTransactions(j, ai, "052.001.02", AB_Transaction_TypeStatement, p, bs);
-          if (rv<0) {
-            DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-            AH_Job_SetStatus(j, AH_JobStatusError);
-            return rv;
-          }
-        }
-        else
-          break;
-      }
+      dbBooked=GWEN_DB_GetGroup(dbXA, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "booked");
+      if (dbBooked) {
+	int i=0;
+
+	/* get booked transactions (daily reports!) */
+	DBG_INFO(AQHBCI_LOGDOMAIN, "Found booked transaction group");
+
+	for (i=0; i<10000; i++) {
+	  p=GWEN_DB_GetBinValue(dbBooked, "dayData", i, 0, 0, &bs);
+	  if (p && bs) {
+	    DBG_INFO(AQHBCI_LOGDOMAIN, "Reading booked day data (%d)", i+1);
+	    rv=AH_Job_GetTransCAMT__ReadTransactions(j, ai, "052_001_02", AB_Transaction_TypeStatement, p, bs);
+	    if (rv<0) {
+	      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+	      AH_Job_SetStatus(j, AH_JobStatusError);
+	      return rv;
+	    }
+	  }
+	  else
+	    break;
+	} /* for i */
+      } /* if dbBooked */
 
       /* get noted transactions */
       p=GWEN_DB_GetBinValue(dbXA, "noted", 0, 0, 0, &bs);
       if (p && bs) {
-        rv=AH_Job_GetTransCAMT__ReadTransactions(j, ai, "052.001.02", AB_Transaction_TypeNotedStatement, p, bs);
+	DBG_INFO(AQHBCI_LOGDOMAIN, "Reading noted data");
+        rv=AH_Job_GetTransCAMT__ReadTransactions(j, ai, "052_001_02", AB_Transaction_TypeNotedStatement, p, bs);
         if (rv<0) {
           DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
           AH_Job_SetStatus(j, AH_JobStatusError);

@@ -298,7 +298,7 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, in
     break;
 
   case AB_Transaction_CommandGetTransactions:
-    if (!(aFlags & AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD)) {
+    if (aFlags & AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers CAMT download");
       mj=AH_Job_GetTransactionsCAMT_new(pro, mu, ma);
       if (!mj) {

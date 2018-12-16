@@ -88,7 +88,7 @@ int AH_ImExporterCAMT_Import(AB_IMEXPORTER *ie,
   }
 
   /* debug */
-  GWEN_XMLNode_Dump(n, 2);
+  /*GWEN_XMLNode_Dump(n, 2); */
 
   /* check document type */
   camVersionWanted=GWEN_DB_GetCharValue(params, "type", 0, "052.001.02");
