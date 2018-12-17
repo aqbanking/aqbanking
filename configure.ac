@@ -658,7 +658,7 @@ AC_SUBST(ktoblzcheck_includes)
 
 # Variable used in aqbanking-config.cmake
 AC_SUBST(GWENHYWFAR_MINIMUM_VERSION, "4.99.2.0")
-AC_GWENHYWFAR(4,99,2,0)
+AC_GWENHYWFAR(4,99,3,0)
 
 all_includes="$all_includes $gwenhywfar_includes"
 
