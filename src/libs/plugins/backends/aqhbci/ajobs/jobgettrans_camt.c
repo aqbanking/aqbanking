@@ -128,7 +128,7 @@ int AH_Job_GetTransCAMT__ReadTransactions(AH_JOB *j,
   GWEN_Buffer_AppendBytes(buf, (const char*) ptr, len);
   GWEN_Buffer_Rewind(buf);
 
-  rv=AB_Banking_ImportBuffer(AB_Provider_GetBanking(pro), tempContext, "camt", docType, buf);
+  rv=AB_Banking_ImportBuffer(AB_Provider_GetBanking(pro), tempContext, "xml", docType, buf);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(buf);
@@ -246,7 +246,7 @@ int AH_Job_GetTransactionsCAMT_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 	  p=GWEN_DB_GetBinValue(dbBooked, "dayData", i, 0, 0, &bs);
 	  if (p && bs) {
 	    DBG_INFO(AQHBCI_LOGDOMAIN, "Reading booked day data (%d)", i+1);
-	    rv=AH_Job_GetTransCAMT__ReadTransactions(j, ai, "052_001_02", AB_Transaction_TypeStatement, p, bs);
+	    rv=AH_Job_GetTransCAMT__ReadTransactions(j, ai, "camt_052_001_02", AB_Transaction_TypeStatement, p, bs);
 	    if (rv<0) {
 	      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
 	      AH_Job_SetStatus(j, AH_JobStatusError);
@@ -262,7 +262,7 @@ int AH_Job_GetTransactionsCAMT_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       p=GWEN_DB_GetBinValue(dbXA, "noted", 0, 0, 0, &bs);
       if (p && bs) {
 	DBG_INFO(AQHBCI_LOGDOMAIN, "Reading noted data");
-        rv=AH_Job_GetTransCAMT__ReadTransactions(j, ai, "052_001_02", AB_Transaction_TypeNotedStatement, p, bs);
+        rv=AH_Job_GetTransCAMT__ReadTransactions(j, ai, "camt_052_001_02", AB_Transaction_TypeNotedStatement, p, bs);
         if (rv<0) {
           DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
           AH_Job_SetStatus(j, AH_JobStatusError);
