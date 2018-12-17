@@ -47,6 +47,11 @@ static int AB_ImExporterXML_CheckFile(AB_IMEXPORTER *ie, const char *fname);
 static GWEN_XMLNODE *AB_ImExporterXML_ReadSchemaFile(AB_IMEXPORTER *ie, const char *schemaName);
 static GWEN_XMLNODE *AB_ImExporterXML_ReadXmlFromSio(AB_IMEXPORTER *ie, GWEN_SYNCIO *sio);
 
+static int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
+                                     AB_IMEXPORTER_CONTEXT *ctx,
+                                     GWEN_DB_NODE *dbData,
+                                     GWEN_DB_NODE *dbParams);
+
 
 
 #endif /* AQBANKING_IMEX_XML_P_H */

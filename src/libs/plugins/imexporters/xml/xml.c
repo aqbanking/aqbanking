@@ -110,6 +110,7 @@ int AB_ImExporterXML_Import(AB_IMEXPORTER *ie,
   dbData=GWEN_DB_Group_new("data");
   rv=GWEN_Xml2Db(xmlDocData, xmlNodeSchema, dbData);
 
+#if 0
   DBG_ERROR(AQBANKING_LOGDOMAIN, "Data received:");
   GWEN_DB_Dump(dbData, 2);
   if (rv<0) {
@@ -119,9 +120,19 @@ int AB_ImExporterXML_Import(AB_IMEXPORTER *ie,
     GWEN_XMLNode_free(xmlDocSchema);
     return rv;
   }
+#endif
 
-  /* TODO: import */
+  /* import int context */
+  rv=AB_ImExporterXML_ImportDb(ie, ctx, dbData, dbSubParams);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_DB_Group_free(dbData);
+    GWEN_XMLNode_free(xmlDocData);
+    GWEN_XMLNode_free(xmlDocSchema);
+    return rv;
+  }
 
+  /* done */
   GWEN_DB_Group_free(dbData);
   GWEN_XMLNode_free(xmlDocData);
   GWEN_XMLNode_free(xmlDocSchema);
@@ -215,6 +226,64 @@ GWEN_XMLNODE *AB_ImExporterXML_ReadXmlFromSio(AB_IMEXPORTER *ie, GWEN_SYNCIO *si
 
   return xmlDocRoot;
 }
+
+
+
+int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
+                              AB_IMEXPORTER_CONTEXT *ctx,
+                              GWEN_DB_NODE *dbData,
+                              GWEN_DB_NODE *dbParams){
+  GWEN_DB_NODE *dbAccount;
+
+  dbAccount=GWEN_DB_FindFirstGroup(dbData, "account");
+  while(dbAccount) {
+    AB_ACCOUNT_SPEC *accountSpec;
+    AB_IMEXPORTER_ACCOUNTINFO *accountInfo;
+    GWEN_DB_NODE *dbCurrent;
+
+    accountSpec=AB_AccountSpec_fromDb(dbAccount);
+    assert(accountSpec);
+
+    accountInfo=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
+							 0,
+							 AB_AccountSpec_GetIban(accountSpec),
+							 AB_AccountSpec_GetBankCode(accountSpec),
+							 AB_AccountSpec_GetAccountNumber(accountSpec),
+							 AB_AccountType_Unknown);
+    assert(accountInfo);
+
+    /* import transactions */
+    dbCurrent=GWEN_DB_FindFirstGroup(dbAccount, "transaction");
+    while (dbCurrent) {
+      AB_TRANSACTION *t;
+
+      t=AB_Transaction_fromDb(dbCurrent);
+      assert(t);
+      AB_ImExporterAccountInfo_AddTransaction(accountInfo, t);
+      dbCurrent=GWEN_DB_FindNextGroup(dbCurrent, "transaction");
+    }
+
+
+    /* import balances */
+    dbCurrent=GWEN_DB_FindFirstGroup(dbAccount, "balance");
+    while (dbCurrent) {
+      AB_BALANCE *bal;
+
+      bal=AB_Balance_fromDb(dbCurrent);
+      AB_ImExporterAccountInfo_AddBalance(accountInfo, bal);
+      dbCurrent=GWEN_DB_FindNextGroup(dbCurrent, "balance");
+    }
+
+    AB_AccountSpec_free(accountSpec);
+
+    dbAccount=GWEN_DB_FindNextGroup(dbAccount, "account");
+  }
+
+  return 0;
+}
+
+
+
 
 
 
