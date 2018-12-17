@@ -21,6 +21,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/inherit.h>
+#include <gwenhywfar/xml2db.h>
 
 
 
@@ -107,7 +108,7 @@ int AB_ImExporterXML_Import(AB_IMEXPORTER *ie,
   }
 
   dbData=GWEN_DB_Group_new("data");
-  rv=AB_ImExporterXML_ImportToDb(xmlDocData, xmlNodeSchema, dbData);
+  rv=GWEN_Xml2Db(xmlDocData, xmlNodeSchema, dbData);
 
   DBG_ERROR(AQBANKING_LOGDOMAIN, "Data received:");
   GWEN_DB_Dump(dbData, 2);
@@ -214,11 +215,6 @@ GWEN_XMLNODE *AB_ImExporterXML_ReadXmlFromSio(AB_IMEXPORTER *ie, GWEN_SYNCIO *si
 
   return xmlDocRoot;
 }
-
-
-
-#include "xml_import.c"
-
 
 
 

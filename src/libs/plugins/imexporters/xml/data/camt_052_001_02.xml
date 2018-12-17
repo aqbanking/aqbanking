@@ -21,6 +21,67 @@
     <enter path="Document/BkToCstmrAcctRpt">
 
       <ForEvery name="Rpt">
+
+
+        <ForEvery name="Bal">
+
+          <CreateAndEnterDbGroup name="balance">
+
+            <!-- Type -->
+            <IfCharDataMatches path="Tp/CdOrPrtry/Cd" pattern="CLBD">
+              <SetCharValue name="type" value="booked"/>
+            </IfCharDataMatches>
+            
+            <IfCharDataMatches path="Tp/CdOrPrtry/Cd" pattern="PRCD">
+              <SetCharValue name="type" value="booked"/>
+            </IfCharDataMatches>
+            
+            <IfCharDataMatches path="Tp/CdOrPrtry/Cd" pattern="CLAV">
+              <SetCharValue name="type" value="disposable"/>
+            </IfCharDataMatches>
+  
+            <!-- Date -->
+            <IfHasCharData path="Dt/Dt">
+              <SetCharValue name="date" path="Dt/Dt" type="date" template="YYYY-MM-DD" />
+            </IfHasCharData>
+  
+            <!-- Amount -->
+            <IfCharDataMatches path="CdtDbtInd" pattern="DBIT">
+              <!-- Debit -->
+
+              <IfHasCharData path="Amt">
+                <IfHasCharData path="Amt@Ccy">
+                  <CreateAndEnterTempDbGroup name="amount" >
+                    <SetTempCharValue name="value"    path="Amt" />
+                    <SetTempCharValue name="currency" path="Amt@Ccy" />
+                    <SetCharValue name="value" value="-$(value):$(currency)" />
+                  </CreateAndEnterTempDbGroup> <!-- amount -->
+                </IfHasCharData> <!-- Amt@Ccy -->
+              </IfHasCharData>   <!-- Amt -->
+
+            </IfCharDataMatches>
+
+            <IfCharDataMatches path="CdtDbtInd" pattern="CRDT">
+              <!-- Credit -->
+
+              <IfHasCharData path="Amt">
+                <IfHasCharData path="Amt@Ccy">
+                  <CreateAndEnterTempDbGroup name="amount" >
+                    <SetTempCharValue name="value"    path="Amt" />
+                    <SetTempCharValue name="currency" path="Amt@Ccy" />
+                    <SetCharValue name="value" value="$(value):$(currency)" />
+                  </CreateAndEnterTempDbGroup> <!-- amount -->
+                </IfHasCharData> <!-- Amt@Ccy -->
+              </IfHasCharData>   <!-- Amt -->
+
+            </IfCharDataMatches>
+  
+  
+          </CreateAndEnterDbGroup>
+  
+        </ForEvery>
+    
+
     
         <ForEvery name="Ntry">
 
@@ -29,20 +90,29 @@
     
             <CreateAndEnterDbGroup name="transaction">
       
+      
+              <!-- booking date -->
               <IfHasCharData path="BookgDt/Dt">
-                <SetCharValue name="date" path="BookgDt/Dt" />
+                <SetCharValue name="date" path="BookgDt/Dt" type="date" template="YYYY-MM-DD" />
               </IfHasCharData>
       
+      
+              <!-- valuta date -->
               <IfHasCharData path="ValDt/Dt">
-                <SetCharValue name="valutaDate" path="ValDt/Dt"/>
+                <SetCharValue name="valutaDate" path="ValDt/Dt" type="date" template="YYYY-MM-DD" />
               </IfHasCharData>
       
+
+              <!-- endToEndReference -->
               <SetCharValue name="endToEndReference" path="NtryDtls/TxDtls/Refs/EndToEndId"/>
       
+
+              <!-- unique transaction id -->
               <IfCharDataMatches path="NtryDtls/TxDtls/Refs/Prtry/Tp" pattern="FI-UMSATZ-ID">
                 <SetCharValue name="fiId" path="NtryDtls/TxDtls/Refs/Prtry/Ref"/>
               </IfCharDataMatches>
               
+              <!-- local/remote name and account -->
               <IfCharDataMatches path="CdtDbtInd" pattern="DBIT">
                 <!-- Debit -->
               
@@ -86,6 +156,7 @@
   
               </IfCharDataMatches> <!-- CdtDbtInd == CRDT- -->
 
+              <!-- transaction key -->
               <IfPathExists path="NtryDtls/TxDtls/BkTxCd/Domn">
 
                 <enter path="NtryDtls/TxDtls/BkTxCd/Domn">
@@ -103,7 +174,7 @@
               </IfPathExists>
               
               
-              <!-- read purpose lines -->
+              <!-- purpose lines -->
               <IfPathExists path="NtryDtls/TxDtls/RmtInf">
 
                 <enter path="NtryDtls/TxDtls/RmtInf">
@@ -116,6 +187,12 @@
 
                 </enter> <!-- RmtInf -->
               </IfPathExists>
+
+
+              <!-- transaction text -->
+              <IfHasCharData path="AddtlNtryInf">
+                <SetCharValue name="transactionText" path="AddtlNtryInf"/>
+              </IfHasCharData>
 
               
             </CreateAndEnterDbGroup> <!-- transaction --> 
