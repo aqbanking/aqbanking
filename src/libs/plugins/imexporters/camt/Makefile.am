@@ -7,7 +7,7 @@ AM_CFLAGS=@visibility_cflags@
 #extra_sources=
 
 
-EXTRA_DIST=README $(extra_sources)
+EXTRA_DIST=$(extra_sources)
 
 noinst_HEADERS=camt_p.h camt.h
 
