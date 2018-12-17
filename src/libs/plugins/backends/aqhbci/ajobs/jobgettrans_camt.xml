@@ -38,7 +38,7 @@
    <GROUP type="kti" version="1" />
    <ELEM name="format" type="ascii" maxsize="256" />
    <GROUP name="booked" delimiter=":" >
-     <ELEM name="dayData" type="bin" trustlevel="2" readbin="0" />
+     <ELEM name="dayData" type="bin" trustlevel="2" maxnum="0" readbin="0" />
    </GROUP>
    <ELEM name="noted" type="bin" minnum="0" trustlevel="2" readbin="0" />
 
