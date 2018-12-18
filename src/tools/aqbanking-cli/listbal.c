@@ -25,53 +25,7 @@
 #include <errno.h>
 
 
-
-static void _dumpBal(const AB_BALANCE *bal, FILE *fd) {
-  if (bal) {
-    const GWEN_DATE *bdt;
-    const AB_VALUE *val;
-  
-    bdt=AB_Balance_GetDate(bal);
-    if (bdt) {
-      GWEN_BUFFER *tbuf;
-
-      tbuf=GWEN_Buffer_new(0, 24, 0, 1);
-      GWEN_Date_toStringWithTemplate(bdt, "DD.MM.YYYY", tbuf);
-      fprintf(fd, "%s\t", GWEN_Buffer_GetStart(tbuf));
-      GWEN_Buffer_free(tbuf);
-    }
-    else {
-      fprintf(fd, "\t\t");
-    }
-  
-    val=AB_Balance_GetValue(bal);
-    if (val) {
-      AB_VALUE *vNew;
-      GWEN_BUFFER *vbuf;
-      const char *cur;
-
-      vNew=AB_Value_dup(val);
-      AB_Value_SetCurrency(vNew, NULL);
-      vbuf=GWEN_Buffer_new(0, 32, 0, 1);
-      AB_Value_toHumanReadableString(vNew, vbuf, 2);
-      fprintf(fd, "%s\t", GWEN_Buffer_GetStart(vbuf));
-      GWEN_Buffer_free(vbuf);
-      AB_Value_free(vNew);
-
-      cur=AB_Value_GetCurrency(val);
-      if (cur)
-	fprintf(fd, "%s\t", cur);
-      else
-	fprintf(fd, "\t");
-    }
-    else {
-      fprintf(fd, "\t\t");
-    }
-  }
-  else {
-    fprintf(fd, "\t\t\t\t");
-  }
-}
+static GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 
 
 
@@ -79,15 +33,143 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;
-  const char *outFile;
   AB_IMEXPORTER_CONTEXT *ctx=0;
   AB_IMEXPORTER_ACCOUNTINFO *iea=0;
   uint32_t aid;
   const char *bankId;
   const char *accountId;
-  const char *bankName;
-  const char *accountName;
-  FILE *f;
+  const char *subAccountId;
+  const char *iban;
+  const char *tmplString;
+
+  /* parse command line arguments */
+  db=_readCommandLine(dbArgs, argc, argv);
+  if (db==NULL) {
+    /* error in command line */
+    return 1;
+  }
+
+  /* read command line arguments */
+  aid=(uint32_t)GWEN_DB_GetIntValue(db, "uniqueAccountId", 0, 0);
+  bankId=GWEN_DB_GetCharValue(db, "bankId", 0, 0);
+  accountId=GWEN_DB_GetCharValue(db, "accountId", 0, 0);
+  subAccountId=GWEN_DB_GetCharValue(db, "subAccountId", 0, 0);
+  iban=GWEN_DB_GetCharValue(db, "iban", 0, 0);
+  tmplString=GWEN_DB_GetCharValue(db, "template", 0,
+				  "$(dateAsString)\t"
+				  "$(valueAsString)\t"
+				  "$(iban)");
+
+  /* init AqBanking */
+  rv=AB_Banking_Init(ab);
+  if (rv) {
+    DBG_ERROR(0, "Error on init (%d)", rv);
+    return 2;
+  }
+
+  /* load ctx file */
+  ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
+  rv=readContext(ctxFile, &ctx, 1);
+  if (rv<0) {
+    DBG_ERROR(0, "Error reading context (%d)", rv);
+    AB_ImExporterContext_free(ctx);
+    return 4;
+  }
+
+  /* copy context, but only keep wanted accounts and transactions */
+  iea=AB_ImExporterContext_GetFirstAccountInfo(ctx);
+  while(iea) {
+    if (AB_ImExporterAccountInfo_Matches(iea,
+                                         aid,  /* unique account id */
+                                         "*",
+                                         bankId,
+                                         accountId,
+                                         subAccountId,
+                                         iban,
+                                         "*", /* currency */
+					 AB_AccountType_Unknown)) {
+      AB_BALANCE *bal;
+      GWEN_DB_NODE *dbAccount;
+      const char *s;
+
+      dbAccount=GWEN_DB_Group_new("dbAccount");
+
+      s=AB_ImExporterAccountInfo_GetBankCode(iea);
+      if (s && *s)
+	GWEN_DB_SetCharValue(dbAccount, GWEN_DB_FLAGS_OVERWRITE_VARS, "bankCode", s);
+
+      s=AB_ImExporterAccountInfo_GetAccountNumber(iea);
+      if (s && *s)
+	GWEN_DB_SetCharValue(dbAccount, GWEN_DB_FLAGS_OVERWRITE_VARS, "accountNumber", s);
+
+      s=AB_ImExporterAccountInfo_GetBic(iea);
+      if (s && *s)
+	GWEN_DB_SetCharValue(dbAccount, GWEN_DB_FLAGS_OVERWRITE_VARS, "bic", s);
+
+      s=AB_ImExporterAccountInfo_GetIban(iea);
+      if (s && *s)
+	GWEN_DB_SetCharValue(dbAccount, GWEN_DB_FLAGS_OVERWRITE_VARS, "iban", s);
+
+      bal=AB_Balance_List_GetLatestByType(AB_ImExporterAccountInfo_GetBalanceList(iea),
+					  AB_Balance_TypeBooked);
+      if (bal) {
+	GWEN_DB_NODE *dbElement;
+	const AB_VALUE *v;
+	const GWEN_DATE *dt;
+	GWEN_BUFFER *dbuf;
+
+	dbElement=GWEN_DB_Group_dup(dbAccount);
+	AB_Balance_toDb(bal, dbElement);
+
+	/* translate value */
+	v=AB_Balance_GetValue(bal);
+	if (v) {
+	  AB_Value_toHumanReadableString(v, dbuf, 2);
+	  GWEN_DB_SetCharValue(dbElement, GWEN_DB_FLAGS_OVERWRITE_VARS, "valueAsString", GWEN_Buffer_GetStart(dbuf));
+	  GWEN_Buffer_Reset(dbuf);
+	}
+
+	/* translate date */
+	dt=AB_Balance_GetDate(bal);
+	if (dt) {
+	  rv=GWEN_Date_toStringWithTemplate(dt, I18N("DD.MM.YYYY"), dbuf);
+	  if (rv>=0) {
+	    GWEN_DB_SetCharValue(dbElement, GWEN_DB_FLAGS_OVERWRITE_VARS, "dateAsString", GWEN_Buffer_GetStart(dbuf));
+	  }
+	  GWEN_Buffer_Reset(dbuf);
+	}
+
+	dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+	GWEN_DB_ReplaceVars(dbElement, tmplString, dbuf);
+	fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(dbuf));
+	GWEN_Buffer_free(dbuf);
+	GWEN_DB_Group_free(dbElement);
+      } /* if bal */
+
+      GWEN_DB_Group_free(dbAccount);
+    } /* if account matches */
+
+    iea=AB_ImExporterAccountInfo_List_Next(iea);
+  } /* while */
+  AB_ImExporterContext_free(ctx);
+
+  /* deinit */
+  rv=AB_Banking_Fini(ab);
+  if (rv) {
+    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
+    return 5;
+  }
+
+  return 0;
+}
+
+
+
+
+/* parse command line */
+GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+  GWEN_DB_NODE *db;
+  int rv;
   const GWEN_ARGS args[]={
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -124,25 +206,25 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "bankName",                   /* name */
+    GWEN_ArgsType_Char,           /* type */
+    "subAccountId",                /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
-    "N",                          /* short option */
-    "bankname",                   /* long option */
-    "Specify the bank name",      /* short description */
-    "Specify the bank name"       /* long description */
+    "aa",                          /* short option */
+    "subaccount",                   /* long option */
+    "Specify the sub account id (Unterkontomerkmal)",    /* short description */
+    "Specify the sub account id (Unterkontomerkmal)"     /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "accountName",                /* name */
+    GWEN_ArgsType_Char,           /* type */
+    "iban",                       /* name */
     0,                            /* minnum */
     1,                            /* maxnum */
-    "n",                          /* short option */
-    "accountname",                    /* long option */
-    "Specify the account name",     /* short description */
-    "Specify the account name"      /* long description */
+    "A",                          /* short option */
+    "iban",                    /* long option */
+    "Specify the iban of your account",      /* short description */
+    "Specify the iban of your account"       /* long description */
   },
   {
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -167,6 +249,17 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     "Specify the file to store the data in"      /* long description */
   },
   {
+    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+    GWEN_ArgsType_Char,            /* type */
+    "template",                    /* name */
+    0,                            /* minnum */
+    1,                            /* maxnum */
+    "T",                          /* short option */
+    "template",                       /* long option */
+    "Specify the template for the balance list output",      /* short description */
+    "Specify the template for the balance list output"       /* long description */
+  },
+  {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
     GWEN_ArgsType_Int,             /* type */
     "help",                       /* name */
@@ -179,6 +272,7 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   }
   };
 
+
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
   rv=GWEN_Args_Check(argc, argv, 1,
                      0 /*GWEN_ARGS_MODE_ALLOW_FREEPARAM*/,
@@ -186,7 +280,7 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
                      db);
   if (rv==GWEN_ARGS_RESULT_ERROR) {
     fprintf(stderr, "ERROR: Could not parse arguments\n");
-    return 1;
+    return NULL;
   }
   else if (rv==GWEN_ARGS_RESULT_HELP) {
     GWEN_BUFFER *ubuf;
@@ -194,134 +288,15 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
     if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutType_Txt)) {
       fprintf(stderr, "ERROR: Could not create help string\n");
-      return 1;
+      return NULL;
     }
     fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
     GWEN_Buffer_free(ubuf);
-    return 0;
+    return NULL;
   }
 
-  aid=(uint32_t)GWEN_DB_GetIntValue(db, "uniqueAccountId", 0, 0);
-  bankId=GWEN_DB_GetCharValue(db, "bankId", 0, 0);
-  bankName=GWEN_DB_GetCharValue(db, "bankName", 0, 0);
-  accountId=GWEN_DB_GetCharValue(db, "accountId", 0, 0);
-  accountName=GWEN_DB_GetCharValue(db, "accountName", 0, 0);
-
-  rv=AB_Banking_Init(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
-  }
-
-  ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
-  rv=readContext(ctxFile, &ctx, 1);
-  if (rv<0) {
-    DBG_ERROR(0, "Error reading context (%d)", rv);
-    return 4;
-  }
-
-  /* open output stream */
-  outFile=GWEN_DB_GetCharValue(db, "outFile", 0, 0);
-  if (outFile==0)
-    f=stdout;
-  else
-    f=fopen(outFile, "w+");
-  if (f==0) {
-    DBG_ERROR(0, "Error selecting output file: %s", strerror(errno));
-    return 4;
-  }
-
-  iea=AB_ImExporterContext_GetFirstAccountInfo(ctx);
-  while(iea) {
-    int matches=1;
-    const char *s;
-
-    if (matches && bankId) {
-      s=AB_ImExporterAccountInfo_GetBankCode(iea);
-      if (!s || !*s || -1==GWEN_Text_ComparePattern(s, bankId, 0))
-        matches=0;
-    }
-
-    if (matches && bankName) {
-      s=AB_ImExporterAccountInfo_GetBankName(iea);
-      if (!s || !*s)
-        s=AB_ImExporterAccountInfo_GetBankName(iea);
-      if (!s || !*s || -1==GWEN_Text_ComparePattern(s, bankName, 0))
-        matches=0;
-    }
-
-    if (matches && aid) {
-      uint32_t id;
-
-      id=AB_ImExporterAccountInfo_GetAccountId(iea);
-      if (aid!=id)
-        matches=0;
-    }
-
-    if (matches && accountId) {
-      s=AB_ImExporterAccountInfo_GetAccountNumber(iea);
-      if (!s || !*s || -1==GWEN_Text_ComparePattern(s, accountId, 0))
-        matches=0;
-    }
-    if (matches && accountName) {
-      s=AB_ImExporterAccountInfo_GetAccountName(iea);
-      if (!s || !*s)
-        s=AB_ImExporterAccountInfo_GetAccountName(iea);
-      if (!s || !*s || -1==GWEN_Text_ComparePattern(s, accountName, 0))
-        matches=0;
-    }
-
-    if (matches) {
-      AB_BALANCE *bal;
-
-      bal=AB_Balance_List_GetLatestByType(AB_ImExporterAccountInfo_GetBalanceList(iea),
-                                          AB_Balance_TypeBooked);
-      if (bal) {
-        const char *s;
-
-	fprintf(f, "Account\t");
-	s=AB_ImExporterAccountInfo_GetBankCode(iea);
-	if (!s)
-	  s="";
-	fprintf(f, "%s\t", s);
-	s=AB_ImExporterAccountInfo_GetAccountNumber(iea);
-	if (!s)
-	  s="";
-	fprintf(f, "%s\t", s);
-	s=AB_ImExporterAccountInfo_GetBankName(iea);
-	if (!s)
-	  s="";
-	fprintf(f, "%s\t", s);
-	s=AB_ImExporterAccountInfo_GetAccountName(iea);
-	if (!s)
-	  s="";
-	fprintf(f, "%s\t", s);
-
-	_dumpBal(bal, f);
-
-        fprintf(f, "\n");
-      }
-    } /* if matches */
-    iea=AB_ImExporterAccountInfo_List_Next(iea);
-  } /* while */
-
-  if (outFile) {
-    if (fclose(f)) {
-      DBG_ERROR(0, "Error closing output file: %s",
-		strerror(errno));
-      return 4;
-    }
-  }
-
-  rv=AB_Banking_Fini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    return 5;
-  }
-
-  return 0;
+  return db;
 }
-
 
 
 
