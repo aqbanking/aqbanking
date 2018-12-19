@@ -22,11 +22,6 @@
 #include <gwenhywfar/misc.h>
 
 
-GWEN_LIST_FUNCTION_LIB_DEFS(AB_IMEXPORTER_ACCOUNTINFO,
-                            AB_ImExporterAccountInfo,
-                            AQBANKING_API)
-
-
 struct AB_IMEXPORTER {
   GWEN_LIST_ELEMENT(AB_IMEXPORTER);
   GWEN_INHERIT_ELEMENT(AB_IMEXPORTER);
