@@ -1464,96 +1464,44 @@ AC_CONFIG_FILES([
   src/libs/plugins/imexporters/eri2/Makefile
   src/libs/plugins/imexporters/eri2/eri2.xml
   src/libs/plugins/imexporters/eri2/profiles/Makefile
-  src/libs/plugins/imexporters/eri2/profiles/default.conf
   src/libs/plugins/imexporters/ofx/Makefile
   src/libs/plugins/imexporters/ofx/ofx.xml
   src/libs/plugins/imexporters/ofx/parser/Makefile
   src/libs/plugins/imexporters/ofx/profiles/Makefile
-  src/libs/plugins/imexporters/ofx/profiles/default.conf
-  src/libs/plugins/imexporters/ofx/profiles/iso8859.conf
   src/libs/plugins/imexporters/swift/Makefile
   src/libs/plugins/imexporters/swift/swift.xml
   src/libs/plugins/imexporters/swift/profiles/Makefile
-  src/libs/plugins/imexporters/swift/profiles/swiftmt940.conf
-  src/libs/plugins/imexporters/swift/profiles/swiftmt942.conf
-  src/libs/plugins/imexporters/swift/profiles/swiftmt535.conf
-  src/libs/plugins/imexporters/swift/profiles/amro940.conf
-  src/libs/plugins/imexporters/swift/profiles/amro942.conf
   src/libs/plugins/imexporters/csv/Makefile
   src/libs/plugins/imexporters/csv/csv.xml
   src/libs/plugins/imexporters/csv/profiles/Makefile
-  src/libs/plugins/imexporters/csv/profiles/default.conf
-  src/libs/plugins/imexporters/csv/profiles/amex.conf
-  src/libs/plugins/imexporters/csv/profiles/aqmoney1.conf
-  src/libs/plugins/imexporters/csv/profiles/aqmoney2.conf
-  src/libs/plugins/imexporters/csv/profiles/comdirect.conf
-  src/libs/plugins/imexporters/csv/profiles/consors-tagesgeld.conf
-  src/libs/plugins/imexporters/csv/profiles/mijnpostbank.conf
-  src/libs/plugins/imexporters/csv/profiles/oko.conf
-  src/libs/plugins/imexporters/csv/profiles/spk-aachen.conf
-  src/libs/plugins/imexporters/csv/profiles/spk-steiermark.conf
-  src/libs/plugins/imexporters/csv/profiles/tonline-banking.conf
-  src/libs/plugins/imexporters/csv/profiles/test.conf
-  src/libs/plugins/imexporters/csv/profiles/vrnetworld.conf
-  src/libs/plugins/imexporters/csv/profiles/lbbberlin.conf
-  src/libs/plugins/imexporters/csv/profiles/bankaustria.conf
-  src/libs/plugins/imexporters/csv/profiles/psk.conf
-  src/libs/plugins/imexporters/csv/profiles/diba.conf
-  src/libs/plugins/imexporters/csv/profiles/dkb.conf
-  src/libs/plugins/imexporters/csv/profiles/dkb-cash.conf
-  src/libs/plugins/imexporters/csv/profiles/sparda.conf
-  src/libs/plugins/imexporters/csv/profiles/full.conf
-  src/libs/plugins/imexporters/csv/profiles/hypovereinsbank.conf
-  src/libs/plugins/imexporters/csv/profiles/postbankffm.conf
-  src/libs/plugins/imexporters/csv/profiles/cli-transfers.conf
-  src/libs/plugins/imexporters/csv/profiles/sns.conf
-  src/libs/plugins/imexporters/csv/profiles/transfers.conf
-  src/libs/plugins/imexporters/csv/profiles/sepadebitnotes.conf
   src/libs/plugins/imexporters/openhbci1/Makefile
   src/libs/plugins/imexporters/openhbci1/openhbci1.xml
   src/libs/plugins/imexporters/openhbci1/profiles/Makefile
-  src/libs/plugins/imexporters/openhbci1/profiles/default.conf
   src/libs/plugins/imexporters/qif/Makefile
   src/libs/plugins/imexporters/qif/qif.xml
   src/libs/plugins/imexporters/qif/profiles/Makefile
-  src/libs/plugins/imexporters/qif/profiles/default.conf
   src/libs/plugins/imexporters/yellownet/Makefile
   src/libs/plugins/imexporters/yellownet/yellownet.xml
   src/libs/plugins/imexporters/yellownet/profiles/Makefile
-  src/libs/plugins/imexporters/yellownet/profiles/default.conf
   src/libs/plugins/imexporters/xmldb/Makefile
   src/libs/plugins/imexporters/xmldb/xmldb.xml
   src/libs/plugins/imexporters/xmldb/profiles/Makefile
-  src/libs/plugins/imexporters/xmldb/profiles/default.conf
   src/libs/plugins/imexporters/sepa/Makefile
   src/libs/plugins/imexporters/sepa/sepa.xml
   src/libs/plugins/imexporters/sepa/profiles/Makefile
-  src/libs/plugins/imexporters/sepa/profiles/default.conf
-  src/libs/plugins/imexporters/sepa/profiles/001_001_02.conf
-  src/libs/plugins/imexporters/sepa/profiles/001_002_03.conf
-  src/libs/plugins/imexporters/sepa/profiles/001_003_03.conf
-  src/libs/plugins/imexporters/sepa/profiles/008_001_01.conf
-  src/libs/plugins/imexporters/sepa/profiles/008_002_02.conf
-  src/libs/plugins/imexporters/sepa/profiles/008_003_02.conf
   src/libs/plugins/imexporters/ctxfile/Makefile
   src/libs/plugins/imexporters/ctxfile/ctxfile.xml
   src/libs/plugins/imexporters/ctxfile/profiles/Makefile
-  src/libs/plugins/imexporters/ctxfile/profiles/default.conf
   src/libs/plugins/imexporters/q43/Makefile
   src/libs/plugins/imexporters/q43/q43.xml
   src/libs/plugins/imexporters/q43/profiles/Makefile
-  src/libs/plugins/imexporters/q43/profiles/default.conf
   src/libs/plugins/imexporters/camt/Makefile
   src/libs/plugins/imexporters/camt/camt.xml
   src/libs/plugins/imexporters/camt/profiles/Makefile
-  src/libs/plugins/imexporters/camt/profiles/default.conf
-  src/libs/plugins/imexporters/camt/profiles/052_001_02.conf
   src/libs/plugins/imexporters/xml/Makefile
   src/libs/plugins/imexporters/xml/xml.xml
   src/libs/plugins/imexporters/xml/data/Makefile
   src/libs/plugins/imexporters/xml/profiles/Makefile
-  src/libs/plugins/imexporters/xml/profiles/default.conf
-  src/libs/plugins/imexporters/xml/profiles/camt_052_001_02.conf
   src/libs/plugins/parsers/Makefile
   src/libs/plugins/parsers/swift/Makefile
   src/libs/plugins/parsers/swift/swift.xml

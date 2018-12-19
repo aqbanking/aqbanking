@@ -18,6 +18,7 @@
 
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/xml.h>
+#include <gwenhywfar/buffer.h>
 
 
 

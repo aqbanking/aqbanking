@@ -1,11 +1,10 @@
 
-EXTRA_DIST=\
-  default.conf.in \
-  camt_052_001_02.conf.in
+#EXTRA_DIST=
 
 profilesdir = $(aqbanking_pkgdatadir)/imexporters/xml/profiles
 profiles_DATA=\
   default.conf \
-  camt_052_001_02.conf
+  camt_052_001_02.conf \
+  pain_001_003_03.conf
 
 
