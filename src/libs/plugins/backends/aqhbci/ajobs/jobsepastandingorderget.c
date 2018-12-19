@@ -200,7 +200,11 @@ int AH_Job_SepaStandingOrdersGet_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 	fiId=GWEN_DB_GetCharValue(dbXA, "fiId", 0, NULL);
 	p=GWEN_DB_GetBinValue(dbXA, "transfer", 0, 0, 0, &bs);
 	if (p && bs) {
-	  rv=AH_Job_SepaStandingOrdersGet__ReadSto(j, ctx, p, bs, fiId);
+
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Received this document:");
+          GWEN_Text_DumpString(p, bs, 2);
+
+          rv=AH_Job_SepaStandingOrdersGet__ReadSto(j, ctx, p, bs, fiId);
 	  if (rv<0) {
 	    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
 	    DBG_WARN(AQHBCI_LOGDOMAIN, "Error reading standing order from data, ignoring (%d)", rv);
