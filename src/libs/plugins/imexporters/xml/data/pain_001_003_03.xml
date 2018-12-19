@@ -1,0 +1,123 @@
+
+<!--
+/***************************************************************************
+    begin       : Sun Dec 16 2018
+    copyright   : (C) 2018 by Martin Preuss
+    email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+ 
+ This file can be used to import a PAIN.001.003.03 file.
+ 
+-->
+
+
+<ImportSchema>
+
+  <IfPathExists path="Document/CstmrCdtTrfInitn">
+
+    <enter path="Document/CstmrCdtTrfInitn">
+
+      <ForEvery name="PmtInf">
+
+        <CreateAndEnterDbGroup name="account">
+
+          <CreateAndEnterTempDbGroup name="account" >
+
+            <!-- next execution date -->
+            <!--
+            <IfHasCharData path="ReqdExctnDt">
+              <SetCharValue name="nextDate" path="ReqdExctnDt" type="date" template="YYYY-MM-DD" />
+            </IfHasCharData>
+            -->
+
+            <IfHasCharData path="Dbtr/Nm">
+              <SetCharValue name="ownerName" path="Dbtr/Nm"/>
+              <SetTempCharValue name="ownerName" path="Dbtr/Nm"/>
+            </IfHasCharData>
+  
+  
+            <IfHasCharData path="DbtrAcct/IBAN">
+              <SetCharValue name="iban" path="DbtrAcct/IBAN"/>
+              <SetTempCharValue name="iban" path="DbtrAcct/IBAN"/>
+            </IfHasCharData>
+  
+  
+            <IfHasCharData path="DbtrAgt/FinInstnId/BIC">
+              <SetCharValue name="bic" path="DbtrAgt/FinInstnId/BIC"/>
+              <SetTempCharValue name="bic" path="DbtrAgt/FinInstnId/BIC"/>
+            </IfHasCharData>
+
+            <ForEvery name="CdtTrfTxInf">
+
+              <CreateAndEnterDbGroup name="transaction">
+
+                <SetCharValue name="type" value="standingOrder" />
+
+                <!-- set values from account info above -->
+                <SetCharValue name="localBic" value="$(bic)" />
+                <SetCharValue name="localIban" value="$(iban)" />
+                <SetCharValue name="localName" value="$(ownerName)" />
+
+
+                <IfHasCharData path="PmtId/EndToEndId">
+                  <IfNotCharDataMatches path="PmtId/EndToEndId" pattern="NOTPROVIDED">
+                    <SetCharValue name="endToEndReference" path="PmtId/EndToEndId"/>
+                  </IfNotCharDataMatches>
+                </IfHasCharData>
+
+
+                <IfHasCharData path="Amt/InstdAmt">
+                  <IfHasCharData path="Amt/InstdAmt@Ccy">
+                    <CreateAndEnterTempDbGroup name="amount" >
+                      <SetTempCharValue name="value"    path="Amt/InstdAmt" />
+                      <SetTempCharValue name="currency" path="Amt/InstdAmt@Ccy" />
+                      <SetCharValue name="value" value="$(value):$(currency)" />
+                    </CreateAndEnterTempDbGroup>
+                  </IfHasCharData>
+                </IfHasCharData>
+  
+                
+                <IfHasCharData path="CdtrAgt/FinInstnId/BIC">
+                  <SetCharValue name="remoteBic" path="CdtrAgt/FinInstnId/BIC"/>
+                </IfHasCharData>
+    
+                <IfHasCharData path="Cdtr/Nm">
+                  <SetCharValue name="remoteName" path="Cdtr/Nm"/>
+                </IfHasCharData>
+  
+                <IfHasCharData path="CdtrAcct/Id/IBAN">
+                  <SetCharValue name="remoteIban" path="CdtrAcct/Id/IBAN"/>
+                </IfHasCharData>
+  
+                <!-- purpose lines -->
+                <IfPathExists path="RmtInf">
+  
+                  <enter path="RmtInf">
+  
+                    <ForEvery name="Ustrd">
+                      <SetCharValue name="purpose" path="." mode="append" delimiter="\n"/>
+                    </ForEvery>
+  
+                  </enter> <!-- RmtInf -->
+                </IfPathExists>
+  
+              </CreateAndEnterDbGroup> <!-- transaction -->
+  
+            </ForEvery> <!-- CdtTrfTxInf -->
+
+          </CreateAndEnterTempDbGroup > <!-- account -->
+
+        </CreateAndEnterDbGroup>  <!-- account -->
+
+      </ForEvery> <!-- PmtInf -->
+
+    </enter> <!-- Document/CstmrCdtTrfInitn -->
+
+  </IfPathExists> <!-- Document/CstmrCdtTrfInitn -->
+
+</ImportSchema>
+
+
