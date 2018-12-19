@@ -166,9 +166,9 @@ int _createAndAndSendRequests(AB_BANKING *ab,
     int rv;
 
     rv=execBankingJobs(ab, jobList, ctxFile);
-    AB_Transaction_List2_free(jobList);
     if (rv) {
       fprintf(stderr, "Error on sendCommands (%d)\n", rv);
+      AB_Transaction_List2_free(jobList);
       return 3;
     }
   }
