@@ -4,7 +4,8 @@ INCLUDES = -I$(top_srcdir)/src/libs/aqbanking -I$(aqbanking_symlinkdir) $(all_in
 
 AM_CFLAGS=@visibility_cflags@
 
-#extra_sources=
+extra_sources=\
+  camt52_001_02.c
 
 
 EXTRA_DIST=$(extra_sources)

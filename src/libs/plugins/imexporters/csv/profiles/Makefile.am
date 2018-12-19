@@ -9,3 +9,4 @@ profiles_DATA=default.conf aqmoney1.conf aqmoney2.conf \
   sns.conf consors-tagesgeld.conf \
   transfers.conf sepadebitnotes.conf
 
+EXTRA_DIST=$(profiles_DATA)

@@ -7,4 +7,5 @@ profiles_DATA=\
   camt_052_001_02.conf \
   pain_001_003_03.conf
 
+EXTRA_DIST=$(profiles_DATA)
 
