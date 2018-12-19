@@ -35,7 +35,6 @@
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_SepaStandingOrderGet_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
@@ -62,7 +61,6 @@ AH_JOB *AH_Job_SepaStandingOrderGet_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
 int AH_Job_SepaStandingOrderGet_Prepare(AH_JOB *j) {
   GWEN_DB_NODE *dbArgs;
   GWEN_DB_NODE *profile;
@@ -86,7 +84,7 @@ int AH_Job_SepaStandingOrderGet_Prepare(AH_JOB *j) {
       GWEN_DB_SetCharValue(dbArgs,
 			   GWEN_DB_FLAGS_OVERWRITE_VARS,
 			   "SupportedSepaFormats/Format",
-			   s);
+                           s);
     }
     else {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "No matching SEPA descriptor found");
@@ -99,126 +97,194 @@ int AH_Job_SepaStandingOrderGet_Prepare(AH_JOB *j) {
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaStandingOrdersGet__ReadSto(AH_JOB *j,
-					  AB_IMEXPORTER_CONTEXT *ctx,
-					  const uint8_t *ptr,
-					  uint32_t len,
-					  const char *fiId){
-  int rv;
-  AB_IMEXPORTER_CONTEXT *tmpCtx;
-  GWEN_BUFFER *tbuf;
-  AB_IMEXPORTER_ACCOUNTINFO *ai;
-  AB_ACCOUNT *a;
-
-  a=AH_AccountJob_GetAccount(j);
-  assert(a);
-
-  tmpCtx=AB_ImExporterContext_new();
-  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  GWEN_Buffer_AppendBytes(tbuf, (const char*) ptr, len);
-
-  rv=AB_Banking_ImportBuffer(AH_Job_GetBankingApi(j),
-			     tmpCtx,
-			     "sepa",
-			     "default",
-			     tbuf);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Buffer_free(tbuf);
-    AB_ImExporterContext_free(tmpCtx);
-    return rv;
-  }
-  GWEN_Buffer_free(tbuf);
-
-  ai=AB_ImExporterContext_GetFirstAccountInfo(tmpCtx);
-  if (ai) {
-    AB_TRANSACTION *t;
-
-    while( (t=AB_ImExporterAccountInfo_GetFirstTransaction(ai, 0, 0)) ) {
-      AB_Transaction_List_Del(t);
-      AB_Transaction_SetFiId(t, fiId);
-      AB_Transaction_SetUniqueAccountId(t, AB_Account_GetUniqueId(a));
-      /* add to real im/exporter context */
-      AB_ImExporterContext_AddTransaction(ctx, t);
-    }
-
-    if (AB_ImExporterAccountInfo_List_Next(ai)) {
-      DBG_WARN(AQHBCI_LOGDOMAIN, "Multiple account infos returned by import!");
-    }
-  }
-  AB_ImExporterContext_free(tmpCtx);
-
-  return 0;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
 int AH_Job_SepaStandingOrdersGet_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
-  GWEN_DB_NODE *dbResponses;
-  GWEN_DB_NODE *dbCurr;
   const char *responseName;
   int rv;
+  AB_ACCOUNT *a;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Processing JobSepaStandingOrdersGet");
 
   assert(j);
+  a=AH_AccountJob_GetAccount(j);
+  assert(a);
 
   responseName=AH_Job_GetResponseName(j);
+  if (responseName && *responseName) {
+    AB_IMEXPORTER_ACCOUNTINFO *ai;
+    GWEN_DB_NODE *dbResponses;
+    GWEN_DB_NODE *dbCurr;
 
+    ai=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
+                                                AB_Account_GetUniqueId(a),
+                                                AB_Account_GetIban(a),
+                                                AB_Account_GetBankCode(a),
+                                                AB_Account_GetAccountNumber(a),
+                                                AB_Account_GetAccountType(a));
+    assert(ai);
 
-  dbResponses=AH_Job_GetResponses(j);
-  assert(dbResponses);
+    dbResponses=AH_Job_GetResponses(j);
+    assert(dbResponses);
 
-  /* search for "Transactions" */
-  dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
-  while(dbCurr) {
-    rv=AH_Job_CheckEncryption(j, dbCurr);
-    if (rv) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (encryption)");
-      AH_Job_SetStatus(j, AH_JobStatusError);
-      return rv;
-    }
-    rv=AH_Job_CheckSignature(j, dbCurr);
-    if (rv) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (signature)");
-      AH_Job_SetStatus(j, AH_JobStatusError);
-      return rv;
-    }
-
-    if (responseName && *responseName) {
+    /* search for "Transactions" */
+    dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
+    while(dbCurr) {
       GWEN_DB_NODE *dbXA;
 
+      rv=AH_Job_CheckEncryption(j, dbCurr);
+      if (rv) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (encryption)");
+        AH_Job_SetStatus(j, AH_JobStatusError);
+        return rv;
+      }
+      rv=AH_Job_CheckSignature(j, dbCurr);
+      if (rv) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (signature)");
+        AH_Job_SetStatus(j, AH_JobStatusError);
+        return rv;
+      }
+
+      /* handle job specific response data */
       dbXA=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data");
       if (dbXA)
         dbXA=GWEN_DB_GetGroup(dbXA, GWEN_PATH_FLAGS_NAMEMUSTEXIST, responseName);
       if (dbXA) {
-	const void *p;
-	unsigned int bs;
-	const char *fiId;
+        AB_TRANSACTION *t;
 
-	fiId=GWEN_DB_GetCharValue(dbXA, "fiId", 0, NULL);
-	p=GWEN_DB_GetBinValue(dbXA, "transfer", 0, 0, 0, &bs);
-	if (p && bs) {
+        t=_readTransactionFromResponse(j, dbXA);
+        if (t)
+          AB_ImExporterAccountInfo_AddTransaction(ai, t);
+      } /* if dbXA */
 
-          DBG_ERROR(AQBANKING_LOGDOMAIN, "Received this document:");
-          GWEN_Text_DumpString(p, bs, 2);
-
-          rv=AH_Job_SepaStandingOrdersGet__ReadSto(j, ctx, p, bs, fiId);
-	  if (rv<0) {
-	    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-	    DBG_WARN(AQHBCI_LOGDOMAIN, "Error reading standing order from data, ignoring (%d)", rv);
-	  }
-	}
-      }
-    }
-
-    dbCurr=GWEN_DB_GetNextGroup(dbCurr);
+      dbCurr=GWEN_DB_GetNextGroup(dbCurr);
+    } /* while dbCurr */
   }
 
   return 0;
 }
 
 
+
+AB_TRANSACTION *_readTransactionFromResponse(AH_JOB *j, GWEN_DB_NODE *dbXA){
+  const char *fiId;
+  const char *descriptor;
+
+  fiId=GWEN_DB_GetCharValue(dbXA, "fiId", 0, NULL);
+  descriptor=GWEN_DB_GetCharValue(dbXA, "descriptor", 0, NULL);
+  if (descriptor && *descriptor) {
+    const char *profileName;
+
+    if (-1!=GWEN_Text_ComparePattern(descriptor, "*001?003?03*", 0))
+      profileName="pain_001_003_03";
+    else
+      profileName=NULL;
+
+    if (profileName) {
+      const void *p;
+      unsigned int bs;
+
+      p=GWEN_DB_GetBinValue(dbXA, "transfer", 0, 0, 0, &bs);
+      if (p && bs) {
+        AB_TRANSACTION *t;
+
+        t=_readSto(j, profileName, p, bs);
+        if (t) {
+          const char *s;
+
+          AB_Transaction_SetFiId(t, fiId);
+
+          s=GWEN_DB_GetCharValue(dbXA, "xfirstExecutionDate", 0, NULL);
+          if (s && *s) {
+            GWEN_DATE *dt;
+
+            dt=GWEN_Date_fromStringWithTemplate(s, "YYYYMMDD");
+            if (dt) {
+              AB_Transaction_SetFirstDate(t, dt);
+              GWEN_Date_free(dt);
+            }
+          }
+
+          s=GWEN_DB_GetCharValue(dbXA, "xperiod", 0, NULL);
+          AB_Transaction_SetPeriod(t, _getPeriod(s));
+
+          AB_Transaction_SetCycle(t, GWEN_DB_GetIntValue(dbXA, "cycle", 0, 0));
+          AB_Transaction_SetExecutionDay(t, GWEN_DB_GetIntValue(dbXA, "executionDay", 0, 0));
+
+          /* done */
+          return t;
+        } /* if t */
+        else {
+          DBG_WARN(AQHBCI_LOGDOMAIN, "Error reading standing order from data, ignoring");
+        }
+      } /* if transaction bindata */
+    } /* if profileNAme */
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "SEPA descriptor \"%s\" not supported, ignoring transaction", descriptor);
+    }
+  } /* if descriptor */
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing SEPA descriptor, ignoring transaction");
+  }
+
+  return NULL;
+}
+
+
+
+AB_TRANSACTION *_readSto(AH_JOB *j, const char *docType, const uint8_t *ptr, uint32_t len) {
+  AB_PROVIDER *pro;
+  AB_IMEXPORTER_CONTEXT *tempContext;
+  AB_IMEXPORTER_ACCOUNTINFO *tempAccountInfo;
+  int rv;
+  GWEN_BUFFER *buf;
+
+  assert(j);
+  pro=AH_Job_GetProvider(j);
+  assert(pro);
+
+  /* import data into a temporary context */
+  tempContext=AB_ImExporterContext_new();
+  buf=GWEN_Buffer_new(0, len, 0, 1);
+  GWEN_Buffer_AppendBytes(buf, (const char*) ptr, len);
+  GWEN_Buffer_Rewind(buf);
+
+  rv=AB_Banking_ImportBuffer(AB_Provider_GetBanking(pro), tempContext, "xml", docType, buf);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(buf);
+    AB_ImExporterContext_free(tempContext);
+    return NULL;
+  }
+  GWEN_Buffer_free(buf);
+
+
+  /* return first transaction from temporary context (only contains ONE transaction) */
+  tempAccountInfo=AB_ImExporterContext_GetFirstAccountInfo(tempContext);
+  if(tempAccountInfo) {
+    AB_TRANSACTION *t;
+
+    t=AB_ImExporterAccountInfo_GetFirstTransaction(tempAccountInfo, 0, 0);
+    if (t) {
+      AB_Transaction_List_Del(t);
+      AB_Transaction_SetType(t, AB_Transaction_TypeStandingOrder);
+      AB_ImExporterContext_free(tempContext);
+      return t;
+    }
+  }
+  AB_ImExporterContext_free(tempContext);
+
+  return 0;
+}
+
+
+
+AB_TRANSACTION_PERIOD _getPeriod(const char *s) {
+  if (s && *s) {
+    if (strcasecmp(s, "M")==0)
+      return AB_Transaction_PeriodMonthly;
+    else if (strcasecmp(s, "W")==0)
+      return AB_Transaction_PeriodWeekly;
+  }
+
+  return AB_Transaction_PeriodUnknown;
+}
 
