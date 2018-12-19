@@ -51,6 +51,7 @@ AH_JOB *AH_Job_SepaStandingOrderGet_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT
   AH_Job_SetProcessFn(j, AH_Job_SepaStandingOrdersGet_Process);
   AH_Job_SetGetLimitsFn(j, AH_Job_GetLimits_EmptyLimits);
   AH_Job_SetHandleCommandFn(j, AH_Job_HandleCommand_Accept);
+  AH_Job_SetHandleResultsFn(j, AH_Job_HandleResults_Empty);
 
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);
