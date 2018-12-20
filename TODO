@@ -1,9 +1,11 @@
 Next:
 =====
 - AB_BANKING:
+  - fix apidoc for provider.h
+- add tool "aqhbci-tool" (just a stub which uses the AH_Provider_Control function)
 
-- fix apidoc for provider.h
-
+- AqHBCI:
+  - HKEKA
 
 
 Mid-term
