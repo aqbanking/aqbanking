@@ -49,6 +49,8 @@ int AB_Provider_WriteAccountSpecForAccount(AB_PROVIDER *pro, const AB_ACCOUNT *a
   AB_ACCOUNT_SPEC *as;
   int rv;
 
+  DBG_NOTICE(AQBANKING_LOGDOMAIN, "Writing account spec for account %u", (unsigned int) AB_Account_GetUniqueId(acc));
+
   as=AB_AccountSpec_new();
   rv=AB_Provider_AccountToAccountSpec(pro, acc, as, doLock);
   if (rv<0) {
