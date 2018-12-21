@@ -1,5 +1,8 @@
 Next:
 =====
+- configure.ac:
+  - remove unused version stuff (AQHBCI_VERSION etc)
+
 - AB_BANKING:
   - fix apidoc for provider.h
 - add tool "aqhbci-tool" (just a stub which uses the AH_Provider_Control function)
