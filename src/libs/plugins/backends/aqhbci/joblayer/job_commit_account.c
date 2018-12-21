@@ -212,12 +212,6 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
       /* handle users */
       AB_Account_SetUserId(storedAcc, AB_User_GetUniqueId(j->user));
 
-      /* update and write account spec */
-      rv=AB_Provider_WriteAccountSpecForAccount(pro, storedAcc, 0); /* do not lock */
-      if (rv<0) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      }
-
       /* unlock account */
       rv=AB_Provider_EndExclUseAccount(pro, storedAcc, 0);
       if (rv<0) {
@@ -251,8 +245,10 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
     GWEN_DB_NODE *gr;
     char numbuf[32];
   
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Setting UPD jobs for this account in user");
-  
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Setting UPD jobs for account %u in user %u",
+               (unsigned int) AB_Account_GetUniqueId(storedAcc),
+               (unsigned int) AB_User_GetUniqueId(j->user));
+
     /* get UPD jobs */
     dbUpd=AH_User_GetUpd(j->user);
     assert(dbUpd);
@@ -274,7 +270,17 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
       gr=GWEN_DB_GetNextGroup(gr);
     } /* while */
   }
-  
+
+  /* update and write account spec */
+  if (storedAcc) {
+    int rv;
+
+    rv=AB_Provider_WriteAccountSpecForAccount(pro, storedAcc, 0); /* dont lock */
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    }
+  }
+
   GWEN_DB_Group_free(dbTempUpd); /* is a copy, we need to free it */
   AB_Account_free(storedAcc);
 }
