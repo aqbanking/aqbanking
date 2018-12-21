@@ -172,15 +172,16 @@ int AH_EditAccountDialog_FindUserEntry(GWEN_DIALOG *dlg, uint32_t userId) {
 
   /* user list */
   num=GWEN_Dialog_GetIntProperty(dlg, "userCombo", GWEN_DialogProperty_ValueCount, 0, 0);
-  for (i=0; i<num; i++) {
+  for (i=1; i<num; i++) {
     const char *t;
 
     t=GWEN_Dialog_GetCharProperty(dlg, "userCombo", GWEN_DialogProperty_Value, i, NULL);
     if (t && *t) {
       unsigned long int id;
 
-      if (sscanf(t, "%lu", &id)==1) {
-        return i;
+      if (sscanf(t, "%lu-", &id)==1) {
+        if (id==userId)
+          return i;
       }
     }
   } /* for i */
