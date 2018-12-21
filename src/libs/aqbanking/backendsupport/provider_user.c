@@ -191,6 +191,8 @@ int AB_Provider_BeginExclUseUser(AB_PROVIDER *pro, AB_USER *u) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "No unique id!");
     return GWEN_ERROR_INVALID;
   }
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Locking customer \"%lu\"", (unsigned long int) AB_User_GetUniqueId(u));
+
   rv=AB_Provider_ReadUser(pro, uid, 1, 0, u);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
@@ -210,6 +212,8 @@ int AB_Provider_EndExclUseUser(AB_PROVIDER *pro, AB_USER *u, int abandon) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "No unique id!");
     return GWEN_ERROR_INVALID;
   }
+
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Unlocking customer \"%lu\"", (unsigned long int) AB_User_GetUniqueId(u));
 
   if (abandon) {
     rv=AB_Banking_Unlock_UserConfig(AB_Provider_GetBanking(pro), uid);

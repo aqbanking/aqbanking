@@ -52,6 +52,8 @@ AH_JOB *AH_AccountJob_new(const char *name,
     /* no account suffix, so we try to determine the highest usable
      * version of the job which still doesn't need the suffix
      */
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "No account suffix [%u], determining highest possible job version for \"%s\" (%08x)",
+               AB_Account_GetUniqueId(account), name, AH_Account_GetFlags(account));
     if (strcasecmp(name, "JobGetTransactions")==0)
       maxVer=4;
     else if (strcasecmp(name, "JobGetBalance")==0)
