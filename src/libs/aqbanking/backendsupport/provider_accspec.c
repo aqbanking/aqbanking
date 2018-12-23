@@ -77,7 +77,7 @@ int AB_Provider_CreateInitialAccountSpecs(AB_PROVIDER *pro) {
 
   /* read all config groups for accounts which have a unique id and which belong to this provider
    */
-  rv=AB_Banking_ReadConfigGroups(AB_Provider_GetBanking(pro), "accounts", "uniqueId", "provider",
+  rv=AB_Banking_ReadConfigGroups(AB_Provider_GetBanking(pro), "accounts", "uniqueId", "backendName",
                                  AB_Provider_GetName(pro), &dbAll);
   if (rv<0) {
     if (rv==GWEN_ERROR_NOT_FOUND) {
