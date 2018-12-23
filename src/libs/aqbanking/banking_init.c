@@ -419,6 +419,7 @@ int AB_Banking_Init(AB_BANKING *ab) {
     if (ab->lastVersion<currentVersion) {
       int rv;
 
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Updating AqBanking");
       rv=AB_Banking_Update(ab, ab->lastVersion, currentVersion);
       if (rv<0) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);

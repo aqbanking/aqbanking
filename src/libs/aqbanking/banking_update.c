@@ -112,8 +112,12 @@ int AB_Banking_UpdateAccountList(AB_BANKING *ab) {
 
 
 int AB_Banking_Update(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion) {
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Updating from version %d.%d.%d.%d",
+	   (lastVersion>>24) & 0xff,  (lastVersion>>16)  & 0xff, (lastVersion>>8)  & 0xff, lastVersion & 0xff);
+
   if (lastVersion<((5<<24) | (99<<16) | (2<<8) | 0)) {
     int rv;
+
 
     rv=AB_Banking_UpdateAccountList(ab);
     if (rv<0) {
@@ -127,30 +131,20 @@ int AB_Banking_Update(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVers
       return rv;
     }
 
-    /* need to create account specs */
-    rv=AB_Banking_Update_5_99_2_0(ab, lastVersion, currentVersion);
+    rv=AB_Banking_Update_Account_SetUserId(ab);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
-  }
 
-  if (lastVersion<((5<<24) | (99<<16) | (3<<8) | 0)) {
-    int rv;
-
-    /* need to update userId in accounts */
-    rv=AB_Banking_Update_5_99_3_0(ab, lastVersion, currentVersion);
+    rv=AB_Banking_Update_Account_SetBackendName(ab);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
-  }
 
-  if (lastVersion<((5<<24) | (99<<16) | (4<<8) | 0)) {
-    int rv;
-
-    /* need to update userId in accounts */
-    rv=AB_Banking_Update_5_99_4_0(ab, lastVersion, currentVersion);
+    /* create account specs */
+    rv=AB_Banking_Update_Backend_InitDeinit(ab);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -163,9 +157,11 @@ int AB_Banking_Update(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVers
 
 
 
-int AB_Banking_Update_5_99_2_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion) {
+int AB_Banking_Update_Backend_InitDeinit(AB_BANKING *ab) {
   GWEN_PLUGIN_DESCRIPTION_LIST2 *descrs;
   GWEN_PLUGIN_MANAGER *pm;
+
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Updating to 5.99.2.0");
 
   pm=GWEN_PluginManager_FindPluginManager("provider");
   if (!pm) {
@@ -214,9 +210,11 @@ int AB_Banking_Update_5_99_2_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t cu
 
 
 
-int AB_Banking_Update_5_99_3_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion) {
+int AB_Banking_Update_Account_SetUserId(AB_BANKING *ab) {
   GWEN_DB_NODE *dbAll=NULL;
   int rv;
+
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Set UserId in accounts");
 
   /* read all config groups which have a variable called "uniqueId" */
   rv=AB_Banking_ReadConfigGroups(ab, AB_CFG_GROUP_ACCOUNTS, "uniqueId", NULL, NULL, &dbAll);
@@ -269,9 +267,11 @@ int AB_Banking_Update_5_99_3_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t cu
 
 
 
-int AB_Banking_Update_5_99_4_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion) {
+int AB_Banking_Update_Account_SetBackendName(AB_BANKING *ab) {
   GWEN_DB_NODE *dbAll=NULL;
   int rv;
+
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Set BackendName in accounts");
 
   /* read all config groups which have a variable called "uniqueId" */
   rv=AB_Banking_ReadConfigGroups(ab, AB_CFG_GROUP_ACCOUNTS, "uniqueId", NULL, NULL, &dbAll);

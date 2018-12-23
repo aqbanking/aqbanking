@@ -126,12 +126,13 @@ static int AB_Banking__TransformIban(const char *iban, int len, char *newIban, i
 static int AB_Banking_UpdateConfList(AB_BANKING *ab, const char *groupName);
 static int AB_Banking_UpdateUserList(AB_BANKING *ab);
 static int AB_Banking_UpdateAccountList(AB_BANKING *ab);
+static int AB_Banking_Update_Account_SetUserId(AB_BANKING *ab);
+static int AB_Banking_Update_Account_SetBackendName(AB_BANKING *ab);
+static int AB_Banking_Update_Backend_InitDeinit(AB_BANKING *ab);
+
 
 
 int AB_Banking_Update(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion);
-static int AB_Banking_Update_5_99_2_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion);
-static int AB_Banking_Update_5_99_3_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion);
-static int AB_Banking_Update_5_99_4_0(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion);
 
 
 
