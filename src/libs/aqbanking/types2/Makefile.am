@@ -124,14 +124,14 @@ sources:
 
 
 
-#%.c: %.xml
-#	typemaker2 -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(top_srcdir)/src/libs/aqbanking/types2 -I $(srcdir) -I $(AQDATABASE_TYPEMAKERDIR)/c --destfolder="$(srcdir)" -D AQBANKING_API  $<
+%.c: %.xml
+	typemaker2 -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(top_srcdir)/src/libs/aqbanking/types2 -I $(srcdir) -I $(AQDATABASE_TYPEMAKERDIR)/c --destfolder="$(srcdir)" -D AQBANKING_API  $<
 
-#%.h: %.xml
-#	typemaker2 -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(top_srcdir)/src/libs/aqbanking/types2 -I $(srcdir) -I $(AQDATABASE_TYPEMAKERDIR)/c --destfolder="$(srcdir)" -D AQBANKING_API  $<
+%.h: %.xml
+	typemaker2 -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(top_srcdir)/src/libs/aqbanking/types2 -I $(srcdir) -I $(AQDATABASE_TYPEMAKERDIR)/c --destfolder="$(srcdir)" -D AQBANKING_API  $<
 
 
-#SUFFIXES = .xml .c
+SUFFIXES = .xml .c
 
 
 types: $(typefiles)
