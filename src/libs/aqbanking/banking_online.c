@@ -525,7 +525,7 @@ int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2* commandList, 
   /* sort account queues by provider */
   GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Info, I18N("Sorting commands by provider"));
   pql=AB_ProviderQueue_List_new();
-  while( (AB_AccountQueue_List_First(aql)) ) {
+  while( (aq=AB_AccountQueue_List_First(aql)) ) {
     uint32_t uid;
     AB_ACCOUNT_SPEC *as=NULL;
     const char *s;
