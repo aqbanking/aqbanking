@@ -20,6 +20,44 @@
         
         <header type="sys" loc="post">aqbanking/transaction.h</header>
       </headers>
+
+
+      <inlines>
+      
+        <inline loc="end" access="public">
+          <content>
+            $(api) void $(struct_prefix)_AddTransaction($(struct_type) *aq, AB_TRANSACTION *t);
+          </content>
+        </inline>
+
+        <inline loc="code" access="public">
+          <content>
+            void $(struct_prefix)_AddTransaction($(struct_type) *aq, AB_TRANSACTION *t) {
+              if (aq->transactionList==NULL)
+                aq->transactionList=AB_Transaction_List2_new();
+              AB_Transaction_List2_PushBack(aq->transactionList, t);
+            }
+          </content>
+        </inline>
+
+        <inline loc="end" access="public">
+          <content>
+            $(api) AB_TRANSACTION *$(struct_prefix)_GetFirstTransaction(const $(struct_type) *aq);
+          </content>
+        </inline>
+
+        <inline loc="code" access="public">
+          <content>
+            AB_TRANSACTION *$(struct_prefix)_GetFirstTransaction(const $(struct_type) *jq) {
+              if (jq->transactionList)
+                return AB_Transaction_List2_GetFront(jq->transactionList);
+              return NULL;
+            }
+          </content>
+        </inline>
+
+      </inlines>
+      
       
     </lang>
 
@@ -29,7 +67,7 @@
         <default>0</default>
         <preset>0</preset>
         <access>public</access>
-        <flags>volatile</flags>
+        <flags>volatile with_getbymember</flags>
         <setflags>none</setflags>
         <getflags>none</getflags>
       </member>

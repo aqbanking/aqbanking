@@ -20,6 +20,7 @@
 
         <header type="sys" loc="post">aqbanking/account_spec.h</header>
         <header type="sys" loc="post">aqbanking/account.h</header>
+        <header type="sys" loc="post">aqbanking/ab_jobqueue.h</header>
 
         <header type="sys" loc="post">aqbanking/transaction.h</header>
       </headers>
@@ -41,6 +42,60 @@
             }
           </content>
         </inline>
+
+
+        <inline loc="end" access="public">
+          <content>
+            $(api) AB_JOBQUEUE *$(struct_prefix)_FindJobQueue(const $(struct_type) *uq, int cmd);
+          </content>
+        </inline>
+
+        <inline loc="code" access="public">
+          <content>
+            AB_JOBQUEUE *$(struct_prefix)_FindJobQueue(const $(struct_type) *uq, int cmd) {
+              if (uq->jobQueueList)
+                return AB_JobQueue_List_GetByJobType(uq->jobQueueList, cmd);
+              return NULL;
+            }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+            $(api) void $(struct_prefix)_AddJobQueue($(struct_type) *up, AB_JOBQUEUE *aq);
+          </content>
+        </inline>
+
+        <inline loc="code" access="public">
+          <content>
+            void $(struct_prefix)_AddJobQueue($(struct_type) *up, AB_JOBQUEUE *aq) {
+              if (up->jobQueueList==NULL)
+                up->jobQueueList=AB_JobQueue_List_new();
+              AB_JobQueue_List_Add(aq, up->jobQueueList);
+            }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <content>
+            $(api) AB_JOBQUEUE *$(struct_prefix)_GetFirstJobQueue(const $(struct_type) *up);
+          </content>
+        </inline>
+
+        <inline loc="code" access="public">
+          <content>
+            AB_JOBQUEUE *$(struct_prefix)_GetFirstJobQueue(const $(struct_type) *up) {
+              if (up->jobQueueList==NULL)
+                return NULL;
+              return AB_JobQueue_List_First(up->jobQueueList);
+            }
+          </content>
+        </inline>
+
 
 
       </inlines>
@@ -82,6 +137,15 @@
       <member name="transactionList" type="AB_TRANSACTION_LIST2">
         <default>NULL</default>
         <preset>AB_Transaction_List2_new()</preset>
+        <access>public</access>
+        <flags>volatile own dup</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+      <member name="jobQueueList" type="AB_JOBQUEUE_LIST">
+        <default>NULL</default>
+        <preset>AB_JobQueue_List_new()</preset>
         <access>public</access>
         <flags>volatile own dup</flags>
         <setflags>none</setflags>

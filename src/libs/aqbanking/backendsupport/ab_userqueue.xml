@@ -22,6 +22,7 @@
       </headers>
 
       <inlines>
+
         <inline loc="end" access="public">
           <content>
             $(api) AB_ACCOUNTQUEUE *$(struct_prefix)_FindAccountQueue(const $(struct_type) *uq, AB_ACCOUNT *acc);

@@ -7,6 +7,7 @@ typefiles= \
   ab_accountqueue.xml \
   ab_userqueue.xml \
   ab_providerqueue.xml \
+  ab_jobqueue.xml \
   ab_queue.xml \
   account.xml \
   user.xml
@@ -20,6 +21,7 @@ dist_typedata_DATA=\
   ab_userqueue_list.tm2 \
   ab_providerqueue.tm2 \
   ab_providerqueue_list.tm2 \
+  ab_jobqueue.tm2 ab_jobqueue_list.tm2 \
   ab_queue.tm2 \
   ab_account.tm2 ab_account_list.tm2 ab_account_list2.tm2 \
   ab_user.tm2 ab_user_list.tm2 ab_user_list2.tm2
@@ -30,6 +32,7 @@ typedata_sources= \
   ab_accountqueue.c \
   ab_userqueue.c \
   ab_providerqueue.c \
+  ab_jobqueue.c \
   ab_queue.c \
   account.c \
   user.c
@@ -38,6 +41,7 @@ built_headers_priv= \
   ab_accountqueue_p.h \
   ab_userqueue_p.h \
   ab_providerqueue_p.h \
+  ab_jobqueue_p.h \
   ab_queue_p.h \
   account_p.h \
   user_p.h
@@ -46,6 +50,7 @@ built_headers_pub= \
   ab_accountqueue.h \
   ab_userqueue.h \
   ab_providerqueue.h \
+  ab_jobqueue.h \
   ab_queue.h \
   account.h \
   user.h
