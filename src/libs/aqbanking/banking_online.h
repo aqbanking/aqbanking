@@ -85,6 +85,7 @@ AQBANKING_API int AB_Banking_SendCommands(AB_BANKING *ab,
 
 /** @name Compatibility Functions for KMyMoney
  *
+ * These functions should not be used in new applications.
  */
 /*@{*/
 
