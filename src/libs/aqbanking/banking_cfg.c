@@ -30,7 +30,7 @@ int AB_Banking__GetConfigManager(AB_BANKING *ab, const char *dname) {
     GWEN_Buffer_AppendString(buf, "dir://");
     GWEN_Buffer_AppendString(buf, dname);
     GWEN_Buffer_AppendString(buf, DIRSEP);
-    GWEN_Buffer_AppendString(buf, "settings");
+    GWEN_Buffer_AppendString(buf, AB_BANKING_SETTINGS_DIR);
   }
   else {
     const char *s;
