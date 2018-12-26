@@ -46,7 +46,7 @@ int EBC_Provider_Send_INI(AB_PROVIDER *pro, AB_USER *u, int doLock) {
 
   /* lock user */
   if (doLock) {
-    rv=AB_Banking_BeginExclUseUser(ab, u);
+    rv=AB_Provider_BeginExclUseUser(pro, u);
     if (rv<0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not lock customer");
       GWEN_HttpSession_free(sess);
@@ -60,17 +60,17 @@ int EBC_Provider_Send_INI(AB_PROVIDER *pro, AB_USER *u, int doLock) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
               "Error exchanging INI request (%d)", rv);
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AB_Provider_EndExclUseUser(pro, u, 1);
     GWEN_HttpSession_free(sess);
     return rv;
   }
 
   /* unlock user */
   if (doLock) {
-    rv=AB_Banking_EndExclUseUser(ab, u, 0);
+    rv=AB_Provider_EndExclUseUser(pro, u, 0);
     if (rv<0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not unlock customer");
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AB_Provider_EndExclUseUser(pro, u, 1);
       GWEN_HttpSession_free(sess);
       return rv;
     }
@@ -125,7 +125,7 @@ int EBC_Provider_Send_HIA(AB_PROVIDER *pro, AB_USER *u, int doLock) {
 
   /* lock user */
   if (doLock) {
-    rv=AB_Banking_BeginExclUseUser(ab, u);
+    rv=AB_Provider_BeginExclUseUser(pro, u);
     if (rv<0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not lock customer");
       GWEN_HttpSession_free(sess);
@@ -139,14 +139,14 @@ int EBC_Provider_Send_HIA(AB_PROVIDER *pro, AB_USER *u, int doLock) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
 	      "Error exchanging HIA request (%d)", rv);
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AB_Provider_EndExclUseUser(pro, u, 1);
     GWEN_HttpSession_free(sess);
     return rv;
   }
 
   /* unlock user */
   if (doLock) {
-    rv=AB_Banking_EndExclUseUser(ab, u, 0);
+    rv=AB_Provider_EndExclUseUser(pro, u, 0);
     if (rv<0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not unlock customer");
       AB_Banking_EndExclUseUser(ab, u, 1);
@@ -198,7 +198,7 @@ int EBC_Provider_Send_HPB(AB_PROVIDER *pro, AB_USER *u, int doLock) {
 
   /* lock user */
   if (doLock) {
-    rv=AB_Banking_BeginExclUseUser(ab, u);
+    rv=AB_Provider_BeginExclUseUser(pro, u);
     if (rv<0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not lock customer");
       GWEN_HttpSession_free(sess);
@@ -212,14 +212,14 @@ int EBC_Provider_Send_HPB(AB_PROVIDER *pro, AB_USER *u, int doLock) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
 	      "Error exchanging HPB request (%d)", rv);
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AB_Provider_EndExclUseUser(pro, u, 1);
     GWEN_HttpSession_free(sess);
     return rv;
   }
 
   /* unlock user */
   if (doLock) {
-    rv=AB_Banking_EndExclUseUser(ab, u, 0);
+    rv=AB_Provider_EndExclUseUser(pro, u, 0);
     if (rv<0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not unlock customer");
       AB_Banking_EndExclUseUser(ab, u, 1);
@@ -242,13 +242,10 @@ int EBC_Provider_Send_HPD(AB_PROVIDER *pro, AB_USER *u, int doLock) {
   GWEN_HTTP_SESSION *sess;
   int rv;
   EBC_USER_STATUS ust;
-  AB_BANKING *ab;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, EBC_PROVIDER, pro);
   assert(dp);
-
-  ab=AB_Provider_GetBanking(pro);
 
   ust=EBC_User_GetStatus(u);
   if (ust!=EBC_UserStatus_Enabled) {
@@ -270,7 +267,7 @@ int EBC_Provider_Send_HPD(AB_PROVIDER *pro, AB_USER *u, int doLock) {
 
   /* lock user */
   if (doLock) {
-    rv=AB_Banking_BeginExclUseUser(ab, u);
+    rv=AB_Provider_BeginExclUseUser(pro, u);
     if (rv<0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not lock customer");
       GWEN_HttpSession_free(sess);
@@ -284,17 +281,17 @@ int EBC_Provider_Send_HPD(AB_PROVIDER *pro, AB_USER *u, int doLock) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
 	      "Error exchanging HPD request (%d)", rv);
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AB_Provider_EndExclUseUser(pro, u, 1);
     GWEN_HttpSession_free(sess);
     return rv;
   }
 
   /* unlock user */
   if (doLock) {
-    rv=AB_Banking_EndExclUseUser(ab, u, 0);
+    rv=AB_Provider_EndExclUseUser(pro, u, 0);
     if (rv<0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not unlock customer");
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AB_Provider_EndExclUseUser(pro, u, 1);
       GWEN_HttpSession_free(sess);
       return rv;
     }
@@ -314,13 +311,10 @@ int EBC_Provider_Send_HKD(AB_PROVIDER *pro, AB_USER *u, int doLock) {
   GWEN_HTTP_SESSION *sess;
   int rv;
   EBC_USER_STATUS ust;
-  AB_BANKING *ab;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, EBC_PROVIDER, pro);
   assert(dp);
-
-  ab=AB_Provider_GetBanking(pro);
 
   ust=EBC_User_GetStatus(u);
   if (ust!=EBC_UserStatus_Enabled) {
@@ -342,7 +336,7 @@ int EBC_Provider_Send_HKD(AB_PROVIDER *pro, AB_USER *u, int doLock) {
 
   /* lock user */
   if (doLock) {
-    rv=AB_Banking_BeginExclUseUser(ab, u);
+    rv=AB_Provider_BeginExclUseUser(pro, u);
     if (rv<0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not lock customer");
       GWEN_HttpSession_free(sess);
@@ -356,17 +350,17 @@ int EBC_Provider_Send_HKD(AB_PROVIDER *pro, AB_USER *u, int doLock) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
 	      "Error exchanging HKD request (%d)", rv);
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AB_Provider_EndExclUseUser(pro, u, 1);
     GWEN_HttpSession_free(sess);
     return rv;
   }
 
   /* unlock user */
   if (doLock) {
-    rv=AB_Banking_EndExclUseUser(ab, u, 0);
+    rv=AB_Provider_EndExclUseUser(pro, u, 0);
     if (rv<0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not unlock customer");
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AB_Provider_EndExclUseUser(pro, u, 1);
       GWEN_HttpSession_free(sess);
       return rv;
     }
@@ -386,13 +380,10 @@ int EBC_Provider_Send_HTD(AB_PROVIDER *pro, AB_USER *u, int doLock) {
   GWEN_HTTP_SESSION *sess;
   int rv;
   EBC_USER_STATUS ust;
-  AB_BANKING *ab;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, EBC_PROVIDER, pro);
   assert(dp);
-
-  ab=AB_Provider_GetBanking(pro);
 
   ust=EBC_User_GetStatus(u);
   if (ust!=EBC_UserStatus_Enabled) {
@@ -414,7 +405,7 @@ int EBC_Provider_Send_HTD(AB_PROVIDER *pro, AB_USER *u, int doLock) {
 
   /* lock user */
   if (doLock) {
-    rv=AB_Banking_BeginExclUseUser(ab, u);
+    rv=AB_Provider_BeginExclUseUser(pro, u);
     if (rv<0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not lock customer");
       GWEN_HttpSession_free(sess);
@@ -428,17 +419,17 @@ int EBC_Provider_Send_HTD(AB_PROVIDER *pro, AB_USER *u, int doLock) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
 	      "Error exchanging HTD request (%d)", rv);
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AB_Provider_EndExclUseUser(pro, u, 1);
     GWEN_HttpSession_free(sess);
     return rv;
   }
 
   /* unlock user */
   if (doLock) {
-    rv=AB_Banking_EndExclUseUser(ab, u, 0);
+    rv=AB_Provider_EndExclUseUser(pro, u, 0);
     if (rv<0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not unlock customer");
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AB_Provider_EndExclUseUser(pro, u, 1);
       GWEN_HttpSession_free(sess);
       return rv;
     }
@@ -457,13 +448,10 @@ int EBC_Provider_Send_PUB(AB_PROVIDER *pro, AB_USER *u, const char *signVersion,
   EBC_PROVIDER *dp;
   GWEN_HTTP_SESSION *sess;
   int rv;
-  AB_BANKING *ab;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, EBC_PROVIDER, pro);
   assert(dp);
-
-  ab=AB_Provider_GetBanking(pro);
 
   /* create and open session */
   sess=EBC_Dialog_new(pro, u);
@@ -476,7 +464,7 @@ int EBC_Provider_Send_PUB(AB_PROVIDER *pro, AB_USER *u, const char *signVersion,
 
   /* lock user */
   if (doLock) {
-    rv=AB_Banking_BeginExclUseUser(ab, u);
+    rv=AB_Provider_BeginExclUseUser(pro, u);
     if (rv<0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not lock customer");
       GWEN_HttpSession_free(sess);
@@ -490,17 +478,17 @@ int EBC_Provider_Send_PUB(AB_PROVIDER *pro, AB_USER *u, const char *signVersion,
     DBG_ERROR(AQEBICS_LOGDOMAIN,
 	      "Error exchanging PUB request (%d)", rv);
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AB_Provider_EndExclUseUser(pro, u, 1);
     GWEN_HttpSession_free(sess);
     return rv;
   }
 
   /* unlock user */
   if (doLock) {
-    rv=AB_Banking_EndExclUseUser(ab, u, 0);
+    rv=AB_Provider_EndExclUseUser(pro, u, 0);
     if (rv<0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not unlock customer");
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AB_Provider_EndExclUseUser(pro, u, 1);
       GWEN_HttpSession_free(sess);
       return rv;
     }
@@ -554,7 +542,7 @@ int EBC_Provider_Download(AB_PROVIDER *pro, AB_USER *u,
 
   /* lock user */
   if (doLock) {
-    rv=AB_Banking_BeginExclUseUser(ab, u);
+    rv=AB_Provider_BeginExclUseUser(pro, u);
     if (rv<0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not lock customer");
       GWEN_HttpSession_free(sess);
@@ -577,10 +565,10 @@ int EBC_Provider_Download(AB_PROVIDER *pro, AB_USER *u,
 
   /* unlock user */
   if (doLock) {
-    rv=AB_Banking_EndExclUseUser(ab, u, 0);
+    rv=AB_Provider_EndExclUseUser(pro, u, 0);
     if (rv<0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not unlock customer");
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AB_Provider_EndExclUseUser(pro, u, 1);
       GWEN_HttpSession_free(sess);
       return rv;
     }
@@ -604,13 +592,10 @@ int EBC_Provider_Upload(AB_PROVIDER *pro, AB_USER *u,
   GWEN_HTTP_SESSION *sess;
   int rv;
   EBC_USER_STATUS ust;
-  AB_BANKING *ab;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, EBC_PROVIDER, pro);
   assert(dp);
-
-  ab=AB_Provider_GetBanking(pro);
 
   ust=EBC_User_GetStatus(u);
   if (ust!=EBC_UserStatus_Enabled) {
@@ -632,7 +617,7 @@ int EBC_Provider_Upload(AB_PROVIDER *pro, AB_USER *u,
 
   /* lock user */
   if (doLock) {
-    rv=AB_Banking_BeginExclUseUser(ab, u);
+    rv=AB_Provider_BeginExclUseUser(pro, u);
     if (rv<0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not lock customer");
       GWEN_HttpSession_free(sess);
@@ -646,17 +631,17 @@ int EBC_Provider_Upload(AB_PROVIDER *pro, AB_USER *u,
     DBG_ERROR(AQEBICS_LOGDOMAIN,
 	      "Error exchanging upload request (%d)", rv);
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AB_Provider_EndExclUseUser(pro, u, 1);
     GWEN_HttpSession_free(sess);
     return rv;
   }
 
   /* unlock user */
   if (doLock) {
-    rv=AB_Banking_EndExclUseUser(ab, u, 0);
+    rv=AB_Provider_EndExclUseUser(pro, u, 0);
     if (rv<0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not unlock customer");
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AB_Provider_EndExclUseUser(pro, u, 1);
       GWEN_HttpSession_free(sess);
       return rv;
     }

@@ -137,38 +137,31 @@ uint32_t EBC_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
 
 
 
-void EBC_User_Extend(AB_USER *u, GWEN_UNUSED AB_PROVIDER *pro,
-		     AB_PROVIDER_EXTEND_MODE em,
-		     GWEN_DB_NODE *db) {
-  DBG_INFO(AQEBICS_LOGDOMAIN, "Extending user with mode %d", em);
-  if (em==AB_ProviderExtendMode_Create ||
-      em==AB_ProviderExtendMode_Extend) {
-    EBC_USER *ue;
-    const char *s;
+AB_USER *EBC_User_new(AB_PROVIDER *pro) {
+  AB_USER *u;
+  EBC_USER *ue;
 
-    GWEN_NEW_OBJECT(EBC_USER, ue);
-    GWEN_INHERIT_SETDATA(AB_USER, EBC_USER, u, ue, EBC_User_freeData);
+  assert(pro);
+  u=AB_User_new();
+  assert(u);
 
-    if (em==AB_ProviderExtendMode_Create) {
-      s=AB_User_GetCountry(u);
-      if (!s || !*s)
-	AB_User_SetCountry(u, "de");
-      /* some reasonable presets */
-      ue->protoVersion=strdup("H003");
-      ue->signVersion=strdup("A005");
-      ue->cryptVersion=strdup("E002");
-      ue->authVersion=strdup("X002");
-    }
-    else {
-      EBC_User_ReadDb(u, db);
-    }
-  }
-  else {
-    if (em==AB_ProviderExtendMode_Add) {
-    }
-    else if (em==AB_ProviderExtendMode_Save)
-      EBC_User_toDb(u, db);
-  }
+  AB_User_SetProvider(u, pro);
+  AB_User_SetBackendName(u, "aqebics");
+
+  GWEN_NEW_OBJECT(EBC_USER, ue);
+  GWEN_INHERIT_SETDATA(AB_USER, EBC_USER, u, ue, EBC_User_freeData);
+
+  ue->readFromDbFn=AB_User_SetReadFromDbFn(u, EBC_User_ReadFromDb);
+  ue->writeToDbFn=AB_User_SetWriteToDbFn(u, EBC_User_WriteToDb);
+
+  /* some reasonable presets */
+  AB_User_SetCountry(u, "de");
+  ue->protoVersion=strdup("H003");
+  ue->signVersion=strdup("A005");
+  ue->cryptVersion=strdup("E002");
+  ue->authVersion=strdup("X002");
+
+  return u;
 }
 
 
@@ -193,7 +186,7 @@ void GWENHYWFAR_CB EBC_User_freeData(GWEN_UNUSED void *bp, void *p) {
 
 
 
-void EBC_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
+void EBC_User__ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
   EBC_USER *ue;
   const char *s;
 
@@ -278,7 +271,7 @@ void EBC_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
 
 
 
-void EBC_User_toDb(AB_USER *u, GWEN_DB_NODE *db) {
+void EBC_User__WriteDb(const AB_USER *u, GWEN_DB_NODE *db) {
   EBC_USER *ue;
 
   assert(u);
@@ -337,6 +330,66 @@ void EBC_User_toDb(AB_USER *u, GWEN_DB_NODE *db) {
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "server", ue->serverUrl);
 }
+
+
+
+int EBC_User_ReadFromDb(AB_USER *u, GWEN_DB_NODE *db) {
+  EBC_USER *ue;
+  int rv;
+  GWEN_DB_NODE *dbP;
+  AB_PROVIDER *pro;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, EBC_USER, u);
+  assert(ue);
+
+  /* save provider, because AB_User_ReadFromDb clears it */
+  pro=AB_User_GetProvider(u);
+
+  /* read data for base class */
+  rv=(ue->readFromDbFn)(u, db);
+  if (rv<0) {
+    DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* set provider again */
+  AB_User_SetProvider(u, pro);
+
+  /* read data for provider */
+  dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");
+  EBC_User__ReadDb(u, dbP);
+
+  return 0;
+}
+
+
+
+int EBC_User_WriteToDb(const AB_USER *u, GWEN_DB_NODE *db) {
+  EBC_USER *ue;
+  int rv;
+  GWEN_DB_NODE *dbP;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, EBC_USER, u);
+  assert(ue);
+
+  /* write data for base class */
+  rv=(ue->writeToDbFn)(u, db);
+  if (rv<0) {
+    DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* write data for provider */
+  dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");
+  EBC_User__WriteDb(u, dbP);
+
+  return 0;
+}
+
+
+
 
 
 

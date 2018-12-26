@@ -22,7 +22,7 @@ typedef struct EBC_CONTEXT EBC_CONTEXT;
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/db.h>
 #include <aqebics/aqebics.h>
-#include <aqbanking/job_be.h>
+#include <aqbanking/transaction.h>
 
 #ifdef __cplusplus
 extern "C" {

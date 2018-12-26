@@ -15,9 +15,8 @@
 #include <aqbanking/provider_be.h>
 
 
-void EBC_Account_Extend(AB_ACCOUNT *a, AB_PROVIDER *pro,
-			AB_PROVIDER_EXTEND_MODE em,
-			GWEN_DB_NODE *db);
+AB_ACCOUNT *EBC_Account_new(AB_PROVIDER *pro);
+
 
 
 #endif /* EBC_CLIENT_ACCOUNT_L_H */

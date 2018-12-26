@@ -5,7 +5,7 @@ INCLUDES=-I$(srcdir)/.. -I$(top_builddir) $(gwenhywfar_includes) -I$(aqbanking_s
 DEFS += -DLOCALEDIR=\"$(localedir)\"
 AM_CFLAGS=-DBUILDING_AQEBICS @visibility_cflags@
 
-typefiles=context.xml
+#typefiles=context.xml
 
 noinst_LTLIBRARIES=libclient.la
 noinst_PROGRAMS=testlib
@@ -52,14 +52,10 @@ EXTRA_DIST=$(typefiles) $(extra_sources)
 noinst_HEADERS=\
  account_l.h \
  account_p.h \
- context_l.h \
- context_p.h \
  dialog_l.h \
  dialog_p.h \
  provider_l.h \
  provider_p.h \
- queues_l.h \
- queues_p.h \
  user_l.h \
  user_p.h
 
@@ -72,10 +68,8 @@ iheader_HEADERS=\
 libclient_la_SOURCES=\
  account.c \
  user.c \
- context.c \
  dialog.c \
- provider.c \
- queues.c
+ provider.c
 
 
 #types: $(typefiles)

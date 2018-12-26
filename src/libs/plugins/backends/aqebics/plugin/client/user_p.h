@@ -36,12 +36,19 @@ struct EBC_USER {
   char *httpContentType;
 
   uint32_t flags;
+
+  AB_USER_READFROMDB_FN readFromDbFn;
+  AB_USER_WRITETODB_FN writeToDbFn;
 };
 
 static void GWENHYWFAR_CB EBC_User_freeData(void *bp, void *p);
 
-static void EBC_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db);
-static void EBC_User_toDb(AB_USER *u, GWEN_DB_NODE *db);
+static void EBC_User__ReadDb(AB_USER *u, GWEN_DB_NODE *db);
+static void EBC_User__WriteDb(const AB_USER *u, GWEN_DB_NODE *db);
+
+
+int EBC_User_ReadFromDb(AB_USER *u, GWEN_DB_NODE *db);
+static int EBC_User_WriteToDb(const AB_USER *u, GWEN_DB_NODE *db);
 
 
 #endif /* EBC_CLIENT_USER_P_H */

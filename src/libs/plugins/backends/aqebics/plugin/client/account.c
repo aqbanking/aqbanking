@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Wed May 07 2008
-    copyright   : (C) 2008 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -27,29 +27,22 @@ GWEN_INHERIT(AB_ACCOUNT, EBC_ACCOUNT)
 
 
 
-void EBC_Account_Extend(AB_ACCOUNT *a, GWEN_UNUSED AB_PROVIDER *pro,
-			AB_PROVIDER_EXTEND_MODE em,
-			GWEN_DB_NODE *db) {
-  if (em==AB_ProviderExtendMode_Create ||
-      em==AB_ProviderExtendMode_Extend) {
-    EBC_ACCOUNT *ae;
+AB_ACCOUNT *EBC_Account_new(AB_PROVIDER *pro) {
+  AB_ACCOUNT *a;
+  EBC_ACCOUNT *ae;
 
-    GWEN_NEW_OBJECT(EBC_ACCOUNT, ae);
-    GWEN_INHERIT_SETDATA(AB_ACCOUNT, EBC_ACCOUNT, a, ae, EBC_Account_freeData);
+  a=AB_Account_new();
+  assert(a);
+  AB_Account_SetProvider(a, pro);
+  AB_Account_SetBackendName(a, "aqebics");
 
-    if (em==AB_ProviderExtendMode_Create) {
-    }
-    else {
-      EBC_Account_ReadDb(a, db);
-    }
-  }
-  else {
-    if (em==AB_ProviderExtendMode_Add) {
-    }
-    else if (em==AB_ProviderExtendMode_Save) {
-      EBC_Account_toDb(a, db);
-    } /* if save */
-  }
+  GWEN_NEW_OBJECT(EBC_ACCOUNT, ae);
+  GWEN_INHERIT_SETDATA(AB_ACCOUNT, EBC_ACCOUNT, a, ae, EBC_Account_freeData);
+
+  ae->readFromDbFn=AB_Account_SetReadFromDbFn(a, EBC_Account_ReadFromDb);
+  ae->writeToDbFn=AB_Account_SetWriteToDbFn(a, EBC_Account_WriteToDb);
+
+  return a;
 }
 
 
@@ -99,37 +92,72 @@ uint32_t EBC_Account_Flags_fromDb(GWEN_DB_NODE *db, const char *name){
 
 
 
-void EBC_Account_ReadDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+int EBC_Account_ReadFromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
   EBC_ACCOUNT *ae;
+  GWEN_DB_NODE *dbP;
+  int rv;
+  AB_PROVIDER *pro;
   const char *s;
 
   assert(a);
   ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, EBC_ACCOUNT, a);
   assert(ae);
 
-  ae->flags=EBC_Account_Flags_fromDb(db, "accountFlags");
+  /* save provider, because AB_Account_ReadFromDb clears it */
+  pro=AB_Account_GetProvider(a);
+
+  /* read data for base class */
+  rv=(ae->readFromDbFn)(a, db);
+  if (rv<0) {
+    DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* set provider again */
+  AB_Account_SetProvider(a, pro);
+
+  dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");
+
+  /* read data for provider */
+  ae->flags=EBC_Account_Flags_fromDb(dbP, "accountFlags");
 
   free(ae->ebicsId);
-  s=GWEN_DB_GetCharValue(db, "ebicsId", 0, 0);
+  s=GWEN_DB_GetCharValue(dbP, "ebicsId", 0, 0);
   if (s) ae->ebicsId=strdup(s);
   else ae->ebicsId=NULL;
+
+  return 0;
 }
 
 
 
-void EBC_Account_toDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+int EBC_Account_WriteToDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db) {
   EBC_ACCOUNT *ae;
+  GWEN_DB_NODE *dbP;
+  int rv;
 
   assert(a);
   ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, EBC_ACCOUNT, a);
   assert(ae);
 
-  EBC_Account_Flags_toDb(db, "accountFlags", ae->flags);
+  rv=(ae->writeToDbFn)(a, db);
+  if (rv<0) {
+    DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
 
+  /* write data for provider */
+  dbP=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, "data/backend");
+
+  EBC_Account_Flags_toDb(dbP, "accountFlags", ae->flags);
   if (ae->ebicsId)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "ebicsId", ae->ebicsId);
+    GWEN_DB_SetCharValue(dbP, GWEN_DB_FLAGS_OVERWRITE_VARS, "ebicsId", ae->ebicsId);
+
+  return 0;
 }
+
+
+
 
 
 

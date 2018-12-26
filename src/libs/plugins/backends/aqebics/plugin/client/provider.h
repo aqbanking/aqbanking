@@ -12,7 +12,10 @@
 
 
 #include <aqebics/aqebics.h>
+
 #include <aqbanking/provider.h>
+#include <aqbanking/user.h>
+
 #include <gwenhywfar/ct.h>
 
 #define EBC_DEFAULT_CONNECT_TIMEOUT  30
