@@ -59,6 +59,7 @@ int AB_Provider_SortProviderQueueIntoUserQueueList(AB_PROVIDER *pro, AB_PROVIDER
         }
         uq=AB_UserQueue_new();
         AB_UserQueue_SetUser(uq, u);
+	AB_UserQueue_SetUserId(uq, uid);
 
         AB_UserQueue_List_Add(uq, uql);
       }
@@ -100,6 +101,7 @@ void AB_Provider_FreeUsersAndAccountsFromUserQueueList(AB_PROVIDER *pro, AB_USER
 
     }
 
+    AB_UserQueue_SetUserId(uq, 0);
     AB_UserQueue_SetUser(uq, NULL);
     AB_User_free(u);
 
