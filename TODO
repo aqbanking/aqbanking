@@ -7,7 +7,51 @@ Next:
   - fix apidoc for provider.h
   - dont export AB_NewUser|AccountDialog_*
   - create APIDOC for banking jobs
-- add tool "aqhbci-tool" (just a stub which uses the AH_Provider_Control function)
+  - add tool "aqhbci-tool" (just a stub which uses the AH_Provider_Control function)
+  - hide AB_IMEXPORTER
+    - create/modify functions:
+      - AB_Banking_Import(AB_BANKING *ab,
+                          const char *importerName,
+                          AB_IMEXPORTER_CONTEXT *ctx,
+                          GWEN_SYNCIO *sio,
+                          GWEN_DB_NODE *dbProfile);
+      - AB_Banking_ImportWithProfile(AB_BANKING *ab,
+                                     const char *importerName,
+                                     AB_IMEXPORTER_CONTEXT *ctx,
+                                     GWEN_SYNCIO *sio,
+                                     const char *profileName,
+                                     const char *profileFile);
+      - AB_Banking_ImportFile(AB_BANKING *ab,
+                              const char *importerName,
+                              AB_IMEXPORTER_CONTEXT *ctx,
+                              const char *inputFileName,
+                              GWEN_DB_NODE *dbProfile);
+      - AB_Banking_ImportFileWithProfile(AB_BANKING *ab,
+                                         const char *importerName,
+                                         AB_IMEXPORTER_CONTEXT *ctx,
+                                         const char *profileName,
+                                         const char *profileFile,
+                                         const char *inputFileName)
+  
+      - AB_Banking_ImportBuffer(AB_BANKING *ab,
+                                const char *importerName,
+                                AB_IMEXPORTER_CONTEXT *ctx,
+                                const uint8_t *dataPtr,
+                                uint32_t dataLen,
+                                GWEN_DB_NODE *dbProfile);
+      - AB_Banking_ImportBufferWithProfile(AB_BANKING *ab,
+                                           const char *importerName,
+                                           AB_IMEXPORTER_CONTEXT *ctx,
+                                           const char *profileName,
+                                           const char *profileFile,
+                                           const uint8_t *dataPtr,
+                                           uint32_t dataLen)
+      - same for exports
+
+- remove AB_Banking_GetNewUserDialog() from API
+- remove AB_ERROR
+- remove AB_Banking__LoadProvider/ImExporter
+- remove AB_Banking_MakeGermanIban()
 
 - AqHBCI:
   - HKEKA
