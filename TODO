@@ -5,6 +5,7 @@ Next:
 
 - AB_BANKING:
   - find out why AB_Value_toString doesn't work when importing cma_052
+  - autodetect xml import schema to use for XML importer
   - fix apidoc for provider.h
   - dont export AB_NewUser|AccountDialog_*
   - create APIDOC for banking jobs
