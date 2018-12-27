@@ -11,13 +11,10 @@ int EBC_Provider_Send_INI(AB_PROVIDER *pro, AB_USER *u, int doLock) {
   GWEN_HTTP_SESSION *sess;
   int rv;
   EBC_USER_STATUS ust;
-  AB_BANKING *ab;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, EBC_PROVIDER, pro);
   assert(dp);
-
-  ab=AB_Provider_GetBanking(pro);
 
   if (EBC_User_GetFlags(u) & EBC_USER_FLAGS_INI) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "INI already sent to the server");
@@ -90,13 +87,10 @@ int EBC_Provider_Send_HIA(AB_PROVIDER *pro, AB_USER *u, int doLock) {
   GWEN_HTTP_SESSION *sess;
   int rv;
   EBC_USER_STATUS ust;
-  AB_BANKING *ab;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, EBC_PROVIDER, pro);
   assert(dp);
-
-  ab=AB_Provider_GetBanking(pro);
 
   if (EBC_User_GetFlags(u) & EBC_USER_FLAGS_HIA) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "HIA already sent to the server");
@@ -149,7 +143,7 @@ int EBC_Provider_Send_HIA(AB_PROVIDER *pro, AB_USER *u, int doLock) {
     rv=AB_Provider_EndExclUseUser(pro, u, 0);
     if (rv<0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not unlock customer");
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AB_Provider_EndExclUseUser(pro, u, 1);
       GWEN_HttpSession_free(sess);
       return rv;
     }
@@ -169,13 +163,10 @@ int EBC_Provider_Send_HPB(AB_PROVIDER *pro, AB_USER *u, int doLock) {
   GWEN_HTTP_SESSION *sess;
   int rv;
   EBC_USER_STATUS ust;
-  AB_BANKING *ab;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, EBC_PROVIDER, pro);
   assert(dp);
-
-  ab=AB_Provider_GetBanking(pro);
 
   ust=EBC_User_GetStatus(u);
   if (ust!=EBC_UserStatus_Init2 &&
@@ -222,7 +213,7 @@ int EBC_Provider_Send_HPB(AB_PROVIDER *pro, AB_USER *u, int doLock) {
     rv=AB_Provider_EndExclUseUser(pro, u, 0);
     if (rv<0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not unlock customer");
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AB_Provider_EndExclUseUser(pro, u, 1);
       GWEN_HttpSession_free(sess);
       return rv;
     }
@@ -514,13 +505,10 @@ int EBC_Provider_Download(AB_PROVIDER *pro, AB_USER *u,
   GWEN_HTTP_SESSION *sess;
   int rv;
   EBC_USER_STATUS ust;
-  AB_BANKING *ab;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, EBC_PROVIDER, pro);
   assert(dp);
-
-  ab=AB_Provider_GetBanking(pro);
 
   ust=EBC_User_GetStatus(u);
   if (ust!=EBC_UserStatus_Enabled) {
@@ -558,7 +546,7 @@ int EBC_Provider_Download(AB_PROVIDER *pro, AB_USER *u,
     DBG_ERROR(AQEBICS_LOGDOMAIN,
 	      "Error exchanging download request (%d)", rv);
     if (doLock)
-      AB_Banking_EndExclUseUser(ab, u, 1);
+      AB_Provider_EndExclUseUser(pro, u, 1);
     GWEN_HttpSession_free(sess);
     return rv;
   }
