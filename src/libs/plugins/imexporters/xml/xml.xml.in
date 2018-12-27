@@ -1,7 +1,7 @@
 <plugin name="xmldb" type="imexporter" import="1" export="1" i18n="aqbanking" >
   <version>@AQBANKING_VERSION_STRING@</version>
   <author>Martin Preuss(martin@libchipcard.de)</author>
-  <short>XML DB</short>
+  <short>XML</short>
   <descr>
     This plugin imports XML data.
   </descr>
