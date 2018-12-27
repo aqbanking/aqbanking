@@ -4,6 +4,7 @@ Next:
   - remove unused version stuff (AQHBCI_VERSION etc)
 
 - AB_BANKING:
+  - find out why AB_Value_toString doesn't work when importing cma_052
   - fix apidoc for provider.h
   - dont export AB_NewUser|AccountDialog_*
   - create APIDOC for banking jobs
