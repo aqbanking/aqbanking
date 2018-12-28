@@ -275,7 +275,7 @@ GWEN_DIALOG *EBC_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
   xp=GWEN_INHERIT_GETDATA(AB_PROVIDER, EBC_PROVIDER, pro);
   assert(xp);
 
-  dlg=EBC_EditUserDialog_new(AB_Provider_GetBanking(pro), u, 1);
+  dlg=EBC_EditUserDialog_new(pro, u, 1);
   if (dlg==NULL) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (no dialog)");
     return NULL;
@@ -294,7 +294,7 @@ GWEN_DIALOG *EBC_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
   xp=GWEN_INHERIT_GETDATA(AB_PROVIDER, EBC_PROVIDER, pro);
   assert(xp);
 
-  dlg=EBC_NewKeyFileDialog_new(AB_Provider_GetBanking(pro));
+  dlg=EBC_NewKeyFileDialog_new(pro);
   if (dlg==NULL) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (no dialog)");
     return NULL;
@@ -1005,8 +1005,6 @@ int EBC_Provider_GetCert(AB_PROVIDER *pro, AB_USER *u) {
 #include "r_download_h003.c"
 #include "r_download.c"
 #include "r_hpd.c"
-#include "r_hkd.c"
-#include "r_htd.c"
 #include "r_sta.c"
 #include "r_upload_h002.c"
 #include "r_upload_h003.c"

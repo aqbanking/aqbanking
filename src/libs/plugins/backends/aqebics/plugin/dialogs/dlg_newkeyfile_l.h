@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Sat Jun 26 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -14,6 +14,7 @@
 
 #include <aqebics/aqebics.h>
 #include <aqbanking/banking.h>
+#include <aqbanking/user.h>
 
 #include <gwenhywfar/dialog.h>
 #include <gwenhywfar/db.h>
@@ -25,7 +26,7 @@ extern "C" {
 
 
 
-GWEN_DIALOG *EBC_NewKeyFileDialog_new(AB_BANKING *ab);
+GWEN_DIALOG *EBC_NewKeyFileDialog_new(AB_PROVIDER *pro);
 
 const char *EBC_NewKeyFileDialog_GetFileName(const GWEN_DIALOG *dlg);
 void EBC_NewKeyFileDialog_SetFileName(GWEN_DIALOG *dlg, const char *s);

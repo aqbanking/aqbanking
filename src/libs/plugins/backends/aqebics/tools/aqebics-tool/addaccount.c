@@ -160,12 +160,6 @@ int addAccount(AB_BANKING *ab,
     return 2;
   }
 
-  rv=AB_Banking_OnlineInit(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
-  }
-
   pro=AB_Banking_GetProvider(ab, EBC_PROVIDER_NAME);
   assert(pro);
 

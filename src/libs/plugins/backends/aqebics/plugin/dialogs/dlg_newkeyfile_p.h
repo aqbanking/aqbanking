@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Sat Jun 26 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -18,6 +18,7 @@
 
 typedef struct EBC_NEWKEYFILE_DIALOG EBC_NEWKEYFILE_DIALOG;
 struct EBC_NEWKEYFILE_DIALOG {
+  AB_PROVIDER *provider;
   AB_BANKING *banking;
 
   char *fileName;

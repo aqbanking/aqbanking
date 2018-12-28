@@ -216,7 +216,7 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
       rv=AB_Provider_EndExclUseAccount(pro, storedAcc, 0);
       if (rv<0) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-        AB_Provider_EndExclUseAccount(pro, acc, 1); /* abort */
+        AB_Provider_EndExclUseAccount(pro, storedAcc, 1); /* abort */
       }
     }
   }

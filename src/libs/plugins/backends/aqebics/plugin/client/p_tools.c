@@ -4,6 +4,8 @@
 #include "user_l.h"
 #include "msg/keys.h"
 
+#include "r_hkd_htd_l.h"
+
 
 
 int EBC_Provider_Send_INI(AB_PROVIDER *pro, AB_USER *u, int doLock) {

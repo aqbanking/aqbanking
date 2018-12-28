@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -35,10 +35,6 @@ int EBC_Provider_XchgHpbRequest(AB_PROVIDER *pro,
                                 AB_USER *u);
 
 int EBC_Provider_XchgHpdRequest(AB_PROVIDER *pro,
-				GWEN_HTTP_SESSION *sess,
-				AB_USER *u);
-
-int EBC_Provider_XchgHkdRequest(AB_PROVIDER *pro,
 				GWEN_HTTP_SESSION *sess,
 				AB_USER *u);
 

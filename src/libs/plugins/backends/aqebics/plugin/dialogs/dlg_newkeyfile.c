@@ -58,7 +58,7 @@ GWEN_INHERIT(GWEN_DIALOG, EBC_NEWKEYFILE_DIALOG)
 
 
 
-GWEN_DIALOG *EBC_NewKeyFileDialog_new(AB_BANKING *ab) {
+GWEN_DIALOG *EBC_NewKeyFileDialog_new(AB_PROVIDER *pro) {
   GWEN_DIALOG *dlg;
   EBC_NEWKEYFILE_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -95,7 +95,8 @@ GWEN_DIALOG *EBC_NewKeyFileDialog_new(AB_BANKING *ab) {
   }
   GWEN_Buffer_free(fbuf);
 
-  xdlg->banking=ab;
+  xdlg->provider=pro;
+  xdlg->banking=AB_Provider_GetBanking(pro);
 
   /* preset */
   xdlg->ebicsVersion=strdup("H003");
@@ -870,7 +871,6 @@ int EBC_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   AB_USER *u;
   int rv;
   uint32_t pid;
-  AB_PROVIDER *pro;
   GWEN_PLUGIN_MANAGER *pm;
   GWEN_PLUGIN *pl;
   GWEN_CRYPT_TOKEN *ct;
@@ -887,19 +887,10 @@ int EBC_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
     return GWEN_DialogEvent_ResultHandled;
   }
 
-  pro=AB_Banking_GetProvider(xdlg->banking, "aqebics");
-  if (pro==NULL) {
-    DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not find backend, maybe some plugins are not installed?");
-    GWEN_Gui_ShowError(I18N("Error"),
-		       "%s",
-		       I18N("Could not find HBCI backend, maybe some plugins are not installed?"));
-    return GWEN_DialogEvent_ResultHandled;
-  }
-
-  u=AB_Banking_CreateUser(xdlg->banking, "aqebics");
+  u=AB_Provider_CreateUserObject(xdlg->provider);
   if (u==NULL) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not create user, maybe backend missing?");
-    GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Could not find HBCI backend, maybe some plugins are not installed?"));
+    GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Could not create EBICS user."));
     return GWEN_DialogEvent_ResultHandled;
   }
 
@@ -983,11 +974,11 @@ int EBC_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   EBC_User_SetServerUrl(u, xdlg->url);
   EBC_User_SetPeerId(u, xdlg->hostId);
 
-  rv=AB_Banking_AddUser(xdlg->banking, u);
+  rv=AB_Provider_AddUser(xdlg->provider, u);
   if (rv<0) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not add user (%d)", rv);
     GWEN_Gui_ShowError(I18N("Error"),
-		       I18N("Could not add HBCI user, maybe there already is a user of that id (%d)"),
+		       I18N("Could not add EBICS user, maybe there already is a user of that id (%d)"),
 		       rv);
     AB_User_free(u);
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not add user, maybe there already is a user of the same id (%d)?", rv);
@@ -1009,24 +1000,24 @@ int EBC_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
                              i, /* mkKeys, sendKeys */
 			     0);
   /* lock new user */
-  rv=AB_Banking_BeginExclUseUser(xdlg->banking, u);
+  rv=AB_Provider_BeginExclUseUser(xdlg->provider, u);
   if (rv<0) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not lock user (%d)", rv);
     GWEN_Gui_ProgressLog2(pid,
 			  GWEN_LoggerLevel_Error,
 			  I18N("Unable to lock users (%d)"), rv);
-    AB_Banking_DeleteUser(xdlg->banking, u);
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     unlink(EBC_NewKeyFileDialog_GetFileName(dlg));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
 
   /* generate keys */
-  rv=EBC_Provider_CreateKeys(pro, u, xdlg->cryptAndAuthKeySize, xdlg->signKeySize, 1);
+  rv=EBC_Provider_CreateKeys(xdlg->provider, u, xdlg->cryptAndAuthKeySize, xdlg->signKeySize, 1);
   if (rv<0) {
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
-    AB_Banking_DeleteUser(xdlg->banking, u);
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     unlink(EBC_NewKeyFileDialog_GetFileName(dlg));
     GWEN_Gui_ProgressLog2(pid,
 			  GWEN_LoggerLevel_Error,
@@ -1037,9 +1028,9 @@ int EBC_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
 
   rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
   if (rv==GWEN_ERROR_USER_ABORTED) {
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
-    AB_Banking_DeleteUser(xdlg->banking, u);
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     unlink(EBC_NewKeyFileDialog_GetFileName(dlg));
     GWEN_Gui_ProgressLog(pid,
 			 GWEN_LoggerLevel_Error,
@@ -1055,11 +1046,11 @@ int EBC_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
 
 
   if (!(EBC_User_GetFlags(u) & EBC_USER_FLAGS_INI)) {
-    rv=EBC_Provider_Send_INI(pro, u, 0);
+    rv=EBC_Provider_Send_INI(xdlg->provider, u, 0);
     if (rv<0) {
-      AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+      AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
       DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
-      AB_Banking_DeleteUser(xdlg->banking, u);
+      AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
       unlink(EBC_NewKeyFileDialog_GetFileName(dlg));
       GWEN_Gui_ProgressEnd(pid);
       return GWEN_DialogEvent_ResultHandled;
@@ -1067,9 +1058,9 @@ int EBC_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
 
     rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
     if (rv==GWEN_ERROR_USER_ABORTED) {
-      AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+      AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
       DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
-      AB_Banking_DeleteUser(xdlg->banking, u);
+      AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
       unlink(EBC_NewKeyFileDialog_GetFileName(dlg));
       GWEN_Gui_ProgressLog(pid,
                            GWEN_LoggerLevel_Error,
@@ -1080,11 +1071,11 @@ int EBC_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   }
 
   if (!(EBC_User_GetFlags(u) & EBC_USER_FLAGS_HIA)) {
-    rv=EBC_Provider_Send_HIA(pro, u, 0);
+    rv=EBC_Provider_Send_HIA(xdlg->provider, u, 0);
     if (rv<0) {
-      AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+      AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
       DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
-      AB_Banking_DeleteUser(xdlg->banking, u);
+      AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
       unlink(EBC_NewKeyFileDialog_GetFileName(dlg));
       GWEN_Gui_ProgressEnd(pid);
       return GWEN_DialogEvent_ResultHandled;
@@ -1092,9 +1083,9 @@ int EBC_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
 
     rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
     if (rv==GWEN_ERROR_USER_ABORTED) {
-      AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+      AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
       DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
-      AB_Banking_DeleteUser(xdlg->banking, u);
+      AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
       unlink(EBC_NewKeyFileDialog_GetFileName(dlg));
       GWEN_Gui_ProgressLog(pid,
                            GWEN_LoggerLevel_Error,
@@ -1105,7 +1096,7 @@ int EBC_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   }
 
   /* unlock user */
-  rv=AB_Banking_EndExclUseUser(xdlg->banking, u, 0);
+  rv=AB_Provider_EndExclUseUser(xdlg->provider, u, 0);
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN,
 	     "Could not unlock customer [%s] (%d)",
@@ -1114,8 +1105,8 @@ int EBC_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
 			  GWEN_LoggerLevel_Error,
 			  I18N("Could not unlock user %s (%d)"),
 			  AB_User_GetUserId(u), rv);
-    AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
-    AB_Banking_DeleteUser(xdlg->banking, u);
+    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
+    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -1290,7 +1281,7 @@ int EBC_NewKeyFileDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, EBC_NEWKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
-  dlg2=EBC_UserSpecialDialog_new(xdlg->banking);
+  dlg2=EBC_UserSpecialDialog_new(xdlg->provider);
   if (dlg2==NULL) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not create dialog");
     GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Could not create dialog, maybe an installation error?"));

@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Thu Jul 08 2010
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2018 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -20,11 +20,10 @@
 
 typedef struct EBC_EDIT_USER_DIALOG EBC_EDIT_USER_DIALOG;
 struct EBC_EDIT_USER_DIALOG {
+  AB_PROVIDER *provider;
   AB_BANKING *banking;
   AB_USER *user;
   int doLock;
-
-  AB_COUNTRY_CONSTLIST2 *countryList;
 };
 
 

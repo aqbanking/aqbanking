@@ -29,8 +29,6 @@ extra_sources=\
   r_hpb_h002.c \
   r_hpb_h003.c \
   r_hpd.c \
-  r_hkd.c \
-  r_htd.c \
   r_ini.c \
   r_ini_h002.c \
   r_ini_h003.c \
@@ -54,6 +52,7 @@ noinst_HEADERS=\
  account_p.h \
  dialog_l.h \
  dialog_p.h \
+ r_hkd_htd_l.h \
  provider_l.h \
  provider_p.h \
  user_l.h \
@@ -69,6 +68,7 @@ libclient_la_SOURCES=\
  account.c \
  user.c \
  dialog.c \
+ r_hkd_htd.c \
  provider.c
 
 
