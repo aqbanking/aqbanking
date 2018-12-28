@@ -43,13 +43,13 @@ noinst_HEADERS=\
  msgengine_l.h \
  msgengine_p.h \
  user_p.h \
- user_l.h
-
-iheaderdir=@aqbanking_headerdir_am@/aqhbci
-iheader_HEADERS=\
+ user_l.h \
  account.h \
  msgengine.h \
  user.h
+
+#iheaderdir=@aqbanking_headerdir_am@/aqhbci
+#iheader_HEADERS=
 
 libhbcimsg_la_SOURCES=\
  account.c \

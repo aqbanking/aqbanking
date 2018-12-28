@@ -16,11 +16,11 @@ noinst_HEADERS=\
   result_l.h \
   result_p.h \
   tanmethod_l.h \
-  tanmethod_p.h
-
-iheaderdir=@aqbanking_headerdir_am@/aqhbci
-iheader_HEADERS=\
+  tanmethod_p.h \
   tanmethod.h
+
+#iheaderdir=@aqbanking_headerdir_am@/aqhbci
+#iheader_HEADERS=
 
 libhbcijob_la_SOURCES=\
   job.c \

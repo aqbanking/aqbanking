@@ -39,17 +39,18 @@ build_headers_pub= \
 build_headers=$(build_headers_priv) $(build_headers_pub)
 
 
-noinst_HEADERS=$(build_headers_priv) \
+noinst_HEADERS=$(build_headers_priv) $(build_headers_pub) \
   ofxhome_p.h \
-  dlg_getinst_p.h
-
-
-iheaderdir=@aqbanking_headerdir_am@/aqofxconnect
-iheader_HEADERS=$(build_headers_pub) \
+  dlg_getinst_p.h \
   oh_institute_data_fns.h \
   oh_institute_spec_fns.h \
   ofxhome.h \
   dlg_getinst.h
+
+
+
+#iheaderdir=@aqbanking_headerdir_am@/aqofxconnect
+#iheader_HEADERS=
 
 
 noinst_LTLIBRARIES=libofxhome.la

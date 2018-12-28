@@ -25,15 +25,16 @@ noinst_HEADERS=\
   user_p.h \
   dlg_edituser_p.h dlg_edituser_l.h \
   dlg_newuser_p.h dlg_newuser_l.h \
-  dlg_ofx_special_p.h dlg_ofx_special_l.h
-
-
-iheaderdir=@aqbanking_headerdir_am@/aqofxconnect
-iheader_HEADERS=\
+  dlg_ofx_special_p.h dlg_ofx_special_l.h \
   account.h \
   aqofxconnect.h \
   provider.h \
   user.h
+
+
+#iheaderdir=@aqbanking_headerdir_am@/aqofxconnect
+#iheader_HEADERS=
+
 
 # static plugin library
 noinst_LTLIBRARIES=libaqofxconnect.la 

@@ -58,13 +58,14 @@ noinst_HEADERS=\
  provider_l.h \
  provider_p.h \
  user_l.h \
- user_p.h
-
-iheaderdir=${includedir}/aqebics/client
-iheader_HEADERS=\
+ user_p.h \
  account.h \
  provider.h \
  user.h
+
+#iheaderdir=${includedir}/aqebics/client
+#iheader_HEADERS=
+
 
 libclient_la_SOURCES=\
  account.c \
