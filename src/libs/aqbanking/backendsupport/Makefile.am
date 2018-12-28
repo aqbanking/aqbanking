@@ -15,16 +15,13 @@ typefiles= \
 
 typedatadir=$(aqbanking_pkgdatadir)/typemaker2/c
 dist_typedata_DATA=\
-  ab_accountqueue.tm2 \
-  ab_accountqueue_list.tm2 \
-  ab_userqueue.tm2 \
-  ab_userqueue_list.tm2 \
-  ab_providerqueue.tm2 \
-  ab_providerqueue_list.tm2 \
-  ab_jobqueue.tm2 ab_jobqueue_list.tm2 \
-  ab_queue.tm2 \
   ab_account.tm2 ab_account_list.tm2 ab_account_list2.tm2 \
-  ab_user.tm2 ab_user_list.tm2 ab_user_list2.tm2
+  ab_accountqueue.tm2 ab_accountqueue_list.tm2 \
+  ab_jobqueue.tm2 ab_jobqueue_list.tm2 \
+  ab_providerqueue.tm2 ab_providerqueue_list.tm2 \
+  ab_queue.tm2 \
+  ab_user.tm2 ab_user_list.tm2 ab_user_list2.tm2 \
+  ab_userqueue.tm2 ab_userqueue_list.tm2
 
 
 # order is important here

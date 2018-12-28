@@ -26,17 +26,17 @@ typefiles=\
 
 typedatadir=$(datadir)/aqbanking/typemaker2/c
 dist_typedata_DATA=\
-  ab_transaction.tm2 ab_transaction_list.tm2 ab_transaction_list2.tm2 \
-  ab_bankinfo_service.tm2 ab_bankinfo_service_list.tm2 ab_bankinfo_service_list2.tm2 \
-  ab_bankinfo.tm2 ab_bankinfo_list.tm2 ab_bankinfo_list2.tm2 \
-  ab_document.tm2 ab_document_list.tm2 ab_document_list2.tm2 \
-  ab_message.tm2 ab_message_list.tm2 ab_message_list2.tm2 \
-  ab_security.tm2 ab_security_list.tm2 ab_security_list2.tm2 \
+  ab_account_spec.tm2 ab_account_spec_list.tm2 ab_account_spec_list2.tm2 \
   ab_balance.tm2 ab_balance_list.tm2 \
+  ab_bankinfo.tm2 ab_bankinfo_list.tm2 ab_bankinfo_list2.tm2 \
+  ab_bankinfo_service.tm2 ab_bankinfo_service_list.tm2 ab_bankinfo_service_list2.tm2 \
+  ab_document.tm2 ab_document_list.tm2 ab_document_list2.tm2 \
   ab_imexporter_accountinfo.tm2 ab_imexporter_accountinfo_list.tm2 ab_imexporter_accountinfo_list2.tm2 \
   ab_imexporter_context.tm2 ab_imexporter_context_list.tm2 ab_imexporter_context_list2.tm2 \
-  ab_account_spec.tm2 ab_account_spec_list.tm2 ab_account_spec_list2.tm2
-
+  ab_message.tm2 ab_message_list.tm2 ab_message_list2.tm2 \
+  ab_security.tm2 ab_security_list.tm2 ab_security_list2.tm2 \
+  ab_transaction.tm2 ab_transaction_list.tm2 ab_transaction_list2.tm2 \
+  ab_transaction_limits.tm2 ab_transaction_limits_list.tm2 ab_transaction_limits_list2.tm2
 
 
 built_sources=  \
