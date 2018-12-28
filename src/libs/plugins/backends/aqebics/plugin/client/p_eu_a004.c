@@ -234,7 +234,7 @@ int EBC_Provider_MkEuCryptZipDoc_A004(AB_PROVIDER *pro,
   int rv;
   uint32_t l;
 
-  DBG_INFO(AQEBICS_LOGDOMAIN, "Generating EU A005");
+  DBG_INFO(AQEBICS_LOGDOMAIN, "Generating EU A004");
   tbuf=GWEN_Buffer_new(0, 512, 0, 1);
   rv=EBC_Provider_MkEuZipDoc_A004(pro, u, requestType, pMsg, lMsg, tbuf);
   if (rv<0) {
