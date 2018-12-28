@@ -447,6 +447,7 @@ for f in ${aqbanking_backends}; do
       ;;
     aqebics)
       aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqebics"
+      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqebics/libaqebics.la"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQEBICS, 1, [plugin availability])
       ;;
     aqofxconnect)
@@ -1527,13 +1528,11 @@ AC_CONFIG_FILES([
   src/libs/plugins/backends/aqnone/Makefile
   src/libs/plugins/backends/aqnone/aqnone.xml
   src/libs/plugins/backends/aqebics/Makefile
-  src/libs/plugins/backends/aqebics/plugin/Makefile
-  src/libs/plugins/backends/aqebics/plugin/aqebics.xml
-  src/libs/plugins/backends/aqebics/plugin/client/Makefile
-  src/libs/plugins/backends/aqebics/plugin/dialogs/Makefile
-  src/libs/plugins/backends/aqebics/plugin/msg/Makefile
-  src/libs/plugins/backends/aqebics/tools/Makefile
-  src/libs/plugins/backends/aqebics/tools/aqebics-tool/Makefile
+  src/libs/plugins/backends/aqebics/aqebics.xml
+  src/libs/plugins/backends/aqebics/client/Makefile
+  src/libs/plugins/backends/aqebics/dialogs/Makefile
+  src/libs/plugins/backends/aqebics/msg/Makefile
+  src/libs/plugins/backends/aqebics/control/Makefile
   src/test/Makefile
   src/tools/Makefile
   src/tools/aqbanking-cli/Makefile

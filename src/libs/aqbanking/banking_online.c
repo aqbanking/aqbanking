@@ -27,6 +27,10 @@
 # include "src/libs/plugins/backends/aqpaypal/provider_l.h"
 #endif
 
+#ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQEBICS
+# include "src/libs/plugins/backends/aqebics/client/provider.h"
+#endif
+
 
 
 
@@ -71,6 +75,17 @@ AB_PROVIDER *AB_Banking__CreateInternalProvider(AB_BANKING *ab, const char *modn
         return pro;
       }
 #endif
+
+#ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQEBICS
+    if (strcasecmp(modname, "aqebics")==0) {
+      AB_PROVIDER *pro;
+
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] compiled-in", modname);
+      pro=EBC_Provider_new(ab);
+      return pro;
+    }
+#endif
+
   }
   else {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Plugin [%s] not compiled-in", modname);

@@ -8,7 +8,7 @@ lib_LTLIBRARIES=libaqbanking.la
 
 libaqbanking_la_SOURCES= dummy.c
 libaqbanking_la_LDFLAGS = -no-undefined -version-info @AQBANKING_SO_CURRENT@:@AQBANKING_SO_REVISION@:@AQBANKING_SO_AGE@
-libaqbanking_la_LIBADD= $(gwenhywfar_libs) $(gmp_libs) $(i18n_libs) \
+libaqbanking_la_LIBADD= $(gwenhywfar_libs) $(gmp_libs) $(i18n_libs) $(AQEBICS_LIBS) \
   aqbanking/libaqbanking_base.la \
   plugins/libabplugins.la
 
