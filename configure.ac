@@ -16,7 +16,7 @@ AC_CONFIG_HEADERS([config.h])
 
 AQBANKING_VERSION_MAJOR=5
 AQBANKING_VERSION_MINOR=99
-AQBANKING_VERSION_PATCHLEVEL=11
+AQBANKING_VERSION_PATCHLEVEL=12
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="beta"
@@ -34,7 +34,7 @@ AQBANKING_VERSION_TAG="beta"
 
 AQBANKING_SO_CURRENT=43
 AQBANKING_SO_AGE=0
-AQBANKING_SO_REVISION=11
+AQBANKING_SO_REVISION=12
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 #
@@ -435,7 +435,7 @@ AC_ARG_WITH(backends,
 )
 
 if test "$aqbanking_backends" = "all"; then
-  aqbanking_backends="aqhbci aqofxconnect aqpaypal"
+  aqbanking_backends="aqhbci aqofxconnect aqpaypal aqebics"
 fi
 
 for f in ${aqbanking_backends}; do
