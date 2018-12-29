@@ -416,7 +416,7 @@ int AB_Banking_Init(AB_BANKING *ab) {
     GWEN_DB_Group_free(db);
 
     /* check whether we need to update */
-    if (ab->lastVersion<currentVersion) {
+    if ((ab->lastVersion>0) && (ab->lastVersion<currentVersion)) {
       int rv;
 
       DBG_INFO(AQBANKING_LOGDOMAIN, "Updating AqBanking");
