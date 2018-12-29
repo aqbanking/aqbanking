@@ -137,14 +137,8 @@ int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, A
 
               rv=AH_Provider__AddCommandToOutbox(pro, u, a, t, outbox);
               if (rv<0) {
-                AB_TRANSACTION *tCopy;
-
                 DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-
-                /* error, add a transaction copy with error status to the context */
-                tCopy=AB_Transaction_dup(t);
-                AB_Transaction_SetStatus(tCopy, AB_Transaction_StatusError);
-                AB_ImExporterContext_AddTransaction(ctx, tCopy);
+                AB_Transaction_SetStatus(t, AB_Transaction_StatusError);
               }
               t=AB_Transaction_List2Iterator_Next(it);
             }
