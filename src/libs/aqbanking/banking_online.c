@@ -95,32 +95,6 @@ AB_PROVIDER *AB_Banking__CreateInternalProvider(AB_BANKING *ab, const char *modn
 
 
 
-
-
-AB_PROVIDER *AB_Banking__LoadProvider(AB_BANKING *ab, const char *modname) {
-  GWEN_PLUGIN *pl;
-
-  pl=GWEN_PluginManager_GetPlugin(ab_pluginManagerProvider, modname);
-  if (pl) {
-    AB_PROVIDER *pro;
-
-    pro=AB_Plugin_Provider_Factory(pl, ab);
-    if (!pro) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in plugin [%s]: No provider created", modname);
-      return NULL;
-    }
-
-    return pro;
-  }
-  else {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] not found", modname);
-    return NULL;
-  }
-}
-
-
-
-
 AB_PROVIDER *AB_Banking__FindProvider(AB_BANKING *ab, const char *name) {
   AB_PROVIDER *pro;
 
@@ -151,7 +125,6 @@ AB_PROVIDER *AB_Banking__GetProvider(AB_BANKING *ab, const char *name) {
   if (pro)
     return pro;
 
-  pro=AB_Banking__LoadProvider(ab, name);
   if (pro)
     AB_Provider_List_Add(pro, ab_providers);
 
