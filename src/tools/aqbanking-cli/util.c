@@ -258,7 +258,7 @@ AB_TRANSACTION *mkSepaTransfer(GWEN_DB_NODE *db, int cmd) {
   }
 
   /* standing orders */
-  if (cmd==AB_Transaction_CommandCreateStandingOrder) {
+  if (cmd==AB_Transaction_CommandSepaCreateStandingOrder) {
      s=GWEN_DB_GetCharValue(db, "firstExecutionDate", 0, 0);
      if (!(s && *s)) {
        DBG_ERROR(0, "Missing first execution date");
@@ -266,8 +266,8 @@ AB_TRANSACTION *mkSepaTransfer(GWEN_DB_NODE *db, int cmd) {
      }
   }
 
-  if (cmd==AB_Transaction_CommandModifyStandingOrder ||
-      cmd==AB_Transaction_CommandDeleteStandingOrder) {
+  if (cmd==AB_Transaction_CommandSepaModifyStandingOrder ||
+      cmd==AB_Transaction_CommandSepaDeleteStandingOrder) {
      /*  not in the Specs, but the banks ask for it)    */
      s=GWEN_DB_GetCharValue(db, "nextExecutionDate", 0, 0);
      if (!(s && *s)) {
@@ -311,9 +311,9 @@ AB_TRANSACTION *mkSepaTransfer(GWEN_DB_NODE *db, int cmd) {
     GWEN_Date_free(d);
   }
 
-  if (cmd==AB_Transaction_CommandCreateStandingOrder ||
-      cmd==AB_Transaction_CommandModifyStandingOrder ||
-      cmd==AB_Transaction_CommandDeleteStandingOrder) {
+  if (cmd==AB_Transaction_CommandSepaCreateStandingOrder ||
+      cmd==AB_Transaction_CommandSepaModifyStandingOrder ||
+      cmd==AB_Transaction_CommandSepaDeleteStandingOrder) {
     const char *s;
     AB_TRANSACTION_PERIOD period=AB_Transaction_PeriodUnknown;
 
@@ -376,7 +376,7 @@ AB_TRANSACTION *mkSepaDebitNote(GWEN_DB_NODE *db, int cmd) {
     return NULL;
   }
 
-  AB_Transaction_SetType(t, cmd);
+  AB_Transaction_SetType(t, AB_Transaction_TypeDebitNote);
   
   /* read some additional fields */
   s=GWEN_DB_GetCharValue(db, "creditorSchemeId", 0, 0);
@@ -726,7 +726,7 @@ int checkTransactionIbans(const AB_TRANSACTION *t) {
   }
   rv=AB_Banking_CheckIban(lIBAN);
   if (rv != 0) {
-    fprintf(stderr, "Invalid local IBAN (%s)\n", rIBAN);
+    fprintf(stderr, "Invalid local IBAN (%s)\n", lIBAN);
     return 3;
   }
 
