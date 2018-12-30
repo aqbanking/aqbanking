@@ -64,6 +64,7 @@ int AH_Job_SepaStandingOrderCreate_Prepare(AH_JOB *j) {
   GWEN_DB_NODE *profile;
   int rv;
   const GWEN_DATE *da;
+  GWEN_BUFFER *tbuf;
   const char *s;
   AB_TRANSACTION *t;
 
@@ -92,22 +93,48 @@ int AH_Job_SepaStandingOrderCreate_Prepare(AH_JOB *j) {
     return rv;
   }
 
+  /* execution date */
+  tbuf=GWEN_Buffer_new(0, 16, 0, 1);
+  da=AB_Transaction_GetDate(t);
+  if (da) {
+    GWEN_Date_toStringWithTemplate(da, "YYYYMMDD", tbuf);
+    GWEN_DB_SetCharValue(dbArgs,
+                         GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "xnextExecutionDate",
+                         GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_Reset(tbuf);
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing execution date.");
+  }
+
   /* first execution date */
   da=AB_Transaction_GetFirstDate(t);
   if (da) {
-    GWEN_BUFFER *tbuf;
-
-    tbuf=GWEN_Buffer_new(0, 16, 0, 1);
     GWEN_Date_toStringWithTemplate(da, "YYYYMMDD", tbuf);
     GWEN_DB_SetCharValue(dbArgs,
                          GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "details/xfirstExecutionDate",
                          GWEN_Buffer_GetStart(tbuf));
-    GWEN_Buffer_free(tbuf);
+    GWEN_Buffer_Reset(tbuf);
   }
   else {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing first execution date.");
   }
+
+  /* last execution date */
+  da=AB_Transaction_GetLastDate(t);
+  if (da) {
+    GWEN_Date_toStringWithTemplate(da, "YYYYMMDD", tbuf);
+    GWEN_DB_SetCharValue(dbArgs,
+                         GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "details/xlastExecutionDate",
+                         GWEN_Buffer_GetStart(tbuf));
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing last execution date.");
+  }
+  GWEN_Buffer_free(tbuf);
 
   /* period */
   switch(AB_Transaction_GetPeriod(t)) {

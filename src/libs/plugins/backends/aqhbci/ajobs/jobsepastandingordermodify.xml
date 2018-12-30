@@ -21,7 +21,7 @@
    <GROUP type="kti_i_forced_sepa" version="1" />
    <ELEM name="descriptor" type="ascii" maxsize="256" />
    <ELEM name="transfer" type="bin" trustlevel="4" />
-   <ELEM name="xnextExecutionDate" type="date" minnum="0" />
+   <ELEM name="xnextExecutionDate" type="date" minnum="0" minsize="8" maxsize="8" />
    <ELEM name="fiId" type="ascii" minnum="0" />
 
    <GROUP type="SepaStoSpecial" name="details" />
