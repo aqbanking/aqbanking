@@ -122,6 +122,7 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
 	AB_Balance_toDb(bal, dbElement);
 
 	/* translate value */
+	dbuf=GWEN_Buffer_new(0, 256, 0, 1);
 	v=AB_Balance_GetValue(bal);
 	if (v) {
 	  AB_Value_toHumanReadableString(v, dbuf, 2);
@@ -139,7 +140,6 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
 	  GWEN_Buffer_Reset(dbuf);
 	}
 
-	dbuf=GWEN_Buffer_new(0, 256, 0, 1);
 	GWEN_DB_ReplaceVars(dbElement, tmplString, dbuf);
 	fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(dbuf));
 	GWEN_Buffer_free(dbuf);

@@ -190,15 +190,9 @@ AB_TRANSACTION *mkSepaTransfer(GWEN_DB_NODE *db, int cmd) {
   s=GWEN_DB_GetCharValue(db, "remoteBic", 0, 0);
   if (s && *s)
     AB_Transaction_SetRemoteBic(t, s);
-  else if (strncmp(AB_Transaction_GetLocalIban(t),
-                   AB_Transaction_GetRemoteIban(t), 2)) {
-    DBG_ERROR(0, "Remote BIC id required for international transaction");
-    AB_Transaction_free(t);
-    return NULL;
-  }
 
   s=GWEN_DB_GetCharValue(db, "remoteName", 0, 0);
-  if (*s && *s)
+  if (s && *s)
     AB_Transaction_SetRemoteName(t, s);
   else {
     DBG_ERROR(0, "No remote name given");
@@ -699,6 +693,7 @@ int replaceVars(const char *s, GWEN_DB_NODE *db, GWEN_BUFFER *dbuf) {
 
 int checkTransactionIbans(const AB_TRANSACTION *t) {
   const char *rIBAN;
+  const char *rBIC;
   const char *lIBAN;
   const char *lBIC;
   int rv;
@@ -707,6 +702,7 @@ int checkTransactionIbans(const AB_TRANSACTION *t) {
 
   /* some checks */
   rIBAN=AB_Transaction_GetRemoteIban(t);
+  rBIC=AB_Transaction_GetRemoteBic(t);
   lIBAN=AB_Transaction_GetLocalIban(t);
   lBIC=AB_Transaction_GetLocalBic(t);
 
@@ -732,6 +728,11 @@ int checkTransactionIbans(const AB_TRANSACTION *t) {
   if (rv != 0) {
     fprintf(stderr, "Invalid local IBAN (%s)\n", rIBAN);
     return 3;
+  }
+
+  if (strncmp(lIBAN, rIBAN, 2) && (!rBIC || !*rBIC)) {
+    DBG_ERROR(0, "Remote BIC id required for international transaction");
+    return 1;
   }
 
   return 0;
