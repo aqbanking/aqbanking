@@ -71,7 +71,6 @@ int sepaTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     AB_Banking_Fini(ab);
     return 2;
   }
-  AB_Transaction_SetType(t, AB_Transaction_TypeTransfer);
   AB_Transaction_SetUniqueAccountId(t, AB_AccountSpec_GetUniqueId(as));
 
   /* set local account info from selected AB_ACCOUNT_SPEC */

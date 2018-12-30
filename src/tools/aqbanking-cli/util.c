@@ -164,6 +164,7 @@ AB_TRANSACTION *mkSepaTransfer(GWEN_DB_NODE *db, int cmd) {
 
   t=AB_Transaction_new();
 
+  AB_Transaction_SetCommand(t, cmd);
   AB_Transaction_SetType(t, AB_Transaction_TypeTransfer);
 
   s=GWEN_DB_GetCharValue(db, "name", 0, 0);
@@ -318,6 +319,8 @@ AB_TRANSACTION *mkSepaTransfer(GWEN_DB_NODE *db, int cmd) {
     AB_TRANSACTION_PERIOD period=AB_Transaction_PeriodUnknown;
 
     /* only needed for standing orders */
+    AB_Transaction_SetSubType(t, AB_Transaction_SubTypeStandingOrder);
+
     s=GWEN_DB_GetCharValue(db, "executionPeriod", 0, 0);
     if (s && *s) {
       period=AB_Transaction_Period_fromString(s);
