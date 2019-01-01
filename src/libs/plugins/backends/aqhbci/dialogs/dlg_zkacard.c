@@ -831,7 +831,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
       AB_ImExporterContext_free(ctx);
       if (rv) {
         AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting server keys (%d)", rv);
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Error sending user keys (%d)", rv);
         AB_Banking_DeleteUser(xdlg->banking, u);
         GWEN_Gui_ProgressEnd(pid);
         return GWEN_DialogEvent_ResultHandled;
