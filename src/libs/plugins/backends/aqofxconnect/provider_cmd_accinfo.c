@@ -102,7 +102,6 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, int keepOpen) {
     return rv;
   }
   else {
-    AB_IMEXPORTER *importer;
     GWEN_DB_NODE *dbProfile;
 
     /* parse response */
@@ -112,20 +111,13 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, int keepOpen) {
 			 I18N("Parsing response"));
 
     /* prepare import */
-    importer=AB_Banking_GetImExporter(AB_Provider_GetBanking(pro), "ofx");
-    if (!importer) {
-      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-		"OFX import module not found");
-      GWEN_Buffer_free(rbuf);
-      AB_ImExporterContext_free(ictx);
-      GWEN_Gui_ProgressEnd(pid);
-      return GWEN_ERROR_NOT_FOUND;
-    }
-
-    GWEN_Buffer_Rewind(rbuf);
     dbProfile=GWEN_DB_Group_new("profile");
     /* actually import */
-    rv=AB_ImExporter_ImportBuffer(importer, ictx, rbuf, dbProfile);
+    rv=AB_Banking_ImportFromBuffer(AB_Provider_GetBanking(pro),
+                                   "ofx", ictx,
+                                   (const uint8_t*) GWEN_Buffer_GetStart(rbuf),
+                                   GWEN_Buffer_GetUsedBytes(rbuf),
+                                   dbProfile);
     GWEN_DB_Group_free(dbProfile);
     GWEN_Buffer_free(rbuf);
     if (rv<0) {

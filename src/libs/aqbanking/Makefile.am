@@ -42,10 +42,7 @@ noinst_HEADERS=\
  banking_be.h \
  banking_l.h \
  banking_p.h \
- i18n_l.h \
- imexporter_be.h \
- imexporter_l.h \
- imexporter_p.h
+ i18n_l.h
 
 
 iheaderdir=@aqbanking_headerdir_am@/aqbanking
@@ -57,14 +54,12 @@ iheader_HEADERS=\
  banking_bankinfo.h \
  banking_online.h \
  banking_transaction.h \
- error.h \
- imexporter.h
+ error.h
 
 
 libaqbanking_base_la_SOURCES=\
  account_type.c \
- banking.c \
- imexporter.c
+ banking.c
 
 
 libaqbanking_base_la_LIBADD= \

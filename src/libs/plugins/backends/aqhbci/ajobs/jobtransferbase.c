@@ -127,7 +127,7 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
   if (t) {
     AB_IMEXPORTER_CONTEXT *ioc;
     AB_TRANSACTION *cpy;
-    AB_IMEXPORTER *ie;
+    GWEN_BUFFER *dbuf;
 
     /* add transfers as transactions for export (exporters only use transactions) */
     ioc=AB_ImExporterContext_new();
@@ -138,30 +138,20 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
       t=AB_Transaction_List_Next(t);
     }
 
-    ie=AB_Banking_GetImExporter(ab, "sepa");
-    if (ie) {
-      GWEN_BUFFER *dbuf;
-
-      dbuf=GWEN_Buffer_new(0, 256, 0, 1);
-      rv=AB_ImExporter_ExportToBuffer(ie, ioc, dbuf, profile);
-      AB_ImExporterContext_free(ioc);
-      if (rv<0) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-        GWEN_Buffer_free(dbuf);
-        return rv;
-      }
-
-      /* store descriptor */
-      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "descriptor", descriptor);
-      /* store transfer */
-      GWEN_DB_SetBinValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "transfer", GWEN_Buffer_GetStart(dbuf), GWEN_Buffer_GetUsedBytes(dbuf));
+    dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    rv=AB_Banking_ExportToBuffer(ab, "sepa", ioc, dbuf, profile);
+    AB_ImExporterContext_free(ioc);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(dbuf);
+      return rv;
     }
-    else {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "here");
-      AB_ImExporterContext_free(ioc);
-      return GWEN_ERROR_NO_DATA;
-    }
+
+    /* store descriptor */
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "descriptor", descriptor);
+    /* store transfer */
+    GWEN_DB_SetBinValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "transfer", GWEN_Buffer_GetStart(dbuf), GWEN_Buffer_GetUsedBytes(dbuf));
+    GWEN_Buffer_free(dbuf);
   }
   else {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");

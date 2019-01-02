@@ -116,7 +116,6 @@ int AH_Job_GetTransCAMT__ReadTransactions(AH_JOB *j,
   AB_IMEXPORTER_CONTEXT *tempContext;
   AB_IMEXPORTER_ACCOUNTINFO *tempAccountInfo;
   int rv;
-  GWEN_BUFFER *buf;
 
   assert(j);
   pro=AH_Job_GetProvider(j);
@@ -124,19 +123,19 @@ int AH_Job_GetTransCAMT__ReadTransactions(AH_JOB *j,
 
   /* import data into a temporary context */
   tempContext=AB_ImExporterContext_new();
-  buf=GWEN_Buffer_new(0, len, 0, 1);
-  GWEN_Buffer_AppendBytes(buf, (const char*) ptr, len);
-  GWEN_Buffer_Rewind(buf);
 
-  rv=AB_Banking_ImportBuffer(AB_Provider_GetBanking(pro), tempContext, "xml", docType, buf);
+  rv=AB_Banking_ImportFromBufferWithProfile(AB_Provider_GetBanking(pro),
+                                            "xml",
+                                            tempContext,
+                                            docType,
+                                            NULL,
+                                            ptr,
+                                            len);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Buffer_free(buf);
     AB_ImExporterContext_free(tempContext);
     return rv;
   }
-  GWEN_Buffer_free(buf);
-
 
   /* copy data from temporary context to real context */
   tempAccountInfo=AB_ImExporterContext_GetFirstAccountInfo(tempContext);

@@ -79,7 +79,11 @@ noinst_HEADERS= $(built_headers_pub)\
   provider_l.h \
   provider_p.h \
   bankinfoplugin_l.h \
-  bankinfoplugin_p.h
+  bankinfoplugin_p.h \
+  imexporter_be.h \
+  imexporter_l.h \
+  imexporter_p.h \
+  imexporter.h
 
 
 noinst_LTLIBRARIES=libabbesupport.la
@@ -90,7 +94,8 @@ libabbesupport_la_SOURCES=$(typedata_sources) \
   httpsession.c \
   msgengine.c \
   provider.c \
-  bankinfoplugin.c
+  bankinfoplugin.c \
+  imexporter.c
 
 
 extra_sources=\

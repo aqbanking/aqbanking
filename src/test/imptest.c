@@ -35,7 +35,10 @@ int importData(AB_BANKING *ab,
   int rv;
 
   /*GWEN_Buffer_Dump(dataBuf, 2);*/
-  rv=AB_Banking_ImportBuffer(ab, ctx, importerName, profileName, dataBuf);
+  rv=AB_Banking_ImportFromBufferWithProfile(ab, importerName, ctx,
+                                            profileName, NULL,
+                                            (const uint8_t*) GWEN_Buffer_GetStart(dataBuf),
+                                            GWEN_Buffer_GetUsedBytes(dataBuf));
   if (rv<0) {
     fprintf(stderr, "Error importing data: %d\n", rv);
     return rv;

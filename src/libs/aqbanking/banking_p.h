@@ -53,6 +53,8 @@
 #include "bankinfoplugin_l.h"
 
 #include <gwenhywfar/plugin.h>
+#include <gwenhywfar/syncio_memory.h>
+
 
 
 struct AB_BANKING {
@@ -185,6 +187,9 @@ static int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2* comman
 
 static AB_PROVIDER *AB_Banking__FindProvider(AB_BANKING *ab, const char *name);
 static AB_PROVIDER *AB_Banking__GetProvider(AB_BANKING *ab, const char *name);
+
+
+static AB_IMEXPORTER *AB_Banking_GetImExporter(AB_BANKING *ab, const char *name);
 
 
 

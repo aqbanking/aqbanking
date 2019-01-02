@@ -12,8 +12,9 @@
 #ifndef AQBANKING_BANKING_IMEX_H
 #define AQBANKING_BANKING_IMEX_H
 
-#include <aqbanking/imexporter.h>
 #include <aqbanking/transaction.h>
+#include <aqbanking/imexporter_context.h>
+#include <aqbanking/imexporter_accountinfo.h>
 
 #include <gwenhywfar/plugindescr.h>
 
@@ -43,16 +44,6 @@ extern "C" {
  */
 AQBANKING_API
 GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetImExporterDescrs(AB_BANKING *ab);
-
-/**
- * Loads an importer/exporter backend with the given name. You can use
- * @ref AB_Banking_GetImExporterDescrs to retrieve a list of available
- * im-/exporters.
- * AqBanking remains the owner of the object returned (if any), so you
- * <b>must not</b> free it.
- */
-AQBANKING_API 
-AB_IMEXPORTER *AB_Banking_GetImExporter(AB_BANKING *ab, const char *name);
 
 /**
  * <p>
@@ -126,6 +117,106 @@ int AB_Banking_SaveLocalImExporterProfile(AB_BANKING *ab,
 					  GWEN_DB_NODE *dbProfile,
 					  const char *fname);
 
+/**
+ * This function should return a dialog (see @ref GWEN_DIALOG) which
+ * allows editing of the given profile.
+ *
+ * @return 0 on success, error code otherwise
+ *
+ * @param ab pointer to the AB_BANKING object
+ * @param imExporterName name of the im-/exporter
+ * @param dbProfile configuration data for the exporter. You can get this
+ *   using @ref AB_Banking_GetImExporterProfiles.
+ * @param pDlg pointer to a dialog pointer (receives the created dialog if any)
+ */
+AQBANKING_API
+int AB_Banking_GetEditImExporterProfileDialog(AB_BANKING *ab,
+                                              const char *imExporterName,
+                                              GWEN_DB_NODE *dbProfile,
+                                              const char *testFileName,
+                                              GWEN_DIALOG **pDlg);
+
+
+/**
+ * Reads the given stream and imports all data from it. This imported
+ * data is stored within the given context.
+ * This is a very basic function, there are convenience functions to make it easier to
+ * import from files or buffers.
+ *
+ * @return 0 on success, error code otherwise
+ *
+ * @param ab pointer to the AB_BANKING object
+ * @param importerName name of the importer module to use
+ * @param ctx import context
+ * @param sio stream to read from
+ * @param dbProfile configuration data for the importer. You can get this
+ *   using @ref AB_Banking_GetImExporterProfiles.
+ *
+ * Example for a dbProfile:
+ * @code
+ * profile {
+ *   char name="test"
+ *   char shortDescr="Test"
+ *   char version="5.0.4"
+ *   char longDescr="Test Profile"
+ *   int import="1"
+ *   int export="1"
+ *   char type="csv"
+ *   char groupNames="transaction", "transfer", "debitnote", "line"
+ *   char dateFormat="DD.MM.YYYY"
+ *   int utc="0"
+ *   char subject="transactions"
+ *   int usePosNegField="0"
+ *   char posNegFieldName="posNeg"
+ *   int defaultIsPositive="1"
+ *   char valueFormat="float"
+ *   params {
+ *     quote="0"
+ *     title="1"
+ *     delimiter=";"
+ *     group="transaction"
+ *     columns {
+ *       1="remoteBankCode"
+ *       2="remoteAccountNumber"
+ *       3="remoteName[0]"
+ *       4="value/value"
+ *       5="purpose[0]"
+ *       6="purpose[1]"
+ *     } # columns
+ *   } # params
+ *  } # profile
+ * @endcode
+
+ */
+AQBANKING_API 
+int AB_Banking_Import(AB_BANKING *ab,
+                      const char *importerName,
+                      AB_IMEXPORTER_CONTEXT *ctx,
+                      GWEN_SYNCIO *sio,
+                      GWEN_DB_NODE *dbProfile);
+
+
+/**
+ * Writes all data to the given stream.
+ * This is a very basic function, there are convenience functions to make it easier to
+ * export to files or buffers.
+ *
+ * @return 0 on success, error code otherwise
+ *
+ * @param ab pointer to the AB_BANKING object
+ * @param exporterName name of the exporter module to use
+ * @param ctx export context
+ * @param sio stream to write to
+ * @param dbProfile configuration data for the exporter. You can get this
+ *   using @ref AB_Banking_GetImExporterProfiles (see also @ref AB_Banking_Import).
+ */
+AQBANKING_API 
+int AB_Banking_Export(AB_BANKING *ab,
+                      const char *exporterName,
+                      AB_IMEXPORTER_CONTEXT *ctx,
+                      GWEN_SYNCIO *sio,
+                      GWEN_DB_NODE *dbProfile);
+
 /*@}*/
 
 
@@ -173,162 +264,249 @@ AQBANKING_API
 int AB_Banking_FillGapsInImExporterContext(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT *iec);
 
 
-AQBANKING_API
-int AB_Banking_ExportWithProfile(AB_BANKING *ab,
-				 const char *exporterName,
-				 AB_IMEXPORTER_CONTEXT *ctx,
-				 const char *profileName,
-				 const char *profileFile,
-				 GWEN_SYNCIO *sio);
-
-
-
 /**
- * Imports data using a profile.
+ * Import data using a profile file.
+ *
+ * The profile to be used is read either from a given profile file (if the argument @b profileFile is given)
+ * or from AqBankings internal profile database.
  *
  * @param ab banking API object
- * @param ctx import context to receive the imported accounts, transactions etc
  * @param importerName name of the importer module (e.g. "csv", "swift", "ofx" etc)
+ * @param ctx import context to receive the imported accounts, transactions etc
+ * @param sio IO from which to import
  * @param profileName name of the importer settings profile stored in the file whose name
- *   is given in @b profileFile
+ *   is given in @b profileFile or the internal profile database
  * @param profileFile name of the file to load the exporter settings profile from. This should
  *  contain at least one profile in a "profile" group. If you want to use profiles installed with
  *  AqBanking you can specify its name via @b profileName and use NULL here
- * @param sio IO from which to import
  *
- * Example for a profile file:
- * @code
- * profile {
- *   char name="test"
- *   char shortDescr="Test"
- *   char version="5.0.4"
- *   char longDescr="Test Profile"
- *   int import="1"
- *   int export="1"
- *   char type="csv"
- *   char groupNames="transaction", "transfer", "debitnote", "line"
- *   char dateFormat="DD.MM.YYYY"
- *   int utc="0"
- *   char subject="transactions"
- *   int usePosNegField="0"
- *   char posNegFieldName="posNeg"
- *   int defaultIsPositive="1"
- *   char valueFormat="float"
- *   params {
- *     quote="0"
- *     title="1"
- *     delimiter=";"
- *     group="transaction"
- *     columns {
- *       1="remoteBankCode"
- *       2="remoteAccountNumber"
- *       3="remoteName[0]"
- *       4="value/value"
- *       5="purpose[0]"
- *       6="purpose[1]"
- *     } # columns
- *   } # params
- *  } # profile
- * @endcode
  */
 AQBANKING_API 
 int AB_Banking_ImportWithProfile(AB_BANKING *ab,
 				 const char *importerName,
 				 AB_IMEXPORTER_CONTEXT *ctx,
+				 GWEN_SYNCIO *sio,
 				 const char *profileName,
-				 const char *profileFile,
-				 GWEN_SYNCIO *sio);
-
+                                 const char *profileFile);
 
 /**
- * This function loads the given im/exporter plugin (if necessary) and also loads the given
- * im/exporter settings profile. The resulting data is written to a GWEN_BUFFER (which is basically
- * a memory buffer).
- * @return 0 on success, an error code otherwise
+ * Export data using a profile file.
+ *
+ * The profile to be used is read either from a given profile file (if the argument @b profileFile is given)
+ * or from AqBankings internal profile database.
+ *
  * @param ab banking API object
- * @param ctx export context containing the accounts, transactions etc to export
  * @param exporterName name of the exporter module (e.g. "csv", "swift", "ofx" etc)
- * @param profileName name of the exporter settings profile to use (most plugins only provide the
- * "default" profile, but especially the CSV im/exporter has many profiles from which to choose)
- * @param buf buffer to write the exported data to
- */
-AQBANKING_API
-int AB_Banking_ExportToBuffer(AB_BANKING *ab,
-			      AB_IMEXPORTER_CONTEXT *ctx,
-			      const char *exporterName,
-                              const char *profileName,
-			      GWEN_BUFFER *buf);
-
-/**
- * This function loads the given im/exporter plugin (if necessary) and also loads the given
- * im/exporter settings profile. The resulting data is written to the given file.
- * @return 0 on success, an error code otherwise
- * @param ab banking API object
- * @param ctx export context containing the accounts, transactions etc to export
- * @param exporterName name of the exporter module (e.g. "csv", "swift", "ofx" etc)
- * @param profileName name of the exporter settings profile to use (most plugins only provide the
- * "default" profile, but especially the CSV im/exporter has many profiles from which to choose)
- * @param fileName name of the file to create and to write the formatted data to
- */
-AQBANKING_API
-int AB_Banking_ExportToFile(AB_BANKING *ab,
-			    AB_IMEXPORTER_CONTEXT *ctx,
-			    const char *exporterName,
-			    const char *profileName,
-			    const char *fileName);
-
-/**
- * This function basically does the same as @ref AB_Banking_ExportToFile. However, it loads the
- * exporter settings profile from a given file (as opposed to the forementioned function which
- * loads the profile by name from the set of system- or user-wide installed profiles).
- * So this functions allows for loading of special profiles which aren't installed.
- * @return 0 on success, an error code otherwise
- * @param ab banking API object
- * @param ctx export context containing the accounts, transactions etc to export
- * @param exporterName name of the exporter module (e.g. "csv", "swift", "ofx" etc)
+ * @param ctx context to export
+ * @param sio IO to which to export
  * @param profileName name of the exporter settings profile stored in the file whose name
- *   is given in @b profileFile
- * @param profileFile name of the file to load the exporter settings profile from.
- * @param outFileName name of the file to create and to write the formatted data to
- */
-AQBANKING_API
-int AB_Banking_ExportToFileWithProfile(AB_BANKING *ab,
-				       const char *exporterName,
-				       AB_IMEXPORTER_CONTEXT *ctx,
-				       const char *profileName,
-				       const char *profileFile,
-				       const char *outputFileName);
-
-
-
-AQBANKING_API
-int AB_Banking_ImportBuffer(AB_BANKING *ab,
-			    AB_IMEXPORTER_CONTEXT *ctx,
-			    const char *exporterName,
-			    const char *profileName,
-			    GWEN_BUFFER *buf);
-
-
-AQBANKING_API
-int AB_Banking_ImportFileWithProfile(AB_BANKING *ab,
-				     const char *importerName,
-				     AB_IMEXPORTER_CONTEXT *ctx,
-				     const char *profileName,
-				     const char *profileFile,
-                                     const char *inputFileName);
-
-
-/**
- * Another convenience function to import a given file.
- * (introduced in AqBanking 4.3.0)
+ *   is given in @b profileFile or the internal profile database
+ * @param profileFile name of the file to load the exporter settings profile from. This should
+ *  contain at least one profile in a "profile" group. If you want to use profiles installed with
+ *  AqBanking you can specify its name via @b profileName and use NULL here
+ *
  */
 AQBANKING_API 
-int AB_Banking_ImportFileWithProfile(AB_BANKING *ab,
-				     const char *importerName,
-				     AB_IMEXPORTER_CONTEXT *ctx,
-				     const char *profileName,
-				     const char *profileFile,
-                                     const char *inputFileName);
+int AB_Banking_ExportWithProfile(AB_BANKING *ab,
+				 const char *exporterName,
+				 AB_IMEXPORTER_CONTEXT *ctx,
+				 GWEN_SYNCIO *sio,
+				 const char *profileName,
+				 const char *profileFile);
+
+
+/**
+ * Reads the given file and imports all data from it. This imported
+ * data is stored within the given context.
+ *
+ * @return 0 on success, error code otherwise
+ *
+ * @param ab pointer to the AB_BANKING object
+ * @param importerName name of the importer module to use
+ * @param ctx import context
+ * @param inputFileName path and name of the file to read from
+ * @param dbProfile configuration data for the importer. You can get this
+ *   using @ref AB_Banking_GetImExporterProfiles.
+ */
+AQBANKING_API 
+int AB_Banking_ImportFromFile(AB_BANKING *ab,
+                              const char *importerName,
+                              AB_IMEXPORTER_CONTEXT *ctx,
+                              const char *inputFileName,
+                              GWEN_DB_NODE *dbProfile);
+
+/**
+ * Writes data from the given im-/exporter context into a file of the given name.
+ * The file will be created if it doesn't exist, otherwise it will be truncated before writing to it.
+ *
+ * @return 0 on success, error code otherwise
+ *
+ * @param ab pointer to the AB_BANKING object
+ * @param exporterName name of the exporter module to use
+ * @param ctx context to export
+ * @param outputFileName path and name of the file to write to
+ * @param dbProfile configuration data for the exporter. You can get this
+ *   using @ref AB_Banking_GetImExporterProfiles.
+ */
+AQBANKING_API 
+int AB_Banking_ExportToFile(AB_BANKING *ab,
+                            const char *exporterName,
+                            AB_IMEXPORTER_CONTEXT *ctx,
+                            const char *outputFileName,
+                            GWEN_DB_NODE *dbProfile);
+
+
+/**
+ * Reads the given file and imports all data from it into the given context. Loads profile.
+ *
+ * The profile to be used is read either from a given profile file (if the argument @b profileFile is given)
+ * or from AqBankings internal profile database.
+ *
+ * @return 0 on success, error code otherwise
+ *
+ * @param ab pointer to the AB_BANKING object
+ * @param importerName name of the importer module to use
+ * @param ctx import context
+ * @param profileName name of the importer settings profile stored in the file whose name
+ *   is given in @b profileFile or the internal profile database
+ * @param profileFile name of the file to load the exporter settings profile from. This should
+ *  contain at least one profile in a "profile" group. If you want to use profiles installed with
+ *  AqBanking you can specify its name via @b profileName and use NULL here
+ * @param inputFileName path and name of the file to read from
+ */
+AQBANKING_API 
+int AB_Banking_ImportFromFileWithProfile(AB_BANKING *ab,
+                                         const char *importerName,
+                                         AB_IMEXPORTER_CONTEXT *ctx,
+                                         const char *profileName,
+                                         const char *profileFile,
+                                         const char *inputFileName);
+
+/**
+ * Writes data from the given im-/exporter context into a file of the given name. Loads profile.
+ * The file will be created if it doesn't exist, otherwise it will be truncated before writing to it.
+ *
+ * The profile to be used is read either from a given profile file (if the argument @b profileFile is given)
+ * or from AqBankings internal profile database.
+ *
+ * @return 0 on success, error code otherwise
+ *
+ * @param ab pointer to the AB_BANKING object
+ * @param exporterName name of the exporter module to use
+ * @param ctx context to export
+ * @param outputFileName path and name of the file to write to
+ * @param profileName name of the exporter settings profile stored in the file whose name
+ *   is given in @b profileFile or the internal profile database
+ * @param profileFile name of the file to load the exporter settings profile from. This should
+ *  contain at least one profile in a "profile" group. If you want to use profiles installed with
+ *  AqBanking you can specify its name via @b profileName and use NULL here
+ */
+AQBANKING_API 
+int AB_Banking_ExportToFileWithProfile(AB_BANKING *ab,
+                                       const char *exporterName,
+                                       AB_IMEXPORTER_CONTEXT *ctx,
+                                       const char *outputFileName,
+                                       const char *profileName,
+                                       const char *profileFile);
+
+
+/**
+ * Reads the given memory buffer and reads all data from it. This imported
+ * data is stored within the given context.
+ *
+ * @return 0 on success, error code otherwise
+ *
+ * @param ab pointer to the AB_BANKING object
+ * @param importerName name of the importer module to use
+ * @param ctx import context
+ * @param dataPtr pointer to the data to import
+ * @param dataLen size of the data pointed to by @b dataPtr
+ * @param dbProfile configuration data for the importer. You can get this
+ *   using @ref AB_Banking_GetImExporterProfiles.
+ */
+AQBANKING_API 
+int AB_Banking_ImportFromBuffer(AB_BANKING *ab,
+                                const char *importerName,
+                                AB_IMEXPORTER_CONTEXT *ctx,
+                                const uint8_t *dataPtr,
+                                uint32_t dataLen,
+                                GWEN_DB_NODE *dbProfile);
+
+/**
+ * Writes data from the given im-/exporter context into a buffer.
+ *
+ * @return 0 on success, error code otherwise
+ *
+ * @param ab pointer to the AB_BANKING object
+ * @param exporterName name of the exporter module to use
+ * @param ctx context to export
+ * @param outputBuffer buffer to export data to
+ * @param dbProfile configuration data for the exporter. You can get this
+ *   using @ref AB_Banking_GetImExporterProfiles.
+ */
+AQBANKING_API 
+int AB_Banking_ExportToBuffer(AB_BANKING *ab,
+			      const char *exporterName,
+			      AB_IMEXPORTER_CONTEXT *ctx,
+                              GWEN_BUFFER *outputBuffer,
+			      GWEN_DB_NODE *dbProfile);
+
+
+/**
+ * Reads the given buffer and imports all data from it into the given context. Loads profile.
+ *
+ * The profile to be used is read either from a given profile file (if the argument @b profileFile is given)
+ * or from AqBankings internal profile database.
+ *
+ * @return 0 on success, error code otherwise
+ *
+ * @param ab pointer to the AB_BANKING object
+ * @param importerName name of the importer module to use
+ * @param ctx import context
+ * @param profileName name of the importer settings profile stored in the file whose name
+ *   is given in @b profileFile or the internal profile database
+ * @param profileFile name of the file to load the exporter settings profile from. This should
+ *  contain at least one profile in a "profile" group. If you want to use profiles installed with
+ *  AqBanking you can specify its name via @b profileName and use NULL here
+ * @param dataPtr pointer to the data to import
+ * @param dataLen size of the data pointed to by @b dataPtr
+ */
+AQBANKING_API 
+int AB_Banking_ImportFromBufferWithProfile(AB_BANKING *ab,
+                                           const char *importerName,
+                                           AB_IMEXPORTER_CONTEXT *ctx,
+                                           const char *profileName,
+                                           const char *profileFile,
+                                           const uint8_t *dataPtr,
+                                           uint32_t dataLen);
+
+/**
+ * Writes data from the given im-/exporter context into a buffer. Loads profile.
+ *
+ * The profile to be used is read either from a given profile file (if the argument @b profileFile is given)
+ * or from AqBankings internal profile database.
+ *
+ * @return 0 on success, error code otherwise
+ *
+ * @param ab pointer to the AB_BANKING object
+ * @param exporterName name of the exporter module to use
+ * @param ctx context to export
+ * @param outputBuffer buffer to export data to
+ * @param profileName name of the exporter settings profile stored in the file whose name
+ *   is given in @b profileFile or the internal profile database
+ * @param profileFile name of the file to load the exporter settings profile from. This should
+ *  contain at least one profile in a "profile" group. If you want to use profiles installed with
+ *  AqBanking you can specify its name via @b profileName and use NULL here
+ */
+AQBANKING_API 
+int AB_Banking_ExportToBufferWithProfile(AB_BANKING *ab,
+                                         const char *exporterName,
+                                         AB_IMEXPORTER_CONTEXT *ctx,
+                                         GWEN_BUFFER *outputBuffer,
+                                         const char *profileName,
+                                         const char *profileFile);
+
+
 
 /*@}*/
 

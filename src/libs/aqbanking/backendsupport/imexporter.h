@@ -60,7 +60,7 @@ extern "C" {
 #endif
 
 typedef struct AB_IMEXPORTER AB_IMEXPORTER;
-GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_IMEXPORTER, AQBANKING_API)
+GWEN_INHERIT_FUNCTION_DEFS(AB_IMEXPORTER)
 
 #ifdef __cplusplus
 }
@@ -92,7 +92,6 @@ extern "C" {
  * @param dbProfile configuration data for the importer. You can get this
  *   using @ref AB_Banking_GetImExporterProfiles.
  */
-AQBANKING_API 
 int AB_ImExporter_Import(AB_IMEXPORTER *ie,
                          AB_IMEXPORTER_CONTEXT *ctx,
 			 GWEN_SYNCIO *sio,
@@ -107,7 +106,6 @@ int AB_ImExporter_Import(AB_IMEXPORTER *ie,
  * @param dbProfile configuration data for the exporter. You can get this
  *   using @ref AB_Banking_GetImExporterProfiles.
  */
-AQBANKING_API 
 int AB_ImExporter_Export(AB_IMEXPORTER *ie,
                          AB_IMEXPORTER_CONTEXT *ctx,
 			 GWEN_SYNCIO *sio,
@@ -130,7 +128,6 @@ int AB_ImExporter_Export(AB_IMEXPORTER *ie,
  *
  * @return 0 on success, error code otherwise
  */
-AQBANKING_API
 int AB_ImExporter_GetEditProfileDialog(AB_IMEXPORTER *ie,
 				       GWEN_DB_NODE *dbProfile,
 				       const char *testFileName,
@@ -138,38 +135,9 @@ int AB_ImExporter_GetEditProfileDialog(AB_IMEXPORTER *ie,
 
 
 /**
- * This is just a convenience function for @ref AB_ImExporter_Import.
- */
-AQBANKING_API
-int AB_ImExporter_ImportFile(AB_IMEXPORTER *ie,
-                             AB_IMEXPORTER_CONTEXT *ctx,
-                             const char *fname,
-			     GWEN_DB_NODE *dbProfile);
-
-AQBANKING_API
-int AB_ImExporter_ImportBuffer(AB_IMEXPORTER *ie,
-			       AB_IMEXPORTER_CONTEXT *ctx,
-                               GWEN_BUFFER *buf,
-			       GWEN_DB_NODE *dbProfile);
-
-AQBANKING_API
-int AB_ImExporter_ExportToBuffer(AB_IMEXPORTER *ie,
-				 AB_IMEXPORTER_CONTEXT *ctx,
-				 GWEN_BUFFER *buf,
-				 GWEN_DB_NODE *dbProfile);
-
-AQBANKING_API
-int AB_ImExporter_ExportToFile(AB_IMEXPORTER *ie,
-			       AB_IMEXPORTER_CONTEXT *ctx,
-			       const char *fname,
-			       GWEN_DB_NODE *dbProfile);
-
-/**
  * This function checks whether the given importer supports the given file.
  */
-AQBANKING_API
-int AB_ImExporter_CheckFile(AB_IMEXPORTER *ie,
-			    const char *fname);
+int AB_ImExporter_CheckFile(AB_IMEXPORTER *ie, const char *fname);
 
 /*@}*/
 
@@ -177,13 +145,11 @@ int AB_ImExporter_CheckFile(AB_IMEXPORTER *ie,
 /**
  * Returns the AB_BANKING object to which the im/exporter belongs.
  */
-AQBANKING_API 
 AB_BANKING *AB_ImExporter_GetBanking(const AB_IMEXPORTER *ie);
 
 /**
  * Returns the name of the im/exporter.
  */
-AQBANKING_API
 const char *AB_ImExporter_GetName(const AB_IMEXPORTER *ie);
 
 
@@ -191,7 +157,6 @@ const char *AB_ImExporter_GetName(const AB_IMEXPORTER *ie);
  * Returns the flags if this im/exporter which specify the supported
  * features.
  */
-AQBANKING_API
 uint32_t AB_ImExporter_GetFlags(const AB_IMEXPORTER *ie);
 
 
@@ -210,26 +175,21 @@ uint32_t AB_ImExporter_GetFlags(const AB_IMEXPORTER *ie);
  * Transforms an UTF-8 string to a DTA string. Untranslateable characters
  * are replaced by a space (chr 32).
  */
-AQBANKING_API
 void AB_ImExporter_Utf8ToDta(const char *p, int size, GWEN_BUFFER *buf);
 
 /**
  * Transforms a DTA string to an UTF-8 string.
  */
-AQBANKING_API 
 void AB_ImExporter_DtaToUtf8(const char *p, int size, GWEN_BUFFER *buf);
 
-AQBANKING_API 
 void AB_ImExporter_Iso8859_1ToUtf8(const char *p, int size, GWEN_BUFFER *buf);
 
 /**
  * This function call @ref AB_ImExporter_Iso8859_1ToUtf8 on all char
  * values in the given db.
  */
-AQBANKING_API 
 int AB_ImExporter_DbFromIso8859_1ToUtf8(GWEN_DB_NODE *db);
 
-AQBANKING_API 
 GWEN_TIME *AB_ImExporter_DateFromString(const char *p, const char *tmpl, int inUtc);
 
 

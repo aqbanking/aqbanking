@@ -1070,23 +1070,6 @@ int test15(int argc, char **argv) {
 
 
 
-int testDate(int argc, char **argv) {
-  GWEN_TIME *ti;
-  int y,m,d;
-
-  if (argc<4) {
-    fprintf(stderr, "Usage: %s msg XMLFILE DATAFILE\n", argv[0]);
-    return 1;
-  }
-  ti=AB_ImExporter_DateFromString(argv[2], argv[3], 1);
-  assert(ti);
-  GWEN_Time_GetBrokenDownDate(ti, &d, &m, &y);
-  DBG_ERROR(0, "Date: %02d %02d %04d", d, m, y);
-  return 0;
-}
-
-
-
 int main(int argc, char **argv) {
   const char *cmd;
   int rv;
@@ -1124,8 +1107,6 @@ int main(int argc, char **argv) {
     rv=test13(argc, argv);
   else if (strcasecmp(cmd, "test15")==0)
     rv=test15(argc, argv);
-  else if (strcasecmp(cmd, "date")==0)
-    rv=testDate(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"", cmd);
     rv=1;
