@@ -69,6 +69,9 @@ void AH_Dialog_SetMsgEngine(AH_DIALOG *dlg, GWEN_MSGENGINE *e);
 GWEN_DB_NODE *AH_Dialog_GetGlobalValues(const AH_DIALOG *dlg);
 
 int AH_Dialog_CheckReceivedMsgNum(AH_DIALOG *dlg, uint32_t msgnum);
+
+int AH_Dialog_ExchangeMessages(AH_DIALOG *dlg, AH_MSG *msgToSend, AH_MSG **pMsgReceived);
+
 int AH_Dialog_RecvMessage(AH_DIALOG *dlg, AH_MSG **pMsg);
 int AH_Dialog_SendMessage(AH_DIALOG *dlg, AH_MSG *msg);
 

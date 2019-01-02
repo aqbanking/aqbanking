@@ -285,6 +285,26 @@ int AH_Dialog_SendMessage(AH_DIALOG *dlg, AH_MSG *msg) {
 
 
 
+int AH_Dialog_ExchangeMessages(AH_DIALOG *dlg, AH_MSG *msgToSend, AH_MSG **pMsgReceived) {
+  int rv;
+
+  rv=AH_Dialog_SendMessage(dlg, msgToSend);
+  if (rv) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=AH_Dialog_RecvMessage(dlg, pMsgReceived);
+  if (rv) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return rv;
+}
+
+
+
 int AH_Dialog_Connect(AH_DIALOG *dlg) {
   AH_Dialog_AddFlags(dlg, AH_DIALOG_FLAGS_INITIATOR);
   if (AH_User_GetCryptMode(dlg->dialogOwner)==AH_CryptMode_Pintan)
