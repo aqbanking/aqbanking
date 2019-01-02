@@ -6,7 +6,7 @@ INCLUDES = -I$(aqbanking_symlinkdir) $(gwenhywfar_includes) $(aqfinance_includes
 
 AM_CFLAGS=@visibility_cflags@
 
-bin_PROGRAMS=aqbanking-cli
+bin_PROGRAMS=aqbanking-cli aqhbci-tool4
 
 aqbanking_cli_LDADD= \
   $(aqbanking_internal_libs) \
@@ -41,6 +41,15 @@ DEFS += -DLOCALEDIR=\"$(localedir)\" -DAQBANKING_CLI_VERSION_STRING=\"@AQBANKING
 
 noinst_HEADERS=globals.h
 #EXTRA_DIST=
+
+
+
+aqhbci_tool4_SOURCES=aqhbci-tool.c
+
+aqhbci_tool4_LDADD= \
+  $(aqbanking_internal_libs) \
+  $(gwenhywfar_libs)
+
 
 
 
