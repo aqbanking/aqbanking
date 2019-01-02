@@ -6,7 +6,11 @@ INCLUDES = -I$(aqbanking_symlinkdir) $(gwenhywfar_includes) $(aqfinance_includes
 
 AM_CFLAGS=@visibility_cflags@
 
-bin_PROGRAMS=aqbanking-cli aqhbci-tool4
+bin_PROGRAMS=\
+  aqbanking-cli\
+  aqhbci-tool4 \
+  aqpaypal-tool \
+  aqebics-tool
 
 aqbanking_cli_LDADD= \
   $(aqbanking_internal_libs) \
@@ -45,8 +49,18 @@ noinst_HEADERS=globals.h
 
 
 aqhbci_tool4_SOURCES=aqhbci-tool.c
-
 aqhbci_tool4_LDADD= \
+  $(aqbanking_internal_libs) \
+  $(gwenhywfar_libs)
+
+
+aqpaypal_tool_SOURCES=aqpaypal-tool.c
+aqpaypal_tool_LDADD= \
+  $(aqbanking_internal_libs) \
+  $(gwenhywfar_libs)
+
+aqebics_tool_SOURCES=aqebics-tool.c
+aqebics_tool_LDADD= \
   $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
 
