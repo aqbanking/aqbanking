@@ -132,28 +132,6 @@ AB_IMEXPORTER *AB_Banking__CreateImExporterPlugin(AB_BANKING *ab, const char *mo
 
 
 
-AB_IMEXPORTER *AB_Banking__LoadImExporterPlugin(AB_BANKING *ab, const char *modname){
-  GWEN_PLUGIN *pl;
-
-  pl=GWEN_PluginManager_GetPlugin(ab_pluginManagerImExporter, modname);
-  if (pl) {
-    AB_IMEXPORTER *ie;
-
-    ie=AB_Plugin_ImExporter_Factory(pl, ab);
-    if (!ie) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in plugin [%s]: No im/exporter created", modname);
-      return NULL;
-    }
-    return ie;
-  }
-  else {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] not found", modname);
-    return NULL;
-  }
-}
-
-
-
 AB_IMEXPORTER *AB_Banking_FindImExporter(AB_BANKING *ab, const char *name) {
   AB_IMEXPORTER *ie;
 
@@ -181,9 +159,6 @@ AB_IMEXPORTER *AB_Banking_GetImExporter(AB_BANKING *ab, const char *name){
   if (ie)
     return ie;
   ie=AB_Banking__CreateImExporterPlugin(ab, name);
-  if (ie)
-    return ie;
-  ie=AB_Banking__LoadImExporterPlugin(ab, name);
   if (ie)
     AB_ImExporter_List_Add(ie, ab_imexporters);
 

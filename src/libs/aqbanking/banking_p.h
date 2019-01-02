@@ -98,8 +98,6 @@ static int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,
 					      GWEN_DB_NODE *db,
 					      int isGlobal);
 
-static AB_IMEXPORTER *AB_Banking__LoadImExporterPlugin(AB_BANKING *ab, const char *modname);
-
 
 static int AB_Banking__TransformIban(const char *iban, int len, char *newIban, int maxLen);
 
