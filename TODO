@@ -9,7 +9,6 @@ Next:
   - fix apidoc for provider.h
   - dont export AB_NewUser|AccountDialog_*
   - create APIDOC for banking jobs
-  - add tool "aqhbci-tool" (just a stub which uses the AH_Provider_Control function)
   - hide AB_IMEXPORTER
     - create/modify functions:
       - AB_Banking_Import(AB_BANKING *ab,
