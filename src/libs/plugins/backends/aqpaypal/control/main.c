@@ -26,6 +26,38 @@
 
 
 
+static void showUsage() {
+  GWEN_BUFFER *ubuf;
+
+  ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
+  GWEN_Buffer_AppendString(ubuf,
+			   I18N("Commands:\n\n"));
+  GWEN_Buffer_AppendString(ubuf,
+			   I18N("  listusers:\n"
+				"    blurb "
+				"file\n\n"));
+ GWEN_Buffer_AppendString(ubuf,
+			   I18N("  listaccounts:\n"
+				"    blurb "
+				"file\n\n"));
+ GWEN_Buffer_AppendString(ubuf,
+			   I18N("  adduser:\n"
+				"    blurb "
+				"file\n\n"));
+ GWEN_Buffer_AppendString(ubuf,
+			   I18N("  addaccount:\n"
+				"    blurb "
+				"file\n\n"));
+ GWEN_Buffer_AppendString(ubuf,
+			   I18N("  setsecret:\n"
+				"    blurb "
+				"file\n\n"));
+
+  fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(ubuf));
+  GWEN_Buffer_free(ubuf);
+}
+
+
 
 int APY_Control(AB_PROVIDER *pro, int argc, char **argv) {
   GWEN_DB_NODE *db;
@@ -34,38 +66,8 @@ int APY_Control(AB_PROVIDER *pro, int argc, char **argv) {
 
   db=GWEN_DB_Group_new("arguments");
   if (argc<1){
-    GWEN_BUFFER *ubuf;
-
-    ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("Usage: "));
-    GWEN_Buffer_AppendString(ubuf, argv[0]);
-    GWEN_Buffer_AppendString(ubuf, I18N(" COMMAND [LOCAL OPTIONS]\n"));
-    GWEN_Buffer_AppendString(ubuf, I18N("\nCommands:\n\n"));
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("  listusers:\n"
-                                  "    blurb "
-                                  "file\n\n"));
-   GWEN_Buffer_AppendString(ubuf,
-                             I18N("  listaccounts:\n"
-                                  "    blurb "
-                                  "file\n\n"));
-   GWEN_Buffer_AppendString(ubuf,
-                             I18N("  adduser:\n"
-                                  "    blurb "
-                                  "file\n\n"));
-   GWEN_Buffer_AppendString(ubuf,
-                             I18N("  addaccount:\n"
-                                  "    blurb "
-                                  "file\n\n"));
-   GWEN_Buffer_AppendString(ubuf,
-                             I18N("  setsecret:\n"
-                                  "    blurb "
-                                  "file\n\n"));
-
-    fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(ubuf));
-    GWEN_Buffer_free(ubuf);
-    return 0;
+    showUsage();
+    return 1;
   }
 
   cmd=argv[0];
@@ -75,7 +77,11 @@ int APY_Control(AB_PROVIDER *pro, int argc, char **argv) {
     return 1;
   }
 
-  if (strcasecmp(cmd, "listusers")==0) {
+  if (strcasecmp(cmd, "help")==0) {
+    showUsage();
+    rv=0;
+  }
+  else if (strcasecmp(cmd, "listusers")==0) {
     rv=APY_Control_ListUsers(pro, db, argc, argv);
   }
   else if (strcasecmp(cmd, "listaccounts")==0) {
