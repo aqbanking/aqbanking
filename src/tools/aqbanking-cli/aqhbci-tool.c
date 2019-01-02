@@ -27,32 +27,15 @@
 
 
 
-static int doControl(AB_BANKING *ab, const char *ctrlBackend, GWEN_DB_NODE *dbArgs, int argc, char **argv);
+static int doControl(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 
-
-
-static void cmdAddHelpStr(GWEN_BUFFER *ubuf,
-                          const char* cmdname,
-                          const char* cmdhelp)
-{
-  // Indentation of the command: one space
-  GWEN_Buffer_AppendString(ubuf, " ");
-  GWEN_Buffer_AppendString(ubuf, cmdname);
-  GWEN_Buffer_AppendString(ubuf, ":\n");
-  // Indentation of the help: three spaces
-  GWEN_Buffer_AppendString(ubuf, "   ");
-  GWEN_Buffer_AppendString(ubuf, cmdhelp);
-  GWEN_Buffer_AppendString(ubuf, "\n");
-}
 
 
 int main(int argc, char **argv) {
   GWEN_DB_NODE *db;
-  const char *cmd;
   int rv;
   AB_BANKING *ab;
   GWEN_GUI *gui;
-  const char *ctrlBackend=NULL;
   int nonInteractive=0;
   int acceptValidCerts=0;
   const char *pinFile;
@@ -235,7 +218,7 @@ int main(int argc, char **argv) {
   ab=AB_Banking_new("aqbanking-cli", cfgDir, 0);
   AB_Gui_Extend(gui, ab);
 
-  rv=doControl(ab, "aqhbci", db, argc, argv);
+  rv=doControl(ab, db, argc, argv);
 
   GWEN_DB_Group_free(db);
   return rv;
@@ -243,7 +226,7 @@ int main(int argc, char **argv) {
 
 
 
-int doControl(AB_BANKING *ab, const char *ctrlBackend, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int doControl(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   int rv;
 
   rv=AB_Banking_Init(ab);
@@ -253,7 +236,7 @@ int doControl(AB_BANKING *ab, const char *ctrlBackend, GWEN_DB_NODE *dbArgs, int
   }
 
 
-  rv=AB_Banking_ProviderControl(ab, ctrlBackend, argc, argv);
+  rv=AB_Banking_ProviderControl(ab, "aqhbci", argc, argv);
   if (rv!=0) {
     DBG_ERROR(0, "Error calling control function (%d)", rv);
     AB_Banking_Fini(ab);
