@@ -125,10 +125,10 @@ int APY_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
 
   /* check whether we need to update */
   currentVersion=
-    (AQPAYPAL_VERSION_MAJOR<<24) |
-    (AQPAYPAL_VERSION_MINOR<<16) |
-    (AQPAYPAL_VERSION_PATCHLEVEL<<8) |
-    AQPAYPAL_VERSION_BUILD;
+    (AQBANKING_VERSION_MAJOR<<24) |
+    (AQBANKING_VERSION_MINOR<<16) |
+    (AQBANKING_VERSION_PATCHLEVEL<<8) |
+    AQBANKING_VERSION_BUILD;
   lastVersion=GWEN_DB_GetIntValue(dbData, "lastVersion", 0, 0);
 
   if (lastVersion<currentVersion) {
@@ -197,10 +197,10 @@ int APY_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
   assert(dp);
 
   currentVersion=
-    (AQPAYPAL_VERSION_MAJOR<<24) |
-    (AQPAYPAL_VERSION_MINOR<<16) |
-    (AQPAYPAL_VERSION_PATCHLEVEL<<8) |
-    AQPAYPAL_VERSION_BUILD;
+    (AQBANKING_VERSION_MAJOR<<24) |
+    (AQBANKING_VERSION_MINOR<<16) |
+    (AQBANKING_VERSION_PATCHLEVEL<<8) |
+    AQBANKING_VERSION_BUILD;
 
   /* save configuration */
   DBG_NOTICE(AQPAYPAL_LOGDOMAIN, "Setting version %08x", currentVersion);

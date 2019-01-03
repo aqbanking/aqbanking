@@ -1533,7 +1533,7 @@ void AH_Msg_LogMessage(AH_MSG *msg,
 
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "aqhbci",
-                       AQHBCI_VERSION_FULL_STRING);
+                       AQBANKING_VERSION_FULL_STRING);
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "appname",
                        AH_HBCI_GetProductName(h));

@@ -67,7 +67,7 @@ AH_HBCI *AH_HBCI_new(AB_PROVIDER *pro){
   hbci->banking=AB_Provider_GetBanking(pro);
   hbci->productName=strdup("AQHBCI");
   rv=snprintf(numbuf, sizeof(numbuf), "%d.%d",
-              AQHBCI_VERSION_MAJOR, AQHBCI_VERSION_MINOR);
+              AQBANKING_VERSION_MAJOR, AQBANKING_VERSION_MINOR);
   if (rv==-1 || rv>=sizeof(numbuf)) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "What ?? %zd bytes isn't enough space for two decimals ?!",
 	      sizeof(numbuf));

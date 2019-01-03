@@ -170,10 +170,10 @@ int AO_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
 
   /* check whether we need to update */
   currentVersion=
-    (AQOFXCONNECT_VERSION_MAJOR<<24) |
-    (AQOFXCONNECT_VERSION_MINOR<<16) |
-    (AQOFXCONNECT_VERSION_PATCHLEVEL<<8) |
-    AQOFXCONNECT_VERSION_BUILD;
+    (AQBANKING_VERSION_MAJOR<<24) |
+    (AQBANKING_VERSION_MINOR<<16) |
+    (AQBANKING_VERSION_PATCHLEVEL<<8) |
+    AQBANKING_VERSION_BUILD;
   lastVersion=GWEN_DB_GetIntValue(dbData, "lastVersion", 0, 0);
 
   if (lastVersion<currentVersion) {
@@ -222,10 +222,10 @@ int AO_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
   DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Deinitializing AqOFXDC backend");
 
   currentVersion=
-    (AQOFXCONNECT_VERSION_MAJOR<<24) |
-    (AQOFXCONNECT_VERSION_MINOR<<16) |
-    (AQOFXCONNECT_VERSION_PATCHLEVEL<<8) |
-    AQOFXCONNECT_VERSION_BUILD;
+    (AQBANKING_VERSION_MAJOR<<24) |
+    (AQBANKING_VERSION_MINOR<<16) |
+    (AQBANKING_VERSION_PATCHLEVEL<<8) |
+    AQBANKING_VERSION_BUILD;
 
   /* save version */
   DBG_NOTICE(AQOFXCONNECT_LOGDOMAIN, "Setting version %08x", currentVersion);

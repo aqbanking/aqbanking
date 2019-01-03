@@ -188,10 +188,10 @@ int AH_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
 
   /* check whether we need to update */
   currentVersion=
-    (AQHBCI_VERSION_MAJOR<<24) |
-    (AQHBCI_VERSION_MINOR<<16) |
-    (AQHBCI_VERSION_PATCHLEVEL<<8) |
-    AQHBCI_VERSION_BUILD;
+    (AQBANKING_VERSION_MAJOR<<24) |
+    (AQBANKING_VERSION_MINOR<<16) |
+    (AQBANKING_VERSION_PATCHLEVEL<<8) |
+    AQBANKING_VERSION_BUILD;
   lastVersion=GWEN_DB_GetIntValue(dbData, "lastVersion", 0, 0);
 
   if (lastVersion<currentVersion) {
@@ -235,10 +235,10 @@ int AH_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   assert(hp);
 
   currentVersion=
-    (AQHBCI_VERSION_MAJOR<<24) |
-    (AQHBCI_VERSION_MINOR<<16) |
-    (AQHBCI_VERSION_PATCHLEVEL<<8) |
-    AQHBCI_VERSION_BUILD;
+    (AQBANKING_VERSION_MAJOR<<24) |
+    (AQBANKING_VERSION_MINOR<<16) |
+    (AQBANKING_VERSION_PATCHLEVEL<<8) |
+    AQBANKING_VERSION_BUILD;
 
   /* save version */
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Setting version %08x", currentVersion);

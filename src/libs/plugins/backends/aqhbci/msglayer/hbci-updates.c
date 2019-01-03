@@ -34,10 +34,10 @@ int AH_HBCI_UpdateDbUser(AH_HBCI *hbci, GWEN_DB_NODE *db) {
   oldVersion=AH_HBCI_GetLastVersion(hbci);
 
   currentVersion=
-    (AQHBCI_VERSION_MAJOR<<24) |
-    (AQHBCI_VERSION_MINOR<<16) |
-    (AQHBCI_VERSION_PATCHLEVEL<<8) |
-    AQHBCI_VERSION_BUILD;
+    (AQBANKING_VERSION_MAJOR<<24) |
+    (AQBANKING_VERSION_MINOR<<16) |
+    (AQBANKING_VERSION_PATCHLEVEL<<8) |
+    AQBANKING_VERSION_BUILD;
 
   if (currentVersion>oldVersion) {
     DBG_WARN(AQHBCI_LOGDOMAIN,
@@ -122,10 +122,10 @@ int AH_HBCI_UpdateDbAccount(AH_HBCI *hbci, GWEN_DB_NODE *db) {
   oldVersion=AH_HBCI_GetLastVersion(hbci);
 
   currentVersion=
-    (AQHBCI_VERSION_MAJOR<<24) |
-    (AQHBCI_VERSION_MINOR<<16) |
-    (AQHBCI_VERSION_PATCHLEVEL<<8) |
-    AQHBCI_VERSION_BUILD;
+    (AQBANKING_VERSION_MAJOR<<24) |
+    (AQBANKING_VERSION_MINOR<<16) |
+    (AQBANKING_VERSION_PATCHLEVEL<<8) |
+    AQBANKING_VERSION_BUILD;
 
   if (currentVersion>oldVersion) {
     DBG_WARN(AQHBCI_LOGDOMAIN,

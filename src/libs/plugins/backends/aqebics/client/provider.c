@@ -186,10 +186,10 @@ int EBC_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
   assert(dp);
 
   currentVersion=
-    (AQEBICS_VERSION_MAJOR<<24) |
-    (AQEBICS_VERSION_MINOR<<16) |
-    (AQEBICS_VERSION_PATCHLEVEL<<8) |
-    AQEBICS_VERSION_BUILD;
+    (AQBANKING_VERSION_MAJOR<<24) |
+    (AQBANKING_VERSION_MINOR<<16) |
+    (AQBANKING_VERSION_PATCHLEVEL<<8) |
+    AQBANKING_VERSION_BUILD;
 
   /* save configuration */
   DBG_NOTICE(AQEBICS_LOGDOMAIN, "Setting version %08x",
