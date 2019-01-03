@@ -124,7 +124,7 @@ int AH_Job_GetTransCAMT__ReadTransactions(AH_JOB *j,
   /* import data into a temporary context */
   tempContext=AB_ImExporterContext_new();
 
-  rv=AB_Banking_ImportFromBufferWithProfile(AB_Provider_GetBanking(pro),
+  rv=AB_Banking_ImportFromBufferLoadProfile(AB_Provider_GetBanking(pro),
                                             "xml",
                                             tempContext,
                                             docType,

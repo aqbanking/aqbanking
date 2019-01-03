@@ -243,7 +243,7 @@ AB_TRANSACTION *_readSto(AH_JOB *j, const char *docType, const uint8_t *ptr, uin
   /* import data into a temporary context */
   tempContext=AB_ImExporterContext_new();
 
-  rv=AB_Banking_ImportFromBufferWithProfile(AB_Provider_GetBanking(pro),
+  rv=AB_Banking_ImportFromBufferLoadProfile(AB_Provider_GetBanking(pro),
                                             "xml",
                                             tempContext,
                                             docType,

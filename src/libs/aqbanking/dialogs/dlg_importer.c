@@ -760,7 +760,7 @@ int AB_ImporterDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
         DBG_ERROR(0, "No profile");
       }
       else {
-	rv=AB_Banking_ImportFromFileWithProfile(xdlg->banking,
+	rv=AB_Banking_ImportFromFileLoadProfile(xdlg->banking,
                                                 xdlg->importerName,
                                                 xdlg->context,
                                                 xdlg->profileName,

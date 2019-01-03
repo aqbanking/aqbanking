@@ -288,7 +288,7 @@ int AB_Banking_Export(AB_BANKING *ab,
 
 
 
-int AB_Banking_ImportWithProfile(AB_BANKING *ab,
+int AB_Banking_ImportLoadProfile(AB_BANKING *ab,
 				 const char *importerName,
 				 AB_IMEXPORTER_CONTEXT *ctx,
 				 GWEN_SYNCIO *sio,
@@ -320,7 +320,7 @@ int AB_Banking_ImportWithProfile(AB_BANKING *ab,
 
 
 
-int AB_Banking_ExportWithProfile(AB_BANKING *ab,
+int AB_Banking_ExportLoadProfile(AB_BANKING *ab,
 				 const char *exporterName,
 				 AB_IMEXPORTER_CONTEXT *ctx,
 				 GWEN_SYNCIO *sio,
@@ -442,7 +442,7 @@ int AB_Banking_ExportToFile(AB_BANKING *ab,
 
 
 
-int AB_Banking_ImportFromFileWithProfile(AB_BANKING *ab,
+int AB_Banking_ImportFromFileLoadProfile(AB_BANKING *ab,
 					 const char *importerName,
 					 AB_IMEXPORTER_CONTEXT *ctx,
 					 const char *profileName,
@@ -474,7 +474,7 @@ int AB_Banking_ImportFromFileWithProfile(AB_BANKING *ab,
 
 
 
-int AB_Banking_ExportToFileWithProfile(AB_BANKING *ab,
+int AB_Banking_ExportToFileLoadProfile(AB_BANKING *ab,
 				       const char *exporterName,
 				       AB_IMEXPORTER_CONTEXT *ctx,
 				       const char *outputFileName,
@@ -559,7 +559,7 @@ int AB_Banking_ExportToBuffer(AB_BANKING *ab,
 
 
 
-int AB_Banking_ImportFromBufferWithProfile(AB_BANKING *ab,
+int AB_Banking_ImportFromBufferLoadProfile(AB_BANKING *ab,
 					   const char *importerName,
 					   AB_IMEXPORTER_CONTEXT *ctx,
 					   const char *profileName,
@@ -592,7 +592,7 @@ int AB_Banking_ImportFromBufferWithProfile(AB_BANKING *ab,
 
 
 
-int AB_Banking_ExportToBufferWithProfile(AB_BANKING *ab,
+int AB_Banking_ExportToBufferLoadProfile(AB_BANKING *ab,
 					 const char *exporterName,
 					 AB_IMEXPORTER_CONTEXT *ctx,
                                          GWEN_BUFFER *outputBuffer,

@@ -163,7 +163,7 @@ int import(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
 
   /* import new context */
   ctx=AB_ImExporterContext_new();
-  rv=AB_Banking_ImportFromFileWithProfile(ab, importerName, ctx,
+  rv=AB_Banking_ImportFromFileLoadProfile(ab, importerName, ctx,
                                           profileName, profileFile,
                                           inFile);
   if (rv<0) {

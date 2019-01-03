@@ -45,7 +45,7 @@ int EBC_Provider_XchgStaRequest(AB_PROVIDER *pro,
   }
   else {
     DBG_INFO(AQEBICS_LOGDOMAIN, "Importing transactions");
-    rv=AB_Banking_ImportFromBufferWithProfile(ab, "swift", ctx,
+    rv=AB_Banking_ImportFromBufferLoadProfile(ab, "swift", ctx,
                                               "SWIFT-MT940", NULL,
                                               (const uint8_t*) GWEN_Buffer_GetStart(buf),
                                               GWEN_Buffer_GetUsedBytes(buf));
