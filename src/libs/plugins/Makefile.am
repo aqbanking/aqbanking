@@ -27,3 +27,8 @@ cppcheck:
 	  $(MAKE) -C $$d cppcheck; \
 	done
 
+
+types:
+
+typedefs:
+

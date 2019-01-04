@@ -44,6 +44,9 @@ testlibcc_LDADD = $(aqbanking_internal_libs) $(gwenhywfar_libs)
 
 TESTS = testlibcc
 
+types:
+
+typedefs:
 
 
 cppcheck:

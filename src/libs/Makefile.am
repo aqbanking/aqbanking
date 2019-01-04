@@ -45,6 +45,11 @@ types:
 	  $(MAKE) -C $$d types; \
 	done
 
+typedefs:
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d typedefs; \
+	done
+
 
 cppcheck:
 	for f in $(libaqbanking_la_SOURCES); do \

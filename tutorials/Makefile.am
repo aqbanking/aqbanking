@@ -30,3 +30,8 @@ tutorial4_LDADD=\
 tutorial5_SOURCES=tutorial5.c
 tutorial5_LDADD=\
   $(top_builddir)/src/libs/libaqbanking.la $(gwenhywfar_libs)
+
+
+types:
+
+typedefs:

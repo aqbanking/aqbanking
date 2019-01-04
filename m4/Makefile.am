@@ -13,3 +13,7 @@ EXTRA_DIST=\
  fox.pc \
  gwenhywfar.m4
 
+
+types:
+
+typedefs:

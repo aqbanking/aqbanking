@@ -27,6 +27,8 @@ libtypes_la_SOURCES=\
 types: $(typefiles)
 	$(gwenhywfar_bindir)/typemaker -d AQBANKING_API $(typefiles)
 
+typedefs:
+
 
 sources:
 	for f in $(libtypes_la_SOURCES); do \

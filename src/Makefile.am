@@ -16,3 +16,13 @@ cppcheck:
 	done
 
 
+types:
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d types; \
+	done
+
+typedefs:
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d typedefs; \
+	done
+
