@@ -18,7 +18,7 @@
                4.2.   Applications
                5.   Building AqBanking
                5.1.   Building from the Tar File
-               5.2.   Building from CVS/SVN
+               5.2.   Building from GIT
                5.3.   Building the API Documentation
                6.   Windows Registry Keys Used
                6.1.   Software\\AqBanking\\Paths\\pkgdatadir
@@ -253,6 +253,8 @@ Compilation hints for specific platforms:
 ----------------------
 
 #>make -fMakefile.cvs
+#>make typedefs
+#>make types
 
 and continue as described in "5.1. Building from the Tar File".
 
@@ -485,8 +487,9 @@ AqBanking6:
                                - replaced AB_Banking_ExecuteJobs() with AB_Banking_SendCommands()
                                  - this function takes a list of jobs in AB_TRANSACTIONs and sends them, no longer needs AB_JOB
 - AB_COUNTRY:                  - deprecated, will be removed before release
+- AB_IMEXPORTER:               - removed (functions now in AB_Banking)
 
 
-Martin Preuss, Wilhelmshaven/Germany, 2018/10/03
+Martin Preuss, Wilhelmshaven/Germany, 2019/01/04
 
 
