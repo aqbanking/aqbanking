@@ -827,30 +827,33 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
           withAuthKey=1;
       }
       ctx=AB_ImExporterContext_new();
-      rv=AH_Provider_SendUserKeys2(pro, u, ctx, withAuthKey, 1, 0, 1);
+      rv=AH_Provider_SendUserKeys2(xdlg->provider, u, ctx, withAuthKey, 1, 0, 1);
       AB_ImExporterContext_free(ctx);
       if (rv) {
-        AB_Banking_EndExclUseUser(xdlg->banking, u, 1);
+          AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
         DBG_INFO(AQHBCI_LOGDOMAIN, "Error sending user keys (%d)", rv);
-        AB_Banking_DeleteUser(xdlg->banking, u);
+        AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
         GWEN_Gui_ProgressEnd(pid);
         return GWEN_DialogEvent_ResultHandled;
       }
   }
   /* get Kundensystem-ID */
   /* FIXME the SysID of the zkacard is the CID, so this should not be necessary */
-#if 0
-  ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetSysId(xdlg->provider, u, ctx, 1, 0, 1);
-  AB_ImExporterContext_free(ctx);
-  if (rv) {
-    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting Kundensystem ID (%d)", rv);
-    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
-    GWEN_Gui_ProgressEnd(pid);
-    return GWEN_DialogEvent_ResultHandled;
+
+  if ( xdlg->rdhVersion != 7 )
+  {
+      ctx=AB_ImExporterContext_new();
+      rv=AH_Provider_GetSysId(xdlg->provider, u, ctx, 1, 0, 1);
+      AB_ImExporterContext_free(ctx);
+      if (rv) {
+          AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting Kundensystem ID (%d)", rv);
+          AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+          GWEN_Gui_ProgressEnd(pid);
+          return GWEN_DialogEvent_ResultHandled;
+      }
   }
-#endif
+
     /* lock new user */
   rv=AB_Provider_BeginExclUseUser(xdlg->provider, u);
   if (rv<0) {
@@ -1158,7 +1161,7 @@ int AH_ZkaCardDialog_FromContext(GWEN_DIALOG *dlg, int i) {
 				  0);
 
       /* RDH7 */
-      xdlg->rdhVersion = GWEN_Crypt_Token_Context_GetRdhVersion(ctx);
+      xdlg->rdhVersion = GWEN_Crypt_Token_Context_GetProtocolVersion(ctx);
       xdlg->keyStatus  = GWEN_Crypt_Token_Context_GetKeyStatus(ctx);
     }
   }
