@@ -24,10 +24,10 @@ extern "C" {
 
 
 
-AQBANKING_API GWEN_DIALOG *AB_NewAccountDialog_new(AB_BANKING *ab, const char *dname);
+GWEN_DIALOG *AB_NewAccountDialog_new(AB_BANKING *ab, const char *dname);
 
-AQBANKING_API AB_ACCOUNT *AB_NewAccountDialog_GetAccount(const GWEN_DIALOG *dlg);
-AQBANKING_API void AB_NewAccountDialog_SetAccount(GWEN_DIALOG *dlg, AB_ACCOUNT *a);
+AB_ACCOUNT *AB_NewAccountDialog_GetAccount(const GWEN_DIALOG *dlg);
+void AB_NewAccountDialog_SetAccount(GWEN_DIALOG *dlg, AB_ACCOUNT *a);
 
 
 #ifdef __cplusplus

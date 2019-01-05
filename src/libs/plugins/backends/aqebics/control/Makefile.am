@@ -6,6 +6,7 @@ INCLUDES=-I.. -I$(top_builddir) -Iclient -I$(srcdir)/../client \
 
 localedir = $(datadir)/locale
 DEFS += -DLOCALEDIR=\"$(localedir)\"
+AM_CFLAGS=-DBUILDING_AQEBICS @visibility_cflags@
 
 
 noinst_LTLIBRARIES=libebicscontrol.la

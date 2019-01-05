@@ -21,7 +21,7 @@
 #include <gwenhywfar/libloader.h>
 
 
-GWEN_LIST_FUNCTION_LIB_DEFS(AB_IMEXPORTER, AB_ImExporter, AQBANKING_API)
+GWEN_LIST_FUNCTION_DEFS(AB_IMEXPORTER, AB_ImExporter)
 
 
 void AB_ImExporter_SetLibLoader(AB_IMEXPORTER *ie, GWEN_LIBLOADER *ll);
