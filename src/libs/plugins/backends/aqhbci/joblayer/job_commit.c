@@ -389,7 +389,6 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
           int keynum, keyver;
           /**** RDH7 Block Start******/
           int keySize;
-          const char *s;
           /**** RDH7 Block End******/
 
           /* TODO: Ask the user to accept the key received */
@@ -399,26 +398,20 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
           modp=GWEN_DB_GetBinValue(dbRd, "key/modulus",  0, NULL, 0, &modl);
           /* skip zero bytes if any */
           while(modl && *((uint8_t*)modp)==0) {
-              modp++;
-              modl--;
+            modp++;
+            modl--;
           }
 
           /* calculate key size in bytes */
           if (modl<=96)
-              keySize=96;
+            keySize=96;
           else {
-              keySize=modl;
+            keySize=modl;
           }
           expp=GWEN_DB_GetBinValue(dbRd, "key/exponent", 0, NULL, 0, &expl);
           bpk=GWEN_Crypt_KeyRsa_fromModExp(keySize, modp, modl, expp, expl);
-          GWEN_Crypt_Key_SetKeyNumber(bpk,
-                  GWEN_DB_GetIntValue(dbRd,
-                          "keyname/keynum",
-                          0, 0));
-          GWEN_Crypt_Key_SetKeyVersion(bpk,
-                  GWEN_DB_GetIntValue(dbRd,
-                          "keyname/keyversion",
-                          0, 0));
+          GWEN_Crypt_Key_SetKeyNumber(bpk, GWEN_DB_GetIntValue(dbRd, "keyname/keynum", 0, 0));
+          GWEN_Crypt_Key_SetKeyVersion(bpk, GWEN_DB_GetIntValue(dbRd, "keyname/keyversion", 0, 0));
 
           if (strcasecmp(keytype, "S")==0) {
             DBG_WARN(AQHBCI_LOGDOMAIN, "Received new server sign key, please verify! (num: %d, version: %d)", keynum, keyver);
@@ -450,8 +443,8 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
         GWEN_DB_NODE *dbT;
 
         dbT=GWEN_DB_FindFirstGroup(dbRd, "SecProfile");
-	while(dbT) {
-	  const char *code;
+        while(dbT) {
+          const char *code;
           int version;
 
 	  code=GWEN_DB_GetCharValue(dbT, "code", 0, NULL);
