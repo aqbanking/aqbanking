@@ -13,6 +13,7 @@
 
 #include "provider_p.h"
 #include "user_l.h"
+#include "control/control_l.h"
 
 #include "dlg_newuser_l.h"
 #include "dlg_edituser_l.h"
@@ -69,6 +70,7 @@ AB_PROVIDER *APY_Provider_new(AB_BANKING *ab){
   AB_Provider_SetCreateAccountObjectsFn(pro, APY_Provider_CreateAccountObject);
   AB_Provider_SetCreateUserObjectsFn(pro, APY_Provider_CreateUserObject);
 
+  AB_Provider_SetControlFn(pro, APY_Control);
 
   AB_Provider_SetGetNewUserDialogFn(pro, APY_Provider_GetNewUserDialog);
   AB_Provider_SetGetEditUserDialogFn(pro, APY_Provider_GetEditUserDialog);
