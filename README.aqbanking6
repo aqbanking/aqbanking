@@ -106,24 +106,6 @@ Also, AB_BALANCE now has a "type" field (e.g. "Booked", "Noted", "Temporary" etc
 
 
 
-aqhbci-tool, aqpaypal-tool
-==========================
-
-These tools have been removed. The same functions (with the same arguments) can be reached via the tool aqbanking-cli:
-
-- example for AqHBCI:
-  old: aqhbci-tool listusers
-  new: aqbanking-cli --control=aqhbci listusers
-
-- example for AqPaypal:
-  old: aqpaypal-tool listusers
-  new: aqbanking-cli --control=aqpaypal listusers
-
-Maybe we will add wrappers with the same names as the old tools to keep the changes transparent to users.
-
-
-
-
 ----------
-2018/12/16
+2019/01/05
 
