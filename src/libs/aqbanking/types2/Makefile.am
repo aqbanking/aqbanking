@@ -125,20 +125,20 @@ sources:
 
 
 %.c: %.xml
-	typemaker2 -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(top_srcdir)/src/libs/aqbanking/types2 -I $(srcdir) -I $(AQDATABASE_TYPEMAKERDIR)/c --destfolder="$(srcdir)" -D AQBANKING_API  $<
+	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(builddir) --destfolder="$(builddir)" -D AQBANKING_API  $<
 
 %.h: %.xml
-	typemaker2 -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(top_srcdir)/src/libs/aqbanking/types2 -I $(srcdir) -I $(AQDATABASE_TYPEMAKERDIR)/c --destfolder="$(srcdir)" -D AQBANKING_API  $<
+	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(builddir) --destfolder="$(builddir)" -D AQBANKING_API  $<
 
 
 SUFFIXES = .xml .c
 
 
 types: $(typefiles)
-	typemaker2 -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(top_srcdir)/src/libs/aqbanking/types2 -I $(srcdir) -I $(AQDATABASE_TYPEMAKERDIR)/c --destfolder="$(srcdir)" -D AQBANKING_API $(typefiles)
+	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" -D AQBANKING_API $(typefiles)
 
 typedefs: $(typefiles)
-	typemaker2 --defs-only -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(top_srcdir)/src/libs/aqbanking/types2 -I $(srcdir) -I $(AQDATABASE_TYPEMAKERDIR)/c --destfolder="$(srcdir)" -D AQBANKING_API $(typefiles)
+	$(typemaker2_exe) --defs-only -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" -D AQBANKING_API $(typefiles)
 
 
 
