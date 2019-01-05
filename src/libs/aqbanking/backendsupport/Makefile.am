@@ -26,10 +26,10 @@ dist_typedata_DATA=\
 
 # order is important here
 typedata_sources= \
+  ab_jobqueue.c \
   ab_accountqueue.c \
   ab_userqueue.c \
   ab_providerqueue.c \
-  ab_jobqueue.c \
   ab_queue.c \
   account.c \
   user.c

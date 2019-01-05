@@ -100,9 +100,9 @@ EXTRA_DIST=$(typefiles) $(built_sources) $(build_headers)
 
 
 
-build_sources: $(built_sources)
+built_sources: $(built_sources)
 	list='$(SUBDIRS)'; for d in $$list; do \
-	  $(MAKE) -C $$d build_sources; \
+	  $(MAKE) -C $$d built_sources; \
 	done ;
 
 clean_build_files:
