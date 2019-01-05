@@ -201,8 +201,8 @@ int AH_Control_AddUser(AB_PROVIDER *pro,
     1,             
     0,             
     "rdhtype",
-    "Select the RDH profile type (1, 2, 3, 5, 9, 10)",
-    "Select the RDH profile type (1, 2, 3, 5, 9, 10)"
+    "Select the RDH profile type (1, 2, 3, 5, 7, 9, 10)",
+    "Select the RDH profile type (1, 2, 3, 5, 7, 9, 10)"
   },
   {
     GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
@@ -278,6 +278,7 @@ int AH_Control_AddUser(AB_PROVIDER *pro,
     switch(rdhType) {
     case 1:
     case 2:
+    case 7:
     case 9:
     case 10:
       /* supported */
@@ -287,7 +288,6 @@ int AH_Control_AddUser(AB_PROVIDER *pro,
     case 4:
     case 5:
     case 6:
-    case 7:
     case 8:
     default:
       DBG_ERROR(AQHBCI_LOGDOMAIN, "RDH type %d not supported", rdhType);

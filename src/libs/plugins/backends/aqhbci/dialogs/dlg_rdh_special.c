@@ -227,6 +227,7 @@ void AH_RdhSpecialDialog_Init(GWEN_DIALOG *dlg) {
   GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, I18N("(auto)"), 0);
   GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "1", 0);
   GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "2", 0);
+  GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "7", 0);
   GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "9", 0);
   GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "10", 0);
 
@@ -235,8 +236,9 @@ void AH_RdhSpecialDialog_Init(GWEN_DIALOG *dlg) {
   case 0:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0); break;
   case 1:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0); break;
   case 2:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 2, 0); break;
-  case 9: GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 3, 0); break;
-  case 10: GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 4, 0); break;
+  case 7: GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 3, 0); break;
+  case 9: GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 4, 0); break;
+  case 10: GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 5, 0); break;
   default:  break;
   }
 
@@ -287,8 +289,9 @@ void AH_RdhSpecialDialog_Fini(GWEN_DIALOG *dlg) {
   switch(i) {
   case 1: xdlg->rdhVersion=1; break;
   case 2: xdlg->rdhVersion=2; break;
-  case 3: xdlg->rdhVersion=9; break;
-  case 4: xdlg->rdhVersion=10; break;
+  case 3: xdlg->rdhVersion=7; break;
+  case 4: xdlg->rdhVersion=9; break;
+  case 5: xdlg->rdhVersion=10; break;
   default:
   case 0: xdlg->rdhVersion=0; break;
   }

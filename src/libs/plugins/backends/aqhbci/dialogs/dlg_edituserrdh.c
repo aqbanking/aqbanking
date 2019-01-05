@@ -328,8 +328,9 @@ int AH_EditUserRdhDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
   switch(i) {
   case 1: AH_User_SetRdhType(xdlg->user, 1); break;
   case 2: AH_User_SetRdhType(xdlg->user, 2); break;
-  case 3: AH_User_SetRdhType(xdlg->user, 9); break;
-  case 4: AH_User_SetRdhType(xdlg->user, 10); break;
+  case 3: AH_User_SetRdhType(xdlg->user, 7); break;
+  case 4: AH_User_SetRdhType(xdlg->user, 9); break;
+  case 5: AH_User_SetRdhType(xdlg->user, 10); break;
   default:
   case 0: AH_User_SetRdhType(xdlg->user, 0); break;
   }

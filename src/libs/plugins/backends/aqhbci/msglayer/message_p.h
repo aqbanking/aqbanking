@@ -119,6 +119,12 @@ static int AH_Msg_EncryptRdh5(AH_MSG *hmsg);
 static int AH_Msg_DecryptRdh5(AH_MSG *hmsg, GWEN_DB_NODE *gr);
 static int AH_Msg_VerifyRdh5(AH_MSG *hmsg, GWEN_DB_NODE *gr);
 
+/**** RDH7 Block Start******/
+static int AH_Msg_SignRdh7(AH_MSG *hmsg, AB_USER *su, GWEN_BUFFER *rawBuf, const char *signer);
+static int AH_Msg_EncryptRdh7(AH_MSG *hmsg);
+static int AH_Msg_DecryptRdh7(AH_MSG *hmsg, GWEN_DB_NODE *gr);
+static int AH_Msg_VerifyRdh7(AH_MSG *hmsg, GWEN_DB_NODE *gr);
+/**** RDH7 Block End******/
 
 static int AH_Msg_SignRdh9(AH_MSG *hmsg, AB_USER *su, GWEN_BUFFER *rawBuf, const char *signer);
 static int AH_Msg_EncryptRdh9(AH_MSG *hmsg);

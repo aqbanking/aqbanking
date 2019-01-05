@@ -818,16 +818,40 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
     return GWEN_DialogEvent_ResultHandled;
   }
 
+  /* send user keys */
+  if ( xdlg->keyStatus & 0x01 )
+  {
+      int withAuthKey=0;
+      if ( xdlg->rdhVersion == 7 )
+      {
+          withAuthKey=1;
+      }
+      ctx=AB_ImExporterContext_new();
+      rv=AH_Provider_SendUserKeys2(xdlg->provider, u, ctx, withAuthKey, 1, 0, 1);
+      AB_ImExporterContext_free(ctx);
+      if (rv) {
+          AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Error sending user keys (%d)", rv);
+        AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+        GWEN_Gui_ProgressEnd(pid);
+        return GWEN_DialogEvent_ResultHandled;
+      }
+  }
   /* get Kundensystem-ID */
-  ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetSysId(xdlg->provider, u, ctx, 1, 0, 1);
-  AB_ImExporterContext_free(ctx);
-  if (rv) {
-    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting Kundensystem ID (%d)", rv);
-    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
-    GWEN_Gui_ProgressEnd(pid);
-    return GWEN_DialogEvent_ResultHandled;
+  /* FIXME the SysID of the zkacard is the CID, so this should not be necessary */
+
+  if ( xdlg->rdhVersion != 7 )
+  {
+      ctx=AB_ImExporterContext_new();
+      rv=AH_Provider_GetSysId(xdlg->provider, u, ctx, 1, 0, 1);
+      AB_ImExporterContext_free(ctx);
+      if (rv) {
+          AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting Kundensystem ID (%d)", rv);
+          AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
+          GWEN_Gui_ProgressEnd(pid);
+          return GWEN_DialogEvent_ResultHandled;
+      }
   }
 
     /* lock new user */
@@ -1136,6 +1160,9 @@ int AH_ZkaCardDialog_FromContext(GWEN_DIALOG *dlg, int i) {
 				  (s && *s)?s:"",
 				  0);
 
+      /* RDH7 */
+      xdlg->rdhVersion = GWEN_Crypt_Token_Context_GetProtocolVersion(ctx);
+      xdlg->keyStatus  = GWEN_Crypt_Token_Context_GetKeyStatus(ctx);
     }
   }
 

@@ -316,7 +316,6 @@ AQHBCI_API GWEN_CRYPT_KEY * AH_User_GetBankPubSignKey(const AB_USER *u);
 AQHBCI_API void AH_User_SetBankPubCryptKey(AB_USER *u, GWEN_CRYPT_KEY *bankPubKey);
 AQHBCI_API GWEN_CRYPT_KEY * AH_User_GetBankPubCryptKey(const AB_USER *u);
 
-
 AQHBCI_API const char *AH_User_FindSepaDescriptor(AB_USER *u, const char *tmpl);
 
 
