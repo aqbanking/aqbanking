@@ -4,7 +4,6 @@ Next:
   - find out why AB_Value_toString doesn't work when importing cma_052
   - autodetect xml import schema to use for XML importer
   - fix apidoc for provider.h
-  - dont export AB_NewUser|AccountDialog_*
   - create APIDOC for banking jobs
 
 - remove AB_ERROR
@@ -33,39 +32,6 @@ Old
 ===
 
 - loganalyzer: read messages from FASTBUFFER instead from IO
-
-CAVEATS:
-- you need to call AB_Job_CheckAvailability() after creating a job
-
-
-- generic settings
-  - bank code
-  - bank name
-  - hbci version
-  - bank url
-  - flags:
-    - userId == customerId
-
-- settings in DDV mode:
-  - flags:
-    - bankDoesntSign
-    - bankUsesSignSeq
-
-- settings in RDH mode
-  - rdh version
-  - keysize
-  - flags:
-    - bankDoesntSign
-    - bankUsesSignSeq
-  
-
-- settings in pin/tan mode
-  - http version
-  - flags
-    - forceSslv3
-    - noBase64
-    - omitSmsAccount
-
 
 - send a local branch under the same name to server:
   "git push -u origin HEAD"
