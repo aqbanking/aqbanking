@@ -140,6 +140,7 @@ int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a) {
 
   /* add account */
   uid=AB_Banking_GetNamedUniqueId(AB_Provider_GetBanking(pro), "account", 1); /* startAtStdUniqueId=1 */
+  AB_Account_SetUniqueId(a, uid);
   rv=AB_Provider_WriteAccount(pro, uid, 1, 1, a); /* lock, unlock */
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
