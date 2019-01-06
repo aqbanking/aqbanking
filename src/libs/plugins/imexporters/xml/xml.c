@@ -99,9 +99,17 @@ int AB_ImExporterXML_Import(AB_IMEXPORTER *ie,
     return GWEN_ERROR_INVALID;
   }
 
-  xmlNodeSchema=GWEN_XMLNode_FindFirstTag(xmlDocSchema, "ImportSchema", NULL, NULL);
+  xmlNodeSchema=GWEN_XMLNode_FindFirstTag(xmlDocSchema, "Schema", NULL, NULL);
   if (!xmlNodeSchema) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing \"ImportSchema\" in schema file.");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing \"Schema\" in schema file.");
+    GWEN_XMLNode_free(xmlDocData);
+    GWEN_XMLNode_free(xmlDocSchema);
+    return GWEN_ERROR_INVALID;
+  }
+
+  xmlNodeSchema=GWEN_XMLNode_FindFirstTag(xmlNodeSchema /* sic! */, "Import", NULL, NULL);
+  if (!xmlNodeSchema) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing \"Import\" in schema file.");
     GWEN_XMLNode_free(xmlDocData);
     GWEN_XMLNode_free(xmlDocSchema);
     return GWEN_ERROR_INVALID;
