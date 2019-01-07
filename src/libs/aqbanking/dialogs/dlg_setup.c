@@ -1119,7 +1119,7 @@ int AB_SetupDialog_AddAccount(GWEN_DIALOG *dlg) {
     }
     GWEN_Dialog_free(dlg2);
 
-    rv=AB_Provider_AddAccount(pro, a);
+    rv=AB_Provider_AddAccount(pro, a, 1); /* do lock corresponding user */
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       AB_Account_free(a);

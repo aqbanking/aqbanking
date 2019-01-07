@@ -109,7 +109,7 @@ int addAccount(AB_PROVIDER *pro, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
       AB_Account_SetBankName(account, AB_BankInfo_GetBankName(bi));
     AB_Account_SetUserId(account, userId);
 
-    rv=AB_Provider_AddAccount(pro, account);
+    rv=AB_Provider_AddAccount(pro, account, 1); /* do lock corresponding user */
     if (rv) {
       DBG_ERROR(0, "Error adding account (%d)", rv);
       return 3;

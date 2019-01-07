@@ -226,7 +226,7 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
     /* account is new, add it */
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Account is new, adding");
     AB_Account_SetUserId(acc, AB_User_GetUniqueId(j->user));
-    rv=AB_Provider_AddAccount(pro, acc);
+    rv=AB_Provider_AddAccount(pro, acc, 0); /* do not lock corresponding user because it already is locked! */
     if (rv<0) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Coud not write new account (%d)", rv);
     }

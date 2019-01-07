@@ -134,7 +134,7 @@ int AB_Provider_WriteAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doU
 
 
 
-int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a) {
+int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a, int lockCorrespondingUser) {
   uint32_t uid;
   int rv;
 
@@ -147,7 +147,7 @@ int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a) {
     return rv;
   }
   /* write account spec */
-  rv=AB_Provider_WriteAccountSpecForAccount(pro, a, 0); /* do not lock */
+  rv=AB_Provider_WriteAccountSpecForAccount(pro, a, lockCorrespondingUser);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;

@@ -806,7 +806,7 @@ int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
     AB_Account_SetAccountName(account, accountname);
     AB_Account_SetUserId(account, AB_User_GetUniqueId(u));
 
-    rv=AB_Provider_AddAccount(xdlg->provider, account);
+    rv=AB_Provider_AddAccount(xdlg->provider, account, 1); /* do lock corresponding user */
     if (rv<0) {
       DBG_INFO(AQPAYPAL_LOGDOMAIN, "Error adding account (%d)", rv);
       AB_Account_free(account);

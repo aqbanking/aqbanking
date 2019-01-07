@@ -497,7 +497,7 @@ int _addAccount(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *account) {
   /* account is new, add it */
   DBG_ERROR(AQEBICS_LOGDOMAIN, "Account is new, adding");
   AB_Account_SetUserId(account, AB_User_GetUniqueId(user));
-  rv=AB_Provider_AddAccount(pro, account);
+  rv=AB_Provider_AddAccount(pro, account, 0); /* do not lock corresponding user, it might already be locked */
   if (rv<0) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Coud not add new account (%d)", rv);
     return rv;

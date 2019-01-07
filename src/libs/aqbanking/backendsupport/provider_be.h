@@ -339,9 +339,13 @@ int AB_Provider_WriteAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doU
  * @return 0 on success, error code otherwise
  * @param pro provider (THIS in C++ speak)
  * @param a account to add
+ * @param lockCorrespondingUser lock user which this account belongs to while using user data.
+ *        Some backends (e.g. AqHBCI) access the corresponding AB_USER object when creating AB_ACCOUNT_SPEC
+ *        objects for the given account. If the user is already locked for any reason, the function
+ *        should not try to lock the AB_USER object because that must fail.
  *
  */
-int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);
+int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a, int lockCorrespondingUser);
 
 
 /**

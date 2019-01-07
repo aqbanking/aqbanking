@@ -193,7 +193,7 @@ int AH_Control_AddAccount(AB_PROVIDER *pro,
     AB_Account_SetUserId(account, userId);
 
     /* add account to system */
-    rv=AB_Provider_AddAccount(pro, account);
+    rv=AB_Provider_AddAccount(pro, account, 1); /* lock corresponding user */
     if (rv<0) {
       DBG_ERROR(0, "Error adding account (%d)", rv);
       AB_Account_free(account);

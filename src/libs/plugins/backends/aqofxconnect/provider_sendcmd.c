@@ -509,7 +509,7 @@ void AO_Provider__AddOrModifyAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a
     /* account is new, add it */
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Account is new, adding");
     AB_Account_SetUserId(acc, AB_User_GetUniqueId(u));
-    rv=AB_Provider_AddAccount(pro, acc);
+    rv=AB_Provider_AddAccount(pro, acc, 1); /* do lock corresponding user */
     if (rv<0) {
       DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Coud not write new account (%d)", rv);
     }
