@@ -106,6 +106,17 @@ int AB_Banking_EndUseProvider(AB_BANKING *ab, AB_PROVIDER *pro);
 int AB_Banking_FindDataFileForImExporter(AB_BANKING *ab, const char *imExpName, const char *fileName, GWEN_BUFFER *fullPathBuffer);
 
 
+/**
+ * List all data files for the given im-/exporter matching the given file mask.
+ *
+ * @return stringlist containing one entry for each file (absolute path)
+ * @param ab pointer to the AB_BANKING object (needs to be initialized, i.e. @ref AB_Banking_Init called).
+ * @param imExpName name of the im-/exporter
+ * @param fileMask mask fore the file name to match (wildcards and jokers allowed, e.g. "*.xml")
+ */
+GWEN_STRINGLIST *AB_Banking_ListDataFilesForImExporter(AB_BANKING *ab, const char *imExpName, const char *fileMask);
+
+
 /*@}*/
 
 

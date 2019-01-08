@@ -972,6 +972,55 @@ int AB_Banking_FindDataFileForImExporter(AB_BANKING *ab, const char *imExpName, 
 
 
 
+GWEN_STRINGLIST *AB_Banking_ListDataFilesForImExporter(AB_BANKING *ab, const char *imExpName, const char *fileMask){
+  int rv;
+  GWEN_BUFFER *pathBuffer;
+  GWEN_STRINGLIST *slGlobalDataDirs;
+  GWEN_STRINGLIST *slMatchingFiles;
+  GWEN_STRINGLISTENTRY *seGlobalDataDir;
+
+  slGlobalDataDirs=AB_Banking_GetGlobalDataDirs();
+  assert(slGlobalDataDirs);
+
+  slMatchingFiles=GWEN_StringList_new();
+
+  pathBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  seGlobalDataDir=GWEN_StringList_FirstEntry(slGlobalDataDirs);
+  while(seGlobalDataDir) {
+    GWEN_Buffer_AppendString(pathBuffer, GWEN_StringListEntry_Data(seGlobalDataDir));
+    GWEN_Buffer_AppendString(pathBuffer,
+                             DIRSEP
+                             "aqbanking"
+                             DIRSEP
+                             AB_IMEXPORTER_FOLDER
+                             DIRSEP);
+    GWEN_Buffer_AppendString(pathBuffer, imExpName);
+    GWEN_Buffer_AppendString(pathBuffer, DIRSEP "data");
+
+    rv=GWEN_Directory_GetMatchingFilesRecursively(GWEN_Buffer_GetStart(pathBuffer), slMatchingFiles, fileMask);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN,
+               "Error listing matching files in folder \"%s\", ignoring",
+               GWEN_Buffer_GetStart(pathBuffer));
+    }
+    GWEN_Buffer_Reset(pathBuffer);
+
+    seGlobalDataDir=GWEN_StringListEntry_Next(seGlobalDataDir);
+  } /* while(seGlobalDataDir) */
+  GWEN_Buffer_free(pathBuffer);
+
+
+  if (GWEN_StringList_Count(slMatchingFiles)<1) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No matching data files");
+    GWEN_StringList_free(slMatchingFiles);
+    return NULL;
+  }
+
+  return slMatchingFiles;
+}
+
+
+
 GWEN_DB_NODE *AB_Banking_GetImExporterProfile(AB_BANKING *ab,
 					      const char *imExporterName,
 					      const char *profileName) {
