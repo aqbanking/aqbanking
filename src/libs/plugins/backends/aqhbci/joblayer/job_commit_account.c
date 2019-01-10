@@ -275,6 +275,10 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
   if (storedAcc) {
     int rv;
 
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Updating account spec for account %u in user %u",
+               (unsigned int) AB_Account_GetUniqueId(storedAcc),
+               (unsigned int) AB_User_GetUniqueId(j->user));
+
     rv=AB_Provider_WriteAccountSpecForAccount(pro, storedAcc, 0); /* dont lock */
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
