@@ -317,23 +317,6 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 
   /* GWEN_DB_Dump(j->jobResponses, 2); */
 
-  /* try to extract accounts */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Committing accounts");
-  rv=AH_Job__Commit_Accounts(j);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  /* try to extract bank parameter data */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Committing BPD");
-  rv=AH_Job__Commit_Bpd(j);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-
   dbCurr=GWEN_DB_GetFirstGroup(j->jobResponses);
   while(dbCurr) {
     GWEN_DB_NODE *dbRd;
@@ -351,10 +334,11 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
         while(dbRes) {
           if (strcasecmp(GWEN_DB_GroupName(dbRes), "result")==0) {
             int code;
-//            const char *text;
+            const char *text;
 
             code=GWEN_DB_GetIntValue(dbRes, "resultcode", 0, 0);
-//            text=GWEN_DB_GetCharValue(dbRes, "text", 0, 0);
+            text=GWEN_DB_GetCharValue(dbRes, "text", 0, 0);
+            DBG_NOTICE(AQHBCI_LOGDOMAIN, "Segment result: %d (%s)", code, text?text:"<none>");
             if (code==3920) {
               int i;
 
@@ -512,6 +496,24 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
     } /* if response data found */
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
   } /* while */
+
+  /* try to extract bank parameter data */
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Committing BPD");
+  rv=AH_Job__Commit_Bpd(j);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* try to extract accounts */
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Committing accounts");
+  rv=AH_Job__Commit_Accounts(j);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+
 
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Finished.");
   return 0;

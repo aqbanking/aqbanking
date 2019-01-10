@@ -13,6 +13,89 @@
  */
 
 
+int AH_Job__Commit_Accounts(AH_JOB *j){
+  int rv;
+  AB_ACCOUNT_LIST *accList;
+  AB_BANKING *ab;
+  AB_PROVIDER *pro;
+
+  ab=AH_Job_GetBankingApi(j);
+  assert(ab);
+  pro=AH_Job_GetProvider(j);
+  assert(pro);
+
+  accList=AB_Account_List_new();
+
+  /* read accounts from job data */
+  rv=AH_Job__Commit_Accounts_ReadAccounts(j, accList);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+  }
+
+#if 0
+  if (AB_Account_List_GetCount(accList)<1) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Found no accounts");
+    GWEN_DB_Dump(dbJob, 2);
+  }
+#endif
+
+  /* only keep accounts which have at least IBAN or bankcode and account number */
+  AH_Job__Commit_Accounts_RemoveEmpty(j, accList);
+
+  /* find out which accounts are new */
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Checking for existing or to be added accounts");
+  if (AB_Account_List_GetCount(accList)) {
+    AB_ACCOUNT_SPEC_LIST *accountSpecList=NULL;
+
+    accountSpecList=AB_AccountSpec_List_new();
+    rv=AB_Banking_GetAccountSpecList(ab, &accountSpecList);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "No account spec list");
+    }
+    else {
+      AB_ACCOUNT *acc;
+
+      acc=AB_Account_List_First(accList);
+      while(acc) {
+        uint32_t storedUid=0;
+
+        storedUid=AH_Job__Commit_Accounts_FindStored(j, acc, accountSpecList);
+        if (storedUid) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Found a matching account (%x)", storedUid);
+          AB_Account_SetUniqueId(acc, storedUid);
+        }
+
+        acc=AB_Account_List_Next(acc);
+      }
+    }
+    AB_AccountSpec_List_free(accountSpecList);
+  }
+
+  /* now either add new accounts or modify existing ones */
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding new or modifying existing accounts");
+  if (AB_Account_List_GetCount(accList)) {
+    AB_ACCOUNT *acc;
+
+    while( (acc=AB_Account_List_First(accList)) ) {
+      /* remove from list. if this is a new account it will be added to AqBanking's internal
+       * list, by which AqBanking takes over the object. If it is a known account, it will be
+       * freed later */
+      AB_Account_List_Del(acc);
+      /* add new or modify existing account */
+      AH_Job__Commit_Accounts_AddOrModify(j, acc);
+
+      /* free local representation */
+      AB_Account_free(acc);
+
+    } /* while */
+  } /* if accounts */
+  AB_Account_List_free(accList);
+
+  /* done */
+  return 0;
+}
+
+
 
 static int AH_Job__Commit_Accounts_ReadAccounts(AH_JOB *j, AB_ACCOUNT_LIST *accList){
   AB_BANKING *ab;
@@ -291,86 +374,5 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
 
 
 
-int AH_Job__Commit_Accounts(AH_JOB *j){
-  int rv;
-  AB_ACCOUNT_LIST *accList;
-  AB_BANKING *ab;
-  AB_PROVIDER *pro;
-
-  ab=AH_Job_GetBankingApi(j);
-  assert(ab);
-  pro=AH_Job_GetProvider(j);
-  assert(pro);
-
-  accList=AB_Account_List_new();
-
-  /* read accounts from job data */
-  rv=AH_Job__Commit_Accounts_ReadAccounts(j, accList);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-  }
-
-#if 0
-  if (AB_Account_List_GetCount(accList)<1) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Found no accounts");
-    GWEN_DB_Dump(dbJob, 2);
-  }
-#endif
-
-  /* only keep accounts which have at least IBAN or bankcode and account number */
-  AH_Job__Commit_Accounts_RemoveEmpty(j, accList);
-
-  /* find out which accounts are new */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Checking for existing or to be added accounts");
-  if (AB_Account_List_GetCount(accList)) {
-    AB_ACCOUNT_SPEC_LIST *accountSpecList=NULL;
-
-    accountSpecList=AB_AccountSpec_List_new();
-    rv=AB_Banking_GetAccountSpecList(ab, &accountSpecList);
-    if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "No account spec list");
-    }
-    else {
-      AB_ACCOUNT *acc;
-
-      acc=AB_Account_List_First(accList);
-      while(acc) {
-        uint32_t storedUid=0;
-
-        storedUid=AH_Job__Commit_Accounts_FindStored(j, acc, accountSpecList);
-        if (storedUid) {
-          DBG_INFO(AQHBCI_LOGDOMAIN, "Found a matching account (%x)", storedUid);
-          AB_Account_SetUniqueId(acc, storedUid);
-        }
-
-        acc=AB_Account_List_Next(acc);
-      }
-    }
-    AB_AccountSpec_List_free(accountSpecList);
-  }
-
-  /* now either add new accounts or modify existing ones */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding new or modifying existing accounts");
-  if (AB_Account_List_GetCount(accList)) {
-    AB_ACCOUNT *acc;
-
-    while( (acc=AB_Account_List_First(accList)) ) {
-      /* remove from list. if this is a new account it will be added to AqBanking's internal
-       * list, by which AqBanking takes over the object. If it is a known account, it will be
-       * freed later */
-      AB_Account_List_Del(acc);
-      /* add new or modify existing account */
-      AH_Job__Commit_Accounts_AddOrModify(j, acc);
-
-      /* free local representation */
-      AB_Account_free(acc);
-
-    } /* while */
-  } /* if accounts */
-  AB_Account_List_free(accList);
-
-  /* done */
-  return 0;
-}
 
 

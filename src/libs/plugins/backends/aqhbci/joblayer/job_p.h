@@ -110,6 +110,15 @@ static int AH_Job__CommitSystemData(AH_JOB *j, int doLock);
 static int AH_Job__Commit_Accounts(AH_JOB *j);
 
 
+static int AH_Job__Commit_Accounts_ReadAccounts(AH_JOB *j, AB_ACCOUNT_LIST *accList);
+static void AH_Job__Commit_Accounts_RemoveEmpty(AH_JOB *j, AB_ACCOUNT_LIST *accList);
+static uint32_t AH_Job__Commit_Accounts_FindStored(AH_JOB *j, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC_LIST *asl);
+static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc);
+
+
+
+
+
 #endif /* AH_JOB_P_H */
 
 
