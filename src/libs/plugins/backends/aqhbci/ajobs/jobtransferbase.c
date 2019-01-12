@@ -365,13 +365,13 @@ int AH_Job_TransferBase_GetLimits_SepaStandingOrder(AH_JOB *j, AB_TRANSACTION_LI
 	s++;
       } /* while */
     }
-
-    i=GWEN_DB_GetIntValue(dbParams, "minDelay", 0, 0);
-    AB_TransactionLimits_SetMinValueSetupTime(lim, i);
-
-    i=GWEN_DB_GetIntValue(dbParams, "maxDelay", 0, 0);
-    AB_TransactionLimits_SetMaxValueSetupTime(lim, i);
   }
+
+  i=GWEN_DB_GetIntValue(dbParams, "mindelay", 0, 0);
+  AB_TransactionLimits_SetMinValueSetupTime(lim, i);
+
+  i=GWEN_DB_GetIntValue(dbParams, "maxdelay", 0, 0);
+  AB_TransactionLimits_SetMaxValueSetupTime(lim, i);
 
   /* nothing more to set for this kind of job */
   *pLimits=lim;
