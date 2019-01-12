@@ -29,7 +29,7 @@
   
         <XmlForEvery name="PmtInf">
   
-          <XmlCreateAndEnterGroup name="account">
+          <DbCreateAndEnterGroup name="account">
   
             <DbCreateAndEnterTempGroup name="account" >
   
