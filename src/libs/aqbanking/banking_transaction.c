@@ -154,7 +154,7 @@ int AB_Banking_CheckTransactionAgainstLimits_Names(const AB_TRANSACTION *t, cons
 
 
 int AB_Banking_CheckTransactionAgainstLimits_Recurrence(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
-  if (lim && (AB_Transaction_GetCommand(t)!=AB_Transaction_CommandSepaDeleteStandingOrder)) {
+  if (lim) {
     /* check period */
     if (AB_Transaction_GetPeriod(t)==AB_Transaction_PeriodMonthly) {
       int n;
