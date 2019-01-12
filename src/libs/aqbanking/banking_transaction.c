@@ -165,7 +165,8 @@ int AB_Banking_CheckTransactionAgainstLimits_Recurrence(const AB_TRANSACTION *t,
         return GWEN_ERROR_INVALID;
       }
 
-      if (!AB_TransactionLimits_ValuesCycleMonthHas(lim, n) &&
+      if (AB_TransactionLimits_GetValuesCycleMonthUsed(lim) &&
+          !AB_TransactionLimits_ValuesCycleMonthHas(lim, n) &&
           !AB_TransactionLimits_ValuesCycleMonthHas(lim, 0)) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Month day \"%d\" not supported by bank", n);
         GWEN_Gui_ProgressLog2(0,
@@ -183,7 +184,8 @@ int AB_Banking_CheckTransactionAgainstLimits_Recurrence(const AB_TRANSACTION *t,
         return GWEN_ERROR_INVALID;
       }
 
-      if (!AB_TransactionLimits_ValuesExecutionDayMonthHas(lim, n) &&
+      if (AB_TransactionLimits_GetValuesExecutionDayMonthUsed(lim) &&
+          !AB_TransactionLimits_ValuesExecutionDayMonthHas(lim, n) &&
           !AB_TransactionLimits_ValuesExecutionDayMonthHas(lim, 0)) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Execution month day \"%d\" not supported by bank", n);
         GWEN_Gui_ProgressLog2(0,
@@ -202,7 +204,8 @@ int AB_Banking_CheckTransactionAgainstLimits_Recurrence(const AB_TRANSACTION *t,
         return GWEN_ERROR_INVALID;
       }
 
-      if (!AB_TransactionLimits_ValuesCycleWeekHas(lim, n) &&
+      if (AB_TransactionLimits_GetValuesCycleWeekUsed(lim) &&
+          !AB_TransactionLimits_ValuesCycleWeekHas(lim, n) &&
           !AB_TransactionLimits_ValuesCycleWeekHas(lim, 0)) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Week day \"%d\" not supported by bank", n);
         GWEN_Gui_ProgressLog2(0,
@@ -220,7 +223,8 @@ int AB_Banking_CheckTransactionAgainstLimits_Recurrence(const AB_TRANSACTION *t,
         return GWEN_ERROR_INVALID;
       }
 
-      if (!AB_TransactionLimits_ValuesExecutionDayWeekHas(lim, n) &&
+      if (AB_TransactionLimits_GetValuesExecutionDayWeekUsed(lim) &&
+          !AB_TransactionLimits_ValuesExecutionDayWeekHas(lim, n) &&
           !AB_TransactionLimits_ValuesExecutionDayWeekHas(lim, 0)) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Execution week day \"%d\" not supported by bank", n);
         GWEN_Gui_ProgressLog2(0,
