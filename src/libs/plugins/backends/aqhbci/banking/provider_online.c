@@ -310,11 +310,12 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
     return rv;
   }
 
-  if (AH_Job_GetKeys_GetCryptKeyInfo(job)==NULL) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No crypt key received");
+  /* Store crypt and sign keys in database */
+  if (AH_Job_GetKeys_GetCryptKeyInfo(job)==NULL && AH_Job_GetKeys_GetSignKeyInfo(job)==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No crypt key and no sign key received");
     GWEN_Gui_ProgressLog(0,
 			 GWEN_LoggerLevel_Error,
-			 I18N("No crypt key received."));
+			 I18N("No crypt key and no sign key received."));
     AH_Job_free(job);
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
@@ -329,15 +330,9 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
 			   I18N("Could not commit result"));
       AH_Job_free(job);
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+    	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       return rv;
     }
-  }
-
-  if (AH_Job_GetKeys_GetSignKeyInfo(job)==0) {
-    GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Notice,
-			 I18N("Bank does not use a sign key."));
   }
 
   /* lock user */
@@ -347,7 +342,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not lock user (%d)\n", rv);
       AH_Job_free(job);
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+    	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       return rv;
     }
   }
@@ -418,7 +413,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
     GWEN_CRYPT_TOKEN_KEYINFO *ki;
     uint32_t kid;
 
-    /* store sign key (if any) */
+    /* store sign key on token (if any) */
     kid=GWEN_Crypt_Token_Context_GetVerifyKeyId(cctx);
     ki=AH_Job_GetKeys_GetSignKeyInfo(job);
     if (kid && ki) {
@@ -427,21 +422,20 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
 				     ki,
 				     0);
       if (rv) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not save key info (%d)", rv);
-	GWEN_Gui_ProgressLog(0,
-			     GWEN_LoggerLevel_Error,
-			     I18N("Error saving sign key"));
-	if (doLock)
-	  AB_Provider_EndExclUseUser(pro, u, 0);
-	AH_Job_free(job);
-	if (!nounmount)
-	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-	return rv;
+    	DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not save key info (%d)", rv);
+    			  GWEN_Gui_ProgressLog(0,GWEN_LoggerLevel_Error,
+			      I18N("Error saving sign key"));
+    	if (doLock)
+    	  AB_Provider_EndExclUseUser(pro, u, 0);
+    	AH_Job_free(job);
+    	if (!nounmount)
+    	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+    	return rv;
       }
       DBG_INFO(AQHBCI_LOGDOMAIN, "Sign key saved");
     }
 
-    /* store crypt key */
+    /* store crypt key on token */
     kid=GWEN_Crypt_Token_Context_GetEncipherKeyId(cctx);
     ki=AH_Job_GetKeys_GetCryptKeyInfo(job);
     if (kid && ki) {
@@ -450,21 +444,20 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
 				     ki,
 				     0);
       if (rv) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not save key info (%d)", rv);
-	GWEN_Gui_ProgressLog(0,
-			     GWEN_LoggerLevel_Error,
-			     I18N("Error saving crypt key"));
-	if (doLock)
-	  AB_Provider_EndExclUseUser(pro, u, 0);
-	AH_Job_free(job);
-	if (!nounmount)
-	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-	return rv;
+    	DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not save key info (%d)", rv);
+    	          GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
+			      I18N("Error saving crypt key"));
+    	if (doLock)
+    	  AB_Provider_EndExclUseUser(pro, u, 0);
+    	AH_Job_free(job);
+    	if (!nounmount)
+    	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+    	return rv;
       }
       DBG_INFO(AQHBCI_LOGDOMAIN, "Crypt key saved");
     }
 
-    /* store auth key (if any) */
+    /* store auth key on token (if any) */
     kid=GWEN_Crypt_Token_Context_GetAuthVerifyKeyId(cctx);
     ki=AH_Job_GetKeys_GetAuthKeyInfo(job);
     if (kid && ki) {
@@ -473,16 +466,15 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
 				     ki,
 				     0);
       if (rv) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not save key info (%d)", rv);
-	GWEN_Gui_ProgressLog(0,
-			     GWEN_LoggerLevel_Error,
-			     I18N("Error saving auth key"));
-	if (doLock)
-	  AB_Provider_EndExclUseUser(pro, u, 0);
-	AH_Job_free(job);
-	if (!nounmount)
-	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-	return rv;
+    	DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not save key info (%d)", rv);
+    			  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
+			      I18N("Error saving auth key"));
+    	if (doLock)
+    	  AB_Provider_EndExclUseUser(pro, u, 0);
+    	AH_Job_free(job);
+    	if (!nounmount)
+    	  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+    	return rv;
       }
       DBG_INFO(AQHBCI_LOGDOMAIN, "Auth key saved");
     }
