@@ -53,7 +53,7 @@ int AB_Banking_CheckTransactionAgainstLimits_Purpose(const AB_TRANSACTION *t, co
             GWEN_StringList_free(sl);
             return GWEN_ERROR_INVALID;
           }
-          else {
+          else if (maxs>0) {
             int l;
             GWEN_BUFFER *tbuf;
 
