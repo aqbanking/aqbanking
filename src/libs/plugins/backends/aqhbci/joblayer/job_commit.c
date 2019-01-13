@@ -365,18 +365,17 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
       else if (strcasecmp(GWEN_DB_GroupName(dbRd), "GetKeyResponse")==0){
         const char *keytype;
 
-        keytype=GWEN_DB_GetCharValue(dbRd, "keyname/keyType",  0, NULL);
+        keytype=GWEN_DB_GetCharValue(dbRd, "keyname/keytype",  0, NULL);
         if (keytype && *keytype) {
           GWEN_CRYPT_KEY * bpk;
           const void *expp, *modp;
           unsigned int expl, modl;
-          int keynum, keyver;
-          /**** RDH7 Block Start******/
-          int keySize;
-          /**** RDH7 Block End******/
+          int keynum, keyver, i;
+	  char hashString[1024];
+	  uint8_t keyExpMod[512];
+	  GWEN_MDIGEST *md;
 
-          /* TODO: Ask the user to accept the key received */
-          DBG_WARN(AQHBCI_LOGDOMAIN, "GetKeyResponse not yet processed!");
+          /* process received keys */
           keynum=GWEN_DB_GetIntValue(dbRd, "keyname/keynum",  0, -1);
           keyver=GWEN_DB_GetIntValue(dbRd, "keyname/keyversion",  0, -1);
           modp=GWEN_DB_GetBinValue(dbRd, "key/modulus",  0, NULL, 0, &modl);
@@ -386,39 +385,71 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
             modl--;
           }
 
-          /* calculate key size in bytes */
-          if (modl<=96)
-            keySize=96;
-          else {
-            keySize=modl;
-          }
           expp=GWEN_DB_GetBinValue(dbRd, "key/exponent", 0, NULL, 0, &expl);
-          bpk=GWEN_Crypt_KeyRsa_fromModExp(keySize, modp, modl, expp, expl);
-          GWEN_Crypt_Key_SetKeyNumber(bpk, GWEN_DB_GetIntValue(dbRd, "keyname/keynum", 0, 0));
-          GWEN_Crypt_Key_SetKeyVersion(bpk, GWEN_DB_GetIntValue(dbRd, "keyname/keyversion", 0, 0));
+          bpk=GWEN_Crypt_KeyRsa_fromModExp(256, modp, modl, expp, expl);
+          GWEN_Crypt_Key_SetKeyNumber(bpk, keynum);
+          GWEN_Crypt_Key_SetKeyVersion(bpk, keyver);
 
-          if (strcasecmp(keytype, "S")==0) {
-            DBG_WARN(AQHBCI_LOGDOMAIN, "Received new server sign key, please verify! (num: %d, version: %d)", keynum, keyver);
+	  /* calculate key hash */
+	  memset(keyExpMod, 0, 512);
+	  memcpy(keyExpMod+256-expl, expp, expl);
+	  memcpy(keyExpMod+256, modp, 256);
+
+	  md=GWEN_MDigest_Sha256_new();
+	  rv=GWEN_MDigest_Begin(md);
+	  if (rv==0)
+	    rv=GWEN_MDigest_Update(md, keyExpMod, 512);
+	  if (rv==0)
+	    rv=GWEN_MDigest_End(md);
+	  memset(hashString, 0, 1024);
+	  for(i=0; i<GWEN_MDigest_GetDigestSize(md); i++)
+	    sprintf(hashString+3*i, "%02x ", *(GWEN_MDigest_GetDigestPtr(md)+i));
+	  GWEN_MDigest_free(md);
+
+	  /* commit the new key */
+	  if (strcasecmp(keytype, "S")==0) {
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "Received new server sign key, please verify! (num: %d, version: %d, hash: %s)", keynum, keyver, hashString);
             GWEN_Gui_ProgressLog2(0,
                                   GWEN_LoggerLevel_Warning,
-                                  I18N("Received new server sign key, please verify! (num: %d, version: %d)"),
-                                  keynum, keyver);
-            AH_User_SetBankPubSignKey(u, bpk);
+                                  I18N("Received new server sign key, please verify! (num: %d, version: %d, hash: %s)"),
+                                  keynum, keyver, hashString);
+
+	    rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN | GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
+                                                I18N("Received Public Bank Sign Key"),
+                                                        I18N("Do you really want to import this key?"),
+                                                        I18N("Import"), I18N("Abort"), NULL, 0);
+	    if (rv==1) {
+	      DBG_ERROR(AQHBCI_LOGDOMAIN, "Imported sign key.");
+	      AH_User_SetBankPubSignKey(u, bpk);
+	    }
+	    else {
+	      DBG_ERROR(AQHBCI_LOGDOMAIN, "Sign key not imported.");
+	    }	    
           }
           else if (strcasecmp(keytype, "V")==0) {
-            DBG_WARN(AQHBCI_LOGDOMAIN, "Received new server crypt key, please verify! (num: %d, version: %d)", keynum, keyver);
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "Received new server crypt key, please verify! (num: %d, version: %d, hash: %s)", keynum, keyver, hashString);
             GWEN_Gui_ProgressLog2(0,
                                   GWEN_LoggerLevel_Warning,
-                                  I18N("Received new server crypt key, please verify! (num: %d, version: %d)"),
-                                  keynum, keyver);
-            AH_User_SetBankPubCryptKey(u, bpk);
+                                  I18N("Received new server crypt key, please verify! (num: %d, version: %d, hash: %s)"),
+                                  keynum, keyver, hashString);
+	    rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN | GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
+                                                I18N("Received Public Bank Crypt Key"),
+                                                        I18N("Do you really want to import this key?"),
+                                                        I18N("Import"), I18N("Abort"), NULL, 0);
+	    if (rv==1) {
+	      DBG_ERROR(AQHBCI_LOGDOMAIN, "Imported crypt key.");
+	      AH_User_SetBankPubCryptKey(u, bpk);
+	    }
+	    else {
+	      DBG_ERROR(AQHBCI_LOGDOMAIN, "Crypt key not imported.");
+	    }	    
           }
           else {
-            DBG_WARN(AQHBCI_LOGDOMAIN, "Received unknown server key: type=%s, num=%d, version=%d", keytype, keynum, keyver);
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "Received unknown server key: type=%s, num=%d, version=%d, hash=%s", keytype, keynum, keyver, hashString);
             GWEN_Gui_ProgressLog2(0,
                                   GWEN_LoggerLevel_Warning,
-                                  I18N("Received unknown server key: type=%s, num=%d, version=%d"),
-                                  keytype, keynum, keyver);
+                                  I18N("Received unknown server key: type=%s, num=%d, version=%d, hash=%s"),
+                                  keytype, keynum, keyver, hashString);
           }
         }
       }
