@@ -371,9 +371,10 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
           const void *expp, *modp;
           unsigned int expl, modl;
           int keynum, keyver, i;
-	  char hashString[1024];
-	  uint8_t keyExpMod[512];
-	  GWEN_MDIGEST *md;
+	      char hashString[1024];
+	      uint8_t keyExpMod[512];
+	      GWEN_MDIGEST *md;
+	      int keySize;
 
           /* process received keys */
           keynum=GWEN_DB_GetIntValue(dbRd, "keyname/keynum",  0, -1);
@@ -385,8 +386,15 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
             modl--;
           }
 
+          /* calculate key size in bytes */
+          if (modl<=96)
+            keySize=96;
+          else {
+            keySize=modl;
+          }
+
           expp=GWEN_DB_GetBinValue(dbRd, "key/exponent", 0, NULL, 0, &expl);
-          bpk=GWEN_Crypt_KeyRsa_fromModExp(256, modp, modl, expp, expl);
+          bpk=GWEN_Crypt_KeyRsa_fromModExp(keySize, modp, modl, expp, expl);
           GWEN_Crypt_Key_SetKeyNumber(bpk, keynum);
           GWEN_Crypt_Key_SetKeyVersion(bpk, keyver);
 
