@@ -47,7 +47,7 @@ int AH_Control_GetAccSepa(AB_PROVIDER *pro,
     GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
     GWEN_ArgsType_Char,           /* type */
     "flags",                      /* name */
-    1,                            /* minnum */
+    0,                            /* minnum */
     99,                            /* maxnum */
     "f",                          /* short option */
     "flags",                   /* long option */
