@@ -1852,14 +1852,12 @@ int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       return rv;
     }
 
-    dbXA=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                          "data/GetAccountSepaInfoResponse");
+    dbXA=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/GetAccountSepaInfoResponse");
     if (dbXA) {
       const char *accountId;
       const char *bankCode;
       const char *accountSuffix;
       const char *sSepa;
-
       const char *iban;
       const char *bic;
       int useWithSepa=0;
@@ -1876,6 +1874,7 @@ int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       iban=GWEN_DB_GetCharValue(dbXA, "iban", 0, 0);
       bic=GWEN_DB_GetCharValue(dbXA, "bic", 0, 0);
 
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Update Account");
       rv=AB_Provider_BeginExclUseAccount(pro, jd->account);
       if (rv<0) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Unable to lock account");
@@ -1912,7 +1911,13 @@ int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 		    iban?iban:"",
 		    bic?bic:"");
 	}
-	AB_Provider_EndExclUseAccount(pro, jd->account, 0);
+        AB_Provider_EndExclUseAccount(pro, jd->account, 0);
+
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Write AccountSpec");
+        rv=AB_Provider_WriteAccountSpecForAccount(pro, jd->account, 0);
+	if (rv<0) {
+	  DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+	}
       }
     } /* if (dbXA) */
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
