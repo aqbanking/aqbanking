@@ -789,6 +789,13 @@ void AH_Job_TransferBase_SetStatusOnTransfersAndAddToCtx(AH_JOB *j, AB_IMEXPORTE
     AB_Transaction_SetStatus(cpy, status);
     AB_Transaction_SetType(cpy, aj->transactionType);
     AB_Transaction_SetSubType(cpy, aj->transactionSubType);
+    if (AB_Transaction_GetDate(cpy)==NULL) {
+      GWEN_DATE *dt;
+
+      dt=GWEN_Date_CurrentDate();
+      AB_Transaction_SetDate(cpy, dt);
+      GWEN_Date_free(dt);
+    }
 
     AB_Transaction_SetUniqueAccountId(cpy, AB_Account_GetUniqueId(a));
 
@@ -827,10 +834,14 @@ int AH_Job_TransferBase_HandleResults(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
       int rcode;
 
       rcode=AH_Result_GetCode(r);
-      if (rcode>=10 && rcode<=19)
+      if (rcode>=10 && rcode<=19) {
+        DBG_INFO(AQBANKING_LOGDOMAIN, "Has10: %d (%s)", rcode, AH_Result_GetText(r));
         has10=1;
-      else if (rcode>=20 && rcode <=29)
+      }
+      else if (rcode>=20 && rcode <=29) {
+        DBG_INFO(AQBANKING_LOGDOMAIN, "Has20: %d (%s)", rcode, AH_Result_GetText(r));
         has20=1;
+      }
       r=AH_Result_List_Next(r);
     }
 
@@ -843,7 +854,7 @@ int AH_Job_TransferBase_HandleResults(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
   }
 
   AH_Job_TransferBase_SetStatusOnTransfersAndAddToCtx(j, ctx, tStatus);
-
+  AH_Job_SetStatusOnCommands(j, tStatus);
   return 0;
 }
 

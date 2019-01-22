@@ -971,7 +971,7 @@ void AH_Job_SetStatus(AH_JOB *j, AH_JOB_STATUS st){
 	case AH_JobStatusEnqueued: ts=AB_Transaction_StatusEnqueued; break;
 	case AH_JobStatusEncoded:  ts=AB_Transaction_StatusSending;  break;
 	case AH_JobStatusSent:     ts=AB_Transaction_StatusSending;  break;
-	case AH_JobStatusAnswered: ts=AB_Transaction_StatusAccepted; break;
+	case AH_JobStatusAnswered: ts=AB_Transaction_StatusSending;  break;
 	case AH_JobStatusError:    ts=AB_Transaction_StatusError;    break;
 
 	case AH_JobStatusAll:      ts=AB_Transaction_StatusUnknown;  break;
@@ -1452,30 +1452,28 @@ int AH_Job_CheckEncryption(AH_JOB *j, GWEN_DB_NODE *dbRsp) {
     assert(j);
     assert(j->usage);
     assert(dbRsp);
-    dbSecurity=GWEN_DB_GetGroup(dbRsp, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-				"security");
+    dbSecurity=GWEN_DB_GetGroup(dbRsp, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "security");
     if (!dbSecurity) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN,
-		"No security settings, should not happen");
-      GWEN_Gui_ProgressLog(
-			     0,
-			     GWEN_LoggerLevel_Error,
-			     I18N("Response without security info (internal)"));
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "No security settings, should not happen");
+      GWEN_Gui_ProgressLog(0,
+			   GWEN_LoggerLevel_Error,
+			   I18N("Response without security info (internal)"));
       return AB_ERROR_SECURITY;
     }
   
     s=GWEN_DB_GetCharValue(dbSecurity, "crypter", 0, 0);
     if (s) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Response encrypted with key [%s]", s);
+
       if (*s=='!' || *s=='?') {
-	DBG_ERROR(AQHBCI_LOGDOMAIN,
-		  "Encrypted with invalid key (%s)", s);
-	GWEN_Gui_ProgressLog(
-			       0,
-			       GWEN_LoggerLevel_Error,
-			       I18N("Response encrypted with invalid key"));
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "Encrypted with invalid key (%s)", s);
+	GWEN_Gui_ProgressLog(0,
+			     GWEN_LoggerLevel_Error,
+			     I18N("Response encrypted with invalid key"));
 	return AB_ERROR_SECURITY;
       }
     }
+
     if (j->expectedCrypter) {
       /* check crypter */
       if (!s) {
@@ -1503,7 +1501,7 @@ int AH_Job_CheckEncryption(AH_JOB *j, GWEN_DB_NODE *dbRsp) {
       }
     }
     else {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "No encryption expected");
+      DBG_INFO(AQHBCI_LOGDOMAIN, "No specific encrypter expected");
     }
   }
 
@@ -2041,6 +2039,28 @@ AH_JOB *AH_Job_List_GetById(AH_JOB_LIST *jl, uint32_t id) {
 
 
 
+void AH_Job_SetStatusOnCommands(AH_JOB *j, AB_TRANSACTION_STATUS status) {
+  AB_TRANSACTION_LIST2 *cmdList;
+
+  assert(j);
+
+  cmdList=AH_Job_GetCommandList(j);
+  if (cmdList) {
+    AB_TRANSACTION_LIST2_ITERATOR *it;
+
+    it=AB_Transaction_List2_First(cmdList);
+    if (it) {
+      AB_TRANSACTION *t;
+
+      t=AB_Transaction_List2Iterator_Data(it);
+      while(t) {
+        AB_Transaction_SetStatus(t, status);
+        t=AB_Transaction_List2Iterator_Next(it);
+      }
+      AB_Transaction_List2Iterator_free(it);
+    }
+  }
+}
 
 
 

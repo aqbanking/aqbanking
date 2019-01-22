@@ -242,9 +242,56 @@ int AH_Job_HandleCommand_Accept(AH_JOB *j, const AB_TRANSACTION *t) {
 
 
 int AH_Job_HandleResults_Empty(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
+  AH_RESULT_LIST *rl;
+  AH_RESULT *r;
+  AB_TRANSACTION_STATUS tStatus;
+
   assert(j);
   assert(j->usage);
+
+  rl=AH_Job_GetSegResults(j);
+  assert(rl);
+
+  r=AH_Result_List_First(rl);
+  if (!r) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No segment results");
+    tStatus=AB_Transaction_StatusError;
+  }
+  else {
+    int has10=0;
+    int has20=0;
+
+    while(r) {
+      int rcode;
+
+      rcode=AH_Result_GetCode(r);
+      if (rcode>=10 && rcode<=19) {
+        DBG_INFO(AQBANKING_LOGDOMAIN, "Has10: %d (%s)", rcode, AH_Result_GetText(r));
+        has10=1;
+      }
+      else if (rcode>=20 && rcode <=29) {
+        DBG_INFO(AQBANKING_LOGDOMAIN, "Has20: %d (%s)", rcode, AH_Result_GetText(r));
+        has20=1;
+      }
+      else {
+        DBG_INFO(AQBANKING_LOGDOMAIN, "Other: %d (%s)", rcode, AH_Result_GetText(r));
+      }
+      r=AH_Result_List_Next(r);
+    }
+
+    if (has20)
+      tStatus=AB_Transaction_StatusAccepted;
+    else if (has10)
+      tStatus=AB_Transaction_StatusPending;
+    else
+      tStatus=AB_Transaction_StatusRejected;
+  }
+
+  AH_Job_SetStatusOnCommands(j, tStatus);
   return 0;
 }
+
+
+
 
 

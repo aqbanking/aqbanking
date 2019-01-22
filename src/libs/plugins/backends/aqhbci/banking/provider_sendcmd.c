@@ -179,7 +179,7 @@ int AH_Provider__SampleResults(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_IMEXPORTE
     AB_MESSAGE_LIST *ml;
     int rv;
 
-    if (0) {
+    if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Info) {
       const GWEN_STRINGLIST *sl;
       GWEN_STRINGLISTENTRY *se;
 
@@ -187,13 +187,17 @@ int AH_Provider__SampleResults(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_IMEXPORTE
       sl=AH_Job_GetLogs(j);
       assert(sl);
       se=GWEN_StringList_FirstEntry(sl);
-      while(se) {
-        const char *s;
+      if (se) {
+        DBG_DEBUG(AQHBCI_LOGDOMAIN, "Logs for job %s", AH_Job_GetName(j));
+        while(se) {
+          const char *s;
 
-        s=GWEN_StringListEntry_Data(se);
-        assert(s);
-        //AB_Job_LogRaw(bj, s);
-        se=GWEN_StringListEntry_Next(se);
+          s=GWEN_StringListEntry_Data(se);
+          assert(s);
+          DBG_DEBUG(AQHBCI_LOGDOMAIN, "- %s", s);
+          //AB_Job_LogRaw(bj, s);
+          se=GWEN_StringListEntry_Next(se);
+        }
       }
     }
 

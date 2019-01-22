@@ -34,7 +34,6 @@ static int AH_Job_TransferBase_HandleResults(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
 static void AH_Job_TransferBase_SetStatusOnTransfersAndAddToCtx(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx, AB_TRANSACTION_STATUS status);
 
 
-
 #endif /* AH_JOBTRANSFERBASE_P_H */
 
 

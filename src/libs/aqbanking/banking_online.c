@@ -491,8 +491,9 @@ int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2* commandList, 
           AB_AccountQueue_List_Add(aq, aql);
         }
 
-        /* assign unique id to job */
-        AB_Transaction_SetUniqueId(t, AB_Banking_GetNamedUniqueId(ab, "jobid", 1));
+        /* assign unique id to job (if none) */
+        if (AB_Transaction_GetUniqueId(t)==0)
+          AB_Transaction_SetUniqueId(t, AB_Banking_GetNamedUniqueId(ab, "jobid", 1));
         AB_Transaction_SetRefUniqueId(t, 0);
         /* set status */
         AB_Transaction_SetStatus(t, AB_Transaction_StatusEnqueued);
@@ -623,5 +624,10 @@ int AB_Banking_SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2* commandList, A
   return rv;
 }
 
+
+
+uint32_t AB_Banking_ReserveJobId(AB_BANKING *ab) {
+  return AB_Banking_GetNamedUniqueId(ab, "jobid", 1);
+}
 
 

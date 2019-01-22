@@ -62,6 +62,14 @@ AQBANKING_API int AB_Banking_GetAccountSpecByUniqueId(const AB_BANKING *ab, uint
 /*@{*/
 
 /**
+ * Ask AqBanking for a new job id which can be used with @ref AB_Transaction_SetId().
+ *
+ * When sending jobs via @ref AB_Banking_SendCommands() AqBanking assigns a unique job id for every
+ * job in the list. However, applications can assign such an id beforehand to work with it.
+ */
+AQBANKING_API uint32_t AB_Banking_ReserveJobId(AB_BANKING *ab);
+
+/**
  * <p>
  * This function sends all jobs from the given list to their
  * respective backend. The results will be stored in the given im-/exporter
