@@ -418,7 +418,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 	  if (strcasecmp(keytype, "S")==0) {
 
 	        /* check if it was already verified and saved at the signature verification stage
-	         * (this is implemented for RDH7 only at the moment) */
+	         * (this is implemented for RDH7 and RDH9 only at the moment) */
 	        GWEN_CRYPT_KEY *bpsk;
 	        uint8_t         alreadyVerified=0;
 
@@ -461,7 +461,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 
 
               rv = 0;
-              bpsk=AH_User_GetBankPubSignKey(u);
+              bpsk=AH_User_GetBankPubCryptKey(u);
               if ( bpsk )
               {
                   /* should we check if the keys are identical, probably not necessary, since the HBCI spec never talks about bank key changes */
