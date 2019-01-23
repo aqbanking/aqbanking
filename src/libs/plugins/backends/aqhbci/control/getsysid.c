@@ -14,6 +14,8 @@
 
 #include "globals_l.h"
 
+#include <aqhbci/user.h>
+
 #include <gwenhywfar/text.h>
 
 #include <sys/types.h>
@@ -92,11 +94,13 @@ int AH_Control_GetSysId(AB_PROVIDER *pro,
   else {
     AB_IMEXPORTER_CONTEXT *ctx;
 
-    //rv=AH_Provider_GetCert(pro, u, 1, 0, 1);
-    //if (rv<0) {
-    //  DBG_ERROR(0, "Error getting certificate (%d)", rv);
-    //  return 3;
-    //}
+    if (AH_User_GetCryptMode(u)==AH_CryptMode_Pintan) {
+      rv=AH_Provider_GetCert(pro, u, 1, 0, 1);
+      if (rv<0) {
+	DBG_ERROR(0, "Error getting certificate (%d)", rv);
+	return 3;
+      }
+    }
 
     ctx=AB_ImExporterContext_new();
     rv=AH_Provider_GetSysId(pro, u, ctx, 1, 0, 1);
