@@ -167,6 +167,7 @@ void AH_EditUserRdhDialog_Init(GWEN_DIALOG *dlg) {
   GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, I18N("(auto)"), 0);
   GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "1", 0);
   GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "2", 0);
+  GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "7", 0);
   GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "9", 0);
   GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "10", 0);
 
@@ -174,8 +175,9 @@ void AH_EditUserRdhDialog_Init(GWEN_DIALOG *dlg) {
   case 0:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0); break;
   case 1:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0); break;
   case 2:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 2, 0); break;
-  case 9: GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 3, 0); break;
-  case 10: GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 4, 0); break;
+  case 7:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 3, 0); break;
+  case 9:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 4, 0); break;
+  case 10: GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 5, 0); break;
   default:  break;
   }
 
@@ -326,13 +328,13 @@ int AH_EditUserRdhDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
 
   i=GWEN_Dialog_GetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, -1);
   switch(i) {
-  case 1: AH_User_SetRdhType(xdlg->user, 1); break;
-  case 2: AH_User_SetRdhType(xdlg->user, 2); break;
-  case 3: AH_User_SetRdhType(xdlg->user, 7); break;
-  case 4: AH_User_SetRdhType(xdlg->user, 9); break;
+  case 1: AH_User_SetRdhType(xdlg->user, 1);  break;
+  case 2: AH_User_SetRdhType(xdlg->user, 2);  break;
+  case 3: AH_User_SetRdhType(xdlg->user, 7);  break;
+  case 4: AH_User_SetRdhType(xdlg->user, 9);  break;
   case 5: AH_User_SetRdhType(xdlg->user, 10); break;
   default:
-  case 0: AH_User_SetRdhType(xdlg->user, 0); break;
+  case 0: AH_User_SetRdhType(xdlg->user, 0);  break;
   }
 
   i=GWEN_Dialog_GetIntProperty(dlg, "statusCombo", GWEN_DialogProperty_Value, 0, -1);
@@ -549,7 +551,7 @@ static int AH_EditUserRdhDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg) {
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_RDH_DIALOG, dlg);
   assert(xdlg);
 
-  tbuf=GWEN_Buffer_new(0, 1024, 0, 1);
+  tbuf=GWEN_Buffer_new(0, 16536, 0, 1);
 
   /* add HTML version of the INI letter */
   GWEN_Buffer_AppendString(tbuf, "<html>");
@@ -584,6 +586,15 @@ static int AH_EditUserRdhDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg) {
     return GWEN_DialogEvent_ResultHandled;
   }
 
+  // Crude workaround for missing GWEN_Gui_Print under qt4/5
+  GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
+                      GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+                      GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
+                      I18N("Holgers INI Letter for HBCI"),
+                      GWEN_Buffer_GetStart(tbuf),
+                      I18N("Dismiss"), NULL, NULL, 0);
+  
+  // GWEN_Gui_Print does not seem to be implemented for qt4/5 yet
   rv=GWEN_Gui_Print(I18N("INI Letter"),
 		    "HBCI-INILETTER",
 		    I18N("INI Letter for HBCI"),
