@@ -26,15 +26,15 @@ int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
   if (variant==0) {
     switch(AH_User_GetRdhType(u)) {
     case 0:
-    case 1: variant=1; break;
+    case 1:  variant=1; break;
     case 2:
     case 3:
     case 4:
     case 5:
     case 6:
-    case 7:
+    case 7:  variant=2; break;
     case 8:
-    case 9:
+    case 9:  variant=2; break;
     case 10: variant=2; break;
     default:
       DBG_ERROR(AQHBCI_LOGDOMAIN, "RDH mode %d not supported", AH_User_GetRdhType(u));
@@ -61,15 +61,15 @@ int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
   if (variant==0) {
     switch(AH_User_GetRdhType(u)) {
     case 0:
-    case 1: variant=1; break;
+    case 1:  variant=1; break;
     case 2:
     case 3:
     case 4:
     case 5:
     case 6:
-    case 7:
+    case 7:  variant=2; break;
     case 8:
-    case 9:
+    case 9:  variant=2; break;
     case 10: variant=2; break;
     default:
       DBG_ERROR(AQHBCI_LOGDOMAIN, "RDH mode %d not supported", AH_User_GetRdhType(u));
