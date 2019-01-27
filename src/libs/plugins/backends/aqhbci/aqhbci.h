@@ -70,7 +70,9 @@ typedef enum {
   /** PIN/TAN mode  */
   AH_CryptMode_Pintan,
   /** RSA-DES-Hybridverfahren  */
-  AH_CryptMode_Rdh
+  AH_CryptMode_Rdh,
+  /** RSA-Verfahren  */
+  AH_CryptMode_Rah
 } AH_CRYPT_MODE;
 AQHBCI_API
 AH_CRYPT_MODE AH_CryptMode_fromString(const char *s);

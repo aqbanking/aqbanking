@@ -1285,7 +1285,7 @@ int AH_Msg_VerifyRdh7(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
      *
      * check message for "S"-KEy, look up if there is a hash on the chip card
      */
-    bankPubSignKey=AH_MsgRhd7__VerifyInitialSignKey7(ct,ctx,u,gr);
+    bankPubSignKey=AH_MsgRxh_VerifyInitialSignKey(ct,ctx,u,gr);
 
     if (bankPubSignKey==NULL) {
       DBG_INFO(AQHBCI_LOGDOMAIN,

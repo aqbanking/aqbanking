@@ -291,7 +291,54 @@ int AH_Job__Commit_Bpd(AH_JOB *j){
 }
 
 
+int AH_Job__VerifiyInitialKey(AB_USER *u,
+                              AH_HBCI *h,
+                              GWEN_CRYPT_KEY *key,
+                              const char *keyName)
+{
 
+    GWEN_CRYPT_TOKEN *ct;
+    const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
+    int rv;
+
+    /* get crypt token of signer */
+    rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),
+            AH_User_GetTokenType(u),
+            AH_User_GetTokenName(u),
+            &ct);
+    if (rv) {
+        DBG_INFO(AQHBCI_LOGDOMAIN,
+                "Could not get crypt token for user \"%s\" (%d)",
+                AB_User_GetUserId(u), rv);
+        return rv;
+    }
+
+    /* open CryptToken if necessary */
+    if (!GWEN_Crypt_Token_IsOpen(ct)) {
+        GWEN_Crypt_Token_AddModes(ct, GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN);
+        rv=GWEN_Crypt_Token_Open(ct, 0, 0);
+        if (rv) {
+            DBG_INFO(AQHBCI_LOGDOMAIN,
+                    "Could not open crypt token for user \"%s\" (%d)",
+                    AB_User_GetUserId(u), rv);
+            return rv;
+        }
+    }
+
+    /* get context and key info */
+    ctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), 0);
+    if (ctx==NULL) {
+        DBG_INFO(AQHBCI_LOGDOMAIN,
+                "Context %d not found on crypt token [%s:%s]",
+                AH_User_GetTokenContextId(u),
+                GWEN_Crypt_Token_GetTypeName(ct),
+                GWEN_Crypt_Token_GetTokenName(ct));
+        return GWEN_ERROR_NOT_FOUND;
+    }
+
+    return AH_User_VerifyInitialKey(ct,ctx,u,key,keyName);
+
+}
 
 
 int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
@@ -375,6 +422,8 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 	      uint8_t keyExpMod[512];
 	      GWEN_MDIGEST *md;
 	      int keySize;
+	      int verified=0;
+	      GWEN_CRYPT_KEY *bpsk;
 
           /* process received keys */
           keynum=GWEN_DB_GetIntValue(dbRd, "keyname/keynum",  0, -1);
@@ -398,94 +447,43 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
           GWEN_Crypt_Key_SetKeyNumber(bpk, keynum);
           GWEN_Crypt_Key_SetKeyVersion(bpk, keyver);
 
-	  /* calculate key hash */
-	  memset(keyExpMod, 0, 512);
-	  memcpy(keyExpMod+256-expl, expp, expl);
-	  memcpy(keyExpMod+256, modp, 256);
-
-	  md=GWEN_MDigest_Sha256_new();
-	  rv=GWEN_MDigest_Begin(md);
-	  if (rv==0)
-	    rv=GWEN_MDigest_Update(md, keyExpMod, 512);
-	  if (rv==0)
-	    rv=GWEN_MDigest_End(md);
-	  memset(hashString, 0, 1024);
-	  for(i=0; i<GWEN_MDigest_GetDigestSize(md); i++)
-	    sprintf(hashString+3*i, "%02x ", *(GWEN_MDigest_GetDigestPtr(md)+i));
-	  GWEN_MDigest_free(md);
+          /* check if it was already verified and saved at the signature verification stage
+           * (this is implemented for RDH7 and RDH9 only at the moment) */
+          bpsk=AH_User_GetBankPubSignKey(u);
+          if ( bpsk ) {
+              int hasVerifiedFlag = GWEN_Crypt_KeyRsa_GetFlags(bpsk) & GWEN_CRYPT_KEYRSA_FLAGS_ISVERIFIED ;
+              if ( hasVerifiedFlag == GWEN_CRYPT_KEYRSA_FLAGS_ISVERIFIED ) verified=1;
+          }
 
 	  /* commit the new key */
 	  if (strcasecmp(keytype, "S")==0) {
 
-	        /* check if it was already verified and saved at the signature verification stage
-	         * (this is implemented for RDH7 and RDH9 only at the moment) */
-	        GWEN_CRYPT_KEY *bpsk;
-	        uint8_t         alreadyVerified=0;
 
-	        bpsk=AH_User_GetBankPubSignKey(u);
-	        if ( bpsk )
-	        {
-	            /* should we check if the keys are identical, probably not necessary, since the HBCI spec never talks about bank key changes */
-	            alreadyVerified= GWEN_Crypt_KeyRsa_GetFlags(bpsk) & GWEN_CRYPT_KEYRSA_FLAGS_ISVERIFIED ;
+
+	        if ( verified == 0 ) {
+	            verified = AH_Job__VerifiyInitialKey(u,h,bpk,"sign");
 	        }
 
-	        if ( alreadyVerified )
-	        {
-	            DBG_INFO(AQHBCI_LOGDOMAIN, "Received new server sign key, already verfied! (num: %d, version: %d, hash: %s)", keynum, keyver, hashString);
+	        if ( verified == 1 ) {
+	            DBG_ERROR(AQHBCI_LOGDOMAIN, "Imported sign key.");
+	            GWEN_Crypt_KeyRsa_AddFlags(bpk,GWEN_CRYPT_KEYRSA_FLAGS_ISVERIFIED);
+	            AH_User_SetBankPubSignKey(u, bpk);
 	        }
-	        else
-	        {
-	            DBG_ERROR(AQHBCI_LOGDOMAIN, "Received new server sign key, please verify! (num: %d, version: %d, hash: %s)", keynum, keyver, hashString);
-	            GWEN_Gui_ProgressLog2(0,
-	                    GWEN_LoggerLevel_Warning,
-	                    I18N("Received new server sign key, please verify! (num: %d, version: %d, hash: %s)"),
-	                    keynum, keyver, hashString);
+	        else {
+	            DBG_ERROR(AQHBCI_LOGDOMAIN, "Crypt key not imported.");
+	        }
 
-	            rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN | GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
-	                    I18N("Received Public Bank Sign Key"),
-	                    I18N("Do you really want to import this key?"),
-	                    I18N("Import"), I18N("Abort"), NULL, 0);
-	            if (rv==1) {
-	                DBG_ERROR(AQHBCI_LOGDOMAIN, "Imported sign key.");
-	                AH_User_SetBankPubSignKey(u, bpk);
-	            }
-	            else {
-	                DBG_ERROR(AQHBCI_LOGDOMAIN, "Sign key not imported.");
-	            }
+
 	        }
-          }
           else if (strcasecmp(keytype, "V")==0) {
 
-              /* check if it already was verified with a verified bank public sign key */
-              GWEN_CRYPT_KEY *bpsk;
-
-
-              rv = 0;
-              bpsk=AH_User_GetBankPubCryptKey(u);
-              if ( bpsk )
-              {
-                  /* should we check if the keys are identical, probably not necessary, since the HBCI spec never talks about bank key changes */
-                  rv= GWEN_Crypt_KeyRsa_GetFlags(bpsk) & GWEN_CRYPT_KEYRSA_FLAGS_ISVERIFIED  ;
-                  if ( rv== GWEN_CRYPT_KEYRSA_FLAGS_ISVERIFIED)
-                  {
-                      rv=1;
-                  }
+              if ( verified == 0 ) {
+                  verified = AH_Job__VerifiyInitialKey(u,h,bpk,"crypt");
               }
 
-              if ( rv == 0 )
-              {
-                  DBG_ERROR(AQHBCI_LOGDOMAIN, "Received new server crypt key, please verify! (num: %d, version: %d, hash: %s)", keynum, keyver, hashString);
-                  GWEN_Gui_ProgressLog2(0,
-                          GWEN_LoggerLevel_Warning,
-                          I18N("Received new server crypt key, please verify! (num: %d, version: %d, hash: %s)"),
-                          keynum, keyver, hashString);
-                  rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN | GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
-                          I18N("Received Public Bank Crypt Key"),
-                          I18N("Do you really want to import this key?"),
-                          I18N("Import"), I18N("Abort"), NULL, 0);
-              }
-              if (rv==1) {
+              if ( verified == 1 ) {
                   DBG_ERROR(AQHBCI_LOGDOMAIN, "Imported crypt key.");
+                  GWEN_Crypt_KeyRsa_AddFlags(bpk,GWEN_CRYPT_KEYRSA_FLAGS_ISVERIFIED);
                   AH_User_SetBankPubCryptKey(u, bpk);
               }
               else {

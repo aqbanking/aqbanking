@@ -1821,6 +1821,7 @@ const char *AH_Msg_GetCrypterId(const AH_MSG *hmsg) {
 
 
 #include "msgcrypt_ddv.c"
+#include "msgcrypt_rxh_common.c"
 #include "msgcrypt_rdh1.c"
 #include "msgcrypt_rdh2.c"
 #include "msgcrypt_rdh3.c"

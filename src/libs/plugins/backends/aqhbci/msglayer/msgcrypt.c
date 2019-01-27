@@ -8,7 +8,7 @@
  ***************************************************************************/
 
 
-
+/*#define TEST_UNIFIED_RXH_CRYPT*/
 
 int AH_Msg__Sign(AH_MSG *hmsg,
 		 GWEN_BUFFER *rawBuf,
@@ -20,8 +20,14 @@ int AH_Msg__Sign(AH_MSG *hmsg,
   switch(AH_User_GetCryptMode(u)) {
   case AH_CryptMode_Ddv:
     return AH_Msg_SignDdv(hmsg, rawBuf, signer);
+#ifdef TEST_UNIFIED_RXH_CRYPT
+  case AH_CryptMode_Rdh:
+  case AH_CryptMode_Rah:
+    return AH_Msg_SignRxh(hmsg, rawBuf, signer);
+#else
   case AH_CryptMode_Rdh:
     return AH_Msg_SignRdh(hmsg, rawBuf, signer);
+#endif
   case AH_CryptMode_Pintan:
     return AH_Msg_SignPinTan(hmsg, rawBuf, signer);
   default:
@@ -42,8 +48,14 @@ int AH_Msg__Encrypt(AH_MSG *hmsg) {
   switch(AH_User_GetCryptMode(u)) {
   case AH_CryptMode_Ddv:
     return AH_Msg_EncryptDdv(hmsg);
+#ifdef TEST_UNIFIED_RXH_CRYPT
+  case AH_CryptMode_Rdh:
+  case AH_CryptMode_Rah:
+    return AH_Msg_EncryptRxh(hmsg);
+#else
   case AH_CryptMode_Rdh:
     return AH_Msg_EncryptRdh(hmsg);
+#endif
   case AH_CryptMode_Pintan:
     return AH_Msg_EncryptPinTan(hmsg);
   default:
@@ -64,8 +76,14 @@ int AH_Msg__Decrypt(AH_MSG *hmsg, GWEN_DB_NODE *gr){
   switch(AH_User_GetCryptMode(u)) {
   case AH_CryptMode_Ddv:
     return AH_Msg_DecryptDdv(hmsg, gr);
+#ifdef TEST_UNIFIED_RXH_CRYPT
+  case AH_CryptMode_Rdh:
+  case AH_CryptMode_Rah:
+      return AH_Msg_DecryptRxh(hmsg, gr);
+#else
   case AH_CryptMode_Rdh:
     return AH_Msg_DecryptRdh(hmsg, gr);
+#endif
   case AH_CryptMode_Pintan:
     return AH_Msg_DecryptPinTan(hmsg, gr);
   default:
@@ -86,8 +104,14 @@ int AH_Msg__Verify(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
   switch(AH_User_GetCryptMode(u)) {
   case AH_CryptMode_Ddv:
     return AH_Msg_VerifyDdv(hmsg, gr);
+#ifdef TEST_UNIFIED_RXH_CRYPT
+  case AH_CryptMode_Rdh:
+  case AH_CryptMode_Rah:
+      return AH_Msg_VerifyRxh(hmsg, gr);
+#else
   case AH_CryptMode_Rdh:
     return AH_Msg_VerifyRdh(hmsg, gr);
+#endif
   case AH_CryptMode_Pintan:
     return AH_Msg_VerifyPinTan(hmsg, gr);
   default:

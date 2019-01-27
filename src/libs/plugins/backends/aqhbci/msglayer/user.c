@@ -2410,3 +2410,165 @@ void AH_User_SetSepaDebitNoteProfile(AB_USER *u, const char *profileName) {
   else
     ue->sepaDebitNoteProfile=NULL;
 }
+
+int AH_User_VerifyInitialKey(GWEN_CRYPT_TOKEN *ct,
+        const GWEN_CRYPT_TOKEN_CONTEXT *ctx,
+        AB_USER *user,
+        GWEN_CRYPT_KEY *key,
+        char *keyName)
+{
+
+
+    uint32_t  keyHashAlgo;
+    uint32_t  keySize;
+    uint32_t  keyNum;
+    uint32_t  keyVer;
+    uint32_t  expLen;
+    uint8_t  *modulus;
+    uint8_t  *exponent;
+    GWEN_MDIGEST *md;
+    uint8_t   verified=0;
+    uint8_t   modBuffer[1024];
+    uint8_t   expBuffer[256];
+
+
+    /* check if NOTEPAD contained a key hash */
+    keyHashAlgo=GWEN_Crypt_Token_Context_GetKeyHashAlgo(ctx);
+
+    modulus=&modBuffer[0];
+    exponent=&expBuffer[0];
+    GWEN_Crypt_KeyRsa_GetModulus(key,modulus,&keySize);
+    GWEN_Crypt_KeyRsa_GetExponent(key,exponent,&expLen);
+    keyNum=GWEN_Crypt_Key_GetKeyNumber(key);
+    keyVer=GWEN_Crypt_Key_GetKeyVersion(key);
+
+    if ( keyHashAlgo == GWEN_Crypt_HashAlgoId_None || keyHashAlgo == GWEN_Crypt_HashAlgoId_Unknown) {
+        int rv;
+        int expPadBytes=keySize-expLen;
+        uint8_t *mdPtr;
+        unsigned int mdSize;
+        int i;
+        char hashString[1024];
+        char dialogTitle[48];
+
+        /* pad exponent to length of modulus */
+        GWEN_BUFFER* keyBuffer;
+        keyBuffer=GWEN_Buffer_new(NULL,2*keySize,0,0);
+        GWEN_Buffer_FillWithBytes(keyBuffer,0x0,expPadBytes);
+        GWEN_Buffer_AppendBytes(keyBuffer,(const char*)exponent,expLen);
+        GWEN_Buffer_AppendBytes(keyBuffer,(const char*)modulus,keySize);
+
+        /*SHA256*/
+        md=GWEN_MDigest_Sha256_new();
+
+        //assert(keyHashNum==7);
+
+        GWEN_MDigest_Begin(md);
+        GWEN_MDigest_Update(md,(uint8_t*)GWEN_Buffer_GetStart(keyBuffer),2*keySize);
+        GWEN_MDigest_End(md);
+        mdPtr=GWEN_MDigest_GetDigestPtr(md);
+        mdSize=GWEN_MDigest_GetDigestSize(md);
+
+        memset(hashString, 0, 1024);
+        for(i=0; i<GWEN_MDigest_GetDigestSize(md); i++)
+            sprintf(hashString+3*i, "%02x ", *(mdPtr+i));
+        GWEN_MDigest_free(md);
+
+
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Received new server %s key, please verify! (num: %d, version: %d, hash: %s)", keyName, keyNum, keyVer, hashString);
+        GWEN_Gui_ProgressLog2(0,
+                GWEN_LoggerLevel_Warning,
+                I18N("Received new server %s key, please verify! (num: %d, version: %d, hash: %s)"),
+                keyName, keyNum, keyVer, hashString);
+
+        snprintf(dialogTitle,47,"Received Public %s Bank Key", keyName);
+        rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN | GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
+                I18N(dialogTitle),
+                I18N("Do you really want to import this key?"),
+                I18N("Import"), I18N("Abort"), NULL, 0);
+        if (rv!=1) {
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "Public %s Key not accepted by user.", keyName);
+            return 0;
+        }
+        else {
+            DBG_INFO(AQHBCI_LOGDOMAIN,
+                    "Bank's public %s key accepted by the user.", keyName);
+            return 1;
+
+        }
+
+
+    }
+    else {
+        int expPadBytes=keySize-expLen;
+        uint8_t *mdPtr;
+        unsigned int mdSize;
+        int hashOk=1;
+        uint32_t keyHashNum;
+        uint32_t keyHashVer;
+        const uint8_t    *keyHash;
+        uint32_t keyHashLen;
+        int i;
+
+        /* pad exponent to length of modulus */
+        GWEN_BUFFER* keyBuffer;
+        keyBuffer=GWEN_Buffer_new(NULL,2*keySize,0,0);
+        GWEN_Buffer_FillWithBytes(keyBuffer,0x0,expPadBytes);
+        GWEN_Buffer_AppendBytes(keyBuffer,(const char*)exponent,expLen);
+        GWEN_Buffer_AppendBytes(keyBuffer,(const char*)modulus,keySize);
+
+        keyHashNum=GWEN_Crypt_Token_Context_GetKeyHashNum(ctx);
+        keyHashVer=GWEN_Crypt_Token_Context_GetKeyHashVer(ctx);
+        keyHash=GWEN_Crypt_Token_Context_GetKeyHashPtr(ctx);
+        keyHashLen=GWEN_Crypt_Token_Context_GetKeyHashLen(ctx);
+
+        if (keyHashAlgo==GWEN_Crypt_HashAlgoId_Sha256) {
+            /*SHA256*/
+            md=GWEN_MDigest_Sha256_new();
+        }
+        else if (keyHashAlgo==GWEN_Crypt_HashAlgoId_Rmd160) {
+            md=GWEN_MDigest_Rmd160_new();
+        }
+        else {
+            /* ERROR, wrong hash algo */
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "Hash Algorithm of Bank Public Sign Key not correct!");
+            return NULL;
+        }
+        //assert(keyHashNum==7);
+
+        GWEN_MDigest_Begin(md);
+        GWEN_MDigest_Update(md,(uint8_t*)GWEN_Buffer_GetStart(keyBuffer),2*keySize);
+        GWEN_MDigest_End(md);
+        mdPtr=GWEN_MDigest_GetDigestPtr(md);
+        mdSize=GWEN_MDigest_GetDigestSize(md);
+        /* compare hashes */
+
+        if ( keyHashLen==mdSize ) {
+            for (i = 0; i < mdSize; i++) {
+                if (mdPtr[i] != (uint8_t) keyHash[i]) {
+                    hashOk=0;
+                    break;
+                }
+            }
+        }
+        else {
+            /* ERROR, hash sizes not identical */
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "Hash Sizes of Bank Public Sign Key do not match!");
+            return 0;
+        }
+
+        GWEN_MDigest_free(md);
+        if (hashOk==1) {
+             DBG_INFO(AQHBCI_LOGDOMAIN,
+                    "Verified the bank's public sign key with the hash from the zka card.");
+             return 1;
+        }
+        else {
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "Hash of Bank Public Sign Key not correct!");
+            return 0;
+        }
+    }
+
+}
+
+
