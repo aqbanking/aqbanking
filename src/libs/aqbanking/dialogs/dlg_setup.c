@@ -897,7 +897,8 @@ int AB_SetupDialog_DelUser(GWEN_DIALOG *dlg) {
       u=AB_User_List_GetByUniqueId(xdlg->currentUserList, uid);
 
       if (u) {
-        /* AB_ACCOUNT *a; */
+        AB_ACCOUNT *a;
+        uint32_t aid;
         int rv;
         char nbuf[512];
 
@@ -922,42 +923,41 @@ int AB_SetupDialog_DelUser(GWEN_DIALOG *dlg) {
           return GWEN_DialogEvent_ResultHandled;
         }
 
-#pragma message "Need to implement this"
-#if 0
-        a=AB_Banking_FindFirstAccountOfUser(xdlg->banking, u);
-        if (a) {
-          int i;
+        xdlg->currentAccountList=AB_Account_List_new();
+        AB_SetupDialog_LoadAccounts(dlg, xdlg->currentAccountList);
+        if (AB_Account_List_GetCount(xdlg->currentAccountList)) {
+          a=AB_Account_List_First(xdlg->currentAccountList);
+          while(a) {
+        	  if( AB_Account_GetUserId(a) == uid ){
+        		  aid=AB_Account_GetUniqueId(a);
+                  rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+                                         GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
+                                         I18N("Error"),
+                                         I18N("<html>"
+                                              "<p>There is at least one account assigned to the selected user.</p>"
+                                              "<p>Do you want to remove the account(s) and continue removing the user?</p>"
+                                              "</html>"
+                                              "There is at least one account assigned to the selected user.\n"
+                                              "Do you want to remove the account(s) and continue removing the user?"),
+                                         I18N("Yes"),
+                                         I18N("No"),
+                                         NULL,
+                                         0);
+                  if (rv!=1) {
+                    DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
+                    return GWEN_DialogEvent_ResultHandled;
+                  }
 
-          rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
-                                 GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
-                                 I18N("Error"),
-                                 I18N("<html>"
-                                      "<p>There is at least one account assigned to the selected user.</p>"
-                                      "<p>Do you want to remove the account(s) and continue removing the user?</p>"
-                                      "</html>"
-                                      "There is at least one account assigned to the selected user.\n"
-                                      "Do you want to remove the account(s) and continue removing the user?"),
-                                 I18N("Yes"),
-                                 I18N("No"),
-                                 NULL,
-                                 0);
-          if (rv!=1) {
-            DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
-            return GWEN_DialogEvent_ResultHandled;
-          }
-
-          i=0;
-          while( (a=AB_Banking_FindFirstAccountOfUser(xdlg->banking, u)) ) {
-            rv=AB_Banking_DeleteAccount(xdlg->banking, a);
-            if (rv<0) {
-              GWEN_Gui_ShowError(I18N("Error"), I18N("Error deleting account: %d (%d deleted)"), rv, i);
-              AB_SetupDialog_Reload(dlg);
-              return GWEN_DialogEvent_ResultHandled;
-            }
-            i++;
+                  rv=AB_Provider_DeleteAccount(AB_Account_GetProvider(a), aid);
+                  if (rv<0) {
+                	  GWEN_Gui_ShowError(I18N("Error"), I18N("Error deleting account: %d (%d deleted)"), rv, aid);
+                	  AB_SetupDialog_Reload(dlg);
+                      return GWEN_DialogEvent_ResultHandled;
+                  }
+        	  }
+        	  a=AB_Account_List_Next(a);
           }
         }
-#endif
 
         /* now delete the user */
         rv=AB_Provider_DeleteUser(AB_User_GetProvider(u), uid);
