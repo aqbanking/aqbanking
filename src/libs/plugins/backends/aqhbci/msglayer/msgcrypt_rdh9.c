@@ -166,8 +166,8 @@ GWEN_CRYPT_KEY * AH_MsgRhd9__VerifyInitialSignKey9(GWEN_CRYPT_TOKEN *ct,
 	    GWEN_MDigest_End(md);
 	    mdPtr=GWEN_MDigest_GetDigestPtr(md);
 	    mdSize=GWEN_MDigest_GetDigestSize(md);
-	    /* compare hashes */
 
+	    /* compare hashes */
 	    if ( keyHashLen==mdSize ) {
 	      for (i = 0; i < mdSize; i++) {
 		if (mdPtr[i] != (uint8_t) keyHash[i]) {

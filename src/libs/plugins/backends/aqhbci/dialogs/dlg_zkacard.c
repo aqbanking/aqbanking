@@ -775,7 +775,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
   AH_User_SetTokenType(u, "zkacard");
   AH_User_SetTokenName(u, GWEN_Crypt_Token_GetTokenName(xdlg->cryptToken));
   AH_User_SetCryptMode(u, AH_CryptMode_Rdh);
-  AH_User_SetTokenContextId(u, 1);
+  AH_User_SetTokenContextId(u, xdlg->contextId);
   AH_User_SetStatus(u, AH_UserStatusEnabled);
 
   url=GWEN_Url_fromString(xdlg->url);
@@ -1116,6 +1116,8 @@ int AH_ZkaCardDialog_FromContext(GWEN_DIALOG *dlg, int i) {
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_ZKACARD_DIALOG, dlg);
   assert(xdlg);
+
+  xdlg->contextId = i+1;	// Real contextId on the card
 
   if (i>=0) {
     GWEN_CRYPT_TOKEN_CONTEXT *ctx;
