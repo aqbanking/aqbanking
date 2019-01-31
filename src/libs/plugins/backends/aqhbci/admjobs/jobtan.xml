@@ -1,0 +1,456 @@
+ <!--
+/***************************************************************************
+    begin       : Thu Jan 31 2019
+    copyright   : (C) 2019 by Martin Preuss
+    email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+  -->
+
+
+<SEGs>
+
+  <!-- Kundennachricht -->
+  <SEGdef id="Tan"
+          code="HKTAN"
+          version="1"
+          delimiter="+" 
+          terminator="'" 
+  >
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="process" type="num" size="1" />
+    <ELEM name="jobHash" type="bin" maxsize="256" minnum="0" />
+    <ELEM name="jobReference" type="ascii" maxsize="35" minnum="0" />
+    <ELEM name="tanList" type="ascii" size="20" minnum="0" />
+    <ELEM name="moreTans" type="ascii" maxsize="1" minnum="0" />
+    <ELEM name="tanInfo" type="ascii" maxsize="99" minnum="0" />
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+  <!-- Banknachricht -->
+  <SEGdef id="TanResponse"
+          code="HITAN" 
+          version="1"
+          delimiter="+" terminator="'" 
+  >
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="process" type="num" size="1" />
+    <ELEM name="jobHash" type="bin" maxsize="256" minnum="0" />
+    <ELEM name="jobReference" type="ascii" maxsize="35" minnum="0" />
+    <ELEM name="challenge" type="ascii" maxsize="256" minnum="0" />
+    <GROUP minnum="0" delimiter=":" terminator="" >
+      <ELEM name="expireDate" type="ascii" minnum="0" size="8" />
+      <ELEM name="expireTime" type="ascii" minnum="0" size="6" />
+    </GROUP>
+    <ELEM name="tanList" type="ascii" size="20" minnum="0" />
+    <ELEM name="tanInfo" type="ascii" maxsize="99" minnum="0" />
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+  <!-- Beschreibungssegment -->
+  <SEGdef code="HITANS" version="1"
+          delimiter="+" terminator="'" isbpdjob="1" >
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="jobspermsg" type="num" maxsize="3" />
+    <ELEM name="minsigs" type="num" maxsize="3" />
+ 
+    <ELEM name="securityClass" type="num" size="1" />
+    
+    <GROUP delimiter=":" terminator="" >
+      <ELEM name="singleStepAllowed" type="alpha" size="1" />
+      <ELEM name="multiJobAllowed" type="alpha" size="1" />
+      <ELEM name="hashMethod" type="num" size="1" />
+      <ELEM name="secProfile" type="num" size="1" />
+      <GROUP type="tanMethod" version="1" name="tanMethod" 
+             minnum="1" maxnum="99"
+             delimiter=":" terminator="" />
+    </GROUP>
+ 
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="securityClass">1</VALUE>
+      <VALUE path="hashMethod">1</VALUE>
+    </VALUES>
+  </SEGdef>
+
+
+
+  <!-- Kundennachricht -->
+  <SEGdef id="Tan"
+          code="HKTAN"
+          version="2"
+          delimiter="+" 
+          terminator="'" 
+  >
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="process" type="num" size="1" />
+    <ELEM name="jobHash" type="bin" maxsize="256" minnum="0" />
+    <ELEM name="jobReference" type="ascii" maxsize="35" minnum="0" />
+    <ELEM name="tanList" type="ascii" size="20" minnum="0" />
+    <ELEM name="moreTans" type="ascii" maxsize="1" minnum="0" />
+    <ELEM name="storno" type="ascii" maxsize="1" minnum="0" />
+    <ELEM name="challengeClass" type="num" maxsize="2" minnum="0" />
+    <GROUP type="challengeParams" name="challengeParams" version="1" minnum="0" />
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+  <!-- Banknachricht -->
+  <SEGdef id="TanResponse"
+          code="HITAN" 
+          version="2"
+          delimiter="+" terminator="'" 
+  >
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="process" type="num" size="1" />
+    <ELEM name="jobHash" type="bin" maxsize="256" minnum="0" />
+    <ELEM name="jobReference" type="ascii" maxsize="35" minnum="0" />
+    <ELEM name="challenge" type="ascii" maxsize="256" minnum="0" />
+    <ELEM name="expireDate" type="ascii" minnum="0" />
+    <ELEM name="tanList" type="ascii" size="20" minnum="0" />
+    <ELEM name="tanInfo" type="ascii" maxsize="99" minnum="0" />
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+  <!-- Beschreibungssegment -->
+  <SEGdef code="HITANS" version="2"
+          delimiter="+" terminator="'" isbpdjob="1" >
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="jobspermsg" type="num" maxsize="3" />
+    <ELEM name="minsigs" type="num" maxsize="1" />
+    <ELEM name="securityClass" type="num" size="1" />
+    
+    <GROUP delimiter=":" terminator="" >
+      <ELEM name="singleStepAllowed" type="alpha" size="1" />
+      <ELEM name="multiJobAllowed" type="alpha" size="1" />
+      <ELEM name="hashMethod" type="num" size="1" />
+      <GROUP type="tanMethod" version="3" name="tanMethod" 
+             minnum="1" maxnum="98"
+             delimiter=":" terminator="" />
+    </GROUP>
+ 
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="securityClass">1</VALUE>
+      <VALUE path="hashMethod">1</VALUE>
+    </VALUES>
+  </SEGdef>
+
+
+ 
+  <!-- Kundennachricht -->
+  <SEGdef id="Tan"
+          code="HKTAN"
+          version="3"
+          delimiter="+" 
+          terminator="'" 
+  >
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="process" type="num" size="1" />
+    <ELEM name="jobHash" type="bin" maxsize="256" minnum="0" />
+    <ELEM name="jobReference" type="ascii" maxsize="35" minnum="0" />
+    <ELEM name="tanList" type="ascii" size="20" minnum="0" />
+    <ELEM name="moreTans" type="ascii" maxsize="1" minnum="0" />
+    <ELEM name="storno" type="ascii" maxsize="1" minnum="0" />
+    <ELEM name="challengeClass" type="num" maxsize="2" minnum="0" />
+    <GROUP type="challengeParams" name="challengeParams" version="1" minnum="0" />
+    <ELEM name="tanMediumId" type="ascii" maxsize="32" minnum="0" />
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+ 
+  <SEGdef id="TanResponse" code="HITAN" version="3" delimiter="+"
+          terminator="'">
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="process" type="num" size="1" />
+    <ELEM name="jobHash" type="bin" maxsize="256" minnum="0" />
+    <ELEM name="jobReference" type="ascii" maxsize="35" minnum="0" />
+    <ELEM name="challenge" type="ascii" maxsize="999" minnum="0" />
+    <GROUP name="expireDateTime" type="timeSpec" minnum="0" />
+    <ELEM name="tanList" type="ascii" size="20" minnum="0" />
+    <ELEM name="ben" type="ascii" size="99" minnum="0" />
+    <ELEM name="tanInfo" type="ascii" maxsize="99" minnum="0" />
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+  
+  <SEGdef code="HITANS" version="3" delimiter="+" terminator="'" isbpdjob="1">
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="jobspermsg" type="num" maxsize="3" />
+    <ELEM name="minsigs" type="num" maxsize="1" />
+    <ELEM name="securityClass" type="num" size="1" />
+    <GROUP delimiter=":" terminator="">
+      <ELEM name="singleStepAllowed" type="alpha" size="1" />
+      <ELEM name="multiJobAllowed" type="alpha" size="1" />
+      <ELEM name="hashMethod" type="num" size="1" />
+      <GROUP type="tanMethod" version="2" name="tanMethod" minnum="1" maxnum="98"
+             delimiter=":" terminator="" />
+    </GROUP>
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="securityClass">1</VALUE>
+      <VALUE path="hashMethod">1</VALUE>
+    </VALUES>
+  </SEGdef>
+
+ 
+ 
+  <!-- Kundennachricht -->
+  <SEGdef id="Tan"
+          code="HKTAN"
+          version="4"
+          delimiter="+" 
+          terminator="'" 
+  >
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="process" type="num" size="1" />
+    <ELEM name="jobHash" type="bin" maxsize="256" minnum="0" />
+    <ELEM name="jobReference" type="ascii" maxsize="35" minnum="0" />
+    <ELEM name="tanList" type="ascii" size="20" minnum="0" />
+    <ELEM name="moreTans" type="ascii" maxsize="1" minnum="0" />
+    <ELEM name="storno" type="ascii" maxsize="1" minnum="0" />
+    <GROUP type="kti" name="smsAccount" version="1" minnum="0" />
+    <ELEM name="challengeClass" type="num" maxsize="2" minnum="0" />
+    <GROUP type="challengeParams" name="challengeParams" version="1" minnum="0" />
+    <ELEM name="tanMediumId" type="ascii" maxsize="32" minnum="0" />
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+ 
+  <SEGdef id="TanResponse" code="HITAN" version="4" delimiter="+"
+          terminator="'">
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="process" type="num" size="1" />
+    <ELEM name="jobHash" type="bin" maxsize="256" minnum="0" />
+    <ELEM name="jobReference" type="ascii" maxsize="35" minnum="0" />
+    <ELEM name="challenge" type="ascii" minnum="0" />
+    <ELEM name="challengeHHD" type="bin" maxsize="128" minnum="0" />
+    <GROUP name="expireDateTime" type="timeSpec" minnum="0" />
+    <ELEM name="tanList" type="ascii" size="20" minnum="0" />
+    <ELEM name="ben" type="ascii" size="99" minnum="0" />
+    <ELEM name="tanMediumId" type="ascii" maxsize="99" minnum="0" />
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+  
+  <SEGdef code="HITANS" version="4" delimiter="+" terminator="'" isbpdjob="1">
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="jobspermsg" type="num" maxsize="3" />
+    <ELEM name="minsigs" type="num" maxsize="1" />
+    <ELEM name="securityClass" type="num" size="1" />
+    <GROUP delimiter=":" terminator="">
+      <ELEM name="singleStepAllowed" type="alpha" size="1" />
+      <ELEM name="multiJobAllowed" type="alpha" size="1" />
+      <ELEM name="hashMethod" type="num" size="1" />
+      <GROUP type="tanMethod" version="4" name="tanMethod" minnum="1" maxnum="98"
+             delimiter=":" terminator="" />
+    </GROUP>
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="securityClass">1</VALUE>
+      <VALUE path="hashMethod">1</VALUE>
+    </VALUES>
+  </SEGdef>
+
+ 
+ 
+  <!-- Kundennachricht -->
+  <SEGdef id="Tan"
+          code="HKTAN"
+          version="5"
+          delimiter="+" 
+          terminator="'" 
+  >
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="process" type="num" size="1" />
+    <ELEM name="segmentId" type="ascii" maxsize="6" minnum="0" />
+    <GROUP type="kti" name="localAccount" version="1" minnum="0" />
+    <ELEM name="jobHash" type="bin" maxsize="256" minnum="0" />
+    <ELEM name="jobReference" type="ascii" maxsize="35" minnum="0" />
+    <ELEM name="tanList" type="ascii" maxsize="20" minnum="0" />
+    <ELEM name="moreTans" type="ascii" maxsize="1" minnum="0" />
+    <ELEM name="storno" type="ascii" maxsize="1" minnum="0" />
+    <GROUP type="kti" name="smsAccount" version="1" minnum="0" />
+    <ELEM name="challengeClass" type="num" maxsize="2" minnum="0" />
+    <GROUP type="challengeParams" name="challengeParams" version="1" minnum="0" />
+    <ELEM name="tanMediumId" type="ascii" maxsize="32" minnum="0" />
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+ 
+  <SEGdef id="TanResponse" code="HITAN" version="5" delimiter="+"
+          terminator="'">
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="process" type="num" maxsize="1" />
+    <ELEM name="jobHash" type="bin" maxsize="256" minnum="0" />
+    <ELEM name="jobReference" type="ascii" maxsize="35" minnum="0" />
+    <ELEM name="challenge" type="ascii" minnum="0" />
+    <ELEM name="challengeHHD" type="bin" maxsize="10240" minnum="0" />
+    <GROUP delimiter=":" terminator="" minnum="0">
+      <ELEM name="expireDate" type="ascii" minnum="0" />
+      <ELEM name="expireTime" type="ascii" minnum="0" />
+    </GROUP>
+ 
+    <ELEM name="tanList" type="ascii" maxsize="20" minnum="0" />
+    <ELEM name="ben" type="ascii" maxsize="20" minnum="0" maxnum="99" />
+    <ELEM name="tanInfo" type="ascii" maxsize="99" minnum="0" />
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+  
+  <SEGdef code="HITANS" version="5" delimiter="+" terminator="'" isbpdjob="1">
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="jobspermsg" type="num" maxsize="3" />
+    <ELEM name="minsigs" type="num" maxsize="1" />
+    <ELEM name="securityClass" type="num" size="1" />
+    <GROUP delimiter=":" terminator="">
+      <ELEM name="singleStepAllowed" type="alpha" size="1" />
+      <ELEM name="multiJobAllowed" type="alpha" size="1" />
+      <ELEM name="hashMethod" type="num" size="1" />
+      <GROUP type="tanMethod" version="5" name="tanMethod" minnum="1" maxnum="98"
+             delimiter=":" terminator="" />
+    </GROUP>
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="securityClass">1</VALUE>
+      <VALUE path="hashMethod">1</VALUE>
+    </VALUES>
+  </SEGdef>
+
+
+
+
+</SEGs>
+
+
+
+<JOBs>
+
+  <JOBdef id="JobTan" 
+          code="HKTAN"
+          params="HITANS"
+          version="1" 
+          mode="PINTAN" 
+          crypt="1" 
+          sign="1" 
+          needBPD="1" 
+          response="TanResponse"
+          single="1"
+  >
+    <SEG type="Tan" version="1" />
+  </JOBdef>
+ 
+  <!--  Geschaeftsvorfall: TAN einreichen (Version 2) -->
+  <JOBdef id="JobTan" 
+          code="HKTAN"
+          params="HITANS"
+          version="2" 
+          mode="PINTAN" 
+          crypt="1" 
+          sign="1" 
+          needBPD="1" 
+          response="TanResponse"
+          single="1"
+  >
+    <SEG type="Tan" version="2" />
+  </JOBdef>
+ 
+  <!--  Geschaeftsvorfall: TAN einreichen (Version 3) -->
+  <JOBdef id="JobTan" 
+          code="HKTAN"
+          params="HITANS"
+          version="3" 
+          mode="PINTAN" 
+          crypt="1" 
+          sign="1" 
+          needBPD="1" 
+          response="TanResponse"
+          single="1"
+  >
+    <SEG type="Tan" version="3" />
+  </JOBdef>
+ 
+ 
+  <!--  Geschaeftsvorfall: TAN einreichen (Version 4) -->
+  <JOBdef id="JobTan" 
+          code="HKTAN"
+          params="HITANS"
+          version="4" 
+          mode="PINTAN" 
+          crypt="1" 
+          sign="1" 
+          needBPD="1" 
+          response="TanResponse"
+          single="1"
+  >
+    <SEG type="Tan" version="4" />
+  </JOBdef>
+ 
+ 
+  <!--  Geschaeftsvorfall: TAN einreichen (Version 5) -->
+  <JOBdef id="JobTan" 
+          code="HKTAN"
+          params="HITANS"
+          version="5" 
+          mode="PINTAN" 
+          crypt="1" 
+          sign="1" 
+          needBPD="1" 
+          response="TanResponse"
+          single="1"
+  >
+    <SEG type="Tan" version="5" />
+  </JOBdef>
+
+
+</JOBs>
+
+
+
+

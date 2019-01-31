@@ -17,6 +17,7 @@
 #include "aqhbci_l.h"
 #include "job_l.h"
 #include "accountjob_l.h"
+#include "jobtan_l.h"
 #include "jobqueue_l.h"
 #include "hbci_l.h"
 #include "adminjobs_l.h"

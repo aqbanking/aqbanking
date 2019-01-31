@@ -1,0 +1,209 @@
+ <!--
+/***************************************************************************
+    begin       : Thu Jan 31 2019
+    copyright   : (C) 2019 by Martin Preuss
+    email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+  -->
+
+
+<SEGs>
+
+
+  <!-- Kundennachricht -->
+  <SEGdef id="GetAccountSepaInfo" code="HKSPA" version="1"
+          delimiter="+" terminator="'" >
+    <GROUP type="SegHead" name="head" />
+    <GROUP type="ktv" version="2" />
+ 
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+ 
+  <SEGdef id="GetAccountSepaInfoResponse" code="HISPA" version="1"
+          delimiter="+" terminator="'" >
+    <GROUP type="SegHead" name="head" />
+    <GROUP type="ktz" name="account" version="1" maxnum="999"/>
+ 
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+   </SEGdef>
+ 
+ 
+  <!-- Beschreibungssegment -->
+  <SEGdef code="HISPAS" version="1"
+          delimiter=":" terminator="'" isbpdjob="1" >
+    <GROUP type="BPDJob" version="2" />
+    <ELEM name="AllowSingleAccount" type="an" maxsize="2" />
+    <ELEM name="AllowNationalAccountSpec" type="an" maxsize="2" />
+    <ELEM name="AllowStructuredPurpose" type="an" maxsize="2" />
+    <GROUP name="SupportedSepaFormats" delimiter=":" terminator="" >
+      <ELEM name="Format" type="ascii" maxsize="256" minnum="0" maxnum="99" />
+    </GROUP>
+ 
+ 
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+ 
+ 
+ 
+  <!-- Kundennachricht -->
+  <SEGdef id="GetAccountSepaInfo" code="HKSPA" version="2"
+          delimiter="+" terminator="'" >
+    <GROUP type="SegHead" name="head" />
+    <GROUP type="ktv" version="2" />
+    <ELEM name="maxEntries" type="num" maxsize="4" minnum="0" />
+    <ELEM name="attach" type="ascii" maxsize="35" minnum="0" />
+ 
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+ 
+  <SEGdef id="GetAccountSepaInfoResponse" code="HISPA" version="2"
+          delimiter="+" terminator="'" >
+    <GROUP type="SegHead" name="head" />
+    <GROUP type="ktz" name="account" version="1" maxnum="999"/>
+ 
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+   </SEGdef>
+ 
+ 
+  <!-- Beschreibungssegment -->
+  <SEGdef code="HISPAS" version="2"
+          delimiter=":" terminator="'" isbpdjob="1" >
+    <GROUP type="BPDJob" version="2" />
+    <ELEM name="AllowSingleAccount" type="an" maxsize="2" />
+    <ELEM name="AllowNationalAccountSpec" type="an" maxsize="2" />
+    <ELEM name="AllowStructuredPurpose" type="an" maxsize="2" />
+    <ELEM name="AllowMaxEntries" type="an" maxsize="2" />
+ 
+    <GROUP name="SupportedSepaFormats" delimiter=":" terminator="" >
+      <ELEM name="Format" type="ascii" maxsize="256" minnum="0" maxnum="99" />
+    </GROUP>
+ 
+ 
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+ 
+ 
+ 
+  <!-- Kundennachricht -->
+  <SEGdef id="GetAccountSepaInfo" code="HKSPA" version="3"
+          delimiter="+" terminator="'" >
+    <GROUP type="SegHead" name="head" />
+    <GROUP type="ktv" version="2" />
+    <ELEM name="maxEntries" type="num" maxsize="4" minnum="0" />
+    <ELEM name="attach" type="ascii" maxsize="35" minnum="0" />
+ 
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+ 
+  <SEGdef id="GetAccountSepaInfoResponse" code="HISPA" version="3"
+          delimiter="+" terminator="'" >
+    <GROUP type="SegHead" name="head" />
+    <GROUP type="ktz" name="account" version="1" maxnum="999"/>
+ 
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+   </SEGdef>
+ 
+ 
+  <!-- Beschreibungssegment -->
+  <SEGdef code="HISPAS" version="3"
+          delimiter=":" terminator="'" isbpdjob="1" >
+    <GROUP type="BPDJob" version="2" />
+    <ELEM name="AllowSingleAccount" type="an" maxsize="2" />
+    <ELEM name="AllowNationalAccountSpec" type="an" maxsize="2" />
+    <ELEM name="AllowStructuredPurpose" type="an" maxsize="2" />
+    <ELEM name="AllowMaxEntries" type="an" maxsize="2" />
+    <ELEM name="MaxReservedPurposeChars" type="num" maxsize="2" minnum="0" />
+ 
+    <GROUP name="SupportedSepaFormats" delimiter=":" terminator="" >
+      <ELEM name="Format" type="ascii" maxsize="256" minnum="0" maxnum="99" />
+    </GROUP>
+ 
+ 
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+
+
+</SEGs>
+
+
+
+<JOBs>
+
+  <JOBdef id="JobGetAccountSepaInfo" 
+          code="HKSPA"
+          params="HISPAS"
+          version="1" 
+          crypt="1" 
+          sign="1" 
+          needBPD="1" 
+          response="GetAccountSepaInfoResponse"
+          single="0"
+  >
+    <SEG type="GetAccountSepaInfo" version="1" />
+  </JOBdef>
+ 
+ 
+  <JOBdef id="JobGetAccountSepaInfo" 
+          code="HKSPA"
+          params="HISPAS"
+          version="2" 
+          crypt="1" 
+          sign="1" 
+          needBPD="1" 
+          response="GetAccountSepaInfoResponse"
+          single="0"
+  >
+    <SEG type="GetAccountSepaInfo" version="2" />
+  </JOBdef>
+ 
+  <JOBdef id="JobGetAccountSepaInfo" 
+          code="HKSPA"
+          params="HISPAS"
+          version="3" 
+          crypt="1" 
+          sign="1" 
+          needBPD="1" 
+          response="GetAccountSepaInfoResponse"
+          single="0"
+  >
+    <SEG type="GetAccountSepaInfo" version="3" />
+  </JOBdef>
+
+
+</JOBs>
+
