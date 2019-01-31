@@ -39,117 +39,131 @@ typedef enum {
     AH_CryptAlg_AES256=14
 } AH_CRYPT_ALG;
 
+typedef enum {
+    AH_UsageSign_None=0,
+    AH_UsageSign_OwnerSigning=6
+} AH_USAGE_SIGN;
+
 typedef struct {
     AH_CRYPT_MODE protocol;
     uint8_t       protocolVersion;
     AH_SIGN_ALG   signAlgo;         /* Signaturalgorithmus, kodiert */
     AH_OPMODE     opmodSignS;       /* Operationsmodus bei Signatur (Signierschluessel) */
     AH_OPMODE     opmodSignD;       /* Operationsmodus bei Signatur (Signaturschluessel) */
-    uint16_t      usageSign;        /* Verwendung des Signaturalgorithmus */
+    AH_USAGE_SIGN usageSign;        /* Verwendung des Signaturalgorithmus */
     AH_HASH_ALG   hashAlgS;         /* Hashalgorithmus, kodiert (Signierschluessel) */
     AH_HASH_ALG   hashAlgD;         /* Hashalgorithmus, kodiert (Signaturschluessel) */
     AH_CRYPT_ALG  cryptAlg;         /* Verschluesselungsalgorithmus, kodiert */
-    AH_OPMODE    opmodCrypt;       /* Operationsmodus bei Verschluesselung */
+    AH_OPMODE     opmodCrypt;       /* Operationsmodus bei Verschluesselung */
 } RXH_PARAMETER;
 
-RXH_PARAMETER  rdh1_parameter={AH_CryptMode_Rdh,
+RXH_PARAMETER  rdh1_parameter={
+        AH_CryptMode_Rdh,
         1,
         AH_SignAlg_RSA,
         AH_Opmode_Iso9796_1,
         AH_Opmode_None,
-        6,
+        AH_UsageSign_OwnerSigning,
         AH_HashAlg_Ripmed160,
         AH_HashAlg_None,
         AH_CryptAlg_2_Key_Triple_Des,
         AH_Opmode_Cbc};
 
-RXH_PARAMETER  rdh2_parameter={AH_CryptMode_Rdh,
+RXH_PARAMETER  rdh2_parameter={
+        AH_CryptMode_Rdh,
         2,
-        10,  /* RSA               */
-        17,  /* ISO 9796-2        */
-        0,   /* kein D-Schluessel */
-        6,   /* Owner Signing     */
-        999, /* RIPMED-160        */
-        0,   /* kein D-Schluessel */
-        13,  /* 2-Key-Triple-DES  */
-        2};  /* CBC (0-Padding)   */
+        AH_SignAlg_RSA,
+        AH_Opmode_Iso9796_2,
+        AH_Opmode_None,
+        AH_UsageSign_OwnerSigning,
+        AH_HashAlg_Ripmed160,
+        AH_HashAlg_None,
+        AH_CryptAlg_2_Key_Triple_Des,
+        AH_Opmode_Cbc};
 
-RXH_PARAMETER  rdh3_parameter={AH_CryptMode_Rdh,
+RXH_PARAMETER  rdh3_parameter={
+        AH_CryptMode_Rdh,
         3,
-        10,  /* RSA               */
-        18,  /* RSASSA-PKCS1-v1_5 */
-        17,  /* ISO 9796-2        */
-        6,   /* Owner Signing     */
-        1,   /* SHA-1             */
-        999, /* RIPMED-160        */
-        13,  /* 2-Key-Triple-DES  */
-        18}; /* RSAES-PKCS1-v1_5  */
+        AH_SignAlg_RSA,
+        AH_Opmode_Rsa_Pkcs1_v1_5,
+        AH_Opmode_Iso9796_2,
+        AH_UsageSign_OwnerSigning,
+        AH_HashAlg_Sha1,
+        AH_HashAlg_Ripmed160,
+        AH_CryptAlg_2_Key_Triple_Des,
+        AH_Opmode_Rsa_Pkcs1_v1_5};
 
-RXH_PARAMETER  rdh5_parameter={AH_CryptMode_Rdh,
+RXH_PARAMETER  rdh5_parameter={
+        AH_CryptMode_Rdh,
         5,
-        10,  /* RSA               */
-        18,  /* RSASSA-PKCS1-v1_5 */
-        0,   /* kein D-Schluessel */
-        6,   /* Owner Signing     */
-        1,   /* SHA-1             */
-        0,   /* kein D-Schluessel */
-        13,  /* 2-Key-Triple-DES  */
-        18}; /* RSAES-PKCS1-v1_5  */
+        AH_SignAlg_RSA,
+        AH_Opmode_Rsa_Pkcs1_v1_5,
+        AH_Opmode_None,
+        AH_UsageSign_OwnerSigning,
+        AH_HashAlg_Sha1,
+        AH_Opmode_None,
+        AH_CryptAlg_2_Key_Triple_Des,
+        AH_Opmode_Rsa_Pkcs1_v1_5};
 
-RXH_PARAMETER  rdh6_parameter={AH_CryptMode_Rdh,
+RXH_PARAMETER  rdh6_parameter={
+        AH_CryptMode_Rdh,
         6,
-        10,  /* RSA               */
-        18,  /* RSASSA-PKCS1-v1_5 */
-        18,  /* RSASSA-PKCS1-v1_5 */
-        6,   /* Owner Signing     */
-        3,   /* SHA-256           */
-        3,   /* SHA-256           */
-        13,  /* 2-Key-Triple-DES  */
-        18}; /* RSAES-PKCS1-v1_5  */
+        AH_SignAlg_RSA,
+        AH_Opmode_Rsa_Pkcs1_v1_5,
+        AH_Opmode_Rsa_Pkcs1_v1_5,
+        AH_UsageSign_OwnerSigning,
+        AH_HashAlg_Sha256,
+        AH_HashAlg_Sha256,
+        AH_CryptAlg_2_Key_Triple_Des,
+        AH_Opmode_Rsa_Pkcs1_v1_5};
 
-RXH_PARAMETER  rdh7_parameter={AH_CryptMode_Rdh,
+RXH_PARAMETER  rdh7_parameter={
+        AH_CryptMode_Rdh,
         7,
-        10,  /* RSA               */
-        19,  /* RSASSA-PSS        */
-        19,  /* RSASSA-PSS        */
-        6,   /* Owner Signing     */
-        6,   /* SHA-256/SHA-256   */
-        3,   /* SHA-256           */
-        13,  /* 2-Key-Triple-DES  */
-        18}; /* RSAES-PKCS1-v1_5  */
+        AH_SignAlg_RSA,
+        AH_Opmode_Rsa_Pss,
+        AH_Opmode_Rsa_Pss,
+        AH_UsageSign_OwnerSigning,
+        AH_HashAlg_Sha256Sha256,
+        AH_HashAlg_Sha256,
+        AH_CryptAlg_2_Key_Triple_Des,
+        AH_Opmode_Rsa_Pkcs1_v1_5};
 
-RXH_PARAMETER  rdh8_parameter={AH_CryptMode_Rdh,
+RXH_PARAMETER  rdh8_parameter={
+        AH_CryptMode_Rdh,
         8,
-        10,  /* RSA               */
-        18,  /* RSASSA-PKCS1-v1_5 */
-        0,   /* kein D-Schluessel */
-        6,   /* Owner Signing     */
-        3,   /* SHA-256           */
-        0,   /* kein D-Schluessel */
-        13,  /* 2-Key-Triple-DES  */
-        18}; /* RSAES-PKCS1-v1_5  */
+        AH_SignAlg_RSA,
+        AH_Opmode_Rsa_Pkcs1_v1_5,
+        AH_Opmode_None,
+        AH_UsageSign_OwnerSigning,
+        AH_HashAlg_Sha256,
+        AH_Opmode_None,
+        AH_CryptAlg_2_Key_Triple_Des,
+        AH_Opmode_Rsa_Pkcs1_v1_5};
 
-RXH_PARAMETER  rdh9_parameter={AH_CryptMode_Rdh,
+RXH_PARAMETER  rdh9_parameter={
+        AH_CryptMode_Rdh,
         9,
-        10,  /* RSA               */
-        19,  /* RSASSA-PSS        */
-        0,   /* kein D-Schluessel */
-        6,   /* Owner Signing     */
-        6,   /* SHA-256/SHA-256   */
-        0,   /* kein D-Schluessel */
-        13,  /* 2-Key-Triple-DES  */
-        18}; /* RSAES-PKCS1-v1_5  */
+        AH_SignAlg_RSA,
+        AH_Opmode_Rsa_Pss,
+        AH_Opmode_None,
+        AH_UsageSign_OwnerSigning,
+        AH_HashAlg_Sha256Sha256,
+        AH_Opmode_None,
+        AH_CryptAlg_2_Key_Triple_Des,
+        AH_Opmode_Rsa_Pkcs1_v1_5};
 
-RXH_PARAMETER  rdh10_parameter={AH_CryptMode_Rdh,
+RXH_PARAMETER  rdh10_parameter={
+        AH_CryptMode_Rdh,
         10,
-        10,  /* RSA               */
-        19,  /* RSASSA-PSS        */
-        0,   /* kein D-Schluessel */
-        6,   /* Owner Signing     */
-        6,   /* SHA-256/SHA-256   */
-        0,   /* kein D-Schluessel */
-        13,  /* 2-Key-Triple-DES  */
-        2};  /* CBC (0-Padding)   */
+        AH_SignAlg_RSA,
+        AH_Opmode_Rsa_Pss,
+        AH_Opmode_None,
+        AH_UsageSign_OwnerSigning,
+        AH_HashAlg_Sha256Sha256,
+        AH_Opmode_None,
+        AH_CryptAlg_2_Key_Triple_Des,
+        AH_Opmode_Cbc};
 
 RXH_PARAMETER *rdh_parameter[11]=
 {
@@ -168,36 +182,36 @@ RXH_PARAMETER *rdh_parameter[11]=
 
 RXH_PARAMETER  rah7_parameter={AH_CryptMode_Rah,
         7,
-        10,  /* RSA               */
+        AH_SignAlg_RSA,
         19,  /* RSASSA-PSS        */
         19,  /* RSASSA-PSS        */
-        6,   /* Owner Signing     */
-        6,   /* SHA-256/SHA-256   */
-        3,   /* SHA-256           */
-        14,  /* AES-256           */
-        18}; /* RSAES-PKCS1-v1_5  */
+        AH_UsageSign_OwnerSigning,
+        AH_HashAlg_Sha256Sha256,
+        AH_HashAlg_Sha256,
+        AH_CryptAlg_AES256,
+        AH_Opmode_Rsa_Pkcs1_v1_5};
 
 RXH_PARAMETER  rah9_parameter={AH_CryptMode_Rah,
         9,
-        10,  /* RSA               */
+        AH_SignAlg_RSA,
         19,  /* RSASSA-PSS        */
-        0,   /* kein D-Schluessel */
-        6,   /* Owner Signing     */
-        6,   /* SHA-256/SHA-256   */
-        0,   /* kein D-Schluessel */
-        14,  /* AES-256           */
-        18}; /* RSAES-PKCS1-v1_5  */
+        AH_Opmode_None,
+        AH_UsageSign_OwnerSigning,
+        AH_HashAlg_Sha256Sha256,
+        AH_Opmode_None,
+        AH_CryptAlg_AES256,
+        AH_Opmode_Rsa_Pkcs1_v1_5};
 
 RXH_PARAMETER  rah10_parameter={AH_CryptMode_Rah,
         10,
-        10,  /* RSA               */
+        AH_SignAlg_RSA,
         19,  /* RSASSA-PSS        */
-        0,   /* kein D-Schluessel */
-        6,   /* Owner Signing     */
-        6,   /* SHA-256/SHA-256   */
-        0,   /* kein D-Schluessel */
-        14,  /* AES-256           */
-        2};  /* CBC (0-Padding)   */
+        AH_Opmode_None,
+        AH_UsageSign_OwnerSigning,
+        AH_HashAlg_Sha256Sha256,
+        AH_Opmode_None,
+        AH_CryptAlg_AES256,
+        AH_Opmode_Cbc};
 
 RXH_PARAMETER *rah_parameter[11]=
 {
@@ -482,6 +496,7 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
     }
 
     GWEN_MsgEngine_SetMode(e,AH_CryptMode_toString(rxh_parameter->protocol));
+    //GWEN_MsgEngine_SetMode(e,"rdh");
     secProfile = AH_Msg_GetSecurityProfile(hmsg);
     gid=0;
 
@@ -574,30 +589,6 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
         AH_Msg_SetExpectedSigner(hmsg, remoteId);
     }
 
-#if 0
-    /* store system id */
-    if (hmsg->noSysId) {
-        GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-                "SecDetails/SecId", "0");
-    }
-    else {
-        /* store CID if we use a card */
-        p=GWEN_Crypt_Token_Context_GetCid(ctx);
-        if (p) {
-            GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/CID", p);
-        }
-        else { /* use sysid for software only solutions */
-            p=AH_User_GetSystemId(su);
-            if (p==NULL)
-                p=GWEN_Crypt_Token_Context_GetSystemId(ctx);
-            if (p)
-                GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", p);
-            else {
-                GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", "0");
-            }
-        }
-    }
-#endif
 
     /* store system id */
     if (hmsg->noSysId) {
@@ -871,7 +862,7 @@ int AH_Msg_EncryptRxh(AH_MSG *hmsg) {
     e=AH_Dialog_GetMsgEngine(hmsg->dialog);
     assert(e);
     GWEN_MsgEngine_SetMode(e,AH_CryptMode_toString(rxh_parameter->protocol));
-
+    //GWEN_MsgEngine_SetMode(e,"rdh");
     gid=0;
 
 
@@ -1179,8 +1170,8 @@ int AH_Msg_DecryptRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr){
     assert(h);
     e=AH_Dialog_GetMsgEngine(hmsg->dialog);
     assert(e);
-    GWEN_MsgEngine_SetMode(e, "rdh");
-
+    //GWEN_MsgEngine_SetMode(e, "rdh");
+    GWEN_MsgEngine_SetMode(e,AH_CryptMode_toString(rxh_parameter->protocol));
     gid=0;
 
 
@@ -1411,11 +1402,12 @@ int AH_MsgRxh__Verify_Internal(GWEN_CRYPT_KEY *k,
             int nbits;
             uint8_t *modPtr;
             /* nasty hack, do something better later */
-            uint8_t modBuffer[1024];
+            uint8_t modBuffer[AH_MSGRXH_MAXKEYBUF];
             uint32_t modLen;
             GWEN_MDIGEST *md;
 
             modPtr=&modBuffer[0];
+            modLen=AH_MSGRXH_MAXKEYBUF;
             /* calculate real number of bits */
             rv=GWEN_Crypt_KeyRsa_GetModulus(k,modPtr,&modLen);
 
