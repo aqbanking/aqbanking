@@ -11,10 +11,12 @@ INCLUDES = -I$(aqbanking_symlinkdir) $(all_includes) \
 noinst_LTLIBRARIES=libhbciadmjobs.la
 
 noinst_HEADERS=\
-  jobgetkeys_l.h jobgetkeys_p.h
+  jobgetkeys_l.h jobgetkeys_p.h \
+  jobsendkeys_l.h jobsendkeys_p.h
 
 libhbciadmjobs_la_SOURCES=\
-  jobgetkeys.c
+  jobgetkeys.c \
+  jobsendkeys.c
 
 
 sources:
@@ -26,7 +28,9 @@ sources:
 	done
 
 xmlfiles=\
-  $(srcdir)/jobgetkeys.xml
+  $(srcdir)/jobgetkeys.xml \
+  $(srcdir)/jobsendkeys.xml
+
 
 EXTRA_DIST=$(xmlfiles)
 

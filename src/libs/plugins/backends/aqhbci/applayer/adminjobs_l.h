@@ -24,23 +24,6 @@ extern "C" {
 
 /* __________________________________________________________________________
  * AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
- *                             AH_Job_SendKeys
- * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
- */
-
-
-AH_JOB *AH_Job_SendKeys_new(AB_PROVIDER *pro, AB_USER *u,
-			    const GWEN_CRYPT_TOKEN_KEYINFO *cryptKeyInfo,
-			    const GWEN_CRYPT_TOKEN_KEYINFO *signKeyInfo,
-			    const GWEN_CRYPT_TOKEN_KEYINFO *authKeyInfo);
-
-
-
-
-
-
-/* __________________________________________________________________________
- * AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
  *                             AH_Job_GetSysId
  * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
  */

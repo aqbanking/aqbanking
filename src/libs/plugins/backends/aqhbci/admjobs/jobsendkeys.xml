@@ -1,0 +1,486 @@
+ <!--
+/***************************************************************************
+    begin       : Thu Jan 31 2019
+    copyright   : (C) 2019 by Martin Preuss
+    email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+  -->
+
+
+<SEGs>
+
+
+ <SEGdef id="SendKey" 
+         code="HKSAK" 
+         version="2"
+         pversion="201"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="context" type="num" maxsize="1" /> 
+   <ELEM name="fntyp" type="num" maxsize="3" />
+   <GROUP name="keyname" type="keyname" />
+   <GROUP name="key" type="key" trustlevel="3" />
+   <GROUP name="cert" type="cert" minnum="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+     <VALUE path="context">2</VALUE>
+     <VALUE path="fntyp">112</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+
+ <SEGdef id="SendSignKey" 
+         code="HKSAK" 
+         version="2"
+         pversion="201"
+         mode="RDH"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="context" type="num" maxsize="1" /> 
+   <ELEM name="fntyp" type="num" maxsize="3" />
+   <GROUP name="keyname" type="signkeyname" />
+   <GROUP name="key" type="signkey" trustlevel="3" />
+   <GROUP name="cert" type="cert" minnum="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+     <VALUE path="context">2</VALUE>
+     <VALUE path="fntyp">112</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+
+ <SEGdef id="SendCryptKey" 
+         code="HKSAK" 
+         version="2"
+         pversion="201"
+         mode="RDH"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="context" type="num" maxsize="1" /> 
+   <ELEM name="fntyp" type="num" maxsize="3" />
+   <GROUP name="keyname" type="cryptkeyname" />
+   <GROUP name="key" type="cryptkey" trustlevel="3" />
+   <GROUP name="cert" type="cert" minnum="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+     <VALUE path="context">2</VALUE>
+     <VALUE path="fntyp">112</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+
+  <SEGdef id="SendKey" 
+          code="HKSAK" 
+          version="2"
+          pversion="210"
+          delimiter="+" 
+          terminator="'" 
+  >
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="context" type="num" maxsize="1" /> 
+    <ELEM name="fntyp" type="num" maxsize="3" />
+    <GROUP name="keyname" type="keyname" />
+    <GROUP name="key" type="key" trustlevel="3" />
+    <GROUP name="cert" type="cert" minnum="0" />
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="context">2</VALUE>
+      <VALUE path="fntyp">112</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+ 
+ 
+  <SEGdef id="SendSignKey" 
+          code="HKSAK" 
+          version="2"
+          pversion="210"
+          mode="RDH"
+          delimiter="+" 
+          terminator="'" 
+  >
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="context" type="num" maxsize="1" /> 
+    <ELEM name="fntyp" type="num" maxsize="3" />
+    <GROUP name="keyname" type="signkeyname" />
+    <GROUP name="key" type="signkey" trustlevel="3" />
+    <GROUP name="cert" type="cert" minnum="0" />
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="context">2</VALUE>
+      <VALUE path="fntyp">112</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+ 
+ 
+  <SEGdef id="SendCryptKey" 
+          code="HKSAK" 
+          version="2"
+          pversion="210"
+          mode="RDH"
+          delimiter="+" 
+          terminator="'" 
+  >
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="context" type="num" maxsize="1" /> 
+    <ELEM name="fntyp" type="num" maxsize="3" />
+    <GROUP name="keyname" type="cryptkeyname" />
+    <GROUP name="key" type="cryptkey" trustlevel="3" />
+    <GROUP name="cert" type="cert" minnum="0" />
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="context">2</VALUE>
+      <VALUE path="fntyp">112</VALUE>
+    </VALUES>
+  </SEGdef>
+
+
+
+  <SEGdef id="SendKey" 
+          code="HKSAK" 
+          version="2"
+          pversion="220"
+          delimiter="+" 
+          terminator="'" 
+  >
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="context" type="num" maxsize="1" /> 
+    <ELEM name="fntyp" type="num" maxsize="3" />
+    <GROUP name="keyname" type="keyname" />
+    <GROUP name="key" type="key" trustlevel="3" />
+    <GROUP name="cert" type="cert" minnum="0" />
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="context">2</VALUE>
+      <VALUE path="fntyp">112</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+ 
+ 
+  <SEGdef id="SendSignKey" 
+          code="HKSAK" 
+          version="2"
+          pversion="220"
+          mode="RDH"
+          delimiter="+" 
+          terminator="'" 
+  >
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="context" type="num" maxsize="1" /> 
+    <ELEM name="fntyp" type="num" maxsize="3" />
+    <GROUP name="keyname" type="signkeyname" />
+    <GROUP name="key" type="signkey" trustlevel="3" />
+    <GROUP name="cert" type="cert" minnum="0" />
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="context">2</VALUE>
+      <VALUE path="fntyp">112</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+ 
+ 
+  <SEGdef id="SendCryptKey" 
+          code="HKSAK" 
+          version="2"
+          pversion="220"
+          mode="RDH"
+          delimiter="+" 
+          terminator="'" 
+  >
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="context" type="num" maxsize="1" /> 
+    <ELEM name="fntyp" type="num" maxsize="3" />
+    <GROUP name="keyname" type="cryptkeyname" />
+    <GROUP name="key" type="cryptkey" trustlevel="3" />
+    <GROUP name="cert" type="cert" minnum="0" />
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="context">2</VALUE>
+      <VALUE path="fntyp">112</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+
+
+
+
+
+  <SEGdef id="SendKey" 
+          code="HKSAK" 
+          version="3"
+          pversion="300"
+          delimiter="+" 
+          terminator="'" 
+  >
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="context" type="num" maxsize="1" /> 
+    <ELEM name="fntyp" type="num" maxsize="3" />
+    <GROUP type="SecProfile" name="secProfile" />
+    <GROUP name="keyname" type="keyname" />
+    <GROUP name="key" type="key" trustlevel="3" />
+    <GROUP name="cert" type="cert" minnum="0" />
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="context">2</VALUE>
+      <VALUE path="fntyp">112</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+ 
+ 
+  <SEGdef id="SendSignKey" 
+          code="HKSAK" 
+          version="3"
+          pversion="300"
+          mode="RDH"
+          delimiter="+" 
+          terminator="'" 
+  >
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="context" type="num" maxsize="1" /> 
+    <ELEM name="fntyp" type="num" maxsize="3" />
+    <GROUP type="SecProfile" name="secProfile" />
+    <GROUP name="keyname" type="signkeyname" />
+    <GROUP name="key" type="signkey" trustlevel="3" />
+    <GROUP name="cert" type="cert" minnum="0" />
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="context">2</VALUE>
+      <VALUE path="fntyp">112</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+  <SEGdef id="SendSignKey" 
+          code="HKSAK" 
+          version="3"
+          pversion="300"
+          mode="RAH"
+          delimiter="+" 
+          terminator="'" 
+  >
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="context" type="num" maxsize="1" /> 
+    <ELEM name="fntyp" type="num" maxsize="3" />
+    <GROUP type="SecProfile" name="secProfile" />
+    <GROUP name="keyname" type="signkeyname" />
+    <GROUP name="key" type="signkey" trustlevel="3" />
+    <GROUP name="cert" type="cert" minnum="0" />
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="context">2</VALUE>
+      <VALUE path="fntyp">112</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+  <SEGdef id="SendCryptKey" 
+          code="HKSAK" 
+          version="3"
+          pversion="300"
+          mode="RDH"
+          delimiter="+" 
+          terminator="'" 
+  >
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="context" type="num" maxsize="1" /> 
+    <ELEM name="fntyp" type="num" maxsize="3" />
+    <GROUP type="SecProfile" name="secProfile" />
+    <GROUP name="keyname" type="cryptkeyname" />
+    <GROUP name="key" type="cryptkey" trustlevel="3" />
+    <GROUP name="cert" type="cert" minnum="0" />
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="context">2</VALUE>
+      <VALUE path="fntyp">112</VALUE>
+    </VALUES>
+  </SEGdef>
+  
+   <SEGdef id="SendCryptKey" 
+          code="HKSAK" 
+          version="3"
+          pversion="300"
+          mode="RAH"
+          delimiter="+" 
+          terminator="'" 
+  >
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="context" type="num" maxsize="1" /> 
+    <ELEM name="fntyp" type="num" maxsize="3" />
+    <GROUP type="SecProfile" name="secProfile" />
+    <GROUP name="keyname" type="cryptkeyname" />
+    <GROUP name="key" type="cryptkey" trustlevel="3" />
+    <GROUP name="cert" type="cert" minnum="0" />
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="context">2</VALUE>
+      <VALUE path="fntyp">112</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+ 
+  <SEGdef id="SendAuthKey" 
+          code="HKSAK" 
+          version="3"
+          pversion="300"
+          mode="RDH"
+          delimiter="+" 
+          terminator="'" 
+  >
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="context" type="num" maxsize="1" /> 
+    <ELEM name="fntyp" type="num" maxsize="3" />
+    <GROUP type="SecProfile" name="secProfile" />
+    <GROUP name="keyname" type="signkeyname" />
+    <GROUP name="key" type="signkey" trustlevel="3" />
+    <GROUP name="cert" type="cert" minnum="0" />
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="context">2</VALUE>
+      <VALUE path="fntyp">112</VALUE>
+    </VALUES>
+  </SEGdef>
+ 
+  <SEGdef id="SendAuthKey" 
+          code="HKSAK" 
+          version="3"
+          pversion="300"
+          mode="RAH"
+          delimiter="+" 
+          terminator="'" 
+  >
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="context" type="num" maxsize="1" /> 
+    <ELEM name="fntyp" type="num" maxsize="3" />
+    <GROUP type="SecProfile" name="secProfile" />
+    <GROUP name="keyname" type="signkeyname" />
+    <GROUP name="key" type="signkey" trustlevel="3" />
+    <GROUP name="cert" type="cert" minnum="0" />
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="context">2</VALUE>
+      <VALUE path="fntyp">112</VALUE>
+    </VALUES>
+  </SEGdef>
+
+
+
+</SEGs>
+
+
+
+<JOBs>
+
+  <JOBdef id="JobSendKeys"
+          version="1" 
+          mode="RDH" 
+          dlg="1" 
+          needsbpd="0"
+   >
+    <MESSAGE name="open" crypt="1" sign="1" >
+      <SEG name="ident" type="Ident" />
+      <SEG type="sendsignKey" name="signKey" version="3" />
+      <SEG type="sendcryptKey" name="cryptkey" version="3" />
+      <VALUES>
+        <VALUE path="cryptkey/key/keytype">V</VALUE>
+        <VALUE path="signkey/key/keytype">S</VALUE>
+      </VALUES>
+    </MESSAGE>
+  </JOBdef>
+ 
+ 
+ 
+  <JOBdef id="JobSendKeysWithAuthKey"
+          version="1" 
+          mode="RDH" 
+          dlg="1" 
+          needsbpd="0"
+   >
+    <MESSAGE name="open" crypt="1" sign="1" >
+      <SEG name="ident" type="Ident" />
+      <SEG type="sendsignKey" name="signKey" version="3" />
+      <SEG type="sendcryptKey" name="cryptkey" version="3" />
+      <SEG type="sendauthKey" name="authkey" version="3" />
+      <VALUES>
+        <VALUE path="cryptkey/key/keytype">V</VALUE>
+        <VALUE path="signkey/key/keytype">S</VALUE>
+        <VALUE path="authkey/key/keytype">D</VALUE>
+      </VALUES>
+    </MESSAGE>
+  </JOBdef>
+ 
+ 
+  <JOBdef id="JobSendKeys"
+          version="1" 
+          mode="RAH" 
+          dlg="1" 
+          needsbpd="0"
+   >
+    <MESSAGE name="open" crypt="1" sign="1" >
+      <SEG name="ident" type="Ident" />
+      <SEG type="sendsignKey" name="signKey" version="3" />
+      <SEG type="sendcryptKey" name="cryptkey" version="3" />
+      <VALUES>
+        <VALUE path="cryptkey/key/keytype">V</VALUE>
+        <VALUE path="signkey/key/keytype">S</VALUE>
+      </VALUES>
+    </MESSAGE>
+  </JOBdef>
+ 
+ 
+ 
+  <JOBdef id="JobSendKeysWithAuthKey"
+          version="1" 
+          mode="RAH" 
+          dlg="1" 
+          needsbpd="0"
+   >
+    <MESSAGE name="open" crypt="1" sign="1" >
+      <SEG name="ident" type="Ident" />
+      <SEG type="sendsignKey" name="signKey" version="3" />
+      <SEG type="sendcryptKey" name="cryptkey" version="3" />
+      <SEG type="sendauthKey" name="authkey" version="3" />
+      <VALUES>
+        <VALUE path="cryptkey/key/keytype">V</VALUE>
+        <VALUE path="signkey/key/keytype">S</VALUE>
+        <VALUE path="authkey/key/keytype">D</VALUE>
+      </VALUES>
+    </MESSAGE>
+  </JOBdef>
+ 
+
+
+</JOBs>
+
+
+
+

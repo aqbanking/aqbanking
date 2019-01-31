@@ -46,6 +46,7 @@
 
 /* admin jobs */
 #include "jobgetkeys_l.h"
+#include "jobsendkeys_l.h"
 
 /*
 #include "dlg_newuser_l.h"
