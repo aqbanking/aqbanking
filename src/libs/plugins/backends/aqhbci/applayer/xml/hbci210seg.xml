@@ -629,54 +629,6 @@
 
 
 
- <SEGdef id="GetKey" 
-         code="HKISA" 
-         version="2"
-         pversion="210"
-         delimiter="+" 
-         terminator="'" 
-         mode="RDH"
- >
-   <GROUP type="SegHead" name="head" />
-   <ELEM name="context" type="num" maxsize="1" />
-   <ELEM name="id" type="num" maxsize="3" />
-   <GROUP type="keyname" name="key" trustlevel="3" />
-   <GROUP type="cert" name="cert" minnum="0" />
-   
-   <VALUES>
-     <VALUE path="head/code">%code</VALUE>
-     <VALUE path="head/version">%version</VALUE>
-     <VALUE path="context">2</VALUE>
-     <VALUE path="id">124</VALUE>
-   </VALUES>
- </SEGdef>
-
-
-
- <SEGdef id="GetKeyResponse" 
-         code="HIISA" 
-         version="2"
-         pversion="210"
-         delimiter="+" 
-         terminator="'"
- >
-   <GROUP type="SegHead" name="head" />
-   <ELEM name="context" type="num" />
-   <ELEM name="exchangeControl" type="ascii" />
-   <ELEM name="msgnum" type="num" maxsize="4" />
-   <ELEM name="id" type="num" />
-   <GROUP name="keyname" type="keyname" />
-   <GROUP name="key" type="key" trustlevel="3" />
-   <GROUP name="cert" type="cert" minnum="0" />
-   <VALUES>
-     <VALUE path="head/code">%code</VALUE>
-     <VALUE path="head/version">%version</VALUE>
-     <VALUE path="context">1</VALUE>
-     <VALUE path="id">224</VALUE>
-   </VALUES>
- </SEGdef>
-
-
 
  <SEGdef id="SendKey" 
          code="HKSAK" 

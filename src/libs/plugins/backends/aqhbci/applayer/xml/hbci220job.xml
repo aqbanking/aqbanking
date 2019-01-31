@@ -49,42 +49,6 @@
 
 
 
- <JOBdef id="JobGetKeys"
-         version="1" 
-         pversion="220"
-         mode="RDH" 
-         dlg="1" 
-         needsbpd="0"
-         response="GetKeyResponse"
-  >
-   <MESSAGE name="open" crypt="0" sign="0" nosysid="1" >
-     <SEG name="ident" type="Ident" />
-     <SEG name="prepare" type="Prepare" />
-     <SEG type="getKey" name="cryptkey" />
-     <SEG type="getKey" name="signKey" />
-     <VALUES>
-       <VALUE path="ident/customerId">9999999999</VALUE>
-       <!-- No system id is needed in this special case -->
-       <VALUE path="ident/status">0</VALUE>
-       <VALUE path="ident/systemId">0</VALUE>
-       <VALUE path="cryptkey/key/keytype">V</VALUE>
-       <VALUE path="cryptkey/key/keynum">999</VALUE>
-       <VALUE path="cryptkey/key/keyversion">999</VALUE>
-       <VALUE path="cryptkey/key/userid">999</VALUE>
-       <VALUE path="signkey/key/keytype">S</VALUE>
-       <VALUE path="signkey/key/keynum">999</VALUE>
-       <VALUE path="signkey/key/keyversion">999</VALUE>
-       <VALUE path="signkey/key/userid">999</VALUE>
-     </VALUES>
-   </MESSAGE>
-<!--   <MESSAGE name="close" sign="1" crypt="0" >
-     <SEG type="DialogEnd" />
-   </MESSAGE>
--->
- </JOBdef>
-
-
-
  <JOBdef id="JobSendKeys"
          version="1" 
          pversion="220"

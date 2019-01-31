@@ -1313,6 +1313,7 @@ AC_CONFIG_FILES([
   src/libs/plugins/backends/aqhbci/joblayer/Makefile
   src/libs/plugins/backends/aqhbci/applayer/Makefile
   src/libs/plugins/backends/aqhbci/ajobs/Makefile
+  src/libs/plugins/backends/aqhbci/admjobs/Makefile
   src/libs/plugins/backends/aqhbci/applayer/xml/Makefile
   src/libs/plugins/backends/aqhbci/control/Makefile
   src/libs/plugins/backends/aqhbci/version.h

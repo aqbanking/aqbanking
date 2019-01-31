@@ -16,27 +16,6 @@
 
 /* __________________________________________________________________________
  * AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
- *                             AH_Job_GetKeys
- * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
- */
-
-typedef struct AH_JOB_GETKEYS AH_JOB_GETKEYS;
-
-struct AH_JOB_GETKEYS {
-  char *peerId;
-  GWEN_CRYPT_TOKEN_KEYINFO *signKeyInfo;
-  GWEN_CRYPT_TOKEN_KEYINFO *cryptKeyInfo;
-  GWEN_CRYPT_TOKEN_KEYINFO *authKeyInfo;
-};
-
-static void GWENHYWFAR_CB AH_Job_GetKeys_FreeData(void *bp, void *p);
-static int AH_Job_GetKeys_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
-
-
-
-
-/* __________________________________________________________________________
- * AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
  *                             AH_Job_SendKeys
  * YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
  */

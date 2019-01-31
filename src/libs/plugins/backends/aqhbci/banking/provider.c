@@ -44,6 +44,9 @@
 /* special jobs */
 #include "jobforeignxferwh_l.h"
 
+/* admin jobs */
+#include "jobgetkeys_l.h"
+
 /*
 #include "dlg_newuser_l.h"
 #include "dlg_pintan_l.h"

@@ -3,7 +3,8 @@ AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 
 INCLUDES = -I$(aqbanking_symlinkdir) $(gwenhywfar_includes) \
   -I$(srcdir)/../msglayer -I$(srcdir)/../joblayer \
-  -I$(srcdir)/../applayer -I$(srcdir)/../ajobs  -I$(srcdir)/.. \
+  -I$(srcdir)/../applayer -I$(srcdir)/.. \
+  -I$(srcdir)/../ajobs -I$(srcdir)/../admjobs \
   -I$(srcdir)/../dialogs  -I$(srcdir)/../control
 
 localedir = $(datadir)/locale
