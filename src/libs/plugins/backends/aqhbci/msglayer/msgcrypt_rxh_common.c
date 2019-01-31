@@ -591,19 +591,31 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
 
 
     /* store system id */
+    /* store system id */
     if (hmsg->noSysId) {
-      GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-               "SecDetails/SecId", "0");
+        GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
+                "SecDetails/SecId", "0");
     }
     else {
-      p=AH_User_GetSystemId(su);
-      if (p==NULL)
-        p=GWEN_Crypt_Token_Context_GetSystemId(ctx);
-      if (p)
-        GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", p);
-      else {
-        GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", "0");
-      }
+        /* store CID if we use a card */
+        const uint8_t *cidData;
+        uint32_t cidLen=GWEN_Crypt_Token_Context_GetCidLen(ctx);
+        cidData=GWEN_Crypt_Token_Context_GetCidPtr(ctx);
+        if (cidLen > 0 && cidData != NULL ) {
+            GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/CID", cidData,cidLen);
+            GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", "0");
+        }
+        else {
+            p=GWEN_Crypt_Token_Context_GetSystemId(ctx);
+            if (p==NULL)
+                p=AH_User_GetSystemId(su);
+
+            if (p)
+                GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", p);
+            else {
+                GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", "0");
+            }
+        }
     }
 
     /* retrieve control reference for sigtail (to be used later) */
@@ -1057,14 +1069,18 @@ int AH_Msg_EncryptRxh(AH_MSG *hmsg) {
     }
     else {
         /* store CID if we use a card */
-        p=GWEN_Crypt_Token_Context_GetCid(ctx);
-        if (p) {
-            GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/CID", p);
+        const uint8_t *cidData;
+        uint32_t cidLen=GWEN_Crypt_Token_Context_GetCidLen(ctx);
+        cidData=GWEN_Crypt_Token_Context_GetCidPtr(ctx);
+        if (cidLen > 0 && cidData != NULL ) {
+            GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/CID", cidData,cidLen);
+            GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", "0");
         }
-        else { /* use sysid for software only solutions */
-            p=AH_User_GetSystemId(u);
+        else {
+            p=GWEN_Crypt_Token_Context_GetSystemId(ctx);
             if (p==NULL)
-                p=GWEN_Crypt_Token_Context_GetSystemId(ctx);
+                p=AH_User_GetSystemId(u);
+
             if (p)
                 GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", p);
             else {
