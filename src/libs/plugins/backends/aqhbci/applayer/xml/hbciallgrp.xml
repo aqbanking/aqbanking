@@ -380,6 +380,36 @@
     <ELEM name="SecId" type="ascii" maxsize="256" minnum="0" />
   </GROUPdef>
 
+<!-- RAH stuff -->
+  
+  <GROUPdef id="SignAlgo" delimiter=":" version="1" mode="RAH" >
+    <!-- Signatur-Algo fuer RDH -->
+    <GROUP type="SignAlgoBase" version="1" />
+
+    <VALUES>
+      <VALUE path="algo">10</VALUE>
+      <VALUE path="mode">16</VALUE>
+    </VALUES>
+  </GROUPdef>
+
+
+
+  <GROUPdef id="CryptAlgo" delimiter=":" version="1" mode="RAH" >
+    <!-- Crypt-Algo fuer RDH -->
+    <GROUP type="CryptAlgoBase" version="1" />
+
+    <VALUES>
+      <VALUE path="keytype">6</VALUE>
+    </VALUES>
+  </GROUPdef>
+
+  <GROUPdef id="SecDetails" delimiter=":" version="1" mode="RAH" >
+    <!-- Sicherheitsidentifikation, Details -->
+    <ELEM name="dir" type="num" maxsize=3 />
+    <ELEM name="CID" type="bin" maxsize="256" minnum="0" trustlevel="3" />
+    <ELEM name="SecId" type="ascii" maxsize="256" minnum="0" />
+  </GROUPdef>
+
 
 
 

@@ -961,7 +961,7 @@
  <SEGdef id="GetAccountSepaInfoResponse" code="HISPA" version="2"
          delimiter="+" terminator="'" >
    <GROUP type="SegHead" name="head" />
-   <GROUP type="ktz" version="1" maxnum="999"/>
+   <GROUP type="ktz" name="account" version="1" maxnum="999"/>
 
    <VALUES>
      <VALUE path="head/code">%code</VALUE>
@@ -1010,7 +1010,7 @@
  <SEGdef id="GetAccountSepaInfoResponse" code="HISPA" version="3"
          delimiter="+" terminator="'" >
    <GROUP type="SegHead" name="head" />
-   <GROUP type="ktz" version="1" maxnum="999"/>
+   <GROUP type="ktz" name="account" version="1" maxnum="999"/>
 
    <VALUES>
      <VALUE path="head/code">%code</VALUE>

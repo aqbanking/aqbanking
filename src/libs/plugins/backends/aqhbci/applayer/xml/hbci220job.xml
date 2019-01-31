@@ -282,7 +282,7 @@
          response="GetAccountSepaInfoResponse"
          single="0"
  >
-   <SEG type="GetAccountSepaInfo" version="2" />
+   <SEG type="GetAccountSepaInfo" version="3" />
  </JOBdef>
 
 

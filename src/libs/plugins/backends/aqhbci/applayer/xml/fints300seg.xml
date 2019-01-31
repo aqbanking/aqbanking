@@ -139,6 +139,42 @@
     </VALUES>
   </SEGdef>
 
+  <SEGdef id="SigHead" 
+          version="4" 
+          pversion="300"
+          code="HNSHK" 
+          mode="RAH"
+          delimiter="+" 
+          terminator="'"
+  >
+    <!-- "Signaturkopf" -->
+    <GROUP type="SegHead" name="head" />
+    <GROUP type="SecProfile" name="secProfile" />
+    <ELEM name="function" type="num" maxsize="3" />
+    <ELEM name="ctrlref" type="ascii" maxsize="14" />
+    <ELEM name="area" type="num" maxsize="3" />
+    <ELEM name="role" type="num" maxsize="3" />
+    <GROUP type="SecDetails" version="1" name="SecDetails"  />
+    <ELEM name="signseq" type="num" maxsize="16" />
+    <GROUP type="secstamp" name="SecStamp" version="1" />
+    <GROUP type="hashalgo" name="HashAlgo" version="1" />
+    <GROUP type="SignAlgo" version="1" name="SignAlgo" />
+    <GROUP type="signkeyname" name="key" version="1" trustlevel="3" />
+    <GROUP type="cert" name="cert" minnum="0" version="1" />
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="function">1</VALUE>
+      <VALUE path="area">1</VALUE>
+      <VALUE path="role">1</VALUE>
+      <VALUE path="secstamp/stampcode">1</VALUE>
+      <VALUE path="key/userId">?userId</VALUE>
+      <VALUE path="key/keynum">?signkeynumber</VALUE>
+      <VALUE path="key/keyversion">?signkeyversion</VALUE>
+      <VALUE path="key/keytype">S</VALUE>
+    </VALUES>
+  </SEGdef>
 
   <SEGdef id="SigHead" 
           version="4" 
@@ -185,6 +221,25 @@
           delimiter="+" 
           terminator="'"
           mode="RDH"
+  >
+    <!-- "Signaturabschluss" -->
+    <GROUP type="SegHead" name="head" />
+    <ELEM name="ctrlref" type="ascii" maxsize="14" />
+    <ELEM name="signature" type="bin" maxsize="512" />
+ 
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+  
+    <SEGdef id="SigTail" 
+          code="HNSHA" 
+          version="2" 
+          pversion="300"
+          delimiter="+" 
+          terminator="'"
+          mode="RAH"
   >
     <!-- "Signaturabschluss" -->
     <GROUP type="SegHead" name="head" />
@@ -313,6 +368,40 @@
     </VALUES>
   </SEGdef>
 
+  <SEGdef id="CryptHead" 
+          code="HNVSK" 
+          version="3" 
+          pversion="300"
+          delimiter="+"
+          terminator="'"
+          mode="RAH"
+  >
+    <!-- "Verschluesselungskopf fuer RDH" -->
+    <GROUP type="SegHead" name="head" />
+    <GROUP type="SecProfile" name="secProfile" />
+    <ELEM name="function" type="num" maxsize="3" />
+    <ELEM name="role" type="num" maxsize="3" />
+    <GROUP type="SecDetails" version="1" name="SecDetails" />
+    <GROUP type="secstamp" name="SecStamp" version="1" />
+    <GROUP type="CryptAlgo" name="CryptAlgo" version="1" />
+    <GROUP type="CryptKeyName" name="key" version="1" trustlevel="3" />
+    <ELEM name="compress" type="an" />
+    <GROUP type="cert" name="cert" minnum="0" version="1" />
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="head/seq">998</VALUE>
+      <VALUE path="function">4</VALUE>
+      <VALUE path="role">1</VALUE>
+      <VALUE path="secstamp/stampcode">1</VALUE>
+      <VALUE path="compress">0</VALUE>
+      <VALUE path="key/userId">?userId</VALUE>
+      <VALUE path="key/keynum">?cryptkeynumber</VALUE>
+      <VALUE path="key/keyversion">?cryptkeyversion</VALUE>
+      <VALUE path="key/keytype">V</VALUE>
+    </VALUES>
+  </SEGdef>
 
   <SEGdef id="CryptHead" 
           code="HNVSK" 
@@ -557,6 +646,31 @@
    </VALUES>
  </SEGdef>
 
+ <SEGdef id="Ident" 
+         code="HKIDN" 
+         version="2"
+         pversion="300"
+         delimiter="+" 
+         terminator="'" 
+         topdown="1"
+         mode="RAH"
+ >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="kik" version="1" />
+   <ELEM name="customerId" type="ascii" maxsize="128" 
+         trustlevel="3" hide="1" topdown="1" />
+   <ELEM name="systemId" type="ascii" maxsize="128" trustlevel="3" 
+         topdown="1" hide="1" />
+   <ELEM name="status" type="num" maxsize="1" topdown="1" />
+   
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+     <VALUE path="systemId">?systemid</VALUE>
+     <VALUE path="customerId">?customerId</VALUE>
+     <VALUE path="status">1</VALUE>
+   </VALUES>
+ </SEGdef>
 
 
  <SEGdef id="Ident" 
@@ -781,6 +895,28 @@
    </VALUES>
  </SEGdef>
 
+ <SEGdef id="GetKey" 
+         code="HKISA" 
+         version="3"
+         pversion="300"
+         delimiter="+" 
+         terminator="'" 
+         mode="RAH"
+ >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="context" type="num" maxsize="1" />
+   <ELEM name="id" type="num" maxsize="3" />
+   <GROUP type="SecProfile" name="secProfile" />
+   <GROUP type="keyname" name="key" trustlevel="3" />
+   <GROUP type="cert" name="cert" minnum="0" />
+   
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+     <VALUE path="context">2</VALUE>
+     <VALUE path="id">124</VALUE>
+   </VALUES>
+ </SEGdef>
 
 
  <SEGdef id="GetKeyResponse" 
@@ -855,13 +991,57 @@
    </VALUES>
  </SEGdef>
 
-
+ <SEGdef id="SendSignKey" 
+         code="HKSAK" 
+         version="3"
+         pversion="300"
+         mode="RAH"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="context" type="num" maxsize="1" /> 
+   <ELEM name="fntyp" type="num" maxsize="3" />
+   <GROUP type="SecProfile" name="secProfile" />
+   <GROUP name="keyname" type="signkeyname" />
+   <GROUP name="key" type="signkey" trustlevel="3" />
+   <GROUP name="cert" type="cert" minnum="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+     <VALUE path="context">2</VALUE>
+     <VALUE path="fntyp">112</VALUE>
+   </VALUES>
+ </SEGdef>
 
  <SEGdef id="SendCryptKey" 
          code="HKSAK" 
          version="3"
          pversion="300"
          mode="RDH"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="context" type="num" maxsize="1" /> 
+   <ELEM name="fntyp" type="num" maxsize="3" />
+   <GROUP type="SecProfile" name="secProfile" />
+   <GROUP name="keyname" type="cryptkeyname" />
+   <GROUP name="key" type="cryptkey" trustlevel="3" />
+   <GROUP name="cert" type="cert" minnum="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+     <VALUE path="context">2</VALUE>
+     <VALUE path="fntyp">112</VALUE>
+   </VALUES>
+ </SEGdef>
+ 
+  <SEGdef id="SendCryptKey" 
+         code="HKSAK" 
+         version="3"
+         pversion="300"
+         mode="RAH"
          delimiter="+" 
          terminator="'" 
  >
@@ -904,6 +1084,28 @@
    </VALUES>
  </SEGdef>
 
+ <SEGdef id="SendAuthKey" 
+         code="HKSAK" 
+         version="3"
+         pversion="300"
+         mode="RAH"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="context" type="num" maxsize="1" /> 
+   <ELEM name="fntyp" type="num" maxsize="3" />
+   <GROUP type="SecProfile" name="secProfile" />
+   <GROUP name="keyname" type="signkeyname" />
+   <GROUP name="key" type="signkey" trustlevel="3" />
+   <GROUP name="cert" type="cert" minnum="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+     <VALUE path="context">2</VALUE>
+     <VALUE path="fntyp">112</VALUE>
+   </VALUES>
+ </SEGdef>
 
  <!-- 
   --------------------------------------------------------------------
