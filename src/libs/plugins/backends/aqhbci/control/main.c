@@ -91,6 +91,10 @@ static void showUsage(const char *prgName) {
 				"    Requests supported iTAN modes for the given "
 				"user\n\n"));
   GWEN_Buffer_AppendString(ubuf,
+			   I18N("  listitanmodes:\n"
+				"    Show a list of supported iTAN modes for the given "
+				"user\n\n"));
+  GWEN_Buffer_AppendString(ubuf,
 			   I18N("  listusers:\n"
 				"    List the users\n\n"));
   GWEN_Buffer_AppendString(ubuf,
