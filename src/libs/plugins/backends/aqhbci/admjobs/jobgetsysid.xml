@@ -1,0 +1,128 @@
+ <!--
+/***************************************************************************
+    begin       : Fri Feb 01 2019
+    copyright   : (C) 2019 by Martin Preuss
+    email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+  -->
+
+
+<SEGs>
+
+
+</SEGs>
+
+
+
+<JOBs>
+
+  <JOBdef id="JobSync" 
+          version="1" 
+          pversion="201"
+          crypt="0" 
+          sign="0" 
+          dlg="1" 
+          needsbpd="0" 
+          response="syncresponse"
+   >
+    <MESSAGE name="open" nosysid="1" >
+      <SEG type="Ident" name="ident" />
+      <SEG type="Prepare" name="prepare" />
+      <SEG type="Sync" name="sync" />
+ 
+      <VALUES>
+        <VALUE path="ident/systemId">0</VALUE>
+      </VALUES>
+    </MESSAGE>
+ 
+    <MESSAGE name="close" ignerrors="1" >
+      <SEG type="DialogEnd" />
+    </MESSAGE>
+  </JOBdef>
+
+
+
+  <JOBdef id="JobSync" 
+          version="1" 
+          pversion="210"
+          crypt="1" 
+          sign="1" 
+          dlg="1" 
+          needsbpd="0" 
+          response="syncresponse"
+   >
+    <MESSAGE name="open" nosysid="1" >
+      <SEG type="Ident" name="ident" />
+      <SEG type="Prepare" name="prepare" />
+      <SEG type="Sync" name="sync" />
+      <VALUES>
+        <VALUE path="ident/systemId">0</VALUE>
+      </VALUES>
+    </MESSAGE>
+ 
+    <MESSAGE name="close" ignerrors="1" >
+      <SEG type="DialogEnd" />
+    </MESSAGE>
+  </JOBdef>
+ 
+ 
+ 
+  <JOBdef id="JobSync" 
+          version="1" 
+          pversion="220"
+          crypt="0" 
+          sign="0" 
+          dlg="1" 
+          needsbpd="0" 
+          response="syncresponse"
+   >
+    <MESSAGE name="open" nosysid="1" >
+      <SEG type="Ident" name="ident" />
+      <SEG type="Prepare" name="prepare" />
+      <SEG type="Sync" name="sync" />
+ 
+      <VALUES>
+        <VALUE path="ident/systemId">0</VALUE>
+      </VALUES>
+    </MESSAGE>
+ 
+    <MESSAGE name="close" ignerrors="1" >
+      <SEG type="DialogEnd" />
+    </MESSAGE>
+    
+  </JOBdef>
+ 
+ 
+ 
+  <JOBdef id="JobSync" 
+          version="1" 
+          pversion="300"
+          crypt="0" 
+          sign="0" 
+          dlg="1" 
+          needsbpd="0" 
+          response="syncresponse"
+   >
+    <MESSAGE name="open" nosysid="1" >
+      <SEG type="Ident" name="ident" />
+      <SEG type="Prepare" name="prepare" version="3" />
+      <SEG type="Sync" name="sync" />
+ 
+      <VALUES>
+        <VALUE path="ident/systemId">0</VALUE>
+      </VALUES>
+    </MESSAGE>
+ 
+    <MESSAGE name="close" ignerrors="1" nosysid="0" >
+      <SEG type="DialogEnd" />
+    </MESSAGE>
+    
+  </JOBdef>
+
+
+
+</JOBs>
+

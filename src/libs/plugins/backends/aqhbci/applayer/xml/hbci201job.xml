@@ -50,32 +50,6 @@
 
 
 
- <JOBdef id="JobSync" 
-         version="1" 
-         pversion="201"
-         crypt="0" 
-         sign="0" 
-         dlg="1" 
-         needsbpd="0" 
-         response="syncresponse"
-  >
-   <MESSAGE name="open" nosysid="1" >
-     <SEG type="Ident" name="ident" />
-     <SEG type="Prepare" name="prepare" />
-     <SEG type="Sync" name="sync" />
-
-     <VALUES>
-       <VALUE path="ident/systemId">0</VALUE>
-     </VALUES>
-   </MESSAGE>
-
-   <MESSAGE name="close" ignerrors="1" >
-     <SEG type="DialogEnd" />
-   </MESSAGE>
- </JOBdef>
-
-
-
  <JOBdef id="JobGetAccounts" 
          version="1" 
          pversion="201"
