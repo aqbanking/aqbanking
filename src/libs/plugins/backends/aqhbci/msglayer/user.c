@@ -2430,6 +2430,9 @@ int AH_User_VerifyInitialKey(GWEN_CRYPT_TOKEN *ct,
     uint8_t   verified=0;
     uint8_t   modBuffer[1024];
     uint8_t   expBuffer[256];
+    uint32_t  keyHashNum;
+    uint32_t  keyHashVer;
+    uint8_t   canVerifiyWithHash=0;
 
 
     /* check if NOTEPAD contained a key hash */
@@ -2437,12 +2440,90 @@ int AH_User_VerifyInitialKey(GWEN_CRYPT_TOKEN *ct,
 
     modulus=&modBuffer[0];
     exponent=&expBuffer[0];
+    keySize=1024;
+    expLen=256;
     GWEN_Crypt_KeyRsa_GetModulus(key,modulus,&keySize);
     GWEN_Crypt_KeyRsa_GetExponent(key,exponent,&expLen);
     keyNum=GWEN_Crypt_Key_GetKeyNumber(key);
     keyVer=GWEN_Crypt_Key_GetKeyVersion(key);
 
-    if ( keyHashAlgo == GWEN_Crypt_HashAlgoId_None || keyHashAlgo == GWEN_Crypt_HashAlgoId_Unknown) {
+    if ( keyHashAlgo != GWEN_Crypt_HashAlgoId_None && keyHashAlgo != GWEN_Crypt_HashAlgoId_Unknown) {
+        keyHashNum=GWEN_Crypt_Token_Context_GetKeyHashNum(ctx);
+        keyHashVer=GWEN_Crypt_Token_Context_GetKeyHashVer(ctx);
+        if ( keyHashNum == keyNum && keyHashVer==keyVer ) {
+           canVerifiyWithHash=1;
+        }
+   }
+
+   if ( canVerifiyWithHash ) {
+       int expPadBytes=keySize-expLen;
+       uint8_t *mdPtr;
+       unsigned int mdSize;
+       int hashOk=1;
+
+       const uint8_t    *keyHash;
+       uint32_t keyHashLen;
+       int i;
+
+       /* pad exponent to length of modulus */
+       GWEN_BUFFER* keyBuffer;
+       keyBuffer=GWEN_Buffer_new(NULL,2*keySize,0,0);
+       GWEN_Buffer_FillWithBytes(keyBuffer,0x0,expPadBytes);
+       GWEN_Buffer_AppendBytes(keyBuffer,(const char*)exponent,expLen);
+       GWEN_Buffer_AppendBytes(keyBuffer,(const char*)modulus,keySize);
+
+       keyHashNum=GWEN_Crypt_Token_Context_GetKeyHashNum(ctx);
+       keyHashVer=GWEN_Crypt_Token_Context_GetKeyHashVer(ctx);
+       keyHash=GWEN_Crypt_Token_Context_GetKeyHashPtr(ctx);
+       keyHashLen=GWEN_Crypt_Token_Context_GetKeyHashLen(ctx);
+
+       if (keyHashAlgo==GWEN_Crypt_HashAlgoId_Sha256) {
+           /*SHA256*/
+           md=GWEN_MDigest_Sha256_new();
+       }
+       else if (keyHashAlgo==GWEN_Crypt_HashAlgoId_Rmd160) {
+           md=GWEN_MDigest_Rmd160_new();
+       }
+       else {
+           /* ERROR, wrong hash algo */
+           DBG_ERROR(AQHBCI_LOGDOMAIN, "Hash Algorithm of Bank Public %s Key not correct!", keyName);
+           return NULL;
+       }
+       //assert(keyHashNum==7);
+
+       GWEN_MDigest_Begin(md);
+       GWEN_MDigest_Update(md,(uint8_t*)GWEN_Buffer_GetStart(keyBuffer),2*keySize);
+       GWEN_MDigest_End(md);
+       mdPtr=GWEN_MDigest_GetDigestPtr(md);
+       mdSize=GWEN_MDigest_GetDigestSize(md);
+       /* compare hashes */
+
+       if ( keyHashLen==mdSize ) {
+           for (i = 0; i < mdSize; i++) {
+               if (mdPtr[i] != (uint8_t) keyHash[i]) {
+                   hashOk=0;
+                   break;
+               }
+           }
+       }
+       else {
+           /* ERROR, hash sizes not identical */
+           DBG_ERROR(AQHBCI_LOGDOMAIN, "Hash Sizes of Bank Public %s Key do not match!", keyName);
+           return 0;
+       }
+
+       GWEN_MDigest_free(md);
+       if (hashOk==1) {
+            DBG_INFO(AQHBCI_LOGDOMAIN,
+                   "Verified the bank's public %s key with the hash from the zka card.", keyName);
+            return 1;
+       }
+       else {
+           DBG_ERROR(AQHBCI_LOGDOMAIN, "Bank Public %s Key could not be verified with the zka card hash!", keyName);
+           return 0;
+       }
+   }
+   else {
         int rv;
         int expPadBytes=keySize-expLen;
         uint8_t *mdPtr;
@@ -2498,75 +2579,6 @@ int AH_User_VerifyInitialKey(GWEN_CRYPT_TOKEN *ct,
         }
 
 
-    }
-    else {
-        int expPadBytes=keySize-expLen;
-        uint8_t *mdPtr;
-        unsigned int mdSize;
-        int hashOk=1;
-        uint32_t keyHashNum;
-        uint32_t keyHashVer;
-        const uint8_t    *keyHash;
-        uint32_t keyHashLen;
-        int i;
-
-        /* pad exponent to length of modulus */
-        GWEN_BUFFER* keyBuffer;
-        keyBuffer=GWEN_Buffer_new(NULL,2*keySize,0,0);
-        GWEN_Buffer_FillWithBytes(keyBuffer,0x0,expPadBytes);
-        GWEN_Buffer_AppendBytes(keyBuffer,(const char*)exponent,expLen);
-        GWEN_Buffer_AppendBytes(keyBuffer,(const char*)modulus,keySize);
-
-        keyHashNum=GWEN_Crypt_Token_Context_GetKeyHashNum(ctx);
-        keyHashVer=GWEN_Crypt_Token_Context_GetKeyHashVer(ctx);
-        keyHash=GWEN_Crypt_Token_Context_GetKeyHashPtr(ctx);
-        keyHashLen=GWEN_Crypt_Token_Context_GetKeyHashLen(ctx);
-
-        if (keyHashAlgo==GWEN_Crypt_HashAlgoId_Sha256) {
-            /*SHA256*/
-            md=GWEN_MDigest_Sha256_new();
-        }
-        else if (keyHashAlgo==GWEN_Crypt_HashAlgoId_Rmd160) {
-            md=GWEN_MDigest_Rmd160_new();
-        }
-        else {
-            /* ERROR, wrong hash algo */
-            DBG_ERROR(AQHBCI_LOGDOMAIN, "Hash Algorithm of Bank Public Sign Key not correct!");
-            return NULL;
-        }
-        //assert(keyHashNum==7);
-
-        GWEN_MDigest_Begin(md);
-        GWEN_MDigest_Update(md,(uint8_t*)GWEN_Buffer_GetStart(keyBuffer),2*keySize);
-        GWEN_MDigest_End(md);
-        mdPtr=GWEN_MDigest_GetDigestPtr(md);
-        mdSize=GWEN_MDigest_GetDigestSize(md);
-        /* compare hashes */
-
-        if ( keyHashLen==mdSize ) {
-            for (i = 0; i < mdSize; i++) {
-                if (mdPtr[i] != (uint8_t) keyHash[i]) {
-                    hashOk=0;
-                    break;
-                }
-            }
-        }
-        else {
-            /* ERROR, hash sizes not identical */
-            DBG_ERROR(AQHBCI_LOGDOMAIN, "Hash Sizes of Bank Public Sign Key do not match!");
-            return 0;
-        }
-
-        GWEN_MDigest_free(md);
-        if (hashOk==1) {
-             DBG_INFO(AQHBCI_LOGDOMAIN,
-                    "Verified the bank's public sign key with the hash from the zka card.");
-             return 1;
-        }
-        else {
-            DBG_ERROR(AQHBCI_LOGDOMAIN, "Hash of Bank Public Sign Key not correct!");
-            return 0;
-        }
     }
 
 }
