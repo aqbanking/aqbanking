@@ -102,8 +102,7 @@ int AH_ImExporterSEPA_Export_Pain_001(AB_IMEXPORTER *ie,
     }
 
     /* create "DbtrAcct" */
-    GWEN_XMLNode_SetCharValueByPath(n, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES,
-                                    "DbtrAcct/Id/IBAN", pmtinf->localIban);
+    GWEN_XMLNode_SetCharValueByPath(n, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "DbtrAcct/Id/IBAN", pmtinf->localIban);
 
     /* create "DbtrAgt" */
     {
@@ -112,11 +111,11 @@ int AH_ImExporterSEPA_Export_Pain_001(AB_IMEXPORTER *ie,
         GWEN_XMLNode_SetCharValueByPath(n, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES,
                                         "DbtrAgt/FinInstnId/BIC", bic);
       else {
-        if (doctype[1] >= 3) /* BIC not required since 001.003.02, but must be written as "Othr/Id/NOTPROVIDED" */
-        {
+        if (doctype[1] >= 3) { /* BIC not required since 001.003.02, but must be written as "Othr/Id/NOTPROVIDED" */
           GWEN_XMLNode_SetCharValueByPath(n, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES,
                                           "DbtrAgt/FinInstnId/Othr/Id", "NOTPROVIDED");
-        } else { /* For PAIN before 001.003.02, BIC is always required */
+        }
+        else { /* For PAIN before 001.003.02, BIC is always required */
           DBG_ERROR(AQBANKING_LOGDOMAIN, "No local BIC, but is required");
           return GWEN_ERROR_BAD_DATA;
         }

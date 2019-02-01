@@ -138,21 +138,19 @@ int AH_ImExporterSEPA_Export_Pain_008(AB_IMEXPORTER *ie,
     }
 
     /* create "CdtrAcct" */
-    GWEN_XMLNode_SetCharValueByPath(n, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES,
-				    "CdtrAcct/Id/IBAN", pmtinf->localIban);
+    GWEN_XMLNode_SetCharValueByPath(n, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "CdtrAcct/Id/IBAN", pmtinf->localIban);
 
     /* create "CdtrAgt" */
     {
       const char* bic = pmtinf->localBic;
       if (bic && *bic)
-        GWEN_XMLNode_SetCharValueByPath(n, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES,
-                                        "CdtrAgt/FinInstnId/BIC", bic);
+        GWEN_XMLNode_SetCharValueByPath(n, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES, "CdtrAgt/FinInstnId/BIC", bic);
       else {
-        if (doctype[1] >= 3) /* BIC not required since 008.003.02, but must be written as "Othr/Id/NOTPROVIDED" */
-        {
+        if (doctype[1] >= 3) { /* BIC not required since 008.003.02, but must be written as "Othr/Id/NOTPROVIDED" */
           GWEN_XMLNode_SetCharValueByPath(n, GWEN_XML_PATH_FLAGS_OVERWRITE_VALUES,
                                           "CdtrAgt/FinInstnId/Othr/Id", "NOTPROVIDED");
-        } else { /* For PAIN before 008.003.02, BIC is always required */
+        }
+        else { /* For PAIN before 008.003.02, BIC is always required */
           DBG_ERROR(AQBANKING_LOGDOMAIN, "No local BIC, but is required");
           return GWEN_ERROR_BAD_DATA;
         }
