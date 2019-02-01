@@ -315,48 +315,50 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv, A
       }
       rv=AB_Banking_CheckIban(rIBAN);
       if (rv != 0) {
-          DBG_ERROR(0, "Invalid remote IBAN (%s), in line %d", rIBAN, transactionLine);
-          reallyExecute = 0;
+        DBG_ERROR(0, "Invalid remote IBAN (%s), in line %d", rIBAN, transactionLine);
+        reallyExecute = 0;
       }
 
       /* check local account */
+#if 0
       if (!lBIC || !(*lBIC)) {
-          DBG_ERROR(0, "Missing local BIC, in line %d", transactionLine);
-          reallyExecute = 0;
+        DBG_ERROR(0, "Missing local BIC, in line %d", transactionLine);
+        reallyExecute = 0;
       }
+#endif
       if (!lIBAN || !(*lIBAN)) {
-          DBG_ERROR(0, "Missing local IBAN, in line %d", transactionLine);
-          reallyExecute = 0;
+        DBG_ERROR(0, "Missing local IBAN, in line %d", transactionLine);
+        reallyExecute = 0;
       }
       rv=AB_Banking_CheckIban(lIBAN);
       if (rv != 0) {
-          DBG_ERROR(0, "Invalid local IBAN (%s), in line %d", lIBAN, transactionLine);
-          reallyExecute = 0;
+        DBG_ERROR(0, "Invalid local IBAN (%s), in line %d", lIBAN, transactionLine);
+        reallyExecute = 0;
       }
 
       /* Create job */
       j = (multisepa_type == AQBANKING_TOOL_SEPA_TRANSFERS)
-              // The command was sepatransfers, so we create JobSepaTransfer
-              ? AB_JobSepaTransfer_new(a)
-              // The command was sepadebitnotes, so we create some debit note
-              : (use_flash_debitnote
-                 // Did we have --use-COR1? Use this extra job type
-                 ? AB_JobSepaFlashDebitNote_new(a)
-                 // No COR1, just standard CORE debit note
-                 : AB_JobSepaDebitNote_new(a));
+        // The command was sepatransfers, so we create JobSepaTransfer
+        ? AB_JobSepaTransfer_new(a)
+        // The command was sepadebitnotes, so we create some debit note
+        : (use_flash_debitnote
+           // Did we have --use-COR1? Use this extra job type
+           ? AB_JobSepaFlashDebitNote_new(a)
+           // No COR1, just standard CORE debit note
+           : AB_JobSepaDebitNote_new(a));
       rv=AB_Job_CheckAvailability(j);
       if (rv<0) {
-          const char* jobtype = AB_Job_Type2Char(AB_Job_GetType(j));
-          DBG_ERROR(0, "Job %s not supported, in line %d.", jobtype, transactionLine);
-          reallyExecute = 0;
+        const char* jobtype = AB_Job_Type2Char(AB_Job_GetType(j));
+        DBG_ERROR(0, "Job %s not supported, in line %d.", jobtype, transactionLine);
+        reallyExecute = 0;
       }
       rv=AB_Job_SetTransaction(j, t);
       if (rv<0) {
-          DBG_ERROR(0, "Unable to add transaction for account %s/%s, line %d, aborting",
-                    AB_ImExporterAccountInfo_GetBankCode(iea),
-                    AB_ImExporterAccountInfo_GetAccountNumber(iea),
-                    transactionLine);
-          reallyExecute = 0;
+        DBG_ERROR(0, "Unable to add transaction for account %s/%s, line %d, aborting",
+                  AB_ImExporterAccountInfo_GetBankCode(iea),
+                  AB_ImExporterAccountInfo_GetAccountNumber(iea),
+                  transactionLine);
+        reallyExecute = 0;
       }
       AB_Job_List2_PushBack(jobList, j);
       t=AB_Transaction_List_Next(t);
@@ -366,10 +368,9 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv, A
   } /* while */
   AB_ImExporterContext_free(ctx);
 
-  if (reallyExecute != 1)
-  {
-      AB_Job_List2_FreeAll(jobList);
-      return 3;
+  if (reallyExecute != 1) {
+    AB_Job_List2_FreeAll(jobList);
+    return 3;
   }
 
   /* execute jobs */

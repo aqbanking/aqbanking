@@ -696,33 +696,40 @@ int replaceVars(const char *s, GWEN_DB_NODE *db, GWEN_BUFFER *dbuf) {
 
 int checkTransactionIbans(const AB_TRANSACTION *t) {
   const char *rIBAN;
-  const char *rBIC;
   const char *lIBAN;
+#if 0
   const char *lBIC;
+  const char *rBIC;
+#endif
   int rv;
 
   assert(t);
 
   /* some checks */
   rIBAN=AB_Transaction_GetRemoteIban(t);
-  rBIC=AB_Transaction_GetRemoteBic(t);
   lIBAN=AB_Transaction_GetLocalIban(t);
-  lBIC=AB_Transaction_GetLocalBic(t);
 
+#if 0
+  rBIC=AB_Transaction_GetRemoteBic(t);
   if (!rIBAN || !(*rIBAN)) {
     fprintf(stderr, "Missing remote IBAN\n");
     return 1;
   }
+#endif
+
   rv=AB_Banking_CheckIban(rIBAN);
   if (rv != 0) {
     fprintf(stderr, "Invalid remote IBAN (%s)\n", rIBAN);
     return 3;
   }
 
+#if 0
+  lBIC=AB_Transaction_GetLocalBic(t);
   if (!lBIC || !(*lBIC)) {
     fprintf(stderr, "Missing local BIC\n");
     return 1;
   }
+#endif
   if (!lIBAN || !(*lIBAN)) {
     fprintf(stderr, "Missing local IBAN\n");
     return 1;
@@ -733,10 +740,12 @@ int checkTransactionIbans(const AB_TRANSACTION *t) {
     return 3;
   }
 
+#if 0
   if (strncmp(lIBAN, rIBAN, 2) && (!rBIC || !*rBIC)) {
     DBG_ERROR(0, "Remote BIC id required for international transaction");
     return 1;
   }
+#endif
 
   return 0;
 }

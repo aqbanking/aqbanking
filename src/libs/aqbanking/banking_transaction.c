@@ -528,6 +528,7 @@ int AB_Banking_CheckTransactionForSepaConformity(const AB_TRANSACTION *t, int re
       return rv;
     }
 
+#if 0
     s=AB_Transaction_GetLocalBic(t);
     if (!(s && *s)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing or empty local BIC in transaction");
@@ -538,6 +539,16 @@ int AB_Banking_CheckTransactionForSepaConformity(const AB_TRANSACTION *t, int re
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in local BIC");
       return rv;
     }
+#else
+    s=AB_Transaction_GetLocalBic(t);
+    if (s && *s) { /* BIC not requeired, but if it exists it must be valid */
+      rv=_checkStringForAlNum(s, 0);
+      if (rv<0) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in local BIC");
+        return rv;
+      }
+    }
+#endif
 
     s=AB_Transaction_GetRemoteIban(t);
     if (!(s && *s)) {
@@ -550,6 +561,7 @@ int AB_Banking_CheckTransactionForSepaConformity(const AB_TRANSACTION *t, int re
       return rv;
     }
 
+#if 0
     s=AB_Transaction_GetRemoteBic(t);
     if (!(s && *s)) {
       if (strncmp(AB_Transaction_GetLocalIban(t), AB_Transaction_GetRemoteIban(t), 2)) {
@@ -564,6 +576,16 @@ int AB_Banking_CheckTransactionForSepaConformity(const AB_TRANSACTION *t, int re
         return rv;
       }
     }
+#else
+    s=AB_Transaction_GetRemoteBic(t);
+    if (s && *s) { /* BIC not requeired, but if it exists it must be valid */
+      rv=_checkStringForAlNum(s, 0);
+      if (rv<0) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in remote BIC");
+        return rv;
+      }
+    }
+#endif
 
     s=AB_Transaction_GetLocalName(t);
     if (!(s && *s)) {

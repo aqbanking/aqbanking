@@ -177,6 +177,7 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
     }
     s=AB_ImExporterAccountInfo_GetBic(ai);
     if (!s || !*s) {
+#if 0
       bic=AB_Transaction_GetLocalBic(t);
       if (!bic || !*bic) {
 	DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -184,6 +185,7 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
 	AH_ImExporter_Sepa_PmtInf_List_free(pl);
 	return GWEN_ERROR_BAD_DATA;
       }
+#endif
     }
     if (doctype[0]==8) {
       sequenceType=AB_Transaction_GetSequence(t);
