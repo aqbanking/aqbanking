@@ -294,6 +294,7 @@ int AH_Job__Commit_Bpd(AH_JOB *j){
 int AH_Job__VerifiyInitialKey(AB_USER *u,
                               AH_HBCI *h,
                               GWEN_CRYPT_KEY *key,
+                              uint16_t sentModl,
                               const char *keyName)
 {
 
@@ -336,7 +337,7 @@ int AH_Job__VerifiyInitialKey(AB_USER *u,
         return GWEN_ERROR_NOT_FOUND;
     }
 
-    return AH_User_VerifyInitialKey(ct,ctx,u,key,keyName);
+    return AH_User_VerifyInitialKey(ct,ctx,u,key,sentModl,keyName);
 
 }
 
@@ -415,12 +416,14 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
         keytype=GWEN_DB_GetCharValue(dbRd, "keyname/keytype",  0, NULL);
         if (keytype && *keytype) {
           GWEN_CRYPT_KEY * bpk;
-          const void *expp, *modp;
+          uint8_t *expp, *modp;
           unsigned int expl, modl;
-          int keynum, keyver, i;
-	      char hashString[1024];
-	      uint8_t keyExpMod[512];
-	      GWEN_MDIGEST *md;
+          int keynum, keyver;
+          uint16_t sentModulusLength;
+          uint16_t nbits;
+
+
+
 	      int keySize;
 	      int verified=0;
 	      GWEN_CRYPT_KEY *bpsk;
@@ -428,21 +431,37 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
           /* process received keys */
           keynum=GWEN_DB_GetIntValue(dbRd, "keyname/keynum",  0, -1);
           keyver=GWEN_DB_GetIntValue(dbRd, "keyname/keyversion",  0, -1);
-          modp=GWEN_DB_GetBinValue(dbRd, "key/modulus",  0, NULL, 0, &modl);
+          modp=(uint8_t*)GWEN_DB_GetBinValue(dbRd, "key/modulus",  0, NULL, 0, &modl);
+          sentModulusLength=modl;
+          DBG_INFO(AQHBCI_LOGDOMAIN,"Got Key with modulus length %d.",modl);
           /* skip zero bytes if any */
-          while(modl && *((uint8_t*)modp)==0) {
+          while(modl && *modp==0) {
             modp++;
             modl--;
           }
+          /* calc real length in bits for information purposes */
+          nbits=modl*8;
+          if (modl) {
+              uint8_t b=*modp;
+              int i;
+              uint8_t mask=0x80;
+
+              for (i=0; i<8; i++) {
+                  if (b & mask)
+                      break;
+                  nbits--;
+                  mask>>=1;
+              }
+          }
 
           /* calculate key size in bytes */
-          if (modl<=96)
+          if (modl<=96) /* could only be for RDH1, in this case we have to pad to 768 bits */
             keySize=96;
           else {
             keySize=modl;
           }
-
-          expp=GWEN_DB_GetBinValue(dbRd, "key/exponent", 0, NULL, 0, &expl);
+          DBG_INFO(AQHBCI_LOGDOMAIN,"Key has real modulus length %d bytes (%d bits) after skipping leading zero bits.",modl,nbits);
+          expp=(uint8_t*)GWEN_DB_GetBinValue(dbRd, "key/exponent", 0, NULL, 0, &expl);
           bpk=GWEN_Crypt_KeyRsa_fromModExp(keySize, modp, modl, expp, expl);
           GWEN_Crypt_Key_SetKeyNumber(bpk, keynum);
           GWEN_Crypt_Key_SetKeyVersion(bpk, keyver);
@@ -461,7 +480,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 
 
 	        if ( verified == 0 ) {
-	            verified = AH_Job__VerifiyInitialKey(u,h,bpk,"sign");
+	            verified = AH_Job__VerifiyInitialKey(u,h,bpk,sentModulusLength,"sign");
 	        }
 
 	        if ( verified == 1 ) {
@@ -478,7 +497,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
           else if (strcasecmp(keytype, "V")==0) {
 
               if ( verified == 0 ) {
-                  verified = AH_Job__VerifiyInitialKey(u,h,bpk,"crypt");
+                  verified = AH_Job__VerifiyInitialKey(u,h,bpk,sentModulusLength,"crypt");
               }
 
               if ( verified == 1 ) {
@@ -492,6 +511,29 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock) {
 
           }
           else {
+            char hashString[1024];
+            int expPadBytes=keySize-expl;
+            uint8_t *mdPtr;
+            unsigned int mdSize;
+            /* pad exponent to length of modulus */
+            GWEN_BUFFER* keyBuffer;
+            GWEN_MDIGEST *md;
+            uint16_t i;
+            keyBuffer=GWEN_Buffer_new(NULL,2*keySize,0,0);
+            GWEN_Buffer_FillWithBytes(keyBuffer,0x0,expPadBytes);
+            GWEN_Buffer_AppendBytes(keyBuffer,(const char*)expp,expl);
+            GWEN_Buffer_AppendBytes(keyBuffer,(const char*)modp,keySize);
+            /*SHA256*/
+            md=GWEN_MDigest_Sha256_new();
+            GWEN_MDigest_Begin(md);
+            GWEN_MDigest_Update(md,(uint8_t*)GWEN_Buffer_GetStart(keyBuffer),2*keySize);
+            GWEN_MDigest_End(md);
+            mdPtr=GWEN_MDigest_GetDigestPtr(md);
+            mdSize=GWEN_MDigest_GetDigestSize(md);
+            memset(hashString, 0, 1024);
+            for(i=0; i<GWEN_MDigest_GetDigestSize(md); i++)
+                sprintf(hashString+3*i, "%02x ", *(mdPtr+i));
+            GWEN_MDigest_free(md);
             DBG_ERROR(AQHBCI_LOGDOMAIN, "Received unknown server key: type=%s, num=%d, version=%d, hash=%s", keytype, keynum, keyver, hashString);
             GWEN_Gui_ProgressLog2(0,
                                   GWEN_LoggerLevel_Warning,

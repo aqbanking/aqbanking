@@ -113,7 +113,8 @@ int AH_User_VerifyInitialKey(GWEN_CRYPT_TOKEN *ct,
         const GWEN_CRYPT_TOKEN_CONTEXT *ctx,
         AB_USER *user,
         GWEN_CRYPT_KEY *key,
-        char *keyName);
+        uint16_t sentModl,
+        const char *keyName);
 
 
 #endif /* AH_USER_L_H */

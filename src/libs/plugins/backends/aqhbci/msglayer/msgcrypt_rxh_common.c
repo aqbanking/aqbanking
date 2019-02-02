@@ -256,6 +256,7 @@ GWEN_CRYPT_KEY * AH_MsgRxh_VerifyInitialSignKey(GWEN_CRYPT_TOKEN *ct,
                 GWEN_DB_Dump(dbKeyResponse, 2);
 
             p=GWEN_DB_GetBinValue(dbKeyResponse, "key/modulus", 0, 0, 0 , &bs);
+
             if (!p || !bs) {
                 DBG_ERROR(AQHBCI_LOGDOMAIN, "No modulus");
                 return NULL;
@@ -268,11 +269,11 @@ GWEN_CRYPT_KEY * AH_MsgRxh_VerifyInitialSignKey(GWEN_CRYPT_TOKEN *ct,
                 unsigned int expLen;
                 int msgKeyNum;
                 int msgKeyVer;
-
+                uint16_t sentModulusLength;
                 int keySize;
 
                 exponent=GWEN_DB_GetBinValue(dbKeyResponse, "key/exponent", 0, 0, 0 , &expLen);
-
+                sentModulusLength=bs;
                 /* skip zero bytes if any */
                 while(bs && *p==0) {
                     p++;
@@ -296,7 +297,7 @@ GWEN_CRYPT_KEY * AH_MsgRxh_VerifyInitialSignKey(GWEN_CRYPT_TOKEN *ct,
                     bpk=GWEN_Crypt_KeyRsa_fromModExp(keySize, p, bs, exponent, expLen);
                     GWEN_Crypt_Key_SetKeyNumber(bpk, msgKeyNum);
                     GWEN_Crypt_Key_SetKeyVersion(bpk, msgKeyVer);
-                    verified=AH_User_VerifyInitialKey(ct,ctx,user,bpk,"sign");
+                    verified=AH_User_VerifyInitialKey(ct,ctx,user,bpk,sentModulusLength,"sign");
                     if ( verified==1)
                     {
                         GWEN_Crypt_KeyRsa_AddFlags(bpk,GWEN_CRYPT_KEYRSA_FLAGS_ISVERIFIED);
@@ -590,7 +591,7 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
     }
 
 
-    /* store system id */
+
     /* store system id */
     if (hmsg->noSysId) {
         GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
@@ -606,12 +607,14 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
             GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", "0");
         }
         else {
-            p=GWEN_Crypt_Token_Context_GetSystemId(ctx);
-            if (p==NULL)
-                p=AH_User_GetSystemId(su);
 
-            if (p)
+            p=AH_User_GetSystemId(su);
+            if (p==NULL) {
+                p=GWEN_Crypt_Token_Context_GetSystemId(ctx);
+            }
+            if (p) {
                 GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", p);
+            }
             else {
                 GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", "0");
             }
@@ -1077,12 +1080,13 @@ int AH_Msg_EncryptRxh(AH_MSG *hmsg) {
             GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", "0");
         }
         else {
-            p=GWEN_Crypt_Token_Context_GetSystemId(ctx);
-            if (p==NULL)
-                p=AH_User_GetSystemId(u);
-
-            if (p)
+            p=AH_User_GetSystemId(u);
+            if (p==NULL){
+                p=GWEN_Crypt_Token_Context_GetSystemId(ctx);
+            }
+            if (p) {
                 GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", p);
+            }
             else {
                 GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", "0");
             }
