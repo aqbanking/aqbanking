@@ -51,6 +51,7 @@ AH_HBCI *AH_HBCI_new(AB_PROVIDER *pro){
   AH_HBCI *hbci;
   char numbuf[32];
   int rv;
+  const char *logLevelName;
 
   assert(pro);
 
@@ -60,6 +61,20 @@ AH_HBCI *AH_HBCI_new(AB_PROVIDER *pro){
 		     0,
 		     GWEN_LoggerType_Console,
 		     GWEN_LoggerFacility_User);
+  }
+
+  logLevelName=getenv("AQHBCI_LOGLEVEL");
+  if (logLevelName) {
+    GWEN_LOGGER_LEVEL ll;
+
+    ll=GWEN_Logger_Name2Level(logLevelName);
+    if (ll!=GWEN_LoggerLevel_Unknown) {
+      GWEN_Logger_SetLevel(AQHBCI_LOGDOMAIN, ll);
+      DBG_WARN(AQHBCI_LOGDOMAIN, "Overriding loglevel for AqHBCI with \"%s\"", logLevelName);
+    }
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown loglevel \"%s\"", logLevelName);
+    }
   }
 
   GWEN_NEW_OBJECT(AH_HBCI, hbci);

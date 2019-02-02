@@ -2448,10 +2448,13 @@ int AH_User_VerifyInitialKey(GWEN_CRYPT_TOKEN *ct,
     keyVer=GWEN_Crypt_Key_GetKeyVersion(key);
 
     if ( keyHashAlgo != GWEN_Crypt_HashAlgoId_None && keyHashAlgo != GWEN_Crypt_HashAlgoId_Unknown) {
+
         keyHashNum=GWEN_Crypt_Token_Context_GetKeyHashNum(ctx);
         keyHashVer=GWEN_Crypt_Token_Context_GetKeyHashVer(ctx);
+        DBG_INFO(AQHBCI_LOGDOMAIN,"Found bank key hash on the zka card! (Hash Algo Identifier: [%d], keyNum: [%d], keyVer: [%d]",keyHashAlgo,keyHashNum,keyHashVer);
         if ( keyHashNum == keyNum && keyHashVer==keyVer ) {
            canVerifiyWithHash=1;
+           DBG_INFO(AQHBCI_LOGDOMAIN,"Key Number and Key Version of the Hash match transmitted key, try verifying with the Hash.");
         }
    }
 
@@ -2464,6 +2467,8 @@ int AH_User_VerifyInitialKey(GWEN_CRYPT_TOKEN *ct,
        const uint8_t    *keyHash;
        uint32_t keyHashLen;
        int i;
+
+       char hashString[1024];
 
        /* pad exponent to length of modulus */
        GWEN_BUFFER* keyBuffer;
@@ -2480,13 +2485,15 @@ int AH_User_VerifyInitialKey(GWEN_CRYPT_TOKEN *ct,
        if (keyHashAlgo==GWEN_Crypt_HashAlgoId_Sha256) {
            /*SHA256*/
            md=GWEN_MDigest_Sha256_new();
+           DBG_INFO(AQHBCI_LOGDOMAIN,"Hash Algo for key verification is SHA256.");
        }
        else if (keyHashAlgo==GWEN_Crypt_HashAlgoId_Rmd160) {
            md=GWEN_MDigest_Rmd160_new();
+           DBG_INFO(AQHBCI_LOGDOMAIN,"Hash Algo for key verification is RIPMED160.");
        }
        else {
            /* ERROR, wrong hash algo */
-           DBG_ERROR(AQHBCI_LOGDOMAIN, "Hash Algorithm of Bank Public %s Key not correct!", keyName);
+           DBG_ERROR(AQHBCI_LOGDOMAIN, "Hash Algorithm of Bank Public %s Key not correct! (Hash Identifier %d)", keyName, keyHashAlgo);
            return NULL;
        }
        //assert(keyHashNum==7);
@@ -2497,6 +2504,16 @@ int AH_User_VerifyInitialKey(GWEN_CRYPT_TOKEN *ct,
        mdPtr=GWEN_MDigest_GetDigestPtr(md);
        mdSize=GWEN_MDigest_GetDigestSize(md);
        /* compare hashes */
+
+       memset(hashString, 0, 1024);
+       for(i=0; i<keyHashLen; i++)
+           sprintf(hashString+3*i, "%02x ", keyHash[i]);
+       DBG_INFO(AQHBCI_LOGDOMAIN,"Key Hash on the Card: Hash Length: %d, Hash: %s",keyHashLen,hashString);
+
+       memset(hashString, 0, 1024);
+       for(i=0; i<GWEN_MDigest_GetDigestSize(md); i++)
+           sprintf(hashString+3*i, "%02x ", *(mdPtr+i));
+       DBG_INFO(AQHBCI_LOGDOMAIN,"Key Hash from the Bank Public %s key: Hash Length: %d, Hash: %s",keyName,keyHashLen,hashString);
 
        if ( keyHashLen==mdSize ) {
            for (i = 0; i < mdSize; i++) {
