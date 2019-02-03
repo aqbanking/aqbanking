@@ -240,6 +240,26 @@ cppcheck:
 clang-check:
 	scan-build $(MAKE)
 
+format:
+	find . -name \*.c -or -name \*.h -exec astyle \
+	  --style=stroustrup \
+	    -s2 \
+	    --min-conditional-indent=0 \
+	    --indent-labels \
+	    --max-continuation-indent=80 \
+	    --pad-comma \
+	    --pad-header \
+	    --unpad-paren \
+	    --align-pointer=name \
+	    --break-closing-braces \
+	    --break-one-line-headers \
+	    --attach-return-type \
+	    --convert-tabs \
+	    --max-code-length=120 \
+	    --break-after-logical \
+	    --dry-run \
+	    --suffix=none \{\} \;
+
 
 ChangeLog:
 	if test -d .git; then \
@@ -262,4 +282,5 @@ typedefs:
 	for d in $(SUBDIRS); do \
 	  $(MAKE) -C $$d typedefs; \
 	done
+
 
