@@ -40,7 +40,8 @@ GWEN_INHERIT(GWEN_DIALOG, AH_PINTAN_SPECIAL_DIALOG)
 
 
 
-GWEN_DIALOG *AH_PinTanSpecialDialog_new(AB_PROVIDER *pro) {
+GWEN_DIALOG *AH_PinTanSpecialDialog_new(AB_PROVIDER *pro)
+{
   GWEN_DIALOG *dlg;
   AH_PINTAN_SPECIAL_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -49,14 +50,14 @@ GWEN_DIALOG *AH_PinTanSpecialDialog_new(AB_PROVIDER *pro) {
   dlg=GWEN_Dialog_new("ah_setup_pintan_special");
   GWEN_NEW_OBJECT(AH_PINTAN_SPECIAL_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AH_PINTAN_SPECIAL_DIALOG, dlg, xdlg,
-		       AH_PinTanSpecialDialog_FreeData);
+                       AH_PinTanSpecialDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AH_PinTanSpecialDialog_SignalHandler);
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-			       "aqbanking/backends/aqhbci/dialogs/dlg_pintan_special.dlg",
-			       fbuf);
+                               "aqbanking/backends/aqhbci/dialogs/dlg_pintan_special.dlg",
+                               fbuf);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
@@ -88,10 +89,11 @@ GWEN_DIALOG *AH_PinTanSpecialDialog_new(AB_PROVIDER *pro) {
 
 
 
-void GWENHYWFAR_CB AH_PinTanSpecialDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AH_PinTanSpecialDialog_FreeData(void *bp, void *p)
+{
   AH_PINTAN_SPECIAL_DIALOG *xdlg;
 
-  xdlg=(AH_PINTAN_SPECIAL_DIALOG*) p;
+  xdlg=(AH_PINTAN_SPECIAL_DIALOG *) p;
 
   free(xdlg->tanMediumId);
 
@@ -100,7 +102,8 @@ void GWENHYWFAR_CB AH_PinTanSpecialDialog_FreeData(void *bp, void *p) {
 
 
 
-int AH_PinTanSpecialDialog_GetHttpVMajor(const GWEN_DIALOG *dlg) {
+int AH_PinTanSpecialDialog_GetHttpVMajor(const GWEN_DIALOG *dlg)
+{
   AH_PINTAN_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -112,7 +115,8 @@ int AH_PinTanSpecialDialog_GetHttpVMajor(const GWEN_DIALOG *dlg) {
 
 
 
-int AH_PinTanSpecialDialog_GetHttpVMinor(const GWEN_DIALOG *dlg) {
+int AH_PinTanSpecialDialog_GetHttpVMinor(const GWEN_DIALOG *dlg)
+{
   AH_PINTAN_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -124,7 +128,8 @@ int AH_PinTanSpecialDialog_GetHttpVMinor(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_PinTanSpecialDialog_SetHttpVersion(GWEN_DIALOG *dlg, int vmajor, int vminor) {
+void AH_PinTanSpecialDialog_SetHttpVersion(GWEN_DIALOG *dlg, int vmajor, int vminor)
+{
   AH_PINTAN_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -137,7 +142,8 @@ void AH_PinTanSpecialDialog_SetHttpVersion(GWEN_DIALOG *dlg, int vmajor, int vmi
 
 
 
-int AH_PinTanSpecialDialog_GetHbciVersion(const GWEN_DIALOG *dlg) {
+int AH_PinTanSpecialDialog_GetHbciVersion(const GWEN_DIALOG *dlg)
+{
   AH_PINTAN_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -149,7 +155,8 @@ int AH_PinTanSpecialDialog_GetHbciVersion(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_PinTanSpecialDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i) {
+void AH_PinTanSpecialDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i)
+{
   AH_PINTAN_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -161,7 +168,8 @@ void AH_PinTanSpecialDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i) {
 
 
 
-uint32_t AH_PinTanSpecialDialog_GetFlags(const GWEN_DIALOG *dlg) {
+uint32_t AH_PinTanSpecialDialog_GetFlags(const GWEN_DIALOG *dlg)
+{
   AH_PINTAN_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -173,7 +181,8 @@ uint32_t AH_PinTanSpecialDialog_GetFlags(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_PinTanSpecialDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AH_PinTanSpecialDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AH_PINTAN_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -185,7 +194,8 @@ void AH_PinTanSpecialDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_PinTanSpecialDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AH_PinTanSpecialDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AH_PINTAN_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -197,7 +207,8 @@ void AH_PinTanSpecialDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_PinTanSpecialDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AH_PinTanSpecialDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AH_PINTAN_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -209,7 +220,8 @@ void AH_PinTanSpecialDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-const char *AH_PinTanSpecialDialog_GetTanMediumId(const GWEN_DIALOG *dlg) {
+const char *AH_PinTanSpecialDialog_GetTanMediumId(const GWEN_DIALOG *dlg)
+{
   AH_PINTAN_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -221,7 +233,8 @@ const char *AH_PinTanSpecialDialog_GetTanMediumId(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_PinTanSpecialDialog_SetTanMediumId(GWEN_DIALOG *dlg, const char *s) {
+void AH_PinTanSpecialDialog_SetTanMediumId(GWEN_DIALOG *dlg, const char *s)
+{
   AH_PINTAN_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -237,7 +250,8 @@ void AH_PinTanSpecialDialog_SetTanMediumId(GWEN_DIALOG *dlg, const char *s) {
 
 
 
-void AH_PinTanSpecialDialog_Init(GWEN_DIALOG *dlg) {
+void AH_PinTanSpecialDialog_Init(GWEN_DIALOG *dlg)
+{
   AH_PINTAN_SPECIAL_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
@@ -249,11 +263,11 @@ void AH_PinTanSpecialDialog_Init(GWEN_DIALOG *dlg) {
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("HBCI PIN/TAN Special Settings"),
-			      0);
+                              "",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("HBCI PIN/TAN Special Settings"),
+                              0);
 
   GWEN_Dialog_SetCharProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_AddValue, 0, "2.20", 0);
   GWEN_Dialog_SetCharProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_AddValue, 0, "3.0", 0);
@@ -262,33 +276,43 @@ void AH_PinTanSpecialDialog_Init(GWEN_DIALOG *dlg) {
   GWEN_Dialog_SetCharProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_AddValue, 0, "1.1", 0);
 
   /* toGui */
-  switch(((xdlg->httpVMajor)<<8)+xdlg->httpVMinor) {
-  case 0x0100: GWEN_Dialog_SetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0); break;
-  case 0x0101: GWEN_Dialog_SetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0); break;
-  default:     break;
+  switch (((xdlg->httpVMajor)<<8)+xdlg->httpVMinor) {
+  case 0x0100:
+    GWEN_Dialog_SetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
+    break;
+  case 0x0101:
+    GWEN_Dialog_SetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0);
+    break;
+  default:
+    break;
   }
 
-  switch(xdlg->hbciVersion) {
-  case 220: GWEN_Dialog_SetIntProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0); break;
-  case 300: GWEN_Dialog_SetIntProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0); break;
-  default:  break;
+  switch (xdlg->hbciVersion) {
+  case 220:
+    GWEN_Dialog_SetIntProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
+    break;
+  case 300:
+    GWEN_Dialog_SetIntProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0);
+    break;
+  default:
+    break;
   }
 
   GWEN_Dialog_SetIntProperty(dlg, "forceSslv3Check", GWEN_DialogProperty_Value, 0,
-			     (xdlg->flags & AH_USER_FLAGS_FORCE_SSL3)?1:0,
-			     0);
+                             (xdlg->flags & AH_USER_FLAGS_FORCE_SSL3)?1:0,
+                             0);
 
   GWEN_Dialog_SetIntProperty(dlg, "ignorePrematureCloseCheck", GWEN_DialogProperty_Value, 0,
                              (xdlg->flags & AH_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE)?1:0,
-			     0);
+                             0);
 
   GWEN_Dialog_SetIntProperty(dlg, "noBase64Check", GWEN_DialogProperty_Value, 0,
-			     (xdlg->flags & AH_USER_FLAGS_NO_BASE64)?1:0,
-			     0);
+                             (xdlg->flags & AH_USER_FLAGS_NO_BASE64)?1:0,
+                             0);
 
   GWEN_Dialog_SetIntProperty(dlg, "omitSmsAccountCheck", GWEN_DialogProperty_Value, 0,
-			     (xdlg->flags & AH_USER_FLAGS_TAN_OMIT_SMS_ACCOUNT)?1:0,
-			     0);
+                             (xdlg->flags & AH_USER_FLAGS_TAN_OMIT_SMS_ACCOUNT)?1:0,
+                             0);
 
   if (xdlg->tanMediumId)
     GWEN_Dialog_SetCharProperty(dlg, "tanMediumIdEdit", GWEN_DialogProperty_Value, 0, xdlg->tanMediumId, 0);
@@ -312,7 +336,8 @@ void AH_PinTanSpecialDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-void AH_PinTanSpecialDialog_Fini(GWEN_DIALOG *dlg) {
+void AH_PinTanSpecialDialog_Fini(GWEN_DIALOG *dlg)
+{
   AH_PINTAN_SPECIAL_DIALOG *xdlg;
   int i;
   GWEN_DB_NODE *dbPrefs;
@@ -327,14 +352,18 @@ void AH_PinTanSpecialDialog_Fini(GWEN_DIALOG *dlg) {
 
   /* fromGui */
   i=GWEN_Dialog_GetIntProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_Value, 0, -1);
-  switch(i) {
-  case 0: xdlg->hbciVersion=220; break;
+  switch (i) {
+  case 0:
+    xdlg->hbciVersion=220;
+    break;
   default:
-  case 1: xdlg->hbciVersion=300; break;
+  case 1:
+    xdlg->hbciVersion=300;
+    break;
   }
 
   i=GWEN_Dialog_GetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, -1);
-  switch(i) {
+  switch (i) {
   case 0:
     xdlg->httpVMajor=1;
     xdlg->httpVMinor=0;
@@ -363,21 +392,22 @@ void AH_PinTanSpecialDialog_Fini(GWEN_DIALOG *dlg) {
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_width",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_width",
+                      i);
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_height",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_height",
+                      i);
 }
 
 
 
-int AH_PinTanSpecialDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int AH_PinTanSpecialDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   DBG_NOTICE(0, "Activated: %s", sender);
   if (strcasecmp(sender, "okButton")==0)
     return GWEN_DialogEvent_ResultAccept;
@@ -393,15 +423,16 @@ int AH_PinTanSpecialDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
 
 
 int GWENHYWFAR_CB AH_PinTanSpecialDialog_SignalHandler(GWEN_DIALOG *dlg,
-						       GWEN_DIALOG_EVENTTYPE t,
-						       const char *sender) {
+                                                       GWEN_DIALOG_EVENTTYPE t,
+                                                       const char *sender)
+{
   AH_PINTAN_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_PINTAN_SPECIAL_DIALOG, dlg);
   assert(xdlg);
 
-  switch(t) {
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     AH_PinTanSpecialDialog_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;

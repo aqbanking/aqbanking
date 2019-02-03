@@ -29,7 +29,7 @@ GWEN_HTTP_SESSION *EBC_Dialog_new(AB_PROVIDER *pro, AB_USER *u);
 
 
 int EBC_Dialog_ExchangeMessages(GWEN_HTTP_SESSION *sess,
-				EB_MSG *msg,
+                                EB_MSG *msg,
                                 EB_MSG **pResponse);
 
 

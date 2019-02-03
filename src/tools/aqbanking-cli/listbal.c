@@ -29,7 +29,8 @@ static GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **arg
 
 
 
-int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;
@@ -56,9 +57,9 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   subAccountId=GWEN_DB_GetCharValue(db, "subAccountId", 0, 0);
   iban=GWEN_DB_GetCharValue(db, "iban", 0, 0);
   tmplString=GWEN_DB_GetCharValue(db, "template", 0,
-				  "$(dateAsString)\t"
-				  "$(valueAsString)\t"
-				  "$(iban)");
+                                  "$(dateAsString)\t"
+                                  "$(valueAsString)\t"
+                                  "$(iban)");
 
   /* init AqBanking */
   rv=AB_Banking_Init(ab);
@@ -78,7 +79,7 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
 
   /* copy context, but only keep wanted accounts and transactions */
   iea=AB_ImExporterContext_GetFirstAccountInfo(ctx);
-  while(iea) {
+  while (iea) {
     if (AB_ImExporterAccountInfo_Matches(iea,
                                          aid,  /* unique account id */
                                          "*",
@@ -87,7 +88,7 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
                                          subAccountId,
                                          iban,
                                          "*", /* currency */
-					 AB_AccountType_Unknown)) {
+                                         AB_AccountType_Unknown)) {
       AB_BALANCE *bal;
       GWEN_DB_NODE *dbAccount;
       const char *s;
@@ -96,54 +97,54 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
 
       s=AB_ImExporterAccountInfo_GetBankCode(iea);
       if (s && *s)
-	GWEN_DB_SetCharValue(dbAccount, GWEN_DB_FLAGS_OVERWRITE_VARS, "bankCode", s);
+        GWEN_DB_SetCharValue(dbAccount, GWEN_DB_FLAGS_OVERWRITE_VARS, "bankCode", s);
 
       s=AB_ImExporterAccountInfo_GetAccountNumber(iea);
       if (s && *s)
-	GWEN_DB_SetCharValue(dbAccount, GWEN_DB_FLAGS_OVERWRITE_VARS, "accountNumber", s);
+        GWEN_DB_SetCharValue(dbAccount, GWEN_DB_FLAGS_OVERWRITE_VARS, "accountNumber", s);
 
       s=AB_ImExporterAccountInfo_GetBic(iea);
       if (s && *s)
-	GWEN_DB_SetCharValue(dbAccount, GWEN_DB_FLAGS_OVERWRITE_VARS, "bic", s);
+        GWEN_DB_SetCharValue(dbAccount, GWEN_DB_FLAGS_OVERWRITE_VARS, "bic", s);
 
       s=AB_ImExporterAccountInfo_GetIban(iea);
       if (s && *s)
-	GWEN_DB_SetCharValue(dbAccount, GWEN_DB_FLAGS_OVERWRITE_VARS, "iban", s);
+        GWEN_DB_SetCharValue(dbAccount, GWEN_DB_FLAGS_OVERWRITE_VARS, "iban", s);
 
       bal=AB_Balance_List_GetLatestByType(AB_ImExporterAccountInfo_GetBalanceList(iea),
-					  AB_Balance_TypeBooked);
+                                          AB_Balance_TypeBooked);
       if (bal) {
-	GWEN_DB_NODE *dbElement;
-	const AB_VALUE *v;
-	const GWEN_DATE *dt;
-	GWEN_BUFFER *dbuf;
+        GWEN_DB_NODE *dbElement;
+        const AB_VALUE *v;
+        const GWEN_DATE *dt;
+        GWEN_BUFFER *dbuf;
 
-	dbElement=GWEN_DB_Group_dup(dbAccount);
-	AB_Balance_toDb(bal, dbElement);
+        dbElement=GWEN_DB_Group_dup(dbAccount);
+        AB_Balance_toDb(bal, dbElement);
 
-	/* translate value */
-	dbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	v=AB_Balance_GetValue(bal);
-	if (v) {
-	  AB_Value_toHumanReadableString(v, dbuf, 2);
-	  GWEN_DB_SetCharValue(dbElement, GWEN_DB_FLAGS_OVERWRITE_VARS, "valueAsString", GWEN_Buffer_GetStart(dbuf));
-	  GWEN_Buffer_Reset(dbuf);
-	}
+        /* translate value */
+        dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+        v=AB_Balance_GetValue(bal);
+        if (v) {
+          AB_Value_toHumanReadableString(v, dbuf, 2);
+          GWEN_DB_SetCharValue(dbElement, GWEN_DB_FLAGS_OVERWRITE_VARS, "valueAsString", GWEN_Buffer_GetStart(dbuf));
+          GWEN_Buffer_Reset(dbuf);
+        }
 
-	/* translate date */
-	dt=AB_Balance_GetDate(bal);
-	if (dt) {
-	  rv=GWEN_Date_toStringWithTemplate(dt, I18N("DD.MM.YYYY"), dbuf);
-	  if (rv>=0) {
-	    GWEN_DB_SetCharValue(dbElement, GWEN_DB_FLAGS_OVERWRITE_VARS, "dateAsString", GWEN_Buffer_GetStart(dbuf));
-	  }
-	  GWEN_Buffer_Reset(dbuf);
-	}
+        /* translate date */
+        dt=AB_Balance_GetDate(bal);
+        if (dt) {
+          rv=GWEN_Date_toStringWithTemplate(dt, I18N("DD.MM.YYYY"), dbuf);
+          if (rv>=0) {
+            GWEN_DB_SetCharValue(dbElement, GWEN_DB_FLAGS_OVERWRITE_VARS, "dateAsString", GWEN_Buffer_GetStart(dbuf));
+          }
+          GWEN_Buffer_Reset(dbuf);
+        }
 
-	GWEN_DB_ReplaceVars(dbElement, tmplString, dbuf);
-	fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(dbuf));
-	GWEN_Buffer_free(dbuf);
-	GWEN_DB_Group_free(dbElement);
+        GWEN_DB_ReplaceVars(dbElement, tmplString, dbuf);
+        fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(dbuf));
+        GWEN_Buffer_free(dbuf);
+        GWEN_DB_Group_free(dbElement);
       } /* if bal */
 
       GWEN_DB_Group_free(dbAccount);
@@ -167,109 +168,110 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
 
 
 /* parse command line */
-GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   int rv;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "uniqueAccountId",             /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    NULL,                         /* short option */
-    "aid",                        /* long option */
-    "Specify the unique account id",      /* short description */
-    "Specify the unique account id"       /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "bankId",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "b",                          /* short option */
-    "bank",                       /* long option */
-    "Specify the bank code",      /* short description */
-    "Specify the bank code"       /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "accountId",                  /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "a",                          /* short option */
-    "account",                    /* long option */
-    "Specify the account number",     /* short description */
-    "Specify the account number"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "subAccountId",                /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "aa",                          /* short option */
-    "subaccount",                   /* long option */
-    "Specify the sub account id (Unterkontomerkmal)",    /* short description */
-    "Specify the sub account id (Unterkontomerkmal)"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "iban",                       /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "A",                          /* short option */
-    "iban",                    /* long option */
-    "Specify the iban of your account",      /* short description */
-    "Specify the iban of your account"       /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "ctxFile",                    /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "c",                          /* short option */
-    "ctxfile",                    /* long option */
-    "Specify the file to store the context in",   /* short description */
-    "Specify the file to store the context in"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "outFile",                    /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "o",                          /* short option */
-    "outfile",                    /* long option */
-    "Specify the file to store the data in",   /* short description */
-    "Specify the file to store the data in"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "template",                    /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "T",                          /* short option */
-    "template",                       /* long option */
-    "Specify the template for the balance list output",      /* short description */
-    "Specify the template for the balance list output"       /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "uniqueAccountId",             /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      NULL,                         /* short option */
+      "aid",                        /* long option */
+      "Specify the unique account id",      /* short description */
+      "Specify the unique account id"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "bankId",                     /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "b",                          /* short option */
+      "bank",                       /* long option */
+      "Specify the bank code",      /* short description */
+      "Specify the bank code"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "accountId",                  /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "a",                          /* short option */
+      "account",                    /* long option */
+      "Specify the account number",     /* short description */
+      "Specify the account number"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "subAccountId",                /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "aa",                          /* short option */
+      "subaccount",                   /* long option */
+      "Specify the sub account id (Unterkontomerkmal)",    /* short description */
+      "Specify the sub account id (Unterkontomerkmal)"     /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "iban",                       /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "A",                          /* short option */
+      "iban",                    /* long option */
+      "Specify the iban of your account",      /* short description */
+      "Specify the iban of your account"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "ctxFile",                    /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "c",                          /* short option */
+      "ctxfile",                    /* long option */
+      "Specify the file to store the context in",   /* short description */
+      "Specify the file to store the context in"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "outFile",                    /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "o",                          /* short option */
+      "outfile",                    /* long option */
+      "Specify the file to store the data in",   /* short description */
+      "Specify the file to store the data in"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "template",                    /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "T",                          /* short option */
+      "template",                       /* long option */
+      "Specify the template for the balance list output",      /* short description */
+      "Specify the template for the balance list output"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
 

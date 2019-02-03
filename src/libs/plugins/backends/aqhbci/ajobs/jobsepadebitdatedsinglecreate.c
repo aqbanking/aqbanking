@@ -33,7 +33,8 @@
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_SepaDebitDatedSingleCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_SepaDebitDatedSingleCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
+{
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
 
@@ -63,7 +64,8 @@ AH_JOB *AH_Job_SepaDebitDatedSingleCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_A
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaDebitDatedSingleCreate_Prepare(AH_JOB *j) {
+int AH_Job_SepaDebitDatedSingleCreate_Prepare(AH_JOB *j)
+{
   GWEN_DB_NODE *profile;
   int rv;
 

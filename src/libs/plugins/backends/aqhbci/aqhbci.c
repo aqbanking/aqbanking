@@ -18,7 +18,8 @@
 
 
 
-AH_CRYPT_MODE AH_CryptMode_fromString(const char *s) {
+AH_CRYPT_MODE AH_CryptMode_fromString(const char *s)
+{
   if (strcasecmp(s, "none")==0)
     return AH_CryptMode_None;
   else if (strcasecmp(s, "ddv")==0)
@@ -28,21 +29,28 @@ AH_CRYPT_MODE AH_CryptMode_fromString(const char *s) {
   else if (strcasecmp(s, "rdh")==0)
     return AH_CryptMode_Rdh;
   else if (strcasecmp(s, "rah")==0)
-      return AH_CryptMode_Rah;
+    return AH_CryptMode_Rah;
   else
     return AH_CryptMode_Unknown;
 }
 
 
 
-const char *AH_CryptMode_toString(AH_CRYPT_MODE v) {
-  switch(v) {
-  case AH_CryptMode_None:   return "none";
-  case AH_CryptMode_Ddv:    return "ddv";
-  case AH_CryptMode_Pintan: return "pintan";
-  case AH_CryptMode_Rdh:    return "rdh";
-  case AH_CryptMode_Rah:    return "rah";
-  default:                  return "unknown";
+const char *AH_CryptMode_toString(AH_CRYPT_MODE v)
+{
+  switch (v) {
+  case AH_CryptMode_None:
+    return "none";
+  case AH_CryptMode_Ddv:
+    return "ddv";
+  case AH_CryptMode_Pintan:
+    return "pintan";
+  case AH_CryptMode_Rdh:
+    return "rdh";
+  case AH_CryptMode_Rah:
+    return "rah";
+  default:
+    return "unknown";
   }
 }
 

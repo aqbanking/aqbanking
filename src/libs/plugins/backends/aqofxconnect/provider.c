@@ -53,45 +53,46 @@ GWEN_INHERIT(AB_PROVIDER, AO_PROVIDER)
 
 
 
-static AO_APPINFO _appInfos[]={
+static AO_APPINFO _appInfos[]= {
   /* got this list from https://microsoftmoneyoffline.wordpress.com/appid-appver/ */
-{ I18S("Intuit Quicken Windows 2013"),    "QWIN",       "2200"},
-{ I18S("Intuit Quicken Windows 2012"),    "QWIN",       "2100"},
-{ I18S("Intuit Quicken Windows 2011"),    "QWIN",       "2000"},
-{ I18S("Intuit Quicken Windows 2010"),    "QWIN",       "1900"},
-{ I18S("Intuit Quicken Windows 2009"),    "QWIN",       "1800"},
-{ I18S("Intuit Quicken Windows 2008"),    "QWIN",       "1700"},
-{ I18S("Intuit Quicken Windows 2007"),    "QWIN",       "1600"},
-{ I18S("Intuit Quicken Windows 2006"),    "QWIN",       "1500"},
-{ I18S("Intuit Quicken Windows 2005"),    "QWIN",       "1400"},
+  { I18S("Intuit Quicken Windows 2013"),    "QWIN",       "2200"},
+  { I18S("Intuit Quicken Windows 2012"),    "QWIN",       "2100"},
+  { I18S("Intuit Quicken Windows 2011"),    "QWIN",       "2000"},
+  { I18S("Intuit Quicken Windows 2010"),    "QWIN",       "1900"},
+  { I18S("Intuit Quicken Windows 2009"),    "QWIN",       "1800"},
+  { I18S("Intuit Quicken Windows 2008"),    "QWIN",       "1700"},
+  { I18S("Intuit Quicken Windows 2007"),    "QWIN",       "1600"},
+  { I18S("Intuit Quicken Windows 2006"),    "QWIN",       "1500"},
+  { I18S("Intuit Quicken Windows 2005"),    "QWIN",       "1400"},
 
-{ I18S("Intuit Quicken Mac 2008"),        "QMOFX",      "1700"},
-{ I18S("Intuit Quicken Mac 2007"),        "QMOFX",      "1600"},
-{ I18S("Intuit Quicken Mac 2006"),        "QMOFX",      "1500"},
-{ I18S("Intuit Quicken Mac 2005"),        "QMOFX",      "1400"},
+  { I18S("Intuit Quicken Mac 2008"),        "QMOFX",      "1700"},
+  { I18S("Intuit Quicken Mac 2007"),        "QMOFX",      "1600"},
+  { I18S("Intuit Quicken Mac 2006"),        "QMOFX",      "1500"},
+  { I18S("Intuit Quicken Mac 2005"),        "QMOFX",      "1400"},
 
-{ I18S("Intuit QuickBooks Windows 2008"), "QBW",        "1800"},
-{ I18S("Intuit QuickBooks Windows 2007"), "QBW",        "1700"},
-{ I18S("Intuit QuickBooks Windows 2006"), "QBW",        "1600"},
-{ I18S("Intuit QuickBooks Windows 2005"), "QBW",        "1500"},
+  { I18S("Intuit QuickBooks Windows 2008"), "QBW",        "1800"},
+  { I18S("Intuit QuickBooks Windows 2007"), "QBW",        "1700"},
+  { I18S("Intuit QuickBooks Windows 2006"), "QBW",        "1600"},
+  { I18S("Intuit QuickBooks Windows 2005"), "QBW",        "1500"},
 
-{ I18S("Microsoft Money Plus"),           "Money Plus", "1700"},
-{ I18S("Microsoft Money 2007"),           "Money",      "1600"},
-{ I18S("Microsoft Money 2006"),           "Money",      "1500"},
-{ I18S("Microsoft Money 2005"),           "Money",      "1400"},
-{ I18S("Microsoft Money 2004"),           "Money",      "1200"},
-{ I18S("Microsoft Money 2003"),           "Money",      "1100"},
+  { I18S("Microsoft Money Plus"),           "Money Plus", "1700"},
+  { I18S("Microsoft Money 2007"),           "Money",      "1600"},
+  { I18S("Microsoft Money 2006"),           "Money",      "1500"},
+  { I18S("Microsoft Money 2005"),           "Money",      "1400"},
+  { I18S("Microsoft Money 2004"),           "Money",      "1200"},
+  { I18S("Microsoft Money 2003"),           "Money",      "1100"},
 
-{ I18S("ProSaldo Money 2013"),            "PROSALDO",   "11005"},
+  { I18S("ProSaldo Money 2013"),            "PROSALDO",   "11005"},
 
-{ NULL, NULL, NULL}
+  { NULL, NULL, NULL}
 };
 
 
 
 
 
-AB_PROVIDER *AO_Provider_new(AB_BANKING *ab){
+AB_PROVIDER *AO_Provider_new(AB_BANKING *ab)
+{
   AB_PROVIDER *pro;
   AO_PROVIDER *dp;
 
@@ -123,10 +124,11 @@ AB_PROVIDER *AO_Provider_new(AB_BANKING *ab){
 
 
 
-void GWENHYWFAR_CB AO_Provider_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AO_Provider_FreeData(void *bp, void *p)
+{
   AO_PROVIDER *dp;
 
-  dp=(AO_PROVIDER*)p;
+  dp=(AO_PROVIDER *)p;
   assert(dp);
 
   GWEN_FREE_OBJECT(dp);
@@ -134,7 +136,8 @@ void GWENHYWFAR_CB AO_Provider_FreeData(void *bp, void *p) {
 
 
 
-int AO_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
+int AO_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData)
+{
   AO_PROVIDER *dp;
   const char *logLevelName;
   uint32_t currentVersion;
@@ -211,7 +214,8 @@ int AO_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
 
 
 
-int AO_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
+int AO_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData)
+{
   AO_PROVIDER *dp;
   uint32_t currentVersion;
 
@@ -246,20 +250,23 @@ int AO_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
 
 
 
-AB_ACCOUNT *AO_Provider_CreateAccountObject(AB_PROVIDER *pro) {
+AB_ACCOUNT *AO_Provider_CreateAccountObject(AB_PROVIDER *pro)
+{
   return AO_Account_new(pro);
 }
 
 
 
-AB_USER *AO_Provider_CreateUserObject(AB_PROVIDER *pro) {
+AB_USER *AO_Provider_CreateUserObject(AB_PROVIDER *pro)
+{
   return AO_User_new(pro);
 }
 
 
 
 
-GWEN_DIALOG *AO_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
+GWEN_DIALOG *AO_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u)
+{
 #if 0
   AO_PROVIDER *xp;
   GWEN_DIALOG *dlg;
@@ -282,7 +289,8 @@ GWEN_DIALOG *AO_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
 
 
 
-GWEN_DIALOG *AO_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
+GWEN_DIALOG *AO_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i)
+{
 #if 0
   AO_PROVIDER *xp;
   GWEN_DIALOG *dlg;
@@ -305,13 +313,15 @@ GWEN_DIALOG *AO_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
 
 
 
-const AO_APPINFO *AO_Provider_GetAppInfos(AB_PROVIDER *pro) {
+const AO_APPINFO *AO_Provider_GetAppInfos(AB_PROVIDER *pro)
+{
   return _appInfos;
 }
 
 
 
-int AO_Provider_GetCert(AB_PROVIDER *pro, AB_USER *u) {
+int AO_Provider_GetCert(AB_PROVIDER *pro, AB_USER *u)
+{
   AO_PROVIDER *xp;
   int rv;
   const char *url;

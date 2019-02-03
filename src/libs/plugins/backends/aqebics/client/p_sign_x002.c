@@ -11,9 +11,10 @@
 
 
 static int EBC_Provider_SignMessage_X002(AB_PROVIDER *pro,
-					 EB_MSG *msg,
-					 AB_USER *u,
-					 xmlNodePtr node) {
+                                         EB_MSG *msg,
+                                         AB_USER *u,
+                                         xmlNodePtr node)
+{
   EBC_PROVIDER *dp;
   int rv;
   GWEN_CRYPT_TOKEN *ct;
@@ -42,15 +43,15 @@ static int EBC_Provider_SignMessage_X002(AB_PROVIDER *pro,
   /* get key id */
   keyId=GWEN_Crypt_Token_Context_GetAuthSignKeyId(ctx);
   ki=GWEN_Crypt_Token_GetKeyInfo(ct,
-				 keyId,
-				 0xffffffff,
-				 0);
+                                 keyId,
+                                 0xffffffff,
+                                 0);
   if (ki==NULL) {
     DBG_INFO(AQEBICS_LOGDOMAIN,
-	     "Keyinfo %04x not found on crypt token [%s:%s]",
-	     keyId,
-	     GWEN_Crypt_Token_GetTypeName(ct),
-	     GWEN_Crypt_Token_GetTokenName(ct));
+             "Keyinfo %04x not found on crypt token [%s:%s]",
+             keyId,
+             GWEN_Crypt_Token_GetTypeName(ct),
+             GWEN_Crypt_Token_GetTokenName(ct));
     GWEN_Crypt_Token_Close(ct, 0, 0);
     return GWEN_ERROR_NOT_FOUND;
   }
@@ -70,9 +71,9 @@ static int EBC_Provider_SignMessage_X002(AB_PROVIDER *pro,
 
   /* base64 encode */
   hbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=GWEN_Base64_Encode((const uint8_t*)GWEN_Buffer_GetStart(bbuf),
-			GWEN_Buffer_GetUsedBytes(bbuf),
-			hbuf, 0);
+  rv=GWEN_Base64_Encode((const uint8_t *)GWEN_Buffer_GetStart(bbuf),
+                        GWEN_Buffer_GetUsedBytes(bbuf),
+                        hbuf, 0);
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(hbuf);
@@ -85,31 +86,31 @@ static int EBC_Provider_SignMessage_X002(AB_PROVIDER *pro,
   nodeX=xmlNewChild(node, ns, BAD_CAST "SignedInfo", NULL);
   nodeXX=xmlNewChild(nodeX, ns, BAD_CAST "CanonicalizationMethod", NULL);
   xmlNewProp(nodeXX,
-	     BAD_CAST "Algorithm",
-	     BAD_CAST "http://www.w3.org/TR/2001/REC-xml-c14n-20010315");
+             BAD_CAST "Algorithm",
+             BAD_CAST "http://www.w3.org/TR/2001/REC-xml-c14n-20010315");
   nodeXX=xmlNewChild(nodeX, ns, BAD_CAST "SignatureMethod", NULL);
   xmlNewProp(nodeXX,
-	     BAD_CAST "Algorithm",
-	     BAD_CAST "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
+             BAD_CAST "Algorithm",
+             BAD_CAST "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
   nodeXX=xmlNewChild(nodeX, ns, BAD_CAST "Reference", NULL);
   xmlNewProp(nodeXX,
-	     BAD_CAST "URI",
-	     BAD_CAST "#xpointer(//*[@authenticate='true'])");
+             BAD_CAST "URI",
+             BAD_CAST "#xpointer(//*[@authenticate='true'])");
   nodeXXX=xmlNewChild(nodeXX, ns, BAD_CAST "Transforms", NULL);
   nodeXXXX=xmlNewChild(nodeXXX, ns, BAD_CAST "Transform", NULL);
   xmlNewProp(nodeXXXX,
-	     BAD_CAST "Algorithm",
-	     BAD_CAST "http://www.w3.org/TR/2001/REC-xml-c14n-20010315");
+             BAD_CAST "Algorithm",
+             BAD_CAST "http://www.w3.org/TR/2001/REC-xml-c14n-20010315");
 
   nodeXXX=xmlNewChild(nodeXX, ns, BAD_CAST "DigestMethod", NULL);
   xmlNewProp(nodeXXX,
-	     BAD_CAST "Algorithm",
-	     BAD_CAST "http://www.w3.org/2001/04/xmlenc#sha256");
+             BAD_CAST "Algorithm",
+             BAD_CAST "http://www.w3.org/2001/04/xmlenc#sha256");
 
   /* store hash value */
   xmlNewTextChild(nodeXX, ns,
-		  BAD_CAST "DigestValue",
-		  BAD_CAST GWEN_Buffer_GetStart(hbuf));
+                  BAD_CAST "DigestValue",
+                  BAD_CAST GWEN_Buffer_GetStart(hbuf));
   GWEN_Buffer_free(hbuf);
 
   /* build hash over SignedInfo */
@@ -126,16 +127,17 @@ static int EBC_Provider_SignMessage_X002(AB_PROVIDER *pro,
     GWEN_CRYPT_PADDALGO *algo;
     int ksize;
     uint32_t l;
-    const uint8_t prefix[]={
+    const uint8_t prefix[]= {
       0x30, 0x31, 0x30, 0x0d,
       0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01,
       0x05, 0x00,
-      0x04, 0x20};
+      0x04, 0x20
+    };
 
     /* add prefix to hash of SignedInfo */
     hbuf=GWEN_Buffer_new(0, 256, 0, 1);
     ksize=GWEN_Crypt_Token_KeyInfo_GetKeySize(ki);
-    GWEN_Buffer_AppendBytes(hbuf, (const char*)prefix, sizeof(prefix));
+    GWEN_Buffer_AppendBytes(hbuf, (const char *)prefix, sizeof(prefix));
     GWEN_Buffer_AppendBuffer(hbuf, bbuf);
     GWEN_Buffer_Reset(bbuf);
 
@@ -147,13 +149,13 @@ static int EBC_Provider_SignMessage_X002(AB_PROVIDER *pro,
     GWEN_Buffer_AllocRoom(bbuf, ksize+16);
     l=GWEN_Buffer_GetMaxUnsegmentedWrite(bbuf);
     rv=GWEN_Crypt_Token_Sign(ct, keyId,
-			     algo,
-			     (const uint8_t*)GWEN_Buffer_GetStart(hbuf),
-			     GWEN_Buffer_GetUsedBytes(hbuf),
-			     (uint8_t*)GWEN_Buffer_GetPosPointer(bbuf),
-			     &l,
-			     NULL, /* ignore seq counter */
-			     0);
+                             algo,
+                             (const uint8_t *)GWEN_Buffer_GetStart(hbuf),
+                             GWEN_Buffer_GetUsedBytes(hbuf),
+                             (uint8_t *)GWEN_Buffer_GetPosPointer(bbuf),
+                             &l,
+                             NULL, /* ignore seq counter */
+                             0);
     GWEN_Crypt_PaddAlgo_free(algo);
     if (rv<0) {
       DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
@@ -166,9 +168,9 @@ static int EBC_Provider_SignMessage_X002(AB_PROVIDER *pro,
 
     /* base 64 encode signature */
     GWEN_Buffer_Reset(hbuf);
-    rv=GWEN_Base64_Encode((const uint8_t*)GWEN_Buffer_GetStart(bbuf),
-			  GWEN_Buffer_GetUsedBytes(bbuf),
-			  hbuf, 0);
+    rv=GWEN_Base64_Encode((const uint8_t *)GWEN_Buffer_GetStart(bbuf),
+                          GWEN_Buffer_GetUsedBytes(bbuf),
+                          hbuf, 0);
     if (rv<0) {
       DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(hbuf);
@@ -179,8 +181,8 @@ static int EBC_Provider_SignMessage_X002(AB_PROVIDER *pro,
 
     /* store signature */
     xmlNewTextChild(node, ns,
-		    BAD_CAST "SignatureValue",
-		    BAD_CAST GWEN_Buffer_GetStart(hbuf));
+                    BAD_CAST "SignatureValue",
+                    BAD_CAST GWEN_Buffer_GetStart(hbuf));
     GWEN_Buffer_free(hbuf);
   }
 

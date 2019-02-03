@@ -20,15 +20,17 @@
 
 
 
-static AB_PROVIDER *AB_Plugin_ProviderNone_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab){
+static AB_PROVIDER *AB_Plugin_ProviderNone_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab)
+{
   return AN_Provider_new(ab);
 }
 
 
 /* interface to gwens plugin loader */
 AQBANKING_EXPORT GWEN_PLUGIN *provider_aqnone_factory(GWEN_PLUGIN_MANAGER *pm,
-						      const char *name,
-						      const char *fileName) {
+                                                      const char *name,
+                                                      const char *fileName)
+{
   GWEN_PLUGIN *pl;
 
   pl=AB_Plugin_Provider_new(pm, name, fileName);

@@ -48,13 +48,13 @@ static int APY_Provider_ExecGetBal(AB_PROVIDER *pro,
                                    AB_TRANSACTION *j);
 
 static int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
-				     AB_IMEXPORTER_ACCOUNTINFO *ai,
-				     AB_USER *u,
-				     AB_TRANSACTION *j);
+                                     AB_IMEXPORTER_ACCOUNTINFO *ai,
+                                     AB_USER *u,
+                                     AB_TRANSACTION *j);
 
 static int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
-				    AB_USER *u,
-				    AB_TRANSACTION *t);
+                                    AB_USER *u,
+                                    AB_TRANSACTION *t);
 
 
 

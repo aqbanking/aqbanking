@@ -22,29 +22,40 @@ int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
                                 int useBankKey,
                                 int variant,
                                 GWEN_BUFFER *lbuf,
-				int nounmount) {
+                                int nounmount)
+{
   if (variant==0) {
-    switch(AH_User_GetRdhType(u)) {
+    switch (AH_User_GetRdhType(u)) {
     case 0:
-    case 1:  variant=1; break;
+    case 1:
+      variant=1;
+      break;
     case 2:
     case 3:
     case 4:
     case 5:
     case 6:
-    case 7:  variant=2; break;
+    case 7:
+      variant=2;
+      break;
     case 8:
-    case 9:  variant=2; break;
-    case 10: variant=2; break;
+    case 9:
+      variant=2;
+      break;
+    case 10:
+      variant=2;
+      break;
     default:
       DBG_ERROR(AQHBCI_LOGDOMAIN, "RDH mode %d not supported", AH_User_GetRdhType(u));
       return GWEN_ERROR_INVALID;
     }
   }
 
-  switch(variant) {
-  case 1: return AH_Provider_GetIniLetterTxt1(pro, u, useBankKey, lbuf, nounmount);
-  case 2: return AH_Provider_GetIniLetterTxt2(pro, u, useBankKey, lbuf, nounmount);
+  switch (variant) {
+  case 1:
+    return AH_Provider_GetIniLetterTxt1(pro, u, useBankKey, lbuf, nounmount);
+  case 2:
+    return AH_Provider_GetIniLetterTxt2(pro, u, useBankKey, lbuf, nounmount);
   default:
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Variant %d not supported", variant);
     return GWEN_ERROR_INVALID;
@@ -53,33 +64,44 @@ int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
 
 
 int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
-				 AB_USER *u,
-				 int useBankKey,
-				 int variant,
-				 GWEN_BUFFER *lbuf,
-				 int nounmount) {
+                                 AB_USER *u,
+                                 int useBankKey,
+                                 int variant,
+                                 GWEN_BUFFER *lbuf,
+                                 int nounmount)
+{
   if (variant==0) {
-    switch(AH_User_GetRdhType(u)) {
+    switch (AH_User_GetRdhType(u)) {
     case 0:
-    case 1:  variant=1; break;
+    case 1:
+      variant=1;
+      break;
     case 2:
     case 3:
     case 4:
     case 5:
     case 6:
-    case 7:  variant=2; break;
+    case 7:
+      variant=2;
+      break;
     case 8:
-    case 9:  variant=2; break;
-    case 10: variant=2; break;
+    case 9:
+      variant=2;
+      break;
+    case 10:
+      variant=2;
+      break;
     default:
       DBG_ERROR(AQHBCI_LOGDOMAIN, "RDH mode %d not supported", AH_User_GetRdhType(u));
       return GWEN_ERROR_INVALID;
     }
   }
 
-  switch(variant) {
-  case 1: return AH_Provider_GetIniLetterHtml1(pro, u, useBankKey, lbuf, nounmount);
-  case 2: return AH_Provider_GetIniLetterHtml2(pro, u, useBankKey, lbuf, nounmount);
+  switch (variant) {
+  case 1:
+    return AH_Provider_GetIniLetterHtml1(pro, u, useBankKey, lbuf, nounmount);
+  case 2:
+    return AH_Provider_GetIniLetterHtml2(pro, u, useBankKey, lbuf, nounmount);
   default:
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Variant %d not supported", variant);
     return GWEN_ERROR_INVALID;
@@ -89,10 +111,11 @@ int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
 
 
 int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
-				 AB_USER *u,
-				 int useBankKey,
-				 GWEN_BUFFER *lbuf,
-				 int nounmount) {
+                                 AB_USER *u,
+                                 int useBankKey,
+                                 GWEN_BUFFER *lbuf,
+                                 int nounmount)
+{
   AB_BANKING *ab;
   AH_HBCI *h;
   const void *p;
@@ -123,14 +146,14 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
   assert(h);
 
   rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),
-			      AH_User_GetTokenType(u),
-			      AH_User_GetTokenName(u),
-			      &ct);
+                              AH_User_GetTokenType(u),
+                              AH_User_GetTokenName(u),
+                              &ct);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not get crypt token (%d)", rv);
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Error getting crypt token"));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Error getting crypt token"));
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
@@ -141,8 +164,8 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not open crypt token (%d)", rv);
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Error opening crypt token"));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Error opening crypt token"));
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
@@ -153,8 +176,8 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
   if (!cctx) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "User context not found on crypt token");
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("User context not found on crypt token"));
+                         GWEN_LoggerLevel_Error,
+                         I18N("User context not found on crypt token"));
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return GWEN_ERROR_NOT_FOUND;
@@ -165,35 +188,35 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
     kid=GWEN_Crypt_Token_Context_GetVerifyKeyId(cctx);
     if (kid) {
       ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				     0);
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                     0);
     }
     if (!ki ||
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       kid=GWEN_Crypt_Token_Context_GetEncipherKeyId(cctx);
       if (kid) {
-	ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				       0);
+        ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
+                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                       0);
       }
     }
     if (!ki ||
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+        AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Server keys missing, please get them first");
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
-			   I18N("Server keys missing, "
-				"please get them first"));
+                           GWEN_LoggerLevel_Error,
+                           I18N("Server keys missing, "
+                                "please get them first"));
       return GWEN_ERROR_NOT_FOUND;
     }
   }
@@ -202,22 +225,22 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
     kid=GWEN_Crypt_Token_Context_GetSignKeyId(cctx);
     if (kid) {
       ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				     0);
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                     0);
     }
     if (!ki ||
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+        AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       DBG_ERROR(AQHBCI_LOGDOMAIN, "User keys missing, please generate them first");
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
-			   I18N("User keys missing, "
-				"please generate them first"));
+                           GWEN_LoggerLevel_Error,
+                           I18N("User keys missing, "
+                                "please generate them first"));
       return GWEN_ERROR_NOT_FOUND;
     }
   }
@@ -261,7 +284,7 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(lbuf,
                            I18N("Key version    : "));
   snprintf(numbuf, sizeof(numbuf), "%d",
-	   GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
+           GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
   GWEN_Buffer_AppendString(lbuf, numbuf);
   GWEN_Buffer_AppendString(lbuf, "\n");
 
@@ -288,7 +311,7 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
   if (!p || !l) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                           I18N("Bad key"));
+                         I18N("Bad key"));
     return GWEN_ERROR_BAD_DATA;
   }
 
@@ -324,7 +347,7 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
   if (!p || !l) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                           I18N("Bad key"));
+                         I18N("Bad key"));
     return GWEN_ERROR_BAD_DATA;
   }
 
@@ -354,9 +377,9 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(lbuf,
                            I18N("Hash"));
   GWEN_Buffer_AppendString(lbuf, "\n\n");
-  rv=AH_Provider__HashRmd160((const uint8_t*)GWEN_Buffer_GetStart(keybuf),
-			     GWEN_Buffer_GetUsedBytes(keybuf),
-			     (uint8_t*)hashbuffer);
+  rv=AH_Provider__HashRmd160((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
+                             GWEN_Buffer_GetUsedBytes(keybuf),
+                             (uint8_t *)hashbuffer);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error hashing (%d)", rv);
     abort();
@@ -389,10 +412,11 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
 
 
 int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
-				  AB_USER *u,
-				  int useBankKey,
-				  GWEN_BUFFER *lbuf,
-				  int nounmount) {
+                                  AB_USER *u,
+                                  int useBankKey,
+                                  GWEN_BUFFER *lbuf,
+                                  int nounmount)
+{
   AB_BANKING *ab;
   AH_HBCI *h;
   const void *p;
@@ -423,14 +447,14 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
   assert(h);
 
   rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),
-			      AH_User_GetTokenType(u),
-			      AH_User_GetTokenName(u),
-			      &ct);
+                              AH_User_GetTokenType(u),
+                              AH_User_GetTokenName(u),
+                              &ct);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not get crypt token (%d)", rv);
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Error getting crypt token"));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Error getting crypt token"));
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
@@ -441,8 +465,8 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not open crypt token (%d)", rv);
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Error opening crypt token"));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Error opening crypt token"));
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
@@ -453,8 +477,8 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
   if (!cctx) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "User context not found on crypt token");
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("User context not found on crypt token"));
+                         GWEN_LoggerLevel_Error,
+                         I18N("User context not found on crypt token"));
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return GWEN_ERROR_NOT_FOUND;
@@ -465,35 +489,35 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
     kid=GWEN_Crypt_Token_Context_GetVerifyKeyId(cctx);
     if (kid) {
       ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				     0);
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                     0);
     }
     if (!ki ||
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       kid=GWEN_Crypt_Token_Context_GetEncipherKeyId(cctx);
       if (kid) {
-	ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				       0);
+        ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
+                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                       0);
       }
     }
     if (!ki ||
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+        AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Server keys missing, please get them first");
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
-			   I18N("Server keys missing, "
-				"please get them first"));
+                           GWEN_LoggerLevel_Error,
+                           I18N("Server keys missing, "
+                                "please get them first"));
       return GWEN_ERROR_NOT_FOUND;
     }
   }
@@ -502,22 +526,22 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
     kid=GWEN_Crypt_Token_Context_GetSignKeyId(cctx);
     if (kid) {
       ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				     0);
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                     0);
     }
     if (!ki ||
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+        AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       DBG_ERROR(AQHBCI_LOGDOMAIN, "User keys missing, please generate them first");
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
-			   I18N("User keys missing, "
-				"please generate them first"));
+                           GWEN_LoggerLevel_Error,
+                           I18N("User keys missing, "
+                                "please generate them first"));
       return GWEN_ERROR_NOT_FOUND;
     }
   }
@@ -562,7 +586,7 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(lbuf, I18N("Key number"));
   GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
   snprintf(numbuf, sizeof(numbuf), "%d",
-	   GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ki));
+           GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ki));
   GWEN_Buffer_AppendString(lbuf, numbuf);
   GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
 
@@ -570,7 +594,7 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(lbuf, I18N("Key version"));
   GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
   snprintf(numbuf, sizeof(numbuf), "%d",
-	   GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
+           GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
   GWEN_Buffer_AppendString(lbuf, numbuf);
   GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
 
@@ -597,7 +621,7 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
   if (!p || !l) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                           I18N("Bad key"));
+                         I18N("Bad key"));
     return GWEN_ERROR_BAD_DATA;
   }
 
@@ -635,7 +659,7 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
   if (!p || !l) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                           I18N("Bad key"));
+                         I18N("Bad key"));
     return GWEN_ERROR_BAD_DATA;
   }
 
@@ -667,9 +691,9 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(lbuf, I18N("Hash"));
   GWEN_Buffer_AppendString(lbuf, "</h4>\n");
   GWEN_Buffer_AppendString(lbuf, "<font face=fixed>\n");
-  rv=AH_Provider__HashRmd160((const uint8_t*)GWEN_Buffer_GetStart(keybuf),
-			     GWEN_Buffer_GetUsedBytes(keybuf),
-			     (uint8_t*)hashbuffer);
+  rv=AH_Provider__HashRmd160((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
+                             GWEN_Buffer_GetUsedBytes(keybuf),
+                             (uint8_t *)hashbuffer);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error hashing (%d)", rv);
     abort();
@@ -709,10 +733,11 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
 
 
 int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
-				 AB_USER *u,
-				 int useBankKey,
-				 GWEN_BUFFER *lbuf,
-				 int nounmount) {
+                                 AB_USER *u,
+                                 int useBankKey,
+                                 GWEN_BUFFER *lbuf,
+                                 int nounmount)
+{
   AB_BANKING *ab;
   AH_HBCI *h;
   const void *p;
@@ -744,14 +769,14 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
   assert(h);
 
   rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),
-			      AH_User_GetTokenType(u),
-			      AH_User_GetTokenName(u),
-			      &ct);
+                              AH_User_GetTokenType(u),
+                              AH_User_GetTokenName(u),
+                              &ct);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not get crypt token (%d)", rv);
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Error getting crypt token"));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Error getting crypt token"));
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
@@ -762,8 +787,8 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not open crypt token (%d)", rv);
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Error opening crypt token"));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Error opening crypt token"));
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
@@ -774,8 +799,8 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
   if (!cctx) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "User context not found on crypt token");
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("User context not found on crypt token"));
+                         GWEN_LoggerLevel_Error,
+                         I18N("User context not found on crypt token"));
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return GWEN_ERROR_NOT_FOUND;
@@ -786,35 +811,35 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
     kid=GWEN_Crypt_Token_Context_GetVerifyKeyId(cctx);
     if (kid) {
       ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				     0);
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                     0);
     }
     if (!ki ||
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       kid=GWEN_Crypt_Token_Context_GetEncipherKeyId(cctx);
       if (kid) {
-	ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				       0);
+        ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
+                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                       0);
       }
     }
     if (!ki ||
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+        AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Server keys missing, please get them first");
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
-			   I18N("Server keys missing, "
-				"please get them first"));
+                           GWEN_LoggerLevel_Error,
+                           I18N("Server keys missing, "
+                                "please get them first"));
       return GWEN_ERROR_NOT_FOUND;
     }
   }
@@ -823,22 +848,22 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
     kid=GWEN_Crypt_Token_Context_GetSignKeyId(cctx);
     if (kid) {
       ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				     0);
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                     0);
     }
     if (!ki ||
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+        AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       DBG_ERROR(AQHBCI_LOGDOMAIN, "User keys missing, please generate them first");
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
-			   I18N("User keys missing, "
-				"please generate them first"));
+                           GWEN_LoggerLevel_Error,
+                           I18N("User keys missing, "
+                                "please generate them first"));
       return GWEN_ERROR_NOT_FOUND;
     }
   }
@@ -888,7 +913,7 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(lbuf,
                            I18N("Key version    : "));
   snprintf(numbuf, sizeof(numbuf), "%d",
-	   GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
+           GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
   GWEN_Buffer_AppendString(lbuf, numbuf);
   GWEN_Buffer_AppendString(lbuf, "\n");
 
@@ -915,7 +940,7 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
   if (!p || !l) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                           I18N("Bad key"));
+                         I18N("Bad key"));
     return GWEN_ERROR_BAD_DATA;
   }
 
@@ -954,7 +979,7 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
   if (!p || !l) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                           I18N("Bad key"));
+                         I18N("Bad key"));
     return GWEN_ERROR_BAD_DATA;
   }
 
@@ -985,9 +1010,9 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(lbuf,
                            I18N("Hash (RMD-160)"));
   GWEN_Buffer_AppendString(lbuf, "\n\n");
-  rv=AH_Provider__HashRmd160((const uint8_t*)GWEN_Buffer_GetStart(keybuf),
-			     GWEN_Buffer_GetUsedBytes(keybuf),
-			     (uint8_t*)hashbuffer);
+  rv=AH_Provider__HashRmd160((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
+                             GWEN_Buffer_GetUsedBytes(keybuf),
+                             (uint8_t *)hashbuffer);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error hashing (%d)", rv);
     abort();
@@ -1010,9 +1035,9 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(lbuf,
                            I18N("Hash (SHA-256)"));
   GWEN_Buffer_AppendString(lbuf, "\n\n");
-  rv=AH_Provider__HashSha256((const uint8_t*)GWEN_Buffer_GetStart(keybuf),
-			     GWEN_Buffer_GetUsedBytes(keybuf),
-			     (uint8_t*)hashbuffer);
+  rv=AH_Provider__HashSha256((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
+                             GWEN_Buffer_GetUsedBytes(keybuf),
+                             (uint8_t *)hashbuffer);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error hashing (%d)", rv);
     abort();
@@ -1049,10 +1074,11 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
 
 
 int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
-				  AB_USER *u,
-				  int useBankKey,
-				  GWEN_BUFFER *lbuf,
-				  int nounmount) {
+                                  AB_USER *u,
+                                  int useBankKey,
+                                  GWEN_BUFFER *lbuf,
+                                  int nounmount)
+{
   AB_BANKING *ab;
   AH_HBCI *h;
   const void *p;
@@ -1084,14 +1110,14 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
   assert(h);
 
   rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),
-			      AH_User_GetTokenType(u),
-			      AH_User_GetTokenName(u),
-			      &ct);
+                              AH_User_GetTokenType(u),
+                              AH_User_GetTokenName(u),
+                              &ct);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not get crypt token (%d)", rv);
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Error getting crypt token"));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Error getting crypt token"));
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
@@ -1102,8 +1128,8 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not open crypt token (%d)", rv);
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Error opening crypt token"));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Error opening crypt token"));
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return rv;
@@ -1114,8 +1140,8 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
   if (!cctx) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "User context not found on crypt token");
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("User context not found on crypt token"));
+                         GWEN_LoggerLevel_Error,
+                         I18N("User context not found on crypt token"));
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return GWEN_ERROR_NOT_FOUND;
@@ -1126,35 +1152,35 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
     kid=GWEN_Crypt_Token_Context_GetVerifyKeyId(cctx);
     if (kid) {
       ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				     0);
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                     0);
     }
     if (!ki ||
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       kid=GWEN_Crypt_Token_Context_GetEncipherKeyId(cctx);
       if (kid) {
-	ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				       0);
+        ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
+                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                       0);
       }
     }
     if (!ki ||
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+        AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Server keys missing, please get them first");
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
-			   I18N("Server keys missing, "
-				"please get them first"));
+                           GWEN_LoggerLevel_Error,
+                           I18N("Server keys missing, "
+                                "please get them first"));
       return GWEN_ERROR_NOT_FOUND;
     }
   }
@@ -1163,22 +1189,22 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
     kid=GWEN_Crypt_Token_Context_GetSignKeyId(cctx);
     if (kid) {
       ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				     0);
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                     0);
     }
     if (!ki ||
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+        AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
       DBG_ERROR(AQHBCI_LOGDOMAIN, "User keys missing, please generate them first");
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
-			   I18N("User keys missing, "
-				"please generate them first"));
+                           GWEN_LoggerLevel_Error,
+                           I18N("User keys missing, "
+                                "please generate them first"));
       return GWEN_ERROR_NOT_FOUND;
     }
   }
@@ -1230,7 +1256,7 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(lbuf, I18N("Key number"));
   GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
   snprintf(numbuf, sizeof(numbuf), "%d",
-	   GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ki));
+           GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ki));
   GWEN_Buffer_AppendString(lbuf, numbuf);
   GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
 
@@ -1238,7 +1264,7 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(lbuf, I18N("Key version"));
   GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
   snprintf(numbuf, sizeof(numbuf), "%d",
-	   GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
+           GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
   GWEN_Buffer_AppendString(lbuf, numbuf);
   GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
 
@@ -1265,7 +1291,7 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
   if (!p || !l) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                           I18N("Bad key"));
+                         I18N("Bad key"));
     return GWEN_ERROR_BAD_DATA;
   }
 
@@ -1306,7 +1332,7 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
   if (!p || !l) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                           I18N("Bad key"));
+                         I18N("Bad key"));
     return GWEN_ERROR_BAD_DATA;
   }
 
@@ -1339,9 +1365,9 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(lbuf, I18N("Hash (RMD-160)"));
   GWEN_Buffer_AppendString(lbuf, "</h4>\n");
   GWEN_Buffer_AppendString(lbuf, "<font face=fixed>\n");
-  rv=AH_Provider__HashRmd160((const uint8_t*)GWEN_Buffer_GetStart(keybuf),
-			     GWEN_Buffer_GetUsedBytes(keybuf),
-			     (uint8_t*)hashbuffer);
+  rv=AH_Provider__HashRmd160((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
+                             GWEN_Buffer_GetUsedBytes(keybuf),
+                             (uint8_t *)hashbuffer);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error hashing (%d)", rv);
     abort();
@@ -1359,9 +1385,9 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(lbuf, I18N("Hash (SHA-256)"));
   GWEN_Buffer_AppendString(lbuf, "</h4>\n");
   GWEN_Buffer_AppendString(lbuf, "<font face=fixed>\n");
-  rv=AH_Provider__HashSha256((const uint8_t*)GWEN_Buffer_GetStart(keybuf),
-			     GWEN_Buffer_GetUsedBytes(keybuf),
-			     (uint8_t*)hashbuffer);
+  rv=AH_Provider__HashSha256((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
+                             GWEN_Buffer_GetUsedBytes(keybuf),
+                             (uint8_t *)hashbuffer);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error hashing (%d)", rv);
     abort();

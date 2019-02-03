@@ -33,7 +33,8 @@ GWEN_INHERIT(AB_IMEXPORTER, AB_IMEXPORTER_YELLOWNET);
 
 
 
-AB_IMEXPORTER *AB_ImExporterYellowNet_new(AB_BANKING *ab){
+AB_IMEXPORTER *AB_ImExporterYellowNet_new(AB_BANKING *ab)
+{
   AB_IMEXPORTER *ie;
   AB_IMEXPORTER_YELLOWNET *ieh;
 
@@ -48,19 +49,20 @@ AB_IMEXPORTER *AB_ImExporterYellowNet_new(AB_BANKING *ab){
 
 
 
-void GWENHYWFAR_CB AB_ImExporterYN_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AB_ImExporterYN_FreeData(void *bp, void *p)
+{
   AB_IMEXPORTER_YELLOWNET *ieh;
 
-  ieh=(AB_IMEXPORTER_YELLOWNET*)p;
+  ieh=(AB_IMEXPORTER_YELLOWNET *)p;
   GWEN_FREE_OBJECT(ieh);
 }
 
 
 
-AB_IMEXPORTER_ACCOUNTINFO*
-AB_ImExporterYN__ReadAccountInfo(AB_IMEXPORTER *ie,
-				 AB_IMEXPORTER_CONTEXT *ctx,
-				 GWEN_XMLNODE *doc) {
+AB_IMEXPORTER_ACCOUNTINFO *AB_ImExporterYN__ReadAccountInfo(AB_IMEXPORTER *ie,
+                                                            AB_IMEXPORTER_CONTEXT *ctx,
+                                                            GWEN_XMLNODE *doc)
+{
   GWEN_XMLNODE *n;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
 
@@ -80,11 +82,11 @@ AB_ImExporterYN__ReadAccountInfo(AB_IMEXPORTER *ie,
       /* account number */
       s=GWEN_XMLNode_GetCharValue(nn, "D_3194", 0);
       if (s)
-	AB_ImExporterAccountInfo_SetAccountNumber(ai, s);
+        AB_ImExporterAccountInfo_SetAccountNumber(ai, s);
       /* IBAN */
       s=GWEN_XMLNode_GetCharValue(nn, "D_3192", 0);
       if (s)
-	AB_ImExporterAccountInfo_SetIban(ai, s);
+        AB_ImExporterAccountInfo_SetIban(ai, s);
       /* currency */
       nnn=GWEN_XMLNode_FindFirstTag(nn, "D_6345", 0, 0);
       if (nnn) {
@@ -102,7 +104,7 @@ AB_ImExporterYN__ReadAccountInfo(AB_IMEXPORTER *ie,
 
   /* owner name */
   n=GWEN_XMLNode_GetNodeByXPath(doc, "SG3[1]/NAD",
-				GWEN_PATH_FLAGS_NAMEMUSTEXIST);
+                                GWEN_PATH_FLAGS_NAMEMUSTEXIST);
   if (n) {
     GWEN_XMLNODE *nn;
 
@@ -112,9 +114,9 @@ AB_ImExporterYN__ReadAccountInfo(AB_IMEXPORTER *ie,
 
       s=GWEN_XMLNode_GetProperty(nn, "Value", 0);
       if (s && strcasecmp(s, "HQ")==0) {
-	nn=GWEN_XMLNode_FindFirstTag(n, "C058", 0, 0);
-	if (nn) {
-	  s=GWEN_XMLNode_GetCharValue(nn, "D_3124", 0);
+        nn=GWEN_XMLNode_FindFirstTag(n, "C058", 0, 0);
+        if (nn) {
+          s=GWEN_XMLNode_GetCharValue(nn, "D_3124", 0);
           if (s && *s) {
             GWEN_BUFFER *xbuf;
 
@@ -134,8 +136,9 @@ AB_ImExporterYN__ReadAccountInfo(AB_IMEXPORTER *ie,
 
 
 AB_VALUE *AB_ImExporterYN__ReadValue(AB_IMEXPORTER *ie,
-				     GWEN_XMLNODE *node,
-				     int value) {
+                                     GWEN_XMLNODE *node,
+                                     int value)
+{
   GWEN_XMLNODE *n;
   AB_VALUE *val=0;
 
@@ -155,9 +158,9 @@ AB_VALUE *AB_ImExporterYN__ReadValue(AB_IMEXPORTER *ie,
       sSign=GWEN_XMLNode_GetCharValue(node, "PF:D_5003", 0);
 
       if (sValue) {
-	val=AB_Value_fromString(sValue);
-	if (val && sSign && strcmp(sSign, "-")==0)
-	  AB_Value_Negate(val);
+        val=AB_Value_fromString(sValue);
+        if (val && sSign && strcmp(sSign, "-")==0)
+          AB_Value_Negate(val);
       }
     }
   }
@@ -167,7 +170,8 @@ AB_VALUE *AB_ImExporterYN__ReadValue(AB_IMEXPORTER *ie,
 
 
 
-GWEN_DATE *AB_ImExporterYN__ReadDate(AB_IMEXPORTER *ie, GWEN_XMLNODE *node, int value) {
+GWEN_DATE *AB_ImExporterYN__ReadDate(AB_IMEXPORTER *ie, GWEN_XMLNODE *node, int value)
+{
   GWEN_XMLNODE *n;
   GWEN_DATE *da=NULL;
 
@@ -185,7 +189,7 @@ GWEN_DATE *AB_ImExporterYN__ReadDate(AB_IMEXPORTER *ie, GWEN_XMLNODE *node, int 
 
       s=GWEN_XMLNode_GetCharValue(n, "D_2380", 0);
       if (s)
-	da=GWEN_Date_fromStringWithTemplate(s, "YYYYMMDD");
+        da=GWEN_Date_fromStringWithTemplate(s, "YYYYMMDD");
     }
   }
 
@@ -196,90 +200,92 @@ GWEN_DATE *AB_ImExporterYN__ReadDate(AB_IMEXPORTER *ie, GWEN_XMLNODE *node, int 
 
 AB_TRANSACTION *AB_ImExporterYN__ReadLNE_LNS(AB_IMEXPORTER *ie,
                                              AB_IMEXPORTER_ACCOUNTINFO *ai,
-                                             GWEN_XMLNODE *node) {
-    AB_TRANSACTION *t;
-    GWEN_XMLNODE *nn;
-    GWEN_DATE *da=NULL;
-    AB_VALUE *val=NULL;
+                                             GWEN_XMLNODE *node)
+{
+  AB_TRANSACTION *t;
+  GWEN_XMLNODE *nn;
+  GWEN_DATE *da=NULL;
+  AB_VALUE *val=NULL;
 
-    t=AB_Transaction_new();
+  t=AB_Transaction_new();
 
-    /* get date */
-    nn=GWEN_XMLNode_FindFirstTag(node, "DTM", 0, 0);
-    if (nn)
-      da=AB_ImExporterYN__ReadDate(ie, nn, 209);
-    AB_Transaction_SetValutaDate(t, da);
-    GWEN_Date_free(da);
-    da=NULL;
+  /* get date */
+  nn=GWEN_XMLNode_FindFirstTag(node, "DTM", 0, 0);
+  if (nn)
+    da=AB_ImExporterYN__ReadDate(ie, nn, 209);
+  AB_Transaction_SetValutaDate(t, da);
+  GWEN_Date_free(da);
+  da=NULL;
 
-    /* read amount */
-    nn=GWEN_XMLNode_FindFirstTag(node, "MOA", 0, 0);
-    if (nn) {
-      /* Gutschrift */
-      val=AB_ImExporterYN__ReadValue(ie, nn, 210);
-      if (val) {
-        if (AB_Value_IsZero(val)) {
-          AB_Value_free(val);
-          val=NULL;
-        }
-      }
-      if (val==NULL) {
-	val=AB_ImExporterYN__ReadValue(ie, nn, 211);
-	if (val)
-	  AB_Value_Negate(val);
+  /* read amount */
+  nn=GWEN_XMLNode_FindFirstTag(node, "MOA", 0, 0);
+  if (nn) {
+    /* Gutschrift */
+    val=AB_ImExporterYN__ReadValue(ie, nn, 210);
+    if (val) {
+      if (AB_Value_IsZero(val)) {
+        AB_Value_free(val);
+        val=NULL;
       }
     }
-    if (val==NULL)
-      val=AB_Value_new();
-    AB_Value_SetCurrency(val, AB_ImExporterAccountInfo_GetCurrency(ai));
-    AB_Transaction_SetValue(t, val);
-    AB_Value_free(val);
-    val=0;
-
-    /* read purpose */
-    nn=GWEN_XMLNode_GetNodeByXPath(node, "FTX/C108",
-				   GWEN_PATH_FLAGS_NAMEMUSTEXIST);
-    if (nn) {
-      GWEN_XMLNODE *nnn;
-
-      nnn=GWEN_XMLNode_FindFirstTag(nn, "D_4440", 0, 0);
-      while(nnn) {
-	GWEN_XMLNODE *nData;
-  
-	nData=GWEN_XMLNode_GetFirstData(nnn);
-        if (nData) {
-          const char *s;
-
-          s=GWEN_XMLNode_GetData(nData);
-          if (s) {
-            GWEN_BUFFER *xbuf;
-
-            xbuf=GWEN_Buffer_new(0, 256, 0, 1);
-            AB_ImExporter_Iso8859_1ToUtf8(s, strlen(s), xbuf);
-            AB_Transaction_AddPurposeLine(t, GWEN_Buffer_GetStart(xbuf));
-            GWEN_Buffer_free(xbuf);
-          }
-        }
-	nnn=GWEN_XMLNode_FindNextTag(nnn, "D_4440", 0, 0);
-      }
+    if (val==NULL) {
+      val=AB_ImExporterYN__ReadValue(ie, nn, 211);
+      if (val)
+        AB_Value_Negate(val);
     }
+  }
+  if (val==NULL)
+    val=AB_Value_new();
+  AB_Value_SetCurrency(val, AB_ImExporterAccountInfo_GetCurrency(ai));
+  AB_Transaction_SetValue(t, val);
+  AB_Value_free(val);
+  val=0;
 
-    return t;
+  /* read purpose */
+  nn=GWEN_XMLNode_GetNodeByXPath(node, "FTX/C108",
+                                 GWEN_PATH_FLAGS_NAMEMUSTEXIST);
+  if (nn) {
+    GWEN_XMLNODE *nnn;
+
+    nnn=GWEN_XMLNode_FindFirstTag(nn, "D_4440", 0, 0);
+    while (nnn) {
+      GWEN_XMLNODE *nData;
+
+      nData=GWEN_XMLNode_GetFirstData(nnn);
+      if (nData) {
+        const char *s;
+
+        s=GWEN_XMLNode_GetData(nData);
+        if (s) {
+          GWEN_BUFFER *xbuf;
+
+          xbuf=GWEN_Buffer_new(0, 256, 0, 1);
+          AB_ImExporter_Iso8859_1ToUtf8(s, strlen(s), xbuf);
+          AB_Transaction_AddPurposeLine(t, GWEN_Buffer_GetStart(xbuf));
+          GWEN_Buffer_free(xbuf);
+        }
+      }
+      nnn=GWEN_XMLNode_FindNextTag(nnn, "D_4440", 0, 0);
+    }
+  }
+
+  return t;
 }
 
 
 
 int AB_ImExporterYN__ReadTransactions(AB_IMEXPORTER *ie,
                                       AB_IMEXPORTER_ACCOUNTINFO *ai,
-				      GWEN_XMLNODE *doc) {
+                                      GWEN_XMLNODE *doc)
+{
   GWEN_XMLNODE *n;
 
   n=GWEN_XMLNode_FindFirstTag(doc, "SG4", 0, 0);
-  while(n) {
+  while (n) {
     GWEN_XMLNODE *nn;
 
     nn=GWEN_XMLNode_GetNodeByXPath(n, "LIN/PF:D_0805",
-				   GWEN_PATH_FLAGS_NAMEMUSTEXIST);
+                                   GWEN_PATH_FLAGS_NAMEMUSTEXIST);
     if (nn) {
       const char *s;
 
@@ -288,20 +294,20 @@ int AB_ImExporterYN__ReadTransactions(AB_IMEXPORTER *ie,
           (strcasecmp(s, "LNE")==0 ||
            strcasecmp(s, "LNS")==0)
          ) {
-	nn = GWEN_XMLNode_FindFirstTag(n, "SG6", 0, 0);
-	while(nn) {
-	  AB_TRANSACTION *t;
-	  const char *s;
+        nn = GWEN_XMLNode_FindFirstTag(n, "SG6", 0, 0);
+        while (nn) {
+          AB_TRANSACTION *t;
+          const char *s;
 
-	  t=AB_ImExporterYN__ReadLNE_LNS(ie, ai, nn);
-	  s=AB_ImExporterAccountInfo_GetAccountNumber(ai);
-	  AB_Transaction_SetLocalAccountNumber(t, s);
-	  s=AB_ImExporterAccountInfo_GetIban(ai);
-	  AB_Transaction_SetLocalIban(t, s);
-	  AB_ImExporterAccountInfo_AddTransaction(ai, t);
+          t=AB_ImExporterYN__ReadLNE_LNS(ie, ai, nn);
+          s=AB_ImExporterAccountInfo_GetAccountNumber(ai);
+          AB_Transaction_SetLocalAccountNumber(t, s);
+          s=AB_ImExporterAccountInfo_GetIban(ai);
+          AB_Transaction_SetLocalIban(t, s);
+          AB_ImExporterAccountInfo_AddTransaction(ai, t);
 
-	  nn=GWEN_XMLNode_FindNextTag(nn, "SG6", 0, 0);
-	}
+          nn=GWEN_XMLNode_FindNextTag(nn, "SG6", 0, 0);
+        }
       }
     }
 
@@ -314,38 +320,39 @@ int AB_ImExporterYN__ReadTransactions(AB_IMEXPORTER *ie,
 
 
 int AB_ImExporterYN__ReadAccountStatus(AB_IMEXPORTER *ie,
-				       AB_IMEXPORTER_ACCOUNTINFO *ai,
-				       GWEN_XMLNODE *doc) {
+                                       AB_IMEXPORTER_ACCOUNTINFO *ai,
+                                       GWEN_XMLNODE *doc)
+{
   GWEN_XMLNODE *n;
 
   n=GWEN_XMLNode_FindFirstTag(doc, "SG4", 0, 0);
-  while(n) {
+  while (n) {
     GWEN_XMLNODE *nn;
 
     nn=GWEN_XMLNode_GetNodeByXPath(n, "LIN/PF:D_0805",
-				   GWEN_PATH_FLAGS_NAMEMUSTEXIST);
+                                   GWEN_PATH_FLAGS_NAMEMUSTEXIST);
     if (nn) {
       const char *s;
 
       s=GWEN_XMLNode_GetProperty(nn, "Value", 0);
       if (s && strcasecmp(s, "LEN")==0) {
-	GWEN_XMLNODE *nnn;
+        GWEN_XMLNODE *nnn;
         GWEN_DATE *dt=0;
         AB_VALUE *val=0;
 
         /* read time */
-	nnn=GWEN_XMLNode_GetNodeByXPath(n, "SG5/DTM", GWEN_PATH_FLAGS_NAMEMUSTEXIST);
-	if (nnn)
+        nnn=GWEN_XMLNode_GetNodeByXPath(n, "SG5/DTM", GWEN_PATH_FLAGS_NAMEMUSTEXIST);
+        if (nnn)
           dt=AB_ImExporterYN__ReadDate(ie, nnn, 202);
 
-	/* read value */
-	nnn=GWEN_XMLNode_GetNodeByXPath(n, "SG5/MOA",
-					GWEN_PATH_FLAGS_NAMEMUSTEXIST);
-	if (nnn)
-	  val=AB_ImExporterYN__ReadValue(ie, nnn, 343);
+        /* read value */
+        nnn=GWEN_XMLNode_GetNodeByXPath(n, "SG5/MOA",
+                                        GWEN_PATH_FLAGS_NAMEMUSTEXIST);
+        if (nnn)
+          val=AB_ImExporterYN__ReadValue(ie, nnn, 343);
 
-	if (val) {
-	  AB_BALANCE *bal;
+        if (val) {
+          AB_BALANCE *bal;
 
           AB_Value_SetCurrency(val, AB_ImExporterAccountInfo_GetCurrency(ai));
           bal=AB_Balance_new();
@@ -354,7 +361,7 @@ int AB_ImExporterYN__ReadAccountStatus(AB_IMEXPORTER *ie,
           AB_Balance_SetValue(bal, val);
           AB_ImExporterAccountInfo_AddBalance(ai, bal);
         }
-	AB_Value_free(val);
+        AB_Value_free(val);
         GWEN_Date_free(dt);
       }
     }
@@ -368,9 +375,10 @@ int AB_ImExporterYN__ReadAccountStatus(AB_IMEXPORTER *ie,
 
 
 int AB_ImExporterYN_Import(AB_IMEXPORTER *ie,
-			   AB_IMEXPORTER_CONTEXT *ctx,
-			   GWEN_SYNCIO *sio,
-			   GWEN_DB_NODE *params){
+                           AB_IMEXPORTER_CONTEXT *ctx,
+                           GWEN_SYNCIO *sio,
+                           GWEN_DB_NODE *params)
+{
   AB_IMEXPORTER_YELLOWNET *ieh;
   //GWEN_DB_NODE *dbSubParams;
   GWEN_XMLNODE *doc;
@@ -383,7 +391,7 @@ int AB_ImExporterYN_Import(AB_IMEXPORTER *ie,
   assert(ieh);
 
 //  dbSubParams=GWEN_DB_GetGroup(params, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-//			       "params");
+//             "params");
 
   doc=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
   ctxml=GWEN_XmlCtxStore_new(doc, GWEN_XML_FLAGS_HANDLE_HEADERS);
@@ -391,7 +399,7 @@ int AB_ImExporterYN_Import(AB_IMEXPORTER *ie,
   GWEN_XmlCtx_free(ctxml);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Could not parse XML stream (%d)", rv);
+              "Could not parse XML stream (%d)", rv);
     GWEN_XMLNode_free(doc);
     return GWEN_ERROR_BAD_DATA;
   }
@@ -404,7 +412,7 @@ int AB_ImExporterYN_Import(AB_IMEXPORTER *ie,
     return GWEN_ERROR_BAD_DATA;
   }
   node=GWEN_XMLNode_FindFirstTag(node, "KONAUS", 0, 0);
-  while(node) {
+  while (node) {
     AB_IMEXPORTER_ACCOUNTINFO *ai;
 
     ai=AB_ImExporterYN__ReadAccountInfo(ie, ctx, node);
@@ -430,7 +438,8 @@ int AB_ImExporterYN_Import(AB_IMEXPORTER *ie,
 
 
 
-int AB_ImExporterYN_CheckFile(AB_IMEXPORTER *ie, const char *fname){
+int AB_ImExporterYN_CheckFile(AB_IMEXPORTER *ie, const char *fname)
+{
   AB_IMEXPORTER_YELLOWNET *ieh;
   GWEN_SYNCIO *sio;
   int rv;
@@ -455,19 +464,19 @@ int AB_ImExporterYN_CheckFile(AB_IMEXPORTER *ie, const char *fname){
   rv=GWEN_SyncIo_Read(sio, tbuf, sizeof(tbuf)-1);
   if (rv<1) {
     DBG_INFO(GWEN_LOGDOMAIN,
-	     "File \"%s\" is not supported by this plugin",
-	     fname);
+             "File \"%s\" is not supported by this plugin",
+             fname);
     GWEN_SyncIo_Disconnect(sio);
     GWEN_SyncIo_free(sio);
     return GWEN_ERROR_BAD_DATA;
   }
   tbuf[rv-1]=0;
-  if (-1!=GWEN_Text_ComparePattern((const char*)tbuf, "*<?xml*", 0) &&
-      -1!=GWEN_Text_ComparePattern((const char*)tbuf, "*<KONAUS>*", 0)) {
+  if (-1!=GWEN_Text_ComparePattern((const char *)tbuf, "*<?xml*", 0) &&
+      -1!=GWEN_Text_ComparePattern((const char *)tbuf, "*<KONAUS>*", 0)) {
     /* match */
     DBG_INFO(GWEN_LOGDOMAIN,
-	     "File \"%s\" is supported by this plugin",
-	     fname);
+             "File \"%s\" is supported by this plugin",
+             fname);
     GWEN_SyncIo_Disconnect(sio);
     GWEN_SyncIo_free(sio);
     return 0;

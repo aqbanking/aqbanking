@@ -26,7 +26,8 @@
 GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_QIF);
 
 
-AB_IMEXPORTER *qif_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
+AB_IMEXPORTER *qif_factory(AB_BANKING *ab, GWEN_DB_NODE *db)
+{
   AB_IMEXPORTER *ie;
   AH_IMEXPORTER_QIF *ieh;
 
@@ -44,7 +45,8 @@ AB_IMEXPORTER *qif_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
 
 
 
-void GWENHYWFAR_CB AH_ImExporterQIF_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_ImExporterQIF_FreeData(void *bp, void *p)
+{
 }
 
 
@@ -55,7 +57,8 @@ int AH_ImExporterQIF__GetDate(AB_IMEXPORTER *ie,
                               const char *paramName,
                               const char *paramDescr,
                               const char *paramContent,
-                              GWEN_TIME **pti) {
+                              GWEN_TIME **pti)
+{
   const char *dateFormat;
   char dfbuf[32];
   int rv;
@@ -73,38 +76,38 @@ int AH_ImExporterQIF__GetDate(AB_IMEXPORTER *ie,
   if (!dateFormat)
     dateFormat=GWEN_DB_GetCharValue(params, "dateFormat", 0, 0);
 
-  while(!ti) {
+  while (!ti) {
     if (!dateFormat) {
       GWEN_BUFFER *tbuf;
       const char *t1a=I18N_NOOP("Please enter the date format for the "
-                               "following item:\n");
+                                "following item:\n");
       const char *t1h=I18N_NOOP("<html>"
                                 "Please enter the date format for the "
                                 "following item:<br>");
       const char *t2a=I18N_NOOP
-        ("The following characters can be used:\n"
-         "- \'Y\': digit of the year\n"
-         "- \'M\': digit of the month\n"
-         "- \'D\': digit of the day\n"
-         "\n"
-         "Examples:\n"
-         " \"YYYY/MM/DD\" (-> 2005/02/25)\n"
-         " \"DD.MM.YYYY\" (-> 25.02.2005)\n"
-         " \"MM/DD/YY\"   (-> 02/25/05)\n");
+                      ("The following characters can be used:\n"
+                       "- \'Y\': digit of the year\n"
+                       "- \'M\': digit of the month\n"
+                       "- \'D\': digit of the day\n"
+                       "\n"
+                       "Examples:\n"
+                       " \"YYYY/MM/DD\" (-> 2005/02/25)\n"
+                       " \"DD.MM.YYYY\" (-> 25.02.2005)\n"
+                       " \"MM/DD/YY\"   (-> 02/25/05)\n");
       const char *t2h=I18N_NOOP
-        ("The following characters can be used:"
-         "<table>"
-         " <tr><td><i>Y</i></td><td>digit of the year</td></tr>\n"
-         " <tr><td><i>M</i></td><td>digit of the month</td></tr>\n"
-         " <tr><td><i>D</i></td><td>digit of the day</td></tr>\n"
-         "</table>\n"
-         "<br>"
-         "Examples:"
-         "<table>"
-         " <tr><td><i>YYYY/MM/DD</i></td><td>(-> 2005/02/25)</td></tr>\n"
-         " <tr><td><i>DD.MM.YYYY</i></td><td>(-> 25.02.2005)</td></tr>\n"
-         " <tr><td><i>MM/DD/YY</i></td><td>(-> 02/25/05)</td></tr>\n"
-         "</html>");
+                      ("The following characters can be used:"
+                       "<table>"
+                       " <tr><td><i>Y</i></td><td>digit of the year</td></tr>\n"
+                       " <tr><td><i>M</i></td><td>digit of the month</td></tr>\n"
+                       " <tr><td><i>D</i></td><td>digit of the day</td></tr>\n"
+                       "</table>\n"
+                       "<br>"
+                       "Examples:"
+                       "<table>"
+                       " <tr><td><i>YYYY/MM/DD</i></td><td>(-> 2005/02/25)</td></tr>\n"
+                       " <tr><td><i>DD.MM.YYYY</i></td><td>(-> 25.02.2005)</td></tr>\n"
+                       " <tr><td><i>MM/DD/YY</i></td><td>(-> 02/25/05)</td></tr>\n"
+                       "</html>");
 
       tbuf=GWEN_Buffer_new(0, 256, 0, 1);
       /* ASCII version */
@@ -123,11 +126,11 @@ int AH_ImExporterQIF__GetDate(AB_IMEXPORTER *ie,
       GWEN_Buffer_AppendString(tbuf, I18N(t2h));
 
       rv=GWEN_Gui_InputBox(0,
-			   first?I18N("Enter Date Format"):
-			   I18N("Enter Correct Date Format"),
-			   GWEN_Buffer_GetStart(tbuf),
-			   dfbuf, 4,  sizeof(dfbuf)-1,
-			   0);
+                           first?I18N("Enter Date Format"):
+                           I18N("Enter Correct Date Format"),
+                           GWEN_Buffer_GetStart(tbuf),
+                           dfbuf, 4,  sizeof(dfbuf)-1,
+                           0);
       GWEN_Buffer_free(tbuf);
       if (rv) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "here");
@@ -160,7 +163,8 @@ int AH_ImExporterQIF__GetValue(AB_IMEXPORTER *ie,
                                const char *paramName,
                                const char *paramDescr,
                                const char *paramContent,
-			       AB_VALUE **pv) {
+                               AB_VALUE **pv)
+{
   const char *s;
   char komma = 0;
   char fixpoint = 0;
@@ -199,42 +203,42 @@ int AH_ImExporterQIF__GetValue(AB_IMEXPORTER *ie,
 
     /* nothing known about fixpoint, elaborate */
     s=paramContent;
-    while(*s) {
+    while (*s) {
       if (*s=='.' || *s==',') {
-	if (*s==',')
-	  komma1Count++;
-	else
-	  komma2Count++;
-	lastKommaChar=*s;
-	lastKommaChar=*s;
-	kommaTypeCount++;
-	lastKommaPos=s;
+        if (*s==',')
+          komma1Count++;
+        else
+          komma2Count++;
+        lastKommaChar=*s;
+        lastKommaChar=*s;
+        kommaTypeCount++;
+        lastKommaPos=s;
       }
       s++;
     } /* while */
-    if ( ( (komma1Count+komma2Count)==1 ) && lastKommaPos) {
+    if (((komma1Count+komma2Count)==1) && lastKommaPos) {
       int i=0;
 
       /* only one komma, check for digits behind it */
       s=lastKommaPos;
       s++;
-      while(*s && isdigit(*s)) {
-	s++;
-	i++;
+      while (*s && isdigit(*s)) {
+        s++;
+        i++;
       }
       if (i<3) {
-	/* most likely got the fixpoint */
-	fixpoint=lastKommaChar;
+        /* most likely got the fixpoint */
+        fixpoint=lastKommaChar;
       }
     }
     else if ((komma1Count==1 && komma2Count>0) ||
-	     (komma2Count==1 && komma1Count>0)) {
+             (komma2Count==1 && komma1Count>0)) {
       if (komma1Count==1) {
-	fixpoint=',';
+        fixpoint=',';
         komma='.';
       }
       else {
-	fixpoint='.';
+        fixpoint='.';
         komma=',';
       }
     }
@@ -242,25 +246,25 @@ int AH_ImExporterQIF__GetValue(AB_IMEXPORTER *ie,
       GWEN_BUFFER *tbuf;
       int rv;
       const char *t1a=
-	I18N_NOOP("The following value could not be parsed: \n");
+        I18N_NOOP("The following value could not be parsed: \n");
       const char *t2a=
-	I18N_NOOP("There are now two possibilities of what character\n"
-		  "represents the decimal fixpoint:\n"
-		  " 1) \'.\' (as in \"123.45\")\n"
-		  " 2) \',\' (as in \"123,45\")\n"
-		  "What is the fixpoint in the value above?");
+        I18N_NOOP("There are now two possibilities of what character\n"
+                  "represents the decimal fixpoint:\n"
+                  " 1) \'.\' (as in \"123.45\")\n"
+                  " 2) \',\' (as in \"123,45\")\n"
+                  "What is the fixpoint in the value above?");
       const char *t1h=
-	I18N_NOOP("<htlm>The following value could not be parsed: <br>");
+        I18N_NOOP("<htlm>The following value could not be parsed: <br>");
       const char *t2h=
-	I18N_NOOP("<br>"
-		  "There are now two possibilities of what character "
-		  "represents the decimal fixpoint: "
+        I18N_NOOP("<br>"
+                  "There are now two possibilities of what character "
+                  "represents the decimal fixpoint: "
                   "<ol>"
-		  " <li>\'.\' (as in \"123.45\")</li>\n"
-		  " <li>\',\' (as in \"123,45\")</li>\n"
-		  "</ol>"
-		  "What is the fixpoint in the value above?"
-		  "</html>");
+                  " <li>\'.\' (as in \"123.45\")</li>\n"
+                  " <li>\',\' (as in \"123,45\")</li>\n"
+                  "</ol>"
+                  "What is the fixpoint in the value above?"
+                  "</html>");
 
       /* this is weird, ask the user */
       tbuf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -271,25 +275,25 @@ int AH_ImExporterQIF__GetValue(AB_IMEXPORTER *ie,
       GWEN_Buffer_AppendString(tbuf, paramContent);
       GWEN_Buffer_AppendString(tbuf, t2h);
       rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN |
-			     GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
-			     GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
-			     I18N("Value Parsing"),
-			     I18N(GWEN_Buffer_GetStart(tbuf)),
-			     I18N("Possibility 1"),
-			     I18N("Possibility 2"),
-			     0,
-			     0);
+                             GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
+                             GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
+                             I18N("Value Parsing"),
+                             I18N(GWEN_Buffer_GetStart(tbuf)),
+                             I18N("Possibility 1"),
+                             I18N("Possibility 2"),
+                             0,
+                             0);
       GWEN_Buffer_free(tbuf);
       if (rv==1) {
-	fixpoint='.';
-	komma=',';
+        fixpoint='.';
+        komma=',';
       }
       else if (rv==2) {
-	fixpoint=',';
-	komma='.';
+        fixpoint=',';
+        komma='.';
       }
       else {
-	DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+        DBG_INFO(AQBANKING_LOGDOMAIN, "here");
         return rv;
       }
     }
@@ -299,34 +303,34 @@ int AH_ImExporterQIF__GetValue(AB_IMEXPORTER *ie,
   numbuf[0]=komma;
   numbuf[1]=0;
   GWEN_DB_SetCharValue(ieqif->dbData, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		       "value/komma", numbuf);
+                       "value/komma", numbuf);
   numbuf[0]=fixpoint;
   GWEN_DB_SetCharValue(ieqif->dbData, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		       "value/fixpoint", numbuf);
+                       "value/fixpoint", numbuf);
 
   i=0;
   s=paramContent;
-  while(*s && i<(int)sizeof(numbuf)) {
+  while (*s && i<(int)sizeof(numbuf)) {
     if (*s==fixpoint)
       numbuf[i++]=',';
     else if (*s=='-' || *s=='+' || *s==isdigit(*s))
       numbuf[i++]=*s;
     else if (*s!=komma) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Bad character in value string");
+                "Bad character in value string");
       return GWEN_ERROR_BAD_DATA;
     }
   }
   if (i>=(int)sizeof(numbuf)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Value string too long");
+              "Value string too long");
     return GWEN_ERROR_BAD_DATA;
   }
   numbuf[i]=0;
 
   if (GWEN_Text_StringToDouble(numbuf, &dval)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Value string does not contain a floating point value.");
+              "Value string does not contain a floating point value.");
     return GWEN_ERROR_BAD_DATA;
   }
 
@@ -338,10 +342,11 @@ int AH_ImExporterQIF__GetValue(AB_IMEXPORTER *ie,
 
 
 int AH_ImExporterQIF__ImportAccount(AB_IMEXPORTER *ie,
-				    AB_IMEXPORTER_CONTEXT *iec,
+                                    AB_IMEXPORTER_CONTEXT *iec,
                                     GWEN_BUFFEREDIO *bio,
                                     GWEN_BUFFER *buf,
-                                    GWEN_DB_NODE *params){
+                                    GWEN_DB_NODE *params)
+{
   AH_IMEXPORTER_QIF *ieqif;
   GWEN_DB_NODE *dbData;
   AB_IMEXPORTER_ACCOUNTINFO *iea = 0;
@@ -369,17 +374,17 @@ int AH_ImExporterQIF__ImportAccount(AB_IMEXPORTER *ie,
 
       err=GWEN_BufferedIO_ReadLine2Buffer(bio, buf);
       if (err) {
-	DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
-	GWEN_DB_Group_free(dbData);
-	return err;
+        DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
+        GWEN_DB_Group_free(dbData);
+        return err;
       }
     }
 
     p=GWEN_Buffer_GetStart(buf);
-    while(isspace(*p))
+    while (isspace(*p))
       p++;
 
-    switch(toupper(*p)) {
+    switch (toupper(*p)) {
     case 'N': /* account name */
       GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS,
                            "name", p+1);
@@ -420,7 +425,7 @@ int AH_ImExporterQIF__ImportAccount(AB_IMEXPORTER *ie,
   s=GWEN_DB_GetCharValue(dbData, "name", 0, 0);
   if (s) {
     iea=AB_ImExporterContext_GetFirstAccountInfo(iec);
-    while(iea) {
+    while (iea) {
       if (strcasecmp(AB_ImExporterAccountInfo_GetAccountName(iea), s)==0)
         break;
       iea=AB_ImExporterContext_GetNextAccountInfo(iec);
@@ -459,9 +464,9 @@ int AH_ImExporterQIF__ImportAccount(AB_IMEXPORTER *ie,
     int rv;
 
     rv=AH_ImExporterQIF__GetDate(ie, params,
-				 "account/statement/dateFormat",
-				 I18N("Account statement date"),
-				 s, &ti);
+                                 "account/statement/dateFormat",
+                                 I18N("Account statement date"),
+                                 s, &ti);
     if (rv) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here");
       GWEN_DB_Group_free(dbData);
@@ -536,7 +541,8 @@ int AH_ImExporterQIF__ImportBank(AB_IMEXPORTER *ie,
                                  AB_IMEXPORTER_CONTEXT *iec,
                                  GWEN_BUFFEREDIO *bio,
                                  GWEN_BUFFER *buf,
-                                 GWEN_DB_NODE *params){
+                                 GWEN_DB_NODE *params)
+{
   AH_IMEXPORTER_QIF *ieqif;
   GWEN_DB_NODE *dbData;
   AB_IMEXPORTER_ACCOUNTINFO *iea;
@@ -567,15 +573,15 @@ int AH_ImExporterQIF__ImportBank(AB_IMEXPORTER *ie,
       if (err) {
         DBG_ERROR_ERR(AQBANKING_LOGDOMAIN, err);
         GWEN_DB_Group_free(dbData);
-	return err;
+        return err;
       }
     }
 
     p=GWEN_Buffer_GetStart(buf);
-    while(isspace(*p))
+    while (isspace(*p))
       p++;
 
-    switch(toupper(*p)) {
+    switch (toupper(*p)) {
     case 'S':
       dbCurrentSplit=GWEN_DB_GetGroup(dbData,
                                       GWEN_PATH_FLAGS_CREATE_GROUP,
@@ -652,7 +658,7 @@ int AH_ImExporterQIF__ImportBank(AB_IMEXPORTER *ie,
     int rv;
 
     rv=AH_ImExporterQIF__GetDate(ie, params,
-				 "account/statement/dateFormat",
+                                 "account/statement/dateFormat",
                                  I18N("Account statement date"),
                                  s, &ti);
     if (rv) {
@@ -713,9 +719,10 @@ int AH_ImExporterQIF__ImportBank(AB_IMEXPORTER *ie,
 
 
 int AH_ImExporterQIF_Import(AB_IMEXPORTER *ie,
-			    AB_IMEXPORTER_CONTEXT *ctx,
-			    GWEN_BUFFEREDIO *bio,
-			    GWEN_DB_NODE *params){
+                            AB_IMEXPORTER_CONTEXT *ctx,
+                            GWEN_BUFFEREDIO *bio,
+                            GWEN_DB_NODE *params)
+{
   GWEN_BUFFER *buf;
   char lastSectionName[256];
   AH_IMEXPORTER_QIF *ieqif;
@@ -726,7 +733,7 @@ int AH_ImExporterQIF_Import(AB_IMEXPORTER *ie,
 
   buf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  while(!GWEN_BufferedIO_CheckEOF(bio)) {
+  while (!GWEN_BufferedIO_CheckEOF(bio)) {
     int err;
     const char *p;
     int rv;
@@ -738,15 +745,15 @@ int AH_ImExporterQIF_Import(AB_IMEXPORTER *ie,
       return err;
     }
     p=GWEN_Buffer_GetStart(buf);
-    while(isspace(*p))
+    while (isspace(*p))
       p++;
 
     if (*p=='!') {
       p++;
       if (strlen(p)>=(int)sizeof(lastSectionName)) {
-	DBG_ERROR(AQBANKING_LOGDOMAIN,
-		  "Buffer too small. Internal error, should not occurr.");
-	abort();
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "Buffer too small. Internal error, should not occurr.");
+        abort();
       }
       strcpy(lastSectionName, p);
       GWEN_Buffer_Reset(buf);
@@ -754,13 +761,13 @@ int AH_ImExporterQIF_Import(AB_IMEXPORTER *ie,
 
     if (lastSectionName[0]) {
       if (strcasecmp(lastSectionName, "Account")==0)
-	rv=AH_ImExporterQIF__ImportAccount(ie, ctx, bio, buf, params);
+        rv=AH_ImExporterQIF__ImportAccount(ie, ctx, bio, buf, params);
       else {
-	DBG_WARN(AQBANKING_LOGDOMAIN,
-		 "Unknown section \"%s\", ignoring",
-		 GWEN_Buffer_GetStart(buf));
-	lastSectionName[0]=0;
-	rv=0; /* ignore this section */
+        DBG_WARN(AQBANKING_LOGDOMAIN,
+                 "Unknown section \"%s\", ignoring",
+                 GWEN_Buffer_GetStart(buf));
+        lastSectionName[0]=0;
+        rv=0; /* ignore this section */
       }
     }
 
@@ -773,9 +780,10 @@ int AH_ImExporterQIF_Import(AB_IMEXPORTER *ie,
 
 
 int AH_ImExporterQIF_Export(AB_IMEXPORTER *ie,
-			    AB_IMEXPORTER_CONTEXT *ctx,
-			    GWEN_BUFFEREDIO *bio,
-                            GWEN_DB_NODE *params){
+                            AB_IMEXPORTER_CONTEXT *ctx,
+                            GWEN_BUFFEREDIO *bio,
+                            GWEN_DB_NODE *params)
+{
   return GWEN_ERROR_NOT_SUPPORTED;
 }
 

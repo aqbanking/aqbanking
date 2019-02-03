@@ -35,8 +35,9 @@ GWEN_INHERIT(AIO_OFX_GROUP, AIO_OFX_GROUP_INVTRAN)
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_INVTRAN_new(const char *groupName,
-				       AIO_OFX_GROUP *parent,
-				       GWEN_XML_CONTEXT *ctx) {
+                                        AIO_OFX_GROUP *parent,
+                                        GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_GROUP *g;
   AIO_OFX_GROUP_INVTRAN *xg;
 
@@ -61,10 +62,11 @@ AIO_OFX_GROUP *AIO_OfxGroup_INVTRAN_new(const char *groupName,
 
 
 GWENHYWFAR_CB
-void AIO_OfxGroup_INVTRAN_FreeData(void *bp, void *p) {
+void AIO_OfxGroup_INVTRAN_FreeData(void *bp, void *p)
+{
   AIO_OFX_GROUP_INVTRAN *xg;
 
-  xg=(AIO_OFX_GROUP_INVTRAN*)p;
+  xg=(AIO_OFX_GROUP_INVTRAN *)p;
   assert(xg);
   free(xg->currentElement);
   AB_Transaction_free(xg->transaction);
@@ -75,7 +77,8 @@ void AIO_OfxGroup_INVTRAN_FreeData(void *bp, void *p) {
 
 
 int AIO_OfxGroup_INVTRAN_StartTag(AIO_OFX_GROUP *g,
-				 const char *tagName) {
+                                  const char *tagName)
+{
   AIO_OFX_GROUP_INVTRAN *xg;
 
   assert(g);
@@ -101,7 +104,8 @@ int AIO_OfxGroup_INVTRAN_StartTag(AIO_OFX_GROUP *g,
 
 
 
-int AIO_OfxGroup_INVTRAN_AddData(AIO_OFX_GROUP *g, const char *data) {
+int AIO_OfxGroup_INVTRAN_AddData(AIO_OFX_GROUP *g, const char *data)
+{
   AIO_OFX_GROUP_INVTRAN *xg;
 
   assert(g);
@@ -126,7 +130,7 @@ int AIO_OfxGroup_INVTRAN_AddData(AIO_OFX_GROUP *g, const char *data) {
                "AddData: %s=[%s]", xg->currentElement, s);
       if (strcasecmp(xg->currentElement, "FITID")==0) {
         AB_Transaction_SetFiId(xg->transaction, s);
-      }  
+      }
       else if (strcasecmp(xg->currentElement, "DTTRADE")==0) {
         GWEN_DATE *da;
 
@@ -169,7 +173,8 @@ int AIO_OfxGroup_INVTRAN_AddData(AIO_OFX_GROUP *g, const char *data) {
 }
 
 
-AB_TRANSACTION *AIO_OfxGroup_INVTRAN_TakeData(const AIO_OFX_GROUP *g){
+AB_TRANSACTION *AIO_OfxGroup_INVTRAN_TakeData(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_INVTRAN *xg;
   AB_TRANSACTION *t;
 

@@ -42,7 +42,7 @@ unsigned int AH_Msg_GetMsgNum(const AH_MSG *hmsg);
 
 unsigned int AH_Msg_GetMsgRef(const AH_MSG *hmsg);
 void AH_Msg_SetMsgRef(AH_MSG *hmsg,
-                           unsigned int i);
+                      unsigned int i);
 unsigned int AH_Msg_GetNodes(AH_MSG *hmsg);
 
 AH_DIALOG *AH_Msg_GetDialog(const AH_MSG *hmsg);

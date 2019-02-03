@@ -45,8 +45,8 @@ struct AH_DDVCARD_DIALOG {
 static void GWENHYWFAR_CB AH_DdvCardDialog_FreeData(void *bp, void *p);
 
 static int GWENHYWFAR_CB AH_DdvCardDialog_SignalHandler(GWEN_DIALOG *dlg,
-							GWEN_DIALOG_EVENTTYPE t,
-							const char *sender);
+                                                        GWEN_DIALOG_EVENTTYPE t,
+                                                        const char *sender);
 
 
 static int AH_DdvCardDialog_FromContext(GWEN_DIALOG *dlg, int i);

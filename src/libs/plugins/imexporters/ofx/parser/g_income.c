@@ -37,8 +37,9 @@ GWEN_INHERIT(AIO_OFX_GROUP, AIO_OFX_GROUP_INCOME)
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_INCOME_new(const char *groupName,
-					     AIO_OFX_GROUP *parent,
-					     GWEN_XML_CONTEXT *ctx) {
+                                       AIO_OFX_GROUP *parent,
+                                       GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_GROUP *g;
   AIO_OFX_GROUP_INCOME *xg;
 
@@ -64,10 +65,11 @@ AIO_OFX_GROUP *AIO_OfxGroup_INCOME_new(const char *groupName,
 
 
 GWENHYWFAR_CB
-void AIO_OfxGroup_INCOME_FreeData(void *bp, void *p) {
+void AIO_OfxGroup_INCOME_FreeData(void *bp, void *p)
+{
   AIO_OFX_GROUP_INCOME *xg;
 
-  xg=(AIO_OFX_GROUP_INCOME*)p;
+  xg=(AIO_OFX_GROUP_INCOME *)p;
   assert(xg);
   AB_Transaction_free(xg->transaction);
 
@@ -78,7 +80,8 @@ void AIO_OfxGroup_INCOME_FreeData(void *bp, void *p) {
 
 
 int AIO_OfxGroup_INCOME_StartTag(AIO_OFX_GROUP *g,
-				 const char *tagName) {
+                                 const char *tagName)
+{
   AIO_OFX_GROUP_INCOME *xg;
   GWEN_XML_CONTEXT *ctx;
   AIO_OFX_GROUP *gNew=NULL;
@@ -119,7 +122,8 @@ int AIO_OfxGroup_INCOME_StartTag(AIO_OFX_GROUP *g,
 
 
 
-int AIO_OfxGroup_INCOME_AddData(AIO_OFX_GROUP *g, const char *data) {
+int AIO_OfxGroup_INCOME_AddData(AIO_OFX_GROUP *g, const char *data)
+{
   AIO_OFX_GROUP_INCOME *xg;
 
   assert(g);
@@ -152,7 +156,7 @@ int AIO_OfxGroup_INCOME_AddData(AIO_OFX_GROUP *g, const char *data) {
           GWEN_Buffer_free(buf);
           return GWEN_ERROR_BAD_DATA;
         }
- 	      AB_Transaction_SetValue(xg->transaction, v);
+        AB_Transaction_SetValue(xg->transaction, v);
         AB_Value_free(v);
       }
       else if (strcasecmp(xg->currentElement, "INCOMETYPE")==0) {
@@ -165,7 +169,7 @@ int AIO_OfxGroup_INCOME_AddData(AIO_OFX_GROUP *g, const char *data) {
         /* TODO */
       }
       else {
-	      DBG_INFO(AQBANKING_LOGDOMAIN,
+        DBG_INFO(AQBANKING_LOGDOMAIN,
                  "Ignoring data for unknown element [%s]",
                  xg->currentElement);
       }
@@ -178,7 +182,8 @@ int AIO_OfxGroup_INCOME_AddData(AIO_OFX_GROUP *g, const char *data) {
 
 
 
-int AIO_OfxGroup_INCOME_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
+int AIO_OfxGroup_INCOME_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg)
+{
   AIO_OFX_GROUP_INCOME *xg;
   const char *s;
   GWEN_XML_CONTEXT *ctx;
@@ -191,7 +196,7 @@ int AIO_OfxGroup_INCOME_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
   assert(ctx);
 
   s=AIO_OfxGroup_GetGroupName(sg);
-  if (strcasecmp(s, "INVTRAN")==0) {    
+  if (strcasecmp(s, "INVTRAN")==0) {
     AB_TRANSACTION *t;
 
     t=AIO_OfxGroup_INVTRAN_TakeData(sg);
@@ -223,7 +228,8 @@ int AIO_OfxGroup_INCOME_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
 
 
 
-AB_TRANSACTION *AIO_OfxGroup_INCOME_TakeTransaction(const AIO_OFX_GROUP *g){
+AB_TRANSACTION *AIO_OfxGroup_INCOME_TakeTransaction(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_INCOME *xg;
   AB_TRANSACTION *t;
 

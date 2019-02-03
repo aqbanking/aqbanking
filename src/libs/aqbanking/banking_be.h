@@ -103,7 +103,8 @@ int AB_Banking_EndUseProvider(AB_BANKING *ab, AB_PROVIDER *pro);
  * @param fileNAme to look for
  * @param fullPathBuffer buffer to receive the complete path to the given file (if found)
  */
-int AB_Banking_FindDataFileForImExporter(AB_BANKING *ab, const char *imExpName, const char *fileName, GWEN_BUFFER *fullPathBuffer);
+int AB_Banking_FindDataFileForImExporter(AB_BANKING *ab, const char *imExpName, const char *fileName,
+                                         GWEN_BUFFER *fullPathBuffer);
 
 
 /**

@@ -28,7 +28,8 @@ GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_XMLDB);
 
 
 
-AB_IMEXPORTER *AB_ImExporterXMLDB_new(AB_BANKING *ab){
+AB_IMEXPORTER *AB_ImExporterXMLDB_new(AB_BANKING *ab)
+{
   AB_IMEXPORTER *ie;
   AH_IMEXPORTER_XMLDB *ieh;
 
@@ -52,10 +53,11 @@ AB_IMEXPORTER *AB_ImExporterXMLDB_new(AB_BANKING *ab){
 
 
 
-void GWENHYWFAR_CB AH_ImExporterXMLDB_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_ImExporterXMLDB_FreeData(void *bp, void *p)
+{
   AH_IMEXPORTER_XMLDB *ieh;
 
-  ieh=(AH_IMEXPORTER_XMLDB*)p;
+  ieh=(AH_IMEXPORTER_XMLDB *)p;
   GWEN_DBIO_free(ieh->dbio);
   GWEN_FREE_OBJECT(ieh);
 }
@@ -65,7 +67,8 @@ void GWENHYWFAR_CB AH_ImExporterXMLDB_FreeData(void *bp, void *p){
 int AH_ImExporterXMLDB_Import(AB_IMEXPORTER *ie,
                               AB_IMEXPORTER_CONTEXT *ctx,
                               GWEN_SYNCIO *sio,
-			      GWEN_DB_NODE *params){
+                              GWEN_DB_NODE *params)
+{
   AH_IMEXPORTER_XMLDB *ieh;
   GWEN_DB_NODE *dbData;
   GWEN_DB_NODE *dbSubParams;
@@ -77,21 +80,21 @@ int AH_ImExporterXMLDB_Import(AB_IMEXPORTER *ie,
   assert(ieh->dbio);
 
   dbSubParams=GWEN_DB_GetGroup(params, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-			       "params");
+                               "params");
   dbData=GWEN_DB_Group_new("transactions");
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
-		       I18N("Reading file..."));
+                       I18N("Reading file..."));
 
   rv=GWEN_DBIO_Import(ieh->dbio,
-		      sio,
+                      sio,
                       dbData,
-		      dbSubParams,
-		      GWEN_DB_FLAGS_DEFAULT |
-		      GWEN_PATH_FLAGS_CREATE_GROUP);
+                      dbSubParams,
+                      GWEN_DB_FLAGS_DEFAULT |
+                      GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error importing data");
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-			 I18N("Error importing data"));
+                         I18N("Error importing data"));
     GWEN_DB_Group_free(dbData);
     return GWEN_ERROR_BAD_DATA;
   }
@@ -109,8 +112,9 @@ int AH_ImExporterXMLDB_Import(AB_IMEXPORTER *ie,
 
 int AH_ImExporterXMLDB_Export(AB_IMEXPORTER *ie,
                               AB_IMEXPORTER_CONTEXT *ctx,
-			      GWEN_SYNCIO *sio,
-			      GWEN_DB_NODE *params){
+                              GWEN_SYNCIO *sio,
+                              GWEN_DB_NODE *params)
+{
   AH_IMEXPORTER_XMLDB *ieh;
   GWEN_DB_NODE *dbSubParams;
   GWEN_DB_NODE *dbData;
@@ -129,21 +133,21 @@ int AH_ImExporterXMLDB_Export(AB_IMEXPORTER *ie,
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error exporting data");
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                          I18N("Error exporting data"));
+                         I18N("Error exporting data"));
     GWEN_DB_Group_free(dbData);
     return rv;
   }
 
   rv=GWEN_DBIO_Export(ieh->dbio,
-		      sio,
+                      sio,
                       dbData,
-		      dbSubParams,
-		      GWEN_DB_FLAGS_DEFAULT |
-		      GWEN_PATH_FLAGS_CREATE_GROUP);
+                      dbSubParams,
+                      GWEN_DB_FLAGS_DEFAULT |
+                      GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error exporting data");
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                          I18N("Error exporting data"));
+                         I18N("Error exporting data"));
     GWEN_DB_Group_free(dbData);
     return GWEN_ERROR_GENERIC;
   }
@@ -154,7 +158,8 @@ int AH_ImExporterXMLDB_Export(AB_IMEXPORTER *ie,
 
 
 
-int AH_ImExporterXMLDB_CheckFile(AB_IMEXPORTER *ie, const char *fname){
+int AH_ImExporterXMLDB_CheckFile(AB_IMEXPORTER *ie, const char *fname)
+{
   AH_IMEXPORTER_XMLDB *ieh;
   GWEN_DBIO_CHECKFILE_RESULT rv;
 
@@ -164,11 +169,15 @@ int AH_ImExporterXMLDB_CheckFile(AB_IMEXPORTER *ie, const char *fname){
   assert(ieh->dbio);
 
   rv=GWEN_DBIO_CheckFile(ieh->dbio, fname);
-  switch(rv) {
-  case GWEN_DBIO_CheckFileResultOk:      return 0;
-  case GWEN_DBIO_CheckFileResultNotOk:   return GWEN_ERROR_BAD_DATA;
-  case GWEN_DBIO_CheckFileResultUnknown: return AB_ERROR_INDIFFERENT;
-  default:                               return GWEN_ERROR_GENERIC;
+  switch (rv) {
+  case GWEN_DBIO_CheckFileResultOk:
+    return 0;
+  case GWEN_DBIO_CheckFileResultNotOk:
+    return GWEN_ERROR_BAD_DATA;
+  case GWEN_DBIO_CheckFileResultUnknown:
+    return AB_ERROR_INDIFFERENT;
+  default:
+    return GWEN_ERROR_GENERIC;
   } /* switch */
 }
 

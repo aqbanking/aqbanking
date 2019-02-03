@@ -30,7 +30,7 @@ struct AHB_SWIFT_TAG {
 
 
 AHB_SWIFT_TAG *AHB_SWIFT_Tag_new(const char *id,
-				 const char *content);
+                                 const char *content);
 void AHB_SWIFT_Tag_free(AHB_SWIFT_TAG *tg);
 
 
@@ -54,26 +54,26 @@ int AHB_SWIFT_ReadLine(GWEN_FAST_BUFFER *fb,
                        unsigned int s);
 
 int AHB_SWIFT__ReadDocument(GWEN_FAST_BUFFER *fb,
-			    AHB_SWIFT_TAG_LIST *tl,
+                            AHB_SWIFT_TAG_LIST *tl,
                             unsigned int maxTags);
 
 
 int AHB_SWIFT_ReadDocument(GWEN_FAST_BUFFER *fb,
-			   AHB_SWIFT_TAG_LIST *tl,
-			   unsigned int maxTags);
+                           AHB_SWIFT_TAG_LIST *tl,
+                           unsigned int maxTags);
 
 
 int AHB_SWIFT_Export(GWEN_DBIO *dbio,
-		     GWEN_SYNCIO *sio,
-		     GWEN_DB_NODE *data,
-		     GWEN_DB_NODE *cfg,
-		     uint32_t flags);
+                     GWEN_SYNCIO *sio,
+                     GWEN_DB_NODE *data,
+                     GWEN_DB_NODE *cfg,
+                     uint32_t flags);
 
 int AHB_SWIFT_Import(GWEN_DBIO *dbio,
-		     GWEN_SYNCIO *sio,
-		     GWEN_DB_NODE *data,
-		     GWEN_DB_NODE *cfg,
-		     uint32_t flags);
+                     GWEN_SYNCIO *sio,
+                     GWEN_DB_NODE *data,
+                     GWEN_DB_NODE *cfg,
+                     uint32_t flags);
 
 GWEN_DBIO_CHECKFILE_RESULT AHB_SWIFT_CheckFile(GWEN_DBIO *dbio,
                                                const char *fname);

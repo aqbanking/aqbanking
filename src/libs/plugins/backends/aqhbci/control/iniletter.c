@@ -27,7 +27,8 @@
 int AH_Control_IniLetter(AB_PROVIDER *pro,
                          GWEN_DB_NODE *dbArgs,
                          int argc,
-                         char **argv) {
+                         char **argv)
+{
   GWEN_DB_NODE *db;
   AB_USER *u=0;
   uint32_t uid;
@@ -35,62 +36,62 @@ int AH_Control_IniLetter(AB_PROVIDER *pro,
   int bankKey;
   int html;
   int variant;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "userId",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "u",                          /* short option */
-    "user",                       /* long option */
-    "Specify the unique user id",    /* short description */
-    "Specify the unique user id"     /* long description */
-  },
-  {
-    0, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "bankKey",                    /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "B",                          /* short option */
-    "bankkey",                    /* long option */
-    "Show iniletter of bank keys",/* short description */
-    "Show iniletter of bank keys" /* long description */
-  },
-  {
-    0, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "html",                       /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    NULL,                          /* short option */
-    "html",                    /* long option */
-    "HTML output",/* short description */
-    "HTML output" /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "variant",                    /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                          /* short option */
-    "variant",                    /* long option */
-    "Choose the variant of the iniletter (0, 1, 2)",/* short description */
-    "Choose the variant of the iniletter (0 for auto, 1 for RDH1, 2 for RDH2 and above)"
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "userId",                     /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "u",                          /* short option */
+      "user",                       /* long option */
+      "Specify the unique user id",    /* short description */
+      "Specify the unique user id"     /* long description */
+    },
+    {
+      0, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "bankKey",                    /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "B",                          /* short option */
+      "bankkey",                    /* long option */
+      "Show iniletter of bank keys",/* short description */
+      "Show iniletter of bank keys" /* long description */
+    },
+    {
+      0, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "html",                       /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      NULL,                          /* short option */
+      "html",                    /* long option */
+      "HTML output",/* short description */
+      "HTML output" /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "variant",                    /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                          /* short option */
+      "variant",                    /* long option */
+      "Choose the variant of the iniletter (0, 1, 2)",/* short description */
+      "Choose the variant of the iniletter (0 for auto, 1 for RDH1, 2 for RDH2 and above)"
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");

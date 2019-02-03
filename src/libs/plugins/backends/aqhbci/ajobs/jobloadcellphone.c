@@ -35,7 +35,8 @@ GWEN_INHERIT(AH_JOB, AH_JOB_LOADCELLPHONE);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_LoadCellPhone_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_LoadCellPhone_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
+{
   AH_JOB *j;
   AH_JOB_LOADCELLPHONE *aj;
   GWEN_DB_NODE *dbArgs;
@@ -58,7 +59,7 @@ AH_JOB *AH_Job_LoadCellPhone_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *accou
   dbArgs=AH_Job_GetArguments(j);
   assert(dbArgs);
   GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
-		       "allAccounts", "N");
+                       "allAccounts", "N");
 
   return j;
 }
@@ -66,10 +67,11 @@ AH_JOB *AH_Job_LoadCellPhone_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *accou
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void GWENHYWFAR_CB AH_Job_LoadCellPhone_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_Job_LoadCellPhone_FreeData(void *bp, void *p)
+{
   AH_JOB_LOADCELLPHONE *aj;
 
-  aj=(AH_JOB_LOADCELLPHONE*)p;
+  aj=(AH_JOB_LOADCELLPHONE *)p;
   GWEN_FREE_OBJECT(aj);
 }
 
@@ -77,7 +79,8 @@ void GWENHYWFAR_CB AH_Job_LoadCellPhone_FreeData(void *bp, void *p){
 
 #if 0
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_LoadCellPhone_ExchangeParams(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx) {
+int AH_Job_LoadCellPhone_ExchangeParams(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AH_JOB_LOADCELLPHONE *aj;
   GWEN_DB_NODE *dbParams;
   GWEN_DB_NODE *dbProduct;
@@ -126,11 +129,11 @@ int AH_Job_LoadCellPhone_ExchangeParams(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CON
 
       v=AB_Value_fromString(s);
       if (v==NULL) {
-	DBG_INFO(GWEN_LOGDOMAIN, "Bad minimum value [%s]", s);
+        DBG_INFO(GWEN_LOGDOMAIN, "Bad minimum value [%s]", s);
       }
       else {
-	AB_CellPhoneProduct_SetMinimumValue(cp, v);
-	AB_Value_free(v);
+        AB_CellPhoneProduct_SetMinimumValue(cp, v);
+        AB_Value_free(v);
       }
     }
 
@@ -140,11 +143,11 @@ int AH_Job_LoadCellPhone_ExchangeParams(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CON
 
       v=AB_Value_fromString(s);
       if (v==NULL) {
-	DBG_INFO(GWEN_LOGDOMAIN, "Bad maximum value [%s]", s);
+        DBG_INFO(GWEN_LOGDOMAIN, "Bad maximum value [%s]", s);
       }
       else {
-	AB_CellPhoneProduct_SetMaximumValue(cp, v);
-	AB_Value_free(v);
+        AB_CellPhoneProduct_SetMaximumValue(cp, v);
+        AB_Value_free(v);
       }
     }
 
@@ -158,27 +161,27 @@ int AH_Job_LoadCellPhone_ExchangeParams(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CON
       vl=AB_CellPhoneProduct_GetValues(cp);
       ns=strdup(s);
       p=ns;
-      while(*p) {
-	char *p0;
+      while (*p) {
+        char *p0;
 
-	p0=p;
-	p=strchr(p0, ';');
-	if (p)
-	  *p=0;
-	if (*p0) {
-	  AB_VALUE *v;
+        p0=p;
+        p=strchr(p0, ';');
+        if (p)
+          *p=0;
+        if (*p0) {
+          AB_VALUE *v;
 
-	  v=AB_Value_fromString(p0);
-	  if (v) {
-	    AB_Value_List_Add(v, vl);
-	  }
-	  else {
-	    DBG_INFO(GWEN_LOGDOMAIN, "Bad value [%s]", p0);
-	  }
-	}
-	if (p)
-	  p++;
-	else
+          v=AB_Value_fromString(p0);
+          if (v) {
+            AB_Value_List_Add(v, vl);
+          }
+          else {
+            DBG_INFO(GWEN_LOGDOMAIN, "Bad value [%s]", p0);
+          }
+        }
+        if (p)
+          p++;
+        else
           break;
       }
     }
@@ -195,7 +198,8 @@ int AH_Job_LoadCellPhone_ExchangeParams(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CON
 
 # if 0
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_LoadCellPhone_ExchangeArgs(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx) {
+int AH_Job_LoadCellPhone_ExchangeArgs(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AH_JOB_LOADCELLPHONE *aj;
   GWEN_DB_NODE *dbArgs;
   const AB_CELLPHONE_PRODUCT *cp;
@@ -249,66 +253,66 @@ int AH_Job_LoadCellPhone_ExchangeArgs(AH_JOB *j, AB_JOB *bj, AB_IMEXPORTER_CONTE
     char *p;
     const char *s;
     int l;
-  
+
     dbV=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "value");
     assert(dbV);
-  
+
     nbuf=GWEN_Buffer_new(0, 32, 0, 1);
     if (GWEN_Text_DoubleToBuffer(AB_Value_GetValueAsDouble(v),
-				 nbuf)) {
+                                 nbuf)) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Buffer overflow");
       GWEN_Buffer_free(nbuf);
       abort();
     }
-  
+
     l=GWEN_Buffer_GetUsedBytes(nbuf);
     if (!l) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Error in conversion");
       GWEN_Buffer_free(nbuf);
       abort();
     }
-  
+
     /* replace "C" comma with "DE" comma, remove thousand's comma */
     p=GWEN_Buffer_GetStart(nbuf);
     s=p;
-    while(*s) {
+    while (*s) {
       if (*s=='.') {
-	*p=',';
-	p++;
+        *p=',';
+        p++;
       }
       else if (*s!=',') {
-	*p=*s;
-	p++;
+        *p=*s;
+        p++;
       }
       s++;
     } /* while */
     *p=0;
-  
+
     if (strchr(GWEN_Buffer_GetStart(nbuf), ',')) {
       /* kill all trailing '0' behind the comma */
       p=GWEN_Buffer_GetStart(nbuf)+l;
-      while(l--) {
-	--p;
-	if (*p=='0')
-	  *p=0;
-	else
-	  break;
+      while (l--) {
+        --p;
+        if (*p=='0')
+          *p=0;
+        else
+          break;
       }
     }
     else
       GWEN_Buffer_AppendString(nbuf, ",");
-  
+
     /* store value */
     GWEN_DB_SetCharValue(dbV, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "value",
-			 GWEN_Buffer_GetStart(nbuf));
+                         "value",
+                         GWEN_Buffer_GetStart(nbuf));
     GWEN_Buffer_free(nbuf);
-  
+
     s=AB_Value_GetCurrency(v);
     if (!s)
       s="EUR";
     GWEN_DB_SetCharValue(dbV, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "currency", s);
+                         "currency", s);
   }
 
   return 0;

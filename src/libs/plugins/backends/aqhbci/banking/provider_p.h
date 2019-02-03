@@ -54,33 +54,36 @@ static int AH_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_I
 
 
 static int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
-					AB_USER *u,
-					int useBankKey,
-					GWEN_BUFFER *lbuf,
-					int nounmount);
+                                        AB_USER *u,
+                                        int useBankKey,
+                                        GWEN_BUFFER *lbuf,
+                                        int nounmount);
 static int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
-					 AB_USER *u,
-					 int useBankKey,
-					 GWEN_BUFFER *lbuf,
-					 int nounmount);
+                                         AB_USER *u,
+                                         int useBankKey,
+                                         GWEN_BUFFER *lbuf,
+                                         int nounmount);
 
 static int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
-					AB_USER *u,
-					int useBankKey,
-					GWEN_BUFFER *lbuf,
-					int nounmount);
+                                        AB_USER *u,
+                                        int useBankKey,
+                                        GWEN_BUFFER *lbuf,
+                                        int nounmount);
 static int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
-					 AB_USER *u,
-					 int useBankKey,
-					 GWEN_BUFFER *lbuf,
-					 int nounmount);
+                                         AB_USER *u,
+                                         int useBankKey,
+                                         GWEN_BUFFER *lbuf,
+                                         int nounmount);
 
 static int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, int cmd, AH_JOB **pHbciJob);
-static int AH_Provider__GetMultiHbciJob(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_USER *mu, AB_ACCOUNT *ma, int cmd, AH_JOB **pHbciJob);
+static int AH_Provider__GetMultiHbciJob(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_USER *mu, AB_ACCOUNT *ma, int cmd,
+                                        AH_JOB **pHbciJob);
 
 
-static int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, AB_IMEXPORTER_CONTEXT *ctx, AH_OUTBOX *outbox);
-static int AH_Provider__AddCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *t, AH_OUTBOX *outbox);
+static int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, AB_IMEXPORTER_CONTEXT *ctx,
+                                            AH_OUTBOX *outbox);
+static int AH_Provider__AddCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *t,
+                                           AH_OUTBOX *outbox);
 
 static int AH_Provider__SampleResults(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_IMEXPORTER_CONTEXT *ctx);
 
@@ -93,7 +96,8 @@ static int AH_Provider__SampleResults(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_IM
  * ***************************************************************************************************************/
 
 
-static int AH_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION_LIMITS_LIST *tll);
+static int AH_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a,
+                                                          AB_TRANSACTION_LIMITS_LIST *tll);
 static int AH_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doLock);
 
 

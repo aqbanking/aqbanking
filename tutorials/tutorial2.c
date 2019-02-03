@@ -35,7 +35,8 @@
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   AB_BANKING *ab;
   AB_ACCOUNT_SPEC_LIST *accs=NULL;
   int rv;
@@ -72,7 +73,7 @@ int main(int argc, char **argv) {
 
     /* return the first entry of the account spec list */
     as=AB_AccountSpec_List_First(accs);
-    while(as) {
+    while (as) {
       fprintf(stderr,
               "Account: %s %s (%s) [%s]\n",
               AB_AccountSpec_GetBankCode(as),

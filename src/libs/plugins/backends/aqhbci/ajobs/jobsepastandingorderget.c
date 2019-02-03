@@ -35,7 +35,8 @@
 
 
 
-AH_JOB *AH_Job_SepaStandingOrderGet_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_SepaStandingOrderGet_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
+{
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
 
@@ -61,7 +62,8 @@ AH_JOB *AH_Job_SepaStandingOrderGet_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT
 
 
 
-int AH_Job_SepaStandingOrderGet_Prepare(AH_JOB *j) {
+int AH_Job_SepaStandingOrderGet_Prepare(AH_JOB *j)
+{
   GWEN_DB_NODE *dbArgs;
   GWEN_DB_NODE *profile;
 
@@ -82,8 +84,8 @@ int AH_Job_SepaStandingOrderGet_Prepare(AH_JOB *j) {
     if (s) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Using SEPA format \"%s\"", s);
       GWEN_DB_SetCharValue(dbArgs,
-			   GWEN_DB_FLAGS_OVERWRITE_VARS,
-			   "SupportedSepaFormats/Format",
+                           GWEN_DB_FLAGS_OVERWRITE_VARS,
+                           "SupportedSepaFormats/Format",
                            s);
     }
     else {
@@ -97,7 +99,8 @@ int AH_Job_SepaStandingOrderGet_Prepare(AH_JOB *j) {
 
 
 
-int AH_Job_SepaStandingOrdersGet_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_SepaStandingOrdersGet_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+{
   const char *responseName;
   int rv;
   AB_ACCOUNT *a;
@@ -127,7 +130,7 @@ int AH_Job_SepaStandingOrdersGet_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
     /* search for "Transactions" */
     dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
-    while(dbCurr) {
+    while (dbCurr) {
       GWEN_DB_NODE *dbXA;
 
       rv=AH_Job_CheckEncryption(j, dbCurr);
@@ -164,7 +167,8 @@ int AH_Job_SepaStandingOrdersGet_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
 
 
-AB_TRANSACTION *_readTransactionFromResponse(AH_JOB *j, GWEN_DB_NODE *dbXA){
+AB_TRANSACTION *_readTransactionFromResponse(AH_JOB *j, GWEN_DB_NODE *dbXA)
+{
   const char *fiId;
   const char *descriptor;
 
@@ -230,7 +234,8 @@ AB_TRANSACTION *_readTransactionFromResponse(AH_JOB *j, GWEN_DB_NODE *dbXA){
 
 
 
-AB_TRANSACTION *_readSto(AH_JOB *j, const char *docType, const uint8_t *ptr, uint32_t len) {
+AB_TRANSACTION *_readSto(AH_JOB *j, const char *docType, const uint8_t *ptr, uint32_t len)
+{
   AB_PROVIDER *pro;
   AB_IMEXPORTER_CONTEXT *tempContext;
   AB_IMEXPORTER_ACCOUNTINFO *tempAccountInfo;
@@ -259,7 +264,7 @@ AB_TRANSACTION *_readSto(AH_JOB *j, const char *docType, const uint8_t *ptr, uin
 
   /* return first transaction from temporary context (only contains ONE transaction) */
   tempAccountInfo=AB_ImExporterContext_GetFirstAccountInfo(tempContext);
-  if(tempAccountInfo) {
+  if (tempAccountInfo) {
     AB_TRANSACTION *t;
 
     t=AB_ImExporterAccountInfo_GetFirstTransaction(tempAccountInfo, 0, 0);
@@ -277,7 +282,8 @@ AB_TRANSACTION *_readSto(AH_JOB *j, const char *docType, const uint8_t *ptr, uin
 
 
 
-AB_TRANSACTION_PERIOD _getPeriod(const char *s) {
+AB_TRANSACTION_PERIOD _getPeriod(const char *s)
+{
   if (s && *s) {
     if (strcasecmp(s, "M")==0)
       return AB_Transaction_PeriodMonthly;

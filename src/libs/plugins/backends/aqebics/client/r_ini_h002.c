@@ -18,8 +18,9 @@
 
 
 static int EBC_Provider_XchgIniRequest_H002(AB_PROVIDER *pro,
-					    GWEN_HTTP_SESSION *sess,
-					    AB_USER *u) {
+                                            GWEN_HTTP_SESSION *sess,
+                                            AB_USER *u)
+{
   EBC_PROVIDER *dp;
   int rv;
   GWEN_CRYPT_TOKEN *ct;
@@ -58,22 +59,22 @@ static int EBC_Provider_XchgIniRequest_H002(AB_PROVIDER *pro,
   kid=GWEN_Crypt_Token_Context_GetSignKeyId(ctx);
   if (kid) {
     signKeyInfo=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-					    GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-					    GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-					    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-					    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-					    0);
+                                            GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                            GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                            GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                            GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                            0);
     if (signKeyInfo==NULL) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Sign key info not found on crypt token");
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
-			   I18N("Sign key info not found on crypt token"));
+                           GWEN_LoggerLevel_Error,
+                           I18N("Sign key info not found on crypt token"));
       return GWEN_ERROR_NOT_FOUND;
     }
   }
 
   signVersion=EBC_User_GetSignVersion(u);
-  if (! (signVersion && *signVersion))
+  if (!(signVersion && *signVersion))
     signVersion="A004";
 
   if (strcasecmp(signVersion, "A004")==0) {
@@ -89,20 +90,20 @@ static int EBC_Provider_XchgIniRequest_H002(AB_PROVIDER *pro,
     /* zip order */
     bufZip=GWEN_Buffer_new(0, 512, 0, 1);
     if (EB_Zip_Deflate(GWEN_Buffer_GetStart(bufKey),
-		       GWEN_Buffer_GetUsedBytes(bufKey),
-		       bufZip)) {
+                       GWEN_Buffer_GetUsedBytes(bufKey),
+                       bufZip)) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Unable to zip key data");
       GWEN_Buffer_free(bufZip);
       GWEN_Buffer_free(bufKey);
       return GWEN_ERROR_GENERIC;
     }
     GWEN_Buffer_free(bufKey);
-  
+
     /* base64 encode for order */
     bufB64=GWEN_Buffer_new(0, 800, 0, 1);
-    if (GWEN_Base64_Encode((const unsigned char*)GWEN_Buffer_GetStart(bufZip),
-			   GWEN_Buffer_GetUsedBytes(bufZip),
-			   bufB64, 0)) {
+    if (GWEN_Base64_Encode((const unsigned char *)GWEN_Buffer_GetStart(bufZip),
+                           GWEN_Buffer_GetUsedBytes(bufZip),
+                           bufB64, 0)) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Error encoding key");
       GWEN_Buffer_free(bufB64);
       GWEN_Buffer_free(bufZip);
@@ -121,21 +122,21 @@ static int EBC_Provider_XchgIniRequest_H002(AB_PROVIDER *pro,
   root_node=xmlNewNode(NULL, BAD_CAST "ebicsUnsecuredRequest");
   xmlDocSetRootElement(doc, root_node);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.ebics.org/H002",
-	      NULL);
+              BAD_CAST "http://www.ebics.org/H002",
+              NULL);
   assert(ns);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
-	      BAD_CAST "ds");
+              BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
+              BAD_CAST "ds");
   assert(ns);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
-	      BAD_CAST "xsi");
+              BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
+              BAD_CAST "xsi");
   xmlNewNsProp(root_node,
-	       ns,
-	       BAD_CAST "schemaLocation", /* xsi:schemaLocation */
-	       BAD_CAST "http://www.ebics.org/H002 "
-	       "http://www.ebics.org/H002/ebics_keymgmt_request.xsd");
+               ns,
+               BAD_CAST "schemaLocation", /* xsi:schemaLocation */
+               BAD_CAST "http://www.ebics.org/H002 "
+               "http://www.ebics.org/H002/ebics_keymgmt_request.xsd");
   xmlNewProp(root_node, BAD_CAST "Version", BAD_CAST "H002");
   xmlNewProp(root_node, BAD_CAST "Revision", BAD_CAST "1");
 
@@ -156,7 +157,7 @@ static int EBC_Provider_XchgIniRequest_H002(AB_PROVIDER *pro,
   if (s)
     EB_Msg_SetCharValue(msg, "header/static/PartnerID", s);
   EB_Msg_SetCharValue(msg, "header/static/UserID",
-		      AB_User_GetUserId(u));
+                      AB_User_GetUserId(u));
   EB_Msg_SetCharValue(msg, "header/static/OrderDetails/OrderType", "INI");
   tbuf=GWEN_Buffer_new(0, 16, 0, 1);
   rv=EBC_Provider_Generate_OrderId(pro, tbuf);
@@ -168,14 +169,14 @@ static int EBC_Provider_XchgIniRequest_H002(AB_PROVIDER *pro,
     return rv;
   }
   EB_Msg_SetCharValue(msg, "header/static/OrderDetails/OrderID",
-		     GWEN_Buffer_GetStart(tbuf));
+                      GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_free(tbuf);
   EB_Msg_SetCharValue(msg,
-		      "header/static/OrderDetails/OrderAttribute",
-		      "DZNNN");
+                      "header/static/OrderDetails/OrderAttribute",
+                      "DZNNN");
   EB_Msg_SetCharValue(msg, "header/static/SecurityMedium", "0000");
   EB_Msg_SetCharValue(msg, "body/DataTransfer/OrderData",
-		      GWEN_Buffer_GetStart(bufB64));
+                      GWEN_Buffer_GetStart(bufB64));
   GWEN_Buffer_free(bufB64);
 
   /* exchange requests */
@@ -203,14 +204,14 @@ static int EBC_Provider_XchgIniRequest_H002(AB_PROVIDER *pro,
   rc=EB_Msg_GetBodyResultCode(mRsp);
   if (rc) {
     if ((rc & 0xff0000)==0x090000 ||
-	(rc & 0xff0000)==0x060000) {
+        (rc & 0xff0000)==0x060000) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Error response: (%06x)", rc);
       EB_Msg_free(mRsp);
       if ((rc & 0xfff00)==0x091300 ||
-	  (rc & 0xfff00)==0x091200)
-	return AB_ERROR_SECURITY;
+          (rc & 0xfff00)==0x091200)
+        return AB_ERROR_SECURITY;
       else
-	return GWEN_ERROR_GENERIC;
+        return GWEN_ERROR_GENERIC;
     }
   }
 

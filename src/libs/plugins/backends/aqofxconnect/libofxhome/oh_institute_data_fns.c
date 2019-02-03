@@ -13,7 +13,8 @@
 
 
 
-int OH_InstituteData_ReadXml(OH_INSTITUTE_DATA *oh, GWEN_XMLNODE *node) {
+int OH_InstituteData_ReadXml(OH_INSTITUTE_DATA *oh, GWEN_XMLNODE *node)
+{
   const char *s;
   int i;
 
@@ -80,7 +81,8 @@ int OH_InstituteData_ReadXml(OH_INSTITUTE_DATA *oh, GWEN_XMLNODE *node) {
 
 
 
-OH_INSTITUTE_DATA *OH_InstituteData_fromXml(GWEN_XMLNODE *node) {
+OH_INSTITUTE_DATA *OH_InstituteData_fromXml(GWEN_XMLNODE *node)
+{
   OH_INSTITUTE_DATA *oh;
   int rv;
 

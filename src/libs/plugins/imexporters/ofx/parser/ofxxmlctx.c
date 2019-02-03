@@ -27,7 +27,8 @@ GWEN_INHERIT(GWEN_XML_CONTEXT, AIO_OFX_XMLCTX)
 
 
 
-GWEN_XML_CONTEXT *AIO_OfxXmlCtx_new(uint32_t flags, AB_IMEXPORTER_CONTEXT *ioContext) {
+GWEN_XML_CONTEXT *AIO_OfxXmlCtx_new(uint32_t flags, AB_IMEXPORTER_CONTEXT *ioContext)
+{
   GWEN_XML_CONTEXT *ctx;
   AIO_OFX_XMLCTX *xctx;
   AIO_OFX_GROUP *g;
@@ -40,7 +41,7 @@ GWEN_XML_CONTEXT *AIO_OfxXmlCtx_new(uint32_t flags, AB_IMEXPORTER_CONTEXT *ioCon
   GWEN_NEW_OBJECT(AIO_OFX_XMLCTX, xctx);
   assert(xctx);
   GWEN_INHERIT_SETDATA(GWEN_XML_CONTEXT, AIO_OFX_XMLCTX, ctx, xctx,
-		       AIO_OfxXmlCtx_FreeData);
+                       AIO_OfxXmlCtx_FreeData);
   xctx->ioContext=ioContext;
 
   /* set virtual functions */
@@ -63,11 +64,12 @@ GWEN_XML_CONTEXT *AIO_OfxXmlCtx_new(uint32_t flags, AB_IMEXPORTER_CONTEXT *ioCon
 
 
 GWENHYWFAR_CB
-void AIO_OfxXmlCtx_FreeData(void *bp, void *p) {
+void AIO_OfxXmlCtx_FreeData(void *bp, void *p)
+{
   AIO_OFX_XMLCTX *xctx;
   AIO_OFX_GROUP *g;
 
-  xctx=(AIO_OFX_XMLCTX*)p;
+  xctx=(AIO_OFX_XMLCTX *)p;
 
   g=xctx->currentGroup;
   while (g) {
@@ -88,7 +90,8 @@ void AIO_OfxXmlCtx_FreeData(void *bp, void *p) {
 
 
 
-const char *AIO_OfxXmlCtx_GetCharset(const GWEN_XML_CONTEXT *ctx) {
+const char *AIO_OfxXmlCtx_GetCharset(const GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_XMLCTX *xctx;
 
   assert(ctx);
@@ -100,7 +103,8 @@ const char *AIO_OfxXmlCtx_GetCharset(const GWEN_XML_CONTEXT *ctx) {
 
 
 
-void AIO_OfxXmlCtx_SetCharset(GWEN_XML_CONTEXT *ctx, const char *s) {
+void AIO_OfxXmlCtx_SetCharset(GWEN_XML_CONTEXT *ctx, const char *s)
+{
   AIO_OFX_XMLCTX *xctx;
 
   assert(ctx);
@@ -108,13 +112,16 @@ void AIO_OfxXmlCtx_SetCharset(GWEN_XML_CONTEXT *ctx, const char *s) {
   assert(xctx);
 
   free(xctx->charset);
-  if (s) xctx->charset=strdup(s);
-  else xctx->charset=NULL;
+  if (s)
+    xctx->charset=strdup(s);
+  else
+    xctx->charset=NULL;
 }
 
 
 
-int AIO_OfxXmlCtx_GetResultCode(const GWEN_XML_CONTEXT *ctx) {
+int AIO_OfxXmlCtx_GetResultCode(const GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_XMLCTX *xctx;
 
   assert(ctx);
@@ -126,7 +133,8 @@ int AIO_OfxXmlCtx_GetResultCode(const GWEN_XML_CONTEXT *ctx) {
 
 
 
-void AIO_OfxXmlCtx_SetResultCode(GWEN_XML_CONTEXT *ctx, int i) {
+void AIO_OfxXmlCtx_SetResultCode(GWEN_XML_CONTEXT *ctx, int i)
+{
   AIO_OFX_XMLCTX *xctx;
 
   assert(ctx);
@@ -138,7 +146,8 @@ void AIO_OfxXmlCtx_SetResultCode(GWEN_XML_CONTEXT *ctx, int i) {
 
 
 
-const char *AIO_OfxXmlCtx_GetResultSeverity(const GWEN_XML_CONTEXT *ctx) {
+const char *AIO_OfxXmlCtx_GetResultSeverity(const GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_XMLCTX *xctx;
 
   assert(ctx);
@@ -150,7 +159,8 @@ const char *AIO_OfxXmlCtx_GetResultSeverity(const GWEN_XML_CONTEXT *ctx) {
 
 
 
-void AIO_OfxXmlCtx_SetResultSeverity(GWEN_XML_CONTEXT *ctx, const char *s) {
+void AIO_OfxXmlCtx_SetResultSeverity(GWEN_XML_CONTEXT *ctx, const char *s)
+{
   AIO_OFX_XMLCTX *xctx;
 
   assert(ctx);
@@ -158,14 +168,16 @@ void AIO_OfxXmlCtx_SetResultSeverity(GWEN_XML_CONTEXT *ctx, const char *s) {
   assert(xctx);
 
   free(xctx->resultSeverity);
-  if (s) xctx->resultSeverity=strdup(s);
-  else xctx->resultSeverity=NULL;
+  if (s)
+    xctx->resultSeverity=strdup(s);
+  else
+    xctx->resultSeverity=NULL;
 }
 
 
 
-AB_IMEXPORTER_CONTEXT*
-AIO_OfxXmlCtx_GetIoContext(const GWEN_XML_CONTEXT *ctx){
+AB_IMEXPORTER_CONTEXT *AIO_OfxXmlCtx_GetIoContext(const GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_XMLCTX *xctx;
 
   assert(ctx);
@@ -177,7 +189,8 @@ AIO_OfxXmlCtx_GetIoContext(const GWEN_XML_CONTEXT *ctx){
 
 
 
-AIO_OFX_GROUP *AIO_OfxXmlCtx_GetCurrentGroup(const GWEN_XML_CONTEXT *ctx) {
+AIO_OFX_GROUP *AIO_OfxXmlCtx_GetCurrentGroup(const GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_XMLCTX *xctx;
 
   assert(ctx);
@@ -189,7 +202,8 @@ AIO_OFX_GROUP *AIO_OfxXmlCtx_GetCurrentGroup(const GWEN_XML_CONTEXT *ctx) {
 
 
 
-void AIO_OfxXmlCtx_SetCurrentGroup(GWEN_XML_CONTEXT *ctx, AIO_OFX_GROUP *g){
+void AIO_OfxXmlCtx_SetCurrentGroup(GWEN_XML_CONTEXT *ctx, AIO_OFX_GROUP *g)
+{
   AIO_OFX_XMLCTX *xctx;
 
   assert(ctx);
@@ -201,7 +215,8 @@ void AIO_OfxXmlCtx_SetCurrentGroup(GWEN_XML_CONTEXT *ctx, AIO_OFX_GROUP *g){
 
 
 
-const char *AIO_OfxXmlCtx_GetCurrentTagName(const GWEN_XML_CONTEXT *ctx) {
+const char *AIO_OfxXmlCtx_GetCurrentTagName(const GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_XMLCTX *xctx;
 
   assert(ctx);
@@ -213,7 +228,8 @@ const char *AIO_OfxXmlCtx_GetCurrentTagName(const GWEN_XML_CONTEXT *ctx) {
 
 
 
-void AIO_OfxXmlCtx_SetCurrentTagName(GWEN_XML_CONTEXT *ctx, const char *s) {
+void AIO_OfxXmlCtx_SetCurrentTagName(GWEN_XML_CONTEXT *ctx, const char *s)
+{
   AIO_OFX_XMLCTX *xctx;
 
   assert(ctx);
@@ -221,15 +237,18 @@ void AIO_OfxXmlCtx_SetCurrentTagName(GWEN_XML_CONTEXT *ctx, const char *s) {
   assert(xctx);
 
   free(xctx->currentTagName);
-  if (s) xctx->currentTagName=strdup(s);
-  else xctx->currentTagName=NULL;
+  if (s)
+    xctx->currentTagName=strdup(s);
+  else
+    xctx->currentTagName=NULL;
 }
 
 
 
 int AIO_OfxXmlCtx_CleanupData(GWEN_XML_CONTEXT *ctx,
-			      const char *data,
-			      GWEN_BUFFER *buf) {
+                              const char *data,
+                              GWEN_BUFFER *buf)
+{
   const uint8_t *p;
   uint8_t *dst;
   uint8_t *src;
@@ -244,15 +263,15 @@ int AIO_OfxXmlCtx_CleanupData(GWEN_XML_CONTEXT *ctx,
     return GWEN_ERROR_BAD_DATA;
   }
 
-  dst=(uint8_t*)GWEN_Buffer_GetStart(buf);
+  dst=(uint8_t *)GWEN_Buffer_GetStart(buf);
   src=dst;
 
   /* skip leading blanks */
-  while(*src && (*src<33 || *src>=127))
+  while (*src && (*src<33 || *src>=127))
     src++;
 
   p=src;
-  bStart=src-((uint8_t*)GWEN_Buffer_GetStart(buf));
+  bStart=src-((uint8_t *)GWEN_Buffer_GetStart(buf));
   size=GWEN_Buffer_GetUsedBytes(buf)-bStart;
   lastWasBlank=0;
   lastBlankPos=0;
@@ -269,10 +288,10 @@ int AIO_OfxXmlCtx_CleanupData(GWEN_XML_CONTEXT *ctx,
     /* remember next loop whether this char was a blank */
     if (c==32) {
       if (!lastWasBlank) {
-	/* store only one blank */
-	lastWasBlank=1;
-	lastBlankPos=dst;
-	*(dst++)=c;
+        /* store only one blank */
+        lastWasBlank=1;
+        lastBlankPos=dst;
+        *(dst++)=c;
       }
     }
     else {
@@ -287,7 +306,7 @@ int AIO_OfxXmlCtx_CleanupData(GWEN_XML_CONTEXT *ctx,
   if (lastBlankPos!=0)
     dst=lastBlankPos;
 
-  size=dst-(uint8_t*)GWEN_Buffer_GetStart(buf);
+  size=dst-(uint8_t *)GWEN_Buffer_GetStart(buf);
   GWEN_Buffer_Crop(buf, 0, size);
 
   return 0;
@@ -296,8 +315,9 @@ int AIO_OfxXmlCtx_CleanupData(GWEN_XML_CONTEXT *ctx,
 
 
 int AIO_OfxXmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
-			       const char *data,
-			       GWEN_BUFFER *buf) {
+                               const char *data,
+                               GWEN_BUFFER *buf)
+{
   AIO_OFX_XMLCTX *xctx;
 
   assert(ctx);
@@ -317,9 +337,9 @@ int AIO_OfxXmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
     }
 
     rv=GWEN_Text_ConvertCharset(xctx->charset, "UTF-8",
-				GWEN_Buffer_GetStart(tbuf),
-				GWEN_Buffer_GetUsedBytes(tbuf),
-				buf);
+                                GWEN_Buffer_GetStart(tbuf),
+                                GWEN_Buffer_GetUsedBytes(tbuf),
+                                buf);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(tbuf);
@@ -340,7 +360,8 @@ int AIO_OfxXmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
 
 
 
-int AIO_OfxXmlCtx_StartTag(GWEN_XML_CONTEXT *ctx, const char *tagName) {
+int AIO_OfxXmlCtx_StartTag(GWEN_XML_CONTEXT *ctx, const char *tagName)
+{
   AIO_OFX_XMLCTX *xctx;
 
   assert(ctx);
@@ -357,7 +378,8 @@ int AIO_OfxXmlCtx_StartTag(GWEN_XML_CONTEXT *ctx, const char *tagName) {
 
 
 
-int AIO_OfxXmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing) {
+int AIO_OfxXmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing)
+{
   AIO_OFX_XMLCTX *xctx;
 
   assert(ctx);
@@ -367,7 +389,7 @@ int AIO_OfxXmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing) {
   if (closing) {
     /* just ignore empty tags which are closed immediately */
     DBG_INFO(AQBANKING_LOGDOMAIN, "Closing empty tag [%s]",
-	     (xctx->currentTagName)?xctx->currentTagName:"<noname>");
+             (xctx->currentTagName)?xctx->currentTagName:"<noname>");
     return 0;
   }
 
@@ -384,74 +406,74 @@ int AIO_OfxXmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing) {
       int endingOfxDoc=0;
 
       if (strcasecmp(xctx->currentTagName, "/OFX")==0) {
-	DBG_INFO(AQBANKING_LOGDOMAIN, "End of OFX document reached, will reset depth to %d",
-		 xctx->startDepthOfOfxElement);
-	endingOfxDoc=1;
+        DBG_INFO(AQBANKING_LOGDOMAIN, "End of OFX document reached, will reset depth to %d",
+                 xctx->startDepthOfOfxElement);
+        endingOfxDoc=1;
       }
 
       /* it is a closing tag, call EndTagFn */
       DBG_INFO(AQBANKING_LOGDOMAIN,
-	       "Calling %s->EndTag(%s)",
-	       AIO_OfxGroup_GetGroupName(xctx->currentGroup),
-	       xctx->currentTagName);
+               "Calling %s->EndTag(%s)",
+               AIO_OfxGroup_GetGroupName(xctx->currentGroup),
+               xctx->currentTagName);
       rv=AIO_OfxGroup_EndTag(xctx->currentGroup, xctx->currentTagName+1);
       if (rv<0) {
-	if (rv!=GWEN_ERROR_NOT_IMPLEMENTED) {
-	  DBG_INFO(AQBANKING_LOGDOMAIN,
-		   "Error in EndTag(%s) for [%s]",
-		   AIO_OfxGroup_GetGroupName(xctx->currentGroup),
-		   xctx->currentTagName);
-	  return rv;
-	}
+        if (rv!=GWEN_ERROR_NOT_IMPLEMENTED) {
+          DBG_INFO(AQBANKING_LOGDOMAIN,
+                   "Error in EndTag(%s) for [%s]",
+                   AIO_OfxGroup_GetGroupName(xctx->currentGroup),
+                   xctx->currentTagName);
+          return rv;
+        }
       }
       else if (rv==1) {
         AIO_OFX_GROUP *g;
-	AIO_OFX_GROUP *gParent;
+        AIO_OFX_GROUP *gParent;
 
-	/* pop current group from stack */
-	g=xctx->currentGroup;
-	gParent=AIO_OfxGroup_GetParent(g);
-	xctx->currentGroup=gParent;
-	if (gParent) {
-	  DBG_INFO(AQBANKING_LOGDOMAIN,
-		   "Calling %s->EndSubGroup(%s)",
-		   AIO_OfxGroup_GetGroupName(gParent),
+        /* pop current group from stack */
+        g=xctx->currentGroup;
+        gParent=AIO_OfxGroup_GetParent(g);
+        xctx->currentGroup=gParent;
+        if (gParent) {
+          DBG_INFO(AQBANKING_LOGDOMAIN,
+                   "Calling %s->EndSubGroup(%s)",
+                   AIO_OfxGroup_GetGroupName(gParent),
                    AIO_OfxGroup_GetGroupName(g));
-	  AIO_OfxGroup_EndSubGroup(gParent, g);
-	}
-	AIO_OfxGroup_free(g);
-	GWEN_XmlCtx_DecDepth(ctx);
+          AIO_OfxGroup_EndSubGroup(gParent, g);
+        }
+        AIO_OfxGroup_free(g);
+        GWEN_XmlCtx_DecDepth(ctx);
       }
 
       if (endingOfxDoc) {
-	/* TODO: Tags which have no closing element should decrease the depth by themselves... */
-	DBG_INFO(AQBANKING_LOGDOMAIN, "End of OFX document reached, resetting depth to %d",
-		 xctx->startDepthOfOfxElement);
-	GWEN_XmlCtx_SetDepth(ctx, xctx->startDepthOfOfxElement);
+        /* TODO: Tags which have no closing element should decrease the depth by themselves... */
+        DBG_INFO(AQBANKING_LOGDOMAIN, "End of OFX document reached, resetting depth to %d",
+                 xctx->startDepthOfOfxElement);
+        GWEN_XmlCtx_SetDepth(ctx, xctx->startDepthOfOfxElement);
       }
     }
     else {
       int rv;
 
       if (strcasecmp(xctx->currentTagName, "OFX")==0) {
-	DBG_INFO(AQBANKING_LOGDOMAIN, "Start of OFX document reached, storing depth");
-	xctx->startDepthOfOfxElement=GWEN_XmlCtx_GetDepth(ctx);
+        DBG_INFO(AQBANKING_LOGDOMAIN, "Start of OFX document reached, storing depth");
+        xctx->startDepthOfOfxElement=GWEN_XmlCtx_GetDepth(ctx);
       }
 
       /* it is an opening tag, call StartTagFn */
       DBG_INFO(AQBANKING_LOGDOMAIN,
-	       "Calling %s->StartTag(%s)",
-	       AIO_OfxGroup_GetGroupName(xctx->currentGroup),
-	       xctx->currentTagName);
+               "Calling %s->StartTag(%s)",
+               AIO_OfxGroup_GetGroupName(xctx->currentGroup),
+               xctx->currentTagName);
       rv=AIO_OfxGroup_StartTag(xctx->currentGroup, xctx->currentTagName);
       if (rv<0) {
-	if (rv!=GWEN_ERROR_NOT_IMPLEMENTED) {
-	  DBG_INFO(AQBANKING_LOGDOMAIN,
-		   "Error in StartTag(%s) for [%s]",
-		   AIO_OfxGroup_GetGroupName(xctx->currentGroup),
-		   xctx->currentTagName);
-	  return rv;
-	}
+        if (rv!=GWEN_ERROR_NOT_IMPLEMENTED) {
+          DBG_INFO(AQBANKING_LOGDOMAIN,
+                   "Error in StartTag(%s) for [%s]",
+                   AIO_OfxGroup_GetGroupName(xctx->currentGroup),
+                   xctx->currentTagName);
+          return rv;
+        }
       }
     }
   }
@@ -464,7 +486,8 @@ int AIO_OfxXmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing) {
 
 
 
-int AIO_OfxXmlCtx_AddData(GWEN_XML_CONTEXT *ctx, const char *data) {
+int AIO_OfxXmlCtx_AddData(GWEN_XML_CONTEXT *ctx, const char *data)
+{
   AIO_OFX_XMLCTX *xctx;
 
   assert(ctx);
@@ -475,15 +498,15 @@ int AIO_OfxXmlCtx_AddData(GWEN_XML_CONTEXT *ctx, const char *data) {
     int rv;
 
     DBG_INFO(AQBANKING_LOGDOMAIN,
-	     "Calling %s->AddData()",
-	     AIO_OfxGroup_GetGroupName(xctx->currentGroup));
+             "Calling %s->AddData()",
+             AIO_OfxGroup_GetGroupName(xctx->currentGroup));
     rv=AIO_OfxGroup_AddData(xctx->currentGroup, data);
     if (rv<0) {
       if (rv!=GWEN_ERROR_NOT_IMPLEMENTED) {
-	DBG_INFO(AQBANKING_LOGDOMAIN,
-		 "Error in AddData(%s)",
-		 AIO_OfxGroup_GetGroupName(xctx->currentGroup));
-	return rv;
+        DBG_INFO(AQBANKING_LOGDOMAIN,
+                 "Error in AddData(%s)",
+                 AIO_OfxGroup_GetGroupName(xctx->currentGroup));
+        return rv;
       }
     }
   }
@@ -493,7 +516,8 @@ int AIO_OfxXmlCtx_AddData(GWEN_XML_CONTEXT *ctx, const char *data) {
 
 
 
-int AIO_OfxXmlCtx_AddComment(GWEN_XML_CONTEXT *ctx, const char *data) {
+int AIO_OfxXmlCtx_AddComment(GWEN_XML_CONTEXT *ctx, const char *data)
+{
   AIO_OFX_XMLCTX *xctx;
 
   assert(ctx);
@@ -507,8 +531,9 @@ int AIO_OfxXmlCtx_AddComment(GWEN_XML_CONTEXT *ctx, const char *data) {
 
 
 int AIO_OfxXmlCtx_AddAttr(GWEN_XML_CONTEXT *ctx,
-			  const char *attrName,
-			  const char *attrData) {
+                          const char *attrName,
+                          const char *attrData)
+{
   AIO_OFX_XMLCTX *xctx;
 
   assert(ctx);

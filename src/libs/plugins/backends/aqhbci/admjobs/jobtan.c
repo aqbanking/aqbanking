@@ -20,7 +20,8 @@ GWEN_INHERIT(AH_JOB, AH_JOB_TAN);
 
 
 
-AH_JOB *AH_Job_Tan_new(AB_PROVIDER *pro, AB_USER *u, int process, int jobVersion) {
+AH_JOB *AH_Job_Tan_new(AB_PROVIDER *pro, AB_USER *u, int process, int jobVersion)
+{
   AH_JOB *j;
   AH_JOB_TAN *aj;
   GWEN_DB_NODE *dbArgs;
@@ -59,10 +60,11 @@ AH_JOB *AH_Job_Tan_new(AB_PROVIDER *pro, AB_USER *u, int process, int jobVersion
 
 
 
-void GWENHYWFAR_CB AH_Job_Tan_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_Job_Tan_FreeData(void *bp, void *p)
+{
   AH_JOB_TAN *aj;
 
-  aj=(AH_JOB_TAN*)p;
+  aj=(AH_JOB_TAN *)p;
   free(aj->tanMediumId);
   free(aj->reference);
   free(aj->challenge);
@@ -72,7 +74,8 @@ void GWENHYWFAR_CB AH_Job_Tan_FreeData(void *bp, void *p){
 
 
 
-int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AH_JOB_TAN *aj;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -88,7 +91,7 @@ int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
   /* search for "TanResponse" */
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
-  while(dbCurr) {
+  while (dbCurr) {
     GWEN_DB_NODE *dbTanResponse;
 
     rv=AH_Job_CheckEncryption(j, dbCurr);
@@ -128,14 +131,14 @@ int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
           GWEN_BUFFER *bbuf;
 
           DBG_INFO(AQHBCI_LOGDOMAIN, "Job has a challengeHHD string:");
-          GWEN_Text_LogString((const char*)p, l, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Info);
+          GWEN_Text_LogString((const char *)p, l, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Info);
 
           bbuf=GWEN_Buffer_new(0, 256, 0, 1);
 #if 0
-          GWEN_Text_ToHexBuffer((const char*) p, l, bbuf, 0, 0, 0);
+          GWEN_Text_ToHexBuffer((const char *) p, l, bbuf, 0, 0, 0);
 #else
           /* data is a string, no need to transform to hex */
-          GWEN_Buffer_AppendBytes(bbuf, (const char*) p, l);
+          GWEN_Buffer_AppendBytes(bbuf, (const char *) p, l);
 #endif
           free(aj->challengeHhd);
           aj->challengeHhd=strdup(GWEN_Buffer_GetStart(bbuf));
@@ -159,7 +162,8 @@ int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
 
 
-int AH_Job_Tan_GetTanMethod(const AH_JOB *j) {
+int AH_Job_Tan_GetTanMethod(const AH_JOB *j)
+{
   AH_JOB_TAN *aj;
 
   assert(j);
@@ -171,7 +175,8 @@ int AH_Job_Tan_GetTanMethod(const AH_JOB *j) {
 
 
 
-void AH_Job_Tan_SetTanMethod(AH_JOB *j, int i) {
+void AH_Job_Tan_SetTanMethod(AH_JOB *j, int i)
+{
   AH_JOB_TAN *aj;
 
   assert(j);
@@ -185,7 +190,8 @@ void AH_Job_Tan_SetTanMethod(AH_JOB *j, int i) {
 
 void AH_Job_Tan_SetHash(AH_JOB *j,
                         const unsigned char *p,
-                        unsigned int len) {
+                        unsigned int len)
+{
   AH_JOB_TAN *aj;
   GWEN_DB_NODE *dbArgs;
 
@@ -201,7 +207,8 @@ void AH_Job_Tan_SetHash(AH_JOB *j,
 
 
 
-void AH_Job_Tan_SetReference(AH_JOB *j, const char *p) {
+void AH_Job_Tan_SetReference(AH_JOB *j, const char *p)
+{
   AH_JOB_TAN *aj;
   GWEN_DB_NODE *dbArgs;
 
@@ -217,7 +224,8 @@ void AH_Job_Tan_SetReference(AH_JOB *j, const char *p) {
 
 
 
-void AH_Job_Tan_SetTanList(AH_JOB *j, const char *p) {
+void AH_Job_Tan_SetTanList(AH_JOB *j, const char *p)
+{
   AH_JOB_TAN *aj;
   GWEN_DB_NODE *dbArgs;
 
@@ -233,7 +241,8 @@ void AH_Job_Tan_SetTanList(AH_JOB *j, const char *p) {
 
 
 
-void AH_Job_Tan_SetTanInfo(AH_JOB *j, const char *p) {
+void AH_Job_Tan_SetTanInfo(AH_JOB *j, const char *p)
+{
   AH_JOB_TAN *aj;
   GWEN_DB_NODE *dbArgs;
 
@@ -249,7 +258,8 @@ void AH_Job_Tan_SetTanInfo(AH_JOB *j, const char *p) {
 
 
 
-void AH_Job_Tan_SetSegCode(AH_JOB *j, const char *p) {
+void AH_Job_Tan_SetSegCode(AH_JOB *j, const char *p)
+{
   AH_JOB_TAN *aj;
   GWEN_DB_NODE *dbArgs;
 
@@ -271,7 +281,8 @@ void AH_Job_Tan_SetSegCode(AH_JOB *j, const char *p) {
 
 
 
-const char *AH_Job_Tan_GetChallenge(const AH_JOB *j) {
+const char *AH_Job_Tan_GetChallenge(const AH_JOB *j)
+{
   AH_JOB_TAN *aj;
 
   assert(j);
@@ -283,7 +294,8 @@ const char *AH_Job_Tan_GetChallenge(const AH_JOB *j) {
 
 
 
-const char *AH_Job_Tan_GetHhdChallenge(const AH_JOB *j) {
+const char *AH_Job_Tan_GetHhdChallenge(const AH_JOB *j)
+{
   AH_JOB_TAN *aj;
 
   assert(j);
@@ -295,7 +307,8 @@ const char *AH_Job_Tan_GetHhdChallenge(const AH_JOB *j) {
 
 
 
-const char *AH_Job_Tan_GetReference(const AH_JOB *j) {
+const char *AH_Job_Tan_GetReference(const AH_JOB *j)
+{
   AH_JOB_TAN *aj;
 
   assert(j);
@@ -307,7 +320,8 @@ const char *AH_Job_Tan_GetReference(const AH_JOB *j) {
 
 
 
-void AH_Job_Tan_SetTanMediumId(AH_JOB *j, const char *s) {
+void AH_Job_Tan_SetTanMediumId(AH_JOB *j, const char *s)
+{
   AH_JOB_TAN *aj;
   GWEN_DB_NODE *dbArgs;
 
@@ -329,7 +343,8 @@ void AH_Job_Tan_SetTanMediumId(AH_JOB *j, const char *s) {
 void AH_Job_Tan_SetLocalAccountInfo(AH_JOB *j,
                                     const char *bankCode,
                                     const char *accountId,
-                                    const char *accountSubId) {
+                                    const char *accountSubId)
+{
   AH_JOB_TAN *aj;
   GWEN_DB_NODE *dbArgs;
 
@@ -353,7 +368,8 @@ void AH_Job_Tan_SetLocalAccountInfo(AH_JOB *j,
 void AH_Job_Tan_SetSmsAccountInfo(AH_JOB *j,
                                   const char *bankCode,
                                   const char *accountId,
-                                  const char *accountSubId) {
+                                  const char *accountSubId)
+{
   AH_JOB_TAN *aj;
   GWEN_DB_NODE *dbArgs;
 
@@ -374,7 +390,8 @@ void AH_Job_Tan_SetSmsAccountInfo(AH_JOB *j,
 
 
 
-int AH_Job_Tan_FinishSetup(AH_JOB *j, AH_JOB *accJob) {
+int AH_Job_Tan_FinishSetup(AH_JOB *j, AH_JOB *accJob)
+{
   AH_JOB_TAN *aj;
   int rv;
   GWEN_DB_NODE *args;
@@ -394,7 +411,7 @@ int AH_Job_Tan_FinishSetup(AH_JOB *j, AH_JOB *accJob) {
 
   /* get data for the selected tan method */
   dbMethod=GWEN_DB_FindFirstGroup(dbParams, "tanMethod");
-  while(dbMethod) {
+  while (dbMethod) {
     int tm;
 
     tm=GWEN_DB_GetIntValue(dbMethod, "function", 0, -1);
@@ -429,7 +446,7 @@ int AH_Job_Tan_FinishSetup(AH_JOB *j, AH_JOB *accJob) {
       GWEN_STRINGLISTENTRY *e;
 
       e=GWEN_StringList_FirstEntry(sl);
-      while(e) {
+      while (e) {
         GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_DEFAULT, "challengeParams/param", GWEN_StringListEntry_Data(e));
         e=GWEN_StringListEntry_Next(e);
       }

@@ -43,8 +43,8 @@ void AIO_OfxXmlCtx_SetCurrentTagName(GWEN_XML_CONTEXT *ctx, const char *s);
 
 
 int AIO_OfxXmlCtx_SanitizeData(GWEN_XML_CONTEXT *ctx,
-			       const char *data,
-			       GWEN_BUFFER *buf);
+                               const char *data,
+                               GWEN_BUFFER *buf);
 
 #endif
 

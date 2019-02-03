@@ -34,7 +34,8 @@ GWEN_INHERIT(GWEN_PLUGIN, AB_PLUGIN_PROVIDER)
 
 
 
-AB_PROVIDER *AB_Provider_new(AB_BANKING *ab, const char *name){
+AB_PROVIDER *AB_Provider_new(AB_BANKING *ab, const char *name)
+{
   AB_PROVIDER *pro;
   GWEN_BUFFER *nbuf;
 
@@ -52,7 +53,7 @@ AB_PROVIDER *AB_Provider_new(AB_BANKING *ab, const char *name){
     char *s;
 
     s=GWEN_Buffer_GetStart(nbuf);
-    while(*s) {
+    while (*s) {
       *s=tolower(*s);
       s++;
     }
@@ -73,7 +74,8 @@ AB_PROVIDER *AB_Provider_new(AB_BANKING *ab, const char *name){
 
 
 
-void AB_Provider_free(AB_PROVIDER *pro){
+void AB_Provider_free(AB_PROVIDER *pro)
+{
   if (pro) {
     assert(pro->usage);
     if (--(pro->usage)==0) {
@@ -91,21 +93,24 @@ void AB_Provider_free(AB_PROVIDER *pro){
 
 
 
-void AB_Provider_AddFlags(AB_PROVIDER *pro, uint32_t fl) {
+void AB_Provider_AddFlags(AB_PROVIDER *pro, uint32_t fl)
+{
   assert(pro);
   pro->flags|=fl;
 }
 
 
 
-void AB_Provider_SetPlugin(AB_PROVIDER *pro, GWEN_PLUGIN *pl) {
+void AB_Provider_SetPlugin(AB_PROVIDER *pro, GWEN_PLUGIN *pl)
+{
   assert(pro);
   pro->plugin=pl;
 }
 
 
 
-int AB_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *db){
+int AB_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *db)
+{
   assert(pro);
   if (pro->initCounter==0) {
     if (pro->initFn) {
@@ -131,13 +136,14 @@ int AB_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *db){
 
 
 
-int AB_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *db){
+int AB_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *db)
+{
   assert(pro);
 
   if (pro->initCounter==1) {
     if (pro->finiFn) {
       int rv;
-  
+
       rv=pro->finiFn(pro, db);
       pro->initCounter=0;
       if (rv<0) {
@@ -165,21 +171,24 @@ int AB_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *db){
 
 
 
-const char *AB_Provider_GetName(const AB_PROVIDER *pro){
+const char *AB_Provider_GetName(const AB_PROVIDER *pro)
+{
   assert(pro);
   return pro->name;
 }
 
 
 
-const char *AB_Provider_GetEscapedName(const AB_PROVIDER *pro){
+const char *AB_Provider_GetEscapedName(const AB_PROVIDER *pro)
+{
   assert(pro);
   return pro->escName;
 }
 
 
 
-AB_BANKING *AB_Provider_GetBanking(const AB_PROVIDER *pro){
+AB_BANKING *AB_Provider_GetBanking(const AB_PROVIDER *pro)
+{
   assert(pro);
   return pro->banking;
 }
@@ -187,14 +196,16 @@ AB_BANKING *AB_Provider_GetBanking(const AB_PROVIDER *pro){
 
 
 
-void AB_Provider_SetInitFn(AB_PROVIDER *pro, AB_PROVIDER_INIT_FN f){
+void AB_Provider_SetInitFn(AB_PROVIDER *pro, AB_PROVIDER_INIT_FN f)
+{
   assert(pro);
   pro->initFn=f;
 }
 
 
 
-void AB_Provider_SetFiniFn(AB_PROVIDER *pro, AB_PROVIDER_FINI_FN f){
+void AB_Provider_SetFiniFn(AB_PROVIDER *pro, AB_PROVIDER_FINI_FN f)
+{
   assert(pro);
   pro->finiFn=f;
 }
@@ -202,70 +213,80 @@ void AB_Provider_SetFiniFn(AB_PROVIDER *pro, AB_PROVIDER_FINI_FN f){
 
 
 
-void AB_Provider_SetGetNewUserDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_NEWUSER_DIALOG_FN f) {
+void AB_Provider_SetGetNewUserDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_NEWUSER_DIALOG_FN f)
+{
   assert(pro);
   pro->getNewUserDialogFn=f;
 }
 
 
 
-void AB_Provider_SetGetEditUserDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_EDITUSER_DIALOG_FN f) {
+void AB_Provider_SetGetEditUserDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_EDITUSER_DIALOG_FN f)
+{
   assert(pro);
   pro->getEditUserDialogFn=f;
 }
 
 
 
-void AB_Provider_SetGetNewAccountDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_NEWACCOUNT_DIALOG_FN f) {
+void AB_Provider_SetGetNewAccountDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_NEWACCOUNT_DIALOG_FN f)
+{
   assert(pro);
   pro->getNewAccountDialogFn=f;
 }
 
 
 
-void AB_Provider_SetGetEditAccountDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_EDITACCOUNT_DIALOG_FN f) {
+void AB_Provider_SetGetEditAccountDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_EDITACCOUNT_DIALOG_FN f)
+{
   assert(pro);
   pro->getEditAccountDialogFn=f;
 }
 
 
 
-void AB_Provider_SetGetUserTypeDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_USERTYPE_DIALOG_FN f) {
+void AB_Provider_SetGetUserTypeDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_USERTYPE_DIALOG_FN f)
+{
   assert(pro);
   pro->getUserTypeDialogFn=f;
 }
 
 
 
-void AB_Provider_SetSendCommandsFn(AB_PROVIDER *pro, AB_PROVIDER_SENDCOMMANDS_FN f) {
+void AB_Provider_SetSendCommandsFn(AB_PROVIDER *pro, AB_PROVIDER_SENDCOMMANDS_FN f)
+{
   assert(pro);
   pro->sendCommandsFn=f;
 }
 
 
 
-void AB_Provider_SetCreateAccountObjectsFn(AB_PROVIDER *pro, AB_PROVIDER_CREATEACCOUNTOBJECT_FN f) {
+void AB_Provider_SetCreateAccountObjectsFn(AB_PROVIDER *pro, AB_PROVIDER_CREATEACCOUNTOBJECT_FN f)
+{
   assert(pro);
   pro->createAccountObjectFn=f;
 }
 
 
 
-void AB_Provider_SetCreateUserObjectsFn(AB_PROVIDER *pro, AB_PROVIDER_CREATEUSEROBJECT_FN f) {
+void AB_Provider_SetCreateUserObjectsFn(AB_PROVIDER *pro, AB_PROVIDER_CREATEUSEROBJECT_FN f)
+{
   assert(pro);
   pro->createUserObjectFn=f;
 }
 
 
 
-void AB_Provider_SetUpdateAccountSpecFn(AB_PROVIDER *pro, AB_PROVIDER_UPDATEACCOUNTSPEC_FN f) {
+void AB_Provider_SetUpdateAccountSpecFn(AB_PROVIDER *pro, AB_PROVIDER_UPDATEACCOUNTSPEC_FN f)
+{
   assert(pro);
   pro->updateAccountSpecFn=f;
 }
 
 
 
-void AB_Provider_SetControlFn(AB_PROVIDER *pro, AB_PROVIDER_CONTROL_FN f) {
+void AB_Provider_SetControlFn(AB_PROVIDER *pro, AB_PROVIDER_CONTROL_FN f)
+{
   assert(pro);
   pro->controlFn=f;
 }
@@ -275,7 +296,8 @@ void AB_Provider_SetControlFn(AB_PROVIDER *pro, AB_PROVIDER_CONTROL_FN f) {
 
 
 
-AB_ACCOUNT *AB_Provider_CreateAccountObject(AB_PROVIDER *pro) {
+AB_ACCOUNT *AB_Provider_CreateAccountObject(AB_PROVIDER *pro)
+{
   assert(pro);
   if (pro->createAccountObjectFn)
     return pro->createAccountObjectFn(pro);
@@ -285,7 +307,8 @@ AB_ACCOUNT *AB_Provider_CreateAccountObject(AB_PROVIDER *pro) {
 
 
 
-AB_USER *AB_Provider_CreateUserObject(AB_PROVIDER *pro) {
+AB_USER *AB_Provider_CreateUserObject(AB_PROVIDER *pro)
+{
   assert(pro);
   if (pro->createUserObjectFn)
     return pro->createUserObjectFn(pro);
@@ -295,7 +318,8 @@ AB_USER *AB_Provider_CreateUserObject(AB_PROVIDER *pro) {
 
 
 
-int AB_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doLock) {
+int AB_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doLock)
+{
   assert(pro);
   if (pro->updateAccountSpecFn)
     return pro->updateAccountSpecFn(pro, as, doLock);
@@ -305,7 +329,8 @@ int AB_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doL
 
 
 
-int AB_Provider_Control(AB_PROVIDER *pro, int argc, char **argv) {
+int AB_Provider_Control(AB_PROVIDER *pro, int argc, char **argv)
+{
   assert(pro);
   if (pro->controlFn)
     return pro->controlFn(pro, argc, argv);
@@ -320,7 +345,8 @@ int AB_Provider_Control(AB_PROVIDER *pro, int argc, char **argv) {
 
 
 
-GWEN_DIALOG *AB_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
+GWEN_DIALOG *AB_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i)
+{
   assert(pro);
   if (pro->getNewUserDialogFn)
     return pro->getNewUserDialogFn(pro, i);
@@ -330,7 +356,8 @@ GWEN_DIALOG *AB_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
 
 
 
-GWEN_DIALOG *AB_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
+GWEN_DIALOG *AB_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u)
+{
   assert(pro);
   if (pro->getEditUserDialogFn) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "calling pro->getEditUserDialogFn");
@@ -344,7 +371,8 @@ GWEN_DIALOG *AB_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
 
 
 
-GWEN_DIALOG *AB_Provider_GetNewAccountDialog(AB_PROVIDER *pro) {
+GWEN_DIALOG *AB_Provider_GetNewAccountDialog(AB_PROVIDER *pro)
+{
   assert(pro);
   if (pro->getNewAccountDialogFn)
     return pro->getNewAccountDialogFn(pro);
@@ -354,7 +382,8 @@ GWEN_DIALOG *AB_Provider_GetNewAccountDialog(AB_PROVIDER *pro) {
 
 
 
-GWEN_DIALOG *AB_Provider_GetEditAccountDialog(AB_PROVIDER *pro, AB_ACCOUNT *a) {
+GWEN_DIALOG *AB_Provider_GetEditAccountDialog(AB_PROVIDER *pro, AB_ACCOUNT *a)
+{
   assert(pro);
   if (pro->getEditAccountDialogFn)
     return pro->getEditAccountDialogFn(pro, a);
@@ -364,7 +393,8 @@ GWEN_DIALOG *AB_Provider_GetEditAccountDialog(AB_PROVIDER *pro, AB_ACCOUNT *a) {
 
 
 
-GWEN_DIALOG *AB_ProviderGetUserTypeDialog(AB_PROVIDER *pro) {
+GWEN_DIALOG *AB_ProviderGetUserTypeDialog(AB_PROVIDER *pro)
+{
   assert(pro);
   if (pro->getUserTypeDialogFn)
     return pro->getUserTypeDialogFn(pro);
@@ -374,7 +404,8 @@ GWEN_DIALOG *AB_ProviderGetUserTypeDialog(AB_PROVIDER *pro) {
 
 
 
-int AB_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx) {
+int AB_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx)
+{
   assert(pro);
   if (pro->sendCommandsFn)
     return pro->sendCommandsFn(pro, pq, ctx);
@@ -387,21 +418,24 @@ int AB_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORT
 
 
 
-int AB_Provider_IsInit(const AB_PROVIDER *pro){
+int AB_Provider_IsInit(const AB_PROVIDER *pro)
+{
   assert(pro);
   return (pro->initCounter>0);
 }
 
 
 
-uint32_t AB_Provider_GetFlags(const AB_PROVIDER *pro){
+uint32_t AB_Provider_GetFlags(const AB_PROVIDER *pro)
+{
   assert(pro);
   return pro->flags;
 }
 
 
 
-int AB_Provider_GetUserDataDir(const AB_PROVIDER *pro, GWEN_BUFFER *buf){
+int AB_Provider_GetUserDataDir(const AB_PROVIDER *pro, GWEN_BUFFER *buf)
+{
   assert(pro);
   assert(buf);
   assert(pro->banking);
@@ -415,15 +449,16 @@ int AB_Provider_GetUserDataDir(const AB_PROVIDER *pro, GWEN_BUFFER *buf){
 
 
 GWEN_PLUGIN *AB_Plugin_Provider_new(GWEN_PLUGIN_MANAGER *pm,
-				    const char *name,
-				    const char *fileName) {
+                                    const char *name,
+                                    const char *fileName)
+{
   GWEN_PLUGIN *pl;
   AB_PLUGIN_PROVIDER *xpl;
 
   pl=GWEN_Plugin_new(pm, name, fileName);
   GWEN_NEW_OBJECT(AB_PLUGIN_PROVIDER, xpl);
   GWEN_INHERIT_SETDATA(GWEN_PLUGIN, AB_PLUGIN_PROVIDER, pl, xpl,
-		       AB_Plugin_Provider_FreeData);
+                       AB_Plugin_Provider_FreeData);
 
   return pl;
 
@@ -431,16 +466,18 @@ GWEN_PLUGIN *AB_Plugin_Provider_new(GWEN_PLUGIN_MANAGER *pm,
 
 
 
-void GWENHYWFAR_CB AB_Plugin_Provider_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AB_Plugin_Provider_FreeData(void *bp, void *p)
+{
   AB_PLUGIN_PROVIDER *xpl;
 
-  xpl=(AB_PLUGIN_PROVIDER*)p;
+  xpl=(AB_PLUGIN_PROVIDER *)p;
   GWEN_FREE_OBJECT(xpl);
 }
 
 
 
-AB_PROVIDER *AB_Plugin_Provider_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab) {
+AB_PROVIDER *AB_Plugin_Provider_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab)
+{
   AB_PLUGIN_PROVIDER *xpl;
 
   assert(pl);
@@ -453,7 +490,8 @@ AB_PROVIDER *AB_Plugin_Provider_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab) {
 
 
 
-void AB_Plugin_Provider_SetFactoryFn(GWEN_PLUGIN *pl, AB_PLUGIN_PROVIDER_FACTORY_FN fn) {
+void AB_Plugin_Provider_SetFactoryFn(GWEN_PLUGIN *pl, AB_PLUGIN_PROVIDER_FACTORY_FN fn)
+{
   AB_PLUGIN_PROVIDER *xpl;
 
   assert(pl);

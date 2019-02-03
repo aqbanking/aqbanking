@@ -37,7 +37,8 @@ GWEN_INHERIT(AH_JOB, AH_JOB_GETBALANCE);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_GetBalance_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_GetBalance_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
+{
   AH_JOB *j;
   AH_JOB_GETBALANCE *aj;
   GWEN_DB_NODE *dbArgs;
@@ -51,23 +52,23 @@ AH_JOB *AH_Job_GetBalance_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
     GWEN_DB_NODE *n;
 
     n=GWEN_DB_GetFirstGroup(updgroup);
-    while(n) {
+    while (n) {
       if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "DKKKS")==0) {
-	useCreditCardJob = 1;
-	break;
+        useCreditCardJob = 1;
+        break;
       }
 
       if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKWPD")==0) {
-	useInvestmentJob = 1;
-	break;
+        useInvestmentJob = 1;
+        break;
       }
       n=GWEN_DB_GetNextGroup(n);
     } /* while */
   } /* if updgroup for the given account found */
 
-  if(useCreditCardJob)
+  if (useCreditCardJob)
     j=AH_AccountJob_new("JobGetBalanceCreditCard", pro, u, account);
-  else if(useInvestmentJob)
+  else if (useInvestmentJob)
     j=AH_AccountJob_new("JobGetBalanceInvestment", pro, u, account);
   else
     j=AH_AccountJob_new("JobGetBalance", pro, u, account);
@@ -80,7 +81,7 @@ AH_JOB *AH_Job_GetBalance_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
   AH_Job_SetSupportedCommand(j, AB_Transaction_CommandGetBalance);
 
   /* overwrite some virtual functions */
-  if(useInvestmentJob)
+  if (useInvestmentJob)
     AH_Job_SetProcessFn(j, AH_Job_GetBalanceInvestment_Process);
   else
     AH_Job_SetProcessFn(j, AH_Job_GetBalance_Process);
@@ -102,17 +103,19 @@ AH_JOB *AH_Job_GetBalance_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void GWENHYWFAR_CB AH_Job_GetBalance_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_Job_GetBalance_FreeData(void *bp, void *p)
+{
   AH_JOB_GETBALANCE *aj;
 
-  aj=(AH_JOB_GETBALANCE*)p;
+  aj=(AH_JOB_GETBALANCE *)p;
   GWEN_FREE_OBJECT(aj);
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AB_BALANCE *AH_Job_GetBalance__ReadBalance(GWEN_DB_NODE *dbT) {
+AB_BALANCE *AH_Job_GetBalance__ReadBalance(GWEN_DB_NODE *dbT)
+{
   AB_VALUE *v;
   const char *p;
   AB_BALANCE *bal;
@@ -124,11 +127,11 @@ AB_BALANCE *AH_Job_GetBalance__ReadBalance(GWEN_DB_NODE *dbT) {
   p=GWEN_DB_GetCharValue(dbT, "debitMark", 0, 0);
   if (p) {
     if (strcasecmp(p, "D")==0 ||
-	strcasecmp(p, "RC")==0) {
+        strcasecmp(p, "RC")==0) {
       isCredit=0;
     }
     else if (strcasecmp(p, "C")==0 ||
-	     strcasecmp(p, "RD")==0)
+             strcasecmp(p, "RD")==0)
       isCredit=1;
     else {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad debit mark \"%s\"", p);
@@ -185,10 +188,11 @@ AB_BALANCE *AH_Job_GetBalance__ReadBalance(GWEN_DB_NODE *dbT) {
 
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_GetBalance__ReadSecurities(AH_JOB *j,
-				      AB_IMEXPORTER_CONTEXT *ctx,
-				      const char *docType,
-				      int noted,
-				      GWEN_BUFFER *buf){
+                                      AB_IMEXPORTER_CONTEXT *ctx,
+                                      const char *docType,
+                                      int noted,
+                                      GWEN_BUFFER *buf)
+{
   GWEN_DBIO *dbio;
   GWEN_SYNCIO *sio;
   int rv;
@@ -200,7 +204,7 @@ int AH_Job_GetBalance__ReadSecurities(AH_JOB *j,
   uint32_t progressId;
   uint64_t cnt=0;
 
-  
+
   a=AH_AccountJob_GetAccount(j);
   assert(a);
   u=AH_Job_GetUser(j);
@@ -210,8 +214,8 @@ int AH_Job_GetBalance__ReadSecurities(AH_JOB *j,
   if (!dbio) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Plugin SWIFT is not found");
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Plugin \"SWIFT\" not found."));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Plugin \"SWIFT\" not found."));
     return AB_ERROR_PLUGIN_MISSING;
   }
 
@@ -222,21 +226,21 @@ int AH_Job_GetBalance__ReadSecurities(AH_JOB *j,
   db=GWEN_DB_Group_new("transactions");
   dbParams=GWEN_DB_Group_new("params");
   GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		       "type", docType);
+                       "type", docType);
   if (AH_User_GetFlags(u) & AH_USER_FLAGS_KEEP_MULTIPLE_BLANKS)
     GWEN_DB_SetIntValue(dbParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			"keepMultipleBlanks", 1);
+                        "keepMultipleBlanks", 1);
   else
     GWEN_DB_SetIntValue(dbParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			"keepMultipleBlanks", 0);
+                        "keepMultipleBlanks", 0);
 
   rv=GWEN_DBIO_Import(dbio, sio,
-		      db, dbParams,
-		      GWEN_PATH_FLAGS_CREATE_GROUP);
+                      db, dbParams,
+                      GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
-	      "Error parsing SWIFT %s (%d)",
-	      docType, rv);
+              "Error parsing SWIFT %s (%d)",
+              docType, rv);
     GWEN_DB_Group_free(dbParams);
     GWEN_DB_Group_free(db);
     GWEN_SyncIo_free(sio);
@@ -249,23 +253,23 @@ int AH_Job_GetBalance__ReadSecurities(AH_JOB *j,
 
   /* first count the securities */
   dbSecurity=GWEN_DB_FindFirstGroup(db, "security");
-  while(dbSecurity) {
+  while (dbSecurity) {
     cnt++;
     dbSecurity=GWEN_DB_FindNextGroup(dbSecurity, "security");
   } /* while */
 
   progressId=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
-				    GWEN_GUI_PROGRESS_ALLOW_EMBED |
-				    GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-				    GWEN_GUI_PROGRESS_SHOW_ABORT,
-				    I18N("Importing transactions..."),
-				    NULL,
-				    cnt,
-				    0);
+                                    GWEN_GUI_PROGRESS_ALLOW_EMBED |
+                                    GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+                                    GWEN_GUI_PROGRESS_SHOW_ABORT,
+                                    I18N("Importing transactions..."),
+                                    NULL,
+                                    cnt,
+                                    0);
 
   /* add security to list */
   dbSecurity=GWEN_DB_FindFirstGroup(db, "security");
-  while(dbSecurity) {
+  while (dbSecurity) {
     AB_SECURITY *asec;
     AB_VALUE *aval;
     GWEN_TIME *gt;
@@ -299,18 +303,19 @@ int AH_Job_GetBalance__ReadSecurities(AH_JOB *j,
     if (p) {
       aval=AB_Value_fromString(p);
       p=GWEN_DB_GetCharValue(dbSecurity, "unitCurrency", 0, NULL);
-      if (p) AB_Value_SetCurrency(aval, p);
+      if (p)
+        AB_Value_SetCurrency(aval, p);
       AB_Security_SetUnitPriceValue(asec, aval);
       AB_Value_free(aval);
     }
 
     gt=GWEN_Time_fromDb(GWEN_DB_GetGroup(dbSecurity,
-					 GWEN_DB_FLAGS_DEFAULT,
-					 "unitPriceDate"));
+                                         GWEN_DB_FLAGS_DEFAULT,
+                                         "unitPriceDate"));
     if (gt) {
       AB_Security_SetUnitPriceDate(asec, gt);
     }
-    
+
     AB_ImExporterContext_AddSecurity(ctx, asec);
 
     GWEN_Time_free(gt);
@@ -326,7 +331,8 @@ int AH_Job_GetBalance__ReadSecurities(AH_JOB *j,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AH_JOB_GETBALANCE *aj;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -340,10 +346,10 @@ int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
   dbResponses=AH_Job_GetResponses(j);
   assert(dbResponses);
-  
+
   /* search for "Balance" */
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
-  while(dbCurr) {
+  while (dbCurr) {
     GWEN_DB_NODE *dbBalance;
 
     rv=AH_Job_CheckEncryption(j, dbCurr);
@@ -374,11 +380,11 @@ int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       a=AH_AccountJob_GetAccount(j);
       assert(a);
       ai=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
-						  AB_Account_GetUniqueId(a),
-						  AB_Account_GetIban(a),
-						  AB_Account_GetBankCode(a),
-						  AB_Account_GetAccountNumber(a),
-						  AB_Account_GetAccountType(a));
+                                                  AB_Account_GetUniqueId(a),
+                                                  AB_Account_GetIban(a),
+                                                  AB_Account_GetBankCode(a),
+                                                  AB_Account_GetAccountNumber(a),
+                                                  AB_Account_GetAccountType(a));
       assert(ai);
 
 
@@ -389,8 +395,8 @@ int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
         bal=AH_Job_GetBalance__ReadBalance(dbT);
         if (bal) {
-	  AB_Balance_SetType(bal, AB_Balance_TypeBooked);
-	  AB_ImExporterAccountInfo_AddBalance(ai, bal);
+          AB_Balance_SetType(bal, AB_Balance_TypeBooked);
+          AB_ImExporterAccountInfo_AddBalance(ai, bal);
         }
       }
 
@@ -401,9 +407,9 @@ int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
         bal=AH_Job_GetBalance__ReadBalance(dbT);
         if (bal) {
-	  AB_Balance_SetType(bal, AB_Balance_TypeNoted);
-	  AB_ImExporterAccountInfo_AddBalance(ai, bal);
-	}
+          AB_Balance_SetType(bal, AB_Balance_TypeNoted);
+          AB_ImExporterAccountInfo_AddBalance(ai, bal);
+        }
       }
 
 #if 0
@@ -435,7 +441,8 @@ int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetBalanceInvestment_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_GetBalanceInvestment_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AH_JOB_GETBALANCE *aj;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -452,12 +459,12 @@ int AH_Job_GetBalanceInvestment_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
   dbResponses=AH_Job_GetResponses(j);
   assert(dbResponses);
-  
+
   tbooked=GWEN_Buffer_new(0, 8192, 0, 1);
 
   /* search for "Balance" */
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
-  while(dbCurr) {
+  while (dbCurr) {
     GWEN_DB_NODE *dbBalance;
 
     //GWEN_DB_Dump(dbCurr, 8);
@@ -488,7 +495,7 @@ int AH_Job_GetBalanceInvestment_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
       p=GWEN_DB_GetBinValue(dbBalance, "booked", 0, 0, 0, &bs);
       if (p && bs)
-	GWEN_Buffer_AppendBytes(tbooked, p, bs);
+        GWEN_Buffer_AppendBytes(tbooked, p, bs);
 
       break; /* break loop, we found the balance */
     } /* if(dbBalance) */
@@ -512,7 +519,7 @@ int AH_Job_GetBalanceInvestment_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   /* read received securities */
   if (GWEN_Buffer_GetUsedBytes(tbooked)) {
 
-    if (AH_Job_GetBalance__ReadSecurities(j, ctx, "mt535", 0, tbooked)){
+    if (AH_Job_GetBalance__ReadSecurities(j, ctx, "mt535", 0, tbooked)) {
       GWEN_Buffer_free(tbooked);
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error parsing received securities");
       AH_Job_SetStatus(j, AH_JobStatusError);

@@ -40,7 +40,8 @@ static int _addAccount(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *account);
 
 
 
-int EBC_Provider_XchgHkdRequest(AB_PROVIDER *pro, GWEN_HTTP_SESSION *sess, AB_USER *u) {
+int EBC_Provider_XchgHkdRequest(AB_PROVIDER *pro, GWEN_HTTP_SESSION *sess, AB_USER *u)
+{
   int rv;
 
   rv=_xchgHkdRequest(pro, sess, u, "HKD");
@@ -54,7 +55,8 @@ int EBC_Provider_XchgHkdRequest(AB_PROVIDER *pro, GWEN_HTTP_SESSION *sess, AB_US
 
 
 
-int EBC_Provider_XchgHtdRequest(AB_PROVIDER *pro, GWEN_HTTP_SESSION *sess, AB_USER *u) {
+int EBC_Provider_XchgHtdRequest(AB_PROVIDER *pro, GWEN_HTTP_SESSION *sess, AB_USER *u)
+{
   int rv;
 
   rv=_xchgHkdRequest(pro, sess, u, "HTD");
@@ -69,7 +71,8 @@ int EBC_Provider_XchgHtdRequest(AB_PROVIDER *pro, GWEN_HTTP_SESSION *sess, AB_US
 
 
 
-int _xchgHkdRequest(AB_PROVIDER *pro, GWEN_HTTP_SESSION *sess, AB_USER *u, const char *requestName) {
+int _xchgHkdRequest(AB_PROVIDER *pro, GWEN_HTTP_SESSION *sess, AB_USER *u, const char *requestName)
+{
   int rv;
   GWEN_BUFFER *buf;
 
@@ -124,37 +127,38 @@ int _xchgHkdRequest(AB_PROVIDER *pro, GWEN_HTTP_SESSION *sess, AB_USER *u, const
 
 
 
-void _sampleAccounts(xmlNodePtr node, GWEN_DB_NODE *dbAll) {
+void _sampleAccounts(xmlNodePtr node, GWEN_DB_NODE *dbAll)
+{
   xmlNodePtr nodeX;
 
   /* sample accounts */
   nodeX=node->children;
-  while(nodeX) {
+  while (nodeX) {
     if (nodeX->type==XML_ELEMENT_NODE) {
-      if (nodeX->name && strcmp((const char*)nodeX->name, "AccountInfo")==0) {
+      if (nodeX->name && strcmp((const char *)nodeX->name, "AccountInfo")==0) {
         GWEN_DB_NODE *db;
         xmlChar *xs;
         xmlNodePtr nodeXX;
-  
+
         DBG_DEBUG(AQEBICS_LOGDOMAIN, "Reading AccountInfo node");
-  
+
         db=GWEN_DB_GetGroup(dbAll, GWEN_PATH_FLAGS_CREATE_GROUP, "Account");
-  
+
         xs=xmlGetProp(nodeX, BAD_CAST "ID");
         if (xs) {
-          GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "EbicsId", (const char*)xs);
+          GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "EbicsId", (const char *)xs);
           xmlFree(xs);
         }
 
         xs=xmlGetProp(nodeX, BAD_CAST "Currency");
         if (xs) {
-          GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "Currency", (const char*)xs);
+          GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "Currency", (const char *)xs);
           xmlFree(xs);
         }
 
         xs=xmlGetProp(nodeX, BAD_CAST "Description");
         if (xs) {
-          GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "AccountName", (const char*)xs);
+          GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "AccountName", (const char *)xs);
           xmlFree(xs);
         }
 
@@ -162,68 +166,68 @@ void _sampleAccounts(xmlNodePtr node, GWEN_DB_NODE *dbAll) {
         while (nodeXX) {
           if (nodeXX->type==XML_ELEMENT_NODE &&
               nodeXX->name) {
-            if (strcmp((const char*)nodeXX->name, "AccountNumber")==0) {
+            if (strcmp((const char *)nodeXX->name, "AccountNumber")==0) {
               xs=xmlGetProp(nodeXX, BAD_CAST "international");
               if (xs) {
                 xmlNodePtr nodeXXX=NULL;
 
-                if (strcasecmp((const char*)xs, "false")==0) {
+                if (strcasecmp((const char *)xs, "false")==0) {
                   nodeXXX=nodeXX->children;
                   if (nodeXXX->type==XML_TEXT_NODE && nodeXXX->content) {
-                    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "AccountNumber", (const char*)nodeXXX->content);
+                    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "AccountNumber", (const char *)nodeXXX->content);
                   }
                 }
                 else {
                   nodeXXX=nodeXX->children;
                   if (nodeXXX->type==XML_TEXT_NODE && nodeXXX->content) {
-                    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "IBAN", (const char*)nodeXXX->content);
+                    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "IBAN", (const char *)nodeXXX->content);
                   }
                 }
                 xmlFree(xs);
               }
             }
-            else if (strcmp((const char*)nodeXX->name, "NationalAccountNumber")==0) {
+            else if (strcmp((const char *)nodeXX->name, "NationalAccountNumber")==0) {
               xmlNodePtr nodeXXX=NULL;
-  
+
               nodeXXX=nodeXX->children;
               if (nodeXXX->type==XML_TEXT_NODE && nodeXXX->content) {
-                GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "AccountNumber", (const char*)nodeXXX->content);
+                GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "AccountNumber", (const char *)nodeXXX->content);
               }
             }
-            else if (strcmp((const char*)nodeXX->name, "BankCode")==0) {
+            else if (strcmp((const char *)nodeXX->name, "BankCode")==0) {
               xs=xmlGetProp(nodeXX, BAD_CAST "international");
               if (xs) {
                 xmlNodePtr nodeXXX=NULL;
-  
-                if (strcasecmp((const char*)xs, "false")==0) {
+
+                if (strcasecmp((const char *)xs, "false")==0) {
                   nodeXXX=nodeXX->children;
                   if (nodeXXX->type==XML_TEXT_NODE && nodeXXX->content) {
-                    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "BankCode", (const char*)nodeXXX->content);
+                    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "BankCode", (const char *)nodeXXX->content);
                   }
                 }
                 else {
                   nodeXXX=nodeXX->children;
                   if (nodeXXX->type==XML_TEXT_NODE && nodeXXX->content) {
-                    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "BIC", (const char*)nodeXXX->content);
+                    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "BIC", (const char *)nodeXXX->content);
                   }
                 }
                 xmlFree(xs);
               }
             }
-            else if (strcmp((const char*)nodeXX->name, "NationalBankCode")==0) {
+            else if (strcmp((const char *)nodeXX->name, "NationalBankCode")==0) {
               xmlNodePtr nodeXXX=NULL;
-  
+
               nodeXXX=nodeXX->children;
               if (nodeXXX->type==XML_TEXT_NODE && nodeXXX->content) {
-                GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "BankCode", (const char*)nodeXXX->content);
+                GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "BankCode", (const char *)nodeXXX->content);
               }
             }
-            else if (strcmp((const char*)nodeXX->name, "AccountHolder")==0) {
+            else if (strcmp((const char *)nodeXX->name, "AccountHolder")==0) {
               xmlNodePtr nodeXXX=NULL;
-  
+
               nodeXXX=nodeXX->children;
               if (nodeXXX->type==XML_TEXT_NODE && nodeXXX->content) {
-                GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "owner", (const char*)nodeXXX->content);
+                GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "owner", (const char *)nodeXXX->content);
               }
             }
           }
@@ -237,14 +241,15 @@ void _sampleAccounts(xmlNodePtr node, GWEN_DB_NODE *dbAll) {
 
 
 
-AB_ACCOUNT_LIST *_readAccounts(AB_PROVIDER *pro, GWEN_DB_NODE *dbAll) {
+AB_ACCOUNT_LIST *_readAccounts(AB_PROVIDER *pro, GWEN_DB_NODE *dbAll)
+{
   AB_ACCOUNT_LIST *accountList;
   GWEN_DB_NODE *db;
 
   accountList=AB_Account_List_new();
 
   db=GWEN_DB_FindFirstGroup(dbAll, "Account");
-  while(db) {
+  while (db) {
     AB_ACCOUNT *account;
 
     account=_readAccount(pro, db);
@@ -264,7 +269,8 @@ AB_ACCOUNT_LIST *_readAccounts(AB_PROVIDER *pro, GWEN_DB_NODE *dbAll) {
 
 
 
-AB_ACCOUNT *_readAccount(AB_PROVIDER *pro, GWEN_DB_NODE *db) {
+AB_ACCOUNT *_readAccount(AB_PROVIDER *pro, GWEN_DB_NODE *db)
+{
   AB_ACCOUNT *a;
   const char *s;
 
@@ -316,14 +322,15 @@ AB_ACCOUNT *_readAccount(AB_PROVIDER *pro, GWEN_DB_NODE *db) {
 
 
 
-void _removeEmptyAccountsFromList(AB_ACCOUNT_LIST *accList){
+void _removeEmptyAccountsFromList(AB_ACCOUNT_LIST *accList)
+{
   /* only keep accounts which have at least IBAN or bankcode and account number */
   DBG_INFO(AQEBICS_LOGDOMAIN, "Checking for empty accounts");
   if (AB_Account_List_GetCount(accList)) {
     AB_ACCOUNT *acc;
 
     acc=AB_Account_List_First(accList);
-    while(acc) {
+    while (acc) {
       AB_ACCOUNT *accNext;
       const char *accountNum;
       const char *bankCode;
@@ -346,7 +353,8 @@ void _removeEmptyAccountsFromList(AB_ACCOUNT_LIST *accList){
 
 
 
-void _assignIdsOfStoredAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accountList){
+void _assignIdsOfStoredAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accountList)
+{
   AB_ACCOUNT_SPEC_LIST *accountSpecList=NULL;
   int rv;
 
@@ -359,7 +367,7 @@ void _assignIdsOfStoredAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accountList){
     AB_ACCOUNT *account;
 
     account=AB_Account_List_First(accountList);
-    while(account) {
+    while (account) {
       AB_ACCOUNT_SPEC *accountSpec;
 
       accountSpec=AB_Provider_FindMatchingAccountSpec(pro, account, accountSpecList);
@@ -379,11 +387,12 @@ void _assignIdsOfStoredAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accountList){
 
 
 
-void _addOrModifyAccounts(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT_LIST *accountList) {
+void _addOrModifyAccounts(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT_LIST *accountList)
+{
   AB_ACCOUNT *account;
 
   account=AB_Account_List_First(accountList);
-  while(account) {
+  while (account) {
     uint32_t uniqueId;
 
     uniqueId=AB_Account_GetUniqueId(account);
@@ -409,7 +418,8 @@ void _addOrModifyAccounts(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT_LIST *acco
 
 
 
-int _modifyExistingAccount(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *account) {
+int _modifyExistingAccount(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *account)
+{
   int rv;
   AB_ACCOUNT *storedAccount=NULL;
   uint32_t uniqueId;
@@ -425,7 +435,7 @@ int _modifyExistingAccount(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *account)
   }
   else {
     const char *s;
-  
+
     /* account is locked now, apply changes */
     assert(storedAccount);
 
@@ -436,47 +446,47 @@ int _modifyExistingAccount(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *account)
     s=AB_Account_GetCountry(account);
     if (s && *s)
       AB_Account_SetCountry(storedAccount, s);
-  
+
     s=AB_Account_GetBankCode(account);
     if (s && *s)
       AB_Account_SetBankCode(storedAccount, s);
-  
+
     s=AB_Account_GetBankName(account);
     if (s && *s)
       AB_Account_SetBankName(storedAccount, s);
-  
+
     s=AB_Account_GetAccountNumber(account);
     if (s && *s)
       AB_Account_SetAccountNumber(storedAccount, s);
-  
+
     s=AB_Account_GetSubAccountId(account);
     if (s && *s)
       AB_Account_SetSubAccountId(storedAccount, s);
-  
+
     s=AB_Account_GetIban(account);
     if (s && *s)
       AB_Account_SetIban(storedAccount, s);
-  
+
     s=AB_Account_GetBic(account);
     if (s && *s)
       AB_Account_SetBic(storedAccount, s);
-  
+
     s=AB_Account_GetOwnerName(account);
     if (s && *s)
       AB_Account_SetOwnerName(storedAccount, s);
-  
+
     s=AB_Account_GetCurrency(account);
     if (s && *s)
       AB_Account_SetCurrency(storedAccount, s);
-  
+
     AB_Account_SetAccountType(storedAccount, AB_Account_GetAccountType(account));
-  
+
     /* add flags from new account */
     EBC_Account_AddFlags(storedAccount, EBC_Account_GetFlags(account));
-  
+
     /* handle users */
     AB_Account_SetUserId(storedAccount, AB_User_GetUniqueId(user));
-  
+
     /* unlock account */
     rv=AB_Provider_EndExclUseAccount(pro, storedAccount, 0);
     if (rv<0) {
@@ -491,7 +501,8 @@ int _modifyExistingAccount(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *account)
 
 
 
-int _addAccount(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *account) {
+int _addAccount(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *account)
+{
   int rv;
 
   /* account is new, add it */

@@ -24,7 +24,8 @@
 GWEN_INHERIT(AB_ACCOUNT, AO_ACCOUNT)
 
 
-AB_ACCOUNT *AO_Account_new(AB_PROVIDER *pro) {
+AB_ACCOUNT *AO_Account_new(AB_PROVIDER *pro)
+{
   AB_ACCOUNT *a;
   AO_ACCOUNT *ae;
 
@@ -47,7 +48,8 @@ AB_ACCOUNT *AO_Account_new(AB_PROVIDER *pro) {
 
 
 
-int AO_Account_ReadFromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+int AO_Account_ReadFromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db)
+{
   AO_ACCOUNT *ae;
   GWEN_DB_NODE *dbP;
   int rv;
@@ -81,7 +83,8 @@ int AO_Account_ReadFromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
 
 
 
-int AO_Account_WriteToDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+int AO_Account_WriteToDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db)
+{
   AO_ACCOUNT *ae;
   GWEN_DB_NODE *dbP;
   int rv;
@@ -108,17 +111,19 @@ int AO_Account_WriteToDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db) {
 
 
 
-void GWENHYWFAR_CB AO_Account_freeData(void *bp, void *p) {
+void GWENHYWFAR_CB AO_Account_freeData(void *bp, void *p)
+{
   AO_ACCOUNT *ae;
 
-  ae=(AO_ACCOUNT*) p;
+  ae=(AO_ACCOUNT *) p;
 
   GWEN_FREE_OBJECT(ae);
 }
 
 
 
-int AO_Account_GetMaxPurposeLines(const AB_ACCOUNT *a){
+int AO_Account_GetMaxPurposeLines(const AB_ACCOUNT *a)
+{
   AO_ACCOUNT *ae;
 
   assert(a);
@@ -130,7 +135,8 @@ int AO_Account_GetMaxPurposeLines(const AB_ACCOUNT *a){
 
 
 
-void AO_Account_SetMaxPurposeLines(AB_ACCOUNT *a, int i){
+void AO_Account_SetMaxPurposeLines(AB_ACCOUNT *a, int i)
+{
   AO_ACCOUNT *ae;
 
   assert(a);
@@ -142,7 +148,8 @@ void AO_Account_SetMaxPurposeLines(AB_ACCOUNT *a, int i){
 
 
 
-int AO_Account_GetDebitAllowed(const AB_ACCOUNT *a){
+int AO_Account_GetDebitAllowed(const AB_ACCOUNT *a)
+{
   AO_ACCOUNT *ae;
 
   assert(a);
@@ -154,7 +161,8 @@ int AO_Account_GetDebitAllowed(const AB_ACCOUNT *a){
 
 
 
-void AO_Account_SetDebitAllowed(AB_ACCOUNT *a, int i){
+void AO_Account_SetDebitAllowed(AB_ACCOUNT *a, int i)
+{
   AO_ACCOUNT *ae;
 
   assert(a);

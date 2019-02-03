@@ -19,116 +19,118 @@
 
 
 
-static void showVersions() {
+static void showVersions()
+{
   int vmajor, vminor, vpatchLevel, vbuild;
 
   fprintf(stdout, "Versions:\n");
   GWEN_Version(&vmajor,
-	       &vminor,
-	       &vpatchLevel,
-	       &vbuild);
+               &vminor,
+               &vpatchLevel,
+               &vbuild);
   fprintf(stdout, " Gwenhywfar   : %d.%d.%d.%d\n",
-	  vmajor, vminor, vpatchLevel, vbuild);
+          vmajor, vminor, vpatchLevel, vbuild);
 
   AB_Banking_GetVersion(&vmajor,
-			&vminor,
-			&vpatchLevel,
-			&vbuild);
+                        &vminor,
+                        &vpatchLevel,
+                        &vbuild);
   fprintf(stdout, " AqBanking    : %d.%d.%d.%d\n",
-	  vmajor, vminor, vpatchLevel, vbuild);
+          vmajor, vminor, vpatchLevel, vbuild);
 
 }
 
 
 
-static void showUsage(const char *prgName) {
+static void showUsage(const char *prgName)
+{
   GWEN_BUFFER *ubuf;
 
   ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("Usage: "));
+                           I18N("Usage: "));
   GWEN_Buffer_AppendString(ubuf, prgName);
   GWEN_Buffer_AppendString(ubuf, I18N(" COMMAND [LOCAL OPTIONS]\n"));
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("\nCommands:\n\n"));
+                           I18N("\nCommands:\n\n"));
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  mkpinlist:\n"
-				"    This command creates an empty PIN "
-				"file\n\n"));
+                           I18N("  mkpinlist:\n"
+                                "    This command creates an empty PIN "
+                                "file\n\n"));
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  adduser:\n"
-				"    Adds a user "
-				"(-> setup HBCI for a bank)\n\n"));
+                           I18N("  adduser:\n"
+                                "    Adds a user "
+                                "(-> setup HBCI for a bank)\n\n"));
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  deluser:\n"
-				"    Deletes a user.\n\n"));
+                           I18N("  deluser:\n"
+                                "    Deletes a user.\n\n"));
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  getkeys:\n"
-				"    Requests the server's key\n\n"));
+                           I18N("  getkeys:\n"
+                                "    Requests the server's key\n\n"));
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  getcert:\n"
-				"    Requests the server's SSL certificate\n\n"));
+                           I18N("  getcert:\n"
+                                "    Requests the server's SSL certificate\n\n"));
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  createkeys:\n"
-				"    Create user keys.\n\n"));
+                           I18N("  createkeys:\n"
+                                "    Create user keys.\n\n"));
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  sendkeys:\n"
-				"    Send the user keys to the bank.\n\n"));
+                           I18N("  sendkeys:\n"
+                                "    Send the user keys to the bank.\n\n"));
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  getaccounts:\n"
-				"    Requests account list for a "
-				"user\n\n"));
+                           I18N("  getaccounts:\n"
+                                "    Requests account list for a "
+                                "user\n\n"));
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  getaccsepa:\n"
-				"    Requests SEPA account list for a "
-				"user\n\n"));
+                           I18N("  getaccsepa:\n"
+                                "    Requests SEPA account list for a "
+                                "user\n\n"));
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  getsysid:\n"
-				"    Requests a system id for the given "
-				"user\n\n"));
+                           I18N("  getsysid:\n"
+                                "    Requests a system id for the given "
+                                "user\n\n"));
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  getitanmodes:\n"
-				"    Requests supported iTAN modes for the given "
-				"user\n\n"));
+                           I18N("  getitanmodes:\n"
+                                "    Requests supported iTAN modes for the given "
+                                "user\n\n"));
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  listitanmodes:\n"
-				"    Show a list of supported iTAN modes for the given "
-				"user\n\n"));
+                           I18N("  listitanmodes:\n"
+                                "    Show a list of supported iTAN modes for the given "
+                                "user\n\n"));
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  listusers:\n"
-				"    List the users\n\n"));
+                           I18N("  listusers:\n"
+                                "    List the users\n\n"));
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  listaccounts:\n"
-				"    List the accounts\n\n"));
+                           I18N("  listaccounts:\n"
+                                "    List the accounts\n\n"));
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  changepin:\n"
-				"    Change the PIN of a key file\n\n"));
+                           I18N("  changepin:\n"
+                                "    Change the PIN of a key file\n\n"));
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  iniletter:\n"
-				"    Print the INI letter for a given "
-				"user\n\n"));
+                           I18N("  iniletter:\n"
+                                "    Print the INI letter for a given "
+                                "user\n\n"));
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  addaccount:\n"
-				"    Manually add account \n\n"));
+                           I18N("  addaccount:\n"
+                                "    Manually add account \n\n"));
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  delaccount:\n"
-				"    Deletes account \n\n"));
+                           I18N("  delaccount:\n"
+                                "    Deletes account \n\n"));
 
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  sethbciversion:\n"
-				"    Set the HBCI protocol version to be used\n\n"));
+                           I18N("  sethbciversion:\n"
+                                "    Set the HBCI protocol version to be used\n\n"));
 
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  setMaxTransfers:\n"
-				"    Set the maximum number of transfers/debit notes per job \n\n"));
+                           I18N("  setMaxTransfers:\n"
+                                "    Set the maximum number of transfers/debit notes per job \n\n"));
 
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  setsepaprofile:\n"
-				"    Set the SEPA profile for transfers/debit notes\n\n"));
+                           I18N("  setsepaprofile:\n"
+                                "    Set the SEPA profile for transfers/debit notes\n\n"));
 
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  setTanMediumId:\n"
-				"    Set the medium id for some PIN/TAN methods (like mTAN) \n\n"));
+                           I18N("  setTanMediumId:\n"
+                                "    Set the medium id for some PIN/TAN methods (like mTAN) \n\n"));
 
   fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
   GWEN_Buffer_free(ubuf);
@@ -136,13 +138,14 @@ static void showUsage(const char *prgName) {
 
 
 
-int AH_Control(AB_PROVIDER *pro, int argc, char **argv) {
+int AH_Control(AB_PROVIDER *pro, int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   const char *cmd;
   int rv;
 
   db=GWEN_DB_Group_new("arguments");
-  if (argc<1){
+  if (argc<1) {
     showUsage(argv[0]);
     GWEN_DB_Group_free(db);
     return 0;

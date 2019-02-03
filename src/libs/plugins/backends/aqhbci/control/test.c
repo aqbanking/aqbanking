@@ -27,7 +27,8 @@
 int AH_Control_Test1(AB_PROVIDER *pro,
                      GWEN_DB_NODE *dbArgs,
                      int argc,
-                     char **argv) {
+                     char **argv)
+{
   return 0;
 }
 

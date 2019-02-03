@@ -20,47 +20,48 @@
 int addMedium(AB_BANKING *ab,
               GWEN_DB_NODE *dbArgs,
               int argc,
-              char **argv) {
+              char **argv)
+{
   GWEN_DB_NODE *db;
   AB_PROVIDER *pro;
   int rv;
   const char *mediumName;
   const char *mediumType;
   GWEN_CRYPT_TOKEN_DEVICE dev;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsTypeChar,            /* type */
-    "mediumType",                 /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "t",                            /* short option */
-    "mediumtype",                 /* long option */
-    "Specify the medium type (file, card or pintan)",      /* short description */
-    "Specify the medium type (file, card or pintan)"       /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsTypeChar,            /* type */
-    "mediumName",                 /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "m",                          /* short option */
-    "mediumname",                 /* long option */
-    "Specify the medium name",    /* short description */
-    "Specify the medium name"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsTypeInt,             /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsTypeChar,            /* type */
+      "mediumType",                 /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "t",                            /* short option */
+      "mediumtype",                 /* long option */
+      "Specify the medium type (file, card or pintan)",      /* short description */
+      "Specify the medium type (file, card or pintan)"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsTypeChar,            /* type */
+      "mediumName",                 /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "m",                          /* short option */
+      "mediumname",                 /* long option */
+      "Specify the medium name",    /* short description */
+      "Specify the medium name"     /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsTypeInt,             /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");

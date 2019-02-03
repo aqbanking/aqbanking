@@ -35,7 +35,8 @@
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   AB_BANKING *ab;
   int rv;
   AB_ACCOUNT_SPEC_LIST *accs=NULL;
@@ -125,11 +126,11 @@ int main(int argc, char **argv) {
       AB_IMEXPORTER_ACCOUNTINFO *ai;
 
       ai=AB_ImExporterContext_GetFirstAccountInfo(ctx);
-      while(ai) {
+      while (ai) {
         const AB_TRANSACTION *t;
 
         t=AB_ImExporterAccountInfo_GetFirstTransaction(ai, 0, 0);
-        while(t) {
+        while (t) {
           const AB_VALUE *v;
 
           v=AB_Transaction_GetValue(t);
@@ -141,7 +142,7 @@ int main(int argc, char **argv) {
 
             fprintf(stderr, " %-32s (%.2f %s)\n",
                     purpose,
-		    AB_Value_GetValueAsDouble(v),
+                    AB_Value_GetValueAsDouble(v),
                     AB_Value_GetCurrency(v));
           }
           t=AB_Transaction_List_Next(t);

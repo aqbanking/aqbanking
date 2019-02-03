@@ -14,9 +14,10 @@
 
 int APY_Provider_ExecJobQueue(AB_PROVIDER *pro,
                               AB_IMEXPORTER_ACCOUNTINFO *ai,
-			      AB_USER *u,
-			      AB_ACCOUNT *a,
-			      AB_JOBQUEUE *jq) {
+                              AB_USER *u,
+                              AB_ACCOUNT *a,
+                              AB_JOBQUEUE *jq)
+{
   APY_PROVIDER *xp;
   AB_JOB_LIST2_ITERATOR *it;
   int errors=0;
@@ -31,30 +32,30 @@ int APY_Provider_ExecJobQueue(AB_PROVIDER *pro,
     AB_JOB *j;
 
     j=AB_Job_List2Iterator_Data(it);
-    while(j) {
+    while (j) {
       int rv=0;
 
-      switch(AB_Job_GetType(j)) {
+      switch (AB_Job_GetType(j)) {
       case AB_Job_TypeGetTransactions:
-	rv=APY_Provider_ExecGetTrans(pro, ai, u, j);
-	break;
+        rv=APY_Provider_ExecGetTrans(pro, ai, u, j);
+        break;
       case AB_Job_TypeGetBalance:
-	rv=APY_Provider_ExecGetBal(pro, ai, u, j);
-	break;
+        rv=APY_Provider_ExecGetBal(pro, ai, u, j);
+        break;
       case AB_Job_TypeTransfer:
       case AB_Job_TypeDebitNote:
       default:
-	DBG_INFO(AQPAYPAL_LOGDOMAIN,
-		 "Job not supported (%d)",
-		 AB_Job_GetType(j));
-	rv=GWEN_ERROR_NOT_SUPPORTED;
+        DBG_INFO(AQPAYPAL_LOGDOMAIN,
+                 "Job not supported (%d)",
+                 AB_Job_GetType(j));
+        rv=GWEN_ERROR_NOT_SUPPORTED;
       } /* switch */
 
       if (rv<0) {
-	errors++;
+        errors++;
       }
       else
-	oks++;
+        oks++;
 
       j=AB_Job_List2Iterator_Next(it);
     }
@@ -79,9 +80,10 @@ int APY_Provider_ExecJobQueue(AB_PROVIDER *pro,
 
 
 int APY_Provider_ExecAccountQueue(AB_PROVIDER *pro,
-				  AB_IMEXPORTER_CONTEXT *ctx,
-				  AB_USER *u,
-				  AB_ACCOUNTQUEUE *aq) {
+                                  AB_IMEXPORTER_CONTEXT *ctx,
+                                  AB_USER *u,
+                                  AB_ACCOUNTQUEUE *aq)
+{
   APY_PROVIDER *xp;
   AB_JOBQUEUE *jq;
   AB_ACCOUNT *a;
@@ -108,7 +110,7 @@ int APY_Provider_ExecAccountQueue(AB_PROVIDER *pro,
   }
 
   jq=AB_JobQueue_List_First(AB_AccountQueue_GetJobQueueList(aq));
-  while(jq) {
+  while (jq) {
     int rv;
 
     rv=APY_Provider_ExecJobQueue(pro, ai, u, a, jq);
@@ -135,8 +137,9 @@ int APY_Provider_ExecAccountQueue(AB_PROVIDER *pro,
 
 
 int APY_Provider_ExecUserQueue(AB_PROVIDER *pro,
-			       AB_IMEXPORTER_CONTEXT *ctx,
-			       AB_USERQUEUE *uq) {
+                               AB_IMEXPORTER_CONTEXT *ctx,
+                               AB_USERQUEUE *uq)
+{
   APY_PROVIDER *xp;
   AB_ACCOUNTQUEUE *aq;
   AB_USER *u;
@@ -179,7 +182,7 @@ int APY_Provider_ExecUserQueue(AB_PROVIDER *pro,
       *(t++)=0;
       t2=strchr(t, ':');
       if (t2) {
-	*(t2++)=0;
+        *(t2++)=0;
       }
     }
 
@@ -191,7 +194,7 @@ int APY_Provider_ExecUserQueue(AB_PROVIDER *pro,
       GWEN_Text_UnescapeToBufferTolerant(t, sbuf2);
       t=GWEN_Buffer_GetStart(sbuf2);
       if (t2) {
-	GWEN_Text_UnescapeToBufferTolerant(t2, sbuf3);
+        GWEN_Text_UnescapeToBufferTolerant(t2, sbuf3);
       }
     }
     APY_User_SetApiSecrets_l(u, GWEN_Buffer_GetStart(sbuf1), GWEN_Buffer_GetStart(sbuf2), GWEN_Buffer_GetStart(sbuf3));
@@ -202,7 +205,7 @@ int APY_Provider_ExecUserQueue(AB_PROVIDER *pro,
   }
 
   aq=AB_AccountQueue_List_First(AB_UserQueue_GetAccountQueueList(uq));
-  while(aq) {
+  while (aq) {
     int rv;
 
     rv=APY_Provider_ExecAccountQueue(pro, ctx, u, aq);
@@ -239,7 +242,8 @@ int APY_Provider_ExecUserQueue(AB_PROVIDER *pro,
 
 
 
-int APY_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
+int APY_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx)
+{
   APY_PROVIDER *xp;
   AB_USERQUEUE *uq;
   int errors=0;
@@ -255,7 +259,7 @@ int APY_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
   }
 
   uq=AB_UserQueue_List_First(AB_Queue_GetUserQueueList(xp->queue));
-  while(uq) {
+  while (uq) {
     int rv;
 
     rv=APY_Provider_ExecUserQueue(pro, ctx, uq);
@@ -281,24 +285,25 @@ int APY_Provider_Execute(AB_PROVIDER *pro, AB_IMEXPORTER_CONTEXT *ctx){
 
 
 
-int APY_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
+int APY_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j)
+{
   APY_PROVIDER *dp;
 
   assert(pro);
   dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, APY_PROVIDER, pro);
   assert(dp);
 
-  switch(AB_Job_GetType(j)) {
+  switch (AB_Job_GetType(j)) {
   case AB_Job_TypeGetTransactions:
     break;
   case AB_Job_TypeGetBalance:
-     break;
+    break;
   case AB_Job_TypeTransfer:
   case AB_Job_TypeDebitNote:
   default:
     DBG_INFO(AQPAYPAL_LOGDOMAIN,
-	     "Job not yet supported (%d)",
-	     AB_Job_GetType(j));
+             "Job not yet supported (%d)",
+             AB_Job_GetType(j));
     return GWEN_ERROR_NOT_SUPPORTED;
   } /* switch */
 
@@ -307,7 +312,8 @@ int APY_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j){
 
 
 
-int APY_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
+int APY_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j)
+{
   APY_PROVIDER *xp;
   AB_ACCOUNT *a;
   AB_USER *u;
@@ -317,7 +323,7 @@ int APY_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
   xp=GWEN_INHERIT_GETDATA(AB_PROVIDER, APY_PROVIDER, pro);
   assert(xp);
 
-  switch(AB_Job_GetType(j)) {
+  switch (AB_Job_GetType(j)) {
   case AB_Job_TypeGetTransactions:
     break;
   case AB_Job_TypeGetBalance:
@@ -326,8 +332,8 @@ int APY_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
   case AB_Job_TypeDebitNote:
   default:
     DBG_INFO(AQPAYPAL_LOGDOMAIN,
-	     "Job not supported (%d)",
-	     AB_Job_GetType(j));
+             "Job not supported (%d)",
+             AB_Job_GetType(j));
     return GWEN_ERROR_NOT_SUPPORTED;
   } /* switch */
 
@@ -358,9 +364,9 @@ int APY_Provider_AddJob(AB_PROVIDER *pro, AB_JOB *j){
       assert(dbCurrJob);
 
       GWEN_DB_SetIntValue(dbCurrJob,
-			  GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  "refJob",
-			  AB_Job_GetJobId(firstJob));
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "refJob",
+                          AB_Job_GetJobId(firstJob));
       /* don't add to queues */
       doAdd=0;
     }

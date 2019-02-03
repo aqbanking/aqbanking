@@ -30,7 +30,8 @@ GWEN_INHERIT(AB_IMEXPORTER, AB_IMEXPORTER_XML);
 
 
 
-AB_IMEXPORTER *AB_ImExporterXML_new(AB_BANKING *ab){
+AB_IMEXPORTER *AB_ImExporterXML_new(AB_BANKING *ab)
+{
   AB_IMEXPORTER *ie;
   AB_IMEXPORTER_XML *ieh;
 
@@ -46,10 +47,11 @@ AB_IMEXPORTER *AB_ImExporterXML_new(AB_BANKING *ab){
 
 
 
-void GWENHYWFAR_CB AB_ImExporterXML_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AB_ImExporterXML_FreeData(void *bp, void *p)
+{
   AB_IMEXPORTER_XML *ieh;
 
-  ieh=(AB_IMEXPORTER_XML*)p;
+  ieh=(AB_IMEXPORTER_XML *)p;
 
   GWEN_FREE_OBJECT(ieh);
 }
@@ -59,7 +61,8 @@ void GWENHYWFAR_CB AB_ImExporterXML_FreeData(void *bp, void *p){
 int AB_ImExporterXML_Import(AB_IMEXPORTER *ie,
                             AB_IMEXPORTER_CONTEXT *ctx,
                             GWEN_SYNCIO *sio,
-                            GWEN_DB_NODE *dbParams){
+                            GWEN_DB_NODE *dbParams)
+{
   AB_IMEXPORTER_XML *ieh;
   GWEN_DB_NODE *dbSubParams;
   const char *schemaName;
@@ -116,9 +119,10 @@ int AB_ImExporterXML_Import(AB_IMEXPORTER *ie,
 
 
 int AB_ImExporterXML_Export(AB_IMEXPORTER *ie,
-			    AB_IMEXPORTER_CONTEXT *ctx,
-			    GWEN_SYNCIO *sio,
-			    GWEN_DB_NODE *params){
+                            AB_IMEXPORTER_CONTEXT *ctx,
+                            GWEN_SYNCIO *sio,
+                            GWEN_DB_NODE *params)
+{
   AB_IMEXPORTER_XML *ieh;
 
   assert(ie);
@@ -130,7 +134,8 @@ int AB_ImExporterXML_Export(AB_IMEXPORTER *ie,
 
 
 
-int AB_ImExporterXML_CheckFile(AB_IMEXPORTER *ie, const char *fname){
+int AB_ImExporterXML_CheckFile(AB_IMEXPORTER *ie, const char *fname)
+{
   AB_IMEXPORTER_XML *ieh;
 
   assert(ie);
@@ -143,7 +148,9 @@ int AB_ImExporterXML_CheckFile(AB_IMEXPORTER *ie, const char *fname){
 
 
 
-GWEN_DB_NODE *AB_ImExporterXML_ImportIntoDbWithSchema(AB_IMEXPORTER *ie, GWEN_XMLNODE *xmlDocData, const char *schemaName){
+GWEN_DB_NODE *AB_ImExporterXML_ImportIntoDbWithSchema(AB_IMEXPORTER *ie, GWEN_XMLNODE *xmlDocData,
+                                                      const char *schemaName)
+{
   AB_IMEXPORTER_XML *ieh;
   GWEN_XMLNODE *xmlDocSchema;
   GWEN_DB_NODE *dbData;
@@ -168,7 +175,8 @@ GWEN_DB_NODE *AB_ImExporterXML_ImportIntoDbWithSchema(AB_IMEXPORTER *ie, GWEN_XM
 
 
 
-GWEN_DB_NODE *AB_ImExporterXML_ImportIntoDbWithoutSchema(AB_IMEXPORTER *ie, GWEN_XMLNODE *xmlDocData) {
+GWEN_DB_NODE *AB_ImExporterXML_ImportIntoDbWithoutSchema(AB_IMEXPORTER *ie, GWEN_XMLNODE *xmlDocData)
+{
   AB_IMEXPORTER_XML *ieh;
   GWEN_XMLNODE *xmlDocSchema;
   GWEN_DB_NODE *dbData;
@@ -193,7 +201,9 @@ GWEN_DB_NODE *AB_ImExporterXML_ImportIntoDbWithoutSchema(AB_IMEXPORTER *ie, GWEN
 
 
 
-GWEN_DB_NODE *AB_ImExporterXML_ImportIntoDbWithSchemaDoc(AB_IMEXPORTER *ie, GWEN_XMLNODE *xmlDocData, GWEN_XMLNODE *xmlDocSchema){
+GWEN_DB_NODE *AB_ImExporterXML_ImportIntoDbWithSchemaDoc(AB_IMEXPORTER *ie, GWEN_XMLNODE *xmlDocData,
+                                                         GWEN_XMLNODE *xmlDocSchema)
+{
   AB_IMEXPORTER_XML *ieh;
   GWEN_XMLNODE *xmlNodeSchema;
   GWEN_DB_NODE *dbData;
@@ -226,7 +236,8 @@ GWEN_DB_NODE *AB_ImExporterXML_ImportIntoDbWithSchemaDoc(AB_IMEXPORTER *ie, GWEN
 
 
 
-GWEN_XMLNODE *AB_ImExporterXML_ReadSchemaFromFile(AB_IMEXPORTER *ie, const char *schemaName){
+GWEN_XMLNODE *AB_ImExporterXML_ReadSchemaFromFile(AB_IMEXPORTER *ie, const char *schemaName)
+{
   GWEN_BUFFER *tbuf;
   GWEN_BUFFER *fullPathBuffer;
   GWEN_XMLNODE *xmlNodeFile;
@@ -239,7 +250,8 @@ GWEN_XMLNODE *AB_ImExporterXML_ReadSchemaFromFile(AB_IMEXPORTER *ie, const char 
   GWEN_Buffer_AppendString(tbuf, schemaName);
   GWEN_Buffer_AppendString(tbuf, ".xml");
 
-  rv=AB_Banking_FindDataFileForImExporter(AB_ImExporter_GetBanking(ie), "xml", GWEN_Buffer_GetStart(tbuf), fullPathBuffer);
+  rv=AB_Banking_FindDataFileForImExporter(AB_ImExporter_GetBanking(ie), "xml", GWEN_Buffer_GetStart(tbuf),
+                                          fullPathBuffer);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(tbuf);
@@ -266,7 +278,8 @@ GWEN_XMLNODE *AB_ImExporterXML_ReadSchemaFromFile(AB_IMEXPORTER *ie, const char 
     return xmlNodeSchema;
   }
   else {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing \"Schema\" in schema file \"%s\", ignoring.", GWEN_Buffer_GetStart(fullPathBuffer));
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing \"Schema\" in schema file \"%s\", ignoring.",
+              GWEN_Buffer_GetStart(fullPathBuffer));
     GWEN_XMLNode_free(xmlNodeFile);
     GWEN_Buffer_free(fullPathBuffer);
     return NULL;
@@ -275,7 +288,8 @@ GWEN_XMLNODE *AB_ImExporterXML_ReadSchemaFromFile(AB_IMEXPORTER *ie, const char 
 
 
 
-GWEN_XMLNODE *AB_ImExporterXML_DetermineSchema(AB_IMEXPORTER *ie, GWEN_XMLNODE *xmlDocData){
+GWEN_XMLNODE *AB_ImExporterXML_DetermineSchema(AB_IMEXPORTER *ie, GWEN_XMLNODE *xmlDocData)
+{
   GWEN_XMLNODE *xmlNodeAllSchemata;
 
   xmlNodeAllSchemata=AB_ImExporterXML_ReadSchemaFiles(ie);
@@ -304,7 +318,8 @@ GWEN_XMLNODE *AB_ImExporterXML_DetermineSchema(AB_IMEXPORTER *ie, GWEN_XMLNODE *
 
 
 
-GWEN_XMLNODE *AB_ImExporterXML_ReadSchemaFiles(AB_IMEXPORTER *ie){
+GWEN_XMLNODE *AB_ImExporterXML_ReadSchemaFiles(AB_IMEXPORTER *ie)
+{
   GWEN_STRINGLIST *slDataFiles;
 
   /* get list of all schema files */
@@ -316,27 +331,29 @@ GWEN_XMLNODE *AB_ImExporterXML_ReadSchemaFiles(AB_IMEXPORTER *ie){
     xmlNodeAllSchemata=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "allSchemaFiles");
 
     seDataFile=GWEN_StringList_FirstEntry(slDataFiles);
-    while(seDataFile) {
+    while (seDataFile) {
       GWEN_XMLNODE *xmlNodeFile;
       int rv;
 
       xmlNodeFile=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "schemaFile");
       rv=GWEN_XML_ReadFile(xmlNodeFile, GWEN_StringListEntry_Data(seDataFile),
-			   GWEN_XML_FLAGS_HANDLE_COMMENTS | GWEN_XML_FLAGS_HANDLE_HEADERS);
+                           GWEN_XML_FLAGS_HANDLE_COMMENTS | GWEN_XML_FLAGS_HANDLE_HEADERS);
       if (rv<0) {
-	DBG_ERROR(AQBANKING_LOGDOMAIN, "Error reading schema file \"%s\" (%d), ignoring.", GWEN_StringListEntry_Data(seDataFile), rv);
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Error reading schema file \"%s\" (%d), ignoring.",
+                  GWEN_StringListEntry_Data(seDataFile), rv);
       }
       else {
-	GWEN_XMLNODE *xmlNodeSchema;
+        GWEN_XMLNODE *xmlNodeSchema;
 
-	xmlNodeSchema=GWEN_XMLNode_FindFirstTag(xmlNodeFile, "Schema", NULL, NULL);
-	if (xmlNodeSchema) {
-	  GWEN_XMLNode_UnlinkChild(xmlNodeFile, xmlNodeSchema);
-	  GWEN_XMLNode_AddChild(xmlNodeAllSchemata, xmlNodeSchema);
-	}
-	else {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing \"Schema\" in schema file \"%s\", ignoring.", GWEN_StringListEntry_Data(seDataFile));
-	}
+        xmlNodeSchema=GWEN_XMLNode_FindFirstTag(xmlNodeFile, "Schema", NULL, NULL);
+        if (xmlNodeSchema) {
+          GWEN_XMLNode_UnlinkChild(xmlNodeFile, xmlNodeSchema);
+          GWEN_XMLNode_AddChild(xmlNodeAllSchemata, xmlNodeSchema);
+        }
+        else {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing \"Schema\" in schema file \"%s\", ignoring.",
+                    GWEN_StringListEntry_Data(seDataFile));
+        }
       } /* if (xmlNode) */
       GWEN_XMLNode_free(xmlNodeFile);
 
@@ -355,11 +372,13 @@ GWEN_XMLNODE *AB_ImExporterXML_ReadSchemaFiles(AB_IMEXPORTER *ie){
 
 
 
-GWEN_XMLNODE *AB_ImExporterXML_FindMatchingSchema(AB_IMEXPORTER *ie, GWEN_XMLNODE *xmlNodeAllSchemata, GWEN_XMLNODE *xmlDocData){
+GWEN_XMLNODE *AB_ImExporterXML_FindMatchingSchema(AB_IMEXPORTER *ie, GWEN_XMLNODE *xmlNodeAllSchemata,
+                                                  GWEN_XMLNODE *xmlDocData)
+{
   GWEN_XMLNODE *xmlNodeSchema;
 
   xmlNodeSchema=GWEN_XMLNode_FindFirstTag(xmlNodeAllSchemata, "Schema", NULL, NULL);
-  while(xmlNodeSchema) {
+  while (xmlNodeSchema) {
     GWEN_XMLNODE *xmlNodeDocMatches;
 
     xmlNodeDocMatches=GWEN_XMLNode_FindFirstTag(xmlNodeSchema, "DocMatches", NULL, NULL);
@@ -368,13 +387,13 @@ GWEN_XMLNODE *AB_ImExporterXML_FindMatchingSchema(AB_IMEXPORTER *ie, GWEN_XMLNOD
 
       xmlNodeMatch=GWEN_XMLNode_FindFirstTag(xmlNodeDocMatches, "Match", NULL, NULL);
       if (xmlNodeMatch) {
-	const char *xmlPropPath;
-	const char *sPattern;
+        const char *xmlPropPath;
+        const char *sPattern;
 
-	xmlPropPath=GWEN_XMLNode_GetProperty(xmlNodeMatch, "path", NULL);
-	sPattern=GWEN_XMLNode_GetCharValue(xmlNodeMatch, NULL, NULL);
-	if (xmlPropPath && *xmlPropPath && sPattern && *sPattern) {
-	  const char *sDocData;
+        xmlPropPath=GWEN_XMLNode_GetProperty(xmlNodeMatch, "path", NULL);
+        sPattern=GWEN_XMLNode_GetCharValue(xmlNodeMatch, NULL, NULL);
+        if (xmlPropPath && *xmlPropPath && sPattern && *sPattern) {
+          const char *sDocData;
 
           sDocData=AB_ImExporterXML_GetCharValueByPath(xmlDocData, xmlPropPath, NULL);
           if (sDocData && *sDocData) {
@@ -415,7 +434,8 @@ GWEN_XMLNODE *AB_ImExporterXML_FindMatchingSchema(AB_IMEXPORTER *ie, GWEN_XMLNOD
 
 
 
-const char *AB_ImExporterXML_GetCharValueByPath(GWEN_XMLNODE *xmlNode, const char *path, const char *defValue) {
+const char *AB_ImExporterXML_GetCharValueByPath(GWEN_XMLNODE *xmlNode, const char *path, const char *defValue)
+{
   const char *s;
 
   s=strchr(path, '@');
@@ -455,7 +475,8 @@ const char *AB_ImExporterXML_GetCharValueByPath(GWEN_XMLNODE *xmlNode, const cha
 
 
 
-GWEN_XMLNODE *AB_ImExporterXML_ReadXmlFromSio(AB_IMEXPORTER *ie, GWEN_SYNCIO *sio){
+GWEN_XMLNODE *AB_ImExporterXML_ReadXmlFromSio(AB_IMEXPORTER *ie, GWEN_SYNCIO *sio)
+{
   int rv;
   GWEN_XMLNODE *xmlDocRoot;
   GWEN_XML_CONTEXT *xmlCtx;
@@ -479,11 +500,12 @@ GWEN_XMLNODE *AB_ImExporterXML_ReadXmlFromSio(AB_IMEXPORTER *ie, GWEN_SYNCIO *si
 
 int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
                               AB_IMEXPORTER_CONTEXT *ctx,
-                              GWEN_DB_NODE *dbData){
+                              GWEN_DB_NODE *dbData)
+{
   GWEN_DB_NODE *dbAccount;
 
   dbAccount=GWEN_DB_FindFirstGroup(dbData, "account");
-  while(dbAccount) {
+  while (dbAccount) {
     AB_ACCOUNT_SPEC *accountSpec;
     AB_IMEXPORTER_ACCOUNTINFO *accountInfo;
     GWEN_DB_NODE *dbCurrent;
@@ -492,11 +514,11 @@ int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
     assert(accountSpec);
 
     accountInfo=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
-							 0,
-							 AB_AccountSpec_GetIban(accountSpec),
-							 AB_AccountSpec_GetBankCode(accountSpec),
-							 AB_AccountSpec_GetAccountNumber(accountSpec),
-							 AB_AccountType_Unknown);
+                                                         0,
+                                                         AB_AccountSpec_GetIban(accountSpec),
+                                                         AB_AccountSpec_GetBankCode(accountSpec),
+                                                         AB_AccountSpec_GetAccountNumber(accountSpec),
+                                                         AB_AccountType_Unknown);
     assert(accountInfo);
 
     /* import transactions */

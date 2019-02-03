@@ -35,8 +35,9 @@ GWEN_INHERIT(AIO_OFX_GROUP, AIO_OFX_GROUP_SECINFO)
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_SECINFO_new(const char *groupName,
-					AIO_OFX_GROUP *parent,
-					GWEN_XML_CONTEXT *ctx) {
+                                        AIO_OFX_GROUP *parent,
+                                        GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_GROUP *g;
   AIO_OFX_GROUP_SECINFO *xg;
 
@@ -60,10 +61,11 @@ AIO_OFX_GROUP *AIO_OfxGroup_SECINFO_new(const char *groupName,
 
 
 GWENHYWFAR_CB
-void AIO_OfxGroup_SECINFO_FreeData(void *bp, void *p) {
+void AIO_OfxGroup_SECINFO_FreeData(void *bp, void *p)
+{
   AIO_OFX_GROUP_SECINFO *xg;
 
-  xg=(AIO_OFX_GROUP_SECINFO*)p;
+  xg=(AIO_OFX_GROUP_SECINFO *)p;
   assert(xg);
   free(xg->currentElement);
   free(xg->ticker);
@@ -75,7 +77,8 @@ void AIO_OfxGroup_SECINFO_FreeData(void *bp, void *p) {
 
 
 
-const char *AIO_OfxGroup_SECINFO_GetTicker(const AIO_OFX_GROUP *g) {
+const char *AIO_OfxGroup_SECINFO_GetTicker(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_SECINFO *xg;
 
   assert(g);
@@ -87,7 +90,8 @@ const char *AIO_OfxGroup_SECINFO_GetTicker(const AIO_OFX_GROUP *g) {
 
 
 
-void AIO_OfxGroup_SECINFO_SetTicker(AIO_OFX_GROUP *g, const char *s) {
+void AIO_OfxGroup_SECINFO_SetTicker(AIO_OFX_GROUP *g, const char *s)
+{
   AIO_OFX_GROUP_SECINFO *xg;
 
   assert(g);
@@ -95,13 +99,16 @@ void AIO_OfxGroup_SECINFO_SetTicker(AIO_OFX_GROUP *g, const char *s) {
   assert(xg);
 
   free(xg->ticker);
-  if (s) xg->ticker=strdup(s);
-  else xg->ticker=NULL;
+  if (s)
+    xg->ticker=strdup(s);
+  else
+    xg->ticker=NULL;
 }
 
 
 
-const char *AIO_OfxGroup_SECINFO_GetSecurityName(const AIO_OFX_GROUP *g) {
+const char *AIO_OfxGroup_SECINFO_GetSecurityName(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_SECINFO *xg;
 
   assert(g);
@@ -113,7 +120,8 @@ const char *AIO_OfxGroup_SECINFO_GetSecurityName(const AIO_OFX_GROUP *g) {
 
 
 
-void AIO_OfxGroup_SECINFO_SetSecurityName(AIO_OFX_GROUP *g, const char *s) {
+void AIO_OfxGroup_SECINFO_SetSecurityName(AIO_OFX_GROUP *g, const char *s)
+{
   AIO_OFX_GROUP_SECINFO *xg;
 
   assert(g);
@@ -121,13 +129,16 @@ void AIO_OfxGroup_SECINFO_SetSecurityName(AIO_OFX_GROUP *g, const char *s) {
   assert(xg);
 
   free(xg->secname);
-  if (s) xg->secname=strdup(s);
-  else xg->secname=NULL;
+  if (s)
+    xg->secname=strdup(s);
+  else
+    xg->secname=NULL;
 }
 
 
 
-const char *AIO_OfxGroup_SECINFO_GetUniqueId(const AIO_OFX_GROUP *g) {
+const char *AIO_OfxGroup_SECINFO_GetUniqueId(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_SECINFO *xg;
 
   assert(g);
@@ -139,7 +150,8 @@ const char *AIO_OfxGroup_SECINFO_GetUniqueId(const AIO_OFX_GROUP *g) {
 
 
 
-void AIO_OfxGroup_SECINFO_SetUniqueId(AIO_OFX_GROUP *g, const char *s) {
+void AIO_OfxGroup_SECINFO_SetUniqueId(AIO_OFX_GROUP *g, const char *s)
+{
   AIO_OFX_GROUP_SECINFO *xg;
 
   assert(g);
@@ -147,13 +159,16 @@ void AIO_OfxGroup_SECINFO_SetUniqueId(AIO_OFX_GROUP *g, const char *s) {
   assert(xg);
 
   free(xg->uniqueId);
-  if (s) xg->uniqueId=strdup(s);
-  else xg->uniqueId=NULL;
+  if (s)
+    xg->uniqueId=strdup(s);
+  else
+    xg->uniqueId=NULL;
 }
 
 
 
-const char *AIO_OfxGroup_SECINFO_GetNameSpace(const AIO_OFX_GROUP *g) {
+const char *AIO_OfxGroup_SECINFO_GetNameSpace(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_SECINFO *xg;
 
   assert(g);
@@ -165,7 +180,8 @@ const char *AIO_OfxGroup_SECINFO_GetNameSpace(const AIO_OFX_GROUP *g) {
 
 
 
-void AIO_OfxGroup_SECINFO_SetNameSpace(AIO_OFX_GROUP *g, const char *s) {
+void AIO_OfxGroup_SECINFO_SetNameSpace(AIO_OFX_GROUP *g, const char *s)
+{
   AIO_OFX_GROUP_SECINFO *xg;
 
   assert(g);
@@ -173,14 +189,17 @@ void AIO_OfxGroup_SECINFO_SetNameSpace(AIO_OFX_GROUP *g, const char *s) {
   assert(xg);
 
   free(xg->nameSpace);
-  if (s) xg->nameSpace=strdup(s);
-  else xg->nameSpace=NULL;
+  if (s)
+    xg->nameSpace=strdup(s);
+  else
+    xg->nameSpace=NULL;
 }
 
 
 
 int AIO_OfxGroup_SECINFO_StartTag(AIO_OFX_GROUP *g,
-				  const char *tagName) {
+                                  const char *tagName)
+{
   AIO_OFX_GROUP_SECINFO *xg;
   GWEN_XML_CONTEXT *ctx;
   AIO_OFX_GROUP *gNew=NULL;
@@ -206,7 +225,7 @@ int AIO_OfxGroup_SECINFO_StartTag(AIO_OFX_GROUP *g,
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	     "Ignoring tag [%s]", tagName);
+             "Ignoring tag [%s]", tagName);
   }
 
   if (gNew) {
@@ -219,7 +238,8 @@ int AIO_OfxGroup_SECINFO_StartTag(AIO_OFX_GROUP *g,
 
 
 
-int AIO_OfxGroup_SECINFO_AddData(AIO_OFX_GROUP *g, const char *data) {
+int AIO_OfxGroup_SECINFO_AddData(AIO_OFX_GROUP *g, const char *data)
+{
   AIO_OFX_GROUP_SECINFO *xg;
 
   assert(g);
@@ -241,15 +261,15 @@ int AIO_OfxGroup_SECINFO_AddData(AIO_OFX_GROUP *g, const char *data) {
     s=GWEN_Buffer_GetStart(buf);
     if (*s) {
       DBG_INFO(AQBANKING_LOGDOMAIN,
-	       "AddData: %s=[%s]", xg->currentElement, s);
+               "AddData: %s=[%s]", xg->currentElement, s);
       if (strcasecmp(xg->currentElement, "SECNAME")==0)
-	AIO_OfxGroup_SECINFO_SetSecurityName(g, GWEN_Buffer_GetStart(buf));
+        AIO_OfxGroup_SECINFO_SetSecurityName(g, GWEN_Buffer_GetStart(buf));
       else if (strcasecmp(xg->currentElement, "TICKER")==0)
-	AIO_OfxGroup_SECINFO_SetTicker(g, GWEN_Buffer_GetStart(buf));
+        AIO_OfxGroup_SECINFO_SetTicker(g, GWEN_Buffer_GetStart(buf));
       else {
-	DBG_INFO(AQBANKING_LOGDOMAIN,
-		 "Ignoring data for unknown element [%s]",
-		 xg->currentElement);
+        DBG_INFO(AQBANKING_LOGDOMAIN,
+                 "Ignoring data for unknown element [%s]",
+                 xg->currentElement);
       }
     }
     GWEN_Buffer_free(buf);
@@ -260,7 +280,8 @@ int AIO_OfxGroup_SECINFO_AddData(AIO_OFX_GROUP *g, const char *data) {
 
 
 
-int AIO_OfxGroup_SECINFO_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
+int AIO_OfxGroup_SECINFO_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg)
+{
   AIO_OFX_GROUP_SECINFO *xg;
   const char *s;
   GWEN_XML_CONTEXT *ctx;

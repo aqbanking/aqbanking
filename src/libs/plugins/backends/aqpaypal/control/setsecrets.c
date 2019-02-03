@@ -35,7 +35,8 @@
 int APY_Control_SetSecrets(AB_PROVIDER *pro,
                            GWEN_DB_NODE *dbArgs,
                            int argc,
-                           char **argv) {
+                           char **argv)
+{
   GWEN_DB_NODE *db;
   AB_USER *u=NULL;
   int rv;
@@ -43,62 +44,62 @@ int APY_Control_SetSecrets(AB_PROVIDER *pro,
   const char *apiUserId;
   const char *apiPassword;
   const char *apiSignature;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "userId",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "u",                          /* short option */
-    "user",                       /* long option */
-    "Specify the unique user id",    /* short description */
-    "Specify the unique user id"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "apiUserId",                  /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "U",                          /* short option */
-    "apiuserid",                  /* long option */
-    "Specify the API user id",    /* short description */
-    "Specify the API user id"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "password",                   /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "P",                          /* short option */
-    "password",                   /* long option */
-    "Specify the API password",   /* short description */
-    "Specify the API password"    /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "signature",                  /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "S",                          /* short option */
-    "signature",                  /* long option */
-    "Specify the API signature",  /* short description */
-    "Specify the API signature"   /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "userId",                     /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "u",                          /* short option */
+      "user",                       /* long option */
+      "Specify the unique user id",    /* short description */
+      "Specify the unique user id"     /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "apiUserId",                  /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "U",                          /* short option */
+      "apiuserid",                  /* long option */
+      "Specify the API user id",    /* short description */
+      "Specify the API user id"     /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "password",                   /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "P",                          /* short option */
+      "password",                   /* long option */
+      "Specify the API password",   /* short description */
+      "Specify the API password"    /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "signature",                  /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "S",                          /* short option */
+      "signature",                  /* long option */
+      "Specify the API signature",  /* short description */
+      "Specify the API signature"   /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -143,8 +144,8 @@ int APY_Control_SetSecrets(AB_PROVIDER *pro,
     rv=AB_Provider_BeginExclUseUser(pro, u);
     if (rv<0) {
       fprintf(stderr,
-	      "ERROR: Could not lock user, maybe it is used in another application? (%d)\n",
-	      rv);
+              "ERROR: Could not lock user, maybe it is used in another application? (%d)\n",
+              rv);
       return 4;
     }
 
@@ -160,8 +161,8 @@ int APY_Control_SetSecrets(AB_PROVIDER *pro,
     rv=AB_Provider_EndExclUseUser(pro, u, 0);
     if (rv<0) {
       fprintf(stderr,
-	      "ERROR: Could not unlock user (%d)\n",
-	      rv);
+              "ERROR: Could not unlock user (%d)\n",
+              rv);
       AB_Provider_EndExclUseUser(pro, u, 1); /* abandon */
       return 4;
     }

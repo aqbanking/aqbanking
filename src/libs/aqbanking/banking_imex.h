@@ -92,8 +92,8 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
 
 AQBANKING_API
 GWEN_DB_NODE *AB_Banking_GetImExporterProfile(AB_BANKING *ab,
-					      const char *imExporterName,
-					      const char *profileName);
+                                              const char *imExporterName,
+                                              const char *profileName);
 
 /**
  * Save the given profile in the local user folder of the given im-/exporter
@@ -114,8 +114,8 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfile(AB_BANKING *ab,
 AQBANKING_API
 int AB_Banking_SaveLocalImExporterProfile(AB_BANKING *ab,
                                           const char *imexporterName,
-					  GWEN_DB_NODE *dbProfile,
-					  const char *fname);
+                                          GWEN_DB_NODE *dbProfile,
+                                          const char *fname);
 
 /**
  * This function should return a dialog (see @ref GWEN_DIALOG) which
@@ -188,7 +188,7 @@ int AB_Banking_GetEditImExporterProfileDialog(AB_BANKING *ab,
  * @endcode
 
  */
-AQBANKING_API 
+AQBANKING_API
 int AB_Banking_Import(AB_BANKING *ab,
                       const char *importerName,
                       AB_IMEXPORTER_CONTEXT *ctx,
@@ -210,7 +210,7 @@ int AB_Banking_Import(AB_BANKING *ab,
  * @param dbProfile configuration data for the exporter. You can get this
  *   using @ref AB_Banking_GetImExporterProfiles (see also @ref AB_Banking_Import).
  */
-AQBANKING_API 
+AQBANKING_API
 int AB_Banking_Export(AB_BANKING *ab,
                       const char *exporterName,
                       AB_IMEXPORTER_CONTEXT *ctx,
@@ -281,12 +281,12 @@ int AB_Banking_FillGapsInImExporterContext(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT
  *  AqBanking you can specify its name via @b profileName and use NULL here
  *
  */
-AQBANKING_API 
+AQBANKING_API
 int AB_Banking_ImportLoadProfile(AB_BANKING *ab,
-				 const char *importerName,
-				 AB_IMEXPORTER_CONTEXT *ctx,
-				 GWEN_SYNCIO *sio,
-				 const char *profileName,
+                                 const char *importerName,
+                                 AB_IMEXPORTER_CONTEXT *ctx,
+                                 GWEN_SYNCIO *sio,
+                                 const char *profileName,
                                  const char *profileFile);
 
 /**
@@ -306,13 +306,13 @@ int AB_Banking_ImportLoadProfile(AB_BANKING *ab,
  *  AqBanking you can specify its name via @b profileName and use NULL here
  *
  */
-AQBANKING_API 
+AQBANKING_API
 int AB_Banking_ExportLoadProfile(AB_BANKING *ab,
-				 const char *exporterName,
-				 AB_IMEXPORTER_CONTEXT *ctx,
-				 GWEN_SYNCIO *sio,
-				 const char *profileName,
-				 const char *profileFile);
+                                 const char *exporterName,
+                                 AB_IMEXPORTER_CONTEXT *ctx,
+                                 GWEN_SYNCIO *sio,
+                                 const char *profileName,
+                                 const char *profileFile);
 
 
 /**
@@ -328,7 +328,7 @@ int AB_Banking_ExportLoadProfile(AB_BANKING *ab,
  * @param dbProfile configuration data for the importer. You can get this
  *   using @ref AB_Banking_GetImExporterProfiles.
  */
-AQBANKING_API 
+AQBANKING_API
 int AB_Banking_ImportFromFile(AB_BANKING *ab,
                               const char *importerName,
                               AB_IMEXPORTER_CONTEXT *ctx,
@@ -348,7 +348,7 @@ int AB_Banking_ImportFromFile(AB_BANKING *ab,
  * @param dbProfile configuration data for the exporter. You can get this
  *   using @ref AB_Banking_GetImExporterProfiles.
  */
-AQBANKING_API 
+AQBANKING_API
 int AB_Banking_ExportToFile(AB_BANKING *ab,
                             const char *exporterName,
                             AB_IMEXPORTER_CONTEXT *ctx,
@@ -374,7 +374,7 @@ int AB_Banking_ExportToFile(AB_BANKING *ab,
  *  AqBanking you can specify its name via @b profileName and use NULL here
  * @param inputFileName path and name of the file to read from
  */
-AQBANKING_API 
+AQBANKING_API
 int AB_Banking_ImportFromFileLoadProfile(AB_BANKING *ab,
                                          const char *importerName,
                                          AB_IMEXPORTER_CONTEXT *ctx,
@@ -401,7 +401,7 @@ int AB_Banking_ImportFromFileLoadProfile(AB_BANKING *ab,
  *  contain at least one profile in a "profile" group. If you want to use profiles installed with
  *  AqBanking you can specify its name via @b profileName and use NULL here
  */
-AQBANKING_API 
+AQBANKING_API
 int AB_Banking_ExportToFileLoadProfile(AB_BANKING *ab,
                                        const char *exporterName,
                                        AB_IMEXPORTER_CONTEXT *ctx,
@@ -424,7 +424,7 @@ int AB_Banking_ExportToFileLoadProfile(AB_BANKING *ab,
  * @param dbProfile configuration data for the importer. You can get this
  *   using @ref AB_Banking_GetImExporterProfiles.
  */
-AQBANKING_API 
+AQBANKING_API
 int AB_Banking_ImportFromBuffer(AB_BANKING *ab,
                                 const char *importerName,
                                 AB_IMEXPORTER_CONTEXT *ctx,
@@ -444,12 +444,12 @@ int AB_Banking_ImportFromBuffer(AB_BANKING *ab,
  * @param dbProfile configuration data for the exporter. You can get this
  *   using @ref AB_Banking_GetImExporterProfiles.
  */
-AQBANKING_API 
+AQBANKING_API
 int AB_Banking_ExportToBuffer(AB_BANKING *ab,
-			      const char *exporterName,
-			      AB_IMEXPORTER_CONTEXT *ctx,
+                              const char *exporterName,
+                              AB_IMEXPORTER_CONTEXT *ctx,
                               GWEN_BUFFER *outputBuffer,
-			      GWEN_DB_NODE *dbProfile);
+                              GWEN_DB_NODE *dbProfile);
 
 
 /**
@@ -471,7 +471,7 @@ int AB_Banking_ExportToBuffer(AB_BANKING *ab,
  * @param dataPtr pointer to the data to import
  * @param dataLen size of the data pointed to by @b dataPtr
  */
-AQBANKING_API 
+AQBANKING_API
 int AB_Banking_ImportFromBufferLoadProfile(AB_BANKING *ab,
                                            const char *importerName,
                                            AB_IMEXPORTER_CONTEXT *ctx,
@@ -498,7 +498,7 @@ int AB_Banking_ImportFromBufferLoadProfile(AB_BANKING *ab,
  *  contain at least one profile in a "profile" group. If you want to use profiles installed with
  *  AqBanking you can specify its name via @b profileName and use NULL here
  */
-AQBANKING_API 
+AQBANKING_API
 int AB_Banking_ExportToBufferLoadProfile(AB_BANKING *ab,
                                          const char *exporterName,
                                          AB_IMEXPORTER_CONTEXT *ctx,

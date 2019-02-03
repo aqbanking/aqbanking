@@ -27,14 +27,15 @@
 #include "globals.h"
 
 
-int EBC_Control(AB_PROVIDER *pro, int argc, char **argv) {
+int EBC_Control(AB_PROVIDER *pro, int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   const char *cmd;
   int rv;
 
   db=GWEN_DB_Group_new("arguments");
 
-  if (argc<1){
+  if (argc<1) {
     GWEN_BUFFER *ubuf;
 
     ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
@@ -52,7 +53,7 @@ int EBC_Control(AB_PROVIDER *pro, int argc, char **argv) {
     GWEN_Buffer_AppendString(ubuf,
                              I18N("  adduser:\n"
                                   "    Adds a user "
-				  "(-> setup EBICS for a bank)\n\n"));
+                                  "(-> setup EBICS for a bank)\n\n"));
     GWEN_Buffer_AppendString(ubuf,
                              I18N("  getkeys:\n"
                                   "    Requests the server's key\n\n"));

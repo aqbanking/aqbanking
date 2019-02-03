@@ -26,7 +26,8 @@
 int listUsers(AB_PROVIDER *pro,
               GWEN_DB_NODE *dbArgs,
               int argc,
-              char **argv) {
+              char **argv)
+{
   GWEN_DB_NODE *db;
   int rv;
   int xml=0;
@@ -34,29 +35,29 @@ int listUsers(AB_PROVIDER *pro,
   AB_USER *u;
   int i=0;
 
-  const GWEN_ARGS args[]={
-  {
-    0,                            /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "xml",                 /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "xml",                /* long option */
-    "Export as xml",  /* short description */
-    0
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      0,                            /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "xml",                 /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                            /* short option */
+      "xml",                /* long option */
+      "Export as xml",  /* short description */
+      0
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -97,8 +98,8 @@ int listUsers(AB_PROVIDER *pro,
   }
 
   u=AB_User_List_First(ul);
-  while(u) {
-    if(!xml) {
+  while (u) {
+    if (!xml) {
       fprintf(stdout, "User %d: Bank: %s/%s User Id: %s Customer Id: %s Unique Id: %lu\n",
               i++,
               AB_User_GetCountry(u),
@@ -111,7 +112,7 @@ int listUsers(AB_PROVIDER *pro,
       const char *name = AB_User_GetUserName(u);
       fprintf(stdout, "  <user>\n");
       fprintf(stdout, "    <userUniqueId>%lu</userUniqueId>\n", (unsigned long int) AB_User_GetUniqueId(u));
-      if(!name)
+      if (!name)
         fprintf(stdout, "    <UserName></UserName>\n");
       else
         fprintf(stdout, "    <UserName><![CDATA[%s]]></UserName>\n", name);

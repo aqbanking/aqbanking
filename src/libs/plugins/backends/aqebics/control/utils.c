@@ -21,12 +21,13 @@
 #include <errno.h>
 
 
-int readFile(const char *fname, GWEN_BUFFER *dbuf) {
+int readFile(const char *fname, GWEN_BUFFER *dbuf)
+{
   FILE *f;
 
   f=fopen(fname, "rb");
   if (f) {
-    while(!feof(f)) {
+    while (!feof(f)) {
       uint32_t l;
       ssize_t s;
       char *p;
@@ -36,13 +37,13 @@ int readFile(const char *fname, GWEN_BUFFER *dbuf) {
       p=GWEN_Buffer_GetPosPointer(dbuf);
       s=fread(p, 1, l, f);
       if (s==0)
-	break;
+        break;
       if (s==(ssize_t)-1) {
-	DBG_INFO(AQEBICS_LOGDOMAIN,
-		 "fread(%s): %s",
-		 fname, strerror(errno));
-	fclose(f);
-	return GWEN_ERROR_IO;
+        DBG_INFO(AQEBICS_LOGDOMAIN,
+                 "fread(%s): %s",
+                 fname, strerror(errno));
+        fclose(f);
+        return GWEN_ERROR_IO;
       }
 
       GWEN_Buffer_IncrementPos(dbuf, s);
@@ -54,16 +55,17 @@ int readFile(const char *fname, GWEN_BUFFER *dbuf) {
   }
   else {
     DBG_INFO(AQEBICS_LOGDOMAIN,
-	     "fopen(%s): %s",
-	     fname, strerror(errno));
+             "fopen(%s): %s",
+             fname, strerror(errno));
     return GWEN_ERROR_IO;
   }
 }
 
 
 
-int writeFile(FILE *f, const char *p, int len) {
-  while(len>0) {
+int writeFile(FILE *f, const char *p, int len)
+{
+  while (len>0) {
     ssize_t l;
     ssize_t s;
 
@@ -73,8 +75,8 @@ int writeFile(FILE *f, const char *p, int len) {
     s=fwrite(p, 1, l, f);
     if (s==(ssize_t)-1 || s==0) {
       DBG_INFO(AQEBICS_LOGDOMAIN,
-	       "fwrite: %s",
-	       strerror(errno));
+               "fwrite: %s",
+               strerror(errno));
       return GWEN_ERROR_IO;
     }
     p+=s;

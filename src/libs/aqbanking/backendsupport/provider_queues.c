@@ -15,7 +15,8 @@
 
 
 
-int AB_Provider_SortProviderQueueIntoUserQueueList(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_USERQUEUE_LIST *uql) {
+int AB_Provider_SortProviderQueueIntoUserQueueList(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_USERQUEUE_LIST *uql)
+{
   AB_ACCOUNTQUEUE_LIST *aql;
   AB_ACCOUNTQUEUE *aq;
 
@@ -26,7 +27,7 @@ int AB_Provider_SortProviderQueueIntoUserQueueList(AB_PROVIDER *pro, AB_PROVIDER
     return GWEN_ERROR_NO_DATA;
   }
 
-  while( (aq=AB_AccountQueue_List_First(aql)) ) {
+  while ((aq=AB_AccountQueue_List_First(aql))) {
     uint32_t aid;
     uint32_t uid;
     AB_ACCOUNT *a=NULL;
@@ -59,7 +60,7 @@ int AB_Provider_SortProviderQueueIntoUserQueueList(AB_PROVIDER *pro, AB_PROVIDER
         }
         uq=AB_UserQueue_new();
         AB_UserQueue_SetUser(uq, u);
-	AB_UserQueue_SetUserId(uq, uid);
+        AB_UserQueue_SetUserId(uq, uid);
 
         AB_UserQueue_List_Add(uq, uql);
       }
@@ -74,13 +75,14 @@ int AB_Provider_SortProviderQueueIntoUserQueueList(AB_PROVIDER *pro, AB_PROVIDER
 
 
 
-void AB_Provider_FreeUsersAndAccountsFromUserQueueList(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql) {
+void AB_Provider_FreeUsersAndAccountsFromUserQueueList(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql)
+{
   AB_USERQUEUE *uq;
 
   assert(pro);
 
   uq=AB_UserQueue_List_First(uql);
-  while(uq) {
+  while (uq) {
     AB_ACCOUNTQUEUE_LIST *aql;
     AB_USER *u;
 
@@ -90,7 +92,7 @@ void AB_Provider_FreeUsersAndAccountsFromUserQueueList(AB_PROVIDER *pro, AB_USER
       AB_ACCOUNTQUEUE *aq;
 
       aq=AB_AccountQueue_List_First(aql);
-      while(aq) {
+      while (aq) {
         AB_ACCOUNT *a;
 
         a=AB_AccountQueue_GetAccount(aq);

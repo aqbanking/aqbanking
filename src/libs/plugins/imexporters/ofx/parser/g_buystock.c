@@ -36,8 +36,9 @@ GWEN_INHERIT(AIO_OFX_GROUP, AIO_OFX_GROUP_BUYSTOCK)
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_BUYSTOCK_new(const char *groupName,
-					     AIO_OFX_GROUP *parent,
-					     GWEN_XML_CONTEXT *ctx) {
+                                         AIO_OFX_GROUP *parent,
+                                         GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_GROUP *g;
   AIO_OFX_GROUP_BUYSTOCK *xg;
 
@@ -63,10 +64,11 @@ AIO_OFX_GROUP *AIO_OfxGroup_BUYSTOCK_new(const char *groupName,
 
 
 GWENHYWFAR_CB
-void AIO_OfxGroup_BUYSTOCK_FreeData(void *bp, void *p) {
+void AIO_OfxGroup_BUYSTOCK_FreeData(void *bp, void *p)
+{
   AIO_OFX_GROUP_BUYSTOCK *xg;
 
-  xg=(AIO_OFX_GROUP_BUYSTOCK*)p;
+  xg=(AIO_OFX_GROUP_BUYSTOCK *)p;
   assert(xg);
   AB_Transaction_free(xg->transaction);
 
@@ -77,7 +79,8 @@ void AIO_OfxGroup_BUYSTOCK_FreeData(void *bp, void *p) {
 
 
 int AIO_OfxGroup_BUYSTOCK_StartTag(AIO_OFX_GROUP *g,
-				 const char *tagName) {
+                                   const char *tagName)
+{
   AIO_OFX_GROUP_BUYSTOCK *xg;
   GWEN_XML_CONTEXT *ctx;
   AIO_OFX_GROUP *gNew=NULL;
@@ -90,16 +93,16 @@ int AIO_OfxGroup_BUYSTOCK_StartTag(AIO_OFX_GROUP *g,
 
   if (strcasecmp(tagName, "BUYTYPE")==0 ||
       strcasecmp(tagName, "SELLTYPE")==0) {
-        /* TODO */
+    /* TODO */
   }
   else if (strcasecmp(tagName, "INVBUY")==0 ||
            strcasecmp(tagName, "INVSELL")==0) {
     gNew=AIO_OfxGroup_INVBUY_new(tagName, g, ctx);
-    
+
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	     "Ignoring tag [%s]", tagName);
+             "Ignoring tag [%s]", tagName);
     free(xg->currentElement);
     xg->currentElement=strdup(tagName);
   }
@@ -114,7 +117,8 @@ int AIO_OfxGroup_BUYSTOCK_StartTag(AIO_OFX_GROUP *g,
 
 
 
-int AIO_OfxGroup_BUYSTOCK_AddData(AIO_OFX_GROUP *g, const char *data) {
+int AIO_OfxGroup_BUYSTOCK_AddData(AIO_OFX_GROUP *g, const char *data)
+{
   AIO_OFX_GROUP_BUYSTOCK *xg;
 
   assert(g);
@@ -138,13 +142,13 @@ int AIO_OfxGroup_BUYSTOCK_AddData(AIO_OFX_GROUP *g, const char *data) {
       DBG_INFO(AQBANKING_LOGDOMAIN,
                "AddData: %s=[%s]", xg->currentElement, s);
       if (strcasecmp(xg->currentElement, "BUYTYPE")==0 ||
-         (strcasecmp(xg->currentElement, "SELLTYPE") ==0)) {
+          (strcasecmp(xg->currentElement, "SELLTYPE") ==0)) {
         /*TODO*/
       }
       else {
         DBG_INFO(AQBANKING_LOGDOMAIN,
-        "Ignoring data for unknown element [%s]",
-        xg->currentElement);
+                 "Ignoring data for unknown element [%s]",
+                 xg->currentElement);
       }
     }
     GWEN_Buffer_free(buf);
@@ -155,7 +159,8 @@ int AIO_OfxGroup_BUYSTOCK_AddData(AIO_OFX_GROUP *g, const char *data) {
 
 
 
-int AIO_OfxGroup_BUYSTOCK_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
+int AIO_OfxGroup_BUYSTOCK_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg)
+{
   AIO_OFX_GROUP_BUYSTOCK *xg;
   const char *s;
   GWEN_XML_CONTEXT *ctx;
@@ -176,7 +181,7 @@ int AIO_OfxGroup_BUYSTOCK_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
     if (t) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Adding transaction");
       xg->transaction=t;
-        /*TODO*/
+      /*TODO*/
     }
   }
 
@@ -185,7 +190,8 @@ int AIO_OfxGroup_BUYSTOCK_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
 
 
 
-AB_TRANSACTION *AIO_OfxGroup_BUYSTOCK_TakeTransaction(const AIO_OFX_GROUP *g){
+AB_TRANSACTION *AIO_OfxGroup_BUYSTOCK_TakeTransaction(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_BUYSTOCK *xg;
   AB_TRANSACTION *t;
 
@@ -196,7 +202,7 @@ AB_TRANSACTION *AIO_OfxGroup_BUYSTOCK_TakeTransaction(const AIO_OFX_GROUP *g){
   t=xg->transaction;
   xg->transaction=NULL;
   free(xg->transaction);
-  
+
   return t;
 }
 

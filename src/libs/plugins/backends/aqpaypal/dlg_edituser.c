@@ -43,7 +43,8 @@ GWEN_INHERIT(GWEN_DIALOG, APY_EDITUSER_DIALOG)
 
 
 
-GWEN_DIALOG *APY_EditUserDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock) {
+GWEN_DIALOG *APY_EditUserDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock)
+{
   GWEN_DIALOG *dlg;
   APY_EDITUSER_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -58,8 +59,8 @@ GWEN_DIALOG *APY_EditUserDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock) {
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-			       "aqbanking/backends/aqpaypal/dialogs/dlg_edituser.dlg",
-			       fbuf);
+                               "aqbanking/backends/aqpaypal/dialogs/dlg_edituser.dlg",
+                               fbuf);
   if (rv<0) {
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
@@ -85,20 +86,28 @@ GWEN_DIALOG *APY_EditUserDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock) {
   xdlg->user=u;
 
   s=AB_User_GetUserName(u);
-  if (s && *s) xdlg->userName=strdup(s);
-  else xdlg->userName=NULL;
+  if (s && *s)
+    xdlg->userName=strdup(s);
+  else
+    xdlg->userName=NULL;
 
   s=AB_User_GetUserId(u);
-  if (s && *s) xdlg->userId=strdup(s);
-  else xdlg->userId=NULL;
+  if (s && *s)
+    xdlg->userId=strdup(s);
+  else
+    xdlg->userId=NULL;
 
   s=AB_User_GetCustomerId(u);
-  if (s && *s) xdlg->customerId=strdup(s);
-  else xdlg->customerId=NULL;
+  if (s && *s)
+    xdlg->customerId=strdup(s);
+  else
+    xdlg->customerId=NULL;
 
   s=APY_User_GetServerUrl(u);
-  if (!(s && *s)) xdlg->url=strdup("https://api-3t.paypal.com/nvp");
-  else xdlg->url=strdup(s);
+  if (!(s && *s))
+    xdlg->url=strdup("https://api-3t.paypal.com/nvp");
+  else
+    xdlg->url=strdup(s);
 
 
   /* done */
@@ -107,10 +116,11 @@ GWEN_DIALOG *APY_EditUserDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock) {
 
 
 
-void GWENHYWFAR_CB APY_EditUserDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB APY_EditUserDialog_FreeData(void *bp, void *p)
+{
   APY_EDITUSER_DIALOG *xdlg;
 
-  xdlg=(APY_EDITUSER_DIALOG*) p;
+  xdlg=(APY_EDITUSER_DIALOG *) p;
   free(xdlg->apiUserId);
   free(xdlg->apiPassword);
   free(xdlg->apiSignature);
@@ -122,7 +132,8 @@ void GWENHYWFAR_CB APY_EditUserDialog_FreeData(void *bp, void *p) {
 
 
 
-AB_USER *APY_EditUserDialog_GetUser(const GWEN_DIALOG *dlg) {
+AB_USER *APY_EditUserDialog_GetUser(const GWEN_DIALOG *dlg)
+{
   APY_EDITUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -134,7 +145,8 @@ AB_USER *APY_EditUserDialog_GetUser(const GWEN_DIALOG *dlg) {
 
 
 
-const char *APY_EditUserDialog_GetApiUserId(const GWEN_DIALOG *dlg) {
+const char *APY_EditUserDialog_GetApiUserId(const GWEN_DIALOG *dlg)
+{
   APY_EDITUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -146,7 +158,8 @@ const char *APY_EditUserDialog_GetApiUserId(const GWEN_DIALOG *dlg) {
 
 
 
-void APY_EditUserDialog_SetApiUserId(GWEN_DIALOG *dlg, const char *s) {
+void APY_EditUserDialog_SetApiUserId(GWEN_DIALOG *dlg, const char *s)
+{
   APY_EDITUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -154,13 +167,16 @@ void APY_EditUserDialog_SetApiUserId(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->apiUserId);
-  if (s) xdlg->apiUserId=strdup(s);
-  else xdlg->apiUserId=NULL;
+  if (s)
+    xdlg->apiUserId=strdup(s);
+  else
+    xdlg->apiUserId=NULL;
 }
 
 
 
-const char *APY_EditUserDialog_GetApiPassword(const GWEN_DIALOG *dlg) {
+const char *APY_EditUserDialog_GetApiPassword(const GWEN_DIALOG *dlg)
+{
   APY_EDITUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -172,7 +188,8 @@ const char *APY_EditUserDialog_GetApiPassword(const GWEN_DIALOG *dlg) {
 
 
 
-void APY_EditUserDialog_SetApiPassword(GWEN_DIALOG *dlg, const char *s) {
+void APY_EditUserDialog_SetApiPassword(GWEN_DIALOG *dlg, const char *s)
+{
   APY_EDITUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -180,13 +197,16 @@ void APY_EditUserDialog_SetApiPassword(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->apiPassword);
-  if (s) xdlg->apiPassword=strdup(s);
-  else xdlg->apiPassword=NULL;
+  if (s)
+    xdlg->apiPassword=strdup(s);
+  else
+    xdlg->apiPassword=NULL;
 }
 
 
 
-const char *APY_EditUserDialog_GetApiSignature(const GWEN_DIALOG *dlg) {
+const char *APY_EditUserDialog_GetApiSignature(const GWEN_DIALOG *dlg)
+{
   APY_EDITUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -198,7 +218,8 @@ const char *APY_EditUserDialog_GetApiSignature(const GWEN_DIALOG *dlg) {
 
 
 
-void APY_EditUserDialog_SetApiSignature(GWEN_DIALOG *dlg, const char *s) {
+void APY_EditUserDialog_SetApiSignature(GWEN_DIALOG *dlg, const char *s)
+{
   APY_EDITUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -206,13 +227,16 @@ void APY_EditUserDialog_SetApiSignature(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->apiSignature);
-  if (s) xdlg->apiSignature=strdup(s);
-  else xdlg->apiSignature=NULL;
+  if (s)
+    xdlg->apiSignature=strdup(s);
+  else
+    xdlg->apiSignature=NULL;
 }
 
 
 
-const char *APY_EditUserDialog_GetUserName(const GWEN_DIALOG *dlg) {
+const char *APY_EditUserDialog_GetUserName(const GWEN_DIALOG *dlg)
+{
   APY_EDITUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -224,7 +248,8 @@ const char *APY_EditUserDialog_GetUserName(const GWEN_DIALOG *dlg) {
 
 
 
-void APY_EditUserDialog_SetUserName(GWEN_DIALOG *dlg, const char *s) {
+void APY_EditUserDialog_SetUserName(GWEN_DIALOG *dlg, const char *s)
+{
   APY_EDITUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -232,13 +257,16 @@ void APY_EditUserDialog_SetUserName(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->userName);
-  if (s) xdlg->userName=strdup(s);
-  else xdlg->userName=NULL;
+  if (s)
+    xdlg->userName=strdup(s);
+  else
+    xdlg->userName=NULL;
 }
 
 
 
-const char *APY_EditUserDialog_GetUserId(const GWEN_DIALOG *dlg) {
+const char *APY_EditUserDialog_GetUserId(const GWEN_DIALOG *dlg)
+{
   APY_EDITUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -250,7 +278,8 @@ const char *APY_EditUserDialog_GetUserId(const GWEN_DIALOG *dlg) {
 
 
 
-void APY_EditUserDialog_SetUserId(GWEN_DIALOG *dlg, const char *s) {
+void APY_EditUserDialog_SetUserId(GWEN_DIALOG *dlg, const char *s)
+{
   APY_EDITUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -258,13 +287,16 @@ void APY_EditUserDialog_SetUserId(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->userId);
-  if (s) xdlg->userId=strdup(s);
-  else xdlg->userId=NULL;
+  if (s)
+    xdlg->userId=strdup(s);
+  else
+    xdlg->userId=NULL;
 }
 
 
 
-const char *APY_EditUserDialog_GetUrl(const GWEN_DIALOG *dlg) {
+const char *APY_EditUserDialog_GetUrl(const GWEN_DIALOG *dlg)
+{
   APY_EDITUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -276,7 +308,8 @@ const char *APY_EditUserDialog_GetUrl(const GWEN_DIALOG *dlg) {
 
 
 
-void APY_EditUserDialog_SetUrl(GWEN_DIALOG *dlg, const char *s) {
+void APY_EditUserDialog_SetUrl(GWEN_DIALOG *dlg, const char *s)
+{
   APY_EDITUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -284,13 +317,16 @@ void APY_EditUserDialog_SetUrl(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->url);
-  if (s) xdlg->url=strdup(s);
-  else xdlg->url=NULL;
+  if (s)
+    xdlg->url=strdup(s);
+  else
+    xdlg->url=NULL;
 }
 
 
 
-uint32_t APY_EditUserDialog_GetFlags(const GWEN_DIALOG *dlg) {
+uint32_t APY_EditUserDialog_GetFlags(const GWEN_DIALOG *dlg)
+{
   APY_EDITUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -302,7 +338,8 @@ uint32_t APY_EditUserDialog_GetFlags(const GWEN_DIALOG *dlg) {
 
 
 
-void APY_EditUserDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void APY_EditUserDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   APY_EDITUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -314,7 +351,8 @@ void APY_EditUserDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void APY_EditUserDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void APY_EditUserDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   APY_EDITUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -326,7 +364,8 @@ void APY_EditUserDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void APY_EditUserDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void APY_EditUserDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   APY_EDITUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -341,7 +380,8 @@ void APY_EditUserDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void APY_EditUserDialog_Init(GWEN_DIALOG *dlg) {
+void APY_EditUserDialog_Init(GWEN_DIALOG *dlg)
+{
   APY_EDITUSER_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
@@ -353,35 +393,35 @@ void APY_EditUserDialog_Init(GWEN_DIALOG *dlg) {
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("Edit Paypal User"),
-			      0);
+                              "",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("Edit Paypal User"),
+                              0);
 
   if (xdlg->userName)
     GWEN_Dialog_SetCharProperty(dlg,
-				"wiz_username_edit",
-				GWEN_DialogProperty_Value,
-				0,
-				xdlg->userName,
-				0);
+                                "wiz_username_edit",
+                                GWEN_DialogProperty_Value,
+                                0,
+                                xdlg->userName,
+                                0);
 
   if (xdlg->userId)
     GWEN_Dialog_SetCharProperty(dlg,
-				"wiz_userid_edit",
-				GWEN_DialogProperty_Value,
-				0,
-				xdlg->userId,
-				0);
+                                "wiz_userid_edit",
+                                GWEN_DialogProperty_Value,
+                                0,
+                                xdlg->userId,
+                                0);
 
   if (xdlg->url)
     GWEN_Dialog_SetCharProperty(dlg,
-				"wiz_url_edit",
-				GWEN_DialogProperty_Value,
-				0,
+                                "wiz_url_edit",
+                                GWEN_DialogProperty_Value,
+                                0,
                                 xdlg->url,
-				0);
+                                0);
 
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
@@ -396,7 +436,8 @@ void APY_EditUserDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-void APY_EditUserDialog_Fini(GWEN_DIALOG *dlg) {
+void APY_EditUserDialog_Fini(GWEN_DIALOG *dlg)
+{
   APY_EDITUSER_DIALOG *xdlg;
   int i;
   GWEN_DB_NODE *dbPrefs;
@@ -410,21 +451,22 @@ void APY_EditUserDialog_Fini(GWEN_DIALOG *dlg) {
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_width",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_width",
+                      i);
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_height",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_height",
+                      i);
 }
 
 
 
-int APY_EditUserDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
+int APY_EditUserDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
+{
   APY_EDITUSER_DIALOG *xdlg;
   const char *s;
 
@@ -485,7 +527,8 @@ int APY_EditUserDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
 
 
 
-int APY_EditUserDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
+int APY_EditUserDialog_HandleActivatedOk(GWEN_DIALOG *dlg)
+{
   APY_EDITUSER_DIALOG *xdlg;
   int rv;
 
@@ -505,14 +548,14 @@ int APY_EditUserDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
     if (rv<0) {
       DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
-			  GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
-			  GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
-			  I18N("Error"),
-			  I18N("Unable to lock user. Maybe already in use?"),
-			  I18N("Dismiss"),
-			  NULL,
-			  NULL,
-			  0);
+                          GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+                          GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
+                          I18N("Error"),
+                          I18N("Unable to lock user. Maybe already in use?"),
+                          I18N("Dismiss"),
+                          NULL,
+                          NULL,
+                          0);
       return GWEN_DialogEvent_ResultHandled;
     }
   }
@@ -531,14 +574,14 @@ int APY_EditUserDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
     if (rv<0) {
       DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
-			  GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
-			  GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
-			  I18N("Error"),
-			  I18N("Unable to unlock user."),
-			  I18N("Dismiss"),
-			  NULL,
-			  NULL,
-			  0);
+                          GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+                          GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
+                          I18N("Error"),
+                          I18N("Unable to unlock user."),
+                          I18N("Dismiss"),
+                          NULL,
+                          NULL,
+                          0);
       return GWEN_DialogEvent_ResultHandled;
     }
   }
@@ -547,7 +590,8 @@ int APY_EditUserDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
 }
 
 
-int APY_EditUserDialog_HandleActivatedSecret(GWEN_DIALOG *dlg) {
+int APY_EditUserDialog_HandleActivatedSecret(GWEN_DIALOG *dlg)
+{
   APY_EDITUSER_DIALOG *xdlg;
   GWEN_DIALOG *dlg2;
   int rv;
@@ -585,7 +629,7 @@ int APY_EditUserDialog_HandleActivatedSecret(GWEN_DIALOG *dlg) {
       *(t++)=0;
       t2=strchr(t, ':');
       if (t2) {
-	*(t2++)=0;
+        *(t2++)=0;
       }
     }
 
@@ -596,7 +640,7 @@ int APY_EditUserDialog_HandleActivatedSecret(GWEN_DIALOG *dlg) {
     if (t) {
       GWEN_Text_UnescapeToBufferTolerant(t, sbuf2);
       if (t2) {
-	GWEN_Text_UnescapeToBufferTolerant(t2, sbuf3);
+        GWEN_Text_UnescapeToBufferTolerant(t2, sbuf3);
       }
     }
     APY_EditSecretDialog_SetApiUserId(dlg2,    GWEN_Buffer_GetStart(sbuf3));
@@ -618,7 +662,7 @@ int APY_EditUserDialog_HandleActivatedSecret(GWEN_DIALOG *dlg) {
   }
   else {
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "Accepted");
-    
+
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
     GWEN_Text_EscapeToBuffer(APY_EditSecretDialog_GetApiPassword(dlg2), tbuf);
     GWEN_Buffer_AppendByte(tbuf, ':');
@@ -626,7 +670,7 @@ int APY_EditUserDialog_HandleActivatedSecret(GWEN_DIALOG *dlg) {
     GWEN_Buffer_AppendByte(tbuf, ':');
     GWEN_Text_EscapeToBuffer(APY_EditSecretDialog_GetApiUserId(dlg2), tbuf);
     rv=APY_Provider_WriteUserApiSecrets(AB_User_GetProvider(u), u,
-					GWEN_Buffer_GetStart(tbuf));
+                                        GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_free(tbuf);
     if (rv<0) {
       DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
@@ -639,7 +683,8 @@ int APY_EditUserDialog_HandleActivatedSecret(GWEN_DIALOG *dlg) {
 }
 
 
-int APY_EditUserDialog_GetSecretPageData(GWEN_DIALOG *dlg) {
+int APY_EditUserDialog_GetSecretPageData(GWEN_DIALOG *dlg)
+{
   APY_EDITUSER_DIALOG *xdlg;
   const char *s;
 
@@ -680,7 +725,8 @@ int APY_EditUserDialog_GetSecretPageData(GWEN_DIALOG *dlg) {
 
 
 
-int APY_EditUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int APY_EditUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   DBG_ERROR(0, "Activated: %s", sender);
   if (strcasecmp(sender, "okButton")==0)
     return APY_EditUserDialog_HandleActivatedOk(dlg);
@@ -699,15 +745,16 @@ int APY_EditUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 
 int GWENHYWFAR_CB APY_EditUserDialog_SignalHandler(GWEN_DIALOG *dlg,
-						   GWEN_DIALOG_EVENTTYPE t,
-						   const char *sender) {
+                                                   GWEN_DIALOG_EVENTTYPE t,
+                                                   const char *sender)
+{
   APY_EDITUSER_DIALOG *xdlg;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, APY_EDITUSER_DIALOG, dlg);
   assert(xdlg);
 
-  switch(t) {
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     APY_EditUserDialog_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;

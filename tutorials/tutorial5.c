@@ -34,7 +34,8 @@
 
 
 
-static AB_ACCOUNT_SPEC *printAccountList_cb(AB_ACCOUNT_SPEC *as, void *user_data) {
+static AB_ACCOUNT_SPEC *printAccountList_cb(AB_ACCOUNT_SPEC *as, void *user_data)
+{
   fprintf(stderr,
           "Account: %s %s (%s) [%s]\n",
           AB_AccountSpec_GetBankCode(as),
@@ -50,7 +51,8 @@ static AB_ACCOUNT_SPEC *printAccountList_cb(AB_ACCOUNT_SPEC *as, void *user_data
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   AB_BANKING *ab;
   AB_ACCOUNT_SPEC_LIST *accs=NULL;
   int rv;

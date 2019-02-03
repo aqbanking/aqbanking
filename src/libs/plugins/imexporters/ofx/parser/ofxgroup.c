@@ -29,8 +29,9 @@ GWEN_INHERIT_FUNCTIONS(AIO_OFX_GROUP)
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_new(const char *groupName,
-				AIO_OFX_GROUP *parent,
-				GWEN_XML_CONTEXT *ctx) {
+                                AIO_OFX_GROUP *parent,
+                                GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_GROUP *g;
 
   GWEN_NEW_OBJECT(AIO_OFX_GROUP, g);
@@ -47,7 +48,8 @@ AIO_OFX_GROUP *AIO_OfxGroup_new(const char *groupName,
 
 
 
-void AIO_OfxGroup_free(AIO_OFX_GROUP *g) {
+void AIO_OfxGroup_free(AIO_OFX_GROUP *g)
+{
   if (g) {
     GWEN_INHERIT_FINI(AIO_OFX_GROUP, g);
     free(g->groupName);
@@ -57,21 +59,24 @@ void AIO_OfxGroup_free(AIO_OFX_GROUP *g) {
 
 
 
-AIO_OFX_GROUP *AIO_OfxGroup_GetParent(const AIO_OFX_GROUP *g) {
+AIO_OFX_GROUP *AIO_OfxGroup_GetParent(const AIO_OFX_GROUP *g)
+{
   assert(g);
   return g->parent;
 }
 
 
 
-GWEN_XML_CONTEXT *AIO_OfxGroup_GetXmlContext(const AIO_OFX_GROUP *g) {
+GWEN_XML_CONTEXT *AIO_OfxGroup_GetXmlContext(const AIO_OFX_GROUP *g)
+{
   assert(g);
   return g->xmlContext;
 }
 
 
 
-const char *AIO_OfxGroup_GetGroupName(const AIO_OFX_GROUP *g) {
+const char *AIO_OfxGroup_GetGroupName(const AIO_OFX_GROUP *g)
+{
   assert(g);
   return g->groupName;
 }
@@ -83,9 +88,9 @@ const char *AIO_OfxGroup_GetGroupName(const AIO_OFX_GROUP *g) {
 
 
 
-AIO_OFX_GROUP_STARTTAG_FN
-AIO_OfxGroup_SetStartTagFn(AIO_OFX_GROUP *g,
-			   AIO_OFX_GROUP_STARTTAG_FN f) {
+AIO_OFX_GROUP_STARTTAG_FN AIO_OfxGroup_SetStartTagFn(AIO_OFX_GROUP *g,
+                                                     AIO_OFX_GROUP_STARTTAG_FN f)
+{
   AIO_OFX_GROUP_STARTTAG_FN oldFn;
 
   assert(g);
@@ -96,9 +101,9 @@ AIO_OfxGroup_SetStartTagFn(AIO_OFX_GROUP *g,
 
 
 
-AIO_OFX_GROUP_ENDTAG_FN
-AIO_OfxGroup_SetEndTagFn(AIO_OFX_GROUP *g,
-			 AIO_OFX_GROUP_ENDTAG_FN f) {
+AIO_OFX_GROUP_ENDTAG_FN AIO_OfxGroup_SetEndTagFn(AIO_OFX_GROUP *g,
+                                                 AIO_OFX_GROUP_ENDTAG_FN f)
+{
   AIO_OFX_GROUP_ENDTAG_FN oldFn;
 
   assert(g);
@@ -109,9 +114,9 @@ AIO_OfxGroup_SetEndTagFn(AIO_OFX_GROUP *g,
 
 
 
-AIO_OFX_GROUP_ADDDATA_FN
-AIO_OfxGroup_SetAddDataFn(AIO_OFX_GROUP *g,
-			  AIO_OFX_GROUP_ADDDATA_FN f) {
+AIO_OFX_GROUP_ADDDATA_FN AIO_OfxGroup_SetAddDataFn(AIO_OFX_GROUP *g,
+                                                   AIO_OFX_GROUP_ADDDATA_FN f)
+{
   AIO_OFX_GROUP_ADDDATA_FN oldFn;
 
   assert(g);
@@ -122,9 +127,9 @@ AIO_OfxGroup_SetAddDataFn(AIO_OFX_GROUP *g,
 
 
 
-AIO_OFX_GROUP_ENDSUBGROUP_FN
-AIO_OfxGroup_SetEndSubGroupFn(AIO_OFX_GROUP *g,
-			      AIO_OFX_GROUP_ENDSUBGROUP_FN f) {
+AIO_OFX_GROUP_ENDSUBGROUP_FN AIO_OfxGroup_SetEndSubGroupFn(AIO_OFX_GROUP *g,
+                                                           AIO_OFX_GROUP_ENDSUBGROUP_FN f)
+{
   AIO_OFX_GROUP_ENDSUBGROUP_FN oldFn;
 
   assert(g);
@@ -138,7 +143,8 @@ AIO_OfxGroup_SetEndSubGroupFn(AIO_OFX_GROUP *g,
 
 
 int AIO_OfxGroup_StartTag(AIO_OFX_GROUP *g,
-			  const char *tagName) {
+                          const char *tagName)
+{
   assert(g);
   if (g->startTagFn)
     return g->startTagFn(g, tagName);
@@ -149,7 +155,8 @@ int AIO_OfxGroup_StartTag(AIO_OFX_GROUP *g,
 
 
 int AIO_OfxGroup_EndTag(AIO_OFX_GROUP *g,
-			const char *tagName) {
+                        const char *tagName)
+{
   assert(g);
   if (g->endTagFn)
     return g->endTagFn(g, tagName);
@@ -160,7 +167,8 @@ int AIO_OfxGroup_EndTag(AIO_OFX_GROUP *g,
 
 
 int AIO_OfxGroup_AddData(AIO_OFX_GROUP *g,
-			 const char *data) {
+                         const char *data)
+{
   assert(g);
   if (g->addDataFn)
     return g->addDataFn(g, data);
@@ -170,7 +178,8 @@ int AIO_OfxGroup_AddData(AIO_OFX_GROUP *g,
 
 
 
-int AIO_OfxGroup_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
+int AIO_OfxGroup_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg)
+{
   assert(g);
   if (g->endSubGroupFn)
     return g->endSubGroupFn(g, sg);

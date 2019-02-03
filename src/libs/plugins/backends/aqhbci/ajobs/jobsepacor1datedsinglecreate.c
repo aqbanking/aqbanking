@@ -35,7 +35,8 @@
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_SepaCor1DebitDatedSingleCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_SepaCor1DebitDatedSingleCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
+{
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
 
@@ -65,7 +66,8 @@ AH_JOB *AH_Job_SepaCor1DebitDatedSingleCreate_new(AB_PROVIDER *pro, AB_USER *u, 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaCor1DebitDatedSingleCreate_Prepare(AH_JOB *j) {
+int AH_Job_SepaCor1DebitDatedSingleCreate_Prepare(AH_JOB *j)
+{
   GWEN_DB_NODE *profile;
   int rv;
 
@@ -80,7 +82,7 @@ int AH_Job_SepaCor1DebitDatedSingleCreate_Prepare(AH_JOB *j) {
 
   /* adjust parameters for COR1 transactions */
   GWEN_DB_SetCharValue(profile, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		       "LocalInstrumentSEPACode", "COR1");
+                       "LocalInstrumentSEPACode", "COR1");
 
   /* export transfers to SEPA */
   rv=AH_Job_TransferBase_SepaExportTransactions(j, profile);

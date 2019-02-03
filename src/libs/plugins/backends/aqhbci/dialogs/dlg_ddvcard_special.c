@@ -40,7 +40,8 @@ GWEN_INHERIT(GWEN_DIALOG, AH_DDVCARD_SPECIAL_DIALOG)
 
 
 
-GWEN_DIALOG *AH_DdvCardSpecialDialog_new(AB_PROVIDER *pro) {
+GWEN_DIALOG *AH_DdvCardSpecialDialog_new(AB_PROVIDER *pro)
+{
   GWEN_DIALOG *dlg;
   AH_DDVCARD_SPECIAL_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -49,14 +50,14 @@ GWEN_DIALOG *AH_DdvCardSpecialDialog_new(AB_PROVIDER *pro) {
   dlg=GWEN_Dialog_new("ah_setup_ddvcard_special");
   GWEN_NEW_OBJECT(AH_DDVCARD_SPECIAL_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AH_DDVCARD_SPECIAL_DIALOG, dlg, xdlg,
-		       AH_DdvCardSpecialDialog_FreeData);
+                       AH_DdvCardSpecialDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AH_DdvCardSpecialDialog_SignalHandler);
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-			       "aqbanking/backends/aqhbci/dialogs/dlg_ddvcard_special.dlg",
-			       fbuf);
+                               "aqbanking/backends/aqhbci/dialogs/dlg_ddvcard_special.dlg",
+                               fbuf);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
@@ -86,16 +87,18 @@ GWEN_DIALOG *AH_DdvCardSpecialDialog_new(AB_PROVIDER *pro) {
 
 
 
-void GWENHYWFAR_CB AH_DdvCardSpecialDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AH_DdvCardSpecialDialog_FreeData(void *bp, void *p)
+{
   AH_DDVCARD_SPECIAL_DIALOG *xdlg;
 
-  xdlg=(AH_DDVCARD_SPECIAL_DIALOG*) p;
+  xdlg=(AH_DDVCARD_SPECIAL_DIALOG *) p;
   GWEN_FREE_OBJECT(xdlg);
 }
 
 
 
-int AH_DdvCardSpecialDialog_GetHbciVersion(const GWEN_DIALOG *dlg) {
+int AH_DdvCardSpecialDialog_GetHbciVersion(const GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -107,7 +110,8 @@ int AH_DdvCardSpecialDialog_GetHbciVersion(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_DdvCardSpecialDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i) {
+void AH_DdvCardSpecialDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i)
+{
   AH_DDVCARD_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -119,7 +123,8 @@ void AH_DdvCardSpecialDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i) {
 
 
 
-uint32_t AH_DdvCardSpecialDialog_GetFlags(const GWEN_DIALOG *dlg) {
+uint32_t AH_DdvCardSpecialDialog_GetFlags(const GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -131,7 +136,8 @@ uint32_t AH_DdvCardSpecialDialog_GetFlags(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_DdvCardSpecialDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AH_DdvCardSpecialDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AH_DDVCARD_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -143,7 +149,8 @@ void AH_DdvCardSpecialDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_DdvCardSpecialDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AH_DdvCardSpecialDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AH_DDVCARD_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -155,7 +162,8 @@ void AH_DdvCardSpecialDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_DdvCardSpecialDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AH_DdvCardSpecialDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AH_DDVCARD_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -167,7 +175,8 @@ void AH_DdvCardSpecialDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_DdvCardSpecialDialog_Init(GWEN_DIALOG *dlg) {
+void AH_DdvCardSpecialDialog_Init(GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_SPECIAL_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
@@ -179,11 +188,11 @@ void AH_DdvCardSpecialDialog_Init(GWEN_DIALOG *dlg) {
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("HBCI PIN/TAN Special Settings"),
-			      0);
+                              "",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("HBCI PIN/TAN Special Settings"),
+                              0);
 
   GWEN_Dialog_SetCharProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_AddValue, 0, "2.01", 0);
   GWEN_Dialog_SetCharProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_AddValue, 0, "2.10", 0);
@@ -191,21 +200,30 @@ void AH_DdvCardSpecialDialog_Init(GWEN_DIALOG *dlg) {
   GWEN_Dialog_SetCharProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_AddValue, 0, "3.0", 0);
 
   /* toGui */
-  switch(xdlg->hbciVersion) {
-  case 201: GWEN_Dialog_SetIntProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0); break;
-  case 210: GWEN_Dialog_SetIntProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0); break;
-  case 220: GWEN_Dialog_SetIntProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_Value, 0, 2, 0); break;
-  case 300: GWEN_Dialog_SetIntProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_Value, 0, 3, 0); break;
-  default:  break;
+  switch (xdlg->hbciVersion) {
+  case 201:
+    GWEN_Dialog_SetIntProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
+    break;
+  case 210:
+    GWEN_Dialog_SetIntProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0);
+    break;
+  case 220:
+    GWEN_Dialog_SetIntProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_Value, 0, 2, 0);
+    break;
+  case 300:
+    GWEN_Dialog_SetIntProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_Value, 0, 3, 0);
+    break;
+  default:
+    break;
   }
 
   GWEN_Dialog_SetIntProperty(dlg, "bankDoesntSignCheck", GWEN_DialogProperty_Value, 0,
-			     (xdlg->flags & AH_USER_FLAGS_BANK_DOESNT_SIGN)?1:0,
-			     0);
+                             (xdlg->flags & AH_USER_FLAGS_BANK_DOESNT_SIGN)?1:0,
+                             0);
 
   GWEN_Dialog_SetIntProperty(dlg, "bankUsesSignSeqCheck", GWEN_DialogProperty_Value, 0,
-			     (xdlg->flags & AH_USER_FLAGS_BANK_USES_SIGNSEQ)?1:0,
-			     0);
+                             (xdlg->flags & AH_USER_FLAGS_BANK_USES_SIGNSEQ)?1:0,
+                             0);
 
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
@@ -220,7 +238,8 @@ void AH_DdvCardSpecialDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-void AH_DdvCardSpecialDialog_Fini(GWEN_DIALOG *dlg) {
+void AH_DdvCardSpecialDialog_Fini(GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_SPECIAL_DIALOG *xdlg;
   int i;
   GWEN_DB_NODE *dbPrefs;
@@ -234,12 +253,20 @@ void AH_DdvCardSpecialDialog_Fini(GWEN_DIALOG *dlg) {
 
   /* fromGui */
   i=GWEN_Dialog_GetIntProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_Value, 0, -1);
-  switch(i) {
-  case 0: xdlg->hbciVersion=201; break;
+  switch (i) {
+  case 0:
+    xdlg->hbciVersion=201;
+    break;
   default:
-  case 1: xdlg->hbciVersion=210; break;
-  case 2: xdlg->hbciVersion=220; break;
-  case 3: xdlg->hbciVersion=300; break;
+  case 1:
+    xdlg->hbciVersion=210;
+    break;
+  case 2:
+    xdlg->hbciVersion=220;
+    break;
+  case 3:
+    xdlg->hbciVersion=300;
+    break;
   }
 
   flags=0;
@@ -252,21 +279,22 @@ void AH_DdvCardSpecialDialog_Fini(GWEN_DIALOG *dlg) {
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_width",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_width",
+                      i);
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_height",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_height",
+                      i);
 }
 
 
 
-int AH_DdvCardSpecialDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int AH_DdvCardSpecialDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   DBG_NOTICE(0, "Activated: %s", sender);
   if (strcasecmp(sender, "okButton")==0)
     return GWEN_DialogEvent_ResultAccept;
@@ -282,15 +310,16 @@ int AH_DdvCardSpecialDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender
 
 
 int GWENHYWFAR_CB AH_DdvCardSpecialDialog_SignalHandler(GWEN_DIALOG *dlg,
-						       GWEN_DIALOG_EVENTTYPE t,
-						       const char *sender) {
+                                                        GWEN_DIALOG_EVENTTYPE t,
+                                                        const char *sender)
+{
   AH_DDVCARD_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_DDVCARD_SPECIAL_DIALOG, dlg);
   assert(xdlg);
 
-  switch(t) {
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     AH_DdvCardSpecialDialog_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;

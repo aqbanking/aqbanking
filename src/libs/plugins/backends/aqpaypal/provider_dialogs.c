@@ -13,7 +13,8 @@
 
 
 
-GWEN_DIALOG *APY_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
+GWEN_DIALOG *APY_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i)
+{
   APY_PROVIDER *xp;
   GWEN_DIALOG *dlg;
 
@@ -32,7 +33,8 @@ GWEN_DIALOG *APY_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
 
 
 
-GWEN_DIALOG *APY_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
+GWEN_DIALOG *APY_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u)
+{
   APY_PROVIDER *xp;
   GWEN_DIALOG *dlg;
 

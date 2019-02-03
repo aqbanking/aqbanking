@@ -21,7 +21,8 @@ GWEN_INHERIT(AH_JOB, AH_JOB_GETACCSEPAINFO)
 
 
 
-AH_JOB *AH_Job_GetAccountSepaInfo_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc) {
+AH_JOB *AH_Job_GetAccountSepaInfo_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc)
+{
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
   AH_JOB_GETACCSEPAINFO *jd;
@@ -37,7 +38,7 @@ AH_JOB *AH_Job_GetAccountSepaInfo_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *
   GWEN_NEW_OBJECT(AH_JOB_GETACCSEPAINFO, jd);
   GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_GETACCSEPAINFO, j, jd,
                        AH_Job_GetAccountSepaInfo_FreeData)
-    AH_Job_SetProcessFn(j, AH_Job_GetAccountSepaInfo_Process);
+  AH_Job_SetProcessFn(j, AH_Job_GetAccountSepaInfo_Process);
 
   jd->account=acc;
 
@@ -74,16 +75,18 @@ AH_JOB *AH_Job_GetAccountSepaInfo_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *
 
 
 
-void GWENHYWFAR_CB AH_Job_GetAccountSepaInfo_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_Job_GetAccountSepaInfo_FreeData(void *bp, void *p)
+{
   AH_JOB_GETACCSEPAINFO *jd;
 
-  jd=(AH_JOB_GETACCSEPAINFO*)p;
+  jd=(AH_JOB_GETACCSEPAINFO *)p;
   GWEN_FREE_OBJECT(jd);
 }
 
 
 
-int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AH_JOB_GETACCSEPAINFO *jd;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -114,7 +117,7 @@ int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
   /* search for "GetAccountSepaInfoResponse" */
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
-  while(dbCurr) {
+  while (dbCurr) {
     GWEN_DB_NODE *dbXA;
     int rv;
 
@@ -157,7 +160,7 @@ int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
           if (reqAccountSuffix==NULL)
             reqAccountSuffix="";
 
-          while(dbAccount) {
+          while (dbAccount) {
             accountId=GWEN_DB_GetCharValue(dbAccount, "accountId", 0, 0);
             accountSuffix=GWEN_DB_GetCharValue(dbAccount, "accountsubid", 0, 0);
             if (accountSuffix==NULL)
@@ -170,11 +173,11 @@ int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
                       bankCode, accountId, accountSuffix, sSepa,
                       reqBankCode, reqAccountId, reqAccountSuffix);
             if (
-                (bankCode && reqBankCode && 0==strcasecmp(bankCode, reqBankCode)) &&
-                (accountId && reqAccountId && 0==strcasecmp(accountId, reqAccountId)) &&
-                (accountSuffix && reqAccountSuffix && 0==strcasecmp(accountSuffix, reqAccountSuffix)) &&
-                (strcasecmp(sSepa, "j")==0)
-               ) {
+              (bankCode && reqBankCode && 0==strcasecmp(bankCode, reqBankCode)) &&
+              (accountId && reqAccountId && 0==strcasecmp(accountId, reqAccountId)) &&
+              (accountSuffix && reqAccountSuffix && 0==strcasecmp(accountSuffix, reqAccountSuffix)) &&
+              (strcasecmp(sSepa, "j")==0)
+            ) {
               /* matching account found, break */
               DBG_INFO(AQHBCI_LOGDOMAIN, "Found matching account in GetAccountSepaInfoResponse");
               break;

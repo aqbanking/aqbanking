@@ -32,7 +32,8 @@
 GWEN_INHERIT(AB_ACCOUNT, AH_ACCOUNT)
 
 
-AB_ACCOUNT *AH_Account_new(AB_PROVIDER *pro) {
+AB_ACCOUNT *AH_Account_new(AB_PROVIDER *pro)
+{
   AB_ACCOUNT *a;
   AH_ACCOUNT *ae;
 
@@ -54,7 +55,8 @@ AB_ACCOUNT *AH_Account_new(AB_PROVIDER *pro) {
 
 
 
-int AH_Account_ReadFromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+int AH_Account_ReadFromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db)
+{
   AH_ACCOUNT *ae;
   GWEN_DB_NODE *dbP;
   int rv;
@@ -95,7 +97,8 @@ int AH_Account_ReadFromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
 
 
 
-int AH_Account_WriteToDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+int AH_Account_WriteToDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db)
+{
   AH_ACCOUNT *ae;
   GWEN_DB_NODE *dbP;
   int rv;
@@ -121,10 +124,11 @@ int AH_Account_WriteToDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db) {
 
 
 
-void GWENHYWFAR_CB AH_Account_freeData(void *bp, void *p) {
+void GWENHYWFAR_CB AH_Account_freeData(void *bp, void *p)
+{
   AH_ACCOUNT *ae;
 
-  ae=(AH_ACCOUNT*) p;
+  ae=(AH_ACCOUNT *) p;
 
   if (ae->dbTempUpd)
     GWEN_DB_Group_free(ae->dbTempUpd);
@@ -134,7 +138,8 @@ void GWENHYWFAR_CB AH_Account_freeData(void *bp, void *p) {
 
 
 
-AH_HBCI *AH_Account_GetHbci(const AB_ACCOUNT *a) {
+AH_HBCI *AH_Account_GetHbci(const AB_ACCOUNT *a)
+{
   AH_ACCOUNT *ae;
 
   assert(a);
@@ -146,7 +151,8 @@ AH_HBCI *AH_Account_GetHbci(const AB_ACCOUNT *a) {
 
 
 void AH_Account_Flags_toDb(GWEN_DB_NODE *db, const char *name,
-                           uint32_t flags) {
+                           uint32_t flags)
+{
   GWEN_DB_DeleteVar(db, name);
   if (flags & AH_BANK_FLAGS_PREFER_SINGLE_TRANSFER)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "preferSingleTransfer");
@@ -166,7 +172,8 @@ void AH_Account_Flags_toDb(GWEN_DB_NODE *db, const char *name,
 
 
 
-uint32_t AH_Account_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
+uint32_t AH_Account_Flags_fromDb(GWEN_DB_NODE *db, const char *name)
+{
   uint32_t fl=0;
   int i;
 
@@ -200,7 +207,8 @@ uint32_t AH_Account_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
 
 
 
-uint32_t AH_Account_GetFlags(const AB_ACCOUNT *a) {
+uint32_t AH_Account_GetFlags(const AB_ACCOUNT *a)
+{
   AH_ACCOUNT *ae;
 
   assert(a);
@@ -212,7 +220,8 @@ uint32_t AH_Account_GetFlags(const AB_ACCOUNT *a) {
 
 
 
-void AH_Account_SetFlags(AB_ACCOUNT *a, uint32_t flags) {
+void AH_Account_SetFlags(AB_ACCOUNT *a, uint32_t flags)
+{
   AH_ACCOUNT *ae;
 
   assert(a);
@@ -224,7 +233,8 @@ void AH_Account_SetFlags(AB_ACCOUNT *a, uint32_t flags) {
 
 
 
-void AH_Account_AddFlags(AB_ACCOUNT *a, uint32_t flags) {
+void AH_Account_AddFlags(AB_ACCOUNT *a, uint32_t flags)
+{
   AH_ACCOUNT *ae;
 
   assert(a);
@@ -236,7 +246,8 @@ void AH_Account_AddFlags(AB_ACCOUNT *a, uint32_t flags) {
 
 
 
-void AH_Account_SubFlags(AB_ACCOUNT *a, uint32_t flags) {
+void AH_Account_SubFlags(AB_ACCOUNT *a, uint32_t flags)
+{
   AH_ACCOUNT *ae;
 
   assert(a);
@@ -248,7 +259,8 @@ void AH_Account_SubFlags(AB_ACCOUNT *a, uint32_t flags) {
 
 
 
-GWEN_DB_NODE *AH_Account_GetDbTempUpd(const AB_ACCOUNT *a) {
+GWEN_DB_NODE *AH_Account_GetDbTempUpd(const AB_ACCOUNT *a)
+{
   AH_ACCOUNT *ae;
 
   assert(a);
@@ -260,7 +272,8 @@ GWEN_DB_NODE *AH_Account_GetDbTempUpd(const AB_ACCOUNT *a) {
 
 
 
-void AH_Account_SetDbTempUpd(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+void AH_Account_SetDbTempUpd(AB_ACCOUNT *a, GWEN_DB_NODE *db)
+{
   AH_ACCOUNT *ae;
 
   assert(a);

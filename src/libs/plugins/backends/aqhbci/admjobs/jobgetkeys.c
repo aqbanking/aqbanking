@@ -20,7 +20,8 @@
 GWEN_INHERIT(AH_JOB, AH_JOB_GETKEYS);
 
 
-AH_JOB *AH_Job_GetKeys_new(AB_PROVIDER *pro, AB_USER *u){
+AH_JOB *AH_Job_GetKeys_new(AB_PROVIDER *pro, AB_USER *u)
+{
   AH_JOB *j;
   AH_JOB_GETKEYS *jd;
   GWEN_DB_NODE *args;
@@ -51,7 +52,7 @@ AH_JOB *AH_Job_GetKeys_new(AB_PROVIDER *pro, AB_USER *u){
   version=AH_User_GetRdhType(u);
   if (version==0)
     version=1;
-  switch(AH_User_GetCryptMode(u)) {
+  switch (AH_User_GetCryptMode(u)) {
   case AH_CryptMode_Rdh:
     GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS, "open/cryptKey/secprofile/code", "RDH");
     GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS, "open/signKey/secprofile/code", "RDH");
@@ -73,10 +74,11 @@ AH_JOB *AH_Job_GetKeys_new(AB_PROVIDER *pro, AB_USER *u){
 
 
 
-void GWENHYWFAR_CB GWENHYWFAR_CB AH_Job_GetKeys_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB GWENHYWFAR_CB AH_Job_GetKeys_FreeData(void *bp, void *p)
+{
   AH_JOB_GETKEYS *jd;
 
-  jd=(AH_JOB_GETKEYS*) p;
+  jd=(AH_JOB_GETKEYS *) p;
 
   GWEN_Crypt_Token_KeyInfo_free(jd->signKeyInfo);
   GWEN_Crypt_Token_KeyInfo_free(jd->cryptKeyInfo);
@@ -87,7 +89,8 @@ void GWENHYWFAR_CB GWENHYWFAR_CB AH_Job_GetKeys_FreeData(void *bp, void *p){
 
 
 
-int AH_Job_GetKeys_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_GetKeys_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AH_HBCI *h;
   AH_JOB_GETKEYS *jd;
   AB_USER *u;
@@ -127,7 +130,7 @@ int AH_Job_GetKeys_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
   /* search for "GetKeyResponse" */
   haveKey=0;
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
-  while(dbCurr) {
+  while (dbCurr) {
     GWEN_DB_NODE *dbKeyResponse;
     int rv;
 
@@ -151,13 +154,13 @@ int AH_Job_GetKeys_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug)
         GWEN_DB_Dump(dbKeyResponse, 2);
 
-      p=GWEN_DB_GetBinValue(dbKeyResponse, "key/modulus", 0, 0, 0 , &bs);
+      p=GWEN_DB_GetBinValue(dbKeyResponse, "key/modulus", 0, 0, 0, &bs);
       if (!p || !bs) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "No modulus");
         return GWEN_ERROR_BAD_DATA;
       }
       else {
-        const uint8_t defaultExpo[3]={0x01, 0x00, 0x01};
+        const uint8_t defaultExpo[3]= {0x01, 0x00, 0x01};
         const char *s;
         uint32_t keyId;
         GWEN_CRYPT_TOKEN_KEYINFO *ki;
@@ -165,7 +168,7 @@ int AH_Job_GetKeys_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
         uint32_t flags=0;
 
         /* skip zero bytes if any */
-        while(bs && *p==0) {
+        while (bs && *p==0) {
           p++;
           bs--;
         }
@@ -233,7 +236,8 @@ int AH_Job_GetKeys_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
 
 
-GWEN_CRYPT_TOKEN_KEYINFO *AH_Job_GetKeys_GetSignKeyInfo(const AH_JOB *j){
+GWEN_CRYPT_TOKEN_KEYINFO *AH_Job_GetKeys_GetSignKeyInfo(const AH_JOB *j)
+{
   AH_JOB_GETKEYS *jd;
 
   assert(j);
@@ -245,7 +249,8 @@ GWEN_CRYPT_TOKEN_KEYINFO *AH_Job_GetKeys_GetSignKeyInfo(const AH_JOB *j){
 
 
 
-GWEN_CRYPT_TOKEN_KEYINFO *AH_Job_GetKeys_GetCryptKeyInfo(const AH_JOB *j){
+GWEN_CRYPT_TOKEN_KEYINFO *AH_Job_GetKeys_GetCryptKeyInfo(const AH_JOB *j)
+{
   AH_JOB_GETKEYS *jd;
 
   assert(j);
@@ -257,7 +262,8 @@ GWEN_CRYPT_TOKEN_KEYINFO *AH_Job_GetKeys_GetCryptKeyInfo(const AH_JOB *j){
 
 
 
-GWEN_CRYPT_TOKEN_KEYINFO *AH_Job_GetKeys_GetAuthKeyInfo(const AH_JOB *j){
+GWEN_CRYPT_TOKEN_KEYINFO *AH_Job_GetKeys_GetAuthKeyInfo(const AH_JOB *j)
+{
   AH_JOB_GETKEYS *jd;
 
   assert(j);
@@ -269,7 +275,8 @@ GWEN_CRYPT_TOKEN_KEYINFO *AH_Job_GetKeys_GetAuthKeyInfo(const AH_JOB *j){
 
 
 
-const char *AH_Job_GetKeys_GetPeerId(const AH_JOB *j) {
+const char *AH_Job_GetKeys_GetPeerId(const AH_JOB *j)
+{
   AH_JOB_GETKEYS *jd;
 
   assert(j);

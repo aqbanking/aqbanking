@@ -37,8 +37,9 @@ GWEN_INHERIT(AIO_OFX_GROUP, AIO_OFX_GROUP_STMTRS)
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_STMTRS_new(const char *groupName,
-				       AIO_OFX_GROUP *parent,
-				       GWEN_XML_CONTEXT *ctx) {
+                                       AIO_OFX_GROUP *parent,
+                                       GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_GROUP *g;
   AIO_OFX_GROUP_STMTRS *xg;
 
@@ -62,10 +63,11 @@ AIO_OFX_GROUP *AIO_OfxGroup_STMTRS_new(const char *groupName,
 
 
 GWENHYWFAR_CB
-void AIO_OfxGroup_STMTRS_FreeData(void *bp, void *p) {
+void AIO_OfxGroup_STMTRS_FreeData(void *bp, void *p)
+{
   AIO_OFX_GROUP_STMTRS *xg;
 
-  xg=(AIO_OFX_GROUP_STMTRS*)p;
+  xg=(AIO_OFX_GROUP_STMTRS *)p;
   assert(xg);
   free(xg->currency);
   free(xg->currentElement);
@@ -75,7 +77,8 @@ void AIO_OfxGroup_STMTRS_FreeData(void *bp, void *p) {
 
 
 int AIO_OfxGroup_STMTRS_StartTag(AIO_OFX_GROUP *g,
-				 const char *tagName) {
+                                 const char *tagName)
+{
   AIO_OFX_GROUP_STMTRS *xg;
   GWEN_XML_CONTEXT *ctx;
   AIO_OFX_GROUP *gNew=NULL;
@@ -112,7 +115,7 @@ int AIO_OfxGroup_STMTRS_StartTag(AIO_OFX_GROUP *g,
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	     "Ignoring group [%s]", tagName);
+             "Ignoring group [%s]", tagName);
     gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);
   }
 
@@ -126,7 +129,8 @@ int AIO_OfxGroup_STMTRS_StartTag(AIO_OFX_GROUP *g,
 
 
 
-int AIO_OfxGroup_STMTRS_AddData(AIO_OFX_GROUP *g, const char *data) {
+int AIO_OfxGroup_STMTRS_AddData(AIO_OFX_GROUP *g, const char *data)
+{
   AIO_OFX_GROUP_STMTRS *xg;
 
   assert(g);
@@ -148,15 +152,15 @@ int AIO_OfxGroup_STMTRS_AddData(AIO_OFX_GROUP *g, const char *data) {
     s=GWEN_Buffer_GetStart(buf);
     if (*s) {
       DBG_INFO(AQBANKING_LOGDOMAIN,
-	       "AddData: %s=[%s]", xg->currentElement, s);
+               "AddData: %s=[%s]", xg->currentElement, s);
       if (strcasecmp(xg->currentElement, "CURDEF")==0) {
-	free(xg->currency);
+        free(xg->currency);
         xg->currency=strdup(s);
       }
       else {
-	DBG_INFO(AQBANKING_LOGDOMAIN,
-		 "Ignoring data for unknown element [%s]",
-		 xg->currentElement);
+        DBG_INFO(AQBANKING_LOGDOMAIN,
+                 "Ignoring data for unknown element [%s]",
+                 xg->currentElement);
       }
     }
     GWEN_Buffer_free(buf);
@@ -167,7 +171,8 @@ int AIO_OfxGroup_STMTRS_AddData(AIO_OFX_GROUP *g, const char *data) {
 
 
 
-int AIO_OfxGroup_STMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
+int AIO_OfxGroup_STMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg)
+{
   AIO_OFX_GROUP_STMTRS *xg;
   const char *s;
   GWEN_XML_CONTEXT *ctx;
@@ -186,9 +191,9 @@ int AIO_OfxGroup_STMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
     const char *s;
 
     DBG_INFO(AQBANKING_LOGDOMAIN,
-	     "Importing account %s/%s",
-	     AIO_OfxGroup_BANKACC_GetBankId(sg),
-	     AIO_OfxGroup_BANKACC_GetAccId(sg));
+             "Importing account %s/%s",
+             AIO_OfxGroup_BANKACC_GetBankId(sg),
+             AIO_OfxGroup_BANKACC_GetAccId(sg));
     ai=AB_ImExporterAccountInfo_new();
     assert(ai);
 
@@ -227,29 +232,29 @@ int AIO_OfxGroup_STMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
 
       it=AB_Transaction_List2_First(tl);
       if (it) {
-	AB_TRANSACTION *t;
+        AB_TRANSACTION *t;
 
-	t=AB_Transaction_List2Iterator_Data(it);
-	while(t) {
-	  DBG_INFO(AQBANKING_LOGDOMAIN, "Importing transaction");
+        t=AB_Transaction_List2Iterator_Data(it);
+        while (t) {
+          DBG_INFO(AQBANKING_LOGDOMAIN, "Importing transaction");
           /* set currency if missing */
-	  if (xg->currency) {
-	    const AB_VALUE *v;
+          if (xg->currency) {
+            const AB_VALUE *v;
 
-	    v=AB_Transaction_GetValue(t);
-	    if (v && AB_Value_GetCurrency(v)==NULL) {
-	      AB_VALUE *v2;
+            v=AB_Transaction_GetValue(t);
+            if (v && AB_Value_GetCurrency(v)==NULL) {
+              AB_VALUE *v2;
 
-	      v2=AB_Value_dup(v);
-	      AB_Value_SetCurrency(v2, xg->currency);
-	      AB_Transaction_SetValue(t, v2);
+              v2=AB_Value_dup(v);
+              AB_Value_SetCurrency(v2, xg->currency);
+              AB_Transaction_SetValue(t, v2);
               AB_Value_free(v2);
-	    }
-	  }
-	  AB_ImExporterAccountInfo_AddTransaction(xg->accountInfo, t);
-	  t=AB_Transaction_List2Iterator_Next(it);
-	}
-	AB_Transaction_List2Iterator_free(it);
+            }
+          }
+          AB_ImExporterAccountInfo_AddTransaction(xg->accountInfo, t);
+          t=AB_Transaction_List2Iterator_Next(it);
+        }
+        AB_Transaction_List2Iterator_free(it);
       }
       /* don't call AB_Transaction_List2_freeAll(), because the transactions
        * from the list have been taken over by the AccountInfo object */
@@ -270,12 +275,12 @@ int AIO_OfxGroup_STMTRS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
       AB_Balance_SetDate(bal, dt);
       AB_Balance_SetValue(bal, v);
       if (xg->currency && AB_Value_GetCurrency(v)==NULL) {
-	AB_VALUE *v2;
+        AB_VALUE *v2;
 
-	v2=AB_Value_dup(v);
-	AB_Value_SetCurrency(v2, xg->currency);
-	AB_Balance_SetValue(bal, v2);
-	AB_Value_free(v2);
+        v2=AB_Value_dup(v);
+        AB_Value_SetCurrency(v2, xg->currency);
+        AB_Balance_SetValue(bal, v2);
+        AB_Value_free(v2);
       }
       DBG_INFO(AQBANKING_LOGDOMAIN, "Adding balance");
       AB_ImExporterAccountInfo_AddBalance(xg->accountInfo, bal);

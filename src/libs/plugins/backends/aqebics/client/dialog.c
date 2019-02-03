@@ -25,7 +25,8 @@ GWEN_INHERIT(GWEN_HTTP_SESSION, EBC_DIALOG)
 
 
 
-GWEN_HTTP_SESSION *EBC_Dialog_new(AB_PROVIDER *pro, AB_USER *u) {
+GWEN_HTTP_SESSION *EBC_Dialog_new(AB_PROVIDER *pro, AB_USER *u)
+{
   GWEN_HTTP_SESSION *sess;
   EBC_DIALOG *xsess;
   const char *url;
@@ -35,7 +36,7 @@ GWEN_HTTP_SESSION *EBC_Dialog_new(AB_PROVIDER *pro, AB_USER *u) {
   url=EBC_User_GetServerUrl(u);
   if (url==NULL) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "No URL for user [%s]",
-	      AB_User_GetUserId(u));
+              AB_User_GetUserId(u));
     return NULL;
   }
 
@@ -46,7 +47,7 @@ GWEN_HTTP_SESSION *EBC_Dialog_new(AB_PROVIDER *pro, AB_USER *u) {
   /* extend session */
   GWEN_NEW_OBJECT(EBC_DIALOG, xsess);
   GWEN_INHERIT_SETDATA(GWEN_HTTP_SESSION, EBC_DIALOG, sess, xsess,
-		       EBC_Dialog_FreeData);
+                       EBC_Dialog_FreeData);
 
   /* set flags according to user settings */
   flags=EBC_User_GetFlags(u);
@@ -67,10 +68,11 @@ GWEN_HTTP_SESSION *EBC_Dialog_new(AB_PROVIDER *pro, AB_USER *u) {
 
 
 
-void GWENHYWFAR_CB EBC_Dialog_FreeData(GWEN_UNUSED void *bp, void *p) {
+void GWENHYWFAR_CB EBC_Dialog_FreeData(GWEN_UNUSED void *bp, void *p)
+{
   EBC_DIALOG *dsess;
 
-  dsess=(EBC_DIALOG*) p;
+  dsess=(EBC_DIALOG *) p;
 
   GWEN_FREE_OBJECT(dsess);
 }
@@ -80,7 +82,8 @@ void GWENHYWFAR_CB EBC_Dialog_FreeData(GWEN_UNUSED void *bp, void *p) {
 
 int EBC_Dialog_ExchangeMessages(GWEN_HTTP_SESSION *sess,
                                 EB_MSG *msg,
-                                EB_MSG **pResponse) {
+                                EB_MSG **pResponse)
+{
   AB_USER *u;
   int rv;
   GWEN_BUFFER *sendBuf;
@@ -107,9 +110,9 @@ int EBC_Dialog_ExchangeMessages(GWEN_HTTP_SESSION *sess,
 
   /* send request */
   rv=GWEN_HttpSession_SendPacket(sess,
-				 "POST",
-				 (const uint8_t*)GWEN_Buffer_GetStart(sendBuf),
-				 GWEN_Buffer_GetUsedBytes(sendBuf));
+                                 "POST",
+                                 (const uint8_t *)GWEN_Buffer_GetStart(sendBuf),
+                                 GWEN_Buffer_GetUsedBytes(sendBuf));
   if (rv<0) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Error sending request (%d)", rv);
     GWEN_Buffer_free(recvBuf);

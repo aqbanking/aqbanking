@@ -35,7 +35,8 @@ GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_Q43);
 
 
 
-AB_IMEXPORTER *AB_ImExporterQ43_new(AB_BANKING *ab){
+AB_IMEXPORTER *AB_ImExporterQ43_new(AB_BANKING *ab)
+{
   AB_IMEXPORTER *ie;
   AH_IMEXPORTER_Q43 *ieh;
 
@@ -52,19 +53,23 @@ AB_IMEXPORTER *AB_ImExporterQ43_new(AB_BANKING *ab){
 
 
 
-void GWENHYWFAR_CB AH_ImExporterQ43_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_ImExporterQ43_FreeData(void *bp, void *p)
+{
   AH_IMEXPORTER_Q43 *ieh;
 
-  ieh=(AH_IMEXPORTER_Q43*)p;
+  ieh=(AH_IMEXPORTER_Q43 *)p;
   GWEN_FREE_OBJECT(ieh);
 }
 
 
 
 /* this needs to be replaced later by a more generic approach */
-const char *AH_ImExporterQ43_GetCurrencyCode(int code) {
-  switch(code) {
-  case 978: return "EUR"; break;
+const char *AH_ImExporterQ43_GetCurrencyCode(int code)
+{
+  switch (code) {
+  case 978:
+    return "EUR";
+    break;
   default:
     break;
   }
@@ -74,7 +79,8 @@ const char *AH_ImExporterQ43_GetCurrencyCode(int code) {
 
 
 
-int AH_ImExporterQ43_ReadInt(const char *p, int len) {
+int AH_ImExporterQ43_ReadInt(const char *p, int len)
+{
   int res=0;
   int i;
 
@@ -94,9 +100,10 @@ int AH_ImExporterQ43_ReadInt(const char *p, int len) {
 
 
 int AH_ImExporterQ43_ReadDocument(AB_IMEXPORTER *ie,
-				  AB_IMEXPORTER_CONTEXT *ctx,
+                                  AB_IMEXPORTER_CONTEXT *ctx,
                                   GWEN_FAST_BUFFER *fb,
-				  GWEN_DB_NODE *params){
+                                  GWEN_DB_NODE *params)
+{
   AB_IMEXPORTER_ACCOUNTINFO *iea=NULL;
   AB_IMEXPORTER_ACCOUNTINFO_LIST *ieaList;
   AB_TRANSACTION *t=NULL;
@@ -121,77 +128,78 @@ int AH_ImExporterQ43_ReadDocument(AB_IMEXPORTER *ie,
 
       size=GWEN_Buffer_GetUsedBytes(lbuf);
       if (size<2) {
-	DBG_ERROR(AQBANKING_LOGDOMAIN,
-		  "Line too short (%d bytes)",
-		  GWEN_Buffer_GetUsedBytes(lbuf));
-	AB_Transaction_free(t);
-	GWEN_Date_free(date);
-	GWEN_Buffer_free(lbuf);
-	return GWEN_ERROR_BAD_DATA;
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "Line too short (%d bytes)",
+                  GWEN_Buffer_GetUsedBytes(lbuf));
+        AB_Transaction_free(t);
+        GWEN_Date_free(date);
+        GWEN_Buffer_free(lbuf);
+        return GWEN_ERROR_BAD_DATA;
       }
       p=GWEN_Buffer_GetStart(lbuf);
       code=((p[0]-'0')*10)+(p[1]-'0');
       DBG_INFO(AQBANKING_LOGDOMAIN, "Got record %02d", code);
 
-      switch(code) {
+      switch (code) {
       case 0: { /* file header */
-	int y, m, d;
+        int y, m, d;
 
-	if (size<12) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN,
-		    "Record %02d too short (%d bytes)",
-		    code, GWEN_Buffer_GetUsedBytes(lbuf));
-	  AB_Transaction_free(t);
+        if (size<12) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN,
+                    "Record %02d too short (%d bytes)",
+                    code, GWEN_Buffer_GetUsedBytes(lbuf));
+          AB_Transaction_free(t);
           GWEN_Date_free(date);
-	  GWEN_Buffer_free(lbuf);
-	  return GWEN_ERROR_BAD_DATA;
-	}
+          GWEN_Buffer_free(lbuf);
+          return GWEN_ERROR_BAD_DATA;
+        }
 
         /* extract date */
-	y=((p[6] -'0')*10)+(p[7] -'0');
-	m=((p[8] -'0')*10)+(p[9] -'0');
-	d=((p[10]-'0')*10)+(p[11]-'0');
-	if (y>YEAR_2000_CUTOFF)
-	  y+=1900;
-	else
+        y=((p[6] -'0')*10)+(p[7] -'0');
+        m=((p[8] -'0')*10)+(p[9] -'0');
+        d=((p[10]-'0')*10)+(p[11]-'0');
+        if (y>YEAR_2000_CUTOFF)
+          y+=1900;
+        else
           y+=2000;
-	GWEN_Date_free(date);
-	date=GWEN_Date_fromGregorian(y, m, d);
-	if (date==NULL) {
+        GWEN_Date_free(date);
+        date=GWEN_Date_fromGregorian(y, m, d);
+        if (date==NULL) {
           DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid date in record %02d", code);
-	  AB_Transaction_free(t);
-	  GWEN_Date_free(date);
-	  GWEN_Buffer_free(lbuf);
-	  return GWEN_ERROR_BAD_DATA;
-	}
+          AB_Transaction_free(t);
+          GWEN_Date_free(date);
+          GWEN_Buffer_free(lbuf);
+          return GWEN_ERROR_BAD_DATA;
+        }
         break;
       }
 
       case 11: { /* account header */
-	char bankCode[9];
-	char accountNumber[11];
+        char bankCode[9];
+        char accountNumber[11];
         int cy;
 
-	if (size<80) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN,
-		    "Record %02d too short (%d bytes)",
-		    code, GWEN_Buffer_GetUsedBytes(lbuf));
-	  AB_Transaction_free(t);
+        if (size<80) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN,
+                    "Record %02d too short (%d bytes)",
+                    code, GWEN_Buffer_GetUsedBytes(lbuf));
+          AB_Transaction_free(t);
           GWEN_Date_free(date);
-	  GWEN_Buffer_free(lbuf);
-	  return GWEN_ERROR_BAD_DATA;
-	}
+          GWEN_Buffer_free(lbuf);
+          return GWEN_ERROR_BAD_DATA;
+        }
 
-	/* get bankcode (combine bank code key and office branch code */
-	strncpy(bankCode, p+2, 8);
-	bankCode[8]=0;
+        /* get bankcode (combine bank code key and office branch code */
+        strncpy(bankCode, p+2, 8);
+        bankCode[8]=0;
 
-	/* get account number */
-	strncpy(accountNumber, p+10, 10);
-	accountNumber[10]=0;
+        /* get account number */
+        strncpy(accountNumber, p+10, 10);
+        accountNumber[10]=0;
 
         /* get account info (or create it if necessary) */
-        iea=AB_ImExporterAccountInfo_List_GetByBankCodeAndAccountNumber(ieaList, bankCode, accountNumber, AB_AccountType_Unknown);
+        iea=AB_ImExporterAccountInfo_List_GetByBankCodeAndAccountNumber(ieaList, bankCode, accountNumber,
+                                                                        AB_AccountType_Unknown);
         if (iea==NULL) {
           iea=AB_ImExporterAccountInfo_new();
           AB_ImExporterAccountInfo_SetBankCode(iea, bankCode);
@@ -199,174 +207,174 @@ int AH_ImExporterQ43_ReadDocument(AB_IMEXPORTER *ie,
           AB_ImExporterContext_AddAccountInfo(ctx, iea);
         }
 
-	cy=((p[47]-'0')*100)+((p[48]-'0')*10)+(p[49]-'0');
-	currency=AH_ImExporterQ43_GetCurrencyCode(cy);
-	if (!currency) {
-	  DBG_WARN(AQBANKING_LOGDOMAIN, "Unknown currency code %d, ignoring", cy);
-	}
+        cy=((p[47]-'0')*100)+((p[48]-'0')*10)+(p[49]-'0');
+        currency=AH_ImExporterQ43_GetCurrencyCode(cy);
+        if (!currency) {
+          DBG_WARN(AQBANKING_LOGDOMAIN, "Unknown currency code %d, ignoring", cy);
+        }
 
-	/* TODO: read initial balance */
+        /* TODO: read initial balance */
         hadSome++;
         break;
       }
 
       case 22: {
-	GWEN_DATE *da;
+        GWEN_DATE *da;
         AB_VALUE *v;
-	int y, m, d;
-	char amount[32];
+        int y, m, d;
+        char amount[32];
         const char *s;
 
-	if (size<80) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN,
-		    "Record %02d too short (%d bytes)",
-		    code, GWEN_Buffer_GetUsedBytes(lbuf));
-	  AB_Transaction_free(t);
-	  GWEN_Date_free(date);
-	  GWEN_Buffer_free(lbuf);
-	  return GWEN_ERROR_BAD_DATA;
-	}
+        if (size<80) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN,
+                    "Record %02d too short (%d bytes)",
+                    code, GWEN_Buffer_GetUsedBytes(lbuf));
+          AB_Transaction_free(t);
+          GWEN_Date_free(date);
+          GWEN_Buffer_free(lbuf);
+          return GWEN_ERROR_BAD_DATA;
+        }
 
-	if (iea==NULL) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad order of records (22 before 11)");
-	  AB_Transaction_free(t);
-	  GWEN_Date_free(date);
-	  GWEN_Buffer_free(lbuf);
-	  return GWEN_ERROR_BAD_DATA;
-	}
+        if (iea==NULL) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad order of records (22 before 11)");
+          AB_Transaction_free(t);
+          GWEN_Date_free(date);
+          GWEN_Buffer_free(lbuf);
+          return GWEN_ERROR_BAD_DATA;
+        }
 
-	if (t)
-	  AB_ImExporterAccountInfo_AddTransaction(iea, t);
-	t=AB_Transaction_new();
+        if (t)
+          AB_ImExporterAccountInfo_AddTransaction(iea, t);
+        t=AB_Transaction_new();
 
-	/* extract booking date */
-	y=((p[10]-'0')*10)+(p[11]-'0');
-	m=((p[12]-'0')*10)+(p[13]-'0');
-	d=((p[14]-'0')*10)+(p[15]-'0');
-	if (y>YEAR_2000_CUTOFF)
-	  y+=1900;
-	else
+        /* extract booking date */
+        y=((p[10]-'0')*10)+(p[11]-'0');
+        m=((p[12]-'0')*10)+(p[13]-'0');
+        d=((p[14]-'0')*10)+(p[15]-'0');
+        if (y>YEAR_2000_CUTOFF)
+          y+=1900;
+        else
           y+=2000;
         da=GWEN_Date_fromGregorian(y, m, d);
         if (da==NULL) {
-	  DBG_WARN(AQBANKING_LOGDOMAIN, "Invalid booking date in record %02d, ignoring", code);
-	}
-	else {
-	  AB_Transaction_SetDate(t, da);
+          DBG_WARN(AQBANKING_LOGDOMAIN, "Invalid booking date in record %02d, ignoring", code);
+        }
+        else {
+          AB_Transaction_SetDate(t, da);
           GWEN_Date_free(da);
-	}
+        }
 
-	/* extract valuta date */
-	y=((p[16]-'0')*10)+(p[17]-'0');
-	m=((p[18]-'0')*10)+(p[18]-'0');
-	d=((p[19]-'0')*10)+(p[20]-'0');
-	if (y>YEAR_2000_CUTOFF)
-	  y+=1900;
-	else
+        /* extract valuta date */
+        y=((p[16]-'0')*10)+(p[17]-'0');
+        m=((p[18]-'0')*10)+(p[18]-'0');
+        d=((p[19]-'0')*10)+(p[20]-'0');
+        if (y>YEAR_2000_CUTOFF)
+          y+=1900;
+        else
           y+=2000;
         da=GWEN_Date_fromGregorian(y, m, d);
-	if (da==NULL) {
-	  DBG_WARN(AQBANKING_LOGDOMAIN, "Invalid valuta date in record %02d, ignoring", code);
-	}
-	else {
-	  AB_Transaction_SetValutaDate(t, da);
+        if (da==NULL) {
+          DBG_WARN(AQBANKING_LOGDOMAIN, "Invalid valuta date in record %02d, ignoring", code);
+        }
+        else {
+          AB_Transaction_SetValutaDate(t, da);
           GWEN_Date_free(da);
-	}
+        }
 
-	/* get amount */
-	strncpy(amount, p+28, 14);
-	amount[14]=0;
-	strncat(amount, "/100:", sizeof(amount)-strlen(amount)-1);
+        /* get amount */
+        strncpy(amount, p+28, 14);
+        amount[14]=0;
+        strncat(amount, "/100:", sizeof(amount)-strlen(amount)-1);
         if (currency)
-	  strncat(amount, currency, sizeof(amount)-strlen(amount)-1);
-	amount[sizeof(amount)-1]=0;
-	v=AB_Value_fromString(amount);
-	if (v==NULL) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid amount in transaction");
-	  AB_Transaction_free(t);
-	  GWEN_Date_free(date);
-	  GWEN_Buffer_free(lbuf);
-	  return GWEN_ERROR_BAD_DATA;
-	}
-	else {
-	  if (p[27]=='1')
-	    /* FIXME: Do we have to negate on "1" or "2"? */
-	    AB_Value_Negate(v);
-	  AB_Transaction_SetValue(t, v);
+          strncat(amount, currency, sizeof(amount)-strlen(amount)-1);
+        amount[sizeof(amount)-1]=0;
+        v=AB_Value_fromString(amount);
+        if (v==NULL) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid amount in transaction");
+          AB_Transaction_free(t);
+          GWEN_Date_free(date);
+          GWEN_Buffer_free(lbuf);
+          return GWEN_ERROR_BAD_DATA;
+        }
+        else {
+          if (p[27]=='1')
+            /* FIXME: Do we have to negate on "1" or "2"? */
+            AB_Value_Negate(v);
+          AB_Transaction_SetValue(t, v);
           AB_Value_free(v);
-	}
+        }
 
         /* copy local account info */
-	s=AB_ImExporterAccountInfo_GetAccountNumber(iea);
+        s=AB_ImExporterAccountInfo_GetAccountNumber(iea);
         AB_Transaction_SetLocalAccountNumber(t, s);
-	s=AB_ImExporterAccountInfo_GetBankCode(iea);
-	AB_Transaction_SetLocalBankCode(t, s);
+        s=AB_ImExporterAccountInfo_GetBankCode(iea);
+        AB_Transaction_SetLocalBankCode(t, s);
         break;
       }
 
       case 23: { /* transaction comments */
-	GWEN_BUFFER *tbuf;
+        GWEN_BUFFER *tbuf;
 
-	if (size<80) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN,
-		    "Record %02d too short (%d bytes)",
-		    code, GWEN_Buffer_GetUsedBytes(lbuf));
-	  AB_Transaction_free(t);
-	  GWEN_Date_free(date);
-	  GWEN_Buffer_free(lbuf);
-	  return GWEN_ERROR_BAD_DATA;
-	}
+        if (size<80) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN,
+                    "Record %02d too short (%d bytes)",
+                    code, GWEN_Buffer_GetUsedBytes(lbuf));
+          AB_Transaction_free(t);
+          GWEN_Date_free(date);
+          GWEN_Buffer_free(lbuf);
+          return GWEN_ERROR_BAD_DATA;
+        }
 
-	if (t==NULL) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad order of records (23 before 22)");
-	  AB_Transaction_free(t);
-	  GWEN_Date_free(date);
-	  GWEN_Buffer_free(lbuf);
-	  return GWEN_ERROR_BAD_DATA;
-	}
+        if (t==NULL) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad order of records (23 before 22)");
+          AB_Transaction_free(t);
+          GWEN_Date_free(date);
+          GWEN_Buffer_free(lbuf);
+          return GWEN_ERROR_BAD_DATA;
+        }
 
-	tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	/* comment 1 */
-	GWEN_Buffer_AppendBytes(tbuf, p+4, 38);
-	GWEN_Text_CondenseBuffer(tbuf);
+        tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+        /* comment 1 */
+        GWEN_Buffer_AppendBytes(tbuf, p+4, 38);
+        GWEN_Text_CondenseBuffer(tbuf);
         if (GWEN_Buffer_GetUsedBytes(tbuf))
-	  AB_Transaction_AddPurposeLine(t, GWEN_Buffer_GetStart(tbuf));
-	GWEN_Buffer_Reset(tbuf);
+          AB_Transaction_AddPurposeLine(t, GWEN_Buffer_GetStart(tbuf));
+        GWEN_Buffer_Reset(tbuf);
 
-	/* comment 2 */
-	GWEN_Buffer_AppendBytes(tbuf, p+42, 38);
-	GWEN_Text_CondenseBuffer(tbuf);
-	if (GWEN_Buffer_GetUsedBytes(tbuf))
-	  AB_Transaction_AddPurposeLine(t, GWEN_Buffer_GetStart(tbuf));
+        /* comment 2 */
+        GWEN_Buffer_AppendBytes(tbuf, p+42, 38);
+        GWEN_Text_CondenseBuffer(tbuf);
+        if (GWEN_Buffer_GetUsedBytes(tbuf))
+          AB_Transaction_AddPurposeLine(t, GWEN_Buffer_GetStart(tbuf));
         GWEN_Buffer_free(tbuf);
-	break;
+        break;
       }
 
       case 33: { /* end of accunt record */
-	/* store current transaction if any */
-	if (t) {
-	  AB_ImExporterAccountInfo_AddTransaction(iea, t);
-	  t=NULL;
-	}
+        /* store current transaction if any */
+        if (t) {
+          AB_ImExporterAccountInfo_AddTransaction(iea, t);
+          t=NULL;
+        }
 
-	// TODO: check the control fields here, read final account balance
+        // TODO: check the control fields here, read final account balance
         break;
       }
 
       case 88: {
-	int numrecs;
+        int numrecs;
 
-	numrecs=AH_ImExporterQ43_ReadInt(p+20, 6);
-	if (numrecs!=records) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN,
-		    "Number of records doesn't match (%d != %d)",
-		    numrecs, records);
-	  AB_Transaction_free(t);
-	  GWEN_Date_free(date);
-	  GWEN_Buffer_free(lbuf);
-	  return GWEN_ERROR_BAD_DATA;
-	}
-	break;
+        numrecs=AH_ImExporterQ43_ReadInt(p+20, 6);
+        if (numrecs!=records) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN,
+                    "Number of records doesn't match (%d != %d)",
+                    numrecs, records);
+          AB_Transaction_free(t);
+          GWEN_Date_free(date);
+          GWEN_Buffer_free(lbuf);
+          return GWEN_ERROR_BAD_DATA;
+        }
+        break;
       }
 
       default:
@@ -375,9 +383,10 @@ int AH_ImExporterQ43_ReadDocument(AB_IMEXPORTER *ie,
 
       GWEN_Buffer_Reset(lbuf);
       if (code!=0)
-	records++;
+        records++;
     }
-  } while (rv>=0);
+  }
+  while (rv>=0);
 
   if (rv==GWEN_ERROR_EOF && hadSome)
     /* ignore EOF when we received some data */
@@ -398,9 +407,10 @@ int AH_ImExporterQ43_ReadDocument(AB_IMEXPORTER *ie,
 
 
 int AH_ImExporterQ43_Import(AB_IMEXPORTER *ie,
-			    AB_IMEXPORTER_CONTEXT *ctx,
-			    GWEN_SYNCIO *sio,
-			    GWEN_DB_NODE *params){
+                            AB_IMEXPORTER_CONTEXT *ctx,
+                            GWEN_SYNCIO *sio,
+                            GWEN_DB_NODE *params)
+{
   AH_IMEXPORTER_Q43 *ieh;
   GWEN_FAST_BUFFER *fb;
   int rv;
@@ -418,7 +428,8 @@ int AH_ImExporterQ43_Import(AB_IMEXPORTER *ie,
 
 
 
-int AH_ImExporterQ43_CheckFile(AB_IMEXPORTER *ie, const char *fname){
+int AH_ImExporterQ43_CheckFile(AB_IMEXPORTER *ie, const char *fname)
+{
   AH_IMEXPORTER_Q43 *ieh;
 
   assert(ie);
@@ -432,9 +443,10 @@ int AH_ImExporterQ43_CheckFile(AB_IMEXPORTER *ie, const char *fname){
 
 
 int AH_ImExporterQ43_Export(AB_IMEXPORTER *ie,
-			    AB_IMEXPORTER_CONTEXT *ctx,
-			    GWEN_SYNCIO *sio,
-			    GWEN_DB_NODE *params){
+                            AB_IMEXPORTER_CONTEXT *ctx,
+                            GWEN_SYNCIO *sio,
+                            GWEN_DB_NODE *params)
+{
   AH_IMEXPORTER_Q43 *ieh;
 
   assert(ie);

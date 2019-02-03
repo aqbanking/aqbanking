@@ -36,8 +36,9 @@ GWEN_INHERIT(AIO_OFX_GROUP, AIO_OFX_GROUP_ACCTINFO)
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_ACCTINFO_new(const char *groupName,
-					 AIO_OFX_GROUP *parent,
-					 GWEN_XML_CONTEXT *ctx) {
+                                         AIO_OFX_GROUP *parent,
+                                         GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_GROUP *g;
   AIO_OFX_GROUP_ACCTINFO *xg;
 
@@ -61,10 +62,11 @@ AIO_OFX_GROUP *AIO_OfxGroup_ACCTINFO_new(const char *groupName,
 
 
 GWENHYWFAR_CB
-void AIO_OfxGroup_ACCTINFO_FreeData(void *bp, void *p) {
+void AIO_OfxGroup_ACCTINFO_FreeData(void *bp, void *p)
+{
   AIO_OFX_GROUP_ACCTINFO *xg;
 
-  xg=(AIO_OFX_GROUP_ACCTINFO*)p;
+  xg=(AIO_OFX_GROUP_ACCTINFO *)p;
   assert(xg);
   free(xg->description);
   free(xg->bankId);
@@ -76,7 +78,8 @@ void AIO_OfxGroup_ACCTINFO_FreeData(void *bp, void *p) {
 
 
 
-const char *AIO_OfxGroup_ACCTINFO_GetBankId(const AIO_OFX_GROUP *g) {
+const char *AIO_OfxGroup_ACCTINFO_GetBankId(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_ACCTINFO *xg;
 
   assert(g);
@@ -88,7 +91,8 @@ const char *AIO_OfxGroup_ACCTINFO_GetBankId(const AIO_OFX_GROUP *g) {
 
 
 
-const char *AIO_OfxGroup_ACCTINFO_GetAccId(const AIO_OFX_GROUP *g) {
+const char *AIO_OfxGroup_ACCTINFO_GetAccId(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_ACCTINFO *xg;
 
   assert(g);
@@ -100,7 +104,8 @@ const char *AIO_OfxGroup_ACCTINFO_GetAccId(const AIO_OFX_GROUP *g) {
 
 
 
-const char *AIO_OfxGroup_ACCTINFO_GetAccType(const AIO_OFX_GROUP *g) {
+const char *AIO_OfxGroup_ACCTINFO_GetAccType(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_ACCTINFO *xg;
 
   assert(g);
@@ -112,7 +117,8 @@ const char *AIO_OfxGroup_ACCTINFO_GetAccType(const AIO_OFX_GROUP *g) {
 
 
 
-const char *AIO_OfxGroup_ACCTINFO_GetAccDescr(const AIO_OFX_GROUP *g) {
+const char *AIO_OfxGroup_ACCTINFO_GetAccDescr(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_ACCTINFO *xg;
 
   assert(g);
@@ -125,7 +131,8 @@ const char *AIO_OfxGroup_ACCTINFO_GetAccDescr(const AIO_OFX_GROUP *g) {
 
 
 int AIO_OfxGroup_ACCTINFO_StartTag(AIO_OFX_GROUP *g,
-				   const char *tagName) {
+                                   const char *tagName)
+{
   AIO_OFX_GROUP_ACCTINFO *xg;
   GWEN_XML_CONTEXT *ctx;
   AIO_OFX_GROUP *gNew=NULL;
@@ -143,9 +150,9 @@ int AIO_OfxGroup_ACCTINFO_StartTag(AIO_OFX_GROUP *g,
     xg->currentElement=strdup(tagName);
   }
   else if (strcasecmp(tagName, "BANKACCTINFO")==0 ||
-	   strcasecmp(tagName, "CCACCTINFO")==0 ||
-	   strcasecmp(tagName, "BPACCTINFO")==0 ||
-	   strcasecmp(tagName, "INVACCTINFO")==0) {
+           strcasecmp(tagName, "CCACCTINFO")==0 ||
+           strcasecmp(tagName, "BPACCTINFO")==0 ||
+           strcasecmp(tagName, "INVACCTINFO")==0) {
     gNew=AIO_OfxGroup_BANKACCTINFO_new(tagName, g, ctx);
   }
   else if (strcasecmp(tagName, "DESC")==0) {
@@ -153,7 +160,7 @@ int AIO_OfxGroup_ACCTINFO_StartTag(AIO_OFX_GROUP *g,
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	     "Ignoring tag [%s]", tagName);
+             "Ignoring tag [%s]", tagName);
     xg->currentElement=strdup(tagName);
   }
 
@@ -167,7 +174,8 @@ int AIO_OfxGroup_ACCTINFO_StartTag(AIO_OFX_GROUP *g,
 
 
 
-int AIO_OfxGroup_ACCTINFO_AddData(AIO_OFX_GROUP *g, const char *data) {
+int AIO_OfxGroup_ACCTINFO_AddData(AIO_OFX_GROUP *g, const char *data)
+{
   AIO_OFX_GROUP_ACCTINFO *xg;
 
   assert(g);
@@ -189,15 +197,15 @@ int AIO_OfxGroup_ACCTINFO_AddData(AIO_OFX_GROUP *g, const char *data) {
     s=GWEN_Buffer_GetStart(buf);
     if (*s) {
       DBG_INFO(AQBANKING_LOGDOMAIN,
-	       "AddData: %s=[%s]", xg->currentElement, s);
+               "AddData: %s=[%s]", xg->currentElement, s);
       if (strcasecmp(xg->currentElement, "DESC")==0) {
-	free(xg->description);
+        free(xg->description);
         xg->description=strdup(s);
       }
       else {
-	DBG_INFO(AQBANKING_LOGDOMAIN,
-		 "Ignoring data for unknown element [%s]",
-		 xg->currentElement);
+        DBG_INFO(AQBANKING_LOGDOMAIN,
+                 "Ignoring data for unknown element [%s]",
+                 xg->currentElement);
       }
     }
     GWEN_Buffer_free(buf);
@@ -208,7 +216,8 @@ int AIO_OfxGroup_ACCTINFO_AddData(AIO_OFX_GROUP *g, const char *data) {
 
 
 
-int AIO_OfxGroup_ACCTINFO_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
+int AIO_OfxGroup_ACCTINFO_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg)
+{
   AIO_OFX_GROUP_ACCTINFO *xg;
   const char *s;
   GWEN_XML_CONTEXT *ctx;
@@ -229,18 +238,24 @@ int AIO_OfxGroup_ACCTINFO_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
 
     s=AIO_OfxGroup_BANKACCTINFO_GetBankId(sg);
     free(xg->bankId);
-    if (s) xg->bankId=strdup(s);
-    else xg->bankId=NULL;
+    if (s)
+      xg->bankId=strdup(s);
+    else
+      xg->bankId=NULL;
 
     s=AIO_OfxGroup_BANKACCTINFO_GetAccId(sg);
     free(xg->accId);
-    if (s) xg->accId=strdup(s);
-    else xg->accId=NULL;
+    if (s)
+      xg->accId=strdup(s);
+    else
+      xg->accId=NULL;
 
     s=AIO_OfxGroup_BANKACCTINFO_GetAccType(sg);
     free(xg->accType);
-    if (s) xg->accType=strdup(s);
-    else xg->accType=NULL;
+    if (s)
+      xg->accType=strdup(s);
+    else
+      xg->accType=NULL;
   }
 
   return 0;

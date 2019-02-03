@@ -28,7 +28,8 @@ GWEN_INHERIT(AB_USER, APY_USER)
 
 
 
-AB_USER *APY_User_new(AB_PROVIDER *pro) {
+AB_USER *APY_User_new(AB_PROVIDER *pro)
+{
   AB_USER *u;
   APY_USER *ue;
 
@@ -52,10 +53,11 @@ AB_USER *APY_User_new(AB_PROVIDER *pro) {
 
 
 
-void GWENHYWFAR_CB APY_User_freeData(void *bp, void *p) {
+void GWENHYWFAR_CB APY_User_freeData(void *bp, void *p)
+{
   APY_USER *ue;
 
-  ue=(APY_USER*)p;
+  ue=(APY_USER *)p;
   free(ue->serverUrl);
   free(ue->apiPassword);
   free(ue->apiSignature);
@@ -65,7 +67,8 @@ void GWENHYWFAR_CB APY_User_freeData(void *bp, void *p) {
 
 
 
-int APY_User_ReadFromDb(AB_USER *u, GWEN_DB_NODE *db) {
+int APY_User_ReadFromDb(AB_USER *u, GWEN_DB_NODE *db)
+{
   APY_USER *ue;
   AB_PROVIDER *pro;
   GWEN_DB_NODE *dbP;
@@ -95,8 +98,10 @@ int APY_User_ReadFromDb(AB_USER *u, GWEN_DB_NODE *db) {
   /* get server address */
   free(ue->serverUrl);
   s=GWEN_DB_GetCharValue(dbP, "server", 0, 0);
-  if (s && *s) ue->serverUrl=strdup(s);
-  else ue->serverUrl=NULL;
+  if (s && *s)
+    ue->serverUrl=strdup(s);
+  else
+    ue->serverUrl=NULL;
 
   /* setup HTTP version */
   ue->httpVMajor=GWEN_DB_GetIntValue(dbP, "httpVMajor", 0, -1);
@@ -111,7 +116,8 @@ int APY_User_ReadFromDb(AB_USER *u, GWEN_DB_NODE *db) {
 
 
 
-int APY_User_WriteToDb(const AB_USER *u, GWEN_DB_NODE *db) {
+int APY_User_WriteToDb(const AB_USER *u, GWEN_DB_NODE *db)
+{
   APY_USER *ue;
   int rv;
   GWEN_DB_NODE *dbP;
@@ -142,7 +148,8 @@ int APY_User_WriteToDb(const AB_USER *u, GWEN_DB_NODE *db) {
 
 
 
-const char *APY_User_GetServerUrl(const AB_USER *u) {
+const char *APY_User_GetServerUrl(const AB_USER *u)
+{
   APY_USER *ue;
 
   assert(u);
@@ -154,7 +161,8 @@ const char *APY_User_GetServerUrl(const AB_USER *u) {
 
 
 
-void APY_User_SetServerUrl(AB_USER *u, const char *s) {
+void APY_User_SetServerUrl(AB_USER *u, const char *s)
+{
   APY_USER *ue;
 
   assert(u);
@@ -162,13 +170,16 @@ void APY_User_SetServerUrl(AB_USER *u, const char *s) {
   assert(ue);
 
   free(ue->serverUrl);
-  if (s) ue->serverUrl=strdup(s);
-  else ue->serverUrl=NULL;
+  if (s)
+    ue->serverUrl=strdup(s);
+  else
+    ue->serverUrl=NULL;
 }
 
 
 
-const char *APY_User_GetApiUserId(const AB_USER *u) {
+const char *APY_User_GetApiUserId(const AB_USER *u)
+{
   APY_USER *ue;
 
   assert(u);
@@ -180,7 +191,8 @@ const char *APY_User_GetApiUserId(const AB_USER *u) {
 
 
 
-const char *APY_User_GetApiPassword(const AB_USER *u) {
+const char *APY_User_GetApiPassword(const AB_USER *u)
+{
   APY_USER *ue;
 
   assert(u);
@@ -192,7 +204,8 @@ const char *APY_User_GetApiPassword(const AB_USER *u) {
 
 
 
-const char *APY_User_GetApiSignature(const AB_USER *u) {
+const char *APY_User_GetApiSignature(const AB_USER *u)
+{
   APY_USER *ue;
 
   assert(u);
@@ -204,7 +217,8 @@ const char *APY_User_GetApiSignature(const AB_USER *u) {
 
 
 
-void APY_User_SetApiSecrets_l(AB_USER *u, const char *password, const char *signature, const char *userid) {
+void APY_User_SetApiSecrets_l(AB_USER *u, const char *password, const char *signature, const char *userid)
+{
   APY_USER *ue;
 
   assert(u);
@@ -212,21 +226,28 @@ void APY_User_SetApiSecrets_l(AB_USER *u, const char *password, const char *sign
   assert(ue);
 
   free(ue->apiPassword);
-  if (password && *password) ue->apiPassword=strdup(password);
-  else ue->apiPassword=NULL;
+  if (password && *password)
+    ue->apiPassword=strdup(password);
+  else
+    ue->apiPassword=NULL;
 
   free(ue->apiSignature);
-  if (signature && *signature) ue->apiSignature=strdup(signature);
-  else ue->apiSignature=NULL;
+  if (signature && *signature)
+    ue->apiSignature=strdup(signature);
+  else
+    ue->apiSignature=NULL;
 
   free(ue->apiUserId);
-  if (userid && *userid) ue->apiUserId=strdup(userid);
-  else ue->apiUserId=NULL;
+  if (userid && *userid)
+    ue->apiUserId=strdup(userid);
+  else
+    ue->apiUserId=NULL;
 }
 
 
 
-int APY_User_SetApiSecrets(AB_USER *u, const char *password, const char *signature, const char *userid) {
+int APY_User_SetApiSecrets(AB_USER *u, const char *password, const char *signature, const char *userid)
+{
   GWEN_BUFFER *tbuf;
   int rv;
 
@@ -247,7 +268,8 @@ int APY_User_SetApiSecrets(AB_USER *u, const char *password, const char *signatu
 
 
 
-int APY_User_GetHttpVMajor(const AB_USER *u) {
+int APY_User_GetHttpVMajor(const AB_USER *u)
+{
   APY_USER *ue;
 
   assert(u);
@@ -259,7 +281,8 @@ int APY_User_GetHttpVMajor(const AB_USER *u) {
 
 
 
-void APY_User_SetHttpVMajor(const AB_USER *u, int i) {
+void APY_User_SetHttpVMajor(const AB_USER *u, int i)
+{
   APY_USER *ue;
 
   assert(u);
@@ -271,7 +294,8 @@ void APY_User_SetHttpVMajor(const AB_USER *u, int i) {
 
 
 
-int APY_User_GetHttpVMinor(const AB_USER *u) {
+int APY_User_GetHttpVMinor(const AB_USER *u)
+{
   APY_USER *ue;
 
   assert(u);
@@ -283,7 +307,8 @@ int APY_User_GetHttpVMinor(const AB_USER *u) {
 
 
 
-void APY_User_SetHttpVMinor(const AB_USER *u, int i) {
+void APY_User_SetHttpVMinor(const AB_USER *u, int i)
+{
   APY_USER *ue;
 
   assert(u);

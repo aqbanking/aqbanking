@@ -40,8 +40,9 @@ GWEN_INHERIT(AIO_OFX_GROUP, AIO_OFX_GROUP_INVTRANLIST)
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_INVTRANLIST_new(const char *groupName,
-					    AIO_OFX_GROUP *parent,
-					    GWEN_XML_CONTEXT *ctx) {
+                                            AIO_OFX_GROUP *parent,
+                                            GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_GROUP *g;
   AIO_OFX_GROUP_INVTRANLIST *xg;
 
@@ -66,10 +67,11 @@ AIO_OFX_GROUP *AIO_OfxGroup_INVTRANLIST_new(const char *groupName,
 
 
 GWENHYWFAR_CB
-void AIO_OfxGroup_INVTRANLIST_FreeData(void *bp, void *p) {
+void AIO_OfxGroup_INVTRANLIST_FreeData(void *bp, void *p)
+{
   AIO_OFX_GROUP_INVTRANLIST *xg;
 
-  xg=(AIO_OFX_GROUP_INVTRANLIST*)p;
+  xg=(AIO_OFX_GROUP_INVTRANLIST *)p;
   assert(xg);
   AB_Transaction_List2_freeAll(xg->transactionList);
 
@@ -79,7 +81,8 @@ void AIO_OfxGroup_INVTRANLIST_FreeData(void *bp, void *p) {
 
 
 
-AB_TRANSACTION_LIST2* AIO_OfxGroup_INVTRANLIST_TakeTransactionList(const AIO_OFX_GROUP *g) {
+AB_TRANSACTION_LIST2 *AIO_OfxGroup_INVTRANLIST_TakeTransactionList(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_INVTRANLIST *xg;
   AB_TRANSACTION_LIST2 *tl;
 
@@ -99,13 +102,14 @@ enough to be handled using a single subgroup and some steering logic. The INVBAN
 identical to the Bank equivalent, so we use the STMTTRN group for it.*/
 
 /* The <BUYMF> and <SELLMF> aggregates are similar, therefore each is handled by the <BUYMF>
- * method. The difference between a buy and a sell is indicated by a positive or negative value 
+ * method. The difference between a buy and a sell is indicated by a positive or negative value
  * in the total and units datum. The <REINVEST> aggregate represents an income event
  * (e.g. dividends) and a buy transaction of the like commodity.
  */
 
 int AIO_OfxGroup_INVTRANLIST_StartTag(AIO_OFX_GROUP *g,
-				      const char *tagName) {
+                                      const char *tagName)
+{
   AIO_OFX_GROUP_INVTRANLIST *xg;
   GWEN_XML_CONTEXT *ctx;
   AIO_OFX_GROUP *gNew=NULL;
@@ -122,7 +126,7 @@ int AIO_OfxGroup_INVTRANLIST_StartTag(AIO_OFX_GROUP *g,
     xg->currentElement=strdup(tagName);
   }
   else if (strcasecmp(tagName, "BUYSTOCK")==0 ||
-	   strcasecmp(tagName, "SELLSTOCK")==0)
+           strcasecmp(tagName, "SELLSTOCK")==0)
     gNew=AIO_OfxGroup_BUYSTOCK_new(tagName, g, ctx);
   else if (strcasecmp(tagName, "INCOME")==0)
     gNew=AIO_OfxGroup_INCOME_new(tagName, g, ctx);
@@ -148,7 +152,8 @@ int AIO_OfxGroup_INVTRANLIST_StartTag(AIO_OFX_GROUP *g,
 
 
 /*Here when the data for either DTSTART or DTEND arrives*/
-int AIO_OfxGroup_INVTRANLIST_AddData(AIO_OFX_GROUP *g, const char *data) {
+int AIO_OfxGroup_INVTRANLIST_AddData(AIO_OFX_GROUP *g, const char *data)
+{
   AIO_OFX_GROUP_INVTRANLIST *xg;
 
   assert(g);
@@ -171,15 +176,15 @@ int AIO_OfxGroup_INVTRANLIST_AddData(AIO_OFX_GROUP *g, const char *data) {
     if (*s) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "AddData: %s=[%s]", xg->currentElement, s);
       if (strcasecmp(xg->currentElement, "DTSTART")==0) {
-	free(xg->dtstart);
-	xg->dtstart=strdup(s);
+        free(xg->dtstart);
+        xg->dtstart=strdup(s);
       }
       else if (strcasecmp(xg->currentElement, "DTEND")==0) {
-	free(xg->dtend);
-	xg->dtend=strdup(s);
+        free(xg->dtend);
+        xg->dtend=strdup(s);
       }
       else {
-	DBG_INFO(AQBANKING_LOGDOMAIN, "Ignoring data for unknown elements [%s]", xg->currentElement);
+        DBG_INFO(AQBANKING_LOGDOMAIN, "Ignoring data for unknown elements [%s]", xg->currentElement);
       }
     }
     GWEN_Buffer_free(buf);
@@ -193,7 +198,8 @@ int AIO_OfxGroup_INVTRANLIST_AddData(AIO_OFX_GROUP *g, const char *data) {
  * </BUYMF>, </SELLMF> or </REINVEST> tags are encountered.
  */
 
-int AIO_OfxGroup_INVTRANLIST_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
+int AIO_OfxGroup_INVTRANLIST_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg)
+{
   AIO_OFX_GROUP_INVTRANLIST *xg;
   const char *s;
   GWEN_XML_CONTEXT *ctx;
@@ -221,7 +227,7 @@ int AIO_OfxGroup_INVTRANLIST_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
   else if (strcasecmp(s, "INVBANKTRAN")==0)
     t=AIO_OfxGroup_STMTRN_TakeTransaction(sg);
   else if (strcasecmp(s, "BUYMF")==0 ||
-      strcasecmp(s, "SELLMF")==0)
+           strcasecmp(s, "SELLMF")==0)
     t=AIO_OfxGroup_BUYMF_TakeTransaction(sg);
   else if (strcasecmp(s, "REINVEST")==0)
     t=AIO_OfxGroup_REINVEST_TakeTransaction(sg);
@@ -232,7 +238,7 @@ int AIO_OfxGroup_INVTRANLIST_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
   if (t) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Adding transaction");
     AB_Transaction_List2_PushBack(xg->transactionList, t);
-    }
+  }
   return 0;
 }
 

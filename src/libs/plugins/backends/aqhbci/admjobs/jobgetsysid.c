@@ -19,7 +19,8 @@
 GWEN_INHERIT(AH_JOB, AH_JOB_GETSYSID)
 
 
-AH_JOB *AH_Job_GetSysId_new(AB_PROVIDER *pro, AB_USER *u){
+AH_JOB *AH_Job_GetSysId_new(AB_PROVIDER *pro, AB_USER *u)
+{
   AH_JOB *j;
   GWEN_DB_NODE *args;
   AH_JOB_GETSYSID *jd;
@@ -33,7 +34,7 @@ AH_JOB *AH_Job_GetSysId_new(AB_PROVIDER *pro, AB_USER *u){
 
   GWEN_NEW_OBJECT(AH_JOB_GETSYSID, jd);
   GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_GETSYSID, j, jd,
-		       AH_Job_GetSysId_FreeData);
+                       AH_Job_GetSysId_FreeData);
   AH_Job_SetProcessFn(j, AH_Job_GetSysId_Process);
   AH_Job_SetNextMsgFn(j, AH_Job_GetSysId_NextMsg);
 
@@ -53,17 +54,19 @@ AH_JOB *AH_Job_GetSysId_new(AB_PROVIDER *pro, AB_USER *u){
 
 
 
-void GWENHYWFAR_CB AH_Job_GetSysId_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_Job_GetSysId_FreeData(void *bp, void *p)
+{
   AH_JOB_GETSYSID *jd;
 
-  jd=(AH_JOB_GETSYSID*)p;
+  jd=(AH_JOB_GETSYSID *)p;
   free(jd->sysId);
   GWEN_FREE_OBJECT(jd);
 }
 
 
 
-int AH_Job_GetSysId_ExtractSysId(AH_JOB *j){
+int AH_Job_GetSysId_ExtractSysId(AH_JOB *j)
+{
   AH_JOB_GETSYSID *jd;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -82,7 +85,7 @@ int AH_Job_GetSysId_ExtractSysId(AH_JOB *j){
 
   /* search for "SyncResponse" */
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
-  while(dbCurr) {
+  while (dbCurr) {
     dbSyncResponse=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/SyncResponse");
     if (dbSyncResponse) {
       const char *s;
@@ -90,16 +93,16 @@ int AH_Job_GetSysId_ExtractSysId(AH_JOB *j){
       DBG_INFO(AQHBCI_LOGDOMAIN, "Found a sync response");
       s=GWEN_DB_GetCharValue(dbSyncResponse, "systemId", 0, 0);
       if (s) {
-	free(jd->sysId);
-	jd->sysId=strdup(s);
-	return 0;
+        free(jd->sysId);
+        jd->sysId=strdup(s);
+        return 0;
       }
       else {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "No system id found");
-	free(jd->sysId);
-	jd->sysId=0;
-	AH_Job_SetStatus(j, AH_JobStatusError);
-	return -1;
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "No system id found");
+        free(jd->sysId);
+        jd->sysId=0;
+        AH_Job_SetStatus(j, AH_JobStatusError);
+        return -1;
       }
     }
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
@@ -111,7 +114,8 @@ int AH_Job_GetSysId_ExtractSysId(AH_JOB *j){
 
 
 
-int AH_Job_GetSysId_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_GetSysId_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AH_JOB_GETSYSID *jd;
 
   assert(j);
@@ -123,7 +127,8 @@ int AH_Job_GetSysId_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
 
 
-const char *AH_Job_GetSysId_GetSysId(AH_JOB *j){
+const char *AH_Job_GetSysId_GetSysId(AH_JOB *j)
+{
   AH_JOB_GETSYSID *jd;
 
   assert(j);
@@ -135,7 +140,8 @@ const char *AH_Job_GetSysId_GetSysId(AH_JOB *j){
 
 
 
-int AH_Job_GetSysId_NextMsg(AH_JOB *j) {
+int AH_Job_GetSysId_NextMsg(AH_JOB *j)
+{
   AH_JOB_GETSYSID *jd;
 
   assert(j);

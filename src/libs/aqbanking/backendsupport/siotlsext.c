@@ -25,7 +25,8 @@ GWEN_INHERIT(GWEN_SYNCIO, AB_SIOTLS_EXT)
 
 
 
-void AB_SioTlsExt_Extend(GWEN_SYNCIO *sio, AB_USER *u) {
+void AB_SioTlsExt_Extend(GWEN_SYNCIO *sio, AB_USER *u)
+{
   AB_SIOTLS_EXT *xsio;
 
   GWEN_NEW_OBJECT(AB_SIOTLS_EXT, xsio);
@@ -40,7 +41,8 @@ void AB_SioTlsExt_Extend(GWEN_SYNCIO *sio, AB_USER *u) {
 
 
 
-void AB_SioTlsExt_Unextend(GWEN_SYNCIO *sio) {
+void AB_SioTlsExt_Unextend(GWEN_SYNCIO *sio)
+{
   AB_SIOTLS_EXT *xsio;
 
   assert(sio);
@@ -57,10 +59,11 @@ void AB_SioTlsExt_Unextend(GWEN_SYNCIO *sio) {
 
 
 
-void GWENHYWFAR_CB AB_SioTlsExt_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AB_SioTlsExt_FreeData(void *bp, void *p)
+{
   AB_SIOTLS_EXT *xsio;
 
-  xsio=(AB_SIOTLS_EXT*) p;
+  xsio=(AB_SIOTLS_EXT *) p;
   assert(xsio);
   GWEN_FREE_OBJECT(xsio);
 }
@@ -83,7 +86,8 @@ AB_USER *AB_SioTlsExt_GetUser(const GWEN_SYNCIO *sio) {
 
 
 
-int GWENHYWFAR_CB AB_SioTlsExt_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert) {
+int GWENHYWFAR_CB AB_SioTlsExt_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert)
+{
   AB_SIOTLS_EXT *xsio;
   GWEN_DB_NODE *dbCerts;
   GWEN_DB_NODE *dbC;

@@ -37,7 +37,8 @@ GWEN_INHERIT(GWEN_PLUGIN, AB_PLUGIN_IMEXPORTER)
 
 
 
-AB_IMEXPORTER *AB_ImExporter_new(AB_BANKING *ab, const char *name){
+AB_IMEXPORTER *AB_ImExporter_new(AB_BANKING *ab, const char *name)
+{
   AB_IMEXPORTER *ie;
 
   assert(ab);
@@ -53,7 +54,8 @@ AB_IMEXPORTER *AB_ImExporter_new(AB_BANKING *ab, const char *name){
 }
 
 
-void AB_ImExporter_free(AB_IMEXPORTER *ie){
+void AB_ImExporter_free(AB_IMEXPORTER *ie)
+{
   if (ie) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Destroying AB_IMEXPORTER");
     GWEN_INHERIT_FINI(AB_IMEXPORTER, ie);
@@ -69,28 +71,32 @@ void AB_ImExporter_free(AB_IMEXPORTER *ie){
 
 
 
-uint32_t AB_ImExporter_GetFlags(const AB_IMEXPORTER *ie) {
+uint32_t AB_ImExporter_GetFlags(const AB_IMEXPORTER *ie)
+{
   assert(ie);
   return ie->flags;
 }
 
 
 
-void AB_ImExporter_SetFlags(AB_IMEXPORTER *ie, uint32_t flags) {
+void AB_ImExporter_SetFlags(AB_IMEXPORTER *ie, uint32_t flags)
+{
   assert(ie);
   ie->flags=flags;
 }
 
 
 
-void AB_ImExporter_AddFlags(AB_IMEXPORTER *ie, uint32_t flags) {
+void AB_ImExporter_AddFlags(AB_IMEXPORTER *ie, uint32_t flags)
+{
   assert(ie);
   ie->flags|=flags;
 }
 
 
 
-void AB_ImExporter_SubFlags(AB_IMEXPORTER *ie, uint32_t flags) {
+void AB_ImExporter_SubFlags(AB_IMEXPORTER *ie, uint32_t flags)
+{
   assert(ie);
   ie->flags&=~flags;
 }
@@ -99,8 +105,9 @@ void AB_ImExporter_SubFlags(AB_IMEXPORTER *ie, uint32_t flags) {
 
 int AB_ImExporter_Import(AB_IMEXPORTER *ie,
                          AB_IMEXPORTER_CONTEXT *ctx,
-			 GWEN_SYNCIO *sio,
-			 GWEN_DB_NODE *params){
+                         GWEN_SYNCIO *sio,
+                         GWEN_DB_NODE *params)
+{
   assert(ie);
   assert(ctx);
   assert(sio);
@@ -109,8 +116,8 @@ int AB_ImExporter_Import(AB_IMEXPORTER *ie,
   if (ie->importFn) {
     if (GWEN_SyncIo_GetStatus(sio)!=GWEN_SyncIo_Status_Connected) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "GWEN_SYNCIO %s not connected (%d); did you forget to call GWEN_SyncIo_Connect()?",
-		GWEN_SyncIo_GetTypeName(sio),
-		GWEN_SyncIo_GetStatus(sio));
+                GWEN_SyncIo_GetTypeName(sio),
+                GWEN_SyncIo_GetStatus(sio));
       return GWEN_ERROR_NOT_OPEN;
     }
 
@@ -124,8 +131,9 @@ int AB_ImExporter_Import(AB_IMEXPORTER *ie,
 
 int AB_ImExporter_Export(AB_IMEXPORTER *ie,
                          AB_IMEXPORTER_CONTEXT *ctx,
-			 GWEN_SYNCIO *sio,
-			 GWEN_DB_NODE *params){
+                         GWEN_SYNCIO *sio,
+                         GWEN_DB_NODE *params)
+{
   assert(ie);
   assert(ctx);
   assert(sio);
@@ -140,7 +148,8 @@ int AB_ImExporter_Export(AB_IMEXPORTER *ie,
 
 
 int AB_ImExporter_CheckFile(AB_IMEXPORTER *ie,
-			    const char *fname){
+                            const char *fname)
+{
   assert(ie);
   assert(fname);
 
@@ -153,9 +162,10 @@ int AB_ImExporter_CheckFile(AB_IMEXPORTER *ie,
 
 
 int AB_ImExporter_GetEditProfileDialog(AB_IMEXPORTER *ie,
-				       GWEN_DB_NODE *dbProfile,
-				       const char *testFileName,
-				       GWEN_DIALOG **pDlg) {
+                                       GWEN_DB_NODE *dbProfile,
+                                       const char *testFileName,
+                                       GWEN_DIALOG **pDlg)
+{
   assert(ie);
   assert(dbProfile);
 
@@ -168,7 +178,8 @@ int AB_ImExporter_GetEditProfileDialog(AB_IMEXPORTER *ie,
 
 
 void AB_ImExporter_SetImportFn(AB_IMEXPORTER *ie,
-                               AB_IMEXPORTER_IMPORT_FN f){
+                               AB_IMEXPORTER_IMPORT_FN f)
+{
   assert(ie);
   ie->importFn=f;
 }
@@ -176,7 +187,8 @@ void AB_ImExporter_SetImportFn(AB_IMEXPORTER *ie,
 
 
 void AB_ImExporter_SetExportFn(AB_IMEXPORTER *ie,
-                               AB_IMEXPORTER_EXPORT_FN f){
+                               AB_IMEXPORTER_EXPORT_FN f)
+{
   assert(ie);
   ie->exportFn=f;
 }
@@ -184,7 +196,8 @@ void AB_ImExporter_SetExportFn(AB_IMEXPORTER *ie,
 
 
 void AB_ImExporter_SetCheckFileFn(AB_IMEXPORTER *ie,
-                                  AB_IMEXPORTER_CHECKFILE_FN f){
+                                  AB_IMEXPORTER_CHECKFILE_FN f)
+{
   assert(ie);
   ie->checkFileFn=f;
 }
@@ -192,28 +205,32 @@ void AB_ImExporter_SetCheckFileFn(AB_IMEXPORTER *ie,
 
 
 void AB_ImExporter_SetGetEditProfileDialogFn(AB_IMEXPORTER *ie,
-					     AB_IMEXPORTER_GET_EDITPROFILE_DIALOG_FN f) {
+                                             AB_IMEXPORTER_GET_EDITPROFILE_DIALOG_FN f)
+{
   assert(ie);
   ie->getEditProfileDialogFn=f;
 }
 
 
 
-AB_BANKING *AB_ImExporter_GetBanking(const AB_IMEXPORTER *ie){
+AB_BANKING *AB_ImExporter_GetBanking(const AB_IMEXPORTER *ie)
+{
   assert(ie);
   return ie->banking;
 }
 
 
 
-const char *AB_ImExporter_GetName(const AB_IMEXPORTER *ie){
+const char *AB_ImExporter_GetName(const AB_IMEXPORTER *ie)
+{
   assert(ie);
   return ie->name;
 }
 
 
 
-void AB_ImExporter_SetLibLoader(AB_IMEXPORTER *ie, GWEN_LIBLOADER *ll) {
+void AB_ImExporter_SetLibLoader(AB_IMEXPORTER *ie, GWEN_LIBLOADER *ll)
+{
   assert(ie);
   ie->libLoader=ll;
 }
@@ -229,8 +246,9 @@ void AB_ImExporter_SetLibLoader(AB_IMEXPORTER *ie, GWEN_LIBLOADER *ll) {
 
 void AB_ImExporter_Utf8ToDta(const char *p,
                              int size,
-                             GWEN_BUFFER *buf) {
-  while(*p) {
+                             GWEN_BUFFER *buf)
+{
+  while (*p) {
     unsigned int c;
 
     if (!size)
@@ -239,7 +257,7 @@ void AB_ImExporter_Utf8ToDta(const char *p,
     c=(unsigned char)(*(p++));
     if (size!=-1)
       size--;
-    switch(c & 0xc0) {
+    switch (c & 0xc0) {
     case 0xc0:
       if (!size) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Incomplete UTF-8 sequence");
@@ -257,15 +275,25 @@ void AB_ImExporter_Utf8ToDta(const char *p,
       if (size && (*p & 0xc0) == 0x80)
         /* a sequence of 3 bytes and more cannot be translated to DTA */
         goto nextUtf8;
-      switch(c) {
+      switch (c) {
       case 0x84:
-      case 0xa4: c=0x5b; break;
+      case 0xa4:
+        c=0x5b;
+        break;
       case 0x96:
-      case 0xb6: c=0x5c; break;
+      case 0xb6:
+        c=0x5c;
+        break;
       case 0x9c:
-      case 0xbc: c=0x5d; break;
-      case 0x9f: c=0x7e; break;
-      default:   c=' '; break;
+      case 0xbc:
+        c=0x5d;
+        break;
+      case 0x9f:
+        c=0x7e;
+        break;
+      default:
+        c=' ';
+        break;
       } /* switch */
       break;
 
@@ -273,7 +301,7 @@ void AB_ImExporter_Utf8ToDta(const char *p,
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid UTF-8 sequence");
     nextUtf8:
       c=' ';
-      while(size && (*p & 0xc0) == 0x80) {
+      while (size && (*p & 0xc0) == 0x80) {
         p++;
         if (size!=-1)
           size--;
@@ -283,8 +311,8 @@ void AB_ImExporter_Utf8ToDta(const char *p,
     default:
       c=toupper(c);
       if (!(isdigit(c) ||
-	    (c>='A' && c<='Z') ||
-	    (strchr(" .,&-+*%/$", c))))
+            (c>='A' && c<='Z') ||
+            (strchr(" .,&-+*%/$", c))))
         c=' ';
     } /* switch */
     GWEN_Buffer_AppendByte(buf, c);
@@ -295,15 +323,16 @@ void AB_ImExporter_Utf8ToDta(const char *p,
 
 void AB_ImExporter_DtaToUtf8(const char *p,
                              int size,
-                             GWEN_BUFFER *buf) {
-  while(*p) {
+                             GWEN_BUFFER *buf)
+{
+  while (*p) {
     unsigned int c;
 
     if (!size)
       break;
 
     c=(unsigned char)(*(p++));
-    switch(c) {
+    switch (c) {
     case 0x5b: /* AE */
       GWEN_Buffer_AppendByte(buf, 0xc3);
       GWEN_Buffer_AppendByte(buf, 0x84);
@@ -340,7 +369,8 @@ void AB_ImExporter_DtaToUtf8(const char *p,
 
 
 GWEN_TIME *AB_ImExporter_DateFromString(const char *p, const char *tmpl,
-					int inUtc) {
+                                        int inUtc)
+{
   GWEN_TIME *ti;
 
   if (strchr(tmpl, 'h')==0) {
@@ -356,7 +386,7 @@ GWEN_TIME *AB_ImExporter_DateFromString(const char *p, const char *tmpl,
     GWEN_Buffer_AppendString(tbuf, "-hh:mm");
 
     ti=GWEN_Time_fromUtcString(GWEN_Buffer_GetStart(dbuf),
-			       GWEN_Buffer_GetStart(tbuf));
+                               GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_free(tbuf);
     GWEN_Buffer_free(dbuf);
   }
@@ -372,8 +402,9 @@ GWEN_TIME *AB_ImExporter_DateFromString(const char *p, const char *tmpl,
 
 void AB_ImExporter_Iso8859_1ToUtf8(const char *p,
                                    int size,
-                                   GWEN_BUFFER *buf) {
-  while(*p) {
+                                   GWEN_BUFFER *buf)
+{
+  while (*p) {
     unsigned int c;
 
     if (!size)
@@ -394,11 +425,12 @@ void AB_ImExporter_Iso8859_1ToUtf8(const char *p,
 
 
 
-int AB_ImExporter__Transform_Var(GWEN_DB_NODE *db, int level) {
+int AB_ImExporter__Transform_Var(GWEN_DB_NODE *db, int level)
+{
   GWEN_DB_NODE *dbC;
 
   dbC=GWEN_DB_GetFirstValue(db);
-  while(dbC) {
+  while (dbC) {
     if (GWEN_DB_GetValueType(dbC)==GWEN_DB_NodeType_ValueChar) {
       const char *s;
       unsigned int l;
@@ -423,7 +455,8 @@ int AB_ImExporter__Transform_Var(GWEN_DB_NODE *db, int level) {
 
 
 
-int AB_ImExporter__Transform_Group(GWEN_DB_NODE *db, int level) {
+int AB_ImExporter__Transform_Group(GWEN_DB_NODE *db, int level)
+{
   GWEN_DB_NODE *dbC;
   int rv;
 
@@ -433,7 +466,7 @@ int AB_ImExporter__Transform_Group(GWEN_DB_NODE *db, int level) {
   }
 
   dbC=GWEN_DB_GetFirstGroup(db);
-  while(dbC) {
+  while (dbC) {
     rv=AB_ImExporter__Transform_Group(dbC, level+1);
     if (rv)
       return rv;
@@ -441,7 +474,7 @@ int AB_ImExporter__Transform_Group(GWEN_DB_NODE *db, int level) {
   }
 
   dbC=GWEN_DB_GetFirstVar(db);
-  while(dbC) {
+  while (dbC) {
     rv=AB_ImExporter__Transform_Var(dbC, level+1);
     if (rv)
       return rv;
@@ -453,7 +486,8 @@ int AB_ImExporter__Transform_Group(GWEN_DB_NODE *db, int level) {
 
 
 
-int AB_ImExporter_DbFromIso8859_1ToUtf8(GWEN_DB_NODE *db) {
+int AB_ImExporter_DbFromIso8859_1ToUtf8(GWEN_DB_NODE *db)
+{
   return AB_ImExporter__Transform_Group(db, 0);
 }
 
@@ -466,32 +500,35 @@ int AB_ImExporter_DbFromIso8859_1ToUtf8(GWEN_DB_NODE *db) {
 
 
 GWEN_PLUGIN *AB_Plugin_ImExporter_new(GWEN_PLUGIN_MANAGER *pm,
-				      const char *name,
-				      const char *fileName) {
+                                      const char *name,
+                                      const char *fileName)
+{
   GWEN_PLUGIN *pl;
   AB_PLUGIN_IMEXPORTER *xpl;
 
   pl=GWEN_Plugin_new(pm, name, fileName);
   GWEN_NEW_OBJECT(AB_PLUGIN_IMEXPORTER, xpl);
   GWEN_INHERIT_SETDATA(GWEN_PLUGIN, AB_PLUGIN_IMEXPORTER, pl, xpl,
-		       AB_Plugin_ImExporter_FreeData);
+                       AB_Plugin_ImExporter_FreeData);
 
   return pl;
 }
 
 
 
-void GWENHYWFAR_CB AB_Plugin_ImExporter_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AB_Plugin_ImExporter_FreeData(void *bp, void *p)
+{
   AB_PLUGIN_IMEXPORTER *xpl;
 
-  xpl=(AB_PLUGIN_IMEXPORTER*)p;
+  xpl=(AB_PLUGIN_IMEXPORTER *)p;
   GWEN_FREE_OBJECT(xpl);
 }
 
 
 
 AB_IMEXPORTER *AB_Plugin_ImExporter_Factory(GWEN_PLUGIN *pl,
-					    AB_BANKING *ab) {
+                                            AB_BANKING *ab)
+{
   AB_PLUGIN_IMEXPORTER *xpl;
 
   assert(pl);
@@ -504,7 +541,8 @@ AB_IMEXPORTER *AB_Plugin_ImExporter_Factory(GWEN_PLUGIN *pl,
 
 
 void AB_Plugin_ImExporter_SetFactoryFn(GWEN_PLUGIN *pl,
-				       AB_PLUGIN_IMEXPORTER_FACTORY_FN fn) {
+                                       AB_PLUGIN_IMEXPORTER_FACTORY_FN fn)
+{
   AB_PLUGIN_IMEXPORTER *xpl;
 
   assert(pl);

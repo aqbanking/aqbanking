@@ -25,7 +25,8 @@ GWEN_INHERIT(GWEN_GUI, AB_GUI)
 
 
 
-GWEN_GUI *AB_Gui_new(AB_BANKING *ab) {
+GWEN_GUI *AB_Gui_new(AB_BANKING *ab)
+{
   GWEN_GUI *gui;
   AB_GUI *xgui;
 
@@ -43,7 +44,8 @@ GWEN_GUI *AB_Gui_new(AB_BANKING *ab) {
 
 
 
-void AB_Gui_Extend(GWEN_GUI *gui, AB_BANKING *ab) {
+void AB_Gui_Extend(GWEN_GUI *gui, AB_BANKING *ab)
+{
   AB_GUI *xgui;
 
   assert(gui);
@@ -58,7 +60,8 @@ void AB_Gui_Extend(GWEN_GUI *gui, AB_BANKING *ab) {
 
 
 
-void AB_Gui_Unextend(GWEN_GUI *gui) {
+void AB_Gui_Unextend(GWEN_GUI *gui)
+{
   AB_GUI *xgui;
 
   assert(gui);
@@ -77,10 +80,11 @@ void AB_Gui_Unextend(GWEN_GUI *gui) {
 
 
 
-void GWENHYWFAR_CB AB_Gui_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AB_Gui_FreeData(void *bp, void *p)
+{
   AB_GUI *xgui;
 
-  xgui=(AB_GUI*) p;
+  xgui=(AB_GUI *) p;
   assert(xgui);
   GWEN_FREE_OBJECT(xgui);
 }
@@ -88,8 +92,9 @@ void GWENHYWFAR_CB AB_Gui_FreeData(void *bp, void *p) {
 
 
 int AB_Gui__HashPair(const char *token,
-		     const char *pin,
-		     GWEN_BUFFER *buf) {
+                     const char *pin,
+                     GWEN_BUFFER *buf)
+{
   GWEN_MDIGEST *md;
   int rv;
 
@@ -97,9 +102,9 @@ int AB_Gui__HashPair(const char *token,
   md=GWEN_MDigest_Md5_new();
   rv=GWEN_MDigest_Begin(md);
   if (rv==0)
-    rv=GWEN_MDigest_Update(md, (const uint8_t*)token, strlen(token));
+    rv=GWEN_MDigest_Update(md, (const uint8_t *)token, strlen(token));
   if (rv==0)
-    rv=GWEN_MDigest_Update(md, (const uint8_t*)pin, strlen(pin));
+    rv=GWEN_MDigest_Update(md, (const uint8_t *)pin, strlen(pin));
   if (rv==0)
     rv=GWEN_MDigest_End(md);
   if (rv<0) {
@@ -108,10 +113,10 @@ int AB_Gui__HashPair(const char *token,
     return rv;
   }
 
-  GWEN_Text_ToHexBuffer((const char*)GWEN_MDigest_GetDigestPtr(md),
-			GWEN_MDigest_GetDigestSize(md),
-			buf,
-			0, 0, 0);
+  GWEN_Text_ToHexBuffer((const char *)GWEN_MDigest_GetDigestPtr(md),
+                        GWEN_MDigest_GetDigestSize(md),
+                        buf,
+                        0, 0, 0);
   GWEN_MDigest_free(md);
   return 0;
 }
@@ -120,8 +125,9 @@ int AB_Gui__HashPair(const char *token,
 
 
 int AB_Gui_CheckCert(GWEN_GUI *gui,
-		     const GWEN_SSLCERTDESCR *cd,
-		     GWEN_SYNCIO *sio, uint32_t guiid) {
+                     const GWEN_SSLCERTDESCR *cd,
+                     GWEN_SYNCIO *sio, uint32_t guiid)
+{
   AB_GUI *xgui;
   const char *hash;
   const char *status;
@@ -161,8 +167,8 @@ int AB_Gui_CheckCert(GWEN_GUI *gui,
     i=GWEN_DB_GetIntValue(dbCerts, GWEN_Buffer_GetStart(hbuf), 0, 1);
     if (i==0) {
       DBG_NOTICE(AQBANKING_LOGDOMAIN,
-		 "Automatically accepting certificate [%s]",
-		 hash);
+                 "Automatically accepting certificate [%s]",
+                 hash);
       result=0;
     }
     else {
@@ -172,45 +178,45 @@ int AB_Gui_CheckCert(GWEN_GUI *gui,
        * user (only if not in non-interactive mode)
        */
       if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_NONINTERACTIVE) {
-	uint32_t fl;
+        uint32_t fl;
 
-	fl=GWEN_SslCertDescr_GetStatusFlags(cd);
-	if (fl==GWEN_SSL_CERT_FLAGS_OK) {
-	  if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_ACCEPTVALIDCERTS) {
-	    DBG_NOTICE(AQBANKING_LOGDOMAIN,
-		       "Automatically accepting valid new certificate [%s]",
-		       hash);
-	    GWEN_Buffer_free(hbuf);
-	    AB_Banking_UnlockSharedConfig(xgui->banking, "certs");
-	    return 0;
-	  }
-	  else {
-	    DBG_NOTICE(AQBANKING_LOGDOMAIN,
-		       "Automatically rejecting certificate [%s] (noninteractive)",
-		       hash);
-	    GWEN_Buffer_free(hbuf);
-	    AB_Banking_UnlockSharedConfig(xgui->banking, "certs");
-	    return GWEN_ERROR_USER_ABORTED;
-	  }
-	} /* if cert is valid */
-	else {
-	  if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_REJECTINVALIDCERTS) {
-	    DBG_NOTICE(AQBANKING_LOGDOMAIN,
-		       "Automatically rejecting invalid certificate [%s] (noninteractive)",
-		       hash);
-	    GWEN_Buffer_free(hbuf);
-	    AB_Banking_UnlockSharedConfig(xgui->banking, "certs");
-	    return GWEN_ERROR_USER_ABORTED;
-	  }
-	}
+        fl=GWEN_SslCertDescr_GetStatusFlags(cd);
+        if (fl==GWEN_SSL_CERT_FLAGS_OK) {
+          if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_ACCEPTVALIDCERTS) {
+            DBG_NOTICE(AQBANKING_LOGDOMAIN,
+                       "Automatically accepting valid new certificate [%s]",
+                       hash);
+            GWEN_Buffer_free(hbuf);
+            AB_Banking_UnlockSharedConfig(xgui->banking, "certs");
+            return 0;
+          }
+          else {
+            DBG_NOTICE(AQBANKING_LOGDOMAIN,
+                       "Automatically rejecting certificate [%s] (noninteractive)",
+                       hash);
+            GWEN_Buffer_free(hbuf);
+            AB_Banking_UnlockSharedConfig(xgui->banking, "certs");
+            return GWEN_ERROR_USER_ABORTED;
+          }
+        } /* if cert is valid */
+        else {
+          if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_REJECTINVALIDCERTS) {
+            DBG_NOTICE(AQBANKING_LOGDOMAIN,
+                       "Automatically rejecting invalid certificate [%s] (noninteractive)",
+                       hash);
+            GWEN_Buffer_free(hbuf);
+            AB_Banking_UnlockSharedConfig(xgui->banking, "certs");
+            return GWEN_ERROR_USER_ABORTED;
+          }
+        }
       } /* if non-interactive */
 
       if (xgui->checkCertFn) {
-	result=xgui->checkCertFn(gui, cd, sio, guiid);
-	if (result==0) {
-	  GWEN_DB_SetIntValue(dbCerts, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			      GWEN_Buffer_GetStart(hbuf), result);
-	}
+        result=xgui->checkCertFn(gui, cd, sio, guiid);
+        if (result==0) {
+          GWEN_DB_SetIntValue(dbCerts, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                              GWEN_Buffer_GetStart(hbuf), result);
+        }
       }
     }
 
@@ -241,7 +247,8 @@ int AB_Gui_CheckCert(GWEN_GUI *gui,
 int GWENHYWFAR_CB AB_Gui_ReadDialogPrefs(GWEN_GUI *gui,
                                          const char *groupName,
                                          const char *altName,
-                                         GWEN_DB_NODE **pDb) {
+                                         GWEN_DB_NODE **pDb)
+{
   AB_GUI *xgui;
 
   assert(gui);
@@ -264,7 +271,7 @@ int GWENHYWFAR_CB AB_Gui_ReadDialogPrefs(GWEN_GUI *gui,
 
     rv=AB_Banking_LoadSharedConfig(xgui->banking,
                                    GWEN_Buffer_GetStart(nbuf),
-				   &db);
+                                   &db);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(nbuf);
@@ -284,7 +291,8 @@ int GWENHYWFAR_CB AB_Gui_ReadDialogPrefs(GWEN_GUI *gui,
 
 int GWENHYWFAR_CB AB_Gui_WriteDialogPrefs(GWEN_GUI *gui,
                                           const char *groupName,
-                                          GWEN_DB_NODE *db) {
+                                          GWEN_DB_NODE *db)
+{
   AB_GUI *xgui;
 
   assert(gui);
@@ -310,17 +318,17 @@ int GWENHYWFAR_CB AB_Gui_WriteDialogPrefs(GWEN_GUI *gui,
     if (rv==0) {
       /* save configuration */
       rv=AB_Banking_SaveSharedConfig(xgui->banking,
-				     GWEN_Buffer_GetStart(nbuf),
-				     db);
+                                     GWEN_Buffer_GetStart(nbuf),
+                                     db);
       if (rv<0) {
-	DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+        DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       }
 
       /* unlock configuration */
       rv=AB_Banking_UnlockSharedConfig(xgui->banking,
-				       GWEN_Buffer_GetStart(nbuf));
+                                       GWEN_Buffer_GetStart(nbuf));
       if (rv<0) {
-	DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+        DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       }
     }
     GWEN_Buffer_free(nbuf);

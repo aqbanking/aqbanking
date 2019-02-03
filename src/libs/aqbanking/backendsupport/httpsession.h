@@ -31,11 +31,11 @@
  *
  */
 /*@{*/
-AQBANKING_API 
+AQBANKING_API
 GWEN_HTTP_SESSION *AB_HttpSession_new(AB_PROVIDER *pro, AB_USER *u,
-				      const char *url,
-				      const char *defaultProto,
-				      int defaultPort);
+                                      const char *url,
+                                      const char *defaultProto,
+                                      int defaultPort);
 
 /*@}*/
 
@@ -45,20 +45,20 @@ GWEN_HTTP_SESSION *AB_HttpSession_new(AB_PROVIDER *pro, AB_USER *u,
  *
  */
 /*@{*/
-AQBANKING_API 
+AQBANKING_API
 AB_USER *AB_HttpSession_GetUser(const GWEN_HTTP_SESSION *sess);
 
-AQBANKING_API 
+AQBANKING_API
 AB_PROVIDER *AB_HttpSession_GetProvider(const GWEN_HTTP_SESSION *sess);
 
-AQBANKING_API 
+AQBANKING_API
 void Ab_HttpSession_AddLog(GWEN_HTTP_SESSION *sess,
-			   const char *s);
+                           const char *s);
 
 AQBANKING_API
 const char *AB_HttpSession_GetLog(const GWEN_HTTP_SESSION *sess);
 
-AQBANKING_API 
+AQBANKING_API
 void AB_HttpSession_ClearLog(GWEN_HTTP_SESSION *sess);
 
 

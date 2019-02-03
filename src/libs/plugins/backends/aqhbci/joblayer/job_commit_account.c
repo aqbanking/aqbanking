@@ -13,7 +13,8 @@
  */
 
 
-int AH_Job__Commit_Accounts(AH_JOB *j){
+int AH_Job__Commit_Accounts(AH_JOB *j)
+{
   int rv;
   AB_ACCOUNT_LIST *accList;
   AB_BANKING *ab;
@@ -56,7 +57,7 @@ int AH_Job__Commit_Accounts(AH_JOB *j){
       AB_ACCOUNT *acc;
 
       acc=AB_Account_List_First(accList);
-      while(acc) {
+      while (acc) {
         uint32_t storedUid=0;
 
         storedUid=AH_Job__Commit_Accounts_FindStored(j, acc, accountSpecList);
@@ -76,7 +77,7 @@ int AH_Job__Commit_Accounts(AH_JOB *j){
   if (AB_Account_List_GetCount(accList)) {
     AB_ACCOUNT *acc;
 
-    while( (acc=AB_Account_List_First(accList)) ) {
+    while ((acc=AB_Account_List_First(accList))) {
       /* remove from list. if this is a new account it will be added to AqBanking's internal
        * list, by which AqBanking takes over the object. If it is a known account, it will be
        * freed later */
@@ -97,7 +98,8 @@ int AH_Job__Commit_Accounts(AH_JOB *j){
 
 
 
-static int AH_Job__Commit_Accounts_ReadAccounts(AH_JOB *j, AB_ACCOUNT_LIST *accList){
+static int AH_Job__Commit_Accounts_ReadAccounts(AH_JOB *j, AB_ACCOUNT_LIST *accList)
+{
   AB_BANKING *ab;
   AB_PROVIDER *pro;
   AH_BPD *bpd;
@@ -113,7 +115,7 @@ static int AH_Job__Commit_Accounts_ReadAccounts(AH_JOB *j, AB_ACCOUNT_LIST *accL
   dbJob=j->jobResponses;
 
   dbCurr=GWEN_DB_FindFirstGroup(dbJob, "AccountData");
-  while(dbCurr) {
+  while (dbCurr) {
     GWEN_DB_NODE *dbAccountData;
 
     dbAccountData=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/AccountData");
@@ -133,30 +135,30 @@ static int AH_Job__Commit_Accounts_ReadAccounts(AH_JOB *j, AB_ACCOUNT_LIST *accL
 
       /* set bank name */
       if (bpd) {
-	const char *s;
+        const char *s;
 
-	s=AH_Bpd_GetBankName(bpd);
-	if (s && *s)
-	  AB_Account_SetBankName(acc, s);
+        s=AH_Bpd_GetBankName(bpd);
+        if (s && *s)
+          AB_Account_SetBankName(acc, s);
       }
 
       // Fixes a bug where the bank sends an account with no bank & account name
-      if(!AB_Account_GetBankName(acc))
-	AB_Account_SetBankName(acc, "dummy");
-      if(!AB_Account_GetAccountName(acc))
-	AB_Account_SetAccountName(acc, "dummy");
+      if (!AB_Account_GetBankName(acc))
+        AB_Account_SetBankName(acc, "dummy");
+      if (!AB_Account_GetAccountName(acc))
+        AB_Account_SetAccountName(acc, "dummy");
 
       /* temporarily store UPD jobs */
       dbUpd=GWEN_DB_Group_new("tmpUpd");
       assert(dbUpd);
 
       gr=GWEN_DB_GetFirstGroup(dbAccountData);
-      while(gr) {
-	if (strcasecmp(GWEN_DB_GroupName(gr), "updjob")==0) {
-	  /* found an upd job */
-	  GWEN_DB_AddGroup(dbUpd, GWEN_DB_Group_dup(gr));
-	}
-	gr=GWEN_DB_GetNextGroup(gr);
+      while (gr) {
+        if (strcasecmp(GWEN_DB_GroupName(gr), "updjob")==0) {
+          /* found an upd job */
+          GWEN_DB_AddGroup(dbUpd, GWEN_DB_Group_dup(gr));
+        }
+        gr=GWEN_DB_GetNextGroup(gr);
       } /* while */
       AH_Account_SetDbTempUpd(acc, dbUpd);
 
@@ -171,14 +173,15 @@ static int AH_Job__Commit_Accounts_ReadAccounts(AH_JOB *j, AB_ACCOUNT_LIST *accL
 
 
 
-static void AH_Job__Commit_Accounts_RemoveEmpty(AH_JOB *j, AB_ACCOUNT_LIST *accList){
+static void AH_Job__Commit_Accounts_RemoveEmpty(AH_JOB *j, AB_ACCOUNT_LIST *accList)
+{
   /* only keep accounts which have at least IBAN or bankcode and account number */
   DBG_INFO(AQHBCI_LOGDOMAIN, "Checking for empty accounts");
   if (AB_Account_List_GetCount(accList)) {
     AB_ACCOUNT *acc;
 
     acc=AB_Account_List_First(accList);
-    while(acc) {
+    while (acc) {
       AB_ACCOUNT *accNext;
       const char *accountNum;
       const char *bankCode;
@@ -201,7 +204,8 @@ static void AH_Job__Commit_Accounts_RemoveEmpty(AH_JOB *j, AB_ACCOUNT_LIST *accL
 
 
 
-static uint32_t AH_Job__Commit_Accounts_FindStored(AH_JOB *j, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC_LIST *asl){
+static uint32_t AH_Job__Commit_Accounts_FindStored(AH_JOB *j, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC_LIST *asl)
+{
   AB_ACCOUNT_SPEC *as=NULL;
   AB_PROVIDER *pro;
 
@@ -221,7 +225,8 @@ static uint32_t AH_Job__Commit_Accounts_FindStored(AH_JOB *j, const AB_ACCOUNT *
 }
 
 
-static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
+static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc)
+{
   AB_BANKING *ab;
   AB_PROVIDER *pro;
   AB_ACCOUNT *storedAcc=NULL;
@@ -235,7 +240,7 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
   dbTempUpd=AH_Account_GetDbTempUpd(acc);
   if (dbTempUpd)
     dbTempUpd=GWEN_DB_Group_dup(dbTempUpd);
-  
+
   if (AB_Account_GetUniqueId(acc)) {
     int rv;
 
@@ -254,44 +259,44 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
       s=AB_Account_GetCountry(acc);
       if (s && *s)
         AB_Account_SetCountry(storedAcc, s);
-  
+
       s=AB_Account_GetBankCode(acc);
       if (s && *s)
         AB_Account_SetBankCode(storedAcc, s);
-  
+
       s=AB_Account_GetBankName(acc);
       if (s && *s)
         AB_Account_SetBankName(storedAcc, s);
-  
+
       s=AB_Account_GetAccountNumber(acc);
       if (s && *s)
         AB_Account_SetAccountNumber(storedAcc, s);
-  
+
       s=AB_Account_GetSubAccountId(acc);
       if (s && *s)
         AB_Account_SetSubAccountId(storedAcc, s);
-  
+
       s=AB_Account_GetIban(acc);
       if (s && *s)
         AB_Account_SetIban(storedAcc, s);
-  
+
       s=AB_Account_GetBic(acc);
       if (s && *s)
         AB_Account_SetBic(storedAcc, s);
-  
+
       s=AB_Account_GetOwnerName(acc);
       if (s && *s)
         AB_Account_SetOwnerName(storedAcc, s);
-  
+
       s=AB_Account_GetCurrency(acc);
       if (s && *s)
         AB_Account_SetCurrency(storedAcc, s);
-  
+
       AB_Account_SetAccountType(storedAcc, AB_Account_GetAccountType(acc));
-  
+
       /* use flags from new account */
       AH_Account_AddFlags(storedAcc, AH_Account_GetFlags(acc));
-  
+
       /* handle users */
       AB_Account_SetUserId(storedAcc, AB_User_GetUniqueId(j->user));
 
@@ -327,7 +332,7 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
     GWEN_DB_NODE *dbUpd;
     GWEN_DB_NODE *gr;
     char numbuf[32];
-  
+
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Setting UPD jobs for account %u in user %u",
                (unsigned int) AB_Account_GetUniqueId(storedAcc),
                (unsigned int) AB_User_GetUniqueId(j->user));
@@ -335,16 +340,16 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc){
     /* get UPD jobs */
     dbUpd=AH_User_GetUpd(j->user);
     assert(dbUpd);
-  
+
     /* create and clear group for each account */
     snprintf(numbuf, sizeof(numbuf)-1, "uaid-%08llx",
              (unsigned long long int) AB_Account_GetUniqueId(storedAcc));
     numbuf[sizeof(numbuf)-1]=0;
-  
+
     dbUpd=GWEN_DB_GetGroup(dbUpd, GWEN_DB_FLAGS_OVERWRITE_GROUPS, numbuf);
-  
+
     gr=GWEN_DB_GetFirstGroup(dbTempUpd);
-    while(gr) {
+    while (gr) {
       if (strcasecmp(GWEN_DB_GroupName(gr), "updjob")==0) {
         /* found an upd job */
         DBG_NOTICE(AQHBCI_LOGDOMAIN, "Adding UPD job");

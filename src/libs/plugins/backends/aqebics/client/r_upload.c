@@ -16,11 +16,12 @@
 
 
 int EBC_Provider_XchgUploadRequest(AB_PROVIDER *pro,
-				   GWEN_HTTP_SESSION *sess,
-				   AB_USER *u,
-				   const char *requestType,
-				   const uint8_t *pData,
-				   uint32_t lData) {
+                                   GWEN_HTTP_SESSION *sess,
+                                   AB_USER *u,
+                                   const char *requestType,
+                                   const uint8_t *pData,
+                                   uint32_t lData)
+{
   EBC_PROVIDER *dp;
   const char *s;
 

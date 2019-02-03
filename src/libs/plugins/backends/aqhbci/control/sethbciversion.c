@@ -28,46 +28,47 @@
 int AH_Control_SetHbciVersion(AB_PROVIDER *pro,
                               GWEN_DB_NODE *dbArgs,
                               int argc,
-                              char **argv) {
+                              char **argv)
+{
   GWEN_DB_NODE *db;
   uint32_t uid;
   AB_USER *u=NULL;
   int rv;
   int hbciVersion;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "userId",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "u",                          /* short option */
-    "user",                       /* long option */
-    "Specify the unique user id",    /* short description */
-    "Specify the unique user id"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,           /* type */
-    "hbciVersion",                 /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    0,                          /* short option */
-    "hbciversion",                   /* long option */
-    "Specify the HBCI version (201, 210, 220, 300)",    /* short description */
-    "Specify the HBCI version (201, 210, 220, 300)"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "userId",                     /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "u",                          /* short option */
+      "user",                       /* long option */
+      "Specify the unique user id",    /* short description */
+      "Specify the unique user id"     /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,           /* type */
+      "hbciVersion",                 /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      0,                          /* short option */
+      "hbciversion",                   /* long option */
+      "Specify the HBCI version (201, 210, 220, 300)",    /* short description */
+      "Specify the HBCI version (201, 210, 220, 300)"     /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");

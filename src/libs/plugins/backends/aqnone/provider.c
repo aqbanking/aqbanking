@@ -15,7 +15,8 @@
 
 
 
-AB_PROVIDER *AN_Provider_new(AB_BANKING *ab){
+AB_PROVIDER *AN_Provider_new(AB_BANKING *ab)
+{
   AB_PROVIDER *pro;
 
   pro=AB_Provider_new(ab, "none");
@@ -27,13 +28,15 @@ AB_PROVIDER *AN_Provider_new(AB_BANKING *ab){
 
 
 
-int AN_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
+int AN_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData)
+{
   return 0;
 }
 
 
 
-int AN_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
+int AN_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData)
+{
   return 0;
 }
 

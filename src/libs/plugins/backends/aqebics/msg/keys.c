@@ -31,9 +31,10 @@
 
 EB_RC EB_Key_toBin(const GWEN_CRYPT_KEY *k,
                    const char *userId,
-		   const char *version,
+                   const char *version,
                    int keySize,
-		   GWEN_BUFFER *buf) {
+                   GWEN_BUFFER *buf)
+{
   int i;
   char numbuf[32];
   int rv;
@@ -70,7 +71,7 @@ EB_RC EB_Key_toBin(const GWEN_CRYPT_KEY *k,
   GWEN_Buffer_AppendString(buf, numbuf);
   if (klen<128)
     GWEN_Buffer_FillWithBytes(buf, 0, 128-klen);
-  GWEN_Buffer_AppendBytes(buf, (const char*)kbuf, klen);
+  GWEN_Buffer_AppendBytes(buf, (const char *)kbuf, klen);
 
   /* get modulus */
   klen=sizeof(kbuf);
@@ -83,7 +84,7 @@ EB_RC EB_Key_toBin(const GWEN_CRYPT_KEY *k,
   GWEN_Buffer_AppendString(buf, numbuf);
   if (klen<128)
     GWEN_Buffer_FillWithBytes(buf, 0, 128-klen);
-  GWEN_Buffer_AppendBytes(buf, (const char*)kbuf, klen);
+  GWEN_Buffer_AppendBytes(buf, (const char *)kbuf, klen);
 
 
   GWEN_Buffer_FillWithBytes(buf, ' ', 236);
@@ -94,10 +95,11 @@ EB_RC EB_Key_toBin(const GWEN_CRYPT_KEY *k,
 
 
 EB_RC EB_Key_fromBin(GWEN_CRYPT_KEY **k,
-		     const char *version,
-		     char *bufUserId,
-		     unsigned int lenUserId,
-                     const char *p, unsigned int bsize) {
+                     const char *version,
+                     char *bufUserId,
+                     unsigned int lenUserId,
+                     const char *p, unsigned int bsize)
+{
   GWEN_CRYPT_KEY *key;
   char tmpbuf[32];
   const char *t;
@@ -130,7 +132,7 @@ EB_RC EB_Key_fromBin(GWEN_CRYPT_KEY **k,
   /* copy user id */
   d=bufUserId;
   i=0;
-  while(t[i] && t[i]!=' ' && (unsigned int)i<(lenUserId-1) && i<8)
+  while (t[i] && t[i]!=' ' && (unsigned int)i<(lenUserId-1) && i<8)
     *(d++)=t[i++];
   *d=0;
   t+=8;
@@ -138,7 +140,7 @@ EB_RC EB_Key_fromBin(GWEN_CRYPT_KEY **k,
   /* get LExponent */
   d=tmpbuf;
   i=0;
-  while(isdigit(t[i]) && i<4)
+  while (isdigit(t[i]) && i<4)
     *(d++)=t[i++];
   *d=0;
   i=0;
@@ -147,14 +149,14 @@ EB_RC EB_Key_fromBin(GWEN_CRYPT_KEY **k,
   nsize=(i+7)/8;
 
   /* get Exponent */
-  ePtr=(const uint8_t*)(t+(128-nsize));
+  ePtr=(const uint8_t *)(t+(128-nsize));
   eLen=nsize;
   t+=128;
 
   /* get LModulus */
   d=tmpbuf;
   i=0;
-  while(t[i] && t[i]!=' ' && i<4)
+  while (t[i] && t[i]!=' ' && i<4)
     *(d++)=t[i++];
   *d=0;
   i=0;
@@ -177,17 +179,17 @@ EB_RC EB_Key_fromBin(GWEN_CRYPT_KEY **k,
   nsize=(i+7)/8;
 
   /* get Modulus */
-  mPtr=(const uint8_t*)(t+(128-nsize));
+  mPtr=(const uint8_t *)(t+(128-nsize));
   mLen=nsize;
   t+=128;
 
   /* create key */
   key=GWEN_Crypt_KeyRsa_fromModExp(keySize,
-				   mPtr, mLen,
-				   ePtr, eLen);
+                                   mPtr, mLen,
+                                   ePtr, eLen);
   if (!key) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Could not create RSA key");
+              "Could not create RSA key");
     return EB_RC_INTERNAL_ERROR;
   }
   *k=key;
@@ -197,7 +199,8 @@ EB_RC EB_Key_fromBin(GWEN_CRYPT_KEY **k,
 
 
 
-EB_RC EB_Key_toXml(GWEN_CRYPT_KEY *k, xmlNodePtr node) {
+EB_RC EB_Key_toXml(GWEN_CRYPT_KEY *k, xmlNodePtr node)
+{
   int rv;
   uint8_t kbuf[300];
   uint32_t klen;
@@ -219,8 +222,8 @@ EB_RC EB_Key_toXml(GWEN_CRYPT_KEY *k, xmlNodePtr node) {
       return EB_RC_INTERNAL_ERROR;
     }
     EB_Xml_SetCharValue(node,
-			"PubKeyValue/ds:RSAKeyValue/Modulus",
-			GWEN_Buffer_GetStart(b64buf));
+                        "PubKeyValue/ds:RSAKeyValue/Modulus",
+                        GWEN_Buffer_GetStart(b64buf));
     GWEN_Buffer_free(b64buf);
   }
 
@@ -242,8 +245,8 @@ EB_RC EB_Key_toXml(GWEN_CRYPT_KEY *k, xmlNodePtr node) {
       return EB_RC_INVALID_REQUEST;
     }
     EB_Xml_SetCharValue(node,
-			"PubKeyValue/ds:RSAKeyValue/Exponent",
-			GWEN_Buffer_GetStart(b64buf));
+                        "PubKeyValue/ds:RSAKeyValue/Exponent",
+                        GWEN_Buffer_GetStart(b64buf));
     GWEN_Buffer_free(b64buf);
   }
 
@@ -252,7 +255,8 @@ EB_RC EB_Key_toXml(GWEN_CRYPT_KEY *k, xmlNodePtr node) {
 
 
 
-EB_RC EB_Key_fromXml(GWEN_CRYPT_KEY **k, xmlNodePtr node) {
+EB_RC EB_Key_fromXml(GWEN_CRYPT_KEY **k, xmlNodePtr node)
+{
   const char *s;
   GWEN_CRYPT_KEY *key;
   uint8_t eBuf[512];
@@ -266,7 +270,7 @@ EB_RC EB_Key_fromXml(GWEN_CRYPT_KEY **k, xmlNodePtr node) {
     const uint8_t *p;
 
     b64buf=GWEN_Buffer_new(0, 256, 0, 1);
-    if (GWEN_Base64_Decode((const unsigned char*) s, 0, b64buf)) {
+    if (GWEN_Base64_Decode((const unsigned char *) s, 0, b64buf)) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not decode data");
       GWEN_Buffer_free(b64buf);
       return EB_RC_INVALID_REQUEST;
@@ -280,13 +284,13 @@ EB_RC EB_Key_fromXml(GWEN_CRYPT_KEY **k, xmlNodePtr node) {
 
     /* correctly calculate key length */
     mLen=GWEN_Buffer_GetUsedBytes(b64buf);
-    p=(const uint8_t*)GWEN_Buffer_GetStart(b64buf);
-    while(mLen && *p==0) {
+    p=(const uint8_t *)GWEN_Buffer_GetStart(b64buf);
+    while (mLen && *p==0) {
       mLen--;
       p++;
     }
     DBG_ERROR(0, "Real key size is: %d (from %d)",
-	      mLen, GWEN_Buffer_GetUsedBytes(b64buf));
+              mLen, GWEN_Buffer_GetUsedBytes(b64buf));
     memmove(mBuf, p, mLen);
     GWEN_Buffer_free(b64buf);
   }
@@ -301,7 +305,7 @@ EB_RC EB_Key_fromXml(GWEN_CRYPT_KEY **k, xmlNodePtr node) {
     GWEN_BUFFER *b64buf;
 
     b64buf=GWEN_Buffer_new(0, 256, 0, 1);
-    if (GWEN_Base64_Decode((const unsigned char*) s, 0, b64buf)) {
+    if (GWEN_Base64_Decode((const unsigned char *) s, 0, b64buf)) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not decode data");
       GWEN_Buffer_free(b64buf);
       return EB_RC_INVALID_REQUEST;
@@ -314,8 +318,8 @@ EB_RC EB_Key_fromXml(GWEN_CRYPT_KEY **k, xmlNodePtr node) {
     }
 
     memmove(eBuf,
-	    GWEN_Buffer_GetStart(b64buf),
-	    GWEN_Buffer_GetUsedBytes(b64buf));
+            GWEN_Buffer_GetStart(b64buf),
+            GWEN_Buffer_GetUsedBytes(b64buf));
     eLen=GWEN_Buffer_GetUsedBytes(b64buf);
     GWEN_Buffer_free(b64buf);
   }
@@ -326,11 +330,11 @@ EB_RC EB_Key_fromXml(GWEN_CRYPT_KEY **k, xmlNodePtr node) {
 
   /* create key */
   key=GWEN_Crypt_KeyRsa_fromModExp(mLen,
-				   mBuf, mLen,
-				   eBuf, eLen);
+                                   mBuf, mLen,
+                                   eBuf, eLen);
   if (!key) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Could not create RSA key");
+              "Could not create RSA key");
     return EB_RC_INTERNAL_ERROR;
   }
   *k=key;
@@ -340,7 +344,8 @@ EB_RC EB_Key_fromXml(GWEN_CRYPT_KEY **k, xmlNodePtr node) {
 
 
 
-int EB_Key_BuildHashSha1(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encode64) {
+int EB_Key_BuildHashSha1(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encode64)
+{
   GWEN_BUFFER *buf1;
   GWEN_BUFFER *buf2;
   char *s;
@@ -362,7 +367,7 @@ int EB_Key_BuildHashSha1(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encode6
     return EB_RC_INVALID_REQUEST;
   }
 
-  rv=GWEN_Text_ToHexBuffer((const char*)kbuf, klen, buf1, 0, 0, 0);
+  rv=GWEN_Text_ToHexBuffer((const char *)kbuf, klen, buf1, 0, 0, 0);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "No modulus in key");
     GWEN_Buffer_free(buf2);
@@ -371,7 +376,7 @@ int EB_Key_BuildHashSha1(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encode6
   }
 
   s=GWEN_Buffer_GetStart(buf1);
-  while(*s=='0')
+  while (*s=='0')
     s++;
   GWEN_Buffer_AppendString(buf2, s);
   GWEN_Buffer_AppendString(buf2, " ");
@@ -387,7 +392,7 @@ int EB_Key_BuildHashSha1(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encode6
     return EB_RC_INVALID_REQUEST;
   }
 
-  rv=GWEN_Text_ToHexBuffer((const char*)kbuf, klen, buf1, 0, 0, 0);
+  rv=GWEN_Text_ToHexBuffer((const char *)kbuf, klen, buf1, 0, 0, 0);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "No modulus in key");
     GWEN_Buffer_free(buf2);
@@ -396,7 +401,7 @@ int EB_Key_BuildHashSha1(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encode6
   }
 
   s=GWEN_Buffer_GetStart(buf1);
-  while(*s=='0')
+  while (*s=='0')
     s++;
   GWEN_Buffer_AppendString(buf2, s);
 
@@ -404,7 +409,7 @@ int EB_Key_BuildHashSha1(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encode6
 
   /* convert to lower case */
   s=GWEN_Buffer_GetStart(buf2);
-  while(*s) {
+  while (*s) {
     *s=(char)tolower(*s);
     s++;
   }
@@ -423,8 +428,8 @@ int EB_Key_BuildHashSha1(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encode6
 
   /* update */
   rv=GWEN_MDigest_Update(md,
-			 (const uint8_t*) GWEN_Buffer_GetStart(buf2),
-			 GWEN_Buffer_GetUsedBytes(buf2));
+                         (const uint8_t *) GWEN_Buffer_GetStart(buf2),
+                         GWEN_Buffer_GetUsedBytes(buf2));
   if (rv<0) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     GWEN_MDigest_free(md);
@@ -443,8 +448,8 @@ int EB_Key_BuildHashSha1(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encode6
 
   if (encode64) {
     if (GWEN_Base64_Encode(GWEN_MDigest_GetDigestPtr(md),
-			   GWEN_MDigest_GetDigestSize(md),
-			   hbuf, 0)) {
+                           GWEN_MDigest_GetDigestSize(md),
+                           hbuf, 0)) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not encode data");
       GWEN_MDigest_free(md);
       GWEN_Buffer_free(buf2);
@@ -453,8 +458,8 @@ int EB_Key_BuildHashSha1(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encode6
   }
   else
     GWEN_Buffer_AppendBytes(hbuf,
-			    (const char*)GWEN_MDigest_GetDigestPtr(md),
-			    GWEN_MDigest_GetDigestSize(md));
+                            (const char *)GWEN_MDigest_GetDigestPtr(md),
+                            GWEN_MDigest_GetDigestSize(md));
   GWEN_MDigest_free(md);
 
   /* cleanup */
@@ -465,7 +470,8 @@ int EB_Key_BuildHashSha1(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encode6
 
 
 
-int EB_Key_BuildHashSha256(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encode64) {
+int EB_Key_BuildHashSha256(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encode64)
+{
   GWEN_BUFFER *buf1;
   GWEN_BUFFER *buf2;
   char *s;
@@ -487,7 +493,7 @@ int EB_Key_BuildHashSha256(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encod
     return EB_RC_INVALID_REQUEST;
   }
 
-  rv=GWEN_Text_ToHexBuffer((const char*)kbuf, klen, buf1, 0, 0, 0);
+  rv=GWEN_Text_ToHexBuffer((const char *)kbuf, klen, buf1, 0, 0, 0);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "No modulus in key");
     GWEN_Buffer_free(buf2);
@@ -496,7 +502,7 @@ int EB_Key_BuildHashSha256(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encod
   }
 
   s=GWEN_Buffer_GetStart(buf1);
-  while(*s=='0')
+  while (*s=='0')
     s++;
   GWEN_Buffer_AppendString(buf2, s);
   GWEN_Buffer_AppendString(buf2, " ");
@@ -512,7 +518,7 @@ int EB_Key_BuildHashSha256(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encod
     return EB_RC_INVALID_REQUEST;
   }
 
-  rv=GWEN_Text_ToHexBuffer((const char*)kbuf, klen, buf1, 0, 0, 0);
+  rv=GWEN_Text_ToHexBuffer((const char *)kbuf, klen, buf1, 0, 0, 0);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "No modulus in key");
     GWEN_Buffer_free(buf2);
@@ -521,7 +527,7 @@ int EB_Key_BuildHashSha256(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encod
   }
 
   s=GWEN_Buffer_GetStart(buf1);
-  while(*s=='0')
+  while (*s=='0')
     s++;
   GWEN_Buffer_AppendString(buf2, s);
 
@@ -529,7 +535,7 @@ int EB_Key_BuildHashSha256(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encod
 
   /* convert to lower case */
   s=GWEN_Buffer_GetStart(buf2);
-  while(*s) {
+  while (*s) {
     *s=(char)tolower(*s);
     s++;
   }
@@ -548,8 +554,8 @@ int EB_Key_BuildHashSha256(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encod
 
   /* update */
   rv=GWEN_MDigest_Update(md,
-			 (const uint8_t*) GWEN_Buffer_GetStart(buf2),
-			 GWEN_Buffer_GetUsedBytes(buf2));
+                         (const uint8_t *) GWEN_Buffer_GetStart(buf2),
+                         GWEN_Buffer_GetUsedBytes(buf2));
   if (rv<0) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     GWEN_MDigest_free(md);
@@ -568,8 +574,8 @@ int EB_Key_BuildHashSha256(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encod
 
   if (encode64) {
     if (GWEN_Base64_Encode(GWEN_MDigest_GetDigestPtr(md),
-			   GWEN_MDigest_GetDigestSize(md),
-			   hbuf, 0)) {
+                           GWEN_MDigest_GetDigestSize(md),
+                           hbuf, 0)) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not encode data");
       GWEN_MDigest_free(md);
       GWEN_Buffer_free(buf2);
@@ -578,8 +584,8 @@ int EB_Key_BuildHashSha256(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encod
   }
   else
     GWEN_Buffer_AppendBytes(hbuf,
-			    (const char*)GWEN_MDigest_GetDigestPtr(md),
-			    GWEN_MDigest_GetDigestSize(md));
+                            (const char *)GWEN_MDigest_GetDigestPtr(md),
+                            GWEN_MDigest_GetDigestSize(md));
   GWEN_MDigest_free(md);
 
   /* cleanup */
@@ -591,8 +597,9 @@ int EB_Key_BuildHashSha256(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encod
 
 
 int EB_Key_Info_BuildHashSha1(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
-			      GWEN_BUFFER *hbuf,
-			      int encode64) {
+                              GWEN_BUFFER *hbuf,
+                              int encode64)
+{
   GWEN_BUFFER *buf1;
   GWEN_BUFFER *buf2;
   char *s;
@@ -614,7 +621,7 @@ int EB_Key_Info_BuildHashSha1(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
     return GWEN_ERROR_NO_DATA;
   }
 
-  rv=GWEN_Text_ToHexBuffer((const char*)p, len, buf1, 0, 0, 0);
+  rv=GWEN_Text_ToHexBuffer((const char *)p, len, buf1, 0, 0, 0);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "No modulus in key");
     GWEN_Buffer_free(buf2);
@@ -622,7 +629,7 @@ int EB_Key_Info_BuildHashSha1(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
     return EB_RC_INTERNAL_ERROR;
   }
   s=GWEN_Buffer_GetStart(buf1);
-  while(*s=='0')
+  while (*s=='0')
     s++;
   GWEN_Buffer_AppendString(buf2, s);
 
@@ -638,7 +645,7 @@ int EB_Key_Info_BuildHashSha1(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
     GWEN_Buffer_free(buf1);
     return EB_RC_INVALID_REQUEST;
   }
-  rv=GWEN_Text_ToHexBuffer((const char*)p, len, buf1, 0, 0, 0);
+  rv=GWEN_Text_ToHexBuffer((const char *)p, len, buf1, 0, 0, 0);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "No modulus in key");
     GWEN_Buffer_free(buf2);
@@ -647,7 +654,7 @@ int EB_Key_Info_BuildHashSha1(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
   }
 
   s=GWEN_Buffer_GetStart(buf1);
-  while(*s=='0')
+  while (*s=='0')
     s++;
   GWEN_Buffer_AppendString(buf2, s);
 
@@ -655,7 +662,7 @@ int EB_Key_Info_BuildHashSha1(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
 
   /* convert to lower case */
   s=GWEN_Buffer_GetStart(buf2);
-  while(*s) {
+  while (*s) {
     *s=(char)tolower(*s);
     s++;
   }
@@ -674,8 +681,8 @@ int EB_Key_Info_BuildHashSha1(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
 
   /* update */
   rv=GWEN_MDigest_Update(md,
-			 (const uint8_t*) GWEN_Buffer_GetStart(buf2),
-			 GWEN_Buffer_GetUsedBytes(buf2));
+                         (const uint8_t *) GWEN_Buffer_GetStart(buf2),
+                         GWEN_Buffer_GetUsedBytes(buf2));
   if (rv<0) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     GWEN_MDigest_free(md);
@@ -694,8 +701,8 @@ int EB_Key_Info_BuildHashSha1(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
 
   if (encode64) {
     if (GWEN_Base64_Encode(GWEN_MDigest_GetDigestPtr(md),
-			   GWEN_MDigest_GetDigestSize(md),
-			   hbuf, 0)) {
+                           GWEN_MDigest_GetDigestSize(md),
+                           hbuf, 0)) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not encode data");
       GWEN_MDigest_free(md);
       GWEN_Buffer_free(buf2);
@@ -704,8 +711,8 @@ int EB_Key_Info_BuildHashSha1(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
   }
   else
     GWEN_Buffer_AppendBytes(hbuf,
-			    (const char*)GWEN_MDigest_GetDigestPtr(md),
-			    GWEN_MDigest_GetDigestSize(md));
+                            (const char *)GWEN_MDigest_GetDigestPtr(md),
+                            GWEN_MDigest_GetDigestSize(md));
   GWEN_MDigest_free(md);
 
   /* cleanup */
@@ -717,8 +724,9 @@ int EB_Key_Info_BuildHashSha1(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
 
 
 int EB_Key_Info_BuildHashSha256(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
-				GWEN_BUFFER *hbuf,
-				int encode64) {
+                                GWEN_BUFFER *hbuf,
+                                int encode64)
+{
   GWEN_BUFFER *buf1;
   GWEN_BUFFER *buf2;
   char *s;
@@ -740,7 +748,7 @@ int EB_Key_Info_BuildHashSha256(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
     return GWEN_ERROR_NO_DATA;
   }
 
-  rv=GWEN_Text_ToHexBuffer((const char*)p, len, buf1, 0, 0, 0);
+  rv=GWEN_Text_ToHexBuffer((const char *)p, len, buf1, 0, 0, 0);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "No modulus in key");
     GWEN_Buffer_free(buf2);
@@ -748,7 +756,7 @@ int EB_Key_Info_BuildHashSha256(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
     return EB_RC_INTERNAL_ERROR;
   }
   s=GWEN_Buffer_GetStart(buf1);
-  while(*s=='0')
+  while (*s=='0')
     s++;
   GWEN_Buffer_AppendString(buf2, s);
 
@@ -764,7 +772,7 @@ int EB_Key_Info_BuildHashSha256(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
     GWEN_Buffer_free(buf1);
     return EB_RC_INVALID_REQUEST;
   }
-  rv=GWEN_Text_ToHexBuffer((const char*)p, len, buf1, 0, 0, 0);
+  rv=GWEN_Text_ToHexBuffer((const char *)p, len, buf1, 0, 0, 0);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "No modulus in key");
     GWEN_Buffer_free(buf2);
@@ -773,7 +781,7 @@ int EB_Key_Info_BuildHashSha256(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
   }
 
   s=GWEN_Buffer_GetStart(buf1);
-  while(*s=='0')
+  while (*s=='0')
     s++;
   GWEN_Buffer_AppendString(buf2, s);
 
@@ -781,7 +789,7 @@ int EB_Key_Info_BuildHashSha256(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
 
   /* convert to lower case */
   s=GWEN_Buffer_GetStart(buf2);
-  while(*s) {
+  while (*s) {
     *s=(char)tolower(*s);
     s++;
   }
@@ -800,8 +808,8 @@ int EB_Key_Info_BuildHashSha256(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
 
   /* update */
   rv=GWEN_MDigest_Update(md,
-			 (const uint8_t*) GWEN_Buffer_GetStart(buf2),
-			 GWEN_Buffer_GetUsedBytes(buf2));
+                         (const uint8_t *) GWEN_Buffer_GetStart(buf2),
+                         GWEN_Buffer_GetUsedBytes(buf2));
   if (rv<0) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     GWEN_MDigest_free(md);
@@ -820,8 +828,8 @@ int EB_Key_Info_BuildHashSha256(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
 
   if (encode64) {
     if (GWEN_Base64_Encode(GWEN_MDigest_GetDigestPtr(md),
-			   GWEN_MDigest_GetDigestSize(md),
-			   hbuf, 0)) {
+                           GWEN_MDigest_GetDigestSize(md),
+                           hbuf, 0)) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not encode data");
       GWEN_MDigest_free(md);
       GWEN_Buffer_free(buf2);
@@ -830,8 +838,8 @@ int EB_Key_Info_BuildHashSha256(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
   }
   else
     GWEN_Buffer_AppendBytes(hbuf,
-			    (const char*)GWEN_MDigest_GetDigestPtr(md),
-			    GWEN_MDigest_GetDigestSize(md));
+                            (const char *)GWEN_MDigest_GetDigestPtr(md),
+                            GWEN_MDigest_GetDigestSize(md));
   GWEN_MDigest_free(md);
 
   /* cleanup */
@@ -843,7 +851,8 @@ int EB_Key_Info_BuildHashSha256(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
 
 
 int EB_Key_Info_BuildSigHash_Rmd160(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
-				    GWEN_BUFFER *hbuf) {
+                                    GWEN_BUFFER *hbuf)
+{
   const uint8_t *p;
   uint32_t len;
   GWEN_BUFFER *bbuf;
@@ -862,7 +871,7 @@ int EB_Key_Info_BuildSigHash_Rmd160(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
   }
   if (len<128)
     GWEN_Buffer_FillWithBytes(bbuf, 0, 128-len);
-  GWEN_Buffer_AppendBytes(bbuf, (const char*)p, len);
+  GWEN_Buffer_AppendBytes(bbuf, (const char *)p, len);
 
   /* get modulus */
   p=GWEN_Crypt_Token_KeyInfo_GetModulusData(ki);
@@ -874,7 +883,7 @@ int EB_Key_Info_BuildSigHash_Rmd160(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
   }
   if (len<128)
     GWEN_Buffer_FillWithBytes(bbuf, 0, 128-len);
-  GWEN_Buffer_AppendBytes(bbuf, (const char*)p, len);
+  GWEN_Buffer_AppendBytes(bbuf, (const char *)p, len);
 
   /* hash */
   md=GWEN_MDigest_Rmd160_new();
@@ -886,8 +895,8 @@ int EB_Key_Info_BuildSigHash_Rmd160(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
     return rv;
   }
   rv=GWEN_MDigest_Update(md,
-			 (const uint8_t*)GWEN_Buffer_GetStart(bbuf),
-			 GWEN_Buffer_GetUsedBytes(bbuf));
+                         (const uint8_t *)GWEN_Buffer_GetStart(bbuf),
+                         GWEN_Buffer_GetUsedBytes(bbuf));
   if (rv<0) {
     GWEN_MDigest_free(md);
     GWEN_Buffer_free(bbuf);
@@ -903,8 +912,8 @@ int EB_Key_Info_BuildSigHash_Rmd160(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
 
   /* add hash to buffer */
   GWEN_Buffer_AppendBytes(hbuf,
-			  (const char*)GWEN_MDigest_GetDigestPtr(md),
-			  GWEN_MDigest_GetDigestSize(md));
+                          (const char *)GWEN_MDigest_GetDigestPtr(md),
+                          GWEN_MDigest_GetDigestSize(md));
   GWEN_MDigest_free(md);
 
   return 0;
@@ -912,7 +921,8 @@ int EB_Key_Info_BuildSigHash_Rmd160(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
 
 
 
-int EB_Key_Info_BuildSigHash_Sha256(const GWEN_CRYPT_TOKEN_KEYINFO *ki, GWEN_BUFFER *hbuf) {
+int EB_Key_Info_BuildSigHash_Sha256(const GWEN_CRYPT_TOKEN_KEYINFO *ki, GWEN_BUFFER *hbuf)
+{
   const uint8_t *p;
   char *t;
   uint32_t len;
@@ -933,7 +943,7 @@ int EB_Key_Info_BuildSigHash_Sha256(const GWEN_CRYPT_TOKEN_KEYINFO *ki, GWEN_BUF
     GWEN_Buffer_free(bbuf);
     return GWEN_ERROR_NO_DATA;
   }
-  rv=GWEN_Text_ToHexBuffer((const char*)p, len, bbuf, 0, 0, 0);
+  rv=GWEN_Text_ToHexBuffer((const char *)p, len, bbuf, 0, 0, 0);
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here");
     GWEN_Buffer_free(xbuf);
@@ -941,10 +951,10 @@ int EB_Key_Info_BuildSigHash_Sha256(const GWEN_CRYPT_TOKEN_KEYINFO *ki, GWEN_BUF
     return GWEN_ERROR_NO_DATA;
   }
 
-  p=(const uint8_t*)GWEN_Buffer_GetStart(bbuf);
-  while(*p=='0')
+  p=(const uint8_t *)GWEN_Buffer_GetStart(bbuf);
+  while (*p=='0')
     p++;
-  GWEN_Buffer_AppendString(xbuf, (const char*)p);
+  GWEN_Buffer_AppendString(xbuf, (const char *)p);
   GWEN_Buffer_AppendByte(xbuf, ' ');
   GWEN_Buffer_Reset(bbuf);
 
@@ -958,7 +968,7 @@ int EB_Key_Info_BuildSigHash_Sha256(const GWEN_CRYPT_TOKEN_KEYINFO *ki, GWEN_BUF
     return GWEN_ERROR_NO_DATA;
   }
 
-  rv=GWEN_Text_ToHexBuffer((const char*) p, len, bbuf, 0, 0, 0);
+  rv=GWEN_Text_ToHexBuffer((const char *) p, len, bbuf, 0, 0, 0);
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here");
     GWEN_Buffer_free(xbuf);
@@ -966,15 +976,15 @@ int EB_Key_Info_BuildSigHash_Sha256(const GWEN_CRYPT_TOKEN_KEYINFO *ki, GWEN_BUF
     return GWEN_ERROR_NO_DATA;
   }
 
-  p=(const uint8_t*)GWEN_Buffer_GetStart(bbuf);
-  while(*p=='0')
+  p=(const uint8_t *)GWEN_Buffer_GetStart(bbuf);
+  while (*p=='0')
     p++;
-  GWEN_Buffer_AppendString(xbuf, (const char*) p);
+  GWEN_Buffer_AppendString(xbuf, (const char *) p);
   GWEN_Buffer_free(bbuf);
 
   /* lowercase */
   t=GWEN_Buffer_GetStart(xbuf);
-  while(*t) {
+  while (*t) {
     *t=tolower(*t);
     t++;
   }
@@ -989,8 +999,8 @@ int EB_Key_Info_BuildSigHash_Sha256(const GWEN_CRYPT_TOKEN_KEYINFO *ki, GWEN_BUF
     return rv;
   }
   rv=GWEN_MDigest_Update(md,
-			 (const uint8_t*)GWEN_Buffer_GetStart(xbuf),
-			 GWEN_Buffer_GetUsedBytes(xbuf));
+                         (const uint8_t *)GWEN_Buffer_GetStart(xbuf),
+                         GWEN_Buffer_GetUsedBytes(xbuf));
   if (rv<0) {
     GWEN_MDigest_free(md);
     GWEN_Buffer_free(xbuf);
@@ -1006,8 +1016,8 @@ int EB_Key_Info_BuildSigHash_Sha256(const GWEN_CRYPT_TOKEN_KEYINFO *ki, GWEN_BUF
 
   /* add hash to buffer */
   GWEN_Buffer_AppendBytes(hbuf,
-			  (const char*)GWEN_MDigest_GetDigestPtr(md),
-			  GWEN_MDigest_GetDigestSize(md));
+                          (const char *)GWEN_MDigest_GetDigestPtr(md),
+                          GWEN_MDigest_GetDigestSize(md));
   GWEN_MDigest_free(md);
 
   return 0;
@@ -1015,7 +1025,8 @@ int EB_Key_Info_BuildSigHash_Sha256(const GWEN_CRYPT_TOKEN_KEYINFO *ki, GWEN_BUF
 
 
 
-EB_RC EB_Key_Info_ReadXml(GWEN_CRYPT_TOKEN_KEYINFO *ki, xmlNodePtr node) {
+EB_RC EB_Key_Info_ReadXml(GWEN_CRYPT_TOKEN_KEYINFO *ki, xmlNodePtr node)
+{
   const char *s;
   uint8_t eBuf[512];
   uint32_t eLen;
@@ -1030,7 +1041,7 @@ EB_RC EB_Key_Info_ReadXml(GWEN_CRYPT_TOKEN_KEYINFO *ki, xmlNodePtr node) {
     const uint8_t *p;
 
     b64buf=GWEN_Buffer_new(0, 256, 0, 1);
-    if (GWEN_Base64_Decode((const unsigned char*) s, 0, b64buf)) {
+    if (GWEN_Base64_Decode((const unsigned char *) s, 0, b64buf)) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not decode data");
       GWEN_Buffer_free(b64buf);
       return EB_RC_INVALID_REQUEST;
@@ -1044,13 +1055,13 @@ EB_RC EB_Key_Info_ReadXml(GWEN_CRYPT_TOKEN_KEYINFO *ki, xmlNodePtr node) {
 
     /* correctly calculate key length */
     nsize=GWEN_Buffer_GetUsedBytes(b64buf);
-    p=(const uint8_t*)GWEN_Buffer_GetStart(b64buf);
-    while(nsize && *p==0) {
+    p=(const uint8_t *)GWEN_Buffer_GetStart(b64buf);
+    while (nsize && *p==0) {
       nsize--;
       p++;
     }
     DBG_INFO(AQEBICS_LOGDOMAIN, "Real key size is: %d/%d (from %d)",
-	     nsize, nsize*8, GWEN_Buffer_GetUsedBytes(b64buf));
+             nsize, nsize*8, GWEN_Buffer_GetUsedBytes(b64buf));
     nsize*=8;
 
     if (nsize>2048)
@@ -1079,7 +1090,7 @@ EB_RC EB_Key_Info_ReadXml(GWEN_CRYPT_TOKEN_KEYINFO *ki, xmlNodePtr node) {
     GWEN_BUFFER *b64buf;
 
     b64buf=GWEN_Buffer_new(0, 256, 0, 1);
-    if (GWEN_Base64_Decode((const unsigned char*) s, 0, b64buf)) {
+    if (GWEN_Base64_Decode((const unsigned char *) s, 0, b64buf)) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not decode data");
       GWEN_Buffer_free(b64buf);
       return EB_RC_INVALID_REQUEST;
@@ -1092,8 +1103,8 @@ EB_RC EB_Key_Info_ReadXml(GWEN_CRYPT_TOKEN_KEYINFO *ki, xmlNodePtr node) {
     }
 
     memmove(eBuf,
-	    GWEN_Buffer_GetStart(b64buf),
-	    GWEN_Buffer_GetUsedBytes(b64buf));
+            GWEN_Buffer_GetStart(b64buf),
+            GWEN_Buffer_GetUsedBytes(b64buf));
     eLen=GWEN_Buffer_GetUsedBytes(b64buf);
     GWEN_Buffer_free(b64buf);
   }
@@ -1107,14 +1118,15 @@ EB_RC EB_Key_Info_ReadXml(GWEN_CRYPT_TOKEN_KEYINFO *ki, xmlNodePtr node) {
   GWEN_Crypt_Token_KeyInfo_SetModulus(ki, mBuf, mLen);
   GWEN_Crypt_Token_KeyInfo_SetExponent(ki, eBuf, eLen);
   GWEN_Crypt_Token_KeyInfo_AddFlags(ki,
-				    GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                    GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT);
   return 0;
 }
 
 
 
-int EB_Key_Info_toXml(const GWEN_CRYPT_TOKEN_KEYINFO *ki, xmlNodePtr node) {
+int EB_Key_Info_toXml(const GWEN_CRYPT_TOKEN_KEYINFO *ki, xmlNodePtr node)
+{
   int rv;
   const uint8_t *p;
   uint32_t len;
@@ -1133,22 +1145,23 @@ int EB_Key_Info_toXml(const GWEN_CRYPT_TOKEN_KEYINFO *ki, xmlNodePtr node) {
     if (*p!=0) {
       tmpbuf=GWEN_Buffer_new(0, len+1, 0, 1);
       GWEN_Buffer_AppendByte(tmpbuf, 0);
-      GWEN_Buffer_AppendBytes(tmpbuf, (const char*)p, len);
-      p=(const uint8_t*)GWEN_Buffer_GetStart(tmpbuf);
+      GWEN_Buffer_AppendBytes(tmpbuf, (const char *)p, len);
+      p=(const uint8_t *)GWEN_Buffer_GetStart(tmpbuf);
       len++;
     }
 #endif
     b64buf=GWEN_Buffer_new(0, 256, 0, 1);
     rv=GWEN_Base64_Encode(p, len, b64buf, 0);
-    GWEN_Buffer_free(tmpbuf); tmpbuf=NULL;
+    GWEN_Buffer_free(tmpbuf);
+    tmpbuf=NULL;
     if (rv<0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not encode data (%d)", rv);
       GWEN_Buffer_free(b64buf);
       return EB_RC_INTERNAL_ERROR;
     }
     EB_Xml_SetCharValue(node,
-			"PubKeyValue/ds:RSAKeyValue/Modulus",
-			GWEN_Buffer_GetStart(b64buf));
+                        "PubKeyValue/ds:RSAKeyValue/Modulus",
+                        GWEN_Buffer_GetStart(b64buf));
     GWEN_Buffer_free(b64buf);
   }
 
@@ -1171,8 +1184,8 @@ int EB_Key_Info_toXml(const GWEN_CRYPT_TOKEN_KEYINFO *ki, xmlNodePtr node) {
       return EB_RC_INTERNAL_ERROR;
     }
     EB_Xml_SetCharValue(node,
-			"PubKeyValue/ds:RSAKeyValue/Exponent",
-			GWEN_Buffer_GetStart(b64buf));
+                        "PubKeyValue/ds:RSAKeyValue/Exponent",
+                        GWEN_Buffer_GetStart(b64buf));
     GWEN_Buffer_free(b64buf);
   }
 
@@ -1182,10 +1195,11 @@ int EB_Key_Info_toXml(const GWEN_CRYPT_TOKEN_KEYINFO *ki, xmlNodePtr node) {
 
 
 EB_RC EB_Key_Info_toBin(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
-			const char *userId,
-			const char *version,
-			int keySize,
-			GWEN_BUFFER *buf) {
+                        const char *userId,
+                        const char *version,
+                        int keySize,
+                        GWEN_BUFFER *buf)
+{
   int i;
   char numbuf[32];
   const uint8_t *p;
@@ -1222,7 +1236,7 @@ EB_RC EB_Key_Info_toBin(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
   GWEN_Buffer_AppendString(buf, numbuf);
   if (len<128)
     GWEN_Buffer_FillWithBytes(buf, 0, 128-len);
-  GWEN_Buffer_AppendBytes(buf, (const char*)p, len);
+  GWEN_Buffer_AppendBytes(buf, (const char *)p, len);
 
   /* get modulus */
   p=GWEN_Crypt_Token_KeyInfo_GetModulusData(ki);
@@ -1235,7 +1249,7 @@ EB_RC EB_Key_Info_toBin(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
   GWEN_Buffer_AppendString(buf, numbuf);
   if (len<128)
     GWEN_Buffer_FillWithBytes(buf, 0, 128-len);
-  GWEN_Buffer_AppendBytes(buf, (const char*)p, len);
+  GWEN_Buffer_AppendBytes(buf, (const char *)p, len);
 
   GWEN_Buffer_FillWithBytes(buf, ' ', 236);
 

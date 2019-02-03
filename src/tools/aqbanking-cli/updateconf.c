@@ -15,7 +15,8 @@
 
 
 
-int updateConf(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int updateConf(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
   /* nothing for now */
   return 0;
 }

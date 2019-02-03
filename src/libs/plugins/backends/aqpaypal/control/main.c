@@ -26,32 +26,33 @@
 
 
 
-static void showUsage() {
+static void showUsage()
+{
   GWEN_BUFFER *ubuf;
 
   ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("Commands:\n\n"));
+                           I18N("Commands:\n\n"));
   GWEN_Buffer_AppendString(ubuf,
-			   I18N("  listusers:\n"
-				"    blurb "
-				"file\n\n"));
- GWEN_Buffer_AppendString(ubuf,
-			   I18N("  listaccounts:\n"
-				"    blurb "
-				"file\n\n"));
- GWEN_Buffer_AppendString(ubuf,
-			   I18N("  adduser:\n"
-				"    blurb "
-				"file\n\n"));
- GWEN_Buffer_AppendString(ubuf,
-			   I18N("  addaccount:\n"
-				"    blurb "
-				"file\n\n"));
- GWEN_Buffer_AppendString(ubuf,
-			   I18N("  setsecret:\n"
-				"    blurb "
-				"file\n\n"));
+                           I18N("  listusers:\n"
+                                "    blurb "
+                                "file\n\n"));
+  GWEN_Buffer_AppendString(ubuf,
+                           I18N("  listaccounts:\n"
+                                "    blurb "
+                                "file\n\n"));
+  GWEN_Buffer_AppendString(ubuf,
+                           I18N("  adduser:\n"
+                                "    blurb "
+                                "file\n\n"));
+  GWEN_Buffer_AppendString(ubuf,
+                           I18N("  addaccount:\n"
+                                "    blurb "
+                                "file\n\n"));
+  GWEN_Buffer_AppendString(ubuf,
+                           I18N("  setsecret:\n"
+                                "    blurb "
+                                "file\n\n"));
 
   fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(ubuf));
   GWEN_Buffer_free(ubuf);
@@ -59,13 +60,14 @@ static void showUsage() {
 
 
 
-int APY_Control(AB_PROVIDER *pro, int argc, char **argv) {
+int APY_Control(AB_PROVIDER *pro, int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   const char *cmd;
   int rv;
 
   db=GWEN_DB_Group_new("arguments");
-  if (argc<1){
+  if (argc<1) {
     showUsage();
     return 1;
   }

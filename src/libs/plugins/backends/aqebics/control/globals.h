@@ -53,9 +53,9 @@ int createKeys(AB_PROVIDER *pro,
                char **argv);
 
 int createTempKey(AB_PROVIDER *pro,
-		  GWEN_DB_NODE *dbArgs,
-		  int argc,
-		  char **argv);
+                  GWEN_DB_NODE *dbArgs,
+                  int argc,
+                  char **argv);
 
 int sendKeys(AB_PROVIDER *pro,
              GWEN_DB_NODE *dbArgs,
@@ -63,9 +63,9 @@ int sendKeys(AB_PROVIDER *pro,
              char **argv);
 
 int sendSignKey(AB_PROVIDER *pro,
-		GWEN_DB_NODE *dbArgs,
-		int argc,
-		char **argv);
+                GWEN_DB_NODE *dbArgs,
+                int argc,
+                char **argv);
 
 int getKeys(AB_PROVIDER *pro,
             GWEN_DB_NODE *dbArgs,
@@ -74,80 +74,80 @@ int getKeys(AB_PROVIDER *pro,
 
 
 int iniLetter(AB_PROVIDER *pro,
-	      GWEN_DB_NODE *dbArgs,
-	      int argc,
-	      char **argv);
+              GWEN_DB_NODE *dbArgs,
+              int argc,
+              char **argv);
 
 
 int hiaLetter(AB_PROVIDER *pro,
-	      GWEN_DB_NODE *dbArgs,
-	      int argc,
-	      char **argv);
+              GWEN_DB_NODE *dbArgs,
+              int argc,
+              char **argv);
 
 int sendHPD(AB_PROVIDER *pro,
-	    GWEN_DB_NODE *dbArgs,
-	    int argc,
-	    char **argv);
+            GWEN_DB_NODE *dbArgs,
+            int argc,
+            char **argv);
 
 int sendHKD(AB_PROVIDER *pro,
-	    GWEN_DB_NODE *dbArgs,
-	    int argc,
-	    char **argv);
+            GWEN_DB_NODE *dbArgs,
+            int argc,
+            char **argv);
 
 int download(AB_PROVIDER *pro,
-	     GWEN_DB_NODE *dbArgs,
-	     int argc,
-	     char **argv);
+             GWEN_DB_NODE *dbArgs,
+             int argc,
+             char **argv);
 
 int upload(AB_PROVIDER *pro,
-	   GWEN_DB_NODE *dbArgs,
-	   int argc,
-	   char **argv);
+           GWEN_DB_NODE *dbArgs,
+           int argc,
+           char **argv);
 
 int getAccounts(AB_PROVIDER *pro,
-		GWEN_DB_NODE *dbArgs,
-		int argc,
-		char **argv);
+                GWEN_DB_NODE *dbArgs,
+                int argc,
+                char **argv);
 
 int mkPinList(AB_PROVIDER *pro,
-	      GWEN_DB_NODE *dbArgs,
-	      int argc,
-	      char **argv);
+              GWEN_DB_NODE *dbArgs,
+              int argc,
+              char **argv);
 
 int resetUser(AB_PROVIDER *pro,
-	      GWEN_DB_NODE *dbArgs,
-	      int argc,
-	      char **argv);
+              GWEN_DB_NODE *dbArgs,
+              int argc,
+              char **argv);
 
 int addUserFlags(AB_PROVIDER *pro,
-		 GWEN_DB_NODE *dbArgs,
-		 int argc,
-		 char **argv);
+                 GWEN_DB_NODE *dbArgs,
+                 int argc,
+                 char **argv);
 
 int subUserFlags(AB_PROVIDER *pro,
-		 GWEN_DB_NODE *dbArgs,
-		 int argc,
-		 char **argv);
+                 GWEN_DB_NODE *dbArgs,
+                 int argc,
+                 char **argv);
 
 int getCert(AB_PROVIDER *pro,
-	    GWEN_DB_NODE *dbArgs,
-	    int argc,
-	    char **argv);
+            GWEN_DB_NODE *dbArgs,
+            int argc,
+            char **argv);
 
 int listUsers(AB_PROVIDER *pro,
-	      GWEN_DB_NODE *dbArgs,
-	      int argc,
-	      char **argv);
+              GWEN_DB_NODE *dbArgs,
+              int argc,
+              char **argv);
 
 int listAccounts(AB_PROVIDER *pro,
-		 GWEN_DB_NODE *dbArgs,
-		 int argc,
-		 char **argv);
+                 GWEN_DB_NODE *dbArgs,
+                 int argc,
+                 char **argv);
 
 int setEbicsVersion(AB_PROVIDER *pro,
-		    GWEN_DB_NODE *dbArgs,
-		    int argc,
-		    char **argv);
+                    GWEN_DB_NODE *dbArgs,
+                    int argc,
+                    char **argv);
 
 
 #endif

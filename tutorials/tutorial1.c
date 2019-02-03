@@ -33,7 +33,8 @@
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   AB_BANKING *ab;
   int rv;
   GWEN_GUI *gui;

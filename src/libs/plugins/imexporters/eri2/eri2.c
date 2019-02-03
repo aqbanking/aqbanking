@@ -49,7 +49,8 @@ GWEN_INHERIT(AB_IMEXPORTER, AB_IMEXPORTER_ERI2)
 
 
 
-AB_IMEXPORTER *AB_ImExporterERI2_new(AB_BANKING *ab){
+AB_IMEXPORTER *AB_ImExporterERI2_new(AB_BANKING *ab)
+{
   AB_IMEXPORTER *ie;
   AB_IMEXPORTER_ERI2 *ieh;
   GWEN_STRINGLIST *paths;
@@ -57,7 +58,7 @@ AB_IMEXPORTER *AB_ImExporterERI2_new(AB_BANKING *ab){
   ie=AB_ImExporter_new(ab, "eri2");
   GWEN_NEW_OBJECT(AB_IMEXPORTER_ERI2, ieh);
   GWEN_INHERIT_SETDATA(AB_IMEXPORTER, AB_IMEXPORTER_ERI2, ie, ieh,
-		       AB_ImExporterERI2_FreeData);
+                       AB_ImExporterERI2_FreeData);
   paths=AB_Banking_GetGlobalDataDirs();
   if (paths) {
     GWEN_BUFFER *fbuf;
@@ -65,14 +66,14 @@ AB_IMEXPORTER *AB_ImExporterERI2_new(AB_BANKING *ab){
 
     fbuf=GWEN_Buffer_new(0, 256, 0, 1);
     rv=GWEN_Directory_FindFileInPaths(paths,
-				      "aqbanking"
-				      DIRSEP
-				      "imexporters"
-				      DIRSEP
-				      "eri2"
-				      DIRSEP
-				      AB_ERI2_XMLFILE,
-				      fbuf);
+                                      "aqbanking"
+                                      DIRSEP
+                                      "imexporters"
+                                      DIRSEP
+                                      "eri2"
+                                      DIRSEP
+                                      AB_ERI2_XMLFILE,
+                                      fbuf);
     GWEN_StringList_free(paths);
     if (rv) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "XML data file not found (%d)", rv);
@@ -85,15 +86,15 @@ AB_IMEXPORTER *AB_ImExporterERI2_new(AB_BANKING *ab){
       xmlNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
 
       rv=GWEN_XML_ReadFile(xmlNode,
-			   GWEN_Buffer_GetStart(fbuf),
-			   GWEN_XML_FLAGS_DEFAULT |
-			   GWEN_XML_FLAGS_HANDLE_HEADERS);
+                           GWEN_Buffer_GetStart(fbuf),
+                           GWEN_XML_FLAGS_DEFAULT |
+                           GWEN_XML_FLAGS_HANDLE_HEADERS);
       if (rv) {
-	DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load XML file [%s]: %d.\n",
-		  GWEN_Buffer_GetStart(fbuf), rv);
-	GWEN_XMLNode_free(xmlNode);
-	GWEN_Buffer_free(fbuf);
-	return NULL;
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load XML file [%s]: %d.\n",
+                  GWEN_Buffer_GetStart(fbuf), rv);
+        GWEN_XMLNode_free(xmlNode);
+        GWEN_Buffer_free(fbuf);
+        return NULL;
       }
       GWEN_Buffer_free(fbuf);
 
@@ -115,10 +116,11 @@ AB_IMEXPORTER *AB_ImExporterERI2_new(AB_BANKING *ab){
 
 
 
-void GWENHYWFAR_CB AB_ImExporterERI2_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AB_ImExporterERI2_FreeData(void *bp, void *p)
+{
   AB_IMEXPORTER_ERI2 *ieh;
 
-  ieh=(AB_IMEXPORTER_ERI2*)p;
+  ieh=(AB_IMEXPORTER_ERI2 *)p;
   GWEN_FREE_OBJECT(ieh);
 }
 
@@ -126,8 +128,9 @@ void GWENHYWFAR_CB AB_ImExporterERI2_FreeData(void *bp, void *p){
 
 int AB_ImExporterERI2_Import(AB_IMEXPORTER *ie,
                              AB_IMEXPORTER_CONTEXT *ctx,
-			     GWEN_SYNCIO *sio,
-			     GWEN_DB_NODE *params){
+                             GWEN_SYNCIO *sio,
+                             GWEN_DB_NODE *params)
+{
   AB_IMEXPORTER_ERI2 *ieh;
   GWEN_DB_NODE *dbData;
   int rv;
@@ -188,16 +191,16 @@ int AB_ImExporterERI2_Import(AB_IMEXPORTER *ie,
 
   /* import from db */
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
-		       I18N("Data imported, transforming to UTF-8"));
+                       I18N("Data imported, transforming to UTF-8"));
   rv=AB_ImExporter_DbFromIso8859_1ToUtf8(dbData);
   if (rv) {
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-			 "Error converting data");
+                         "Error converting data");
     GWEN_DB_Group_free(dbData);
     return rv;
   }
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
-		       "Transforming data to transactions");
+                       "Transforming data to transactions");
   rv = AB_ImExporterERI2__ImportFromGroup(ctx, dbData, params);
   if (rv) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
@@ -211,9 +214,11 @@ int AB_ImExporterERI2_Import(AB_IMEXPORTER *ie,
 
 
 
-const char* AB_ImExporterERI2__StripPZero(const char *p) {
+const char *AB_ImExporterERI2__StripPZero(const char *p)
+{
 
-  while ((*p == '0') || (*p == 'P')) p++;
+  while ((*p == '0') || (*p == 'P'))
+    p++;
   return p;
 
 }
@@ -222,7 +227,8 @@ const char* AB_ImExporterERI2__StripPZero(const char *p) {
 
 int AB_ImExporterERI2__HandleRec1(GWEN_DB_NODE *dbT,
                                   GWEN_DB_NODE *dbParams,
-                                  AB_TRANSACTION *t) {
+                                  AB_TRANSACTION *t)
+{
   const char *p;
   const char *dateFormat;
 
@@ -262,7 +268,7 @@ int AB_ImExporterERI2__HandleRec1(GWEN_DB_NODE *dbT,
     AB_Transaction_SetValue(t, v);
     AB_Value_free(v);
   }
-  
+
   /* translate date */
   p = GWEN_DB_GetCharValue(dbT, "date", 0, 0);
   if (p) {
@@ -273,30 +279,30 @@ int AB_ImExporterERI2__HandleRec1(GWEN_DB_NODE *dbT,
       AB_Transaction_SetDate(t, da);
     GWEN_Date_free(da);
   }
-  
+
   /* translate valutaDate */
   p = GWEN_DB_GetCharValue(dbT, "valutaDate", 0, 0);
   if (p) {
     GWEN_DATE *da;
-  
+
     da = GWEN_Date_fromStringWithTemplate(p, dateFormat);
     if (da)
       AB_Transaction_SetValutaDate(t, da);
     GWEN_Date_free(da);
   }
-  
+
   /* possibly translate value */
   p = GWEN_DB_GetCharValue(dbT, "Sign", 0, 0);
   if (p) {
     int determined=0;
     int j;
-  
+
     /* get positive/negative mark */
-  
+
     /* try positive marks first */
     for (j=0; ; j++) {
       const char *patt;
-  
+
       patt = GWEN_DB_GetCharValue(dbParams, "positiveValues", j, 0);
       if (!patt) {
         if (j == 0)
@@ -310,11 +316,11 @@ int AB_ImExporterERI2__HandleRec1(GWEN_DB_NODE *dbT,
         break;
       }
     } /* for */
-  
+
     if (!determined) {
       for (j=0; ; j++) {
         const char *patt;
-  
+
         patt = GWEN_DB_GetCharValue(dbParams, "negativeValues", j, 0);
         if (!patt) {
           if (j == 0)
@@ -324,12 +330,12 @@ int AB_ImExporterERI2__HandleRec1(GWEN_DB_NODE *dbT,
         }
         if (-1 != GWEN_Text_ComparePattern(p, patt, 0)) {
           const AB_VALUE *pv;
-  
+
           /* value must be negated */
           pv = AB_Transaction_GetValue(t);
           if (pv) {
             AB_VALUE *v;
-  
+
             v = AB_Value_dup(pv);
             AB_Value_Negate(v);
             AB_Transaction_SetValue(t, v);
@@ -347,7 +353,8 @@ int AB_ImExporterERI2__HandleRec1(GWEN_DB_NODE *dbT,
 
 
 
-void AB_ImExporterERI2__AddPurpose(AB_TRANSACTION *t, const char *s) {
+void AB_ImExporterERI2__AddPurpose(AB_TRANSACTION *t, const char *s)
+{
 
   if (strlen(s) > 0)
     AB_Transaction_AddPurposeLine(t, s);
@@ -358,16 +365,17 @@ void AB_ImExporterERI2__AddPurpose(AB_TRANSACTION *t, const char *s) {
 
 int AB_ImExporterERI2__HandleRec2(GWEN_DB_NODE *dbT,
                                   GWEN_DB_NODE *dbParams,
-                                  AB_TRANSACTION *t) {
+                                  AB_TRANSACTION *t)
+{
   const char *p;
 
   p = GWEN_DB_GetCharValue(dbT, "purpose1", 0, 0);
   if (p)
-  AB_ImExporterERI2__AddPurpose(t, p);
+    AB_ImExporterERI2__AddPurpose(t, p);
 
   p = GWEN_DB_GetCharValue(dbT, "purpose2", 0, 0);
   if (p)
-  AB_ImExporterERI2__AddPurpose(t, p);
+    AB_ImExporterERI2__AddPurpose(t, p);
 
   return 0;
 }
@@ -376,20 +384,21 @@ int AB_ImExporterERI2__HandleRec2(GWEN_DB_NODE *dbT,
 
 int AB_ImExporterERI2__HandleRec3(GWEN_DB_NODE *dbT,
                                   GWEN_DB_NODE *dbParams,
-                                  AB_TRANSACTION *t) {
+                                  AB_TRANSACTION *t)
+{
   const char *p;
 
   p = GWEN_DB_GetCharValue(dbT, "purpose3", 0, 0);
   if (p)
-  AB_ImExporterERI2__AddPurpose(t, p);
+    AB_ImExporterERI2__AddPurpose(t, p);
 
   p = GWEN_DB_GetCharValue(dbT, "purpose4", 0, 0);
   if (p)
-  AB_ImExporterERI2__AddPurpose(t, p);
+    AB_ImExporterERI2__AddPurpose(t, p);
 
   p = GWEN_DB_GetCharValue(dbT, "purpose5", 0, 0);
   if (p)
-  AB_ImExporterERI2__AddPurpose(t, p);
+    AB_ImExporterERI2__AddPurpose(t, p);
 
   return 0;
 }
@@ -397,8 +406,9 @@ int AB_ImExporterERI2__HandleRec3(GWEN_DB_NODE *dbT,
 
 
 int AB_ImExporterERI2__HandleRec4(GWEN_DB_NODE *dbT,
-				  GWEN_DB_NODE *dbParams,
-				  AB_TRANSACTION *t) {
+                                  GWEN_DB_NODE *dbParams,
+                                  AB_TRANSACTION *t)
+{
 
   const char *p1, *p2, *p3;
   GWEN_BUFFER *pbuf;
@@ -411,7 +421,8 @@ int AB_ImExporterERI2__HandleRec4(GWEN_DB_NODE *dbT,
   p2 = GWEN_DB_GetCharValue(dbT, "purpose4", 0, 0);
   p3 = GWEN_DB_GetCharValue(dbT, "purpose5", 0, 0);
 
-  if (p1) GWEN_Buffer_AppendString(pbuf, p1);
+  if (p1)
+    GWEN_Buffer_AppendString(pbuf, p1);
   if (GWEN_Buffer_GetUsedBytes(pbuf) < 32)
     GWEN_Buffer_AppendString(pbuf, " ");
   if (p2)
@@ -436,7 +447,8 @@ int AB_ImExporterERI2__HandleRec4(GWEN_DB_NODE *dbT,
 
 void AB_ImExporterERI2__AddTransaction(AB_IMEXPORTER_CONTEXT *ctx,
                                        AB_TRANSACTION *t,
-                                       GWEN_DB_NODE *params) {
+                                       GWEN_DB_NODE *params)
+{
   AB_IMEXPORTER_ACCOUNTINFO *iea = 0;
   const char *bankName;
   const char *la;
@@ -448,7 +460,7 @@ void AB_ImExporterERI2__AddTransaction(AB_IMEXPORTER_CONTEXT *ctx,
   iea = AB_ImExporterContext_GetFirstAccountInfo(ctx);
   la = AB_Transaction_GetLocalAccountNumber(t);
   assert(la);
-  while(iea) {
+  while (iea) {
     if (strcmp(AB_ImExporterAccountInfo_GetAccountNumber(iea),
                AB_Transaction_GetLocalAccountNumber(t))==0)
       break;
@@ -476,11 +488,12 @@ void AB_ImExporterERI2__AddTransaction(AB_IMEXPORTER_CONTEXT *ctx,
 
 int AB_ImExporterERI2__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
                                        GWEN_DB_NODE *db,
-				       GWEN_DB_NODE *dbParams) {
+                                       GWEN_DB_NODE *dbParams)
+{
   GWEN_DB_NODE *dbT;
 
   dbT = GWEN_DB_FindFirstGroup(db, "RecordType1");
-  while(dbT) {
+  while (dbT) {
     if (GWEN_DB_GetCharValue(dbT, "amount", 0, 0)) {
       AB_TRANSACTION *t;
       GWEN_DB_NODE *dbN;
@@ -491,7 +504,7 @@ int AB_ImExporterERI2__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
       if (!t) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in config file");
         GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-			     "Error in config file");
+                             "Error in config file");
         return GWEN_ERROR_GENERIC;
       }
 
@@ -525,10 +538,11 @@ int AB_ImExporterERI2__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
                 break;
               if (strcasecmp(GWEN_DB_GroupName(dbN), "RecordType3") == 0) {
                 if (!i) {
-		  rv = AB_ImExporterERI2__HandleRec3(dbN, dbParams, t);
-		} else {
-		  rv = AB_ImExporterERI2__HandleRec4(dbN, dbParams, t);
-		}
+                  rv = AB_ImExporterERI2__HandleRec3(dbN, dbParams, t);
+                }
+                else {
+                  rv = AB_ImExporterERI2__HandleRec4(dbN, dbParams, t);
+                }
                 if (rv) {
                   DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
                   AB_Transaction_free(t);
@@ -562,7 +576,8 @@ int AB_ImExporterERI2__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
 
 
-int AB_ImExporterERI2_CheckFile(AB_IMEXPORTER *ie, const char *fname){
+int AB_ImExporterERI2_CheckFile(AB_IMEXPORTER *ie, const char *fname)
+{
   GWEN_BUFFER *lbuffer;
   AB_IMEXPORTER_ERI2 *ieh;
   GWEN_SYNCIO *sio;
@@ -584,7 +599,7 @@ int AB_ImExporterERI2_CheckFile(AB_IMEXPORTER *ie, const char *fname){
   if (rv<0) {
     /* error */
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "open(%s): %s", fname, strerror(errno));
+              "open(%s): %s", fname, strerror(errno));
     return GWEN_ERROR_IO;
   }
 
@@ -592,19 +607,19 @@ int AB_ImExporterERI2_CheckFile(AB_IMEXPORTER *ie, const char *fname){
   rv=GWEN_SyncIo_Buffered_ReadLineToBuffer(sio, lbuffer);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN,
-	     "File \"%s\" is not supported by this plugin",
-	     fname);
+             "File \"%s\" is not supported by this plugin",
+             fname);
     GWEN_Buffer_free(lbuffer);
     GWEN_SyncIo_Disconnect(sio);
     GWEN_SyncIo_free(sio);
     return GWEN_ERROR_BAD_DATA;
   }
 
-  if ( -1 != GWEN_Text_ComparePattern(GWEN_Buffer_GetStart(lbuffer), "*EUR99999999992000*", 0)) {
+  if (-1 != GWEN_Text_ComparePattern(GWEN_Buffer_GetStart(lbuffer), "*EUR99999999992000*", 0)) {
     /* match */
     DBG_INFO(AQBANKING_LOGDOMAIN,
-	     "File \"%s\" is supported by this plugin",
-	     fname);
+             "File \"%s\" is supported by this plugin",
+             fname);
     GWEN_Buffer_free(lbuffer);
     GWEN_SyncIo_Disconnect(sio);
     GWEN_SyncIo_free(sio);
@@ -620,8 +635,9 @@ int AB_ImExporterERI2_CheckFile(AB_IMEXPORTER *ie, const char *fname){
 
 int AB_ImExporterERI2_Export(AB_IMEXPORTER *ie,
                              AB_IMEXPORTER_CONTEXT *ctx,
-			     GWEN_SYNCIO *sio,
-			     GWEN_DB_NODE *params){
+                             GWEN_SYNCIO *sio,
+                             GWEN_DB_NODE *params)
+{
   AB_IMEXPORTER_ERI2 *ieh;
 
   assert(ie);

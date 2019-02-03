@@ -24,37 +24,38 @@
 
 
 int setEbicsVersion(AB_PROVIDER *pro,
-		    GWEN_DB_NODE *dbArgs,
-		    int argc,
-		    char **argv) {
+                    GWEN_DB_NODE *dbArgs,
+                    int argc,
+                    char **argv)
+{
   GWEN_DB_NODE *db;
   uint32_t uid;
   AB_USER *u=NULL;
   int rv;
   const char *ebicsVersion;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "ebicsVersion",                /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "E",                          /* short option */
-    "ebicsversion",               /* long option */
-    "Specify the EBICS version to use (e.g. H002)",     /* short description */
-    "Specify the EBICS version to use (e.g. H002)"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "ebicsVersion",                /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "E",                          /* short option */
+      "ebicsversion",               /* long option */
+      "Specify the EBICS version to use (e.g. H002)",     /* short description */
+      "Specify the EBICS version to use (e.g. H002)"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -97,20 +98,20 @@ int setEbicsVersion(AB_PROVIDER *pro,
     if (ebicsVersion) {
       if (strcasecmp(ebicsVersion, "H002")==0) {
         EBC_User_SetProtoVersion(u, "H002");
-	EBC_User_SetSignVersion(u, "A004");
-	EBC_User_SetAuthVersion(u, "X001");
-	EBC_User_SetCryptVersion(u, "E001");
+        EBC_User_SetSignVersion(u, "A004");
+        EBC_User_SetAuthVersion(u, "X001");
+        EBC_User_SetCryptVersion(u, "E001");
       }
       else if (strcasecmp(ebicsVersion, "H003")==0) {
-	EBC_User_SetProtoVersion(u, "H003");
-	EBC_User_SetSignVersion(u, "A005");
-	EBC_User_SetAuthVersion(u, "X002");
-	EBC_User_SetCryptVersion(u, "E002");
+        EBC_User_SetProtoVersion(u, "H003");
+        EBC_User_SetSignVersion(u, "A005");
+        EBC_User_SetAuthVersion(u, "X002");
+        EBC_User_SetCryptVersion(u, "E002");
       }
       else {
         fprintf(stderr, "%s",
                 I18N("Invalid protocol version.\n"
-		     "Possible versions are H002 and H003.\n"));
+                     "Possible versions are H002 and H003.\n"));
         return 3;
       }
     }

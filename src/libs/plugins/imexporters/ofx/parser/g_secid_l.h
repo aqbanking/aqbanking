@@ -21,8 +21,8 @@
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_SECID_new(const char *groupName,
-				      AIO_OFX_GROUP *parent,
-				      GWEN_XML_CONTEXT *ctx);
+                                      AIO_OFX_GROUP *parent,
+                                      GWEN_XML_CONTEXT *ctx);
 
 const char *AIO_OfxGroup_SECID_GetUniqueId(const AIO_OFX_GROUP *g);
 void AIO_OfxGroup_SECID_SetUniqueId(AIO_OFX_GROUP *g, const char *s);

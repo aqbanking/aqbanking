@@ -30,7 +30,8 @@
 
 
 
-OFXHOME *OfxHome_new(const char *dataFolder) {
+OFXHOME *OfxHome_new(const char *dataFolder)
+{
   OFXHOME *ofh;
 
   GWEN_NEW_OBJECT(OFXHOME, ofh);
@@ -45,7 +46,8 @@ OFXHOME *OfxHome_new(const char *dataFolder) {
 
 
 
-void OfxHome_free(OFXHOME *ofh) {
+void OfxHome_free(OFXHOME *ofh)
+{
   if (ofh) {
     free(ofh->dataFolder);
     OH_InstituteSpec_List_free(ofh->specList);
@@ -57,7 +59,8 @@ void OfxHome_free(OFXHOME *ofh) {
 
 
 
-int OfxHome_SetupHttpSession(OFXHOME *ofh, GWEN_HTTP_SESSION *sess) {
+int OfxHome_SetupHttpSession(OFXHOME *ofh, GWEN_HTTP_SESSION *sess)
+{
 
   GWEN_HttpSession_SetHttpVMajor(sess, 1);
   GWEN_HttpSession_SetHttpVMinor(sess, 1);
@@ -68,7 +71,8 @@ int OfxHome_SetupHttpSession(OFXHOME *ofh, GWEN_HTTP_SESSION *sess) {
 
 
 
-int OfxHome_DownloadSpecs(OFXHOME *ofh, OH_INSTITUTE_SPEC_LIST *sl) {
+int OfxHome_DownloadSpecs(OFXHOME *ofh, OH_INSTITUTE_SPEC_LIST *sl)
+{
   GWEN_HTTP_SESSION *sess;
   int rv;
   GWEN_BUFFER *xbuf;
@@ -144,7 +148,7 @@ int OfxHome_DownloadSpecs(OFXHOME *ofh, OH_INSTITUTE_SPEC_LIST *sl) {
     return GWEN_ERROR_NO_DATA;
   }
   else {
-    while(n) {
+    while (n) {
       OH_INSTITUTE_SPEC *os;
 
       os=OH_InstituteSpec_fromXml(n);
@@ -165,7 +169,8 @@ int OfxHome_DownloadSpecs(OFXHOME *ofh, OH_INSTITUTE_SPEC_LIST *sl) {
 
 
 
-int OfxHome_SaveSpecs(OFXHOME *ofh, const OH_INSTITUTE_SPEC_LIST *sl) {
+int OfxHome_SaveSpecs(OFXHOME *ofh, const OH_INSTITUTE_SPEC_LIST *sl)
+{
   GWEN_DB_NODE *db;
   OH_INSTITUTE_SPEC *os;
   GWEN_BUFFER *nbuf;
@@ -174,7 +179,7 @@ int OfxHome_SaveSpecs(OFXHOME *ofh, const OH_INSTITUTE_SPEC_LIST *sl) {
   /* store institutes in db */
   db=GWEN_DB_Group_new("institutes");
   os=OH_InstituteSpec_List_First(sl);
-  while(os) {
+  while (os) {
     GWEN_DB_NODE *dbT;
     int rv;
 
@@ -217,7 +222,8 @@ int OfxHome_SaveSpecs(OFXHOME *ofh, const OH_INSTITUTE_SPEC_LIST *sl) {
 
 
 
-int OfxHome_LoadSpecs(OFXHOME *ofh, OH_INSTITUTE_SPEC_LIST *sl) {
+int OfxHome_LoadSpecs(OFXHOME *ofh, OH_INSTITUTE_SPEC_LIST *sl)
+{
   GWEN_DB_NODE *db;
   GWEN_DB_NODE *dbT;
   GWEN_BUFFER *nbuf;
@@ -247,7 +253,7 @@ int OfxHome_LoadSpecs(OFXHOME *ofh, OH_INSTITUTE_SPEC_LIST *sl) {
   GWEN_Buffer_free(nbuf);
 
   dbT=GWEN_DB_GetFirstGroup(db);
-  while(dbT) {
+  while (dbT) {
     OH_INSTITUTE_SPEC *os;
 
     os=OH_InstituteSpec_fromDb(dbT);
@@ -268,7 +274,8 @@ int OfxHome_LoadSpecs(OFXHOME *ofh, OH_INSTITUTE_SPEC_LIST *sl) {
 
 
 
-int OfxHome_CheckSpecsCache(OFXHOME *ofh, int hours) {
+int OfxHome_CheckSpecsCache(OFXHOME *ofh, int hours)
+{
   GWEN_BUFFER *nbuf;
   int rv;
   struct stat st;
@@ -305,7 +312,8 @@ int OfxHome_CheckSpecsCache(OFXHOME *ofh, int hours) {
 
 
 
-const OH_INSTITUTE_SPEC_LIST *OfxHome_GetSpecs(OFXHOME *ofh) {
+const OH_INSTITUTE_SPEC_LIST *OfxHome_GetSpecs(OFXHOME *ofh)
+{
   if (ofh->specList==NULL) {
     OH_INSTITUTE_SPEC_LIST *sl;
     int rv;
@@ -346,7 +354,8 @@ const OH_INSTITUTE_SPEC_LIST *OfxHome_GetSpecs(OFXHOME *ofh) {
 
 
 
-int OfxHome_DownloadData(OFXHOME *ofh, int fid, OH_INSTITUTE_DATA **pData) {
+int OfxHome_DownloadData(OFXHOME *ofh, int fid, OH_INSTITUTE_DATA **pData)
+{
   GWEN_HTTP_SESSION *sess;
   int rv;
   GWEN_BUFFER *xbuf;
@@ -433,7 +442,8 @@ int OfxHome_DownloadData(OFXHOME *ofh, int fid, OH_INSTITUTE_DATA **pData) {
 
 
 
-int OfxHome_SaveData(OFXHOME *ofh, const OH_INSTITUTE_DATA *od) {
+int OfxHome_SaveData(OFXHOME *ofh, const OH_INSTITUTE_DATA *od)
+{
   GWEN_DB_NODE *db;
   GWEN_BUFFER *nbuf;
   int rv;
@@ -477,7 +487,8 @@ int OfxHome_SaveData(OFXHOME *ofh, const OH_INSTITUTE_DATA *od) {
 
 
 
-int OfxHome_LoadData(OFXHOME *ofh, int fid, OH_INSTITUTE_DATA **pData) {
+int OfxHome_LoadData(OFXHOME *ofh, int fid, OH_INSTITUTE_DATA **pData)
+{
   GWEN_DB_NODE *db;
   GWEN_BUFFER *nbuf;
   int rv;
@@ -527,7 +538,8 @@ int OfxHome_LoadData(OFXHOME *ofh, int fid, OH_INSTITUTE_DATA **pData) {
 
 
 
-int OfxHome_CheckDataCache(OFXHOME *ofh, int fid, int hours) {
+int OfxHome_CheckDataCache(OFXHOME *ofh, int fid, int hours)
+{
   GWEN_BUFFER *nbuf;
   int rv;
   char numbuf[32];
@@ -568,7 +580,8 @@ int OfxHome_CheckDataCache(OFXHOME *ofh, int fid, int hours) {
 
 
 
-const OH_INSTITUTE_DATA *OfxHome_GetData(OFXHOME *ofh, int fid) {
+const OH_INSTITUTE_DATA *OfxHome_GetData(OFXHOME *ofh, int fid)
+{
   OH_INSTITUTE_DATA *d=NULL;
 
   d=OH_InstituteData_List_GetById(ofh->dataList, fid);

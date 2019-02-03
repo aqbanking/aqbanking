@@ -21,8 +21,8 @@
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_Generic_new(const char *groupName,
-					AIO_OFX_GROUP *parent,
-					GWEN_XML_CONTEXT *ctx);
+                                        AIO_OFX_GROUP *parent,
+                                        GWEN_XML_CONTEXT *ctx);
 
 AB_ACCOUNT_TYPE AIO_OfxGroup_Generic_AccountTypeFromString(const char *s);
 

@@ -15,7 +15,8 @@
 
 
 
-int test1(int argc, char **argv) {
+int test1(int argc, char **argv)
+{
   EBS_SERVER *es;
   EBS_USERSTORE *us;
   EBS_USER *u;
@@ -41,7 +42,8 @@ int test1(int argc, char **argv) {
 
 
 
-int test2(int argc, char **argv) {
+int test2(int argc, char **argv)
+{
   EBS_SERVER *es;
   EBS_USERSTORE *us;
   EBS_USER *u;
@@ -60,7 +62,8 @@ int test2(int argc, char **argv) {
 
 
 
-int test3(int argc, char **argv) {
+int test3(int argc, char **argv)
+{
   EBS_SERVER *es;
   EBS_USERSTORE *us;
   EBS_USER *u;
@@ -87,13 +90,14 @@ int test3(int argc, char **argv) {
 
 
 
-int readFile(const char *fname, GWEN_BUFFER *buf) {
+int readFile(const char *fname, GWEN_BUFFER *buf)
+{
   FILE *f;
 
   f=fopen(fname, "r");
   if (!f)
     return -1;
-  while(!feof(f)) {
+  while (!feof(f)) {
     char tmpbuf[512];
     size_t size;
 
@@ -113,7 +117,8 @@ int readFile(const char *fname, GWEN_BUFFER *buf) {
 
 
 
-int test4(int argc, char **argv) {
+int test4(int argc, char **argv)
+{
   int rv;
   GWEN_BUFFER *rqbuf;
   GWEN_BUFFER *rspbuf;
@@ -146,7 +151,8 @@ int test4(int argc, char **argv) {
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   const char *cmd;
   int rv;
 

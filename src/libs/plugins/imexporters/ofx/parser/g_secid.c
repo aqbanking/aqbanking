@@ -35,8 +35,9 @@ GWEN_INHERIT(AIO_OFX_GROUP, AIO_OFX_GROUP_SECID)
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_SECID_new(const char *groupName,
-				      AIO_OFX_GROUP *parent,
-				      GWEN_XML_CONTEXT *ctx) {
+                                      AIO_OFX_GROUP *parent,
+                                      GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_GROUP *g;
   AIO_OFX_GROUP_SECID *xg;
 
@@ -59,10 +60,11 @@ AIO_OFX_GROUP *AIO_OfxGroup_SECID_new(const char *groupName,
 
 
 GWENHYWFAR_CB
-void AIO_OfxGroup_SECID_FreeData(void *bp, void *p) {
+void AIO_OfxGroup_SECID_FreeData(void *bp, void *p)
+{
   AIO_OFX_GROUP_SECID *xg;
 
-  xg=(AIO_OFX_GROUP_SECID*)p;
+  xg=(AIO_OFX_GROUP_SECID *)p;
   assert(xg);
   free(xg->currentElement);
   free(xg->uniqueId);
@@ -72,7 +74,8 @@ void AIO_OfxGroup_SECID_FreeData(void *bp, void *p) {
 
 
 
-const char *AIO_OfxGroup_SECID_GetUniqueId(const AIO_OFX_GROUP *g) {
+const char *AIO_OfxGroup_SECID_GetUniqueId(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_SECID *xg;
 
   assert(g);
@@ -84,7 +87,8 @@ const char *AIO_OfxGroup_SECID_GetUniqueId(const AIO_OFX_GROUP *g) {
 
 
 
-void AIO_OfxGroup_SECID_SetUniqueId(AIO_OFX_GROUP *g, const char *s) {
+void AIO_OfxGroup_SECID_SetUniqueId(AIO_OFX_GROUP *g, const char *s)
+{
   AIO_OFX_GROUP_SECID *xg;
 
   assert(g);
@@ -92,13 +96,16 @@ void AIO_OfxGroup_SECID_SetUniqueId(AIO_OFX_GROUP *g, const char *s) {
   assert(xg);
 
   free(xg->uniqueId);
-  if (s) xg->uniqueId=strdup(s);
-  else xg->uniqueId=NULL;
+  if (s)
+    xg->uniqueId=strdup(s);
+  else
+    xg->uniqueId=NULL;
 }
 
 
 
-const char *AIO_OfxGroup_SECID_GetNameSpace(const AIO_OFX_GROUP *g) {
+const char *AIO_OfxGroup_SECID_GetNameSpace(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_SECID *xg;
 
   assert(g);
@@ -110,7 +117,8 @@ const char *AIO_OfxGroup_SECID_GetNameSpace(const AIO_OFX_GROUP *g) {
 
 
 
-void AIO_OfxGroup_SECID_SetNameSpace(AIO_OFX_GROUP *g, const char *s) {
+void AIO_OfxGroup_SECID_SetNameSpace(AIO_OFX_GROUP *g, const char *s)
+{
   AIO_OFX_GROUP_SECID *xg;
 
   assert(g);
@@ -118,14 +126,17 @@ void AIO_OfxGroup_SECID_SetNameSpace(AIO_OFX_GROUP *g, const char *s) {
   assert(xg);
 
   free(xg->nameSpace);
-  if (s) xg->nameSpace=strdup(s);
-  else xg->nameSpace=NULL;
+  if (s)
+    xg->nameSpace=strdup(s);
+  else
+    xg->nameSpace=NULL;
 }
 
 
 
 int AIO_OfxGroup_SECID_StartTag(AIO_OFX_GROUP *g,
-				 const char *tagName) {
+                                const char *tagName)
+{
   AIO_OFX_GROUP_SECID *xg;
 
   assert(g);
@@ -141,7 +152,7 @@ int AIO_OfxGroup_SECID_StartTag(AIO_OFX_GROUP *g,
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	     "Ignoring tag [%s]", tagName);
+             "Ignoring tag [%s]", tagName);
   }
 
   return 0;
@@ -149,7 +160,8 @@ int AIO_OfxGroup_SECID_StartTag(AIO_OFX_GROUP *g,
 
 
 
-int AIO_OfxGroup_SECID_AddData(AIO_OFX_GROUP *g, const char *data) {
+int AIO_OfxGroup_SECID_AddData(AIO_OFX_GROUP *g, const char *data)
+{
   AIO_OFX_GROUP_SECID *xg;
 
   assert(g);
@@ -171,15 +183,15 @@ int AIO_OfxGroup_SECID_AddData(AIO_OFX_GROUP *g, const char *data) {
     s=GWEN_Buffer_GetStart(buf);
     if (*s) {
       DBG_INFO(AQBANKING_LOGDOMAIN,
-	       "AddData: %s=[%s]", xg->currentElement, s);
+               "AddData: %s=[%s]", xg->currentElement, s);
       if (strcasecmp(xg->currentElement, "UNIQUEID")==0)
-	AIO_OfxGroup_SECID_SetUniqueId(g, GWEN_Buffer_GetStart(buf));
+        AIO_OfxGroup_SECID_SetUniqueId(g, GWEN_Buffer_GetStart(buf));
       else if (strcasecmp(xg->currentElement, "UNIQUEIDTYPE")==0)
-	AIO_OfxGroup_SECID_SetNameSpace(g, GWEN_Buffer_GetStart(buf));
+        AIO_OfxGroup_SECID_SetNameSpace(g, GWEN_Buffer_GetStart(buf));
       else {
-	DBG_INFO(AQBANKING_LOGDOMAIN,
-		 "Ignoring data for unknown element [%s]",
-		 xg->currentElement);
+        DBG_INFO(AQBANKING_LOGDOMAIN,
+                 "Ignoring data for unknown element [%s]",
+                 xg->currentElement);
       }
     }
     GWEN_Buffer_free(buf);
@@ -190,7 +202,8 @@ int AIO_OfxGroup_SECID_AddData(AIO_OFX_GROUP *g, const char *data) {
 
 
 
-AB_TRANSACTION *AIO_OfxGroup_SECID_TakeData(const AIO_OFX_GROUP *g){
+AB_TRANSACTION *AIO_OfxGroup_SECID_TakeData(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_SECID *xg;
   AB_TRANSACTION *t;
 

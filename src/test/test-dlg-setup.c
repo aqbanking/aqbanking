@@ -3,7 +3,8 @@
 #include <aqbanking/dlg_setup.h>
 #include <assert.h>
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   GWEN_GUI *gui;
   int r;
 
@@ -27,14 +28,12 @@ int main(int argc, char **argv) {
       dlg = AB_SetupDialog_new(ab);
 
       r = GWEN_Gui_ExecDialog(dlg, 0);
-      if (r <= 0)
-        {
-          printf("Dialog was aborted/rejected\n");
-        }
-      else
-        {
-          printf("Dialog accepted, all fine\n");
-        }
+      if (r <= 0) {
+        printf("Dialog was aborted/rejected\n");
+      }
+      else {
+        printf("Dialog accepted, all fine\n");
+      }
       GWEN_Dialog_free(dlg);
     }
 

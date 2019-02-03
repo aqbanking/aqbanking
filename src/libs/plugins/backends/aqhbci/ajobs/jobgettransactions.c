@@ -39,7 +39,8 @@ GWEN_INHERIT(AH_JOB, AH_JOB_GETTRANSACTIONS);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_GetTransactions_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_GetTransactions_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
+{
   AH_JOB *j;
   AH_JOB_GETTRANSACTIONS *aj;
   GWEN_DB_NODE *dbArgs;
@@ -50,18 +51,18 @@ AH_JOB *AH_Job_GetTransactions_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc
   //Check if we should use DKKKU
   updgroup=AH_User_GetUpdForAccount(u, account);
   if (updgroup) {
-     GWEN_DB_NODE *n;
-      n=GWEN_DB_GetFirstGroup(updgroup);
-      while(n) {
-        if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "DKKKU")==0) {
-          useCreditCardJob = 1;
-          break;
-        }
-        n=GWEN_DB_GetNextGroup(n);
-      } /* while */
+    GWEN_DB_NODE *n;
+    n=GWEN_DB_GetFirstGroup(updgroup);
+    while (n) {
+      if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "DKKKU")==0) {
+        useCreditCardJob = 1;
+        break;
+      }
+      n=GWEN_DB_GetNextGroup(n);
+    } /* while */
   } /* if updgroup for the given account found */
 
-  if(useCreditCardJob)
+  if (useCreditCardJob)
     j=AH_AccountJob_new("JobGetTransactionsCreditCard", pro, u, account);
   else
     j=AH_AccountJob_new("JobGetTransactions", pro, u, account);
@@ -74,7 +75,7 @@ AH_JOB *AH_Job_GetTransactions_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc
   AH_Job_SetSupportedCommand(j, AB_Transaction_CommandGetTransactions);
 
   /* overwrite some virtual functions */
-  if(useCreditCardJob)
+  if (useCreditCardJob)
     AH_Job_SetProcessFn(j, AH_Job_GetTransactionsCreditCard_Process);
   else
     AH_Job_SetProcessFn(j, AH_Job_GetTransactions_Process);
@@ -86,22 +87,23 @@ AH_JOB *AH_Job_GetTransactions_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);
   assert(dbArgs);
-  if(useCreditCardJob)
+  if (useCreditCardJob)
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
                          "accountNumber", AB_Account_GetAccountNumber(account));
   else
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
-                       "allAccounts", "N");
+                         "allAccounts", "N");
   return j;
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void GWENHYWFAR_CB AH_Job_GetTransactions_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_Job_GetTransactions_FreeData(void *bp, void *p)
+{
   AH_JOB_GETTRANSACTIONS *aj;
 
-  aj=(AH_JOB_GETTRANSACTIONS*)p;
+  aj=(AH_JOB_GETTRANSACTIONS *)p;
 
   GWEN_FREE_OBJECT(aj);
 }
@@ -111,9 +113,10 @@ void GWENHYWFAR_CB AH_Job_GetTransactions_FreeData(void *bp, void *p){
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
                                              AB_IMEXPORTER_ACCOUNTINFO *ai,
-					     const char *docType,
+                                             const char *docType,
                                              int noted,
-					     GWEN_BUFFER *buf){
+                                             GWEN_BUFFER *buf)
+{
   GWEN_DBIO *dbio;
   GWEN_SYNCIO *sio;
   int rv;
@@ -134,8 +137,8 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
   if (!dbio) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Plugin SWIFT is not found");
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Plugin \"SWIFT\" not found."));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Plugin \"SWIFT\" not found."));
     return AB_ERROR_PLUGIN_MISSING;
   }
 
@@ -145,21 +148,21 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
   db=GWEN_DB_Group_new("transactions");
   dbParams=GWEN_DB_Group_new("params");
   GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		       "type", docType);
+                       "type", docType);
   if (AH_User_GetFlags(u) & AH_USER_FLAGS_KEEP_MULTIPLE_BLANKS)
     GWEN_DB_SetIntValue(dbParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			"keepMultipleBlanks", 1);
+                        "keepMultipleBlanks", 1);
   else
     GWEN_DB_SetIntValue(dbParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			"keepMultipleBlanks", 0);
+                        "keepMultipleBlanks", 0);
 
   rv=GWEN_DBIO_Import(dbio, sio,
-		      db, dbParams,
-		      GWEN_PATH_FLAGS_CREATE_GROUP);
+                      db, dbParams,
+                      GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
-	      "Error parsing SWIFT %s (%d)",
-	      docType, rv);
+              "Error parsing SWIFT %s (%d)",
+              docType, rv);
     GWEN_DB_Group_free(dbParams);
     GWEN_DB_Group_free(db);
     GWEN_SyncIo_free(sio);
@@ -172,11 +175,11 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
 
   /* first count the groups */
   dbDay=GWEN_DB_FindFirstGroup(db, "day");
-  while(dbDay) {
+  while (dbDay) {
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_FindFirstGroup(dbDay, "transaction");
-    while(dbT) {
+    while (dbT) {
       cnt++;
       dbT=GWEN_DB_FindNextGroup(dbT, "transaction");
     } /* while */
@@ -184,21 +187,21 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
   } /* while */
 
   progressId=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
-				    GWEN_GUI_PROGRESS_ALLOW_EMBED |
-				    GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-				    GWEN_GUI_PROGRESS_SHOW_ABORT,
-				    I18N("Importing transactions..."),
-				    NULL,
-				    cnt,
-				    0);
+                                    GWEN_GUI_PROGRESS_ALLOW_EMBED |
+                                    GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+                                    GWEN_GUI_PROGRESS_SHOW_ABORT,
+                                    I18N("Importing transactions..."),
+                                    NULL,
+                                    cnt,
+                                    0);
 
   /* add transactions to list */
   dbDay=GWEN_DB_FindFirstGroup(db, "day");
-  while(dbDay) {
+  while (dbDay) {
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_FindFirstGroup(dbDay, "transaction");
-    while(dbT) {
+    while (dbT) {
       AB_TRANSACTION *t;
 
       t=AB_Transaction_fromDb(dbT);
@@ -207,40 +210,40 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
         GWEN_DB_Dump(dbT, 2);
       }
       else {
-	const char *s;
+        const char *s;
 
         AB_Transaction_SetLocalBankCode(t, AB_User_GetBankCode(u));
         AB_Transaction_SetLocalAccountNumber(t, AB_Account_GetAccountNumber(a));
         AB_Transaction_SetUniqueAccountId(t, AB_Account_GetUniqueId(a));
 
-	/* some translations */
-	s=AB_Transaction_GetRemoteIban(t);
-	if (!(s && *s)) {
-	  const char *sAid;
+        /* some translations */
+        s=AB_Transaction_GetRemoteIban(t);
+        if (!(s && *s)) {
+          const char *sAid;
 
-	  /* no remote IBAN set, check whether the bank sends this info in the
-	   * fields for national account specifications (instead of the SWIFT
-	   * field "?38" which was specified for this case) */
-	  sAid=AB_Transaction_GetRemoteAccountNumber(t);
-	  if (sAid && *sAid && AB_Banking_CheckIban(sAid)==0) {
-	    /* there is a remote account number specification, and that is an IBAN,
-	     * so we set that accordingly */
-	    DBG_INFO(AQBANKING_LOGDOMAIN, "Setting remote IBAN from account number");
-	    AB_Transaction_SetRemoteIban(t, sAid);
+          /* no remote IBAN set, check whether the bank sends this info in the
+           * fields for national account specifications (instead of the SWIFT
+           * field "?38" which was specified for this case) */
+          sAid=AB_Transaction_GetRemoteAccountNumber(t);
+          if (sAid && *sAid && AB_Banking_CheckIban(sAid)==0) {
+            /* there is a remote account number specification, and that is an IBAN,
+             * so we set that accordingly */
+            DBG_INFO(AQBANKING_LOGDOMAIN, "Setting remote IBAN from account number");
+            AB_Transaction_SetRemoteIban(t, sAid);
 
-	    /* set remote BIC if it not already is */
-	    s=AB_Transaction_GetRemoteBic(t);
-	    if (!(s && *s)) {
-	      const char *sBid;
+            /* set remote BIC if it not already is */
+            s=AB_Transaction_GetRemoteBic(t);
+            if (!(s && *s)) {
+              const char *sBid;
 
-	      sBid=AB_Transaction_GetRemoteBankCode(t);
-	      if (sBid && *sBid) {
-		DBG_INFO(AQBANKING_LOGDOMAIN, "Setting remote BIC from bank code");
-		AB_Transaction_SetRemoteBic(t, sBid);
-	      }
-	    }
-	  }
-	}
+              sBid=AB_Transaction_GetRemoteBankCode(t);
+              if (sBid && *sBid) {
+                DBG_INFO(AQBANKING_LOGDOMAIN, "Setting remote BIC from bank code");
+                AB_Transaction_SetRemoteBic(t, sBid);
+              }
+            }
+          }
+        }
 
         if (noted)
           AB_Transaction_SetType(t, AB_Transaction_TypeNotedStatement);
@@ -252,9 +255,9 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
       }
 
       if (GWEN_ERROR_USER_ABORTED==
-	  GWEN_Gui_ProgressAdvance(progressId, GWEN_GUI_PROGRESS_ONE)) {
-	GWEN_Gui_ProgressEnd(progressId);
-	return GWEN_ERROR_USER_ABORTED;
+          GWEN_Gui_ProgressAdvance(progressId, GWEN_GUI_PROGRESS_ONE)) {
+        GWEN_Gui_ProgressEnd(progressId);
+        return GWEN_ERROR_USER_ABORTED;
       }
 
       dbT=GWEN_DB_FindNextGroup(dbT, "transaction");
@@ -264,9 +267,9 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
     if (!noted) {
       dbT=GWEN_DB_FindFirstGroup(dbDay, "endSaldo");
       while (dbT) {
-	GWEN_DB_NODE *dbX;
+        GWEN_DB_NODE *dbX;
         const char *s;
-	GWEN_DATE *dt=0;
+        GWEN_DATE *dt=0;
 
         /* read date */
         s=GWEN_DB_GetCharValue(dbT, "date", 0, NULL);
@@ -278,25 +281,25 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
         }
 
         /* read value */
-	dbX=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "value");
-	if (dbX) {
-	  AB_VALUE *v;
-  
-	  v=AB_Value_fromDb(dbX);
-	  if (v) {
-	    AB_BALANCE *bal;
-  
+        dbX=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "value");
+        if (dbX) {
+          AB_VALUE *v;
+
+          v=AB_Value_fromDb(dbX);
+          if (v) {
+            AB_BALANCE *bal;
+
             bal=AB_Balance_new();
             AB_Balance_SetType(bal, AB_Balance_TypeNoted);
             AB_Balance_SetDate(bal, dt);
             AB_Balance_SetValue(bal, v);
             AB_Value_free(v);
-	    AB_ImExporterAccountInfo_AddBalance(ai, bal);
-	  }
-	}
+            AB_ImExporterAccountInfo_AddBalance(ai, bal);
+          }
+        }
         GWEN_Date_free(dt);
-  
-	dbT=GWEN_DB_FindNextGroup(dbT, "endSaldo");
+
+        dbT=GWEN_DB_FindNextGroup(dbT, "endSaldo");
       } /* while */
     }
 
@@ -312,7 +315,8 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AH_JOB_GETTRANSACTIONS *aj;
   AB_ACCOUNT *a;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
@@ -336,7 +340,7 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
   /* search for "Transactions" */
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
-  while(dbCurr) {
+  while (dbCurr) {
     GWEN_DB_NODE *dbXA;
 
     rv=AH_Job_CheckEncryption(j, dbCurr);
@@ -357,7 +361,7 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
     }
 
     dbXA=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-			  "data/transactions");
+                          "data/transactions");
     if (dbXA) {
       const void *p;
       unsigned int bs;
@@ -366,10 +370,10 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
         GWEN_DB_Dump(dbXA, 2);
       p=GWEN_DB_GetBinValue(dbXA, "booked", 0, 0, 0, &bs);
       if (p && bs)
-	GWEN_Buffer_AppendBytes(tbooked, p, bs);
+        GWEN_Buffer_AppendBytes(tbooked, p, bs);
       p=GWEN_DB_GetBinValue(dbXA, "noted", 0, 0, 0, &bs);
       if (p && bs)
-	GWEN_Buffer_AppendBytes(tnoted, p, bs);
+        GWEN_Buffer_AppendBytes(tnoted, p, bs);
     } /* if "Transactions" */
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
   }
@@ -405,7 +409,7 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
       }
     }
 
-    if (AH_Job_GetTransactions__ReadTransactions(j, ai, "mt940", 0, tbooked)){
+    if (AH_Job_GetTransactions__ReadTransactions(j, ai, "mt940", 0, tbooked)) {
       GWEN_Buffer_free(tbooked);
       GWEN_Buffer_free(tnoted);
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error parsing booked transactions");
@@ -465,7 +469,8 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
 
 
-int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AH_JOB_GETTRANSACTIONS *aj;
   AB_ACCOUNT *a;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
@@ -508,7 +513,7 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
 
   /* search for "Transactions" */
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
-  while(dbCurr) {
+  while (dbCurr) {
     GWEN_DB_NODE *dbXA;
 
     rv=AH_Job_CheckEncryption(j, dbCurr);
@@ -544,7 +549,7 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
       while (dbT) {
         AB_VALUE *v1;
         AB_VALUE *v2;
-        GWEN_STRINGLIST* purpose;
+        GWEN_STRINGLIST *purpose;
         AB_TRANSACTION *t;
 
         /* read date (Buchungsdatum) */
@@ -581,7 +586,7 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
               AB_Value_Negate(v2);
             }
             else if (strcasecmp(p, "C")==0 ||
-                strcasecmp(p, "RD")==0)
+                     strcasecmp(p, "RD")==0)
               v2=AB_Value_dup(v1);
             else {
               DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad debit mark \"%s\"", p);
@@ -594,10 +599,10 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
         /* read purpose */
         purpose=GWEN_StringList_new();
         for (i=0; i<10; i++) {
-            p=GWEN_DB_GetCharValue(dbT, "purpose", i, 0);
-            if (!p)
-                break;
-            GWEN_StringList_AppendString(purpose, p, 0, 0);
+          p=GWEN_DB_GetCharValue(dbT, "purpose", i, 0);
+          if (!p)
+            break;
+          GWEN_StringList_AppendString(purpose, p, 0, 0);
         }
 
         /* read reference */
@@ -606,7 +611,7 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
           GWEN_StringList_AppendString(purpose, ref, 0, 0);
 
         t=AB_Transaction_new();
-        if(ref)
+        if (ref)
           AB_Transaction_SetFiId(t, ref);
         AB_Transaction_SetUniqueAccountId(t, AB_Account_GetUniqueId(a));
         AB_Transaction_SetLocalBankCode(t, AB_User_GetBankCode(u));
@@ -635,7 +640,8 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetTransactions_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits) {
+int AH_Job_GetTransactions_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits)
+{
   AB_TRANSACTION_LIMITS *tl;
   GWEN_DB_NODE *dbParams;
 
@@ -652,14 +658,15 @@ int AH_Job_GetTransactions_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits)
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetTransactions_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t) {
+int AH_Job_GetTransactions_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t)
+{
   const GWEN_DATE *da;
-  
+
   da=AB_Transaction_GetFirstDate(t);
   if (da) {
     char dbuf[16];
     GWEN_DB_NODE *dbArgs;
-  
+
     dbArgs=AH_Job_GetArguments(j);
     snprintf(dbuf, sizeof(dbuf), "%04d%02d%02d",
              GWEN_Date_GetYear(da),
@@ -667,12 +674,12 @@ int AH_Job_GetTransactions_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t) {
              GWEN_Date_GetDay(da));
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "fromDate", dbuf);
   }
-  
+
   da=AB_Transaction_GetLastDate(t);
   if (da) {
     char dbuf[16];
     GWEN_DB_NODE *dbArgs;
-  
+
     dbArgs=AH_Job_GetArguments(j);
     snprintf(dbuf, sizeof(dbuf), "%04d%02d%02d",
              GWEN_Date_GetYear(da),
@@ -680,7 +687,7 @@ int AH_Job_GetTransactions_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t) {
              GWEN_Date_GetDay(da));
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "toDate", dbuf);
   }
-  
+
   return 0;
 }
 

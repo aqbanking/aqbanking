@@ -53,14 +53,14 @@ static int AH_Dialog_CreateIoLayer_Hbci(AH_DIALOG *dlg);
 static int AH_Dialog_Connect_Hbci(AH_DIALOG *dlg);
 static int AH_Dialog_Disconnect_Hbci(AH_DIALOG *dlg);
 static int AH_Dialog_SendPacket_Hbci(AH_DIALOG *dlg,
-				     const char *buf, int blen);
+                                     const char *buf, int blen);
 static int AH_Dialog_RecvMessage_Hbci(AH_DIALOG *dlg, AH_MSG **pMsg);
 
 static int AH_Dialog_CreateIoLayer_Https(AH_DIALOG *dlg);
 static int AH_Dialog_Connect_Https(AH_DIALOG *dlg);
 static int AH_Dialog_Disconnect_Https(AH_DIALOG *dlg);
 static int AH_Dialog_SendPacket_Https(AH_DIALOG *dlg,
-				      const char *buf, int blen);
+                                      const char *buf, int blen);
 static int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg);
 
 

@@ -77,7 +77,7 @@ typedef enum {
  */
 /*@{*/
 typedef int (*AH_JOB_PROCESS_FN)(AH_JOB *j,
-				 AB_IMEXPORTER_CONTEXT *ctx);
+                                 AB_IMEXPORTER_CONTEXT *ctx);
 typedef int (*AH_JOB_COMMIT_FN)(AH_JOB *j, int doLock);
 typedef int (*AH_JOB_PREPARE_FN)(AH_JOB *j);
 
@@ -106,7 +106,7 @@ typedef int (*AH_JOB_NEXTMSG_FN)(AH_JOB *j);
  */
 /*@{*/
 AH_JOB *AH_Job_new(const char *name,
-		   AB_PROVIDER *pro,
+                   AB_PROVIDER *pro,
                    AB_USER *u,
                    AB_ACCOUNT *acc,
                    int jobVersion);
@@ -323,8 +323,8 @@ void AH_Job_ValueToChallengeString(const AB_VALUE *v, GWEN_BUFFER *buf);
  * a job version from the returned list.
  */
 int AH_Job_SampleBpdVersions(const char *name,
-			     AB_USER *u,
-			     GWEN_DB_NODE *dbResult);
+                             AB_USER *u,
+                             GWEN_DB_NODE *dbResult);
 
 int AH_Job_GetMaxVersionUpUntil(const char *name, AB_USER *u, int maxVersion);
 

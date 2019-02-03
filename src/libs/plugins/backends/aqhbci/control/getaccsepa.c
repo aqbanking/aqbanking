@@ -26,45 +26,46 @@
 int AH_Control_GetAccSepa(AB_PROVIDER *pro,
                           GWEN_DB_NODE *dbArgs,
                           int argc,
-                          char **argv) {
+                          char **argv)
+{
   GWEN_DB_NODE *db;
   AB_ACCOUNT *a=NULL;
   int rv;
   uint32_t aid;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,           /* type */
-    "accountId",                 /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "a",                          /* short option */
-    "account",                   /* long option */
-    "Specify the unique id of the account",    /* short description */
-    "Specify the unique id of the account"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "flags",                      /* name */
-    0,                            /* minnum */
-    99,                            /* maxnum */
-    "f",                          /* short option */
-    "flags",                   /* long option */
-    "Specify the user flags",    /* short description */
-    "Specify the user flags"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,           /* type */
+      "accountId",                 /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "a",                          /* short option */
+      "account",                   /* long option */
+      "Specify the unique id of the account",    /* short description */
+      "Specify the unique id of the account"     /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "flags",                      /* name */
+      0,                            /* minnum */
+      99,                            /* maxnum */
+      "f",                          /* short option */
+      "flags",                   /* long option */
+      "Specify the user flags",    /* short description */
+      "Specify the user flags"     /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");

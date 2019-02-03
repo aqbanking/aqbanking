@@ -44,10 +44,11 @@ GWEN_INHERIT_FUNCTIONS(AH_JOB);
 
 
 AH_JOB *AH_Job_new(const char *name,
-		   AB_PROVIDER *pro,
-		   AB_USER *u,
+                   AB_PROVIDER *pro,
+                   AB_USER *u,
                    AB_ACCOUNT *acc,
-                   int jobVersion) {
+                   int jobVersion)
+{
   AH_JOB *j;
   GWEN_XMLNODE *node;
   GWEN_XMLNODE *jobNode=0;
@@ -105,7 +106,7 @@ AH_JOB *AH_Job_new(const char *name,
                                          name);
   if (!node) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
-	     "Job \"%s\" not supported by local XML files", name);
+             "Job \"%s\" not supported by local XML files", name);
     AH_Job_free(j);
     return 0;
   }
@@ -131,8 +132,10 @@ AH_JOB *AH_Job_new(const char *name,
   /* get and store segment code for later use in TAN jobs */
   segCode=GWEN_XMLNode_GetProperty(node, "code", "");
   free(j->code);
-  if (segCode && *segCode) j->code=strdup(segCode);
-  else j->code=NULL;
+  if (segCode && *segCode)
+    j->code=strdup(segCode);
+  else
+    j->code=NULL;
 
   if (bpd) {
     bpdgrp=AH_Bpd_GetBpdJobs(bpd, AH_User_GetHbciVersion(u));
@@ -151,7 +154,7 @@ AH_JOB *AH_Job_new(const char *name,
              name, paramName);
 
     if (!bpd) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN,"No BPD");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "No BPD");
       AH_Job_free(j);
       return 0;
     }
@@ -181,74 +184,74 @@ AH_JOB *AH_Job_new(const char *name,
     if (jobVersion) {
       /* a job version has been selected from outside, look for
        * the BPD of that particular version */
-      while(jobBPD) {
-	int version;
+      while (jobBPD) {
+        int version;
 
-	/* get version from BPD */
-	version=atoi(GWEN_DB_GroupName(jobBPD));
-	if (version==jobVersion) {
-	  /* now get the correct version of the JOB */
-	  DBG_INFO(AQHBCI_LOGDOMAIN, "Checking Job %s (%d)",
-		   name, version);
-	  node=GWEN_MsgEngine_FindNodeByProperty(e,
-						 "JOB",
-						 "id",
-						 version,
-						 name);
-	  if (node) {
-	    dbHighestVersion=jobBPD;
-	    highestVersion=version;
-	    jobNode=node;
-	  }
-	}
-	jobBPD=GWEN_DB_GetNextGroup(jobBPD);
+        /* get version from BPD */
+        version=atoi(GWEN_DB_GroupName(jobBPD));
+        if (version==jobVersion) {
+          /* now get the correct version of the JOB */
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Checking Job %s (%d)",
+                   name, version);
+          node=GWEN_MsgEngine_FindNodeByProperty(e,
+                                                 "JOB",
+                                                 "id",
+                                                 version,
+                                                 name);
+          if (node) {
+            dbHighestVersion=jobBPD;
+            highestVersion=version;
+            jobNode=node;
+          }
+        }
+        jobBPD=GWEN_DB_GetNextGroup(jobBPD);
       } /* while */
       jobBPD=dbHighestVersion;
     }
     else {
-      while(jobBPD) {
-	int version;
+      while (jobBPD) {
+        int version;
 
-	/* get version from BPD */
-	version=atoi(GWEN_DB_GroupName(jobBPD));
-	if (version>highestVersion) {
-	  /* now get the correct version of the JOB */
-	  DBG_INFO(AQHBCI_LOGDOMAIN, "Checking Job %s (%d)",
-		   name, version);
-	  node=GWEN_MsgEngine_FindNodeByProperty(e,
-						 "JOB",
-						 "id",
-						 version,
-						 name);
-	  if (node) {
-	    dbHighestVersion=jobBPD;
-	    highestVersion=version;
-	    jobNode=node;
-	  }
-	}
-	jobBPD=GWEN_DB_GetNextGroup(jobBPD);
+        /* get version from BPD */
+        version=atoi(GWEN_DB_GroupName(jobBPD));
+        if (version>highestVersion) {
+          /* now get the correct version of the JOB */
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Checking Job %s (%d)",
+                   name, version);
+          node=GWEN_MsgEngine_FindNodeByProperty(e,
+                                                 "JOB",
+                                                 "id",
+                                                 version,
+                                                 name);
+          if (node) {
+            dbHighestVersion=jobBPD;
+            highestVersion=version;
+            jobNode=node;
+          }
+        }
+        jobBPD=GWEN_DB_GetNextGroup(jobBPD);
       } /* while */
       jobBPD=dbHighestVersion;
     }
 
     if (!jobBPD) {
       if (needsBPD) {
-	if (AH_User_GetCryptMode(u)!=AH_CryptMode_Pintan &&
-	    strcasecmp(name, "JobTan")==0) {
-	  /* lower loglevel for JobTan in non-PINTAN mode because this is
-	   * often confusing */
-	  DBG_INFO(AQHBCI_LOGDOMAIN,
-		   "Job \"%s\" not supported by your bank",
-		   name);
-	}
-	else {
-	  /* no BPD when needed, error */
-	  DBG_WARN(AQHBCI_LOGDOMAIN,
-		    "Job \"%s\" not supported by your bank",
-		    name);
-	}
-	AH_Job_free(j);
-	return 0;
+        if (AH_User_GetCryptMode(u)!=AH_CryptMode_Pintan &&
+            strcasecmp(name, "JobTan")==0) {
+          /* lower loglevel for JobTan in non-PINTAN mode because this is
+           * often confusing */
+          DBG_INFO(AQHBCI_LOGDOMAIN,
+                   "Job \"%s\" not supported by your bank",
+                   name);
+        }
+        else {
+          /* no BPD when needed, error */
+          DBG_WARN(AQHBCI_LOGDOMAIN,
+                   "Job \"%s\" not supported by your bank",
+                   name);
+        }
+        AH_Job_free(j);
+        return 0;
       }
     }
     else {
@@ -276,7 +279,7 @@ AH_JOB *AH_Job_new(const char *name,
       if (code) {
         DBG_NOTICE(AQHBCI_LOGDOMAIN, "Code is \"%s\"", code);
         updnode=GWEN_DB_GetFirstGroup(updgroup);
-        while(updnode) {
+        while (updnode) {
           if (strcasecmp(GWEN_DB_GetCharValue(updnode, "job", 0, ""),
                          code)==0) {
             break;
@@ -294,7 +297,7 @@ AH_JOB *AH_Job_new(const char *name,
       GWEN_DB_AddGroupChildren(dgr, updnode);
     }
     else if (needsBPD) {
-      DBG_INFO(AQHBCI_LOGDOMAIN,"Job \"%s\" not enabled for account \"%u\"",
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" not enabled for account \"%u\"",
                name, AB_Account_GetUniqueId(acc));
       AH_Job_free(j);
       return NULL;
@@ -338,7 +341,7 @@ AH_JOB *AH_Job_new(const char *name,
 
     descrBuf=GWEN_Buffer_new(0, 64, 0, 1);
     dn=GWEN_XMLNode_GetFirstData(descrNode);
-    while(dn) {
+    while (dn) {
       const char *d;
 
       d=GWEN_XMLNode_GetData(dn);
@@ -405,7 +408,7 @@ AH_JOB *AH_Job_new(const char *name,
       const char *s;
 
       descriptors=GWEN_StringList_new();
-      while(dbT) {
+      while (dbT) {
         for (i=0; i<10; i++) {
           s=GWEN_DB_GetCharValue(dbT, "format", i, NULL);
           if (!(s && *s))
@@ -429,7 +432,8 @@ AH_JOB *AH_Job_new(const char *name,
 
 
 
-void AH_Job_free(AH_JOB *j) {
+void AH_Job_free(AH_JOB *j)
+{
   if (j) {
     assert(j->usage);
     if (--(j->usage)==0) {
@@ -466,8 +470,9 @@ void AH_Job_free(AH_JOB *j) {
 
 
 int AH_Job_SampleBpdVersions(const char *name,
-			     AB_USER *u,
-			     GWEN_DB_NODE *dbResult) {
+                             AB_USER *u,
+                             GWEN_DB_NODE *dbResult)
+{
   GWEN_XMLNODE *node;
   const char *paramName;
   GWEN_DB_NODE *bpdgrp;
@@ -498,7 +503,7 @@ int AH_Job_SampleBpdVersions(const char *name,
                                          name);
   if (!node) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
-	     "Job \"%s\" not supported by local XML files", name);
+             "Job \"%s\" not supported by local XML files", name);
     return GWEN_ERROR_NOT_FOUND;
   }
 
@@ -516,10 +521,10 @@ int AH_Job_SampleBpdVersions(const char *name,
     GWEN_DB_NODE *jobBPD;
 
     DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" needs BPD job \"%s\"",
-	     name, paramName);
+             name, paramName);
 
     if (!bpd) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN,"No BPD");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "No BPD");
       return GWEN_ERROR_BAD_DATA;
     }
 
@@ -533,7 +538,7 @@ int AH_Job_SampleBpdVersions(const char *name,
     }
 
     /* check for jobs for which we have a BPD */
-    while(jobBPD) {
+    while (jobBPD) {
       int version;
 
       /* get version from BPD */
@@ -541,15 +546,15 @@ int AH_Job_SampleBpdVersions(const char *name,
       /* now get the correct version of the JOB */
       DBG_INFO(AQHBCI_LOGDOMAIN, "Checking Job %s (%d)", name, version);
       node=GWEN_MsgEngine_FindNodeByProperty(e,
-					     "JOB",
-					     "id",
-					     version,
-					     name);
+                                             "JOB",
+                                             "id",
+                                             version,
+                                             name);
       if (node) {
-	GWEN_DB_NODE *cpy;
+        GWEN_DB_NODE *cpy;
 
-	cpy=GWEN_DB_Group_dup(jobBPD);
-	GWEN_DB_AddGroup(dbResult, cpy);
+        cpy=GWEN_DB_Group_dup(jobBPD);
+        GWEN_DB_AddGroup(dbResult, cpy);
       }
       jobBPD=GWEN_DB_GetNextGroup(jobBPD);
     } /* while */
@@ -564,7 +569,8 @@ int AH_Job_SampleBpdVersions(const char *name,
 
 
 
-int AH_Job_GetMaxVersionUpUntil(const char *name, AB_USER *u, int maxVersion) {
+int AH_Job_GetMaxVersionUpUntil(const char *name, AB_USER *u, int maxVersion)
+{
   GWEN_DB_NODE *db;
   int rv;
 
@@ -581,7 +587,7 @@ int AH_Job_GetMaxVersionUpUntil(const char *name, AB_USER *u, int maxVersion) {
 
     /* determine maximum version */
     dbT=GWEN_DB_GetFirstGroup(db);
-    while(dbT) {
+    while (dbT) {
       int v;
 
       v=atoi(GWEN_DB_GroupName(dbT));
@@ -591,14 +597,15 @@ int AH_Job_GetMaxVersionUpUntil(const char *name, AB_USER *u, int maxVersion) {
     }
     GWEN_DB_Group_free(db);
     DBG_INFO(AQHBCI_LOGDOMAIN, "Max version of [%s] up until %d: %d",
-	     name, maxVersion, m);
+             name, maxVersion, m);
     return m;
   }
 }
 
 
 
-AB_MESSAGE_LIST *AH_Job_GetMessages(const AH_JOB *j) {
+AB_MESSAGE_LIST *AH_Job_GetMessages(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->messages;
@@ -606,7 +613,8 @@ AB_MESSAGE_LIST *AH_Job_GetMessages(const AH_JOB *j) {
 
 
 
-int AH_Job_GetChallengeClass(const AH_JOB *j) {
+int AH_Job_GetChallengeClass(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->challengeClass;
@@ -614,7 +622,8 @@ int AH_Job_GetChallengeClass(const AH_JOB *j) {
 
 
 
-int AH_Job_GetSegmentVersion(const AH_JOB *j) {
+int AH_Job_GetSegmentVersion(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->segmentVersion;
@@ -622,7 +631,8 @@ int AH_Job_GetSegmentVersion(const AH_JOB *j) {
 
 
 
-void AH_Job_SetChallengeClass(AH_JOB *j, int i) {
+void AH_Job_SetChallengeClass(AH_JOB *j, int i)
+{
   assert(j);
   assert(j->usage);
   j->challengeClass=i;
@@ -630,7 +640,8 @@ void AH_Job_SetChallengeClass(AH_JOB *j, int i) {
 
 
 
-void AH_Job_Attach(AH_JOB *j) {
+void AH_Job_Attach(AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   j->usage++;
@@ -638,7 +649,8 @@ void AH_Job_Attach(AH_JOB *j) {
 
 
 
-int AH_Job_PrepareNextMessage(AH_JOB *j) {
+int AH_Job_PrepareNextMessage(AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
 
@@ -667,15 +679,15 @@ int AH_Job_PrepareNextMessage(AH_JOB *j) {
   }
 
   if (j->status==AH_JobStatusToDo) {
-      DBG_NOTICE(AQHBCI_LOGDOMAIN,
-                 "Hmm, job has never been sent, so we do nothing here");
+    DBG_NOTICE(AQHBCI_LOGDOMAIN,
+               "Hmm, job has never been sent, so we do nothing here");
     j->flags&=~AH_JOB_FLAGS_HASMOREMSGS;
     return 0;
   }
 
   if (j->flags & AH_JOB_FLAGS_HASATTACHPOINT) {
-      DBG_NOTICE(AQHBCI_LOGDOMAIN,
-                 "Job has an attachpoint, so yes, we need more messages");
+    DBG_NOTICE(AQHBCI_LOGDOMAIN,
+               "Job has an attachpoint, so yes, we need more messages");
     j->flags|=AH_JOB_FLAGS_HASMOREMSGS;
     AH_Job_Log(j, GWEN_LoggerLevel_Debug,
                "Job has an attachpoint");
@@ -740,7 +752,8 @@ int AH_Job_PrepareNextMessage(AH_JOB *j) {
 
 
 
-uint32_t AH_Job_GetId(const AH_JOB *j){
+uint32_t AH_Job_GetId(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->id;
@@ -748,7 +761,8 @@ uint32_t AH_Job_GetId(const AH_JOB *j){
 
 
 
-void AH_Job_SetId(AH_JOB *j, uint32_t i){
+void AH_Job_SetId(AH_JOB *j, uint32_t i)
+{
   assert(j);
   assert(j->usage);
   j->id=i;
@@ -756,7 +770,8 @@ void AH_Job_SetId(AH_JOB *j, uint32_t i){
 
 
 
-const char *AH_Job_GetName(const AH_JOB *j) {
+const char *AH_Job_GetName(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->name;
@@ -764,7 +779,8 @@ const char *AH_Job_GetName(const AH_JOB *j) {
 
 
 
-const char *AH_Job_GetCode(const AH_JOB *j) {
+const char *AH_Job_GetCode(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->code;
@@ -772,7 +788,8 @@ const char *AH_Job_GetCode(const AH_JOB *j) {
 
 
 
-const char *AH_Job_GetResponseName(const AH_JOB *j) {
+const char *AH_Job_GetResponseName(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->responseName;
@@ -780,7 +797,8 @@ const char *AH_Job_GetResponseName(const AH_JOB *j) {
 
 
 
-int AH_Job_GetMinSignatures(const AH_JOB *j){
+int AH_Job_GetMinSignatures(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->minSigs;
@@ -788,7 +806,8 @@ int AH_Job_GetMinSignatures(const AH_JOB *j){
 
 
 
-int AH_Job_GetSecurityProfile(const AH_JOB *j){
+int AH_Job_GetSecurityProfile(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->secProfile;
@@ -796,7 +815,8 @@ int AH_Job_GetSecurityProfile(const AH_JOB *j){
 
 
 
-int AH_Job_GetSecurityClass(const AH_JOB *j) {
+int AH_Job_GetSecurityClass(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->secClass;
@@ -804,7 +824,8 @@ int AH_Job_GetSecurityClass(const AH_JOB *j) {
 
 
 
-int AH_Job_GetJobsPerMsg(const AH_JOB *j){
+int AH_Job_GetJobsPerMsg(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->jobsPerMsg;
@@ -812,7 +833,8 @@ int AH_Job_GetJobsPerMsg(const AH_JOB *j){
 
 
 
-uint32_t AH_Job_GetFlags(const AH_JOB *j) {
+uint32_t AH_Job_GetFlags(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->flags;
@@ -820,7 +842,8 @@ uint32_t AH_Job_GetFlags(const AH_JOB *j) {
 
 
 
-void AH_Job_SetFlags(AH_JOB *j, uint32_t f) {
+void AH_Job_SetFlags(AH_JOB *j, uint32_t f)
+{
   assert(j);
   assert(j->usage);
   DBG_INFO(AQHBCI_LOGDOMAIN, "Changing flags of job \"%s\" from %08x to %08x",
@@ -830,7 +853,8 @@ void AH_Job_SetFlags(AH_JOB *j, uint32_t f) {
 
 
 
-void AH_Job_AddFlags(AH_JOB *j, uint32_t f){
+void AH_Job_AddFlags(AH_JOB *j, uint32_t f)
+{
   assert(j);
   assert(j->usage);
   DBG_INFO(AQHBCI_LOGDOMAIN,
@@ -841,7 +865,8 @@ void AH_Job_AddFlags(AH_JOB *j, uint32_t f){
 
 
 
-void AH_Job_SubFlags(AH_JOB *j, uint32_t f){
+void AH_Job_SubFlags(AH_JOB *j, uint32_t f)
+{
   assert(j);
   assert(j->usage);
   DBG_INFO(AQHBCI_LOGDOMAIN,
@@ -852,7 +877,8 @@ void AH_Job_SubFlags(AH_JOB *j, uint32_t f){
 
 
 
-GWEN_DB_NODE *AH_Job_GetParams(const AH_JOB *j){
+GWEN_DB_NODE *AH_Job_GetParams(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->jobParams;
@@ -860,7 +886,8 @@ GWEN_DB_NODE *AH_Job_GetParams(const AH_JOB *j){
 
 
 
-GWEN_DB_NODE *AH_Job_GetArguments(const AH_JOB *j){
+GWEN_DB_NODE *AH_Job_GetArguments(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->jobArguments;
@@ -868,7 +895,8 @@ GWEN_DB_NODE *AH_Job_GetArguments(const AH_JOB *j){
 
 
 
-GWEN_DB_NODE *AH_Job_GetResponses(const AH_JOB *j){
+GWEN_DB_NODE *AH_Job_GetResponses(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->jobResponses;
@@ -876,7 +904,8 @@ GWEN_DB_NODE *AH_Job_GetResponses(const AH_JOB *j){
 
 
 
-uint32_t AH_Job_GetFirstSegment(const AH_JOB *j){
+uint32_t AH_Job_GetFirstSegment(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->firstSegment;
@@ -884,7 +913,8 @@ uint32_t AH_Job_GetFirstSegment(const AH_JOB *j){
 
 
 
-void AH_Job_SetFirstSegment(AH_JOB *j, uint32_t i){
+void AH_Job_SetFirstSegment(AH_JOB *j, uint32_t i)
+{
   assert(j);
   assert(j->usage);
   j->firstSegment=i;
@@ -892,7 +922,8 @@ void AH_Job_SetFirstSegment(AH_JOB *j, uint32_t i){
 
 
 
-uint32_t AH_Job_GetLastSegment(const AH_JOB *j){
+uint32_t AH_Job_GetLastSegment(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->lastSegment;
@@ -900,7 +931,8 @@ uint32_t AH_Job_GetLastSegment(const AH_JOB *j){
 
 
 
-void AH_Job_SetLastSegment(AH_JOB *j, uint32_t i){
+void AH_Job_SetLastSegment(AH_JOB *j, uint32_t i)
+{
   assert(j);
   assert(j->usage);
   j->lastSegment=i;
@@ -908,17 +940,19 @@ void AH_Job_SetLastSegment(AH_JOB *j, uint32_t i){
 
 
 
-int AH_Job_HasSegment(const AH_JOB *j, int seg){
+int AH_Job_HasSegment(const AH_JOB *j, int seg)
+{
   assert(j);
   assert(j->usage);
   DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" checked for %d: first=%d, last=%d",
-           j->name,seg,  j->firstSegment, j->lastSegment);
+           j->name, seg,  j->firstSegment, j->lastSegment);
   return (seg<=j->lastSegment && seg>=j->firstSegment);
 }
 
 
 
-void AH_Job_AddResponse(AH_JOB *j, GWEN_DB_NODE *db){
+void AH_Job_AddResponse(AH_JOB *j, GWEN_DB_NODE *db)
+{
   assert(j);
   assert(j->usage);
   GWEN_DB_AddGroup(j->jobResponses, db);
@@ -926,7 +960,8 @@ void AH_Job_AddResponse(AH_JOB *j, GWEN_DB_NODE *db){
 
 
 
-AH_JOB_STATUS AH_Job_GetStatus(const AH_JOB *j){
+AH_JOB_STATUS AH_Job_GetStatus(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->status;
@@ -934,7 +969,8 @@ AH_JOB_STATUS AH_Job_GetStatus(const AH_JOB *j){
 
 
 
-void AH_Job_SetStatus(AH_JOB *j, AH_JOB_STATUS st){
+void AH_Job_SetStatus(AH_JOB *j, AH_JOB_STATUS st)
+{
   assert(j);
   assert(j->usage);
   if (j->status!=st) {
@@ -962,27 +998,43 @@ void AH_Job_SetStatus(AH_JOB *j, AH_JOB_STATUS st){
 
       jit=AB_Transaction_List2_First(j->commandList);
       if (jit) {
-	AB_TRANSACTION *t;
-	AB_TRANSACTION_STATUS ts=AB_Transaction_StatusUnknown;
+        AB_TRANSACTION *t;
+        AB_TRANSACTION_STATUS ts=AB_Transaction_StatusUnknown;
 
-	switch(st) {
-	case AH_JobStatusUnknown:  ts=AB_Transaction_StatusUnknown;  break;
-	case AH_JobStatusToDo:     ts=AB_Transaction_StatusEnqueued; break;
-	case AH_JobStatusEnqueued: ts=AB_Transaction_StatusEnqueued; break;
-	case AH_JobStatusEncoded:  ts=AB_Transaction_StatusSending;  break;
-	case AH_JobStatusSent:     ts=AB_Transaction_StatusSending;  break;
-	case AH_JobStatusAnswered: ts=AB_Transaction_StatusSending;  break;
-	case AH_JobStatusError:    ts=AB_Transaction_StatusError;    break;
+        switch (st) {
+        case AH_JobStatusUnknown:
+          ts=AB_Transaction_StatusUnknown;
+          break;
+        case AH_JobStatusToDo:
+          ts=AB_Transaction_StatusEnqueued;
+          break;
+        case AH_JobStatusEnqueued:
+          ts=AB_Transaction_StatusEnqueued;
+          break;
+        case AH_JobStatusEncoded:
+          ts=AB_Transaction_StatusSending;
+          break;
+        case AH_JobStatusSent:
+          ts=AB_Transaction_StatusSending;
+          break;
+        case AH_JobStatusAnswered:
+          ts=AB_Transaction_StatusSending;
+          break;
+        case AH_JobStatusError:
+          ts=AB_Transaction_StatusError;
+          break;
 
-	case AH_JobStatusAll:      ts=AB_Transaction_StatusUnknown;  break;
-	}
+        case AH_JobStatusAll:
+          ts=AB_Transaction_StatusUnknown;
+          break;
+        }
 
-	t=AB_Transaction_List2Iterator_Data(jit);
-	while(t) {
-	  AB_Transaction_SetStatus(t, ts);
-	  t=AB_Transaction_List2Iterator_Next(jit);
-	}
-	AB_Transaction_List2Iterator_free(jit);
+        t=AB_Transaction_List2Iterator_Data(jit);
+        while (t) {
+          AB_Transaction_SetStatus(t, ts);
+          t=AB_Transaction_List2Iterator_Next(jit);
+        }
+        AB_Transaction_List2Iterator_free(jit);
       } /* if (jit) */
     } /* if (j->commandList) */
   }
@@ -990,7 +1042,8 @@ void AH_Job_SetStatus(AH_JOB *j, AH_JOB_STATUS st){
 
 
 
-void AH_Job_AddSigner(AH_JOB *j, const char *s){
+void AH_Job_AddSigner(AH_JOB *j, const char *s)
+{
   GWEN_BUFFER *lbuf;
 
   assert(j);
@@ -1019,7 +1072,8 @@ void AH_Job_AddSigner(AH_JOB *j, const char *s){
 
 
 
-AB_USER *AH_Job_GetUser(const AH_JOB *j){
+AB_USER *AH_Job_GetUser(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->user;
@@ -1027,7 +1081,8 @@ AB_USER *AH_Job_GetUser(const AH_JOB *j){
 
 
 
-const GWEN_STRINGLIST *AH_Job_GetSigners(const AH_JOB *j){
+const GWEN_STRINGLIST *AH_Job_GetSigners(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->signers;
@@ -1035,7 +1090,8 @@ const GWEN_STRINGLIST *AH_Job_GetSigners(const AH_JOB *j){
 
 
 
-GWEN_XMLNODE *AH_Job_GetXmlNode(const AH_JOB *j){
+GWEN_XMLNODE *AH_Job_GetXmlNode(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   if (j->flags & AH_JOB_FLAGS_MULTIMSG) {
@@ -1048,7 +1104,8 @@ GWEN_XMLNODE *AH_Job_GetXmlNode(const AH_JOB *j){
 
 
 
-unsigned int AH_Job_GetMsgNum(const AH_JOB *j){
+unsigned int AH_Job_GetMsgNum(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->msgNum;
@@ -1056,7 +1113,8 @@ unsigned int AH_Job_GetMsgNum(const AH_JOB *j){
 
 
 
-const char *AH_Job_GetDialogId(const AH_JOB *j){
+const char *AH_Job_GetDialogId(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->dialogId;
@@ -1064,7 +1122,8 @@ const char *AH_Job_GetDialogId(const AH_JOB *j){
 
 
 
-void AH_Job_SetMsgNum(AH_JOB *j, unsigned int i){
+void AH_Job_SetMsgNum(AH_JOB *j, unsigned int i)
+{
   assert(j);
   assert(j->usage);
   j->msgNum=i;
@@ -1072,7 +1131,8 @@ void AH_Job_SetMsgNum(AH_JOB *j, unsigned int i){
 
 
 
-void AH_Job_SetDialogId(AH_JOB *j, const char *s){
+void AH_Job_SetDialogId(AH_JOB *j, const char *s)
+{
   assert(j);
   assert(j->usage);
   assert(s);
@@ -1083,8 +1143,9 @@ void AH_Job_SetDialogId(AH_JOB *j, const char *s){
 
 
 
-const char *AH_Job_StatusName(AH_JOB_STATUS st) {
-  switch(st) {
+const char *AH_Job_StatusName(AH_JOB_STATUS st)
+{
+  switch (st) {
   case AH_JobStatusUnknown:
     return "unknown";
   case AH_JobStatusToDo:
@@ -1108,7 +1169,8 @@ const char *AH_Job_StatusName(AH_JOB_STATUS st) {
 }
 
 
-int AH_Job_HasWarnings(const AH_JOB *j){
+int AH_Job_HasWarnings(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return (j->flags & AH_JOB_FLAGS_HASWARNINGS);
@@ -1116,7 +1178,8 @@ int AH_Job_HasWarnings(const AH_JOB *j){
 
 
 
-int AH_Job_HasErrors(const AH_JOB *j){
+int AH_Job_HasErrors(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return
@@ -1126,23 +1189,24 @@ int AH_Job_HasErrors(const AH_JOB *j){
 
 
 
-void AH_Job_SampleResults(AH_JOB *j) {
+void AH_Job_SampleResults(AH_JOB *j)
+{
   GWEN_DB_NODE *dbCurr;
 
   assert(j);
   assert(j->usage);
 
   dbCurr=GWEN_DB_GetFirstGroup(j->jobResponses);
-  while(dbCurr) {
+  while (dbCurr) {
     GWEN_DB_NODE *dbResults;
 
     dbResults=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                              "data/SegResult");
+                               "data/SegResult");
     if (dbResults) {
       GWEN_DB_NODE *dbRes;
 
       dbRes=GWEN_DB_GetFirstGroup(dbResults);
-      while(dbRes) {
+      while (dbRes) {
         if (strcasecmp(GWEN_DB_GroupName(dbRes), "result")==0) {
           AH_RESULT *r;
           int code;
@@ -1153,7 +1217,7 @@ void AH_Job_SampleResults(AH_JOB *j) {
           if (code) {
             GWEN_BUFFER *lbuf;
             char numbuf[32];
-	    GWEN_LOGGER_LEVEL ll;
+            GWEN_LOGGER_LEVEL ll;
 
             if (code>=9000)
               ll=GWEN_LoggerLevel_Error;
@@ -1184,7 +1248,7 @@ void AH_Job_SampleResults(AH_JOB *j) {
           AH_Result_List_Add(r, j->segResults);
 
           DBG_DEBUG(AQHBCI_LOGDOMAIN, "Segment result:");
-	  if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
+          if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
             AH_Result_Dump(r, stderr, 4);
 
           /* check result */
@@ -1203,7 +1267,7 @@ void AH_Job_SampleResults(AH_JOB *j) {
         GWEN_DB_NODE *dbRes;
 
         dbRes=GWEN_DB_GetFirstGroup(dbResults);
-        while(dbRes) {
+        while (dbRes) {
           if (strcasecmp(GWEN_DB_GroupName(dbRes), "result")==0) {
             AH_RESULT *r;
             int code;
@@ -1214,8 +1278,8 @@ void AH_Job_SampleResults(AH_JOB *j) {
             if (code) {
               GWEN_BUFFER *lbuf;
               char numbuf[32];
-	      GWEN_LOGGER_LEVEL ll;
-  
+              GWEN_LOGGER_LEVEL ll;
+
               if (code>=9000)
                 ll=GWEN_LoggerLevel_Error;
               else if (code>=3000)
@@ -1267,7 +1331,8 @@ void AH_Job_SampleResults(AH_JOB *j) {
 
 
 
-const char *AH_Job_GetDescription(const AH_JOB *j){
+const char *AH_Job_GetDescription(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   if (j->description)
@@ -1277,7 +1342,8 @@ const char *AH_Job_GetDescription(const AH_JOB *j){
 
 
 
-void AH_Job_Dump(const AH_JOB *j, FILE *f, unsigned int insert) {
+void AH_Job_Dump(const AH_JOB *j, FILE *f, unsigned int insert)
+{
   uint32_t k;
 
   for (k=0; k<insert; k++)
@@ -1290,7 +1356,7 @@ void AH_Job_Dump(const AH_JOB *j, FILE *f, unsigned int insert) {
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
-  fprintf(f, "Status: %s (%d)\n", AH_Job_StatusName(j->status),j->status);
+  fprintf(f, "Status: %s (%d)\n", AH_Job_StatusName(j->status), j->status);
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
@@ -1310,14 +1376,15 @@ void AH_Job_Dump(const AH_JOB *j, FILE *f, unsigned int insert) {
 
 
 
-int AH_Job_HasItanResult(AH_JOB *j) {
+int AH_Job_HasItanResult(AH_JOB *j)
+{
   GWEN_DB_NODE *dbCurr;
 
   assert(j);
   assert(j->usage);
 
   dbCurr=GWEN_DB_GetFirstGroup(j->jobResponses);
-  while(dbCurr) {
+  while (dbCurr) {
     GWEN_DB_NODE *dbRd;
 
     dbRd=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data");
@@ -1325,15 +1392,15 @@ int AH_Job_HasItanResult(AH_JOB *j) {
       dbRd=GWEN_DB_GetFirstGroup(dbRd);
     }
     if (dbRd) {
-      if (strcasecmp(GWEN_DB_GroupName(dbRd), "SegResult")==0){
+      if (strcasecmp(GWEN_DB_GroupName(dbRd), "SegResult")==0) {
         GWEN_DB_NODE *dbRes;
 
         dbRes=GWEN_DB_GetFirstGroup(dbRd);
-        while(dbRes) {
+        while (dbRes) {
           if (strcasecmp(GWEN_DB_GroupName(dbRes), "result")==0) {
             int code;
 //            const char *text;
-  
+
             code=GWEN_DB_GetIntValue(dbRes, "resultcode", 0, 0);
 //            text=GWEN_DB_GetCharValue(dbRes, "text", 0, 0);
             if (code==3920) {
@@ -1352,7 +1419,8 @@ int AH_Job_HasItanResult(AH_JOB *j) {
 
 
 
-AH_JOB *AH_Job__freeAll_cb(AH_JOB *j, void *userData) {
+AH_JOB *AH_Job__freeAll_cb(AH_JOB *j, void *userData)
+{
   assert(j);
   assert(j->usage);
   AH_Job_free(j);
@@ -1361,14 +1429,16 @@ AH_JOB *AH_Job__freeAll_cb(AH_JOB *j, void *userData) {
 
 
 
-void AH_Job_List2_FreeAll(AH_JOB_LIST2 *jl){
+void AH_Job_List2_FreeAll(AH_JOB_LIST2 *jl)
+{
   AH_Job_List2_ForEach(jl, AH_Job__freeAll_cb, 0);
   AH_Job_List2_free(jl);
 }
 
 
 
-AH_HBCI *AH_Job_GetHbci(const AH_JOB *j){
+AH_HBCI *AH_Job_GetHbci(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
 
@@ -1377,7 +1447,8 @@ AH_HBCI *AH_Job_GetHbci(const AH_JOB *j){
 
 
 
-AB_BANKING *AH_Job_GetBankingApi(const AH_JOB *j){
+AB_BANKING *AH_Job_GetBankingApi(const AH_JOB *j)
+{
   AH_HBCI *hbci;
 
   assert(j);
@@ -1389,7 +1460,8 @@ AB_BANKING *AH_Job_GetBankingApi(const AH_JOB *j){
 
 
 
-AH_RESULT_LIST *AH_Job_GetSegResults(const AH_JOB *j){
+AH_RESULT_LIST *AH_Job_GetSegResults(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->segResults;
@@ -1397,7 +1469,8 @@ AH_RESULT_LIST *AH_Job_GetSegResults(const AH_JOB *j){
 
 
 
-AH_RESULT_LIST *AH_Job_GetMsgResults(const AH_JOB *j){
+AH_RESULT_LIST *AH_Job_GetMsgResults(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->msgResults;
@@ -1405,7 +1478,8 @@ AH_RESULT_LIST *AH_Job_GetMsgResults(const AH_JOB *j){
 
 
 
-const char *AH_Job_GetExpectedSigner(const AH_JOB *j){
+const char *AH_Job_GetExpectedSigner(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->expectedSigner;
@@ -1413,17 +1487,21 @@ const char *AH_Job_GetExpectedSigner(const AH_JOB *j){
 
 
 
-void AH_Job_SetExpectedSigner(AH_JOB *j, const char *s){
+void AH_Job_SetExpectedSigner(AH_JOB *j, const char *s)
+{
   assert(j);
   assert(j->usage);
   free(j->expectedSigner);
-  if (s) j->expectedSigner=strdup(s);
-  else j->expectedSigner=0;
+  if (s)
+    j->expectedSigner=strdup(s);
+  else
+    j->expectedSigner=0;
 }
 
 
 
-const char *AH_Job_GetExpectedCrypter(const AH_JOB *j){
+const char *AH_Job_GetExpectedCrypter(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->expectedCrypter;
@@ -1431,24 +1509,28 @@ const char *AH_Job_GetExpectedCrypter(const AH_JOB *j){
 
 
 
-void AH_Job_SetExpectedCrypter(AH_JOB *j, const char *s){
+void AH_Job_SetExpectedCrypter(AH_JOB *j, const char *s)
+{
   assert(j);
   assert(j->usage);
   free(j->expectedCrypter);
-  if (s) j->expectedCrypter=strdup(s);
-  else j->expectedCrypter=0;
+  if (s)
+    j->expectedCrypter=strdup(s);
+  else
+    j->expectedCrypter=0;
 }
 
 
 
-int AH_Job_CheckEncryption(AH_JOB *j, GWEN_DB_NODE *dbRsp) {
+int AH_Job_CheckEncryption(AH_JOB *j, GWEN_DB_NODE *dbRsp)
+{
   if (AH_User_GetCryptMode(j->user)==AH_CryptMode_Pintan) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Not checking security in PIN/TAN mode");
   }
   else {
     GWEN_DB_NODE *dbSecurity;
     const char *s;
-  
+
     assert(j);
     assert(j->usage);
     assert(dbRsp);
@@ -1456,48 +1538,48 @@ int AH_Job_CheckEncryption(AH_JOB *j, GWEN_DB_NODE *dbRsp) {
     if (!dbSecurity) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "No security settings, should not happen");
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
-			   I18N("Response without security info (internal)"));
+                           GWEN_LoggerLevel_Error,
+                           I18N("Response without security info (internal)"));
       return AB_ERROR_SECURITY;
     }
-  
+
     s=GWEN_DB_GetCharValue(dbSecurity, "crypter", 0, 0);
     if (s) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Response encrypted with key [%s]", s);
 
       if (*s=='!' || *s=='?') {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Encrypted with invalid key (%s)", s);
-	GWEN_Gui_ProgressLog(0,
-			     GWEN_LoggerLevel_Error,
-			     I18N("Response encrypted with invalid key"));
-	return AB_ERROR_SECURITY;
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Encrypted with invalid key (%s)", s);
+        GWEN_Gui_ProgressLog(0,
+                             GWEN_LoggerLevel_Error,
+                             I18N("Response encrypted with invalid key"));
+        return AB_ERROR_SECURITY;
       }
     }
 
     if (j->expectedCrypter) {
       /* check crypter */
       if (!s) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN,
-		  "Response is not encrypted (but expected to be)");
-	GWEN_Gui_ProgressLog(0,
-			     GWEN_LoggerLevel_Error,
-			     I18N("Response is not encrypted as expected"));
-	return AB_ERROR_SECURITY;
-  
+        DBG_ERROR(AQHBCI_LOGDOMAIN,
+                  "Response is not encrypted (but expected to be)");
+        GWEN_Gui_ProgressLog(0,
+                             GWEN_LoggerLevel_Error,
+                             I18N("Response is not encrypted as expected"));
+        return AB_ERROR_SECURITY;
+
       }
-  
+
       if (strcasecmp(s, j->expectedCrypter)!=0) {
-	DBG_WARN(AQHBCI_LOGDOMAIN,
-		 "Not encrypted with the expected key "
-		 "(exp: \"%s\", is: \"%s\"",
-		 j->expectedCrypter, s);
-	/*
-	 GWEN_Gui_ProgressLog(
-	                      0,
-	                      GWEN_LoggerLevel_Error,
-	                      I18N("Response not encrypted with expected key"));
-	 return AB_ERROR_SECURITY;
-	 */
+        DBG_WARN(AQHBCI_LOGDOMAIN,
+                 "Not encrypted with the expected key "
+                 "(exp: \"%s\", is: \"%s\"",
+                 j->expectedCrypter, s);
+        /*
+         GWEN_Gui_ProgressLog(
+                              0,
+                              GWEN_LoggerLevel_Error,
+                              I18N("Response not encrypted with expected key"));
+         return AB_ERROR_SECURITY;
+         */
       }
     }
     else {
@@ -1510,7 +1592,8 @@ int AH_Job_CheckEncryption(AH_JOB *j, GWEN_DB_NODE *dbRsp) {
 
 
 
-int AH_Job_CheckSignature(AH_JOB *j, GWEN_DB_NODE *dbRsp) {
+int AH_Job_CheckSignature(AH_JOB *j, GWEN_DB_NODE *dbRsp)
+{
   if (AH_User_GetCryptMode(j->user)==AH_CryptMode_Pintan) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Not checking signature in PIN/TAN mode");
   }
@@ -1518,147 +1601,147 @@ int AH_Job_CheckSignature(AH_JOB *j, GWEN_DB_NODE *dbRsp) {
     GWEN_DB_NODE *dbSecurity;
     int i;
     uint32_t uFlags;
-  
+
     assert(j);
     assert(j->usage);
-  
+
     uFlags=AH_User_GetFlags(j->user);
-  
+
     assert(dbRsp);
     dbSecurity=GWEN_DB_GetGroup(dbRsp, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-				"security");
+                                "security");
     if (!dbSecurity) {
       DBG_ERROR(AQHBCI_LOGDOMAIN,
-		"No security settings, should not happen");
+                "No security settings, should not happen");
       GWEN_Gui_ProgressLog(
-			     0,
-			     GWEN_LoggerLevel_Error,
-			     I18N("Response without security info (internal)"));
+        0,
+        GWEN_LoggerLevel_Error,
+        I18N("Response without security info (internal)"));
       return GWEN_ERROR_GENERIC;
     }
-  
+
     /* check for invalid signers */
     for (i=0; ; i++) {
       const char *s;
-  
+
       s=GWEN_DB_GetCharValue(dbSecurity, "signer", i, 0);
       if (!s)
-	break;
+        break;
       if (*s=='!') {
-	DBG_ERROR(AQHBCI_LOGDOMAIN,
-		  "Invalid signature found, will not tolerate it");
-	GWEN_Gui_ProgressLog(0,
-			     GWEN_LoggerLevel_Error,
-			     I18N("Invalid bank signature"));
-	return AB_ERROR_SECURITY;
+        DBG_ERROR(AQHBCI_LOGDOMAIN,
+                  "Invalid signature found, will not tolerate it");
+        GWEN_Gui_ProgressLog(0,
+                             GWEN_LoggerLevel_Error,
+                             I18N("Invalid bank signature"));
+        return AB_ERROR_SECURITY;
       }
     } /* for */
-  
+
     if (j->expectedSigner && !(uFlags & AH_USER_FLAGS_BANK_DOESNT_SIGN)) {
       /* check signer */
       for (i=0; ; i++) {
-	const char *s;
-  
-	s=GWEN_DB_GetCharValue(dbSecurity, "signer", i, 0);
-	if (!s) {
-	  DBG_ERROR(AQHBCI_LOGDOMAIN,
-		    "Not signed by expected signer (%d)", i);
-	  GWEN_Gui_ProgressLog(0,
-			       GWEN_LoggerLevel_Error,
-			       I18N("Response not signed by the bank"));
-	  if (i==0) {
-	    int but;
-  
-	    /* check whether the user want's to accept the unsigned message */
-	    but=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN |
-				    GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
-				    GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
-	       I18N("Security Warning"),
-	       I18N(
-  "The HBCI response of the bank has not been signed by the bank, \n"
-  "contrary to what has been expected. This can be the case because the \n"
-  "bank just stopped signing their HBCI responses. This error message \n"
-  "would also occur if there were a replay attack against your computer \n"
-  "in progress right now, which is probably quite unlikely. \n"
-  " \n"
-  "Please contact your bank and ask them whether their HBCI server \n"
-  "stopped signing the HBCI responses. If the bank is concerned about \n"
-  "your security, it should not stop signing the HBCI responses. \n"
-  " \n"
-  "Do you nevertheless want to accept this response this time or always?"
-  "<html><p>"
-  "The HBCI response of the bank has not been signed by the bank, \n"
-  "contrary to what has been expected. This can be the case because the \n"
-  "bank just stopped signing their HBCI responses. This error message \n"
-  "would also occur if there were a replay attack against your computer \n"
-  "in progress right now, which is probably quite unlikely. \n"
-  "</p><p>"
-  "Please contact your bank and ask them whether their HBCI server \n"
-  "stopped signing the HBCI responses. If the bank is concerned about \n"
-  "your security, it should not stop signing the HBCI responses. \n"
-  "</p><p>"
-  "Do you nevertheless want to accept this response this time or always?"
-  "</p></html>"
-  ),
-	       I18N("Accept this time"),
-	       I18N("Accept always"),
-	       I18N("Abort"), 0);
-	    if (but==1) {
-	      GWEN_Gui_ProgressLog(0,
-				   GWEN_LoggerLevel_Notice,
-				   I18N("User accepts this unsigned "
-					"response"));
-	      AH_Job_SetExpectedSigner(j, 0);
-	      break;
-	    }
-	    else if (but==2) {
-	      GWEN_Gui_ProgressLog(0,
-				   GWEN_LoggerLevel_Notice,
-				   I18N("User accepts all further unsigned "
-					"responses"));
-	      AH_User_AddFlags(j->user, AH_USER_FLAGS_BANK_DOESNT_SIGN);
-	      AH_Job_SetExpectedSigner(j, 0);
-	      break;
-	    }
-	    else {
-	      GWEN_Gui_ProgressLog(0,
-				   GWEN_LoggerLevel_Error,
-				   I18N("Aborted"));
-	      return AB_ERROR_SECURITY;
-	    }
-	  }
-	  else {
-	    int ii;
-  
-	    DBG_ERROR(AQHBCI_LOGDOMAIN,
-		      "Job signed with unexpected key(s)"
-		      "(was expecting \"%s\"):",
-		      j->expectedSigner);
-	    for (ii=0; ; ii++) {
-	      s=GWEN_DB_GetCharValue(dbSecurity, "signer", ii, 0);
-	      if (!s)
-		break;
-	      DBG_ERROR(AQHBCI_LOGDOMAIN,
-			"Signed unexpectedly with key \"%s\"", s);
-	    }
-	    return AB_ERROR_SECURITY;
-	  }
-	}
-	else {
-	  if (strcasecmp(s, j->expectedSigner)==0) {
-	    DBG_INFO(AQHBCI_LOGDOMAIN,
-		     "Jobs signed as expected with \"%s\"",
-		     j->expectedSigner);
-	    break;
-	  }
-	  else if (*s!='!' && *s!='?') {
-	    DBG_INFO(AQHBCI_LOGDOMAIN,
-		     "Signer name does not match expected name (%s!=%s), "
-		     "but we accept it anyway",
-		     s, j->expectedSigner);
-	    break;
-	  }
-	}
+        const char *s;
+
+        s=GWEN_DB_GetCharValue(dbSecurity, "signer", i, 0);
+        if (!s) {
+          DBG_ERROR(AQHBCI_LOGDOMAIN,
+                    "Not signed by expected signer (%d)", i);
+          GWEN_Gui_ProgressLog(0,
+                               GWEN_LoggerLevel_Error,
+                               I18N("Response not signed by the bank"));
+          if (i==0) {
+            int but;
+
+            /* check whether the user want's to accept the unsigned message */
+            but=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN |
+                                    GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+                                    GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
+                                    I18N("Security Warning"),
+                                    I18N(
+                                      "The HBCI response of the bank has not been signed by the bank, \n"
+                                      "contrary to what has been expected. This can be the case because the \n"
+                                      "bank just stopped signing their HBCI responses. This error message \n"
+                                      "would also occur if there were a replay attack against your computer \n"
+                                      "in progress right now, which is probably quite unlikely. \n"
+                                      " \n"
+                                      "Please contact your bank and ask them whether their HBCI server \n"
+                                      "stopped signing the HBCI responses. If the bank is concerned about \n"
+                                      "your security, it should not stop signing the HBCI responses. \n"
+                                      " \n"
+                                      "Do you nevertheless want to accept this response this time or always?"
+                                      "<html><p>"
+                                      "The HBCI response of the bank has not been signed by the bank, \n"
+                                      "contrary to what has been expected. This can be the case because the \n"
+                                      "bank just stopped signing their HBCI responses. This error message \n"
+                                      "would also occur if there were a replay attack against your computer \n"
+                                      "in progress right now, which is probably quite unlikely. \n"
+                                      "</p><p>"
+                                      "Please contact your bank and ask them whether their HBCI server \n"
+                                      "stopped signing the HBCI responses. If the bank is concerned about \n"
+                                      "your security, it should not stop signing the HBCI responses. \n"
+                                      "</p><p>"
+                                      "Do you nevertheless want to accept this response this time or always?"
+                                      "</p></html>"
+                                    ),
+                                    I18N("Accept this time"),
+                                    I18N("Accept always"),
+                                    I18N("Abort"), 0);
+            if (but==1) {
+              GWEN_Gui_ProgressLog(0,
+                                   GWEN_LoggerLevel_Notice,
+                                   I18N("User accepts this unsigned "
+                                        "response"));
+              AH_Job_SetExpectedSigner(j, 0);
+              break;
+            }
+            else if (but==2) {
+              GWEN_Gui_ProgressLog(0,
+                                   GWEN_LoggerLevel_Notice,
+                                   I18N("User accepts all further unsigned "
+                                        "responses"));
+              AH_User_AddFlags(j->user, AH_USER_FLAGS_BANK_DOESNT_SIGN);
+              AH_Job_SetExpectedSigner(j, 0);
+              break;
+            }
+            else {
+              GWEN_Gui_ProgressLog(0,
+                                   GWEN_LoggerLevel_Error,
+                                   I18N("Aborted"));
+              return AB_ERROR_SECURITY;
+            }
+          }
+          else {
+            int ii;
+
+            DBG_ERROR(AQHBCI_LOGDOMAIN,
+                      "Job signed with unexpected key(s)"
+                      "(was expecting \"%s\"):",
+                      j->expectedSigner);
+            for (ii=0; ; ii++) {
+              s=GWEN_DB_GetCharValue(dbSecurity, "signer", ii, 0);
+              if (!s)
+                break;
+              DBG_ERROR(AQHBCI_LOGDOMAIN,
+                        "Signed unexpectedly with key \"%s\"", s);
+            }
+            return AB_ERROR_SECURITY;
+          }
+        }
+        else {
+          if (strcasecmp(s, j->expectedSigner)==0) {
+            DBG_INFO(AQHBCI_LOGDOMAIN,
+                     "Jobs signed as expected with \"%s\"",
+                     j->expectedSigner);
+            break;
+          }
+          else if (*s!='!' && *s!='?') {
+            DBG_INFO(AQHBCI_LOGDOMAIN,
+                     "Signer name does not match expected name (%s!=%s), "
+                     "but we accept it anyway",
+                     s, j->expectedSigner);
+            break;
+          }
+        }
       } /* for */
       DBG_INFO(AQHBCI_LOGDOMAIN, "Signature check ok");
     }
@@ -1671,7 +1754,8 @@ int AH_Job_CheckSignature(AH_JOB *j, GWEN_DB_NODE *dbRsp) {
 
 
 
-const char *AH_Job_GetUsedTan(const AH_JOB *j){
+const char *AH_Job_GetUsedTan(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->usedTan;
@@ -1679,14 +1763,15 @@ const char *AH_Job_GetUsedTan(const AH_JOB *j){
 
 
 
-void AH_Job_SetUsedTan(AH_JOB *j, const char *s){
+void AH_Job_SetUsedTan(AH_JOB *j, const char *s)
+{
   assert(j);
   assert(j->usage);
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Changing TAN in job [%s](%08x) from [%s] to [%s]",
-	   j->name, j->id,
-	   (j->usedTan)?(j->usedTan):"(empty)",
-	   s?s:"(empty)");
+           j->name, j->id,
+           (j->usedTan)?(j->usedTan):"(empty)",
+           s?s:"(empty)");
   free(j->usedTan);
   if (s) {
     j->usedTan=strdup(s);
@@ -1697,7 +1782,8 @@ void AH_Job_SetUsedTan(AH_JOB *j, const char *s){
 
 
 
-void AH_Job_Log(AH_JOB *j, GWEN_LOGGER_LEVEL ll, const char *txt) {
+void AH_Job_Log(AH_JOB *j, GWEN_LOGGER_LEVEL ll, const char *txt)
+{
   char buffer[32];
   GWEN_TIME *ti;
   GWEN_BUFFER *lbuf;
@@ -1723,76 +1809,87 @@ void AH_Job_Log(AH_JOB *j, GWEN_LOGGER_LEVEL ll, const char *txt) {
 
 
 
-const GWEN_STRINGLIST *AH_Job_GetLogs(const AH_JOB *j) {
+const GWEN_STRINGLIST *AH_Job_GetLogs(const AH_JOB *j)
+{
   assert(j);
   return j->log;
 }
 
 
 
-GWEN_STRINGLIST *AH_Job_GetChallengeParams(const AH_JOB *j) {
+GWEN_STRINGLIST *AH_Job_GetChallengeParams(const AH_JOB *j)
+{
   assert(j);
   return j->challengeParams;
 }
 
 
 
-void AH_Job_ClearChallengeParams(AH_JOB *j) {
+void AH_Job_ClearChallengeParams(AH_JOB *j)
+{
   assert(j);
   GWEN_StringList_Clear(j->challengeParams);
 }
 
 
 
-void AH_Job_AddChallengeParam(AH_JOB *j, const char *s) {
+void AH_Job_AddChallengeParam(AH_JOB *j, const char *s)
+{
   assert(j);
   GWEN_StringList_AppendString(j->challengeParams, s, 0, 0);
 }
 
 
 
-void AH_Job_ValueToChallengeString(const AB_VALUE *v, GWEN_BUFFER *buf) {
+void AH_Job_ValueToChallengeString(const AB_VALUE *v, GWEN_BUFFER *buf)
+{
   AB_Value_toHbciString(v, buf);
 }
 
 
 
-int AH_Job_GetTransferCount(AH_JOB *j) {
+int AH_Job_GetTransferCount(AH_JOB *j)
+{
   assert(j);
   return j->transferCount;
 }
 
 
 
-void AH_Job_IncTransferCount(AH_JOB *j) {
+void AH_Job_IncTransferCount(AH_JOB *j)
+{
   assert(j);
   j->transferCount++;
 }
 
 
 
-int AH_Job_GetMaxTransfers(AH_JOB *j) {
+int AH_Job_GetMaxTransfers(AH_JOB *j)
+{
   assert(j);
   return j->maxTransfers;
 }
 
 
 
-void AH_Job_SetMaxTransfers(AH_JOB *j, int i) {
+void AH_Job_SetMaxTransfers(AH_JOB *j, int i)
+{
   assert(j);
   j->maxTransfers=i;
 }
 
 
 
-AB_TRANSACTION_LIST *AH_Job_GetTransferList(const AH_JOB *j) {
+AB_TRANSACTION_LIST *AH_Job_GetTransferList(const AH_JOB *j)
+{
   assert(j);
   return j->transferList;
 }
 
 
 
-AB_TRANSACTION *AH_Job_GetFirstTransfer(const AH_JOB *j) {
+AB_TRANSACTION *AH_Job_GetFirstTransfer(const AH_JOB *j)
+{
   assert(j);
   if (j->transferList==NULL)
     return NULL;
@@ -1802,7 +1899,8 @@ AB_TRANSACTION *AH_Job_GetFirstTransfer(const AH_JOB *j) {
 
 
 
-void AH_Job_AddTransfer(AH_JOB *j, AB_TRANSACTION *t) {
+void AH_Job_AddTransfer(AH_JOB *j, AB_TRANSACTION *t)
+{
   assert(j);
   if (j->transferList==NULL)
     j->transferList=AB_Transaction_List_new();
@@ -1814,7 +1912,8 @@ void AH_Job_AddTransfer(AH_JOB *j, AB_TRANSACTION *t) {
 
 
 static int AH_Job__SepaProfileSupported(GWEN_DB_NODE *profile,
-                                        const GWEN_STRINGLIST *descriptors) {
+                                        const GWEN_STRINGLIST *descriptors)
+{
   GWEN_STRINGLISTENTRY *se;
   char pattern[13];
   const char *s;
@@ -1827,7 +1926,7 @@ static int AH_Job__SepaProfileSupported(GWEN_DB_NODE *profile,
    * will either not match or be rejected by the exporter. */
   strncpy(pattern+1, GWEN_DB_GetCharValue(profile, "type", 0, ""), 10);
   se=GWEN_StringList_FirstEntry(descriptors);
-  while(se) {
+  while (se) {
     s=GWEN_StringListEntry_Data(se);
     if (s && GWEN_Text_ComparePattern(s, pattern, 1)!=-1) {
       /* record the descriptor matching this profile */
@@ -1845,7 +1944,8 @@ static int AH_Job__SepaProfileSupported(GWEN_DB_NODE *profile,
 
 
 
-static int AH_Job__SortSepaProfiles(const void *a, const void *b) {
+static int AH_Job__SortSepaProfiles(const void *a, const void *b)
+{
   GWEN_DB_NODE **ppa=(GWEN_DB_NODE **)a;
   GWEN_DB_NODE **ppb=(GWEN_DB_NODE **)b;
   GWEN_DB_NODE *pa=*ppa;
@@ -1868,7 +1968,8 @@ static int AH_Job__SortSepaProfiles(const void *a, const void *b) {
 
 
 GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *type,
-                                     const char *name) {
+                                     const char *name)
+{
   const GWEN_STRINGLIST *descriptors;
   GWEN_DB_NODE *dbProfiles;
 
@@ -1930,7 +2031,7 @@ GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *type,
     unsigned int pCount=0;
 
     n=GWEN_DB_GetFirstGroup(dbProfiles);
-    while(n) {
+    while (n) {
       nn=n;
       n=GWEN_DB_GetNextGroup(n);
 
@@ -1978,7 +2079,8 @@ GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *type,
 
 
 
-AB_TRANSACTION_COMMAND AH_Job_GetSupportedCommand(const AH_JOB *j) {
+AB_TRANSACTION_COMMAND AH_Job_GetSupportedCommand(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->supportedCommand;
@@ -1986,7 +2088,8 @@ AB_TRANSACTION_COMMAND AH_Job_GetSupportedCommand(const AH_JOB *j) {
 
 
 
-void AH_Job_SetSupportedCommand(AH_JOB *j, AB_TRANSACTION_COMMAND tc) {
+void AH_Job_SetSupportedCommand(AH_JOB *j, AB_TRANSACTION_COMMAND tc)
+{
   assert(j);
   assert(j->usage);
   j->supportedCommand=tc;
@@ -1994,7 +2097,8 @@ void AH_Job_SetSupportedCommand(AH_JOB *j, AB_TRANSACTION_COMMAND tc) {
 
 
 
-AB_PROVIDER *AH_Job_GetProvider(const AH_JOB *j) {
+AB_PROVIDER *AH_Job_GetProvider(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   return j->provider;
@@ -2002,7 +2106,8 @@ AB_PROVIDER *AH_Job_GetProvider(const AH_JOB *j) {
 
 
 
-void AH_Job_AddCommand(AH_JOB *j, AB_TRANSACTION *t) {
+void AH_Job_AddCommand(AH_JOB *j, AB_TRANSACTION *t)
+{
   assert(j);
   assert(j->usage);
 
@@ -2013,7 +2118,8 @@ void AH_Job_AddCommand(AH_JOB *j, AB_TRANSACTION *t) {
 
 
 
-AB_TRANSACTION_LIST2 *AH_Job_GetCommandList(const AH_JOB *j) {
+AB_TRANSACTION_LIST2 *AH_Job_GetCommandList(const AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
 
@@ -2022,15 +2128,16 @@ AB_TRANSACTION_LIST2 *AH_Job_GetCommandList(const AH_JOB *j) {
 
 
 
-AH_JOB *AH_Job_List_GetById(AH_JOB_LIST *jl, uint32_t id) {
+AH_JOB *AH_Job_List_GetById(AH_JOB_LIST *jl, uint32_t id)
+{
   if (jl) {
     AH_JOB *j;
 
     j=AH_Job_List_First(jl);
-    while(j) {
+    while (j) {
       if (AH_Job_GetId(j)==id)
-	return j;
-      j=AH_Job_List_Next (j );
+        return j;
+      j=AH_Job_List_Next(j);
     }
   }
 
@@ -2039,7 +2146,8 @@ AH_JOB *AH_Job_List_GetById(AH_JOB_LIST *jl, uint32_t id) {
 
 
 
-void AH_Job_SetStatusOnCommands(AH_JOB *j, AB_TRANSACTION_STATUS status) {
+void AH_Job_SetStatusOnCommands(AH_JOB *j, AB_TRANSACTION_STATUS status)
+{
   AB_TRANSACTION_LIST2 *cmdList;
 
   assert(j);
@@ -2053,7 +2161,7 @@ void AH_Job_SetStatusOnCommands(AH_JOB *j, AB_TRANSACTION_STATUS status) {
       AB_TRANSACTION *t;
 
       t=AB_Transaction_List2Iterator_Data(it);
-      while(t) {
+      while (t) {
         AB_Transaction_SetStatus(t, status);
         t=AB_Transaction_List2Iterator_Next(it);
       }

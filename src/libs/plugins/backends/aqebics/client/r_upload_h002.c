@@ -16,13 +16,14 @@
 
 
 static int EBC_Provider_MkUploadInitRequest_H002(AB_PROVIDER *pro,
-						 GWEN_HTTP_SESSION *sess,
-						 AB_USER *u,
-						 const char *requestType,
-						 GWEN_CRYPT_KEY *skey,
-						 const char *pEu,
-						 uint32_t dlen,
-						 EB_MSG **pMsg) {
+                                                 GWEN_HTTP_SESSION *sess,
+                                                 AB_USER *u,
+                                                 const char *requestType,
+                                                 GWEN_CRYPT_KEY *skey,
+                                                 const char *pEu,
+                                                 uint32_t dlen,
+                                                 EB_MSG **pMsg)
+{
   EBC_PROVIDER *dp;
   int rv;
   xmlNsPtr ns;
@@ -54,21 +55,21 @@ static int EBC_Provider_MkUploadInitRequest_H002(AB_PROVIDER *pro,
   root_node=xmlNewNode(NULL, BAD_CAST "ebicsRequest");
   xmlDocSetRootElement(doc, root_node);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.ebics.org/H002",
-	      NULL);
+              BAD_CAST "http://www.ebics.org/H002",
+              NULL);
   assert(ns);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
-	      BAD_CAST "ds");
+              BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
+              BAD_CAST "ds");
   assert(ns);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
-	      BAD_CAST "xsi");
+              BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
+              BAD_CAST "xsi");
   xmlNewNsProp(root_node,
-	       ns,
-	       BAD_CAST "schemaLocation", /* xsi:schemaLocation */
-	       BAD_CAST "http://www.ebics.org/H002 "
-	       "http://www.ebics.org/H002/ebics_request.xsd");
+               ns,
+               BAD_CAST "schemaLocation", /* xsi:schemaLocation */
+               BAD_CAST "http://www.ebics.org/H002 "
+               "http://www.ebics.org/H002/ebics_request.xsd");
 
   xmlNewProp(root_node, BAD_CAST "Version", BAD_CAST "H002");
   xmlNewProp(root_node, BAD_CAST "Revision", BAD_CAST "1");
@@ -82,8 +83,8 @@ static int EBC_Provider_MkUploadInitRequest_H002(AB_PROVIDER *pro,
   if (!s)
     s="EBICS";
   nodeXX=xmlNewTextChild(nodeX, NULL,
-			 BAD_CAST "HostID",
-			 BAD_CAST s);
+                         BAD_CAST "HostID",
+                         BAD_CAST s);
 
   /* generate Nonce */
   tbuf=GWEN_Buffer_new(0, 128, 0, 1);
@@ -95,8 +96,8 @@ static int EBC_Provider_MkUploadInitRequest_H002(AB_PROVIDER *pro,
     return rv;
   }
   nodeXX=xmlNewTextChild(nodeX, NULL,
-			 BAD_CAST "Nonce",
-			 BAD_CAST GWEN_Buffer_GetStart(tbuf));
+                         BAD_CAST "Nonce",
+                         BAD_CAST GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_Reset(tbuf);
 
   /* generate timestamp */
@@ -108,23 +109,23 @@ static int EBC_Provider_MkUploadInitRequest_H002(AB_PROVIDER *pro,
     return rv;
   }
   nodeXX=xmlNewTextChild(nodeX, NULL,
-			 BAD_CAST "Timestamp",
-			 BAD_CAST GWEN_Buffer_GetStart(tbuf));
+                         BAD_CAST "Timestamp",
+                         BAD_CAST GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_Reset(tbuf);
 
   nodeXX=xmlNewTextChild(nodeX, NULL,
-			 BAD_CAST "PartnerID",
-			 BAD_CAST partnerId);
+                         BAD_CAST "PartnerID",
+                         BAD_CAST partnerId);
 
   nodeXX=xmlNewTextChild(nodeX, NULL,
-			 BAD_CAST "UserID",
-			 BAD_CAST userId);
+                         BAD_CAST "UserID",
+                         BAD_CAST userId);
 
   /* order details */
   nodeXX=xmlNewChild(nodeX, NULL, BAD_CAST "OrderDetails", NULL);
   xmlNewTextChild(nodeXX, NULL,
-		  BAD_CAST "OrderType",
-		  BAD_CAST requestType);
+                  BAD_CAST "OrderType",
+                  BAD_CAST requestType);
 
   /* generate order id */
   rv=EBC_Provider_Generate_OrderId(pro, tbuf);
@@ -135,18 +136,18 @@ static int EBC_Provider_MkUploadInitRequest_H002(AB_PROVIDER *pro,
     return rv;
   }
   xmlNewTextChild(nodeXX, NULL,
-		  BAD_CAST "OrderID",
-		  BAD_CAST GWEN_Buffer_GetStart(tbuf));
+                  BAD_CAST "OrderID",
+                  BAD_CAST GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_free(tbuf);
 
   if (EBC_User_GetFlags(u) & EBC_USER_FLAGS_NO_EU)
     xmlNewTextChild(nodeXX, NULL,
-		    BAD_CAST "OrderAttribute",
-		    BAD_CAST "DZHNN");
+                    BAD_CAST "OrderAttribute",
+                    BAD_CAST "DZHNN");
   else
     xmlNewTextChild(nodeXX, NULL,
-		    BAD_CAST "OrderAttribute",
-		    BAD_CAST "OZHNN");
+                    BAD_CAST "OrderAttribute",
+                    BAD_CAST "OZHNN");
   xmlNewChild(nodeXX, NULL, BAD_CAST "StandardOrderParams", NULL);
 
   /* bank pubkey digests */
@@ -160,21 +161,21 @@ static int EBC_Provider_MkUploadInitRequest_H002(AB_PROVIDER *pro,
 
   /* security medium */
   xmlNewTextChild(nodeX, NULL,
-		  BAD_CAST "SecurityMedium",
-		  BAD_CAST "0000");
+                  BAD_CAST "SecurityMedium",
+                  BAD_CAST "0000");
 
   snprintf(numbuf, sizeof(numbuf)-1, "%i", (dlen+(1024*1024)-1)/(1024*1024));
   numbuf[sizeof(numbuf)-1]=0;
   xmlNewTextChild(nodeX, NULL,
-		  BAD_CAST "NumSegments",
-		  BAD_CAST numbuf);
+                  BAD_CAST "NumSegments",
+                  BAD_CAST numbuf);
 
 
   /* mutable */
   nodeX=xmlNewChild(node, NULL, BAD_CAST "mutable", NULL);
   xmlNewTextChild(nodeX, NULL,
-		  BAD_CAST "TransactionPhase",
-		  BAD_CAST "Initialisation");
+                  BAD_CAST "TransactionPhase",
+                  BAD_CAST "Initialisation");
 
 
   /* prepare signature node */
@@ -199,8 +200,8 @@ static int EBC_Provider_MkUploadInitRequest_H002(AB_PROVIDER *pro,
   if (!(EBC_User_GetFlags(u) & EBC_USER_FLAGS_NO_EU)) {
     /* add EU */
     nodeXX=xmlNewTextChild(nodeX, NULL,
-			   BAD_CAST "SignatureData",
-			   BAD_CAST pEu);
+                           BAD_CAST "SignatureData",
+                           BAD_CAST pEu);
     xmlNewProp(nodeXX, BAD_CAST "authenticate", BAD_CAST "true");
   }
 
@@ -219,14 +220,15 @@ static int EBC_Provider_MkUploadInitRequest_H002(AB_PROVIDER *pro,
 
 
 static int EBC_Provider_MkUploadTransferRequest_H002(AB_PROVIDER *pro,
-						     GWEN_HTTP_SESSION *sess,
-						     AB_USER *u,
-						     const char *transactionId,
-						     const char *pData,
-						     uint32_t lData,
-						     int segmentNumber,
-						     int isLast,
-						     EB_MSG **pMsg) {
+                                                     GWEN_HTTP_SESSION *sess,
+                                                     AB_USER *u,
+                                                     const char *transactionId,
+                                                     const char *pData,
+                                                     uint32_t lData,
+                                                     int segmentNumber,
+                                                     int isLast,
+                                                     EB_MSG **pMsg)
+{
   EBC_PROVIDER *dp;
   int rv;
   xmlNsPtr ns;
@@ -258,21 +260,21 @@ static int EBC_Provider_MkUploadTransferRequest_H002(AB_PROVIDER *pro,
   root_node=xmlNewNode(NULL, BAD_CAST "ebicsRequest");
   xmlDocSetRootElement(doc, root_node);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.ebics.org/H002",
-	      NULL);
+              BAD_CAST "http://www.ebics.org/H002",
+              NULL);
   assert(ns);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
-	      BAD_CAST "ds");
+              BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
+              BAD_CAST "ds");
   assert(ns);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
-	      BAD_CAST "xsi");
+              BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
+              BAD_CAST "xsi");
   xmlNewNsProp(root_node,
-	       ns,
-	       BAD_CAST "schemaLocation", /* xsi:schemaLocation */
-	       BAD_CAST "http://www.ebics.org/H002 "
-	       "http://www.ebics.org/H002/ebics_request.xsd");
+               ns,
+               BAD_CAST "schemaLocation", /* xsi:schemaLocation */
+               BAD_CAST "http://www.ebics.org/H002 "
+               "http://www.ebics.org/H002/ebics_request.xsd");
 
   xmlNewProp(root_node, BAD_CAST "Version", BAD_CAST "H002");
   xmlNewProp(root_node, BAD_CAST "Revision", BAD_CAST "1");
@@ -286,24 +288,24 @@ static int EBC_Provider_MkUploadTransferRequest_H002(AB_PROVIDER *pro,
   if (!s)
     s="EBICS";
   nodeXX=xmlNewTextChild(nodeX, NULL,
-			 BAD_CAST "HostID",
-			 BAD_CAST s);
+                         BAD_CAST "HostID",
+                         BAD_CAST s);
   nodeXX=xmlNewTextChild(nodeX, NULL,
-			 BAD_CAST "TransactionID",
-			 BAD_CAST transactionId);
+                         BAD_CAST "TransactionID",
+                         BAD_CAST transactionId);
 
   /* mutable */
   nodeX=xmlNewChild(node, NULL, BAD_CAST "mutable", NULL);
   xmlNewTextChild(nodeX, NULL,
-		  BAD_CAST "TransactionPhase",
-		  BAD_CAST "Transfer");
+                  BAD_CAST "TransactionPhase",
+                  BAD_CAST "Transfer");
   snprintf(numbuf, sizeof(numbuf)-1, "%d", segmentNumber);
   numbuf[sizeof(numbuf)-1]=0;
   nodeXX=xmlNewTextChild(nodeX, NULL,
-			 BAD_CAST "SegmentNumber",
-			 BAD_CAST numbuf);
+                         BAD_CAST "SegmentNumber",
+                         BAD_CAST numbuf);
   xmlNewProp(nodeXX, BAD_CAST "lastSegment",
-	     BAD_CAST (isLast?"true":"false"));
+             BAD_CAST(isLast?"true":"false"));
 
   /* prepare signature node */
   sigNode=xmlNewChild(root_node, NULL, BAD_CAST "AuthSignature", NULL);
@@ -316,7 +318,7 @@ static int EBC_Provider_MkUploadTransferRequest_H002(AB_PROVIDER *pro,
   tbuf=GWEN_Buffer_new(0, lData, 0, 1);
   GWEN_Buffer_AppendBytes(tbuf, pData, lData);
   nodeXX=xmlNewChild(nodeX, NULL, BAD_CAST "OrderData",
-		     BAD_CAST GWEN_Buffer_GetStart(tbuf));
+                     BAD_CAST GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_free(tbuf);
 
   /* sign */
@@ -334,11 +336,12 @@ static int EBC_Provider_MkUploadTransferRequest_H002(AB_PROVIDER *pro,
 
 
 int EBC_Provider_XchgUploadRequest_H002(AB_PROVIDER *pro,
-					GWEN_HTTP_SESSION *sess,
-					AB_USER *u,
-					const char *requestType,
-					const uint8_t *pData,
-					uint32_t lData) {
+                                        GWEN_HTTP_SESSION *sess,
+                                        AB_USER *u,
+                                        const char *requestType,
+                                        const uint8_t *pData,
+                                        uint32_t lData)
+{
   EBC_PROVIDER *dp;
   int rv;
   GWEN_CRYPT_KEY *skey;
@@ -368,7 +371,7 @@ int EBC_Provider_XchgUploadRequest_H002(AB_PROVIDER *pro,
   if (!(EBC_User_GetFlags(u) & EBC_USER_FLAGS_NO_EU)) {
     /* generate electronic signature */
     DBG_INFO(AQEBICS_LOGDOMAIN, "Generating electronic signature for user [%s]",
-	     AB_User_GetUserId(u));
+             AB_User_GetUserId(u));
     euBuf=GWEN_Buffer_new(0, 1024, 0, 1);
     rv=EBC_Provider_MkEuCryptZipDoc(pro, u, requestType, pData, lData, skey, euBuf);
     if (rv<0) {
@@ -411,16 +414,16 @@ int EBC_Provider_XchgUploadRequest_H002(AB_PROVIDER *pro,
   DBG_INFO(AQEBICS_LOGDOMAIN, "Generating upload init request");
   if (EBC_User_GetFlags(u) & EBC_USER_FLAGS_NO_EU)
     rv=EBC_Provider_MkUploadInitRequest_H002(pro, sess, u, requestType,
-					     skey,
-					     NULL, /* no EU */
-					     GWEN_Buffer_GetUsedBytes(dbuf),
-					     &msg);
+                                             skey,
+                                             NULL, /* no EU */
+                                             GWEN_Buffer_GetUsedBytes(dbuf),
+                                             &msg);
   else
     rv=EBC_Provider_MkUploadInitRequest_H002(pro, sess, u, requestType,
-					     skey,
-					     GWEN_Buffer_GetStart(euBuf),
-					     GWEN_Buffer_GetUsedBytes(dbuf),
-					     &msg);
+                                             skey,
+                                             GWEN_Buffer_GetStart(euBuf),
+                                             GWEN_Buffer_GetUsedBytes(dbuf),
+                                             &msg);
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(dbuf);
@@ -465,17 +468,17 @@ int EBC_Provider_XchgUploadRequest_H002(AB_PROVIDER *pro,
   rc=EB_Msg_GetBodyResultCode(mRsp);
   if (rc) {
     if ((rc & 0xff0000)==0x090000 ||
-	(rc & 0xff0000)==0x060000) {
+        (rc & 0xff0000)==0x060000) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Error response: (%06x)", rc);
       EB_Msg_free(mRsp);
       GWEN_Buffer_free(dbuf);
       Ab_HttpSession_AddLog(sess, GWEN_Buffer_GetStart(logbuf));
       GWEN_Buffer_free(logbuf);
       if ((rc & 0xfff00)==0x091300 ||
-	  (rc & 0xfff00)==0x091200)
-	return AB_ERROR_SECURITY;
+          (rc & 0xfff00)==0x091200)
+        return AB_ERROR_SECURITY;
       else
-	return GWEN_ERROR_GENERIC;
+        return GWEN_ERROR_GENERIC;
     }
   }
   if (1) {
@@ -505,22 +508,22 @@ int EBC_Provider_XchgUploadRequest_H002(AB_PROVIDER *pro,
 
       n=1024*1024;
       if (n>bytesLeft)
-	n=bytesLeft;
+        n=bytesLeft;
       assert(n);
       DBG_INFO(AQEBICS_LOGDOMAIN, "Generating upload transfer request");
       rv=EBC_Provider_MkUploadTransferRequest_H002(pro, sess, u,
-						   transactionId,
-						   p,
-						   n,
-						   i+1,
-						   (i==numSegs-1)?1:0,
-						   &msg);
+                                                   transactionId,
+                                                   p,
+                                                   n,
+                                                   i+1,
+                                                   (i==numSegs-1)?1:0,
+                                                   &msg);
       if (rv<0) {
-	DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
-	GWEN_Buffer_free(dbuf);
-	Ab_HttpSession_AddLog(sess, GWEN_Buffer_GetStart(logbuf));
-	GWEN_Buffer_free(logbuf);
-	return rv;
+        DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
+        GWEN_Buffer_free(dbuf);
+        Ab_HttpSession_AddLog(sess, GWEN_Buffer_GetStart(logbuf));
+        GWEN_Buffer_free(logbuf);
+        return rv;
       }
 
       /* exchange requests */
@@ -528,12 +531,12 @@ int EBC_Provider_XchgUploadRequest_H002(AB_PROVIDER *pro,
       GWEN_Buffer_AppendString(logbuf, I18N("\tExchanging upload transfer request"));
       rv=EBC_Dialog_ExchangeMessages(sess, msg, &mRsp);
       if (rv<0 || rv>=300) {
-	DBG_ERROR(AQEBICS_LOGDOMAIN, "Error exchanging messages (%d)", rv);
-	EB_Msg_free(msg);
-	GWEN_Buffer_free(dbuf);
-	Ab_HttpSession_AddLog(sess, GWEN_Buffer_GetStart(logbuf));
-	GWEN_Buffer_free(logbuf);
-	return rv;
+        DBG_ERROR(AQEBICS_LOGDOMAIN, "Error exchanging messages (%d)", rv);
+        EB_Msg_free(msg);
+        GWEN_Buffer_free(dbuf);
+        Ab_HttpSession_AddLog(sess, GWEN_Buffer_GetStart(logbuf));
+        GWEN_Buffer_free(logbuf);
+        return rv;
       }
       EB_Msg_free(msg);
 
@@ -545,13 +548,13 @@ int EBC_Provider_XchgUploadRequest_H002(AB_PROVIDER *pro,
 
       rc=EB_Msg_GetResultCode(mRsp);
       if ((rc & 0xff0000)==0x090000 ||
-	  (rc & 0xff0000)==0x060000) {
-	DBG_ERROR(AQEBICS_LOGDOMAIN, "Error response: (%06x)", rc);
-	EB_Msg_free(mRsp);
-	GWEN_Buffer_free(dbuf);
-	Ab_HttpSession_AddLog(sess, GWEN_Buffer_GetStart(logbuf));
-	GWEN_Buffer_free(logbuf);
-	return AB_ERROR_SECURITY;
+          (rc & 0xff0000)==0x060000) {
+        DBG_ERROR(AQEBICS_LOGDOMAIN, "Error response: (%06x)", rc);
+        EB_Msg_free(mRsp);
+        GWEN_Buffer_free(dbuf);
+        Ab_HttpSession_AddLog(sess, GWEN_Buffer_GetStart(logbuf));
+        GWEN_Buffer_free(logbuf);
+        return AB_ERROR_SECURITY;
       }
 
       /* prepare next round */

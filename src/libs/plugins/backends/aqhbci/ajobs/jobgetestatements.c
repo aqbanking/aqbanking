@@ -38,7 +38,8 @@
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_GetEStatements_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_GetEStatements_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
+{
   AH_JOB *j;
 
   j=AH_AccountJob_new("JobGetEStatements", pro, u, account);
@@ -59,7 +60,8 @@ AH_JOB *AH_Job_GetEStatements_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acco
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetEStatements_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_GetEStatements_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+{
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
   const char *responseName;
@@ -82,7 +84,7 @@ int AH_Job_GetEStatements_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
   /* search for "Transactions" */
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
-  while(dbCurr) {
+  while (dbCurr) {
     rv=AH_Job_CheckEncryption(j, dbCurr);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (encryption)");
@@ -104,7 +106,7 @@ int AH_Job_GetEStatements_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
         dbXA=GWEN_DB_GetGroup(dbXA, GWEN_PATH_FLAGS_NAMEMUSTEXIST, responseName);
       if (dbXA) {
         const void *p;
-	unsigned int bs;
+        unsigned int bs;
 
         p=GWEN_DB_GetBinValue(dbXA, "eStatement", 0, 0, 0, &bs);
         if (p && bs) {
@@ -126,14 +128,14 @@ int AH_Job_GetEStatements_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
           /* get account info for this account */
           if (iea==NULL) {
             /* not set yet, find or create it */
-	    iea=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
-							 AB_Account_GetUniqueId(acc),
-							 AB_Account_GetIban(acc),
-							 AB_Account_GetBankCode(acc),
-							 AB_Account_GetAccountNumber(acc),
-							 AB_Account_GetAccountType(acc));
-	    assert(iea);
-	  }
+            iea=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
+                                                         AB_Account_GetUniqueId(acc),
+                                                         AB_Account_GetIban(acc),
+                                                         AB_Account_GetBankCode(acc),
+                                                         AB_Account_GetAccountNumber(acc),
+                                                         AB_Account_GetAccountType(acc));
+            assert(iea);
+          }
 
           /* add document to imexporter context */
           AB_ImExporterAccountInfo_AddEStatement(iea, doc);

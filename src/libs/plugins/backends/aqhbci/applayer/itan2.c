@@ -20,7 +20,8 @@
 
 int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
                           AH_DIALOG *dlg,
-			  AH_JOBQUEUE *qJob){
+                          AH_JOBQUEUE *qJob)
+{
   const AH_JOB_LIST *jl;
   AH_MSG *msg1;
   AH_MSG *msg2;
@@ -63,7 +64,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Signatures needed but no signer given");
       return GWEN_ERROR_INVALID;
     }
-    while(se) {
+    while (se) {
       AH_Job_AddSigner(jTan1, GWEN_StringListEntry_Data(se));
       se=GWEN_StringListEntry_Next(se);
     } /* while */
@@ -98,8 +99,8 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   /* encode message */
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding queue");
   GWEN_Gui_ProgressLog(0,
-		       GWEN_LoggerLevel_Info,
-		       I18N("Encoding queue"));
+                       GWEN_LoggerLevel_Info,
+                       I18N("Encoding queue"));
   AH_Msg_SetNeedTan(msg1, 0);
   rv=AH_Msg_EncodeMsg(msg1);
   if (rv) {
@@ -116,9 +117,11 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
     AH_Job_SetDialogId(j, AH_Dialog_GetDialogId(dlg));
     /* store expected signer and crypter (if any) */
     s=AH_Msg_GetExpectedSigner(msg1);
-    if (s) AH_Job_SetExpectedSigner(j, s);
+    if (s)
+      AH_Job_SetExpectedSigner(j, s);
     s=AH_Msg_GetExpectedCrypter(msg1);
-    if (s) AH_Job_SetExpectedCrypter(j, s);
+    if (s)
+      AH_Job_SetExpectedCrypter(j, s);
   }
 
   if (AH_Job_GetStatus(jTan1)==AH_JobStatusEncoded) {
@@ -128,9 +131,11 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
     AH_Job_SetDialogId(jTan1, AH_Dialog_GetDialogId(dlg));
     /* store expected signer and crypter (if any) */
     s=AH_Msg_GetExpectedSigner(msg1);
-    if (s) AH_Job_SetExpectedSigner(jTan1, s);
+    if (s)
+      AH_Job_SetExpectedSigner(jTan1, s);
     s=AH_Msg_GetExpectedCrypter(msg1);
-    if (s) AH_Job_SetExpectedCrypter(jTan1, s);
+    if (s)
+      AH_Job_SetExpectedCrypter(jTan1, s);
   }
 
   /* send message */
@@ -218,7 +223,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
       AH_JobQueue_free(qJob2);
       return GWEN_ERROR_INVALID;
     }
-    while(se) {
+    while (se) {
       AH_Job_AddSigner(jTan2, GWEN_StringListEntry_Data(se));
       se=GWEN_StringListEntry_Next(se);
     } /* while */
@@ -244,8 +249,8 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   /* encode HKTAN message */
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding queue");
   GWEN_Gui_ProgressLog(0,
-		       GWEN_LoggerLevel_Info,
-		       I18N("Encoding queue"));
+                       GWEN_LoggerLevel_Info,
+                       I18N("Encoding queue"));
   AH_Msg_SetNeedTan(msg2, 1);
   rv=AH_Msg_EncodeMsg(msg2);
   if (rv) {
@@ -257,7 +262,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
 
   /* store used TAN in original job (if any) */
   DBG_INFO(AQHBCI_LOGDOMAIN, "Storing TAN in job [%s]",
-	   AH_Job_GetName(j));
+           AH_Job_GetName(j));
   AH_Job_SetUsedTan(j, AH_Msg_GetTan(msg2));
 
   if (AH_Job_GetStatus(jTan2)==AH_JobStatusEncoded) {
@@ -267,17 +272,19 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
     AH_Job_SetDialogId(jTan2, AH_Dialog_GetDialogId(dlg));
     /* store expected signer and crypter (if any) */
     s=AH_Msg_GetExpectedSigner(msg2);
-    if (s) AH_Job_SetExpectedSigner(jTan2, s);
+    if (s)
+      AH_Job_SetExpectedSigner(jTan2, s);
     s=AH_Msg_GetExpectedCrypter(msg2);
-    if (s) AH_Job_SetExpectedCrypter(jTan2, s);
+    if (s)
+      AH_Job_SetExpectedCrypter(jTan2, s);
 
     /* store TAN in TAN job */
     AH_Job_SetUsedTan(jTan2, AH_Msg_GetTan(msg2));
   }
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN,
-	     "jTAN2 not encoded? (%d)",
-	     AH_Job_GetStatus(jTan2));
+             "jTAN2 not encoded? (%d)",
+             AH_Job_GetStatus(jTan2));
   }
 
   /* send HKTAN message */
@@ -318,67 +325,67 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
       /* segment results */
       rl=AH_Job_GetSegResults(jTan2);
       if (rl) {
-	AH_RESULT *or;
+        AH_RESULT *or;
 
-	or=AH_Result_List_First(rl);
-	if (or==NULL) {
-	  DBG_INFO(AQHBCI_LOGDOMAIN,
-		   "No segment result in job HKTAN");
-	}
-	while(or) {
-	  AH_JOB *qj;
+        or=AH_Result_List_First(rl);
+        if (or==NULL) {
+          DBG_INFO(AQHBCI_LOGDOMAIN,
+                   "No segment result in job HKTAN");
+        }
+        while (or) {
+          AH_JOB *qj;
 
-	  qj=AH_Job_List_First(qjl);
-	  while(qj) {
-	    if (qj!=jTan2) {
-	      AH_RESULT *nr;
+          qj=AH_Job_List_First(qjl);
+          while (qj) {
+            if (qj!=jTan2) {
+              AH_RESULT *nr;
 
-	      nr=AH_Result_dup(or);
-	      DBG_ERROR(AQHBCI_LOGDOMAIN,
-			"Adding result %d to job %s",
-			AH_Result_GetCode(or),
-			AH_Job_GetName(qj));
-	      AH_Result_List_Add(nr, AH_Job_GetSegResults(qj));
-	    }
-	    else {
-	      DBG_INFO(AQHBCI_LOGDOMAIN,
+              nr=AH_Result_dup(or);
+              DBG_ERROR(AQHBCI_LOGDOMAIN,
+                        "Adding result %d to job %s",
+                        AH_Result_GetCode(or),
+                        AH_Job_GetName(qj));
+              AH_Result_List_Add(nr, AH_Job_GetSegResults(qj));
+            }
+            else {
+              DBG_INFO(AQHBCI_LOGDOMAIN,
                        "Not adding result to the same job");
-	    }
-	    qj=AH_Job_List_Next(qj);
-	  }
+            }
+            qj=AH_Job_List_Next(qj);
+          }
 
-	  or=AH_Result_List_Next(or);
-	} /* while or */
+          or=AH_Result_List_Next(or);
+        } /* while or */
       } /* if rl */
       else {
-	DBG_INFO(AQHBCI_LOGDOMAIN,
+        DBG_INFO(AQHBCI_LOGDOMAIN,
                  "No segment results in HKTAN");
       }
 
       /* msg results */
       rl=AH_Job_GetMsgResults(jTan2);
       if (rl) {
-	AH_RESULT *or;
+        AH_RESULT *or;
 
-	or=AH_Result_List_First(rl);
-	while(or) {
-	  AH_JOB *qj;
+        or=AH_Result_List_First(rl);
+        while (or) {
+          AH_JOB *qj;
 
-	  qj=AH_Job_List_First(qjl);
-	  while(qj) {
-	    AH_RESULT *nr;
+          qj=AH_Job_List_First(qjl);
+          while (qj) {
+            AH_RESULT *nr;
 
-	    nr=AH_Result_dup(or);
-	    AH_Result_List_Add(nr, AH_Job_GetMsgResults(qj));
-	    qj=AH_Job_List_Next(qj);
-	  }
+            nr=AH_Result_dup(or);
+            AH_Result_List_Add(nr, AH_Job_GetMsgResults(qj));
+            qj=AH_Job_List_Next(qj);
+          }
 
-	  or=AH_Result_List_Next(or);
-	} /* while or */
+          or=AH_Result_List_Next(or);
+        } /* while or */
       } /* if rl */
       else {
-	DBG_INFO(AQHBCI_LOGDOMAIN,
-		 "No message results in HKTAN");
+        DBG_INFO(AQHBCI_LOGDOMAIN,
+                 "No message results in HKTAN");
       }
     } /* if qjl */
     else {

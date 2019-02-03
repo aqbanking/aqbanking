@@ -47,7 +47,8 @@ GWEN_INHERIT(GWEN_DIALOG, AB_SETUP_DIALOG)
 
 
 
-GWEN_DIALOG *AB_SetupDialog_new(AB_BANKING *ab) {
+GWEN_DIALOG *AB_SetupDialog_new(AB_BANKING *ab)
+{
   GWEN_DIALOG *dlg;
   AB_SETUP_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -56,14 +57,14 @@ GWEN_DIALOG *AB_SetupDialog_new(AB_BANKING *ab) {
   dlg=GWEN_Dialog_new("ab_setup");
   GWEN_NEW_OBJECT(AB_SETUP_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg, xdlg,
-		       AB_SetupDialog_FreeData);
+                       AB_SetupDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AB_SetupDialog_SignalHandler);
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-			       "aqbanking/dialogs/dlg_setup.dlg",
-			       fbuf);
+                               "aqbanking/dialogs/dlg_setup.dlg",
+                               fbuf);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
@@ -89,10 +90,11 @@ GWEN_DIALOG *AB_SetupDialog_new(AB_BANKING *ab) {
 
 
 
-void GWENHYWFAR_CB AB_SetupDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AB_SetupDialog_FreeData(void *bp, void *p)
+{
   AB_SETUP_DIALOG *xdlg;
 
-  xdlg=(AB_SETUP_DIALOG*) p;
+  xdlg=(AB_SETUP_DIALOG *) p;
 
   AB_User_List_free(xdlg->currentUserList);
   AB_Account_List_free(xdlg->currentAccountList);
@@ -103,11 +105,12 @@ void GWENHYWFAR_CB AB_SetupDialog_FreeData(void *bp, void *p) {
 
 
 
-static void createUserListBoxString(const AB_USER *u, GWEN_BUFFER *tbuf) {
+static void createUserListBoxString(const AB_USER *u, GWEN_BUFFER *tbuf)
+{
   const char *s;
   char numbuf[32];
   uint32_t uid;
-  
+
   /* column 1 */
   uid=AB_User_GetUniqueId(u);
   snprintf(numbuf, sizeof(numbuf)-1, "%06d", uid);
@@ -126,19 +129,19 @@ static void createUserListBoxString(const AB_USER *u, GWEN_BUFFER *tbuf) {
   if (s && *s)
     GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, "\t");
-  
+
   /* column 4 */
   s=AB_User_GetCustomerId(u);
   if (s && *s)
     GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, "\t");
-  
+
   /* column 5 */
   s=AB_User_GetUserName(u);
   if (s && *s)
     GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, "\t");
-  
+
   /* column 6 */
   s=AB_User_GetBackendName(u);
   if (s && *s)
@@ -147,48 +150,49 @@ static void createUserListBoxString(const AB_USER *u, GWEN_BUFFER *tbuf) {
 
 
 
-static void createAccountListBoxString(const AB_ACCOUNT *a, GWEN_BUFFER *tbuf) {
+static void createAccountListBoxString(const AB_ACCOUNT *a, GWEN_BUFFER *tbuf)
+{
   const char *s;
   char numbuf[32];
   uint32_t uid;
-  
+
   /* column 1 */
   uid=AB_Account_GetUniqueId(a);
   snprintf(numbuf, sizeof(numbuf)-1, "%06d", uid);
   numbuf[sizeof(numbuf)-1]=0;
   GWEN_Buffer_AppendString(tbuf, numbuf);
   GWEN_Buffer_AppendString(tbuf, "\t");
-  
+
   /* column 2 */
   s=AB_Account_GetBankCode(a);
   if (s && *s)
     GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, "\t");
-  
+
   /* column 3 */
   s=AB_Account_GetBankName(a);
   if (s && *s)
     GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, "\t");
-  
+
   /* column 4 */
   s=AB_Account_GetAccountNumber(a);
   if (s && *s)
     GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, "\t");
-  
+
   /* column 5 */
   s=AB_Account_GetAccountName(a);
   if (s && *s)
     GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, "\t");
-  
+
   /* column 6 */
   s=AB_Account_GetOwnerName(a);
   if (s && *s)
     GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, "\t");
-  
+
   /* column 7 */
   s=AB_Account_GetBackendName(a);
   if (s && *s)
@@ -197,7 +201,8 @@ static void createAccountListBoxString(const AB_ACCOUNT *a, GWEN_BUFFER *tbuf) {
 
 
 
-uint32_t AB_SetupDialog_GetCurrentId(GWEN_DIALOG *dlg, const char *comboBoxName) {
+uint32_t AB_SetupDialog_GetCurrentId(GWEN_DIALOG *dlg, const char *comboBoxName)
+{
   int idx;
 
   idx=GWEN_Dialog_GetIntProperty(dlg, comboBoxName, GWEN_DialogProperty_Value, 0, -1);
@@ -222,19 +227,22 @@ uint32_t AB_SetupDialog_GetCurrentId(GWEN_DIALOG *dlg, const char *comboBoxName)
 }
 
 
-uint32_t AB_SetupDialog_GetCurrentUserId(GWEN_DIALOG *dlg) {
+uint32_t AB_SetupDialog_GetCurrentUserId(GWEN_DIALOG *dlg)
+{
   return AB_SetupDialog_GetCurrentId(dlg, "userListBox");
 }
 
 
 
-uint32_t AB_SetupDialog_GetCurrentAccountId(GWEN_DIALOG *dlg) {
+uint32_t AB_SetupDialog_GetCurrentAccountId(GWEN_DIALOG *dlg)
+{
   return AB_SetupDialog_GetCurrentId(dlg, "accountListBox");
 }
 
 
 
-int AB_SetupDialog_UserChanged(GWEN_DIALOG *dlg) {
+int AB_SetupDialog_UserChanged(GWEN_DIALOG *dlg)
+{
   AB_SETUP_DIALOG *xdlg;
 
   assert(dlg);
@@ -246,7 +254,8 @@ int AB_SetupDialog_UserChanged(GWEN_DIALOG *dlg) {
 
 
 
-int AB_SetupDialog_AccountChanged(GWEN_DIALOG *dlg) {
+int AB_SetupDialog_AccountChanged(GWEN_DIALOG *dlg)
+{
   AB_SETUP_DIALOG *xdlg;
 
   assert(dlg);
@@ -258,7 +267,8 @@ int AB_SetupDialog_AccountChanged(GWEN_DIALOG *dlg) {
 
 
 
-static void AB_SetupDialog_ActivateProviders(GWEN_DIALOG *dlg) {
+static void AB_SetupDialog_ActivateProviders(GWEN_DIALOG *dlg)
+{
   AB_SETUP_DIALOG *xdlg;
   GWEN_PLUGIN_DESCRIPTION_LIST2 *pdl;
 
@@ -279,7 +289,7 @@ static void AB_SetupDialog_ActivateProviders(GWEN_DIALOG *dlg) {
       GWEN_PLUGIN_DESCRIPTION *pd;
 
       pd=GWEN_PluginDescription_List2Iterator_Data(it);
-      while(pd) {
+      while (pd) {
         const char *pName;
 
         pName=GWEN_PluginDescription_GetName(pd);
@@ -305,7 +315,8 @@ static void AB_SetupDialog_ActivateProviders(GWEN_DIALOG *dlg) {
 
 
 
-static void AB_SetupDialog_DeactivateProviders(GWEN_DIALOG *dlg) {
+static void AB_SetupDialog_DeactivateProviders(GWEN_DIALOG *dlg)
+{
   AB_SETUP_DIALOG *xdlg;
 
   assert(dlg);
@@ -320,7 +331,7 @@ static void AB_SetupDialog_DeactivateProviders(GWEN_DIALOG *dlg) {
       AB_PROVIDER *pro;
 
       pro=AB_Provider_List2Iterator_Data(it);
-      while(pro) {
+      while (pro) {
         AB_Banking_EndUseProvider(xdlg->banking, pro);
         pro=AB_Provider_List2Iterator_Next(it);
       }
@@ -333,7 +344,8 @@ static void AB_SetupDialog_DeactivateProviders(GWEN_DIALOG *dlg) {
 
 
 
-static AB_PROVIDER *AB_SetupDialog_GetProviderByName(GWEN_DIALOG *dlg, const char *pName) {
+static AB_PROVIDER *AB_SetupDialog_GetProviderByName(GWEN_DIALOG *dlg, const char *pName)
+{
   AB_SETUP_DIALOG *xdlg;
 
   assert(dlg);
@@ -348,7 +360,7 @@ static AB_PROVIDER *AB_SetupDialog_GetProviderByName(GWEN_DIALOG *dlg, const cha
       AB_PROVIDER *pro;
 
       pro=AB_Provider_List2Iterator_Data(it);
-      while(pro) {
+      while (pro) {
         const char *s;
 
         s=AB_Provider_GetName(pro);
@@ -367,7 +379,8 @@ static AB_PROVIDER *AB_SetupDialog_GetProviderByName(GWEN_DIALOG *dlg, const cha
 
 
 
-static void AB_SetupDialog_LoadUsers(GWEN_DIALOG *dlg, AB_USER_LIST *ul) {
+static void AB_SetupDialog_LoadUsers(GWEN_DIALOG *dlg, AB_USER_LIST *ul)
+{
   AB_SETUP_DIALOG *xdlg;
 
   assert(dlg);
@@ -382,7 +395,7 @@ static void AB_SetupDialog_LoadUsers(GWEN_DIALOG *dlg, AB_USER_LIST *ul) {
       AB_PROVIDER *pro;
 
       pro=AB_Provider_List2Iterator_Data(it);
-      while(pro) {
+      while (pro) {
         int rv;
 
         rv=AB_Provider_ReadUsers(pro, ul);
@@ -398,7 +411,8 @@ static void AB_SetupDialog_LoadUsers(GWEN_DIALOG *dlg, AB_USER_LIST *ul) {
 
 
 
-static void AB_SetupDialog_LoadAccounts(GWEN_DIALOG *dlg, AB_ACCOUNT_LIST *al) {
+static void AB_SetupDialog_LoadAccounts(GWEN_DIALOG *dlg, AB_ACCOUNT_LIST *al)
+{
   AB_SETUP_DIALOG *xdlg;
 
   assert(dlg);
@@ -413,7 +427,7 @@ static void AB_SetupDialog_LoadAccounts(GWEN_DIALOG *dlg, AB_ACCOUNT_LIST *al) {
       AB_PROVIDER *pro;
 
       pro=AB_Provider_List2Iterator_Data(it);
-      while(pro) {
+      while (pro) {
         int rv;
 
         rv=AB_Provider_ReadAccounts(pro, al);
@@ -429,7 +443,8 @@ static void AB_SetupDialog_LoadAccounts(GWEN_DIALOG *dlg, AB_ACCOUNT_LIST *al) {
 
 
 
-static void AB_SetupDialog_Reload(GWEN_DIALOG *dlg) {
+static void AB_SetupDialog_Reload(GWEN_DIALOG *dlg)
+{
   AB_SETUP_DIALOG *xdlg;
   AB_USER *u;
   AB_ACCOUNT *a;
@@ -452,7 +467,7 @@ static void AB_SetupDialog_Reload(GWEN_DIALOG *dlg) {
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
     u=AB_User_List_First(xdlg->currentUserList);
-    while(u) {
+    while (u) {
       createUserListBoxString(u, tbuf);
       GWEN_Dialog_SetCharProperty(dlg,
                                   "userListBox",
@@ -484,7 +499,7 @@ static void AB_SetupDialog_Reload(GWEN_DIALOG *dlg) {
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
     a=AB_Account_List_First(xdlg->currentAccountList);
-    while(a) {
+    while (a) {
       createAccountListBoxString(a, tbuf);
       GWEN_Dialog_SetCharProperty(dlg,
                                   "accountListBox",
@@ -509,7 +524,8 @@ static void AB_SetupDialog_Reload(GWEN_DIALOG *dlg) {
 
 
 
-void AB_SetupDialog_Init(GWEN_DIALOG *dlg) {
+void AB_SetupDialog_Init(GWEN_DIALOG *dlg)
+{
   AB_SETUP_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
@@ -522,39 +538,39 @@ void AB_SetupDialog_Init(GWEN_DIALOG *dlg) {
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("AqBanking Setup"),
-			      0);
+                              "",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("AqBanking Setup"),
+                              0);
 
   /* user list */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "userListBox",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("Id\tBank Code\tUser Id\tCustomer Id\tUser Name\tModule"),
-			      0);
+                              "userListBox",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("Id\tBank Code\tUser Id\tCustomer Id\tUser Name\tModule"),
+                              0);
   GWEN_Dialog_SetIntProperty(dlg,
-			     "userListBox",
-			     GWEN_DialogProperty_SelectionMode,
-			     0,
-			     GWEN_Dialog_SelectionMode_Single,
-			     0);
+                             "userListBox",
+                             GWEN_DialogProperty_SelectionMode,
+                             0,
+                             GWEN_Dialog_SelectionMode_Single,
+                             0);
 
   /* account list */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "accountListBox",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("Id\tBank Code\tBank Name\tAccount Number\tAccount Name\tOwner Name\tModule"),
-			      0);
+                              "accountListBox",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("Id\tBank Code\tBank Name\tAccount Number\tAccount Name\tOwner Name\tModule"),
+                              0);
   GWEN_Dialog_SetIntProperty(dlg,
-			     "accountListBox",
-			     GWEN_DialogProperty_SelectionMode,
-			     0,
-			     GWEN_Dialog_SelectionMode_Single,
-			     0);
+                             "accountListBox",
+                             GWEN_DialogProperty_SelectionMode,
+                             0,
+                             GWEN_Dialog_SelectionMode_Single,
+                             0);
 
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
@@ -601,7 +617,8 @@ void AB_SetupDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-void AB_SetupDialog_Fini(GWEN_DIALOG *dlg) {
+void AB_SetupDialog_Fini(GWEN_DIALOG *dlg)
+{
   AB_SETUP_DIALOG *xdlg;
   int i;
   GWEN_DB_NODE *dbPrefs;
@@ -618,16 +635,16 @@ void AB_SetupDialog_Fini(GWEN_DIALOG *dlg) {
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_width",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_width",
+                      i);
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_height",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_height",
+                      i);
 
   /* store column widths of user list */
   GWEN_DB_DeleteVar(dbPrefs, "user_list_columns");
@@ -638,29 +655,29 @@ void AB_SetupDialog_Fini(GWEN_DIALOG *dlg) {
     if (j<USER_LIST_MINCOLWIDTH)
       j=USER_LIST_MINCOLWIDTH;
     GWEN_DB_SetIntValue(dbPrefs,
-			GWEN_DB_FLAGS_DEFAULT,
-			"user_list_columns",
-			j);
+                        GWEN_DB_FLAGS_DEFAULT,
+                        "user_list_columns",
+                        j);
   }
   /* store column sorting of user list */
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "user_list_sortbycolumn",
-		      -1);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "user_list_sortbycolumn",
+                      -1);
   for (i=0; i<6; i++) {
     int j;
 
     j=GWEN_Dialog_GetIntProperty(dlg, "userListBox", GWEN_DialogProperty_SortDirection, i,
-				 GWEN_DialogSortDirection_None);
+                                 GWEN_DialogSortDirection_None);
     if (j!=GWEN_DialogSortDirection_None) {
       GWEN_DB_SetIntValue(dbPrefs,
-			  GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  "user_list_sortbycolumn",
-			  i);
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "user_list_sortbycolumn",
+                          i);
       GWEN_DB_SetIntValue(dbPrefs,
-			  GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  "user_list_sortdir",
-			  (j==GWEN_DialogSortDirection_Up)?1:0);
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "user_list_sortdir",
+                          (j==GWEN_DialogSortDirection_Up)?1:0);
       break;
     }
   }
@@ -674,29 +691,29 @@ void AB_SetupDialog_Fini(GWEN_DIALOG *dlg) {
     if (j<ACCOUNT_LIST_MINCOLWIDTH)
       j=ACCOUNT_LIST_MINCOLWIDTH;
     GWEN_DB_SetIntValue(dbPrefs,
-			GWEN_DB_FLAGS_DEFAULT,
-			"account_list_columns",
-			j);
+                        GWEN_DB_FLAGS_DEFAULT,
+                        "account_list_columns",
+                        j);
   }
   /* store column sorting */
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "account_list_sortbycolumn",
-		      -1);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "account_list_sortbycolumn",
+                      -1);
   for (i=0; i<7; i++) {
     int j;
 
     j=GWEN_Dialog_GetIntProperty(dlg, "accountListBox", GWEN_DialogProperty_SortDirection, i,
-				 GWEN_DialogSortDirection_None);
+                                 GWEN_DialogSortDirection_None);
     if (j!=GWEN_DialogSortDirection_None) {
       GWEN_DB_SetIntValue(dbPrefs,
-			  GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  "account_list_sortbycolumn",
-			  i);
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "account_list_sortbycolumn",
+                          i);
       GWEN_DB_SetIntValue(dbPrefs,
-			  GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  "account_list_sortdir",
-			  (j==GWEN_DialogSortDirection_Up)?1:0);
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "account_list_sortdir",
+                          (j==GWEN_DialogSortDirection_Up)?1:0);
       break;
     }
   }
@@ -704,7 +721,8 @@ void AB_SetupDialog_Fini(GWEN_DIALOG *dlg) {
 
 
 
-int AB_SetupDialog_EditUser(GWEN_DIALOG *dlg) {
+int AB_SetupDialog_EditUser(GWEN_DIALOG *dlg)
+{
   AB_SETUP_DIALOG *xdlg;
 
   assert(dlg);
@@ -764,7 +782,8 @@ int AB_SetupDialog_EditUser(GWEN_DIALOG *dlg) {
 
 
 
-int AB_SetupDialog_AddUser(GWEN_DIALOG *dlg) {
+int AB_SetupDialog_AddUser(GWEN_DIALOG *dlg)
+{
   AB_SETUP_DIALOG *xdlg;
   GWEN_DIALOG *dlg2;
   int rv;
@@ -795,78 +814,78 @@ int AB_SetupDialog_AddUser(GWEN_DIALOG *dlg) {
 
       pro=AB_SetupDialog_GetProviderByName(dlg, s);
       if (pro==NULL) {
-	DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider [%s] not found", s);
-	GWEN_Dialog_free(dlg2);
-	return GWEN_DialogEvent_ResultHandled;
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider [%s] not found", s);
+        GWEN_Dialog_free(dlg2);
+        return GWEN_DialogEvent_ResultHandled;
       }
       selectedType=AB_SetupNewUserDialog_GetSelectedType(dlg2);
       GWEN_Dialog_free(dlg2);
 
       flags=AB_Provider_GetFlags(pro);
       if (flags & AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG) {
-	GWEN_DIALOG *dlg3;
-	int rv;
+        GWEN_DIALOG *dlg3;
+        int rv;
 
-	dlg3=AB_Provider_GetNewUserDialog(pro, selectedType);
-	if (dlg3==NULL) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
-	  return GWEN_DialogEvent_ResultHandled;
-	}
-
-	rv=GWEN_Gui_ExecDialog(dlg3, 0);
-	if (rv==0) {
-	  /* rejected */
-	  GWEN_Dialog_free(dlg3);
-	  return GWEN_DialogEvent_ResultHandled;
-	}
-	GWEN_Dialog_free(dlg3);
-	AB_SetupDialog_Reload(dlg);
-      }
-      else {
-	GWEN_DIALOG *dlg3;
-	AB_USER *u;
-	const char *s;
-	int rv;
-    
-        u=AB_Provider_CreateUserObject(pro);
-        if (u==NULL) {
-	  DBG_INFO(AQBANKING_LOGDOMAIN, "No user created.");
+        dlg3=AB_Provider_GetNewUserDialog(pro, selectedType);
+        if (dlg3==NULL) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
           return GWEN_DialogEvent_ResultHandled;
         }
 
-	s=GWEN_I18N_GetCurrentLocale();
-	if (s && *s) {
+        rv=GWEN_Gui_ExecDialog(dlg3, 0);
+        if (rv==0) {
+          /* rejected */
+          GWEN_Dialog_free(dlg3);
+          return GWEN_DialogEvent_ResultHandled;
+        }
+        GWEN_Dialog_free(dlg3);
+        AB_SetupDialog_Reload(dlg);
+      }
+      else {
+        GWEN_DIALOG *dlg3;
+        AB_USER *u;
+        const char *s;
+        int rv;
+
+        u=AB_Provider_CreateUserObject(pro);
+        if (u==NULL) {
+          DBG_INFO(AQBANKING_LOGDOMAIN, "No user created.");
+          return GWEN_DialogEvent_ResultHandled;
+        }
+
+        s=GWEN_I18N_GetCurrentLocale();
+        if (s && *s) {
           if (strstr(s, "de_"))
             AB_User_SetCountry(u, "de");
           else if (strstr(s, "us_"))
             AB_User_SetCountry(u, "us");
         }
-    
+
         dlg3=AB_EditUserDialog_new(pro, u, 0);
-	if (dlg3==NULL) {
-	  DBG_INFO(AQBANKING_LOGDOMAIN, "Could not create dialog");
-	  AB_User_free(u);
-	  return GWEN_DialogEvent_ResultHandled;
-	}
-    
-	rv=GWEN_Gui_ExecDialog(dlg3, 0);
-	if (rv==0) {
-	  /* rejected */
-	  GWEN_Dialog_free(dlg3);
+        if (dlg3==NULL) {
+          DBG_INFO(AQBANKING_LOGDOMAIN, "Could not create dialog");
           AB_User_free(u);
-	  return GWEN_DialogEvent_ResultHandled;
-	}
-	GWEN_Dialog_free(dlg3);
-    
+          return GWEN_DialogEvent_ResultHandled;
+        }
+
+        rv=GWEN_Gui_ExecDialog(dlg3, 0);
+        if (rv==0) {
+          /* rejected */
+          GWEN_Dialog_free(dlg3);
+          AB_User_free(u);
+          return GWEN_DialogEvent_ResultHandled;
+        }
+        GWEN_Dialog_free(dlg3);
+
         rv=AB_Provider_AddUser(pro, u);
         if (rv<0) {
-	  DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-	  AB_User_free(u);
-	  return GWEN_DialogEvent_ResultHandled;
-	}
+          DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+          AB_User_free(u);
+          return GWEN_DialogEvent_ResultHandled;
+        }
         AB_User_free(u);
 
-	AB_SetupDialog_Reload(dlg);
+        AB_SetupDialog_Reload(dlg);
       }
     }
     else {
@@ -880,7 +899,8 @@ int AB_SetupDialog_AddUser(GWEN_DIALOG *dlg) {
 
 
 
-int AB_SetupDialog_DelUser(GWEN_DIALOG *dlg) {
+int AB_SetupDialog_DelUser(GWEN_DIALOG *dlg)
+{
   AB_SETUP_DIALOG *xdlg;
 
   assert(dlg);
@@ -927,35 +947,35 @@ int AB_SetupDialog_DelUser(GWEN_DIALOG *dlg) {
         AB_SetupDialog_LoadAccounts(dlg, xdlg->currentAccountList);
         if (AB_Account_List_GetCount(xdlg->currentAccountList)) {
           a=AB_Account_List_First(xdlg->currentAccountList);
-          while(a) {
-        	  if( AB_Account_GetUserId(a) == uid ){
-        		  aid=AB_Account_GetUniqueId(a);
-                  rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
-                                         GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
-                                         I18N("Error"),
-                                         I18N("<html>"
-                                              "<p>There is at least one account assigned to the selected user.</p>"
-                                              "<p>Do you want to remove the account(s) and continue removing the user?</p>"
-                                              "</html>"
-                                              "There is at least one account assigned to the selected user.\n"
-                                              "Do you want to remove the account(s) and continue removing the user?"),
-                                         I18N("Yes"),
-                                         I18N("No"),
-                                         NULL,
-                                         0);
-                  if (rv!=1) {
-                    DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
-                    return GWEN_DialogEvent_ResultHandled;
-                  }
+          while (a) {
+            if (AB_Account_GetUserId(a) == uid) {
+              aid=AB_Account_GetUniqueId(a);
+              rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+                                     GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
+                                     I18N("Error"),
+                                     I18N("<html>"
+                                          "<p>There is at least one account assigned to the selected user.</p>"
+                                          "<p>Do you want to remove the account(s) and continue removing the user?</p>"
+                                          "</html>"
+                                          "There is at least one account assigned to the selected user.\n"
+                                          "Do you want to remove the account(s) and continue removing the user?"),
+                                     I18N("Yes"),
+                                     I18N("No"),
+                                     NULL,
+                                     0);
+              if (rv!=1) {
+                DBG_INFO(AQBANKING_LOGDOMAIN, "Aborted by user");
+                return GWEN_DialogEvent_ResultHandled;
+              }
 
-                  rv=AB_Provider_DeleteAccount(AB_Account_GetProvider(a), aid);
-                  if (rv<0) {
-                	  GWEN_Gui_ShowError(I18N("Error"), I18N("Error deleting account: %d (%d deleted)"), rv, aid);
-                	  AB_SetupDialog_Reload(dlg);
-                      return GWEN_DialogEvent_ResultHandled;
-                  }
-        	  }
-        	  a=AB_Account_List_Next(a);
+              rv=AB_Provider_DeleteAccount(AB_Account_GetProvider(a), aid);
+              if (rv<0) {
+                GWEN_Gui_ShowError(I18N("Error"), I18N("Error deleting account: %d (%d deleted)"), rv, aid);
+                AB_SetupDialog_Reload(dlg);
+                return GWEN_DialogEvent_ResultHandled;
+              }
+            }
+            a=AB_Account_List_Next(a);
           }
         }
 
@@ -975,7 +995,8 @@ int AB_SetupDialog_DelUser(GWEN_DIALOG *dlg) {
 
 
 
-int AB_SetupDialog_EditAccount(GWEN_DIALOG *dlg) {
+int AB_SetupDialog_EditAccount(GWEN_DIALOG *dlg)
+{
   AB_SETUP_DIALOG *xdlg;
 
   assert(dlg);
@@ -1027,7 +1048,8 @@ int AB_SetupDialog_EditAccount(GWEN_DIALOG *dlg) {
 
 
 
-int AB_SetupDialog_AddAccount(GWEN_DIALOG *dlg) {
+int AB_SetupDialog_AddAccount(GWEN_DIALOG *dlg)
+{
   AB_SETUP_DIALOG *xdlg;
   AB_PROVIDER *pro;
   const char *s;
@@ -1046,9 +1068,9 @@ int AB_SetupDialog_AddAccount(GWEN_DIALOG *dlg) {
       initialProvider="aqofxconnect";
   }
   pro=AB_SelectBackend(xdlg->banking,
-		       initialProvider,
-		       I18N("Please select the online banking backend the new "
-			    "account is to be created for."));
+                       initialProvider,
+                       I18N("Please select the online banking backend the new "
+                            "account is to be created for."));
   if (pro==NULL) {
     DBG_ERROR(0, "No provider selected.");
     return GWEN_DialogEvent_ResultHandled;
@@ -1137,7 +1159,8 @@ int AB_SetupDialog_AddAccount(GWEN_DIALOG *dlg) {
 
 
 
-int AB_SetupDialog_DelAccount(GWEN_DIALOG *dlg) {
+int AB_SetupDialog_DelAccount(GWEN_DIALOG *dlg)
+{
   AB_SETUP_DIALOG *xdlg;
 
   assert(dlg);
@@ -1204,7 +1227,8 @@ int AB_SetupDialog_DelAccount(GWEN_DIALOG *dlg) {
 
 
 
-int AB_SetupDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int AB_SetupDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   DBG_NOTICE(0, "Activated: %s", sender);
   if (strcasecmp(sender, "closeButton")==0)
     return GWEN_DialogEvent_ResultAccept;
@@ -1234,15 +1258,16 @@ int AB_SetupDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 
 int GWENHYWFAR_CB AB_SetupDialog_SignalHandler(GWEN_DIALOG *dlg,
-					       GWEN_DIALOG_EVENTTYPE t,
-					       const char *sender) {
+                                               GWEN_DIALOG_EVENTTYPE t,
+                                               const char *sender)
+{
   AB_SETUP_DIALOG *xdlg;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
   assert(xdlg);
 
-  switch(t) {
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     AB_SetupDialog_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;

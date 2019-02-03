@@ -13,12 +13,13 @@
 
 
 int EBC_Provider_MkEuCryptZipDoc(AB_PROVIDER *pro,
-				 AB_USER *u,
-				 const char *requestType,
-				 const uint8_t *pMsg,
-				 uint32_t lMsg,
-				 GWEN_CRYPT_KEY *skey,
-				 GWEN_BUFFER *sbuf) {
+                                 AB_USER *u,
+                                 const char *requestType,
+                                 const uint8_t *pMsg,
+                                 uint32_t lMsg,
+                                 GWEN_CRYPT_KEY *skey,
+                                 GWEN_BUFFER *sbuf)
+{
   const char *s;
   int rv;
 

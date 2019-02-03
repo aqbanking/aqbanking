@@ -8,7 +8,7 @@
  * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
-/** @file 
+/** @file
  * @short The main interface of the aqbanking library
  */
 
@@ -128,8 +128,8 @@ GWEN_INHERIT_FUNCTION_LIB_DEFS(AB_BANKING, AQBANKING_API)
  */
 AQBANKING_API
 AB_BANKING *AB_Banking_new(const char *appName,
-			   const char *dname,
-			   uint32_t extensions);
+                           const char *dname,
+                           uint32_t extensions);
 
 
 /**
@@ -137,15 +137,15 @@ AB_BANKING *AB_Banking_new(const char *appName,
  * @ref AB_Banking_Init has been called on this object then
  * @ref  AB_Banking_Fini should be called before this function.
  */
-AQBANKING_API 
+AQBANKING_API
 void AB_Banking_free(AB_BANKING *ab);
 
 
-AQBANKING_API 
+AQBANKING_API
 void AB_Banking_GetVersion(int *major,
-			   int *minor,
-			   int *patchlevel,
-			   int *build);
+                           int *minor,
+                           int *patchlevel,
+                           int *build);
 
 
 /**
@@ -156,7 +156,7 @@ void AB_Banking_GetVersion(int *major,
  *
  * @param ab banking interface
  */
-AQBANKING_API 
+AQBANKING_API
 int AB_Banking_Init(AB_BANKING *ab);
 
 /**
@@ -167,7 +167,7 @@ int AB_Banking_Init(AB_BANKING *ab);
  *
  * @param ab banking interface
  */
-AQBANKING_API 
+AQBANKING_API
 int AB_Banking_Fini(AB_BANKING *ab);
 
 
@@ -183,7 +183,7 @@ int AB_Banking_Fini(AB_BANKING *ab);
  * Returns the application name as given to @ref AB_Banking_new.
  * @param ab pointer to the AB_BANKING object
  */
-AQBANKING_API 
+AQBANKING_API
 const char *AB_Banking_GetAppName(const AB_BANKING *ab);
 
 /**
@@ -192,7 +192,7 @@ const char *AB_Banking_GetAppName(const AB_BANKING *ab);
  * '/', '.' etc) are escaped.
  * @param ab pointer to the AB_BANKING object
  */
-AQBANKING_API 
+AQBANKING_API
 const char *AB_Banking_GetEscapedAppName(const AB_BANKING *ab);
 
 /**
@@ -202,7 +202,7 @@ const char *AB_Banking_GetEscapedAppName(const AB_BANKING *ab);
  * @param ab pointer to the AB_BANKING object
  * @param buf GWEN_BUFFER to append the path name to
  */
-AQBANKING_API 
+AQBANKING_API
 int AB_Banking_GetUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
 
 
@@ -214,7 +214,7 @@ int AB_Banking_GetUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf);
  * Please note that this folder does not necessarily exist, but you are free
  * to create it.
  */
-AQBANKING_API 
+AQBANKING_API
 int AB_Banking_GetSharedDataDir(const AB_BANKING *ab,
                                 const char *name,
                                 GWEN_BUFFER *buf);
@@ -315,10 +315,10 @@ AQBANKING_API int AB_Banking_ProviderControl(AB_BANKING *ab, const char *backend
  *   see @ref AqHBCI_NewUserDialog_CodeGeneric and following).
  *   Use value 0 for the generic dialog.
  */
-AQBANKING_API 
+AQBANKING_API
 GWEN_DIALOG *AB_Banking_GetNewUserDialog(AB_BANKING *ab,
-					 const char *backend,
-					 int mode);
+                                         const char *backend,
+                                         int mode);
 
 /*@}*/
 

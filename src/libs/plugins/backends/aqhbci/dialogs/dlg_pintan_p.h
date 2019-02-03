@@ -45,8 +45,8 @@ struct AH_PINTAN_DIALOG {
 static void GWENHYWFAR_CB AH_PinTanDialog_FreeData(void *bp, void *p);
 
 static int GWENHYWFAR_CB AH_PinTanDialog_SignalHandler(GWEN_DIALOG *dlg,
-						       GWEN_DIALOG_EVENTTYPE t,
-						       const char *sender);
+                                                       GWEN_DIALOG_EVENTTYPE t,
+                                                       const char *sender);
 
 
 

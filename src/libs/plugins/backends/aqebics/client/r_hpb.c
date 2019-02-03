@@ -19,8 +19,9 @@
 
 
 int EBC_Provider_XchgHpbRequest(AB_PROVIDER *pro,
-				GWEN_HTTP_SESSION *sess,
-                                AB_USER *u) {
+                                GWEN_HTTP_SESSION *sess,
+                                AB_USER *u)
+{
   const char *s;
 
   s=EBC_User_GetProtoVersion(u);

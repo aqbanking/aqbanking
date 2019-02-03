@@ -30,7 +30,7 @@ static void GWENHYWFAR_CB AIO_OfxGroup_BANKACCTINFO_FreeData(void *bp, void *p);
 
 static int AIO_OfxGroup_BANKACCTINFO_StartTag(AIO_OFX_GROUP *g, const char *tagName);
 static int AIO_OfxGroup_BANKACCTINFO_EndSubGroup(AIO_OFX_GROUP *g,
-						 AIO_OFX_GROUP *sg);
+                                                 AIO_OFX_GROUP *sg);
 static int AIO_OfxGroup_BANKACCTINFO_AddData(AIO_OFX_GROUP *g, const char *data);
 
 #endif

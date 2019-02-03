@@ -47,32 +47,32 @@ int EB_Xml_InsertChild(xmlNodePtr node, xmlNodePtr n);
 
 
 int EB_Xml_GetXpathData(xmlNodePtr signedInfoNode,
-			const xmlChar *uri,
-			GWEN_BUFFER *rbuf);
+                        const xmlChar *uri,
+                        GWEN_BUFFER *rbuf);
 
 int EB_Xml_DocFromBuffer(const char *ptr, int size, xmlDocPtr *pdoc);
 
 
 int EB_Xml_BuildHashData(xmlNodePtr signedInfoNode,
-			 const xmlChar *uri,
-			 GWEN_BUFFER *rbuf);
+                         const xmlChar *uri,
+                         GWEN_BUFFER *rbuf);
 
 int EB_Xml_BuildNodeHash(xmlNodePtr node,
-			 const char *uri,
-			 GWEN_MDIGEST *md,
-			 GWEN_BUFFER *hbuf);
+                         const char *uri,
+                         GWEN_MDIGEST *md,
+                         GWEN_BUFFER *hbuf);
 
 int EB_Xml_BuildNodeHashSha1(xmlNodePtr node,
-			     const char *uri,
-			     GWEN_BUFFER *hbuf);
+                             const char *uri,
+                             GWEN_BUFFER *hbuf);
 
 int EB_Xml_BuildNodeHashSha256(xmlNodePtr node,
-			       const char *uri,
-			       GWEN_BUFFER *hbuf);
+                               const char *uri,
+                               GWEN_BUFFER *hbuf);
 
 int EB_Xml_BuildNodeHashSha256Sha256(xmlNodePtr node,
-				     const char *uri,
-				     GWEN_BUFFER *hbuf);
+                                     const char *uri,
+                                     GWEN_BUFFER *hbuf);
 
 
 

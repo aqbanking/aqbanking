@@ -26,20 +26,28 @@
 GWEN_INHERIT(AB_USER, EBC_USER)
 
 
-const char *EBC_User_Status_toString(EBC_USER_STATUS st){
-  switch(st) {
-  case EBC_UserStatus_New:      return "new";
-  case EBC_UserStatus_Enabled:  return "enabled";
-  case EBC_UserStatus_Init1:    return "init1";
-  case EBC_UserStatus_Init2:    return "init2";
-  case EBC_UserStatus_Disabled: return "disabled";
-  default:                      return "unknown";
+const char *EBC_User_Status_toString(EBC_USER_STATUS st)
+{
+  switch (st) {
+  case EBC_UserStatus_New:
+    return "new";
+  case EBC_UserStatus_Enabled:
+    return "enabled";
+  case EBC_UserStatus_Init1:
+    return "init1";
+  case EBC_UserStatus_Init2:
+    return "init2";
+  case EBC_UserStatus_Disabled:
+    return "disabled";
+  default:
+    return "unknown";
   } /* switch */
 }
 
 
 
-EBC_USER_STATUS EBC_User_Status_fromString(const char *s){
+EBC_USER_STATUS EBC_User_Status_fromString(const char *s)
+{
   assert(s);
   if (strcasecmp(s, "new")==0)
     return EBC_UserStatus_New;
@@ -58,7 +66,8 @@ EBC_USER_STATUS EBC_User_Status_fromString(const char *s){
 
 
 void EBC_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
-                         uint32_t flags) {
+                         uint32_t flags)
+{
   GWEN_DB_DeleteVar(db, name);
   if (flags & EBC_USER_FLAGS_BANK_DOESNT_SIGN)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "bankDoesntSign");
@@ -88,7 +97,8 @@ void EBC_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
 
 
 
-uint32_t EBC_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
+uint32_t EBC_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name)
+{
   uint32_t fl=0;
   int i;
 
@@ -137,7 +147,8 @@ uint32_t EBC_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
 
 
 
-AB_USER *EBC_User_new(AB_PROVIDER *pro) {
+AB_USER *EBC_User_new(AB_PROVIDER *pro)
+{
   AB_USER *u;
   EBC_USER *ue;
 
@@ -166,10 +177,11 @@ AB_USER *EBC_User_new(AB_PROVIDER *pro) {
 
 
 
-void GWENHYWFAR_CB EBC_User_freeData(GWEN_UNUSED void *bp, void *p) {
+void GWENHYWFAR_CB EBC_User_freeData(GWEN_UNUSED void *bp, void *p)
+{
   EBC_USER *ue;
 
-  ue=(EBC_USER*)p;
+  ue=(EBC_USER *)p;
   free(ue->peerId);
   free(ue->tokenType);
   free(ue->tokenName);
@@ -186,7 +198,8 @@ void GWENHYWFAR_CB EBC_User_freeData(GWEN_UNUSED void *bp, void *p) {
 
 
 
-void EBC_User__ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
+void EBC_User__ReadDb(AB_USER *u, GWEN_DB_NODE *db)
+{
   EBC_USER *ue;
   const char *s;
 
@@ -195,27 +208,33 @@ void EBC_User__ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
   assert(ue);
 
   ue->flags=EBC_User_Flags_fromDb(db, "userFlags");
-  
+
   s=GWEN_DB_GetCharValue(db, "status", 0, "new");
   ue->status=EBC_User_Status_fromString(s);
-  
+
   /* load server address */
   free(ue->serverUrl);
   s=GWEN_DB_GetCharValue(db, "server", 0, 0);
-  if (s) ue->serverUrl=strdup(s);
-  else ue->serverUrl=NULL;
+  if (s)
+    ue->serverUrl=strdup(s);
+  else
+    ue->serverUrl=NULL;
 
   /* get peer id */
   free(ue->peerId);
   s=GWEN_DB_GetCharValue(db, "peerId", 0, 0);
-  if (s) ue->peerId=strdup(s);
-  else ue->peerId=NULL;
+  if (s)
+    ue->peerId=strdup(s);
+  else
+    ue->peerId=NULL;
 
   free(ue->systemId);
   s=GWEN_DB_GetCharValue(db, "systemId", 0, 0);
-  if (s) ue->systemId=strdup(s);
-  else ue->systemId=NULL;
-  
+  if (s)
+    ue->systemId=strdup(s);
+  else
+    ue->systemId=NULL;
+
   /* setup HTTP version */
   ue->httpVMajor=GWEN_DB_GetIntValue(db, "httpVMajor", 0, -1);
   ue->httpVMinor=GWEN_DB_GetIntValue(db, "httpVMinor", 0, -1);
@@ -226,52 +245,69 @@ void EBC_User__ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
 
   free(ue->httpUserAgent);
   s=GWEN_DB_GetCharValue(db, "httpUserAgent", 0, 0);
-  if (s) ue->httpUserAgent=strdup(s);
-  else ue->httpUserAgent=NULL;
+  if (s)
+    ue->httpUserAgent=strdup(s);
+  else
+    ue->httpUserAgent=NULL;
 
   free(ue->httpContentType);
   s=GWEN_DB_GetCharValue(db, "httpContentType", 0,
-			 "text/xml; charset=UTF-8");
-  if (s) ue->httpContentType=strdup(s);
-  else ue->httpContentType=NULL;
-  
+                         "text/xml; charset=UTF-8");
+  if (s)
+    ue->httpContentType=strdup(s);
+  else
+    ue->httpContentType=NULL;
+
   /* setup medium stuff */
   free(ue->tokenType);
   s=GWEN_DB_GetCharValue(db, "tokenType", 0, 0);
-  if (s) ue->tokenType=strdup(s);
-  else ue->tokenType=NULL;
+  if (s)
+    ue->tokenType=strdup(s);
+  else
+    ue->tokenType=NULL;
 
   free(ue->tokenName);
   s=GWEN_DB_GetCharValue(db, "tokenName", 0, 0);
-  if (s) ue->tokenName=strdup(s);
-  else ue->tokenName=NULL;
+  if (s)
+    ue->tokenName=strdup(s);
+  else
+    ue->tokenName=NULL;
 
   free(ue->protoVersion);
   s=GWEN_DB_GetCharValue(db, "protoVersion", 0, "H002");
-  if (s) ue->protoVersion=strdup(s);
-  else ue->protoVersion=NULL;
+  if (s)
+    ue->protoVersion=strdup(s);
+  else
+    ue->protoVersion=NULL;
 
   free(ue->signVersion);
   s=GWEN_DB_GetCharValue(db, "signVersion", 0, "A004");
-  if (s) ue->signVersion=strdup(s);
-  else ue->signVersion=NULL;
+  if (s)
+    ue->signVersion=strdup(s);
+  else
+    ue->signVersion=NULL;
 
   free(ue->cryptVersion);
   s=GWEN_DB_GetCharValue(db, "cryptVersion", 0, "E001");
-  if (s) ue->cryptVersion=strdup(s);
-  else ue->cryptVersion=NULL;
+  if (s)
+    ue->cryptVersion=strdup(s);
+  else
+    ue->cryptVersion=NULL;
 
   free(ue->authVersion);
   s=GWEN_DB_GetCharValue(db, "authVersion", 0, "X001");
-  if (s) ue->authVersion=strdup(s);
-  else ue->authVersion=NULL;
+  if (s)
+    ue->authVersion=strdup(s);
+  else
+    ue->authVersion=NULL;
 
   ue->tokenContextId=GWEN_DB_GetIntValue(db, "tokenContextId", 0, 1);
 }
 
 
 
-void EBC_User__WriteDb(const AB_USER *u, GWEN_DB_NODE *db) {
+void EBC_User__WriteDb(const AB_USER *u, GWEN_DB_NODE *db)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -279,51 +315,51 @@ void EBC_User__WriteDb(const AB_USER *u, GWEN_DB_NODE *db) {
   assert(ue);
 
   EBC_User_Flags_toDb(db, "userFlags", ue->flags);
-  
+
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		       "status",
-		       EBC_User_Status_toString(ue->status));
-  
+                       "status",
+                       EBC_User_Status_toString(ue->status));
+
   if (ue->peerId)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "peerId", ue->peerId);
+                         "peerId", ue->peerId);
   if (ue->systemId)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "systemId", ue->systemId);
-  
+                         "systemId", ue->systemId);
+
   /* save crypt token settings */
   if (ue->tokenType)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "tokenType", ue->tokenType);
+                         "tokenType", ue->tokenType);
   if (ue->tokenName)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "tokenName", ue->tokenName);
+                         "tokenName", ue->tokenName);
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "tokenContextId", ue->tokenContextId);
+                      "tokenContextId", ue->tokenContextId);
   if (ue->protoVersion)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "protoVersion", ue->protoVersion);
+                         "protoVersion", ue->protoVersion);
   if (ue->signVersion)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "signVersion", ue->signVersion);
+                         "signVersion", ue->signVersion);
   if (ue->cryptVersion)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "cryptVersion", ue->cryptVersion);
+                         "cryptVersion", ue->cryptVersion);
   if (ue->authVersion)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "authVersion", ue->authVersion);
-  
+                         "authVersion", ue->authVersion);
+
   /* save http settings */
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "httpVMajor", ue->httpVMajor);
+                      "httpVMajor", ue->httpVMajor);
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "httpVMinor", ue->httpVMinor);
+                      "httpVMinor", ue->httpVMinor);
   if (ue->httpUserAgent)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "httpUserAgent", ue->httpUserAgent);
+                         "httpUserAgent", ue->httpUserAgent);
   if (ue->httpContentType)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "httpContentType", ue->httpContentType);
+                         "httpContentType", ue->httpContentType);
 
   /* save URL */
   if (ue->serverUrl)
@@ -333,7 +369,8 @@ void EBC_User__WriteDb(const AB_USER *u, GWEN_DB_NODE *db) {
 
 
 
-int EBC_User_ReadFromDb(AB_USER *u, GWEN_DB_NODE *db) {
+int EBC_User_ReadFromDb(AB_USER *u, GWEN_DB_NODE *db)
+{
   EBC_USER *ue;
   int rv;
   GWEN_DB_NODE *dbP;
@@ -365,7 +402,8 @@ int EBC_User_ReadFromDb(AB_USER *u, GWEN_DB_NODE *db) {
 
 
 
-int EBC_User_WriteToDb(const AB_USER *u, GWEN_DB_NODE *db) {
+int EBC_User_WriteToDb(const AB_USER *u, GWEN_DB_NODE *db)
+{
   EBC_USER *ue;
   int rv;
   GWEN_DB_NODE *dbP;
@@ -393,7 +431,8 @@ int EBC_User_WriteToDb(const AB_USER *u, GWEN_DB_NODE *db) {
 
 
 
-const char *EBC_User_GetPeerId(const AB_USER *u) {
+const char *EBC_User_GetPeerId(const AB_USER *u)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -405,7 +444,8 @@ const char *EBC_User_GetPeerId(const AB_USER *u) {
 
 
 
-void EBC_User_SetPeerId(AB_USER *u, const char *s) {
+void EBC_User_SetPeerId(AB_USER *u, const char *s)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -421,7 +461,8 @@ void EBC_User_SetPeerId(AB_USER *u, const char *s) {
 
 
 
-uint32_t EBC_User_GetTokenContextId(const AB_USER *u){
+uint32_t EBC_User_GetTokenContextId(const AB_USER *u)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -433,7 +474,8 @@ uint32_t EBC_User_GetTokenContextId(const AB_USER *u){
 
 
 
-void EBC_User_SetTokenContextId(AB_USER *u, uint32_t id){
+void EBC_User_SetTokenContextId(AB_USER *u, uint32_t id)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -445,7 +487,8 @@ void EBC_User_SetTokenContextId(AB_USER *u, uint32_t id){
 
 
 
-const char *EBC_User_GetTokenType(const AB_USER *u) {
+const char *EBC_User_GetTokenType(const AB_USER *u)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -457,7 +500,8 @@ const char *EBC_User_GetTokenType(const AB_USER *u) {
 
 
 
-void EBC_User_SetTokenType(AB_USER *u, const char *s) {
+void EBC_User_SetTokenType(AB_USER *u, const char *s)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -473,7 +517,8 @@ void EBC_User_SetTokenType(AB_USER *u, const char *s) {
 
 
 
-const char *EBC_User_GetTokenName(const AB_USER *u) {
+const char *EBC_User_GetTokenName(const AB_USER *u)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -485,7 +530,8 @@ const char *EBC_User_GetTokenName(const AB_USER *u) {
 
 
 
-void EBC_User_SetTokenName(AB_USER *u, const char *s) {
+void EBC_User_SetTokenName(AB_USER *u, const char *s)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -502,7 +548,8 @@ void EBC_User_SetTokenName(AB_USER *u, const char *s) {
 
 
 
-EBC_USER_STATUS EBC_User_GetStatus(const AB_USER *u){
+EBC_USER_STATUS EBC_User_GetStatus(const AB_USER *u)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -514,7 +561,8 @@ EBC_USER_STATUS EBC_User_GetStatus(const AB_USER *u){
 
 
 
-void EBC_User_SetStatus(AB_USER *u, EBC_USER_STATUS i){
+void EBC_User_SetStatus(AB_USER *u, EBC_USER_STATUS i)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -526,7 +574,8 @@ void EBC_User_SetStatus(AB_USER *u, EBC_USER_STATUS i){
 
 
 
-const char *EBC_User_GetServerUrl(const AB_USER *u) {
+const char *EBC_User_GetServerUrl(const AB_USER *u)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -538,7 +587,8 @@ const char *EBC_User_GetServerUrl(const AB_USER *u) {
 
 
 
-void EBC_User_SetServerUrl(AB_USER *u, const char *s) {
+void EBC_User_SetServerUrl(AB_USER *u, const char *s)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -546,13 +596,16 @@ void EBC_User_SetServerUrl(AB_USER *u, const char *s) {
   assert(ue);
 
   free(ue->serverUrl);
-  if (s) ue->serverUrl=strdup(s);
-  else ue->serverUrl=NULL;
+  if (s)
+    ue->serverUrl=strdup(s);
+  else
+    ue->serverUrl=NULL;
 }
 
 
 
-const char *EBC_User_GetSystemId(const AB_USER *u) {
+const char *EBC_User_GetSystemId(const AB_USER *u)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -564,7 +617,8 @@ const char *EBC_User_GetSystemId(const AB_USER *u) {
 
 
 
-void EBC_User_SetSystemId(AB_USER *u, const char *s) {
+void EBC_User_SetSystemId(AB_USER *u, const char *s)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -580,7 +634,8 @@ void EBC_User_SetSystemId(AB_USER *u, const char *s) {
 
 
 
-uint32_t EBC_User_GetFlags(const AB_USER *u) {
+uint32_t EBC_User_GetFlags(const AB_USER *u)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -592,7 +647,8 @@ uint32_t EBC_User_GetFlags(const AB_USER *u) {
 
 
 
-void EBC_User_SetFlags(AB_USER *u, uint32_t flags) {
+void EBC_User_SetFlags(AB_USER *u, uint32_t flags)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -604,7 +660,8 @@ void EBC_User_SetFlags(AB_USER *u, uint32_t flags) {
 
 
 
-void EBC_User_AddFlags(AB_USER *u, uint32_t flags) {
+void EBC_User_AddFlags(AB_USER *u, uint32_t flags)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -616,7 +673,8 @@ void EBC_User_AddFlags(AB_USER *u, uint32_t flags) {
 
 
 
-void EBC_User_SubFlags(AB_USER *u, uint32_t flags) {
+void EBC_User_SubFlags(AB_USER *u, uint32_t flags)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -628,7 +686,8 @@ void EBC_User_SubFlags(AB_USER *u, uint32_t flags) {
 
 
 
-const char *EBC_User_GetHttpUserAgent(const AB_USER *u) {
+const char *EBC_User_GetHttpUserAgent(const AB_USER *u)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -640,7 +699,8 @@ const char *EBC_User_GetHttpUserAgent(const AB_USER *u) {
 
 
 
-void EBC_User_SetHttpUserAgent(AB_USER *u, const char *s) {
+void EBC_User_SetHttpUserAgent(AB_USER *u, const char *s)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -648,13 +708,16 @@ void EBC_User_SetHttpUserAgent(AB_USER *u, const char *s) {
   assert(ue);
 
   free(ue->httpUserAgent);
-  if (s) ue->httpUserAgent=strdup(s);
-  else ue->httpUserAgent=NULL;
+  if (s)
+    ue->httpUserAgent=strdup(s);
+  else
+    ue->httpUserAgent=NULL;
 }
 
 
 
-const char *EBC_User_GetHttpContentType(const AB_USER *u) {
+const char *EBC_User_GetHttpContentType(const AB_USER *u)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -666,7 +729,8 @@ const char *EBC_User_GetHttpContentType(const AB_USER *u) {
 
 
 
-void EBC_User_SetHttpContentType(AB_USER *u, const char *s) {
+void EBC_User_SetHttpContentType(AB_USER *u, const char *s)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -674,13 +738,16 @@ void EBC_User_SetHttpContentType(AB_USER *u, const char *s) {
   assert(ue);
 
   free(ue->httpContentType);
-  if (s) ue->httpContentType=strdup(s);
-  else ue->httpContentType=NULL;
+  if (s)
+    ue->httpContentType=strdup(s);
+  else
+    ue->httpContentType=NULL;
 }
 
 
 
-int EBC_User_GetHttpVMajor(const AB_USER *u) {
+int EBC_User_GetHttpVMajor(const AB_USER *u)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -692,7 +759,8 @@ int EBC_User_GetHttpVMajor(const AB_USER *u) {
 
 
 
-void EBC_User_SetHttpVMajor(AB_USER *u, int i) {
+void EBC_User_SetHttpVMajor(AB_USER *u, int i)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -704,7 +772,8 @@ void EBC_User_SetHttpVMajor(AB_USER *u, int i) {
 
 
 
-int EBC_User_GetHttpVMinor(const AB_USER *u) {
+int EBC_User_GetHttpVMinor(const AB_USER *u)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -716,7 +785,8 @@ int EBC_User_GetHttpVMinor(const AB_USER *u) {
 
 
 
-void EBC_User_SetHttpVMinor(AB_USER *u, int i) {
+void EBC_User_SetHttpVMinor(AB_USER *u, int i)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -728,7 +798,8 @@ void EBC_User_SetHttpVMinor(AB_USER *u, int i) {
 
 
 
-const char *EBC_User_GetProtoVersion(const AB_USER *u) {
+const char *EBC_User_GetProtoVersion(const AB_USER *u)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -740,7 +811,8 @@ const char *EBC_User_GetProtoVersion(const AB_USER *u) {
 
 
 
-void EBC_User_SetProtoVersion(AB_USER *u, const char *s) {
+void EBC_User_SetProtoVersion(AB_USER *u, const char *s)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -748,13 +820,16 @@ void EBC_User_SetProtoVersion(AB_USER *u, const char *s) {
   assert(ue);
 
   free(ue->protoVersion);
-  if (s) ue->protoVersion=strdup(s);
-  else ue->protoVersion=NULL;
+  if (s)
+    ue->protoVersion=strdup(s);
+  else
+    ue->protoVersion=NULL;
 }
 
 
 
-const char *EBC_User_GetSignVersion(const AB_USER *u) {
+const char *EBC_User_GetSignVersion(const AB_USER *u)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -766,7 +841,8 @@ const char *EBC_User_GetSignVersion(const AB_USER *u) {
 
 
 
-void EBC_User_SetSignVersion(AB_USER *u, const char *s) {
+void EBC_User_SetSignVersion(AB_USER *u, const char *s)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -774,13 +850,16 @@ void EBC_User_SetSignVersion(AB_USER *u, const char *s) {
   assert(ue);
 
   free(ue->signVersion);
-  if (s) ue->signVersion=strdup(s);
-  else ue->signVersion=NULL;
+  if (s)
+    ue->signVersion=strdup(s);
+  else
+    ue->signVersion=NULL;
 }
 
 
 
-const char *EBC_User_GetCryptVersion(const AB_USER *u) {
+const char *EBC_User_GetCryptVersion(const AB_USER *u)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -792,7 +871,8 @@ const char *EBC_User_GetCryptVersion(const AB_USER *u) {
 
 
 
-void EBC_User_SetCryptVersion(AB_USER *u, const char *s) {
+void EBC_User_SetCryptVersion(AB_USER *u, const char *s)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -800,13 +880,16 @@ void EBC_User_SetCryptVersion(AB_USER *u, const char *s) {
   assert(ue);
 
   free(ue->cryptVersion);
-  if (s) ue->cryptVersion=strdup(s);
-  else ue->cryptVersion=NULL;
+  if (s)
+    ue->cryptVersion=strdup(s);
+  else
+    ue->cryptVersion=NULL;
 }
 
 
 
-const char *EBC_User_GetAuthVersion(const AB_USER *u) {
+const char *EBC_User_GetAuthVersion(const AB_USER *u)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -818,7 +901,8 @@ const char *EBC_User_GetAuthVersion(const AB_USER *u) {
 
 
 
-void EBC_User_SetAuthVersion(AB_USER *u, const char *s) {
+void EBC_User_SetAuthVersion(AB_USER *u, const char *s)
+{
   EBC_USER *ue;
 
   assert(u);
@@ -826,13 +910,16 @@ void EBC_User_SetAuthVersion(AB_USER *u, const char *s) {
   assert(ue);
 
   free(ue->authVersion);
-  if (s) ue->authVersion=strdup(s);
-  else ue->authVersion=NULL;
+  if (s)
+    ue->authVersion=strdup(s);
+  else
+    ue->authVersion=NULL;
 }
 
 
 
-int EBC_User_MkPasswdName(const AB_USER *u, GWEN_BUFFER *buf) {
+int EBC_User_MkPasswdName(const AB_USER *u, GWEN_BUFFER *buf)
+{
   EBC_USER *ue;
 
   assert(u);

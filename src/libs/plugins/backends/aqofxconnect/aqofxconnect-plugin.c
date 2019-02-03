@@ -22,15 +22,17 @@
 
 
 
-static AB_PROVIDER *AB_Plugin_ProviderOFX_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab){
+static AB_PROVIDER *AB_Plugin_ProviderOFX_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab)
+{
   return AO_Provider_new(ab);
 }
 
 
 /* interface to gwens plugin loader */
 AQBANKING_EXPORT GWEN_PLUGIN *provider_aqofxconnect_factory(GWEN_PLUGIN_MANAGER *pm,
-							    const char *name,
-							    const char *fileName) {
+                                                            const char *name,
+                                                            const char *fileName)
+{
   GWEN_PLUGIN *pl;
 
   pl=AB_Plugin_Provider_new(pm, name, fileName);

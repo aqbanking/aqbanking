@@ -59,7 +59,7 @@ unsigned int AH_Outbox_CountFinishedJobs(AH_OUTBOX *ob);
 
 int AH_Outbox_Execute(AH_OUTBOX *ob,
                       AB_IMEXPORTER_CONTEXT *ctx,
-		      int withProgress, int nounmount, int doLock);
+                      int withProgress, int nounmount, int doLock);
 
 
 AH_JOB *AH_Outbox_FindTransferJob(AH_OUTBOX *ob,

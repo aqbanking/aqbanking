@@ -29,8 +29,8 @@ struct AB_EDIT_ACCOUNT_DIALOG {
 static void GWENHYWFAR_CB AB_EditAccountDialog_FreeData(void *bp, void *p);
 
 static int GWENHYWFAR_CB AB_EditAccountDialog_SignalHandler(GWEN_DIALOG *dlg,
-							    GWEN_DIALOG_EVENTTYPE t,
-							    const char *sender);
+                                                            GWEN_DIALOG_EVENTTYPE t,
+                                                            const char *sender);
 
 
 

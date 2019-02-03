@@ -57,7 +57,8 @@ GWEN_LIST_FUNCTIONS(AH_MSG, AH_Msg);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Msg_AddSignerId(AH_MSG *hmsg, const char *s) {
+int AH_Msg_AddSignerId(AH_MSG *hmsg, const char *s)
+{
   assert(hmsg);
   if (hmsg->nodes) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Signers must be added before nodes !");
@@ -69,7 +70,8 @@ int AH_Msg_AddSignerId(AH_MSG *hmsg, const char *s) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-unsigned int AH_Msg_GetSignerCount(AH_MSG *hmsg){
+unsigned int AH_Msg_GetSignerCount(AH_MSG *hmsg)
+{
   assert(hmsg);
   return GWEN_StringList_Count(hmsg->signerIdList);
 }
@@ -77,7 +79,8 @@ unsigned int AH_Msg_GetSignerCount(AH_MSG *hmsg){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-GWEN_BUFFER *AH_Msg_GetBuffer(AH_MSG *hmsg){
+GWEN_BUFFER *AH_Msg_GetBuffer(AH_MSG *hmsg)
+{
   assert(hmsg);
   return hmsg->buffer;
 }
@@ -85,7 +88,8 @@ GWEN_BUFFER *AH_Msg_GetBuffer(AH_MSG *hmsg){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-GWEN_BUFFER *AH_Msg_TakeBuffer(AH_MSG *hmsg){
+GWEN_BUFFER *AH_Msg_TakeBuffer(AH_MSG *hmsg)
+{
   GWEN_BUFFER *bf;
 
   assert(hmsg);
@@ -97,7 +101,8 @@ GWEN_BUFFER *AH_Msg_TakeBuffer(AH_MSG *hmsg){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Msg_SetBuffer(AH_MSG *hmsg, GWEN_BUFFER *bf){
+void AH_Msg_SetBuffer(AH_MSG *hmsg, GWEN_BUFFER *bf)
+{
   assert(hmsg);
   GWEN_Buffer_free(hmsg->buffer);
   hmsg->buffer=bf;
@@ -106,7 +111,8 @@ void AH_Msg_SetBuffer(AH_MSG *hmsg, GWEN_BUFFER *bf){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-unsigned int AH_Msg_GetMsgNum(const AH_MSG *hmsg){
+unsigned int AH_Msg_GetMsgNum(const AH_MSG *hmsg)
+{
   assert(hmsg);
   return hmsg->msgNum;
 }
@@ -114,7 +120,8 @@ unsigned int AH_Msg_GetMsgNum(const AH_MSG *hmsg){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-unsigned int AH_Msg_GetMsgRef(const AH_MSG *hmsg){
+unsigned int AH_Msg_GetMsgRef(const AH_MSG *hmsg)
+{
   assert(hmsg);
   return hmsg->refMsgNum;
 }
@@ -122,7 +129,8 @@ unsigned int AH_Msg_GetMsgRef(const AH_MSG *hmsg){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Msg_SetMsgRef(AH_MSG *hmsg, unsigned int i){
+void AH_Msg_SetMsgRef(AH_MSG *hmsg, unsigned int i)
+{
   assert(hmsg);
   hmsg->refMsgNum=i;
 }
@@ -130,7 +138,8 @@ void AH_Msg_SetMsgRef(AH_MSG *hmsg, unsigned int i){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-unsigned int AH_Msg_GetNodes(AH_MSG *hmsg){
+unsigned int AH_Msg_GetNodes(AH_MSG *hmsg)
+{
   assert(hmsg);
   return hmsg->nodes;
 }
@@ -138,7 +147,8 @@ unsigned int AH_Msg_GetNodes(AH_MSG *hmsg){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_MSG *AH_Msg_new(AH_DIALOG *dlg){
+AH_MSG *AH_Msg_new(AH_DIALOG *dlg)
+{
   AH_MSG *hmsg;
 
   assert(dlg);
@@ -156,7 +166,8 @@ AH_MSG *AH_Msg_new(AH_DIALOG *dlg){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Msg_free(AH_MSG *hmsg){
+void AH_Msg_free(AH_MSG *hmsg)
+{
   if (hmsg) {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Destroying AH_MSG");
     GWEN_LIST_FINI(AH_MSG, hmsg);
@@ -184,7 +195,8 @@ void AH_Msg_free(AH_MSG *hmsg){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AB_USER *AH_Msg_GetUser(const AH_MSG *hmsg, const char *userId) {
+AB_USER *AH_Msg_GetUser(const AH_MSG *hmsg, const char *userId)
+{
   assert(hmsg);
   if (hmsg->dialog) {
     AB_USER *u;
@@ -204,7 +216,8 @@ AB_USER *AH_Msg_GetUser(const AH_MSG *hmsg, const char *userId) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Msg_GetSecurityProfile(const AH_MSG *hmsg) {
+int AH_Msg_GetSecurityProfile(const AH_MSG *hmsg)
+{
   assert(hmsg);
   return hmsg->secProfile;
 }
@@ -212,21 +225,24 @@ int AH_Msg_GetSecurityProfile(const AH_MSG *hmsg) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Msg_SetSecurityProfile(AH_MSG *hmsg, int i) {
+void AH_Msg_SetSecurityProfile(AH_MSG *hmsg, int i)
+{
   assert(hmsg);
   hmsg->secProfile=i;
 }
 
 
 
-int AH_Msg_GetSecurityClass(const AH_MSG *hmsg) {
+int AH_Msg_GetSecurityClass(const AH_MSG *hmsg)
+{
   assert(hmsg);
   return hmsg->secClass;
 }
 
 
 
-void AH_Msg_SetSecurityClass(AH_MSG *hmsg, int i) {
+void AH_Msg_SetSecurityClass(AH_MSG *hmsg, int i)
+{
   assert(hmsg);
   hmsg->secClass=i;
 }
@@ -234,7 +250,8 @@ void AH_Msg_SetSecurityClass(AH_MSG *hmsg, int i) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Msg_AddMsgTail(AH_MSG *hmsg){
+int AH_Msg_AddMsgTail(AH_MSG *hmsg)
+{
   GWEN_XMLNODE *node;
   GWEN_DB_NODE *cfg;
   int rv;
@@ -245,10 +262,10 @@ int AH_Msg_AddMsgTail(AH_MSG *hmsg){
   assert(e);
 
   node=GWEN_MsgEngine_FindNodeByPropertyStrictProto(e,
-						    "SEG",
-						    "id",
-						    0,
-						    "MsgTail");
+                                                    "SEG",
+                                                    "id",
+                                                    0,
+                                                    "MsgTail");
   if (!node) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Segment \"MsgTail\" not found");
     return -1;
@@ -275,7 +292,8 @@ int AH_Msg_AddMsgTail(AH_MSG *hmsg){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Msg_AddMsgHead(AH_MSG *hmsg) {
+int AH_Msg_AddMsgHead(AH_MSG *hmsg)
+{
   GWEN_XMLNODE *node;
   GWEN_DB_NODE *cfg;
   GWEN_BUFFER *hbuf;
@@ -288,10 +306,10 @@ int AH_Msg_AddMsgHead(AH_MSG *hmsg) {
   assert(e);
 
   node=GWEN_MsgEngine_FindNodeByPropertyStrictProto(e,
-						    "SEG",
-						    "id",
-						    0,
-						    "MsgHead");
+                                                    "SEG",
+                                                    "id",
+                                                    0,
+                                                    "MsgHead");
   if (!node) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Segment \"MsgHead\"not found");
     return -1;
@@ -314,7 +332,7 @@ int AH_Msg_AddMsgHead(AH_MSG *hmsg) {
                          AH_Dialog_GetDialogId(hmsg->dialog));
   }
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Protocol version is %d",
-           GWEN_MsgEngine_GetProtocolVersion(e));
+            GWEN_MsgEngine_GetProtocolVersion(e));
 
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
                       "hversion",
@@ -338,7 +356,7 @@ int AH_Msg_AddMsgHead(AH_MSG *hmsg) {
   }
 
   msize=GWEN_Buffer_GetUsedBytes(hmsg->buffer)+
-    GWEN_Buffer_GetUsedBytes(hbuf);
+        GWEN_Buffer_GetUsedBytes(hbuf);
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Message size is: %d", msize);
   GWEN_DB_SetIntValue(cfg,
                       GWEN_DB_FLAGS_OVERWRITE_VARS,
@@ -374,7 +392,8 @@ int AH_Msg_AddMsgHead(AH_MSG *hmsg) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-unsigned int AH_Msg_GetCurrentSegmentNumber(AH_MSG *hmsg) {
+unsigned int AH_Msg_GetCurrentSegmentNumber(AH_MSG *hmsg)
+{
   if (hmsg->firstSegment==0) {
     unsigned int rv;
 
@@ -392,7 +411,8 @@ unsigned int AH_Msg_GetCurrentSegmentNumber(AH_MSG *hmsg) {
 /* --------------------------------------------------------------- FUNCTION */
 unsigned int AH_Msg_AddNode(AH_MSG *hmsg,
                             GWEN_XMLNODE *node,
-                            GWEN_DB_NODE *data) {
+                            GWEN_DB_NODE *data)
+{
   int rv;
   GWEN_MSGENGINE *e;
   unsigned int usedBefore;
@@ -447,7 +467,8 @@ unsigned int AH_Msg_AddNode(AH_MSG *hmsg,
 /* --------------------------------------------------------------- FUNCTION */
 unsigned int AH_Msg_InsertNode(AH_MSG *hmsg,
                                GWEN_XMLNODE *node,
-                               GWEN_DB_NODE *data) {
+                               GWEN_DB_NODE *data)
+{
   int rv;
   GWEN_MSGENGINE *e;
   GWEN_BUFFER *tmpbuf;
@@ -507,7 +528,8 @@ unsigned int AH_Msg_InsertNode(AH_MSG *hmsg,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Msg_EncodeMsg(AH_MSG *hmsg) {
+int AH_Msg_EncodeMsg(AH_MSG *hmsg)
+{
   GWEN_MSGENGINE *e;
   int rv;
 
@@ -615,7 +637,8 @@ int AH_Msg_ReadSegment(AH_MSG *msg,
                        const char *gtype,
                        GWEN_BUFFER *mbuf,
                        GWEN_DB_NODE *gr,
-                       unsigned int flags) {
+                       unsigned int flags)
+{
   GWEN_XMLNODE *node;
   unsigned int posBak;
   const char *p;
@@ -785,7 +808,7 @@ int AH_Msg_ReadSegment(AH_MSG *msg,
                           "segment/error/pos",
                           GWEN_Buffer_GetPos(mbuf)-startPos);
 
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error parsing segment \"%s\"",p);
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error parsing segment \"%s\"", p);
       GWEN_Text_DumpString(GWEN_Buffer_GetStart(mbuf)+startPos,
                            GWEN_Buffer_GetUsedBytes(mbuf)-startPos,
                            1);
@@ -827,7 +850,8 @@ int AH_Msg_ReadMessage(AH_MSG *msg,
                        const char *gtype,
                        GWEN_BUFFER *mbuf,
                        GWEN_DB_NODE *gr,
-                       unsigned int flags) {
+                       unsigned int flags)
+{
   unsigned int segments;
   unsigned int errors;
   int rv;
@@ -835,7 +859,7 @@ int AH_Msg_ReadMessage(AH_MSG *msg,
   segments=0;
   errors=0;
 
-  while(GWEN_Buffer_GetBytesLeft(mbuf)) {
+  while (GWEN_Buffer_GetBytesLeft(mbuf)) {
     rv=AH_Msg_ReadSegment(msg, e, gtype, mbuf, gr, flags);
     if (rv==-2) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here");
@@ -859,14 +883,15 @@ int AH_Msg_ReadMessage(AH_MSG *msg,
   } /* while */
 
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Parsed %d segments (%d had errors)",
-           segments, errors);
+            segments, errors);
   return 0;
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Msg_SequenceCheck(GWEN_DB_NODE *gr) {
+int AH_Msg_SequenceCheck(GWEN_DB_NODE *gr)
+{
   GWEN_DB_NODE *n;
   unsigned int sn;
   unsigned int errors;
@@ -876,7 +901,7 @@ int AH_Msg_SequenceCheck(GWEN_DB_NODE *gr) {
   sn=1;
   errors=0;
   n=GWEN_DB_GetFirstGroup(gr);
-  while(n) {
+  while (n) {
     unsigned int rsn;
 
     rsn=GWEN_DB_GetIntValue(n, "head/seq", 0, 0);
@@ -913,7 +938,8 @@ int AH_Msg_SequenceCheck(GWEN_DB_NODE *gr) {
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Msg_DecodeMsg(AH_MSG *hmsg,
                      GWEN_DB_NODE *gr,
-                     unsigned int flags) {
+                     unsigned int flags)
+{
   GWEN_MSGENGINE *e;
   int rv;
   GWEN_DB_NODE *n, *n2;
@@ -964,8 +990,8 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
   if (AH_Dialog_CheckReceivedMsgNum(hmsg->dialog, hmsg->msgNum)) {
     DBG_WARN(AQHBCI_LOGDOMAIN, "Bad message number, ignoring");
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Warning,
-			 I18N("Bad message number, ignoring"));
+                         GWEN_LoggerLevel_Warning,
+                         I18N("Bad message number, ignoring"));
     /* FIXME: this is sometimes returned by the Sparkasse server, when
      * the server is currently out of service
      * We will for now ignore this, since this message still returns an
@@ -1018,35 +1044,35 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
     p=GWEN_DB_GetCharValue(n2, "dialogid", 0, 0);
     if (!p) {
       DBG_WARN(AQHBCI_LOGDOMAIN,
-	       "No reference dialog id in message, ignoring");
+               "No reference dialog id in message, ignoring");
       /*return GWEN_ERROR_BAD_DATA;*/
     }
     else {
       if (strcasecmp(AH_Dialog_GetDialogId(hmsg->dialog), p)!=0) {
-	/* some servers send error responses with invalid dialog id and
-	 * message number 9999; we don't rely on the correct id anyway, so
-	 * we might as well ignore that error here */
-	DBG_WARN(AQHBCI_LOGDOMAIN, "Dialog id does not match current dialog id, ignoring");
-	GWEN_Gui_ProgressLog(guiid,
-			     GWEN_LoggerLevel_Warning,
-			     I18N("Dialog id does not match, ignoring"));
-	/*return GWEN_ERROR_BAD_DATA;*/
+        /* some servers send error responses with invalid dialog id and
+         * message number 9999; we don't rely on the correct id anyway, so
+         * we might as well ignore that error here */
+        DBG_WARN(AQHBCI_LOGDOMAIN, "Dialog id does not match current dialog id, ignoring");
+        GWEN_Gui_ProgressLog(guiid,
+                             GWEN_LoggerLevel_Warning,
+                             I18N("Dialog id does not match, ignoring"));
+        /*return GWEN_ERROR_BAD_DATA;*/
       }
       hmsg->refMsgNum=GWEN_DB_GetIntValue(n2, "msgnum", 0, 0);
       if (hmsg->refMsgNum!=expMsgNum) {
-	DBG_WARN(AQHBCI_LOGDOMAIN, "Bad message reference number, ignoring");
-	GWEN_Gui_ProgressLog(guiid,
-			     GWEN_LoggerLevel_Warning,
-			     I18N("Bad message reference number, ignoring"));
-	hmsg->refMsgNum=expMsgNum;
+        DBG_WARN(AQHBCI_LOGDOMAIN, "Bad message reference number, ignoring");
+        GWEN_Gui_ProgressLog(guiid,
+                             GWEN_LoggerLevel_Warning,
+                             I18N("Bad message reference number, ignoring"));
+        hmsg->refMsgNum=expMsgNum;
       }
     }
   }
   else {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "No message reference found");
     GWEN_Gui_ProgressLog(guiid,
-			 GWEN_LoggerLevel_Warning,
-			 I18N("No message reference found, ignoring"));
+                         GWEN_LoggerLevel_Warning,
+                         I18N("No message reference found, ignoring"));
   }
 
   /* find Crypt head */
@@ -1121,67 +1147,85 @@ int AH_Msg_DecodeMsg(AH_MSG *hmsg,
 
 /* --------------------------------------------------------------- FUNCTION */
 void AH_Msg__Dump(const AH_MSG *hmsg,
-                  unsigned int indent) {
+                  unsigned int indent)
+{
   unsigned int i;
   GWEN_STRINGLISTENTRY *se;
 
-  for (i=0; i<indent; i++) fprintf(stderr, " ");
+  for (i=0; i<indent; i++)
+    fprintf(stderr, " ");
   fprintf(stderr, "AH_Msg\n");
-  for (i=0; i<indent; i++) fprintf(stderr, " ");
+  for (i=0; i<indent; i++)
+    fprintf(stderr, " ");
   fprintf(stderr, "==================================================\n");
-  for (i=0; i<indent; i++) fprintf(stderr, " ");
+  for (i=0; i<indent; i++)
+    fprintf(stderr, " ");
   if (hmsg->origbuffer) {
-    for (i=0; i<indent; i++) fprintf(stderr, " ");
+    for (i=0; i<indent; i++)
+      fprintf(stderr, " ");
     fprintf(stderr, "Original buffer      :\n");
     GWEN_Buffer_Dump(hmsg->origbuffer, indent+2);
   }
   else {
-    for (i=0; i<indent; i++) fprintf(stderr, " ");
+    for (i=0; i<indent; i++)
+      fprintf(stderr, " ");
     fprintf(stderr, "Original buffer      : none\n");
   }
   if (hmsg->buffer) {
-    for (i=0; i<indent; i++) fprintf(stderr, " ");
+    for (i=0; i<indent; i++)
+      fprintf(stderr, " ");
     fprintf(stderr, "Buffer:\n");
     GWEN_Buffer_Dump(hmsg->buffer, indent+2);
   }
   else {
-    for (i=0; i<indent; i++) fprintf(stderr, " ");
+    for (i=0; i<indent; i++)
+      fprintf(stderr, " ");
     fprintf(stderr, "Buffer               : none\n");
   }
 
-  for (i=0; i<indent; i++) fprintf(stderr, " ");
+  for (i=0; i<indent; i++)
+    fprintf(stderr, " ");
   if (hmsg->crypterId) {
     fprintf(stderr, "Crypter: %s\n", hmsg->crypterId);
   }
   else {
     fprintf(stderr, "Crypter: none\n");
   }
-  for (i=0; i<indent; i++) fprintf(stderr, " ");
+  for (i=0; i<indent; i++)
+    fprintf(stderr, " ");
   fprintf(stderr, "Signers (%d):\n", GWEN_StringList_Count(hmsg->signerIdList));
   se=GWEN_StringList_FirstEntry(AH_Msg_GetSignerIdList(hmsg));
-  while(se) {
-    for (i=0; i<indent+2; i++) fprintf(stderr, " ");
+  while (se) {
+    for (i=0; i<indent+2; i++)
+      fprintf(stderr, " ");
     fprintf(stderr, "%s\n", GWEN_StringListEntry_Data(se));
     se=GWEN_StringListEntry_Next(se);
   } /* while */
-  for (i=0; i<indent; i++) fprintf(stderr, " ");
+  for (i=0; i<indent; i++)
+    fprintf(stderr, " ");
   fprintf(stderr, "Nodes                : %d\n", hmsg->nodes);
-  for (i=0; i<indent; i++) fprintf(stderr, " ");
+  for (i=0; i<indent; i++)
+    fprintf(stderr, " ");
   fprintf(stderr, "Msg number           : %d\n", hmsg->msgNum);
-  for (i=0; i<indent; i++) fprintf(stderr, " ");
+  for (i=0; i<indent; i++)
+    fprintf(stderr, " ");
   fprintf(stderr, "Reference msg number : %d\n", hmsg->refMsgNum);
-  for (i=0; i<indent; i++) fprintf(stderr, " ");
+  for (i=0; i<indent; i++)
+    fprintf(stderr, " ");
   fprintf(stderr, "First segment        : %d\n", hmsg->firstSegment);
-  for (i=0; i<indent; i++) fprintf(stderr, " ");
+  for (i=0; i<indent; i++)
+    fprintf(stderr, " ");
   fprintf(stderr, "Last segment         : %d\n", hmsg->lastSegment);
-  for (i=0; i<indent; i++) fprintf(stderr, " ");
+  for (i=0; i<indent; i++)
+    fprintf(stderr, " ");
   fprintf(stderr, "\n");
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_DIALOG *AH_Msg_GetDialog(const AH_MSG *hmsg){
+AH_DIALOG *AH_Msg_GetDialog(const AH_MSG *hmsg)
+{
   assert(hmsg);
   return hmsg->dialog;
 }
@@ -1189,11 +1233,12 @@ AH_DIALOG *AH_Msg_GetDialog(const AH_MSG *hmsg){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Msg_IsSignedBy(const AH_MSG *hmsg, const char *s){
+int AH_Msg_IsSignedBy(const AH_MSG *hmsg, const char *s)
+{
   GWEN_STRINGLISTENTRY *se;
 
   se=GWEN_StringList_FirstEntry(hmsg->signerIdList);
-  while(se) {
+  while (se) {
     if (strcasecmp(GWEN_StringListEntry_Data(se), s)==0)
       break;
     se=GWEN_StringListEntry_Next(se);
@@ -1211,7 +1256,8 @@ int AH_Msg_IsSignedBy(const AH_MSG *hmsg, const char *s){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Msg_EnableInsert(AH_MSG *hmsg) {
+int AH_Msg_EnableInsert(AH_MSG *hmsg)
+{
   assert(hmsg);
 
   if (hmsg->nodes && !hmsg->enableInsert) {
@@ -1226,7 +1272,8 @@ int AH_Msg_EnableInsert(AH_MSG *hmsg) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Msg_HasWarnings(const AH_MSG *hmsg) {
+int AH_Msg_HasWarnings(const AH_MSG *hmsg)
+{
   assert(hmsg);
   return hmsg->hasWarnings;
 }
@@ -1234,7 +1281,8 @@ int AH_Msg_HasWarnings(const AH_MSG *hmsg) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Msg_SetHasWarnings(AH_MSG *hmsg, int i) {
+void AH_Msg_SetHasWarnings(AH_MSG *hmsg, int i)
+{
   assert(hmsg);
   hmsg->hasWarnings=i;
 }
@@ -1242,7 +1290,8 @@ void AH_Msg_SetHasWarnings(AH_MSG *hmsg, int i) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Msg_HasErrors(const AH_MSG *hmsg) {
+int AH_Msg_HasErrors(const AH_MSG *hmsg)
+{
   assert(hmsg);
   return hmsg->hasErrors;
 }
@@ -1250,7 +1299,8 @@ int AH_Msg_HasErrors(const AH_MSG *hmsg) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Msg_SetHasErrors(AH_MSG *hmsg, int i) {
+void AH_Msg_SetHasErrors(AH_MSG *hmsg, int i)
+{
   assert(hmsg);
   hmsg->hasErrors=i;
 }
@@ -1258,7 +1308,8 @@ void AH_Msg_SetHasErrors(AH_MSG *hmsg, int i) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Msg_GetResultCode(const AH_MSG *hmsg){
+int AH_Msg_GetResultCode(const AH_MSG *hmsg)
+{
   assert(hmsg);
   return hmsg->resultCode;
 }
@@ -1266,7 +1317,8 @@ int AH_Msg_GetResultCode(const AH_MSG *hmsg){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Msg_SetResultCode(AH_MSG *hmsg, int i){
+void AH_Msg_SetResultCode(AH_MSG *hmsg, int i)
+{
   assert(hmsg);
   hmsg->resultCode=i;
 }
@@ -1274,7 +1326,8 @@ void AH_Msg_SetResultCode(AH_MSG *hmsg, int i){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-const char *AH_Msg_GetResultText(const AH_MSG *hmsg){
+const char *AH_Msg_GetResultText(const AH_MSG *hmsg)
+{
   assert(hmsg);
   return hmsg->resultText;
 }
@@ -1282,17 +1335,21 @@ const char *AH_Msg_GetResultText(const AH_MSG *hmsg){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Msg_SetResultText(AH_MSG *hmsg, const char *s){
+void AH_Msg_SetResultText(AH_MSG *hmsg, const char *s)
+{
   assert(hmsg);
   free(hmsg->resultText);
-  if (s) hmsg->resultText=strdup(s);
-  else hmsg->resultText=0;
+  if (s)
+    hmsg->resultText=strdup(s);
+  else
+    hmsg->resultText=0;
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-const char *AH_Msg_GetResultParam(const AH_MSG *hmsg){
+const char *AH_Msg_GetResultParam(const AH_MSG *hmsg)
+{
   assert(hmsg);
   return hmsg->resultParam;
 }
@@ -1300,17 +1357,21 @@ const char *AH_Msg_GetResultParam(const AH_MSG *hmsg){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Msg_SetResultParam(AH_MSG *hmsg, const char *s){
+void AH_Msg_SetResultParam(AH_MSG *hmsg, const char *s)
+{
   assert(hmsg);
   free(hmsg->resultParam);
-  if (s) hmsg->resultParam=strdup(s);
-  else hmsg->resultParam=0;
+  if (s)
+    hmsg->resultParam=strdup(s);
+  else
+    hmsg->resultParam=0;
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-unsigned int AH_Msg_GetHbciVersion(const AH_MSG *hmsg) {
+unsigned int AH_Msg_GetHbciVersion(const AH_MSG *hmsg)
+{
   assert(hmsg);
   return hmsg->hbciVersion;
 }
@@ -1318,7 +1379,8 @@ unsigned int AH_Msg_GetHbciVersion(const AH_MSG *hmsg) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Msg_SetHbciVersion(AH_MSG *hmsg, unsigned int i) {
+void AH_Msg_SetHbciVersion(AH_MSG *hmsg, unsigned int i)
+{
   assert(hmsg);
   hmsg->hbciVersion=i;
 }
@@ -1326,17 +1388,21 @@ void AH_Msg_SetHbciVersion(AH_MSG *hmsg, unsigned int i) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Msg_SetTan(AH_MSG *hmsg, const char *s){
+void AH_Msg_SetTan(AH_MSG *hmsg, const char *s)
+{
   assert(hmsg);
   free(hmsg->usedTan);
-  if (s) hmsg->usedTan=strdup(s);
-  else hmsg->usedTan=0;
+  if (s)
+    hmsg->usedTan=strdup(s);
+  else
+    hmsg->usedTan=0;
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-const char *AH_Msg_GetTan(const AH_MSG *hmsg){
+const char *AH_Msg_GetTan(const AH_MSG *hmsg)
+{
   assert(hmsg);
   return hmsg->usedTan;
 }
@@ -1344,7 +1410,8 @@ const char *AH_Msg_GetTan(const AH_MSG *hmsg){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Msg_GetNeedTan(const AH_MSG *hmsg){
+int AH_Msg_GetNeedTan(const AH_MSG *hmsg)
+{
   assert(hmsg);
   return hmsg->needTan;
 }
@@ -1352,7 +1419,8 @@ int AH_Msg_GetNeedTan(const AH_MSG *hmsg){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Msg_SetNeedTan(AH_MSG *hmsg, int i){
+void AH_Msg_SetNeedTan(AH_MSG *hmsg, int i)
+{
   assert(hmsg);
   hmsg->needTan=i;
 }
@@ -1360,7 +1428,8 @@ void AH_Msg_SetNeedTan(AH_MSG *hmsg, int i){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Msg_NoSysId(const AH_MSG *hmsg){
+int AH_Msg_NoSysId(const AH_MSG *hmsg)
+{
   assert(hmsg);
   return hmsg->noSysId;
 }
@@ -1368,7 +1437,8 @@ int AH_Msg_NoSysId(const AH_MSG *hmsg){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Msg_SetNoSysId(AH_MSG *hmsg, int i){
+void AH_Msg_SetNoSysId(AH_MSG *hmsg, int i)
+{
   assert(hmsg);
   hmsg->noSysId=i;
 }
@@ -1379,7 +1449,8 @@ void AH_Msg_SetNoSysId(AH_MSG *hmsg, int i){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Msg__AnonHnsha(const char *psegment, unsigned int slen, GWEN_SYNCIO *sio){
+int AH_Msg__AnonHnsha(const char *psegment, unsigned int slen, GWEN_SYNCIO *sio)
+{
   int plusCount=0;
   int lastWasEscape=0;
   int segDone=0;
@@ -1388,7 +1459,7 @@ int AH_Msg__AnonHnsha(const char *psegment, unsigned int slen, GWEN_SYNCIO *sio)
 
   p=psegment;
   count=slen;
-  while(*p && !segDone && count--) {
+  while (*p && !segDone && count--) {
     int normalChar=1;
     int err;
 
@@ -1399,20 +1470,20 @@ int AH_Msg__AnonHnsha(const char *psegment, unsigned int slen, GWEN_SYNCIO *sio)
     }
     else {
       if (*p=='?') {
-	lastWasEscape=1;
+        lastWasEscape=1;
       }
       else {
-	if (*p=='\'')
-	  segDone=1;
-	else if (*p=='+')
-	  plusCount++;
-	lastWasEscape=0;
+        if (*p=='\'')
+          segDone=1;
+        else if (*p=='+')
+          plusCount++;
+        lastWasEscape=0;
       }
     }
     if (plusCount>=3 && normalChar && *p!='+' && *p!='\'' && *p!=':')
-      err=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) "*", 1);
+      err=GWEN_SyncIo_WriteForced(sio, (const uint8_t *) "*", 1);
     else
-      err=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) p, 1);
+      err=GWEN_SyncIo_WriteForced(sio, (const uint8_t *) p, 1);
     if (err<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", err);
       return err;
@@ -1427,7 +1498,8 @@ int AH_Msg__AnonHnsha(const char *psegment, unsigned int slen, GWEN_SYNCIO *sio)
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Msg__AnonHkpae(const char *psegment, unsigned int slen, GWEN_SYNCIO *sio){
+int AH_Msg__AnonHkpae(const char *psegment, unsigned int slen, GWEN_SYNCIO *sio)
+{
   int plusCount=0;
   int lastWasEscape=0;
   int segDone=0;
@@ -1436,7 +1508,7 @@ int AH_Msg__AnonHkpae(const char *psegment, unsigned int slen, GWEN_SYNCIO *sio)
 
   p=psegment;
   count=slen;
-  while(*p && !segDone && count--) {
+  while (*p && !segDone && count--) {
     int normalChar=1;
     int err;
 
@@ -1447,20 +1519,20 @@ int AH_Msg__AnonHkpae(const char *psegment, unsigned int slen, GWEN_SYNCIO *sio)
     }
     else {
       if (*p=='?') {
-	lastWasEscape=1;
+        lastWasEscape=1;
       }
       else {
-	if (*p=='\'')
-	  segDone=1;
-	else if (*p=='+')
-	  plusCount++;
-	lastWasEscape=0;
+        if (*p=='\'')
+          segDone=1;
+        else if (*p=='+')
+          plusCount++;
+        lastWasEscape=0;
       }
     }
     if (plusCount>=1 && normalChar && *p!='+' && *p!='\'' && *p!=':')
-      err=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) "*", 1);
+      err=GWEN_SyncIo_WriteForced(sio, (const uint8_t *) "*", 1);
     else
-      err=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) p, 1);
+      err=GWEN_SyncIo_WriteForced(sio, (const uint8_t *) p, 1);
     if (err<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", err);
       return err;
@@ -1478,7 +1550,8 @@ int AH_Msg__AnonHkpae(const char *psegment, unsigned int slen, GWEN_SYNCIO *sio)
 void AH_Msg_LogMessage(AH_MSG *msg,
                        GWEN_BUFFER *buf,
                        int rec,
-                       int crypt) {
+                       int crypt)
+{
   GWEN_DB_NODE *db;
   AB_USER *u;
   AH_HBCI *h;
@@ -1509,14 +1582,14 @@ void AH_Msg_LogMessage(AH_MSG *msg,
                        "mode",
                        AH_CryptMode_toString(AH_User_GetCryptMode(u)));
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "rdhtype",
-		      AH_User_GetRdhType(u));
+                      "rdhtype",
+                      AH_User_GetRdhType(u));
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "hbciVersion",
-		      AH_User_GetHbciVersion(u));
+                      "hbciVersion",
+                      AH_User_GetHbciVersion(u));
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		       "tokenType",
-		       AH_User_GetTokenType(u));
+                       "tokenType",
+                       AH_User_GetTokenType(u));
 
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "crypt",
@@ -1526,10 +1599,10 @@ void AH_Msg_LogMessage(AH_MSG *msg,
                        rec?"bank":"user");
   GWEN_Version(&vmajor, &vminor, &vpatchlevel, &vbuild);
   snprintf(vbuf, sizeof(vbuf)-1, "%d.%d.%d.%d",
-	   vmajor, vminor, vpatchlevel, vbuild);
+           vmajor, vminor, vpatchlevel, vbuild);
   vbuf[sizeof(vbuf)-1]=0;
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		       "gwenhywfar", vbuf);
+                       "gwenhywfar", vbuf);
 
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "aqhbci",
@@ -1539,12 +1612,12 @@ void AH_Msg_LogMessage(AH_MSG *msg,
                        AH_HBCI_GetProductName(h));
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "appversion",
-		       AH_HBCI_GetProductVersion(h));
+                       AH_HBCI_GetProductVersion(h));
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "size",
-		      GWEN_Buffer_GetUsedBytes(buf));
+                      "size",
+                      GWEN_Buffer_GetUsedBytes(buf));
   if (GWEN_Directory_GetPath(logFile,
-			     GWEN_PATH_FLAGS_VARIABLE)) {
+                             GWEN_PATH_FLAGS_VARIABLE)) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "Path \"%s\" is not available, cannot log",
               logFile);
@@ -1554,11 +1627,11 @@ void AH_Msg_LogMessage(AH_MSG *msg,
 
   sio=GWEN_SyncIo_File_new(logFile, GWEN_SyncIo_File_CreationMode_OpenAlways);
   GWEN_SyncIo_AddFlags(sio,
-		       GWEN_SYNCIO_FILE_FLAGS_READ |
-		       GWEN_SYNCIO_FILE_FLAGS_WRITE |
-		       GWEN_SYNCIO_FILE_FLAGS_UREAD |
-		       GWEN_SYNCIO_FILE_FLAGS_UWRITE |
-		       GWEN_SYNCIO_FILE_FLAGS_APPEND);
+                       GWEN_SYNCIO_FILE_FLAGS_READ |
+                       GWEN_SYNCIO_FILE_FLAGS_WRITE |
+                       GWEN_SYNCIO_FILE_FLAGS_UREAD |
+                       GWEN_SYNCIO_FILE_FLAGS_UWRITE |
+                       GWEN_SYNCIO_FILE_FLAGS_APPEND);
   rv=GWEN_SyncIo_Connect(sio);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -1569,10 +1642,10 @@ void AH_Msg_LogMessage(AH_MSG *msg,
 
   /* write header */
   rv=GWEN_DB_WriteToIo(db, sio,
-		       GWEN_DB_FLAGS_WRITE_SUBGROUPS |
-		       GWEN_DB_FLAGS_DETAILED_GROUPS |
-		       GWEN_DB_FLAGS_USE_COLON|
-		       GWEN_DB_FLAGS_OMIT_TYPES);
+                       GWEN_DB_FLAGS_WRITE_SUBGROUPS |
+                       GWEN_DB_FLAGS_DETAILED_GROUPS |
+                       GWEN_DB_FLAGS_USE_COLON|
+                       GWEN_DB_FLAGS_OMIT_TYPES);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_SyncIo_Disconnect(sio);
@@ -1582,7 +1655,7 @@ void AH_Msg_LogMessage(AH_MSG *msg,
   }
 
   /* append empty line to separate header from data */
-  rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) "\n", 1);
+  rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t *) "\n", 1);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_SyncIo_Disconnect(sio);
@@ -1599,69 +1672,69 @@ void AH_Msg_LogMessage(AH_MSG *msg,
 
     bleft=bsize;
     p=GWEN_Buffer_GetStart(buf);
-    while(bleft) {
+    while (bleft) {
       char *segEnd;
       unsigned int slen;
 
       if (*p=='\'') {
-	rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) p, 1);
-	if (rv<0) {
-	  DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-	  GWEN_SyncIo_Disconnect(sio);
-	  GWEN_SyncIo_free(sio);
-	  GWEN_DB_Group_free(db);
-	  return;
-	}
+        rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t *) p, 1);
+        if (rv<0) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+          GWEN_SyncIo_Disconnect(sio);
+          GWEN_SyncIo_free(sio);
+          GWEN_DB_Group_free(db);
+          return;
+        }
 
-	p++;
-	bleft--;
+        p++;
+        bleft--;
       }
       else {
-	segEnd=strchr(p, '\'');
-	if (segEnd==NULL) {
-	  /* no segment end found, write rest of the buffer */
-	  rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*)p, bleft);
-	  if (rv<0) {
-	    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-	    GWEN_SyncIo_Disconnect(sio);
-	    GWEN_SyncIo_free(sio);
-	    GWEN_DB_Group_free(db);
-	    return;
-	  }
-	  break;
-	}
+        segEnd=strchr(p, '\'');
+        if (segEnd==NULL) {
+          /* no segment end found, write rest of the buffer */
+          rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t *)p, bleft);
+          if (rv<0) {
+            DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+            GWEN_SyncIo_Disconnect(sio);
+            GWEN_SyncIo_free(sio);
+            GWEN_DB_Group_free(db);
+            return;
+          }
+          break;
+        }
 
-	assert(segEnd);
-	slen=segEnd-p+1;
-	assert(slen);
-  
-	if (strncasecmp(p, "HNSHA:", 6)==0)
-	  rv=AH_Msg__AnonHnsha(p, slen, sio);
-	else if (strncasecmp(p, "HKPAE:", 6)==0 ||
-		 strncasecmp(p, "DKPAE:", 6)==0)
-	  rv=AH_Msg__AnonHkpae(p, slen, sio);
-	/* add more segments with confidential data here */
-	else {
-	  unsigned int l;
+        assert(segEnd);
+        slen=segEnd-p+1;
+        assert(slen);
 
-	  l=slen;
-	  rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*)p, l);
-	}
-	if (rv<0) {
-	  DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-	  GWEN_SyncIo_Disconnect(sio);
-	  GWEN_SyncIo_free(sio);
-	  GWEN_DB_Group_free(db);
-	  return;
-	}
+        if (strncasecmp(p, "HNSHA:", 6)==0)
+          rv=AH_Msg__AnonHnsha(p, slen, sio);
+        else if (strncasecmp(p, "HKPAE:", 6)==0 ||
+                 strncasecmp(p, "DKPAE:", 6)==0)
+          rv=AH_Msg__AnonHkpae(p, slen, sio);
+        /* add more segments with confidential data here */
+        else {
+          unsigned int l;
 
-	bleft-=slen;
-	p=segEnd+1;
+          l=slen;
+          rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t *)p, l);
+        }
+        if (rv<0) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+          GWEN_SyncIo_Disconnect(sio);
+          GWEN_SyncIo_free(sio);
+          GWEN_DB_Group_free(db);
+          return;
+        }
+
+        bleft-=slen;
+        p=segEnd+1;
       }
     } /* while bleft */
   }
   else {
-    rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*)GWEN_Buffer_GetStart(buf), bsize);
+    rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t *)GWEN_Buffer_GetStart(buf), bsize);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_SyncIo_Disconnect(sio);
@@ -1672,7 +1745,7 @@ void AH_Msg_LogMessage(AH_MSG *msg,
   }
 
   /* add LF for better readability */
-  rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t*) "\n", 1);
+  rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t *) "\n", 1);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_SyncIo_Disconnect(sio);
@@ -1697,72 +1770,87 @@ void AH_Msg_LogMessage(AH_MSG *msg,
 
 
 
-const char *AH_Msg_GetExpectedSigner(const AH_MSG *msg){
+const char *AH_Msg_GetExpectedSigner(const AH_MSG *msg)
+{
   assert(msg);
   return msg->expectedSigner;
 }
 
 
 
-void AH_Msg_SetExpectedSigner(AH_MSG *msg, const char *s){
+void AH_Msg_SetExpectedSigner(AH_MSG *msg, const char *s)
+{
   assert(msg);
   free(msg->expectedSigner);
-  if (s) msg->expectedSigner=strdup(s);
-  else msg->expectedSigner=0;
+  if (s)
+    msg->expectedSigner=strdup(s);
+  else
+    msg->expectedSigner=0;
 }
 
 
 
-const char *AH_Msg_GetExpectedCrypter(const AH_MSG *msg){
+const char *AH_Msg_GetExpectedCrypter(const AH_MSG *msg)
+{
   assert(msg);
   return msg->expectedCrypter;
 }
 
 
 
-void AH_Msg_SetExpectedCrypter(AH_MSG *msg, const char *s){
+void AH_Msg_SetExpectedCrypter(AH_MSG *msg, const char *s)
+{
   assert(msg);
   free(msg->expectedCrypter);
-  if (s) msg->expectedCrypter=strdup(s);
-  else msg->expectedCrypter=0;
+  if (s)
+    msg->expectedCrypter=strdup(s);
+  else
+    msg->expectedCrypter=0;
 }
 
 
 
-void AH_Msg_SetPin(AH_MSG *msg, const char *s){
+void AH_Msg_SetPin(AH_MSG *msg, const char *s)
+{
   assert(msg);
   if (msg->usedPin) {
     memset(msg->usedPin, 0, strlen(msg->usedPin));
     free(msg->usedPin);
   }
-  if (s) msg->usedPin=strdup(s);
-  else msg->usedPin=0;
+  if (s)
+    msg->usedPin=strdup(s);
+  else
+    msg->usedPin=0;
 }
 
 
 
-const char *AH_Msg_GetPin(const AH_MSG *msg){
+const char *AH_Msg_GetPin(const AH_MSG *msg)
+{
   assert(msg);
   return msg->usedPin;
 }
 
 
 
-void AH_Msg_SetItanHashMode(AH_MSG *hmsg, int i) {
+void AH_Msg_SetItanHashMode(AH_MSG *hmsg, int i)
+{
   assert(hmsg);
   hmsg->itanHashMode=i;
 }
 
 
 
-int AH_Msg_GetItanHashMode(const AH_MSG *hmsg) {
+int AH_Msg_GetItanHashMode(const AH_MSG *hmsg)
+{
   assert(hmsg);
   return hmsg->itanHashMode;
 }
 
 
 
-void AH_Msg_SetItanHashBuffer(AH_MSG *hmsg, GWEN_BUFFER *hbuf) {
+void AH_Msg_SetItanHashBuffer(AH_MSG *hmsg, GWEN_BUFFER *hbuf)
+{
   assert(hmsg);
   if (hmsg->itanHashBuffer!=hbuf) {
     GWEN_Buffer_free(hmsg->itanHashBuffer);
@@ -1772,35 +1860,40 @@ void AH_Msg_SetItanHashBuffer(AH_MSG *hmsg, GWEN_BUFFER *hbuf) {
 
 
 
-GWEN_BUFFER *AH_Msg_GetItanHashBuffer(const AH_MSG *hmsg) {
+GWEN_BUFFER *AH_Msg_GetItanHashBuffer(const AH_MSG *hmsg)
+{
   assert(hmsg);
   return hmsg->itanHashBuffer;
 }
 
 
 
-void AH_Msg_SetItanMethod(AH_MSG *hmsg, uint32_t i) {
+void AH_Msg_SetItanMethod(AH_MSG *hmsg, uint32_t i)
+{
   assert(hmsg);
   hmsg->itanMethod=i;
 }
 
 
 
-uint32_t AH_Msg_GetItanMethod(const AH_MSG *hmsg) {
+uint32_t AH_Msg_GetItanMethod(const AH_MSG *hmsg)
+{
   assert(hmsg);
   return hmsg->itanMethod;
 }
 
 
 
-const GWEN_STRINGLIST *AH_Msg_GetSignerIdList(const AH_MSG *hmsg) {
+const GWEN_STRINGLIST *AH_Msg_GetSignerIdList(const AH_MSG *hmsg)
+{
   assert(hmsg);
   return hmsg->signerIdList;
 }
 
 
 
-void AH_Msg_SetCrypterId(AH_MSG *hmsg, const char *s) {
+void AH_Msg_SetCrypterId(AH_MSG *hmsg, const char *s)
+{
   assert(hmsg);
   free(hmsg->crypterId);
   if (s)
@@ -1811,7 +1904,8 @@ void AH_Msg_SetCrypterId(AH_MSG *hmsg, const char *s) {
 
 
 
-const char *AH_Msg_GetCrypterId(const AH_MSG *hmsg) {
+const char *AH_Msg_GetCrypterId(const AH_MSG *hmsg)
+{
   assert(hmsg);
   return hmsg->crypterId;
 }

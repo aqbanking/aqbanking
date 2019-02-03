@@ -43,14 +43,15 @@
 GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_OFX);
 
 
-AB_IMEXPORTER *ofx_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
+AB_IMEXPORTER *ofx_factory(AB_BANKING *ab, GWEN_DB_NODE *db)
+{
   AB_IMEXPORTER *ie;
   AH_IMEXPORTER_OFX *ieh;
 
   ie=AB_ImExporter_new(ab, "ofx");
   GWEN_NEW_OBJECT(AH_IMEXPORTER_OFX, ieh);
   GWEN_INHERIT_SETDATA(AB_IMEXPORTER, AH_IMEXPORTER_OFX, ie, ieh,
-		       AH_ImExporterOFX_FreeData);
+                       AH_ImExporterOFX_FreeData);
   ieh->dbData=db;
 
   AB_ImExporter_SetImportFn(ie, AH_ImExporterOFX_Import);
@@ -60,20 +61,22 @@ AB_IMEXPORTER *ofx_factory(AB_BANKING *ab, GWEN_DB_NODE *db){
 
 
 
-void GWENHYWFAR_CB AH_ImExporterOFX_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_ImExporterOFX_FreeData(void *bp, void *p)
+{
   AH_IMEXPORTER_OFX *ieh;
 
-  ieh=(AH_IMEXPORTER_OFX*)p;
+  ieh=(AH_IMEXPORTER_OFX *)p;
   GWEN_FREE_OBJECT(ieh);
 }
 
 
 
 int AH_ImExporterOFX_Import(AB_IMEXPORTER *ie,
-			    AB_IMEXPORTER_CONTEXT *ctx,
+                            AB_IMEXPORTER_CONTEXT *ctx,
                             GWEN_IO_LAYER *io,
-			    GWEN_DB_NODE *params,
-			    uint32_t guiid){
+                            GWEN_DB_NODE *params,
+                            uint32_t guiid)
+{
   AH_IMEXPORTER_OFX *ieh;
   LibofxContextPtr ofxctx;
   GWEN_BUFFER *dbuf;
@@ -88,11 +91,11 @@ int AH_ImExporterOFX_Import(AB_IMEXPORTER *ie,
   ofxctx=libofx_get_new_context();
 
   ofx_set_account_cb(ofxctx,
-		     AH_ImExporterOFX_AccountCallback_cb,
-		     ieh);
+                     AH_ImExporterOFX_AccountCallback_cb,
+                     ieh);
   ofx_set_transaction_cb(ofxctx,
-			 AH_ImExporterOFX_TransactionCallback_cb,
-			 ieh);
+                         AH_ImExporterOFX_TransactionCallback_cb,
+                         ieh);
 
   paths=AB_Banking_GetGlobalDataDirs();
   if (paths) {
@@ -101,29 +104,29 @@ int AH_ImExporterOFX_Import(AB_IMEXPORTER *ie,
 
     fbuf=GWEN_Buffer_new(0, 256, 0, 1);
     rv=GWEN_Directory_FindPathForFile(paths,
-				      "libofx"
-				      DIRSEP
-				      "dtd"
-				      DIRSEP
-				      "ofx150.dtd",
-				      fbuf);
+                                      "libofx"
+                                      DIRSEP
+                                      "dtd"
+                                      DIRSEP
+                                      "ofx150.dtd",
+                                      fbuf);
     GWEN_StringList_free(paths);
     if (rv==0) {
       GWEN_Buffer_AppendString(fbuf,
-			       DIRSEP
-			       "libofx"
-			       DIRSEP
-			       "dtd"
-			       DIRSEP);
+                               DIRSEP
+                               "libofx"
+                               DIRSEP
+                               "dtd"
+                               DIRSEP);
 #ifdef LIBOFX_GT_0_8_4
       DBG_INFO(AQBANKING_LOGDOMAIN,
-	       "Setting path for DTD files to [%s]",
-	       GWEN_Buffer_GetStart(fbuf));
+               "Setting path for DTD files to [%s]",
+               GWEN_Buffer_GetStart(fbuf));
       libofx_set_dtd_dir(ofxctx, GWEN_Buffer_GetStart(fbuf));
 #else
       DBG_INFO(AQBANKING_LOGDOMAIN,
-	       "Cannot set path for DTD files to [%s]: libofx is 0.8.3 or older",
-	       GWEN_Buffer_GetStart(fbuf));
+               "Cannot set path for DTD files to [%s]: libofx is 0.8.3 or older",
+               GWEN_Buffer_GetStart(fbuf));
 #endif
     }
     GWEN_Buffer_free(fbuf);
@@ -173,7 +176,8 @@ int AH_ImExporterOFX_Import(AB_IMEXPORTER *ie,
 
 
 
-int AH_ImExporterOFX_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid){
+int AH_ImExporterOFX_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t guiid)
+{
   int fd;
   GWEN_BUFFEREDIO *bio;
 
@@ -191,14 +195,14 @@ int AH_ImExporterOFX_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t gu
   bio=GWEN_BufferedIO_File_new(fd);
   GWEN_BufferedIO_SetReadBuffer(bio, 0, 256);
 
-  while(!GWEN_BufferedIO_CheckEOF(bio)) {
+  while (!GWEN_BufferedIO_CheckEOF(bio)) {
     char lbuffer[256];
     int err;
 
     err=GWEN_BufferedIO_ReadLine(bio, lbuffer, sizeof(lbuffer));
     if (err) {
       DBG_INFO(AQBANKING_LOGDOMAIN,
-	       "File \"%s\" is not supported by this plugin",
+               "File \"%s\" is not supported by this plugin",
                fname);
       GWEN_BufferedIO_Close(bio);
       GWEN_BufferedIO_free(bio);
@@ -226,12 +230,13 @@ int AH_ImExporterOFX_CheckFile(AB_IMEXPORTER *ie, const char *fname, uint32_t gu
 
 
 int AH_ImExporterOFX_StatusCallback_cb(const struct OfxStatusData data,
-                                       void *user_data){
+                                       void *user_data)
+{
   AH_IMEXPORTER_OFX *ieh;
 
   DBG_INFO(AQBANKING_LOGDOMAIN,
            "Status callback");
-  ieh=(AH_IMEXPORTER_OFX*)user_data;
+  ieh=(AH_IMEXPORTER_OFX *)user_data;
 
   return 0;
 }
@@ -239,13 +244,14 @@ int AH_ImExporterOFX_StatusCallback_cb(const struct OfxStatusData data,
 
 
 int AH_ImExporterOFX_AccountCallback_cb(const struct OfxAccountData data,
-                                        void *user_data){
+                                        void *user_data)
+{
   AH_IMEXPORTER_OFX *ieh;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
 
   DBG_INFO(AQBANKING_LOGDOMAIN,
-	   "Account callback");
-  ieh=(AH_IMEXPORTER_OFX*)user_data;
+           "Account callback");
+  ieh=(AH_IMEXPORTER_OFX *)user_data;
 
   ai=AB_ImExporterAccountInfo_new();
 #ifdef HAVE_OFX_WITH_CONNECT
@@ -275,14 +281,28 @@ int AH_ImExporterOFX_AccountCallback_cb(const struct OfxAccountData data,
   if (data.account_type_valid) {
     AB_ACCOUNT_TYPE at;
 
-    switch(data.account_type) {
-    case OFX_CHECKING:   at=AB_AccountType_Checking; break;
-    case OFX_SAVINGS:    at=AB_AccountType_Savings; break;
-    case OFX_MONEYMRKT:  at=AB_AccountType_Investment; break;
-    case OFX_CREDITLINE: at=AB_AccountType_Bank; break;
-    case OFX_CMA:        at=AB_AccountType_Cash; break;
-    case OFX_CREDITCARD: at=AB_AccountType_CreditCard; break;
-    case OFX_INVESTMENT: at=AB_AccountType_Investment; break;
+    switch (data.account_type) {
+    case OFX_CHECKING:
+      at=AB_AccountType_Checking;
+      break;
+    case OFX_SAVINGS:
+      at=AB_AccountType_Savings;
+      break;
+    case OFX_MONEYMRKT:
+      at=AB_AccountType_Investment;
+      break;
+    case OFX_CREDITLINE:
+      at=AB_AccountType_Bank;
+      break;
+    case OFX_CMA:
+      at=AB_AccountType_Cash;
+      break;
+    case OFX_CREDITCARD:
+      at=AB_AccountType_CreditCard;
+      break;
+    case OFX_INVESTMENT:
+      at=AB_AccountType_Investment;
+      break;
     default:
       at=AB_AccountType_Bank;
       break;
@@ -301,26 +321,27 @@ int AH_ImExporterOFX_AccountCallback_cb(const struct OfxAccountData data,
 
 
 int AH_ImExporterOFX_SecurityCallback_cb(const struct OfxSecurityData data,
-                                         void *user_data){
+                                         void *user_data)
+{
   AH_IMEXPORTER_OFX *ieh;
 
   DBG_INFO(AQBANKING_LOGDOMAIN,
-	   "Security callback");
-  ieh=(AH_IMEXPORTER_OFX*)user_data;
+           "Security callback");
+  ieh=(AH_IMEXPORTER_OFX *)user_data;
 
   return 0;
 }
 
 
 
-int
-AH_ImExporterOFX_TransactionCallback_cb(const struct OfxTransactionData data,
-                                        void *user_data){
+int AH_ImExporterOFX_TransactionCallback_cb(const struct OfxTransactionData data,
+                                            void *user_data)
+{
   AH_IMEXPORTER_OFX *ieh;
 
   DBG_INFO(AQBANKING_LOGDOMAIN,
            "Transaction callback");
-  ieh=(AH_IMEXPORTER_OFX*)user_data;
+  ieh=(AH_IMEXPORTER_OFX *)user_data;
 
   if (!ieh->lastAccountInfo) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Transaction but no account. Ignoring");
@@ -366,13 +387,13 @@ AH_ImExporterOFX_TransactionCallback_cb(const struct OfxTransactionData data,
       cur=0;
       if (data.account_ptr)
         if (data.account_ptr->currency_valid)
-	  cur=data.account_ptr->currency;
+          cur=data.account_ptr->currency;
       val=AB_Value_fromDouble(data.amount);
       assert(val);
       AB_Value_SetCurrency(val, cur);
       if (data.invtransactiontype_valid)
-	/* negate for investment transaction type (hack, see KMyMoney) */
-	AB_Value_Negate(val);
+        /* negate for investment transaction type (hack, see KMyMoney) */
+        AB_Value_Negate(val);
       AB_Transaction_SetValue(t, val);
       AB_Value_free(val);
     }
@@ -381,8 +402,8 @@ AH_ImExporterOFX_TransactionCallback_cb(const struct OfxTransactionData data,
                 "No amount in transaction");
     }
 
-    if (data.transactiontype_valid){
-      switch(data.transactiontype){
+    if (data.transactiontype_valid) {
+      switch (data.transactiontype) {
       case OFX_CHECK:
         AB_Transaction_SetTransactionKey(t, "CHK");
         AB_Transaction_SetTransactionText(t, "Check");
@@ -447,7 +468,7 @@ AH_ImExporterOFX_TransactionCallback_cb(const struct OfxTransactionData data,
       }
     } /* if transaction type is valid */
     else if (data.invtransactiontype_valid) {
-      switch (data.invtransactiontype){
+      switch (data.invtransactiontype) {
       case OFX_BUYDEBT:
       case OFX_BUYMF:
       case OFX_BUYOPT:
@@ -476,7 +497,7 @@ AH_ImExporterOFX_TransactionCallback_cb(const struct OfxTransactionData data,
         AB_Transaction_SetTransactionText(t, "Dividend");
         AB_Transaction_SetSubType(t, AB_Transaction_SubTypeDividend);
         break;
-        /* rest is unhandled */
+      /* rest is unhandled */
       case OFX_CLOSUREOPT:
         AB_Transaction_SetTransactionText(t, "XCLOSUREOPT");
         break;
@@ -506,18 +527,18 @@ AH_ImExporterOFX_TransactionCallback_cb(const struct OfxTransactionData data,
       if (data.fees_valid || data.commission_valid) {
         AB_VALUE *vFees;
 
-	vFees=AB_Value_new();
+        vFees=AB_Value_new();
         if (data.fees_valid) {
           AB_VALUE *v;
 
-	  v=AB_Value_fromDouble(data.fees);
-	  AB_Value_AddValue(vFees, v);
-	  AB_Value_free(v);
+          v=AB_Value_fromDouble(data.fees);
+          AB_Value_AddValue(vFees, v);
+          AB_Value_free(v);
         }
         if (data.commission_valid) {
           AB_VALUE *v;
 
-	  v=AB_Value_fromDouble(data.commission);
+          v=AB_Value_fromDouble(data.commission);
           AB_Value_AddValue(vFees, v);
           AB_Value_free(v);
         }
@@ -532,7 +553,7 @@ AH_ImExporterOFX_TransactionCallback_cb(const struct OfxTransactionData data,
       if (data.unitprice_valid && data.fees_valid) {
         AB_VALUE *v;
 
-	v=AB_Value_fromDouble(data.fees); /* TODO: add currency */
+        v=AB_Value_fromDouble(data.fees); /* TODO: add currency */
         AB_Transaction_SetUnitPrice(t, v);
         AB_Value_free(v);
       }
@@ -561,12 +582,13 @@ AH_ImExporterOFX_TransactionCallback_cb(const struct OfxTransactionData data,
 
 
 int AH_ImExporterOFX_StatementCallback_cb(const struct OfxStatementData data,
-                                          void *user_data){
+                                          void *user_data)
+{
   AH_IMEXPORTER_OFX *ieh;
 
   DBG_INFO(AQBANKING_LOGDOMAIN,
-	   "Statement callback");
-  ieh=(AH_IMEXPORTER_OFX*)user_data;
+           "Statement callback");
+  ieh=(AH_IMEXPORTER_OFX *)user_data;
 
   return 0;
 }

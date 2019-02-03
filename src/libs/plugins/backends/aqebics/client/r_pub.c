@@ -17,9 +17,10 @@
 
 
 int EBC_Provider_XchgPubRequest(AB_PROVIDER *pro,
-				GWEN_HTTP_SESSION *sess,
-				AB_USER *u,
-				const char *signVersion) {
+                                GWEN_HTTP_SESSION *sess,
+                                AB_USER *u,
+                                const char *signVersion)
+{
   const char *s;
 
   s=EBC_User_GetProtoVersion(u);

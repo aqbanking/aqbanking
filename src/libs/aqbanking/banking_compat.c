@@ -10,7 +10,8 @@
 
 
 
-int AB_Banking_SetAccountSpecAlias(AB_BANKING *ab, const AB_ACCOUNT_SPEC *as, const char *alias) {
+int AB_Banking_SetAccountSpecAlias(AB_BANKING *ab, const AB_ACCOUNT_SPEC *as, const char *alias)
+{
   int rv;
   GWEN_DB_NODE *dbConfig=NULL;
   GWEN_DB_NODE *db;
@@ -37,7 +38,8 @@ int AB_Banking_SetAccountSpecAlias(AB_BANKING *ab, const AB_ACCOUNT_SPEC *as, co
 
 
 
-AB_ACCOUNT_SPEC *AB_Banking_GetAccountSpecByAlias(AB_BANKING *ab, const char *alias){
+AB_ACCOUNT_SPEC *AB_Banking_GetAccountSpecByAlias(AB_BANKING *ab, const char *alias)
+{
   GWEN_DB_NODE *dbConfig=NULL;
   GWEN_DB_NODE *db;
   AB_ACCOUNT_SPEC *as=NULL;

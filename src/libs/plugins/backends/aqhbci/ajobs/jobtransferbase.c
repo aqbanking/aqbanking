@@ -42,9 +42,10 @@ GWEN_INHERIT(AH_JOB, AH_JOB_TRANSFERBASE);
 AH_JOB *AH_Job_TransferBase_new(const char *jobName,
                                 AB_TRANSACTION_TYPE tt,
                                 AB_TRANSACTION_SUBTYPE tst,
-                                AB_PROVIDER *pro, 
+                                AB_PROVIDER *pro,
                                 AB_USER *u,
-                                AB_ACCOUNT *account) {
+                                AB_ACCOUNT *account)
+{
   AH_JOB *j;
   AH_JOB_TRANSFERBASE *aj;
 
@@ -68,10 +69,11 @@ AH_JOB *AH_Job_TransferBase_new(const char *jobName,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void GWENHYWFAR_CB AH_Job_TransferBase_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_Job_TransferBase_FreeData(void *bp, void *p)
+{
   AH_JOB_TRANSFERBASE *aj;
 
-  aj=(AH_JOB_TRANSFERBASE*)p;
+  aj=(AH_JOB_TRANSFERBASE *)p;
   free(aj->fiid);
 
   GWEN_FREE_OBJECT(aj);
@@ -80,7 +82,8 @@ void GWENHYWFAR_CB AH_Job_TransferBase_FreeData(void *bp, void *p){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-const char *AH_Job_TransferBase_GetFiid(const AH_JOB *j) {
+const char *AH_Job_TransferBase_GetFiid(const AH_JOB *j)
+{
   AH_JOB_TRANSFERBASE *aj;
 
   assert(j);
@@ -93,7 +96,8 @@ const char *AH_Job_TransferBase_GetFiid(const AH_JOB *j) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile) {
+int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
+{
   AH_JOB_TRANSFERBASE *aj;
   GWEN_DB_NODE *dbArgs;
   AB_BANKING *ab;
@@ -120,7 +124,7 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
   descriptor=GWEN_DB_GetCharValue(profile, "descriptor", 0, 0);
   assert(descriptor);
   DBG_INFO(AQHBCI_LOGDOMAIN, "Using SEPA descriptor %s and profile %s",
-	   descriptor, GWEN_DB_GetCharValue(profile, "name", 0, 0));
+           descriptor, GWEN_DB_GetCharValue(profile, "name", 0, 0));
 
   /* set data in job */
   t=AH_Job_GetFirstTransfer(j);
@@ -131,7 +135,7 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
 
     /* add transfers as transactions for export (exporters only use transactions) */
     ioc=AB_ImExporterContext_new();
-    while(t) {
+    while (t) {
       cpy=AB_Transaction_dup(t);
       AB_Transaction_SetUniqueAccountId(cpy, AB_Account_GetUniqueId(a));
       AB_ImExporterContext_AddTransaction(ioc, cpy);
@@ -150,7 +154,8 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
     /* store descriptor */
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "descriptor", descriptor);
     /* store transfer */
-    GWEN_DB_SetBinValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "transfer", GWEN_Buffer_GetStart(dbuf), GWEN_Buffer_GetUsedBytes(dbuf));
+    GWEN_DB_SetBinValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "transfer", GWEN_Buffer_GetStart(dbuf),
+                        GWEN_Buffer_GetUsedBytes(dbuf));
     GWEN_Buffer_free(dbuf);
   }
   else {
@@ -164,7 +169,8 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_TransferBase_GetLimits_SepaUndated(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits) {
+int AH_Job_TransferBase_GetLimits_SepaUndated(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits)
+{
   AB_TRANSACTION_LIMITS *lim;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging params");
@@ -186,7 +192,8 @@ int AH_Job_TransferBase_GetLimits_SepaUndated(AH_JOB *j, AB_TRANSACTION_LIMITS *
 
 
 
-int AH_Job_TransferBase_GetLimits_SepaDated(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits) {
+int AH_Job_TransferBase_GetLimits_SepaDated(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits)
+{
   AB_TRANSACTION_LIMITS *lim;
   GWEN_DB_NODE *dbParams;
   int i, i1, i2;
@@ -235,7 +242,8 @@ int AH_Job_TransferBase_GetLimits_SepaDated(AH_JOB *j, AB_TRANSACTION_LIMITS **p
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_TransferBase_GetLimits_SepaStandingOrder(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits) {
+int AH_Job_TransferBase_GetLimits_SepaStandingOrder(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits)
+{
   AB_TRANSACTION_LIMITS *lim;
   GWEN_DB_NODE *dbParams;
   const char *s;
@@ -261,25 +269,25 @@ int AH_Job_TransferBase_GetLimits_SepaStandingOrder(AH_JOB *j, AB_TRANSACTION_LI
     s=GWEN_DB_GetCharValue(dbParams, "AllowedTurnusMonths", 0, 0);
     if (s && *s) {
       AB_TransactionLimits_SetAllowMonthly(lim, 1);
-      while(*s) {
-	char buf[3];
-	const char *x;
-	int rv;
-	int d;
+      while (*s) {
+        char buf[3];
+        const char *x;
+        int rv;
+        int d;
 
-	buf[2]=0;
-	strncpy(buf, s, 2);
-	x=buf;
-	if (*x=='0')
-	  x++;
+        buf[2]=0;
+        strncpy(buf, s, 2);
+        x=buf;
+        if (*x=='0')
+          x++;
 
-	rv=sscanf(x, "%d", &d);
-	if (rv!=1) {
-	  DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
-	}
-	else
-	  AB_TransactionLimits_ValuesCycleMonthAdd(lim, d);
-	s+=2;
+        rv=sscanf(x, "%d", &d);
+        if (rv!=1) {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
+        }
+        else
+          AB_TransactionLimits_ValuesCycleMonthAdd(lim, d);
+        s+=2;
       } /* while */
     }
     else
@@ -289,25 +297,25 @@ int AH_Job_TransferBase_GetLimits_SepaStandingOrder(AH_JOB *j, AB_TRANSACTION_LI
     AB_TransactionLimits_SetValuesExecutionDayMonthUsed(lim, 0);
     s=GWEN_DB_GetCharValue(dbParams, "AllowedMonthDays", 0, 0);
     if (s && *s) {
-      while(*s) {
-	char buf[3];
-	const char *x;
-	int rv;
-	int d;
+      while (*s) {
+        char buf[3];
+        const char *x;
+        int rv;
+        int d;
 
-	buf[2]=0;
-	strncpy(buf, s, 2);
-	x=buf;
-	if (*x=='0')
-	  x++;
+        buf[2]=0;
+        strncpy(buf, s, 2);
+        x=buf;
+        if (*x=='0')
+          x++;
 
-	rv=sscanf(x, "%d", &d);
-	if (rv!=1) {
-	  DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
-	}
-	else
-	  AB_TransactionLimits_ValuesExecutionDayMonthAdd(lim, d);
-	s+=2;
+        rv=sscanf(x, "%d", &d);
+        if (rv!=1) {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
+        }
+        else
+          AB_TransactionLimits_ValuesExecutionDayMonthAdd(lim, d);
+        s+=2;
       } /* while */
     }
 
@@ -316,25 +324,25 @@ int AH_Job_TransferBase_GetLimits_SepaStandingOrder(AH_JOB *j, AB_TRANSACTION_LI
     s=GWEN_DB_GetCharValue(dbParams, "AllowedTurnusWeeks", 0, 0);
     if (s && *s) {
       AB_TransactionLimits_SetAllowWeekly(lim, 1);
-      while(*s) {
-	char buf[3];
-	const char *x;
-	int rv;
-	int d;
+      while (*s) {
+        char buf[3];
+        const char *x;
+        int rv;
+        int d;
 
-	buf[2]=0;
-	strncpy(buf, s, 2);
-	x=buf;
-	if (*x=='0')
-	  x++;
+        buf[2]=0;
+        strncpy(buf, s, 2);
+        x=buf;
+        if (*x=='0')
+          x++;
 
-	rv=sscanf(x, "%d", &d);
-	if (rv!=1) {
-	  DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
-	}
-	else
-	  AB_TransactionLimits_ValuesCycleWeekAdd(lim, d);
-	s+=2;
+        rv=sscanf(x, "%d", &d);
+        if (rv!=1) {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
+        }
+        else
+          AB_TransactionLimits_ValuesCycleWeekAdd(lim, d);
+        s+=2;
       } /* while */
     }
     else
@@ -344,25 +352,25 @@ int AH_Job_TransferBase_GetLimits_SepaStandingOrder(AH_JOB *j, AB_TRANSACTION_LI
     AB_TransactionLimits_SetValuesExecutionDayWeekUsed(lim, 0);
     s=GWEN_DB_GetCharValue(dbParams, "AllowedWeekDays", 0, 0);
     if (s && *s) {
-      while(*s) {
-	char buf[2];
-	const char *x;
-	int rv;
-	int d;
+      while (*s) {
+        char buf[2];
+        const char *x;
+        int rv;
+        int d;
 
-	buf[0]=*s;
-	buf[1]=0;
-	x=buf;
-	if (*x=='0')
-	  x++;
+        buf[0]=*s;
+        buf[1]=0;
+        x=buf;
+        if (*x=='0')
+          x++;
 
-	rv=sscanf(x, "%d", &d);
-	if (rv!=1) {
-	  DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
-	}
-	else
-	  AB_TransactionLimits_ValuesExecutionDayWeekAdd(lim, d);
-	s++;
+        rv=sscanf(x, "%d", &d);
+        if (rv!=1) {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
+        }
+        else
+          AB_TransactionLimits_ValuesExecutionDayWeekAdd(lim, d);
+        s++;
       } /* while */
     }
   }
@@ -384,7 +392,8 @@ int AH_Job_TransferBase_GetLimits_SepaStandingOrder(AH_JOB *j, AB_TRANSACTION_LI
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_TransferBase_HandleCommand_SepaUndated(AH_JOB *j, const AB_TRANSACTION *t) {
+int AH_Job_TransferBase_HandleCommand_SepaUndated(AH_JOB *j, const AB_TRANSACTION *t)
+{
   AB_TRANSACTION_LIMITS *lim=NULL;
   AB_BANKING *ab;
   AB_TRANSACTION *tCopy=NULL;
@@ -450,81 +459,8 @@ int AH_Job_TransferBase_HandleCommand_SepaUndated(AH_JOB *j, const AB_TRANSACTIO
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_TransferBase_HandleCommand_SepaDated(AH_JOB *j, const AB_TRANSACTION *t) {
-  AB_TRANSACTION_LIMITS *lim=NULL;
-  AB_BANKING *ab;
-  AB_TRANSACTION *tCopy=NULL;
-  int rv;
-  AB_USER *u;
-  uint32_t uflags;
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging args");
-
-  ab=AH_Job_GetBankingApi(j);
-  assert(ab);
-
-  u=AH_Job_GetUser(j);
-  assert(u);
-
-  uflags=AH_User_GetFlags(u);
-
-  /* get limits and transaction */
-  if (t==NULL) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
-    return GWEN_ERROR_INVALID;
-  }
-  rv=AH_Job_GetLimits(j, &lim);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  /* validate transaction */
-  rv=AB_Banking_CheckTransactionForSepaConformity(t, (uflags & AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET)?1:0);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_TransactionLimits_free(lim);
-    return rv;
-  }
-
-  rv=AB_Banking_CheckTransactionAgainstLimits_Purpose(t, lim);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_TransactionLimits_free(lim);
-    return rv;
-  }
-
-  rv=AB_Banking_CheckTransactionAgainstLimits_Names(t, lim);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_TransactionLimits_free(lim);
-    return rv;
-  }
-
-  rv=AB_Banking_CheckTransactionAgainstLimits_Date(t, lim);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_TransactionLimits_free(lim);
-    return rv;
-  }
-  AB_TransactionLimits_free(lim);
-
-
-  tCopy=AB_Transaction_dup(t);
-
-  /* set group id so the application can know which transfers went together in one setting */
-  AB_Transaction_SetGroupId(tCopy, AH_Job_GetId(j));
-
-  /* store copy of transaction for later */
-  AH_Job_AddTransfer(j, tCopy);
-
-  return 0;
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_TransferBase_HandleCommand_SepaDatedDebit(AH_JOB *j, const AB_TRANSACTION *t) {
+int AH_Job_TransferBase_HandleCommand_SepaDated(AH_JOB *j, const AB_TRANSACTION *t)
+{
   AB_TRANSACTION_LIMITS *lim=NULL;
   AB_BANKING *ab;
   AB_TRANSACTION *tCopy=NULL;
@@ -598,7 +534,83 @@ int AH_Job_TransferBase_HandleCommand_SepaDatedDebit(AH_JOB *j, const AB_TRANSAC
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_TransferBase_HandleCommand_SepaStandingOrder(AH_JOB *j, const AB_TRANSACTION *t) {
+int AH_Job_TransferBase_HandleCommand_SepaDatedDebit(AH_JOB *j, const AB_TRANSACTION *t)
+{
+  AB_TRANSACTION_LIMITS *lim=NULL;
+  AB_BANKING *ab;
+  AB_TRANSACTION *tCopy=NULL;
+  int rv;
+  AB_USER *u;
+  uint32_t uflags;
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging args");
+
+  ab=AH_Job_GetBankingApi(j);
+  assert(ab);
+
+  u=AH_Job_GetUser(j);
+  assert(u);
+
+  uflags=AH_User_GetFlags(u);
+
+  /* get limits and transaction */
+  if (t==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
+    return GWEN_ERROR_INVALID;
+  }
+  rv=AH_Job_GetLimits(j, &lim);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* validate transaction */
+  rv=AB_Banking_CheckTransactionForSepaConformity(t, (uflags & AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET)?1:0);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_TransactionLimits_free(lim);
+    return rv;
+  }
+
+  rv=AB_Banking_CheckTransactionAgainstLimits_Purpose(t, lim);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_TransactionLimits_free(lim);
+    return rv;
+  }
+
+  rv=AB_Banking_CheckTransactionAgainstLimits_Names(t, lim);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_TransactionLimits_free(lim);
+    return rv;
+  }
+
+  rv=AB_Banking_CheckTransactionAgainstLimits_Date(t, lim);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_TransactionLimits_free(lim);
+    return rv;
+  }
+  AB_TransactionLimits_free(lim);
+
+
+  tCopy=AB_Transaction_dup(t);
+
+  /* set group id so the application can know which transfers went together in one setting */
+  AB_Transaction_SetGroupId(tCopy, AH_Job_GetId(j));
+
+  /* store copy of transaction for later */
+  AH_Job_AddTransfer(j, tCopy);
+
+  return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+int AH_Job_TransferBase_HandleCommand_SepaStandingOrder(AH_JOB *j, const AB_TRANSACTION *t)
+{
   AB_TRANSACTION_LIMITS *lim=NULL;
   AB_BANKING *ab;
   AB_TRANSACTION *tCopy=NULL;
@@ -685,7 +697,8 @@ int AH_Job_TransferBase_HandleCommand_SepaStandingOrder(AH_JOB *j, const AB_TRAN
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_TransferBase_AddChallengeParams29(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod) {
+int AH_Job_TransferBase_AddChallengeParams29(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod)
+{
   const AB_TRANSACTION *t;
   const char *s;
   int tanVer=AH_JOB_TANVER_1_4;
@@ -727,7 +740,8 @@ int AH_Job_TransferBase_AddChallengeParams29(AH_JOB *j, int hkTanVer, GWEN_DB_NO
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_TransferBase_AddChallengeParams35(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod) {
+int AH_Job_TransferBase_AddChallengeParams35(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod)
+{
   const AB_TRANSACTION *t;
   const char *s;
   int tanVer=AH_JOB_TANVER_1_4;
@@ -768,7 +782,9 @@ int AH_Job_TransferBase_AddChallengeParams35(AH_JOB *j, int hkTanVer, GWEN_DB_NO
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void AH_Job_TransferBase_SetStatusOnTransfersAndAddToCtx(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx, AB_TRANSACTION_STATUS status) {
+void AH_Job_TransferBase_SetStatusOnTransfersAndAddToCtx(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
+                                                         AB_TRANSACTION_STATUS status)
+{
   AH_JOB_TRANSFERBASE *aj;
   const AB_TRANSACTION *t;
   AB_ACCOUNT *a;
@@ -808,7 +824,8 @@ void AH_Job_TransferBase_SetStatusOnTransfersAndAddToCtx(AH_JOB *j, AB_IMEXPORTE
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_TransferBase_HandleResults(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
+int AH_Job_TransferBase_HandleResults(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AH_JOB_TRANSFERBASE *aj;
   AH_RESULT_LIST *rl;
   AH_RESULT *r;
@@ -830,7 +847,7 @@ int AH_Job_TransferBase_HandleResults(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
     int has10=0;
     int has20=0;
 
-    while(r) {
+    while (r) {
       int rcode;
 
       rcode=AH_Result_GetCode(r);
@@ -861,7 +878,8 @@ int AH_Job_TransferBase_HandleResults(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_TransferBase_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
+int AH_Job_TransferBase_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AH_JOB_TRANSFERBASE *aj;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -879,7 +897,7 @@ int AH_Job_TransferBase_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
 
   /* search for "TransferBaseSingleResponse" */
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
-  while(dbCurr) {
+  while (dbCurr) {
     int rv;
 
     rv=AH_Job_CheckEncryption(j, dbCurr);

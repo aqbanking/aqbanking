@@ -35,7 +35,8 @@ GWEN_INHERIT(AH_JOB, AH_ACCOUNTJOB);
 AH_JOB *AH_AccountJob_new(const char *name,
                           AB_PROVIDER *pro,
                           AB_USER *u,
-                          AB_ACCOUNT *account){
+                          AB_ACCOUNT *account)
+{
   AH_ACCOUNTJOB *aj;
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
@@ -63,7 +64,7 @@ AH_JOB *AH_AccountJob_new(const char *name,
     else if (strcasecmp(name, "JobSingleDebitNote")==0)
       maxVer=3;
     else if (strcasecmp(name, "JobInternalTransfer")==0 ||
-	     strcasecmp(name, "JobLoadCellPhone")==0)
+             strcasecmp(name, "JobLoadCellPhone")==0)
       /* this job needs a suffix, so if there is none you don't get it */
       maxVer=-1;
     else if (strcasecmp(name, "JobGetDatedTransfers")==0)
@@ -82,11 +83,11 @@ AH_JOB *AH_AccountJob_new(const char *name,
       maxVer=1;
     if (maxVer==-1) {
       DBG_ERROR(AQHBCI_LOGDOMAIN,
-		"This job needs an account suffix, but your bank didn't provide one. "
-		"Therefore this job is not supported with your account.");
+                "This job needs an account suffix, but your bank didn't provide one. "
+                "Therefore this job is not supported with your account.");
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
-			   I18N("This job needs an account suffix, but your bank did not provide one. "
+                           GWEN_LoggerLevel_Error,
+                           I18N("This job needs an account suffix, but your bank did not provide one. "
                                 "Therefore this job is not supported with your account.\n"
                                 "Setting a higher HBCI version in the user settings might fix "
                                 "the problem."));
@@ -95,11 +96,11 @@ AH_JOB *AH_AccountJob_new(const char *name,
     if (maxVer>0) {
       jobVersion=AH_Job_GetMaxVersionUpUntil(name, u, maxVer);
       if (jobVersion<1) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "No job [%s] below version %d, falling back to 0", name, maxVer);
-	GWEN_Gui_ProgressLog2(0,
-			      GWEN_LoggerLevel_Warning,
-			      "No version for job [%s] up to %d found, falling back to 0", name, maxVer);
-	jobVersion=0;
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "No job [%s] below version %d, falling back to 0", name, maxVer);
+        GWEN_Gui_ProgressLog2(0,
+                              GWEN_LoggerLevel_Warning,
+                              "No version for job [%s] up to %d found, falling back to 0", name, maxVer);
+        jobVersion=0;
       }
       else {
         DBG_INFO(AQHBCI_LOGDOMAIN, "Reducing version of job [%s] to %d", name, jobVersion);
@@ -149,7 +150,8 @@ AH_JOB *AH_AccountJob_new(const char *name,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AB_ACCOUNT *AH_AccountJob_GetAccount(const AH_JOB *j){
+AB_ACCOUNT *AH_AccountJob_GetAccount(const AH_JOB *j)
+{
   AH_ACCOUNTJOB *aj;
 
   assert(j);
@@ -162,24 +164,27 @@ AB_ACCOUNT *AH_AccountJob_GetAccount(const AH_JOB *j){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void GWENHYWFAR_CB AH_AccountJob_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AH_AccountJob_FreeData(void *bp, void *p)
+{
   AH_ACCOUNTJOB *aj;
 
-  aj=(AH_ACCOUNTJOB*)p;
+  aj=(AH_ACCOUNTJOB *)p;
   GWEN_FREE_OBJECT(aj);
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_AccountJob_IsAccountJob(const AH_JOB *j) {
+int AH_AccountJob_IsAccountJob(const AH_JOB *j)
+{
   return GWEN_INHERIT_ISOFTYPE(AH_JOB, AH_ACCOUNTJOB, j);
 }
 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_AccountJob_AddCurrentTime(GWEN_BUFFER *buf) {
+int AH_AccountJob_AddCurrentTime(GWEN_BUFFER *buf)
+{
   GWEN_TIME *t;
   int hours, mins, secs;
   char numbuf[16];
@@ -199,7 +204,8 @@ int AH_AccountJob_AddCurrentTime(GWEN_BUFFER *buf) {
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_AccountJob_AddCurrentDate(GWEN_BUFFER *buf) {
+int AH_AccountJob_AddCurrentDate(GWEN_BUFFER *buf)
+{
   GWEN_TIME *t;
   int year, month, day;
   char numbuf[16];

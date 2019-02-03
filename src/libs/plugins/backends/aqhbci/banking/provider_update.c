@@ -17,7 +17,8 @@
 
 int AH_Provider_UpdatePreInit(AB_PROVIDER *pro,
                               uint32_t lastVersion,
-                              uint32_t currentVersion) {
+                              uint32_t currentVersion)
+{
 #if 0 /* no preinit for now */
   int rv;
 
@@ -33,7 +34,8 @@ int AH_Provider_UpdatePreInit(AB_PROVIDER *pro,
 
 int AH_Provider_UpdatePostInit(AB_PROVIDER *pro,
                                uint32_t lastVersion,
-                               uint32_t currentVersion) {
+                               uint32_t currentVersion)
+{
   int rv;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Update (post init): Previous version %d.%d.%d.%d, new version %d.%d.%d.%d",

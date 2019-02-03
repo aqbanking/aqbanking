@@ -27,7 +27,8 @@ GWEN_INHERIT(AB_ACCOUNT, EBC_ACCOUNT)
 
 
 
-AB_ACCOUNT *EBC_Account_new(AB_PROVIDER *pro) {
+AB_ACCOUNT *EBC_Account_new(AB_PROVIDER *pro)
+{
   AB_ACCOUNT *a;
   EBC_ACCOUNT *ae;
 
@@ -47,10 +48,11 @@ AB_ACCOUNT *EBC_Account_new(AB_PROVIDER *pro) {
 
 
 
-void GWENHYWFAR_CB EBC_Account_freeData(GWEN_UNUSED void *bp, void *p) {
+void GWENHYWFAR_CB EBC_Account_freeData(GWEN_UNUSED void *bp, void *p)
+{
   EBC_ACCOUNT *ae;
 
-  ae=(EBC_ACCOUNT*)p;
+  ae=(EBC_ACCOUNT *)p;
   free(ae->ebicsId);
   GWEN_FREE_OBJECT(ae);
 }
@@ -58,7 +60,8 @@ void GWENHYWFAR_CB EBC_Account_freeData(GWEN_UNUSED void *bp, void *p) {
 
 
 void EBC_Account_Flags_toDb(GWEN_DB_NODE *db, const char *name,
-			    uint32_t flags) {
+                            uint32_t flags)
+{
   GWEN_DB_DeleteVar(db, name);
   if (flags & EBC_ACCOUNT_FLAGS_STA_SPP)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "staSpp");
@@ -68,7 +71,8 @@ void EBC_Account_Flags_toDb(GWEN_DB_NODE *db, const char *name,
 
 
 
-uint32_t EBC_Account_Flags_fromDb(GWEN_DB_NODE *db, const char *name){
+uint32_t EBC_Account_Flags_fromDb(GWEN_DB_NODE *db, const char *name)
+{
   uint32_t fl=0;
   int i;
 
@@ -92,7 +96,8 @@ uint32_t EBC_Account_Flags_fromDb(GWEN_DB_NODE *db, const char *name){
 
 
 
-int EBC_Account_ReadFromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+int EBC_Account_ReadFromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db)
+{
   EBC_ACCOUNT *ae;
   GWEN_DB_NODE *dbP;
   int rv;
@@ -123,15 +128,18 @@ int EBC_Account_ReadFromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db) {
 
   free(ae->ebicsId);
   s=GWEN_DB_GetCharValue(dbP, "ebicsId", 0, 0);
-  if (s) ae->ebicsId=strdup(s);
-  else ae->ebicsId=NULL;
+  if (s)
+    ae->ebicsId=strdup(s);
+  else
+    ae->ebicsId=NULL;
 
   return 0;
 }
 
 
 
-int EBC_Account_WriteToDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db) {
+int EBC_Account_WriteToDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db)
+{
   EBC_ACCOUNT *ae;
   GWEN_DB_NODE *dbP;
   int rv;
@@ -161,7 +169,8 @@ int EBC_Account_WriteToDb(const AB_ACCOUNT *a, GWEN_DB_NODE *db) {
 
 
 
-const char *EBC_Account_GetEbicsId(const AB_ACCOUNT *a) {
+const char *EBC_Account_GetEbicsId(const AB_ACCOUNT *a)
+{
   EBC_ACCOUNT *ae;
 
   assert(a);
@@ -173,7 +182,8 @@ const char *EBC_Account_GetEbicsId(const AB_ACCOUNT *a) {
 
 
 
-void EBC_Account_SetEbicsId(AB_ACCOUNT *a, const char *s) {
+void EBC_Account_SetEbicsId(AB_ACCOUNT *a, const char *s)
+{
   EBC_ACCOUNT *ae;
 
   assert(a);
@@ -181,13 +191,16 @@ void EBC_Account_SetEbicsId(AB_ACCOUNT *a, const char *s) {
   assert(ae);
 
   free(ae->ebicsId);
-  if (s) ae->ebicsId=strdup(s);
-  else ae->ebicsId=NULL;
+  if (s)
+    ae->ebicsId=strdup(s);
+  else
+    ae->ebicsId=NULL;
 }
 
 
 
-uint32_t EBC_Account_GetFlags(const AB_ACCOUNT *a) {
+uint32_t EBC_Account_GetFlags(const AB_ACCOUNT *a)
+{
   EBC_ACCOUNT *ae;
 
   assert(a);
@@ -199,7 +212,8 @@ uint32_t EBC_Account_GetFlags(const AB_ACCOUNT *a) {
 
 
 
-void EBC_Account_SetFlags(AB_ACCOUNT *a, uint32_t flags) {
+void EBC_Account_SetFlags(AB_ACCOUNT *a, uint32_t flags)
+{
   EBC_ACCOUNT *ae;
 
   assert(a);
@@ -211,7 +225,8 @@ void EBC_Account_SetFlags(AB_ACCOUNT *a, uint32_t flags) {
 
 
 
-void EBC_Account_AddFlags(AB_ACCOUNT *a, uint32_t flags) {
+void EBC_Account_AddFlags(AB_ACCOUNT *a, uint32_t flags)
+{
   EBC_ACCOUNT *ae;
 
   assert(a);
@@ -223,7 +238,8 @@ void EBC_Account_AddFlags(AB_ACCOUNT *a, uint32_t flags) {
 
 
 
-void EBC_Account_SubFlags(AB_ACCOUNT *a, uint32_t flags) {
+void EBC_Account_SubFlags(AB_ACCOUNT *a, uint32_t flags)
+{
   EBC_ACCOUNT *ae;
 
   assert(a);

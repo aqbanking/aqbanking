@@ -31,8 +31,9 @@
  */
 
 int readContext(const char *ctxFile,
-		AB_IMEXPORTER_CONTEXT **pCtx,
-		int mustExist) {
+                AB_IMEXPORTER_CONTEXT **pCtx,
+                int mustExist)
+{
   AB_IMEXPORTER_CONTEXT *ctx;
   GWEN_SYNCIO *sio;
   GWEN_DB_NODE *dbCtx;
@@ -41,8 +42,8 @@ int readContext(const char *ctxFile,
   if (ctxFile==NULL) {
     sio=GWEN_SyncIo_File_fromStdin();
     GWEN_SyncIo_AddFlags(sio,
-			 GWEN_SYNCIO_FLAGS_DONTCLOSE |
-			 GWEN_SYNCIO_FILE_FLAGS_READ);
+                         GWEN_SYNCIO_FLAGS_DONTCLOSE |
+                         GWEN_SYNCIO_FILE_FLAGS_READ);
   }
   else {
     sio=GWEN_SyncIo_File_new(ctxFile, GWEN_SyncIo_File_CreationMode_OpenExisting);
@@ -50,10 +51,10 @@ int readContext(const char *ctxFile,
     rv=GWEN_SyncIo_Connect(sio);
     if (rv<0) {
       if (!mustExist) {
-	ctx=AB_ImExporterContext_new();
-	*pCtx=ctx;
-	GWEN_SyncIo_free(sio);
-	return 0;
+        ctx=AB_ImExporterContext_new();
+        *pCtx=ctx;
+        GWEN_SyncIo_free(sio);
+        return 0;
       }
       GWEN_SyncIo_free(sio);
       return 4;
@@ -63,8 +64,8 @@ int readContext(const char *ctxFile,
   /* actually read */
   dbCtx=GWEN_DB_Group_new("context");
   rv=GWEN_DB_ReadFromIo(dbCtx, sio,
-			GWEN_DB_FLAGS_DEFAULT |
-			GWEN_PATH_FLAGS_CREATE_GROUP);
+                        GWEN_DB_FLAGS_DEFAULT |
+                        GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv<0) {
     DBG_ERROR(0, "Error reading context file (%d)", rv);
     GWEN_DB_Group_free(dbCtx);
@@ -94,7 +95,8 @@ int readContext(const char *ctxFile,
  * ========================================================================================================================
  */
 
-int writeContext(const char *ctxFile, const AB_IMEXPORTER_CONTEXT *ctx) {
+int writeContext(const char *ctxFile, const AB_IMEXPORTER_CONTEXT *ctx)
+{
   GWEN_DB_NODE *dbCtx;
   GWEN_SYNCIO *sio;
   int rv;
@@ -102,22 +104,22 @@ int writeContext(const char *ctxFile, const AB_IMEXPORTER_CONTEXT *ctx) {
   if (ctxFile==NULL) {
     sio=GWEN_SyncIo_File_fromStdout();
     GWEN_SyncIo_AddFlags(sio,
-			 GWEN_SYNCIO_FLAGS_DONTCLOSE |
-			 GWEN_SYNCIO_FILE_FLAGS_WRITE);
+                         GWEN_SYNCIO_FLAGS_DONTCLOSE |
+                         GWEN_SYNCIO_FILE_FLAGS_WRITE);
   }
   else {
     sio=GWEN_SyncIo_File_new(ctxFile, GWEN_SyncIo_File_CreationMode_CreateAlways);
     GWEN_SyncIo_AddFlags(sio,
-			 GWEN_SYNCIO_FILE_FLAGS_READ |
-			 GWEN_SYNCIO_FILE_FLAGS_WRITE |
-			 GWEN_SYNCIO_FILE_FLAGS_UREAD |
-			 GWEN_SYNCIO_FILE_FLAGS_UWRITE |
-			 GWEN_SYNCIO_FILE_FLAGS_GREAD |
-			 GWEN_SYNCIO_FILE_FLAGS_GWRITE);
+                         GWEN_SYNCIO_FILE_FLAGS_READ |
+                         GWEN_SYNCIO_FILE_FLAGS_WRITE |
+                         GWEN_SYNCIO_FILE_FLAGS_UREAD |
+                         GWEN_SYNCIO_FILE_FLAGS_UWRITE |
+                         GWEN_SYNCIO_FILE_FLAGS_GREAD |
+                         GWEN_SYNCIO_FILE_FLAGS_GWRITE);
     rv=GWEN_SyncIo_Connect(sio);
     if (rv<0) {
       DBG_ERROR(0, "Error selecting output file: %s",
-		strerror(errno));
+                strerror(errno));
       GWEN_SyncIo_free(sio);
       return 4;
     }
@@ -154,7 +156,8 @@ int writeContext(const char *ctxFile, const AB_IMEXPORTER_CONTEXT *ctx) {
  *                                                mkSepaTransfer
  * ========================================================================================================================
  */
-AB_TRANSACTION *mkSepaTransfer(GWEN_DB_NODE *db, int cmd) {
+AB_TRANSACTION *mkSepaTransfer(GWEN_DB_NODE *db, int cmd)
+{
   AB_TRANSACTION *t;
   const char *s;
   int i;
@@ -260,21 +263,21 @@ AB_TRANSACTION *mkSepaTransfer(GWEN_DB_NODE *db, int cmd) {
 
   /* standing orders */
   if (cmd==AB_Transaction_CommandSepaCreateStandingOrder) {
-     s=GWEN_DB_GetCharValue(db, "firstExecutionDate", 0, 0);
-     if (!(s && *s)) {
-       DBG_ERROR(0, "Missing first execution date");
-       return NULL;
-     }
+    s=GWEN_DB_GetCharValue(db, "firstExecutionDate", 0, 0);
+    if (!(s && *s)) {
+      DBG_ERROR(0, "Missing first execution date");
+      return NULL;
+    }
   }
 
   if (cmd==AB_Transaction_CommandSepaModifyStandingOrder ||
       cmd==AB_Transaction_CommandSepaDeleteStandingOrder) {
-     /*  not in the Specs, but the banks ask for it)    */
-     s=GWEN_DB_GetCharValue(db, "nextExecutionDate", 0, 0);
-     if (!(s && *s)) {
-       DBG_ERROR(0, "Missing next execution date");
-       return NULL;
-     }
+    /*  not in the Specs, but the banks ask for it)    */
+    s=GWEN_DB_GetCharValue(db, "nextExecutionDate", 0, 0);
+    if (!(s && *s)) {
+      DBG_ERROR(0, "Missing next execution date");
+      return NULL;
+    }
   }
 
   if (s && *s) {
@@ -369,7 +372,8 @@ AB_TRANSACTION *mkSepaTransfer(GWEN_DB_NODE *db, int cmd) {
  * ========================================================================================================================
  */
 
-AB_TRANSACTION *mkSepaDebitNote(GWEN_DB_NODE *db, int cmd) {
+AB_TRANSACTION *mkSepaDebitNote(GWEN_DB_NODE *db, int cmd)
+{
   AB_TRANSACTION *t;
   const char *s;
 
@@ -380,7 +384,7 @@ AB_TRANSACTION *mkSepaDebitNote(GWEN_DB_NODE *db, int cmd) {
   }
 
   AB_Transaction_SetType(t, AB_Transaction_TypeDebitNote);
-  
+
   /* read some additional fields */
   s=GWEN_DB_GetCharValue(db, "creditorSchemeId", 0, 0);
   if (!(s && *s)) {
@@ -443,7 +447,8 @@ AB_TRANSACTION *mkSepaDebitNote(GWEN_DB_NODE *db, int cmd) {
  * ========================================================================================================================
  */
 
-int getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db, AB_ACCOUNT_SPEC_LIST **pAccountSpecList) {
+int getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db, AB_ACCOUNT_SPEC_LIST **pAccountSpecList)
+{
   AB_ACCOUNT_SPEC_LIST *asl=NULL;
   uint32_t uniqueAccountId;
   int rv;
@@ -498,7 +503,7 @@ int getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db, AB_ACCOUNT_SPEC_LIST *
       }
 
       as=AB_AccountSpec_List_First(asl);
-      while(as) {
+      while (as) {
         AB_ACCOUNT_SPEC *asNext;
 
         asNext=AB_AccountSpec_List_Next(as);
@@ -534,7 +539,8 @@ int getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db, AB_ACCOUNT_SPEC_LIST *
  */
 
 
-AB_ACCOUNT_SPEC *getSingleSelectedAccount(AB_BANKING *ab, GWEN_DB_NODE *db) {
+AB_ACCOUNT_SPEC *getSingleSelectedAccount(AB_BANKING *ab, GWEN_DB_NODE *db)
+{
   int rv;
   AB_ACCOUNT_SPEC_LIST *al=NULL;
   AB_ACCOUNT_SPEC *as;
@@ -568,118 +574,119 @@ AB_ACCOUNT_SPEC *getSingleSelectedAccount(AB_BANKING *ab, GWEN_DB_NODE *db) {
  * ========================================================================================================================
  */
 
-int replaceVars(const char *s, GWEN_DB_NODE *db, GWEN_BUFFER *dbuf) {
-    const char *p;
+int replaceVars(const char *s, GWEN_DB_NODE *db, GWEN_BUFFER *dbuf)
+{
+  const char *p;
 
   p=s;
-  while(*p) {
+  while (*p) {
     if (*p=='$') {
       p++;
       if (*p=='$')
-	GWEN_Buffer_AppendByte(dbuf, '$');
+        GWEN_Buffer_AppendByte(dbuf, '$');
       else if (*p=='(') {
-	const char *pStart;
+        const char *pStart;
 
-	p++;
-	pStart=p;
-	while(*p && *p!=')')
-	  p++;
-	if (*p!=')') {
-	  DBG_ERROR(GWEN_LOGDOMAIN, "Unterminated variable name in code");
-	  return GWEN_ERROR_BAD_DATA;
-	}
-	else {
+        p++;
+        pStart=p;
+        while (*p && *p!=')')
+          p++;
+        if (*p!=')') {
+          DBG_ERROR(GWEN_LOGDOMAIN, "Unterminated variable name in code");
+          return GWEN_ERROR_BAD_DATA;
+        }
+        else {
           int len;
-	  char *name;
-	  const char *valueString;
-	  int valueInt;
-	  char numbuf[32];
-	  int rv;
+          char *name;
+          const char *valueString;
+          int valueInt;
+          char numbuf[32];
+          int rv;
 
-	  len=p-pStart;
-	  if (len<1) {
-	    DBG_ERROR(GWEN_LOGDOMAIN, "Empty variable name in code");
-	    return GWEN_ERROR_BAD_DATA;
-	  }
-	  name=(char*) malloc(len+1);
-	  assert(name);
-	  memmove(name, pStart, len);
+          len=p-pStart;
+          if (len<1) {
+            DBG_ERROR(GWEN_LOGDOMAIN, "Empty variable name in code");
+            return GWEN_ERROR_BAD_DATA;
+          }
+          name=(char *) malloc(len+1);
+          assert(name);
+          memmove(name, pStart, len);
           name[len]=0;
 
-	  switch(GWEN_DB_GetVariableType(db, name)) {
-	  case GWEN_DB_NodeType_ValueInt:
-	    valueInt=GWEN_DB_GetIntValue(db, name, 0, 0);
-	    rv=GWEN_Text_NumToString(valueInt, numbuf, sizeof(numbuf)-1, 0);
-	    if (rv>=0)
-	      GWEN_Buffer_AppendString(dbuf, numbuf);
-	    break;
-	  case GWEN_DB_NodeType_ValueChar:
-	    valueString=GWEN_DB_GetCharValue(db, name, 0, NULL);
-	    if (valueString)
-	      GWEN_Buffer_AppendString(dbuf, valueString);
+          switch (GWEN_DB_GetVariableType(db, name)) {
+          case GWEN_DB_NodeType_ValueInt:
+            valueInt=GWEN_DB_GetIntValue(db, name, 0, 0);
+            rv=GWEN_Text_NumToString(valueInt, numbuf, sizeof(numbuf)-1, 0);
+            if (rv>=0)
+              GWEN_Buffer_AppendString(dbuf, numbuf);
+            break;
+          case GWEN_DB_NodeType_ValueChar:
+            valueString=GWEN_DB_GetCharValue(db, name, 0, NULL);
+            if (valueString)
+              GWEN_Buffer_AppendString(dbuf, valueString);
 #if 0 /* just replace with empty value */
-	    else {
-	      GWEN_Buffer_AppendString(dbuf, " [__VALUE OF ");
-	      GWEN_Buffer_AppendString(dbuf, name);
-	      GWEN_Buffer_AppendString(dbuf, " WAS NOT SET__] ");
-	    }
+            else {
+              GWEN_Buffer_AppendString(dbuf, " [__VALUE OF ");
+              GWEN_Buffer_AppendString(dbuf, name);
+              GWEN_Buffer_AppendString(dbuf, " WAS NOT SET__] ");
+            }
 #endif
-	    break;
+            break;
 
-	  default:
-	    break;
-	  }
-	  free(name);
-	}
+          default:
+            break;
+          }
+          free(name);
+        }
       }
       else {
-	DBG_ERROR(GWEN_LOGDOMAIN, "Bad variable string in code");
+        DBG_ERROR(GWEN_LOGDOMAIN, "Bad variable string in code");
         return GWEN_ERROR_BAD_DATA;
       }
       p++;
     }
     else {
       if (*p=='#') {
-	/* let # lines begin on a new line */
-	GWEN_Buffer_AppendByte(dbuf, '\n');
-	GWEN_Buffer_AppendByte(dbuf, *p);
+        /* let # lines begin on a new line */
+        GWEN_Buffer_AppendByte(dbuf, '\n');
+        GWEN_Buffer_AppendByte(dbuf, *p);
 
-	/* skip introducing cross and copy all stuff until the next cross
-	 * upon which wa inject a newline (to make the preprocessor happy)
-	 */
-	p++;
-	while(*p && *p!='#') {
-	  GWEN_Buffer_AppendByte(dbuf, *p);
-	  p++;
-	}
-	if (*p=='#') {
-	  GWEN_Buffer_AppendByte(dbuf, '\n');
-	  p++;
-	}
+        /* skip introducing cross and copy all stuff until the next cross
+         * upon which wa inject a newline (to make the preprocessor happy)
+         */
+        p++;
+        while (*p && *p!='#') {
+          GWEN_Buffer_AppendByte(dbuf, *p);
+          p++;
+        }
+        if (*p=='#') {
+          GWEN_Buffer_AppendByte(dbuf, '\n');
+          p++;
+        }
       }
       else if (*p=='\\') {
-	/* check for recognized control escapes */
-	if (tolower(p[1])=='n') {
-	  GWEN_Buffer_AppendByte(dbuf, '\n');
-	  p+=2; /* skip introducing backslash and control character */
-	}
-	else if (tolower(p[1])=='t') {
-	  GWEN_Buffer_AppendByte(dbuf, '\t');
-	  p+=2; /* skip introducing backslash and control character */
-	}
-	else if (tolower(p[1])=='\\') {
-	  GWEN_Buffer_AppendByte(dbuf, '\\');
-	  p+=2; /* skip introducing backslash and control character */
-	}
-	else {
-	  /* no known escape character, just add literally */
-	  GWEN_Buffer_AppendByte(dbuf, *p);
-	  p++;
-	}
+        /* check for recognized control escapes */
+        if (tolower(p[1])=='n') {
+          GWEN_Buffer_AppendByte(dbuf, '\n');
+          p+=2; /* skip introducing backslash and control character */
+        }
+        else if (tolower(p[1])=='t') {
+          GWEN_Buffer_AppendByte(dbuf, '\t');
+          p+=2; /* skip introducing backslash and control character */
+        }
+        else if (tolower(p[1])=='\\') {
+          GWEN_Buffer_AppendByte(dbuf, '\\');
+          p+=2; /* skip introducing backslash and control character */
+        }
+        else {
+          /* no known escape character, just add literally */
+          GWEN_Buffer_AppendByte(dbuf, *p);
+          p++;
+        }
       }
       else {
-	GWEN_Buffer_AppendByte(dbuf, *p);
-	p++;
+        GWEN_Buffer_AppendByte(dbuf, *p);
+        p++;
       }
     }
   }
@@ -694,7 +701,8 @@ int replaceVars(const char *s, GWEN_DB_NODE *db, GWEN_BUFFER *dbuf) {
  * ========================================================================================================================
  */
 
-int checkTransactionIbans(const AB_TRANSACTION *t) {
+int checkTransactionIbans(const AB_TRANSACTION *t)
+{
   const char *rIBAN;
   const char *lIBAN;
 #if 0
@@ -757,7 +765,8 @@ int checkTransactionIbans(const AB_TRANSACTION *t) {
  * ========================================================================================================================
  */
 
-int checkTransactionLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim, uint32_t flags) {
+int checkTransactionLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim, uint32_t flags)
+{
   if (lim==NULL) {
     fprintf(stderr, "ERROR: Job not supported with this account.\n");
     return 3;
@@ -803,7 +812,8 @@ int checkTransactionLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS 
  * ========================================================================================================================
  */
 
-int addTransactionToContextFile(const AB_TRANSACTION *t, const char *ctxFile) {
+int addTransactionToContextFile(const AB_TRANSACTION *t, const char *ctxFile)
+{
   int rv;
   AB_IMEXPORTER_CONTEXT *ctx=NULL;
 
@@ -845,7 +855,8 @@ int addTransactionToContextFile(const AB_TRANSACTION *t, const char *ctxFile) {
  * ========================================================================================================================
  */
 
-int execBankingJobs(AB_BANKING *ab, AB_TRANSACTION_LIST2 *tList, const char *ctxFile) {
+int execBankingJobs(AB_BANKING *ab, AB_TRANSACTION_LIST2 *tList, const char *ctxFile)
+{
   int rv;
   int rvExec=0;
   AB_IMEXPORTER_CONTEXT *ctx=NULL;
@@ -877,7 +888,8 @@ int execBankingJobs(AB_BANKING *ab, AB_TRANSACTION_LIST2 *tList, const char *ctx
  * ========================================================================================================================
  */
 
-int execSingleBankingJob(AB_BANKING *ab, AB_TRANSACTION *t, const char *ctxFile) {
+int execSingleBankingJob(AB_BANKING *ab, AB_TRANSACTION *t, const char *ctxFile)
+{
   AB_TRANSACTION_LIST2 *jobList;
   int rv;
 
@@ -896,7 +908,8 @@ int execSingleBankingJob(AB_BANKING *ab, AB_TRANSACTION *t, const char *ctxFile)
  * ========================================================================================================================
  */
 
-AB_TRANSACTION *createAndCheckRequest(AB_BANKING *ab, AB_ACCOUNT_SPEC *as, AB_TRANSACTION_COMMAND cmd) {
+AB_TRANSACTION *createAndCheckRequest(AB_BANKING *ab, AB_ACCOUNT_SPEC *as, AB_TRANSACTION_COMMAND cmd)
+{
   if (AB_AccountSpec_GetTransactionLimitsForCommand(as, cmd)) {
     AB_TRANSACTION *j;
 
@@ -918,12 +931,13 @@ AB_TRANSACTION *createAndCheckRequest(AB_BANKING *ab, AB_ACCOUNT_SPEC *as, AB_TR
  */
 
 int createAndAddRequest(AB_BANKING *ab,
-			AB_TRANSACTION_LIST2 *tList,
-			AB_ACCOUNT_SPEC *as,
-			AB_TRANSACTION_COMMAND cmd,
-			const GWEN_DATE *fromDate,
-			const GWEN_DATE *toDate,
-			int ignoreUnsupported) {
+                        AB_TRANSACTION_LIST2 *tList,
+                        AB_ACCOUNT_SPEC *as,
+                        AB_TRANSACTION_COMMAND cmd,
+                        const GWEN_DATE *fromDate,
+                        const GWEN_DATE *toDate,
+                        int ignoreUnsupported)
+{
   uint32_t aid;
   AB_TRANSACTION *j;
 
@@ -934,9 +948,9 @@ int createAndAddRequest(AB_BANKING *ab,
   if (j) {
     if (cmd==AB_Transaction_CommandGetTransactions) {
       if (fromDate)
-	AB_Transaction_SetFirstDate(j, fromDate);
+        AB_Transaction_SetFirstDate(j, fromDate);
       if (toDate)
-	AB_Transaction_SetLastDate(j, toDate);
+        AB_Transaction_SetLastDate(j, toDate);
     }
     AB_Transaction_List2_PushBack(tList, j);
     return 0;
@@ -944,14 +958,14 @@ int createAndAddRequest(AB_BANKING *ab,
   else {
     if (ignoreUnsupported) {
       fprintf(stderr, "Warning: Ignoring request \"%s\" for %lu, not supported.\n",
-	      AB_Transaction_Command_toString(cmd),
-	      (unsigned long int) aid);
+              AB_Transaction_Command_toString(cmd),
+              (unsigned long int) aid);
       return 0;
     }
     else {
       fprintf(stderr, "Error: Request \"%s\" for %lu not supported.\n",
-	      AB_Transaction_Command_toString(cmd),
-	      (unsigned long int) aid);
+              AB_Transaction_Command_toString(cmd),
+              (unsigned long int) aid);
       return GWEN_ERROR_GENERIC;
     }
   }
@@ -965,11 +979,12 @@ int createAndAddRequest(AB_BANKING *ab,
  */
 
 int createAndAddRequests(AB_BANKING *ab,
-			 AB_TRANSACTION_LIST2 *tList,
-			 AB_ACCOUNT_SPEC *as,
-			 const GWEN_DATE *fromDate,
-			 const GWEN_DATE *toDate,
-			 uint32_t requestFlags) {
+                         AB_TRANSACTION_LIST2 *tList,
+                         AB_ACCOUNT_SPEC *as,
+                         const GWEN_DATE *fromDate,
+                         const GWEN_DATE *toDate,
+                         uint32_t requestFlags)
+{
   int ignoreUnsupported=requestFlags & AQBANKING_TOOL_REQUEST_IGNORE_UNSUP;
   int rv;
 

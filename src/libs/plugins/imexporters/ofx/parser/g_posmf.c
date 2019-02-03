@@ -33,8 +33,9 @@
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_POSMF_new(const char *groupName,
-				      AIO_OFX_GROUP *parent,
-				      GWEN_XML_CONTEXT *ctx) {
+                                      AIO_OFX_GROUP *parent,
+                                      GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_GROUP *g;
 
   /* create base group */
@@ -51,7 +52,8 @@ AIO_OFX_GROUP *AIO_OfxGroup_POSMF_new(const char *groupName,
 
 
 int AIO_OfxGroup_POSMF_StartTag(AIO_OFX_GROUP *g,
-				const char *tagName) {
+                                const char *tagName)
+{
   AIO_OFX_GROUP *gNew=NULL;
   GWEN_XML_CONTEXT *ctx;
 
@@ -64,7 +66,7 @@ int AIO_OfxGroup_POSMF_StartTag(AIO_OFX_GROUP *g,
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	    "Ignoring group [%s]", tagName);
+             "Ignoring group [%s]", tagName);
     gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);
   }
 
@@ -78,7 +80,8 @@ int AIO_OfxGroup_POSMF_StartTag(AIO_OFX_GROUP *g,
 
 
 
-int AIO_OfxGroup_POSMF_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
+int AIO_OfxGroup_POSMF_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg)
+{
   const char *s;
   GWEN_XML_CONTEXT *ctx;
 

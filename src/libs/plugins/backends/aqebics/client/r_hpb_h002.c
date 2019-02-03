@@ -19,8 +19,9 @@
 
 
 static int EBC_Provider_XchgHpbRequest_H002(AB_PROVIDER *pro,
-					    GWEN_HTTP_SESSION *sess,
-					    AB_USER *u) {
+                                            GWEN_HTTP_SESSION *sess,
+                                            AB_USER *u)
+{
   EBC_PROVIDER *dp;
   int rv;
   GWEN_CRYPT_TOKEN *ct;
@@ -54,21 +55,21 @@ static int EBC_Provider_XchgHpbRequest_H002(AB_PROVIDER *pro,
   root_node=xmlNewNode(NULL, BAD_CAST "ebicsNoPubKeyDigestsRequest");
   xmlDocSetRootElement(doc, root_node);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.ebics.org/H002",
-	      NULL);
+              BAD_CAST "http://www.ebics.org/H002",
+              NULL);
   assert(ns);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
-	      BAD_CAST "ds");
+              BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
+              BAD_CAST "ds");
   assert(ns);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
-	      BAD_CAST "xsi");
+              BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
+              BAD_CAST "xsi");
   xmlNewNsProp(root_node,
-	       ns,
-	       BAD_CAST "schemaLocation", /* xsi:schemaLocation */
-	       BAD_CAST "http://www.ebics.org/H002 "
-	       "http://www.ebics.org/H002/ebics_keymgmt_request.xsd");
+               ns,
+               BAD_CAST "schemaLocation", /* xsi:schemaLocation */
+               BAD_CAST "http://www.ebics.org/H002 "
+               "http://www.ebics.org/H002/ebics_keymgmt_request.xsd");
 
   xmlNewProp(root_node, BAD_CAST "Version", BAD_CAST "H002");
   xmlNewProp(root_node, BAD_CAST "Revision", BAD_CAST "1");
@@ -116,12 +117,12 @@ static int EBC_Provider_XchgHpbRequest_H002(AB_PROVIDER *pro,
   if (s)
     EB_Msg_SetCharValue(msg, "header/static/PartnerID", s);
   EB_Msg_SetCharValue(msg, "header/static/UserID",
-		      AB_User_GetUserId(u));
+                      AB_User_GetUserId(u));
   EB_Msg_SetCharValue(msg, "header/static/OrderDetails/OrderType", "HPB");
 
   EB_Msg_SetCharValue(msg,
-		      "header/static/OrderDetails/OrderAttribute",
-		      "DZHNN");
+                      "header/static/OrderDetails/OrderAttribute",
+                      "DZHNN");
   EB_Msg_SetCharValue(msg, "header/static/SecurityMedium", "0000");
 
   /* sign */
@@ -157,14 +158,14 @@ static int EBC_Provider_XchgHpbRequest_H002(AB_PROVIDER *pro,
   rc=EB_Msg_GetBodyResultCode(mRsp);
   if (rc) {
     if ((rc & 0xff0000)==0x090000 ||
-	(rc & 0xff0000)==0x060000) {
+        (rc & 0xff0000)==0x060000) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Error response: (%06x)", rc);
       EB_Msg_free(mRsp);
       if ((rc & 0xfff00)==0x091300 ||
-	  (rc & 0xfff00)==0x091200)
-	return AB_ERROR_SECURITY;
+          (rc & 0xfff00)==0x091200)
+        return AB_ERROR_SECURITY;
       else
-	return GWEN_ERROR_GENERIC;
+        return GWEN_ERROR_GENERIC;
     }
   }
   if (1) {
@@ -178,11 +179,11 @@ static int EBC_Provider_XchgHpbRequest_H002(AB_PROVIDER *pro,
 
     /* extract keys and store them */
     node=EB_Xml_GetNode(EB_Msg_GetRootNode(mRsp),
-			"body/DataTransfer/DataEncryptionInfo",
-			GWEN_PATH_FLAGS_NAMEMUSTEXIST);
+                        "body/DataTransfer/DataEncryptionInfo",
+                        GWEN_PATH_FLAGS_NAMEMUSTEXIST);
     if (node==NULL) {
       DBG_ERROR(AQEBICS_LOGDOMAIN,
-		"Bad message from server: Missing session key");
+                "Bad message from server: Missing session key");
       EB_Msg_free(mRsp);
       return GWEN_ERROR_BAD_DATA;
     }
@@ -196,12 +197,12 @@ static int EBC_Provider_XchgHpbRequest_H002(AB_PROVIDER *pro,
     s=EB_Msg_GetCharValue(mRsp, "body/DataTransfer/OrderData", NULL);
     if (!s) {
       DBG_ERROR(AQEBICS_LOGDOMAIN,
-		"Bad message from server: Missing OrderData");
+                "Bad message from server: Missing OrderData");
       EB_Msg_free(mRsp);
       return GWEN_ERROR_BAD_DATA;
     }
     buf1=GWEN_Buffer_new(0, strlen(s), 0, 1);
-    rv=GWEN_Base64_Decode((const uint8_t*)s, 0, buf1);
+    rv=GWEN_Base64_Decode((const uint8_t *)s, 0, buf1);
     if (rv<0) {
       DBG_INFO(AQEBICS_LOGDOMAIN, "Could not decode OrderData (%d)", rv);
       GWEN_Buffer_free(buf1);
@@ -212,9 +213,9 @@ static int EBC_Provider_XchgHpbRequest_H002(AB_PROVIDER *pro,
     /* decode data */
     buf2=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(buf1), 0, 1);
     rv=EBC_Provider_DecryptData(pro, u, skey,
-				(const uint8_t*)GWEN_Buffer_GetStart(buf1),
-				GWEN_Buffer_GetUsedBytes(buf1),
-				buf2);
+                                (const uint8_t *)GWEN_Buffer_GetStart(buf1),
+                                GWEN_Buffer_GetUsedBytes(buf1),
+                                buf2);
     if (rv<0) {
       DBG_INFO(AQEBICS_LOGDOMAIN, "Could not decrypt OrderData (%d)", rv);
       GWEN_Buffer_free(buf2);
@@ -224,8 +225,8 @@ static int EBC_Provider_XchgHpbRequest_H002(AB_PROVIDER *pro,
 
     /* parse XML document */
     rv=EB_Xml_DocFromBuffer(GWEN_Buffer_GetStart(buf2),
-			    GWEN_Buffer_GetUsedBytes(buf2),
-			    &orderDoc);
+                            GWEN_Buffer_GetUsedBytes(buf2),
+                            &orderDoc);
     GWEN_Buffer_free(buf2);
     GWEN_Buffer_free(buf1);
     if (rv<0) {
@@ -243,10 +244,10 @@ static int EBC_Provider_XchgHpbRequest_H002(AB_PROVIDER *pro,
 
     /* get auth key */
     node=EB_Xml_GetNode(root_node, "AuthenticationPubKeyInfo",
-			GWEN_PATH_FLAGS_NAMEMUSTEXIST);
+                        GWEN_PATH_FLAGS_NAMEMUSTEXIST);
     if (node==NULL) {
       DBG_ERROR(AQEBICS_LOGDOMAIN,
-		"No authentication key found");
+                "No authentication key found");
       xmlFreeDoc(orderDoc);
       EB_Msg_free(mRsp);
       return GWEN_ERROR_BAD_DATA;
@@ -259,28 +260,28 @@ static int EBC_Provider_XchgHpbRequest_H002(AB_PROVIDER *pro,
 
       cki=GWEN_Crypt_Token_GetKeyInfo(ct, keyId, 0, 0);
       if (cki)
-	ki=GWEN_Crypt_Token_KeyInfo_dup(cki);
+        ki=GWEN_Crypt_Token_KeyInfo_dup(cki);
       else
-	ki=GWEN_Crypt_Token_KeyInfo_new(keyId,
-					GWEN_Crypt_CryptAlgoId_Rsa,
-					128);
+        ki=GWEN_Crypt_Token_KeyInfo_new(keyId,
+                                        GWEN_Crypt_CryptAlgoId_Rsa,
+                                        128);
       GWEN_Crypt_Token_KeyInfo_SetFlags(ki, 0);
       rc=EB_Key_Info_ReadXml(ki, node);
       if (rc) {
-	DBG_INFO(AQEBICS_LOGDOMAIN, "here (%06x)", rc);
+        DBG_INFO(AQEBICS_LOGDOMAIN, "here (%06x)", rc);
         GWEN_Crypt_Token_KeyInfo_free(ki);
-	xmlFreeDoc(orderDoc);
-	EB_Msg_free(mRsp);
-	return GWEN_ERROR_BAD_DATA;
+        xmlFreeDoc(orderDoc);
+        EB_Msg_free(mRsp);
+        return GWEN_ERROR_BAD_DATA;
       }
 
       rv=GWEN_Crypt_Token_SetKeyInfo(ct, keyId, ki, 0);
       GWEN_Crypt_Token_KeyInfo_free(ki);
       if (rv) {
-	DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
-	xmlFreeDoc(orderDoc);
-	EB_Msg_free(mRsp);
-	return rv;
+        DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
+        xmlFreeDoc(orderDoc);
+        EB_Msg_free(mRsp);
+        return rv;
       }
 
       DBG_NOTICE(AQEBICS_LOGDOMAIN, "Auth key stored");
@@ -288,10 +289,10 @@ static int EBC_Provider_XchgHpbRequest_H002(AB_PROVIDER *pro,
 
     /* get crypt key */
     node=EB_Xml_GetNode(root_node, "EncryptionPubKeyInfo",
-			GWEN_PATH_FLAGS_NAMEMUSTEXIST);
+                        GWEN_PATH_FLAGS_NAMEMUSTEXIST);
     if (node==NULL) {
       DBG_ERROR(AQEBICS_LOGDOMAIN,
-		"No encryption key found");
+                "No encryption key found");
       xmlFreeDoc(orderDoc);
       EB_Msg_free(mRsp);
       return GWEN_ERROR_BAD_DATA;
@@ -304,28 +305,28 @@ static int EBC_Provider_XchgHpbRequest_H002(AB_PROVIDER *pro,
 
       cki=GWEN_Crypt_Token_GetKeyInfo(ct, keyId, 0, 0);
       if (cki)
-	ki=GWEN_Crypt_Token_KeyInfo_dup(cki);
+        ki=GWEN_Crypt_Token_KeyInfo_dup(cki);
       else
-	ki=GWEN_Crypt_Token_KeyInfo_new(keyId,
-					GWEN_Crypt_CryptAlgoId_Rsa,
-					128);
+        ki=GWEN_Crypt_Token_KeyInfo_new(keyId,
+                                        GWEN_Crypt_CryptAlgoId_Rsa,
+                                        128);
       GWEN_Crypt_Token_KeyInfo_SetFlags(ki, 0);
       rc=EB_Key_Info_ReadXml(ki, node);
       if (rc) {
-	DBG_INFO(AQEBICS_LOGDOMAIN, "here (%06x)", rc);
+        DBG_INFO(AQEBICS_LOGDOMAIN, "here (%06x)", rc);
         GWEN_Crypt_Token_KeyInfo_free(ki);
-	xmlFreeDoc(orderDoc);
-	EB_Msg_free(mRsp);
-	return GWEN_ERROR_BAD_DATA;
+        xmlFreeDoc(orderDoc);
+        EB_Msg_free(mRsp);
+        return GWEN_ERROR_BAD_DATA;
       }
 
       rv=GWEN_Crypt_Token_SetKeyInfo(ct, keyId, ki, 0);
       GWEN_Crypt_Token_KeyInfo_free(ki);
       if (rv) {
-	DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
-	xmlFreeDoc(orderDoc);
-	EB_Msg_free(mRsp);
-	return rv;
+        DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
+        xmlFreeDoc(orderDoc);
+        EB_Msg_free(mRsp);
+        return rv;
       }
 
       DBG_NOTICE(AQEBICS_LOGDOMAIN, "Crypt key stored");

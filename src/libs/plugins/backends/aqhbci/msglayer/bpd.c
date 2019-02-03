@@ -31,7 +31,8 @@ GWEN_LIST_FUNCTIONS(AH_BPD_ADDR, AH_BpdAddr);
 GWEN_LIST2_FUNCTIONS(AH_BPD_ADDR, AH_BpdAddr);
 
 
-AH_BPD *AH_Bpd_new(){
+AH_BPD *AH_Bpd_new()
+{
   AH_BPD *bpd;
 
   GWEN_NEW_OBJECT(AH_BPD, bpd);
@@ -45,7 +46,8 @@ AH_BPD *AH_Bpd_new(){
 
 
 
-void AH_Bpd_free(AH_BPD *bpd){
+void AH_Bpd_free(AH_BPD *bpd)
+{
   if (bpd) {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Destroying AH_BPD");
     free(bpd->bankName);
@@ -58,7 +60,8 @@ void AH_Bpd_free(AH_BPD *bpd){
 
 
 
-AH_BPD *AH_Bpd_dup(const AH_BPD *oldBpd){
+AH_BPD *AH_Bpd_dup(const AH_BPD *oldBpd)
+{
   AH_BPD *bpd;
   GWEN_DB_NODE *db;
 
@@ -80,7 +83,8 @@ AH_BPD *AH_Bpd_dup(const AH_BPD *oldBpd){
 
 
 
-AH_BPD *AH_Bpd_FromDb(GWEN_DB_NODE *db){
+AH_BPD *AH_Bpd_FromDb(GWEN_DB_NODE *db)
+{
   GWEN_DB_NODE *gr;
   int i;
   const char *p;
@@ -159,7 +163,7 @@ AH_BPD *AH_Bpd_FromDb(GWEN_DB_NODE *db){
                       "addresses");
   if (gr) {
     gr=GWEN_DB_FindFirstGroup(gr, "addr");
-    while(gr) {
+    while (gr) {
       AH_BPD_ADDR *ba;
 
       ba=AH_BpdAddr_FromDb(gr);
@@ -178,7 +182,8 @@ AH_BPD *AH_Bpd_FromDb(GWEN_DB_NODE *db){
 
 
 
-int AH_Bpd_ToDb(const AH_BPD *bpd, GWEN_DB_NODE *db){
+int AH_Bpd_ToDb(const AH_BPD *bpd, GWEN_DB_NODE *db)
+{
   GWEN_DB_NODE *gr;
   unsigned int i;
   const char *p;
@@ -199,10 +204,16 @@ int AH_Bpd_ToDb(const AH_BPD *bpd, GWEN_DB_NODE *db){
                       "bankPort",
                       bpd->bankPort);
 
-  switch(bpd->addrType) {
-  case AH_BPD_AddrTypeTCP: p="tcp"; break;
-  case AH_BPD_AddrTypeBTX: p="btx"; break;
-  case AH_BPD_AddrTypeSSL: p="ssl"; break;
+  switch (bpd->addrType) {
+  case AH_BPD_AddrTypeTCP:
+    p="tcp";
+    break;
+  case AH_BPD_AddrTypeBTX:
+    p="btx";
+    break;
+  case AH_BPD_AddrTypeSSL:
+    p="ssl";
+    break;
   default:
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Unsupported address type (%d)", bpd->addrType);
     return -1;
@@ -260,7 +271,7 @@ int AH_Bpd_ToDb(const AH_BPD *bpd, GWEN_DB_NODE *db){
     gr=GWEN_DB_GetGroup(db,
                         GWEN_DB_FLAGS_OVERWRITE_GROUPS,
                         "addresses");
-    while(ba) {
+    while (ba) {
       GWEN_DB_NODE *dbA;
 
       dbA=GWEN_DB_GetGroup(gr,
@@ -282,14 +293,16 @@ int AH_Bpd_ToDb(const AH_BPD *bpd, GWEN_DB_NODE *db){
 
 
 
-int AH_Bpd_GetJobTypesPerMsg(const AH_BPD *bpd){
+int AH_Bpd_GetJobTypesPerMsg(const AH_BPD *bpd)
+{
   assert(bpd);
   return bpd->jobTypesPerMsg;
 }
 
 
 
-void AH_Bpd_SetJobTypesPerMsg(AH_BPD *bpd, int i){
+void AH_Bpd_SetJobTypesPerMsg(AH_BPD *bpd, int i)
+{
   assert(bpd);
   bpd->jobTypesPerMsg=i;
   bpd->isDirty=1;
@@ -297,14 +310,16 @@ void AH_Bpd_SetJobTypesPerMsg(AH_BPD *bpd, int i){
 
 
 
-int AH_Bpd_GetMaxMsgSize(const AH_BPD *bpd){
+int AH_Bpd_GetMaxMsgSize(const AH_BPD *bpd)
+{
   assert(bpd);
   return bpd->maxMsgSize;
 }
 
 
 
-void AH_Bpd_SetMaxMsgSize(AH_BPD *bpd, int i){
+void AH_Bpd_SetMaxMsgSize(AH_BPD *bpd, int i)
+{
   assert(bpd);
   bpd->maxMsgSize=i;
   bpd->isDirty=1;
@@ -312,14 +327,16 @@ void AH_Bpd_SetMaxMsgSize(AH_BPD *bpd, int i){
 
 
 
-int AH_Bpd_GetBpdVersion(const AH_BPD *bpd){
+int AH_Bpd_GetBpdVersion(const AH_BPD *bpd)
+{
   assert(bpd);
   return bpd->bpdVersion;
 }
 
 
 
-void AH_Bpd_SetBpdVersion(AH_BPD *bpd, int i){
+void AH_Bpd_SetBpdVersion(AH_BPD *bpd, int i)
+{
   assert(bpd);
   bpd->bpdVersion=i;
   bpd->isDirty=1;
@@ -327,7 +344,8 @@ void AH_Bpd_SetBpdVersion(AH_BPD *bpd, int i){
 
 
 
-GWEN_DB_NODE *AH_Bpd_GetBpdJobs(const AH_BPD *bpd, int hbciVersion){
+GWEN_DB_NODE *AH_Bpd_GetBpdJobs(const AH_BPD *bpd, int hbciVersion)
+{
   GWEN_DB_NODE *gr;
   char numbuf[16];
 
@@ -341,7 +359,8 @@ GWEN_DB_NODE *AH_Bpd_GetBpdJobs(const AH_BPD *bpd, int hbciVersion){
 
 
 
-void AH_Bpd_SetBpdJobs(AH_BPD *bpd, GWEN_DB_NODE *n){
+void AH_Bpd_SetBpdJobs(AH_BPD *bpd, GWEN_DB_NODE *n)
+{
   assert(bpd);
   GWEN_DB_Group_free(bpd->bpdJobs);
   bpd->bpdJobs=n;
@@ -350,7 +369,8 @@ void AH_Bpd_SetBpdJobs(AH_BPD *bpd, GWEN_DB_NODE *n){
 
 
 
-void AH_Bpd_ClearBpdJobs(AH_BPD *bpd){
+void AH_Bpd_ClearBpdJobs(AH_BPD *bpd)
+{
   assert(bpd);
   GWEN_DB_ClearGroup(bpd->bpdJobs, 0);
   bpd->isDirty=1;
@@ -358,14 +378,16 @@ void AH_Bpd_ClearBpdJobs(AH_BPD *bpd){
 
 
 
-const int *AH_Bpd_GetHbciVersions(const AH_BPD *bpd){
+const int *AH_Bpd_GetHbciVersions(const AH_BPD *bpd)
+{
   assert(bpd);
   return bpd->hbciVersions;
 }
 
 
 
-int AH_Bpd_AddHbciVersion(AH_BPD *bpd, int i){
+int AH_Bpd_AddHbciVersion(AH_BPD *bpd, int i)
+{
   int j;
 
   assert(bpd);
@@ -387,7 +409,8 @@ int AH_Bpd_AddHbciVersion(AH_BPD *bpd, int i){
 }
 
 
-void AH_Bpd_ClearHbciVersions(AH_BPD *bpd){
+void AH_Bpd_ClearHbciVersions(AH_BPD *bpd)
+{
   unsigned int i;
 
   assert(bpd);
@@ -399,7 +422,8 @@ void AH_Bpd_ClearHbciVersions(AH_BPD *bpd){
 
 
 
-int AH_Bpd_AddLanguage(AH_BPD *bpd, int i){
+int AH_Bpd_AddLanguage(AH_BPD *bpd, int i)
+{
   int j;
 
   assert(bpd);
@@ -422,14 +446,16 @@ int AH_Bpd_AddLanguage(AH_BPD *bpd, int i){
 
 
 
-const int *AH_Bpd_GetLanguages(const AH_BPD *bpd){
+const int *AH_Bpd_GetLanguages(const AH_BPD *bpd)
+{
   assert(bpd);
   return bpd->languages;
 }
 
 
 
-void AH_Bpd_ClearLanguages(AH_BPD *bpd){
+void AH_Bpd_ClearLanguages(AH_BPD *bpd)
+{
   unsigned int i;
 
   assert(bpd);
@@ -441,7 +467,8 @@ void AH_Bpd_ClearLanguages(AH_BPD *bpd){
 
 
 
-int AH_Bpd_IsDirty(const AH_BPD *bpd){
+int AH_Bpd_IsDirty(const AH_BPD *bpd)
+{
   assert(bpd);
   if (bpd->isDirty)
     return 1;
@@ -450,14 +477,16 @@ int AH_Bpd_IsDirty(const AH_BPD *bpd){
 
 
 
-void AH_Bpd_SetIsDirty(AH_BPD *bpd, int dirty){
+void AH_Bpd_SetIsDirty(AH_BPD *bpd, int dirty)
+{
   assert(bpd);
   bpd->isDirty=dirty;
 }
 
 
 
-void AH_Bpd_Dump(const AH_BPD *bpd, int insert) {
+void AH_Bpd_Dump(const AH_BPD *bpd, int insert)
+{
   uint32_t k;
   unsigned int i;
 
@@ -482,7 +511,7 @@ void AH_Bpd_Dump(const AH_BPD *bpd, int insert) {
   fprintf(stderr, "HBCI versions  : ");
   for (i=0; i<AH_BPD_MAXHBCIVERSIONS; i++) {
     if (bpd->hbciVersions[i])
-      fprintf(stderr, "%d ",bpd->hbciVersions[i]);
+      fprintf(stderr, "%d ", bpd->hbciVersions[i]);
   }
   fprintf(stderr, "\n");
 
@@ -491,7 +520,7 @@ void AH_Bpd_Dump(const AH_BPD *bpd, int insert) {
   fprintf(stderr, "Languages      : ");
   for (i=0; i<AH_BPD_MAXLANGUAGES; i++) {
     if (bpd->languages[i])
-      fprintf(stderr, "%d ",bpd->languages[i]);
+      fprintf(stderr, "%d ", bpd->languages[i]);
   }
   fprintf(stderr, "\n");
 
@@ -503,14 +532,16 @@ void AH_Bpd_Dump(const AH_BPD *bpd, int insert) {
 
 
 
-const char *AH_Bpd_GetBankAddr(const AH_BPD *bpd){
+const char *AH_Bpd_GetBankAddr(const AH_BPD *bpd)
+{
   assert(bpd);
   return bpd->bankAddr;
 }
 
 
 
-void AH_Bpd_SetBankAddr(AH_BPD *bpd, const char *addr){
+void AH_Bpd_SetBankAddr(AH_BPD *bpd, const char *addr)
+{
   assert(bpd);
   assert(addr);
   free(bpd->bankAddr);
@@ -520,14 +551,16 @@ void AH_Bpd_SetBankAddr(AH_BPD *bpd, const char *addr){
 
 
 
-int AH_Bpd_GetBankPort(const AH_BPD *bpd){
+int AH_Bpd_GetBankPort(const AH_BPD *bpd)
+{
   assert(bpd);
   return bpd->bankPort;
 }
 
 
 
-void AH_Bpd_SetBankPort(AH_BPD *bpd, int p){
+void AH_Bpd_SetBankPort(AH_BPD *bpd, int p)
+{
   assert(bpd);
   bpd->bankPort=p;
   bpd->isDirty=1;
@@ -535,28 +568,32 @@ void AH_Bpd_SetBankPort(AH_BPD *bpd, int p){
 
 
 
-AH_BPD_ADDR_TYPE AH_Bpd_GetAddrType(const AH_BPD *bpd){
+AH_BPD_ADDR_TYPE AH_Bpd_GetAddrType(const AH_BPD *bpd)
+{
   assert(bpd);
   return bpd->addrType;
 }
 
 
 
-void AH_Bpd_SetAddrType(AH_BPD *bpd, AH_BPD_ADDR_TYPE i){
+void AH_Bpd_SetAddrType(AH_BPD *bpd, AH_BPD_ADDR_TYPE i)
+{
   bpd->addrType=i;
   bpd->isDirty=1;
 }
 
 
 
-const char *AH_Bpd_GetBankName(const AH_BPD *bpd){
+const char *AH_Bpd_GetBankName(const AH_BPD *bpd)
+{
   assert(bpd);
   return bpd->bankName;
 }
 
 
 
-void AH_Bpd_SetBankName(AH_BPD *bpd, const char *s){
+void AH_Bpd_SetBankName(AH_BPD *bpd, const char *s)
+{
   assert(bpd);
   assert(s);
   free(bpd->bankName);
@@ -566,14 +603,16 @@ void AH_Bpd_SetBankName(AH_BPD *bpd, const char *s){
 
 
 
-void AH_Bpd_ClearAddr(AH_BPD *bpd){
+void AH_Bpd_ClearAddr(AH_BPD *bpd)
+{
   assert(bpd);
   AH_BpdAddr_List_Clear(bpd->addrList);
 }
 
 
 
-void AH_Bpd_AddAddr(AH_BPD *bpd, AH_BPD_ADDR *ba){
+void AH_Bpd_AddAddr(AH_BPD *bpd, AH_BPD_ADDR *ba)
+{
   assert(bpd);
   assert(ba);
   AH_BpdAddr_List_Add(ba, bpd->addrList);
@@ -581,7 +620,8 @@ void AH_Bpd_AddAddr(AH_BPD *bpd, AH_BPD_ADDR *ba){
 
 
 
-AH_BPD_ADDR_LIST *AH_Bpd_GetAddrList(const AH_BPD *bpd){
+AH_BPD_ADDR_LIST *AH_Bpd_GetAddrList(const AH_BPD *bpd)
+{
   assert(bpd);
   return bpd->addrList;
 }
@@ -595,7 +635,8 @@ AH_BPD_ADDR_LIST *AH_Bpd_GetAddrList(const AH_BPD *bpd){
 
 
 
-AH_BPD_ADDR *AH_BpdAddr_new(){
+AH_BPD_ADDR *AH_BpdAddr_new()
+{
   AH_BPD_ADDR *ba;
 
   GWEN_NEW_OBJECT(AH_BPD_ADDR, ba);
@@ -606,7 +647,8 @@ AH_BPD_ADDR *AH_BpdAddr_new(){
 
 
 
-void AH_BpdAddr_free(AH_BPD_ADDR *ba){
+void AH_BpdAddr_free(AH_BPD_ADDR *ba)
+{
   if (ba) {
     GWEN_LIST_FINI(AH_BPD_ADDR, ba);
     free(ba->addr);
@@ -617,7 +659,8 @@ void AH_BpdAddr_free(AH_BPD_ADDR *ba){
 
 
 
-AH_BPD_ADDR *AH_BpdAddr_dup(const AH_BPD_ADDR *ba){
+AH_BPD_ADDR *AH_BpdAddr_dup(const AH_BPD_ADDR *ba)
+{
   AH_BPD_ADDR *newBa;
 
   assert(ba);
@@ -635,81 +678,96 @@ AH_BPD_ADDR *AH_BpdAddr_dup(const AH_BPD_ADDR *ba){
 
 
 
-AH_BPD_ADDR_TYPE AH_BpdAddr_GetType(const AH_BPD_ADDR *ba){
+AH_BPD_ADDR_TYPE AH_BpdAddr_GetType(const AH_BPD_ADDR *ba)
+{
   assert(ba);
   return ba->type;
 }
 
 
 
-void AH_BpdAddr_SetType(AH_BPD_ADDR *ba, AH_BPD_ADDR_TYPE t){
+void AH_BpdAddr_SetType(AH_BPD_ADDR *ba, AH_BPD_ADDR_TYPE t)
+{
   assert(ba);
   ba->type=t;
 }
 
 
 
-const char *AH_BpdAddr_GetAddr(const AH_BPD_ADDR *ba){
+const char *AH_BpdAddr_GetAddr(const AH_BPD_ADDR *ba)
+{
   assert(ba);
   return ba->addr;
 }
 
 
 
-void AH_BpdAddr_SetAddr(AH_BPD_ADDR *ba, const char *s){
+void AH_BpdAddr_SetAddr(AH_BPD_ADDR *ba, const char *s)
+{
   assert(ba);
   free(ba->addr);
-  if (s) ba->addr=strdup(s);
-  else ba->addr=0;
+  if (s)
+    ba->addr=strdup(s);
+  else
+    ba->addr=0;
 }
 
 
 
-const char *AH_BpdAddr_GetSuffix(const AH_BPD_ADDR *ba){
+const char *AH_BpdAddr_GetSuffix(const AH_BPD_ADDR *ba)
+{
   assert(ba);
   return ba->suffix;
 }
 
 
 
-void AH_BpdAddr_SetSuffix(AH_BPD_ADDR *ba, const char *s){
+void AH_BpdAddr_SetSuffix(AH_BPD_ADDR *ba, const char *s)
+{
   assert(ba);
   free(ba->suffix);
-  if (s) ba->suffix=strdup(s);
-  else ba->suffix=0;
+  if (s)
+    ba->suffix=strdup(s);
+  else
+    ba->suffix=0;
 }
 
 
 
-AH_BPD_FILTER_TYPE AH_BpdAddr_GetFType(const AH_BPD_ADDR *ba){
+AH_BPD_FILTER_TYPE AH_BpdAddr_GetFType(const AH_BPD_ADDR *ba)
+{
   assert(ba);
   return ba->ftype;
 }
 
 
 
-void AH_BpdAddr_SetFType(AH_BPD_ADDR *ba, AH_BPD_FILTER_TYPE t){
+void AH_BpdAddr_SetFType(AH_BPD_ADDR *ba, AH_BPD_FILTER_TYPE t)
+{
   assert(ba);
   ba->ftype=t;
 }
 
 
 
-int AH_BpdAddr_GetFVersion(const AH_BPD_ADDR *ba){
+int AH_BpdAddr_GetFVersion(const AH_BPD_ADDR *ba)
+{
   assert(ba);
   return ba->fversion;
 }
 
 
 
-void AH_BpdAddr_SetFVersion(AH_BPD_ADDR *ba, int i){
+void AH_BpdAddr_SetFVersion(AH_BPD_ADDR *ba, int i)
+{
   assert(ba);
   ba->fversion=i;
 }
 
 
 
-AH_BPD_ADDR *AH_BpdAddr_FromDb(GWEN_DB_NODE *db){
+AH_BPD_ADDR *AH_BpdAddr_FromDb(GWEN_DB_NODE *db)
+{
   AH_BPD_ADDR *ba;
   const char *p;
 
@@ -725,13 +783,20 @@ AH_BPD_ADDR *AH_BpdAddr_FromDb(GWEN_DB_NODE *db){
       AH_BpdAddr_free(ba);
       return 0;
     }
-    switch(i) {
-    case 1: ba->type=AH_BPD_AddrTypeBTX; break;
-    case 2: ba->type=AH_BPD_AddrTypeTCP; break;
-    case 3: ba->type=AH_BPD_AddrTypeSSL; break;
+    switch (i) {
+    case 1:
+      ba->type=AH_BPD_AddrTypeBTX;
+      break;
+    case 2:
+      ba->type=AH_BPD_AddrTypeTCP;
+      break;
+    case 3:
+      ba->type=AH_BPD_AddrTypeSSL;
+      break;
     default:
       DBG_ERROR(AQHBCI_LOGDOMAIN, "bad BPD address: unknown type %i", i);
-      ba->type=AH_BPD_AddrTypeUnknown; break;
+      ba->type=AH_BPD_AddrTypeUnknown;
+      break;
       GWEN_DB_Dump(db, 2);
       AH_BpdAddr_free(ba);
       return 0;
@@ -792,7 +857,8 @@ AH_BPD_ADDR *AH_BpdAddr_FromDb(GWEN_DB_NODE *db){
 
 
 
-int AH_BpdAddr_ToDb(const AH_BPD_ADDR *ba, GWEN_DB_NODE *db){
+int AH_BpdAddr_ToDb(const AH_BPD_ADDR *ba, GWEN_DB_NODE *db)
+{
   assert(ba);
   assert(db);
 
@@ -801,7 +867,7 @@ int AH_BpdAddr_ToDb(const AH_BPD_ADDR *ba, GWEN_DB_NODE *db){
     return -1;
   }
 
-  switch(ba->type) {
+  switch (ba->type) {
   case AH_BPD_AddrTypeTCP:
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "type", "tcp");
@@ -820,7 +886,7 @@ int AH_BpdAddr_ToDb(const AH_BPD_ADDR *ba, GWEN_DB_NODE *db){
     break;
   }
 
-  switch(ba->ftype) {
+  switch (ba->ftype) {
   case AH_BPD_FilterTypeBase64:
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "ftype", "mim");

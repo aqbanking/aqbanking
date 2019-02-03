@@ -33,8 +33,8 @@ static GWENHYWFAR_CB void AB_SelectBankInfoDialog_FreeData(void *bp, void *p);
 
 
 static int GWENHYWFAR_CB AB_SelectBankInfoDialog_SignalHandler(GWEN_DIALOG *dlg,
-							       GWEN_DIALOG_EVENTTYPE t,
-							       const char *sender);
+                                                               GWEN_DIALOG_EVENTTYPE t,
+                                                               const char *sender);
 
 
 

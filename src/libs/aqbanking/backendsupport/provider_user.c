@@ -15,7 +15,8 @@
 
 
 
-int AB_Provider_ReadUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_USER *user) {
+int AB_Provider_ReadUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_USER *user)
+{
   int rv;
   GWEN_DB_NODE *db=NULL;
 
@@ -38,7 +39,8 @@ int AB_Provider_ReadUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnloc
 
 
 
-int AB_Provider_GetUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_USER **pUser) {
+int AB_Provider_GetUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_USER **pUser)
+{
   int rv;
   AB_USER *u;
 
@@ -58,7 +60,8 @@ int AB_Provider_GetUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock
 
 
 
-int AB_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList) {
+int AB_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList)
+{
   int rv;
   GWEN_DB_NODE *dbAll=NULL;
   GWEN_DB_NODE *db;
@@ -72,7 +75,7 @@ int AB_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList) {
   }
 
   db=GWEN_DB_GetFirstGroup(dbAll);
-  while(db) {
+  while (db) {
     AB_USER *u=NULL;
 
     u=AB_Provider_CreateUserObject(pro);
@@ -82,11 +85,11 @@ int AB_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList) {
     else {
       rv=AB_User_ReadFromDb(u, db);
       if (rv<0) {
-	DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading user (%d), ignoring", rv);
-	AB_User_free(u);
+        DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading user (%d), ignoring", rv);
+        AB_User_free(u);
       }
       else
-	AB_User_List_Add(u, userList);
+        AB_User_List_Add(u, userList);
     }
     /* next */
     db=GWEN_DB_GetNextGroup(db);
@@ -99,7 +102,8 @@ int AB_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList) {
 
 
 
-int AB_Provider_WriteUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, const AB_USER *user) {
+int AB_Provider_WriteUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, const AB_USER *user)
+{
   int rv;
   GWEN_DB_NODE *db;
 
@@ -123,7 +127,8 @@ int AB_Provider_WriteUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlo
 
 
 
-int AB_Provider_AddUser(AB_PROVIDER *pro, AB_USER *u) {
+int AB_Provider_AddUser(AB_PROVIDER *pro, AB_USER *u)
+{
   uint32_t uid;
   int rv;
 
@@ -139,7 +144,8 @@ int AB_Provider_AddUser(AB_PROVIDER *pro, AB_USER *u) {
 
 
 
-int AB_Provider_DeleteUser(AB_PROVIDER *pro, uint32_t uid) {
+int AB_Provider_DeleteUser(AB_PROVIDER *pro, uint32_t uid)
+{
   int rv;
   AB_ACCOUNT_LIST *al;
 
@@ -155,7 +161,7 @@ int AB_Provider_DeleteUser(AB_PROVIDER *pro, uint32_t uid) {
     int cnt=0;
 
     a=AB_Account_List_First(al);
-    while(a) {
+    while (a) {
       if (AB_Account_GetUserId(a)==uid) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Account %lu still uses this user", (unsigned long int) AB_Account_GetUniqueId(a));
         cnt++;
@@ -163,7 +169,7 @@ int AB_Provider_DeleteUser(AB_PROVIDER *pro, uint32_t uid) {
       a=AB_Account_List_Next(a);
     }
     if (cnt>0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "%d accounts using this user",cnt);
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "%d accounts using this user", cnt);
       AB_Account_List_free(al);
       return GWEN_ERROR_INVALID;
     }
@@ -182,7 +188,8 @@ int AB_Provider_DeleteUser(AB_PROVIDER *pro, uint32_t uid) {
 
 
 
-int AB_Provider_BeginExclUseUser(AB_PROVIDER *pro, AB_USER *u) {
+int AB_Provider_BeginExclUseUser(AB_PROVIDER *pro, AB_USER *u)
+{
   int rv;
   uint32_t uid;
 
@@ -203,7 +210,8 @@ int AB_Provider_BeginExclUseUser(AB_PROVIDER *pro, AB_USER *u) {
 
 
 
-int AB_Provider_EndExclUseUser(AB_PROVIDER *pro, AB_USER *u, int abandon) {
+int AB_Provider_EndExclUseUser(AB_PROVIDER *pro, AB_USER *u, int abandon)
+{
   int rv;
   uint32_t uid;
 

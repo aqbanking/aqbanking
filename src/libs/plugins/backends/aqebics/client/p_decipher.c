@@ -16,9 +16,10 @@
 
 
 int EBC_Provider_ExtractSessionKey(AB_PROVIDER *pro,
-				   AB_USER *u,
-				   xmlNodePtr node,
-				   GWEN_CRYPT_KEY **pKey) {
+                                   AB_USER *u,
+                                   xmlNodePtr node,
+                                   GWEN_CRYPT_KEY **pKey)
+{
   const char *s;
   GWEN_BUFFER *d64buf;
   int rv;
@@ -38,7 +39,7 @@ int EBC_Provider_ExtractSessionKey(AB_PROVIDER *pro,
 
   /* get pubkey digest node */
   nodeX=EB_Xml_GetNode(node, "EncryptionPubKeyDigest",
-		       GWEN_PATH_FLAGS_NAMEMUSTEXIST);
+                       GWEN_PATH_FLAGS_NAMEMUSTEXIST);
   if (nodeX==NULL) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "No pubkey digest");
     return GWEN_ERROR_BAD_DATA;
@@ -53,12 +54,12 @@ int EBC_Provider_ExtractSessionKey(AB_PROVIDER *pro,
     DBG_INFO(AQEBICS_LOGDOMAIN, "No \"Version\" in pubkey digest");
     return GWEN_ERROR_BAD_DATA;
   }
-  if (strcasecmp(s, (const char*)prop)!=0) {
+  if (strcasecmp(s, (const char *)prop)!=0) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Unexpected crypt version in pubkey digest");
     xmlFree(prop);
     return GWEN_ERROR_BAD_DATA;
   }
-  if (strcasecmp((const char*)prop, "E001")==0) {
+  if (strcasecmp((const char *)prop, "E001")==0) {
     xmlFree(prop);
     /* check digest algo */
     prop=xmlGetProp(nodeX, BAD_CAST "Algorithm");
@@ -66,17 +67,17 @@ int EBC_Provider_ExtractSessionKey(AB_PROVIDER *pro,
       DBG_INFO(AQEBICS_LOGDOMAIN, "No \"Algorithm\" in pubkey digest");
       return GWEN_ERROR_BAD_DATA;
     }
-    if (strcasecmp((const char*)prop,
-		   "http://www.w3.org/2000/09/xmldsig#sha1")!=0) {
+    if (strcasecmp((const char *)prop,
+                   "http://www.w3.org/2000/09/xmldsig#sha1")!=0) {
       DBG_INFO(AQEBICS_LOGDOMAIN, "Unexpected digest algo [%s]",
-	       prop);
+               prop);
       xmlFree(prop);
       return GWEN_ERROR_BAD_DATA;
     }
     xmlFree(prop);
     kversion=1;
   }
-  else if (strcasecmp((const char*)prop, "E002")==0) {
+  else if (strcasecmp((const char *)prop, "E002")==0) {
     xmlFree(prop);
     /* check digest algo */
     prop=xmlGetProp(nodeX, BAD_CAST "Algorithm");
@@ -84,10 +85,10 @@ int EBC_Provider_ExtractSessionKey(AB_PROVIDER *pro,
       DBG_INFO(AQEBICS_LOGDOMAIN, "No \"Algorithm\" in pubkey digest");
       return GWEN_ERROR_BAD_DATA;
     }
-    if (strcasecmp((const char*)prop,
-		   "http://www.w3.org/2001/04/xmlenc#sha256")!=0) {
+    if (strcasecmp((const char *)prop,
+                   "http://www.w3.org/2001/04/xmlenc#sha256")!=0) {
       DBG_INFO(AQEBICS_LOGDOMAIN, "Unexpected digest algo [%s]",
-	       prop);
+               prop);
       xmlFree(prop);
       return GWEN_ERROR_BAD_DATA;
     }
@@ -96,7 +97,7 @@ int EBC_Provider_ExtractSessionKey(AB_PROVIDER *pro,
   }
   else {
     DBG_INFO(AQEBICS_LOGDOMAIN, "Unexpected crypt version [%s]",
-	     prop);
+             prop);
     xmlFree(prop);
     return GWEN_ERROR_BAD_DATA;
   }
@@ -120,14 +121,14 @@ int EBC_Provider_ExtractSessionKey(AB_PROVIDER *pro,
   kid=GWEN_Crypt_Token_Context_GetDecipherKeyId(ctx);
   if (kid)
     ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-				   GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				   GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT,
-				   0);
+                                   GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                   GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT,
+                                   0);
   if (ki==NULL) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Crypt key info not found on crypt token");
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Crypt key info not found on crypt token"));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Crypt key info not found on crypt token"));
     return GWEN_ERROR_NOT_FOUND;
   }
   ksize=GWEN_Crypt_Token_KeyInfo_GetKeySize(ki);
@@ -140,7 +141,7 @@ int EBC_Provider_ExtractSessionKey(AB_PROVIDER *pro,
     /* compare hashes */
     if (strcasecmp(s, GWEN_Buffer_GetStart(d64buf))!=0) {
       DBG_INFO(AQEBICS_LOGDOMAIN,
-	       "Pubkey digest does not match");
+               "Pubkey digest does not match");
       GWEN_Buffer_free(d64buf);
       return GWEN_ERROR_NO_KEY;
     }
@@ -155,7 +156,7 @@ int EBC_Provider_ExtractSessionKey(AB_PROVIDER *pro,
 
     /* decode transaction key */
     keyBuffer=GWEN_Buffer_new(0, 256, 0, 1);
-    rv=GWEN_Base64_Decode((const uint8_t*)s, 0, keyBuffer);
+    rv=GWEN_Base64_Decode((const uint8_t *)s, 0, keyBuffer);
     if (rv<0) {
       DBG_INFO(AQEBICS_LOGDOMAIN, "Could not decode transaction key (%d)", rv);
       GWEN_Buffer_free(keyBuffer);
@@ -171,12 +172,12 @@ int EBC_Provider_ExtractSessionKey(AB_PROVIDER *pro,
     GWEN_Crypt_PaddAlgo_SetPaddSize(algo, ksize);
     l=GWEN_Buffer_GetMaxUnsegmentedWrite(dkbuf);
     rv=GWEN_Crypt_Token_Decipher(ct, kid,
-				 algo,
-				 (const uint8_t*)GWEN_Buffer_GetStart(keyBuffer),
-				 GWEN_Buffer_GetUsedBytes(keyBuffer),
-				 (uint8_t*)GWEN_Buffer_GetStart(dkbuf),
-				 &l,
-				 0);
+                                 algo,
+                                 (const uint8_t *)GWEN_Buffer_GetStart(keyBuffer),
+                                 GWEN_Buffer_GetUsedBytes(keyBuffer),
+                                 (uint8_t *)GWEN_Buffer_GetStart(dkbuf),
+                                 &l,
+                                 0);
     if (rv<0) {
       DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(dkbuf);
@@ -196,14 +197,14 @@ int EBC_Provider_ExtractSessionKey(AB_PROVIDER *pro,
 
     if (GWEN_Logger_GetLevel(AQEBICS_LOGDOMAIN)>=GWEN_LoggerLevel_Debug) {
       DBG_DEBUG(AQEBICS_LOGDOMAIN,
-		"Decrypted session key:");
+                "Decrypted session key:");
       GWEN_Buffer_Dump(dkbuf, 2);
     }
 
     /* create DES key */
     key=GWEN_Crypt_KeyDes3K_fromData(GWEN_Crypt_CryptMode_Cbc, 16,
-				     (const uint8_t*)GWEN_Buffer_GetStart(dkbuf),
-				     GWEN_Buffer_GetUsedBytes(dkbuf));
+                                     (const uint8_t *)GWEN_Buffer_GetStart(dkbuf),
+                                     GWEN_Buffer_GetUsedBytes(dkbuf));
     if (key==NULL) {
       DBG_INFO(AQEBICS_LOGDOMAIN, "Could not create DES key from data");
       GWEN_Buffer_free(dkbuf);
@@ -219,7 +220,7 @@ int EBC_Provider_ExtractSessionKey(AB_PROVIDER *pro,
     /* compare hashes */
     if (strcasecmp(s, GWEN_Buffer_GetStart(d64buf))!=0) {
       DBG_INFO(AQEBICS_LOGDOMAIN,
-	       "Pubkey digest does not match");
+               "Pubkey digest does not match");
       GWEN_Buffer_free(d64buf);
       return GWEN_ERROR_NO_KEY;
     }
@@ -234,7 +235,7 @@ int EBC_Provider_ExtractSessionKey(AB_PROVIDER *pro,
 
     /* decode transaction key */
     keyBuffer=GWEN_Buffer_new(0, 256, 0, 1);
-    rv=GWEN_Base64_Decode((const uint8_t*)s, 0, keyBuffer);
+    rv=GWEN_Base64_Decode((const uint8_t *)s, 0, keyBuffer);
     if (rv<0) {
       DBG_INFO(AQEBICS_LOGDOMAIN, "Could not decode transaction key (%d)", rv);
       GWEN_Buffer_free(keyBuffer);
@@ -250,12 +251,12 @@ int EBC_Provider_ExtractSessionKey(AB_PROVIDER *pro,
     GWEN_Crypt_PaddAlgo_SetPaddSize(algo, ksize);
     l=GWEN_Buffer_GetMaxUnsegmentedWrite(dkbuf);
     rv=GWEN_Crypt_Token_Decipher(ct, kid,
-				 algo,
-				 (const uint8_t*)GWEN_Buffer_GetStart(keyBuffer),
-				 GWEN_Buffer_GetUsedBytes(keyBuffer),
-				 (uint8_t*)GWEN_Buffer_GetStart(dkbuf),
-				 &l,
-				 0);
+                                 algo,
+                                 (const uint8_t *)GWEN_Buffer_GetStart(keyBuffer),
+                                 GWEN_Buffer_GetUsedBytes(keyBuffer),
+                                 (uint8_t *)GWEN_Buffer_GetStart(dkbuf),
+                                 &l,
+                                 0);
     if (rv<0) {
       DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(dkbuf);
@@ -275,14 +276,14 @@ int EBC_Provider_ExtractSessionKey(AB_PROVIDER *pro,
 
     if (GWEN_Logger_GetLevel(AQEBICS_LOGDOMAIN)>=GWEN_LoggerLevel_Debug) {
       DBG_DEBUG(AQEBICS_LOGDOMAIN,
-		"Decrypted session key:");
+                "Decrypted session key:");
       GWEN_Buffer_Dump(dkbuf, 2);
     }
 
     /* create DES key */
     key=GWEN_Crypt_KeyAes128_fromData(GWEN_Crypt_CryptMode_Cbc, 16,
-				      (const uint8_t*)GWEN_Buffer_GetStart(dkbuf),
-				      GWEN_Buffer_GetUsedBytes(dkbuf));
+                                      (const uint8_t *)GWEN_Buffer_GetStart(dkbuf),
+                                      GWEN_Buffer_GetUsedBytes(dkbuf));
     if (key==NULL) {
       DBG_INFO(AQEBICS_LOGDOMAIN, "Could not create AES-128 key from data");
       GWEN_Buffer_free(dkbuf);
@@ -300,10 +301,11 @@ int EBC_Provider_ExtractSessionKey(AB_PROVIDER *pro,
 
 int EBC_Provider_DecryptData(GWEN_UNUSED AB_PROVIDER *pro,
                              AB_USER *u,
-			     GWEN_CRYPT_KEY *skey,
-			     const uint8_t *p,
+                             GWEN_CRYPT_KEY *skey,
+                             const uint8_t *p,
                              uint32_t len,
-			     GWEN_BUFFER *msgBuffer) {
+                             GWEN_BUFFER *msgBuffer)
+{
   GWEN_BUFFER *tbuf;
   uint32_t l;
   int rv;
@@ -321,13 +323,13 @@ int EBC_Provider_DecryptData(GWEN_UNUSED AB_PROVIDER *pro,
     GWEN_Crypt_KeyDes3K_SetIV(skey, NULL, 0);
     /* now decrypt */
     rv=GWEN_Crypt_Key_Decipher(skey,
-			       p, len,
-			       (uint8_t*)GWEN_Buffer_GetPosPointer(tbuf),
-			       &l);
+                               p, len,
+                               (uint8_t *)GWEN_Buffer_GetPosPointer(tbuf),
+                               &l);
     if (rv<0) {
       DBG_INFO(AQEBICS_LOGDOMAIN,
-	       "Error deciphering %d bytes of data here (%d)",
-	       (int)len, rv);
+               "Error deciphering %d bytes of data here (%d)",
+               (int)len, rv);
       GWEN_Buffer_free(tbuf);
       return rv;
     }
@@ -359,13 +361,13 @@ int EBC_Provider_DecryptData(GWEN_UNUSED AB_PROVIDER *pro,
     GWEN_Crypt_KeyAes128_SetIV(skey, NULL, 0);
     /* now decrypt */
     rv=GWEN_Crypt_Key_Decipher(skey,
-			       p, len,
-			       (uint8_t*)GWEN_Buffer_GetPosPointer(tbuf),
-			       &l);
+                               p, len,
+                               (uint8_t *)GWEN_Buffer_GetPosPointer(tbuf),
+                               &l);
     if (rv<0) {
       DBG_INFO(AQEBICS_LOGDOMAIN,
-	       "Error deciphering %d bytes of data here (%d)",
-	       (int)len, rv);
+               "Error deciphering %d bytes of data here (%d)",
+               (int)len, rv);
       GWEN_Buffer_free(tbuf);
       return rv;
     }

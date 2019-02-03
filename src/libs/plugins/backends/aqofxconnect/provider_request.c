@@ -12,7 +12,8 @@
 
 
 
-int AO_Provider__AddHeaders(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf) {
+int AO_Provider__AddHeaders(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf)
+{
   GWEN_TIME *ti;
   const char *s;
 
@@ -20,8 +21,8 @@ int AO_Provider__AddHeaders(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf) {
   assert(ti);
 
   GWEN_Buffer_AppendString(buf,
-			   "OFXHEADER:100\r\n"
-			   "DATA:OFXSGML\r\n");
+                           "OFXHEADER:100\r\n"
+                           "DATA:OFXSGML\r\n");
   GWEN_Buffer_AppendString(buf, "VERSION:");
   s=AO_User_GetHeaderVer(u);
   if (!s || !*s)
@@ -57,7 +58,8 @@ int AO_Provider__AddHeaders(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf) {
 
 
 
-int AO_Provider__AddSignOn(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf) {
+int AO_Provider__AddSignOn(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf)
+{
   GWEN_TIME *ti;
   const char *s;
   char userpass[64];
@@ -81,10 +83,10 @@ int AO_Provider__AddSignOn(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf) {
   }
   else {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-	      "Missing user id, should not happen");
+              "Missing user id, should not happen");
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Missing user id, should not happen"));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Missing user id, should not happen"));
     return GWEN_ERROR_INTERNAL;
   }
 
@@ -104,14 +106,14 @@ int AO_Provider__AddSignOn(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf) {
     GWEN_Buffer_AppendString(nbuf, s);
     snprintf(msgbuf, sizeof(msgbuf), I18N(msg), s, s);
     rv=GWEN_Gui_GetPassword(0,
-			    GWEN_Buffer_GetStart(nbuf),
-			    I18N("Enter Password"),
-			    msgbuf,
-			    userpass,
-			    4,
+                            GWEN_Buffer_GetStart(nbuf),
+                            I18N("Enter Password"),
+                            msgbuf,
+                            userpass,
+                            4,
                             sizeof(userpass),
                             GWEN_Gui_PasswordMethod_Text, NULL,
-			    0);
+                            0);
     GWEN_Buffer_free(nbuf);
     if (rv<0) {
       memset(userpass, 0, sizeof(userpass));
@@ -133,13 +135,13 @@ int AO_Provider__AddSignOn(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf) {
       GWEN_Buffer_AppendString(buf, "<FI>");
       s=AO_User_GetOrg(u);
       if (s) {
-	GWEN_Buffer_AppendString(buf, "<ORG>");
-	GWEN_Buffer_AppendString(buf, s);
+        GWEN_Buffer_AppendString(buf, "<ORG>");
+        GWEN_Buffer_AppendString(buf, s);
       }
       s=AO_User_GetFid(u);
       if (s) {
-	GWEN_Buffer_AppendString(buf, "<FID>");
-	GWEN_Buffer_AppendString(buf, s);
+        GWEN_Buffer_AppendString(buf, "<FID>");
+        GWEN_Buffer_AppendString(buf, s);
       }
       GWEN_Buffer_AppendString(buf, "</FI>");
     }
@@ -178,7 +180,9 @@ int AO_Provider__AddSignOn(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf) {
 
 
 
-int AO_Provider__WrapRequest(AB_PROVIDER *pro, AB_USER *u, const char *mTypeName, const char *tTypeName, GWEN_BUFFER *buf) {
+int AO_Provider__WrapRequest(AB_PROVIDER *pro, AB_USER *u, const char *mTypeName, const char *tTypeName,
+                             GWEN_BUFFER *buf)
+{
   GWEN_BUFFER *tbuf;
   GWEN_TIME *ti;
 
@@ -227,7 +231,8 @@ int AO_Provider__WrapRequest(AB_PROVIDER *pro, AB_USER *u, const char *mTypeName
 
 
 
-int AO_Provider__WrapMessage(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf) {
+int AO_Provider__WrapMessage(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf)
+{
   GWEN_BUFFER *tbuf;
   int rv;
 
@@ -237,7 +242,7 @@ int AO_Provider__WrapMessage(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf) {
   rv=AO_Provider__AddHeaders(pro, u, tbuf);
   if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-	      "Error adding headers (%d)", rv);
+              "Error adding headers (%d)", rv);
     GWEN_Buffer_free(tbuf);
     return rv;
   }
@@ -246,7 +251,7 @@ int AO_Provider__WrapMessage(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf) {
   rv=AO_Provider__AddSignOn(pro, u, tbuf);
   if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-	      "Error adding signon element (%d)", rv);
+              "Error adding signon element (%d)", rv);
     GWEN_Buffer_free(tbuf);
     return rv;
   }

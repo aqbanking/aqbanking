@@ -20,7 +20,8 @@
 
 
 
-AB_BANKINFO_PLUGIN *AB_BankInfoPluginDE_new(AB_BANKING *ab){
+AB_BANKINFO_PLUGIN *AB_BankInfoPluginDE_new(AB_BANKING *ab)
+{
   AB_BANKINFO_PLUGIN *bip;
 
   bip=AB_BankInfoPluginGENERIC_new(ab, "de");

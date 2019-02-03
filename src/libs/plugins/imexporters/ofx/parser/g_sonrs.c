@@ -32,8 +32,9 @@
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_SONRS_new(const char *groupName,
-				      AIO_OFX_GROUP *parent,
-				      GWEN_XML_CONTEXT *ctx) {
+                                      AIO_OFX_GROUP *parent,
+                                      GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_GROUP *g;
 
   /* create base group */
@@ -49,7 +50,8 @@ AIO_OFX_GROUP *AIO_OfxGroup_SONRS_new(const char *groupName,
 
 
 int AIO_OfxGroup_SONRS_StartTag(AIO_OFX_GROUP *g,
-				const char *tagName) {
+                                const char *tagName)
+{
   AIO_OFX_GROUP *gNew=NULL;
   GWEN_XML_CONTEXT *ctx;
 
@@ -59,25 +61,25 @@ int AIO_OfxGroup_SONRS_StartTag(AIO_OFX_GROUP *g,
 
   if (strcasecmp(tagName, "STATUS")==0) {
     gNew=AIO_OfxGroup_STATUS_new(tagName, g, ctx,
-				 I18N("Status for signon request"));
+                                 I18N("Status for signon request"));
   }
   else if (strcasecmp(tagName, "DTSERVER")==0 ||
-	   strcasecmp(tagName, "LANGUAGE")==0 ||
-	   strcasecmp(tagName, "DTPROFUP")==0 ||
-	   strcasecmp(tagName, "DTACCTUP")==0 ||
-	   strcasecmp(tagName, "SESSCOOKIE")==0) {
+           strcasecmp(tagName, "LANGUAGE")==0 ||
+           strcasecmp(tagName, "DTPROFUP")==0 ||
+           strcasecmp(tagName, "DTACCTUP")==0 ||
+           strcasecmp(tagName, "SESSCOOKIE")==0) {
     /* some tags, just ignore them here */
   }
   else if (strcasecmp(tagName, "FI")==0) {
     gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);
   }
   else if (-1!=GWEN_Text_ComparePattern(tagName, "INTU.*", 0) ||
-	   -1!=GWEN_Text_ComparePattern(tagName, "AT.*", 0)) {
+           -1!=GWEN_Text_ComparePattern(tagName, "AT.*", 0)) {
     /* simply ignore INTU. stuff */
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	     "Ignoring element [%s]", tagName);
+             "Ignoring element [%s]", tagName);
     /*gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);*/
   }
 

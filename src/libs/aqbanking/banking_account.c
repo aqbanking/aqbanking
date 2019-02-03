@@ -12,7 +12,8 @@
 /* This file is included by banking.c */
 
 
-int AB_Banking_Read_AccountConfig(const AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb) {
+int AB_Banking_Read_AccountConfig(const AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb)
+{
   int rv;
 
   rv=AB_Banking_ReadConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid, doLock, doUnlock, pDb);
@@ -26,7 +27,8 @@ int AB_Banking_Read_AccountConfig(const AB_BANKING *ab, uint32_t uid, int doLock
 
 
 
-int AB_Banking_Write_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE *db){
+int AB_Banking_Write_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE *db)
+{
   int rv;
 
   rv=AB_Banking_WriteConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid, doLock, doUnlock, db);
@@ -40,7 +42,8 @@ int AB_Banking_Write_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, int
 
 
 
-int AB_Banking_Delete_AccountConfig(AB_BANKING *ab, uint32_t uid) {
+int AB_Banking_Delete_AccountConfig(AB_BANKING *ab, uint32_t uid)
+{
   int rv;
 
   rv=AB_Banking_DeleteConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid);
@@ -54,7 +57,8 @@ int AB_Banking_Delete_AccountConfig(AB_BANKING *ab, uint32_t uid) {
 
 
 
-int AB_Banking_Unlock_AccountConfig(AB_BANKING *ab, uint32_t uid) {
+int AB_Banking_Unlock_AccountConfig(AB_BANKING *ab, uint32_t uid)
+{
   int rv;
 
   rv=AB_Banking_UnlockConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid);

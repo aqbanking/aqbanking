@@ -19,8 +19,9 @@
 
 
 int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
-			  AH_DIALOG *dlg,
-			  AH_JOBQUEUE *qJob){
+                          AH_DIALOG *dlg,
+                          AH_JOBQUEUE *qJob)
+{
   const AH_JOB_LIST *jl;
   AH_MSG *msg1;
   AH_MSG *msg2;
@@ -57,7 +58,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
     AH_JOB *aj;
 
     aj=j;
-    while(aj) {
+    while (aj) {
       if (AH_AccountJob_IsAccountJob(aj))
         break;
       aj=AH_Job_List_Next(aj);
@@ -106,7 +107,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
     GWEN_STRINGLISTENTRY *e;
 
     e=GWEN_StringList_FirstEntry(sl);
-    while(e) {
+    while (e) {
       AH_Job_AddChallengeParam(jTan, GWEN_StringListEntry_Data(e));
       e=GWEN_StringListEntry_Next(e);
     }
@@ -131,7 +132,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Signatures needed but no signer given");
       return GWEN_ERROR_INVALID;
     }
-    while(se) {
+    while (se) {
       AH_Job_AddSigner(jTan, GWEN_StringListEntry_Data(se));
       se=GWEN_StringListEntry_Next(se);
     } /* while */
@@ -145,7 +146,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   msg1=AH_Msg_new(dlg);
   AH_Msg_SetItanMethod(msg1, um);
   AH_Msg_SetItanHashMode(msg1,
-			 GWEN_DB_GetIntValue(dbParams, "hashMethod", 0, 0));
+                         GWEN_DB_GetIntValue(dbParams, "hashMethod", 0, 0));
   rv=AH_Outbox__CBox_JobToMessage(j, msg1);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -163,8 +164,8 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   AH_Msg_SetItanMethod(msg2, 0);
   AH_Msg_SetItanHashMode(msg2, 0);
   AH_Job_Tan_SetHash(jTan,
-		     (const unsigned char*)GWEN_Buffer_GetStart(bHash),
-		     GWEN_Buffer_GetUsedBytes(bHash));
+                     (const unsigned char *)GWEN_Buffer_GetStart(bHash),
+                     GWEN_Buffer_GetUsedBytes(bHash));
   AH_Job_Tan_SetSegCode(jTan, AH_Job_GetCode(j));
 
   rv=AH_Job_Tan_FinishSetup(jTan, j);
@@ -197,8 +198,8 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   /* encode HKTAN message */
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding queue");
   GWEN_Gui_ProgressLog(0,
-		       GWEN_LoggerLevel_Info,
-		       I18N("Encoding queue"));
+                       GWEN_LoggerLevel_Info,
+                       I18N("Encoding queue"));
   AH_Msg_SetNeedTan(msg2, 0);
   rv=AH_Msg_EncodeMsg(msg2);
   if (rv) {
@@ -216,9 +217,11 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
     AH_Job_SetDialogId(jTan, AH_Dialog_GetDialogId(dlg));
     /* store expected signer and crypter (if any) */
     s=AH_Msg_GetExpectedSigner(msg2);
-    if (s) AH_Job_SetExpectedSigner(jTan, s);
+    if (s)
+      AH_Job_SetExpectedSigner(jTan, s);
     s=AH_Msg_GetExpectedCrypter(msg2);
-    if (s) AH_Job_SetExpectedCrypter(jTan, s);
+    if (s)
+      AH_Job_SetExpectedCrypter(jTan, s);
   }
 
   /* send HKTAN message */
@@ -290,8 +293,8 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   /* encode job message */
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding queue");
   GWEN_Gui_ProgressLog(0,
-		       GWEN_LoggerLevel_Info,
-		       I18N("Encoding queue"));
+                       GWEN_LoggerLevel_Info,
+                       I18N("Encoding queue"));
   rv=AH_Msg_EncodeMsg(msg1);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -301,7 +304,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
 
   /* store used TAN in original job (if any) */
   DBG_INFO(AQHBCI_LOGDOMAIN, "Storing TAN in job [%s]",
-	   AH_Job_GetName(j));
+           AH_Job_GetName(j));
   AH_Job_SetUsedTan(j, AH_Msg_GetTan(msg1));
 
   if (AH_Job_GetStatus(j)==AH_JobStatusEncoded) {
@@ -312,9 +315,11 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
     AH_Job_SetDialogId(j, AH_Dialog_GetDialogId(dlg));
     /* store expected signer and crypter (if any) */
     s=AH_Msg_GetExpectedSigner(msg1);
-    if (s) AH_Job_SetExpectedSigner(j, s);
+    if (s)
+      AH_Job_SetExpectedSigner(j, s);
     s=AH_Msg_GetExpectedCrypter(msg1);
-    if (s) AH_Job_SetExpectedCrypter(j, s);
+    if (s)
+      AH_Job_SetExpectedCrypter(j, s);
   }
 
   /* send job message */

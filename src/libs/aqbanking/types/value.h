@@ -57,13 +57,13 @@ AQBANKING_API AB_VALUE *AB_Value_fromString(const char *s);
 AQBANKING_API void AB_Value_toString(const AB_VALUE *v, GWEN_BUFFER *buf);
 
 AQBANKING_API void AB_Value_toHumanReadableString(const AB_VALUE *v,
-						  GWEN_BUFFER *buf,
-						  int prec);
+                                                  GWEN_BUFFER *buf,
+                                                  int prec);
 
 AQBANKING_API void AB_Value_toHumanReadableString2(const AB_VALUE *v,
-						   GWEN_BUFFER *buf,
-						   int prec,
-						   int withCurrency);
+                                                   GWEN_BUFFER *buf,
+                                                   int prec,
+                                                   int withCurrency);
 
 AQBANKING_API AB_VALUE *AB_Value_fromDouble(double i);
 
@@ -103,8 +103,8 @@ AQBANKING_API void AB_Value_SetValueFromDouble(AB_VALUE *v, double i);
  * This form looks like "12345/6789" (nominator/denominator).
  */
 AQBANKING_API int AB_Value_GetNumDenomString(const AB_VALUE *v,
-					     char *buffer,
-					     uint32_t buflen);
+                                             char *buffer,
+                                             uint32_t buflen);
 
 AQBANKING_API void AB_Value_SetZero(AB_VALUE *v);
 

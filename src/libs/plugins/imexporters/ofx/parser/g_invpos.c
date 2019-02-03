@@ -36,8 +36,9 @@ GWEN_INHERIT(AIO_OFX_GROUP, AIO_OFX_GROUP_INVPOS)
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_INVPOS_new(const char *groupName,
-				       AIO_OFX_GROUP *parent,
-				       GWEN_XML_CONTEXT *ctx) {
+                                       AIO_OFX_GROUP *parent,
+                                       GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_GROUP *g;
   AIO_OFX_GROUP_INVPOS *xg;
 
@@ -63,10 +64,11 @@ AIO_OFX_GROUP *AIO_OfxGroup_INVPOS_new(const char *groupName,
 
 
 GWENHYWFAR_CB
-void AIO_OfxGroup_INVPOS_FreeData(void *bp, void *p) {
+void AIO_OfxGroup_INVPOS_FreeData(void *bp, void *p)
+{
   AIO_OFX_GROUP_INVPOS *xg;
 
-  xg=(AIO_OFX_GROUP_INVPOS*)p;
+  xg=(AIO_OFX_GROUP_INVPOS *)p;
   assert(xg);
   free(xg->currentElement);
   AB_Security_free(xg->security);
@@ -76,7 +78,8 @@ void AIO_OfxGroup_INVPOS_FreeData(void *bp, void *p) {
 
 
 
-AB_SECURITY *AIO_OfxGroup_INVPOS_TakeSecurity(const AIO_OFX_GROUP *g){
+AB_SECURITY *AIO_OfxGroup_INVPOS_TakeSecurity(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_INVPOS *xg;
   AB_SECURITY *sec;
 
@@ -92,7 +95,8 @@ AB_SECURITY *AIO_OfxGroup_INVPOS_TakeSecurity(const AIO_OFX_GROUP *g){
 
 
 int AIO_OfxGroup_INVPOS_StartTag(AIO_OFX_GROUP *g,
-				 const char *tagName) {
+                                 const char *tagName)
+{
   AIO_OFX_GROUP_INVPOS *xg;
   GWEN_XML_CONTEXT *ctx;
   AIO_OFX_GROUP *gNew=NULL;
@@ -121,7 +125,7 @@ int AIO_OfxGroup_INVPOS_StartTag(AIO_OFX_GROUP *g,
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	     "Ignoring group [%s]", tagName);
+             "Ignoring group [%s]", tagName);
     gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);
   }
 
@@ -135,7 +139,8 @@ int AIO_OfxGroup_INVPOS_StartTag(AIO_OFX_GROUP *g,
 
 
 
-int AIO_OfxGroup_INVPOS_AddData(AIO_OFX_GROUP *g, const char *data) {
+int AIO_OfxGroup_INVPOS_AddData(AIO_OFX_GROUP *g, const char *data)
+{
   AIO_OFX_GROUP_INVPOS *xg;
 
   assert(g);
@@ -157,52 +162,52 @@ int AIO_OfxGroup_INVPOS_AddData(AIO_OFX_GROUP *g, const char *data) {
     s=GWEN_Buffer_GetStart(buf);
     if (*s) {
       DBG_INFO(AQBANKING_LOGDOMAIN,
-	       "AddData: %s=[%s]", xg->currentElement, s);
+               "AddData: %s=[%s]", xg->currentElement, s);
       if (strcasecmp(xg->currentElement, "UNITS")==0) {
-	AB_VALUE *v;
+        AB_VALUE *v;
 
-	v=AB_Value_fromString(s);
-	if (v==NULL) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN,
-		    "Invalid data for UNITS: [%s]", s);
-	  GWEN_Buffer_free(buf);
-	  return GWEN_ERROR_BAD_DATA;
-	}
-	AB_Security_SetUnits(xg->security, v);
-	AB_Value_free(v);
+        v=AB_Value_fromString(s);
+        if (v==NULL) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN,
+                    "Invalid data for UNITS: [%s]", s);
+          GWEN_Buffer_free(buf);
+          return GWEN_ERROR_BAD_DATA;
+        }
+        AB_Security_SetUnits(xg->security, v);
+        AB_Value_free(v);
       }
       else if (strcasecmp(xg->currentElement, "UNITPRICE")==0) {
-	AB_VALUE *v;
+        AB_VALUE *v;
 
-	v=AB_Value_fromString(s);
-	if (v==NULL) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN,
-		    "Invalid data for UNITPRICE: [%s]", s);
-	  GWEN_Buffer_free(buf);
-	  return GWEN_ERROR_BAD_DATA;
-	}
-	if (xg->currency)
+        v=AB_Value_fromString(s);
+        if (v==NULL) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN,
+                    "Invalid data for UNITPRICE: [%s]", s);
+          GWEN_Buffer_free(buf);
+          return GWEN_ERROR_BAD_DATA;
+        }
+        if (xg->currency)
           AB_Value_SetCurrency(v, xg->currency);
-	AB_Security_SetUnitPriceValue(xg->security, v);
-	AB_Value_free(v);
+        AB_Security_SetUnitPriceValue(xg->security, v);
+        AB_Value_free(v);
       }
       else if (strcasecmp(xg->currentElement, "DTPRICEASOF")==0) {
-	GWEN_TIME *ti;
+        GWEN_TIME *ti;
 
-	ti=GWEN_Time_fromString(s, "YYYYMMDD");
-	if (ti==NULL) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN,
-		    "Invalid data for DTPRICEASOF: [%s]", s);
-	  GWEN_Buffer_free(buf);
+        ti=GWEN_Time_fromString(s, "YYYYMMDD");
+        if (ti==NULL) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN,
+                    "Invalid data for DTPRICEASOF: [%s]", s);
+          GWEN_Buffer_free(buf);
           return GWEN_ERROR_BAD_DATA;
-	}
-	AB_Security_SetUnitPriceDate(xg->security, ti);
-	GWEN_Time_free(ti);
+        }
+        AB_Security_SetUnitPriceDate(xg->security, ti);
+        GWEN_Time_free(ti);
       }
       else {
-	DBG_INFO(AQBANKING_LOGDOMAIN,
-		 "Ignoring data for unknown element [%s]",
-		 xg->currentElement);
+        DBG_INFO(AQBANKING_LOGDOMAIN,
+                 "Ignoring data for unknown element [%s]",
+                 xg->currentElement);
       }
     }
     GWEN_Buffer_free(buf);
@@ -213,7 +218,8 @@ int AIO_OfxGroup_INVPOS_AddData(AIO_OFX_GROUP *g, const char *data) {
 
 
 
-int AIO_OfxGroup_INVPOS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
+int AIO_OfxGroup_INVPOS_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg)
+{
   AIO_OFX_GROUP_INVPOS *xg;
   const char *s;
   GWEN_XML_CONTEXT *ctx;

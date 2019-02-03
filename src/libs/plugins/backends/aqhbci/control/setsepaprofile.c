@@ -28,7 +28,8 @@
 int AH_Control_SetSepaProfile(AB_PROVIDER *pro,
                               GWEN_DB_NODE *dbArgs,
                               int argc,
-                              char **argv) {
+                              char **argv)
+{
   GWEN_DB_NODE *db;
   uint32_t uid;
   AB_USER *u=NULL;
@@ -37,51 +38,51 @@ int AH_Control_SetSepaProfile(AB_PROVIDER *pro,
   const char *dProfile;
   GWEN_DB_NODE *profile;
   const char *s;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "userId",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "u",                          /* short option */
-    "user",                       /* long option */
-    "Specify the unique user id",    /* short description */
-    "Specify the unique user id"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "transferProfile",            /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "t",                          /* short option */
-    "transfers",                  /* long option */
-    "Specify the SEPA profile for transfers",    /* short description */
-    "Specify the SEPA profile for transfers (\"\" for default)" /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "debitNoteProfile",           /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "d",                          /* short option */
-    "debitnotes",                 /* long option */
-    "Specify the SEPA profile for debit notes",    /* short description */
-    "Specify the SEPA profile for debit notes (\"\" for default)" /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "userId",                     /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "u",                          /* short option */
+      "user",                       /* long option */
+      "Specify the unique user id",    /* short description */
+      "Specify the unique user id"     /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "transferProfile",            /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "t",                          /* short option */
+      "transfers",                  /* long option */
+      "Specify the SEPA profile for transfers",    /* short description */
+      "Specify the SEPA profile for transfers (\"\" for default)" /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "debitNoteProfile",           /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "d",                          /* short option */
+      "debitnotes",                 /* long option */
+      "Specify the SEPA profile for debit notes",    /* short description */
+      "Specify the SEPA profile for debit notes (\"\" for default)" /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -162,8 +163,8 @@ int AH_Control_SetSepaProfile(AB_PROVIDER *pro,
         fprintf(stderr, "Setting SEPA profile for transfers to \"%s\"\n", tProfile);
       }
       else {
-	fprintf(stderr, "Resetting default SEPA profile for transfers\n");
-	tProfile=NULL;
+        fprintf(stderr, "Resetting default SEPA profile for transfers\n");
+        tProfile=NULL;
       }
       AH_User_SetSepaTransferProfile(u, tProfile);
     }

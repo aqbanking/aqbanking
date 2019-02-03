@@ -31,8 +31,9 @@
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_OFX_new(const char *groupName,
-				    AIO_OFX_GROUP *parent,
-				    GWEN_XML_CONTEXT *ctx) {
+                                    AIO_OFX_GROUP *parent,
+                                    GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_GROUP *g;
 
   /* create base group */
@@ -47,7 +48,8 @@ AIO_OFX_GROUP *AIO_OfxGroup_OFX_new(const char *groupName,
 
 
 
-int AIO_OfxGroup_OFX_StartTag(AIO_OFX_GROUP *g, const char *tagName) {
+int AIO_OfxGroup_OFX_StartTag(AIO_OFX_GROUP *g, const char *tagName)
+{
   AIO_OFX_GROUP *gNew=NULL;
   GWEN_XML_CONTEXT *ctx;
 
@@ -71,7 +73,7 @@ int AIO_OfxGroup_OFX_StartTag(AIO_OFX_GROUP *g, const char *tagName) {
     gNew=AIO_OfxGroup_SECLISTMSGSRSV1_new(tagName, g, ctx);
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	     "Ignoring group [%s]", tagName);
+             "Ignoring group [%s]", tagName);
     gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);
   }
 

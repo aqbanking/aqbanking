@@ -36,7 +36,8 @@ int AH_MsgEngine_TypeRead(GWEN_MSGENGINE *e,
                           GWEN_XMLNODE *node,
                           GWEN_BUFFER *vbuf,
                           char escapeChar,
-                          const char *delimiters){
+                          const char *delimiters)
+{
   AH_MSGENGINE *x;
   const char *type;
   int v;
@@ -47,13 +48,13 @@ int AH_MsgEngine_TypeRead(GWEN_MSGENGINE *e,
   assert(x);
 
 
-  type=GWEN_XMLNode_GetProperty(node, "type","");
+  type=GWEN_XMLNode_GetProperty(node, "type", "");
   if (strcasecmp(type, "date")==0) {
     char buffer[9];
     unsigned int i;
 
     DBG_VERBOUS(AQHBCI_LOGDOMAIN, "Supporting type \"date\"");
-    memset(buffer,0, sizeof(buffer));
+    memset(buffer, 0, sizeof(buffer));
     if (GWEN_Buffer_GetBytesLeft(msgbuf)<8) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Too few bytes for date (%d<8)",
                 GWEN_Buffer_GetBytesLeft(msgbuf));
@@ -105,7 +106,7 @@ int AH_MsgEngine_TypeRead(GWEN_MSGENGINE *e,
     unsigned int i;
 
     DBG_INFO(AQHBCI_LOGDOMAIN, "Supporting type \"time\"");
-    memset(buffer,0, sizeof(buffer));
+    memset(buffer, 0, sizeof(buffer));
     if (GWEN_Buffer_GetBytesLeft(msgbuf)<6) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Too few bytes for time (%d<6)",
                 GWEN_Buffer_GetBytesLeft(msgbuf));
@@ -162,7 +163,8 @@ int AH_MsgEngine_TypeRead(GWEN_MSGENGINE *e,
 int AH_MsgEngine_BinTypeWrite(GWEN_MSGENGINE *e,
                               GWEN_XMLNODE *node,
                               GWEN_DB_NODE *gr,
-                              GWEN_BUFFER *dbuf) {
+                              GWEN_BUFFER *dbuf)
+{
   const char *s;
 
   s=GWEN_XMLNode_GetProperty(node, "binType", 0);
@@ -175,13 +177,13 @@ int AH_MsgEngine_BinTypeWrite(GWEN_MSGENGINE *e,
 
       dbio=GWEN_DBIO_GetPlugin("dtaus");
       if (!dbio) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "DTAUS parser plugin not available");
-	return GWEN_ERROR_NOT_SUPPORTED;
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "DTAUS parser plugin not available");
+        return GWEN_ERROR_NOT_SUPPORTED;
       }
 
       s=GWEN_XMLNode_GetProperty(node, "name", 0);
       assert(s);
-    
+
       dbCfg=GWEN_DB_GetGroup(gr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, s);
       assert(dbCfg);
 
@@ -189,11 +191,11 @@ int AH_MsgEngine_BinTypeWrite(GWEN_MSGENGINE *e,
                                    "transactions");
 
       rv=GWEN_DBIO_ExportToBuffer(dbio, dbuf,
-				  dbTransfers, dbCfg,
-				  GWEN_DB_FLAGS_DEFAULT);
+                                  dbTransfers, dbCfg,
+                                  GWEN_DB_FLAGS_DEFAULT);
       if (rv<0) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Error creating DTAUS object");
-	return rv;
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Error creating DTAUS object");
+        return rv;
       }
 
       return 0;
@@ -208,7 +210,8 @@ int AH_MsgEngine_BinTypeWrite(GWEN_MSGENGINE *e,
 int AH_MsgEngine_TypeWrite(GWEN_MSGENGINE *e,
                            GWEN_BUFFER *gbuf,
                            GWEN_BUFFER *data,
-                           GWEN_XMLNODE *node){
+                           GWEN_XMLNODE *node)
+{
   AH_MSGENGINE *x;
   const char *type;
   int v;
@@ -218,13 +221,13 @@ int AH_MsgEngine_TypeWrite(GWEN_MSGENGINE *e,
   x=GWEN_INHERIT_GETDATA(GWEN_MSGENGINE, AH_MSGENGINE, e);
   assert(x);
 
-  type=GWEN_XMLNode_GetProperty(node, "type","");
+  type=GWEN_XMLNode_GetProperty(node, "type", "");
   if (strcasecmp(type, "date")==0) {
     char buffer[9];
     unsigned int i;
 
     DBG_VERBOUS(AQHBCI_LOGDOMAIN, "Supporting type \"date\"");
-    memset(buffer,0, sizeof(buffer));
+    memset(buffer, 0, sizeof(buffer));
     if (GWEN_Buffer_GetBytesLeft(data)<8) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Too few bytes for date (%d<8)",
                 GWEN_Buffer_GetBytesLeft(data));
@@ -276,7 +279,7 @@ int AH_MsgEngine_TypeWrite(GWEN_MSGENGINE *e,
     unsigned int i;
 
     DBG_VERBOUS(AQHBCI_LOGDOMAIN, "Supporting type \"time\"");
-    memset(buffer,0, sizeof(buffer));
+    memset(buffer, 0, sizeof(buffer));
     if (GWEN_Buffer_GetBytesLeft(data)<6) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Too few bytes for time (%d<6)",
                 GWEN_Buffer_GetBytesLeft(data));
@@ -324,7 +327,7 @@ int AH_MsgEngine_TypeWrite(GWEN_MSGENGINE *e,
   }
   else {
     DBG_VERBOUS(AQHBCI_LOGDOMAIN,
-              "Type \"%s\" not supported by MsgEngineHBCI", type);
+                "Type \"%s\" not supported by MsgEngineHBCI", type);
     return 1;
   }
 }
@@ -332,7 +335,8 @@ int AH_MsgEngine_TypeWrite(GWEN_MSGENGINE *e,
 
 
 GWEN_DB_NODE_TYPE AH_MsgEngine_TypeCheck(GWEN_MSGENGINE *e,
-					 const char *tname){
+                                         const char *tname)
+{
   AH_MSGENGINE *x;
 
   DBG_VERBOUS(AQHBCI_LOGDOMAIN, "AH_MsgEngine_TypeCheck");
@@ -352,7 +356,8 @@ GWEN_DB_NODE_TYPE AH_MsgEngine_TypeCheck(GWEN_MSGENGINE *e,
 
 const char *AH_MsgEngine_GetCharValue(GWEN_MSGENGINE *e,
                                       const char *name,
-                                      const char *defValue){
+                                      const char *defValue)
+{
   AH_MSGENGINE *x;
   AH_HBCI *h;
 
@@ -378,7 +383,7 @@ const char *AH_MsgEngine_GetCharValue(GWEN_MSGENGINE *e,
     return AB_User_GetUserId(x->user);
   else if (strcasecmp(name, "bankcode")==0)
     return AB_User_GetBankCode(x->user);
-  else if (strcasecmp(name, "systemId")==0){
+  else if (strcasecmp(name, "systemId")==0) {
     const char *p;
 
     DBG_WARN(AQHBCI_LOGDOMAIN,
@@ -391,7 +396,7 @@ const char *AH_MsgEngine_GetCharValue(GWEN_MSGENGINE *e,
   else {
     DBG_VERBOUS(AQHBCI_LOGDOMAIN,
                 "Unknown char variable \"%s\", returning default value",
-		name);
+                name);
     return defValue;
   }
 }
@@ -400,7 +405,8 @@ const char *AH_MsgEngine_GetCharValue(GWEN_MSGENGINE *e,
 
 int AH_MsgEngine_GetIntValue(GWEN_MSGENGINE *e,
                              const char *name,
-                             int defValue){
+                             int defValue)
+{
   AH_MSGENGINE *x;
 
   DBG_VERBOUS(AQHBCI_LOGDOMAIN, "AH_MsgEngine_GetIntValue");
@@ -426,14 +432,15 @@ int AH_MsgEngine_GetIntValue(GWEN_MSGENGINE *e,
     return AH_User_GetBpdVersion(x->user);
   else {
     DBG_VERBOUS(AQHBCI_LOGDOMAIN, "Unknown int variable \"%s\", returning default value",
-		name);
+                name);
     return defValue;
   }
 }
 
 
 
-AH_MSGENGINE *AH_MsgEngine_Data_new() {
+AH_MSGENGINE *AH_MsgEngine_Data_new()
+{
   AH_MSGENGINE *x;
 
   GWEN_NEW_OBJECT(AH_MSGENGINE, x);
@@ -443,7 +450,8 @@ AH_MSGENGINE *AH_MsgEngine_Data_new() {
 
 
 
-void AH_MsgEngine_Data_free(AH_MSGENGINE *x) {
+void AH_MsgEngine_Data_free(AH_MSGENGINE *x)
+{
   assert(x);
   DBG_INFO(AQHBCI_LOGDOMAIN, "Destroying AH_MSGENGINE");
   GWEN_FREE_OBJECT(x);
@@ -451,16 +459,18 @@ void AH_MsgEngine_Data_free(AH_MSGENGINE *x) {
 
 
 
-void GWENHYWFAR_CB AH_MsgEngine_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AH_MsgEngine_FreeData(void *bp, void *p)
+{
   AH_MSGENGINE *x;
 
-  x=(AH_MSGENGINE*)p;
+  x=(AH_MSGENGINE *)p;
   AH_MsgEngine_Data_free(x);
 }
 
 
 
-void AH_MsgEngine_SetUser(GWEN_MSGENGINE *e, AB_USER *u){
+void AH_MsgEngine_SetUser(GWEN_MSGENGINE *e, AB_USER *u)
+{
   AH_MSGENGINE *x;
 
   assert(e);
@@ -471,7 +481,8 @@ void AH_MsgEngine_SetUser(GWEN_MSGENGINE *e, AB_USER *u){
 
 
 
-GWEN_MSGENGINE *AH_MsgEngine_new(){
+GWEN_MSGENGINE *AH_MsgEngine_new()
+{
   GWEN_MSGENGINE *e;
   AH_MSGENGINE *x;
 

@@ -34,17 +34,17 @@ extern "C" {
 #endif
 
 
-  /**
-   * This enum can be used as argument to @ref AB_Provider_GetNewUserDialog
-   */
-  enum AQHBCI_NEWUSER_DIALOG_CODE {
-    AqHBCI_NewUserDialog_CodeGeneric=0,
-    AqHBCI_NewUserDialog_CodeExistingPinTan,
-    AqHBCI_NewUserDialog_CodeCreateKeyFile,
-    AqHBCI_NewUserDialog_CodeExistingKeyFile,
-    AqHBCI_NewUserDialog_CodeCreateChipcard,
-    AqHBCI_NewUserDialog_CodeExistingChipcard
-  };
+/**
+ * This enum can be used as argument to @ref AB_Provider_GetNewUserDialog
+ */
+enum AQHBCI_NEWUSER_DIALOG_CODE {
+  AqHBCI_NewUserDialog_CodeGeneric=0,
+  AqHBCI_NewUserDialog_CodeExistingPinTan,
+  AqHBCI_NewUserDialog_CodeCreateKeyFile,
+  AqHBCI_NewUserDialog_CodeExistingKeyFile,
+  AqHBCI_NewUserDialog_CodeCreateChipcard,
+  AqHBCI_NewUserDialog_CodeExistingChipcard
+};
 
 
 AQHBCI_API
@@ -83,7 +83,7 @@ const char *AH_Provider_GetProductVersion(const AB_PROVIDER *pro);
 AQHBCI_API
 int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
                             AB_IMEXPORTER_CONTEXT *ctx,
-			    int withProgress, int nounmount, int doLock);
+                            int withProgress, int nounmount, int doLock);
 
 /**
  * Retrieve the system id for the given user. This is only needed for
@@ -96,7 +96,7 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
 AQHBCI_API
 int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
                          AB_IMEXPORTER_CONTEXT *ctx,
-			 int withProgress, int nounmount, int doLock);
+                         int withProgress, int nounmount, int doLock);
 
 /**
  * Retrieve the public server keys for the given user. This is only needed for
@@ -109,7 +109,7 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
 AQHBCI_API
 int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
                               AB_IMEXPORTER_CONTEXT *ctx,
-			      int withProgress, int nounmount, int doLock);
+                              int withProgress, int nounmount, int doLock);
 
 /**
  * Send the public keys of the given user. This is only needed for
@@ -122,7 +122,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
 AQHBCI_API
 int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
                              AB_IMEXPORTER_CONTEXT *ctx,
-			     int withProgress, int nounmount, int doLock);
+                             int withProgress, int nounmount, int doLock);
 
 /**
  * Send the public keys of the given user. This is only needed for
@@ -136,9 +136,9 @@ int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
  */
 AQHBCI_API
 int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
-			      AB_IMEXPORTER_CONTEXT *ctx,
-			      int withAuthKey,
-			      int withProgress, int nounmount, int doLock);
+                              AB_IMEXPORTER_CONTEXT *ctx,
+                              int withAuthKey,
+                              int withProgress, int nounmount, int doLock);
 
 /**
  * Retrieve the SSL certificate for the given user. This is only needed for
@@ -150,8 +150,8 @@ int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
  */
 AQHBCI_API
 int AH_Provider_GetCert(AB_PROVIDER *pro,
-			AB_USER *u,
-			int withProgress, int nounmount, int doLock);
+                        AB_USER *u,
+                        int withProgress, int nounmount, int doLock);
 
 /**
  * Ask the server for the list of supported iTAN modes. Not all servers
@@ -163,8 +163,8 @@ int AH_Provider_GetCert(AB_PROVIDER *pro,
  */
 AQHBCI_API
 int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
-			     AB_IMEXPORTER_CONTEXT *ctx,
-			     int withProgress, int nounmount, int doLock);
+                             AB_IMEXPORTER_CONTEXT *ctx,
+                             int withProgress, int nounmount, int doLock);
 
 
 /**
@@ -178,7 +178,7 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
 AQHBCI_API
 int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
                           AB_IMEXPORTER_CONTEXT *ctx,
-			  int withProgress, int nounmount, int doLock);
+                          int withProgress, int nounmount, int doLock);
 
 
 /**
@@ -223,7 +223,7 @@ int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
                                 int useBankKey,
                                 int variant,
                                 GWEN_BUFFER *lbuf,
-				int nounmount);
+                                int nounmount);
 
 /**
  * Creates a HTML version of the INI letter. This function needs to mount
@@ -241,7 +241,7 @@ int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
                                  int useBankKey,
                                  int variant,
                                  GWEN_BUFFER *lbuf,
-				 int nounmount);
+                                 int nounmount);
 /*@}*/
 
 

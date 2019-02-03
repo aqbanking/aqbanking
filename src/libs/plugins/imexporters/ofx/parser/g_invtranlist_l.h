@@ -21,9 +21,9 @@
 #include "ofxgroup_l.h"
 
 AIO_OFX_GROUP *AIO_OfxGroup_INVTRANLIST_new(const char *groupName,
-					    AIO_OFX_GROUP *parent,
-					    GWEN_XML_CONTEXT *ctx);
+                                            AIO_OFX_GROUP *parent,
+                                            GWEN_XML_CONTEXT *ctx);
 
-AB_TRANSACTION_LIST2*  AIO_OfxGroup_INVTRANLIST_TakeTransactionList(const AIO_OFX_GROUP *g);
+AB_TRANSACTION_LIST2  *AIO_OfxGroup_INVTRANLIST_TakeTransactionList(const AIO_OFX_GROUP *g);
 
 #endif

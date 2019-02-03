@@ -48,7 +48,8 @@ GWEN_INHERIT(GWEN_DIALOG, APY_NEWUSER_DIALOG)
 
 
 
-GWEN_DIALOG *APY_NewUserDialog_new(AB_PROVIDER *pro) {
+GWEN_DIALOG *APY_NewUserDialog_new(AB_PROVIDER *pro)
+{
   GWEN_DIALOG *dlg;
   APY_NEWUSER_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -62,8 +63,8 @@ GWEN_DIALOG *APY_NewUserDialog_new(AB_PROVIDER *pro) {
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-			       "aqbanking/backends/aqpaypal/dialogs/dlg_newuser.dlg",
-			       fbuf);
+                               "aqbanking/backends/aqpaypal/dialogs/dlg_newuser.dlg",
+                               fbuf);
   if (rv<0) {
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
@@ -96,10 +97,11 @@ GWEN_DIALOG *APY_NewUserDialog_new(AB_PROVIDER *pro) {
 
 
 
-void GWENHYWFAR_CB APY_NewUserDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB APY_NewUserDialog_FreeData(void *bp, void *p)
+{
   APY_NEWUSER_DIALOG *xdlg;
 
-  xdlg=(APY_NEWUSER_DIALOG*) p;
+  xdlg=(APY_NEWUSER_DIALOG *) p;
   free(xdlg->apiUserId);
   free(xdlg->apiPassword);
   free(xdlg->apiSignature);
@@ -112,7 +114,8 @@ void GWENHYWFAR_CB APY_NewUserDialog_FreeData(void *bp, void *p) {
 
 
 
-AB_USER *APY_NewUserDialog_GetUser(const GWEN_DIALOG *dlg) {
+AB_USER *APY_NewUserDialog_GetUser(const GWEN_DIALOG *dlg)
+{
   APY_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -124,7 +127,8 @@ AB_USER *APY_NewUserDialog_GetUser(const GWEN_DIALOG *dlg) {
 
 
 
-const char *APY_NewUserDialog_GetApiUserId(const GWEN_DIALOG *dlg) {
+const char *APY_NewUserDialog_GetApiUserId(const GWEN_DIALOG *dlg)
+{
   APY_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -136,7 +140,8 @@ const char *APY_NewUserDialog_GetApiUserId(const GWEN_DIALOG *dlg) {
 
 
 
-void APY_NewUserDialog_SetApiUserId(GWEN_DIALOG *dlg, const char *s) {
+void APY_NewUserDialog_SetApiUserId(GWEN_DIALOG *dlg, const char *s)
+{
   APY_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -144,13 +149,16 @@ void APY_NewUserDialog_SetApiUserId(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->apiUserId);
-  if (s) xdlg->apiUserId=strdup(s);
-  else xdlg->apiUserId=NULL;
+  if (s)
+    xdlg->apiUserId=strdup(s);
+  else
+    xdlg->apiUserId=NULL;
 }
 
 
 
-const char *APY_NewUserDialog_GetApiPassword(const GWEN_DIALOG *dlg) {
+const char *APY_NewUserDialog_GetApiPassword(const GWEN_DIALOG *dlg)
+{
   APY_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -162,7 +170,8 @@ const char *APY_NewUserDialog_GetApiPassword(const GWEN_DIALOG *dlg) {
 
 
 
-void APY_NewUserDialog_SetApiPassword(GWEN_DIALOG *dlg, const char *s) {
+void APY_NewUserDialog_SetApiPassword(GWEN_DIALOG *dlg, const char *s)
+{
   APY_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -170,13 +179,16 @@ void APY_NewUserDialog_SetApiPassword(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->apiPassword);
-  if (s) xdlg->apiPassword=strdup(s);
-  else xdlg->apiPassword=NULL;
+  if (s)
+    xdlg->apiPassword=strdup(s);
+  else
+    xdlg->apiPassword=NULL;
 }
 
 
 
-const char *APY_NewUserDialog_GetApiSignature(const GWEN_DIALOG *dlg) {
+const char *APY_NewUserDialog_GetApiSignature(const GWEN_DIALOG *dlg)
+{
   APY_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -188,7 +200,8 @@ const char *APY_NewUserDialog_GetApiSignature(const GWEN_DIALOG *dlg) {
 
 
 
-void APY_NewUserDialog_SetApiSignature(GWEN_DIALOG *dlg, const char *s) {
+void APY_NewUserDialog_SetApiSignature(GWEN_DIALOG *dlg, const char *s)
+{
   APY_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -196,13 +209,16 @@ void APY_NewUserDialog_SetApiSignature(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->apiSignature);
-  if (s) xdlg->apiSignature=strdup(s);
-  else xdlg->apiSignature=NULL;
+  if (s)
+    xdlg->apiSignature=strdup(s);
+  else
+    xdlg->apiSignature=NULL;
 }
 
 
 
-const char *APY_NewUserDialog_GetUserName(const GWEN_DIALOG *dlg) {
+const char *APY_NewUserDialog_GetUserName(const GWEN_DIALOG *dlg)
+{
   APY_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -214,7 +230,8 @@ const char *APY_NewUserDialog_GetUserName(const GWEN_DIALOG *dlg) {
 
 
 
-void APY_NewUserDialog_SetUserName(GWEN_DIALOG *dlg, const char *s) {
+void APY_NewUserDialog_SetUserName(GWEN_DIALOG *dlg, const char *s)
+{
   APY_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -222,13 +239,16 @@ void APY_NewUserDialog_SetUserName(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->userName);
-  if (s) xdlg->userName=strdup(s);
-  else xdlg->userName=NULL;
+  if (s)
+    xdlg->userName=strdup(s);
+  else
+    xdlg->userName=NULL;
 }
 
 
 
-const char *APY_NewUserDialog_GetUserId(const GWEN_DIALOG *dlg) {
+const char *APY_NewUserDialog_GetUserId(const GWEN_DIALOG *dlg)
+{
   APY_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -240,7 +260,8 @@ const char *APY_NewUserDialog_GetUserId(const GWEN_DIALOG *dlg) {
 
 
 
-void APY_NewUserDialog_SetUserId(GWEN_DIALOG *dlg, const char *s) {
+void APY_NewUserDialog_SetUserId(GWEN_DIALOG *dlg, const char *s)
+{
   APY_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -248,13 +269,16 @@ void APY_NewUserDialog_SetUserId(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->userId);
-  if (s) xdlg->userId=strdup(s);
-  else xdlg->userId=NULL;
+  if (s)
+    xdlg->userId=strdup(s);
+  else
+    xdlg->userId=NULL;
 }
 
 
 
-const char *APY_NewUserDialog_GetUrl(const GWEN_DIALOG *dlg) {
+const char *APY_NewUserDialog_GetUrl(const GWEN_DIALOG *dlg)
+{
   APY_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -266,7 +290,8 @@ const char *APY_NewUserDialog_GetUrl(const GWEN_DIALOG *dlg) {
 
 
 
-void APY_NewUserDialog_SetUrl(GWEN_DIALOG *dlg, const char *s) {
+void APY_NewUserDialog_SetUrl(GWEN_DIALOG *dlg, const char *s)
+{
   APY_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -274,13 +299,16 @@ void APY_NewUserDialog_SetUrl(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->url);
-  if (s) xdlg->url=strdup(s);
-  else xdlg->url=NULL;
+  if (s)
+    xdlg->url=strdup(s);
+  else
+    xdlg->url=NULL;
 }
 
 
 
-int APY_NewUserDialog_GetHttpVMajor(const GWEN_DIALOG *dlg) {
+int APY_NewUserDialog_GetHttpVMajor(const GWEN_DIALOG *dlg)
+{
   APY_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -292,7 +320,8 @@ int APY_NewUserDialog_GetHttpVMajor(const GWEN_DIALOG *dlg) {
 
 
 
-int APY_NewUserDialog_GetHttpVMinor(const GWEN_DIALOG *dlg) {
+int APY_NewUserDialog_GetHttpVMinor(const GWEN_DIALOG *dlg)
+{
   APY_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -304,7 +333,8 @@ int APY_NewUserDialog_GetHttpVMinor(const GWEN_DIALOG *dlg) {
 
 
 
-void APY_NewUserDialog_SetHttpVersion(GWEN_DIALOG *dlg, int vmajor, int vminor) {
+void APY_NewUserDialog_SetHttpVersion(GWEN_DIALOG *dlg, int vmajor, int vminor)
+{
   APY_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -317,7 +347,8 @@ void APY_NewUserDialog_SetHttpVersion(GWEN_DIALOG *dlg, int vmajor, int vminor) 
 
 
 
-uint32_t APY_NewUserDialog_GetFlags(const GWEN_DIALOG *dlg) {
+uint32_t APY_NewUserDialog_GetFlags(const GWEN_DIALOG *dlg)
+{
   APY_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -329,7 +360,8 @@ uint32_t APY_NewUserDialog_GetFlags(const GWEN_DIALOG *dlg) {
 
 
 
-void APY_NewUserDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void APY_NewUserDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   APY_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -341,7 +373,8 @@ void APY_NewUserDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void APY_NewUserDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void APY_NewUserDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   APY_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -353,7 +386,8 @@ void APY_NewUserDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void APY_NewUserDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void APY_NewUserDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   APY_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -368,7 +402,8 @@ void APY_NewUserDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void APY_NewUserDialog_Init(GWEN_DIALOG *dlg) {
+void APY_NewUserDialog_Init(GWEN_DIALOG *dlg)
+{
   APY_NEWUSER_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
@@ -380,77 +415,77 @@ void APY_NewUserDialog_Init(GWEN_DIALOG *dlg) {
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("Paypal Setup Wizard"),
-			      0);
+                              "",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("Paypal Setup Wizard"),
+                              0);
 
   /* select first page */
   GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, 0, 0);
 
   /* setup intro page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_begin_label",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("<html>"
+                              "wiz_begin_label",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("<html>"
                                    "<p>This dialog assists you in setting up a Paypal User.</p>"
-				   "<p>Please note that you have to apply for API access with Paypal. "
-				   "The following procedure helps you getting there:</p>"
-				   "<p>Login into your Paypal account via web browser, enter the <i>My Profile</i> "
-				   "page, click  <i>API access</i> under <i>Account information</i>.</p>"
+                                   "<p>Please note that you have to apply for API access with Paypal. "
+                                   "The following procedure helps you getting there:</p>"
+                                   "<p>Login into your Paypal account via web browser, enter the <i>My Profile</i> "
+                                   "page, click  <i>API access</i> under <i>Account information</i>.</p>"
                                    "<p>Choose <b>Option 2</b>.</p>"
                                    "</html>"
                                    "This dialog assists you in setting up a Paypal User.\n"
-				   "Please note that you have to apply for API access with Paypal.\n"
-				   "The following procedure helps you getting there:\n"
-				   "Login into your Paypal account via web browser, enter the \"My Profile\"\n"
-				   "page, click  \"API access\" under \"Account information\".\n"
+                                   "Please note that you have to apply for API access with Paypal.\n"
+                                   "The following procedure helps you getting there:\n"
+                                   "Login into your Paypal account via web browser, enter the \"My Profile\"\n"
+                                   "page, click  \"API access\" under \"Account information\".\n"
                                    "Choose OPTION 2."
                                   ),
-			      0);
+                              0);
 
   /* setup user page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_user_label",
-			      GWEN_DialogProperty_Title,
-			      0,
+                              "wiz_user_label",
+                              GWEN_DialogProperty_Title,
+                              0,
                               I18N("<html>"
                                    "<p>You can find the information needed here after logging into your "
-				   "Paypal account via web browser. The information can then be found "
+                                   "Paypal account via web browser. The information can then be found "
                                    "under <i>My Profile</i>, <i>Account Information</i>, <i>API Access</i>.</p>"
                                    "</html>"
                                    "You can find the information needed here after logging into your\n"
-				   "Paypal account via web browser. The information can then be found\n"
+                                   "Paypal account via web browser. The information can then be found\n"
                                    "under <\"My Profile\", \"Account Information\", \"API Access\"."
                                   ),
                               0);
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_url_edit",
-			      GWEN_DialogProperty_Value,
-			      0,
-			      "https://api-3t.paypal.com/nvp",
-			      0);
+                              "wiz_url_edit",
+                              GWEN_DialogProperty_Value,
+                              0,
+                              "https://api-3t.paypal.com/nvp",
+                              0);
 
 
   /* setup secret page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_secret_label",
-			      GWEN_DialogProperty_Title,
-			      0,
+                              "wiz_secret_label",
+                              GWEN_DialogProperty_Title,
+                              0,
                               I18N("<html>"
                                    "<p>Enter the API password and signature as it is found on the "
                                    "Paypal page described in the previous steps.</p>"
-				   "<p><font color=\"red\"><b>"
-				   "The API password and API signature are extremely sensitive "
-				   "information which you must under no circumstances reveal to "
-				   "anybody!</b></font></p>"
-				   "<p>That being said, these credentials are also quite hard to "
-				   "remember, so AqBanking stores them in a file which is very well "
-				   "encrypted.</p>"
-				   "<p>When the user is created in the next step you will be asked for "
+                                   "<p><font color=\"red\"><b>"
+                                   "The API password and API signature are extremely sensitive "
+                                   "information which you must under no circumstances reveal to "
+                                   "anybody!</b></font></p>"
+                                   "<p>That being said, these credentials are also quite hard to "
+                                   "remember, so AqBanking stores them in a file which is very well "
+                                   "encrypted.</p>"
+                                   "<p>When the user is created in the next step you will be asked for "
                                    "the password to be set for that credential file.</p>"
                                    "</html>"
                                    "Enter the API password and signature as it is found on the\n"
@@ -459,40 +494,40 @@ void APY_NewUserDialog_Init(GWEN_DIALOG *dlg) {
                                    "information which you must under no circumstances reveal to\n"
                                    "anybody!\n"
                                    "That being said, these credentials are also quite hard to\n"
-				   "remember, so AqBanking stores them in a file which is very well\n"
+                                   "remember, so AqBanking stores them in a file which is very well\n"
                                    "encrypted.\n"
-				   "When the user is created in the next step you will be asked for\n"
+                                   "When the user is created in the next step you will be asked for\n"
                                    "the password to be set for that credential file."
                                   ),
-			      0);
+                              0);
 
   /* setup creation page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_create_label",
-			      GWEN_DialogProperty_Title,
-			      0,
+                              "wiz_create_label",
+                              GWEN_DialogProperty_Title,
+                              0,
                               I18N("<html>"
                                    "<p>We are now ready to create the user.</p>"
-				   "<p>Click the <i>next</i> button to proceed or <i>abort</i> to abort.</p>"
-				   "<p>If you proceed you will be asked to enter a new password. This is the password "
-				   "for the credentials file described in previous steps.</p>"
+                                   "<p>Click the <i>next</i> button to proceed or <i>abort</i> to abort.</p>"
+                                   "<p>If you proceed you will be asked to enter a new password. This is the password "
+                                   "for the credentials file described in previous steps.</p>"
                                    "<p>Please be carefull to enter a sufficiently secure password</p>"
                                    "</html>"
                                    "We are now ready to create the user.\n"
                                    "Click the \"next\" button to proceed or \"abort\" to abort.\n"
-				   "If you proceed you will be asked to enter a new password. This is the password\n"
+                                   "If you proceed you will be asked to enter a new password. This is the password\n"
                                    "for the credentials file described in previous steps.\n"
                                    "Please be carefull to enter a sufficiently secure password."
                                   ),
-			      0);
+                              0);
 
   /* setup extro page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_end_label",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("The user has been successfully setup."),
-			      0);
+                              "wiz_end_label",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("The user has been successfully setup."),
+                              0);
 
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
@@ -511,7 +546,8 @@ void APY_NewUserDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-void APY_NewUserDialog_Fini(GWEN_DIALOG *dlg) {
+void APY_NewUserDialog_Fini(GWEN_DIALOG *dlg)
+{
   APY_NEWUSER_DIALOG *xdlg;
   int i;
   GWEN_DB_NODE *dbPrefs;
@@ -525,21 +561,22 @@ void APY_NewUserDialog_Fini(GWEN_DIALOG *dlg) {
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_width",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_width",
+                      i);
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_height",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_height",
+                      i);
 }
 
 
 
-int APY_NewUserDialog_GetSecretPageData(GWEN_DIALOG *dlg) {
+int APY_NewUserDialog_GetSecretPageData(GWEN_DIALOG *dlg)
+{
   APY_NEWUSER_DIALOG *xdlg;
   const char *s;
 
@@ -576,7 +613,8 @@ int APY_NewUserDialog_GetSecretPageData(GWEN_DIALOG *dlg) {
 
 
 
-int APY_NewUserDialog_GetUserPageData(GWEN_DIALOG *dlg) {
+int APY_NewUserDialog_GetUserPageData(GWEN_DIALOG *dlg)
+{
   APY_NEWUSER_DIALOG *xdlg;
   const char *s;
 
@@ -613,7 +651,8 @@ int APY_NewUserDialog_GetUserPageData(GWEN_DIALOG *dlg) {
 
 
 
-int APY_NewUserDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
+int APY_NewUserDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards)
+{
   APY_NEWUSER_DIALOG *xdlg;
   int rv;
 
@@ -621,7 +660,7 @@ int APY_NewUserDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, APY_NEWUSER_DIALOG, dlg);
   assert(xdlg);
 
-  switch(page) {
+  switch (page) {
   case PAGE_BEGIN:
     GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
     GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, page, 0);
@@ -670,7 +709,8 @@ int APY_NewUserDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
 
 
 
-int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
+int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg)
+{
   APY_NEWUSER_DIALOG *xdlg;
   AB_USER *u;
   int rv;
@@ -709,21 +749,21 @@ int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
   }
 
   pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
-			     GWEN_GUI_PROGRESS_ALLOW_EMBED |
-			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-			     GWEN_GUI_PROGRESS_SHOW_ABORT,
-			     I18N("Setting Up Paypal User"),
-			     I18N("The user will be created."),
-			     3,
-			     0);
+                             GWEN_GUI_PROGRESS_ALLOW_EMBED |
+                             GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+                             GWEN_GUI_PROGRESS_SHOW_ABORT,
+                             I18N("Setting Up Paypal User"),
+                             I18N("The user will be created."),
+                             3,
+                             0);
   /* lock new user */
   DBG_INFO(0, "Locking user");
   rv=AB_Provider_BeginExclUseUser(xdlg->provider, u);
   if (rv<0) {
     DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Could not lock user (%d)", rv);
     GWEN_Gui_ProgressLog(pid,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Unable to lock users"));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Unable to lock users"));
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
@@ -732,8 +772,8 @@ int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
 #if 0
   DBG_INFO(0, "Getting certs (%08x)", AH_User_GetFlags(u));
   GWEN_Gui_ProgressLog(pid,
-		       GWEN_LoggerLevel_Notice,
-		       I18N("Retrieving SSL certificate"));
+                       GWEN_LoggerLevel_Notice,
+                       I18N("Retrieving SSL certificate"));
   rv=APY_Provider_GetCert(pro, u, 0, 1, 0);
   if (rv<0) {
     // TODO: retry with SSLv3 if necessary
@@ -750,8 +790,8 @@ int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
     AB_Banking_DeleteUser(xdlg->banking, u);
     GWEN_Gui_ProgressLog(pid,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Aborted by user."));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Aborted by user."));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -774,12 +814,12 @@ int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
   rv=AB_Provider_EndExclUseUser(xdlg->provider, u, 0);
   if (rv<0) {
     DBG_INFO(AQPAYPAL_LOGDOMAIN,
-	     "Could not unlock user [%s] (%d)",
-	     AB_User_GetUserId(u), rv);
+             "Could not unlock user [%s] (%d)",
+             AB_User_GetUserId(u), rv);
     GWEN_Gui_ProgressLog2(pid,
-			  GWEN_LoggerLevel_Error,
-			  I18N("Could not unlock user %s (%d)"),
-			  AB_User_GetUserId(u), rv);
+                          GWEN_LoggerLevel_Error,
+                          I18N("Could not unlock user %s (%d)"),
+                          AB_User_GetUserId(u), rv);
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
@@ -817,11 +857,11 @@ int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
   }
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_end_label",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("The user has been successfully setup."),
-			      0);
+                              "wiz_end_label",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("The user has been successfully setup."),
+                              0);
   GWEN_Gui_ProgressEnd(pid);
   APY_NewUserDialog_EnterPage(dlg, PAGE_END, 1);
 
@@ -832,7 +872,8 @@ int APY_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
 
 
 
-int APY_NewUserDialog_Next(GWEN_DIALOG *dlg) {
+int APY_NewUserDialog_Next(GWEN_DIALOG *dlg)
+{
   APY_NEWUSER_DIALOG *xdlg;
   int page;
 
@@ -856,7 +897,8 @@ int APY_NewUserDialog_Next(GWEN_DIALOG *dlg) {
 
 
 
-int APY_NewUserDialog_Previous(GWEN_DIALOG *dlg) {
+int APY_NewUserDialog_Previous(GWEN_DIALOG *dlg)
+{
   APY_NEWUSER_DIALOG *xdlg;
   int page;
 
@@ -875,7 +917,8 @@ int APY_NewUserDialog_Previous(GWEN_DIALOG *dlg) {
 
 
 
-int APY_NewUserDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
+int APY_NewUserDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg)
+{
 #if 0
   APY_NEWUSER_DIALOG *xdlg;
   GWEN_DIALOG *dlg2;
@@ -915,7 +958,8 @@ int APY_NewUserDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
 
 
 
-int APY_NewUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int APY_NewUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   DBG_INFO(0, "Activated: %s", sender);
   if (strcasecmp(sender, "wiz_prev_button")==0)
     return APY_NewUserDialog_Previous(dlg);
@@ -934,7 +978,8 @@ int APY_NewUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 
 
-int APY_NewUserDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender) {
+int APY_NewUserDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender)
+{
   if (strcasecmp(sender, "wiz_username_edit")==0 ||
       strcasecmp(sender, "wiz_userid_edit")==0 ||
       strcasecmp(sender, "wiz_url_edit")==0 ||
@@ -946,16 +991,16 @@ int APY_NewUserDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender) {
     if (GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1)==PAGE_USER) {
       rv=APY_NewUserDialog_GetUserPageData(dlg);
       if (rv<0)
-	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
       else
-	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
     }
     else if (GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1)==PAGE_SECRET) {
       rv=APY_NewUserDialog_GetSecretPageData(dlg);
       if (rv<0)
-	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
       else
-	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
     }
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -965,15 +1010,16 @@ int APY_NewUserDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender) {
 
 
 int GWENHYWFAR_CB APY_NewUserDialog_SignalHandler(GWEN_DIALOG *dlg,
-						  GWEN_DIALOG_EVENTTYPE t,
-						  const char *sender) {
+                                                  GWEN_DIALOG_EVENTTYPE t,
+                                                  const char *sender)
+{
   APY_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, APY_NEWUSER_DIALOG, dlg);
   assert(xdlg);
 
-  switch(t) {
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     APY_NewUserDialog_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;

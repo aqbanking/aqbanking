@@ -24,32 +24,32 @@ enum {
   AHB_SWIFT535_LEVEL_SUBBAL,
   AHB_SWIFT535_LEVEL_ADDINFO
 };
-  
+
 
 int AHB_SWIFT535_Parse_97A(const AHB_SWIFT_TAG *tg,
-                          uint32_t flags,
-                          GWEN_DB_NODE *data,
-                          GWEN_DB_NODE *cfg);
+                           uint32_t flags,
+                           GWEN_DB_NODE *data,
+                           GWEN_DB_NODE *cfg);
 
 int AHB_SWIFT535_Parse_35B(const AHB_SWIFT_TAG *tg,
-                          uint32_t flags,
-                          GWEN_DB_NODE *data,
-                          GWEN_DB_NODE *cfg);
+                           uint32_t flags,
+                           GWEN_DB_NODE *data,
+                           GWEN_DB_NODE *cfg);
 
 int AHB_SWIFT535_Parse_90B(const AHB_SWIFT_TAG *tg,
-                          uint32_t flags,
-                          GWEN_DB_NODE *data,
-                          GWEN_DB_NODE *cfg);
+                           uint32_t flags,
+                           GWEN_DB_NODE *data,
+                           GWEN_DB_NODE *cfg);
 
 int AHB_SWIFT535_Parse_98A(const AHB_SWIFT_TAG *tg,
-                          uint32_t flags,
-                          GWEN_DB_NODE *data,
-                          GWEN_DB_NODE *cfg);
+                           uint32_t flags,
+                           GWEN_DB_NODE *data,
+                           GWEN_DB_NODE *cfg);
 
 int AHB_SWIFT535_Parse_93B(const AHB_SWIFT_TAG *tg,
-                          uint32_t flags,
-                          GWEN_DB_NODE *data,
-                          GWEN_DB_NODE *cfg);
+                           uint32_t flags,
+                           GWEN_DB_NODE *data,
+                           GWEN_DB_NODE *cfg);
 
 
 #endif /* AQHBCIBANK_SWIFT535_P_H */

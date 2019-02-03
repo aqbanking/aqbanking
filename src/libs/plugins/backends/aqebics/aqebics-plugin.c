@@ -23,7 +23,8 @@
 #include <gwenhywfar/plugin.h>
 
 
-AB_PROVIDER *AB_Plugin_ProviderEBICS_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab){
+AB_PROVIDER *AB_Plugin_ProviderEBICS_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab)
+{
   return EBC_Provider_new(ab);
 }
 
@@ -33,7 +34,8 @@ AB_PROVIDER *AB_Plugin_ProviderEBICS_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab){
 AQBANKING_EXPORT
 GWEN_PLUGIN *provider_aqebics_factory(GWEN_PLUGIN_MANAGER *pm,
                                       const char *name,
-                                      const char *fileName) {
+                                      const char *fileName)
+{
   GWEN_PLUGIN *pl;
 
   pl=AB_Plugin_Provider_new(pm, name, fileName);
@@ -42,7 +44,8 @@ GWEN_PLUGIN *provider_aqebics_factory(GWEN_PLUGIN_MANAGER *pm,
 }
 
 
-int EBC_Plugins_Init() {
+int EBC_Plugins_Init()
+{
   GWEN_PLUGIN_MANAGER *pm;
   GWEN_PLUGIN *p;
 

@@ -29,8 +29,8 @@ struct APY_EDITSECRET_DIALOG {
 void GWENHYWFAR_CB APY_EditSecretDialog_FreeData(void *bp, void *p);
 
 int GWENHYWFAR_CB APY_EditSecretDialog_SignalHandler(GWEN_DIALOG *dlg,
-                                                           GWEN_DIALOG_EVENTTYPE t,
-                                                           const char *sender);
+                                                     GWEN_DIALOG_EVENTTYPE t,
+                                                     const char *sender);
 
 
 

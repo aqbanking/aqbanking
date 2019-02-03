@@ -18,10 +18,10 @@
 
 
 static int AIO_OfxGroup_POSSTOCK_StartTag(AIO_OFX_GROUP *g,
-					  const char *tagName);
+                                          const char *tagName);
 
 static int AIO_OfxGroup_POSSTOCK_EndSubGroup(AIO_OFX_GROUP *g,
-					     AIO_OFX_GROUP *sg);
+                                             AIO_OFX_GROUP *sg);
 
 #endif
 

@@ -33,7 +33,8 @@
 
 
 
-GWEN_DIALOG *AH_ChooseUserTypeDialog_new(AB_PROVIDER *pro) {
+GWEN_DIALOG *AH_ChooseUserTypeDialog_new(AB_PROVIDER *pro)
+{
   GWEN_DIALOG *dlg;
   GWEN_BUFFER *fbuf;
   int rv;
@@ -46,8 +47,8 @@ GWEN_DIALOG *AH_ChooseUserTypeDialog_new(AB_PROVIDER *pro) {
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-			       "aqbanking/backends/aqhbci/dialogs/dlg_choose_usertype.dlg",
-			       fbuf);
+                               "aqbanking/backends/aqhbci/dialogs/dlg_choose_usertype.dlg",
+                               fbuf);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
@@ -67,9 +68,9 @@ GWEN_DIALOG *AH_ChooseUserTypeDialog_new(AB_PROVIDER *pro) {
 
   /* add media paths for icons */
   GWEN_Dialog_AddMediaPathsFromPathManager(dlg,
-					   GWEN_PM_LIBNAME,
-					   GWEN_PM_SYSDATADIR,
-					   "aqbanking/backends/aqhbci/dialogs");
+                                           GWEN_PM_LIBNAME,
+                                           GWEN_PM_SYSDATADIR,
+                                           "aqbanking/backends/aqhbci/dialogs");
 
   /* done */
   return dlg;
@@ -77,11 +78,12 @@ GWEN_DIALOG *AH_ChooseUserTypeDialog_new(AB_PROVIDER *pro) {
 
 
 
-void AH_ChooseUserTypeDialog_Init(GWEN_DIALOG *dlg) {
+void AH_ChooseUserTypeDialog_Init(GWEN_DIALOG *dlg)
+{
   GWEN_Dialog_SetCharProperty(dlg, "hbciIntroLabel", GWEN_DialogProperty_Title, 0,
                               I18N("<html>"
                                    "<p>The HBCI module supports a broad range of security "
-				   "media. Please choose the user setup mode from the following "
+                                   "media. Please choose the user setup mode from the following "
                                    "list.</p>"
                                    "<p>Click on the <i>run</i> button below to create the user.</p>"
                                    "</html>"
@@ -90,9 +92,9 @@ void AH_ChooseUserTypeDialog_Init(GWEN_DIALOG *dlg) {
                                    "list.\n"
                                    "Click on the RUN button below to create the user."
                                   ),
-			      0);
+                              0);
 
-  switch(AB_UserTypePageDialog_GetSelectedType(dlg)) {
+  switch (AB_UserTypePageDialog_GetSelectedType(dlg)) {
   case AqHBCI_NewUserDialog_CodeGeneric:
   case AqHBCI_NewUserDialog_CodeExistingPinTan:
     GWEN_Dialog_SetIntProperty(dlg, "hbciPinTanRadio", GWEN_DialogProperty_Value, 0, 1, 0);
@@ -118,7 +120,8 @@ void AH_ChooseUserTypeDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-void AH_ChooseUserTypeDialog_Fini(GWEN_DIALOG *dlg) {
+void AH_ChooseUserTypeDialog_Fini(GWEN_DIALOG *dlg)
+{
   int i;
 
   if (GWEN_Dialog_GetIntProperty(dlg, "hbciPinTanRadio", GWEN_DialogProperty_Value, 0, 0)!=0)
@@ -139,7 +142,8 @@ void AH_ChooseUserTypeDialog_Fini(GWEN_DIALOG *dlg) {
 
 
 
-int AH_ChooseUserTypeDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int AH_ChooseUserTypeDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   /* nothing for now */
   return GWEN_DialogEvent_ResultNotHandled;
 }
@@ -147,9 +151,10 @@ int AH_ChooseUserTypeDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender
 
 
 int GWENHYWFAR_CB AH_ChooseUserTypeDialog_SignalHandler(GWEN_DIALOG *dlg,
-							GWEN_DIALOG_EVENTTYPE t,
-							const char *sender) {
-  switch(t) {
+                                                        GWEN_DIALOG_EVENTTYPE t,
+                                                        const char *sender)
+{
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     AH_ChooseUserTypeDialog_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;

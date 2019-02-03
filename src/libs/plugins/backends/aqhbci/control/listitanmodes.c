@@ -28,34 +28,35 @@
 int AH_Control_ListItanModes(AB_PROVIDER *pro,
                              GWEN_DB_NODE *dbArgs,
                              int argc,
-                             char **argv) {
+                             char **argv)
+{
   GWEN_DB_NODE *db;
   uint32_t uid;
   AB_USER *u=NULL;
   int rv;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "userId",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "u",                          /* short option */
-    "user",                       /* long option */
-    "Specify the unique user id",    /* short description */
-    "Specify the unique user id"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "userId",                     /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "u",                          /* short option */
+      "user",                       /* long option */
+      "Specify the unique user id",    /* short description */
+      "Specify the unique user id"     /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -101,8 +102,8 @@ int AH_Control_ListItanModes(AB_PROVIDER *pro,
 
       tm=AH_TanMethod_List_First(tl);
       fprintf(stdout, "TAN Methods\n");
-      while(tm) {
-	const char *mid;
+      while (tm) {
+        const char *mid;
         const char *mname;
         int combinedVersion;
 
@@ -114,28 +115,28 @@ int AH_Control_ListItanModes(AB_PROVIDER *pro,
                 AH_TanMethod_GetGvVersion(tm),
                 AH_TanMethod_GetProcess(tm));
         mid=AH_TanMethod_GetMethodId(tm);
-	mname=AH_TanMethod_GetMethodName(tm);
-	if (mid && mname) {
-	  fprintf(stdout, ": %s (%s)", mid, mname);
-	}
-	else if (mid && !mname) {
-	  fprintf(stdout, ": %s", mid);
-	}
-	else if (!mid && mname) {
-	  fprintf(stdout, ": %s", mname);
-	}
+        mname=AH_TanMethod_GetMethodName(tm);
+        if (mid && mname) {
+          fprintf(stdout, ": %s (%s)", mid, mname);
+        }
+        else if (mid && !mname) {
+          fprintf(stdout, ": %s", mid);
+        }
+        else if (!mid && mname) {
+          fprintf(stdout, ": %s", mname);
+        }
 
-	if (AH_User_HasTanMethod(u, AH_TanMethod_GetFunction(tm))) {
+        if (AH_User_HasTanMethod(u, AH_TanMethod_GetFunction(tm))) {
           if (AH_User_GetSelectedTanMethod(u)==combinedVersion)
-	    fprintf(stdout, " [available and selected]");
+            fprintf(stdout, " [available and selected]");
           else
-	    fprintf(stdout, " [available]");
-	}
-	else
-	  fprintf(stdout, " [not available]");
-	fprintf(stdout, "\n");
+            fprintf(stdout, " [available]");
+        }
+        else
+          fprintf(stdout, " [not available]");
+        fprintf(stdout, "\n");
 
-	tm=AH_TanMethod_List_Next(tm);
+        tm=AH_TanMethod_List_Next(tm);
       }
     }
 

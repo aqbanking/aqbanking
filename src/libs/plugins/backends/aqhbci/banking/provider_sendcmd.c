@@ -14,7 +14,8 @@
 
 
 
-int AH_Provider__AddCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *t, AH_OUTBOX *outbox) {
+int AH_Provider__AddCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *t, AH_OUTBOX *outbox)
+{
   int rv;
   int cmd;
   AH_JOB *mj=NULL;
@@ -46,15 +47,15 @@ int AH_Provider__AddCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a,
 
   if (jobIsNew) {
     int sigs;
-    
+
     /* check whether we need to sign the job */
     sigs=AH_Job_GetMinSignatures(mj);
     if (sigs) {
       if (sigs>1) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Multiple signatures not yet supported");
-                  GWEN_Gui_ProgressLog(0,
-                  GWEN_LoggerLevel_Error,
-                  I18N("ERROR: Multiple signatures not yet supported"));
+        GWEN_Gui_ProgressLog(0,
+                             GWEN_LoggerLevel_Error,
+                             I18N("ERROR: Multiple signatures not yet supported"));
         AH_Job_free(mj);
         return GWEN_ERROR_GENERIC;
       }
@@ -94,7 +95,9 @@ int AH_Provider__AddCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a,
 
 
 
-int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, AB_IMEXPORTER_CONTEXT *ctx, AH_OUTBOX *outbox) {
+int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, AB_IMEXPORTER_CONTEXT *ctx,
+                                     AH_OUTBOX *outbox)
+{
   AH_PROVIDER *hp;
   AB_USERQUEUE *uq;
 
@@ -103,7 +106,7 @@ int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, A
   assert(hp);
 
   uq=AB_UserQueue_List_First(uql);
-  while(uq) {
+  while (uq) {
     AB_ACCOUNTQUEUE_LIST *aql;
     AB_USER *u;
 
@@ -115,7 +118,7 @@ int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, A
       AB_ACCOUNTQUEUE *aq;
 
       aq=AB_AccountQueue_List_First(aql);
-      while(aq) {
+      while (aq) {
         AB_ACCOUNT *a;
         AB_TRANSACTION_LIST2 *tl2;
 
@@ -132,7 +135,7 @@ int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, A
             AB_TRANSACTION *t;
 
             t=AB_Transaction_List2Iterator_Data(it);
-            while(t) {
+            while (t) {
               int rv;
 
               rv=AH_Provider__AddCommandToOutbox(pro, u, a, t, outbox);
@@ -160,7 +163,8 @@ int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, A
 
 
 
-int AH_Provider__SampleResults(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_IMEXPORTER_CONTEXT *ctx) {
+int AH_Provider__SampleResults(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AH_PROVIDER *hp;
   AH_JOB_LIST *mjl;
   AH_JOB *j;
@@ -175,7 +179,7 @@ int AH_Provider__SampleResults(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_IMEXPORTE
   assert(mjl);
 
   j=AH_Job_List_First(mjl);
-  while(j) {
+  while (j) {
     AB_MESSAGE_LIST *ml;
     int rv;
 
@@ -189,7 +193,7 @@ int AH_Provider__SampleResults(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_IMEXPORTE
       se=GWEN_StringList_FirstEntry(sl);
       if (se) {
         DBG_DEBUG(AQHBCI_LOGDOMAIN, "Logs for job %s", AH_Job_GetName(j));
-        while(se) {
+        while (se) {
           const char *s;
 
           s=GWEN_StringListEntry_Data(se);
@@ -211,14 +215,14 @@ int AH_Provider__SampleResults(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_IMEXPORTE
     ml=AH_Job_GetMessages(j);
     if (ml) {
       AB_MESSAGE *msg;
-  
+
       msg=AB_Message_List_First(ml);
-      while(msg) {
+      while (msg) {
         AB_ImExporterContext_AddMessage(ctx, AB_Message_dup(msg));
         msg=AB_Message_List_Next(msg);
       }
     }
-  
+
     j=AH_Job_List_Next(j);
   } /* while j */
 
@@ -227,7 +231,8 @@ int AH_Provider__SampleResults(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_IMEXPORTE
 
 
 
-int AH_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx) {
+int AH_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AH_PROVIDER *hp;
   AB_USERQUEUE_LIST *uql;
   int rv;
@@ -286,13 +291,15 @@ int AH_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORT
 
 
 
-AB_ACCOUNT *AH_Provider_CreateAccountObject(AB_PROVIDER *pro) {
+AB_ACCOUNT *AH_Provider_CreateAccountObject(AB_PROVIDER *pro)
+{
   return AH_Account_new(pro);
 }
 
 
 
-AB_USER *AH_Provider_CreateUserObject(AB_PROVIDER *pro) {
+AB_USER *AH_Provider_CreateUserObject(AB_PROVIDER *pro)
+{
   return AH_User_new(pro);
 }
 

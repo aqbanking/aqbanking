@@ -31,7 +31,8 @@
 
 
 
-GWEN_DIALOG *AH_Provider_GetNewCardUserDialog(AB_PROVIDER *pro) {
+GWEN_DIALOG *AH_Provider_GetNewCardUserDialog(AB_PROVIDER *pro)
+{
   int rv;
   GWEN_BUFFER *mtypeName;
   GWEN_BUFFER *mediumName;
@@ -46,23 +47,23 @@ GWEN_DIALOG *AH_Provider_GetNewCardUserDialog(AB_PROVIDER *pro) {
   mediumName=GWEN_Buffer_new(0, 64, 0, 1);
 
   rv=AB_Banking_CheckCryptToken(ab,
-				GWEN_Crypt_Token_Device_Card,
-				mtypeName,
-				mediumName);
+                                GWEN_Crypt_Token_Device_Card,
+                                mtypeName,
+                                mediumName);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_Gui_ShowError(I18N("Chipcard Error"),
-		       I18N("Error checking chip card (%d).\n"
-			    "Maybe libchipcard or its plugins are not installed?"));
+                       I18N("Error checking chip card (%d).\n"
+                            "Maybe libchipcard or its plugins are not installed?"));
     GWEN_Buffer_free(mediumName);
     GWEN_Buffer_free(mtypeName);
     return NULL;
   }
 
   rv=AB_Banking_GetCryptToken(AB_Provider_GetBanking(pro),
-			      GWEN_Buffer_GetStart(mtypeName),
-			      GWEN_Buffer_GetStart(mediumName),
-			      &ct);
+                              GWEN_Buffer_GetStart(mtypeName),
+                              GWEN_Buffer_GetStart(mediumName),
+                              &ct);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(mediumName);
@@ -110,7 +111,7 @@ GWEN_DIALOG *AH_Provider_GetNewCardUserDialog(AB_PROVIDER *pro) {
   }
   else {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Card type \"%s\" not yet supported",
-	      GWEN_Buffer_GetStart(mtypeName));
+              GWEN_Buffer_GetStart(mtypeName));
   }
   GWEN_Buffer_free(mediumName);
   GWEN_Buffer_free(mtypeName);
@@ -120,7 +121,8 @@ GWEN_DIALOG *AH_Provider_GetNewCardUserDialog(AB_PROVIDER *pro) {
 
 
 
-GWEN_DIALOG *AH_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
+GWEN_DIALOG *AH_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u)
+{
   AH_PROVIDER *hp;
   GWEN_DIALOG *dlg;
 
@@ -130,7 +132,7 @@ GWEN_DIALOG *AH_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
   assert(hp);
 
-  switch(AH_User_GetCryptMode(u)) {
+  switch (AH_User_GetCryptMode(u)) {
   case AH_CryptMode_Pintan:
     dlg=AH_EditUserPinTanDialog_new(pro, u, 1);
     break;
@@ -156,7 +158,8 @@ GWEN_DIALOG *AH_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
 
 
 
-GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
+GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i)
+{
   AH_PROVIDER *hp;
   GWEN_DIALOG *dlg;
 
@@ -166,7 +169,7 @@ GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Get user dialog %d", i);
 
-  switch(i) {
+  switch (i) {
   case AqHBCI_NewUserDialog_CodeExistingPinTan:
     dlg=AH_PinTanDialog_new(pro);
     break;
@@ -200,7 +203,8 @@ GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
 
 
 
-GWEN_DIALOG *AH_Provider_GetEditAccountDialog(AB_PROVIDER *pro, AB_ACCOUNT *a) {
+GWEN_DIALOG *AH_Provider_GetEditAccountDialog(AB_PROVIDER *pro, AB_ACCOUNT *a)
+{
   AH_PROVIDER *hp;
   GWEN_DIALOG *dlg;
 
@@ -219,7 +223,8 @@ GWEN_DIALOG *AH_Provider_GetEditAccountDialog(AB_PROVIDER *pro, AB_ACCOUNT *a) {
 
 
 
-GWEN_DIALOG *AH_Provider_GetUserTypeDialog(AB_PROVIDER *pro) {
+GWEN_DIALOG *AH_Provider_GetUserTypeDialog(AB_PROVIDER *pro)
+{
   AH_PROVIDER *hp;
   GWEN_DIALOG *dlg;
 

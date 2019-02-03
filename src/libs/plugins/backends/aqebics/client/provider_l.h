@@ -81,66 +81,66 @@ int EBC_Provider_GetTransferTimeout(const AB_PROVIDER *pro);
 
 int EBC_Provider_XchgIniRequest(AB_PROVIDER *pro,
                                 GWEN_HTTP_SESSION *sess,
-				AB_USER *u);
+                                AB_USER *u);
 
 int EBC_Provider_XchgHiaRequest(AB_PROVIDER *pro,
-				GWEN_HTTP_SESSION *sess,
-				AB_USER *u);
+                                GWEN_HTTP_SESSION *sess,
+                                AB_USER *u);
 
 int EBC_Provider_XchgPubRequest(AB_PROVIDER *pro,
-				GWEN_HTTP_SESSION *sess,
-				AB_USER *u,
-				const char *signVersion);
+                                GWEN_HTTP_SESSION *sess,
+                                AB_USER *u,
+                                const char *signVersion);
 
 int EBC_Provider_XchgHpbRequest(AB_PROVIDER *pro,
-				GWEN_HTTP_SESSION *sess,
+                                GWEN_HTTP_SESSION *sess,
                                 AB_USER *u);
 
 int EBC_Provider_XchgHpdRequest(AB_PROVIDER *pro,
-				GWEN_HTTP_SESSION *sess,
-				AB_USER *u);
+                                GWEN_HTTP_SESSION *sess,
+                                AB_USER *u);
 
 int EBC_Provider_XchgHtdRequest(AB_PROVIDER *pro,
-				GWEN_HTTP_SESSION *sess,
-				AB_USER *u);
+                                GWEN_HTTP_SESSION *sess,
+                                AB_USER *u);
 
 int EBC_Provider_XchgStaRequest(AB_PROVIDER *pro,
-				GWEN_HTTP_SESSION *sess,
-				const GWEN_DATE *fromDate,
-				const GWEN_DATE *toDate,
-				AB_IMEXPORTER_CONTEXT *ctx);
+                                GWEN_HTTP_SESSION *sess,
+                                const GWEN_DATE *fromDate,
+                                const GWEN_DATE *toDate,
+                                AB_IMEXPORTER_CONTEXT *ctx);
 
 
 int EBC_Provider_SignMessage(AB_PROVIDER *pro,
-			     EB_MSG *msg,
-			     AB_USER *u,
-			     xmlNodePtr node);
+                             EB_MSG *msg,
+                             AB_USER *u,
+                             xmlNodePtr node);
 
 int EBC_Provider_ExtractSessionKey(AB_PROVIDER *pro,
-				   AB_USER *u,
-				   xmlNodePtr node,
-				   GWEN_CRYPT_KEY **pKey);
+                                   AB_USER *u,
+                                   xmlNodePtr node,
+                                   GWEN_CRYPT_KEY **pKey);
 
 int EBC_Provider_DecryptData(AB_PROVIDER *pro,
                              AB_USER *u,
-			     GWEN_CRYPT_KEY *skey,
-			     const uint8_t *p,
-			     uint32_t len,
-			     GWEN_BUFFER *msgBuffer);
+                             GWEN_CRYPT_KEY *skey,
+                             const uint8_t *p,
+                             uint32_t len,
+                             GWEN_BUFFER *msgBuffer);
 
 
 int EBC_Provider_EncryptData(AB_PROVIDER *pro,
                              AB_USER *u,
-			     GWEN_CRYPT_KEY *skey,
-			     const uint8_t *pData,
-			     uint32_t lData,
-			     GWEN_BUFFER *sbuf);
+                             GWEN_CRYPT_KEY *skey,
+                             const uint8_t *pData,
+                             uint32_t lData,
+                             GWEN_BUFFER *sbuf);
 
 
 int EBC_Provider_EncryptKey(AB_PROVIDER *pro,
-			    AB_USER *u,
-			    const GWEN_CRYPT_KEY *skey,
-			    GWEN_BUFFER *sbuf);
+                            AB_USER *u,
+                            const GWEN_CRYPT_KEY *skey,
+                            GWEN_BUFFER *sbuf);
 
 
 int EBC_Provider_GenerateNonce(AB_PROVIDER *pro, GWEN_BUFFER *buf);
@@ -148,88 +148,88 @@ int EBC_Provider_GenerateTimeStamp(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *bu
 int EBC_Provider_Generate_OrderId(AB_PROVIDER *pro, GWEN_BUFFER *buf);
 
 int EBC_Provider_MountToken(AB_PROVIDER *pro,
-			    AB_USER *u,
-			    GWEN_CRYPT_TOKEN **pCt,
-			    const GWEN_CRYPT_TOKEN_CONTEXT **pCtx);
+                            AB_USER *u,
+                            GWEN_CRYPT_TOKEN **pCt,
+                            const GWEN_CRYPT_TOKEN_CONTEXT **pCtx);
 
 GWEN_LOGGER_LEVEL EBC_Provider_ResultCodeToLogLevel(AB_PROVIDER *pro, const char *s);
 
 void EBC_Provider_LogRequestResults(AB_PROVIDER *pro,
-				    EB_MSG *mRsp,
-				    GWEN_BUFFER *logbuf);
+                                    EB_MSG *mRsp,
+                                    GWEN_BUFFER *logbuf);
 
 
 int EBC_Provider_MkDownloadInitRequest(AB_PROVIDER *pro,
-				       GWEN_HTTP_SESSION *sess,
-				       AB_USER *u,
-				       const char *requestType,
-				       const GWEN_TIME *fromTime,
-				       const GWEN_TIME *toTime,
-				       EB_MSG **pMsg);
+                                       GWEN_HTTP_SESSION *sess,
+                                       AB_USER *u,
+                                       const char *requestType,
+                                       const GWEN_TIME *fromTime,
+                                       const GWEN_TIME *toTime,
+                                       EB_MSG **pMsg);
 
 int EBC_Provider_MkDownloadTransferRequest(AB_PROVIDER *pro,
-					   GWEN_HTTP_SESSION *sess,
-					   AB_USER *u,
-					   const char *transactionId,
+                                           GWEN_HTTP_SESSION *sess,
+                                           AB_USER *u,
+                                           const char *transactionId,
                                            int segmentNumber,
-					   EB_MSG **pMsg);
+                                           EB_MSG **pMsg);
 
 int EBC_Provider_MkDownloadReceiptRequest(AB_PROVIDER *pro,
-					  GWEN_HTTP_SESSION *sess,
-					  AB_USER *u,
-					  const char *transactionId,
+                                          GWEN_HTTP_SESSION *sess,
+                                          AB_USER *u,
+                                          const char *transactionId,
                                           int receiptCode,
-					  EB_MSG **pMsg);
+                                          EB_MSG **pMsg);
 
 int EBC_Provider_XchgDownloadRequest(AB_PROVIDER *pro,
-				     GWEN_HTTP_SESSION *sess,
-				     AB_USER *u,
-				     const char *requestType,
-				     GWEN_BUFFER *targetBuffer,
-				     int withReceipt,
-				     const GWEN_DATE *fromDate,
-				     const GWEN_DATE *toDate);
+                                     GWEN_HTTP_SESSION *sess,
+                                     AB_USER *u,
+                                     const char *requestType,
+                                     GWEN_BUFFER *targetBuffer,
+                                     int withReceipt,
+                                     const GWEN_DATE *fromDate,
+                                     const GWEN_DATE *toDate);
 
 
 int EBC_Provider_MkUploadInitRequest(AB_PROVIDER *pro,
-				     GWEN_HTTP_SESSION *sess,
-				     AB_USER *u,
-				     const char *requestType,
-				     GWEN_CRYPT_KEY *skey,
-				     const char *pEu,
-				     uint32_t dlen,
-				     EB_MSG **pMsg);
+                                     GWEN_HTTP_SESSION *sess,
+                                     AB_USER *u,
+                                     const char *requestType,
+                                     GWEN_CRYPT_KEY *skey,
+                                     const char *pEu,
+                                     uint32_t dlen,
+                                     EB_MSG **pMsg);
 
 int EBC_Provider_MkUploadTransferRequest(AB_PROVIDER *pro,
-					 GWEN_HTTP_SESSION *sess,
-					 AB_USER *u,
-					 const char *transactionId,
-					 const char *pData,
-					 uint32_t lData,
-					 int segmentNumber,
-					 int isLast,
-					 EB_MSG **pMsg);
+                                         GWEN_HTTP_SESSION *sess,
+                                         AB_USER *u,
+                                         const char *transactionId,
+                                         const char *pData,
+                                         uint32_t lData,
+                                         int segmentNumber,
+                                         int isLast,
+                                         EB_MSG **pMsg);
 
 int EBC_Provider_XchgUploadRequest(AB_PROVIDER *pro,
-				   GWEN_HTTP_SESSION *sess,
-				   AB_USER *u,
-				   const char *requestType,
-				   const uint8_t *pData,
-				   uint32_t lData);
+                                   GWEN_HTTP_SESSION *sess,
+                                   AB_USER *u,
+                                   const char *requestType,
+                                   const uint8_t *pData,
+                                   uint32_t lData);
 
 
 
 int EBC_Provider_MkEuCryptZipDoc(AB_PROVIDER *pro,
-				 AB_USER *u,
-				 const char *requestType,
-				 const uint8_t *pMsg,
-				 uint32_t lMsg,
-				 GWEN_CRYPT_KEY *skey,
-				 GWEN_BUFFER *sbuf);
+                                 AB_USER *u,
+                                 const char *requestType,
+                                 const uint8_t *pMsg,
+                                 uint32_t lMsg,
+                                 GWEN_CRYPT_KEY *skey,
+                                 GWEN_BUFFER *sbuf);
 
 int EBC_Provider_FillDataEncryptionInfoNode(AB_PROVIDER *pro, AB_USER *u,
-					    const GWEN_CRYPT_KEY *skey,
-					    xmlNodePtr node);
+                                            const GWEN_CRYPT_KEY *skey,
+                                            xmlNodePtr node);
 
 
 int EBC_Provider_Sha256(const uint8_t *pData, uint32_t lData, GWEN_BUFFER *hbuf);

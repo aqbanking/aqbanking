@@ -36,7 +36,8 @@ GWEN_INHERIT(AH_JOB, AH_JOB_FOREIGNXFERWH);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_ForeignTransferWH_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_ForeignTransferWH_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
+{
   AH_JOB *j;
   AH_JOB_FOREIGNXFERWH *aj;
   GWEN_DB_NODE *dbArgs;
@@ -60,11 +61,11 @@ AH_JOB *AH_Job_ForeignTransferWH_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a
   assert(dbArgs);
 
   GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		       "bankCode",
-		       AB_Account_GetBankCode(account));
+                       "bankCode",
+                       AB_Account_GetBankCode(account));
   GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		       "accountId",
-		       AB_Account_GetAccountNumber(account));
+                       "accountId",
+                       AB_Account_GetAccountNumber(account));
 
   dbParams=AH_Job_GetParams(j);
   aj->maxTransfers=GWEN_DB_GetIntValue(dbParams, "maxTransfers", 0, 0);
@@ -77,10 +78,11 @@ AH_JOB *AH_Job_ForeignTransferWH_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void GWENHYWFAR_CB AH_Job_ForeignTransferWH_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_Job_ForeignTransferWH_FreeData(void *bp, void *p)
+{
   AH_JOB_FOREIGNXFERWH *aj;
 
-  aj=(AH_JOB_FOREIGNXFERWH*)p;
+  aj=(AH_JOB_FOREIGNXFERWH *)p;
 
   GWEN_FREE_OBJECT(aj);
 }
@@ -88,7 +90,8 @@ void GWENHYWFAR_CB AH_Job_ForeignTransferWH_FreeData(void *bp, void *p){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_ForeignTransferWH_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_ForeignTransferWH_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AH_JOB_FOREIGNXFERWH *aj;
 
   assert(j);
@@ -103,16 +106,17 @@ int AH_Job_ForeignTransferWH_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_ForeignTransferWH_SetDtazv(AH_JOB *j,
-				      const uint8_t *dataPtr,
-				      uint32_t dataLen) {
+                                      const uint8_t *dataPtr,
+                                      uint32_t dataLen)
+{
   GWEN_DB_NODE *dbArgs;
 
   dbArgs=AH_Job_GetArguments(j);
   assert(dbArgs);
 
   GWEN_DB_SetBinValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "transfers",
-		      dataPtr, dataLen);
+                      "transfers",
+                      dataPtr, dataLen);
 
   return 0;
 }

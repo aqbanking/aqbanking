@@ -39,7 +39,8 @@ GWEN_INHERIT(AH_JOB, AH_JOB_GETTRANS_CAMT);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_GetTransactionsCAMT_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_GetTransactionsCAMT_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
+{
   AH_JOB *j;
   AH_JOB_GETTRANS_CAMT *aj;
   GWEN_DB_NODE *dbArgs;
@@ -95,10 +96,11 @@ AH_JOB *AH_Job_GetTransactionsCAMT_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void GWENHYWFAR_CB AH_Job_GetTransactionsCAMT_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_Job_GetTransactionsCAMT_FreeData(void *bp, void *p)
+{
   AH_JOB_GETTRANS_CAMT *aj;
 
-  aj=(AH_JOB_GETTRANS_CAMT*)p;
+  aj=(AH_JOB_GETTRANS_CAMT *)p;
 
   GWEN_FREE_OBJECT(aj);
 }
@@ -111,7 +113,8 @@ int AH_Job_GetTransCAMT__ReadTransactions(AH_JOB *j,
                                           const char *docType,
                                           int ty,
                                           const uint8_t *ptr,
-                                          uint32_t len) {
+                                          uint32_t len)
+{
   AB_PROVIDER *pro;
   AB_IMEXPORTER_CONTEXT *tempContext;
   AB_IMEXPORTER_ACCOUNTINFO *tempAccountInfo;
@@ -139,7 +142,7 @@ int AH_Job_GetTransCAMT__ReadTransactions(AH_JOB *j,
 
   /* copy data from temporary context to real context */
   tempAccountInfo=AB_ImExporterContext_GetFirstAccountInfo(tempContext);
-  while(tempAccountInfo) {
+  while (tempAccountInfo) {
     AB_TRANSACTION_LIST *tl;
     AB_BALANCE_LIST *bl;
 
@@ -148,7 +151,7 @@ int AH_Job_GetTransCAMT__ReadTransactions(AH_JOB *j,
     if (tl) {
       AB_TRANSACTION *t;
 
-      while( (t=AB_Transaction_List_First(tl)) ) {
+      while ((t=AB_Transaction_List_First(tl))) {
         AB_Transaction_List_Del(t);
         AB_Transaction_SetType(t, ty);
         AB_ImExporterAccountInfo_AddTransaction(ai, t);
@@ -160,7 +163,7 @@ int AH_Job_GetTransCAMT__ReadTransactions(AH_JOB *j,
     if (bl) {
       AB_BALANCE *bal;
 
-      while( (bal=AB_Balance_List_First(bl)) ) {
+      while ((bal=AB_Balance_List_First(bl))) {
         AB_Balance_List_Del(bal);
         AB_ImExporterAccountInfo_AddBalance(ai, bal);
       }
@@ -176,7 +179,8 @@ int AH_Job_GetTransCAMT__ReadTransactions(AH_JOB *j,
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetTransactionsCAMT_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_GetTransactionsCAMT_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AH_JOB_GETTRANS_CAMT *aj;
   AB_ACCOUNT *a;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
@@ -207,7 +211,7 @@ int AH_Job_GetTransactionsCAMT_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
   /* search for "Transactions" */
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
-  while(dbCurr) {
+  while (dbCurr) {
     GWEN_DB_NODE *dbXA;
 
     rv=AH_Job_CheckEncryption(j, dbCurr);
@@ -236,31 +240,31 @@ int AH_Job_GetTransactionsCAMT_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
       dbBooked=GWEN_DB_GetGroup(dbXA, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "booked");
       if (dbBooked) {
-	int i=0;
+        int i=0;
 
-	/* get booked transactions (daily reports!) */
-	DBG_INFO(AQHBCI_LOGDOMAIN, "Found booked transaction group");
+        /* get booked transactions (daily reports!) */
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Found booked transaction group");
 
-	for (i=0; i<10000; i++) {
-	  p=GWEN_DB_GetBinValue(dbBooked, "dayData", i, 0, 0, &bs);
-	  if (p && bs) {
-	    DBG_INFO(AQHBCI_LOGDOMAIN, "Reading booked day data (%d)", i+1);
-	    rv=AH_Job_GetTransCAMT__ReadTransactions(j, ai, "camt_052_001_02", AB_Transaction_TypeStatement, p, bs);
-	    if (rv<0) {
-	      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-	      AH_Job_SetStatus(j, AH_JobStatusError);
-	      return rv;
-	    }
-	  }
-	  else
-	    break;
-	} /* for i */
+        for (i=0; i<10000; i++) {
+          p=GWEN_DB_GetBinValue(dbBooked, "dayData", i, 0, 0, &bs);
+          if (p && bs) {
+            DBG_INFO(AQHBCI_LOGDOMAIN, "Reading booked day data (%d)", i+1);
+            rv=AH_Job_GetTransCAMT__ReadTransactions(j, ai, "camt_052_001_02", AB_Transaction_TypeStatement, p, bs);
+            if (rv<0) {
+              DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+              AH_Job_SetStatus(j, AH_JobStatusError);
+              return rv;
+            }
+          }
+          else
+            break;
+        } /* for i */
       } /* if dbBooked */
 
       /* get noted transactions */
       p=GWEN_DB_GetBinValue(dbXA, "noted", 0, 0, 0, &bs);
       if (p && bs) {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "Reading noted data");
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Reading noted data");
         rv=AH_Job_GetTransCAMT__ReadTransactions(j, ai, "camt_052_001_02", AB_Transaction_TypeNotedStatement, p, bs);
         if (rv<0) {
           DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -296,7 +300,8 @@ int AH_Job_GetTransactionsCAMT_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetTransactionsCAMT_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits) {
+int AH_Job_GetTransactionsCAMT_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits)
+{
   AB_TRANSACTION_LIMITS *tl;
   GWEN_DB_NODE *dbParams;
 
@@ -313,14 +318,15 @@ int AH_Job_GetTransactionsCAMT_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLim
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetTransactionsCAMT_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t) {
+int AH_Job_GetTransactionsCAMT_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t)
+{
   const GWEN_DATE *da;
-  
+
   da=AB_Transaction_GetFirstDate(t);
   if (da) {
     char dbuf[16];
     GWEN_DB_NODE *dbArgs;
-  
+
     dbArgs=AH_Job_GetArguments(j);
     snprintf(dbuf, sizeof(dbuf), "%04d%02d%02d",
              GWEN_Date_GetYear(da),
@@ -328,12 +334,12 @@ int AH_Job_GetTransactionsCAMT_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t)
              GWEN_Date_GetDay(da));
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "fromDate", dbuf);
   }
-  
+
   da=AB_Transaction_GetLastDate(t);
   if (da) {
     char dbuf[16];
     GWEN_DB_NODE *dbArgs;
-  
+
     dbArgs=AH_Job_GetArguments(j);
     snprintf(dbuf, sizeof(dbuf), "%04d%02d%02d",
              GWEN_Date_GetYear(da),
@@ -341,7 +347,7 @@ int AH_Job_GetTransactionsCAMT_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t)
              GWEN_Date_GetDay(da));
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "toDate", dbuf);
   }
-  
+
   return 0;
 }
 

@@ -10,11 +10,12 @@
 
 
 int EBC_Provider_EncryptData(AB_PROVIDER *pro,
-			     AB_USER *u,
-			     GWEN_CRYPT_KEY *skey,
-			     const uint8_t *pData,
-			     uint32_t lData,
-			     GWEN_BUFFER *sbuf) {
+                             AB_USER *u,
+                             GWEN_CRYPT_KEY *skey,
+                             const uint8_t *pData,
+                             uint32_t lData,
+                             GWEN_BUFFER *sbuf)
+{
   const char *s;
 
   s=EBC_User_GetCryptVersion(u);
@@ -34,9 +35,10 @@ int EBC_Provider_EncryptData(AB_PROVIDER *pro,
 
 
 int EBC_Provider_EncryptKey(AB_PROVIDER *pro,
-			    AB_USER *u,
-			    const GWEN_CRYPT_KEY *skey,
-			    GWEN_BUFFER *sbuf) {
+                            AB_USER *u,
+                            const GWEN_CRYPT_KEY *skey,
+                            GWEN_BUFFER *sbuf)
+{
   const char *s;
 
   s=EBC_User_GetCryptVersion(u);

@@ -85,7 +85,7 @@ extern "C" {
  */
 #define AH_USER_FLAGS_VERIFY_NO_BANKSIGNKEY     0x00002000
 
-  /*@}*/
+/*@}*/
 
 
 
@@ -292,8 +292,8 @@ int AH_User_MkPinName(const AB_USER *u, GWEN_BUFFER *buf);
 
 AQHBCI_API
 int AH_User_MkTanName(const AB_USER *u,
-		      const char *challenge,
-		      GWEN_BUFFER *buf);
+                      const char *challenge,
+                      GWEN_BUFFER *buf);
 
 /**
  * The list returned is only valid until the next call to this function!
@@ -311,10 +311,10 @@ AQHBCI_API int AH_User_GetMaxDebitNotesPerJob(const AB_USER *u);
 AQHBCI_API void AH_User_SetMaxDebitNotesPerJob(AB_USER *u, int i);
 
 AQHBCI_API void AH_User_SetBankPubSignKey(AB_USER *u, GWEN_CRYPT_KEY *bankPubKey);
-AQHBCI_API GWEN_CRYPT_KEY * AH_User_GetBankPubSignKey(const AB_USER *u);
+AQHBCI_API GWEN_CRYPT_KEY *AH_User_GetBankPubSignKey(const AB_USER *u);
 
 AQHBCI_API void AH_User_SetBankPubCryptKey(AB_USER *u, GWEN_CRYPT_KEY *bankPubKey);
-AQHBCI_API GWEN_CRYPT_KEY * AH_User_GetBankPubCryptKey(const AB_USER *u);
+AQHBCI_API GWEN_CRYPT_KEY *AH_User_GetBankPubCryptKey(const AB_USER *u);
 
 AQHBCI_API const char *AH_User_FindSepaDescriptor(AB_USER *u, const char *tmpl);
 

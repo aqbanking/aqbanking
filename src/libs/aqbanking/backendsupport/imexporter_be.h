@@ -32,7 +32,7 @@
 extern "C" {
 #endif
 
-typedef AB_IMEXPORTER* (*AB_IMEXPORTER_FACTORY_FN)(AB_BANKING *ab);
+typedef AB_IMEXPORTER *(*AB_IMEXPORTER_FACTORY_FN)(AB_BANKING *ab);
 
 
 /** @name Construction and Destruction
@@ -66,19 +66,19 @@ void AB_ImExporter_SubFlags(AB_IMEXPORTER *ie, uint32_t flags);
 /*@{*/
 typedef int (*AB_IMEXPORTER_IMPORT_FN)(AB_IMEXPORTER *ie,
                                        AB_IMEXPORTER_CONTEXT *ctx,
-				       GWEN_SYNCIO *sio,
-				       GWEN_DB_NODE *params);
+                                       GWEN_SYNCIO *sio,
+                                       GWEN_DB_NODE *params);
 
 typedef int (*AB_IMEXPORTER_EXPORT_FN)(AB_IMEXPORTER *ie,
                                        AB_IMEXPORTER_CONTEXT *ctx,
-				       GWEN_SYNCIO *sio,
-				       GWEN_DB_NODE *params);
+                                       GWEN_SYNCIO *sio,
+                                       GWEN_DB_NODE *params);
 
 /**
  * Checks whether the given file is possibly supported by the plugin.
  */
 typedef int (*AB_IMEXPORTER_CHECKFILE_FN)(AB_IMEXPORTER *ie,
-					  const char *fname);
+                                          const char *fname);
 
 
 /**
@@ -87,9 +87,9 @@ typedef int (*AB_IMEXPORTER_CHECKFILE_FN)(AB_IMEXPORTER *ie,
  * (introduced in AqBanking 4.3.0)
  */
 typedef int (*AB_IMEXPORTER_GET_EDITPROFILE_DIALOG_FN)(AB_IMEXPORTER *ie,
-						       GWEN_DB_NODE *params,
-						       const char *testFileName,
-						       GWEN_DIALOG **pDlg);
+                                                       GWEN_DB_NODE *params,
+                                                       const char *testFileName,
+                                                       GWEN_DIALOG **pDlg);
 
 /*@}*/
 
@@ -117,12 +117,12 @@ void AB_ImExporter_SetGetEditProfileDialogFn(AB_IMEXPORTER *ie, AB_IMEXPORTER_GE
  */
 /*@{*/
 
-typedef AB_IMEXPORTER* (*AB_PLUGIN_IMEXPORTER_FACTORY_FN)(GWEN_PLUGIN *pl, AB_BANKING *ab);
+typedef AB_IMEXPORTER *(*AB_PLUGIN_IMEXPORTER_FACTORY_FN)(GWEN_PLUGIN *pl, AB_BANKING *ab);
 
 
 GWEN_PLUGIN *AB_Plugin_ImExporter_new(GWEN_PLUGIN_MANAGER *pm,
-				      const char *name,
-				      const char *fileName);
+                                      const char *name,
+                                      const char *fileName);
 
 AB_IMEXPORTER *AB_Plugin_ImExporter_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab);
 

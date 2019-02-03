@@ -15,7 +15,7 @@
 
 
 AB_BANKINFO_PLUGIN *AB_BankInfoPluginGENERIC_new(AB_BANKING *ab,
-						 const char *country);
+                                                 const char *country);
 
 
 

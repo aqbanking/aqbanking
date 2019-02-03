@@ -57,7 +57,7 @@ int AB_BankInfoPluginGENERIC__AddByNameAndLoc(AB_BANKINFO_PLUGIN *bip,
 
 int AB_BankInfoPluginGENERIC__CmpTemplate(AB_BANKINFO *bi,
                                           const AB_BANKINFO *tbi,
-					  uint32_t flags);
+                                          uint32_t flags);
 
 
 int AB_BankInfoPluginGENERIC_AddByTemplate(AB_BANKINFO_PLUGIN *bip,

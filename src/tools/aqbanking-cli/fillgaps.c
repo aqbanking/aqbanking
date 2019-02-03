@@ -24,36 +24,37 @@
 
 
 
-int fillGaps(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int fillGaps(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
 #pragma message "Need to implement this"
 #if 0
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;
   AB_IMEXPORTER_CONTEXT *ctx=0;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "ctxFile",                    /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "c",                          /* short option */
-    "ctxfile",                    /* long option */
-    "Specify the file to store the context in",   /* short description */
-    "Specify the file to store the context in"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "ctxFile",                    /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "c",                          /* short option */
+      "ctxfile",                    /* long option */
+      "Specify the file to store the context in",   /* short description */
+      "Specify the file to store the context in"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");

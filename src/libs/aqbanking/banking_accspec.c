@@ -12,7 +12,8 @@
 
 
 
-int AB_Banking_ReadAccountSpec(const AB_BANKING *ab, uint32_t uniqueId, AB_ACCOUNT_SPEC **pAccountSpec) {
+int AB_Banking_ReadAccountSpec(const AB_BANKING *ab, uint32_t uniqueId, AB_ACCOUNT_SPEC **pAccountSpec)
+{
   AB_ACCOUNT_SPEC *accountSpec;
   GWEN_DB_NODE *db=NULL;
   int rv;
@@ -41,7 +42,8 @@ int AB_Banking_ReadAccountSpec(const AB_BANKING *ab, uint32_t uniqueId, AB_ACCOU
 
 
 
-int AB_Banking_WriteAccountSpec(AB_BANKING *ab, const AB_ACCOUNT_SPEC *accountSpec) {
+int AB_Banking_WriteAccountSpec(AB_BANKING *ab, const AB_ACCOUNT_SPEC *accountSpec)
+{
   GWEN_DB_NODE *db=NULL;
   int rv;
   uint32_t uniqueId;
@@ -67,7 +69,8 @@ int AB_Banking_WriteAccountSpec(AB_BANKING *ab, const AB_ACCOUNT_SPEC *accountSp
 
 
 
-int AB_Banking_DeleteAccountSpec(AB_BANKING *ab, uint32_t uid) {
+int AB_Banking_DeleteAccountSpec(AB_BANKING *ab, uint32_t uid)
+{
   int rv;
 
   rv=AB_Banking_DeleteConfigGroup(ab, AB_CFG_GROUP_ACCOUNTSPECS, uid);
@@ -84,7 +87,8 @@ int AB_Banking_DeleteAccountSpec(AB_BANKING *ab, uint32_t uid) {
 
 
 
-int AB_Banking_GetAccountSpecList(const AB_BANKING *ab, AB_ACCOUNT_SPEC_LIST** pAccountSpecList) {
+int AB_Banking_GetAccountSpecList(const AB_BANKING *ab, AB_ACCOUNT_SPEC_LIST **pAccountSpecList)
+{
   GWEN_DB_NODE *dbAll=NULL;
   int rv;
 
@@ -100,7 +104,7 @@ int AB_Banking_GetAccountSpecList(const AB_BANKING *ab, AB_ACCOUNT_SPEC_LIST** p
     accountSpecList=AB_AccountSpec_List_new();
 
     db=GWEN_DB_GetFirstGroup(dbAll);
-    while(db) {
+    while (db) {
       AB_ACCOUNT_SPEC *a=NULL;
 
       assert(db);
@@ -132,7 +136,8 @@ int AB_Banking_GetAccountSpecList(const AB_BANKING *ab, AB_ACCOUNT_SPEC_LIST** p
 
 
 
-int AB_Banking_GetAccountSpecByUniqueId(const AB_BANKING *ab, uint32_t uniqueAccountId, AB_ACCOUNT_SPEC** pAccountSpec) {
+int AB_Banking_GetAccountSpecByUniqueId(const AB_BANKING *ab, uint32_t uniqueAccountId, AB_ACCOUNT_SPEC **pAccountSpec)
+{
   int rv;
 
   rv=AB_Banking_ReadAccountSpec(ab, uniqueAccountId, pAccountSpec);

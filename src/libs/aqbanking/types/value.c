@@ -39,7 +39,8 @@ GWEN_LIST_FUNCTIONS(AB_VALUE, AB_Value)
 
 
 
-AB_VALUE *AB_Value_new(void) {
+AB_VALUE *AB_Value_new(void)
+{
   AB_VALUE *v;
 
   GWEN_NEW_OBJECT(AB_VALUE, v);
@@ -50,7 +51,8 @@ AB_VALUE *AB_Value_new(void) {
 
 
 
-void AB_Value_free(AB_VALUE *v) {
+void AB_Value_free(AB_VALUE *v)
+{
   if (v) {
     mpq_clear(v->value);
     free(v->currency);
@@ -61,7 +63,8 @@ void AB_Value_free(AB_VALUE *v) {
 
 
 
-AB_VALUE *AB_Value_dup(const AB_VALUE *ov) {
+AB_VALUE *AB_Value_dup(const AB_VALUE *ov)
+{
   AB_VALUE *v;
 
   assert(ov);
@@ -75,7 +78,8 @@ AB_VALUE *AB_Value_dup(const AB_VALUE *ov) {
 
 
 
-AB_VALUE *AB_Value_fromDouble(double i) {
+AB_VALUE *AB_Value_fromDouble(double i)
+{
   GWEN_BUFFER *nbuf;
   AB_VALUE *v;
   int rv;
@@ -88,7 +92,8 @@ AB_VALUE *AB_Value_fromDouble(double i) {
   return v;
 }
 
-AB_VALUE *AB_Value_fromInt(long int num, long int denom) {
+AB_VALUE *AB_Value_fromInt(long int num, long int denom)
+{
   AB_VALUE *v;
 
   v=AB_Value_new();
@@ -98,14 +103,15 @@ AB_VALUE *AB_Value_fromInt(long int num, long int denom) {
 }
 
 
-static int AB_Value_determineDecimalComma(const char *s) {
+static int AB_Value_determineDecimalComma(const char *s)
+{
   int len;
   int i;
 
   len=strlen(s);
   for (i=len-1; i>=0; i--) {
     if (s[i]==',' || s[i]=='.')
-      return (int) (s[i]);
+      return (int)(s[i]);
   }
 
   return 0;
@@ -113,17 +119,18 @@ static int AB_Value_determineDecimalComma(const char *s) {
 
 
 
-AB_VALUE *AB_Value_fromString(const char *s) {
+AB_VALUE *AB_Value_fromString(const char *s)
+{
   AB_VALUE *v;
   const char *currency=NULL;
-  int conversion_succeeded = 1;	// assume conversion will succeed
+  int conversion_succeeded = 1; // assume conversion will succeed
   char *tmpString=NULL;
   char *p;
   char *t;
   char decimalComma;
   int isNeg=0;
 
-  if( !s ) {
+  if (!s) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Attempt to convert a NULL value");
     return NULL;
   }
@@ -131,7 +138,7 @@ AB_VALUE *AB_Value_fromString(const char *s) {
   tmpString=strdup(s);
   p=tmpString;
 
-  while(*p && *p<33)
+  while (*p && *p<33)
     p++;
 
   if (*p=='-') {
@@ -155,15 +162,15 @@ AB_VALUE *AB_Value_fromString(const char *s) {
 
     s1=p;
     d1=p;
-    while(*s1) {
+    while (*s1) {
       register char c;
 
       c=*(s1++);
       if (isdigit(c) || c=='/')
-	*(d1++)=c;
+        *(d1++)=c;
       else if (c==decimalComma)
         /* always use '.' as decimal comma */
-	*(d1++)='.';
+        *(d1++)='.';
     }
     *d1=0;
   }
@@ -181,7 +188,8 @@ AB_VALUE *AB_Value_fromString(const char *s) {
       if (*next != 0)
         denominator *= 10;
       t++;
-    } while (*next);
+    }
+    while (*next);
 
     // set denominator to the calculated value
     mpz_set_ui(mpq_denref(v->value), denominator);
@@ -218,17 +226,19 @@ AB_VALUE *AB_Value_fromString(const char *s) {
 
 
 
-const char *AB_Value_GetCurrency(const AB_VALUE *v){
+const char *AB_Value_GetCurrency(const AB_VALUE *v)
+{
   assert(v);
   return v->currency;
 }
 
 
 
-void AB_Value_SetCurrency(AB_VALUE *v, const char *s){
+void AB_Value_SetCurrency(AB_VALUE *v, const char *s)
+{
   assert(v);
   free(v->currency);
-  if (s) 
+  if (s)
     v->currency=strdup(s);
   else
     v->currency=0;
@@ -236,7 +246,8 @@ void AB_Value_SetCurrency(AB_VALUE *v, const char *s){
 
 
 
-AB_VALUE *AB_Value_fromDb(GWEN_DB_NODE *db){
+AB_VALUE *AB_Value_fromDb(GWEN_DB_NODE *db)
+{
   AB_VALUE *vc;
   const char *p;
 
@@ -257,39 +268,42 @@ AB_VALUE *AB_Value_fromDb(GWEN_DB_NODE *db){
 
 
 
-int AB_Value_toDb(const AB_VALUE *v, GWEN_DB_NODE *db) {
+int AB_Value_toDb(const AB_VALUE *v, GWEN_DB_NODE *db)
+{
   GWEN_BUFFER *buf;
 
   buf=GWEN_Buffer_new(0, 128, 0, 1);
   AB_Value__toString(v, buf);
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		       "value", GWEN_Buffer_GetStart(buf));
+                       "value", GWEN_Buffer_GetStart(buf));
   GWEN_Buffer_free(buf);
   if (v->currency)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "currency", v->currency);
+                         "currency", v->currency);
   return 0;
 }
 
 
 
-int AB_Value_toDbFloat(const AB_VALUE *v, GWEN_DB_NODE *db) {
+int AB_Value_toDbFloat(const AB_VALUE *v, GWEN_DB_NODE *db)
+{
   GWEN_BUFFER *buf;
 
   buf=GWEN_Buffer_new(0, 128, 0, 1);
   AB_Value_toHumanReadableString2(v, buf, 2, 0);
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		       "value", GWEN_Buffer_GetStart(buf));
+                       "value", GWEN_Buffer_GetStart(buf));
   GWEN_Buffer_free(buf);
   if (v->currency)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "currency", v->currency);
+                         "currency", v->currency);
   return 0;
 }
 
 
 
-void AB_Value__toString(const AB_VALUE *v, GWEN_BUFFER *buf) {
+void AB_Value__toString(const AB_VALUE *v, GWEN_BUFFER *buf)
+{
   int rv;
   uint32_t size;
   char *p;
@@ -307,8 +321,9 @@ void AB_Value__toString(const AB_VALUE *v, GWEN_BUFFER *buf) {
 
 
 int AB_Value_GetNumDenomString(const AB_VALUE *v,
-			       char *buffer,
-			       uint32_t buflen) {
+                               char *buffer,
+                               uint32_t buflen)
+{
   int rv;
 
   assert(v);
@@ -323,7 +338,8 @@ int AB_Value_GetNumDenomString(const AB_VALUE *v,
 
 
 
-void AB_Value_toString(const AB_VALUE *v, GWEN_BUFFER *buf) {
+void AB_Value_toString(const AB_VALUE *v, GWEN_BUFFER *buf)
+{
   assert(v);
   AB_Value__toString(v, buf);
   if (v->currency) {
@@ -335,17 +351,19 @@ void AB_Value_toString(const AB_VALUE *v, GWEN_BUFFER *buf) {
 
 
 void AB_Value_toHumanReadableString(const AB_VALUE *v,
-                                     GWEN_BUFFER *buf,
-                                     int prec) {
+                                    GWEN_BUFFER *buf,
+                                    int prec)
+{
   AB_Value_toHumanReadableString2(v, buf, prec?prec:2, 0);
 }
 
 
 
 void AB_Value_toHumanReadableString2(const AB_VALUE *v,
-				     GWEN_BUFFER *buf,
-				     int prec,
-				     int withCurrency) {
+                                     GWEN_BUFFER *buf,
+                                     int prec,
+                                     int withCurrency)
+{
   char numbuf[128];
   double num;
   int rv;
@@ -357,7 +375,7 @@ void AB_Value_toHumanReadableString2(const AB_VALUE *v,
 
   num=AB_Value_GetValueAsDouble(v);
   rv=snprintf(numbuf, sizeof(numbuf), "%.*f",
-	      prec, num);
+              prec, num);
 
 #ifdef HAVE_SETLOCALE
   setlocale(LC_NUMERIC, currentLocale);
@@ -377,10 +395,11 @@ void AB_Value_toHumanReadableString2(const AB_VALUE *v,
 
 
 
-double AB_Value_GetValueAsDouble(const AB_VALUE *v) {
+double AB_Value_GetValueAsDouble(const AB_VALUE *v)
+{
   assert(v);
   if (mpz_fits_slong_p(mpq_numref(v->value)) && mpz_fits_slong_p(mpq_denref(v->value))) {
-    return (double) (mpz_get_d(mpq_numref(v->value)) / mpz_get_d(mpq_denref(v->value)));
+    return (double)(mpz_get_d(mpq_numref(v->value)) / mpz_get_d(mpq_denref(v->value)));
   }
   else {
     return mpq_get_d(v->value);
@@ -389,14 +408,16 @@ double AB_Value_GetValueAsDouble(const AB_VALUE *v) {
 
 
 
-void AB_Value_SetValueFromDouble(AB_VALUE *v, double i) {
+void AB_Value_SetValueFromDouble(AB_VALUE *v, double i)
+{
   assert(v);
   mpq_set_d(v->value, i);
 }
 
 
 
-void AB_Value_SetZero(AB_VALUE *v) {
+void AB_Value_SetZero(AB_VALUE *v)
+{
   assert(v);
   mpq_clear(v->value);
   mpq_init(v->value);
@@ -404,35 +425,40 @@ void AB_Value_SetZero(AB_VALUE *v) {
 
 
 
-int AB_Value_IsZero(const AB_VALUE *v) {
+int AB_Value_IsZero(const AB_VALUE *v)
+{
   assert(v);
   return (mpq_sgn(v->value)==0);
 }
 
 
 
-int AB_Value_IsNegative(const AB_VALUE *v) {
+int AB_Value_IsNegative(const AB_VALUE *v)
+{
   assert(v);
   return (mpq_sgn(v->value)<0);
 }
 
 
 
-int AB_Value_IsPositive(const AB_VALUE *v) {
+int AB_Value_IsPositive(const AB_VALUE *v)
+{
   assert(v);
   return (mpq_sgn(v->value)>=0);
 }
 
 
 
-int AB_Value_Compare(const AB_VALUE *v1, const AB_VALUE *v2) {
+int AB_Value_Compare(const AB_VALUE *v1, const AB_VALUE *v2)
+{
   assert(v1);
   assert(v2);
 
   return mpq_cmp(v1->value, v2->value);
 }
 
-int AB_Value_Equal(const AB_VALUE *v1, const AB_VALUE *v2) {
+int AB_Value_Equal(const AB_VALUE *v1, const AB_VALUE *v2)
+{
   assert(v1);
   assert(v2);
 
@@ -441,7 +467,8 @@ int AB_Value_Equal(const AB_VALUE *v1, const AB_VALUE *v2) {
 
 
 
-int AB_Value_AddValue(AB_VALUE *v1, const AB_VALUE *v2) {
+int AB_Value_AddValue(AB_VALUE *v1, const AB_VALUE *v2)
+{
   assert(v1);
   assert(v2);
 
@@ -451,7 +478,8 @@ int AB_Value_AddValue(AB_VALUE *v1, const AB_VALUE *v2) {
 
 
 
-int AB_Value_SubValue(AB_VALUE *v1, const AB_VALUE *v2) {
+int AB_Value_SubValue(AB_VALUE *v1, const AB_VALUE *v2)
+{
   assert(v1);
   assert(v2);
   mpq_sub(v1->value, v1->value, v2->value);
@@ -460,7 +488,8 @@ int AB_Value_SubValue(AB_VALUE *v1, const AB_VALUE *v2) {
 
 
 
-int AB_Value_MultValue(AB_VALUE *v1, const AB_VALUE *v2) {
+int AB_Value_MultValue(AB_VALUE *v1, const AB_VALUE *v2)
+{
   assert(v1);
   assert(v2);
 
@@ -470,7 +499,8 @@ int AB_Value_MultValue(AB_VALUE *v1, const AB_VALUE *v2) {
 
 
 
-int AB_Value_DivValue(AB_VALUE *v1, const AB_VALUE *v2) {
+int AB_Value_DivValue(AB_VALUE *v1, const AB_VALUE *v2)
+{
   assert(v1);
   assert(v2);
 
@@ -480,7 +510,8 @@ int AB_Value_DivValue(AB_VALUE *v1, const AB_VALUE *v2) {
 
 
 
-int AB_Value_Negate(AB_VALUE *v) {
+int AB_Value_Negate(AB_VALUE *v)
+{
   assert(v);
   mpq_neg(v->value, v->value);
   return 0;
@@ -488,7 +519,8 @@ int AB_Value_Negate(AB_VALUE *v) {
 
 
 
-void AB_Value_Dump(const AB_VALUE *v, FILE *f, unsigned int indent) {
+void AB_Value_Dump(const AB_VALUE *v, FILE *f, unsigned int indent)
+{
   unsigned int i;
 
   for (i=0; i<indent; i++)
@@ -508,14 +540,15 @@ void AB_Value_Dump(const AB_VALUE *v, FILE *f, unsigned int indent) {
 
 
 
-AB_VALUE_LIST *AB_Value_List_dup(const AB_VALUE_LIST *stl) {
+AB_VALUE_LIST *AB_Value_List_dup(const AB_VALUE_LIST *stl)
+{
   if (stl) {
     AB_VALUE_LIST *nl;
     AB_VALUE *e;
 
     nl=AB_Value_List_new();
     e=AB_Value_List_First(stl);
-    while(e) {
+    while (e) {
       AB_VALUE *ne;
 
       ne=AB_Value_dup(e);
@@ -531,21 +564,24 @@ AB_VALUE_LIST *AB_Value_List_dup(const AB_VALUE_LIST *stl) {
 
 
 
-long int AB_Value_Num(const AB_VALUE *v) {
+long int AB_Value_Num(const AB_VALUE *v)
+{
   assert(v);
   return mpz_get_si(mpq_numref(v->value));
 }
 
 
 
-long int AB_Value_Denom(const AB_VALUE *v) {
+long int AB_Value_Denom(const AB_VALUE *v)
+{
   assert(v);
   return mpz_get_si(mpq_denref(v->value));
 }
 
 
 
-void AB_Value_toHbciString(const AB_VALUE *v, GWEN_BUFFER *buf) {
+void AB_Value_toHbciString(const AB_VALUE *v, GWEN_BUFFER *buf)
+{
   GWEN_BUFFER *tbuf;
   char *p;
   int l;
@@ -555,7 +591,7 @@ void AB_Value_toHbciString(const AB_VALUE *v, GWEN_BUFFER *buf) {
 
   /* convert decimal komma */
   p=GWEN_Buffer_GetStart(tbuf);
-  while(*p) {
+  while (*p) {
     if (*p=='.') {
       *p=',';
       break;
@@ -568,7 +604,7 @@ void AB_Value_toHbciString(const AB_VALUE *v, GWEN_BUFFER *buf) {
   l=strlen(GWEN_Buffer_GetStart(tbuf));
   if (l>0 && strchr(p, ',')!=NULL) {
     l--;
-    while(l>0 && p[l]=='0') {
+    while (l>0 && p[l]=='0') {
       p[l]=0;
       l--;
     }

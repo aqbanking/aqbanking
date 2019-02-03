@@ -30,7 +30,7 @@ struct AH_IMEXPORTER_QIF {
 };
 
 
-AB_IMEXPORTER* qif_factory(AB_BANKING *ab, GWEN_DB_NODE *db);
+AB_IMEXPORTER *qif_factory(AB_BANKING *ab, GWEN_DB_NODE *db);
 void GWENHYWFAR_CB AH_ImExporterQIF_FreeData(void *bp, void *p);
 
 int AH_ImExporterQIF_Import(AB_IMEXPORTER *ie,

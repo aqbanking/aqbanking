@@ -20,14 +20,15 @@ GWEN_INHERIT(GWEN_DIALOG, AB_NEWUSER_DIALOG)
 
 
 
-GWEN_DIALOG *AB_NewUserDialog_new(AB_BANKING *ab, AB_PROVIDER *pro, const char *dname) {
+GWEN_DIALOG *AB_NewUserDialog_new(AB_BANKING *ab, AB_PROVIDER *pro, const char *dname)
+{
   GWEN_DIALOG *dlg;
   AB_NEWUSER_DIALOG *xdlg;
 
   dlg=GWEN_Dialog_new(dname);
   GWEN_NEW_OBJECT(AB_NEWUSER_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AB_NEWUSER_DIALOG, dlg, xdlg,
-		       AB_NewUserDialog_FreeData);
+                       AB_NewUserDialog_FreeData);
 
   xdlg->banking=ab;
   xdlg->provider=pro;
@@ -36,16 +37,18 @@ GWEN_DIALOG *AB_NewUserDialog_new(AB_BANKING *ab, AB_PROVIDER *pro, const char *
 
 
 
-void GWENHYWFAR_CB AB_NewUserDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AB_NewUserDialog_FreeData(void *bp, void *p)
+{
   AB_NEWUSER_DIALOG *xdlg;
 
-  xdlg=(AB_NEWUSER_DIALOG*) p;
+  xdlg=(AB_NEWUSER_DIALOG *) p;
   GWEN_FREE_OBJECT(xdlg);
 }
 
 
 
-AB_USER *AB_NewUserDialog_GetUser(const GWEN_DIALOG *dlg) {
+AB_USER *AB_NewUserDialog_GetUser(const GWEN_DIALOG *dlg)
+{
   AB_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -57,7 +60,8 @@ AB_USER *AB_NewUserDialog_GetUser(const GWEN_DIALOG *dlg) {
 
 
 
-void AB_NewUserDialog_SetUser(GWEN_DIALOG *dlg, AB_USER *u) {
+void AB_NewUserDialog_SetUser(GWEN_DIALOG *dlg, AB_USER *u)
+{
   AB_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -69,7 +73,8 @@ void AB_NewUserDialog_SetUser(GWEN_DIALOG *dlg, AB_USER *u) {
 
 
 
-AB_BANKING *AB_NewUserDialog_GetBanking(const GWEN_DIALOG *dlg) {
+AB_BANKING *AB_NewUserDialog_GetBanking(const GWEN_DIALOG *dlg)
+{
   AB_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -81,7 +86,8 @@ AB_BANKING *AB_NewUserDialog_GetBanking(const GWEN_DIALOG *dlg) {
 
 
 
-AB_PROVIDER *AB_NewUserDialog_GetProvider(const GWEN_DIALOG *dlg) {
+AB_PROVIDER *AB_NewUserDialog_GetProvider(const GWEN_DIALOG *dlg)
+{
   AB_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);

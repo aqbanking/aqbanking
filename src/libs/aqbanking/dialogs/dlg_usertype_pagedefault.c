@@ -33,7 +33,8 @@
 
 
 
-GWEN_DIALOG *AB_UserTypePageDefaultDialog_new(AB_BANKING *ab) {
+GWEN_DIALOG *AB_UserTypePageDefaultDialog_new(AB_BANKING *ab)
+{
   GWEN_DIALOG *dlg;
   GWEN_BUFFER *fbuf;
   int rv;
@@ -44,8 +45,8 @@ GWEN_DIALOG *AB_UserTypePageDefaultDialog_new(AB_BANKING *ab) {
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-			       "aqbanking/dialogs/dlg_usertype_pagedefault.dlg",
-			       fbuf);
+                               "aqbanking/dialogs/dlg_usertype_pagedefault.dlg",
+                               fbuf);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
@@ -65,9 +66,9 @@ GWEN_DIALOG *AB_UserTypePageDefaultDialog_new(AB_BANKING *ab) {
 
   /* add media paths for icons */
   GWEN_Dialog_AddMediaPathsFromPathManager(dlg,
-					   GWEN_PM_LIBNAME,
-					   GWEN_PM_SYSDATADIR,
-					   "aqbanking/dialogs/dialogs");
+                                           GWEN_PM_LIBNAME,
+                                           GWEN_PM_SYSDATADIR,
+                                           "aqbanking/dialogs/dialogs");
 
   /* done */
   return dlg;
@@ -75,7 +76,8 @@ GWEN_DIALOG *AB_UserTypePageDefaultDialog_new(AB_BANKING *ab) {
 
 
 
-void AB_UserTypePageDefaultDialog_Init(GWEN_DIALOG *dlg) {
+void AB_UserTypePageDefaultDialog_Init(GWEN_DIALOG *dlg)
+{
   GWEN_Dialog_SetCharProperty(dlg, "defaultIntroLabel", GWEN_DialogProperty_Title, 0,
                               I18N("<html>"
                                    "<p>Click on the <i>run</i> button below to create the user.</p>"
@@ -86,14 +88,16 @@ void AB_UserTypePageDefaultDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-void AB_UserTypePageDefaultDialog_Fini(GWEN_DIALOG *dlg) {
+void AB_UserTypePageDefaultDialog_Fini(GWEN_DIALOG *dlg)
+{
   DBG_NOTICE(AQBANKING_LOGDOMAIN, "fini called");
   AB_UserTypePageDialog_SetSelectedType(dlg, 0);
 }
 
 
 
-int AB_UserTypePageDefaultDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int AB_UserTypePageDefaultDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   /* nothing for now */
   return GWEN_DialogEvent_ResultNotHandled;
 }
@@ -101,9 +105,10 @@ int AB_UserTypePageDefaultDialog_HandleActivated(GWEN_DIALOG *dlg, const char *s
 
 
 int GWENHYWFAR_CB AB_UserTypePageDefaultDialog_SignalHandler(GWEN_DIALOG *dlg,
-							     GWEN_DIALOG_EVENTTYPE t,
-							     const char *sender) {
-  switch(t) {
+                                                             GWEN_DIALOG_EVENTTYPE t,
+                                                             const char *sender)
+{
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     AB_UserTypePageDefaultDialog_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;

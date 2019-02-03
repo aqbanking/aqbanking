@@ -40,7 +40,8 @@ GWEN_INHERIT(AH_JOB, AH_JOB_CREATESEPAMULTICOR1);
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_SepaCor1DebitDatedMultiCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_SepaCor1DebitDatedMultiCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
+{
   AH_JOB *j;
   AH_JOB_CREATESEPAMULTICOR1 *aj;
   GWEN_DB_NODE *dbParams;
@@ -96,10 +97,11 @@ AH_JOB *AH_Job_SepaCor1DebitDatedMultiCreate_new(AB_PROVIDER *pro, AB_USER *u, A
 
 
 /* --------------------------------------------------------------- FUNCTION */
-void GWENHYWFAR_CB AH_Job_SepaCor1DebitDatedMultiCreate_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_Job_SepaCor1DebitDatedMultiCreate_FreeData(void *bp, void *p)
+{
   AH_JOB_CREATESEPAMULTICOR1 *aj;
 
-  aj=(AH_JOB_CREATESEPAMULTICOR1*)p;
+  aj=(AH_JOB_CREATESEPAMULTICOR1 *)p;
 
   free(aj->fiid);
   AB_Value_free(aj->sumValues);
@@ -110,7 +112,8 @@ void GWENHYWFAR_CB AH_Job_SepaCor1DebitDatedMultiCreate_FreeData(void *bp, void 
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaCor1DebitDatedMultiCreate_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod) {
+int AH_Job_SepaCor1DebitDatedMultiCreate_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod)
+{
   AH_JOB_CREATESEPAMULTICOR1 *aj;
   const AB_TRANSACTION *t;
   const char *s;
@@ -159,7 +162,8 @@ int AH_Job_SepaCor1DebitDatedMultiCreate_AddChallengeParams(AH_JOB *j, int hkTan
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaCor1DebitDatedMultiCreate_Prepare(AH_JOB *j) {
+int AH_Job_SepaCor1DebitDatedMultiCreate_Prepare(AH_JOB *j)
+{
   AH_JOB_CREATESEPAMULTICOR1 *aj;
   GWEN_DB_NODE *dbArgs;
   GWEN_DB_NODE *profile;
@@ -184,7 +188,7 @@ int AH_Job_SepaCor1DebitDatedMultiCreate_Prepare(AH_JOB *j) {
     assert(t); /* debug */
     return GWEN_ERROR_INTERNAL;
   }
-  while(t) {
+  while (t) {
     const AB_VALUE *v;
 
     v=AB_Transaction_GetValue(t);
@@ -209,7 +213,7 @@ int AH_Job_SepaCor1DebitDatedMultiCreate_Prepare(AH_JOB *j) {
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "singleBookingWanted", "N");
     GWEN_DB_SetIntValue(profile, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "singleBookingWanted", 0);
+                        "singleBookingWanted", 0);
   }
 
   /* adjust parameters for COR1 transactions */
@@ -242,7 +246,7 @@ int AH_Job_SepaCor1DebitDatedMultiCreate_Prepare(AH_JOB *j) {
 
     /* store value */
     GWEN_DB_SetCharValue(dbV, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "value",
+                         "value",
                          GWEN_Buffer_GetStart(nbuf));
     GWEN_Buffer_free(nbuf);
 

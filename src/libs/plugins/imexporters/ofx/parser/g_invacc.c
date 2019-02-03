@@ -30,8 +30,9 @@ GWEN_INHERIT(AIO_OFX_GROUP, AIO_OFX_GROUP_INVACC)
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_INVACC_new(const char *groupName,
-				       AIO_OFX_GROUP *parent,
-				       GWEN_XML_CONTEXT *ctx) {
+                                       AIO_OFX_GROUP *parent,
+                                       GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_GROUP *g;
   AIO_OFX_GROUP_INVACC *xg;
 
@@ -57,10 +58,11 @@ AIO_OFX_GROUP *AIO_OfxGroup_INVACC_new(const char *groupName,
 
 
 GWENHYWFAR_CB
-void AIO_OfxGroup_INVACC_FreeData(void *bp, void *p) {
+void AIO_OfxGroup_INVACC_FreeData(void *bp, void *p)
+{
   AIO_OFX_GROUP_INVACC *xg;
 
-  xg=(AIO_OFX_GROUP_INVACC*)p;
+  xg=(AIO_OFX_GROUP_INVACC *)p;
   assert(xg);
 
   free(xg->currentElement);
@@ -72,7 +74,8 @@ void AIO_OfxGroup_INVACC_FreeData(void *bp, void *p) {
 
 
 
-const char *AIO_OfxGroup_INVACC_GetBrokerId(const AIO_OFX_GROUP *g) {
+const char *AIO_OfxGroup_INVACC_GetBrokerId(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_INVACC *xg;
 
   assert(g);
@@ -84,7 +87,8 @@ const char *AIO_OfxGroup_INVACC_GetBrokerId(const AIO_OFX_GROUP *g) {
 
 
 
-void AIO_OfxGroup_INVACC_SetBrokerId(AIO_OFX_GROUP *g, const char *s) {
+void AIO_OfxGroup_INVACC_SetBrokerId(AIO_OFX_GROUP *g, const char *s)
+{
   AIO_OFX_GROUP_INVACC *xg;
 
   assert(g);
@@ -92,13 +96,16 @@ void AIO_OfxGroup_INVACC_SetBrokerId(AIO_OFX_GROUP *g, const char *s) {
   assert(xg);
 
   free(xg->brokerId);
-  if (s) xg->brokerId=strdup(s);
-  else xg->brokerId=NULL;
+  if (s)
+    xg->brokerId=strdup(s);
+  else
+    xg->brokerId=NULL;
 }
 
 
 
-const char *AIO_OfxGroup_INVACC_GetAccId(const AIO_OFX_GROUP *g) {
+const char *AIO_OfxGroup_INVACC_GetAccId(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_INVACC *xg;
 
   assert(g);
@@ -110,7 +117,8 @@ const char *AIO_OfxGroup_INVACC_GetAccId(const AIO_OFX_GROUP *g) {
 
 
 
-void AIO_OfxGroup_INVACC_SetAccId(AIO_OFX_GROUP *g, const char *s) {
+void AIO_OfxGroup_INVACC_SetAccId(AIO_OFX_GROUP *g, const char *s)
+{
   AIO_OFX_GROUP_INVACC *xg;
 
   assert(g);
@@ -118,13 +126,16 @@ void AIO_OfxGroup_INVACC_SetAccId(AIO_OFX_GROUP *g, const char *s) {
   assert(xg);
 
   free(xg->accId);
-  if (s) xg->accId=strdup(s);
-  else xg->accId=NULL;
+  if (s)
+    xg->accId=strdup(s);
+  else
+    xg->accId=NULL;
 }
 
 
 
-const char *AIO_OfxGroup_INVACC_GetAccType(const AIO_OFX_GROUP *g) {
+const char *AIO_OfxGroup_INVACC_GetAccType(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_INVACC *xg;
 
   assert(g);
@@ -136,7 +147,8 @@ const char *AIO_OfxGroup_INVACC_GetAccType(const AIO_OFX_GROUP *g) {
 
 
 
-void AIO_OfxGroup_INVACC_SetAccType(AIO_OFX_GROUP *g, const char *s) {
+void AIO_OfxGroup_INVACC_SetAccType(AIO_OFX_GROUP *g, const char *s)
+{
   AIO_OFX_GROUP_INVACC *xg;
 
   assert(g);
@@ -144,13 +156,16 @@ void AIO_OfxGroup_INVACC_SetAccType(AIO_OFX_GROUP *g, const char *s) {
   assert(xg);
 
   free(xg->accType);
-  if (s) xg->accType=strdup(s);
-  else xg->accType=NULL;
+  if (s)
+    xg->accType=strdup(s);
+  else
+    xg->accType=NULL;
 }
 
 
 
-int AIO_OfxGroup_INVACC_StartTag(AIO_OFX_GROUP *g, const char *tagName) {
+int AIO_OfxGroup_INVACC_StartTag(AIO_OFX_GROUP *g, const char *tagName)
+{
   AIO_OFX_GROUP_INVACC *xg;
   //GWEN_XML_CONTEXT *ctx;
 
@@ -173,7 +188,8 @@ int AIO_OfxGroup_INVACC_StartTag(AIO_OFX_GROUP *g, const char *tagName) {
 
 
 
-int AIO_OfxGroup_INVACC_AddData(AIO_OFX_GROUP *g, const char *data) {
+int AIO_OfxGroup_INVACC_AddData(AIO_OFX_GROUP *g, const char *data)
+{
   AIO_OFX_GROUP_INVACC *xg;
 
   assert(g);
@@ -196,12 +212,12 @@ int AIO_OfxGroup_INVACC_AddData(AIO_OFX_GROUP *g, const char *data) {
     if (*s) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "AddData: %s=[%s]", xg->currentElement, s);
       if (strcasecmp(xg->currentElement, "BROKERID")==0 ||
-	  strcasecmp(xg->currentElement, "BANKID")==0)
-	AIO_OfxGroup_INVACC_SetBrokerId(g, GWEN_Buffer_GetStart(buf));
+          strcasecmp(xg->currentElement, "BANKID")==0)
+        AIO_OfxGroup_INVACC_SetBrokerId(g, GWEN_Buffer_GetStart(buf));
       else if (strcasecmp(xg->currentElement, "ACCTID")==0)
-	AIO_OfxGroup_INVACC_SetAccId(g, GWEN_Buffer_GetStart(buf));
+        AIO_OfxGroup_INVACC_SetAccId(g, GWEN_Buffer_GetStart(buf));
       else {
-	DBG_INFO(AQBANKING_LOGDOMAIN, "Ignoring data for unknown element [%s]", xg->currentElement);
+        DBG_INFO(AQBANKING_LOGDOMAIN, "Ignoring data for unknown element [%s]", xg->currentElement);
       }
     }
     GWEN_Buffer_free(buf);

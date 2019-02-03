@@ -19,13 +19,15 @@
 
 GWEN_DIALOG *AB_Banking_CreateImporterDialog(AB_BANKING *ab,
                                              AB_IMEXPORTER_CONTEXT *ctx,
-                                             const char *finishedMessage) {
+                                             const char *finishedMessage)
+{
   return AB_ImporterDialog_new(ab, ctx, finishedMessage);
 }
 
 
 
-GWEN_DIALOG *AB_Banking_CreateSetupDialog(AB_BANKING *ab) {
+GWEN_DIALOG *AB_Banking_CreateSetupDialog(AB_BANKING *ab)
+{
   return AB_SetupDialog_new(ab);
 }
 

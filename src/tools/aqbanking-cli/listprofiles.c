@@ -23,34 +23,35 @@
 
 
 
-int listProfiles(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int listProfiles(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   GWEN_DB_NODE *dbProfiles;
   int rv;
   const char *importerName;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "importerName",               /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "importer",                    /* long option */
-    "Specify the importer to use",   /* short description */
-    "Specify the importer to use"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "importerName",               /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                            /* short option */
+      "importer",                    /* long option */
+      "Specify the importer to use",   /* short description */
+      "Specify the importer to use"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -88,7 +89,7 @@ int listProfiles(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     GWEN_DB_NODE *dbT;
 
     dbT=GWEN_DB_GetFirstGroup(dbProfiles);
-    while(dbT) {
+    while (dbT) {
       const char *sName;
       const char *sVersion;
       const char *sShortDescr;
@@ -100,10 +101,10 @@ int listProfiles(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
       isGlobal=GWEN_DB_GetIntValue(dbT, "isGlobal", 0, 0);
 
       fprintf(stdout, "%s\t%s\t%s\t%s\n",
-	      sName?sName:"(none)",
-	      sVersion?sVersion:"(none)",
-	      sShortDescr?sShortDescr:"",
-	      isGlobal?"global":"local");
+              sName?sName:"(none)",
+              sVersion?sVersion:"(none)",
+              sShortDescr?sShortDescr:"",
+              isGlobal?"global":"local");
 
       dbT=GWEN_DB_GetNextGroup(dbT);
     }

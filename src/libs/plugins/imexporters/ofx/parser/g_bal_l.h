@@ -23,8 +23,8 @@
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_BAL_new(const char *groupName,
-				    AIO_OFX_GROUP *parent,
-				    GWEN_XML_CONTEXT *ctx);
+                                    AIO_OFX_GROUP *parent,
+                                    GWEN_XML_CONTEXT *ctx);
 
 const AB_VALUE *AIO_OfxGroup_BAL_GetValue(const AIO_OFX_GROUP *g);
 void AIO_OfxGroup_BAL_SetValue(AIO_OFX_GROUP *g, const AB_VALUE *v);

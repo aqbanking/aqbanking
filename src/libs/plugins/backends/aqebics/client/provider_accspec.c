@@ -9,9 +9,10 @@
 
 
 
-int EBC_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, AB_ACCOUNT *acc, AB_TRANSACTION_LIMITS_LIST *tll) {
+int EBC_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, AB_ACCOUNT *acc, AB_TRANSACTION_LIMITS_LIST *tll)
+{
   int i;
-  int jobList[]={
+  int jobList[]= {
     /* AB_Transaction_CommandGetBalance,                */
     AB_Transaction_CommandGetTransactions,
     /* AB_Transaction_CommandLoadCellPhone,             */
@@ -23,10 +24,11 @@ int EBC_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, AB_ACCOUNT
     /* AB_Transaction_CommandSepaDeleteStandingOrder,   */
     /* AB_Transaction_CommandSepaGetStandingOrders,     */
     /* AB_Transaction_CommandGetEStatements,            */
-    AB_Transaction_CommandUnknown};
+    AB_Transaction_CommandUnknown
+  };
 
   i=0;
-  while(jobList[i]!=AB_Transaction_CommandUnknown) {
+  while (jobList[i]!=AB_Transaction_CommandUnknown) {
     AB_TRANSACTION_LIMITS *limits=NULL;
 
     DBG_INFO(AQEBICS_LOGDOMAIN, "Handling job \"%s\"", AB_Transaction_Command_toString(jobList[i]));
@@ -48,7 +50,8 @@ int EBC_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, AB_ACCOUNT
 
 
 
-int EBC_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doLock) {
+int EBC_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doLock)
+{
   int rv;
   uint32_t aid=0;
   AB_ACCOUNT *a=NULL;

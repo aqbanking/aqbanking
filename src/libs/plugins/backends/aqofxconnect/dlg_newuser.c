@@ -52,7 +52,8 @@ GWEN_INHERIT(GWEN_DIALOG, AO_NEWUSER_DIALOG)
 
 
 
-GWEN_DIALOG *AO_NewUserDialog_new(AB_PROVIDER *pro) {
+GWEN_DIALOG *AO_NewUserDialog_new(AB_PROVIDER *pro)
+{
   GWEN_DIALOG *dlg;
   AO_NEWUSER_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -61,14 +62,14 @@ GWEN_DIALOG *AO_NewUserDialog_new(AB_PROVIDER *pro) {
   dlg=GWEN_Dialog_new("ao_newuser");
   GWEN_NEW_OBJECT(AO_NEWUSER_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AO_NEWUSER_DIALOG, dlg, xdlg,
-		       AO_NewUserDialog_FreeData);
+                       AO_NewUserDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AO_NewUserDialog_SignalHandler);
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-			       "aqbanking/backends/aqofxconnect/dialogs/dlg_newuser.dlg",
-			       fbuf);
+                               "aqbanking/backends/aqofxconnect/dialogs/dlg_newuser.dlg",
+                               fbuf);
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
@@ -99,10 +100,11 @@ GWEN_DIALOG *AO_NewUserDialog_new(AB_PROVIDER *pro) {
 
 
 
-void GWENHYWFAR_CB AO_NewUserDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AO_NewUserDialog_FreeData(void *bp, void *p)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
-  xdlg=(AO_NEWUSER_DIALOG*) p;
+  xdlg=(AO_NEWUSER_DIALOG *) p;
   free(xdlg->userName);
   free(xdlg->userId);
   free(xdlg->url);
@@ -120,7 +122,8 @@ void GWENHYWFAR_CB AO_NewUserDialog_FreeData(void *bp, void *p) {
 
 
 
-AB_USER *AO_NewUserDialog_GetUser(const GWEN_DIALOG *dlg) {
+AB_USER *AO_NewUserDialog_GetUser(const GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -132,7 +135,8 @@ AB_USER *AO_NewUserDialog_GetUser(const GWEN_DIALOG *dlg) {
 
 
 
-const char *AO_NewUserDialog_GetBankName(const GWEN_DIALOG *dlg) {
+const char *AO_NewUserDialog_GetBankName(const GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -144,7 +148,8 @@ const char *AO_NewUserDialog_GetBankName(const GWEN_DIALOG *dlg) {
 
 
 
-void AO_NewUserDialog_SetBankName(GWEN_DIALOG *dlg, const char *s) {
+void AO_NewUserDialog_SetBankName(GWEN_DIALOG *dlg, const char *s)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -152,13 +157,16 @@ void AO_NewUserDialog_SetBankName(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->bankName);
-  if (s) xdlg->bankName=strdup(s);
-  else xdlg->bankName=NULL;
+  if (s)
+    xdlg->bankName=strdup(s);
+  else
+    xdlg->bankName=NULL;
 }
 
 
 
-const char *AO_NewUserDialog_GetUserName(const GWEN_DIALOG *dlg) {
+const char *AO_NewUserDialog_GetUserName(const GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -170,7 +178,8 @@ const char *AO_NewUserDialog_GetUserName(const GWEN_DIALOG *dlg) {
 
 
 
-void AO_NewUserDialog_SetUserName(GWEN_DIALOG *dlg, const char *s) {
+void AO_NewUserDialog_SetUserName(GWEN_DIALOG *dlg, const char *s)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -178,13 +187,16 @@ void AO_NewUserDialog_SetUserName(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->userName);
-  if (s) xdlg->userName=strdup(s);
-  else xdlg->userName=NULL;
+  if (s)
+    xdlg->userName=strdup(s);
+  else
+    xdlg->userName=NULL;
 }
 
 
 
-const char *AO_NewUserDialog_GetUserId(const GWEN_DIALOG *dlg) {
+const char *AO_NewUserDialog_GetUserId(const GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -196,7 +208,8 @@ const char *AO_NewUserDialog_GetUserId(const GWEN_DIALOG *dlg) {
 
 
 
-void AO_NewUserDialog_SetUserId(GWEN_DIALOG *dlg, const char *s) {
+void AO_NewUserDialog_SetUserId(GWEN_DIALOG *dlg, const char *s)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -204,13 +217,16 @@ void AO_NewUserDialog_SetUserId(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->userId);
-  if (s) xdlg->userId=strdup(s);
-  else xdlg->userId=NULL;
+  if (s)
+    xdlg->userId=strdup(s);
+  else
+    xdlg->userId=NULL;
 }
 
 
 
-const char *AO_NewUserDialog_GetFid(const GWEN_DIALOG *dlg) {
+const char *AO_NewUserDialog_GetFid(const GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -222,7 +238,8 @@ const char *AO_NewUserDialog_GetFid(const GWEN_DIALOG *dlg) {
 
 
 
-void AO_NewUserDialog_SetFid(GWEN_DIALOG *dlg, const char *s) {
+void AO_NewUserDialog_SetFid(GWEN_DIALOG *dlg, const char *s)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -230,13 +247,16 @@ void AO_NewUserDialog_SetFid(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->fid);
-  if (s) xdlg->fid=strdup(s);
-  else xdlg->fid=NULL;
+  if (s)
+    xdlg->fid=strdup(s);
+  else
+    xdlg->fid=NULL;
 }
 
 
 
-const char *AO_NewUserDialog_GetOrg(const GWEN_DIALOG *dlg) {
+const char *AO_NewUserDialog_GetOrg(const GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -248,7 +268,8 @@ const char *AO_NewUserDialog_GetOrg(const GWEN_DIALOG *dlg) {
 
 
 
-void AO_NewUserDialog_SetOrg(GWEN_DIALOG *dlg, const char *s) {
+void AO_NewUserDialog_SetOrg(GWEN_DIALOG *dlg, const char *s)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -256,13 +277,16 @@ void AO_NewUserDialog_SetOrg(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->org);
-  if (s) xdlg->org=strdup(s);
-  else xdlg->org=NULL;
+  if (s)
+    xdlg->org=strdup(s);
+  else
+    xdlg->org=NULL;
 }
 
 
 
-const char *AO_NewUserDialog_GetAppId(const GWEN_DIALOG *dlg) {
+const char *AO_NewUserDialog_GetAppId(const GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -274,7 +298,8 @@ const char *AO_NewUserDialog_GetAppId(const GWEN_DIALOG *dlg) {
 
 
 
-void AO_NewUserDialog_SetAppId(GWEN_DIALOG *dlg, const char *s) {
+void AO_NewUserDialog_SetAppId(GWEN_DIALOG *dlg, const char *s)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -282,13 +307,16 @@ void AO_NewUserDialog_SetAppId(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->appId);
-  if (s) xdlg->appId=strdup(s);
-  else xdlg->appId=NULL;
+  if (s)
+    xdlg->appId=strdup(s);
+  else
+    xdlg->appId=NULL;
 }
 
 
 
-const char *AO_NewUserDialog_GetAppVer(const GWEN_DIALOG *dlg) {
+const char *AO_NewUserDialog_GetAppVer(const GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -300,7 +328,8 @@ const char *AO_NewUserDialog_GetAppVer(const GWEN_DIALOG *dlg) {
 
 
 
-void AO_NewUserDialog_SetAppVer(GWEN_DIALOG *dlg, const char *s) {
+void AO_NewUserDialog_SetAppVer(GWEN_DIALOG *dlg, const char *s)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -308,13 +337,16 @@ void AO_NewUserDialog_SetAppVer(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->appVer);
-  if (s) xdlg->appVer=strdup(s);
-  else xdlg->appVer=NULL;
+  if (s)
+    xdlg->appVer=strdup(s);
+  else
+    xdlg->appVer=NULL;
 }
 
 
 
-const char *AO_NewUserDialog_GetHeaderVer(const GWEN_DIALOG *dlg) {
+const char *AO_NewUserDialog_GetHeaderVer(const GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -326,7 +358,8 @@ const char *AO_NewUserDialog_GetHeaderVer(const GWEN_DIALOG *dlg) {
 
 
 
-void AO_NewUserDialog_SetHeaderVer(GWEN_DIALOG *dlg, const char *s) {
+void AO_NewUserDialog_SetHeaderVer(GWEN_DIALOG *dlg, const char *s)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -334,13 +367,16 @@ void AO_NewUserDialog_SetHeaderVer(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->headerVer);
-  if (s) xdlg->headerVer=strdup(s);
-  else xdlg->headerVer=NULL;
+  if (s)
+    xdlg->headerVer=strdup(s);
+  else
+    xdlg->headerVer=NULL;
 }
 
 
 
-const char *AO_NewUserDialog_GetBrokerId(const GWEN_DIALOG *dlg) {
+const char *AO_NewUserDialog_GetBrokerId(const GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -352,7 +388,8 @@ const char *AO_NewUserDialog_GetBrokerId(const GWEN_DIALOG *dlg) {
 
 
 
-void AO_NewUserDialog_SetBrokerId(GWEN_DIALOG *dlg, const char *s) {
+void AO_NewUserDialog_SetBrokerId(GWEN_DIALOG *dlg, const char *s)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -360,13 +397,16 @@ void AO_NewUserDialog_SetBrokerId(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->brokerId);
-  if (s) xdlg->brokerId=strdup(s);
-  else xdlg->brokerId=NULL;
+  if (s)
+    xdlg->brokerId=strdup(s);
+  else
+    xdlg->brokerId=NULL;
 }
 
 
 
-const char *AO_NewUserDialog_GetUrl(const GWEN_DIALOG *dlg) {
+const char *AO_NewUserDialog_GetUrl(const GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -378,7 +418,8 @@ const char *AO_NewUserDialog_GetUrl(const GWEN_DIALOG *dlg) {
 
 
 
-void AO_NewUserDialog_SetUrl(GWEN_DIALOG *dlg, const char *s) {
+void AO_NewUserDialog_SetUrl(GWEN_DIALOG *dlg, const char *s)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -386,13 +427,16 @@ void AO_NewUserDialog_SetUrl(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->url);
-  if (s) xdlg->url=strdup(s);
-  else xdlg->url=NULL;
+  if (s)
+    xdlg->url=strdup(s);
+  else
+    xdlg->url=NULL;
 }
 
 
 
-const char *AO_NewUserDialog_GetClientUid(const GWEN_DIALOG *dlg) {
+const char *AO_NewUserDialog_GetClientUid(const GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -404,7 +448,8 @@ const char *AO_NewUserDialog_GetClientUid(const GWEN_DIALOG *dlg) {
 
 
 
-void AO_NewUserDialog_SetClientUid(GWEN_DIALOG *dlg, const char *s) {
+void AO_NewUserDialog_SetClientUid(GWEN_DIALOG *dlg, const char *s)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -412,13 +457,16 @@ void AO_NewUserDialog_SetClientUid(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->clientUid);
-  if (s) xdlg->clientUid=strdup(s);
-  else xdlg->clientUid=NULL;
+  if (s)
+    xdlg->clientUid=strdup(s);
+  else
+    xdlg->clientUid=NULL;
 }
 
 
 
-int AO_NewUserDialog_GetHttpVMajor(const GWEN_DIALOG *dlg) {
+int AO_NewUserDialog_GetHttpVMajor(const GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -430,7 +478,8 @@ int AO_NewUserDialog_GetHttpVMajor(const GWEN_DIALOG *dlg) {
 
 
 
-int AO_NewUserDialog_GetHttpVMinor(const GWEN_DIALOG *dlg) {
+int AO_NewUserDialog_GetHttpVMinor(const GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -442,7 +491,8 @@ int AO_NewUserDialog_GetHttpVMinor(const GWEN_DIALOG *dlg) {
 
 
 
-void AO_NewUserDialog_SetHttpVersion(GWEN_DIALOG *dlg, int vmajor, int vminor) {
+void AO_NewUserDialog_SetHttpVersion(GWEN_DIALOG *dlg, int vmajor, int vminor)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -455,7 +505,8 @@ void AO_NewUserDialog_SetHttpVersion(GWEN_DIALOG *dlg, int vmajor, int vminor) {
 
 
 
-uint32_t AO_NewUserDialog_GetFlags(const GWEN_DIALOG *dlg) {
+uint32_t AO_NewUserDialog_GetFlags(const GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -467,7 +518,8 @@ uint32_t AO_NewUserDialog_GetFlags(const GWEN_DIALOG *dlg) {
 
 
 
-void AO_NewUserDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AO_NewUserDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -479,7 +531,8 @@ void AO_NewUserDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AO_NewUserDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AO_NewUserDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -491,7 +544,8 @@ void AO_NewUserDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AO_NewUserDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AO_NewUserDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
@@ -506,7 +560,8 @@ void AO_NewUserDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AO_NewUserDialog_Init(GWEN_DIALOG *dlg) {
+void AO_NewUserDialog_Init(GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
@@ -519,20 +574,20 @@ void AO_NewUserDialog_Init(GWEN_DIALOG *dlg) {
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("OFX DirectConnect Setup Wizard"),
-			      0);
+                              "",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("OFX DirectConnect Setup Wizard"),
+                              0);
 
   /* select first page */
   GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, 0, 0);
 
   /* setup intro page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_begin_label",
-			      GWEN_DialogProperty_Title,
-			      0,
+                              "wiz_begin_label",
+                              GWEN_DialogProperty_Title,
+                              0,
                               I18N("<html>"
                                    "<p>This dialog assists you in setting up an OFX DirectConnect User.</p>"
                                    "</html>"
@@ -541,9 +596,9 @@ void AO_NewUserDialog_Init(GWEN_DIALOG *dlg) {
 
   /* setup bank page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_bank_label",
-			      GWEN_DialogProperty_Title,
-			      0,
+                              "wiz_bank_label",
+                              GWEN_DialogProperty_Title,
+                              0,
                               I18N("<html>"
                                    "<p>Please enter your bank settings below.</p>"
                                    "<p>Click the <b>Select</b> button to choose from a list of "
@@ -566,8 +621,8 @@ void AO_NewUserDialog_Init(GWEN_DIALOG *dlg) {
   /* setup user page */
   GWEN_Dialog_SetCharProperty(dlg,
                               "wiz_user_label",
-			      GWEN_DialogProperty_Title,
-			      0,
+                              GWEN_DialogProperty_Title,
+                              0,
                               I18N("<html>"
                                    "<p>Please enter your user settings below.</p>"
                                    "<p><i>User Name</i> is your real name, <i>User Id</i> is "
@@ -585,9 +640,9 @@ void AO_NewUserDialog_Init(GWEN_DIALOG *dlg) {
 
   /* setup application page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_app_label",
-			      GWEN_DialogProperty_Title,
-			      0,
+                              "wiz_app_label",
+                              GWEN_DialogProperty_Title,
+                              0,
                               I18N("<html>"
                                    "<p>Please choose the application you want AqBanking to emulate. "
                                    "Not all banks support all applications and versions, you might have "
@@ -606,7 +661,7 @@ void AO_NewUserDialog_Init(GWEN_DIALOG *dlg) {
     const AO_APPINFO *first;
 
     first=ai;
-    while(ai->appName) {
+    while (ai->appName) {
       GWEN_Dialog_SetCharProperty(dlg, "wiz_app_combo", GWEN_DialogProperty_AddValue, 0, I18N(ai->appName), 0);
       ai++;
     }
@@ -624,9 +679,9 @@ void AO_NewUserDialog_Init(GWEN_DIALOG *dlg) {
 
   /* setup creation page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_create_label",
-			      GWEN_DialogProperty_Title,
-			      0,
+                              "wiz_create_label",
+                              GWEN_DialogProperty_Title,
+                              0,
                               I18N("<html>"
                                    "<p>We are now ready to create the user.</p>"
                                    "<p>Click the <i>next</i> button to proceed or <i>abort</i> to abort.</p>"
@@ -637,9 +692,9 @@ void AO_NewUserDialog_Init(GWEN_DIALOG *dlg) {
 
   /* setup extro page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_end_label",
-			      GWEN_DialogProperty_Title,
-			      0,
+                              "wiz_end_label",
+                              GWEN_DialogProperty_Title,
+                              0,
                               I18N("<html>"
                                    "<p>The user has been successfully setup.</p>"
                                    "<p>You can now try to retrieve the list of accounts the "
@@ -655,7 +710,7 @@ void AO_NewUserDialog_Init(GWEN_DIALOG *dlg) {
                                    "bank does not support account list download you will have to\n"
                                    "add the account manually."
                                   ),
-			      0);
+                              0);
 
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
@@ -674,7 +729,8 @@ void AO_NewUserDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-void AO_NewUserDialog_Fini(GWEN_DIALOG *dlg) {
+void AO_NewUserDialog_Fini(GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
   int i;
   GWEN_DB_NODE *dbPrefs;
@@ -688,21 +744,22 @@ void AO_NewUserDialog_Fini(GWEN_DIALOG *dlg) {
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_width",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_width",
+                      i);
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_height",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_height",
+                      i);
 }
 
 
 
-int AO_NewUserDialog_GetBankPageData(GWEN_DIALOG *dlg) {
+int AO_NewUserDialog_GetBankPageData(GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
   const char *s;
 
@@ -753,7 +810,8 @@ int AO_NewUserDialog_GetBankPageData(GWEN_DIALOG *dlg) {
 
 
 
-int AO_NewUserDialog_GetUserPageData(GWEN_DIALOG *dlg) {
+int AO_NewUserDialog_GetUserPageData(GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
   const char *s;
 
@@ -788,7 +846,8 @@ int AO_NewUserDialog_GetUserPageData(GWEN_DIALOG *dlg) {
 
 
 
-int AO_NewUserDialog_GetAppPageData(GWEN_DIALOG *dlg) {
+int AO_NewUserDialog_GetAppPageData(GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
   const char *s;
 
@@ -825,7 +884,8 @@ int AO_NewUserDialog_GetAppPageData(GWEN_DIALOG *dlg) {
 
 
 
-int AO_NewUserDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
+int AO_NewUserDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards)
+{
   AO_NEWUSER_DIALOG *xdlg;
   int rv;
 
@@ -833,7 +893,7 @@ int AO_NewUserDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AO_NEWUSER_DIALOG, dlg);
   assert(xdlg);
 
-  switch(page) {
+  switch (page) {
   case PAGE_BEGIN:
     GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
     GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, page, 0);
@@ -896,7 +956,8 @@ int AO_NewUserDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
 
 
 
-int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
+int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
   AB_USER *u;
   int rv;
@@ -947,29 +1008,29 @@ int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
   }
 
   pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
-			     GWEN_GUI_PROGRESS_ALLOW_EMBED |
-			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-			     GWEN_GUI_PROGRESS_SHOW_ABORT,
+                             GWEN_GUI_PROGRESS_ALLOW_EMBED |
+                             GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+                             GWEN_GUI_PROGRESS_SHOW_ABORT,
                              I18N("Setting Up OFX DirectConnect User"),
                              I18N("The user will be created and the certificate retrieved."),
                              1,
-			     0);
+                             0);
   /* lock new user */
   DBG_ERROR(0, "Locking user");
   rv=AB_Provider_BeginExclUseUser(xdlg->provider, u);
   if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Could not lock user (%d)", rv);
     GWEN_Gui_ProgressLog(pid,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Unable to lock users"));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Unable to lock users"));
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
 
   GWEN_Gui_ProgressLog(pid,
-		       GWEN_LoggerLevel_Notice,
-		       I18N("Retrieving SSL certificate"));
+                       GWEN_LoggerLevel_Notice,
+                       I18N("Retrieving SSL certificate"));
   rv=AO_Provider_GetCert(xdlg->provider, u);
   if (rv<0) {
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
@@ -985,8 +1046,8 @@ int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressLog(pid,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Aborted by user."));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Aborted by user."));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -996,12 +1057,12 @@ int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
   rv=AB_Provider_EndExclUseUser(xdlg->provider, u, 0);
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
-	     "Could not unlock user [%s] (%d)",
-	     AB_User_GetUserId(u), rv);
+             "Could not unlock user [%s] (%d)",
+             AB_User_GetUserId(u), rv);
     GWEN_Gui_ProgressLog2(pid,
-			  GWEN_LoggerLevel_Error,
-			  I18N("Could not unlock user %s (%d)"),
-			  AB_User_GetUserId(u), rv);
+                          GWEN_LoggerLevel_Error,
+                          I18N("Could not unlock user %s (%d)"),
+                          AB_User_GetUserId(u), rv);
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
@@ -1018,7 +1079,8 @@ int AO_NewUserDialog_DoIt(GWEN_DIALOG *dlg) {
 
 
 
-int AO_NewUserDialog_UndoIt(GWEN_DIALOG *dlg) {
+int AO_NewUserDialog_UndoIt(GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
   AB_USER *u;
 
@@ -1044,7 +1106,7 @@ int AO_NewUserDialog_UndoIt(GWEN_DIALOG *dlg) {
 
       uid=AB_User_GetUniqueId(u);
       a=AB_Account_List_First(accountList);
-      while(a) {
+      while (a) {
         AB_Account_List_Del(a);
         if (AB_Account_GetUserId(a)==uid)
           AB_Provider_DeleteAccount(xdlg->provider, AB_Account_GetUniqueId(a));
@@ -1062,7 +1124,8 @@ int AO_NewUserDialog_UndoIt(GWEN_DIALOG *dlg) {
 
 
 
-int AO_NewUserDialog_Next(GWEN_DIALOG *dlg) {
+int AO_NewUserDialog_Next(GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
   int page;
 
@@ -1086,7 +1149,8 @@ int AO_NewUserDialog_Next(GWEN_DIALOG *dlg) {
 
 
 
-int AO_NewUserDialog_Previous(GWEN_DIALOG *dlg) {
+int AO_NewUserDialog_Previous(GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
   int page;
 
@@ -1105,7 +1169,8 @@ int AO_NewUserDialog_Previous(GWEN_DIALOG *dlg) {
 
 
 
-int AO_NewUserDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
+int AO_NewUserDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
   GWEN_DIALOG *dlg2;
   int rv;
@@ -1143,13 +1208,17 @@ int AO_NewUserDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
 
     s=AO_OfxSpecialDialog_GetClientUid(dlg2);
     free(xdlg->clientUid);
-    if (s) xdlg->clientUid=strdup(s);
-    else xdlg->clientUid=NULL;
+    if (s)
+      xdlg->clientUid=strdup(s);
+    else
+      xdlg->clientUid=NULL;
 
     s=AO_OfxSpecialDialog_GetSecurityType(dlg2);
     free(xdlg->securityType);
-    if (s) xdlg->securityType=strdup(s);
-    else xdlg->securityType=NULL;
+    if (s)
+      xdlg->securityType=strdup(s);
+    else
+      xdlg->securityType=NULL;
   }
 
   GWEN_Dialog_free(dlg2);
@@ -1158,7 +1227,8 @@ int AO_NewUserDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
 
 
 
-int AO_NewUserDialog_HandleActivatedBankSelect(GWEN_DIALOG *dlg) {
+int AO_NewUserDialog_HandleActivatedBankSelect(GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
   int rv;
   GWEN_DIALOG *dlg2;
@@ -1185,7 +1255,7 @@ int AO_NewUserDialog_HandleActivatedBankSelect(GWEN_DIALOG *dlg) {
     GWEN_Buffer_free(tbuf);
     return GWEN_DialogEvent_ResultHandled;
   }
-  
+
   dlg2=OH_GetInstituteDialog_new(GWEN_Buffer_GetStart(tbuf), NULL);
   GWEN_Buffer_free(tbuf);
   if (dlg2==NULL) {
@@ -1193,18 +1263,18 @@ int AO_NewUserDialog_HandleActivatedBankSelect(GWEN_DIALOG *dlg) {
     return GWEN_DialogEvent_ResultHandled;
   }
   rv=GWEN_Gui_ExecDialog(dlg2, 0);
-  if (rv<=0){
+  if (rv<=0) {
     DBG_DEBUG(AQOFXCONNECT_LOGDOMAIN, "Dialog: rejected (%d)", rv);
     return GWEN_DialogEvent_ResultHandled;
   }
   else {
     const OH_INSTITUTE_DATA *od;
-  
+
     DBG_DEBUG(AQOFXCONNECT_LOGDOMAIN, "Dialog: rejected (%d)", rv);
     od=OH_GetInstituteDialog_GetSelectedInstitute(dlg2);
     if (od) {
       const char *s;
-  
+
       s=OH_InstituteData_GetName(od);
       if (s && *s)
         GWEN_Dialog_SetCharProperty(dlg, "wiz_bankname_edit", GWEN_DialogProperty_Value, 0, s, 0);
@@ -1231,7 +1301,8 @@ int AO_NewUserDialog_HandleActivatedBankSelect(GWEN_DIALOG *dlg) {
 
 
 
-int AO_NewUserDialog_HandleActivatedApp(GWEN_DIALOG *dlg) {
+int AO_NewUserDialog_HandleActivatedApp(GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
   int idx;
 
@@ -1246,7 +1317,7 @@ int AO_NewUserDialog_HandleActivatedApp(GWEN_DIALOG *dlg) {
 
     ai=AO_Provider_GetAppInfos(xdlg->provider);
     if (ai) {
-      while(ai->appName && --idx) {
+      while (ai->appName && --idx) {
         ai++;
       }
       if (ai->appName) {
@@ -1263,7 +1334,8 @@ int AO_NewUserDialog_HandleActivatedApp(GWEN_DIALOG *dlg) {
 
 
 
-int AO_NewUserDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg) {
+int AO_NewUserDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg)
+{
   AO_NEWUSER_DIALOG *xdlg;
   int rv;
 
@@ -1282,7 +1354,8 @@ int AO_NewUserDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg) {
 
 
 
-int AO_NewUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int AO_NewUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   DBG_ERROR(0, "Activated: %s", sender);
   if (strcasecmp(sender, "wiz_prev_button")==0)
     return AO_NewUserDialog_Previous(dlg);
@@ -1309,7 +1382,8 @@ int AO_NewUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 
 
-int AO_NewUserDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender) {
+int AO_NewUserDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender)
+{
   if (strcasecmp(sender, "wiz_username_edit")==0 ||
       strcasecmp(sender, "wiz_userid_edit")==0 ||
       strcasecmp(sender, "wiz_url_edit")==0 ||
@@ -1324,23 +1398,23 @@ int AO_NewUserDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender) {
     if (GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1)==PAGE_BANK) {
       rv=AO_NewUserDialog_GetBankPageData(dlg);
       if (rv<0)
-	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
       else
-	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
     }
     else if (GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1)==PAGE_USER) {
       rv=AO_NewUserDialog_GetUserPageData(dlg);
       if (rv<0)
-	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
       else
-	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
     }
     else if (GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1)==PAGE_APP) {
       rv=AO_NewUserDialog_GetAppPageData(dlg);
       if (rv<0)
-	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
       else
-	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
     }
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -1351,14 +1425,15 @@ int AO_NewUserDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender) {
 
 int GWENHYWFAR_CB AO_NewUserDialog_SignalHandler(GWEN_DIALOG *dlg,
                                                  GWEN_DIALOG_EVENTTYPE t,
-                                                 const char *sender) {
+                                                 const char *sender)
+{
   AO_NEWUSER_DIALOG *xdlg;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AO_NEWUSER_DIALOG, dlg);
   assert(xdlg);
 
-  switch(t) {
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     AO_NewUserDialog_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;

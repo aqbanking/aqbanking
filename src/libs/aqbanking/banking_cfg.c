@@ -10,13 +10,14 @@
 
 
 
-int AB_Banking__GetConfigManager(AB_BANKING *ab, const char *dname) {
+int AB_Banking__GetConfigManager(AB_BANKING *ab, const char *dname)
+{
   GWEN_BUFFER *buf;
   char home[256];
 
   if (GWEN_Directory_GetHomeDirectory(home, sizeof(home))) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Could not determine home directory, aborting.");
+              "Could not determine home directory, aborting.");
     abort();
   }
 
@@ -63,18 +64,18 @@ int AB_Banking__GetConfigManager(AB_BANKING *ab, const char *dname) {
   }
 
   DBG_INFO(AQBANKING_LOGDOMAIN,
-	   "Using data folder [%s]",
-	   ab->dataDir);
+           "Using data folder [%s]",
+           ab->dataDir);
   DBG_INFO(AQBANKING_LOGDOMAIN,
-	   "Using ConfigManager [%s]",
-	   GWEN_Buffer_GetStart(buf));
+           "Using ConfigManager [%s]",
+           GWEN_Buffer_GetStart(buf));
 
   ab->configMgr=GWEN_ConfigMgr_Factory(GWEN_Buffer_GetStart(buf));
   if (ab->configMgr==NULL) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Could not create ConfigMgr[%s]. "
-	      "Maybe the gwenhywfar plugins are not installed?",
-	      GWEN_Buffer_GetStart(buf));
+              "Could not create ConfigMgr[%s]. "
+              "Maybe the gwenhywfar plugins are not installed?",
+              GWEN_Buffer_GetStart(buf));
     GWEN_Buffer_free(buf);
     return GWEN_ERROR_GENERIC;
   }
@@ -86,7 +87,8 @@ int AB_Banking__GetConfigManager(AB_BANKING *ab, const char *dname) {
 
 
 
-int AB_Banking_LoadSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE **pDb) {
+int AB_Banking_LoadSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE **pDb)
+{
   assert(ab);
   assert(name);
   if (name) {
@@ -95,8 +97,8 @@ int AB_Banking_LoadSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE *
     rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_SHARED, name, pDb);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Could not load shared group [%s] (%d)",
-		name, rv);
+                "Could not load shared group [%s] (%d)",
+                name, rv);
       return rv;
     }
     return 0;
@@ -109,7 +111,8 @@ int AB_Banking_LoadSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE *
 
 
 
-int AB_Banking_SaveSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE *db) {
+int AB_Banking_SaveSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE *db)
+{
   assert(ab);
   assert(name);
   if (name) {
@@ -118,8 +121,8 @@ int AB_Banking_SaveSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE *
     rv=GWEN_ConfigMgr_SetGroup(ab->configMgr, AB_CFG_GROUP_SHARED, name, db);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Could not save shared group [%s] (%d)",
-		name, rv);
+                "Could not save shared group [%s] (%d)",
+                name, rv);
       return rv;
     }
     return 0;
@@ -132,7 +135,8 @@ int AB_Banking_SaveSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE *
 
 
 
-int AB_Banking_LockSharedConfig(AB_BANKING *ab, const char *name) {
+int AB_Banking_LockSharedConfig(AB_BANKING *ab, const char *name)
+{
   assert(ab);
   assert(name);
   if (name) {
@@ -141,8 +145,8 @@ int AB_Banking_LockSharedConfig(AB_BANKING *ab, const char *name) {
     rv=GWEN_ConfigMgr_LockGroup(ab->configMgr, AB_CFG_GROUP_SHARED, name);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Could not lock shared group [%s] (%d)",
-		name, rv);
+                "Could not lock shared group [%s] (%d)",
+                name, rv);
       return rv;
     }
     return 0;
@@ -155,7 +159,8 @@ int AB_Banking_LockSharedConfig(AB_BANKING *ab, const char *name) {
 
 
 
-int AB_Banking_UnlockSharedConfig(AB_BANKING *ab, const char *name) {
+int AB_Banking_UnlockSharedConfig(AB_BANKING *ab, const char *name)
+{
   assert(ab);
   assert(name);
   if (name) {
@@ -164,8 +169,8 @@ int AB_Banking_UnlockSharedConfig(AB_BANKING *ab, const char *name) {
     rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_SHARED, name);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Could not unlock shared group [%s] (%d)",
-		name, rv);
+                "Could not unlock shared group [%s] (%d)",
+                name, rv);
       return rv;
     }
     return 0;
@@ -178,7 +183,8 @@ int AB_Banking_UnlockSharedConfig(AB_BANKING *ab, const char *name) {
 
 
 
-int AB_Banking_GetUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf){
+int AB_Banking_GetUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf)
+{
   if (ab->dataDir) {
     GWEN_Buffer_AppendString(buf, ab->dataDir);
     return 0;
@@ -193,23 +199,24 @@ int AB_Banking_GetUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf){
 
 int AB_Banking_GetSharedDataDir(const AB_BANKING *ab,
                                 const char *name,
-                                GWEN_BUFFER *buf){
+                                GWEN_BUFFER *buf)
+{
   assert(ab);
   if (ab->dataDir) {
     GWEN_Buffer_AppendString(buf, ab->dataDir);
     GWEN_Buffer_AppendString(buf, DIRSEP "shared" DIRSEP);
     if (GWEN_Text_EscapeToBufferTolerant(name, buf)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Bad share name, aborting.");
+                "Bad share name, aborting.");
       abort();
     }
     else {
       char *s;
-  
+
       s=GWEN_Buffer_GetStart(buf);
-      while(*s) {
-	*s=tolower(*s);
-	s++;
+      while (*s) {
+        *s=tolower(*s);
+        s++;
       }
     }
     return 0;
@@ -222,7 +229,8 @@ int AB_Banking_GetSharedDataDir(const AB_BANKING *ab,
 
 
 
-int AB_Banking_GetAppUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf){
+int AB_Banking_GetAppUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf)
+{
   int rv;
 
   assert(ab->appEscName);
@@ -241,8 +249,9 @@ int AB_Banking_GetAppUserDataDir(const AB_BANKING *ab, GWEN_BUFFER *buf){
 
 
 int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab,
-				      const char *name,
-				      GWEN_BUFFER *buf){
+                                      const char *name,
+                                      GWEN_BUFFER *buf)
+{
   int rv;
 
   rv=AB_Banking_GetUserDataDir(ab, buf);
@@ -256,7 +265,8 @@ int AB_Banking_GetProviderUserDataDir(const AB_BANKING *ab,
 
 
 
-GWEN_STRINGLIST *AB_Banking_GetGlobalDataDirs(void) {
+GWEN_STRINGLIST *AB_Banking_GetGlobalDataDirs(void)
+{
   GWEN_STRINGLIST *sl;
 
   sl=GWEN_PathManager_GetPaths(AB_PM_LIBNAME, AB_PM_DATADIR);
@@ -265,7 +275,8 @@ GWEN_STRINGLIST *AB_Banking_GetGlobalDataDirs(void) {
 
 
 
-GWEN_STRINGLIST *AB_Banking_GetGlobalSysconfDirs(void) {
+GWEN_STRINGLIST *AB_Banking_GetGlobalSysconfDirs(void)
+{
   GWEN_STRINGLIST *sl;
 
   sl=GWEN_PathManager_GetPaths(AB_PM_LIBNAME, AB_PM_SYSCONFDIR);
@@ -279,7 +290,8 @@ int AB_Banking_ReadNamedConfigGroup(const AB_BANKING *ab,
                                     const char *subGroupName,
                                     int doLock,
                                     int doUnlock,
-                                    GWEN_DB_NODE **pDb) {
+                                    GWEN_DB_NODE **pDb)
+{
   GWEN_DB_NODE *db=NULL;
   int rv;
 
@@ -288,7 +300,7 @@ int AB_Banking_ReadNamedConfigGroup(const AB_BANKING *ab,
   /* check for config manager (created by AB_Banking_Init) */
   if (ab->configMgr==NULL) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "No config manager (maybe the gwenhywfar plugins are not installed?");
+              "No config manager (maybe the gwenhywfar plugins are not installed?");
     return GWEN_ERROR_GENERIC;
   }
 
@@ -328,11 +340,12 @@ int AB_Banking_ReadNamedConfigGroup(const AB_BANKING *ab,
 
 
 int AB_Banking_WriteNamedConfigGroup(AB_BANKING *ab,
-                                      const char *groupName,
-                                      const char *subGroupName,
-                                      int doLock,
-                                      int doUnlock,
-                                      GWEN_DB_NODE *db) {
+                                     const char *groupName,
+                                     const char *subGroupName,
+                                     int doLock,
+                                     int doUnlock,
+                                     GWEN_DB_NODE *db)
+{
   int rv;
 
   assert(ab);
@@ -382,7 +395,8 @@ int AB_Banking_ReadConfigGroup(const AB_BANKING *ab,
                                uint32_t uniqueId,
                                int doLock,
                                int doUnlock,
-                               GWEN_DB_NODE **pDb) {
+                               GWEN_DB_NODE **pDb)
+{
   int rv;
   char idBuf[256];
 
@@ -415,11 +429,12 @@ int AB_Banking_ReadConfigGroup(const AB_BANKING *ab,
 
 
 int AB_Banking_WriteConfigGroup(AB_BANKING *ab,
-                                 const char *groupName,
-                                 uint32_t uniqueId,
-                                 int doLock,
-                                 int doUnlock,
-                                 GWEN_DB_NODE *db) {
+                                const char *groupName,
+                                uint32_t uniqueId,
+                                int doLock,
+                                int doUnlock,
+                                GWEN_DB_NODE *db)
+{
   int rv;
   char idBuf[256];
 
@@ -452,7 +467,8 @@ int AB_Banking_WriteConfigGroup(AB_BANKING *ab,
 
 
 
-int AB_Banking_DeleteConfigGroup(AB_BANKING *ab, const char *groupName, uint32_t uniqueId) {
+int AB_Banking_DeleteConfigGroup(AB_BANKING *ab, const char *groupName, uint32_t uniqueId)
+{
   int rv;
   char idBuf[256];
 
@@ -484,7 +500,8 @@ int AB_Banking_DeleteConfigGroup(AB_BANKING *ab, const char *groupName, uint32_t
 
 
 
-int AB_Banking_UnlockConfigGroup(AB_BANKING *ab, const char *groupName, uint32_t uniqueId) {
+int AB_Banking_UnlockConfigGroup(AB_BANKING *ab, const char *groupName, uint32_t uniqueId)
+{
   int rv;
   char idBuf[256];
 
@@ -521,7 +538,8 @@ int AB_Banking_ReadConfigGroups(const AB_BANKING *ab,
                                 const char *uidField,
                                 const char *matchVar,
                                 const char *matchVal,
-                                GWEN_DB_NODE **pDb) {
+                                GWEN_DB_NODE **pDb)
+{
   GWEN_STRINGLIST *sl;
   int rv;
 
@@ -540,7 +558,7 @@ int AB_Banking_ReadConfigGroups(const AB_BANKING *ab,
     dbAll=GWEN_DB_Group_new("all");
 
     se=GWEN_StringList_FirstEntry(sl);
-    while(se) {
+    while (se) {
       const char *t;
       GWEN_DB_NODE *db=NULL;
 
@@ -573,15 +591,15 @@ int AB_Banking_ReadConfigGroups(const AB_BANKING *ab,
           GWEN_DB_GroupRename(db, t);
           if (doAdd && uidField && *uidField) {
             int v;
-  
+
             v=GWEN_DB_GetIntValue(db, uidField, 0, 0);
             if (v==0)
               doAdd=0;
           }
-  
+
           if (doAdd && matchVar && *matchVar) {
             const char *s;
-  
+
             s=GWEN_DB_GetCharValue(db, matchVar, 0, NULL);
             if (s && *s) {
               if (strcasecmp(s, matchVal)!=0)
@@ -592,7 +610,7 @@ int AB_Banking_ReadConfigGroups(const AB_BANKING *ab,
                 doAdd=0;
             }
           }
-  
+
           if (doAdd)
             GWEN_DB_AddGroup(dbAll, db);
           else
@@ -605,8 +623,8 @@ int AB_Banking_ReadConfigGroups(const AB_BANKING *ab,
     if (GWEN_DB_Groups_Count(dbAll)) {
       *pDb=dbAll;
       if (ignoredGroups) {
-	GWEN_StringList_free(sl);
-	return GWEN_ERROR_PARTIAL;
+        GWEN_StringList_free(sl);
+        return GWEN_ERROR_PARTIAL;
       }
       return 0;
     }

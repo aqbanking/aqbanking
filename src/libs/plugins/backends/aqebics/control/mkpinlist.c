@@ -29,36 +29,37 @@
 int mkPinList(AB_PROVIDER *pro,
               GWEN_DB_NODE *dbArgs,
               int argc,
-              char **argv) {
+              char **argv)
+{
   GWEN_DB_NODE *db;
   GWEN_SYNCIO *sio;
   AB_USER_LIST *ul;
   AB_USER *u;
   int rv;
   const char *outFile;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "outFile",                    /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "o",                          /* short option */
-    "outfile",                    /* long option */
-    "Specify the name of the output file", /* short description */
-    "Specify the name of the output file"  /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "outFile",                    /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "o",                          /* short option */
+      "outfile",                    /* long option */
+      "Specify the name of the output file", /* short description */
+      "Specify the name of the output file"  /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -92,16 +93,16 @@ int mkPinList(AB_PROVIDER *pro,
   else {
     sio=GWEN_SyncIo_File_new(outFile, GWEN_SyncIo_File_CreationMode_CreateAlways);
     GWEN_SyncIo_AddFlags(sio,
-			 GWEN_SYNCIO_FILE_FLAGS_READ |
-			 GWEN_SYNCIO_FILE_FLAGS_WRITE |
-			 GWEN_SYNCIO_FILE_FLAGS_UREAD |
-			 GWEN_SYNCIO_FILE_FLAGS_UWRITE |
-			 GWEN_SYNCIO_FILE_FLAGS_GREAD |
-			 GWEN_SYNCIO_FILE_FLAGS_GWRITE);
+                         GWEN_SYNCIO_FILE_FLAGS_READ |
+                         GWEN_SYNCIO_FILE_FLAGS_WRITE |
+                         GWEN_SYNCIO_FILE_FLAGS_UREAD |
+                         GWEN_SYNCIO_FILE_FLAGS_UWRITE |
+                         GWEN_SYNCIO_FILE_FLAGS_GREAD |
+                         GWEN_SYNCIO_FILE_FLAGS_GWRITE);
     rv=GWEN_SyncIo_Connect(sio);
     if (rv<0) {
       DBG_ERROR(0, "Error opening output file: %s",
-		strerror(errno));
+                strerror(errno));
       return 4;
     }
   }
@@ -120,11 +121,11 @@ int mkPinList(AB_PROVIDER *pro,
   }
 
   u=AB_User_List_First(ul);
-  while(u) {
+  while (u) {
     const char *s;
     GWEN_BUFFER *nbuf;
     int rv;
-  
+
     GWEN_SyncIo_WriteLine(sio, "");
     GWEN_SyncIo_WriteString(sio, "# User \"");
     s=AB_User_GetUserId(u);
@@ -134,13 +135,13 @@ int mkPinList(AB_PROVIDER *pro,
     s=AB_User_GetBankCode(u);
     GWEN_SyncIo_WriteString(sio, s);
     GWEN_SyncIo_WriteLine(sio, "\"");
-  
-    nbuf=GWEN_Buffer_new(0, 256 ,0 ,1);
+
+    nbuf=GWEN_Buffer_new(0, 256, 0, 1);
     rv=EBC_User_MkPasswdName(u, nbuf);
     if (rv==0) {
       GWEN_BUFFER *obuf;
-  
-      obuf=GWEN_Buffer_new(0, 256 ,0 ,1);
+
+      obuf=GWEN_Buffer_new(0, 256, 0, 1);
       if (GWEN_Text_EscapeToBufferTolerant(GWEN_Buffer_GetStart(nbuf), obuf)) {
         DBG_ERROR(0, "Error escaping name to buffer");
         GWEN_SyncIo_Disconnect(sio);
@@ -149,7 +150,7 @@ int mkPinList(AB_PROVIDER *pro,
       }
       GWEN_SyncIo_WriteString(sio, GWEN_Buffer_GetStart(obuf));
       GWEN_SyncIo_WriteLine(sio, " = \"\"");
-  
+
       GWEN_Buffer_free(obuf);
     }
     GWEN_Buffer_free(nbuf);

@@ -14,10 +14,12 @@
 
 
 
-int AH_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc, AB_TRANSACTION_LIMITS_LIST *tll) {
+int AH_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc,
+                                                   AB_TRANSACTION_LIMITS_LIST *tll)
+{
   int rv;
   int i;
-  int jobList[]={
+  int jobList[]= {
     AB_Transaction_CommandGetBalance,
     AB_Transaction_CommandGetTransactions,
     /*AB_Transaction_CommandLoadCellPhone, */
@@ -29,12 +31,13 @@ int AH_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u,
     AB_Transaction_CommandSepaDeleteStandingOrder,
     AB_Transaction_CommandSepaGetStandingOrders,
     AB_Transaction_CommandGetEStatements,
-    AB_Transaction_CommandUnknown};
+    AB_Transaction_CommandUnknown
+  };
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Creating transaction limits for account \"%u\"", (unsigned int)AB_Account_GetUniqueId(acc));
 
   i=0;
-  while(jobList[i]!=AB_Transaction_CommandUnknown) {
+  while (jobList[i]!=AB_Transaction_CommandUnknown) {
     AH_JOB *j=NULL;
     AB_TRANSACTION_LIMITS *limits=NULL;
 
@@ -43,7 +46,7 @@ int AH_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u,
     rv=AH_Provider__CreateHbciJob(pro, u, acc, jobList[i], &j);
     if (rv<0) {
       if (rv==GWEN_ERROR_NOT_AVAILABLE) {
-	DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" is not available", AB_Transaction_Command_toString(jobList[i]));
+        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" is not available", AB_Transaction_Command_toString(jobList[i]));
       }
       else {
         DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -70,7 +73,8 @@ int AH_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u,
 
 
 
-int AH_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doLock) {
+int AH_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doLock)
+{
   int rv;
   uint32_t aid=0;
   AB_ACCOUNT *a=NULL;

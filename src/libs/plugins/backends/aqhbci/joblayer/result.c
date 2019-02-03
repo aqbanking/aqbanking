@@ -34,7 +34,8 @@ AH_RESULT *AH_Result_new(int code,
                          const char *text,
                          const char *ref,
                          const char *param,
-                         int isMsgResult){
+                         int isMsgResult)
+{
   AH_RESULT *r;
 
   GWEN_NEW_OBJECT(AH_RESULT, r);
@@ -53,7 +54,8 @@ AH_RESULT *AH_Result_new(int code,
 
 
 
-void AH_Result_free(AH_RESULT *r){
+void AH_Result_free(AH_RESULT *r)
+{
   if (r) {
     GWEN_LIST_FINI(AH_RESULT, r);
 
@@ -67,84 +69,95 @@ void AH_Result_free(AH_RESULT *r){
 
 
 
-AH_RESULT *AH_Result_dup(const AH_RESULT *or) {
+AH_RESULT *AH_Result_dup(const AH_RESULT *or)
+{
   AH_RESULT *r;
 
   assert(or);
   r=AH_Result_new(or->code,
-		  or->text,
-		  or->ref,
-		  or->param,
-		  or->isMsgResult);
+                  or->text,
+                  or->ref,
+                  or->param,
+                  or->isMsgResult);
   return r;
 }
 
 
 
-int AH_Result_GetCode(const AH_RESULT *r){
+int AH_Result_GetCode(const AH_RESULT *r)
+{
   assert(r);
   return r->code;
 }
 
 
 
-const char *AH_Result_GetText(const AH_RESULT *r){
+const char *AH_Result_GetText(const AH_RESULT *r)
+{
   assert(r);
   return r->text;
 }
 
 
 
-const char *AH_Result_GetRef(const AH_RESULT *r){
+const char *AH_Result_GetRef(const AH_RESULT *r)
+{
   assert(r);
   return r->ref;
 }
 
 
 
-const char *AH_Result_GetParam(const AH_RESULT *r){
+const char *AH_Result_GetParam(const AH_RESULT *r)
+{
   assert(r);
   return r->param;
 }
 
 
 
-int AH_Result_IsError(const AH_RESULT *r){
+int AH_Result_IsError(const AH_RESULT *r)
+{
   assert(r);
   return (r->code>=9000);
 }
 
 
 
-int AH_Result_IsWarning(const AH_RESULT *r){
+int AH_Result_IsWarning(const AH_RESULT *r)
+{
   assert(r);
   return (r->code>=3000 && r->code<4000);
 }
 
 
 
-int AH_Result_IsInfo(const AH_RESULT *r){
+int AH_Result_IsInfo(const AH_RESULT *r)
+{
   assert(r);
   return (r->code>=1000 && r->code<2000);
 }
 
 
 
-int AH_Result_IsOk(const AH_RESULT *r){
+int AH_Result_IsOk(const AH_RESULT *r)
+{
   assert(r);
   return (r->code<9000);
 }
 
 
 
-int AH_Result_IsMsgResult(const AH_RESULT *r){
+int AH_Result_IsMsgResult(const AH_RESULT *r)
+{
   assert(r);
   return r->isMsgResult;
 }
 
 
 
-void AH_Result_Dump(const AH_RESULT *r, FILE *f, unsigned int insert) {
+void AH_Result_Dump(const AH_RESULT *r, FILE *f, unsigned int insert)
+{
   uint32_t k;
 
   for (k=0; k<insert; k++)

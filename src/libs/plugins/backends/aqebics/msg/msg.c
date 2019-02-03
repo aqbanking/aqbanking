@@ -29,7 +29,8 @@ GWEN_INHERIT_FUNCTIONS(EB_MSG)
 
 
 
-void EB_Msg__initWithDoc(EB_MSG *m) {
+void EB_Msg__initWithDoc(EB_MSG *m)
+{
   xmlNodePtr rootNode;
   const char *s;
 
@@ -52,7 +53,7 @@ void EB_Msg__initWithDoc(EB_MSG *m) {
 
   if (m->hVersion==NULL) {
     rootNode=xmlDocGetRootElement(m->doc);
-    s=(const char*)xmlGetProp(rootNode, BAD_CAST "Version");
+    s=(const char *)xmlGetProp(rootNode, BAD_CAST "Version");
     if (!(s && *s))
       s="H000";
     free(m->hVersion);
@@ -62,7 +63,8 @@ void EB_Msg__initWithDoc(EB_MSG *m) {
 
 
 
-EB_MSG *EB_Msg_new() {
+EB_MSG *EB_Msg_new()
+{
   EB_MSG *m;
 
   GWEN_NEW_OBJECT(EB_MSG, m);
@@ -77,7 +79,8 @@ EB_MSG *EB_Msg_new() {
 
 
 
-EB_MSG *EB_Msg_fromBuffer(const char *buffer, int size) {
+EB_MSG *EB_Msg_fromBuffer(const char *buffer, int size)
+{
   EB_MSG *m;
 
   GWEN_NEW_OBJECT(EB_MSG, m);
@@ -96,7 +99,8 @@ EB_MSG *EB_Msg_fromBuffer(const char *buffer, int size) {
 
 
 
-EB_MSG *EB_Msg_fromFile(const char *fname) {
+EB_MSG *EB_Msg_fromFile(const char *fname)
+{
   EB_MSG *m;
 
   GWEN_NEW_OBJECT(EB_MSG, m);
@@ -116,7 +120,8 @@ EB_MSG *EB_Msg_fromFile(const char *fname) {
 
 
 
-EB_MSG *EB_Msg_newResponse(int willSign, const char *rName, const char *hVersion) {
+EB_MSG *EB_Msg_newResponse(int willSign, const char *rName, const char *hVersion)
+{
   EB_MSG *m;
 
   GWEN_NEW_OBJECT(EB_MSG, m);
@@ -131,7 +136,8 @@ EB_MSG *EB_Msg_newResponse(int willSign, const char *rName, const char *hVersion
 
 
 
-EB_MSG *EB_Msg_newRequest(int willSign, const char *hVersion) {
+EB_MSG *EB_Msg_newRequest(int willSign, const char *hVersion)
+{
   EB_MSG *m;
 
   GWEN_NEW_OBJECT(EB_MSG, m);
@@ -146,20 +152,22 @@ EB_MSG *EB_Msg_newRequest(int willSign, const char *hVersion) {
 
 
 
-void EB_Msg_toBuffer(EB_MSG *m, GWEN_BUFFER *buf) {
+void EB_Msg_toBuffer(EB_MSG *m, GWEN_BUFFER *buf)
+{
   xmlChar *xmlbuff;
   int buffersize;
 
   assert(m);
   assert(m->usage);
   xmlDocDumpFormatMemory(m->doc, &xmlbuff, &buffersize, 0);
-  GWEN_Buffer_AppendBytes(buf, (const char*)xmlbuff, (uint32_t)buffersize);
+  GWEN_Buffer_AppendBytes(buf, (const char *)xmlbuff, (uint32_t)buffersize);
   xmlFree(xmlbuff);
 }
 
 
 
-void EB_Msg_free(EB_MSG *m) {
+void EB_Msg_free(EB_MSG *m)
+{
   if (m) {
     assert(m->usage);
     if (m->usage==1) {
@@ -177,14 +185,15 @@ void EB_Msg_free(EB_MSG *m) {
 
 
 #if 0
-xmlNodeSetPtr EB_Xml_GetNodes(EB_MSG *m, const char *xpathExpr) {
+xmlNodeSetPtr EB_Xml_GetNodes(EB_MSG *m, const char *xpathExpr)
+{
   xmlNodeSetPtr nodes;
   xmlXPathObjectPtr xpathObj;
 
   assert(m);
   assert(m->usage);
   xpathObj=xmlXPathEvalExpression(BAD_CAST xpathExpr, m->xpathCtx);
-  if(xpathObj == NULL) {
+  if (xpathObj == NULL) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
               "Unable to evaluate xpath expression \"%s\"",
               xpathExpr);
@@ -206,7 +215,8 @@ xmlNodeSetPtr EB_Xml_GetNodes(EB_MSG *m, const char *xpathExpr) {
 
 
 
-xmlDocPtr EB_Msg_GetDoc(const EB_MSG *m) {
+xmlDocPtr EB_Msg_GetDoc(const EB_MSG *m)
+{
   assert(m);
   assert(m->usage);
   return m->doc;
@@ -214,7 +224,8 @@ xmlDocPtr EB_Msg_GetDoc(const EB_MSG *m) {
 
 
 
-xmlNodePtr EB_Msg_GetRootNode(EB_MSG *m) {
+xmlNodePtr EB_Msg_GetRootNode(EB_MSG *m)
+{
   assert(m);
   assert(m->usage);
   assert(m->doc);
@@ -223,7 +234,8 @@ xmlNodePtr EB_Msg_GetRootNode(EB_MSG *m) {
 
 
 
-const char *EB_Msg_GetHVersion(const EB_MSG *m) {
+const char *EB_Msg_GetHVersion(const EB_MSG *m)
+{
   assert(m);
   assert(m->usage);
   return m->hVersion;
@@ -231,25 +243,29 @@ const char *EB_Msg_GetHVersion(const EB_MSG *m) {
 
 
 
-void EB_Msg_SetHVersion(EB_MSG *m, const char *s) {
+void EB_Msg_SetHVersion(EB_MSG *m, const char *s)
+{
   assert(m);
   assert(m->usage);
   free(m->hVersion);
-  if (s) m->hVersion=strdup(s);
-  else m->hVersion=NULL;
+  if (s)
+    m->hVersion=strdup(s);
+  else
+    m->hVersion=NULL;
 }
 
 
 
-int EB_Msg_BuildHashData(EB_MSG *m, GWEN_BUFFER *hbuf) {
+int EB_Msg_BuildHashData(EB_MSG *m, GWEN_BUFFER *hbuf)
+{
   int rv;
 
   assert(m);
   assert(m->usage);
 
   rv=EB_Xml_BuildHashData(xmlDocGetRootElement(m->doc),
-			  BAD_CAST "#xpointer(//*[@authenticate='true'])",
-			  hbuf);
+                          BAD_CAST "#xpointer(//*[@authenticate='true'])",
+                          hbuf);
   if (rv) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -260,31 +276,35 @@ int EB_Msg_BuildHashData(EB_MSG *m, GWEN_BUFFER *hbuf) {
 
 
 
-int EB_Msg_BuildHashSha1(EB_MSG *m, GWEN_BUFFER *hbuf) {
+int EB_Msg_BuildHashSha1(EB_MSG *m, GWEN_BUFFER *hbuf)
+{
   return EB_Xml_BuildNodeHashSha1(xmlDocGetRootElement(m->doc),
-				  "#xpointer(//*[@authenticate='true'])",
-				  hbuf);
+                                  "#xpointer(//*[@authenticate='true'])",
+                                  hbuf);
 }
 
 
 
-int EB_Msg_BuildHashSha256(EB_MSG *m, GWEN_BUFFER *hbuf) {
+int EB_Msg_BuildHashSha256(EB_MSG *m, GWEN_BUFFER *hbuf)
+{
   return EB_Xml_BuildNodeHashSha256(xmlDocGetRootElement(m->doc),
-				    "#xpointer(//*[@authenticate='true'])",
-				    hbuf);
+                                    "#xpointer(//*[@authenticate='true'])",
+                                    hbuf);
 }
 
 
 
-int EB_Msg_BuildHashSha256Sha256(EB_MSG *m, GWEN_BUFFER *hbuf) {
+int EB_Msg_BuildHashSha256Sha256(EB_MSG *m, GWEN_BUFFER *hbuf)
+{
   return EB_Xml_BuildNodeHashSha256Sha256(xmlDocGetRootElement(m->doc),
-					  "#xpointer(//*[@authenticate='true'])",
-					  hbuf);
+                                          "#xpointer(//*[@authenticate='true'])",
+                                          hbuf);
 }
 
 
 
-int EB_Msg_ReadHash(EB_MSG *m, GWEN_BUFFER *hbuf) {
+int EB_Msg_ReadHash(EB_MSG *m, GWEN_BUFFER *hbuf)
+{
   const char *s;
   int rv;
 
@@ -300,7 +320,7 @@ int EB_Msg_ReadHash(EB_MSG *m, GWEN_BUFFER *hbuf) {
     return -1;
   }
 
-  rv=GWEN_Base64_Decode((const unsigned char*)s, 0, hbuf);
+  rv=GWEN_Base64_Decode((const unsigned char *)s, 0, hbuf);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not decode hash");
     return -1;
@@ -311,7 +331,8 @@ int EB_Msg_ReadHash(EB_MSG *m, GWEN_BUFFER *hbuf) {
 
 
 
-int EB_Msg_WriteHash(EB_MSG *m, const unsigned char *hash, int hsize) {
+int EB_Msg_WriteHash(EB_MSG *m, const unsigned char *hash, int hsize)
+{
   int rv;
   GWEN_BUFFER *hbuf;
 
@@ -342,7 +363,8 @@ int EB_Msg_WriteHash(EB_MSG *m, const unsigned char *hash, int hsize) {
 
 
 
-int EB_Msg_ReadSignature(EB_MSG *m, GWEN_BUFFER *hbuf) {
+int EB_Msg_ReadSignature(EB_MSG *m, GWEN_BUFFER *hbuf)
+{
   const char *s;
   int rv;
 
@@ -358,7 +380,7 @@ int EB_Msg_ReadSignature(EB_MSG *m, GWEN_BUFFER *hbuf) {
     return -1;
   }
 
-  rv=GWEN_Base64_Decode((const unsigned char*)s, 0, hbuf);
+  rv=GWEN_Base64_Decode((const unsigned char *)s, 0, hbuf);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not decode signature");
     return -1;
@@ -369,7 +391,8 @@ int EB_Msg_ReadSignature(EB_MSG *m, GWEN_BUFFER *hbuf) {
 
 
 
-int EB_Msg_WriteSignature(EB_MSG *m, const unsigned char *hash, int hsize) {
+int EB_Msg_WriteSignature(EB_MSG *m, const unsigned char *hash, int hsize)
+{
   int rv;
   GWEN_BUFFER *hbuf;
 
@@ -378,8 +401,8 @@ int EB_Msg_WriteSignature(EB_MSG *m, const unsigned char *hash, int hsize) {
 
   if (hsize!=128) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Bad signature size (expected 128, was %d)",
-	      hsize);
+              "Bad signature size (expected 128, was %d)",
+              hsize);
     return -1;
   }
 
@@ -387,14 +410,14 @@ int EB_Msg_WriteSignature(EB_MSG *m, const unsigned char *hash, int hsize) {
   rv=GWEN_Base64_Encode(hash, (uint32_t) hsize, hbuf, 0);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Could not base64-encode signature (%d)", rv);
+              "Could not base64-encode signature (%d)", rv);
     GWEN_Buffer_free(hbuf);
     return -1;
   }
   EB_Xml_SetCharValue(xmlDocGetRootElement(m->doc),
                       "AuthSignature/"
-		      "ds:SignatureValue",
-		      GWEN_Buffer_GetStart(hbuf));
+                      "ds:SignatureValue",
+                      GWEN_Buffer_GetStart(hbuf));
   GWEN_Buffer_free(hbuf);
 
   return 0;
@@ -402,7 +425,8 @@ int EB_Msg_WriteSignature(EB_MSG *m, const unsigned char *hash, int hsize) {
 
 
 
-int EB_Msg_SetCharValue(EB_MSG *m, const char *path, const char *value) {
+int EB_Msg_SetCharValue(EB_MSG *m, const char *path, const char *value)
+{
   assert(m);
   assert(m->usage);
 
@@ -412,7 +436,8 @@ int EB_Msg_SetCharValue(EB_MSG *m, const char *path, const char *value) {
 
 
 const char *EB_Msg_GetCharValue(const EB_MSG *m, const char *path,
-                                const char *defValue) {
+                                const char *defValue)
+{
   assert(m);
   assert(m->usage);
 
@@ -422,7 +447,8 @@ const char *EB_Msg_GetCharValue(const EB_MSG *m, const char *path,
 
 
 
-int EB_Msg_SetIntValue(EB_MSG *m, const char *path, int value) {
+int EB_Msg_SetIntValue(EB_MSG *m, const char *path, int value)
+{
   assert(m);
   assert(m->usage);
 
@@ -431,17 +457,19 @@ int EB_Msg_SetIntValue(EB_MSG *m, const char *path, int value) {
 
 
 
-int EB_Msg_GetIntValue(const EB_MSG *m, const char *path, int defValue) {
+int EB_Msg_GetIntValue(const EB_MSG *m, const char *path, int defValue)
+{
   assert(m);
   assert(m->usage);
 
   return EB_Xml_GetIntValue(xmlDocGetRootElement(m->doc),
-			    path, defValue);
+                            path, defValue);
 }
 
 
 
-EB_RC EB_Msg_GetResultCode(const EB_MSG *m) {
+EB_RC EB_Msg_GetResultCode(const EB_MSG *m)
+{
   const char *s;
 
   s=EB_Msg_GetCharValue(m, "header/mutable/ReturnCode", 0);
@@ -456,7 +484,8 @@ EB_RC EB_Msg_GetResultCode(const EB_MSG *m) {
 
 
 
-EB_RC EB_Msg_GetBodyResultCode(const EB_MSG *m) {
+EB_RC EB_Msg_GetBodyResultCode(const EB_MSG *m)
+{
   const char *s;
 
   s=EB_Msg_GetCharValue(m, "body/ReturnCode", 0);
@@ -475,7 +504,8 @@ EB_RC EB_Msg_GetBodyResultCode(const EB_MSG *m) {
 
 
 
-xmlDocPtr EB_Msg__generateRequest(int willSign, const char *hVersion) {
+xmlDocPtr EB_Msg__generateRequest(int willSign, const char *hVersion)
+{
   xmlDocPtr doc=NULL;
   xmlNodePtr root_node = NULL;
   xmlNodePtr node = NULL;
@@ -514,7 +544,8 @@ xmlDocPtr EB_Msg__generateRequest(int willSign, const char *hVersion) {
 
 
 
-xmlDocPtr EB_Msg__generateResponse(int willSign, const char *rName, const char *hVersion) {
+xmlDocPtr EB_Msg__generateResponse(int willSign, const char *rName, const char *hVersion)
+{
   xmlDocPtr doc=NULL;
   xmlNodePtr root_node = NULL;
   xmlNodePtr node = NULL;
@@ -549,7 +580,8 @@ xmlDocPtr EB_Msg__generateResponse(int willSign, const char *rName, const char *
 
 
 
-int EB_Msg__prepareSignature(xmlDocPtr doc) {
+int EB_Msg__prepareSignature(xmlDocPtr doc)
+{
   xmlNodePtr node;
   xmlNsPtr ns;
   xmlNodePtr n;

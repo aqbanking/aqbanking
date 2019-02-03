@@ -19,8 +19,8 @@
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_STMTRN_new(const char *groupName,
-				       AIO_OFX_GROUP *parent,
-				       GWEN_XML_CONTEXT *ctx);
+                                       AIO_OFX_GROUP *parent,
+                                       GWEN_XML_CONTEXT *ctx);
 
 AB_TRANSACTION *AIO_OfxGroup_STMTRN_TakeTransaction(const AIO_OFX_GROUP *g);
 

@@ -20,14 +20,15 @@ GWEN_INHERIT(GWEN_DIALOG, AB_USERTYPE_PAGE_DIALOG)
 
 
 
-GWEN_DIALOG *AB_UserTypePageDialog_new(AB_BANKING *ab, const char *dname) {
+GWEN_DIALOG *AB_UserTypePageDialog_new(AB_BANKING *ab, const char *dname)
+{
   GWEN_DIALOG *dlg;
   AB_USERTYPE_PAGE_DIALOG *xdlg;
 
   dlg=GWEN_Dialog_new(dname);
   GWEN_NEW_OBJECT(AB_USERTYPE_PAGE_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AB_USERTYPE_PAGE_DIALOG, dlg, xdlg,
-		       AB_UserTypePageDialog_FreeData);
+                       AB_UserTypePageDialog_FreeData);
 
   xdlg->banking=ab;
   return dlg;
@@ -35,16 +36,18 @@ GWEN_DIALOG *AB_UserTypePageDialog_new(AB_BANKING *ab, const char *dname) {
 
 
 
-void GWENHYWFAR_CB AB_UserTypePageDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AB_UserTypePageDialog_FreeData(void *bp, void *p)
+{
   AB_USERTYPE_PAGE_DIALOG *xdlg;
 
-  xdlg=(AB_USERTYPE_PAGE_DIALOG*) p;
+  xdlg=(AB_USERTYPE_PAGE_DIALOG *) p;
   GWEN_FREE_OBJECT(xdlg);
 }
 
 
 
-AB_BANKING *AB_UserTypePageDialog_GetBanking(const GWEN_DIALOG *dlg) {
+AB_BANKING *AB_UserTypePageDialog_GetBanking(const GWEN_DIALOG *dlg)
+{
   AB_USERTYPE_PAGE_DIALOG *xdlg;
 
   assert(dlg);
@@ -56,7 +59,8 @@ AB_BANKING *AB_UserTypePageDialog_GetBanking(const GWEN_DIALOG *dlg) {
 
 
 
-int AB_UserTypePageDialog_GetSelectedType(const GWEN_DIALOG *dlg) {
+int AB_UserTypePageDialog_GetSelectedType(const GWEN_DIALOG *dlg)
+{
   AB_USERTYPE_PAGE_DIALOG *xdlg;
 
   assert(dlg);
@@ -68,7 +72,8 @@ int AB_UserTypePageDialog_GetSelectedType(const GWEN_DIALOG *dlg) {
 
 
 
-void AB_UserTypePageDialog_SetSelectedType(GWEN_DIALOG *dlg, int t) {
+void AB_UserTypePageDialog_SetSelectedType(GWEN_DIALOG *dlg, int t)
+{
   AB_USERTYPE_PAGE_DIALOG *xdlg;
 
   assert(dlg);

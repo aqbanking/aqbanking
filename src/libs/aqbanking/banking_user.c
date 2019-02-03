@@ -13,7 +13,8 @@
 
 
 
-int AB_Banking_Read_UserConfig(const AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb) {
+int AB_Banking_Read_UserConfig(const AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb)
+{
   int rv;
 
   rv=AB_Banking_ReadConfigGroup(ab, AB_CFG_GROUP_USERS, uid, doLock, doUnlock, pDb);
@@ -27,7 +28,8 @@ int AB_Banking_Read_UserConfig(const AB_BANKING *ab, uint32_t uid, int doLock, i
 
 
 
-int AB_Banking_Write_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE *db){
+int AB_Banking_Write_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE *db)
+{
   int rv;
 
   rv=AB_Banking_WriteConfigGroup(ab, AB_CFG_GROUP_USERS, uid, doLock, doUnlock, db);
@@ -41,7 +43,8 @@ int AB_Banking_Write_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int do
 
 
 
-int AB_Banking_Delete_UserConfig(AB_BANKING *ab, uint32_t uid) {
+int AB_Banking_Delete_UserConfig(AB_BANKING *ab, uint32_t uid)
+{
   int rv;
 
   rv=AB_Banking_DeleteConfigGroup(ab, AB_CFG_GROUP_USERS, uid);
@@ -55,7 +58,8 @@ int AB_Banking_Delete_UserConfig(AB_BANKING *ab, uint32_t uid) {
 
 
 
-int AB_Banking_Unlock_UserConfig(AB_BANKING *ab, uint32_t uid) {
+int AB_Banking_Unlock_UserConfig(AB_BANKING *ab, uint32_t uid)
+{
   int rv;
 
   rv=AB_Banking_UnlockConfigGroup(ab, AB_CFG_GROUP_USERS, uid);

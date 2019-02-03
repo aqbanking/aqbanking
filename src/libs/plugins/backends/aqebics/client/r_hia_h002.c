@@ -20,8 +20,9 @@
 
 
 int EBC_Provider_XchgHiaRequest_H002(AB_PROVIDER *pro,
-				     GWEN_HTTP_SESSION *sess,
-				     AB_USER *u) {
+                                     GWEN_HTTP_SESSION *sess,
+                                     AB_USER *u)
+{
   EBC_PROVIDER *dp;
   int rv;
   GWEN_CRYPT_TOKEN *ct;
@@ -60,16 +61,16 @@ int EBC_Provider_XchgHiaRequest_H002(AB_PROVIDER *pro,
   kid=GWEN_Crypt_Token_Context_GetDecipherKeyId(ctx);
   if (kid) {
     cryptKeyInfo=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-					     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-					     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-					     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-					     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-					     0);
+                                             GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                             GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                             GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                             GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                             0);
     if (cryptKeyInfo==NULL) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Crypt key info not found on crypt token");
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
-			   I18N("Crypt key info not found on crypt token"));
+                           GWEN_LoggerLevel_Error,
+                           I18N("Crypt key info not found on crypt token"));
       return GWEN_ERROR_NOT_FOUND;
     }
   }
@@ -78,16 +79,16 @@ int EBC_Provider_XchgHiaRequest_H002(AB_PROVIDER *pro,
   kid=GWEN_Crypt_Token_Context_GetAuthSignKeyId(ctx);
   if (kid) {
     authKeyInfo=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-					    GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-					    GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-					    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-					    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-					    0);
+                                            GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                            GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                            GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                            GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                            0);
     if (authKeyInfo==NULL) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Auth key info not found on crypt token");
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
-			   I18N("Auth key info not found on crypt token"));
+                           GWEN_LoggerLevel_Error,
+                           I18N("Auth key info not found on crypt token"));
       return GWEN_ERROR_NOT_FOUND;
     }
   }
@@ -98,25 +99,25 @@ int EBC_Provider_XchgHiaRequest_H002(AB_PROVIDER *pro,
   root_node=xmlNewNode(NULL, BAD_CAST "HIARequestOrderData");
   xmlDocSetRootElement(doc, root_node);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.ebics.org/H002",
-	      NULL);
+              BAD_CAST "http://www.ebics.org/H002",
+              NULL);
   assert(ns);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
-	      BAD_CAST "ds");
+              BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
+              BAD_CAST "ds");
   assert(ns);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
-	      BAD_CAST "xsi");
+              BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
+              BAD_CAST "xsi");
   xmlNewNsProp(root_node,
-	       ns,
-	       BAD_CAST "schemaLocation", /* xsi:schemaLocation */
-	       BAD_CAST "http://www.ebics.org/H002 "
-	       "http://www.ebics.org/H002/ebics_orders.xsd");
+               ns,
+               BAD_CAST "schemaLocation", /* xsi:schemaLocation */
+               BAD_CAST "http://www.ebics.org/H002 "
+               "http://www.ebics.org/H002/ebics_orders.xsd");
 
   /* create auth key tree */
   node=xmlNewChild(root_node, NULL,
-		   BAD_CAST "AuthenticationPubKeyInfo", NULL);
+                   BAD_CAST "AuthenticationPubKeyInfo", NULL);
   rv=EB_Key_Info_toXml(authKeyInfo, node);
   if (rv<0) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Error response: (%d)", rv);
@@ -129,7 +130,7 @@ int EBC_Provider_XchgHiaRequest_H002(AB_PROVIDER *pro,
 
   /* create crypt key tree */
   node=xmlNewChild(root_node, NULL,
-		   BAD_CAST "EncryptionPubKeyInfo", NULL);
+                   BAD_CAST "EncryptionPubKeyInfo", NULL);
   rv=EB_Key_Info_toXml(cryptKeyInfo, node);
   if (rv<0) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Error response: (%d)", rv);
@@ -142,12 +143,12 @@ int EBC_Provider_XchgHiaRequest_H002(AB_PROVIDER *pro,
 
   /* store partner id and user id */
   node=xmlNewChild(root_node, NULL,
-		   BAD_CAST "PartnerID",
-		   BAD_CAST partnerId);
+                   BAD_CAST "PartnerID",
+                   BAD_CAST partnerId);
 
   node=xmlNewChild(root_node, NULL,
-		   BAD_CAST "UserID",
-		   BAD_CAST userId);
+                   BAD_CAST "UserID",
+                   BAD_CAST userId);
 
   /* compress and base64 doc */
   mbuf=GWEN_Buffer_new(0, 512, 0, 1);
@@ -165,21 +166,21 @@ int EBC_Provider_XchgHiaRequest_H002(AB_PROVIDER *pro,
   root_node=xmlNewNode(NULL, BAD_CAST "ebicsUnsecuredRequest");
   xmlDocSetRootElement(doc, root_node);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.ebics.org/H002",
-	      NULL);
+              BAD_CAST "http://www.ebics.org/H002",
+              NULL);
   assert(ns);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
-	      BAD_CAST "ds");
+              BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
+              BAD_CAST "ds");
   assert(ns);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
-	      BAD_CAST "xsi");
+              BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
+              BAD_CAST "xsi");
   xmlNewNsProp(root_node,
-	       ns,
-	       BAD_CAST "schemaLocation", /* xsi:schemaLocation */
-	       BAD_CAST "http://www.ebics.org/H002 "
-	       "http://www.ebics.org/H002/ebics_keymgmt_request.xsd");
+               ns,
+               BAD_CAST "schemaLocation", /* xsi:schemaLocation */
+               BAD_CAST "http://www.ebics.org/H002 "
+               "http://www.ebics.org/H002/ebics_keymgmt_request.xsd");
   xmlNewProp(root_node, BAD_CAST "Version", BAD_CAST "H002");
   xmlNewProp(root_node, BAD_CAST "Revision", BAD_CAST "1");
 
@@ -200,7 +201,7 @@ int EBC_Provider_XchgHiaRequest_H002(AB_PROVIDER *pro,
   if (s)
     EB_Msg_SetCharValue(msg, "header/static/PartnerID", s);
   EB_Msg_SetCharValue(msg, "header/static/UserID",
-		      AB_User_GetUserId(u));
+                      AB_User_GetUserId(u));
   EB_Msg_SetCharValue(msg, "header/static/OrderDetails/OrderType", "HIA");
   tbuf=GWEN_Buffer_new(0, 16, 0, 1);
   rv=EBC_Provider_Generate_OrderId(pro, tbuf);
@@ -212,14 +213,14 @@ int EBC_Provider_XchgHiaRequest_H002(AB_PROVIDER *pro,
     return rv;
   }
   EB_Msg_SetCharValue(msg, "header/static/OrderDetails/OrderID",
-		     GWEN_Buffer_GetStart(tbuf));
+                      GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_free(tbuf);
   EB_Msg_SetCharValue(msg,
-		      "header/static/OrderDetails/OrderAttribute",
-		      "DZNNN");
+                      "header/static/OrderDetails/OrderAttribute",
+                      "DZNNN");
   EB_Msg_SetCharValue(msg, "header/static/SecurityMedium", "0200");
   EB_Msg_SetCharValue(msg, "body/DataTransfer/OrderData",
-		      GWEN_Buffer_GetStart(mbuf));
+                      GWEN_Buffer_GetStart(mbuf));
   GWEN_Buffer_free(mbuf);
 
   /* exchange requests */
@@ -247,14 +248,14 @@ int EBC_Provider_XchgHiaRequest_H002(AB_PROVIDER *pro,
   rc=EB_Msg_GetBodyResultCode(mRsp);
   if (rc) {
     if ((rc & 0xff0000)==0x090000 ||
-	(rc & 0xff0000)==0x060000) {
+        (rc & 0xff0000)==0x060000) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Error response: (%06x)", rc);
       EB_Msg_free(mRsp);
       if ((rc & 0xfff00)==0x091300 ||
-	  (rc & 0xfff00)==0x091200)
-	return AB_ERROR_SECURITY;
+          (rc & 0xfff00)==0x091200)
+        return AB_ERROR_SECURITY;
       else
-	return GWEN_ERROR_GENERIC;
+        return GWEN_ERROR_GENERIC;
     }
   }
 

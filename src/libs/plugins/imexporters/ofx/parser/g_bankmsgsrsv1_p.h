@@ -18,7 +18,7 @@
 
 
 static int AIO_OfxGroup_BANKMSGSRSV1_StartTag(AIO_OFX_GROUP *g,
-					      const char *tagName);
+                                              const char *tagName);
 
 #endif
 

@@ -34,10 +34,11 @@ GWEN_INHERIT(GWEN_HTTP_SESSION, AB_HTTP_SESSION)
 
 
 GWEN_HTTP_SESSION *AB_HttpSession_new(AB_PROVIDER *pro,
-				      AB_USER *u,
-				      const char *url,
-				      const char *defaultProto,
-				      int defaultPort) {
+                                      AB_USER *u,
+                                      const char *url,
+                                      const char *defaultProto,
+                                      int defaultPort)
+{
   GWEN_HTTP_SESSION *sess;
   AB_HTTP_SESSION *xsess;
 
@@ -62,17 +63,19 @@ GWEN_HTTP_SESSION *AB_HttpSession_new(AB_PROVIDER *pro,
 
 
 
-void GWENHYWFAR_CB AB_HttpSession_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AB_HttpSession_FreeData(void *bp, void *p)
+{
   AB_HTTP_SESSION *xsess;
 
-  xsess=(AB_HTTP_SESSION*)p;
+  xsess=(AB_HTTP_SESSION *)p;
   GWEN_Buffer_free(xsess->logs);
   GWEN_FREE_OBJECT(xsess);
 }
 
 
 
-AB_PROVIDER *AB_HttpSession_GetProvider(const GWEN_HTTP_SESSION *sess) {
+AB_PROVIDER *AB_HttpSession_GetProvider(const GWEN_HTTP_SESSION *sess)
+{
   AB_HTTP_SESSION *xsess;
 
   assert(sess);
@@ -84,7 +87,8 @@ AB_PROVIDER *AB_HttpSession_GetProvider(const GWEN_HTTP_SESSION *sess) {
 
 
 
-AB_USER *AB_HttpSession_GetUser(const GWEN_HTTP_SESSION *sess) {
+AB_USER *AB_HttpSession_GetUser(const GWEN_HTTP_SESSION *sess)
+{
   AB_HTTP_SESSION *xsess;
 
   assert(sess);
@@ -97,7 +101,8 @@ AB_USER *AB_HttpSession_GetUser(const GWEN_HTTP_SESSION *sess) {
 
 
 void Ab_HttpSession_AddLog(GWEN_HTTP_SESSION *sess,
-			   const char *s) {
+                           const char *s)
+{
   AB_HTTP_SESSION *xsess;
 
   assert(sess);
@@ -109,14 +114,15 @@ void Ab_HttpSession_AddLog(GWEN_HTTP_SESSION *sess,
     if (s) {
       GWEN_Buffer_AppendString(xsess->logs, s);
       if (s[l-1]!='\n')
-	GWEN_Buffer_AppendByte(xsess->logs, '\n');
+        GWEN_Buffer_AppendByte(xsess->logs, '\n');
     }
   }
 }
 
 
 
-const char *AB_HttpSession_GetLog(const GWEN_HTTP_SESSION *sess) {
+const char *AB_HttpSession_GetLog(const GWEN_HTTP_SESSION *sess)
+{
   AB_HTTP_SESSION *xsess;
 
   assert(sess);
@@ -131,7 +137,8 @@ const char *AB_HttpSession_GetLog(const GWEN_HTTP_SESSION *sess) {
 
 
 
-void AB_HttpSession_ClearLog(GWEN_HTTP_SESSION *sess) {
+void AB_HttpSession_ClearLog(GWEN_HTTP_SESSION *sess)
+{
   AB_HTTP_SESSION *xsess;
 
   assert(sess);
@@ -144,7 +151,8 @@ void AB_HttpSession_ClearLog(GWEN_HTTP_SESSION *sess) {
 
 
 
-int GWENHYWFAR_CB AB_HttpSession_InitSyncIo(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio) {
+int GWENHYWFAR_CB AB_HttpSession_InitSyncIo(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio)
+{
   AB_HTTP_SESSION *xsess;
   GWEN_SYNCIO *sioTls;
 

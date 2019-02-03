@@ -20,30 +20,33 @@ GWEN_INHERIT(GWEN_DIALOG, AB_NEWACCOUNT_DIALOG)
 
 
 
-GWEN_DIALOG *AB_NewAccountDialog_new(AB_BANKING *ab, const char *dname) {
+GWEN_DIALOG *AB_NewAccountDialog_new(AB_BANKING *ab, const char *dname)
+{
   GWEN_DIALOG *dlg;
   AB_NEWACCOUNT_DIALOG *xdlg;
 
   dlg=GWEN_Dialog_new(dname);
   GWEN_NEW_OBJECT(AB_NEWACCOUNT_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AB_NEWACCOUNT_DIALOG, dlg, xdlg,
-		       AB_NewAccountDialog_FreeData);
+                       AB_NewAccountDialog_FreeData);
 
   return dlg;
 }
 
 
 
-void GWENHYWFAR_CB AB_NewAccountDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AB_NewAccountDialog_FreeData(void *bp, void *p)
+{
   AB_NEWACCOUNT_DIALOG *xdlg;
 
-  xdlg=(AB_NEWACCOUNT_DIALOG*) p;
+  xdlg=(AB_NEWACCOUNT_DIALOG *) p;
   GWEN_FREE_OBJECT(xdlg);
 }
 
 
 
-AB_ACCOUNT *AB_NewAccountDialog_GetAccount(const GWEN_DIALOG *dlg) {
+AB_ACCOUNT *AB_NewAccountDialog_GetAccount(const GWEN_DIALOG *dlg)
+{
   AB_NEWACCOUNT_DIALOG *xdlg;
 
   assert(dlg);
@@ -55,7 +58,8 @@ AB_ACCOUNT *AB_NewAccountDialog_GetAccount(const GWEN_DIALOG *dlg) {
 
 
 
-void AB_NewAccountDialog_SetAccount(GWEN_DIALOG *dlg, AB_ACCOUNT *a) {
+void AB_NewAccountDialog_SetAccount(GWEN_DIALOG *dlg, AB_ACCOUNT *a)
+{
   AB_NEWACCOUNT_DIALOG *xdlg;
 
   assert(dlg);

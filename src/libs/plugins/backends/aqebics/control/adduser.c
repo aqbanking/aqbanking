@@ -30,31 +30,32 @@
 
 
 static int getBankUrl(AB_BANKING *ab,
-		      const char *bankId,
-		      GWEN_BUFFER *bufServer) {
+                      const char *bankId,
+                      GWEN_BUFFER *bufServer)
+{
   AB_BANKINFO *bi;
-  
+
   bi=AB_Banking_GetBankInfo(ab, "de", 0, bankId);
   if (bi) {
     AB_BANKINFO_SERVICE_LIST *l;
     AB_BANKINFO_SERVICE *sv;
-  
+
     l=AB_BankInfo_GetServices(bi);
     assert(l);
     sv=AB_BankInfoService_List_First(l);
-    while(sv) {
+    while (sv) {
       const char *st;
-  
+
       st=AB_BankInfoService_GetType(sv);
       if (st && *st && strcasecmp(st, "ebics")==0) {
-	const char *addr;
+        const char *addr;
 
-	addr=AB_BankInfoService_GetAddress(sv);
-	if (addr && *addr) {
-	  GWEN_Buffer_Reset(bufServer);
-	  GWEN_Buffer_AppendString(bufServer, addr);
-	  return 0;
-	}
+        addr=AB_BankInfoService_GetAddress(sv);
+        if (addr && *addr) {
+          GWEN_Buffer_Reset(bufServer);
+          GWEN_Buffer_AppendString(bufServer, addr);
+          return 0;
+        }
       }
       sv=AB_BankInfoService_List_Next(sv);
     }
@@ -69,7 +70,8 @@ static int getBankUrl(AB_BANKING *ab,
 int addUser(AB_PROVIDER *pro,
             GWEN_DB_NODE *dbArgs,
             int argc,
-            char **argv) {
+            char **argv)
+{
   GWEN_DB_NODE *db;
   int rv;
   GWEN_BUFFER *nameBuffer=NULL;
@@ -84,139 +86,139 @@ int addUser(AB_PROVIDER *pro,
   const char *ebicsVersion;
   int importing;
   uint32_t cid;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "bankId",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "b",                          /* short option */
-    "bank",                       /* long option */
-    "Specify the bank code",      /* short description */
-    "Specify the bank code"       /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "userId",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "u",                          /* short option */
-    "user",                       /* long option */
-    "Specify the user id (Benutzerkennung)",        /* short description */
-    "Specify the user id (Benutzerkennung)"         /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "customerId",                 /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "c",                          /* short option */
-    "customer",                   /* long option */
-    "Specify the customer id (Kundennummer)",    /* short description */
-    "Specify the customer id (Kundennummer)"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "tokenType",                  /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "t",                          /* short option */
-    "tokentype",                  /* long option */
-    "Specify the crypt token type", /* short description */
-    "Specify the crypt token type"  /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "tokenName",                  /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "n",                          /* short option */
-    "tokenname",                  /* long option */
-    "Specify the crypt token name", /* short description */
-    "Specify the crypt token name"  /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "serverAddr",                 /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "s",                          /* short option */
-    "server",                     /* long option */
-    "Specify the server URL",     /* short description */
-    "Specify the server URL"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "hostName",                 /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "H",                          /* short option */
-    "hostname",                     /* long option */
-    "Specify the EBICS hostname",     /* short description */
-    "Specify the EBICS hostname"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "userName",                 /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "N",                          /* short option */
-    "username",                     /* long option */
-    "Specify the realname of the user",     /* short description */
-    "Specify the realname of the user"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "ebicsVersion",                /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "E",                          /* short option */
-    "ebicsversion",               /* long option */
-    "Specify the EBICS version to use (e.g. H002)",     /* short description */
-    "Specify the EBICS version to use (e.g. H002)"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "context",                    /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "context",                    /* long option */
-    "Select a context on the medium", /* short description */
-    "Select a context on the medium"  /* long description */
-  },
-  {
-    0,                            /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "import",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "import",                     /* long option */
-    "Import a user which has already been in use (e.g. with previous versions)",
-    "Import a user which has already been in use (e.g. with previous versions)"
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "bankId",                     /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "b",                          /* short option */
+      "bank",                       /* long option */
+      "Specify the bank code",      /* short description */
+      "Specify the bank code"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "userId",                     /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "u",                          /* short option */
+      "user",                       /* long option */
+      "Specify the user id (Benutzerkennung)",        /* short description */
+      "Specify the user id (Benutzerkennung)"         /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "customerId",                 /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "c",                          /* short option */
+      "customer",                   /* long option */
+      "Specify the customer id (Kundennummer)",    /* short description */
+      "Specify the customer id (Kundennummer)"     /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "tokenType",                  /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "t",                          /* short option */
+      "tokentype",                  /* long option */
+      "Specify the crypt token type", /* short description */
+      "Specify the crypt token type"  /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "tokenName",                  /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "n",                          /* short option */
+      "tokenname",                  /* long option */
+      "Specify the crypt token name", /* short description */
+      "Specify the crypt token name"  /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "serverAddr",                 /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "s",                          /* short option */
+      "server",                     /* long option */
+      "Specify the server URL",     /* short description */
+      "Specify the server URL"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "hostName",                 /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "H",                          /* short option */
+      "hostname",                     /* long option */
+      "Specify the EBICS hostname",     /* short description */
+      "Specify the EBICS hostname"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "userName",                 /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "N",                          /* short option */
+      "username",                     /* long option */
+      "Specify the realname of the user",     /* short description */
+      "Specify the realname of the user"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "ebicsVersion",                /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "E",                          /* short option */
+      "ebicsversion",               /* long option */
+      "Specify the EBICS version to use (e.g. H002)",     /* short description */
+      "Specify the EBICS version to use (e.g. H002)"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "context",                    /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                            /* short option */
+      "context",                    /* long option */
+      "Select a context on the medium", /* short description */
+      "Select a context on the medium"  /* long description */
+    },
+    {
+      0,                            /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "import",                     /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                            /* short option */
+      "import",                     /* long option */
+      "Import a user which has already been in use (e.g. with previous versions)",
+      "Import a user which has already been in use (e.g. with previous versions)"
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -269,35 +271,35 @@ int addUser(AB_PROVIDER *pro,
       const GWEN_CRYPT_TOKEN_CONTEXT *cctx;
 
       if (cid==0) {
-	DBG_ERROR(0, "No context given.");
-	return 1;
+        DBG_ERROR(0, "No context given.");
+        return 1;
       }
 
       /* get crypt token */
       pm=GWEN_PluginManager_FindPluginManager("ct");
       if (pm==0) {
-	DBG_ERROR(0, "Plugin manager not found");
-	return 3;
+        DBG_ERROR(0, "Plugin manager not found");
+        return 3;
       }
 
       pl=GWEN_PluginManager_GetPlugin(pm, tokenType);
       if (pl==0) {
-	DBG_ERROR(0, "Plugin not found");
-	return 3;
+        DBG_ERROR(0, "Plugin not found");
+        return 3;
       }
       DBG_INFO(0, "Plugin found");
 
       ct=GWEN_Crypt_Token_Plugin_CreateToken(pl, tokenName);
       if (ct==0) {
-	DBG_ERROR(0, "Could not create crypt token");
-	return 3;
+        DBG_ERROR(0, "Could not create crypt token");
+        return 3;
       }
 
       /* open crypt token */
       rv=GWEN_Crypt_Token_Open(ct, 0, 0);
       if (rv) {
-	DBG_ERROR(0, "Could not open token (%d)", rv);
-	return 3;
+        DBG_ERROR(0, "Could not open token (%d)", rv);
+        return 3;
       }
 
       /* get real token name */
@@ -307,8 +309,8 @@ int addUser(AB_PROVIDER *pro,
 
       cctx=GWEN_Crypt_Token_GetContext(ct, cid, 0);
       if (cctx==NULL) {
-	DBG_ERROR(0, "Context %02x not found", cid);
-	return 3;
+        DBG_ERROR(0, "Context %02x not found", cid);
+        return 3;
       }
       ctx=GWEN_Crypt_Token_Context_dup(cctx);
       lbankId=bankId?bankId:GWEN_Crypt_Token_Context_GetServiceId(ctx);
@@ -320,8 +322,8 @@ int addUser(AB_PROVIDER *pro,
 
       rv=GWEN_Crypt_Token_Close(ct, 0, 0);
       if (rv) {
-	DBG_ERROR(0, "Could not close token (%d)", rv);
-	return 3;
+        DBG_ERROR(0, "Could not close token (%d)", rv);
+        return 3;
       }
 
       GWEN_Crypt_Token_free(ct);
@@ -339,8 +341,8 @@ int addUser(AB_PROVIDER *pro,
     /* TODO: Check for existing users to avoid duplicates */
 #if 0
     user=AB_Banking_FindUser(ab, EBC_PROVIDER_NAME,
-			     "de",
-			     lbankId, luserId, lcustomerId);
+                             "de",
+                             lbankId, luserId, lcustomerId);
     if (user) {
       DBG_ERROR(0, "User %s already exists", luserId);
       return 3;
@@ -361,21 +363,21 @@ int addUser(AB_PROVIDER *pro,
     EBC_User_SetTokenContextId(user, cid);
     if (ebicsVersion) {
       if (strcasecmp(ebicsVersion, "H002")==0) {
-	EBC_User_SetProtoVersion(user, "H002");
-	EBC_User_SetSignVersion(user, "A004");
-	EBC_User_SetAuthVersion(user, "X001");
-	EBC_User_SetCryptVersion(user, "E001");
+        EBC_User_SetProtoVersion(user, "H002");
+        EBC_User_SetSignVersion(user, "A004");
+        EBC_User_SetAuthVersion(user, "X001");
+        EBC_User_SetCryptVersion(user, "E001");
       }
       else if (strcasecmp(ebicsVersion, "H003")==0) {
-	EBC_User_SetProtoVersion(user, "H003");
-	EBC_User_SetSignVersion(user, "A005");
-	EBC_User_SetAuthVersion(user, "X002");
-	EBC_User_SetCryptVersion(user, "E002");
+        EBC_User_SetProtoVersion(user, "H003");
+        EBC_User_SetSignVersion(user, "A005");
+        EBC_User_SetAuthVersion(user, "X002");
+        EBC_User_SetCryptVersion(user, "E002");
       }
       else {
-	fprintf(stderr, "%s",
-		I18N("Invalid protocol version.\n"
-		     "Possible versions are H002 and H003.\n"));
+        fprintf(stderr, "%s",
+                I18N("Invalid protocol version.\n"
+                     "Possible versions are H002 and H003.\n"));
         return 3;
       }
     }
@@ -386,17 +388,17 @@ int addUser(AB_PROVIDER *pro,
 
       tbuf=GWEN_Buffer_new(0, 256, 0, 1);
       if (getBankUrl(AB_Provider_GetBanking(pro), lbankId, tbuf)) {
-	DBG_INFO(0, "Could not find server address for \"%s\"", lbankId);
+        DBG_INFO(0, "Could not find server address for \"%s\"", lbankId);
       }
       if (GWEN_Buffer_GetUsedBytes(tbuf)==0) {
-	DBG_ERROR(0, "No address given and none available in internal db");
-	return 3;
+        DBG_ERROR(0, "No address given and none available in internal db");
+        return 3;
       }
       url=GWEN_Url_fromString(GWEN_Buffer_GetStart(tbuf));
       if (url==NULL) {
-	DBG_ERROR(0, "Bad URL \"%s\" in internal db",
-		  GWEN_Buffer_GetStart(tbuf));
-	return 3;
+        DBG_ERROR(0, "Bad URL \"%s\" in internal db",
+                  GWEN_Buffer_GetStart(tbuf));
+        return 3;
       }
       GWEN_Buffer_free(tbuf);
     }
@@ -404,8 +406,8 @@ int addUser(AB_PROVIDER *pro,
       /* set address */
       url=GWEN_Url_fromString(lserverAddr);
       if (url==NULL) {
-	DBG_ERROR(0, "Bad URL \"%s\"", lserverAddr);
-	return 3;
+        DBG_ERROR(0, "Bad URL \"%s\"", lserverAddr);
+        return 3;
       }
     }
 

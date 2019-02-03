@@ -23,7 +23,8 @@
 
 
 
-int import(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int import(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;
@@ -34,95 +35,95 @@ int import(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   const char *bankId;
   const char *accountId;
   AB_IMEXPORTER_CONTEXT *ctx=0;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "ctxFile",                    /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "c",                          /* short option */
-    "ctxfile",                    /* long option */
-    "Specify the file to store the context in",   /* short description */
-    "Specify the file to store the context in"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "inFile",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "f",                          /* short option */
-    "infile",                    /* long option */
-    "Specify the file to read the data from",   /* short description */
-    "Specify the file to read the data from"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "importerName",               /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "importer",                    /* long option */
-    "Specify the importer to use",   /* short description */
-    "Specify the importer to use"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "profileName",                /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "profile",                    /* long option */
-    "Specify the export profile to use",   /* short description */
-    "Specify the export profile to use"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "profileFile",                /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "profile-file",               /* long option */
-    "Specify the file to load the export profile from",/* short description */
-    "Specify the file to load the export profile from" /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "bankId",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "b",                          /* short option */
-    "bank",                       /* long option */
-    "overwrite the bank code",      /* short description */
-    "overwrite the bank code"       /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "accountId",                  /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "a",                          /* short option */
-    "account",                    /* long option */
-    "overwrite the account number",     /* short description */
-    "overwrite the account number"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "ctxFile",                    /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "c",                          /* short option */
+      "ctxfile",                    /* long option */
+      "Specify the file to store the context in",   /* short description */
+      "Specify the file to store the context in"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "inFile",                     /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "f",                          /* short option */
+      "infile",                    /* long option */
+      "Specify the file to read the data from",   /* short description */
+      "Specify the file to read the data from"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "importerName",               /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                            /* short option */
+      "importer",                    /* long option */
+      "Specify the importer to use",   /* short description */
+      "Specify the importer to use"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "profileName",                /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                            /* short option */
+      "profile",                    /* long option */
+      "Specify the export profile to use",   /* short description */
+      "Specify the export profile to use"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "profileFile",                /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                            /* short option */
+      "profile-file",               /* long option */
+      "Specify the file to load the export profile from",/* short description */
+      "Specify the file to load the export profile from" /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "bankId",                     /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "b",                          /* short option */
+      "bank",                       /* long option */
+      "overwrite the bank code",      /* short description */
+      "overwrite the bank code"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "accountId",                  /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "a",                          /* short option */
+      "account",                    /* long option */
+      "overwrite the account number",     /* short description */
+      "overwrite the account number"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -177,11 +178,11 @@ int import(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     AB_IMEXPORTER_ACCOUNTINFO *iea;
 
     iea=AB_ImExporterContext_GetFirstAccountInfo(ctx);
-    while(iea) {
+    while (iea) {
       if (bankId)
-	AB_ImExporterAccountInfo_SetBankCode(iea, bankId);
+        AB_ImExporterAccountInfo_SetBankCode(iea, bankId);
       if (accountId)
-	AB_ImExporterAccountInfo_SetAccountNumber(iea, accountId);
+        AB_ImExporterAccountInfo_SetAccountNumber(iea, accountId);
       iea=AB_ImExporterAccountInfo_List_Next(iea);
     } /* while */
   }

@@ -35,7 +35,8 @@
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   GWEN_GUI *gui;
   AB_BANKING *ab;
   AB_ACCOUNT_SPEC_LIST *accs=NULL;
@@ -80,16 +81,16 @@ int main(int argc, char **argv) {
     AB_Banking_SendCommands(ab, cmdList, ctx);
 
     ai=AB_ImExporterContext_GetFirstAccountInfo(ctx);
-    while(ai) {
+    while (ai) {
       const AB_TRANSACTION *t;
 
       t=AB_ImExporterAccountInfo_GetFirstTransaction(ai, 0, 0);
-      while(t) {
-	const AB_VALUE *v;
+      while (t) {
+        const AB_VALUE *v;
 
-	v=AB_Transaction_GetValue(t);
-	if (v) {
-	  const char *purpose;
+        v=AB_Transaction_GetValue(t);
+        if (v) {
+          const char *purpose;
 
           purpose=AB_Transaction_GetPurpose(t);
           fprintf(stderr, " %-32s (%.2f %s)\n",
@@ -97,7 +98,7 @@ int main(int argc, char **argv) {
                   AB_Value_GetValueAsDouble(v),
                   AB_Value_GetCurrency(v));
         }
-	t=AB_Transaction_List_Next(t);
+        t=AB_Transaction_List_Next(t);
       } /* while transactions */
       ai=AB_ImExporterAccountInfo_List_Next(ai);
     } /* while ai */

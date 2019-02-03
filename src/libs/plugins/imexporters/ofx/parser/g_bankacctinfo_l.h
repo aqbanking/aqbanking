@@ -19,8 +19,8 @@
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_BANKACCTINFO_new(const char *groupName,
-					     AIO_OFX_GROUP *parent,
-					     GWEN_XML_CONTEXT *ctx);
+                                             AIO_OFX_GROUP *parent,
+                                             GWEN_XML_CONTEXT *ctx);
 
 const char *AIO_OfxGroup_BANKACCTINFO_GetBankId(const AIO_OFX_GROUP *g);
 const char *AIO_OfxGroup_BANKACCTINFO_GetAccId(const AIO_OFX_GROUP *g);

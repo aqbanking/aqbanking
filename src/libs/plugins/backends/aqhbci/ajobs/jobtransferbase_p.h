@@ -31,7 +31,8 @@ static int AH_Job_TransferBase_HandleResults(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
 /**
  * Set given status on all transfers and add copies of them to the given context.
  */
-static void AH_Job_TransferBase_SetStatusOnTransfersAndAddToCtx(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx, AB_TRANSACTION_STATUS status);
+static void AH_Job_TransferBase_SetStatusOnTransfersAndAddToCtx(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
+                                                                AB_TRANSACTION_STATUS status);
 
 
 #endif /* AH_JOBTRANSFERBASE_P_H */

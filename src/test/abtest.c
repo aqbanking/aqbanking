@@ -22,7 +22,8 @@
 #include <errno.h>
 
 
-int test1(int argc, char **argv) {
+int test1(int argc, char **argv)
+{
   AB_BANKING *ab;
   int rv;
 
@@ -51,7 +52,8 @@ int test1(int argc, char **argv) {
 }
 
 
-int test3(int argc, char **argv) {
+int test3(int argc, char **argv)
+{
   AB_BANKING *ab;
   int rv;
 
@@ -83,7 +85,8 @@ int test3(int argc, char **argv) {
 
 
 
-int test5(int argc, char **argv) {
+int test5(int argc, char **argv)
+{
   int rv;
   GWEN_DB_NODE *db;
   GWEN_DB_NODE *dbParams;
@@ -93,7 +96,7 @@ int test5(int argc, char **argv) {
   GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
                        "params/type", "mt940");
   rv=GWEN_DB_ReadFileAs(db, "test.swift", "swift", dbParams,
-			GWEN_PATH_FLAGS_CREATE_GROUP);
+                        GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv) {
     DBG_ERROR(0, "Error reading file");
     return 2;
@@ -105,7 +108,8 @@ int test5(int argc, char **argv) {
 
 
 
-int test6(int argc, char **argv) {
+int test6(int argc, char **argv)
+{
   int rv;
   GWEN_DB_NODE *db;
   GWEN_DB_NODE *dbParams;
@@ -150,7 +154,7 @@ int test6(int argc, char **argv) {
                        "columns/12", "v[11]");
 
   rv=GWEN_DB_ReadFileAs(db, "test.txt", "csv", dbParams,
-			GWEN_PATH_FLAGS_CREATE_GROUP);
+                        GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv) {
     DBG_ERROR(0, "Error reading file");
     return 2;
@@ -174,7 +178,7 @@ int test6(int argc, char **argv) {
   GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_DEFAULT,
                        "columns/3", "v[2]");
   dbT=GWEN_DB_FindFirstGroup(db, "country");
-  while(dbT) {
+  while (dbT) {
     int cnt;
     int i;
     GWEN_BUFFER *buf;
@@ -206,7 +210,7 @@ int test6(int argc, char **argv) {
   }
 
   rv=GWEN_DB_WriteFileAs(dbOut, "countries.csv", "csv", dbParams,
-			 GWEN_DB_FLAGS_DEFAULT);
+                         GWEN_DB_FLAGS_DEFAULT);
   if (rv) {
     DBG_ERROR(0, "Error writing file");
     return 2;
@@ -218,7 +222,7 @@ int test6(int argc, char **argv) {
   dbT=GWEN_DB_FindFirstGroup(db, "country");
   first=1;
   fprintf(f, "ab_country_list= {\n");
-  while(dbT) {
+  while (dbT) {
     int cnt;
     int i;
     int j;
@@ -270,7 +274,8 @@ int test6(int argc, char **argv) {
 
 
 
-int readCSVCountries(const char *fname, GWEN_DB_NODE *db) {
+int readCSVCountries(const char *fname, GWEN_DB_NODE *db)
+{
   int rv;
   GWEN_DB_NODE *dbParams;
 
@@ -309,7 +314,7 @@ int readCSVCountries(const char *fname, GWEN_DB_NODE *db) {
                        "columns/12", "v[11]");
 
   rv=GWEN_DB_ReadFileAs(db, fname, "csv", dbParams,
-			GWEN_PATH_FLAGS_CREATE_GROUP);
+                        GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv) {
     DBG_ERROR(0, "Error reading file");
     return 2;
@@ -321,21 +326,22 @@ int readCSVCountries(const char *fname, GWEN_DB_NODE *db) {
 
 
 
-int readXMLCountries(const char *fname, GWEN_DB_NODE *dbCountries) {
+int readXMLCountries(const char *fname, GWEN_DB_NODE *dbCountries)
+{
   GWEN_XMLNODE *nRoot;
   GWEN_XMLNODE *nRow;
 
   GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
   nRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
   if (GWEN_XML_ReadFile(nRoot, fname,
-			GWEN_XML_FLAGS_DEFAULT |
-			GWEN_XML_FLAGS_HANDLE_HEADERS)) {
+                        GWEN_XML_FLAGS_DEFAULT |
+                        GWEN_XML_FLAGS_HANDLE_HEADERS)) {
     DBG_ERROR(0, "Could not read XML file.\n");
     return 2;
   }
 
   nRow=GWEN_XMLNode_FindFirstTag(nRoot, "tr", 0, 0);
-  while(nRow) {
+  while (nRow) {
     GWEN_XMLNODE *nCol;
     GWEN_DB_NODE *dbCountry=0;
 
@@ -346,129 +352,135 @@ int readXMLCountries(const char *fname, GWEN_DB_NODE *dbCountries) {
 
       nData=GWEN_XMLNode_GetFirstData(nCol);
       if (nData) {
-	GWEN_BUFFER *dbuf;
+        GWEN_BUFFER *dbuf;
         const char *s;
-	char *p;
+        char *p;
 
         dbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	s=GWEN_XMLNode_GetData(nData);
-	assert(s);
-	if (GWEN_Text_UnescapeXmlToBuffer(s, dbuf)) {
-	  fprintf(stderr, "Error unescaping country \"%s\"", s);
-	  return 2;
-	}
-	p=GWEN_Buffer_GetStart(dbuf);
-	if (strlen(p)>1) {
-	  p=strchr(p, '(');
-	  if (p) {
-	    *p=0;
-	    GWEN_Text_CondenseBuffer(dbuf);
-	  }
-	  if (strcasecmp(GWEN_Buffer_GetStart(dbuf), "&nbsp;")!=0)
-	    GWEN_DB_SetCharValue(dbCountry, GWEN_DB_FLAGS_DEFAULT,
-				 "countryName", GWEN_Buffer_GetStart(dbuf));
-	}
+        s=GWEN_XMLNode_GetData(nData);
+        assert(s);
+        if (GWEN_Text_UnescapeXmlToBuffer(s, dbuf)) {
+          fprintf(stderr, "Error unescaping country \"%s\"", s);
+          return 2;
+        }
+        p=GWEN_Buffer_GetStart(dbuf);
+        if (strlen(p)>1) {
+          p=strchr(p, '(');
+          if (p) {
+            *p=0;
+            GWEN_Text_CondenseBuffer(dbuf);
+          }
+          if (strcasecmp(GWEN_Buffer_GetStart(dbuf), "&nbsp;")!=0)
+            GWEN_DB_SetCharValue(dbCountry, GWEN_DB_FLAGS_DEFAULT,
+                                 "countryName", GWEN_Buffer_GetStart(dbuf));
+        }
         GWEN_Buffer_free(dbuf);
       }
     }
 
-    if (nCol) nCol=GWEN_XMLNode_FindNextTag(nCol, "td", 0, 0);
-    if (nCol) nCol=GWEN_XMLNode_FindNextTag(nCol, "td", 0, 0);
+    if (nCol)
+      nCol=GWEN_XMLNode_FindNextTag(nCol, "td", 0, 0);
+    if (nCol)
+      nCol=GWEN_XMLNode_FindNextTag(nCol, "td", 0, 0);
     if (nCol) {
       GWEN_XMLNODE *nData;
 
       nData=GWEN_XMLNode_GetFirstData(nCol);
       if (nData) {
-	GWEN_BUFFER *dbuf;
+        GWEN_BUFFER *dbuf;
         const char *s;
-	char *p;
+        char *p;
 
         dbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	s=GWEN_XMLNode_GetData(nData);
-	assert(s);
-	if (GWEN_Text_UnescapeXmlToBuffer(s, dbuf)) {
-	  fprintf(stderr, "Error unescaping country code \"%s\"", s);
-	  return 2;
-	}
-	p=GWEN_Buffer_GetStart(dbuf);
-	if (strlen(p)>1) {
-	  if (strcasecmp(GWEN_Buffer_GetStart(dbuf), "&nbsp;")!=0) {
-	    p[2]=0;
-	    GWEN_DB_SetCharValue(dbCountry, GWEN_DB_FLAGS_DEFAULT,
-				 "countryCode", GWEN_Buffer_GetStart(dbuf));
-	  }
-	}
-	GWEN_Buffer_free(dbuf);
-      }
-    }
-
-    if (nCol) nCol=GWEN_XMLNode_FindNextTag(nCol, "td", 0, 0);
-    if (nCol) nCol=GWEN_XMLNode_FindNextTag(nCol, "td", 0, 0);
-    if (nCol) {
-      GWEN_XMLNODE *nData;
-
-      nData=GWEN_XMLNode_GetFirstData(nCol);
-      if (nData) {
-	GWEN_BUFFER *dbuf;
-        const char *s;
-	char *p;
-
-        dbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	s=GWEN_XMLNode_GetData(nData);
-	assert(s);
-	if (GWEN_Text_UnescapeXmlToBuffer(s, dbuf)) {
-	  fprintf(stderr, "Error unescaping currency name \"%s\"", s);
-	  return 2;
-	}
-	p=GWEN_Buffer_GetStart(dbuf);
-	if (strlen(p)>1) {
-	  p=strchr(p, '(');
-	  if (p) {
-	    *p=0;
-	    GWEN_Text_CondenseBuffer(dbuf);
-	  }
-	  if (strcasecmp(GWEN_Buffer_GetStart(dbuf), "&nbsp;")!=0)
-	    GWEN_DB_SetCharValue(dbCountry, GWEN_DB_FLAGS_DEFAULT,
-				 "currencyName", GWEN_Buffer_GetStart(dbuf));
-	}
+        s=GWEN_XMLNode_GetData(nData);
+        assert(s);
+        if (GWEN_Text_UnescapeXmlToBuffer(s, dbuf)) {
+          fprintf(stderr, "Error unescaping country code \"%s\"", s);
+          return 2;
+        }
+        p=GWEN_Buffer_GetStart(dbuf);
+        if (strlen(p)>1) {
+          if (strcasecmp(GWEN_Buffer_GetStart(dbuf), "&nbsp;")!=0) {
+            p[2]=0;
+            GWEN_DB_SetCharValue(dbCountry, GWEN_DB_FLAGS_DEFAULT,
+                                 "countryCode", GWEN_Buffer_GetStart(dbuf));
+          }
+        }
         GWEN_Buffer_free(dbuf);
       }
     }
 
-    if (nCol) nCol=GWEN_XMLNode_FindNextTag(nCol, "td", 0, 0);
-    if (nCol) nCol=GWEN_XMLNode_FindNextTag(nCol, "td", 0, 0);
+    if (nCol)
+      nCol=GWEN_XMLNode_FindNextTag(nCol, "td", 0, 0);
+    if (nCol)
+      nCol=GWEN_XMLNode_FindNextTag(nCol, "td", 0, 0);
     if (nCol) {
       GWEN_XMLNODE *nData;
 
       nData=GWEN_XMLNode_GetFirstData(nCol);
       if (nData) {
-	GWEN_BUFFER *dbuf;
+        GWEN_BUFFER *dbuf;
         const char *s;
-	char *p;
+        char *p;
 
         dbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	s=GWEN_XMLNode_GetData(nData);
-	assert(s);
-	if (GWEN_Text_UnescapeXmlToBuffer(s, dbuf)) {
-	  fprintf(stderr, "Error unescaping currency code \"%s\"", s);
-	  return 2;
-	}
-	p=GWEN_Buffer_GetStart(dbuf);
-	if (strlen(p)>2) {
-	  if (strcasecmp(GWEN_Buffer_GetStart(dbuf), "&nbsp;")!=0) {
-	    p[3]=0;
-	    GWEN_DB_SetCharValue(dbCountry, GWEN_DB_FLAGS_DEFAULT,
-				 "currencyCode", GWEN_Buffer_GetStart(dbuf));
-	  }
-	}
+        s=GWEN_XMLNode_GetData(nData);
+        assert(s);
+        if (GWEN_Text_UnescapeXmlToBuffer(s, dbuf)) {
+          fprintf(stderr, "Error unescaping currency name \"%s\"", s);
+          return 2;
+        }
+        p=GWEN_Buffer_GetStart(dbuf);
+        if (strlen(p)>1) {
+          p=strchr(p, '(');
+          if (p) {
+            *p=0;
+            GWEN_Text_CondenseBuffer(dbuf);
+          }
+          if (strcasecmp(GWEN_Buffer_GetStart(dbuf), "&nbsp;")!=0)
+            GWEN_DB_SetCharValue(dbCountry, GWEN_DB_FLAGS_DEFAULT,
+                                 "currencyName", GWEN_Buffer_GetStart(dbuf));
+        }
+        GWEN_Buffer_free(dbuf);
+      }
+    }
+
+    if (nCol)
+      nCol=GWEN_XMLNode_FindNextTag(nCol, "td", 0, 0);
+    if (nCol)
+      nCol=GWEN_XMLNode_FindNextTag(nCol, "td", 0, 0);
+    if (nCol) {
+      GWEN_XMLNODE *nData;
+
+      nData=GWEN_XMLNode_GetFirstData(nCol);
+      if (nData) {
+        GWEN_BUFFER *dbuf;
+        const char *s;
+        char *p;
+
+        dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+        s=GWEN_XMLNode_GetData(nData);
+        assert(s);
+        if (GWEN_Text_UnescapeXmlToBuffer(s, dbuf)) {
+          fprintf(stderr, "Error unescaping currency code \"%s\"", s);
+          return 2;
+        }
+        p=GWEN_Buffer_GetStart(dbuf);
+        if (strlen(p)>2) {
+          if (strcasecmp(GWEN_Buffer_GetStart(dbuf), "&nbsp;")!=0) {
+            p[3]=0;
+            GWEN_DB_SetCharValue(dbCountry, GWEN_DB_FLAGS_DEFAULT,
+                                 "currencyCode", GWEN_Buffer_GetStart(dbuf));
+          }
+        }
         GWEN_Buffer_free(dbuf);
       }
     }
 
     if (GWEN_DB_VariableExists(dbCountry, "countryName") &&
-	GWEN_DB_VariableExists(dbCountry, "countryCode") &&
-	GWEN_DB_VariableExists(dbCountry, "currencyName") &&
-	GWEN_DB_VariableExists(dbCountry, "currencyCode")) {
+        GWEN_DB_VariableExists(dbCountry, "countryCode") &&
+        GWEN_DB_VariableExists(dbCountry, "currencyName") &&
+        GWEN_DB_VariableExists(dbCountry, "currencyCode")) {
       GWEN_DB_AddGroup(dbCountries, dbCountry);
     }
     else {
@@ -483,7 +495,8 @@ int readXMLCountries(const char *fname, GWEN_DB_NODE *dbCountries) {
 
 
 
-int test7(int argc, char **argv) {
+int test7(int argc, char **argv)
+{
   const char *fname;
   GWEN_DB_NODE *dbCountries;
   int rv;
@@ -505,11 +518,12 @@ int test7(int argc, char **argv) {
 
 
 
-int packCsvCountries(GWEN_DB_NODE *dbCSV) {
+int packCsvCountries(GWEN_DB_NODE *dbCSV)
+{
   GWEN_DB_NODE *dbT;
 
   dbT=GWEN_DB_FindFirstGroup(dbCSV, "country");
-  while(dbT) {
+  while (dbT) {
     int cnt;
     int i;
     int j;
@@ -528,19 +542,19 @@ int packCsvCountries(GWEN_DB_NODE *dbCSV) {
       GWEN_Buffer_AppendString(buf, GWEN_DB_GetCharValue(dbT, "v", i, 0));
     }
     GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "countryName",
-			 GWEN_Buffer_GetStart(buf));
+                         "countryName",
+                         GWEN_Buffer_GetStart(buf));
     GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			 "countryCode",
-			 GWEN_DB_GetCharValue(dbT, "v", i++, 0));
+                         "countryCode",
+                         GWEN_DB_GetCharValue(dbT, "v", i++, 0));
     if (sscanf(GWEN_DB_GetCharValue(dbT, "v", ++i, 0), "%d", &j)!=1) {
       fprintf(stderr, "ERROR in country %s\n",
-	      GWEN_Buffer_GetStart(buf));
+              GWEN_Buffer_GetStart(buf));
       return 2;
     }
     else {
       GWEN_DB_SetIntValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  "countryNum", j);
+                          "countryNum", j);
     }
     GWEN_DB_DeleteVar(dbT, "v");
 
@@ -553,7 +567,8 @@ int packCsvCountries(GWEN_DB_NODE *dbCSV) {
 
 
 
-int test8(int argc, char **argv) {
+int test8(int argc, char **argv)
+{
   const char *fnameXML, *fnameCSV;
   GWEN_DB_NODE *dbXML;
   GWEN_DB_NODE *dbCSV;
@@ -590,39 +605,39 @@ int test8(int argc, char **argv) {
     return rv;
 
   dbC=GWEN_DB_GetFirstGroup(dbXML);
-  while(dbC) {
+  while (dbC) {
     const char *code;
 
     code=GWEN_DB_GetCharValue(dbC, "countryCode", 0, 0);
     if (code) {
       dbT=GWEN_DB_GetFirstGroup(dbCSV);
-      while(dbT) {
-	const char *s;
+      while (dbT) {
+        const char *s;
 
-	s=GWEN_DB_GetCharValue(dbT, "countryCode", 0, 0);
-	if (s) {
-	  if (strcasecmp(s, code)==0)
-	    break;
-	}
-	dbT=GWEN_DB_GetNextGroup(dbT);
+        s=GWEN_DB_GetCharValue(dbT, "countryCode", 0, 0);
+        if (s) {
+          if (strcasecmp(s, code)==0)
+            break;
+        }
+        dbT=GWEN_DB_GetNextGroup(dbT);
       }
 
       if (!dbT) {
         DBG_ERROR(0, "Country \"%s\" not found", code);
       }
       else {
-	int nc;
+        int nc;
 
-	nc=GWEN_DB_GetIntValue(dbT, "countryNum", 0, 0);
-	if (nc) {
-	  DBG_ERROR(0, "Setting country code %s=%d", code, nc);
-	  GWEN_DB_SetIntValue(dbC, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			      "countryNum", nc);
-	}
-	else {
-	  DBG_ERROR(0, "Country \"%s\" has no number", code);
-	  GWEN_DB_Dump(dbT, 2);
-	}
+        nc=GWEN_DB_GetIntValue(dbT, "countryNum", 0, 0);
+        if (nc) {
+          DBG_ERROR(0, "Setting country code %s=%d", code, nc);
+          GWEN_DB_SetIntValue(dbC, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                              "countryNum", nc);
+        }
+        else {
+          DBG_ERROR(0, "Country \"%s\" has no number", code);
+          GWEN_DB_Dump(dbT, 2);
+        }
       }
     }
     else {
@@ -638,7 +653,7 @@ int test8(int argc, char **argv) {
   dbT=GWEN_DB_FindFirstGroup(dbXML, "country");
   first=1;
   fprintf(f, "ab_country_list= {\n");
-  while(dbT) {
+  while (dbT) {
     const char *s;
     int i;
 
@@ -652,28 +667,28 @@ int test8(int argc, char **argv) {
     i=GWEN_DB_GetIntValue(dbT, "countryNum", 0, 0);
     if (i!=280) {
       if (i==276) {
-	s=GWEN_DB_GetCharValue(dbT, "countryName", 0, 0);
-	assert(s);
-	fprintf(f, "{ I18N_NOOP(\"%s\"), ",
-		s);
-	s=GWEN_DB_GetCharValue(dbT, "countryCode", 0, 0);
-	assert(s);
-	fprintf(f, "\"%s\",", s);
-	i=GWEN_DB_GetIntValue(dbT, "countryNum", 0, 0);
-	fprintf(f, " %d,", 280);
-	s=GWEN_DB_GetCharValue(dbT, "currencyName", 0, 0);
-	assert(s);
-	fprintf(f, " I18N_NOOP(\"%s\"), ", s);
-	s=GWEN_DB_GetCharValue(dbT, "currencyCode", 0, 0);
-	assert(s);
-	fprintf(f, " \"%s\" }", s);
-	fprintf(f, ",\n");
+        s=GWEN_DB_GetCharValue(dbT, "countryName", 0, 0);
+        assert(s);
+        fprintf(f, "{ I18N_NOOP(\"%s\"), ",
+                s);
+        s=GWEN_DB_GetCharValue(dbT, "countryCode", 0, 0);
+        assert(s);
+        fprintf(f, "\"%s\",", s);
+        i=GWEN_DB_GetIntValue(dbT, "countryNum", 0, 0);
+        fprintf(f, " %d,", 280);
+        s=GWEN_DB_GetCharValue(dbT, "currencyName", 0, 0);
+        assert(s);
+        fprintf(f, " I18N_NOOP(\"%s\"), ", s);
+        s=GWEN_DB_GetCharValue(dbT, "currencyCode", 0, 0);
+        assert(s);
+        fprintf(f, " \"%s\" }", s);
+        fprintf(f, ",\n");
       }
 
       s=GWEN_DB_GetCharValue(dbT, "countryName", 0, 0);
       assert(s);
       fprintf(f, "{ I18N_NOOP(\"%s\"), ",
-	      s);
+              s);
       s=GWEN_DB_GetCharValue(dbT, "countryCode", 0, 0);
       assert(s);
       fprintf(f, "\"%s\",", s);
@@ -703,7 +718,8 @@ int test8(int argc, char **argv) {
 
 
 
-int test9(int argc, char **argv) {
+int test9(int argc, char **argv)
+{
   AB_BANKING *ab;
   AB_BANKINFO_LIST2 *bl;
   AB_BANKINFO_LIST2_ITERATOR *bit;
@@ -737,7 +753,7 @@ int test9(int argc, char **argv) {
     fprintf(stdout, "Found the following banks:\n");
     bi=AB_BankInfo_List2Iterator_Data(bit);
     assert(bi);
-    while(bi) {
+    while (bi) {
       count++;
       fprintf(stdout, "%5d %s %s %s\n",
               count,
@@ -765,7 +781,8 @@ int test9(int argc, char **argv) {
 }
 
 
-int test10(int argc, char **argv) {
+int test10(int argc, char **argv)
+{
   AB_BANKING *ab;
   AB_BANKINFO_LIST2 *bl;
   AB_BANKINFO_LIST2_ITERATOR *bit;
@@ -799,7 +816,7 @@ int test10(int argc, char **argv) {
     fprintf(stdout, "Found the following banks:\n");
     bi=AB_BankInfo_List2Iterator_Data(bit);
     assert(bi);
-    while(bi) {
+    while (bi) {
       count++;
       fprintf(stdout, "%5d %s %s %s\n",
               count,
@@ -828,7 +845,8 @@ int test10(int argc, char **argv) {
 
 
 
-int test11(int argc, char **argv) {
+int test11(int argc, char **argv)
+{
   AB_BANKING *ab;
   AB_BANKINFO_LIST2 *bl;
   AB_BANKINFO_LIST2_ITERATOR *bit;
@@ -862,7 +880,7 @@ int test11(int argc, char **argv) {
     fprintf(stdout, "Found the following banks:\n");
     bi=AB_BankInfo_List2Iterator_Data(bit);
     assert(bi);
-    while(bi) {
+    while (bi) {
       count++;
       fprintf(stdout, "%5d %s %s %s\n",
               count,
@@ -892,7 +910,8 @@ int test11(int argc, char **argv) {
 
 
 
-int test12(int argc, char **argv) {
+int test12(int argc, char **argv)
+{
   AB_BANKING *ab;
   AB_BANKINFO_LIST2 *bl;
   AB_BANKINFO_LIST2_ITERATOR *bit;
@@ -933,7 +952,7 @@ int test12(int argc, char **argv) {
     fprintf(stdout, "Found the following banks:\n");
     bi=AB_BankInfo_List2Iterator_Data(bit);
     assert(bi);
-    while(bi) {
+    while (bi) {
       count++;
       fprintf(stdout, "%5d %s %s %s\n",
               count,
@@ -963,7 +982,8 @@ int test12(int argc, char **argv) {
 
 
 
-int test13(int argc, char **argv) {
+int test13(int argc, char **argv)
+{
   int rv;
   const char *iban;
 
@@ -1008,7 +1028,8 @@ int test13(int argc, char **argv) {
 
 
 
-int test15(int argc, char **argv) {
+int test15(int argc, char **argv)
+{
   AB_BANKING *ab;
   int rv;
   GWEN_DBIO *dbio;
@@ -1044,9 +1065,9 @@ int test15(int argc, char **argv) {
   dbData=GWEN_DB_Group_new("data");
 
   rv=GWEN_DBIO_ImportFromFile(dbio, fname,
-			      dbData,
-			      dbParams,
-			      GWEN_PATH_FLAGS_CREATE_GROUP);
+                              dbData,
+                              dbParams,
+                              GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv) {
     fprintf(stderr, "Error on import (%d)\n", rv);
     return 2;
@@ -1070,7 +1091,8 @@ int test15(int argc, char **argv) {
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   const char *cmd;
   int rv;
 

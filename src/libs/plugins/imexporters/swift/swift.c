@@ -28,7 +28,8 @@ GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_SWIFT);
 
 
 
-AB_IMEXPORTER *AB_ImExporterSWIFT_new(AB_BANKING *ab){
+AB_IMEXPORTER *AB_ImExporterSWIFT_new(AB_BANKING *ab)
+{
   AB_IMEXPORTER *ie;
   AH_IMEXPORTER_SWIFT *ieh;
 
@@ -51,10 +52,11 @@ AB_IMEXPORTER *AB_ImExporterSWIFT_new(AB_BANKING *ab){
 
 
 
-void GWENHYWFAR_CB AH_ImExporterSWIFT_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_ImExporterSWIFT_FreeData(void *bp, void *p)
+{
   AH_IMEXPORTER_SWIFT *ieh;
 
-  ieh=(AH_IMEXPORTER_SWIFT*)p;
+  ieh=(AH_IMEXPORTER_SWIFT *)p;
   GWEN_DBIO_free(ieh->dbio);
   GWEN_FREE_OBJECT(ieh);
 }
@@ -64,7 +66,8 @@ void GWENHYWFAR_CB AH_ImExporterSWIFT_FreeData(void *bp, void *p){
 int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
                               AB_IMEXPORTER_CONTEXT *ctx,
                               GWEN_SYNCIO *sio,
-			      GWEN_DB_NODE *params){
+                              GWEN_DB_NODE *params)
+{
   AH_IMEXPORTER_SWIFT *ieh;
   GWEN_DB_NODE *dbData;
   GWEN_DB_NODE *dbSubParams;
@@ -76,32 +79,32 @@ int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
   assert(ieh->dbio);
 
   dbSubParams=GWEN_DB_GetGroup(params, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-			       "params");
+                               "params");
   dbData=GWEN_DB_Group_new("transactions");
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug,
-		       I18N("Reading file..."));
+                       I18N("Reading file..."));
 
   rv=GWEN_DBIO_Import(ieh->dbio,
-		      sio,
-		      dbData,
-		      dbSubParams,
-		      GWEN_DB_FLAGS_DEFAULT |
-		      GWEN_PATH_FLAGS_CREATE_GROUP);
+                      sio,
+                      dbData,
+                      dbSubParams,
+                      GWEN_DB_FLAGS_DEFAULT |
+                      GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error importing data (%d)", rv);
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-			 I18N("Error importing data"));
+                         I18N("Error importing data"));
     GWEN_DB_Group_free(dbData);
     return GWEN_ERROR_BAD_DATA;
   }
 
   /* transform DB to transactions */
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug,
-		       "Data imported, transforming to transactions");
+                       "Data imported, transforming to transactions");
   rv=AH_ImExporterSWIFT__ImportFromGroup(ctx, dbData, params);
   if (rv) {
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-			 "Error importing data");
+                         "Error importing data");
     GWEN_DB_Group_free(dbData);
     return rv;
   }
@@ -114,20 +117,21 @@ int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
 
 int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
                                         GWEN_DB_NODE *db,
-					GWEN_DB_NODE *dbParams) {
+                                        GWEN_DB_NODE *dbParams)
+{
   GWEN_DB_NODE *dbT;
   uint32_t progressId;
 
   progressId=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
-				    GWEN_GUI_PROGRESS_ALLOW_EMBED |
-				    GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-				    GWEN_GUI_PROGRESS_SHOW_ABORT,
-				    I18N("Importing parsed data..."),
-				    NULL,
-				    GWEN_DB_Groups_Count(db),
-				    0);
+                                    GWEN_GUI_PROGRESS_ALLOW_EMBED |
+                                    GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+                                    GWEN_GUI_PROGRESS_SHOW_ABORT,
+                                    I18N("Importing parsed data..."),
+                                    NULL,
+                                    GWEN_DB_Groups_Count(db),
+                                    0);
   dbT=GWEN_DB_GetFirstGroup(db);
-  while(dbT) {
+  while (dbT) {
     int matches;
     int i;
     const char *p;
@@ -160,58 +164,58 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
       t=AB_Transaction_fromDb(dbT);
       if (!t) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in config file");
-	GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-			     I18N("Error in config file"));
-	return GWEN_ERROR_GENERIC;
+        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
+                             I18N("Error in config file"));
+        return GWEN_ERROR_GENERIC;
       }
 
       /* some translations */
       s=AB_Transaction_GetRemoteIban(t);
       if (!(s && *s)) {
-	const char *sAid;
+        const char *sAid;
 
-	/* no remote IBAN set, check whether the bank sends this info in the
-	 * fields for national account specifications (instead of the SWIFT
-	 * field "?38" which was specified for this case) */
-	sAid=AB_Transaction_GetRemoteAccountNumber(t);
-	if (sAid && *sAid && AB_Banking_CheckIban(sAid)==0) {
-	  /* there is a remote account number specification, and that is an IBAN,
-	   * so we set that accordingly */
-	  DBG_INFO(AQBANKING_LOGDOMAIN, "Setting remote IBAN from account number");
-	  AB_Transaction_SetRemoteIban(t, sAid);
+        /* no remote IBAN set, check whether the bank sends this info in the
+         * fields for national account specifications (instead of the SWIFT
+         * field "?38" which was specified for this case) */
+        sAid=AB_Transaction_GetRemoteAccountNumber(t);
+        if (sAid && *sAid && AB_Banking_CheckIban(sAid)==0) {
+          /* there is a remote account number specification, and that is an IBAN,
+           * so we set that accordingly */
+          DBG_INFO(AQBANKING_LOGDOMAIN, "Setting remote IBAN from account number");
+          AB_Transaction_SetRemoteIban(t, sAid);
 
-	  /* set remote BIC if it not already is */
-	  s=AB_Transaction_GetRemoteBic(t);
-	  if (!(s && *s)) {
-	    const char *sBid;
+          /* set remote BIC if it not already is */
+          s=AB_Transaction_GetRemoteBic(t);
+          if (!(s && *s)) {
+            const char *sBid;
 
-	    sBid=AB_Transaction_GetRemoteBankCode(t);
-	    if (sBid && *sBid) {
-	      DBG_INFO(AQBANKING_LOGDOMAIN, "Setting remote BIC from bank code");
-	      AB_Transaction_SetRemoteBic(t, sBid);
-	    }
-	  }
-	}
+            sBid=AB_Transaction_GetRemoteBankCode(t);
+            if (sBid && *sBid) {
+              DBG_INFO(AQBANKING_LOGDOMAIN, "Setting remote BIC from bank code");
+              AB_Transaction_SetRemoteBic(t, sBid);
+            }
+          }
+        }
       }
 
       /* ABWA+: replace remote name with ABWA+ content */
       s=GWEN_DB_GetCharValue(dbT, "sepa/ABWA", 0, NULL);
       if (s && *s) {
-	int i;
+        int i;
 
         //DBG_ERROR(AQBANKING_LOGDOMAIN, "Replacing remote name with ABWA value [%s]", s);
-	for (i=0; i<2; i++) {
-	  s=GWEN_DB_GetCharValue(dbT, "sepa/ABWA", i, NULL);
-	  if (s && *s) {
-	    AB_Transaction_SetRemoteName(t, s);
-	  }
-	}
+        for (i=0; i<2; i++) {
+          s=GWEN_DB_GetCharValue(dbT, "sepa/ABWA", i, NULL);
+          if (s && *s) {
+            AB_Transaction_SetRemoteName(t, s);
+          }
+        }
       }
 
       /* ABWE+: replace local name with ABWE+ content */
       s=GWEN_DB_GetCharValue(dbT, "sepa/ABWE", 0, NULL);
       if (s && *s) {
-	AB_Transaction_SetLocalName(t, s);
+        AB_Transaction_SetLocalName(t, s);
       }
 
 
@@ -273,15 +277,15 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
       // not a transaction, check subgroups
       rv=AH_ImExporterSWIFT__ImportFromGroup(ctx, dbT, dbParams);
       if (rv) {
-	GWEN_Gui_ProgressEnd(progressId);
-	return rv;
+        GWEN_Gui_ProgressEnd(progressId);
+        return rv;
       }
     }
 
     if (GWEN_Gui_ProgressAdvance(progressId, GWEN_GUI_PROGRESS_ONE)==
-	GWEN_ERROR_USER_ABORTED) {
+        GWEN_ERROR_USER_ABORTED) {
       GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-			   I18N("Aborted by user"));
+                           I18N("Aborted by user"));
       GWEN_Gui_ProgressEnd(progressId);
       return GWEN_ERROR_USER_ABORTED;
     }
@@ -294,7 +298,8 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
 
 
-int AH_ImExporterSWIFT_CheckFile(AB_IMEXPORTER *ie, const char *fname){
+int AH_ImExporterSWIFT_CheckFile(AB_IMEXPORTER *ie, const char *fname)
+{
   AH_IMEXPORTER_SWIFT *ieh;
   GWEN_DBIO_CHECKFILE_RESULT rv;
 
@@ -304,11 +309,15 @@ int AH_ImExporterSWIFT_CheckFile(AB_IMEXPORTER *ie, const char *fname){
   assert(ieh->dbio);
 
   rv=GWEN_DBIO_CheckFile(ieh->dbio, fname);
-  switch(rv) {
-  case GWEN_DBIO_CheckFileResultOk:      return 0;
-  case GWEN_DBIO_CheckFileResultNotOk:   return GWEN_ERROR_BAD_DATA;
-  case GWEN_DBIO_CheckFileResultUnknown: return AB_ERROR_INDIFFERENT;
-  default:                               return GWEN_ERROR_GENERIC;
+  switch (rv) {
+  case GWEN_DBIO_CheckFileResultOk:
+    return 0;
+  case GWEN_DBIO_CheckFileResultNotOk:
+    return GWEN_ERROR_BAD_DATA;
+  case GWEN_DBIO_CheckFileResultUnknown:
+    return AB_ERROR_INDIFFERENT;
+  default:
+    return GWEN_ERROR_GENERIC;
   } /* switch */
 }
 

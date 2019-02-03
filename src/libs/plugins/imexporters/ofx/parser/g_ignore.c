@@ -27,8 +27,9 @@ GWEN_INHERIT(AIO_OFX_GROUP, AIO_OFX_GROUP_IGNORE)
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_Ignore_new(const char *groupName,
-				       AIO_OFX_GROUP *parent,
-				       GWEN_XML_CONTEXT *ctx) {
+                                       AIO_OFX_GROUP *parent,
+                                       GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_GROUP *g;
   AIO_OFX_GROUP_IGNORE *xg;
 
@@ -54,17 +55,19 @@ AIO_OFX_GROUP *AIO_OfxGroup_Ignore_new(const char *groupName,
 
 
 GWENHYWFAR_CB
-void AIO_OfxGroup_Ignore_FreeData(void *bp, void *p) {
+void AIO_OfxGroup_Ignore_FreeData(void *bp, void *p)
+{
   AIO_OFX_GROUP_IGNORE *xg;
 
-  xg=(AIO_OFX_GROUP_IGNORE*)p;
+  xg=(AIO_OFX_GROUP_IGNORE *)p;
   GWEN_StringList_free(xg->openTags);
   GWEN_FREE_OBJECT(xg);
 }
 
 
 
-int AIO_OfxGroup_Ignore_StartTag(AIO_OFX_GROUP *g, const char *tagName) {
+int AIO_OfxGroup_Ignore_StartTag(AIO_OFX_GROUP *g, const char *tagName)
+{
   AIO_OFX_GROUP_IGNORE *xg;
 
   assert(g);
@@ -79,7 +82,8 @@ int AIO_OfxGroup_Ignore_StartTag(AIO_OFX_GROUP *g, const char *tagName) {
 
 
 
-int AIO_OfxGroup_Ignore_EndTag(AIO_OFX_GROUP *g, const char *tagName) {
+int AIO_OfxGroup_Ignore_EndTag(AIO_OFX_GROUP *g, const char *tagName)
+{
   AIO_OFX_GROUP_IGNORE *xg;
 
   assert(g);
@@ -113,7 +117,8 @@ int AIO_OfxGroup_Ignore_EndTag(AIO_OFX_GROUP *g, const char *tagName) {
 
 
 
-int AIO_OfxGroup_Ignore_AddData(AIO_OFX_GROUP *g, const char *data) {
+int AIO_OfxGroup_Ignore_AddData(AIO_OFX_GROUP *g, const char *data)
+{
   /* just ignore the data */
   return 0;
 }

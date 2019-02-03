@@ -46,14 +46,15 @@ GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_OFX);
 
 
 
-AB_IMEXPORTER *AB_ImExporterOFX_new(AB_BANKING *ab){
+AB_IMEXPORTER *AB_ImExporterOFX_new(AB_BANKING *ab)
+{
   AB_IMEXPORTER *ie;
   AH_IMEXPORTER_OFX *ieh;
 
   ie=AB_ImExporter_new(ab, "ofx");
   GWEN_NEW_OBJECT(AH_IMEXPORTER_OFX, ieh);
   GWEN_INHERIT_SETDATA(AB_IMEXPORTER, AH_IMEXPORTER_OFX, ie, ieh,
-		       AH_ImExporterOFX_FreeData);
+                       AH_ImExporterOFX_FreeData);
   AB_ImExporter_SetImportFn(ie, AH_ImExporterOFX_Import);
   AB_ImExporter_SetCheckFileFn(ie, AH_ImExporterOFX_CheckFile);
   return ie;
@@ -61,19 +62,21 @@ AB_IMEXPORTER *AB_ImExporterOFX_new(AB_BANKING *ab){
 
 
 
-void GWENHYWFAR_CB AH_ImExporterOFX_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_ImExporterOFX_FreeData(void *bp, void *p)
+{
   AH_IMEXPORTER_OFX *ieh;
 
-  ieh=(AH_IMEXPORTER_OFX*)p;
+  ieh=(AH_IMEXPORTER_OFX *)p;
   GWEN_FREE_OBJECT(ieh);
 }
 
 
 
 int AH_ImExporterOFX_Import(AB_IMEXPORTER *ie,
-			    AB_IMEXPORTER_CONTEXT *ctx,
+                            AB_IMEXPORTER_CONTEXT *ctx,
                             GWEN_SYNCIO *sio,
-			    GWEN_DB_NODE *params){
+                            GWEN_DB_NODE *params)
+{
   AH_IMEXPORTER_OFX *ieh;
   int rv;
   GWEN_XML_CONTEXT *xmlCtx;
@@ -106,7 +109,8 @@ int AH_ImExporterOFX_Import(AB_IMEXPORTER *ie,
 
 
 
-int AH_ImExporterOFX_CheckFile(AB_IMEXPORTER *ie, const char *fname){
+int AH_ImExporterOFX_CheckFile(AB_IMEXPORTER *ie, const char *fname)
+{
   AH_IMEXPORTER_OFX *ieh;
   GWEN_SYNCIO *sio;
   int rv;
@@ -131,19 +135,19 @@ int AH_ImExporterOFX_CheckFile(AB_IMEXPORTER *ie, const char *fname){
   rv=GWEN_SyncIo_Read(sio, tbuf, sizeof(tbuf)-1);
   if (rv<1) {
     DBG_INFO(GWEN_LOGDOMAIN,
-	     "File \"%s\" is not supported by this plugin",
-	     fname);
+             "File \"%s\" is not supported by this plugin",
+             fname);
     GWEN_SyncIo_Disconnect(sio);
     GWEN_SyncIo_free(sio);
     return GWEN_ERROR_BAD_DATA;
   }
   tbuf[rv-1]=0;
-  if (-1!=GWEN_Text_ComparePattern((const char*)tbuf, "*<OFX>*", 0) ||
-      -1!=GWEN_Text_ComparePattern((const char*)tbuf, "*<OFC>*", 0)) {
+  if (-1!=GWEN_Text_ComparePattern((const char *)tbuf, "*<OFX>*", 0) ||
+      -1!=GWEN_Text_ComparePattern((const char *)tbuf, "*<OFC>*", 0)) {
     /* match */
     DBG_INFO(GWEN_LOGDOMAIN,
-	     "File \"%s\" is supported by this plugin",
-	     fname);
+             "File \"%s\" is supported by this plugin",
+             fname);
     GWEN_SyncIo_Disconnect(sio);
     GWEN_SyncIo_free(sio);
     return 0;

@@ -21,7 +21,8 @@ AH_JOB *AH_Job_SendKeys_new(AB_PROVIDER *pro,
                             AB_USER *u,
                             GWEN_CRYPT_TOKEN_KEYINFO *cryptKeyInfo,
                             GWEN_CRYPT_TOKEN_KEYINFO *signKeyInfo,
-                            GWEN_CRYPT_TOKEN_KEYINFO *authKeyInfo) {
+                            GWEN_CRYPT_TOKEN_KEYINFO *authKeyInfo)
+{
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
   GWEN_DB_NODE *dbKey;
@@ -92,7 +93,8 @@ AH_JOB *AH_Job_SendKeys_new(AB_PROVIDER *pro,
 int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
                                GWEN_DB_NODE *dbKey,
                                GWEN_CRYPT_TOKEN_KEYINFO *ki,
-                               int kn) {
+                               int kn)
+{
   uint32_t bsize;
   const uint8_t *p;
   AB_USER *u;
@@ -123,7 +125,7 @@ int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
 
   GWEN_DB_SetCharValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS, "keyName/userid", userId);
 
-  switch(kn) {
+  switch (kn) {
   case 0:
     GWEN_DB_SetCharValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS, "keyName/keyType", "V");
     break;
@@ -137,20 +139,21 @@ int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
   }
 
   GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS, "keyName/keyNum", GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ki));
-  GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS, "keyName/keyVersion", GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
+  GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS, "keyName/keyVersion",
+                      GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
 
   /* set key */
   if (kn==0) { /* crypt key */
     GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS, "key/purpose", 5);
-    switch(AH_User_GetRdhType(u)) {
+    switch (AH_User_GetRdhType(u)) {
     case 10:
       GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS, "key/opmode", 2);
       break;
-      /**** RDH7 Block Start******/
+    /**** RDH7 Block Start******/
     case 7:
       GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS, "key/opmode", 18);
       break;
-      /**** RDH7 Block End***/
+    /**** RDH7 Block End***/
     case 5:
       GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS, "key/opmode", 18);
       break;
@@ -175,15 +178,15 @@ int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
   else {
     /* sign key */
     GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS, "key/purpose", 6);
-    switch(AH_User_GetRdhType(u)) {
+    switch (AH_User_GetRdhType(u)) {
     case 10:
       GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS, "key/opmode", 19);
       break;
-      /**** RDH7 Block Start******/
+    /**** RDH7 Block Start******/
     case 7:
       GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS, "key/opmode", 19);
       break;
-      /**** RDH7 Block End***/
+    /**** RDH7 Block End***/
     case 5:
       GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS, "key/opmode", 18);
       break;

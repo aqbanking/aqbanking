@@ -12,7 +12,8 @@
 
 
 
-int AO_Provider_CreateConnection(AB_PROVIDER *pro, AB_USER *u, GWEN_HTTP_SESSION **pSess) {
+int AO_Provider_CreateConnection(AB_PROVIDER *pro, AB_USER *u, GWEN_HTTP_SESSION **pSess)
+{
   int rv;
   GWEN_HTTP_SESSION *sess;
   uint32_t flags;
@@ -56,7 +57,8 @@ int AO_Provider_CreateConnection(AB_PROVIDER *pro, AB_USER *u, GWEN_HTTP_SESSION
 
 
 
-int AO_Provider_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_t *p, unsigned int plen, GWEN_BUFFER **pRbuf) {
+int AO_Provider_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_t *p, unsigned int plen, GWEN_BUFFER **pRbuf)
+{
   AO_PROVIDER *dp;
   GWEN_HTTP_SESSION *sess=NULL;
   GWEN_BUFFER *rbuf;
@@ -70,10 +72,10 @@ int AO_Provider_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_t *p, u
     FILE *f;
 
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-	      "Saving response in \"/tmp/ofx.log\" ...");
+              "Saving response in \"/tmp/ofx.log\" ...");
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Warning,
-			 I18N("Saving communication log to /tmp/ofx.log"));
+                         GWEN_LoggerLevel_Warning,
+                         I18N("Saving communication log to /tmp/ofx.log"));
 
     f=fopen("/tmp/ofx.log", "a+");
     if (!f) {
@@ -83,13 +85,13 @@ int AO_Provider_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_t *p, u
       fprintf(f, "\n\nSending:\n");
       fprintf(f, "-------------------------------------\n");
       if (fwrite(p,
-		 plen,
+                 plen,
                  1,
                  f)!=1) {
         DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fwrite: %s", strerror(errno));
       }
       if (fclose(f)) {
-	DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fclose: %s", strerror(errno));
+        DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fclose: %s", strerror(errno));
       }
     }
   }
@@ -98,18 +100,18 @@ int AO_Provider_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_t *p, u
   rv=AO_Provider_CreateConnection(pro, u, &sess);
   if (rv) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-	      "Could not create connection");
+              "Could not create connection");
     GWEN_Gui_ProgressLog2(0,
-			  GWEN_LoggerLevel_Error,
-			  I18N("Could not create connection (%d)"),
-			  rv);
+                          GWEN_LoggerLevel_Error,
+                          I18N("Could not create connection (%d)"),
+                          rv);
     return rv;
   }
 
   /* send request */
   GWEN_Gui_ProgressLog(0,
-		       GWEN_LoggerLevel_Info,
-		       I18N("Sending request..."));
+                       GWEN_LoggerLevel_Info,
+                       I18N("Sending request..."));
   rv=GWEN_HttpSession_SendPacket(sess, "POST", p, plen);
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
@@ -120,16 +122,16 @@ int AO_Provider_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_t *p, u
 
   /* wait for response */
   GWEN_Gui_ProgressLog(0,
-		       GWEN_LoggerLevel_Info,
-		       I18N("Waiting for response..."));
+                       GWEN_LoggerLevel_Info,
+                       I18N("Waiting for response..."));
   rbuf=GWEN_Buffer_new(0, 1024, 0, 1);
   rv=GWEN_HttpSession_RecvPacket(sess, rbuf);
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN,
              "Error receiving packet (%d)", rv);
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Network error while waiting for response"));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Network error while waiting for response"));
     GWEN_Buffer_free(rbuf);
     GWEN_HttpSession_Fini(sess);
     GWEN_HttpSession_free(sess);
@@ -150,8 +152,8 @@ int AO_Provider_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_t *p, u
 
   /* found a response, transform it */
   GWEN_Gui_ProgressLog(0,
-		       GWEN_LoggerLevel_Info,
-		       I18N("Parsing response..."));
+                       GWEN_LoggerLevel_Info,
+                       I18N("Parsing response..."));
 
   *pRbuf=rbuf;
 
@@ -159,7 +161,7 @@ int AO_Provider_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_t *p, u
     FILE *f;
 
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-	      "Saving response in \"/tmp/ofx.log\" ...");
+              "Saving response in \"/tmp/ofx.log\" ...");
     f=fopen("/tmp/ofx.log", "a+");
     if (!f) {
       DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fopen: %s", strerror(errno));
@@ -168,13 +170,13 @@ int AO_Provider_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_t *p, u
       fprintf(f, "\n\nReceived:\n");
       fprintf(f, "-------------------------------------\n");
       if (fwrite(GWEN_Buffer_GetStart(rbuf),
-		 GWEN_Buffer_GetUsedBytes(rbuf),
-		 1,
-		 f)!=1) {
-	DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fwrite: %s", strerror(errno));
+                 GWEN_Buffer_GetUsedBytes(rbuf),
+                 1,
+                 f)!=1) {
+        DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fwrite: %s", strerror(errno));
       }
       if (fclose(f)) {
-	DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fclose: %s", strerror(errno));
+        DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fclose: %s", strerror(errno));
       }
     }
   }

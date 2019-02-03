@@ -34,8 +34,9 @@ GWEN_INHERIT(AIO_OFX_GROUP, AIO_OFX_GROUP_BAL)
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_BAL_new(const char *groupName,
-					AIO_OFX_GROUP *parent,
-					GWEN_XML_CONTEXT *ctx) {
+                                    AIO_OFX_GROUP *parent,
+                                    GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_GROUP *g;
   AIO_OFX_GROUP_BAL *xg;
 
@@ -58,10 +59,11 @@ AIO_OFX_GROUP *AIO_OfxGroup_BAL_new(const char *groupName,
 
 
 GWENHYWFAR_CB
-void AIO_OfxGroup_BAL_FreeData(void *bp, void *p) {
+void AIO_OfxGroup_BAL_FreeData(void *bp, void *p)
+{
   AIO_OFX_GROUP_BAL *xg;
 
-  xg=(AIO_OFX_GROUP_BAL*)p;
+  xg=(AIO_OFX_GROUP_BAL *)p;
   assert(xg);
   free(xg->currentElement);
   GWEN_Date_free(xg->date);
@@ -71,7 +73,8 @@ void AIO_OfxGroup_BAL_FreeData(void *bp, void *p) {
 
 
 
-const AB_VALUE *AIO_OfxGroup_BAL_GetValue(const AIO_OFX_GROUP *g) {
+const AB_VALUE *AIO_OfxGroup_BAL_GetValue(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_BAL *xg;
 
   assert(g);
@@ -83,7 +86,8 @@ const AB_VALUE *AIO_OfxGroup_BAL_GetValue(const AIO_OFX_GROUP *g) {
 
 
 
-void AIO_OfxGroup_BAL_SetValue(AIO_OFX_GROUP *g, const AB_VALUE *v) {
+void AIO_OfxGroup_BAL_SetValue(AIO_OFX_GROUP *g, const AB_VALUE *v)
+{
   AIO_OFX_GROUP_BAL *xg;
 
   assert(g);
@@ -91,13 +95,16 @@ void AIO_OfxGroup_BAL_SetValue(AIO_OFX_GROUP *g, const AB_VALUE *v) {
   assert(xg);
 
   AB_Value_free(xg->value);
-  if (v) xg->value=AB_Value_dup(v);
-  else xg->value=NULL;
+  if (v)
+    xg->value=AB_Value_dup(v);
+  else
+    xg->value=NULL;
 }
 
 
 
-const GWEN_DATE *AIO_OfxGroup_BAL_GetDate(const AIO_OFX_GROUP *g) {
+const GWEN_DATE *AIO_OfxGroup_BAL_GetDate(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_BAL *xg;
 
   assert(g);
@@ -109,7 +116,8 @@ const GWEN_DATE *AIO_OfxGroup_BAL_GetDate(const AIO_OFX_GROUP *g) {
 
 
 
-void AIO_OfxGroup_BAL_SetDate(AIO_OFX_GROUP *g, const GWEN_DATE *dt) {
+void AIO_OfxGroup_BAL_SetDate(AIO_OFX_GROUP *g, const GWEN_DATE *dt)
+{
   AIO_OFX_GROUP_BAL *xg;
 
   assert(g);
@@ -117,14 +125,17 @@ void AIO_OfxGroup_BAL_SetDate(AIO_OFX_GROUP *g, const GWEN_DATE *dt) {
   assert(xg);
 
   GWEN_Date_free(xg->date);
-  if (dt) xg->date=GWEN_Date_dup(dt);
-  else xg->date=NULL;
+  if (dt)
+    xg->date=GWEN_Date_dup(dt);
+  else
+    xg->date=NULL;
 }
 
 
 
 
-int AIO_OfxGroup_BAL_StartTag(AIO_OFX_GROUP *g, const char *tagName) {
+int AIO_OfxGroup_BAL_StartTag(AIO_OFX_GROUP *g, const char *tagName)
+{
   AIO_OFX_GROUP_BAL *xg;
   //GWEN_XML_CONTEXT *ctx;
 
@@ -141,7 +152,7 @@ int AIO_OfxGroup_BAL_StartTag(AIO_OFX_GROUP *g, const char *tagName) {
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	     "Ignoring tag [%s]", tagName);
+             "Ignoring tag [%s]", tagName);
   }
 
   return 0;
@@ -149,7 +160,8 @@ int AIO_OfxGroup_BAL_StartTag(AIO_OFX_GROUP *g, const char *tagName) {
 
 
 
-int AIO_OfxGroup_BAL_AddData(AIO_OFX_GROUP *g, const char *data) {
+int AIO_OfxGroup_BAL_AddData(AIO_OFX_GROUP *g, const char *data)
+{
   AIO_OFX_GROUP_BAL *xg;
 
   assert(g);
@@ -171,37 +183,37 @@ int AIO_OfxGroup_BAL_AddData(AIO_OFX_GROUP *g, const char *data) {
     s=GWEN_Buffer_GetStart(buf);
     if (*s) {
       DBG_INFO(AQBANKING_LOGDOMAIN,
-	       "AddData: %s=[%s]", xg->currentElement, s);
+               "AddData: %s=[%s]", xg->currentElement, s);
       if (strcasecmp(xg->currentElement, "BALAMT")==0) {
-	AB_VALUE *v;
+        AB_VALUE *v;
 
-	v=AB_Value_fromString(s);
-	if (v==NULL) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN,
-		    "Invalid data for BALAMT: [%s]", s);
-	  GWEN_Buffer_free(buf);
-	  return GWEN_ERROR_BAD_DATA;
-	}
-	AB_Value_free(xg->value);
-	xg->value=v;
+        v=AB_Value_fromString(s);
+        if (v==NULL) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN,
+                    "Invalid data for BALAMT: [%s]", s);
+          GWEN_Buffer_free(buf);
+          return GWEN_ERROR_BAD_DATA;
+        }
+        AB_Value_free(xg->value);
+        xg->value=v;
       }
       else if (strcasecmp(xg->currentElement, "DTASOF")==0) {
-	GWEN_DATE *dt;
+        GWEN_DATE *dt;
 
         dt=GWEN_Date_fromStringWithTemplate(s, "YYYYMMDD");
-	if (dt==NULL) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN,
+        if (dt==NULL) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN,
                     "Invalid data for DTASOF: [%s]", s);
-	  GWEN_Buffer_free(buf);
-	  return GWEN_ERROR_BAD_DATA;
-	}
-	GWEN_Date_free(xg->date);
+          GWEN_Buffer_free(buf);
+          return GWEN_ERROR_BAD_DATA;
+        }
+        GWEN_Date_free(xg->date);
         xg->date=dt;
       }
       else {
-	DBG_INFO(AQBANKING_LOGDOMAIN,
-		 "Ignoring data for unknown element [%s]",
-		 xg->currentElement);
+        DBG_INFO(AQBANKING_LOGDOMAIN,
+                 "Ignoring data for unknown element [%s]",
+                 xg->currentElement);
       }
     }
     GWEN_Buffer_free(buf);

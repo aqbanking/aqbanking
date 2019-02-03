@@ -15,7 +15,8 @@
 
 
 
-AB_BANKINFO_PLUGIN *AB_Banking_CreateImBankInfoPlugin(AB_BANKING *ab, const char *modname){
+AB_BANKINFO_PLUGIN *AB_Banking_CreateImBankInfoPlugin(AB_BANKING *ab, const char *modname)
+{
   if (modname && *modname) {
 #ifdef AQBANKING_WITH_PLUGIN_BANKINFO_DE
     if (strcasecmp(modname, "de")==0)
@@ -29,7 +30,8 @@ AB_BANKINFO_PLUGIN *AB_Banking_CreateImBankInfoPlugin(AB_BANKING *ab, const char
 
 
 
-AB_BANKINFO_PLUGIN *AB_Banking_LoadBankInfoPlugin(AB_BANKING *ab, const char *modname){
+AB_BANKINFO_PLUGIN *AB_Banking_LoadBankInfoPlugin(AB_BANKING *ab, const char *modname)
+{
   GWEN_PLUGIN *pl;
 
   pl=GWEN_PluginManager_GetPlugin(ab_pluginManagerBankInfo, modname);
@@ -51,11 +53,12 @@ AB_BANKINFO_PLUGIN *AB_Banking_LoadBankInfoPlugin(AB_BANKING *ab, const char *mo
 
 
 
-AB_BANKINFO_PLUGIN *AB_Banking_FindBankInfoPlugin(AB_BANKING *ab, const char *country){
+AB_BANKINFO_PLUGIN *AB_Banking_FindBankInfoPlugin(AB_BANKING *ab, const char *country)
+{
   AB_BANKINFO_PLUGIN *bip;
 
   bip=AB_BankInfoPlugin_List_First(ab_bankInfoPlugins);
-  while(bip) {
+  while (bip) {
     if (strcasecmp(AB_BankInfoPlugin_GetCountry(bip), country)==0)
       break;
     bip=AB_BankInfoPlugin_List_Next(bip);
@@ -66,7 +69,8 @@ AB_BANKINFO_PLUGIN *AB_Banking_FindBankInfoPlugin(AB_BANKING *ab, const char *co
 
 
 
-AB_BANKINFO_PLUGIN *AB_Banking_GetBankInfoPlugin(AB_BANKING *ab, const char *country) {
+AB_BANKINFO_PLUGIN *AB_Banking_GetBankInfoPlugin(AB_BANKING *ab, const char *country)
+{
   AB_BANKINFO_PLUGIN *bip;
 
   assert(ab);
@@ -90,7 +94,8 @@ AB_BANKINFO_PLUGIN *AB_Banking_GetBankInfoPlugin(AB_BANKING *ab, const char *cou
 AB_BANKINFO *AB_Banking_GetBankInfo(AB_BANKING *ab,
                                     const char *country,
                                     const char *branchId,
-                                    const char *bankId){
+                                    const char *bankId)
+{
   AB_BANKINFO_PLUGIN *bip;
 
   assert(ab);
@@ -109,7 +114,8 @@ AB_BANKINFO *AB_Banking_GetBankInfo(AB_BANKING *ab,
 int AB_Banking_GetBankInfoByTemplate(AB_BANKING *ab,
                                      const char *country,
                                      AB_BANKINFO *tbi,
-                                     AB_BANKINFO_LIST2 *bl){
+                                     AB_BANKINFO_LIST2 *bl)
+{
   AB_BANKINFO_PLUGIN *bip;
 
   assert(ab);
@@ -127,12 +133,12 @@ int AB_Banking_GetBankInfoByTemplate(AB_BANKING *ab,
 
 
 
-AB_BANKINFO_CHECKRESULT
-AB_Banking_CheckAccount(AB_BANKING *ab,
-                        const char *country,
-                        const char *branchId,
-                        const char *bankId,
-                        const char *accountId) {
+AB_BANKINFO_CHECKRESULT AB_Banking_CheckAccount(AB_BANKING *ab,
+                                                const char *country,
+                                                const char *branchId,
+                                                const char *bankId,
+                                                const char *accountId)
+{
   AB_BANKINFO_PLUGIN *bip;
 
   assert(ab);
@@ -148,7 +154,8 @@ AB_Banking_CheckAccount(AB_BANKING *ab,
 
 
 
-int AB_Banking__TransformIban(const char *iban, int len, char *newIban, int maxLen) {
+int AB_Banking__TransformIban(const char *iban, int len, char *newIban, int maxLen)
+{
   int i, j;
   const char *p;
   char *s;
@@ -159,29 +166,32 @@ int AB_Banking__TransformIban(const char *iban, int len, char *newIban, int maxL
   j=0;
   p=iban;
   s=newIban;
-  while(j<len && i<maxLen) {
+  while (j<len && i<maxLen) {
     int c;
 
     c=toupper(*p);
     if (c!=' ') {
       if (c>='A' && c<='Z') {
-	c=10+(c-'A');
-	*s='0'+(c/10);
-	s++; i++;
-	if (i>=maxLen) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad IBAN (too long)");
-	  return -1;
-	}
-	*s='0'+(c%10);
-	s++; i++;
+        c=10+(c-'A');
+        *s='0'+(c/10);
+        s++;
+        i++;
+        if (i>=maxLen) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad IBAN (too long)");
+          return -1;
+        }
+        *s='0'+(c%10);
+        s++;
+        i++;
       }
       else if (isdigit(c)) {
-	*s=c;
-	s++; i++;
+        *s=c;
+        s++;
+        i++;
       }
       else {
-	DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad IBAN (bad char)");
-	return -1;
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad IBAN (bad char)");
+        return -1;
       }
     }
     p++;
@@ -198,7 +208,8 @@ int AB_Banking__TransformIban(const char *iban, int len, char *newIban, int maxL
 
 
 
-int AB_Banking_CheckIban(const char *iban) {
+int AB_Banking_CheckIban(const char *iban)
+{
   char newIban[256];
   char tmp[10];
   int i;
@@ -219,7 +230,7 @@ int AB_Banking_CheckIban(const char *iban) {
 
   /* convert IBAN+4 to buffer */
   if (AB_Banking__TransformIban(p, strlen(p),
-				newIban, sizeof(newIban)-1)) {
+                                newIban, sizeof(newIban)-1)) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here");
     return -1;
   }
@@ -227,7 +238,7 @@ int AB_Banking_CheckIban(const char *iban) {
   /* append country and checksum */
   p=iban;
   s=newIban+strlen(newIban);
-  if (AB_Banking__TransformIban(p, 4, s, sizeof(newIban)-strlen(newIban)-1)){
+  if (AB_Banking__TransformIban(p, 4, s, sizeof(newIban)-strlen(newIban)-1)) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here");
     return -1;
   }
@@ -236,7 +247,7 @@ int AB_Banking_CheckIban(const char *iban) {
   p=newIban;
   tmp[0]=0;
   j=0;
-  while(*p) {
+  while (*p) {
     for (i=strlen(tmp); i<9;  i++) {
       if (!*p)
         break;
@@ -262,7 +273,8 @@ int AB_Banking_CheckIban(const char *iban) {
 
 
 
-int AB_Banking_MakeGermanIban(const char *bankCode, const char *accountNumber, GWEN_BUFFER *ibanBuf) {
+int AB_Banking_MakeGermanIban(const char *bankCode, const char *accountNumber, GWEN_BUFFER *ibanBuf)
+{
   GWEN_BUFFER *tbuf;
   int i;
   char numbuf[32];
@@ -305,7 +317,7 @@ int AB_Banking_MakeGermanIban(const char *bankCode, const char *accountNumber, G
   p=GWEN_Buffer_GetStart(tbuf);
   tmp[0]=0;
   j=0;
-  while(*p) {
+  while (*p) {
     for (i=strlen(tmp); i<9;  i++) {
       if (!*p)
         break;

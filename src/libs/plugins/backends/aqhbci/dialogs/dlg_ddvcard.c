@@ -51,7 +51,8 @@ GWEN_INHERIT(GWEN_DIALOG, AH_DDVCARD_DIALOG)
 
 
 
-GWEN_DIALOG *AH_DdvCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct) {
+GWEN_DIALOG *AH_DdvCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct)
+{
   GWEN_DIALOG *dlg;
   AH_DDVCARD_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -60,14 +61,14 @@ GWEN_DIALOG *AH_DdvCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct) {
   dlg=GWEN_Dialog_new("ah_setup_ddvcard");
   GWEN_NEW_OBJECT(AH_DDVCARD_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AH_DDVCARD_DIALOG, dlg, xdlg,
-		       AH_DdvCardDialog_FreeData);
+                       AH_DdvCardDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AH_DdvCardDialog_SignalHandler);
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-			       "aqbanking/backends/aqhbci/dialogs/dlg_ddvcard.dlg",
-			       fbuf);
+                               "aqbanking/backends/aqhbci/dialogs/dlg_ddvcard.dlg",
+                               fbuf);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
@@ -98,10 +99,10 @@ GWEN_DIALOG *AH_DdvCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct) {
     if (!GWEN_Crypt_Token_IsOpen(ct)) {
       rv=GWEN_Crypt_Token_Open(ct, 0, 0);
       if (rv<0) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Error opening token (%d)", rv);
-	GWEN_Gui_ShowError(I18N("Error"), I18N("Could not contact card. Maybe removed? (%d)"), rv);
-	GWEN_Dialog_free(dlg);
-	return NULL;
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Error opening token (%d)", rv);
+        GWEN_Gui_ShowError(I18N("Error"), I18N("Could not contact card. Maybe removed? (%d)"), rv);
+        GWEN_Dialog_free(dlg);
+        return NULL;
       }
     }
 
@@ -119,10 +120,10 @@ GWEN_DIALOG *AH_DdvCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct) {
 
       ctx=GWEN_Crypt_Token_GetContext(ct, idList[i], 0);
       if (ctx) {
-	GWEN_CRYPT_TOKEN_CONTEXT *nctx;
+        GWEN_CRYPT_TOKEN_CONTEXT *nctx;
 
-	nctx=GWEN_Crypt_Token_Context_dup(ctx);
-	GWEN_Crypt_Token_Context_List_Add(nctx, xdlg->contextList);
+        nctx=GWEN_Crypt_Token_Context_dup(ctx);
+        GWEN_Crypt_Token_Context_List_Add(nctx, xdlg->contextList);
         DBG_INFO(AQHBCI_LOGDOMAIN, "Added context %08x", idList[i]);
       }
     }
@@ -138,10 +139,11 @@ GWEN_DIALOG *AH_DdvCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct) {
 
 
 
-void GWENHYWFAR_CB AH_DdvCardDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AH_DdvCardDialog_FreeData(void *bp, void *p)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
-  xdlg=(AH_DDVCARD_DIALOG*) p;
+  xdlg=(AH_DDVCARD_DIALOG *) p;
   GWEN_Crypt_Token_Context_List_free(xdlg->contextList);
   free(xdlg->bankCode);
   free(xdlg->bankName);
@@ -154,7 +156,8 @@ void GWENHYWFAR_CB AH_DdvCardDialog_FreeData(void *bp, void *p) {
 
 
 
-AB_USER *AH_DdvCardDialog_GetUser(const GWEN_DIALOG *dlg) {
+AB_USER *AH_DdvCardDialog_GetUser(const GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -166,7 +169,8 @@ AB_USER *AH_DdvCardDialog_GetUser(const GWEN_DIALOG *dlg) {
 
 
 
-GWEN_CRYPT_TOKEN *AH_DdvCardDialog_GetCryptToken(const GWEN_DIALOG *dlg) {
+GWEN_CRYPT_TOKEN *AH_DdvCardDialog_GetCryptToken(const GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -178,7 +182,8 @@ GWEN_CRYPT_TOKEN *AH_DdvCardDialog_GetCryptToken(const GWEN_DIALOG *dlg) {
 
 
 
-const char *AH_DdvCardDialog_GetBankCode(const GWEN_DIALOG *dlg) {
+const char *AH_DdvCardDialog_GetBankCode(const GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -190,7 +195,8 @@ const char *AH_DdvCardDialog_GetBankCode(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_DdvCardDialog_SetBankCode(GWEN_DIALOG *dlg, const char *s) {
+void AH_DdvCardDialog_SetBankCode(GWEN_DIALOG *dlg, const char *s)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -198,13 +204,16 @@ void AH_DdvCardDialog_SetBankCode(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->bankCode);
-  if (s) xdlg->bankCode=strdup(s);
-  else xdlg->bankCode=NULL;
+  if (s)
+    xdlg->bankCode=strdup(s);
+  else
+    xdlg->bankCode=NULL;
 }
 
 
 
-const char *AH_DdvCardDialog_GetBankName(const GWEN_DIALOG *dlg) {
+const char *AH_DdvCardDialog_GetBankName(const GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -216,7 +225,8 @@ const char *AH_DdvCardDialog_GetBankName(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_DdvCardDialog_SetBankName(GWEN_DIALOG *dlg, const char *s) {
+void AH_DdvCardDialog_SetBankName(GWEN_DIALOG *dlg, const char *s)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -224,13 +234,16 @@ void AH_DdvCardDialog_SetBankName(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->bankName);
-  if (s) xdlg->bankName=strdup(s);
-  else xdlg->bankName=NULL;
+  if (s)
+    xdlg->bankName=strdup(s);
+  else
+    xdlg->bankName=NULL;
 }
 
 
 
-const char *AH_DdvCardDialog_GetUserName(const GWEN_DIALOG *dlg) {
+const char *AH_DdvCardDialog_GetUserName(const GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -242,7 +255,8 @@ const char *AH_DdvCardDialog_GetUserName(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_DdvCardDialog_SetUserName(GWEN_DIALOG *dlg, const char *s) {
+void AH_DdvCardDialog_SetUserName(GWEN_DIALOG *dlg, const char *s)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -250,13 +264,16 @@ void AH_DdvCardDialog_SetUserName(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->userName);
-  if (s) xdlg->userName=strdup(s);
-  else xdlg->userName=NULL;
+  if (s)
+    xdlg->userName=strdup(s);
+  else
+    xdlg->userName=NULL;
 }
 
 
 
-const char *AH_DdvCardDialog_GetUserId(const GWEN_DIALOG *dlg) {
+const char *AH_DdvCardDialog_GetUserId(const GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -268,7 +285,8 @@ const char *AH_DdvCardDialog_GetUserId(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_DdvCardDialog_SetUserId(GWEN_DIALOG *dlg, const char *s) {
+void AH_DdvCardDialog_SetUserId(GWEN_DIALOG *dlg, const char *s)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -276,13 +294,16 @@ void AH_DdvCardDialog_SetUserId(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->userId);
-  if (s) xdlg->userId=strdup(s);
-  else xdlg->userId=NULL;
+  if (s)
+    xdlg->userId=strdup(s);
+  else
+    xdlg->userId=NULL;
 }
 
 
 
-const char *AH_DdvCardDialog_GetCustomerId(const GWEN_DIALOG *dlg) {
+const char *AH_DdvCardDialog_GetCustomerId(const GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -294,7 +315,8 @@ const char *AH_DdvCardDialog_GetCustomerId(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_DdvCardDialog_SetCustomerId(GWEN_DIALOG *dlg, const char *s) {
+void AH_DdvCardDialog_SetCustomerId(GWEN_DIALOG *dlg, const char *s)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -302,13 +324,16 @@ void AH_DdvCardDialog_SetCustomerId(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->customerId);
-  if (s) xdlg->customerId=strdup(s);
-  else xdlg->customerId=NULL;
+  if (s)
+    xdlg->customerId=strdup(s);
+  else
+    xdlg->customerId=NULL;
 }
 
 
 
-const char *AH_DdvCardDialog_GetUrl(const GWEN_DIALOG *dlg) {
+const char *AH_DdvCardDialog_GetUrl(const GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -320,7 +345,8 @@ const char *AH_DdvCardDialog_GetUrl(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_DdvCardDialog_SetUrl(GWEN_DIALOG *dlg, const char *s) {
+void AH_DdvCardDialog_SetUrl(GWEN_DIALOG *dlg, const char *s)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -328,13 +354,16 @@ void AH_DdvCardDialog_SetUrl(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->url);
-  if (s) xdlg->url=strdup(s);
-  else xdlg->url=NULL;
+  if (s)
+    xdlg->url=strdup(s);
+  else
+    xdlg->url=NULL;
 }
 
 
 
-const char *AH_DdvCardDialog_GetPeerId(const GWEN_DIALOG *dlg) {
+const char *AH_DdvCardDialog_GetPeerId(const GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -346,7 +375,8 @@ const char *AH_DdvCardDialog_GetPeerId(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_DdvCardDialog_SetPeerId(GWEN_DIALOG *dlg, const char *s) {
+void AH_DdvCardDialog_SetPeerId(GWEN_DIALOG *dlg, const char *s)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -354,12 +384,15 @@ void AH_DdvCardDialog_SetPeerId(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->peerId);
-  if (s) xdlg->peerId=strdup(s);
-  else xdlg->peerId=NULL;
+  if (s)
+    xdlg->peerId=strdup(s);
+  else
+    xdlg->peerId=NULL;
 }
 
 
-int AH_DdvCardDialog_GetHbciVersion(const GWEN_DIALOG *dlg) {
+int AH_DdvCardDialog_GetHbciVersion(const GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -371,7 +404,8 @@ int AH_DdvCardDialog_GetHbciVersion(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_DdvCardDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i) {
+void AH_DdvCardDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -383,7 +417,8 @@ void AH_DdvCardDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i) {
 
 
 
-uint32_t AH_DdvCardDialog_GetFlags(const GWEN_DIALOG *dlg) {
+uint32_t AH_DdvCardDialog_GetFlags(const GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -395,7 +430,8 @@ uint32_t AH_DdvCardDialog_GetFlags(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_DdvCardDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AH_DdvCardDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -407,7 +443,8 @@ void AH_DdvCardDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_DdvCardDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AH_DdvCardDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -419,7 +456,8 @@ void AH_DdvCardDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_DdvCardDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AH_DdvCardDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -434,7 +472,8 @@ void AH_DdvCardDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_DdvCardDialog_Init(GWEN_DIALOG *dlg) {
+void AH_DdvCardDialog_Init(GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
@@ -446,23 +485,23 @@ void AH_DdvCardDialog_Init(GWEN_DIALOG *dlg) {
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("HBCI DDV-Card Setup Wizard"),
-			      0);
+                              "",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("HBCI DDV-Card Setup Wizard"),
+                              0);
 
   /* select first page */
   GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, 0, 0);
 
   /* setup intro page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_begin_label",
-			      GWEN_DialogProperty_Title,
-			      0,
+                              "wiz_begin_label",
+                              GWEN_DialogProperty_Title,
+                              0,
                               I18N("<html>"
                                    "<p>This dialog assists you in setting up a DDV Chipcard User.</p>"
-				   "<p>Some chipcards contain user information. You can click the button below "
+                                   "<p>Some chipcards contain user information. You can click the button below "
                                    "to read that information from the card.</p>"
                                    "</html>"
                                    "This dialog assists you in setting up a DDV Chipcard User.\n"
@@ -472,14 +511,14 @@ void AH_DdvCardDialog_Init(GWEN_DIALOG *dlg) {
 
   /* setup bank page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_bank_label",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("<html>"
+                              "wiz_bank_label",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("<html>"
                                    "<p>Please select the bank.</p>"
-				   "<p>AqBanking has an internal database which "
-				   "contains HBCI/FinTS information about many banks.<p>"
-				   "<p>If there is an entry for your bank this dialog will use the "
+                                   "<p>AqBanking has an internal database which "
+                                   "contains HBCI/FinTS information about many banks.<p>"
+                                   "<p>If there is an entry for your bank this dialog will use the "
                                    "information from the database.</p>"
                                    "</html>"
                                    "Please select the bank.\n"
@@ -487,45 +526,45 @@ void AH_DdvCardDialog_Init(GWEN_DIALOG *dlg) {
                                    "HBCI/FinTS information about many banks.\n"
                                    "If there is an entry for your bank this dialog will use the\n"
                                    "information from the database."),
-			      0);
+                              0);
 
   /* setup user page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_user_label",
-			      GWEN_DialogProperty_Title,
-			      0,
+                              "wiz_user_label",
+                              GWEN_DialogProperty_Title,
+                              0,
                               I18N("<html>"
                                    "<p>For most banks the customer id must be the same as the user id.</p>"
-				   "<p>However, some banks actually use the customer id, so please look into "
-				   "the documentation provided by your bank to discover whether this is the "
+                                   "<p>However, some banks actually use the customer id, so please look into "
+                                   "the documentation provided by your bank to discover whether this is the "
                                    "case with your bank.</p>"
                                    "</html>"
                                    "For most banks the customer id must be the same as the user id.\n"
                                    "However, some banks actually use the customer id, so please look into\n"
-				   "the documentation provided by your bank to discover whether this is the\n"
+                                   "the documentation provided by your bank to discover whether this is the\n"
                                    "case with your bank."),
                               0);
 
   /* setup creation page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_create_label",
-			      GWEN_DialogProperty_Title,
-			      0,
+                              "wiz_create_label",
+                              GWEN_DialogProperty_Title,
+                              0,
                               I18N("<html>"
                                    "<p>We are now ready to create the user and retrieve the account list.</p>"
                                    "<p>Click the <i>next</i> button to proceed or <i>abort</i> to abort.</p>"
                                    "</html>"
                                    "We are now ready to create the user and retrieve the account list.\n"
                                    "Click the NEXT button to proceed or ABORT to abort."),
-			      0);
+                              0);
 
   /* setup extro page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_end_label",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("The user has been successfully setup."),
-			      0);
+                              "wiz_end_label",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("The user has been successfully setup."),
+                              0);
 
   GWEN_Dialog_SetIntProperty(dlg, "wiz_context_combo", GWEN_DialogProperty_ClearValues, 0, 0, 0);
   if (1) {
@@ -534,7 +573,7 @@ void AH_DdvCardDialog_Init(GWEN_DIALOG *dlg) {
 
     i=1;
     ctx=GWEN_Crypt_Token_Context_List_First(xdlg->contextList);
-    while(ctx) {
+    while (ctx) {
       char numbuf[64];
       GWEN_BUFFER *tbuf;
       const char *s;
@@ -546,16 +585,16 @@ void AH_DdvCardDialog_Init(GWEN_DIALOG *dlg) {
 
       s=GWEN_Crypt_Token_Context_GetServiceId(ctx);
       if (s && *s && strcasecmp(s, "20202020")!=0)
-	GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, s);
       else
-	GWEN_Buffer_AppendString(tbuf, I18N("<no bank code>"));
+        GWEN_Buffer_AppendString(tbuf, I18N("<no bank code>"));
       GWEN_Buffer_AppendString(tbuf, "-");
 
       s=GWEN_Crypt_Token_Context_GetUserId(ctx);
       if (s && *s)
-	GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, s);
       else
-	GWEN_Buffer_AppendString(tbuf, I18N("<no user id>"));
+        GWEN_Buffer_AppendString(tbuf, I18N("<no user id>"));
 
       GWEN_Dialog_SetCharProperty(dlg, "wiz_context_combo", GWEN_DialogProperty_AddValue, 0, GWEN_Buffer_GetStart(tbuf), 0);
       GWEN_Buffer_free(tbuf);
@@ -584,7 +623,8 @@ void AH_DdvCardDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-void AH_DdvCardDialog_Fini(GWEN_DIALOG *dlg) {
+void AH_DdvCardDialog_Fini(GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_DIALOG *xdlg;
   int i;
   GWEN_DB_NODE *dbPrefs;
@@ -598,21 +638,22 @@ void AH_DdvCardDialog_Fini(GWEN_DIALOG *dlg) {
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_width",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_width",
+                      i);
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_height",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_height",
+                      i);
 }
 
 
 
-int AH_DdvCardDialog_GetBankPageData(GWEN_DIALOG *dlg) {
+int AH_DdvCardDialog_GetBankPageData(GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_DIALOG *xdlg;
   const char *s;
 
@@ -647,7 +688,8 @@ int AH_DdvCardDialog_GetBankPageData(GWEN_DIALOG *dlg) {
 
 
 
-int AH_DdvCardDialog_GetUserPageData(GWEN_DIALOG *dlg) {
+int AH_DdvCardDialog_GetUserPageData(GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_DIALOG *xdlg;
   const char *s;
 
@@ -682,7 +724,8 @@ int AH_DdvCardDialog_GetUserPageData(GWEN_DIALOG *dlg) {
 
 
 
-int AH_DdvCardDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
+int AH_DdvCardDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards)
+{
   AH_DDVCARD_DIALOG *xdlg;
   int rv;
 
@@ -690,7 +733,7 @@ int AH_DdvCardDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_DDVCARD_DIALOG, dlg);
   assert(xdlg);
 
-  switch(page) {
+  switch (page) {
   case PAGE_BEGIN:
     GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
     GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, page, 0);
@@ -739,7 +782,8 @@ int AH_DdvCardDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
 
 
 
-int AH_DdvCardDialog_DoIt(GWEN_DIALOG *dlg) {
+int AH_DdvCardDialog_DoIt(GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_DIALOG *xdlg;
   AB_USER *u;
   GWEN_URL *url;
@@ -794,20 +838,20 @@ int AH_DdvCardDialog_DoIt(GWEN_DIALOG *dlg) {
   }
 
   pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
-			     GWEN_GUI_PROGRESS_ALLOW_EMBED |
-			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-			     GWEN_GUI_PROGRESS_SHOW_ABORT,
-			     I18N("Setting Up DDV User"),
-			     I18N("The list of accounts will be retrieved."),
-			     1,
-			     0);
+                             GWEN_GUI_PROGRESS_ALLOW_EMBED |
+                             GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+                             GWEN_GUI_PROGRESS_SHOW_ABORT,
+                             I18N("Setting Up DDV User"),
+                             I18N("The list of accounts will be retrieved."),
+                             1,
+                             0);
   /* lock new user */
   rv=AB_Provider_BeginExclUseUser(xdlg->provider, u);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not lock user (%d)", rv);
     GWEN_Gui_ProgressLog2(pid,
-			  GWEN_LoggerLevel_Error,
-			  I18N("Unable to lock users (%d)"), rv);
+                          GWEN_LoggerLevel_Error,
+                          I18N("Unable to lock users (%d)"), rv);
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
@@ -815,8 +859,8 @@ int AH_DdvCardDialog_DoIt(GWEN_DIALOG *dlg) {
 
   /* get account list */
   GWEN_Gui_ProgressLog(pid,
-		       GWEN_LoggerLevel_Notice,
-		       I18N("Retrieving account list"));
+                       GWEN_LoggerLevel_Notice,
+                       I18N("Retrieving account list"));
   ctx=AB_ImExporterContext_new();
   rv=AH_Provider_GetAccounts(xdlg->provider, u, ctx, 0, 1, 0);
   if (rv<0) {
@@ -835,8 +879,8 @@ int AH_DdvCardDialog_DoIt(GWEN_DIALOG *dlg) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressLog(pid,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Aborted by user."));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Aborted by user."));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -845,12 +889,12 @@ int AH_DdvCardDialog_DoIt(GWEN_DIALOG *dlg) {
   rv=AB_Provider_EndExclUseUser(xdlg->provider, u, 0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
-	     "Could not unlock customer [%s] (%d)",
-	     AB_User_GetCustomerId(u), rv);
+             "Could not unlock customer [%s] (%d)",
+             AB_User_GetCustomerId(u), rv);
     GWEN_Gui_ProgressLog2(pid,
-			  GWEN_LoggerLevel_Error,
-			  I18N("Could not unlock user %s (%d)"),
-			  AB_User_GetUserId(u), rv);
+                          GWEN_LoggerLevel_Error,
+                          I18N("Could not unlock user %s (%d)"),
+                          AB_User_GetUserId(u), rv);
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
@@ -858,11 +902,11 @@ int AH_DdvCardDialog_DoIt(GWEN_DIALOG *dlg) {
   }
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_end_label",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("The user has been successfully setup."),
-			      0);
+                              "wiz_end_label",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("The user has been successfully setup."),
+                              0);
   GWEN_Gui_ProgressEnd(pid);
   AH_DdvCardDialog_EnterPage(dlg, PAGE_END, 1);
 
@@ -873,7 +917,8 @@ int AH_DdvCardDialog_DoIt(GWEN_DIALOG *dlg) {
 
 
 
-int AH_DdvCardDialog_Next(GWEN_DIALOG *dlg) {
+int AH_DdvCardDialog_Next(GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_DIALOG *xdlg;
   int page;
 
@@ -897,7 +942,8 @@ int AH_DdvCardDialog_Next(GWEN_DIALOG *dlg) {
 
 
 
-int AH_DdvCardDialog_Previous(GWEN_DIALOG *dlg) {
+int AH_DdvCardDialog_Previous(GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_DIALOG *xdlg;
   int page;
 
@@ -916,7 +962,8 @@ int AH_DdvCardDialog_Previous(GWEN_DIALOG *dlg) {
 
 
 
-int AH_DdvCardDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
+int AH_DdvCardDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_DIALOG *xdlg;
   GWEN_DIALOG *dlg2;
   int rv;
@@ -948,61 +995,61 @@ int AH_DdvCardDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
 
       s=AB_BankInfo_GetBankId(bi);
       GWEN_Dialog_SetCharProperty(dlg,
-				  "wiz_bankcode_edit",
-				  GWEN_DialogProperty_Value,
-				  0,
-				  (s && *s)?s:"",
-				  0);
+                                  "wiz_bankcode_edit",
+                                  GWEN_DialogProperty_Value,
+                                  0,
+                                  (s && *s)?s:"",
+                                  0);
 
       s=AB_BankInfo_GetBankName(bi);
       GWEN_Dialog_SetCharProperty(dlg,
-				  "wiz_bankname_edit",
-				  GWEN_DialogProperty_Value,
-				  0,
-				  (s && *s)?s:"",
-				  0);
+                                  "wiz_bankname_edit",
+                                  GWEN_DialogProperty_Value,
+                                  0,
+                                  (s && *s)?s:"",
+                                  0);
       sv=AB_BankInfoService_List_First(AB_BankInfo_GetServices(bi));
-      while(sv) {
-	const char *s;
+      while (sv) {
+        const char *s;
 
-	s=AB_BankInfoService_GetType(sv);
-	if (s && *s && strcasecmp(s, "HBCI")==0) {
-	  s=AB_BankInfoService_GetMode(sv);
-	  if (s && *s && strcasecmp(s, "ddv")==0)
-	    break;
-	}
-	sv=AB_BankInfoService_List_Next(sv);
+        s=AB_BankInfoService_GetType(sv);
+        if (s && *s && strcasecmp(s, "HBCI")==0) {
+          s=AB_BankInfoService_GetMode(sv);
+          if (s && *s && strcasecmp(s, "ddv")==0)
+            break;
+        }
+        sv=AB_BankInfoService_List_Next(sv);
       }
 
       if (sv) {
-	/* DDV service found */
-	s=AB_BankInfoService_GetAddress(sv);
-	GWEN_Dialog_SetCharProperty(dlg,
-				    "wiz_url_edit",
-				    GWEN_DialogProperty_Value,
-				    0,
-				    (s && *s)?s:"",
-				    0);
-	s=AB_BankInfoService_GetPversion(sv);
-	if (s && *s) {
-	  if (strcasecmp(s, "2.01")==0 ||
-	      strcasecmp(s, "2")==0)
-	    xdlg->hbciVersion=201;
-	  else if (strcasecmp(s, "2.10")==0 ||
-		   strcasecmp(s, "2.1")==0)
-	    xdlg->hbciVersion=210;
-	  else if (strcasecmp(s, "2.20")==0 ||
-		   strcasecmp(s, "2.2")==0)
-	    xdlg->hbciVersion=220;
-	  else if (strcasecmp(s, "3.00")==0 ||
-		   strcasecmp(s, "3.0")==0 ||
-		   strcasecmp(s, "3")==0)
-	    xdlg->hbciVersion=300;
-	  else if (strcasecmp(s, "4.00")==0 ||
-		   strcasecmp(s, "4.0")==0 ||
-		   strcasecmp(s, "4")==0)
-	    xdlg->hbciVersion=400;
-	}
+        /* DDV service found */
+        s=AB_BankInfoService_GetAddress(sv);
+        GWEN_Dialog_SetCharProperty(dlg,
+                                    "wiz_url_edit",
+                                    GWEN_DialogProperty_Value,
+                                    0,
+                                    (s && *s)?s:"",
+                                    0);
+        s=AB_BankInfoService_GetPversion(sv);
+        if (s && *s) {
+          if (strcasecmp(s, "2.01")==0 ||
+              strcasecmp(s, "2")==0)
+            xdlg->hbciVersion=201;
+          else if (strcasecmp(s, "2.10")==0 ||
+                   strcasecmp(s, "2.1")==0)
+            xdlg->hbciVersion=210;
+          else if (strcasecmp(s, "2.20")==0 ||
+                   strcasecmp(s, "2.2")==0)
+            xdlg->hbciVersion=220;
+          else if (strcasecmp(s, "3.00")==0 ||
+                   strcasecmp(s, "3.0")==0 ||
+                   strcasecmp(s, "3")==0)
+            xdlg->hbciVersion=300;
+          else if (strcasecmp(s, "4.00")==0 ||
+                   strcasecmp(s, "4.0")==0 ||
+                   strcasecmp(s, "4")==0)
+            xdlg->hbciVersion=400;
+        }
       }
     }
   }
@@ -1019,7 +1066,8 @@ int AH_DdvCardDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
 
 
 
-int AH_DdvCardDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
+int AH_DdvCardDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg)
+{
   AH_DDVCARD_DIALOG *xdlg;
   GWEN_DIALOG *dlg2;
   int rv;
@@ -1056,7 +1104,8 @@ int AH_DdvCardDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
 
 
 
-int AH_DdvCardDialog_FromContext(GWEN_DIALOG *dlg, int i) {
+int AH_DdvCardDialog_FromContext(GWEN_DIALOG *dlg, int i)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -1067,7 +1116,7 @@ int AH_DdvCardDialog_FromContext(GWEN_DIALOG *dlg, int i) {
     GWEN_CRYPT_TOKEN_CONTEXT *ctx;
 
     ctx=GWEN_Crypt_Token_Context_List_First(xdlg->contextList);
-    while(ctx && i--)
+    while (ctx && i--)
       ctx=GWEN_Crypt_Token_Context_List_Next(ctx);
 
     if (ctx) {
@@ -1075,35 +1124,35 @@ int AH_DdvCardDialog_FromContext(GWEN_DIALOG *dlg, int i) {
 
       s=GWEN_Crypt_Token_Context_GetServiceId(ctx);
       if (s && strcasecmp(s, "20202020")==0)
-	s=NULL;
+        s=NULL;
       GWEN_Dialog_SetCharProperty(dlg,
-				  "wiz_bankcode_edit",
-				  GWEN_DialogProperty_Value,
-				  0,
-				  (s && *s)?s:"",
-				  0);
+                                  "wiz_bankcode_edit",
+                                  GWEN_DialogProperty_Value,
+                                  0,
+                                  (s && *s)?s:"",
+                                  0);
 
       s=GWEN_Crypt_Token_Context_GetAddress(ctx);
       GWEN_Dialog_SetCharProperty(dlg,
-				  "wiz_url_edit",
-				  GWEN_DialogProperty_Value,
-				  0,
-				  (s && *s)?s:"",
-				  0);
+                                  "wiz_url_edit",
+                                  GWEN_DialogProperty_Value,
+                                  0,
+                                  (s && *s)?s:"",
+                                  0);
 
       s=GWEN_Crypt_Token_Context_GetUserId(ctx);
       GWEN_Dialog_SetCharProperty(dlg,
-				  "wiz_userid_edit",
-				  GWEN_DialogProperty_Value,
-				  0,
-				  (s && *s)?s:"",
-				  0);
+                                  "wiz_userid_edit",
+                                  GWEN_DialogProperty_Value,
+                                  0,
+                                  (s && *s)?s:"",
+                                  0);
       GWEN_Dialog_SetCharProperty(dlg,
-				  "wiz_customerid_edit",
-				  GWEN_DialogProperty_Value,
-				  0,
-				  (s && *s)?s:"",
-				  0);
+                                  "wiz_customerid_edit",
+                                  GWEN_DialogProperty_Value,
+                                  0,
+                                  (s && *s)?s:"",
+                                  0);
 
     }
   }
@@ -1113,7 +1162,8 @@ int AH_DdvCardDialog_FromContext(GWEN_DIALOG *dlg, int i) {
 
 
 
-int AH_DdvCardDialog_HandleActivatedContext(GWEN_DIALOG *dlg) {
+int AH_DdvCardDialog_HandleActivatedContext(GWEN_DIALOG *dlg)
+{
   int i;
 
   i=GWEN_Dialog_GetIntProperty(dlg, "wiz_context_combo", GWEN_DialogProperty_Value, 0, -1);
@@ -1124,7 +1174,8 @@ int AH_DdvCardDialog_HandleActivatedContext(GWEN_DIALOG *dlg) {
 
 
 
-int AH_DdvCardDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int AH_DdvCardDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   if (strcasecmp(sender, "wiz_bankcode_button")==0)
     return AH_DdvCardDialog_HandleActivatedBankCode(dlg);
   else if (strcasecmp(sender, "wiz_prev_button")==0)
@@ -1146,7 +1197,8 @@ int AH_DdvCardDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 
 
-int AH_DdvCardDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender) {
+int AH_DdvCardDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender)
+{
   if (strcasecmp(sender, "wiz_bankcode_edit")==0 ||
       strcasecmp(sender, "wiz_url_edit")==0 ||
       strcasecmp(sender, "wiz_username_edit")==0 ||
@@ -1157,16 +1209,16 @@ int AH_DdvCardDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender) {
     if (GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1)==PAGE_BANK) {
       rv=AH_DdvCardDialog_GetBankPageData(dlg);
       if (rv<0)
-	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
       else
-	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
     }
     else if (GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1)==PAGE_USER) {
       rv=AH_DdvCardDialog_GetUserPageData(dlg);
       if (rv<0)
-	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
       else
-	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
     }
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -1176,15 +1228,16 @@ int AH_DdvCardDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender) {
 
 
 int GWENHYWFAR_CB AH_DdvCardDialog_SignalHandler(GWEN_DIALOG *dlg,
-						GWEN_DIALOG_EVENTTYPE t,
-						const char *sender) {
+                                                 GWEN_DIALOG_EVENTTYPE t,
+                                                 const char *sender)
+{
   AH_DDVCARD_DIALOG *xdlg;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_DDVCARD_DIALOG, dlg);
   assert(xdlg);
 
-  switch(t) {
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     AH_DdvCardDialog_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;

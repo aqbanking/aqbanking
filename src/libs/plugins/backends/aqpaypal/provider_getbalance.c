@@ -14,9 +14,10 @@
 
 
 int APY_Provider_ExecGetBal(AB_PROVIDER *pro,
-			      AB_IMEXPORTER_ACCOUNTINFO *ai,
-			      AB_USER *u,
-			      AB_TRANSACTION *j) {
+                            AB_IMEXPORTER_ACCOUNTINFO *ai,
+                            AB_USER *u,
+                            AB_TRANSACTION *j)
+{
   GWEN_HTTP_SESSION *sess;
   GWEN_BUFFER *tbuf;
   const char *s;
@@ -107,21 +108,21 @@ int APY_Provider_ExecGetBal(AB_PROVIDER *pro,
       fprintf(f, "\n============================================\n");
       fprintf(f, "Sending (GetBal):\n");
       if (len>0) {
-	if (1!=fwrite(GWEN_Buffer_GetStart(tbuf), GWEN_Buffer_GetUsedBytes(tbuf), 1, f)) {
-	  DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-	  fclose(f);
-	}
-	else {
-	  if (fclose(f)) {
-	    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-	  }
-	}
+        if (1!=fwrite(GWEN_Buffer_GetStart(tbuf), GWEN_Buffer_GetUsedBytes(tbuf), 1, f)) {
+          DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+          fclose(f);
+        }
+        else {
+          if (fclose(f)) {
+            DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+          }
+        }
       }
       else {
-	fprintf(f, "Empty data.\n");
-	if (fclose(f)) {
-	  DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-	}
+        fprintf(f, "Empty data.\n");
+        if (fclose(f)) {
+          DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+        }
       }
     }
   }
@@ -129,8 +130,8 @@ int APY_Provider_ExecGetBal(AB_PROVIDER *pro,
 
   /* send request */
   rv=GWEN_HttpSession_SendPacket(sess, "POST",
-				 (const uint8_t*) GWEN_Buffer_GetStart(tbuf),
-				 GWEN_Buffer_GetUsedBytes(tbuf));
+                                 (const uint8_t *) GWEN_Buffer_GetStart(tbuf),
+                                 GWEN_Buffer_GetUsedBytes(tbuf));
   if (rv<0) {
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
     GWEN_HttpSession_Fini(sess);
@@ -163,21 +164,21 @@ int APY_Provider_ExecGetBal(AB_PROVIDER *pro,
       fprintf(f, "\n============================================\n");
       fprintf(f, "Received (GetBal):\n");
       if (len>0) {
-	if (1!=fwrite(GWEN_Buffer_GetStart(tbuf), GWEN_Buffer_GetUsedBytes(tbuf), 1, f)) {
-	  DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-	  fclose(f);
-	}
-	else {
-	  if (fclose(f)) {
-	    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-	  }
-	}
+        if (1!=fwrite(GWEN_Buffer_GetStart(tbuf), GWEN_Buffer_GetUsedBytes(tbuf), 1, f)) {
+          DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+          fclose(f);
+        }
+        else {
+          if (fclose(f)) {
+            DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+          }
+        }
       }
       else {
-	fprintf(f, "Empty data.\n");
-	if (fclose(f)) {
-	  DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-	}
+        fprintf(f, "Empty data.\n");
+        if (fclose(f)) {
+          DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+        }
       }
     }
   }
@@ -205,7 +206,7 @@ int APY_Provider_ExecGetBal(AB_PROVIDER *pro,
   s=GWEN_DB_GetCharValue(dbResponse, "ACK", 0, NULL);
   if (s && *s) {
     if (strcasecmp(s, "Success")==0 ||
-	strcasecmp(s, "SuccessWithWarning")==0) {
+        strcasecmp(s, "SuccessWithWarning")==0) {
       DBG_INFO(AQPAYPAL_LOGDOMAIN, "Success");
     }
     else {
@@ -226,14 +227,14 @@ int APY_Provider_ExecGetBal(AB_PROVIDER *pro,
 
   /* now get the transactions */
   dbCurr=GWEN_DB_GetFirstGroup(dbResponse);
-  while(dbCurr) {
+  while (dbCurr) {
     AB_BALANCE *bal;
     GWEN_DATE *t=NULL;
     AB_VALUE *vc;
     const char *p;
-    
+
     DBG_NOTICE(AQPAYPAL_LOGDOMAIN, "Got a balance");
-    
+
     /* read and parse value */
     p=GWEN_DB_GetCharValue(dbCurr, "L_AMT", 0, 0);
     if (!p)
@@ -241,12 +242,12 @@ int APY_Provider_ExecGetBal(AB_PROVIDER *pro,
     vc=AB_Value_fromString(p);
     if (vc==NULL)
       return GWEN_ERROR_BAD_DATA;
-    
+
     /* read currency (if any) */
     p=GWEN_DB_GetCharValue(dbCurr, "L_CURRENCYCODE", 0, "EUR");
     if (p)
       AB_Value_SetCurrency(vc, p);
-    
+
     p=GWEN_DB_GetCharValue(dbResponse, "TIMESTAMP", 0, NULL);
     if (p && *p) {
       /*t=GWEN_Time_fromUtcString(p, "YYYY-MM-DDThh:mm:ssZ");*/
@@ -266,7 +267,7 @@ int APY_Provider_ExecGetBal(AB_PROVIDER *pro,
 
     AB_Value_free(vc);
     GWEN_Date_free(t);
-    
+
     /* add new balance */
     AB_ImExporterAccountInfo_AddBalance(ai, bal);
     break; /* break loop, we found the balance */

@@ -31,8 +31,9 @@
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_STMTTRNRS_new(const char *groupName,
-					  AIO_OFX_GROUP *parent,
-					  GWEN_XML_CONTEXT *ctx) {
+                                          AIO_OFX_GROUP *parent,
+                                          GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_GROUP *g;
 
   /* create base group */
@@ -48,7 +49,8 @@ AIO_OFX_GROUP *AIO_OfxGroup_STMTTRNRS_new(const char *groupName,
 
 
 int AIO_OfxGroup_STMTTRNRS_StartTag(AIO_OFX_GROUP *g,
-				    const char *tagName) {
+                                    const char *tagName)
+{
   AIO_OFX_GROUP *gNew=NULL;
   GWEN_XML_CONTEXT *ctx;
 
@@ -58,19 +60,19 @@ int AIO_OfxGroup_STMTTRNRS_StartTag(AIO_OFX_GROUP *g,
 
   if (strcasecmp(tagName, "STATUS")==0) {
     gNew=AIO_OfxGroup_STATUS_new(tagName, g, ctx,
-				 I18N("Status for transaction statement request"));
+                                 I18N("Status for transaction statement request"));
   }
   else if (strcasecmp(tagName, "TRNUID")==0 ||
-	   strcasecmp(tagName, "CLTCOOKIE")==0) {
+           strcasecmp(tagName, "CLTCOOKIE")==0) {
     /* some tags, just ignore them here */
   }
   else if (strcasecmp(tagName, "STMTRS")==0 ||
-	   strcasecmp(tagName, "CCSTMTRS")==0) {
+           strcasecmp(tagName, "CCSTMTRS")==0) {
     gNew=AIO_OfxGroup_STMTRS_new(tagName, g, ctx);
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	     "Ignoring group [%s]", tagName);
+             "Ignoring group [%s]", tagName);
     gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);
   }
 

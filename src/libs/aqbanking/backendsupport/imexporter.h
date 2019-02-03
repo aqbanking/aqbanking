@@ -94,8 +94,8 @@ extern "C" {
  */
 int AB_ImExporter_Import(AB_IMEXPORTER *ie,
                          AB_IMEXPORTER_CONTEXT *ctx,
-			 GWEN_SYNCIO *sio,
-			 GWEN_DB_NODE *dbProfile);
+                         GWEN_SYNCIO *sio,
+                         GWEN_DB_NODE *dbProfile);
 
 /**
  * Writes all data to the given stream.
@@ -108,8 +108,8 @@ int AB_ImExporter_Import(AB_IMEXPORTER *ie,
  */
 int AB_ImExporter_Export(AB_IMEXPORTER *ie,
                          AB_IMEXPORTER_CONTEXT *ctx,
-			 GWEN_SYNCIO *sio,
-			 GWEN_DB_NODE *dbProfile);
+                         GWEN_SYNCIO *sio,
+                         GWEN_DB_NODE *dbProfile);
 
 /**
  * This function should return a dialog (see @ref GWEN_DIALOG) which
@@ -129,9 +129,9 @@ int AB_ImExporter_Export(AB_IMEXPORTER *ie,
  * @return 0 on success, error code otherwise
  */
 int AB_ImExporter_GetEditProfileDialog(AB_IMEXPORTER *ie,
-				       GWEN_DB_NODE *dbProfile,
-				       const char *testFileName,
-				       GWEN_DIALOG **pDlg);
+                                       GWEN_DB_NODE *dbProfile,
+                                       const char *testFileName,
+                                       GWEN_DIALOG **pDlg);
 
 
 /**

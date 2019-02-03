@@ -33,7 +33,8 @@ GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_SEPA);
 
 
 
-static AH_IMEXPORTER_SEPA_PMTINF *AH_ImExporter_Sepa_PmtInf_new() {
+static AH_IMEXPORTER_SEPA_PMTINF *AH_ImExporter_Sepa_PmtInf_new()
+{
   AH_IMEXPORTER_SEPA_PMTINF *pmtinf;
 
   GWEN_NEW_OBJECT(AH_IMEXPORTER_SEPA_PMTINF, pmtinf)
@@ -46,7 +47,8 @@ static AH_IMEXPORTER_SEPA_PMTINF *AH_ImExporter_Sepa_PmtInf_new() {
 
 
 
-static void AH_ImExporter_Sepa_PmtInf_free(AH_IMEXPORTER_SEPA_PMTINF *pmtinf) {
+static void AH_ImExporter_Sepa_PmtInf_free(AH_IMEXPORTER_SEPA_PMTINF *pmtinf)
+{
   if (pmtinf) {
     free(pmtinf->ctrlsum);
     AB_Value_free(pmtinf->value);
@@ -58,14 +60,15 @@ static void AH_ImExporter_Sepa_PmtInf_free(AH_IMEXPORTER_SEPA_PMTINF *pmtinf) {
 
 
 
-AB_IMEXPORTER *AB_ImExporterSEPA_new(AB_BANKING *ab){
+AB_IMEXPORTER *AB_ImExporterSEPA_new(AB_BANKING *ab)
+{
   AB_IMEXPORTER *ie;
   AH_IMEXPORTER_SEPA *ieh;
 
   ie=AB_ImExporter_new(ab, "sepa");
   GWEN_NEW_OBJECT(AH_IMEXPORTER_SEPA, ieh);
   GWEN_INHERIT_SETDATA(AB_IMEXPORTER, AH_IMEXPORTER_SEPA, ie, ieh,
-		       AH_ImExporterSEPA_FreeData);
+                       AH_ImExporterSEPA_FreeData);
   AB_ImExporter_SetImportFn(ie, AH_ImExporterSEPA_Import);
   AB_ImExporter_SetExportFn(ie, AH_ImExporterSEPA_Export);
   AB_ImExporter_SetCheckFileFn(ie, AH_ImExporterSEPA_CheckFile);
@@ -74,19 +77,21 @@ AB_IMEXPORTER *AB_ImExporterSEPA_new(AB_BANKING *ab){
 
 
 
-void GWENHYWFAR_CB AH_ImExporterSEPA_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_ImExporterSEPA_FreeData(void *bp, void *p)
+{
   AH_IMEXPORTER_SEPA *ieh;
 
-  ieh=(AH_IMEXPORTER_SEPA*)p;
+  ieh=(AH_IMEXPORTER_SEPA *)p;
   GWEN_FREE_OBJECT(ieh);
 }
 
 
 
 int AH_ImExporterSEPA_Import(AB_IMEXPORTER *ie,
-			     AB_IMEXPORTER_CONTEXT *ctx,
-			     GWEN_SYNCIO *sio,
-			     GWEN_DB_NODE *params){
+                             AB_IMEXPORTER_CONTEXT *ctx,
+                             GWEN_SYNCIO *sio,
+                             GWEN_DB_NODE *params)
+{
   AH_IMEXPORTER_SEPA *ieh;
 
   assert(ie);
@@ -99,12 +104,12 @@ int AH_ImExporterSEPA_Import(AB_IMEXPORTER *ie,
 
 
 
-static int
-AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
-				    AB_IMEXPORTER_CONTEXT *ctx,
-				    GWEN_XMLNODE *painNode,
-				    uint32_t doctype[],
-				    AH_IMEXPORTER_SEPA_PMTINF_LIST **pList) {
+static int AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
+                                               AB_IMEXPORTER_CONTEXT *ctx,
+                                               GWEN_XMLNODE *painNode,
+                                               uint32_t doctype[],
+                                               AH_IMEXPORTER_SEPA_PMTINF_LIST **pList)
+{
   GWEN_XMLNODE *n;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
   AB_TRANSACTION *t;
@@ -122,7 +127,7 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
   }
   else if (AB_ImExporterAccountInfo_List_Next(ai)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Account info for more than one local account");
+              "Account info for more than one local account");
     return GWEN_ERROR_NOT_SUPPORTED;
   }
 
@@ -136,7 +141,7 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
   pl=AH_ImExporter_Sepa_PmtInf_List_new();
   pmtinf=AH_ImExporter_Sepa_PmtInf_new();
   AH_ImExporter_Sepa_PmtInf_List_Add(pmtinf, pl);
-  while(t) {
+  while (t) {
     const GWEN_DATE *da;
     int day, month, year;
     uint32_t transDate;
@@ -159,20 +164,20 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
     if (!s || !*s) {
       name=AB_Transaction_GetLocalName(t);
       if (!name || !*name) {
-	DBG_ERROR(AQBANKING_LOGDOMAIN,
-		  "Missing local name in transaction %d", tcount);
-	AH_ImExporter_Sepa_PmtInf_List_free(pl);
-	return GWEN_ERROR_BAD_DATA;
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "Missing local name in transaction %d", tcount);
+        AH_ImExporter_Sepa_PmtInf_List_free(pl);
+        return GWEN_ERROR_BAD_DATA;
       }
     }
     s=AB_ImExporterAccountInfo_GetIban(ai);
     if (!s || !*s) {
       iban=AB_Transaction_GetLocalIban(t);
       if (!iban || !*iban) {
-	DBG_ERROR(AQBANKING_LOGDOMAIN,
-		  "Missing local IBAN in transaction %d", tcount);
-	AH_ImExporter_Sepa_PmtInf_List_free(pl);
-	return GWEN_ERROR_BAD_DATA;
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "Missing local IBAN in transaction %d", tcount);
+        AH_ImExporter_Sepa_PmtInf_List_free(pl);
+        return GWEN_ERROR_BAD_DATA;
       }
     }
     s=AB_ImExporterAccountInfo_GetBic(ai);
@@ -180,53 +185,53 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
 #if 0
       bic=AB_Transaction_GetLocalBic(t);
       if (!bic || !*bic) {
-	DBG_ERROR(AQBANKING_LOGDOMAIN,
-		  "Missing local BIC in transaction %d", tcount);
-	AH_ImExporter_Sepa_PmtInf_List_free(pl);
-	return GWEN_ERROR_BAD_DATA;
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "Missing local BIC in transaction %d", tcount);
+        AH_ImExporter_Sepa_PmtInf_List_free(pl);
+        return GWEN_ERROR_BAD_DATA;
       }
 #endif
     }
     if (doctype[0]==8) {
       sequenceType=AB_Transaction_GetSequence(t);
       if (sequenceType==AB_Transaction_SequenceUnknown) {
-	DBG_ERROR(AQBANKING_LOGDOMAIN,
-		  "Missing sequence type in transaction %d", tcount);
-	AH_ImExporter_Sepa_PmtInf_List_free(pl);
-	return GWEN_ERROR_BAD_DATA;
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "Missing sequence type in transaction %d", tcount);
+        AH_ImExporter_Sepa_PmtInf_List_free(pl);
+        return GWEN_ERROR_BAD_DATA;
       }
       cdtrSchmeId=AB_Transaction_GetCreditorSchemeId(t);
       if (!cdtrSchmeId || !*cdtrSchmeId) {
-	DBG_ERROR(AQBANKING_LOGDOMAIN,
-		  "Missing creditor scheme id in transaction %d", tcount);
-	AH_ImExporter_Sepa_PmtInf_List_free(pl);
-	return GWEN_ERROR_BAD_DATA;
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "Missing creditor scheme id in transaction %d", tcount);
+        AH_ImExporter_Sepa_PmtInf_List_free(pl);
+        return GWEN_ERROR_BAD_DATA;
       }
     }
 
     if (pmtinf->tcount) {
       /* specify list of match criteria in one place */
-#define TRANSACTION_DOES_NOT_MATCH					\
-      (transDate!=pmtinf->transDate ||					\
-       (name && strcmp(name, pmtinf->localName)) ||			\
-       (iban && strcmp(iban, pmtinf->localIban)) ||			\
-       (bic && strcmp(bic, pmtinf->localBic)) ||			\
-       (doctype[0]==8 &&						\
-	(sequenceType!=pmtinf->sequenceType ||				\
-	 (cdtrSchmeId && strcmp(cdtrSchmeId, pmtinf->creditorSchemeId)))))
+#define TRANSACTION_DOES_NOT_MATCH          \
+      (transDate!=pmtinf->transDate ||          \
+       (name && strcmp(name, pmtinf->localName)) ||     \
+       (iban && strcmp(iban, pmtinf->localIban)) ||     \
+       (bic && strcmp(bic, pmtinf->localBic)) ||      \
+       (doctype[0]==8 &&            \
+  (sequenceType!=pmtinf->sequenceType ||        \
+   (cdtrSchmeId && strcmp(cdtrSchmeId, pmtinf->creditorSchemeId)))))
 
       /* match against current PmtInf block */
       if (TRANSACTION_DOES_NOT_MATCH) {
-	/* search for a fitting PmtInf block */
-	pmtinf=AH_ImExporter_Sepa_PmtInf_List_First(pl);
-	while(pmtinf && TRANSACTION_DOES_NOT_MATCH)
-	  pmtinf=AH_ImExporter_Sepa_PmtInf_List_Next(pmtinf);
+        /* search for a fitting PmtInf block */
+        pmtinf=AH_ImExporter_Sepa_PmtInf_List_First(pl);
+        while (pmtinf && TRANSACTION_DOES_NOT_MATCH)
+          pmtinf=AH_ImExporter_Sepa_PmtInf_List_Next(pmtinf);
 #undef TRANSACTION_DOES_NOT_MATCH
 
-	if (!pmtinf) {
-	  pmtinf=AH_ImExporter_Sepa_PmtInf_new(t);
-	  AH_ImExporter_Sepa_PmtInf_List_Add(pmtinf, pl);
-	}
+        if (!pmtinf) {
+          pmtinf=AH_ImExporter_Sepa_PmtInf_new(t);
+          AH_ImExporter_Sepa_PmtInf_List_Add(pmtinf, pl);
+        }
       }
     }
 
@@ -238,8 +243,8 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
       pmtinf->date=da;               /* transaction date (AB_Transaction_GetDate()) */
       pmtinf->transDate=transDate;   /* transaction date short representation ((year<<16)+(month<<8)+(day)) */
       if (doctype[0]==8) {
-	pmtinf->sequenceType=sequenceType;
-	pmtinf->creditorSchemeId=cdtrSchmeId;
+        pmtinf->sequenceType=sequenceType;
+        pmtinf->creditorSchemeId=cdtrSchmeId;
       }
     }
 
@@ -248,7 +253,7 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
     tv=AB_Transaction_GetValue(t);
     if (tv==NULL) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Missing value in transaction %d", tcount);
+                "Missing value in transaction %d", tcount);
       AH_ImExporter_Sepa_PmtInf_List_free(pl);
       return GWEN_ERROR_BAD_DATA;
     }
@@ -261,7 +266,7 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
   v=AB_Value_new();
   tbuf=GWEN_Buffer_new(0, 64, 0, 1);
   pmtinf=AH_ImExporter_Sepa_PmtInf_List_First(pl);
-  while(pmtinf) {
+  while (pmtinf) {
     AB_Value_toHumanReadableString2(pmtinf->value, tbuf, 2, 0);
     pmtinf->ctrlsum=strdup(GWEN_Buffer_GetStart(tbuf));
     assert(pmtinf->ctrlsum);
@@ -310,7 +315,7 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
 
     /* special treatment for pain.001.001.02 and pain.008.001.01 */
     if (doctype[1]==1 && ((doctype[0]==1 && doctype[2]==2) ||
-			  (doctype[0]==8 && doctype[2]==1)))
+                          (doctype[0]==8 && doctype[2]==1)))
       GWEN_XMLNode_SetCharValue(n, "Grpg", "GRPD");
 
     nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "InitgPty");
@@ -329,15 +334,16 @@ AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
 
 
 int AH_ImExporterSEPA_Export(AB_IMEXPORTER *ie,
-			     AB_IMEXPORTER_CONTEXT *ctx,
-			     GWEN_SYNCIO *sio,
-			     GWEN_DB_NODE *params){
+                             AB_IMEXPORTER_CONTEXT *ctx,
+                             GWEN_SYNCIO *sio,
+                             GWEN_DB_NODE *params)
+{
   AH_IMEXPORTER_SEPA *ieh;
   GWEN_XMLNODE *root;
   GWEN_XMLNODE *documentNode;
   GWEN_XMLNODE *topNode;
   GWEN_XMLNODE *n;
-  uint32_t doctype[]={0, 0, 0};
+  uint32_t doctype[]= {0, 0, 0};
   const char *s;
   int rv;
 
@@ -352,15 +358,15 @@ int AH_ImExporterSEPA_Export(AB_IMEXPORTER *ie,
     char *tail;
 
     /* Parse strings of the form xxx.yyy.zz */
-    p=tail=(char*)s;
+    p=tail=(char *)s;
     for (i=0; i<3 && *tail; i++) {
       j=strtol(p, &tail, 10);
       if (!isspace(*p) &&
-	  ((*tail=='.' && tail-p==3) || (*tail=='\0' && tail-p==2)) &&
-	  j>0)
-	doctype[i]=j;
+          ((*tail=='.' && tail-p==3) || (*tail=='\0' && tail-p==2)) &&
+          j>0)
+        doctype[i]=j;
       else
-	break;
+        break;
       p=tail+1;
     }
     if (i<3)
@@ -380,15 +386,15 @@ int AH_ImExporterSEPA_Export(AB_IMEXPORTER *ie,
   s=GWEN_DB_GetCharValue(params, "xmlns", 0, 0);
   if (!s || !*s) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "xmlns not specified in profile \"%s\"",
-	      GWEN_DB_GetCharValue(params, "name", 0, 0));
+              "xmlns not specified in profile \"%s\"",
+              GWEN_DB_GetCharValue(params, "name", 0, 0));
     GWEN_XMLNode_free(root);
     return GWEN_ERROR_INVALID;
   }
   GWEN_XMLNode_SetProperty(documentNode, "xmlns", s);
   GWEN_XMLNode_AddChild(root, documentNode);
 
-  switch(doctype[0]) {
+  switch (doctype[0]) {
   case 1:
     if (doctype[1]>1 || doctype[2]>2)
       s="CstmrCdtTrfInitn";
@@ -409,7 +415,7 @@ int AH_ImExporterSEPA_Export(AB_IMEXPORTER *ie,
     break;
   default:
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unknown SEPA type \"%s\"",
-	      GWEN_DB_GetCharValue(params, "type", 0, 0));
+              GWEN_DB_GetCharValue(params, "type", 0, 0));
     GWEN_XMLNode_free(root);
     return GWEN_ERROR_INVALID;
   }
@@ -418,9 +424,9 @@ int AH_ImExporterSEPA_Export(AB_IMEXPORTER *ie,
     GWEN_XML_CONTEXT *xmlctx;
 
     xmlctx=GWEN_XmlCtxStore_new(root,
-				GWEN_XML_FLAGS_INDENT |
-				GWEN_XML_FLAGS_SIMPLE |
-				GWEN_XML_FLAGS_HANDLE_HEADERS);
+                                GWEN_XML_FLAGS_INDENT |
+                                GWEN_XML_FLAGS_SIMPLE |
+                                GWEN_XML_FLAGS_HANDLE_HEADERS);
 
     rv=GWEN_XMLNode_WriteToStream(root, xmlctx, sio);
     if (rv)
@@ -435,7 +441,8 @@ int AH_ImExporterSEPA_Export(AB_IMEXPORTER *ie,
 
 
 
-int AH_ImExporterSEPA_CheckFile(AB_IMEXPORTER *ie, const char *fname){
+int AH_ImExporterSEPA_CheckFile(AB_IMEXPORTER *ie, const char *fname)
+{
   AH_IMEXPORTER_SEPA *ieh;
 
   assert(ie);

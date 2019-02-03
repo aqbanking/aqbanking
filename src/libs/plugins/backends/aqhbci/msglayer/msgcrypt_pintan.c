@@ -10,10 +10,11 @@
 
 
 int AH_MsgPinTan_PrepareCryptoSeg(AH_MSG *hmsg,
-				  AB_USER *u,
-				  GWEN_DB_NODE *cfg,
-				  int crypt,
-				  int createCtrlRef) {
+                                  AB_USER *u,
+                                  GWEN_DB_NODE *cfg,
+                                  int crypt,
+                                  int createCtrlRef)
+{
   char sdate[9];
   char stime[7];
   char ctrlref[15];
@@ -62,7 +63,7 @@ int AH_MsgPinTan_PrepareCryptoSeg(AH_MSG *hmsg,
   }
 
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-		      "SecDetails/dir", 1);
+                      "SecDetails/dir", 1);
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
                        "SecStamp/date", sdate);
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
@@ -77,12 +78,12 @@ int AH_MsgPinTan_PrepareCryptoSeg(AH_MSG *hmsg,
                        "key/keytype",
                        crypt?"V":"S");
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-		      "key/keynum", 1);
+                      "key/keynum", 1);
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-		      "key/keyversion", 1);
+                      "key/keyversion", 1);
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-		       "secProfile/code",
-		       "PIN");
+                       "secProfile/code",
+                       "PIN");
   /*
   if (crypt)
     GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
@@ -100,8 +101,9 @@ int AH_MsgPinTan_PrepareCryptoSeg(AH_MSG *hmsg,
 
 
 int AH_Msg_SignPinTan(AH_MSG *hmsg,
-		      GWEN_BUFFER *rawBuf,
-		      const char *signer) {
+                      GWEN_BUFFER *rawBuf,
+                      const char *signer)
+{
   AH_HBCI *h;
   GWEN_XMLNODE *node;
   GWEN_DB_NODE *cfg;
@@ -125,18 +127,18 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg,
   su=AH_Msg_GetUser(hmsg, signer);
   if (!su) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
-	      "Unknown user \"%s\"",
-	      signer);
+              "Unknown user \"%s\"",
+              signer);
     return GWEN_ERROR_NOT_FOUND;
   }
 
   uFlags=AH_User_GetFlags(su);
 
   node=GWEN_MsgEngine_FindNodeByPropertyStrictProto(e,
-						    "SEG",
-						    "id",
-						    0,
-						    "SigHead");
+                                                    "SEG",
+                                                    "id",
+                                                    0,
+                                                    "SigHead");
   if (!node) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Segment \"SigHead\" not found");
     return GWEN_ERROR_INTERNAL;
@@ -171,8 +173,8 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg,
     assert(*remoteId);
 
     DBG_DEBUG(AQHBCI_LOGDOMAIN,
-	      "Expecting \"%s\" to sign the response",
-	      remoteId);
+              "Expecting \"%s\" to sign the response",
+              remoteId);
     AH_Msg_SetExpectedSigner(hmsg, remoteId);
   }
 
@@ -186,14 +188,14 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg,
 
   if (tm) {
     GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-			"function", tm);
+                        "function", tm);
   }
 
   /* retrieve control reference for sigtail (to be used later) */
   p=GWEN_DB_GetCharValue(cfg, "ctrlref", 0, "");
   if (strlen(p)>=sizeof(ctrlref)) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
-	     "Control reference too long (14 bytes maximum)");
+             "Control reference too long (14 bytes maximum)");
     GWEN_DB_Group_free(cfg);
     return -1;
   }
@@ -204,7 +206,7 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg,
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
                       "head/seq", hmsg->firstSegment-1);
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-		      "signseq", 1);
+                      "signseq", 1);
 
   /* create signature head segment */
   rv=GWEN_MsgEngine_CreateMessageFromNode(e, node, hbuf, cfg);
@@ -220,8 +222,8 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg,
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Inserting signature head");
   GWEN_Buffer_Rewind(hmsg->buffer);
   GWEN_Buffer_InsertBytes(hmsg->buffer,
-			  GWEN_Buffer_GetStart(hbuf),
-			  GWEN_Buffer_GetUsedBytes(hbuf));
+                          GWEN_Buffer_GetStart(hbuf),
+                          GWEN_Buffer_GetUsedBytes(hbuf));
 
   /* create sigtail */
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Completing signature tail");
@@ -231,18 +233,18 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg,
                       "head/seq", hmsg->lastSegment+1);
   /* store to DB */
   GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-		      "signature",
-		      "NOSIGNATURE",
+                      "signature",
+                      "NOSIGNATURE",
                       11);
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-		       "ctrlref", ctrlref);
+                       "ctrlref", ctrlref);
 
   /* handle pin */
   memset(pin, 0, sizeof(pin));
   rv=AH_User_InputPin(su, pin, 4, sizeof(pin), 0);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
-	      "Error getting pin from medium (%d)", rv);
+              "Error getting pin from medium (%d)", rv);
     GWEN_DB_Group_free(cfg);
     GWEN_Buffer_free(hbuf);
     memset(pin, 0, sizeof(pin));
@@ -255,12 +257,12 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg,
   /* handle tan */
   if (hmsg->needTan) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN,
-	       "This queue needs a TAN");
+               "This queue needs a TAN");
     if (hmsg->usedTan) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN,
-		 "Using existing TAN");
+                 "Using existing TAN");
       GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-			   "tan", hmsg->usedTan);
+                           "tan", hmsg->usedTan);
     }
     else {
       char tan[16];
@@ -269,27 +271,27 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg,
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Asking for TAN");
       rv=AH_User_InputTan(su, tan, 4, sizeof(tan));
       if (rv<0) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Error getting TAN from medium");
-	GWEN_DB_Group_free(cfg);
-	GWEN_Buffer_free(hbuf);
-	return rv;
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Error getting TAN from medium");
+        GWEN_DB_Group_free(cfg);
+        GWEN_Buffer_free(hbuf);
+        return rv;
       }
       GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-			   "tan", tan);
+                           "tan", tan);
       AH_Msg_SetTan(hmsg, tan);
     }
   }
   else {
     DBG_NOTICE(AQHBCI_LOGDOMAIN,
-	       "This queue doesn't need a TAN");
+               "This queue doesn't need a TAN");
   }
 
   /* get node */
   node=GWEN_MsgEngine_FindNodeByPropertyStrictProto(e,
-						    "SEG",
-						    "id",
-						    0,
-						    "SigTail");
+                                                    "SEG",
+                                                    "id",
+                                                    0,
+                                                    "SigTail");
   if (!node) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Segment \"SigTail\"not found");
     GWEN_Buffer_free(hbuf);
@@ -327,7 +329,8 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg,
 
 
 
-int AH_Msg_EncryptPinTan(AH_MSG *hmsg) {
+int AH_Msg_EncryptPinTan(AH_MSG *hmsg)
+{
   AH_HBCI *h;
   GWEN_XMLNODE *node;
   GWEN_DB_NODE *cfg;
@@ -355,10 +358,10 @@ int AH_Msg_EncryptPinTan(AH_MSG *hmsg) {
 
   /* create crypt head */
   node=GWEN_MsgEngine_FindNodeByPropertyStrictProto(e,
-						    "SEG",
-						    "id",
-						    0,
-						    "CryptHead");
+                                                    "SEG",
+                                                    "id",
+                                                    0,
+                                                    "CryptHead");
   if (!node) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Segment \"CryptHead\" not found");
     return GWEN_ERROR_INTERNAL;
@@ -367,7 +370,7 @@ int AH_Msg_EncryptPinTan(AH_MSG *hmsg) {
   /* create CryptHead */
   cfg=GWEN_DB_Group_new("crypthead");
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-		      "head/seq", 998);
+                      "head/seq", 998);
 
   rv=AH_MsgPinTan_PrepareCryptoSeg(hmsg, u, cfg, 1, 0);
   if (rv) {
@@ -386,14 +389,14 @@ int AH_Msg_EncryptPinTan(AH_MSG *hmsg) {
 
   /* store encrypted message key */
   GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-		      "CryptAlgo/MsgKey",
+                      "CryptAlgo/MsgKey",
                       "NOKEY", 5);
 
   hbuf=GWEN_Buffer_new(0, 256+GWEN_Buffer_GetUsedBytes(hmsg->buffer), 0, 1);
   rv=GWEN_MsgEngine_CreateMessageFromNode(e,
-					  node,
-					  hbuf,
-					  cfg);
+                                          node,
+                                          hbuf,
+                                          cfg);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Could not create CryptHead (%d)", rv);
     GWEN_Buffer_free(hbuf);
@@ -407,15 +410,15 @@ int AH_Msg_EncryptPinTan(AH_MSG *hmsg) {
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
                       "head/seq", 999);
   GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-		      "cryptdata",
-		      GWEN_Buffer_GetStart(hmsg->buffer),
+                      "cryptdata",
+                      GWEN_Buffer_GetStart(hmsg->buffer),
                       GWEN_Buffer_GetUsedBytes(hmsg->buffer));
 
   node=GWEN_MsgEngine_FindNodeByPropertyStrictProto(e,
-						    "SEG",
-						    "id",
-						    0,
-						    "CryptData");
+                                                    "SEG",
+                                                    "id",
+                                                    0,
+                                                    "CryptData");
   if (!node) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Segment \"CryptData\"not found");
     GWEN_Buffer_free(hbuf);
@@ -444,7 +447,8 @@ int AH_Msg_EncryptPinTan(AH_MSG *hmsg) {
 
 
 
-int AH_Msg_DecryptPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr){
+int AH_Msg_DecryptPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr)
+{
   AH_HBCI *h;
   GWEN_BUFFER *mbuf;
   uint32_t l;
@@ -473,9 +477,9 @@ int AH_Msg_DecryptPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr){
 
   /* get encrypted session key */
   nhead=GWEN_DB_GetGroup(gr,
-			 GWEN_DB_FLAGS_DEFAULT |
-			 GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-			 "CryptHead");
+                         GWEN_DB_FLAGS_DEFAULT |
+                         GWEN_PATH_FLAGS_NAMEMUSTEXIST,
+                         "CryptHead");
   if (!nhead) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No crypt head");
     return GWEN_ERROR_BAD_DATA;
@@ -494,10 +498,10 @@ int AH_Msg_DecryptPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr){
 
   /* get encrypted data */
   p=GWEN_DB_GetBinValue(ndata,
-			"CryptData",
+                        "CryptData",
                         0,
-                        0,0,
-			&l);
+                        0, 0,
+                        &l);
   if (!p || !l) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No crypt data");
     return GWEN_ERROR_BAD_DATA;
@@ -505,7 +509,7 @@ int AH_Msg_DecryptPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr){
 
   /* decipher message with session key */
   mbuf=GWEN_Buffer_new(0, l, 0, 1);
-  GWEN_Buffer_AppendBytes(mbuf, (const char*)p, l);
+  GWEN_Buffer_AppendBytes(mbuf, (const char *)p, l);
 
   /* store crypter id */
   AH_Msg_SetCrypterId(hmsg, crypterId);
@@ -521,7 +525,8 @@ int AH_Msg_DecryptPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr){
 
 
 
-int AH_Msg_VerifyPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
+int AH_Msg_VerifyPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr)
+{
   AH_HBCI *h;
   GWEN_LIST *sigheads;
   GWEN_LIST *sigtails;
@@ -547,7 +552,7 @@ int AH_Msg_VerifyPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
   nonSigHeads=0;
   nSigheads=0;
   n=GWEN_DB_GetFirstGroup(gr);
-  while(n) {
+  while (n) {
     if (strcasecmp(GWEN_DB_GroupName(n), "SigHead")==0) {
       /* found a signature head */
       if (nonSigHeads) {
@@ -569,7 +574,7 @@ int AH_Msg_VerifyPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
   if (!n) {
     if (nSigheads) {
       DBG_ERROR(AQHBCI_LOGDOMAIN,
-		"Found Signature heads but no other segments");
+                "Found Signature heads but no other segments");
       GWEN_List_free(sigheads);
       return GWEN_ERROR_BAD_DATA;
     }
@@ -587,7 +592,7 @@ int AH_Msg_VerifyPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
   }
 
   /* now get first signature tail */
-  while(n) {
+  while (n) {
     if (strcasecmp(GWEN_DB_GroupName(n), "SigTail")==0) {
       unsigned int currpos;
 
@@ -611,7 +616,7 @@ int AH_Msg_VerifyPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
   }
 
   sigtails=GWEN_List_new();
-  while(n) {
+  while (n) {
     if (strcasecmp(GWEN_DB_GroupName(n), "SigTail")!=0)
       break;
     GWEN_List_PushBack(sigtails, n);
@@ -660,14 +665,14 @@ int AH_Msg_VerifyPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
     const char *signerId;
 
     /* get signature tail */
-    sigtail=(GWEN_DB_NODE*)GWEN_List_GetBack(sigtails);
+    sigtail=(GWEN_DB_NODE *)GWEN_List_GetBack(sigtails);
 
     /* get corresponding signature head */
-    sighead=(GWEN_DB_NODE*)GWEN_List_GetFront(sigheads);
+    sighead=(GWEN_DB_NODE *)GWEN_List_GetFront(sigheads);
 
     if (!sighead || !sigtail) {
       DBG_ERROR(AQHBCI_LOGDOMAIN,
-		"No signature head/tail left (internal error)");
+                "No signature head/tail left (internal error)");
       GWEN_List_free(sigheads);
       GWEN_List_free(sigtails);
       return GWEN_ERROR_INTERNAL;
@@ -677,7 +682,7 @@ int AH_Msg_VerifyPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
     GWEN_List_PopFront(sigheads);
 
     signerId=GWEN_DB_GetCharValue(sighead, "key/userid", 0,
-				  I18N("unknown"));
+                                  I18N("unknown"));
 
     /* some checks */
     if (strcasecmp(GWEN_DB_GetCharValue(sighead, "ctrlref", 0, ""),

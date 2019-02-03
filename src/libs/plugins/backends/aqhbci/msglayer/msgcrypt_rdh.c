@@ -10,8 +10,9 @@
 
 
 int AH_Msg_SignRdh(AH_MSG *hmsg,
-		   GWEN_BUFFER *rawBuf,
-		   const char *signer) {
+                   GWEN_BUFFER *rawBuf,
+                   const char *signer)
+{
   AB_USER *su;
   int rv;
 
@@ -20,12 +21,12 @@ int AH_Msg_SignRdh(AH_MSG *hmsg,
   su=AH_Msg_GetUser(hmsg, signer);
   if (!su) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
-	      "Unknown user \"%s\"",
-	      signer);
+              "Unknown user \"%s\"",
+              signer);
     return GWEN_ERROR_NOT_FOUND;
   }
 
-  switch(AH_User_GetRdhType(su)) {
+  switch (AH_User_GetRdhType(su)) {
   case 0:
   case 1:
     rv=AH_Msg_SignRdh1(hmsg, su, rawBuf, signer);
@@ -39,11 +40,11 @@ int AH_Msg_SignRdh(AH_MSG *hmsg,
   case 5:
     rv=AH_Msg_SignRdh5(hmsg, su, rawBuf, signer);
     break;
-    /**** RDH7 Block Start******/
+  /**** RDH7 Block Start******/
   case 7:
-	rv=AH_Msg_SignRdh7(hmsg, su, rawBuf, signer);
+    rv=AH_Msg_SignRdh7(hmsg, su, rawBuf, signer);
     break;
-    /**** RDH7 Block End******/
+  /**** RDH7 Block End******/
   case 9:
     rv=AH_Msg_SignRdh9(hmsg, su, rawBuf, signer);
     break;
@@ -60,14 +61,15 @@ int AH_Msg_SignRdh(AH_MSG *hmsg,
 
 
 
-int AH_Msg_EncryptRdh(AH_MSG *hmsg) {
+int AH_Msg_EncryptRdh(AH_MSG *hmsg)
+{
   AB_USER *u;
   int rv;
 
   assert(hmsg);
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
 
-  switch(AH_User_GetRdhType(u)) {
+  switch (AH_User_GetRdhType(u)) {
   case 0:
   case 1:
     rv=AH_Msg_EncryptRdh1(hmsg);
@@ -81,11 +83,11 @@ int AH_Msg_EncryptRdh(AH_MSG *hmsg) {
   case 5:
     rv=AH_Msg_EncryptRdh5(hmsg);
     break;
-    /**** RDH7 Block Start******/
+  /**** RDH7 Block Start******/
   case 7:
     rv=AH_Msg_EncryptRdh7(hmsg);
     break;
-    /**** RDH7 Block End******/
+  /**** RDH7 Block End******/
   case 9:
     rv=AH_Msg_EncryptRdh9(hmsg);
     break;
@@ -103,14 +105,15 @@ int AH_Msg_EncryptRdh(AH_MSG *hmsg) {
 
 
 
-int AH_Msg_DecryptRdh(AH_MSG *hmsg, GWEN_DB_NODE *gr){
+int AH_Msg_DecryptRdh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
+{
   AB_USER *u;
   int rv;
 
   assert(hmsg);
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
 
-  switch(AH_User_GetRdhType(u)) {
+  switch (AH_User_GetRdhType(u)) {
   case 0:
   case 1:
     rv=AH_Msg_DecryptRdh1(hmsg, gr);
@@ -124,11 +127,11 @@ int AH_Msg_DecryptRdh(AH_MSG *hmsg, GWEN_DB_NODE *gr){
   case 5:
     rv=AH_Msg_DecryptRdh5(hmsg, gr);
     break;
-    /**** RDH7 Block Start******/
+  /**** RDH7 Block Start******/
   case 7:
     rv=AH_Msg_DecryptRdh7(hmsg, gr);
     break;
-    /**** RDH7 Block End******/
+  /**** RDH7 Block End******/
   case 9:
     rv=AH_Msg_DecryptRdh9(hmsg, gr);
     break;
@@ -145,14 +148,15 @@ int AH_Msg_DecryptRdh(AH_MSG *hmsg, GWEN_DB_NODE *gr){
 
 
 
-int AH_Msg_VerifyRdh(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
+int AH_Msg_VerifyRdh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
+{
   AB_USER *u;
   int rv;
 
   assert(hmsg);
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
 
-  switch(AH_User_GetRdhType(u)) {
+  switch (AH_User_GetRdhType(u)) {
   case 0:
   case 1:
     rv=AH_Msg_VerifyRdh1(hmsg, gr);
@@ -166,11 +170,11 @@ int AH_Msg_VerifyRdh(AH_MSG *hmsg, GWEN_DB_NODE *gr) {
   case 5:
     rv=AH_Msg_VerifyRdh5(hmsg, gr);
     break;
-    /**** RDH7 Block Start******/
+  /**** RDH7 Block Start******/
   case 7:
     rv=AH_Msg_VerifyRdh7(hmsg, gr);
     break;
-    /**** RDH7 Block End******/
+  /**** RDH7 Block End******/
   case 9:
     rv=AH_Msg_VerifyRdh9(hmsg, gr);
     break;

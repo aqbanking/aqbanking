@@ -26,7 +26,8 @@
 
 
 
-int AH_HBCI_UpdateDbUser(AH_HBCI *hbci, GWEN_DB_NODE *db) {
+int AH_HBCI_UpdateDbUser(AH_HBCI *hbci, GWEN_DB_NODE *db)
+{
   int rv;
   uint32_t oldVersion;
   uint32_t currentVersion;
@@ -114,7 +115,8 @@ int AH_HBCI_UpdateDbUser(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 
 
 
-int AH_HBCI_UpdateDbAccount(AH_HBCI *hbci, GWEN_DB_NODE *db) {
+int AH_HBCI_UpdateDbAccount(AH_HBCI *hbci, GWEN_DB_NODE *db)
+{
   uint32_t oldVersion;
   uint32_t currentVersion;
   int rv;
@@ -155,15 +157,16 @@ int AH_HBCI_UpdateDbAccount(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 
 
 
-int AH_HBCI_UpdateUser_1_9_7_7(AH_HBCI *hbci, GWEN_DB_NODE *db) {
+int AH_HBCI_UpdateUser_1_9_7_7(AH_HBCI *hbci, GWEN_DB_NODE *db)
+{
   GWEN_DB_NODE *dbT;
-  
+
   dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "server");
   if (dbT) {
     const char *s_addr;
     const char *s_port;
     const char *s_type;
-  
+
     s_addr=GWEN_DB_GetCharValue(dbT, "address", 0, 0);
     s_port=GWEN_DB_GetCharValue(dbT, "suffix", 0, 0);
     s_type=GWEN_DB_GetCharValue(dbT, "type", 0, "tcp");
@@ -210,15 +213,17 @@ int AH_HBCI_UpdateUser_1_9_7_7(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 
 
 
-int AH_HBCI_UpdateUser_2_1_1_1(AH_HBCI *hbci, GWEN_DB_NODE *db) {
+int AH_HBCI_UpdateUser_2_1_1_1(AH_HBCI *hbci, GWEN_DB_NODE *db)
+{
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		       "tanMethods", "singleStep");
+                       "tanMethods", "singleStep");
   return 0;
 }
 
 
 
-int AH_HBCI_UpdateUser_2_9_3_2(AH_HBCI *hbci, GWEN_DB_NODE *db) {
+int AH_HBCI_UpdateUser_2_9_3_2(AH_HBCI *hbci, GWEN_DB_NODE *db)
+{
   int i;
 
   /* adjust token settings */
@@ -234,30 +239,30 @@ int AH_HBCI_UpdateUser_2_9_3_2(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 
       mediumId=GWEN_DB_GetIntValue(db, "medium", 0, 0);
       if (mediumId) {
-	GWEN_DB_NODE *dbT;
+        GWEN_DB_NODE *dbT;
 
-	dbT=GWEN_DB_FindFirstGroup(dbMedia, "medium");
-	while(dbT) {
-	  i=GWEN_DB_GetIntValue(dbT, "uniqueId", 0, 0);
-	  if (i) {
-	    if (i==mediumId) {
-	      const char *typeName;
-	      const char *name;
+        dbT=GWEN_DB_FindFirstGroup(dbMedia, "medium");
+        while (dbT) {
+          i=GWEN_DB_GetIntValue(dbT, "uniqueId", 0, 0);
+          if (i) {
+            if (i==mediumId) {
+              const char *typeName;
+              const char *name;
 
-	      name=GWEN_DB_GetCharValue(dbT, "mediumName", 0, 0);
-	      assert(name);
-	      typeName=GWEN_DB_GetCharValue(dbT, "mediumTypeName", 0, 0);
-	      assert(typeName);
+              name=GWEN_DB_GetCharValue(dbT, "mediumName", 0, 0);
+              assert(name);
+              typeName=GWEN_DB_GetCharValue(dbT, "mediumTypeName", 0, 0);
+              assert(typeName);
 
-	      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-				   "tokenType", typeName);
-	      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-				   "tokenName", name);
-	      break;
-	    }
-	  }
-	  dbT=GWEN_DB_FindNextGroup(dbT, "medium");
-	}
+              GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                                   "tokenType", typeName);
+              GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                                   "tokenName", name);
+              break;
+            }
+          }
+          dbT=GWEN_DB_FindNextGroup(dbT, "medium");
+        }
       }
     }
   }
@@ -278,7 +283,7 @@ int AH_HBCI_UpdateUser_2_9_3_2(AH_HBCI *hbci, GWEN_DB_NODE *db) {
     else
       i=0; /* default is 0 in any mode other than rdh */
     GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			"rdhType", i);
+                        "rdhType", i);
   }
 
   return 0;
@@ -286,20 +291,22 @@ int AH_HBCI_UpdateUser_2_9_3_2(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 
 
 
-int AH_HBCI_UpdateUser_2_9_3_3(AH_HBCI *hbci, GWEN_DB_NODE *db) {
+int AH_HBCI_UpdateUser_2_9_3_3(AH_HBCI *hbci, GWEN_DB_NODE *db)
+{
   int i;
 
   /* create tokenContextId from medium context id */
   i=GWEN_DB_GetIntValue(db, "contextId", 0, 0);
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "tokenContextId", i+1);
+                      "tokenContextId", i+1);
 
   return 0;
 }
 
 
 
-int AH_HBCI_UpdateUser_3_1_1_2(AH_HBCI *hbci, GWEN_DB_NODE *db) {
+int AH_HBCI_UpdateUser_3_1_1_2(AH_HBCI *hbci, GWEN_DB_NODE *db)
+{
   int i;
 
   GWEN_DB_DeleteVar(db, "tanMethodList");
@@ -312,62 +319,63 @@ int AH_HBCI_UpdateUser_3_1_1_2(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 
     if (strcasecmp(s, "singleStep")==0)
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
-			  "tanMethodList", 999);
+                          "tanMethodList", 999);
     else if (strcasecmp(s, "twoStep0")==0)
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
-			  "tanMethodList", 990);
+                          "tanMethodList", 990);
     else if (strcasecmp(s, "twoStep1")==0)
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
-			  "tanMethodList", 991);
+                          "tanMethodList", 991);
     else if (strcasecmp(s, "twoStep2")==0)
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
-			  "tanMethodList", 992);
+                          "tanMethodList", 992);
     else if (strcasecmp(s, "twoStep3")==0)
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
-			  "tanMethodList", 993);
+                          "tanMethodList", 993);
     else if (strcasecmp(s, "twoStep4")==0)
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
-			  "tanMethodList", 994);
+                          "tanMethodList", 994);
     else if (strcasecmp(s, "twoStep5")==0)
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
-			  "tanMethodList", 995);
+                          "tanMethodList", 995);
     else if (strcasecmp(s, "twoStep6")==0)
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
-			  "tanMethodList", 996);
+                          "tanMethodList", 996);
     else if (strcasecmp(s, "twoStep7")==0)
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
-			  "tanMethodList", 997);
+                          "tanMethodList", 997);
     else if (strcasecmp(s, "twoStep00")==0)
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
-			  "tanMethodList", 900);
+                          "tanMethodList", 900);
     else if (strcasecmp(s, "twoStep01")==0)
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
-			  "tanMethodList", 901);
+                          "tanMethodList", 901);
     else if (strcasecmp(s, "twoStep02")==0)
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
-			  "tanMethodList", 902);
+                          "tanMethodList", 902);
     else if (strcasecmp(s, "twoStep03")==0)
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
-			  "tanMethodList", 903);
+                          "tanMethodList", 903);
     else if (strcasecmp(s, "twoStep04")==0)
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
-			  "tanMethodList", 904);
+                          "tanMethodList", 904);
     else if (strcasecmp(s, "twoStep05")==0)
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
-			  "tanMethodList", 905);
+                          "tanMethodList", 905);
     else if (strcasecmp(s, "twoStep06")==0)
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
-			  "tanMethodList", 906);
+                          "tanMethodList", 906);
     else if (strcasecmp(s, "twoStep07")==0)
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_DEFAULT,
-			  "tanMethodList", 907);
+                          "tanMethodList", 907);
   }
   return 0;
 }
 
 
 
-int AH_HBCI_UpdateUser_5_0_3_1(AH_HBCI *hbci, GWEN_DB_NODE *db) {
+int AH_HBCI_UpdateUser_5_0_3_1(AH_HBCI *hbci, GWEN_DB_NODE *db)
+{
   int tmn;
 
   /* update selectedTanMethod */
@@ -391,7 +399,7 @@ int AH_HBCI_UpdateUser_5_0_3_1(AH_HBCI *hbci, GWEN_DB_NODE *db) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "No group");
     }
 
-    while(dbT) {
+    while (dbT) {
       int foundTm=0;
       int version;
 
@@ -401,7 +409,7 @@ int AH_HBCI_UpdateUser_5_0_3_1(AH_HBCI *hbci, GWEN_DB_NODE *db) {
         GWEN_DB_NODE *dbM;
 
         dbM=GWEN_DB_FindFirstGroup(dbT, "tanMethod");
-        while(dbM) {
+        while (dbM) {
           int fn;
 
           fn=GWEN_DB_GetIntValue(dbM, "function", 0, 0);
@@ -438,7 +446,8 @@ int AH_HBCI_UpdateUser_5_0_3_1(AH_HBCI *hbci, GWEN_DB_NODE *db) {
 
 
 
-int AH_HBCI_UpdateAccount_1_9_7_9(AH_HBCI *hbci, GWEN_DB_NODE *db) {
+int AH_HBCI_UpdateAccount_1_9_7_9(AH_HBCI *hbci, GWEN_DB_NODE *db)
+{
   uint32_t flags;
 
   flags=AH_Account_Flags_fromDb(db, "accountFlags");

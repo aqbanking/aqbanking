@@ -19,7 +19,8 @@
 
 
 
-int test1(int argc, char **argv) {
+int test1(int argc, char **argv)
+{
   const char *fname;
   GWEN_BUFFER *rbuf;
   EB_MSG *m;
@@ -38,41 +39,41 @@ int test1(int argc, char **argv) {
 
 
   /* Init xmlsec library */
-  if(xmlSecInit() < 0) {
-      fprintf(stderr, "Error: xmlsec initialization failed.\n");
-      return(-1);
+  if (xmlSecInit() < 0) {
+    fprintf(stderr, "Error: xmlsec initialization failed.\n");
+    return (-1);
   }
 
   /* Check loaded library version */
-  if(xmlSecCheckVersion() != 1) {
-      fprintf(stderr, "Error: loaded xmlsec library version is not compatible.\n");
-      return(-1);
+  if (xmlSecCheckVersion() != 1) {
+    fprintf(stderr, "Error: loaded xmlsec library version is not compatible.\n");
+    return (-1);
   }
 
   /* Load default crypto engine if we are supporting dynamic
    * loading for xmlsec-crypto libraries. Use the crypto library
-   * name ("openssl", "nss", etc.) to load corresponding 
+   * name ("openssl", "nss", etc.) to load corresponding
    * xmlsec-crypto library.
    */
 #ifdef XMLSEC_CRYPTO_DYNAMIC_LOADING
-  if(xmlSecCryptoDLLoadLibrary(BAD_CAST XMLSEC_CRYPTO) < 0) {
-      fprintf(stderr, "Error: unable to load default xmlsec-crypto library. Make sure\n"
-                      "that you have it installed and check shared libraries path\n"
-                      "(LD_LIBRARY_PATH) envornment variable.\n");
-      return(-1);	
+  if (xmlSecCryptoDLLoadLibrary(BAD_CAST XMLSEC_CRYPTO) < 0) {
+    fprintf(stderr, "Error: unable to load default xmlsec-crypto library. Make sure\n"
+            "that you have it installed and check shared libraries path\n"
+            "(LD_LIBRARY_PATH) envornment variable.\n");
+    return (-1);
   }
 #endif /* XMLSEC_CRYPTO_DYNAMIC_LOADING */
 
   /* Init crypto library */
-  if(xmlSecCryptoAppInit(NULL) < 0) {
-      fprintf(stderr, "Error: crypto initialization failed.\n");
-      return(-1);
+  if (xmlSecCryptoAppInit(NULL) < 0) {
+    fprintf(stderr, "Error: crypto initialization failed.\n");
+    return (-1);
   }
 
   /* Init xmlsec-crypto library */
-  if(xmlSecCryptoInit() < 0) {
-      fprintf(stderr, "Error: xmlsec-crypto initialization failed.\n");
-      return(-1);
+  if (xmlSecCryptoInit() < 0) {
+    fprintf(stderr, "Error: xmlsec-crypto initialization failed.\n");
+    return (-1);
   }
 
   m=EB_Msg_fromFile(fname);
@@ -90,7 +91,8 @@ int test1(int argc, char **argv) {
 
 
 
-int test2(int argc, char **argv) {
+int test2(int argc, char **argv)
+{
   const char *fname;
   GWEN_BUFFER *rbuf;
   EB_MSG *m;
@@ -109,41 +111,41 @@ int test2(int argc, char **argv) {
 
 
   /* Init xmlsec library */
-  if(xmlSecInit() < 0) {
-      fprintf(stderr, "Error: xmlsec initialization failed.\n");
-      return(-1);
+  if (xmlSecInit() < 0) {
+    fprintf(stderr, "Error: xmlsec initialization failed.\n");
+    return (-1);
   }
 
   /* Check loaded library version */
-  if(xmlSecCheckVersion() != 1) {
-      fprintf(stderr, "Error: loaded xmlsec library version is not compatible.\n");
-      return(-1);
+  if (xmlSecCheckVersion() != 1) {
+    fprintf(stderr, "Error: loaded xmlsec library version is not compatible.\n");
+    return (-1);
   }
 
   /* Load default crypto engine if we are supporting dynamic
    * loading for xmlsec-crypto libraries. Use the crypto library
-   * name ("openssl", "nss", etc.) to load corresponding 
+   * name ("openssl", "nss", etc.) to load corresponding
    * xmlsec-crypto library.
    */
 #ifdef XMLSEC_CRYPTO_DYNAMIC_LOADING
-  if(xmlSecCryptoDLLoadLibrary(BAD_CAST XMLSEC_CRYPTO) < 0) {
-      fprintf(stderr, "Error: unable to load default xmlsec-crypto library. Make sure\n"
-                      "that you have it installed and check shared libraries path\n"
-                      "(LD_LIBRARY_PATH) envornment variable.\n");
-      return(-1);	
+  if (xmlSecCryptoDLLoadLibrary(BAD_CAST XMLSEC_CRYPTO) < 0) {
+    fprintf(stderr, "Error: unable to load default xmlsec-crypto library. Make sure\n"
+            "that you have it installed and check shared libraries path\n"
+            "(LD_LIBRARY_PATH) envornment variable.\n");
+    return (-1);
   }
 #endif /* XMLSEC_CRYPTO_DYNAMIC_LOADING */
 
   /* Init crypto library */
-  if(xmlSecCryptoAppInit(NULL) < 0) {
-      fprintf(stderr, "Error: crypto initialization failed.\n");
-      return(-1);
+  if (xmlSecCryptoAppInit(NULL) < 0) {
+    fprintf(stderr, "Error: crypto initialization failed.\n");
+    return (-1);
   }
 
   /* Init xmlsec-crypto library */
-  if(xmlSecCryptoInit() < 0) {
-      fprintf(stderr, "Error: xmlsec-crypto initialization failed.\n");
-      return(-1);
+  if (xmlSecCryptoInit() < 0) {
+    fprintf(stderr, "Error: xmlsec-crypto initialization failed.\n");
+    return (-1);
   }
 
   m=EB_Msg_fromFile(fname);
@@ -163,7 +165,8 @@ int test2(int argc, char **argv) {
 
 
 
-void dumpNode(xmlNodePtr node, int level) {
+void dumpNode(xmlNodePtr node, int level)
+{
   xmlNode *cur_node = NULL;
 
   for (cur_node = node; cur_node; cur_node = cur_node->next) {
@@ -173,15 +176,15 @@ void dumpNode(xmlNodePtr node, int level) {
     for (i=0; i<level*2; i++)
       printf(" ");
     printf("node type: %d, name: %s\n",
-	   cur_node->type, cur_node->name);
+           cur_node->type, cur_node->name);
 #if 0
     if (cur_node->type == XML_ELEMENT_NODE) {
       int i;
 
       for (i=0; i<level*2; i++)
-	printf(" ");
+        printf(" ");
       printf("node type: %d, name: %s\n",
-	     cur_node->type, cur_node->name);
+             cur_node->type, cur_node->name);
     }
 #endif
     dumpNode(cur_node->children, level+1);
@@ -190,7 +193,8 @@ void dumpNode(xmlNodePtr node, int level) {
 
 
 
-int test3(int argc, char **argv) {
+int test3(int argc, char **argv)
+{
   const char *fname;
   EB_MSG *m;
   xmlNodePtr node;
@@ -208,41 +212,41 @@ int test3(int argc, char **argv) {
 
 
   /* Init xmlsec library */
-  if(xmlSecInit() < 0) {
-      fprintf(stderr, "Error: xmlsec initialization failed.\n");
-      return(-1);
+  if (xmlSecInit() < 0) {
+    fprintf(stderr, "Error: xmlsec initialization failed.\n");
+    return (-1);
   }
 
   /* Check loaded library version */
-  if(xmlSecCheckVersion() != 1) {
-      fprintf(stderr, "Error: loaded xmlsec library version is not compatible.\n");
-      return(-1);
+  if (xmlSecCheckVersion() != 1) {
+    fprintf(stderr, "Error: loaded xmlsec library version is not compatible.\n");
+    return (-1);
   }
 
   /* Load default crypto engine if we are supporting dynamic
    * loading for xmlsec-crypto libraries. Use the crypto library
-   * name ("openssl", "nss", etc.) to load corresponding 
+   * name ("openssl", "nss", etc.) to load corresponding
    * xmlsec-crypto library.
    */
 #ifdef XMLSEC_CRYPTO_DYNAMIC_LOADING
-  if(xmlSecCryptoDLLoadLibrary(BAD_CAST XMLSEC_CRYPTO) < 0) {
-      fprintf(stderr, "Error: unable to load default xmlsec-crypto library. Make sure\n"
-                      "that you have it installed and check shared libraries path\n"
-                      "(LD_LIBRARY_PATH) envornment variable.\n");
-      return(-1);	
+  if (xmlSecCryptoDLLoadLibrary(BAD_CAST XMLSEC_CRYPTO) < 0) {
+    fprintf(stderr, "Error: unable to load default xmlsec-crypto library. Make sure\n"
+            "that you have it installed and check shared libraries path\n"
+            "(LD_LIBRARY_PATH) envornment variable.\n");
+    return (-1);
   }
 #endif /* XMLSEC_CRYPTO_DYNAMIC_LOADING */
 
   /* Init crypto library */
-  if(xmlSecCryptoAppInit(NULL) < 0) {
-      fprintf(stderr, "Error: crypto initialization failed.\n");
-      return(-1);
+  if (xmlSecCryptoAppInit(NULL) < 0) {
+    fprintf(stderr, "Error: crypto initialization failed.\n");
+    return (-1);
   }
 
   /* Init xmlsec-crypto library */
-  if(xmlSecCryptoInit() < 0) {
-      fprintf(stderr, "Error: xmlsec-crypto initialization failed.\n");
-      return(-1);
+  if (xmlSecCryptoInit() < 0) {
+    fprintf(stderr, "Error: xmlsec-crypto initialization failed.\n");
+    return (-1);
   }
 
   m=EB_Msg_fromFile(fname);
@@ -258,7 +262,8 @@ int test3(int argc, char **argv) {
 }
 
 
-int test5(int argc, char **argv) {
+int test5(int argc, char **argv)
+{
   /*const char *fname;*/
   xmlDocPtr doc;
   xmlNsPtr ns;
@@ -273,21 +278,21 @@ int test5(int argc, char **argv) {
   root_node=xmlNewNode(NULL, BAD_CAST "ebics");
   xmlDocSetRootElement(doc, root_node);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.ebics.org/H001",
-	      NULL);
+              BAD_CAST "http://www.ebics.org/H001",
+              NULL);
   assert(ns);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
-	      BAD_CAST "ds");
+              BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
+              BAD_CAST "ds");
   assert(ns);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
-	      BAD_CAST "xsi");
+              BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
+              BAD_CAST "xsi");
   xmlNewNsProp(root_node,
-	       ns,
-	       BAD_CAST "schemaLocation",
-	       BAD_CAST "http://www.ebics.org/H001 "
-	       "http://www.ebics.org/H001/ebics_request.xsd");
+               ns,
+               BAD_CAST "schemaLocation",
+               BAD_CAST "http://www.ebics.org/H001 "
+               "http://www.ebics.org/H001/ebics_request.xsd");
   nodeX=xmlNewChild(root_node, NULL, BAD_CAST "header", NULL);
   ns=xmlSearchNs(doc, nodeX, BAD_CAST "ds");
   if (!ns) {
@@ -303,7 +308,8 @@ int test5(int argc, char **argv) {
 
 
 
-int test6(int argc, char **argv) {
+int test6(int argc, char **argv)
+{
   xmlDocPtr doc;
   xmlNodePtr root_node = NULL;
 
@@ -316,7 +322,7 @@ int test6(int argc, char **argv) {
   EB_Xml_Ebicsify(root_node, "H002");
 
   EB_Xml_SetCharValue(root_node,
-		      "header/ds:AuthStuff/ds:Signature",
+                      "header/ds:AuthStuff/ds:Signature",
                       "Test");
 
   xmlDocDump(stderr, doc);
@@ -327,7 +333,8 @@ int test6(int argc, char **argv) {
 
 
 
-int test7(int argc, char **argv) {
+int test7(int argc, char **argv)
+{
   xmlDocPtr doc=NULL;
   xmlNodePtr root_node = NULL;
   xmlNodePtr node = NULL;
@@ -355,7 +362,8 @@ int test7(int argc, char **argv) {
 
 
 
-int check1(int argc, char **argv) {
+int check1(int argc, char **argv)
+{
   GWEN_CRYPT_KEY *key1p;
   GWEN_CRYPT_KEY *key1s;
   GWEN_CRYPT_KEY *key2;
@@ -385,8 +393,8 @@ int check1(int argc, char **argv) {
   userIdBuf[0]=0;
   rv=EB_Key_fromBin(&key2, "A004",
                     userIdBuf, sizeof(userIdBuf),
-		    GWEN_Buffer_GetStart(buf1),
-		    GWEN_Buffer_GetUsedBytes(buf1));
+                    GWEN_Buffer_GetStart(buf1),
+                    GWEN_Buffer_GetUsedBytes(buf1));
   if (rv) {
     fprintf(stderr, "EB_Key_fromBin: %d\n", rv);
     return 3;
@@ -394,8 +402,8 @@ int check1(int argc, char **argv) {
 
   if (strcmp(userIdBuf, "martin")!=0) {
     fprintf(stderr,
-	    "Non-matching user id (expected \"martin\", got \"%s\")\n",
-	    userIdBuf);
+            "Non-matching user id (expected \"martin\", got \"%s\")\n",
+            userIdBuf);
     return 3;
   }
 
@@ -448,7 +456,8 @@ int check1(int argc, char **argv) {
 
 
 
-int check2(int argc, char **argv) {
+int check2(int argc, char **argv)
+{
   xmlDocPtr doc=NULL;
   xmlNodePtr root_node = NULL;
   xmlNodePtr node = NULL;
@@ -528,7 +537,8 @@ int check2(int argc, char **argv) {
 
 
 
-int check3(int argc, char **argv) {
+int check3(int argc, char **argv)
+{
   GWEN_BUFFER *buf1;
   GWEN_BUFFER *buf2;
   int rv;
@@ -583,7 +593,8 @@ int check3(int argc, char **argv) {
 
 
 
-int check4(int argc, char **argv) {
+int check4(int argc, char **argv)
+{
   xmlDocPtr doc=NULL;
   xmlDocPtr doc2=NULL;
   xmlNodePtr root_node = NULL;
@@ -614,7 +625,7 @@ int check4(int argc, char **argv) {
 
   buf1=GWEN_Buffer_new(0, 1024, 0, 1);
   xmlDocDumpFormatMemory(doc, &xmlbuff, &buffersize, 1);
-  GWEN_Buffer_AppendBytes(buf1, (const char*)xmlbuff, buffersize);
+  GWEN_Buffer_AppendBytes(buf1, (const char *)xmlbuff, buffersize);
   xmlFree(xmlbuff);
 
   bufTmp=GWEN_Buffer_new(0, 1024, 0, 1);
@@ -633,7 +644,7 @@ int check4(int argc, char **argv) {
 
   buf2=GWEN_Buffer_new(0, 1024, 0, 1);
   xmlDocDumpFormatMemory(doc2, &xmlbuff, &buffersize, 1);
-  GWEN_Buffer_AppendBytes(buf2, (const char*)xmlbuff, buffersize);
+  GWEN_Buffer_AppendBytes(buf2, (const char *)xmlbuff, buffersize);
   xmlFree(xmlbuff);
 
   if (GWEN_Buffer_GetUsedBytes(buf1)!=GWEN_Buffer_GetUsedBytes(buf2)) {
@@ -675,7 +686,8 @@ int check4(int argc, char **argv) {
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   const char *cmd;
   int rv;
 

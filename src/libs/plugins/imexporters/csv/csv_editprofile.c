@@ -45,7 +45,7 @@
 GWEN_INHERIT(GWEN_DIALOG, AB_CSV_EDIT_PROFILE_DIALOG)
 
 
-static const char *csv_dateFormats[]={
+static const char *csv_dateFormats[]= {
   "DD.MM.YYYY",
   "dD.mM.YYYY",
   "MM/DD/YYYY",
@@ -58,7 +58,7 @@ static const char *csv_dateFormats[]={
 };
 
 
-static const char *csv_delimiters[]={
+static const char *csv_delimiters[]= {
   "TAB", I18S("Tabulator (default)"),
   "SPACE", I18S("Space"),
   ",", I18S("Komma (,)"),
@@ -68,7 +68,7 @@ static const char *csv_delimiters[]={
 };
 
 
-static const char *csv_subjects[]={
+static const char *csv_subjects[]= {
   "transactions", I18S("Booked Transactions (default)"),
   "notedTransactions", I18S("Noted Transactions"),
   NULL
@@ -76,14 +76,14 @@ static const char *csv_subjects[]={
 
 
 
-static const char *csv_amountFormats[]={
+static const char *csv_amountFormats[]= {
   "rational", I18S("Rational (default)"),
   "float", I18S("Float"),
   NULL
 };
 
 
-static const char *csv_columns[]={
+static const char *csv_columns[]= {
   "",                     I18S("-- empty --"),
   "localCountry",         I18S("Local Country Code"),
   "localBankCode",        I18S("Local Bank Code"),
@@ -167,8 +167,9 @@ static const char *csv_columns[]={
 
 
 GWEN_DIALOG *AB_CSV_EditProfileDialog_new(AB_IMEXPORTER *ie,
-					  GWEN_DB_NODE *dbProfile,
-					  const char *testFileName) {
+                                          GWEN_DB_NODE *dbProfile,
+                                          const char *testFileName)
+{
   AB_BANKING *ab;
   GWEN_DIALOG *dlg;
   AB_CSV_EDIT_PROFILE_DIALOG *xdlg;
@@ -182,14 +183,14 @@ GWEN_DIALOG *AB_CSV_EditProfileDialog_new(AB_IMEXPORTER *ie,
   dlg=GWEN_Dialog_new("ab_csv_edit_profile");
   GWEN_NEW_OBJECT(AB_CSV_EDIT_PROFILE_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AB_CSV_EDIT_PROFILE_DIALOG, dlg, xdlg,
-		       AB_CSV_EditProfileDialog_FreeData);
+                       AB_CSV_EditProfileDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AB_CSV_EditProfileDialog_SignalHandler);
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-			       "aqbanking/imexporters/csv/dialogs/csv_editprofile.dlg",
-			       fbuf);
+                               "aqbanking/imexporters/csv/dialogs/csv_editprofile.dlg",
+                               fbuf);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
@@ -220,10 +221,11 @@ GWEN_DIALOG *AB_CSV_EditProfileDialog_new(AB_IMEXPORTER *ie,
 
 
 
-void GWENHYWFAR_CB AB_CSV_EditProfileDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AB_CSV_EditProfileDialog_FreeData(void *bp, void *p)
+{
   AB_CSV_EDIT_PROFILE_DIALOG *xdlg;
 
-  xdlg=(AB_CSV_EDIT_PROFILE_DIALOG*) p;
+  xdlg=(AB_CSV_EDIT_PROFILE_DIALOG *) p;
   assert(xdlg);
 
   GWEN_Buffer_free(xdlg->dataBuffer);
@@ -234,8 +236,9 @@ void GWENHYWFAR_CB AB_CSV_EditProfileDialog_FreeData(void *bp, void *p) {
 
 
 static const char *getCharValueFromDoubleStringsCombo(GWEN_DIALOG *dlg,
-						      const char *comboBoxName,
-						      const char **strings) {
+                                                      const char *comboBoxName,
+                                                      const char **strings)
+{
   int i;
   int j;
 
@@ -257,7 +260,8 @@ static const char *getCharValueFromDoubleStringsCombo(GWEN_DIALOG *dlg,
 
 
 
-static int readTestData(GWEN_DIALOG *dlg) {
+static int readTestData(GWEN_DIALOG *dlg)
+{
   AB_CSV_EDIT_PROFILE_DIALOG *xdlg;
   GWEN_SYNCIO *sio;
   GWEN_SYNCIO *baseIo;
@@ -331,7 +335,7 @@ static int readTestData(GWEN_DIALOG *dlg) {
   }
 
   GWEN_Dialog_SetCharProperty(dlg, "dataEdit", GWEN_DialogProperty_Value, 0,
-			      GWEN_Buffer_GetStart(dbuf), 0);
+                              GWEN_Buffer_GetStart(dbuf), 0);
 
   /* we don't need the io layer any longer */
   GWEN_SyncIo_Disconnect(sio);
@@ -339,13 +343,13 @@ static int readTestData(GWEN_DIALOG *dlg) {
 
   wbuffer=GWEN_Buffer_new(0, 256, 0, 1);
   s=GWEN_Buffer_GetStart(dbuf);
-  while(*s) {
+  while (*s) {
     rv=GWEN_Text_GetWordToBuffer(s, delimiter, wbuffer,
-				 GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS |
-				 GWEN_TEXT_FLAGS_DEL_TRAILING_BLANKS |
-				 GWEN_TEXT_FLAGS_NULL_IS_DELIMITER |
-				 GWEN_TEXT_FLAGS_DEL_QUOTES,
-				 &s);
+                                 GWEN_TEXT_FLAGS_DEL_LEADING_BLANKS |
+                                 GWEN_TEXT_FLAGS_DEL_TRAILING_BLANKS |
+                                 GWEN_TEXT_FLAGS_NULL_IS_DELIMITER |
+                                 GWEN_TEXT_FLAGS_DEL_QUOTES,
+                                 &s);
     if (rv) {
       DBG_DEBUG(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(wbuffer);
@@ -356,7 +360,7 @@ static int readTestData(GWEN_DIALOG *dlg) {
     GWEN_Buffer_Reset(wbuffer);
     if (*s) {
       if (strchr(delimiter, *s))
-	s++;
+        s++;
     }
   } /* while */
   GWEN_Buffer_free(wbuffer);
@@ -377,9 +381,10 @@ static int readTestData(GWEN_DIALOG *dlg) {
 
 
 static void setUpComboFromSingleStrings(GWEN_DIALOG *dlg,
-					const char *comboBoxName,
-					const char **strings,
-					const char *s) {
+                                        const char *comboBoxName,
+                                        const char **strings,
+                                        const char *s)
+{
   int i;
   int j;
   const char *t;
@@ -408,9 +413,10 @@ static void setUpComboFromSingleStrings(GWEN_DIALOG *dlg,
 
 
 static void setUpComboFromDoubleStrings(GWEN_DIALOG *dlg,
-					const char *comboBoxName,
-					const char **strings,
-					const char *s) {
+                                        const char *comboBoxName,
+                                        const char **strings,
+                                        const char *s)
+{
   int i;
   int j;
   const char *t1;
@@ -441,10 +447,11 @@ static void setUpComboFromDoubleStrings(GWEN_DIALOG *dlg,
 
 
 static int setDbValueFromDoubleStringsCombo(GWEN_DIALOG *dlg,
-					    GWEN_DB_NODE *db,
+                                            GWEN_DB_NODE *db,
                                             const char *varName,
-					    const char *comboBoxName,
-					    const char **strings) {
+                                            const char *comboBoxName,
+                                            const char **strings)
+{
   int i;
   int j;
 
@@ -467,10 +474,11 @@ static int setDbValueFromDoubleStringsCombo(GWEN_DIALOG *dlg,
 
 
 static int setColumnValueFromCombo(GWEN_DIALOG *dlg,
-				   GWEN_DB_NODE *db,
-				   const char *varName,
-				   const char *comboBoxName,
-				   const char **strings) {
+                                   GWEN_DB_NODE *db,
+                                   const char *varName,
+                                   const char *comboBoxName,
+                                   const char **strings)
+{
   int i;
   int j;
 
@@ -493,7 +501,8 @@ static int setColumnValueFromCombo(GWEN_DIALOG *dlg,
 
 
 
-void AB_CSV_EditProfileDialog_Init(GWEN_DIALOG *dlg) {
+void AB_CSV_EditProfileDialog_Init(GWEN_DIALOG *dlg)
+{
   AB_CSV_EDIT_PROFILE_DIALOG *xdlg;
   int i;
   const char *s;
@@ -517,11 +526,11 @@ void AB_CSV_EditProfileDialog_Init(GWEN_DIALOG *dlg) {
     GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, i, 0);
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("Edit CSV Profile"),
-			      0);
+                              "",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("Edit CSV Profile"),
+                              0);
 
   /* setup dialog widgets */
   s=GWEN_DB_GetCharValue(xdlg->dbProfile, "name", 0, NULL);
@@ -595,7 +604,8 @@ void AB_CSV_EditProfileDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-void AB_CSV_EditProfileDialog_Fini(GWEN_DIALOG *dlg) {
+void AB_CSV_EditProfileDialog_Fini(GWEN_DIALOG *dlg)
+{
   AB_CSV_EDIT_PROFILE_DIALOG *xdlg;
   int i;
   GWEN_DB_NODE *dbPrefs;
@@ -611,23 +621,24 @@ void AB_CSV_EditProfileDialog_Fini(GWEN_DIALOG *dlg) {
   if (i<DIALOG_MINWIDTH)
     i=DIALOG_MINWIDTH;
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_width",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_width",
+                      i);
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   if (i<DIALOG_MINHEIGHT)
     i=DIALOG_MINHEIGHT;
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_height",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_height",
+                      i);
 }
 
 
 
-int AB_CSV_EditProfileDialog_fromGui(GWEN_DIALOG *dlg, GWEN_DB_NODE *db) {
+int AB_CSV_EditProfileDialog_fromGui(GWEN_DIALOG *dlg, GWEN_DB_NODE *db)
+{
   const char *s;
   int i;
 
@@ -636,11 +647,11 @@ int AB_CSV_EditProfileDialog_fromGui(GWEN_DIALOG *dlg, GWEN_DB_NODE *db) {
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "name", s);
   else {
     GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
-			GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
-			GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
-			I18N("Input Error"),
-			I18N("Please enter a name for the profile."),
-			I18N("Continue"), 0, 0, 0);
+                        GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+                        GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
+                        I18N("Input Error"),
+                        I18N("Please enter a name for the profile."),
+                        I18N("Continue"), 0, 0, 0);
     /* change focus */
     GWEN_Dialog_SetIntProperty(dlg, "nameEdit", GWEN_DialogProperty_Focus, 0, 1, 0);
     return GWEN_ERROR_BAD_DATA;
@@ -670,11 +681,11 @@ int AB_CSV_EditProfileDialog_fromGui(GWEN_DIALOG *dlg, GWEN_DB_NODE *db) {
   i=setDbValueFromDoubleStringsCombo(dlg, db, "params/delimiter", "delimiterCombo", csv_delimiters);
   if (i<0) {
     GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
-			GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
-			GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
-			I18N("Input Error"),
-			I18N("Please select a field delimiter."),
-			I18N("Continue"), 0, 0, 0);
+                        GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+                        GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
+                        I18N("Input Error"),
+                        I18N("Please select a field delimiter."),
+                        I18N("Continue"), 0, 0, 0);
     GWEN_Dialog_SetIntProperty(dlg, "tabBook", GWEN_DialogProperty_Value, 0, 0, 0);
     GWEN_Dialog_SetIntProperty(dlg, "delimiterCombo", GWEN_DialogProperty_Focus, 0, 1, 0);
     return GWEN_ERROR_BAD_DATA;
@@ -690,11 +701,11 @@ int AB_CSV_EditProfileDialog_fromGui(GWEN_DIALOG *dlg, GWEN_DB_NODE *db) {
   s=GWEN_Dialog_GetCharProperty(dlg, "dateFormatCombo", GWEN_DialogProperty_Value, 0, "");
   if (!(s && *s)) {
     GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
-			GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
-			GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
-			I18N("Input Error"),
-			I18N("Please select a date format."),
-			I18N("Continue"), 0, 0, 0);
+                        GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+                        GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
+                        I18N("Input Error"),
+                        I18N("Please select a date format."),
+                        I18N("Continue"), 0, 0, 0);
     GWEN_Dialog_SetIntProperty(dlg, "tabBook", GWEN_DialogProperty_Value, 0, 0, 0);
     GWEN_Dialog_SetIntProperty(dlg, "dateFormatCombo", GWEN_DialogProperty_Focus, 0, 1, 0);
     return GWEN_ERROR_BAD_DATA;
@@ -704,11 +715,11 @@ int AB_CSV_EditProfileDialog_fromGui(GWEN_DIALOG *dlg, GWEN_DB_NODE *db) {
   i=setDbValueFromDoubleStringsCombo(dlg, db, "valueFormat", "amountFormatCombo", csv_amountFormats);
   if (i<0) {
     GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
-			GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
-			GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
-			I18N("Input Error"),
-			I18N("Please select a value format."),
-			I18N("Continue"), 0, 0, 0);
+                        GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+                        GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
+                        I18N("Input Error"),
+                        I18N("Please select a value format."),
+                        I18N("Continue"), 0, 0, 0);
     GWEN_Dialog_SetIntProperty(dlg, "tabBook", GWEN_DialogProperty_Value, 0, 0, 0);
     GWEN_Dialog_SetIntProperty(dlg, "amountFormatCombo", GWEN_DialogProperty_Focus, 0, 1, 0);
     return GWEN_ERROR_BAD_DATA;
@@ -733,11 +744,11 @@ int AB_CSV_EditProfileDialog_fromGui(GWEN_DIALOG *dlg, GWEN_DB_NODE *db) {
     rv=setColumnValueFromCombo(dlg, db, varName, comboName, csv_columns);
     if (rv<0) {
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
-			  GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
-			  GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
-			  I18N("Input Error"),
-			  I18N("Please select a valid column type."),
-			  I18N("Continue"), 0, 0, 0);
+                          GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+                          GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
+                          I18N("Input Error"),
+                          I18N("Please select a valid column type."),
+                          I18N("Continue"), 0, 0, 0);
       GWEN_Dialog_SetIntProperty(dlg, "tabBook", GWEN_DialogProperty_Value, 0, 1, 0);
       GWEN_Dialog_SetIntProperty(dlg, comboName, GWEN_DialogProperty_Focus, 0, 1, 0);
       return GWEN_ERROR_BAD_DATA;
@@ -749,7 +760,8 @@ int AB_CSV_EditProfileDialog_fromGui(GWEN_DIALOG *dlg, GWEN_DB_NODE *db) {
 
 
 
-int AB_CSV_EditProfileDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int AB_CSV_EditProfileDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   AB_CSV_EDIT_PROFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -788,7 +800,8 @@ int AB_CSV_EditProfileDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sende
 
 
 
-int AB_CSV_EditProfileDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender){
+int AB_CSV_EditProfileDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender)
+{
   AB_CSV_EDIT_PROFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -809,15 +822,16 @@ int AB_CSV_EditProfileDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *se
 
 
 int GWENHYWFAR_CB AB_CSV_EditProfileDialog_SignalHandler(GWEN_DIALOG *dlg,
-							 GWEN_DIALOG_EVENTTYPE t,
-							 const char *sender) {
+                                                         GWEN_DIALOG_EVENTTYPE t,
+                                                         const char *sender)
+{
   AB_CSV_EDIT_PROFILE_DIALOG *xdlg;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_CSV_EDIT_PROFILE_DIALOG, dlg);
   assert(xdlg);
 
-  switch(t) {
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     AB_CSV_EditProfileDialog_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;

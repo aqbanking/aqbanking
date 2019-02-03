@@ -29,9 +29,9 @@ static const char *AH_ImExporterQ43_GetCurrencyCode(int code);
 static int AH_ImExporterQ43_ReadInt(const char *p, int len);
 
 static int AH_ImExporterQ43_ReadDocument(AB_IMEXPORTER *ie,
-					 AB_IMEXPORTER_CONTEXT *ctx,
-					 GWEN_FAST_BUFFER *fb,
-					 GWEN_DB_NODE *params);
+                                         AB_IMEXPORTER_CONTEXT *ctx,
+                                         GWEN_FAST_BUFFER *fb,
+                                         GWEN_DB_NODE *params);
 
 static int AH_ImExporterQ43_Import(AB_IMEXPORTER *ie,
                                    AB_IMEXPORTER_CONTEXT *ctx,

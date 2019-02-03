@@ -40,8 +40,9 @@ GWEN_INHERIT(GWEN_DIALOG, AB_SELECTBANKINFO_DIALOG)
 
 
 GWEN_DIALOG *AB_SelectBankInfoDialog_new(AB_BANKING *ab,
-					 const char *country,
-					 const char *bankCode) {
+                                         const char *country,
+                                         const char *bankCode)
+{
   GWEN_DIALOG *dlg;
   AB_SELECTBANKINFO_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -50,14 +51,14 @@ GWEN_DIALOG *AB_SelectBankInfoDialog_new(AB_BANKING *ab,
   dlg=GWEN_Dialog_new("ab_selectbankinfo");
   GWEN_NEW_OBJECT(AB_SELECTBANKINFO_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AB_SELECTBANKINFO_DIALOG, dlg, xdlg,
-		       AB_SelectBankInfoDialog_FreeData);
+                       AB_SelectBankInfoDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AB_SelectBankInfoDialog_SignalHandler);
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-			       "aqbanking/dialogs/dlg_selectbankinfo.dlg",
-			       fbuf);
+                               "aqbanking/dialogs/dlg_selectbankinfo.dlg",
+                               fbuf);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
@@ -77,11 +78,15 @@ GWEN_DIALOG *AB_SelectBankInfoDialog_new(AB_BANKING *ab,
 
   xdlg->banking=ab;
 
-  if (country) xdlg->country=strdup(country);
-  else xdlg->country=strdup("de");
+  if (country)
+    xdlg->country=strdup(country);
+  else
+    xdlg->country=strdup("de");
 
-  if (bankCode) xdlg->bankCode=strdup(bankCode);
-  else xdlg->bankCode=NULL;
+  if (bankCode)
+    xdlg->bankCode=strdup(bankCode);
+  else
+    xdlg->bankCode=NULL;
 
   /* done */
   return dlg;
@@ -89,10 +94,11 @@ GWEN_DIALOG *AB_SelectBankInfoDialog_new(AB_BANKING *ab,
 
 
 
-void GWENHYWFAR_CB AB_SelectBankInfoDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AB_SelectBankInfoDialog_FreeData(void *bp, void *p)
+{
   AB_SELECTBANKINFO_DIALOG *xdlg;
 
-  xdlg=(AB_SELECTBANKINFO_DIALOG*) p;
+  xdlg=(AB_SELECTBANKINFO_DIALOG *) p;
   AB_BankInfo_free(xdlg->selectedBankInfo);
   AB_BankInfo_List2_freeAll(xdlg->matchingBankInfos);
   free(xdlg->country);
@@ -102,7 +108,8 @@ void GWENHYWFAR_CB AB_SelectBankInfoDialog_FreeData(void *bp, void *p) {
 
 
 
-static void createListBoxString(const AB_BANKINFO *bi, GWEN_BUFFER *tbuf) {
+static void createListBoxString(const AB_BANKINFO *bi, GWEN_BUFFER *tbuf)
+{
   const char *s;
   AB_BANKINFO_SERVICE *sv;
   uint32_t pos;
@@ -112,17 +119,17 @@ static void createListBoxString(const AB_BANKINFO *bi, GWEN_BUFFER *tbuf) {
   if (s && *s)
     GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, "\t");
-  
+
   s=AB_BankInfo_GetBic(bi);
   if (s && *s)
     GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, "\t");
-  
+
   s=AB_BankInfo_GetBankName(bi);
   if (s && *s)
     GWEN_Buffer_AppendString(tbuf, s);
   GWEN_Buffer_AppendString(tbuf, "\t");
-  
+
   s=AB_BankInfo_GetLocation(bi);
   if (s && *s)
     GWEN_Buffer_AppendString(tbuf, s);
@@ -130,7 +137,7 @@ static void createListBoxString(const AB_BANKINFO *bi, GWEN_BUFFER *tbuf) {
 
   pos=GWEN_Buffer_GetPos(tbuf);
   sv=AB_BankInfoService_List_First(AB_BankInfo_GetServices(bi));
-  while(sv) {
+  while (sv) {
     const char *s;
 
     s=AB_BankInfoService_GetType(sv);
@@ -139,9 +146,9 @@ static void createListBoxString(const AB_BANKINFO *bi, GWEN_BUFFER *tbuf) {
 
       p=GWEN_Buffer_GetStart(tbuf)+pos;
       if (strstr(p, s)==NULL) {
-	if (svsAdded)
-	  GWEN_Buffer_AppendString(tbuf, ", ");
-	GWEN_Buffer_AppendString(tbuf, s);
+        if (svsAdded)
+          GWEN_Buffer_AppendString(tbuf, ", ");
+        GWEN_Buffer_AppendString(tbuf, s);
         svsAdded++;
       }
     }
@@ -151,7 +158,8 @@ static void createListBoxString(const AB_BANKINFO *bi, GWEN_BUFFER *tbuf) {
 
 
 
-const AB_BANKINFO *AB_SelectBankInfoDialog_GetSelectedBankInfo(GWEN_DIALOG *dlg) {
+const AB_BANKINFO *AB_SelectBankInfoDialog_GetSelectedBankInfo(GWEN_DIALOG *dlg)
+{
   AB_SELECTBANKINFO_DIALOG *xdlg;
 
   assert(dlg);
@@ -163,7 +171,8 @@ const AB_BANKINFO *AB_SelectBankInfoDialog_GetSelectedBankInfo(GWEN_DIALOG *dlg)
 
 
 
-AB_BANKINFO *AB_SelectBankInfoDialog_DetermineSelectedBankInfo(GWEN_DIALOG *dlg) {
+AB_BANKINFO *AB_SelectBankInfoDialog_DetermineSelectedBankInfo(GWEN_DIALOG *dlg)
+{
   AB_SELECTBANKINFO_DIALOG *xdlg;
 
   assert(dlg);
@@ -180,29 +189,29 @@ AB_BANKINFO *AB_SelectBankInfoDialog_DetermineSelectedBankInfo(GWEN_DIALOG *dlg)
 
       currentText=GWEN_Dialog_GetCharProperty(dlg, "listBox", GWEN_DialogProperty_Value, idx, NULL);
       if (currentText && *currentText) {
-	it=AB_BankInfo_List2_First(xdlg->matchingBankInfos);
-	if (it) {
-	  AB_BANKINFO *bi;
-	  GWEN_BUFFER *tbuf;
+        it=AB_BankInfo_List2_First(xdlg->matchingBankInfos);
+        if (it) {
+          AB_BANKINFO *bi;
+          GWEN_BUFFER *tbuf;
 
-	  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-	  bi=AB_BankInfo_List2Iterator_Data(it);
-	  while(bi) {
-	    createListBoxString(bi, tbuf);
+          tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+          bi=AB_BankInfo_List2Iterator_Data(it);
+          while (bi) {
+            createListBoxString(bi, tbuf);
 
-	    if (strcasecmp(currentText, GWEN_Buffer_GetStart(tbuf))==0) {
-	      GWEN_Buffer_free(tbuf);
-	      AB_BankInfo_List2Iterator_free(it);
-	      return bi;
-	    }
+            if (strcasecmp(currentText, GWEN_Buffer_GetStart(tbuf))==0) {
+              GWEN_Buffer_free(tbuf);
+              AB_BankInfo_List2Iterator_free(it);
+              return bi;
+            }
 
-	    GWEN_Buffer_Reset(tbuf);
-	    bi=AB_BankInfo_List2Iterator_Next(it);
-	  }
+            GWEN_Buffer_Reset(tbuf);
+            bi=AB_BankInfo_List2Iterator_Next(it);
+          }
 
-	  GWEN_Buffer_free(tbuf);
-	  AB_BankInfo_List2Iterator_free(it);
-	}
+          GWEN_Buffer_free(tbuf);
+          AB_BankInfo_List2Iterator_free(it);
+        }
       }
     }
   }
@@ -211,11 +220,12 @@ AB_BANKINFO *AB_SelectBankInfoDialog_DetermineSelectedBankInfo(GWEN_DIALOG *dlg)
 
 
 
-static void removeAllSpaces(uint8_t *s) {
+static void removeAllSpaces(uint8_t *s)
+{
   uint8_t *d;
 
   d=s;
-  while(*s) {
+  while (*s) {
     if (*s>33)
       *(d++)=*s;
     s++;
@@ -225,7 +235,8 @@ static void removeAllSpaces(uint8_t *s) {
 
 
 
-void AB_SelectBankInfoDialog_UpdateList(GWEN_DIALOG *dlg) {
+void AB_SelectBankInfoDialog_UpdateList(GWEN_DIALOG *dlg)
+{
   AB_SELECTBANKINFO_DIALOG *xdlg;
   AB_BANKINFO *tbi;
   const char *s;
@@ -255,10 +266,10 @@ void AB_SelectBankInfoDialog_UpdateList(GWEN_DIALOG *dlg) {
     char *cpy;
 
     len=strlen(s);
-    cpy=(char*) malloc(len+2);
+    cpy=(char *) malloc(len+2);
     assert(cpy);
     memmove(cpy, s, len+1); /* copy including terminating zero char */
-    removeAllSpaces((uint8_t*)cpy);
+    removeAllSpaces((uint8_t *)cpy);
     len=strlen(cpy);
     if (len) {
       /* append joker */
@@ -276,10 +287,10 @@ void AB_SelectBankInfoDialog_UpdateList(GWEN_DIALOG *dlg) {
     char *cpy;
 
     len=strlen(s);
-    cpy=(char*) malloc(len+2);
+    cpy=(char *) malloc(len+2);
     assert(cpy);
     memmove(cpy, s, len+1); /* copy including terminating zero char */
-    removeAllSpaces((uint8_t*)cpy);
+    removeAllSpaces((uint8_t *)cpy);
     len=strlen(cpy);
     if (len) {
       /* append joker */
@@ -332,17 +343,17 @@ void AB_SelectBankInfoDialog_UpdateList(GWEN_DIALOG *dlg) {
 
       tbuf=GWEN_Buffer_new(0, 256, 0, 1);
       bi=AB_BankInfo_List2Iterator_Data(it);
-      while(bi) {
-	createListBoxString(bi, tbuf);
+      while (bi) {
+        createListBoxString(bi, tbuf);
 
-	GWEN_Dialog_SetCharProperty(dlg,
-				    "listBox",
-				    GWEN_DialogProperty_AddValue,
-				    0,
-				    GWEN_Buffer_GetStart(tbuf),
-				    0);
-	GWEN_Buffer_Reset(tbuf);
-	bi=AB_BankInfo_List2Iterator_Next(it);
+        GWEN_Dialog_SetCharProperty(dlg,
+                                    "listBox",
+                                    GWEN_DialogProperty_AddValue,
+                                    0,
+                                    GWEN_Buffer_GetStart(tbuf),
+                                    0);
+        GWEN_Buffer_Reset(tbuf);
+        bi=AB_BankInfo_List2Iterator_Next(it);
       }
 
       GWEN_Buffer_free(tbuf);
@@ -361,7 +372,8 @@ void AB_SelectBankInfoDialog_UpdateList(GWEN_DIALOG *dlg) {
 
 
 
-void AB_SelectBankInfoDialog_Init(GWEN_DIALOG *dlg) {
+void AB_SelectBankInfoDialog_Init(GWEN_DIALOG *dlg)
+{
   AB_SELECTBANKINFO_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
@@ -374,24 +386,24 @@ void AB_SelectBankInfoDialog_Init(GWEN_DIALOG *dlg) {
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("Select a Bank"),
-			      0);
+                              "",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("Select a Bank"),
+                              0);
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "listBox",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("Bank Code\tBIC\tName\tLocation\tProtocols"),
-			      0);
+                              "listBox",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("Bank Code\tBIC\tName\tLocation\tProtocols"),
+                              0);
   GWEN_Dialog_SetIntProperty(dlg,
-			     "listBox",
-			     GWEN_DialogProperty_SelectionMode,
-			     0,
-			     GWEN_Dialog_SelectionMode_Single,
-			     0);
+                             "listBox",
+                             GWEN_DialogProperty_SelectionMode,
+                             0,
+                             GWEN_Dialog_SelectionMode_Single,
+                             0);
 
 
   /* read width */
@@ -423,7 +435,8 @@ void AB_SelectBankInfoDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-void AB_SelectBankInfoDialog_Fini(GWEN_DIALOG *dlg) {
+void AB_SelectBankInfoDialog_Fini(GWEN_DIALOG *dlg)
+{
   AB_SELECTBANKINFO_DIALOG *xdlg;
   int i;
   GWEN_DB_NODE *dbPrefs;
@@ -437,16 +450,16 @@ void AB_SelectBankInfoDialog_Fini(GWEN_DIALOG *dlg) {
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_width",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_width",
+                      i);
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_height",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_height",
+                      i);
 
 
   /* store column widths of importer list */
@@ -458,29 +471,29 @@ void AB_SelectBankInfoDialog_Fini(GWEN_DIALOG *dlg) {
     if (j<LIST_MINCOLWIDTH)
       j=LIST_MINCOLWIDTH;
     GWEN_DB_SetIntValue(dbPrefs,
-			GWEN_DB_FLAGS_DEFAULT,
-			"bank_list_columns",
-			j);
+                        GWEN_DB_FLAGS_DEFAULT,
+                        "bank_list_columns",
+                        j);
   }
   /* store column sorting */
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "bank_list_sortbycolumn",
-		      -1);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "bank_list_sortbycolumn",
+                      -1);
   for (i=0; i<5; i++) {
     int j;
 
     j=GWEN_Dialog_GetIntProperty(dlg, "listBox", GWEN_DialogProperty_SortDirection, i,
-				 GWEN_DialogSortDirection_None);
+                                 GWEN_DialogSortDirection_None);
     if (j!=GWEN_DialogSortDirection_None) {
       GWEN_DB_SetIntValue(dbPrefs,
-			  GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  "bank_list_sortbycolumn",
-			  i);
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "bank_list_sortbycolumn",
+                          i);
       GWEN_DB_SetIntValue(dbPrefs,
-			  GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  "bank_list_sortdir",
-			  (j==GWEN_DialogSortDirection_Up)?1:0);
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "bank_list_sortdir",
+                          (j==GWEN_DialogSortDirection_Up)?1:0);
       break;
     }
   }
@@ -488,7 +501,8 @@ void AB_SelectBankInfoDialog_Fini(GWEN_DIALOG *dlg) {
 
 
 
-int AB_SelectBankInfoDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int AB_SelectBankInfoDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   AB_SELECTBANKINFO_DIALOG *xdlg;
 
   assert(dlg);
@@ -529,7 +543,8 @@ int AB_SelectBankInfoDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender
 
 
 
-int AB_SelectBankInfoDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender) {
+int AB_SelectBankInfoDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender)
+{
   const char *s;
 
   DBG_NOTICE(0, "Changed %s", sender);
@@ -542,7 +557,7 @@ int AB_SelectBankInfoDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sen
     }
   }
   else if (strcasecmp(sender, "nameEdit")==0 ||
-	   strcasecmp(sender, "locationEdit")==0) {
+           strcasecmp(sender, "locationEdit")==0) {
     s=GWEN_Dialog_GetCharProperty(dlg, sender, GWEN_DialogProperty_Value, 0, NULL);
     if (s && strlen(s)>3) {
       AB_SelectBankInfoDialog_UpdateList(dlg);
@@ -559,15 +574,16 @@ int AB_SelectBankInfoDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sen
 
 
 int GWENHYWFAR_CB AB_SelectBankInfoDialog_SignalHandler(GWEN_DIALOG *dlg,
-							GWEN_DIALOG_EVENTTYPE t,
-							const char *sender) {
+                                                        GWEN_DIALOG_EVENTTYPE t,
+                                                        const char *sender)
+{
   AB_SELECTBANKINFO_DIALOG *xdlg;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SELECTBANKINFO_DIALOG, dlg);
   assert(xdlg);
 
-  switch(t) {
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     AB_SelectBankInfoDialog_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;

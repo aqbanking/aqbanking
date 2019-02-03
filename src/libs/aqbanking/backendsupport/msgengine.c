@@ -29,7 +29,8 @@ GWEN_INHERIT(GWEN_MSGENGINE, AB_MSGENGINE)
 
 
 
-GWEN_MSGENGINE *AB_MsgEngine_new(void){
+GWEN_MSGENGINE *AB_MsgEngine_new(void)
+{
   GWEN_MSGENGINE *e;
   AB_MSGENGINE *le;
 
@@ -52,12 +53,13 @@ GWEN_MSGENGINE *AB_MsgEngine_new(void){
 
 
 
-void GWENHYWFAR_CB AB_MsgEngine_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AB_MsgEngine_FreeData(void *bp, void *p)
+{
   //GWEN_MSGENGINE *e;
   AB_MSGENGINE *le;
 
   //e=(GWEN_MSGENGINE*)bp;
-  le=(AB_MSGENGINE*)p;
+  le=(AB_MSGENGINE *)p;
 
   /* free all objects inside AB_MsgEngine */
 
@@ -66,7 +68,8 @@ void GWENHYWFAR_CB AB_MsgEngine_FreeData(void *bp, void *p){
 
 
 
-uint32_t AB_MsgEngine__FromBCD(uint32_t value) {
+uint32_t AB_MsgEngine__FromBCD(uint32_t value)
+{
   uint32_t rv;
 
   rv=0;
@@ -84,7 +87,8 @@ uint32_t AB_MsgEngine__FromBCD(uint32_t value) {
 
 
 
-uint32_t AB_MsgEngine__ToBCD(uint32_t value) {
+uint32_t AB_MsgEngine__ToBCD(uint32_t value)
+{
   uint32_t rv;
 
   rv=0;
@@ -130,7 +134,8 @@ int AB_MsgEngine_TypeRead(GWEN_MSGENGINE *e,
                           GWEN_XMLNODE *node,
                           GWEN_BUFFER *vbuf,
                           char escapeChar,
-                          const char *delimiters){
+                          const char *delimiters)
+{
   AB_MSGENGINE *le;
   const char *type;
 
@@ -142,7 +147,7 @@ int AB_MsgEngine_TypeRead(GWEN_MSGENGINE *e,
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Buffer empty");
     return 0;
   }
-  type=GWEN_XMLNode_GetProperty(node, "type","");
+  type=GWEN_XMLNode_GetProperty(node, "type", "");
   if (strcasecmp(type, "byte")==0) {
     int isBCD;
     int c;
@@ -318,8 +323,8 @@ int AB_MsgEngine_TypeRead(GWEN_MSGENGINE *e,
     }
 
     if (GWEN_Text_ToBcdBuffer(GWEN_Buffer_GetPosPointer(msgbuf),
-			      size,
-			      vbuf,
+                              size,
+                              vbuf,
                               0, 0, skipLeadingZeroes)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error parsing BCD string");
       return -1;
@@ -368,22 +373,22 @@ int AB_MsgEngine_TypeRead(GWEN_MSGENGINE *e,
       GWEN_Text_CondenseBuffer(tbuf);
       GWEN_Buffer_Rewind(tbuf);
       if (GWEN_Buffer_GetUsedBytes(tbuf)==0) {
-	/* just to fool the caller */
+        /* just to fool the caller */
         GWEN_Buffer_AppendByte(tbuf, 0);
       }
       if (GWEN_Buffer_AppendBuffer(vbuf, tbuf)) {
-	DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+        DBG_INFO(AQBANKING_LOGDOMAIN, "here");
         GWEN_Buffer_free(tbuf);
-	return -1;
+        return -1;
       }
       GWEN_Buffer_free(tbuf);
     }
     else {
       if (GWEN_Buffer_AppendBytes(vbuf,
-				  GWEN_Buffer_GetPosPointer(msgbuf),
-				  size)) {
-	DBG_INFO(AQBANKING_LOGDOMAIN, "here");
-	return -1;
+                                  GWEN_Buffer_GetPosPointer(msgbuf),
+                                  size)) {
+        DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+        return -1;
       }
     }
 
@@ -427,7 +432,7 @@ int AB_MsgEngine_TypeRead(GWEN_MSGENGINE *e,
         j&=0x1f;
     }
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Tag type %02x%s", j,
-	      isBerTlv?" (BER-TLV)":"");
+              isBerTlv?" (BER-TLV)":"");
 
     /* get length */
     pos++;
@@ -507,7 +512,8 @@ int AB_MsgEngine_TypeRead(GWEN_MSGENGINE *e,
 int AB_MsgEngine_TypeWrite(GWEN_MSGENGINE *e,
                            GWEN_BUFFER *gbuf,
                            GWEN_BUFFER *data,
-                           GWEN_XMLNODE *node){
+                           GWEN_XMLNODE *node)
+{
   AB_MSGENGINE *le;
   const char *type;
 
@@ -515,7 +521,7 @@ int AB_MsgEngine_TypeWrite(GWEN_MSGENGINE *e,
   le=GWEN_INHERIT_GETDATA(GWEN_MSGENGINE, AB_MSGENGINE, e);
   assert(le);
 
-  type=GWEN_XMLNode_GetProperty(node, "type","");
+  type=GWEN_XMLNode_GetProperty(node, "type", "");
   if (strcasecmp(type, "byte")==0) {
     int value;
     int isBCD;
@@ -563,24 +569,24 @@ int AB_MsgEngine_TypeWrite(GWEN_MSGENGINE *e,
 
     if (bigEndian) {
       if (GWEN_Buffer_AppendByte(gbuf,
-                                 (unsigned char)((value>>8)&0xff))){
+                                 (unsigned char)((value>>8)&0xff))) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "called from here");
         return -1;
       }
       if (GWEN_Buffer_AppendByte(gbuf,
-                                 (unsigned char)(value&0xff))){
+                                 (unsigned char)(value&0xff))) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "called from here");
         return -1;
       }
     }
     else {
       if (GWEN_Buffer_AppendByte(gbuf,
-                                 (unsigned char)(value&0xff))){
+                                 (unsigned char)(value&0xff))) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "called from here");
         return -1;
       }
       if (GWEN_Buffer_AppendByte(gbuf,
-                                 (unsigned char)((value>>8)&0xff))){
+                                 (unsigned char)((value>>8)&0xff))) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "called from here");
         return -1;
       }
@@ -605,44 +611,44 @@ int AB_MsgEngine_TypeWrite(GWEN_MSGENGINE *e,
 
     if (bigEndian) {
       if (GWEN_Buffer_AppendByte(gbuf,
-                                 (unsigned char)((value>>24)&0xff))){
+                                 (unsigned char)((value>>24)&0xff))) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "called from here");
         return -1;
       }
       if (GWEN_Buffer_AppendByte(gbuf,
-                                 (unsigned char)((value>>16)&0xff))){
+                                 (unsigned char)((value>>16)&0xff))) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "called from here");
         return -1;
       }
       if (GWEN_Buffer_AppendByte(gbuf,
-                                 (unsigned char)((value>>8)&0xff))){
+                                 (unsigned char)((value>>8)&0xff))) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "called from here");
         return -1;
       }
       if (GWEN_Buffer_AppendByte(gbuf,
-                                 (unsigned char)(value&0xff))){
+                                 (unsigned char)(value&0xff))) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "called from here");
         return -1;
       }
     }
     else {
       if (GWEN_Buffer_AppendByte(gbuf,
-                                 (unsigned char)(value&0xff))){
+                                 (unsigned char)(value&0xff))) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "called from here");
         return -1;
       }
       if (GWEN_Buffer_AppendByte(gbuf,
-                                 (unsigned char)((value>>8)&0xff))){
+                                 (unsigned char)((value>>8)&0xff))) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "called from here");
         return -1;
       }
       if (GWEN_Buffer_AppendByte(gbuf,
-                                 (unsigned char)((value>>16)&0xff))){
+                                 (unsigned char)((value>>16)&0xff))) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "called from here");
         return -1;
       }
       if (GWEN_Buffer_AppendByte(gbuf,
-                                 (unsigned char)((value>>24)&0xff))){
+                                 (unsigned char)((value>>24)&0xff))) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "called from here");
         return -1;
       }
@@ -736,7 +742,8 @@ int AB_MsgEngine_TypeWrite(GWEN_MSGENGINE *e,
 
 
 GWEN_DB_NODE_TYPE AB_MsgEngine_TypeCheck(GWEN_MSGENGINE *e,
-					 const char *tname){
+                                         const char *tname)
+{
   AB_MSGENGINE *le;
 
   assert(e);
@@ -760,7 +767,8 @@ GWEN_DB_NODE_TYPE AB_MsgEngine_TypeCheck(GWEN_MSGENGINE *e,
 
 const char *AB_MsgEngine_GetCharValue(GWEN_MSGENGINE *e,
                                       const char *name,
-                                      const char *defValue){
+                                      const char *defValue)
+{
   AB_MSGENGINE *le;
 
   assert(e);
@@ -774,7 +782,8 @@ const char *AB_MsgEngine_GetCharValue(GWEN_MSGENGINE *e,
 
 int AB_MsgEngine_GetIntValue(GWEN_MSGENGINE *e,
                              const char *name,
-                             int defValue){
+                             int defValue)
+{
   AB_MSGENGINE *le;
 
   assert(e);
@@ -789,7 +798,8 @@ int AB_MsgEngine_GetIntValue(GWEN_MSGENGINE *e,
 int AB_MsgEngine_BinTypeRead(GWEN_MSGENGINE *e,
                              GWEN_XMLNODE *node,
                              GWEN_DB_NODE *gr,
-                             GWEN_BUFFER *vbuf){
+                             GWEN_BUFFER *vbuf)
+{
   const char *typ;
 
   typ=GWEN_XMLNode_GetProperty(node, "type", "");
@@ -842,7 +852,7 @@ int AB_MsgEngine_BinTypeRead(GWEN_MSGENGINE *e,
         j&=0x1f;
     }
     DBG_DEBUG(AQBANKING_LOGDOMAIN, "Tag type %02x%s", j,
-	      isBerTlv?" (BER-TLV)":"");
+              isBerTlv?" (BER-TLV)":"");
     tagType=j;
 
     /* get length */
@@ -917,32 +927,32 @@ int AB_MsgEngine_BinTypeRead(GWEN_MSGENGINE *e,
           ngr=gr;
           if (name) {
             if (*name) {
-	      ngr=GWEN_DB_GetGroup(gr,
-				   GWEN_DB_FLAGS_DEFAULT,
-				   name);
+              ngr=GWEN_DB_GetGroup(gr,
+                                   GWEN_DB_FLAGS_DEFAULT,
+                                   name);
               assert(ngr);
             }
           }
           name=GWEN_XMLNode_GetProperty(tlvNode, "name", 0);
           if (name) {
             if (*name) {
-	      ngr=GWEN_DB_GetGroup(ngr,
-				   GWEN_DB_FLAGS_DEFAULT |
+              ngr=GWEN_DB_GetGroup(ngr,
+                                   GWEN_DB_FLAGS_DEFAULT |
                                    GWEN_PATH_FLAGS_CREATE_GROUP,
-				   name);
+                                   name);
               assert(ngr);
             }
           }
-	  if (tagLength) {
+          if (tagLength) {
             if (GWEN_MsgEngine_ParseMessage(e,
                                             tlvNode,
                                             vbuf,
                                             ngr,
-                                            GWEN_MSGENGINE_READ_FLAGS_DEFAULT)){
+                                            GWEN_MSGENGINE_READ_FLAGS_DEFAULT)) {
               DBG_INFO(AQBANKING_LOGDOMAIN, "here");
               return -1;
             }
-	  }
+          }
           return 0;
         } /* if tag id matches */
       } /* if id is ok */
@@ -983,7 +993,8 @@ int AB_MsgEngine_BinTypeRead(GWEN_MSGENGINE *e,
 int AB_MsgEngine_BinTypeWrite(GWEN_MSGENGINE *e,
                               GWEN_XMLNODE *node,
                               GWEN_DB_NODE *gr,
-                              GWEN_BUFFER *dbuf){
+                              GWEN_BUFFER *dbuf)
+{
   return 1;
 }
 

@@ -35,8 +35,9 @@ GWEN_INHERIT(AIO_OFX_GROUP, AIO_OFX_GROUP_STMTRN)
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_STMTRN_new(const char *groupName,
-				       AIO_OFX_GROUP *parent,
-				       GWEN_XML_CONTEXT *ctx) {
+                                       AIO_OFX_GROUP *parent,
+                                       GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_GROUP *g;
   AIO_OFX_GROUP_STMTRN *xg;
 
@@ -62,10 +63,11 @@ AIO_OFX_GROUP *AIO_OfxGroup_STMTRN_new(const char *groupName,
 
 
 GWENHYWFAR_CB
-void AIO_OfxGroup_STMTRN_FreeData(void *bp, void *p) {
+void AIO_OfxGroup_STMTRN_FreeData(void *bp, void *p)
+{
   AIO_OFX_GROUP_STMTRN *xg;
 
-  xg=(AIO_OFX_GROUP_STMTRN*)p;
+  xg=(AIO_OFX_GROUP_STMTRN *)p;
   assert(xg);
   free(xg->currentElement);
   AB_Transaction_free(xg->transaction);
@@ -75,7 +77,8 @@ void AIO_OfxGroup_STMTRN_FreeData(void *bp, void *p) {
 
 
 
-AB_TRANSACTION *AIO_OfxGroup_STMTRN_TakeTransaction(const AIO_OFX_GROUP *g){
+AB_TRANSACTION *AIO_OfxGroup_STMTRN_TakeTransaction(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_STMTRN *xg;
   AB_TRANSACTION *t;
 
@@ -91,7 +94,8 @@ AB_TRANSACTION *AIO_OfxGroup_STMTRN_TakeTransaction(const AIO_OFX_GROUP *g){
 
 
 int AIO_OfxGroup_STMTRN_StartTag(AIO_OFX_GROUP *g,
-				 const char *tagName) {
+                                 const char *tagName)
+{
   AIO_OFX_GROUP_STMTRN *xg;
   GWEN_XML_CONTEXT *ctx;
   AIO_OFX_GROUP *gNew=NULL;
@@ -141,7 +145,7 @@ int AIO_OfxGroup_STMTRN_StartTag(AIO_OFX_GROUP *g,
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	     "Ignoring tag [%s]", tagName);
+             "Ignoring tag [%s]", tagName);
     /*gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);*/
     free(xg->currentElement);
     xg->currentElement=strdup(tagName);
@@ -157,7 +161,8 @@ int AIO_OfxGroup_STMTRN_StartTag(AIO_OFX_GROUP *g,
 
 
 
-int AIO_OfxGroup_STMTRN_AddData(AIO_OFX_GROUP *g, const char *data) {
+int AIO_OfxGroup_STMTRN_AddData(AIO_OFX_GROUP *g, const char *data)
+{
   AIO_OFX_GROUP_STMTRN *xg;
 
   assert(g);
@@ -179,136 +184,136 @@ int AIO_OfxGroup_STMTRN_AddData(AIO_OFX_GROUP *g, const char *data) {
     s=GWEN_Buffer_GetStart(buf);
     if (*s) {
       DBG_INFO(AQBANKING_LOGDOMAIN,
-	       "AddData: %s=[%s]", xg->currentElement, s);
+               "AddData: %s=[%s]", xg->currentElement, s);
       if (strcasecmp(xg->currentElement, "TRNTYPE")==0) {
-	AB_TRANSACTION *t;
+        AB_TRANSACTION *t;
 
         t=xg->transaction;
-	if (strcasecmp(s, "CREDIT")==0) {
-	  AB_Transaction_SetTransactionKey(t, "MSC");
-	  AB_Transaction_SetTransactionText(t, I18N("Generic credit"));
-	}
-	else if (strcasecmp(s, "DEBIT")==0) {
-	  AB_Transaction_SetTransactionKey(t, "MSC");
-	  AB_Transaction_SetTransactionText(t, I18N("Generic debit"));
-	}
-	else if (strcasecmp(s, "INT")==0) {
-	  AB_Transaction_SetTransactionKey(t, "INT");
-	  AB_Transaction_SetTransactionText(t, I18N("Interest earned or paid (Note: Depends on signage of amount)"));
-	}
-	else if (strcasecmp(s, "DIV")==0) {
-	  AB_Transaction_SetTransactionKey(t, "DIV");
-	  AB_Transaction_SetTransactionText(t, I18N("Dividend"));
-	}
-	else if (strcasecmp(s, "FEE")==0) {
-	  AB_Transaction_SetTransactionKey(t, "BRF");
-	  AB_Transaction_SetTransactionText(t, I18N("FI fee"));
-	}
-	else if (strcasecmp(s, "SRVCHG")==0) {
-	  AB_Transaction_SetTransactionKey(t, "CHG");
-	  AB_Transaction_SetTransactionText(t, I18N("Service charge"));
-	}
-	else if (strcasecmp(s, "DEP")==0) {
-	  AB_Transaction_SetTransactionKey(t, "LDP"); /* FIXME: not sure */
-	  AB_Transaction_SetTransactionText(t, I18N("Deposit"));
-	}
-	else if (strcasecmp(s, "ATM")==0) {
-	  AB_Transaction_SetTransactionKey(t, "MSC"); /* misc */
-	  AB_Transaction_SetTransactionText(t, I18N("ATM debit or credit (Note: Depends on signage of amount)"));
-	}
-	else if (strcasecmp(s, "POS")==0) {
-	  AB_Transaction_SetTransactionKey(t, "MSC"); /* misc */
-	  AB_Transaction_SetTransactionText(t, I18N("Point of sale debit or credit (Note: Depends on signage of amount)"));
-	}
-	else if (strcasecmp(s, "XFER")==0) {
-	  AB_Transaction_SetTransactionKey(t, "TRF");
-	  AB_Transaction_SetTransactionText(t, I18N("Transfer"));
-	}
-	else if (strcasecmp(s, "CHECK")==0) {
-	  AB_Transaction_SetTransactionKey(t, "CHK");
-	  AB_Transaction_SetTransactionText(t, I18N("Check"));
-	}
-	else if (strcasecmp(s, "PAYMENT")==0) {
-	  AB_Transaction_SetTransactionKey(t, "TRF"); /* FIXME: not sure */
-	  AB_Transaction_SetTransactionText(t, I18N("Electronic payment"));
-	}
-	else if (strcasecmp(s, "CASH")==0) {
-	  AB_Transaction_SetTransactionKey(t, "MSC"); /* FIXME: not sure */
-	  AB_Transaction_SetTransactionText(t, I18N("Cash withdrawal"));
-	}
-	else if (strcasecmp(s, "DIRECTDEP")==0) {
-	  AB_Transaction_SetTransactionKey(t, "LDP"); /* FIXME: not sure */
-	  AB_Transaction_SetTransactionText(t, I18N("Direct deposit"));
-	}
-	else if (strcasecmp(s, "DIRECTDEBIT")==0) {
-	  AB_Transaction_SetTransactionKey(t, "MSC"); /* FIXME: not sure */
-	  AB_Transaction_SetTransactionText(t, I18N("Merchant initiated debit"));
-	}
-	else if (strcasecmp(s, "REPEATPMT")==0) {
-	  AB_Transaction_SetTransactionKey(t, "STO");
-	  AB_Transaction_SetTransactionText(t, I18N("Repeating payment/standing order"));
-	}
-	else if (strcasecmp(s, "OTHER")==0) {
-	  AB_Transaction_SetTransactionKey(t, "MSC");
-	  AB_Transaction_SetTransactionText(t, I18N("Other"));
-	}
-	else {
-	  DBG_WARN(AQBANKING_LOGDOMAIN, "Unknown transaction type [%s]", s);
-	  AB_Transaction_SetTransactionText(t, I18N("Unknown transaction type"));
-	}
+        if (strcasecmp(s, "CREDIT")==0) {
+          AB_Transaction_SetTransactionKey(t, "MSC");
+          AB_Transaction_SetTransactionText(t, I18N("Generic credit"));
+        }
+        else if (strcasecmp(s, "DEBIT")==0) {
+          AB_Transaction_SetTransactionKey(t, "MSC");
+          AB_Transaction_SetTransactionText(t, I18N("Generic debit"));
+        }
+        else if (strcasecmp(s, "INT")==0) {
+          AB_Transaction_SetTransactionKey(t, "INT");
+          AB_Transaction_SetTransactionText(t, I18N("Interest earned or paid (Note: Depends on signage of amount)"));
+        }
+        else if (strcasecmp(s, "DIV")==0) {
+          AB_Transaction_SetTransactionKey(t, "DIV");
+          AB_Transaction_SetTransactionText(t, I18N("Dividend"));
+        }
+        else if (strcasecmp(s, "FEE")==0) {
+          AB_Transaction_SetTransactionKey(t, "BRF");
+          AB_Transaction_SetTransactionText(t, I18N("FI fee"));
+        }
+        else if (strcasecmp(s, "SRVCHG")==0) {
+          AB_Transaction_SetTransactionKey(t, "CHG");
+          AB_Transaction_SetTransactionText(t, I18N("Service charge"));
+        }
+        else if (strcasecmp(s, "DEP")==0) {
+          AB_Transaction_SetTransactionKey(t, "LDP"); /* FIXME: not sure */
+          AB_Transaction_SetTransactionText(t, I18N("Deposit"));
+        }
+        else if (strcasecmp(s, "ATM")==0) {
+          AB_Transaction_SetTransactionKey(t, "MSC"); /* misc */
+          AB_Transaction_SetTransactionText(t, I18N("ATM debit or credit (Note: Depends on signage of amount)"));
+        }
+        else if (strcasecmp(s, "POS")==0) {
+          AB_Transaction_SetTransactionKey(t, "MSC"); /* misc */
+          AB_Transaction_SetTransactionText(t, I18N("Point of sale debit or credit (Note: Depends on signage of amount)"));
+        }
+        else if (strcasecmp(s, "XFER")==0) {
+          AB_Transaction_SetTransactionKey(t, "TRF");
+          AB_Transaction_SetTransactionText(t, I18N("Transfer"));
+        }
+        else if (strcasecmp(s, "CHECK")==0) {
+          AB_Transaction_SetTransactionKey(t, "CHK");
+          AB_Transaction_SetTransactionText(t, I18N("Check"));
+        }
+        else if (strcasecmp(s, "PAYMENT")==0) {
+          AB_Transaction_SetTransactionKey(t, "TRF"); /* FIXME: not sure */
+          AB_Transaction_SetTransactionText(t, I18N("Electronic payment"));
+        }
+        else if (strcasecmp(s, "CASH")==0) {
+          AB_Transaction_SetTransactionKey(t, "MSC"); /* FIXME: not sure */
+          AB_Transaction_SetTransactionText(t, I18N("Cash withdrawal"));
+        }
+        else if (strcasecmp(s, "DIRECTDEP")==0) {
+          AB_Transaction_SetTransactionKey(t, "LDP"); /* FIXME: not sure */
+          AB_Transaction_SetTransactionText(t, I18N("Direct deposit"));
+        }
+        else if (strcasecmp(s, "DIRECTDEBIT")==0) {
+          AB_Transaction_SetTransactionKey(t, "MSC"); /* FIXME: not sure */
+          AB_Transaction_SetTransactionText(t, I18N("Merchant initiated debit"));
+        }
+        else if (strcasecmp(s, "REPEATPMT")==0) {
+          AB_Transaction_SetTransactionKey(t, "STO");
+          AB_Transaction_SetTransactionText(t, I18N("Repeating payment/standing order"));
+        }
+        else if (strcasecmp(s, "OTHER")==0) {
+          AB_Transaction_SetTransactionKey(t, "MSC");
+          AB_Transaction_SetTransactionText(t, I18N("Other"));
+        }
+        else {
+          DBG_WARN(AQBANKING_LOGDOMAIN, "Unknown transaction type [%s]", s);
+          AB_Transaction_SetTransactionText(t, I18N("Unknown transaction type"));
+        }
       }
       else if (strcasecmp(xg->currentElement, "DTPOSTED")==0) {
-	GWEN_DATE *da;
+        GWEN_DATE *da;
 
         da=GWEN_Date_fromStringWithTemplate(s, "YYYYMMDD");
         if (da==NULL) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN,
+          DBG_ERROR(AQBANKING_LOGDOMAIN,
                     "Invalid data for DTPOSTED: [%s]", s);
-	  GWEN_Buffer_free(buf);
+          GWEN_Buffer_free(buf);
           return GWEN_ERROR_BAD_DATA;
-	}
-	AB_Transaction_SetValutaDate(xg->transaction, da);
+        }
+        AB_Transaction_SetValutaDate(xg->transaction, da);
         GWEN_Date_free(da);
       }
       else if (strcasecmp(xg->currentElement, "DTUSER")==0) {
         GWEN_DATE *da;
 
         da=GWEN_Date_fromStringWithTemplate(s, "YYYYMMDD");
-	if (da==NULL) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN,
-		    "Invalid data for DTUSER: [%s]", s);
-	  GWEN_Buffer_free(buf);
-	  return GWEN_ERROR_BAD_DATA;
-	}
-	AB_Transaction_SetDate(xg->transaction, da);
+        if (da==NULL) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN,
+                    "Invalid data for DTUSER: [%s]", s);
+          GWEN_Buffer_free(buf);
+          return GWEN_ERROR_BAD_DATA;
+        }
+        AB_Transaction_SetDate(xg->transaction, da);
         GWEN_Date_free(da);
       }
       else if (strcasecmp(xg->currentElement, "DTAVAIL")==0) {
         /* ignore */
       }
       else if (strcasecmp(xg->currentElement, "TRNAMT")==0) {
-	AB_VALUE *v;
+        AB_VALUE *v;
 
-	v=AB_Value_fromString(s);
-	if (v==NULL) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN,
-		    "Invalid data for TRNAMT: [%s]", s);
-	  GWEN_Buffer_free(buf);
-	  return GWEN_ERROR_BAD_DATA;
-	}
-	if (xg->currency)
+        v=AB_Value_fromString(s);
+        if (v==NULL) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN,
+                    "Invalid data for TRNAMT: [%s]", s);
+          GWEN_Buffer_free(buf);
+          return GWEN_ERROR_BAD_DATA;
+        }
+        if (xg->currency)
           AB_Value_SetCurrency(v, xg->currency);
-	AB_Transaction_SetValue(xg->transaction, v);
-	AB_Value_free(v);
+        AB_Transaction_SetValue(xg->transaction, v);
+        AB_Value_free(v);
       }
       else if (strcasecmp(xg->currentElement, "FITID")==0) {
-	AB_Transaction_SetFiId(xg->transaction, s);
+        AB_Transaction_SetFiId(xg->transaction, s);
       }
       else if (strcasecmp(xg->currentElement, "CHECKNUM")==0) {
-	AB_Transaction_SetCustomerReference(xg->transaction, s);
+        AB_Transaction_SetCustomerReference(xg->transaction, s);
       }
       else if (strcasecmp(xg->currentElement, "REFNUM")==0) {
-	AB_Transaction_SetCustomerReference(xg->transaction, s);
+        AB_Transaction_SetCustomerReference(xg->transaction, s);
       }
       else if (strcasecmp(xg->currentElement, "PAYEEID")==0) {
         /* ignore */
@@ -317,17 +322,17 @@ int AIO_OfxGroup_STMTRN_AddData(AIO_OFX_GROUP *g, const char *data) {
         AB_Transaction_SetRemoteName(xg->transaction, s);
       }
       else if (strcasecmp(xg->currentElement, "MEMO")==0 ||
-	       strcasecmp(xg->currentElement, "MEMO2")==0) {
-	AB_Transaction_AddPurposeLine(xg->transaction, s);
+               strcasecmp(xg->currentElement, "MEMO2")==0) {
+        AB_Transaction_AddPurposeLine(xg->transaction, s);
       }
       else if (strcasecmp(xg->currentElement, "SRVRTID")==0 ||
-	       strcasecmp(xg->currentElement, "SRVRTID2")==0) {
-	AB_Transaction_SetBankReference(xg->transaction, s);
+               strcasecmp(xg->currentElement, "SRVRTID2")==0) {
+        AB_Transaction_SetBankReference(xg->transaction, s);
       }
       else {
-	DBG_INFO(AQBANKING_LOGDOMAIN,
-		 "Ignoring data for unknown element [%s]",
-		 xg->currentElement);
+        DBG_INFO(AQBANKING_LOGDOMAIN,
+                 "Ignoring data for unknown element [%s]",
+                 xg->currentElement);
       }
     }
     GWEN_Buffer_free(buf);
@@ -338,7 +343,8 @@ int AIO_OfxGroup_STMTRN_AddData(AIO_OFX_GROUP *g, const char *data) {
 
 
 
-int AIO_OfxGroup_STMTRN_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
+int AIO_OfxGroup_STMTRN_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg)
+{
   AIO_OFX_GROUP_STMTRN *xg;
   const char *s;
   GWEN_XML_CONTEXT *ctx;

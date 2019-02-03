@@ -21,7 +21,8 @@
 
 
 
-int AH_Job_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
+int AH_Job_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+{
 
   assert(j);
   assert(j->usage);
@@ -38,7 +39,8 @@ int AH_Job_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx){
 
 
 
-int AH_Job_Commit(AH_JOB *j, int doLock){
+int AH_Job_Commit(AH_JOB *j, int doLock)
+{
   assert(j);
   assert(j->usage);
   if (j->commitFn)
@@ -51,7 +53,8 @@ int AH_Job_Commit(AH_JOB *j, int doLock){
 
 
 
-int AH_Job_Prepare(AH_JOB *j){
+int AH_Job_Prepare(AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   if (j->prepareFn)
@@ -64,7 +67,8 @@ int AH_Job_Prepare(AH_JOB *j){
 
 
 
-int AH_Job_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod) {
+int AH_Job_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod)
+{
   assert(j);
   assert(j->usage);
   if (j->addChallengeParamsFn)
@@ -77,7 +81,8 @@ int AH_Job_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod) {
 
 
 
-int AH_Job_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits) {
+int AH_Job_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits)
+{
   assert(j);
   assert(j->usage);
   if (j->getLimitsFn)
@@ -90,7 +95,8 @@ int AH_Job_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits) {
 
 
 
-int AH_Job_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t) {
+int AH_Job_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t)
+{
   assert(j);
   assert(j->usage);
   if (j->handleCommandFn)
@@ -103,7 +109,8 @@ int AH_Job_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t) {
 
 
 
-int AH_Job_HandleResults(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
+int AH_Job_HandleResults(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+{
   assert(j);
   assert(j->usage);
   if (j->handleResultsFn)
@@ -124,7 +131,8 @@ int AH_Job_HandleResults(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
 
 
 
-void AH_Job_SetProcessFn(AH_JOB *j, AH_JOB_PROCESS_FN f){
+void AH_Job_SetProcessFn(AH_JOB *j, AH_JOB_PROCESS_FN f)
+{
   assert(j);
   assert(j->usage);
   j->processFn=f;
@@ -132,7 +140,8 @@ void AH_Job_SetProcessFn(AH_JOB *j, AH_JOB_PROCESS_FN f){
 
 
 
-void AH_Job_SetCommitFn(AH_JOB *j, AH_JOB_COMMIT_FN f){
+void AH_Job_SetCommitFn(AH_JOB *j, AH_JOB_COMMIT_FN f)
+{
   assert(j);
   assert(j->usage);
   j->commitFn=f;
@@ -140,7 +149,8 @@ void AH_Job_SetCommitFn(AH_JOB *j, AH_JOB_COMMIT_FN f){
 
 
 
-void AH_Job_SetNextMsgFn(AH_JOB *j, AH_JOB_NEXTMSG_FN f){
+void AH_Job_SetNextMsgFn(AH_JOB *j, AH_JOB_NEXTMSG_FN f)
+{
   assert(j);
   assert(j->usage);
   j->nextMsgFn=f;
@@ -148,7 +158,8 @@ void AH_Job_SetNextMsgFn(AH_JOB *j, AH_JOB_NEXTMSG_FN f){
 
 
 
-void AH_Job_SetPrepareFn(AH_JOB *j, AH_JOB_PREPARE_FN f) {
+void AH_Job_SetPrepareFn(AH_JOB *j, AH_JOB_PREPARE_FN f)
+{
   assert(j);
   assert(j->usage);
   j->prepareFn=f;
@@ -156,7 +167,8 @@ void AH_Job_SetPrepareFn(AH_JOB *j, AH_JOB_PREPARE_FN f) {
 
 
 
-void AH_Job_SetAddChallengeParamsFn(AH_JOB *j, AH_JOB_ADDCHALLENGEPARAMS_FN f) {
+void AH_Job_SetAddChallengeParamsFn(AH_JOB *j, AH_JOB_ADDCHALLENGEPARAMS_FN f)
+{
   assert(j);
   assert(j->usage);
   j->addChallengeParamsFn=f;
@@ -164,7 +176,8 @@ void AH_Job_SetAddChallengeParamsFn(AH_JOB *j, AH_JOB_ADDCHALLENGEPARAMS_FN f) {
 
 
 
-void AH_Job_SetGetLimitsFn(AH_JOB *j, AH_JOB_GETLIMITS_FN f) {
+void AH_Job_SetGetLimitsFn(AH_JOB *j, AH_JOB_GETLIMITS_FN f)
+{
   assert(j);
   assert(j->usage);
   j->getLimitsFn=f;
@@ -172,7 +185,8 @@ void AH_Job_SetGetLimitsFn(AH_JOB *j, AH_JOB_GETLIMITS_FN f) {
 
 
 
-void AH_Job_SetHandleCommandFn(AH_JOB *j, AH_JOB_HANDLECOMMAND_FN f) {
+void AH_Job_SetHandleCommandFn(AH_JOB *j, AH_JOB_HANDLECOMMAND_FN f)
+{
   assert(j);
   assert(j->usage);
   j->handleCommandFn=f;
@@ -180,7 +194,8 @@ void AH_Job_SetHandleCommandFn(AH_JOB *j, AH_JOB_HANDLECOMMAND_FN f) {
 
 
 
-void AH_Job_SetHandleResultsFn(AH_JOB *j, AH_JOB_HANDLERESULTS_FN f) {
+void AH_Job_SetHandleResultsFn(AH_JOB *j, AH_JOB_HANDLERESULTS_FN f)
+{
   assert(j);
   assert(j->usage);
   j->handleResultsFn=f;
@@ -196,7 +211,8 @@ void AH_Job_SetHandleResultsFn(AH_JOB *j, AH_JOB_HANDLERESULTS_FN f) {
 
 
 
-int AH_Job_DefaultProcessHandler(AH_JOB *j){
+int AH_Job_DefaultProcessHandler(AH_JOB *j)
+{
   assert(j);
   assert(j->usage);
   if (j->flags & AH_JOB_FLAGS_PROCESSED) {
@@ -208,7 +224,8 @@ int AH_Job_DefaultProcessHandler(AH_JOB *j){
 
 
 
-int AH_Job_DefaultCommitHandler(AH_JOB *j, int doLock){
+int AH_Job_DefaultCommitHandler(AH_JOB *j, int doLock)
+{
   int rv;
 
   assert(j);
@@ -224,7 +241,8 @@ int AH_Job_DefaultCommitHandler(AH_JOB *j, int doLock){
 
 
 
-int AH_Job_GetLimits_EmptyLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits) {
+int AH_Job_GetLimits_EmptyLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits)
+{
   AB_TRANSACTION_LIMITS *tl;
 
   tl=AB_TransactionLimits_new();
@@ -235,13 +253,15 @@ int AH_Job_GetLimits_EmptyLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits) {
 
 
 
-int AH_Job_HandleCommand_Accept(AH_JOB *j, const AB_TRANSACTION *t) {
+int AH_Job_HandleCommand_Accept(AH_JOB *j, const AB_TRANSACTION *t)
+{
   return 0;
 }
 
 
 
-int AH_Job_HandleResults_Empty(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
+int AH_Job_HandleResults_Empty(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AH_RESULT_LIST *rl;
   AH_RESULT *r;
   AB_TRANSACTION_STATUS tStatus;
@@ -261,7 +281,7 @@ int AH_Job_HandleResults_Empty(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
     int has10=0;
     int has20=0;
 
-    while(r) {
+    while (r) {
       int rcode;
 
       rcode=AH_Result_GetCode(r);

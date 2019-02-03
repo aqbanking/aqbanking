@@ -34,7 +34,7 @@
 #include <fcntl.h>
 
 #ifndef GWEN_DIR_SEPARATOR_S
-  /* for gwenyhwfar < 2.5.4 */
+/* for gwenyhwfar < 2.5.4 */
 # define GWEN_DIR_SEPARATOR '/'
 # define GWEN_DIR_SEPARATOR_S "/"
 #endif
@@ -46,7 +46,8 @@
 static AB_BANKINFO_LIST *bis=0;
 static GWEN_DB_NODE *dbIdx=0;
 
-int readCSVFile(const char *fname, const char *pname, GWEN_DB_NODE *db) {
+int readCSVFile(const char *fname, const char *pname, GWEN_DB_NODE *db)
+{
   GWEN_DB_NODE *dbParams;
 
   dbParams=GWEN_DB_Group_new("params");
@@ -69,9 +70,10 @@ int readCSVFile(const char *fname, const char *pname, GWEN_DB_NODE *db) {
 
 
 AB_BANKINFO *findBankInfo(AB_BANKINFO *bi,
-			  const char *blz,
-			  const char *location) {
-  while(bi) {
+                          const char *blz,
+                          const char *location)
+{
+  while (bi) {
     const char *lblz;
     const char *lloc;
 
@@ -79,10 +81,10 @@ AB_BANKINFO *findBankInfo(AB_BANKINFO *bi,
     lloc=AB_BankInfo_GetLocation(bi);
     if (lblz && blz) {
       if (GWEN_Text_ComparePattern(lblz, blz, 0)!=-1) {
-	if (!location ||
-	    (location && lloc &&
-	     GWEN_Text_ComparePattern(lloc, location, 0)!=-1))
-	  break;
+        if (!location ||
+            (location && lloc &&
+             GWEN_Text_ComparePattern(lloc, location, 0)!=-1))
+          break;
       }
     }
     bi=AB_BankInfo_List_Next(bi);
@@ -93,7 +95,8 @@ AB_BANKINFO *findBankInfo(AB_BANKINFO *bi,
 
 
 
-AB_BANKINFO *findFirstBankInfo(const char *blz, const char *location) {
+AB_BANKINFO *findFirstBankInfo(const char *blz, const char *location)
+{
   AB_BANKINFO *bi;
 
   bi=AB_BankInfo_List_First(bis);
@@ -103,8 +106,9 @@ AB_BANKINFO *findFirstBankInfo(const char *blz, const char *location) {
 
 
 AB_BANKINFO *findNextBankInfo(AB_BANKINFO *bi,
-			      const char *blz,
-			      const char *location) {
+                              const char *blz,
+                              const char *location)
+{
   bi=AB_BankInfo_List_Next(bi);
   return findBankInfo(bi, blz, location);
 }
@@ -112,16 +116,17 @@ AB_BANKINFO *findNextBankInfo(AB_BANKINFO *bi,
 
 
 void isoToUtf8(const char *p,
-	       int size,
-	       GWEN_BUFFER *buf) {
-  while(*p) {
+               int size,
+               GWEN_BUFFER *buf)
+{
+  while (*p) {
     unsigned int c;
 
     if (!size)
       break;
 
     c=(unsigned char)(*(p++));
-    switch(c) {
+    switch (c) {
     case 0xc4: /* AE */
       GWEN_Buffer_AppendByte(buf, 0xc3);
       GWEN_Buffer_AppendByte(buf, 0x84);
@@ -162,13 +167,13 @@ void isoToUtf8(const char *p,
       GWEN_Buffer_AppendByte(buf, 0x67);
       break;
 
-      /* english chars */
+    /* english chars */
     case 0xa3: /* pound swign */
       GWEN_Buffer_AppendByte(buf, 0xc3);
       GWEN_Buffer_AppendByte(buf, 0x63);
       break;
 
-      /* french chars */
+    /* french chars */
     case 0xc7: /* C cedille */
       GWEN_Buffer_AppendByte(buf, 0xc3);
       GWEN_Buffer_AppendByte(buf, 0x87);
@@ -265,7 +270,8 @@ void isoToUtf8(const char *p,
 
 
 
-uint32_t _word_similarity(const char *a, const char *b){
+uint32_t _word_similarity(const char *a, const char *b)
+{
   uint32_t score = 0;
   size_t l = 0;
 
@@ -273,10 +279,13 @@ uint32_t _word_similarity(const char *a, const char *b){
     if (*a == *b)
       score += 1 << FUZZY_SHIFT;
     else if (*a == b[1]) {
-      score += 1 << (FUZZY_SHIFT-2); b++;
+      score += 1 << (FUZZY_SHIFT-2);
+      b++;
     }
     else if (a[1] == *b) {
-      score += 1 << (FUZZY_SHIFT-2); a++; l++;
+      score += 1 << (FUZZY_SHIFT-2);
+      a++;
+      l++;
     }
     a++;
     b++;
@@ -291,20 +300,22 @@ uint32_t _word_similarity(const char *a, const char *b){
 
 
 
-int _is_ascii_alnum(unsigned char c) {
+int _is_ascii_alnum(unsigned char c)
+{
   return ((c>='A' || c<='Z') ||
-	  (c>='a' || c<='z') ||
-	  (c>='0' || c<='9') ||
-	  c>=128);
+          (c>='a' || c<='z') ||
+          (c>='0' || c<='9') ||
+          c>=128);
 }
 
 
 
-GWEN_STRINGLIST *_make_word_list(const char *str) {
+GWEN_STRINGLIST *_make_word_list(const char *str)
+{
   GWEN_STRINGLIST *sl;
 
   sl=GWEN_StringList_new();
-  while(*str) {
+  while (*str) {
     const char *p;
     size_t size;
 
@@ -321,49 +332,49 @@ GWEN_STRINGLIST *_make_word_list(const char *str) {
       char *t;
       size_t i;
 
-      wptr=(char*)malloc(size+1);
+      wptr=(char *)malloc(size+1);
       t=wptr;
       for (i=0; i<size; i++)
-	*(t++)=tolower(*(p++));
+        *(t++)=tolower(*(p++));
       *t=0;
       /* expand some abbreviations */
       if (strcasecmp(wptr, "FCU")==0) {
-	GWEN_StringList_AppendString(sl, "FEDERAL", 0, 0);
-	GWEN_StringList_AppendString(sl, "CREDIT", 0, 0);
-	GWEN_StringList_AppendString(sl, "UNION", 0, 0);
+        GWEN_StringList_AppendString(sl, "FEDERAL", 0, 0);
+        GWEN_StringList_AppendString(sl, "CREDIT", 0, 0);
+        GWEN_StringList_AppendString(sl, "UNION", 0, 0);
         free(wptr);
       }
       else if (strcasecmp(wptr, "1ST")==0) {
-	GWEN_StringList_AppendString(sl, "FIRST", 0, 0);
-	free(wptr);
+        GWEN_StringList_AppendString(sl, "FIRST", 0, 0);
+        free(wptr);
       }
       else if (strcasecmp(wptr, "TR")==0) {
-	GWEN_StringList_AppendString(sl, "TRUST", 0, 0);
-	free(wptr);
+        GWEN_StringList_AppendString(sl, "TRUST", 0, 0);
+        free(wptr);
       }
       else if (strcasecmp(wptr, "BK")==0) {
-	GWEN_StringList_AppendString(sl, "BANK", 0, 0);
-	free(wptr);
+        GWEN_StringList_AppendString(sl, "BANK", 0, 0);
+        free(wptr);
       }
       else if (strcasecmp(wptr, "CO")==0) {
-	GWEN_StringList_AppendString(sl, "COMPANY", 0, 0);
-	free(wptr);
+        GWEN_StringList_AppendString(sl, "COMPANY", 0, 0);
+        free(wptr);
       }
       else if (strcasecmp(wptr, "CORP")==0) {
-	GWEN_StringList_AppendString(sl, "CORPORATION", 0, 0);
-	free(wptr);
+        GWEN_StringList_AppendString(sl, "CORPORATION", 0, 0);
+        free(wptr);
       }
       else if (strcasecmp(wptr, "DEPT")==0) {
-	GWEN_StringList_AppendString(sl, "DEPARTMENT", 0, 0);
-	free(wptr);
+        GWEN_StringList_AppendString(sl, "DEPARTMENT", 0, 0);
+        free(wptr);
       }
       else if (strcasecmp(wptr, "NAT")==0 ||
-	       strcasecmp(wptr, "NATL")==0) {
-	GWEN_StringList_AppendString(sl, "NATIONAL", 0, 0);
-	free(wptr);
+               strcasecmp(wptr, "NATL")==0) {
+        GWEN_StringList_AppendString(sl, "NATIONAL", 0, 0);
+        free(wptr);
       }
       else {
-	GWEN_StringList_AppendString(sl, wptr, 1, 0); /* take this string */
+        GWEN_StringList_AppendString(sl, wptr, 1, 0); /* take this string */
       }
     }
   } /* while */
@@ -374,13 +385,14 @@ GWEN_STRINGLIST *_make_word_list(const char *str) {
 
 
 uint32_t _cmp_word_list(const char *s,
-			GWEN_STRINGLIST *words) {
+                        GWEN_STRINGLIST *words)
+{
   uint32_t score = 0;
   uint32_t n = 0;
   GWEN_STRINGLISTENTRY *se;
 
   se=GWEN_StringList_FirstEntry(words);
-  while(se) {
+  while (se) {
     const char *p;
 
     n++;
@@ -400,13 +412,14 @@ uint32_t _cmp_word_list(const char *s,
 
 
 uint32_t _find_score(GWEN_STRINGLIST *a,
-				       GWEN_STRINGLIST *b) {
+                     GWEN_STRINGLIST *b)
+{
   uint32_t score = 0;
   uint32_t n = 0;
   GWEN_STRINGLISTENTRY *se;
 
   se=GWEN_StringList_FirstEntry(a);
-  while(se) {
+  while (se) {
     const char *p;
 
     n++;
@@ -423,7 +436,8 @@ uint32_t _find_score(GWEN_STRINGLIST *a,
 
 
 
-uint32_t FuzzyCompare(const char *str1, const char *str2) {
+uint32_t FuzzyCompare(const char *str1, const char *str2)
+{
   GWEN_STRINGLIST *a;
   GWEN_STRINGLIST *b;
   uint32_t score;
@@ -444,7 +458,8 @@ uint32_t FuzzyCompare(const char *str1, const char *str2) {
 
 
 
-int readDBBFile(const char *fname) {
+int readDBBFile(const char *fname)
+{
   GWEN_DB_NODE *dbData;
   GWEN_DB_NODE *dbT;
   int count=0;
@@ -459,7 +474,7 @@ int readDBBFile(const char *fname) {
 
   fprintf(stdout, "Building database...\n");
   dbT=GWEN_DB_FindFirstGroup(dbData, "bank");
-  while(dbT) {
+  while (dbT) {
     const char *lblz;
     const char *lloc;
 
@@ -467,14 +482,14 @@ int readDBBFile(const char *fname) {
     lloc=GWEN_DB_GetCharValue(dbT, "location", 0, 0);
     if (lloc && lblz && isdigit(*lblz)) {
       if (strcasecmp(lblz, "0")!=0) {
-	AB_BANKINFO *bi;
+        AB_BANKINFO *bi;
 
-	bi=AB_BankInfo_fromDb(dbT);
+        bi=AB_BankInfo_fromDb(dbT);
         assert(bi);
         AB_BankInfo_SetCity(bi, lloc);
 
-	AB_BankInfo_List_Add(bi, bis);
-	count++;
+        AB_BankInfo_List_Add(bi, bis);
+        count++;
       }
     }
     dbT=GWEN_DB_FindNextGroup(dbT, "bank");
@@ -487,7 +502,8 @@ int readDBBFile(const char *fname) {
 
 
 
-int readHBCIFile(const char *fname) {
+int readHBCIFile(const char *fname)
+{
   GWEN_DB_NODE *dbData;
   GWEN_DB_NODE *dbT;
   int count=0;
@@ -502,19 +518,19 @@ int readHBCIFile(const char *fname) {
 
   if (GWEN_DB_WriteFile(dbData,
                         "out.conf",
-			GWEN_DB_FLAGS_QUOTE_VALUES | \
+                        GWEN_DB_FLAGS_QUOTE_VALUES | \
                         GWEN_DB_FLAGS_WRITE_SUBGROUPS | \
                         GWEN_DB_FLAGS_INDEND | \
                         GWEN_DB_FLAGS_ADD_GROUP_NEWLINES | \
                         GWEN_DB_FLAGS_ESCAPE_CHARVALUES | \
-			GWEN_DB_FLAGS_OMIT_TYPES)) {
+                        GWEN_DB_FLAGS_OMIT_TYPES)) {
     DBG_ERROR(0, "Error writing bank file");
     return -1;
   }
 
   fprintf(stdout, "Updating database...\n");
   dbT=GWEN_DB_FindFirstGroup(dbData, "bank");
-  while(dbT) {
+  while (dbT) {
     const char *lblz;
     const char *lloc;
 
@@ -524,187 +540,187 @@ int readHBCIFile(const char *fname) {
       AB_BANKINFO *bi;
 
       bi=findFirstBankInfo(lblz, lloc);
-      while(bi) {
-	const char *addr;
-	const char *ver;
+      while (bi) {
+        const char *addr;
+        const char *ver;
 
-	count++;
-	addr=GWEN_DB_GetCharValue(dbT, "hostName", 0, 0);
+        count++;
+        addr=GWEN_DB_GetCharValue(dbT, "hostName", 0, 0);
         if (addr==0)
-	  addr=GWEN_DB_GetCharValue(dbT, "hostIp", 0, 0);
-	ver=GWEN_DB_GetCharValue(dbT, "hbciVersion", 0, 0);
-	if (ver) {
-	  /* normalize version */
-	  if (strcmp(ver, "2")==0 ||
-	      strcmp(ver, "2.01")==0 ||
-	      strcmp(ver, "2.0.1")==0)
-	    ver="2.01";
-	  else if (strcmp(ver, "2.1")==0 ||
-		   strcmp(ver, "2.10")==0 ||
-		   strcmp(ver, "2.1.0")==0)
-	    ver="2.10";
-	  else if (strcmp(ver, "2.2")==0 ||
-		   strcmp(ver, "2.20")==0 ||
-		   strcmp(ver, "2.2.0")==0)
-	    ver="2.20";
-	  else if (strcmp(ver, "3")==0 ||
-		   strcmp(ver, "3.0")==0 ||
-		   strcmp(ver, "3.0.0")==0)
-	    ver="3.0";
-	  else if (strcmp(ver, "4")==0 ||
-		   strcmp(ver, "4.0")==0 ||
-		   strcmp(ver, "4.0.0")==0)
-	    ver="3.0";
-	}
-	if (addr) {
-	  const char *s;
+          addr=GWEN_DB_GetCharValue(dbT, "hostIp", 0, 0);
+        ver=GWEN_DB_GetCharValue(dbT, "hbciVersion", 0, 0);
+        if (ver) {
+          /* normalize version */
+          if (strcmp(ver, "2")==0 ||
+              strcmp(ver, "2.01")==0 ||
+              strcmp(ver, "2.0.1")==0)
+            ver="2.01";
+          else if (strcmp(ver, "2.1")==0 ||
+                   strcmp(ver, "2.10")==0 ||
+                   strcmp(ver, "2.1.0")==0)
+            ver="2.10";
+          else if (strcmp(ver, "2.2")==0 ||
+                   strcmp(ver, "2.20")==0 ||
+                   strcmp(ver, "2.2.0")==0)
+            ver="2.20";
+          else if (strcmp(ver, "3")==0 ||
+                   strcmp(ver, "3.0")==0 ||
+                   strcmp(ver, "3.0.0")==0)
+            ver="3.0";
+          else if (strcmp(ver, "4")==0 ||
+                   strcmp(ver, "4.0")==0 ||
+                   strcmp(ver, "4.0.0")==0)
+            ver="3.0";
+        }
+        if (addr) {
+          const char *s;
 
-	  s=GWEN_DB_GetCharValue(dbT, "ddv", 0, "nein");
-	  if (strcasecmp(s, "ja")==0) {
-	    AB_BANKINFO_SERVICE *sv;
+          s=GWEN_DB_GetCharValue(dbT, "ddv", 0, "nein");
+          if (strcasecmp(s, "ja")==0) {
+            AB_BANKINFO_SERVICE *sv;
 
-	    sv=AB_BankInfoService_new();
-	    AB_BankInfoService_SetType(sv, "HBCI");
-	    AB_BankInfoService_SetAddress(sv, addr);
-	    AB_BankInfoService_SetPversion(sv, ver);
-	    AB_BankInfoService_SetMode(sv, "DDV");
-	    AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
-	  } /* if DDV */
+            sv=AB_BankInfoService_new();
+            AB_BankInfoService_SetType(sv, "HBCI");
+            AB_BankInfoService_SetAddress(sv, addr);
+            AB_BankInfoService_SetPversion(sv, ver);
+            AB_BankInfoService_SetMode(sv, "DDV");
+            AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
+          } /* if DDV */
 
-	  s=GWEN_DB_GetCharValue(dbT, "rdh1", 0, "nein");
-	  if (strcasecmp(s, "ja")==0) {
-	    AB_BANKINFO_SERVICE *sv;
+          s=GWEN_DB_GetCharValue(dbT, "rdh1", 0, "nein");
+          if (strcasecmp(s, "ja")==0) {
+            AB_BANKINFO_SERVICE *sv;
 
-	    sv=AB_BankInfoService_new();
-	    AB_BankInfoService_SetType(sv, "HBCI");
-	    AB_BankInfoService_SetAddress(sv, addr);
-	    AB_BankInfoService_SetPversion(sv, ver);
-	    AB_BankInfoService_SetMode(sv, "RDH1");
-	    AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
-	  } /* if RDH1 */
+            sv=AB_BankInfoService_new();
+            AB_BankInfoService_SetType(sv, "HBCI");
+            AB_BankInfoService_SetAddress(sv, addr);
+            AB_BankInfoService_SetPversion(sv, ver);
+            AB_BankInfoService_SetMode(sv, "RDH1");
+            AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
+          } /* if RDH1 */
 
-	  s=GWEN_DB_GetCharValue(dbT, "rdh2", 0, "nein");
-	  if (strcasecmp(s, "ja")==0) {
-	    AB_BANKINFO_SERVICE *sv;
+          s=GWEN_DB_GetCharValue(dbT, "rdh2", 0, "nein");
+          if (strcasecmp(s, "ja")==0) {
+            AB_BANKINFO_SERVICE *sv;
 
-	    sv=AB_BankInfoService_new();
-	    AB_BankInfoService_SetType(sv, "HBCI");
-	    AB_BankInfoService_SetAddress(sv, addr);
-	    AB_BankInfoService_SetPversion(sv, ver);
-	    AB_BankInfoService_SetMode(sv, "RDH2");
-	    AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
-	  } /* if RDH2 */
+            sv=AB_BankInfoService_new();
+            AB_BankInfoService_SetType(sv, "HBCI");
+            AB_BankInfoService_SetAddress(sv, addr);
+            AB_BankInfoService_SetPversion(sv, ver);
+            AB_BankInfoService_SetMode(sv, "RDH2");
+            AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
+          } /* if RDH2 */
 
-	  s=GWEN_DB_GetCharValue(dbT, "rdh3", 0, "nein");
-	  if (strcasecmp(s, "ja")==0) {
-	    AB_BANKINFO_SERVICE *sv;
+          s=GWEN_DB_GetCharValue(dbT, "rdh3", 0, "nein");
+          if (strcasecmp(s, "ja")==0) {
+            AB_BANKINFO_SERVICE *sv;
 
-	    sv=AB_BankInfoService_new();
-	    AB_BankInfoService_SetType(sv, "HBCI");
-	    AB_BankInfoService_SetAddress(sv, addr);
-	    AB_BankInfoService_SetPversion(sv, ver);
-	    AB_BankInfoService_SetMode(sv, "RDH3");
-	    AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
-	  } /* if RDH3 */
+            sv=AB_BankInfoService_new();
+            AB_BankInfoService_SetType(sv, "HBCI");
+            AB_BankInfoService_SetAddress(sv, addr);
+            AB_BankInfoService_SetPversion(sv, ver);
+            AB_BankInfoService_SetMode(sv, "RDH3");
+            AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
+          } /* if RDH3 */
 
-	  s=GWEN_DB_GetCharValue(dbT, "rdh4", 0, "nein");
-	  if (strcasecmp(s, "ja")==0) {
-	    AB_BANKINFO_SERVICE *sv;
+          s=GWEN_DB_GetCharValue(dbT, "rdh4", 0, "nein");
+          if (strcasecmp(s, "ja")==0) {
+            AB_BANKINFO_SERVICE *sv;
 
-	    sv=AB_BankInfoService_new();
-	    AB_BankInfoService_SetType(sv, "HBCI");
-	    AB_BankInfoService_SetAddress(sv, addr);
-	    AB_BankInfoService_SetPversion(sv, ver);
-	    AB_BankInfoService_SetMode(sv, "RDH4");
-	    AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
-	  } /* if RDH4 */
+            sv=AB_BankInfoService_new();
+            AB_BankInfoService_SetType(sv, "HBCI");
+            AB_BankInfoService_SetAddress(sv, addr);
+            AB_BankInfoService_SetPversion(sv, ver);
+            AB_BankInfoService_SetMode(sv, "RDH4");
+            AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
+          } /* if RDH4 */
 
-	  s=GWEN_DB_GetCharValue(dbT, "rdh5", 0, "nein");
-	  if (strcasecmp(s, "ja")==0) {
-	    AB_BANKINFO_SERVICE *sv;
+          s=GWEN_DB_GetCharValue(dbT, "rdh5", 0, "nein");
+          if (strcasecmp(s, "ja")==0) {
+            AB_BANKINFO_SERVICE *sv;
 
-	    sv=AB_BankInfoService_new();
-	    AB_BankInfoService_SetType(sv, "HBCI");
-	    AB_BankInfoService_SetAddress(sv, addr);
-	    AB_BankInfoService_SetPversion(sv, ver);
-	    AB_BankInfoService_SetMode(sv, "RDH5");
-	    AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
-	  } /* if RDH5 */
+            sv=AB_BankInfoService_new();
+            AB_BankInfoService_SetType(sv, "HBCI");
+            AB_BankInfoService_SetAddress(sv, addr);
+            AB_BankInfoService_SetPversion(sv, ver);
+            AB_BankInfoService_SetMode(sv, "RDH5");
+            AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
+          } /* if RDH5 */
 
-	  s=GWEN_DB_GetCharValue(dbT, "rdh6", 0, "nein");
-	  if (strcasecmp(s, "ja")==0) {
-	    AB_BANKINFO_SERVICE *sv;
+          s=GWEN_DB_GetCharValue(dbT, "rdh6", 0, "nein");
+          if (strcasecmp(s, "ja")==0) {
+            AB_BANKINFO_SERVICE *sv;
 
-	    sv=AB_BankInfoService_new();
-	    AB_BankInfoService_SetType(sv, "HBCI");
-	    AB_BankInfoService_SetAddress(sv, addr);
-	    AB_BankInfoService_SetPversion(sv, ver);
-	    AB_BankInfoService_SetMode(sv, "RDH6");
-	    AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
-	  } /* if RDH6 */
+            sv=AB_BankInfoService_new();
+            AB_BankInfoService_SetType(sv, "HBCI");
+            AB_BankInfoService_SetAddress(sv, addr);
+            AB_BankInfoService_SetPversion(sv, ver);
+            AB_BankInfoService_SetMode(sv, "RDH6");
+            AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
+          } /* if RDH6 */
 
-	  s=GWEN_DB_GetCharValue(dbT, "rdh7", 0, "nein");
-	  if (strcasecmp(s, "ja")==0) {
-	    AB_BANKINFO_SERVICE *sv;
+          s=GWEN_DB_GetCharValue(dbT, "rdh7", 0, "nein");
+          if (strcasecmp(s, "ja")==0) {
+            AB_BANKINFO_SERVICE *sv;
 
-	    sv=AB_BankInfoService_new();
-	    AB_BankInfoService_SetType(sv, "HBCI");
-	    AB_BankInfoService_SetAddress(sv, addr);
-	    AB_BankInfoService_SetPversion(sv, ver);
-	    AB_BankInfoService_SetMode(sv, "RDH7");
-	    AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
-	  } /* if RDH7 */
+            sv=AB_BankInfoService_new();
+            AB_BankInfoService_SetType(sv, "HBCI");
+            AB_BankInfoService_SetAddress(sv, addr);
+            AB_BankInfoService_SetPversion(sv, ver);
+            AB_BankInfoService_SetMode(sv, "RDH7");
+            AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
+          } /* if RDH7 */
 
-	  s=GWEN_DB_GetCharValue(dbT, "rdh8", 0, "nein");
-	  if (strcasecmp(s, "ja")==0) {
-	    AB_BANKINFO_SERVICE *sv;
+          s=GWEN_DB_GetCharValue(dbT, "rdh8", 0, "nein");
+          if (strcasecmp(s, "ja")==0) {
+            AB_BANKINFO_SERVICE *sv;
 
-	    sv=AB_BankInfoService_new();
-	    AB_BankInfoService_SetType(sv, "HBCI");
-	    AB_BankInfoService_SetAddress(sv, addr);
-	    AB_BankInfoService_SetPversion(sv, ver);
-	    AB_BankInfoService_SetMode(sv, "RDH8");
-	    AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
-	  } /* if RDH8 */
+            sv=AB_BankInfoService_new();
+            AB_BankInfoService_SetType(sv, "HBCI");
+            AB_BankInfoService_SetAddress(sv, addr);
+            AB_BankInfoService_SetPversion(sv, ver);
+            AB_BankInfoService_SetMode(sv, "RDH8");
+            AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
+          } /* if RDH8 */
 
-	  s=GWEN_DB_GetCharValue(dbT, "rdh9", 0, "nein");
-	  if (strcasecmp(s, "ja")==0) {
-	    AB_BANKINFO_SERVICE *sv;
+          s=GWEN_DB_GetCharValue(dbT, "rdh9", 0, "nein");
+          if (strcasecmp(s, "ja")==0) {
+            AB_BANKINFO_SERVICE *sv;
 
-	    sv=AB_BankInfoService_new();
-	    AB_BankInfoService_SetType(sv, "HBCI");
-	    AB_BankInfoService_SetAddress(sv, addr);
-	    AB_BankInfoService_SetPversion(sv, ver);
-	    AB_BankInfoService_SetMode(sv, "RDH9");
-	    AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
-	  } /* if RDH9 */
+            sv=AB_BankInfoService_new();
+            AB_BankInfoService_SetType(sv, "HBCI");
+            AB_BankInfoService_SetAddress(sv, addr);
+            AB_BankInfoService_SetPversion(sv, ver);
+            AB_BankInfoService_SetMode(sv, "RDH9");
+            AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
+          } /* if RDH9 */
 
-	  s=GWEN_DB_GetCharValue(dbT, "rdh10", 0, "nein");
-	  if (strcasecmp(s, "ja")==0) {
-	    AB_BANKINFO_SERVICE *sv;
+          s=GWEN_DB_GetCharValue(dbT, "rdh10", 0, "nein");
+          if (strcasecmp(s, "ja")==0) {
+            AB_BANKINFO_SERVICE *sv;
 
-	    sv=AB_BankInfoService_new();
-	    AB_BankInfoService_SetType(sv, "HBCI");
-	    AB_BankInfoService_SetAddress(sv, addr);
-	    AB_BankInfoService_SetPversion(sv, ver);
-	    AB_BankInfoService_SetMode(sv, "RDH10");
-	    AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
-	  } /* if RDH10 */
+            sv=AB_BankInfoService_new();
+            AB_BankInfoService_SetType(sv, "HBCI");
+            AB_BankInfoService_SetAddress(sv, addr);
+            AB_BankInfoService_SetPversion(sv, ver);
+            AB_BankInfoService_SetMode(sv, "RDH10");
+            AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
+          } /* if RDH10 */
 
-	  s=GWEN_DB_GetCharValue(dbT, "pinTanUrl", 0, 0);
-	  if (s && *s) {
-	    AB_BANKINFO_SERVICE *sv;
+          s=GWEN_DB_GetCharValue(dbT, "pinTanUrl", 0, 0);
+          if (s && *s) {
+            AB_BANKINFO_SERVICE *sv;
 
-	    sv=AB_BankInfoService_new();
-	    AB_BankInfoService_SetType(sv, "HBCI");
-	    AB_BankInfoService_SetAddress(sv, s);
-	    AB_BankInfoService_SetPversion(sv, ver);
-	    AB_BankInfoService_SetMode(sv, "PINTAN");
-	    AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
-	  } /* id PINTAN */
-	} /* if addr */
+            sv=AB_BankInfoService_new();
+            AB_BankInfoService_SetType(sv, "HBCI");
+            AB_BankInfoService_SetAddress(sv, s);
+            AB_BankInfoService_SetPversion(sv, ver);
+            AB_BankInfoService_SetMode(sv, "PINTAN");
+            AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
+          } /* id PINTAN */
+        } /* if addr */
 
-	bi=findNextBankInfo(bi, lblz, lloc);
+        bi=findNextBankInfo(bi, lblz, lloc);
       }
 
     }
@@ -718,7 +734,8 @@ int readHBCIFile(const char *fname) {
 
 
 
-int readATBLZFile(const char *fname) {
+int readATBLZFile(const char *fname)
+{
   GWEN_DB_NODE *dbData;
   GWEN_DB_NODE *dbT;
   int count=0;
@@ -733,18 +750,18 @@ int readATBLZFile(const char *fname) {
 
   fprintf(stdout, "Building database...\n");
   dbT=GWEN_DB_FindFirstGroup(dbData, "bank");
-  while(dbT) {
+  while (dbT) {
     const char *lblz;
 
     lblz=GWEN_DB_GetCharValue(dbT, "bankId", 0, 0);
     if (lblz && isdigit(*lblz)) {
       if (strcasecmp(lblz, "0")!=0) {
-	AB_BANKINFO *bi;
+        AB_BANKINFO *bi;
 
-	bi=AB_BankInfo_fromDb(dbT);
+        bi=AB_BankInfo_fromDb(dbT);
         assert(bi);
-	AB_BankInfo_List_Add(bi, bis);
-	count++;
+        AB_BankInfo_List_Add(bi, bis);
+        count++;
       }
     }
     dbT=GWEN_DB_FindNextGroup(dbT, "bank");
@@ -757,7 +774,8 @@ int readATBLZFile(const char *fname) {
 
 
 
-int readATBLZFile2(const char *fname) {
+int readATBLZFile2(const char *fname)
+{
   GWEN_DB_NODE *dbData;
   GWEN_DB_NODE *dbT;
   int count=0;
@@ -772,12 +790,12 @@ int readATBLZFile2(const char *fname) {
 
   if (GWEN_DB_WriteFile(dbData,
                         "out.conf",
-			GWEN_DB_FLAGS_QUOTE_VALUES | \
+                        GWEN_DB_FLAGS_QUOTE_VALUES | \
                         GWEN_DB_FLAGS_WRITE_SUBGROUPS | \
                         GWEN_DB_FLAGS_INDEND | \
                         GWEN_DB_FLAGS_ADD_GROUP_NEWLINES | \
                         GWEN_DB_FLAGS_ESCAPE_CHARVALUES | \
-			GWEN_DB_FLAGS_OMIT_TYPES)) {
+                        GWEN_DB_FLAGS_OMIT_TYPES)) {
     DBG_ERROR(0, "Error writing bank file");
     return -1;
   }
@@ -785,7 +803,7 @@ int readATBLZFile2(const char *fname) {
 
   fprintf(stdout, "Updating database...\n");
   dbT=GWEN_DB_FindFirstGroup(dbData, "bank");
-  while(dbT) {
+  while (dbT) {
     const char *lblz;
     const char *lloc;
 
@@ -796,35 +814,35 @@ int readATBLZFile2(const char *fname) {
 
       bi=findFirstBankInfo(lblz, 0);
       if (!bi) {
-	/* new bank, add it */
-	bi=AB_BankInfo_fromDb(dbT);
-	if (bi) {
-	  AB_BankInfo_List_Add(bi, bis);
+        /* new bank, add it */
+        bi=AB_BankInfo_fromDb(dbT);
+        if (bi) {
+          AB_BankInfo_List_Add(bi, bis);
           count++;
-	}
+        }
       } /* if bank is new */
       else {
-	while(bi) {
-	  const char *s;
+        while (bi) {
+          const char *s;
 
-	  s=GWEN_DB_GetCharValue(dbT, "bankName", 0, 0);
-	  if (s && *s)
-	    AB_BankInfo_SetBankName(bi, s);
-	  s=GWEN_DB_GetCharValue(dbT, "street", 0, 0);
-	  if (s && *s)
-	    AB_BankInfo_SetStreet(bi, s);
-	  s=GWEN_DB_GetCharValue(dbT, "zipCode", 0, 0);
-	  if (s && *s)
-	    AB_BankInfo_SetZipcode(bi, s);
-	  s=GWEN_DB_GetCharValue(dbT, "location", 0, 0);
-	  if (s && *s) {
-	    AB_BankInfo_SetLocation(bi, s);
-	    AB_BankInfo_SetCity(bi, s);
-	  }
-	  count++;
+          s=GWEN_DB_GetCharValue(dbT, "bankName", 0, 0);
+          if (s && *s)
+            AB_BankInfo_SetBankName(bi, s);
+          s=GWEN_DB_GetCharValue(dbT, "street", 0, 0);
+          if (s && *s)
+            AB_BankInfo_SetStreet(bi, s);
+          s=GWEN_DB_GetCharValue(dbT, "zipCode", 0, 0);
+          if (s && *s)
+            AB_BankInfo_SetZipcode(bi, s);
+          s=GWEN_DB_GetCharValue(dbT, "location", 0, 0);
+          if (s && *s) {
+            AB_BankInfo_SetLocation(bi, s);
+            AB_BankInfo_SetCity(bi, s);
+          }
+          count++;
 
-	  bi=findNextBankInfo(bi, lblz, 0);
-	} /* while bi */
+          bi=findNextBankInfo(bi, lblz, 0);
+        } /* while bi */
       } /* if bank already exists */
     }
     dbT=GWEN_DB_FindNextGroup(dbT, "bank");
@@ -837,7 +855,8 @@ int readATBLZFile2(const char *fname) {
 
 
 
-int readFedAchDirFile(const char *fname) {
+int readFedAchDirFile(const char *fname)
+{
   GWEN_DB_NODE *dbData;
   GWEN_DB_NODE *dbT;
   int count=0;
@@ -852,7 +871,7 @@ int readFedAchDirFile(const char *fname) {
 
   fprintf(stdout, "Building database...\n");
   dbT=GWEN_DB_FindFirstGroup(dbData, "bank");
-  while(dbT) {
+  while (dbT) {
     const char *lblz;
     const char *lloc;
     int recType;
@@ -872,31 +891,31 @@ int readFedAchDirFile(const char *fname) {
       tbuf=GWEN_Buffer_new(0, 32, 0, 1);
       s=GWEN_DB_GetCharValue(dbT, "xPhoneAreaCode", 0, 0);
       if (s) {
-	GWEN_Buffer_AppendString(tbuf, s);
-	GWEN_Buffer_AppendByte(tbuf, '-');
+        GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendByte(tbuf, '-');
       }
       s=GWEN_DB_GetCharValue(dbT, "xPhonePrefix", 0, 0);
       if (s)
-	GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, s);
       s=GWEN_DB_GetCharValue(dbT, "xPhoneSuffix", 0, 0);
       if (s)
-	GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, s);
       GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			   "phone", GWEN_Buffer_GetStart(tbuf));
+                           "phone", GWEN_Buffer_GetStart(tbuf));
       GWEN_Buffer_Reset(tbuf);
 
       /* compose zipcode */
       s=GWEN_DB_GetCharValue(dbT, "xZipCode", 0, 0);
       if (s) {
-	GWEN_Buffer_AppendString(tbuf, s);
-	s=GWEN_DB_GetCharValue(dbT, "xZipExt", 0, 0);
-	if (s) {
-	  GWEN_Buffer_AppendByte(tbuf, '-');
-	  GWEN_Buffer_AppendString(tbuf, s);
-	}
-	GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			     "zipCode", GWEN_Buffer_GetStart(tbuf));
-	GWEN_Buffer_Reset(tbuf);
+        GWEN_Buffer_AppendString(tbuf, s);
+        s=GWEN_DB_GetCharValue(dbT, "xZipExt", 0, 0);
+        if (s) {
+          GWEN_Buffer_AppendByte(tbuf, '-');
+          GWEN_Buffer_AppendString(tbuf, s);
+        }
+        GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                             "zipCode", GWEN_Buffer_GetStart(tbuf));
+        GWEN_Buffer_Reset(tbuf);
       }
       bi=AB_BankInfo_fromDb(dbT);
       assert(bi);
@@ -918,7 +937,8 @@ int readFedAchDirFile(const char *fname) {
 
 
 const char *readCharValueXml(GWEN_XMLNODE *n, const char *name,
-                             GWEN_BUFFER *dbuf) {
+                             GWEN_BUFFER *dbuf)
+{
   GWEN_XMLNODE *nn;
 
   GWEN_Buffer_Reset(dbuf);
@@ -958,7 +978,8 @@ const char *readCharValueXml(GWEN_XMLNODE *n, const char *name,
 
 int readMSMFiles(const char *path,
                  const char *ifname,
-		 const char *country) {
+                 const char *country)
+{
   GWEN_BUFFER *pbuf;
   GWEN_BUFFER *dbuf;
   uint32_t pos;
@@ -988,7 +1009,7 @@ int readMSMFiles(const char *path,
   n=GWEN_XMLNode_FindFirstTag(nBanks, "fil", 0, 0);
   if (n)
     n=GWEN_XMLNode_FindFirstTag(n, "fi", 0, 0);
-  while(n) {
+  while (n) {
     GWEN_XMLNODE *nProvider;
 
     nProvider=GWEN_XMLNode_FindFirstTag(n, "prov", 0, 0);
@@ -998,231 +1019,231 @@ int readMSMFiles(const char *path,
 
       guid=GWEN_XMLNode_GetCharValue(nProvider, "CrossRefGuid", 0);
       if (!guid || !*guid)
-	guid=GWEN_XMLNode_GetCharValue(nProvider, "guid", 0);
+        guid=GWEN_XMLNode_GetCharValue(nProvider, "guid", 0);
       else {
         //isCross=1;
       }
       if (guid) {
-	FILE *f;
+        FILE *f;
 
-	GWEN_Buffer_AppendString(pbuf, "/fi/");
-	GWEN_Buffer_AppendString(pbuf, guid);
-	GWEN_Buffer_AppendString(pbuf, ".xml");
-	/*fprintf(stderr, "Reading file \"%s\"\n", GWEN_Buffer_GetStart(pbuf));*/
-	f=fopen(GWEN_Buffer_GetStart(pbuf), "r");
-	if (f) {
-	  GWEN_XMLNODE *nBank;
-	  GWEN_XMLNODE *b;
-  
-	  fclose(f);
-	  nBank=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "bank");
-	  if (GWEN_XML_ReadFile(nBank,
-				GWEN_Buffer_GetStart(pbuf),
-				GWEN_XML_FLAGS_DEFAULT)) {
-	    DBG_ERROR(0, "Error reading bank file \"%s\"",
-		      GWEN_Buffer_GetStart(pbuf));
-	    GWEN_XMLNode_free(nBank);
-	    GWEN_XMLNode_free(nBanks);
-	    return -1;
-	  }
-	  b=GWEN_XMLNode_FindFirstTag(nBank, "MSNOnlSvcInfo", 0, 0);
-	  if (b)
-	    b=GWEN_XMLNode_FindFirstTag(b, "ProviderSettings", 0, 0);
-	  if (b) {
-	    const char *s;
+        GWEN_Buffer_AppendString(pbuf, "/fi/");
+        GWEN_Buffer_AppendString(pbuf, guid);
+        GWEN_Buffer_AppendString(pbuf, ".xml");
+        /*fprintf(stderr, "Reading file \"%s\"\n", GWEN_Buffer_GetStart(pbuf));*/
+        f=fopen(GWEN_Buffer_GetStart(pbuf), "r");
+        if (f) {
+          GWEN_XMLNODE *nBank;
+          GWEN_XMLNODE *b;
 
-	    s=readCharValueXml(b, "country", dbuf);
-	    if (s && *s) {
-	      if (strcasecmp(s, "USA")==0 ||
-		  strcasecmp(s, "US")==0 ||
-		  strcasecmp(s, "Uni")==0 ||
-		  strcasecmp(s, "United States")==0)
-		s="us";
-	      else if (strcasecmp(s, "CAN")==0 ||
-		       strcasecmp(s, "CA")==0 ||
-		       strcasecmp(s, "Canada")==0)
-		s="ca";
-	      else {
-		DBG_ERROR(0, "Unknown country \"%s\" in bank \"%s\"", s, guid);
-		GWEN_XMLNode_free(nBank);
-		GWEN_XMLNode_free(nBanks);
-		return -1;
-	      }
-	    }
-	    else {
-	      /*fprintf(stderr, "No country in bank \"%s\", ignoring\n", guid);*/
-	      /* assume us */
-	      s="us";
-	    }
-	    if (strcasecmp(s, country)==0) {
-	      AB_BANKINFO *bi;
-	      const char *zipCode;
-	      const char *name;
-	      int addIt=1;
-  
-	      bi=AB_BankInfo_new();
-	      AB_BankInfo_SetCountry(bi, s);
-	      s=readCharValueXml(nProvider, "name", dbuf);
-	      if (s && *s)
-		AB_BankInfo_SetBankName(bi, s);
-	      else {
-		DBG_ERROR(0, "No name in bank \"%s\"", guid);
-		GWEN_XMLNode_free(nBank);
-		GWEN_XMLNode_free(nBanks);
-		return -1;
-	      }
-  
-	      s=readCharValueXml(b, "city", dbuf);
-	      if (s && *s) {
-		AB_BankInfo_SetLocation(bi, s);
-		AB_BankInfo_SetCity(bi, s);
-	      }
-	      s=readCharValueXml(b, "address1", dbuf);
-	      if (s && *s)
-		AB_BankInfo_SetStreet(bi, s);
-	      s=readCharValueXml(b, "zip", dbuf);
-	      if (s && *s)
-		AB_BankInfo_SetZipcode(bi, s);
-	      s=readCharValueXml(b, "phone", dbuf);
-	      if (s && *s)
-		AB_BankInfo_SetPhone(bi, s);
-	      s=readCharValueXml(b, "InternetMail", dbuf);
-	      if (s && *s)
-		AB_BankInfo_SetEmail(bi, s);
-	      s=readCharValueXml(b, "website1", dbuf);
-	      if (s && *s)
-		AB_BankInfo_SetWebsite(bi, s);
-  
-	      s=readCharValueXml(b, "driverType", dbuf);
-	      if (s && strcasecmp(s, "O")==0) {
-		const char *pver;
-		const char *server;
-  
-		pver=GWEN_XMLNode_GetCharValue(b, "OFXHeaderVer", 0);
-		server=readCharValueXml(b, "ProviderUrl",
-					dbuf);
+          fclose(f);
+          nBank=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "bank");
+          if (GWEN_XML_ReadFile(nBank,
+                                GWEN_Buffer_GetStart(pbuf),
+                                GWEN_XML_FLAGS_DEFAULT)) {
+            DBG_ERROR(0, "Error reading bank file \"%s\"",
+                      GWEN_Buffer_GetStart(pbuf));
+            GWEN_XMLNode_free(nBank);
+            GWEN_XMLNode_free(nBanks);
+            return -1;
+          }
+          b=GWEN_XMLNode_FindFirstTag(nBank, "MSNOnlSvcInfo", 0, 0);
+          if (b)
+            b=GWEN_XMLNode_FindFirstTag(b, "ProviderSettings", 0, 0);
+          if (b) {
+            const char *s;
+
+            s=readCharValueXml(b, "country", dbuf);
+            if (s && *s) {
+              if (strcasecmp(s, "USA")==0 ||
+                  strcasecmp(s, "US")==0 ||
+                  strcasecmp(s, "Uni")==0 ||
+                  strcasecmp(s, "United States")==0)
+                s="us";
+              else if (strcasecmp(s, "CAN")==0 ||
+                       strcasecmp(s, "CA")==0 ||
+                       strcasecmp(s, "Canada")==0)
+                s="ca";
+              else {
+                DBG_ERROR(0, "Unknown country \"%s\" in bank \"%s\"", s, guid);
+                GWEN_XMLNode_free(nBank);
+                GWEN_XMLNode_free(nBanks);
+                return -1;
+              }
+            }
+            else {
+              /*fprintf(stderr, "No country in bank \"%s\", ignoring\n", guid);*/
+              /* assume us */
+              s="us";
+            }
+            if (strcasecmp(s, country)==0) {
+              AB_BANKINFO *bi;
+              const char *zipCode;
+              const char *name;
+              int addIt=1;
+
+              bi=AB_BankInfo_new();
+              AB_BankInfo_SetCountry(bi, s);
+              s=readCharValueXml(nProvider, "name", dbuf);
+              if (s && *s)
+                AB_BankInfo_SetBankName(bi, s);
+              else {
+                DBG_ERROR(0, "No name in bank \"%s\"", guid);
+                GWEN_XMLNode_free(nBank);
+                GWEN_XMLNode_free(nBanks);
+                return -1;
+              }
+
+              s=readCharValueXml(b, "city", dbuf);
+              if (s && *s) {
+                AB_BankInfo_SetLocation(bi, s);
+                AB_BankInfo_SetCity(bi, s);
+              }
+              s=readCharValueXml(b, "address1", dbuf);
+              if (s && *s)
+                AB_BankInfo_SetStreet(bi, s);
+              s=readCharValueXml(b, "zip", dbuf);
+              if (s && *s)
+                AB_BankInfo_SetZipcode(bi, s);
+              s=readCharValueXml(b, "phone", dbuf);
+              if (s && *s)
+                AB_BankInfo_SetPhone(bi, s);
+              s=readCharValueXml(b, "InternetMail", dbuf);
+              if (s && *s)
+                AB_BankInfo_SetEmail(bi, s);
+              s=readCharValueXml(b, "website1", dbuf);
+              if (s && *s)
+                AB_BankInfo_SetWebsite(bi, s);
+
+              s=readCharValueXml(b, "driverType", dbuf);
+              if (s && strcasecmp(s, "O")==0) {
+                const char *pver;
+                const char *server;
+
+                pver=GWEN_XMLNode_GetCharValue(b, "OFXHeaderVer", 0);
+                server=readCharValueXml(b, "ProviderUrl",
+                                        dbuf);
                 if (pver && *pver && server && *server &&
                     strcasecmp(server, "http://moneycentral.msn.com/cust404.htm")!=0) {
-		  AB_BANKINFO_SERVICE *sv;
-  
-		  sv=AB_BankInfoService_new();
-		  AB_BankInfoService_SetType(sv, "OFX");
-		  AB_BankInfoService_SetAddress(sv, server);
-		  AB_BankInfoService_SetPversion(sv, pver);
-		  s=readCharValueXml(b, "fid", dbuf);
-		  if (s && *s)
-		      AB_BankInfoService_SetAux1(sv, s);
-		  s=readCharValueXml(b, "org", dbuf);
-		  if (s && *s)
-		      AB_BankInfoService_SetAux2(sv, s);
+                  AB_BANKINFO_SERVICE *sv;
 
-		  AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
-		}
-	      }
-  
-	      name=AB_BankInfo_GetBankName(bi);
-	      zipCode=AB_BankInfo_GetZipcode(bi);
-	      if (name && *name && zipCode && *zipCode) {
-		AB_BANKINFO *tbi;
-		char zbuf[32];
-		const char *x;
-		char *y;
-  
-		/* make compact zip code */
-		assert(strlen(zipCode)<sizeof(zbuf));
-		x=zipCode;
-		y=zbuf;
-		while(*x) {
-		  if (*x=='-')
-		    break;
-		  else if (isdigit(*x))
-		    *(y++)=*x;
-		  x++;
-		} /* while */
-		*y=0;
-		zipCode=zbuf;
-		tbi=AB_BankInfo_List_First(bis);
-		while(tbi) {
-		  const char *lname;
-		  const char *lzip;
-		  const char *lblz;
-  
-		  lblz=AB_BankInfo_GetBankId(tbi);
-		  if (lblz && *lblz) {
-		    lname=AB_BankInfo_GetBankName(tbi);
-		    lzip=AB_BankInfo_GetZipcode(tbi);
-    
-		    if (lname && *lname && lzip && *lzip) {
-		      char lzbuf[32];
-    
-		      /* make compact zip code */
-		      assert(strlen(lzip)<sizeof(lzbuf));
-		      x=lzip;
-		      y=lzbuf;
-		      while(*x) {
-			if (*x=='-')
-			  break;
-			else if (isdigit(*x))
-			  *(y++)=*x;
-			x++;
-		      } /* while */
-		      *y=0;
-		      lzip=lzbuf;
-		      if (strcasecmp(zipCode, lzip)==0) {
-			uint32_t v;
-    
-			v=FuzzyCompare(name, lname);
-			if (v>FUZZY_THRESHOLD) {
-			  fprintf(stderr,
-				  "Updating existing entry for \"%s\" "
-				  "(%u)\n",
-				  lname, v);
-			  break;
-			}
-		      }
-		    }
-		  }
-		  tbi=AB_BankInfo_List_Next(tbi);
-		} /* while existing entries */
-		if (tbi) {
-		  const char *s1, *s2;
-  
-		  /* merge in new info */
-		  s1=AB_BankInfo_GetEmail(bi);
-		  s2=AB_BankInfo_GetEmail(tbi);
-		  if ((s1 && *s1) && (!s2 || !*s2))
-		    AB_BankInfo_SetEmail(tbi, s1);
-		  s1=AB_BankInfo_GetWebsite(bi);
-		  s2=AB_BankInfo_GetWebsite(tbi);
-		  if ((s1 && *s1) && (!s2 || !*s2))
-		    AB_BankInfo_SetWebsite(tbi, s1);
-  
-		  /* move new service entries to end of existing ones */
-		  AB_BankInfoService_List_AddList(AB_BankInfo_GetServices(tbi),
-						  AB_BankInfo_GetServices(bi));
-  
-		  addIt=0;
-		}
-	      }
-	      if (addIt)
-		AB_BankInfo_List_Add(bi, bis);
-	      else {
-		AB_BankInfo_free(bi);
-		updateCount++;
-	      }
-	    } /* if matching country */
-	  } /* if provider */
-	  else {
-	    fprintf(stderr,
-		    "File \"%s\" does not contain bank descriptions\n",
-		    GWEN_Buffer_GetStart(pbuf));
-	  }
-	  GWEN_XMLNode_free(nBank);
-	} /* if provider file exists */
-	else {
-	  fprintf(stderr, "Provider file for bank \"%s\" not found\n", guid);
-	}
-	GWEN_Buffer_Crop(pbuf, 0, pos);
+                  sv=AB_BankInfoService_new();
+                  AB_BankInfoService_SetType(sv, "OFX");
+                  AB_BankInfoService_SetAddress(sv, server);
+                  AB_BankInfoService_SetPversion(sv, pver);
+                  s=readCharValueXml(b, "fid", dbuf);
+                  if (s && *s)
+                    AB_BankInfoService_SetAux1(sv, s);
+                  s=readCharValueXml(b, "org", dbuf);
+                  if (s && *s)
+                    AB_BankInfoService_SetAux2(sv, s);
+
+                  AB_BankInfoService_List_Add(sv, AB_BankInfo_GetServices(bi));
+                }
+              }
+
+              name=AB_BankInfo_GetBankName(bi);
+              zipCode=AB_BankInfo_GetZipcode(bi);
+              if (name && *name && zipCode && *zipCode) {
+                AB_BANKINFO *tbi;
+                char zbuf[32];
+                const char *x;
+                char *y;
+
+                /* make compact zip code */
+                assert(strlen(zipCode)<sizeof(zbuf));
+                x=zipCode;
+                y=zbuf;
+                while (*x) {
+                  if (*x=='-')
+                    break;
+                  else if (isdigit(*x))
+                    *(y++)=*x;
+                  x++;
+                } /* while */
+                *y=0;
+                zipCode=zbuf;
+                tbi=AB_BankInfo_List_First(bis);
+                while (tbi) {
+                  const char *lname;
+                  const char *lzip;
+                  const char *lblz;
+
+                  lblz=AB_BankInfo_GetBankId(tbi);
+                  if (lblz && *lblz) {
+                    lname=AB_BankInfo_GetBankName(tbi);
+                    lzip=AB_BankInfo_GetZipcode(tbi);
+
+                    if (lname && *lname && lzip && *lzip) {
+                      char lzbuf[32];
+
+                      /* make compact zip code */
+                      assert(strlen(lzip)<sizeof(lzbuf));
+                      x=lzip;
+                      y=lzbuf;
+                      while (*x) {
+                        if (*x=='-')
+                          break;
+                        else if (isdigit(*x))
+                          *(y++)=*x;
+                        x++;
+                      } /* while */
+                      *y=0;
+                      lzip=lzbuf;
+                      if (strcasecmp(zipCode, lzip)==0) {
+                        uint32_t v;
+
+                        v=FuzzyCompare(name, lname);
+                        if (v>FUZZY_THRESHOLD) {
+                          fprintf(stderr,
+                                  "Updating existing entry for \"%s\" "
+                                  "(%u)\n",
+                                  lname, v);
+                          break;
+                        }
+                      }
+                    }
+                  }
+                  tbi=AB_BankInfo_List_Next(tbi);
+                } /* while existing entries */
+                if (tbi) {
+                  const char *s1, *s2;
+
+                  /* merge in new info */
+                  s1=AB_BankInfo_GetEmail(bi);
+                  s2=AB_BankInfo_GetEmail(tbi);
+                  if ((s1 && *s1) && (!s2 || !*s2))
+                    AB_BankInfo_SetEmail(tbi, s1);
+                  s1=AB_BankInfo_GetWebsite(bi);
+                  s2=AB_BankInfo_GetWebsite(tbi);
+                  if ((s1 && *s1) && (!s2 || !*s2))
+                    AB_BankInfo_SetWebsite(tbi, s1);
+
+                  /* move new service entries to end of existing ones */
+                  AB_BankInfoService_List_AddList(AB_BankInfo_GetServices(tbi),
+                                                  AB_BankInfo_GetServices(bi));
+
+                  addIt=0;
+                }
+              }
+              if (addIt)
+                AB_BankInfo_List_Add(bi, bis);
+              else {
+                AB_BankInfo_free(bi);
+                updateCount++;
+              }
+            } /* if matching country */
+          } /* if provider */
+          else {
+            fprintf(stderr,
+                    "File \"%s\" does not contain bank descriptions\n",
+                    GWEN_Buffer_GetStart(pbuf));
+          }
+          GWEN_XMLNode_free(nBank);
+        } /* if provider file exists */
+        else {
+          fprintf(stderr, "Provider file for bank \"%s\" not found\n", guid);
+        }
+        GWEN_Buffer_Crop(pbuf, 0, pos);
       } /* if guid */
       else {
         fprintf(stderr, "File does not contain a GUID\n");
@@ -1241,7 +1262,8 @@ int readMSMFiles(const char *path,
 
 
 
-int readBcFile(const char *fname) {
+int readBcFile(const char *fname)
+{
   GWEN_DB_NODE *dbData;
   GWEN_DB_NODE *dbT;
   int count=0;
@@ -1258,17 +1280,17 @@ int readBcFile(const char *fname) {
                         "out.conf",
                         GWEN_DB_FLAGS_QUOTE_VALUES | \
                         GWEN_DB_FLAGS_WRITE_SUBGROUPS | \
-			GWEN_DB_FLAGS_INDEND | \
+                        GWEN_DB_FLAGS_INDEND | \
                         GWEN_DB_FLAGS_ADD_GROUP_NEWLINES | \
                         GWEN_DB_FLAGS_ESCAPE_CHARVALUES | \
-			GWEN_DB_FLAGS_OMIT_TYPES)) {
+                        GWEN_DB_FLAGS_OMIT_TYPES)) {
     DBG_ERROR(0, "Error writing bank file");
     return -1;
   }
 
   fprintf(stdout, "Building database...\n");
   dbT=GWEN_DB_FindFirstGroup(dbData, "bank");
-  while(dbT) {
+  while (dbT) {
     const char *lblz;
     const char *lloc;
 
@@ -1303,9 +1325,9 @@ int readBcFile(const char *fname) {
       }
       s=GWEN_DB_GetCharValue(dbT, "xFax", 0, 0);
       if (s && *s)
-	GWEN_Buffer_AppendString(tbuf, s);
+        GWEN_Buffer_AppendString(tbuf, s);
       GWEN_DB_SetCharValue(dbT, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			   "fax", GWEN_Buffer_GetStart(tbuf));
+                           "fax", GWEN_Buffer_GetStart(tbuf));
       GWEN_Buffer_Reset(tbuf);
 
       /* compose bank code */
@@ -1352,7 +1374,8 @@ int readBcFile(const char *fname) {
 
 
 
-int makeIndexBlz(const char *fname) {
+int makeIndexBlz(const char *fname)
+{
   AB_BANKINFO *bi;
   FILE *f;
   uint32_t count=0;
@@ -1364,7 +1387,7 @@ int makeIndexBlz(const char *fname) {
   }
 
   bi=AB_BankInfo_List_First(bis);
-  while(bi) {
+  while (bi) {
     uint32_t pos;
     const char *s;
     char numbuf[32];
@@ -1394,7 +1417,8 @@ int makeIndexBlz(const char *fname) {
 
 
 
-int makeIndexBic(const char *fname) {
+int makeIndexBic(const char *fname)
+{
   AB_BANKINFO *bi;
   FILE *f;
   uint32_t count=0;
@@ -1406,7 +1430,7 @@ int makeIndexBic(const char *fname) {
   }
 
   bi=AB_BankInfo_List_First(bis);
-  while(bi) {
+  while (bi) {
     const char *s;
 
     count++;
@@ -1437,7 +1461,8 @@ int makeIndexBic(const char *fname) {
 
 
 
-int makeIndexNameAndLoc(const char *fname) {
+int makeIndexNameAndLoc(const char *fname)
+{
   AB_BANKINFO *bi;
   FILE *f;
   uint32_t count=0;
@@ -1449,7 +1474,7 @@ int makeIndexNameAndLoc(const char *fname) {
   }
 
   bi=AB_BankInfo_List_First(bis);
-  while(bi) {
+  while (bi) {
     const char *name;
     const char *loc;
 
@@ -1459,7 +1484,7 @@ int makeIndexNameAndLoc(const char *fname) {
     if (name && *name && loc && *loc) {
       uint32_t pos;
       char numbuf[32];
-  
+
       snprintf(numbuf, sizeof(numbuf), "%08x", count);
       pos=(uint32_t)GWEN_DB_GetIntValue(dbIdx, numbuf, 0, 0);
       if (pos==0 && count!=1) {
@@ -1482,7 +1507,8 @@ int makeIndexNameAndLoc(const char *fname) {
 
 
 
-int saveBankInfos(const char *path) {
+int saveBankInfos(const char *path)
+{
   AB_BANKINFO *bi;
   uint32_t count=0;
   GWEN_BUFFER *xbuf;
@@ -1493,10 +1519,10 @@ int saveBankInfos(const char *path) {
   fprintf(stdout, "Saving database...\n");
   sio=GWEN_SyncIo_File_new(path, GWEN_SyncIo_File_CreationMode_CreateAlways);
   GWEN_SyncIo_AddFlags(sio,
-		       GWEN_SYNCIO_FILE_FLAGS_READ |
-		       GWEN_SYNCIO_FILE_FLAGS_WRITE |
-		       GWEN_SYNCIO_FILE_FLAGS_UREAD |
-		       GWEN_SYNCIO_FILE_FLAGS_UWRITE);
+                       GWEN_SYNCIO_FILE_FLAGS_READ |
+                       GWEN_SYNCIO_FILE_FLAGS_WRITE |
+                       GWEN_SYNCIO_FILE_FLAGS_UREAD |
+                       GWEN_SYNCIO_FILE_FLAGS_UWRITE);
   rv=GWEN_SyncIo_Connect(sio);
   if (rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
@@ -1512,8 +1538,8 @@ int saveBankInfos(const char *path) {
   }
   if (rv>=0) {
     GWEN_FASTBUFFER_WRITELINE(fb, rv,
-			      "# Please do not modify this file, "
-			      "the index files rely on exact positions.");
+                              "# Please do not modify this file, "
+                              "the index files rely on exact positions.");
   }
   if (rv<0) {
     DBG_INFO(0, "here (%d)", rv);
@@ -1526,7 +1552,7 @@ int saveBankInfos(const char *path) {
 
   xbuf=GWEN_Buffer_new(0, 256, 0, 1);
   bi=AB_BankInfo_List_First(bis);
-  while(bi) {
+  while (bi) {
     const char *s;
     GWEN_DB_NODE *dbT;
     uint32_t pos;
@@ -1556,15 +1582,15 @@ int saveBankInfos(const char *path) {
     pos=GWEN_FastBuffer_GetBytesWritten(fb);
     snprintf(numbuf, sizeof(numbuf), "%08x", count);
     GWEN_DB_SetIntValue(dbIdx,
-			GWEN_PATH_FLAGS_CREATE_VAR,
-			numbuf, pos);
+                        GWEN_PATH_FLAGS_CREATE_VAR,
+                        numbuf, pos);
     if (GWEN_DB_WriteToFastBuffer(dbT,
-				  fb,
-				  GWEN_DB_FLAGS_QUOTE_VALUES | \
-				  GWEN_DB_FLAGS_WRITE_SUBGROUPS | \
-				  GWEN_DB_FLAGS_INDEND | \
-				  GWEN_DB_FLAGS_ESCAPE_CHARVALUES | \
-				  GWEN_DB_FLAGS_OMIT_TYPES)) {
+                                  fb,
+                                  GWEN_DB_FLAGS_QUOTE_VALUES | \
+                                  GWEN_DB_FLAGS_WRITE_SUBGROUPS | \
+                                  GWEN_DB_FLAGS_INDEND | \
+                                  GWEN_DB_FLAGS_ESCAPE_CHARVALUES | \
+                                  GWEN_DB_FLAGS_OMIT_TYPES)) {
       DBG_ERROR(0, "Error writing bank file \"%s\"", path);
       GWEN_DB_Group_free(dbT);
       GWEN_FastBuffer_free(fb);
@@ -1618,7 +1644,8 @@ int saveBankInfos(const char *path) {
 
 
 
-int makeBankInfos(const char *path) {
+int makeBankInfos(const char *path)
+{
   AB_BANKINFO *bi;
   uint32_t count=0;
   char numbuf[32];
@@ -1626,7 +1653,7 @@ int makeBankInfos(const char *path) {
 
   dbuf=GWEN_Buffer_new(0, 256, 0, 1);
   bi=AB_BankInfo_List_First(bis);
-  while(bi) {
+  while (bi) {
     GWEN_DB_NODE *dbT;
 
     count++;
@@ -1642,7 +1669,7 @@ int makeBankInfos(const char *path) {
                                GWEN_DIR_FLAGS_PUBLIC_PATH |
                                GWEN_DIR_FLAGS_PUBLIC_NAME)) {
       DBG_ERROR(0, "Error creating path \"%s\"",
-		GWEN_Buffer_GetStart(dbuf));
+                GWEN_Buffer_GetStart(dbuf));
       /* GWEN_DB_Group_free(dbT); -- not yet initialized */
       GWEN_Buffer_free(dbuf);
       return -1;
@@ -1658,15 +1685,15 @@ int makeBankInfos(const char *path) {
 
     /* write file */
     if (GWEN_DB_WriteFile(dbT,
-			  GWEN_Buffer_GetStart(dbuf),
-			  GWEN_DB_FLAGS_QUOTE_VALUES | \
-			  GWEN_DB_FLAGS_WRITE_SUBGROUPS | \
-			  GWEN_DB_FLAGS_INDEND | \
-			  GWEN_DB_FLAGS_ADD_GROUP_NEWLINES | \
-			  GWEN_DB_FLAGS_ESCAPE_CHARVALUES | \
-			  GWEN_DB_FLAGS_OMIT_TYPES)) {
+                          GWEN_Buffer_GetStart(dbuf),
+                          GWEN_DB_FLAGS_QUOTE_VALUES | \
+                          GWEN_DB_FLAGS_WRITE_SUBGROUPS | \
+                          GWEN_DB_FLAGS_INDEND | \
+                          GWEN_DB_FLAGS_ADD_GROUP_NEWLINES | \
+                          GWEN_DB_FLAGS_ESCAPE_CHARVALUES | \
+                          GWEN_DB_FLAGS_OMIT_TYPES)) {
       DBG_ERROR(0, "Error writing bank file \"%s\"",
-		GWEN_Buffer_GetStart(dbuf));
+                GWEN_Buffer_GetStart(dbuf));
       GWEN_DB_Group_free(dbT);
       GWEN_Buffer_free(dbuf);
       return -1;
@@ -1703,7 +1730,8 @@ int makeBankInfos(const char *path) {
 
 
 
-int loadBanks(const char *fname, AB_BANKINFO_LIST *biList) {
+int loadBanks(const char *fname, AB_BANKINFO_LIST *biList)
+{
   uint32_t count=0;
   GWEN_SYNCIO *sio;
   GWEN_FAST_BUFFER *fb;
@@ -1721,7 +1749,7 @@ int loadBanks(const char *fname, AB_BANKINFO_LIST *biList) {
 
   fb=GWEN_FastBuffer_new(512, sio);
 
-  for(;;) {
+  for (;;) {
     GWEN_DB_NODE *dbT;
     AB_BANKINFO *bi;
     int pos;
@@ -1731,9 +1759,9 @@ int loadBanks(const char *fname, AB_BANKINFO_LIST *biList) {
     dbT=GWEN_DB_Group_new("bank");
     pos=GWEN_FastBuffer_GetBytesRead(fb);
     rv=GWEN_DB_ReadFromFastBuffer(dbT, fb,
-				  GWEN_DB_FLAGS_DEFAULT |
-				  GWEN_PATH_FLAGS_CREATE_GROUP|
-				  GWEN_DB_FLAGS_UNTIL_EMPTY_LINE);
+                                  GWEN_DB_FLAGS_DEFAULT |
+                                  GWEN_PATH_FLAGS_CREATE_GROUP|
+                                  GWEN_DB_FLAGS_UNTIL_EMPTY_LINE);
     if (rv<0) {
       if (rv==GWEN_ERROR_EOF)
         break;
@@ -1768,7 +1796,8 @@ int loadBanks(const char *fname, AB_BANKINFO_LIST *biList) {
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   if (argc<2) {
     fprintf(stderr,
             "Usage:\n"
@@ -1860,8 +1889,8 @@ int main(int argc, char **argv) {
     if (argc<6) {
       fprintf(stderr,
               "Usage:\n"
-	      "%s build-am SRCPATH COUNTRY FEDACHDIRFILE DESTFILE\n",
-	      argv[0]);
+              "%s build-am SRCPATH COUNTRY FEDACHDIRFILE DESTFILE\n",
+              argv[0]);
       return 1;
     }
     path=argv[2];
@@ -1873,7 +1902,7 @@ int main(int argc, char **argv) {
 
     if (strcasecmp(country, "us")==0) {
       if (readFedAchDirFile(src2File)) {
-	return 3;
+        return 3;
       }
     }
 
@@ -1990,30 +2019,30 @@ int main(int argc, char **argv) {
     }
 
     curBi=AB_BankInfo_List_First(updBis);
-    while(curBi) {
+    while (curBi) {
       const char *bankId;
 
       bankId=AB_BankInfo_GetBankId(curBi);
       if (bankId) {
-	AB_BANKINFO *origBi;
+        AB_BANKINFO *origBi;
 
-	origBi=AB_BankInfo_List_First(bis);
-	while(origBi) {
-	  const char *s;
+        origBi=AB_BankInfo_List_First(bis);
+        while (origBi) {
+          const char *s;
 
-	  s=AB_BankInfo_GetBankId(origBi);
-	  if (s && strcasecmp(s, bankId)==0)
+          s=AB_BankInfo_GetBankId(origBi);
+          if (s && strcasecmp(s, bankId)==0)
             break;
-	  origBi=AB_BankInfo_List_Next(origBi);
-	}
+          origBi=AB_BankInfo_List_Next(origBi);
+        }
 
-	if (origBi) {
-	  /* replace original */
-	  AB_BankInfo_List_Del(origBi);
-	  AB_BankInfo_free(origBi);
-	  origBi=AB_BankInfo_dup(curBi);
-	  AB_BankInfo_List_Add(origBi, bis);
-	}
+        if (origBi) {
+          /* replace original */
+          AB_BankInfo_List_Del(origBi);
+          AB_BankInfo_free(origBi);
+          origBi=AB_BankInfo_dup(curBi);
+          AB_BankInfo_List_Add(origBi, bis);
+        }
       }
 
       curBi=AB_BankInfo_List_Next(curBi);

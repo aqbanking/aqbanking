@@ -43,7 +43,8 @@ GWEN_INHERIT(GWEN_DIALOG, AH_EDIT_USER_PINTAN_DIALOG)
 
 
 
-GWEN_DIALOG *AH_EditUserPinTanDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock) {
+GWEN_DIALOG *AH_EditUserPinTanDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock)
+{
   GWEN_DIALOG *dlg;
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -52,14 +53,14 @@ GWEN_DIALOG *AH_EditUserPinTanDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLoc
   dlg=GWEN_Dialog_new("ah_edit_user_pintan");
   GWEN_NEW_OBJECT(AH_EDIT_USER_PINTAN_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AH_EDIT_USER_PINTAN_DIALOG, dlg, xdlg,
-		       AH_EditUserPinTanDialog_FreeData);
+                       AH_EditUserPinTanDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AH_EditUserPinTanDialog_SignalHandler);
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-			       "aqbanking/backends/aqhbci/dialogs/dlg_edituserpintan.dlg",
-			       fbuf);
+                               "aqbanking/backends/aqhbci/dialogs/dlg_edituserpintan.dlg",
+                               fbuf);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
@@ -89,10 +90,11 @@ GWEN_DIALOG *AH_EditUserPinTanDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLoc
 
 
 
-void GWENHYWFAR_CB AH_EditUserPinTanDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AH_EditUserPinTanDialog_FreeData(void *bp, void *p)
+{
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
 
-  xdlg=(AH_EDIT_USER_PINTAN_DIALOG*) p;
+  xdlg=(AH_EDIT_USER_PINTAN_DIALOG *) p;
   AH_TanMethod_List_free(xdlg->tanMethodList);
 
   GWEN_FREE_OBJECT(xdlg);
@@ -100,7 +102,8 @@ void GWENHYWFAR_CB AH_EditUserPinTanDialog_FreeData(void *bp, void *p) {
 
 
 
-static int createTanMethodString(const AH_TAN_METHOD *tm, GWEN_BUFFER *tbuf) {
+static int createTanMethodString(const AH_TAN_METHOD *tm, GWEN_BUFFER *tbuf)
+{
   const char *s;
   char numbuf[32];
 
@@ -128,7 +131,8 @@ static int createTanMethodString(const AH_TAN_METHOD *tm, GWEN_BUFFER *tbuf) {
 
 
 
-const AH_TAN_METHOD *AH_EditUserPinTanDialog_GetCurrentTanMethod(GWEN_DIALOG *dlg) {
+const AH_TAN_METHOD *AH_EditUserPinTanDialog_GetCurrentTanMethod(GWEN_DIALOG *dlg)
+{
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
   int idx;
 
@@ -147,13 +151,13 @@ const AH_TAN_METHOD *AH_EditUserPinTanDialog_GetCurrentTanMethod(GWEN_DIALOG *dl
 
       tbuf=GWEN_Buffer_new(0, 256, 0, 1);
       tm=AH_TanMethod_List_First(xdlg->tanMethodList);
-      while(tm) {
-	if (createTanMethodString(tm, tbuf)==0 &&
-	    strcasecmp(GWEN_Buffer_GetStart(tbuf), currentText)==0) {
-	  GWEN_Buffer_free(tbuf);
-	  return tm;
-	}
-	GWEN_Buffer_Reset(tbuf);
+      while (tm) {
+        if (createTanMethodString(tm, tbuf)==0 &&
+            strcasecmp(GWEN_Buffer_GetStart(tbuf), currentText)==0) {
+          GWEN_Buffer_free(tbuf);
+          return tm;
+        }
+        GWEN_Buffer_Reset(tbuf);
 
         tm=AH_TanMethod_List_Next(tm);
       }
@@ -166,7 +170,8 @@ const AH_TAN_METHOD *AH_EditUserPinTanDialog_GetCurrentTanMethod(GWEN_DIALOG *dl
 
 
 
-static void AH_EditUserPinTanDialog_UpdateTanMethods(GWEN_DIALOG *dlg) {
+static void AH_EditUserPinTanDialog_UpdateTanMethods(GWEN_DIALOG *dlg)
+{
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
   const AH_TAN_METHOD_LIST *ctl;
 
@@ -201,11 +206,11 @@ static void AH_EditUserPinTanDialog_UpdateTanMethods(GWEN_DIALOG *dlg) {
     idx=-1;
     i=1;
     tm=AH_TanMethod_List_First(xdlg->tanMethodList);
-    while(tm) {
+    while (tm) {
       if (createTanMethodString(tm, tbuf)==0) {
-	if (AH_TanMethod_GetFunction(tm)==tfn && AH_TanMethod_GetGvVersion(tm)==tjv)
+        if (AH_TanMethod_GetFunction(tm)==tfn && AH_TanMethod_GetGvVersion(tm)==tjv)
           idx=i;
-	GWEN_Dialog_SetCharProperty(dlg, "tanMethodCombo", GWEN_DialogProperty_AddValue, 0, GWEN_Buffer_GetStart(tbuf), 0);
+        GWEN_Dialog_SetCharProperty(dlg, "tanMethodCombo", GWEN_DialogProperty_AddValue, 0, GWEN_Buffer_GetStart(tbuf), 0);
         i++;
       }
       GWEN_Buffer_Reset(tbuf);
@@ -221,7 +226,8 @@ static void AH_EditUserPinTanDialog_UpdateTanMethods(GWEN_DIALOG *dlg) {
 
 
 
-void AH_EditUserPinTanDialog_Init(GWEN_DIALOG *dlg) {
+void AH_EditUserPinTanDialog_Init(GWEN_DIALOG *dlg)
+{
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
@@ -237,11 +243,11 @@ void AH_EditUserPinTanDialog_Init(GWEN_DIALOG *dlg) {
 
   /* init */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("Edit User"),
-			      0);
+                              "",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("Edit User"),
+                              0);
 
   /* also selects currently selected TAN method */
   AH_EditUserPinTanDialog_UpdateTanMethods(dlg);
@@ -275,16 +281,26 @@ void AH_EditUserPinTanDialog_Init(GWEN_DIALOG *dlg) {
   GWEN_Dialog_SetCharProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_AddValue, 0, "1.1", 0);
 
   /* toGui */
-  switch(((AH_User_GetHttpVMajor(xdlg->user))<<8)+AH_User_GetHttpVMinor(xdlg->user)) {
-  case 0x0100: GWEN_Dialog_SetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0); break;
-  case 0x0101: GWEN_Dialog_SetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0); break;
-  default:     break;
+  switch (((AH_User_GetHttpVMajor(xdlg->user))<<8)+AH_User_GetHttpVMinor(xdlg->user)) {
+  case 0x0100:
+    GWEN_Dialog_SetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
+    break;
+  case 0x0101:
+    GWEN_Dialog_SetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0);
+    break;
+  default:
+    break;
   }
 
-  switch(AH_User_GetHbciVersion(xdlg->user)) {
-  case 220: GWEN_Dialog_SetIntProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0); break;
-  case 300: GWEN_Dialog_SetIntProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0); break;
-  default:  break;
+  switch (AH_User_GetHbciVersion(xdlg->user)) {
+  case 220:
+    GWEN_Dialog_SetIntProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
+    break;
+  case 300:
+    GWEN_Dialog_SetIntProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0);
+    break;
+  default:
+    break;
   }
 
   /* TAN medium id */
@@ -297,20 +313,20 @@ void AH_EditUserPinTanDialog_Init(GWEN_DIALOG *dlg) {
 
   flags=AH_User_GetFlags(xdlg->user);
   GWEN_Dialog_SetIntProperty(dlg, "forceSslv3Check", GWEN_DialogProperty_Value, 0,
-			     (flags & AH_USER_FLAGS_FORCE_SSL3)?1:0,
-			     0);
+                             (flags & AH_USER_FLAGS_FORCE_SSL3)?1:0,
+                             0);
 
   GWEN_Dialog_SetIntProperty(dlg, "ignorePrematureCloseCheck", GWEN_DialogProperty_Value, 0,
                              (flags & AH_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE)?1:0,
                              0);
 
   GWEN_Dialog_SetIntProperty(dlg, "noBase64Check", GWEN_DialogProperty_Value, 0,
-			     (flags & AH_USER_FLAGS_NO_BASE64)?1:0,
-			     0);
+                             (flags & AH_USER_FLAGS_NO_BASE64)?1:0,
+                             0);
 
   GWEN_Dialog_SetIntProperty(dlg, "omitSmsAccountCheck", GWEN_DialogProperty_Value, 0,
                              (flags & AH_USER_FLAGS_TAN_OMIT_SMS_ACCOUNT)?1:0,
-			     0);
+                             0);
 
 
   /* read width */
@@ -326,11 +342,12 @@ void AH_EditUserPinTanDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-static void removeAllSpaces(uint8_t *s) {
+static void removeAllSpaces(uint8_t *s)
+{
   uint8_t *d;
 
   d=s;
-  while(*s) {
+  while (*s) {
     if (*s>33)
       *(d++)=*s;
     s++;
@@ -340,7 +357,8 @@ static void removeAllSpaces(uint8_t *s) {
 
 
 
-int AH_EditUserPinTanDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
+int AH_EditUserPinTanDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
+{
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
   const char *s;
   int i;
@@ -371,7 +389,7 @@ int AH_EditUserPinTanDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
     GWEN_Buffer_AppendString(tbuf, s);
     GWEN_Text_CondenseBuffer(tbuf);
-    removeAllSpaces((uint8_t*)GWEN_Buffer_GetStart(tbuf));
+    removeAllSpaces((uint8_t *)GWEN_Buffer_GetStart(tbuf));
     if (u)
       AB_User_SetBankCode(u, GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_free(tbuf);
@@ -406,14 +424,18 @@ int AH_EditUserPinTanDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
     AB_User_SetCountry(u, "de");
 
   i=GWEN_Dialog_GetIntProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_Value, 0, -1);
-  switch(i) {
-  case 0: AH_User_SetHbciVersion(xdlg->user, 220); break;
+  switch (i) {
+  case 0:
+    AH_User_SetHbciVersion(xdlg->user, 220);
+    break;
   default:
-  case 1: AH_User_SetHbciVersion(xdlg->user, 300); break;
+  case 1:
+    AH_User_SetHbciVersion(xdlg->user, 300);
+    break;
   }
 
   i=GWEN_Dialog_GetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, -1);
-  switch(i) {
+  switch (i) {
   case 0:
     AH_User_SetHttpVMajor(xdlg->user, 1);
     AH_User_SetHttpVMinor(xdlg->user, 0);
@@ -454,11 +476,11 @@ int AH_EditUserPinTanDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
     GWEN_Buffer_AppendString(tbuf, s);
     GWEN_Text_CondenseBuffer(tbuf);
-    removeAllSpaces((uint8_t*)GWEN_Buffer_GetStart(tbuf));
+    removeAllSpaces((uint8_t *)GWEN_Buffer_GetStart(tbuf));
     gu=GWEN_Url_fromString(GWEN_Buffer_GetStart(tbuf));
     if (gu==NULL) {
       if (!quiet) {
-	GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Invalid URL"));
+        GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Invalid URL"));
       }
       GWEN_Buffer_free(tbuf);
       return GWEN_ERROR_BAD_DATA;
@@ -485,7 +507,8 @@ int AH_EditUserPinTanDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
 
 
 
-void AH_EditUserPinTanDialog_Fini(GWEN_DIALOG *dlg) {
+void AH_EditUserPinTanDialog_Fini(GWEN_DIALOG *dlg)
+{
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
   int i;
   GWEN_DB_NODE *dbPrefs;
@@ -499,21 +522,22 @@ void AH_EditUserPinTanDialog_Fini(GWEN_DIALOG *dlg) {
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_width",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_width",
+                      i);
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_height",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_height",
+                      i);
 }
 
 
 
-int AH_EditUserPinTanDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
+int AH_EditUserPinTanDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg)
+{
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
   GWEN_DIALOG *dlg2;
   int rv;
@@ -543,11 +567,11 @@ int AH_EditUserPinTanDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
 
       s=AB_BankInfo_GetBankId(bi);
       GWEN_Dialog_SetCharProperty(dlg,
-				  "bankCodeEdit",
-				  GWEN_DialogProperty_Value,
-				  0,
-				  (s && *s)?s:"",
-				  0);
+                                  "bankCodeEdit",
+                                  GWEN_DialogProperty_Value,
+                                  0,
+                                  (s && *s)?s:"",
+                                  0);
     }
   }
   GWEN_Dialog_free(dlg2);
@@ -557,7 +581,8 @@ int AH_EditUserPinTanDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
 
 
 
-int AH_EditUserPinTanDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
+int AH_EditUserPinTanDialog_HandleActivatedOk(GWEN_DIALOG *dlg)
+{
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
   int rv;
 
@@ -577,14 +602,14 @@ int AH_EditUserPinTanDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
-			  GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
-			  GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
-			  I18N("Error"),
-			  I18N("Unable to lock user. Maybe already in use?"),
-			  I18N("Dismiss"),
-			  NULL,
-			  NULL,
-			  0);
+                          GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+                          GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
+                          I18N("Error"),
+                          I18N("Unable to lock user. Maybe already in use?"),
+                          I18N("Dismiss"),
+                          NULL,
+                          NULL,
+                          0);
       return GWEN_DialogEvent_ResultHandled;
     }
   }
@@ -598,14 +623,14 @@ int AH_EditUserPinTanDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
-			  GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
-			  GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
-			  I18N("Error"),
-			  I18N("Unable to unlock user."),
-			  I18N("Dismiss"),
-			  NULL,
-			  NULL,
-			  0);
+                          GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+                          GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
+                          I18N("Error"),
+                          I18N("Unable to unlock user."),
+                          I18N("Dismiss"),
+                          NULL,
+                          NULL,
+                          0);
       AB_Provider_EndExclUseUser(xdlg->provider, xdlg->user, 1);
       return GWEN_DialogEvent_ResultHandled;
     }
@@ -616,7 +641,8 @@ int AH_EditUserPinTanDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
 
 
 
-static int AH_EditUserPinTanDialog_HandleActivatedGetCert(GWEN_DIALOG *dlg) {
+static int AH_EditUserPinTanDialog_HandleActivatedGetCert(GWEN_DIALOG *dlg)
+{
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
   int rv;
 
@@ -625,10 +651,10 @@ static int AH_EditUserPinTanDialog_HandleActivatedGetCert(GWEN_DIALOG *dlg) {
   assert(xdlg);
 
   rv=AH_Provider_GetCert(xdlg->provider,
-			 xdlg->user,
-			 1,   /* withProgress */
-			 0,   /* nounmount */
-			 xdlg->doLock);
+                         xdlg->user,
+                         1,   /* withProgress */
+                         0,   /* nounmount */
+                         xdlg->doLock);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
   }
@@ -638,7 +664,8 @@ static int AH_EditUserPinTanDialog_HandleActivatedGetCert(GWEN_DIALOG *dlg) {
 
 
 
-static int AH_EditUserPinTanDialog_HandleActivatedGetSysId(GWEN_DIALOG *dlg) {
+static int AH_EditUserPinTanDialog_HandleActivatedGetSysId(GWEN_DIALOG *dlg)
+{
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
   int rv;
   AB_IMEXPORTER_CONTEXT *ctx;
@@ -649,11 +676,11 @@ static int AH_EditUserPinTanDialog_HandleActivatedGetSysId(GWEN_DIALOG *dlg) {
 
   ctx=AB_ImExporterContext_new();
   rv=AH_Provider_GetSysId(xdlg->provider,
-			  xdlg->user,
+                          xdlg->user,
                           ctx,
-			  1,   /* withProgress */
-			  0,   /* nounmount */
-			  xdlg->doLock);
+                          1,   /* withProgress */
+                          0,   /* nounmount */
+                          xdlg->doLock);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
   }
@@ -666,7 +693,8 @@ static int AH_EditUserPinTanDialog_HandleActivatedGetSysId(GWEN_DIALOG *dlg) {
 
 
 
-static int AH_EditUserPinTanDialog_HandleActivatedGetItanModes(GWEN_DIALOG *dlg) {
+static int AH_EditUserPinTanDialog_HandleActivatedGetItanModes(GWEN_DIALOG *dlg)
+{
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
   int rv;
   AB_IMEXPORTER_CONTEXT *ctx;
@@ -677,11 +705,11 @@ static int AH_EditUserPinTanDialog_HandleActivatedGetItanModes(GWEN_DIALOG *dlg)
 
   ctx=AB_ImExporterContext_new();
   rv=AH_Provider_GetItanModes(xdlg->provider,
-			      xdlg->user,
-			      ctx,
-			      1,   /* withProgress */
-			      0,   /* nounmount */
-			      xdlg->doLock);
+                              xdlg->user,
+                              ctx,
+                              1,   /* withProgress */
+                              0,   /* nounmount */
+                              xdlg->doLock);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
   }
@@ -694,7 +722,8 @@ static int AH_EditUserPinTanDialog_HandleActivatedGetItanModes(GWEN_DIALOG *dlg)
 
 
 
-static int AH_EditUserPinTanDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg) {
+static int AH_EditUserPinTanDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg)
+{
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
   int rv;
   AB_IMEXPORTER_CONTEXT *ctx;
@@ -705,11 +734,11 @@ static int AH_EditUserPinTanDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg) 
 
   ctx=AB_ImExporterContext_new();
   rv=AH_Provider_GetAccounts(xdlg->provider,
-			     xdlg->user,
-			     ctx,
-			     1,   /* withProgress */
-			     0,   /* nounmount */
-			     xdlg->doLock);
+                             xdlg->user,
+                             ctx,
+                             1,   /* withProgress */
+                             0,   /* nounmount */
+                             xdlg->doLock);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
   }
@@ -722,7 +751,8 @@ static int AH_EditUserPinTanDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg) 
 
 
 
-int AH_EditUserPinTanDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int AH_EditUserPinTanDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   if (strcasecmp(sender, "bankCodeButton")==0)
     return AH_EditUserPinTanDialog_HandleActivatedBankCode(dlg);
   else if (strcasecmp(sender, "getCertButton")==0)
@@ -747,15 +777,16 @@ int AH_EditUserPinTanDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender
 
 
 int GWENHYWFAR_CB AH_EditUserPinTanDialog_SignalHandler(GWEN_DIALOG *dlg,
-							GWEN_DIALOG_EVENTTYPE t,
-							const char *sender) {
+                                                        GWEN_DIALOG_EVENTTYPE t,
+                                                        const char *sender)
+{
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_PINTAN_DIALOG, dlg);
   assert(xdlg);
 
-  switch(t) {
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     AH_EditUserPinTanDialog_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;

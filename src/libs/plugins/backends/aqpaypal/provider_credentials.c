@@ -14,12 +14,13 @@
 
 
 
-static int readFile(const char *fname, GWEN_BUFFER *dbuf) {
+static int readFile(const char *fname, GWEN_BUFFER *dbuf)
+{
   FILE *f;
 
   f=fopen(fname, "rb");
   if (f) {
-    while(!feof(f)) {
+    while (!feof(f)) {
       uint32_t l;
       ssize_t s;
       char *p;
@@ -29,13 +30,13 @@ static int readFile(const char *fname, GWEN_BUFFER *dbuf) {
       p=GWEN_Buffer_GetPosPointer(dbuf);
       s=fread(p, 1, l, f);
       if (s==0)
-	break;
+        break;
       if (s==(ssize_t)-1) {
-	DBG_ERROR(AQPAYPAL_LOGDOMAIN,
-		  "fread(%s): %s",
-		  fname, strerror(errno));
-	fclose(f);
-	return GWEN_ERROR_IO;
+        DBG_ERROR(AQPAYPAL_LOGDOMAIN,
+                  "fread(%s): %s",
+                  fname, strerror(errno));
+        fclose(f);
+        return GWEN_ERROR_IO;
       }
 
       GWEN_Buffer_IncrementPos(dbuf, s);
@@ -47,16 +48,17 @@ static int readFile(const char *fname, GWEN_BUFFER *dbuf) {
   }
   else {
     DBG_ERROR(AQPAYPAL_LOGDOMAIN,
-	     "fopen(%s): %s",
-	     fname, strerror(errno));
+              "fopen(%s): %s",
+              fname, strerror(errno));
     return GWEN_ERROR_IO;
   }
 }
 
 
 
-static int writeToFile(FILE *f, const char *p, int len) {
-  while(len>0) {
+static int writeToFile(FILE *f, const char *p, int len)
+{
+  while (len>0) {
     ssize_t l;
     ssize_t s;
 
@@ -66,8 +68,8 @@ static int writeToFile(FILE *f, const char *p, int len) {
     s=fwrite(p, 1, l, f);
     if (s==(ssize_t)-1 || s==0) {
       DBG_ERROR(AQPAYPAL_LOGDOMAIN,
-	       "fwrite: %s",
-	       strerror(errno));
+                "fwrite: %s",
+                strerror(errno));
       return GWEN_ERROR_IO;
     }
     p+=s;
@@ -79,7 +81,8 @@ static int writeToFile(FILE *f, const char *p, int len) {
 
 
 
-static int writeFile(const char *fname, const char *p, int len) {
+static int writeFile(const char *fname, const char *p, int len)
+{
   FILE *f;
 
   f=fopen(fname, "wb");
@@ -99,7 +102,7 @@ static int writeFile(const char *fname, const char *p, int len) {
   }
   else {
     DBG_ERROR(AQPAYPAL_LOGDOMAIN, "fopen(%s): %s",
-	      fname, strerror(errno));
+              fname, strerror(errno));
     return GWEN_ERROR_IO;
   }
 
@@ -109,7 +112,8 @@ static int writeFile(const char *fname, const char *p, int len) {
 
 
 
-int APY_Provider_ReadUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, GWEN_BUFFER *secbuf) {
+int APY_Provider_ReadUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, GWEN_BUFFER *secbuf)
+{
   APY_PROVIDER *xp;
   int rv;
   GWEN_BUFFER *pbuf;
@@ -151,12 +155,12 @@ int APY_Provider_ReadUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, GWEN_BUF
   }
 
   snprintf(text, sizeof(text)-1,
-	   I18N("Please enter the password for \n"
-		"Paypal user %s\n"
-		"<html>"
-		"Please enter the password for Paypal user <i>%s</i></br>"
-		"</html>"),
-	   uid, uid);
+           I18N("Please enter the password for \n"
+                "Paypal user %s\n"
+                "<html>"
+                "Please enter the password for Paypal user <i>%s</i></br>"
+                "</html>"),
+           uid, uid);
   text[sizeof(text)-1]=0;
 
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -164,14 +168,14 @@ int APY_Provider_ReadUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, GWEN_BUF
   GWEN_Text_UnescapeToBufferTolerant(GWEN_Buffer_GetStart(pbuf), tbuf);
 
   rv=GWEN_Gui_GetPassword(0,
-			  GWEN_Buffer_GetStart(tbuf),
-			  I18N("Enter Password"),
-			  text,
-			  pw,
-			  4,
+                          GWEN_Buffer_GetStart(tbuf),
+                          I18N("Enter Password"),
+                          text,
+                          pw,
+                          4,
                           sizeof(pw)-1,
                           GWEN_Gui_PasswordMethod_Text, NULL,
-			  0);
+                          0);
   if (rv<0) {
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(tbuf);
@@ -180,12 +184,12 @@ int APY_Provider_ReadUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, GWEN_BUF
     return rv;
   }
 
-  rv=GWEN_SmallTresor_Decrypt((const uint8_t*) GWEN_Buffer_GetStart(sbuf),
-			      GWEN_Buffer_GetUsedBytes(sbuf),
-			      pw,
-			      secbuf,
-			      AQPAYPAL_PASSWORD_ITERATIONS,
-			      AQPAYPAL_CRYPT_ITERATIONS);
+  rv=GWEN_SmallTresor_Decrypt((const uint8_t *) GWEN_Buffer_GetStart(sbuf),
+                              GWEN_Buffer_GetUsedBytes(sbuf),
+                              pw,
+                              secbuf,
+                              AQPAYPAL_PASSWORD_ITERATIONS,
+                              AQPAYPAL_CRYPT_ITERATIONS);
   /* overwrite password ASAP */
   memset(pw, 0, sizeof(pw));
   GWEN_Buffer_free(tbuf);
@@ -201,7 +205,8 @@ int APY_Provider_ReadUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, GWEN_BUF
 
 
 
-int APY_Provider_WriteUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, const char *sec) {
+int APY_Provider_WriteUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, const char *sec)
+{
   APY_PROVIDER *xp;
   int rv;
   GWEN_BUFFER *pbuf;
@@ -243,12 +248,12 @@ int APY_Provider_WriteUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, const c
   GWEN_Buffer_AppendString(pbuf, ".sec");
 
   snprintf(text, sizeof(text)-1,
-	   I18N("Please enter the password for \n"
-		"Paypal user %s\n"
-		"<html>"
-		"Please enter the password for Paypal user <i>%s</i></br>"
-		"</html>"),
-	   uid, uid);
+           I18N("Please enter the password for \n"
+                "Paypal user %s\n"
+                "<html>"
+                "Please enter the password for Paypal user <i>%s</i></br>"
+                "</html>"),
+           uid, uid);
   text[sizeof(text)-1]=0;
 
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -256,12 +261,12 @@ int APY_Provider_WriteUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, const c
   GWEN_Text_UnescapeToBufferTolerant(GWEN_Buffer_GetStart(pbuf), tbuf);
 
   rv=GWEN_Gui_GetPassword(GWEN_GUI_INPUT_FLAGS_CONFIRM,
-			  GWEN_Buffer_GetStart(tbuf),
-			  I18N("Enter Password"),
-			  text,
-			  pw,
-			  4,
-			  sizeof(pw)-1,
+                          GWEN_Buffer_GetStart(tbuf),
+                          I18N("Enter Password"),
+                          text,
+                          pw,
+                          4,
+                          sizeof(pw)-1,
                           GWEN_Gui_PasswordMethod_Text, NULL,
                           0);
   if (rv<0) {
@@ -273,12 +278,12 @@ int APY_Provider_WriteUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, const c
   GWEN_Buffer_free(tbuf);
 
   sbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=GWEN_SmallTresor_Encrypt((const uint8_t*) sec,
-			      strlen(sec),
-			      pw,
-			      sbuf,
-			      AQPAYPAL_PASSWORD_ITERATIONS,
-			      AQPAYPAL_CRYPT_ITERATIONS);
+  rv=GWEN_SmallTresor_Encrypt((const uint8_t *) sec,
+                              strlen(sec),
+                              pw,
+                              sbuf,
+                              AQPAYPAL_PASSWORD_ITERATIONS,
+                              AQPAYPAL_CRYPT_ITERATIONS);
   /* overwrite password ASAP */
   memset(pw, 0, sizeof(pw));
   if (rv<0) {
@@ -290,8 +295,8 @@ int APY_Provider_WriteUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, const c
 
   /* write file */
   rv=writeFile(GWEN_Buffer_GetStart(pbuf),
-	       GWEN_Buffer_GetStart(sbuf),
-	       GWEN_Buffer_GetUsedBytes(sbuf));
+               GWEN_Buffer_GetStart(sbuf),
+               GWEN_Buffer_GetUsedBytes(sbuf));
   if (rv<0) {
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(sbuf);

@@ -116,8 +116,8 @@ const char *AB_Provider_GetName(const AB_PROVIDER *pro);
  * name of the backend to form a file path.
  */
 const char *AB_Provider_GetEscapedName(const AB_PROVIDER *pro);
-/** 
- * Returns the Banking object that this Provider belongs to. 
+/**
+ * Returns the Banking object that this Provider belongs to.
  */
 AB_BANKING *AB_Provider_GetBanking(const AB_PROVIDER *pro);
 

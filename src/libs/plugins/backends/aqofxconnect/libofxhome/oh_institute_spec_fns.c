@@ -15,7 +15,8 @@
 
 
 
-int OH_InstituteSpec_ReadXml(OH_INSTITUTE_SPEC *os, GWEN_XMLNODE *node) {
+int OH_InstituteSpec_ReadXml(OH_INSTITUTE_SPEC *os, GWEN_XMLNODE *node)
+{
   const char *s;
   int i;
 
@@ -45,7 +46,8 @@ int OH_InstituteSpec_ReadXml(OH_INSTITUTE_SPEC *os, GWEN_XMLNODE *node) {
 
 
 
-OH_INSTITUTE_SPEC *OH_InstituteSpec_fromXml(GWEN_XMLNODE *node) {
+OH_INSTITUTE_SPEC *OH_InstituteSpec_fromXml(GWEN_XMLNODE *node)
+{
   OH_INSTITUTE_SPEC *os;
   int rv;
 

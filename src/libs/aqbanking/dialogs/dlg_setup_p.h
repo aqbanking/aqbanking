@@ -33,8 +33,8 @@ struct AB_SETUP_DIALOG {
 static void GWENHYWFAR_CB AB_SetupDialog_FreeData(void *bp, void *p);
 
 static int GWENHYWFAR_CB AB_SetupDialog_SignalHandler(GWEN_DIALOG *dlg,
-						      GWEN_DIALOG_EVENTTYPE t,
-						      const char *sender);
+                                                      GWEN_DIALOG_EVENTTYPE t,
+                                                      const char *sender);
 
 
 

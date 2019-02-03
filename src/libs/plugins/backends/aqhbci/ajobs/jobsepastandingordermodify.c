@@ -20,7 +20,8 @@
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_SepaStandingOrderModify_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_SepaStandingOrderModify_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
+{
   AH_JOB *j;
 
   j=AH_Job_TransferBase_new("JobSepaStandingOrderModify",

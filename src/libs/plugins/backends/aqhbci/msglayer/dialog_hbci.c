@@ -12,7 +12,8 @@
 
 
 
-int AH_Dialog_CreateIoLayer_Hbci(AH_DIALOG *dlg) {
+int AH_Dialog_CreateIoLayer_Hbci(AH_DIALOG *dlg)
+{
   const GWEN_URL *url;
   GWEN_SYNCIO *sio;
   int rv;
@@ -43,13 +44,14 @@ int AH_Dialog_CreateIoLayer_Hbci(AH_DIALOG *dlg) {
 
 
 
-int AH_Dialog_Connect_Hbci(AH_DIALOG *dlg) {
+int AH_Dialog_Connect_Hbci(AH_DIALOG *dlg)
+{
   if (dlg->ioLayer==NULL) {
     int rv;
 
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Notice,
-			 I18N("Connecting to bank..."));
+                         GWEN_LoggerLevel_Notice,
+                         I18N("Connecting to bank..."));
 
     rv=AH_Dialog_CreateIoLayer_Hbci(dlg);
     if (rv) {
@@ -59,43 +61,46 @@ int AH_Dialog_Connect_Hbci(AH_DIALOG *dlg) {
 
     do {
       rv=GWEN_SyncIo_Connect(dlg->ioLayer);
-    } while (rv==GWEN_ERROR_INTERRUPTED);
+    }
+    while (rv==GWEN_ERROR_INTERRUPTED);
 
     if (rv<0) {
       DBG_ERROR(AQHBCI_LOGDOMAIN,
-		"Could not connect to bank (%d)", rv);
+                "Could not connect to bank (%d)", rv);
       GWEN_SyncIo_free(dlg->ioLayer);
       dlg->ioLayer=NULL;
       GWEN_Gui_ProgressLog2(0,
-			    GWEN_LoggerLevel_Error,
-			    I18N("Could not connect (%d)"),
-			    rv);
+                            GWEN_LoggerLevel_Error,
+                            I18N("Could not connect (%d)"),
+                            rv);
       return rv;
     }
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Notice,
-			 I18N("Connected."));
+                         GWEN_LoggerLevel_Notice,
+                         I18N("Connected."));
   }
   return 0;
 }
 
 
 
-int AH_Dialog_Disconnect_Hbci(AH_DIALOG *dlg) {
+int AH_Dialog_Disconnect_Hbci(AH_DIALOG *dlg)
+{
   if (dlg->ioLayer) {
     int rv;
 
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Notice,
-			 I18N("Disconnecting from bank..."));
+                         GWEN_LoggerLevel_Notice,
+                         I18N("Disconnecting from bank..."));
 
     do {
       rv=GWEN_SyncIo_Disconnect(dlg->ioLayer);
-    } while (rv==GWEN_ERROR_INTERRUPTED);
+    }
+    while (rv==GWEN_ERROR_INTERRUPTED);
 
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Notice,
-			 I18N("Disconnected."));
+                         GWEN_LoggerLevel_Notice,
+                         I18N("Disconnected."));
     GWEN_SyncIo_free(dlg->ioLayer);
     dlg->ioLayer=NULL;
   }
@@ -104,10 +109,11 @@ int AH_Dialog_Disconnect_Hbci(AH_DIALOG *dlg) {
 
 
 
-int AH_Dialog_SendPacket_Hbci(AH_DIALOG *dlg, const char *buf, int blen) {
+int AH_Dialog_SendPacket_Hbci(AH_DIALOG *dlg, const char *buf, int blen)
+{
   int rv;
 
-  rv=GWEN_SyncIo_WriteForced(dlg->ioLayer, (const uint8_t*)buf, blen);
+  rv=GWEN_SyncIo_WriteForced(dlg->ioLayer, (const uint8_t *)buf, blen);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -118,7 +124,8 @@ int AH_Dialog_SendPacket_Hbci(AH_DIALOG *dlg, const char *buf, int blen) {
 
 
 
-int AH_Dialog_RecvMessage_Hbci(AH_DIALOG *dlg, AH_MSG **pMsg) {
+int AH_Dialog_RecvMessage_Hbci(AH_DIALOG *dlg, AH_MSG **pMsg)
+{
   AH_MSG *msg;
   GWEN_BUFFER *tbuf;
   int rv;
@@ -130,7 +137,7 @@ int AH_Dialog_RecvMessage_Hbci(AH_DIALOG *dlg, AH_MSG **pMsg) {
   assert(dlg->ioLayer);
 
   /* receive header */
-  rv=GWEN_SyncIo_ReadForced(dlg->ioLayer, (uint8_t*)header, sizeof(header)-1);
+  rv=GWEN_SyncIo_ReadForced(dlg->ioLayer, (uint8_t *)header, sizeof(header)-1);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error reading header (%d)", rv);
     return rv;
@@ -183,8 +190,8 @@ int AH_Dialog_RecvMessage_Hbci(AH_DIALOG *dlg, AH_MSG **pMsg) {
 
   /* receive rest of the message */
   rv=GWEN_SyncIo_ReadForced(dlg->ioLayer,
-			    (uint8_t*)GWEN_Buffer_GetPosPointer(tbuf),
-			    msgSize);
+                            (uint8_t *)GWEN_Buffer_GetPosPointer(tbuf),
+                            msgSize);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error reading message (%d)", rv);
     GWEN_Buffer_free(tbuf);

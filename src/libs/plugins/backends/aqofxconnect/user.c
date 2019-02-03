@@ -27,7 +27,8 @@ GWEN_INHERIT(AB_USER, AO_USER);
 
 
 
-uint32_t AO_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
+uint32_t AO_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name)
+{
   int i;
   uint32_t f=0;
 
@@ -64,7 +65,8 @@ uint32_t AO_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name) {
 
 
 void AO_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
-                        uint32_t f) {
+                        uint32_t f)
+{
   GWEN_DB_DeleteVar(db, name);
   if (f & AO_USER_FLAGS_ACCOUNT_LIST)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
@@ -80,22 +82,23 @@ void AO_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
                          "billpay");
   if (f & AO_USER_FLAGS_EMPTY_BANKID)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-			 "emptyBankId");
+                         "emptyBankId");
   if (f & AO_USER_FLAGS_EMPTY_FID)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-			 "emptyFid");
+                         "emptyFid");
   if (f & AO_USER_FLAGS_FORCE_SSL3)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-			 "forceSsl3");
+                         "forceSsl3");
   if (f & AO_USER_FLAGS_SEND_SHORT_DATE)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name,
-			 "sendShortDate");
+                         "sendShortDate");
 }
 
 
 
 
-AB_USER *AO_User_new(AB_PROVIDER *pro) {
+AB_USER *AO_User_new(AB_PROVIDER *pro)
+{
   AB_USER *u;
   AO_USER *ue;
 
@@ -119,7 +122,8 @@ AB_USER *AO_User_new(AB_PROVIDER *pro) {
 
 
 
-int AO_User_ReadFromDb(AB_USER *u, GWEN_DB_NODE *db) {
+int AO_User_ReadFromDb(AB_USER *u, GWEN_DB_NODE *db)
+{
   AO_USER *ue;
   int rv;
   GWEN_DB_NODE *dbP;
@@ -151,7 +155,8 @@ int AO_User_ReadFromDb(AB_USER *u, GWEN_DB_NODE *db) {
 
 
 
-int AO_User_WriteToDb(const AB_USER *u, GWEN_DB_NODE *db) {
+int AO_User_WriteToDb(const AB_USER *u, GWEN_DB_NODE *db)
+{
   AO_USER *ue;
   int rv;
   GWEN_DB_NODE *dbP;
@@ -179,10 +184,11 @@ int AO_User_WriteToDb(const AB_USER *u, GWEN_DB_NODE *db) {
 
 
 
-void GWENHYWFAR_CB AO_User_freeData(void *bp, void *p) {
+void GWENHYWFAR_CB AO_User_freeData(void *bp, void *p)
+{
   AO_USER *ue;
 
-  ue=(AO_USER*)p;
+  ue=(AO_USER *)p;
 
   free(ue->bankName);
   free(ue->brokerId);
@@ -200,7 +206,8 @@ void GWENHYWFAR_CB AO_User_freeData(void *bp, void *p) {
 
 
 
-void AO_User__ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
+void AO_User__ReadDb(AB_USER *u, GWEN_DB_NODE *db)
+{
   AO_USER *ue;
   const char *s;
 
@@ -209,63 +216,63 @@ void AO_User__ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
   assert(ue);
 
   ue->flags=AO_User_Flags_fromDb(db, "flags");
-  
+
   free(ue->bankName);
   s=GWEN_DB_GetCharValue(db, "bankName", 0, NULL);
   if (s)
     ue->bankName=strdup(s);
   else
     ue->bankName=NULL;
-  
+
   free(ue->brokerId);
   s=GWEN_DB_GetCharValue(db, "brokerId", 0, NULL);
   if (s)
     ue->brokerId=strdup(s);
   else
     ue->brokerId=NULL;
-  
+
   free(ue->org);
   s=GWEN_DB_GetCharValue(db, "org", 0, NULL);
   if (s)
     ue->org=strdup(s);
   else
     ue->org=NULL;
-  
+
   free(ue->fid);
   s=GWEN_DB_GetCharValue(db, "fid", 0, NULL);
   if (s)
     ue->fid=strdup(s);
   else
     ue->fid=NULL;
-  
+
   free(ue->serverAddr);
   s=GWEN_DB_GetCharValue(db, "serverAddr", 0, NULL);
   if (s)
     ue->serverAddr=strdup(s);
   else
     ue->serverAddr=NULL;
-  
+
   free(ue->appId);
   s=GWEN_DB_GetCharValue(db, "appId", 0, NULL);
   if (s)
     ue->appId=strdup(s);
   else
     ue->appId=NULL;
-  
+
   free(ue->appVer);
   s=GWEN_DB_GetCharValue(db, "appVer", 0, NULL);
   if (s)
     ue->appVer=strdup(s);
   else
     ue->appVer=NULL;
-  
+
   free(ue->headerVer);
   s=GWEN_DB_GetCharValue(db, "headerVer", 0, NULL);
   if (s)
     ue->headerVer=strdup(s);
   else
     ue->headerVer=NULL;
-  
+
   free(ue->clientUid);
   s=GWEN_DB_GetCharValue(db, "clientUid", 0, NULL);
   if (s)
@@ -298,7 +305,8 @@ void AO_User__ReadDb(AB_USER *u, GWEN_DB_NODE *db) {
 
 
 
-void AO_User__WriteDb(const AB_USER *u, GWEN_DB_NODE *db) {
+void AO_User__WriteDb(const AB_USER *u, GWEN_DB_NODE *db)
+{
   AO_USER *ue;
 
   assert(u);
@@ -350,7 +358,8 @@ void AO_User__WriteDb(const AB_USER *u, GWEN_DB_NODE *db) {
 
 
 
-const char *AO_User_GetBankName(const AB_USER *u) {
+const char *AO_User_GetBankName(const AB_USER *u)
+{
   AO_USER *ue;
 
   assert(u);
@@ -362,7 +371,8 @@ const char *AO_User_GetBankName(const AB_USER *u) {
 
 
 
-void AO_User_SetBankName(AB_USER *u, const char *s) {
+void AO_User_SetBankName(AB_USER *u, const char *s)
+{
   AO_USER *ue;
 
   assert(u);
@@ -370,14 +380,17 @@ void AO_User_SetBankName(AB_USER *u, const char *s) {
   assert(ue);
 
   free(ue->bankName);
-  if (s) ue->bankName=strdup(s);
-  else ue->bankName=NULL;
+  if (s)
+    ue->bankName=strdup(s);
+  else
+    ue->bankName=NULL;
 }
 
 
 
 
-const char *AO_User_GetBrokerId(const AB_USER *u) {
+const char *AO_User_GetBrokerId(const AB_USER *u)
+{
   AO_USER *ue;
 
   assert(u);
@@ -389,7 +402,8 @@ const char *AO_User_GetBrokerId(const AB_USER *u) {
 
 
 
-void AO_User_SetBrokerId(AB_USER *u, const char *s) {
+void AO_User_SetBrokerId(AB_USER *u, const char *s)
+{
   AO_USER *ue;
 
   assert(u);
@@ -397,13 +411,16 @@ void AO_User_SetBrokerId(AB_USER *u, const char *s) {
   assert(ue);
 
   free(ue->brokerId);
-  if (s) ue->brokerId=strdup(s);
-  else ue->brokerId=NULL;
+  if (s)
+    ue->brokerId=strdup(s);
+  else
+    ue->brokerId=NULL;
 }
 
 
 
-const char *AO_User_GetOrg(const AB_USER *u) {
+const char *AO_User_GetOrg(const AB_USER *u)
+{
   AO_USER *ue;
 
   assert(u);
@@ -415,7 +432,8 @@ const char *AO_User_GetOrg(const AB_USER *u) {
 
 
 
-void AO_User_SetOrg(AB_USER *u, const char *s) {
+void AO_User_SetOrg(AB_USER *u, const char *s)
+{
   AO_USER *ue;
 
   assert(u);
@@ -423,14 +441,17 @@ void AO_User_SetOrg(AB_USER *u, const char *s) {
   assert(ue);
 
   free(ue->org);
-  if (s) ue->org=strdup(s);
-  else ue->org=NULL;
+  if (s)
+    ue->org=strdup(s);
+  else
+    ue->org=NULL;
 }
 
 
 
 
-const char *AO_User_GetFid(const AB_USER *u) {
+const char *AO_User_GetFid(const AB_USER *u)
+{
   AO_USER *ue;
 
   assert(u);
@@ -442,7 +463,8 @@ const char *AO_User_GetFid(const AB_USER *u) {
 
 
 
-void AO_User_SetFid(AB_USER *u, const char *s) {
+void AO_User_SetFid(AB_USER *u, const char *s)
+{
   AO_USER *ue;
 
   assert(u);
@@ -450,13 +472,16 @@ void AO_User_SetFid(AB_USER *u, const char *s) {
   assert(ue);
 
   free(ue->fid);
-  if (s) ue->fid=strdup(s);
-  else ue->fid=NULL;
+  if (s)
+    ue->fid=strdup(s);
+  else
+    ue->fid=NULL;
 }
 
 
 
-const char *AO_User_GetServerAddr(const AB_USER *u) {
+const char *AO_User_GetServerAddr(const AB_USER *u)
+{
   AO_USER *ue;
 
   assert(u);
@@ -468,7 +493,8 @@ const char *AO_User_GetServerAddr(const AB_USER *u) {
 
 
 
-void AO_User_SetServerAddr(AB_USER *u, const char *s) {
+void AO_User_SetServerAddr(AB_USER *u, const char *s)
+{
   AO_USER *ue;
 
   assert(u);
@@ -476,13 +502,16 @@ void AO_User_SetServerAddr(AB_USER *u, const char *s) {
   assert(ue);
 
   free(ue->serverAddr);
-  if (s) ue->serverAddr=strdup(s);
-  else ue->serverAddr=NULL;
+  if (s)
+    ue->serverAddr=strdup(s);
+  else
+    ue->serverAddr=NULL;
 }
 
 
 
-uint32_t AO_User_GetFlags(const AB_USER *u) {
+uint32_t AO_User_GetFlags(const AB_USER *u)
+{
   AO_USER *ue;
 
   ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
@@ -493,7 +522,8 @@ uint32_t AO_User_GetFlags(const AB_USER *u) {
 
 
 
-void AO_User_SetFlags(AB_USER *u, uint32_t f) {
+void AO_User_SetFlags(AB_USER *u, uint32_t f)
+{
   AO_USER *ue;
 
   ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
@@ -504,7 +534,8 @@ void AO_User_SetFlags(AB_USER *u, uint32_t f) {
 
 
 
-void AO_User_AddFlags(AB_USER *u, uint32_t f) {
+void AO_User_AddFlags(AB_USER *u, uint32_t f)
+{
   AO_USER *ue;
 
   ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
@@ -515,7 +546,8 @@ void AO_User_AddFlags(AB_USER *u, uint32_t f) {
 
 
 
-void AO_User_SubFlags(AB_USER *u, uint32_t f) {
+void AO_User_SubFlags(AB_USER *u, uint32_t f)
+{
   AO_USER *ue;
 
   ue=GWEN_INHERIT_GETDATA(AB_USER, AO_USER, u);
@@ -526,7 +558,8 @@ void AO_User_SubFlags(AB_USER *u, uint32_t f) {
 
 
 
-const char *AO_User_GetAppId(const AB_USER *u) {
+const char *AO_User_GetAppId(const AB_USER *u)
+{
   AO_USER *ue;
 
   assert(u);
@@ -538,7 +571,8 @@ const char *AO_User_GetAppId(const AB_USER *u) {
 
 
 
-void AO_User_SetAppId(AB_USER *u, const char *s) {
+void AO_User_SetAppId(AB_USER *u, const char *s)
+{
   AO_USER *ue;
 
   assert(u);
@@ -546,13 +580,16 @@ void AO_User_SetAppId(AB_USER *u, const char *s) {
   assert(ue);
 
   free(ue->appId);
-  if (s) ue->appId=strdup(s);
-  else ue->appId=NULL;
+  if (s)
+    ue->appId=strdup(s);
+  else
+    ue->appId=NULL;
 }
 
 
 
-const char *AO_User_GetAppVer(const AB_USER *u) {
+const char *AO_User_GetAppVer(const AB_USER *u)
+{
   AO_USER *ue;
 
   assert(u);
@@ -564,7 +601,8 @@ const char *AO_User_GetAppVer(const AB_USER *u) {
 
 
 
-void AO_User_SetAppVer(AB_USER *u, const char *s) {
+void AO_User_SetAppVer(AB_USER *u, const char *s)
+{
   AO_USER *ue;
 
   assert(u);
@@ -572,13 +610,16 @@ void AO_User_SetAppVer(AB_USER *u, const char *s) {
   assert(ue);
 
   free(ue->appVer);
-  if (s) ue->appVer=strdup(s);
-  else ue->appVer=NULL;
+  if (s)
+    ue->appVer=strdup(s);
+  else
+    ue->appVer=NULL;
 }
 
 
 
-const char *AO_User_GetHeaderVer(const AB_USER *u) {
+const char *AO_User_GetHeaderVer(const AB_USER *u)
+{
   AO_USER *ue;
 
   assert(u);
@@ -590,7 +631,8 @@ const char *AO_User_GetHeaderVer(const AB_USER *u) {
 
 
 
-void AO_User_SetHeaderVer(AB_USER *u, const char *s) {
+void AO_User_SetHeaderVer(AB_USER *u, const char *s)
+{
   AO_USER *ue;
 
   assert(u);
@@ -598,13 +640,16 @@ void AO_User_SetHeaderVer(AB_USER *u, const char *s) {
   assert(ue);
 
   free(ue->headerVer);
-  if (s) ue->headerVer=strdup(s);
-  else ue->headerVer=NULL;
+  if (s)
+    ue->headerVer=strdup(s);
+  else
+    ue->headerVer=NULL;
 }
 
 
 
-const char *AO_User_GetClientUid(const AB_USER *u) {
+const char *AO_User_GetClientUid(const AB_USER *u)
+{
   AO_USER *ue;
 
   assert(u);
@@ -616,7 +661,8 @@ const char *AO_User_GetClientUid(const AB_USER *u) {
 
 
 
-void AO_User_SetClientUid(AB_USER *u, const char *s) {
+void AO_User_SetClientUid(AB_USER *u, const char *s)
+{
   AO_USER *ue;
 
   assert(u);
@@ -624,13 +670,16 @@ void AO_User_SetClientUid(AB_USER *u, const char *s) {
   assert(ue);
 
   free(ue->clientUid);
-  if (s) ue->clientUid=strdup(s);
-  else ue->clientUid=NULL;
+  if (s)
+    ue->clientUid=strdup(s);
+  else
+    ue->clientUid=NULL;
 }
 
 
 
-const char *AO_User_GetSecurityType(const AB_USER *u) {
+const char *AO_User_GetSecurityType(const AB_USER *u)
+{
   AO_USER *ue;
 
   assert(u);
@@ -642,7 +691,8 @@ const char *AO_User_GetSecurityType(const AB_USER *u) {
 
 
 
-void AO_User_SetSecurityType(AB_USER *u, const char *s) {
+void AO_User_SetSecurityType(AB_USER *u, const char *s)
+{
   AO_USER *ue;
 
   assert(u);
@@ -650,13 +700,16 @@ void AO_User_SetSecurityType(AB_USER *u, const char *s) {
   assert(ue);
 
   free(ue->securityType);
-  if (s) ue->securityType=strdup(s);
-  else ue->securityType=NULL;
+  if (s)
+    ue->securityType=strdup(s);
+  else
+    ue->securityType=NULL;
 }
 
 
 
-int AO_User_GetHttpVMajor(const AB_USER *u) {
+int AO_User_GetHttpVMajor(const AB_USER *u)
+{
   AO_USER *ue;
 
   assert(u);
@@ -668,7 +721,8 @@ int AO_User_GetHttpVMajor(const AB_USER *u) {
 
 
 
-void AO_User_SetHttpVMajor(AB_USER *u, int i) {
+void AO_User_SetHttpVMajor(AB_USER *u, int i)
+{
   AO_USER *ue;
 
   assert(u);
@@ -680,7 +734,8 @@ void AO_User_SetHttpVMajor(AB_USER *u, int i) {
 
 
 
-int AO_User_GetHttpVMinor(const AB_USER *u) {
+int AO_User_GetHttpVMinor(const AB_USER *u)
+{
   AO_USER *ue;
 
   assert(u);
@@ -692,7 +747,8 @@ int AO_User_GetHttpVMinor(const AB_USER *u) {
 
 
 
-void AO_User_SetHttpVMinor(AB_USER *u, int i) {
+void AO_User_SetHttpVMinor(AB_USER *u, int i)
+{
   AO_USER *ue;
 
   assert(u);
@@ -704,7 +760,8 @@ void AO_User_SetHttpVMinor(AB_USER *u, int i) {
 
 
 
-const char *AO_User_GetHttpUserAgent(const AB_USER *u) {
+const char *AO_User_GetHttpUserAgent(const AB_USER *u)
+{
   AO_USER *ue;
 
   assert(u);
@@ -716,7 +773,8 @@ const char *AO_User_GetHttpUserAgent(const AB_USER *u) {
 
 
 
-void AO_User_SetHttpUserAgent(AB_USER *u, const char *s) {
+void AO_User_SetHttpUserAgent(AB_USER *u, const char *s)
+{
   AO_USER *ue;
 
   assert(u);
@@ -724,8 +782,10 @@ void AO_User_SetHttpUserAgent(AB_USER *u, const char *s) {
   assert(ue);
 
   free(ue->httpUserAgent);
-  if (s) ue->httpUserAgent=strdup(s);
-  else ue->httpUserAgent=NULL;
+  if (s)
+    ue->httpUserAgent=strdup(s);
+  else
+    ue->httpUserAgent=NULL;
 }
 
 

@@ -30,7 +30,8 @@ static AB_PROVIDER_LIST *ab_providers=NULL;
 
 
 
-int AB_Banking_PluginSystemInit(void) {
+int AB_Banking_PluginSystemInit(void)
+{
   if (ab_plugin_init_count==0) {
     const char *s;
     GWEN_PLUGIN_MANAGER *pm;
@@ -43,9 +44,9 @@ int AB_Banking_PluginSystemInit(void) {
     }
     if (!GWEN_Logger_IsOpen(AQBANKING_LOGDOMAIN)) {
       GWEN_Logger_Open(AQBANKING_LOGDOMAIN,
-		       "aqbanking", 0,
-		       GWEN_LoggerType_Console,
-		       GWEN_LoggerFacility_User);
+                       "aqbanking", 0,
+                       GWEN_LoggerType_Console,
+                       GWEN_LoggerFacility_User);
       GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevel_Notice);
     }
 
@@ -58,50 +59,50 @@ int AB_Banking_PluginSystemInit(void) {
     }
 
     DBG_INFO(AQBANKING_LOGDOMAIN,
-	     "AqBanking v"
-	     AQBANKING_VERSION_FULL_STRING
-	     " (compiled at "
-	     COMPILE_DATETIME
-	     "): initialising");
+             "AqBanking v"
+             AQBANKING_VERSION_FULL_STRING
+             " (compiled at "
+             COMPILE_DATETIME
+             "): initialising");
 
     /* define locale paths */
     GWEN_PathManager_DefinePath(AB_PM_LIBNAME, AB_PM_LOCALEDIR);
     GWEN_PathManager_AddPathFromWinReg(AB_PM_LIBNAME,
-				       AB_PM_LIBNAME,
-				       AB_PM_LOCALEDIR,
-				       AB_BANKING_REGKEY_PATHS,
-				       AB_BANKING_REGKEY_LOCALEDIR);
+                                       AB_PM_LIBNAME,
+                                       AB_PM_LOCALEDIR,
+                                       AB_BANKING_REGKEY_PATHS,
+                                       AB_BANKING_REGKEY_LOCALEDIR);
 #if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
     /* add folder relative to EXE */
     GWEN_PathManager_AddRelPath(AB_PM_LIBNAME,
-				AB_PM_LIBNAME,
-				AB_PM_LOCALEDIR,
-				LOCALEDIR,
-				GWEN_PathManager_RelModeExe);
+                                AB_PM_LIBNAME,
+                                AB_PM_LOCALEDIR,
+                                LOCALEDIR,
+                                GWEN_PathManager_RelModeExe);
 #else
     /* add absolute folder */
     GWEN_PathManager_AddPath(AB_PM_LIBNAME,
-			     AB_PM_LIBNAME,
-			     AB_PM_LOCALEDIR,
-			     LOCALEDIR);
+                             AB_PM_LIBNAME,
+                             AB_PM_LOCALEDIR,
+                             LOCALEDIR);
 #endif
 
 
 
     if (1) {
       GWEN_STRINGLIST *sl=GWEN_PathManager_GetPaths(AB_PM_LIBNAME,
-						    AB_PM_LOCALEDIR);
+                                                    AB_PM_LOCALEDIR);
       const char *localedir=GWEN_StringList_FirstString(sl);
 
       rv=GWEN_I18N_BindTextDomain_Dir(PACKAGE, localedir);
       if (rv) {
-	DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not bind textdomain (%d)", rv);
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not bind textdomain (%d)", rv);
       }
       else {
-	rv=GWEN_I18N_BindTextDomain_Codeset(PACKAGE, "UTF-8");
-	if (rv) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not set codeset (%d)", rv);
-	}
+        rv=GWEN_I18N_BindTextDomain_Codeset(PACKAGE, "UTF-8");
+        if (rv) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not set codeset (%d)", rv);
+        }
       }
 
       GWEN_StringList_free(sl);
@@ -111,71 +112,71 @@ int AB_Banking_PluginSystemInit(void) {
     /* define sysconf paths */
     GWEN_PathManager_DefinePath(AB_PM_LIBNAME, AB_PM_SYSCONFDIR);
     GWEN_PathManager_AddPathFromWinReg(AB_PM_LIBNAME,
-				       AB_PM_LIBNAME,
-				       AB_PM_SYSCONFDIR,
-				       AB_BANKING_REGKEY_PATHS,
-				       AB_BANKING_REGKEY_SYSCONFDIR);
+                                       AB_PM_LIBNAME,
+                                       AB_PM_SYSCONFDIR,
+                                       AB_BANKING_REGKEY_PATHS,
+                                       AB_BANKING_REGKEY_SYSCONFDIR);
 #if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
     /* add folder relative to EXE */
     GWEN_PathManager_AddRelPath(AB_PM_LIBNAME,
-				AB_PM_LIBNAME,
-				AB_PM_SYSCONFDIR,
-				AQBANKING_SYSCONF_DIR,
-				GWEN_PathManager_RelModeExe);
+                                AB_PM_LIBNAME,
+                                AB_PM_SYSCONFDIR,
+                                AQBANKING_SYSCONF_DIR,
+                                GWEN_PathManager_RelModeExe);
 #else
     /* add absolute folder */
     GWEN_PathManager_AddPath(AB_PM_LIBNAME,
-			     AB_PM_LIBNAME,
-			     AB_PM_SYSCONFDIR,
-			     AQBANKING_SYSCONF_DIR);
+                             AB_PM_LIBNAME,
+                             AB_PM_SYSCONFDIR,
+                             AQBANKING_SYSCONF_DIR);
 #endif
 
     /* define data paths */
     GWEN_PathManager_DefinePath(AB_PM_LIBNAME, AB_PM_DATADIR);
     GWEN_PathManager_AddPathFromWinReg(AB_PM_LIBNAME,
-				       AB_PM_LIBNAME,
-				       AB_PM_DATADIR,
-				       AB_BANKING_REGKEY_PATHS,
-				       AB_BANKING_REGKEY_DATADIR);
+                                       AB_PM_LIBNAME,
+                                       AB_PM_DATADIR,
+                                       AB_BANKING_REGKEY_PATHS,
+                                       AB_BANKING_REGKEY_DATADIR);
 #if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
     /* add folder relative to EXE */
     GWEN_PathManager_AddRelPath(AB_PM_LIBNAME,
-				AB_PM_LIBNAME,
-				AB_PM_DATADIR,
-				AQBANKING_DATA_DIR,
-				GWEN_PathManager_RelModeExe);
+                                AB_PM_LIBNAME,
+                                AB_PM_DATADIR,
+                                AQBANKING_DATA_DIR,
+                                GWEN_PathManager_RelModeExe);
 #else
     /* add absolute folder */
     GWEN_PathManager_AddPath(AB_PM_LIBNAME,
-			     AB_PM_LIBNAME,
-			     AB_PM_DATADIR,
-			     AQBANKING_DATA_DIR);
+                             AB_PM_LIBNAME,
+                             AB_PM_DATADIR,
+                             AQBANKING_DATA_DIR);
 #endif
 
     /* define wizard paths */
     GWEN_PathManager_DefinePath(AB_PM_LIBNAME, AB_PM_WIZARDDIR);
     GWEN_PathManager_AddPathFromWinReg(AB_PM_LIBNAME,
-				       AB_PM_LIBNAME,
-				       AB_PM_WIZARDDIR,
-				       AB_BANKING_REGKEY_PATHS,
-				       AB_BANKING_REGKEY_WIZARDDIR);
+                                       AB_PM_LIBNAME,
+                                       AB_PM_WIZARDDIR,
+                                       AB_BANKING_REGKEY_PATHS,
+                                       AB_BANKING_REGKEY_WIZARDDIR);
 #if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
     /* add folder relative to EXE */
     GWEN_PathManager_AddRelPath(AB_PM_LIBNAME,
-				AB_PM_LIBNAME,
-				AB_PM_WIZARDDIR,
-				AQBANKING_PLUGINS
-				DIRSEP
-				AB_WIZARD_FOLDER,
-				GWEN_PathManager_RelModeExe);
+                                AB_PM_LIBNAME,
+                                AB_PM_WIZARDDIR,
+                                AQBANKING_PLUGINS
+                                DIRSEP
+                                AB_WIZARD_FOLDER,
+                                GWEN_PathManager_RelModeExe);
 #else
     /* add absolute folder */
     GWEN_PathManager_AddPath(AB_PM_LIBNAME,
-			     AB_PM_LIBNAME,
-			     AB_PM_WIZARDDIR,
-			     AQBANKING_PLUGINS
-			     DIRSEP
-			     AB_WIZARD_FOLDER);
+                             AB_PM_LIBNAME,
+                             AB_PM_WIZARDDIR,
+                             AQBANKING_PLUGINS
+                             DIRSEP
+                             AB_WIZARD_FOLDER);
 #endif
 
     /* create bankinfo plugin manager */
@@ -183,29 +184,29 @@ int AB_Banking_PluginSystemInit(void) {
     pm=GWEN_PluginManager_new("bankinfo", AB_PM_LIBNAME);
     if (GWEN_PluginManager_Register(pm)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Could not register bankinfo plugin manager");
+                "Could not register bankinfo plugin manager");
       return GWEN_ERROR_GENERIC;
     }
 
     GWEN_PluginManager_AddPathFromWinReg(pm,
-					 AB_PM_LIBNAME,
-					 AB_BANKING_REGKEY_PATHS,
-					 AB_BANKING_REGKEY_BANKINFODIR);
+                                         AB_PM_LIBNAME,
+                                         AB_BANKING_REGKEY_PATHS,
+                                         AB_BANKING_REGKEY_BANKINFODIR);
 #if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
     /* add folder relative to EXE */
     GWEN_PluginManager_AddRelPath(pm,
-				  AB_PM_LIBNAME,
-				  AQBANKING_PLUGINS
-				  DIRSEP
-				  AB_BANKINFO_PLUGIN_FOLDER,
-				  GWEN_PathManager_RelModeExe);
+                                  AB_PM_LIBNAME,
+                                  AQBANKING_PLUGINS
+                                  DIRSEP
+                                  AB_BANKINFO_PLUGIN_FOLDER,
+                                  GWEN_PathManager_RelModeExe);
 #else
     /* add absolute folder */
     GWEN_PluginManager_AddPath(pm,
-			       AB_PM_LIBNAME,
-			       AQBANKING_PLUGINS
-			       DIRSEP
-			       AB_BANKINFO_PLUGIN_FOLDER);
+                               AB_PM_LIBNAME,
+                               AQBANKING_PLUGINS
+                               DIRSEP
+                               AB_BANKINFO_PLUGIN_FOLDER);
 #endif
     ab_pluginManagerBankInfo=pm;
 
@@ -215,29 +216,29 @@ int AB_Banking_PluginSystemInit(void) {
     pm=GWEN_PluginManager_new("provider", AB_PM_LIBNAME);
     if (GWEN_PluginManager_Register(pm)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Could not register provider plugin manager");
+                "Could not register provider plugin manager");
       return GWEN_ERROR_GENERIC;
     }
 
     GWEN_PluginManager_AddPathFromWinReg(pm,
-					 AB_PM_LIBNAME,
-					 AB_BANKING_REGKEY_PATHS,
-					 AB_BANKING_REGKEY_PROVIDERDIR);
+                                         AB_PM_LIBNAME,
+                                         AB_BANKING_REGKEY_PATHS,
+                                         AB_BANKING_REGKEY_PROVIDERDIR);
 #if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
     /* add folder relative to EXE */
     GWEN_PluginManager_AddRelPath(pm,
-				  AB_PM_LIBNAME,
-				  AQBANKING_PLUGINS
-				  DIRSEP
-				  AB_PROVIDER_FOLDER,
-				  GWEN_PathManager_RelModeExe);
+                                  AB_PM_LIBNAME,
+                                  AQBANKING_PLUGINS
+                                  DIRSEP
+                                  AB_PROVIDER_FOLDER,
+                                  GWEN_PathManager_RelModeExe);
 #else
     /* add absolute folder */
     GWEN_PluginManager_AddPath(pm,
-			       AB_PM_LIBNAME,
-			       AQBANKING_PLUGINS
-			       DIRSEP
-			       AB_PROVIDER_FOLDER);
+                               AB_PM_LIBNAME,
+                               AQBANKING_PLUGINS
+                               DIRSEP
+                               AB_PROVIDER_FOLDER);
 #endif
     ab_pluginManagerProvider=pm;
 
@@ -247,29 +248,29 @@ int AB_Banking_PluginSystemInit(void) {
     pm=GWEN_PluginManager_new("imexporter", AB_PM_LIBNAME);
     if (GWEN_PluginManager_Register(pm)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Could not register imexporters plugin manager");
+                "Could not register imexporters plugin manager");
       return GWEN_ERROR_GENERIC;
     }
 
     GWEN_PluginManager_AddPathFromWinReg(pm,
-					 AB_PM_LIBNAME,
-					 AB_BANKING_REGKEY_PATHS,
-					 AB_BANKING_REGKEY_IMPORTERDIR);
+                                         AB_PM_LIBNAME,
+                                         AB_BANKING_REGKEY_PATHS,
+                                         AB_BANKING_REGKEY_IMPORTERDIR);
 #if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
     /* add folder relative to EXE */
     GWEN_PluginManager_AddRelPath(pm,
-				  AB_PM_LIBNAME,
-				  AQBANKING_PLUGINS
-				  DIRSEP
-				  AB_IMEXPORTER_FOLDER,
-				  GWEN_PathManager_RelModeExe);
+                                  AB_PM_LIBNAME,
+                                  AQBANKING_PLUGINS
+                                  DIRSEP
+                                  AB_IMEXPORTER_FOLDER,
+                                  GWEN_PathManager_RelModeExe);
 #else
     /* add absolute folder */
     GWEN_PluginManager_AddPath(pm,
-			       AB_PM_LIBNAME,
-			       AQBANKING_PLUGINS
-			       DIRSEP
-			       AB_IMEXPORTER_FOLDER);
+                               AB_PM_LIBNAME,
+                               AQBANKING_PLUGINS
+                               DIRSEP
+                               AB_IMEXPORTER_FOLDER);
 #endif
     ab_pluginManagerImExporter=pm;
 
@@ -296,7 +297,7 @@ int AB_Banking_PluginSystemInit(void) {
     }
     else {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
-		"Could not find DBIO plugin manager, maybe GWEN_Init() was not called?");
+                "Could not find DBIO plugin manager, maybe GWEN_Init() was not called?");
       return GWEN_ERROR_GENERIC;
     }
 
@@ -311,7 +312,8 @@ int AB_Banking_PluginSystemInit(void) {
 
 
 
-int AB_Banking_PluginSystemFini(void) {
+int AB_Banking_PluginSystemFini(void)
+{
   if (ab_plugin_init_count) {
     if (--ab_plugin_init_count==0) {
       AB_BankInfoPlugin_List_free(ab_bankInfoPlugins);
@@ -323,32 +325,32 @@ int AB_Banking_PluginSystemFini(void) {
 
       /* unregister and unload provider plugin manager */
       if (ab_pluginManagerProvider) {
-	if (GWEN_PluginManager_Unregister(ab_pluginManagerProvider)) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN,
-		    "Could not unregister provider plugin manager");
-	}
-	GWEN_PluginManager_free(ab_pluginManagerProvider);
-	ab_pluginManagerProvider=NULL;
+        if (GWEN_PluginManager_Unregister(ab_pluginManagerProvider)) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN,
+                    "Could not unregister provider plugin manager");
+        }
+        GWEN_PluginManager_free(ab_pluginManagerProvider);
+        ab_pluginManagerProvider=NULL;
       }
 
       /* unregister and unload bankinfo plugin manager */
       if (ab_pluginManagerBankInfo) {
-	if (GWEN_PluginManager_Unregister(ab_pluginManagerBankInfo)) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN,
-		    "Could not unregister bankinfo plugin manager");
-	}
-	GWEN_PluginManager_free(ab_pluginManagerBankInfo);
-	ab_pluginManagerBankInfo=NULL;
+        if (GWEN_PluginManager_Unregister(ab_pluginManagerBankInfo)) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN,
+                    "Could not unregister bankinfo plugin manager");
+        }
+        GWEN_PluginManager_free(ab_pluginManagerBankInfo);
+        ab_pluginManagerBankInfo=NULL;
       }
 
       /* unregister and unload imexporters plugin manager */
       if (ab_pluginManagerImExporter) {
-	if (GWEN_PluginManager_Unregister(ab_pluginManagerImExporter)) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN,
-		    "Could not unregister imexporter plugin manager");
-	}
-	GWEN_PluginManager_free(ab_pluginManagerImExporter);
-	ab_pluginManagerImExporter=NULL;
+        if (GWEN_PluginManager_Unregister(ab_pluginManagerImExporter)) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN,
+                    "Could not unregister imexporter plugin manager");
+        }
+        GWEN_PluginManager_free(ab_pluginManagerImExporter);
+        ab_pluginManagerImExporter=NULL;
       }
 
       /* undefine our own paths */
@@ -366,14 +368,15 @@ int AB_Banking_PluginSystemFini(void) {
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	     "AB_Banking_PluginSystemFini() called too often!");
+             "AB_Banking_PluginSystemFini() called too often!");
   }
   return 0;
 }
 
 
 
-int AB_Banking_Init(AB_BANKING *ab) {
+int AB_Banking_Init(AB_BANKING *ab)
+{
   int rv;
 
   assert(ab);
@@ -404,7 +407,7 @@ int AB_Banking_Init(AB_BANKING *ab) {
       AB_Banking_PluginSystemFini();
       return GWEN_ERROR_GENERIC;
     }
-  
+
     /* load main group, check version */
     rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config", &db);
     if (rv<0) {
@@ -435,13 +438,14 @@ int AB_Banking_Init(AB_BANKING *ab) {
 
 
 
-int AB_Banking_Fini(AB_BANKING *ab) {
+int AB_Banking_Fini(AB_BANKING *ab)
+{
   int rv;
 
   /* deinit local stuff */
   if (ab->initCount<1) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "AqBanking object not initialized!");
+              "AqBanking object not initialized!");
     return GWEN_ERROR_INVALID;
   }
 
@@ -454,14 +458,14 @@ int AB_Banking_Fini(AB_BANKING *ab) {
                 "No config manager (maybe the gwenhywfar plugins are not installed?");
       return GWEN_ERROR_GENERIC;
     }
-  
+
     /* lock group */
     rv=GWEN_ConfigMgr_LockGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config");
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock main config group (%d)", rv);
       return rv;
     }
-  
+
     /* load group (is locked now) */
     rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config", &db);
     if (rv<0) {
@@ -469,7 +473,7 @@ int AB_Banking_Fini(AB_BANKING *ab) {
       GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config");
       return rv;
     }
-  
+
     /* modify group */
     GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                         "lastVersion",
@@ -477,7 +481,7 @@ int AB_Banking_Fini(AB_BANKING *ab) {
                         (AQBANKING_VERSION_MINOR<<16) |
                         (AQBANKING_VERSION_PATCHLEVEL<<8) |
                         AQBANKING_VERSION_BUILD);
-  
+
     /* save group (still locked) */
     rv=GWEN_ConfigMgr_SetGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config", db);
     if (rv<0) {
@@ -486,7 +490,7 @@ int AB_Banking_Fini(AB_BANKING *ab) {
       GWEN_DB_Group_free(db);
       return rv;
     }
-  
+
     /* unlock group */
     rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, AB_CFG_GROUP_MAIN, "config");
     if (rv<0) {
@@ -494,7 +498,7 @@ int AB_Banking_Fini(AB_BANKING *ab) {
       GWEN_DB_Group_free(db);
       return rv;
     }
-  
+
     GWEN_DB_Group_free(db);
 
     /* clear all active crypt token */
@@ -515,7 +519,8 @@ int AB_Banking_Fini(AB_BANKING *ab) {
 #ifdef OS_WIN32
 BOOL APIENTRY DllMain(HINSTANCE hInst,
                       DWORD reason,
-                      LPVOID reserved) {
+                      LPVOID reserved)
+{
   int err;
 
   switch (reason) {

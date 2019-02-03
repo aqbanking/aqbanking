@@ -39,7 +39,7 @@ static int AB_MsgEngine_TypeWrite(GWEN_MSGENGINE *e,
                                   GWEN_XMLNODE *node);
 
 static GWEN_DB_NODE_TYPE AB_MsgEngine_TypeCheck(GWEN_MSGENGINE *e,
-						const char *tname);
+                                                const char *tname);
 
 static const char *AB_MsgEngine_GetCharValue(GWEN_MSGENGINE *e,
                                              const char *name,

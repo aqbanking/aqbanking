@@ -69,24 +69,24 @@ void AH_User_SetUpdVersion(AB_USER *u, int i);
 
 
 int AH_User_InputPin(AB_USER *u,
-		     char *pwbuffer,
-		     int minLen, int maxLen,
+                     char *pwbuffer,
+                     int minLen, int maxLen,
                      int flags);
 
 int AH_User_InputPasswd(AB_USER *u,
-			char *pwbuffer,
-			int minLen, int maxLen,
+                        char *pwbuffer,
+                        int minLen, int maxLen,
                         int flags);
 
 int AH_User_InputTan(AB_USER *u,
-		     char *pwbuffer,
-		     int minLen,
+                     char *pwbuffer,
+                     int minLen,
                      int maxLen);
 
 int AH_User_InputTanWithChallenge(AB_USER *u,
-				  const char *challenge,
-				  char *pwbuffer,
-				  int minLen,
+                                  const char *challenge,
+                                  char *pwbuffer,
+                                  int minLen,
                                   int maxLen);
 
 /* for optical challenges */
@@ -98,23 +98,23 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
                                    int maxLen);
 
 int AH_User_SetTanStatus(AB_USER *u,
-			 const char *challenge,
-			 const char *tan,
-			 GWEN_GUI_PASSWORD_STATUS status);
+                         const char *challenge,
+                         const char *tan,
+                         GWEN_GUI_PASSWORD_STATUS status);
 
 int AH_User_SetPinStatus(AB_USER *u,
-			 const char *pin,
-			 GWEN_GUI_PASSWORD_STATUS status);
+                         const char *pin,
+                         GWEN_GUI_PASSWORD_STATUS status);
 
 
 const GWEN_STRINGLIST *AH_User_GetSepaDescriptors(AB_USER *u);
 
 int AH_User_VerifyInitialKey(GWEN_CRYPT_TOKEN *ct,
-        const GWEN_CRYPT_TOKEN_CONTEXT *ctx,
-        AB_USER *user,
-        GWEN_CRYPT_KEY *key,
-        uint16_t sentModl,
-        const char *keyName);
+                             const GWEN_CRYPT_TOKEN_CONTEXT *ctx,
+                             AB_USER *user,
+                             GWEN_CRYPT_KEY *key,
+                             uint16_t sentModl,
+                             const char *keyName);
 
 
 #endif /* AH_USER_L_H */

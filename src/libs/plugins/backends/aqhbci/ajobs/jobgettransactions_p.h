@@ -30,11 +30,11 @@ static int AH_Job_GetTransactions_HandleCommand(AH_JOB *j, const AB_TRANSACTION 
 
 
 static int
-  AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
-                                           AB_IMEXPORTER_ACCOUNTINFO *ai,
-                                           const char *docType,
-                                           int noted,
-					   GWEN_BUFFER *buf);
+AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
+                                         AB_IMEXPORTER_ACCOUNTINFO *ai,
+                                         const char *docType,
+                                         int noted,
+                                         GWEN_BUFFER *buf);
 
 
 

@@ -43,8 +43,8 @@ static int AIO_OfxXmlCtx_EndTag(GWEN_XML_CONTEXT *ctx, int closing);
 static int AIO_OfxXmlCtx_AddData(GWEN_XML_CONTEXT *ctx, const char *data);
 static int AIO_OfxXmlCtx_AddComment(GWEN_XML_CONTEXT *ctx, const char *data);
 static int AIO_OfxXmlCtx_AddAttr(GWEN_XML_CONTEXT *ctx,
-				 const char *attrName,
-				 const char *attrData);
+                                 const char *attrName,
+                                 const char *attrData);
 
 static int AIO_OfxXmlCtx_CleanupData(GWEN_XML_CONTEXT *ctx,
                                      const char *data,

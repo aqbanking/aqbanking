@@ -24,7 +24,8 @@
 
 
 
-int AH_HHD14_ReadBytesDec(const char *p, int len) {
+int AH_HHD14_ReadBytesDec(const char *p, int len)
+{
   int r=0;
   int i;
   const char *pSave;
@@ -52,7 +53,8 @@ int AH_HHD14_ReadBytesDec(const char *p, int len) {
 
 
 
-int AH_HHD14_ReadBytesHex(const char *p, int len) {
+int AH_HHD14_ReadBytesHex(const char *p, int len)
+{
   unsigned int r=0;
   int i;
 
@@ -82,10 +84,11 @@ int AH_HHD14_ReadBytesHex(const char *p, int len) {
 
 
 
-unsigned int AH_HHD14_Quersumme(unsigned int i) {
+unsigned int AH_HHD14_Quersumme(unsigned int i)
+{
   unsigned int qs=0;
 
-  while(i) {
+  while (i) {
     qs+=i % 10;
     i/=10;
   }
@@ -94,7 +97,8 @@ unsigned int AH_HHD14_Quersumme(unsigned int i) {
 
 
 
-int AH_HHD14_ExtractDataForLuhnSum(const char *code, GWEN_BUFFER *xbuf) {
+int AH_HHD14_ExtractDataForLuhnSum(const char *code, GWEN_BUFFER *xbuf)
+{
   int rv;
   unsigned int len;
   unsigned int i=0;
@@ -152,7 +156,7 @@ int AH_HHD14_ExtractDataForLuhnSum(const char *code, GWEN_BUFFER *xbuf) {
   i += numBytes + 2;         /* add length of LC and LS */
 
   /* read LDE1, DE1, LDE2, DE2, ... */
-  while(i<len-1) {
+  while (i<len-1) {
     unsigned int v;
 
     rv=AH_HHD14_ReadBytesHex(code, 2);
@@ -160,7 +164,7 @@ int AH_HHD14_ExtractDataForLuhnSum(const char *code, GWEN_BUFFER *xbuf) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d) at [%s]", rv, code);
       return rv;
     }
-/*    v=((unsigned int) rv) & 0xf; */
+    /*    v=((unsigned int) rv) & 0xf; */
     v=((unsigned int) rv) & maskLen;
     code+=2;
     if (i+v+1 > len) {
@@ -177,7 +181,8 @@ int AH_HHD14_ExtractDataForLuhnSum(const char *code, GWEN_BUFFER *xbuf) {
 
 
 
-int AH_HHD14_CalcLuhnSum(const char *code, int len) {
+int AH_HHD14_CalcLuhnSum(const char *code, int len)
+{
   int i;
   int sum=0;
   int next;
@@ -210,7 +215,8 @@ int AH_HHD14_CalcLuhnSum(const char *code, int len) {
 
 
 
-int AH_HHD14_CalcXorSum(const char *code, int len) {
+int AH_HHD14_CalcXorSum(const char *code, int len)
+{
   int i;
   int sum=0;
 
@@ -233,15 +239,16 @@ int AH_HHD14_CalcXorSum(const char *code, int len) {
 
 
 
-void AH_HHD14_CompressCode(const uint8_t *code, GWEN_BUFFER *cbuf) {
+void AH_HHD14_CompressCode(const uint8_t *code, GWEN_BUFFER *cbuf)
+{
   const uint8_t *p;
 
   p=code;
-  while(*p) {
+  while (*p) {
     uint8_t c;
 
     c=toupper(*p);
-    if ( (c>='0' && c<='9') || (c>='A' && c<='Z') || c==',')
+    if ((c>='0' && c<='9') || (c>='A' && c<='Z') || c==',')
       GWEN_Buffer_AppendByte(cbuf, c);
     p++;
   }
@@ -249,7 +256,8 @@ void AH_HHD14_CompressCode(const uint8_t *code, GWEN_BUFFER *cbuf) {
 
 
 
-void AH_HHD14_ExtractCode(GWEN_BUFFER *cbuf) {
+void AH_HHD14_ExtractCode(GWEN_BUFFER *cbuf)
+{
   const char *pStart=NULL;
   const char *pEnd=NULL;
 
@@ -268,7 +276,8 @@ void AH_HHD14_ExtractCode(GWEN_BUFFER *cbuf) {
 
 
 
-int AH_HHD14__Translate(const char *code, GWEN_BUFFER *cbuf) {
+int AH_HHD14__Translate(const char *code, GWEN_BUFFER *cbuf)
+{
   /*unsigned int totalLength;*/ /*TODO: handle total length */
   unsigned int inLenAndFlags;
   unsigned int inLen;
@@ -335,7 +344,8 @@ int AH_HHD14__Translate(const char *code, GWEN_BUFFER *cbuf) {
       numbuf[sizeof(numbuf)-1]=0;
       GWEN_Buffer_AppendString(xbuf, numbuf);
       code+=2;
-    } while (ctrl & maskCtlFlag);
+    }
+    while (ctrl & maskCtlFlag);
   }
   else {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "no control bytes fallback to HHD 1.3.2");
@@ -369,9 +379,9 @@ int AH_HHD14__Translate(const char *code, GWEN_BUFFER *cbuf) {
       int i;
 
       for (i=0; i<inLen; i++) {
-        if (code[i]<'0' || code[i]>'9'){
-	        /* contains something other than digits, use ascii encoding */
-	        DBG_ERROR(AQHBCI_LOGDOMAIN, "Switched to ASCII");
+        if (code[i]<'0' || code[i]>'9') {
+          /* contains something other than digits, use ascii encoding */
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Switched to ASCII");
           inLenAndFlags|=maskAscFlag;
           break;
         }
@@ -472,12 +482,13 @@ int AH_HHD14__Translate(const char *code, GWEN_BUFFER *cbuf) {
 
 
 
-int AH_HHD14_Translate(const char *code, GWEN_BUFFER *cbuf) {
+int AH_HHD14_Translate(const char *code, GWEN_BUFFER *cbuf)
+{
   GWEN_BUFFER *xbuf;
   int rv;
 
   xbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  AH_HHD14_CompressCode((const uint8_t*) code, xbuf);
+  AH_HHD14_CompressCode((const uint8_t *) code, xbuf);
 
   AH_HHD14_ExtractCode(xbuf);
 
@@ -504,7 +515,8 @@ int AH_HHD14_Translate(const char *code, GWEN_BUFFER *cbuf) {
 int AH_HHD14_AddChallengeParams_04(AH_JOB *j,
                                    const AB_VALUE *vAmount,
                                    const char *sRemoteBankCode,
-                                   const char *sRemoteAccountNumber) {
+                                   const char *sRemoteAccountNumber)
+{
   /* P1: Betrag */
   if (vAmount) {
     GWEN_BUFFER *tbuf;
@@ -549,7 +561,8 @@ int AH_HHD14_AddChallengeParams_04(AH_JOB *j,
 
 int AH_HHD14_AddChallengeParams_05(AH_JOB *j,
                                    const AB_VALUE *vAmount,
-                                   const char *sRemoteAccountNumber) {
+                                   const char *sRemoteAccountNumber)
+{
   GWEN_BUFFER *tbuf;
 
   /* P1: Betrag */
@@ -590,7 +603,8 @@ int AH_HHD14_AddChallengeParams_05(AH_JOB *j,
 
 int AH_HHD14_AddChallengeParams_09(AH_JOB *j,
                                    const AB_VALUE *vAmount,
-                                   const char *sRemoteIban) {
+                                   const char *sRemoteIban)
+{
   /* P1: Betrag */
   if (vAmount) {
     GWEN_BUFFER *tbuf;
@@ -616,7 +630,8 @@ int AH_HHD14_AddChallengeParams_09(AH_JOB *j,
 
 
 int AH_HHD14_AddChallengeParams_12(AH_JOB *j, int numTransfers, const AB_VALUE *vSumOfAmount,
-                                   const char *sLocalAccount, const AB_VALUE *vSumOfRemoteAccounts) {
+                                   const char *sLocalAccount, const AB_VALUE *vSumOfRemoteAccounts)
+{
   char numbuf[16];
 
   /* P1: number of transfers */
@@ -679,7 +694,8 @@ int AH_HHD14_AddChallengeParams_12(AH_JOB *j, int numTransfers, const AB_VALUE *
 
 
 
-int AH_HHD14_AddChallengeParams_13(AH_JOB *j, int numTransfers, const AB_VALUE *vSumOfAmount, const char *sLocalIban) {
+int AH_HHD14_AddChallengeParams_13(AH_JOB *j, int numTransfers, const AB_VALUE *vSumOfAmount, const char *sLocalIban)
+{
   /* same as 12, but uses IBAN */
   return AH_HHD14_AddChallengeParams_12(j, numTransfers, vSumOfAmount, sLocalIban, NULL);
 }
@@ -688,20 +704,23 @@ int AH_HHD14_AddChallengeParams_13(AH_JOB *j, int numTransfers, const AB_VALUE *
 
 int AH_HHD14_AddChallengeParams_17(AH_JOB *j,
                                    const AB_VALUE *vAmount,
-                                   const char *sRemoteIban) {
+                                   const char *sRemoteIban)
+{
   return AH_HHD14_AddChallengeParams_09(j, vAmount, sRemoteIban);
 }
 
 
 
 int AH_HHD14_AddChallengeParams_19(AH_JOB *j, int numTransfers, const AB_VALUE *vSumOfAmount,
-                                   const char *sLocalAccountNumber, const AB_VALUE *vSumOfRemoteAccounts) {
+                                   const char *sLocalAccountNumber, const AB_VALUE *vSumOfRemoteAccounts)
+{
   /* same as 12 */
   return AH_HHD14_AddChallengeParams_12(j, numTransfers, vSumOfAmount, sLocalAccountNumber, vSumOfRemoteAccounts);
 }
 
 
-int AH_HHD14_AddChallengeParams_20(AH_JOB *j, int numTransfers, const AB_VALUE *vSumOfAmount, const char *sLocalIban) {
+int AH_HHD14_AddChallengeParams_20(AH_JOB *j, int numTransfers, const AB_VALUE *vSumOfAmount, const char *sLocalIban)
+{
   /* same as 12 */
   return AH_HHD14_AddChallengeParams_12(j, numTransfers, vSumOfAmount, sLocalIban, NULL);
 }
@@ -711,7 +730,8 @@ int AH_HHD14_AddChallengeParams_20(AH_JOB *j, int numTransfers, const AB_VALUE *
 int AH_HHD14_AddChallengeParams_23(AH_JOB *j,
                                    const AB_VALUE *vAmount,
                                    const char *sRemoteIban,
-                                   const GWEN_DATE *da) {
+                                   const GWEN_DATE *da)
+{
   /* P1: Betrag */
   if (vAmount) {
     GWEN_BUFFER *tbuf;
@@ -753,7 +773,8 @@ int AH_HHD14_AddChallengeParams_23(AH_JOB *j,
 int AH_HHD14_AddChallengeParams_29(AH_JOB *j,
                                    const AB_VALUE *vAmount,
                                    const char *sRemoteIban,
-                                   const GWEN_DATE *da) {
+                                   const GWEN_DATE *da)
+{
   /* same as 23 */
   return AH_HHD14_AddChallengeParams_23(j, vAmount, sRemoteIban, da);
 }
@@ -764,7 +785,8 @@ int AH_HHD14_AddChallengeParams_32(AH_JOB *j,
                                    int transferCount,
                                    const AB_VALUE *vAmount,
                                    const char *sLocalIban,
-                                   const GWEN_DATE *da) {
+                                   const GWEN_DATE *da)
+{
   char numBuf[32];
 
   /* P1: Anzahl */
@@ -819,7 +841,8 @@ int AH_HHD14_AddChallengeParams_32(AH_JOB *j,
 
 int AH_HHD14_AddChallengeParams_35(AH_JOB *j,
                                    const AB_VALUE *vAmount,
-                                   const char *sRemoteIban) {
+                                   const char *sRemoteIban)
+{
   /* same as 09 */
   return AH_HHD14_AddChallengeParams_09(j, vAmount, sRemoteIban);
 }

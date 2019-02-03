@@ -31,13 +31,14 @@ int importData(AB_BANKING *ab,
                AB_IMEXPORTER_CONTEXT *ctx,
                const char *importerName,
                const char *profileName,
-               GWEN_BUFFER *dataBuf) {
+               GWEN_BUFFER *dataBuf)
+{
   int rv;
 
   /*GWEN_Buffer_Dump(dataBuf, 2);*/
   rv=AB_Banking_ImportFromBufferLoadProfile(ab, importerName, ctx,
                                             profileName, NULL,
-                                            (const uint8_t*) GWEN_Buffer_GetStart(dataBuf),
+                                            (const uint8_t *) GWEN_Buffer_GetStart(dataBuf),
                                             GWEN_Buffer_GetUsedBytes(dataBuf));
   if (rv<0) {
     fprintf(stderr, "Error importing data: %d\n", rv);
@@ -48,7 +49,8 @@ int importData(AB_BANKING *ab,
 }
 
 
-int testFile(AB_BANKING *ab, const char *fname) {
+int testFile(AB_BANKING *ab, const char *fname)
+{
   int rv;
   GWEN_XMLNODE *doc;
   GWEN_XMLNODE *n;
@@ -92,7 +94,7 @@ int testFile(AB_BANKING *ab, const char *fname) {
   }
 
   dataBuf=GWEN_Buffer_new(0, 1024, 0, 1);
-  rv=GWEN_Base64_Decode((const unsigned char*)data, strlen(data), dataBuf);
+  rv=GWEN_Base64_Decode((const unsigned char *)data, strlen(data), dataBuf);
   if (rv<0) {
     fprintf(stderr, "testdata is not base64 encoded (%d).\n", rv);
     return 2;
@@ -135,7 +137,7 @@ int testFile(AB_BANKING *ab, const char *fname) {
     GWEN_BUFFER *buf2;
     const char *s1;
     const char *s2;
-  
+
     dbReference=GWEN_DB_Group_new("reference");
     dbImported=GWEN_DB_Group_new("imported");
     AB_ImExporterContext_toDb(ctxReference, dbReference);
@@ -175,7 +177,8 @@ int testFile(AB_BANKING *ab, const char *fname) {
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   AB_BANKING *ab;
   int rv;
   int rvTest;

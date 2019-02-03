@@ -12,7 +12,8 @@
 
 static void _import_052_001_02_read_account_spec(AB_IMEXPORTER *ie,
                                                  GWEN_XMLNODE *xmlNode,
-                                                 AB_ACCOUNT_SPEC *accountSpec) {
+                                                 AB_ACCOUNT_SPEC *accountSpec)
+{
   const char *s;
 
   s=GWEN_XMLNode_GetCharValueByPath(xmlNode, "Id/IBAN", NULL);
@@ -37,7 +38,8 @@ static void _import_052_001_02_read_account_spec(AB_IMEXPORTER *ie,
 
 static int _import_052_001_02_read_balance(AB_IMEXPORTER *ie,
                                            GWEN_XMLNODE *xmlNode,
-                                           AB_IMEXPORTER_ACCOUNTINFO *accountInfo) {
+                                           AB_IMEXPORTER_ACCOUNTINFO *accountInfo)
+{
   const char *s;
   GWEN_XMLNODE *n;
   AB_BALANCE *balance=NULL;
@@ -125,11 +127,12 @@ static int _import_052_001_02_read_balance(AB_IMEXPORTER *ie,
 
 static int _import_052_001_02_read_balances(AB_IMEXPORTER *ie,
                                             GWEN_XMLNODE *xmlNode,
-                                            AB_IMEXPORTER_ACCOUNTINFO *accountInfo) {
+                                            AB_IMEXPORTER_ACCOUNTINFO *accountInfo)
+{
   GWEN_XMLNODE *n;
 
   n=GWEN_XMLNode_FindFirstTag(xmlNode, "Bal", NULL, NULL);
-  while(n) {
+  while (n) {
     int rv;
 
     rv=_import_052_001_02_read_balance(ie, n, accountInfo);
@@ -148,7 +151,8 @@ static int _import_052_001_02_read_balances(AB_IMEXPORTER *ie,
 static int _import_052_001_02_read_transaction_details(AB_IMEXPORTER *ie,
                                                        GWEN_XMLNODE *xmlNode,
                                                        AB_TRANSACTION *t,
-                                                       int isCredit) {
+                                                       int isCredit)
+{
   const char *s;
   GWEN_XMLNODE *n;
 
@@ -232,9 +236,9 @@ static int _import_052_001_02_read_transaction_details(AB_IMEXPORTER *ie,
 
   /* read purpose */
   n=GWEN_XMLNode_FindFirstTag(xmlNode, "RmtInf", NULL, NULL);
-  if(n)
+  if (n)
     n=GWEN_XMLNode_FindFirstTag(n, "Ustrd", NULL, NULL);
-  while(n) {
+  while (n) {
     GWEN_XMLNODE *nn;
 
     nn=GWEN_XMLNode_GetFirstData(n);
@@ -252,8 +256,9 @@ static int _import_052_001_02_read_transaction_details(AB_IMEXPORTER *ie,
 
 
 static int _import_052_001_02_read_transaction(AB_IMEXPORTER *ie,
-					       GWEN_XMLNODE *xmlNode,
-                                               AB_IMEXPORTER_ACCOUNTINFO *accountInfo) {
+                                               GWEN_XMLNODE *xmlNode,
+                                               AB_IMEXPORTER_ACCOUNTINFO *accountInfo)
+{
   const char *s;
   GWEN_XMLNODE *n;
   AB_TRANSACTION *t;
@@ -346,7 +351,7 @@ static int _import_052_001_02_read_transaction(AB_IMEXPORTER *ie,
   s=GWEN_XMLNode_GetCharValueByPath(xmlNode, "AddtlNtryInf", NULL);
   if (s && *s)
     AB_Transaction_SetTransactionText(t, s);
-  
+
 
   /* read transaction details */
   n=GWEN_XMLNode_GetNodeByXPath(xmlNode, "NtryDtls/TxDtls", GWEN_PATH_FLAGS_NAMEMUSTEXIST);
@@ -374,12 +379,13 @@ static int _import_052_001_02_read_transaction(AB_IMEXPORTER *ie,
 
 
 static int _import_052_001_02_read_transactions(AB_IMEXPORTER *ie,
-						GWEN_XMLNODE *xmlNode,
-						AB_IMEXPORTER_ACCOUNTINFO *accountInfo) {
+                                                GWEN_XMLNODE *xmlNode,
+                                                AB_IMEXPORTER_ACCOUNTINFO *accountInfo)
+{
   GWEN_XMLNODE *n;
 
   n=GWEN_XMLNode_FindFirstTag(xmlNode, "Ntry", NULL, NULL);
-  while(n) {
+  while (n) {
     int rv;
 
     rv=_import_052_001_02_read_transaction(ie, n, accountInfo);
@@ -398,7 +404,8 @@ static int _import_052_001_02_read_transactions(AB_IMEXPORTER *ie,
 static int _import_052_001_02_report(AB_IMEXPORTER *ie,
                                      AB_IMEXPORTER_CONTEXT *ctx,
                                      GWEN_DB_NODE *params,
-                                     GWEN_XMLNODE *xmlNode) {
+                                     GWEN_XMLNODE *xmlNode)
+{
   GWEN_XMLNODE *n;
   AB_IMEXPORTER_ACCOUNTINFO *accountInfo=NULL;
   int rv;
@@ -411,11 +418,11 @@ static int _import_052_001_02_report(AB_IMEXPORTER *ie,
     accountSpec=AB_AccountSpec_new();
     _import_052_001_02_read_account_spec(ie, n, accountSpec);
     accountInfo=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
-							 0,
-							 AB_AccountSpec_GetIban(accountSpec),
-							 AB_AccountSpec_GetBankCode(accountSpec),
-							 AB_AccountSpec_GetAccountNumber(accountSpec),
-							 AB_AccountType_Unknown);
+                                                         0,
+                                                         AB_AccountSpec_GetIban(accountSpec),
+                                                         AB_AccountSpec_GetBankCode(accountSpec),
+                                                         AB_AccountSpec_GetAccountNumber(accountSpec),
+                                                         AB_AccountType_Unknown);
     assert(accountInfo);
     AB_AccountSpec_free(accountSpec);
   }
@@ -444,7 +451,8 @@ static int _import_052_001_02_report(AB_IMEXPORTER *ie,
 int AH_ImExporterCAMT_Import_052_001_02(AB_IMEXPORTER *ie,
                                         AB_IMEXPORTER_CONTEXT *ctx,
                                         GWEN_DB_NODE *params,
-                                        GWEN_XMLNODE *xmlNode) {
+                                        GWEN_XMLNODE *xmlNode)
+{
   GWEN_XMLNODE *n;
 
   n=GWEN_XMLNode_FindFirstTag(xmlNode, "BkToCstmrAcctRpt", NULL, NULL);
@@ -460,7 +468,7 @@ int AH_ImExporterCAMT_Import_052_001_02(AB_IMEXPORTER *ie,
   }
 
   /* now read every report */
-  while(n) {
+  while (n) {
     int rv;
 
     rv=_import_052_001_02_report(ie, ctx, params, n);

@@ -43,7 +43,7 @@ int EBC_Provider__generateNonce(GWEN_BUFFER *buf);
 
 /* p_tools.inc */
 static int EBC_Provider__addKiTxt(AB_PROVIDER *pro,
-				  const GWEN_CRYPT_TOKEN_KEYINFO *ki,
+                                  const GWEN_CRYPT_TOKEN_KEYINFO *ki,
                                   GWEN_BUFFER *lbuf,
                                   int version);
 
@@ -51,74 +51,74 @@ static const char *EBC_Provider_TechnicalCodeToString(const char *s);
 static const char *EBC_Provider_BankCodeToString(const char *s);
 
 static int EBC_Provider_EuSign_A004(AB_PROVIDER *pro,
-				    AB_USER *u,
-				    const char *requestType,
-				    const uint8_t *pMsg,
-				    uint32_t lMsg,
-				    GWEN_BUFFER *sbuf);
+                                    AB_USER *u,
+                                    const char *requestType,
+                                    const uint8_t *pMsg,
+                                    uint32_t lMsg,
+                                    GWEN_BUFFER *sbuf);
 static int EBC_Provider_MkEuZipDoc_A004(AB_PROVIDER *pro,
-					AB_USER *u,
-					const char *requestType,
-					const uint8_t *pMsg,
-					uint32_t lMsg,
-					GWEN_BUFFER *sbuf);
+                                        AB_USER *u,
+                                        const char *requestType,
+                                        const uint8_t *pMsg,
+                                        uint32_t lMsg,
+                                        GWEN_BUFFER *sbuf);
 
 static int EBC_Provider_EuSign_A005(AB_PROVIDER *pro,
-				    AB_USER *u,
-				    const char *requestType,
-				    const uint8_t *pMsg,
-				    uint32_t lMsg,
-				    GWEN_BUFFER *sbuf);
+                                    AB_USER *u,
+                                    const char *requestType,
+                                    const uint8_t *pMsg,
+                                    uint32_t lMsg,
+                                    GWEN_BUFFER *sbuf);
 static int EBC_Provider_MkEuZipDoc_A005(AB_PROVIDER *pro,
-					AB_USER *u,
-					const char *requestType,
-					const uint8_t *pMsg,
-					uint32_t lMsg,
-					GWEN_BUFFER *sbuf);
+                                        AB_USER *u,
+                                        const char *requestType,
+                                        const uint8_t *pMsg,
+                                        uint32_t lMsg,
+                                        GWEN_BUFFER *sbuf);
 
 static int EBC_Provider_ExecContext_STA(AB_PROVIDER *pro,
-					AB_IMEXPORTER_CONTEXT *ctx,
-					AB_USER *u,
-					AB_ACCOUNT *a,
-					GWEN_HTTP_SESSION *sess,
-					AB_JOBQUEUE *jq);
+                                        AB_IMEXPORTER_CONTEXT *ctx,
+                                        AB_USER *u,
+                                        AB_ACCOUNT *a,
+                                        GWEN_HTTP_SESSION *sess,
+                                        AB_JOBQUEUE *jq);
 
 #if 0
 static int EBC_Provider_ExecContext__IZV(AB_PROVIDER *pro,
-					 AB_IMEXPORTER_CONTEXT *ctx,
-					 AB_USER *u,
-					 AB_ACCOUNT *a,
-					 GWEN_HTTP_SESSION *sess,
-					 EBC_CONTEXT *ectx);
+                                         AB_IMEXPORTER_CONTEXT *ctx,
+                                         AB_USER *u,
+                                         AB_ACCOUNT *a,
+                                         GWEN_HTTP_SESSION *sess,
+                                         EBC_CONTEXT *ectx);
 
 static int EBC_Provider_ExecContext_IZV(AB_PROVIDER *pro,
-					AB_IMEXPORTER_CONTEXT *ctx,
-					AB_USER *u,
-					AB_ACCOUNT *a,
-					GWEN_HTTP_SESSION *sess,
-					EBC_CONTEXT *ectx);
+                                        AB_IMEXPORTER_CONTEXT *ctx,
+                                        AB_USER *u,
+                                        AB_ACCOUNT *a,
+                                        GWEN_HTTP_SESSION *sess,
+                                        EBC_CONTEXT *ectx);
 
 
 static int EBC_Provider_ExecContext(AB_PROVIDER *pro,
-				    AB_IMEXPORTER_CONTEXT *ctx,
-				    AB_USER *u,
-				    AB_ACCOUNT *a,
-				    GWEN_HTTP_SESSION *sess,
-				    EBC_CONTEXT *ectx);
+                                    AB_IMEXPORTER_CONTEXT *ctx,
+                                    AB_USER *u,
+                                    AB_ACCOUNT *a,
+                                    GWEN_HTTP_SESSION *sess,
+                                    EBC_CONTEXT *ectx);
 
 
 static int EBC_Provider_ExecAccountQueue(AB_PROVIDER *pro,
-					 AB_IMEXPORTER_CONTEXT *ctx,
-					 AB_USER *u,
-					 GWEN_HTTP_SESSION *sess,
-					 EBC_ACCOUNTQUEUE *aq);
+                                         AB_IMEXPORTER_CONTEXT *ctx,
+                                         AB_USER *u,
+                                         GWEN_HTTP_SESSION *sess,
+                                         EBC_ACCOUNTQUEUE *aq);
 
 static int EBC_Provider_ExecUserQueue(AB_PROVIDER *pro,
-				      AB_IMEXPORTER_CONTEXT *ctx,
-				      EBC_USERQUEUE *uq);
+                                      AB_IMEXPORTER_CONTEXT *ctx,
+                                      EBC_USERQUEUE *uq);
 
 int EBC_Provider_ExecQueue(AB_PROVIDER *pro,
-			   AB_IMEXPORTER_CONTEXT *ctx);
+                           AB_IMEXPORTER_CONTEXT *ctx);
 #endif
 
 

@@ -14,7 +14,8 @@
  */
 
 
-int AB_Provider_AccountToAccountSpec(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC *as, int doLock) {
+int AB_Provider_AccountToAccountSpec(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC *as, int doLock)
+{
   int rv;
 
   assert(acc);
@@ -45,7 +46,8 @@ int AB_Provider_AccountToAccountSpec(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB
 
 
 
-int AB_Provider_WriteAccountSpecForAccount(AB_PROVIDER *pro, const AB_ACCOUNT *acc, int doLock) {
+int AB_Provider_WriteAccountSpecForAccount(AB_PROVIDER *pro, const AB_ACCOUNT *acc, int doLock)
+{
   AB_ACCOUNT_SPEC *as;
   int rv;
 
@@ -70,7 +72,8 @@ int AB_Provider_WriteAccountSpecForAccount(AB_PROVIDER *pro, const AB_ACCOUNT *a
 
 
 
-int AB_Provider_CreateInitialAccountSpecs(AB_PROVIDER *pro) {
+int AB_Provider_CreateInitialAccountSpecs(AB_PROVIDER *pro)
+{
   int rv;
   GWEN_DB_NODE *dbAll=NULL;
   GWEN_DB_NODE *db;
@@ -89,7 +92,7 @@ int AB_Provider_CreateInitialAccountSpecs(AB_PROVIDER *pro) {
   }
 
   db=GWEN_DB_GetFirstGroup(dbAll);
-  while(db) {
+  while (db) {
     AB_ACCOUNT *acc=NULL;
     AB_ACCOUNT_SPEC *as;
 
@@ -110,10 +113,10 @@ int AB_Provider_CreateInitialAccountSpecs(AB_PROVIDER *pro) {
       AB_Account_free(acc);
       return rv;
     }
-  
+
     /* account object no longer needed */
     AB_Account_free(acc);
-  
+
     /* write account spec */
     rv=AB_Banking_WriteAccountSpec(AB_Provider_GetBanking(pro), as);
     if (rv<0) {

@@ -40,7 +40,7 @@ typedef enum {
 /**
  * Translate account type to a string (e.g. AB_AccountType_CreditCard -> "creditcard").
  */
-AQBANKING_API 
+AQBANKING_API
 const char *AB_AccountType_toChar(AB_ACCOUNT_TYPE ty);
 
 
@@ -48,7 +48,7 @@ const char *AB_AccountType_toChar(AB_ACCOUNT_TYPE ty);
  * Translate account type from a string (e.g. "creditcard" -> AB_AccountType_CreditCard).
  * @return account type (or AB_AccountType_Invalid on error).
  */
-AQBANKING_API 
+AQBANKING_API
 AB_ACCOUNT_TYPE AB_AccountType_fromChar(const char *s);
 
 

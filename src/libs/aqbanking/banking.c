@@ -83,8 +83,9 @@ GWEN_INHERIT_FUNCTIONS(AB_BANKING)
 
 
 AB_BANKING *AB_Banking_new(const char *appName,
-			   const char *dname,
-			   uint32_t extensions){
+                           const char *dname,
+                           uint32_t extensions)
+{
   AB_BANKING *ab;
   GWEN_BUFFER *nbuf;
   char buffer[256];
@@ -111,7 +112,7 @@ AB_BANKING *AB_Banking_new(const char *appName,
     char *s;
 
     s=GWEN_Buffer_GetStart(nbuf);
-    while(*s) {
+    while (*s) {
       *s=tolower(*s);
       s++;
     }
@@ -150,7 +151,8 @@ AB_BANKING *AB_Banking_new(const char *appName,
 
 
 
-void AB_Banking_free(AB_BANKING *ab){
+void AB_Banking_free(AB_BANKING *ab)
+{
   if (ab) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Destroying AB_BANKING");
 
@@ -170,23 +172,24 @@ void AB_Banking_free(AB_BANKING *ab){
 
 
 
-int AB_Banking_GetNamedUniqueId(AB_BANKING *ab, const char *idName, int startAtStdUniqueId){
+int AB_Banking_GetNamedUniqueId(AB_BANKING *ab, const char *idName, int startAtStdUniqueId)
+{
   int rv;
   int uid=0;
   GWEN_DB_NODE *dbConfig=NULL;
 
   rv=GWEN_ConfigMgr_LockGroup(ab->configMgr,
-			      AB_CFG_GROUP_MAIN,
-			      "uniqueId");
+                              AB_CFG_GROUP_MAIN,
+                              "uniqueId");
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock main config (%d)", rv);
     return rv;
   }
 
   rv=GWEN_ConfigMgr_GetGroup(ab->configMgr,
-			     AB_CFG_GROUP_MAIN,
-			     "uniqueId",
-			     &dbConfig);
+                             AB_CFG_GROUP_MAIN,
+                             "uniqueId",
+                             &dbConfig);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to read main config (%d)", rv);
     return rv;
@@ -220,14 +223,14 @@ int AB_Banking_GetNamedUniqueId(AB_BANKING *ab, const char *idName, int startAtS
   }
 
   rv=GWEN_ConfigMgr_SetGroup(ab->configMgr,
-			     AB_CFG_GROUP_MAIN,
-			     "uniqueId",
-			     dbConfig);
+                             AB_CFG_GROUP_MAIN,
+                             "uniqueId",
+                             dbConfig);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to write main config (%d)", rv);
     GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
-			       AB_CFG_GROUP_MAIN,
-			       "uniqueId");
+                               AB_CFG_GROUP_MAIN,
+                               "uniqueId");
     GWEN_DB_Group_free(dbConfig);
     return rv;
   }
@@ -235,8 +238,8 @@ int AB_Banking_GetNamedUniqueId(AB_BANKING *ab, const char *idName, int startAtS
 
   /* unlock */
   rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr,
-				AB_CFG_GROUP_MAIN,
-				"uniqueId");
+                                AB_CFG_GROUP_MAIN,
+                                "uniqueId");
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to unlock main config (%d)", rv);
     return rv;
@@ -247,21 +250,24 @@ int AB_Banking_GetNamedUniqueId(AB_BANKING *ab, const char *idName, int startAtS
 
 
 
-GWEN_CONFIGMGR *AB_Banking_GetConfigMgr(AB_BANKING *ab) {
+GWEN_CONFIGMGR *AB_Banking_GetConfigMgr(AB_BANKING *ab)
+{
   assert(ab);
   return ab->configMgr;
 }
 
 
 
-const char *AB_Banking_GetAppName(const AB_BANKING *ab){
+const char *AB_Banking_GetAppName(const AB_BANKING *ab)
+{
   assert(ab);
   return ab->appName;
 }
 
 
 
-const char *AB_Banking_GetEscapedAppName(const AB_BANKING *ab){
+const char *AB_Banking_GetEscapedAppName(const AB_BANKING *ab)
+{
   assert(ab);
   return ab->appEscName;
 }
@@ -269,9 +275,10 @@ const char *AB_Banking_GetEscapedAppName(const AB_BANKING *ab){
 
 
 void AB_Banking_GetVersion(int *major,
-			   int *minor,
-			   int *patchlevel,
-			   int *build) {
+                           int *minor,
+                           int *patchlevel,
+                           int *build)
+{
   if (major)
     *major=AQBANKING_VERSION_MAJOR;
   if (minor)
@@ -285,29 +292,30 @@ void AB_Banking_GetVersion(int *major,
 
 
 GWEN_DIALOG *AB_Banking_GetNewUserDialog(AB_BANKING *ab,
-					 const char *backend,
-					 int mode) {
-/*
-  AB_PROVIDER *pro;
-  GWEN_DIALOG *dlg;
+                                         const char *backend,
+                                         int mode)
+{
+  /*
+    AB_PROVIDER *pro;
+    GWEN_DIALOG *dlg;
 
-  assert(ab);
-  pro=AB_Banking_GetProvider(ab, backend);
-  if (!pro) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Backend \"%s\" not found", backend);
-    return NULL;
-  }
+    assert(ab);
+    pro=AB_Banking_GetProvider(ab, backend);
+    if (!pro) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Backend \"%s\" not found", backend);
+      return NULL;
+    }
 
-  dlg=AB_Provider_GetNewUserDialog(pro, mode);
-  if (dlg==NULL) {
-    DBG_INFO(AQBANKING_LOGDOMAIN,
-	     "Provider did not return a NewUser dialog (backend=%s, mode=%d)",
-	     backend, mode);
-    return NULL;
-  }
+    dlg=AB_Provider_GetNewUserDialog(pro, mode);
+    if (dlg==NULL) {
+      DBG_INFO(AQBANKING_LOGDOMAIN,
+         "Provider did not return a NewUser dialog (backend=%s, mode=%d)",
+         backend, mode);
+      return NULL;
+    }
 
-  return dlg;
-*/
+    return dlg;
+  */
   return NULL;
 }
 

@@ -31,8 +31,8 @@ extern "C" {
 
 
 GWEN_DIALOG *AB_SelectBankInfoDialog_new(AB_BANKING *ab,
-					 const char *country,
-					 const char *bankCode);
+                                         const char *country,
+                                         const char *bankCode);
 
 const AB_BANKINFO *AB_SelectBankInfoDialog_GetSelectedBankInfo(GWEN_DIALOG *dlg);
 

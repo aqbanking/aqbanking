@@ -39,7 +39,8 @@
 
 
 
-GWEN_DIALOG *AH_NewUserDialog_new(AB_PROVIDER *pro) {
+GWEN_DIALOG *AH_NewUserDialog_new(AB_PROVIDER *pro)
+{
   GWEN_DIALOG *dlg;
   GWEN_BUFFER *fbuf;
   int rv;
@@ -50,8 +51,8 @@ GWEN_DIALOG *AH_NewUserDialog_new(AB_PROVIDER *pro) {
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-			       "aqbanking/backends/aqhbci/dialogs/dlg_newuser.dlg",
-			       fbuf);
+                               "aqbanking/backends/aqhbci/dialogs/dlg_newuser.dlg",
+                               fbuf);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
@@ -71,9 +72,9 @@ GWEN_DIALOG *AH_NewUserDialog_new(AB_PROVIDER *pro) {
 
   /* add media paths for icons */
   GWEN_Dialog_AddMediaPathsFromPathManager(dlg,
-					   GWEN_PM_LIBNAME,
-					   GWEN_PM_SYSDATADIR,
-					   "aqbanking/backends/aqhbci/dialogs");
+                                           GWEN_PM_LIBNAME,
+                                           GWEN_PM_SYSDATADIR,
+                                           "aqbanking/backends/aqhbci/dialogs");
 
   /* done */
   return dlg;
@@ -81,44 +82,45 @@ GWEN_DIALOG *AH_NewUserDialog_new(AB_PROVIDER *pro) {
 
 
 
-void AH_NewUserDialog_Init(GWEN_DIALOG *dlg) {
+void AH_NewUserDialog_Init(GWEN_DIALOG *dlg)
+{
   GWEN_DB_NODE *dbPrefs;
   int i;
 
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("Create a New User"),
-			      0);
+                              "",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("Create a New User"),
+                              0);
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "introLabel",
-			      GWEN_DialogProperty_Title,
-			      0,
+                              "introLabel",
+                              GWEN_DialogProperty_Title,
+                              0,
                               I18N("<html>"
                                    "<p>You can now create a new HBCI/FinTS user.</p>"
-				   "AqBanking supports the following user types:"
-				   "<ul>"
-				   " <li>Keyfile-based user</li>"
-				   " <li>Chipcard-based user</li>"
-				   " <li>PIN/TAN user</li>"
-				   "</ul>"
-				   "<p>Which type of user you need to setup is determined "
-				   "by the bank. The letter from your bank should contain this "
+                                   "AqBanking supports the following user types:"
+                                   "<ul>"
+                                   " <li>Keyfile-based user</li>"
+                                   " <li>Chipcard-based user</li>"
+                                   " <li>PIN/TAN user</li>"
+                                   "</ul>"
+                                   "<p>Which type of user you need to setup is determined "
+                                   "by the bank. The letter from your bank should contain this "
                                    "information.</p>"
                                    "</html>"
                                    "You can now create a new HBCI/FinTS user.\n"
                                    "AqBanking supports the following user types:\n"
-				   " - Keyfile-based user\n"
-				   " - Chipcard-based user\n"
-				   " - PIN/TAN user\n"
-				   "Which type of user you need to setup is determined\n"
-				   "by the bank. The letter from your bank should contain this\n"
+                                   " - Keyfile-based user\n"
+                                   " - Chipcard-based user\n"
+                                   " - PIN/TAN user\n"
+                                   "Which type of user you need to setup is determined\n"
+                                   "by the bank. The letter from your bank should contain this\n"
                                    "information."),
-			      0);
+                              0);
 
   /* temporarily disable not-implemented buttons */
   GWEN_Dialog_SetIntProperty(dlg, "importKeyFileButton", GWEN_DialogProperty_Enabled, 0, 0, 0);
@@ -138,7 +140,8 @@ void AH_NewUserDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewUserDialog_Fini(GWEN_DIALOG *dlg) {
+void AH_NewUserDialog_Fini(GWEN_DIALOG *dlg)
+{
   int i;
   GWEN_DB_NODE *dbPrefs;
 
@@ -147,21 +150,22 @@ void AH_NewUserDialog_Fini(GWEN_DIALOG *dlg) {
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_width",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_width",
+                      i);
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_height",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_height",
+                      i);
 }
 
 
 
-static int AH_NewUserDialog_HandleActivatedPinTan(GWEN_DIALOG *dlg) {
+static int AH_NewUserDialog_HandleActivatedPinTan(GWEN_DIALOG *dlg)
+{
   GWEN_DIALOG *dlg2;
   int rv;
 
@@ -186,7 +190,8 @@ static int AH_NewUserDialog_HandleActivatedPinTan(GWEN_DIALOG *dlg) {
 
 
 
-static int AH_NewUserDialog_HandleActivatedUseCard(GWEN_DIALOG *dlg) {
+static int AH_NewUserDialog_HandleActivatedUseCard(GWEN_DIALOG *dlg)
+{
   int rv;
   GWEN_BUFFER *mtypeName;
   GWEN_BUFFER *mediumName;
@@ -197,18 +202,18 @@ static int AH_NewUserDialog_HandleActivatedUseCard(GWEN_DIALOG *dlg) {
   mediumName=GWEN_Buffer_new(0, 64, 0, 1);
 
   pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
-			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-			     GWEN_GUI_PROGRESS_KEEP_OPEN |
-			     GWEN_GUI_PROGRESS_SHOW_ABORT,
-			     I18N("Checking Chipcard"),
-			     I18N("Checking chipcard type, please wait..."),
-			     GWEN_GUI_PROGRESS_NONE,
-			     0);
+                             GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+                             GWEN_GUI_PROGRESS_KEEP_OPEN |
+                             GWEN_GUI_PROGRESS_SHOW_ABORT,
+                             I18N("Checking Chipcard"),
+                             I18N("Checking chipcard type, please wait..."),
+                             GWEN_GUI_PROGRESS_NONE,
+                             0);
 
   rv=AB_Banking_CheckCryptToken(AB_NewUserDialog_GetBanking(dlg),
-				GWEN_Crypt_Token_Device_Card,
-				mtypeName,
-				mediumName);
+                                GWEN_Crypt_Token_Device_Card,
+                                mtypeName,
+                                mediumName);
   GWEN_Gui_ProgressEnd(pid);
   if (rv<0) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -218,9 +223,9 @@ static int AH_NewUserDialog_HandleActivatedUseCard(GWEN_DIALOG *dlg) {
   }
 
   rv=AB_Banking_GetCryptToken(AB_NewUserDialog_GetBanking(dlg),
-			      GWEN_Buffer_GetStart(mtypeName),
-			      GWEN_Buffer_GetStart(mediumName),
-			      &ct);
+                              GWEN_Buffer_GetStart(mtypeName),
+                              GWEN_Buffer_GetStart(mediumName),
+                              &ct);
   if (rv<0) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(mediumName);
@@ -241,7 +246,7 @@ static int AH_NewUserDialog_HandleActivatedUseCard(GWEN_DIALOG *dlg) {
     }
 
     GWEN_Dialog_SetWidgetText(dlg2, "", I18N("Create HBCI/FinTS DDV User"));
-  
+
     rv=GWEN_Gui_ExecDialog(dlg2, 0);
     if (rv==0) {
       /* rejected */
@@ -262,7 +267,7 @@ static int AH_NewUserDialog_HandleActivatedUseCard(GWEN_DIALOG *dlg) {
   }
   else {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Card type \"%s\" not yet supported",
-	      GWEN_Buffer_GetStart(mtypeName));
+              GWEN_Buffer_GetStart(mtypeName));
   }
   GWEN_Buffer_free(mediumName);
   GWEN_Buffer_free(mtypeName);
@@ -273,7 +278,8 @@ static int AH_NewUserDialog_HandleActivatedUseCard(GWEN_DIALOG *dlg) {
 
 
 
-static int AH_NewUserDialog_HandleActivatedNewKeyFile(GWEN_DIALOG *dlg) {
+static int AH_NewUserDialog_HandleActivatedNewKeyFile(GWEN_DIALOG *dlg)
+{
   GWEN_DIALOG *dlg2;
   int rv;
 
@@ -298,7 +304,8 @@ static int AH_NewUserDialog_HandleActivatedNewKeyFile(GWEN_DIALOG *dlg) {
 
 
 
-int AH_NewUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int AH_NewUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   if (strcasecmp(sender, "abortButton")==0)
     return GWEN_DialogEvent_ResultReject;
   else if (strcasecmp(sender, "usePinTanButton")==0)
@@ -317,9 +324,10 @@ int AH_NewUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 
 int GWENHYWFAR_CB AH_NewUserDialog_SignalHandler(GWEN_DIALOG *dlg,
-						 GWEN_DIALOG_EVENTTYPE t,
-						 const char *sender) {
-  switch(t) {
+                                                 GWEN_DIALOG_EVENTTYPE t,
+                                                 const char *sender)
+{
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     AH_NewUserDialog_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;

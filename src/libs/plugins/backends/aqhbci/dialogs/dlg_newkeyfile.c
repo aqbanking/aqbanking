@@ -53,7 +53,8 @@ GWEN_INHERIT(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG)
 
 
 
-GWEN_DIALOG *AH_NewKeyFileDialog_new(AB_PROVIDER *pro) {
+GWEN_DIALOG *AH_NewKeyFileDialog_new(AB_PROVIDER *pro)
+{
   GWEN_DIALOG *dlg;
   AH_NEWKEYFILE_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -62,14 +63,14 @@ GWEN_DIALOG *AH_NewKeyFileDialog_new(AB_PROVIDER *pro) {
   dlg=GWEN_Dialog_new("ah_setup_newkeyfile");
   GWEN_NEW_OBJECT(AH_NEWKEYFILE_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg, xdlg,
-		       AH_NewKeyFileDialog_FreeData);
+                       AH_NewKeyFileDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AH_NewKeyFileDialog_SignalHandler);
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-			       "aqbanking/backends/aqhbci/dialogs/dlg_newkeyfile.dlg",
-			       fbuf);
+                               "aqbanking/backends/aqhbci/dialogs/dlg_newkeyfile.dlg",
+                               fbuf);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
@@ -82,8 +83,8 @@ GWEN_DIALOG *AH_NewKeyFileDialog_new(AB_PROVIDER *pro) {
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d).", rv);
     GWEN_Gui_ShowError(I18N("Error"),
-		       I18N("Could not read dialog description file [%s], maybe an installation error (%d)?"),
-		       GWEN_Buffer_GetStart(fbuf), rv);
+                       I18N("Could not read dialog description file [%s], maybe an installation error (%d)?"),
+                       GWEN_Buffer_GetStart(fbuf), rv);
     GWEN_Buffer_free(fbuf);
     GWEN_Dialog_free(dlg);
     return NULL;
@@ -103,10 +104,11 @@ GWEN_DIALOG *AH_NewKeyFileDialog_new(AB_PROVIDER *pro) {
 
 
 
-void GWENHYWFAR_CB AH_NewKeyFileDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AH_NewKeyFileDialog_FreeData(void *bp, void *p)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
-  xdlg=(AH_NEWKEYFILE_DIALOG*) p;
+  xdlg=(AH_NEWKEYFILE_DIALOG *) p;
   free(xdlg->fileName);
   free(xdlg->bankCode);
   free(xdlg->bankName);
@@ -118,7 +120,8 @@ void GWENHYWFAR_CB AH_NewKeyFileDialog_FreeData(void *bp, void *p) {
 
 
 
-AB_USER *AH_NewKeyFileDialog_GetUser(const GWEN_DIALOG *dlg) {
+AB_USER *AH_NewKeyFileDialog_GetUser(const GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -130,7 +133,8 @@ AB_USER *AH_NewKeyFileDialog_GetUser(const GWEN_DIALOG *dlg) {
 
 
 
-const char *AH_NewKeyFileDialog_GetFileName(const GWEN_DIALOG *dlg) {
+const char *AH_NewKeyFileDialog_GetFileName(const GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -142,7 +146,8 @@ const char *AH_NewKeyFileDialog_GetFileName(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileDialog_SetFileName(GWEN_DIALOG *dlg, const char *s) {
+void AH_NewKeyFileDialog_SetFileName(GWEN_DIALOG *dlg, const char *s)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -150,13 +155,16 @@ void AH_NewKeyFileDialog_SetFileName(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->fileName);
-  if (s) xdlg->fileName=strdup(s);
-  else xdlg->fileName=NULL;
+  if (s)
+    xdlg->fileName=strdup(s);
+  else
+    xdlg->fileName=NULL;
 }
 
 
 
-const char *AH_NewKeyFileDialog_GetBankCode(const GWEN_DIALOG *dlg) {
+const char *AH_NewKeyFileDialog_GetBankCode(const GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -168,7 +176,8 @@ const char *AH_NewKeyFileDialog_GetBankCode(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileDialog_SetBankCode(GWEN_DIALOG *dlg, const char *s) {
+void AH_NewKeyFileDialog_SetBankCode(GWEN_DIALOG *dlg, const char *s)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -176,13 +185,16 @@ void AH_NewKeyFileDialog_SetBankCode(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->bankCode);
-  if (s) xdlg->bankCode=strdup(s);
-  else xdlg->bankCode=NULL;
+  if (s)
+    xdlg->bankCode=strdup(s);
+  else
+    xdlg->bankCode=NULL;
 }
 
 
 
-const char *AH_NewKeyFileDialog_GetBankName(const GWEN_DIALOG *dlg) {
+const char *AH_NewKeyFileDialog_GetBankName(const GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -194,7 +206,8 @@ const char *AH_NewKeyFileDialog_GetBankName(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileDialog_SetBankName(GWEN_DIALOG *dlg, const char *s) {
+void AH_NewKeyFileDialog_SetBankName(GWEN_DIALOG *dlg, const char *s)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -202,13 +215,16 @@ void AH_NewKeyFileDialog_SetBankName(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->bankName);
-  if (s) xdlg->bankName=strdup(s);
-  else xdlg->bankName=NULL;
+  if (s)
+    xdlg->bankName=strdup(s);
+  else
+    xdlg->bankName=NULL;
 }
 
 
 
-const char *AH_NewKeyFileDialog_GetUserName(const GWEN_DIALOG *dlg) {
+const char *AH_NewKeyFileDialog_GetUserName(const GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -220,7 +236,8 @@ const char *AH_NewKeyFileDialog_GetUserName(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileDialog_SetUserName(GWEN_DIALOG *dlg, const char *s) {
+void AH_NewKeyFileDialog_SetUserName(GWEN_DIALOG *dlg, const char *s)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -228,13 +245,16 @@ void AH_NewKeyFileDialog_SetUserName(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->userName);
-  if (s) xdlg->userName=strdup(s);
-  else xdlg->userName=NULL;
+  if (s)
+    xdlg->userName=strdup(s);
+  else
+    xdlg->userName=NULL;
 }
 
 
 
-const char *AH_NewKeyFileDialog_GetUserId(const GWEN_DIALOG *dlg) {
+const char *AH_NewKeyFileDialog_GetUserId(const GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -246,7 +266,8 @@ const char *AH_NewKeyFileDialog_GetUserId(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileDialog_SetUserId(GWEN_DIALOG *dlg, const char *s) {
+void AH_NewKeyFileDialog_SetUserId(GWEN_DIALOG *dlg, const char *s)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -254,13 +275,16 @@ void AH_NewKeyFileDialog_SetUserId(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->userId);
-  if (s) xdlg->userId=strdup(s);
-  else xdlg->userId=NULL;
+  if (s)
+    xdlg->userId=strdup(s);
+  else
+    xdlg->userId=NULL;
 }
 
 
 
-const char *AH_NewKeyFileDialog_GetCustomerId(const GWEN_DIALOG *dlg) {
+const char *AH_NewKeyFileDialog_GetCustomerId(const GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -272,7 +296,8 @@ const char *AH_NewKeyFileDialog_GetCustomerId(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileDialog_SetCustomerId(GWEN_DIALOG *dlg, const char *s) {
+void AH_NewKeyFileDialog_SetCustomerId(GWEN_DIALOG *dlg, const char *s)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -280,13 +305,16 @@ void AH_NewKeyFileDialog_SetCustomerId(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->customerId);
-  if (s) xdlg->customerId=strdup(s);
-  else xdlg->customerId=NULL;
+  if (s)
+    xdlg->customerId=strdup(s);
+  else
+    xdlg->customerId=NULL;
 }
 
 
 
-const char *AH_NewKeyFileDialog_GetUrl(const GWEN_DIALOG *dlg) {
+const char *AH_NewKeyFileDialog_GetUrl(const GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -298,7 +326,8 @@ const char *AH_NewKeyFileDialog_GetUrl(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileDialog_SetUrl(GWEN_DIALOG *dlg, const char *s) {
+void AH_NewKeyFileDialog_SetUrl(GWEN_DIALOG *dlg, const char *s)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -306,13 +335,16 @@ void AH_NewKeyFileDialog_SetUrl(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->url);
-  if (s) xdlg->url=strdup(s);
-  else xdlg->url=NULL;
+  if (s)
+    xdlg->url=strdup(s);
+  else
+    xdlg->url=NULL;
 }
 
 
 
-int AH_NewKeyFileDialog_GetHbciVersion(const GWEN_DIALOG *dlg) {
+int AH_NewKeyFileDialog_GetHbciVersion(const GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -324,7 +356,8 @@ int AH_NewKeyFileDialog_GetHbciVersion(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i) {
+void AH_NewKeyFileDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -336,7 +369,8 @@ void AH_NewKeyFileDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i) {
 
 
 
-int AH_NewKeyFileDialog_GetRdhVersion(const GWEN_DIALOG *dlg) {
+int AH_NewKeyFileDialog_GetRdhVersion(const GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -348,7 +382,8 @@ int AH_NewKeyFileDialog_GetRdhVersion(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileDialog_SetRdhVersion(GWEN_DIALOG *dlg, int i) {
+void AH_NewKeyFileDialog_SetRdhVersion(GWEN_DIALOG *dlg, int i)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -360,7 +395,8 @@ void AH_NewKeyFileDialog_SetRdhVersion(GWEN_DIALOG *dlg, int i) {
 
 
 
-uint32_t AH_NewKeyFileDialog_GetFlags(const GWEN_DIALOG *dlg) {
+uint32_t AH_NewKeyFileDialog_GetFlags(const GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -372,7 +408,8 @@ uint32_t AH_NewKeyFileDialog_GetFlags(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AH_NewKeyFileDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -384,7 +421,8 @@ void AH_NewKeyFileDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_NewKeyFileDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AH_NewKeyFileDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -396,7 +434,8 @@ void AH_NewKeyFileDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_NewKeyFileDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AH_NewKeyFileDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
@@ -411,7 +450,8 @@ void AH_NewKeyFileDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_NewKeyFileDialog_Init(GWEN_DIALOG *dlg) {
+void AH_NewKeyFileDialog_Init(GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
@@ -423,33 +463,33 @@ void AH_NewKeyFileDialog_Init(GWEN_DIALOG *dlg) {
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("HBCI Keyfile Setup Wizard"),
-			      0);
+                              "",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("HBCI Keyfile Setup Wizard"),
+                              0);
 
   /* select first page */
   GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, 0, 0);
 
   /* setup intro page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_begin_label",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("This dialog assists you in setting up a Keyfile User.\n"),
-			      0);
+                              "wiz_begin_label",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("This dialog assists you in setting up a Keyfile User.\n"),
+                              0);
 
   /* setup bank page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_bank_label",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("<html>"
+                              "wiz_bank_label",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("<html>"
                                    "<p>Please select the bank.</p>"
-				   "<p>AqBanking has an internal database which "
-				   "contains HBCI/FinTS information about many banks.<p>"
-				   "<p>If there is an entry for your bank this dialog will use the "
+                                   "<p>AqBanking has an internal database which "
+                                   "contains HBCI/FinTS information about many banks.<p>"
+                                   "<p>If there is an entry for your bank this dialog will use the "
                                    "information from the database.</p>"
                                    "</html>"
                                    "Please select the bank.\n"
@@ -457,43 +497,43 @@ void AH_NewKeyFileDialog_Init(GWEN_DIALOG *dlg) {
                                    "HBCI/FinTS information about many banks.\n"
                                    "If there is an entry for your bank this dialog will use the\n"
                                    "information from the database."),
-			      0);
+                              0);
 
   /* setup user page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_user_label",
-			      GWEN_DialogProperty_Title,
-			      0,
+                              "wiz_user_label",
+                              GWEN_DialogProperty_Title,
+                              0,
                               I18N("<html>"
                                    "<p>For most banks the customer id must be the same as the user id.</p>"
-				   "<p>However, some banks actually use the customer id, so please look into "
-				   "the documentation provided by your bank to discover whether this is the "
+                                   "<p>However, some banks actually use the customer id, so please look into "
+                                   "the documentation provided by your bank to discover whether this is the "
                                    "case with your bank.</p>"
                                    "</html>"
                                    "For most banks the customer id must be the same as the user id.\n"
                                    "However, some banks actually use the customer id, so please look into\n"
-				   "the documentation provided by your bank to discover whether this is the\n"
+                                   "the documentation provided by your bank to discover whether this is the\n"
                                    "case with your bank."),
-			      0);
+                              0);
 
   /* setup creation page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_create_label",
-			      GWEN_DialogProperty_Title,
-			      0,
+                              "wiz_create_label",
+                              GWEN_DialogProperty_Title,
+                              0,
                               I18N("<html>"
                                    "<p>We are now ready to create the user and exchange keys with the server.</p>"
                                    "<p>Click the <i>next</i> button to proceed or <i>abort</i> to abort.</p>"
                                    "</html>"
                                    "We are now ready to create the user and exchange keys with the server.\n"
                                    "Click the NEXT button to proceed or ABORT to abort."),
-			      0);
+                              0);
 
   /* setup extro page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_end_label",
-			      GWEN_DialogProperty_Title,
-			      0,
+                              "wiz_end_label",
+                              GWEN_DialogProperty_Title,
+                              0,
                               I18N("<html>"
                                    "<p>The user has been successfully created.</p>"
                                    "<p>You must now <b>print</b> the INI letter (click the button below) "
@@ -504,7 +544,7 @@ void AH_NewKeyFileDialog_Init(GWEN_DIALOG *dlg) {
                                    "You must now PRINT the INI letter (click the button below)\n"
                                    "and SEND it to the bank.\n"
                                    "The activation of your account by the bank can take a few days."),
-				   0);
+                              0);
 
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
@@ -523,7 +563,8 @@ void AH_NewKeyFileDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-void AH_NewKeyFileDialog_Fini(GWEN_DIALOG *dlg) {
+void AH_NewKeyFileDialog_Fini(GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
   int i;
   GWEN_DB_NODE *dbPrefs;
@@ -537,21 +578,22 @@ void AH_NewKeyFileDialog_Fini(GWEN_DIALOG *dlg) {
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_width",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_width",
+                      i);
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_height",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_height",
+                      i);
 }
 
 
 
-int AH_NewKeyFileDialog_GetFilePageData(GWEN_DIALOG *dlg) {
+int AH_NewKeyFileDialog_GetFilePageData(GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
   const char *s;
 
@@ -572,7 +614,8 @@ int AH_NewKeyFileDialog_GetFilePageData(GWEN_DIALOG *dlg) {
 
 
 
-int AH_NewKeyFileDialog_GetBankPageData(GWEN_DIALOG *dlg) {
+int AH_NewKeyFileDialog_GetBankPageData(GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
   const char *s;
 
@@ -607,7 +650,8 @@ int AH_NewKeyFileDialog_GetBankPageData(GWEN_DIALOG *dlg) {
 
 
 
-int AH_NewKeyFileDialog_GetUserPageData(GWEN_DIALOG *dlg) {
+int AH_NewKeyFileDialog_GetUserPageData(GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
   const char *s;
 
@@ -642,7 +686,8 @@ int AH_NewKeyFileDialog_GetUserPageData(GWEN_DIALOG *dlg) {
 
 
 
-int AH_NewKeyFileDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
+int AH_NewKeyFileDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
   int rv;
 
@@ -650,7 +695,7 @@ int AH_NewKeyFileDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
-  switch(page) {
+  switch (page) {
   case PAGE_BEGIN:
     GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
     GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, page, 0);
@@ -709,7 +754,8 @@ int AH_NewKeyFileDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
 
 
 
-int AH_NewKeyFileDialog_CheckBankIniLetter(GWEN_DIALOG *dlg, AB_USER *u) {
+int AH_NewKeyFileDialog_CheckBankIniLetter(GWEN_DIALOG *dlg, AB_USER *u)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
   int rv;
   GWEN_BUFFER *tbuf;
@@ -724,16 +770,16 @@ int AH_NewKeyFileDialog_CheckBankIniLetter(GWEN_DIALOG *dlg, AB_USER *u) {
   /* add HTML version of the INI letter */
   GWEN_Buffer_AppendString(tbuf, "<html>");
   GWEN_Buffer_AppendString(tbuf, I18N("<p>The following is the INI letter describing the keys of your bank. "
-				      "Please look at it carefully and compare the information against that "
-				      "in the letter from your bank.</p>"
-				      "<p><font color=red><b>Important Warning:</b></font> Only proceed if the hash matches! "
-				      "Contact your bank immediately if the hash does not match!</p>"));
+                                      "Please look at it carefully and compare the information against that "
+                                      "in the letter from your bank.</p>"
+                                      "<p><font color=red><b>Important Warning:</b></font> Only proceed if the hash matches! "
+                                      "Contact your bank immediately if the hash does not match!</p>"));
   rv=AH_Provider_GetIniLetterHtml(AB_User_GetProvider(u),
                                   u,
-				  1,
-				  0,
-				  tbuf,
-				  1);
+                                  1,
+                                  0,
+                                  tbuf,
+                                  1);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     // TODO: show error message
@@ -745,17 +791,17 @@ int AH_NewKeyFileDialog_CheckBankIniLetter(GWEN_DIALOG *dlg, AB_USER *u) {
 
   /* add ASCII version of the INI letter for frontends which don't support HTML */
   GWEN_Buffer_AppendString(tbuf, I18N("The following is the INI letter describing the keys of your bank.\n"
-				      "Please look at it carefully and compare the information against that\n"
-				      "in the letter from your bank.\n"
-				      "\n"
-				      "IMPORTANT WARNING: Only proceed if the hash matches!\n"
-				      "Contact your bank immediately if the hash does not match!\n\n"));
+                                      "Please look at it carefully and compare the information against that\n"
+                                      "in the letter from your bank.\n"
+                                      "\n"
+                                      "IMPORTANT WARNING: Only proceed if the hash matches!\n"
+                                      "Contact your bank immediately if the hash does not match!\n\n"));
   rv=AH_Provider_GetIniLetterTxt(AB_User_GetProvider(u),
                                  u,
-				 1,
-				 0,
-				 tbuf,
-				 0);
+                                 1,
+                                 0,
+                                 tbuf,
+                                 0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     // TODO: show error message
@@ -764,14 +810,14 @@ int AH_NewKeyFileDialog_CheckBankIniLetter(GWEN_DIALOG *dlg, AB_USER *u) {
   }
 
   if (1!=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_INFO |
-			     GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
-			     GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
-			     I18N("Check Bank Keys"),
-			     GWEN_Buffer_GetStart(tbuf),
-			     I18N("Keys are ok"),
-			     I18N("Keys do not match!"),
-			     NULL,
-			     0)) {
+                             GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+                             GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
+                             I18N("Check Bank Keys"),
+                             GWEN_Buffer_GetStart(tbuf),
+                             I18N("Keys are ok"),
+                             I18N("Keys do not match!"),
+                             NULL,
+                             0)) {
     GWEN_Buffer_free(tbuf);
     return GWEN_ERROR_VERIFY;
   }
@@ -782,7 +828,8 @@ int AH_NewKeyFileDialog_CheckBankIniLetter(GWEN_DIALOG *dlg, AB_USER *u) {
 
 
 
-int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
+int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
   AB_USER *u;
   GWEN_URL *url;
@@ -837,8 +884,8 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   if (pm==0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Plugin manager not found");
     GWEN_Gui_ShowError(I18N("Error"),
-		       I18N("CryptToken plugin for type %s is not available. Did you install all necessary packages?"),
-		       GWEN_CRYPT_TOKEN_PLUGIN_TYPENAME);
+                       I18N("CryptToken plugin for type %s is not available. Did you install all necessary packages?"),
+                       GWEN_CRYPT_TOKEN_PLUGIN_TYPENAME);
     return 3;
   }
 
@@ -846,8 +893,8 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   if (pl==0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Plugin not found");
     GWEN_Gui_ShowError(I18N("Error"),
-		       I18N("CryptToken plugin for type %s is not available. Did you install all necessary packages?"),
-		       AH_User_GetTokenType(u));
+                       I18N("CryptToken plugin for type %s is not available. Did you install all necessary packages?"),
+                       AH_User_GetTokenType(u));
     AB_User_free(u);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -864,9 +911,9 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create token");
     GWEN_Gui_ShowError(I18N("Error"),
-		       I18N("The keyfile %s could not be created. Maybe there already is a file of that name (%d)."),
-		       GWEN_Crypt_Token_GetTokenName(ct),
-		       rv);
+                       I18N("The keyfile %s could not be created. Maybe there already is a file of that name (%d)."),
+                       GWEN_Crypt_Token_GetTokenName(ct),
+                       rv);
     AB_User_free(u);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -876,9 +923,9 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not close token");
     GWEN_Gui_ShowError(I18N("Error"),
-		       I18N("The keyfile %s could not be closed. Please check disc space."),
-		       GWEN_Crypt_Token_GetTokenName(ct),
-		       rv);
+                       I18N("The keyfile %s could not be closed. Please check disc space."),
+                       GWEN_Crypt_Token_GetTokenName(ct),
+                       rv);
     AB_User_free(u);
     unlink(AH_User_GetTokenName(u));
     return GWEN_DialogEvent_ResultHandled;
@@ -896,28 +943,28 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not add user (%d)", rv);
     GWEN_Gui_ShowError(I18N("Error"),
-		       I18N("Could not add HBCI user, maybe there already is a user of that id (%d)"),
-		       rv);
+                       I18N("Could not add HBCI user, maybe there already is a user of that id (%d)"),
+                       rv);
     AB_User_free(u);
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not add user, maybe there already is a user of the same id (%d)?", rv);
     return GWEN_DialogEvent_ResultHandled;
   }
 
   pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
-			     GWEN_GUI_PROGRESS_ALLOW_EMBED |
-			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-			     GWEN_GUI_PROGRESS_SHOW_ABORT,
-			     I18N("Setting Up Keyfile User"),
-			     I18N("The server keys will now be retrieved, keys created and sent to the bank."),
-			     3, /* getkeys, mkKeys, sendKeys */
-			     0);
+                             GWEN_GUI_PROGRESS_ALLOW_EMBED |
+                             GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+                             GWEN_GUI_PROGRESS_SHOW_ABORT,
+                             I18N("Setting Up Keyfile User"),
+                             I18N("The server keys will now be retrieved, keys created and sent to the bank."),
+                             3, /* getkeys, mkKeys, sendKeys */
+                             0);
   /* lock new user */
   rv=AB_Provider_BeginExclUseUser(xdlg->provider, u);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not lock user (%d)", rv);
     GWEN_Gui_ProgressLog2(pid,
-			  GWEN_LoggerLevel_Error,
-			  I18N("Unable to lock users (%d)"), rv);
+                          GWEN_LoggerLevel_Error,
+                          I18N("Unable to lock users (%d)"), rv);
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     unlink(AH_NewKeyFileDialog_GetFileName(dlg));
     GWEN_Gui_ProgressEnd(pid);
@@ -926,8 +973,8 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
 
   /* get server keys id */
   GWEN_Gui_ProgressLog(pid,
-		       GWEN_LoggerLevel_Notice,
-		       I18N("Retrieving server keys"));
+                       GWEN_LoggerLevel_Notice,
+                       I18N("Retrieving server keys"));
   ctx=AB_ImExporterContext_new();
   rv=AH_Provider_GetServerKeys(xdlg->provider, u, ctx, 0, 1, 0);
   AB_ImExporterContext_free(ctx);
@@ -947,8 +994,8 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     unlink(AH_NewKeyFileDialog_GetFileName(dlg));
     GWEN_Gui_ProgressLog(pid,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Bad bank keys, you should contact your bank."));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Bad bank keys, you should contact your bank."));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -960,8 +1007,8 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     unlink(AH_NewKeyFileDialog_GetFileName(dlg));
     GWEN_Gui_ProgressLog(pid,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Aborted by user."));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Aborted by user."));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -974,8 +1021,8 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     unlink(AH_NewKeyFileDialog_GetFileName(dlg));
     GWEN_Gui_ProgressLog2(pid,
-			  GWEN_LoggerLevel_Error,
-			  I18N("Error generating keys: %d"), rv);
+                          GWEN_LoggerLevel_Error,
+                          I18N("Error generating keys: %d"), rv);
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -987,16 +1034,16 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     unlink(AH_NewKeyFileDialog_GetFileName(dlg));
     GWEN_Gui_ProgressLog(pid,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Aborted by user."));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Aborted by user."));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
 
   /* send user keys */
   GWEN_Gui_ProgressLog(pid,
-		       GWEN_LoggerLevel_Notice,
-		       I18N("Sending user keys"));
+                       GWEN_LoggerLevel_Notice,
+                       I18N("Sending user keys"));
   ctx=AB_ImExporterContext_new();
   rv=AH_Provider_SendUserKeys2(xdlg->provider, u, ctx, 0, 0, 1, 0); /* withAuthKey, withProgress, nounmount, doLock */
   AB_ImExporterContext_free(ctx);
@@ -1016,8 +1063,8 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     //unlink(AH_NewKeyFileDialog_GetFileName(dlg));
     GWEN_Gui_ProgressLog(pid,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Aborted by user."));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Aborted by user."));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -1027,12 +1074,12 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
   rv=AB_Provider_EndExclUseUser(xdlg->provider, u, 0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
-	     "Could not unlock customer [%s] (%d)",
-	     AB_User_GetCustomerId(u), rv);
+             "Could not unlock customer [%s] (%d)",
+             AB_User_GetCustomerId(u), rv);
     GWEN_Gui_ProgressLog2(pid,
-			  GWEN_LoggerLevel_Error,
-			  I18N("Could not unlock user %s (%d)"),
-			  AB_User_GetUserId(u), rv);
+                          GWEN_LoggerLevel_Error,
+                          I18N("Could not unlock user %s (%d)"),
+                          AB_User_GetUserId(u), rv);
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
@@ -1049,7 +1096,8 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg) {
 
 
 
-int AH_NewKeyFileDialog_Next(GWEN_DIALOG *dlg) {
+int AH_NewKeyFileDialog_Next(GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
   int page;
 
@@ -1073,7 +1121,8 @@ int AH_NewKeyFileDialog_Next(GWEN_DIALOG *dlg) {
 
 
 
-int AH_NewKeyFileDialog_Previous(GWEN_DIALOG *dlg) {
+int AH_NewKeyFileDialog_Previous(GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
   int page;
 
@@ -1092,7 +1141,8 @@ int AH_NewKeyFileDialog_Previous(GWEN_DIALOG *dlg) {
 
 
 
-int AH_NewKeyFileDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
+int AH_NewKeyFileDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
   GWEN_DIALOG *dlg2;
   int rv;
@@ -1124,87 +1174,87 @@ int AH_NewKeyFileDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
 
       s=AB_BankInfo_GetBankId(bi);
       GWEN_Dialog_SetCharProperty(dlg,
-				  "wiz_bankcode_edit",
-				  GWEN_DialogProperty_Value,
-				  0,
-				  (s && *s)?s:"",
-				  0);
+                                  "wiz_bankcode_edit",
+                                  GWEN_DialogProperty_Value,
+                                  0,
+                                  (s && *s)?s:"",
+                                  0);
 
       s=AB_BankInfo_GetBankName(bi);
       GWEN_Dialog_SetCharProperty(dlg,
-				  "wiz_bankname_edit",
-				  GWEN_DialogProperty_Value,
-				  0,
-				  (s && *s)?s:"",
-				  0);
+                                  "wiz_bankname_edit",
+                                  GWEN_DialogProperty_Value,
+                                  0,
+                                  (s && *s)?s:"",
+                                  0);
       sv=AB_BankInfoService_List_First(AB_BankInfo_GetServices(bi));
-      while(sv) {
-	const char *s;
+      while (sv) {
+        const char *s;
 
-	s=AB_BankInfoService_GetType(sv);
-	if (s && *s && strcasecmp(s, "HBCI")==0) {
-	  s=AB_BankInfoService_GetMode(sv);
-	  if (s && *s && strncasecmp(s, "RDH", 3)==0)
-	    break;
-	}
-	sv=AB_BankInfoService_List_Next(sv);
+        s=AB_BankInfoService_GetType(sv);
+        if (s && *s && strcasecmp(s, "HBCI")==0) {
+          s=AB_BankInfoService_GetMode(sv);
+          if (s && *s && strncasecmp(s, "RDH", 3)==0)
+            break;
+        }
+        sv=AB_BankInfoService_List_Next(sv);
       }
 
       if (sv) {
-	/* RDH service found */
-	s=AB_BankInfoService_GetMode(sv);
-	if (s && *s) {
-	  if (strcasecmp(s, "RDH1")==0)
-	    xdlg->rdhVersion=1;
-	  else if (strcasecmp(s, "RDH2")==0)
-	    xdlg->rdhVersion=2;
-	  else if (strcasecmp(s, "RDH3")==0)
-	    xdlg->rdhVersion=3;
-	  else if (strcasecmp(s, "RDH4")==0)
-	    xdlg->rdhVersion=4;
-	  else if (strcasecmp(s, "RDH5")==0)
-	    xdlg->rdhVersion=5;
-	  else if (strcasecmp(s, "RDH6")==0)
-	    xdlg->rdhVersion=6;
-	  else if (strcasecmp(s, "RDH7")==0)
-	    xdlg->rdhVersion=7;
-	  else if (strcasecmp(s, "RDH8")==0)
-	    xdlg->rdhVersion=8;
-	  else if (strcasecmp(s, "RDH9")==0)
-	    xdlg->rdhVersion=9;
-	  else if (strcasecmp(s, "RDH10")==0)
-	    xdlg->rdhVersion=10;
-	  else if (strcasecmp(s, "RDH")==0)
-	    xdlg->rdhVersion=1;
-	}
+        /* RDH service found */
+        s=AB_BankInfoService_GetMode(sv);
+        if (s && *s) {
+          if (strcasecmp(s, "RDH1")==0)
+            xdlg->rdhVersion=1;
+          else if (strcasecmp(s, "RDH2")==0)
+            xdlg->rdhVersion=2;
+          else if (strcasecmp(s, "RDH3")==0)
+            xdlg->rdhVersion=3;
+          else if (strcasecmp(s, "RDH4")==0)
+            xdlg->rdhVersion=4;
+          else if (strcasecmp(s, "RDH5")==0)
+            xdlg->rdhVersion=5;
+          else if (strcasecmp(s, "RDH6")==0)
+            xdlg->rdhVersion=6;
+          else if (strcasecmp(s, "RDH7")==0)
+            xdlg->rdhVersion=7;
+          else if (strcasecmp(s, "RDH8")==0)
+            xdlg->rdhVersion=8;
+          else if (strcasecmp(s, "RDH9")==0)
+            xdlg->rdhVersion=9;
+          else if (strcasecmp(s, "RDH10")==0)
+            xdlg->rdhVersion=10;
+          else if (strcasecmp(s, "RDH")==0)
+            xdlg->rdhVersion=1;
+        }
 
-	s=AB_BankInfoService_GetAddress(sv);
-	GWEN_Dialog_SetCharProperty(dlg,
-				    "wiz_url_edit",
-				    GWEN_DialogProperty_Value,
-				    0,
-				    (s && *s)?s:"",
-				    0);
-	s=AB_BankInfoService_GetPversion(sv);
-	if (s && *s) {
-	  if (strcasecmp(s, "2.01")==0 ||
-	      strcasecmp(s, "2")==0)
-	    xdlg->hbciVersion=201;
-	  else if (strcasecmp(s, "2.10")==0 ||
-		   strcasecmp(s, "2.1")==0)
-	    xdlg->hbciVersion=210;
-	  else if (strcasecmp(s, "2.20")==0 ||
-		   strcasecmp(s, "2.2")==0)
-	    xdlg->hbciVersion=220;
-	  else if (strcasecmp(s, "3.00")==0 ||
-		   strcasecmp(s, "3.0")==0 ||
-		   strcasecmp(s, "3")==0)
-	    xdlg->hbciVersion=300;
-	  else if (strcasecmp(s, "4.00")==0 ||
-		   strcasecmp(s, "4.0")==0 ||
-		   strcasecmp(s, "4")==0)
-	    xdlg->hbciVersion=400;
-	}
+        s=AB_BankInfoService_GetAddress(sv);
+        GWEN_Dialog_SetCharProperty(dlg,
+                                    "wiz_url_edit",
+                                    GWEN_DialogProperty_Value,
+                                    0,
+                                    (s && *s)?s:"",
+                                    0);
+        s=AB_BankInfoService_GetPversion(sv);
+        if (s && *s) {
+          if (strcasecmp(s, "2.01")==0 ||
+              strcasecmp(s, "2")==0)
+            xdlg->hbciVersion=201;
+          else if (strcasecmp(s, "2.10")==0 ||
+                   strcasecmp(s, "2.1")==0)
+            xdlg->hbciVersion=210;
+          else if (strcasecmp(s, "2.20")==0 ||
+                   strcasecmp(s, "2.2")==0)
+            xdlg->hbciVersion=220;
+          else if (strcasecmp(s, "3.00")==0 ||
+                   strcasecmp(s, "3.0")==0 ||
+                   strcasecmp(s, "3")==0)
+            xdlg->hbciVersion=300;
+          else if (strcasecmp(s, "4.00")==0 ||
+                   strcasecmp(s, "4.0")==0 ||
+                   strcasecmp(s, "4")==0)
+            xdlg->hbciVersion=400;
+        }
       }
     }
   }
@@ -1221,7 +1271,8 @@ int AH_NewKeyFileDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
 
 
 
-int AH_NewKeyFileDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
+int AH_NewKeyFileDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
   GWEN_DIALOG *dlg2;
   int rv;
@@ -1260,7 +1311,8 @@ int AH_NewKeyFileDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
 
 
 
-int AH_NewKeyFileDialog_HandleActivatedFileButton(GWEN_DIALOG *dlg) {
+int AH_NewKeyFileDialog_HandleActivatedFileButton(GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
   int rv;
   const char *s;
@@ -1275,18 +1327,18 @@ int AH_NewKeyFileDialog_HandleActivatedFileButton(GWEN_DIALOG *dlg) {
   if (s && *s)
     GWEN_Buffer_AppendString(pathBuffer, s);
   rv=GWEN_Gui_GetFileName(I18N("Create Keyfile"),
-			  GWEN_Gui_FileNameType_SaveFileName,
-			  0,
-			  I18N("All Files (*)\tOHBCI Files (*ohbci;*.medium)"),
-			  pathBuffer,
-			  GWEN_Dialog_GetGuiId(dlg));
+                          GWEN_Gui_FileNameType_SaveFileName,
+                          0,
+                          I18N("All Files (*)\tOHBCI Files (*ohbci;*.medium)"),
+                          pathBuffer,
+                          GWEN_Dialog_GetGuiId(dlg));
   if (rv==0) {
     GWEN_Dialog_SetCharProperty(dlg,
-				"wiz_filename_edit",
-				GWEN_DialogProperty_Value,
-				0,
-				GWEN_Buffer_GetStart(pathBuffer),
-				0);
+                                "wiz_filename_edit",
+                                GWEN_DialogProperty_Value,
+                                0,
+                                GWEN_Buffer_GetStart(pathBuffer),
+                                0);
     rv=AH_NewKeyFileDialog_GetFilePageData(dlg);
     if (rv<0)
       GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
@@ -1302,7 +1354,8 @@ int AH_NewKeyFileDialog_HandleActivatedFileButton(GWEN_DIALOG *dlg) {
 
 
 
-static int AH_NewKeyFileDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg) {
+static int AH_NewKeyFileDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
   int rv;
   GWEN_BUFFER *tbuf;
@@ -1317,11 +1370,11 @@ static int AH_NewKeyFileDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg) {
   /* add HTML version of the INI letter */
   GWEN_Buffer_AppendString(tbuf, "<html>");
   rv=AH_Provider_GetIniLetterHtml(AB_User_GetProvider(xdlg->user),
-				  xdlg->user,
-				  0,
-				  0,
-				  tbuf,
-				  1);
+                                  xdlg->user,
+                                  0,
+                                  0,
+                                  tbuf,
+                                  1);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     // TODO: show error message
@@ -1334,11 +1387,11 @@ static int AH_NewKeyFileDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg) {
 
   /* add ASCII version of the INI letter for frontends which don't support HTML */
   rv=AH_Provider_GetIniLetterTxt(AB_User_GetProvider(xdlg->user),
-				 xdlg->user,
-				 0,
-				 0,
-				 tbuf,
-				 0);
+                                 xdlg->user,
+                                 0,
+                                 0,
+                                 tbuf,
+                                 0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     // TODO: show error message
@@ -1348,10 +1401,10 @@ static int AH_NewKeyFileDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg) {
   }
 
   rv=GWEN_Gui_Print(I18N("INI Letter"),
-		    "HBCI-INILETTER",
-		    I18N("INI Letter for HBCI"),
-		    GWEN_Buffer_GetStart(tbuf),
-		    0);
+                    "HBCI-INILETTER",
+                    I18N("INI Letter for HBCI"),
+                    GWEN_Buffer_GetStart(tbuf),
+                    0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     // TODO: show error message
@@ -1365,7 +1418,8 @@ static int AH_NewKeyFileDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg) {
 
 
 
-int AH_NewKeyFileDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int AH_NewKeyFileDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   if (strcasecmp(sender, "wiz_filename_button")==0)
     return AH_NewKeyFileDialog_HandleActivatedFileButton(dlg);
   else if (strcasecmp(sender, "wiz_bankcode_button")==0)
@@ -1389,7 +1443,8 @@ int AH_NewKeyFileDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 
 
-int AH_NewKeyFileDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender) {
+int AH_NewKeyFileDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender)
+{
   if (strcasecmp(sender, "wiz_filename_edit")==0 ||
       strcasecmp(sender, "wiz_bankcode_edit")==0 ||
       strcasecmp(sender, "wiz_url_edit")==0 ||
@@ -1401,23 +1456,23 @@ int AH_NewKeyFileDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender)
     if (GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1)==PAGE_FILE) {
       rv=AH_NewKeyFileDialog_GetFilePageData(dlg);
       if (rv<0)
-	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
       else
-	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
     }
     else if (GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1)==PAGE_BANK) {
       rv=AH_NewKeyFileDialog_GetBankPageData(dlg);
       if (rv<0)
-	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
       else
-	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
     }
     else if (GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1)==PAGE_USER) {
       rv=AH_NewKeyFileDialog_GetUserPageData(dlg);
       if (rv<0)
-	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
       else
-	GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
     }
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -1427,15 +1482,16 @@ int AH_NewKeyFileDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender)
 
 
 int GWENHYWFAR_CB AH_NewKeyFileDialog_SignalHandler(GWEN_DIALOG *dlg,
-						    GWEN_DIALOG_EVENTTYPE t,
-						    const char *sender) {
+                                                    GWEN_DIALOG_EVENTTYPE t,
+                                                    const char *sender)
+{
   AH_NEWKEYFILE_DIALOG *xdlg;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_NEWKEYFILE_DIALOG, dlg);
   assert(xdlg);
 
-  switch(t) {
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     AH_NewKeyFileDialog_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;

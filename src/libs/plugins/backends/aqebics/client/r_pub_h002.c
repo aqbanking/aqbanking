@@ -17,9 +17,10 @@
 
 
 int EBC_Provider_XchgPubRequest_H002(AB_PROVIDER *pro,
-				     GWEN_HTTP_SESSION *sess,
-				     AB_USER *u,
-				     const char *signVersion) {
+                                     GWEN_HTTP_SESSION *sess,
+                                     AB_USER *u,
+                                     const char *signVersion)
+{
   EBC_PROVIDER *dp;
   int rv;
   const char *userId;
@@ -48,16 +49,16 @@ int EBC_Provider_XchgPubRequest_H002(AB_PROVIDER *pro,
   kid=GWEN_Crypt_Token_Context_GetTempSignKeyId(ctx);
   if (kid) {
     signKeyInfo=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-					    GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-					    GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-					    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-					    GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-					    0);
+                                            GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                            GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                            GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                            GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                            0);
     if (signKeyInfo==NULL) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Sign key info not found on crypt token");
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
-			   I18N("Sign key info not found on crypt token"));
+                           GWEN_LoggerLevel_Error,
+                           I18N("Sign key info not found on crypt token"));
       return GWEN_ERROR_NOT_FOUND;
     }
   }
@@ -86,25 +87,25 @@ int EBC_Provider_XchgPubRequest_H002(AB_PROVIDER *pro,
     root_node=xmlNewNode(NULL, BAD_CAST "PUBRequestOrderData");
     xmlDocSetRootElement(doc, root_node);
     ns=xmlNewNs(root_node,
-		BAD_CAST "http://www.ebics.org/H002",
-		NULL);
+                BAD_CAST "http://www.ebics.org/H002",
+                NULL);
     assert(ns);
     ns=xmlNewNs(root_node,
-		BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
-		BAD_CAST "ds");
+                BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
+                BAD_CAST "ds");
     assert(ns);
     ns=xmlNewNs(root_node,
-		BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
-		BAD_CAST "xsi");
+                BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
+                BAD_CAST "xsi");
     xmlNewNsProp(root_node,
-		 ns,
-		 BAD_CAST "schemaLocation", /* xsi:schemaLocation */
-		 BAD_CAST "http://www.ebics.org/H002 "
-		 "http://www.ebics.org/H002/ebics_orders.xsd");
-  
+                 ns,
+                 BAD_CAST "schemaLocation", /* xsi:schemaLocation */
+                 BAD_CAST "http://www.ebics.org/H002 "
+                 "http://www.ebics.org/H002/ebics_orders.xsd");
+
     /* create sign key tree */
     node=xmlNewChild(root_node, NULL,
-		     BAD_CAST "SignaturePubKeyInfo", NULL);
+                     BAD_CAST "SignaturePubKeyInfo", NULL);
     rv=EB_Key_Info_toXml(signKeyInfo, node);
     if (rv<0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Error response: (%d)", rv);
@@ -117,13 +118,13 @@ int EBC_Provider_XchgPubRequest_H002(AB_PROVIDER *pro,
 
     /* store partner id and user id */
     node=xmlNewChild(root_node, NULL,
-		     BAD_CAST "PartnerID",
-		     BAD_CAST partnerId);
-  
+                     BAD_CAST "PartnerID",
+                     BAD_CAST partnerId);
+
     node=xmlNewChild(root_node, NULL,
-		     BAD_CAST "UserID",
-		     BAD_CAST userId);
-  
+                     BAD_CAST "UserID",
+                     BAD_CAST userId);
+
     /* compress and base64 doc */
     bufKey=GWEN_Buffer_new(0, 4096, 0, 1);
     rv=EB_Xml_Compress64Doc(doc, bufKey);
@@ -136,8 +137,8 @@ int EBC_Provider_XchgPubRequest_H002(AB_PROVIDER *pro,
   }
 
   rv=EBC_Provider_XchgUploadRequest(pro, sess, u, "PUB",
-				    (const uint8_t*)GWEN_Buffer_GetStart(bufKey),
-				    GWEN_Buffer_GetUsedBytes(bufKey));
+                                    (const uint8_t *)GWEN_Buffer_GetStart(bufKey),
+                                    GWEN_Buffer_GetUsedBytes(bufKey));
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(bufKey);

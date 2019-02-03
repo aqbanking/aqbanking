@@ -22,7 +22,8 @@
 
 
 
-int control(AB_BANKING *ab, const char *ctrlBackend, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int control(AB_BANKING *ab, const char *ctrlBackend, GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
   int rv;
 
   rv=AB_Banking_Init(ab);

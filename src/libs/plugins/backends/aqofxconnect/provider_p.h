@@ -59,7 +59,8 @@ static AB_USER *AO_Provider_CreateUserObject(AB_PROVIDER *pro);
  * ***************************************************************************************************************/
 
 
-static int AO_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB_TRANSACTION_LIMITS_LIST *tll);
+static int AO_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, const AB_ACCOUNT *acc,
+                                                          AB_TRANSACTION_LIMITS_LIST *tll);
 static int AO_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doLock);
 
 
@@ -82,11 +83,16 @@ static int AO_Provider__AddAccountInfoReq(AB_PROVIDER *pro, AB_USER *u, GWEN_BUF
  * ***************************************************************************************************************/
 
 
-static int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j, GWEN_BUFFER *buf);
-static int AO_Provider__AddCreditCardStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j, GWEN_BUFFER *buf);
-static int AO_Provider__AddInvStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j, GWEN_BUFFER *buf);
-static int AO_Provider__AddStatementRequest(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j, GWEN_BUFFER *buf);
-static int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j, AB_IMEXPORTER_CONTEXT *ictx);
+static int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j,
+                                            GWEN_BUFFER *buf);
+static int AO_Provider__AddCreditCardStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j,
+                                                  GWEN_BUFFER *buf);
+static int AO_Provider__AddInvStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j,
+                                           GWEN_BUFFER *buf);
+static int AO_Provider__AddStatementRequest(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j,
+                                            GWEN_BUFFER *buf);
+static int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j,
+                                         AB_IMEXPORTER_CONTEXT *ictx);
 
 
 
@@ -98,7 +104,8 @@ static int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUN
 
 
 static int AO_Provider_CreateConnection(AB_PROVIDER *pro, AB_USER *u, GWEN_HTTP_SESSION **pSess);
-static int AO_Provider_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_t *p, unsigned int plen, GWEN_BUFFER **pRbuf);
+static int AO_Provider_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_t *p, unsigned int plen,
+                                      GWEN_BUFFER **pRbuf);
 
 
 
@@ -111,7 +118,8 @@ static int AO_Provider_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_
 
 static int AO_Provider__AddHeaders(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf);
 static int AO_Provider__AddSignOn(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf);
-static int AO_Provider__WrapRequest(AB_PROVIDER *pro, AB_USER *u, const char *mTypeName, const char *tTypeName, GWEN_BUFFER *buf);
+static int AO_Provider__WrapRequest(AB_PROVIDER *pro, AB_USER *u, const char *mTypeName, const char *tTypeName,
+                                    GWEN_BUFFER *buf);
 static int AO_Provider__WrapMessage(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf);
 
 
@@ -125,7 +133,8 @@ static int AO_Provider__WrapMessage(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *b
 
 static AB_TRANSACTION *AO_Provider_FindJobById(AB_TRANSACTION_LIST2 *jl, uint32_t jid);
 static int AO_Provider__AddJobToList2(AB_PROVIDER *pro, AB_TRANSACTION *j, AB_TRANSACTION_LIST2 *jobList);
-static int AO_Provider__SendJobList(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION_LIST2 *jl, AB_IMEXPORTER_CONTEXT *ctx);
+static int AO_Provider__SendJobList(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION_LIST2 *jl,
+                                    AB_IMEXPORTER_CONTEXT *ctx);
 static void AO_Provider__FinishJobs(AB_PROVIDER *pro, AB_TRANSACTION_LIST2 *jobList, AB_IMEXPORTER_CONTEXT *ctx);
 static int AO_Provider__SendAccountQueue(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNTQUEUE *aq, AB_IMEXPORTER_CONTEXT *ctx);
 static int AO_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTER_CONTEXT *ctx);

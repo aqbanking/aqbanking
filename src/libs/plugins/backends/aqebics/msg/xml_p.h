@@ -17,7 +17,7 @@
 #include "xml.h"
 
 
-static void* EB_Xml__HandlePath(const char *entry,
+static void *EB_Xml__HandlePath(const char *entry,
                                 void *data,
                                 int idx,
                                 uint32_t flags);

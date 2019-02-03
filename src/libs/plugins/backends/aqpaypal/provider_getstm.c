@@ -14,7 +14,8 @@
 
 int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
                              AB_USER *u,
-			     AB_TRANSACTION *t) {
+                             AB_TRANSACTION *t)
+{
   GWEN_HTTP_SESSION *sess;
   GWEN_BUFFER *tbuf;
   const char *s;
@@ -27,7 +28,7 @@ int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
   sess=AB_HttpSession_new(pro, u, APY_User_GetServerUrl(u), "https", 443);
   if (sess==NULL) {
     DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Could not create http session for user [%s]",
-	      AB_User_GetUserId(u));
+              AB_User_GetUserId(u));
     return GWEN_ERROR_GENERIC;
   }
 
@@ -111,29 +112,29 @@ int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
       fprintf(f, "\n============================================\n");
       fprintf(f, "Sending (UpdateTrans):\n");
       if (len>0) {
-	if (1!=fwrite(GWEN_Buffer_GetStart(tbuf), GWEN_Buffer_GetUsedBytes(tbuf), 1, f)) {
-	  DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-	  fclose(f);
-	}
-	else {
-	  if (fclose(f)) {
-	    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-	  }
-	}
+        if (1!=fwrite(GWEN_Buffer_GetStart(tbuf), GWEN_Buffer_GetUsedBytes(tbuf), 1, f)) {
+          DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+          fclose(f);
+        }
+        else {
+          if (fclose(f)) {
+            DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+          }
+        }
       }
       else {
-	fprintf(f, "Empty data.\n");
-	if (fclose(f)) {
-	  DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-	}
+        fprintf(f, "Empty data.\n");
+        if (fclose(f)) {
+          DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+        }
       }
     }
   }
 
   /* send request */
   rv=GWEN_HttpSession_SendPacket(sess, "POST",
-				 (const uint8_t*) GWEN_Buffer_GetStart(tbuf),
-				 GWEN_Buffer_GetUsedBytes(tbuf));
+                                 (const uint8_t *) GWEN_Buffer_GetStart(tbuf),
+                                 GWEN_Buffer_GetUsedBytes(tbuf));
   if (rv<0) {
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
     GWEN_HttpSession_Fini(sess);
@@ -164,21 +165,21 @@ int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
       fprintf(f, "\n============================================\n");
       fprintf(f, "Received (UpdateTrans):\n");
       if (len>0) {
-	if (1!=fwrite(GWEN_Buffer_GetStart(tbuf), GWEN_Buffer_GetUsedBytes(tbuf), 1, f)) {
-	  DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-	  fclose(f);
-	}
-	else {
-	  if (fclose(f)) {
-	    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-	  }
-	}
+        if (1!=fwrite(GWEN_Buffer_GetStart(tbuf), GWEN_Buffer_GetUsedBytes(tbuf), 1, f)) {
+          DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+          fclose(f);
+        }
+        else {
+          if (fclose(f)) {
+            DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+          }
+        }
       }
       else {
-	fprintf(f, "Empty data.\n");
-	if (fclose(f)) {
-	  DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-	}
+        fprintf(f, "Empty data.\n");
+        if (fclose(f)) {
+          DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+        }
       }
     }
   }
@@ -212,7 +213,7 @@ int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
   s=GWEN_DB_GetCharValue(dbResponse, "ACK", 0, NULL);
   if (s && *s) {
     if (strcasecmp(s, "Success")==0 ||
-	strcasecmp(s, "SuccessWithWarning")==0) {
+        strcasecmp(s, "SuccessWithWarning")==0) {
       DBG_INFO(AQPAYPAL_LOGDOMAIN, "Success");
     }
     else {
@@ -250,15 +251,15 @@ int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
     if (strcasecmp(s, "Completed")==0)
       AB_Transaction_SetStatus(t, AB_Transaction_StatusAccepted);
     else if (strcasecmp(s, "Denied")==0 ||
-	     strcasecmp(s, "Failed")==0 ||
-	     strcasecmp(s, "Expired")==0 ||
-	     strcasecmp(s, "Voided")==0)
+             strcasecmp(s, "Failed")==0 ||
+             strcasecmp(s, "Expired")==0 ||
+             strcasecmp(s, "Voided")==0)
       AB_Transaction_SetStatus(t, AB_Transaction_StatusRejected);
     else if (strcasecmp(s, "Pending")==0 ||
-	     strcasecmp(s, "Processed")==0)
+             strcasecmp(s, "Processed")==0)
       AB_Transaction_SetStatus(t, AB_Transaction_StatusPending);
     else if (strcasecmp(s, "Refunded")==0 ||
-	     strcasecmp(s, "Reversed")==0)
+             strcasecmp(s, "Reversed")==0)
       AB_Transaction_SetStatus(t, AB_Transaction_StatusRevoked);
     else {
       DBG_INFO(AQPAYPAL_LOGDOMAIN, "Unknown payment status (%s)", s);
@@ -270,7 +271,7 @@ int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
     AB_Transaction_SetBankReference(t, s);
 
   dbT=GWEN_DB_GetFirstGroup(dbResponse);
-  while(dbT) {
+  while (dbT) {
     GWEN_BUFFER *pbuf;
 
     pbuf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -284,15 +285,15 @@ int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
       GWEN_Buffer_AppendString(pbuf, s);
       s=GWEN_DB_GetCharValue(dbT, "L_NUMBER", 0, NULL);
       if (s && *s) {
-	GWEN_Buffer_AppendString(pbuf, "(");
-	GWEN_Buffer_AppendString(pbuf, s);
-	GWEN_Buffer_AppendString(pbuf, ")");
+        GWEN_Buffer_AppendString(pbuf, "(");
+        GWEN_Buffer_AppendString(pbuf, s);
+        GWEN_Buffer_AppendString(pbuf, ")");
       }
     }
     else {
       s=GWEN_DB_GetCharValue(dbT, "L_NUMBER", 0, NULL);
       if (s && *s)
-	GWEN_Buffer_AppendString(pbuf, s);
+        GWEN_Buffer_AppendString(pbuf, s);
     }
 
     s=GWEN_DB_GetCharValue(dbT, "L_AMT", 0, NULL);
@@ -301,8 +302,8 @@ int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
       GWEN_Buffer_AppendString(pbuf, s);
       s=GWEN_DB_GetCharValue(dbT, "L_CURRENCYCODE", 0, NULL);
       if (s && *s) {
-	GWEN_Buffer_AppendString(pbuf, " ");
-	GWEN_Buffer_AppendString(pbuf, s);
+        GWEN_Buffer_AppendString(pbuf, " ");
+        GWEN_Buffer_AppendString(pbuf, s);
       }
       GWEN_Buffer_AppendString(pbuf, "]");
 
@@ -324,9 +325,10 @@ int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
 
 
 int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
-			      AB_IMEXPORTER_ACCOUNTINFO *ai,
-			      AB_USER *u,
-                              AB_TRANSACTION *j) {
+                              AB_IMEXPORTER_ACCOUNTINFO *ai,
+                              AB_USER *u,
+                              AB_TRANSACTION *j)
+{
   GWEN_HTTP_SESSION *sess;
   GWEN_BUFFER *tbuf;
   const char *s;
@@ -431,21 +433,21 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
       fprintf(f, "\n============================================\n");
       fprintf(f, "Sending (GetTrans):\n");
       if (len>0) {
-	if (1!=fwrite(GWEN_Buffer_GetStart(tbuf), GWEN_Buffer_GetUsedBytes(tbuf), 1, f)) {
-	  DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-	  fclose(f);
-	}
-	else {
-	  if (fclose(f)) {
-	    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-	  }
-	}
+        if (1!=fwrite(GWEN_Buffer_GetStart(tbuf), GWEN_Buffer_GetUsedBytes(tbuf), 1, f)) {
+          DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+          fclose(f);
+        }
+        else {
+          if (fclose(f)) {
+            DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+          }
+        }
       }
       else {
-	fprintf(f, "Empty data.\n");
-	if (fclose(f)) {
-	  DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-	}
+        fprintf(f, "Empty data.\n");
+        if (fclose(f)) {
+          DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+        }
       }
     }
   }
@@ -462,8 +464,8 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
 
   /* send request */
   rv=GWEN_HttpSession_SendPacket(sess, "POST",
-				 (const uint8_t*) GWEN_Buffer_GetStart(tbuf),
-				 GWEN_Buffer_GetUsedBytes(tbuf));
+                                 (const uint8_t *) GWEN_Buffer_GetStart(tbuf),
+                                 GWEN_Buffer_GetUsedBytes(tbuf));
   if (rv<0) {
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
     GWEN_HttpSession_Fini(sess);
@@ -496,21 +498,21 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
       fprintf(f, "\n============================================\n");
       fprintf(f, "Received (GetTrans):\n");
       if (len>0) {
-	if (1!=fwrite(GWEN_Buffer_GetStart(tbuf), GWEN_Buffer_GetUsedBytes(tbuf), 1, f)) {
-	  DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-	  fclose(f);
-	}
-	else {
-	  if (fclose(f)) {
-	    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-	  }
-	}
+        if (1!=fwrite(GWEN_Buffer_GetStart(tbuf), GWEN_Buffer_GetUsedBytes(tbuf), 1, f)) {
+          DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+          fclose(f);
+        }
+        else {
+          if (fclose(f)) {
+            DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+          }
+        }
       }
       else {
-	fprintf(f, "Empty data.\n");
-	if (fclose(f)) {
-	  DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-	}
+        fprintf(f, "Empty data.\n");
+        if (fclose(f)) {
+          DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+        }
       }
     }
   }
@@ -538,7 +540,7 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
   s=GWEN_DB_GetCharValue(dbResponse, "ACK", 0, NULL);
   if (s && *s) {
     if (strcasecmp(s, "Success")==0 ||
-	strcasecmp(s, "SuccessWithWarning")==0) {
+        strcasecmp(s, "SuccessWithWarning")==0) {
       DBG_INFO(AQPAYPAL_LOGDOMAIN, "Success");
     }
     else {
@@ -559,7 +561,7 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
 
   /* now get the transactions */
   dbT=GWEN_DB_GetFirstGroup(dbResponse);
-  while(dbT) {
+  while (dbT) {
     AB_TRANSACTION *t;
     int dontKeep;
 
@@ -577,28 +579,28 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
         GWEN_Date_free(da);
       }
       else {
-	DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Invalid timespec [%s]", s);
+        DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Invalid timespec [%s]", s);
       }
     }
 
     s=GWEN_DB_GetCharValue(dbT, "L_TYPE", 0, NULL);
     if (s && *s) {
       // reverse engineered rule which transactions to keep and which not
-      if (strcasecmp(s, "Authorization")==0 || strcasecmp(s, "Order")==0 )
-	dontKeep++;
+      if (strcasecmp(s, "Authorization")==0 || strcasecmp(s, "Order")==0)
+        dontKeep++;
 
       /* TODO: maybe handle those types differently? */
       if (strcasecmp(s, "Transfer")==0) {
-	AB_Transaction_SetType(t, AB_Transaction_TypeTransaction);
-	AB_Transaction_SetSubType(t, AB_Transaction_SubTypeStandard);
+        AB_Transaction_SetType(t, AB_Transaction_TypeTransaction);
+        AB_Transaction_SetSubType(t, AB_Transaction_SubTypeStandard);
       }
       else if (strcasecmp(s, "Payment")==0) {
-	AB_Transaction_SetType(t, AB_Transaction_TypeTransaction);
-	AB_Transaction_SetSubType(t, AB_Transaction_SubTypeStandard);
+        AB_Transaction_SetType(t, AB_Transaction_TypeTransaction);
+        AB_Transaction_SetSubType(t, AB_Transaction_SubTypeStandard);
       }
       else {
-	AB_Transaction_SetType(t, AB_Transaction_TypeTransaction);
-	AB_Transaction_SetSubType(t, AB_Transaction_SubTypeStandard);
+        AB_Transaction_SetType(t, AB_Transaction_TypeTransaction);
+        AB_Transaction_SetSubType(t, AB_Transaction_SubTypeStandard);
       }
     }
 
@@ -616,14 +618,14 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
 
       v=AB_Value_fromString(s);
       if (v==NULL) {
-	DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Invalid amount [%s]", s);
+        DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Invalid amount [%s]", s);
       }
       else {
-	s=GWEN_DB_GetCharValue(dbT, "L_CURRENCYCODE", 0, NULL);
-	if (s && *s)
-	  AB_Value_SetCurrency(v, s);
-	AB_Transaction_SetValue(t, v);
-	AB_Value_free(v);
+        s=GWEN_DB_GetCharValue(dbT, "L_CURRENCYCODE", 0, NULL);
+        if (s && *s)
+          AB_Value_SetCurrency(v, s);
+        AB_Transaction_SetValue(t, v);
+        AB_Value_free(v);
       }
     }
     else {
@@ -636,27 +638,27 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
 
       v=AB_Value_fromString(s);
       if (v==NULL) {
-	DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Invalid fee amount [%s]", s);
+        DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Invalid fee amount [%s]", s);
       }
       else {
-	s=GWEN_DB_GetCharValue(dbT, "L_CURRENCYCODE", 0, NULL);
-	if (s && *s)
-	  AB_Value_SetCurrency(v, s);
-	AB_Transaction_SetFees(t, v);
-	AB_Value_free(v);
+        s=GWEN_DB_GetCharValue(dbT, "L_CURRENCYCODE", 0, NULL);
+        if (s && *s)
+          AB_Value_SetCurrency(v, s);
+        AB_Transaction_SetFees(t, v);
+        AB_Value_free(v);
       }
     }
 
     s=GWEN_DB_GetCharValue(dbT, "L_STATUS", 0, NULL);
     if (s && *s) {
       // reverse engineered rule which transactions to keep and which not
-      if (strcasecmp(s, "Placed")==0 || strcasecmp(s, "Removed")==0 )
-	dontKeep++;
+      if (strcasecmp(s, "Placed")==0 || strcasecmp(s, "Removed")==0)
+        dontKeep++;
 
       if (strcasecmp(s, "Completed")==0)
-	AB_Transaction_SetStatus(t, AB_Transaction_StatusAccepted);
+        AB_Transaction_SetStatus(t, AB_Transaction_StatusAccepted);
       else
-	AB_Transaction_SetStatus(t, AB_Transaction_StatusPending);
+        AB_Transaction_SetStatus(t, AB_Transaction_StatusPending);
     }
 
     /* get transaction details */
@@ -667,22 +669,22 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
       s2=GWEN_DB_GetCharValue(dbT, "L_TYPE", 0, NULL);
       if (s2 && *s2) {
         /* only get details for payments (maybe add other types later) */
-	if (strcasecmp(s2, "Payment")==0 ||
-	    strcasecmp(s2, "Purchase")==0 ||
-	    strcasecmp(s2, "Donation")==0) {
-	  DBG_INFO(AQPAYPAL_LOGDOMAIN, "Getting details for transaction [%s]", s);
-	  rv=APY_Provider_UpdateTrans(pro, u, t);
-	  if (rv<0) {
-	    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
-	  }
-	}
+        if (strcasecmp(s2, "Payment")==0 ||
+            strcasecmp(s2, "Purchase")==0 ||
+            strcasecmp(s2, "Donation")==0) {
+          DBG_INFO(AQPAYPAL_LOGDOMAIN, "Getting details for transaction [%s]", s);
+          rv=APY_Provider_UpdateTrans(pro, u, t);
+          if (rv<0) {
+            DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
+          }
+        }
       }
     }
 
     /* add transaction */
     /* but only if L_TYPE neither Authorization nor Order */
     s=GWEN_DB_GetCharValue(dbT, "L_TYPE", 0, NULL);
-    if (s && *s ) {
+    if (s && *s) {
       if (!dontKeep)
         AB_ImExporterAccountInfo_AddTransaction(ai, t);
     }

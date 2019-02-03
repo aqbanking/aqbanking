@@ -15,9 +15,9 @@
 
 
 int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
-			GWEN_DB_NODE *data,
-			GWEN_DB_NODE *cfg,
-			uint32_t flags);
+                        GWEN_DB_NODE *data,
+                        GWEN_DB_NODE *cfg,
+                        uint32_t flags);
 
 
 #endif /* AQHBCIBANK_SWIFT940_P_H */

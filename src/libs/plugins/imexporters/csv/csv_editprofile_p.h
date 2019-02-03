@@ -34,8 +34,8 @@ static GWENHYWFAR_CB void AB_CSV_EditProfileDialog_FreeData(void *bp, void *p);
 
 static GWENHYWFAR_CB
 int AB_CSV_EditProfileDialog_SignalHandler(GWEN_DIALOG *dlg,
-					   GWEN_DIALOG_EVENTTYPE t,
-					   const char *sender);
+                                           GWEN_DIALOG_EVENTTYPE t,
+                                           const char *sender);
 
 
 #endif

@@ -16,25 +16,26 @@
 #include <aqbanking/banking.h>
 
 
-int versions(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int versions(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
   int vmajor, vminor, vpatchLevel, vbuild;
 
   fprintf(stdout, "Versions:\n");
   fprintf(stdout, " AqBanking-CLI: %s\n",
-	  AQBANKING_CLI_VERSION_STRING);
+          AQBANKING_CLI_VERSION_STRING);
   GWEN_Version(&vmajor,
-	       &vminor,
-	       &vpatchLevel,
-	       &vbuild);
+               &vminor,
+               &vpatchLevel,
+               &vbuild);
   fprintf(stdout, " Gwenhywfar   : %d.%d.%d.%d\n",
-	  vmajor, vminor, vpatchLevel, vbuild);
+          vmajor, vminor, vpatchLevel, vbuild);
 
   AB_Banking_GetVersion(&vmajor,
-			&vminor,
-			&vpatchLevel,
-			&vbuild);
+                        &vminor,
+                        &vpatchLevel,
+                        &vbuild);
   fprintf(stdout, " AqBanking    : %d.%d.%d.%d\n",
-	  vmajor, vminor, vpatchLevel, vbuild);
+          vmajor, vminor, vpatchLevel, vbuild);
 
   return 0;
 }

@@ -11,9 +11,10 @@
 
 
 int EBC_Provider_SignMessage(AB_PROVIDER *pro,
-			     EB_MSG *msg,
-			     AB_USER *u,
-                             xmlNodePtr node) {
+                             EB_MSG *msg,
+                             AB_USER *u,
+                             xmlNodePtr node)
+{
   const char *s;
 
   s=EBC_User_GetAuthVersion(u);

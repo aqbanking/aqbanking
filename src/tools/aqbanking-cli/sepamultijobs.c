@@ -26,7 +26,9 @@
 
 
 
-int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv, AQBANKING_TOOL_MULTISEPA_TYPE multisepa_type) {
+int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv,
+                  AQBANKING_TOOL_MULTISEPA_TYPE multisepa_type)
+{
 #pragma message "Need to implement this"
 #if 0
   GWEN_DB_NODE *db;
@@ -45,128 +47,128 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv, A
   AB_ACCOUNT *forcedAccount=NULL;
   AB_JOB_LIST2 *jobList;
   int rvExec, reallyExecute = 1, transactionLine = 0;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "ctxFile",                    /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "c",                          /* short option */
-    "ctxfile",                    /* long option */
-    "Specify the file to store the context in",   /* short description */
-    "Specify the file to store the context in"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "inFile",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "f",                          /* short option */
-    "infile",                    /* long option */
-    "Specify the file to read the data from",   /* short description */
-    "Specify the file to read the data from"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "importerName",               /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "importer",                    /* long option */
-    "Specify the importer to use",   /* short description */
-    "Specify the importer to use"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "profileName",                /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "profile",                    /* long option */
-    "Specify the import profile to use",   /* short description */
-    "Specify the import profile to use"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "profileFile",                /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "profile-file",               /* long option */
-    "Specify the file to load the import profile from (WATCH OUT: Feature might be broken)",/* short description */
-    "Specify the file to load the import profile from" /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "bankId",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "b",                          /* short option */
-    "bank",                       /* long option */
-    "overwrite the bank code",      /* short description */
-    "overwrite the bank code"       /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "accountId",                  /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "a",                          /* short option */
-    "account",                    /* long option */
-    "overwrite the account number",     /* short description */
-    "overwrite the account number"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "subAccountId",                /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "aa",                          /* short option */
-    "subaccount",                   /* long option */
-    "Specify the sub account id (Unterkontomerkmal)",    /* short description */
-    "Specify the sub account id (Unterkontomerkmal)"     /* long description */
-  },
-  {
-    0,                
-    GWEN_ArgsType_Int,
-    "fillGaps",
-    0,  
-    1,  
-    0, 
-    "fill-gaps",
-    "let AqBanking fill-in missing account information if possible",
-    "let AqBanking fill-in missing account information if possible",
-  },
-  {
-        0, /* flags */
-        GWEN_ArgsType_Int,           /* type */
-        "useCOR1",                /* name */
-        0,                            /* minnum */
-        1,                            /* maxnum */
-        0,                          /* short option */
-        "use-COR1",                   /* long option */
-        "If given, use COR1 variant of debit notes (faster), otherwise CORE (slower)",    /* short description */
-        "If given, use COR1 variant of debit notes (faster), otherwise CORE (slower)"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "ctxFile",                    /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "c",                          /* short option */
+      "ctxfile",                    /* long option */
+      "Specify the file to store the context in",   /* short description */
+      "Specify the file to store the context in"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "inFile",                     /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "f",                          /* short option */
+      "infile",                    /* long option */
+      "Specify the file to read the data from",   /* short description */
+      "Specify the file to read the data from"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "importerName",               /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                            /* short option */
+      "importer",                    /* long option */
+      "Specify the importer to use",   /* short description */
+      "Specify the importer to use"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "profileName",                /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                            /* short option */
+      "profile",                    /* long option */
+      "Specify the import profile to use",   /* short description */
+      "Specify the import profile to use"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "profileFile",                /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                            /* short option */
+      "profile-file",               /* long option */
+      "Specify the file to load the import profile from (WATCH OUT: Feature might be broken)",/* short description */
+      "Specify the file to load the import profile from" /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "bankId",                     /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "b",                          /* short option */
+      "bank",                       /* long option */
+      "overwrite the bank code",      /* short description */
+      "overwrite the bank code"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "accountId",                  /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "a",                          /* short option */
+      "account",                    /* long option */
+      "overwrite the account number",     /* short description */
+      "overwrite the account number"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "subAccountId",                /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "aa",                          /* short option */
+      "subaccount",                   /* long option */
+      "Specify the sub account id (Unterkontomerkmal)",    /* short description */
+      "Specify the sub account id (Unterkontomerkmal)"     /* long description */
+    },
+    {
+      0,
+      GWEN_ArgsType_Int,
+      "fillGaps",
+      0,
+      1,
+      0,
+      "fill-gaps",
+      "let AqBanking fill-in missing account information if possible",
+      "let AqBanking fill-in missing account information if possible",
+    },
+    {
+      0, /* flags */
+      GWEN_ArgsType_Int,           /* type */
+      "useCOR1",                /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                          /* short option */
+      "use-COR1",                   /* long option */
+      "If given, use COR1 variant of debit notes (faster), otherwise CORE (slower)",    /* short description */
+      "If given, use COR1 variant of debit notes (faster), otherwise CORE (slower)"     /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -240,8 +242,8 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv, A
   /* import new context */
   ctx=AB_ImExporterContext_new();
   rv=AB_Banking_ImportFileWithProfile(ab, importerName, ctx,
-				      profileName, profileFile,
-				      inFile);
+                                      profileName, profileFile,
+                                      inFile);
   if (rv<0) {
     DBG_ERROR(0, "Error reading file: %d", rv);
     AB_ImExporterContext_free(ctx);
@@ -255,7 +257,7 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv, A
   /* populate job list */
   jobList=AB_Job_List2_new();
   iea=AB_ImExporterContext_GetFirstAccountInfo(ctx);
-  while(iea) {
+  while (iea) {
     AB_ACCOUNT *a;
     AB_TRANSACTION *t;
 
@@ -280,12 +282,12 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv, A
                   AB_ImExporterAccountInfo_GetAccountNumber(iea));
         AB_Job_List2_FreeAll(jobList);
         AB_ImExporterContext_free(ctx);
-	return 3;
+        return 3;
       }
     }
 
     t=AB_ImExporterAccountInfo_GetFirstTransaction(iea, 0, 0);
-    while(t) {
+    while (t) {
       AB_JOB *j;
       const char *rIBAN;
       const char *lIBAN;
@@ -303,15 +305,15 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv, A
 
       /* preset local BIC and IBAN from account, if not set */
       if (!lBIC || !(*lBIC))
-	lBIC=AB_Account_GetBIC(a);
+        lBIC=AB_Account_GetBIC(a);
 
       if (!lIBAN || !(*lIBAN))
-	lIBAN=AB_Account_GetIBAN(a);
+        lIBAN=AB_Account_GetIBAN(a);
 
       /* check remote account */
       if (!rIBAN || !(*rIBAN)) {
-          DBG_ERROR(0, "Missing remote IBAN, in line %d", transactionLine);
-          reallyExecute = 0;
+        DBG_ERROR(0, "Missing remote IBAN, in line %d", transactionLine);
+        reallyExecute = 0;
       }
       rv=AB_Banking_CheckIban(rIBAN);
       if (rv != 0) {
@@ -338,17 +340,17 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv, A
 
       /* Create job */
       j = (multisepa_type == AQBANKING_TOOL_SEPA_TRANSFERS)
-        // The command was sepatransfers, so we create JobSepaTransfer
-        ? AB_JobSepaTransfer_new(a)
-        // The command was sepadebitnotes, so we create some debit note
-        : (use_flash_debitnote
-           // Did we have --use-COR1? Use this extra job type
-           ? AB_JobSepaFlashDebitNote_new(a)
-           // No COR1, just standard CORE debit note
-           : AB_JobSepaDebitNote_new(a));
+          // The command was sepatransfers, so we create JobSepaTransfer
+          ? AB_JobSepaTransfer_new(a)
+          // The command was sepadebitnotes, so we create some debit note
+          : (use_flash_debitnote
+             // Did we have --use-COR1? Use this extra job type
+             ? AB_JobSepaFlashDebitNote_new(a)
+             // No COR1, just standard CORE debit note
+             : AB_JobSepaDebitNote_new(a));
       rv=AB_Job_CheckAvailability(j);
       if (rv<0) {
-        const char* jobtype = AB_Job_Type2Char(AB_Job_GetType(j));
+        const char *jobtype = AB_Job_Type2Char(AB_Job_GetType(j));
         DBG_ERROR(0, "Job %s not supported, in line %d.", jobtype, transactionLine);
         reallyExecute = 0;
       }

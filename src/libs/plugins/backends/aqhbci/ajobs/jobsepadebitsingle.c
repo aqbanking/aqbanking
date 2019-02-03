@@ -36,7 +36,8 @@
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_SepaDebitSingle_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_SepaDebitSingle_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
+{
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
 
@@ -66,7 +67,8 @@ AH_JOB *AH_Job_SepaDebitSingle_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaDebitSingle_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod) {
+int AH_Job_SepaDebitSingle_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod)
+{
   const AB_TRANSACTION *t;
   const char *s;
   int tanVer=AH_JOB_TANVER_1_4;
@@ -107,7 +109,8 @@ int AH_Job_SepaDebitSingle_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_N
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaDebitSingle_Prepare(AH_JOB *j) {
+int AH_Job_SepaDebitSingle_Prepare(AH_JOB *j)
+{
   GWEN_DB_NODE *profile;
   int rv;
 

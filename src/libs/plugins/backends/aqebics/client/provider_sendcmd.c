@@ -9,7 +9,8 @@
 
 
 
-int EBC_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx) {
+int EBC_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx)
+{
   EBC_PROVIDER *hp;
   AB_USERQUEUE_LIST *uql;
   AB_USERQUEUE *uq;
@@ -30,7 +31,7 @@ int EBC_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPOR
   }
 
   uq=AB_UserQueue_List_First(uql);
-  while(uq) {
+  while (uq) {
     int rv;
 
     rv=EBC_Provider__SendUserQueue(pro, uq, ctx);
@@ -48,7 +49,8 @@ int EBC_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPOR
 
 
 
-int EBC_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTER_CONTEXT *ctx) {
+int EBC_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AB_ACCOUNTQUEUE_LIST *aql;
   AB_USER *u;
   GWEN_HTTP_SESSION *sess;
@@ -76,7 +78,8 @@ int EBC_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTE
     rv=AB_Provider_BeginExclUseUser(pro, u);
     if (rv<0) {
       DBG_INFO(AQEBICS_LOGDOMAIN, "Could not lock user [%lu] (%d)", (unsigned long int) AB_User_GetUniqueId(u), rv);
-      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Error, I18N("Could not lock user \"%lu\""), (unsigned long int) AB_User_GetUniqueId(u));
+      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Error, I18N("Could not lock user \"%lu\""),
+                            (unsigned long int) AB_User_GetUniqueId(u));
       AB_Provider_EndExclUseUser(pro, u, 1);  /* abandon */
       GWEN_HttpSession_Fini(sess);
       GWEN_HttpSession_free(sess);
@@ -84,7 +87,7 @@ int EBC_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTE
     }
 
     aq=AB_AccountQueue_List_First(aql);
-    while(aq) {
+    while (aq) {
       int rv;
 
       rv=EBC_Provider__SendAccountQueue(pro, u, aq, sess, ctx);
@@ -95,10 +98,12 @@ int EBC_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTE
       aq=AB_AccountQueue_List_Next(aq);
     } /* while aq */
 
-    GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info, I18N("Unlocking customer \"%lu\""), (unsigned long int) AB_User_GetUniqueId(u));
+    GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info, I18N("Unlocking customer \"%lu\""),
+                          (unsigned long int) AB_User_GetUniqueId(u));
     rv=AB_Provider_EndExclUseUser(pro, u, 0);
     if (rv<0) {
-      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Error, I18N("Could not unlock user \"%lu\""), (unsigned long int) AB_User_GetUniqueId(u));
+      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Error, I18N("Could not unlock user \"%lu\""),
+                            (unsigned long int) AB_User_GetUniqueId(u));
       AB_Provider_EndExclUseUser(pro, u, 1); /* abandon */
       GWEN_HttpSession_Fini(sess);
       GWEN_HttpSession_free(sess);
@@ -116,7 +121,8 @@ int EBC_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTE
 
 
 int EBC_Provider__SendAccountQueue(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNTQUEUE *aq,
-                                   GWEN_HTTP_SESSION *sess, AB_IMEXPORTER_CONTEXT *ctx) {
+                                   GWEN_HTTP_SESSION *sess, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AB_JOBQUEUE_LIST *jql;
   AB_ACCOUNT *a;
 
@@ -130,12 +136,12 @@ int EBC_Provider__SendAccountQueue(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNTQUEUE
     AB_JOBQUEUE *jq;
 
     jq=AB_JobQueue_List_First(jql);
-    while(jq) {
+    while (jq) {
       AB_TRANSACTION_COMMAND cmd;
       int rv;
 
       cmd=AB_JobQueue_GetJobType(jq);
-      switch(cmd) {
+      switch (cmd) {
       case AB_Transaction_CommandGetTransactions:
         rv=EBC_Provider_ExecContext_STA(pro, ctx, u, a, sess, jq);
         break;
@@ -160,7 +166,8 @@ int EBC_Provider__SendAccountQueue(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNTQUEUE
 
 
 
-void EBC_Provider_SortTransactionsIntoJobQueues(AB_PROVIDER *pro, AB_ACCOUNTQUEUE *aq) {
+void EBC_Provider_SortTransactionsIntoJobQueues(AB_PROVIDER *pro, AB_ACCOUNTQUEUE *aq)
+{
   AB_TRANSACTION_LIST2 *tl;
 
   tl=AB_AccountQueue_GetTransactionList(aq);
@@ -172,7 +179,7 @@ void EBC_Provider_SortTransactionsIntoJobQueues(AB_PROVIDER *pro, AB_ACCOUNTQUEU
       AB_TRANSACTION *t;
 
       t=AB_Transaction_List2Iterator_Data(it);
-      while(t) {
+      while (t) {
         AB_JOBQUEUE *jq;
         AB_TRANSACTION_COMMAND cmd;
 
@@ -209,11 +216,12 @@ void EBC_Provider_SortTransactionsIntoJobQueues(AB_PROVIDER *pro, AB_ACCOUNTQUEU
 
 
 int EBC_Provider_ExecContext_STA(AB_PROVIDER *pro,
-				 AB_IMEXPORTER_CONTEXT *ctx,
-				 GWEN_UNUSED AB_USER *u,
-				 GWEN_UNUSED AB_ACCOUNT *a,
+                                 AB_IMEXPORTER_CONTEXT *ctx,
+                                 GWEN_UNUSED AB_USER *u,
+                                 GWEN_UNUSED AB_ACCOUNT *a,
                                  GWEN_HTTP_SESSION *sess,
-                                 AB_JOBQUEUE *jq) {
+                                 AB_JOBQUEUE *jq)
+{
   EBC_PROVIDER *dp;
   AB_TRANSACTION_LIST2 *jl;
 
@@ -231,7 +239,7 @@ int EBC_Provider_ExecContext_STA(AB_PROVIDER *pro,
 
       uj=AB_Transaction_List2Iterator_Data(jit);
       assert(uj);
-      while(uj) {
+      while (uj) {
         int rv;
 
         /* exchange STA request */
@@ -266,11 +274,12 @@ int EBC_Provider_ExecContext_STA(AB_PROVIDER *pro,
 
 #if 0
 int EBC_Provider_ExecContext__IZV(AB_PROVIDER *pro,
-				  AB_IMEXPORTER_CONTEXT *ctx,
-				  AB_USER *u,
-				  AB_ACCOUNT *a,
-				  GWEN_HTTP_SESSION *sess,
-				  EBC_CONTEXT *ectx){
+                                  AB_IMEXPORTER_CONTEXT *ctx,
+                                  AB_USER *u,
+                                  AB_ACCOUNT *a,
+                                  GWEN_HTTP_SESSION *sess,
+                                  EBC_CONTEXT *ectx)
+{
   EBC_PROVIDER *dp;
   AB_JOB_LIST2_ITERATOR *jit;
   AB_JOB_STATUS js;
@@ -302,7 +311,7 @@ int EBC_Provider_ExecContext__IZV(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(logbuf, I18N("Transfer type: "));
   GWEN_Buffer_AppendString(logbuf, "\t");
 
-  switch(EBC_Context_GetJobType(ectx)) {
+  switch (EBC_Context_GetJobType(ectx)) {
   case AB_Job_TypeTransfer:
     if (!profileName)
       profileName="transfer";
@@ -340,15 +349,15 @@ int EBC_Provider_ExecContext__IZV(AB_PROVIDER *pro,
 
     uj=AB_Job_List2Iterator_Data(jit);
     assert(uj);
-    while(uj) {
+    while (uj) {
       AB_TRANSACTION *t;
       const char *s;
       const AB_VALUE *v;
 
-      switch(EBC_Context_GetJobType(ectx)) {
+      switch (EBC_Context_GetJobType(ectx)) {
       case AB_Job_TypeTransfer:
       case AB_Job_TypeDebitNote:
-	t=AB_Job_GetTransaction(uj);
+        t=AB_Job_GetTransaction(uj);
         break;
       default:
         t=NULL;
@@ -356,36 +365,36 @@ int EBC_Provider_ExecContext__IZV(AB_PROVIDER *pro,
       assert(t);
 
       if (groupId==0)
-	/* take id from first job of the created DTAUS doc */
-	groupId=AB_Job_GetJobId(uj);
+        /* take id from first job of the created DTAUS doc */
+        groupId=AB_Job_GetJobId(uj);
       AB_Transaction_SetGroupId(t, groupId);
 
       AB_ImExporterAccountInfo_AddTransaction(ai, AB_Transaction_dup(t));
       s=AB_Transaction_GetRemoteName(t);
       if (!s)
-	s=I18N("unknown");
+        s=I18N("unknown");
       GWEN_Buffer_AppendString(logbuf, s);
       GWEN_Buffer_AppendString(logbuf, "\t");
       s=AB_Transaction_GetRemoteBankCode(t);
       if (!s)
-	s="????????";
+        s="????????";
       GWEN_Buffer_AppendString(logbuf, s);
       GWEN_Buffer_AppendString(logbuf, "\t");
       s=AB_Transaction_GetRemoteAccountNumber(t);
       if (!s)
-	s="??????????";
+        s="??????????";
       GWEN_Buffer_AppendString(logbuf, s);
       GWEN_Buffer_AppendString(logbuf, "\t");
       s=AB_Transaction_GetPurpose(t);
       if (!s)
-	s="";
+        s="";
       GWEN_Buffer_AppendString(logbuf, s);
       GWEN_Buffer_AppendString(logbuf, "\t");
       v=AB_Transaction_GetValue(t);
       if (v)
-	AB_Value_toHumanReadableString(v, logbuf, 2);
+        AB_Value_toHumanReadableString(v, logbuf, 2);
       else
-	GWEN_Buffer_AppendString(logbuf, "0,00 EUR");
+        GWEN_Buffer_AppendString(logbuf, "0,00 EUR");
       GWEN_Buffer_AppendString(logbuf, "\n");
 
       uj=AB_Job_List2Iterator_Next(jit);
@@ -401,15 +410,15 @@ int EBC_Provider_ExecContext__IZV(AB_PROVIDER *pro,
 
   DBG_INFO(AQEBICS_LOGDOMAIN, "Exporting transactions to DTAUS[default]");
   rv=AB_Banking_ExportToBuffer(AB_Provider_GetBanking(pro),
-			       exCtx,
-			       "dtaus",
-			       profileName,
-			       bufDtaus);
+                               exCtx,
+                               "dtaus",
+                               profileName,
+                               bufDtaus);
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(bufDtaus);
     EBC_Provider_SetJobListStatus(EBC_Context_GetJobs(ectx),
-				  AB_Job_StatusError);
+                                  AB_Job_StatusError);
     GWEN_Buffer_AppendString(logbuf, "\t");
     GWEN_Buffer_AppendString(logbuf, I18N("Error while exporting to DTAUS\n"));
     GWEN_Buffer_AppendString(logbuf, "END\n");
@@ -434,8 +443,8 @@ int EBC_Provider_ExecContext__IZV(AB_PROVIDER *pro,
   else
     rqType="IZV";
   rv=EBC_Provider_XchgUploadRequest(pro, sess, u, rqType,
-				    (const uint8_t*)GWEN_Buffer_GetStart(bufDtaus),
-				    GWEN_Buffer_GetUsedBytes(bufDtaus));
+                                    (const uint8_t *)GWEN_Buffer_GetStart(bufDtaus),
+                                    GWEN_Buffer_GetUsedBytes(bufDtaus));
   if (rv<0 || rv>=300)
     js=AB_Job_StatusError;
   else
@@ -457,11 +466,12 @@ int EBC_Provider_ExecContext__IZV(AB_PROVIDER *pro,
 
 
 int EBC_Provider_ExecContext_IZV(AB_PROVIDER *pro,
-				 AB_IMEXPORTER_CONTEXT *ctx,
-				 AB_USER *u,
-				 AB_ACCOUNT *a,
-				 GWEN_HTTP_SESSION *sess,
-				 EBC_CONTEXT *ectx){
+                                 AB_IMEXPORTER_CONTEXT *ctx,
+                                 AB_USER *u,
+                                 AB_ACCOUNT *a,
+                                 GWEN_HTTP_SESSION *sess,
+                                 EBC_CONTEXT *ectx)
+{
   EBC_PROVIDER *dp;
   AB_JOB_LIST2_ITERATOR *jit;
   int rv;
@@ -479,13 +489,13 @@ int EBC_Provider_ExecContext_IZV(AB_PROVIDER *pro,
 
     uj=AB_Job_List2Iterator_Data(jit);
     assert(uj);
-    while(uj) {
+    while (uj) {
       const AB_TRANSACTION *ot;
 
-      switch(EBC_Context_GetJobType(ectx)) {
+      switch (EBC_Context_GetJobType(ectx)) {
       case AB_Job_TypeTransfer:
       case AB_Job_TypeDebitNote:
-	ot=AB_Job_GetTransaction(uj);
+        ot=AB_Job_GetTransaction(uj);
         break;
       default:
         ot=NULL;
@@ -493,16 +503,22 @@ int EBC_Provider_ExecContext_IZV(AB_PROVIDER *pro,
 
       assert(ot);
       if (ot) {
-	AB_TRANSACTION *t;
-	AB_TRANSACTION_STATUS tStatus;
+        AB_TRANSACTION *t;
+        AB_TRANSACTION_STATUS tStatus;
 
-	switch(AB_Job_GetStatus(uj)) {
-	case AB_Job_StatusFinished: tStatus=AB_Transaction_StatusAccepted; break;
-	case AB_Job_StatusPending:  tStatus=AB_Transaction_StatusPending; break;
-	default:                    tStatus=AB_Transaction_StatusRejected; break;
-	}
+        switch (AB_Job_GetStatus(uj)) {
+        case AB_Job_StatusFinished:
+          tStatus=AB_Transaction_StatusAccepted;
+          break;
+        case AB_Job_StatusPending:
+          tStatus=AB_Transaction_StatusPending;
+          break;
+        default:
+          tStatus=AB_Transaction_StatusRejected;
+          break;
+        }
 
-	t=AB_Transaction_dup(ot);
+        t=AB_Transaction_dup(ot);
         AB_Transaction_SetStatus(t, tStatus);
         AB_Transaction_SetUniqueAccountId(t, AB_Account_GetUniqueId(a));
         if (AB_Transaction_GetType(t)<=AB_Transaction_TypeNone)

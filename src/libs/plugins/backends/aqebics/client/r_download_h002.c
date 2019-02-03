@@ -11,12 +11,13 @@
 
 
 static int EBC_Provider_MkDownloadInitRequest_H002(AB_PROVIDER *pro,
-						   GWEN_HTTP_SESSION *sess,
-						   AB_USER *u,
-						   const char *requestType,
-						   const GWEN_DATE *fromDate,
-						   const GWEN_DATE *toDate,
-						   EB_MSG **pMsg) {
+                                                   GWEN_HTTP_SESSION *sess,
+                                                   AB_USER *u,
+                                                   const char *requestType,
+                                                   const GWEN_DATE *fromDate,
+                                                   const GWEN_DATE *toDate,
+                                                   EB_MSG **pMsg)
+{
   EBC_PROVIDER *dp;
   int rv;
   GWEN_CRYPT_TOKEN *ct;
@@ -57,21 +58,21 @@ static int EBC_Provider_MkDownloadInitRequest_H002(AB_PROVIDER *pro,
   root_node=xmlNewNode(NULL, BAD_CAST "ebicsRequest");
   xmlDocSetRootElement(doc, root_node);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.ebics.org/H002",
-	      NULL);
+              BAD_CAST "http://www.ebics.org/H002",
+              NULL);
   assert(ns);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
-	      BAD_CAST "ds");
+              BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
+              BAD_CAST "ds");
   assert(ns);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
-	      BAD_CAST "xsi");
+              BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
+              BAD_CAST "xsi");
   xmlNewNsProp(root_node,
-	       ns,
-	       BAD_CAST "schemaLocation", /* xsi:schemaLocation */
-	       BAD_CAST "http://www.ebics.org/H002 "
-	       "http://www.ebics.org/H002/ebics_request.xsd");
+               ns,
+               BAD_CAST "schemaLocation", /* xsi:schemaLocation */
+               BAD_CAST "http://www.ebics.org/H002 "
+               "http://www.ebics.org/H002/ebics_request.xsd");
 
   xmlNewProp(root_node, BAD_CAST "Version", BAD_CAST "H002");
   xmlNewProp(root_node, BAD_CAST "Revision", BAD_CAST "1");
@@ -85,8 +86,8 @@ static int EBC_Provider_MkDownloadInitRequest_H002(AB_PROVIDER *pro,
   if (!s)
     s="EBICS";
   nodeXX=xmlNewTextChild(nodeX, NULL,
-			 BAD_CAST "HostID",
-			 BAD_CAST s);
+                         BAD_CAST "HostID",
+                         BAD_CAST s);
 
   /* generate Nonce */
   tbuf=GWEN_Buffer_new(0, 128, 0, 1);
@@ -98,8 +99,8 @@ static int EBC_Provider_MkDownloadInitRequest_H002(AB_PROVIDER *pro,
     return rv;
   }
   nodeXX=xmlNewTextChild(nodeX, NULL,
-			 BAD_CAST "Nonce",
-			 BAD_CAST GWEN_Buffer_GetStart(tbuf));
+                         BAD_CAST "Nonce",
+                         BAD_CAST GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_Reset(tbuf);
 
   /* generate timestamp */
@@ -111,26 +112,26 @@ static int EBC_Provider_MkDownloadInitRequest_H002(AB_PROVIDER *pro,
     return rv;
   }
   nodeXX=xmlNewTextChild(nodeX, NULL,
-			 BAD_CAST "Timestamp",
-			 BAD_CAST GWEN_Buffer_GetStart(tbuf));
+                         BAD_CAST "Timestamp",
+                         BAD_CAST GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_free(tbuf);
 
   nodeXX=xmlNewTextChild(nodeX, NULL,
-			 BAD_CAST "PartnerID",
-			 BAD_CAST partnerId);
+                         BAD_CAST "PartnerID",
+                         BAD_CAST partnerId);
 
   nodeXX=xmlNewTextChild(nodeX, NULL,
-			 BAD_CAST "UserID",
-			 BAD_CAST userId);
+                         BAD_CAST "UserID",
+                         BAD_CAST userId);
 
   /* order details */
   nodeXX=xmlNewChild(nodeX, NULL, BAD_CAST "OrderDetails", NULL);
   xmlNewTextChild(nodeXX, NULL,
-		  BAD_CAST "OrderType",
-		  BAD_CAST requestType);
+                  BAD_CAST "OrderType",
+                  BAD_CAST requestType);
   xmlNewTextChild(nodeXX, NULL,
-		  BAD_CAST "OrderAttribute",
-		  BAD_CAST "DZHNN");
+                  BAD_CAST "OrderAttribute",
+                  BAD_CAST "DZHNN");
   nodeXXX=xmlNewChild(nodeXX, NULL, BAD_CAST "StandardOrderParams", NULL);
   if (fromDate || toDate) {
     xmlNodePtr nodeXXXX;
@@ -157,8 +158,8 @@ static int EBC_Provider_MkDownloadInitRequest_H002(AB_PROVIDER *pro,
       tbuf=GWEN_Buffer_new(0, 256, 0, 1);
       GWEN_Date_toStringWithTemplate(t1, "YYYY-MM-DD", tbuf);
       xmlNewTextChild(nodeXXXX, NULL,
-		      BAD_CAST "Start",
-		      BAD_CAST GWEN_Buffer_GetStart(tbuf));
+                      BAD_CAST "Start",
+                      BAD_CAST GWEN_Buffer_GetStart(tbuf));
       GWEN_Buffer_free(tbuf);
     }
 
@@ -168,8 +169,8 @@ static int EBC_Provider_MkDownloadInitRequest_H002(AB_PROVIDER *pro,
       tbuf=GWEN_Buffer_new(0, 256, 0, 1);
       GWEN_Date_toStringWithTemplate(t2, "YYYY-MM-DD", tbuf);
       xmlNewTextChild(nodeXXXX, NULL,
-		      BAD_CAST "End",
-		      BAD_CAST GWEN_Buffer_GetStart(tbuf));
+                      BAD_CAST "End",
+                      BAD_CAST GWEN_Buffer_GetStart(tbuf));
       GWEN_Buffer_free(tbuf);
     }
     if (tempTime)
@@ -187,14 +188,14 @@ static int EBC_Provider_MkDownloadInitRequest_H002(AB_PROVIDER *pro,
 
   /* security medium */
   xmlNewTextChild(nodeX, NULL,
-		  BAD_CAST "SecurityMedium",
-		  BAD_CAST "0000");
+                  BAD_CAST "SecurityMedium",
+                  BAD_CAST "0000");
 
   /* mutable */
   nodeX=xmlNewChild(node, NULL, BAD_CAST "mutable", NULL);
   xmlNewTextChild(nodeX, NULL,
-		  BAD_CAST "TransactionPhase",
-		  BAD_CAST "Initialisation");
+                  BAD_CAST "TransactionPhase",
+                  BAD_CAST "Initialisation");
 
 
   /* prepare signature node */
@@ -218,11 +219,12 @@ static int EBC_Provider_MkDownloadInitRequest_H002(AB_PROVIDER *pro,
 
 
 static int EBC_Provider_MkDownloadTransferRequest_H002(AB_PROVIDER *pro,
-						       GWEN_HTTP_SESSION *sess,
-						       AB_USER *u,
-						       const char *transactionId,
-						       int segmentNumber,
-						       EB_MSG **pMsg) {
+                                                       GWEN_HTTP_SESSION *sess,
+                                                       AB_USER *u,
+                                                       const char *transactionId,
+                                                       int segmentNumber,
+                                                       EB_MSG **pMsg)
+{
   EBC_PROVIDER *dp;
   int rv;
   GWEN_CRYPT_TOKEN *ct;
@@ -253,21 +255,21 @@ static int EBC_Provider_MkDownloadTransferRequest_H002(AB_PROVIDER *pro,
   root_node=xmlNewNode(NULL, BAD_CAST "ebicsRequest");
   xmlDocSetRootElement(doc, root_node);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.ebics.org/H002",
-	      NULL);
+              BAD_CAST "http://www.ebics.org/H002",
+              NULL);
   assert(ns);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
-	      BAD_CAST "ds");
+              BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
+              BAD_CAST "ds");
   assert(ns);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
-	      BAD_CAST "xsi");
+              BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
+              BAD_CAST "xsi");
   xmlNewNsProp(root_node,
-	       ns,
-	       BAD_CAST "schemaLocation", /* xsi:schemaLocation */
-	       BAD_CAST "http://www.ebics.org/H002 "
-	       "http://www.ebics.org/H002/ebics_request.xsd");
+               ns,
+               BAD_CAST "schemaLocation", /* xsi:schemaLocation */
+               BAD_CAST "http://www.ebics.org/H002 "
+               "http://www.ebics.org/H002/ebics_request.xsd");
 
   xmlNewProp(root_node, BAD_CAST "Version", BAD_CAST "H002");
   xmlNewProp(root_node, BAD_CAST "Revision", BAD_CAST "1");
@@ -291,8 +293,8 @@ static int EBC_Provider_MkDownloadTransferRequest_H002(AB_PROVIDER *pro,
   /* mutable */
   nodeX=xmlNewChild(node, NULL, BAD_CAST "mutable", NULL);
   xmlNewTextChild(nodeX, NULL,
-		  BAD_CAST "TransactionPhase",
-		  BAD_CAST "Transfer");
+                  BAD_CAST "TransactionPhase",
+                  BAD_CAST "Transfer");
   EB_Msg_SetIntValue(msg, "header/mutable/SegmentNumber", segmentNumber);
 
   /* prepare signature node */
@@ -316,11 +318,12 @@ static int EBC_Provider_MkDownloadTransferRequest_H002(AB_PROVIDER *pro,
 
 
 static int EBC_Provider_MkDownloadReceiptRequest_H002(AB_PROVIDER *pro,
-						      GWEN_HTTP_SESSION *sess,
-						      AB_USER *u,
-						      const char *transactionId,
-						      int receiptCode,
-						      EB_MSG **pMsg) {
+                                                      GWEN_HTTP_SESSION *sess,
+                                                      AB_USER *u,
+                                                      const char *transactionId,
+                                                      int receiptCode,
+                                                      EB_MSG **pMsg)
+{
   EBC_PROVIDER *dp;
   int rv;
   GWEN_CRYPT_TOKEN *ct;
@@ -351,21 +354,21 @@ static int EBC_Provider_MkDownloadReceiptRequest_H002(AB_PROVIDER *pro,
   root_node=xmlNewNode(NULL, BAD_CAST "ebicsRequest");
   xmlDocSetRootElement(doc, root_node);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.ebics.org/H002",
-	      NULL);
+              BAD_CAST "http://www.ebics.org/H002",
+              NULL);
   assert(ns);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
-	      BAD_CAST "ds");
+              BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
+              BAD_CAST "ds");
   assert(ns);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
-	      BAD_CAST "xsi");
+              BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
+              BAD_CAST "xsi");
   xmlNewNsProp(root_node,
-	       ns,
-	       BAD_CAST "schemaLocation", /* xsi:schemaLocation */
-	       BAD_CAST "http://www.ebics.org/H002 "
-	       "http://www.ebics.org/H002/ebics_request.xsd");
+               ns,
+               BAD_CAST "schemaLocation", /* xsi:schemaLocation */
+               BAD_CAST "http://www.ebics.org/H002 "
+               "http://www.ebics.org/H002/ebics_request.xsd");
 
   xmlNewProp(root_node, BAD_CAST "Version", BAD_CAST "H002");
   xmlNewProp(root_node, BAD_CAST "Revision", BAD_CAST "1");
@@ -389,8 +392,8 @@ static int EBC_Provider_MkDownloadReceiptRequest_H002(AB_PROVIDER *pro,
   /* mutable */
   nodeX=xmlNewChild(node, NULL, BAD_CAST "mutable", NULL);
   xmlNewTextChild(nodeX, NULL,
-		  BAD_CAST "TransactionPhase",
-		  BAD_CAST "Receipt");
+                  BAD_CAST "TransactionPhase",
+                  BAD_CAST "Receipt");
 
   /* prepare signature node */
   sigNode=xmlNewChild(root_node, NULL, BAD_CAST "AuthSignature", NULL);
@@ -417,13 +420,14 @@ static int EBC_Provider_MkDownloadReceiptRequest_H002(AB_PROVIDER *pro,
 
 
 int EBC_Provider_XchgDownloadRequest_H002(AB_PROVIDER *pro,
-					  GWEN_HTTP_SESSION *sess,
-					  AB_USER *u,
-					  const char *requestType,
-					  GWEN_BUFFER *targetBuffer,
-					  int withReceipt,
-					  const GWEN_DATE *fromDate,
-					  const GWEN_DATE *toDate) {
+                                          GWEN_HTTP_SESSION *sess,
+                                          AB_USER *u,
+                                          const char *requestType,
+                                          GWEN_BUFFER *targetBuffer,
+                                          int withReceipt,
+                                          const GWEN_DATE *fromDate,
+                                          const GWEN_DATE *toDate)
+{
   EBC_PROVIDER *dp;
   int rv;
   GWEN_CRYPT_TOKEN *ct;
@@ -446,7 +450,7 @@ int EBC_Provider_XchgDownloadRequest_H002(AB_PROVIDER *pro,
   /* create initialisation request */
   rv=EBC_Provider_MkDownloadInitRequest_H002(pro, sess, u, requestType,
                                              fromDate, toDate,
-					     &msg);
+                                             &msg);
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -477,20 +481,20 @@ int EBC_Provider_XchgDownloadRequest_H002(AB_PROVIDER *pro,
   rc=EB_Msg_GetBodyResultCode(mRsp);
   if (rc) {
     if ((rc & 0xff0000)==0x090000 ||
-	(rc & 0xff0000)==0x060000) {
+        (rc & 0xff0000)==0x060000) {
       EB_Msg_free(mRsp);
       if (rc==0x090005) {
-	DBG_ERROR(AQEBICS_LOGDOMAIN, "No download data");
-	return GWEN_ERROR_NO_DATA;
+        DBG_ERROR(AQEBICS_LOGDOMAIN, "No download data");
+        return GWEN_ERROR_NO_DATA;
       }
       else if ((rc & 0xfff00)==0x091300 ||
-	       (rc & 0xfff00)==0x091200) {
-	DBG_ERROR(AQEBICS_LOGDOMAIN, "Security error (%06x)", rc);
-	return AB_ERROR_SECURITY;
+               (rc & 0xfff00)==0x091200) {
+        DBG_ERROR(AQEBICS_LOGDOMAIN, "Security error (%06x)", rc);
+        return AB_ERROR_SECURITY;
       }
       else {
-	DBG_ERROR(AQEBICS_LOGDOMAIN, "Generic error (%06x)", rc);
-	return GWEN_ERROR_GENERIC;
+        DBG_ERROR(AQEBICS_LOGDOMAIN, "Generic error (%06x)", rc);
+        return GWEN_ERROR_GENERIC;
       }
     }
     else {
@@ -509,11 +513,11 @@ int EBC_Provider_XchgDownloadRequest_H002(AB_PROVIDER *pro,
 
     /* extract keys and store them */
     node=EB_Xml_GetNode(EB_Msg_GetRootNode(mRsp),
-			"body/DataTransfer/DataEncryptionInfo",
-			GWEN_PATH_FLAGS_NAMEMUSTEXIST);
+                        "body/DataTransfer/DataEncryptionInfo",
+                        GWEN_PATH_FLAGS_NAMEMUSTEXIST);
     if (node==NULL) {
       DBG_ERROR(AQEBICS_LOGDOMAIN,
-		"Bad message from server: Missing session key");
+                "Bad message from server: Missing session key");
       EB_Msg_free(mRsp);
       return GWEN_ERROR_BAD_DATA;
     }
@@ -549,29 +553,29 @@ int EBC_Provider_XchgDownloadRequest_H002(AB_PROVIDER *pro,
 
       i=EB_Msg_GetIntValue(mRsp, "header/mutable/SegmentNumber", 0);
       if (i!=segmentNumber) {
-	DBG_ERROR(AQEBICS_LOGDOMAIN,
-		  "Unexpected segment number (%d, expected %d)", i, segmentNumber);
-	GWEN_Buffer_free(dbuffer);
-	GWEN_Crypt_Key_free(skey);
-	EB_Msg_free(mRsp);
-	return GWEN_ERROR_BAD_DATA;
+        DBG_ERROR(AQEBICS_LOGDOMAIN,
+                  "Unexpected segment number (%d, expected %d)", i, segmentNumber);
+        GWEN_Buffer_free(dbuffer);
+        GWEN_Crypt_Key_free(skey);
+        EB_Msg_free(mRsp);
+        return GWEN_ERROR_BAD_DATA;
       }
 
       /* read next chunk of data */
       s=EB_Msg_GetCharValue(mRsp, "body/DataTransfer/OrderData", NULL);
       if (!s) {
-	DBG_ERROR(AQEBICS_LOGDOMAIN,
-		  "Bad message from server: Missing OrderData");
-	GWEN_Buffer_free(dbuffer);
-	GWEN_Crypt_Key_free(skey);
-	EB_Msg_free(mRsp);
-	return GWEN_ERROR_BAD_DATA;
+        DBG_ERROR(AQEBICS_LOGDOMAIN,
+                  "Bad message from server: Missing OrderData");
+        GWEN_Buffer_free(dbuffer);
+        GWEN_Crypt_Key_free(skey);
+        EB_Msg_free(mRsp);
+        return GWEN_ERROR_BAD_DATA;
       }
       GWEN_Buffer_AppendString(dbuffer, s);
 
       if (segmentNumber>=segmentCount) {
-	DBG_INFO(AQEBICS_LOGDOMAIN, "Transfer finished");
-	break;
+        DBG_INFO(AQEBICS_LOGDOMAIN, "Transfer finished");
+        break;
       }
 
       /* exchange next message */
@@ -579,37 +583,37 @@ int EBC_Provider_XchgDownloadRequest_H002(AB_PROVIDER *pro,
 
       rv=EBC_Provider_MkDownloadTransferRequest_H002(pro, sess, u, transactionId, segmentNumber, &msg);
       if (rv<0) {
-	DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
-	GWEN_Buffer_free(dbuffer);
-	GWEN_Crypt_Key_free(skey);
-	return rv;
+        DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
+        GWEN_Buffer_free(dbuffer);
+        GWEN_Crypt_Key_free(skey);
+        return rv;
       }
 
       /* exchange requests */
       rv=EBC_Dialog_ExchangeMessages(sess, msg, &mRsp);
       if (rv<0 || rv>=300) {
-	DBG_ERROR(AQEBICS_LOGDOMAIN, "Error exchanging messages (%d)", rv);
-	EB_Msg_free(msg);
-	GWEN_Buffer_free(dbuffer);
-	GWEN_Crypt_Key_free(skey);
-	return rv;
+        DBG_ERROR(AQEBICS_LOGDOMAIN, "Error exchanging messages (%d)", rv);
+        EB_Msg_free(msg);
+        GWEN_Buffer_free(dbuffer);
+        GWEN_Crypt_Key_free(skey);
+        return rv;
       }
       EB_Msg_free(msg);
-    
+
       /* check response */
       assert(mRsp);
-    
+
       /* log results */
       EBC_Provider_LogRequestResults(pro, mRsp, NULL);
 
       rc=EB_Msg_GetResultCode(mRsp);
       if ((rc & 0xff0000)==0x090000 ||
-	  (rc & 0xff0000)==0x060000) {
-	DBG_ERROR(AQEBICS_LOGDOMAIN, "Error response: (%06x)", rc);
-	EB_Msg_free(mRsp);
-	GWEN_Buffer_free(dbuffer);
-	GWEN_Crypt_Key_free(skey);
-	return AB_ERROR_SECURITY;
+          (rc & 0xff0000)==0x060000) {
+        DBG_ERROR(AQEBICS_LOGDOMAIN, "Error response: (%06x)", rc);
+        EB_Msg_free(mRsp);
+        GWEN_Buffer_free(dbuffer);
+        GWEN_Crypt_Key_free(skey);
+        return AB_ERROR_SECURITY;
       }
     }
     EB_Msg_free(mRsp);
@@ -618,13 +622,13 @@ int EBC_Provider_XchgDownloadRequest_H002(AB_PROVIDER *pro,
     s=GWEN_Buffer_GetStart(dbuffer);
     if (*s==0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN,
-		"Bad message from server: Missing OrderData");
+                "Bad message from server: Missing OrderData");
       GWEN_Buffer_free(dbuffer);
       GWEN_Crypt_Key_free(skey);
       return GWEN_ERROR_BAD_DATA;
     }
     buf1=GWEN_Buffer_new(0, strlen(s), 0, 1);
-    rv=GWEN_Base64_Decode((const uint8_t*)s, 0, buf1);
+    rv=GWEN_Base64_Decode((const uint8_t *)s, 0, buf1);
     if (rv<0) {
       DBG_INFO(AQEBICS_LOGDOMAIN, "Could not decode OrderData (%d)", rv);
       GWEN_Buffer_free(buf1);
@@ -636,9 +640,9 @@ int EBC_Provider_XchgDownloadRequest_H002(AB_PROVIDER *pro,
 
     /* decrypt/unzip data */
     rv=EBC_Provider_DecryptData(pro, u, skey,
-				(const uint8_t*)GWEN_Buffer_GetStart(buf1),
-				GWEN_Buffer_GetUsedBytes(buf1),
-				targetBuffer);
+                                (const uint8_t *)GWEN_Buffer_GetStart(buf1),
+                                GWEN_Buffer_GetUsedBytes(buf1),
+                                targetBuffer);
     if (rv<0) {
       DBG_INFO(AQEBICS_LOGDOMAIN, "Could not decrypt OrderData (%d)", rv);
       GWEN_Buffer_free(buf1);
@@ -652,8 +656,8 @@ int EBC_Provider_XchgDownloadRequest_H002(AB_PROVIDER *pro,
 
     /* send receipt message */
     rv=EBC_Provider_MkDownloadReceiptRequest_H002(pro, sess, u, transactionId,
-						  withReceipt?0:1,
-						  &msg);
+                                                  withReceipt?0:1,
+                                                  &msg);
     if (rv<0) {
       DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -676,7 +680,7 @@ int EBC_Provider_XchgDownloadRequest_H002(AB_PROVIDER *pro,
 
     rc=EB_Msg_GetResultCode(mRsp);
     if ((rc & 0xff0000)==0x090000 ||
-	(rc & 0xff0000)==0x060000) {
+        (rc & 0xff0000)==0x060000) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Error response: (%06x)", rc);
       EB_Msg_free(mRsp);
       return AB_ERROR_SECURITY;

@@ -133,11 +133,11 @@ static int AH_Msg_VerifyRdh9(AH_MSG *hmsg, GWEN_DB_NODE *gr);
 
 
 static int AH_Msg__AnonHnsha(const char *psegment,
-			     unsigned int slen,
-			     GWEN_SYNCIO *sio);
+                             unsigned int slen,
+                             GWEN_SYNCIO *sio);
 static int AH_Msg__AnonHkpae(const char *psegment,
-			     unsigned int slen,
-			     GWEN_SYNCIO *sio);
+                             unsigned int slen,
+                             GWEN_SYNCIO *sio);
 
 
 #endif /* AH_MESSAGE_P_H */

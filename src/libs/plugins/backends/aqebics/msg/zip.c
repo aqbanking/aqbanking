@@ -22,15 +22,16 @@
 
 
 
-int EB_Zip_Deflate(const char *ptr, unsigned int size, GWEN_BUFFER *buf) {
+int EB_Zip_Deflate(const char *ptr, unsigned int size, GWEN_BUFFER *buf)
+{
   z_stream z;
   char outbuf[512];
   int rv;
   int mode;
 
-  z.next_in=(unsigned char*)ptr;
+  z.next_in=(unsigned char *)ptr;
   z.avail_in=size;
-  z.next_out=(unsigned char*)outbuf;
+  z.next_out=(unsigned char *)outbuf;
   z.avail_out=sizeof(outbuf);
   z.zalloc=Z_NULL;
   z.zfree=Z_NULL;
@@ -42,7 +43,7 @@ int EB_Zip_Deflate(const char *ptr, unsigned int size, GWEN_BUFFER *buf) {
   }
 
   mode=Z_NO_FLUSH;
-  for(;;) {
+  for (;;) {
     rv=deflate(&z, mode);
     if (rv==Z_STREAM_END)
       break;
@@ -55,13 +56,13 @@ int EB_Zip_Deflate(const char *ptr, unsigned int size, GWEN_BUFFER *buf) {
       mode=Z_FINISH;
     if (z.avail_out==0) {
       GWEN_Buffer_AppendBytes(buf, outbuf, (uint32_t) sizeof(outbuf));
-      z.next_out=(unsigned char*)outbuf;
+      z.next_out=(unsigned char *)outbuf;
       z.avail_out=sizeof(outbuf);
     }
   }
   if (z.avail_out!=sizeof(outbuf)) {
     GWEN_Buffer_AppendBytes(buf, outbuf, (uint32_t)(sizeof(outbuf)-z.avail_out));
-    z.next_out=(unsigned char*)outbuf;
+    z.next_out=(unsigned char *)outbuf;
     z.avail_out=sizeof(outbuf);
   }
 
@@ -72,15 +73,16 @@ int EB_Zip_Deflate(const char *ptr, unsigned int size, GWEN_BUFFER *buf) {
 
 
 
-int EB_Zip_Inflate(const char *ptr, unsigned int size, GWEN_BUFFER *buf) {
+int EB_Zip_Inflate(const char *ptr, unsigned int size, GWEN_BUFFER *buf)
+{
   z_stream z;
   char outbuf[512];
   int rv;
   int mode;
 
-  z.next_in=(unsigned char*)ptr;
+  z.next_in=(unsigned char *)ptr;
   z.avail_in=size;
-  z.next_out=(unsigned char*)outbuf;
+  z.next_out=(unsigned char *)outbuf;
   z.avail_out=sizeof(outbuf);
   z.zalloc=Z_NULL;
   z.zfree=Z_NULL;
@@ -92,7 +94,7 @@ int EB_Zip_Inflate(const char *ptr, unsigned int size, GWEN_BUFFER *buf) {
   }
 
   mode=Z_NO_FLUSH;
-  for(;;) {
+  for (;;) {
     rv=inflate(&z, mode);
     if (rv==Z_STREAM_END)
       break;
@@ -105,13 +107,13 @@ int EB_Zip_Inflate(const char *ptr, unsigned int size, GWEN_BUFFER *buf) {
       mode=Z_FINISH;
     if (z.avail_out==0) {
       GWEN_Buffer_AppendBytes(buf, outbuf, sizeof(outbuf));
-      z.next_out=(unsigned char*)outbuf;
+      z.next_out=(unsigned char *)outbuf;
       z.avail_out=sizeof(outbuf);
     }
   }
   if (z.avail_out!=sizeof(outbuf)) {
-    GWEN_Buffer_AppendBytes(buf, outbuf, (uint32_t) (sizeof(outbuf)-z.avail_out));
-    z.next_out=(unsigned char*)outbuf;
+    GWEN_Buffer_AppendBytes(buf, outbuf, (uint32_t)(sizeof(outbuf)-z.avail_out));
+    z.next_out=(unsigned char *)outbuf;
     z.avail_out=sizeof(outbuf);
   }
 

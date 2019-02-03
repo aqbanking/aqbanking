@@ -16,8 +16,8 @@
 
 
 static int GWENHYWFAR_CB AB_UserTypePageDefaultDialog_SignalHandler(GWEN_DIALOG *dlg,
-								    GWEN_DIALOG_EVENTTYPE t,
-								    const char *sender);
+                                                                    GWEN_DIALOG_EVENTTYPE t,
+                                                                    const char *sender);
 
 
 

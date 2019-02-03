@@ -30,35 +30,36 @@
 int APY_Control_ListAccounts(AB_PROVIDER *pro,
                              GWEN_DB_NODE *dbArgs,
                              int argc,
-                             char **argv) {
+                             char **argv)
+{
   GWEN_DB_NODE *db;
   int rv, verbose;
   AB_ACCOUNT_LIST *al;
   AB_ACCOUNT *a;
   int i=0;
-  const GWEN_ARGS args[]={
-  {
-              0,                             /* flags */
-              GWEN_ArgsType_Int,             /* type */
-              "verbose",                        /* name */
-              0,                            /* minnum */
-              1,                            /* maxnum */
-              "v",                            /* short option */
-              "verbose",                /* long option */
-              "Show list in verbose form (with more columns)",  /* short description */
-              0
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      0,                             /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "verbose",                        /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "v",                            /* short option */
+      "verbose",                /* long option */
+      "Show list in verbose form (with more columns)",  /* short description */
+      0
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -94,13 +95,13 @@ int APY_Control_ListAccounts(AB_PROVIDER *pro,
   }
 
   a=AB_Account_List_First(al);
-  while(a) {
+  while (a) {
     fprintf(stdout, "Account %d: Bank: %s Account Number: %s",
             i++,
             AB_Account_GetBankCode(a),
             AB_Account_GetAccountNumber(a));
     if (verbose) {
-      const char* subAccountId = AB_Account_GetSubAccountId(a);
+      const char *subAccountId = AB_Account_GetSubAccountId(a);
       fprintf(stdout, "  SubAccountId: %s  LocalUniqueId: %d",
               subAccountId ? subAccountId : "(none)",
               AB_Account_GetUniqueId(a));

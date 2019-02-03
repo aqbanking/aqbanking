@@ -29,7 +29,8 @@ static GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **arg
 
 
 
-int addAccount(AB_PROVIDER *pro, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int addAccount(AB_PROVIDER *pro, GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   AB_USER *u=0;
   int rv;
@@ -84,10 +85,10 @@ int addAccount(AB_PROVIDER *pro, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
     }
     else {
       if (!forceAdd) {
-	fprintf(stderr,
-		"ERROR: Could not find bank with id %s\n",
-		bankId);
-	return 3;
+        fprintf(stderr,
+                "ERROR: Could not find bank with id %s\n",
+                bankId);
+        return 3;
       }
       bi=NULL;
       fprintf(stderr, "Warning: Could not find bank with id %s\n", bankId);
@@ -120,87 +121,88 @@ int addAccount(AB_PROVIDER *pro, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
 }
 
 
-GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   int rv;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "bankId",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "b",                          /* short option */
-    "bank",                       /* long option */
-    "Specify the bank code",      /* short description */
-    "Specify the bank code"       /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,           /* type */
-    "userId",                     /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "u",                          /* short option */
-    "user",                       /* long option */
-    "Specify the unique user id",    /* short description */
-    "Specify the unique user id"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "ownerName",                  /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "owner",                      /* long option */
-    "Specify the owner name",     /* short description */
-    "Specify the owner name"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "accountName",                /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "n",                          /* short option */
-    "name",                       /* long option */
-    "Specify the account name (Konto-Name)",    /* short description */
-    "Specify the account name (Konto-Name)"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "accountId",                  /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "a",                          /* short option */
-    "account",                    /* long option */
-    "Specify the account id (Kontonummer)",    /* short description */
-    "Specify the account id (Kontonummer)"     /* long description */
-  },
-  {
-    0,
-    GWEN_ArgsType_Int,            /* type */
-    "force",                      /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                          /* short option */
-    "force",                    /* long option */
-    "Force adding the account even if there is no bank info",
-    "Force adding the account even if there is no bank info"
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "bankId",                     /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "b",                          /* short option */
+      "bank",                       /* long option */
+      "Specify the bank code",      /* short description */
+      "Specify the bank code"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,           /* type */
+      "userId",                     /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "u",                          /* short option */
+      "user",                       /* long option */
+      "Specify the unique user id",    /* short description */
+      "Specify the unique user id"     /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "ownerName",                  /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                            /* short option */
+      "owner",                      /* long option */
+      "Specify the owner name",     /* short description */
+      "Specify the owner name"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "accountName",                /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "n",                          /* short option */
+      "name",                       /* long option */
+      "Specify the account name (Konto-Name)",    /* short description */
+      "Specify the account name (Konto-Name)"     /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "accountId",                  /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "a",                          /* short option */
+      "account",                    /* long option */
+      "Specify the account id (Kontonummer)",    /* short description */
+      "Specify the account id (Kontonummer)"     /* long description */
+    },
+    {
+      0,
+      GWEN_ArgsType_Int,            /* type */
+      "force",                      /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                          /* short option */
+      "force",                    /* long option */
+      "Force adding the account even if there is no bank info",
+      "Force adding the account even if there is no bank info"
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");

@@ -11,7 +11,8 @@
 
 
 
-int AH_Dialog_CreateIoLayer_Https(AH_DIALOG *dlg) {
+int AH_Dialog_CreateIoLayer_Https(AH_DIALOG *dlg)
+{
   const GWEN_URL *url;
   int rv;
   GWEN_HTTP_SESSION *sess;
@@ -32,10 +33,10 @@ int AH_Dialog_CreateIoLayer_Https(AH_DIALOG *dlg) {
   GWEN_Url_toString(url, tbuf);
 
   sess=AB_HttpSession_new(dlg->provider,
-			  dlg->dialogOwner,
-			  GWEN_Buffer_GetStart(tbuf),
-			  "https",
-			  443);
+                          dlg->dialogOwner,
+                          GWEN_Buffer_GetStart(tbuf),
+                          "https",
+                          443);
   GWEN_Buffer_free(tbuf);
 
   /* setup session */
@@ -71,7 +72,8 @@ int AH_Dialog_CreateIoLayer_Https(AH_DIALOG *dlg) {
 
 
 
-int AH_Dialog_Connect_Https(AH_DIALOG *dlg) {
+int AH_Dialog_Connect_Https(AH_DIALOG *dlg)
+{
   if (dlg->httpSession==NULL) {
     int rv;
 
@@ -87,7 +89,8 @@ int AH_Dialog_Connect_Https(AH_DIALOG *dlg) {
 
 
 
-int AH_Dialog_Disconnect_Https(AH_DIALOG *dlg) {
+int AH_Dialog_Disconnect_Https(AH_DIALOG *dlg)
+{
   if (dlg->httpSession) {
     GWEN_HttpSession_Fini(dlg->httpSession);
     GWEN_HttpSession_free(dlg->httpSession);
@@ -100,7 +103,8 @@ int AH_Dialog_Disconnect_Https(AH_DIALOG *dlg) {
 
 
 
-int AH_Dialog_SendPacket_Https(AH_DIALOG *dlg, const char *buf, int blen) {
+int AH_Dialog_SendPacket_Https(AH_DIALOG *dlg, const char *buf, int blen)
+{
   int rv;
   GWEN_BUFFER *tbuf;
   uint32_t fl;
@@ -114,7 +118,7 @@ int AH_Dialog_SendPacket_Https(AH_DIALOG *dlg, const char *buf, int blen) {
     GWEN_Buffer_AppendBytes(tbuf, buf, blen);
   }
   else {
-    rv=GWEN_Base64_Encode((const unsigned char*)buf, blen, tbuf, 0);
+    rv=GWEN_Base64_Encode((const unsigned char *)buf, blen, tbuf, 0);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Could not BASE64 encode data (%d)", rv);
       GWEN_Buffer_free(tbuf);
@@ -127,8 +131,8 @@ int AH_Dialog_SendPacket_Https(AH_DIALOG *dlg, const char *buf, int blen) {
   }
 
   rv=GWEN_HttpSession_SendPacket(dlg->httpSession, "POST",
-				 (const uint8_t*) GWEN_Buffer_GetStart(tbuf),
-				 GWEN_Buffer_GetUsedBytes(tbuf));
+                                 (const uint8_t *) GWEN_Buffer_GetStart(tbuf),
+                                 GWEN_Buffer_GetUsedBytes(tbuf));
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(tbuf);
@@ -144,7 +148,8 @@ int AH_Dialog_SendPacket_Https(AH_DIALOG *dlg, const char *buf, int blen) {
 
 
 
-int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg) {
+int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg)
+{
   GWEN_BUFFER *tbuf;
   AH_MSG *msg;
   int rv;
@@ -191,15 +196,15 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg) {
     GWEN_BUFFER *bbuf;
 
     bbuf=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(tbuf), 0, 1);
-    rv=GWEN_Base64_Decode((const unsigned char*) GWEN_Buffer_GetStart(tbuf),
-			  GWEN_Buffer_GetUsedBytes(tbuf),
-			  bbuf);
+    rv=GWEN_Base64_Decode((const unsigned char *) GWEN_Buffer_GetStart(tbuf),
+                          GWEN_Buffer_GetUsedBytes(tbuf),
+                          bbuf);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Could not decode BASE64 message (%d)", rv);
       /* for debugging purposes */
       GWEN_Buffer_Dump(tbuf, 2);
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
+                           GWEN_LoggerLevel_Error,
                            I18N("Could not BASE64-decode the message"));
       GWEN_Buffer_free(bbuf);
       GWEN_Buffer_free(tbuf);
@@ -213,7 +218,7 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg) {
     if (strstr(GWEN_Buffer_GetStart(tbuf), "HNHBK:")==NULL) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Received message is not HBCI");
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
+                           GWEN_LoggerLevel_Error,
                            I18N("Received message is not HBCI"));
       /* for debugging purposes */
       GWEN_Buffer_Dump(tbuf, 2);
@@ -228,7 +233,7 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg) {
   /* trim response */
   i=GWEN_Buffer_GetUsedBytes(tbuf);
   p=GWEN_Buffer_GetStart(tbuf);
-  while(i>0) {
+  while (i>0) {
     if (p[i-1]!=0)
       break;
     i--;
@@ -271,8 +276,8 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg) {
     GWEN_Buffer_Dump(tbuf, 2);
     GWEN_Buffer_free(tbuf);
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Unparsable message received"));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Unparsable message received"));
     GWEN_HttpSession_Fini(dlg->httpSession);
     GWEN_HttpSession_free(dlg->httpSession);
     dlg->httpSession=NULL;
@@ -288,8 +293,8 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg) {
     GWEN_Buffer_Dump(tbuf, 2);
     GWEN_Buffer_free(tbuf);
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Received message was truncated"));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Received message was truncated"));
     GWEN_HttpSession_Fini(dlg->httpSession);
     GWEN_HttpSession_free(dlg->httpSession);
     dlg->httpSession=NULL;
@@ -306,18 +311,19 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg) {
 
 
 
-int AH_Dialog_TestServer_Https(AH_DIALOG *dlg) {
+int AH_Dialog_TestServer_Https(AH_DIALOG *dlg)
+{
   int rv;
 
   GWEN_Gui_ProgressLog(0,
-		       GWEN_LoggerLevel_Notice,
-		       I18N("Preparing connection"));
+                       GWEN_LoggerLevel_Notice,
+                       I18N("Preparing connection"));
   rv=AH_Dialog_CreateIoLayer_Https(dlg);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Could not create io layer (%d)", rv);
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Error preparing connection"));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Error preparing connection"));
     return rv;
   }
 

@@ -41,8 +41,8 @@ struct APY_NEWUSER_DIALOG {
 static void GWENHYWFAR_CB APY_NewUserDialog_FreeData(void *bp, void *p);
 
 static int GWENHYWFAR_CB APY_NewUserDialog_SignalHandler(GWEN_DIALOG *dlg,
-							 GWEN_DIALOG_EVENTTYPE t,
-							 const char *sender);
+                                                         GWEN_DIALOG_EVENTTYPE t,
+                                                         const char *sender);
 
 
 

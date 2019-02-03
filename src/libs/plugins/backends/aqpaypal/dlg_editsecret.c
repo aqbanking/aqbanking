@@ -39,7 +39,8 @@ GWEN_INHERIT(GWEN_DIALOG, APY_EDITSECRET_DIALOG)
 
 
 
-GWEN_DIALOG *APY_EditSecretDialog_new(AB_BANKING *ab) {
+GWEN_DIALOG *APY_EditSecretDialog_new(AB_BANKING *ab)
+{
   GWEN_DIALOG *dlg;
   APY_EDITSECRET_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -48,7 +49,7 @@ GWEN_DIALOG *APY_EditSecretDialog_new(AB_BANKING *ab) {
   dlg=GWEN_Dialog_new("apy_editsecret");
   GWEN_NEW_OBJECT(APY_EDITSECRET_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, APY_EDITSECRET_DIALOG, dlg, xdlg,
-		       APY_EditSecretDialog_FreeData);
+                       APY_EditSecretDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, APY_EditSecretDialog_SignalHandler);
 
   /* get path of dialog description file */
@@ -81,10 +82,11 @@ GWEN_DIALOG *APY_EditSecretDialog_new(AB_BANKING *ab) {
 }
 
 
-void GWENHYWFAR_CB APY_EditSecretDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB APY_EditSecretDialog_FreeData(void *bp, void *p)
+{
   APY_EDITSECRET_DIALOG *xdlg;
 
-  xdlg=(APY_EDITSECRET_DIALOG*) p;
+  xdlg=(APY_EDITSECRET_DIALOG *) p;
   free(xdlg->apiUserId);
   free(xdlg->apiPassword);
   free(xdlg->apiSignature);
@@ -94,7 +96,8 @@ void GWENHYWFAR_CB APY_EditSecretDialog_FreeData(void *bp, void *p) {
 
 
 
-void APY_EditSecretDialog_SetApiUserId(GWEN_DIALOG *dlg, const char *s) {
+void APY_EditSecretDialog_SetApiUserId(GWEN_DIALOG *dlg, const char *s)
+{
   APY_EDITSECRET_DIALOG *xdlg;
 
   assert(dlg);
@@ -102,13 +105,16 @@ void APY_EditSecretDialog_SetApiUserId(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->apiUserId);
-  if (s) xdlg->apiUserId=strdup(s);
-  else xdlg->apiUserId=NULL;
+  if (s)
+    xdlg->apiUserId=strdup(s);
+  else
+    xdlg->apiUserId=NULL;
 }
 
 
 
-char *APY_EditSecretDialog_GetApiUserId(const GWEN_DIALOG *dlg) {
+char *APY_EditSecretDialog_GetApiUserId(const GWEN_DIALOG *dlg)
+{
   APY_EDITSECRET_DIALOG *xdlg;
 
   assert(dlg);
@@ -120,7 +126,8 @@ char *APY_EditSecretDialog_GetApiUserId(const GWEN_DIALOG *dlg) {
 
 
 
-void APY_EditSecretDialog_SetApiPassword(GWEN_DIALOG *dlg, const char *s) {
+void APY_EditSecretDialog_SetApiPassword(GWEN_DIALOG *dlg, const char *s)
+{
   APY_EDITSECRET_DIALOG *xdlg;
 
   assert(dlg);
@@ -128,13 +135,16 @@ void APY_EditSecretDialog_SetApiPassword(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->apiPassword);
-  if (s) xdlg->apiPassword=strdup(s);
-  else xdlg->apiPassword=NULL;
+  if (s)
+    xdlg->apiPassword=strdup(s);
+  else
+    xdlg->apiPassword=NULL;
 }
 
 
 
-char *APY_EditSecretDialog_GetApiPassword(const GWEN_DIALOG *dlg) {
+char *APY_EditSecretDialog_GetApiPassword(const GWEN_DIALOG *dlg)
+{
   APY_EDITSECRET_DIALOG *xdlg;
 
   assert(dlg);
@@ -146,7 +156,8 @@ char *APY_EditSecretDialog_GetApiPassword(const GWEN_DIALOG *dlg) {
 
 
 
-void APY_EditSecretDialog_SetApiSignature(GWEN_DIALOG *dlg, const char *s) {
+void APY_EditSecretDialog_SetApiSignature(GWEN_DIALOG *dlg, const char *s)
+{
   APY_EDITSECRET_DIALOG *xdlg;
 
   assert(dlg);
@@ -154,13 +165,16 @@ void APY_EditSecretDialog_SetApiSignature(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->apiSignature);
-  if (s) xdlg->apiSignature=strdup(s);
-  else xdlg->apiSignature=NULL;
+  if (s)
+    xdlg->apiSignature=strdup(s);
+  else
+    xdlg->apiSignature=NULL;
 }
 
 
 
-char *APY_EditSecretDialog_GetApiSignature(const GWEN_DIALOG *dlg) {
+char *APY_EditSecretDialog_GetApiSignature(const GWEN_DIALOG *dlg)
+{
   APY_EDITSECRET_DIALOG *xdlg;
 
   assert(dlg);
@@ -172,7 +186,8 @@ char *APY_EditSecretDialog_GetApiSignature(const GWEN_DIALOG *dlg) {
 
 
 
-void APY_EditSecretDialog_Init(GWEN_DIALOG *dlg) {
+void APY_EditSecretDialog_Init(GWEN_DIALOG *dlg)
+{
   APY_EDITSECRET_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
@@ -184,28 +199,28 @@ void APY_EditSecretDialog_Init(GWEN_DIALOG *dlg) {
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("PayPal Secret Settings"),
-			      0);
+                              "",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("PayPal Secret Settings"),
+                              0);
 
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_secret_label",
-			      GWEN_DialogProperty_Title,
-			      0,
+                              "wiz_secret_label",
+                              GWEN_DialogProperty_Title,
+                              0,
                               I18N("<html>"
                                    "<p>Enter the API password and signature as it is found on the "
                                    "Paypal page described in the previous steps.</p>"
-				   "<p><font color=\"red\"><b>"
-				   "The API password and API signature are extremely sensitive "
-				   "information which you must under no circumstances reveal to "
-				   "anybody!</b></font></p>"
-				   "<p>That being said, these credentials are also quite hard to "
-				   "remember, so AqBanking stores them in a file which is very well "
-				   "encrypted.</p>"
-				   "<p>When the user is created in the next step you will be asked for "
+                                   "<p><font color=\"red\"><b>"
+                                   "The API password and API signature are extremely sensitive "
+                                   "information which you must under no circumstances reveal to "
+                                   "anybody!</b></font></p>"
+                                   "<p>That being said, these credentials are also quite hard to "
+                                   "remember, so AqBanking stores them in a file which is very well "
+                                   "encrypted.</p>"
+                                   "<p>When the user is created in the next step you will be asked for "
                                    "the password to be set for that credential file.</p>"
                                    "</html>"
                                    "Enter the API password and signature as it is found on the\n"
@@ -214,28 +229,28 @@ void APY_EditSecretDialog_Init(GWEN_DIALOG *dlg) {
                                    "information which you must under no circumstances reveal to\n"
                                    "anybody!\n"
                                    "That being said, these credentials are also quite hard to\n"
-				   "remember, so AqBanking stores them in a file which is very well\n"
+                                   "remember, so AqBanking stores them in a file which is very well\n"
                                    "encrypted.\n"
-				   "When the user is created in the next step you will be asked for\n"
+                                   "When the user is created in the next step you will be asked for\n"
                                    "the password to be set for that credential file."
                                   ),
-			      0);
+                              0);
 
   if (xdlg->apiUserId)
     GWEN_Dialog_SetCharProperty(dlg, "wiz_apiuserid_edit",
-				GWEN_DialogProperty_Value, 0,
+                                GWEN_DialogProperty_Value, 0,
                                 xdlg->apiUserId,
                                 0);
 
   if (xdlg->apiPassword)
     GWEN_Dialog_SetCharProperty(dlg, "wiz_apipass_edit",
-				GWEN_DialogProperty_Value, 0,
+                                GWEN_DialogProperty_Value, 0,
                                 xdlg->apiPassword,
                                 0);
 
   if (xdlg->apiSignature)
     GWEN_Dialog_SetCharProperty(dlg, "wiz_apisig_edit",
-				GWEN_DialogProperty_Value, 0,
+                                GWEN_DialogProperty_Value, 0,
                                 xdlg->apiSignature,
                                 0);
 
@@ -253,7 +268,8 @@ void APY_EditSecretDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-void APY_EditSecretDialog_Fini(GWEN_DIALOG *dlg) {
+void APY_EditSecretDialog_Fini(GWEN_DIALOG *dlg)
+{
   APY_EDITSECRET_DIALOG *xdlg;
   int i;
   GWEN_DB_NODE *dbPrefs;
@@ -267,35 +283,36 @@ void APY_EditSecretDialog_Fini(GWEN_DIALOG *dlg) {
 
   /* fromGui */
   s=GWEN_Dialog_GetCharProperty(dlg, "wiz_apiuserid_edit",
-				GWEN_DialogProperty_Value, 0, NULL);
+                                GWEN_DialogProperty_Value, 0, NULL);
   APY_EditSecretDialog_SetApiUserId(dlg, s);
 
   s=GWEN_Dialog_GetCharProperty(dlg, "wiz_apipass_edit",
-				GWEN_DialogProperty_Value, 0, NULL);
+                                GWEN_DialogProperty_Value, 0, NULL);
   APY_EditSecretDialog_SetApiPassword(dlg, s);
 
   s=GWEN_Dialog_GetCharProperty(dlg, "wiz_apisig_edit",
-				GWEN_DialogProperty_Value, 0, NULL);
+                                GWEN_DialogProperty_Value, 0, NULL);
   APY_EditSecretDialog_SetApiSignature(dlg, s);
 
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_width",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_width",
+                      i);
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_height",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_height",
+                      i);
 }
 
 
 
-int APY_EditSecretDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int APY_EditSecretDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   DBG_INFO(0, "Activated: %s", sender);
   if (strcasecmp(sender, "okButton")==0)
     return GWEN_DialogEvent_ResultAccept;
@@ -311,15 +328,16 @@ int APY_EditSecretDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 
 int GWENHYWFAR_CB APY_EditSecretDialog_SignalHandler(GWEN_DIALOG *dlg,
-                                                    GWEN_DIALOG_EVENTTYPE t,
-                                                    const char *sender) {
+                                                     GWEN_DIALOG_EVENTTYPE t,
+                                                     const char *sender)
+{
   APY_EDITSECRET_DIALOG *xdlg;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, APY_EDITSECRET_DIALOG, dlg);
   assert(xdlg);
 
-  switch(t) {
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     APY_EditSecretDialog_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;

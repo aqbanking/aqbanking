@@ -40,7 +40,8 @@ GWEN_INHERIT(GWEN_DIALOG, AB_SELECTBACKEND_DIALOG)
 
 
 
-GWEN_DIALOG *AB_SelectBackendDialog_new(AB_BANKING *ab, const char *text) {
+GWEN_DIALOG *AB_SelectBackendDialog_new(AB_BANKING *ab, const char *text)
+{
   GWEN_DIALOG *dlg;
   AB_SELECTBACKEND_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -49,14 +50,14 @@ GWEN_DIALOG *AB_SelectBackendDialog_new(AB_BANKING *ab, const char *text) {
   dlg=GWEN_Dialog_new("ab_selectbackend");
   GWEN_NEW_OBJECT(AB_SELECTBACKEND_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AB_SELECTBACKEND_DIALOG, dlg, xdlg,
-		       AB_SelectBackendDialog_FreeData);
+                       AB_SelectBackendDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AB_SelectBackendDialog_SignalHandler);
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-			       "aqbanking/dialogs/dlg_selectbackend.dlg",
-			       fbuf);
+                               "aqbanking/dialogs/dlg_selectbackend.dlg",
+                               fbuf);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
@@ -84,10 +85,11 @@ GWEN_DIALOG *AB_SelectBackendDialog_new(AB_BANKING *ab, const char *text) {
 
 
 
-void GWENHYWFAR_CB AB_SelectBackendDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AB_SelectBackendDialog_FreeData(void *bp, void *p)
+{
   AB_SELECTBACKEND_DIALOG *xdlg;
 
-  xdlg=(AB_SELECTBACKEND_DIALOG*) p;
+  xdlg=(AB_SELECTBACKEND_DIALOG *) p;
   free(xdlg->selectedProvider);
   free(xdlg->text);
   GWEN_FREE_OBJECT(xdlg);
@@ -95,7 +97,8 @@ void GWENHYWFAR_CB AB_SelectBackendDialog_FreeData(void *bp, void *p) {
 
 
 
-const char *AB_SelectBackendDialog_GetSelectedProvider(const GWEN_DIALOG *dlg) {
+const char *AB_SelectBackendDialog_GetSelectedProvider(const GWEN_DIALOG *dlg)
+{
   AB_SELECTBACKEND_DIALOG *xdlg;
 
   assert(dlg);
@@ -107,7 +110,8 @@ const char *AB_SelectBackendDialog_GetSelectedProvider(const GWEN_DIALOG *dlg) {
 
 
 
-void AB_SelectBackendDialog_SetSelectedProvider(GWEN_DIALOG *dlg, const char *s) {
+void AB_SelectBackendDialog_SetSelectedProvider(GWEN_DIALOG *dlg, const char *s)
+{
   AB_SELECTBACKEND_DIALOG *xdlg;
 
   assert(dlg);
@@ -115,13 +119,16 @@ void AB_SelectBackendDialog_SetSelectedProvider(GWEN_DIALOG *dlg, const char *s)
   assert(xdlg);
 
   free(xdlg->selectedProvider);
-  if (s) xdlg->selectedProvider=strdup(s);
-  else xdlg->selectedProvider=NULL;
+  if (s)
+    xdlg->selectedProvider=strdup(s);
+  else
+    xdlg->selectedProvider=NULL;
 }
 
 
 
-void AB_SelectBackendDialog_DetermineBackend(GWEN_DIALOG *dlg) {
+void AB_SelectBackendDialog_DetermineBackend(GWEN_DIALOG *dlg)
+{
   int idx;
   AB_SELECTBACKEND_DIALOG *xdlg;
 
@@ -135,7 +142,7 @@ void AB_SelectBackendDialog_DetermineBackend(GWEN_DIALOG *dlg) {
     GWEN_PLUGIN_DESCRIPTION *d;
 
     d=GWEN_PluginDescription_List_First(xdlg->pluginDescrList);
-    while(d && idx>0) {
+    while (d && idx>0) {
       idx--;
       d=GWEN_PluginDescription_List_Next(d);
     }
@@ -146,7 +153,8 @@ void AB_SelectBackendDialog_DetermineBackend(GWEN_DIALOG *dlg) {
 
 
 
-int AB_SelectBackendDialog_BackendChanged(GWEN_DIALOG *dlg) {
+int AB_SelectBackendDialog_BackendChanged(GWEN_DIALOG *dlg)
+{
   AB_SELECTBACKEND_DIALOG *xdlg;
   int idx;
 
@@ -159,7 +167,7 @@ int AB_SelectBackendDialog_BackendChanged(GWEN_DIALOG *dlg) {
     GWEN_PLUGIN_DESCRIPTION *d;
 
     d=GWEN_PluginDescription_List_First(xdlg->pluginDescrList);
-    while(d && idx>0) {
+    while (d && idx>0) {
       idx--;
       d=GWEN_PluginDescription_List_Next(d);
     }
@@ -176,7 +184,8 @@ int AB_SelectBackendDialog_BackendChanged(GWEN_DIALOG *dlg) {
 
 
 
-void AB_SelectBackendDialog_Reload(GWEN_DIALOG *dlg) {
+void AB_SelectBackendDialog_Reload(GWEN_DIALOG *dlg)
+{
   AB_SELECTBACKEND_DIALOG *xdlg;
   GWEN_PLUGIN_DESCRIPTION_LIST2 *ll;
 
@@ -206,38 +215,38 @@ void AB_SelectBackendDialog_Reload(GWEN_DIALOG *dlg) {
 
       tbuf=GWEN_Buffer_new(0, 256, 0, 1);
       d=GWEN_PluginDescription_List2Iterator_Data(it);
-      while(d) {
-	const char *s;
-    
-	s=GWEN_PluginDescription_GetName(d);
-	if (s && *s) {
+      while (d) {
+        const char *s;
+
+        s=GWEN_PluginDescription_GetName(d);
+        if (s && *s) {
           GWEN_Buffer_AppendString(tbuf, s);
-	  if (idx==-1 && xdlg->selectedProvider && strcasecmp(xdlg->selectedProvider, s)==0)
+          if (idx==-1 && xdlg->selectedProvider && strcasecmp(xdlg->selectedProvider, s)==0)
             idx=i;
-	  s=GWEN_PluginDescription_GetShortDescr(d);
-	  if (s && *s) {
-	    GWEN_Buffer_AppendString(tbuf, " - ");
-	    GWEN_Buffer_AppendString(tbuf, s);
-	  }
+          s=GWEN_PluginDescription_GetShortDescr(d);
+          if (s && *s) {
+            GWEN_Buffer_AppendString(tbuf, " - ");
+            GWEN_Buffer_AppendString(tbuf, s);
+          }
 
-	  GWEN_PluginDescription_Attach(d);
-	  GWEN_PluginDescription_List_Add(d, xdlg->pluginDescrList);
+          GWEN_PluginDescription_Attach(d);
+          GWEN_PluginDescription_List_Add(d, xdlg->pluginDescrList);
 
-	  GWEN_Dialog_SetCharProperty(dlg,
-				      "backendCombo",
-				      GWEN_DialogProperty_AddValue,
-				      0,
-				      GWEN_Buffer_GetStart(tbuf),
-				      0);
-	  GWEN_Buffer_Reset(tbuf);
+          GWEN_Dialog_SetCharProperty(dlg,
+                                      "backendCombo",
+                                      GWEN_DialogProperty_AddValue,
+                                      0,
+                                      GWEN_Buffer_GetStart(tbuf),
+                                      0);
+          GWEN_Buffer_Reset(tbuf);
 
-	  i++;
-	}
+          i++;
+        }
 
-	d=GWEN_PluginDescription_List2Iterator_Next(it);
+        d=GWEN_PluginDescription_List2Iterator_Next(it);
       }
       if (idx!=-1)
-	GWEN_Dialog_SetIntProperty(dlg, "backendCombo", GWEN_DialogProperty_Value, 0, idx, 0);
+        GWEN_Dialog_SetIntProperty(dlg, "backendCombo", GWEN_DialogProperty_Value, 0, idx, 0);
 
       GWEN_Buffer_free(tbuf);
       GWEN_PluginDescription_List2Iterator_free(it);
@@ -251,7 +260,8 @@ void AB_SelectBackendDialog_Reload(GWEN_DIALOG *dlg) {
 
 
 
-void AB_SelectBackendDialog_Init(GWEN_DIALOG *dlg) {
+void AB_SelectBackendDialog_Init(GWEN_DIALOG *dlg)
+{
   AB_SELECTBACKEND_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
@@ -263,26 +273,26 @@ void AB_SelectBackendDialog_Init(GWEN_DIALOG *dlg) {
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("Select Backend"),
-			      0);
+                              "",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("Select Backend"),
+                              0);
 
   if (xdlg->text && *(xdlg->text))
     GWEN_Dialog_SetCharProperty(dlg,
-				"introLabel",
-				GWEN_DialogProperty_Title,
-				0,
+                                "introLabel",
+                                GWEN_DialogProperty_Title,
+                                0,
                                 xdlg->text,
-				0);
+                                0);
   else
     GWEN_Dialog_SetCharProperty(dlg,
-				"introLabel",
-				GWEN_DialogProperty_Title,
-				0,
-				I18N("Select a backend."),
-				0);
+                                "introLabel",
+                                GWEN_DialogProperty_Title,
+                                0,
+                                I18N("Select a backend."),
+                                0);
 
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
@@ -299,7 +309,8 @@ void AB_SelectBackendDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-void AB_SelectBackendDialog_Fini(GWEN_DIALOG *dlg) {
+void AB_SelectBackendDialog_Fini(GWEN_DIALOG *dlg)
+{
   AB_SELECTBACKEND_DIALOG *xdlg;
   int i;
   GWEN_DB_NODE *dbPrefs;
@@ -315,21 +326,22 @@ void AB_SelectBackendDialog_Fini(GWEN_DIALOG *dlg) {
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_width",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_width",
+                      i);
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_height",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_height",
+                      i);
 }
 
 
 
-int AB_SelectBackendDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int AB_SelectBackendDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   DBG_NOTICE(0, "Activated: %s", sender);
   if (strcasecmp(sender, "okButton")==0)
     return GWEN_DialogEvent_ResultAccept;
@@ -347,15 +359,16 @@ int AB_SelectBackendDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
 
 
 int GWENHYWFAR_CB AB_SelectBackendDialog_SignalHandler(GWEN_DIALOG *dlg,
-						       GWEN_DIALOG_EVENTTYPE t,
-						       const char *sender) {
+                                                       GWEN_DIALOG_EVENTTYPE t,
+                                                       const char *sender)
+{
   AB_SELECTBACKEND_DIALOG *xdlg;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SELECTBACKEND_DIALOG, dlg);
   assert(xdlg);
 
-  switch(t) {
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     AB_SelectBackendDialog_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;
@@ -384,7 +397,8 @@ int GWENHYWFAR_CB AB_SelectBackendDialog_SignalHandler(GWEN_DIALOG *dlg,
 
 
 
-AB_PROVIDER *AB_SelectBackend(AB_BANKING *ab, const char *initial, const char *text) {
+AB_PROVIDER *AB_SelectBackend(AB_BANKING *ab, const char *initial, const char *text)
+{
   GWEN_DIALOG *dlg;
   int rv;
 
@@ -411,9 +425,9 @@ AB_PROVIDER *AB_SelectBackend(AB_BANKING *ab, const char *initial, const char *t
 
       pro=AB_Banking_BeginUseProvider(ab, s);
       if (pro==NULL) {
-	DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider [%s] not found", s);
-	GWEN_Dialog_free(dlg);
-	return NULL;
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider [%s] not found", s);
+        GWEN_Dialog_free(dlg);
+        return NULL;
       }
       GWEN_Dialog_free(dlg);
       return pro;

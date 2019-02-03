@@ -54,14 +54,15 @@ GWEN_INHERIT(AB_PROVIDER, APY_PROVIDER)
 
 
 
-AB_PROVIDER *APY_Provider_new(AB_BANKING *ab){
+AB_PROVIDER *APY_Provider_new(AB_BANKING *ab)
+{
   AB_PROVIDER *pro;
   APY_PROVIDER *xp;
 
   pro=AB_Provider_new(ab, APY_PROVIDER_NAME);
   GWEN_NEW_OBJECT(APY_PROVIDER, xp);
   GWEN_INHERIT_SETDATA(AB_PROVIDER, APY_PROVIDER, pro, xp,
-		       APY_Provider_FreeData);
+                       APY_Provider_FreeData);
 
 
   AB_Provider_SetInitFn(pro, APY_Provider_Init);
@@ -76,25 +77,27 @@ AB_PROVIDER *APY_Provider_new(AB_BANKING *ab){
   AB_Provider_SetGetEditUserDialogFn(pro, APY_Provider_GetEditUserDialog);
 
   AB_Provider_AddFlags(pro,
-		       AB_PROVIDER_FLAGS_HAS_EDITUSER_DIALOG |
-		       AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG);
+                       AB_PROVIDER_FLAGS_HAS_EDITUSER_DIALOG |
+                       AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG);
 
   return pro;
 }
 
 
 
-void GWENHYWFAR_CB APY_Provider_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB APY_Provider_FreeData(void *bp, void *p)
+{
   APY_PROVIDER *xp;
 
-  xp=(APY_PROVIDER*) p;
+  xp=(APY_PROVIDER *) p;
 
   GWEN_FREE_OBJECT(xp);
 }
 
 
 
-int APY_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
+int APY_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData)
+{
   APY_PROVIDER *dp;
   const char *logLevelName;
   uint32_t currentVersion;
@@ -106,9 +109,9 @@ int APY_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
 
   if (!GWEN_Logger_IsOpen(AQPAYPAL_LOGDOMAIN)) {
     GWEN_Logger_Open(AQPAYPAL_LOGDOMAIN,
-		     "aqpaypal", 0,
-		     GWEN_LoggerType_Console,
-		     GWEN_LoggerFacility_User);
+                     "aqpaypal", 0,
+                     GWEN_LoggerType_Console,
+                     GWEN_LoggerFacility_User);
   }
 
   logLevelName=getenv("AQPAYPAL_LOGLEVEL");
@@ -174,7 +177,7 @@ int APY_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
     else {
       rv=GWEN_I18N_BindTextDomain_Codeset(PACKAGE, "UTF-8");
       if (rv) {
-	DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Could not set codeset (%d)", rv);
+        DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Could not set codeset (%d)", rv);
       }
     }
 
@@ -188,7 +191,8 @@ int APY_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
 
 
 
-int APY_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
+int APY_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData)
+{
   APY_PROVIDER *dp;
   uint32_t currentVersion;
 
@@ -215,7 +219,8 @@ int APY_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData){
 
 
 
-AB_ACCOUNT *APY_Provider_CreateAccountObject(AB_PROVIDER *pro) {
+AB_ACCOUNT *APY_Provider_CreateAccountObject(AB_PROVIDER *pro)
+{
   AB_ACCOUNT *a;
 
   a=AB_Account_new();
@@ -227,7 +232,8 @@ AB_ACCOUNT *APY_Provider_CreateAccountObject(AB_PROVIDER *pro) {
 
 
 
-AB_USER *APY_Provider_CreateUserObject(AB_PROVIDER *pro) {
+AB_USER *APY_Provider_CreateUserObject(AB_PROVIDER *pro)
+{
   return APY_User_new(pro);
 }
 
@@ -239,9 +245,10 @@ AB_USER *APY_Provider_CreateUserObject(AB_PROVIDER *pro) {
 
 
 
-int APY_Provider_ParseResponse(AB_PROVIDER *pro, const char *s, GWEN_DB_NODE *db) {
+int APY_Provider_ParseResponse(AB_PROVIDER *pro, const char *s, GWEN_DB_NODE *db)
+{
   /* read vars */
-  while(*s) {
+  while (*s) {
     GWEN_BUFFER *bName;
     GWEN_BUFFER *bValue;
     const char *p;
@@ -250,7 +257,7 @@ int APY_Provider_ParseResponse(AB_PROVIDER *pro, const char *s, GWEN_DB_NODE *db
     bName=GWEN_Buffer_new(0, 256, 0, 1);
     bValue=GWEN_Buffer_new(0, 256, 0, 1);
     p=s;
-    while(*p && *p!='&' && *p!='=')
+    while (*p && *p!='&' && *p!='=')
       p++;
     if (p!=s)
       GWEN_Buffer_AppendBytes(bName, s, (p-s));
@@ -258,7 +265,7 @@ int APY_Provider_ParseResponse(AB_PROVIDER *pro, const char *s, GWEN_DB_NODE *db
     if (*p=='=') {
       s++;
       p=s;
-      while(*p && *p!='&')
+      while (*p && *p!='&')
         p++;
       if (p!=s)
         GWEN_Buffer_AppendBytes(bValue, s, (p-s));
@@ -267,28 +274,28 @@ int APY_Provider_ParseResponse(AB_PROVIDER *pro, const char *s, GWEN_DB_NODE *db
 
     dbT=db;
     if (strncasecmp(GWEN_Buffer_GetStart(bName), "L_ERRORCODE", 11)!=0 &&
-	strncasecmp(GWEN_Buffer_GetStart(bName), "L_SHORTMESSAGE", 14)!=0 &&
-	strncasecmp(GWEN_Buffer_GetStart(bName), "L_LONGMESSAGE", 13)!=0 &&
-	strncasecmp(GWEN_Buffer_GetStart(bName), "L_SEVERITYCODE", 14)!=0 &&
-	strncasecmp(GWEN_Buffer_GetStart(bName), "SHIPTOSTREET2", 13)!=0) {
+        strncasecmp(GWEN_Buffer_GetStart(bName), "L_SHORTMESSAGE", 14)!=0 &&
+        strncasecmp(GWEN_Buffer_GetStart(bName), "L_LONGMESSAGE", 13)!=0 &&
+        strncasecmp(GWEN_Buffer_GetStart(bName), "L_SEVERITYCODE", 14)!=0 &&
+        strncasecmp(GWEN_Buffer_GetStart(bName), "SHIPTOSTREET2", 13)!=0) {
       int i;
 
       i=GWEN_Buffer_GetUsedBytes(bName)-1;
       if (i>0) {
-	char *t;
-  
-	t=GWEN_Buffer_GetStart(bName)+i;
-	while(i && isdigit(*t)) {
-	  i--;
-	  t--;
-	}
-	if (i>0) {
-	  t++;
-	  if (*t) {
-	    dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, t);
-	    *t=0;
-	  }
-	}
+        char *t;
+
+        t=GWEN_Buffer_GetStart(bName)+i;
+        while (i && isdigit(*t)) {
+          i--;
+          t--;
+        }
+        if (i>0) {
+          t++;
+          if (*t) {
+            dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, t);
+            *t=0;
+          }
+        }
       }
     }
 
@@ -299,9 +306,9 @@ int APY_Provider_ParseResponse(AB_PROVIDER *pro, const char *s, GWEN_DB_NODE *db
       xbuf=GWEN_Buffer_new(0, 256, 0, 1);
       GWEN_Text_UnescapeToBufferTolerant(GWEN_Buffer_GetStart(bValue), xbuf);
       GWEN_DB_SetCharValue(dbT,
-			   GWEN_DB_FLAGS_DEFAULT,
-			   GWEN_Buffer_GetStart(bName),
-			   GWEN_Buffer_GetStart(xbuf));
+                           GWEN_DB_FLAGS_DEFAULT,
+                           GWEN_Buffer_GetStart(bName),
+                           GWEN_Buffer_GetStart(xbuf));
       GWEN_Buffer_free(xbuf);
     }
 

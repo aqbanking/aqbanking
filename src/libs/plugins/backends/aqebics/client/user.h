@@ -39,7 +39,7 @@ extern "C" {
 
 
 AQEBICS_API void EBC_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
-                                    uint32_t flags);
+                                     uint32_t flags);
 
 AQEBICS_API uint32_t EBC_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name);
 

@@ -12,7 +12,8 @@
 
 
 
-int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j, GWEN_BUFFER *buf) {
+int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j, GWEN_BUFFER *buf)
+{
   const char *s;
   int rv;
 
@@ -38,7 +39,7 @@ int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a
 
   /* add account type */
   GWEN_Buffer_AppendString(buf, "<ACCTTYPE>");
-  switch(AB_Account_GetAccountType(a)) {
+  switch (AB_Account_GetAccountType(a)) {
   case AB_AccountType_Checking:
     GWEN_Buffer_AppendString(buf, "CHECKING");
     break;
@@ -70,9 +71,9 @@ int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a
     if (da) {
       GWEN_Buffer_AppendString(buf, "<DTSTART>");
       if (AO_User_GetFlags(u) & AO_USER_FLAGS_SEND_SHORT_DATE)
-	GWEN_Date_toStringWithTemplate(da, "YYYYMMDD000000", buf);
+        GWEN_Date_toStringWithTemplate(da, "YYYYMMDD000000", buf);
       else
-	GWEN_Date_toStringWithTemplate(da, "YYYYMMDD000000.000", buf);
+        GWEN_Date_toStringWithTemplate(da, "YYYYMMDD000000.000", buf);
     }
 
     da=AB_Transaction_GetLastDate(j);
@@ -104,7 +105,9 @@ int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a
 
 
 
-int AO_Provider__AddCreditCardStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j, GWEN_BUFFER *buf) {
+int AO_Provider__AddCreditCardStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j,
+                                           GWEN_BUFFER *buf)
+{
   const char *s;
   int rv;
 
@@ -157,7 +160,8 @@ int AO_Provider__AddCreditCardStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCO
 
 
 
-int AO_Provider__AddInvStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j, GWEN_BUFFER *buf) {
+int AO_Provider__AddInvStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j, GWEN_BUFFER *buf)
+{
   const char *s;
   int rv;
 
@@ -233,12 +237,13 @@ int AO_Provider__AddInvStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a,
 
 
 
-int AO_Provider__AddStatementRequest(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j, GWEN_BUFFER *buf) {
+int AO_Provider__AddStatementRequest(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j, GWEN_BUFFER *buf)
+{
   int rv;
 
   assert(a);
 
-  switch(AB_Account_GetAccountType(a)) {
+  switch (AB_Account_GetAccountType(a)) {
   case AB_AccountType_CreditCard:
     rv=AO_Provider__AddCreditCardStatementReq(pro, u, a, j, buf);
     break;
@@ -267,7 +272,9 @@ int AO_Provider__AddStatementRequest(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a
 
 
 
-int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j, AB_IMEXPORTER_CONTEXT *ictx) {
+int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j,
+                                  AB_IMEXPORTER_CONTEXT *ictx)
+{
   AO_PROVIDER *dp;
   GWEN_BUFFER *reqbuf;
   GWEN_BUFFER *rbuf=0;
@@ -296,7 +303,7 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, A
   rv=AO_Provider__WrapMessage(pro, u, reqbuf);
   if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-	      "Error adding request element (%d)", rv);
+              "Error adding request element (%d)", rv);
     GWEN_Buffer_free(reqbuf);
     return rv;
   }
@@ -304,16 +311,16 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, A
   /* exchange messages (might also return HTTP code!) */
   AB_Transaction_SetStatus(j, AB_Transaction_StatusSending);
   rv=AO_Provider_SendAndReceive(pro, u,
-				(const uint8_t*)GWEN_Buffer_GetStart(reqbuf),
-				GWEN_Buffer_GetUsedBytes(reqbuf),
-				&rbuf);
+                                (const uint8_t *)GWEN_Buffer_GetStart(reqbuf),
+                                GWEN_Buffer_GetUsedBytes(reqbuf),
+                                &rbuf);
   AB_Transaction_SetStatus(j, AB_Transaction_StatusSent);
   if (rv) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-	      "Error exchanging getStatements-request (%d)", rv);
+              "Error exchanging getStatements-request (%d)", rv);
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Error parsing server response"));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Error parsing server response"));
     GWEN_Buffer_free(rbuf);
     GWEN_Buffer_free(reqbuf);
     return rv;
@@ -331,7 +338,7 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, A
     /* actually import */
     rv=AB_Banking_ImportFromBuffer(AB_Provider_GetBanking(pro),
                                    "ofx", ictx,
-                                   (const uint8_t*) GWEN_Buffer_GetStart(rbuf),
+                                   (const uint8_t *) GWEN_Buffer_GetStart(rbuf),
                                    GWEN_Buffer_GetUsedBytes(rbuf),
                                    dbProfile);
     GWEN_DB_Group_free(dbProfile);

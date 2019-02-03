@@ -20,10 +20,11 @@
 
 
 int EBC_Provider_XchgStaRequest(AB_PROVIDER *pro,
-				GWEN_HTTP_SESSION *sess,
-				const GWEN_DATE *fromDate,
-				const GWEN_DATE *toDate,
-				AB_IMEXPORTER_CONTEXT *ctx) {
+                                GWEN_HTTP_SESSION *sess,
+                                const GWEN_DATE *fromDate,
+                                const GWEN_DATE *toDate,
+                                AB_IMEXPORTER_CONTEXT *ctx)
+{
   AB_BANKING *ab;
   int rv;
   GWEN_BUFFER *buf;
@@ -47,7 +48,7 @@ int EBC_Provider_XchgStaRequest(AB_PROVIDER *pro,
     DBG_INFO(AQEBICS_LOGDOMAIN, "Importing transactions");
     rv=AB_Banking_ImportFromBufferLoadProfile(ab, "swift", ctx,
                                               "SWIFT-MT940", NULL,
-                                              (const uint8_t*) GWEN_Buffer_GetStart(buf),
+                                              (const uint8_t *) GWEN_Buffer_GetStart(buf),
                                               GWEN_Buffer_GetUsedBytes(buf));
     GWEN_Buffer_free(buf);
     if (rv<0) {

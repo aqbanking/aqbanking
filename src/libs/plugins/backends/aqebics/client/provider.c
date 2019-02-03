@@ -43,7 +43,8 @@ GWEN_INHERIT(AB_PROVIDER, EBC_PROVIDER)
 
 
 
-AB_PROVIDER *EBC_Provider_new(AB_BANKING *ab){
+AB_PROVIDER *EBC_Provider_new(AB_BANKING *ab)
+{
   AB_PROVIDER *pro;
   EBC_PROVIDER *dp;
 
@@ -74,10 +75,11 @@ AB_PROVIDER *EBC_Provider_new(AB_BANKING *ab){
 
 
 
-void GWENHYWFAR_CB EBC_Provider_FreeData(GWEN_UNUSED void *bp, void *p) {
+void GWENHYWFAR_CB EBC_Provider_FreeData(GWEN_UNUSED void *bp, void *p)
+{
   EBC_PROVIDER *dp;
 
-  dp=(EBC_PROVIDER*)p;
+  dp=(EBC_PROVIDER *)p;
   assert(dp);
 
   GWEN_FREE_OBJECT(dp);
@@ -85,7 +87,8 @@ void GWENHYWFAR_CB EBC_Provider_FreeData(GWEN_UNUSED void *bp, void *p) {
 
 
 
-int EBC_Provider_GetConnectTimeout(const AB_PROVIDER *pro) {
+int EBC_Provider_GetConnectTimeout(const AB_PROVIDER *pro)
+{
   EBC_PROVIDER *dp;
 
   assert(pro);
@@ -97,7 +100,8 @@ int EBC_Provider_GetConnectTimeout(const AB_PROVIDER *pro) {
 
 
 
-int EBC_Provider_GetTransferTimeout(const AB_PROVIDER *pro) {
+int EBC_Provider_GetTransferTimeout(const AB_PROVIDER *pro)
+{
   EBC_PROVIDER *dp;
 
   assert(pro);
@@ -109,7 +113,8 @@ int EBC_Provider_GetTransferTimeout(const AB_PROVIDER *pro) {
 
 
 
-int EBC_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
+int EBC_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData)
+{
   EBC_PROVIDER *dp;
   const char *logLevelName;
 
@@ -119,9 +124,9 @@ int EBC_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
 
   if (!GWEN_Logger_IsOpen(AQEBICS_LOGDOMAIN)) {
     GWEN_Logger_Open(AQEBICS_LOGDOMAIN,
-		     "aqebics", 0,
-		     GWEN_LoggerType_Console,
-		     GWEN_LoggerFacility_User);
+                     "aqebics", 0,
+                     GWEN_LoggerType_Console,
+                     GWEN_LoggerFacility_User);
   }
 
   logLevelName=getenv("AQEBICS_LOGLEVEL");
@@ -146,7 +151,7 @@ int EBC_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
 
   if (1) {
     GWEN_STRINGLIST *sl=GWEN_PathManager_GetPaths(AB_PM_LIBNAME,
-						  AB_PM_LOCALEDIR);
+                                                  AB_PM_LOCALEDIR);
     const char *localedir=GWEN_StringList_FirstString(sl);
     int rv;
 
@@ -157,7 +162,7 @@ int EBC_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
     else {
       rv=GWEN_I18N_BindTextDomain_Codeset(PACKAGE, "UTF-8");
       if (rv) {
-	DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not set codeset (%d)", rv);
+        DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not set codeset (%d)", rv);
       }
     }
 
@@ -166,7 +171,7 @@ int EBC_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
 
   DBG_NOTICE(AQEBICS_LOGDOMAIN, "Initializing AqEBICS backend");
   dp->connectTimeout=GWEN_DB_GetIntValue(dbData, "connectTimeout", 0,
-                                        EBC_DEFAULT_CONNECT_TIMEOUT);
+                                         EBC_DEFAULT_CONNECT_TIMEOUT);
   dp->transferTimeout=GWEN_DB_GetIntValue(dbData, "transferTimeout", 0,
                                           EBC_DEFAULT_TRANSFER_TIMEOUT);
 
@@ -175,7 +180,8 @@ int EBC_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
 
 
 
-int EBC_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
+int EBC_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData)
+{
   EBC_PROVIDER *dp;
   uint32_t currentVersion;
 
@@ -207,7 +213,8 @@ int EBC_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
 
 
 #if 0
-int EBC_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j) {
+int EBC_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j)
+{
   EBC_PROVIDER *dp;
   AB_ACCOUNT *a;
   AB_USER *u;
@@ -223,15 +230,15 @@ int EBC_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j) {
   if (u==NULL) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "No user assigned to this account.");
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Error,
-			 I18N("No user assigned to this account."));
+                         GWEN_LoggerLevel_Error,
+                         I18N("No user assigned to this account."));
     GWEN_Gui_ShowError(I18N("Setup Error"),
-		       I18N("No user assigned to this account. Please assign one in the online banking setup dialog "
-			    "for this account.\n"));
+                       I18N("No user assigned to this account. Please assign one in the online banking setup dialog "
+                            "for this account.\n"));
     return GWEN_ERROR_INTERNAL;
   }
 
-  switch(AB_Job_GetType(j)) {
+  switch (AB_Job_GetType(j)) {
   case AB_Job_TypeTransfer: {
     AB_TRANSACTION_LIMITS *lim;
 
@@ -266,8 +273,8 @@ int EBC_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j) {
   case AB_Job_TypeGetBalance:
   default:
     DBG_INFO(AQEBICS_LOGDOMAIN,
-	     "Job not yet supported (%d)",
-	     AB_Job_GetType(j));
+             "Job not yet supported (%d)",
+             AB_Job_GetType(j));
     return GWEN_ERROR_NOT_SUPPORTED;
   } /* switch */
   return 0;
@@ -276,7 +283,8 @@ int EBC_Provider_UpdateJob(AB_PROVIDER *pro, AB_JOB *j) {
 
 
 
-GWEN_DIALOG *EBC_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
+GWEN_DIALOG *EBC_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u)
+{
   EBC_PROVIDER *xp;
   GWEN_DIALOG *dlg;
 
@@ -295,7 +303,8 @@ GWEN_DIALOG *EBC_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u) {
 
 
 
-GWEN_DIALOG *EBC_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
+GWEN_DIALOG *EBC_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i)
+{
   EBC_PROVIDER *xp;
   GWEN_DIALOG *dlg;
 
@@ -314,22 +323,25 @@ GWEN_DIALOG *EBC_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i) {
 
 
 
-AB_ACCOUNT *EBC_Provider_CreateAccountObject(AB_PROVIDER *pro) {
+AB_ACCOUNT *EBC_Provider_CreateAccountObject(AB_PROVIDER *pro)
+{
   return EBC_Account_new(pro);
 }
 
 
 
-AB_USER *EBC_Provider_CreateUserObject(AB_PROVIDER *pro) {
+AB_USER *EBC_Provider_CreateUserObject(AB_PROVIDER *pro)
+{
   return EBC_User_new(pro);
 }
 
 
 
 int EBC_Provider_MountToken(AB_PROVIDER *pro,
-			    AB_USER *u,
-			    GWEN_CRYPT_TOKEN **pCt,
-			    const GWEN_CRYPT_TOKEN_CONTEXT **pCtx) {
+                            AB_USER *u,
+                            GWEN_CRYPT_TOKEN **pCt,
+                            const GWEN_CRYPT_TOKEN_CONTEXT **pCtx)
+{
   EBC_PROVIDER *dp;
   int rv;
   GWEN_CRYPT_TOKEN *ct;
@@ -341,13 +353,13 @@ int EBC_Provider_MountToken(AB_PROVIDER *pro,
 
   /* get crypt token of signer */
   rv=AB_Banking_GetCryptToken(AB_Provider_GetBanking(pro),
-			      EBC_User_GetTokenType(u),
-			      EBC_User_GetTokenName(u),
-			      &ct);
+                              EBC_User_GetTokenType(u),
+                              EBC_User_GetTokenName(u),
+                              &ct);
   if (rv) {
     DBG_INFO(AQEBICS_LOGDOMAIN,
-	     "Could not get crypt token for user \"%s\" (%d)",
-	     AB_User_GetUserId(u), rv);
+             "Could not get crypt token for user \"%s\" (%d)",
+             AB_User_GetUserId(u), rv);
     return rv;
   }
 
@@ -360,22 +372,22 @@ int EBC_Provider_MountToken(AB_PROVIDER *pro,
     rv=GWEN_Crypt_Token_Open(ct, 0, 0);
     if (rv) {
       DBG_INFO(AQEBICS_LOGDOMAIN,
-	       "Could not open crypt token for user \"%s\" (%d)",
-	       AB_User_GetUserId(u), rv);
+               "Could not open crypt token for user \"%s\" (%d)",
+               AB_User_GetUserId(u), rv);
       return rv;
     }
   }
 
   /* get context and key info */
   ctx=GWEN_Crypt_Token_GetContext(ct,
-				  EBC_User_GetTokenContextId(u),
-				  0);
+                                  EBC_User_GetTokenContextId(u),
+                                  0);
   if (ctx==NULL) {
     DBG_INFO(AQEBICS_LOGDOMAIN,
-	     "Context %d not found on crypt token [%s:%s]",
-	     EBC_User_GetTokenContextId(u),
-	     GWEN_Crypt_Token_GetTypeName(ct),
-	     GWEN_Crypt_Token_GetTokenName(ct));
+             "Context %d not found on crypt token [%s:%s]",
+             EBC_User_GetTokenContextId(u),
+             GWEN_Crypt_Token_GetTypeName(ct),
+             GWEN_Crypt_Token_GetTokenName(ct));
     return GWEN_ERROR_NOT_FOUND;
   }
 
@@ -387,12 +399,13 @@ int EBC_Provider_MountToken(AB_PROVIDER *pro,
 
 
 
-int EBC_Provider_GenerateNonce(GWEN_UNUSED AB_PROVIDER *pro, GWEN_BUFFER *buf) {
+int EBC_Provider_GenerateNonce(GWEN_UNUSED AB_PROVIDER *pro, GWEN_BUFFER *buf)
+{
   int rv;
   uint8_t rbuf[16];
 
   GWEN_Crypt_Random(2, rbuf, sizeof(rbuf));
-  rv=GWEN_Text_ToHexBuffer((const char*)rbuf, sizeof(rbuf), buf, 0, 0, 0);
+  rv=GWEN_Text_ToHexBuffer((const char *)rbuf, sizeof(rbuf), buf, 0, 0, 0);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
               "Could not convert NONCE to hex (%d)", rv);
@@ -400,8 +413,8 @@ int EBC_Provider_GenerateNonce(GWEN_UNUSED AB_PROVIDER *pro, GWEN_BUFFER *buf) {
   }
 
   DBG_DEBUG(AQEBICS_LOGDOMAIN,
-	    "Generated NONCE [%s]",
-	    GWEN_Buffer_GetStart(buf));
+            "Generated NONCE [%s]",
+            GWEN_Buffer_GetStart(buf));
 
   return 0;
 }
@@ -409,8 +422,9 @@ int EBC_Provider_GenerateNonce(GWEN_UNUSED AB_PROVIDER *pro, GWEN_BUFFER *buf) {
 
 
 int EBC_Provider_GenerateTimeStamp(GWEN_UNUSED AB_PROVIDER *pro,
-				   AB_USER *u,
-				   GWEN_BUFFER *buf) {
+                                   AB_USER *u,
+                                   GWEN_BUFFER *buf)
+{
   char timestamp[40];
   time_t ti;
   struct tm *t;
@@ -419,20 +433,20 @@ int EBC_Provider_GenerateTimeStamp(GWEN_UNUSED AB_PROVIDER *pro,
   /*
   if (EBC_User_GetFlags(u) & EBC_USER_FLAGS_TIMESTAMP_FIX1) {
   */
-    t=gmtime(&ti);
-    snprintf(timestamp, sizeof(timestamp)-1,
-	     "%04d-%02d-%02dT%02d:%02d:%02d.000Z",
-	     t->tm_year+1900,
-	     t->tm_mon+1,
-	     t->tm_mday,
-	     t->tm_hour,
-	     t->tm_min,
-	     t->tm_sec);
-    timestamp[sizeof(timestamp)-1]=0;
-    DBG_DEBUG(AQEBICS_LOGDOMAIN,
-	      "Generated timestamp [%s]",
-	      timestamp);
-    GWEN_Buffer_AppendString(buf, timestamp);
+  t=gmtime(&ti);
+  snprintf(timestamp, sizeof(timestamp)-1,
+           "%04d-%02d-%02dT%02d:%02d:%02d.000Z",
+           t->tm_year+1900,
+           t->tm_mon+1,
+           t->tm_mday,
+           t->tm_hour,
+           t->tm_min,
+           t->tm_sec);
+  timestamp[sizeof(timestamp)-1]=0;
+  DBG_DEBUG(AQEBICS_LOGDOMAIN,
+            "Generated timestamp [%s]",
+            timestamp);
+  GWEN_Buffer_AppendString(buf, timestamp);
   /*
   }
   else {
@@ -443,19 +457,19 @@ int EBC_Provider_GenerateTimeStamp(GWEN_UNUSED AB_PROVIDER *pro,
     if (t->tm_isdst>0)
       thzone+=60;
     snprintf(timestamp, sizeof(timestamp)-1,
-	     "%04d-%02d-%02dT%02d:%02d:%02d.000%+03d:%02d",
-	     t->tm_year+1900,
-	     t->tm_mon+1,
-	     t->tm_mday,
-	     t->tm_hour,
-	     t->tm_min,
-	     t->tm_sec,
-	     (int)(thzone/60),
-	     abs(thzone%60));
+       "%04d-%02d-%02dT%02d:%02d:%02d.000%+03d:%02d",
+       t->tm_year+1900,
+       t->tm_mon+1,
+       t->tm_mday,
+       t->tm_hour,
+       t->tm_min,
+       t->tm_sec,
+       (int)(thzone/60),
+       abs(thzone%60));
     timestamp[sizeof(timestamp)-1]=0;
     DBG_DEBUG(AQEBICS_LOGDOMAIN,
-	      "Generated timestamp [%s] (tz=%d, daylight=%d)",
-	      timestamp, (int)timezone, t->tm_isdst);
+        "Generated timestamp [%s] (tz=%d, daylight=%d)",
+        timestamp, (int)timezone, t->tm_isdst);
     GWEN_Buffer_AppendString(buf, timestamp);
   }
   */
@@ -465,7 +479,8 @@ int EBC_Provider_GenerateTimeStamp(GWEN_UNUSED AB_PROVIDER *pro,
 
 
 
-int EBC_Provider_Generate_OrderId(AB_PROVIDER *pro, GWEN_BUFFER *buf) {
+int EBC_Provider_Generate_OrderId(AB_PROVIDER *pro, GWEN_BUFFER *buf)
+{
   uint32_t id;
   char rbuf[4];
   char c;
@@ -489,18 +504,24 @@ int EBC_Provider_Generate_OrderId(AB_PROVIDER *pro, GWEN_BUFFER *buf) {
   GWEN_Buffer_AppendByte(buf, c);
 
   c=rbuf[1];
-  if (c<10) c+='0';
-  else c+='A'-10;
+  if (c<10)
+    c+='0';
+  else
+    c+='A'-10;
   GWEN_Buffer_AppendByte(buf, c);
 
   c=rbuf[2];
-  if (c<10) c+='0';
-  else c+='A'-10;
+  if (c<10)
+    c+='0';
+  else
+    c+='A'-10;
   GWEN_Buffer_AppendByte(buf, c);
 
   c=rbuf[3];
-  if (c<10) c+='0';
-  else c+='A'-10;
+  if (c<10)
+    c+='0';
+  else
+    c+='A'-10;
   GWEN_Buffer_AppendByte(buf, c);
 
   return 0;
@@ -509,7 +530,8 @@ int EBC_Provider_Generate_OrderId(AB_PROVIDER *pro, GWEN_BUFFER *buf) {
 
 
 GWEN_LOGGER_LEVEL EBC_Provider_ResultCodeToLogLevel(GWEN_UNUSED AB_PROVIDER *pro,
-						    const char *s) {
+                                                    const char *s)
+{
   if (strlen(s)!=6) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Invalid error code [%s]", s);
     return GWEN_LoggerLevel_Error;
@@ -519,13 +541,21 @@ GWEN_LOGGER_LEVEL EBC_Provider_ResultCodeToLogLevel(GWEN_UNUSED AB_PROVIDER *pro
     GWEN_LOGGER_LEVEL lev;
 
     c=s[1]-'0';
-    switch(c) {
-    case 0:  lev=GWEN_LoggerLevel_Info; break;
-    case 1:  lev=GWEN_LoggerLevel_Notice; break;
-    case 3:  lev=GWEN_LoggerLevel_Warning; break;
+    switch (c) {
+    case 0:
+      lev=GWEN_LoggerLevel_Info;
+      break;
+    case 1:
+      lev=GWEN_LoggerLevel_Notice;
+      break;
+    case 3:
+      lev=GWEN_LoggerLevel_Warning;
+      break;
     case 6:
     case 9:
-    default: lev=GWEN_LoggerLevel_Error; break;
+    default:
+      lev=GWEN_LoggerLevel_Error;
+      break;
     }
 
     return lev;
@@ -534,90 +564,150 @@ GWEN_LOGGER_LEVEL EBC_Provider_ResultCodeToLogLevel(GWEN_UNUSED AB_PROVIDER *pro
 
 
 
-const char *EBC_Provider_TechnicalCodeToString(const char *s) {
+const char *EBC_Provider_TechnicalCodeToString(const char *s)
+{
   unsigned int code;
 
   if (sscanf(s, "%u", &code)!=1)
     return NULL;
 
-  switch(code) {
-  case 0    : return I18N("Ok");
-  case 11000: return I18N("Download postproces done");
-  case 11001: return I18N("Download postproces skipped");
-  case 11101: return I18N("TX segment number underrun");
-  case 31001: return I18N("Order params ignored");
-  case 61001: return I18N("Authentication failed");
-  case 61002: return I18N("Invalid request");
-  case 61099: return I18N("Internal error");
-  case 61101: return I18N("TX recovery sync");
-  case 91002: return I18N("Invalid user or invalid user state");
-  case 91003: return I18N("User unknown");
-  case 91004: return I18N("Invalid user state");
-  case 91005: return I18N("Invalid order type");
-  case 91006: return I18N("Unsupported order type");
-  case 91007: return I18N("Distributed signature authorisation failed");
-  case 91008: return I18N("Bank pubkey update required");
-  case 91009: return I18N("Segment size exceeded");
-  case 91010: return I18N("Invalid XML");
-  case 91101: return I18N("TX unknown transaction id");
-  case 91102: return I18N("TX abort");
-  case 91103: return I18N("TX message replay");
-  case 91104: return I18N("TX segment number exceeded");
-  case 91112: return I18N("Invalid order params");
-  case 91113: return I18N("Invalid request content");
-  case 91117: return I18N("Max order data size exceeded");
-  case 91118: return I18N("Max segments exceeded");
-  case 91119: return I18N("Max transactions exceeded");
-  case 91120: return I18N("Partner id mismatch");
-  case 91121: return I18N("Incompatible order attribute");
-  default:    return NULL;
+  switch (code) {
+  case 0    :
+    return I18N("Ok");
+  case 11000:
+    return I18N("Download postproces done");
+  case 11001:
+    return I18N("Download postproces skipped");
+  case 11101:
+    return I18N("TX segment number underrun");
+  case 31001:
+    return I18N("Order params ignored");
+  case 61001:
+    return I18N("Authentication failed");
+  case 61002:
+    return I18N("Invalid request");
+  case 61099:
+    return I18N("Internal error");
+  case 61101:
+    return I18N("TX recovery sync");
+  case 91002:
+    return I18N("Invalid user or invalid user state");
+  case 91003:
+    return I18N("User unknown");
+  case 91004:
+    return I18N("Invalid user state");
+  case 91005:
+    return I18N("Invalid order type");
+  case 91006:
+    return I18N("Unsupported order type");
+  case 91007:
+    return I18N("Distributed signature authorisation failed");
+  case 91008:
+    return I18N("Bank pubkey update required");
+  case 91009:
+    return I18N("Segment size exceeded");
+  case 91010:
+    return I18N("Invalid XML");
+  case 91101:
+    return I18N("TX unknown transaction id");
+  case 91102:
+    return I18N("TX abort");
+  case 91103:
+    return I18N("TX message replay");
+  case 91104:
+    return I18N("TX segment number exceeded");
+  case 91112:
+    return I18N("Invalid order params");
+  case 91113:
+    return I18N("Invalid request content");
+  case 91117:
+    return I18N("Max order data size exceeded");
+  case 91118:
+    return I18N("Max segments exceeded");
+  case 91119:
+    return I18N("Max transactions exceeded");
+  case 91120:
+    return I18N("Partner id mismatch");
+  case 91121:
+    return I18N("Incompatible order attribute");
+  default:
+    return NULL;
   }
 }
 
 
 
-const char *EBC_Provider_BankCodeToString(const char *s) {
+const char *EBC_Provider_BankCodeToString(const char *s)
+{
   unsigned int code;
 
   if (sscanf(s, "%u", &code)!=1)
     return NULL;
 
-  switch(code) {
-  case 0    : return I18N("Ok");
-  case 11301: return I18N("No online checks");
-  case 91001: return I18N("Download signed only");
-  case 91002: return I18N("Download unsigned only");
-  case 90003: return I18N("Authorisation failed");
-  case 90004: return I18N("Invalid order data format");
-  case 90005: return I18N("No download data available");
-  case 90006: return I18N("Unsupported request for order instance");
-  case 91105: return I18N("Recovery not supported");
-  case 91111: return I18N("Invalid signature file format");
-  case 91114: return I18N("Order id unknown");
-  case 91115: return I18N("Order id already exists");
-  case 91116: return I18N("Processing error");
-  case 91201: return I18N("Keymgmt unsupported version of signature");
-  case 91202: return I18N("Keymgmt unsupported version of authentication");
-  case 91203: return I18N("Keymgmt unsupported version of encryption");
-  case 91204: return I18N("Keymgmt keylength error in signature");
-  case 91205: return I18N("Keymgmt keylength error in authentication");
-  case 91206: return I18N("Keymgmt keylength error in encryption");
-  case 91207: return I18N("Keymgmt no X509 support");
-  case 91301: return I18N("Signature verification failed");
-  case 91302: return I18N("Account authorisation failed");
-  case 91303: return I18N("Amount check failed");
-  case 91304: return I18N("Signer unknown");
-  case 91305: return I18N("Invalid signer state");
-  case 91306: return I18N("Duplicate signature");
-  default:    return NULL;
+  switch (code) {
+  case 0    :
+    return I18N("Ok");
+  case 11301:
+    return I18N("No online checks");
+  case 91001:
+    return I18N("Download signed only");
+  case 91002:
+    return I18N("Download unsigned only");
+  case 90003:
+    return I18N("Authorisation failed");
+  case 90004:
+    return I18N("Invalid order data format");
+  case 90005:
+    return I18N("No download data available");
+  case 90006:
+    return I18N("Unsupported request for order instance");
+  case 91105:
+    return I18N("Recovery not supported");
+  case 91111:
+    return I18N("Invalid signature file format");
+  case 91114:
+    return I18N("Order id unknown");
+  case 91115:
+    return I18N("Order id already exists");
+  case 91116:
+    return I18N("Processing error");
+  case 91201:
+    return I18N("Keymgmt unsupported version of signature");
+  case 91202:
+    return I18N("Keymgmt unsupported version of authentication");
+  case 91203:
+    return I18N("Keymgmt unsupported version of encryption");
+  case 91204:
+    return I18N("Keymgmt keylength error in signature");
+  case 91205:
+    return I18N("Keymgmt keylength error in authentication");
+  case 91206:
+    return I18N("Keymgmt keylength error in encryption");
+  case 91207:
+    return I18N("Keymgmt no X509 support");
+  case 91301:
+    return I18N("Signature verification failed");
+  case 91302:
+    return I18N("Account authorisation failed");
+  case 91303:
+    return I18N("Amount check failed");
+  case 91304:
+    return I18N("Signer unknown");
+  case 91305:
+    return I18N("Invalid signer state");
+  case 91306:
+    return I18N("Duplicate signature");
+  default:
+    return NULL;
   }
 }
 
 
 
 void EBC_Provider_LogRequestResults(AB_PROVIDER *pro,
-				    EB_MSG *mRsp,
-				    GWEN_BUFFER *logbuf) {
+                                    EB_MSG *mRsp,
+                                    GWEN_BUFFER *logbuf)
+{
   const char *tcode;
   const char *bcode;
   const char *s;
@@ -642,8 +732,8 @@ void EBC_Provider_LogRequestResults(AB_PROVIDER *pro,
       GWEN_Buffer_AppendBuffer(logbuf, tbuf);
     }
     GWEN_Gui_ProgressLog(0,
-			 EBC_Provider_ResultCodeToLogLevel(pro, tcode),
-			 GWEN_Buffer_GetStart(tbuf));
+                         EBC_Provider_ResultCodeToLogLevel(pro, tcode),
+                         GWEN_Buffer_GetStart(tbuf));
     DBG_INFO(AQEBICS_LOGDOMAIN, "%s", GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_Reset(tbuf);
   }
@@ -658,8 +748,8 @@ void EBC_Provider_LogRequestResults(AB_PROVIDER *pro,
       GWEN_Buffer_AppendBuffer(logbuf, tbuf);
     }
     GWEN_Gui_ProgressLog(0,
-			 GWEN_LoggerLevel_Notice,
-			 GWEN_Buffer_GetStart(tbuf));
+                         GWEN_LoggerLevel_Notice,
+                         GWEN_Buffer_GetStart(tbuf));
     DBG_INFO(AQEBICS_LOGDOMAIN, "%s", GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_Reset(tbuf);
   }
@@ -683,8 +773,8 @@ void EBC_Provider_LogRequestResults(AB_PROVIDER *pro,
     }
 
     GWEN_Gui_ProgressLog(0,
-			 EBC_Provider_ResultCodeToLogLevel(pro, bcode),
-			 GWEN_Buffer_GetStart(tbuf));
+                         EBC_Provider_ResultCodeToLogLevel(pro, bcode),
+                         GWEN_Buffer_GetStart(tbuf));
     DBG_INFO(AQEBICS_LOGDOMAIN, "%s", GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_Reset(tbuf);
   }
@@ -694,7 +784,8 @@ void EBC_Provider_LogRequestResults(AB_PROVIDER *pro,
 
 
 
-int EBC_Provider_AddBankPubKeyDigests(AB_PROVIDER *pro, AB_USER *u, xmlNodePtr node) {
+int EBC_Provider_AddBankPubKeyDigests(AB_PROVIDER *pro, AB_USER *u, xmlNodePtr node)
+{
   EBC_PROVIDER *dp;
   int rv;
   GWEN_CRYPT_TOKEN *ct;
@@ -719,22 +810,22 @@ int EBC_Provider_AddBankPubKeyDigests(AB_PROVIDER *pro, AB_USER *u, xmlNodePtr n
   /* get key id for server auth key */
   keyId=GWEN_Crypt_Token_Context_GetAuthVerifyKeyId(ctx);
   ki=GWEN_Crypt_Token_GetKeyInfo(ct,
-				 keyId,
-				 0xffffffff,
-				 0);
+                                 keyId,
+                                 0xffffffff,
+                                 0);
   if (ki==NULL) {
     DBG_INFO(AQEBICS_LOGDOMAIN,
-	     "Keyinfo %04x not found on crypt token [%s:%s]",
-	     keyId,
-	     GWEN_Crypt_Token_GetTypeName(ct),
-	     GWEN_Crypt_Token_GetTokenName(ct));
+             "Keyinfo %04x not found on crypt token [%s:%s]",
+             keyId,
+             GWEN_Crypt_Token_GetTypeName(ct),
+             GWEN_Crypt_Token_GetTokenName(ct));
     GWEN_Crypt_Token_Close(ct, 0, 0);
     return GWEN_ERROR_NOT_FOUND;
   }
 
   s=EBC_User_GetAuthVersion(u);
   DBG_ERROR(0, "Auth Version: %s\n", s);
-  if (! (s && *s))
+  if (!(s && *s))
     s="X001";
   if (strcasecmp(s, "X001")==0) {
     hbuf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -746,16 +837,16 @@ int EBC_Provider_AddBankPubKeyDigests(AB_PROVIDER *pro, AB_USER *u, xmlNodePtr n
       return rv;
     }
     nodeX=xmlNewTextChild(node, NULL,
-			  BAD_CAST "Authentication",
-			  BAD_CAST GWEN_Buffer_GetStart(hbuf));
+                          BAD_CAST "Authentication",
+                          BAD_CAST GWEN_Buffer_GetStart(hbuf));
     GWEN_Buffer_free(hbuf);
     assert(nodeX);
     xmlNewProp(nodeX,
-	       BAD_CAST "Version",
-	       BAD_CAST "X001");
+               BAD_CAST "Version",
+               BAD_CAST "X001");
     xmlNewProp(nodeX,
-	       BAD_CAST "Algorithm",
-	       BAD_CAST "http://www.w3.org/2000/09/xmldsig#sha1");
+               BAD_CAST "Algorithm",
+               BAD_CAST "http://www.w3.org/2000/09/xmldsig#sha1");
   }
   else if (strcasecmp(s, "X002")==0) {
     hbuf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -767,16 +858,16 @@ int EBC_Provider_AddBankPubKeyDigests(AB_PROVIDER *pro, AB_USER *u, xmlNodePtr n
       return rv;
     }
     nodeX=xmlNewTextChild(node, NULL,
-			  BAD_CAST "Authentication",
-			  BAD_CAST GWEN_Buffer_GetStart(hbuf));
+                          BAD_CAST "Authentication",
+                          BAD_CAST GWEN_Buffer_GetStart(hbuf));
     GWEN_Buffer_free(hbuf);
     assert(nodeX);
     xmlNewProp(nodeX,
-	       BAD_CAST "Version",
-	       BAD_CAST "X002");
+               BAD_CAST "Version",
+               BAD_CAST "X002");
     xmlNewProp(nodeX,
-	       BAD_CAST "Algorithm",
-	       BAD_CAST "http://www.w3.org/2001/04/xmlenc#sha256");
+               BAD_CAST "Algorithm",
+               BAD_CAST "http://www.w3.org/2001/04/xmlenc#sha256");
   }
   else {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Unsupported auth version [%s]", s);
@@ -787,21 +878,21 @@ int EBC_Provider_AddBankPubKeyDigests(AB_PROVIDER *pro, AB_USER *u, xmlNodePtr n
   /* get key id for server crypt key */
   keyId=GWEN_Crypt_Token_Context_GetEncipherKeyId(ctx);
   ki=GWEN_Crypt_Token_GetKeyInfo(ct,
-				 keyId,
-				 0xffffffff,
-				 0);
+                                 keyId,
+                                 0xffffffff,
+                                 0);
   if (ki==NULL) {
     DBG_INFO(AQEBICS_LOGDOMAIN,
-	     "Keyinfo %04x not found on crypt token [%s:%s]",
-	     keyId,
-	     GWEN_Crypt_Token_GetTypeName(ct),
-	     GWEN_Crypt_Token_GetTokenName(ct));
+             "Keyinfo %04x not found on crypt token [%s:%s]",
+             keyId,
+             GWEN_Crypt_Token_GetTypeName(ct),
+             GWEN_Crypt_Token_GetTokenName(ct));
     GWEN_Crypt_Token_Close(ct, 0, 0);
     return GWEN_ERROR_NOT_FOUND;
   }
 
   s=EBC_User_GetCryptVersion(u);
-  if (! (s && *s))
+  if (!(s && *s))
     s="E001";
   if (strcasecmp(s, "E001")==0) {
     hbuf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -813,16 +904,16 @@ int EBC_Provider_AddBankPubKeyDigests(AB_PROVIDER *pro, AB_USER *u, xmlNodePtr n
       return rv;
     }
     nodeX=xmlNewTextChild(node, NULL,
-			  BAD_CAST "Encryption",
-			  BAD_CAST GWEN_Buffer_GetStart(hbuf));
+                          BAD_CAST "Encryption",
+                          BAD_CAST GWEN_Buffer_GetStart(hbuf));
     GWEN_Buffer_free(hbuf);
     assert(nodeX);
     xmlNewProp(nodeX,
-	       BAD_CAST "Version",
-	       BAD_CAST "E001");
+               BAD_CAST "Version",
+               BAD_CAST "E001");
     xmlNewProp(nodeX,
-	       BAD_CAST "Algorithm",
-	       BAD_CAST "http://www.w3.org/2000/09/xmldsig#sha1");
+               BAD_CAST "Algorithm",
+               BAD_CAST "http://www.w3.org/2000/09/xmldsig#sha1");
   }
   else if (strcasecmp(s, "E002")==0) {
     hbuf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -834,16 +925,16 @@ int EBC_Provider_AddBankPubKeyDigests(AB_PROVIDER *pro, AB_USER *u, xmlNodePtr n
       return rv;
     }
     nodeX=xmlNewTextChild(node, NULL,
-			  BAD_CAST "Encryption",
-			  BAD_CAST GWEN_Buffer_GetStart(hbuf));
+                          BAD_CAST "Encryption",
+                          BAD_CAST GWEN_Buffer_GetStart(hbuf));
     GWEN_Buffer_free(hbuf);
     assert(nodeX);
     xmlNewProp(nodeX,
-	       BAD_CAST "Version",
-	       BAD_CAST "E002");
+               BAD_CAST "Version",
+               BAD_CAST "E002");
     xmlNewProp(nodeX,
-	       BAD_CAST "Algorithm",
-	       BAD_CAST "http://www.w3.org/2001/04/xmlenc#sha256");
+               BAD_CAST "Algorithm",
+               BAD_CAST "http://www.w3.org/2001/04/xmlenc#sha256");
   }
   else {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Unsupported crypt version [%s]", s);
@@ -857,8 +948,9 @@ int EBC_Provider_AddBankPubKeyDigests(AB_PROVIDER *pro, AB_USER *u, xmlNodePtr n
 
 
 int EBC_Provider_FillDataEncryptionInfoNode(AB_PROVIDER *pro, AB_USER *u,
-					    const GWEN_CRYPT_KEY *skey,
-					    xmlNodePtr node) {
+                                            const GWEN_CRYPT_KEY *skey,
+                                            xmlNodePtr node)
+{
   EBC_PROVIDER *dp;
   int rv;
   GWEN_CRYPT_TOKEN *ct;
@@ -883,15 +975,15 @@ int EBC_Provider_FillDataEncryptionInfoNode(AB_PROVIDER *pro, AB_USER *u,
   /* get key id for server crypt key */
   keyId=GWEN_Crypt_Token_Context_GetEncipherKeyId(ctx);
   ki=GWEN_Crypt_Token_GetKeyInfo(ct,
-				 keyId,
-				 0xffffffff,
-				 0);
+                                 keyId,
+                                 0xffffffff,
+                                 0);
   if (ki==NULL) {
     DBG_INFO(AQEBICS_LOGDOMAIN,
-	     "Keyinfo %04x not found on crypt token [%s:%s]",
-	     keyId,
-	     GWEN_Crypt_Token_GetTypeName(ct),
-	     GWEN_Crypt_Token_GetTokenName(ct));
+             "Keyinfo %04x not found on crypt token [%s:%s]",
+             keyId,
+             GWEN_Crypt_Token_GetTypeName(ct),
+             GWEN_Crypt_Token_GetTokenName(ct));
     GWEN_Crypt_Token_Close(ct, 0, 0);
     return GWEN_ERROR_NOT_FOUND;
   }
@@ -910,17 +1002,17 @@ int EBC_Provider_FillDataEncryptionInfoNode(AB_PROVIDER *pro, AB_USER *u,
       return rv;
     }
     nodeX=xmlNewTextChild(node, NULL,
-			  BAD_CAST "EncryptionPubKeyDigest",
-			  BAD_CAST GWEN_Buffer_GetStart(hbuf));
+                          BAD_CAST "EncryptionPubKeyDigest",
+                          BAD_CAST GWEN_Buffer_GetStart(hbuf));
     GWEN_Buffer_free(hbuf);
     assert(nodeX);
 
     xmlNewProp(nodeX,
-	       BAD_CAST "Version",
-	       BAD_CAST "E001");
+               BAD_CAST "Version",
+               BAD_CAST "E001");
     xmlNewProp(nodeX,
-	       BAD_CAST "Algorithm",
-	       BAD_CAST "http://www.w3.org/2000/09/xmldsig#sha1");
+               BAD_CAST "Algorithm",
+               BAD_CAST "http://www.w3.org/2000/09/xmldsig#sha1");
   }
   else if (strcasecmp(s, "E002")==0) {
     rv=EB_Key_Info_BuildHashSha256(ki, hbuf, 1);
@@ -931,17 +1023,17 @@ int EBC_Provider_FillDataEncryptionInfoNode(AB_PROVIDER *pro, AB_USER *u,
       return rv;
     }
     nodeX=xmlNewTextChild(node, NULL,
-			  BAD_CAST "EncryptionPubKeyDigest",
-			  BAD_CAST GWEN_Buffer_GetStart(hbuf));
+                          BAD_CAST "EncryptionPubKeyDigest",
+                          BAD_CAST GWEN_Buffer_GetStart(hbuf));
     GWEN_Buffer_free(hbuf);
     assert(nodeX);
 
     xmlNewProp(nodeX,
-	       BAD_CAST "Version",
-	       BAD_CAST "E002");
+               BAD_CAST "Version",
+               BAD_CAST "E002");
     xmlNewProp(nodeX,
-	       BAD_CAST "Algorithm",
-	       BAD_CAST "http://www.w3.org/2001/04/xmlenc#sha256");
+               BAD_CAST "Algorithm",
+               BAD_CAST "http://www.w3.org/2001/04/xmlenc#sha256");
   }
 
 
@@ -956,8 +1048,8 @@ int EBC_Provider_FillDataEncryptionInfoNode(AB_PROVIDER *pro, AB_USER *u,
   }
 
   nodeX=xmlNewTextChild(node, NULL,
-			BAD_CAST "TransactionKey",
-			BAD_CAST GWEN_Buffer_GetStart(hbuf));
+                        BAD_CAST "TransactionKey",
+                        BAD_CAST GWEN_Buffer_GetStart(hbuf));
   GWEN_Buffer_free(hbuf);
   assert(nodeX);
 
@@ -966,7 +1058,8 @@ int EBC_Provider_FillDataEncryptionInfoNode(AB_PROVIDER *pro, AB_USER *u,
 
 
 
-int EBC_Provider_GetCert(AB_PROVIDER *pro, AB_USER *u) {
+int EBC_Provider_GetCert(AB_PROVIDER *pro, AB_USER *u)
+{
   GWEN_HTTP_SESSION *sess;
   int rv;
   AB_BANKING *ab;

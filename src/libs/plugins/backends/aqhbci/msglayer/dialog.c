@@ -41,7 +41,8 @@
 #endif
 
 
-AH_DIALOG *AH_Dialog_new(AB_USER *u, AB_PROVIDER *pro) {
+AH_DIALOG *AH_Dialog_new(AB_USER *u, AB_PROVIDER *pro)
+{
   AH_DIALOG *dlg;
   AH_HBCI *h;
   GWEN_BUFFER *pbuf;
@@ -81,14 +82,16 @@ AH_DIALOG *AH_Dialog_new(AB_USER *u, AB_PROVIDER *pro) {
 
 
 
-void AH_Dialog_Attach(AH_DIALOG *dlg){
+void AH_Dialog_Attach(AH_DIALOG *dlg)
+{
   assert(dlg);
   dlg->usage++;
 }
 
 
 
-void AH_Dialog_free(AH_DIALOG *dlg){
+void AH_Dialog_free(AH_DIALOG *dlg)
+{
   if (dlg) {
     assert(dlg->usage);
     if (--(dlg->usage)==0) {
@@ -108,52 +111,60 @@ void AH_Dialog_free(AH_DIALOG *dlg){
 
 
 
-const char *AH_Dialog_GetLogFile(const AH_DIALOG *dlg){
+const char *AH_Dialog_GetLogFile(const AH_DIALOG *dlg)
+{
   assert(dlg);
   return dlg->logName;
 }
 
 
 
-uint32_t AH_Dialog_GetNextMsgNum(AH_DIALOG *dlg){
+uint32_t AH_Dialog_GetNextMsgNum(AH_DIALOG *dlg)
+{
   assert(dlg);
   return ++dlg->lastMsgNum;
 }
 
 
 
-uint32_t
-AH_Dialog_GetLastReceivedMsgNum(const AH_DIALOG *dlg){
+uint32_t AH_Dialog_GetLastReceivedMsgNum(const AH_DIALOG *dlg)
+{
   assert(dlg);
   return dlg->lastReceivedMsgNum;
 }
 
 
 
-const char *AH_Dialog_GetDialogId(const AH_DIALOG *dlg){
+const char *AH_Dialog_GetDialogId(const AH_DIALOG *dlg)
+{
   assert(dlg);
   return dlg->dialogId;
 }
 
 
 
-void AH_Dialog_SetDialogId(AH_DIALOG *dlg, const char *s){
+void AH_Dialog_SetDialogId(AH_DIALOG *dlg, const char *s)
+{
   assert(dlg);
   free(dlg->dialogId);
-  if (s) dlg->dialogId=strdup(s);
-  else dlg->dialogId=0;
+  if (s)
+    dlg->dialogId=strdup(s);
+  else
+    dlg->dialogId=0;
 }
 
 
 
-AB_USER *AH_Dialog_GetDialogOwner(const AH_DIALOG *dlg){
+AB_USER *AH_Dialog_GetDialogOwner(const AH_DIALOG *dlg)
+{
   assert(dlg);
   return dlg->dialogOwner;
 }
 
 
 
-GWEN_MSGENGINE *AH_Dialog_GetMsgEngine(const AH_DIALOG *dlg){
+GWEN_MSGENGINE *AH_Dialog_GetMsgEngine(const AH_DIALOG *dlg)
+{
   assert(dlg);
   assert(dlg->msgEngine);
   return dlg->msgEngine;
@@ -162,7 +173,8 @@ GWEN_MSGENGINE *AH_Dialog_GetMsgEngine(const AH_DIALOG *dlg){
 
 
 int AH_Dialog_CheckReceivedMsgNum(AH_DIALOG *dlg,
-                                  uint32_t msgnum){
+                                  uint32_t msgnum)
+{
   assert(dlg);
   if (msgnum!=dlg->lastReceivedMsgNum+1) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
@@ -178,55 +190,63 @@ int AH_Dialog_CheckReceivedMsgNum(AH_DIALOG *dlg,
 
 
 
-uint32_t AH_Dialog_GetFlags(const AH_DIALOG *dlg){
+uint32_t AH_Dialog_GetFlags(const AH_DIALOG *dlg)
+{
   assert(dlg);
   return dlg->flags;
 }
 
 
 
-void AH_Dialog_SetFlags(AH_DIALOG *dlg, uint32_t f){
+void AH_Dialog_SetFlags(AH_DIALOG *dlg, uint32_t f)
+{
   assert(dlg);
   dlg->flags=f;
 }
 
 
 
-GWEN_DB_NODE *AH_Dialog_GetGlobalValues(const AH_DIALOG *dlg){
+GWEN_DB_NODE *AH_Dialog_GetGlobalValues(const AH_DIALOG *dlg)
+{
   assert(dlg);
   return dlg->globalValues;
 }
 
 
 
-void AH_Dialog_AddFlags(AH_DIALOG *dlg, uint32_t f){
+void AH_Dialog_AddFlags(AH_DIALOG *dlg, uint32_t f)
+{
   assert(dlg);
   dlg->flags|=f;
 }
 
 
 
-void AH_Dialog_SubFlags(AH_DIALOG *dlg, uint32_t f){
+void AH_Dialog_SubFlags(AH_DIALOG *dlg, uint32_t f)
+{
   assert(dlg);
   dlg->flags&=~f;
 }
 
 
 
-AH_HBCI *AH_Dialog_GetHbci(const AH_DIALOG *dlg) {
+AH_HBCI *AH_Dialog_GetHbci(const AH_DIALOG *dlg)
+{
   assert(dlg);
   return AH_User_GetHbci(dlg->dialogOwner);
 }
 
 
 
-AB_BANKING *AH_Dialog_GetBankingApi(const AH_DIALOG *dlg) {
+AB_BANKING *AH_Dialog_GetBankingApi(const AH_DIALOG *dlg)
+{
   return AH_HBCI_GetBankingApi(AH_Dialog_GetHbci(dlg));
 }
 
 
 
-uint32_t AH_Dialog_GetLastMsgNum(const AH_DIALOG *dlg){
+uint32_t AH_Dialog_GetLastMsgNum(const AH_DIALOG *dlg)
+{
   assert(dlg);
   return dlg->lastMsgNum;
 }
@@ -237,7 +257,8 @@ uint32_t AH_Dialog_GetLastMsgNum(const AH_DIALOG *dlg){
 
 
 /* network stuff */
-int AH_Dialog_RecvMessage(AH_DIALOG *dlg, AH_MSG **pMsg) {
+int AH_Dialog_RecvMessage(AH_DIALOG *dlg, AH_MSG **pMsg)
+{
   assert(dlg);
   if (AH_User_GetCryptMode(dlg->dialogOwner)==AH_CryptMode_Pintan)
     return AH_Dialog_RecvMessage_Https(dlg, pMsg);
@@ -247,7 +268,8 @@ int AH_Dialog_RecvMessage(AH_DIALOG *dlg, AH_MSG **pMsg) {
 
 
 
-int AH_Dialog_SendPacket(AH_DIALOG *dlg, const char *buf, int blen) {
+int AH_Dialog_SendPacket(AH_DIALOG *dlg, const char *buf, int blen)
+{
   assert(dlg);
   if (AH_User_GetCryptMode(dlg->dialogOwner)==AH_CryptMode_Pintan)
     return AH_Dialog_SendPacket_Https(dlg, buf, blen);
@@ -257,7 +279,8 @@ int AH_Dialog_SendPacket(AH_DIALOG *dlg, const char *buf, int blen) {
 
 
 
-int AH_Dialog_SendMessage(AH_DIALOG *dlg, AH_MSG *msg) {
+int AH_Dialog_SendMessage(AH_DIALOG *dlg, AH_MSG *msg)
+{
   int rv;
   GWEN_BUFFER *mbuf;
 
@@ -273,8 +296,8 @@ int AH_Dialog_SendMessage(AH_DIALOG *dlg, AH_MSG *msg) {
   assert(mbuf);
 
   rv=AH_Dialog_SendPacket(dlg,
-			  GWEN_Buffer_GetStart(mbuf),
-			  GWEN_Buffer_GetUsedBytes(mbuf));
+                          GWEN_Buffer_GetStart(mbuf),
+                          GWEN_Buffer_GetUsedBytes(mbuf));
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error sending message for dialog (%d)", rv);
     return rv;
@@ -285,7 +308,8 @@ int AH_Dialog_SendMessage(AH_DIALOG *dlg, AH_MSG *msg) {
 
 
 
-int AH_Dialog_ExchangeMessages(AH_DIALOG *dlg, AH_MSG *msgToSend, AH_MSG **pMsgReceived) {
+int AH_Dialog_ExchangeMessages(AH_DIALOG *dlg, AH_MSG *msgToSend, AH_MSG **pMsgReceived)
+{
   int rv;
 
   rv=AH_Dialog_SendMessage(dlg, msgToSend);
@@ -305,7 +329,8 @@ int AH_Dialog_ExchangeMessages(AH_DIALOG *dlg, AH_MSG *msgToSend, AH_MSG **pMsgR
 
 
 
-int AH_Dialog_Connect(AH_DIALOG *dlg) {
+int AH_Dialog_Connect(AH_DIALOG *dlg)
+{
   AH_Dialog_AddFlags(dlg, AH_DIALOG_FLAGS_INITIATOR);
   if (AH_User_GetCryptMode(dlg->dialogOwner)==AH_CryptMode_Pintan)
     return AH_Dialog_Connect_Https(dlg);
@@ -315,7 +340,8 @@ int AH_Dialog_Connect(AH_DIALOG *dlg) {
 
 
 
-int AH_Dialog_Disconnect(AH_DIALOG *dlg) {
+int AH_Dialog_Disconnect(AH_DIALOG *dlg)
+{
   if (AH_User_GetCryptMode(dlg->dialogOwner)==AH_CryptMode_Pintan)
     return AH_Dialog_Disconnect_Https(dlg);
   else
@@ -324,56 +350,64 @@ int AH_Dialog_Disconnect(AH_DIALOG *dlg) {
 
 
 
-void AH_Dialog_SetItanMethod(AH_DIALOG *dlg, uint32_t i) {
+void AH_Dialog_SetItanMethod(AH_DIALOG *dlg, uint32_t i)
+{
   assert(dlg);
   dlg->itanMethod=i;
 }
 
 
 
-uint32_t AH_Dialog_GetItanMethod(const AH_DIALOG *dlg) {
+uint32_t AH_Dialog_GetItanMethod(const AH_DIALOG *dlg)
+{
   assert(dlg);
   return dlg->itanMethod;
 }
 
 
 
-int AH_Dialog_GetItanProcessType(const AH_DIALOG *dlg) {
+int AH_Dialog_GetItanProcessType(const AH_DIALOG *dlg)
+{
   assert(dlg);
   return dlg->itanProcessType;
 }
 
 
 
-void AH_Dialog_SetItanProcessType(AH_DIALOG *dlg, int i) {
+void AH_Dialog_SetItanProcessType(AH_DIALOG *dlg, int i)
+{
   assert(dlg);
   dlg->itanProcessType=i;
 }
 
 
 
-int AH_Dialog_GetTanJobVersion(const AH_DIALOG *dlg) {
+int AH_Dialog_GetTanJobVersion(const AH_DIALOG *dlg)
+{
   assert(dlg);
   return dlg->tanJobVersion;
 }
 
 
 
-void AH_Dialog_SetTanJobVersion(AH_DIALOG *dlg, int i) {
+void AH_Dialog_SetTanJobVersion(AH_DIALOG *dlg, int i)
+{
   assert(dlg);
   dlg->tanJobVersion=i;
 }
 
 
 
-const AH_TAN_METHOD *AH_Dialog_GetTanMethodDescription(const AH_DIALOG *dlg) {
+const AH_TAN_METHOD *AH_Dialog_GetTanMethodDescription(const AH_DIALOG *dlg)
+{
   assert(dlg);
   return dlg->tanMethodDescription;
 }
 
 
 
-void AH_Dialog_SetTanMethodDescription(AH_DIALOG *dlg, const AH_TAN_METHOD *tm) {
+void AH_Dialog_SetTanMethodDescription(AH_DIALOG *dlg, const AH_TAN_METHOD *tm)
+{
   assert(dlg);
   AH_TanMethod_free(dlg->tanMethodDescription);
   if (tm)

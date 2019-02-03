@@ -36,8 +36,9 @@ GWEN_INHERIT(AIO_OFX_GROUP, AIO_OFX_GROUP_BANKTRANLIST)
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_BANKTRANLIST_new(const char *groupName,
-					     AIO_OFX_GROUP *parent,
-					     GWEN_XML_CONTEXT *ctx) {
+                                             AIO_OFX_GROUP *parent,
+                                             GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_GROUP *g;
   AIO_OFX_GROUP_BANKTRANLIST *xg;
 
@@ -63,10 +64,11 @@ AIO_OFX_GROUP *AIO_OfxGroup_BANKTRANLIST_new(const char *groupName,
 
 
 GWENHYWFAR_CB
-void AIO_OfxGroup_BANKTRANLIST_FreeData(void *bp, void *p) {
+void AIO_OfxGroup_BANKTRANLIST_FreeData(void *bp, void *p)
+{
   AIO_OFX_GROUP_BANKTRANLIST *xg;
 
-  xg=(AIO_OFX_GROUP_BANKTRANLIST*)p;
+  xg=(AIO_OFX_GROUP_BANKTRANLIST *)p;
   assert(xg);
   AB_Transaction_List2_freeAll(xg->transactionList);
 
@@ -76,8 +78,8 @@ void AIO_OfxGroup_BANKTRANLIST_FreeData(void *bp, void *p) {
 
 
 
-AB_TRANSACTION_LIST2*
-AIO_OfxGroup_BANKTRANLIST_TakeTransactionList(const AIO_OFX_GROUP *g) {
+AB_TRANSACTION_LIST2 *AIO_OfxGroup_BANKTRANLIST_TakeTransactionList(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_BANKTRANLIST *xg;
   AB_TRANSACTION_LIST2 *tl;
 
@@ -93,7 +95,8 @@ AIO_OfxGroup_BANKTRANLIST_TakeTransactionList(const AIO_OFX_GROUP *g) {
 
 
 int AIO_OfxGroup_BANKTRANLIST_StartTag(AIO_OFX_GROUP *g,
-				 const char *tagName) {
+                                       const char *tagName)
+{
   AIO_OFX_GROUP_BANKTRANLIST *xg;
   GWEN_XML_CONTEXT *ctx;
   AIO_OFX_GROUP *gNew=NULL;
@@ -114,7 +117,7 @@ int AIO_OfxGroup_BANKTRANLIST_StartTag(AIO_OFX_GROUP *g,
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	     "Ignoring group [%s]", tagName);
+             "Ignoring group [%s]", tagName);
     gNew=AIO_OfxGroup_Ignore_new(tagName, g, ctx);
   }
 
@@ -128,7 +131,8 @@ int AIO_OfxGroup_BANKTRANLIST_StartTag(AIO_OFX_GROUP *g,
 
 
 
-int AIO_OfxGroup_BANKTRANLIST_AddData(AIO_OFX_GROUP *g, const char *data) {
+int AIO_OfxGroup_BANKTRANLIST_AddData(AIO_OFX_GROUP *g, const char *data)
+{
   AIO_OFX_GROUP_BANKTRANLIST *xg;
 
   assert(g);
@@ -150,19 +154,19 @@ int AIO_OfxGroup_BANKTRANLIST_AddData(AIO_OFX_GROUP *g, const char *data) {
     s=GWEN_Buffer_GetStart(buf);
     if (*s) {
       DBG_INFO(AQBANKING_LOGDOMAIN,
-	       "AddData: %s=[%s]", xg->currentElement, s);
+               "AddData: %s=[%s]", xg->currentElement, s);
       if (strcasecmp(xg->currentElement, "DTSTART")==0) {
-	free(xg->dtstart);
-	xg->dtstart=strdup(s);
+        free(xg->dtstart);
+        xg->dtstart=strdup(s);
       }
       else if (strcasecmp(xg->currentElement, "DTEND")==0) {
-	free(xg->dtend);
-	xg->dtend=strdup(s);
+        free(xg->dtend);
+        xg->dtend=strdup(s);
       }
       else {
-	DBG_INFO(AQBANKING_LOGDOMAIN,
-		 "Ignoring data for unknown element [%s]",
-		 xg->currentElement);
+        DBG_INFO(AQBANKING_LOGDOMAIN,
+                 "Ignoring data for unknown element [%s]",
+                 xg->currentElement);
       }
     }
     GWEN_Buffer_free(buf);
@@ -173,7 +177,8 @@ int AIO_OfxGroup_BANKTRANLIST_AddData(AIO_OFX_GROUP *g, const char *data) {
 
 
 
-int AIO_OfxGroup_BANKTRANLIST_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
+int AIO_OfxGroup_BANKTRANLIST_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg)
+{
   AIO_OFX_GROUP_BANKTRANLIST *xg;
   const char *s;
   GWEN_XML_CONTEXT *ctx;

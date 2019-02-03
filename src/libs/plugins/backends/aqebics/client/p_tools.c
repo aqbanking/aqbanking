@@ -8,7 +8,8 @@
 
 
 
-int EBC_Provider_Send_INI(AB_PROVIDER *pro, AB_USER *u, int doLock) {
+int EBC_Provider_Send_INI(AB_PROVIDER *pro, AB_USER *u, int doLock)
+{
   EBC_PROVIDER *dp;
   GWEN_HTTP_SESSION *sess;
   int rv;
@@ -28,9 +29,9 @@ int EBC_Provider_Send_INI(AB_PROVIDER *pro, AB_USER *u, int doLock) {
       ust!=EBC_UserStatus_Init1 &&
       ust!=EBC_UserStatus_Disabled) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Invalid status \"%s\" of user \"%s\"",
-	      EBC_User_Status_toString(ust),
-	      AB_User_GetUserId(u));
+              "Invalid status \"%s\" of user \"%s\"",
+              EBC_User_Status_toString(ust),
+              AB_User_GetUserId(u));
     return GWEN_ERROR_INVALID;
   }
 
@@ -84,7 +85,8 @@ int EBC_Provider_Send_INI(AB_PROVIDER *pro, AB_USER *u, int doLock) {
 
 
 
-int EBC_Provider_Send_HIA(AB_PROVIDER *pro, AB_USER *u, int doLock) {
+int EBC_Provider_Send_HIA(AB_PROVIDER *pro, AB_USER *u, int doLock)
+{
   EBC_PROVIDER *dp;
   GWEN_HTTP_SESSION *sess;
   int rv;
@@ -104,9 +106,9 @@ int EBC_Provider_Send_HIA(AB_PROVIDER *pro, AB_USER *u, int doLock) {
       ust!=EBC_UserStatus_Init1 &&
       ust!=EBC_UserStatus_Disabled) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Invalid status \"%s\" of user \"%s\"",
-	      EBC_User_Status_toString(ust),
-	      AB_User_GetUserId(u));
+              "Invalid status \"%s\" of user \"%s\"",
+              EBC_User_Status_toString(ust),
+              AB_User_GetUserId(u));
     return GWEN_ERROR_INVALID;
   }
 
@@ -133,7 +135,7 @@ int EBC_Provider_Send_HIA(AB_PROVIDER *pro, AB_USER *u, int doLock) {
   rv=EBC_Provider_XchgHiaRequest(pro, sess, u);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Error exchanging HIA request (%d)", rv);
+              "Error exchanging HIA request (%d)", rv);
     if (doLock)
       AB_Provider_EndExclUseUser(pro, u, 1);
     GWEN_HttpSession_free(sess);
@@ -160,7 +162,8 @@ int EBC_Provider_Send_HIA(AB_PROVIDER *pro, AB_USER *u, int doLock) {
 
 
 
-int EBC_Provider_Send_HPB(AB_PROVIDER *pro, AB_USER *u, int doLock) {
+int EBC_Provider_Send_HPB(AB_PROVIDER *pro, AB_USER *u, int doLock)
+{
   EBC_PROVIDER *dp;
   GWEN_HTTP_SESSION *sess;
   int rv;
@@ -174,9 +177,9 @@ int EBC_Provider_Send_HPB(AB_PROVIDER *pro, AB_USER *u, int doLock) {
   if (ust!=EBC_UserStatus_Init2 &&
       ust!=EBC_UserStatus_Enabled) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Invalid status \"%s\" of user \"%s\"",
-	      EBC_User_Status_toString(ust),
-	      AB_User_GetUserId(u));
+              "Invalid status \"%s\" of user \"%s\"",
+              EBC_User_Status_toString(ust),
+              AB_User_GetUserId(u));
     return GWEN_ERROR_INVALID;
   }
 
@@ -203,7 +206,7 @@ int EBC_Provider_Send_HPB(AB_PROVIDER *pro, AB_USER *u, int doLock) {
   rv=EBC_Provider_XchgHpbRequest(pro, sess, u);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Error exchanging HPB request (%d)", rv);
+              "Error exchanging HPB request (%d)", rv);
     if (doLock)
       AB_Provider_EndExclUseUser(pro, u, 1);
     GWEN_HttpSession_free(sess);
@@ -230,7 +233,8 @@ int EBC_Provider_Send_HPB(AB_PROVIDER *pro, AB_USER *u, int doLock) {
 
 
 
-int EBC_Provider_Send_HPD(AB_PROVIDER *pro, AB_USER *u, int doLock) {
+int EBC_Provider_Send_HPD(AB_PROVIDER *pro, AB_USER *u, int doLock)
+{
   EBC_PROVIDER *dp;
   GWEN_HTTP_SESSION *sess;
   int rv;
@@ -243,9 +247,9 @@ int EBC_Provider_Send_HPD(AB_PROVIDER *pro, AB_USER *u, int doLock) {
   ust=EBC_User_GetStatus(u);
   if (ust!=EBC_UserStatus_Enabled) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Invalid status \"%s\" of user \"%s\"",
-	      EBC_User_Status_toString(ust),
-	      AB_User_GetUserId(u));
+              "Invalid status \"%s\" of user \"%s\"",
+              EBC_User_Status_toString(ust),
+              AB_User_GetUserId(u));
     return GWEN_ERROR_INVALID;
   }
 
@@ -272,7 +276,7 @@ int EBC_Provider_Send_HPD(AB_PROVIDER *pro, AB_USER *u, int doLock) {
   rv=EBC_Provider_XchgHpdRequest(pro, sess, u);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Error exchanging HPD request (%d)", rv);
+              "Error exchanging HPD request (%d)", rv);
     if (doLock)
       AB_Provider_EndExclUseUser(pro, u, 1);
     GWEN_HttpSession_free(sess);
@@ -299,7 +303,8 @@ int EBC_Provider_Send_HPD(AB_PROVIDER *pro, AB_USER *u, int doLock) {
 
 
 
-int EBC_Provider_Send_HKD(AB_PROVIDER *pro, AB_USER *u, int doLock) {
+int EBC_Provider_Send_HKD(AB_PROVIDER *pro, AB_USER *u, int doLock)
+{
   EBC_PROVIDER *dp;
   GWEN_HTTP_SESSION *sess;
   int rv;
@@ -312,9 +317,9 @@ int EBC_Provider_Send_HKD(AB_PROVIDER *pro, AB_USER *u, int doLock) {
   ust=EBC_User_GetStatus(u);
   if (ust!=EBC_UserStatus_Enabled) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Invalid status \"%s\" of user \"%s\"",
-	      EBC_User_Status_toString(ust),
-	      AB_User_GetUserId(u));
+              "Invalid status \"%s\" of user \"%s\"",
+              EBC_User_Status_toString(ust),
+              AB_User_GetUserId(u));
     return GWEN_ERROR_INVALID;
   }
 
@@ -341,7 +346,7 @@ int EBC_Provider_Send_HKD(AB_PROVIDER *pro, AB_USER *u, int doLock) {
   rv=EBC_Provider_XchgHkdRequest(pro, sess, u);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Error exchanging HKD request (%d)", rv);
+              "Error exchanging HKD request (%d)", rv);
     if (doLock)
       AB_Provider_EndExclUseUser(pro, u, 1);
     GWEN_HttpSession_free(sess);
@@ -368,7 +373,8 @@ int EBC_Provider_Send_HKD(AB_PROVIDER *pro, AB_USER *u, int doLock) {
 
 
 
-int EBC_Provider_Send_HTD(AB_PROVIDER *pro, AB_USER *u, int doLock) {
+int EBC_Provider_Send_HTD(AB_PROVIDER *pro, AB_USER *u, int doLock)
+{
   EBC_PROVIDER *dp;
   GWEN_HTTP_SESSION *sess;
   int rv;
@@ -381,9 +387,9 @@ int EBC_Provider_Send_HTD(AB_PROVIDER *pro, AB_USER *u, int doLock) {
   ust=EBC_User_GetStatus(u);
   if (ust!=EBC_UserStatus_Enabled) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Invalid status \"%s\" of user \"%s\"",
-	      EBC_User_Status_toString(ust),
-	      AB_User_GetUserId(u));
+              "Invalid status \"%s\" of user \"%s\"",
+              EBC_User_Status_toString(ust),
+              AB_User_GetUserId(u));
     return GWEN_ERROR_INVALID;
   }
 
@@ -410,7 +416,7 @@ int EBC_Provider_Send_HTD(AB_PROVIDER *pro, AB_USER *u, int doLock) {
   rv=EBC_Provider_XchgHtdRequest(pro, sess, u);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Error exchanging HTD request (%d)", rv);
+              "Error exchanging HTD request (%d)", rv);
     if (doLock)
       AB_Provider_EndExclUseUser(pro, u, 1);
     GWEN_HttpSession_free(sess);
@@ -437,7 +443,8 @@ int EBC_Provider_Send_HTD(AB_PROVIDER *pro, AB_USER *u, int doLock) {
 
 
 
-int EBC_Provider_Send_PUB(AB_PROVIDER *pro, AB_USER *u, const char *signVersion, int doLock) {
+int EBC_Provider_Send_PUB(AB_PROVIDER *pro, AB_USER *u, const char *signVersion, int doLock)
+{
   EBC_PROVIDER *dp;
   GWEN_HTTP_SESSION *sess;
   int rv;
@@ -469,7 +476,7 @@ int EBC_Provider_Send_PUB(AB_PROVIDER *pro, AB_USER *u, const char *signVersion,
   rv=EBC_Provider_XchgPubRequest(pro, sess, u, signVersion);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Error exchanging PUB request (%d)", rv);
+              "Error exchanging PUB request (%d)", rv);
     if (doLock)
       AB_Provider_EndExclUseUser(pro, u, 1);
     GWEN_HttpSession_free(sess);
@@ -498,11 +505,12 @@ int EBC_Provider_Send_PUB(AB_PROVIDER *pro, AB_USER *u, const char *signVersion,
 
 int EBC_Provider_Download(AB_PROVIDER *pro, AB_USER *u,
                           const char *rtype,
-			  GWEN_BUFFER *targetBuffer,
-			  int withReceipt,
-			  const GWEN_DATE *fromDate,
+                          GWEN_BUFFER *targetBuffer,
+                          int withReceipt,
+                          const GWEN_DATE *fromDate,
                           const GWEN_DATE *toDate,
-                          int doLock) {
+                          int doLock)
+{
   EBC_PROVIDER *dp;
   GWEN_HTTP_SESSION *sess;
   int rv;
@@ -515,9 +523,9 @@ int EBC_Provider_Download(AB_PROVIDER *pro, AB_USER *u,
   ust=EBC_User_GetStatus(u);
   if (ust!=EBC_UserStatus_Enabled) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Invalid status \"%s\" of user \"%s\"",
-	      EBC_User_Status_toString(ust),
-	      AB_User_GetUserId(u));
+              "Invalid status \"%s\" of user \"%s\"",
+              EBC_User_Status_toString(ust),
+              AB_User_GetUserId(u));
     return GWEN_ERROR_INVALID;
   }
 
@@ -542,11 +550,11 @@ int EBC_Provider_Download(AB_PROVIDER *pro, AB_USER *u,
 
   /* exchange request and response */
   rv=EBC_Provider_XchgDownloadRequest(pro, sess, u,
-				      rtype, targetBuffer, withReceipt,
+                                      rtype, targetBuffer, withReceipt,
                                       fromDate, toDate);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Error exchanging download request (%d)", rv);
+              "Error exchanging download request (%d)", rv);
     if (doLock)
       AB_Provider_EndExclUseUser(pro, u, 1);
     GWEN_HttpSession_free(sess);
@@ -574,10 +582,11 @@ int EBC_Provider_Download(AB_PROVIDER *pro, AB_USER *u,
 
 
 int EBC_Provider_Upload(AB_PROVIDER *pro, AB_USER *u,
-			const char *rtype,
-			const uint8_t *pData,
+                        const char *rtype,
+                        const uint8_t *pData,
                         uint32_t lData,
-                        int doLock) {
+                        int doLock)
+{
   EBC_PROVIDER *dp;
   GWEN_HTTP_SESSION *sess;
   int rv;
@@ -590,9 +599,9 @@ int EBC_Provider_Upload(AB_PROVIDER *pro, AB_USER *u,
   ust=EBC_User_GetStatus(u);
   if (ust!=EBC_UserStatus_Enabled) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Invalid status \"%s\" of user \"%s\"",
-	      EBC_User_Status_toString(ust),
-	      AB_User_GetUserId(u));
+              "Invalid status \"%s\" of user \"%s\"",
+              EBC_User_Status_toString(ust),
+              AB_User_GetUserId(u));
     return GWEN_ERROR_INVALID;
   }
 
@@ -619,7 +628,7 @@ int EBC_Provider_Upload(AB_PROVIDER *pro, AB_USER *u,
   rv=EBC_Provider_XchgUploadRequest(pro, sess, u, rtype, pData, lData);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Error exchanging upload request (%d)", rv);
+              "Error exchanging upload request (%d)", rv);
     if (doLock)
       AB_Provider_EndExclUseUser(pro, u, 1);
     GWEN_HttpSession_free(sess);
@@ -647,10 +656,11 @@ int EBC_Provider_Upload(AB_PROVIDER *pro, AB_USER *u,
 
 
 int EBC_Provider_CreateKeys(AB_PROVIDER *pro,
-			    AB_USER *u,
-			    int cryptAndAuthKeySizeInBytes,
-			    int signKeySizeInBytes,
-			    int nounmount) {
+                            AB_USER *u,
+                            int cryptAndAuthKeySizeInBytes,
+                            int signKeySizeInBytes,
+                            int nounmount)
+{
   EBC_PROVIDER *dp;
   GWEN_CRYPT_TOKEN *ct;
   const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
@@ -664,12 +674,12 @@ int EBC_Provider_CreateKeys(AB_PROVIDER *pro,
 
   /* get token */
   rv=AB_Banking_GetCryptToken(AB_Provider_GetBanking(pro),
-			      EBC_User_GetTokenType(u),
-			      EBC_User_GetTokenName(u),
-			      &ct);
+                              EBC_User_GetTokenType(u),
+                              EBC_User_GetTokenName(u),
+                              &ct);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Error getting the user's crypt token (%d)", rv);
+              "Error getting the user's crypt token (%d)", rv);
     return rv;
   }
 
@@ -677,7 +687,7 @@ int EBC_Provider_CreateKeys(AB_PROVIDER *pro,
 
   /* create algo */
   algo=GWEN_Crypt_CryptAlgo_new(GWEN_Crypt_CryptAlgoId_Rsa,
-				GWEN_Crypt_CryptMode_None);
+                                GWEN_Crypt_CryptMode_None);
   GWEN_Crypt_CryptAlgo_SetChunkSize(algo, cryptAndAuthKeySizeInBytes);
 
   /* open token for admin */
@@ -685,41 +695,41 @@ int EBC_Provider_CreateKeys(AB_PROVIDER *pro,
     rv=GWEN_Crypt_Token_Open(ct, 1, 0);
     if (rv) {
       DBG_ERROR(AQEBICS_LOGDOMAIN,
-		"Error opening crypt token (%d)", rv);
+                "Error opening crypt token (%d)", rv);
       GWEN_Crypt_CryptAlgo_free(algo);
       return rv;
     }
   }
-  
+
   /* get context */
   ctx=GWEN_Crypt_Token_GetContext(ct, EBC_User_GetTokenContextId(u), 0);
   if (ctx==NULL) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Could not get context %d", EBC_User_GetTokenContextId(u));
+              "Could not get context %d", EBC_User_GetTokenContextId(u));
     GWEN_Crypt_CryptAlgo_free(algo);
     return GWEN_ERROR_INVALID;
   }
-  
+
   DBG_INFO(AQEBICS_LOGDOMAIN, "Creating keys, please wait...");
-  
+
   /* get cipher key id */
   keyId=GWEN_Crypt_Token_Context_GetDecipherKeyId(ctx);
   if (keyId==0) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "No decipher key id specified (internal error)");
+              "No decipher key id specified (internal error)");
     GWEN_Crypt_CryptAlgo_free(algo);
     return GWEN_ERROR_INVALID;
   }
-  
+
   /* generate cipher key */
   rv=GWEN_Crypt_Token_GenerateKey(ct, keyId, algo, 0);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Error generating key (%d)", rv);
+              "Error generating key (%d)", rv);
     GWEN_Crypt_CryptAlgo_free(algo);
     return rv;
   }
-  
+
   /* get auth sign key id */
   keyId=GWEN_Crypt_Token_Context_GetAuthSignKeyId(ctx);
   if (keyId) {
@@ -727,7 +737,7 @@ int EBC_Provider_CreateKeys(AB_PROVIDER *pro,
     rv=GWEN_Crypt_Token_GenerateKey(ct, keyId, algo, 0);
     if (rv) {
       DBG_ERROR(AQEBICS_LOGDOMAIN,
-		"Error generating key (%d)", rv);
+                "Error generating key (%d)", rv);
       GWEN_Crypt_CryptAlgo_free(algo);
       return rv;
     }
@@ -737,17 +747,17 @@ int EBC_Provider_CreateKeys(AB_PROVIDER *pro,
   keyId=GWEN_Crypt_Token_Context_GetSignKeyId(ctx);
   if (keyId==0) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "No sign key id specified (internal error)");
+              "No sign key id specified (internal error)");
     GWEN_Crypt_CryptAlgo_free(algo);
     return GWEN_ERROR_INVALID;
   }
-  
+
   /* generate sign key */
   GWEN_Crypt_CryptAlgo_SetChunkSize(algo, signKeySizeInBytes);
   rv=GWEN_Crypt_Token_GenerateKey(ct, keyId, algo, 0);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Error generating key (%d)", rv);
+              "Error generating key (%d)", rv);
     GWEN_Crypt_CryptAlgo_free(algo);
     return rv;
   }
@@ -757,7 +767,7 @@ int EBC_Provider_CreateKeys(AB_PROVIDER *pro,
     rv=GWEN_Crypt_Token_Close(ct, 0, 0);
     if (rv) {
       DBG_ERROR(AQEBICS_LOGDOMAIN,
-		"Error closing crypt token (%d)", rv);
+                "Error closing crypt token (%d)", rv);
       GWEN_Crypt_CryptAlgo_free(algo);
       return rv;
     }
@@ -770,9 +780,10 @@ int EBC_Provider_CreateKeys(AB_PROVIDER *pro,
 
 
 int EBC_Provider_CreateTempKey(AB_PROVIDER *pro,
-			       AB_USER *u,
-			       int signKeySizeInBytes,
-			       int nounmount) {
+                               AB_USER *u,
+                               int signKeySizeInBytes,
+                               int nounmount)
+{
   EBC_PROVIDER *dp;
   GWEN_CRYPT_TOKEN *ct;
   const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
@@ -786,12 +797,12 @@ int EBC_Provider_CreateTempKey(AB_PROVIDER *pro,
 
   /* get token */
   rv=AB_Banking_GetCryptToken(AB_Provider_GetBanking(pro),
-			      EBC_User_GetTokenType(u),
-			      EBC_User_GetTokenName(u),
-			      &ct);
+                              EBC_User_GetTokenType(u),
+                              EBC_User_GetTokenName(u),
+                              &ct);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Error getting the user's crypt token (%d)", rv);
+              "Error getting the user's crypt token (%d)", rv);
     return rv;
   }
 
@@ -799,45 +810,45 @@ int EBC_Provider_CreateTempKey(AB_PROVIDER *pro,
 
   /* create algo */
   algo=GWEN_Crypt_CryptAlgo_new(GWEN_Crypt_CryptAlgoId_Rsa,
-				GWEN_Crypt_CryptMode_None);
+                                GWEN_Crypt_CryptMode_None);
 
   /* open token for admin */
   if (!GWEN_Crypt_Token_IsOpen(ct)) {
     rv=GWEN_Crypt_Token_Open(ct, 1, 0);
     if (rv) {
       DBG_ERROR(AQEBICS_LOGDOMAIN,
-		"Error opening crypt token (%d)", rv);
+                "Error opening crypt token (%d)", rv);
       GWEN_Crypt_CryptAlgo_free(algo);
       return rv;
     }
   }
-  
+
   /* get context */
   ctx=GWEN_Crypt_Token_GetContext(ct, EBC_User_GetTokenContextId(u), 0);
   if (ctx==NULL) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Could not get context %d", EBC_User_GetTokenContextId(u));
+              "Could not get context %d", EBC_User_GetTokenContextId(u));
     GWEN_Crypt_CryptAlgo_free(algo);
     return GWEN_ERROR_INVALID;
   }
-  
+
   DBG_INFO(AQEBICS_LOGDOMAIN, "Creating keys, please wait...");
-  
+
   /* get temp sign key id */
   keyId=GWEN_Crypt_Token_Context_GetTempSignKeyId(ctx);
   if (keyId==0) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "No sign key id specified (internal error)");
+              "No sign key id specified (internal error)");
     GWEN_Crypt_CryptAlgo_free(algo);
     return GWEN_ERROR_INVALID;
   }
-  
+
   /* generate sign key */
   GWEN_Crypt_CryptAlgo_SetChunkSize(algo, signKeySizeInBytes);
   rv=GWEN_Crypt_Token_GenerateKey(ct, keyId, algo, 0);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN,
-	      "Error generating key (%d)", rv);
+              "Error generating key (%d)", rv);
     GWEN_Crypt_CryptAlgo_free(algo);
     return rv;
   }
@@ -847,7 +858,7 @@ int EBC_Provider_CreateTempKey(AB_PROVIDER *pro,
     rv=GWEN_Crypt_Token_Close(ct, 0, 0);
     if (rv) {
       DBG_ERROR(AQEBICS_LOGDOMAIN,
-		"Error closing crypt token (%d)", rv);
+                "Error closing crypt token (%d)", rv);
       GWEN_Crypt_CryptAlgo_free(algo);
       return rv;
     }
@@ -860,10 +871,11 @@ int EBC_Provider_CreateTempKey(AB_PROVIDER *pro,
 
 
 int EBC_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
-				 AB_USER *u,
-				 int useBankKey,
-				 GWEN_BUFFER *lbuf,
-				 int nounmount) {
+                                 AB_USER *u,
+                                 int useBankKey,
+                                 GWEN_BUFFER *lbuf,
+                                 int nounmount)
+{
   AB_BANKING *ab;
   const void *p;
   unsigned int l;
@@ -903,35 +915,35 @@ int EBC_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
     kid=GWEN_Crypt_Token_Context_GetVerifyKeyId(ctx);
     if (kid) {
       ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				     0);
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                     0);
     }
     if (!ki ||
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       kid=GWEN_Crypt_Token_Context_GetEncipherKeyId(ctx);
       if (kid) {
-	ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				       0);
+        ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
+                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                       0);
       }
     }
     if (!ki ||
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(ab);
+        AB_Banking_ClearCryptTokenList(ab);
       DBG_ERROR(0, "Server keys missing, please get them first");
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
-			   I18N("Server keys missing, "
-				"please get them first"));
+                           GWEN_LoggerLevel_Error,
+                           I18N("Server keys missing, "
+                                "please get them first"));
       return GWEN_ERROR_NOT_FOUND;
     }
   }
@@ -940,22 +952,22 @@ int EBC_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
     kid=GWEN_Crypt_Token_Context_GetSignKeyId(ctx);
     if (kid) {
       ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				     0);
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                     0);
     }
     if (!ki ||
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(ab);
+        AB_Banking_ClearCryptTokenList(ab);
       DBG_ERROR(0, "User keys missing, please generate them first");
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
-			   I18N("User keys missing, "
-				"please generate them first"));
+                           GWEN_LoggerLevel_Error,
+                           I18N("User keys missing, "
+                                "please generate them first"));
       return GWEN_ERROR_NOT_FOUND;
     }
   }
@@ -967,13 +979,13 @@ int EBC_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(lbuf, signVersion);
   GWEN_Buffer_AppendString(lbuf, ")\n\n");
   GWEN_Buffer_AppendString(lbuf,
-			   I18N("Date           : "));
+                           I18N("Date           : "));
   ti=GWEN_CurrentTime();
   assert(ti);
   GWEN_Time_toString(ti, I18N("YYYY/MM/DD"), lbuf);
   GWEN_Buffer_AppendString(lbuf, "\n");
   GWEN_Buffer_AppendString(lbuf,
-			   I18N("Time           : "));
+                           I18N("Time           : "));
   GWEN_Time_toString(ti, I18N("hh:mm:ss"), lbuf);
   GWEN_Buffer_AppendString(lbuf, "\n");
 
@@ -1004,7 +1016,7 @@ int EBC_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
   if (!p || !l) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Bad key.");
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                           I18N("Bad key"));
+                         I18N("Bad key"));
     return GWEN_ERROR_BAD_DATA;
   }
 
@@ -1037,7 +1049,7 @@ int EBC_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
   if (!p || !l) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Bad key.");
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                           I18N("Bad key"));
+                         I18N("Bad key"));
     return GWEN_ERROR_BAD_DATA;
   }
 
@@ -1108,14 +1120,14 @@ int EBC_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
   if (!useBankKey) {
     GWEN_Buffer_AppendString(lbuf, "\n\n");
     GWEN_Buffer_AppendString(lbuf,
-			     I18N("I confirm that I created the above key "
-				  "for my electronic signature.\n"));
+                             I18N("I confirm that I created the above key "
+                                  "for my electronic signature.\n"));
     GWEN_Buffer_AppendString(lbuf, "\n\n");
     GWEN_Buffer_AppendString(lbuf,
-			     I18N("____________________________  "
-				  "____________________________\n"
-				  "Place, date                   "
-				  "Signature\n"));
+                             I18N("____________________________  "
+                                  "____________________________\n"
+                                  "Place, date                   "
+                                  "Signature\n"));
   }
 
   return 0;
@@ -1124,9 +1136,10 @@ int EBC_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
 
 
 int EBC_Provider__addKiTxt(GWEN_UNUSED AB_PROVIDER *pro,
-			   const GWEN_CRYPT_TOKEN_KEYINFO *ki,
+                           const GWEN_CRYPT_TOKEN_KEYINFO *ki,
                            GWEN_BUFFER *lbuf,
-                           int version) {
+                           int version)
+{
   const uint8_t *p;
   unsigned int l;
   unsigned int nl;
@@ -1145,12 +1158,12 @@ int EBC_Provider__addKiTxt(GWEN_UNUSED AB_PROVIDER *pro,
   if (!p || !l) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Bad key.");
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                           I18N("Bad key"));
+                         I18N("Bad key"));
     return GWEN_ERROR_BAD_DATA;
   }
 
   /* skip null bytes */
-  while(*p==0 && l>1) {
+  while (*p==0 && l>1) {
     p++;
     l--;
   }
@@ -1160,13 +1173,13 @@ int EBC_Provider__addKiTxt(GWEN_UNUSED AB_PROVIDER *pro,
   bbuf=GWEN_Buffer_new(0, nl+1, 0, 1);
   if (l<nl)
     GWEN_Buffer_FillWithBytes(bbuf, 0, nl-l);
-  GWEN_Buffer_AppendBytes(bbuf, (const char*)p, l);
-  p=(const uint8_t*)GWEN_Buffer_GetStart(bbuf);
+  GWEN_Buffer_AppendBytes(bbuf, (const char *)p, l);
+  p=(const uint8_t *)GWEN_Buffer_GetStart(bbuf);
   l=GWEN_Buffer_GetUsedBytes(bbuf);
 
   for (i=0; i<(nl/16); i++) {
     GWEN_Buffer_AppendString(lbuf, "  ");
-    if (GWEN_Text_ToHexBuffer((const char*)p, 16, lbuf, 2, ' ', 0)) {
+    if (GWEN_Text_ToHexBuffer((const char *)p, 16, lbuf, 2, ' ', 0)) {
       DBG_ERROR(0, "Error converting to hex??");
       abort();
     }
@@ -1186,7 +1199,7 @@ int EBC_Provider__addKiTxt(GWEN_UNUSED AB_PROVIDER *pro,
   if (!p || !l) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Bad key.");
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                           I18N("Bad key"));
+                         I18N("Bad key"));
     return GWEN_ERROR_BAD_DATA;
   }
 
@@ -1194,12 +1207,12 @@ int EBC_Provider__addKiTxt(GWEN_UNUSED AB_PROVIDER *pro,
   bbuf=GWEN_Buffer_new(0, nl+1, 0, 1);
   if (l<nl)
     GWEN_Buffer_FillWithBytes(bbuf, 0, nl-l);
-  GWEN_Buffer_AppendBytes(bbuf, (const char*)p, l);
-  p=(const uint8_t*)GWEN_Buffer_GetStart(bbuf);
+  GWEN_Buffer_AppendBytes(bbuf, (const char *)p, l);
+  p=(const uint8_t *)GWEN_Buffer_GetStart(bbuf);
   l=GWEN_Buffer_GetUsedBytes(bbuf);
   for (i=0; i<(nl/16); i++) {
     GWEN_Buffer_AppendString(lbuf, "  ");
-    if (GWEN_Text_ToHexBuffer((const char*)p, 16, lbuf, 2, ' ', 0)) {
+    if (GWEN_Text_ToHexBuffer((const char *)p, 16, lbuf, 2, ' ', 0)) {
       DBG_ERROR(0, "Error converting to hex??");
       abort();
     }
@@ -1215,7 +1228,7 @@ int EBC_Provider__addKiTxt(GWEN_UNUSED AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(lbuf, "\n\n");
 
   bbuf=GWEN_Buffer_new(0, 21, 0, 1);
-  switch(version) {
+  switch (version) {
   case 1:
     rv=EB_Key_Info_BuildHashSha1(ki, bbuf, 0);
     if (rv<0) {
@@ -1223,11 +1236,11 @@ int EBC_Provider__addKiTxt(GWEN_UNUSED AB_PROVIDER *pro,
       abort();
     }
 
-    p=(const uint8_t*)GWEN_Buffer_GetStart(bbuf);
+    p=(const uint8_t *)GWEN_Buffer_GetStart(bbuf);
     l=GWEN_Buffer_GetUsedBytes(bbuf);
     for (i=0; i<2; i++) {
       GWEN_Buffer_AppendString(lbuf, "  ");
-      if (GWEN_Text_ToHexBuffer((const char*)p, 10, lbuf, 2, ' ', 0)) {
+      if (GWEN_Text_ToHexBuffer((const char *)p, 10, lbuf, 2, ' ', 0)) {
         DBG_ERROR(0, "Error converting to hex??");
         abort();
       }
@@ -1243,11 +1256,11 @@ int EBC_Provider__addKiTxt(GWEN_UNUSED AB_PROVIDER *pro,
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Error hashing (%d)", rv);
       abort();
     }
-    p=(const uint8_t*)GWEN_Buffer_GetStart(bbuf);
+    p=(const uint8_t *)GWEN_Buffer_GetStart(bbuf);
     l=GWEN_Buffer_GetUsedBytes(bbuf);
     for (i=0; i<2; i++) {
       GWEN_Buffer_AppendString(lbuf, "  ");
-      if (GWEN_Text_ToHexBuffer((const char*)p, 16, lbuf, 2, ' ', 0)) {
+      if (GWEN_Text_ToHexBuffer((const char *)p, 16, lbuf, 2, ' ', 0)) {
         DBG_ERROR(0, "Error converting to hex??");
         abort();
       }
@@ -1263,10 +1276,11 @@ int EBC_Provider__addKiTxt(GWEN_UNUSED AB_PROVIDER *pro,
 
 
 int EBC_Provider_GetHiaLetterTxt(AB_PROVIDER *pro,
-				 AB_USER *u,
-				 int useBankKey,
-				 GWEN_BUFFER *lbuf,
-				 int nounmount) {
+                                 AB_USER *u,
+                                 int useBankKey,
+                                 GWEN_BUFFER *lbuf,
+                                 int nounmount)
+{
   AB_BANKING *ab;
   GWEN_TIME *ti;
   int rv;
@@ -1308,22 +1322,22 @@ int EBC_Provider_GetHiaLetterTxt(AB_PROVIDER *pro,
     kid=GWEN_Crypt_Token_Context_GetAuthVerifyKeyId(ctx);
     if (kid) {
       ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				     0);
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                     0);
     }
     if (!ki ||
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(ab);
+        AB_Banking_ClearCryptTokenList(ab);
       DBG_ERROR(0, "Server keys missing, please get them first");
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
-			   I18N("Server keys missing, "
-				"please get them first"));
+                           GWEN_LoggerLevel_Error,
+                           I18N("Server keys missing, "
+                                "please get them first"));
       return GWEN_ERROR_NOT_FOUND;
     }
   }
@@ -1332,37 +1346,37 @@ int EBC_Provider_GetHiaLetterTxt(AB_PROVIDER *pro,
     kid=GWEN_Crypt_Token_Context_GetAuthSignKeyId(ctx);
     if (kid) {
       ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				     0);
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                     0);
     }
     if (!ki ||
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(ab);
+        AB_Banking_ClearCryptTokenList(ab);
       DBG_ERROR(0, "User keys missing, please generate them first");
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
-			   I18N("User keys missing, "
-				"please generate them first"));
+                           GWEN_LoggerLevel_Error,
+                           I18N("User keys missing, "
+                                "please generate them first"));
       return GWEN_ERROR_NOT_FOUND;
     }
   }
 
   /* prelude */
   GWEN_Buffer_AppendString(lbuf,
-			   I18N("\n\n\nINI-Letter HIA\n\n"));
+                           I18N("\n\n\nINI-Letter HIA\n\n"));
   GWEN_Buffer_AppendString(lbuf,
-			   I18N("Date           : "));
+                           I18N("Date           : "));
   ti=GWEN_CurrentTime();
   assert(ti);
   GWEN_Time_toString(ti, I18N("YYYY/MM/DD"), lbuf);
   GWEN_Buffer_AppendString(lbuf, "\n");
   GWEN_Buffer_AppendString(lbuf,
-			   I18N("Time           : "));
+                           I18N("Time           : "));
   GWEN_Time_toString(ti, I18N("hh:mm:ss"), lbuf);
   GWEN_Buffer_AppendString(lbuf, "\n");
 
@@ -1400,22 +1414,22 @@ int EBC_Provider_GetHiaLetterTxt(AB_PROVIDER *pro,
     kid=GWEN_Crypt_Token_Context_GetEncipherKeyId(ctx);
     if (kid) {
       ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				     0);
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                     0);
     }
     if (!ki ||
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(ab);
+        AB_Banking_ClearCryptTokenList(ab);
       DBG_ERROR(0, "Server keys missing, please get them first");
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
-			   I18N("Server keys missing, "
-				"please get them first"));
+                           GWEN_LoggerLevel_Error,
+                           I18N("Server keys missing, "
+                                "please get them first"));
       return GWEN_ERROR_NOT_FOUND;
     }
   }
@@ -1424,22 +1438,22 @@ int EBC_Provider_GetHiaLetterTxt(AB_PROVIDER *pro,
     kid=GWEN_Crypt_Token_Context_GetDecipherKeyId(ctx);
     if (kid) {
       ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-				     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-				     0);
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
+                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
+                                     0);
     }
     if (!ki ||
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-	!(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
-	AB_Banking_ClearCryptTokenList(ab);
+        AB_Banking_ClearCryptTokenList(ab);
       DBG_ERROR(0, "User keys missing, please generate them first");
       GWEN_Gui_ProgressLog(0,
-			   GWEN_LoggerLevel_Error,
-			   I18N("User keys missing, "
-				"please generate them first"));
+                           GWEN_LoggerLevel_Error,
+                           I18N("User keys missing, "
+                                "please generate them first"));
       return GWEN_ERROR_NOT_FOUND;
     }
   }
@@ -1464,14 +1478,14 @@ int EBC_Provider_GetHiaLetterTxt(AB_PROVIDER *pro,
   if (!useBankKey) {
     GWEN_Buffer_AppendString(lbuf, "\n\n");
     GWEN_Buffer_AppendString(lbuf,
-			     I18N("I confirm that I created the above "
-				  "keys.\n"));
+                             I18N("I confirm that I created the above "
+                                  "keys.\n"));
     GWEN_Buffer_AppendString(lbuf, "\n\n");
     GWEN_Buffer_AppendString(lbuf,
-			     I18N("____________________________  "
-				  "____________________________\n"
-				  "Place, date                   "
-				  "Signature\n"));
+                             I18N("____________________________  "
+                                  "____________________________\n"
+                                  "Place, date                   "
+                                  "Signature\n"));
   }
 
   return 0;
@@ -1479,13 +1493,14 @@ int EBC_Provider_GetHiaLetterTxt(AB_PROVIDER *pro,
 
 
 
-int EBC_Provider_Sha256(const uint8_t *pData, uint32_t lData, GWEN_BUFFER *hbuf) {
+int EBC_Provider_Sha256(const uint8_t *pData, uint32_t lData, GWEN_BUFFER *hbuf)
+{
   GWEN_BUFFER *tbuf;
   GWEN_MDIGEST *md;
   int rv;
 
   tbuf=GWEN_Buffer_new(0, lData, 0, 1);
-  while(lData--) {
+  while (lData--) {
     uint8_t c;
 
     c=*(pData++);
@@ -1503,8 +1518,8 @@ int EBC_Provider_Sha256(const uint8_t *pData, uint32_t lData, GWEN_BUFFER *hbuf)
     return rv;
   }
   rv=GWEN_MDigest_Update(md,
-			 (const uint8_t*)GWEN_Buffer_GetStart(tbuf),
-			 GWEN_Buffer_GetUsedBytes(tbuf));
+                         (const uint8_t *)GWEN_Buffer_GetStart(tbuf),
+                         GWEN_Buffer_GetUsedBytes(tbuf));
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     GWEN_MDigest_free(md);
@@ -1519,8 +1534,8 @@ int EBC_Provider_Sha256(const uint8_t *pData, uint32_t lData, GWEN_BUFFER *hbuf)
     return rv;
   }
   GWEN_Buffer_AppendBytes(hbuf,
-			  (const char*)GWEN_MDigest_GetDigestPtr(md),
-			  GWEN_MDigest_GetDigestSize(md));
+                          (const char *)GWEN_MDigest_GetDigestPtr(md),
+                          GWEN_MDigest_GetDigestSize(md));
   GWEN_MDigest_free(md);
   GWEN_Buffer_free(tbuf);
 

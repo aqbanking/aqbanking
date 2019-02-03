@@ -25,9 +25,10 @@
 
 
 int download(AB_PROVIDER *pro,
-	     GWEN_DB_NODE *dbArgs,
-	     int argc,
-	     char **argv) {
+             GWEN_DB_NODE *dbArgs,
+             int argc,
+             char **argv)
+{
   GWEN_DB_NODE *db;
   uint32_t uid;
   AB_USER *u=NULL;
@@ -37,73 +38,73 @@ int download(AB_PROVIDER *pro,
   const char *toTime;
   int receipt;
   int verbosity;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "userId",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "u",                          /* short option */
-    "user",                       /* long option */
-    "Specify the unique user id",    /* short description */
-    "Specify the unique user id"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "requestType",                /* name */
-    1,                            /* minnum */
-    1,                            /* maxnum */
-    "r",                          /* short option */
-    "request",                  /* long option */
-    "Specify the request type",      /* short description */
-    "Specify the request type"       /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "fromTime",
-    0,         
-    1,         
-    0,
-    "fromtime", 
-    "Specify the start date",
-    "Specify the start date"
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "toTime",
-    0,         
-    1,         
-    0,
-    "totime",
-    "Specify the end date",
-    "Specify the end date"
-  },
-  {
-    0,
-    GWEN_ArgsType_Int,
-    "receipt",
-    0,         
-    1,         
-    0,
-    "receipt",
-    "Acknowledge receiption",
-    "Acknowledge receiption"
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "userId",                     /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "u",                          /* short option */
+      "user",                       /* long option */
+      "Specify the unique user id",    /* short description */
+      "Specify the unique user id"     /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "requestType",                /* name */
+      1,                            /* minnum */
+      1,                            /* maxnum */
+      "r",                          /* short option */
+      "request",                  /* long option */
+      "Specify the request type",      /* short description */
+      "Specify the request type"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "fromTime",
+      0,
+      1,
+      0,
+      "fromtime",
+      "Specify the start date",
+      "Specify the start date"
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "toTime",
+      0,
+      1,
+      0,
+      "totime",
+      "Specify the end date",
+      "Specify the end date"
+    },
+    {
+      0,
+      GWEN_ArgsType_Int,
+      "receipt",
+      0,
+      1,
+      0,
+      "receipt",
+      "Acknowledge receiption",
+      "Acknowledge receiption"
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -156,39 +157,39 @@ int download(AB_PROVIDER *pro,
     if (fromTime) {
       daFrom=GWEN_Date_fromStringWithTemplate(fromTime, "YYYYMMDD");
       if (daFrom==NULL) {
-	fprintf(stderr, "ERROR: Invalid fromDate (use \"YYYYMMDD\")\n");
-	return 1;
+        fprintf(stderr, "ERROR: Invalid fromDate (use \"YYYYMMDD\")\n");
+        return 1;
       }
     }
 
     if (toTime) {
       daTo=GWEN_Date_fromStringWithTemplate(toTime, "YYYYMMDD");
       if (daTo==NULL) {
-	fprintf(stderr, "ERROR: Invalid toDate (use \"YYYYMMDD\")\n");
-	return 1;
+        fprintf(stderr, "ERROR: Invalid toDate (use \"YYYYMMDD\")\n");
+        return 1;
       }
     }
 
     guiid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
-				 GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-				 GWEN_GUI_PROGRESS_SHOW_LOG |
-				 GWEN_GUI_PROGRESS_ALWAYS_SHOW_LOG |
-				 GWEN_GUI_PROGRESS_KEEP_OPEN |
-				 GWEN_GUI_PROGRESS_SHOW_ABORT,
-				 I18N("Executing Request"),
-				 I18N("Now the request is send "
-				      "to the credit institute."),
-				 GWEN_GUI_PROGRESS_NONE,
-				 0);
+                                 GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+                                 GWEN_GUI_PROGRESS_SHOW_LOG |
+                                 GWEN_GUI_PROGRESS_ALWAYS_SHOW_LOG |
+                                 GWEN_GUI_PROGRESS_KEEP_OPEN |
+                                 GWEN_GUI_PROGRESS_SHOW_ABORT,
+                                 I18N("Executing Request"),
+                                 I18N("Now the request is send "
+                                      "to the credit institute."),
+                                 GWEN_GUI_PROGRESS_NONE,
+                                 0);
 
     destBuffer=GWEN_Buffer_new(0, 1024, 0, 1);
     GWEN_Buffer_SetHardLimit(destBuffer, EBICS_BUFFER_MAX_HARD_LIMIT);
 
     rv=EBC_Provider_Download(pro, u,
-			     requestType,
-			     destBuffer,
-			     receipt,
-			     daFrom,
+                             requestType,
+                             destBuffer,
+                             receipt,
+                             daFrom,
                              daTo,
                              1);
     if (rv==GWEN_ERROR_NO_DATA) {
@@ -209,8 +210,8 @@ int download(AB_PROVIDER *pro,
         return 6;
       }
       else {
-	if (verbosity>0)
-	  fprintf(stderr, "INFO: Wrote %d bytes\n", GWEN_Buffer_GetUsedBytes(destBuffer));
+        if (verbosity>0)
+          fprintf(stderr, "INFO: Wrote %d bytes\n", GWEN_Buffer_GetUsedBytes(destBuffer));
       }
     }
     else {

@@ -26,7 +26,7 @@
 #define AB_WIZARD_FOLDER "wizards"
 
 #ifdef OS_WIN32
-# define AB_BANKING_USERDATADIR "aqbanking"  
+# define AB_BANKING_USERDATADIR "aqbanking"
 #else
 # define AB_BANKING_USERDATADIR ".aqbanking"
 #endif
@@ -97,8 +97,8 @@ static AB_BANKINFO_PLUGIN *AB_Banking_GetBankInfoPlugin(AB_BANKING *ab, const ch
 
 static int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,
                                               const char *path,
-					      GWEN_DB_NODE *db,
-					      int isGlobal);
+                                              GWEN_DB_NODE *db,
+                                              int isGlobal);
 
 
 static int AB_Banking__TransformIban(const char *iban, int len, char *newIban, int maxLen);
@@ -180,7 +180,8 @@ static int AB_Banking_UnlockConfigGroup(AB_BANKING *ab, const char *groupName, u
 
 
 
-static int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2* commandList, AB_IMEXPORTER_CONTEXT *ctx, uint32_t pid);
+static int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2 *commandList, AB_IMEXPORTER_CONTEXT *ctx,
+                                    uint32_t pid);
 
 
 

@@ -12,7 +12,8 @@
 
 
 
-int AB_Banking_CheckTransactionAgainstLimits_Purpose(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
+int AB_Banking_CheckTransactionAgainstLimits_Purpose(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim)
+{
   int maxn;
   int maxs;
   const char *purpose;
@@ -40,7 +41,7 @@ int AB_Banking_CheckTransactionAgainstLimits_Purpose(const AB_TRANSACTION *t, co
 
       n=0;
       se=GWEN_StringList_FirstEntry(sl);
-      while(se) {
+      while (se) {
         p=GWEN_StringListEntry_Data(se);
         if (p && *p) {
           n++;
@@ -89,7 +90,8 @@ int AB_Banking_CheckTransactionAgainstLimits_Purpose(const AB_TRANSACTION *t, co
 
 
 
-int AB_Banking_CheckTransactionAgainstLimits_Names(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
+int AB_Banking_CheckTransactionAgainstLimits_Names(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim)
+{
   int maxs;
   const char *s;
 
@@ -153,7 +155,8 @@ int AB_Banking_CheckTransactionAgainstLimits_Names(const AB_TRANSACTION *t, cons
 
 
 
-int AB_Banking_CheckTransactionAgainstLimits_Recurrence(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
+int AB_Banking_CheckTransactionAgainstLimits_Recurrence(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim)
+{
   if (lim) {
     /* check period */
     if (AB_Transaction_GetPeriod(t)==AB_Transaction_PeriodMonthly) {
@@ -245,7 +248,8 @@ int AB_Banking_CheckTransactionAgainstLimits_Recurrence(const AB_TRANSACTION *t,
 
 
 
-int AB_Banking_CheckTransactionAgainstLimits_ExecutionDate(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
+int AB_Banking_CheckTransactionAgainstLimits_ExecutionDate(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim)
+{
   if (lim) {
     const GWEN_DATE *dt;
 
@@ -255,12 +259,12 @@ int AB_Banking_CheckTransactionAgainstLimits_ExecutionDate(const AB_TRANSACTION 
       GWEN_DATE *currDate;
       int diff;
       int n;
-  
+
       currDate=GWEN_Date_CurrentDate();
       assert(currDate);
       diff=GWEN_Date_Diff(dt, currDate);
       GWEN_Date_free(currDate);
-  
+
       /* check minimum setup time */
       n=AB_TransactionLimits_GetMinValueSetupTime(lim);
       if (n && diff<n) {
@@ -272,7 +276,7 @@ int AB_Banking_CheckTransactionAgainstLimits_ExecutionDate(const AB_TRANSACTION 
                               n);
         return GWEN_ERROR_INVALID;
       }
-  
+
       /* check maximum setup time */
       n=AB_TransactionLimits_GetMaxValueSetupTime(lim);
       if (n && diff>n) {
@@ -292,7 +296,8 @@ int AB_Banking_CheckTransactionAgainstLimits_ExecutionDate(const AB_TRANSACTION 
 
 
 
-int AB_Banking_CheckTransactionAgainstLimits_Date(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
+int AB_Banking_CheckTransactionAgainstLimits_Date(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim)
+{
   if (lim) {
     const GWEN_DATE *dt;
 
@@ -338,7 +343,8 @@ int AB_Banking_CheckTransactionAgainstLimits_Date(const AB_TRANSACTION *t, const
 
 
 
-int AB_Banking_CheckTransactionAgainstLimits_Sequence(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim) {
+int AB_Banking_CheckTransactionAgainstLimits_Sequence(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim)
+{
   if (lim) {
     const GWEN_DATE *dt;
 
@@ -354,31 +360,31 @@ int AB_Banking_CheckTransactionAgainstLimits_Sequence(const AB_TRANSACTION *t, c
       diff=GWEN_Date_Diff(dt, currDate);
       GWEN_Date_free(currDate);
 
-      switch(AB_Transaction_GetSequence(t)) {
+      switch (AB_Transaction_GetSequence(t)) {
       case AB_Transaction_SequenceOnce:
-	minTime=AB_TransactionLimits_GetMinValueSetupTimeOnce(lim);
-	maxTime=AB_TransactionLimits_GetMaxValueSetupTimeOnce(lim);
-	break;
+        minTime=AB_TransactionLimits_GetMinValueSetupTimeOnce(lim);
+        maxTime=AB_TransactionLimits_GetMaxValueSetupTimeOnce(lim);
+        break;
       case AB_Transaction_SequenceFirst:
-	minTime=AB_TransactionLimits_GetMinValueSetupTimeFirst(lim);
-	maxTime=AB_TransactionLimits_GetMaxValueSetupTimeFirst(lim);
-	break;
+        minTime=AB_TransactionLimits_GetMinValueSetupTimeFirst(lim);
+        maxTime=AB_TransactionLimits_GetMaxValueSetupTimeFirst(lim);
+        break;
       case AB_Transaction_SequenceFollowing:
-	minTime=AB_TransactionLimits_GetMinValueSetupTimeRecurring(lim);
-	maxTime=AB_TransactionLimits_GetMaxValueSetupTimeRecurring(lim);
-	break;
+        minTime=AB_TransactionLimits_GetMinValueSetupTimeRecurring(lim);
+        maxTime=AB_TransactionLimits_GetMaxValueSetupTimeRecurring(lim);
+        break;
       case AB_Transaction_SequenceFinal:
-	minTime=AB_TransactionLimits_GetMinValueSetupTimeFinal(lim);
-	maxTime=AB_TransactionLimits_GetMaxValueSetupTimeFinal(lim);
-	break;
+        minTime=AB_TransactionLimits_GetMinValueSetupTimeFinal(lim);
+        maxTime=AB_TransactionLimits_GetMaxValueSetupTimeFinal(lim);
+        break;
       case AB_Transaction_SequenceUnknown:
-	break;
+        break;
       }
 
       if (minTime==0)
-	minTime=AB_TransactionLimits_GetMinValueSetupTime(lim);
+        minTime=AB_TransactionLimits_GetMinValueSetupTime(lim);
       if (maxTime==0)
-	maxTime=AB_TransactionLimits_GetMaxValueSetupTime(lim);
+        maxTime=AB_TransactionLimits_GetMaxValueSetupTime(lim);
 
       /* check minimum setup time */
       if (minTime && diff<minTime) {
@@ -413,7 +419,8 @@ int AB_Banking_CheckTransactionAgainstLimits_Sequence(const AB_TRANSACTION *t, c
 
 
 
-static int _checkStringForSepaCharset(const char *s, int restricted) {
+static int _checkStringForSepaCharset(const char *s, int restricted)
+{
   char ascii_chars[]="'&*$%:?,-(+.)/ "; /* last is a blank! */
   const char *ascii;
 
@@ -425,7 +432,7 @@ static int _checkStringForSepaCharset(const char *s, int restricted) {
   if (restricted)
     ascii+=RESTRICTED_CHARS_OFFSET;
 
-  while(*s) {
+  while (*s) {
     unsigned char c=*s++;
 
     if (!((c>='A' && c<='Z') ||
@@ -436,50 +443,50 @@ static int _checkStringForSepaCharset(const char *s, int restricted) {
       int i = 0;
 
       if (c == 0xC3 && !restricted) {
-	c = *s++;
-	switch(c) {
-	case 0x84:	/* AE */
-	case 0xA4:	/* ae */
-	case 0x96:	/* OE */
-	case 0xB6:	/* oe */
-	case 0x9C:	/* UE */
-	case 0xBC:	/* ue */
-	case 0x9F:	/* ss */
-	  if ((*s & 0xC0) != 0x80)
-	    break;
-	  /* these are no umlauts, after all, so fall through */
+        c = *s++;
+        switch (c) {
+        case 0x84:  /* AE */
+        case 0xA4:  /* ae */
+        case 0x96:  /* OE */
+        case 0xB6:  /* oe */
+        case 0x9C:  /* UE */
+        case 0xBC:  /* ue */
+        case 0x9F:  /* ss */
+          if ((*s & 0xC0) != 0x80)
+            break;
+        /* these are no umlauts, after all, so fall through */
 
-	default:
-	  errchr[i++]=0xC3;
-	  if ((c & 0xC0) == 0x80)
-	    errchr[i++]=c;
-	  else
-	    /* UTF-8 sequence ended prematurely */
-	    s--;
-	  break;
-	}
+        default:
+          errchr[i++]=0xC3;
+          if ((c & 0xC0) == 0x80)
+            errchr[i++]=c;
+          else
+            /* UTF-8 sequence ended prematurely */
+            s--;
+          break;
+        }
       }
       else
-	errchr[i++] = c;
+        errchr[i++] = c;
 
       if (i) {
-	while((*s & 0xC0) == 0x80)
-	  if (i<6)
-	    errchr[i++]=*s++;
-	  else {
-	    i++;
-	    s++;
-	  }
+        while ((*s & 0xC0) == 0x80)
+          if (i<6)
+            errchr[i++]=*s++;
+          else {
+            i++;
+            s++;
+          }
 
-	if (i<7 && (i>1 || !(c & 0x80))) {
-	  errchr[i] = '\0';
-	  DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in string: '%s'",
-		    errchr);
-	}
-	else {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN, "String not properly UTF-8 encoded");
-	}
-	return GWEN_ERROR_BAD_DATA;
+        if (i<7 && (i>1 || !(c & 0x80))) {
+          errchr[i] = '\0';
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid character in string: '%s'",
+                    errchr);
+        }
+        else {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "String not properly UTF-8 encoded");
+        }
+        return GWEN_ERROR_BAD_DATA;
       }
     }
   }
@@ -493,9 +500,10 @@ static int _checkStringForSepaCharset(const char *s, int restricted) {
  * other than "A"-"Z", "a"-"z" and "0"-"9".
  * We don't use isalnum here because I'm not sure how that function handles UTF-8 chars with umlauts...
  */
-static int _checkStringForAlNum(const char *s, int lcase) {
+static int _checkStringForAlNum(const char *s, int lcase)
+{
   assert(s);
-  while(*s) {
+  while (*s) {
     unsigned char c=*s;
 
     if (!((c>='0' && c<='9') ||
@@ -512,7 +520,8 @@ static int _checkStringForAlNum(const char *s, int lcase) {
 
 
 
-int AB_Banking_CheckTransactionForSepaConformity(const AB_TRANSACTION *t, int restricted) {
+int AB_Banking_CheckTransactionForSepaConformity(const AB_TRANSACTION *t, int restricted)
+{
   if (t) {
     const char *s;
     int rv;
@@ -620,7 +629,8 @@ int AB_Banking_CheckTransactionForSepaConformity(const AB_TRANSACTION *t, int re
 
 
 
-void AB_Banking_FillTransactionFromAccountSpec(AB_TRANSACTION *t, const AB_ACCOUNT_SPEC *as) {
+void AB_Banking_FillTransactionFromAccountSpec(AB_TRANSACTION *t, const AB_ACCOUNT_SPEC *as)
+{
   const char *s;
 
   assert(t);

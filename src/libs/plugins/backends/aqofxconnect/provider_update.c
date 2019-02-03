@@ -12,7 +12,8 @@
 
 
 
-int AO_Provider_UpdatePreInit(AB_PROVIDER *pro, uint32_t lastVersion, uint32_t currentVersion) {
+int AO_Provider_UpdatePreInit(AB_PROVIDER *pro, uint32_t lastVersion, uint32_t currentVersion)
+{
 #if 0 /* no preinit for now */
   int rv;
 
@@ -26,7 +27,8 @@ int AO_Provider_UpdatePreInit(AB_PROVIDER *pro, uint32_t lastVersion, uint32_t c
 
 
 
-int AO_Provider_UpdatePostInit(AB_PROVIDER *pro, uint32_t lastVersion, uint32_t currentVersion) {
+int AO_Provider_UpdatePostInit(AB_PROVIDER *pro, uint32_t lastVersion, uint32_t currentVersion)
+{
   int rv;
 
   DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Update (post init): Previous version %d.%d.%d.%d, new version %d.%d.%d.%d",

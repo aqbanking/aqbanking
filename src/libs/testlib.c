@@ -11,7 +11,8 @@
 
 
 
-void dumpNumDenom(const char *t, const AB_VALUE *v) {
+void dumpNumDenom(const char *t, const AB_VALUE *v)
+{
   char numbuf[256];
 
   if (!AB_Value_GetNumDenomString(v, numbuf, sizeof(numbuf))) {
@@ -23,7 +24,8 @@ void dumpNumDenom(const char *t, const AB_VALUE *v) {
 }
 
 
-int test1(int argc, char **argv) {
+int test1(int argc, char **argv)
+{
   AB_VALUE *v1;
   AB_VALUE *v2;
   AB_VALUE *v3;
@@ -36,7 +38,7 @@ int test1(int argc, char **argv) {
     return 1;
   }
   fprintf(stderr, "v1          : %f\n",
-	  AB_Value_GetValueAsDouble(v1));
+          AB_Value_GetValueAsDouble(v1));
   dumpNumDenom("v1", v1);
 
   v2=AB_Value_fromString("10/1");
@@ -45,7 +47,7 @@ int test1(int argc, char **argv) {
     return 1;
   }
   fprintf(stderr, "v2          : %f\n",
-	  AB_Value_GetValueAsDouble(v2));
+          AB_Value_GetValueAsDouble(v2));
   dumpNumDenom("v2", v2);
 
   v3=AB_Value_dup(v1);
@@ -54,7 +56,7 @@ int test1(int argc, char **argv) {
     return 1;
   }
   fprintf(stderr, "v3          : %f\n",
-	  AB_Value_GetValueAsDouble(v3));
+          AB_Value_GetValueAsDouble(v3));
   dumpNumDenom("v3", v3);
 
   v4=AB_Value_fromString("-1250,");
@@ -63,7 +65,7 @@ int test1(int argc, char **argv) {
     return 1;
   }
   fprintf(stderr, "v4          : %f\n",
-	  AB_Value_GetValueAsDouble(v4));
+          AB_Value_GetValueAsDouble(v4));
   dumpNumDenom("v4", v4);
 
   rv=AB_Value_MultValue(v3, v2);
@@ -73,12 +75,12 @@ int test1(int argc, char **argv) {
   }
 
   fprintf(stderr, "r           : %f\n",
-	  AB_Value_GetValueAsDouble(v3));
+          AB_Value_GetValueAsDouble(v3));
   dumpNumDenom("r ", v3);
 
   if (AB_Value_GetValueAsDouble(v3)!=9876543211.2345) {
     fprintf(stderr, "Bad result : %f\n",
-	    AB_Value_GetValueAsDouble(v3));
+            AB_Value_GetValueAsDouble(v3));
     return 1;
   }
   dumpNumDenom("v3", v3);
@@ -88,7 +90,8 @@ int test1(int argc, char **argv) {
 }
 
 
-int test4(int argc, char **argv) {
+int test4(int argc, char **argv)
+{
   int rv;
 //  AB_BANKING *ab;
   GWEN_GUI *gui;
@@ -130,7 +133,8 @@ int test4(int argc, char **argv) {
 
 
 
-int test5(int argc, char **argv) {
+int test5(int argc, char **argv)
+{
   AB_VALUE *v1;
   GWEN_BUFFER *tbuf;
 
@@ -201,14 +205,15 @@ int test5(int argc, char **argv) {
 
 
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[])
+{
 #if 1
   return test5(argc, argv);
 #else
   AB_BANKING *ab;
 
   ab=AB_Banking_new("testlib", "testname",
-		    AB_BANKING_EXTENSION_NONE);
+                    AB_BANKING_EXTENSION_NONE);
 
   AB_Banking_free(ab);
 

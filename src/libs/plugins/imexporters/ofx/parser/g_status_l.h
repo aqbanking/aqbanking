@@ -19,9 +19,9 @@
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_STATUS_new(const char *groupName,
-				       AIO_OFX_GROUP *parent,
-				       GWEN_XML_CONTEXT *ctx,
-				       const char *description);
+                                       AIO_OFX_GROUP *parent,
+                                       GWEN_XML_CONTEXT *ctx,
+                                       const char *description);
 
 
 #endif

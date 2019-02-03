@@ -22,14 +22,14 @@
 
 EB_RC EB_Key_toBin(const GWEN_CRYPT_KEY *k,
                    const char *userId,
-		   const char *version,
+                   const char *version,
                    int keySize,
                    GWEN_BUFFER *buf);
 
 EB_RC EB_Key_fromBin(GWEN_CRYPT_KEY **k,
-		     const char *version,
-		     char *bufUserId,
-		     unsigned int lenUserId,
+                     const char *version,
+                     char *bufUserId,
+                     unsigned int lenUserId,
                      const char *p, unsigned int bsize);
 
 
@@ -40,22 +40,22 @@ int EB_Key_Info_toXml(const GWEN_CRYPT_TOKEN_KEYINFO *ki, xmlNodePtr node);
 EB_RC EB_Key_Info_ReadXml(GWEN_CRYPT_TOKEN_KEYINFO *ki, xmlNodePtr node);
 
 EB_RC EB_Key_Info_toBin(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
-			const char *userId,
-			const char *version,
-			int keySize,
-			GWEN_BUFFER *buf);
+                        const char *userId,
+                        const char *version,
+                        int keySize,
+                        GWEN_BUFFER *buf);
 
 
 int EB_Key_BuildHashSha1(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encode64);
 int EB_Key_BuildHashSha256(const GWEN_CRYPT_KEY *k, GWEN_BUFFER *hbuf, int encode64);
 
 int EB_Key_Info_BuildHashSha1(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
-			      GWEN_BUFFER *hbuf,
-			      int encode64);
+                              GWEN_BUFFER *hbuf,
+                              int encode64);
 
 int EB_Key_Info_BuildHashSha256(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
-				GWEN_BUFFER *hbuf,
-				int encode64);
+                                GWEN_BUFFER *hbuf,
+                                int encode64);
 
 
 int EB_Key_Info_BuildSigHash_Rmd160(const GWEN_CRYPT_TOKEN_KEYINFO *ki, GWEN_BUFFER *hbuf);

@@ -34,8 +34,9 @@ GWEN_INHERIT(AIO_OFX_GROUP, AIO_OFX_GROUP_BANKACC)
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_BANKACC_new(const char *groupName,
-					AIO_OFX_GROUP *parent,
-					GWEN_XML_CONTEXT *ctx) {
+                                        AIO_OFX_GROUP *parent,
+                                        GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_GROUP *g;
   AIO_OFX_GROUP_BANKACC *xg;
 
@@ -65,10 +66,11 @@ AIO_OFX_GROUP *AIO_OfxGroup_BANKACC_new(const char *groupName,
 
 
 GWENHYWFAR_CB
-void AIO_OfxGroup_BANKACC_FreeData(void *bp, void *p) {
+void AIO_OfxGroup_BANKACC_FreeData(void *bp, void *p)
+{
   AIO_OFX_GROUP_BANKACC *xg;
 
-  xg=(AIO_OFX_GROUP_BANKACC*)p;
+  xg=(AIO_OFX_GROUP_BANKACC *)p;
   assert(xg);
   free(xg->currentElement);
   free(xg->bankId);
@@ -79,7 +81,8 @@ void AIO_OfxGroup_BANKACC_FreeData(void *bp, void *p) {
 
 
 
-const char *AIO_OfxGroup_BANKACC_GetBankId(const AIO_OFX_GROUP *g) {
+const char *AIO_OfxGroup_BANKACC_GetBankId(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_BANKACC *xg;
 
   assert(g);
@@ -91,7 +94,8 @@ const char *AIO_OfxGroup_BANKACC_GetBankId(const AIO_OFX_GROUP *g) {
 
 
 
-void AIO_OfxGroup_BANKACC_SetBankId(AIO_OFX_GROUP *g, const char *s) {
+void AIO_OfxGroup_BANKACC_SetBankId(AIO_OFX_GROUP *g, const char *s)
+{
   AIO_OFX_GROUP_BANKACC *xg;
 
   assert(g);
@@ -99,13 +103,16 @@ void AIO_OfxGroup_BANKACC_SetBankId(AIO_OFX_GROUP *g, const char *s) {
   assert(xg);
 
   free(xg->bankId);
-  if (s) xg->bankId=strdup(s);
-  else xg->bankId=NULL;
+  if (s)
+    xg->bankId=strdup(s);
+  else
+    xg->bankId=NULL;
 }
 
 
 
-const char *AIO_OfxGroup_BANKACC_GetAccId(const AIO_OFX_GROUP *g) {
+const char *AIO_OfxGroup_BANKACC_GetAccId(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_BANKACC *xg;
 
   assert(g);
@@ -117,7 +124,8 @@ const char *AIO_OfxGroup_BANKACC_GetAccId(const AIO_OFX_GROUP *g) {
 
 
 
-void AIO_OfxGroup_BANKACC_SetAccId(AIO_OFX_GROUP *g, const char *s) {
+void AIO_OfxGroup_BANKACC_SetAccId(AIO_OFX_GROUP *g, const char *s)
+{
   AIO_OFX_GROUP_BANKACC *xg;
 
   assert(g);
@@ -125,13 +133,16 @@ void AIO_OfxGroup_BANKACC_SetAccId(AIO_OFX_GROUP *g, const char *s) {
   assert(xg);
 
   free(xg->accId);
-  if (s) xg->accId=strdup(s);
-  else xg->accId=NULL;
+  if (s)
+    xg->accId=strdup(s);
+  else
+    xg->accId=NULL;
 }
 
 
 
-const char *AIO_OfxGroup_BANKACC_GetAccType(const AIO_OFX_GROUP *g) {
+const char *AIO_OfxGroup_BANKACC_GetAccType(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_BANKACC *xg;
 
   assert(g);
@@ -143,7 +154,8 @@ const char *AIO_OfxGroup_BANKACC_GetAccType(const AIO_OFX_GROUP *g) {
 
 
 
-void AIO_OfxGroup_BANKACC_SetAccType(AIO_OFX_GROUP *g, const char *s) {
+void AIO_OfxGroup_BANKACC_SetAccType(AIO_OFX_GROUP *g, const char *s)
+{
   AIO_OFX_GROUP_BANKACC *xg;
 
   assert(g);
@@ -151,14 +163,17 @@ void AIO_OfxGroup_BANKACC_SetAccType(AIO_OFX_GROUP *g, const char *s) {
   assert(xg);
 
   free(xg->accType);
-  if (s) xg->accType=strdup(s);
-  else xg->accType=NULL;
+  if (s)
+    xg->accType=strdup(s);
+  else
+    xg->accType=NULL;
 }
 
 
 
 int AIO_OfxGroup_BANKACC_StartTag(AIO_OFX_GROUP *g,
-				 const char *tagName) {
+                                  const char *tagName)
+{
   AIO_OFX_GROUP_BANKACC *xg;
   //GWEN_XML_CONTEXT *ctx;
 
@@ -181,7 +196,7 @@ int AIO_OfxGroup_BANKACC_StartTag(AIO_OFX_GROUP *g,
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	     "Ignoring tag [%s]", tagName);
+             "Ignoring tag [%s]", tagName);
   }
 
   return 0;
@@ -189,7 +204,8 @@ int AIO_OfxGroup_BANKACC_StartTag(AIO_OFX_GROUP *g,
 
 
 
-int AIO_OfxGroup_BANKACC_AddData(AIO_OFX_GROUP *g, const char *data) {
+int AIO_OfxGroup_BANKACC_AddData(AIO_OFX_GROUP *g, const char *data)
+{
   AIO_OFX_GROUP_BANKACC *xg;
 
   assert(g);
@@ -211,19 +227,19 @@ int AIO_OfxGroup_BANKACC_AddData(AIO_OFX_GROUP *g, const char *data) {
     s=GWEN_Buffer_GetStart(buf);
     if (*s) {
       DBG_INFO(AQBANKING_LOGDOMAIN,
-	       "AddData: %s=[%s]", xg->currentElement, s);
+               "AddData: %s=[%s]", xg->currentElement, s);
       if (strcasecmp(xg->currentElement, "BANKID")==0)
-	AIO_OfxGroup_BANKACC_SetBankId(g, GWEN_Buffer_GetStart(buf));
+        AIO_OfxGroup_BANKACC_SetBankId(g, GWEN_Buffer_GetStart(buf));
       else if (strcasecmp(xg->currentElement, "BROKERID")==0)
-	AIO_OfxGroup_BANKACC_SetBankId(g, GWEN_Buffer_GetStart(buf));
+        AIO_OfxGroup_BANKACC_SetBankId(g, GWEN_Buffer_GetStart(buf));
       else if (strcasecmp(xg->currentElement, "ACCTID")==0)
-	AIO_OfxGroup_BANKACC_SetAccId(g, GWEN_Buffer_GetStart(buf));
+        AIO_OfxGroup_BANKACC_SetAccId(g, GWEN_Buffer_GetStart(buf));
       else if (strcasecmp(xg->currentElement, "ACCTTYPE")==0)
-	AIO_OfxGroup_BANKACC_SetAccType(g, GWEN_Buffer_GetStart(buf));
+        AIO_OfxGroup_BANKACC_SetAccType(g, GWEN_Buffer_GetStart(buf));
       else {
-	DBG_INFO(AQBANKING_LOGDOMAIN,
-		 "Ignoring data for unknown element [%s]",
-		 xg->currentElement);
+        DBG_INFO(AQBANKING_LOGDOMAIN,
+                 "Ignoring data for unknown element [%s]",
+                 xg->currentElement);
       }
     }
     GWEN_Buffer_free(buf);

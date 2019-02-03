@@ -20,8 +20,8 @@
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_INVPOS_new(const char *groupName,
-				       AIO_OFX_GROUP *parent,
-				       GWEN_XML_CONTEXT *ctx);
+                                       AIO_OFX_GROUP *parent,
+                                       GWEN_XML_CONTEXT *ctx);
 
 AB_SECURITY *AIO_OfxGroup_INVPOS_TakeSecurity(const AIO_OFX_GROUP *g);
 

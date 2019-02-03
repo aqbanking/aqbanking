@@ -24,7 +24,8 @@ GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_OPENHBCI1);
 
 
 
-AB_IMEXPORTER *AB_ImExporterOpenHBCI1_new(AB_BANKING *ab){
+AB_IMEXPORTER *AB_ImExporterOpenHBCI1_new(AB_BANKING *ab)
+{
   AB_IMEXPORTER *ie;
   AH_IMEXPORTER_OPENHBCI1 *ieh;
 
@@ -48,10 +49,11 @@ AB_IMEXPORTER *AB_ImExporterOpenHBCI1_new(AB_BANKING *ab){
 
 
 
-void GWENHYWFAR_CB AH_ImExporterOpenHBCI1_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_ImExporterOpenHBCI1_FreeData(void *bp, void *p)
+{
   AH_IMEXPORTER_OPENHBCI1 *ieh;
 
-  ieh=(AH_IMEXPORTER_OPENHBCI1*)p;
+  ieh=(AH_IMEXPORTER_OPENHBCI1 *)p;
   GWEN_DBIO_free(ieh->dbio);
   GWEN_FREE_OBJECT(ieh);
 }
@@ -59,9 +61,10 @@ void GWENHYWFAR_CB AH_ImExporterOpenHBCI1_FreeData(void *bp, void *p){
 
 
 int AH_ImExporterOpenHBCI1_Import(AB_IMEXPORTER *ie,
-				  AB_IMEXPORTER_CONTEXT *ctx,
-				  GWEN_SYNCIO *sio,
-				  GWEN_DB_NODE *params){
+                                  AB_IMEXPORTER_CONTEXT *ctx,
+                                  GWEN_SYNCIO *sio,
+                                  GWEN_DB_NODE *params)
+{
   AH_IMEXPORTER_OPENHBCI1 *ieh;
   GWEN_DB_NODE *dbData;
   GWEN_DB_NODE *dbSubParams;
@@ -73,38 +76,38 @@ int AH_ImExporterOpenHBCI1_Import(AB_IMEXPORTER *ie,
   assert(ieh->dbio);
 
   dbSubParams=GWEN_DB_GetGroup(params, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-			       "params");
+                               "params");
   dbData=GWEN_DB_Group_new("transactions");
   rv=GWEN_DBIO_Import(ieh->dbio,
-		      sio,
+                      sio,
                       dbData,
-		      dbSubParams,
-		      GWEN_DB_FLAGS_DEFAULT |
-		      GWEN_PATH_FLAGS_CREATE_GROUP);
+                      dbSubParams,
+                      GWEN_DB_FLAGS_DEFAULT |
+                      GWEN_PATH_FLAGS_CREATE_GROUP);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error importing data (%d)", rv);
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-			 "Error importing data");
+                         "Error importing data");
     GWEN_DB_Group_free(dbData);
     return GWEN_ERROR_GENERIC;
   }
 
   /* transform DB to transactions */
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
-		       I18N("Data imported, transforming to UTF-8"));
+                       I18N("Data imported, transforming to UTF-8"));
   rv=AB_ImExporter_DbFromIso8859_1ToUtf8(dbData);
   if (rv) {
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-			 "Error converting data");
+                         "Error converting data");
     GWEN_DB_Group_free(dbData);
     return rv;
   }
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
-		       "Transforming data to transactions");
+                       "Transforming data to transactions");
   rv=AH_ImExporterOpenHBCI1__ImportFromGroup(ctx, dbData, params);
   if (rv) {
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-			 "Error importing data");
+                         "Error importing data");
     GWEN_DB_Group_free(dbData);
     return rv;
   }
@@ -116,8 +119,9 @@ int AH_ImExporterOpenHBCI1_Import(AB_IMEXPORTER *ie,
 
 
 int AH_ImExporterOpenHBCI1__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
-					    GWEN_DB_NODE *db,
-					    GWEN_DB_NODE *dbParams) {
+                                            GWEN_DB_NODE *db,
+                                            GWEN_DB_NODE *dbParams)
+{
   GWEN_DB_NODE *dbBanks;
   const char *dateFormat;
 
@@ -131,119 +135,119 @@ int AH_ImExporterOpenHBCI1__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
     if (!dbBank) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "No bank groups");
     }
-    while(dbBank) {
+    while (dbBank) {
       GWEN_DB_NODE *dbAccounts;
 
       dbAccounts=GWEN_DB_GetGroup(dbBank, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-				  "account");
+                                  "account");
       if (dbAccounts) {
-	GWEN_DB_NODE *dbAccount;
+        GWEN_DB_NODE *dbAccount;
 
-	dbAccount=GWEN_DB_GetFirstGroup(dbAccounts);
-	if (!dbAccount) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN, "No account groups");
-	}
-	while(dbAccount) {
-	  GWEN_DB_NODE *dbT;
-	  const char *bankId;
-	  const char *accountId;
+        dbAccount=GWEN_DB_GetFirstGroup(dbAccounts);
+        if (!dbAccount) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "No account groups");
+        }
+        while (dbAccount) {
+          GWEN_DB_NODE *dbT;
+          const char *bankId;
+          const char *accountId;
 
-	  bankId=GWEN_DB_GetCharValue(dbAccount, "params/institute", 0, 0);
-	  accountId=GWEN_DB_GetCharValue(dbAccount,
-					 "params/accountNumber", 0, 0);
-	  dbT=GWEN_DB_FindFirstGroup(dbAccount, "transaction");
-	  if (!dbT) {
-	    DBG_ERROR(AQBANKING_LOGDOMAIN, "No transaction groups");
-	  }
-	  while(dbT) {
-	    AB_TRANSACTION *t;
-	    const char *p;
-	    int i;
+          bankId=GWEN_DB_GetCharValue(dbAccount, "params/institute", 0, 0);
+          accountId=GWEN_DB_GetCharValue(dbAccount,
+                                         "params/accountNumber", 0, 0);
+          dbT=GWEN_DB_FindFirstGroup(dbAccount, "transaction");
+          if (!dbT) {
+            DBG_ERROR(AQBANKING_LOGDOMAIN, "No transaction groups");
+          }
+          while (dbT) {
+            AB_TRANSACTION *t;
+            const char *p;
+            int i;
 
             t=AB_Transaction_new();
-	    AB_Transaction_SetLocalBankCode(t, bankId);
-	    AB_Transaction_SetLocalAccountNumber(t, accountId);
-	    p=GWEN_DB_GetCharValue(dbT, "otherInstitute", 0, 0);
-	    AB_Transaction_SetRemoteBankCode(t, p);
-	    p=GWEN_DB_GetCharValue(dbT, "otherId", 0, 0);
-	    AB_Transaction_SetRemoteAccountNumber(t, p);
-	    p=GWEN_DB_GetCharValue(dbT, "primanota", 0, 0);
-	    AB_Transaction_SetPrimanota(t, p);
-	    p=GWEN_DB_GetCharValue(dbT, "key", 0, 0);
-	    AB_Transaction_SetTransactionKey(t, p);
-	    p=GWEN_DB_GetCharValue(dbT, "text", 0, 0);
-	    AB_Transaction_SetTransactionText(t, p);
-	    AB_Transaction_SetTextKey(t, GWEN_DB_GetIntValue(dbT,
-							     "code",
-							     0, 53));
-	    for (i=0; ; i++) {
-	      p=GWEN_DB_GetCharValue(dbT, "description", i, 0);
-	      if (!p)
-		break;
-	      AB_Transaction_AddPurposeLine(t, p);
-	    }
+            AB_Transaction_SetLocalBankCode(t, bankId);
+            AB_Transaction_SetLocalAccountNumber(t, accountId);
+            p=GWEN_DB_GetCharValue(dbT, "otherInstitute", 0, 0);
+            AB_Transaction_SetRemoteBankCode(t, p);
+            p=GWEN_DB_GetCharValue(dbT, "otherId", 0, 0);
+            AB_Transaction_SetRemoteAccountNumber(t, p);
+            p=GWEN_DB_GetCharValue(dbT, "primanota", 0, 0);
+            AB_Transaction_SetPrimanota(t, p);
+            p=GWEN_DB_GetCharValue(dbT, "key", 0, 0);
+            AB_Transaction_SetTransactionKey(t, p);
+            p=GWEN_DB_GetCharValue(dbT, "text", 0, 0);
+            AB_Transaction_SetTransactionText(t, p);
+            AB_Transaction_SetTextKey(t, GWEN_DB_GetIntValue(dbT,
+                                                             "code",
+                                                             0, 53));
+            for (i=0; ; i++) {
+              p=GWEN_DB_GetCharValue(dbT, "description", i, 0);
+              if (!p)
+                break;
+              AB_Transaction_AddPurposeLine(t, p);
+            }
 
-	    for (i=0; ; i++) {
-	      p=GWEN_DB_GetCharValue(dbT, "otherName", i, 0);
-	      if (!p)
-		break;
-	      AB_Transaction_SetRemoteName(t, p);
-	    }
+            for (i=0; ; i++) {
+              p=GWEN_DB_GetCharValue(dbT, "otherName", i, 0);
+              if (!p)
+                break;
+              AB_Transaction_SetRemoteName(t, p);
+            }
 
-	    p=GWEN_DB_GetCharValue(dbT, "customerReference", 0, 0);
-	    AB_Transaction_SetCustomerReference(t, p);
-	    p=GWEN_DB_GetCharValue(dbT, "bankReference", 0, 0);
-	    AB_Transaction_SetBankReference(t, p);
+            p=GWEN_DB_GetCharValue(dbT, "customerReference", 0, 0);
+            AB_Transaction_SetCustomerReference(t, p);
+            p=GWEN_DB_GetCharValue(dbT, "bankReference", 0, 0);
+            AB_Transaction_SetBankReference(t, p);
 
-	    p=GWEN_DB_GetCharValue(dbT, "value", 0, 0);
-	    if (p) {
-	      AB_VALUE *val;
+            p=GWEN_DB_GetCharValue(dbT, "value", 0, 0);
+            if (p) {
+              AB_VALUE *val;
 
-	      val=AB_Value_fromString(p);
-	      if (!val) {
-		DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value");
-	      }
-	      else {
-		if (AB_Value_GetCurrency(val)==0)
-		  AB_Value_SetCurrency(val, "DEM");
+              val=AB_Value_fromString(p);
+              if (!val) {
+                DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value");
+              }
+              else {
+                if (AB_Value_GetCurrency(val)==0)
+                  AB_Value_SetCurrency(val, "DEM");
                 AB_Transaction_SetValue(t, val);
-	      }
-	    }
+              }
+            }
 
-	    /* translate date */
-	    p=GWEN_DB_GetCharValue(dbT, "date", 0, 0);
-	    if (p) {
-	      GWEN_DATE *da;
-
-              da=GWEN_Date_fromStringWithTemplate(p, dateFormat);
-              if (da)
-		AB_Transaction_SetDate(t, da);
-	      GWEN_Date_free(da);
-	    }
-      
-	    /* translate valutaDate */
-	    p=GWEN_DB_GetCharValue(dbT, "valutaDate", 0, 0);
-	    if (p) {
-	      GWEN_DATE *da;
+            /* translate date */
+            p=GWEN_DB_GetCharValue(dbT, "date", 0, 0);
+            if (p) {
+              GWEN_DATE *da;
 
               da=GWEN_Date_fromStringWithTemplate(p, dateFormat);
               if (da)
-		AB_Transaction_SetValutaDate(t, da);
-	      GWEN_Date_free(da);
-	    }
-      
-	    DBG_NOTICE(AQBANKING_LOGDOMAIN, "Adding transaction");
-	    AB_ImExporterContext_AddTransaction(ctx, t);
+                AB_Transaction_SetDate(t, da);
+              GWEN_Date_free(da);
+            }
 
-	    dbT=GWEN_DB_FindNextGroup(dbT, "transaction");
-	  } /* while dbT */
+            /* translate valutaDate */
+            p=GWEN_DB_GetCharValue(dbT, "valutaDate", 0, 0);
+            if (p) {
+              GWEN_DATE *da;
 
-	  dbAccount=GWEN_DB_GetNextGroup(dbAccount);
-	} /* while dbAccount */
+              da=GWEN_Date_fromStringWithTemplate(p, dateFormat);
+              if (da)
+                AB_Transaction_SetValutaDate(t, da);
+              GWEN_Date_free(da);
+            }
+
+            DBG_NOTICE(AQBANKING_LOGDOMAIN, "Adding transaction");
+            AB_ImExporterContext_AddTransaction(ctx, t);
+
+            dbT=GWEN_DB_FindNextGroup(dbT, "transaction");
+          } /* while dbT */
+
+          dbAccount=GWEN_DB_GetNextGroup(dbAccount);
+        } /* while dbAccount */
 
       } /* if dbAccounts */
       else {
-	DBG_ERROR(AQBANKING_LOGDOMAIN, "No account group");
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "No account group");
       }
       dbBank=GWEN_DB_GetNextGroup(dbBank);
     } /* while dbBank */
@@ -257,7 +261,8 @@ int AH_ImExporterOpenHBCI1__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
 
 
-int AH_ImExporterOpenHBCI1_CheckFile(AB_IMEXPORTER *ie, const char *fname){
+int AH_ImExporterOpenHBCI1_CheckFile(AB_IMEXPORTER *ie, const char *fname)
+{
   AH_IMEXPORTER_OPENHBCI1 *ieh;
   GWEN_DBIO_CHECKFILE_RESULT rv;
 
@@ -267,20 +272,25 @@ int AH_ImExporterOpenHBCI1_CheckFile(AB_IMEXPORTER *ie, const char *fname){
   assert(ieh->dbio);
 
   rv=GWEN_DBIO_CheckFile(ieh->dbio, fname);
-  switch(rv) {
-  case GWEN_DBIO_CheckFileResultOk:      return AB_ERROR_INDIFFERENT;
-  case GWEN_DBIO_CheckFileResultNotOk:   return GWEN_ERROR_BAD_DATA;
-  case GWEN_DBIO_CheckFileResultUnknown: return AB_ERROR_INDIFFERENT;
-  default:                               return GWEN_ERROR_GENERIC;
+  switch (rv) {
+  case GWEN_DBIO_CheckFileResultOk:
+    return AB_ERROR_INDIFFERENT;
+  case GWEN_DBIO_CheckFileResultNotOk:
+    return GWEN_ERROR_BAD_DATA;
+  case GWEN_DBIO_CheckFileResultUnknown:
+    return AB_ERROR_INDIFFERENT;
+  default:
+    return GWEN_ERROR_GENERIC;
   } /* switch */
 }
 
 
 
 int AH_ImExporterOpenHBCI1_Export(AB_IMEXPORTER *ie,
-				  AB_IMEXPORTER_CONTEXT *ctx,
+                                  AB_IMEXPORTER_CONTEXT *ctx,
                                   GWEN_SYNCIO *sio,
-				  GWEN_DB_NODE *params){
+                                  GWEN_DB_NODE *params)
+{
   AH_IMEXPORTER_OPENHBCI1 *ieh;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
   GWEN_DB_NODE *dbData;
@@ -296,16 +306,16 @@ int AH_ImExporterOpenHBCI1_Export(AB_IMEXPORTER *ie,
   dbSubParams=GWEN_DB_GetGroup(params, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
                                "params");
   dateFormat=GWEN_DB_GetCharValue(params, "dateFormat", 0,
-				  "YYYY/MM/DD");
+                                  "YYYY/MM/DD");
 
   /* create db, store transactions in it */
   dbData=GWEN_DB_Group_new("transactions");
   ai=AB_ImExporterContext_GetFirstAccountInfo(ctx);
-  while(ai) {
+  while (ai) {
     const AB_TRANSACTION *t;
 
     t=AB_ImExporterAccountInfo_GetFirstTransaction(ai, 0, 0);
-    while(t) {
+    while (t) {
       GWEN_DB_NODE *dbTransaction;
       const GWEN_DATE *da;
 
@@ -314,8 +324,8 @@ int AH_ImExporterOpenHBCI1_Export(AB_IMEXPORTER *ie,
       if (rv) {
         DBG_ERROR(AQBANKING_LOGDOMAIN,
                   "Could not transform transaction to db");
-	GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-			     "Error transforming data to db");
+        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
+                             "Error transforming data to db");
         GWEN_DB_Group_free(dbData);
         GWEN_DB_Group_free(dbTransaction);
         return GWEN_ERROR_GENERIC;
@@ -327,25 +337,25 @@ int AH_ImExporterOpenHBCI1_Export(AB_IMEXPORTER *ie,
 
       da=AB_Transaction_GetDate(t);
       if (da) {
-	GWEN_BUFFER *tbuf;
+        GWEN_BUFFER *tbuf;
         int rv;
 
-	tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+        tbuf=GWEN_Buffer_new(0, 32, 0, 1);
         rv=GWEN_Date_toStringWithTemplate(da, dateFormat, tbuf);
         if (rv) {
-	  DBG_WARN(AQBANKING_LOGDOMAIN, "Bad date format string/date");
-	}
-	else
-	  GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS,
-			       "date", GWEN_Buffer_GetStart(tbuf));
+          DBG_WARN(AQBANKING_LOGDOMAIN, "Bad date format string/date");
+        }
+        else
+          GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                               "date", GWEN_Buffer_GetStart(tbuf));
         GWEN_Buffer_free(tbuf);
       }
 
       da=AB_Transaction_GetValutaDate(t);
       if (da) {
-	GWEN_BUFFER *tbuf;
+        GWEN_BUFFER *tbuf;
 
-	tbuf=GWEN_Buffer_new(0, 32, 0, 1);
+        tbuf=GWEN_Buffer_new(0, 32, 0, 1);
         rv=GWEN_Date_toStringWithTemplate(da, dateFormat, tbuf);
         if (rv) {
           DBG_WARN(AQBANKING_LOGDOMAIN, "Bad date format string/date");
@@ -367,12 +377,12 @@ int AH_ImExporterOpenHBCI1_Export(AB_IMEXPORTER *ie,
   rv=GWEN_DBIO_Export(ieh->dbio,
                       sio,
                       dbData,
-		      dbSubParams,
-		      GWEN_DB_FLAGS_DEFAULT);
+                      dbSubParams,
+                      GWEN_DB_FLAGS_DEFAULT);
   if (rv) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Error exporting data (%d)", rv);
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-			 "Error exporting data");
+                         "Error exporting data");
     GWEN_DB_Group_free(dbData);
     return GWEN_ERROR_GENERIC;
   }

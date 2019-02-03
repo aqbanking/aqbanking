@@ -52,10 +52,10 @@
 
  *   ctx=AB_ImExporterContext_new();
  *   dlg=AB_ImporterDialog_new(banking,
- *       		      ctx,
- *       		      I18N("Your file has been successfully imported.\n"
- *       			   "Click the finish button below to import the "
- *       			   "data into the application\n"));
+ *                ctx,
+ *                I18N("Your file has been successfully imported.\n"
+ *               "Click the finish button below to import the "
+ *               "data into the application\n"));
  *
  *   if (dlg==NULL) {
  *     fprintf(stderr, "Could not create dialog\n");
@@ -124,8 +124,8 @@ library is organized in multiple layers:
 <ul>
   <li>
     <b>API for Applications</b>:
-    This contains the complete API to be used by applications (see 
-    @ref G_AB_C_INTERFACE). It is subdivided into several groups and 
+    This contains the complete API to be used by applications (see
+    @ref G_AB_C_INTERFACE). It is subdivided into several groups and
     includes (among other things):
     <ul>
       <li>Managing Backends/Providers</li>
@@ -144,7 +144,7 @@ library is organized in multiple layers:
     the Provider functions which actually implement the online banking
     functionality. ("Provider" is simply another word for "backend".)
     The API has been designed to be as wide open as possible, and currently
-    it is used by plugins for HBCI, OFX Direct Connect, YellowNet, 
+    it is used by plugins for HBCI, OFX Direct Connect, YellowNet,
     DTAUS and GeldKarte providers.
   </li>
 </ul>

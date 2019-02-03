@@ -55,7 +55,7 @@ struct AH_OUTBOX__CBOX {
 };
 
 
-static AH_OUTBOX__CBOX *AH_Outbox__CBox_new(AB_PROVIDER *pro, 
+static AH_OUTBOX__CBOX *AH_Outbox__CBox_new(AB_PROVIDER *pro,
                                             AB_USER *u,
                                             AH_OUTBOX *ob);
 static void AH_Outbox__CBox_free(AH_OUTBOX__CBOX *cbox);
@@ -64,19 +64,19 @@ static void AH_Outbox__CBox_Finish(AH_OUTBOX__CBOX *cbox);
 
 static void AH_Outbox__CBox_AddTodoJob(AH_OUTBOX__CBOX *cbox, AH_JOB *j);
 
-static AB_USER*
-  AH_Outbox__CBox_GetUser(const AH_OUTBOX__CBOX *cbox);
+static AB_USER *
+AH_Outbox__CBox_GetUser(const AH_OUTBOX__CBOX *cbox);
 
-static AH_JOB_LIST*
-  AH_Outbox__CBox_TakeFinishedJobs(AH_OUTBOX__CBOX *cbox);
+static AH_JOB_LIST *
+AH_Outbox__CBox_TakeFinishedJobs(AH_OUTBOX__CBOX *cbox);
 
 
 static int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox);
 
 static int AH_Outbox__CBox__Hash(int mode,
-				 const uint8_t *p,
-				 unsigned int l,
-				 AH_MSG *msg);
+                                 const uint8_t *p,
+                                 unsigned int l,
+                                 AH_MSG *msg);
 
 
 
@@ -106,10 +106,10 @@ static unsigned int AH_Outbox__CountJobList(const AH_JOB_LIST *jl);
 
 static int AH_Outbox__CBox_SendQueue(AH_OUTBOX__CBOX *cbox,
                                      AH_DIALOG *dlg,
-				     AH_JOBQUEUE *jq);
-static int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox, 
+                                     AH_JOBQUEUE *jq);
+static int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox,
                                      AH_DIALOG *dlg,
-				     AH_JOBQUEUE *jq);
+                                     AH_JOBQUEUE *jq);
 static int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
                                         AH_DIALOG *dlg,
                                         AH_JOBQUEUE *jq);
@@ -122,20 +122,20 @@ static void AH_Outbox__CBox_HandleQueueListError(AH_OUTBOX__CBOX *cbox,
 
 static int AH_Outbox__CBox_SendAndRecvQueue(AH_OUTBOX__CBOX *cbox,
                                             AH_DIALOG *dlg,
-					    AH_JOBQUEUE *jq);
+                                            AH_JOBQUEUE *jq);
 
-static int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox, 
-				      AH_DIALOG *dlg,
-				      uint32_t jqFlags);
-static int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox, 
+static int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox,
+                                      AH_DIALOG *dlg,
+                                      uint32_t jqFlags);
+static int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox,
                                        AH_DIALOG *dlg,
-				       uint32_t jqFlags);
+                                       uint32_t jqFlags);
 
 static int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
-						  AH_JOBQUEUE_LIST *jql);
+                                                  AH_JOBQUEUE_LIST *jql);
 
 static int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox,
-					      AH_JOBQUEUE *jq);
+                                              AH_JOBQUEUE *jq);
 
 static void AH_Outbox__CBox_ExtractMatchingQueues(AH_JOBQUEUE_LIST *jql,
                                                   AH_JOBQUEUE_LIST *jqlWanted,
@@ -144,7 +144,7 @@ static void AH_Outbox__CBox_ExtractMatchingQueues(AH_JOBQUEUE_LIST *jql,
                                                   uint32_t jqmask);
 static int AH_Outbox__CBox_SendAndRecvSelected(AH_OUTBOX__CBOX *cbox,
                                                uint32_t jqflags,
-					       uint32_t jqmask);
+                                               uint32_t jqmask);
 
 static int AH_Outbox__CBox_SendAndRecvDialogQueues(AH_OUTBOX__CBOX *cbox);
 
@@ -179,7 +179,7 @@ static int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
 
 
 static void AH_Outbox__CBox_CopyJobResultsToJobList(const AH_JOB *j,
-						    const AH_JOB_LIST *qjl);
+                                                    const AH_JOB_LIST *qjl);
 
 
 static int AH_Outbox_LockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers);

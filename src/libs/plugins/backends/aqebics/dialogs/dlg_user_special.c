@@ -45,7 +45,8 @@ GWEN_INHERIT(GWEN_DIALOG, EBC_USER_SPECIAL_DIALOG)
 
 
 
-GWEN_DIALOG *EBC_UserSpecialDialog_new(AB_PROVIDER *pro) {
+GWEN_DIALOG *EBC_UserSpecialDialog_new(AB_PROVIDER *pro)
+{
   GWEN_DIALOG *dlg;
   EBC_USER_SPECIAL_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -54,14 +55,14 @@ GWEN_DIALOG *EBC_UserSpecialDialog_new(AB_PROVIDER *pro) {
   dlg=GWEN_Dialog_new("ah_setup_pintan_special");
   GWEN_NEW_OBJECT(EBC_USER_SPECIAL_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, EBC_USER_SPECIAL_DIALOG, dlg, xdlg,
-		       EBC_UserSpecialDialog_FreeData);
+                       EBC_UserSpecialDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, EBC_UserSpecialDialog_SignalHandler);
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(GWEN_PM_LIBNAME, GWEN_PM_SYSDATADIR,
-			       "aqbanking/backends/aqebics/dialogs/dlg_user_special.dlg",
-			       fbuf);
+                               "aqbanking/backends/aqebics/dialogs/dlg_user_special.dlg",
+                               fbuf);
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
@@ -92,16 +93,18 @@ GWEN_DIALOG *EBC_UserSpecialDialog_new(AB_PROVIDER *pro) {
 
 
 
-void GWENHYWFAR_CB EBC_UserSpecialDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB EBC_UserSpecialDialog_FreeData(void *bp, void *p)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
 
-  xdlg=(EBC_USER_SPECIAL_DIALOG*) p;
+  xdlg=(EBC_USER_SPECIAL_DIALOG *) p;
   GWEN_FREE_OBJECT(xdlg);
 }
 
 
 
-int EBC_UserSpecialDialog_GetHttpVMajor(const GWEN_DIALOG *dlg) {
+int EBC_UserSpecialDialog_GetHttpVMajor(const GWEN_DIALOG *dlg)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -113,7 +116,8 @@ int EBC_UserSpecialDialog_GetHttpVMajor(const GWEN_DIALOG *dlg) {
 
 
 
-int EBC_UserSpecialDialog_GetHttpVMinor(const GWEN_DIALOG *dlg) {
+int EBC_UserSpecialDialog_GetHttpVMinor(const GWEN_DIALOG *dlg)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -125,7 +129,8 @@ int EBC_UserSpecialDialog_GetHttpVMinor(const GWEN_DIALOG *dlg) {
 
 
 
-void EBC_UserSpecialDialog_SetHttpVersion(GWEN_DIALOG *dlg, int vmajor, int vminor) {
+void EBC_UserSpecialDialog_SetHttpVersion(GWEN_DIALOG *dlg, int vmajor, int vminor)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -138,7 +143,8 @@ void EBC_UserSpecialDialog_SetHttpVersion(GWEN_DIALOG *dlg, int vmajor, int vmin
 
 
 
-uint32_t EBC_UserSpecialDialog_GetFlags(const GWEN_DIALOG *dlg) {
+uint32_t EBC_UserSpecialDialog_GetFlags(const GWEN_DIALOG *dlg)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -150,7 +156,8 @@ uint32_t EBC_UserSpecialDialog_GetFlags(const GWEN_DIALOG *dlg) {
 
 
 
-void EBC_UserSpecialDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void EBC_UserSpecialDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -162,7 +169,8 @@ void EBC_UserSpecialDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void EBC_UserSpecialDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void EBC_UserSpecialDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -174,7 +182,8 @@ void EBC_UserSpecialDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void EBC_UserSpecialDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void EBC_UserSpecialDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -186,7 +195,8 @@ void EBC_UserSpecialDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-const char *EBC_UserSpecialDialog_GetEbicsVersion(const GWEN_DIALOG *dlg) {
+const char *EBC_UserSpecialDialog_GetEbicsVersion(const GWEN_DIALOG *dlg)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -198,7 +208,8 @@ const char *EBC_UserSpecialDialog_GetEbicsVersion(const GWEN_DIALOG *dlg) {
 
 
 
-void EBC_UserSpecialDialog_SetEbicsVersion(GWEN_DIALOG *dlg, const char *s) {
+void EBC_UserSpecialDialog_SetEbicsVersion(GWEN_DIALOG *dlg, const char *s)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -206,13 +217,16 @@ void EBC_UserSpecialDialog_SetEbicsVersion(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->ebicsVersion);
-  if (s) xdlg->ebicsVersion=strdup(s);
-  else xdlg->ebicsVersion=NULL;
+  if (s)
+    xdlg->ebicsVersion=strdup(s);
+  else
+    xdlg->ebicsVersion=NULL;
 }
 
 
 
-const char *EBC_UserSpecialDialog_GetSignVersion(const GWEN_DIALOG *dlg) {
+const char *EBC_UserSpecialDialog_GetSignVersion(const GWEN_DIALOG *dlg)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -224,7 +238,8 @@ const char *EBC_UserSpecialDialog_GetSignVersion(const GWEN_DIALOG *dlg) {
 
 
 
-void EBC_UserSpecialDialog_SetSignVersion(GWEN_DIALOG *dlg, const char *s) {
+void EBC_UserSpecialDialog_SetSignVersion(GWEN_DIALOG *dlg, const char *s)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -232,13 +247,16 @@ void EBC_UserSpecialDialog_SetSignVersion(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->signVersion);
-  if (s) xdlg->signVersion=strdup(s);
-  else xdlg->signVersion=NULL;
+  if (s)
+    xdlg->signVersion=strdup(s);
+  else
+    xdlg->signVersion=NULL;
 }
 
 
 
-const char *EBC_UserSpecialDialog_GetCryptVersion(const GWEN_DIALOG *dlg) {
+const char *EBC_UserSpecialDialog_GetCryptVersion(const GWEN_DIALOG *dlg)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -250,7 +268,8 @@ const char *EBC_UserSpecialDialog_GetCryptVersion(const GWEN_DIALOG *dlg) {
 
 
 
-void EBC_UserSpecialDialog_SetCryptVersion(GWEN_DIALOG *dlg, const char *s) {
+void EBC_UserSpecialDialog_SetCryptVersion(GWEN_DIALOG *dlg, const char *s)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -258,13 +277,16 @@ void EBC_UserSpecialDialog_SetCryptVersion(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->cryptVersion);
-  if (s) xdlg->cryptVersion=strdup(s);
-  else xdlg->cryptVersion=NULL;
+  if (s)
+    xdlg->cryptVersion=strdup(s);
+  else
+    xdlg->cryptVersion=NULL;
 }
 
 
 
-const char *EBC_UserSpecialDialog_GetAuthVersion(const GWEN_DIALOG *dlg) {
+const char *EBC_UserSpecialDialog_GetAuthVersion(const GWEN_DIALOG *dlg)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -276,7 +298,8 @@ const char *EBC_UserSpecialDialog_GetAuthVersion(const GWEN_DIALOG *dlg) {
 
 
 
-void EBC_UserSpecialDialog_SetAuthVersion(GWEN_DIALOG *dlg, const char *s) {
+void EBC_UserSpecialDialog_SetAuthVersion(GWEN_DIALOG *dlg, const char *s)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -284,13 +307,16 @@ void EBC_UserSpecialDialog_SetAuthVersion(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->authVersion);
-  if (s) xdlg->authVersion=strdup(s);
-  else xdlg->authVersion=NULL;
+  if (s)
+    xdlg->authVersion=strdup(s);
+  else
+    xdlg->authVersion=NULL;
 }
 
 
 
-int EBC_UserSpecialDialog_GetSignKeySize(const GWEN_DIALOG *dlg) {
+int EBC_UserSpecialDialog_GetSignKeySize(const GWEN_DIALOG *dlg)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -302,7 +328,8 @@ int EBC_UserSpecialDialog_GetSignKeySize(const GWEN_DIALOG *dlg) {
 
 
 
-void EBC_UserSpecialDialog_SetSignKeySize(GWEN_DIALOG *dlg, int i) {
+void EBC_UserSpecialDialog_SetSignKeySize(GWEN_DIALOG *dlg, int i)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -314,7 +341,8 @@ void EBC_UserSpecialDialog_SetSignKeySize(GWEN_DIALOG *dlg, int i) {
 
 
 
-int EBC_UserSpecialDialog_GetCryptAndAuthKeySize(const GWEN_DIALOG *dlg) {
+int EBC_UserSpecialDialog_GetCryptAndAuthKeySize(const GWEN_DIALOG *dlg)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -326,7 +354,8 @@ int EBC_UserSpecialDialog_GetCryptAndAuthKeySize(const GWEN_DIALOG *dlg) {
 
 
 
-void EBC_UserSpecialDialog_SetCryptAndAuthKeySize(GWEN_DIALOG *dlg, int i) {
+void EBC_UserSpecialDialog_SetCryptAndAuthKeySize(GWEN_DIALOG *dlg, int i)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -340,7 +369,8 @@ void EBC_UserSpecialDialog_SetCryptAndAuthKeySize(GWEN_DIALOG *dlg, int i) {
 
 
 
-void EBC_UserSpecialDialog_Init(GWEN_DIALOG *dlg) {
+void EBC_UserSpecialDialog_Init(GWEN_DIALOG *dlg)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
@@ -353,11 +383,11 @@ void EBC_UserSpecialDialog_Init(GWEN_DIALOG *dlg) {
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "",
-			      GWEN_DialogProperty_Title,
+                              "",
+                              GWEN_DialogProperty_Title,
                               0,
                               I18N("EBICS Special Settings"),
-			      0);
+                              0);
 
   GWEN_Dialog_SetCharProperty(dlg, "ebicsVersionCombo", GWEN_DialogProperty_AddValue, 0, "2.3 (H002)", 0);
   GWEN_Dialog_SetCharProperty(dlg, "ebicsVersionCombo", GWEN_DialogProperty_AddValue, 0, "2.4 (H003)", 0);
@@ -388,7 +418,7 @@ void EBC_UserSpecialDialog_Init(GWEN_DIALOG *dlg) {
 
   /* protocol version */
   s=xdlg->ebicsVersion;
-  if (! (s && *s))
+  if (!(s && *s))
     s="H003";
   if (strcasecmp(s, "H002")==0)
     GWEN_Dialog_SetIntProperty(dlg, "ebicsVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
@@ -397,7 +427,7 @@ void EBC_UserSpecialDialog_Init(GWEN_DIALOG *dlg) {
 
   /* signature version */
   s=xdlg->signVersion;
-  if (! (s && *s))
+  if (!(s && *s))
     s="A005";
   if (strcasecmp(s, "A004")==0)
     GWEN_Dialog_SetIntProperty(dlg, "signVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
@@ -406,7 +436,7 @@ void EBC_UserSpecialDialog_Init(GWEN_DIALOG *dlg) {
 
   /* crypt version */
   s=xdlg->cryptVersion;
-  if (! (s && *s))
+  if (!(s && *s))
     s="E002";
   if (strcasecmp(s, "E001")==0)
     GWEN_Dialog_SetIntProperty(dlg, "cryptVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
@@ -415,7 +445,7 @@ void EBC_UserSpecialDialog_Init(GWEN_DIALOG *dlg) {
 
   /* auth version */
   s=xdlg->authVersion;
-  if (! (s && *s))
+  if (!(s && *s))
     s="X002";
   if (strcasecmp(s, "X001")==0)
     GWEN_Dialog_SetIntProperty(dlg, "authVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
@@ -423,13 +453,18 @@ void EBC_UserSpecialDialog_Init(GWEN_DIALOG *dlg) {
     GWEN_Dialog_SetIntProperty(dlg, "authVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0);
 
   /* http version */
-  switch(((xdlg->httpVMajor)<<8)+xdlg->httpVMinor) {
-  case 0x0100: GWEN_Dialog_SetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0); break;
-  case 0x0101: GWEN_Dialog_SetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0); break;
-  default:     break;
+  switch (((xdlg->httpVMajor)<<8)+xdlg->httpVMinor) {
+  case 0x0100:
+    GWEN_Dialog_SetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
+    break;
+  case 0x0101:
+    GWEN_Dialog_SetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0);
+    break;
+  default:
+    break;
   }
 
-  switch(xdlg->signKeySize) {
+  switch (xdlg->signKeySize) {
   case 128:
     GWEN_Dialog_SetIntProperty(dlg, "signKeySizeCombo", GWEN_DialogProperty_Value, 0, 0, 0);
     break;
@@ -445,7 +480,7 @@ void EBC_UserSpecialDialog_Init(GWEN_DIALOG *dlg) {
     break;
   }
 
-  switch(xdlg->cryptAndAuthKeySize) {
+  switch (xdlg->cryptAndAuthKeySize) {
   case 128:
     GWEN_Dialog_SetIntProperty(dlg, "cryptAndAuthKeySizeCombo", GWEN_DialogProperty_Value, 0, 0, 0);
     break;
@@ -464,13 +499,13 @@ void EBC_UserSpecialDialog_Init(GWEN_DIALOG *dlg) {
 
   GWEN_Dialog_SetIntProperty(dlg, "forceSslv3Check", GWEN_DialogProperty_Value, 0,
                              (xdlg->flags & EBC_USER_FLAGS_FORCE_SSLV3)?1:0,
-			     0);
+                             0);
   GWEN_Dialog_SetIntProperty(dlg, "useIzlCheck", GWEN_DialogProperty_Value, 0,
-			     (xdlg->flags & EBC_USER_FLAGS_USE_IZL)?1:0,
-			     0);
+                             (xdlg->flags & EBC_USER_FLAGS_USE_IZL)?1:0,
+                             0);
   GWEN_Dialog_SetIntProperty(dlg, "noEuCheck", GWEN_DialogProperty_Value, 0,
-			     (xdlg->flags & EBC_USER_FLAGS_NO_EU)?1:0,
-			     0);
+                             (xdlg->flags & EBC_USER_FLAGS_NO_EU)?1:0,
+                             0);
 
 
   /* read width */
@@ -489,7 +524,8 @@ void EBC_UserSpecialDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-void EBC_UserSpecialDialog_Fini(GWEN_DIALOG *dlg) {
+void EBC_UserSpecialDialog_Fini(GWEN_DIALOG *dlg)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
   int i;
   GWEN_DB_NODE *dbPrefs;
@@ -503,36 +539,52 @@ void EBC_UserSpecialDialog_Fini(GWEN_DIALOG *dlg) {
 
   /* fromGui */
   i=GWEN_Dialog_GetIntProperty(dlg, "ebicsVersionCombo", GWEN_DialogProperty_Value, 0, -1);
-  switch(i) {
-  case 0: EBC_UserSpecialDialog_SetEbicsVersion(dlg, "H002"); break;
+  switch (i) {
+  case 0:
+    EBC_UserSpecialDialog_SetEbicsVersion(dlg, "H002");
+    break;
   default:
-  case 1: EBC_UserSpecialDialog_SetEbicsVersion(dlg, "H003"); break;
+  case 1:
+    EBC_UserSpecialDialog_SetEbicsVersion(dlg, "H003");
+    break;
   }
 
   i=GWEN_Dialog_GetIntProperty(dlg, "signVersionCombo", GWEN_DialogProperty_Value, 0, -1);
-  switch(i) {
-  case 0: EBC_UserSpecialDialog_SetSignVersion(dlg, "A004"); break;
+  switch (i) {
+  case 0:
+    EBC_UserSpecialDialog_SetSignVersion(dlg, "A004");
+    break;
   default:
-  case 1: EBC_UserSpecialDialog_SetSignVersion(dlg, "A005"); break;
+  case 1:
+    EBC_UserSpecialDialog_SetSignVersion(dlg, "A005");
+    break;
   }
 
   i=GWEN_Dialog_GetIntProperty(dlg, "cryptVersionCombo", GWEN_DialogProperty_Value, 0, -1);
-  switch(i) {
-  case 0: EBC_UserSpecialDialog_SetCryptVersion(dlg, "E001"); break;
+  switch (i) {
+  case 0:
+    EBC_UserSpecialDialog_SetCryptVersion(dlg, "E001");
+    break;
   default:
-  case 1: EBC_UserSpecialDialog_SetCryptVersion(dlg, "E002"); break;
+  case 1:
+    EBC_UserSpecialDialog_SetCryptVersion(dlg, "E002");
+    break;
   }
 
   i=GWEN_Dialog_GetIntProperty(dlg, "authVersionCombo", GWEN_DialogProperty_Value, 0, -1);
-  switch(i) {
-  case 0: EBC_UserSpecialDialog_SetAuthVersion(dlg, "X001"); break;
+  switch (i) {
+  case 0:
+    EBC_UserSpecialDialog_SetAuthVersion(dlg, "X001");
+    break;
   default:
-  case 1: EBC_UserSpecialDialog_SetAuthVersion(dlg, "X002"); break;
+  case 1:
+    EBC_UserSpecialDialog_SetAuthVersion(dlg, "X002");
+    break;
   }
 
 
   i=GWEN_Dialog_GetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, -1);
-  switch(i) {
+  switch (i) {
   case 0:
     xdlg->httpVMajor=1;
     xdlg->httpVMinor=0;
@@ -545,21 +597,37 @@ void EBC_UserSpecialDialog_Fini(GWEN_DIALOG *dlg) {
   }
 
   i=GWEN_Dialog_GetIntProperty(dlg, "signKeySizeCombo", GWEN_DialogProperty_Value, 0, -1);
-  switch(i) {
-  case 0: xdlg->signKeySize=128;  break;
+  switch (i) {
+  case 0:
+    xdlg->signKeySize=128;
+    break;
   default:
-  case 1: xdlg->signKeySize=256;  break;
-  case 2: xdlg->signKeySize=512;  break;
-  case 3: xdlg->signKeySize=1024; break;
+  case 1:
+    xdlg->signKeySize=256;
+    break;
+  case 2:
+    xdlg->signKeySize=512;
+    break;
+  case 3:
+    xdlg->signKeySize=1024;
+    break;
   }
 
   i=GWEN_Dialog_GetIntProperty(dlg, "cryptAndAuthKeySizeCombo", GWEN_DialogProperty_Value, 0, -1);
-  switch(i) {
-  case 0: xdlg->cryptAndAuthKeySize=128;  break;
+  switch (i) {
+  case 0:
+    xdlg->cryptAndAuthKeySize=128;
+    break;
   default:
-  case 1: xdlg->cryptAndAuthKeySize=256;  break;
-  case 2: xdlg->cryptAndAuthKeySize=512;  break;
-  case 3: xdlg->cryptAndAuthKeySize=1024; break;
+  case 1:
+    xdlg->cryptAndAuthKeySize=256;
+    break;
+  case 2:
+    xdlg->cryptAndAuthKeySize=512;
+    break;
+  case 3:
+    xdlg->cryptAndAuthKeySize=1024;
+    break;
   }
 
   flags=0;
@@ -575,21 +643,22 @@ void EBC_UserSpecialDialog_Fini(GWEN_DIALOG *dlg) {
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_width",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_width",
+                      i);
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_height",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_height",
+                      i);
 }
 
 
 
-int EBC_UserSpecialDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int EBC_UserSpecialDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   DBG_ERROR(0, "Activated: %s", sender);
   if (strcasecmp(sender, "okButton")==0)
     return GWEN_DialogEvent_ResultAccept;
@@ -606,14 +675,15 @@ int EBC_UserSpecialDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) 
 
 int GWENHYWFAR_CB EBC_UserSpecialDialog_SignalHandler(GWEN_DIALOG *dlg,
                                                       GWEN_DIALOG_EVENTTYPE t,
-                                                      const char *sender) {
+                                                      const char *sender)
+{
   EBC_USER_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, EBC_USER_SPECIAL_DIALOG, dlg);
   assert(xdlg);
 
-  switch(t) {
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     EBC_UserSpecialDialog_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;

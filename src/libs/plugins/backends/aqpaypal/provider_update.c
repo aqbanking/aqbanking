@@ -14,7 +14,8 @@
 
 
 
-int APY_Provider_UpdatePreInit(AB_PROVIDER *pro, uint32_t lastVersion, uint32_t currentVersion) {
+int APY_Provider_UpdatePreInit(AB_PROVIDER *pro, uint32_t lastVersion, uint32_t currentVersion)
+{
 #if 0 /* no preinit for now */
   int rv;
 
@@ -28,7 +29,8 @@ int APY_Provider_UpdatePreInit(AB_PROVIDER *pro, uint32_t lastVersion, uint32_t 
 
 
 
-int APY_Provider_UpdatePostInit(AB_PROVIDER *pro, uint32_t lastVersion, uint32_t currentVersion) {
+int APY_Provider_UpdatePostInit(AB_PROVIDER *pro, uint32_t lastVersion, uint32_t currentVersion)
+{
 #if 0 /* no postinit for now */
   int rv;
 

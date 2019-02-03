@@ -28,58 +28,59 @@
 int AH_Control_SetMaxTransfers(AB_PROVIDER *pro,
                                GWEN_DB_NODE *dbArgs,
                                int argc,
-                               char **argv) {
+                               char **argv)
+{
   GWEN_DB_NODE *db;
   uint32_t uid;
   AB_USER *u=NULL;
   int rv;
   int maxTransfers;
   int maxDebitNotes;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "userId",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "u",                          /* short option */
-    "user",                       /* long option */
-    "Specify the unique user id",    /* short description */
-    "Specify the unique user id"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "maxTransfers",               /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "t",                          /* short option */
-    "transfers",                  /* long option */
-    "Specify the maximum number of transfers per job",    /* short description */
-    "Specify the maximum number of transfers per job"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "maxDebitNotes",              /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "d",                          /* short option */
-    "debitnotes",                 /* long option */
-    "Specify the maximum number of debit notes per job",    /* short description */
-    "Specify the maximum number of debit notes per job"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "userId",                     /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "u",                          /* short option */
+      "user",                       /* long option */
+      "Specify the unique user id",    /* short description */
+      "Specify the unique user id"     /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "maxTransfers",               /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "t",                          /* short option */
+      "transfers",                  /* long option */
+      "Specify the maximum number of transfers per job",    /* short description */
+      "Specify the maximum number of transfers per job"     /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "maxDebitNotes",              /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "d",                          /* short option */
+      "debitnotes",                 /* long option */
+      "Specify the maximum number of debit notes per job",    /* short description */
+      "Specify the maximum number of debit notes per job"     /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");

@@ -27,10 +27,11 @@
 
 
 
-void* EB_Xml__HandlePath(const char *entry,
+void *EB_Xml__HandlePath(const char *entry,
                          void *data,
                          int idx,
-                         uint32_t flags) {
+                         uint32_t flags)
+{
   xmlNodePtr n;
   xmlNodePtr nn;
   int i;
@@ -66,20 +67,20 @@ void* EB_Xml__HandlePath(const char *entry,
 
   /* check whether we are allowed to simply create the node */
   if (
-      ((flags & GWEN_PATH_FLAGS_LAST) &&
-       (((flags & GWEN_PATH_FLAGS_VARIABLE) &&
-         (flags & GWEN_PATH_FLAGS_CREATE_VAR)) ||
-        (!(flags & GWEN_PATH_FLAGS_VARIABLE) &&
-         (flags & GWEN_PATH_FLAGS_CREATE_GROUP)))
-      ) ||
-      (
-       !(flags & GWEN_PATH_FLAGS_LAST) &&
-       (flags & GWEN_PATH_FLAGS_PATHCREATE))
-     ) {
+    ((flags & GWEN_PATH_FLAGS_LAST) &&
+     (((flags & GWEN_PATH_FLAGS_VARIABLE) &&
+       (flags & GWEN_PATH_FLAGS_CREATE_VAR)) ||
+      (!(flags & GWEN_PATH_FLAGS_VARIABLE) &&
+       (flags & GWEN_PATH_FLAGS_CREATE_GROUP)))
+    ) ||
+    (
+      !(flags & GWEN_PATH_FLAGS_LAST) &&
+      (flags & GWEN_PATH_FLAGS_PATHCREATE))
+  ) {
     /* simply create the new variable/group */
     if (idx!=0) {
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Index is not 0, not creating %s[%d]",
-               entry, idx);
+                entry, idx);
       return 0;
     }
     DBG_VERBOUS(AQEBICS_LOGDOMAIN,
@@ -92,9 +93,9 @@ void* EB_Xml__HandlePath(const char *entry,
 
   nn=n->children;
   i=idx;
-  while(nn) {
+  while (nn) {
     if (nn->type==XML_ELEMENT_NODE) {
-      if (nn->name && strcmp((const char*)nn->name, name)==0) {
+      if (nn->name && strcmp((const char *)nn->name, name)==0) {
         if (i--==0)
           break;
       }
@@ -105,10 +106,10 @@ void* EB_Xml__HandlePath(const char *entry,
   if (!nn) {
     /* node not found, check, if we are allowed to create it */
     if (
-        (!(flags & GWEN_PATH_FLAGS_LAST) &&
-         (flags & GWEN_PATH_FLAGS_PATHMUSTEXIST)) ||
-        (flags & GWEN_PATH_FLAGS_NAMEMUSTEXIST)
-       ) {
+      (!(flags & GWEN_PATH_FLAGS_LAST) &&
+       (flags & GWEN_PATH_FLAGS_PATHMUSTEXIST)) ||
+      (flags & GWEN_PATH_FLAGS_NAMEMUSTEXIST)
+    ) {
       DBG_VERBOUS(AQEBICS_LOGDOMAIN,
                   "Entry \"%s\" does not exist", entry);
       return 0;
@@ -126,11 +127,11 @@ void* EB_Xml__HandlePath(const char *entry,
   else {
     /* node does exist, check whether this is ok */
     if (
-        ((flags & GWEN_PATH_FLAGS_LAST) &&
-         (flags & GWEN_PATH_FLAGS_NAMEMUSTNOTEXIST)) ||
-        (!(flags & GWEN_PATH_FLAGS_LAST) &&
-         (flags & GWEN_PATH_FLAGS_PATHMUSTNOTEXIST))
-       ) {
+      ((flags & GWEN_PATH_FLAGS_LAST) &&
+       (flags & GWEN_PATH_FLAGS_NAMEMUSTNOTEXIST)) ||
+      (!(flags & GWEN_PATH_FLAGS_LAST) &&
+       (flags & GWEN_PATH_FLAGS_PATHMUSTNOTEXIST))
+    ) {
       DBG_VERBOUS(AQEBICS_LOGDOMAIN, "Entry \"%s\" already exists", entry);
       return 0;
     }
@@ -142,7 +143,8 @@ void* EB_Xml__HandlePath(const char *entry,
 
 
 xmlNodePtr EB_Xml_GetNode(xmlNodePtr n, const char *path,
-                          uint32_t flags) {
+                          uint32_t flags)
+{
   return (xmlNodePtr)GWEN_Path_HandleWithIdx(path,
                                              n,
                                              flags,
@@ -151,7 +153,8 @@ xmlNodePtr EB_Xml_GetNode(xmlNodePtr n, const char *path,
 
 
 
-int EB_Xml_SetCharValue(xmlNodePtr n, const char *path, const char *value) {
+int EB_Xml_SetCharValue(xmlNodePtr n, const char *path, const char *value)
+{
   xmlNodePtr node;
 
   node=EB_Xml_GetNode(n, path, 0);
@@ -168,7 +171,8 @@ int EB_Xml_SetCharValue(xmlNodePtr n, const char *path, const char *value) {
 
 
 const char *EB_Xml_GetCharValue(xmlNodePtr n, const char *path,
-                                const char *defValue) {
+                                const char *defValue)
+{
   xmlNodePtr node;
 
   node=EB_Xml_GetNode(n, path, GWEN_PATH_FLAGS_NAMEMUSTEXIST);
@@ -180,9 +184,9 @@ const char *EB_Xml_GetCharValue(xmlNodePtr n, const char *path,
   if (node==0)
     return defValue;
 
-  while(node) {
+  while (node) {
     if (node->type==XML_TEXT_NODE) {
-      return (const char*)node->content;
+      return (const char *)node->content;
     }
     node=node->next;
   }
@@ -192,7 +196,8 @@ const char *EB_Xml_GetCharValue(xmlNodePtr n, const char *path,
 
 
 
-int EB_Xml_SetIntValue(xmlNodePtr n, const char *path, int value) {
+int EB_Xml_SetIntValue(xmlNodePtr n, const char *path, int value)
+{
   char numbuf[32];
 
   snprintf(numbuf, sizeof(numbuf)-1, "%d", value);
@@ -202,7 +207,8 @@ int EB_Xml_SetIntValue(xmlNodePtr n, const char *path, int value) {
 
 
 
-int EB_Xml_GetIntValue(xmlNodePtr n, const char *path, int defValue) {
+int EB_Xml_GetIntValue(xmlNodePtr n, const char *path, int defValue)
+{
   const char *s;
   int i;
 
@@ -216,7 +222,8 @@ int EB_Xml_GetIntValue(xmlNodePtr n, const char *path, int defValue) {
 
 
 
-int EB_Xml_CompressDoc(xmlDocPtr doc, GWEN_BUFFER *buf) {
+int EB_Xml_CompressDoc(xmlDocPtr doc, GWEN_BUFFER *buf)
+{
   xmlChar *xmlbuff;
   int buffersize;
   int rv;
@@ -233,7 +240,7 @@ int EB_Xml_CompressDoc(xmlDocPtr doc, GWEN_BUFFER *buf) {
 
     f=fopen("/tmp/compress.txt", "w+");
     if (f) {
-      fwrite((const char*)xmlbuff, buffersize, 1, f);
+      fwrite((const char *)xmlbuff, buffersize, 1, f);
       fclose(f);
     }
     else {
@@ -243,7 +250,7 @@ int EB_Xml_CompressDoc(xmlDocPtr doc, GWEN_BUFFER *buf) {
   }
 #endif
 
-  rv=EB_Zip_Deflate((const char*)xmlbuff, buffersize, buf);
+  rv=EB_Zip_Deflate((const char *)xmlbuff, buffersize, buf);
   xmlFree(xmlbuff);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not zip doc (%d)", rv);
@@ -255,7 +262,8 @@ int EB_Xml_CompressDoc(xmlDocPtr doc, GWEN_BUFFER *buf) {
 
 
 
-int EB_Xml_Compress64Doc(xmlDocPtr doc, GWEN_BUFFER *buf) {
+int EB_Xml_Compress64Doc(xmlDocPtr doc, GWEN_BUFFER *buf)
+{
   GWEN_BUFFER *tbuf;
   int rv;
 
@@ -266,7 +274,7 @@ int EB_Xml_Compress64Doc(xmlDocPtr doc, GWEN_BUFFER *buf) {
     return rv;
   }
 
-  rv=GWEN_Base64_Encode((const unsigned char*)GWEN_Buffer_GetStart(tbuf),
+  rv=GWEN_Base64_Encode((const unsigned char *)GWEN_Buffer_GetStart(tbuf),
                         GWEN_Buffer_GetUsedBytes(tbuf),
                         buf, 0);
   GWEN_Buffer_free(tbuf);
@@ -280,7 +288,8 @@ int EB_Xml_Compress64Doc(xmlDocPtr doc, GWEN_BUFFER *buf) {
 
 
 
-int EB_Xml_UncompressDoc(const char *ptr, int size, xmlDocPtr *pdoc) {
+int EB_Xml_UncompressDoc(const char *ptr, int size, xmlDocPtr *pdoc)
+{
   xmlDocPtr doc;
   int rv;
   GWEN_BUFFER *tbuf;
@@ -311,12 +320,13 @@ int EB_Xml_UncompressDoc(const char *ptr, int size, xmlDocPtr *pdoc) {
 
 
 int EB_Xml_Uncompress64Doc(const char *ptr, int size,
-                           xmlDocPtr *pdoc) {
+                           xmlDocPtr *pdoc)
+{
   GWEN_BUFFER *tbuf;
   int rv;
 
   tbuf=GWEN_Buffer_new(0, 512, 0, 1);
-  rv=GWEN_Base64_Decode((const unsigned char*)ptr, size, tbuf);
+  rv=GWEN_Base64_Decode((const unsigned char *)ptr, size, tbuf);
   if (rv) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not base64-decode doc");
     GWEN_Buffer_free(tbuf);
@@ -337,26 +347,27 @@ int EB_Xml_Uncompress64Doc(const char *ptr, int size,
 
 
 
-int EB_Xml_Ebicsify(xmlNodePtr node, const char *hVersion) {
+int EB_Xml_Ebicsify(xmlNodePtr node, const char *hVersion)
+{
   if (strcasecmp(hVersion, "H002")==0) {
     xmlNsPtr ns;
 
     ns=xmlNewNs(node,
-		BAD_CAST "http://www.ebics.org/H002",
-		NULL);
+                BAD_CAST "http://www.ebics.org/H002",
+                NULL);
     assert(ns);
     ns=xmlNewNs(node,
-		BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
-		BAD_CAST "ds");
+                BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
+                BAD_CAST "ds");
     assert(ns);
     ns=xmlNewNs(node,
-		BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
-		BAD_CAST "xsi");
+                BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
+                BAD_CAST "xsi");
     xmlNewNsProp(node,
-		 ns,
-		 BAD_CAST "schemaLocation", /* xsi:schemaLocation */
-		 BAD_CAST "http://www.ebics.org/H002 "
-		 "http://www.ebics.org/H002/ebics_request.xsd");
+                 ns,
+                 BAD_CAST "schemaLocation", /* xsi:schemaLocation */
+                 BAD_CAST "http://www.ebics.org/H002 "
+                 "http://www.ebics.org/H002/ebics_request.xsd");
     xmlNewProp(node, BAD_CAST "Version", BAD_CAST "H002");
     xmlNewProp(node, BAD_CAST "Revision", BAD_CAST "1");
   }
@@ -364,21 +375,21 @@ int EB_Xml_Ebicsify(xmlNodePtr node, const char *hVersion) {
     xmlNsPtr ns;
 
     ns=xmlNewNs(node,
-		BAD_CAST "http://www.ebics.org/H003",
-		NULL);
+                BAD_CAST "http://www.ebics.org/H003",
+                NULL);
     assert(ns);
     ns=xmlNewNs(node,
-		BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
-		BAD_CAST "ds");
+                BAD_CAST "http://www.w3.org/2000/09/xmldsig#",
+                BAD_CAST "ds");
     assert(ns);
     ns=xmlNewNs(node,
-		BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
-		BAD_CAST "xsi");
+                BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
+                BAD_CAST "xsi");
     xmlNewNsProp(node,
-		 ns,
-		 BAD_CAST "schemaLocation", /* xsi:schemaLocation */
-		 BAD_CAST "http://www.ebics.org/H003 "
-		 "http://www.ebics.org/H003/ebics_request.xsd");
+                 ns,
+                 BAD_CAST "schemaLocation", /* xsi:schemaLocation */
+                 BAD_CAST "http://www.ebics.org/H003 "
+                 "http://www.ebics.org/H003/ebics_request.xsd");
     xmlNewProp(node, BAD_CAST "Version", BAD_CAST "H003");
     xmlNewProp(node, BAD_CAST "Revision", BAD_CAST "1");
   }
@@ -392,7 +403,8 @@ int EB_Xml_Ebicsify(xmlNodePtr node, const char *hVersion) {
 
 
 
-int EB_Xml_InsertChild(xmlNodePtr node, xmlNodePtr n) {
+int EB_Xml_InsertChild(xmlNodePtr node, xmlNodePtr n)
+{
   if (node->children)
     xmlAddPrevSibling(node->children, n);
   else
@@ -404,8 +416,9 @@ int EB_Xml_InsertChild(xmlNodePtr node, xmlNodePtr n) {
 
 
 int EB_Xml_GetXpathData(xmlNodePtr signedInfoNode,
-			const xmlChar *uri,
-			GWEN_BUFFER *rbuf) {
+                        const xmlChar *uri,
+                        GWEN_BUFFER *rbuf)
+{
   xmlSecTransformPtr tptr;
   int rv;
   xmlSecTransformDataType firstType;
@@ -420,58 +433,58 @@ int EB_Xml_GetXpathData(xmlNodePtr signedInfoNode,
   rv=xmlSecTransformCtxSetUri(ctx, uri, signedInfoNode);
   if (rv) {
     xmlSecError(XMLSEC_ERRORS_HERE,
-		NULL,
-		"xmlSecTransformCtxAppend",
-		XMLSEC_ERRORS_R_XMLSEC_FAILED,
-		XMLSEC_ERRORS_NO_MESSAGE);
+                NULL,
+                "xmlSecTransformCtxAppend",
+                XMLSEC_ERRORS_R_XMLSEC_FAILED,
+                XMLSEC_ERRORS_NO_MESSAGE);
     xmlSecTransformCtxDestroy(ctx);
     return (-1);
   }
 
   /* canonicalisation (see xmlsec/transforms.h) */
   tptr=xmlSecTransformCtxCreateAndAppend(ctx,
-					 xmlSecTransformInclC14NId);
-  if(tptr == NULL) {
+                                         xmlSecTransformInclC14NId);
+  if (tptr == NULL) {
     xmlSecError(XMLSEC_ERRORS_HERE,
-		NULL,
-		"xmlSecTransformCtxAppend",
-		XMLSEC_ERRORS_R_XMLSEC_FAILED,
-		XMLSEC_ERRORS_NO_MESSAGE);
+                NULL,
+                "xmlSecTransformCtxAppend",
+                XMLSEC_ERRORS_R_XMLSEC_FAILED,
+                XMLSEC_ERRORS_NO_MESSAGE);
     xmlSecTransformCtxDestroy(ctx);
-    return(-1);
+    return (-1);
   }
 
   firstType=xmlSecTransformGetDataType(ctx->first,
-				       xmlSecTransformModePush,
-				       ctx);
-  if((firstType & xmlSecTransformDataTypeXml) != 0) {
+                                       xmlSecTransformModePush,
+                                       ctx);
+  if ((firstType & xmlSecTransformDataTypeXml) != 0) {
     xmlSecNodeSetPtr nodeset = NULL;
 
     nodeset=xmlSecNodeSetGetChildren(signedInfoNode->doc,
-				     signedInfoNode, 1, 0);
+                                     signedInfoNode, 1, 0);
 
     /* calculate the signature */
     rv=xmlSecTransformCtxXmlExecute(ctx, nodeset);
-    if(rv<0) {
+    if (rv<0) {
       xmlSecError(XMLSEC_ERRORS_HERE,
-		  NULL,
-		  "xmlSecTransformCtxXmlExecute",
-		  XMLSEC_ERRORS_R_XMLSEC_FAILED,
-		  XMLSEC_ERRORS_NO_MESSAGE);
+                  NULL,
+                  "xmlSecTransformCtxXmlExecute",
+                  XMLSEC_ERRORS_R_XMLSEC_FAILED,
+                  XMLSEC_ERRORS_NO_MESSAGE);
       xmlSecNodeSetDestroy(nodeset);
       xmlSecTransformCtxDestroy(ctx);
-      return(-1);
+      return (-1);
     }
     xmlSecNodeSetDestroy(nodeset);
   }
   else {
     xmlSecError(XMLSEC_ERRORS_HERE,
-		NULL,
-		"the binary c14n transforms are not supported yet",
-		XMLSEC_ERRORS_R_NOT_IMPLEMENTED,
-		XMLSEC_ERRORS_NO_MESSAGE);
+                NULL,
+                "the binary c14n transforms are not supported yet",
+                XMLSEC_ERRORS_R_NOT_IMPLEMENTED,
+                XMLSEC_ERRORS_NO_MESSAGE);
     xmlSecTransformCtxDestroy(ctx);
-    return(-1);
+    return (-1);
   }
 
   /* ctx->result now contains the resulting data */
@@ -479,16 +492,17 @@ int EB_Xml_GetXpathData(xmlNodePtr signedInfoNode,
   rlen=xmlSecBufferGetSize(ctx->result);
   if (result && rlen) {
     DBG_DEBUG(AQEBICS_LOGDOMAIN, "Have data: %d bytes", rlen);
-    GWEN_Buffer_AppendBytes(rbuf, (char*)result, rlen);
+    GWEN_Buffer_AppendBytes(rbuf, (char *)result, rlen);
   }
   xmlSecTransformCtxDestroy(ctx);
 
-  return(0);
+  return (0);
 }
 
 
 
-int EB_Xml_DocFromBuffer(const char *ptr, int size, xmlDocPtr *pdoc) {
+int EB_Xml_DocFromBuffer(const char *ptr, int size, xmlDocPtr *pdoc)
+{
   xmlDocPtr doc;
 
   doc=xmlParseMemory(ptr, size);
@@ -506,8 +520,9 @@ int EB_Xml_DocFromBuffer(const char *ptr, int size, xmlDocPtr *pdoc) {
 
 
 int EB_Xml_BuildHashData(xmlNodePtr signedInfoNode,
-			 const xmlChar *uri,
-			 GWEN_BUFFER *rbuf) {
+                         const xmlChar *uri,
+                         GWEN_BUFFER *rbuf)
+{
   xmlSecTransformPtr tptr;
   int rv;
   xmlSecTransformDataType firstType;
@@ -522,92 +537,93 @@ int EB_Xml_BuildHashData(xmlNodePtr signedInfoNode,
   rv=xmlSecTransformCtxSetUri(ctx, uri, signedInfoNode);
   if (rv) {
     xmlSecError(XMLSEC_ERRORS_HERE,
-		NULL,
-		"xmlSecTransformCtxAppend",
-		XMLSEC_ERRORS_R_XMLSEC_FAILED,
-		XMLSEC_ERRORS_NO_MESSAGE);
+                NULL,
+                "xmlSecTransformCtxAppend",
+                XMLSEC_ERRORS_R_XMLSEC_FAILED,
+                XMLSEC_ERRORS_NO_MESSAGE);
     xmlSecTransformCtxDestroy(ctx);
     return (-1);
   }
 
   /* canonicalisation (see xmlsec/transforms.h) */
   tptr=xmlSecTransformCtxCreateAndAppend(ctx,
-					 xmlSecTransformInclC14NId);
-  if(tptr == NULL) {
+                                         xmlSecTransformInclC14NId);
+  if (tptr == NULL) {
     xmlSecError(XMLSEC_ERRORS_HERE,
-		NULL,
-		"xmlSecTransformCtxAppend",
-		XMLSEC_ERRORS_R_XMLSEC_FAILED,
-		XMLSEC_ERRORS_NO_MESSAGE);
+                NULL,
+                "xmlSecTransformCtxAppend",
+                XMLSEC_ERRORS_R_XMLSEC_FAILED,
+                XMLSEC_ERRORS_NO_MESSAGE);
     xmlSecTransformCtxDestroy(ctx);
-    return(-1);
+    return (-1);
   }
 
 #if 0
   /* hashing (see xmlsec/app.h)  */
   tptr=xmlSecTransformCtxCreateAndAppend(ctx,
-					 xmlSecTransformHmacSha1Id);
-  if(tptr == NULL) {
+                                         xmlSecTransformHmacSha1Id);
+  if (tptr == NULL) {
     xmlSecError(XMLSEC_ERRORS_HERE,
-		NULL,
-		"xmlSecTransformCtxAppend",
-		XMLSEC_ERRORS_R_XMLSEC_FAILED,
-		XMLSEC_ERRORS_NO_MESSAGE);
+                NULL,
+                "xmlSecTransformCtxAppend",
+                XMLSEC_ERRORS_R_XMLSEC_FAILED,
+                XMLSEC_ERRORS_NO_MESSAGE);
     xmlSecTransformCtxDestroy(ctx);
-    return(-1);
+    return (-1);
   }
 #endif
 
   firstType=xmlSecTransformGetDataType(ctx->first,
-				       xmlSecTransformModePush,
-				       ctx);
-  if((firstType & xmlSecTransformDataTypeXml) != 0) {
+                                       xmlSecTransformModePush,
+                                       ctx);
+  if ((firstType & xmlSecTransformDataTypeXml) != 0) {
     xmlSecNodeSetPtr nodeset = NULL;
 
     nodeset=xmlSecNodeSetGetChildren(signedInfoNode->doc,
-				     signedInfoNode, 1, 0);
+                                     signedInfoNode, 1, 0);
 
     /* calculate the signature */
     rv=xmlSecTransformCtxXmlExecute(ctx, nodeset);
-    if(rv<0) {
+    if (rv<0) {
       xmlSecError(XMLSEC_ERRORS_HERE,
-		  NULL,
-		  "xmlSecTransformCtxXmlExecute",
-		  XMLSEC_ERRORS_R_XMLSEC_FAILED,
-		  XMLSEC_ERRORS_NO_MESSAGE);
+                  NULL,
+                  "xmlSecTransformCtxXmlExecute",
+                  XMLSEC_ERRORS_R_XMLSEC_FAILED,
+                  XMLSEC_ERRORS_NO_MESSAGE);
       xmlSecNodeSetDestroy(nodeset);
       xmlSecTransformCtxDestroy(ctx);
-      return(-1);
+      return (-1);
     }
     xmlSecNodeSetDestroy(nodeset);
   }
   else {
     xmlSecError(XMLSEC_ERRORS_HERE,
-		NULL,
-		"the binary c14n transforms are not supported yet",
-		XMLSEC_ERRORS_R_NOT_IMPLEMENTED,
-		XMLSEC_ERRORS_NO_MESSAGE);
+                NULL,
+                "the binary c14n transforms are not supported yet",
+                XMLSEC_ERRORS_R_NOT_IMPLEMENTED,
+                XMLSEC_ERRORS_NO_MESSAGE);
     xmlSecTransformCtxDestroy(ctx);
-    return(-1);
+    return (-1);
   }
 
   /* ctx->result now contains the resulting data */
   result=xmlSecBufferGetData(ctx->result);
   rlen=xmlSecBufferGetSize(ctx->result);
   if (result && rlen) {
-    GWEN_Buffer_AppendBytes(rbuf, (char*)result, rlen);
+    GWEN_Buffer_AppendBytes(rbuf, (char *)result, rlen);
   }
   xmlSecTransformCtxDestroy(ctx);
 
-  return(0);
+  return (0);
 }
 
 
 
 int EB_Xml_BuildNodeHash(xmlNodePtr node,
-			 const char *uri,
+                         const char *uri,
                          GWEN_MDIGEST *md,
-			 GWEN_BUFFER *hbuf) {
+                         GWEN_BUFFER *hbuf)
+{
   GWEN_BUFFER *dbuf;
   int rv;
 
@@ -629,8 +645,8 @@ int EB_Xml_BuildNodeHash(xmlNodePtr node,
 
   /* update */
   rv=GWEN_MDigest_Update(md,
-			 (const uint8_t*) GWEN_Buffer_GetStart(dbuf),
-			 GWEN_Buffer_GetUsedBytes(dbuf));
+                         (const uint8_t *) GWEN_Buffer_GetStart(dbuf),
+                         GWEN_Buffer_GetUsedBytes(dbuf));
   if (rv<0) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(dbuf);
@@ -646,8 +662,8 @@ int EB_Xml_BuildNodeHash(xmlNodePtr node,
   }
 
   GWEN_Buffer_AppendBytes(hbuf,
-			  (const char*)GWEN_MDigest_GetDigestPtr(md),
-			  GWEN_MDigest_GetDigestSize(md));
+                          (const char *)GWEN_MDigest_GetDigestPtr(md),
+                          GWEN_MDigest_GetDigestSize(md));
   /* cleanup */
   GWEN_Buffer_free(dbuf);
 
@@ -657,8 +673,9 @@ int EB_Xml_BuildNodeHash(xmlNodePtr node,
 
 
 int EB_Xml_BuildNodeHashSha1(xmlNodePtr node,
-			     const char *uri,
-			     GWEN_BUFFER *hbuf) {
+                             const char *uri,
+                             GWEN_BUFFER *hbuf)
+{
   GWEN_MDIGEST *md;
   int rv;
 
@@ -671,8 +688,9 @@ int EB_Xml_BuildNodeHashSha1(xmlNodePtr node,
 
 
 int EB_Xml_BuildNodeHashSha256(xmlNodePtr node,
-			       const char *uri,
-			       GWEN_BUFFER *hbuf) {
+                               const char *uri,
+                               GWEN_BUFFER *hbuf)
+{
   GWEN_MDIGEST *md;
   int rv;
 
@@ -685,8 +703,9 @@ int EB_Xml_BuildNodeHashSha256(xmlNodePtr node,
 
 
 int EB_Xml_BuildNodeHashSha256Sha256(xmlNodePtr node,
-				     const char *uri,
-				     GWEN_BUFFER *hbuf) {
+                                     const char *uri,
+                                     GWEN_BUFFER *hbuf)
+{
   GWEN_MDIGEST *md;
   int rv;
   GWEN_BUFFER *xbuf;
@@ -711,8 +730,8 @@ int EB_Xml_BuildNodeHashSha256Sha256(xmlNodePtr node,
 
   /* update */
   rv=GWEN_MDigest_Update(md,
-			 (const uint8_t*) GWEN_Buffer_GetStart(xbuf),
-			 GWEN_Buffer_GetUsedBytes(xbuf));
+                         (const uint8_t *) GWEN_Buffer_GetStart(xbuf),
+                         GWEN_Buffer_GetUsedBytes(xbuf));
   if (rv<0) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(xbuf);
@@ -729,8 +748,8 @@ int EB_Xml_BuildNodeHashSha256Sha256(xmlNodePtr node,
   GWEN_Buffer_free(xbuf);
 
   GWEN_Buffer_AppendBytes(hbuf,
-			  (const char*)GWEN_MDigest_GetDigestPtr(md),
-			  GWEN_MDigest_GetDigestSize(md));
+                          (const char *)GWEN_MDigest_GetDigestPtr(md),
+                          GWEN_MDigest_GetDigestSize(md));
 
   GWEN_MDigest_free(md);
   return rv;

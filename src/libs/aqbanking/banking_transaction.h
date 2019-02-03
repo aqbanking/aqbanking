@@ -35,7 +35,8 @@ extern "C" {
  * @param t transaction to check
  * @param lim limits to check against.
  */
-AQBANKING_API int AB_Banking_CheckTransactionAgainstLimits_Purpose(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
+AQBANKING_API int AB_Banking_CheckTransactionAgainstLimits_Purpose(const AB_TRANSACTION *t,
+                                                                   const AB_TRANSACTION_LIMITS *lim);
 
 /**
  * Check transaction against limits: Check local and remote name.
@@ -43,7 +44,8 @@ AQBANKING_API int AB_Banking_CheckTransactionAgainstLimits_Purpose(const AB_TRAN
  * @param t transaction to check
  * @param lim limits to check against.
  */
-AQBANKING_API int AB_Banking_CheckTransactionAgainstLimits_Names(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
+AQBANKING_API int AB_Banking_CheckTransactionAgainstLimits_Names(const AB_TRANSACTION *t,
+                                                                 const AB_TRANSACTION_LIMITS *lim);
 
 /**
  * Check transaction against limits: Check recurrence.
@@ -51,7 +53,8 @@ AQBANKING_API int AB_Banking_CheckTransactionAgainstLimits_Names(const AB_TRANSA
  * @param t transaction to check
  * @param lim limits to check against.
  */
-AQBANKING_API int AB_Banking_CheckTransactionAgainstLimits_Recurrence(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
+AQBANKING_API int AB_Banking_CheckTransactionAgainstLimits_Recurrence(const AB_TRANSACTION *t,
+                                                                      const AB_TRANSACTION_LIMITS *lim);
 
 /**
  * Check transaction against limits: Check execution date.
@@ -59,7 +62,8 @@ AQBANKING_API int AB_Banking_CheckTransactionAgainstLimits_Recurrence(const AB_T
  * @param t transaction to check
  * @param lim limits to check against.
  */
-AQBANKING_API int AB_Banking_CheckTransactionAgainstLimits_ExecutionDate(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
+AQBANKING_API int AB_Banking_CheckTransactionAgainstLimits_ExecutionDate(const AB_TRANSACTION *t,
+                                                                         const AB_TRANSACTION_LIMITS *lim);
 
 /**
  * Check transaction against limits: Check date.
@@ -67,7 +71,8 @@ AQBANKING_API int AB_Banking_CheckTransactionAgainstLimits_ExecutionDate(const A
  * @param t transaction to check
  * @param lim limits to check against.
  */
-AQBANKING_API int AB_Banking_CheckTransactionAgainstLimits_Date(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
+AQBANKING_API int AB_Banking_CheckTransactionAgainstLimits_Date(const AB_TRANSACTION *t,
+                                                                const AB_TRANSACTION_LIMITS *lim);
 
 /**
  * Check transaction against limits: Check sequence setup (debit notes).
@@ -75,7 +80,8 @@ AQBANKING_API int AB_Banking_CheckTransactionAgainstLimits_Date(const AB_TRANSAC
  * @param t transaction to check
  * @param lim limits to check against.
  */
-AQBANKING_API int AB_Banking_CheckTransactionAgainstLimits_Sequence(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim);
+AQBANKING_API int AB_Banking_CheckTransactionAgainstLimits_Sequence(const AB_TRANSACTION *t,
+                                                                    const AB_TRANSACTION_LIMITS *lim);
 
 /**
  * Check transaction for SEPA conformity (IBAN, BIC, names)

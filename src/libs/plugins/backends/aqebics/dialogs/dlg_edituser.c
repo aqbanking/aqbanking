@@ -47,7 +47,8 @@ GWEN_INHERIT(GWEN_DIALOG, EBC_EDIT_USER_DIALOG)
 
 
 
-GWEN_DIALOG *EBC_EditUserDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock) {
+GWEN_DIALOG *EBC_EditUserDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock)
+{
   GWEN_DIALOG *dlg;
   EBC_EDIT_USER_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -56,7 +57,7 @@ GWEN_DIALOG *EBC_EditUserDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock) {
   dlg=GWEN_Dialog_new("ebc_edit_user");
   GWEN_NEW_OBJECT(EBC_EDIT_USER_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, EBC_EDIT_USER_DIALOG, dlg, xdlg,
-		       EBC_EditUserDialog_FreeData);
+                       EBC_EditUserDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, EBC_EditUserDialog_SignalHandler);
 
   /* get path of dialog description file */
@@ -93,16 +94,18 @@ GWEN_DIALOG *EBC_EditUserDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock) {
 
 
 
-void GWENHYWFAR_CB EBC_EditUserDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB EBC_EditUserDialog_FreeData(void *bp, void *p)
+{
   EBC_EDIT_USER_DIALOG *xdlg;
 
-  xdlg=(EBC_EDIT_USER_DIALOG*) p;
+  xdlg=(EBC_EDIT_USER_DIALOG *) p;
   GWEN_FREE_OBJECT(xdlg);
 }
 
 
 
-void EBC_EditUserDialog_Init(GWEN_DIALOG *dlg) {
+void EBC_EditUserDialog_Init(GWEN_DIALOG *dlg)
+{
   EBC_EDIT_USER_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
@@ -178,11 +181,12 @@ void EBC_EditUserDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-static void removeAllSpaces(uint8_t *s) {
+static void removeAllSpaces(uint8_t *s)
+{
   uint8_t *d;
 
   d=s;
-  while(*s) {
+  while (*s) {
     if (*s>33)
       *(d++)=*s;
     s++;
@@ -192,7 +196,8 @@ static void removeAllSpaces(uint8_t *s) {
 
 
 
-void EBC_EditUserDialog_toGui(GWEN_DIALOG *dlg) {
+void EBC_EditUserDialog_toGui(GWEN_DIALOG *dlg)
+{
   EBC_EDIT_USER_DIALOG *xdlg;
   uint32_t flags;
   const char *s;
@@ -203,7 +208,7 @@ void EBC_EditUserDialog_toGui(GWEN_DIALOG *dlg) {
 
   /* protocol version */
   s=EBC_User_GetProtoVersion(xdlg->user);
-  if (! (s && *s))
+  if (!(s && *s))
     s="H003";
   if (strcasecmp(s, "H002")==0)
     GWEN_Dialog_SetIntProperty(dlg, "ebicsVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
@@ -212,7 +217,7 @@ void EBC_EditUserDialog_toGui(GWEN_DIALOG *dlg) {
 
   /* signature version */
   s=EBC_User_GetSignVersion(xdlg->user);
-  if (! (s && *s))
+  if (!(s && *s))
     s="A005";
   if (strcasecmp(s, "A004")==0)
     GWEN_Dialog_SetIntProperty(dlg, "signVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
@@ -221,7 +226,7 @@ void EBC_EditUserDialog_toGui(GWEN_DIALOG *dlg) {
 
   /* crypt version */
   s=EBC_User_GetCryptVersion(xdlg->user);
-  if (! (s && *s))
+  if (!(s && *s))
     s="E002";
   if (strcasecmp(s, "E001")==0)
     GWEN_Dialog_SetIntProperty(dlg, "cryptVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
@@ -230,7 +235,7 @@ void EBC_EditUserDialog_toGui(GWEN_DIALOG *dlg) {
 
   /* auth version */
   s=EBC_User_GetAuthVersion(xdlg->user);
-  if (! (s && *s))
+  if (!(s && *s))
     s="X002";
   if (strcasecmp(s, "X001")==0)
     GWEN_Dialog_SetIntProperty(dlg, "authVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
@@ -238,39 +243,56 @@ void EBC_EditUserDialog_toGui(GWEN_DIALOG *dlg) {
     GWEN_Dialog_SetIntProperty(dlg, "authVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0);
 
   /* status */
-  switch(EBC_User_GetStatus(xdlg->user)) {
-  case EBC_UserStatus_New:      GWEN_Dialog_SetIntProperty(dlg, "statusCombo", GWEN_DialogProperty_Value, 0, 0, 0); break;
-  case EBC_UserStatus_Init1:    GWEN_Dialog_SetIntProperty(dlg, "statusCombo", GWEN_DialogProperty_Value, 0, 1, 0); break;
-  case EBC_UserStatus_Init2:    GWEN_Dialog_SetIntProperty(dlg, "statusCombo", GWEN_DialogProperty_Value, 0, 2, 0); break;
-  case EBC_UserStatus_Enabled:  GWEN_Dialog_SetIntProperty(dlg, "statusCombo", GWEN_DialogProperty_Value, 0, 3, 0); break;
-  case EBC_UserStatus_Disabled: GWEN_Dialog_SetIntProperty(dlg, "statusCombo", GWEN_DialogProperty_Value, 0, 4, 0); break;
-  default:  break;
+  switch (EBC_User_GetStatus(xdlg->user)) {
+  case EBC_UserStatus_New:
+    GWEN_Dialog_SetIntProperty(dlg, "statusCombo", GWEN_DialogProperty_Value, 0, 0, 0);
+    break;
+  case EBC_UserStatus_Init1:
+    GWEN_Dialog_SetIntProperty(dlg, "statusCombo", GWEN_DialogProperty_Value, 0, 1, 0);
+    break;
+  case EBC_UserStatus_Init2:
+    GWEN_Dialog_SetIntProperty(dlg, "statusCombo", GWEN_DialogProperty_Value, 0, 2, 0);
+    break;
+  case EBC_UserStatus_Enabled:
+    GWEN_Dialog_SetIntProperty(dlg, "statusCombo", GWEN_DialogProperty_Value, 0, 3, 0);
+    break;
+  case EBC_UserStatus_Disabled:
+    GWEN_Dialog_SetIntProperty(dlg, "statusCombo", GWEN_DialogProperty_Value, 0, 4, 0);
+    break;
+  default:
+    break;
   }
 
   /* http version */
-  switch(((EBC_User_GetHttpVMajor(xdlg->user))<<8)+EBC_User_GetHttpVMinor(xdlg->user)) {
-  case 0x0100: GWEN_Dialog_SetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0); break;
-  case 0x0101: GWEN_Dialog_SetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0); break;
-  default:     break;
+  switch (((EBC_User_GetHttpVMajor(xdlg->user))<<8)+EBC_User_GetHttpVMinor(xdlg->user)) {
+  case 0x0100:
+    GWEN_Dialog_SetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
+    break;
+  case 0x0101:
+    GWEN_Dialog_SetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0);
+    break;
+  default:
+    break;
   }
 
 
   /* flags */
   flags=EBC_User_GetFlags(xdlg->user);
   GWEN_Dialog_SetIntProperty(dlg, "forceSslv3Check", GWEN_DialogProperty_Value, 0,
-			     (flags & EBC_USER_FLAGS_FORCE_SSLV3)?1:0,
-			     0);
+                             (flags & EBC_USER_FLAGS_FORCE_SSLV3)?1:0,
+                             0);
   GWEN_Dialog_SetIntProperty(dlg, "useIzlCheck", GWEN_DialogProperty_Value, 0,
-			     (flags & EBC_USER_FLAGS_USE_IZL)?1:0,
-			     0);
+                             (flags & EBC_USER_FLAGS_USE_IZL)?1:0,
+                             0);
   GWEN_Dialog_SetIntProperty(dlg, "noEuCheck", GWEN_DialogProperty_Value, 0,
-			     (flags & EBC_USER_FLAGS_NO_EU)?1:0,
-			     0);
+                             (flags & EBC_USER_FLAGS_NO_EU)?1:0,
+                             0);
 }
 
 
 
-int EBC_EditUserDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
+int EBC_EditUserDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
+{
   EBC_EDIT_USER_DIALOG *xdlg;
   const char *s;
   int i;
@@ -300,7 +322,7 @@ int EBC_EditUserDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
     GWEN_Buffer_AppendString(tbuf, s);
     GWEN_Text_CondenseBuffer(tbuf);
-    removeAllSpaces((uint8_t*)GWEN_Buffer_GetStart(tbuf));
+    removeAllSpaces((uint8_t *)GWEN_Buffer_GetStart(tbuf));
     if (u)
       AB_User_SetBankCode(u, GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_free(tbuf);
@@ -359,45 +381,72 @@ int EBC_EditUserDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
     AB_User_SetCountry(u, "de");
 
   i=GWEN_Dialog_GetIntProperty(dlg, "ebicsVersionCombo", GWEN_DialogProperty_Value, 0, -1);
-  switch(i) {
-  case 0: EBC_User_SetProtoVersion(xdlg->user, "H002"); break;
+  switch (i) {
+  case 0:
+    EBC_User_SetProtoVersion(xdlg->user, "H002");
+    break;
   default:
-  case 1: EBC_User_SetProtoVersion(xdlg->user, "H003"); break;
+  case 1:
+    EBC_User_SetProtoVersion(xdlg->user, "H003");
+    break;
   }
 
   i=GWEN_Dialog_GetIntProperty(dlg, "signVersionCombo", GWEN_DialogProperty_Value, 0, -1);
-  switch(i) {
-  case 0: EBC_User_SetSignVersion(xdlg->user, "A004"); break;
+  switch (i) {
+  case 0:
+    EBC_User_SetSignVersion(xdlg->user, "A004");
+    break;
   default:
-  case 1: EBC_User_SetSignVersion(xdlg->user, "A005"); break;
+  case 1:
+    EBC_User_SetSignVersion(xdlg->user, "A005");
+    break;
   }
 
   i=GWEN_Dialog_GetIntProperty(dlg, "cryptVersionCombo", GWEN_DialogProperty_Value, 0, -1);
-  switch(i) {
-  case 0: EBC_User_SetCryptVersion(xdlg->user, "E001"); break;
+  switch (i) {
+  case 0:
+    EBC_User_SetCryptVersion(xdlg->user, "E001");
+    break;
   default:
-  case 1: EBC_User_SetCryptVersion(xdlg->user, "E002"); break;
+  case 1:
+    EBC_User_SetCryptVersion(xdlg->user, "E002");
+    break;
   }
 
   i=GWEN_Dialog_GetIntProperty(dlg, "authVersionCombo", GWEN_DialogProperty_Value, 0, -1);
-  switch(i) {
-  case 0: EBC_User_SetAuthVersion(xdlg->user, "X001"); break;
+  switch (i) {
+  case 0:
+    EBC_User_SetAuthVersion(xdlg->user, "X001");
+    break;
   default:
-  case 1: EBC_User_SetAuthVersion(xdlg->user, "X002"); break;
+  case 1:
+    EBC_User_SetAuthVersion(xdlg->user, "X002");
+    break;
   }
 
   i=GWEN_Dialog_GetIntProperty(dlg, "statusCombo", GWEN_DialogProperty_Value, 0, -1);
-  switch(i) {
-  case 0: EBC_User_SetStatus(xdlg->user, EBC_UserStatus_New); break;
-  case 1: EBC_User_SetStatus(xdlg->user, EBC_UserStatus_Init1); break;
-  case 2: EBC_User_SetStatus(xdlg->user, EBC_UserStatus_Init2); break;
-  case 3: EBC_User_SetStatus(xdlg->user, EBC_UserStatus_Enabled); break;
-  case 4: EBC_User_SetStatus(xdlg->user, EBC_UserStatus_Disabled); break;
-  default: break;
+  switch (i) {
+  case 0:
+    EBC_User_SetStatus(xdlg->user, EBC_UserStatus_New);
+    break;
+  case 1:
+    EBC_User_SetStatus(xdlg->user, EBC_UserStatus_Init1);
+    break;
+  case 2:
+    EBC_User_SetStatus(xdlg->user, EBC_UserStatus_Init2);
+    break;
+  case 3:
+    EBC_User_SetStatus(xdlg->user, EBC_UserStatus_Enabled);
+    break;
+  case 4:
+    EBC_User_SetStatus(xdlg->user, EBC_UserStatus_Disabled);
+    break;
+  default:
+    break;
   }
 
   i=GWEN_Dialog_GetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, -1);
-  switch(i) {
+  switch (i) {
   case 0:
     EBC_User_SetHttpVMajor(xdlg->user, 1);
     EBC_User_SetHttpVMinor(xdlg->user, 0);
@@ -423,7 +472,8 @@ int EBC_EditUserDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet) {
 
 
 
-void EBC_EditUserDialog_Fini(GWEN_DIALOG *dlg) {
+void EBC_EditUserDialog_Fini(GWEN_DIALOG *dlg)
+{
   EBC_EDIT_USER_DIALOG *xdlg;
   int i;
   GWEN_DB_NODE *dbPrefs;
@@ -437,21 +487,22 @@ void EBC_EditUserDialog_Fini(GWEN_DIALOG *dlg) {
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_width",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_width",
+                      i);
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_height",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_height",
+                      i);
 }
 
 
 
-int EBC_EditUserDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
+int EBC_EditUserDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg)
+{
   EBC_EDIT_USER_DIALOG *xdlg;
   GWEN_DIALOG *dlg2;
   int rv;
@@ -482,11 +533,11 @@ int EBC_EditUserDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
 
       s=AB_BankInfo_GetBankId(bi);
       GWEN_Dialog_SetCharProperty(dlg,
-				  "bankCodeEdit",
-				  GWEN_DialogProperty_Value,
-				  0,
-				  (s && *s)?s:"",
-				  0);
+                                  "bankCodeEdit",
+                                  GWEN_DialogProperty_Value,
+                                  0,
+                                  (s && *s)?s:"",
+                                  0);
     }
   }
   GWEN_Dialog_free(dlg2);
@@ -496,7 +547,8 @@ int EBC_EditUserDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
 
 
 
-int EBC_EditUserDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
+int EBC_EditUserDialog_HandleActivatedOk(GWEN_DIALOG *dlg)
+{
   EBC_EDIT_USER_DIALOG *xdlg;
   int rv;
 
@@ -516,14 +568,14 @@ int EBC_EditUserDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
     if (rv<0) {
       DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
-			  GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
-			  GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
-			  I18N("Error"),
-			  I18N("Unable to lock user. Maybe already in use?"),
-			  I18N("Dismiss"),
-			  NULL,
-			  NULL,
-			  0);
+                          GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+                          GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
+                          I18N("Error"),
+                          I18N("Unable to lock user. Maybe already in use?"),
+                          I18N("Dismiss"),
+                          NULL,
+                          NULL,
+                          0);
       return GWEN_DialogEvent_ResultHandled;
     }
   }
@@ -537,14 +589,14 @@ int EBC_EditUserDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
     if (rv<0) {
       DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
-			  GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
-			  GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
-			  I18N("Error"),
-			  I18N("Unable to unlock user."),
-			  I18N("Dismiss"),
-			  NULL,
-			  NULL,
-			  0);
+                          GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+                          GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
+                          I18N("Error"),
+                          I18N("Unable to unlock user."),
+                          I18N("Dismiss"),
+                          NULL,
+                          NULL,
+                          0);
       return GWEN_DialogEvent_ResultHandled;
     }
   }
@@ -554,7 +606,8 @@ int EBC_EditUserDialog_HandleActivatedOk(GWEN_DIALOG *dlg) {
 
 
 
-static int EBC_EditUserDialog_HandleActivatedGetBankKeys(GWEN_DIALOG *dlg) {
+static int EBC_EditUserDialog_HandleActivatedGetBankKeys(GWEN_DIALOG *dlg)
+{
   EBC_EDIT_USER_DIALOG *xdlg;
   int rv;
   uint32_t guiid;
@@ -564,16 +617,16 @@ static int EBC_EditUserDialog_HandleActivatedGetBankKeys(GWEN_DIALOG *dlg) {
   assert(xdlg);
 
   guiid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
-			       GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-			       GWEN_GUI_PROGRESS_SHOW_LOG |
-			       GWEN_GUI_PROGRESS_ALWAYS_SHOW_LOG |
-			       GWEN_GUI_PROGRESS_KEEP_OPEN |
-			       GWEN_GUI_PROGRESS_SHOW_ABORT,
-			       I18N("Executing Request"),
-			       I18N("Now the request is send "
-				    "to the credit institute."),
-			       GWEN_GUI_PROGRESS_NONE,
-			       0);
+                               GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+                               GWEN_GUI_PROGRESS_SHOW_LOG |
+                               GWEN_GUI_PROGRESS_ALWAYS_SHOW_LOG |
+                               GWEN_GUI_PROGRESS_KEEP_OPEN |
+                               GWEN_GUI_PROGRESS_SHOW_ABORT,
+                               I18N("Executing Request"),
+                               I18N("Now the request is send "
+                                    "to the credit institute."),
+                               GWEN_GUI_PROGRESS_NONE,
+                               0);
   rv=EBC_Provider_Send_HPB(AB_User_GetProvider(xdlg->user), xdlg->user, 1);
   EBC_EditUserDialog_toGui(dlg);
   GWEN_Gui_ProgressEnd(guiid);
@@ -588,7 +641,8 @@ static int EBC_EditUserDialog_HandleActivatedGetBankKeys(GWEN_DIALOG *dlg) {
 
 
 
-static int EBC_EditUserDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg) {
+static int EBC_EditUserDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg)
+{
   EBC_EDIT_USER_DIALOG *xdlg;
 
   assert(dlg);
@@ -602,16 +656,16 @@ static int EBC_EditUserDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg) {
     int rv2;
 
     guiid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
-				 GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-				 GWEN_GUI_PROGRESS_SHOW_LOG |
-				 GWEN_GUI_PROGRESS_ALWAYS_SHOW_LOG |
-				 GWEN_GUI_PROGRESS_KEEP_OPEN |
-				 GWEN_GUI_PROGRESS_SHOW_ABORT,
-				 I18N("Executing Request"),
-				 I18N("Now the request is send "
-				      "to the credit institute."),
-				 GWEN_GUI_PROGRESS_NONE,
-				 0);
+                                 GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+                                 GWEN_GUI_PROGRESS_SHOW_LOG |
+                                 GWEN_GUI_PROGRESS_ALWAYS_SHOW_LOG |
+                                 GWEN_GUI_PROGRESS_KEEP_OPEN |
+                                 GWEN_GUI_PROGRESS_SHOW_ABORT,
+                                 I18N("Executing Request"),
+                                 I18N("Now the request is send "
+                                      "to the credit institute."),
+                                 GWEN_GUI_PROGRESS_NONE,
+                                 0);
 
     rv1=EBC_Provider_Send_HKD(AB_User_GetProvider(xdlg->user), xdlg->user, 1);
     DBG_INFO(AQEBICS_LOGDOMAIN, "Retrieving user information");
@@ -631,7 +685,8 @@ static int EBC_EditUserDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg) {
 
 
 
-static int EBC_EditUserDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg) {
+static int EBC_EditUserDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg)
+{
   EBC_EDIT_USER_DIALOG *xdlg;
   int rv;
   GWEN_BUFFER *tbuf;
@@ -645,7 +700,7 @@ static int EBC_EditUserDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg) {
   /* add HTML version of the INI letter */
   //GWEN_Buffer_AppendString(tbuf, "<html>");
   rv=EBC_Provider_GetIniLetterTxt(AB_User_GetProvider(xdlg->user),
-				  xdlg->user, 0, tbuf, 0);
+                                  xdlg->user, 0, tbuf, 0);
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     // TODO: show error message
@@ -659,7 +714,7 @@ static int EBC_EditUserDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg) {
 #if 0
   /* add ASCII version of the INI letter for frontends which don't support HTML */
   rv=EBC_Provider_GetIniLetterTxt(AB_User_GetProvider(xdlg->user),
-				  xdlg->user, 0, tbuf, 0);
+                                  xdlg->user, 0, tbuf, 0);
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     // TODO: show error message
@@ -670,10 +725,10 @@ static int EBC_EditUserDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg) {
 #endif
 
   rv=GWEN_Gui_Print(I18N("INI Letter"),
-		    "EBICS-INILETTER",
-		    I18N("INI Letter for EBICS"),
-		    GWEN_Buffer_GetStart(tbuf),
-		    0);
+                    "EBICS-INILETTER",
+                    I18N("INI Letter for EBICS"),
+                    GWEN_Buffer_GetStart(tbuf),
+                    0);
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     // TODO: show error message
@@ -687,7 +742,8 @@ static int EBC_EditUserDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg) {
 
 
 
-static int EBC_EditUserDialog_HandleActivatedHiaLetter(GWEN_DIALOG *dlg) {
+static int EBC_EditUserDialog_HandleActivatedHiaLetter(GWEN_DIALOG *dlg)
+{
   EBC_EDIT_USER_DIALOG *xdlg;
   int rv;
   GWEN_BUFFER *tbuf;
@@ -701,7 +757,7 @@ static int EBC_EditUserDialog_HandleActivatedHiaLetter(GWEN_DIALOG *dlg) {
   /* add HTML version of the INI letter */
   //GWEN_Buffer_AppendString(tbuf, "<html>");
   rv=EBC_Provider_GetHiaLetterTxt(AB_User_GetProvider(xdlg->user),
-				  xdlg->user, 0, tbuf, 0);
+                                  xdlg->user, 0, tbuf, 0);
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     // TODO: show error message
@@ -715,7 +771,7 @@ static int EBC_EditUserDialog_HandleActivatedHiaLetter(GWEN_DIALOG *dlg) {
 #if 0
   /* add ASCII version of the HIA letter for frontends which don't support HTML */
   rv=EBC_Provider_GetHIALetterTxt(AB_User_GetProvider(xdlg->user),
-				  xdlg->user, 0, tbuf, 0);
+                                  xdlg->user, 0, tbuf, 0);
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     // TODO: show error message
@@ -726,10 +782,10 @@ static int EBC_EditUserDialog_HandleActivatedHiaLetter(GWEN_DIALOG *dlg) {
 #endif
 
   rv=GWEN_Gui_Print(I18N("HIA Letter"),
-		    "EBICS-HIALETTER",
-		    I18N("HIA Letter for EBICS"),
-		    GWEN_Buffer_GetStart(tbuf),
-		    0);
+                    "EBICS-HIALETTER",
+                    I18N("HIA Letter for EBICS"),
+                    GWEN_Buffer_GetStart(tbuf),
+                    0);
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     // TODO: show error message
@@ -743,7 +799,8 @@ static int EBC_EditUserDialog_HandleActivatedHiaLetter(GWEN_DIALOG *dlg) {
 
 
 
-int EBC_EditUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int EBC_EditUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   if (strcasecmp(sender, "bankCodeButton")==0)
     return EBC_EditUserDialog_HandleActivatedBankCode(dlg);
   else if (strcasecmp(sender, "getBankKeysButton")==0)
@@ -759,7 +816,7 @@ int EBC_EditUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 
     i=GWEN_Dialog_GetIntProperty(dlg, "ebicsVersionCombo", GWEN_DialogProperty_Value, 0, -1);
-    switch(i) {
+    switch (i) {
     case 0: /* H002 */
       GWEN_Dialog_SetIntProperty(dlg, "signVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
       GWEN_Dialog_SetIntProperty(dlg, "cryptVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
@@ -789,15 +846,16 @@ int EBC_EditUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 
 int GWENHYWFAR_CB EBC_EditUserDialog_SignalHandler(GWEN_DIALOG *dlg,
-						   GWEN_DIALOG_EVENTTYPE t,
-						   const char *sender) {
+                                                   GWEN_DIALOG_EVENTTYPE t,
+                                                   const char *sender)
+{
   EBC_EDIT_USER_DIALOG *xdlg;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, EBC_EDIT_USER_DIALOG, dlg);
   assert(xdlg);
 
-  switch(t) {
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     EBC_EditUserDialog_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;

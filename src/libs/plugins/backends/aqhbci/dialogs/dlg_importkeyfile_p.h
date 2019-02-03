@@ -46,8 +46,8 @@ struct AH_IMPORTKEYFILE_DIALOG {
 static void GWENHYWFAR_CB AH_ImportKeyFileDialog_FreeData(void *bp, void *p);
 
 static int GWENHYWFAR_CB AH_ImportKeyFileDialog_SignalHandler(GWEN_DIALOG *dlg,
-							      GWEN_DIALOG_EVENTTYPE t,
-							      const char *sender);
+                                                              GWEN_DIALOG_EVENTTYPE t,
+                                                              const char *sender);
 
 static int AH_ImportKeyFileDialog_GetFilePageData(GWEN_DIALOG *dlg);
 static int AH_ImportKeyFileDialog_CheckFileType(GWEN_DIALOG *dlg);

@@ -14,11 +14,12 @@
 
 
 int EBC_Provider_EuSign_A004(AB_PROVIDER *pro,
-			     AB_USER *u,
-			     const char *requestType,
-			     const uint8_t *pMsg,
-			     uint32_t lMsg,
-			     GWEN_BUFFER *sbuf) {
+                             AB_USER *u,
+                             const char *requestType,
+                             const uint8_t *pMsg,
+                             uint32_t lMsg,
+                             GWEN_BUFFER *sbuf)
+{
   EBC_PROVIDER *dp;
   GWEN_MDIGEST *md;
   GWEN_BUFFER *hbuf;
@@ -64,8 +65,8 @@ int EBC_Provider_EuSign_A004(AB_PROVIDER *pro,
 
   hbuf=GWEN_Buffer_new(0, GWEN_MDigest_GetDigestSize(md), 0, 1);
   GWEN_Buffer_AppendBytes(hbuf,
-			  (const char*)GWEN_MDigest_GetDigestPtr(md),
-			  GWEN_MDigest_GetDigestSize(md));
+                          (const char *)GWEN_MDigest_GetDigestPtr(md),
+                          GWEN_MDigest_GetDigestSize(md));
   GWEN_MDigest_free(md);
 
   /* get crypt token and context */
@@ -78,15 +79,15 @@ int EBC_Provider_EuSign_A004(AB_PROVIDER *pro,
   /* get key id */
   keyId=GWEN_Crypt_Token_Context_GetSignKeyId(ctx);
   ki=GWEN_Crypt_Token_GetKeyInfo(ct,
-				 keyId,
-				 0xffffffff,
-				 0);
+                                 keyId,
+                                 0xffffffff,
+                                 0);
   if (ki==NULL) {
     DBG_INFO(AQEBICS_LOGDOMAIN,
-	     "Keyinfo %04x not found on crypt token [%s:%s]",
-	     keyId,
-	     GWEN_Crypt_Token_GetTypeName(ct),
-	     GWEN_Crypt_Token_GetTokenName(ct));
+             "Keyinfo %04x not found on crypt token [%s:%s]",
+             keyId,
+             GWEN_Crypt_Token_GetTypeName(ct),
+             GWEN_Crypt_Token_GetTokenName(ct));
     GWEN_Crypt_Token_Close(ct, 0, 0);
     GWEN_Buffer_free(hbuf);
     return GWEN_ERROR_NOT_FOUND;
@@ -102,13 +103,13 @@ int EBC_Provider_EuSign_A004(AB_PROVIDER *pro,
   ebuf=GWEN_Buffer_new(0, ksize+16, 0, 1);
   l=GWEN_Buffer_GetMaxUnsegmentedWrite(ebuf);
   rv=GWEN_Crypt_Token_Sign(ct, keyId,
-			   algo,
-			   (const uint8_t*)GWEN_Buffer_GetStart(hbuf),
-			   GWEN_Buffer_GetUsedBytes(hbuf),
-			   (uint8_t*)GWEN_Buffer_GetPosPointer(ebuf),
-			   &l,
-			   NULL, /* ignore seq counter */
-			   0);
+                           algo,
+                           (const uint8_t *)GWEN_Buffer_GetStart(hbuf),
+                           GWEN_Buffer_GetUsedBytes(hbuf),
+                           (uint8_t *)GWEN_Buffer_GetPosPointer(ebuf),
+                           &l,
+                           NULL, /* ignore seq counter */
+                           0);
   GWEN_Crypt_PaddAlgo_free(algo);
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
@@ -127,8 +128,8 @@ int EBC_Provider_EuSign_A004(AB_PROVIDER *pro,
   EB_Eu_SetModLen(eu, ksize*8);
   EB_Eu_SetJobType(eu, requestType);
   EB_Eu_SetSignature(eu,
-		     (const uint8_t*) GWEN_Buffer_GetStart(ebuf),
-		     GWEN_Buffer_GetUsedBytes(ebuf));
+                     (const uint8_t *) GWEN_Buffer_GetStart(ebuf),
+                     GWEN_Buffer_GetUsedBytes(ebuf));
   GWEN_Buffer_free(ebuf);
   ti=GWEN_CurrentTime();
   EB_Eu_SetCreationTime(eu, ti);
@@ -147,11 +148,12 @@ int EBC_Provider_EuSign_A004(AB_PROVIDER *pro,
 
 
 int EBC_Provider_MkEuZipDoc_A004(AB_PROVIDER *pro,
-				 AB_USER *u,
-				 const char *requestType,
-				 const uint8_t *pMsg,
-				 uint32_t lMsg,
-				 GWEN_BUFFER *sbuf) {
+                                 AB_USER *u,
+                                 const char *requestType,
+                                 const uint8_t *pMsg,
+                                 uint32_t lMsg,
+                                 GWEN_BUFFER *sbuf)
+{
   int rv;
   xmlDocPtr doc;
   xmlNodePtr root_node;
@@ -169,9 +171,9 @@ int EBC_Provider_MkEuZipDoc_A004(AB_PROVIDER *pro,
   }
 
   bbuf=GWEN_Buffer_new(0, (GWEN_Buffer_GetUsedBytes(tbuf)*3)/2, 0, 1);
-  rv=GWEN_Base64_Encode((const uint8_t*)GWEN_Buffer_GetStart(tbuf),
-			GWEN_Buffer_GetUsedBytes(tbuf),
-			bbuf, 0);
+  rv=GWEN_Base64_Encode((const uint8_t *)GWEN_Buffer_GetStart(tbuf),
+                        GWEN_Buffer_GetUsedBytes(tbuf),
+                        bbuf, 0);
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(bbuf);
@@ -185,26 +187,26 @@ int EBC_Provider_MkEuZipDoc_A004(AB_PROVIDER *pro,
   root_node=xmlNewNode(NULL, BAD_CAST "UserSignatureData");
   xmlDocSetRootElement(doc, root_node);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.ebics.org/H002",
-	      NULL);
+              BAD_CAST "http://www.ebics.org/H002",
+              NULL);
   assert(ns);
   ns=xmlNewNs(root_node,
-	      BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
-	      BAD_CAST "xsi");
+              BAD_CAST "http://www.w3.org/2001/XMLSchema-instance",
+              BAD_CAST "xsi");
   xmlNewNsProp(root_node,
-	       ns,
-	       BAD_CAST "schemaLocation", /* xsi:schemaLocation */
-	       BAD_CAST "http://www.ebics.org/H002 "
-	       "http://www.ebics.org/H002/ebics_orders.xsd");
+               ns,
+               BAD_CAST "schemaLocation", /* xsi:schemaLocation */
+               BAD_CAST "http://www.ebics.org/H002 "
+               "http://www.ebics.org/H002/ebics_orders.xsd");
 
   node=xmlNewTextChild(root_node, NULL,
-		       BAD_CAST "OrderSignature",
-		       BAD_CAST GWEN_Buffer_GetStart(bbuf));
+                       BAD_CAST "OrderSignature",
+                       BAD_CAST GWEN_Buffer_GetStart(bbuf));
   GWEN_Buffer_free(bbuf);
 
   xmlNewProp(node,
-	     BAD_CAST "PartnerID",
-	     BAD_CAST AB_User_GetCustomerId(u));
+             BAD_CAST "PartnerID",
+             BAD_CAST AB_User_GetCustomerId(u));
 
 
   rv=EB_Xml_CompressDoc(doc, sbuf);
@@ -223,12 +225,13 @@ int EBC_Provider_MkEuZipDoc_A004(AB_PROVIDER *pro,
 
 
 int EBC_Provider_MkEuCryptZipDoc_A004(AB_PROVIDER *pro,
-				      AB_USER *u,
-				      const char *requestType,
-				      const uint8_t *pMsg,
-				      uint32_t lMsg,
-				      GWEN_CRYPT_KEY *skey,
-				      GWEN_BUFFER *sbuf) {
+                                      AB_USER *u,
+                                      const char *requestType,
+                                      const uint8_t *pMsg,
+                                      uint32_t lMsg,
+                                      GWEN_CRYPT_KEY *skey,
+                                      GWEN_BUFFER *sbuf)
+{
   GWEN_BUFFER *tbuf;
   GWEN_BUFFER *ebuf;
   int rv;
@@ -257,10 +260,10 @@ int EBC_Provider_MkEuCryptZipDoc_A004(AB_PROVIDER *pro,
   /* reset IV !! */
   GWEN_Crypt_KeyDes3K_SetIV(skey, NULL, 0);
   rv=GWEN_Crypt_Key_Encipher(skey,
-			     (uint8_t*)GWEN_Buffer_GetStart(tbuf),
-			     GWEN_Buffer_GetUsedBytes(tbuf),
-			     (uint8_t*)GWEN_Buffer_GetPosPointer(ebuf),
-			     &l);
+                             (uint8_t *)GWEN_Buffer_GetStart(tbuf),
+                             GWEN_Buffer_GetUsedBytes(tbuf),
+                             (uint8_t *)GWEN_Buffer_GetPosPointer(ebuf),
+                             &l);
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(ebuf);
@@ -272,9 +275,9 @@ int EBC_Provider_MkEuCryptZipDoc_A004(AB_PROVIDER *pro,
   GWEN_Buffer_AdjustUsedBytes(ebuf);
 
   /* base64 encode encrypted EU into given buffer */
-  rv=GWEN_Base64_Encode((const uint8_t*)GWEN_Buffer_GetStart(ebuf),
-			GWEN_Buffer_GetUsedBytes(ebuf),
-			sbuf, 0);
+  rv=GWEN_Base64_Encode((const uint8_t *)GWEN_Buffer_GetStart(ebuf),
+                        GWEN_Buffer_GetUsedBytes(ebuf),
+                        sbuf, 0);
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(ebuf);

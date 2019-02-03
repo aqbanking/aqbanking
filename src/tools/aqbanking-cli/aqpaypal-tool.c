@@ -31,7 +31,8 @@ static int doControl(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   int rv;
   AB_BANKING *ab;
@@ -41,76 +42,76 @@ int main(int argc, char **argv) {
   const char *pinFile;
   const char *cfgDir;
   const char *s;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "cfgdir",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "D",                          /* short option */
-    "cfgdir",                     /* long option */
-    I18S("Specify the configuration folder"),
-    I18S("Specify the configuration folder")
-  },
-  {
-    0,                            /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "nonInteractive",             /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "n",                          /* short option */
-    "noninteractive",             /* long option */
-    "Select non-interactive mode",/* short description */
-    "Select non-interactive mode.\n"        /* long description */
-    "This automatically returns a confirmative answer to any non-critical\n"
-    "message."
-  },
-  {
-    0,                            /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "acceptValidCerts",           /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "A",                          /* short option */
-    "acceptvalidcerts",           /* long option */
-    "Automatically accept all valid TLS certificate",
-    "Automatically accept all valid TLS certificate"
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "charset",                    /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "charset",                    /* long option */
-    "Specify the output character set",       /* short description */
-    "Specify the output character set"        /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "pinfile",                    /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "P",                          /* short option */
-    "pinfile",                    /* long option */
-    "Specify the PIN file",       /* short description */
-    "Specify the PIN file"        /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",
-    I18S("Show this help screen. For help on commands, "
-	 "run aqbanking-cli <COMMAND> --help."),
-    I18S("Show this help screen. For help on commands, run aqbanking-cli <COMMAND> --help.")
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "cfgdir",                     /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "D",                          /* short option */
+      "cfgdir",                     /* long option */
+      I18S("Specify the configuration folder"),
+      I18S("Specify the configuration folder")
+    },
+    {
+      0,                            /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "nonInteractive",             /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "n",                          /* short option */
+      "noninteractive",             /* long option */
+      "Select non-interactive mode",/* short description */
+      "Select non-interactive mode.\n"        /* long description */
+      "This automatically returns a confirmative answer to any non-critical\n"
+      "message."
+    },
+    {
+      0,                            /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "acceptValidCerts",           /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "A",                          /* short option */
+      "acceptvalidcerts",           /* long option */
+      "Automatically accept all valid TLS certificate",
+      "Automatically accept all valid TLS certificate"
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "charset",                    /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                            /* short option */
+      "charset",                    /* long option */
+      "Specify the output character set",       /* short description */
+      "Specify the output character set"        /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "pinfile",                    /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "P",                          /* short option */
+      "pinfile",                    /* long option */
+      "Specify the PIN file",       /* short description */
+      "Specify the PIN file"        /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",
+      I18S("Show this help screen. For help on commands, "
+           "run aqbanking-cli <COMMAND> --help."),
+      I18S("Show this help screen. For help on commands, run aqbanking-cli <COMMAND> --help.")
+    }
   };
 
   rv=GWEN_Init();
@@ -120,8 +121,8 @@ int main(int argc, char **argv) {
   }
 
   GWEN_Logger_Open(0, "aqpaypal-tool", 0,
-		   GWEN_LoggerType_Console,
-		   GWEN_LoggerFacility_User);
+                   GWEN_LoggerType_Console,
+                   GWEN_LoggerFacility_User);
   GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Warning);
 
   rv=GWEN_I18N_BindTextDomain_Dir(PACKAGE, LOCALEDIR);
@@ -137,10 +138,10 @@ int main(int argc, char **argv) {
 
   db=GWEN_DB_Group_new("arguments");
   rv=GWEN_Args_Check(argc, argv, 1,
-		     GWEN_ARGS_MODE_ALLOW_FREEPARAM |
-		     GWEN_ARGS_MODE_STOP_AT_FREEPARAM,
-		     args,
-		     db);
+                     GWEN_ARGS_MODE_ALLOW_FREEPARAM |
+                     GWEN_ARGS_MODE_STOP_AT_FREEPARAM,
+                     args,
+                     db);
   if (rv==GWEN_ARGS_RESULT_ERROR) {
     fprintf(stderr, "ERROR: Could not parse arguments main\n");
     GWEN_DB_Group_free(db);
@@ -226,7 +227,8 @@ int main(int argc, char **argv) {
 
 
 
-int doControl(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int doControl(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
   int rv;
 
   rv=AB_Banking_Init(ab);

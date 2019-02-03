@@ -18,8 +18,8 @@
 
 
 GWEN_DIALOG *AB_CSV_EditProfileDialog_new(AB_IMEXPORTER *ie,
-					  GWEN_DB_NODE *params,
-					  const char *testFileName);
+                                          GWEN_DB_NODE *params,
+                                          const char *testFileName);
 
 
 

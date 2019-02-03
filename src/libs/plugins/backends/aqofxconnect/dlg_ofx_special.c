@@ -40,7 +40,8 @@ GWEN_INHERIT(GWEN_DIALOG, AO_OFX_SPECIAL_DIALOG)
 
 
 
-GWEN_DIALOG *AO_OfxSpecialDialog_new(AB_PROVIDER *pro) {
+GWEN_DIALOG *AO_OfxSpecialDialog_new(AB_PROVIDER *pro)
+{
   GWEN_DIALOG *dlg;
   AO_OFX_SPECIAL_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -49,7 +50,7 @@ GWEN_DIALOG *AO_OfxSpecialDialog_new(AB_PROVIDER *pro) {
   dlg=GWEN_Dialog_new("ao_ofx_special");
   GWEN_NEW_OBJECT(AO_OFX_SPECIAL_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AO_OFX_SPECIAL_DIALOG, dlg, xdlg,
-		       AO_OfxSpecialDialog_FreeData);
+                       AO_OfxSpecialDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AO_OfxSpecialDialog_SignalHandler);
 
   /* get path of dialog description file */
@@ -87,10 +88,11 @@ GWEN_DIALOG *AO_OfxSpecialDialog_new(AB_PROVIDER *pro) {
 
 
 
-void GWENHYWFAR_CB AO_OfxSpecialDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AO_OfxSpecialDialog_FreeData(void *bp, void *p)
+{
   AO_OFX_SPECIAL_DIALOG *xdlg;
 
-  xdlg=(AO_OFX_SPECIAL_DIALOG*) p;
+  xdlg=(AO_OFX_SPECIAL_DIALOG *) p;
   free(xdlg->clientUid);
   free(xdlg->securityType);
 
@@ -99,7 +101,8 @@ void GWENHYWFAR_CB AO_OfxSpecialDialog_FreeData(void *bp, void *p) {
 
 
 
-int AO_OfxSpecialDialog_GetHttpVMajor(const GWEN_DIALOG *dlg) {
+int AO_OfxSpecialDialog_GetHttpVMajor(const GWEN_DIALOG *dlg)
+{
   AO_OFX_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -111,7 +114,8 @@ int AO_OfxSpecialDialog_GetHttpVMajor(const GWEN_DIALOG *dlg) {
 
 
 
-int AO_OfxSpecialDialog_GetHttpVMinor(const GWEN_DIALOG *dlg) {
+int AO_OfxSpecialDialog_GetHttpVMinor(const GWEN_DIALOG *dlg)
+{
   AO_OFX_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -123,7 +127,8 @@ int AO_OfxSpecialDialog_GetHttpVMinor(const GWEN_DIALOG *dlg) {
 
 
 
-void AO_OfxSpecialDialog_SetHttpVersion(GWEN_DIALOG *dlg, int vmajor, int vminor) {
+void AO_OfxSpecialDialog_SetHttpVersion(GWEN_DIALOG *dlg, int vmajor, int vminor)
+{
   AO_OFX_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -136,7 +141,8 @@ void AO_OfxSpecialDialog_SetHttpVersion(GWEN_DIALOG *dlg, int vmajor, int vminor
 
 
 
-uint32_t AO_OfxSpecialDialog_GetFlags(const GWEN_DIALOG *dlg) {
+uint32_t AO_OfxSpecialDialog_GetFlags(const GWEN_DIALOG *dlg)
+{
   AO_OFX_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -148,7 +154,8 @@ uint32_t AO_OfxSpecialDialog_GetFlags(const GWEN_DIALOG *dlg) {
 
 
 
-void AO_OfxSpecialDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AO_OfxSpecialDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AO_OFX_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -160,7 +167,8 @@ void AO_OfxSpecialDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AO_OfxSpecialDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AO_OfxSpecialDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AO_OFX_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -172,7 +180,8 @@ void AO_OfxSpecialDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AO_OfxSpecialDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AO_OfxSpecialDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AO_OFX_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -184,7 +193,8 @@ void AO_OfxSpecialDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AO_OfxSpecialDialog_SetSecurityType(GWEN_DIALOG *dlg, const char *s) {
+void AO_OfxSpecialDialog_SetSecurityType(GWEN_DIALOG *dlg, const char *s)
+{
   AO_OFX_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -192,13 +202,16 @@ void AO_OfxSpecialDialog_SetSecurityType(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->securityType);
-  if (s) xdlg->securityType=strdup(s);
-  else xdlg->securityType=NULL;
+  if (s)
+    xdlg->securityType=strdup(s);
+  else
+    xdlg->securityType=NULL;
 }
 
 
 
-const char *AO_OfxSpecialDialog_GetSecurityType(const GWEN_DIALOG *dlg) {
+const char *AO_OfxSpecialDialog_GetSecurityType(const GWEN_DIALOG *dlg)
+{
   AO_OFX_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -210,7 +223,8 @@ const char *AO_OfxSpecialDialog_GetSecurityType(const GWEN_DIALOG *dlg) {
 
 
 
-void AO_OfxSpecialDialog_SetClientUid(GWEN_DIALOG *dlg, const char *s) {
+void AO_OfxSpecialDialog_SetClientUid(GWEN_DIALOG *dlg, const char *s)
+{
   AO_OFX_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -218,13 +232,16 @@ void AO_OfxSpecialDialog_SetClientUid(GWEN_DIALOG *dlg, const char *s) {
   assert(xdlg);
 
   free(xdlg->clientUid);
-  if (s) xdlg->clientUid=strdup(s);
-  else xdlg->clientUid=NULL;
+  if (s)
+    xdlg->clientUid=strdup(s);
+  else
+    xdlg->clientUid=NULL;
 }
 
 
 
-const char *AO_OfxSpecialDialog_GetClientUid(const GWEN_DIALOG *dlg) {
+const char *AO_OfxSpecialDialog_GetClientUid(const GWEN_DIALOG *dlg)
+{
   AO_OFX_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -236,7 +253,8 @@ const char *AO_OfxSpecialDialog_GetClientUid(const GWEN_DIALOG *dlg) {
 
 
 
-void AO_OfxSpecialDialog_Init(GWEN_DIALOG *dlg) {
+void AO_OfxSpecialDialog_Init(GWEN_DIALOG *dlg)
+{
   AO_OFX_SPECIAL_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
@@ -248,37 +266,42 @@ void AO_OfxSpecialDialog_Init(GWEN_DIALOG *dlg) {
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("OFX DirectConnect Special Settings"),
-			      0);
+                              "",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("OFX DirectConnect Special Settings"),
+                              0);
 
   GWEN_Dialog_SetCharProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_AddValue, 0, "1.0", 0);
   GWEN_Dialog_SetCharProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_AddValue, 0, "1.1", 0);
 
   /* toGui */
-  switch(((xdlg->httpVMajor)<<8)+xdlg->httpVMinor) {
-  case 0x0100: GWEN_Dialog_SetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0); break;
-  case 0x0101: GWEN_Dialog_SetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0); break;
-  default:     break;
+  switch (((xdlg->httpVMajor)<<8)+xdlg->httpVMinor) {
+  case 0x0100:
+    GWEN_Dialog_SetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
+    break;
+  case 0x0101:
+    GWEN_Dialog_SetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0);
+    break;
+  default:
+    break;
   }
 
   GWEN_Dialog_SetIntProperty(dlg, "forceSslv3Check", GWEN_DialogProperty_Value, 0,
-			     (xdlg->flags & AO_USER_FLAGS_FORCE_SSL3)?1:0,
-			     0);
+                             (xdlg->flags & AO_USER_FLAGS_FORCE_SSL3)?1:0,
+                             0);
 
   GWEN_Dialog_SetIntProperty(dlg, "emptyBankIdCheck", GWEN_DialogProperty_Value, 0,
-			     (xdlg->flags & AO_USER_FLAGS_EMPTY_BANKID)?1:0,
-			     0);
+                             (xdlg->flags & AO_USER_FLAGS_EMPTY_BANKID)?1:0,
+                             0);
 
   GWEN_Dialog_SetIntProperty(dlg, "emptyFidCheck", GWEN_DialogProperty_Value, 0,
                              (xdlg->flags & AO_USER_FLAGS_EMPTY_FID)?1:0,
-			     0);
+                             0);
 
   GWEN_Dialog_SetIntProperty(dlg, "shortDateCheck", GWEN_DialogProperty_Value, 0,
                              (xdlg->flags & AO_USER_FLAGS_SEND_SHORT_DATE)?1:0,
-			     0);
+                             0);
   if (xdlg->clientUid)
     GWEN_Dialog_SetCharProperty(dlg, "clientUidEdit", GWEN_DialogProperty_Value, 0,
                                 xdlg->clientUid,
@@ -303,7 +326,8 @@ void AO_OfxSpecialDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-void AO_OfxSpecialDialog_Fini(GWEN_DIALOG *dlg) {
+void AO_OfxSpecialDialog_Fini(GWEN_DIALOG *dlg)
+{
   AO_OFX_SPECIAL_DIALOG *xdlg;
   int i;
   GWEN_DB_NODE *dbPrefs;
@@ -318,7 +342,7 @@ void AO_OfxSpecialDialog_Fini(GWEN_DIALOG *dlg) {
 
   /* fromGui */
   i=GWEN_Dialog_GetIntProperty(dlg, "httpVersionCombo", GWEN_DialogProperty_Value, 0, -1);
-  switch(i) {
+  switch (i) {
   case 0:
     xdlg->httpVMajor=1;
     xdlg->httpVMinor=0;
@@ -350,21 +374,22 @@ void AO_OfxSpecialDialog_Fini(GWEN_DIALOG *dlg) {
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_width",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_width",
+                      i);
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_height",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_height",
+                      i);
 }
 
 
 
-int AO_OfxSpecialDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int AO_OfxSpecialDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   DBG_ERROR(0, "Activated: %s", sender);
   if (strcasecmp(sender, "okButton")==0)
     return GWEN_DialogEvent_ResultAccept;
@@ -381,14 +406,15 @@ int AO_OfxSpecialDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 int GWENHYWFAR_CB AO_OfxSpecialDialog_SignalHandler(GWEN_DIALOG *dlg,
                                                     GWEN_DIALOG_EVENTTYPE t,
-                                                    const char *sender) {
+                                                    const char *sender)
+{
   AO_OFX_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AO_OFX_SPECIAL_DIALOG, dlg);
   assert(xdlg);
 
-  switch(t) {
+  switch (t) {
   case GWEN_DialogEvent_TypeInit:
     AO_OfxSpecialDialog_Init(dlg);
     return GWEN_DialogEvent_ResultHandled;;

@@ -48,8 +48,8 @@ struct AO_NEWUSER_DIALOG {
 static void GWENHYWFAR_CB AO_NewUserDialog_FreeData(void *bp, void *p);
 
 static int GWENHYWFAR_CB AO_NewUserDialog_SignalHandler(GWEN_DIALOG *dlg,
-							 GWEN_DIALOG_EVENTTYPE t,
-							 const char *sender);
+                                                        GWEN_DIALOG_EVENTTYPE t,
+                                                        const char *sender);
 
 
 static void AO_NewUserDialog_Init(GWEN_DIALOG *dlg);

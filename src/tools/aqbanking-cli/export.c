@@ -23,7 +23,8 @@
 
 
 
-int exportCtx(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
+int exportCtx(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;
@@ -42,150 +43,150 @@ int exportCtx(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   int transactionType=0;
   int transactionCommand=0;
   const char *s;
-  const GWEN_ARGS args[]={
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Int,            /* type */
-    "uniqueAccountId",             /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    NULL,                         /* short option */
-    "aid",                        /* long option */
-    "Specify the unique account id",      /* short description */
-    "Specify the unique account id"       /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "bankId",                     /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "b",                          /* short option */
-    "bank",                       /* long option */
-    "Specify the bank code",      /* short description */
-    "Specify the bank code"       /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "accountId",                  /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "a",                          /* short option */
-    "account",                    /* long option */
-    "Specify the account number",     /* short description */
-    "Specify the account number"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "subAccountId",                /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "aa",                          /* short option */
-    "subaccount",                   /* long option */
-    "Specify the sub account id (Unterkontomerkmal)",    /* short description */
-    "Specify the sub account id (Unterkontomerkmal)"     /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "iban",                       /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "A",                          /* short option */
-    "iban",                    /* long option */
-    "Specify the iban of your account",      /* short description */
-    "Specify the iban of your account"       /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "transactionType",            /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "tt",                         /* short option */
-    "transactiontype",            /* long option */
-    "Specify the transaction type to filter",      /* short description */
-    "Specify the transaction type to filter"       /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,           /* type */
-    "transactionCommand",         /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "tc",                         /* short option */
-    "transactioncommand",         /* long option */
-    "Specify the transaction command to filter",      /* short description */
-    "Specify the transaction command to filter"       /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "ctxFile",                    /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "c",                          /* short option */
-    "ctxfile",                    /* long option */
-    "Specify the file to store the context in",   /* short description */
-    "Specify the file to store the context in"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "outFile",                    /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    "o",                          /* short option */
-    "outfile",                    /* long option */
-    "Specify the file to store the data in",   /* short description */
-    "Specify the file to store the data in"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "exporterName",               /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "exporter",                    /* long option */
-    "Specify the exporter to use",   /* short description */
-    "Specify the exporter to use"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "profileName",                /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "profile",                    /* long option */
-    "Specify the export profile to use",   /* short description */
-    "Specify the export profile to use"      /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-    GWEN_ArgsType_Char,            /* type */
-    "profileFile",                /* name */
-    0,                            /* minnum */
-    1,                            /* maxnum */
-    0,                            /* short option */
-    "profile-file",               /* long option */
-    "Specify the file to load the export profile from",/* short description */
-    "Specify the file to load the export profile from" /* long description */
-  },
-  {
-    GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-    GWEN_ArgsType_Int,             /* type */
-    "help",                       /* name */
-    0,                            /* minnum */
-    0,                            /* maxnum */
-    "h",                          /* short option */
-    "help",                       /* long option */
-    "Show this help screen",      /* short description */
-    "Show this help screen"       /* long description */
-  }
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "uniqueAccountId",             /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      NULL,                         /* short option */
+      "aid",                        /* long option */
+      "Specify the unique account id",      /* short description */
+      "Specify the unique account id"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "bankId",                     /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "b",                          /* short option */
+      "bank",                       /* long option */
+      "Specify the bank code",      /* short description */
+      "Specify the bank code"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "accountId",                  /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "a",                          /* short option */
+      "account",                    /* long option */
+      "Specify the account number",     /* short description */
+      "Specify the account number"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "subAccountId",                /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "aa",                          /* short option */
+      "subaccount",                   /* long option */
+      "Specify the sub account id (Unterkontomerkmal)",    /* short description */
+      "Specify the sub account id (Unterkontomerkmal)"     /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "iban",                       /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "A",                          /* short option */
+      "iban",                    /* long option */
+      "Specify the iban of your account",      /* short description */
+      "Specify the iban of your account"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "transactionType",            /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "tt",                         /* short option */
+      "transactiontype",            /* long option */
+      "Specify the transaction type to filter",      /* short description */
+      "Specify the transaction type to filter"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "transactionCommand",         /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "tc",                         /* short option */
+      "transactioncommand",         /* long option */
+      "Specify the transaction command to filter",      /* short description */
+      "Specify the transaction command to filter"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "ctxFile",                    /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "c",                          /* short option */
+      "ctxfile",                    /* long option */
+      "Specify the file to store the context in",   /* short description */
+      "Specify the file to store the context in"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "outFile",                    /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "o",                          /* short option */
+      "outfile",                    /* long option */
+      "Specify the file to store the data in",   /* short description */
+      "Specify the file to store the data in"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "exporterName",               /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                            /* short option */
+      "exporter",                    /* long option */
+      "Specify the exporter to use",   /* short description */
+      "Specify the exporter to use"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "profileName",                /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                            /* short option */
+      "profile",                    /* long option */
+      "Specify the export profile to use",   /* short description */
+      "Specify the export profile to use"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "profileFile",                /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                            /* short option */
+      "profile-file",               /* long option */
+      "Specify the file to load the export profile from",/* short description */
+      "Specify the file to load the export profile from" /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -258,7 +259,7 @@ int exportCtx(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
   /* copy context, but only keep wanted accounts and transactions */
   nctx=AB_ImExporterContext_new();
   iea=AB_ImExporterContext_GetFirstAccountInfo(ctx);
-  while(iea) {
+  while (iea) {
     if (AB_ImExporterAccountInfo_Matches(iea,
                                          aid,  /* unique account id */
                                          "*",
@@ -285,7 +286,7 @@ int exportCtx(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv) {
 
   /* export new context */
   rv=AB_Banking_ExportToFileLoadProfile(ab, exporterName, nctx,
-					profileName, profileFile,
+                                        profileName, profileFile,
                                         outFile);
   if (rv<0) {
     DBG_ERROR(0, "Error exporting (%d).", rv);

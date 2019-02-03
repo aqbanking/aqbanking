@@ -34,7 +34,8 @@ GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_CAMT);
 
 
 
-AB_IMEXPORTER *AB_ImExporterCAMT_new(AB_BANKING *ab){
+AB_IMEXPORTER *AB_ImExporterCAMT_new(AB_BANKING *ab)
+{
   AB_IMEXPORTER *ie;
   AH_IMEXPORTER_CAMT *ieh;
 
@@ -50,10 +51,11 @@ AB_IMEXPORTER *AB_ImExporterCAMT_new(AB_BANKING *ab){
 
 
 
-void GWENHYWFAR_CB AH_ImExporterCAMT_FreeData(void *bp, void *p){
+void GWENHYWFAR_CB AH_ImExporterCAMT_FreeData(void *bp, void *p)
+{
   AH_IMEXPORTER_CAMT *ieh;
 
-  ieh=(AH_IMEXPORTER_CAMT*)p;
+  ieh=(AH_IMEXPORTER_CAMT *)p;
   GWEN_FREE_OBJECT(ieh);
 }
 
@@ -62,7 +64,8 @@ void GWENHYWFAR_CB AH_ImExporterCAMT_FreeData(void *bp, void *p){
 int AH_ImExporterCAMT_Import(AB_IMEXPORTER *ie,
                              AB_IMEXPORTER_CONTEXT *ctx,
                              GWEN_SYNCIO *sio,
-			     GWEN_DB_NODE *params) {
+                             GWEN_DB_NODE *params)
+{
   int rv;
   GWEN_XMLNODE *xmlRoot;
   GWEN_XMLNODE *n;
@@ -108,13 +111,15 @@ int AH_ImExporterCAMT_Import(AB_IMEXPORTER *ie,
 int AH_ImExporterCAMT_Export(AB_IMEXPORTER *ie,
                              AB_IMEXPORTER_CONTEXT *ctx,
                              GWEN_SYNCIO *sio,
-                             GWEN_DB_NODE *params) {
+                             GWEN_DB_NODE *params)
+{
   return GWEN_ERROR_NOT_SUPPORTED;
 }
 
 
 
-int AH_ImExporterCAMT_CheckFile(AB_IMEXPORTER *ie, const char *fname) {
+int AH_ImExporterCAMT_CheckFile(AB_IMEXPORTER *ie, const char *fname)
+{
   return 0;
 }
 

@@ -105,7 +105,8 @@ struct AH_JOB {
 static void AH_Job_SampleResults(AH_JOB *j);
 static AH_JOB *AH_Job__freeAll_cb(AH_JOB *j, void *userData);
 
-static int AH_Job__VerifyInitialKey(AB_USER *u, AH_HBCI *h, GWEN_CRYPT_KEY *key, uint16_t sentModl, const char *keyName);
+static int AH_Job__VerifyInitialKey(AB_USER *u, AH_HBCI *h, GWEN_CRYPT_KEY *key, uint16_t sentModl,
+                                    const char *keyName);
 static int AH_Job__CommitSystemData(AH_JOB *j, int doLock);
 
 static int AH_Job__Commit_Accounts(AH_JOB *j);

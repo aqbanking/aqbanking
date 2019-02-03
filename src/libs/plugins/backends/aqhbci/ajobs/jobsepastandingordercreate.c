@@ -34,7 +34,8 @@
 
 
 /* --------------------------------------------------------------- FUNCTION */
-AH_JOB *AH_Job_SepaStandingOrderCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account) {
+AH_JOB *AH_Job_SepaStandingOrderCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
+{
   AH_JOB *j;
 
   j=AH_Job_TransferBase_new("JobSepaStandingOrderCreate",
@@ -59,7 +60,8 @@ AH_JOB *AH_Job_SepaStandingOrderCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCO
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaStandingOrderCreate_Prepare(AH_JOB *j) {
+int AH_Job_SepaStandingOrderCreate_Prepare(AH_JOB *j)
+{
   GWEN_DB_NODE *dbArgs;
   GWEN_DB_NODE *profile;
   int rv;
@@ -137,9 +139,13 @@ int AH_Job_SepaStandingOrderCreate_Prepare(AH_JOB *j) {
   GWEN_Buffer_free(tbuf);
 
   /* period */
-  switch(AB_Transaction_GetPeriod(t)) {
-  case AB_Transaction_PeriodMonthly: s="M"; break;
-  case AB_Transaction_PeriodWeekly:  s="W"; break;
+  switch (AB_Transaction_GetPeriod(t)) {
+  case AB_Transaction_PeriodMonthly:
+    s="M";
+    break;
+  case AB_Transaction_PeriodWeekly:
+    s="W";
+    break;
   default:
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Unsupported period %d",
               AB_Transaction_GetPeriod(t));
@@ -167,9 +173,9 @@ int AH_Job_SepaStandingOrderCreate_Prepare(AH_JOB *j) {
   s=AB_Transaction_GetFiId(t);
   if (s) {
     GWEN_DB_SetCharValue(dbArgs,
-                       GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "fiId",
-                       AB_Transaction_GetFiId(t));
+                         GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "fiId",
+                         AB_Transaction_GetFiId(t));
   }
 
   return 0;

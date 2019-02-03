@@ -33,7 +33,7 @@ static void GWENHYWFAR_CB AIO_OfxGroup_SECINFO_FreeData(void *bp, void *p);
 static int AIO_OfxGroup_SECINFO_StartTag(AIO_OFX_GROUP *g, const char *tagName);
 static int AIO_OfxGroup_SECINFO_AddData(AIO_OFX_GROUP *g, const char *data);
 static int AIO_OfxGroup_SECINFO_EndSubGroup(AIO_OFX_GROUP *g,
-					    AIO_OFX_GROUP *sg);
+                                            AIO_OFX_GROUP *sg);
 
 #endif
 

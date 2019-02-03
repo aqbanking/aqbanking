@@ -16,7 +16,8 @@
 
 
 
-int AB_Provider_ReadAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_ACCOUNT *account) {
+int AB_Provider_ReadAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_ACCOUNT *account)
+{
   int rv;
   GWEN_DB_NODE *db=NULL;
 
@@ -51,7 +52,8 @@ int AB_Provider_ReadAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUn
 
 
 
-int AB_Provider_GetAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_ACCOUNT **pAccount) {
+int AB_Provider_GetAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, AB_ACCOUNT **pAccount)
+{
   int rv;
   AB_ACCOUNT *a;
 
@@ -70,20 +72,22 @@ int AB_Provider_GetAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnl
 
 
 
-int AB_Provider_ReadAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accountList) {
+int AB_Provider_ReadAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accountList)
+{
   int rv;
   GWEN_DB_NODE *dbAll=NULL;
   GWEN_DB_NODE *db;
 
   /* read all config groups for accounts which have a unique id and which belong to this provider */
-  rv=AB_Banking_ReadConfigGroups(AB_Provider_GetBanking(pro), AB_CFG_GROUP_ACCOUNTS, "uniqueId", "backendName", pro->name, &dbAll);
+  rv=AB_Banking_ReadConfigGroups(AB_Provider_GetBanking(pro), AB_CFG_GROUP_ACCOUNTS, "uniqueId", "backendName", pro->name,
+                                 &dbAll);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
   db=GWEN_DB_GetFirstGroup(dbAll);
-  while(db) {
+  while (db) {
     AB_ACCOUNT *a=NULL;
 
     a=AB_Provider_CreateAccountObject(pro);
@@ -110,7 +114,8 @@ int AB_Provider_ReadAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accountList) {
 
 
 
-int AB_Provider_WriteAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, const AB_ACCOUNT *account) {
+int AB_Provider_WriteAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock, const AB_ACCOUNT *account)
+{
   int rv;
   GWEN_DB_NODE *db;
 
@@ -134,7 +139,8 @@ int AB_Provider_WriteAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doU
 
 
 
-int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a, int lockCorrespondingUser) {
+int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a, int lockCorrespondingUser)
+{
   uint32_t uid;
   int rv;
 
@@ -159,7 +165,8 @@ int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a, int lockCorrespondin
 
 
 
-int AB_Provider_DeleteAccount(AB_PROVIDER *pro, uint32_t uid) {
+int AB_Provider_DeleteAccount(AB_PROVIDER *pro, uint32_t uid)
+{
   int rv1;
   int rv2;
 
@@ -183,7 +190,8 @@ int AB_Provider_DeleteAccount(AB_PROVIDER *pro, uint32_t uid) {
 
 
 
-int AB_Provider_BeginExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a) {
+int AB_Provider_BeginExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a)
+{
   int rv;
   uint32_t uid;
 
@@ -203,7 +211,8 @@ int AB_Provider_BeginExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a) {
 
 
 
-int AB_Provider_EndExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a, int abandon) {
+int AB_Provider_EndExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a, int abandon)
+{
   int rv;
   uint32_t uid;
 
@@ -234,22 +243,23 @@ int AB_Provider_EndExclUseAccount(AB_PROVIDER *pro, AB_ACCOUNT *a, int abandon) 
 
 
 
-AB_ACCOUNT_SPEC *AB_Provider_FindMatchingAccountSpec(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC_LIST *asl){
+AB_ACCOUNT_SPEC *AB_Provider_FindMatchingAccountSpec(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC_LIST *asl)
+{
   const char *accountNum;
   const char *bankCode;
   const char *iban;
   AB_ACCOUNT_SPEC *as=NULL;
-  
+
   accountNum=AB_Account_GetAccountNumber(acc);
   bankCode=AB_Account_GetBankCode(acc);
   iban=AB_Account_GetIban(acc);
-  
+
   DBG_INFO(AQBANKING_LOGDOMAIN, "Checking account [blz=%s, acc=%s, iban=%s, type=%d]",
            bankCode?bankCode:"<none>",
            accountNum?accountNum:"<none>",
            iban?iban:"<none>",
            AB_Account_GetAccountType(acc));
-  
+
   /* first look for that specific combination of given iban / bankcode+account number */
   if ((iban && *iban) || (accountNum && *accountNum && bankCode && *bankCode)) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Comparing IBAN and old account specs");
@@ -316,47 +326,47 @@ AB_ACCOUNT_SPEC *AB_Provider_FindMatchingAccountSpec(AB_PROVIDER *pro, const AB_
     if (as==NULL) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Not found, trying with unspecific account type");
       as=AB_AccountSpec_List_FindFirst(asl,
-				       pro->name,
-				       NULL,
-				       "", /* empty bank code */
-				       "", /* empty account number */
-				       AB_Account_GetSubAccountId(acc),
-				       AB_Account_GetIban(acc),
-				       "*", /* any currency */
-				       AB_AccountType_Unknown);
+                                       pro->name,
+                                       NULL,
+                                       "", /* empty bank code */
+                                       "", /* empty account number */
+                                       AB_Account_GetSubAccountId(acc),
+                                       AB_Account_GetIban(acc),
+                                       "*", /* any currency */
+                                       AB_AccountType_Unknown);
     }
   }
   else {
     /* neither iban nor bank code/account number, should not happen... */
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Account not found, neither IBAN nor account number given, SNH!");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Account not found, neither IBAN nor account number given, SNH!");
   }
-  
-  
+
+
   /* if no stored account try a more generic approach */
   if (as==NULL) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Not found, trying unspecific approach");
     as=AB_AccountSpec_List_FindFirst(asl,
-				     pro->name,
+                                     pro->name,
                                      AB_Account_GetCountry(acc),
-				     AB_Account_GetBankCode(acc),
-				     AB_Account_GetAccountNumber(acc),
-				     AB_Account_GetSubAccountId(acc),
-				     AB_Account_GetIban(acc),
-				     "*", /* any currency */
-				     AB_Account_GetAccountType(acc));
+                                     AB_Account_GetBankCode(acc),
+                                     AB_Account_GetAccountNumber(acc),
+                                     AB_Account_GetSubAccountId(acc),
+                                     AB_Account_GetIban(acc),
+                                     "*", /* any currency */
+                                     AB_Account_GetAccountType(acc));
   }
   /* if still no stored account try again with unspecific account type */
   if (as==NULL) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "Not found, trying with unspecific account type");
     as=AB_AccountSpec_List_FindFirst(asl,
-				     pro->name,
-				     AB_Account_GetCountry(acc),
-				     AB_Account_GetBankCode(acc),
-				     AB_Account_GetAccountNumber(acc),
-				     AB_Account_GetSubAccountId(acc),
-				     AB_Account_GetIban(acc),
-				     "*", /* any currency */
-				     AB_AccountType_Unknown);
+                                     pro->name,
+                                     AB_Account_GetCountry(acc),
+                                     AB_Account_GetBankCode(acc),
+                                     AB_Account_GetAccountNumber(acc),
+                                     AB_Account_GetSubAccountId(acc),
+                                     AB_Account_GetIban(acc),
+                                     "*", /* any currency */
+                                     AB_AccountType_Unknown);
   }
 
   if (as) {

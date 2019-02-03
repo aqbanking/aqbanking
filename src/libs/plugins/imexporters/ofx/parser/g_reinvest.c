@@ -37,8 +37,9 @@ GWEN_INHERIT(AIO_OFX_GROUP, AIO_OFX_GROUP_REINVEST)
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_REINVEST_new(const char *groupName,
-					     AIO_OFX_GROUP *parent,
-					     GWEN_XML_CONTEXT *ctx) {
+                                         AIO_OFX_GROUP *parent,
+                                         GWEN_XML_CONTEXT *ctx)
+{
   AIO_OFX_GROUP *g;
   AIO_OFX_GROUP_REINVEST *xg;
 
@@ -64,10 +65,11 @@ AIO_OFX_GROUP *AIO_OfxGroup_REINVEST_new(const char *groupName,
 
 
 GWENHYWFAR_CB
-void AIO_OfxGroup_REINVEST_FreeData(void *bp, void *p) {
+void AIO_OfxGroup_REINVEST_FreeData(void *bp, void *p)
+{
   AIO_OFX_GROUP_REINVEST *xg;
 
-  xg=(AIO_OFX_GROUP_REINVEST*)p;
+  xg=(AIO_OFX_GROUP_REINVEST *)p;
   assert(xg);
   AB_Transaction_free(xg->transaction);
 
@@ -78,7 +80,8 @@ void AIO_OfxGroup_REINVEST_FreeData(void *bp, void *p) {
 
 
 int AIO_OfxGroup_REINVEST_StartTag(AIO_OFX_GROUP *g,
-				 const char *tagName) {
+                                   const char *tagName)
+{
   AIO_OFX_GROUP_REINVEST *xg;
   GWEN_XML_CONTEXT *ctx;
   AIO_OFX_GROUP *gNew=NULL;
@@ -101,11 +104,11 @@ int AIO_OfxGroup_REINVEST_StartTag(AIO_OFX_GROUP *g,
     gNew=AIO_OfxGroup_INVTRAN_new(tagName, g, ctx);
   }
   else if (strcasecmp(tagName, "SECID")==0) {
-   gNew=AIO_OfxGroup_SECID_new(tagName, g, ctx);
+    gNew=AIO_OfxGroup_SECID_new(tagName, g, ctx);
   }
   else {
     DBG_WARN(AQBANKING_LOGDOMAIN,
-	         "Ignoring tag [%s]", tagName);
+             "Ignoring tag [%s]", tagName);
     free(xg->currentElement);
     xg->currentElement=strdup(tagName);
   }
@@ -120,13 +123,14 @@ int AIO_OfxGroup_REINVEST_StartTag(AIO_OFX_GROUP *g,
 
 
 
-int AIO_OfxGroup_REINVEST_AddData(AIO_OFX_GROUP *g, const char *data) {
+int AIO_OfxGroup_REINVEST_AddData(AIO_OFX_GROUP *g, const char *data)
+{
   AIO_OFX_GROUP_REINVEST *xg;
 
   assert(g);
   xg=GWEN_INHERIT_GETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_REINVEST, g);
   assert(xg);
-  
+
   if (xg->currentElement) {
     GWEN_BUFFER *buf;
     int rv;
@@ -160,7 +164,7 @@ int AIO_OfxGroup_REINVEST_AddData(AIO_OFX_GROUP *g, const char *data) {
         AB_VALUE *v;
 
         v=AB_Value_fromString(s);
-       	if (v==NULL) {
+        if (v==NULL) {
           DBG_ERROR(AQBANKING_LOGDOMAIN,
                     "Invalid data for UNITPRICE: [%s]", s);
           GWEN_Buffer_free(buf);
@@ -196,13 +200,14 @@ int AIO_OfxGroup_REINVEST_AddData(AIO_OFX_GROUP *g, const char *data) {
     }
     GWEN_Buffer_free(buf);
   }
-  
+
   return 0;
 }
 
 
 
-int AIO_OfxGroup_REINVEST_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
+int AIO_OfxGroup_REINVEST_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg)
+{
   AIO_OFX_GROUP_REINVEST *xg;
   const char *s;
   GWEN_XML_CONTEXT *ctx;
@@ -229,7 +234,7 @@ int AIO_OfxGroup_REINVEST_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
   }
   else if (strcasecmp(s, "SECID")==0) {
     AB_TRANSACTION *t;
-    
+
     t=AIO_OfxGroup_SECID_TakeData(sg);
     if (t) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Adding data");
@@ -247,14 +252,15 @@ int AIO_OfxGroup_REINVEST_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg) {
 
 
 
-AB_TRANSACTION *AIO_OfxGroup_REINVEST_TakeTransaction(const AIO_OFX_GROUP *g){
+AB_TRANSACTION *AIO_OfxGroup_REINVEST_TakeTransaction(const AIO_OFX_GROUP *g)
+{
   AIO_OFX_GROUP_REINVEST *xg;
   AB_TRANSACTION *t;
- 
+
   assert(g);
   xg=GWEN_INHERIT_GETDATA(AIO_OFX_GROUP, AIO_OFX_GROUP_REINVEST, g);
   assert(xg);
-  
+
   t=xg->transaction;
   xg->transaction=NULL;
   free(xg->transaction);

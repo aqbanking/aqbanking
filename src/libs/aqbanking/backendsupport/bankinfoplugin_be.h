@@ -28,7 +28,7 @@ GWEN_INHERIT_FUNCTION_DEFS(AB_BANKINFO_PLUGIN)
 GWEN_LIST2_FUNCTION_DEFS(AB_BANKINFO_PLUGIN, AB_BankInfoPlugin)
 
 
-typedef AB_BANKINFO_PLUGIN* (*AB_BANKINFO_PLUGIN_FACTORY_FN)(AB_BANKING *ab);
+typedef AB_BANKINFO_PLUGIN *(*AB_BANKINFO_PLUGIN_FACTORY_FN)(AB_BANKING *ab);
 
 
 
@@ -36,7 +36,7 @@ typedef AB_BANKINFO_PLUGIN* (*AB_BANKINFO_PLUGIN_FACTORY_FN)(AB_BANKING *ab);
  *
  */
 /*@{*/
-typedef AB_BANKINFO* (*AB_BANKINFOPLUGIN_GETBANKINFO_FN)(AB_BANKINFO_PLUGIN *bip,
+typedef AB_BANKINFO *(*AB_BANKINFOPLUGIN_GETBANKINFO_FN)(AB_BANKINFO_PLUGIN *bip,
                                                          const char *branchId,
                                                          const char *bankId);
 
@@ -45,10 +45,10 @@ typedef int (*AB_BANKINFOPLUGIN_GETBANKINFOBYTMPLATE_FN)(AB_BANKINFO_PLUGIN *bip
                                                          AB_BANKINFO_LIST2 *bl);
 
 
-typedef AB_BANKINFO_CHECKRESULT (*AB_BANKINFOPLUGIN_CHECKACCOUNT_FN)(AB_BANKINFO_PLUGIN *bip,
-                                                                     const char *branchId,
-                                                                     const char *bankId,
-                                                                     const char *accountId);
+typedef AB_BANKINFO_CHECKRESULT(*AB_BANKINFOPLUGIN_CHECKACCOUNT_FN)(AB_BANKINFO_PLUGIN *bip,
+                                                                    const char *branchId,
+                                                                    const char *bankId,
+                                                                    const char *accountId);
 /*@}*/
 
 
@@ -104,12 +104,12 @@ void AB_BankInfoPlugin_SetCheckAccountFn(AB_BANKINFO_PLUGIN *bip, AB_BANKINFOPLU
 
 
 
-typedef AB_BANKINFO_PLUGIN* (*AB_PLUGIN_BANKINFO_FACTORY_FN)(GWEN_PLUGIN *pl, AB_BANKING *ab);
+typedef AB_BANKINFO_PLUGIN *(*AB_PLUGIN_BANKINFO_FACTORY_FN)(GWEN_PLUGIN *pl, AB_BANKING *ab);
 
 
 GWEN_PLUGIN *AB_Plugin_BankInfo_new(GWEN_PLUGIN_MANAGER *pm,
-				    const char *name,
-				    const char *fileName);
+                                    const char *name,
+                                    const char *fileName);
 
 
 AB_BANKINFO_PLUGIN *AB_Plugin_BankInfo_Factory(GWEN_PLUGIN *pl, AB_BANKING *ab);

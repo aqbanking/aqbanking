@@ -101,11 +101,11 @@ int execSingleBankingJob(AB_BANKING *ab, AB_TRANSACTION *t, const char *ctxFile)
 AB_TRANSACTION *createAndCheckRequest(AB_BANKING *ab, AB_ACCOUNT_SPEC *as, AB_TRANSACTION_COMMAND cmd);
 
 int createAndAddRequest(AB_BANKING *ab,
-			AB_TRANSACTION_LIST2 *tList,
-			AB_ACCOUNT_SPEC *as,
-			AB_TRANSACTION_COMMAND cmd,
-			const GWEN_DATE *fromDate,
-			const GWEN_DATE *toDate,
+                        AB_TRANSACTION_LIST2 *tList,
+                        AB_ACCOUNT_SPEC *as,
+                        AB_TRANSACTION_COMMAND cmd,
+                        const GWEN_DATE *fromDate,
+                        const GWEN_DATE *toDate,
                         int ignoreUnsupported);
 
 /**
@@ -142,7 +142,8 @@ int listTrans(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int listProfiles(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int request(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int sepaDebitNote(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv, int use_flash_debitnote);
-int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv, AQBANKING_TOOL_MULTISEPA_TYPE multisepa_type);
+int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv,
+                  AQBANKING_TOOL_MULTISEPA_TYPE multisepa_type);
 int sepaRecurTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int sepaTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int updateConf(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);

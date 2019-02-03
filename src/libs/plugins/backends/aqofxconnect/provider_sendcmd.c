@@ -12,7 +12,8 @@
 
 
 
-AB_TRANSACTION *AO_Provider_FindJobById(AB_TRANSACTION_LIST2 *jl, uint32_t jid) {
+AB_TRANSACTION *AO_Provider_FindJobById(AB_TRANSACTION_LIST2 *jl, uint32_t jid)
+{
   AB_TRANSACTION_LIST2_ITERATOR *jit;
 
   jit=AB_Transaction_List2_First(jl);
@@ -21,9 +22,9 @@ AB_TRANSACTION *AO_Provider_FindJobById(AB_TRANSACTION_LIST2 *jl, uint32_t jid) 
 
     j=AB_Transaction_List2Iterator_Data(jit);
     assert(j);
-    while(j) {
+    while (j) {
       if (AB_Transaction_GetUniqueId(j)==jid) {
-	AB_Transaction_List2Iterator_free(jit);
+        AB_Transaction_List2Iterator_free(jit);
         return j;
       }
       j=AB_Transaction_List2Iterator_Next(jit);
@@ -36,7 +37,8 @@ AB_TRANSACTION *AO_Provider_FindJobById(AB_TRANSACTION_LIST2 *jl, uint32_t jid) 
 
 
 
-int AO_Provider__AddJobToList2(AB_PROVIDER *pro, AB_TRANSACTION *j, AB_TRANSACTION_LIST2 *jobList){
+int AO_Provider__AddJobToList2(AB_PROVIDER *pro, AB_TRANSACTION *j, AB_TRANSACTION_LIST2 *jobList)
+{
   AO_PROVIDER *dp;
   uint32_t aid=0;
   int doAdd=1;
@@ -48,7 +50,7 @@ int AO_Provider__AddJobToList2(AB_PROVIDER *pro, AB_TRANSACTION *j, AB_TRANSACTI
   aid=AB_Transaction_GetUniqueAccountId(j);
   assert(aid);
 
-  switch(AB_Transaction_GetCommand(j)) {
+  switch (AB_Transaction_GetCommand(j)) {
   case AB_Transaction_CommandGetBalance:
   case AB_Transaction_CommandGetTransactions:
     break;
@@ -72,12 +74,12 @@ int AO_Provider__AddJobToList2(AB_PROVIDER *pro, AB_TRANSACTION *j, AB_TRANSACTI
 
       uj=AB_Transaction_List2Iterator_Data(jit);
       assert(uj);
-      while(uj) {
+      while (uj) {
         AB_TRANSACTION_COMMAND jt;
 
         jt=AB_Transaction_GetCommand(uj);
         if (jt==AB_Transaction_CommandGetBalance ||
-	    jt==AB_Transaction_CommandGetTransactions) {
+            jt==AB_Transaction_CommandGetTransactions) {
           if (AB_Transaction_GetUniqueAccountId(uj)==aid) {
             /* let new job refer to the only already in queue */
             AB_Transaction_SetRefUniqueId(j, AB_Transaction_GetUniqueId(uj));
@@ -85,7 +87,7 @@ int AO_Provider__AddJobToList2(AB_PROVIDER *pro, AB_TRANSACTION *j, AB_TRANSACTI
             break;
           }
         }
-	uj=AB_Transaction_List2Iterator_Next(jit);
+        uj=AB_Transaction_List2Iterator_Next(jit);
       } /* while */
       AB_Transaction_List2Iterator_free(jit);
     }
@@ -103,7 +105,7 @@ int AO_Provider__AddJobToList2(AB_PROVIDER *pro, AB_TRANSACTION *j, AB_TRANSACTI
 
       uj=AB_Transaction_List2Iterator_Data(jit);
       assert(uj);
-      while(uj) {
+      while (uj) {
         AB_TRANSACTION_COMMAND jt;
 
         jt=AB_Transaction_GetCommand(uj);
@@ -113,18 +115,18 @@ int AO_Provider__AddJobToList2(AB_PROVIDER *pro, AB_TRANSACTION *j, AB_TRANSACTI
               const GWEN_DATE *dtcurr;
 
               dtcurr=AB_Transaction_GetFirstDate(uj);
-	      if (dtcurr) {
-		/* current job has a time */
-		if (GWEN_Date_Diff(dtcurr, dtnew)>0) {
-		  /* new time is before that of current job, replace */
+              if (dtcurr) {
+                /* current job has a time */
+                if (GWEN_Date_Diff(dtcurr, dtnew)>0) {
+                  /* new time is before that of current job, replace */
                   AB_Transaction_SetRefUniqueId(uj, AB_Transaction_GetUniqueId(j));
                   AB_Transaction_List2_Erase(jobList, jit);
                   doAdd=1;
                   break;
                 }
               }
-	      else {
-		/* current job has no time, so replace by job with time */
+              else {
+                /* current job has no time, so replace by job with time */
                 AB_Transaction_SetRefUniqueId(uj, AB_Transaction_GetUniqueId(j));
                 AB_Transaction_List2_Erase(jobList, jit);
                 doAdd=1;
@@ -132,9 +134,9 @@ int AO_Provider__AddJobToList2(AB_PROVIDER *pro, AB_TRANSACTION *j, AB_TRANSACTI
               }
             }
             else {
-	      /* new job has no time, so don't add it */
+              /* new job has no time, so don't add it */
               AB_Transaction_SetRefUniqueId(j, AB_Transaction_GetUniqueId(uj));
-	      doAdd=0;
+              doAdd=0;
               break;
             }
           } /* if same account */
@@ -157,7 +159,9 @@ int AO_Provider__AddJobToList2(AB_PROVIDER *pro, AB_TRANSACTION *j, AB_TRANSACTI
 
 
 
-int AO_Provider__SendJobList(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION_LIST2 *jobList, AB_IMEXPORTER_CONTEXT *ctx) {
+int AO_Provider__SendJobList(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION_LIST2 *jobList,
+                             AB_IMEXPORTER_CONTEXT *ctx)
+{
   AB_TRANSACTION_LIST2_ITERATOR *jit;
 
   /* check whether a getBalance job already exists. If it does then
@@ -168,7 +172,7 @@ int AO_Provider__SendJobList(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRA
 
     uj=AB_Transaction_List2Iterator_Data(jit);
     assert(uj);
-    while(uj) {
+    while (uj) {
       AB_TRANSACTION_COMMAND jt;
       int rv;
 
@@ -221,7 +225,8 @@ int AO_Provider__SendJobList(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRA
 
 
 
-void AO_Provider__FinishJobs(AB_PROVIDER *pro, AB_TRANSACTION_LIST2 *jobList, AB_IMEXPORTER_CONTEXT *ctx) {
+void AO_Provider__FinishJobs(AB_PROVIDER *pro, AB_TRANSACTION_LIST2 *jobList, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AB_TRANSACTION_LIST2_ITERATOR *it;
 
   it=AB_Transaction_List2_First(jobList);
@@ -229,7 +234,7 @@ void AO_Provider__FinishJobs(AB_PROVIDER *pro, AB_TRANSACTION_LIST2 *jobList, AB
     AB_TRANSACTION *t;
 
     t=AB_Transaction_List2Iterator_Data(it);
-    while(t) {
+    while (t) {
       uint32_t gid;
 
       gid=AB_Transaction_GetRefUniqueId(t);
@@ -255,7 +260,8 @@ void AO_Provider__FinishJobs(AB_PROVIDER *pro, AB_TRANSACTION_LIST2 *jobList, AB
 
 
 
-int AO_Provider__SendAccountQueue(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNTQUEUE *aq, AB_IMEXPORTER_CONTEXT *ctx) {
+int AO_Provider__SendAccountQueue(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNTQUEUE *aq, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AB_ACCOUNT *a;
   AB_TRANSACTION_LIST2 *tl2;
   AB_TRANSACTION_LIST2 *toSend;
@@ -279,7 +285,7 @@ int AO_Provider__SendAccountQueue(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNTQUEUE 
       AB_TRANSACTION *t;
 
       t=AB_Transaction_List2Iterator_Data(it);
-      while(t) {
+      while (t) {
         int rv;
 
         /* add job to the list of jobs to send */
@@ -338,7 +344,8 @@ int AO_Provider__SendAccountQueue(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNTQUEUE 
 
 
 
-int AO_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTER_CONTEXT *ctx) {
+int AO_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AB_ACCOUNTQUEUE_LIST *aql;
   AB_USER *u;
 
@@ -357,13 +364,14 @@ int AO_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTER
     rv=AB_Provider_BeginExclUseUser(pro, u);
     if (rv<0) {
       DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Could not lock user [%lu] (%d)", (unsigned long int) AB_User_GetUniqueId(u), rv);
-      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Error, I18N("Could not lock user \"%lu\""), (unsigned long int) AB_User_GetUniqueId(u));
+      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Error, I18N("Could not lock user \"%lu\""),
+                            (unsigned long int) AB_User_GetUniqueId(u));
       AB_Provider_EndExclUseUser(pro, u, 1);  /* abandon */
       return rv;
     }
 
     aq=AB_AccountQueue_List_First(aql);
-    while(aq) {
+    while (aq) {
       int rv;
 
       rv=AO_Provider__SendAccountQueue(pro, u, aq, ctx);
@@ -374,10 +382,12 @@ int AO_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTER
       aq=AB_AccountQueue_List_Next(aq);
     } /* while aq */
 
-    GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info, I18N("Unlocking customer \"%lu\""), (unsigned long int) AB_User_GetUniqueId(u));
+    GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info, I18N("Unlocking customer \"%lu\""),
+                          (unsigned long int) AB_User_GetUniqueId(u));
     rv=AB_Provider_EndExclUseUser(pro, u, 0);
     if (rv<0) {
-      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Error, I18N("Could not unlock user \"%lu\""), (unsigned long int) AB_User_GetUniqueId(u));
+      GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Error, I18N("Could not unlock user \"%lu\""),
+                            (unsigned long int) AB_User_GetUniqueId(u));
       AB_Provider_EndExclUseUser(pro, u, 1); /* abandon */
       return rv;
     }
@@ -388,7 +398,8 @@ int AO_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTER
 
 
 
-int AO_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx) {
+int AO_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AO_PROVIDER *hp;
   AB_USERQUEUE_LIST *uql;
   AB_USERQUEUE *uq;
@@ -409,7 +420,7 @@ int AO_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORT
   }
 
   uq=AB_UserQueue_List_First(uql);
-  while(uq) {
+  while (uq) {
     int rv;
 
     rv=AO_Provider__SendUserQueue(pro, uq, ctx);
@@ -427,7 +438,8 @@ int AO_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORT
 
 
 
-void AO_Provider__AddOrModifyAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc){
+void AO_Provider__AddOrModifyAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc)
+{
   AB_ACCOUNT *storedAcc=NULL;
 
   assert(pro);
@@ -451,41 +463,41 @@ void AO_Provider__AddOrModifyAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a
       s=AB_Account_GetCountry(acc);
       if (s && *s)
         AB_Account_SetCountry(storedAcc, s);
-  
+
       s=AB_Account_GetBankCode(acc);
       if (s && *s)
         AB_Account_SetBankCode(storedAcc, s);
-  
+
       s=AB_Account_GetBankName(acc);
       if (s && *s)
         AB_Account_SetBankName(storedAcc, s);
-  
+
       s=AB_Account_GetAccountNumber(acc);
       if (s && *s)
         AB_Account_SetAccountNumber(storedAcc, s);
-  
+
       s=AB_Account_GetSubAccountId(acc);
       if (s && *s)
         AB_Account_SetSubAccountId(storedAcc, s);
-  
+
       s=AB_Account_GetIban(acc);
       if (s && *s)
         AB_Account_SetIban(storedAcc, s);
-  
+
       s=AB_Account_GetBic(acc);
       if (s && *s)
         AB_Account_SetBic(storedAcc, s);
-  
+
       s=AB_Account_GetOwnerName(acc);
       if (s && *s)
         AB_Account_SetOwnerName(storedAcc, s);
-  
+
       s=AB_Account_GetCurrency(acc);
       if (s && *s)
         AB_Account_SetCurrency(storedAcc, s);
-  
+
       AB_Account_SetAccountType(storedAcc, AB_Account_GetAccountType(acc));
-  
+
       /* handle users */
       AB_Account_SetUserId(storedAcc, AB_User_GetUniqueId(u));
 
@@ -528,7 +540,8 @@ void AO_Provider__AddOrModifyAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a
 
 
 
-int AO_Provider__ProcessImporterContext(AB_PROVIDER *pro, AB_USER *u, AB_IMEXPORTER_CONTEXT *ictx){
+int AO_Provider__ProcessImporterContext(AB_PROVIDER *pro, AB_USER *u, AB_IMEXPORTER_CONTEXT *ictx)
+{
   AB_IMEXPORTER_ACCOUNTINFO *ai;
   AB_BANKING *ab;
 
@@ -542,7 +555,7 @@ int AO_Provider__ProcessImporterContext(AB_PROVIDER *pro, AB_USER *u, AB_IMEXPOR
   if (!ai) {
     DBG_INFO(0, "No accounts");
   }
-  while(ai) {
+  while (ai) {
     const char *country;
     const char *bankCode;
     const char *accountNumber;
@@ -557,7 +570,7 @@ int AO_Provider__ProcessImporterContext(AB_PROVIDER *pro, AB_USER *u, AB_IMEXPOR
     if (bankCode && accountNumber) {
       AB_ACCOUNT_SPEC_LIST *accountSpecList=NULL;
       int rv;
-  
+
       accountSpecList=AB_AccountSpec_List_new();
       rv=AB_Banking_GetAccountSpecList(ab, &accountSpecList);
       if (rv<0) {

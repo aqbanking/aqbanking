@@ -100,7 +100,8 @@
 GWEN_INHERIT(AB_PROVIDER, AH_PROVIDER);
 
 
-AB_PROVIDER *AH_Provider_new(AB_BANKING *ab, const char *name){
+AB_PROVIDER *AH_Provider_new(AB_BANKING *ab, const char *name)
+{
   AB_PROVIDER *pro;
   AH_PROVIDER *hp;
   GWEN_BUFFER *pbuf;
@@ -125,10 +126,10 @@ AB_PROVIDER *AH_Provider_new(AB_BANKING *ab, const char *name){
   AB_Provider_SetControlFn(pro, AH_Control);
 
   AB_Provider_AddFlags(pro,
-		       AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG |
-		       AB_PROVIDER_FLAGS_HAS_EDITUSER_DIALOG |
-		       AB_PROVIDER_FLAGS_HAS_EDITACCOUNT_DIALOG |
-		       AB_PROVIDER_FLAGS_HAS_USERTYPE_DIALOG);
+                       AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG |
+                       AB_PROVIDER_FLAGS_HAS_EDITUSER_DIALOG |
+                       AB_PROVIDER_FLAGS_HAS_EDITACCOUNT_DIALOG |
+                       AB_PROVIDER_FLAGS_HAS_USERTYPE_DIALOG);
 
   GWEN_NEW_OBJECT(AH_PROVIDER, hp);
   GWEN_INHERIT_SETDATA(AB_PROVIDER, AH_PROVIDER, pro, hp,
@@ -145,11 +146,12 @@ AB_PROVIDER *AH_Provider_new(AB_BANKING *ab, const char *name){
 
 
 
-void GWENHYWFAR_CB AH_Provider_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AH_Provider_FreeData(void *bp, void *p)
+{
   AH_PROVIDER *hp;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Destroying AH_PROVIDER");
-  hp=(AH_PROVIDER*)p;
+  hp=(AH_PROVIDER *)p;
 
   GWEN_DB_Group_free(hp->dbTempConfig);
   AH_HBCI_free(hp->hbci);
@@ -159,7 +161,8 @@ void GWENHYWFAR_CB AH_Provider_FreeData(void *bp, void *p) {
 
 
 
-int AH_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
+int AH_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData)
+{
   AH_PROVIDER *hp;
   int rv;
   const char *logLevelName;
@@ -229,7 +232,8 @@ int AH_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
 
 
 
-int AH_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
+int AH_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData)
+{
   AH_PROVIDER *hp;
   uint32_t currentVersion;
   int rv;
@@ -259,7 +263,8 @@ int AH_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData) {
 
 
 
-const char *AH_Provider_GetProductName(const AB_PROVIDER *pro) {
+const char *AH_Provider_GetProductName(const AB_PROVIDER *pro)
+{
   AH_HBCI *h;
 
   assert(pro);
@@ -270,7 +275,8 @@ const char *AH_Provider_GetProductName(const AB_PROVIDER *pro) {
 
 
 
-const char *AH_Provider_GetProductVersion(const AB_PROVIDER *pro) {
+const char *AH_Provider_GetProductVersion(const AB_PROVIDER *pro)
+{
   AH_HBCI *h;
 
   assert(pro);
@@ -281,7 +287,8 @@ const char *AH_Provider_GetProductVersion(const AB_PROVIDER *pro) {
 
 
 
-int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, int cmd, AH_JOB **pHbciJob){
+int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, int cmd, AH_JOB **pHbciJob)
+{
   AH_PROVIDER *hp;
   AH_JOB *mj;
   uint32_t aFlags;
@@ -293,7 +300,7 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, in
   aFlags=AH_Account_GetFlags(ma);
 
   mj=0;
-  switch(cmd) {
+  switch (cmd) {
 
   case AB_Transaction_CommandGetBalance:
     mj=AH_Job_GetBalance_new(pro, mu, ma);
@@ -373,7 +380,8 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, in
         /* try single transfer */
         mj=AH_Job_SepaDebitDatedSingleCreate_new(pro, mu, ma);
         if (!mj) {
-          DBG_WARN(AQHBCI_LOGDOMAIN, "Job \"SepaDebitDatedSingleCreate\" not supported with this account, trying old single debit");
+          DBG_WARN(AQHBCI_LOGDOMAIN,
+                   "Job \"SepaDebitDatedSingleCreate\" not supported with this account, trying old single debit");
 
           /* try old singleDebit job next */
           mj=AH_Job_SepaDebitSingle_new(pro, mu, ma);
@@ -491,7 +499,9 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, in
 
 
 
-int AH_Provider__GetMultiHbciJob(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_USER *mu, AB_ACCOUNT *ma, int cmd, AH_JOB **pHbciJob){
+int AH_Provider__GetMultiHbciJob(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_USER *mu, AB_ACCOUNT *ma, int cmd,
+                                 AH_JOB **pHbciJob)
+{
   AH_PROVIDER *hp;
   AH_JOB *mj=NULL;
 
@@ -501,7 +511,7 @@ int AH_Provider__GetMultiHbciJob(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_USER *m
 
   assert(mu);
 
-  switch(cmd) {
+  switch (cmd) {
   case AB_Transaction_CommandSepaTransfer:
     mj=AH_Outbox_FindTransferJob(outbox, mu, ma, "JobSepaTransferMulti");
     break;
@@ -529,7 +539,8 @@ int AH_Provider__GetMultiHbciJob(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_USER *m
 
 
 
-AH_HBCI *AH_Provider_GetHbci(const AB_PROVIDER *pro){
+AH_HBCI *AH_Provider_GetHbci(const AB_PROVIDER *pro)
+{
   AH_PROVIDER *hp;
 
   assert(pro);
@@ -541,7 +552,8 @@ AH_HBCI *AH_Provider_GetHbci(const AB_PROVIDER *pro){
 
 
 
-int AH_Provider__HashRmd160(const uint8_t *p, unsigned int l, uint8_t *buf) {
+int AH_Provider__HashRmd160(const uint8_t *p, unsigned int l, uint8_t *buf)
+{
   GWEN_MDIGEST *md;
   int rv;
 
@@ -570,7 +582,8 @@ int AH_Provider__HashRmd160(const uint8_t *p, unsigned int l, uint8_t *buf) {
 
 
 
-int AH_Provider__HashSha256(const uint8_t *p, unsigned int l, uint8_t *buf) {
+int AH_Provider__HashSha256(const uint8_t *p, unsigned int l, uint8_t *buf)
+{
   GWEN_MDIGEST *md;
   int rv;
 
@@ -604,13 +617,14 @@ int AH_Provider__HashSha256(const uint8_t *p, unsigned int l, uint8_t *buf) {
 
 
 
-int AH_Provider_WriteValueToDb(const AB_VALUE *v, GWEN_DB_NODE *dbV) {
+int AH_Provider_WriteValueToDb(const AB_VALUE *v, GWEN_DB_NODE *dbV)
+{
   if (v) {
     GWEN_BUFFER *nbuf;
     char *p;
     const char *s;
     int l;
-  
+
     nbuf=GWEN_Buffer_new(0, 32, 0, 1);
     AH_Job_ValueToChallengeString(v, nbuf);
     l=GWEN_Buffer_GetUsedBytes(nbuf);
@@ -619,11 +633,11 @@ int AH_Provider_WriteValueToDb(const AB_VALUE *v, GWEN_DB_NODE *dbV) {
       GWEN_Buffer_free(nbuf);
       abort();
     }
-  
+
     /* replace "C" comma with "DE" comma, remove thousand's comma */
     p=GWEN_Buffer_GetStart(nbuf);
     s=p;
-    while(*s) {
+    while (*s) {
       if (*s=='.') {
         *p=',';
         p++;
@@ -635,11 +649,11 @@ int AH_Provider_WriteValueToDb(const AB_VALUE *v, GWEN_DB_NODE *dbV) {
       s++;
     } /* while */
     *p=0;
-  
+
     if (strchr(GWEN_Buffer_GetStart(nbuf), ',')) {
       /* kill all trailing '0' behind the comma */
       p=GWEN_Buffer_GetStart(nbuf)+l;
-      while(l--) {
+      while (l--) {
         --p;
         if (*p=='0')
           *p=0;
@@ -649,13 +663,13 @@ int AH_Provider_WriteValueToDb(const AB_VALUE *v, GWEN_DB_NODE *dbV) {
     }
     else
       GWEN_Buffer_AppendString(nbuf, ",");
-  
+
     /* store value */
     GWEN_DB_SetCharValue(dbV, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "value",
                          GWEN_Buffer_GetStart(nbuf));
     GWEN_Buffer_free(nbuf);
-  
+
     s=AB_Value_GetCurrency(v);
     if (!s)
       s="EUR";
@@ -672,7 +686,8 @@ int AH_Provider_WriteValueToDb(const AB_VALUE *v, GWEN_DB_NODE *dbV) {
 
 
 
-static int AH_Provider_Test4(AB_PROVIDER *pro) {
+static int AH_Provider_Test4(AB_PROVIDER *pro)
+{
 #if 0
   AB_BANKING *ab;
   AB_USER *u;
@@ -714,7 +729,8 @@ static int AH_Provider_Test4(AB_PROVIDER *pro) {
 
 
 
-int AH_Provider_Test(AB_PROVIDER *pro) {
+int AH_Provider_Test(AB_PROVIDER *pro)
+{
   return AH_Provider_Test4(pro);
 }
 
