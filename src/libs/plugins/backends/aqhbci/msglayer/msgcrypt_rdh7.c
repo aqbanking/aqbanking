@@ -929,13 +929,15 @@ int AH_Msg_EncryptRdh7(AH_MSG *hmsg) {
 #endif
   /* store CID */
   {
-      uint8_t *cidData;
-      uint32_t cidLen=GWEN_Crypt_Token_Context_GetCidLen(ctx);
-      cidData=GWEN_Crypt_Token_Context_GetCidPtr(ctx);
-      if (cidLen > 0 && cidData != NULL ) {
-          GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/CID", cidData,cidLen);
-          GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", "0");
-      }
+    const uint8_t *cidData;
+    uint32_t cidLen;
+
+    cidLen=GWEN_Crypt_Token_Context_GetCidLen(ctx);
+    cidData=GWEN_Crypt_Token_Context_GetCidPtr(ctx);
+    if (cidLen > 0 && cidData != NULL ) {
+      GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/CID", cidData,cidLen);
+      GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", "0");
+    }
   }
 
 
