@@ -241,7 +241,7 @@ clang-check:
 	scan-build $(MAKE)
 
 format:
-	find . -name \*.c -or -name \*.h -exec astyle \
+	find . -name '*.[c,h,cpp]' -exec astyle \
 	  --style=stroustrup \
 	    -s2 \
 	    --min-conditional-indent=0 \
@@ -257,7 +257,7 @@ format:
 	    --convert-tabs \
 	    --max-code-length=120 \
 	    --break-after-logical \
-	    --dry-run \
+	    --preserve-date \
 	    --suffix=none \{\} \;
 
 
