@@ -17,7 +17,7 @@
 
 static int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
                                       GWEN_DB_NODE *dbKey,
-				      const GWEN_CRYPT_TOKEN_KEYINFO *ki,
+				                      GWEN_CRYPT_TOKEN_KEYINFO *ki,
                                       int kn);
 
 

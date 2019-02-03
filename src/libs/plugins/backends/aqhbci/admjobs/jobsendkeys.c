@@ -19,9 +19,9 @@
 
 AH_JOB *AH_Job_SendKeys_new(AB_PROVIDER *pro,
                             AB_USER *u,
-                            const GWEN_CRYPT_TOKEN_KEYINFO *cryptKeyInfo,
-                            const GWEN_CRYPT_TOKEN_KEYINFO *signKeyInfo,
-                            const GWEN_CRYPT_TOKEN_KEYINFO *authKeyInfo) {
+                            GWEN_CRYPT_TOKEN_KEYINFO *cryptKeyInfo,
+                            GWEN_CRYPT_TOKEN_KEYINFO *signKeyInfo,
+                            GWEN_CRYPT_TOKEN_KEYINFO *authKeyInfo) {
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
   GWEN_DB_NODE *dbKey;
@@ -91,7 +91,7 @@ AH_JOB *AH_Job_SendKeys_new(AB_PROVIDER *pro,
 
 int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
                                GWEN_DB_NODE *dbKey,
-                               const GWEN_CRYPT_TOKEN_KEYINFO *ki,
+                               GWEN_CRYPT_TOKEN_KEYINFO *ki,
                                int kn) {
   uint32_t bsize;
   const uint8_t *p;
