@@ -177,6 +177,7 @@ void AH_EditUserRdhDialog_Init(GWEN_DIALOG *dlg)
   }
 
   GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, I18N("(auto)"), 0);
+<<<<<<< Updated upstream
   GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "1", 0);
   GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "2", 0);
   GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "7", 0);
@@ -204,6 +205,47 @@ void AH_EditUserRdhDialog_Init(GWEN_DIALOG *dlg)
     break;
   default:
     break;
+=======
+  GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "RDH-1", 0);
+  GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "RDH-2", 0);
+  GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "RDH-3", 0);
+  GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "RDH-5", 0);
+  GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "RDH-6", 0);
+  GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "RDH-7", 0);
+  GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "RDH-8", 0);
+  GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "RDH-9", 0);
+  GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "RDH-10", 0);
+  GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "RAH-7", 0);
+  GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "RAH-9", 0);
+  GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "RAH-10", 0);
+
+  /* toGui */
+  switch(AH_User_GetCryptMode(xdlg->user)) {
+  case AH_CryptMode_Rdh:
+    switch(AH_User_GetRdhType(xdlg->user)) {
+    case 0:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0); break;
+    case 1:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0); break;
+    case 2:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 2, 0); break;
+    case 3:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 3, 0); break;
+    case 5:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 4, 0); break;
+    case 6:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 5, 0); break;
+    case 7:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 6, 0); break;
+    case 8:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 7, 0); break;
+    case 9:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 8, 0); break;
+    case 10: GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 9, 0); break;
+    default:  break;
+    }
+    break;
+  case AH_CryptMode_Rah:
+    switch(AH_User_GetRdhType(xdlg->user)) {
+    case 7:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 10, 0); break;
+    case 9:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 11, 0); break;
+    case 10: GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 12, 0); break;
+    default:  break;
+    }
+    break;
+  default: GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0); break;
+>>>>>>> Stashed changes
   }
 
   switch (AH_User_GetStatus(xdlg->user)) {
@@ -371,6 +413,7 @@ int AH_EditUserRdhDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
   }
 
   i=GWEN_Dialog_GetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, -1);
+<<<<<<< Updated upstream
   switch (i) {
   case 1:
     AH_User_SetRdhType(xdlg->user, 1);
@@ -391,6 +434,22 @@ int AH_EditUserRdhDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
   case 0:
     AH_User_SetRdhType(xdlg->user, 0);
     break;
+=======
+  switch(i) {
+  case 1:  AH_User_SetRdhType(xdlg->user, 1);  AH_User_SetCryptMode(xdlg->user, AH_CryptMode_Rdh);  break;
+  case 2:  AH_User_SetRdhType(xdlg->user, 2);  AH_User_SetCryptMode(xdlg->user, AH_CryptMode_Rdh);  break;
+  case 3:  AH_User_SetRdhType(xdlg->user, 3);  AH_User_SetCryptMode(xdlg->user, AH_CryptMode_Rdh);  break;
+  case 4:  AH_User_SetRdhType(xdlg->user, 5);  AH_User_SetCryptMode(xdlg->user, AH_CryptMode_Rdh);  break;
+  case 5:  AH_User_SetRdhType(xdlg->user, 6);  AH_User_SetCryptMode(xdlg->user, AH_CryptMode_Rdh);  break;
+  case 6:  AH_User_SetRdhType(xdlg->user, 7);  AH_User_SetCryptMode(xdlg->user, AH_CryptMode_Rdh);  break;
+  case 7:  AH_User_SetRdhType(xdlg->user, 8);  AH_User_SetCryptMode(xdlg->user, AH_CryptMode_Rdh);  break;
+  case 8:  AH_User_SetRdhType(xdlg->user, 9);  AH_User_SetCryptMode(xdlg->user, AH_CryptMode_Rdh);  break;
+  case 9:  AH_User_SetRdhType(xdlg->user, 10); AH_User_SetCryptMode(xdlg->user, AH_CryptMode_Rdh);  break;
+  case 10: AH_User_SetRdhType(xdlg->user, 7);  AH_User_SetCryptMode(xdlg->user, AH_CryptMode_Rah);  break;
+  case 11: AH_User_SetRdhType(xdlg->user, 9);  AH_User_SetCryptMode(xdlg->user, AH_CryptMode_Rah);  break;
+  case 12: AH_User_SetRdhType(xdlg->user, 10); AH_User_SetCryptMode(xdlg->user, AH_CryptMode_Rah);  break;
+  default: AH_User_SetRdhType(xdlg->user, 0);  AH_User_SetCryptMode(xdlg->user, AH_CryptMode_Rdh);  break;
+>>>>>>> Stashed changes
   }
 
   i=GWEN_Dialog_GetIntProperty(dlg, "statusCombo", GWEN_DialogProperty_Value, 0, -1);
@@ -462,7 +521,7 @@ int AH_EditUserRdhDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg)
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_RDH_DIALOG, dlg);
   assert(xdlg);
 
-  dlg2=AB_SelectBankInfoDialog_new(xdlg->banking, "de", NULL);
+  dlg2=AB_SelectBankInfoDialog_new(xdlg->banking, "de", GWEN_Dialog_GetCharProperty(dlg, "bankCodeEdit", GWEN_DialogProperty_Value, 0, NULL));
   if (dlg2==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create dialog");
     GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Could create dialog, maybe incomplete installation?"));

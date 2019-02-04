@@ -22,7 +22,9 @@
     <widget type="radioButton" name="hbciUseChipcardRadio"   text="Import an already used chipcard" group="1" flags="fillX justifyLeft" />
     <widget type="radioButton" name="hbciCreateKeyFileRadio" text="Create a new Keyfile" group="1" flags="fillX justifyLeft" />
     <widget type="radioButton" name="hbciImportKeyFileRadio" text="Import an existing Keyfile" group="1" flags="fillX justifyLeft" />
+<!--
     <widget type="radioButton" name="hbciInitChipcardRadio"  text="Init a chipcard" group="1" flags="fillX justifyLeft" />
+-->
 
   </widget>
 
