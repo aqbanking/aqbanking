@@ -23,6 +23,7 @@ struct AH_RDH_SPECIAL_DIALOG {
 
   int hbciVersion;
   int rdhVersion;
+  int cryptMode;
   uint32_t flags;
 };
 

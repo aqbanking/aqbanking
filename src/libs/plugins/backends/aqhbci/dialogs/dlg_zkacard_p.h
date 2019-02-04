@@ -35,6 +35,7 @@ struct AH_ZKACARD_DIALOG {
   int hbciVersion;
 
   int rdhVersion;
+  int cryptMode;
 
   int contextId;
 

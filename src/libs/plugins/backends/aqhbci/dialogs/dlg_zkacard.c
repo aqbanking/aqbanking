@@ -133,6 +133,7 @@ GWEN_DIALOG *AH_ZkaCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct)
   /* preset */
   xdlg->hbciVersion=300;
   xdlg->rdhVersion=9;
+  xdlg->cryptMode = AH_CryptMode_Rdh;
   xdlg->flags= AH_USER_FLAGS_BANK_DOESNT_SIGN | AH_USER_FLAGS_BANK_USES_SIGNSEQ;
 
   /* done */
@@ -1021,7 +1022,7 @@ int AH_ZkaCardDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg)
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_ZKACARD_DIALOG, dlg);
   assert(xdlg);
 
-  dlg2=AB_SelectBankInfoDialog_new(xdlg->banking, "de", NULL);
+  dlg2=AB_SelectBankInfoDialog_new(xdlg->banking, "de", GWEN_Dialog_GetCharProperty(dlg, "wiz_bankcode_edit", GWEN_DialogProperty_Value, 0, NULL));
   if (dlg2==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create dialog");
     GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Could not create dialog, maybe an installation error?"));
@@ -1134,6 +1135,7 @@ int AH_ZkaCardDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg)
 
   AH_RdhSpecialDialog_SetHbciVersion(dlg2, xdlg->hbciVersion);
   AH_RdhSpecialDialog_SetRdhVersion(dlg2, xdlg->rdhVersion);
+  AH_RdhSpecialDialog_SetCryptMode(dlg2, xdlg->cryptMode);
   AH_RdhSpecialDialog_SetFlags(dlg2, xdlg->flags);
 
   rv=GWEN_Gui_ExecDialog(dlg2, 0);
@@ -1145,6 +1147,7 @@ int AH_ZkaCardDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg)
   else {
     xdlg->hbciVersion=AH_RdhSpecialDialog_GetHbciVersion(dlg2);
     xdlg->rdhVersion=AH_RdhSpecialDialog_GetRdhVersion(dlg2);
+    xdlg->cryptMode=AH_RdhSpecialDialog_GetCryptMode(dlg2);
     xdlg->flags=AH_RdhSpecialDialog_GetFlags(dlg2);
   }
 
@@ -1208,8 +1211,8 @@ int AH_ZkaCardDialog_FromContext(GWEN_DIALOG *dlg, int i)
                                   (s && *s)?s:"",
                                   0);
 
-      /* RDH7 */
       xdlg->rdhVersion = GWEN_Crypt_Token_Context_GetProtocolVersion(ctx);
+      xdlg->cryptMode = AH_CryptMode_Rdh;
       xdlg->keyStatus  = GWEN_Crypt_Token_Context_GetKeyStatus(ctx);
     }
   }

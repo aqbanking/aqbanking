@@ -142,6 +142,9 @@ GWEN_DIALOG *AH_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u)
   case AH_CryptMode_Rdh:
     dlg=AH_EditUserRdhDialog_new(pro, u, 1);
     break;
+  case AH_CryptMode_Rah:
+    dlg=AH_EditUserRdhDialog_new(pro, u, 1);
+    break;
   default:
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown crypt mode %d)", AH_User_GetCryptMode(u));
     dlg=NULL;

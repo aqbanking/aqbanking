@@ -385,6 +385,7 @@ void AB_SelectBankInfoDialog_Init(GWEN_DIALOG *dlg)
 
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
+  GWEN_Dialog_SetCharProperty(dlg, "blzEdit", GWEN_DialogProperty_Value, 0, xdlg->bankCode, 0);
   GWEN_Dialog_SetCharProperty(dlg,
                               "",
                               GWEN_DialogProperty_Title,

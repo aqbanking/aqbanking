@@ -8,7 +8,7 @@
  ***************************************************************************/
 
 
-/*#define TEST_UNIFIED_RXH_CRYPT*/
+#define TEST_UNIFIED_RXH_CRYPT
 
 int AH_Msg__Sign(AH_MSG *hmsg,
                  GWEN_BUFFER *rawBuf,
