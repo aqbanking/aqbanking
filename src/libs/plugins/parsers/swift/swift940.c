@@ -1406,6 +1406,7 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
                  strcmp(id, "90D")==0 || /* "Anzahl und Summe Soll-Buchungen" (examples I've seen are invalid anyway) */
                  strcmp(id, "90C")==0) { /* "Anzahl und Summe Haben-Buchungen" (examples I've seen are invalid anyway) */
           /* ignore some well known tags */
+          DBG_INFO(AQBANKING_LOGDOMAIN, "Ignoring well known tag \"%s\"", id);
         }
         else {
           DBG_WARN(AQBANKING_LOGDOMAIN,
