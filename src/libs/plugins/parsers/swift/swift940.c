@@ -1402,8 +1402,14 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
           }
         }
         else {
-          DBG_WARN(AQBANKING_LOGDOMAIN, "Unexpected tag '%s' found.", id)
-          DBG_WARN(AQBANKING_LOGDOMAIN, "To debug set environment variable AQBANKING_LOGLEVEL=info and rerun");
+          DBG_WARN(AQBANKING_LOGDOMAIN,
+                   "Unhandled tag '%s' found. "
+                   "This only means the file contains info we currently don't read, "
+                   "in most cases this is unimportant data.",
+                   id);
+          DBG_WARN(AQBANKING_LOGDOMAIN,
+                   "To debug set environment variable AQBANKING_LOGLEVEL=info and rerun,"
+                   "otherwise just ignore this message.");
         }
 
       }
