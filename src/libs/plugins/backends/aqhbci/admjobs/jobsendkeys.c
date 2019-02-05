@@ -80,20 +80,19 @@ AH_JOB *AH_Job_SendKeys_new(AB_PROVIDER *pro,
   GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "cryptKey/secprofile/version", version);
   GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "signKey/secprofile/version", version);
 
-  switch (AH_User_GetCryptMode(u))
-  {
+  switch (AH_User_GetCryptMode(u)) {
   case AH_CryptMode_Rdh:
-      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "cryptKey/secprofile/code", "RDH");
-      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "signKey/secprofile/code", "RDH");
-      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "authKey/secprofile/code", "RDH");
-      break;
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "cryptKey/secprofile/code", "RDH");
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "signKey/secprofile/code", "RDH");
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "authKey/secprofile/code", "RDH");
+    break;
   case AH_CryptMode_Rah:
-      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "cryptKey/secprofile/code", "RAH");
-      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "signKey/secprofile/code", "RAH");
-      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "authKey/secprofile/code", "RAH");
-      break;
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "cryptKey/secprofile/code", "RAH");
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "signKey/secprofile/code", "RAH");
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "authKey/secprofile/code", "RAH");
+    break;
   default:
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "We need to send public keys only for RDH or RAH!\n");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "We need to send public keys only for RDH or RAH!\n");
 
   }
   DBG_INFO(AQHBCI_LOGDOMAIN, "JobSendKeys created");
@@ -236,8 +235,8 @@ int AH_Job_SendKeys_PrepareKey(AH_JOB *j,
   p=GWEN_Crypt_Token_KeyInfo_GetCertificateData(ki);
   bsize=GWEN_Crypt_Token_KeyInfo_GetCertificateLen(ki);
   if (p && bsize) {
-      GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS, "cert/type", GWEN_Crypt_Token_KeyInfo_GetCertType(ki));
-      GWEN_DB_SetBinValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS, "cert/cert", p, bsize);
+    GWEN_DB_SetIntValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS, "cert/type", GWEN_Crypt_Token_KeyInfo_GetCertType(ki));
+    GWEN_DB_SetBinValue(dbKey, GWEN_DB_FLAGS_OVERWRITE_VARS, "cert/cert", p, bsize);
   }
 
   return 0;

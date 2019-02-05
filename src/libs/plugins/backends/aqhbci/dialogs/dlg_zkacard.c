@@ -1022,7 +1022,8 @@ int AH_ZkaCardDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg)
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_ZKACARD_DIALOG, dlg);
   assert(xdlg);
 
-  dlg2=AB_SelectBankInfoDialog_new(xdlg->banking, "de", GWEN_Dialog_GetCharProperty(dlg, "wiz_bankcode_edit", GWEN_DialogProperty_Value, 0, NULL));
+  dlg2=AB_SelectBankInfoDialog_new(xdlg->banking, "de", GWEN_Dialog_GetCharProperty(dlg, "wiz_bankcode_edit",
+                                   GWEN_DialogProperty_Value, 0, NULL));
   if (dlg2==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create dialog");
     GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Could not create dialog, maybe an installation error?"));

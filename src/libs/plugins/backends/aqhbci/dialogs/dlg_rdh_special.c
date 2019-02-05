@@ -150,11 +150,8 @@ void AH_RdhSpecialDialog_SetRdhVersion(GWEN_DIALOG *dlg, int i)
 
 
 
-<<<<<<< Updated upstream
-uint32_t AH_RdhSpecialDialog_GetFlags(const GWEN_DIALOG *dlg)
+int AH_RdhSpecialDialog_GetCryptMode(const GWEN_DIALOG *dlg)
 {
-=======
-int AH_RdhSpecialDialog_GetCryptMode(const GWEN_DIALOG *dlg) {
   AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -166,7 +163,8 @@ int AH_RdhSpecialDialog_GetCryptMode(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_RdhSpecialDialog_SetCryptMode(GWEN_DIALOG *dlg, int i) {
+void AH_RdhSpecialDialog_SetCryptMode(GWEN_DIALOG *dlg, int i)
+{
   AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -178,8 +176,8 @@ void AH_RdhSpecialDialog_SetCryptMode(GWEN_DIALOG *dlg, int i) {
 
 
 
-uint32_t AH_RdhSpecialDialog_GetFlags(const GWEN_DIALOG *dlg) {
->>>>>>> Stashed changes
+uint32_t AH_RdhSpecialDialog_GetFlags(const GWEN_DIALOG *dlg)
+{
   AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -287,55 +285,61 @@ void AH_RdhSpecialDialog_Init(GWEN_DIALOG *dlg)
   GWEN_Dialog_SetCharProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_AddValue, 0, "RAH-10", 0);
 
   /* toGui */
-<<<<<<< Updated upstream
-  switch (xdlg->rdhVersion) {
-  case 0:
-    GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
-    break;
-  case 1:
-    GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0);
-    break;
-  case 2:
-    GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 2, 0);
-    break;
-  case 7:
-    GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 3, 0);
-    break;
-  case 9:
-    GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 4, 0);
-    break;
-  case 10:
-    GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 5, 0);
-    break;
-  default:
-    break;
-=======
-  switch(xdlg->cryptMode) {
+  switch (xdlg->cryptMode) {
   case AH_CryptMode_Rdh:
-    switch(xdlg->rdhVersion) {
-    case 0:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0); break;
-    case 1:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0); break;
-    case 2:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 2, 0); break;
-    case 3:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 3, 0); break;
-    case 5:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 4, 0); break;
-    case 6:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 5, 0); break;
-    case 7:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 6, 0); break;
-    case 8:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 7, 0); break;
-    case 9:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 8, 0); break;
-    case 10: GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 9, 0); break;
-    default:  break;
+    switch (xdlg->rdhVersion) {
+    case 0:
+      GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
+      break;
+    case 1:
+      GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0);
+      break;
+    case 2:
+      GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 2, 0);
+      break;
+    case 3:
+      GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 3, 0);
+      break;
+    case 5:
+      GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 4, 0);
+      break;
+    case 6:
+      GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 5, 0);
+      break;
+    case 7:
+      GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 6, 0);
+      break;
+    case 8:
+      GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 7, 0);
+      break;
+    case 9:
+      GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 8, 0);
+      break;
+    case 10:
+      GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 9, 0);
+      break;
+    default:
+      break;
     }
     break;
   case AH_CryptMode_Rah:
-    switch(xdlg->rdhVersion) {
-    case 7:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 10, 0); break;
-    case 9:  GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 11, 0); break;
-    case 10: GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 12, 0); break;
-    default:  break;
+    switch (xdlg->rdhVersion) {
+    case 7:
+      GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 10, 0);
+      break;
+    case 9:
+      GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 11, 0);
+      break;
+    case 10:
+      GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 12, 0);
+      break;
+    default:
+      break;
     }
     break;
-  default: GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0); break;
->>>>>>> Stashed changes
+  default:
+    GWEN_Dialog_SetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
+    break;
   }
 
   GWEN_Dialog_SetIntProperty(dlg, "bankDoesntSignCheck", GWEN_DialogProperty_Value, 0,
@@ -391,43 +395,59 @@ void AH_RdhSpecialDialog_Fini(GWEN_DIALOG *dlg)
   }
 
   i=GWEN_Dialog_GetIntProperty(dlg, "rdhVersionCombo", GWEN_DialogProperty_Value, 0, -1);
-<<<<<<< Updated upstream
   switch (i) {
   case 1:
     xdlg->rdhVersion=1;
+    xdlg->cryptMode=AH_CryptMode_Rdh;
     break;
   case 2:
     xdlg->rdhVersion=2;
+    xdlg->cryptMode=AH_CryptMode_Rdh;
     break;
   case 3:
-    xdlg->rdhVersion=7;
+    xdlg->rdhVersion=3;
+    xdlg->cryptMode=AH_CryptMode_Rdh;
     break;
   case 4:
-    xdlg->rdhVersion=9;
+    xdlg->rdhVersion=5;
+    xdlg->cryptMode=AH_CryptMode_Rdh;
     break;
   case 5:
+    xdlg->rdhVersion=6;
+    xdlg->cryptMode=AH_CryptMode_Rdh;
+    break;
+  case 6:
+    xdlg->rdhVersion=7;
+    xdlg->cryptMode=AH_CryptMode_Rdh;
+    break;
+  case 7:
+    xdlg->rdhVersion=8;
+    xdlg->cryptMode=AH_CryptMode_Rdh;
+    break;
+  case 8:
+    xdlg->rdhVersion=9;
+    xdlg->cryptMode=AH_CryptMode_Rdh;
+    break;
+  case 9:
     xdlg->rdhVersion=10;
+    xdlg->cryptMode=AH_CryptMode_Rdh;
+    break;
+  case 10:
+    xdlg->rdhVersion=7;
+    xdlg->cryptMode=AH_CryptMode_Rah;
+    break;
+  case 11:
+    xdlg->rdhVersion=9;
+    xdlg->cryptMode=AH_CryptMode_Rah;
+    break;
+  case 12:
+    xdlg->rdhVersion=10;
+    xdlg->cryptMode=AH_CryptMode_Rah;
     break;
   default:
-  case 0:
     xdlg->rdhVersion=0;
+    xdlg->cryptMode=AH_CryptMode_Rdh;
     break;
-=======
-  switch(i) {
-  case 1:  xdlg->rdhVersion=1;  xdlg->cryptMode=AH_CryptMode_Rdh; break;
-  case 2:  xdlg->rdhVersion=2;  xdlg->cryptMode=AH_CryptMode_Rdh; break;
-  case 3:  xdlg->rdhVersion=3;  xdlg->cryptMode=AH_CryptMode_Rdh; break;
-  case 4:  xdlg->rdhVersion=5;  xdlg->cryptMode=AH_CryptMode_Rdh; break;
-  case 5:  xdlg->rdhVersion=6;  xdlg->cryptMode=AH_CryptMode_Rdh; break;
-  case 6:  xdlg->rdhVersion=7;  xdlg->cryptMode=AH_CryptMode_Rdh; break;
-  case 7:  xdlg->rdhVersion=8;  xdlg->cryptMode=AH_CryptMode_Rdh; break;
-  case 8:  xdlg->rdhVersion=9;  xdlg->cryptMode=AH_CryptMode_Rdh; break;
-  case 9:  xdlg->rdhVersion=10; xdlg->cryptMode=AH_CryptMode_Rdh; break;
-  case 10: xdlg->rdhVersion=7;  xdlg->cryptMode=AH_CryptMode_Rah; break;
-  case 11: xdlg->rdhVersion=9;  xdlg->cryptMode=AH_CryptMode_Rah; break;
-  case 12: xdlg->rdhVersion=10; xdlg->cryptMode=AH_CryptMode_Rah; break;
-  default: xdlg->rdhVersion=0;  xdlg->cryptMode=AH_CryptMode_Rdh; break;
->>>>>>> Stashed changes
   }
 
   flags=0;

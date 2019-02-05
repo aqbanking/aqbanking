@@ -375,7 +375,7 @@ AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg)
                     (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NOSYSID));
 
   AH_Msg_SetSignSeqOne(msg,
-                      (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_SIGNSEQONE));
+                       (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_SIGNSEQONE));
 
   /* copy signers */
   if (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_SIGN) {
