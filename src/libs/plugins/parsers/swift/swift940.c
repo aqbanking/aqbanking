@@ -1401,6 +1401,12 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
             DBG_WARN(AQBANKING_LOGDOMAIN, "Unexpected related reference '%s' in document tag 21 encountered.", p);
           }
         }
+        else if (strcmp(id, "13")==0 ||  /* "Erstellungszeitpunkt */
+                 strcmp(id, "34F")==0 || /* "Mindestbetrag" (sometimes contains some strange values) */
+                 strcmp(id, "90D")==0 || /* "Anzahl und Summe Soll-Buchungen" (examples I've seen are invalid anyway) */
+                 strcmp(id, "90C")==0) { /* "Anzahl und Summe Haben-Buchungen" (examples I've seen are invalid anyway) */
+          /* ignore some well known tags */
+        }
         else {
           DBG_WARN(AQBANKING_LOGDOMAIN,
                    "Unhandled tag '%s' found. "
