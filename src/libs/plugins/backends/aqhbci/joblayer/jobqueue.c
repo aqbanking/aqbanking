@@ -140,6 +140,7 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j)
   int crypt;
   int needTAN;
   int noSysId;
+  int signSeqOne;
   int noItan;
   GWEN_STRINGLIST *jobTypes;
   AH_JOB *cj;
@@ -166,6 +167,7 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j)
   crypt=0;
   needTAN=0;
   noSysId=0;
+  signSeqOne=0;
   noItan=0;
   jobTypes=GWEN_StringList_new();
   cj=AH_Job_List_First(jq->jobs);
@@ -179,6 +181,7 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j)
     crypt|=(AH_Job_GetFlags(cj) & AH_JOB_FLAGS_CRYPT);
     needTAN|=(AH_Job_GetFlags(cj) & AH_JOB_FLAGS_NEEDTAN);
     noSysId|=(AH_Job_GetFlags(cj) & AH_JOB_FLAGS_NOSYSID);
+    signSeqOne|=(AH_Job_GetFlags(cj) & AH_JOB_FLAGS_SIGNSEQONE);
     noItan|=(AH_Job_GetFlags(cj) & AH_JOB_FLAGS_NOITAN);
     cj=AH_Job_List_Next(cj);
   } /* while */
@@ -287,6 +290,8 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j)
       jq->flags|=AH_JOBQUEUE_FLAGS_NEEDTAN;
     if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_NOSYSID)
       jq->flags|=AH_JOBQUEUE_FLAGS_NOSYSID;
+    if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_SIGNSEQONE)
+      jq->flags|=AH_JOBQUEUE_FLAGS_SIGNSEQONE;
     if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_NOITAN)
       jq->flags|=AH_JOBQUEUE_FLAGS_NOITAN;
   }
@@ -368,6 +373,9 @@ AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg)
 
   AH_Msg_SetNoSysId(msg,
                     (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NOSYSID));
+
+  AH_Msg_SetSignSeqOne(msg,
+                      (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_SIGNSEQONE));
 
   /* copy signers */
   if (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_SIGN) {

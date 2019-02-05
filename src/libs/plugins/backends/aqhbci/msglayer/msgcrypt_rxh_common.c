@@ -638,7 +638,12 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
   /* create SigHead */
   hbuf=GWEN_Buffer_new(0, 128+GWEN_Buffer_GetUsedBytes(rawBuf), 0, 1);
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "head/seq", hmsg->firstSegment-1);
-  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "signseq", GWEN_Crypt_Token_KeyInfo_GetSignCounter(ki));
+  if (AH_Msg_SignSeqOne(hmsg)){
+      GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "signseq", 1);
+  }
+  else {
+      GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "signseq", GWEN_Crypt_Token_KeyInfo_GetSignCounter(ki));
+  }
 
   /* create signature head segment */
   rv=GWEN_MsgEngine_CreateMessageFromNode(e, node, hbuf, cfg);

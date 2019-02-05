@@ -80,6 +80,9 @@ void AH_Msg_SetNeedTan(AH_MSG *hmsg, int i);
 int AH_Msg_NoSysId(const AH_MSG *hmsg);
 void AH_Msg_SetNoSysId(AH_MSG *hmsg, int i);
 
+int AH_Msg_SignSeqOne(const AH_MSG *hmsg);
+void AH_Msg_SetSignSeqOne(AH_MSG *hmsg, int i);
+
 unsigned int AH_Msg_GetCurrentSegmentNumber(AH_MSG *hmsg);
 
 unsigned int AH_Msg_AddNode(AH_MSG *hmsg,

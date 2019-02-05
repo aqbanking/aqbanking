@@ -1435,7 +1435,6 @@ int AH_Msg_NoSysId(const AH_MSG *hmsg)
 }
 
 
-
 /* --------------------------------------------------------------- FUNCTION */
 void AH_Msg_SetNoSysId(AH_MSG *hmsg, int i)
 {
@@ -1444,8 +1443,19 @@ void AH_Msg_SetNoSysId(AH_MSG *hmsg, int i)
 }
 
 
+/* --------------------------------------------------------------- FUNCTION */
+void AH_Msg_SetSignSeqOne(AH_MSG *hmsg, int i)
+{
+  assert(hmsg);
+  hmsg->signSeqOne=i;
+}
 
-
+/* --------------------------------------------------------------- FUNCTION */
+int AH_Msg_SignSeqOne(const AH_MSG *hmsg)
+{
+  assert(hmsg);
+  return hmsg->signSeqOne;
+}
 
 
 /* --------------------------------------------------------------- FUNCTION */

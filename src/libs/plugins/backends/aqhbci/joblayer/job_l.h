@@ -13,7 +13,7 @@
 
 typedef struct AH_JOB AH_JOB;
 
-
+#define AH_JOB_FLAGS_SIGNSEQONE           0x00000800
 #define AH_JOB_FLAGS_IGNORE_ERROR         0x00001000
 #define AH_JOB_FLAGS_NOITAN               0x00002000
 #define AH_JOB_FLAGS_TANUSED              0x00004000

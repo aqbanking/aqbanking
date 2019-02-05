@@ -55,6 +55,7 @@ struct AH_MSG {
   char *usedTan;
   int needTan;
   int noSysId;
+  int signSeqOne;
 
   char *usedPin;
 
