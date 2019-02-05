@@ -22,7 +22,7 @@
 
   <Import>
 
-    <IfPathExists path="Document/BkToCstmrStmt">
+    <XmlIfPathExists path="Document/BkToCstmrStmt">
   
       <XmlEnter path="Document/BkToCstmrStmt">
   
