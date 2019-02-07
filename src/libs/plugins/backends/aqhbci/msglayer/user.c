@@ -2712,12 +2712,12 @@ int AH_User_VerifyInitialKey(GWEN_CRYPT_TOKEN *ct,
       msgBuffer=GWEN_Buffer_new(NULL, 2048, 0, 1);
       GWEN_Buffer_AppendString(msgBuffer,
                                "Could not verify the received key with the key hash stored on your banking card!\n");
-      GWEN_Buffer_AppendString(msgBuffer, "Hashes did not match!\\n");
+      GWEN_Buffer_AppendString(msgBuffer, "Hashes did not match!\n");
       GWEN_Buffer_AppendString(msgBuffer, "Hash on the card has length ");
-      snprintf(numBuf, sizeof(numBuf), "%d",
+      snprintf(numBuf, sizeof(numBuf), "%d, ",
                keyHashLen);
       GWEN_Buffer_AppendString(msgBuffer, numBuf);
-      GWEN_Buffer_AppendString(msgBuffer, "Hash Value ");
+      GWEN_Buffer_AppendString(msgBuffer, "hash value ");
       if (keyHashAlgo==GWEN_Crypt_HashAlgoId_Sha256) {
         /*SHA256*/
         GWEN_Buffer_AppendString(msgBuffer, "(SHA256):\n");
@@ -2727,11 +2727,11 @@ int AH_User_VerifyInitialKey(GWEN_CRYPT_TOKEN *ct,
         GWEN_Buffer_AppendString(msgBuffer, "(RIPEMD-160):\n");
       }
       GWEN_Buffer_AppendString(msgBuffer, cardHashString);
-      GWEN_Buffer_AppendString(msgBuffer, "\n\n Hash from transmitted key has length ");
-      snprintf(numBuf, sizeof(numBuf), "%d",
+      GWEN_Buffer_AppendString(msgBuffer, "\n\nHash from transmitted key has length ");
+      snprintf(numBuf, sizeof(numBuf), "%d, ",
                mdSize);
       GWEN_Buffer_AppendString(msgBuffer, numBuf);
-      GWEN_Buffer_AppendString(msgBuffer, "Hash Value ");
+      GWEN_Buffer_AppendString(msgBuffer, "hash value ");
       if (keyHashAlgo==GWEN_Crypt_HashAlgoId_Sha256) {
         /*SHA256*/
         GWEN_Buffer_AppendString(msgBuffer, "(SHA256):\n");
@@ -2792,7 +2792,7 @@ int AH_User_VerifyInitialKey(GWEN_CRYPT_TOKEN *ct,
     snprintf(numBuf, sizeof(numBuf), "%d",
              keyNum);
     GWEN_Buffer_AppendString(msgBuffer, numBuf);
-    GWEN_Buffer_AppendString(msgBuffer, "\n\n Hash from transmitted key has length ");
+    GWEN_Buffer_AppendString(msgBuffer, "\n\nHash from transmitted key has length ");
     snprintf(numBuf, sizeof(numBuf), "%d",
              mdSize);
     GWEN_Buffer_AppendString(msgBuffer, numBuf);
