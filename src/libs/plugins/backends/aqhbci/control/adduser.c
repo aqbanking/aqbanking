@@ -94,6 +94,7 @@ int AH_Control_AddUser(AB_PROVIDER *pro,
   const char *userName;
   int hbciVersion;
   int rdhType;
+  int cryptModeRAH=0;
   uint32_t cid;
   const GWEN_ARGS args[]= {
     {
@@ -207,6 +208,17 @@ int AH_Control_AddUser(AB_PROVIDER *pro,
       "Select the RDH profile type (1, 2, 3, 5, 7, 9, 10)"
     },
     {
+      0,
+      GWEN_ArgsType_Int,
+      "cryptModeRAH",
+      0,
+      1,
+      0,
+      "cryptmoderah",
+      "Selects RAH instead of RDH crypt mode",
+      "Selects RAH instead of RDH crypt mode"
+    },
+    {
       GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
       GWEN_ArgsType_Int,            /* type */
       "help",                       /* name */
@@ -250,6 +262,8 @@ int AH_Control_AddUser(AB_PROVIDER *pro,
   cid=GWEN_DB_GetIntValue(db, "context", 0, 1);
   hbciVersion=GWEN_DB_GetIntValue(db, "hbciVersion", 0, 0);
   rdhType=GWEN_DB_GetIntValue(db, "rdhType", 0, 1);
+  if(GWEN_DB_FindFirstVar(db, "cryptModeRAH"))
+    cryptModeRAH=1;
   userName=GWEN_DB_GetCharValue(db, "userName", 0, 0);
   assert(userName);
 
@@ -277,23 +291,45 @@ int AH_Control_AddUser(AB_PROVIDER *pro,
   }
 
   if (rdhType>0) {
-    switch (rdhType) {
-    case 1:
-    case 2:
-    case 7:
-    case 9:
-    case 10:
-      /* supported */
-      break;
+    if(cryptModeRAH) {
+      switch (rdhType) {
+      case 7:
+      case 9:
+      case 10:
+	/* supported */
+	break;
 
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 8:
-    default:
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "RDH type %d not supported", rdhType);
-      return 1;
+      case 1:
+      case 2:
+      case 3:
+      case 4:
+      case 5:
+      case 6:
+      case 8:
+      default:
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "RAH type %d not supported", rdhType);
+	return 1;
+      }
+    }
+    else {
+      switch (rdhType) {
+      case 1:
+      case 2:
+      case 3:
+      case 5:
+      case 6:
+      case 7:
+      case 8:
+      case 9:
+      case 10:
+	/* supported */
+	break;
+
+      case 4:
+      default:
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "RDH type %d not supported", rdhType);
+	return 1;
+      }
     }
   }
 
@@ -406,8 +442,12 @@ int AH_Control_AddUser(AB_PROVIDER *pro,
       algo=GWEN_Crypt_Token_KeyInfo_GetCryptAlgoId(ki);
       if (algo==GWEN_Crypt_CryptAlgoId_Des3K)
         cm=AH_CryptMode_Ddv;
-      else if (algo==GWEN_Crypt_CryptAlgoId_Rsa)
-        cm=AH_CryptMode_Rdh;
+      else if (algo==GWEN_Crypt_CryptAlgoId_Rsa) {
+	if(cryptModeRAH)
+	  cm=AH_CryptMode_Rah;
+	else
+	  cm=AH_CryptMode_Rdh;
+      }
       else {
         DBG_ERROR(AQHBCI_LOGDOMAIN,
                   "Unexpected crypt algorithm \"%s\", unable to determine crypt mode",
@@ -440,6 +480,17 @@ int AH_Control_AddUser(AB_PROVIDER *pro,
       GWEN_Crypt_Token_Context_free(ctx);
       GWEN_Buffer_free(nameBuffer);
       return 3;
+    }
+
+    if(rdhType>1 && rdhType!=GWEN_Crypt_Token_Context_GetProtocolVersion(ctx)) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Specified RDH version %d differs from RDH version %d on card!",
+		rdhType, GWEN_Crypt_Token_Context_GetProtocolVersion(ctx));
+      GWEN_Crypt_Token_Context_free(ctx);
+      GWEN_Buffer_free(nameBuffer);
+      return 3;
+    }
+    else {
+      rdhType=GWEN_Crypt_Token_Context_GetProtocolVersion(ctx);
     }
 
     /* TODO: Check for existing users to avoid duplicates */
