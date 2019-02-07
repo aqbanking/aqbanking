@@ -594,7 +594,7 @@ void AH_ZkaCardDialog_Init(GWEN_DIALOG *dlg) {
   if (i>=DIALOG_MINHEIGHT)
     GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, i, 0);
 
-  /* disable next and previous buttons */
+  /* enable next and disable previous buttons */
   GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
   GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
 }
@@ -742,8 +742,8 @@ int AH_ZkaCardDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
   case PAGE_END:
     GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, page, 0);
     GWEN_Dialog_SetCharProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Title, 0, I18N("Finish"), 0);
-    GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
-    GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+    //GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+    GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
     GWEN_Dialog_SetIntProperty(dlg, "wiz_abort_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
     return GWEN_DialogEvent_ResultHandled;
 
@@ -830,6 +830,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting server keys (%d)", rv);
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
+    GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
     return GWEN_DialogEvent_ResultHandled;
   }
 
@@ -847,6 +848,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error sending user keys (%d)", rv);
       AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
       GWEN_Gui_ProgressEnd(pid);
+      GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
       return GWEN_DialogEvent_ResultHandled;
     }
   }
@@ -862,6 +864,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting Kundensystem ID (%d)", rv);
       AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
       GWEN_Gui_ProgressEnd(pid);
+      GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
       return GWEN_DialogEvent_ResultHandled;
     }
   }
@@ -875,6 +878,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
 			  I18N("Unable to lock users (%d)"), rv);
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
+    GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
     return GWEN_DialogEvent_ResultHandled;
   }
 
@@ -890,6 +894,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting accounts (%d)", rv);
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
+    GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
     return GWEN_DialogEvent_ResultHandled;
   }
 
@@ -902,6 +907,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
 			 GWEN_LoggerLevel_Error,
 			 I18N("Aborted by user."));
     GWEN_Gui_ProgressEnd(pid);
+    GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
     return GWEN_DialogEvent_ResultHandled;
   }
 
@@ -918,6 +924,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
+    GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
     return GWEN_DialogEvent_ResultHandled;
   }
 
