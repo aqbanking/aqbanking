@@ -34,6 +34,9 @@ void AH_RdhSpecialDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i);
 int AH_RdhSpecialDialog_GetRdhVersion(const GWEN_DIALOG *dlg);
 void AH_RdhSpecialDialog_SetRdhVersion(GWEN_DIALOG *dlg, int i);
 
+int AH_RdhSpecialDialog_GetCryptMode(const GWEN_DIALOG *dlg);
+void AH_RdhSpecialDialog_SetCryptMode(GWEN_DIALOG *dlg, int i);
+
 uint32_t AH_RdhSpecialDialog_GetFlags(const GWEN_DIALOG *dlg);
 void AH_RdhSpecialDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl);
 void AH_RdhSpecialDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl);
