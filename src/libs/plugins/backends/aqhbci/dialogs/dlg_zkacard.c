@@ -52,7 +52,8 @@ GWEN_INHERIT(GWEN_DIALOG, AH_ZKACARD_DIALOG)
 
 
 
-GWEN_DIALOG *AH_ZkaCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct) {
+GWEN_DIALOG *AH_ZkaCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct)
+{
   GWEN_DIALOG *dlg;
   AH_ZKACARD_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -61,14 +62,14 @@ GWEN_DIALOG *AH_ZkaCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct) {
   dlg=GWEN_Dialog_new("ah_setup_zkacard");
   GWEN_NEW_OBJECT(AH_ZKACARD_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AH_ZKACARD_DIALOG, dlg, xdlg,
-		       AH_ZkaCardDialog_FreeData);
+                       AH_ZkaCardDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AH_ZkaCardDialog_SignalHandler);
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-			       "aqbanking/backends/aqhbci/dialogs/dlg_zkacard.dlg",
-			       fbuf);
+                               "aqbanking/backends/aqhbci/dialogs/dlg_zkacard.dlg",
+                               fbuf);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
@@ -99,10 +100,10 @@ GWEN_DIALOG *AH_ZkaCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct) {
     if (!GWEN_Crypt_Token_IsOpen(ct)) {
       rv=GWEN_Crypt_Token_Open(ct, 0, 0);
       if (rv<0) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Error opening token (%d)", rv);
-	GWEN_Gui_ShowError(I18N("Error"), I18N("Could not contact card. Maybe removed? (%d)"), rv);
-	GWEN_Dialog_free(dlg);
-	return NULL;
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Error opening token (%d)", rv);
+        GWEN_Gui_ShowError(I18N("Error"), I18N("Could not contact card. Maybe removed? (%d)"), rv);
+        GWEN_Dialog_free(dlg);
+        return NULL;
       }
     }
 
@@ -120,10 +121,10 @@ GWEN_DIALOG *AH_ZkaCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct) {
 
       ctx=GWEN_Crypt_Token_GetContext(ct, idList[i], 0);
       if (ctx) {
-	GWEN_CRYPT_TOKEN_CONTEXT *nctx;
+        GWEN_CRYPT_TOKEN_CONTEXT *nctx;
 
-	nctx=GWEN_Crypt_Token_Context_dup(ctx);
-	GWEN_Crypt_Token_Context_List_Add(nctx, xdlg->contextList);
+        nctx=GWEN_Crypt_Token_Context_dup(ctx);
+        GWEN_Crypt_Token_Context_List_Add(nctx, xdlg->contextList);
         DBG_INFO(AQHBCI_LOGDOMAIN, "Added context %08x", idList[i]);
       }
     }
@@ -141,7 +142,8 @@ GWEN_DIALOG *AH_ZkaCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct) {
 
 
 
-void GWENHYWFAR_CB AH_ZkaCardDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AH_ZkaCardDialog_FreeData(void *bp, void *p)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   xdlg=(AH_ZKACARD_DIALOG *) p;
@@ -157,7 +159,8 @@ void GWENHYWFAR_CB AH_ZkaCardDialog_FreeData(void *bp, void *p) {
 
 
 
-AB_USER *AH_ZkaCardDialog_GetUser(const GWEN_DIALOG *dlg) {
+AB_USER *AH_ZkaCardDialog_GetUser(const GWEN_DIALOG *dlg)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -169,7 +172,8 @@ AB_USER *AH_ZkaCardDialog_GetUser(const GWEN_DIALOG *dlg) {
 
 
 
-GWEN_CRYPT_TOKEN *AH_ZkaCardDialog_GetCryptToken(const GWEN_DIALOG *dlg) {
+GWEN_CRYPT_TOKEN *AH_ZkaCardDialog_GetCryptToken(const GWEN_DIALOG *dlg)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -181,7 +185,8 @@ GWEN_CRYPT_TOKEN *AH_ZkaCardDialog_GetCryptToken(const GWEN_DIALOG *dlg) {
 
 
 
-const char *AH_ZkaCardDialog_GetBankCode(const GWEN_DIALOG *dlg) {
+const char *AH_ZkaCardDialog_GetBankCode(const GWEN_DIALOG *dlg)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -193,7 +198,8 @@ const char *AH_ZkaCardDialog_GetBankCode(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_ZkaCardDialog_SetBankCode(GWEN_DIALOG *dlg, const char *s) {
+void AH_ZkaCardDialog_SetBankCode(GWEN_DIALOG *dlg, const char *s)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -209,7 +215,8 @@ void AH_ZkaCardDialog_SetBankCode(GWEN_DIALOG *dlg, const char *s) {
 
 
 
-const char *AH_ZkaCardDialog_GetBankName(const GWEN_DIALOG *dlg) {
+const char *AH_ZkaCardDialog_GetBankName(const GWEN_DIALOG *dlg)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -221,7 +228,8 @@ const char *AH_ZkaCardDialog_GetBankName(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_ZkaCardDialog_SetBankName(GWEN_DIALOG *dlg, const char *s) {
+void AH_ZkaCardDialog_SetBankName(GWEN_DIALOG *dlg, const char *s)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -237,7 +245,8 @@ void AH_ZkaCardDialog_SetBankName(GWEN_DIALOG *dlg, const char *s) {
 
 
 
-const char *AH_ZkaCardDialog_GetUserName(const GWEN_DIALOG *dlg) {
+const char *AH_ZkaCardDialog_GetUserName(const GWEN_DIALOG *dlg)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -249,7 +258,8 @@ const char *AH_ZkaCardDialog_GetUserName(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_ZkaCardDialog_SetUserName(GWEN_DIALOG *dlg, const char *s) {
+void AH_ZkaCardDialog_SetUserName(GWEN_DIALOG *dlg, const char *s)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -265,7 +275,8 @@ void AH_ZkaCardDialog_SetUserName(GWEN_DIALOG *dlg, const char *s) {
 
 
 
-const char *AH_ZkaCardDialog_GetUserId(const GWEN_DIALOG *dlg) {
+const char *AH_ZkaCardDialog_GetUserId(const GWEN_DIALOG *dlg)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -277,7 +288,8 @@ const char *AH_ZkaCardDialog_GetUserId(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_ZkaCardDialog_SetUserId(GWEN_DIALOG *dlg, const char *s) {
+void AH_ZkaCardDialog_SetUserId(GWEN_DIALOG *dlg, const char *s)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -293,7 +305,8 @@ void AH_ZkaCardDialog_SetUserId(GWEN_DIALOG *dlg, const char *s) {
 
 
 
-const char *AH_ZkaCardDialog_GetCustomerId(const GWEN_DIALOG *dlg) {
+const char *AH_ZkaCardDialog_GetCustomerId(const GWEN_DIALOG *dlg)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -305,7 +318,8 @@ const char *AH_ZkaCardDialog_GetCustomerId(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_ZkaCardDialog_SetCustomerId(GWEN_DIALOG *dlg, const char *s) {
+void AH_ZkaCardDialog_SetCustomerId(GWEN_DIALOG *dlg, const char *s)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -321,7 +335,8 @@ void AH_ZkaCardDialog_SetCustomerId(GWEN_DIALOG *dlg, const char *s) {
 
 
 
-const char *AH_ZkaCardDialog_GetUrl(const GWEN_DIALOG *dlg) {
+const char *AH_ZkaCardDialog_GetUrl(const GWEN_DIALOG *dlg)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -333,7 +348,8 @@ const char *AH_ZkaCardDialog_GetUrl(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_ZkaCardDialog_SetUrl(GWEN_DIALOG *dlg, const char *s) {
+void AH_ZkaCardDialog_SetUrl(GWEN_DIALOG *dlg, const char *s)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -349,7 +365,8 @@ void AH_ZkaCardDialog_SetUrl(GWEN_DIALOG *dlg, const char *s) {
 
 
 
-const char *AH_ZkaCardDialog_GetPeerId(const GWEN_DIALOG *dlg) {
+const char *AH_ZkaCardDialog_GetPeerId(const GWEN_DIALOG *dlg)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -361,7 +378,8 @@ const char *AH_ZkaCardDialog_GetPeerId(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_ZkaCardDialog_SetPeerId(GWEN_DIALOG *dlg, const char *s) {
+void AH_ZkaCardDialog_SetPeerId(GWEN_DIALOG *dlg, const char *s)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -376,7 +394,8 @@ void AH_ZkaCardDialog_SetPeerId(GWEN_DIALOG *dlg, const char *s) {
 }
 
 
-int AH_ZkaCardDialog_GetHbciVersion(const GWEN_DIALOG *dlg) {
+int AH_ZkaCardDialog_GetHbciVersion(const GWEN_DIALOG *dlg)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -388,7 +407,8 @@ int AH_ZkaCardDialog_GetHbciVersion(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_ZkaCardDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i) {
+void AH_ZkaCardDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -400,7 +420,8 @@ void AH_ZkaCardDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i) {
 
 
 
-uint32_t AH_ZkaCardDialog_GetFlags(const GWEN_DIALOG *dlg) {
+uint32_t AH_ZkaCardDialog_GetFlags(const GWEN_DIALOG *dlg)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -412,7 +433,8 @@ uint32_t AH_ZkaCardDialog_GetFlags(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_ZkaCardDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AH_ZkaCardDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -424,7 +446,8 @@ void AH_ZkaCardDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_ZkaCardDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AH_ZkaCardDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -436,7 +459,8 @@ void AH_ZkaCardDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_ZkaCardDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AH_ZkaCardDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -451,7 +475,8 @@ void AH_ZkaCardDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_ZkaCardDialog_Init(GWEN_DIALOG *dlg) {
+void AH_ZkaCardDialog_Init(GWEN_DIALOG *dlg)
+{
   AH_ZKACARD_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
@@ -463,20 +488,20 @@ void AH_ZkaCardDialog_Init(GWEN_DIALOG *dlg) {
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("HBCI ZKA-Card Setup Wizard"),
-			      0);
+                              "",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("HBCI ZKA-Card Setup Wizard"),
+                              0);
 
   /* select first page */
   GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, 0, 0);
 
   /* setup intro page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_begin_label",
-			      GWEN_DialogProperty_Title,
-			      0,
+                              "wiz_begin_label",
+                              GWEN_DialogProperty_Title,
+                              0,
                               I18N("<html>"
                                    "<p>This dialog assists you in setting up a ZKA Chipcard User.</p>"
                                    "<p>Some chipcards contain user information. You can click the button below "
@@ -489,10 +514,10 @@ void AH_ZkaCardDialog_Init(GWEN_DIALOG *dlg) {
 
   /* setup bank page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_bank_label",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("<html>"
+                              "wiz_bank_label",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("<html>"
                                    "<p>Please select the bank.</p>"
                                    "<p>AqBanking has an internal database which "
                                    "contains HBCI/FinTS information about many banks.<p>"
@@ -504,13 +529,13 @@ void AH_ZkaCardDialog_Init(GWEN_DIALOG *dlg) {
                                    "HBCI/FinTS information about many banks.\n"
                                    "If there is an entry for your bank this dialog will use the\n"
                                    "information from the database."),
-			      0);
+                              0);
 
   /* setup user page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_user_label",
-			      GWEN_DialogProperty_Title,
-			      0,
+                              "wiz_user_label",
+                              GWEN_DialogProperty_Title,
+                              0,
                               I18N("<html>"
                                    "<p>For most banks the customer id must be the same as the user id.</p>"
                                    "<p>However, some banks actually use the customer id, so please look into "
@@ -538,11 +563,11 @@ void AH_ZkaCardDialog_Init(GWEN_DIALOG *dlg) {
 
   /* setup extro page */
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_end_label",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("The user has been successfully setup."),
-			      0);
+                              "wiz_end_label",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("The user has been successfully setup."),
+                              0);
 
   GWEN_Dialog_SetIntProperty(dlg, "wiz_context_combo", GWEN_DialogProperty_ClearValues, 0, 0, 0);
   if (1) {
@@ -601,7 +626,8 @@ void AH_ZkaCardDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-void AH_ZkaCardDialog_Fini(GWEN_DIALOG *dlg) {
+void AH_ZkaCardDialog_Fini(GWEN_DIALOG *dlg)
+{
   AH_ZKACARD_DIALOG *xdlg;
   int i;
   GWEN_DB_NODE *dbPrefs;
@@ -615,21 +641,22 @@ void AH_ZkaCardDialog_Fini(GWEN_DIALOG *dlg) {
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_width",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_width",
+                      i);
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_height",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_height",
+                      i);
 }
 
 
 
-int AH_ZkaCardDialog_GetBankPageData(GWEN_DIALOG *dlg) {
+int AH_ZkaCardDialog_GetBankPageData(GWEN_DIALOG *dlg)
+{
   AH_ZKACARD_DIALOG *xdlg;
   const char *s;
 
@@ -664,7 +691,8 @@ int AH_ZkaCardDialog_GetBankPageData(GWEN_DIALOG *dlg) {
 
 
 
-int AH_ZkaCardDialog_GetUserPageData(GWEN_DIALOG *dlg) {
+int AH_ZkaCardDialog_GetUserPageData(GWEN_DIALOG *dlg)
+{
   AH_ZKACARD_DIALOG *xdlg;
   const char *s;
 
@@ -699,7 +727,8 @@ int AH_ZkaCardDialog_GetUserPageData(GWEN_DIALOG *dlg) {
 
 
 
-int AH_ZkaCardDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
+int AH_ZkaCardDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards)
+{
   AH_ZKACARD_DIALOG *xdlg;
   int rv;
 
@@ -756,7 +785,8 @@ int AH_ZkaCardDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards) {
 
 
 
-int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
+int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg)
+{
   AH_ZKACARD_DIALOG *xdlg;
   AB_USER *u;
   GWEN_URL *url;
@@ -813,13 +843,13 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
   }
 
   pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
-			     GWEN_GUI_PROGRESS_ALLOW_EMBED |
-			     GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-			     GWEN_GUI_PROGRESS_SHOW_ABORT,
-			     I18N("Setting Up ZKA User"),
-			     I18N("The list of accounts will be retrieved."),
-			     1,
-			     0);
+                             GWEN_GUI_PROGRESS_ALLOW_EMBED |
+                             GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+                             GWEN_GUI_PROGRESS_SHOW_ABORT,
+                             I18N("Setting Up ZKA User"),
+                             I18N("The list of accounts will be retrieved."),
+                             1,
+                             0);
 
   /* get public bank server key */
   ctx=AB_ImExporterContext_new();
@@ -874,8 +904,8 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not lock user (%d)", rv);
     GWEN_Gui_ProgressLog2(pid,
-			  GWEN_LoggerLevel_Error,
-			  I18N("Unable to lock users (%d)"), rv);
+                          GWEN_LoggerLevel_Error,
+                          I18N("Unable to lock users (%d)"), rv);
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
     GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
@@ -884,8 +914,8 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
 
   /* get account list */
   GWEN_Gui_ProgressLog(pid,
-		       GWEN_LoggerLevel_Notice,
-		       I18N("Retrieving account list"));
+                       GWEN_LoggerLevel_Notice,
+                       I18N("Retrieving account list"));
   ctx=AB_ImExporterContext_new();
   rv=AH_Provider_GetAccounts(xdlg->provider, u, ctx, 0, 1, 0);
   AB_ImExporterContext_free(ctx);
@@ -904,8 +934,8 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressLog(pid,
-			 GWEN_LoggerLevel_Error,
-			 I18N("Aborted by user."));
+                         GWEN_LoggerLevel_Error,
+                         I18N("Aborted by user."));
     GWEN_Gui_ProgressEnd(pid);
     GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
     return GWEN_DialogEvent_ResultHandled;
@@ -915,12 +945,12 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
   rv=AB_Provider_EndExclUseUser(xdlg->provider, u, 0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
-	     "Could not unlock customer [%s] (%d)",
-	     AB_User_GetCustomerId(u), rv);
+             "Could not unlock customer [%s] (%d)",
+             AB_User_GetCustomerId(u), rv);
     GWEN_Gui_ProgressLog2(pid,
-			  GWEN_LoggerLevel_Error,
-			  I18N("Could not unlock user %s (%d)"),
-			  AB_User_GetUserId(u), rv);
+                          GWEN_LoggerLevel_Error,
+                          I18N("Could not unlock user %s (%d)"),
+                          AB_User_GetUserId(u), rv);
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
@@ -929,11 +959,11 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
   }
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "wiz_end_label",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("The user has been successfully setup."),
-			      0);
+                              "wiz_end_label",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("The user has been successfully setup."),
+                              0);
   GWEN_Gui_ProgressEnd(pid);
   AH_ZkaCardDialog_EnterPage(dlg, PAGE_END, 1);
 
@@ -944,7 +974,8 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg) {
 
 
 
-int AH_ZkaCardDialog_Next(GWEN_DIALOG *dlg) {
+int AH_ZkaCardDialog_Next(GWEN_DIALOG *dlg)
+{
   AH_ZKACARD_DIALOG *xdlg;
   int page;
 
@@ -968,7 +999,8 @@ int AH_ZkaCardDialog_Next(GWEN_DIALOG *dlg) {
 
 
 
-int AH_ZkaCardDialog_Previous(GWEN_DIALOG *dlg) {
+int AH_ZkaCardDialog_Previous(GWEN_DIALOG *dlg)
+{
   AH_ZKACARD_DIALOG *xdlg;
   int page;
 
@@ -987,7 +1019,8 @@ int AH_ZkaCardDialog_Previous(GWEN_DIALOG *dlg) {
 
 
 
-int AH_ZkaCardDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
+int AH_ZkaCardDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg)
+{
   AH_ZKACARD_DIALOG *xdlg;
   GWEN_DIALOG *dlg2;
   int rv;
@@ -1020,19 +1053,19 @@ int AH_ZkaCardDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
 
       s=AB_BankInfo_GetBankId(bi);
       GWEN_Dialog_SetCharProperty(dlg,
-				  "wiz_bankcode_edit",
-				  GWEN_DialogProperty_Value,
-				  0,
-				  (s && *s)?s:"",
-				  0);
+                                  "wiz_bankcode_edit",
+                                  GWEN_DialogProperty_Value,
+                                  0,
+                                  (s && *s)?s:"",
+                                  0);
 
       s=AB_BankInfo_GetBankName(bi);
       GWEN_Dialog_SetCharProperty(dlg,
-				  "wiz_bankname_edit",
-				  GWEN_DialogProperty_Value,
-				  0,
-				  (s && *s)?s:"",
-				  0);
+                                  "wiz_bankname_edit",
+                                  GWEN_DialogProperty_Value,
+                                  0,
+                                  (s && *s)?s:"",
+                                  0);
       sv=AB_BankInfoService_List_First(AB_BankInfo_GetServices(bi));
       while (sv) {
         const char *s;
@@ -1047,34 +1080,34 @@ int AH_ZkaCardDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
       }
 
       if (sv) {
-	/* ZKA service found */
-	s=AB_BankInfoService_GetAddress(sv);
-	GWEN_Dialog_SetCharProperty(dlg,
-				    "wiz_url_edit",
-				    GWEN_DialogProperty_Value,
-				    0,
-				    (s && *s)?s:"",
-				    0);
-	s=AB_BankInfoService_GetPversion(sv);
-	if (s && *s) {
-	  if (strcasecmp(s, "2.01")==0 ||
-	      strcasecmp(s, "2")==0)
-	    xdlg->hbciVersion=201;
-	  else if (strcasecmp(s, "2.10")==0 ||
-		   strcasecmp(s, "2.1")==0)
-	    xdlg->hbciVersion=210;
-	  else if (strcasecmp(s, "2.20")==0 ||
-		   strcasecmp(s, "2.2")==0)
-	    xdlg->hbciVersion=220;
-	  else if (strcasecmp(s, "3.00")==0 ||
-		   strcasecmp(s, "3.0")==0 ||
-		   strcasecmp(s, "3")==0)
-	    xdlg->hbciVersion=300;
-	  else if (strcasecmp(s, "4.00")==0 ||
-		   strcasecmp(s, "4.0")==0 ||
-		   strcasecmp(s, "4")==0)
-	    xdlg->hbciVersion=400;
-	}
+        /* ZKA service found */
+        s=AB_BankInfoService_GetAddress(sv);
+        GWEN_Dialog_SetCharProperty(dlg,
+                                    "wiz_url_edit",
+                                    GWEN_DialogProperty_Value,
+                                    0,
+                                    (s && *s)?s:"",
+                                    0);
+        s=AB_BankInfoService_GetPversion(sv);
+        if (s && *s) {
+          if (strcasecmp(s, "2.01")==0 ||
+              strcasecmp(s, "2")==0)
+            xdlg->hbciVersion=201;
+          else if (strcasecmp(s, "2.10")==0 ||
+                   strcasecmp(s, "2.1")==0)
+            xdlg->hbciVersion=210;
+          else if (strcasecmp(s, "2.20")==0 ||
+                   strcasecmp(s, "2.2")==0)
+            xdlg->hbciVersion=220;
+          else if (strcasecmp(s, "3.00")==0 ||
+                   strcasecmp(s, "3.0")==0 ||
+                   strcasecmp(s, "3")==0)
+            xdlg->hbciVersion=300;
+          else if (strcasecmp(s, "4.00")==0 ||
+                   strcasecmp(s, "4.0")==0 ||
+                   strcasecmp(s, "4")==0)
+            xdlg->hbciVersion=400;
+        }
       }
     }
   }
@@ -1091,7 +1124,8 @@ int AH_ZkaCardDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg) {
 
 
 
-int AH_ZkaCardDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
+int AH_ZkaCardDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg)
+{
   AH_ZKACARD_DIALOG *xdlg;
   GWEN_DIALOG *dlg2;
   int rv;
@@ -1132,7 +1166,8 @@ int AH_ZkaCardDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg) {
 
 
 
-int AH_ZkaCardDialog_FromContext(GWEN_DIALOG *dlg, int i) {
+int AH_ZkaCardDialog_FromContext(GWEN_DIALOG *dlg, int i)
+{
   AH_ZKACARD_DIALOG *xdlg;
 
   assert(dlg);
@@ -1153,36 +1188,36 @@ int AH_ZkaCardDialog_FromContext(GWEN_DIALOG *dlg, int i) {
 
       s=GWEN_Crypt_Token_Context_GetServiceId(ctx);
       if (s && strcasecmp(s, "20202020")==0)
-	s=NULL;
+        s=NULL;
       GWEN_Dialog_SetCharProperty(dlg,
-				  "wiz_bankcode_edit",
-				  GWEN_DialogProperty_Value,
-				  0,
-				  (s && *s)?s:"",
-				  0);
+                                  "wiz_bankcode_edit",
+                                  GWEN_DialogProperty_Value,
+                                  0,
+                                  (s && *s)?s:"",
+                                  0);
 
       s=GWEN_Crypt_Token_Context_GetAddress(ctx);
       GWEN_Dialog_SetCharProperty(dlg,
-				  "wiz_url_edit",
-				  GWEN_DialogProperty_Value,
-				  0,
-				  (s && *s)?s:"",
-				  0);
+                                  "wiz_url_edit",
+                                  GWEN_DialogProperty_Value,
+                                  0,
+                                  (s && *s)?s:"",
+                                  0);
 
       s=GWEN_Crypt_Token_Context_GetUserId(ctx);
       GWEN_Dialog_SetCharProperty(dlg,
-				  "wiz_userid_edit",
-				  GWEN_DialogProperty_Value,
-				  0,
-				  (s && *s)?s:"",
-				  0);
+                                  "wiz_userid_edit",
+                                  GWEN_DialogProperty_Value,
+                                  0,
+                                  (s && *s)?s:"",
+                                  0);
       s=GWEN_Crypt_Token_Context_GetCustomerId(ctx);
       GWEN_Dialog_SetCharProperty(dlg,
-				  "wiz_customerid_edit",
-				  GWEN_DialogProperty_Value,
-				  0,
-				  (s && *s)?s:"",
-				  0);
+                                  "wiz_customerid_edit",
+                                  GWEN_DialogProperty_Value,
+                                  0,
+                                  (s && *s)?s:"",
+                                  0);
 
       xdlg->rdhVersion = GWEN_Crypt_Token_Context_GetProtocolVersion(ctx);
       xdlg->cryptMode = AH_CryptMode_Rdh;
@@ -1195,7 +1230,8 @@ int AH_ZkaCardDialog_FromContext(GWEN_DIALOG *dlg, int i) {
 
 
 
-int AH_ZkaCardDialog_HandleActivatedContext(GWEN_DIALOG *dlg) {
+int AH_ZkaCardDialog_HandleActivatedContext(GWEN_DIALOG *dlg)
+{
   int i;
 
   i=GWEN_Dialog_GetIntProperty(dlg, "wiz_context_combo", GWEN_DialogProperty_Value, 0, -1);
@@ -1206,7 +1242,8 @@ int AH_ZkaCardDialog_HandleActivatedContext(GWEN_DIALOG *dlg) {
 
 
 
-int AH_ZkaCardDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int AH_ZkaCardDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   if (strcasecmp(sender, "wiz_bankcode_button")==0)
     return AH_ZkaCardDialog_HandleActivatedBankCode(dlg);
   else if (strcasecmp(sender, "wiz_prev_button")==0)
@@ -1228,7 +1265,8 @@ int AH_ZkaCardDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 
 
-int AH_ZkaCardDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender) {
+int AH_ZkaCardDialog_HandleValueChanged(GWEN_DIALOG *dlg, const char *sender)
+{
   if (strcasecmp(sender, "wiz_bankcode_edit")==0 ||
       strcasecmp(sender, "wiz_url_edit")==0 ||
       strcasecmp(sender, "wiz_username_edit")==0 ||

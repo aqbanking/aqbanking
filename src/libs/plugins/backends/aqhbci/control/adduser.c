@@ -262,7 +262,7 @@ int AH_Control_AddUser(AB_PROVIDER *pro,
   cid=GWEN_DB_GetIntValue(db, "context", 0, 1);
   hbciVersion=GWEN_DB_GetIntValue(db, "hbciVersion", 0, 0);
   rdhType=GWEN_DB_GetIntValue(db, "rdhType", 0, 1);
-  if(GWEN_DB_FindFirstVar(db, "cryptModeRAH"))
+  if (GWEN_DB_FindFirstVar(db, "cryptModeRAH"))
     cryptModeRAH=1;
   userName=GWEN_DB_GetCharValue(db, "userName", 0, 0);
   assert(userName);
@@ -291,13 +291,13 @@ int AH_Control_AddUser(AB_PROVIDER *pro,
   }
 
   if (rdhType>0) {
-    if(cryptModeRAH) {
+    if (cryptModeRAH) {
       switch (rdhType) {
       case 7:
       case 9:
       case 10:
-	/* supported */
-	break;
+        /* supported */
+        break;
 
       case 1:
       case 2:
@@ -307,8 +307,8 @@ int AH_Control_AddUser(AB_PROVIDER *pro,
       case 6:
       case 8:
       default:
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "RAH type %d not supported", rdhType);
-	return 1;
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "RAH type %d not supported", rdhType);
+        return 1;
       }
     }
     else {
@@ -322,13 +322,13 @@ int AH_Control_AddUser(AB_PROVIDER *pro,
       case 8:
       case 9:
       case 10:
-	/* supported */
-	break;
+        /* supported */
+        break;
 
       case 4:
       default:
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "RDH type %d not supported", rdhType);
-	return 1;
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "RDH type %d not supported", rdhType);
+        return 1;
       }
     }
   }
@@ -443,10 +443,10 @@ int AH_Control_AddUser(AB_PROVIDER *pro,
       if (algo==GWEN_Crypt_CryptAlgoId_Des3K)
         cm=AH_CryptMode_Ddv;
       else if (algo==GWEN_Crypt_CryptAlgoId_Rsa) {
-	if(cryptModeRAH)
-	  cm=AH_CryptMode_Rah;
-	else
-	  cm=AH_CryptMode_Rdh;
+        if (cryptModeRAH)
+          cm=AH_CryptMode_Rah;
+        else
+          cm=AH_CryptMode_Rdh;
       }
       else {
         DBG_ERROR(AQHBCI_LOGDOMAIN,
@@ -482,9 +482,9 @@ int AH_Control_AddUser(AB_PROVIDER *pro,
       return 3;
     }
 
-    if(rdhType>1 && rdhType!=GWEN_Crypt_Token_Context_GetProtocolVersion(ctx)) {
+    if (rdhType>1 && rdhType!=GWEN_Crypt_Token_Context_GetProtocolVersion(ctx)) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Specified RDH version %d differs from RDH version %d on card!",
-		rdhType, GWEN_Crypt_Token_Context_GetProtocolVersion(ctx));
+                rdhType, GWEN_Crypt_Token_Context_GetProtocolVersion(ctx));
       GWEN_Crypt_Token_Context_free(ctx);
       GWEN_Buffer_free(nameBuffer);
       return 3;

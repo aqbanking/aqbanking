@@ -40,7 +40,8 @@ GWEN_INHERIT(GWEN_DIALOG, AH_RDH_SPECIAL_DIALOG)
 
 
 
-GWEN_DIALOG *AH_RdhSpecialDialog_new(AB_PROVIDER *pro) {
+GWEN_DIALOG *AH_RdhSpecialDialog_new(AB_PROVIDER *pro)
+{
   GWEN_DIALOG *dlg;
   AH_RDH_SPECIAL_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
@@ -49,14 +50,14 @@ GWEN_DIALOG *AH_RdhSpecialDialog_new(AB_PROVIDER *pro) {
   dlg=GWEN_Dialog_new("ah_rdh_special");
   GWEN_NEW_OBJECT(AH_RDH_SPECIAL_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AH_RDH_SPECIAL_DIALOG, dlg, xdlg,
-		       AH_RdhSpecialDialog_FreeData);
+                       AH_RdhSpecialDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AH_RdhSpecialDialog_SignalHandler);
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
   rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-			       "aqbanking/backends/aqhbci/dialogs/dlg_rdh_special.dlg",
-			       fbuf);
+                               "aqbanking/backends/aqhbci/dialogs/dlg_rdh_special.dlg",
+                               fbuf);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
@@ -87,7 +88,8 @@ GWEN_DIALOG *AH_RdhSpecialDialog_new(AB_PROVIDER *pro) {
 
 
 
-void GWENHYWFAR_CB AH_RdhSpecialDialog_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AH_RdhSpecialDialog_FreeData(void *bp, void *p)
+{
   AH_RDH_SPECIAL_DIALOG *xdlg;
 
   xdlg=(AH_RDH_SPECIAL_DIALOG *) p;
@@ -96,7 +98,8 @@ void GWENHYWFAR_CB AH_RdhSpecialDialog_FreeData(void *bp, void *p) {
 
 
 
-int AH_RdhSpecialDialog_GetHbciVersion(const GWEN_DIALOG *dlg) {
+int AH_RdhSpecialDialog_GetHbciVersion(const GWEN_DIALOG *dlg)
+{
   AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -108,7 +111,8 @@ int AH_RdhSpecialDialog_GetHbciVersion(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_RdhSpecialDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i) {
+void AH_RdhSpecialDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i)
+{
   AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -120,7 +124,8 @@ void AH_RdhSpecialDialog_SetHbciVersion(GWEN_DIALOG *dlg, int i) {
 
 
 
-int AH_RdhSpecialDialog_GetRdhVersion(const GWEN_DIALOG *dlg) {
+int AH_RdhSpecialDialog_GetRdhVersion(const GWEN_DIALOG *dlg)
+{
   AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -132,7 +137,8 @@ int AH_RdhSpecialDialog_GetRdhVersion(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_RdhSpecialDialog_SetRdhVersion(GWEN_DIALOG *dlg, int i) {
+void AH_RdhSpecialDialog_SetRdhVersion(GWEN_DIALOG *dlg, int i)
+{
   AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -144,7 +150,8 @@ void AH_RdhSpecialDialog_SetRdhVersion(GWEN_DIALOG *dlg, int i) {
 
 
 
-int AH_RdhSpecialDialog_GetCryptMode(const GWEN_DIALOG *dlg) {
+int AH_RdhSpecialDialog_GetCryptMode(const GWEN_DIALOG *dlg)
+{
   AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -156,7 +163,8 @@ int AH_RdhSpecialDialog_GetCryptMode(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_RdhSpecialDialog_SetCryptMode(GWEN_DIALOG *dlg, int i) {
+void AH_RdhSpecialDialog_SetCryptMode(GWEN_DIALOG *dlg, int i)
+{
   AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -168,7 +176,8 @@ void AH_RdhSpecialDialog_SetCryptMode(GWEN_DIALOG *dlg, int i) {
 
 
 
-uint32_t AH_RdhSpecialDialog_GetFlags(const GWEN_DIALOG *dlg) {
+uint32_t AH_RdhSpecialDialog_GetFlags(const GWEN_DIALOG *dlg)
+{
   AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -180,7 +189,8 @@ uint32_t AH_RdhSpecialDialog_GetFlags(const GWEN_DIALOG *dlg) {
 
 
 
-void AH_RdhSpecialDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AH_RdhSpecialDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -192,7 +202,8 @@ void AH_RdhSpecialDialog_SetFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_RdhSpecialDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AH_RdhSpecialDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -204,7 +215,8 @@ void AH_RdhSpecialDialog_AddFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_RdhSpecialDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
+void AH_RdhSpecialDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl)
+{
   AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
@@ -216,7 +228,8 @@ void AH_RdhSpecialDialog_SubFlags(GWEN_DIALOG *dlg, uint32_t fl) {
 
 
 
-void AH_RdhSpecialDialog_Init(GWEN_DIALOG *dlg) {
+void AH_RdhSpecialDialog_Init(GWEN_DIALOG *dlg)
+{
   AH_RDH_SPECIAL_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
@@ -228,11 +241,11 @@ void AH_RdhSpecialDialog_Init(GWEN_DIALOG *dlg) {
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   GWEN_Dialog_SetCharProperty(dlg,
-			      "",
-			      GWEN_DialogProperty_Title,
-			      0,
-			      I18N("HBCI Keyfile Special Settings"),
-			      0);
+                              "",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("HBCI Keyfile Special Settings"),
+                              0);
 
   GWEN_Dialog_SetCharProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_AddValue, 0, "2.01", 0);
   GWEN_Dialog_SetCharProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_AddValue, 0, "2.10", 0);
@@ -330,12 +343,12 @@ void AH_RdhSpecialDialog_Init(GWEN_DIALOG *dlg) {
   }
 
   GWEN_Dialog_SetIntProperty(dlg, "bankDoesntSignCheck", GWEN_DialogProperty_Value, 0,
-			     (xdlg->flags & AH_USER_FLAGS_BANK_DOESNT_SIGN)?1:0,
-			     0);
+                             (xdlg->flags & AH_USER_FLAGS_BANK_DOESNT_SIGN)?1:0,
+                             0);
 
   GWEN_Dialog_SetIntProperty(dlg, "bankUsesSignSeqCheck", GWEN_DialogProperty_Value, 0,
-			     (xdlg->flags & AH_USER_FLAGS_BANK_USES_SIGNSEQ)?1:0,
-			     0);
+                             (xdlg->flags & AH_USER_FLAGS_BANK_USES_SIGNSEQ)?1:0,
+                             0);
 
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
@@ -350,7 +363,8 @@ void AH_RdhSpecialDialog_Init(GWEN_DIALOG *dlg) {
 
 
 
-void AH_RdhSpecialDialog_Fini(GWEN_DIALOG *dlg) {
+void AH_RdhSpecialDialog_Fini(GWEN_DIALOG *dlg)
+{
   AH_RDH_SPECIAL_DIALOG *xdlg;
   int i;
   GWEN_DB_NODE *dbPrefs;
@@ -446,21 +460,22 @@ void AH_RdhSpecialDialog_Fini(GWEN_DIALOG *dlg) {
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_width",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_width",
+                      i);
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs,
-		      GWEN_DB_FLAGS_OVERWRITE_VARS,
-		      "dialog_height",
-		      i);
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "dialog_height",
+                      i);
 }
 
 
 
-int AH_RdhSpecialDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
+int AH_RdhSpecialDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+{
   DBG_NOTICE(0, "Activated: %s", sender);
   if (strcasecmp(sender, "okButton")==0)
     return GWEN_DialogEvent_ResultAccept;
@@ -476,8 +491,9 @@ int AH_RdhSpecialDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender) {
 
 
 int GWENHYWFAR_CB AH_RdhSpecialDialog_SignalHandler(GWEN_DIALOG *dlg,
-							   GWEN_DIALOG_EVENTTYPE t,
-							   const char *sender) {
+                                                    GWEN_DIALOG_EVENTTYPE t,
+                                                    const char *sender)
+{
   AH_RDH_SPECIAL_DIALOG *xdlg;
 
   assert(dlg);
