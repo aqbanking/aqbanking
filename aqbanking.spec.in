@@ -74,9 +74,7 @@ Packager:      Martin Preuss <martin@aquamaniac.de>
 URL:           http://sourceforge.net/projects/aqbanking
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 Requires:      gwenhywfar >= %{_gwenhywfar_version}
-Requires:      ktoblzcheck
 BuildRequires: gwenhywfar-devel >= %{_gwenhywfar_version}
-BuildRequires: ktoblzcheck
 #BuildRequires: python-ctypes
 BuildRequires: python >= 2.3
 BuildRequires: pyxml

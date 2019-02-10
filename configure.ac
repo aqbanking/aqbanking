@@ -184,6 +184,8 @@ AC_CHECK_TOOL([RC], [windres], [no])
 AC_CHECK_PROG(USE_DOT,dot,YES,NO)
 AC_CHECK_PROG(SED,sed,sed)
 
+PKG_PROG_PKG_CONFIG
+
 # Checks for libraries.
 
 ###-------------------------------------------------------------------------
@@ -426,37 +428,12 @@ AC_SUBST(aqbanking_plugins_bankinfo_libs)
 
 ###-------------------------------------------------------------------------
 #
-# KtoBlzCheck
-#
-
-pkg_modules="ktoblzcheck >= 1.10"
-PKG_CHECK_MODULES(ktoblzcheck, [$pkg_modules], [have_ktoblzcheck="yes"], [have_ktoblzcheck="no"])
-if test "$have_ktoblzcheck" = "yes"; then
-  AC_DEFINE(HAVE_KTOBLZCHECK, 1, [if KTOBLZCHECK is available])
-  ktoblzcheck_includes="$ktoblzcheck_CFLAGS"
-  ktoblzcheck_libs="$ktoblzcheck_LIBS"
-else
-  AC_MSG_WARN([
-*** ktoblzcheck is missing. 
-*** Account number checking will not be available.
-*** We strongly suggest installing ktoblzcheck and its devel
-*** package.])
-fi
-
-AM_CONDITIONAL(WITH_KTOBLZCHECK, [test "$have_ktoblzcheck" = "yes"])
-AC_SUBST(ktoblzcheck_libs)
-AC_SUBST(ktoblzcheck_includes)
-
-
-
-###-------------------------------------------------------------------------
-#
 # Check for Gwen
 #
 
 # Variable used in aqbanking-config.cmake
-AC_SUBST(GWENHYWFAR_MINIMUM_VERSION, "4.99.8.0")
-AC_GWENHYWFAR(4,99,8,0)
+AC_SUBST(GWENHYWFAR_MINIMUM_VERSION, "4.99.9.0")
+AC_GWENHYWFAR(4,99,9,0)
 
 all_includes="$all_includes $gwenhywfar_includes"
 
@@ -1370,7 +1347,6 @@ echo "Data Search Folder      : $aqbanking_data_searchdir"
 echo "Locale Search Folder    : $aqbanking_locale_searchdir"
 echo "Plugin Search Folder    : $aqbanking_plugin_searchdir"
 echo "Symbol Visibility       : $visibility_supported"
-echo "Use KtoBlzCheck         : $have_ktoblzcheck"
 echo "Build AqBanking-CLI     : $enable_cli"
 echo "CLI Version String      : $AQBANKING_CLI_VERSION_STRING"
 echo
@@ -1382,14 +1358,6 @@ echo "  Backends              : $aqbanking_backends"
 echo "  Im-/Exporters         : $aqbanking_imexporters"
 echo "  Parsers               : $aqbanking_parsers"
 echo "  Bank Infos            : $aqbanking_bankinfos"
-echo
-
-echo "Additional Information"
-echo "----------------------------------------------------"
-if test "$have_ktoblzcheck" != "yes"; then
-  echo " - you really should consider installing ktoblzcheck "
-  echo "   in order to enable account number validation!"
-fi
 echo
 
 echo "----------------------------------------------------"
