@@ -263,7 +263,7 @@ int main(int argc, char **argv)
 
     GWEN_Buffer_AppendString(ubuf, "\n");
 
-    fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
+    fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(ubuf));
     GWEN_Buffer_free(ubuf);
     GWEN_DB_Group_free(db);
     return 0;

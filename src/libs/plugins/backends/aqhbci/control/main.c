@@ -132,7 +132,7 @@ static void showUsage(const char *prgName)
                            I18N("  setTanMediumId:\n"
                                 "    Set the medium id for some PIN/TAN methods (like mTAN) \n\n"));
 
-  fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
+  fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(ubuf));
   GWEN_Buffer_free(ubuf);
 }
 

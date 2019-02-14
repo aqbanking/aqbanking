@@ -64,7 +64,7 @@ int chkIban(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
       fprintf(stderr, "ERROR: Could not create help string\n");
       return 1;
     }
-    fprintf(stderr,
+    fprintf(stdout,
             I18N("This command checks the given combination of account id\n"
                  "and bank code for validity.\n"
                  "\n"

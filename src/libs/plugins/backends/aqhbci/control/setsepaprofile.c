@@ -102,7 +102,7 @@ int AH_Control_SetSepaProfile(AB_PROVIDER *pro,
       fprintf(stderr, "ERROR: Could not create help string\n");
       return 1;
     }
-    fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
+    fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(ubuf));
     GWEN_Buffer_free(ubuf);
     return 0;
   }
