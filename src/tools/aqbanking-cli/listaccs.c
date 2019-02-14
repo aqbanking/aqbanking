@@ -168,7 +168,7 @@ int listAccs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
   rv=getSelectedAccounts(ab, db, &al);
   if (rv<0) {
     if (rv==GWEN_ERROR_NOT_FOUND) {
-      DBG_ERROR(0, "No matching accounts");
+      DBG_INFO(0, "No matching accounts");
     }
     else {
       DBG_ERROR(0, "Error getting selected accounts (%d)", rv);

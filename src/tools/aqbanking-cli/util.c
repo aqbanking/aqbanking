@@ -472,7 +472,9 @@ int getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db, AB_ACCOUNT_SPEC_LIST *
     /* no unique account id given, try match parameters */
     rv=AB_Banking_GetAccountSpecList(ab, &asl);
     if (rv<0) {
-      DBG_ERROR(0, "Could not load account specs (%d)", rv);
+      if (rv==GWEN_ERROR_NOT_FOUND) {
+        DBG_ERROR(0, "Could not load account specs (%d)", rv);
+      }
       AB_AccountSpec_List_free(asl);
       return rv;
     }
