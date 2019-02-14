@@ -473,6 +473,9 @@ int getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db, AB_ACCOUNT_SPEC_LIST *
     rv=AB_Banking_GetAccountSpecList(ab, &asl);
     if (rv<0) {
       if (rv==GWEN_ERROR_NOT_FOUND) {
+        DBG_INFO(0, "No account specs (%d)", rv);
+      }
+      else {
         DBG_ERROR(0, "Could not load account specs (%d)", rv);
       }
       AB_AccountSpec_List_free(asl);
