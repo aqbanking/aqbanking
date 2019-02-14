@@ -104,7 +104,7 @@ int AH_Control_AddsubAccountFlags(AB_PROVIDER *pro,
 
       s=GWEN_DB_GetCharValue(dbTmp, "flags", i, NULL);
       if (s==NULL)
-	break;
+        break;
       GWEN_Buffer_AppendString(ubuf, "- ");
       GWEN_Buffer_AppendString(ubuf, s);
       GWEN_Buffer_AppendString(ubuf, "\n");

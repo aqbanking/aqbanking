@@ -34,7 +34,8 @@ static int checkRdhType(int rdhType, int cryptModeRAH);
 static int checkHbciVersion(int hbciVersion);
 static int fillFromToken(AB_USER *user, const char *tokenType, const char *tokenName, uint32_t cid, int cryptModeRAH);
 static int fillUserDataFromContext(AB_USER *user, const GWEN_CRYPT_TOKEN_CONTEXT *ctx);
-static int determineCryptMode(AB_USER *user, GWEN_CRYPT_TOKEN *ct, const GWEN_CRYPT_TOKEN_CONTEXT *ctx, int cryptModeRAH);
+static int determineCryptMode(AB_USER *user, GWEN_CRYPT_TOKEN *ct, const GWEN_CRYPT_TOKEN_CONTEXT *ctx,
+                              int cryptModeRAH);
 static int finishUser(AB_USER *user);
 
 
@@ -454,32 +455,32 @@ int fillFromToken(AB_USER *user, const char *tokenType, const char *tokenName, u
   GWEN_CRYPT_TOKEN *ct;
   const GWEN_CRYPT_TOKEN_CONTEXT *cryptTokenContext;
   int rv;
-  
+
   if (cid==0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No context given.");
     return 1;
   }
-  
+
   /* get crypt token */
   pm=GWEN_PluginManager_FindPluginManager("ct");
   if (pm==0) {
     DBG_ERROR(0, "Plugin manager not found");
     return 3;
   }
-  
+
   pl=GWEN_PluginManager_GetPlugin(pm, tokenType);
   if (pl==0) {
     DBG_ERROR(0, "Plugin not found");
     return 3;
   }
   DBG_INFO(0, "Plugin found");
-  
+
   ct=GWEN_Crypt_Token_Plugin_CreateToken(pl, tokenName);
   if (ct==0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create crypt token");
     return 3;
   }
-  
+
   /* open crypt token */
   rv=GWEN_Crypt_Token_Open(ct, 0, 0);
   if (rv) {
@@ -487,7 +488,7 @@ int fillFromToken(AB_USER *user, const char *tokenType, const char *tokenName, u
     GWEN_Crypt_Token_free(ct);
     return 3;
   }
-  
+
   /* get real token name */
   if (AH_User_GetTokenName(user)==NULL)
     AH_User_SetTokenName(user, GWEN_Crypt_Token_GetTokenName(ct));
