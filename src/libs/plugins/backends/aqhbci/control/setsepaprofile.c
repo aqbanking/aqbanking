@@ -151,6 +151,11 @@ int AH_Control_SetSepaProfile(AB_PROVIDER *pro,
     }
   }
 
+  rv=AB_Provider_HasUser(pro, uid);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) uid);
+    return 2;
+  }
   rv=AB_Provider_GetUser(pro, uid, 1, 0, &u); /* don't lock to allow for AH_Provider_EndExclUseUser */
   if (rv<0) {
     fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) uid);

@@ -28,6 +28,21 @@ int AB_Banking_Read_UserConfig(const AB_BANKING *ab, uint32_t uid, int doLock, i
 
 
 
+int AB_Banking_Has_UserConfig(const AB_BANKING *ab, uint32_t uid)
+{
+  int rv;
+
+  rv=AB_Banking_HasConfigGroup(ab, AB_CFG_GROUP_USERS, uid);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
 int AB_Banking_Write_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE *db)
 {
   int rv;

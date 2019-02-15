@@ -136,6 +136,11 @@ int AH_Control_AddsubAccountFlags(AB_PROVIDER *pro,
   }
 
   /* get account (lock, don't unlock, so we can later call AH_Provider_EndExclUseAccount */
+  rv=AB_Provider_HasAccount(pro, aid);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: Account with id %lu not found\n", (unsigned long int) aid);
+    return 2;
+  }
   rv=AB_Provider_GetAccount(pro, aid, 1, 0, &a);
   if (rv<0) {
     fprintf(stderr, "ERROR: Account with id %lu not found\n", (unsigned long int) aid);

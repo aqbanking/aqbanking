@@ -140,6 +140,12 @@ int AH_Control_AddAccount(AB_PROVIDER *pro,
   accountName=GWEN_DB_GetCharValue(db, "accountName", 0, "Account");
   ownerName=GWEN_DB_GetCharValue(db, "ownerName", 0, NULL);
 
+  rv=AB_Provider_HasUser(pro, userId);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) userId);
+    return 2;
+  }
+
   rv=AB_Provider_GetUser(pro, userId, 1, 1, &u);
   if (rv<0) {
     fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) userId);

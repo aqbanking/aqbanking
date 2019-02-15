@@ -105,6 +105,11 @@ int AH_Control_DelUser(AB_PROVIDER *pro,
 
   pretend=GWEN_DB_GetIntValue(db, "pretend", 0, 0);
 
+  rv=AB_Provider_HasUser(pro, uid);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) uid);
+    return 2;
+  }
   rv=AB_Provider_GetUser(pro, uid, 1, 1, &u);
   if (rv<0) {
     fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) uid);

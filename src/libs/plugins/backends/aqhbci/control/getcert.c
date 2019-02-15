@@ -87,6 +87,11 @@ int AH_Control_GetCert(AB_PROVIDER *pro,
     return 1;
   }
 
+  rv=AB_Provider_HasUser(pro, uid);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) uid);
+    return 2;
+  }
   rv=AB_Provider_GetUser(pro, uid, 1, 1, &u);
   if (rv<0) {
     fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) uid);

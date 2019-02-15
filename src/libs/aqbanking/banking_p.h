@@ -164,6 +164,10 @@ static int AB_Banking_ReadConfigGroup(const AB_BANKING *ab,
                                       int doUnlock,
                                       GWEN_DB_NODE **pDb);
 
+static int AB_Banking_HasConfigGroup(const AB_BANKING *ab,
+                                     const char *groupName,
+                                     uint32_t uniqueId);
+
 
 static int AB_Banking_WriteConfigGroup(AB_BANKING *ab,
                                        const char *groupName,

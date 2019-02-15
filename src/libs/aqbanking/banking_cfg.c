@@ -428,6 +428,41 @@ int AB_Banking_ReadConfigGroup(const AB_BANKING *ab,
 
 
 
+int AB_Banking_HasConfigGroup(const AB_BANKING *ab,
+                              const char *groupName,
+                              uint32_t uniqueId)
+{
+  int rv;
+  char idBuf[256];
+
+  assert(ab);
+
+  /* check for config manager (created by AB_Banking_Init) */
+  if (ab->configMgr==NULL) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No config manager (maybe the gwenhywfar plugins are not installed?");
+    return GWEN_ERROR_GENERIC;
+  }
+
+
+  /* make config manager id from given unique id */
+  rv=GWEN_ConfigMgr_MkUniqueIdFromId(ab->configMgr, groupName, uniqueId, 0, idBuf, sizeof(idBuf)-1);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to create a unique id for config group (%d)", rv);
+    return rv;
+  }
+  idBuf[sizeof(idBuf)-1]=0;
+
+  rv=GWEN_ConfigMgr_HasGroup(ab->configMgr, groupName, idBuf);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return rv;
+}
+
+
+
 int AB_Banking_WriteConfigGroup(AB_BANKING *ab,
                                 const char *groupName,
                                 uint32_t uniqueId,

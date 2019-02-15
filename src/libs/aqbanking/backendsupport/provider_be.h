@@ -314,6 +314,15 @@ int AB_Provider_ReadAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accountList);
 
 
 /**
+ * Check whether an account with the given id exists.
+ * @return 0 if a user with the given id exists, error code otherwise
+ * @param pro pointer to provider object
+ * @param uid unique id of the object in question
+ */
+int AB_Provider_HasAccount(AB_PROVIDER *pro, uint32_t uid);
+
+
+/**
  * Write account given by its unique id.
  *
  * When writing the object it will be locked and/or unlocked as requested.
@@ -432,6 +441,15 @@ int AB_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList);
 
 
 /**
+ * Check whether a user with the given id exists.
+ * @return 0 if a user with the given id exists, error code otherwise
+ * @param pro pointer to provider object
+ * @param uid unique id of the object in question
+ */
+int AB_Provider_HasUser(AB_PROVIDER *pro, uint32_t uid);
+
+
+/**
  * Write user given by its unique id.
  *
  * When writing the object it will be locked and/or unlocked as requested.
@@ -440,7 +458,7 @@ int AB_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList);
  *
  * @return 0 if okay, <0 on error
  * @param pro provider (THIS in C++ speak)
- * @param uid unique id of the object to read
+ * @param uid unique id of the object to write
  * @param doLock do lock the objects configuration before reading
  * @param doUnlock do unlock the objects configuration after reading
  * @param user pointer to the object to be written to the configuration

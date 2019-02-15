@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Wed Nov 28 2018
- copyright   : (C) 2018 by Martin Preuss
+ copyright   : (C) 2019 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -17,6 +17,21 @@ int AB_Banking_Read_AccountConfig(const AB_BANKING *ab, uint32_t uid, int doLock
   int rv;
 
   rv=AB_Banking_ReadConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid, doLock, doUnlock, pDb);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return rv;
+}
+
+
+
+int AB_Banking_Has_AccountConfig(const AB_BANKING *ab, uint32_t uid)
+{
+  int rv;
+
+  rv=AB_Banking_HasConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;

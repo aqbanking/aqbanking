@@ -19,11 +19,19 @@ int AB_Provider_ReadUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnloc
 {
   int rv;
   GWEN_DB_NODE *db=NULL;
+  uint32_t uidInDb;
 
   rv=AB_Banking_Read_UserConfig(AB_Provider_GetBanking(pro), uid, doLock, doUnlock, &db);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
+  }
+
+  uidInDb=GWEN_DB_GetIntValue(db, "uniqueId", 0, 0);
+  if (uidInDb==0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No unique id in config, so no user with id %llu", (unsigned long long int) uid);
+    GWEN_DB_Group_free(db);
+    return GWEN_ERROR_NOT_FOUND;
   }
 
   rv=AB_User_ReadFromDb(user, db);
@@ -54,6 +62,21 @@ int AB_Provider_GetUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock
   }
 
   *pUser=u;
+
+  return 0;
+}
+
+
+
+int AB_Provider_HasUser(AB_PROVIDER *pro, uint32_t uid)
+{
+  int rv;
+
+  rv=AB_Banking_Has_UserConfig(AB_Provider_GetBanking(pro), uid);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
 
   return 0;
 }

@@ -98,6 +98,11 @@ int AH_Control_GetAccSepa(AB_PROVIDER *pro,
   }
 
   /* get account */
+  rv=AB_Provider_HasAccount(pro, aid);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: Account with id %lu not found\n", (unsigned long int) aid);
+    return 2;
+  }
   rv=AB_Provider_GetAccount(pro, aid, 1, 1, &a);
   if (rv<0) {
     fprintf(stderr, "ERROR: Account with id %lu not found\n", (unsigned long int) aid);

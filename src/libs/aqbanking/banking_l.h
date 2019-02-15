@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2018 by Martin Preuss
+ copyright   : (C) 2019 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -28,6 +28,7 @@
  */
 
 int AB_Banking_Read_AccountConfig(const AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb);
+int AB_Banking_Has_AccountConfig(const AB_BANKING *ab, uint32_t uid);
 int AB_Banking_Write_AccountConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE *db);
 int AB_Banking_Delete_AccountConfig(AB_BANKING *ab, uint32_t uid);
 int AB_Banking_Unlock_AccountConfig(AB_BANKING *ab, uint32_t uid);
@@ -39,6 +40,7 @@ int AB_Banking_Unlock_AccountConfig(AB_BANKING *ab, uint32_t uid);
  */
 
 int AB_Banking_Read_UserConfig(const AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE **pDb);
+int AB_Banking_Has_UserConfig(const AB_BANKING *ab, uint32_t uid);
 int AB_Banking_Write_UserConfig(AB_BANKING *ab, uint32_t uid, int doLock, int doUnlock, GWEN_DB_NODE *db);
 int AB_Banking_Delete_UserConfig(AB_BANKING *ab, uint32_t uid);
 int AB_Banking_Unlock_UserConfig(AB_BANKING *ab, uint32_t uid);

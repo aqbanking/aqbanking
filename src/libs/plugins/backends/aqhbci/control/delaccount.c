@@ -106,6 +106,11 @@ int AH_Control_DelAccount(AB_PROVIDER *pro,
 
   pretend=GWEN_DB_GetIntValue(db, "pretend", 0, 0);
 
+  rv=AB_Provider_HasAccount(pro, aid);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: Account with id %lu not found\n", (unsigned long int) aid);
+    return 2;
+  }
   rv=AB_Provider_GetAccount(pro, aid, 1, 1, &a);
   if (rv<0) {
     fprintf(stderr, "ERROR: Account with id %lu not found\n", (unsigned long int) aid);
