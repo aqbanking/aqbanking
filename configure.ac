@@ -16,7 +16,7 @@ AC_CONFIG_HEADERS([config.h])
 
 AQBANKING_VERSION_MAJOR=5
 AQBANKING_VERSION_MINOR=99
-AQBANKING_VERSION_PATCHLEVEL=18
+AQBANKING_VERSION_PATCHLEVEL=19
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="beta"
@@ -34,7 +34,7 @@ AQBANKING_VERSION_TAG="beta"
 
 AQBANKING_SO_CURRENT=43
 AQBANKING_SO_AGE=0
-AQBANKING_SO_REVISION=18
+AQBANKING_SO_REVISION=19
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 
@@ -234,7 +234,7 @@ AC_ARG_WITH(backends,
 )
 
 if test "$aqbanking_backends" = "all"; then
-  aqbanking_backends="aqhbci aqofxconnect aqpaypal aqebics"
+  aqbanking_backends="aqhbci aqofxconnect aqebics"
 fi
 
 for f in ${aqbanking_backends}; do
@@ -432,8 +432,8 @@ AC_SUBST(aqbanking_plugins_bankinfo_libs)
 #
 
 # Variable used in aqbanking-config.cmake
-AC_SUBST(GWENHYWFAR_MINIMUM_VERSION, "4.99.9.0")
-AC_GWENHYWFAR(4,99,9,0)
+AC_SUBST(GWENHYWFAR_MINIMUM_VERSION, "4.99.10.0")
+AC_GWENHYWFAR(4,99,10,0)
 
 all_includes="$all_includes $gwenhywfar_includes"
 
