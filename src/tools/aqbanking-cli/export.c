@@ -285,9 +285,7 @@ int exportCtx(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
   AB_ImExporterContext_free(ctx); /* old context */
 
   /* export new context */
-  rv=AB_Banking_ExportToFileLoadProfile(ab, exporterName, nctx,
-                                        profileName, profileFile,
-                                        outFile);
+  rv=AB_Banking_ExportToFileLoadProfile(ab, exporterName, nctx, outFile, profileName, profileFile);
   if (rv<0) {
     DBG_ERROR(0, "Error exporting (%d).", rv);
     AB_ImExporterContext_free(nctx);
