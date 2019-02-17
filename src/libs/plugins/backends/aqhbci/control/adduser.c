@@ -669,6 +669,10 @@ int finishUser(AB_USER *user)
     return 3;
   }
 
+  /* set default HBCI/FinTS version */
+  if (AH_User_GetHbciVersion(user)==0)
+    AH_User_SetHbciVersion(user, 300);
+
   return 0;
 }
 
