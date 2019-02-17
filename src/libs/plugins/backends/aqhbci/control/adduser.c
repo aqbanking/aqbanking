@@ -109,6 +109,7 @@ int AH_Control_AddUser(AB_PROVIDER *pro,
   AH_User_SetTokenType(user, tokenType);
   AH_User_SetTokenName(user, tokenName);
   AH_User_SetTokenContextId(user, cid);
+  AH_User_SetHbciVersion(user, hbciVersion);
   if (rdhType>0)
     AH_User_SetRdhType(user, rdhType);
   if (server && *server) {
