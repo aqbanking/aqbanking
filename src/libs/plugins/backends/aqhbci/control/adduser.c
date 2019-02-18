@@ -148,7 +148,7 @@ int AH_Control_AddUser(AB_PROVIDER *pro,
   /* add user */
   rv=AB_Provider_AddUser(pro, user);
   if (rv<0) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Coud not add new user (%d)", rv);
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not add new user (%d)", rv);
     AB_User_free(user);
     return 4;
   }
