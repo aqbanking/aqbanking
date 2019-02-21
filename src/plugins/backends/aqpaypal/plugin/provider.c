@@ -28,6 +28,7 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/smalltresor.h>
 #include <gwenhywfar/directory.h>
+#include <gwenhywfar/gui.h>
 
 #include <ctype.h>
 #include <stdio.h>

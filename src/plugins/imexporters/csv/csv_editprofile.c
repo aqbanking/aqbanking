@@ -23,6 +23,7 @@
 #include <gwenhywfar/syncio_buffered.h>
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/gui.h>
 
 #include <assert.h>
 #include <sys/stat.h>
