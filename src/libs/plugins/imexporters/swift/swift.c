@@ -266,6 +266,7 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
           AB_Balance_SetType(bal, AB_Balance_TypeNoted); /* TODO: maybe use "booked" here? */
 
           iea=AB_ImExporterContext_GetOrAddAccountInfo(ctx, 0, iban, bankCode, accountNumber, 0);
+          DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding balance");
           AB_ImExporterAccountInfo_AddBalance(iea, bal);
         }
       }

@@ -1043,7 +1043,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
     }
     memmove(buffer, p, 3);
     buffer[3]=0;
-    AHB_SWIFT__SetCharValue(data, flags, "value/currency", buffer);
+    AHB_SWIFT__SetCharValue(data, GWEN_DB_FLAGS_OVERWRITE_VARS, "value/currency", buffer);
     p+=3;
     bleft-=3;
   }
@@ -1075,7 +1075,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
     memmove(s, p, p2-p+1);
     s[p2-p]=0;
   }
-  AHB_SWIFT__SetCharValue(data, flags, "value", s);
+  AHB_SWIFT__SetCharValue(data, GWEN_DB_FLAGS_OVERWRITE_VARS, "value/value", s);
   GWEN_Memory_dealloc(s);
   /*bleft-=p2-p;*/
   /*p=p2;*/
