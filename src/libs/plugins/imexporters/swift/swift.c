@@ -98,6 +98,9 @@ int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
     return GWEN_ERROR_BAD_DATA;
   }
 
+  DBG_ERROR(0, "Parsed data is:");
+  GWEN_DB_Dump(dbData, 2);
+
   /* transform DB to transactions */
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug,
                        "Data imported, transforming to transactions");
@@ -263,7 +266,13 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
           AB_Balance_SetDate(bal, dt);
           AB_Balance_SetValue(bal, v);
           AB_Value_free(v);
-          AB_Balance_SetType(bal, AB_Balance_TypeNoted); /* TODO: maybe use "booked" here? */
+
+          /* determine saldo type */
+          s=GWEN_DB_GetCharValue(dbT, "type", 0, NULL);
+          if (s && *s && strcasecmp(s, "final")==0)
+            AB_Balance_SetType(bal, AB_Balance_TypeNoted); /* TODO: maybe use "booked" here? */
+          else
+            AB_Balance_SetType(bal, AB_Balance_TypeTemporary);
 
           iea=AB_ImExporterContext_GetOrAddAccountInfo(ctx, 0, iban, bankCode, accountNumber, 0);
           DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding balance");
