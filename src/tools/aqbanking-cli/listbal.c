@@ -42,6 +42,8 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
   const char *subAccountId;
   const char *iban;
   const char *tmplString;
+  const char *s;
+  AB_BALANCE_TYPE bt=AB_Balance_TypeNoted;
 
   /* parse command line arguments */
   db=_readCommandLine(dbArgs, argc, argv);
@@ -60,6 +62,19 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
                                   "$(dateAsString)\t"
                                   "$(valueAsString)\t"
                                   "$(iban)");
+
+  /* determine balance type */
+  s=GWEN_DB_GetCharValue(db, "balanceType", 0, "noted");
+  if (s && *s) {
+    AB_BALANCE_TYPE tempBalanceType;
+
+    tempBalanceType=AB_Balance_Type_fromString(s);
+    if (tempBalanceType==AB_Balance_TypeUnknown) {
+      DBG_ERROR(0, "Invalid balance type given (%s)", s);
+      return 1;
+    }
+    bt=tempBalanceType;
+  }
 
   /* init AqBanking */
   rv=AB_Banking_Init(ab);
@@ -111,8 +126,7 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
       if (s && *s)
         GWEN_DB_SetCharValue(dbAccount, GWEN_DB_FLAGS_OVERWRITE_VARS, "iban", s);
 
-      bal=AB_Balance_List_GetLatestByType(AB_ImExporterAccountInfo_GetBalanceList(iea),
-                                          AB_Balance_TypeBooked);
+      bal=AB_Balance_List_GetLatestByType(AB_ImExporterAccountInfo_GetBalanceList(iea), bt);
       if (bal) {
         GWEN_DB_NODE *dbElement;
         const AB_VALUE *v;
@@ -249,6 +263,17 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
       "outfile",                    /* long option */
       "Specify the file to store the data in",   /* short description */
       "Specify the file to store the data in"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "balanceType",                /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "bt",                          /* short option */
+      "balanceType",                   /* long option */
+      "Specify the balance type",    /* short description */
+      "Specify the balance type (e.g. noted, booked, temporary)"     /* long description */
     },
     {
       GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
