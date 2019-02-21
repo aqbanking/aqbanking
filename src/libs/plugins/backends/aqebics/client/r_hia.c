@@ -32,6 +32,8 @@ int EBC_Provider_XchgHiaRequest(AB_PROVIDER *pro,
     return EBC_Provider_XchgHiaRequest_H002(pro, sess, u);
   else if (strcasecmp(s, "H003")==0)
     return EBC_Provider_XchgHiaRequest_H003(pro, sess, u);
+  else if (strcasecmp(s, "H004")==0)
+    return EBC_Provider_XchgHiaRequest_H004(pro, sess, u);
   else {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Proto version [%s] not supported", s);
     return GWEN_ERROR_INTERNAL;

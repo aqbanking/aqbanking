@@ -27,7 +27,8 @@ int EBC_Provider_EuSign_A005(AB_PROVIDER *pro,
   uint32_t l;
   GWEN_CRYPT_PADDALGO *algo;
   int rv;
-  const uint8_t prefix[]= {
+  int numPaddBytes=0;
+  const uint8_t digestInfo[]= {
     0x30, 0x31, 0x30, 0x0d,
     0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01,
     0x05, 0x00,
@@ -64,15 +65,29 @@ int EBC_Provider_EuSign_A005(AB_PROVIDER *pro,
   xbuf=GWEN_Buffer_new(0, 40, 0, 1);
   EBC_Provider_Sha256(pMsg, lMsg, xbuf);
 
-  /* add prefix to hash of SignedInfo */
+  /* add digestInfo to hash of SignedInfo */
   hbuf=GWEN_Buffer_new(0, 256, 0, 1);
   ksize=GWEN_Crypt_Token_KeyInfo_GetKeySize(ki);
-  GWEN_Buffer_AppendBytes(hbuf, (const char *)prefix, sizeof(prefix));
-  GWEN_Buffer_AppendBytes(hbuf, GWEN_Buffer_GetStart(xbuf), GWEN_Buffer_GetUsedBytes(xbuf));
+
+  GWEN_Buffer_AppendByte(hbuf, 0x01); /* block type */
+
+  numPaddBytes=ksize-3-sizeof(digestInfo)-GWEN_Buffer_GetUsedBytes(xbuf);
+  if (numPaddBytes<1) {
+    DBG_ERROR(AQEBICS_LOGDOMAIN, "Invalid number of padd bytes, key too small (%d)", numPaddBytes);
+    GWEN_Buffer_free(xbuf);
+    GWEN_Buffer_free(hbuf);
+    return GWEN_ERROR_INTERNAL;
+  }
+  GWEN_Buffer_FillWithBytes(hbuf, 0xff, numPaddBytes);
+
+  GWEN_Buffer_AppendByte(hbuf, 0x01); /* separator */
+
+  GWEN_Buffer_AppendBytes(hbuf, (const char *)digestInfo, sizeof(digestInfo)); /* digest info */
+  GWEN_Buffer_AppendBytes(hbuf, GWEN_Buffer_GetStart(xbuf), GWEN_Buffer_GetUsedBytes(xbuf)); /* hash */
   GWEN_Buffer_free(xbuf);
 
   /* select padd algo */
-  algo=GWEN_Crypt_PaddAlgo_new(GWEN_Crypt_PaddAlgoId_Pkcs1_2);
+  algo=GWEN_Crypt_PaddAlgo_new(GWEN_Crypt_PaddAlgoId_None);
   GWEN_Crypt_PaddAlgo_SetPaddSize(algo, ksize);
 
   /* actually sign */

@@ -374,10 +374,16 @@ int addUser(AB_PROVIDER *pro,
         EBC_User_SetAuthVersion(user, "X002");
         EBC_User_SetCryptVersion(user, "E002");
       }
+      else if (strcasecmp(ebicsVersion, "H004")==0) {
+        EBC_User_SetProtoVersion(user, "H004");
+        EBC_User_SetSignVersion(user, "A005");
+        EBC_User_SetAuthVersion(user, "X002");
+        EBC_User_SetCryptVersion(user, "E002");
+      }
       else {
         fprintf(stderr, "%s",
                 I18N("Invalid protocol version.\n"
-                     "Possible versions are H002 and H003.\n"));
+                     "Possible versions are H002, H003 and H004.\n"));
         return 3;
       }
     }

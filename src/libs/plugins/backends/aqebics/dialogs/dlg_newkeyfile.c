@@ -101,7 +101,7 @@ GWEN_DIALOG *EBC_NewKeyFileDialog_new(AB_PROVIDER *pro)
   xdlg->banking=AB_Provider_GetBanking(pro);
 
   /* preset */
-  xdlg->ebicsVersion=strdup("H003");
+  xdlg->ebicsVersion=strdup("H004");
   xdlg->signVersion=strdup("A005");
   xdlg->cryptVersion=strdup("E002");
   xdlg->authVersion=strdup("X002");
@@ -1319,10 +1319,16 @@ int EBC_NewKeyFileDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg)
             xdlg->cryptVersion=strdup("E002");
             xdlg->authVersion=strdup("X002");
           }
+          else if (strcasecmp(s, "H004")==0) {
+            xdlg->ebicsVersion=strdup("H004");
+            xdlg->signVersion=strdup("A005");
+            xdlg->cryptVersion=strdup("E002");
+            xdlg->authVersion=strdup("X002");
+          }
         }
 
         if (xdlg->ebicsVersion==NULL) {
-          xdlg->ebicsVersion=strdup("H003");
+          xdlg->ebicsVersion=strdup("H004");
           xdlg->signVersion=strdup("A005");
           xdlg->cryptVersion=strdup("E002");
           xdlg->authVersion=strdup("X002");

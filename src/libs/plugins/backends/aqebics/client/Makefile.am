@@ -27,13 +27,16 @@ extra_sources=\
   r_hia.c \
   r_hia_h002.c \
   r_hia_h003.c \
+  r_hia_h004.c \
   r_hpb.c \
   r_hpb_h002.c \
   r_hpb_h003.c \
+  r_hpb_h004.c \
   r_hpd.c \
   r_ini.c \
   r_ini_h002.c \
   r_ini_h003.c \
+  r_ini_h004.c \
   r_download.c \
   r_download_h002.c \
   r_download_h003.c \

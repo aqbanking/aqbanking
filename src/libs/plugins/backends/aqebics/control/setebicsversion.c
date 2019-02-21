@@ -108,6 +108,12 @@ int setEbicsVersion(AB_PROVIDER *pro,
         EBC_User_SetAuthVersion(u, "X002");
         EBC_User_SetCryptVersion(u, "E002");
       }
+      else if (strcasecmp(ebicsVersion, "H004")==0) {
+        EBC_User_SetProtoVersion(u, "H004");
+        EBC_User_SetSignVersion(u, "A005");
+        EBC_User_SetAuthVersion(u, "X002");
+        EBC_User_SetCryptVersion(u, "E002");
+      }
       else {
         fprintf(stderr, "%s",
                 I18N("Invalid protocol version.\n"

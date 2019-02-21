@@ -145,6 +145,7 @@ void EBC_EditUserDialog_Init(GWEN_DIALOG *dlg)
 
   GWEN_Dialog_SetCharProperty(dlg, "ebicsVersionCombo", GWEN_DialogProperty_AddValue, 0, "2.3 (H002)", 0);
   GWEN_Dialog_SetCharProperty(dlg, "ebicsVersionCombo", GWEN_DialogProperty_AddValue, 0, "2.4 (H003)", 0);
+  GWEN_Dialog_SetCharProperty(dlg, "ebicsVersionCombo", GWEN_DialogProperty_AddValue, 0, "2.5 (H004)", 0);
 
   GWEN_Dialog_SetCharProperty(dlg, "signVersionCombo", GWEN_DialogProperty_AddValue, 0, "A004", 0);
   GWEN_Dialog_SetCharProperty(dlg, "signVersionCombo", GWEN_DialogProperty_AddValue, 0, "A005", 0);
@@ -214,6 +215,8 @@ void EBC_EditUserDialog_toGui(GWEN_DIALOG *dlg)
     GWEN_Dialog_SetIntProperty(dlg, "ebicsVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
   else if (strcasecmp(s, "H003")==0)
     GWEN_Dialog_SetIntProperty(dlg, "ebicsVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0);
+  else if (strcasecmp(s, "H004")==0)
+    GWEN_Dialog_SetIntProperty(dlg, "ebicsVersionCombo", GWEN_DialogProperty_Value, 0, 2, 0);
 
   /* signature version */
   s=EBC_User_GetSignVersion(xdlg->user);
@@ -385,9 +388,12 @@ int EBC_EditUserDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
   case 0:
     EBC_User_SetProtoVersion(xdlg->user, "H002");
     break;
-  default:
   case 1:
     EBC_User_SetProtoVersion(xdlg->user, "H003");
+    break;
+  default:
+  case 2:
+    EBC_User_SetProtoVersion(xdlg->user, "H004");
     break;
   }
 
@@ -822,9 +828,13 @@ int EBC_EditUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
       GWEN_Dialog_SetIntProperty(dlg, "cryptVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
       GWEN_Dialog_SetIntProperty(dlg, "authVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
       break;
-
-    default:
     case 1: /* H003 */
+      GWEN_Dialog_SetIntProperty(dlg, "signVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0);
+      GWEN_Dialog_SetIntProperty(dlg, "cryptVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0);
+      GWEN_Dialog_SetIntProperty(dlg, "authVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0);
+      break;
+    default:
+    case 2: /* H004 */
       GWEN_Dialog_SetIntProperty(dlg, "signVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0);
       GWEN_Dialog_SetIntProperty(dlg, "cryptVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0);
       GWEN_Dialog_SetIntProperty(dlg, "authVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0);

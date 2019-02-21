@@ -391,6 +391,7 @@ void EBC_UserSpecialDialog_Init(GWEN_DIALOG *dlg)
 
   GWEN_Dialog_SetCharProperty(dlg, "ebicsVersionCombo", GWEN_DialogProperty_AddValue, 0, "2.3 (H002)", 0);
   GWEN_Dialog_SetCharProperty(dlg, "ebicsVersionCombo", GWEN_DialogProperty_AddValue, 0, "2.4 (H003)", 0);
+  GWEN_Dialog_SetCharProperty(dlg, "ebicsVersionCombo", GWEN_DialogProperty_AddValue, 0, "2.5 (H004)", 0);
 
   GWEN_Dialog_SetCharProperty(dlg, "signVersionCombo", GWEN_DialogProperty_AddValue, 0, "A004", 0);
   GWEN_Dialog_SetCharProperty(dlg, "signVersionCombo", GWEN_DialogProperty_AddValue, 0, "A005", 0);
@@ -424,6 +425,8 @@ void EBC_UserSpecialDialog_Init(GWEN_DIALOG *dlg)
     GWEN_Dialog_SetIntProperty(dlg, "ebicsVersionCombo", GWEN_DialogProperty_Value, 0, 0, 0);
   else if (strcasecmp(s, "H003")==0)
     GWEN_Dialog_SetIntProperty(dlg, "ebicsVersionCombo", GWEN_DialogProperty_Value, 0, 1, 0);
+  else if (strcasecmp(s, "H004")==0)
+    GWEN_Dialog_SetIntProperty(dlg, "ebicsVersionCombo", GWEN_DialogProperty_Value, 0, 2, 0);
 
   /* signature version */
   s=xdlg->signVersion;
@@ -543,9 +546,12 @@ void EBC_UserSpecialDialog_Fini(GWEN_DIALOG *dlg)
   case 0:
     EBC_UserSpecialDialog_SetEbicsVersion(dlg, "H002");
     break;
-  default:
   case 1:
     EBC_UserSpecialDialog_SetEbicsVersion(dlg, "H003");
+    break;
+  default:
+  case 2:
+    EBC_UserSpecialDialog_SetEbicsVersion(dlg, "H004");
     break;
   }
 
