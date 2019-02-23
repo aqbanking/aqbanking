@@ -15,9 +15,16 @@ EXTRA_DIST=$(typefiles) $(extra_sources)
 
 
 noinst_HEADERS=\
- r_hkd_htd_l.h \
- r_unsecured_l.h \
- r_ini_l.h
+  r_download_l.h \
+  r_hia_l.h \
+  r_hkd_htd_l.h \
+  r_hpb_l.h \
+  r_hpd_l.h \
+  r_ini_l.h \
+  r_pub_l.h \
+  r_unsecured_l.h \
+  r_upload_l.h
+
 
 #iheaderdir=${includedir}/aqebics/client
 #iheader_HEADERS=
