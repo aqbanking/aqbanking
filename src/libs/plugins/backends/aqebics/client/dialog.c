@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -152,6 +152,46 @@ int EBC_Dialog_ExchangeMessages(GWEN_HTTP_SESSION *sess,
 }
 
 
+
+int EBC_Dialog_ExchangeMessagesAndCheckResponse(GWEN_HTTP_SESSION *sess,
+                                                EB_MSG *msg,
+                                                EB_MSG **pResponse)
+{
+  int rv;
+  EB_MSG *mRsp;
+  EB_RC rc;
+
+  rv=EBC_Dialog_ExchangeMessages(sess, msg, pResponse);
+  if (rv<0 || rv>=300) {
+    DBG_ERROR(AQEBICS_LOGDOMAIN, "Error exchanging messages (%d)", rv);
+    return rv;
+  }
+
+  /* check response */
+  mRsp=*pResponse;
+  assert(mRsp);
+
+  rc=EB_Msg_GetResultCode(mRsp);
+  if ((rc & 0xff0000)==0x090000 ||
+      (rc & 0xff0000)==0x060000) {
+    DBG_ERROR(AQEBICS_LOGDOMAIN, "Error response: (%06x)", rc);
+    return AB_ERROR_SECURITY;
+  }
+  rc=EB_Msg_GetBodyResultCode(mRsp);
+  if (rc) {
+    if ((rc & 0xff0000)==0x090000 ||
+        (rc & 0xff0000)==0x060000) {
+      DBG_ERROR(AQEBICS_LOGDOMAIN, "Error response: (%06x)", rc);
+      if ((rc & 0xfff00)==0x091300 ||
+          (rc & 0xfff00)==0x091200)
+        return AB_ERROR_SECURITY;
+      else
+        return GWEN_ERROR_GENERIC;
+    }
+  }
+
+  return rv;
+}
 
 
 

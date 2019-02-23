@@ -1,27 +1,40 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
+
+#include "r_pub_l.h"
+
+#include "aqebics_l.h"
 #include "msg/msg.h"
 #include "msg/keys.h"
+#include "msg/zip.h"
+#include "msg/xml.h"
 #include "user_l.h"
+#include "provider_l.h"
+#include "r_upload_l.h"
 
 #include <gwenhywfar/base64.h>
+#include <gwenhywfar/gui.h>
+#include <gwenhywfar/httpsession.h>
 
 
 
-int EBC_Provider_XchgPubRequest_H003(AB_PROVIDER *pro,
+
+int EBC_Provider_XchgPubRequest_H002(AB_PROVIDER *pro,
                                      GWEN_HTTP_SESSION *sess,
                                      AB_USER *u,
                                      const char *signVersion)
 {
-  EBC_PROVIDER *dp;
   int rv;
   const char *userId;
   const char *partnerId;
@@ -30,10 +43,6 @@ int EBC_Provider_XchgPubRequest_H003(AB_PROVIDER *pro,
   const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   uint32_t kid;
   const GWEN_CRYPT_TOKEN_KEYINFO *signKeyInfo=NULL;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, EBC_PROVIDER, pro);
-  assert(dp);
 
   userId=AB_User_GetUserId(u);
   partnerId=AB_User_GetCustomerId(u);
@@ -84,10 +93,10 @@ int EBC_Provider_XchgPubRequest_H003(AB_PROVIDER *pro,
     /* create INIRequestOrderData */
     doc=xmlNewDoc(BAD_CAST "1.0");
     doc->encoding=xmlCharStrdup("UTF-8");
-    root_node=xmlNewNode(NULL, BAD_CAST "SignaturePubKeyOrderData");
+    root_node=xmlNewNode(NULL, BAD_CAST "PUBRequestOrderData");
     xmlDocSetRootElement(doc, root_node);
     ns=xmlNewNs(root_node,
-                BAD_CAST "http://www.ebics.org/S001",
+                BAD_CAST "http://www.ebics.org/H002",
                 NULL);
     assert(ns);
     ns=xmlNewNs(root_node,
@@ -100,8 +109,8 @@ int EBC_Provider_XchgPubRequest_H003(AB_PROVIDER *pro,
     xmlNewNsProp(root_node,
                  ns,
                  BAD_CAST "schemaLocation", /* xsi:schemaLocation */
-                 BAD_CAST "http://www.ebics.org/S001 "
-                 "http://www.ebics.org/S001/ebics_signature.xsd");
+                 BAD_CAST "http://www.ebics.org/H002 "
+                 "http://www.ebics.org/H002/ebics_orders.xsd");
 
     /* create sign key tree */
     node=xmlNewChild(root_node, NULL,
@@ -124,9 +133,6 @@ int EBC_Provider_XchgPubRequest_H003(AB_PROVIDER *pro,
     node=xmlNewChild(root_node, NULL,
                      BAD_CAST "UserID",
                      BAD_CAST userId);
-
-    DBG_ERROR(0, "Will send this order:");
-    xmlDocDump(stderr, doc);
 
     /* compress and base64 doc */
     bufKey=GWEN_Buffer_new(0, 4096, 0, 1);

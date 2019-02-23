@@ -393,6 +393,21 @@ int EB_Xml_Ebicsify(xmlNodePtr node, const char *hVersion)
     xmlNewProp(node, BAD_CAST "Version", BAD_CAST "H003");
     xmlNewProp(node, BAD_CAST "Revision", BAD_CAST "1");
   }
+  else if (strcasecmp(hVersion, "H004")==0) {
+    xmlNsPtr ns;
+
+    ns=xmlNewNs(node, BAD_CAST "urn:org:ebics:H004", NULL);
+    assert(ns);
+    ns=xmlNewNs(node, BAD_CAST "http://www.w3.org/2000/09/xmldsig#", BAD_CAST "ds");
+    assert(ns);
+    ns=xmlNewNs(node, BAD_CAST "http://www.w3.org/2001/XMLSchema-instance", BAD_CAST "xsi");
+    xmlNewNsProp(node,
+                 ns,
+                 BAD_CAST "schemaLocation", /* xsi:schemaLocation */
+                 BAD_CAST "urn:org:ebics:H004 ebics_request_H004.xsd");
+    xmlNewProp(node, BAD_CAST "Version", BAD_CAST "H004");
+    xmlNewProp(node, BAD_CAST "Revision", BAD_CAST "1");
+  }
   else {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Unknown EBICS version [%s]", hVersion);
     return -1;

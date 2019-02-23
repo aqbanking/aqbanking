@@ -1,5 +1,20 @@
+/***************************************************************************
+    begin       : Mon Mar 01 2004
+    copyright   : (C) 2019 by Martin Preuss
+    email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
 
+#include "r_download_l.h"
+
+#include "aqebics_l.h"
 #include "msg/msg.h"
 #include "msg/keys.h"
 #include "msg/zip.h"
@@ -7,6 +22,9 @@
 #include "user_l.h"
 
 #include <gwenhywfar/base64.h>
+#include <gwenhywfar/gui.h>
+#include <gwenhywfar/httpsession.h>
+
 
 
 
@@ -19,12 +37,7 @@ int EBC_Provider_XchgDownloadRequest(AB_PROVIDER *pro,
                                      const GWEN_DATE *fromDate,
                                      const GWEN_DATE *toDate)
 {
-  EBC_PROVIDER *dp;
   const char *s;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, EBC_PROVIDER, pro);
-  assert(dp);
 
   s=EBC_User_GetProtoVersion(u);
   if (!(s && *s))

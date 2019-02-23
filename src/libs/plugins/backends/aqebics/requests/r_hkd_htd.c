@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -23,9 +23,16 @@
 #include "msg/xml.h"
 #include "user_l.h"
 
+#include "r_download_l.h"
+
 #include <gwenhywfar/base64.h>
 #include <gwenhywfar/gui.h>
 
+
+/* -------------------------------------------------------------------------------------------------------------------------
+ * forward declarations
+ * -------------------------------------------------------------------------------------------------------------------------
+ */
 
 static int _xchgHkdRequest(AB_PROVIDER *pro, GWEN_HTTP_SESSION *sess, AB_USER *u, const char *requestName);
 
@@ -37,6 +44,13 @@ static void _assignIdsOfStoredAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accoun
 static void _addOrModifyAccounts(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT_LIST *accountList);
 static int _modifyExistingAccount(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *account);
 static int _addAccount(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *account);
+
+
+
+/* -------------------------------------------------------------------------------------------------------------------------
+ * code
+ * --------------------------------------------------------------------------------------------------------------------------
+ */
 
 
 

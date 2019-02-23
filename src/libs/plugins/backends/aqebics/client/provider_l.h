@@ -18,6 +18,11 @@
 #include <gwenhywfar/ct.h>
 #include <gwenhywfar/cryptkey.h>
 
+#include <libxml/tree.h>
+#include <libxml/parser.h>
+#include <libxml/xpath.h>
+
+
 #define EBC_DEFAULT_CONNECT_TIMEOUT  30
 #define EBC_DEFAULT_TRANSFER_TIMEOUT 60
 
@@ -48,6 +53,16 @@ int EBC_Provider_GetHiaLetterTxt(AB_PROVIDER *pro,
 
 int EBC_Provider_GetCert(AB_PROVIDER *pro, AB_USER *u);
 
+int EBC_Provider_AddBankPubKeyDigests(AB_PROVIDER *pro, AB_USER *u, xmlNodePtr node);
+
+int EBC_Provider_DecodeAndDecryptData(AB_PROVIDER *pro,
+                                      AB_USER *u,
+                                      GWEN_CRYPT_KEY *skey,
+                                      const char *sEncryptedData,
+                                      GWEN_BUFFER *targetBuffer);
+
+
+
 int EBC_Provider_Send_HIA(AB_PROVIDER *pro, AB_USER *u, int doLock);
 int EBC_Provider_Send_INI(AB_PROVIDER *pro, AB_USER *u, int doLock);
 int EBC_Provider_Send_PUB(AB_PROVIDER *pro, AB_USER *u, const char *signVersion, int doLock);
@@ -69,6 +84,18 @@ int EBC_Provider_Upload(AB_PROVIDER *pro, AB_USER *u,
                         const uint8_t *pData,
                         uint32_t lData,
                         int doLock);
+
+int EBC_Provider_DownloadIntoContext(AB_PROVIDER *pro,
+                                     AB_USER *u,
+                                     const char *rtype,
+                                     int withReceipt,
+                                     const GWEN_DATE *fromDate,
+                                     const GWEN_DATE *toDate,
+                                     const char *importerName,
+                                     const char *profileName,
+                                     AB_IMEXPORTER_CONTEXT *ctx,
+                                     int doLock);
+
 
 int EBC_Provider_GetConnectTimeout(const AB_PROVIDER *pro);
 int EBC_Provider_GetTransferTimeout(const AB_PROVIDER *pro);
@@ -158,7 +185,7 @@ void EBC_Provider_LogRequestResults(AB_PROVIDER *pro,
                                     EB_MSG *mRsp,
                                     GWEN_BUFFER *logbuf);
 
-
+#if 0
 int EBC_Provider_MkDownloadInitRequest(AB_PROVIDER *pro,
                                        GWEN_HTTP_SESSION *sess,
                                        AB_USER *u,
@@ -216,6 +243,7 @@ int EBC_Provider_XchgUploadRequest(AB_PROVIDER *pro,
                                    const char *requestType,
                                    const uint8_t *pData,
                                    uint32_t lData);
+#endif
 
 
 

@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile: medium_p.h,v $
-                             -------------------
-    cvs         : $Id: medium_p.h,v 1.3 2006/01/23 05:16:27 aquamaniac Exp $
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -31,6 +28,10 @@ GWEN_HTTP_SESSION *EBC_Dialog_new(AB_PROVIDER *pro, AB_USER *u);
 int EBC_Dialog_ExchangeMessages(GWEN_HTTP_SESSION *sess,
                                 EB_MSG *msg,
                                 EB_MSG **pResponse);
+
+int EBC_Dialog_ExchangeMessagesAndCheckResponse(GWEN_HTTP_SESSION *sess,
+                                                EB_MSG *msg,
+                                                EB_MSG **pResponse);
 
 
 

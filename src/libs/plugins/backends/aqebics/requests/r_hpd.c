@@ -1,20 +1,31 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
+
+#include "r_hpd_l.h"
+
+#include "aqebics_l.h"
 #include "msg/msg.h"
 #include "msg/keys.h"
 #include "msg/zip.h"
 #include "msg/xml.h"
 #include "user_l.h"
 
+#include "r_download_l.h"
+
 #include <gwenhywfar/base64.h>
+#include <gwenhywfar/gui.h>
+#include <gwenhywfar/httpsession.h>
 
 
 

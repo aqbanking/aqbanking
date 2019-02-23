@@ -7,15 +7,30 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+
+#include "r_upload_l.h"
+
+#include "aqebics_l.h"
 #include "msg/msg.h"
 #include "msg/keys.h"
 #include "msg/zip.h"
 #include "msg/xml.h"
 #include "user_l.h"
+#include "provider_l.h"
+
+#include <gwenhywfar/base64.h>
+#include <gwenhywfar/gui.h>
+#include <gwenhywfar/httpsession.h>
+#include <gwenhywfar/cryptkeysym.h>
 
 
 
-static int EBC_Provider_MkUploadInitRequest_H003(AB_PROVIDER *pro,
+
+static int EBC_Provider_MkUploadInitRequest_H002(AB_PROVIDER *pro,
                                                  GWEN_HTTP_SESSION *sess,
                                                  AB_USER *u,
                                                  const char *requestType,
@@ -24,7 +39,6 @@ static int EBC_Provider_MkUploadInitRequest_H003(AB_PROVIDER *pro,
                                                  uint32_t dlen,
                                                  EB_MSG **pMsg)
 {
-  EBC_PROVIDER *dp;
   int rv;
   xmlNsPtr ns;
   EB_MSG *msg;
@@ -35,15 +49,10 @@ static int EBC_Provider_MkUploadInitRequest_H003(AB_PROVIDER *pro,
   xmlNodePtr node = NULL;
   xmlNodePtr nodeX = NULL;
   xmlNodePtr nodeXX = NULL;
-  /*xmlNodePtr nodeXXX = NULL;*/
   xmlNodePtr sigNode = NULL;
   GWEN_BUFFER *tbuf;
   const char *s;
   char numbuf[32];
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, EBC_PROVIDER, pro);
-  assert(dp);
 
   userId=AB_User_GetUserId(u);
   partnerId=AB_User_GetCustomerId(u);
@@ -56,7 +65,7 @@ static int EBC_Provider_MkUploadInitRequest_H003(AB_PROVIDER *pro,
   root_node=xmlNewNode(NULL, BAD_CAST "ebicsRequest");
   xmlDocSetRootElement(doc, root_node);
   ns=xmlNewNs(root_node,
-              BAD_CAST "http://www.ebics.org/H003",
+              BAD_CAST "http://www.ebics.org/H002",
               NULL);
   assert(ns);
   ns=xmlNewNs(root_node,
@@ -69,10 +78,10 @@ static int EBC_Provider_MkUploadInitRequest_H003(AB_PROVIDER *pro,
   xmlNewNsProp(root_node,
                ns,
                BAD_CAST "schemaLocation", /* xsi:schemaLocation */
-               BAD_CAST "http://www.ebics.org/H003 "
-               "http://www.ebics.org/H003/ebics_request.xsd");
+               BAD_CAST "http://www.ebics.org/H002 "
+               "http://www.ebics.org/H002/ebics_request.xsd");
 
-  xmlNewProp(root_node, BAD_CAST "Version", BAD_CAST "H003");
+  xmlNewProp(root_node, BAD_CAST "Version", BAD_CAST "H002");
   xmlNewProp(root_node, BAD_CAST "Revision", BAD_CAST "1");
 
   /* header */
@@ -220,7 +229,7 @@ static int EBC_Provider_MkUploadInitRequest_H003(AB_PROVIDER *pro,
 
 
 
-static int EBC_Provider_MkUploadTransferRequest_H003(AB_PROVIDER *pro,
+static int EBC_Provider_MkUploadTransferRequest_H002(AB_PROVIDER *pro,
                                                      GWEN_HTTP_SESSION *sess,
                                                      AB_USER *u,
                                                      const char *transactionId,
@@ -230,7 +239,6 @@ static int EBC_Provider_MkUploadTransferRequest_H003(AB_PROVIDER *pro,
                                                      int isLast,
                                                      EB_MSG **pMsg)
 {
-  EBC_PROVIDER *dp;
   int rv;
   xmlNsPtr ns;
   EB_MSG *msg;
@@ -246,10 +254,6 @@ static int EBC_Provider_MkUploadTransferRequest_H003(AB_PROVIDER *pro,
   const char *s;
   char numbuf[32];
 
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, EBC_PROVIDER, pro);
-  assert(dp);
-
   userId=AB_User_GetUserId(u);
   partnerId=AB_User_GetCustomerId(u);
   if (partnerId==NULL)
@@ -261,7 +265,7 @@ static int EBC_Provider_MkUploadTransferRequest_H003(AB_PROVIDER *pro,
   root_node=xmlNewNode(NULL, BAD_CAST "ebicsRequest");
   xmlDocSetRootElement(doc, root_node);
   ns=xmlNewNs(root_node,
-              BAD_CAST "http://www.ebics.org/H003",
+              BAD_CAST "http://www.ebics.org/H002",
               NULL);
   assert(ns);
   ns=xmlNewNs(root_node,
@@ -274,10 +278,10 @@ static int EBC_Provider_MkUploadTransferRequest_H003(AB_PROVIDER *pro,
   xmlNewNsProp(root_node,
                ns,
                BAD_CAST "schemaLocation", /* xsi:schemaLocation */
-               BAD_CAST "http://www.ebics.org/H003 "
-               "http://www.ebics.org/H003/ebics_request.xsd");
+               BAD_CAST "http://www.ebics.org/H002 "
+               "http://www.ebics.org/H002/ebics_request.xsd");
 
-  xmlNewProp(root_node, BAD_CAST "Version", BAD_CAST "H003");
+  xmlNewProp(root_node, BAD_CAST "Version", BAD_CAST "H002");
   xmlNewProp(root_node, BAD_CAST "Revision", BAD_CAST "1");
 
   /* header */
@@ -336,14 +340,13 @@ static int EBC_Provider_MkUploadTransferRequest_H003(AB_PROVIDER *pro,
 
 
 
-int EBC_Provider_XchgUploadRequest_H003(AB_PROVIDER *pro,
+int EBC_Provider_XchgUploadRequest_H002(AB_PROVIDER *pro,
                                         GWEN_HTTP_SESSION *sess,
                                         AB_USER *u,
                                         const char *requestType,
                                         const uint8_t *pData,
                                         uint32_t lData)
 {
-  EBC_PROVIDER *dp;
   int rv;
   GWEN_CRYPT_KEY *skey;
   GWEN_BUFFER *euBuf=NULL;
@@ -355,17 +358,13 @@ int EBC_Provider_XchgUploadRequest_H003(AB_PROVIDER *pro,
   EB_RC rc;
   GWEN_BUFFER *logbuf;
 
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, EBC_PROVIDER, pro);
-  assert(dp);
-
   logbuf=GWEN_Buffer_new(0, 128, 0, 1);
 
-  /* generate session key (for now only E002 is possible) */
+  /* generate session key */
   DBG_INFO(AQEBICS_LOGDOMAIN, "Generating session key");
-  skey=GWEN_Crypt_KeyAes128_Generate(GWEN_Crypt_CryptMode_Cbc, 16, 2);
+  skey=GWEN_Crypt_KeyDes3K_Generate(GWEN_Crypt_CryptMode_Cbc, 24, 2);
   if (skey==NULL) {
-    DBG_ERROR(AQEBICS_LOGDOMAIN, "Unable to generate AES-128 key");
+    DBG_ERROR(AQEBICS_LOGDOMAIN, "Unable to generate DES key");
     return GWEN_ERROR_GENERIC;
   }
 
@@ -414,13 +413,13 @@ int EBC_Provider_XchgUploadRequest_H003(AB_PROVIDER *pro,
   /* create upload init request */
   DBG_INFO(AQEBICS_LOGDOMAIN, "Generating upload init request");
   if (EBC_User_GetFlags(u) & EBC_USER_FLAGS_NO_EU)
-    rv=EBC_Provider_MkUploadInitRequest_H003(pro, sess, u, requestType,
+    rv=EBC_Provider_MkUploadInitRequest_H002(pro, sess, u, requestType,
                                              skey,
                                              NULL, /* no EU */
                                              GWEN_Buffer_GetUsedBytes(dbuf),
                                              &msg);
   else
-    rv=EBC_Provider_MkUploadInitRequest_H003(pro, sess, u, requestType,
+    rv=EBC_Provider_MkUploadInitRequest_H002(pro, sess, u, requestType,
                                              skey,
                                              GWEN_Buffer_GetStart(euBuf),
                                              GWEN_Buffer_GetUsedBytes(dbuf),
@@ -512,7 +511,7 @@ int EBC_Provider_XchgUploadRequest_H003(AB_PROVIDER *pro,
         n=bytesLeft;
       assert(n);
       DBG_INFO(AQEBICS_LOGDOMAIN, "Generating upload transfer request");
-      rv=EBC_Provider_MkUploadTransferRequest_H003(pro, sess, u,
+      rv=EBC_Provider_MkUploadTransferRequest_H002(pro, sess, u,
                                                    transactionId,
                                                    p,
                                                    n,

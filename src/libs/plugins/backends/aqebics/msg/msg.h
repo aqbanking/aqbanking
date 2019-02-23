@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -13,10 +13,14 @@
 
 #include <aqebics/aqebics.h>
 
+#include <aqbanking/provider.h>
+#include <aqbanking/user.h>
+
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/path.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/buffer.h>
+#include <gwenhywfar/cryptkey.h>
 
 
 #include <libxml/tree.h>
@@ -74,6 +78,10 @@ EB_RC EB_Msg_GetBodyResultCode(const EB_MSG *m);
 
 const char *EB_Msg_GetHVersion(const EB_MSG *m);
 void EB_Msg_SetHVersion(EB_MSG *m, const char *s);
+
+
+GWEN_CRYPT_KEY *EB_Msg_ExtractAndDecodeSessionKey(EB_MSG *msg, AB_PROVIDER *pro, AB_USER *u);
+
 
 #endif
 

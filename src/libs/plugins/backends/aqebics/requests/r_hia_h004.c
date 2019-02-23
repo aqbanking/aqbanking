@@ -1,11 +1,18 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+
+#include "r_hia_l.h"
 
 #include "aqebics_l.h"
 #include "msg/msg.h"
@@ -16,14 +23,12 @@
 
 #include <gwenhywfar/base64.h>
 #include <gwenhywfar/gui.h>
+#include <gwenhywfar/httpsession.h>
 
 
 
-int EBC_Provider_XchgHiaRequest_H002(AB_PROVIDER *pro,
-                                     GWEN_HTTP_SESSION *sess,
-                                     AB_USER *u)
+int EBC_Provider_XchgHiaRequest_H004(AB_PROVIDER *pro, GWEN_HTTP_SESSION *sess, AB_USER *u)
 {
-  EBC_PROVIDER *dp;
   int rv;
   GWEN_CRYPT_TOKEN *ct;
   const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
@@ -39,13 +44,10 @@ int EBC_Provider_XchgHiaRequest_H002(AB_PROVIDER *pro,
   xmlDocPtr doc;
   xmlNodePtr root_node = NULL;
   xmlNodePtr node = NULL;
+  /*xmlNodePtr nodeX = NULL;*/
   GWEN_BUFFER *mbuf;
   GWEN_BUFFER *tbuf;
   const char *s;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, EBC_PROVIDER, pro);
-  assert(dp);
 
   userId=AB_User_GetUserId(u);
   partnerId=AB_User_GetCustomerId(u);
@@ -99,7 +101,7 @@ int EBC_Provider_XchgHiaRequest_H002(AB_PROVIDER *pro,
   root_node=xmlNewNode(NULL, BAD_CAST "HIARequestOrderData");
   xmlDocSetRootElement(doc, root_node);
   ns=xmlNewNs(root_node,
-              BAD_CAST "http://www.ebics.org/H002",
+              BAD_CAST "http://www.ebics.org/H004",
               NULL);
   assert(ns);
   ns=xmlNewNs(root_node,
@@ -112,8 +114,8 @@ int EBC_Provider_XchgHiaRequest_H002(AB_PROVIDER *pro,
   xmlNewNsProp(root_node,
                ns,
                BAD_CAST "schemaLocation", /* xsi:schemaLocation */
-               BAD_CAST "http://www.ebics.org/H002 "
-               "http://www.ebics.org/H002/ebics_orders.xsd");
+               BAD_CAST "http://www.ebics.org/H004 "
+               "http://www.ebics.org/H004/ebics_orders.xsd");
 
   /* create auth key tree */
   node=xmlNewChild(root_node, NULL,
@@ -126,7 +128,7 @@ int EBC_Provider_XchgHiaRequest_H002(AB_PROVIDER *pro,
   }
   xmlNewChild(node, NULL,
               BAD_CAST "AuthenticationVersion",
-              BAD_CAST "X001");
+              BAD_CAST "X002");
 
   /* create crypt key tree */
   node=xmlNewChild(root_node, NULL,
@@ -139,7 +141,7 @@ int EBC_Provider_XchgHiaRequest_H002(AB_PROVIDER *pro,
   }
   xmlNewChild(node, NULL,
               BAD_CAST "EncryptionVersion",
-              BAD_CAST "E001");
+              BAD_CAST "E002");
 
   /* store partner id and user id */
   node=xmlNewChild(root_node, NULL,
@@ -166,7 +168,7 @@ int EBC_Provider_XchgHiaRequest_H002(AB_PROVIDER *pro,
   root_node=xmlNewNode(NULL, BAD_CAST "ebicsUnsecuredRequest");
   xmlDocSetRootElement(doc, root_node);
   ns=xmlNewNs(root_node,
-              BAD_CAST "http://www.ebics.org/H002",
+              BAD_CAST "http://www.ebics.org/H004",
               NULL);
   assert(ns);
   ns=xmlNewNs(root_node,
@@ -179,9 +181,9 @@ int EBC_Provider_XchgHiaRequest_H002(AB_PROVIDER *pro,
   xmlNewNsProp(root_node,
                ns,
                BAD_CAST "schemaLocation", /* xsi:schemaLocation */
-               BAD_CAST "http://www.ebics.org/H002 "
-               "http://www.ebics.org/H002/ebics_keymgmt_request.xsd");
-  xmlNewProp(root_node, BAD_CAST "Version", BAD_CAST "H002");
+               BAD_CAST "http://www.ebics.org/H004 "
+               "http://www.ebics.org/H004/ebics_keymgmt_request.xsd");
+  xmlNewProp(root_node, BAD_CAST "Version", BAD_CAST "H004");
   xmlNewProp(root_node, BAD_CAST "Revision", BAD_CAST "1");
 
   /* header */

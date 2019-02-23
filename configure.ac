@@ -1308,6 +1308,7 @@ AC_CONFIG_FILES([
   src/libs/plugins/backends/aqebics/dialogs/Makefile
   src/libs/plugins/backends/aqebics/msg/Makefile
   src/libs/plugins/backends/aqebics/control/Makefile
+  src/libs/plugins/backends/aqebics/requests/Makefile
   src/test/Makefile
   src/tools/Makefile
   src/tools/aqbanking-cli/Makefile

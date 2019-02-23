@@ -7,7 +7,14 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
+
+#include "r_hpb_l.h"
+
+#include "aqebics_l.h"
 #include "msg/msg.h"
 #include "msg/keys.h"
 #include "msg/zip.h"
@@ -15,14 +22,13 @@
 #include "user_l.h"
 
 #include <gwenhywfar/base64.h>
+#include <gwenhywfar/gui.h>
+#include <gwenhywfar/httpsession.h>
 
 
 
-static int EBC_Provider_XchgHpbRequest_H004(AB_PROVIDER *pro,
-                                            GWEN_HTTP_SESSION *sess,
-                                            AB_USER *u)
+int EBC_Provider_XchgHpbRequest_H004(AB_PROVIDER *pro, GWEN_HTTP_SESSION *sess, AB_USER *u)
 {
-  EBC_PROVIDER *dp;
   int rv;
   GWEN_CRYPT_TOKEN *ct;
   const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
@@ -37,10 +43,6 @@ static int EBC_Provider_XchgHpbRequest_H004(AB_PROVIDER *pro,
   xmlNodePtr sigNode = NULL;
   GWEN_BUFFER *tbuf;
   const char *s;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, EBC_PROVIDER, pro);
-  assert(dp);
 
   /* get crypt token and context */
   rv=EBC_Provider_MountToken(pro, u, &ct, &ctx);

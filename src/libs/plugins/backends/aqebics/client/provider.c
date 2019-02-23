@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -17,6 +17,7 @@
 #include "aqebics_l.h"
 #include "user_l.h"
 #include "account_l.h"
+#include "r_ini_l.h"
 #include "msg/xml.h"
 #include "msg/keys.h"
 #include "dialogs/dlg_edituser_l.h"
@@ -1093,6 +1094,45 @@ int EBC_Provider_GetCert(AB_PROVIDER *pro, AB_USER *u)
 }
 
 
+
+int EBC_Provider_DecodeAndDecryptData(AB_PROVIDER *pro,
+                                      AB_USER *u,
+                                      GWEN_CRYPT_KEY *skey,
+                                      const char *sEncryptedData,
+                                      GWEN_BUFFER *targetBuffer)
+{
+  GWEN_BUFFER *buf1;
+  int rv;
+
+  /* BASE64-decode receiced data */
+  buf1=GWEN_Buffer_new(0, strlen(sEncryptedData), 0, 1);
+  rv=GWEN_Base64_Decode((const uint8_t *)sEncryptedData, 0, buf1);
+  if (rv<0) {
+    DBG_INFO(AQEBICS_LOGDOMAIN, "Could not decode OrderData (%d)", rv);
+    GWEN_Buffer_free(buf1);
+    return rv;
+  }
+
+  /* decrypt/unzip data */
+  rv=EBC_Provider_DecryptData(pro, u, skey,
+                              (const uint8_t *)GWEN_Buffer_GetStart(buf1),
+                              GWEN_Buffer_GetUsedBytes(buf1),
+                              targetBuffer);
+  if (rv<0) {
+    DBG_INFO(AQEBICS_LOGDOMAIN, "Could not decrypt OrderData (%d)", rv);
+    GWEN_Buffer_free(buf1);
+    return rv;
+  }
+  GWEN_Buffer_free(buf1);
+
+  /*DBG_ERROR(0, "Got this data:");
+   GWEN_Buffer_Dump(targetBuffer, stderr, 2);*/
+
+  return 0;
+}
+
+
+
 #include "provider_sendcmd.c"
 #include "provider_accspec.c"
 
@@ -1107,28 +1147,4 @@ int EBC_Provider_GetCert(AB_PROVIDER *pro, AB_USER *u)
 #include "p_eu_a005.c"
 #include "p_eu.c"
 #include "p_tools.c"
-#include "r_ini_h002.c"
-#include "r_ini_h003.c"
-#include "r_ini_h004.c"
-#include "r_ini.c"
-#include "r_hia_h002.c"
-#include "r_hia_h003.c"
-#include "r_hia_h004.c"
-#include "r_hia.c"
-#include "r_hpb_h002.c"
-#include "r_hpb_h003.c"
-#include "r_hpb_h004.c"
-#include "r_hpb.c"
-#include "r_download_h002.c"
-#include "r_download_h003.c"
-#include "r_download.c"
-#include "r_hpd.c"
-#include "r_sta.c"
-#include "r_upload_h002.c"
-#include "r_upload_h003.c"
-#include "r_upload.c"
-#include "r_pub_h002.c"
-#include "r_pub_h003.c"
-#include "r_pub.c"
-
 

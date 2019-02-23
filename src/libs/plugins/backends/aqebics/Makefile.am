@@ -1,4 +1,4 @@
-SUBDIRS=msg client dialogs control
+SUBDIRS=msg client dialogs control requests
 
 INCLUDES=-I.. -I$(top_builddir) -I$(srcdir)/client -I$(builddir)/client \
   $(gwenhywfar_includes) -I$(aqbanking_symlinkdir) $(AQEBICS_CFLAGS)
@@ -26,6 +26,7 @@ libaqebics_la_LIBADD=\
   msg/libmsg.la \
   dialogs/libdialogs.la \
   client/libclient.la \
+  requests/libaqebics_requests.la \
   control/libebicscontrol.la -lz $(AQEBICS_LIBS)
 
 

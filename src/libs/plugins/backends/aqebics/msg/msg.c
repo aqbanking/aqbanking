@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -13,6 +13,7 @@
 
 #include "msg_p.h"
 #include "xml.h"
+#include "provider_l.h"
 
 #include <xmlsec/transforms.h>
 #include <xmlsec/errors.h>
@@ -623,6 +624,37 @@ int EB_Msg__prepareSignature(xmlDocPtr doc)
 
   return 0;
 }
+
+
+
+GWEN_CRYPT_KEY *EB_Msg_ExtractAndDecodeSessionKey(EB_MSG *msg, AB_PROVIDER *pro, AB_USER *u)
+{
+  xmlNodePtr node=NULL;
+  GWEN_CRYPT_KEY *skey=NULL;
+  int rv;
+
+  assert(msg);
+  assert(msg->usage);
+
+  /* extract keys and store them */
+  node=EB_Xml_GetNode(xmlDocGetRootElement(msg->doc),
+		      "body/DataTransfer/DataEncryptionInfo",
+		      GWEN_PATH_FLAGS_NAMEMUSTEXIST);
+  if (node==NULL) {
+    DBG_ERROR(AQEBICS_LOGDOMAIN, "Bad message: Missing session key");
+    return NULL;
+  }
+  rv=EBC_Provider_ExtractSessionKey(pro, u, node, &skey);
+  if (rv<0) {
+    DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
+    return NULL;
+  }
+  DBG_INFO(AQEBICS_LOGDOMAIN, "Got session key");
+
+  return skey;
+}
+
+
 
 
 

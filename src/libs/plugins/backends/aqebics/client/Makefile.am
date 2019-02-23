@@ -1,6 +1,6 @@
 
 
-INCLUDES=-I$(srcdir)/.. -I$(top_builddir) $(gwenhywfar_includes) -I$(aqbanking_symlinkdir) $(AQEBICS_CFLAGS)
+INCLUDES=-I$(srcdir)/.. -I$(srcdir)/../requests -I$(top_builddir) $(gwenhywfar_includes) -I$(aqbanking_symlinkdir) $(AQEBICS_CFLAGS)
 
 DEFS += -DLOCALEDIR=\"$(localedir)\"
 AM_CFLAGS=-DBUILDING_AQEBICS @visibility_cflags@
@@ -23,30 +23,7 @@ extra_sources=\
   p_sign.c \
   p_sign_x001.c \
   p_sign_x002.c \
-  p_tools.c \
-  r_hia.c \
-  r_hia_h002.c \
-  r_hia_h003.c \
-  r_hia_h004.c \
-  r_hpb.c \
-  r_hpb_h002.c \
-  r_hpb_h003.c \
-  r_hpb_h004.c \
-  r_hpd.c \
-  r_ini.c \
-  r_ini_h002.c \
-  r_ini_h003.c \
-  r_ini_h004.c \
-  r_download.c \
-  r_download_h002.c \
-  r_download_h003.c \
-  r_sta.c \
-  r_upload.c \
-  r_upload_h002.c \
-  r_upload_h003.c \
-  r_pub.c \
-  r_pub_h002.c \
-  r_pub_h003.c
+  p_tools.c
 
 
 EXTRA_DIST=$(typefiles) $(extra_sources)
@@ -57,7 +34,6 @@ noinst_HEADERS=\
  account_p.h \
  dialog_l.h \
  dialog_p.h \
- r_hkd_htd_l.h \
  provider_l.h \
  provider_p.h \
  user_l.h \
@@ -74,7 +50,6 @@ libclient_la_SOURCES=\
  account.c \
  user.c \
  dialog.c \
- r_hkd_htd.c \
  provider.c
 
 

@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -11,9 +11,21 @@
 #include "msg/msg.h"
 #include "msg/keys.h"
 #include "msg/zip.h"
+#include "msg/xml.h"
 #include "user_l.h"
+#include "provider_l.h"
+#include "aqebics_l.h"
 
 #include <gwenhywfar/base64.h>
+#include <gwenhywfar/gui.h>
+#include <gwenhywfar/debug.h>
+
+#include <aqbanking/httpsession.h>
+
+
+#include "r_ini_h002.c"
+#include "r_ini_h003.c"
+#include "r_ini_h004.c"
 
 
 

@@ -5,6 +5,8 @@
 #include "msg/keys.h"
 
 #include "r_hkd_htd_l.h"
+#include "r_download_l.h"
+#include "r_upload_l.h"
 
 
 
@@ -577,6 +579,49 @@ int EBC_Provider_Download(AB_PROVIDER *pro, AB_USER *u,
   GWEN_HttpSession_free(sess);
 
   return rv;
+}
+
+
+
+int EBC_Provider_DownloadIntoContext(AB_PROVIDER *pro,
+                                     AB_USER *u,
+                                     const char *rtype,
+                                     int withReceipt,
+                                     const GWEN_DATE *fromDate,
+                                     const GWEN_DATE *toDate,
+                                     const char *importerName,
+                                     const char *profileName,
+                                     AB_IMEXPORTER_CONTEXT *ctx,
+                                     int doLock)
+{
+  int rv;
+  GWEN_BUFFER *buf;
+
+  buf=GWEN_Buffer_new(0, 1024, 0, 1);
+  GWEN_Buffer_SetHardLimit(buf, EBICS_BUFFER_MAX_HARD_LIMIT);
+
+  DBG_INFO(AQEBICS_LOGDOMAIN, "Downloading data");
+  rv=EBC_Provider_Download(pro, u, rtype, buf, withReceipt, fromDate, toDate, doLock);
+  if (rv<0 || rv>=300) {
+    DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(buf);
+    return rv;
+  }
+
+  DBG_INFO(AQEBICS_LOGDOMAIN, "Importing data (%s : %s)", importerName, profileName);
+  rv=AB_Banking_ImportFromBufferLoadProfile(AB_Provider_GetBanking(pro),
+                                            importerName,
+                                            ctx,
+                                            profileName, NULL,
+                                            (const uint8_t *) GWEN_Buffer_GetStart(buf),
+                                            GWEN_Buffer_GetUsedBytes(buf));
+  GWEN_Buffer_free(buf);
+  if (rv<0) {
+    DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+  DBG_INFO(AQEBICS_LOGDOMAIN, "Importing transactions: done");
+  return 0;
 }
 
 
