@@ -242,15 +242,16 @@ int EBC_Provider_ExecContext_STA(AB_PROVIDER *pro,
       while (uj) {
         int rv;
 
-        /* exchange STA request */
-        rv=EBC_Provider_XchgStaRequest(pro, sess,
-                                       AB_Transaction_GetFirstDate(uj),
-                                       AB_Transaction_GetLastDate(uj),
-                                       ctx);
-        if (rv==0) {
-          AB_Transaction_SetStatus(uj, AB_Transaction_StatusAccepted);
-        }
-        else {
+        rv=EBC_Provider_DownloadIntoContextWithSession(pro, sess, u,
+                                                       "STA",
+                                                       1 /* withReceipt */,
+                                                       AB_Transaction_GetFirstDate(uj),
+                                                       AB_Transaction_GetLastDate(uj),
+                                                       "swift",
+                                                       "SWIFT-MT940",
+                                                       ctx,
+                                                       0 /* don't lock */);
+        if (rv<0 || rv>=300) {
           if (rv==GWEN_ERROR_NO_DATA)
             AB_Transaction_SetStatus(uj, AB_Transaction_StatusAccepted);
           else {
@@ -262,6 +263,7 @@ int EBC_Provider_ExecContext_STA(AB_PROVIDER *pro,
             }
           }
         }
+
         uj=AB_Transaction_List2Iterator_Next(jit);
       } /* while */
       AB_Transaction_List2Iterator_free(jit);
