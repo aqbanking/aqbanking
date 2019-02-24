@@ -54,6 +54,9 @@ GWEN_HTTP_SESSION *EBC_Dialog_new(AB_PROVIDER *pro, AB_USER *u)
   if (flags & EBC_USER_FLAGS_FORCE_SSLV3)
     GWEN_HttpSession_AddFlags(sess, GWEN_HTTP_SESSION_FLAGS_FORCE_SSL3);
 
+  if (flags & EBC_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE)
+    GWEN_HttpSession_AddFlags(sess, GWEN_HTTP_SESSION_FLAGS_TLS_IGN_PREMATURE_CLOSE);
+
   /* set HTTP config according to user settings */
   GWEN_HttpSession_SetHttpUserAgent(sess, EBC_User_GetHttpUserAgent(u));
   s=EBC_User_GetHttpContentType(u);

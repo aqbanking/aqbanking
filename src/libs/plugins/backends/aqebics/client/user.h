@@ -36,6 +36,8 @@ extern "C" {
 #define EBC_USER_FLAGS_USE_IZL                  0x00010000
 #define EBC_USER_FLAGS_TIMESTAMP_FIX1           0x00020000
 #define EBC_USER_FLAGS_NO_EU                    0x00040000
+#define EBC_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE  0x00080000
+
 
 
 AQEBICS_API void EBC_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,

@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -93,6 +93,8 @@ void EBC_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "timestampFix1");
   if (flags & EBC_USER_FLAGS_NO_EU)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "noEu");
+  if (flags & EBC_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "tlsIgnPrematureClose");
 }
 
 
@@ -132,6 +134,8 @@ uint32_t EBC_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name)
       fl|=EBC_USER_FLAGS_TIMESTAMP_FIX1;
     else if (strcasecmp(s, "noEu")==0)
       fl|=EBC_USER_FLAGS_NO_EU;
+    else if (strcasecmp(s, "tlsIgnPrematureClose")==0)
+      fl|=EBC_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE;
     else {
       DBG_WARN(AQEBICS_LOGDOMAIN, "Unknown user flag \"%s\"", s);
     }
