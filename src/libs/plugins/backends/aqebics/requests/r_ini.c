@@ -7,25 +7,19 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
-#include "msg/msg.h"
-#include "msg/keys.h"
-#include "msg/zip.h"
-#include "msg/xml.h"
-#include "user_l.h"
-#include "provider_l.h"
+
+#include "r_ini_l.h"
+
 #include "aqebics_l.h"
+#include "user_l.h"
 
-#include <gwenhywfar/base64.h>
 #include <gwenhywfar/gui.h>
-#include <gwenhywfar/debug.h>
+#include <gwenhywfar/httpsession.h>
 
-#include <aqbanking/httpsession.h>
-
-
-#include "r_ini_h002.c"
-#include "r_ini_h003.c"
-#include "r_ini_h004.c"
 
 
 
