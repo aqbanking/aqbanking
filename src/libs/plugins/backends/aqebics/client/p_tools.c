@@ -7,6 +7,11 @@
 #include "r_hkd_htd_l.h"
 #include "r_download_l.h"
 #include "r_upload_l.h"
+#include "r_ini_l.h"
+#include "r_hia_l.h"
+#include "r_pub_l.h"
+#include "r_hpb_l.h"
+#include "r_hpd_l.h"
 
 
 
@@ -505,6 +510,69 @@ int EBC_Provider_Send_PUB(AB_PROVIDER *pro, AB_USER *u, const char *signVersion,
 
 
 
+int EBC_Provider_DownloadWithSession(AB_PROVIDER *pro,
+				     GWEN_HTTP_SESSION *sess,
+				     AB_USER *u,
+                                     const char *rtype,
+                                     GWEN_BUFFER *targetBuffer,
+                                     int withReceipt,
+                                     const GWEN_DATE *fromDate,
+                                     const GWEN_DATE *toDate,
+				     int doLock)
+{
+  EBC_PROVIDER *dp;
+  int rv;
+  EBC_USER_STATUS ust;
+
+  assert(pro);
+  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, EBC_PROVIDER, pro);
+  assert(dp);
+
+  ust=EBC_User_GetStatus(u);
+  if (ust!=EBC_UserStatus_Enabled) {
+    DBG_ERROR(AQEBICS_LOGDOMAIN,
+              "Invalid status \"%s\" of user \"%s\"",
+              EBC_User_Status_toString(ust),
+              AB_User_GetUserId(u));
+    return GWEN_ERROR_INVALID;
+  }
+
+  /* lock user */
+  if (doLock) {
+    rv=AB_Provider_BeginExclUseUser(pro, u);
+    if (rv<0) {
+      DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not lock customer");
+      return rv;
+    }
+  }
+
+  /* exchange request and response */
+  rv=EBC_Provider_XchgDownloadRequest(pro, sess, u,
+                                      rtype, targetBuffer, withReceipt,
+                                      fromDate, toDate);
+  if (rv) {
+    DBG_ERROR(AQEBICS_LOGDOMAIN,
+              "Error exchanging download request (%d)", rv);
+    if (doLock)
+      AB_Provider_EndExclUseUser(pro, u, 1);
+    return rv;
+  }
+
+  /* unlock user */
+  if (doLock) {
+    rv=AB_Provider_EndExclUseUser(pro, u, 0);
+    if (rv<0) {
+      DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not unlock customer");
+      AB_Provider_EndExclUseUser(pro, u, 1);
+      return rv;
+    }
+  }
+
+  return rv;
+}
+
+
+
 int EBC_Provider_Download(AB_PROVIDER *pro, AB_USER *u,
                           const char *rtype,
                           GWEN_BUFFER *targetBuffer,
@@ -540,38 +608,11 @@ int EBC_Provider_Download(AB_PROVIDER *pro, AB_USER *u,
     return rv;
   }
 
-  /* lock user */
-  if (doLock) {
-    rv=AB_Provider_BeginExclUseUser(pro, u);
-    if (rv<0) {
-      DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not lock customer");
-      GWEN_HttpSession_free(sess);
-      return rv;
-    }
-  }
-
-  /* exchange request and response */
-  rv=EBC_Provider_XchgDownloadRequest(pro, sess, u,
-                                      rtype, targetBuffer, withReceipt,
-                                      fromDate, toDate);
-  if (rv) {
-    DBG_ERROR(AQEBICS_LOGDOMAIN,
-              "Error exchanging download request (%d)", rv);
-    if (doLock)
-      AB_Provider_EndExclUseUser(pro, u, 1);
+  rv=EBC_Provider_DownloadWithSession(pro, sess, u, rtype, targetBuffer, withReceipt, fromDate, toDate, doLock);
+  if (rv<0 || rv>=300) {
+    DBG_ERROR(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     GWEN_HttpSession_free(sess);
     return rv;
-  }
-
-  /* unlock user */
-  if (doLock) {
-    rv=AB_Provider_EndExclUseUser(pro, u, 0);
-    if (rv<0) {
-      DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not unlock customer");
-      AB_Provider_EndExclUseUser(pro, u, 1);
-      GWEN_HttpSession_free(sess);
-      return rv;
-    }
   }
 
   /* close and destroy session */
@@ -615,6 +656,50 @@ int EBC_Provider_DownloadIntoContext(AB_PROVIDER *pro,
                                             profileName, NULL,
                                             (const uint8_t *) GWEN_Buffer_GetStart(buf),
                                             GWEN_Buffer_GetUsedBytes(buf));
+  GWEN_Buffer_free(buf);
+  if (rv<0) {
+    DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+  DBG_INFO(AQEBICS_LOGDOMAIN, "Importing transactions: done");
+  return 0;
+}
+
+
+
+int EBC_Provider_DownloadIntoContextWithSession(AB_PROVIDER *pro,
+						GWEN_HTTP_SESSION *sess,
+						AB_USER *u,
+						const char *rtype,
+						int withReceipt,
+						const GWEN_DATE *fromDate,
+						const GWEN_DATE *toDate,
+						const char *importerName,
+						const char *profileName,
+						AB_IMEXPORTER_CONTEXT *ctx,
+						int doLock)
+{
+  int rv;
+  GWEN_BUFFER *buf;
+
+  buf=GWEN_Buffer_new(0, 1024, 0, 1);
+  GWEN_Buffer_SetHardLimit(buf, EBICS_BUFFER_MAX_HARD_LIMIT);
+
+  DBG_INFO(AQEBICS_LOGDOMAIN, "Downloading data");
+  rv=EBC_Provider_DownloadWithSession(pro, sess, u, rtype, buf, withReceipt, fromDate, toDate, doLock);
+  if (rv<0 || rv>=300) {
+    DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(buf);
+    return rv;
+  }
+
+  DBG_INFO(AQEBICS_LOGDOMAIN, "Importing data (%s : %s)", importerName, profileName);
+  rv=AB_Banking_ImportFromBufferLoadProfile(AB_Provider_GetBanking(pro),
+					    importerName,
+					    ctx,
+					    profileName, NULL,
+					    (const uint8_t *) GWEN_Buffer_GetStart(buf),
+					    GWEN_Buffer_GetUsedBytes(buf));
   GWEN_Buffer_free(buf);
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);

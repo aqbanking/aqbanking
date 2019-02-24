@@ -79,6 +79,16 @@ int EBC_Provider_Download(AB_PROVIDER *pro, AB_USER *u,
                           const GWEN_DATE *toDate,
                           int doLock);
 
+int EBC_Provider_DownloadWithSession(AB_PROVIDER *pro,
+				     GWEN_HTTP_SESSION *sess,
+				     AB_USER *u,
+                                     const char *rtype,
+                                     GWEN_BUFFER *targetBuffer,
+                                     int withReceipt,
+                                     const GWEN_DATE *fromDate,
+                                     const GWEN_DATE *toDate,
+				     int doLock);
+
 int EBC_Provider_Upload(AB_PROVIDER *pro, AB_USER *u,
                         const char *rtype,
                         const uint8_t *pData,
@@ -96,46 +106,24 @@ int EBC_Provider_DownloadIntoContext(AB_PROVIDER *pro,
                                      AB_IMEXPORTER_CONTEXT *ctx,
                                      int doLock);
 
+int EBC_Provider_DownloadIntoContextWithSession(AB_PROVIDER *pro,
+						GWEN_HTTP_SESSION *sess,
+						AB_USER *u,
+						const char *rtype,
+						int withReceipt,
+						const GWEN_DATE *fromDate,
+						const GWEN_DATE *toDate,
+						const char *importerName,
+						const char *profileName,
+						AB_IMEXPORTER_CONTEXT *ctx,
+                                                int doLock);
+
 
 int EBC_Provider_GetConnectTimeout(const AB_PROVIDER *pro);
 int EBC_Provider_GetTransferTimeout(const AB_PROVIDER *pro);
 
 
 
-
-
-
-
-int EBC_Provider_XchgIniRequest(AB_PROVIDER *pro,
-                                GWEN_HTTP_SESSION *sess,
-                                AB_USER *u);
-
-int EBC_Provider_XchgHiaRequest(AB_PROVIDER *pro,
-                                GWEN_HTTP_SESSION *sess,
-                                AB_USER *u);
-
-int EBC_Provider_XchgPubRequest(AB_PROVIDER *pro,
-                                GWEN_HTTP_SESSION *sess,
-                                AB_USER *u,
-                                const char *signVersion);
-
-int EBC_Provider_XchgHpbRequest(AB_PROVIDER *pro,
-                                GWEN_HTTP_SESSION *sess,
-                                AB_USER *u);
-
-int EBC_Provider_XchgHpdRequest(AB_PROVIDER *pro,
-                                GWEN_HTTP_SESSION *sess,
-                                AB_USER *u);
-
-int EBC_Provider_XchgHtdRequest(AB_PROVIDER *pro,
-                                GWEN_HTTP_SESSION *sess,
-                                AB_USER *u);
-
-int EBC_Provider_XchgStaRequest(AB_PROVIDER *pro,
-                                GWEN_HTTP_SESSION *sess,
-                                const GWEN_DATE *fromDate,
-                                const GWEN_DATE *toDate,
-                                AB_IMEXPORTER_CONTEXT *ctx);
 
 
 int EBC_Provider_SignMessage(AB_PROVIDER *pro,
@@ -185,65 +173,6 @@ void EBC_Provider_LogRequestResults(AB_PROVIDER *pro,
                                     EB_MSG *mRsp,
                                     GWEN_BUFFER *logbuf);
 
-#if 0
-int EBC_Provider_MkDownloadInitRequest(AB_PROVIDER *pro,
-                                       GWEN_HTTP_SESSION *sess,
-                                       AB_USER *u,
-                                       const char *requestType,
-                                       const GWEN_TIME *fromTime,
-                                       const GWEN_TIME *toTime,
-                                       EB_MSG **pMsg);
-
-int EBC_Provider_MkDownloadTransferRequest(AB_PROVIDER *pro,
-                                           GWEN_HTTP_SESSION *sess,
-                                           AB_USER *u,
-                                           const char *transactionId,
-                                           int segmentNumber,
-                                           EB_MSG **pMsg);
-
-int EBC_Provider_MkDownloadReceiptRequest(AB_PROVIDER *pro,
-                                          GWEN_HTTP_SESSION *sess,
-                                          AB_USER *u,
-                                          const char *transactionId,
-                                          int receiptCode,
-                                          EB_MSG **pMsg);
-
-int EBC_Provider_XchgDownloadRequest(AB_PROVIDER *pro,
-                                     GWEN_HTTP_SESSION *sess,
-                                     AB_USER *u,
-                                     const char *requestType,
-                                     GWEN_BUFFER *targetBuffer,
-                                     int withReceipt,
-                                     const GWEN_DATE *fromDate,
-                                     const GWEN_DATE *toDate);
-
-
-int EBC_Provider_MkUploadInitRequest(AB_PROVIDER *pro,
-                                     GWEN_HTTP_SESSION *sess,
-                                     AB_USER *u,
-                                     const char *requestType,
-                                     GWEN_CRYPT_KEY *skey,
-                                     const char *pEu,
-                                     uint32_t dlen,
-                                     EB_MSG **pMsg);
-
-int EBC_Provider_MkUploadTransferRequest(AB_PROVIDER *pro,
-                                         GWEN_HTTP_SESSION *sess,
-                                         AB_USER *u,
-                                         const char *transactionId,
-                                         const char *pData,
-                                         uint32_t lData,
-                                         int segmentNumber,
-                                         int isLast,
-                                         EB_MSG **pMsg);
-
-int EBC_Provider_XchgUploadRequest(AB_PROVIDER *pro,
-                                   GWEN_HTTP_SESSION *sess,
-                                   AB_USER *u,
-                                   const char *requestType,
-                                   const uint8_t *pData,
-                                   uint32_t lData);
-#endif
 
 
 
