@@ -98,8 +98,10 @@ int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
     return GWEN_ERROR_BAD_DATA;
   }
 
+#if 0
   DBG_ERROR(0, "Parsed data is:");
   GWEN_DB_Dump(dbData, 2);
+#endif
 
   /* transform DB to transactions */
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug,
