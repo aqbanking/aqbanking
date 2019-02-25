@@ -67,7 +67,8 @@ static int _downloadRemainingSegments(AB_PROVIDER *pro,
                                       GWEN_BUFFER *dbuffer);
 
 
-static int _sendReceipt(AB_PROVIDER *pro, GWEN_HTTP_SESSION *sess, AB_USER *u, const char *transactionId, int withReceipt);
+static int _sendReceipt(AB_PROVIDER *pro, GWEN_HTTP_SESSION *sess, AB_USER *u, const char *transactionId,
+                        int withReceipt);
 
 
 
@@ -398,7 +399,7 @@ int _mkDownloadInitRequest(AB_PROVIDER *pro,
 
   nodeX=xmlNewChild(node, NULL, BAD_CAST "static", NULL);
   s=EBC_User_GetPeerId(u);
-  nodeXX=xmlNewTextChild(nodeX, NULL, BAD_CAST "HostID", BAD_CAST (s?s:"EBICS"));
+  nodeXX=xmlNewTextChild(nodeX, NULL, BAD_CAST "HostID", BAD_CAST(s?s:"EBICS"));
 
   /* generate Nonce */
   tbuf=GWEN_Buffer_new(0, 128, 0, 1);
@@ -510,7 +511,8 @@ int _mkDownloadInitRequest(AB_PROVIDER *pro,
 
 
 
-int _mkDownloadTransferRequest(AB_PROVIDER *pro, AB_USER *u, const char *transactionId, int segmentNumber, EB_MSG **pMsg)
+int _mkDownloadTransferRequest(AB_PROVIDER *pro, AB_USER *u, const char *transactionId, int segmentNumber,
+                               EB_MSG **pMsg)
 {
   int rv;
   EB_MSG *msg;
@@ -534,7 +536,7 @@ int _mkDownloadTransferRequest(AB_PROVIDER *pro, AB_USER *u, const char *transac
 
   nodeX=xmlNewChild(node, NULL, BAD_CAST "static", NULL);
   s=EBC_User_GetPeerId(u);
-  xmlNewTextChild(nodeX, NULL, BAD_CAST "HostID", BAD_CAST (s?s:"EBICS"));
+  xmlNewTextChild(nodeX, NULL, BAD_CAST "HostID", BAD_CAST(s?s:"EBICS"));
 
   xmlNewTextChild(nodeX, NULL, BAD_CAST "TransactionID", BAD_CAST transactionId);
 
@@ -587,7 +589,7 @@ int _mkDownloadReceiptRequest(AB_PROVIDER *pro, AB_USER *u, const char *transact
 
   nodeX=xmlNewChild(node, NULL, BAD_CAST "static", NULL);
   s=EBC_User_GetPeerId(u);
-  xmlNewTextChild(nodeX, NULL, BAD_CAST "HostID", BAD_CAST (s?s:"EBICS"));
+  xmlNewTextChild(nodeX, NULL, BAD_CAST "HostID", BAD_CAST(s?s:"EBICS"));
   xmlNewTextChild(nodeX, NULL, BAD_CAST "TransactionID", BAD_CAST transactionId);
 
   /* mutable */

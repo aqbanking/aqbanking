@@ -1292,17 +1292,17 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
 
           dbTransaction=0;
           DBG_INFO(AQBANKING_LOGDOMAIN, "Starting new day");
-	  if (strcasecmp(id, "60F")==0)
-	    dbSaldo=GWEN_DB_GetGroup(dbDay, GWEN_PATH_FLAGS_CREATE_GROUP, "StartSaldo");
-	  else
-	    dbSaldo=GWEN_DB_GetGroup(dbDay, GWEN_PATH_FLAGS_CREATE_GROUP, "InterimStartSaldo");
+          if (strcasecmp(id, "60F")==0)
+            dbSaldo=GWEN_DB_GetGroup(dbDay, GWEN_PATH_FLAGS_CREATE_GROUP, "StartSaldo");
+          else
+            dbSaldo=GWEN_DB_GetGroup(dbDay, GWEN_PATH_FLAGS_CREATE_GROUP, "InterimStartSaldo");
           GWEN_DB_AddGroupChildren(dbSaldo, dbTemplate);
           if (AHB_SWIFT940_Parse_6_0_2(tg, flags, dbSaldo, cfg)) {
             DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
             GWEN_DB_Group_free(dbTemplate);
             GWEN_Gui_ProgressEnd(progressId);
             return -1;
-	  }
+          }
           else {
             dbDate=GWEN_DB_GetGroup(dbSaldo, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
                                     "date");
@@ -1312,11 +1312,11 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
           if (curr) {
             AHB_SWIFT__SetCharValue(dbTemplate, flags,
                                     "value/currency", curr);
-	  }
-	  if (strcasecmp(id, "60F")==0)
-	    GWEN_DB_SetCharValue(dbSaldo, GWEN_DB_FLAGS_OVERWRITE_VARS, "type", "final");
-	  else
-	    GWEN_DB_SetCharValue(dbSaldo, GWEN_DB_FLAGS_OVERWRITE_VARS, "type", "interim");
+          }
+          if (strcasecmp(id, "60F")==0)
+            GWEN_DB_SetCharValue(dbSaldo, GWEN_DB_FLAGS_OVERWRITE_VARS, "type", "final");
+          else
+            GWEN_DB_SetCharValue(dbSaldo, GWEN_DB_FLAGS_OVERWRITE_VARS, "type", "interim");
 
         }
         else if (strcasecmp(id, "62M")==0 || /* Interim EndSaldo */
@@ -1329,18 +1329,18 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
             DBG_WARN(AQBANKING_LOGDOMAIN, "Your bank does not send an opening saldo");
             dbDay=GWEN_DB_GetGroup(data, GWEN_PATH_FLAGS_CREATE_GROUP, "day");
           }
-	  dbSaldo=GWEN_DB_GetGroup(dbDay, GWEN_PATH_FLAGS_CREATE_GROUP, "EndSaldo");
-	  GWEN_DB_AddGroupChildren(dbSaldo, dbTemplate);
+          dbSaldo=GWEN_DB_GetGroup(dbDay, GWEN_PATH_FLAGS_CREATE_GROUP, "EndSaldo");
+          GWEN_DB_AddGroupChildren(dbSaldo, dbTemplate);
           if (AHB_SWIFT940_Parse_6_0_2(tg, flags, dbSaldo, cfg)) {
             DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
             GWEN_DB_Group_free(dbTemplate);
             GWEN_Gui_ProgressEnd(progressId);
             return -1;
           }
-	  if (strcasecmp(id, "62F")==0)
-	    GWEN_DB_SetCharValue(dbSaldo, GWEN_DB_FLAGS_OVERWRITE_VARS, "type", "final");
-	  else
-	    GWEN_DB_SetCharValue(dbSaldo, GWEN_DB_FLAGS_OVERWRITE_VARS, "type", "interim");
+          if (strcasecmp(id, "62F")==0)
+            GWEN_DB_SetCharValue(dbSaldo, GWEN_DB_FLAGS_OVERWRITE_VARS, "type", "final");
+          else
+            GWEN_DB_SetCharValue(dbSaldo, GWEN_DB_FLAGS_OVERWRITE_VARS, "type", "interim");
           dbDay=0;
 
         }

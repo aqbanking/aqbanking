@@ -638,8 +638,8 @@ GWEN_CRYPT_KEY *EB_Msg_ExtractAndDecodeSessionKey(EB_MSG *msg, AB_PROVIDER *pro,
 
   /* extract keys and store them */
   node=EB_Xml_GetNode(xmlDocGetRootElement(msg->doc),
-		      "body/DataTransfer/DataEncryptionInfo",
-		      GWEN_PATH_FLAGS_NAMEMUSTEXIST);
+                      "body/DataTransfer/DataEncryptionInfo",
+                      GWEN_PATH_FLAGS_NAMEMUSTEXIST);
   if (node==NULL) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Bad message: Missing session key");
     return NULL;

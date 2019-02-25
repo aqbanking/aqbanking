@@ -136,7 +136,8 @@ int EBC_Provider_XchgUploadRequest_H003(AB_PROVIDER *pro,
   if (EBC_User_GetFlags(u) & EBC_USER_FLAGS_NO_EU)
     rv=_mkUploadInitRequest(pro, sess, u, requestType, skey, NULL, GWEN_Buffer_GetUsedBytes(dbuf), &msg);
   else
-    rv=_mkUploadInitRequest(pro, sess, u, requestType, skey, GWEN_Buffer_GetStart(euBuf), GWEN_Buffer_GetUsedBytes(dbuf), &msg);
+    rv=_mkUploadInitRequest(pro, sess, u, requestType, skey, GWEN_Buffer_GetStart(euBuf), GWEN_Buffer_GetUsedBytes(dbuf),
+                            &msg);
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(dbuf);
@@ -326,7 +327,7 @@ int _mkUploadInitRequest(AB_PROVIDER *pro,
 
   nodeX=xmlNewChild(node, NULL, BAD_CAST "static", NULL);
   s=EBC_User_GetPeerId(u);
-  nodeXX=xmlNewTextChild(nodeX, NULL, BAD_CAST "HostID", BAD_CAST (s?s:"EBICS"));
+  nodeXX=xmlNewTextChild(nodeX, NULL, BAD_CAST "HostID", BAD_CAST(s?s:"EBICS"));
 
   /* generate Nonce */
   tbuf=GWEN_Buffer_new(0, 128, 0, 1);
@@ -479,7 +480,7 @@ int _mkUploadTransferRequest(AB_PROVIDER *pro,
 
   nodeX=xmlNewChild(node, NULL, BAD_CAST "static", NULL);
   s=EBC_User_GetPeerId(u);
-  nodeXX=xmlNewTextChild(nodeX, NULL, BAD_CAST "HostID", BAD_CAST (s?s:"EBICS"));
+  nodeXX=xmlNewTextChild(nodeX, NULL, BAD_CAST "HostID", BAD_CAST(s?s:"EBICS"));
   nodeXX=xmlNewTextChild(nodeX, NULL, BAD_CAST "TransactionID", BAD_CAST transactionId);
 
   /* mutable */
@@ -488,7 +489,7 @@ int _mkUploadTransferRequest(AB_PROVIDER *pro,
   snprintf(numbuf, sizeof(numbuf)-1, "%d", segmentNumber);
   numbuf[sizeof(numbuf)-1]=0;
   nodeXX=xmlNewTextChild(nodeX, NULL, BAD_CAST "SegmentNumber", BAD_CAST numbuf);
-  xmlNewProp(nodeXX, BAD_CAST "lastSegment", BAD_CAST (isLast?"true":"false"));
+  xmlNewProp(nodeXX, BAD_CAST "lastSegment", BAD_CAST(isLast?"true":"false"));
 
   /* prepare signature node */
   sigNode=xmlNewChild(root_node, NULL, BAD_CAST "AuthSignature", NULL);

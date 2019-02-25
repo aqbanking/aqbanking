@@ -511,14 +511,14 @@ int EBC_Provider_Send_PUB(AB_PROVIDER *pro, AB_USER *u, const char *signVersion,
 
 
 int EBC_Provider_DownloadWithSession(AB_PROVIDER *pro,
-				     GWEN_HTTP_SESSION *sess,
-				     AB_USER *u,
+                                     GWEN_HTTP_SESSION *sess,
+                                     AB_USER *u,
                                      const char *rtype,
                                      GWEN_BUFFER *targetBuffer,
                                      int withReceipt,
                                      const GWEN_DATE *fromDate,
                                      const GWEN_DATE *toDate,
-				     int doLock)
+                                     int doLock)
 {
   EBC_PROVIDER *dp;
   int rv;
@@ -668,16 +668,16 @@ int EBC_Provider_DownloadIntoContext(AB_PROVIDER *pro,
 
 
 int EBC_Provider_DownloadIntoContextWithSession(AB_PROVIDER *pro,
-						GWEN_HTTP_SESSION *sess,
-						AB_USER *u,
-						const char *rtype,
-						int withReceipt,
-						const GWEN_DATE *fromDate,
-						const GWEN_DATE *toDate,
-						const char *importerName,
-						const char *profileName,
-						AB_IMEXPORTER_CONTEXT *ctx,
-						int doLock)
+                                                GWEN_HTTP_SESSION *sess,
+                                                AB_USER *u,
+                                                const char *rtype,
+                                                int withReceipt,
+                                                const GWEN_DATE *fromDate,
+                                                const GWEN_DATE *toDate,
+                                                const char *importerName,
+                                                const char *profileName,
+                                                AB_IMEXPORTER_CONTEXT *ctx,
+                                                int doLock)
 {
   int rv;
   GWEN_BUFFER *buf;
@@ -695,11 +695,11 @@ int EBC_Provider_DownloadIntoContextWithSession(AB_PROVIDER *pro,
 
   DBG_INFO(AQEBICS_LOGDOMAIN, "Importing data (%s : %s)", importerName, profileName);
   rv=AB_Banking_ImportFromBufferLoadProfile(AB_Provider_GetBanking(pro),
-					    importerName,
-					    ctx,
-					    profileName, NULL,
-					    (const uint8_t *) GWEN_Buffer_GetStart(buf),
-					    GWEN_Buffer_GetUsedBytes(buf));
+                                            importerName,
+                                            ctx,
+                                            profileName, NULL,
+                                            (const uint8_t *) GWEN_Buffer_GetStart(buf),
+                                            GWEN_Buffer_GetUsedBytes(buf));
   GWEN_Buffer_free(buf);
   if (rv<0) {
     DBG_INFO(AQEBICS_LOGDOMAIN, "here (%d)", rv);

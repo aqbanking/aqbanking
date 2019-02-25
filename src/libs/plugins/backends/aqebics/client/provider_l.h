@@ -80,14 +80,14 @@ int EBC_Provider_Download(AB_PROVIDER *pro, AB_USER *u,
                           int doLock);
 
 int EBC_Provider_DownloadWithSession(AB_PROVIDER *pro,
-				     GWEN_HTTP_SESSION *sess,
-				     AB_USER *u,
+                                     GWEN_HTTP_SESSION *sess,
+                                     AB_USER *u,
                                      const char *rtype,
                                      GWEN_BUFFER *targetBuffer,
                                      int withReceipt,
                                      const GWEN_DATE *fromDate,
                                      const GWEN_DATE *toDate,
-				     int doLock);
+                                     int doLock);
 
 int EBC_Provider_Upload(AB_PROVIDER *pro, AB_USER *u,
                         const char *rtype,
@@ -107,15 +107,15 @@ int EBC_Provider_DownloadIntoContext(AB_PROVIDER *pro,
                                      int doLock);
 
 int EBC_Provider_DownloadIntoContextWithSession(AB_PROVIDER *pro,
-						GWEN_HTTP_SESSION *sess,
-						AB_USER *u,
-						const char *rtype,
-						int withReceipt,
-						const GWEN_DATE *fromDate,
-						const GWEN_DATE *toDate,
-						const char *importerName,
-						const char *profileName,
-						AB_IMEXPORTER_CONTEXT *ctx,
+                                                GWEN_HTTP_SESSION *sess,
+                                                AB_USER *u,
+                                                const char *rtype,
+                                                int withReceipt,
+                                                const GWEN_DATE *fromDate,
+                                                const GWEN_DATE *toDate,
+                                                const char *importerName,
+                                                const char *profileName,
+                                                AB_IMEXPORTER_CONTEXT *ctx,
                                                 int doLock);
 
 
