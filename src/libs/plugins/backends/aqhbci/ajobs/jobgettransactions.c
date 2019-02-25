@@ -114,201 +114,68 @@ void GWENHYWFAR_CB AH_Job_GetTransactions_FreeData(void *bp, void *p)
 int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
                                              AB_IMEXPORTER_ACCOUNTINFO *ai,
                                              const char *docType,
-                                             int noted,
-                                             GWEN_BUFFER *buf)
+                                             int ty,
+                                             const uint8_t *ptr,
+                                             uint32_t len)
 {
-  GWEN_DBIO *dbio;
-  GWEN_SYNCIO *sio;
+  AB_PROVIDER *pro;
+  AB_IMEXPORTER_CONTEXT *tempContext;
+  AB_IMEXPORTER_ACCOUNTINFO *tempAccountInfo;
   int rv;
-  GWEN_DB_NODE *db;
-  GWEN_DB_NODE *dbDay;
-  GWEN_DB_NODE *dbParams;
-  AB_ACCOUNT *a;
-  AB_USER *u;
-  uint32_t progressId;
-  uint64_t cnt=0;
 
-  a=AH_AccountJob_GetAccount(j);
-  assert(a);
-  u=AH_Job_GetUser(j);
-  assert(u);
+  assert(j);
+  pro=AH_Job_GetProvider(j);
+  assert(pro);
 
-  dbio=GWEN_DBIO_GetPlugin("swift");
-  if (!dbio) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Plugin SWIFT is not found");
-    GWEN_Gui_ProgressLog(0,
-                         GWEN_LoggerLevel_Error,
-                         I18N("Plugin \"SWIFT\" not found."));
-    return AB_ERROR_PLUGIN_MISSING;
-  }
+  /* import data into a temporary context */
+  tempContext=AB_ImExporterContext_new();
 
-  GWEN_Buffer_Rewind(buf);
-  sio=GWEN_SyncIo_Memory_new(buf, 0);
-
-  db=GWEN_DB_Group_new("transactions");
-  dbParams=GWEN_DB_Group_new("params");
-  GWEN_DB_SetCharValue(dbParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "type", docType);
-  if (AH_User_GetFlags(u) & AH_USER_FLAGS_KEEP_MULTIPLE_BLANKS)
-    GWEN_DB_SetIntValue(dbParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                        "keepMultipleBlanks", 1);
-  else
-    GWEN_DB_SetIntValue(dbParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                        "keepMultipleBlanks", 0);
-
-  rv=GWEN_DBIO_Import(dbio, sio,
-                      db, dbParams,
-                      GWEN_PATH_FLAGS_CREATE_GROUP);
+  rv=AB_Banking_ImportFromBufferLoadProfile(AB_Provider_GetBanking(pro),
+                                            "swift",
+                                            tempContext,
+                                            docType,
+                                            NULL,
+                                            ptr,
+                                            len);
   if (rv<0) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "Error parsing SWIFT %s (%d)",
-              docType, rv);
-    GWEN_DB_Group_free(dbParams);
-    GWEN_DB_Group_free(db);
-    GWEN_SyncIo_free(sio);
-    GWEN_DBIO_free(dbio);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_ImExporterContext_free(tempContext);
     return rv;
   }
-  GWEN_DB_Group_free(dbParams);
-  GWEN_SyncIo_free(sio);
-  GWEN_DBIO_free(dbio);
 
-  /* first count the groups */
-  dbDay=GWEN_DB_FindFirstGroup(db, "day");
-  while (dbDay) {
-    GWEN_DB_NODE *dbT;
+  /* copy data from temporary context to real context */
+  tempAccountInfo=AB_ImExporterContext_GetFirstAccountInfo(tempContext);
+  while (tempAccountInfo) {
+    AB_TRANSACTION_LIST *tl;
+    AB_BALANCE_LIST *bl;
 
-    dbT=GWEN_DB_FindFirstGroup(dbDay, "transaction");
-    while (dbT) {
-      cnt++;
-      dbT=GWEN_DB_FindNextGroup(dbT, "transaction");
-    } /* while */
-    dbDay=GWEN_DB_FindNextGroup(dbDay, "day");
-  } /* while */
-
-  progressId=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
-                                    GWEN_GUI_PROGRESS_ALLOW_EMBED |
-                                    GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-                                    GWEN_GUI_PROGRESS_SHOW_ABORT,
-                                    I18N("Importing transactions..."),
-                                    NULL,
-                                    cnt,
-                                    0);
-
-  /* add transactions to list */
-  dbDay=GWEN_DB_FindFirstGroup(db, "day");
-  while (dbDay) {
-    GWEN_DB_NODE *dbT;
-
-    dbT=GWEN_DB_FindFirstGroup(dbDay, "transaction");
-    while (dbT) {
+    /* move transactions, set transaction type */
+    tl=AB_ImExporterAccountInfo_GetTransactionList(tempAccountInfo);
+    if (tl) {
       AB_TRANSACTION *t;
 
-      t=AB_Transaction_fromDb(dbT);
-      if (!t) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad transaction data:");
-        GWEN_DB_Dump(dbT, 2);
-      }
-      else {
-        const char *s;
-
-        AB_Transaction_SetLocalBankCode(t, AB_User_GetBankCode(u));
-        AB_Transaction_SetLocalAccountNumber(t, AB_Account_GetAccountNumber(a));
-        AB_Transaction_SetUniqueAccountId(t, AB_Account_GetUniqueId(a));
-
-        /* some translations */
-        s=AB_Transaction_GetRemoteIban(t);
-        if (!(s && *s)) {
-          const char *sAid;
-
-          /* no remote IBAN set, check whether the bank sends this info in the
-           * fields for national account specifications (instead of the SWIFT
-           * field "?38" which was specified for this case) */
-          sAid=AB_Transaction_GetRemoteAccountNumber(t);
-          if (sAid && *sAid && AB_Banking_CheckIban(sAid)==0) {
-            /* there is a remote account number specification, and that is an IBAN,
-             * so we set that accordingly */
-            DBG_INFO(AQBANKING_LOGDOMAIN, "Setting remote IBAN from account number");
-            AB_Transaction_SetRemoteIban(t, sAid);
-
-            /* set remote BIC if it not already is */
-            s=AB_Transaction_GetRemoteBic(t);
-            if (!(s && *s)) {
-              const char *sBid;
-
-              sBid=AB_Transaction_GetRemoteBankCode(t);
-              if (sBid && *sBid) {
-                DBG_INFO(AQBANKING_LOGDOMAIN, "Setting remote BIC from bank code");
-                AB_Transaction_SetRemoteBic(t, sBid);
-              }
-            }
-          }
-        }
-
-        if (noted)
-          AB_Transaction_SetType(t, AB_Transaction_TypeNotedStatement);
-        else
-          AB_Transaction_SetType(t, AB_Transaction_TypeStatement);
-
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Adding transaction");
+      while ((t=AB_Transaction_List_First(tl))) {
+        AB_Transaction_List_Del(t);
+        AB_Transaction_SetType(t, ty);
         AB_ImExporterAccountInfo_AddTransaction(ai, t);
       }
-
-      if (GWEN_ERROR_USER_ABORTED==
-          GWEN_Gui_ProgressAdvance(progressId, GWEN_GUI_PROGRESS_ONE)) {
-        GWEN_Gui_ProgressEnd(progressId);
-        return GWEN_ERROR_USER_ABORTED;
-      }
-
-      dbT=GWEN_DB_FindNextGroup(dbT, "transaction");
-    } /* while */
-
-    /* read all endsaldos */
-    if (!noted) {
-      dbT=GWEN_DB_FindFirstGroup(dbDay, "endSaldo");
-      while (dbT) {
-        GWEN_DB_NODE *dbX;
-        const char *s;
-        GWEN_DATE *dt=0;
-
-        /* read date */
-        s=GWEN_DB_GetCharValue(dbT, "date", 0, NULL);
-        if (s && *s) {
-          dt=GWEN_Date_fromString(s);
-          if (dt==NULL) {
-            DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad date in saldo");
-          }
-        }
-
-        /* read value */
-        dbX=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "value");
-        if (dbX) {
-          AB_VALUE *v;
-
-          v=AB_Value_fromDb(dbX);
-          if (v) {
-            AB_BALANCE *bal;
-
-            bal=AB_Balance_new();
-            AB_Balance_SetType(bal, AB_Balance_TypeNoted);
-            AB_Balance_SetDate(bal, dt);
-            AB_Balance_SetValue(bal, v);
-            AB_Value_free(v);
-            AB_ImExporterAccountInfo_AddBalance(ai, bal);
-          }
-        }
-        GWEN_Date_free(dt);
-
-        dbT=GWEN_DB_FindNextGroup(dbT, "endSaldo");
-      } /* while */
     }
 
-    dbDay=GWEN_DB_FindNextGroup(dbDay, "day");
-  } /* while */
+    /* move balances */
+    bl=AB_ImExporterAccountInfo_GetBalanceList(tempAccountInfo);
+    if (bl) {
+      AB_BALANCE *bal;
 
-  GWEN_Gui_ProgressEnd(progressId);
+      while ((bal=AB_Balance_List_First(bl))) {
+        AB_Balance_List_Del(bal);
+        AB_ImExporterAccountInfo_AddBalance(ai, bal);
+      }
+    }
 
-  GWEN_DB_Group_free(db);
+    tempAccountInfo=AB_ImExporterAccountInfo_List_Next(tempAccountInfo);
+  }
+  AB_ImExporterContext_free(tempContext);
+
   return 0;
 }
 
@@ -409,7 +276,12 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
       }
     }
 
-    if (AH_Job_GetTransactions__ReadTransactions(j, ai, "mt940", 0, tbooked)) {
+    if (AH_Job_GetTransactions__ReadTransactions(j,
+                                                 ai,
+                                                 "SWIFT-MT940",
+                                                 AB_Transaction_TypeStatement,
+                                                 (const uint8_t *) GWEN_Buffer_GetStart(tbooked),
+                                                 GWEN_Buffer_GetUsedBytes(tbooked))) {
       GWEN_Buffer_free(tbooked);
       GWEN_Buffer_free(tnoted);
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error parsing booked transactions");
@@ -435,7 +307,12 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
       }
     }
 
-    if (AH_Job_GetTransactions__ReadTransactions(j, ai, "mt942", 1, tnoted)) {
+    if (AH_Job_GetTransactions__ReadTransactions(j,
+                                                 ai,
+                                                 "SWIFT-MT942",
+                                                 AB_Transaction_TypeNotedStatement,
+                                                 (const uint8_t *) GWEN_Buffer_GetStart(tnoted),
+                                                 GWEN_Buffer_GetUsedBytes(tnoted))) {
       GWEN_Buffer_free(tbooked);
       GWEN_Buffer_free(tnoted);
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error parsing noted transactions");
