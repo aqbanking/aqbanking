@@ -74,6 +74,8 @@ types:
 
 typedefs:
 
+built_sources:
+
 
 cppcheck:
 	for f in $(libabdialogs_la_SOURCES); do \

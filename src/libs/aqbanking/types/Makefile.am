@@ -29,6 +29,8 @@ types: $(typefiles)
 
 typedefs:
 
+built_sources:
+
 
 sources:
 	for f in $(libtypes_la_SOURCES); do \
