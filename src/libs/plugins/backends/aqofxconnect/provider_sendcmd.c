@@ -349,7 +349,7 @@ int AO_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTER
   AB_ACCOUNTQUEUE_LIST *aql;
   AB_USER *u;
 
-  assert(u);
+  assert(uq);
   u=AB_UserQueue_GetUser(uq);
   assert(u);
   DBG_ERROR(0, "Handling user \"%s\"", AB_User_GetUserId(u));

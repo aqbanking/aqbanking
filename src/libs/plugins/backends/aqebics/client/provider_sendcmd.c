@@ -56,7 +56,7 @@ int EBC_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTE
   GWEN_HTTP_SESSION *sess;
   int rv;
 
-  assert(u);
+  assert(uq);
   u=AB_UserQueue_GetUser(uq);
   assert(u);
   DBG_ERROR(0, "Handling user \"%s\"", AB_User_GetUserId(u));

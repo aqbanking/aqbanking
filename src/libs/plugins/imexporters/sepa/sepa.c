@@ -229,7 +229,7 @@ static int AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
 #undef TRANSACTION_DOES_NOT_MATCH
 
         if (!pmtinf) {
-          pmtinf=AH_ImExporter_Sepa_PmtInf_new(t);
+          pmtinf=AH_ImExporter_Sepa_PmtInf_new();
           AH_ImExporter_Sepa_PmtInf_List_Add(pmtinf, pl);
         }
       }
