@@ -104,7 +104,7 @@ RXH_PARAMETER  rdh5_parameter= {
   AH_Opmode_None,
   AH_UsageSign_OwnerSigning,
   AH_HashAlg_Sha1,
-  AH_Opmode_None,
+  AH_HashAlg_None,
   AH_CryptAlg_2_Key_Triple_Des,
   AH_Opmode_Rsa_Pkcs1_v1_5
 };
@@ -143,7 +143,7 @@ RXH_PARAMETER  rdh8_parameter= {
   AH_Opmode_None,
   AH_UsageSign_OwnerSigning,
   AH_HashAlg_Sha256,
-  AH_Opmode_None,
+  AH_HashAlg_None,
   AH_CryptAlg_2_Key_Triple_Des,
   AH_Opmode_Rsa_Pkcs1_v1_5
 };
@@ -156,7 +156,7 @@ RXH_PARAMETER  rdh9_parameter= {
   AH_Opmode_None,
   AH_UsageSign_OwnerSigning,
   AH_HashAlg_Sha256Sha256,
-  AH_Opmode_None,
+  AH_HashAlg_None,
   AH_CryptAlg_2_Key_Triple_Des,
   AH_Opmode_Rsa_Pkcs1_v1_5
 };
@@ -169,7 +169,7 @@ RXH_PARAMETER  rdh10_parameter= {
   AH_Opmode_None,
   AH_UsageSign_OwnerSigning,
   AH_HashAlg_Sha256Sha256,
-  AH_Opmode_None,
+  AH_HashAlg_None,
   AH_CryptAlg_2_Key_Triple_Des,
   AH_Opmode_Cbc
 };
@@ -207,7 +207,7 @@ RXH_PARAMETER  rah9_parameter= {AH_CryptMode_Rah,
                                 AH_Opmode_None,
                                 AH_UsageSign_OwnerSigning,
                                 AH_HashAlg_Sha256Sha256,
-                                AH_Opmode_None,
+                                AH_HashAlg_None,
                                 AH_CryptAlg_AES256,
                                 AH_Opmode_Rsa_Pkcs1_v1_5
                                };
@@ -219,7 +219,7 @@ RXH_PARAMETER  rah10_parameter= {AH_CryptMode_Rah,
                                  AH_Opmode_None,
                                  AH_UsageSign_OwnerSigning,
                                  AH_HashAlg_Sha256Sha256,
-                                 AH_Opmode_None,
+                                 AH_HashAlg_None,
                                  AH_CryptAlg_AES256,
                                  AH_Opmode_Cbc
                                 };
@@ -666,7 +666,7 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
   {
     uint32_t signLen;
     GWEN_CRYPT_PADDALGO *algo;
-    GWEN_MDIGEST *md;
+    GWEN_MDIGEST *md=NULL;
     uint32_t seq;
     AH_HASH_ALG hashAlg;
     AH_OPMODE opMode;
