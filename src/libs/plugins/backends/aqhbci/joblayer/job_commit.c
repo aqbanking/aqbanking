@@ -536,7 +536,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock)
             mdPtr=GWEN_MDigest_GetDigestPtr(md);
             mdSize=GWEN_MDigest_GetDigestSize(md);
             memset(hashString, 0, 1024);
-            for (i=0; i<GWEN_MDigest_GetDigestSize(md); i++)
+            for (i=0; i<mdSize; i++)
               sprintf(hashString+3*i, "%02x ", *(mdPtr+i));
             GWEN_MDigest_free(md);
             DBG_ERROR(AQHBCI_LOGDOMAIN, "Received unknown server key: type=%s, num=%d, version=%d, hash=%s", keytype, keynum,
