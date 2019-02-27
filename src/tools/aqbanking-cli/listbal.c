@@ -43,7 +43,7 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
   const char *iban;
   const char *tmplString;
   const char *s;
-  AB_BALANCE_TYPE bt=AB_Balance_TypeNoted;
+  AB_BALANCE_TYPE bt=AB_Balance_TypeBooked;
 
   /* parse command line arguments */
   db=_readCommandLine(dbArgs, argc, argv);
