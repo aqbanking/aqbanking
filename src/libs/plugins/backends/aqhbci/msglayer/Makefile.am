@@ -12,14 +12,6 @@ EXTRA_DIST=\
   msgcrypt.c \
   msgcrypt_ddv.c \
   msgcrypt_rxh_common.c \
-  msgcrypt_rdh.c \
-  msgcrypt_rdh1.c \
-  msgcrypt_rdh2.c \
-  msgcrypt_rdh3.c \
-  msgcrypt_rdh5.c \
-  msgcrypt_rdh7.c \
-  msgcrypt_rdh9.c \
-  msgcrypt_rdh10.c \
   msgcrypt_pintan.c \
   dialog_hbci.c \
   dialog_https.c

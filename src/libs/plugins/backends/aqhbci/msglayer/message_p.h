@@ -92,47 +92,6 @@ static int AH_Msg__Encrypt(AH_MSG *hmsg);
 static int AH_Msg__Decrypt(AH_MSG *hmsg, GWEN_DB_NODE *gr);
 static int AH_Msg__Verify(AH_MSG *hmsg, GWEN_DB_NODE *gr);
 
-
-
-static int AH_Msg_SignRdh(AH_MSG *hmsg, GWEN_BUFFER *rawBuf, const char *signer);
-static int AH_Msg_EncryptRdh(AH_MSG *hmsg);
-static int AH_Msg_DecryptRdh(AH_MSG *hmsg, GWEN_DB_NODE *gr);
-static int AH_Msg_VerifyRdh(AH_MSG *hmsg, GWEN_DB_NODE *gr);
-
-static int AH_Msg_SignRdh1(AH_MSG *hmsg, AB_USER *su, GWEN_BUFFER *rawBuf, const char *signer);
-static int AH_Msg_EncryptRdh1(AH_MSG *hmsg);
-static int AH_Msg_DecryptRdh1(AH_MSG *hmsg, GWEN_DB_NODE *gr);
-static int AH_Msg_VerifyRdh1(AH_MSG *hmsg, GWEN_DB_NODE *gr);
-
-static int AH_Msg_SignRdh2(AH_MSG *hmsg, AB_USER *su, GWEN_BUFFER *rawBuf, const char *signer);
-static int AH_Msg_EncryptRdh2(AH_MSG *hmsg);
-static int AH_Msg_DecryptRdh2(AH_MSG *hmsg, GWEN_DB_NODE *gr);
-static int AH_Msg_VerifyRdh2(AH_MSG *hmsg, GWEN_DB_NODE *gr);
-
-static int AH_Msg_SignRdh3(AH_MSG *hmsg, AB_USER *su, GWEN_BUFFER *rawBuf, const char *signer);
-static int AH_Msg_EncryptRdh3(AH_MSG *hmsg);
-static int AH_Msg_DecryptRdh3(AH_MSG *hmsg, GWEN_DB_NODE *gr);
-static int AH_Msg_VerifyRdh3(AH_MSG *hmsg, GWEN_DB_NODE *gr);
-
-
-static int AH_Msg_SignRdh5(AH_MSG *hmsg, AB_USER *su, GWEN_BUFFER *rawBuf, const char *signer);
-static int AH_Msg_EncryptRdh5(AH_MSG *hmsg);
-static int AH_Msg_DecryptRdh5(AH_MSG *hmsg, GWEN_DB_NODE *gr);
-static int AH_Msg_VerifyRdh5(AH_MSG *hmsg, GWEN_DB_NODE *gr);
-
-/**** RDH7 Block Start******/
-static int AH_Msg_SignRdh7(AH_MSG *hmsg, AB_USER *su, GWEN_BUFFER *rawBuf, const char *signer);
-static int AH_Msg_EncryptRdh7(AH_MSG *hmsg);
-static int AH_Msg_DecryptRdh7(AH_MSG *hmsg, GWEN_DB_NODE *gr);
-static int AH_Msg_VerifyRdh7(AH_MSG *hmsg, GWEN_DB_NODE *gr);
-/**** RDH7 Block End******/
-
-static int AH_Msg_SignRdh9(AH_MSG *hmsg, AB_USER *su, GWEN_BUFFER *rawBuf, const char *signer);
-static int AH_Msg_EncryptRdh9(AH_MSG *hmsg);
-static int AH_Msg_DecryptRdh9(AH_MSG *hmsg, GWEN_DB_NODE *gr);
-static int AH_Msg_VerifyRdh9(AH_MSG *hmsg, GWEN_DB_NODE *gr);
-
-
 static int AH_Msg__AnonHnsha(const char *psegment,
                              unsigned int slen,
                              GWEN_SYNCIO *sio);
