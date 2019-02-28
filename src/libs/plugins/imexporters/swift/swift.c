@@ -83,6 +83,14 @@ int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug,
                        I18N("Reading file..."));
 
+#if 1
+  if (params) {
+    DBG_ERROR(0, "Parameters for SWIFT-Parser:");
+    GWEN_DB_Dump(params, 2);
+  }
+#endif
+
+
   DBG_INFO(AQBANKING_LOGDOMAIN, "Importing SWIFT data into GWEN_DB");
   rv=GWEN_DBIO_Import(ieh->dbio,
                       sio,
