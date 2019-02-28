@@ -78,12 +78,12 @@ int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
   assert(ieh);
   assert(ieh->dbio);
 
-  dbSubParams=GWEN_DB_GetGroup(params, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                               "params");
+  dbSubParams=GWEN_DB_GetGroup(params, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "params");
   dbData=GWEN_DB_Group_new("transactions");
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug,
                        I18N("Reading file..."));
 
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Importing SWIFT data into GWEN_DB");
   rv=GWEN_DBIO_Import(ieh->dbio,
                       sio,
                       dbData,
@@ -97,9 +97,10 @@ int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
     GWEN_DB_Group_free(dbData);
     return GWEN_ERROR_BAD_DATA;
   }
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Importing SWIFT data into GWEN_DB: done");
 
-#if 0
-  DBG_ERROR(0, "Parsed data is:");
+#if 1
+  DBG_ERROR(0, "Imported SWIFT data is (GWEN_DB):");
   GWEN_DB_Dump(dbData, 2);
 #endif
 
@@ -126,6 +127,8 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 {
   GWEN_DB_NODE *dbT;
   uint32_t progressId;
+
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Importing from DB group \"%s\"", GWEN_DB_GroupName(db));
 
   progressId=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
                                     GWEN_GUI_PROGRESS_ALLOW_EMBED |
@@ -305,6 +308,7 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
   } // while
 
   GWEN_Gui_ProgressEnd(progressId);
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Importing from DB group \"%s\": Done", GWEN_DB_GroupName(db));
   return 0;
 }
 

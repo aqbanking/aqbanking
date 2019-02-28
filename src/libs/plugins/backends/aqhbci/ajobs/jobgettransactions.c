@@ -130,6 +130,11 @@ int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
   /* import data into a temporary context */
   tempContext=AB_ImExporterContext_new();
 
+#if 1
+  DBG_ERROR(0, "About to read this SWIFT data (%s)", docType);
+  GWEN_Text_DumpString((const char*) ptr, len, 2);
+#endif
+
   rv=AB_Banking_ImportFromBufferLoadProfile(AB_Provider_GetBanking(pro),
                                             "swift",
                                             tempContext,
