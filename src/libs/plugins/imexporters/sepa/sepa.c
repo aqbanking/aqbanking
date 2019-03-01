@@ -310,8 +310,10 @@ static int AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
 
     /* store NbOfTxs */
     GWEN_XMLNode_SetIntValue(n, "NbOfTxs", tcount);
+#if 0
     /* store CtrlSum */
     GWEN_XMLNode_SetCharValue(n, "CtrlSum", ctrlsum);
+#endif
 
     /* special treatment for pain.001.001.02 and pain.008.001.01 */
     if (doctype[1]==1 && ((doctype[0]==1 && doctype[2]==2) ||
