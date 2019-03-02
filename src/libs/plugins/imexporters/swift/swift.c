@@ -23,6 +23,8 @@
 #include <gwenhywfar/inherit.h>
 
 
+/*#define SWIFT_VERBOSE_DEBUG*/
+
 
 GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_SWIFT);
 
@@ -83,7 +85,7 @@ int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug,
                        I18N("Reading file..."));
 
-#if 1
+#ifdef SWIFT_VERBOSE_DEBUG
   if (params) {
     DBG_ERROR(0, "Parameters for SWIFT-Parser:");
     GWEN_DB_Dump(params, 2);
@@ -107,7 +109,7 @@ int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
   }
   DBG_INFO(AQBANKING_LOGDOMAIN, "Importing SWIFT data into GWEN_DB: done");
 
-#if 1
+#ifdef SWIFT_VERBOSE_DEBUG
   DBG_ERROR(0, "Imported SWIFT data is (GWEN_DB):");
   GWEN_DB_Dump(dbData, 2);
 #endif
