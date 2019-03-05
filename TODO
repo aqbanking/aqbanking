@@ -7,6 +7,8 @@ Next:
 
 - remove AB_ERROR
 - remove AB_Banking_MakeGermanIban()
+- remove class aqhbci (move to ah_provider)
+- sort "#include" directives in backends, make them more specific
 
 - AqHBCI:
   - HKEKA
