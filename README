@@ -475,8 +475,9 @@ AqBanking6:
                                  - this function takes a list of jobs in AB_TRANSACTIONs and sends them, no longer needs AB_JOB
 - AB_COUNTRY:                  - deprecated, will be removed before release
 - AB_IMEXPORTER:               - removed (functions now in AB_Banking)
+- Includes:                    - some header files have been moved to subfolders (e.g. aqbanking/value.h -> aqbanking/types/value.h>)
+                                 If your compiler complains about missing headers try "aqbanking/types/" instead of "aqbanking".
 
-
-Martin Preuss, Wilhelmshaven/Germany, 2019/01/04
+Martin Preuss, Wilhelmshaven/Germany, 2019/03/05
 
 
