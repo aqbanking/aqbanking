@@ -1,5 +1,5 @@
 
-INCLUDES=-I.. -I$(top_builddir) -I$(srcdir)/../client $(gwenhywfar_includes) -I$(aqbanking_symlinkdir) $(AQEBICS_CFLAGS)
+INCLUDES = -I$(top_srcdir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/../.. $(AQEBICS_CFLAGS)
 
 DEFS += -DLOCALEDIR=\"$(localedir)\" 
 

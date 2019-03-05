@@ -13,7 +13,7 @@
 
 #include "msg_p.h"
 #include "xml.h"
-#include "provider_l.h"
+#include "aqebics/client/provider_l.h"
 
 #include <xmlsec/transforms.h>
 #include <xmlsec/errors.h>

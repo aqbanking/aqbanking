@@ -19,7 +19,8 @@
 
 #include <aqbanking/banking.h>
 #include <aqbanking/banking_be.h>
-#include <aqbanking/imexporter_be.h>
+#include <aqbanking/backendsupport/imexporter_be.h>
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/gui.h>

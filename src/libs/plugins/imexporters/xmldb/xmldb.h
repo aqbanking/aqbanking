@@ -12,7 +12,7 @@
 #define AQHBCI_IMEX_XMLDB_H
 
 
-#include <aqbanking/imexporter_be.h>
+#include <aqbanking/backendsupport/imexporter_be.h>
 
 
 AB_IMEXPORTER *AB_ImExporterXMLDB_new(AB_BANKING *ab);

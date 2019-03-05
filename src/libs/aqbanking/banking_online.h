@@ -13,7 +13,7 @@
 #define AQBANKING_BANKING_OB_H
 
 #include <aqbanking/error.h>
-#include <aqbanking/account_spec.h>
+#include <aqbanking/types/account_spec.h>
 
 
 #ifdef __cplusplus

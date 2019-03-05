@@ -12,7 +12,7 @@
 #ifndef AQBANKING_BANKINFOPLUGIN_H
 #define AQBANKING_BANKINFOPLUGIN_H
 
-#include <aqbanking/bankinfo.h>
+#include <aqbanking/types/bankinfo.h>
 
 
 

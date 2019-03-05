@@ -15,7 +15,7 @@
 #include "globals.h"
 
 /* aqbanking includes */
-#include <aqbanking/transaction.h>
+#include <aqbanking/types/transaction.h>
 
 /* gwenhywfar includes */
 #include <gwenhywfar/text.h>

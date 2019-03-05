@@ -1,8 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
  begin       : Mon Jan 07 2008
- copyright   : (C) 2008 by Martin Preuss
+ copyright   : (C) 2019 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -22,7 +20,7 @@
 
 #include "g_invpos_l.h"
 
-#include "i18n_l.h"
+#include "aqbanking/i18n_l.h"
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>

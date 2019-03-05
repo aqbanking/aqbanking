@@ -11,9 +11,7 @@
 #define AQEBICS_CLIENT_PROVIDER_H
 
 
-#include <aqebics/aqebics.h>
-
-#include <aqbanking/provider.h>
+#include <aqbanking/backendsupport/provider.h>
 
 
 AB_PROVIDER *EBC_Provider_new(AB_BANKING *ab);

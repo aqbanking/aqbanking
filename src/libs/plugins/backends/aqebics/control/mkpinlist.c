@@ -13,7 +13,7 @@
 
 
 #include "globals.h"
-#include <aqebics/user.h>
+#include "aqebics/client/user.h"
 
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/syncio_file.h>

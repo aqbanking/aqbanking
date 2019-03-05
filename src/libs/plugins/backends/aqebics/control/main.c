@@ -21,7 +21,7 @@
 #include <gwenhywfar/cgui.h>
 
 #include <aqbanking/banking.h>
-#include <aqbanking/abgui.h>
+#include <aqbanking/gui/abgui.h>
 
 
 #include "globals.h"

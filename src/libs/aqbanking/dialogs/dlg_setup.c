@@ -17,16 +17,13 @@
 #include "dlg_setup_p.h"
 #include "i18n_l.h"
 
-#include <aqbanking/user.h>
+#include <aqbanking/backendsupport/user.h>
 #include <aqbanking/banking_be.h>
-#include <aqbanking/dlg_selectbackend.h>
-#include <aqbanking/dlg_editaccount.h>
-#include <aqbanking/dlg_edituser.h>
+#include <aqbanking/dialogs/dlg_selectbackend.h>
+#include <aqbanking/dialogs/dlg_editaccount.h>
+#include <aqbanking/dialogs/dlg_edituser.h>
 
-#include <aqbanking/dlg_setup_newuser.h>
-
-#include <aqhbci/user.h>
-#include <aqhbci/provider.h>
+#include <aqbanking/dialogs/dlg_setup_newuser.h>
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>
@@ -66,7 +63,7 @@ GWEN_DIALOG *AB_SetupDialog_new(AB_BANKING *ab)
                                "aqbanking/dialogs/dlg_setup.dlg",
                                fbuf);
   if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
     GWEN_Dialog_free(dlg);
     return NULL;
@@ -75,7 +72,7 @@ GWEN_DIALOG *AB_SetupDialog_new(AB_BANKING *ab)
   /* read dialog from dialog description file */
   rv=GWEN_Dialog_ReadXmlFile(dlg, GWEN_Buffer_GetStart(fbuf));
   if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d).", rv);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d).", rv);
     GWEN_Buffer_free(fbuf);
     GWEN_Dialog_free(dlg);
     return NULL;

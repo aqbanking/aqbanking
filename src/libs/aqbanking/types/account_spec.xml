@@ -31,8 +31,8 @@
         <header type="sys" loc="pre">gwenhywfar/text.h</header>
         <header type="sys" loc="pre">gwenhywfar/buffer.h</header>
 
-        <header type="sys" loc="post">aqbanking/transaction.h</header>
-        <header type="sys" loc="post">aqbanking/transactionlimits.h</header>
+        <header type="sys" loc="post">aqbanking/types/transaction.h</header>
+        <header type="sys" loc="post">aqbanking/types/transactionlimits.h</header>
 
       </headers>
 

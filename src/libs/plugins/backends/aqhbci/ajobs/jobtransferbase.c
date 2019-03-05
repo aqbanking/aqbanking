@@ -20,12 +20,12 @@
 #include "provider_l.h"
 #include "hhd_l.h"
 
+#include <aqbanking/types/transaction.h>
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/text.h>
-
-#include <aqbanking/transaction.h>
 
 #include <stdlib.h>
 #include <assert.h>

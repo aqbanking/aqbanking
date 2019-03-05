@@ -18,12 +18,12 @@
 #include "i18n_l.h"
 #include "provider_l.h"
 
-#include <aqhbci/user.h>
-#include <aqhbci/provider.h>
+#include "aqhbci/banking/user.h"
+#include "aqhbci/banking/provider.h"
 
-#include <aqbanking/user.h>
+#include <aqbanking/backendsupport/user.h>
 #include <aqbanking/banking_be.h>
-#include <aqbanking/dlg_selectbankinfo.h>
+#include <aqbanking/dialogs/dlg_selectbankinfo.h>
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>

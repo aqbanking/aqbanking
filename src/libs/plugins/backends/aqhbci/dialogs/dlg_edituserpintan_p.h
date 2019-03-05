@@ -14,7 +14,7 @@
 
 #include "dlg_edituserpintan_l.h"
 
-#include <aqhbci/user.h>
+#include "aqhbci/banking/user.h"
 
 
 

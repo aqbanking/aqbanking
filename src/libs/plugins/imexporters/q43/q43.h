@@ -12,7 +12,7 @@
 #define AQHBCI_IMEX_Q43_H
 
 
-#include <aqbanking/imexporter.h>
+#include <aqbanking/backendsupport/imexporter.h>
 
 
 AB_IMEXPORTER *AB_ImExporterQ43_new(AB_BANKING *ab);

@@ -11,11 +11,13 @@
 #define AQPAYPAL_PROVIDER_L_H
 
 
-#include <aqpaypal/provider.h>
+#include <aqbanking/backendsupport/provider.h>
+#include <aqbanking/backendsupport/user.h>
+#include <aqbanking/backendsupport/account.h>
 
 
 
-AQPAYPAL_API AB_PROVIDER *APY_Provider_new(AB_BANKING *ab);
+AB_PROVIDER *APY_Provider_new(AB_BANKING *ab);
 
 int APY_Provider_ReadUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, GWEN_BUFFER *secbuf);
 int APY_Provider_WriteUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, const char *sec);

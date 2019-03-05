@@ -1,8 +1,6 @@
 #EXTRA_DIST=
 
-INCLUDES = -I$(aqbanking_symlinkdir) $(gwenhywfar_includes) $(aqfinance_includes) \
-  -I$(top_srcdir)/src/plugins/backends/aqhbci/plugin/banking \
-  -I$(top_srcdir)/src/plugins/backends/aqhbci/plugin/msglayer
+INCLUDES = -I$(top_srcdir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/..
 
 AM_CFLAGS=@visibility_cflags@
 

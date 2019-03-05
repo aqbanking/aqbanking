@@ -1,6 +1,6 @@
 SUBDIRS=libofxhome
 
-INCLUDES=-I$(aqbanking_symlinkdir) -I$(top_srcdir)/src/libs/aqbanking $(gwenhywfar_includes)
+INCLUDES = -I$(top_srcdir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/..
 
 AM_CFLAGS=@visibility_cflags@
 

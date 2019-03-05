@@ -15,7 +15,7 @@
 
 #include <aqbanking/banking.h>
 #include <aqbanking/banking_be.h>
-#include <aqbanking/bankinfoplugin_be.h>
+#include <aqbanking/backendsupport/bankinfoplugin_be.h>
 
 #include <gwenhywfar/configmgr.h>
 #include <gwenhywfar/stringlist.h>

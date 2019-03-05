@@ -17,7 +17,7 @@
 
 #include "imexporter_l.h"
 
-#include <aqbanking/transaction.h>
+#include <aqbanking/types/transaction.h>
 
 #include <gwenhywfar/misc.h>
 

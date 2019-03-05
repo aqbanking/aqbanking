@@ -12,16 +12,17 @@
 #endif
 
 #include "swift940_p.h"
-#include "i18n_l.h"
+#include "aqbanking/i18n_l.h"
 
 /* #include <aqhbci/aqhbci.h> */
 #include <aqbanking/error.h>
-#include <aqbanking/imexporter_be.h>
+#include <aqbanking/backendsupport/imexporter_be.h>
 
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gwentime.h>
 #include <gwenhywfar/gui.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>

@@ -1,6 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
  begin       : Mon Jan 07 2008
  copyright   : (C) 2008 by Martin Preuss
  email       : martin@libchipcard.de
@@ -15,7 +13,7 @@
 
 
 #include "ofxgroup_l.h"
-#include <aqbanking/security.h>
+#include <aqbanking/types/security.h>
 
 
 

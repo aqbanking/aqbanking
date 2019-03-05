@@ -16,7 +16,7 @@
 #include "jobforeignxferwh_p.h"
 #include "aqhbci_l.h"
 #include "accountjob_l.h"
-#include <aqhbci/account.h>
+#include "aqhbci/banking/account.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>

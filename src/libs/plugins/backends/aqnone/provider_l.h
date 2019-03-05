@@ -10,7 +10,7 @@
 #ifndef AN_PROVIDER_L_H
 #define AN_PROVIDER_L_H
 
-#include <aqbanking/provider_be.h>
+#include <aqbanking/backendsupport/provider_be.h>
 
 #include <aqbanking/system.h>
 

@@ -26,7 +26,7 @@
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/text.h>
 
-#include <aqbanking/document.h>
+#include <aqbanking/types/document.h>
 
 #include <stdlib.h>
 #include <assert.h>

@@ -10,8 +10,8 @@
 #ifndef AH_ACCOUNT_H
 #define AH_ACCOUNT_H
 
-#include <aqhbci/aqhbci.h> /* for AQHBCI_API */
-#include <aqbanking/account.h>
+#include "aqhbci/aqhbci.h" /* for AQHBCI_API */
+#include <aqbanking/backendsupport/account.h>
 
 /** @defgroup G_AB_BE_AQHBCI_Account HBCI Account Extensions
  * @ingroup G_AB_BE_AQHBCI

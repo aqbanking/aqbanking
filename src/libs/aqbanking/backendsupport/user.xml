@@ -31,7 +31,7 @@
         <header type="sys" loc="pre">gwenhywfar/text.h</header>
         <header type="sys" loc="pre">gwenhywfar/buffer.h</header>
 
-        <header type="sys" loc="post">aqbanking/provider.h</header>
+        <header type="sys" loc="post">aqbanking/backendsupport/provider.h</header>
 
       </headers>
 

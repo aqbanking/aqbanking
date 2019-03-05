@@ -10,7 +10,7 @@
 #ifndef AQBANKING_BANKINFO_GENERIC_L_H
 #define AQBANKING_BANKINFO_GENERIC_L_H
 
-#include <aqbanking/bankinfoplugin_be.h>
+#include <aqbanking/backendsupport/bankinfoplugin_be.h>
 #include <aqbanking/banking.h>
 
 

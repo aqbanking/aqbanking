@@ -17,11 +17,9 @@
 #include "dlg_usertype_pagedefault_p.h"
 #include "i18n_l.h"
 
-#include <aqhbci/provider.h>
-
-#include <aqbanking/user.h>
+#include <aqbanking/backendsupport/user.h>
 #include <aqbanking/banking_be.h>
-#include <aqbanking/dlg_usertype_page_be.h>
+#include <aqbanking/dialogs/dlg_usertype_page_be.h>
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>
@@ -48,7 +46,7 @@ GWEN_DIALOG *AB_UserTypePageDefaultDialog_new(AB_BANKING *ab)
                                "aqbanking/dialogs/dlg_usertype_pagedefault.dlg",
                                fbuf);
   if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
     GWEN_Dialog_free(dlg);
     return NULL;
@@ -57,7 +55,7 @@ GWEN_DIALOG *AB_UserTypePageDefaultDialog_new(AB_BANKING *ab)
   /* read dialog from dialog description file */
   rv=GWEN_Dialog_ReadXmlFile(dlg, GWEN_Buffer_GetStart(fbuf));
   if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d).", rv);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d).", rv);
     GWEN_Buffer_free(fbuf);
     GWEN_Dialog_free(dlg);
     return NULL;

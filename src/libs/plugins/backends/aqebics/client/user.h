@@ -12,7 +12,7 @@
 
 #include <aqebics/aqebics.h>
 
-#include <aqbanking/user.h>
+#include <aqbanking/backendsupport/user.h>
 
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/misc.h>

@@ -12,8 +12,8 @@
 #ifndef AB_HTTPSESS_H
 #define AB_HTTPSESS_H
 
-#include <aqbanking/user.h>
-#include <aqbanking/provider.h>
+#include <aqbanking/backendsupport/user.h>
+#include <aqbanking/backendsupport/provider.h>
 
 #include <gwenhywfar/httpsession.h>
 

@@ -11,7 +11,7 @@
 #define AO_USER_H
 
 #include <aqofxconnect/aqofxconnect.h>
-#include <aqbanking/provider_be.h>
+#include <aqbanking/backendsupport/provider_be.h>
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/db.h>

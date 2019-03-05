@@ -9,10 +9,10 @@
 
 
 
-#include "msg/msg.h"
-#include "msg/keys.h"
-#include "user_l.h"
-#include "r_unsecured_l.h"
+#include "aqebics/msg/msg.h"
+#include "aqebics/msg/keys.h"
+#include "aqebics/client/user_l.h"
+#include "aqebics/requests/r_unsecured_l.h"
 
 
 #include <gwenhywfar/base64.h>

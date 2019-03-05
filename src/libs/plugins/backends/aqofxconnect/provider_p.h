@@ -17,7 +17,7 @@
 
 #include <aqofxconnect/provider.h>
 
-#include <aqbanking/transaction.h>
+#include <aqbanking/types/transaction.h>
 
 #include <gwenhywfar/buffer.h>
 

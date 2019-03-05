@@ -1,6 +1,4 @@
-INCLUDES=-I$(aqbanking_symlinkdir) \
-  -I.. -I$(srcdir)/.. \
-  @all_includes@
+INCLUDES = -I$(srcdir)/../.. -I$(srcdir)/.. $(gwenhywfar_includes)
 
 AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
@@ -27,7 +25,11 @@ noinst_HEADERS=\
   dlg_usertype_page_p.h \
   dlg_setup_newuser_p.h \
   dlg_usertype_pagedefault_l.h \
-  dlg_usertype_pagedefault_p.h
+  dlg_usertype_pagedefault_p.h \
+  dlg_newaccount_be.h \
+  dlg_newaccount_p.h \
+  dlg_newuser_be.h \
+  dlg_newuser_p.h
 
 libabdialogs_la_SOURCES=\
   dlg_importer.c \
@@ -38,7 +40,9 @@ libabdialogs_la_SOURCES=\
   dlg_edituser.c \
   dlg_usertype_page.c \
   dlg_setup_newuser.c \
-  dlg_usertype_pagedefault.c
+  dlg_usertype_pagedefault.c \
+  dlg_newaccount.c \
+  dlg_newuser.c
 
 
 dlgdatadir=$(aqbanking_pkgdatadir)/dialogs

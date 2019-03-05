@@ -17,10 +17,6 @@ dist_aclocal_DATA = aqbanking.m4
 
 ACLOCAL_AMFLAGS = $(ADD_ACLOCAL_FLAGS) -I m4
 
-iheaderdir=@aqbanking_headerdir_am@/aqbanking
-iheader_HEADERS=\
-  version.h system.h
-
 CLEANFILES = aqbanking-config aqbanking-config.in
 
 aqbanking-config: aqbanking-config.in
@@ -222,11 +218,11 @@ BUILT_SOURCES = $(iheader_HEADERS) sl-headers
 CLEANFILES += $(BUILT_SOURCES)
 
 symlinks: mksymlinks.sh
-	${SHELL} mksymlinks.sh $(srcdir) $(builddir)
+#	${SHELL} mksymlinks.sh $(srcdir) $(builddir)
 
 sl-headers: mksymlinks.sh
 	$(MAKE) -C src built_sources
-	${SHELL} mksymlinks.sh $(srcdir) $(builddir)
+#	${SHELL} mksymlinks.sh $(srcdir) $(builddir)
 
 # Call this to have Qt's uic files and glade files cleaned up from
 # bad elements

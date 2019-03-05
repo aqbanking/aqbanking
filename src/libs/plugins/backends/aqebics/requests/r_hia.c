@@ -14,8 +14,8 @@
 
 #include "r_hia_l.h"
 
-#include "aqebics_l.h"
-#include "user_l.h"
+#include "aqebics/aqebics_l.h"
+#include "aqebics/client/user_l.h"
 
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/httpsession.h>

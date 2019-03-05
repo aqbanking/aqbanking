@@ -1,8 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
  begin       : Mon Jan 07 2008
- copyright   : (C) 2008 by Martin Preuss
+ copyright   : (C) 2019 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -16,7 +14,7 @@
 
 #include "ofxgroup_l.h"
 
-#include <aqbanking/value.h>
+#include <aqbanking/types/value.h>
 
 #include <gwenhywfar/gwentime.h>
 

@@ -14,9 +14,9 @@
 
 #include "globals.h"
 
-#include <gwenhywfar/text.h>
+#include "aqebics/client/user.h"
 
-#include <aqhbci/user.h>
+#include <gwenhywfar/text.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>

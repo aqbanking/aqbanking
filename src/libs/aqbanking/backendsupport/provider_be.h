@@ -16,10 +16,10 @@
 #ifndef AQBANKING_PROVIDER_BE_H
 #define AQBANKING_PROVIDER_BE_H
 
-#include <aqbanking/provider.h>
-#include <aqbanking/ab_providerqueue.h>
-#include <aqbanking/ab_userqueue.h>
-#include <aqbanking/user.h>
+#include <aqbanking/backendsupport/provider.h>
+#include <aqbanking/backendsupport/ab_providerqueue.h>
+#include <aqbanking/backendsupport/ab_userqueue.h>
+#include <aqbanking/backendsupport/user.h>
 
 #include <gwenhywfar/plugin.h>
 #include <gwenhywfar/db.h>

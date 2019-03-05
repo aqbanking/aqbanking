@@ -13,7 +13,8 @@
 
 
 #include "joblayer/job_l.h"
-#include <aqhbci/account.h>
+#include "aqhbci/banking/account.h"
+
 #include <gwenhywfar/ct.h>
 
 #ifdef __cplusplus

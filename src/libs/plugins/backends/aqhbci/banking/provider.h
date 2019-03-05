@@ -11,11 +11,9 @@
 #define AH_PROVIDER_H
 
 
-#include <aqhbci/aqhbci.h>
-
 #include <aqbanking/banking.h>
-#include <aqbanking/provider_be.h>
-#include <aqbanking/user.h>
+#include <aqbanking/backendsupport/provider_be.h>
+#include <aqbanking/backendsupport/user.h>
 
 #include <gwenhywfar/ct.h>
 
@@ -47,7 +45,6 @@ enum AQHBCI_NEWUSER_DIALOG_CODE {
 };
 
 
-AQHBCI_API
 AB_PROVIDER *AH_Provider_new(AB_BANKING *ab, const char *name);
 
 
@@ -55,10 +52,8 @@ AB_PROVIDER *AH_Provider_new(AB_BANKING *ab, const char *name);
  *
  */
 /*@{*/
-AQHBCI_API
 const char *AH_Provider_GetProductName(const AB_PROVIDER *pro);
 
-AQHBCI_API
 const char *AH_Provider_GetProductVersion(const AB_PROVIDER *pro);
 
 /*@}*/
@@ -80,7 +75,6 @@ const char *AH_Provider_GetProductVersion(const AB_PROVIDER *pro);
  * @param nounmount if !=0 then the user's medium is not unmounted in the end.
  *  This is used by setup wizards to avoid having to enter a pin too often.
  */
-AQHBCI_API
 int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
                             AB_IMEXPORTER_CONTEXT *ctx,
                             int withProgress, int nounmount, int doLock);
@@ -93,7 +87,6 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
  * @param nounmount if !=0 then the user's medium is not unmounted in the end.
  *  This is used by setup wizards to avoid having to enter a pin too often.
  */
-AQHBCI_API
 int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
                          AB_IMEXPORTER_CONTEXT *ctx,
                          int withProgress, int nounmount, int doLock);
@@ -106,7 +99,6 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
  * @param nounmount if !=0 then the user's medium is not unmounted in the end.
  *  This is used by setup wizards to avoid having to enter a pin too often.
  */
-AQHBCI_API
 int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
                               AB_IMEXPORTER_CONTEXT *ctx,
                               int withProgress, int nounmount, int doLock);
@@ -119,7 +111,6 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
  * @param nounmount if !=0 then the user's medium is not unmounted in the end.
  *  This is used by setup wizards to avoid having to enter a pin too often.
  */
-AQHBCI_API
 int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
                              AB_IMEXPORTER_CONTEXT *ctx,
                              int withProgress, int nounmount, int doLock);
@@ -134,7 +125,6 @@ int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
  * @param nounmount if !=0 then the user's medium is not unmounted in the end.
  *  This is used by setup wizards to avoid having to enter a pin too often.
  */
-AQHBCI_API
 int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
                               AB_IMEXPORTER_CONTEXT *ctx,
                               int withAuthKey,
@@ -148,7 +138,6 @@ int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
  * @param nounmount if !=0 then the user's medium is not unmounted in the end.
  *  This is used by setup wizards to avoid having to enter a pin too often.
  */
-AQHBCI_API
 int AH_Provider_GetCert(AB_PROVIDER *pro,
                         AB_USER *u,
                         int withProgress, int nounmount, int doLock);
@@ -161,7 +150,6 @@ int AH_Provider_GetCert(AB_PROVIDER *pro,
  * @param nounmount if !=0 then the user's medium is not unmounted in the end.
  *  This is used by setup wizards to avoid having to enter a pin too often.
  */
-AQHBCI_API
 int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
                              AB_IMEXPORTER_CONTEXT *ctx,
                              int withProgress, int nounmount, int doLock);
@@ -175,7 +163,6 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
  * @param nounmount if !=0 then the user's medium is not unmounted in the end.
  *  This is used by setup wizards to avoid having to enter a pin too often.
  */
-AQHBCI_API
 int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
                           AB_IMEXPORTER_CONTEXT *ctx,
                           int withProgress, int nounmount, int doLock);
@@ -189,7 +176,6 @@ int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
  * @param nounmount if !=0 then the user's medium is not unmounted in the end.
  *  This is used by setup wizards to avoid having to enter a pin too often.
  */
-AQHBCI_API
 int AH_Provider_GetAccountSepaInfo(AB_PROVIDER *pro,
                                    AB_ACCOUNT *a,
                                    AB_IMEXPORTER_CONTEXT *ctx,
@@ -217,7 +203,6 @@ int AH_Provider_GetAccountSepaInfo(AB_PROVIDER *pro,
  * @param lbuf buffer to write the iniletter to
  * @param nounmount if !=0 the CryptToken will not be unmounted after use
  */
-AQHBCI_API
 int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
                                 AB_USER *u,
                                 int useBankKey,
@@ -235,7 +220,6 @@ int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
  * @param lbuf buffer to write the iniletter to
  * @param nounmount if !=0 the CryptToken will not be unmounted after use
  */
-AQHBCI_API
 int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
                                  AB_USER *u,
                                  int useBankKey,
@@ -252,11 +236,9 @@ int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
  * @param u user for which the keys are to be created
  * @param nounmount if !=0 the CryptToken will not be unmounted after use
  */
-AQHBCI_API
 int AH_Provider_CreateKeys(AB_PROVIDER *pro, AB_USER *u, int nounmount);
 
 
-AQHBCI_API
 int AH_Provider_Test(AB_PROVIDER *pro);
 
 

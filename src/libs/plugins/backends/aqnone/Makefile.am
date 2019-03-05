@@ -1,7 +1,5 @@
-INCLUDES = \
-  -I$(top_srcdir) \
-  -I$(aqbanking_symlinkdir) \
-  $(all_includes)
+
+INCLUDES = -I$(top_srcdir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/..
 
 DEFS += -DBUILDING_AQNONE
 

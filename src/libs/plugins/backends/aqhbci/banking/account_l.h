@@ -14,7 +14,7 @@
 
 #include "account.h"
 #include "hbci_l.h"
-#include <aqbanking/provider_be.h>
+#include <aqbanking/backendsupport/provider_be.h>
 
 
 AH_HBCI *AH_Account_GetHbci(const AB_ACCOUNT *a);

@@ -1,17 +1,17 @@
 
 
 #include <gwenhywfar/url.h>
-#include "user_l.h"
-#include "msg/keys.h"
+#include "aqebics/client/user_l.h"
+#include "aqebics/msg/keys.h"
 
-#include "r_hkd_htd_l.h"
-#include "r_download_l.h"
-#include "r_upload_l.h"
-#include "r_ini_l.h"
-#include "r_hia_l.h"
-#include "r_pub_l.h"
-#include "r_hpb_l.h"
-#include "r_hpd_l.h"
+#include "aqebics/requests/r_hkd_htd_l.h"
+#include "aqebics/requests/r_download_l.h"
+#include "aqebics/requests/r_upload_l.h"
+#include "aqebics/requests/r_ini_l.h"
+#include "aqebics/requests/r_hia_l.h"
+#include "aqebics/requests/r_pub_l.h"
+#include "aqebics/requests/r_hpb_l.h"
+#include "aqebics/requests/r_hpd_l.h"
 
 
 

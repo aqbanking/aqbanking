@@ -15,7 +15,7 @@
 #include "swift_p.h"
 #include "swift940_l.h"
 #include "swift535_l.h"
-#include "i18n_l.h"
+#include "aqbanking/i18n_l.h"
 #include <aqbanking/banking.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>

@@ -17,9 +17,9 @@
 
 
 #include "banking_p.h"
-#include "provider_l.h"
-#include "imexporter_l.h"
-#include "bankinfoplugin_l.h"
+#include "backendsupport/provider_l.h"
+#include "backendsupport/imexporter_l.h"
+#include "backendsupport/bankinfoplugin_l.h"
 #include "i18n_l.h"
 #include "banking_dialogs.h"
 

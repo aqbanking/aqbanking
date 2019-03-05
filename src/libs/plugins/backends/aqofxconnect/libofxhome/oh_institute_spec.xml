@@ -17,7 +17,7 @@
       
       <headers>
         <header type="sys" loc="pre">aqofxconnect/aqofxconnect.h</header>
-        <header type="sys" loc="post">aqofxconnect/oh_institute_spec_fns.h</header>
+        <header type="sys" loc="post">aqofxconnect/libofxhome/oh_institute_spec_fns.h</header>
         <header type="local" loc="codeEnd">oh_institute_spec_fns.c</header>
       </headers>
       

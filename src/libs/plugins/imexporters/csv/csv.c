@@ -13,9 +13,9 @@
 
 #include "csv_p.h"
 #include "csv_editprofile_l.h"
-#include "i18n_l.h"
+#include "aqbanking/i18n_l.h"
 
-#include "imexporter_be.h"
+#include "aqbanking/backendsupport/imexporter_be.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>

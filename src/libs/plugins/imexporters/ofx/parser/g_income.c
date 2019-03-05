@@ -22,7 +22,7 @@
 #include "g_invtran_l.h"
 #include "g_secid_l.h"
 
-#include <aqbanking/transaction.h>
+#include <aqbanking/types/transaction.h>
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>

@@ -5,7 +5,8 @@ AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 
 EXTRA_DIST=aqhbci.xml.in header.xml.in
 
-INCLUDES = -I$(aqbanking_symlinkdir) $(gwenhywfar_includes) \
+INCLUDES = -I$(top_srcdir)/src/libs $(gwenhywfar_includes) \
+ -I$(srcdir)/../ \
  -I$(srcdir)/joblayer
 
 BUILT_SOURCES = version.h

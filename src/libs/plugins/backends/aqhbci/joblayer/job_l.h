@@ -52,8 +52,8 @@ void AH_Job_List2_FreeAll(AH_JOB_LIST2 *jl);
 #include "result_l.h"
 #include <aqhbci/aqhbci.h>
 
-#include <aqbanking/user.h>
-#include <aqbanking/message.h>
+#include <aqbanking/backendsupport/user.h>
+#include <aqbanking/types/message.h>
 #include <aqbanking/banking_be.h>
 
 #include <gwenhywfar/db.h>

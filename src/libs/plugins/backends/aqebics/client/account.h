@@ -10,9 +10,9 @@
 #ifndef EBC_CLIENT_ACCOUNT_H
 #define EBC_CLIENT_ACCOUNT_H
 
-#include <aqebics/aqebics.h>
+#include "aqebics/aqebics.h"
 
-#include <aqbanking/account.h>
+#include <aqbanking/backendsupport/account.h>
 
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/misc.h>

@@ -14,7 +14,7 @@
 
 #include "g_stmtrs_p.h"
 #include "ofxxmlctx_l.h"
-#include "i18n_l.h"
+#include "aqbanking/i18n_l.h"
 
 #include "g_generic_l.h"
 #include "g_ignore_l.h"
@@ -22,7 +22,7 @@
 #include "g_banktranlist_l.h"
 #include "g_bal_l.h"
 
-#include <aqbanking/balance.h>
+#include <aqbanking/types/balance.h>
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>

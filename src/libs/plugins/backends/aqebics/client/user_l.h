@@ -11,8 +11,9 @@
 #define EBC_CLIENT_USER_L_H
 
 
-#include <aqebics/user.h>
-#include <aqbanking/provider_be.h>
+#include "aqebics/client/user.h"
+
+#include <aqbanking/backendsupport/provider_be.h>
 
 
 AB_USER *EBC_User_new(AB_PROVIDER *pro);

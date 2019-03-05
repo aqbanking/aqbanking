@@ -1,7 +1,8 @@
 
 AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 
-INCLUDES = -I$(aqbanking_symlinkdir) $(gwenhywfar_includes) \
+INCLUDES = -I$(top_srcdir)/src/libs $(gwenhywfar_includes) \
+  -I$(srcdir)/../../ \
   -I$(srcdir)/../msglayer -I$(srcdir)/../joblayer \
   -I$(srcdir)/../applayer -I$(srcdir)/../ajobs  -I$(srcdir)/.. \
   -I$(srcdir)/../dialogs

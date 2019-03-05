@@ -1,8 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
 begin       : Thur Apr 23 2009
-copyright   : (C) 2009 by Stephen R. Besch (C) 2008 by Martin Preuss
+copyright   : (C) 2009 by Stephen R. Besch (C) 2019 by Martin Preuss
 email       : sbesch@buffalo.edu martin@libchipcard.de
 
  ***************************************************************************
@@ -16,7 +14,7 @@ email       : sbesch@buffalo.edu martin@libchipcard.de
 
 #include "g_invacc_p.h"
 #include "ofxxmlctx_l.h"
-#include "i18n_l.h"
+#include "aqbanking/i18n_l.h"
 
 #include "g_generic_l.h"
 #include "g_ignore_l.h"

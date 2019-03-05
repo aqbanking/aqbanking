@@ -15,7 +15,7 @@
 #include "yellownet.h"
 
 #include <gwenhywfar/dbio.h>
-#include <aqbanking/imexporter_be.h>
+#include <aqbanking/backendsupport/imexporter_be.h>
 
 
 typedef struct AB_IMEXPORTER_YELLOWNET AB_IMEXPORTER_YELLOWNET;

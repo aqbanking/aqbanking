@@ -10,9 +10,9 @@
 #ifndef AQEBICS_CLIENT_R_HKD_HTD_L_H
 #define AQEBICS_CLIENT_R_HKD_HTD_L_H
 
-#include <aqebics/provider.h>
+#include "aqebics/client/provider.h"
 
-#include <aqbanking/user.h>
+#include <aqbanking/backendsupport/user.h>
 
 #include <gwenhywfar/httpsession.h>
 

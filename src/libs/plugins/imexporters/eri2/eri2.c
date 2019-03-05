@@ -22,10 +22,10 @@
 #include <gwenhywfar/syncio_buffered.h>
 
 #include <aqbanking/banking_be.h>
-#include <aqbanking/msgengine.h>
+#include <aqbanking/backendsupport/msgengine.h>
 #include <aqbanking/banking_be.h>
-#include <aqbanking/transaction.h>
-#include "i18n_l.h"
+#include <aqbanking/types/transaction.h>
+#include "aqbanking/i18n_l.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>

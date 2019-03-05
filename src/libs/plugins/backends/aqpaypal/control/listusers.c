@@ -15,8 +15,8 @@
 #include "globals_l.h"
 
 #include <aqbanking/banking.h>
-#include <aqbanking/user.h>
-#include <aqbanking/provider_be.h>
+#include <aqbanking/backendsupport/user.h>
+#include <aqbanking/backendsupport/provider_be.h>
 
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/args.h>

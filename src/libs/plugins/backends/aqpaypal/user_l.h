@@ -12,7 +12,7 @@
 
 
 #include <aqpaypal/user.h>
-#include <aqbanking/provider_be.h>
+#include <aqbanking/backendsupport/provider_be.h>
 
 
 AB_USER *APY_User_new(AB_PROVIDER *pro);

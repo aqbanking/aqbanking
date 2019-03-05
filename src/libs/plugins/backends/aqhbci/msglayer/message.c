@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -20,7 +20,7 @@
 #include "dialog_l.h"
 #include "msgengine_l.h"
 #include "user_l.h"
-#include <aqhbci/provider.h>
+#include "aqhbci/banking/provider.h"
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/debug.h>

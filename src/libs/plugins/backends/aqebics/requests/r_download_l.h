@@ -11,11 +11,11 @@
 #ifndef AQEBICS_CLIENT_R_DOWNLOAD_L_H
 #define AQEBICS_CLIENT_R_DOWNLOAD_L_H
 
-#include "provider_l.h"
+#include "aqebics/client/provider_l.h"
 
-#include <aqbanking/provider.h>
-#include <aqbanking/user.h>
-#include <aqbanking/httpsession.h>
+#include <aqbanking/backendsupport/provider.h>
+#include <aqbanking/backendsupport/user.h>
+#include <aqbanking/backendsupport/httpsession.h>
 
 
 int EBC_Provider_XchgDownloadRequest(AB_PROVIDER *pro,

@@ -13,8 +13,8 @@
 
 
 #include "globals_l.h"
-#include <aqhbci/user.h>
-#include <aqhbci/msgengine.h>
+#include "aqhbci/banking/user.h"
+#include "aqhbci/msglayer/msgengine.h"
 
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/syncio_file.h>

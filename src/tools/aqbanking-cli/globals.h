@@ -13,7 +13,7 @@
 
 
 #include <aqbanking/banking.h>
-#include <aqbanking/account_spec.h>
+#include <aqbanking/types/account_spec.h>
 
 #include <gwenhywfar/args.h>
 #include <gwenhywfar/buffer.h>

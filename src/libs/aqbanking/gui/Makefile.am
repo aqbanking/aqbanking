@@ -1,4 +1,4 @@
-INCLUDES=-I$(aqbanking_symlinkdir) @all_includes@
+INCLUDES = -I$(srcdir)/../.. -I$(srcdir)/.. $(gwenhywfar_includes)
 
 AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
@@ -10,7 +10,7 @@ noinst_HEADERS=\
   abgui_p.h
 
 
-iheaderdir=@aqbanking_headerdir_am@/aqbanking
+iheaderdir=@aqbanking_headerdir_am@/aqbanking/gui
 iheader_HEADERS=\
   abgui.h
 

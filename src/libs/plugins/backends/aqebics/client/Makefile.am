@@ -1,6 +1,6 @@
 
 
-INCLUDES=-I$(srcdir)/.. -I$(srcdir)/../requests -I$(top_builddir) $(gwenhywfar_includes) -I$(aqbanking_symlinkdir) $(AQEBICS_CFLAGS)
+INCLUDES = -I$(top_srcdir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/../.. $(AQEBICS_CFLAGS)
 
 DEFS += -DLOCALEDIR=\"$(localedir)\"
 AM_CFLAGS=-DBUILDING_AQEBICS @visibility_cflags@

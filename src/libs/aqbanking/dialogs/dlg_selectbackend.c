@@ -17,11 +17,8 @@
 #include "dlg_selectbackend_p.h"
 #include "i18n_l.h"
 
-#include <aqbanking/user.h>
+#include <aqbanking/backendsupport/user.h>
 #include <aqbanking/banking_be.h>
-
-#include <aqhbci/user.h>
-#include <aqhbci/provider.h>
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>
@@ -59,7 +56,7 @@ GWEN_DIALOG *AB_SelectBackendDialog_new(AB_BANKING *ab, const char *text)
                                "aqbanking/dialogs/dlg_selectbackend.dlg",
                                fbuf);
   if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Dialog description file not found (%d).", rv);
     GWEN_Buffer_free(fbuf);
     GWEN_Dialog_free(dlg);
     return NULL;
@@ -68,7 +65,7 @@ GWEN_DIALOG *AB_SelectBackendDialog_new(AB_BANKING *ab, const char *text)
   /* read dialog from dialog description file */
   rv=GWEN_Dialog_ReadXmlFile(dlg, GWEN_Buffer_GetStart(fbuf));
   if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d).", rv);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d).", rv);
     GWEN_Buffer_free(fbuf);
     GWEN_Dialog_free(dlg);
     return NULL;

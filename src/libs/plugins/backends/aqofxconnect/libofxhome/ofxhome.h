@@ -13,8 +13,8 @@
 
 
 #include <aqofxconnect/aqofxconnect.h>
-#include <aqofxconnect/oh_institute_data.h>
-#include <aqofxconnect/oh_institute_spec.h>
+#include <aqofxconnect/libofxhome/oh_institute_data.h>
+#include <aqofxconnect/libofxhome/oh_institute_spec.h>
 
 #include <gwenhywfar/xml.h>
 

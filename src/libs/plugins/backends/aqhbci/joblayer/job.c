@@ -16,12 +16,13 @@
 #include "job_p.h"
 #include "aqhbci_l.h"
 #include "hbci_l.h"
-#include "user_l.h"
-#include "account_l.h"
-#include "banking/provider_l.h"
+#include "aqhbci/banking/user_l.h"
+#include "aqhbci/banking/account_l.h"
+#include "aqhbci/banking/provider_l.h"
+#include "aqhbci/banking/provider.h"
 
-#include <aqhbci/provider.h>
-#include <aqbanking/account.h>
+#include <aqbanking/backendsupport/account.h>
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/gui.h>

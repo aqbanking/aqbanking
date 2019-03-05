@@ -10,7 +10,7 @@
 #ifndef AO_ACCOUNT_H
 #define AO_ACCOUNT_H
 
-#include <aqbanking/account.h>
+#include <aqbanking/backendsupport/account.h>
 #include <aqofxconnect/provider.h>
 
 
@@ -18,14 +18,14 @@
 extern "C" {
 #endif
 
-AQOFXCONNECT_API AB_ACCOUNT *AO_Account_new(AB_PROVIDER *pro);
+AB_ACCOUNT *AO_Account_new(AB_PROVIDER *pro);
 
 
-AQOFXCONNECT_API int AO_Account_GetMaxPurposeLines(const AB_ACCOUNT *a);
-AQOFXCONNECT_API void AO_Account_SetMaxPurposeLines(AB_ACCOUNT *a, int i);
+int AO_Account_GetMaxPurposeLines(const AB_ACCOUNT *a);
+void AO_Account_SetMaxPurposeLines(AB_ACCOUNT *a, int i);
 
-AQOFXCONNECT_API int AO_Account_GetDebitAllowed(const AB_ACCOUNT *a);
-AQOFXCONNECT_API void AO_Account_SetDebitAllowed(AB_ACCOUNT *a, int i);
+int AO_Account_GetDebitAllowed(const AB_ACCOUNT *a);
+void AO_Account_SetDebitAllowed(AB_ACCOUNT *a, int i);
 
 
 

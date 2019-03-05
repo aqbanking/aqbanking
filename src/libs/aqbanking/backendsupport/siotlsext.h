@@ -13,7 +13,7 @@
 #define AQBANKING_SIOTLSEXT_H
 
 #include <aqbanking/error.h>
-#include <aqbanking/user.h>
+#include <aqbanking/backendsupport/user.h>
 
 #include <gwenhywfar/syncio.h>
 

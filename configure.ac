@@ -16,7 +16,7 @@ AC_CONFIG_HEADERS([config.h])
 
 AQBANKING_VERSION_MAJOR=5
 AQBANKING_VERSION_MINOR=99
-AQBANKING_VERSION_PATCHLEVEL=21
+AQBANKING_VERSION_PATCHLEVEL=22
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="beta"
@@ -34,7 +34,7 @@ AQBANKING_VERSION_TAG="beta"
 
 AQBANKING_SO_CURRENT=43
 AQBANKING_SO_AGE=0
-AQBANKING_SO_REVISION=21
+AQBANKING_SO_REVISION=22
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 
@@ -1222,9 +1222,10 @@ AC_CONFIG_FILES([
   src/Makefile
   src/libs/Makefile
   src/libs/aqbanking/Makefile
+  src/libs/aqbanking/version.h
+  src/libs/aqbanking/system.h
   src/libs/aqbanking/dialogs/Makefile
   src/libs/aqbanking/types/Makefile
-  src/libs/aqbanking/types2/Makefile
   src/libs/aqbanking/gui/Makefile
   src/libs/aqbanking/typemaker2/Makefile
   src/libs/aqbanking/typemaker2/c/Makefile
@@ -1320,8 +1321,6 @@ AC_CONFIG_FILES([
   aqbanking.pc
   aqbanking.spec
   aqbanking.iss
-  version.h
-  system.h
   aqbanking-config.cmake
   aqbanking-config-version.cmake
 ])

@@ -13,7 +13,7 @@
 
 
 #include <aqbanking/banking.h>
-#include <aqbanking/user.h>
+#include <aqbanking/backendsupport/user.h>
 
 #include <gwenhywfar/dialog.h>
 

@@ -1,8 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
  begin       : Mon Jan 07 2008
- copyright   : (C) 2008 by Martin Preuss
+ copyright   : (C) 2019 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -16,7 +14,7 @@
 
 #include "g_bal_p.h"
 #include "ofxxmlctx_l.h"
-#include "i18n_l.h"
+#include "aqbanking/i18n_l.h"
 
 #include "g_generic_l.h"
 #include "g_ignore_l.h"

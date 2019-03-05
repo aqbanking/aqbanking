@@ -22,14 +22,15 @@
 
 typedef struct AH_OUTBOX AH_OUTBOX;
 
-#include <gwenhywfar/inherit.h>
-#include <gwenhywfar/gwentime.h>
-
 #include "hbci_l.h"
 #include "job_l.h"
 
-#include <aqhbci/user.h>
-#include <aqbanking/imexporter.h>
+#include "aqhbci/banking/user.h"
+
+#include <aqbanking/backendsupport/imexporter.h>
+
+#include <gwenhywfar/inherit.h>
+#include <gwenhywfar/gwentime.h>
 
 
 AH_OUTBOX *AH_Outbox_new(AB_PROVIDER *pro);

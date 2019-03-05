@@ -1,4 +1,4 @@
-INCLUDES=-I$(aqbanking_symlinkdir) @all_includes@  -I.. -I$(srcdir)/..
+INCLUDES = -I$(srcdir)/../.. -I$(srcdir)/.. $(gwenhywfar_includes)
 
 AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
@@ -63,8 +63,6 @@ built_headers=$(built_headers_priv) $(built_headers_pub)
 
 noinst_HEADERS= $(built_headers_pub)\
   siotlsext.h \
-  dlg_newaccount_be.h \
-  dlg_newuser_be.h \
   httpsession.h \
   msgengine.h \
   provider.h \
@@ -72,8 +70,6 @@ noinst_HEADERS= $(built_headers_pub)\
   bankinfoplugin.h \
   bankinfoplugin_be.h \
   siotlsext_p.h \
-  dlg_newaccount_p.h \
-  dlg_newuser_p.h \
   httpsession_p.h \
   msgengine_p.h \
   provider_l.h \
@@ -89,8 +85,6 @@ noinst_HEADERS= $(built_headers_pub)\
 noinst_LTLIBRARIES=libabbesupport.la
 libabbesupport_la_SOURCES=$(typedata_sources) \
   siotlsext.c \
-  dlg_newaccount.c \
-  dlg_newuser.c \
   httpsession.c \
   msgengine.c \
   provider.c \
@@ -117,19 +111,19 @@ MAINTAINERCLEANFILES = $(typedata_sources) $(built_headers) $(dist_typedata_DATA
 built_sources: $(typedata_sources)
 
 .xml.c:
-	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types2 -I $(builddir) --destfolder="$(builddir)"  $<
+	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types -I $(builddir) --destfolder="$(builddir)"  $<
 
 .xml.h:
-	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types2 -I $(builddir) --destfolder="$(builddir)"  $<
+	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types -I $(builddir) --destfolder="$(builddir)"  $<
 
 SUFFIXES = .xml .c
 
 
 types: $(typefiles)
-	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types2 --destfolder="$(srcdir)" $(typefiles)
+	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types --destfolder="$(srcdir)" $(typefiles)
 
 typedefs: $(typefiles)
-	$(typemaker2_exe) --defs-only -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types2 --destfolder="$(srcdir)" $(typefiles)
+	$(typemaker2_exe) --defs-only -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types --destfolder="$(srcdir)" $(typefiles)
 
 
 format_build_files:

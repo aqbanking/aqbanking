@@ -15,7 +15,7 @@
       
       <headers>
         <header type="sys" loc="pre">aqbanking/error.h</header>
-        <header type="sys" loc="post">aqbanking/ab_userqueue.h</header>
+        <header type="sys" loc="post">aqbanking/backendsupport/ab_userqueue.h</header>
       </headers>
 
       <inlines>

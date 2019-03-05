@@ -14,8 +14,8 @@
 
 #include "dlg_getinst.h"
 
-#include <aqofxconnect/oh_institute_spec.h>
-#include <aqofxconnect/ofxhome.h>
+#include "aqofxconnect/libofxhome/oh_institute_spec.h"
+#include "aqofxconnect/libofxhome/ofxhome.h"
 
 
 

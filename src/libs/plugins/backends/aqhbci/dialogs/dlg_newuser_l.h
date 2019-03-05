@@ -12,8 +12,11 @@
 #define AQHBCI_NEWUSER_DIALOG_H
 
 
-#include <aqbanking/dlg_newuser_be.h>
-#include <aqhbci/aqhbci.h>
+#include "aqhbci/aqhbci.h"
+
+#include "aqbanking/backendsupport/provider.h"
+
+#include <gwenhywfar/dialog.h>
 
 
 #ifdef __cplusplus

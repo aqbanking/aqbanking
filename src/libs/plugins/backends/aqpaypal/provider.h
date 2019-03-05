@@ -11,10 +11,7 @@
 #define AQPAYPAL_PROVIDER_H
 
 
-#include <aqbanking/provider_be.h>
-
-#include <aqpaypal/aqpaypal.h>
-
+#include <aqbanking/backendsupport/provider_be.h>
 
 
 

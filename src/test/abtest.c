@@ -11,7 +11,7 @@
 
 #include <aqbanking/banking.h>
 #include <aqbanking/banking_be.h>
-#include <aqbanking/msgengine.h>
+#include <aqbanking/backendsupport/msgengine.h>
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>

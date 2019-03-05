@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2013 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -10,8 +10,9 @@
 #ifndef AH_USER_H
 #define AH_USER_H
 
-#include <aqhbci/aqhbci.h>
-#include <aqhbci/tanmethod.h>
+#include "aqhbci/aqhbci.h"
+#include "aqhbci/joblayer/tanmethod.h"
+
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/cryptkeyrsa.h>
@@ -25,7 +26,7 @@
  */
 /*@{*/
 
-#include <aqbanking/user.h>
+#include <aqbanking/backendsupport/user.h>
 
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/url.h>

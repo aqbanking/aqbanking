@@ -1,4 +1,4 @@
-INCLUDES = -I$(aqbanking_symlinkdir) $(all_includes) $(ktoblzcheck_includes)
+INCLUDES = -I$(top_srcdir)/src/libs $(gwenhywfar_includes)
 
 AM_CFLAGS=@visibility_cflags@
 

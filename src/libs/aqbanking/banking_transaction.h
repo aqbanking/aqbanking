@@ -13,8 +13,8 @@
 #define AQBANKING_BANKING_TRANSACTION_H
 
 #include <aqbanking/error.h>
-#include <aqbanking/transaction.h>
-#include <aqbanking/transactionlimits.h>
+#include <aqbanking/types/transaction.h>
+#include <aqbanking/types/transactionlimits.h>
 
 
 #ifdef __cplusplus

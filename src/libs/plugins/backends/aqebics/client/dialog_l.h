@@ -11,10 +11,10 @@
 #ifndef EBC_CLIENT_DIALOG_L_H
 #define EBC_CLIENT_DIALOG_L_H
 
-#include "msg/msg.h"
+#include "aqebics/msg/msg.h"
 
-#include <aqbanking/provider.h>
-#include <aqbanking/user.h>
+#include <aqbanking/backendsupport/provider.h>
+#include <aqbanking/backendsupport/user.h>
 
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/misc.h>

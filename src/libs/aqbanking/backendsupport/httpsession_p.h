@@ -14,7 +14,7 @@
 
 #include "httpsession.h"
 
-#include <aqbanking/user.h>
+#include <aqbanking/backendsupport/user.h>
 
 
 

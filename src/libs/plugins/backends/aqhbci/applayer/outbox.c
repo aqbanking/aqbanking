@@ -25,7 +25,7 @@
 #include "provider_l.h"
 
 #include <aqbanking/banking_be.h>
-#include <aqbanking/imexporter.h>
+#include <aqbanking/backendsupport/imexporter.h>
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>

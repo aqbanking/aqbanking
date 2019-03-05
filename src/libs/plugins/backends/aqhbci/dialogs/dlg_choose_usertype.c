@@ -15,13 +15,13 @@
 
 
 #include "dlg_choose_usertype_p.h"
-#include "i18n_l.h"
+#include "aqbanking/i18n_l.h"
 
-#include <aqhbci/provider.h>
+#include "aqhbci/banking/provider.h"
 
-#include <aqbanking/user.h>
+#include <aqbanking/backendsupport/user.h>
 #include <aqbanking/banking_be.h>
-#include <aqbanking/dlg_usertype_page_be.h>
+#include <aqbanking/dialogs/dlg_usertype_page_be.h>
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>

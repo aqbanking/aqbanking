@@ -18,7 +18,7 @@
 #include "i18n_l.h"
 
 #include <aqbanking/banking_be.h>
-#include <aqbanking/provider_be.h>
+#include <aqbanking/backendsupport/provider_be.h>
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>

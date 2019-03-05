@@ -1,11 +1,8 @@
-SUBDIRS=types2 types gui backendsupport typemaker2 dialogs
+SUBDIRS=types gui backendsupport typemaker2 dialogs
 
 INCLUDES = \
   $(gwenhywfar_includes) \
-  -I$(aqbanking_symlinkdir) \
-  -I$(srcdir)/types \
-  -I$(srcdir)/dialogs \
-  -I$(srcdir)/backendsupport
+  -I$(srcdir)/../
 
 noinst_LTLIBRARIES=libaqbanking_base.la
 
@@ -23,7 +20,9 @@ EXTRA_DIST=\
  banking_transaction.c \
  banking_update.c \
  banking_user.c \
- banking_compat.c
+ banking_compat.c \
+ system.h.in \
+ version.h.in
 
 
 
@@ -54,7 +53,9 @@ iheader_HEADERS=\
  banking_bankinfo.h \
  banking_online.h \
  banking_transaction.h \
- error.h
+ error.h \
+ system.h \
+ version.h
 
 
 libaqbanking_base_la_SOURCES=\
@@ -64,8 +65,7 @@ libaqbanking_base_la_SOURCES=\
 
 libaqbanking_base_la_LIBADD= \
  backendsupport/libabbesupport.la \
- types2/libabtypes2.la \
- types/libtypes.la \
+ types/libabtypes.la \
  gui/libabgui.la \
  dialogs/libabdialogs.la
 

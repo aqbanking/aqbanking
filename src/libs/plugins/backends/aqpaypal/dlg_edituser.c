@@ -17,9 +17,9 @@
 #include "provider_l.h"
 #include "dlg_edituser_p.h"
 #include "dlg_editsecret_p.h"
-#include "i18n_l.h"
+#include "aqbanking/i18n_l.h"
 
-#include <aqbanking/user.h>
+#include <aqbanking/backendsupport/user.h>
 #include <aqbanking/banking_be.h>
 
 #include <aqpaypal/user.h>

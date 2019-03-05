@@ -9,7 +9,7 @@
 
 
 #include <gwenhywfar/mdigest.h>
-#include "msg/eu.h"
+#include "aqebics/msg/eu.h"
 
 
 

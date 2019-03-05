@@ -12,7 +12,7 @@
 #define AQBANKING_PLUGIN_OFX_H
 
 
-#include <aqbanking/imexporter.h>
+#include <aqbanking/backendsupport/imexporter.h>
 
 AB_IMEXPORTER *AB_ImExporterOFX_new(AB_BANKING *ab);
 

@@ -13,8 +13,8 @@
 
 #include <aqebics/aqebics.h>
 
-#include <aqbanking/provider.h>
-#include <aqbanking/user.h>
+#include <aqbanking/backendsupport/provider.h>
+#include <aqbanking/backendsupport/user.h>
 
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/path.h>

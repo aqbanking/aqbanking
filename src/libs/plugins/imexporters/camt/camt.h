@@ -12,7 +12,7 @@
 #define AQBANKING_IMEX_CAMT_H
 
 
-#include <aqbanking/imexporter.h>
+#include <aqbanking/backendsupport/imexporter.h>
 
 
 AB_IMEXPORTER *AB_ImExporterCAMT_new(AB_BANKING *ab);

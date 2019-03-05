@@ -4,7 +4,7 @@
 #endif
 
 #include <aqbanking/banking.h>
-#include <aqbanking/value.h>
+#include <aqbanking/types/value.h>
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/cgui.h>

@@ -1,6 +1,6 @@
 SUBDIRS=profiles
 
-INCLUDES = -I$(top_srcdir)/src/libs/aqbanking -I$(aqbanking_symlinkdir) $(all_includes)
+INCLUDES = -I$(top_srcdir)/src/libs $(gwenhywfar_includes)
 #EXTRA_DIST=README
 
 imexporterplugindir = $(aqbanking_plugindir)/imexporters

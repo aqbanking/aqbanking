@@ -17,9 +17,9 @@
 #include "dlg_newuser_p.h"
 #include "dlg_ofx_special_l.h"
 #include "libofxhome/dlg_getinst.h"
-#include "i18n_l.h"
+#include "aqbanking/i18n_l.h"
 
-#include <aqbanking/user.h>
+#include <aqbanking/backendsupport/user.h>
 #include <aqbanking/banking_be.h>
 
 #include <aqofxconnect/user.h>

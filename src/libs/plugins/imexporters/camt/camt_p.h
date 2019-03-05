@@ -14,7 +14,7 @@
 
 #include "camt.h"
 
-#include <aqbanking/imexporter_be.h>
+#include <aqbanking/backendsupport/imexporter_be.h>
 
 
 typedef struct AH_IMEXPORTER_CAMT AH_IMEXPORTER_CAMT;

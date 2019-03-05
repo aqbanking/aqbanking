@@ -26,9 +26,11 @@
 
 #define I18N_NOOP(msg) msg
 
+#include "aqhbci/aqhbci.h"
+#include "aqhbci/banking/provider.h"
+
 #include <aqbanking/banking.h>
 #include <aqbanking/banking_be.h>
-#include <aqhbci/provider.h>
 
 #include <gwenhywfar/args.h>
 #include <gwenhywfar/buffer.h>

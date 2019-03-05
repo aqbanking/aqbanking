@@ -11,7 +11,7 @@
 #ifndef AQBANKING_IMEX_ERI2_H
 #define AQBANKING_IMEX_ERI2_H
 
-#include <aqbanking/imexporter_be.h>
+#include <aqbanking/backendsupport/imexporter_be.h>
 #include <aqbanking/banking.h>
 
 

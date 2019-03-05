@@ -48,9 +48,9 @@
 
 
 #include "banking_l.h"
-#include "provider_l.h"
-#include "imexporter_l.h"
-#include "bankinfoplugin_l.h"
+#include "backendsupport/provider_l.h"
+#include "backendsupport/imexporter_l.h"
+#include "backendsupport/bankinfoplugin_l.h"
 
 #include <gwenhywfar/plugin.h>
 #include <gwenhywfar/syncio_memory.h>

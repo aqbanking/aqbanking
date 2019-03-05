@@ -12,7 +12,7 @@
 #define AQPAYPAL_CONTROL_BE_H
 
 
-#include <aqbanking/provider_be.h>
+#include <aqbanking/backendsupport/provider_be.h>
 
 
 int APY_Control(AB_PROVIDER *pro, int argc, char **argv);

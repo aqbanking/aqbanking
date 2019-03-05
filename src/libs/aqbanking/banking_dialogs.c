@@ -11,8 +11,8 @@
 /* This file is included by banking.c */
 
 
-#include "dlg_importer.h"
-#include "dlg_setup.h"
+#include "dialogs/dlg_importer.h"
+#include "dialogs/dlg_setup.h"
 
 
 

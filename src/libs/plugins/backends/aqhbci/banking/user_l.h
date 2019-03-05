@@ -11,10 +11,12 @@
 #define AH_USER_L_H
 
 
-#include <aqhbci/user.h>
+#include "aqhbci/banking/user.h"
 #include "bpd_l.h"
 #include "hbci_l.h"
-#include <aqbanking/provider_be.h>
+
+#include <aqbanking/backendsupport/provider_be.h>
+
 #include <gwenhywfar/msgengine.h>
 #include <gwenhywfar/gui.h>
 

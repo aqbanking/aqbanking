@@ -12,14 +12,14 @@
 # include <config.h>
 #endif
 
-#include "i18n_l.h"
+#include "aqbanking/i18n_l.h"
 #include "user_p.h"
 #include "hbci_l.h"
 #include "provider_l.h"
 #include "hbci-updates_l.h"
 #include "msgengine_l.h"
 #include "tanmethod_l.h"
-#include <aqhbci/provider.h>
+#include "aqhbci/banking/provider.h"
 #include "adminjobs_l.h"
 
 #include "hhd_l.h"

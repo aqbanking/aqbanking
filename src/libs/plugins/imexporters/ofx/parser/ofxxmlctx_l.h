@@ -14,7 +14,7 @@
 
 #include "ofxgroup_l.h"
 
-#include <aqbanking/imexporter.h>
+#include <aqbanking/backendsupport/imexporter.h>
 
 #include <gwenhywfar/xmlctx.h>
 

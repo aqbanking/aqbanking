@@ -12,7 +12,7 @@
 #ifndef AQBANKING_BANKING_INFO_H
 #define AQBANKING_BANKING_INFO_H
 
-#include <aqbanking/bankinfo.h>
+#include <aqbanking/types/bankinfo.h>
 
 
 typedef enum {

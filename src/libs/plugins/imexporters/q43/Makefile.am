@@ -1,6 +1,6 @@
 SUBDIRS=profiles
 
-INCLUDES = -I$(aqbanking_symlinkdir) -I$(top_srcdir)/src/libs/aqbanking $(all_includes)
+INCLUDES = -I$(top_srcdir)/src/libs $(gwenhywfar_includes)
 
 AM_CFLAGS=@visibility_cflags@
 

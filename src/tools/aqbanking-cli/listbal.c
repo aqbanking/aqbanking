@@ -14,7 +14,7 @@
 #include "globals.h"
 #include <gwenhywfar/text.h>
 
-#include <aqbanking/balance.h>
+#include <aqbanking/types/balance.h>
 
 #include <stdio.h>
 

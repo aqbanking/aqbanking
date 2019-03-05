@@ -13,7 +13,7 @@
 
 #include "ofx.h"
 
-#include <aqbanking/imexporter_be.h>
+#include <aqbanking/backendsupport/imexporter_be.h>
 
 
 typedef struct AH_IMEXPORTER_OFX AH_IMEXPORTER_OFX;

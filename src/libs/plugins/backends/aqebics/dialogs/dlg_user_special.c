@@ -16,11 +16,11 @@
 
 #include "dlg_user_special_p.h"
 
-#include <aqbanking/user.h>
-#include <aqbanking/banking_be.h>
+#include "aqebics/client/user.h"
+#include "aqebics/client/provider.h"
 
-#include <aqebics/user.h>
-#include <aqebics/provider.h>
+#include <aqbanking/backendsupport/user.h>
+#include <aqbanking/banking_be.h>
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>

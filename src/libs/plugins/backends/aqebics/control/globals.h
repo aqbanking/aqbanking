@@ -11,11 +11,11 @@
 #ifndef CBANKING_GLOBALS_H
 #define CBANKING_GLOBALS_H
 
-#include "provider_l.h"
+#include "aqebics/client/provider_l.h"
+#include "aqebics/client/provider.h"
+#include "aqebics/client/user.h"
 
 #include <aqbanking/banking_be.h>
-#include <aqebics/provider.h>
-#include <aqebics/user.h>
 
 #include <gwenhywfar/args.h>
 #include <gwenhywfar/buffer.h>

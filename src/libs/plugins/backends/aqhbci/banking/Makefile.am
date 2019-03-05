@@ -1,7 +1,8 @@
 
 AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 
-INCLUDES = -I$(aqbanking_symlinkdir) $(gwenhywfar_includes) \
+INCLUDES = -I$(top_srcdir)/src/libs $(gwenhywfar_includes) \
+  -I$(srcdir)/../.. \
   -I$(srcdir)/../msglayer -I$(srcdir)/../joblayer \
   -I$(srcdir)/../applayer -I$(srcdir)/.. \
   -I$(srcdir)/../ajobs -I$(srcdir)/../admjobs \
@@ -16,14 +17,22 @@ noinst_LTLIBRARIES=libhbcibanking.la
 noinst_HEADERS=\
  provider_l.h \
  provider_p.h \
- provider.h
+ provider.h \
+ user.h \
+ user_p.h \
+ user_l.h \
+ account.h \
+ account_l.h \
+ account_p.h
 
 
 #iheaderdir=@aqbanking_headerdir_am@/aqhbci
 #iheader_HEADERS=
 
 libhbcibanking_la_SOURCES=\
- provider.c
+ provider.c \
+ account.c \
+ user.c
 
 
 

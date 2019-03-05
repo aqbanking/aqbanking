@@ -12,7 +12,7 @@
 #ifndef AQBANKING_BANKINFOPLUGIN_BE_H
 #define AQBANKING_BANKINFOPLUGIN_BE_H
 
-#include <aqbanking/bankinfoplugin.h>
+#include <aqbanking/backendsupport/bankinfoplugin.h>
 
 
 typedef struct AB_BANKINFO_PLUGIN AB_BANKINFO_PLUGIN;

@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -19,10 +16,11 @@
 #include "jobqueue_p.h"
 #include "aqhbci_l.h"
 #include "job_l.h"
-#include "user_l.h"
+#include "aqhbci/banking/user_l.h"
 #include "message_l.h"
 #include "hbci_l.h"
 #include "dialog_l.h"
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/logger.h>

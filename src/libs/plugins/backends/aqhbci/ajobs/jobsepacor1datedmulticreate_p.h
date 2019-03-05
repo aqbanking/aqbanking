@@ -13,7 +13,9 @@
 
 
 #include "jobsepacor1datedmulticreate_l.h"
-#include <aqbanking/transaction.h>
+
+#include <aqbanking/types/transaction.h>
+
 #include <gwenhywfar/db.h>
 
 

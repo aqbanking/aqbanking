@@ -17,11 +17,11 @@
 #include "dlg_ddvcard_special_p.h"
 #include "i18n_l.h"
 
-#include <aqbanking/user.h>
+#include <aqbanking/backendsupport/user.h>
 #include <aqbanking/banking_be.h>
 
-#include <aqhbci/user.h>
-#include <aqhbci/provider.h>
+#include "aqhbci/banking/user.h"
+#include "aqhbci/banking/provider.h"
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>

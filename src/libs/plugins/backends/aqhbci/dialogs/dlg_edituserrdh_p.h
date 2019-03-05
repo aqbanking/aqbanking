@@ -14,7 +14,7 @@
 
 #include "dlg_edituserrdh_l.h"
 
-#include <aqhbci/user.h>
+#include "aqhbci/banking/user.h"
 
 
 

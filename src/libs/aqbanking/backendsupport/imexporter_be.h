@@ -17,7 +17,8 @@
 #define AQBANKING_IMEXPORTER_BE_H
 
 
-#include <aqbanking/imexporter.h>
+#include <aqbanking/backendsupport/imexporter.h>
+
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/plugin.h>
 

@@ -13,8 +13,8 @@
 
 
 #include "globals.h"
-#include <aqebics/user.h>
-#include <aqebics/provider.h>
+#include "aqebics/client/user.h"
+#include "aqebics/client/provider.h"
 
 #include <gwenhywfar/text.h>
 

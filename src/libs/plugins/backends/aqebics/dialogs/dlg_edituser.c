@@ -15,13 +15,13 @@
 
 
 #include "dlg_edituser_p.h"
-#include "provider_l.h"
 
-#include <aqebics/user.h>
+#include "aqebics/client/provider_l.h"
+#include "aqebics/client/user.h"
 
-#include <aqbanking/user.h>
+#include <aqbanking/backendsupport/user.h>
 #include <aqbanking/banking_be.h>
-#include <aqbanking/dlg_selectbankinfo.h>
+#include <aqbanking/dialogs/dlg_selectbankinfo.h>
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>

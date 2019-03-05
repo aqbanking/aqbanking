@@ -19,7 +19,7 @@
 #include "hbci_l.h"
 #include "user_l.h"
 #include "msgengine_l.h"
-#include <aqhbci/user.h>
+#include "aqhbci/banking/user.h"
 
 #include <aqbanking/banking_be.h>
 

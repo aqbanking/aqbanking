@@ -17,8 +17,8 @@
 
 #include <gwenhywfar/text.h>
 
-#include <aqhbci/user.h>
-#include <aqhbci/account.h>
+#include "aqhbci/banking/user.h"
+#include "aqhbci/banking/account.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>

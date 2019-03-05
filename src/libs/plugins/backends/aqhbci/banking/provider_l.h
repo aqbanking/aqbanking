@@ -17,7 +17,6 @@
 AH_HBCI *AH_Provider_GetHbci(const AB_PROVIDER *pro);
 
 
-AQHBCI_API
 int AH_Provider_SendDtazv(AB_PROVIDER *pro,
                           AB_USER *u,
                           AB_ACCOUNT *a,
@@ -26,7 +25,6 @@ int AH_Provider_SendDtazv(AB_PROVIDER *pro,
                           uint32_t dataLen,
                           int withProgress, int nounmount, int doLock);
 
-AQHBCI_API
 int AH_Provider_WriteValueToDb(const AB_VALUE *v, GWEN_DB_NODE *dbV);
 
 

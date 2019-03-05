@@ -17,7 +17,7 @@
 
 #include "g_invstmtrs_p.h"
 #include "ofxxmlctx_l.h"
-#include "i18n_l.h"
+#include "aqbanking/i18n_l.h"
 
 #include "g_generic_l.h"
 #include "g_ignore_l.h"
@@ -25,7 +25,7 @@
 #include "g_invacc_l.h"               /*SRB 4/22/09*/
 #include "g_invposlist_l.h"
 #include "g_invtranlist_l.h"          /*SRB 4/22/09*/
-#include <aqbanking/balance.h>
+#include <aqbanking/types/balance.h>
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>

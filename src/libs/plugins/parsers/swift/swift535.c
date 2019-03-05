@@ -12,11 +12,11 @@
 #endif
 
 #include "swift535_p.h"
-#include "i18n_l.h"
+#include "aqbanking/i18n_l.h"
 
 /* #include <aqhbci/aqhbci.h> */
 #include <aqbanking/error.h>
-#include <aqbanking/imexporter_be.h>
+#include <aqbanking/backendsupport/imexporter_be.h>
 
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>

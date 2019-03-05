@@ -13,7 +13,7 @@
 
 #include "globals.h"
 
-#include <aqbanking/transaction.h>
+#include <aqbanking/types/transaction.h>
 
 #include <gwenhywfar/text.h>
 

@@ -14,7 +14,7 @@
 
 #include "dialog_l.h"
 
-#include <aqbanking/httpsession.h>
+#include <aqbanking/backendsupport/httpsession.h>
 
 #include <gwenhywfar/inetaddr.h>
 

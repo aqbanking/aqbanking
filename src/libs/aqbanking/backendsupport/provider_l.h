@@ -15,8 +15,9 @@
 #define AB_PROVIDER_FOLDER "providers"
 #define AB_PROVIDER_DEBUGGER_FOLDER "debugger"
 
-#include <aqbanking/provider.h>
-#include <aqbanking/provider_be.h>
+#include <aqbanking/backendsupport/provider.h>
+#include <aqbanking/backendsupport/provider_be.h>
+
 #include <gwenhywfar/plugin.h>
 
 GWEN_LIST_FUNCTION_DEFS(AB_PROVIDER, AB_Provider)

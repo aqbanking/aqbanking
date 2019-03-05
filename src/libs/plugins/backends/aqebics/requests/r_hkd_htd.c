@@ -13,17 +13,17 @@
 
 
 #include "r_hkd_htd_l.h"
-#include "provider_l.h"
-#include "aqebics_l.h"
-#include "account_l.h"
+#include "aqebics/client/provider_l.h"
+#include "aqebics/aqebics_l.h"
+#include "aqebics/client/account_l.h"
 
-#include "msg/msg.h"
-#include "msg/keys.h"
-#include "msg/zip.h"
-#include "msg/xml.h"
-#include "user_l.h"
+#include "aqebics/msg/msg.h"
+#include "aqebics/msg/keys.h"
+#include "aqebics/msg/zip.h"
+#include "aqebics/msg/xml.h"
+#include "aqebics/client/user_l.h"
 
-#include "r_download_l.h"
+#include "aqebics/requests/r_download_l.h"
 
 #include <gwenhywfar/base64.h>
 #include <gwenhywfar/gui.h>

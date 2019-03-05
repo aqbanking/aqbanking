@@ -12,7 +12,7 @@
 # include <config.h>
 #endif
 
-#include "aqhbci_l.h"
+#include "aqhbci/aqhbci_l.h"
 
 #include "adminjobs_p.h"
 #include "job_l.h"
@@ -21,7 +21,7 @@
 #include "provider_l.h"
 
 #include <aqbanking/banking_be.h>
-#include <aqbanking/account.h>
+#include <aqbanking/backendsupport/account.h>
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>

@@ -7,8 +7,8 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#include "msg/zip.h"
-#include "msg/keys.h"
+#include "aqebics/msg/zip.h"
+#include "aqebics/msg/keys.h"
 
 #include <gwenhywfar/padd.h>
 #include <gwenhywfar/cryptkeysym.h>

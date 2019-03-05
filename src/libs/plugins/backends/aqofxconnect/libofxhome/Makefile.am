@@ -1,5 +1,4 @@
-INCLUDES=-I$(aqbanking_symlinkdir) $(gwenhywfar_includes) \
-  -I$(top_srcdir)/src/libs/aqbanking $(GWENGUI_GTK2_CFLAGS) $(GTK2_CFLAGS)
+INCLUDES = -I$(top_srcdir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/../../ -I$(srcdir)/..
 
 AM_CFLAGS=@visibility_cflags@
 
@@ -82,13 +81,13 @@ sources:
 
 
 
-%.c: %.xml
-	$(gwenhywfar_bindir)/typemaker2 -I $(top_srcdir)/src/lib/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" -D AQOFXCONNECT_API  $<
+#%.c: %.xml
+#	$(gwenhywfar_bindir)/typemaker2 -I $(top_srcdir)/src/lib/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" -D AQOFXCONNECT_API  $<
+#
+#%.h: %.xml
+#	$(gwenhywfar_bindir)/typemaker2 -I $(top_srcdir)/src/lib/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" -D AQOFXCONNECT_API  $<
 
-%.h: %.xml
-	$(gwenhywfar_bindir)/typemaker2 -I $(top_srcdir)/src/lib/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" -D AQOFXCONNECT_API  $<
-
-SUFFIXES = .xml .c
+#SUFFIXES = .xml .c
 
 
 cppcheck:

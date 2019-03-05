@@ -15,8 +15,9 @@
 #define AB_IMEXPORTER_FOLDER "imexporters"
 
 
-#include <aqbanking/imexporter.h>
-#include <aqbanking/imexporter_be.h>
+#include <aqbanking/backendsupport/imexporter.h>
+#include <aqbanking/backendsupport/imexporter_be.h>
+
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/libloader.h>
 

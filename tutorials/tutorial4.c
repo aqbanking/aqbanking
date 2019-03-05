@@ -30,7 +30,7 @@
 
 #include <aqbanking/banking.h>
 #include <gwenhywfar/cgui.h>
-#include <aqbanking/transaction.h>
+#include <aqbanking/types/transaction.h>
 
 
 

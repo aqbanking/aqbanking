@@ -12,8 +12,10 @@
 #endif
 
 #include "yellownet_p.h"
-#include "i18n_l.h"
+
+#include "aqbanking/i18n_l.h"
 #include <aqbanking/banking.h>
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/gui.h>

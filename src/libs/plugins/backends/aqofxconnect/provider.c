@@ -19,10 +19,10 @@
 /*#include "dlg_edituser_l.h"*/
 /*#include "dlg_newuser_l.h"*/
 
-#include <aqbanking/account.h>
-#include <aqbanking/transaction.h>
-#include <aqbanking/value.h>
-#include <aqbanking/httpsession.h>
+#include <aqbanking/backendsupport/account.h>
+#include <aqbanking/types/transaction.h>
+#include <aqbanking/types/value.h>
+#include <aqbanking/backendsupport/httpsession.h>
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/inherit.h>

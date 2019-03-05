@@ -14,7 +14,7 @@
 
 #include <aqebics/aqebics.h>
 #include <aqbanking/banking.h>
-#include <aqbanking/provider.h>
+#include <aqbanking/backendsupport/provider.h>
 
 #include <gwenhywfar/dialog.h>
 #include <gwenhywfar/db.h>

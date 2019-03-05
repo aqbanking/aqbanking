@@ -13,9 +13,9 @@
 #endif
 
 #include "dialog_p.h"
-#include "user_l.h"
+#include "aqebics/client/user_l.h"
 
-#include <aqbanking/httpsession.h>
+#include <aqbanking/backendsupport/httpsession.h>
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>

@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -35,14 +32,15 @@ typedef struct AH_MSGENGINE AH_MSGENGINE;
 #endif
 
 #include <aqhbci/aqhbci.h>
-#include <aqbanking/user.h>
+
+#include <aqbanking/backendsupport/user.h>
+
 #include <gwenhywfar/msgengine.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-AQHBCI_API
 GWEN_MSGENGINE *AH_MsgEngine_new();
 
 

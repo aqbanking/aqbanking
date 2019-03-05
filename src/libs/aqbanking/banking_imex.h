@@ -12,9 +12,9 @@
 #ifndef AQBANKING_BANKING_IMEX_H
 #define AQBANKING_BANKING_IMEX_H
 
-#include <aqbanking/transaction.h>
-#include <aqbanking/imexporter_context.h>
-#include <aqbanking/imexporter_accountinfo.h>
+#include <aqbanking/types/transaction.h>
+#include <aqbanking/types/imexporter_context.h>
+#include <aqbanking/types/imexporter_accountinfo.h>
 
 #include <gwenhywfar/plugindescr.h>
 

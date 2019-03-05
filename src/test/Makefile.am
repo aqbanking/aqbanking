@@ -1,4 +1,4 @@
-INCLUDES = -I$(aqbanking_symlinkdir) $(all_includes) $(GWENGUI_GTK2_CFLAGS) $(GTK2_CFLAGS)
+INCLUDES = -I$(top_srcdir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/.. $(GWENGUI_GTK2_CFLAGS) $(GTK2_CFLAGS)
 
 
 if WITH_GWENGUI_GTK2

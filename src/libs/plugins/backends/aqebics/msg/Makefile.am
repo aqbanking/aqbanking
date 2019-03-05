@@ -1,7 +1,6 @@
 
 
-INCLUDES=-I.. -I$(top_builddir) -I$(srcdir)/../client  \
-  $(AQEBICS_CFLAGS) $(gwenhywfar_includes) -I$(aqbanking_symlinkdir)
+INCLUDES = -I$(top_srcdir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/../.. $(AQEBICS_CFLAGS)
 
 AM_CFLAGS=-DBUILDING_AQEBICS @visibility_cflags@
 

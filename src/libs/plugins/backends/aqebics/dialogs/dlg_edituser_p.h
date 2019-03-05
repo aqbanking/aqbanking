@@ -14,7 +14,7 @@
 
 #include "dlg_edituser_l.h"
 
-#include <aqebics/user.h>
+#include "aqebics/client/user.h"
 
 
 

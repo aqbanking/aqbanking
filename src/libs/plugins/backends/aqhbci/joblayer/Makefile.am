@@ -1,7 +1,8 @@
 
 AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 
-INCLUDES = -I$(aqbanking_symlinkdir) $(all_includes) \
+INCLUDES = -I$(top_srcdir)/src/libs $(gwenhywfar_includes) \
+  -I$(srcdir)/../.. \
   -I$(srcdir)/../msglayer -I$(srcdir)/..
 
 typefiles=tanmethod.xml

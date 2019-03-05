@@ -10,10 +10,10 @@
 #ifndef AQEBICS_CLIENT_PROVIDER_L_H
 #define AQEBICS_CLIENT_PROVIDER_L_H
 
-#include "provider.h"
-#include "dialog_l.h"
+#include "aqebics/client/provider.h"
+#include "aqebics/client/dialog_l.h"
 
-#include <aqbanking/user.h>
+#include <aqbanking/backendsupport/user.h>
 
 #include <gwenhywfar/ct.h>
 #include <gwenhywfar/cryptkey.h>

@@ -1,7 +1,9 @@
 
 AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 
-INCLUDES = -I$(srcdir) -I$(srcdir)/.. -I$(srcdir)/../banking \
+INCLUDES = -I$(top_srcdir)/src/libs $(gwenhywfar_includes) \
+  -I$(srcdir)/../.. \
+  -I$(srcdir)/.. -I$(srcdir)/../banking \
   -I$(srcdir)/../applayer \
   -I$(srcdir)/../joblayer \
   -I$(aqbanking_symlinkdir) $(all_includes) \
@@ -22,8 +24,6 @@ DEFS+=-DAH_XMLDATADIR=\"$(aqbanking_data_searchdir)/aqbanking/backends/aqhbci\"
 noinst_LTLIBRARIES=libhbcimsg.la
 
 noinst_HEADERS=\
- account_p.h \
- account_l.h \
  bpd_l.h \
  bpd_p.h \
  dialog_l.h \
@@ -36,24 +36,18 @@ noinst_HEADERS=\
  message_p.h \
  msgengine_l.h \
  msgengine_p.h \
- user_p.h \
- user_l.h \
- account.h \
- msgengine.h \
- user.h
+ msgengine.h
 
 #iheaderdir=@aqbanking_headerdir_am@/aqhbci
 #iheader_HEADERS=
 
 libhbcimsg_la_SOURCES=\
- account.c \
  bpd.c \
  dialog.c \
  hbci.c \
  hbci-updates.c \
  message.c \
- msgengine.c \
- user.c
+ msgengine.c
 
 sources:
 	for f in $(libhbcimsg_la_SOURCES) $(EXTRA_DIST); do \

@@ -15,14 +15,15 @@
 
 
 #include "dlg_editaccount_p.h"
-#include "i18n_l.h"
-#include "provider_l.h"
+#include "aqbanking/i18n_l.h"
+#include "aqhbci/banking/provider_l.h"
 
-#include <aqhbci/account.h>
-#include <aqhbci/provider.h>
-#include <aqbanking/account.h>
+#include "aqhbci/banking/account.h"
+#include "aqhbci/banking/provider.h"
+
+#include <aqbanking/backendsupport/account.h>
 #include <aqbanking/banking_be.h>
-#include <aqbanking/dlg_selectbankinfo.h>
+#include <aqbanking/dialogs/dlg_selectbankinfo.h>
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>

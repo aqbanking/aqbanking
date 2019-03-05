@@ -65,12 +65,12 @@
 */
 
 #include "adminjobs_l.h"
-#include <aqhbci/user.h>
+#include "aqhbci/banking/user.h"
 
 #include <aqbanking/banking_be.h>
-#include <aqbanking/account.h>
-#include <aqbanking/provider_be.h>
-#include <aqbanking/ab_userqueue.h>
+#include <aqbanking/backendsupport/account.h>
+#include <aqbanking/backendsupport/provider_be.h>
+#include <aqbanking/backendsupport/ab_userqueue.h>
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>

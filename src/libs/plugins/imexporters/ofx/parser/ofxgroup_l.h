@@ -1,8 +1,6 @@
 /***************************************************************************
- $RCSfile$
- -------------------
  begin       : Mon Jan 07 2008
- copyright   : (C) 2008 by Martin Preuss
+ copyright   : (C) 2019 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -13,7 +11,7 @@
 #ifndef AIO_OFX_OFXGROUP_L_H
 #define AIO_OFX_OFXGROUP_L_H
 
-#include <aqbanking/imexporter.h>
+#include <aqbanking/backendsupport/imexporter.h>
 
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/xmlctx.h>

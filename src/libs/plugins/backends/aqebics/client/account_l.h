@@ -11,8 +11,8 @@
 #define EBC_CLIENT_ACCOUNT_L_H
 
 
-#include <aqebics/account.h>
-#include <aqbanking/provider_be.h>
+#include "aqebics/client/account.h"
+#include <aqbanking/backendsupport/provider_be.h>
 
 
 AB_ACCOUNT *EBC_Account_new(AB_PROVIDER *pro);

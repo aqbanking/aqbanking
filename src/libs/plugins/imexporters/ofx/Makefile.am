@@ -1,6 +1,6 @@
 SUBDIRS=parser profiles
 
-INCLUDES = -I$(aqbanking_symlinkdir) $(gwenhywfar_includes) -Iparser -I$(srcdir)/parser
+INCLUDES = -I$(top_srcdir)/src/libs $(gwenhywfar_includes) -Iparser -I$(srcdir)/parser
 
 AM_CFLAGS=@visibility_cflags@
 

@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2011 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -16,15 +16,15 @@
 #include <gwenhywfar/plugindescr.h>
 #include <gwenhywfar/ct.h>
 
-#include <aqhbci/aqhbci.h>
+#include "aqhbci.h"
 
 #include <aqbanking/banking.h>
 
 typedef struct AH_HBCI AH_HBCI;
 
 
-#include <aqhbci/user.h>
-#include <aqhbci/account.h>
+#include "aqhbci/banking/user.h"
+#include "aqhbci/banking/account.h"
 
 
 #define AH_DEFAULT_KEYLEN 768

@@ -67,8 +67,8 @@ GWEN_INHERIT_FUNCTION_DEFS(AB_IMEXPORTER)
 #endif
 
 
-#include <aqbanking/imexporter_context.h>
-#include <aqbanking/imexporter_accountinfo.h>
+#include <aqbanking/types/imexporter_context.h>
+#include <aqbanking/types/imexporter_accountinfo.h>
 #include <aqbanking/banking.h>
 
 

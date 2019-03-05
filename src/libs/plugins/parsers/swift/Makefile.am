@@ -1,6 +1,6 @@
 INCLUDES = \
-  -I$(aqbanking_symlinkdir) $(gwenhywfar_includes) \
-  -I$(top_srcdir)/src/libs/aqbanking
+  $(gwenhywfar_includes) \
+  -I$(top_srcdir)/src/libs
 
 AM_CFLAGS=@visibility_cflags@
 

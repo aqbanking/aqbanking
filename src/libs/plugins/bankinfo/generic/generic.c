@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004-2010 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -12,7 +12,7 @@
 #endif
 
 #include "generic_p.h"
-#include "i18n_l.h"
+#include "aqbanking/i18n_l.h"
 
 #include <aqbanking/banking_be.h>
 #include <gwenhywfar/debug.h>

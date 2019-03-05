@@ -15,7 +15,7 @@
 #include "xmldb.h"
 
 #include <gwenhywfar/dbio.h>
-#include <aqbanking/imexporter_be.h>
+#include <aqbanking/backendsupport/imexporter_be.h>
 
 
 typedef struct AH_IMEXPORTER_XMLDB AH_IMEXPORTER_XMLDB;

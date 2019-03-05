@@ -12,7 +12,7 @@
 #ifndef AQBANKING_SIOTLSEXT_P_H
 #define AQBANKING_SIOTLSEXT_P_H
 
-#include <aqbanking/siotlsext.h>
+#include <aqbanking/backendsupport/siotlsext.h>
 
 #include <gwenhywfar/syncio_tls.h>
 

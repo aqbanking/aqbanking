@@ -21,9 +21,9 @@
 #include "dlg_ddvcard_l.h"
 #include "dlg_newkeyfile_l.h"
 
-#include <aqbanking/user.h>
-#include <aqbanking/banking_be.h>
-#include <aqbanking/dlg_newuser_be.h>
+#include "aqbanking/backendsupport/user.h"
+#include "aqbanking/banking_be.h"
+#include "aqbanking/dialogs/dlg_newuser_be.h"
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>

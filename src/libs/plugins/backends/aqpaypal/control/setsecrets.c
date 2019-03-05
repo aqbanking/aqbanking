@@ -17,7 +17,7 @@
 #include <aqpaypal/user.h>
 
 #include <aqbanking/banking_be.h>
-#include <aqbanking/provider_be.h>
+#include <aqbanking/backendsupport/provider_be.h>
 
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/url.h>

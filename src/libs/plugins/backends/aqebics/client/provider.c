@@ -14,21 +14,22 @@
 
 
 #include "provider_p.h"
-#include "aqebics_l.h"
-#include "user_l.h"
-#include "account_l.h"
-#include "r_ini_l.h"
-#include "msg/xml.h"
-#include "msg/keys.h"
-#include "dialogs/dlg_edituser_l.h"
-#include "dialogs/dlg_newkeyfile_l.h"
-#include "control/control_l.h"
 
-#include <aqbanking/provider_be.h>
+#include "aqebics/aqebics_l.h"
+#include "aqebics/client/user_l.h"
+#include "aqebics/client/account_l.h"
+#include "aqebics/requests/r_ini_l.h"
+#include "aqebics/msg/xml.h"
+#include "aqebics/msg/keys.h"
+#include "aqebics/dialogs/dlg_edituser_l.h"
+#include "aqebics/dialogs/dlg_newkeyfile_l.h"
+#include "aqebics/control/control_l.h"
+
+#include <aqbanking/backendsupport/provider_be.h>
 #include <aqbanking/banking_be.h>
-#include <aqbanking/account.h>
-#include <aqbanking/value.h>
-#include <aqbanking/httpsession.h>
+#include <aqbanking/backendsupport/account.h>
+#include <aqbanking/types/value.h>
+#include <aqbanking/backendsupport/httpsession.h>
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/inherit.h>

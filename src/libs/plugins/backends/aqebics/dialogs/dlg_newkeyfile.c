@@ -13,17 +13,17 @@
 #endif
 
 
-
 #include "dlg_newkeyfile_p.h"
-#include "provider_l.h"
 
-#include <aqbanking/dlg_selectbankinfo.h>
-#include <aqbanking/user.h>
+#include "aqebics/client/provider_l.h"
+
+#include "aqebics/client/user.h"
+#include "aqebics/client/provider.h"
+#include "aqebics/dialogs/dlg_user_special_l.h"
+
+#include <aqbanking/dialogs/dlg_selectbankinfo.h>
+#include <aqbanking/backendsupport/user.h>
 #include <aqbanking/banking_be.h>
-
-#include <aqebics/user.h>
-#include <aqebics/provider.h>
-#include "dlg_user_special_l.h"
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>

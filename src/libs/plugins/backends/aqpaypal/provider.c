@@ -18,8 +18,8 @@
 #include "dlg_newuser_l.h"
 #include "dlg_edituser_l.h"
 
-#include <aqbanking/httpsession.h>
-#include <aqbanking/transaction.h>
+#include <aqbanking/backendsupport/httpsession.h>
+#include <aqbanking/types/transaction.h>
 #include <aqbanking/banking_be.h>
 
 #include <gwenhywfar/misc.h>

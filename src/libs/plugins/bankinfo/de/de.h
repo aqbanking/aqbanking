@@ -12,7 +12,7 @@
 
 
 
-#include <aqbanking/bankinfoplugin_be.h>
+#include <aqbanking/backendsupport/bankinfoplugin_be.h>
 
 
 AB_BANKINFO_PLUGIN *AB_BankInfoPluginDE_new(AB_BANKING *ab);

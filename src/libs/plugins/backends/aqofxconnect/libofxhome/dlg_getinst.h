@@ -15,8 +15,8 @@
 #include <gwenhywfar/dialog.h>
 #include <gwenhywfar/db.h>
 
-#include <aqofxconnect/aqofxconnect.h>
-#include <aqofxconnect/oh_institute_data.h>
+#include "aqofxconnect/aqofxconnect.h"
+#include "aqofxconnect/libofxhome/oh_institute_data.h"
 
 
 #ifdef __cplusplus
@@ -24,10 +24,8 @@ extern "C" {
 #endif
 
 
-AQOFXCONNECT_API
 GWEN_DIALOG *OH_GetInstituteDialog_new(const char *dataFolder, const char *name);
 
-AQOFXCONNECT_API
 const OH_INSTITUTE_DATA *OH_GetInstituteDialog_GetSelectedInstitute(GWEN_DIALOG *dlg);
 
 
