@@ -194,12 +194,8 @@ PKG_PROG_PKG_CONFIG
 #
 AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h stdlib.h string.h unistd.h locale.h])
-AC_CHECK_HEADERS([termios.h signal.h iconv.h])
-AC_CHECK_DECLS([sigprocmask], [], [], [
-  #ifdef HAVE_SIGNAL_H
-  #  include <signal.h>
-  #endif
-])
+AC_CHECK_HEADERS([iconv.h libintl.h locale.h])
+AC_CHECK_HEADERS([assert.h ctype.h errno.h fcntl.h stdio.h stdlib.h string.h strings.h locale.h])
 
 
 
