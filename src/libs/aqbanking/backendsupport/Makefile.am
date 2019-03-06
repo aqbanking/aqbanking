@@ -4,11 +4,11 @@ AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
 
 typefiles= \
-  ab_accountqueue.xml \
-  ab_userqueue.xml \
-  ab_providerqueue.xml \
-  ab_jobqueue.xml \
-  ab_queue.xml \
+  accountqueue.xml \
+  userqueue.xml \
+  providerqueue.xml \
+  jobqueue.xml \
+  queue.xml \
   account.xml \
   user.xml
 
@@ -26,29 +26,29 @@ dist_typedata_DATA=\
 
 # order is important here
 typedata_sources= \
-  ab_jobqueue.c \
-  ab_accountqueue.c \
-  ab_userqueue.c \
-  ab_providerqueue.c \
-  ab_queue.c \
+  jobqueue.c \
+  accountqueue.c \
+  userqueue.c \
+  providerqueue.c \
+  queue.c \
   account.c \
   user.c
 
 built_headers_priv= \
-  ab_accountqueue_p.h \
-  ab_userqueue_p.h \
-  ab_providerqueue_p.h \
-  ab_jobqueue_p.h \
-  ab_queue_p.h \
+  accountqueue_p.h \
+  userqueue_p.h \
+  providerqueue_p.h \
+  jobqueue_p.h \
+  queue_p.h \
   account_p.h \
   user_p.h
 
 built_headers_pub= \
-  ab_accountqueue.h \
-  ab_userqueue.h \
-  ab_providerqueue.h \
-  ab_jobqueue.h \
-  ab_queue.h \
+  accountqueue.h \
+  userqueue.h \
+  providerqueue.h \
+  jobqueue.h \
+  queue.h \
   account.h \
   user.h
 

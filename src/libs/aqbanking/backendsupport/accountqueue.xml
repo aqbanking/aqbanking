@@ -7,6 +7,8 @@
     <lang id="c">
       <identifier>AB_ACCOUNTQUEUE</identifier>
       <prefix>AB_AccountQueue</prefix>
+
+      <baseFileName>accountqueue</baseFileName>
       
       <flags>
         with_inherit
@@ -20,7 +22,7 @@
 
         <header type="sys" loc="post">aqbanking/types/account_spec.h</header>
         <header type="sys" loc="post">aqbanking/backendsupport/account.h</header>
-        <header type="sys" loc="post">aqbanking/backendsupport/ab_jobqueue.h</header>
+        <header type="sys" loc="post">aqbanking/backendsupport/jobqueue.h</header>
 
         <header type="sys" loc="post">aqbanking/types/transaction.h</header>
       </headers>

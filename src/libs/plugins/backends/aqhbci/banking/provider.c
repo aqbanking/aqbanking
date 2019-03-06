@@ -70,7 +70,7 @@
 #include <aqbanking/banking_be.h>
 #include <aqbanking/backendsupport/account.h>
 #include <aqbanking/backendsupport/provider_be.h>
-#include <aqbanking/backendsupport/ab_userqueue.h>
+#include <aqbanking/backendsupport/userqueue.h>
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
@@ -80,12 +80,6 @@
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/mdigest.h>
 #include <gwenhywfar/ctplugin.h>
-
-#include <ctype.h>
-#include <stdlib.h>
-
-#include <stdio.h> /* for test4 */
-#include <errno.h> /* for test4 */
 
 
 

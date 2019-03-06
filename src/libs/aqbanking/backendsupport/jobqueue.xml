@@ -7,6 +7,8 @@
     <lang id="c">
       <identifier>AB_JOBQUEUE</identifier>
       <prefix>AB_JobQueue</prefix>
+
+      <baseFileName>jobqueue</baseFileName>
       
       <flags>
         with_inherit

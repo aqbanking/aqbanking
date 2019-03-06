@@ -17,8 +17,8 @@
 #define AQBANKING_PROVIDER_BE_H
 
 #include <aqbanking/backendsupport/provider.h>
-#include <aqbanking/backendsupport/ab_providerqueue.h>
-#include <aqbanking/backendsupport/ab_userqueue.h>
+#include <aqbanking/backendsupport/providerqueue.h>
+#include <aqbanking/backendsupport/userqueue.h>
 #include <aqbanking/backendsupport/user.h>
 
 #include <gwenhywfar/plugin.h>

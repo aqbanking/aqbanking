@@ -12,7 +12,7 @@
 
 #include "provider_l.h"
 
-#include <aqbanking/backendsupport/ab_queue.h>
+#include <aqbanking/backendsupport/queue.h>
 
 
 

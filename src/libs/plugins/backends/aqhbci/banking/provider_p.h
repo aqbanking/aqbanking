@@ -17,7 +17,7 @@
 #include "outbox_l.h"
 
 
-#include <aqbanking/backendsupport/ab_userqueue.h>
+#include <aqbanking/backendsupport/userqueue.h>
 
 
 typedef struct AH_PROVIDER AH_PROVIDER;
