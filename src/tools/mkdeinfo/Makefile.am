@@ -14,6 +14,7 @@ endif
 # IS_WINDOWS
 
 
+built_sources:
 
 sources:
 

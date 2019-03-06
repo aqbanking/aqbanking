@@ -18,7 +18,6 @@ GWEN_LIST_FUNCTION_DEFS(AH_MSG, AH_Msg);
 #include "dialog_l.h"
 
 #include <gwenhywfar/xml.h>
-#include <stdio.h>
 
 
 AH_MSG *AH_Msg_new(AH_DIALOG *dlg);

@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
@@ -15,7 +12,6 @@
 
 #include <gwenhywfar/misc.h>
 
-#include <stdio.h>
 
 
 typedef struct AH_RESULT AH_RESULT;

@@ -15,7 +15,6 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/list2.h>
 #include <gwenhywfar/db.h>
-#include <stdio.h>
 
 
 typedef enum {
