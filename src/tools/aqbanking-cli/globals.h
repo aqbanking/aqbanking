@@ -22,7 +22,6 @@
 #include <gwenhywfar/i18n.h>
 #include <gwenhywfar/cgui.h>
 
-#include <inttypes.h>
 
 
 #define I18N(msg) GWEN_I18N_Translate(PACKAGE, msg)

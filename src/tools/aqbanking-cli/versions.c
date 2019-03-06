@@ -12,8 +12,10 @@
 #endif
 
 #include "globals.h"
-#include <gwenhywfar/gwenhywfar.h>
+
 #include <aqbanking/banking.h>
+
+#include <gwenhywfar/gwenhywfar.h>
 
 
 int versions(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
