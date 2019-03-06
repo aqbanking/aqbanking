@@ -30,9 +30,7 @@
 #include <gwenhywfar/stringlist.h>
 #include <gwenhywfar/cryptkeyrsa.h>
 
-#include <stdlib.h>
 #include <assert.h>
-#include <string.h>
 
 
 

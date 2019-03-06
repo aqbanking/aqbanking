@@ -13,8 +13,9 @@
 #define AQBANKING_GUI_H
 
 
-#include <gwenhywfar/gui_be.h>
 #include <aqbanking/banking.h>
+
+#include <gwenhywfar/gui_be.h>
 
 
 /** @addtogroup G_AB_GUI Gwenhywfar GUI Extension

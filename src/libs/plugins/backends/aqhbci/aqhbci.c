@@ -14,7 +14,6 @@
 
 #include "aqhbci_l.h"
 
-#include <string.h>
 
 
 

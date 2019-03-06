@@ -13,7 +13,9 @@
 #define AQBANKING_PROVIDER_P_H
 
 #include "provider_l.h"
+
 #include <aqbanking/banking.h>
+
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/list2.h>

@@ -13,19 +13,14 @@
 #endif
 
 #include "imexporter_p.h"
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/syncio_file.h>
 #include <gwenhywfar/syncio_memory.h>
 
-#include <stdlib.h>
 #include <assert.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <errno.h>
 #include <ctype.h>
 
 

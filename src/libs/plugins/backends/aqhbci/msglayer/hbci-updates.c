@@ -20,10 +20,6 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gui.h>
 
-#include <stdlib.h>
-#include <assert.h>
-#include <string.h>
-
 
 
 int AH_HBCI_UpdateDbUser(AH_HBCI *hbci, GWEN_DB_NODE *db)

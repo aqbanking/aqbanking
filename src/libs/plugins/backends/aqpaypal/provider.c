@@ -32,9 +32,7 @@
 #include <gwenhywfar/gui.h>
 
 #include <ctype.h>
-#include <stdio.h>
 #include <errno.h>
-#include <string.h>
 
 
 #define AQPAYPAL_PASSWORD_ITERATIONS 1467

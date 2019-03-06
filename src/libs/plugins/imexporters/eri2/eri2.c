@@ -27,13 +27,7 @@
 #include <aqbanking/types/transaction.h>
 #include "aqbanking/i18n_l.h"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <errno.h>
-#include <string.h>
-#include <assert.h>
-#include <ctype.h>
 
 
 #ifdef OS_WIN32

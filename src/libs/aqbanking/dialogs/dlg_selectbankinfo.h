@@ -11,11 +11,10 @@
 #ifndef AQBANKING_DLG_SELECTBANKINFO_H
 #define AQBANKING_DLG_SELECTBANKINFO_H
 
+#include <aqbanking/banking.h>
 
 #include <gwenhywfar/dialog.h>
 #include <gwenhywfar/db.h>
-
-#include <aqbanking/banking.h>
 
 
 #ifdef __cplusplus

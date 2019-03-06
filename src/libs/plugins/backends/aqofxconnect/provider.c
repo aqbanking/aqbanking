@@ -36,10 +36,7 @@
 #include <gwenhywfar/i18n.h>
 #include <gwenhywfar/url.h>
 
-#include <unistd.h>
-#include <ctype.h>
 #include <errno.h>
-#include <string.h>
 
 
 #define I18N(msg) GWEN_I18N_Translate(PACKAGE, msg)

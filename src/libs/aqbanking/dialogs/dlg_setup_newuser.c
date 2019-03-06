@@ -13,12 +13,13 @@
 #endif
 
 #include "dlg_setup_newuser_p.h"
-#include "dlg_usertype_pagedefault_l.h"
-#include "dlg_usertype_page_be.h"
-#include "i18n_l.h"
+
+#include "aqbanking/dialogs/dlg_usertype_pagedefault_l.h"
+#include "aqbanking/dialogs/dlg_usertype_page_be.h"
+#include "aqbanking/i18n_l.h"
+#include "aqbanking/backendsupport/provider_be.h"
 
 #include <aqbanking/banking_be.h>
-#include <aqbanking/backendsupport/provider_be.h>
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>

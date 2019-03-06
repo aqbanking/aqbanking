@@ -13,7 +13,9 @@
 #define AQBANKING_MSGENGINE_H
 
 #include <aqbanking/error.h> /* for AQBANKING_API */
+
 #include <gwenhywfar/msgengine.h>
+
 
 #ifdef __cplusplus
 extern "C" {

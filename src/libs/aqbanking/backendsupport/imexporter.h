@@ -12,13 +12,13 @@
 #ifndef AQBANKING_IMEXPORTER_H
 #define AQBANKING_IMEXPORTER_H
 
+#include <aqbanking/error.h>
+
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/syncio.h>
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/dialog.h>
-
-#include <aqbanking/error.h>
 
 
 /** @addtogroup G_AB_IMEXPORTER Generic Im- and Exporter

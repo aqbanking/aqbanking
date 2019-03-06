@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile: user.c,v $
-                             -------------------
-    cvs         : $Id: user.c,v 1.4 2006/01/17 22:58:29 aquamaniac Exp $
     begin       : Mon Mar 01 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de

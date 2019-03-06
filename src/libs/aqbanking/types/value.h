@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Apr 05 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
@@ -15,14 +12,12 @@
 #ifndef AB_VALUE_H
 #define AB_VALUE_H
 
+#include <aqbanking/error.h>
+
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/list.h>
 #include <gwenhywfar/types.h>
-
-#include <aqbanking/error.h>
-
-#include <stdio.h>
 
 
 #ifdef __cplusplus

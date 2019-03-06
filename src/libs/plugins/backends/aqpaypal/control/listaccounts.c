@@ -20,11 +20,6 @@
 #include <gwenhywfar/args.h>
 #include <gwenhywfar/debug.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <string.h>
-#include <errno.h>
 
 
 int APY_Control_ListAccounts(AB_PROVIDER *pro,

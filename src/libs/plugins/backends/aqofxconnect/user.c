@@ -17,9 +17,6 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 
-#include <stdlib.h>
-#include <assert.h>
-#include <string.h>
 
 
 

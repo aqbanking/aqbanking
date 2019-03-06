@@ -14,8 +14,8 @@
 
 #include "dlg_setup.h"
 
-#include <aqbanking/backendsupport/user.h>
-#include <aqbanking/backendsupport/account.h>
+#include "aqbanking/backendsupport/user.h"
+#include "aqbanking/backendsupport/account.h"
 
 
 

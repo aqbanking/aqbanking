@@ -27,9 +27,7 @@
 
 #include <gwenhywfar/syncio_memory.h>
 
-#include <stdlib.h>
 #include <assert.h>
-#include <string.h>
 #include <errno.h>
 
 

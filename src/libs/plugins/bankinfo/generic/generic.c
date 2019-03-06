@@ -15,18 +15,13 @@
 #include "aqbanking/i18n_l.h"
 
 #include <aqbanking/banking_be.h>
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/syncio_file.h>
 
-#include <stdio.h>
-#include <string.h>
 #include <errno.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
 
 #ifdef OS_WIN32
 # define DIRSEP "\\"

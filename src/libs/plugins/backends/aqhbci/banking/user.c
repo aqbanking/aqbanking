@@ -29,10 +29,7 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
 
-#include <stdlib.h>
 #include <assert.h>
-#include <string.h>
-#include <ctype.h>
 
 
 GWEN_INHERIT(AB_USER, AH_USER)

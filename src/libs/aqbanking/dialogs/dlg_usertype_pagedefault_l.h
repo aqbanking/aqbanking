@@ -12,8 +12,9 @@
 #define AQBANKING_DLG_USERTYPE_PAGEDEFAULT_L_H
 
 
-#include <gwenhywfar/dialog.h>
 #include <aqbanking/banking.h>
+
+#include <gwenhywfar/dialog.h>
 
 
 #ifdef __cplusplus

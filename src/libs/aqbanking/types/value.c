@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Apr 05 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de

@@ -26,10 +26,7 @@
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/text.h>
 
-#include <stdlib.h>
 #include <assert.h>
-#include <string.h>
-#include <errno.h>
 
 
 

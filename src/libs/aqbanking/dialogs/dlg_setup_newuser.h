@@ -12,9 +12,9 @@
 #define AQBANKING_DLG_SETUP_NEWUSER_H
 
 
-#include <gwenhywfar/dialog.h>
-
 #include <aqbanking/banking.h>
+
+#include <gwenhywfar/dialog.h>
 
 
 

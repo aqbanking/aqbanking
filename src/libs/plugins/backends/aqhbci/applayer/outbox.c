@@ -31,10 +31,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/gui.h>
 
-#include <stdlib.h>
 #include <assert.h>
-#include <string.h>
-#include <time.h>
 
 
 GWEN_LIST_FUNCTIONS(AH_OUTBOX__CBOX, AH_Outbox__CBox);

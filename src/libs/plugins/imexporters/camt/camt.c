@@ -25,7 +25,6 @@
 #include <gwenhywfar/gwentime.h>
 #include <gwenhywfar/text.h>
 
-#include <ctype.h>
 
 
 

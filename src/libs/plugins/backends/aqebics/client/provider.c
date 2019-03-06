@@ -25,11 +25,12 @@
 #include "aqebics/dialogs/dlg_newkeyfile_l.h"
 #include "aqebics/control/control_l.h"
 
-#include <aqbanking/backendsupport/provider_be.h>
+#include "aqbanking/backendsupport/provider_be.h"
+#include "aqbanking/backendsupport/account.h"
+#include "aqbanking/backendsupport/httpsession.h"
+
 #include <aqbanking/banking_be.h>
-#include <aqbanking/backendsupport/account.h>
 #include <aqbanking/types/value.h>
-#include <aqbanking/backendsupport/httpsession.h>
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/inherit.h>
@@ -38,7 +39,6 @@
 #include <gwenhywfar/ct.h>
 #include <gwenhywfar/gui.h>
 
-#include <time.h>
 
 
 GWEN_INHERIT(AB_PROVIDER, EBC_PROVIDER)

@@ -12,11 +12,11 @@
 #define AQBANKING_DLG_IMPORTER_H
 
 
-#include <gwenhywfar/dialog.h>
-#include <gwenhywfar/db.h>
-
 #include <aqbanking/banking.h>
 #include <aqbanking/backendsupport/imexporter.h>
+
+#include <gwenhywfar/dialog.h>
+#include <gwenhywfar/db.h>
 
 
 

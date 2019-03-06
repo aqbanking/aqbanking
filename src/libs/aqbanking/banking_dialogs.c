@@ -11,8 +11,8 @@
 /* This file is included by banking.c */
 
 
-#include "dialogs/dlg_importer.h"
-#include "dialogs/dlg_setup.h"
+#include "aqbanking/dialogs/dlg_importer.h"
+#include "aqbanking/dialogs/dlg_setup.h"
 
 
 

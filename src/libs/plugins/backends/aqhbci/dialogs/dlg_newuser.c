@@ -15,12 +15,12 @@
 
 
 #include "dlg_newuser_p.h"
-#include "i18n_l.h"
 
 #include "dlg_pintan_l.h"
 #include "dlg_ddvcard_l.h"
 #include "dlg_newkeyfile_l.h"
 
+#include "aqbanking/i18n_l.h"
 #include "aqbanking/backendsupport/user.h"
 #include "aqbanking/banking_be.h"
 #include "aqbanking/dialogs/dlg_newuser_be.h"

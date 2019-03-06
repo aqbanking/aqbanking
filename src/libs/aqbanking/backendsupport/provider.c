@@ -12,16 +12,15 @@
 # include <config.h>
 #endif
 
-#include "provider_p.h"
-#include "provider_be.h"
-#include "banking_l.h"
+#include "aqbanking/backendsupport/provider_p.h"
+#include "aqbanking/backendsupport/provider_be.h"
+#include "aqbanking/banking_l.h"
+
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/text.h>
 
-#include <stdlib.h>
 #include <assert.h>
-#include <string.h>
 #include <ctype.h>
 
 

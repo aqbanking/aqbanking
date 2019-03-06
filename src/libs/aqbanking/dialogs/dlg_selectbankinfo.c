@@ -14,7 +14,8 @@
 
 
 #include "dlg_selectbankinfo_p.h"
-#include "i18n_l.h"
+
+#include "aqbanking/i18n_l.h"
 
 #include <aqbanking/banking_be.h>
 

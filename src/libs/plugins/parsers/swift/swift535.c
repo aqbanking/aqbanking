@@ -22,10 +22,8 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gwentime.h>
 #include <gwenhywfar/gui.h>
-#include <stdlib.h>
-#include <string.h>
+
 #include <ctype.h>
-#include <assert.h>
 
 
 

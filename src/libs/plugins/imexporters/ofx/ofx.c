@@ -30,10 +30,6 @@
 #include <gwenhywfar/xml.h>
 #include <gwenhywfar/syncio_file.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <errno.h>
 
 #ifdef OS_WIN32
 # define DIRSEP "\\"

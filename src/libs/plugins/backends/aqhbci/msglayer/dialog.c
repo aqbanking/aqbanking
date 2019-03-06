@@ -29,9 +29,6 @@
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/text.h>
 
-#include <string.h>
-#include <ctype.h>
-#include <errno.h>
 
 
 #ifdef OS_WIN32

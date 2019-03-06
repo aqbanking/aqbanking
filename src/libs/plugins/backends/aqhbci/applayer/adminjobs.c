@@ -29,10 +29,7 @@
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/text.h>
 
-#include <stdlib.h>
 #include <assert.h>
-#include <string.h>
-#include <time.h>
 
 
 

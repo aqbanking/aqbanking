@@ -18,11 +18,6 @@
 
 #include "aqhbci/banking/user.h"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <string.h>
-#include <errno.h>
 
 
 int AH_Control_ListItanModes(AB_PROVIDER *pro,

@@ -20,11 +20,6 @@
 #include "aqhbci/banking/user.h"
 #include "aqhbci/banking/account.h"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <string.h>
-#include <errno.h>
 
 
 int AH_Control_AddsubAccountFlags(AB_PROVIDER *pro,

@@ -15,15 +15,15 @@
 
 
 #include "dlg_setup_p.h"
-#include "i18n_l.h"
 
-#include <aqbanking/backendsupport/user.h>
+#include "aqbanking/i18n_l.h"
+#include "aqbanking/backendsupport/user.h"
+#include "aqbanking/dialogs/dlg_selectbackend.h"
+#include "aqbanking/dialogs/dlg_editaccount.h"
+#include "aqbanking/dialogs/dlg_edituser.h"
+#include "aqbanking/dialogs/dlg_setup_newuser.h"
+
 #include <aqbanking/banking_be.h>
-#include <aqbanking/dialogs/dlg_selectbackend.h>
-#include <aqbanking/dialogs/dlg_editaccount.h>
-#include <aqbanking/dialogs/dlg_edituser.h>
-
-#include <aqbanking/dialogs/dlg_setup_newuser.h>
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>

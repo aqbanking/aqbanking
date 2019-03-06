@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
     copyright   : (C) 2004 by Martin Preuss
     email       : martin@libchipcard.de
@@ -22,9 +19,7 @@
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
 
-#include <stdlib.h>
 #include <assert.h>
-#include <string.h>
 
 
 GWEN_LIST_FUNCTIONS(AH_BPD_ADDR, AH_BpdAddr);

@@ -24,7 +24,6 @@
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/inherit.h>
 
-#include <stdlib.h>
 #include <ctype.h>
 
 

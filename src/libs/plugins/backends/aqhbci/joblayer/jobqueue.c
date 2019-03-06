@@ -27,10 +27,8 @@
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/text.h>
 
-#include <stdlib.h>
 #include <assert.h>
-#include <string.h>
-#include <ctype.h>
+
 
 
 GWEN_LIST_FUNCTIONS(AH_JOBQUEUE, AH_JobQueue);

@@ -25,9 +25,7 @@
 #include <gwenhywfar/dbio.h>
 #include <gwenhywfar/syncio_memory.h>
 
-#include <stdlib.h>
 #include <assert.h>
-#include <string.h>
 
 
 

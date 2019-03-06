@@ -16,13 +16,12 @@
 #ifndef AQBANKING_PROVIDER_H
 #define AQBANKING_PROVIDER_H
 
+#include <aqbanking/error.h> /* for AQBANKING_API */
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/list2.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/xml.h>
-
-#include <aqbanking/error.h> /* for AQBANKING_API */
 
 
 #define AB_PROVIDER_FLAGS_COMPLETE_DAY_REPORTS 0x00000001

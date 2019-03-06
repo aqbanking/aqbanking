@@ -13,7 +13,6 @@
 
 #include "dlg_importer.h"
 
-
 #include <gwenhywfar/stringlist.h>
 
 

@@ -24,11 +24,7 @@
 #include <gwenhywfar/dbio.h>
 #include <gwenhywfar/text.h>
 
-#include <stdlib.h>
 #include <assert.h>
-#include <string.h>
-#include <errno.h>
-#include <ctype.h>
 
 
 GWEN_INHERIT(AH_JOB, AH_JOB_FOREIGNXFERWH);

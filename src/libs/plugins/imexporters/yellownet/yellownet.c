@@ -25,10 +25,6 @@
 #include <gwenhywfar/fastbuffer.h>
 #include <gwenhywfar/syncio_file.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <errno.h>
 
 
 GWEN_INHERIT(AB_IMEXPORTER, AB_IMEXPORTER_YELLOWNET);

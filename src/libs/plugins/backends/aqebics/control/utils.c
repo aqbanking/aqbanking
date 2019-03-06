@@ -1,7 +1,4 @@
 /***************************************************************************
- $RCSfile: main.c,v $
- -------------------
- cvs         : $Id: main.c,v 1.5 2005/08/24 14:05:32 aquamaniac Exp $
  begin       : Tue May 03 2005
  copyright   : (C) 2005 by Martin Preuss
  email       : martin@libchipcard.de
@@ -16,8 +13,6 @@
 
 #include "globals.h"
 
-#include <stdio.h>
-#include <string.h>
 #include <errno.h>
 
 

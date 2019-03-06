@@ -27,11 +27,6 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/gui.h>
 
-#include <assert.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <string.h>
 
 
 #define DIALOG_MINWIDTH  400

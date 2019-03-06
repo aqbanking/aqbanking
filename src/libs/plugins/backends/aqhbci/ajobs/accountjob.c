@@ -22,9 +22,7 @@
 #include <gwenhywfar/gwentime.h>
 #include <gwenhywfar/gui.h>
 
-#include <stdlib.h>
 #include <assert.h>
-#include <string.h>
 
 
 

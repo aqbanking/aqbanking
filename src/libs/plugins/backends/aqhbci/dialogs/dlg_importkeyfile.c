@@ -32,7 +32,6 @@
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/ctplugin.h>
 
-#include <unistd.h>
 
 
 #define PAGE_BEGIN     0

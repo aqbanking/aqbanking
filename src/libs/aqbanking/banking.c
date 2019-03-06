@@ -39,17 +39,11 @@
 #include <gwenhywfar/configmgr.h>
 #include <gwenhywfar/syncio_file.h>
 
-#include <stdlib.h>
 #include <assert.h>
-#include <string.h>
 #include <unistd.h>
-#include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <errno.h>
 #include <ctype.h>
-#include <stdio.h>
 
 
 #ifdef OS_WIN32

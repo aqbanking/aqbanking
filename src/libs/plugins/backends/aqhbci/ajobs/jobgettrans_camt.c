@@ -27,10 +27,7 @@
 
 #include <gwenhywfar/syncio_memory.h>
 
-#include <stdlib.h>
 #include <assert.h>
-#include <string.h>
-#include <errno.h>
 
 
 GWEN_INHERIT(AH_JOB, AH_JOB_GETTRANS_CAMT);
