@@ -21,17 +21,12 @@
 #include <gwenhywfar/fastbuffer.h>
 #include <gwenhywfar/syncio_file.h>
 
-#include <aqbanking/bankinfo.h>
+#include <aqbanking/types/bankinfo.h>
 
-#include <time.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <ctype.h>
-#include <string.h>
-#include <errno.h>
-#include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
+#include <errno.h>
+
 
 #ifndef GWEN_DIR_SEPARATOR_S
 /* for gwenyhwfar < 2.5.4 */

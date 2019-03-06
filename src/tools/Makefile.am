@@ -1,8 +1,4 @@
-DIST_SUBDIRS=aqbanking-cli
-
-if ENABLE_CLI
-SUBDIRS=aqbanking-cli
-endif
+SUBDIRS=aqbanking-cli mkdeinfo
 
 
 sources:

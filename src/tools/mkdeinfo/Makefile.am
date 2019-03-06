@@ -1,5 +1,4 @@
-INCLUDES = -I$(aqbanking_symlinkdir) $(gwenhywfar_includes) \
-           -I$(top_srcdir)/src/libs/aqbanking
+INCLUDES = -I$(top_srcdir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/..
 
 
 

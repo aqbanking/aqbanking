@@ -1313,6 +1313,7 @@ AC_CONFIG_FILES([
   src/test/Makefile
   src/tools/Makefile
   src/tools/aqbanking-cli/Makefile
+  src/tools/mkdeinfo/Makefile
   tutorials/Makefile
   po/Makefile
   Doxyfile
