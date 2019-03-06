@@ -1,0 +1,35 @@
+
+This folder contains the library AqBanking.
+
+The main folder contains the main class of AqBanking, AB_BANKING.
+
+There are some subfolders:
+
+types
+-----
+Contains classes/objects for some important banking tasks, like account specifications,
+transaction definitions etc.
+These files are installed and to be used by applications.
+
+gui
+---
+Contains the class AB_GUI, and implementation of the GWEN_GUI class using AqBanking for
+lookup and storage of SSL certificates of the servers.
+These files are installed and to be used by applications.
+
+
+backendsupport
+--------------
+Contains code for objects which are only to be used by AqBanking and the plugins.
+Code from this folder is never installed and is not to be used outside AqBanking.
+
+dialogs
+-------
+Contains some internal GWEN_DIALOG objects which are called by AqBanking.
+These also are not installed and not to be used outside AqBanking.
+
+typemaker2
+----------
+Contains type definition files for the typemaker2 tool (provided with the library
+Gwenhywfar).
+These are installed and can be used in your own types.
