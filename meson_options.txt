@@ -3,3 +3,4 @@ option('locale-searchdir', type : 'string', description : 'Search folder for loc
 option('data-searchdir', type : 'string', description : 'Search folder for data files')
 option('plugin-searchdir', type : 'string', description : 'Search folder for plugins')
 option('local-install', type : 'boolean', value : 'false')
+option('backends', type : 'string', description : 'List of backends to compile-in')

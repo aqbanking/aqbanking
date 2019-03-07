@@ -95,6 +95,7 @@ endif
 
 
 
+
 ##################################################################################
 # locale-searchdir
 #
@@ -111,6 +112,7 @@ if ab_locale_searchdir == ''
     ab_locale_searchdir = 'share/locale'
   endif
 endif
+
 
 
 
@@ -134,6 +136,21 @@ endif
 
 
 
+##################################################################################
+# find libgmp
+#
+
+libgmp = cc.find_library('gmp', required : true)
+if libgmp.found()
+    ab_deps += libgmp
+#    libgmp_inc=include_directories(libgwenhywfar.get_pkgconfig_variable('includedir'))
+endif
+if not cc.has_header('gmp.h')
+  error ('Header "gmp.h" not available.')
+endif
+
+
+
 
 ##################################################################################
 # find libgwenhywfar
@@ -141,19 +158,56 @@ endif
 
 libgwenhywfar = dependency('gwenhywfar', version: '>=4.99.10', required : true)
 if libgwenhywfar.found()
-    ab_defines += '-DHAVE_JPEG_H'
     ab_deps += libgwenhywfar
     libgwenhywfar_inc=include_directories(libgwenhywfar.get_pkgconfig_variable('includedir'))
 endif
 
 
 
-#ab_defines += [
-#  '-DAQBANKING_VERSION_MAJOR="@0@"'.format(ab_version_array[0]),
-#  '-DAQBANKING_VERSION_MINOR="@0@"'.format(ab_version_array[1]),
-#  '-DAQBANKING_PATCH_LEVEL="@0@"'.format(ab_version_array[2]),
-#  '-DAQBANKING_BUILD="@0@"'.format(ab_version_array[3]),
-#]
+
+##################################################################################
+# check backends
+#
+
+backend_aqhbci_use        = false
+backend_aqhbci_deps       = []
+
+backend_aqebics_use       = false
+backend_aqebics_deps      = []
+
+backend_aqofxconnect_use  = false
+backend_aqofxconnect_deps = false
+
+
+backends=get_option('backends')
+if backends ==''
+  backends='all'
+endif
+
+if backends =='all'
+  backends='aqhbci aqofxconnect aqebics'
+endif
+
+backends_array=backends.split(' ')
+foreach backend: backends_array
+  if backend == 'aqnone'
+    backend_aqnone_use = true
+    ab_defines += '-DAQBANKING_WITH_PLUGIN_BACKEND_AQNONE'
+  elif backend == 'aqhbci'
+    backend_aqhbci_use = true
+    ab_defines += '-DAQBANKING_WITH_PLUGIN_BACKEND_AQHBCI'
+  elif backend == 'aqebics'
+    d = dependency('xmlsec1-gnutls', version: '>=1.0.0', required : true)
+    if d.found()
+      backend_aqebics_deps +=d
+      backend_aqebics_use = true
+      ab_defines += '-DAQBANKING_WITH_PLUGIN_BACKEND_AQEBICS'
+    endif
+  elif backend == 'aqofxconnect'
+    backend_aqofxconnect_use = true
+    ab_defines += '-DAQBANKING_WITH_PLUGIN_BACKEND_AQOFXCONNECT'
+  endif
+endforeach
 
 
 

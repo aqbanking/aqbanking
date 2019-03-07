@@ -16,6 +16,8 @@ configure_file(input : 'system.h.in', output : 'system.h', configuration : ab_co
 
 subdir('gui')
 subdir('backendsupport')
+subdir('types')
+subdir('dialogs')
 
 
 libabbase_src = [ 
@@ -24,9 +26,12 @@ libabbase_src = [
 ]
 
 
+
 libabbase = static_library('abbase', libabbase_src,
                                      include_directories : libabbase_includes,
                                      c_args : libabbase_defines,
                                      install : false,
-                                     link_with : libabbackendsupport,
+#                                     gnu_symbol_visibility : 'hidden',
+                                     link_with: [libabbackendsupport, libabdialogs, libabgui, libabtypes],
 )
+
