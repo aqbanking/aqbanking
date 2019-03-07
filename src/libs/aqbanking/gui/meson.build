@@ -18,4 +18,3 @@ libabgui = static_library('abgui', libabgui_src,
                           install : false
 )
 
-

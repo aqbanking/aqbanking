@@ -31,11 +31,18 @@ ab_bugreport = 'martin@aqbanking.de'
 ab_deps = []
 ab_defines = []
 ab_includes = []
+ab_ldflags = []
 
 
 cc = meson.get_compiler('c')
 host_system = host_machine.system()
 
+
+##################################################################################
+# create system config for config.h
+#
+
+ab_system_conf = configuration_data()
 
 ab_prefix=get_option('prefix')
 
@@ -53,6 +60,16 @@ if cc.compiles('''int foo_def(void) __attribute__((visibility("default")));
                name : '__attribute__((visibility(...)))')
   ab_defines += ['-DGCC_WITH_VISIBILITY_ATTRIBUTE', '-fvisibility=hidden']
 endif
+
+
+
+
+foreach ldflag: [ '-Wl,-Bsymbolic', '-Wl,-z,relro', '-Wl,-z,now', ]
+  if cc.links('int main () { return 0; }', name: ldflag, args: ldflag)
+    ab_ldflags += [ ldflag ]
+  endif
+endforeach
+
 
 
 
@@ -192,20 +209,20 @@ backends_array=backends.split(' ')
 foreach backend: backends_array
   if backend == 'aqnone'
     backend_aqnone_use = true
-    ab_defines += '-DAQBANKING_WITH_PLUGIN_BACKEND_AQNONE'
+    ab_system_conf.set('AQBANKING_WITH_PLUGIN_BACKEND_AQNONE', 1)
   elif backend == 'aqhbci'
     backend_aqhbci_use = true
-    ab_defines += '-DAQBANKING_WITH_PLUGIN_BACKEND_AQHBCI'
+    ab_system_conf.set('AQBANKING_WITH_PLUGIN_BACKEND_AQHBCI', 1)
   elif backend == 'aqebics'
     d = dependency('xmlsec1-gnutls', version: '>=1.0.0', required : true)
     if d.found()
       backend_aqebics_deps +=d
       backend_aqebics_use = true
-      ab_defines += '-DAQBANKING_WITH_PLUGIN_BACKEND_AQEBICS'
+      ab_system_conf.set('AQBANKING_WITH_PLUGIN_BACKEND_AQEBICS', 1)
     endif
   elif backend == 'aqofxconnect'
     backend_aqofxconnect_use = true
-    ab_defines += '-DAQBANKING_WITH_PLUGIN_BACKEND_AQOFXCONNECT'
+    ab_system_conf.set('AQBANKING_WITH_PLUGIN_BACKEND_AQOFXCONNECT', 1)
   endif
 endforeach
 
@@ -213,7 +230,7 @@ endforeach
 
 
 ##################################################################################
-# setup configuration (used for config.h.in->config.h
+# setup configuration (used for version.h, system.h
 #
 
 ab_conf = configuration_data()
@@ -243,8 +260,16 @@ else
   ab_conf.set('aqbanking_sys_is_windows', 0)
 endif
 
-# output file(s)
-configure_file(input : 'config.h.in', output : 'config.h.test', configuration : ab_conf)
+
+
+
+##################################################################################
+# setup configuration (used for config.h.in->config.h
+#
+#
+
+# output config.h
+configure_file(output : 'config.h', configuration : ab_system_conf)
 
 
 

@@ -1,8 +1,5 @@
 
-#subdirs('backends')
-#subdirs('bankinfo')
-#subdirs('imexporters')
-#subdirs('parsers')
+subdir('backends')
 
 
 libabplugins_includes = []
@@ -20,6 +17,6 @@ libabplugins = static_library('abplugins', libabplugins_src,
                               include_directories : libabbase_includes,
                               c_args : libabplugins_defines,
                               install : false,
-                              # link_with: [libabbackendsupport, libabdialogs, libabgui, libabtypes],
+                              link_whole: [libabp_backends],
 )
 

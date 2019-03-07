@@ -35,4 +35,3 @@ libabbackendsupport = static_library('abbackendsupport', libabbackendsupport_src
 )
 
 
-

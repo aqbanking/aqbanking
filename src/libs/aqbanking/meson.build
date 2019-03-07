@@ -30,8 +30,9 @@ libabbase_src = [
 libabbase = static_library('abbase', libabbase_src,
                                      include_directories : libabbase_includes,
                                      c_args : libabbase_defines,
+                                     link_args : ab_ldflags,
                                      install : false,
-#                                     gnu_symbol_visibility : 'hidden',
-                                     link_with: [libabbackendsupport, libabdialogs, libabgui, libabtypes],
+                                     link_whole: [libabbackendsupport, libabdialogs, libabgui, libabtypes],
 )
+
 

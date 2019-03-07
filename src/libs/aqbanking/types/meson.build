@@ -34,4 +34,3 @@ libabtypes = static_library('abtypes', libabtypes_src,
 )
 
 
-
