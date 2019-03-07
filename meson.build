@@ -27,15 +27,26 @@ ab_bugreport = 'martin@aqbanking.de'
 
 
 
-# private AqBanking's dependencies and defines
+##################################################################################
+# AqBanking's dependencies and defines
+#
+
 ab_deps = []
 ab_defines = []
 ab_includes = []
 ab_ldflags = []
 
 
+
+
+##################################################################################
+# compiler, host system
+#
+
 cc = meson.get_compiler('c')
 host_system = host_machine.system()
+
+
 
 
 ##################################################################################
