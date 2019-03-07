@@ -2,6 +2,11 @@
 libabbackendsupport_includes = []
 libabbackendsupport_includes += include_directories('../../')
 libabbackendsupport_includes += libgwenhywfar_inc
+libabbackendsupport_includes += root_includes
+
+
+libabbackendsupport_defines = ab_defines
+
 
 libabbackendsupport_gensrc = [
   'jobqueue.c',
@@ -25,7 +30,7 @@ libabbackendsupport_src = [ libabbackendsupport_gensrc,
 
 libabbackendsupport = static_library('abbackendsupport', libabbackendsupport_src,
                                      include_directories : libabbackendsupport_includes,
-                                     c_args : ab_defines,
+                                     c_args : libabbackendsupport_defines,
                                      install : false
 )
 

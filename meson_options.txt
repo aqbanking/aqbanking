@@ -1,0 +1,5 @@
+option('cfg-searchdir', type : 'string', description : 'Search folder for configuration files')
+option('locale-searchdir', type : 'string', description : 'Search folder for locale files')
+option('data-searchdir', type : 'string', description : 'Search folder for data files')
+option('plugin-searchdir', type : 'string', description : 'Search folder for plugins')
+option('local-install', type : 'boolean', value : 'false')
