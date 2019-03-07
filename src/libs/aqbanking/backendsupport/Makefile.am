@@ -4,13 +4,13 @@ AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
 
 typefiles= \
-  accountqueue.xml \
-  userqueue.xml \
-  providerqueue.xml \
-  jobqueue.xml \
-  queue.xml \
-  account.xml \
-  user.xml
+  accountqueue.tdef \
+  userqueue.tdef \
+  providerqueue.tdef \
+  jobqueue.tdef \
+  queue.tdef \
+  account.tdef \
+  user.tdef
 
 
 typedatadir=$(aqbanking_pkgdatadir)/typemaker2/c
@@ -110,13 +110,13 @@ MAINTAINERCLEANFILES = $(typedata_sources) $(built_headers) $(dist_typedata_DATA
 
 built_sources: $(typedata_sources)
 
-.xml.c:
+.tdef.c:
 	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types -I $(builddir) --destfolder="$(builddir)"  $<
 
-.xml.h:
+.tdef.h:
 	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types -I $(builddir) --destfolder="$(builddir)"  $<
 
-SUFFIXES = .xml .c
+SUFFIXES = .tdef .c
 
 
 types: $(typefiles)
