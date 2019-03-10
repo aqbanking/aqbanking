@@ -1,13 +1,7 @@
 oh_institute_data.tm2
-oh_institute_data.c
-oh_institute_data.h
-oh_institute_data_p.h
 oh_institute_data_list.tm2
 oh_institute_data_list2.tm2
 oh_institute_spec.tm2
 oh_institute_spec_list.tm2
 oh_institute_spec_list2.tm2
-oh_institute_spec.c
-oh_institute_spec.h
-oh_institute_spec_p.h
 libtest
