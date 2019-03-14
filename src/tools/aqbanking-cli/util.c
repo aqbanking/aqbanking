@@ -836,16 +836,6 @@ int addTransactionToContextFile(const AB_TRANSACTION *t, const char *ctxFile)
     return 4;
   }
 
-  /* write result */
-  rv=writeContext(ctxFile, ctx);
-  AB_ImExporterContext_free(ctx);
-  if (rv<0) {
-    DBG_ERROR(0, "Error writing context file (%d)", rv);
-    AB_ImExporterContext_free(ctx);
-    return 4;
-  }
-  AB_ImExporterContext_free(ctx);
-
   return 0;
 }
 
