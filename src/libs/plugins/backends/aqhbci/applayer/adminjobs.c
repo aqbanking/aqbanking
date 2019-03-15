@@ -232,7 +232,7 @@ int AH_Job_TestVersion_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
         code=GWEN_DB_GetIntValue(dbResult, "resultCode", 0, -1);
         if (code>=9000) {
           if (code==9180) {
-            /* version is definately not supported */
+            /* version is definitely not supported */
             jd->versionSupported=AH_JobTestVersion_ResultNotSupported;
           }
           else {
@@ -260,7 +260,7 @@ int AH_Job_TestVersion_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
           }
         } /* if error */
         else {
-          /* not an error, so the version is definately supported */
+          /* not an error, so the version is definitely supported */
           hadAGoodResult=1;
         }
         dbResult=GWEN_DB_FindNextGroup(dbResult, "result");
