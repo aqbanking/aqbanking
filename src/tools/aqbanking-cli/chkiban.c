@@ -71,7 +71,7 @@ int chkIban(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
                  "Return codes:\n"
                  " 1: missing/bad arguments\n"
                  " 2: error while initializing AqBanking\n"
-                 " 3: given combination is definately invalid\n"
+                 " 3: given combination is definitely invalid\n"
                  " 5: error while deinitializing AqBanking\n"
                  "\n"
                  "Arguments:\n"
