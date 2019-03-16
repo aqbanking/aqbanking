@@ -33,21 +33,7 @@
 #include <gwenhywfar/cgui.h>
 
 
-
-static AB_ACCOUNT_SPEC *printAccountList_cb(AB_ACCOUNT_SPEC *as, void *user_data)
-{
-  fprintf(stderr,
-          "Account: %s %s (%s) [%s]\n",
-          AB_AccountSpec_GetBankCode(as),
-          AB_AccountSpec_GetAccountNumber(as),
-          AB_AccountSpec_GetAccountName(as),
-          /* every account is assigned to a backend (sometimes called provider)
-           * which actually performs online banking tasks. We get a pointer
-           * to that provider/backend with this call to show its name in our
-           * example.*/
-          AB_AccountSpec_GetBackendName(as));
-  return NULL;
-}
+static AB_ACCOUNT_SPEC *printAccountList_cb(AB_ACCOUNT_SPEC *as, void *user_data);
 
 
 
@@ -61,7 +47,7 @@ int main(int argc, char **argv)
   gui=GWEN_Gui_CGui_new();
   GWEN_Gui_SetGui(gui);
 
-  ab=AB_Banking_new("tutorial2", 0, 0);
+  ab=AB_Banking_new("tutorial5", 0, 0);
 
   /* Initialize AqBanking */
   rv=AB_Banking_Init(ab);
@@ -102,4 +88,19 @@ int main(int argc, char **argv)
   return 0;
 }
 
+
+
+AB_ACCOUNT_SPEC *printAccountList_cb(AB_ACCOUNT_SPEC *as, void *user_data)
+{
+  fprintf(stderr,
+          "Account: %s %s (%s) [%s]\n",
+          AB_AccountSpec_GetBankCode(as),
+          AB_AccountSpec_GetAccountNumber(as),
+          AB_AccountSpec_GetAccountName(as),
+          /* every account is assigned to a backend (sometimes called provider)
+           * which actually performs online banking tasks. We get a pointer
+           * to the name of that provider/backend with this call.*/
+          AB_AccountSpec_GetBackendName(as));
+  return NULL;
+}
 
