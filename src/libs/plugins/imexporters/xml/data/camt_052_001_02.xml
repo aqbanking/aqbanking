@@ -128,6 +128,10 @@
                   <XmlIfHasCharData path="ValDt/Dt">
                     <DbSetCharValue name="valutaDate" path="ValDt/Dt" type="date" template="YYYY-MM-DD" />
                   </XmlIfHasCharData>
+
+                  <XmlIfHasCharData path="AcctSvcrRef">
+                    <DbSetCharValue name="bankReference" path="AcctSvcrRef"/>
+                  </XmlIfHasCharData>
           
     
                   <!-- endToEndReference -->
@@ -188,14 +192,29 @@
     
                     <XmlEnter path="NtryDtls/TxDtls/BkTxCd/Domn">
     
-                        <DbCreateAndEnterTempGroup name="code" >
-    
+                      <DbCreateAndEnterTempGroup name="code" >
+  
+                        <XmlIfHasCharData path="Cd">
                           <DbSetTempCharValue name="code"    path="Cd" />
-                          <DbSetTempCharValue name="family" path="Fmly/Cd" />
-                          <DbSetTempCharValue name="subfamily" path="Fmly/SubFmlyCd" />
-                          <DbSetCharValue     name="transactionKey" value="$(code)-$(family)-$(subfamily)" />
+                        </XmlIfHasCharData>
                         
-                        </DbCreateAndEnterTempGroup>
+                        <XmlIfPathExists path="Fmly">
+                          <XmlEnter path="Fmly">
+                        
+                            <XmlIfHasCharData path="Cd">
+                              <DbSetTempCharValue name="family" path="Cd" />
+                            </XmlIfHasCharData>
+
+                            <XmlIfHasCharData path="SubFmlyCd">
+                              <DbSetTempCharValue name="subfamily" path="SubFmlyCd" />
+                            </XmlIfHasCharData>
+
+                          </XmlEnter> <!-- Fmly -->
+                        </XmlIfPathExists>
+                        
+                        <DbSetCharValue     name="transactionKey" value="$(code)+$(family)+$(subfamily)" />
+                      
+                      </DbCreateAndEnterTempGroup>
     
                     </XmlEnter> <!-- NtryDtls/TxDtls/BkTxCd/Domn -->
                   </XmlIfPathExists>
