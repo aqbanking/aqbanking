@@ -16,6 +16,10 @@
 
 
 
+static GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv);
+
+
+
 
 int listTrans(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
 {
@@ -33,139 +37,12 @@ int listTrans(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
   int transactionCommand=0;
   const char *tmplString;
   const char *s;
-  const GWEN_ARGS args[]= {
-    {
-      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-      GWEN_ArgsType_Int,            /* type */
-      "uniqueAccountId",             /* name */
-      0,                            /* minnum */
-      1,                            /* maxnum */
-      NULL,                         /* short option */
-      "aid",                        /* long option */
-      "Specify the unique account id",      /* short description */
-      "Specify the unique account id"       /* long description */
-    },
-    {
-      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-      GWEN_ArgsType_Char,            /* type */
-      "bankId",                     /* name */
-      0,                            /* minnum */
-      1,                            /* maxnum */
-      "b",                          /* short option */
-      "bank",                       /* long option */
-      "Specify the bank code",      /* short description */
-      "Specify the bank code"       /* long description */
-    },
-    {
-      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-      GWEN_ArgsType_Char,            /* type */
-      "accountId",                  /* name */
-      0,                            /* minnum */
-      1,                            /* maxnum */
-      "a",                          /* short option */
-      "account",                    /* long option */
-      "Specify the account number",     /* short description */
-      "Specify the account number"      /* long description */
-    },
-    {
-      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-      GWEN_ArgsType_Char,           /* type */
-      "subAccountId",                /* name */
-      0,                            /* minnum */
-      1,                            /* maxnum */
-      "aa",                          /* short option */
-      "subaccount",                   /* long option */
-      "Specify the sub account id (Unterkontomerkmal)",    /* short description */
-      "Specify the sub account id (Unterkontomerkmal)"     /* long description */
-    },
-    {
-      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-      GWEN_ArgsType_Char,           /* type */
-      "iban",                       /* name */
-      0,                            /* minnum */
-      1,                            /* maxnum */
-      "A",                          /* short option */
-      "iban",                    /* long option */
-      "Specify the iban of your account",      /* short description */
-      "Specify the iban of your account"       /* long description */
-    },
-    {
-      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-      GWEN_ArgsType_Char,           /* type */
-      "transactionType",            /* name */
-      0,                            /* minnum */
-      1,                            /* maxnum */
-      "tt",                         /* short option */
-      "transactiontype",            /* long option */
-      "Specify the transaction type to filter",      /* short description */
-      "Specify the transaction type to filter"       /* long description */
-    },
-    {
-      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-      GWEN_ArgsType_Char,           /* type */
-      "transactionCommand",         /* name */
-      0,                            /* minnum */
-      1,                            /* maxnum */
-      "tc",                         /* short option */
-      "transactioncommand",         /* long option */
-      "Specify the transaction command to filter",      /* short description */
-      "Specify the transaction command to filter"       /* long description */
-    },
-    {
-      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-      GWEN_ArgsType_Char,            /* type */
-      "ctxFile",                    /* name */
-      0,                            /* minnum */
-      1,                            /* maxnum */
-      "c",                          /* short option */
-      "ctxfile",                    /* long option */
-      "Specify the file to store the context in",   /* short description */
-      "Specify the file to store the context in"      /* long description */
-    },
-    {
-      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-      GWEN_ArgsType_Char,            /* type */
-      "template",                    /* name */
-      0,                            /* minnum */
-      1,                            /* maxnum */
-      "T",                          /* short option */
-      "template",                       /* long option */
-      "Specify the template for the transaction list output",      /* short description */
-      "Specify the template for the transaction list output"       /* long description */
-    },
-    {
-      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-      GWEN_ArgsType_Int,             /* type */
-      "help",                       /* name */
-      0,                            /* minnum */
-      0,                            /* maxnum */
-      "h",                          /* short option */
-      "help",                       /* long option */
-      "Show this help screen",      /* short description */
-      "Show this help screen"       /* long description */
-    }
-  };
 
-  db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
-  rv=GWEN_Args_Check(argc, argv, 1,
-                     0 /*GWEN_ARGS_MODE_ALLOW_FREEPARAM*/,
-                     args,
-                     db);
-  if (rv==GWEN_ARGS_RESULT_ERROR) {
-    fprintf(stderr, "ERROR: Could not parse arguments\n");
+  /* parse command line arguments */
+  db=_readCommandLine(dbArgs, argc, argv);
+  if (db==NULL) {
+    /* error in command line */
     return 1;
-  }
-  else if (rv==GWEN_ARGS_RESULT_HELP) {
-    GWEN_BUFFER *ubuf;
-
-    ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
-    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutType_Txt)) {
-      fprintf(stderr, "ERROR: Could not create help string\n");
-      return 1;
-    }
-    fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(ubuf));
-    GWEN_Buffer_free(ubuf);
-    return 0;
   }
 
   /* read command line arguments */
@@ -316,6 +193,161 @@ int listTrans(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
 
 
 
+/* parse command line */
+GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
+  GWEN_DB_NODE *db;
+  int rv;
+  const GWEN_ARGS args[]= {
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "uniqueAccountId",             /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      NULL,                         /* short option */
+      "aid",                        /* long option */
+      "Specify the unique account id",      /* short description */
+      "Specify the unique account id"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "bankId",                     /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "b",                          /* short option */
+      "bank",                       /* long option */
+      "Specify the bank code",      /* short description */
+      "Specify the bank code"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "accountId",                  /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "a",                          /* short option */
+      "account",                    /* long option */
+      "Specify the account number",     /* short description */
+      "Specify the account number"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "subAccountId",                /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "aa",                          /* short option */
+      "subaccount",                   /* long option */
+      "Specify the sub account id (Unterkontomerkmal)",    /* short description */
+      "Specify the sub account id (Unterkontomerkmal)"     /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "iban",                       /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "A",                          /* short option */
+      "iban",                    /* long option */
+      "Specify the iban of your account",      /* short description */
+      "Specify the iban of your account"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "transactionType",            /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "tt",                         /* short option */
+      "transactiontype",            /* long option */
+      "Specify the transaction type to filter",      /* short description */
+      "Specify the transaction type to filter"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "transactionCommand",         /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "tc",                         /* short option */
+      "transactioncommand",         /* long option */
+      "Specify the transaction command to filter",      /* short description */
+      "Specify the transaction command to filter"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "ctxFile",                    /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "c",                          /* short option */
+      "ctxfile",                    /* long option */
+      "Specify the file to store the context in",   /* short description */
+      "Specify the file to store the context in"      /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "template",                    /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "T",                          /* short option */
+      "template",                       /* long option */
+      "Specify the template for the transaction list output",      /* short description */
+      "Specify the template for the transaction list output"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "help",                       /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      "h",                          /* short option */
+      "help",                       /* long option */
+      "Show this help screen",      /* short description */
+      "Show this help screen"       /* long description */
+    }
+  };
+
+  db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
+  rv=GWEN_Args_Check(argc, argv, 1,
+                     0 /*GWEN_ARGS_MODE_ALLOW_FREEPARAM*/,
+                     args,
+                     db);
+  if (rv==GWEN_ARGS_RESULT_ERROR) {
+    fprintf(stderr, "ERROR: Could not parse arguments\n");
+    return NULL;
+  }
+  else if (rv==GWEN_ARGS_RESULT_HELP) {
+    GWEN_BUFFER *ubuf;
+
+    ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
+    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutType_Txt)) {
+      fprintf(stderr, "ERROR: Could not create help string\n");
+      return NULL;
+    }
+    GWEN_Buffer_AppendString(ubuf, "\n");
+    GWEN_Buffer_AppendString(ubuf, "The template string given to \"-T\" may contain variables to specify the output.\n");
+    GWEN_Buffer_AppendString(ubuf,"Default is: \"$(dateAsString)\\t$(valueAsString)\\t$(iban)");
+    GWEN_Buffer_AppendString(ubuf,"Possible variables are:\n");
+    GWEN_Buffer_AppendString(ubuf," $(dateAsString)  : Date of the balance in format ");
+    GWEN_Buffer_AppendString(ubuf, I18N("DD.MM.YYYY"));
+    GWEN_Buffer_AppendString(ubuf," \n");
+    GWEN_Buffer_AppendString(ubuf," $(valueAsString) : Amount of the balance\n");
+    GWEN_Buffer_AppendString(ubuf," $(iban)          : IBAN of the account this balance comes from\n");
+    GWEN_Buffer_AppendString(ubuf," $(bic)           : Account number of the account this balance comes from\n");
+    GWEN_Buffer_AppendString(ubuf," $(bankcode)      : Bank code (Bankleitzahl) of the account this balance comes from\n");
+    GWEN_Buffer_AppendString(ubuf," $(accountnumber) : Account number of the account this balance comes from\n");
+
+    fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(ubuf));
+    GWEN_Buffer_free(ubuf);
+    return NULL;
+  }
+
+  return db;
+}
 
 
 
