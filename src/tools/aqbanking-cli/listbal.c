@@ -311,6 +311,19 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
       fprintf(stderr, "ERROR: Could not create help string\n");
       return NULL;
     }
+    GWEN_Buffer_AppendString(ubuf, "\n");
+    GWEN_Buffer_AppendString(ubuf, "The template string given to \"-T\" may contain variables to specify the output.\n");
+    GWEN_Buffer_AppendString(ubuf,"Default is: \"$(dateAsString)\\t$(valueAsString)\\t$(iban)");
+    GWEN_Buffer_AppendString(ubuf,"Possible variables are:\n");
+    GWEN_Buffer_AppendString(ubuf," $(dateAsString)  : Date of the balance in format ");
+    GWEN_Buffer_AppendString(ubuf, I18N("DD.MM.YYYY"));
+    GWEN_Buffer_AppendString(ubuf," \n");
+    GWEN_Buffer_AppendString(ubuf," $(valueAsString) : Amount of the balance\n");
+    GWEN_Buffer_AppendString(ubuf," $(iban)          : IBAN of the account this balance comes from\n");
+    GWEN_Buffer_AppendString(ubuf," $(bic)           : Account number of the account this balance comes from\n");
+    GWEN_Buffer_AppendString(ubuf," $(bankcode)      : Bank code (Bankleitzahl) of the account this balance comes from\n");
+    GWEN_Buffer_AppendString(ubuf," $(accountnumber) : Account number of the account this balance comes from\n");
+
     fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(ubuf));
     GWEN_Buffer_free(ubuf);
     return NULL;
