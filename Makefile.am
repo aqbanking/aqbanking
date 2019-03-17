@@ -4,7 +4,7 @@ DIST_SUBDIRS=admin doc m4 src po tutorials
 EXTRA_DIST=AUTHORS COPYING ChangeLog INSTALL NEWS README \
  aqbanking.spec.in aqbanking.spec \
  aqbanking.iss.in aqbanking.iss \
- Doxyfile.in version.h.in system.h.in \
+ Doxyfile.in \
  i18nsources \
  mksymlinks.sh.in mksymlinks.sh Makefile.cvs
 
