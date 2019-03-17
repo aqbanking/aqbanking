@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     result = -1;
 
   buf2 = GWEN_Buffer_new(NULL, 300, 0, 0);
-  AB_Value_toHumanReadableString2(value, buf2, 2, 0);
+  AB_Value_toHumanReadableString(value, buf2, 2, 0);
   if ((strcmp(GWEN_Buffer_GetStart(buf2), "1361.54") != 0)
       && (strcmp(GWEN_Buffer_GetStart(buf2), "1361,54") != 0))
     result = -1;

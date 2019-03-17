@@ -526,8 +526,32 @@ int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
     while (dbCurrent) {
       AB_TRANSACTION *t;
 
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Reading this db:");
+      GWEN_DB_Dump(dbCurrent, 2);
+
       t=AB_Transaction_fromDb(dbCurrent);
       assert(t);
+
+      if (1) {
+        const AB_VALUE *v;
+
+        v=AB_Transaction_GetValue(t);
+        if (v) {
+          const char *sCurrency;
+
+          sCurrency=AB_Value_GetCurrency(v);
+          if (sCurrency && *sCurrency) {
+            DBG_ERROR(AQBANKING_LOGDOMAIN, "Okay, currency is [%s]", sCurrency);
+          }
+          else {
+            DBG_ERROR(AQBANKING_LOGDOMAIN, "NO CURRENCY!!");
+          }
+        }
+        else {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "NO VALUE!!");
+        }
+      }
+
       AB_ImExporterAccountInfo_AddTransaction(accountInfo, t);
       dbCurrent=GWEN_DB_FindNextGroup(dbCurrent, "transaction");
     }

@@ -134,7 +134,7 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
         dbuf=GWEN_Buffer_new(0, 256, 0, 1);
         v=AB_Balance_GetValue(bal);
         if (v) {
-          AB_Value_toHumanReadableString(v, dbuf, 2);
+          AB_Value_toHumanReadableString(v, dbuf, 2, 0);
           GWEN_DB_SetCharValue(dbElement, GWEN_DB_FLAGS_OVERWRITE_VARS, "valueAsString", GWEN_Buffer_GetStart(dbuf));
           GWEN_Buffer_Reset(dbuf);
         }
@@ -313,16 +313,16 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
     }
     GWEN_Buffer_AppendString(ubuf, "\n");
     GWEN_Buffer_AppendString(ubuf, "The template string given to \"-T\" may contain variables to specify the output.\n");
-    GWEN_Buffer_AppendString(ubuf,"Default is: \"$(dateAsString)\\t$(valueAsString)\\t$(iban)");
-    GWEN_Buffer_AppendString(ubuf,"Possible variables are:\n");
-    GWEN_Buffer_AppendString(ubuf," $(dateAsString)  : Date of the balance in format ");
+    GWEN_Buffer_AppendString(ubuf, "Default is: \"$(dateAsString)\\t$(valueAsString)\\t$(iban)");
+    GWEN_Buffer_AppendString(ubuf, "Possible variables are:\n");
+    GWEN_Buffer_AppendString(ubuf, " $(dateAsString)  : Date of the balance in format ");
     GWEN_Buffer_AppendString(ubuf, I18N("DD.MM.YYYY"));
-    GWEN_Buffer_AppendString(ubuf," \n");
-    GWEN_Buffer_AppendString(ubuf," $(valueAsString) : Amount of the balance\n");
-    GWEN_Buffer_AppendString(ubuf," $(iban)          : IBAN of the account this balance comes from\n");
-    GWEN_Buffer_AppendString(ubuf," $(bic)           : Account number of the account this balance comes from\n");
-    GWEN_Buffer_AppendString(ubuf," $(bankcode)      : Bank code (Bankleitzahl) of the account this balance comes from\n");
-    GWEN_Buffer_AppendString(ubuf," $(accountnumber) : Account number of the account this balance comes from\n");
+    GWEN_Buffer_AppendString(ubuf, " \n");
+    GWEN_Buffer_AppendString(ubuf, " $(valueAsString) : Amount of the balance\n");
+    GWEN_Buffer_AppendString(ubuf, " $(iban)          : IBAN of the account this balance comes from\n");
+    GWEN_Buffer_AppendString(ubuf, " $(bic)           : Account number of the account this balance comes from\n");
+    GWEN_Buffer_AppendString(ubuf, " $(bankcode)      : Bank code (Bankleitzahl) of the account this balance comes from\n");
+    GWEN_Buffer_AppendString(ubuf, " $(accountnumber) : Account number of the account this balance comes from\n");
 
     fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(ubuf));
     GWEN_Buffer_free(ubuf);

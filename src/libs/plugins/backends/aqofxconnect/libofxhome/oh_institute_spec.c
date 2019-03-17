@@ -21,7 +21,8 @@ GWEN_LIST_FUNCTIONS(OH_INSTITUTE_SPEC, OH_InstituteSpec)
 GWEN_LIST2_FUNCTIONS(OH_INSTITUTE_SPEC, OH_InstituteSpec)
 
 
-OH_INSTITUTE_SPEC *OH_InstituteSpec_new(void) {
+OH_INSTITUTE_SPEC *OH_InstituteSpec_new(void)
+{
   OH_INSTITUTE_SPEC *p_struct;
 
   GWEN_NEW_OBJECT(OH_INSTITUTE_SPEC, p_struct)
@@ -35,28 +36,32 @@ OH_INSTITUTE_SPEC *OH_InstituteSpec_new(void) {
   return p_struct;
 }
 
-void OH_InstituteSpec_free(OH_INSTITUTE_SPEC *p_struct) {
+void OH_InstituteSpec_free(OH_INSTITUTE_SPEC *p_struct)
+{
   if (p_struct) {
-  assert(p_struct->_refCount);
-  if (p_struct->_refCount==1) {
-    GWEN_LIST_FINI(OH_INSTITUTE_SPEC, p_struct)
-  /* members */
-    free(p_struct->name); p_struct->name=NULL;
-    p_struct->_refCount=0;
-    GWEN_FREE_OBJECT(p_struct);
-  }
-  else
-    p_struct->_refCount--;
+    assert(p_struct->_refCount);
+    if (p_struct->_refCount==1) {
+      GWEN_LIST_FINI(OH_INSTITUTE_SPEC, p_struct)
+      /* members */
+      free(p_struct->name);
+      p_struct->name=NULL;
+      p_struct->_refCount=0;
+      GWEN_FREE_OBJECT(p_struct);
+    }
+    else
+      p_struct->_refCount--;
   }
 }
 
-void OH_InstituteSpec_Attach(OH_INSTITUTE_SPEC *p_struct) {
+void OH_InstituteSpec_Attach(OH_INSTITUTE_SPEC *p_struct)
+{
   assert(p_struct);
   assert(p_struct->_refCount);
   p_struct->_refCount++;
 }
 
-OH_INSTITUTE_SPEC *OH_InstituteSpec_dup(const OH_INSTITUTE_SPEC *p_src) {
+OH_INSTITUTE_SPEC *OH_InstituteSpec_dup(const OH_INSTITUTE_SPEC *p_src)
+{
   OH_INSTITUTE_SPEC *p_struct;
 
   assert(p_src);
@@ -66,7 +71,8 @@ OH_INSTITUTE_SPEC *OH_InstituteSpec_dup(const OH_INSTITUTE_SPEC *p_src) {
 
   /* member "name" */
   if (p_struct->name) {
-    free(p_struct->name); p_struct->name=NULL;
+    free(p_struct->name);
+    p_struct->name=NULL;
     p_struct->name=NULL;
   }
   if (p_src->name) {
@@ -76,15 +82,17 @@ OH_INSTITUTE_SPEC *OH_InstituteSpec_dup(const OH_INSTITUTE_SPEC *p_src) {
   return p_struct;
 }
 
-OH_INSTITUTE_SPEC *OH_InstituteSpec_copy(OH_INSTITUTE_SPEC *p_struct, const OH_INSTITUTE_SPEC *p_src) {
-    assert(p_struct);
+OH_INSTITUTE_SPEC *OH_InstituteSpec_copy(OH_INSTITUTE_SPEC *p_struct, const OH_INSTITUTE_SPEC *p_src)
+{
+  assert(p_struct);
   assert(p_src);
   /* member "id" */
   p_struct->id=p_src->id;
 
   /* member "name" */
   if (p_struct->name) {
-    free(p_struct->name); p_struct->name=NULL;
+    free(p_struct->name);
+    p_struct->name=NULL;
     p_struct->name=NULL;
   }
   if (p_src->name) {
@@ -94,25 +102,30 @@ OH_INSTITUTE_SPEC *OH_InstituteSpec_copy(OH_INSTITUTE_SPEC *p_struct, const OH_I
   return p_struct;
 }
 
-int OH_InstituteSpec_GetId(const OH_INSTITUTE_SPEC *p_struct) {
+int OH_InstituteSpec_GetId(const OH_INSTITUTE_SPEC *p_struct)
+{
   assert(p_struct);
   return p_struct->id;
 }
 
-const char *OH_InstituteSpec_GetName(const OH_INSTITUTE_SPEC *p_struct) {
+const char *OH_InstituteSpec_GetName(const OH_INSTITUTE_SPEC *p_struct)
+{
   assert(p_struct);
   return p_struct->name;
 }
 
-void OH_InstituteSpec_SetId(OH_INSTITUTE_SPEC *p_struct, int p_src) {
+void OH_InstituteSpec_SetId(OH_INSTITUTE_SPEC *p_struct, int p_src)
+{
   assert(p_struct);
   p_struct->id=p_src;
 }
 
-void OH_InstituteSpec_SetName(OH_INSTITUTE_SPEC *p_struct, const char *p_src) {
+void OH_InstituteSpec_SetName(OH_INSTITUTE_SPEC *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->name) {
-    free(p_struct->name); p_struct->name=NULL;
+    free(p_struct->name);
+    p_struct->name=NULL;
   }
   if (p_src) {
     p_struct->name=strdup(p_src);
@@ -123,14 +136,15 @@ void OH_InstituteSpec_SetName(OH_INSTITUTE_SPEC *p_struct, const char *p_src) {
 }
 
 /* list1 functions */
-OH_INSTITUTE_SPEC_LIST *OH_InstituteSpec_List_dup(const OH_INSTITUTE_SPEC_LIST *p_src) {
+OH_INSTITUTE_SPEC_LIST *OH_InstituteSpec_List_dup(const OH_INSTITUTE_SPEC_LIST *p_src)
+{
   OH_INSTITUTE_SPEC_LIST *p_dest;
   OH_INSTITUTE_SPEC *p_elem;
 
   assert(p_src);
   p_dest=OH_InstituteSpec_List_new();
   p_elem=OH_InstituteSpec_List_First(p_src);
-  while(p_elem) {
+  while (p_elem) {
     OH_INSTITUTE_SPEC *p_cpy;
 
     p_cpy=OH_InstituteSpec_dup(p_elem);
@@ -141,22 +155,31 @@ OH_INSTITUTE_SPEC_LIST *OH_InstituteSpec_List_dup(const OH_INSTITUTE_SPEC_LIST *
   return p_dest;
 }
 
-void OH_InstituteSpec_ReadDb(OH_INSTITUTE_SPEC *p_struct, GWEN_DB_NODE *p_db) {
+void OH_InstituteSpec_ReadDb(OH_INSTITUTE_SPEC *p_struct, GWEN_DB_NODE *p_db)
+{
   assert(p_struct);
   /* member "id" */
   p_struct->id=GWEN_DB_GetIntValue(p_db, "id", 0, 0);
 
   /* member "name" */
   if (p_struct->name) {
-    free(p_struct->name); p_struct->name=NULL;
+    free(p_struct->name);
+    p_struct->name=NULL;
   }
-  { const char *s; s=GWEN_DB_GetCharValue(p_db, "name", 0, NULL); if (s) p_struct->name=strdup(s); }
-  if (p_struct->name==NULL) {  p_struct->name=NULL;
+  {
+    const char *s;
+    s=GWEN_DB_GetCharValue(p_db, "name", 0, NULL);
+    if (s)
+      p_struct->name=strdup(s);
+  }
+  if (p_struct->name==NULL) {
+    p_struct->name=NULL;
   }
 
 }
 
-int OH_InstituteSpec_WriteDb(const OH_INSTITUTE_SPEC *p_struct, GWEN_DB_NODE *p_db) {
+int OH_InstituteSpec_WriteDb(const OH_INSTITUTE_SPEC *p_struct, GWEN_DB_NODE *p_db)
+{
   int p_rv;
 
   assert(p_struct);
@@ -168,7 +191,12 @@ int OH_InstituteSpec_WriteDb(const OH_INSTITUTE_SPEC *p_struct, GWEN_DB_NODE *p_
   }
 
   /* member "name" */
-  if (p_struct->name) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "name", p_struct->name); else { GWEN_DB_DeleteVar(p_db, "name"); p_rv=0; }
+  if (p_struct->name)
+    p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "name", p_struct->name);
+  else {
+    GWEN_DB_DeleteVar(p_db, "name");
+    p_rv=0;
+  }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
@@ -177,26 +205,34 @@ int OH_InstituteSpec_WriteDb(const OH_INSTITUTE_SPEC *p_struct, GWEN_DB_NODE *p_
   return 0;
 }
 
-OH_INSTITUTE_SPEC *OH_InstituteSpec_fromDb(GWEN_DB_NODE *p_db) {
+OH_INSTITUTE_SPEC *OH_InstituteSpec_fromDb(GWEN_DB_NODE *p_db)
+{
   OH_INSTITUTE_SPEC *p_struct;
   p_struct=OH_InstituteSpec_new();
   OH_InstituteSpec_ReadDb(p_struct, p_db);
   return p_struct;
 }
 
-int OH_InstituteSpec_toDb(const OH_INSTITUTE_SPEC *p_struct, GWEN_DB_NODE *p_db) {
+int OH_InstituteSpec_toDb(const OH_INSTITUTE_SPEC *p_struct, GWEN_DB_NODE *p_db)
+{
   return OH_InstituteSpec_WriteDb(p_struct, p_db);
 }
 
-OH_INSTITUTE_SPEC *OH_InstituteSpec_List_GetById(const OH_INSTITUTE_SPEC_LIST *p_list, int p_cmp) {
+OH_INSTITUTE_SPEC *OH_InstituteSpec_List_GetById(const OH_INSTITUTE_SPEC_LIST *p_list, int p_cmp)
+{
   OH_INSTITUTE_SPEC *p_struct;
 
   assert(p_list);
   p_struct = OH_InstituteSpec_List_First(p_list);
-  while(p_struct) {
+  while (p_struct) {
     int p_rv;
 
-    if (p_struct->id==p_cmp) p_rv=0; else if (p_cmp<p_struct->id) p_rv=-1; else p_rv=1;
+    if (p_struct->id==p_cmp)
+      p_rv=0;
+    else if (p_cmp<p_struct->id)
+      p_rv=-1;
+    else
+      p_rv=1;
     if (p_rv == 0)
       return p_struct;
     p_struct = OH_InstituteSpec_List_Next(p_struct);

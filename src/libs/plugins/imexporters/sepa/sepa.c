@@ -267,7 +267,7 @@ static int AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
   tbuf=GWEN_Buffer_new(0, 64, 0, 1);
   pmtinf=AH_ImExporter_Sepa_PmtInf_List_First(pl);
   while (pmtinf) {
-    AB_Value_toHumanReadableString2(pmtinf->value, tbuf, 2, 0);
+    AB_Value_toHumanReadableString(pmtinf->value, tbuf, 2, 0);
     pmtinf->ctrlsum=strdup(GWEN_Buffer_GetStart(tbuf));
     assert(pmtinf->ctrlsum);
     GWEN_Buffer_Reset(tbuf);
@@ -275,7 +275,7 @@ static int AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
     pmtinf=AH_ImExporter_Sepa_PmtInf_List_Next(pmtinf);
   }
 
-  AB_Value_toHumanReadableString2(v, tbuf, 2, 0);
+  AB_Value_toHumanReadableString(v, tbuf, 2, 0);
   ctrlsum=strdup(GWEN_Buffer_GetStart(tbuf));
   assert(ctrlsum);
   GWEN_Buffer_free(tbuf);

@@ -173,7 +173,7 @@ int AH_ImExporterSEPA_Export_Pain_001(AB_IMEXPORTER *ie,
             GWEN_XMLNode_AddChild(nnn, nnnn);
 
             tbuf=GWEN_Buffer_new(0, 64, 0, 1);
-            AB_Value_toHumanReadableString2(tv, tbuf, 2, 0);
+            AB_Value_toHumanReadableString(tv, tbuf, 2, 0);
             s=AB_Value_GetCurrency(tv);
             if (!s)
               s="EUR";

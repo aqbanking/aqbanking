@@ -21,7 +21,8 @@ GWEN_LIST_FUNCTIONS(OH_INSTITUTE_DATA, OH_InstituteData)
 GWEN_LIST2_FUNCTIONS(OH_INSTITUTE_DATA, OH_InstituteData)
 
 
-OH_INSTITUTE_DATA *OH_InstituteData_new(void) {
+OH_INSTITUTE_DATA *OH_InstituteData_new(void)
+{
   OH_INSTITUTE_DATA *p_struct;
 
   GWEN_NEW_OBJECT(OH_INSTITUTE_DATA, p_struct)
@@ -43,35 +44,46 @@ OH_INSTITUTE_DATA *OH_InstituteData_new(void) {
   return p_struct;
 }
 
-void OH_InstituteData_free(OH_INSTITUTE_DATA *p_struct) {
+void OH_InstituteData_free(OH_INSTITUTE_DATA *p_struct)
+{
   if (p_struct) {
-  assert(p_struct->_refCount);
-  if (p_struct->_refCount==1) {
-    GWEN_LIST_FINI(OH_INSTITUTE_DATA, p_struct)
-  /* members */
-    free(p_struct->name); p_struct->name=NULL;
-    free(p_struct->fid); p_struct->fid=NULL;
-    free(p_struct->org); p_struct->org=NULL;
-    free(p_struct->brokerId); p_struct->brokerId=NULL;
-    free(p_struct->url); p_struct->url=NULL;
-    GWEN_Time_free(p_struct->lastOfxValidationTime); p_struct->lastOfxValidationTime=NULL;
-    GWEN_Time_free(p_struct->lastSslValidationTime); p_struct->lastSslValidationTime=NULL;
-    free(p_struct->fileName); p_struct->fileName=NULL;
-    p_struct->_refCount=0;
-    GWEN_FREE_OBJECT(p_struct);
-  }
-  else
-    p_struct->_refCount--;
+    assert(p_struct->_refCount);
+    if (p_struct->_refCount==1) {
+      GWEN_LIST_FINI(OH_INSTITUTE_DATA, p_struct)
+      /* members */
+      free(p_struct->name);
+      p_struct->name=NULL;
+      free(p_struct->fid);
+      p_struct->fid=NULL;
+      free(p_struct->org);
+      p_struct->org=NULL;
+      free(p_struct->brokerId);
+      p_struct->brokerId=NULL;
+      free(p_struct->url);
+      p_struct->url=NULL;
+      GWEN_Time_free(p_struct->lastOfxValidationTime);
+      p_struct->lastOfxValidationTime=NULL;
+      GWEN_Time_free(p_struct->lastSslValidationTime);
+      p_struct->lastSslValidationTime=NULL;
+      free(p_struct->fileName);
+      p_struct->fileName=NULL;
+      p_struct->_refCount=0;
+      GWEN_FREE_OBJECT(p_struct);
+    }
+    else
+      p_struct->_refCount--;
   }
 }
 
-void OH_InstituteData_Attach(OH_INSTITUTE_DATA *p_struct) {
+void OH_InstituteData_Attach(OH_INSTITUTE_DATA *p_struct)
+{
   assert(p_struct);
   assert(p_struct->_refCount);
   p_struct->_refCount++;
 }
 
-OH_INSTITUTE_DATA *OH_InstituteData_dup(const OH_INSTITUTE_DATA *p_src) {
+OH_INSTITUTE_DATA *OH_InstituteData_dup(const OH_INSTITUTE_DATA *p_src)
+{
   OH_INSTITUTE_DATA *p_struct;
 
   assert(p_src);
@@ -84,7 +96,8 @@ OH_INSTITUTE_DATA *OH_InstituteData_dup(const OH_INSTITUTE_DATA *p_src) {
 
   /* member "name" */
   if (p_struct->name) {
-    free(p_struct->name); p_struct->name=NULL;
+    free(p_struct->name);
+    p_struct->name=NULL;
     p_struct->name=NULL;
   }
   if (p_src->name) {
@@ -93,7 +106,8 @@ OH_INSTITUTE_DATA *OH_InstituteData_dup(const OH_INSTITUTE_DATA *p_src) {
 
   /* member "fid" */
   if (p_struct->fid) {
-    free(p_struct->fid); p_struct->fid=NULL;
+    free(p_struct->fid);
+    p_struct->fid=NULL;
     p_struct->fid=NULL;
   }
   if (p_src->fid) {
@@ -102,7 +116,8 @@ OH_INSTITUTE_DATA *OH_InstituteData_dup(const OH_INSTITUTE_DATA *p_src) {
 
   /* member "org" */
   if (p_struct->org) {
-    free(p_struct->org); p_struct->org=NULL;
+    free(p_struct->org);
+    p_struct->org=NULL;
     p_struct->org=NULL;
   }
   if (p_src->org) {
@@ -111,7 +126,8 @@ OH_INSTITUTE_DATA *OH_InstituteData_dup(const OH_INSTITUTE_DATA *p_src) {
 
   /* member "brokerId" */
   if (p_struct->brokerId) {
-    free(p_struct->brokerId); p_struct->brokerId=NULL;
+    free(p_struct->brokerId);
+    p_struct->brokerId=NULL;
     p_struct->brokerId=NULL;
   }
   if (p_src->brokerId) {
@@ -120,7 +136,8 @@ OH_INSTITUTE_DATA *OH_InstituteData_dup(const OH_INSTITUTE_DATA *p_src) {
 
   /* member "url" */
   if (p_struct->url) {
-    free(p_struct->url); p_struct->url=NULL;
+    free(p_struct->url);
+    p_struct->url=NULL;
     p_struct->url=NULL;
   }
   if (p_src->url) {
@@ -129,7 +146,8 @@ OH_INSTITUTE_DATA *OH_InstituteData_dup(const OH_INSTITUTE_DATA *p_src) {
 
   /* member "lastOfxValidationTime" */
   if (p_struct->lastOfxValidationTime) {
-    GWEN_Time_free(p_struct->lastOfxValidationTime); p_struct->lastOfxValidationTime=NULL;
+    GWEN_Time_free(p_struct->lastOfxValidationTime);
+    p_struct->lastOfxValidationTime=NULL;
     p_struct->lastOfxValidationTime=NULL;
   }
   if (p_src->lastOfxValidationTime) {
@@ -138,7 +156,8 @@ OH_INSTITUTE_DATA *OH_InstituteData_dup(const OH_INSTITUTE_DATA *p_src) {
 
   /* member "lastSslValidationTime" */
   if (p_struct->lastSslValidationTime) {
-    GWEN_Time_free(p_struct->lastSslValidationTime); p_struct->lastSslValidationTime=NULL;
+    GWEN_Time_free(p_struct->lastSslValidationTime);
+    p_struct->lastSslValidationTime=NULL;
     p_struct->lastSslValidationTime=NULL;
   }
   if (p_src->lastSslValidationTime) {
@@ -147,7 +166,8 @@ OH_INSTITUTE_DATA *OH_InstituteData_dup(const OH_INSTITUTE_DATA *p_src) {
 
   /* member "fileName" */
   if (p_struct->fileName) {
-    free(p_struct->fileName); p_struct->fileName=NULL;
+    free(p_struct->fileName);
+    p_struct->fileName=NULL;
     p_struct->fileName=NULL;
   }
   if (p_src->fileName) {
@@ -157,8 +177,9 @@ OH_INSTITUTE_DATA *OH_InstituteData_dup(const OH_INSTITUTE_DATA *p_src) {
   return p_struct;
 }
 
-OH_INSTITUTE_DATA *OH_InstituteData_copy(OH_INSTITUTE_DATA *p_struct, const OH_INSTITUTE_DATA *p_src) {
-    assert(p_struct);
+OH_INSTITUTE_DATA *OH_InstituteData_copy(OH_INSTITUTE_DATA *p_struct, const OH_INSTITUTE_DATA *p_src)
+{
+  assert(p_struct);
   assert(p_src);
   /* member "id" */
   p_struct->id=p_src->id;
@@ -168,7 +189,8 @@ OH_INSTITUTE_DATA *OH_InstituteData_copy(OH_INSTITUTE_DATA *p_struct, const OH_I
 
   /* member "name" */
   if (p_struct->name) {
-    free(p_struct->name); p_struct->name=NULL;
+    free(p_struct->name);
+    p_struct->name=NULL;
     p_struct->name=NULL;
   }
   if (p_src->name) {
@@ -177,7 +199,8 @@ OH_INSTITUTE_DATA *OH_InstituteData_copy(OH_INSTITUTE_DATA *p_struct, const OH_I
 
   /* member "fid" */
   if (p_struct->fid) {
-    free(p_struct->fid); p_struct->fid=NULL;
+    free(p_struct->fid);
+    p_struct->fid=NULL;
     p_struct->fid=NULL;
   }
   if (p_src->fid) {
@@ -186,7 +209,8 @@ OH_INSTITUTE_DATA *OH_InstituteData_copy(OH_INSTITUTE_DATA *p_struct, const OH_I
 
   /* member "org" */
   if (p_struct->org) {
-    free(p_struct->org); p_struct->org=NULL;
+    free(p_struct->org);
+    p_struct->org=NULL;
     p_struct->org=NULL;
   }
   if (p_src->org) {
@@ -195,7 +219,8 @@ OH_INSTITUTE_DATA *OH_InstituteData_copy(OH_INSTITUTE_DATA *p_struct, const OH_I
 
   /* member "brokerId" */
   if (p_struct->brokerId) {
-    free(p_struct->brokerId); p_struct->brokerId=NULL;
+    free(p_struct->brokerId);
+    p_struct->brokerId=NULL;
     p_struct->brokerId=NULL;
   }
   if (p_src->brokerId) {
@@ -204,7 +229,8 @@ OH_INSTITUTE_DATA *OH_InstituteData_copy(OH_INSTITUTE_DATA *p_struct, const OH_I
 
   /* member "url" */
   if (p_struct->url) {
-    free(p_struct->url); p_struct->url=NULL;
+    free(p_struct->url);
+    p_struct->url=NULL;
     p_struct->url=NULL;
   }
   if (p_src->url) {
@@ -213,7 +239,8 @@ OH_INSTITUTE_DATA *OH_InstituteData_copy(OH_INSTITUTE_DATA *p_struct, const OH_I
 
   /* member "lastOfxValidationTime" */
   if (p_struct->lastOfxValidationTime) {
-    GWEN_Time_free(p_struct->lastOfxValidationTime); p_struct->lastOfxValidationTime=NULL;
+    GWEN_Time_free(p_struct->lastOfxValidationTime);
+    p_struct->lastOfxValidationTime=NULL;
     p_struct->lastOfxValidationTime=NULL;
   }
   if (p_src->lastOfxValidationTime) {
@@ -222,7 +249,8 @@ OH_INSTITUTE_DATA *OH_InstituteData_copy(OH_INSTITUTE_DATA *p_struct, const OH_I
 
   /* member "lastSslValidationTime" */
   if (p_struct->lastSslValidationTime) {
-    GWEN_Time_free(p_struct->lastSslValidationTime); p_struct->lastSslValidationTime=NULL;
+    GWEN_Time_free(p_struct->lastSslValidationTime);
+    p_struct->lastSslValidationTime=NULL;
     p_struct->lastSslValidationTime=NULL;
   }
   if (p_src->lastSslValidationTime) {
@@ -231,7 +259,8 @@ OH_INSTITUTE_DATA *OH_InstituteData_copy(OH_INSTITUTE_DATA *p_struct, const OH_I
 
   /* member "fileName" */
   if (p_struct->fileName) {
-    free(p_struct->fileName); p_struct->fileName=NULL;
+    free(p_struct->fileName);
+    p_struct->fileName=NULL;
     p_struct->fileName=NULL;
   }
   if (p_src->fileName) {
@@ -241,80 +270,96 @@ OH_INSTITUTE_DATA *OH_InstituteData_copy(OH_INSTITUTE_DATA *p_struct, const OH_I
   return p_struct;
 }
 
-int OH_InstituteData_GetId(const OH_INSTITUTE_DATA *p_struct) {
+int OH_InstituteData_GetId(const OH_INSTITUTE_DATA *p_struct)
+{
   assert(p_struct);
   return p_struct->id;
 }
 
-uint32_t OH_InstituteData_GetFlags(const OH_INSTITUTE_DATA *p_struct) {
+uint32_t OH_InstituteData_GetFlags(const OH_INSTITUTE_DATA *p_struct)
+{
   assert(p_struct);
   return p_struct->flags;
 }
 
-const char *OH_InstituteData_GetName(const OH_INSTITUTE_DATA *p_struct) {
+const char *OH_InstituteData_GetName(const OH_INSTITUTE_DATA *p_struct)
+{
   assert(p_struct);
   return p_struct->name;
 }
 
-const char *OH_InstituteData_GetFid(const OH_INSTITUTE_DATA *p_struct) {
+const char *OH_InstituteData_GetFid(const OH_INSTITUTE_DATA *p_struct)
+{
   assert(p_struct);
   return p_struct->fid;
 }
 
-const char *OH_InstituteData_GetOrg(const OH_INSTITUTE_DATA *p_struct) {
+const char *OH_InstituteData_GetOrg(const OH_INSTITUTE_DATA *p_struct)
+{
   assert(p_struct);
   return p_struct->org;
 }
 
-const char *OH_InstituteData_GetBrokerId(const OH_INSTITUTE_DATA *p_struct) {
+const char *OH_InstituteData_GetBrokerId(const OH_INSTITUTE_DATA *p_struct)
+{
   assert(p_struct);
   return p_struct->brokerId;
 }
 
-const char *OH_InstituteData_GetUrl(const OH_INSTITUTE_DATA *p_struct) {
+const char *OH_InstituteData_GetUrl(const OH_INSTITUTE_DATA *p_struct)
+{
   assert(p_struct);
   return p_struct->url;
 }
 
-const GWEN_TIME *OH_InstituteData_GetLastOfxValidationTime(const OH_INSTITUTE_DATA *p_struct) {
+const GWEN_TIME *OH_InstituteData_GetLastOfxValidationTime(const OH_INSTITUTE_DATA *p_struct)
+{
   assert(p_struct);
   return p_struct->lastOfxValidationTime;
 }
 
-const GWEN_TIME *OH_InstituteData_GetLastSslValidationTime(const OH_INSTITUTE_DATA *p_struct) {
+const GWEN_TIME *OH_InstituteData_GetLastSslValidationTime(const OH_INSTITUTE_DATA *p_struct)
+{
   assert(p_struct);
   return p_struct->lastSslValidationTime;
 }
 
-const char *OH_InstituteData_GetFileName(const OH_INSTITUTE_DATA *p_struct) {
+const char *OH_InstituteData_GetFileName(const OH_INSTITUTE_DATA *p_struct)
+{
   assert(p_struct);
   return p_struct->fileName;
 }
 
-void OH_InstituteData_SetId(OH_INSTITUTE_DATA *p_struct, int p_src) {
+void OH_InstituteData_SetId(OH_INSTITUTE_DATA *p_struct, int p_src)
+{
   assert(p_struct);
   p_struct->id=p_src;
 }
 
-void OH_InstituteData_SetFlags(OH_INSTITUTE_DATA *p_struct, uint32_t p_src) {
+void OH_InstituteData_SetFlags(OH_INSTITUTE_DATA *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->flags=p_src;
 }
 
-void OH_InstituteData_AddFlags(OH_INSTITUTE_DATA *p_struct, uint32_t p_src) {
+void OH_InstituteData_AddFlags(OH_INSTITUTE_DATA *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->flags|=p_src;
 }
 
-void OH_InstituteData_SubFlags(OH_INSTITUTE_DATA *p_struct, uint32_t p_src) {
+void OH_InstituteData_SubFlags(OH_INSTITUTE_DATA *p_struct, uint32_t p_src)
+{
   assert(p_struct);
   p_struct->flags&=~p_src;
 }
 
-void OH_InstituteData_SetName(OH_INSTITUTE_DATA *p_struct, const char *p_src) {
+void OH_InstituteData_SetName(OH_INSTITUTE_DATA *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->name) {
-    free(p_struct->name); p_struct->name=NULL;
+    free(p_struct->name);
+    p_struct->name=NULL;
   }
   if (p_src) {
     p_struct->name=strdup(p_src);
@@ -324,10 +369,12 @@ void OH_InstituteData_SetName(OH_INSTITUTE_DATA *p_struct, const char *p_src) {
   }
 }
 
-void OH_InstituteData_SetFid(OH_INSTITUTE_DATA *p_struct, const char *p_src) {
+void OH_InstituteData_SetFid(OH_INSTITUTE_DATA *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->fid) {
-    free(p_struct->fid); p_struct->fid=NULL;
+    free(p_struct->fid);
+    p_struct->fid=NULL;
   }
   if (p_src) {
     p_struct->fid=strdup(p_src);
@@ -337,10 +384,12 @@ void OH_InstituteData_SetFid(OH_INSTITUTE_DATA *p_struct, const char *p_src) {
   }
 }
 
-void OH_InstituteData_SetOrg(OH_INSTITUTE_DATA *p_struct, const char *p_src) {
+void OH_InstituteData_SetOrg(OH_INSTITUTE_DATA *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->org) {
-    free(p_struct->org); p_struct->org=NULL;
+    free(p_struct->org);
+    p_struct->org=NULL;
   }
   if (p_src) {
     p_struct->org=strdup(p_src);
@@ -350,10 +399,12 @@ void OH_InstituteData_SetOrg(OH_INSTITUTE_DATA *p_struct, const char *p_src) {
   }
 }
 
-void OH_InstituteData_SetBrokerId(OH_INSTITUTE_DATA *p_struct, const char *p_src) {
+void OH_InstituteData_SetBrokerId(OH_INSTITUTE_DATA *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->brokerId) {
-    free(p_struct->brokerId); p_struct->brokerId=NULL;
+    free(p_struct->brokerId);
+    p_struct->brokerId=NULL;
   }
   if (p_src) {
     p_struct->brokerId=strdup(p_src);
@@ -363,10 +414,12 @@ void OH_InstituteData_SetBrokerId(OH_INSTITUTE_DATA *p_struct, const char *p_src
   }
 }
 
-void OH_InstituteData_SetUrl(OH_INSTITUTE_DATA *p_struct, const char *p_src) {
+void OH_InstituteData_SetUrl(OH_INSTITUTE_DATA *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->url) {
-    free(p_struct->url); p_struct->url=NULL;
+    free(p_struct->url);
+    p_struct->url=NULL;
   }
   if (p_src) {
     p_struct->url=strdup(p_src);
@@ -376,10 +429,12 @@ void OH_InstituteData_SetUrl(OH_INSTITUTE_DATA *p_struct, const char *p_src) {
   }
 }
 
-void OH_InstituteData_SetLastOfxValidationTime(OH_INSTITUTE_DATA *p_struct, const GWEN_TIME *p_src) {
+void OH_InstituteData_SetLastOfxValidationTime(OH_INSTITUTE_DATA *p_struct, const GWEN_TIME *p_src)
+{
   assert(p_struct);
   if (p_struct->lastOfxValidationTime) {
-    GWEN_Time_free(p_struct->lastOfxValidationTime); p_struct->lastOfxValidationTime=NULL;
+    GWEN_Time_free(p_struct->lastOfxValidationTime);
+    p_struct->lastOfxValidationTime=NULL;
   }
   if (p_src) {
     p_struct->lastOfxValidationTime=GWEN_Time_dup(p_src);
@@ -389,10 +444,12 @@ void OH_InstituteData_SetLastOfxValidationTime(OH_INSTITUTE_DATA *p_struct, cons
   }
 }
 
-void OH_InstituteData_SetLastSslValidationTime(OH_INSTITUTE_DATA *p_struct, const GWEN_TIME *p_src) {
+void OH_InstituteData_SetLastSslValidationTime(OH_INSTITUTE_DATA *p_struct, const GWEN_TIME *p_src)
+{
   assert(p_struct);
   if (p_struct->lastSslValidationTime) {
-    GWEN_Time_free(p_struct->lastSslValidationTime); p_struct->lastSslValidationTime=NULL;
+    GWEN_Time_free(p_struct->lastSslValidationTime);
+    p_struct->lastSslValidationTime=NULL;
   }
   if (p_src) {
     p_struct->lastSslValidationTime=GWEN_Time_dup(p_src);
@@ -402,10 +459,12 @@ void OH_InstituteData_SetLastSslValidationTime(OH_INSTITUTE_DATA *p_struct, cons
   }
 }
 
-void OH_InstituteData_SetFileName(OH_INSTITUTE_DATA *p_struct, const char *p_src) {
+void OH_InstituteData_SetFileName(OH_INSTITUTE_DATA *p_struct, const char *p_src)
+{
   assert(p_struct);
   if (p_struct->fileName) {
-    free(p_struct->fileName); p_struct->fileName=NULL;
+    free(p_struct->fileName);
+    p_struct->fileName=NULL;
   }
   if (p_src) {
     p_struct->fileName=strdup(p_src);
@@ -416,14 +475,15 @@ void OH_InstituteData_SetFileName(OH_INSTITUTE_DATA *p_struct, const char *p_src
 }
 
 /* list1 functions */
-OH_INSTITUTE_DATA_LIST *OH_InstituteData_List_dup(const OH_INSTITUTE_DATA_LIST *p_src) {
+OH_INSTITUTE_DATA_LIST *OH_InstituteData_List_dup(const OH_INSTITUTE_DATA_LIST *p_src)
+{
   OH_INSTITUTE_DATA_LIST *p_dest;
   OH_INSTITUTE_DATA *p_elem;
 
   assert(p_src);
   p_dest=OH_InstituteData_List_new();
   p_elem=OH_InstituteData_List_First(p_src);
-  while(p_elem) {
+  while (p_elem) {
     OH_INSTITUTE_DATA *p_cpy;
 
     p_cpy=OH_InstituteData_dup(p_elem);
@@ -434,7 +494,8 @@ OH_INSTITUTE_DATA_LIST *OH_InstituteData_List_dup(const OH_INSTITUTE_DATA_LIST *
   return p_dest;
 }
 
-void OH_InstituteData_ReadDb(OH_INSTITUTE_DATA *p_struct, GWEN_DB_NODE *p_db) {
+void OH_InstituteData_ReadDb(OH_INSTITUTE_DATA *p_struct, GWEN_DB_NODE *p_db)
+{
   assert(p_struct);
   /* member "id" */
   p_struct->id=GWEN_DB_GetIntValue(p_db, "id", 0, 0);
@@ -444,70 +505,121 @@ void OH_InstituteData_ReadDb(OH_INSTITUTE_DATA *p_struct, GWEN_DB_NODE *p_db) {
 
   /* member "name" */
   if (p_struct->name) {
-    free(p_struct->name); p_struct->name=NULL;
+    free(p_struct->name);
+    p_struct->name=NULL;
   }
-  { const char *s; s=GWEN_DB_GetCharValue(p_db, "name", 0, NULL); if (s) p_struct->name=strdup(s); }
-  if (p_struct->name==NULL) {  p_struct->name=NULL;
+  {
+    const char *s;
+    s=GWEN_DB_GetCharValue(p_db, "name", 0, NULL);
+    if (s)
+      p_struct->name=strdup(s);
+  }
+  if (p_struct->name==NULL) {
+    p_struct->name=NULL;
   }
 
   /* member "fid" */
   if (p_struct->fid) {
-    free(p_struct->fid); p_struct->fid=NULL;
+    free(p_struct->fid);
+    p_struct->fid=NULL;
   }
-  { const char *s; s=GWEN_DB_GetCharValue(p_db, "fid", 0, NULL); if (s) p_struct->fid=strdup(s); }
-  if (p_struct->fid==NULL) {  p_struct->fid=NULL;
+  {
+    const char *s;
+    s=GWEN_DB_GetCharValue(p_db, "fid", 0, NULL);
+    if (s)
+      p_struct->fid=strdup(s);
+  }
+  if (p_struct->fid==NULL) {
+    p_struct->fid=NULL;
   }
 
   /* member "org" */
   if (p_struct->org) {
-    free(p_struct->org); p_struct->org=NULL;
+    free(p_struct->org);
+    p_struct->org=NULL;
   }
-  { const char *s; s=GWEN_DB_GetCharValue(p_db, "org", 0, NULL); if (s) p_struct->org=strdup(s); }
-  if (p_struct->org==NULL) {  p_struct->org=NULL;
+  {
+    const char *s;
+    s=GWEN_DB_GetCharValue(p_db, "org", 0, NULL);
+    if (s)
+      p_struct->org=strdup(s);
+  }
+  if (p_struct->org==NULL) {
+    p_struct->org=NULL;
   }
 
   /* member "brokerId" */
   if (p_struct->brokerId) {
-    free(p_struct->brokerId); p_struct->brokerId=NULL;
+    free(p_struct->brokerId);
+    p_struct->brokerId=NULL;
   }
-  { const char *s; s=GWEN_DB_GetCharValue(p_db, "brokerId", 0, NULL); if (s) p_struct->brokerId=strdup(s); }
-  if (p_struct->brokerId==NULL) {  p_struct->brokerId=NULL;
+  {
+    const char *s;
+    s=GWEN_DB_GetCharValue(p_db, "brokerId", 0, NULL);
+    if (s)
+      p_struct->brokerId=strdup(s);
+  }
+  if (p_struct->brokerId==NULL) {
+    p_struct->brokerId=NULL;
   }
 
   /* member "url" */
   if (p_struct->url) {
-    free(p_struct->url); p_struct->url=NULL;
+    free(p_struct->url);
+    p_struct->url=NULL;
   }
-  { const char *s; s=GWEN_DB_GetCharValue(p_db, "url", 0, NULL); if (s) p_struct->url=strdup(s); }
-  if (p_struct->url==NULL) {  p_struct->url=NULL;
+  {
+    const char *s;
+    s=GWEN_DB_GetCharValue(p_db, "url", 0, NULL);
+    if (s)
+      p_struct->url=strdup(s);
+  }
+  if (p_struct->url==NULL) {
+    p_struct->url=NULL;
   }
 
   /* member "lastOfxValidationTime" */
   if (p_struct->lastOfxValidationTime) {
-    GWEN_Time_free(p_struct->lastOfxValidationTime); p_struct->lastOfxValidationTime=NULL;
+    GWEN_Time_free(p_struct->lastOfxValidationTime);
+    p_struct->lastOfxValidationTime=NULL;
   }
-  { GWEN_DB_NODE *dbDest; dbDest=GWEN_DB_GetGroup(p_db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "lastOfxValidationTime"); if (dbDest) p_struct->lastOfxValidationTime=GWEN_Time_fromDb(dbDest); }
-  if (p_struct->lastOfxValidationTime==NULL) {  p_struct->lastOfxValidationTime=NULL;
+  {
+    GWEN_DB_NODE *dbDest;
+    dbDest=GWEN_DB_GetGroup(p_db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "lastOfxValidationTime");
+    if (dbDest)
+      p_struct->lastOfxValidationTime=GWEN_Time_fromDb(dbDest);
+  }
+  if (p_struct->lastOfxValidationTime==NULL) {
+    p_struct->lastOfxValidationTime=NULL;
   }
 
   /* member "lastSslValidationTime" */
   if (p_struct->lastSslValidationTime) {
-    GWEN_Time_free(p_struct->lastSslValidationTime); p_struct->lastSslValidationTime=NULL;
+    GWEN_Time_free(p_struct->lastSslValidationTime);
+    p_struct->lastSslValidationTime=NULL;
   }
-  { GWEN_DB_NODE *dbDest; dbDest=GWEN_DB_GetGroup(p_db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "lastSslValidationTime"); if (dbDest) p_struct->lastSslValidationTime=GWEN_Time_fromDb(dbDest); }
-  if (p_struct->lastSslValidationTime==NULL) {  p_struct->lastSslValidationTime=NULL;
+  {
+    GWEN_DB_NODE *dbDest;
+    dbDest=GWEN_DB_GetGroup(p_db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "lastSslValidationTime");
+    if (dbDest)
+      p_struct->lastSslValidationTime=GWEN_Time_fromDb(dbDest);
+  }
+  if (p_struct->lastSslValidationTime==NULL) {
+    p_struct->lastSslValidationTime=NULL;
   }
 
   /* member "fileName" */
   if (p_struct->fileName) {
-    free(p_struct->fileName); p_struct->fileName=NULL;
+    free(p_struct->fileName);
+    p_struct->fileName=NULL;
   }
   /* member "fileName" is volatile, just presetting */
   p_struct->fileName=NULL;
 
 }
 
-int OH_InstituteData_WriteDb(const OH_INSTITUTE_DATA *p_struct, GWEN_DB_NODE *p_db) {
+int OH_InstituteData_WriteDb(const OH_INSTITUTE_DATA *p_struct, GWEN_DB_NODE *p_db)
+{
   int p_rv;
 
   assert(p_struct);
@@ -526,49 +638,88 @@ int OH_InstituteData_WriteDb(const OH_INSTITUTE_DATA *p_struct, GWEN_DB_NODE *p_
   }
 
   /* member "name" */
-  if (p_struct->name) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "name", p_struct->name); else { GWEN_DB_DeleteVar(p_db, "name"); p_rv=0; }
+  if (p_struct->name)
+    p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "name", p_struct->name);
+  else {
+    GWEN_DB_DeleteVar(p_db, "name");
+    p_rv=0;
+  }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
   }
 
   /* member "fid" */
-  if (p_struct->fid) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "fid", p_struct->fid); else { GWEN_DB_DeleteVar(p_db, "fid"); p_rv=0; }
+  if (p_struct->fid)
+    p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "fid", p_struct->fid);
+  else {
+    GWEN_DB_DeleteVar(p_db, "fid");
+    p_rv=0;
+  }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
   }
 
   /* member "org" */
-  if (p_struct->org) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "org", p_struct->org); else { GWEN_DB_DeleteVar(p_db, "org"); p_rv=0; }
+  if (p_struct->org)
+    p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "org", p_struct->org);
+  else {
+    GWEN_DB_DeleteVar(p_db, "org");
+    p_rv=0;
+  }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
   }
 
   /* member "brokerId" */
-  if (p_struct->brokerId) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "brokerId", p_struct->brokerId); else { GWEN_DB_DeleteVar(p_db, "brokerId"); p_rv=0; }
+  if (p_struct->brokerId)
+    p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "brokerId", p_struct->brokerId);
+  else {
+    GWEN_DB_DeleteVar(p_db, "brokerId");
+    p_rv=0;
+  }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
   }
 
   /* member "url" */
-  if (p_struct->url) p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "url", p_struct->url); else { GWEN_DB_DeleteVar(p_db, "url"); p_rv=0; }
+  if (p_struct->url)
+    p_rv=GWEN_DB_SetCharValue(p_db, GWEN_DB_FLAGS_OVERWRITE_VARS, "url", p_struct->url);
+  else {
+    GWEN_DB_DeleteVar(p_db, "url");
+    p_rv=0;
+  }
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
   }
 
   /* member "lastOfxValidationTime" */
-  if (p_struct->lastOfxValidationTime){ GWEN_DB_NODE *dbDest; dbDest=GWEN_DB_GetGroup(p_db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "lastOfxValidationTime"); assert(dbDest); p_rv=GWEN_Time_toDb(p_struct->lastOfxValidationTime, dbDest); } else p_rv=0;
+  if (p_struct->lastOfxValidationTime) {
+    GWEN_DB_NODE *dbDest;
+    dbDest=GWEN_DB_GetGroup(p_db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "lastOfxValidationTime");
+    assert(dbDest);
+    p_rv=GWEN_Time_toDb(p_struct->lastOfxValidationTime, dbDest);
+  }
+  else
+    p_rv=0;
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
   }
 
   /* member "lastSslValidationTime" */
-  if (p_struct->lastSslValidationTime){ GWEN_DB_NODE *dbDest; dbDest=GWEN_DB_GetGroup(p_db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "lastSslValidationTime"); assert(dbDest); p_rv=GWEN_Time_toDb(p_struct->lastSslValidationTime, dbDest); } else p_rv=0;
+  if (p_struct->lastSslValidationTime) {
+    GWEN_DB_NODE *dbDest;
+    dbDest=GWEN_DB_GetGroup(p_db, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "lastSslValidationTime");
+    assert(dbDest);
+    p_rv=GWEN_Time_toDb(p_struct->lastSslValidationTime, dbDest);
+  }
+  else
+    p_rv=0;
   if (p_rv<0) {
     DBG_INFO(GWEN_LOGDOMAIN, "here (%d)\n", p_rv);
     return p_rv;
@@ -579,26 +730,34 @@ int OH_InstituteData_WriteDb(const OH_INSTITUTE_DATA *p_struct, GWEN_DB_NODE *p_
   return 0;
 }
 
-OH_INSTITUTE_DATA *OH_InstituteData_fromDb(GWEN_DB_NODE *p_db) {
+OH_INSTITUTE_DATA *OH_InstituteData_fromDb(GWEN_DB_NODE *p_db)
+{
   OH_INSTITUTE_DATA *p_struct;
   p_struct=OH_InstituteData_new();
   OH_InstituteData_ReadDb(p_struct, p_db);
   return p_struct;
 }
 
-int OH_InstituteData_toDb(const OH_INSTITUTE_DATA *p_struct, GWEN_DB_NODE *p_db) {
+int OH_InstituteData_toDb(const OH_INSTITUTE_DATA *p_struct, GWEN_DB_NODE *p_db)
+{
   return OH_InstituteData_WriteDb(p_struct, p_db);
 }
 
-OH_INSTITUTE_DATA *OH_InstituteData_List_GetById(const OH_INSTITUTE_DATA_LIST *p_list, int p_cmp) {
+OH_INSTITUTE_DATA *OH_InstituteData_List_GetById(const OH_INSTITUTE_DATA_LIST *p_list, int p_cmp)
+{
   OH_INSTITUTE_DATA *p_struct;
 
   assert(p_list);
   p_struct = OH_InstituteData_List_First(p_list);
-  while(p_struct) {
+  while (p_struct) {
     int p_rv;
 
-    if (p_struct->id==p_cmp) p_rv=0; else if (p_cmp<p_struct->id) p_rv=-1; else p_rv=1;
+    if (p_struct->id==p_cmp)
+      p_rv=0;
+    else if (p_cmp<p_struct->id)
+      p_rv=-1;
+    else
+      p_rv=1;
     if (p_rv == 0)
       return p_struct;
     p_struct = OH_InstituteData_List_Next(p_struct);

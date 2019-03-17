@@ -128,7 +128,7 @@ int listTrans(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
           /* translate value */
           v=AB_Transaction_GetValue(t);
           if (v) {
-            AB_Value_toHumanReadableString(v, dbuf, 2);
+            AB_Value_toHumanReadableString(v, dbuf, 2, 0);
             GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS, "valueAsString", GWEN_Buffer_GetStart(dbuf));
             GWEN_Buffer_Reset(dbuf);
           }
@@ -330,57 +330,60 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
     }
     GWEN_Buffer_AppendString(ubuf, "\n");
     GWEN_Buffer_AppendString(ubuf, "The template string given to \"-T\" may contain variables to specify the output.\n");
-    GWEN_Buffer_AppendString(ubuf,"Default is (all in one line): \n");
+    GWEN_Buffer_AppendString(ubuf, "Default is (all in one line): \n");
     GWEN_Buffer_AppendString(ubuf, "  $(dateOrValutaDateAsString)\\t$(valueAsString)\\t$(localBankcode)\\t\n");
-    GWEN_Buffer_AppendString(ubuf, "   $(localAccountNumber)\\t$(localIban)\\t$(remoteName)\\t$(remoteIban)\\t$(purpose)\n");
+    GWEN_Buffer_AppendString(ubuf,
+                             "   $(localAccountNumber)\\t$(localIban)\\t$(remoteName)\\t$(remoteIban)\\t$(purpose)\n");
     GWEN_Buffer_AppendString(ubuf, "\n");
-    GWEN_Buffer_AppendString(ubuf,"Often used variables are:\n");
-    GWEN_Buffer_AppendString(ubuf," $(status)              : Transaction status\n");
-    GWEN_Buffer_AppendString(ubuf," $(idForApplication)    : Transaction id assigned by the application\n");
-    GWEN_Buffer_AppendString(ubuf," $(fiId)                : Transaction id assigned by the bank\n");
+    GWEN_Buffer_AppendString(ubuf, "Often used variables are:\n");
+    GWEN_Buffer_AppendString(ubuf, " $(status)              : Transaction status\n");
+    GWEN_Buffer_AppendString(ubuf, " $(idForApplication)    : Transaction id assigned by the application\n");
+    GWEN_Buffer_AppendString(ubuf, " $(fiId)                : Transaction id assigned by the bank\n");
 
-    GWEN_Buffer_AppendString(ubuf," $(localIban)           : Local IBAN\n");
-    GWEN_Buffer_AppendString(ubuf," $(localBic)            : Local BIC\n");
-    GWEN_Buffer_AppendString(ubuf," $(localBankcode)       : Local bank code (Bankleitzahl)\n");
-    GWEN_Buffer_AppendString(ubuf," $(localAccountnumber)  : Local account number\n");
+    GWEN_Buffer_AppendString(ubuf, " $(localIban)           : Local IBAN\n");
+    GWEN_Buffer_AppendString(ubuf, " $(localBic)            : Local BIC\n");
+    GWEN_Buffer_AppendString(ubuf, " $(localBankcode)       : Local bank code (Bankleitzahl)\n");
+    GWEN_Buffer_AppendString(ubuf, " $(localAccountnumber)  : Local account number\n");
 
-    GWEN_Buffer_AppendString(ubuf," $(remoteIban)          : Remote IBAN\n");
-    GWEN_Buffer_AppendString(ubuf," $(remoteBic)           : Remote account number\n");
-    GWEN_Buffer_AppendString(ubuf," $(remoteBankcode)      : Remote bank code (Bankleitzahl)\n");
-    GWEN_Buffer_AppendString(ubuf," $(remoteAccountnumber) : Remote account number\n");
+    GWEN_Buffer_AppendString(ubuf, " $(remoteIban)          : Remote IBAN\n");
+    GWEN_Buffer_AppendString(ubuf, " $(remoteBic)           : Remote account number\n");
+    GWEN_Buffer_AppendString(ubuf, " $(remoteBankcode)      : Remote bank code (Bankleitzahl)\n");
+    GWEN_Buffer_AppendString(ubuf, " $(remoteAccountnumber) : Remote account number\n");
 
-    GWEN_Buffer_AppendString(ubuf," $(dateAsString)        : Date of the balance in format ");
+    GWEN_Buffer_AppendString(ubuf, " $(dateAsString)        : Date of the balance in format ");
     GWEN_Buffer_AppendString(ubuf, I18N("DD.MM.YYYY"));
-    GWEN_Buffer_AppendString(ubuf," \n");
-    GWEN_Buffer_AppendString(ubuf," $(valutaDateAsString)  : Valuta Date of the balance in format ");
+    GWEN_Buffer_AppendString(ubuf, " \n");
+    GWEN_Buffer_AppendString(ubuf, " $(valutaDateAsString)  : Valuta Date of the balance in format ");
     GWEN_Buffer_AppendString(ubuf, I18N("DD.MM.YYYY"));
-    GWEN_Buffer_AppendString(ubuf," \n");
-    GWEN_Buffer_AppendString(ubuf," $(valueAsString)       : Amount of the balance\n");
+    GWEN_Buffer_AppendString(ubuf, " \n");
+    GWEN_Buffer_AppendString(ubuf, " $(valueAsString)       : Amount of the balance\n");
 
-    GWEN_Buffer_AppendString(ubuf," $(purpose)             : Memo/purpose (\"Verwendungszweck\")\n");
+    GWEN_Buffer_AppendString(ubuf, " $(purpose)             : Memo/purpose (\"Verwendungszweck\")\n");
 
-    GWEN_Buffer_AppendString(ubuf," $(customerReference)   : Customer reference\n");
-    GWEN_Buffer_AppendString(ubuf," $(bankReference)       : Bank reference\n");
-    GWEN_Buffer_AppendString(ubuf," $(endToEndReference)   : SEPA end to end reference\n");
+    GWEN_Buffer_AppendString(ubuf, " $(customerReference)   : Customer reference\n");
+    GWEN_Buffer_AppendString(ubuf, " $(bankReference)       : Bank reference\n");
+    GWEN_Buffer_AppendString(ubuf, " $(endToEndReference)   : SEPA end to end reference\n");
     GWEN_Buffer_AppendString(ubuf, "\n");
 
-    GWEN_Buffer_AppendString(ubuf,"Variables used with debit notes:\n");
+    GWEN_Buffer_AppendString(ubuf, "Variables used with debit notes:\n");
 
-    GWEN_Buffer_AppendString(ubuf," $(creditorSchemeId)    : Creditor Schema Id\n");
-    GWEN_Buffer_AppendString(ubuf," $(originatorId)        : Originator Id\n");
-    GWEN_Buffer_AppendString(ubuf," $(mandateId)           : Mandate Id\n");
-    GWEN_Buffer_AppendString(ubuf," $(sequence)            : (once, first, following, final)\n");
+    GWEN_Buffer_AppendString(ubuf, " $(creditorSchemeId)    : Creditor Schema Id\n");
+    GWEN_Buffer_AppendString(ubuf, " $(originatorId)        : Originator Id\n");
+    GWEN_Buffer_AppendString(ubuf, " $(mandateId)           : Mandate Id\n");
+    GWEN_Buffer_AppendString(ubuf, " $(sequence)            : (once, first, following, final)\n");
     GWEN_Buffer_AppendString(ubuf, "\n");
 
-    GWEN_Buffer_AppendString(ubuf,"Variables seldomly used:\n");
-    GWEN_Buffer_AppendString(ubuf," $(type)                : Transaction type\n");
-    GWEN_Buffer_AppendString(ubuf," $(subType)             : Transaction subtype\n");
-    GWEN_Buffer_AppendString(ubuf," $(command)             : Command (for banking jobs, normally \"none\"\n");
-    GWEN_Buffer_AppendString(ubuf," $(uniqueAccountId)     : Unique id of the account to which this Transaction belongs\n");
-    GWEN_Buffer_AppendString(ubuf," $(uniqueId)            : Unique id of the transaction (mostly unused)\n");
-    GWEN_Buffer_AppendString(ubuf," $(refUniqueId)         : Unique id of another transaction this one refers to (mostly unused)\n");
-    GWEN_Buffer_AppendString(ubuf," $(transactionText)     : Transaction text (e.g. \"Gehalt\")\n");
-    GWEN_Buffer_AppendString(ubuf," $(transactionKey)      : Some other value assigned by the bank\n");
+    GWEN_Buffer_AppendString(ubuf, "Variables seldomly used:\n");
+    GWEN_Buffer_AppendString(ubuf, " $(type)                : Transaction type\n");
+    GWEN_Buffer_AppendString(ubuf, " $(subType)             : Transaction subtype\n");
+    GWEN_Buffer_AppendString(ubuf, " $(command)             : Command (for banking jobs, normally \"none\"\n");
+    GWEN_Buffer_AppendString(ubuf,
+                             " $(uniqueAccountId)     : Unique id of the account to which this Transaction belongs\n");
+    GWEN_Buffer_AppendString(ubuf, " $(uniqueId)            : Unique id of the transaction (mostly unused)\n");
+    GWEN_Buffer_AppendString(ubuf,
+                             " $(refUniqueId)         : Unique id of another transaction this one refers to (mostly unused)\n");
+    GWEN_Buffer_AppendString(ubuf, " $(transactionText)     : Transaction text (e.g. \"Gehalt\")\n");
+    GWEN_Buffer_AppendString(ubuf, " $(transactionKey)      : Some other value assigned by the bank\n");
 
 
     fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(ubuf));

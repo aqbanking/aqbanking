@@ -568,7 +568,7 @@ int AH_HHD14_AddChallengeParams_05(AH_JOB *j,
   /* P1: Betrag */
   if (vAmount) {
     tbuf=GWEN_Buffer_new(0, 64, 0, 1);
-    AB_Value_toHumanReadableString2(vAmount, tbuf, 2, 0); /* TODO: currency needed?? -> apparently not */
+    AB_Value_toHumanReadableString(vAmount, tbuf, 2, 0); /* TODO: currency needed?? -> apparently not */
     AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_free(tbuf);
   }
@@ -644,7 +644,7 @@ int AH_HHD14_AddChallengeParams_12(AH_JOB *j, int numTransfers, const AB_VALUE *
     GWEN_BUFFER *tbuf;
 
     tbuf=GWEN_Buffer_new(0, 64, 0, 1);
-    AB_Value_toHumanReadableString2(vSumOfAmount, tbuf, 2, 0);
+    AB_Value_toHumanReadableString(vSumOfAmount, tbuf, 2, 0);
     AH_Job_AddChallengeParam(j, GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_free(tbuf);
   }
@@ -677,7 +677,7 @@ int AH_HHD14_AddChallengeParams_12(AH_JOB *j, int numTransfers, const AB_VALUE *
     char *p;
 
     tbuf=GWEN_Buffer_new(0, 64, 0, 1);
-    AB_Value_toHumanReadableString2(vSumOfRemoteAccounts, tbuf, 0, 0);
+    AB_Value_toHumanReadableString(vSumOfRemoteAccounts, tbuf, 0, 0);
     /* remove decimal point */
     p=strchr(GWEN_Buffer_GetStart(tbuf), '.');
     if (p)

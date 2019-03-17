@@ -287,7 +287,7 @@ int AB_Value_toDbFloat(const AB_VALUE *v, GWEN_DB_NODE *db)
   GWEN_BUFFER *buf;
 
   buf=GWEN_Buffer_new(0, 128, 0, 1);
-  AB_Value_toHumanReadableString2(v, buf, 2, 0);
+  AB_Value_toHumanReadableString(v, buf, 2, 0);
   GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                        "value", GWEN_Buffer_GetStart(buf));
   GWEN_Buffer_free(buf);
@@ -311,7 +311,7 @@ void AB_Value__toString(const AB_VALUE *v, GWEN_BUFFER *buf)
   size=GWEN_Buffer_GetMaxUnsegmentedWrite(buf);
   rv=gmp_snprintf(p, size, "%Qi", v->value);
   assert(rv<size);
-  GWEN_Buffer_IncrementPos(buf, rv+1);
+  GWEN_Buffer_IncrementPos(buf, rv);
   GWEN_Buffer_AdjustUsedBytes(buf);
 }
 
@@ -349,17 +349,8 @@ void AB_Value_toString(const AB_VALUE *v, GWEN_BUFFER *buf)
 
 void AB_Value_toHumanReadableString(const AB_VALUE *v,
                                     GWEN_BUFFER *buf,
-                                    int prec)
-{
-  AB_Value_toHumanReadableString2(v, buf, prec?prec:2, 0);
-}
-
-
-
-void AB_Value_toHumanReadableString2(const AB_VALUE *v,
-                                     GWEN_BUFFER *buf,
-                                     int prec,
-                                     int withCurrency)
+                                    int prec,
+                                    int withCurrency)
 {
   char numbuf[128];
   double num;
@@ -527,7 +518,7 @@ void AB_Value_Dump(const AB_VALUE *v, FILE *f, unsigned int indent)
     GWEN_BUFFER *nbuf;
 
     nbuf=GWEN_Buffer_new(0, 128, 0, 1);
-    AB_Value_toHumanReadableString(v, nbuf, 2);
+    AB_Value_toHumanReadableString(v, nbuf, 2, 1);
     gmp_fprintf(f, "%Qi (%s)\n", v->value, GWEN_Buffer_GetStart(nbuf));
     GWEN_Buffer_free(nbuf);
   }
@@ -584,7 +575,7 @@ void AB_Value_toHbciString(const AB_VALUE *v, GWEN_BUFFER *buf)
   int l;
 
   tbuf=GWEN_Buffer_new(0, 32, 0, 1);
-  AB_Value_toHumanReadableString2(v, tbuf, 2, 0);
+  AB_Value_toHumanReadableString(v, tbuf, 2, 0);
 
   /* convert decimal komma */
   p=GWEN_Buffer_GetStart(tbuf);
