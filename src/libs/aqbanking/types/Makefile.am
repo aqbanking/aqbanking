@@ -93,7 +93,8 @@ iheader_HEADERS=$(build_headers_pub) \
   value.h
 
 
-noinst_HEADERS=$(build_headers_priv)
+noinst_HEADERS=$(build_headers_priv) \
+  value_p.h
 
 
 
