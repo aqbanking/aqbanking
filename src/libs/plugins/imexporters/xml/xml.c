@@ -29,6 +29,11 @@
 GWEN_INHERIT(AB_IMEXPORTER, AB_IMEXPORTER_XML);
 
 
+static AB_TRANSACTION *dbToTransaction(AB_IMEXPORTER *ie, GWEN_DB_NODE *db);
+static void handleTransactionDetails(AB_TRANSACTION *t, const char *sDetails);
+
+
+
 
 AB_IMEXPORTER *AB_ImExporterXML_new(AB_BANKING *ab)
 {
@@ -526,7 +531,7 @@ int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
     while (dbCurrent) {
       AB_TRANSACTION *t;
 
-      t=AB_Transaction_fromDb(dbCurrent);
+      t=dbToTransaction(ie, dbCurrent);
       assert(t);
 
       AB_ImExporterAccountInfo_AddTransaction(accountInfo, t);
@@ -554,6 +559,94 @@ int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
 
 
 
+AB_TRANSACTION *dbToTransaction(AB_IMEXPORTER *ie, GWEN_DB_NODE *db)
+{
+  AB_TRANSACTION *t;
+  const char *s;
+
+  t=AB_Transaction_fromDb(db);
+  assert(t);
+  s=GWEN_DB_GetCharValue(db, "transactionDetails", 0, NULL);
+  if (s && *s)
+    handleTransactionDetails(t, s);
+
+  return t;
+}
+
+
+
+void handleTransactionDetails(AB_TRANSACTION *t, const char *sDetails)
+{
+  const char *sStart;
+  const char *s;
+
+  s=sDetails;
+  if (*s!='N')
+    return;
+  s++;
+
+  /* transactionKey */
+  sStart=s;
+  while(*s && *s!='+')
+    s++;
+  if (s>sStart) {
+    char *sCopy;
+
+    sCopy=strndup(sStart, s-sStart);
+    assert(sCopy);
+    AB_Transaction_SetTransactionKey(t, sCopy);
+    free(sCopy);
+  }
+
+  /* transaction code */
+  if (!(*s))
+    return;
+  s++;
+  sStart=s;
+  while(*s && *s!='+')
+    s++;
+  if (s>sStart) {
+    char *sCopy;
+    int num=0;
+
+    sCopy=strndup(sStart, s-sStart);
+    assert(sCopy);
+    if (1!=sscanf(sCopy, "%d", &num)) {
+      DBG_WARN(AQBANKING_LOGDOMAIN, "Transaction details with invalid code (2nd element) in \"%s\", ignoring", sDetails);
+    }
+    else
+      AB_Transaction_SetTransactionCode(t, num);
+    free(sCopy);
+  }
+
+  /* primanota */
+  if (!(*s))
+    return;
+  s++;
+  sStart=s;
+  while(*s && *s!='+')
+    s++;
+  if (s>sStart) {
+    char *sCopy;
+
+    sCopy=strndup(sStart, s-sStart);
+    assert(sCopy);
+    AB_Transaction_SetPrimanota(t, sCopy);
+    free(sCopy);
+  }
+
+#if 0 /* textKexExt, ignored for now */
+  if (!(*s))
+    return;
+  s++;
+  sStart=s;
+  while(*s && *s!='+')
+    s++;
+  if (s>sStart) {
+    /* 4th field */
+  }
+#endif
+}
 
 
 

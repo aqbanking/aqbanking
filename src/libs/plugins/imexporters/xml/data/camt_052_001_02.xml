@@ -48,111 +48,33 @@
             </XmlEnter>
   
   
-            <XmlForEvery name="Bal">
-    
-              <DbCreateAndEnterGroup name="balance">
-    
-                <!-- Type -->
-                <XmlIfCharDataMatches path="Tp/CdOrPrtry/Cd" pattern="CLBD">
-                  <DbSetCharValue name="type" value="booked"/>
-                </XmlIfCharDataMatches>
-                
-                <XmlIfCharDataMatches path="Tp/CdOrPrtry/Cd" pattern="PRCD">
-                  <DbSetCharValue name="type" value="booked"/>
-                </XmlIfCharDataMatches>
-                
-                <XmlIfCharDataMatches path="Tp/CdOrPrtry/Cd" pattern="CLAV">
-                  <DbSetCharValue name="type" value="disposable"/>
-                </XmlIfCharDataMatches>
+            <XmlIfPathExists path="Bal">
+              <XmlForEvery name="Bal">
       
-                <!-- Date -->
-                <XmlIfHasCharData path="Dt/Dt">
-                  <DbSetCharValue name="date" path="Dt/Dt" type="date" template="YYYY-MM-DD" />
-                </XmlIfHasCharData>
+                <DbCreateAndEnterGroup name="balance">
       
-                <!-- Amount -->
-                <XmlIfCharDataMatches path="CdtDbtInd" pattern="DBIT">
-                  <!-- Debit -->
-    
-                  <XmlIfHasCharData path="Amt">
-                    <XmlIfHasCharData path="Amt@Ccy">
-                      <DbCreateAndEnterTempGroup name="amount" >
-                        <DbSetTempCharValue name="value"    path="Amt" />
-                        <DbSetTempCharValue name="currency" path="Amt@Ccy" />
-                        <DbSetCharValue name="value" value="-$(value):$(currency)" />
-                      </DbCreateAndEnterTempGroup> <!-- amount -->
-                    </XmlIfHasCharData> <!-- Amt@Ccy -->
-                  </XmlIfHasCharData>   <!-- Amt -->
-    
-                </XmlIfCharDataMatches>
-    
-                <XmlIfCharDataMatches path="CdtDbtInd" pattern="CRDT">
-                  <!-- Credit -->
-    
-                  <XmlIfHasCharData path="Amt">
-                    <XmlIfHasCharData path="Amt@Ccy">
-                      <DbCreateAndEnterTempGroup name="amount" >
-                        <DbSetTempCharValue name="value"    path="Amt" />
-                        <DbSetTempCharValue name="currency" path="Amt@Ccy" />
-                        <DbSetCharValue name="value" value="$(value):$(currency)" />
-                      </DbCreateAndEnterTempGroup> <!-- amount -->
-                    </XmlIfHasCharData> <!-- Amt@Ccy -->
-                  </XmlIfHasCharData>   <!-- Amt -->
-    
-                </XmlIfCharDataMatches>
-      
-      
-              </DbCreateAndEnterGroup>
-      
-            </XmlForEvery>
-        
-    
-        
-            <XmlForEvery name="Ntry">
-    
-             <XmlIfHasCharData path="Amt">
-    
-        
-                <DbCreateAndEnterGroup name="transaction">
-  
-                  <DbSetCharValue name="type" value="statement" />
-          
-          
-                  <!-- booking date -->
-                  <XmlIfHasCharData path="BookgDt/Dt">
-                    <DbSetCharValue name="date" path="BookgDt/Dt" type="date" template="YYYY-MM-DD" />
-                  </XmlIfHasCharData>
-          
-          
-                  <!-- valuta date -->
-                  <XmlIfHasCharData path="ValDt/Dt">
-                    <DbSetCharValue name="valutaDate" path="ValDt/Dt" type="date" template="YYYY-MM-DD" />
-                  </XmlIfHasCharData>
-
-                  <XmlIfHasCharData path="AcctSvcrRef">
-                    <DbSetCharValue name="bankReference" path="AcctSvcrRef"/>
-                  </XmlIfHasCharData>
-          
-    
-                  <!-- endToEndReference -->
-                  <DbSetCharValue name="endToEndReference" path="NtryDtls/TxDtls/Refs/EndToEndId"/>
-          
-    
-                  <!-- unique transaction id -->
-                  <XmlIfCharDataMatches path="NtryDtls/TxDtls/Refs/Prtry/Tp" pattern="FI-UMSATZ-ID">
-                    <DbSetCharValue name="fiId" path="NtryDtls/TxDtls/Refs/Prtry/Ref"/>
+                  <!-- Type -->
+                  <XmlIfCharDataMatches path="Tp/CdOrPrtry/Cd" pattern="CLBD">
+                    <DbSetCharValue name="type" value="booked"/>
                   </XmlIfCharDataMatches>
                   
-                  <!-- local/remote name and account -->
+                  <XmlIfCharDataMatches path="Tp/CdOrPrtry/Cd" pattern="PRCD">
+                    <DbSetCharValue name="type" value="booked"/>
+                  </XmlIfCharDataMatches>
+                  
+                  <XmlIfCharDataMatches path="Tp/CdOrPrtry/Cd" pattern="CLAV">
+                    <DbSetCharValue name="type" value="disposable"/>
+                  </XmlIfCharDataMatches>
+        
+                  <!-- Date -->
+                  <XmlIfHasCharData path="Dt/Dt">
+                    <DbSetCharValue name="date" path="Dt/Dt" type="date" template="YYYY-MM-DD" />
+                  </XmlIfHasCharData>
+        
+                  <!-- Amount -->
                   <XmlIfCharDataMatches path="CdtDbtInd" pattern="DBIT">
                     <!-- Debit -->
-                  
-                    <DbSetCharValue name="localName" path="NtryDtls/TxDtls/RltdPties/Dbtr/Nm"/>
-                    <DbSetCharValue name="localIban" path="NtryDtls/TxDtls/RltdPties/DbtrAcct/Id/IBAN"/>
-          
-                    <DbSetCharValue name="remoteName" path="NtryDtls/TxDtls/RltdPties/Cdtr/Nm"/>
-                    <DbSetCharValue name="remoteIban" path="NtryDtls/TxDtls/RltdPties/CdtrAcct/Id/IBAN"/>
-          
+      
                     <XmlIfHasCharData path="Amt">
                       <XmlIfHasCharData path="Amt@Ccy">
                         <DbCreateAndEnterTempGroup name="amount" >
@@ -162,91 +84,197 @@
                         </DbCreateAndEnterTempGroup> <!-- amount -->
                       </XmlIfHasCharData> <!-- Amt@Ccy -->
                     </XmlIfHasCharData>   <!-- Amt -->
-                  
-                  </XmlIfCharDataMatches> <!-- CdtDbtInd == DBIT -->
-          
-                  
+      
+                  </XmlIfCharDataMatches>
+      
                   <XmlIfCharDataMatches path="CdtDbtInd" pattern="CRDT">
                     <!-- Credit -->
-          
-                    <DbSetCharValue name="remoteName" path="NtryDtls/TxDtls/RltdPties/Dbtr/Nm"/>
-                    <DbSetCharValue name="remoteIban" path="NtryDtls/TxDtls/RltdPties/DbtrAcct/Id/IBAN"/>
-          
-                    <DbSetCharValue name="localName" path="NtryDtls/TxDtls/RltdPties/Cdtr/Nm"/>
-                    <DbSetCharValue name="localIban" path="NtryDtls/TxDtls/RltdPties/CdtrAcct/Id/IBAN"/>
-          
+      
                     <XmlIfHasCharData path="Amt">
                       <XmlIfHasCharData path="Amt@Ccy">
                         <DbCreateAndEnterTempGroup name="amount" >
                           <DbSetTempCharValue name="value"    path="Amt" />
                           <DbSetTempCharValue name="currency" path="Amt@Ccy" />
                           <DbSetCharValue name="value" value="$(value):$(currency)" />
-                        </DbCreateAndEnterTempGroup>
+                        </DbCreateAndEnterTempGroup> <!-- amount -->
+                      </XmlIfHasCharData> <!-- Amt@Ccy -->
+                    </XmlIfHasCharData>   <!-- Amt -->
+      
+                  </XmlIfCharDataMatches>
+        
+        
+                </DbCreateAndEnterGroup>
+        
+              </XmlForEvery>
+            </XmlIfPathExists>
+        
+    
+        
+            <XmlIfPathExists path="Ntry">
+              <XmlForEvery name="Ntry">
+      
+               <XmlIfHasCharData path="Amt">
+      
+          
+                  <DbCreateAndEnterGroup name="transaction">
+  
+                    <!-- preset -->
+                    <DbSetCharValue name="type" value="statement" />
+  
+                    <XmlIfCharDataMatches path="Sts" pattern="BOOK">
+                      <DbSetCharValue name="type" value="statement" mode="replace" />
+                    </XmlIfCharDataMatches>
+  
+                    <XmlIfCharDataMatches path="Sts" pattern="PDNG">
+                      <DbSetCharValue name="type" value="notedStatement" mode="replace" />
+                    </XmlIfCharDataMatches>
+    
+            
+                    <!-- booking date -->
+                    <XmlIfHasCharData path="BookgDt/Dt">
+                      <DbSetCharValue name="date" path="BookgDt/Dt" type="date" template="YYYY-MM-DD" />
+                    </XmlIfHasCharData>
+            
+            
+                    <!-- valuta date -->
+                    <XmlIfHasCharData path="ValDt/Dt">
+                      <DbSetCharValue name="valutaDate" path="ValDt/Dt" type="date" template="YYYY-MM-DD" />
+                    </XmlIfHasCharData>
+  
+                    <XmlIfHasCharData path="AcctSvcrRef">
+                      <DbSetCharValue name="bankReference" path="AcctSvcrRef"/>
+                    </XmlIfHasCharData>
+            
+      
+                    <!-- endToEndReference -->
+                    <XmlIfHasCharData path="NtryDtls/TxDtls/Refs/EndToEndId">
+                      <DbSetCharValue name="endToEndReference" path="NtryDtls/TxDtls/Refs/EndToEndId"/>
+                    </XmlIfHasCharData>
+            
+      
+                    <!-- unique transaction id -->
+                    <XmlIfCharDataMatches path="NtryDtls/TxDtls/Refs/Prtry/Tp" pattern="FI-UMSATZ-ID">
+                      <DbSetCharValue name="fiId" path="NtryDtls/TxDtls/Refs/Prtry/Ref"/>
+                    </XmlIfCharDataMatches>
+                    
+                    <!-- local/remote name and account -->
+                    <XmlIfCharDataMatches path="CdtDbtInd" pattern="DBIT">
+                      <!-- Debit -->
+                    
+                      <XmlIfHasCharData path="NtryDtls/TxDtls/RltdPties/Dbtr/Nm">
+                        <DbSetCharValue name="localName" path="NtryDtls/TxDtls/RltdPties/Dbtr/Nm"/>
                       </XmlIfHasCharData>
+                      <DbSetCharValue name="localIban" path="NtryDtls/TxDtls/RltdPties/DbtrAcct/Id/IBAN"/>
+            
+                      <XmlIfHasCharData path="NtryDtls/TxDtls/RltdPties/Cdtr/Nm">
+                        <DbSetCharValue name="remoteName" path="NtryDtls/TxDtls/RltdPties/Cdtr/Nm"/>
+                      </XmlIfHasCharData>
+                      <DbSetCharValue name="remoteIban" path="NtryDtls/TxDtls/RltdPties/CdtrAcct/Id/IBAN"/>
+            
+                      <XmlIfHasCharData path="Amt">
+                        <XmlIfHasCharData path="Amt@Ccy">
+                          <DbCreateAndEnterTempGroup name="amount" >
+                            <DbSetTempCharValue name="value"    path="Amt" />
+                            <DbSetTempCharValue name="currency" path="Amt@Ccy" />
+                            <DbSetCharValue name="value" value="-$(value):$(currency)" />
+                          </DbCreateAndEnterTempGroup> <!-- amount -->
+                        </XmlIfHasCharData> <!-- Amt@Ccy -->
+                      </XmlIfHasCharData>   <!-- Amt -->
+                    
+                    </XmlIfCharDataMatches> <!-- CdtDbtInd == DBIT -->
+            
+                    
+                    <XmlIfCharDataMatches path="CdtDbtInd" pattern="CRDT">
+                      <!-- Credit -->
+            
+                      <XmlIfHasCharData path="NtryDtls/TxDtls/RltdPties/Dbtr/Nm">
+                        <DbSetCharValue name="remoteName" path="NtryDtls/TxDtls/RltdPties/Dbtr/Nm"/>
+                      </XmlIfHasCharData>
+                        
+                      <DbSetCharValue name="remoteIban" path="NtryDtls/TxDtls/RltdPties/DbtrAcct/Id/IBAN"/>
+            
+                      <XmlIfHasCharData path="NtryDtls/TxDtls/RltdPties/Cdtr/Nm">
+                        <DbSetCharValue name="localName" path="NtryDtls/TxDtls/RltdPties/Cdtr/Nm"/>
+                      </XmlIfHasCharData>
+                      <DbSetCharValue name="localIban" path="NtryDtls/TxDtls/RltdPties/CdtrAcct/Id/IBAN"/>
+            
+                      <XmlIfHasCharData path="Amt">
+                        <XmlIfHasCharData path="Amt@Ccy">
+                          <DbCreateAndEnterTempGroup name="amount" >
+                            <DbSetTempCharValue name="value"    path="Amt" />
+                            <DbSetTempCharValue name="currency" path="Amt@Ccy" />
+                            <DbSetCharValue name="value" value="$(value):$(currency)" />
+                          </DbCreateAndEnterTempGroup>
+                        </XmlIfHasCharData>
+                      </XmlIfHasCharData>
+        
+                    </XmlIfCharDataMatches> <!-- CdtDbtInd == CRDT- -->
+      
+                    <!-- transaction key -->
+                    <XmlIfPathExists path="NtryDtls/TxDtls/BkTxCd/Domn">
+                      <XmlEnter path="NtryDtls/TxDtls/BkTxCd/Domn">
+      
+                        <DbCreateAndEnterTempGroup name="code" >
+    
+                          <XmlIfHasCharData path="Cd">
+                            <DbSetTempCharValue name="code"    path="Cd" />
+                          </XmlIfHasCharData>
+                          
+                          <XmlIfPathExists path="Fmly">
+                            <XmlEnter path="Fmly">
+                          
+                              <XmlIfHasCharData path="Cd">
+                                <DbSetTempCharValue name="family" path="Cd" />
+                              </XmlIfHasCharData>
+  
+                              <XmlIfHasCharData path="SubFmlyCd">
+                                <DbSetTempCharValue name="subfamily" path="SubFmlyCd" />
+                              </XmlIfHasCharData>
+  
+                            </XmlEnter> <!-- Fmly -->
+                          </XmlIfPathExists>
+                          
+                          <DbSetCharValue     name="transactionKey" value="$(code)-$(family)-$(subfamily)" />
+                        
+                        </DbCreateAndEnterTempGroup>
+      
+                      </XmlEnter> <!-- NtryDtls/TxDtls/BkTxCd/Domn -->
+                    </XmlIfPathExists>
+  
+                    <XmlIfPathExists path="NtryDtls/TxDtls/BkTxCd/Prtry/Cd">
+                      <!-- 4-char SWIFT transaction code + GVC + Primanota + text key extension -->
+                      <DbSetCharValue     name="transactionDetails" path="NtryDtls/TxDtls/BkTxCd/Prtry/Cd" />
+                    </XmlIfPathExists> <!-- NtryDtls/TxDtls/BkTxCd/Prtry/Cd -->
+                    
+                    
+                    <!-- purpose lines -->
+                    <XmlIfPathExists path="NtryDtls/TxDtls/RmtInf">
+      
+                      <XmlEnter path="NtryDtls/TxDtls/RmtInf">
+    
+                        <XmlForEvery name="Ustrd">
+                            
+                          <DbSetCharValue name="purpose" path="." mode="append" delimiter="\n"/>
+                          
+                        </XmlForEvery>
+      
+                      </XmlEnter> <!-- RmtInf -->
+                    </XmlIfPathExists>
+      
+      
+                    <!-- transaction text -->
+                    <XmlIfHasCharData path="AddtlNtryInf">
+                      <DbSetCharValue name="transactionText" path="AddtlNtryInf"/>
                     </XmlIfHasCharData>
       
-                  </XmlIfCharDataMatches> <!-- CdtDbtInd == CRDT- -->
-    
-                  <!-- transaction key -->
-                  <XmlIfPathExists path="NtryDtls/TxDtls/BkTxCd/Domn">
-    
-                    <XmlEnter path="NtryDtls/TxDtls/BkTxCd/Domn">
-    
-                      <DbCreateAndEnterTempGroup name="code" >
-  
-                        <XmlIfHasCharData path="Cd">
-                          <DbSetTempCharValue name="code"    path="Cd" />
-                        </XmlIfHasCharData>
-                        
-                        <XmlIfPathExists path="Fmly">
-                          <XmlEnter path="Fmly">
-                        
-                            <XmlIfHasCharData path="Cd">
-                              <DbSetTempCharValue name="family" path="Cd" />
-                            </XmlIfHasCharData>
+                    
+                  </DbCreateAndEnterGroup> <!-- transaction --> 
+               
+               </XmlIfHasCharData> <!-- if there is an amount -->
+      
+              </XmlForEvery> <!-- Ntry -->
+            </XmlIfPathExists>
 
-                            <XmlIfHasCharData path="SubFmlyCd">
-                              <DbSetTempCharValue name="subfamily" path="SubFmlyCd" />
-                            </XmlIfHasCharData>
-
-                          </XmlEnter> <!-- Fmly -->
-                        </XmlIfPathExists>
-                        
-                        <DbSetCharValue     name="transactionKey" value="$(code)+$(family)+$(subfamily)" />
-                      
-                      </DbCreateAndEnterTempGroup>
-    
-                    </XmlEnter> <!-- NtryDtls/TxDtls/BkTxCd/Domn -->
-                  </XmlIfPathExists>
-                  
-                  
-                  <!-- purpose lines -->
-                  <XmlIfPathExists path="NtryDtls/TxDtls/RmtInf">
-    
-                    <XmlEnter path="NtryDtls/TxDtls/RmtInf">
-  
-                      <XmlForEvery name="Ustrd">
-                          
-                        <DbSetCharValue name="purpose" path="." mode="append" delimiter="\n"/>
-                        
-                      </XmlForEvery>
-    
-                    </XmlEnter> <!-- RmtInf -->
-                  </XmlIfPathExists>
-    
-    
-                  <!-- transaction text -->
-                  <XmlIfHasCharData path="AddtlNtryInf">
-                    <DbSetCharValue name="transactionText" path="AddtlNtryInf"/>
-                  </XmlIfHasCharData>
-    
-                  
-                </DbCreateAndEnterGroup> <!-- transaction --> 
-             
-             </XmlIfHasCharData> <!-- if there is an amount -->
-    
-            </XmlForEvery> <!-- Ntry -->
-  
           </DbCreateAndEnterGroup> <!-- account -->
     
         </XmlForEvery>   <!-- Rpt -->
