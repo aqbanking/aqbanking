@@ -7,6 +7,7 @@ profiles_DATA=default.conf aqmoney1.conf aqmoney2.conf \
   diba.conf sparda.conf full.conf dkb.conf dkb-cash.conf \
   hypovereinsbank.conf postbankffm.conf cli-transfers.conf \
   sns.conf consors-tagesgeld.conf \
-  transfers.conf sepadebitnotes.conf
+  transfers.conf sepadebitnotes.conf \
+  homebank.conf
 
 EXTRA_DIST=$(profiles_DATA)
