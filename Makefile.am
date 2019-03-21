@@ -230,8 +230,12 @@ code-cleanup:
 	-admin/fixuifiles
 	-admin/glade-fixup
 
+#cppcheck:
+#	  $(MAKE) -C src cppcheck
+
 cppcheck:
-	  $(MAKE) -C src cppcheck
+	for f in `find . -name \*.c -o -name \*.cpp`; do cppcheck --force $$f; done
+
 
 clang-check:
 	scan-build $(MAKE)
