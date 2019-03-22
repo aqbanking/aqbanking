@@ -230,26 +230,26 @@
           <typeFlagsValue>with_list1</typeFlagsValue>
           <content>
              /** \n
-              * Find the first matching account info object in a list of account info objects.   \n
-              * @param al list of account info objects among to search                           \n
-              * @param backendName name of the banking backend (wildcards and jokers allowed)    \n
-              * @param country ISO code of the country (wildcards and jokers allowed)            \n
-              * @param bankId bank code to search for (wildcards and jokers allowed)             \n
-              * @param accountNumber account number to search for (wildcards and jokers allowed) \n
-              * @param subAccountId sub account number (wildcards and jokers allowed)            \n
-              * @param iban IBAN to search for (wildcards and jokers allowed)                    \n
-              * @param currency currecny the account uses (wildcards and jokers allowed)         \n
-              * @param ty account type (use AB_AccountType_Unknown as wildcard)          \n
-              */                                                                                 \n
-             $(api) $(struct_type) *$(struct_prefix)_List_FindFirst($(struct_type)_LIST *al,
-                                                                    const char *backendName,
-                                                                    const char *country,
-                                                                    const char *bankId,
-                                                                    const char *accountNumber,
-                                                                    const char *subAccountId,
-                                                                    const char *iban,
-                                                                    const char *currency,
-                                                                    int ty);
+              * Find the first matching account info object in a list of account info objects.     \n
+              * @param al list of account info objects among to search                             \n
+              * @param backendName name of the banking backend (wildcards and jokers allowed)      \n
+              * @param country ISO code of the country (wildcards and jokers allowed)              \n
+              * @param bankId bank code to search for (wildcards and jokers allowed)               \n
+              * @param accountNumber account number to search for (wildcards and jokers allowed)   \n
+              * @param subAccountId sub account number (wildcards and jokers allowed)              \n
+              * @param iban IBAN to search for (wildcards and jokers allowed)                      \n
+              * @param currency currecny the account uses (wildcards and jokers allowed)           \n
+              * @param ty account type (use AB_AccountType_Unknown as wildcard)                    \n
+              */                                                                                   \n
+             $(api) $(struct_type) *$(struct_prefix)_List_FindFirst(const $(struct_type)_LIST *al, \n
+                                                                    const char *backendName,       \n
+                                                                    const char *country,           \n
+                                                                    const char *bankId,            \n
+                                                                    const char *accountNumber,     \n
+                                                                    const char *subAccountId,      \n
+                                                                    const char *iban,              \n
+                                                                    const char *currency,          \n
+                                                                    int ty);                      
           </content>
         </inline>
 
@@ -259,7 +259,7 @@
           <typeFlagsMask>with_list1</typeFlagsMask>
           <typeFlagsValue>with_list1</typeFlagsValue>
           <content>
-             $(struct_type) *$(struct_prefix)_List_FindFirst($(struct_type)_LIST *al,
+             $(struct_type) *$(struct_prefix)_List_FindFirst(const $(struct_type)_LIST *al,
                                                              const char *backendName,
                                                              const char *country,
                                                              const char *bankId,

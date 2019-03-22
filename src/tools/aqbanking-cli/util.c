@@ -443,14 +443,13 @@ AB_TRANSACTION *mkSepaDebitNote(GWEN_DB_NODE *db, int cmd)
  * ========================================================================================================================
  */
 
-int getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db, AB_ACCOUNT_SPEC_LIST **pAccountSpecList)
+AB_ACCOUNT_SPEC_LIST *getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db)
 {
   AB_ACCOUNT_SPEC_LIST *asl=NULL;
   uint32_t uniqueAccountId;
   int rv;
 
   asl=AB_AccountSpec_List_new();
-
   uniqueAccountId=(uint32_t) GWEN_DB_GetIntValue(db, "uniqueAccountId", 0, 0);
   if (uniqueAccountId) {
     AB_ACCOUNT_SPEC *as=NULL;
@@ -460,7 +459,7 @@ int getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db, AB_ACCOUNT_SPEC_LIST *
     if (rv<0) {
       DBG_ERROR(0, "Could not load account spec %lu (%d)", (unsigned long int) uniqueAccountId, rv);
       AB_AccountSpec_List_free(asl);
-      return rv;
+      return NULL;
     }
     AB_AccountSpec_List_Add(as, asl);
   }
@@ -475,7 +474,7 @@ int getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db, AB_ACCOUNT_SPEC_LIST *
         DBG_ERROR(0, "Could not load account specs (%d)", rv);
       }
       AB_AccountSpec_List_free(asl);
-      return rv;
+      return NULL;
     }
     else {
       const char *backendName;
@@ -500,13 +499,11 @@ int getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db, AB_ACCOUNT_SPEC_LIST *
       if (aType==AB_AccountType_Invalid) {
         DBG_ERROR(0, "Invalid Could not load account specs (%d)", rv);
         AB_AccountSpec_List_free(asl);
-        return GWEN_ERROR_INVALID;
+        return NULL;
       }
-
       as=AB_AccountSpec_List_First(asl);
       while (as) {
         AB_ACCOUNT_SPEC *asNext;
-
         asNext=AB_AccountSpec_List_Next(as);
         if (AB_AccountSpec_Matches(as, backendName,
                                    country, bankId, accountId, subAccountId,
@@ -521,15 +518,11 @@ int getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db, AB_ACCOUNT_SPEC_LIST *
       }
     }
   }
-
-  if (AB_AccountSpec_List_GetCount(asl))
-    *pAccountSpecList=asl;
-  else {
+  if (AB_AccountSpec_List_GetCount(asl)<1) {
     AB_AccountSpec_List_free(asl);
-    *pAccountSpecList=NULL;
-    return GWEN_ERROR_NOT_FOUND;
+    return NULL;
   }
-  return 0;
+  return asl;
 }
 
 
@@ -542,21 +535,17 @@ int getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db, AB_ACCOUNT_SPEC_LIST *
 
 AB_ACCOUNT_SPEC *getSingleSelectedAccount(AB_BANKING *ab, GWEN_DB_NODE *db)
 {
-  int rv;
   AB_ACCOUNT_SPEC_LIST *al=NULL;
   AB_ACCOUNT_SPEC *as;
 
-  rv=getSelectedAccounts(ab, db, &al);
-  if (rv<0) {
-    if (rv==GWEN_ERROR_NOT_FOUND)
-      fprintf(stderr, "No matching accounts\n");
-    else
-      fprintf(stderr, "Error getting selected accounts (%d)\n", rv);
+  al=getSelectedAccounts(ab, db);
+  if (al==NULL) {
+    DBG_INFO(0, "No matching accounts");
     return NULL;
   }
 
   if (AB_AccountSpec_List_GetCount(al)>1) {
-    fprintf(stderr, "Ambiguous account specification (%d accounts matching)\n", AB_AccountSpec_List_GetCount(al));
+    DBG_ERROR(0, "Ambiguous account specification (%d accounts matching)", AB_AccountSpec_List_GetCount(al));
     AB_AccountSpec_List_free(al);
     return NULL;
   }
@@ -571,128 +560,149 @@ AB_ACCOUNT_SPEC *getSingleSelectedAccount(AB_BANKING *ab, GWEN_DB_NODE *db)
 
 
 /* ========================================================================================================================
- *                                                replaceVars
+ *                                                pickAccountSpecForArgs
  * ========================================================================================================================
  */
 
-int replaceVars(const char *s, GWEN_DB_NODE *db, GWEN_BUFFER *dbuf)
+
+AB_ACCOUNT_SPEC *pickAccountSpecForArgs(const AB_ACCOUNT_SPEC_LIST *accountSpecList, GWEN_DB_NODE *db)
 {
-  const char *p;
+  uint32_t uaid;
+  AB_ACCOUNT_SPEC *accountSpec=NULL;
 
-  p=s;
-  while (*p) {
-    if (*p=='$') {
-      p++;
-      if (*p=='$')
-        GWEN_Buffer_AppendByte(dbuf, '$');
-      else if (*p=='(') {
-        const char *pStart;
+  assert(accountSpecList);
+  assert(db);
 
-        p++;
-        pStart=p;
-        while (*p && *p!=')')
-          p++;
-        if (*p!=')') {
-          DBG_ERROR(GWEN_LOGDOMAIN, "Unterminated variable name in code");
-          return GWEN_ERROR_BAD_DATA;
-        }
-        else {
-          int len;
-          char *name;
-          const char *valueString;
-          int valueInt;
-          char numbuf[32];
-          int rv;
-
-          len=p-pStart;
-          if (len<1) {
-            DBG_ERROR(GWEN_LOGDOMAIN, "Empty variable name in code");
-            return GWEN_ERROR_BAD_DATA;
-          }
-          name=(char *) malloc(len+1);
-          assert(name);
-          memmove(name, pStart, len);
-          name[len]=0;
-
-          switch (GWEN_DB_GetVariableType(db, name)) {
-          case GWEN_DB_NodeType_ValueInt:
-            valueInt=GWEN_DB_GetIntValue(db, name, 0, 0);
-            rv=GWEN_Text_NumToString(valueInt, numbuf, sizeof(numbuf)-1, 0);
-            if (rv>=0)
-              GWEN_Buffer_AppendString(dbuf, numbuf);
-            break;
-          case GWEN_DB_NodeType_ValueChar:
-            valueString=GWEN_DB_GetCharValue(db, name, 0, NULL);
-            if (valueString)
-              GWEN_Buffer_AppendString(dbuf, valueString);
-#if 0 /* just replace with empty value */
-            else {
-              GWEN_Buffer_AppendString(dbuf, " [__VALUE OF ");
-              GWEN_Buffer_AppendString(dbuf, name);
-              GWEN_Buffer_AppendString(dbuf, " WAS NOT SET__] ");
-            }
-#endif
-            break;
-
-          default:
-            break;
-          }
-          free(name);
-        }
-      }
-      else {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Bad variable string in code");
-        return GWEN_ERROR_BAD_DATA;
-      }
-      p++;
+  uaid=(uint32_t) GWEN_DB_GetIntValue(db, "uniqueAccountId", 0, 0);
+  if (uaid>0) {
+    accountSpec=AB_AccountSpec_List_GetByUniqueId(accountSpecList, uaid);
+    if (accountSpec==NULL) {
+      DBG_ERROR(0, "ERROR: No account spec with unique id %llu", (unsigned long long int) uaid);
+      return NULL;
     }
-    else {
-      if (*p=='#') {
-        /* let # lines begin on a new line */
-        GWEN_Buffer_AppendByte(dbuf, '\n');
-        GWEN_Buffer_AppendByte(dbuf, *p);
+  }
+  else {
+    const char *backendName;
+    const char *country;
+    const char *bankId;
+    const char *accountId;
+    const char *subAccountId;
+    const char *iban;
+    const char *s;
+    AB_ACCOUNT_TYPE aType=AB_AccountType_Unknown;
 
-        /* skip introducing cross and copy all stuff until the next cross
-         * upon which wa inject a newline (to make the preprocessor happy)
-         */
-        p++;
-        while (*p && *p!='#') {
-          GWEN_Buffer_AppendByte(dbuf, *p);
-          p++;
-        }
-        if (*p=='#') {
-          GWEN_Buffer_AppendByte(dbuf, '\n');
-          p++;
-        }
-      }
-      else if (*p=='\\') {
-        /* check for recognized control escapes */
-        if (tolower(p[1])=='n') {
-          GWEN_Buffer_AppendByte(dbuf, '\n');
-          p+=2; /* skip introducing backslash and control character */
-        }
-        else if (tolower(p[1])=='t') {
-          GWEN_Buffer_AppendByte(dbuf, '\t');
-          p+=2; /* skip introducing backslash and control character */
-        }
-        else if (tolower(p[1])=='\\') {
-          GWEN_Buffer_AppendByte(dbuf, '\\');
-          p+=2; /* skip introducing backslash and control character */
-        }
-        else {
-          /* no known escape character, just add literally */
-          GWEN_Buffer_AppendByte(dbuf, *p);
-          p++;
-        }
-      }
-      else {
-        GWEN_Buffer_AppendByte(dbuf, *p);
-        p++;
-      }
+    backendName=GWEN_DB_GetCharValue(db, "backendName", 0, "*");
+    country=GWEN_DB_GetCharValue(db, "country", 0, "*");
+    bankId=GWEN_DB_GetCharValue(db, "bankId", 0, "*");
+    accountId=GWEN_DB_GetCharValue(db, "accountId", 0, "*");
+    subAccountId=GWEN_DB_GetCharValue(db, "subAccountId", 0, "*");
+    iban=GWEN_DB_GetCharValue(db, "iban", 0, "*");
+    s=GWEN_DB_GetCharValue(db, "accountType", 0, NULL);
+    if (s && *s)
+      aType=AB_AccountType_fromChar(s);
+    if (aType==AB_AccountType_Invalid) {
+      DBG_ERROR(0, "Invalid account type (%s)", s);
+      return NULL;
+    }
+
+
+    accountSpec=AB_AccountSpec_List_FindFirst(accountSpecList,
+                                              backendName,
+                                              country,
+                                              bankId,
+                                              accountId,
+                                              subAccountId,
+                                              iban,
+                                              "*", /* currency */
+                                              aType);
+    if (accountSpec==NULL) {
+      DBG_ERROR(0, "ERROR: No matching account spec found");
+      return NULL;
+    }
+
+    if (AB_AccountSpec_List_FindNext(accountSpec,
+                                     backendName,
+                                     country,
+                                     bankId,
+                                     accountId,
+                                     subAccountId,
+                                     iban,
+                                     "*", /* currency */
+                                     aType)) {
+      DBG_ERROR(0, "ERROR: Ambiguous account specification");
+      return NULL;
     }
   }
 
-  return 0;
+  return accountSpec;
+}
+
+
+
+/* ========================================================================================================================
+ *                                                pickAccountSpecForTransaction
+ * ========================================================================================================================
+ */
+
+
+AB_ACCOUNT_SPEC *pickAccountSpecForTransaction(const AB_ACCOUNT_SPEC_LIST *accountSpecList, const AB_TRANSACTION *t)
+{
+  uint32_t uaid;
+  AB_ACCOUNT_SPEC *accountSpec=NULL;
+
+  assert(accountSpecList);
+  assert(t);
+
+  uaid=AB_Transaction_GetUniqueAccountId(t);
+  if (uaid>0) {
+    accountSpec=AB_AccountSpec_List_GetByUniqueId(accountSpecList, uaid);
+    if (accountSpec==NULL) {
+      DBG_ERROR(0, "ERROR: No account spec with unique id %llu", (unsigned long long int) uaid);
+      return NULL;
+    }
+  }
+  else {
+    const char *country;
+    const char *bankCode;
+    const char *accountNumber;
+    const char *accountSuffix;
+    const char *iban;
+
+    country=AB_Transaction_GetLocalCountry(t);
+    bankCode=AB_Transaction_GetLocalBankCode(t);
+    accountNumber=AB_Transaction_GetLocalAccountNumber(t);
+    accountSuffix=AB_Transaction_GetLocalSuffix(t);
+    iban=AB_Transaction_GetLocalIban(t);
+
+    accountSpec=AB_AccountSpec_List_FindFirst(accountSpecList,
+                                              "*", /* backend */
+                                              (country && *country)?country:"*",
+                                              (bankCode && *bankCode)?bankCode:"*",
+                                              (accountNumber && *accountNumber)?accountNumber:"*",
+                                              (accountSuffix && *accountSuffix)?accountSuffix:"*",
+                                              (iban && *iban)?iban:"*",
+                                              "*", /* currency */
+                                              AB_AccountType_Unknown);
+    if (accountSpec==NULL) {
+      DBG_ERROR(0, "ERROR: No matching account spec found");
+      return NULL;
+    }
+
+    if (AB_AccountSpec_List_FindNext(accountSpec,
+                                     "*", /* backend */
+                                     (country && *country)?country:"*",
+                                     (bankCode && *bankCode)?bankCode:"*",
+                                     (accountNumber && *accountNumber)?accountNumber:"*",
+                                     (accountSuffix && *accountSuffix)?accountSuffix:"*",
+                                     (iban && *iban)?iban:"*",
+                                     "*", /* currency */
+                                     AB_AccountType_Unknown)) {
+      DBG_ERROR(0, "ERROR: Ambiguous account specification");
+      return NULL;
+    }
+  }
+
+  return accountSpec;
 }
 
 
@@ -890,6 +900,44 @@ int execSingleBankingJob(AB_BANKING *ab, AB_TRANSACTION *t, const char *ctxFile)
   AB_Transaction_List2_free(jobList);
 
   return rv;
+}
+
+
+
+/* ========================================================================================================================
+ *                                                writeJobsAsContextFile
+ * ========================================================================================================================
+ */
+
+int writeJobsAsContextFile(AB_TRANSACTION_LIST2 *tList, const char *ctxFile)
+{
+  int rv;
+  AB_TRANSACTION_LIST2_ITERATOR *it;
+  AB_IMEXPORTER_CONTEXT *ctx=NULL;
+
+  ctx=AB_ImExporterContext_new();
+
+  it=AB_Transaction_List2_First(tList);
+  if (it) {
+    AB_TRANSACTION *t;
+
+    t=AB_Transaction_List2Iterator_Data(it);
+    while (t) {
+      AB_ImExporterContext_AddTransaction(ctx, AB_Transaction_dup(t));
+      t=AB_Transaction_List2Iterator_Next(it);
+    }
+    AB_Transaction_List2Iterator_free(it);
+  }
+
+  /* write result */
+  rv=writeContext(ctxFile, ctx);
+  AB_ImExporterContext_free(ctx);
+  if (rv<0) {
+    DBG_ERROR(0, "Error writing context file (%d)", rv);
+    return 4;
+  }
+
+  return 0;
 }
 
 

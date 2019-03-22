@@ -587,7 +587,7 @@ void handleTransactionDetails(AB_TRANSACTION *t, const char *sDetails)
 
   /* transactionKey */
   sStart=s;
-  while(*s && *s!='+')
+  while (*s && *s!='+')
     s++;
   if (s>sStart) {
     char *sCopy;
@@ -603,7 +603,7 @@ void handleTransactionDetails(AB_TRANSACTION *t, const char *sDetails)
     return;
   s++;
   sStart=s;
-  while(*s && *s!='+')
+  while (*s && *s!='+')
     s++;
   if (s>sStart) {
     char *sCopy;
@@ -624,7 +624,7 @@ void handleTransactionDetails(AB_TRANSACTION *t, const char *sDetails)
     return;
   s++;
   sStart=s;
-  while(*s && *s!='+')
+  while (*s && *s!='+')
     s++;
   if (s>sStart) {
     char *sCopy;
@@ -640,7 +640,7 @@ void handleTransactionDetails(AB_TRANSACTION *t, const char *sDetails)
     return;
   s++;
   sStart=s;
-  while(*s && *s!='+')
+  while (*s && *s!='+')
     s++;
   if (s>sStart) {
     /* 4th field */

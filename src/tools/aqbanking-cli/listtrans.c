@@ -167,7 +167,7 @@ int listTrans(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
           }
 
 
-          replaceVars(tmplString, dbTransaction, dbuf);
+          GWEN_DB_ReplaceVars(dbTransaction, tmplString, dbuf);
           fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(dbuf));
           GWEN_Buffer_Reset(dbuf);
 
@@ -384,6 +384,17 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
                              " $(refUniqueId)         : Unique id of another transaction this one refers to (mostly unused)\n");
     GWEN_Buffer_AppendString(ubuf, " $(transactionText)     : Transaction text (e.g. \"Gehalt\")\n");
     GWEN_Buffer_AppendString(ubuf, " $(transactionKey)      : Some other value assigned by the bank\n");
+    GWEN_Buffer_AppendString(ubuf, "\n");
+
+    GWEN_Buffer_AppendString(ubuf, "\n");
+    GWEN_Buffer_AppendString(ubuf, "The following transaction types can be used with \"-tt\":\n");
+    GWEN_Buffer_AppendString(ubuf, " statement              : standard bank statements\n");
+    GWEN_Buffer_AppendString(ubuf,
+                             " notedStatement         : statements not yet booked but planned to be booked by the bank\n");
+    GWEN_Buffer_AppendString(ubuf, " transfer               : transfer (pay to someone else)\n");
+    GWEN_Buffer_AppendString(ubuf, " debitNote              : debit note (request someone to pay to you)\n");
+    GWEN_Buffer_AppendString(ubuf, " standingOrder          : standing order (periodical payment to someone else)\n");
+    GWEN_Buffer_AppendString(ubuf, " internalTransfer       : transfer between two of your accounts at one bank\n");
 
 
     fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(ubuf));

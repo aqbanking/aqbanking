@@ -35,11 +35,11 @@ typedef enum {
 
 
 
-#define AQBANKING_TOOL_LIMITFLAGS_PURPOSE  0x0001
-#define AQBANKING_TOOL_LIMITFLAGS_NAMES    0x0002
-#define AQBANKING_TOOL_LIMITFLAGS_SEQUENCE 0x0004
-#define AQBANKING_TOOL_LIMITFLAGS_DATE     0x0008
-#define AQBANKING_TOOL_LIMITFLAGS_SEPA     0x0010
+#define AQBANKING_TOOL_LIMITFLAGS_PURPOSE    0x0001
+#define AQBANKING_TOOL_LIMITFLAGS_NAMES      0x0002
+#define AQBANKING_TOOL_LIMITFLAGS_SEQUENCE   0x0004
+#define AQBANKING_TOOL_LIMITFLAGS_DATE       0x0008
+#define AQBANKING_TOOL_LIMITFLAGS_SEPA       0x0010
 
 
 
@@ -49,7 +49,6 @@ typedef enum {
 #define AQBANKING_TOOL_REQUEST_ESTATEMENTS   0x0008
 
 #define AQBANKING_TOOL_REQUEST_IGNORE_UNSUP  0x8000
-
 
 
 
@@ -71,7 +70,7 @@ AB_TRANSACTION *mkSepaDebitNote(GWEN_DB_NODE *db, int cmd);
 /**
  * Get selected AqBanking account sepcs matching the user given parameters in command line db.
  */
-int getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db, AB_ACCOUNT_SPEC_LIST **pAccountSpecList);
+AB_ACCOUNT_SPEC_LIST *getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db);
 
 /**
  * Return a single account spec matching the user given parameters in command line db.
@@ -80,11 +79,9 @@ int getSelectedAccounts(AB_BANKING *ab, GWEN_DB_NODE *db, AB_ACCOUNT_SPEC_LIST *
 AB_ACCOUNT_SPEC *getSingleSelectedAccount(AB_BANKING *ab, GWEN_DB_NODE *db);
 
 
-/**
- * Replace variables in the given text.
- * Variables are used like this: "$(VAR1)".
- */
-int replaceVars(const char *s, GWEN_DB_NODE *db, GWEN_BUFFER *dbuf);
+AB_ACCOUNT_SPEC *pickAccountSpecForArgs(const AB_ACCOUNT_SPEC_LIST *accountSpecList, GWEN_DB_NODE *db);
+AB_ACCOUNT_SPEC *pickAccountSpecForTransaction(const AB_ACCOUNT_SPEC_LIST *as, const AB_TRANSACTION *t);
+
 
 
 int checkTransactionIbans(const AB_TRANSACTION *t);
@@ -92,6 +89,8 @@ int checkTransactionLimits(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS 
 
 
 int addTransactionToContextFile(const AB_TRANSACTION *t, const char *ctxFile);
+
+int writeJobsAsContextFile(AB_TRANSACTION_LIST2 *tList, const char *ctxFile);
 
 
 int execBankingJobs(AB_BANKING *ab, AB_TRANSACTION_LIST2 *tList, const char *ctxFile);

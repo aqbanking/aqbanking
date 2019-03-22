@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue Mar 25 2014
- copyright   : (C) 2018 by Martin Preuss
+ copyright   : (C) 2019 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -19,12 +19,21 @@
 
 
 
+static GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv);
+
+static int _createJobsFromContext(AB_IMEXPORTER_CONTEXT *ctx,
+                                  const AB_ACCOUNT_SPEC_LIST *accountSpecList,
+                                  AB_ACCOUNT_SPEC *forcedAccount,
+                                  AB_TRANSACTION_COMMAND cmd,
+                                  AB_TRANSACTION_LIST2 *jobList);
+
+
+
+
 
 int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv,
                   AQBANKING_TOOL_MULTISEPA_TYPE multisepa_type)
 {
-#pragma message "Need to implement this"
-#if 0
   GWEN_DB_NODE *db;
   int rv;
   const char *ctxFile;
@@ -32,15 +41,132 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv,
   const char *importerName;
   const char *profileName;
   const char *profileFile;
-  const char *bankId;
-  const char *accountId;
-  const char *subAccountId;
-  int fillGaps, use_flash_debitnote;
+  int use_flash_debitnote;
   AB_IMEXPORTER_CONTEXT *ctx=0;
-  AB_IMEXPORTER_ACCOUNTINFO *iea;
-  AB_ACCOUNT *forcedAccount=NULL;
-  AB_JOB_LIST2 *jobList;
-  int rvExec, reallyExecute = 1, transactionLine = 0;
+  AB_ACCOUNT_SPEC *forcedAccount=NULL;
+  AB_TRANSACTION_LIST2 *jobList;
+  AB_ACCOUNT_SPEC_LIST *accountSpecList=NULL;
+  AB_TRANSACTION_COMMAND cmd;
+  int dryRun=0;
+  int rvExec;
+
+  /* parse command line arguments */
+  db=_readCommandLine(dbArgs, argc, argv);
+  if (db==NULL) {
+    /* error in command line */
+    return 1;
+  }
+
+  importerName=GWEN_DB_GetCharValue(db, "importerName", 0, "csv");
+  profileName=GWEN_DB_GetCharValue(db, "profileName", 0,
+                                   (multisepa_type == AQBANKING_TOOL_SEPA_TRANSFERS)
+                                   ? "default"
+                                   : "sepadebitnotes");
+  profileFile=GWEN_DB_GetCharValue(db, "profileFile", 0, NULL);
+  ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
+  inFile=GWEN_DB_GetCharValue(db, "inFile", 0, 0);
+  use_flash_debitnote=GWEN_DB_GetIntValue(db, "useCOR1", 0, 0);
+  dryRun=GWEN_DB_GetIntValue(db, "dryRun", 0, 0);
+
+  rv=AB_Banking_Init(ab);
+  if (rv) {
+    DBG_ERROR(0, "Error on init (%d)", rv);
+    return 2;
+  }
+
+  rv=AB_Banking_GetAccountSpecList(ab, &accountSpecList);
+  if (rv<0) {
+    DBG_INFO(0, "here (%d)", rv);
+    AB_Banking_Fini(ab);
+    return 4;
+  }
+
+  /* find local account to set later if requested */
+  if (GWEN_DB_VariableExists(db, "uniqueAccountId") ||
+      GWEN_DB_VariableExists(db, "bankId") ||
+      GWEN_DB_VariableExists(db, "accountId") ||
+      GWEN_DB_VariableExists(db, "subAccountId") ||
+      GWEN_DB_VariableExists(db, "iban")) {
+    forcedAccount=pickAccountSpecForArgs(accountSpecList, db);
+    if (forcedAccount==NULL) {
+      DBG_ERROR(0, "Invalid account specification.");
+      AB_Banking_Fini(ab);
+      return 4;
+    }
+  }
+
+  /* import new context */
+  ctx=AB_ImExporterContext_new();
+  rv=AB_Banking_ImportFromFileLoadProfile(ab, importerName, ctx,
+                                          profileName, profileFile,
+                                          inFile);
+  if (rv<0) {
+    DBG_ERROR(0, "Error reading file: %d", rv);
+    AB_ImExporterContext_free(ctx);
+    AB_Banking_Fini(ab);
+    return 4;
+  }
+
+  /* create jobs from imported transactions */
+  cmd=(multisepa_type == AQBANKING_TOOL_SEPA_TRANSFERS)
+      // The command was sepatransfers, so we create JobSepaTransfer
+      ? AB_Transaction_CommandSepaTransfer
+      // The command was sepadebitnotes, so we create some debit note
+      : (use_flash_debitnote
+         // Did we have --use-COR1? Use this extra job type
+         ? AB_Transaction_CommandSepaFlashDebitNote
+         // No COR1, just standard CORE debit note
+         : AB_Transaction_CommandSepaDebitNote);
+
+  /* populate job list */
+  jobList=AB_Transaction_List2_new();
+  rv=_createJobsFromContext(ctx, accountSpecList, forcedAccount, cmd, jobList);
+  AB_ImExporterContext_free(ctx);
+  if (rv<0) {
+    DBG_INFO(0, "Error (%d)", rv);
+    writeJobsAsContextFile(jobList, ctxFile);
+    AB_Transaction_List2_freeAll(jobList);
+    AB_Banking_Fini(ab);
+    return 3;
+  }
+
+  /* execute jobs */
+  rvExec=0;
+  if (dryRun) {
+    DBG_NOTICE(0, "Dry-run requested, not sending jobs");
+    writeJobsAsContextFile(jobList, ctxFile);
+  }
+  else {
+    rv=execBankingJobs(ab, jobList, ctxFile);
+    if (rv) {
+      DBG_ERROR(0, "Error on executeQueue (%d)", rv);
+      rvExec=3;
+    }
+  }
+  AB_Transaction_List2_freeAll(jobList);
+
+  /* that's it */
+  rv=AB_Banking_Fini(ab);
+  if (rv) {
+    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
+    if (rvExec)
+      return rvExec;
+    else
+      return 5;
+  }
+
+  if (rvExec)
+    return rvExec;
+  else
+    return 0;
+}
+
+
+
+GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
+{
+  GWEN_DB_NODE *db;
+  int rv;
   const GWEN_ARGS args[]= {
     {
       GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -99,6 +225,17 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv,
     },
     {
       GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "uniqueAccountId",             /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      NULL,                         /* short option */
+      "aid",                        /* long option */
+      "Specify the unique account id",      /* short description */
+      "Specify the unique account id"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
       GWEN_ArgsType_Char,            /* type */
       "bankId",                     /* name */
       0,                            /* minnum */
@@ -131,15 +268,26 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv,
       "Specify the sub account id (Unterkontomerkmal)"     /* long description */
     },
     {
-      0,
-      GWEN_ArgsType_Int,
-      "fillGaps",
-      0,
-      1,
-      0,
-      "fill-gaps",
-      "let AqBanking fill-in missing account information if possible",
-      "let AqBanking fill-in missing account information if possible",
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "iban",                       /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "A",                          /* short option */
+      "iban",                    /* long option */
+      "Specify the iban of your account",      /* short description */
+      "Specify the iban of your account"       /* long description */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "accountType",                 /* name */
+      0,                             /* minnum */
+      1,                             /* maxnum */
+      "t",                           /* short option */
+      "accounttype",                       /* long option */
+      "Specify the type of your account",      /* short description */
+      "Specify the type of your account"       /* long description */
     },
     {
       0, /* flags */
@@ -151,6 +299,17 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv,
       "use-COR1",                   /* long option */
       "If given, use COR1 variant of debit notes (faster), otherwise CORE (slower)",    /* short description */
       "If given, use COR1 variant of debit notes (faster), otherwise CORE (slower)"     /* long description */
+    },
+    {
+      0, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "dryRun",                     /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                           /* short option */
+      "dryRun",                    /* long option */
+      "If given jobs will not be really executed, just written to the context file",    /* short description */
+      "If given jobs will not be really executed, just written to the context file"     /* long description */
     },
     {
       GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
@@ -165,6 +324,7 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv,
     }
   };
 
+
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
   rv=GWEN_Args_Check(argc, argv, 1,
                      0 /*GWEN_ARGS_MODE_ALLOW_FREEPARAM*/,
@@ -172,7 +332,7 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv,
                      db);
   if (rv==GWEN_ARGS_RESULT_ERROR) {
     fprintf(stderr, "ERROR: Could not parse arguments\n");
-    return 1;
+    return NULL;
   }
   else if (rv==GWEN_ARGS_RESULT_HELP) {
     GWEN_BUFFER *ubuf;
@@ -180,243 +340,125 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv,
     ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
     if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutType_Txt)) {
       fprintf(stderr, "ERROR: Could not create help string\n");
-      return 1;
+      return NULL;
     }
     fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(ubuf));
     GWEN_Buffer_free(ubuf);
-    return 0;
+    return NULL;
   }
 
-  bankId=GWEN_DB_GetCharValue(db, "bankId", 0, 0);
-  accountId=GWEN_DB_GetCharValue(db, "accountId", 0, 0);
-  subAccountId=GWEN_DB_GetCharValue(db, "subAccountId", 0, 0);
-  importerName=GWEN_DB_GetCharValue(db, "importerName", 0, "csv");
-  profileName=GWEN_DB_GetCharValue(db, "profileName", 0,
-                                   (multisepa_type == AQBANKING_TOOL_SEPA_TRANSFERS)
-                                   ? "default"
-                                   : "sepadebitnotes");
-  profileFile=GWEN_DB_GetCharValue(db, "profileFile", 0, NULL);
-  ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
-  fillGaps=GWEN_DB_GetIntValue(db, "fillGaps", 0, 0);
-  inFile=GWEN_DB_GetCharValue(db, "inFile", 0, 0);
-  use_flash_debitnote = GWEN_DB_GetIntValue(db, "useCOR1", 0, 0);
+  return db;
+}
 
-  rv=AB_Banking_Init(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
-  }
 
-  rv=AB_Banking_OnlineInit(ab);
-  if (rv) {
-    DBG_ERROR(0, "Error on init (%d)", rv);
-    return 2;
-  }
 
-  /* find local account to set later if requested */
-  if (bankId || accountId) {
-    AB_ACCOUNT_LIST2 *al;
+int _createJobsFromContext(AB_IMEXPORTER_CONTEXT *ctx,
+                           const AB_ACCOUNT_SPEC_LIST *accountSpecList,
+                           AB_ACCOUNT_SPEC *forcedAccount,
+                           AB_TRANSACTION_COMMAND cmd,
+                           AB_TRANSACTION_LIST2 *jobList)
+{
+  AB_IMEXPORTER_ACCOUNTINFO *iea;
+  int reallyExecute=1;
+  int transactionLine=0;
 
-    /* get account */
-    al=AB_Banking_FindAccounts(ab, "*", "*", bankId, accountId, subAccountId);
-    if (al==NULL || AB_Account_List2_GetSize(al)==0) {
-      DBG_ERROR(0, "Account not found");
-      AB_Account_List2_free(al);
-      return 2;
-    }
-    else if (AB_Account_List2_GetSize(al)>1) {
-      DBG_ERROR(0, "Ambiguous account specification");
-      AB_Account_List2_free(al);
-      return 2;
-    }
-    forcedAccount=AB_Account_List2_GetFront(al);
-    AB_Account_List2_free(al);
-  }
-
-  /* import new context */
-  ctx=AB_ImExporterContext_new();
-  rv=AB_Banking_ImportFileWithProfile(ab, importerName, ctx,
-                                      profileName, profileFile,
-                                      inFile);
-  if (rv<0) {
-    DBG_ERROR(0, "Error reading file: %d", rv);
-    AB_ImExporterContext_free(ctx);
-    return 4;
-  }
-
-  /* fill gaps */
-  if (fillGaps)
-    AB_Banking_FillGapsInImExporterContext(ab, ctx);
-
-  /* populate job list */
-  jobList=AB_Job_List2_new();
   iea=AB_ImExporterContext_GetFirstAccountInfo(ctx);
   while (iea) {
-    AB_ACCOUNT *a;
-    AB_TRANSACTION *t;
-
-    if (forcedAccount)
-      a=forcedAccount;
-    else {
-      a=NULL;
-      if (AB_ImExporterAccountInfo_GetAccountId(iea))
-        a=AB_Banking_GetAccount(ab, AB_ImExporterAccountInfo_GetAccountId(iea));
-      if (a==NULL)
-        a=AB_Banking_FindAccount2(ab,
-                                  "*",
-                                  "*",
-                                  AB_ImExporterAccountInfo_GetBankCode(iea),
-                                  AB_ImExporterAccountInfo_GetAccountNumber(iea),
-                                  AB_ImExporterAccountInfo_GetSubAccountId(iea),
-                                  AB_ImExporterAccountInfo_GetIban(iea),
-                                  AB_ImExporterAccountInfo_GetAccountType(iea));
-      if (!a) {
-        DBG_ERROR(0, "Local account %s/%s not found, aborting",
-                  AB_ImExporterAccountInfo_GetBankCode(iea),
-                  AB_ImExporterAccountInfo_GetAccountNumber(iea));
-        AB_Job_List2_FreeAll(jobList);
-        AB_ImExporterContext_free(ctx);
-        return 3;
-      }
-    }
+    const AB_TRANSACTION *t;
 
     t=AB_ImExporterAccountInfo_GetFirstTransaction(iea, 0, 0);
     while (t) {
-      AB_JOB *j;
+      AB_ACCOUNT_SPEC *as;
+      AB_TRANSACTION *job=NULL;
       const char *rIBAN;
       const char *lIBAN;
       const char *lBIC;
-      transactionLine++;
+      const AB_TRANSACTION_LIMITS *lim;
+      int rv;
 
-      if (forcedAccount) {
-        AB_Transaction_SetLocalIban(t, AB_Account_GetIBAN(forcedAccount));
-        AB_Transaction_SetLocalBic(t, AB_Account_GetBIC(forcedAccount));
+      job=AB_Transaction_dup(t);
+
+      if (forcedAccount)
+        as=forcedAccount;
+      else
+        as=pickAccountSpecForTransaction(accountSpecList, t);
+      if (as==NULL) {
+        DBG_ERROR(0, "Could not determine account for job in line %d", transactionLine);
+        reallyExecute=0;
+        AB_Transaction_SetStatus(job, AB_Transaction_StatusError);
       }
 
-      rIBAN=AB_Transaction_GetRemoteIban(t);
-      lIBAN=AB_Transaction_GetLocalIban(t);
-      lBIC=AB_Transaction_GetLocalBic(t);
+      /* fill missing fields in transaction from account spec */
+      AB_Banking_FillTransactionFromAccountSpec(job, as);
 
-      /* preset local BIC and IBAN from account, if not set */
-      if (!lBIC || !(*lBIC))
-        lBIC=AB_Account_GetBIC(a);
-
-      if (!lIBAN || !(*lIBAN))
-        lIBAN=AB_Account_GetIBAN(a);
+      rIBAN=AB_Transaction_GetRemoteIban(job);
+      lIBAN=AB_Transaction_GetLocalIban(job);
+      lBIC=AB_Transaction_GetLocalBic(job);
 
       /* check remote account */
       if (!rIBAN || !(*rIBAN)) {
         DBG_ERROR(0, "Missing remote IBAN, in line %d", transactionLine);
-        reallyExecute = 0;
+        reallyExecute=0;
       }
       rv=AB_Banking_CheckIban(rIBAN);
       if (rv != 0) {
         DBG_ERROR(0, "Invalid remote IBAN (%s), in line %d", rIBAN, transactionLine);
-        reallyExecute = 0;
+        reallyExecute=0;
+        AB_Transaction_SetStatus(job, AB_Transaction_StatusError);
       }
 
       /* check local account */
-#if 0
       if (!lBIC || !(*lBIC)) {
-        DBG_ERROR(0, "Missing local BIC, in line %d", transactionLine);
-        reallyExecute = 0;
+        DBG_WARN(0, "Missing local BIC, in line %d (ignoring, not needed anymore anyway)", transactionLine);
       }
-#endif
       if (!lIBAN || !(*lIBAN)) {
         DBG_ERROR(0, "Missing local IBAN, in line %d", transactionLine);
-        reallyExecute = 0;
+        reallyExecute=0;
       }
       rv=AB_Banking_CheckIban(lIBAN);
       if (rv != 0) {
         DBG_ERROR(0, "Invalid local IBAN (%s), in line %d", lIBAN, transactionLine);
-        reallyExecute = 0;
+        reallyExecute=0;
+        AB_Transaction_SetStatus(job, AB_Transaction_StatusError);
       }
 
-      /* Create job */
-      j = (multisepa_type == AQBANKING_TOOL_SEPA_TRANSFERS)
-          // The command was sepatransfers, so we create JobSepaTransfer
-          ? AB_JobSepaTransfer_new(a)
-          // The command was sepadebitnotes, so we create some debit note
-          : (use_flash_debitnote
-             // Did we have --use-COR1? Use this extra job type
-             ? AB_JobSepaFlashDebitNote_new(a)
-             // No COR1, just standard CORE debit note
-             : AB_JobSepaDebitNote_new(a));
-      rv=AB_Job_CheckAvailability(j);
-      if (rv<0) {
-        const char *jobtype = AB_Job_Type2Char(AB_Job_GetType(j));
-        DBG_ERROR(0, "Job %s not supported, in line %d.", jobtype, transactionLine);
-        reallyExecute = 0;
+      AB_Transaction_SetType(job,
+                             (cmd==AB_Transaction_CommandSepaTransfer)
+                             ? AB_Transaction_TypeTransfer
+                             : AB_Transaction_TypeDebitNote
+                            );
+
+      lim=AB_AccountSpec_GetTransactionLimitsForCommand(as, cmd);
+      if (lim==NULL) {
+        DBG_ERROR(0, "Job %s not supported, in line %d.", AB_Transaction_Command_toString(cmd), transactionLine);
+        reallyExecute=0;
+        AB_Transaction_SetStatus(job, AB_Transaction_StatusError);
       }
-      rv=AB_Job_SetTransaction(j, t);
-      if (rv<0) {
-        DBG_ERROR(0, "Unable to add transaction for account %s/%s, line %d, aborting",
-                  AB_ImExporterAccountInfo_GetBankCode(iea),
-                  AB_ImExporterAccountInfo_GetAccountNumber(iea),
-                  transactionLine);
-        reallyExecute = 0;
+      else {
+        rv=checkTransactionLimits(job, lim,
+                                  AQBANKING_TOOL_LIMITFLAGS_PURPOSE |
+                                  AQBANKING_TOOL_LIMITFLAGS_NAMES |
+                                  AQBANKING_TOOL_LIMITFLAGS_SEPA);
+        if (rv<0) {
+          DBG_ERROR(0, "Job %s violates limits, in line %d.", AB_Transaction_Command_toString(cmd), transactionLine);
+          reallyExecute=0;
+          AB_Transaction_SetStatus(job, AB_Transaction_StatusError);
+        }
       }
-      AB_Job_List2_PushBack(jobList, j);
+      AB_Transaction_SetCommand(job, cmd);
+
+      AB_Transaction_List2_PushBack(jobList, job);
+      transactionLine++;
       t=AB_Transaction_List_Next(t);
     } /* while t */
 
     iea=AB_ImExporterAccountInfo_List_Next(iea);
   } /* while */
-  AB_ImExporterContext_free(ctx);
 
-  if (reallyExecute != 1) {
-    AB_Job_List2_FreeAll(jobList);
-    return 3;
-  }
-
-  /* execute jobs */
-  rvExec=0;
-  ctx=AB_ImExporterContext_new();
-  rv=AB_Banking_ExecuteJobs(ab, jobList, ctx);
-  if (rv) {
-    fprintf(stderr, "Error on executeQueue (%d)\n", rv);
-    rvExec=3;
-  }
-  AB_Job_List2_FreeAll(jobList);
-
-  /* write context */
-  rv=writeContext(ctxFile, ctx);
-  AB_ImExporterContext_free(ctx);
-  if (rv<0) {
-    AB_Banking_OnlineFini(ab);
-    AB_Banking_Fini(ab);
-    return 4;
-  }
-
-  /* that's it */
-  rv=AB_Banking_OnlineFini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    AB_Banking_Fini(ab);
-    if (rvExec)
-      return rvExec;
-    else
-      return 5;
-  }
-
-  rv=AB_Banking_Fini(ab);
-  if (rv) {
-    fprintf(stderr, "ERROR: Error on deinit (%d)\n", rv);
-    if (rvExec)
-      return rvExec;
-    else
-      return 5;
-  }
-
-  if (rvExec)
-    return rvExec;
-  else
-    return 0;
-#endif
+  if (reallyExecute==0)
+    return GWEN_ERROR_GENERIC;
   return 0;
 }
-
-
 
 
 

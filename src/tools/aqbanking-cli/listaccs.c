@@ -165,14 +165,9 @@ int listAccs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
   }
 
 
-  rv=getSelectedAccounts(ab, db, &al);
-  if (rv<0) {
-    if (rv==GWEN_ERROR_NOT_FOUND) {
-      DBG_INFO(0, "No matching accounts");
-    }
-    else {
-      DBG_ERROR(0, "Error getting selected accounts (%d)", rv);
-    }
+  al=getSelectedAccounts(ab, db);
+  if (al==NULL) {
+    DBG_INFO(0, "No matching accounts");
     AB_Banking_Fini(ab);
     return 2;
   }
@@ -193,7 +188,7 @@ int listAccs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
       GWEN_DB_SetCharValue(dbAccountSpec, GWEN_DB_FLAGS_OVERWRITE_VARS, "typeAsString",
                            AB_AccountType_toChar(AB_AccountSpec_GetType(as)));
 
-      replaceVars(tmplString, dbAccountSpec, dbuf);
+      GWEN_DB_ReplaceVars(dbAccountSpec, tmplString, dbuf);
       fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(dbuf));
       GWEN_Buffer_Reset(dbuf);
 
