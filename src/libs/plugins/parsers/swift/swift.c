@@ -214,7 +214,7 @@ int AHB_SWIFT_GetNextSubTag(const char **sptr, AHB_SWIFT_SUBTAG **tptr)
 {
   const char *s;
   int id=0;
-  int nextId=0;
+  /*int nextId=0;*/
   const char *content=NULL;
   AHB_SWIFT_SUBTAG *stg;
 
@@ -251,7 +251,7 @@ int AHB_SWIFT_GetNextSubTag(const char **sptr, AHB_SWIFT_SUBTAG **tptr)
       if (*t==0x0a)
         t++;
       if (*t && isdigit(*t)) {
-        nextId=(*(t++)-'0')*10;
+        /*nextId=(*(t++)-'0')*10;*/
         if (*t==0x0a)
           t++;
         if (*t && isdigit(*t)) {
