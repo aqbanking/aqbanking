@@ -324,7 +324,6 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
     }
   };
 
-
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
   rv=GWEN_Args_Check(argc, argv, 1,
                      0 /*GWEN_ARGS_MODE_ALLOW_FREEPARAM*/,
