@@ -16,7 +16,7 @@
 #include <gwenhywfar/fastbuffer.h>
 
 
-#define AHB_SWIFT_MAXLINELEN 512
+#define AHB_SWIFT_MAXLINELEN 2048
 
 #include "swift_l.h"
 
