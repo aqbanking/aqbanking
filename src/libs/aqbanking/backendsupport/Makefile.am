@@ -1,4 +1,4 @@
-INCLUDES = -I$(srcdir)/../.. -I$(srcdir)/.. $(gwenhywfar_includes)
+INCLUDES = -I$(srcdir)/../.. -I$(srcdir)/.. -I$(top_builddir)/src/libs $(gwenhywfar_includes)
 
 AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
@@ -111,10 +111,10 @@ MAINTAINERCLEANFILES = $(typedata_sources) $(built_headers) $(dist_typedata_DATA
 built_sources: $(typedata_sources)
 
 .xml.c:
-	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types -I $(builddir) --destfolder="$(builddir)"  $<
+	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(builddir)/../types -I $(srcdir)/../types2 -I $(builddir) --destfolder="$(builddir)"  $<
 
 .xml.h:
-	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types -I $(builddir) --destfolder="$(builddir)"  $<
+	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(builddir)/../types -I $(srcdir)/../types2 -I $(builddir) --destfolder="$(builddir)"  $<
 
 SUFFIXES = .xml .c
 

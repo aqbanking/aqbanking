@@ -1,8 +1,11 @@
 SUBDIRS=types gui backendsupport typemaker2 dialogs
 
 INCLUDES = \
-  $(gwenhywfar_includes) \
-  -I$(srcdir)/../
+  -I$(srcdir)/.. \
+  -I$(top_builddir)/src/libs \
+  -I$(top_builddir)/src/libs/plugins/backends \
+  -I$(top_srcdir) \
+  $(gwenhywfar_includes)
 
 noinst_LTLIBRARIES=libaqbanking_base.la
 
