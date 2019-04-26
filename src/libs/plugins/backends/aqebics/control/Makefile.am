@@ -1,5 +1,5 @@
 
-INCLUDES = -I$(top_srcdir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/../.. $(AQEBICS_CFLAGS)
+INCLUDES = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/../.. $(AQEBICS_CFLAGS)
 
 #EXTRA_DIST=
 

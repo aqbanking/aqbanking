@@ -1,6 +1,6 @@
 EXTRA_DIST = README tutorials.h
 
-INCLUDES = -I$(top_srcdir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/..
+INCLUDES = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/..
 
 noinst_PROGRAMS=\
   tutorial1 \

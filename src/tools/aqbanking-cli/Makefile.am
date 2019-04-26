@@ -1,6 +1,6 @@
 #EXTRA_DIST=
 
-INCLUDES = -I$(top_srcdir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/..
+INCLUDES = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/..
 
 AM_CFLAGS=@visibility_cflags@
 
