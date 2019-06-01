@@ -994,13 +994,15 @@ int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox,
     return rv;
   }
 
-  /* select iTAN mode */
-  if (!(AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NOITAN)) {
-    rv=AH_Outbox__CBox_SelectItanMode(cbox, dlg);
-    if (rv) {
-      AH_Dialog_Disconnect(dlg);
-      AH_Dialog_free(dlg);
-      return rv;
+  if (AH_User_GetCryptMode(cbox->user)==AH_CryptMode_Pintan) {
+    /* select iTAN mode */
+    if (!(AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NOITAN)) {
+      rv=AH_Outbox__CBox_SelectItanMode(cbox, dlg);
+      if (rv) {
+	AH_Dialog_Disconnect(dlg);
+	AH_Dialog_free(dlg);
+	return rv;
+      }
     }
   }
 
