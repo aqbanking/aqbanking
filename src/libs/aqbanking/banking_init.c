@@ -17,13 +17,13 @@
 
 static uint32_t ab_plugin_init_count=0;
 
-static GWEN_PLUGIN_MANAGER *ab_pluginManagerBankInfo=NULL;
-static GWEN_PLUGIN_MANAGER *ab_pluginManagerProvider=NULL;
-static GWEN_PLUGIN_MANAGER *ab_pluginManagerImExporter=NULL;
-static AB_BANKINFO_PLUGIN_LIST *ab_bankInfoPlugins=NULL;
+static /*@null@*/GWEN_PLUGIN_MANAGER *ab_pluginManagerBankInfo=NULL;
+static /*@null@*/GWEN_PLUGIN_MANAGER *ab_pluginManagerProvider=NULL;
+static /*@null@*/GWEN_PLUGIN_MANAGER *ab_pluginManagerImExporter=NULL;
+static /*@null@*/AB_BANKINFO_PLUGIN_LIST *ab_bankInfoPlugins=NULL;
 
-static AB_IMEXPORTER_LIST *ab_imexporters=NULL;
-static AB_PROVIDER_LIST *ab_providers=NULL;
+static /*@null@*/AB_IMEXPORTER_LIST *ab_imexporters=NULL;
+static /*@null@*/AB_PROVIDER_LIST *ab_providers=NULL;
 
 
 #define AB_DBIO_FOLDER "dbio"
@@ -390,7 +390,6 @@ int AB_Banking_Init(AB_BANKING *ab)
   }
 
   if (ab->initCount==0) {
-    int rv;
     uint32_t currentVersion;
     GWEN_DB_NODE *db=NULL;
 
@@ -415,13 +414,11 @@ int AB_Banking_Init(AB_BANKING *ab)
       AB_Banking_PluginSystemFini();
       return rv;
     }
-    ab->lastVersion=GWEN_DB_GetIntValue(db, "lastVersion", 0, 0);
+    ab->lastVersion=(uint32_t) GWEN_DB_GetIntValue(db, "lastVersion", 0, 0);
     GWEN_DB_Group_free(db);
 
     /* check whether we need to update */
     if ((ab->lastVersion>0) && (ab->lastVersion<currentVersion)) {
-      int rv;
-
       DBG_INFO(AQBANKING_LOGDOMAIN, "Updating AqBanking");
       rv=AB_Banking_Update(ab, ab->lastVersion, currentVersion);
       if (rv<0) {

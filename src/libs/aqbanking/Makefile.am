@@ -108,3 +108,8 @@ cppcheck:
 	done
 
 
+splint:
+	for f in $(libaqbanking_base_la_SOURCES); do \
+	  splint $(INCLUDES) $(DEFS) +enumint -unrecogcomments +posixlib -predboolint +boolint -boolops $$f ; \
+	done
+	
