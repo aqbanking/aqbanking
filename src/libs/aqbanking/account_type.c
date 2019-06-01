@@ -13,8 +13,9 @@
 # include <config.h>
 #endif
 
-
 #include "account_type.h"
+
+#include <strings.h>
 
 
 
