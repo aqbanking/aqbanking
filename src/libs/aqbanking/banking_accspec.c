@@ -129,9 +129,6 @@ int AB_Banking_GetAccountSpecList(const AB_BANKING *ab, AB_ACCOUNT_SPEC_LIST **p
       return GWEN_ERROR_NOT_FOUND;
     }
   }
-
-  DBG_INFO(AQBANKING_LOGDOMAIN, "No account specs found");
-  return GWEN_ERROR_NOT_FOUND;
 }
 
 
