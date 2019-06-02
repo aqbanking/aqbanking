@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -33,51 +30,12 @@
  */
 /*@{*/
 /**
- * This update converts AH_BPDADDR groups to GWEN_URL strings.
- */
-static int AH_HBCI_UpdateUser_1_9_7_7(AH_HBCI *hbci, GWEN_DB_NODE *db);
-
-/**
- * This update adds the variable "tanMethods" with an initial value of
- * "singleStep"
- */
-static int AH_HBCI_UpdateUser_2_1_1_1(AH_HBCI *hbci, GWEN_DB_NODE *db);
-
-/**
- * This update creates the crypt token settings from the medium id
- * and sets the rdhType if it not already is.
- */
-static int AH_HBCI_UpdateUser_2_9_3_2(AH_HBCI *hbci, GWEN_DB_NODE *db);
-
-/**
- * This update creates tokenContextId from contextId for media.
- */
-static int AH_HBCI_UpdateUser_2_9_3_3(AH_HBCI *hbci, GWEN_DB_NODE *db);
-
-/**
- * This update transforms tanMethods to tanMethodList
- */
-static int AH_HBCI_UpdateUser_3_1_1_2(AH_HBCI *hbci, GWEN_DB_NODE *db);
-
-/**
  * This update transforms selectedTanMethod
  */
 static int AH_HBCI_UpdateUser_5_0_3_1(AH_HBCI *hbci, GWEN_DB_NODE *db);
 
 /*@}*/
 
-
-/** @name Account DB Update Functions
- *
- * Functions in this group called from @ref AB_Account_Extend.
- */
-/*@{*/
-/**
- * This update sets the account flags to the default value if they are "0".
- * This now makes single transfers the default.
- */
-static int AH_HBCI_UpdateAccount_1_9_7_9(AH_HBCI *hbci, GWEN_DB_NODE *db);
-/*@}*/
 
 
 #endif

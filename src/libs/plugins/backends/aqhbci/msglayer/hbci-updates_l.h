@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -23,11 +20,13 @@
  */
 int AH_HBCI_UpdateDbUser(AH_HBCI *hbci, GWEN_DB_NODE *db);
 
+#if 0
 /**
  * This function is called from AH_User_Extend to extend the given account
  * data DB to the latest version.
  */
 int AH_HBCI_UpdateDbAccount(AH_HBCI *hbci, GWEN_DB_NODE *db);
+#endif
 
 
 #endif
