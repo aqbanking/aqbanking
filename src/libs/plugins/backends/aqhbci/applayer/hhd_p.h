@@ -15,6 +15,7 @@
 #include "hhd_l.h"
 
 
+#if 0
 static int AH_HHD14_ReadBytesDec(const char *p, int len);
 static int AH_HHD14_ReadBytesHex(const char *p, int len);
 static unsigned int AH_HHD14_Quersumme(unsigned int i);
@@ -26,6 +27,7 @@ static void AH_HHD14_CompressCode(const uint8_t *code, GWEN_BUFFER *cbuf);
 static void AH_HHD14_ExtractCode(GWEN_BUFFER *cbuf);
 
 static int AH_HHD14__Translate(const char *code, GWEN_BUFFER *cbuf);
+#endif
 
 
 

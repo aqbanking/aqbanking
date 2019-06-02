@@ -22,7 +22,10 @@
 #include <ctype.h>
 
 
-
+#if 0
+/*
+ * Currently not used (see tan_chiptan_opt.c)
+ */
 
 int AH_HHD14_ReadBytesDec(const char *p, int len)
 {
@@ -504,7 +507,7 @@ int AH_HHD14_Translate(const char *code, GWEN_BUFFER *cbuf)
   GWEN_Buffer_free(xbuf);
   return 0;
 }
-
+#endif
 
 
 

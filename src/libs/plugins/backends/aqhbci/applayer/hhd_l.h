@@ -14,7 +14,9 @@
 #include <gwenhywfar/buffer.h>
 
 
+#if 0
 int AH_HHD14_Translate(const char *code, GWEN_BUFFER *cbuf);
+#endif
 
 
 
