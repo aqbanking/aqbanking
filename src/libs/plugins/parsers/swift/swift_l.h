@@ -15,8 +15,6 @@
 #include <gwenhywfar/dbio.h>
 
 
-#define AHB_SWIFT_MAXLINELEN 512
-
 
 typedef struct AHB_SWIFT_TAG AHB_SWIFT_TAG;
 typedef struct AHB_SWIFT_SUBTAG AHB_SWIFT_SUBTAG;
