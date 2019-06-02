@@ -23,10 +23,6 @@
 
 AB_USER *AH_User_new(AB_PROVIDER *pro);
 
-int AH_User_ReadDb(AB_USER *u, GWEN_DB_NODE *db);
-int AH_User_toDb(const AB_USER *u, GWEN_DB_NODE *db);
-
-
 AH_HBCI *AH_User_GetHbci(const AB_USER *u);
 GWEN_MSGENGINE *AH_User_GetMsgEngine(const AB_USER *u);
 
@@ -60,7 +56,6 @@ void AH_User_SetBpd(AB_USER *u, AH_BPD *bpd);
  *
  */
 GWEN_DB_NODE *AH_User_GetUpd(const AB_USER *u);
-void AH_User_SetUpd(AB_USER *u, GWEN_DB_NODE *n);
 
 GWEN_DB_NODE *AH_User_GetUpdForAccount(const AB_USER *u, const AB_ACCOUNT *acc);
 GWEN_DB_NODE *AH_User_GetUpdForAccountUniqueId(const AB_USER *u, uint32_t uid);
@@ -75,29 +70,10 @@ int AH_User_InputPin(AB_USER *u,
                      int minLen, int maxLen,
                      int flags);
 
-int AH_User_InputPasswd(AB_USER *u,
-                        char *pwbuffer,
-                        int minLen, int maxLen,
-                        int flags);
-
 int AH_User_InputTan(AB_USER *u,
                      char *pwbuffer,
                      int minLen,
                      int maxLen);
-
-int AH_User_InputTanWithChallenge(AB_USER *u,
-                                  const char *challenge,
-                                  char *pwbuffer,
-                                  int minLen,
-                                  int maxLen);
-
-/* for optical challenges */
-int AH_User_InputTanWithChallenge2(AB_USER *u,
-                                   const char *challenge,
-                                   const char *challengeHhd,
-                                   char *pwbuffer,
-                                   int minLen,
-                                   int maxLen);
 
 int AH_User_SetTanStatus(AB_USER *u,
                          const char *challenge,

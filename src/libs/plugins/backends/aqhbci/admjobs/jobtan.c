@@ -134,7 +134,8 @@ int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
           GWEN_Text_LogString((const char *)p, l, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Info);
 
           bbuf=GWEN_Buffer_new(0, 256, 0, 1);
-#if 0
+#if 1
+          /* data is binary, transform to string */
           GWEN_Text_ToHexBuffer((const char *) p, l, bbuf, 0, 0, 0);
 #else
           /* data is a string, no need to transform to hex */

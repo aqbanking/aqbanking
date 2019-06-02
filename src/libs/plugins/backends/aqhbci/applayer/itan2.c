@@ -178,12 +178,13 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
     char tanBuffer[64];
 
     memset(tanBuffer, 0, sizeof(tanBuffer));
-    rv=AH_User_InputTanWithChallenge2(u,
-                                      challenge,
-                                      challengeHhd,
-                                      tanBuffer,
-                                      1,
-                                      sizeof(tanBuffer));
+    rv=AH_Outbox__CBox_InputTanWithChallenge(cbox,
+                                             dlg,
+                                             challenge,
+                                             challengeHhd,
+                                             tanBuffer,
+                                             1,
+                                             sizeof(tanBuffer)-1);
     if (rv) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       AH_Msg_free(msg2);

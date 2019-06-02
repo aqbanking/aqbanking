@@ -22,12 +22,19 @@ noinst_LTLIBRARIES=libhbciapp.la
 noinst_HEADERS=\
   adminjobs_l.h adminjobs_p.h\
   outbox_l.h outbox_p.h \
-  hhd_l.h hhd_p.h
+  hhd_l.h hhd_p.h \
+  tanmechanism.h tanmechanism_p.h \
+  tan_chiptan_opt.h
+
 
 libhbciapp_la_SOURCES=\
   adminjobs.c \
   outbox.c \
-  hhd.c
+  hhd.c \
+  tanmechanism.c \
+  tan_chiptan_opt.c
+
+
 
 sources:
 	for f in $(libhbciapp_la_SOURCES); do \

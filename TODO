@@ -1,5 +1,10 @@
 Next:
 =====
+- AQHBCI:
+  - remove AH_User_InputTanWithChallenge()
+  - possibly remove HHD code from HHD14
+
+
 - AB_BANKING:
   - find out why AB_Value_toString doesn't work when importing cma_052
   - fix apidoc for provider.h

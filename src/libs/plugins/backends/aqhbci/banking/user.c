@@ -896,23 +896,6 @@ GWEN_DB_NODE *AH_User_GetUpdForAccountUniqueId(const AB_USER *u, uint32_t uid)
 
 
 
-void AH_User_SetUpd(AB_USER *u, GWEN_DB_NODE *n)
-{
-  AH_USER *ue;
-
-  assert(u);
-  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
-  assert(ue);
-
-  if (ue->dbUpd)
-    GWEN_DB_Group_free(ue->dbUpd);
-  if (n) {
-    ue->dbUpd=GWEN_DB_Group_dup(n);
-  }
-  else
-    ue->dbUpd=GWEN_DB_Group_new("upd");
-}
-
 GWEN_CRYPT_KEY *AH_User_GetBankPubCryptKey(const AB_USER *u)
 {
   AH_USER *ue;
@@ -1545,100 +1528,6 @@ int AH_User_InputPin(AB_USER *u,
 
 
 
-int AH_User_InputPasswd(AB_USER *u,
-                        char *pwbuffer,
-                        int minLen, int maxLen,
-                        int flags)
-{
-  AB_PROVIDER *pro;
-  AB_BANKING *ab;
-  GWEN_BUFFER *nbuf;
-  int rv;
-  const char *numeric_warning = "";
-  char buffer[512];
-  const char *un;
-  const char *bn=NULL;
-  AB_BANKINFO *bi;
-
-  assert(u);
-  un=AB_User_GetUserId(u);
-
-  pro=AB_User_GetProvider(u);
-  assert(pro);
-  ab=AB_Provider_GetBanking(pro);
-  assert(ab);
-
-  /* find bank name */
-  bi=AB_Banking_GetBankInfo(ab, "de", "*", AB_User_GetBankCode(u));
-  if (bi)
-    bn=AB_BankInfo_GetBankName(bi);
-  if (!bn)
-    AB_User_GetBankCode(u);
-
-  buffer[0]=0;
-  buffer[sizeof(buffer)-1]=0;
-  if (flags & GWEN_GUI_INPUT_FLAGS_NUMERIC) {
-    numeric_warning = I18N(" You must only enter numbers, not letters.");
-  }
-  if (flags & GWEN_GUI_INPUT_FLAGS_CONFIRM) {
-    snprintf(buffer, sizeof(buffer)-1,
-             I18N("Please enter a new password for \n"
-                  "user %s at %s\n"
-                  "The input must be at least %d characters long.%s"
-                  "<html>"
-                  "<p>"
-                  "Please enter a new password for user <i>%s</i> at "
-                  "<i>%s</i>."
-                  "</p>"
-                  "<p>"
-                  "The input must be at least %d characters long.%s"
-                  "</p>"
-                  "</html>"),
-             un, bn,
-             minLen,
-             numeric_warning,
-             un, bn,
-             minLen,
-             numeric_warning);
-  }
-  else {
-    snprintf(buffer, sizeof(buffer)-1,
-             I18N("Please enter the password for \n"
-                  "user %s at %s\n"
-                  "%s"
-                  "<html>"
-                  "Please enter the password for user <i>%s</i> at"
-                  "<i>%s</i>.<br>"
-                  "%s"
-                  "</html>"),
-             un, bn,
-             numeric_warning,
-             un, bn,
-             numeric_warning);
-  }
-  buffer[sizeof(buffer)-1]=0;
-
-  AB_BankInfo_free(bi);
-
-  nbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  AH_User_MkPasswdName(u, nbuf);
-
-  rv=GWEN_Gui_GetPassword(flags,
-                          GWEN_Buffer_GetStart(nbuf),
-                          I18N("Enter Password"),
-                          buffer,
-                          pwbuffer,
-                          minLen,
-                          maxLen,
-                          GWEN_Gui_PasswordMethod_Text, NULL,
-                          0);
-  GWEN_Buffer_free(nbuf);
-
-  return rv;
-}
-
-
-
 int AH_User_InputTan(AB_USER *u,
                      char *pwbuffer,
                      int minLen,
@@ -1699,98 +1588,6 @@ int AH_User_InputTan(AB_USER *u,
   AB_BankInfo_free(bi);
   return rv;
 }
-
-
-
-int AH_User_InputTanWithChallenge(AB_USER *u,
-                                  const char *challenge,
-                                  char *pwbuffer,
-                                  int minLen,
-                                  int maxLen)
-{
-  AB_PROVIDER *pro;
-  AB_BANKING *ab;
-  int rv;
-  char buffer[1024];
-  const char *un;
-  const char *bn=NULL;
-  GWEN_BUFFER *nbuf;
-  GWEN_BUFFER *xbuf;
-  AB_BANKINFO *bi;
-
-  assert(u);
-  un=AB_User_GetUserId(u);
-
-  pro=AB_User_GetProvider(u);
-  assert(pro);
-  ab=AB_Provider_GetBanking(pro);
-  assert(ab);
-
-  /* find bank name */
-  bi=AB_Banking_GetBankInfo(ab, "de", "*", AB_User_GetBankCode(u));
-  if (bi)
-    bn=AB_BankInfo_GetBankName(bi);
-  if (!bn)
-    AB_User_GetBankCode(u);
-
-  buffer[0]=0;
-  buffer[sizeof(buffer)-1]=0;
-
-  xbuf=GWEN_Buffer_new(0, 256, 0, 1);
-
-  /* text version */
-  snprintf(buffer, sizeof(buffer)-1,
-           I18N("Please enter the TAN\n"
-                "for user %s at %s.\n"), un, bn);
-  buffer[sizeof(buffer)-1]=0;
-  GWEN_Buffer_AppendString(xbuf, buffer);
-  if (challenge && *challenge) {
-    GWEN_Buffer_AppendString(xbuf, I18N("The server provided the following challenge:"));
-    GWEN_Buffer_AppendString(xbuf, "\n");
-    GWEN_Buffer_AppendString(xbuf, challenge);
-  }
-
-  /* html version */
-  GWEN_Buffer_AppendString(xbuf,
-                           "<html>"
-                           "<p>");
-  snprintf(buffer, sizeof(buffer)-1,
-           I18N("Please enter the TAN for user <i>%s</i> at <i>%s</i>."), un, bn);
-  buffer[sizeof(buffer)-1]=0;
-  GWEN_Buffer_AppendString(xbuf, buffer);
-  GWEN_Buffer_AppendString(xbuf, "</p>");
-  if (challenge && *challenge) {
-    GWEN_Buffer_AppendString(xbuf, "<p>");
-    GWEN_Buffer_AppendString(xbuf, I18N("The server provided the following challenge:"));
-    GWEN_Buffer_AppendString(xbuf, "</p>"
-                             "<p align=\"center\" >"
-                             "<font color=\"blue\">");
-    GWEN_Buffer_AppendString(xbuf, challenge);
-    GWEN_Buffer_AppendString(xbuf,
-                             "</font>"
-                             "</p>"
-                             "</html>");
-  }
-
-  nbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  AH_User_MkTanName(u, challenge, nbuf);
-  rv=GWEN_Gui_GetPassword(GWEN_GUI_INPUT_FLAGS_TAN |
-                          /*GWEN_GUI_INPUT_FLAGS_NUMERIC |*/
-                          GWEN_GUI_INPUT_FLAGS_SHOW,
-                          GWEN_Buffer_GetStart(nbuf),
-                          I18N("Enter TAN"),
-                          GWEN_Buffer_GetStart(xbuf),
-                          pwbuffer,
-                          minLen,
-                          maxLen,
-                          GWEN_Gui_PasswordMethod_Text, NULL,
-                          0);
-  GWEN_Buffer_free(xbuf);
-  GWEN_Buffer_free(nbuf);
-  AB_BankInfo_free(bi);
-  return rv;
-}
-
 
 
 int AH_User_SetTanStatus(AB_USER *u,
@@ -2275,12 +2072,13 @@ int AH_User_AddTextWithoutTags(const char *s, GWEN_BUFFER *obuf)
 
 
 
-int AH_User_InputTanWithChallenge2(AB_USER *u,
-                                   const char *challenge,
-                                   const char *challengeHhd,
-                                   char *pwbuffer,
-                                   int minLen,
-                                   int maxLen)
+#if 0
+int AH_User_InputTanWithChallenge(AB_USER *u,
+                                  const char *challenge,
+                                  const char *challengeHhd,
+                                  char *pwbuffer,
+                                  int minLen,
+                                  int maxLen)
 {
   AB_PROVIDER *pro;
   AB_BANKING *ab;
@@ -2422,34 +2220,7 @@ int AH_User_InputTanWithChallenge2(AB_USER *u,
 
   return rv;
 }
-
-
-
-const char *AH_User_FindSepaDescriptor(AB_USER *u, const char *tmpl)
-{
-  AH_USER *ue;
-  GWEN_STRINGLISTENTRY *se;
-
-  assert(u);
-  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
-  assert(ue);
-
-  if (GWEN_StringList_Count(ue->sepaDescriptors)<1)
-    AH_User_LoadSepaDescriptors(u);
-
-  se=GWEN_StringList_FirstEntry(ue->sepaDescriptors);
-  while (se) {
-    const char *s;
-
-    s=GWEN_StringListEntry_Data(se);
-    if (s && *s && -1!=GWEN_Text_ComparePattern(s, tmpl, 1))
-      return s;
-
-    se=GWEN_StringListEntry_Next(se);
-  }
-
-  return NULL;
-}
+#endif
 
 
 

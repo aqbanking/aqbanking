@@ -181,6 +181,15 @@ static int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
 static void AH_Outbox__CBox_CopyJobResultsToJobList(const AH_JOB *j,
                                                     const AH_JOB_LIST *qjl);
 
+static int AH_Outbox__CBox_InputTanWithChallenge(AH_OUTBOX__CBOX *cbox,
+                                                 AH_DIALOG *dialog,
+                                                 const char *sChallenge,
+                                                 const char *sChallengeHhd,
+                                                 char *passwordBuffer,
+                                                 int passwordMinLen,
+                                                 int passwordMaxLen);
+
+
 
 static int AH_Outbox_LockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers);
 static int AH_Outbox_UnlockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers, int abandon);
