@@ -58,11 +58,12 @@ AH_TAN_MECHANISM *AH_TanMechanism_Factory(const AH_TAN_METHOD *tanMethod);
 
 
 
-AH_TAN_MECHANISM *AH_TanMechanism_new(const AH_TAN_METHOD *tanMethod);
+AH_TAN_MECHANISM *AH_TanMechanism_new(const AH_TAN_METHOD *tanMethod, int tanMethodId);
 void AH_TanMechanism_free(AH_TAN_MECHANISM *tanMechanism);
 
 
 const AH_TAN_METHOD *AH_TanMechanism_GetTanMethod(const AH_TAN_MECHANISM *tanMechanism);
+int AH_TanMechanism_GetTanMethodId(const AH_TAN_MECHANISM *tanMechanism);
 
 
 int AH_TanMechanism_GetTan(AH_TAN_MECHANISM *tanMechanism,
@@ -74,7 +75,6 @@ int AH_TanMechanism_GetTan(AH_TAN_MECHANISM *tanMechanism,
                            char *passwordBuffer,
                            int passwordMinLen,
                            int passwordMaxLen);
-
 
 
 

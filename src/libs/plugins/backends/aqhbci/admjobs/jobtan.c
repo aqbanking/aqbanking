@@ -55,6 +55,8 @@ AH_JOB *AH_Job_Tan_new(AB_PROVIDER *pro, AB_USER *u, int process, int jobVersion
   if (s && *s)
     AH_Job_Tan_SetTanMediumId(j, s);
 
+  aj->tanProcess=process;
+
   return j;
 }
 
@@ -272,7 +274,7 @@ void AH_Job_Tan_SetSegCode(AH_JOB *j, const char *p)
   assert(dbArgs);
 
   if (p && *p) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Setting segment id in TAN to [%s]", p);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Setting segment id in TAN to [%s]", p);
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "segmentId", p);
   }
   else {

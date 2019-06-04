@@ -79,6 +79,27 @@ extern "C" {
 /*@}*/
 
 
+/** @name TAN methods
+ *
+ * TAN input is done via @ref GWEN_Gui_GetPassword. One argument to this function "methodId".
+ * AqBanking uses @ref GWEN_Gui_PasswordMethod_Text for normal TAN entry (e.g. SMS/mobile TAN) and
+ * @ref GWEN_Gui_PasswordMethod_OpticalHHD for all optical methods (like chipTAN, photoTAN etc).
+ * Another argument to this function is "methodParams", which contains additional data (like the image
+ * data for photoTAN). The most important value in "methodParams" is "tanMethodId" (integer). It contains
+ * one of the values given in this section. This can be used by implementations of the function
+ * @ref GWEN_Gui_GetPassword to determine how to present the TAN entry to the user.
+ *
+ */
+/*@{*/
+#define AB_BANKING_TANMETHOD_TEXT          0x00000001
+#define AB_BANKING_TANMETHOD_CHIPTAN       0x00000002
+#define AB_BANKING_TANMETHOD_CHIPTAN_OPTIC 0x00000003
+#define AB_BANKING_TANMETHOD_CHIPTAN_USB   0x00000004
+#define AB_BANKING_TANMETHOD_CHIPTAN_QR    0x00000005
+#define AB_BANKING_TANMETHOD_PHOTOTAN      0x00000006
+/*@}*/
+
+
 /**
  * This object is prepared to be inherited (using @ref GWEN_INHERIT_SETDATA).
  */

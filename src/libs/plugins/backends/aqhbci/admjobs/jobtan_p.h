@@ -24,6 +24,7 @@ struct AH_JOB_TAN {
   char *reference;
   int tanMethod;
   char *tanMediumId;
+  int tanProcess;
 };
 static void GWENHYWFAR_CB AH_Job_Tan_FreeData(void *bp, void *p);
 static int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);

@@ -24,7 +24,8 @@ noinst_HEADERS=\
   outbox_l.h outbox_p.h \
   hhd_l.h hhd_p.h \
   tanmechanism.h tanmechanism_p.h \
-  tan_chiptan_opt.h
+  tan_chiptan_opt.h \
+  tan_text.h
 
 
 libhbciapp_la_SOURCES=\
@@ -32,7 +33,8 @@ libhbciapp_la_SOURCES=\
   outbox.c \
   hhd.c \
   tanmechanism.c \
-  tan_chiptan_opt.c
+  tan_chiptan_opt.c \
+  tan_text.c
 
 
 

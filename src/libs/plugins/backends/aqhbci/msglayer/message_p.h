@@ -55,7 +55,7 @@ struct AH_MSG {
   char *usedTan;
   int needTan;
   int noSysId;
-  int signSeqOne;
+  int signSeqOne; /* set signature sequence to 1 (used by AH_Msg_SignRxh) */
 
   char *usedPin;
 

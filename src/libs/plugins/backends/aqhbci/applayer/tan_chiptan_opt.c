@@ -48,11 +48,11 @@ static int _getTan(AH_TAN_MECHANISM *tanMechanism,
 /* implementation */
 
 
-AH_TAN_MECHANISM *AH_TanMechanism_ChipTanOpt_new(const AH_TAN_METHOD *tanMethod)
+AH_TAN_MECHANISM *AH_TanMechanism_ChipTanOpt_new(const AH_TAN_METHOD *tanMethod, int tanMethodId)
 {
   AH_TAN_MECHANISM *tanMechanism;
 
-  tanMechanism=AH_TanMechanism_new(tanMethod);
+  tanMechanism=AH_TanMechanism_new(tanMethod, tanMethodId);
   assert(tanMechanism);
 
   AH_TanMechanism_SetGetTanFn(tanMechanism, _getTan);
@@ -94,6 +94,10 @@ int _getTan(AH_TAN_MECHANISM *tanMechanism,
     GWEN_DB_NODE *dbTanMethod;
 
     dbMethodParams=GWEN_DB_Group_new("methodParams");
+
+    GWEN_DB_SetIntValue(dbMethodParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                        "tanMethodId", AH_TanMechanism_GetTanMethodId(tanMechanism));
+
     GWEN_DB_SetCharValue(dbMethodParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
                          "challenge", GWEN_Buffer_GetStart(cbuf));
 
@@ -115,12 +119,15 @@ int _getTan(AH_TAN_MECHANISM *tanMechanism,
                             0);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(bufToken);
       GWEN_Buffer_free(cbuf);
+      GWEN_DB_Group_free(dbMethodParams);
       return rv;
     }
 
     GWEN_Buffer_free(bufToken);
     GWEN_Buffer_free(cbuf);
+    GWEN_DB_Group_free(dbMethodParams);
     return 0;
   }
 }

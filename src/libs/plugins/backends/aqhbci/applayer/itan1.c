@@ -147,7 +147,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   AH_Msg_SetItanMethod(msg1, um);
   AH_Msg_SetItanHashMode(msg1,
                          GWEN_DB_GetIntValue(dbParams, "hashMethod", 0, 0));
-  rv=AH_Outbox__CBox_JobToMessage(j, msg1);
+  rv=AH_Outbox__CBox_JobToMessage(j, msg1, 1);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg1);
@@ -186,7 +186,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
     return rv;
   }
 
-  rv=AH_Outbox__CBox_JobToMessage(jTan, msg2);
+  rv=AH_Outbox__CBox_JobToMessage(jTan, msg2, 1);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg2);

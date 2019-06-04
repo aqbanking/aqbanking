@@ -109,7 +109,7 @@ int AH_Outbox__CBox__Hash(int mode,
 
 
 
-int AH_Outbox__CBox_JobToMessage(AH_JOB *j, AH_MSG *msg)
+int AH_Outbox__CBox_JobToMessage(AH_JOB *j, AH_MSG *msg, int doCopySigners)
 {
   AB_USER *user;
   unsigned int firstSeg;
@@ -135,19 +135,21 @@ int AH_Outbox__CBox_JobToMessage(AH_JOB *j, AH_MSG *msg)
   AH_Msg_SetNeedTan(msg,
                     (AH_Job_GetFlags(j) & AH_JOB_FLAGS_NEEDTAN));
 
-  /* copy signers */
-  if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_SIGN) {
-    GWEN_STRINGLISTENTRY *se;
+  if (doCopySigners) {
+    /* copy signers */
+    if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_SIGN) {
+      GWEN_STRINGLISTENTRY *se;
 
-    se=GWEN_StringList_FirstEntry(AH_Job_GetSigners(j));
-    if (!se) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Signatures needed but no signer given");
-      return GWEN_ERROR_INVALID;
+      se=GWEN_StringList_FirstEntry(AH_Job_GetSigners(j));
+      if (!se) {
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "Signatures needed but no signer given");
+	return GWEN_ERROR_INVALID;
+      }
+      while (se) {
+	AH_Msg_AddSignerId(msg, GWEN_StringListEntry_Data(se));
+	se=GWEN_StringListEntry_Next(se);
+      } /* while */
     }
-    while (se) {
-      AH_Msg_AddSignerId(msg, GWEN_StringListEntry_Data(se));
-      se=GWEN_StringListEntry_Next(se);
-    } /* while */
   }
 
   /* copy crypter */

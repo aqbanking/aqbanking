@@ -15,7 +15,7 @@
 
 
 
-AH_TAN_MECHANISM *AH_TanMechanism_ChipTanOpt_new(const AH_TAN_METHOD *tanMethod);
+AH_TAN_MECHANISM *AH_TanMechanism_ChipTanOpt_new(const AH_TAN_METHOD *tanMethod, int tanMethodId);
 
 
 

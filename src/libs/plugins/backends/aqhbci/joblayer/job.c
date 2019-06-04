@@ -256,7 +256,7 @@ AH_JOB *AH_Job_new(const char *name,
       }
     }
     else {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Highest version is %d", highestVersion);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Highest version for job \"%s\" is %d", name, highestVersion);
       GWEN_DB_AddGroupChildren(j->jobParams, jobBPD);
       /* sample some variables from BPD jobs */
       j->segmentVersion=highestVersion;

@@ -81,7 +81,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   /* create message */
   msg1=AH_Msg_new(dlg);
   /* add original job */
-  rv=AH_Outbox__CBox_JobToMessage(j, msg1);
+  rv=AH_Outbox__CBox_JobToMessage(j, msg1, 1);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg1);
@@ -89,7 +89,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
   }
 
   /* add HKTAN message */
-  rv=AH_Outbox__CBox_JobToMessage(jTan1, msg1);
+  rv=AH_Outbox__CBox_JobToMessage(jTan1, msg1, 0);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg1);
@@ -239,7 +239,7 @@ int AH_Outbox__CBox_Itan2(AH_OUTBOX__CBOX *cbox,
     return rv;
   }
 
-  rv=AH_Outbox__CBox_JobToMessage(jTan2, msg2);
+  rv=AH_Outbox__CBox_JobToMessage(jTan2, msg2, 1);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg2);
