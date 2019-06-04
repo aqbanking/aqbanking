@@ -1,9 +1,12 @@
 Next:
 =====
 - AQHBCI:
-  - remove AH_User_InputTanWithChallenge()
-  - possibly remove HHD code from HHD14
-
+  - simplify functions:
+    - AH_JobQueue_DispatchMessage()
+    - AH_JobQueue_ToMessage()
+    - AH_JobQueue_AddJob()
+    - AH_Msg_DecodeMsg()
+    - AH_Msg_LogMessage()
 
 - AB_BANKING:
   - find out why AB_Value_toString doesn't work when importing cma_052
