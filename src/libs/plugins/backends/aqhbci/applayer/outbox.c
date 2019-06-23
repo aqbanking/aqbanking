@@ -240,10 +240,7 @@ int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox)
         else {
           AH_Job_Log(j, GWEN_LoggerLevel_Info,
                      "Dialog job enqueued");
-          /* job added. This is a dialog job, so we need to begin and
-           * and end the dialog */
-          AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_BEGINDIALOG);
-          /*AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_ENDDIALOG); DEBUG */
+          /* job added. This is a dialog job */
           AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_ISDIALOG);
           AH_JobQueue_List_Add(jq, cbox->todoQueues);
         } /* if added to queue */
@@ -262,7 +259,6 @@ int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox)
    * append them to new queues as needed */
   DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing non-dialog jobs");
   jq=AH_JobQueue_new(cbox->user);
-  AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_BEGINDIALOG);
   firstJob=1;
   DBG_INFO(AQHBCI_LOGDOMAIN, "We have %d jobs to handle",
            AH_Job_List_GetCount(cbox->todoJobs));

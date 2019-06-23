@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -19,21 +16,29 @@
 
 typedef struct AH_JOBQUEUE AH_JOBQUEUE;
 
+/** jobs in the queue need encrytion */
 #define AH_JOBQUEUE_FLAGS_CRYPT       0x00000001
+/** jobs in the queue need signature */
 #define AH_JOBQUEUE_FLAGS_SIGN        0x00000002
+/** job queue contains a dialog job */
 #define AH_JOBQUEUE_FLAGS_ISDIALOG    0x00000004
-#define AH_JOBQUEUE_FLAGS_DLGSTARTED  0x00000008
+/** jobs in the queue need a TAN */
 #define AH_JOBQUEUE_FLAGS_NEEDTAN     0x00000010
+/** set systemid "0" instead of real value */
 #define AH_JOBQUEUE_FLAGS_NOSYSID     0x00000020
+/** dont select iTAN mode for this queue (i.e. use single step mode) */
 #define AH_JOBQUEUE_FLAGS_NOITAN      0x00000040
+/** use "1" as signature counter value in signatures, not the real sequence counter */
 #define AH_JOBQUEUE_FLAGS_SIGNSEQONE  0x00000080
 
 #define AH_JOBQUEUE_FLAGS_COPYMASK    0x0000ffff
-
-#define AH_JOBQUEUE_FLAGS_BEGINDIALOG 0x00010000
-#define AH_JOBQUEUE_FLAGS_ENDDIALOG   0x00020000
+/** job queue has been sent to outbox */
 #define AH_JOBQUEUE_FLAGS_OUTBOX      0x00040000
+
+/** at least on job in the queue has warnings */
 #define AH_JOBQUEUE_FLAGS_HASWARNINGS 0x00080000
+
+/** at least on job in the queue has errors */
 #define AH_JOBQUEUE_FLAGS_HASERRORS   0x00100000
 /** a dialog job has been started */
 

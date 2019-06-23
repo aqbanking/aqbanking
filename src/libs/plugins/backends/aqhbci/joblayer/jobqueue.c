@@ -1182,10 +1182,6 @@ void AH_JobQueue_Dump(AH_JOBQUEUE *jq, FILE *f, unsigned int insert)
     fprintf(f, "CRYPT ");
   if (jq->flags & AH_JOBQUEUE_FLAGS_SIGN)
     fprintf(f, "SIGN ");
-  if (jq->flags & AH_JOBQUEUE_FLAGS_BEGINDIALOG)
-    fprintf(f, "BEGINDIALOG ");
-  if (jq->flags & AH_JOBQUEUE_FLAGS_ENDDIALOG)
-    fprintf(f, "ENDDIALOG ");
   if (jq->flags & AH_JOBQUEUE_FLAGS_ISDIALOG)
     fprintf(f, "ISDIALOG ");
   if (jq->flags & AH_JOBQUEUE_FLAGS_OUTBOX)
@@ -1194,8 +1190,6 @@ void AH_JobQueue_Dump(AH_JOBQUEUE *jq, FILE *f, unsigned int insert)
     fprintf(f, "HASWARNINGS ");
   if (jq->flags & AH_JOBQUEUE_FLAGS_HASERRORS)
     fprintf(f, "HASERRORS ");
-  if (jq->flags & AH_JOBQUEUE_FLAGS_DLGSTARTED)
-    fprintf(f, "DLGSTARTED ");
   fprintf(f, ")\n");
 
   for (k=0; k<insert; k++)
