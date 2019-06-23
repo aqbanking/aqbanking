@@ -328,15 +328,6 @@ AH_JOB_LIST *AH_JobQueue_TakeJobList(AH_JOBQUEUE *jq)
 
 
 
-uint32_t AH_JobQueue_GetMsgNum(const AH_JOBQUEUE *jq)
-{
-  assert(jq);
-  assert(jq->usage);
-  return jq->msgNum;
-}
-
-
-
 AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg)
 {
   AH_MSG *msg;
@@ -403,9 +394,7 @@ AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg)
     AH_JOB_STATUS st;
 
     st=AH_Job_GetStatus(j);
-    /* only encode jobs which have not already been sent or which have
-     * have no errors
-     */
+    /* only encode jobs which have not already been sent or which have no errors */
     if (st==AH_JobStatusEnqueued) {
       unsigned int firstSeg;
       unsigned int lastSeg;
@@ -506,10 +495,7 @@ AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg)
   } /* while */
 
 
-  jq->msgNum=AH_Msg_GetMsgNum(msg);
-  DBG_INFO(AQHBCI_LOGDOMAIN,
-           "Job queue encoded and ready to be sent (msgNum=%d)",
-           jq->msgNum);
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Job queue encoded and ready to be sent");
   return msg;
 }
 

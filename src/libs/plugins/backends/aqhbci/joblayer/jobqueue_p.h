@@ -1,9 +1,6 @@
 /***************************************************************************
- $RCSfile$
-                             -------------------
-    cvs         : $Id$
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -27,7 +24,6 @@ struct AH_JOBQUEUE {
   GWEN_STRINGLIST *signers;
   uint32_t usage;
   AH_JOB_LIST *jobs;
-  uint32_t msgNum;
   uint32_t flags;
 
   int secProfile;
