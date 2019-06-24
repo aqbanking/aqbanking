@@ -8,6 +8,10 @@ Next:
     - AH_Msg_DecodeMsg()
     - AH_Msg_LogMessage()
 
+- TAN entry: Maybe move that completely to AqBanking? GWEN_Gui_GetPasswords
+  has become a monster...
+
+
 - AB_BANKING:
   - find out why AB_Value_toString doesn't work when importing cma_052
   - fix apidoc for provider.h
