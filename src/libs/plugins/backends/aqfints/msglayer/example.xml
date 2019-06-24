@@ -1,0 +1,46 @@
+<?xml?>
+
+
+<GROUPs>
+
+  <GROUPdef id="SegHead" >
+    <!-- "Segmentkopf" -->
+    <DE name="code"    dbType="char" restriction="AN"  maxsize="6" />
+    <DE name="seq"     dbType="int"  restriction="num" maxsize="15" />
+    <DE name="version" dbType="int"  restriction="num" maxsize="3"/>
+    <DE name="ref"     dbType="int"  restriction="num" maxsize="3" minnum=0 />
+    
+  </GROUPdef>
+</GROUPs>
+
+
+
+<SEGs>
+
+  <SEGdef id="MsgHead" 
+          code="HNHBK" 
+          version="3"
+          pversion="300"
+  >
+    <!-- "Nachrichtenkopf" -->
+    <DEG>
+      <GROUP ref="SegHead" name="head" />
+    </DEG>
+    <DE name="size"       dbType="int"  restriction="num"   maxsize="12" leftfill="1" />
+    <DE name="hversion"   dbType="int"  restriction="num"   maxsize="3" />
+    <DE name="dialogId"   dbType="char" restriction="ascii" maxsize="128" />
+    <DE name="msgnum"     dbType="int"  restriction="num"   maxsize="4" />
+    <DEG minnum="0">
+      <DE name="dialogId" dbType="char" restriction="ascii" maxsize="35" />
+      <DE name="msgnum"   dbType="int"  restriction="num"   maxsize="4" />
+    </DEG>
+ 
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="hversion">%pversion</VALUE>
+    </VALUES>
+  </SEGdef>
+
+</SEGs>
+
