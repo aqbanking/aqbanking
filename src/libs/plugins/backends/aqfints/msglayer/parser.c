@@ -22,7 +22,9 @@
   - ReadFints
   - WriteFints
 
-  - SetupFromDb
+  - TREE=encode(DEFS, DB)
+  - DB  =decode(TREE, DEFS)
+
 
  */
 

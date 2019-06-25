@@ -1312,6 +1312,7 @@ AC_CONFIG_FILES([
   src/libs/plugins/backends/aqebics/control/Makefile
   src/libs/plugins/backends/aqebics/requests/Makefile
   src/libs/plugins/backends/aqfints/Makefile
+  src/libs/plugins/backends/aqfints/aqfints.xml
   src/libs/plugins/backends/aqfints/msglayer/Makefile
   src/test/Makefile
   src/tools/Makefile
