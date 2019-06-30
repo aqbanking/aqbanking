@@ -178,6 +178,16 @@
       </member>
 
 
+      <member name="id" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
       <member name="name" type="char_ptr" maxlen="64" >
         <default>NULL</default>
         <preset>NULL</preset>
@@ -185,6 +195,12 @@
         <flags>own</flags>
         <setflags>const dup</setflags>
         <getflags>const</getflags>
+      </member>
+
+      <member name="version" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
       </member>
 
       <member name="ref" type="char_ptr" maxlen="64" >

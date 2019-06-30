@@ -50,7 +50,9 @@ noinst_HEADERS= $(build_headers)
 
 libaqfintsmsg_la_SOURCES= $(built_sources) \
   parser.c \
-  parser_xml.c
+  parser_xml.c \
+  parser_normalize.c
+
 
 
 noinst_PROGRAMS = libtest

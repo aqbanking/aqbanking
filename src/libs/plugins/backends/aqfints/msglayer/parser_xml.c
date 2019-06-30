@@ -68,16 +68,11 @@ int AQFINTS_Parser_Xml_ReadFile(AQFINTS_SEGMENT_LIST *segmentList,
   else {
     GWEN_XMLNODE *xmlNodeFints;
 
-    DBG_ERROR(0, "Read this file:");
-    GWEN_XMLNode_Dump(xmlNodeFile, 2);
-
     xmlNodeFints=GWEN_XMLNode_FindFirstTag(xmlNodeFile, "FinTS", NULL, NULL);
     if (xmlNodeFints) {
-      DBG_ERROR(0, "Reading segments and groups");
       readGroupsAndSegs(segmentList, groupTree, xmlNodeFints);
     }
     else {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing \"FinTS\" in XML file \"%s\"", filename);
       GWEN_XMLNode_free(xmlNodeFile);
       return GWEN_ERROR_BAD_DATA;
     }
@@ -102,11 +97,9 @@ void readGroupsAndSegs(AQFINTS_SEGMENT_LIST *segmentList,
     s=GWEN_XMLNode_GetData(xmlNode);
     if (s && *s) {
       if (strcasecmp(s, "GROUPs")==0) {
-        DBG_ERROR(0, "Reading groups");
         readGroups(groupTree, xmlNode);
       }
       else if (strcasecmp(s, "SEGs")==0) {
-        DBG_ERROR(0, "Reading segments");
         readSegments(segmentList, xmlNode);
       }
       else {
@@ -134,7 +127,6 @@ void readGroups(AQFINTS_ELEMENT_TREE *groupTree, GWEN_XMLNODE *xmlSource)
 
       elChild=AQFINTS_Element_new();
       AQFINTS_Element_Tree_Add(groupTree, elChild);
-      DBG_ERROR(0, "Reading group");
       readElementWithChildren(elChild, xmlNode);
     }
     xmlNode=GWEN_XMLNode_GetNextTag(xmlNode);
@@ -170,12 +162,8 @@ void readSegments(AQFINTS_SEGMENT_LIST *segmentList, GWEN_XMLNODE *xmlSource)
 void readElementWithChildren(AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlSource)
 {
 
-  DBG_ERROR(0, "Reading element \"%s\"", GWEN_XMLNode_GetData(xmlSource));
-
   /* read this element */
   readElement(el, xmlSource);
-
-  DBG_ERROR(0, "Reading child elements");
 
   /* read child elements for some groups */
   switch(AQFINTS_Element_GetElementType(el)) {
@@ -187,8 +175,6 @@ void readElementWithChildren(AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlSource)
   case AQFINTS_ElementType_Unknown:
     break;
   }
-
-  DBG_ERROR(0, "Done.");
 }
 
 
@@ -197,20 +183,15 @@ void readChildElements(AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlSource)
 {
   GWEN_XMLNODE *xmlNode;
 
-  DBG_ERROR(0, "ReadChildElements(\"%s\")", GWEN_XMLNode_GetData(xmlSource));
-
   xmlNode=GWEN_XMLNode_GetFirstTag(xmlSource);
   while(xmlNode) {
     AQFINTS_ELEMENT *elChild;
-
-    DBG_ERROR(0, "Reading child element \"%s\"", GWEN_XMLNode_GetData(xmlNode));
 
     elChild=AQFINTS_Element_new();
     AQFINTS_Element_Tree_AddChild(el, elChild);
     readElementWithChildren(elChild, xmlNode);
     xmlNode=GWEN_XMLNode_GetNextTag(xmlNode);
   }
-  DBG_ERROR(0, "Done.");
 }
 
 
