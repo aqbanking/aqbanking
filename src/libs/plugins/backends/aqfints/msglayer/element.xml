@@ -19,6 +19,7 @@
       <headers>
         <header type="sys"   loc="pre">aqbanking/error.h</header>
         <header type="sys"   loc="pre">gwenhywfar/bindata.h</header>
+        <header type="sys"   loc="code">string.h</header>
       </headers>
       
 
@@ -73,8 +74,45 @@
                  
                  ptrCopy=(uint8_t*) malloc(len);
                  assert(ptrCopy);
-                 memmove(st-&gt;data.pointer, ptr, len);
+                 memmove(ptrCopy, ptr, len);
+                 st-&gt;data.pointer=ptrCopy;
                  st-&gt;data.length=len;
+               }
+               else {
+                 st-&gt;data.pointer=NULL;
+                 st-&gt;data.length=0;
+               }
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_SetTextDataCopy($(struct_type) *st, const char *ptr);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             void $(struct_prefix)_SetTextDataCopy($(struct_type) *st, const char *ptr) { \n
+               /* free previous data */ \n
+               if (st-&gt;data.pointer &amp;&amp; st-&gt;data.length) {
+                 free(st-&gt;data.pointer);
+               } \n
+
+               /* create copy if there is data to copy */ \n
+               if (ptr) {
+                 char *ptrCopy;
+                 
+                 ptrCopy=strdup(ptr);
+                 assert(ptrCopy);
+                 st-&gt;data.pointer=(uint8_t*) ptrCopy;
+                 st-&gt;data.length=strlen(ptrCopy)+1; /* count trailing zero */ \n
                }
                else {
                  st-&gt;data.pointer=NULL;
@@ -135,6 +173,7 @@
     <defines>
 
       <define id="AQFINTS_ELEMENT_RTFLAGS" prefix="AQFINTS_ELEMENT_RTFLAGS_">
+        <item name="ISBIN"       value="0x00000001" />
      </define>
 
      <define id="AQFINTS_ELEMENT_FLAGS" prefix="AQFINTS_ELEMENT_FLAGS_">

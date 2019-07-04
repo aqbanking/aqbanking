@@ -60,7 +60,7 @@
         <DE name="msgnum"   type="num"   maxsize="4" />
       </DEG>
 
-      <GROUP type="kik" version="1" />
+      <GROUP type="ktv" version="1" />
    
     </SEGdef>
   

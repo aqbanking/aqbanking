@@ -15,6 +15,8 @@
 
 #include "parser_normalize.h"
 
+#include <gwenhywfar/text.h>
+
 
 
 
@@ -74,6 +76,22 @@ void AQFINTS_Parser_DumpElementTree(AQFINTS_ELEMENT *element, int indent)
   if (i!=-1)
     fprintf(stderr, " maxsize=%d", i);
 
+  if (AQFINTS_Element_GetDataLength(element)) {
+    if (AQFINTS_Element_GetRuntimeFlags(element) & AQFINTS_ELEMENT_RTFLAGS_ISBIN) {
+      const uint8_t *ptr;
+      uint32_t len;
+
+      fprintf(stderr, " binary data: ");
+      ptr=AQFINTS_Element_GetDataPointer(element);
+      len=AQFINTS_Element_GetDataLength(element);
+      GWEN_Text_DumpString((const char*) ptr, len, indent+4);
+    }
+    else {
+      s=(const char*) AQFINTS_Element_GetDataPointer(element);
+      fprintf(stderr, " data=\"%s\"", s?s:"(empty)");
+    }
+  }
+
   fprintf(stderr, "\n");
 
   childElement=AQFINTS_Element_Tree2_GetFirstChild(element);
@@ -105,9 +123,13 @@ void AQFINTS_Parser_DumpSegment(AQFINTS_SEGMENT *segment, int indent)
   if (s && *s)
     fprintf(stderr, " code=%s", s?s:"(empty)");
 
-  fprintf(stderr, " segver=%d", AQFINTS_Segment_GetSegmentVersion(segment));
+  i=AQFINTS_Segment_GetSegmentVersion(segment);
+  if (i!=0)
+    fprintf(stderr, " segver=%d", i);
 
-  fprintf(stderr, " protover=%d", AQFINTS_Segment_GetProtocolVersion(segment));
+  i=AQFINTS_Segment_GetProtocolVersion(segment);
+  if (i!=0)
+    fprintf(stderr, " protover=%d", i);
 
   fprintf(stderr, "\n");
 
