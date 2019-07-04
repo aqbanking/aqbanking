@@ -204,23 +204,6 @@
         <access>public</access>
       </member>
 
-      <member name="ref" type="char_ptr" maxlen="64" >
-        <descr>Reference to another element</descr>
-        <default>NULL</default>
-        <preset>NULL</preset>
-        <access>public</access>
-        <flags>own</flags>
-        <setflags>const dup</setflags>
-        <getflags>const</getflags>
-      </member>
-
-      <member name="dbType" type="int" enum="AQFINTS_ELEMENT_DATATYPE" maxlen="8">
-        <default>AQFINTS_ElementDataType_Unknown</default>
-        <preset>AQFINTS_ElementDataType_Unknown</preset>
-        <flags>enum</flags>
-        <access>public</access>
-      </member>
-
       <member name="type" type="char_ptr" maxlen="64" >
         <default>NULL</default>
         <preset>NULL</preset>

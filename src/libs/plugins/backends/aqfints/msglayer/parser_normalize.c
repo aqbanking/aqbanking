@@ -123,17 +123,17 @@ void resolveGroups(AQFINTS_ELEMENT *elementTree, AQFINTS_ELEMENT *groupTree)
   element=AQFINTS_Element_Tree2_GetFirstChild(elementTree);
   while(element) {
     if (AQFINTS_Element_GetElementType(element)==AQFINTS_ElementType_Group) {
-      const char *sGroupRef;
+      const char *sGroupType;
 
-      sGroupRef=AQFINTS_Element_GetRef(element);
-      if (sGroupRef && *sGroupRef) {
+      sGroupType=AQFINTS_Element_GetType(element);
+      if (sGroupType && *sGroupType) {
         AQFINTS_ELEMENT *groupDefElement;
         int iGroupVersion;
 
         iGroupVersion=AQFINTS_Element_GetVersion(element);
-        groupDefElement=AQFINTS_Parser_FindGroupInTree(groupTree, sGroupRef, iGroupVersion);
+        groupDefElement=AQFINTS_Parser_FindGroupInTree(groupTree, sGroupType, iGroupVersion);
         if (groupDefElement==NULL) {
-          DBG_ERROR(0, "Group \"%s:%d\" not found", sGroupRef, iGroupVersion);
+          DBG_ERROR(0, "Group \"%s:%d\" not found", sGroupType, iGroupVersion);
           assert(0);
         }
         else {

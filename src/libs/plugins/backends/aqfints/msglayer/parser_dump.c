@@ -36,30 +36,23 @@ void AQFINTS_Parser_DumpElementTree(AQFINTS_ELEMENT *element, int indent)
   default:                        fprintf(stderr, "(UNK)"); break;
   }
 
+  s=AQFINTS_Element_GetName(element);
+  if (s && *s)
+    fprintf(stderr, " name=\"%s\"", s?s:"(empty)");
+
   if (AQFINTS_Element_GetElementType(element)==AQFINTS_ElementType_De) {
-    switch(AQFINTS_Element_GetDbType(element)) {
-    case AQFINTS_ElementDataType_Int:  fprintf(stderr, " int "); break;
-    case AQFINTS_ElementDataType_Char: fprintf(stderr, " char"); break;
-    case AQFINTS_ElementDataType_Bin:  fprintf(stderr, " bin "); break;
-    default:                           fprintf(stderr, " UNK "); break;
-    }
+    s=AQFINTS_Element_GetType(element);
+    if (s && *s)
+      fprintf(stderr, " type=\"%s\"", s?s:"(empty)");
   }
 
   s=AQFINTS_Element_GetId(element);
   if (s && *s)
     fprintf(stderr, " id=\"%s\"", s?s:"(empty)");
 
-  s=AQFINTS_Element_GetName(element);
-  if (s && *s)
-    fprintf(stderr, " name=\"%s\"", s?s:"(empty)");
-
   i=AQFINTS_Element_GetVersion(element);
   if (i!=0)
     fprintf(stderr, " version=%d", i);
-
-  s=AQFINTS_Element_GetRef(element);
-  if (s && *s)
-    fprintf(stderr, " ref=\"%s\"", s?s:"(empty)");
 
   s=AQFINTS_Element_GetType(element);
   if (s && *s)

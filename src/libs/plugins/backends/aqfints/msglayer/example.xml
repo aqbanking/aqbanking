@@ -7,12 +7,35 @@
   
     <GROUPdef id="SegHead" >
       <!-- "Segmentkopf" -->
-      <DE name="code"    dbType="char" restriction="AN"  maxsize="6" />
-      <DE name="seq"     dbType="int"  restriction="num" maxsize="15" />
-      <DE name="version" dbType="int"  restriction="num" maxsize="3"/>
-      <DE name="ref"     dbType="int"  restriction="num" maxsize="3" minnum=0 />
+      <DE name="code"    type="AN"  maxsize="6" />
+      <DE name="seq"     type="num" maxsize="15" />
+      <DE name="version" type="num" maxsize="3"/>
+      <DE name="ref"     type="num" maxsize="3" minnum=0 />
       
     </GROUPdef>
+    
+
+    <GROUPdef id="btg" version="1">
+      <!-- "Betrag" -->
+      <de name="value"    type="float" maxsize="20" trustlevel="1" />
+      <de name="currency" type="alpha" maxsize="3" />
+    </GROUPdef>
+    
+
+    <GROUPdef id="kik" version="1">
+      <!-- "Kreditinstitutskennung" -->
+      <DE name="country" type="num" maxsize="3" />
+      <DE name="bankcode" type="ascii" maxsize="30" minnum="0" />
+    </GROUPdef>
+
+
+    <GROUPdef id="ktv" version="1">
+      <!-- "Kontoverbindung" -->
+      <DE name="accountid" type="ascii" maxsize="20" />
+      <GROUP type="kik" version="1" />
+    </GROUPdef>
+    
+    
   </GROUPs>
   
   
@@ -26,16 +49,18 @@
     >
       <!-- "Nachrichtenkopf" -->
       <DEG>
-        <GROUP ref="SegHead" name="head" />
+        <GROUP type="SegHead" name="head" />
       </DEG>
-      <DE name="size"       dbType="int"  restriction="num"   maxsize="12" leftfill="1" />
-      <DE name="hversion"   dbType="int"  restriction="num"   maxsize="3" />
-      <DE name="dialogId"   dbType="char" restriction="ascii" maxsize="128" />
-      <DE name="msgnum"     dbType="int"  restriction="num"   maxsize="4" />
+      <DE name="size"       type="num"   maxsize="12" leftfill="1" />
+      <DE name="hversion"   type="num"   maxsize="3" />
+      <DE name="dialogId"   type="ascii" maxsize="128" />
+      <DE name="msgnum"     type="num"   maxsize="4" />
       <DEG minnum="0">
-        <DE name="dialogId" dbType="char" restriction="ascii" maxsize="35" />
-        <DE name="msgnum"   dbType="int"  restriction="num"   maxsize="4" />
+        <DE name="dialogId" type="ascii" maxsize="35" />
+        <DE name="msgnum"   type="num"   maxsize="4" />
       </DEG>
+
+      <GROUP type="kik" version="1" />
    
     </SEGdef>
   

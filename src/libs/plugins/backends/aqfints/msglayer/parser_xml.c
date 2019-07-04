@@ -263,14 +263,6 @@ void readElement(AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlSource)
   if (s && *s)
     AQFINTS_Element_SetId(el, s);
 
-  s=GWEN_XMLNode_GetProperty(xmlSource, "ref", NULL);
-  if (s && *s)
-    AQFINTS_Element_SetRef(el, s);
-
-  s=GWEN_XMLNode_GetProperty(xmlSource, "dbType", "unknown");
-  if (s && *s)
-    AQFINTS_Element_SetDbType(el, AQFINTS_ElementDataType_fromString(s));
-
   s=GWEN_XMLNode_GetProperty(xmlSource, "type", NULL);
   if (s && *s)
     AQFINTS_Element_SetType(el, s);
