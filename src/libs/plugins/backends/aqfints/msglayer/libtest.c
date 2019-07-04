@@ -68,13 +68,13 @@ int test_readHbci(void)
     "HKIDN:3:2+280:49999924+1111111111111111111+2222222222222222222222222222+1'"
     "HKVVB:4:3+4+0+1+AQHBCI+5.99'"
     "HNSHA:5:2+20190625002302++444444444'"
-    "TEST1:6:1+@12@123456789012'";
+    "TEST1:6:1+testdata1::@12@123456789012'";
   int rv;
   AQFINTS_SEGMENT_LIST *segmentList;
 
   segmentList=AQFINTS_Segment_List_new();
 
-  rv=AQFINTS_Parser_Hbci_Buffer_Read(segmentList, (const uint8_t*) testData, strlen(testData));
+  rv=AQFINTS_Parser_Hbci_ReadBuffer(segmentList, (const uint8_t*) testData, strlen(testData));
   if (rv<0) {
     fprintf(stderr, "Error reading HBCI data.\n");
     AQFINTS_Segment_List_free(segmentList);

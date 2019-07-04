@@ -17,9 +17,9 @@
 
 
 
-int AQFINTS_Parser_Hbci_Buffer_Read(AQFINTS_SEGMENT_LIST *targetSegmentList,
-                                    const uint8_t *ptrBuf,
-                                    uint32_t lenBuf);
+int AQFINTS_Parser_Hbci_ReadBuffer(AQFINTS_SEGMENT_LIST *targetSegmentList,
+                                   const uint8_t *ptrBuf,
+                                   uint32_t lenBuf);
 
 #endif
 

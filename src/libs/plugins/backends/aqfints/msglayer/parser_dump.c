@@ -91,6 +91,10 @@ void AQFINTS_Parser_DumpElementTree(AQFINTS_ELEMENT *element, int indent)
       fprintf(stderr, " data=\"%s\"", s?s:"(empty)");
     }
   }
+  else {
+    if (AQFINTS_Element_GetElementType(element)==AQFINTS_ElementType_De)
+      fprintf(stderr, " (nodata)");
+  }
 
   fprintf(stderr, "\n");
 

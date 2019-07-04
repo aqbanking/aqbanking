@@ -26,6 +26,11 @@
 
 
 
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
 static int segRead(AQFINTS_SEGMENT *targetSegment, const uint8_t *ptrBuf, uint32_t lenBuf);
 static int degRead(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenBuf);
 static int deRead(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenBuf);
@@ -35,15 +40,21 @@ static int binRead(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32
 
 
 
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
-int AQFINTS_Parser_Hbci_Buffer_Read(AQFINTS_SEGMENT_LIST *targetSegmentList,
-                                    const uint8_t *ptrBuf,
-                                    uint32_t lenBuf)
+
+
+
+int AQFINTS_Parser_Hbci_ReadBuffer(AQFINTS_SEGMENT_LIST *targetSegmentList,
+                                   const uint8_t *ptrBuf,
+                                   uint32_t lenBuf)
 {
   uint32_t origLenBuf;
 
   origLenBuf=lenBuf;
-
 
   while(lenBuf && *ptrBuf) {
     AQFINTS_SEGMENT *targetSegment;
@@ -217,7 +228,8 @@ int stringRead(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t l
     case '+':
     case ':':
       /* end of segment, DEG or DE reached */
-      AQFINTS_Element_SetTextDataCopy(targetElement, GWEN_Buffer_GetStart(destBuf));
+      if (GWEN_Buffer_GetUsedBytes(destBuf))
+        AQFINTS_Element_SetTextDataCopy(targetElement, GWEN_Buffer_GetStart(destBuf));
       GWEN_Buffer_free(destBuf);
       return (int) (origLenBuf-lenBuf);
     case '?':
@@ -276,7 +288,8 @@ int binRead(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenB
         return GWEN_ERROR_BAD_DATA;
       }
 
-      AQFINTS_Element_SetDataCopy(targetElement, ptrBuf, lenBinary);
+      if (lenBinary)
+        AQFINTS_Element_SetDataCopy(targetElement, ptrBuf, lenBinary);
       AQFINTS_Element_AddRuntimeFlags(targetElement, AQFINTS_ELEMENT_RTFLAGS_ISBIN);
       ptrBuf+=lenBinary;
       lenBuf-=lenBinary;
