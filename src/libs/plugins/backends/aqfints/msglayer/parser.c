@@ -85,31 +85,6 @@ AQFINTS_ELEMENT *AQFINTS_Parser_GetGroupTree(const AQFINTS_PARSER *parser)
 
 
 
-AQFINTS_ELEMENT *AQFINTS_Parser_FindGroup(const AQFINTS_PARSER *parser, const char *id, int version)
-{
-  AQFINTS_ELEMENT *group;
-
-  group=AQFINTS_Element_Tree2_GetFirstChild(parser->groupTree);
-  while(group) {
-    if (version==0 || version==AQFINTS_Element_GetVersion(group)) {
-      if (!(id && *id))
-        return group;
-      else {
-        const char *s;
-
-        s=AQFINTS_Element_GetId(group);
-        if (s && *s && strcasecmp(s, id)==0)
-          return group;
-      }
-    }
-    group=AQFINTS_Element_Tree2_GetNext(group);
-  }
-
-  return NULL;
-}
-
-
-
 AQFINTS_SEGMENT *AQFINTS_Parser_FindSegment(const AQFINTS_PARSER *parser, const char *id, int segmentVersion, int protocolVersion)
 {
   AQFINTS_SEGMENT *segment;
@@ -129,6 +104,31 @@ AQFINTS_SEGMENT *AQFINTS_Parser_FindSegment(const AQFINTS_PARSER *parser, const 
       }
     }
     segment=AQFINTS_Segment_List_Next(segment);
+  }
+
+  return NULL;
+}
+
+
+
+AQFINTS_ELEMENT *AQFINTS_Parser_FindGroupInTree(AQFINTS_ELEMENT *groupTree, const char *id, int version)
+{
+  AQFINTS_ELEMENT *group;
+
+  group=AQFINTS_Element_Tree2_GetFirstChild(groupTree);
+  while(group) {
+    if (version==0 || version==AQFINTS_Element_GetVersion(group)) {
+      if (!(id && *id))
+        return group;
+      else {
+        const char *s;
+
+        s=AQFINTS_Element_GetId(group);
+        if (s && *s && strcasecmp(s, id)==0)
+          return group;
+      }
+    }
+    group=AQFINTS_Element_Tree2_GetNext(group);
   }
 
   return NULL;

@@ -21,8 +21,8 @@
   
     <SEGdef id="MsgHead" 
             code="HNHBK" 
-            version="3"
-            pversion="300"
+            segmentVersion="3"
+            protocolVersion="300"
     >
       <!-- "Nachrichtenkopf" -->
       <DEG>

@@ -146,6 +146,7 @@
 
     <enums>
       <enum id="AQFINTS_ELEMENT_TYPE" prefix="AQFINTS_ElementType_" type="AQFINTS_ELEMENT_TYPE">
+        <item name="root" />
         <item name="group" />
         <item name="de" />
         <item name="deg" />

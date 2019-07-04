@@ -31,11 +31,10 @@ AQFINTS_SEGMENT_LIST *AQFINTS_Parser_GetSegmentList(const AQFINTS_PARSER *parser
 AQFINTS_ELEMENT *AQFINTS_Parser_GetGroupTree(const AQFINTS_PARSER *parser);
 
 
-
-AQFINTS_ELEMENT *AQFINTS_Parser_FindGroup(const AQFINTS_PARSER *parser, const char *id, int version);
-
 AQFINTS_SEGMENT *AQFINTS_Parser_FindSegment(const AQFINTS_PARSER *parser, const char *id, int segmentVersion, int protocolVersion);
 
+
+AQFINTS_ELEMENT *AQFINTS_Parser_FindGroupInTree(AQFINTS_ELEMENT *groupTree, const char *id, int version);
 
 
 #endif

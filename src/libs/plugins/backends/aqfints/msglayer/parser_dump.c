@@ -29,44 +29,57 @@ void AQFINTS_Parser_DumpElementTree(AQFINTS_ELEMENT *element, int indent)
     fprintf(stderr, " ");
 
   switch(AQFINTS_Element_GetElementType(element)) {
+  case AQFINTS_ElementType_Root:  fprintf(stderr, "ROOT "); break;
   case AQFINTS_ElementType_Group: fprintf(stderr, "GROUP"); break;
   case AQFINTS_ElementType_Deg:   fprintf(stderr, "DEG  "); break;
   case AQFINTS_ElementType_De:    fprintf(stderr, "DE   "); break;
   default:                        fprintf(stderr, "(UNK)"); break;
   }
 
-  switch(AQFINTS_Element_GetDbType(element)) {
-  case AQFINTS_ElementDataType_Int:  fprintf(stderr, " int "); break;
-  case AQFINTS_ElementDataType_Char: fprintf(stderr, " char"); break;
-  case AQFINTS_ElementDataType_Bin:  fprintf(stderr, " bin "); break;
-  default:                           fprintf(stderr, " UNK "); break;
+  if (AQFINTS_Element_GetElementType(element)==AQFINTS_ElementType_De) {
+    switch(AQFINTS_Element_GetDbType(element)) {
+    case AQFINTS_ElementDataType_Int:  fprintf(stderr, " int "); break;
+    case AQFINTS_ElementDataType_Char: fprintf(stderr, " char"); break;
+    case AQFINTS_ElementDataType_Bin:  fprintf(stderr, " bin "); break;
+    default:                           fprintf(stderr, " UNK "); break;
+    }
   }
 
   s=AQFINTS_Element_GetId(element);
   if (s && *s)
-    fprintf(stderr, " id=%s", s?s:"(empty)");
+    fprintf(stderr, " id=\"%s\"", s?s:"(empty)");
 
   s=AQFINTS_Element_GetName(element);
   if (s && *s)
-    fprintf(stderr, " name=%s", s?s:"(empty)");
+    fprintf(stderr, " name=\"%s\"", s?s:"(empty)");
 
-  fprintf(stderr, " version=%d", AQFINTS_Element_GetVersion(element));
+  i=AQFINTS_Element_GetVersion(element);
+  if (i!=0)
+    fprintf(stderr, " version=%d", i);
 
   s=AQFINTS_Element_GetRef(element);
   if (s && *s)
-    fprintf(stderr, " ref=%s", s?s:"(empty)");
+    fprintf(stderr, " ref=\"%s\"", s?s:"(empty)");
 
   s=AQFINTS_Element_GetType(element);
   if (s && *s)
-    fprintf(stderr, " type=%s", s?s:"(empty)");
+    fprintf(stderr, " type=\"%s\"", s?s:"(empty)");
 
-  fprintf(stderr, " minnum=%d", AQFINTS_Element_GetMinNum(element));
+  i=AQFINTS_Element_GetMinNum(element);
+  if (i!=1)
+    fprintf(stderr, " minnum=%d", i);
 
-  fprintf(stderr, " maxnum=%d", AQFINTS_Element_GetMaxNum(element));
+  i=AQFINTS_Element_GetMaxNum(element);
+  if (i!=1)
+    fprintf(stderr, " maxnum=%d", i);
 
-  fprintf(stderr, " minsize=%d", AQFINTS_Element_GetMinSize(element));
+  i=AQFINTS_Element_GetMinSize(element);
+  if (i!=0)
+    fprintf(stderr, " minsize=%d", i);
 
-  fprintf(stderr, " maxsize=%d", AQFINTS_Element_GetMaxSize(element));
+  i=AQFINTS_Element_GetMaxSize(element);
+  if (i!=-1)
+    fprintf(stderr, " maxsize=%d", i);
 
   fprintf(stderr, "\n");
 
@@ -76,5 +89,53 @@ void AQFINTS_Parser_DumpElementTree(AQFINTS_ELEMENT *element, int indent)
     childElement=AQFINTS_Element_Tree2_GetNext(childElement);
   }
 }
+
+
+
+void AQFINTS_Parser_DumpSegment(AQFINTS_SEGMENT *segment, int indent)
+{
+
+  int i;
+  const char *s;
+  AQFINTS_ELEMENT *elementTree;
+
+  for (i=0; i<indent; i++)
+    fprintf(stderr, " ");
+
+  fprintf(stderr, "SEG  ");
+
+  s=AQFINTS_Segment_GetId(segment);
+  if (s && *s)
+    fprintf(stderr, " id=%s", s?s:"(empty)");
+
+  s=AQFINTS_Segment_GetCode(segment);
+  if (s && *s)
+    fprintf(stderr, " code=%s", s?s:"(empty)");
+
+  fprintf(stderr, " segver=%d", AQFINTS_Segment_GetSegmentVersion(segment));
+
+  fprintf(stderr, " protover=%d", AQFINTS_Segment_GetProtocolVersion(segment));
+
+  fprintf(stderr, "\n");
+
+  elementTree=AQFINTS_Segment_GetElements(segment);
+  if (elementTree)
+    AQFINTS_Parser_DumpElementTree(elementTree, indent+2);
+}
+
+
+
+void AQFINTS_Parser_DumpSegmentList(AQFINTS_SEGMENT_LIST *segmentList, int indent)
+{
+  AQFINTS_SEGMENT *segment;
+
+  segment=AQFINTS_Segment_List_First(segmentList);
+  while(segment) {
+    AQFINTS_Parser_DumpSegment(segment, indent);
+    segment=AQFINTS_Segment_List_Next(segment);
+  }
+}
+
+
 
 

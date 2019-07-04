@@ -17,6 +17,10 @@
 
 void AQFINTS_Parser_DumpElementTree(AQFINTS_ELEMENT *element, int indent);
 
+void AQFINTS_Parser_DumpSegment(AQFINTS_SEGMENT *segment, int indent);
+
+void AQFINTS_Parser_DumpSegmentList(AQFINTS_SEGMENT_LIST *segmentList, int indent);
+
 
 #endif
 

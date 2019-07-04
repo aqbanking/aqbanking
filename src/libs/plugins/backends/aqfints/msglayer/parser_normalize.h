@@ -17,8 +17,10 @@
 #include <gwenhywfar/xml.h>
 
 
-void AQFINTS_Parser_Normalize_Segment(AQFINTS_SEGMENT *segment);
+void AQFINTS_Parser_SegmentList_ResolveGroups(AQFINTS_SEGMENT_LIST *segmentList, AQFINTS_ELEMENT *groupTree);
 
+void AQFINTS_Parser_SegmentList_Normalize(AQFINTS_SEGMENT_LIST *segmentList);
 
 #endif
+
 

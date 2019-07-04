@@ -167,6 +167,7 @@ void readElementWithChildren(AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlSource)
 
   /* read child elements for some groups */
   switch(AQFINTS_Element_GetElementType(el)) {
+  case AQFINTS_ElementType_Root:
   case AQFINTS_ElementType_Group:
   case AQFINTS_ElementType_Deg:
     readChildElements(el, xmlSource);
@@ -213,6 +214,7 @@ void readSegmentChildren(AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlSource)
   elementTree=AQFINTS_Segment_GetElements(segment);
   if (elementTree==NULL) {
     elementTree=AQFINTS_Element_new();
+    AQFINTS_Element_SetElementType(elementTree, AQFINTS_ElementType_Root);
     AQFINTS_Segment_SetElements(segment, elementTree);
   }
 
@@ -256,6 +258,10 @@ void readElement(AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlSource)
   s=GWEN_XMLNode_GetProperty(xmlSource, "name", NULL);
   if (s && *s)
     AQFINTS_Element_SetName(el, s);
+
+  s=GWEN_XMLNode_GetProperty(xmlSource, "id", NULL);
+  if (s && *s)
+    AQFINTS_Element_SetId(el, s);
 
   s=GWEN_XMLNode_GetProperty(xmlSource, "ref", NULL);
   if (s && *s)

@@ -11,6 +11,7 @@
 
 #include "parser_xml.h"
 #include "parser_dump.h"
+#include "parser_normalize.h"
 
 
 
@@ -23,6 +24,7 @@ int test_loadFile(const char *filename)
 
   segmentList=AQFINTS_Segment_List_new();
   groupTree=AQFINTS_Element_new();
+  AQFINTS_Element_SetElementType(groupTree, AQFINTS_ElementType_Root);
 
   rv=AQFINTS_Parser_Xml_ReadFile(segmentList, groupTree, filename);
   if (rv<0) {
@@ -32,7 +34,21 @@ int test_loadFile(const char *filename)
     return 2;
   }
 
+  fprintf(stderr, "Groups:\n");
   AQFINTS_Parser_DumpElementTree(groupTree, 2);
+
+  fprintf(stderr, "Segments:\n");
+  AQFINTS_Parser_DumpSegmentList(segmentList, 2);
+
+  AQFINTS_Parser_SegmentList_ResolveGroups(segmentList, groupTree);
+
+  fprintf(stderr, "Segments after resolving groups:\n");
+  AQFINTS_Parser_DumpSegmentList(segmentList, 2);
+
+  AQFINTS_Parser_SegmentList_Normalize(segmentList);
+
+  fprintf(stderr, "Segments after normalizing:\n");
+  AQFINTS_Parser_DumpSegmentList(segmentList, 2);
 
   AQFINTS_Element_Tree2_free(groupTree);
   AQFINTS_Segment_List_free(segmentList);
