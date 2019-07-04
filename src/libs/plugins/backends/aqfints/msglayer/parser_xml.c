@@ -26,10 +26,10 @@
  */
 
 static void readGroupsAndSegs(AQFINTS_SEGMENT_LIST *segmentList,
-                              AQFINTS_ELEMENT_TREE *groupTree,
+                              AQFINTS_ELEMENT *groupTree,
                               GWEN_XMLNODE *xmlSource);
 
-static void readGroups(AQFINTS_ELEMENT_TREE *groupTree, GWEN_XMLNODE *xmlSource);
+static void readGroups(AQFINTS_ELEMENT *groupTree, GWEN_XMLNODE *xmlSource);
 static void readSegments(AQFINTS_SEGMENT_LIST *segmentList, GWEN_XMLNODE *xmlSource);
 
 static void readElementWithChildren(AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlSource);
@@ -52,7 +52,7 @@ static void readSegmentChildren(AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlSourc
 
 
 int AQFINTS_Parser_Xml_ReadFile(AQFINTS_SEGMENT_LIST *segmentList,
-                                AQFINTS_ELEMENT_TREE *groupTree,
+                                AQFINTS_ELEMENT *groupTree,
                                 const char *filename)
 {
   GWEN_XMLNODE *xmlNodeFile;
@@ -85,7 +85,7 @@ int AQFINTS_Parser_Xml_ReadFile(AQFINTS_SEGMENT_LIST *segmentList,
 
 
 void readGroupsAndSegs(AQFINTS_SEGMENT_LIST *segmentList,
-                       AQFINTS_ELEMENT_TREE *groupTree,
+                       AQFINTS_ELEMENT *groupTree,
                        GWEN_XMLNODE *xmlSource)
 {
   GWEN_XMLNODE *xmlNode;
@@ -113,7 +113,7 @@ void readGroupsAndSegs(AQFINTS_SEGMENT_LIST *segmentList,
 
 
 
-void readGroups(AQFINTS_ELEMENT_TREE *groupTree, GWEN_XMLNODE *xmlSource)
+void readGroups(AQFINTS_ELEMENT *groupTree, GWEN_XMLNODE *xmlSource)
 {
   GWEN_XMLNODE *xmlNode;
 
@@ -126,7 +126,7 @@ void readGroups(AQFINTS_ELEMENT_TREE *groupTree, GWEN_XMLNODE *xmlSource)
       AQFINTS_ELEMENT *elChild;
 
       elChild=AQFINTS_Element_new();
-      AQFINTS_Element_Tree_Add(groupTree, elChild);
+      AQFINTS_Element_Tree2_AddChild(groupTree, elChild);
       readElementWithChildren(elChild, xmlNode);
     }
     xmlNode=GWEN_XMLNode_GetNextTag(xmlNode);
@@ -188,7 +188,7 @@ void readChildElements(AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlSource)
     AQFINTS_ELEMENT *elChild;
 
     elChild=AQFINTS_Element_new();
-    AQFINTS_Element_Tree_AddChild(el, elChild);
+    AQFINTS_Element_Tree2_AddChild(el, elChild);
     readElementWithChildren(elChild, xmlNode);
     xmlNode=GWEN_XMLNode_GetNextTag(xmlNode);
   }
@@ -207,12 +207,12 @@ void readSegmentWithChildren(AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlSource)
 void readSegmentChildren(AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlSource)
 {
   GWEN_XMLNODE *xmlNode;
-  AQFINTS_ELEMENT_TREE *elementTree;
+  AQFINTS_ELEMENT *elementTree;
 
   /* get or create element tree */
   elementTree=AQFINTS_Segment_GetElements(segment);
   if (elementTree==NULL) {
-    elementTree=AQFINTS_Element_Tree_new();
+    elementTree=AQFINTS_Element_new();
     AQFINTS_Segment_SetElements(segment, elementTree);
   }
 
@@ -221,7 +221,7 @@ void readSegmentChildren(AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlSource)
     AQFINTS_ELEMENT *elChild;
 
     elChild=AQFINTS_Element_new();
-    AQFINTS_Element_Tree_Add(elementTree, elChild);
+    AQFINTS_Element_Tree2_AddChild(elementTree, elChild);
     readElementWithChildren(elChild, xmlNode);
     xmlNode=GWEN_XMLNode_GetNextTag(xmlNode);
   }
@@ -261,23 +261,24 @@ void readElement(AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlSource)
   if (s && *s)
     AQFINTS_Element_SetRef(el, s);
 
-  i=GWEN_XMLNode_GetIntProperty(xmlSource, "dbType", AQFINTS_ElementDataType_Unknown);
-  AQFINTS_Element_SetDbType(el, i);
+  s=GWEN_XMLNode_GetProperty(xmlSource, "dbType", "unknown");
+  if (s && *s)
+    AQFINTS_Element_SetDbType(el, AQFINTS_ElementDataType_fromString(s));
 
   s=GWEN_XMLNode_GetProperty(xmlSource, "type", NULL);
   if (s && *s)
     AQFINTS_Element_SetType(el, s);
 
-  i=GWEN_XMLNode_GetIntProperty(xmlSource, "minNum", 0);
+  i=GWEN_XMLNode_GetIntProperty(xmlSource, "minNum", 1);
   AQFINTS_Element_SetMinNum(el, i);
 
-  i=GWEN_XMLNode_GetIntProperty(xmlSource, "maxNum", 0);
+  i=GWEN_XMLNode_GetIntProperty(xmlSource, "maxNum", 1);
   AQFINTS_Element_SetMaxNum(el, i);
 
   i=GWEN_XMLNode_GetIntProperty(xmlSource, "minSize", 0);
   AQFINTS_Element_SetMinSize(el, i);
 
-  i=GWEN_XMLNode_GetIntProperty(xmlSource, "maxSize", 0);
+  i=GWEN_XMLNode_GetIntProperty(xmlSource, "maxSize", -1);
   AQFINTS_Element_SetMaxSize(el, i);
 
   flags|=(GWEN_XMLNode_GetIntProperty(xmlSource, "leftFill", 0)?AQFINTS_ELEMENT_FLAGS_LEFTFILL:0);

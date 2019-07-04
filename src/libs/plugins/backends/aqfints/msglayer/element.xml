@@ -12,7 +12,7 @@
       
       <flags>
         with_db
-        with_tree
+        with_tree2
         with_refcount
       </flags>
       

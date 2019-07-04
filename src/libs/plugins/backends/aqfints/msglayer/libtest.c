@@ -10,27 +10,31 @@
 
 
 #include "parser_xml.h"
+#include "parser_dump.h"
+
 
 
 int test_loadFile(const char *filename)
 {
   int rv;
   AQFINTS_SEGMENT_LIST *segmentList;
-  AQFINTS_ELEMENT_TREE *groupTree;
+  AQFINTS_ELEMENT *groupTree;
 
 
   segmentList=AQFINTS_Segment_List_new();
-  groupTree=AQFINTS_Element_Tree_new();
+  groupTree=AQFINTS_Element_new();
 
   rv=AQFINTS_Parser_Xml_ReadFile(segmentList, groupTree, filename);
   if (rv<0) {
     fprintf(stderr, "Error reading file.\n");
-    AQFINTS_Element_Tree_free(groupTree);
+    AQFINTS_Element_Tree2_free(groupTree);
     AQFINTS_Segment_List_free(segmentList);
     return 2;
   }
 
-  AQFINTS_Element_Tree_free(groupTree);
+  AQFINTS_Parser_DumpElementTree(groupTree, 2);
+
+  AQFINTS_Element_Tree2_free(groupTree);
   AQFINTS_Segment_List_free(segmentList);
 
   fprintf(stderr, "Success.\n");

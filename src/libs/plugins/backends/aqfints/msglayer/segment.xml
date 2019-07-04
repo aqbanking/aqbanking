@@ -157,7 +157,7 @@
       </member>
 
 
-      <member name="elements" type="AQFINTS_ELEMENT_TREE" >
+      <member name="elements" type="AQFINTS_ELEMENT" >
         <access>public</access>
         <flags>own</flags>
         <setflags>none</setflags>

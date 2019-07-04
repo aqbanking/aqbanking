@@ -8,19 +8,14 @@
  * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
-
-#ifndef AQFINTS_PARSER_P_H
-#define AQFINTS_PARSER_P_H
-
-
-#include "msglayer/parser.h"
+#ifndef AQFINTS_PARSER_DUMP_H
+#define AQFINTS_PARSER_DUMP_H
 
 
+#include "msglayer/segment.h"
 
-struct AQFINTS_PARSER {
-  AQFINTS_SEGMENT_LIST *segmentList;
-  AQFINTS_ELEMENT *groupTree;
-};
+
+void AQFINTS_Parser_DumpElementTree(AQFINTS_ELEMENT *element, int indent);
 
 
 #endif

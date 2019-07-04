@@ -22,7 +22,7 @@ typefiles=\
 
 typedatadir=$(datadir)/aqbanking/typemaker2/c
 dist_typedata_DATA=\
-  aqfints_element.tm2 aqfints_element_tree.tm2
+  aqfints_element.tm2 aqfints_element_tree2.tm2
 
 
 
@@ -51,7 +51,8 @@ noinst_HEADERS= $(build_headers)
 libaqfintsmsg_la_SOURCES= $(built_sources) \
   parser.c \
   parser_xml.c \
-  parser_normalize.c
+  parser_normalize.c \
+  parser_dump.c
 
 
 

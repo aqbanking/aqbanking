@@ -28,7 +28,7 @@ void AQFINTS_Parser_free(AQFINTS_PARSER *parser);
 
 
 AQFINTS_SEGMENT_LIST *AQFINTS_Parser_GetSegmentList(const AQFINTS_PARSER *parser);
-AQFINTS_ELEMENT_TREE *AQFINTS_Parser_GetGroupTree(const AQFINTS_PARSER *parser);
+AQFINTS_ELEMENT *AQFINTS_Parser_GetGroupTree(const AQFINTS_PARSER *parser);
 
 
 

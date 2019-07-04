@@ -29,6 +29,16 @@
   - DB  =decode(TREE, DEFS)
 
 
+  - Getting data:
+    - DEFS     DATA
+      DEG      DEG    WORK-DATA = DEG
+      DE       DEG    WORK-DATA = first DE below DEG
+
+    - context:
+      - current DB path
+      - current DEF node
+      - current DATA node
+
  */
 
 
@@ -40,7 +50,7 @@ AQFINTS_PARSER *AQFINTS_Parser_new()
   GWEN_NEW_OBJECT(AQFINTS_PARSER, parser);
 
   parser->segmentList=AQFINTS_Segment_List_new();
-  parser->groupTree=AQFINTS_Element_Tree_new();
+  parser->groupTree=AQFINTS_Element_new();
 
   return parser;
 }
@@ -50,7 +60,7 @@ AQFINTS_PARSER *AQFINTS_Parser_new()
 void AQFINTS_Parser_free(AQFINTS_PARSER *parser)
 {
   if (parser) {
-    AQFINTS_Element_Tree_free(parser->groupTree);
+    AQFINTS_Element_Tree2_free(parser->groupTree);
     AQFINTS_Segment_List_free(parser->segmentList);
 
     GWEN_FREE_OBJECT(parser);
@@ -67,7 +77,7 @@ AQFINTS_SEGMENT_LIST *AQFINTS_Parser_GetSegmentList(const AQFINTS_PARSER *parser
 
 
 
-AQFINTS_ELEMENT_TREE *AQFINTS_Parser_GetGroupTree(const AQFINTS_PARSER *parser)
+AQFINTS_ELEMENT *AQFINTS_Parser_GetGroupTree(const AQFINTS_PARSER *parser)
 {
   assert(parser);
   return parser->groupTree;
@@ -79,7 +89,7 @@ AQFINTS_ELEMENT *AQFINTS_Parser_FindGroup(const AQFINTS_PARSER *parser, const ch
 {
   AQFINTS_ELEMENT *group;
 
-  group=AQFINTS_Element_Tree_GetFirst(parser->groupTree);
+  group=AQFINTS_Element_Tree2_GetFirstChild(parser->groupTree);
   while(group) {
     if (version==0 || version==AQFINTS_Element_GetVersion(group)) {
       if (!(id && *id))
@@ -92,7 +102,7 @@ AQFINTS_ELEMENT *AQFINTS_Parser_FindGroup(const AQFINTS_PARSER *parser, const ch
           return group;
       }
     }
-    group=AQFINTS_Element_Tree_GetNext(group);
+    group=AQFINTS_Element_Tree2_GetNext(group);
   }
 
   return NULL;

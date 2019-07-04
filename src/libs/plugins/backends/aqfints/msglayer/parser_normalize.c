@@ -20,26 +20,26 @@
 
 void AQFINTS_Parser_Normalize_Segment(AQFINTS_SEGMENT *segment)
 {
-  AQFINTS_ELEMENT_TREE *elementTree;
+  AQFINTS_ELEMENT *elementTree;
 
   elementTree=AQFINTS_Segment_GetElements(segment);
   if (elementTree) {
     AQFINTS_ELEMENT *element;
 
     /* check top-level elements: if DE, prepend a DEG before it */
-    element=AQFINTS_Element_Tree_GetFirst(elementTree);
+    element=AQFINTS_Element_Tree2_GetFirstChild(elementTree);
     while(element) {
       AQFINTS_ELEMENT *nextElement;
 
-      nextElement=AQFINTS_Element_Tree_GetNext(element);
+      nextElement=AQFINTS_Element_Tree2_GetNext(element);
 
       if (AQFINTS_Element_GetElementType(element)==AQFINTS_ElementType_De) {
         AQFINTS_ELEMENT *elementDeg;
 
         elementDeg=AQFINTS_Element_new();
         AQFINTS_Element_SetElementType(elementDeg, AQFINTS_ElementType_Deg);
-        AQFINTS_Element_Tree_Replace(element, elementDeg);
-        AQFINTS_Element_Tree_AddChild(elementDeg, element);
+        AQFINTS_Element_Tree2_Replace(element, elementDeg);
+        AQFINTS_Element_Tree2_AddChild(elementDeg, element);
       }
 
       element=nextElement;

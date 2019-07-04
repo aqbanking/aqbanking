@@ -19,7 +19,7 @@
 
 
 int AQFINTS_Parser_Xml_ReadFile(AQFINTS_SEGMENT_LIST *segmentList,
-                                AQFINTS_ELEMENT_TREE *groupTree,
+                                AQFINTS_ELEMENT *groupTree,
                                 const char *filename);
 
 
