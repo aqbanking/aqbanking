@@ -142,6 +142,18 @@
         <access>public</access>
       </member>
 
+      <member name="segmentNumber" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+      <member name="refSegmentNumber" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
       <member name="protocolVersion" type="int" maxlen="8" >
         <default>0</default>
         <preset>0</preset>

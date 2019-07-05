@@ -36,6 +36,7 @@ static int degRead(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32
 static int deRead(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenBuf);
 static int stringRead(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenBuf);
 static int binRead(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenBuf);
+static void parseSegHeader(AQFINTS_SEGMENT *segment);
 
 
 
@@ -69,6 +70,7 @@ int AQFINTS_Parser_Hbci_ReadBuffer(AQFINTS_SEGMENT_LIST *targetSegmentList,
       AQFINTS_Segment_free(targetSegment);
       return rv;
     }
+    parseSegHeader(targetSegment);
     AQFINTS_Segment_List_Add(targetSegment, targetSegmentList);
 
     /* advance pointer and size */
@@ -86,6 +88,55 @@ int AQFINTS_Parser_Hbci_ReadBuffer(AQFINTS_SEGMENT_LIST *targetSegmentList,
   } /* while */
 
   return (int) (origLenBuf-lenBuf);
+}
+
+
+
+void parseSegHeader(AQFINTS_SEGMENT *segment)
+{
+  AQFINTS_ELEMENT *element;
+
+  element=AQFINTS_Segment_GetElements(segment);
+  if (element) {
+    AQFINTS_ELEMENT *deg1;
+
+    deg1=AQFINTS_Element_Tree2_GetFirstChild(element);
+    if (deg1) {
+      AQFINTS_ELEMENT *de;
+
+      de=AQFINTS_Element_Tree2_GetFirstChild(deg1);
+      if (de) {
+        const char *s;
+        int i;
+
+        /* read segment code */
+        s=AQFINTS_Element_GetDataAsChar(de, NULL);
+        if (s && *s)
+          AQFINTS_Segment_SetCode(segment, s);
+
+        /* read segment number */
+        de=AQFINTS_Element_Tree2_GetNext(de);
+        if (de) {
+          i=AQFINTS_Element_GetDataAsInt(de, 0);
+          AQFINTS_Segment_SetSegmentNumber(segment, i);
+
+          /* read segment version */
+          de=AQFINTS_Element_Tree2_GetNext(de);
+          if (de) {
+            i=AQFINTS_Element_GetDataAsInt(de, 0);
+            AQFINTS_Segment_SetSegmentVersion(segment, i);
+
+            /* read reference segment number */
+            de=AQFINTS_Element_Tree2_GetNext(de);
+            if (de) {
+              i=AQFINTS_Element_GetDataAsInt(de, 0);
+              AQFINTS_Segment_SetRefSegmentNumber(segment, i);
+            } /* if fourth de */
+          } /* if third de */
+        } /* if second de */
+      } /* if first de */
+    } /* if deg1 */
+  } /* if element */
 }
 
 

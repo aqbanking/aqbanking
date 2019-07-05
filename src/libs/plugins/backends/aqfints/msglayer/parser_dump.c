@@ -121,11 +121,11 @@ void AQFINTS_Parser_DumpSegment(AQFINTS_SEGMENT *segment, int indent)
 
   s=AQFINTS_Segment_GetId(segment);
   if (s && *s)
-    fprintf(stderr, " id=%s", s?s:"(empty)");
+    fprintf(stderr, " id=\"%s\"", s?s:"(empty)");
 
   s=AQFINTS_Segment_GetCode(segment);
   if (s && *s)
-    fprintf(stderr, " code=%s", s?s:"(empty)");
+    fprintf(stderr, " code=\"%s\"", s?s:"(empty)");
 
   i=AQFINTS_Segment_GetSegmentVersion(segment);
   if (i!=0)

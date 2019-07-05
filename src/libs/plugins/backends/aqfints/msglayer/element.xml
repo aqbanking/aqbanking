@@ -163,6 +163,57 @@
              }
           </content>
         </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) const char* $(struct_prefix)_GetDataAsChar(const $(struct_type) *st, const char *defaultValue);
+          </content>
+        </inline>
+
+        <inline loc="code" >
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             const char* $(struct_prefix)_GetDataAsChar(const $(struct_type) *st, const char *defaultValue) {
+               if (st-&gt;data.length &amp;&amp; st-&gt;data.pointer &amp;&amp;
+                   !(st-&gt;runtimeFlags &amp; AQFINTS_ELEMENT_RTFLAGS_ISBIN))
+                 return (const char*) (st-&gt;data.pointer);
+               return defaultValue;
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) int $(struct_prefix)_GetDataAsInt(const $(struct_type) *st, int defaultValue);
+          </content>
+        </inline>
+
+        <inline loc="code" >
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             int $(struct_prefix)_GetDataAsInt(const $(struct_type) *st, int defaultValue) {
+               const char *s;
+               
+               s=$(struct_prefix)_GetDataAsChar(st, NULL);
+               if (s &amp;&amp; *s) {
+                 long int retVal=0;
+                 
+                 if (1==sscanf(s, "%li", &retVal))
+                   return retVal;
+               }
+               return defaultValue;
+             }
+          </content>
+        </inline>
+
       
       </inlines>
 
@@ -274,6 +325,13 @@
       <member name="maxSize" type="int" maxlen="8" >
         <default>-1</default>
         <preset>-1</preset>
+        <access>public</access>
+      </member>
+
+
+      <member name="trustLevel" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
         <access>public</access>
       </member>
 

@@ -279,6 +279,9 @@ void readElement(AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlSource)
   i=GWEN_XMLNode_GetIntProperty(xmlSource, "maxSize", -1);
   AQFINTS_Element_SetMaxSize(el, i);
 
+  i=GWEN_XMLNode_GetIntProperty(xmlSource, "trustLevel", 0);
+  AQFINTS_Element_SetTrustLevel(el, i);
+
   flags|=(GWEN_XMLNode_GetIntProperty(xmlSource, "leftFill", 0)?AQFINTS_ELEMENT_FLAGS_LEFTFILL:0);
   flags|=(GWEN_XMLNode_GetIntProperty(xmlSource, "rightFill", 0)?AQFINTS_ELEMENT_FLAGS_RIGHTFILL:0);
   AQFINTS_Element_SetFlags(el, flags);
