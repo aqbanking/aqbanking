@@ -16,6 +16,7 @@
 #include "parser_xml.h"
 
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/text.h>
 
 
 
@@ -66,7 +67,10 @@ int AQFINTS_Parser_Xml_ReadFile(AQFINTS_SEGMENT_LIST *segmentList,
   int rv;
 
   xmlNodeFile=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "fintsFile");
-  rv=GWEN_XML_ReadFile(xmlNodeFile, filename, GWEN_XML_FLAGS_HANDLE_COMMENTS | GWEN_XML_FLAGS_HANDLE_HEADERS);
+  rv=GWEN_XML_ReadFile(xmlNodeFile, filename,
+                       GWEN_XML_FLAGS_HANDLE_COMMENTS |
+                       GWEN_XML_FLAGS_HANDLE_HEADERS |
+                       GWEN_XML_FLAGS_SIMPLE);
   if (rv<0) {
     DBG_ERROR(0, "Error reading XML file \"%s\" (%d)", filename, rv);
     GWEN_XMLNode_free(xmlNodeFile);
@@ -93,11 +97,14 @@ int AQFINTS_Parser_Xml_ReadFile(AQFINTS_SEGMENT_LIST *segmentList,
 int AQFINTS_Parser_Xml_WriteSegmentDefinitionFile(const AQFINTS_SEGMENT_LIST *segmentList, const char *filename)
 {
   GWEN_XMLNODE *xmlFile;
+  GWEN_XMLNODE *xmlHeader;
   GWEN_XMLNODE *xmlFinTS;
   GWEN_XMLNODE *xmlSegs;
   int rv;
 
   xmlFile=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "ROOT");
+  xmlHeader=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "?xml");
+  GWEN_XMLNode_AddHeader(xmlFile, xmlHeader);
   xmlFinTS=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "FinTS");
   GWEN_XMLNode_AddChild(xmlFile, xmlFinTS);
   xmlSegs=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "SEGs");
@@ -105,7 +112,11 @@ int AQFINTS_Parser_Xml_WriteSegmentDefinitionFile(const AQFINTS_SEGMENT_LIST *se
 
   writeSegmentDefinitions(segmentList, xmlSegs);
 
-  rv=GWEN_XMLNode_WriteFile(xmlFile, filename, GWEN_XML_FLAGS_INDENT | GWEN_XML_FLAGS_HANDLE_COMMENTS);
+  rv=GWEN_XMLNode_WriteFile(xmlFile, filename,
+                            GWEN_XML_FLAGS_INDENT |
+                            GWEN_XML_FLAGS_HANDLE_COMMENTS |
+                            GWEN_XML_FLAGS_HANDLE_HEADERS |
+                            GWEN_XML_FLAGS_SIMPLE);
   if (rv<0) {
     DBG_INFO(0, "here (%d)", rv);
     GWEN_XMLNode_free(xmlFile);
@@ -397,6 +408,30 @@ void readElement(AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlSource)
   flags|=(GWEN_XMLNode_GetIntProperty(xmlSource, "rightFill", 0)?AQFINTS_ELEMENT_FLAGS_RIGHTFILL:0);
   flags|=(GWEN_XMLNode_GetIntProperty(xmlSource, "isBin", 0)?AQFINTS_ELEMENT_FLAGS_ISBIN:0);
   AQFINTS_Element_SetFlags(el, flags);
+
+  if (AQFINTS_Element_GetElementType(el)==AQFINTS_ElementType_De) {
+    const GWEN_XMLNODE *xmlNode;
+
+    xmlNode=GWEN_XMLNode_GetFirstData(xmlSource);
+    if (xmlNode) {
+      s=GWEN_XMLNode_GetData(xmlNode);
+      if (s && *s) {
+        if (flags & AQFINTS_ELEMENT_FLAGS_ISBIN) {
+          GWEN_BUFFER *binBuffer;
+
+          binBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+          GWEN_Text_FromHexBuffer(s, binBuffer);
+          AQFINTS_Element_SetDataCopy(el,
+                                      (const uint8_t*) GWEN_Buffer_GetStart(binBuffer),
+                                      GWEN_Buffer_GetUsedBytes(binBuffer));
+          GWEN_Buffer_free(binBuffer);
+        }
+        else {
+          AQFINTS_Element_SetTextDataCopy(el, s);
+        }
+      }
+    }
+  }
 }
 
 
@@ -449,6 +484,35 @@ void writeElement(const AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlDest)
     GWEN_XMLNode_SetIntProperty(xmlDest, "rightFill", 1);
   if (flags & AQFINTS_ELEMENT_FLAGS_ISBIN)
     GWEN_XMLNode_SetIntProperty(xmlDest, "isBin", 1);
+
+  if (AQFINTS_Element_GetElementType(el)==AQFINTS_ElementType_De) {
+    if (flags & AQFINTS_ELEMENT_FLAGS_ISBIN) {
+      const uint8_t *ptrData;
+      uint32_t lenData;
+
+      ptrData=AQFINTS_Element_GetDataPointer(el);
+      lenData=AQFINTS_Element_GetDataLength(el);
+      if (lenData && ptrData) {
+        GWEN_BUFFER *hexBuffer;
+        GWEN_XMLNODE *xmlNode;
+
+        hexBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+        GWEN_Text_ToHexBuffer((const char*) ptrData, lenData, hexBuffer, 32, '\n', 0);
+        xmlNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeData, GWEN_Buffer_GetStart(hexBuffer));
+        GWEN_XMLNode_AddChild(xmlDest, xmlNode);
+        GWEN_Buffer_free(hexBuffer);
+      }
+    }
+    else {
+      s=AQFINTS_Element_GetDataAsChar(el, NULL);
+      if (s && *s) {
+        GWEN_XMLNODE *xmlNode;
+
+        xmlNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeData, s);
+        GWEN_XMLNode_AddChild(xmlDest, xmlNode);
+      }
+    }
+  }
 }
 
 
@@ -495,11 +559,11 @@ void writeSegment(const AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlDest)
     GWEN_XMLNode_SetProperty(xmlDest, "code", s);
 
   i=AQFINTS_Segment_GetSegmentVersion(segment);
-  if (i!=-1)
+  if (i!=0)
     GWEN_XMLNode_SetIntProperty(xmlDest, "segmentVersion", i);
 
   i=AQFINTS_Segment_GetProtocolVersion(segment);
-  if (i!=-1)
+  if (i!=0)
     GWEN_XMLNode_SetIntProperty(xmlDest, "protocolVersion", i);
 }
 

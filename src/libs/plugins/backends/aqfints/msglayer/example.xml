@@ -24,7 +24,7 @@
 
     <GROUPdef id="kik" version="1">
       <!-- "Kreditinstitutskennung" -->
-      <DE name="country" type="num" maxsize="3" />
+      <DE name="country" type="num" maxsize="3" >280</DE>
       <DE name="bankcode" type="ascii" maxsize="30" minnum="0" />
     </GROUPdef>
 
@@ -61,6 +61,7 @@
       </DEG>
 
       <GROUP type="ktv" version="1" />
+      <DE name="test"     type="bin"   isBin="1" >313233343536373839303132</DE>
    
     </SEGdef>
   
