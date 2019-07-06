@@ -77,7 +77,7 @@ void AQFINTS_Parser_DumpElementTree(AQFINTS_ELEMENT *element, int indent)
     fprintf(stderr, " maxsize=%d", i);
 
   if (AQFINTS_Element_GetDataLength(element)) {
-    if (AQFINTS_Element_GetRuntimeFlags(element) & AQFINTS_ELEMENT_RTFLAGS_ISBIN) {
+    if (AQFINTS_Element_GetFlags(element) & AQFINTS_ELEMENT_FLAGS_ISBIN) {
       const uint8_t *ptr;
       uint32_t len;
 

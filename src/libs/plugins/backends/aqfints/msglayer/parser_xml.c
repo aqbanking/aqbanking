@@ -40,6 +40,13 @@ static void readSegment(AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlSource);
 static void readSegmentWithChildren(AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlSource);
 static void readSegmentChildren(AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlSource);
 
+static void writeSegmentDefinitions(const AQFINTS_SEGMENT_LIST *segmentList, GWEN_XMLNODE *xmlDest);
+static void writeSegmentWithElements(const AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlDest);
+static void writeElementTree(const AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlDest);
+
+static void writeSegment(const AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlDest);
+static void writeElement(const AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlDest);
+
 
 
 
@@ -80,6 +87,53 @@ int AQFINTS_Parser_Xml_ReadFile(AQFINTS_SEGMENT_LIST *segmentList,
   GWEN_XMLNode_free(xmlNodeFile);
   return 0;
 }
+
+
+
+int AQFINTS_Parser_Xml_WriteSegmentDefinitionFile(const AQFINTS_SEGMENT_LIST *segmentList, const char *filename)
+{
+  GWEN_XMLNODE *xmlFile;
+  GWEN_XMLNODE *xmlFinTS;
+  GWEN_XMLNODE *xmlSegs;
+  int rv;
+
+  xmlFile=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "ROOT");
+  xmlFinTS=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "FinTS");
+  GWEN_XMLNode_AddChild(xmlFile, xmlFinTS);
+  xmlSegs=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "SEGs");
+  GWEN_XMLNode_AddChild(xmlFinTS, xmlSegs);
+
+  writeSegmentDefinitions(segmentList, xmlSegs);
+
+  rv=GWEN_XMLNode_WriteFile(xmlFile, filename, GWEN_XML_FLAGS_INDENT | GWEN_XML_FLAGS_HANDLE_COMMENTS);
+  if (rv<0) {
+    DBG_INFO(0, "here (%d)", rv);
+    GWEN_XMLNode_free(xmlFile);
+    return rv;
+  }
+
+  GWEN_XMLNode_free(xmlFile);
+  return 0;
+}
+
+
+
+void writeSegmentDefinitions(const AQFINTS_SEGMENT_LIST *segmentList, GWEN_XMLNODE *xmlDest)
+{
+  const AQFINTS_SEGMENT *segment;
+
+  segment=AQFINTS_Segment_List_First(segmentList);
+  while(segment) {
+    GWEN_XMLNODE *xmlNode;
+
+    xmlNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "SEGdef");
+    writeSegmentWithElements(segment, xmlNode);
+    GWEN_XMLNode_AddChild(xmlDest, xmlNode);
+
+    segment=AQFINTS_Segment_List_Next(segment);
+  }
+}
+
 
 
 
@@ -231,6 +285,63 @@ void readSegmentChildren(AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlSource)
 
 
 
+void writeSegmentWithElements(const AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlDest)
+{
+  const AQFINTS_ELEMENT *elements;
+
+  writeSegment(segment, xmlDest);
+  elements=AQFINTS_Segment_GetElements(segment);
+  if (elements) {
+    const AQFINTS_ELEMENT *el;
+
+    el=AQFINTS_Element_Tree2_GetFirstChild(elements);
+    while(el) {
+      writeElementTree(el, xmlDest);
+      el=AQFINTS_Element_Tree2_GetNext(el);
+    }
+  }
+}
+
+
+
+void writeElementTree(const AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlDest)
+{
+  AQFINTS_ELEMENT_TYPE elementType;
+  const char *s;
+
+  elementType=AQFINTS_Element_GetElementType(el);
+  switch(elementType) {
+  case AQFINTS_ElementType_Root:   s="root";  break;
+  case AQFINTS_ElementType_Group:  s="GROUP"; break;
+  case AQFINTS_ElementType_De:     s="DE";    break;
+  case AQFINTS_ElementType_Deg:    s="DEG";   break;
+  default:                         s=NULL;    break;
+  }
+  if (s) {
+    GWEN_XMLNODE *xmlNode;
+    const AQFINTS_ELEMENT *elChild;
+
+    xmlNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, s);
+    writeElement(el, xmlNode);
+
+    elChild=AQFINTS_Element_Tree2_GetFirstChild(el);
+    while(elChild) {
+      writeElementTree(elChild, xmlNode);
+      elChild=AQFINTS_Element_Tree2_GetNext(elChild);
+    }
+
+    GWEN_XMLNode_AddChild(xmlDest, xmlNode);
+  }
+}
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * basic object reading/writing
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
 
 void readElement(AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlSource)
 {
@@ -284,7 +395,60 @@ void readElement(AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlSource)
 
   flags|=(GWEN_XMLNode_GetIntProperty(xmlSource, "leftFill", 0)?AQFINTS_ELEMENT_FLAGS_LEFTFILL:0);
   flags|=(GWEN_XMLNode_GetIntProperty(xmlSource, "rightFill", 0)?AQFINTS_ELEMENT_FLAGS_RIGHTFILL:0);
+  flags|=(GWEN_XMLNode_GetIntProperty(xmlSource, "isBin", 0)?AQFINTS_ELEMENT_FLAGS_ISBIN:0);
   AQFINTS_Element_SetFlags(el, flags);
+}
+
+
+
+void writeElement(const AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlDest)
+{
+  const char *s;
+  int i;
+  uint32_t flags;
+
+  assert(el);
+  assert(xmlDest);
+
+  s=AQFINTS_Element_GetName(el);
+  if (s && *s)
+    GWEN_XMLNode_SetProperty(xmlDest, "name", s);
+
+  s=AQFINTS_Element_GetId(el);
+  if (s && *s)
+    GWEN_XMLNode_SetProperty(xmlDest, "id", s);
+
+  s=AQFINTS_Element_GetType(el);
+  if (s && *s)
+    GWEN_XMLNode_SetProperty(xmlDest, "type", s);
+
+  i=AQFINTS_Element_GetMinNum(el);
+  if (i!=1)
+    GWEN_XMLNode_SetIntProperty(xmlDest, "minNum", i);
+
+  i=AQFINTS_Element_GetMaxNum(el);
+  if (i!=1)
+    GWEN_XMLNode_SetIntProperty(xmlDest, "maxNum", i);
+
+  i=AQFINTS_Element_GetMinSize(el);
+  if (i!=0)
+    GWEN_XMLNode_SetIntProperty(xmlDest, "minSize", i);
+
+  i=AQFINTS_Element_GetMaxSize(el);
+  if (i!=-1)
+    GWEN_XMLNode_SetIntProperty(xmlDest, "maxSize", i);
+
+  i=AQFINTS_Element_GetTrustLevel(el);
+  if (i!=0)
+    GWEN_XMLNode_SetIntProperty(xmlDest, "trustLevel", i);
+
+  flags=AQFINTS_Element_GetFlags(el);
+  if (flags & AQFINTS_ELEMENT_FLAGS_LEFTFILL)
+    GWEN_XMLNode_SetIntProperty(xmlDest, "leftFill", 1);
+  if (flags & AQFINTS_ELEMENT_FLAGS_RIGHTFILL)
+    GWEN_XMLNode_SetIntProperty(xmlDest, "rightFill", 1);
+  if (flags & AQFINTS_ELEMENT_FLAGS_ISBIN)
+    GWEN_XMLNode_SetIntProperty(xmlDest, "isBin", 1);
 }
 
 
@@ -311,4 +475,33 @@ void readSegment(AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlSource)
   i=GWEN_XMLNode_GetIntProperty(xmlSource, "protocolVersion", -1);
   AQFINTS_Segment_SetProtocolVersion(segment, i);
 }
+
+
+
+void writeSegment(const AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlDest)
+{
+  const char *s;
+  int i;
+
+  assert(segment);
+  assert(xmlDest);
+
+  s=AQFINTS_Segment_GetId(segment);
+  if (s && *s)
+    GWEN_XMLNode_SetProperty(xmlDest, "id", s);
+
+  s=AQFINTS_Segment_GetCode(segment);
+  if (s && *s)
+    GWEN_XMLNode_SetProperty(xmlDest, "code", s);
+
+  i=AQFINTS_Segment_GetSegmentVersion(segment);
+  if (i!=-1)
+    GWEN_XMLNode_SetIntProperty(xmlDest, "segmentVersion", i);
+
+  i=AQFINTS_Segment_GetProtocolVersion(segment);
+  if (i!=-1)
+    GWEN_XMLNode_SetIntProperty(xmlDest, "protocolVersion", i);
+}
+
+
 

@@ -341,7 +341,7 @@ int binRead(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenB
 
       if (lenBinary)
         AQFINTS_Element_SetDataCopy(targetElement, ptrBuf, lenBinary);
-      AQFINTS_Element_AddRuntimeFlags(targetElement, AQFINTS_ELEMENT_RTFLAGS_ISBIN);
+      AQFINTS_Element_AddFlags(targetElement, AQFINTS_ELEMENT_FLAGS_ISBIN);
       ptrBuf+=lenBinary;
       lenBuf-=lenBinary;
       return (int) (origLenBuf-lenBuf);

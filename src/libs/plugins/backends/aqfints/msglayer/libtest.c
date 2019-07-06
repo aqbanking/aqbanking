@@ -90,12 +90,51 @@ int test_readHbci(void)
 
 
 
+int test_saveFile(const char *filenameIn, const char *filenameOut)
+{
+  int rv;
+  AQFINTS_SEGMENT_LIST *segmentList;
+  AQFINTS_ELEMENT *groupTree;
+
+  segmentList=AQFINTS_Segment_List_new();
+  groupTree=AQFINTS_Element_new();
+  AQFINTS_Element_SetElementType(groupTree, AQFINTS_ElementType_Root);
+
+  rv=AQFINTS_Parser_Xml_ReadFile(segmentList, groupTree, filenameIn);
+  if (rv<0) {
+    fprintf(stderr, "Error reading file.\n");
+    AQFINTS_Element_Tree2_free(groupTree);
+    AQFINTS_Segment_List_free(segmentList);
+    return 2;
+  }
+
+  AQFINTS_Parser_SegmentList_ResolveGroups(segmentList, groupTree);
+  AQFINTS_Parser_SegmentList_Normalize(segmentList);
+
+  rv=AQFINTS_Parser_Xml_WriteSegmentDefinitionFile(segmentList, filenameOut);
+  if (rv<0) {
+    fprintf(stderr, "Error writing file (%d).\n", rv);
+    AQFINTS_Element_Tree2_free(groupTree);
+    AQFINTS_Segment_List_free(segmentList);
+    return 2;
+  }
+
+  AQFINTS_Element_Tree2_free(groupTree);
+  AQFINTS_Segment_List_free(segmentList);
+
+  fprintf(stderr, "Success.\n");
+  return 0;
+}
+
+
+
 
 
 int main(int args, char **argv)
 {
   //test_loadFile("example.xml");
-  test_readHbci();
+  //test_readHbci();
+  test_saveFile("example.xml", "example.xml.out");
 
   return 0;
 }

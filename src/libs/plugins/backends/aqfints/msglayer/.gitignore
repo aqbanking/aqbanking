@@ -11,3 +11,5 @@ segment.h
 segment_p.h
 
 libtest
+
+example.xml.out

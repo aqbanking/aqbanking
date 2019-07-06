@@ -179,7 +179,7 @@
           <content>
              const char* $(struct_prefix)_GetDataAsChar(const $(struct_type) *st, const char *defaultValue) {
                if (st-&gt;data.length &amp;&amp; st-&gt;data.pointer &amp;&amp;
-                   !(st-&gt;runtimeFlags &amp; AQFINTS_ELEMENT_RTFLAGS_ISBIN))
+                   !(st-&gt;flags &amp; AQFINTS_ELEMENT_FLAGS_ISBIN))
                  return (const char*) (st-&gt;data.pointer);
                return defaultValue;
              }
@@ -224,12 +224,12 @@
     <defines>
 
       <define id="AQFINTS_ELEMENT_RTFLAGS" prefix="AQFINTS_ELEMENT_RTFLAGS_">
-        <item name="ISBIN"       value="0x00000001" />
      </define>
 
      <define id="AQFINTS_ELEMENT_FLAGS" prefix="AQFINTS_ELEMENT_FLAGS_">
-        <item name="LEFTFILL"    value="0x00000001" />
-        <item name="RIGHTFILL"   value="0x00000002" />
+        <item name="ISBIN"       value="0x00000001" />
+        <item name="LEFTFILL"    value="0x00000002" />
+        <item name="RIGHTFILL"   value="0x00000004" />
      </define>
 
     </defines>
