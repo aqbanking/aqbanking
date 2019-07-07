@@ -53,7 +53,8 @@ libaqfintsmsg_la_SOURCES= $(built_sources) \
   parser_xml.c \
   parser_normalize.c \
   parser_dump.c \
-  parser_hbci.c
+  parser_hbci.c \
+  parser_db.c
 
 
 
