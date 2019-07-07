@@ -38,7 +38,6 @@ static int readString(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uin
 static int readBin(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenBuf);
 static void parseSegHeader(AQFINTS_SEGMENT *segment);
 
-void writeSeg(AQFINTS_SEGMENT *seg, GWEN_BUFFER *destBuf);
 static void writeDegSequence(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf, int elementCount, int *pEndOfLastNonEmptyElement);
 static int writeDeg(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf);
 static void writeDeSequence(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf, int elementCount, int *pEndOfLastNonEmptyElement);
@@ -452,7 +451,7 @@ int writeDeg(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf)
 
     cropPos=endOfLastNonEmptyElement?endOfLastNonEmptyElement:elementStartPos;
 
-    DBG_ERROR(0, "Crop destbuffer: %d->%d", pos, cropPos);
+    DBG_DEBUG(0, "Crop destbuffer: %d->%d", pos, cropPos);
     GWEN_Buffer_Crop(destBuf, 0, cropPos);
   }
 
@@ -482,10 +481,10 @@ void writeDeSequence(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf, int element
       rv=writeDe(childElement, destBuf);
       if (rv>0) {
         *pEndOfLastNonEmptyElement=GWEN_Buffer_GetPos(destBuf);
-        DBG_ERROR(0, "Nonempty element ends at %d", GWEN_Buffer_GetPos(destBuf));
+        DBG_DEBUG(0, "Nonempty element ends at %d", GWEN_Buffer_GetPos(destBuf));
       }
       else {
-        DBG_ERROR(0, "Empty element ends at %d", GWEN_Buffer_GetPos(destBuf));
+        DBG_DEBUG(0, "Empty element ends at %d", GWEN_Buffer_GetPos(destBuf));
       }
     }
     elementCount++;

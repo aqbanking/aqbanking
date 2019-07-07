@@ -189,7 +189,8 @@ int test_writeSegments()
   GWEN_Buffer_Dump(destBuf, 2);
 
   if (strlen(testData)!=GWEN_Buffer_GetUsedBytes(destBuf)) {
-    fprintf(stderr, "ERROR: Size differs (orig=%d, returned=%d)\n", strlen(testData), GWEN_Buffer_GetUsedBytes(destBuf));
+    fprintf(stderr, "ERROR: Size differs (orig=%d, returned=%d)\n",
+	    (int) strlen(testData), GWEN_Buffer_GetUsedBytes(destBuf));
   }
   if (memcmp(testData, GWEN_Buffer_GetStart(destBuf), GWEN_Buffer_GetUsedBytes(destBuf))) {
     fprintf(stderr, "ERROR: Data differs\n");
