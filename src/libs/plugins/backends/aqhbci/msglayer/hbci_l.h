@@ -88,10 +88,8 @@ void AH_HBCI_free(AH_HBCI *hbci);
  */
 /*@{*/
 const char *AH_HBCI_GetProductName(const AH_HBCI *hbci);
-void AH_HBCI_SetProductName(AH_HBCI *hbci, const char *s);
 
 const char *AH_HBCI_GetProductVersion(const AH_HBCI *hbci);
-void AH_HBCI_SetProductVersion(AH_HBCI *hbci, const char *s);
 
 AB_BANKING *AH_HBCI_GetBankingApi(const AH_HBCI *hbci);
 AB_PROVIDER *AH_HBCI_GetProvider(const AH_HBCI *hbci);

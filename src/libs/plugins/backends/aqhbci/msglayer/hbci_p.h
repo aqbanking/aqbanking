@@ -31,7 +31,6 @@ struct AH_HBCI {
   AB_BANKING *banking;
   AB_PROVIDER *provider;
 
-  char *productName;
   char *productVersion;
 
   GWEN_XMLNODE *defs;
