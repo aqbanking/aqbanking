@@ -462,8 +462,6 @@ int writeDeg(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf)
 
   /* set size and pos */
   elementSize=GWEN_Buffer_GetPos(destBuf)-elementStartPos;
-  AQFINTS_Element_SetStartPos(element, elementStartPos);
-  AQFINTS_Element_SetSize(element, elementSize);
   return (elementSize>0)?1:0;
 }
 
@@ -524,8 +522,6 @@ int writeDe(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf)
   }
 
   elementSize=GWEN_Buffer_GetPos(destBuf)-elementStartPos;
-  AQFINTS_Element_SetStartPos(element, elementStartPos);
-  AQFINTS_Element_SetSize(element, elementSize);
   return (elementSize>0)?1:0;
 }
 
