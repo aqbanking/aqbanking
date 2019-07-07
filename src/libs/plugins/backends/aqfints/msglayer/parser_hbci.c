@@ -59,8 +59,10 @@ int AQFINTS_Parser_Hbci_ReadBuffer(AQFINTS_SEGMENT_LIST *targetSegmentList,
                                    const uint8_t *ptrBuf,
                                    uint32_t lenBuf)
 {
+  const uint8_t *origPtrBuf;
   uint32_t origLenBuf;
 
+  origPtrBuf=ptrBuf;
   origLenBuf=lenBuf;
 
   while(lenBuf && *ptrBuf) {
@@ -68,7 +70,6 @@ int AQFINTS_Parser_Hbci_ReadBuffer(AQFINTS_SEGMENT_LIST *targetSegmentList,
     int rv;
 
     targetSegment=AQFINTS_Segment_new();
-
 
     rv=readSeg(targetSegment, ptrBuf, lenBuf);
     if (rv<0) {
@@ -78,6 +79,10 @@ int AQFINTS_Parser_Hbci_ReadBuffer(AQFINTS_SEGMENT_LIST *targetSegmentList,
     }
     parseSegHeader(targetSegment);
     AQFINTS_Segment_List_Add(targetSegment, targetSegmentList);
+
+    /* set pos and size */
+    AQFINTS_Segment_SetStartPos(targetSegment, ptrBuf-origPtrBuf);
+    AQFINTS_Segment_SetSize(targetSegment, rv);
 
     /* advance pointer and size */
     lenBuf-=rv;

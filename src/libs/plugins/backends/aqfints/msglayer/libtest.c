@@ -188,6 +188,9 @@ int test_writeSegments()
 
   GWEN_Buffer_Dump(destBuf, 2);
 
+  fprintf(stderr, "Segments:\n");
+  AQFINTS_Parser_DumpSegmentList(segmentList, 2);
+
   if (strlen(testData)!=GWEN_Buffer_GetUsedBytes(destBuf)) {
     fprintf(stderr, "ERROR: Size differs (orig=%d, returned=%d)\n",
 	    (int) strlen(testData), GWEN_Buffer_GetUsedBytes(destBuf));
