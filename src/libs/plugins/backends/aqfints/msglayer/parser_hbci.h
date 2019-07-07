@@ -20,6 +20,10 @@
 int AQFINTS_Parser_Hbci_ReadBuffer(AQFINTS_SEGMENT_LIST *targetSegmentList,
                                    const uint8_t *ptrBuf,
                                    uint32_t lenBuf);
+void AQFINTS_Parser_Hbci_WriteBuffer(AQFINTS_SEGMENT_LIST *segmentList, GWEN_BUFFER *destBuf);
+
+void AQFINTS_Parser_Hbci_WriteSegment(AQFINTS_SEGMENT *segment, GWEN_BUFFER *destBuf);
+
 
 #endif
 

@@ -162,6 +162,48 @@ int test_saveFile2(const char *filenameOut)
 
 
 
+int test_writeSegments()
+{
+  const char *testData=
+    "HNSHK:2:4+PIN:2+942+20190625002302+1+1+1::3333333333333333333333333333+1+1:20190625:002302+1:999:1+6:10:16+280:49999924:1111111111111111111:S:1:1'"
+    "HKIDN:3:2+280:49999924+1111111111111111111+2222222222222222222222222222+1'"
+    "HKVVB:4:3+4+0+1+AQHBCI+5.99'"
+    "HNSHA:5:2+20190625002302++444444444'"
+    "TEST1:6:1+testdata1::@12@123456789012'";
+  int rv;
+  AQFINTS_SEGMENT_LIST *segmentList;
+  GWEN_BUFFER *destBuf;
+
+  segmentList=AQFINTS_Segment_List_new();
+
+  rv=AQFINTS_Parser_Hbci_ReadBuffer(segmentList, (const uint8_t*) testData, strlen(testData));
+  if (rv<0) {
+    fprintf(stderr, "Error reading HBCI data.\n");
+    AQFINTS_Segment_List_free(segmentList);
+    return 2;
+  }
+
+  destBuf=GWEN_Buffer_new(0, 256, 0, 1);
+  AQFINTS_Parser_Hbci_WriteBuffer(segmentList, destBuf);
+
+  GWEN_Buffer_Dump(destBuf, 2);
+
+  if (strlen(testData)!=GWEN_Buffer_GetUsedBytes(destBuf)) {
+    fprintf(stderr, "ERROR: Size differs (orig=%d, returned=%d)\n", strlen(testData), GWEN_Buffer_GetUsedBytes(destBuf));
+  }
+  if (memcmp(testData, GWEN_Buffer_GetStart(destBuf), GWEN_Buffer_GetUsedBytes(destBuf))) {
+    fprintf(stderr, "ERROR: Data differs\n");
+  }
+
+  GWEN_Buffer_free(destBuf);
+  AQFINTS_Segment_List_free(segmentList);
+
+  fprintf(stderr, "Success.\n");
+  return 0;
+}
+
+
+
 
 
 int main(int args, char **argv)
@@ -169,7 +211,8 @@ int main(int args, char **argv)
   //test_loadFile("example.xml");
   //test_readHbci();
   //test_saveFile1("example.xml", "example.xml.out");
-  test_saveFile2("example.xml.out");
+  //test_saveFile2("example.xml.out");
+  test_writeSegments();
 
   return 0;
 }

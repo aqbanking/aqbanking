@@ -184,6 +184,20 @@
         <flags>volatile with_flags</flags>
         <access>public</access>
       </member>
+
+      <member name="startPos" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>volatile</flags>
+        <access>public</access>
+      </member>
+
+      <member name="size" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>volatile</flags>
+        <access>public</access>
+      </member>
       
     </members>
     
