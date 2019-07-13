@@ -16,6 +16,7 @@
 #include "msglayer/segment.h"
 
 
+int AQFINTS_Parser_Db_ReadSegment(AQFINTS_SEGMENT *definitionSegment, AQFINTS_SEGMENT *dataSegment, GWEN_DB_NODE *db);
 
 
 #endif

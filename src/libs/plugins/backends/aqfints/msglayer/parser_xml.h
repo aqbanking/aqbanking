@@ -22,6 +22,10 @@ int AQFINTS_Parser_Xml_ReadFile(AQFINTS_SEGMENT_LIST *segmentList,
                                 AQFINTS_ELEMENT *groupTree,
                                 const char *filename);
 
+int AQFINTS_Parser_Xml_ReadBuffer(AQFINTS_SEGMENT_LIST *segmentList,
+                                  AQFINTS_ELEMENT *groupTree,
+                                  const char *dataString);
+
 int AQFINTS_Parser_Xml_WriteSegmentDefinitionFile(const AQFINTS_SEGMENT_LIST *segmentList, const char *filename);
 
 

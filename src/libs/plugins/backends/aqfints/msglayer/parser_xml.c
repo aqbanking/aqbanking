@@ -94,6 +94,40 @@ int AQFINTS_Parser_Xml_ReadFile(AQFINTS_SEGMENT_LIST *segmentList,
 
 
 
+int AQFINTS_Parser_Xml_ReadBuffer(AQFINTS_SEGMENT_LIST *segmentList,
+                                  AQFINTS_ELEMENT *groupTree,
+                                  const char *dataString)
+{
+  GWEN_XMLNODE *xmlNodeFile;
+  int rv;
+
+  xmlNodeFile=GWEN_XMLNode_fromString(dataString, strlen(dataString),
+                                      GWEN_XML_FLAGS_HANDLE_COMMENTS |
+                                      GWEN_XML_FLAGS_HANDLE_HEADERS |
+                                      GWEN_XML_FLAGS_SIMPLE);
+  if (xmlNodeFile==NULL) {
+    DBG_ERROR(0, "Error reading XML data from buffer");
+    return GWEN_ERROR_BAD_DATA;
+  }
+  else {
+    GWEN_XMLNODE *xmlNodeFints;
+
+    xmlNodeFints=GWEN_XMLNode_FindFirstTag(xmlNodeFile, "FinTS", NULL, NULL);
+    if (xmlNodeFints) {
+      readGroupsAndSegs(segmentList, groupTree, xmlNodeFints);
+    }
+    else {
+      DBG_ERROR(0, "No FinTS group.");
+      GWEN_XMLNode_free(xmlNodeFile);
+      return GWEN_ERROR_BAD_DATA;
+    }
+  }
+  GWEN_XMLNode_free(xmlNodeFile);
+  return 0;
+}
+
+
+
 int AQFINTS_Parser_Xml_WriteSegmentDefinitionFile(const AQFINTS_SEGMENT_LIST *segmentList, const char *filename)
 {
   GWEN_XMLNODE *xmlFile;
