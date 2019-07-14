@@ -1,4 +1,4 @@
-SUBDIRS=parser
+SUBDIRS=parser xml
 
 AM_CFLAGS=-DBUILDING_AQFINTS @visibility_cflags@
 
@@ -39,7 +39,7 @@ noinst_HEADERS= $(build_headers)
 libaqfintsmsg_la_SOURCES=dummy.c
 
 
-libaqfintsmsg_la_LIBADD=libafmsgparser.la
+libaqfintsmsg_la_LIBADD=parser/libafmsgparser.la
 
 
 
