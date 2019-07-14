@@ -1,0 +1,23 @@
+<?xml?>
+
+
+<FinTS>
+
+  <SEGs>
+
+    <SEGdef id="DialogEnd" 
+            code="HKEND" 
+            segmentVersion="1"
+            protocolVersion="300"
+    >
+      <DEG>
+        <GROUP name="head"     type="SegHead" />
+      </DEG>
+      <DE    name="dialogid" type="ascii" maxsize="128" />
+    </SEGdef>
+
+
+  </SEGs>
+
+
+</FinTS>

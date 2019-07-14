@@ -1,0 +1,73 @@
+<?xml?>
+
+
+<FinTS>
+
+  <GROUPs>
+
+    <GROUPdef id="language" version="1" >
+      <DE     name="language"       type="num"      maxsize="3"  minnum="1" maxnum="9" />
+    </GROUPdef>
+  
+  
+    <GROUPdef id="version" version="1" >
+      <DE     name="version"        type="num"      maxsize="3"  minnum="1" maxnum="9" />
+    </GROUPdef>
+
+
+    <GROUPdef id="needtan" version="1">
+      <!-- "Angabe: Braucht Geschaeftsvorfall TAN?" -->
+      <DE     name="job"            type="an"       maxsize="6" />
+      <DE     name="needTan"        type="an"       maxsize="1" />
+    </GROUPdef>
+
+
+  </GROUPs>
+
+
+  <SEGs>
+
+   <SEGdef id="BPD" 
+           code="HIBPA" 
+           segmentVersion="3"
+           protocolVersion="300"
+   >
+     <GROUP   name="head"           type="SegHead" />
+     <DE      name="version"        type="num"      maxsize="3" />
+     <GROUP                         type="kik"      version="1" />
+     <DE      name="name"           type="ascii"    maxsize="60" />
+     <DE      name="jobtypespermsg" type="num"      maxsize="3" />
+     <GROUP   name="languages"      type="language" version="1" />
+     <GROUP   name="versions"       type="version"  />
+     <DE      name="maxmsgsize"     type="num"      maxsize="4"  minnum="0" />
+     <DE      name="minTimeout"     type="num"      maxsize="4"  minnum="0" />
+     <DE      name="maxTimeout"     type="num"      maxsize="4"  minnum="0" />
+   </SEGdef>
+
+
+   <SEGdef id="PinTanBPD" 
+           code="HIPINS" 
+           segmentVersion="1"
+           protocolVersion="300"
+   >
+     <DEG>
+       <GROUP   name="head"           type="SegHead" />
+     </DEG>
+     <DE      name="jobspermsg"     type="num"      maxsize="3" />
+     <DE      name="minsigs"        type="num"      maxsize="3" />
+     <DE      name="securityClass"  type="num"      minsize="1"  maxsize="1" minnum="0" />
+     <DEG>
+       <DE    name="minPinLen"      type="num"      maxsize="2"  minnum="0" /> 
+       <DE    name="maxPinLen"      type="num"      maxsize="2"  minnum="0" /> 
+       <DE    name="maxTanLen"      type="num"      maxsize="2"  minnum="0" /> 
+       <DE    name="userIdText"     type="ascii"    maxsize="30" minnum="0" /> 
+       <DE    name="customerIdText" type="ascii"    maxsize="30" minnum="0" /> 
+       <GROUP name="job"            type="NeedTAN"  minnum="0"   maxnum="999" version="1" />
+     </DEG>
+   </SEGdef>
+
+
+  </SEGs>
+
+
+</FinTS>

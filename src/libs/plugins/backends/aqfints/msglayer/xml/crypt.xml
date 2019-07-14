@@ -1,0 +1,169 @@
+<?xml?>
+
+
+<FinTS>
+
+
+  <GROUPs>
+
+  
+    <GROUPdef id="keyname" version="1">
+      <!-- Schluesselname -->
+      <GROUP                       type="kik"   version="1" />
+      <DE name="userid"            type="ascii" maxsize="35" trustlevel="3" />
+      <DE name="keytype"           type="alpha" maxsize="1" minsize="1" />
+      <DE name="keynum"            type="num"   maxsize="3" />
+      <DE name="keyversion"        type="num"   maxsize="3" />
+    </GROUPdef>
+
+
+    <GROUPdef id="secstamp" version="1">
+      <!-- Sicherheits-/ Gueltigkeitsdatum und -uhrzeit -->
+      <DE name="stampcode"         type="num"   maxsize="1" />
+      <DE name="date"              type="date"  minsize="8" maxsize="8" minnum="0" />
+      <DE name="time"              type="time"  minsize="6" maxsize="6" minnum="0" />
+    </GROUPdef>
+  
+  
+    <GROUPdef id="cert" version="1">
+      <!-- Zertifikat -->
+      <DE name="type"              type="num"   maxsize="1" />
+      <DE name="cert"              type="bin"   maxsize="2048" />
+    </GROUPdef>
+  
+  
+    <GROUPdef id="SecProfile" version="1">
+      <!-- Sicherheitsprofil, ab FinTS3 -->
+      <DE name="code"              type="an"    maxsize="16" />
+      <DE name="version"           type="num"   maxsize="3" maxnum="9" />
+    </GROUPdef>
+  
+  
+    <GROUPdef id="key" version="1">
+      <!-- oeffentlicher Schluessel -->
+      <DE name="purpose"           type="num"   maxsize="3" />
+      <DE name="opmode"            type="num"   maxsize="3" />
+      <DE name="type"              type="num"   maxsize="3" />
+      <DE name="modulus"           type="bin"   maxsize="512" />
+      <DE name="modname"           type="num"   maxsize="3" />
+      <DE name="exponent"          type="bin"   maxsize="512" />
+      <DE name="expname"           type="num"   maxsize="3" />
+    </GROUPdef>
+
+
+    <GROUPdef id="HashAlgo" version="1">
+      <!-- Hash-Algo -->
+      <DE name="purpose"           type="an"    maxsize="3" />
+      <DE name="algo"              type="an"    maxsize="3" />
+      <DE name="pname"             type="an"    maxsize="3" />
+      <DE name="param"             type="bin"   maxsize="512" minnum="0" />
+    </GROUPdef>
+
+
+
+  </GROUPs>
+
+
+  <SEGs>
+
+
+    <SEGdef id="SigHead" 
+            segmentVersion="4" 
+            protocolVersion="300"
+            code="HNSHK" 
+    >
+      <!-- "Signaturkopf" -->
+      <DEG>
+        <GROUP name="head"             type="SegHead"  />
+      </DEG>
+      <DEG>
+        <GROUP name="secProfile"       type="SecProfile" />
+      </DEG>
+      <DE    name="function"         type="num"        maxsize="3" />
+      <DE    name="ctrlref"          type="ascii"      maxsize="14" />
+      <DE    name="area"             type="num"        maxsize="3" />
+      <DE    name="role"             type="num"        maxsize="3" />
+      <DEG>
+        <GROUP name="SecDetails"       type="SecDetails" version="1"   />
+      </DEG>
+      <DE    name="signseq"          type="num"        maxsize="16" />
+      <DEG>
+        <GROUP name="SecStamp"         type="secstamp"   version="1" />
+      </DEG>
+      <DEG>
+        <GROUP name="HashAlgo"         type="hashalgo"   version="1" />
+      </DEG>
+      <DEG>
+        <GROUP name="SignAlgo"         type="SignAlgo"   version="1" />
+      </DEG>
+      <DEG>
+        <GROUP name="key"              type="nkeyname"   version="1" trustlevel="3" />
+      </DEG>
+      <DEG>
+        <GROUP name="cert"             type="cert"       minnum="0" version="1" />
+      </DEG>
+      
+    </SEGdef>
+
+
+    <SEGdef id="SigTail" 
+            code="HNSHA" 
+            segmentVersion="2" 
+            protocolVersion="300"
+    >
+      <!-- "Signaturabschluss" -->
+      <DEG>
+        <GROUP name="head"             type="SegHead" />
+      </DEG>
+      <DE    name="ctrlref"          type="ascii"      maxsize="14" />
+      <DE    name="signature_unused" type="bin"        maxsize="512" minnum="0" />
+      <DEG>
+        <GROUP>
+          <!-- maxsize should be 6 here and type should be AN, but then the 
+               logmanager has problems -->
+          <DE  name="pin"              type="ascii"      maxsize="35" />
+          <DE  name="tan"              type="an"         maxsize="35" minnum="0" />
+        </GROUP>
+      </DEG>
+      
+    </SEGdef>
+
+
+
+    <SEGdef id="CryptHead" 
+            code="HNVSK" 
+            segmentVersion="3" 
+            protocolVersion="300"
+    >
+      <!-- "Verschluesselungskopf fuer PIN/TAN" -->
+      <DEG>
+        <GROUP name="head"             type="SegHead" />
+      </DEG>
+      <DEG>
+        <GROUP name="secProfile"       type="SecProfile" />
+      </DEG>
+      <DE      name="function"         type="num" maxsize="3" />
+      <DE      name="role"             type="num" maxsize="3" />
+      <DEG>
+        <GROUP name="SecDetails"       type="SecDetails" version="1" />
+      </DEG>
+      <DEG>
+        <GROUP name="SecStamp"         type="secstamp" version="1" />
+      </DEG>
+      <DEG>
+        <GROUP name="CryptAlgo"        type="CryptAlgo" version="1" />
+      </DEG>
+      <DEG>
+        <GROUP name="key"              type="CryptKeyName" version="1" trustlevel="3" />
+      </DEG>
+      <DE      name="compress"         type="an" />
+      <DEG>
+        <GROUP name="cert"             type="cert" minnum="0" version="1" />
+      </DEG>
+    </SEGdef>
+
+
+  </SEGs>
+
+
+</FinTS>
