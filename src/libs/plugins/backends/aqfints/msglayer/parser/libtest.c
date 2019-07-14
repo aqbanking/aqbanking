@@ -607,7 +607,7 @@ int test_segmentToDb5()
       "<SEGs>"
 	"<SEGdef id=\"PinTanBPD\" code=\"HIPINS\" segmentVersion=\"1\" protocolVersion=\"300\">"
 	  "<DEG>"
-	    "<GROUP   name=\"head\"           type=\"SegHead\" />"
+	    "<GROUP   name=\"head\"         type=\"SegHead\" />"
 	  "</DEG>"
 	  "<DE      name=\"jobspermsg\"     type=\"num\"      maxsize=\"3\" />"
 	  "<DE      name=\"minsigs\"        type=\"num\"      maxsize=\"3\" />"
