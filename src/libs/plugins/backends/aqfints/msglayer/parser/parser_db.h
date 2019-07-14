@@ -12,8 +12,8 @@
 #define AQFINTS_PARSER_DB_H
 
 
-#include "msglayer/element.h"
-#include "msglayer/segment.h"
+#include "msglayer/parser/element.h"
+#include "msglayer/parser/segment.h"
 
 
 int AQFINTS_Parser_Db_ReadSegment(AQFINTS_SEGMENT *definitionSegment, AQFINTS_SEGMENT *dataSegment, GWEN_DB_NODE *db);

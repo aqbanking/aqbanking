@@ -481,6 +481,102 @@ int test_segmentToDb3()
 
 
 
+int test_segmentToDb4()
+{
+  AQFINTS_SEGMENT_LIST *segmentListDef;
+  AQFINTS_SEGMENT_LIST *segmentListData;
+  AQFINTS_ELEMENT *groupTree;
+  GWEN_DB_NODE *dbData;
+  int rv;
+  const char *defData=
+    "<FinTS>"
+       "<SEGs>"
+         "<SEGdef id=\"Segment1\" code=\"seg1\" segmentVersion=1 protocolVersion=300 >"
+           "<DEG name=\"deg1.1\">"
+             "<DE name=\"de1.1.1\" type=\"num\"></DE>"
+             "<DE name=\"de1.1.2\" type=\"an\"></DE>"
+           "</DEG>"
+           "<DEG>"
+             "<DE name=\"de1.2.1\" type=\"an\"></DE>"
+             "<DE name=\"de1.2.2\" type=\"an\"></DE>"
+             "<DE name=\"de1.2.3\" type=\"an\" minnum=0></DE>"
+           "</DEG>"
+           "<DEG name=\"deg2\" minnum=0>"
+             "<DE name=\"de2.2.1\" type=\"an\"></DE>"
+             "<DE name=\"de2.2.2\" type=\"an\"></DE>"
+             "<DE name=\"de2.2.3\" type=\"an\" minnum=0></DE>"
+           "</DEG>"
+         "</SEGdef>"
+      "</SEGs>"
+    "</FinTS>";
+
+  const char *elemData=
+    "<FinTS>"
+      "<SEGs>"
+        "<SEGdef id=\"Segment1\" code=\"seg1\" segmentVersion=1 protocolVersion=300 >"
+          "<DEG>"
+           "<DE>123</DE>"
+           "<DE>data 1.1.2</DE>"
+          "</DEG>"
+          "<DEG>"
+           "<DE>data 1.2.1</DE>"
+           "<DE>data 1.2.2</DE>"
+          "</DEG>"
+        "</SEGdef>"
+      "</SEGs>"
+    "</FinTS>";
+
+  groupTree=AQFINTS_Element_new();
+  AQFINTS_Element_SetElementType(groupTree, AQFINTS_ElementType_Root);
+
+  segmentListDef=AQFINTS_Segment_List_new();
+  segmentListData=AQFINTS_Segment_List_new();
+
+  rv=AQFINTS_Parser_Xml_ReadBuffer(segmentListDef, groupTree, defData);
+  if (rv<0) {
+    fprintf(stderr, "Error reading definitions (%d).\n", rv);
+    AQFINTS_Element_Tree2_free(groupTree);
+    AQFINTS_Segment_List_free(segmentListData);
+    AQFINTS_Segment_List_free(segmentListDef);
+    return 2;
+  }
+
+  rv=AQFINTS_Parser_Xml_ReadBuffer(segmentListData, groupTree, elemData);
+  if (rv<0) {
+    fprintf(stderr, "Error reading data (%d).\n", rv);
+    AQFINTS_Element_Tree2_free(groupTree);
+    AQFINTS_Segment_List_free(segmentListData);
+    AQFINTS_Segment_List_free(segmentListDef);
+    return 2;
+  }
+
+  dbData=GWEN_DB_Group_new("data");
+
+  rv=AQFINTS_Parser_Db_ReadSegment(AQFINTS_Segment_List_First(segmentListDef),
+                                   AQFINTS_Segment_List_First(segmentListData),
+                                   dbData);
+  if (rv<0) {
+    fprintf(stderr, "Error parsing data.\n");
+    GWEN_DB_Group_free(dbData);
+    AQFINTS_Element_Tree2_free(groupTree);
+    AQFINTS_Segment_List_free(segmentListData);
+    AQFINTS_Segment_List_free(segmentListDef);
+    return 2;
+  }
+
+  GWEN_DB_Dump(dbData, 2);
+
+  GWEN_DB_Group_free(dbData);
+  AQFINTS_Element_Tree2_free(groupTree);
+  AQFINTS_Segment_List_free(segmentListData);
+  AQFINTS_Segment_List_free(segmentListDef);
+
+  fprintf(stderr, "Success.\n");
+  return 0;
+}
+
+
+
 
 int main(int args, char **argv)
 {
@@ -489,7 +585,7 @@ int main(int args, char **argv)
   //test_saveFile1("example.xml", "example.xml.out");
   //test_saveFile2("example.xml.out");
   //test_writeSegments();
-  test_segmentToDb3();
+  test_segmentToDb4();
 
   return 0;
 }

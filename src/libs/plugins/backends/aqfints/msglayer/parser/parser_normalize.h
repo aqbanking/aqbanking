@@ -12,7 +12,7 @@
 #define AQFINTS_PARSER_NORMALIZE_H
 
 
-#include "msglayer/segment.h"
+#include "msglayer/parser/segment.h"
 
 #include <gwenhywfar/xml.h>
 

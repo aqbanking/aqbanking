@@ -13,8 +13,8 @@
 #define AQFINTS_PARSER_H
 
 
-#include "msglayer/element.h"
-#include "msglayer/segment.h"
+#include "msglayer/parser/element.h"
+#include "msglayer/parser/segment.h"
 
 #include <gwenhywfar/xml.h>
 

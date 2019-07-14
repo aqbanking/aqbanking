@@ -8,21 +8,19 @@
  * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
-#ifndef AQFINTS_PARSER_HBCI_H
-#define AQFINTS_PARSER_HBCI_H
+
+#ifndef AQFINTS_PARSER_P_H
+#define AQFINTS_PARSER_P_H
 
 
-#include "msglayer/element.h"
-#include "msglayer/segment.h"
+#include "msglayer/parser/parser.h"
 
 
 
-int AQFINTS_Parser_Hbci_ReadBuffer(AQFINTS_SEGMENT_LIST *targetSegmentList,
-                                   const uint8_t *ptrBuf,
-                                   uint32_t lenBuf);
-void AQFINTS_Parser_Hbci_WriteBuffer(AQFINTS_SEGMENT_LIST *segmentList, GWEN_BUFFER *destBuf);
-
-void AQFINTS_Parser_Hbci_WriteSegment(AQFINTS_SEGMENT *segment, GWEN_BUFFER *destBuf);
+struct AQFINTS_PARSER {
+  AQFINTS_SEGMENT_LIST *segmentList;
+  AQFINTS_ELEMENT *groupTree;
+};
 
 
 #endif
