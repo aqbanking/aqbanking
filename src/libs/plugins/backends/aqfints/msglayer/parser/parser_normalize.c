@@ -99,6 +99,8 @@ void normalizeSequence(AQFINTS_ELEMENT *elementTree)
 
       elementDeg=AQFINTS_Element_new();
       AQFINTS_Element_SetElementType(elementDeg, AQFINTS_ElementType_Deg);
+      AQFINTS_Element_SetMinNum(elementDeg, AQFINTS_Element_GetMinNum(element));
+      AQFINTS_Element_SetMaxNum(elementDeg, AQFINTS_Element_GetMaxNum(element));
       AQFINTS_Element_Tree2_Replace(element, elementDeg);
       AQFINTS_Element_Tree2_AddChild(elementDeg, element);
     }

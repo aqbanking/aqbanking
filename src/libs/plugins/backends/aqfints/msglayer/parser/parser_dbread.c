@@ -12,7 +12,7 @@
 # include <config.h>
 #endif
 
-#include "parser_db.h"
+#include "parser_dbread.h"
 
 #include <gwenhywfar/debug.h>
 
@@ -250,7 +250,6 @@ int readDeGroup(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT **pElementDa
 
   while(elementData) {
     AQFINTS_ELEMENT *childDefinitionData;
-    AQFINTS_ELEMENT *childElementData;
     int rv;
     GWEN_DB_NODE *dbForDeg;
 
@@ -271,8 +270,10 @@ int readDeGroup(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT **pElementDa
       DBG_INFO(0, "here (%d)", rv);
       return rv;
     }
+#if 0
     if (elementData)
       elementData=AQFINTS_Element_Tree2_GetNext(elementData);
+#endif
     idx++;
     if (maxNum && idx>=maxNum)
       break;

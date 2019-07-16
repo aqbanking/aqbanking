@@ -8,9 +8,8 @@
  * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
-#ifndef AQFINTS_PARSER_DB_H
-#define AQFINTS_PARSER_DB_H
-
+#ifndef AQFINTS_PARSER_DBREAD_H
+#define AQFINTS_PARSER_DBREAD_H
 
 #include "msglayer/parser/element.h"
 #include "msglayer/parser/segment.h"
