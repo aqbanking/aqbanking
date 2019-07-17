@@ -214,6 +214,31 @@
           </content>
         </inline>
 
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_SetDataAsInt($(struct_type) *st, int value);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             void $(struct_prefix)_SetDataAsInt($(struct_type) *st, int value) { \n
+               char numbuf[32];
+               int i;
+
+               i=snprintf(numbuf, sizeof(numbuf)-1, "%i", value);
+               assert(i&lt;=(sizeof(numbuf)-1));
+               numbuf[sizeof(numbuf)-1]=0;
+               $(struct_prefix)_SetTextDataCopy(st, numbuf);
+             }
+          </content>
+        </inline>
+
       
       </inlines>
 

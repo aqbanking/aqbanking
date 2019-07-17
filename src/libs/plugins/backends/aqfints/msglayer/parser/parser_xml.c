@@ -99,7 +99,6 @@ int AQFINTS_Parser_Xml_ReadBuffer(AQFINTS_SEGMENT_LIST *segmentList,
                                   const char *dataString)
 {
   GWEN_XMLNODE *xmlNodeFile;
-  int rv;
 
   xmlNodeFile=GWEN_XMLNode_fromString(dataString, strlen(dataString),
                                       GWEN_XML_FLAGS_HANDLE_COMMENTS |

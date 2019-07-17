@@ -14,6 +14,8 @@
 
 #include "parser_dbread.h"
 
+#include "parser.h"
+
 #include <gwenhywfar/debug.h>
 
 
@@ -360,21 +362,18 @@ int readDe(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT **pElementData, G
 
   while(elementData) {
     if (sDbName && *sDbName) {
-      if (strcasecmp(sType, "AN")==0 ||
-	  strcasecmp(sType, "float")==0 ||
-	  strcasecmp(sType, "alpha")==0 ||
-	  strcasecmp(sType, "ascii")==0) {
-	const char *sData;
+      if (AQFINTS_Parser_IsCharType(sType)) {
+        const char *sData;
 
 	sData=AQFINTS_Element_GetDataAsChar(elementData, NULL);
 	if (sData && *sData)
 	  GWEN_DB_SetCharValue(db, 0, sDbName, sData);
       }
-      else if (strcasecmp(sType, "num")==0) {
-	GWEN_DB_SetIntValue(db, 0, sDbName, AQFINTS_Element_GetDataAsInt(elementData, 0));
+      else if (AQFINTS_Parser_IsIntType(sType)) {
+        GWEN_DB_SetIntValue(db, 0, sDbName, AQFINTS_Element_GetDataAsInt(elementData, 0));
       }
-      else if (strcasecmp(sType, "bin")==0) {
-	const uint8_t *val;
+      else if (AQFINTS_Parser_IsBinType(sType)) {
+        const uint8_t *val;
 	uint32_t valSize;
 
 	val=AQFINTS_Element_GetDataPointer(elementData);

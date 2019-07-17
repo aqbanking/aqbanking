@@ -136,6 +136,39 @@ AQFINTS_ELEMENT *AQFINTS_Parser_FindGroupInTree(AQFINTS_ELEMENT *groupTree, cons
 
 
 
+int AQFINTS_Parser_IsCharType(const char *sType)
+{
+  if (sType && *sType) {
+    if (strcasecmp(sType, "AN")==0 ||
+        strcasecmp(sType, "float")==0 ||
+        strcasecmp(sType, "alpha")==0 ||
+        strcasecmp(sType, "ascii")==0)
+      return 1;
+  }
+  return 0;
+}
+
+
+
+int AQFINTS_Parser_IsIntType(const char *sType)
+{
+  if (sType && *sType) {
+    if (strcasecmp(sType, "num")==0)
+      return 1;
+  }
+  return 0;
+}
+
+
+
+int AQFINTS_Parser_IsBinType(const char *sType)
+{
+  if (sType && *sType) {
+    if (strcasecmp(sType, "bin")==0)
+      return 1;
+  }
+  return 0;
+}
 
 
 
