@@ -24,7 +24,6 @@ int test_loadFile(const char *filename)
   AQFINTS_SEGMENT_LIST *segmentList;
   AQFINTS_ELEMENT *groupTree;
 
-
   segmentList=AQFINTS_Segment_List_new();
   groupTree=AQFINTS_Element_new();
   AQFINTS_Element_SetElementType(groupTree, AQFINTS_ElementType_Root);

@@ -15,11 +15,13 @@
 
 #include "msglayer/parser/parser.h"
 
+#include <gwenhywfar/stringlist.h>
+
 
 
 struct AQFINTS_PARSER {
   AQFINTS_SEGMENT_LIST *segmentList;
-  AQFINTS_ELEMENT *groupTree;
+  GWEN_STRINGLIST *pathList;
 };
 
 

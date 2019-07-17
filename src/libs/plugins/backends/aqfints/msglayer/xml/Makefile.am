@@ -1,10 +1,10 @@
 
-xmldatadir=$(aqbanking_pkgdatadir)/backends/aqfints
-xmldata_DATA=\
-  basic.xml \
-  crypt.xml \
-  ident.xml \
-  prepare.xml \
-  dialogend.xml
+fintsdatadir=$(aqbanking_pkgdatadir)/backends/aqfints
+fintsdata_DATA=\
+  basic.fints \
+  crypt.fints \
+  ident.fints \
+  prepare.fints \
+  dialogend.fints
 
 
