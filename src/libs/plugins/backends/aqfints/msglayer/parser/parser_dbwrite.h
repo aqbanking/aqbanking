@@ -17,7 +17,7 @@
 #include <gwenhywfar/db.h>
 
 
-int AQFINTS_Parser_Db_WriteSegment(AQFINTS_SEGMENT *segmentDefinition, AQFINTS_ELEMENT *elementDataParent, GWEN_DB_NODE *db);
+int AQFINTS_Parser_Db_WriteSegment(AQFINTS_SEGMENT *segmentDefinition, AQFINTS_SEGMENT *segmentData, GWEN_DB_NODE *db);
 
 
 #endif

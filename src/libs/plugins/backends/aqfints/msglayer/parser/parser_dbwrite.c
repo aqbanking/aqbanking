@@ -43,14 +43,23 @@ static int writeBinElement(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *
 
 
 
-int AQFINTS_Parser_Db_WriteSegment(AQFINTS_SEGMENT *segmentDefinition, AQFINTS_ELEMENT *elementDataParent, GWEN_DB_NODE *db)
+int AQFINTS_Parser_Db_WriteSegment(AQFINTS_SEGMENT *segmentDefinition, AQFINTS_SEGMENT *segmentData, GWEN_DB_NODE *db)
 {
   AQFINTS_ELEMENT *elementDefinition;
   AQFINTS_ELEMENT *childDefinitionData;
+  AQFINTS_ELEMENT *elementDataParent;
   int rv;
 
   elementDefinition=AQFINTS_Segment_GetElements(segmentDefinition);
   assert(elementDefinition);
+
+  elementDataParent=AQFINTS_Segment_GetElements(segmentData);
+  if (elementDataParent==NULL) {
+    elementDataParent=AQFINTS_Element_new();
+    AQFINTS_Element_SetElementType(elementDataParent, AQFINTS_ElementType_Root);
+    AQFINTS_Segment_SetElements(segmentData, elementDataParent);
+  }
+  assert(elementDataParent);
 
   childDefinitionData=AQFINTS_Element_Tree2_GetFirstChild(elementDefinition);
   if (childDefinitionData==NULL) {
@@ -157,7 +166,14 @@ int writeDegGroup(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDa
 
 int writeDeg(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDataParent, GWEN_DB_NODE *db)
 {
-  return writeDeGroup(elementDefinition, elementDataParent, db);
+  AQFINTS_ELEMENT *elementData;
+
+  elementData=AQFINTS_Element_new();
+  AQFINTS_Element_SetElementType(elementData, AQFINTS_ElementType_Deg);
+  AQFINTS_Element_SetTrustLevel(elementData, AQFINTS_Element_GetTrustLevel(elementDefinition));
+  AQFINTS_Element_Tree2_AddChild(elementDataParent, elementData);
+
+  return writeDeGroup(elementDefinition, elementData, db);
 }
 
 
@@ -227,12 +243,12 @@ int writeDeGroup(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDat
     }
   }
   else {
-    /* if no group name given the occurrence must be 1 (i.e. manNum=1, maxNum=1)
+    /* if no group name given the occurrence must be 0 or 1 (i.e. maxNum=1)
      * because with no group name we wouldn't know how to determine the number of instances
      * of the group to generate
      */
-    if (minNum!=1 || maxNum!=1) {
-      DBG_ERROR(0, "Definition has no name while minNum and/or maxNum !=1");
+    if (maxNum!=1) {
+      DBG_ERROR(0, "Definition has no name while maxNum!=1");
       return GWEN_ERROR_BAD_DATA;
     }
 
@@ -305,6 +321,17 @@ int writeCharElement(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elemen
   if (minNum && idx<minNum) {
     DBG_ERROR(0, "Too few elements in DB (%d < %d)", idx, minNum);
   }
+
+  /* create empty DE element if no data */
+  if (idx==0) {
+    AQFINTS_ELEMENT *elementData;
+
+    elementData=AQFINTS_Element_new();
+    AQFINTS_Element_SetElementType(elementData, AQFINTS_ElementType_De);
+    AQFINTS_Element_SetType(elementData, AQFINTS_Element_GetType(elementDefinition));
+    AQFINTS_Element_SetTrustLevel(elementData, AQFINTS_Element_GetTrustLevel(elementDefinition));
+    AQFINTS_Element_Tree2_AddChild(elementDataParent, elementData);
+  }
   return 0;
 }
 
@@ -347,6 +374,18 @@ int writeIntElement(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *element
   if (minNum && idx<minNum) {
     DBG_ERROR(0, "Too few elements in DB (%d < %d)", idx, minNum);
   }
+
+  /* create empty DE element if no data */
+  if (idx==0) {
+    AQFINTS_ELEMENT *elementData;
+
+    elementData=AQFINTS_Element_new();
+    AQFINTS_Element_SetElementType(elementData, AQFINTS_ElementType_De);
+    AQFINTS_Element_SetType(elementData, AQFINTS_Element_GetType(elementDefinition));
+    AQFINTS_Element_SetTrustLevel(elementData, AQFINTS_Element_GetTrustLevel(elementDefinition));
+    AQFINTS_Element_Tree2_AddChild(elementDataParent, elementData);
+  }
+
   return 0;
 }
 
@@ -397,6 +436,18 @@ int writeBinElement(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *element
   if (minNum && idx<minNum) {
     DBG_ERROR(0, "Too few elements in DB (%d < %d)", idx, minNum);
   }
+
+  /* create empty DE element if no data */
+  if (idx==0) {
+    AQFINTS_ELEMENT *elementData;
+
+    elementData=AQFINTS_Element_new();
+    AQFINTS_Element_SetElementType(elementData, AQFINTS_ElementType_De);
+    AQFINTS_Element_SetType(elementData, AQFINTS_Element_GetType(elementDefinition));
+    AQFINTS_Element_SetTrustLevel(elementData, AQFINTS_Element_GetTrustLevel(elementDefinition));
+    AQFINTS_Element_Tree2_AddChild(elementDataParent, elementData);
+  }
+
   return 0;
 }
 

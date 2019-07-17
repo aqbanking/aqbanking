@@ -30,6 +30,9 @@ static void normalizeSegment(AQFINTS_SEGMENT *segment);
 static void resolveGroups(AQFINTS_ELEMENT *elementTree, AQFINTS_ELEMENT *groupTree);
 static void segmentResolveGroups(AQFINTS_SEGMENT *segment, AQFINTS_ELEMENT *groupTree);
 
+static void removeTrailingEmptyDegChildren(AQFINTS_ELEMENT *elementTree);
+static void removeTrailingEmptyDeChildren(AQFINTS_ELEMENT *elementTree);
+
 
 
 
@@ -61,6 +64,27 @@ void AQFINTS_Parser_SegmentList_Normalize(AQFINTS_SEGMENT_LIST *segmentList)
   while(segment) {
     normalizeSegment(segment);
     segment=AQFINTS_Segment_List_Next(segment);
+  }
+}
+
+
+
+void AQFINTS_Parser_Segment_RemoveTrailingEmptyElements(AQFINTS_SEGMENT *segment)
+{
+  AQFINTS_ELEMENT *elementTree;
+
+  elementTree=AQFINTS_Segment_GetElements(segment);
+  if (elementTree) {
+    AQFINTS_ELEMENT *element;
+
+    /* shorten content of DEG's */
+    element=AQFINTS_Element_Tree2_GetFirstChild(elementTree);
+    while(element) {
+      removeTrailingEmptyDeChildren(element);
+      element=AQFINTS_Element_Tree2_GetNext(element);
+    }
+    /* shorten the list of DEG */
+    removeTrailingEmptyDegChildren(elementTree);
   }
 }
 
@@ -164,6 +188,45 @@ void resolveGroups(AQFINTS_ELEMENT *elementTree, AQFINTS_ELEMENT *groupTree)
 
 
 
+
+void removeTrailingEmptyDegChildren(AQFINTS_ELEMENT *elementTree)
+{
+  AQFINTS_ELEMENT *element;
+  
+  while((element=AQFINTS_Element_Tree2_GetLastChild(elementTree))) {
+    if (AQFINTS_Element_GetElementType(element)==AQFINTS_ElementType_Deg) {
+      if (AQFINTS_Element_Tree2_GetFirstChild(element)==NULL) {
+        AQFINTS_Element_Tree2_Unlink(element);
+        AQFINTS_Element_free(element);
+      }
+      else
+        break;
+    }
+    else
+      break;
+  }
+}
+
+
+
+void removeTrailingEmptyDeChildren(AQFINTS_ELEMENT *elementTree)
+{
+  AQFINTS_ELEMENT *element;
+  
+  while((element=AQFINTS_Element_Tree2_GetLastChild(elementTree))) {
+    if (AQFINTS_Element_GetElementType(element)==AQFINTS_ElementType_De) {
+      if (AQFINTS_Element_GetDataLength(element)==0 ||
+          AQFINTS_Element_GetDataPointer(element)==NULL) {
+        AQFINTS_Element_Tree2_Unlink(element);
+        AQFINTS_Element_free(element);
+      }
+      else
+        break;
+    }
+    else
+      break;
+  }
+}
 
 
 
