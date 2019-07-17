@@ -190,6 +190,58 @@ AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentById(const AQFINTS_PARSER *parser, co
 
 
 
+AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefByCode(const AQFINTS_PARSER *parser, const char *id, int jobVersion, int protocolVersion)
+{
+  AQFINTS_JOBDEF *jobDef;
+
+  jobDef=AQFINTS_JobDef_List_First(parser->jobDefList);
+  while(jobDef) {
+    if ((jobVersion==0 || jobVersion==AQFINTS_JobDef_GetJobVersion(jobDef)) &&
+        (protocolVersion==0 || protocolVersion==AQFINTS_JobDef_GetProtocolVersion(jobDef))){
+      if (!(id && *id))
+        return jobDef;
+      else {
+        const char *s;
+
+        s=AQFINTS_JobDef_GetCode(jobDef);
+        if (s && *s && strcasecmp(s, id)==0)
+          return jobDef;
+      }
+    }
+    jobDef=AQFINTS_JobDef_List_Next(jobDef);
+  }
+
+  return NULL;
+}
+
+
+
+AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefById(const AQFINTS_PARSER *parser, const char *id, int jobVersion, int protocolVersion)
+{
+  AQFINTS_JOBDEF *jobDef;
+
+  jobDef=AQFINTS_JobDef_List_First(parser->jobDefList);
+  while(jobDef) {
+    if ((jobVersion==0 || jobVersion==AQFINTS_JobDef_GetJobVersion(jobDef)) &&
+        (protocolVersion==0 || protocolVersion==AQFINTS_JobDef_GetProtocolVersion(jobDef))){
+      if (!(id && *id))
+        return jobDef;
+      else {
+        const char *s;
+
+        s=AQFINTS_JobDef_GetId(jobDef);
+        if (s && *s && strcasecmp(s, id)==0)
+          return jobDef;
+      }
+    }
+    jobDef=AQFINTS_JobDef_List_Next(jobDef);
+  }
+
+  return NULL;
+}
+
+
+
 int AQFINTS_Parser_ReadIntoDb(AQFINTS_PARSER *parser,
                               const uint8_t *ptrBuf,
                               uint32_t lenBuf,

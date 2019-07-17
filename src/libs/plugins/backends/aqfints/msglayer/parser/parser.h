@@ -161,5 +161,36 @@ AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentByCode(const AQFINTS_PARSER *parser, 
 
 
 
+/** @name Find Job Definitions
+ *
+ */
+/*@{*/
+
+/**
+ * Find job definition by id.
+ *
+ * @return object found (NULL otherwise)
+ * @param parser parser object
+ * @param id job id (see @ref AQFINTS_JobDef_GetId)
+ * @param jobVersion segment version (0 matches any)
+ * @param protocolVersion protocol version (0 matches any)
+ */
+AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefByCode(const AQFINTS_PARSER *parser, const char *id, int jobVersion, int protocolVersion);
+
+
+/**
+ * Find job definition by code.
+ *
+ * @return object  found (NULL otherwise)
+ * @param parser parser object
+ * @param code HBCI segment code (like "HNSHK", see @ref AQFINTS_JobDef_GetCode)
+ * @param jobVersion segment version (0 matches any)
+ * @param protocolVersion protocol version (0 matches any)
+ */
+AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefById(const AQFINTS_PARSER *parser, const char *id, int jobVersion, int protocolVersion);
+/*@}*/
+
+
+
 #endif
 
