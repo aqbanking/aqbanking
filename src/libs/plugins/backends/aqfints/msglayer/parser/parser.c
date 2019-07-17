@@ -136,7 +136,33 @@ int AQFINTS_Parser_ReadFiles(AQFINTS_PARSER *parser)
 
 
 
-AQFINTS_SEGMENT *AQFINTS_Parser_FindSegment(const AQFINTS_PARSER *parser, const char *id, int segmentVersion, int protocolVersion)
+AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentByCode(const AQFINTS_PARSER *parser, const char *id, int segmentVersion, int protocolVersion)
+{
+  AQFINTS_SEGMENT *segment;
+
+  segment=AQFINTS_Segment_List_First(parser->segmentList);
+  while(segment) {
+    if ((segmentVersion==0 || segmentVersion==AQFINTS_Segment_GetSegmentVersion(segment)) &&
+        (protocolVersion==0 || protocolVersion==AQFINTS_Segment_GetProtocolVersion(segment))){
+      if (!(id && *id))
+        return segment;
+      else {
+        const char *s;
+
+        s=AQFINTS_Segment_GetCode(segment);
+        if (s && *s && strcasecmp(s, id)==0)
+          return segment;
+      }
+    }
+    segment=AQFINTS_Segment_List_Next(segment);
+  }
+
+  return NULL;
+}
+
+
+
+AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentById(const AQFINTS_PARSER *parser, const char *id, int segmentVersion, int protocolVersion)
 {
   AQFINTS_SEGMENT *segment;
 
@@ -229,7 +255,7 @@ int AQFINTS_Parser_ReadSegmentListToDb(AQFINTS_PARSER *parser,
       AQFINTS_SEGMENT *defSegment;
 
       /* TODO: set protocol version somehow */
-      defSegment=AQFINTS_Parser_FindSegment(parser, sCode, segmentVersion, 0);
+      defSegment=AQFINTS_Parser_FindSegmentByCode(parser, sCode, segmentVersion, 0);
       if (defSegment) {
         int rv;
 

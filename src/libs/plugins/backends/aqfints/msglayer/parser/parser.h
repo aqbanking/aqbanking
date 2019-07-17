@@ -27,10 +27,18 @@ typedef struct AQFINTS_PARSER AQFINTS_PARSER;
  *
  */
 /*@{*/
+/**
+ * Constructor.
+ */
 AQFINTS_PARSER *AQFINTS_Parser_new();
 
+
+/**
+ * Destructor.
+ */
 void AQFINTS_Parser_free(AQFINTS_PARSER *parser);
 /*@}*/
+
 
 
 /** @name Read HBCI/FinTS Segments
@@ -73,6 +81,7 @@ int AQFINTS_Parser_ReadIntoSegmentList(AQFINTS_PARSER *parser,
                                        const uint8_t *ptrBuf,
                                        uint32_t lenBuf);
 
+
 /**
  * Parses a segment list into a GWEN_DB_NODE.
  *
@@ -90,7 +99,6 @@ int AQFINTS_Parser_ReadSegmentListToDb(AQFINTS_PARSER *parser,
 
 
 
-
 /** @name Load Definition Files
  *
  */
@@ -105,6 +113,7 @@ int AQFINTS_Parser_ReadSegmentListToDb(AQFINTS_PARSER *parser,
  * @param path folder to add
  */
 void AQFINTS_Parser_AddPath(AQFINTS_PARSER *parser, const char *path);
+
 
 /**
  * Read files from the folders specified via @ref AQFINTS_Parser_AddPath().
@@ -124,7 +133,29 @@ int AQFINTS_Parser_ReadFiles(AQFINTS_PARSER *parser);
  *
  */
 /*@{*/
-AQFINTS_SEGMENT *AQFINTS_Parser_FindSegment(const AQFINTS_PARSER *parser, const char *id, int segmentVersion, int protocolVersion);
+
+/**
+ * Find segment by id.
+ *
+ * @return segment found (NULL otherwise)
+ * @param parser parser object
+ * @param id segment id (see @ref AQFINTS_Segment_GetId)
+ * @param segmentVersion segment version (0 matches any)
+ * @param protocolVersion protocol version (0 matches any)
+ */
+AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentById(const AQFINTS_PARSER *parser, const char *id, int segmentVersion, int protocolVersion);
+
+
+/**
+ * Find segment by code.
+ *
+ * @return segment found (NULL otherwise)
+ * @param parser parser object
+ * @param code HBCI segment code (like "HNSHK", see @ref AQFINTS_Segment_GetCode)
+ * @param segmentVersion segment version (0 matches any)
+ * @param protocolVersion protocol version (0 matches any)
+ */
+AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentByCode(const AQFINTS_PARSER *parser, const char *code, int segmentVersion, int protocolVersion);
 /*@}*/
 
 
