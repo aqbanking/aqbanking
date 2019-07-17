@@ -13,8 +13,7 @@
 #endif
 
 #include "parser_dbread.h"
-
-#include "parser.h"
+#include "parser_internal.h"
 
 #include <gwenhywfar/debug.h>
 

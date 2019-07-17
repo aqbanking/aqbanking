@@ -96,7 +96,8 @@
     <defines>
 
       <define id="AQFINTS_SEGMENT_RTFLAGS" prefix="AQFINTS_SEGMENT_RTFLAGS_">
-     </define>
+        <item name="PARSED"       value="0x00000001" />
+      </define>
 
      <define id="AQFINTS_SEGMENT_FLAGS" prefix="AQFINTS_SEGMENT_FLAGS_">
      </define>

@@ -25,6 +25,8 @@
  */
 
 
+static AQFINTS_ELEMENT *findGroupInTree(AQFINTS_ELEMENT *groupTree, const char *id, int version);
+
 static void normalizeSequence(AQFINTS_ELEMENT *elementTree);
 static void normalizeSegment(AQFINTS_SEGMENT *segment);
 static void resolveGroups(AQFINTS_ELEMENT *elementTree, AQFINTS_ELEMENT *groupTree);
@@ -88,6 +90,30 @@ void AQFINTS_Parser_Segment_RemoveTrailingEmptyElements(AQFINTS_SEGMENT *segment
   }
 }
 
+
+
+AQFINTS_ELEMENT *findGroupInTree(AQFINTS_ELEMENT *groupTree, const char *id, int version)
+{
+  AQFINTS_ELEMENT *group;
+
+  group=AQFINTS_Element_Tree2_GetFirstChild(groupTree);
+  while(group) {
+    if (version==0 || version==AQFINTS_Element_GetVersion(group)) {
+      if (!(id && *id))
+        return group;
+      else {
+        const char *s;
+
+        s=AQFINTS_Element_GetId(group);
+        if (s && *s && strcasecmp(s, id)==0)
+          return group;
+      }
+    }
+    group=AQFINTS_Element_Tree2_GetNext(group);
+  }
+
+  return NULL;
+}
 
 
 
@@ -157,7 +183,7 @@ void resolveGroups(AQFINTS_ELEMENT *elementTree, AQFINTS_ELEMENT *groupTree)
         int iGroupVersion;
 
         iGroupVersion=AQFINTS_Element_GetVersion(element);
-        groupDefElement=AQFINTS_Parser_FindGroupInTree(groupTree, sGroupType, iGroupVersion);
+        groupDefElement=findGroupInTree(groupTree, sGroupType, iGroupVersion);
         if (groupDefElement==NULL) {
           DBG_ERROR(0, "Group \"%s:%d\" not found", sGroupType, iGroupVersion);
           assert(0);

@@ -23,13 +23,20 @@ typedef struct AQFINTS_PARSER AQFINTS_PARSER;
 
 
 
+/** @name Constructor, Destructor
+ *
+ */
+/*@{*/
 AQFINTS_PARSER *AQFINTS_Parser_new();
 
 void AQFINTS_Parser_free(AQFINTS_PARSER *parser);
+/*@}*/
 
 
-AQFINTS_SEGMENT *AQFINTS_Parser_FindSegment(const AQFINTS_PARSER *parser, const char *id, int segmentVersion, int protocolVersion);
-
+/** @name Read HBCI/FinTS Segments
+ *
+ */
+/*@{*/
 
 int AQFINTS_Parser_ReadIntoDb(AQFINTS_PARSER *parser,
                               const uint8_t *ptrBuf,
@@ -45,35 +52,28 @@ int AQFINTS_Parser_ReadIntoSegmentList(AQFINTS_PARSER *parser,
 int AQFINTS_Parser_ReadSegmentListToDb(AQFINTS_PARSER *parser,
                                        AQFINTS_SEGMENT_LIST *segmentList,
                                        GWEN_DB_NODE *db);
+/*@}*/
 
 
 
+
+/** @name Load Definition Files
+ *
+ */
+/*@{*/
 void AQFINTS_Parser_AddPath(AQFINTS_PARSER *parser, const char *path);
 int AQFINTS_Parser_ReadFiles(AQFINTS_PARSER *parser);
+/*@}*/
 
 
 
-AQFINTS_SEGMENT_LIST *AQFINTS_Parser_GetSegmentList(const AQFINTS_PARSER *parser);
-AQFINTS_ELEMENT *AQFINTS_Parser_GetGroupTree(const AQFINTS_PARSER *parser);
-
-
-AQFINTS_ELEMENT *AQFINTS_Parser_FindGroupInTree(AQFINTS_ELEMENT *groupTree, const char *id, int version);
-
-
-/**
- * @return 1 if sType referes to a char type, 0 otherwise
+/** @name Find Segments
+ *
  */
-int AQFINTS_Parser_IsCharType(const char *sType);
+/*@{*/
+AQFINTS_SEGMENT *AQFINTS_Parser_FindSegment(const AQFINTS_PARSER *parser, const char *id, int segmentVersion, int protocolVersion);
+/*@}*/
 
-/**
- * @return 1 if sType referes to an int type, 0 otherwise
- */
-int AQFINTS_Parser_IsIntType(const char *sType);
-
-/**
- * @return 1 if sType referes to a binary type, 0 otherwise
- */
-int AQFINTS_Parser_IsBinType(const char *sType);
 
 
 #endif

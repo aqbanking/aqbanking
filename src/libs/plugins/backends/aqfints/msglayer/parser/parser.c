@@ -136,14 +136,6 @@ int AQFINTS_Parser_ReadFiles(AQFINTS_PARSER *parser)
 
 
 
-AQFINTS_SEGMENT_LIST *AQFINTS_Parser_GetSegmentList(const AQFINTS_PARSER *parser)
-{
-  assert(parser);
-  return parser->segmentList;
-}
-
-
-
 AQFINTS_SEGMENT *AQFINTS_Parser_FindSegment(const AQFINTS_PARSER *parser, const char *id, int segmentVersion, int protocolVersion)
 {
   AQFINTS_SEGMENT *segment;
@@ -166,67 +158,6 @@ AQFINTS_SEGMENT *AQFINTS_Parser_FindSegment(const AQFINTS_PARSER *parser, const 
   }
 
   return NULL;
-}
-
-
-
-AQFINTS_ELEMENT *AQFINTS_Parser_FindGroupInTree(AQFINTS_ELEMENT *groupTree, const char *id, int version)
-{
-  AQFINTS_ELEMENT *group;
-
-  group=AQFINTS_Element_Tree2_GetFirstChild(groupTree);
-  while(group) {
-    if (version==0 || version==AQFINTS_Element_GetVersion(group)) {
-      if (!(id && *id))
-        return group;
-      else {
-        const char *s;
-
-        s=AQFINTS_Element_GetId(group);
-        if (s && *s && strcasecmp(s, id)==0)
-          return group;
-      }
-    }
-    group=AQFINTS_Element_Tree2_GetNext(group);
-  }
-
-  return NULL;
-}
-
-
-
-int AQFINTS_Parser_IsCharType(const char *sType)
-{
-  if (sType && *sType) {
-    if (strcasecmp(sType, "AN")==0 ||
-        strcasecmp(sType, "float")==0 ||
-        strcasecmp(sType, "alpha")==0 ||
-        strcasecmp(sType, "ascii")==0)
-      return 1;
-  }
-  return 0;
-}
-
-
-
-int AQFINTS_Parser_IsIntType(const char *sType)
-{
-  if (sType && *sType) {
-    if (strcasecmp(sType, "num")==0)
-      return 1;
-  }
-  return 0;
-}
-
-
-
-int AQFINTS_Parser_IsBinType(const char *sType)
-{
-  if (sType && *sType) {
-    if (strcasecmp(sType, "bin")==0)
-      return 1;
-  }
-  return 0;
 }
 
 
@@ -307,7 +238,7 @@ int AQFINTS_Parser_ReadSegmentListToDb(AQFINTS_PARSER *parser,
           DBG_ERROR(0, "Error reading segment \"%s\" (version %d) into DB (%d)", sCode, segmentVersion, rv);
           return rv;
         }
-
+        AQFINTS_Segment_AddRuntimeFlags(segment, AQFINTS_SEGMENT_RTFLAGS_PARSED);
         segmentsRead++;
       }
       else {

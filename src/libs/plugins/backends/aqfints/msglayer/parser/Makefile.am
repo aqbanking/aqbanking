@@ -55,7 +55,8 @@ libafmsgparser_la_SOURCES= $(built_sources) \
   parser_dump.c \
   parser_hbci.c \
   parser_dbread.c \
-  parser_dbwrite.c
+  parser_dbwrite.c \
+  parser_internal.c
 
 
 
