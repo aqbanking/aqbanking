@@ -34,6 +34,7 @@ AQFINTS_PARSER *AQFINTS_Parser_new()
 
   GWEN_NEW_OBJECT(AQFINTS_PARSER, parser);
 
+  parser->jobDefList=AQFINTS_JobDef_List_new();
   parser->segmentList=AQFINTS_Segment_List_new();
   parser->pathList=GWEN_StringList_new();
 
@@ -47,6 +48,7 @@ void AQFINTS_Parser_free(AQFINTS_PARSER *parser)
   if (parser) {
     GWEN_StringList_free(parser->pathList);
     AQFINTS_Segment_List_free(parser->segmentList);
+    AQFINTS_JobDef_List_free(parser->jobDefList);
 
     GWEN_FREE_OBJECT(parser);
   }
@@ -107,7 +109,7 @@ int AQFINTS_Parser_ReadFiles(AQFINTS_PARSER *parser)
     if (s && *s) {
       int rv;
 
-      rv=AQFINTS_Parser_Xml_ReadFile(parser->segmentList, groupTree, s);
+      rv=AQFINTS_Parser_Xml_ReadFile(parser->jobDefList, parser->segmentList, groupTree, s);
       if (rv<0) {
         DBG_ERROR(0, "Error reading file \"%s\" (%d), ignoring", s, rv);
       }

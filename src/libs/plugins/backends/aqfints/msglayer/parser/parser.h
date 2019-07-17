@@ -15,6 +15,7 @@
 
 #include "msglayer/parser/element.h"
 #include "msglayer/parser/segment.h"
+#include "msglayer/parser/jobdef.h"
 
 #include <gwenhywfar/xml.h>
 

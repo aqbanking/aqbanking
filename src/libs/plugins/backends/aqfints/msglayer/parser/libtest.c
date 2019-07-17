@@ -21,14 +21,16 @@
 int test_loadFile(const char *filename)
 {
   int rv;
+  AQFINTS_JOBDEF_LIST *jobDefList;
   AQFINTS_SEGMENT_LIST *segmentList;
   AQFINTS_ELEMENT *groupTree;
 
+  jobDefList=AQFINTS_JobDef_List_new();
   segmentList=AQFINTS_Segment_List_new();
   groupTree=AQFINTS_Element_new();
   AQFINTS_Element_SetElementType(groupTree, AQFINTS_ElementType_Root);
 
-  rv=AQFINTS_Parser_Xml_ReadFile(segmentList, groupTree, filename);
+  rv=AQFINTS_Parser_Xml_ReadFile(jobDefList, segmentList, groupTree, filename);
   if (rv<0) {
     fprintf(stderr, "Error reading file.\n");
     AQFINTS_Element_Tree2_free(groupTree);
@@ -94,14 +96,16 @@ int test_readHbci(void)
 int test_saveFile1(const char *filenameIn, const char *filenameOut)
 {
   int rv;
+  AQFINTS_JOBDEF_LIST *jobDefList;
   AQFINTS_SEGMENT_LIST *segmentList;
   AQFINTS_ELEMENT *groupTree;
 
+  jobDefList=AQFINTS_JobDef_List_new();
   segmentList=AQFINTS_Segment_List_new();
   groupTree=AQFINTS_Element_new();
   AQFINTS_Element_SetElementType(groupTree, AQFINTS_ElementType_Root);
 
-  rv=AQFINTS_Parser_Xml_ReadFile(segmentList, groupTree, filenameIn);
+  rv=AQFINTS_Parser_Xml_ReadFile(jobDefList, segmentList, groupTree, filenameIn);
   if (rv<0) {
     fprintf(stderr, "Error reading file.\n");
     AQFINTS_Element_Tree2_free(groupTree);
@@ -211,6 +215,7 @@ int test_writeSegments()
 
 int test_segmentToDb1()
 {
+  AQFINTS_JOBDEF_LIST *jobDefList;
   AQFINTS_SEGMENT_LIST *segmentListDef;
   AQFINTS_SEGMENT_LIST *segmentListData;
   AQFINTS_ELEMENT *groupTree;
@@ -251,10 +256,11 @@ int test_segmentToDb1()
   groupTree=AQFINTS_Element_new();
   AQFINTS_Element_SetElementType(groupTree, AQFINTS_ElementType_Root);
 
+  jobDefList=AQFINTS_JobDef_List_new();
   segmentListDef=AQFINTS_Segment_List_new();
   segmentListData=AQFINTS_Segment_List_new();
 
-  rv=AQFINTS_Parser_Xml_ReadBuffer(segmentListDef, groupTree, defData);
+  rv=AQFINTS_Parser_Xml_ReadBuffer(jobDefList, segmentListDef, groupTree, defData);
   if (rv<0) {
     fprintf(stderr, "Error reading definitions (%d).\n", rv);
     AQFINTS_Element_Tree2_free(groupTree);
@@ -263,7 +269,7 @@ int test_segmentToDb1()
     return 2;
   }
 
-  rv=AQFINTS_Parser_Xml_ReadBuffer(segmentListData, groupTree, elemData);
+  rv=AQFINTS_Parser_Xml_ReadBuffer(jobDefList, segmentListData, groupTree, elemData);
   if (rv<0) {
     fprintf(stderr, "Error reading data (%d).\n", rv);
     AQFINTS_Element_Tree2_free(groupTree);
@@ -301,6 +307,7 @@ int test_segmentToDb1()
 
 int test_segmentToDb2()
 {
+  AQFINTS_JOBDEF_LIST *jobDefList;
   AQFINTS_SEGMENT_LIST *segmentListDef;
   AQFINTS_SEGMENT_LIST *segmentListData;
   AQFINTS_ELEMENT *groupTree;
@@ -342,10 +349,11 @@ int test_segmentToDb2()
   groupTree=AQFINTS_Element_new();
   AQFINTS_Element_SetElementType(groupTree, AQFINTS_ElementType_Root);
 
+  jobDefList=AQFINTS_JobDef_List_new();
   segmentListDef=AQFINTS_Segment_List_new();
   segmentListData=AQFINTS_Segment_List_new();
 
-  rv=AQFINTS_Parser_Xml_ReadBuffer(segmentListDef, groupTree, defData);
+  rv=AQFINTS_Parser_Xml_ReadBuffer(jobDefList, segmentListDef, groupTree, defData);
   if (rv<0) {
     fprintf(stderr, "Error reading definitions (%d).\n", rv);
     AQFINTS_Element_Tree2_free(groupTree);
@@ -354,7 +362,7 @@ int test_segmentToDb2()
     return 2;
   }
 
-  rv=AQFINTS_Parser_Xml_ReadBuffer(segmentListData, groupTree, elemData);
+  rv=AQFINTS_Parser_Xml_ReadBuffer(jobDefList, segmentListData, groupTree, elemData);
   if (rv<0) {
     fprintf(stderr, "Error reading data (%d).\n", rv);
     AQFINTS_Element_Tree2_free(groupTree);
@@ -392,6 +400,7 @@ int test_segmentToDb2()
 
 int test_segmentToDb3()
 {
+  AQFINTS_JOBDEF_LIST *jobDefList;
   AQFINTS_SEGMENT_LIST *segmentListDef;
   AQFINTS_SEGMENT_LIST *segmentListData;
   AQFINTS_ELEMENT *groupTree;
@@ -433,10 +442,11 @@ int test_segmentToDb3()
   groupTree=AQFINTS_Element_new();
   AQFINTS_Element_SetElementType(groupTree, AQFINTS_ElementType_Root);
 
+  jobDefList=AQFINTS_JobDef_List_new();
   segmentListDef=AQFINTS_Segment_List_new();
   segmentListData=AQFINTS_Segment_List_new();
 
-  rv=AQFINTS_Parser_Xml_ReadBuffer(segmentListDef, groupTree, defData);
+  rv=AQFINTS_Parser_Xml_ReadBuffer(jobDefList, segmentListDef, groupTree, defData);
   if (rv<0) {
     fprintf(stderr, "Error reading definitions (%d).\n", rv);
     AQFINTS_Element_Tree2_free(groupTree);
@@ -445,7 +455,7 @@ int test_segmentToDb3()
     return 2;
   }
 
-  rv=AQFINTS_Parser_Xml_ReadBuffer(segmentListData, groupTree, elemData);
+  rv=AQFINTS_Parser_Xml_ReadBuffer(jobDefList, segmentListData, groupTree, elemData);
   if (rv<0) {
     fprintf(stderr, "Error reading data (%d).\n", rv);
     AQFINTS_Element_Tree2_free(groupTree);
@@ -483,6 +493,7 @@ int test_segmentToDb3()
 
 int test_segmentToDb4()
 {
+  AQFINTS_JOBDEF_LIST *jobDefList;
   AQFINTS_SEGMENT_LIST *segmentListDef;
   AQFINTS_SEGMENT_LIST *segmentListData;
   AQFINTS_ELEMENT *groupTree;
@@ -529,10 +540,11 @@ int test_segmentToDb4()
   groupTree=AQFINTS_Element_new();
   AQFINTS_Element_SetElementType(groupTree, AQFINTS_ElementType_Root);
 
+  jobDefList=AQFINTS_JobDef_List_new();
   segmentListDef=AQFINTS_Segment_List_new();
   segmentListData=AQFINTS_Segment_List_new();
 
-  rv=AQFINTS_Parser_Xml_ReadBuffer(segmentListDef, groupTree, defData);
+  rv=AQFINTS_Parser_Xml_ReadBuffer(jobDefList, segmentListDef, groupTree, defData);
   if (rv<0) {
     fprintf(stderr, "Error reading definitions (%d).\n", rv);
     AQFINTS_Element_Tree2_free(groupTree);
@@ -541,7 +553,7 @@ int test_segmentToDb4()
     return 2;
   }
 
-  rv=AQFINTS_Parser_Xml_ReadBuffer(segmentListData, groupTree, elemData);
+  rv=AQFINTS_Parser_Xml_ReadBuffer(jobDefList, segmentListData, groupTree, elemData);
   if (rv<0) {
     fprintf(stderr, "Error reading data (%d).\n", rv);
     AQFINTS_Element_Tree2_free(groupTree);
@@ -579,6 +591,7 @@ int test_segmentToDb4()
 
 int test_segmentToDb5()
 {
+  AQFINTS_JOBDEF_LIST *jobDefList;
   AQFINTS_SEGMENT_LIST *segmentListDef;
   AQFINTS_SEGMENT_LIST *segmentListData;
   AQFINTS_ELEMENT *groupTree;
@@ -639,8 +652,9 @@ int test_segmentToDb5()
 
   /* read definition data */
   groupTree=AQFINTS_Element_new();
+  jobDefList=AQFINTS_JobDef_List_new();
   segmentListDef=AQFINTS_Segment_List_new();
-  rv=AQFINTS_Parser_Xml_ReadBuffer(segmentListDef, groupTree, defData);
+  rv=AQFINTS_Parser_Xml_ReadBuffer(jobDefList, segmentListDef, groupTree, defData);
   if (rv<0) {
     fprintf(stderr, "Error reading definitions (%d).\n", rv);
     AQFINTS_Element_Tree2_free(groupTree);
@@ -682,6 +696,7 @@ int test_segmentToDb5()
 
 int test_segmentFromDb()
 {
+  AQFINTS_JOBDEF_LIST *jobDefList;
   AQFINTS_SEGMENT_LIST *segmentListDef;
   AQFINTS_SEGMENT_LIST *segmentListData;
   AQFINTS_SEGMENT *segmentOut;
@@ -745,8 +760,9 @@ int test_segmentFromDb()
   /* read definition data */
   fprintf(stderr, "Reading definition data\n");
   groupTree=AQFINTS_Element_new();
+  jobDefList=AQFINTS_JobDef_List_new();
   segmentListDef=AQFINTS_Segment_List_new();
-  rv=AQFINTS_Parser_Xml_ReadBuffer(segmentListDef, groupTree, defData);
+  rv=AQFINTS_Parser_Xml_ReadBuffer(jobDefList, segmentListDef, groupTree, defData);
   if (rv<0) {
     fprintf(stderr, "Error reading definitions (%d).\n", rv);
     AQFINTS_Element_Tree2_free(groupTree);
@@ -805,6 +821,7 @@ int test_segmentFromDb()
 
 int test_segmentFromDb2()
 {
+  AQFINTS_JOBDEF_LIST *jobDefList;
   AQFINTS_SEGMENT_LIST *segmentListDef;
   AQFINTS_SEGMENT_LIST *segmentListData;
   AQFINTS_SEGMENT *segmentOut;
@@ -869,8 +886,9 @@ int test_segmentFromDb2()
   /* read definition data */
   fprintf(stderr, "Reading definition data\n");
   groupTree=AQFINTS_Element_new();
+  jobDefList=AQFINTS_JobDef_List_new();
   segmentListDef=AQFINTS_Segment_List_new();
-  rv=AQFINTS_Parser_Xml_ReadBuffer(segmentListDef, groupTree, defData);
+  rv=AQFINTS_Parser_Xml_ReadBuffer(jobDefList, segmentListDef, groupTree, defData);
   if (rv<0) {
     fprintf(stderr, "Error reading definitions (%d).\n", rv);
     AQFINTS_Element_Tree2_free(groupTree);

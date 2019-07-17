@@ -26,9 +26,10 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-static void readGroupsAndSegs(AQFINTS_SEGMENT_LIST *segmentList,
-                              AQFINTS_ELEMENT *groupTree,
-                              GWEN_XMLNODE *xmlSource);
+static void readGroupsAndSegsAndJobs(AQFINTS_JOBDEF_LIST *jobDefList,
+                                     AQFINTS_SEGMENT_LIST *segmentList,
+                                     AQFINTS_ELEMENT *groupTree,
+                                     GWEN_XMLNODE *xmlSource);
 
 static void readGroups(AQFINTS_ELEMENT *groupTree, GWEN_XMLNODE *xmlSource);
 static void readSegments(AQFINTS_SEGMENT_LIST *segmentList, GWEN_XMLNODE *xmlSource);
@@ -41,6 +42,8 @@ static void readSegment(AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlSource);
 static void readSegmentWithChildren(AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlSource);
 static void readSegmentChildren(AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlSource);
 
+static void readJobDefs(AQFINTS_JOBDEF_LIST *jobDefList, GWEN_XMLNODE *xmlSource);
+
 static void writeSegmentDefinitions(const AQFINTS_SEGMENT_LIST *segmentList, GWEN_XMLNODE *xmlDest);
 static void writeSegmentWithElements(const AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlDest);
 static void writeElementTree(const AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlDest);
@@ -48,6 +51,7 @@ static void writeElementTree(const AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlDest);
 static void writeSegment(const AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlDest);
 static void writeElement(const AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlDest);
 
+static void readJobDef(AQFINTS_JOBDEF *jobDef, GWEN_XMLNODE *xmlSource);
 
 
 
@@ -59,7 +63,8 @@ static void writeElement(const AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlDest);
 
 
 
-int AQFINTS_Parser_Xml_ReadFile(AQFINTS_SEGMENT_LIST *segmentList,
+int AQFINTS_Parser_Xml_ReadFile(AQFINTS_JOBDEF_LIST *jobDefList,
+                                AQFINTS_SEGMENT_LIST *segmentList,
                                 AQFINTS_ELEMENT *groupTree,
                                 const char *filename)
 {
@@ -81,7 +86,7 @@ int AQFINTS_Parser_Xml_ReadFile(AQFINTS_SEGMENT_LIST *segmentList,
 
     xmlNodeFints=GWEN_XMLNode_FindFirstTag(xmlNodeFile, "FinTS", NULL, NULL);
     if (xmlNodeFints) {
-      readGroupsAndSegs(segmentList, groupTree, xmlNodeFints);
+      readGroupsAndSegsAndJobs(jobDefList, segmentList, groupTree, xmlNodeFints);
     }
     else {
       GWEN_XMLNode_free(xmlNodeFile);
@@ -94,7 +99,8 @@ int AQFINTS_Parser_Xml_ReadFile(AQFINTS_SEGMENT_LIST *segmentList,
 
 
 
-int AQFINTS_Parser_Xml_ReadBuffer(AQFINTS_SEGMENT_LIST *segmentList,
+int AQFINTS_Parser_Xml_ReadBuffer(AQFINTS_JOBDEF_LIST *jobDefList,
+                                  AQFINTS_SEGMENT_LIST *segmentList,
                                   AQFINTS_ELEMENT *groupTree,
                                   const char *dataString)
 {
@@ -113,7 +119,7 @@ int AQFINTS_Parser_Xml_ReadBuffer(AQFINTS_SEGMENT_LIST *segmentList,
 
     xmlNodeFints=GWEN_XMLNode_FindFirstTag(xmlNodeFile, "FinTS", NULL, NULL);
     if (xmlNodeFints) {
-      readGroupsAndSegs(segmentList, groupTree, xmlNodeFints);
+      readGroupsAndSegsAndJobs(jobDefList, segmentList, groupTree, xmlNodeFints);
     }
     else {
       DBG_ERROR(0, "No FinTS group.");
@@ -182,9 +188,10 @@ void writeSegmentDefinitions(const AQFINTS_SEGMENT_LIST *segmentList, GWEN_XMLNO
 
 
 
-void readGroupsAndSegs(AQFINTS_SEGMENT_LIST *segmentList,
-                       AQFINTS_ELEMENT *groupTree,
-                       GWEN_XMLNODE *xmlSource)
+void readGroupsAndSegsAndJobs(AQFINTS_JOBDEF_LIST *jobDefList,
+                              AQFINTS_SEGMENT_LIST *segmentList,
+                              AQFINTS_ELEMENT *groupTree,
+                              GWEN_XMLNODE *xmlSource)
 {
   GWEN_XMLNODE *xmlNode;
 
@@ -199,6 +206,9 @@ void readGroupsAndSegs(AQFINTS_SEGMENT_LIST *segmentList,
       }
       else if (strcasecmp(s, "SEGs")==0) {
         readSegments(segmentList, xmlNode);
+      }
+      else if (strcasecmp(s, "JOBs")==0) {
+        readJobDefs(jobDefList, xmlNode);
       }
       else {
         DBG_INFO(0, "Ignoring XML element \"%s\"", s);
@@ -248,6 +258,37 @@ void readSegments(AQFINTS_SEGMENT_LIST *segmentList, GWEN_XMLNODE *xmlSource)
       segment=AQFINTS_Segment_new();
       readSegmentWithChildren(segment, xmlNode);
       AQFINTS_Segment_List_Add(segment, segmentList);
+    }
+    xmlNode=GWEN_XMLNode_GetNextTag(xmlNode);
+  }
+}
+
+
+
+void readJobDefs(AQFINTS_JOBDEF_LIST *jobDefList, GWEN_XMLNODE *xmlSource)
+{
+  GWEN_XMLNODE *xmlNode;
+
+  xmlNode=GWEN_XMLNode_GetFirstTag(xmlSource);
+  while(xmlNode) {
+    const char *s;
+
+    s=GWEN_XMLNode_GetData(xmlNode);
+    if (s && *s && strcasecmp(s, "JOBdef")==0) {
+      AQFINTS_JOBDEF *jobDef;
+      AQFINTS_SEGMENT_LIST *segmentList;
+
+      jobDef=AQFINTS_JobDef_new();
+      segmentList=AQFINTS_JobDef_GetSegments(jobDef);
+      if (segmentList==NULL) {
+        segmentList=AQFINTS_Segment_List_new();
+        AQFINTS_JobDef_SetSegments(jobDef, segmentList);
+      }
+      assert(segmentList);
+
+      readJobDef(jobDef, xmlNode);
+      readSegments(segmentList, xmlSource);
+      AQFINTS_JobDef_List_Add(jobDef, jobDefList);
     }
     xmlNode=GWEN_XMLNode_GetNextTag(xmlNode);
   }
@@ -598,6 +639,96 @@ void writeSegment(const AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlDest)
   i=AQFINTS_Segment_GetProtocolVersion(segment);
   if (i!=0)
     GWEN_XMLNode_SetIntProperty(xmlDest, "protocolVersion", i);
+}
+
+
+
+
+void readJobDef(AQFINTS_JOBDEF *jobDef, GWEN_XMLNODE *xmlSource)
+{
+  const char *s;
+  int i;
+  uint32_t flags=0;
+
+  assert(jobDef);
+  assert(xmlSource);
+
+  s=GWEN_XMLNode_GetProperty(xmlSource, "id", NULL);
+  if (s && *s)
+    AQFINTS_JobDef_SetId(jobDef, s);
+
+  s=GWEN_XMLNode_GetProperty(xmlSource, "code", NULL);
+  if (s && *s)
+    AQFINTS_JobDef_SetCode(jobDef, s);
+
+  s=GWEN_XMLNode_GetProperty(xmlSource, "params", NULL);
+  if (s && *s)
+    AQFINTS_JobDef_SetParams(jobDef, s);
+
+  s=GWEN_XMLNode_GetProperty(xmlSource, "response", NULL);
+  if (s && *s)
+    AQFINTS_JobDef_SetResponse(jobDef, s);
+
+  i=GWEN_XMLNode_GetIntProperty(xmlSource, "jobVersion", -1);
+  AQFINTS_JobDef_SetJobVersion(jobDef, i);
+
+  i=GWEN_XMLNode_GetIntProperty(xmlSource, "protocolVersion", -1);
+  AQFINTS_JobDef_SetProtocolVersion(jobDef, i);
+
+  flags|=(GWEN_XMLNode_GetIntProperty(xmlSource, "crypt", 0)?AQFINTS_JOBDEF_FLAGS_CRYPT:0);
+  flags|=(GWEN_XMLNode_GetIntProperty(xmlSource, "sign", 0)?AQFINTS_JOBDEF_FLAGS_SIGN:0);
+  flags|=(GWEN_XMLNode_GetIntProperty(xmlSource, "attachable", 0)?AQFINTS_JOBDEF_FLAGS_ATTACHABLE:0);
+  flags|=(GWEN_XMLNode_GetIntProperty(xmlSource, "needBPD", 0)?AQFINTS_JOBDEF_FLAGS_NEED_BPD:0);
+  flags|=(GWEN_XMLNode_GetIntProperty(xmlSource, "single", 0)?AQFINTS_JOBDEF_FLAGS_SINGLE:0);
+  AQFINTS_JobDef_SetFlags(jobDef, flags);
+}
+
+
+
+void writeJobDef(const AQFINTS_JOBDEF *jobDef, GWEN_XMLNODE *xmlDest)
+{
+  const char *s;
+  int i;
+  uint32_t flags;
+
+  assert(jobDef);
+  assert(xmlDest);
+
+  s=AQFINTS_JobDef_GetId(jobDef);
+  if (s && *s)
+    GWEN_XMLNode_SetProperty(xmlDest, "id", s);
+
+  s=AQFINTS_JobDef_GetCode(jobDef);
+  if (s && *s)
+    GWEN_XMLNode_SetProperty(xmlDest, "code", s);
+
+  s=AQFINTS_JobDef_GetParams(jobDef);
+  if (s && *s)
+    GWEN_XMLNode_SetProperty(xmlDest, "params", s);
+
+  s=AQFINTS_JobDef_GetResponse(jobDef);
+  if (s && *s)
+    GWEN_XMLNode_SetProperty(xmlDest, "response", s);
+
+  i=AQFINTS_JobDef_GetJobVersion(jobDef);
+  if (i!=0)
+    GWEN_XMLNode_SetIntProperty(xmlDest, "jobVersion", i);
+
+  i=AQFINTS_JobDef_GetProtocolVersion(jobDef);
+  if (i!=0)
+    GWEN_XMLNode_SetIntProperty(xmlDest, "protocolVersion", i);
+
+  flags=AQFINTS_JobDef_GetFlags(jobDef);
+  if (flags & AQFINTS_JOBDEF_FLAGS_CRYPT)
+    GWEN_XMLNode_SetIntProperty(xmlDest, "crypt", 1);
+  if (flags & AQFINTS_JOBDEF_FLAGS_SIGN)
+    GWEN_XMLNode_SetIntProperty(xmlDest, "sign", 1);
+  if (flags & AQFINTS_JOBDEF_FLAGS_ATTACHABLE)
+    GWEN_XMLNode_SetIntProperty(xmlDest, "attachable", 1);
+  if (flags & AQFINTS_JOBDEF_FLAGS_NEED_BPD)
+    GWEN_XMLNode_SetIntProperty(xmlDest, "needBPD", 1);
+  if (flags & AQFINTS_JOBDEF_FLAGS_SINGLE)
+    GWEN_XMLNode_SetIntProperty(xmlDest, "single", 1);
 }
 
 

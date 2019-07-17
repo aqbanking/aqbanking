@@ -16,19 +16,23 @@ noinst_LTLIBRARIES=libafmsgparser.la
 
 typefiles=\
   element.xml \
-  segment.xml
+  segment.xml \
+  jobdef.xml
 
 
 
 typedatadir=$(datadir)/aqbanking/typemaker2/c
 dist_typedata_DATA=\
-  aqfints_element.tm2 aqfints_element_tree2.tm2
+  aqfints_element.tm2 aqfints_element_tree2.tm2 \
+  aqfints_segment.tm2 aqfints_segment_list.tm2 \
+  aqfints_jobdef.tm2 aqfints_jobdef_list.tm2
 
 
 
 built_sources=  \
   element.c \
-  segment.c
+  segment.c \
+  jobdef.c
 
 
 build_headers_priv= \
@@ -38,7 +42,8 @@ build_headers_priv= \
 
 build_headers_pub= \
   element.h \
-  segment.h
+  segment.h \
+  jobdef.h
 
 
 build_headers=$(build_headers_priv) $(build_headers_pub)

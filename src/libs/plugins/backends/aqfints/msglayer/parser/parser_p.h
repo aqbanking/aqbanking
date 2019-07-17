@@ -20,6 +20,7 @@
 
 
 struct AQFINTS_PARSER {
+  AQFINTS_JOBDEF_LIST *jobDefList;
   AQFINTS_SEGMENT_LIST *segmentList;
   GWEN_STRINGLIST *pathList;
 };

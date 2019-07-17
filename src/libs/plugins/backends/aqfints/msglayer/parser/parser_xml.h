@@ -14,15 +14,18 @@
 
 #include "msglayer/parser/element.h"
 #include "msglayer/parser/segment.h"
+#include "msglayer/parser/jobdef.h"
 
 #include <gwenhywfar/xml.h>
 
 
-int AQFINTS_Parser_Xml_ReadFile(AQFINTS_SEGMENT_LIST *segmentList,
+int AQFINTS_Parser_Xml_ReadFile(AQFINTS_JOBDEF_LIST *jobDefList,
+                                AQFINTS_SEGMENT_LIST *segmentList,
                                 AQFINTS_ELEMENT *groupTree,
                                 const char *filename);
 
-int AQFINTS_Parser_Xml_ReadBuffer(AQFINTS_SEGMENT_LIST *segmentList,
+int AQFINTS_Parser_Xml_ReadBuffer(AQFINTS_JOBDEF_LIST *jobDefList,
+                                  AQFINTS_SEGMENT_LIST *segmentList,
                                   AQFINTS_ELEMENT *groupTree,
                                   const char *dataString);
 

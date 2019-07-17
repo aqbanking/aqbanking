@@ -10,6 +10,12 @@ segment.c
 segment.h
 segment_p.h
 
+aqfints_jobdef.tm2
+aqfints_jobdef_list.tm2
+jobdef.c
+jobdef.h
+jobdef_p.h
+
 libtest
 
 example.xml.out
