@@ -173,17 +173,12 @@
             protocolVersion="300"
     >
       <!-- "Nachrichtenkopf" -->
-     <DEG>
-       <GROUP name="head"           type="SegHead" />
-     </DEG>
+     <DEG   name="head"           type="SegHead" />
      <DE    name="size"             type="num"        maxsize="12" leftfill="1" />
      <DE    name="hversion"         type="num"        maxsize="3" />
      <DE    name="dialogId"         type="ascii"      maxsize="128" />
      <DE    name="msgnum"           type="num"        maxsize="4" />
-     <DEG>
-       <GROUP name="msgref"         type="msgref"     minnum="0" version="1">
-     </DEG>
-   
+     <DEG   name="msgref"         type="msgref"     minnum="0" version="1"/>
     </SEGdef>
   
   
@@ -193,9 +188,7 @@
             protocolVersion="300"
     >
       <!-- "Nachrichtenabschluss" -->
-     <DEG>
-       <GROUP name="head"           type="SegHead"     />
-     </DEG>
+     <DEG   name="head"           type="SegHead"     />
      <DE    name="msgnum"           type="num"        maxsize="4" />
     </SEGdef>
   
@@ -206,12 +199,8 @@
             protocolVersion="300"
     >
      <!-- "Rueckmeldungen zur Gesamtnachricht" -->
-     <DEG>
-       <GROUP  name="head"             type="SegHead" />
-     </DEG>
-     <DEG>
-       <GROUP  name="result"           type="result"     version="1" maxnum="99" />
-     </DEG>
+     <DEG   name="head"             type="SegHead" />
+     <DEG   name="result"           type="result"     version="1" maxnum="99" />
     </SEGdef>
   
   
@@ -222,12 +211,8 @@
             protocolVersion="300"
     >
      <!-- "Rueckmeldungen zu Segmenten" -->
-     <DEG>
-       <GROUP  name="head"             type="SegHead" />
-     </DEG>
-     <DEG>
-       <GROUP  name="result"           type="result"     version="1" maxnum="99" />
-     </DEG>
+     <DEG   name="head"             type="SegHead" />
+     <DEG   name="result"           type="result"     version="1" maxnum="99" />
     </SEGdef>
 
 

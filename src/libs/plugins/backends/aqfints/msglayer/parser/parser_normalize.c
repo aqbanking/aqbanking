@@ -174,10 +174,13 @@ void resolveGroups(AQFINTS_ELEMENT *elementTree, AQFINTS_ELEMENT *groupTree)
   
   element=AQFINTS_Element_Tree2_GetFirstChild(elementTree);
   while(element) {
-    if (AQFINTS_Element_GetElementType(element)==AQFINTS_ElementType_Group) {
-      const char *sGroupType;
+    const char *sGroupType;
+    AQFINTS_ELEMENT_TYPE eType;
 
-      sGroupType=AQFINTS_Element_GetType(element);
+    eType=AQFINTS_Element_GetElementType(element);
+    sGroupType=AQFINTS_Element_GetType(element);
+    if ((eType==AQFINTS_ElementType_Group) ||
+        (eType==AQFINTS_ElementType_Deg && sGroupType && *sGroupType)) {
       if (sGroupType && *sGroupType) {
         AQFINTS_ELEMENT *groupDefElement;
         int iGroupVersion;

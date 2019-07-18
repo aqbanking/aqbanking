@@ -9,6 +9,7 @@
  ***************************************************************************/
 
 
+#include "parser.h"
 #include "parser_xml.h"
 #include "parser_dump.h"
 #include "parser_normalize.h"
@@ -956,6 +957,26 @@ int test_segmentFromDb2()
 
 
 
+int test_parser()
+{
+  AQFINTS_PARSER *parser;
+  int rv;
+
+  parser=AQFINTS_Parser_new();
+  AQFINTS_Parser_AddPath(parser, "../xml");
+  rv=AQFINTS_Parser_ReadFiles(parser);
+  if (rv<0) {
+    fprintf(stderr, "Error reading files.\n");
+    return 2;
+  }
+
+  fprintf(stderr, "Success.\n");
+  return 0;
+}
+
+
+
+
 int main(int args, char **argv)
 {
   //test_loadFile("example.xml");
@@ -964,7 +985,8 @@ int main(int args, char **argv)
   //test_saveFile2("example.xml.out");
   //test_writeSegments();
   //test_segmentToDb5();
-  test_segmentFromDb2();
+  //test_segmentFromDb2();
+  test_parser();
 
   return 0;
 }

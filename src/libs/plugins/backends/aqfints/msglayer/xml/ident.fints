@@ -10,12 +10,8 @@
             segmentVersion="2"
             protocolVersion="300"
     >
-      <DEG>
-        <GROUP name="head"       type="SegHead" />
-      </DEG>
-      <DEG>
-       <GROUP                   type="kik" version="1" />
-      </DEG>
+      <DEG   name="head"       type="SegHead" />
+      <DEG                     type="kik" version="1" />
       <DE    name="customerId" type="ascii" maxsize="128" trustlevel="3" hide="1" />
       <DE    name="systemId"   type="ascii" maxsize="128" trustlevel="3" hide="1" />
       <DE    name="status"     type="num" maxsize="1" topdown="1" />

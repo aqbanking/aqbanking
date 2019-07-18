@@ -32,13 +32,13 @@
            segmentVersion="3"
            protocolVersion="300"
    >
-     <GROUP   name="head"           type="SegHead" />
+     <DEG     name="head"           type="SegHead" />
      <DE      name="version"        type="num"      maxsize="3" />
-     <GROUP                         type="kik"      version="1" />
+     <DEG                           type="kik"      version="1" />
      <DE      name="name"           type="ascii"    maxsize="60" />
      <DE      name="jobtypespermsg" type="num"      maxsize="3" />
-     <GROUP   name="languages"      type="language" version="1" />
-     <GROUP   name="versions"       type="version"  />
+     <DEG     name="languages"      type="language" version="1" />
+     <DEG     name="versions"       type="version"  />
      <DE      name="maxmsgsize"     type="num"      maxsize="4"  minnum="0" />
      <DE      name="minTimeout"     type="num"      maxsize="4"  minnum="0" />
      <DE      name="maxTimeout"     type="num"      maxsize="4"  minnum="0" />
@@ -50,9 +50,7 @@
            segmentVersion="1"
            protocolVersion="300"
    >
-     <DEG>
-       <GROUP   name="head"           type="SegHead" />
-     </DEG>
+     <DEG     name="head"           type="SegHead" />
      <DE      name="jobspermsg"     type="num"      maxsize="3" />
      <DE      name="minsigs"        type="num"      maxsize="3" />
      <DE      name="securityClass"  type="num"      minsize="1"  maxsize="1" minnum="0" />

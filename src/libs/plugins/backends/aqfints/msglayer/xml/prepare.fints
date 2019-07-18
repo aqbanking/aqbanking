@@ -10,9 +10,7 @@
             segmentVersion="2"
             protocolVersion="300"
     >
-      <DEG>
-        <GROUP name="head"       type="SegHead" />
-      </DEG>
+      <DEG   name="head"       type="SegHead" />
       <DE    name="bpdVersion" type="num"     maxsize="3" hide="1" />
       <DE    name="updVersion" type="num"     maxsize="3" hide="1" />
       <DE    name="lang"       type="num"     maxsize="3" />
@@ -26,9 +24,7 @@
             segmentVersion="3"
             protocolVersion="300"
     >
-      <DEG>
-        <GROUP name="head"       type="SegHead" />
-      </DEG>
+      <DEG   name="head"       type="SegHead" />
       <DE    name="bpdVersion" type="num"     maxsize="3" hide="1" />
       <DE    name="updVersion" type="num"     maxsize="3" hide="1" />
       <DE    name="lang"       type="num"     maxsize="3" />

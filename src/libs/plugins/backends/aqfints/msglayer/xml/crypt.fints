@@ -60,6 +60,33 @@
     </GROUPdef>
 
 
+    <GROUPdef id="SignAlgo" version="1">
+      <!-- Signatur-Algo -->
+      <DE name="purpose"           type="an" maxsize="3" />
+      <DE name="algo"              type="an" maxsize="3" />
+      <DE name="mode"              type="an" maxsize="3" />
+    </GROUPdef>
+
+
+    <GROUPdef id="CryptAlgo" version="1">
+      <!-- Crypt-Algo -->
+      <DE name="purpose"           type="an" maxsize="3" />
+      <DE name="mode"              type="an" maxsize="3" />
+      <DE name="algo"              type="an" maxsize="3" />
+      <DE name="MsgKey"            type="bin" maxsize="512" />
+      <DE name="KeyType"           type="an" maxsize="3" />
+      <DE name="pname"             type="an" maxsize="3" />
+      <DE name="param"             type="bin" maxsize="512" minnum="0" />
+    </GROUPdef>
+
+
+    <GROUPdef id="SecDetails" version="1" >
+      <!-- Sicherheitsidentifikation, Details -->
+      <DE name="dir"               type="num" maxsize=3 />
+      <DE                          type="an" />
+      <DE name="SecId"             type="ascii" maxsize="256" minnum="1" />
+    </GROUPdef>
+
 
   </GROUPs>
 
@@ -73,35 +100,19 @@
             code="HNSHK" 
     >
       <!-- "Signaturkopf" -->
-      <DEG>
-        <GROUP name="head"             type="SegHead"  />
-      </DEG>
-      <DEG>
-        <GROUP name="secProfile"       type="SecProfile" />
-      </DEG>
+      <DEG   name="head"             type="SegHead"  />
+      <DEG   name="secProfile"       type="SecProfile" />
       <DE    name="function"         type="num"        maxsize="3" />
       <DE    name="ctrlref"          type="ascii"      maxsize="14" />
       <DE    name="area"             type="num"        maxsize="3" />
       <DE    name="role"             type="num"        maxsize="3" />
-      <DEG>
-        <GROUP name="SecDetails"       type="SecDetails" version="1"   />
-      </DEG>
+      <DEG   name="SecDetails"       type="SecDetails" version="1"   />
       <DE    name="signseq"          type="num"        maxsize="16" />
-      <DEG>
-        <GROUP name="SecStamp"         type="secstamp"   version="1" />
-      </DEG>
-      <DEG>
-        <GROUP name="HashAlgo"         type="hashalgo"   version="1" />
-      </DEG>
-      <DEG>
-        <GROUP name="SignAlgo"         type="SignAlgo"   version="1" />
-      </DEG>
-      <DEG>
-        <GROUP name="key"              type="nkeyname"   version="1" trustlevel="3" />
-      </DEG>
-      <DEG>
-        <GROUP name="cert"             type="cert"       minnum="0" version="1" />
-      </DEG>
+      <DEG   name="SecStamp"         type="secstamp"   version="1" />
+      <DEG   name="HashAlgo"         type="hashalgo"   version="1" />
+      <DEG   name="SignAlgo"         type="SignAlgo"   version="1" />
+      <DEG   name="key"              type="keyname"    version="1" trustlevel="3" />
+      <DEG   name="cert"             type="cert"       minnum="0" version="1" />
       
     </SEGdef>
 
@@ -112,9 +123,7 @@
             protocolVersion="300"
     >
       <!-- "Signaturabschluss" -->
-      <DEG>
-        <GROUP name="head"             type="SegHead" />
-      </DEG>
+      <DEG   name="head"             type="SegHead" />
       <DE    name="ctrlref"          type="ascii"      maxsize="14" />
       <DE    name="signature_unused" type="bin"        maxsize="512" minnum="0" />
       <DEG>
@@ -136,30 +145,16 @@
             protocolVersion="300"
     >
       <!-- "Verschluesselungskopf fuer PIN/TAN" -->
-      <DEG>
-        <GROUP name="head"             type="SegHead" />
-      </DEG>
-      <DEG>
-        <GROUP name="secProfile"       type="SecProfile" />
-      </DEG>
+      <DEG     name="head"             type="SegHead" />
+      <DEG     name="secProfile"       type="SecProfile" />
       <DE      name="function"         type="num" maxsize="3" />
       <DE      name="role"             type="num" maxsize="3" />
-      <DEG>
-        <GROUP name="SecDetails"       type="SecDetails" version="1" />
-      </DEG>
-      <DEG>
-        <GROUP name="SecStamp"         type="secstamp" version="1" />
-      </DEG>
-      <DEG>
-        <GROUP name="CryptAlgo"        type="CryptAlgo" version="1" />
-      </DEG>
-      <DEG>
-        <GROUP name="key"              type="CryptKeyName" version="1" trustlevel="3" />
-      </DEG>
+      <DEG     name="SecDetails"       type="SecDetails" version="1" />
+      <DEG     name="SecStamp"         type="secstamp" version="1" />
+      <DEG     name="CryptAlgo"        type="CryptAlgo" version="1" />
+      <DEG     name="key"              type="keyName" version="1" trustlevel="3" />
       <DE      name="compress"         type="an" />
-      <DEG>
-        <GROUP name="cert"             type="cert" minnum="0" version="1" />
-      </DEG>
+      <DEG     name="cert"             type="cert" minnum="0" version="1" />
     </SEGdef>
 
 

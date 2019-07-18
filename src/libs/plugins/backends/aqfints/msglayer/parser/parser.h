@@ -121,6 +121,7 @@ void AQFINTS_Parser_AddPath(AQFINTS_PARSER *parser, const char *path);
  *
  * Adding paths after calling this function here has no effect.
  * Only returns an error if no file could be loaded (either because of errors or because there was no file to load).
+ * This function is used to load segment and job definitions for the parser.
  *
  * @return 0 if okay, errorcode otherwise
  * @param parser parser object

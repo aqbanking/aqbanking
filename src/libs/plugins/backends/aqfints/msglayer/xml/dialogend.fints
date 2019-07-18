@@ -10,9 +10,7 @@
             segmentVersion="1"
             protocolVersion="300"
     >
-      <DEG>
-        <GROUP name="head"     type="SegHead" />
-      </DEG>
+      <DEG   name="head"     type="SegHead" />
       <DE    name="dialogid" type="ascii" maxsize="128" />
     </SEGdef>
 
