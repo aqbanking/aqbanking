@@ -113,6 +113,7 @@ void AQFINTS_Parser_DumpSegment(AQFINTS_SEGMENT *segment, int indent)
   int i;
   const char *s;
   AQFINTS_ELEMENT *elementTree;
+  uint32_t rtflags;
 
   for (i=0; i<indent; i++)
     fprintf(stderr, " ");
@@ -142,6 +143,10 @@ void AQFINTS_Parser_DumpSegment(AQFINTS_SEGMENT *segment, int indent)
   i=AQFINTS_Segment_GetSize(segment);
   if (i!=0)
     fprintf(stderr, " size=%d", i);
+
+  rtflags=AQFINTS_Segment_GetRuntimeFlags(segment);
+  if (rtflags & AQFINTS_SEGMENT_RTFLAGS_PARSED)
+    fprintf(stderr, " parsed");
 
   fprintf(stderr, "\n");
 
