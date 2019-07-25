@@ -1,0 +1,46 @@
+
+
+- job list for user:
+   - contains jobs to be sent for a given user, from those the job queue will be filled
+- job queue:
+   - contains jobs to be sent now to the bank
+   - there is only one job queue
+
+
+- sending jobs in HBCI mode:
+  - create message 1
+  - for every job from the queue:
+    - get segment and DB from job
+    - set segment number accordingly
+    - encode and add segment to commandBuffer
+  - if message needs signing:
+    - for every signer:
+      - create signature head
+      - encode signature head
+      - hash data from signature head
+      - hash data from commandBuffer (jobs to sign)
+      - add signature head to fullMessageBuffer
+      - create signature tail, set hash
+      - add signature tail to tailBuffer
+    - add commandBuffer to fullMessageBuffer
+    - add signatureTails to fullMessageBuffer
+  - if message needs crypting:
+    - generate crypt head
+    - add crypt head to encryptedMessageBuffer
+    - generate and encode crypt data segment
+    - add crypt data segment to encryptedMessageBuffer
+    - exchange encryptedMessageBuffer and fullMessageBuffer
+  - determine full size of HBCI message
+  - generate message head
+  - insert message head into fullMessageBuffer
+
+
+
+- folder
+  - formals oder hbci
+    - user data
+    - account data
+    - bpd
+    - xml
+
+
