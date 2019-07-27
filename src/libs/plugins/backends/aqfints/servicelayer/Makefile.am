@@ -1,4 +1,4 @@
-SUBDIRS=parser
+SUBDIRS=xml bpd upd
 
 AM_CFLAGS=-DBUILDING_AQFINTS @visibility_cflags@
 
@@ -12,7 +12,7 @@ INCLUDES = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_incl
 DEFS+=-DAH_XMLDATADIR=\"$(aqbanking_data_searchdir)/aqbanking/backends/aqhbci\"
 
 
-noinst_LTLIBRARIES=libaqfintsmsg.la
+noinst_LTLIBRARIES=libaqfintsservice.la
 
 
 typefiles=
@@ -36,12 +36,13 @@ build_headers=$(build_headers_priv) $(build_headers_pub)
 noinst_HEADERS= $(build_headers)
 
 
-libaqfintsmsg_la_SOURCES=\
-  message.c
+libaqfintsservice_la_SOURCES=dummy.c
 
 
 
-libaqfintsmsg_la_LIBADD=parser/libafmsgparser.la
+libaqfintsservice_la_LIBADD=\
+  bpd/libafmsgbpd.la \
+  upd/libafmsgupd.la
 
 
 
@@ -64,7 +65,7 @@ format_built_files:
 
 
 sources:
-	for f in $(libaqfintsmsg_la_SOURCES) $(EXTRA_DIST); do \
+	for f in $(libaqfintsservice_la_SOURCES) $(EXTRA_DIST); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 	for d in $(SUBDIRS); do \
@@ -78,7 +79,7 @@ types: $(typefiles)
 
 
 cppcheck:
-	for f in $(libaqfintsmsg_la_SOURCES); do \
+	for f in $(libaqfintsservice_la_SOURCES); do \
 	  cppcheck --force $$f ; \
 	done
 	for d in $(SUBDIRS); do \

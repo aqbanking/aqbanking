@@ -1,14 +1,14 @@
 <?xml?>
 
 <tm2>
-  <type id="AQFINTS_BPD" type="pointer">
+  <type id="AQFINTS_UPD" type="pointer">
     <descr>
     </descr>
     <lang id="c">
-      <identifier>AQFINTS_BPD</identifier>
-      <prefix>AQFINTS_Bpd</prefix>
+      <identifier>AQFINTS_UPD</identifier>
+      <prefix>AQFINTS_Upd</prefix>
 
-      <baseFileName>bpd</baseFileName>
+      <baseFileName>upd</baseFileName>
       
       <flags>
         with_db
@@ -19,20 +19,19 @@
       <headers>
         <header type="sys"   loc="pre">aqbanking/error.h</header>
         <header type="sys"   loc="code">string.h</header>
-        <header type="local" loc="post">msglayer/bpd/bpdjob.h</header>
-        <header type="local" loc="post">msglayer/bpd/bpdaddr.h</header>
+        <header type="local" loc="post">servicelayer/upd/updjob.h</header>
       </headers>
       
 
       <inlines>
 
 
-        <!-- addBpdJob -->
+        <!-- addUpdJob -->
         <inline loc="end" access="public">
           <typeFlagsMask></typeFlagsMask>
           <typeFlagsValue></typeFlagsValue>
           <content>
-             $(api) void $(struct_prefix)_AddBpdJob($(struct_type) *st, AQFINTS_BPDJOB *j);
+             $(api) void $(struct_prefix)_AddUpdJob($(struct_type) *st, AQFINTS_UPDJOB *j);
           </content>
         </inline>
 
@@ -40,32 +39,10 @@
           <typeFlagsMask></typeFlagsMask>
           <typeFlagsValue></typeFlagsValue>
           <content>
-             void $(struct_prefix)_AddBpdJob($(struct_type) *st, AQFINTS_BPDJOB *j) {
-               if (st-&gt;bpdJobs==NULL)
-                 st-&gt;bpdJobs=AQFINTS_BpdJob_List_new();
-               AQFINTS_BpdJob_List_Add(j, st-&gt;bpdJobs);
-             }
-          </content>
-        </inline>
-
-
-        <!-- addBpdAddr -->
-        <inline loc="end" access="public">
-          <typeFlagsMask></typeFlagsMask>
-          <typeFlagsValue></typeFlagsValue>
-          <content>
-             $(api) void $(struct_prefix)_AddBpdAddr($(struct_type) *st, AQFINTS_BPDADDR *addr);
-          </content>
-        </inline>
-
-        <inline loc="code">
-          <typeFlagsMask></typeFlagsMask>
-          <typeFlagsValue></typeFlagsValue>
-          <content>
-             void $(struct_prefix)_AddBpdAddr($(struct_type) *st, AQFINTS_BPDADDR *addr) {
-               if (st-&gt;addresses==NULL)
-                 st-&gt;addresses=AQFINTS_BpdAddr_List_new();
-               AQFINTS_BpdAddr_List_Add(addr, st-&gt;addresses);
+             void $(struct_prefix)_AddUpdJob($(struct_type) *st, AQFINTS_UPDJOB *j) {
+               if (st-&gt;updJobs==NULL)
+                 st-&gt;updJobs=AQFINTS_UpdJob_List_new();
+               AQFINTS_UpdJob_List_Add(j, st-&gt;updJobs);
              }
           </content>
         </inline>
@@ -79,10 +56,10 @@
 
     <defines>
 
-      <define id="AQFINTS_BPD_RTFLAGS" prefix="AQFINTS_BPD_RTFLAGS_">
+      <define id="AQFINTS_UPD_RTFLAGS" prefix="AQFINTS_UPD_RTFLAGS_">
      </define>
 
-     <define id="AQFINTS_BPD_FLAGS" prefix="AQFINTS_BPD_FLAGS_">
+     <define id="AQFINTS_UPD_FLAGS" prefix="AQFINTS_UPD_FLAGS_">
      </define>
 
     </defines>
@@ -142,15 +119,7 @@
       </member>
 
 
-      <member name="bpdJobs" type="AQFINTS_BPDJOB_LIST" >
-        <access>public</access>
-        <flags>own</flags>
-        <setflags>none</setflags>
-        <getflags>none</getflags>
-      </member>
-
-
-      <member name="addresses" type="AQFINTS_BPDADDR_LIST" >
+      <member name="updJobs" type="AQFINTS_UPDJOB_LIST" >
         <access>public</access>
         <flags>own</flags>
         <setflags>none</setflags>

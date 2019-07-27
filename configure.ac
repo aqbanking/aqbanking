@@ -1315,8 +1315,10 @@ AC_CONFIG_FILES([
   src/libs/plugins/backends/aqfints/aqfints.xml
   src/libs/plugins/backends/aqfints/msglayer/Makefile
   src/libs/plugins/backends/aqfints/msglayer/parser/Makefile
-  src/libs/plugins/backends/aqfints/msglayer/xml/Makefile
-  src/libs/plugins/backends/aqfints/msglayer/bpd/Makefile
+  src/libs/plugins/backends/aqfints/servicelayer/Makefile
+  src/libs/plugins/backends/aqfints/servicelayer/xml/Makefile
+  src/libs/plugins/backends/aqfints/servicelayer/bpd/Makefile
+  src/libs/plugins/backends/aqfints/servicelayer/upd/Makefile
   src/test/Makefile
   src/tools/Makefile
   src/tools/aqbanking-cli/Makefile
