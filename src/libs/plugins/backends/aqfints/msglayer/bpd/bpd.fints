@@ -59,8 +59,10 @@
       <DE      name="minTimeout"     type="num"      maxsize="4"  minnum="0" />
       <DE      name="maxTimeout"     type="num"      maxsize="4"  minnum="0" />
     </SEGdef>
- 
- 
+
+
+
+
     <SEGdef id="PinTanBPD" 
             code="HIPINS" 
             segmentVersion="1"
@@ -78,6 +80,59 @@
         <DE    name="customerIdText" type="ascii"    maxsize="30" minnum="0" /> 
         <GROUP name="job"            type="NeedTAN"  minnum="0"   maxnum="999" version="1" />
       </DEG>
+    </SEGdef>
+
+
+
+
+    <SEGdef id="BpdAddr" 
+            code="HIKOM" 
+            segmentVersion="2"
+    >
+     <DEG      name="head"           type="SegHead" />
+     <DEG                            type="kik"      version="1" />
+     <DE       name="language"       type="num"      maxsize="3" />
+     <DEG      name="service"                        minnum="1"   maxnum="9" >
+       <DE     name="type"           type="num"      maxsize="2" />
+       <DE     name="address"        type="ascii"    maxsize="512" />
+       <DE     name="suffix"         type="an"       minnum="0"   maxsize="512" />
+       <DE     name="filter"         type="an"       minnum="0"   maxsize="3" />
+       <DE     name="filterVersion"  type="num"      minnum="0"   maxsize="3" />
+     </DEG>
+    </SEGdef>
+
+
+    <SEGdef id="BpdAddr" 
+            code="HIKOM" 
+            segmentVersion="3"
+    >
+     <DEG      name="head"           type="SegHead" />
+     <DEG                            type="kik"      version="1" />
+     <DE       name="language"       type="num"      maxsize="3" />
+     <DEG      name="service"                        minnum="1"   maxnum="9" >
+       <DE     name="type"           type="num"      maxsize="2" />
+       <DE     name="address"        type="ascii"    maxsize="512" />
+       <DE     name="suffix"         type="an"       minnum="0"   maxsize="512" />
+       <DE     name="filter"         type="an"       minnum="0"   maxsize="3" />
+       <DE     name="filterVersion"  type="num"      minnum="0"   maxsize="3" />
+     </DEG>
+    </SEGdef>
+
+
+    <SEGdef id="BpdAddr" 
+            code="HIKOM" 
+            segmentVersion="4"
+    >
+     <DEG      name="head"           type="SegHead" />
+     <DEG                            type="kik"      version="1" />
+     <DE       name="language"       type="num"      maxsize="3" />
+     <DEG      name="service"                        minnum="1"   maxnum="9" >
+       <DE     name="type"           type="num"      maxsize="2" />
+       <DE     name="address"        type="ascii"    maxsize="512" />
+       <DE     name="suffix"         type="an"       minnum="0"   maxsize="512" />
+       <DE     name="filter"         type="an"       minnum="0"   maxsize="3" />
+       <DE     name="filterVersion"  type="num"      minnum="0"   maxsize="3" />
+     </DEG>
     </SEGdef>
 
 

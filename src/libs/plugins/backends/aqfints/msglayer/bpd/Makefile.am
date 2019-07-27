@@ -15,7 +15,10 @@ noinst_LTLIBRARIES=libafmsgbpd.la
 
 
 typefiles= \
-  bpdjob.xml
+  bpdjob.xml \
+  bpdaddrservice.xml \
+  bpdaddr.xml \
+  bpd.xml
 
 
 
@@ -33,15 +36,24 @@ dist_typedata_DATA=
 
 
 built_sources=\
-  bpdjob.c
+  bpdjob.c \
+  bpd.c \
+  bpdaddrservice.c \
+  bpdaddr.c
 
 
 build_headers_priv=\
-  bpdjob_p.h
+  bpdjob_p.h \
+  bpd_p.h \
+  bpdaddrservice_p.h \
+  bpdaddr_p.h
 
 
 build_headers_pub=\
-  bpdjob.h
+  bpdjob.h \
+  bpd.h \
+  bpdaddrservice.h \
+  bpdaddr.h
 
 
 
