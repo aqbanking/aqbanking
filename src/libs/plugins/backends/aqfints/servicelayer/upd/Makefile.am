@@ -2,6 +2,7 @@
 AM_CFLAGS=-DBUILDING_AQFINTS @visibility_cflags@
 
 INCLUDES = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) \
+  -I$(srcdir)/../../.. \
   -I$(srcdir)/../.. \
   -I$(srcdir)/.. \
   -I$(aqbanking_symlinkdir) $(all_includes) \
@@ -37,7 +38,8 @@ dist_typedata_DATA=
 built_sources=\
   updjob.c \
   accountdata.c \
-  userdata.c
+  userdata.c \
+  upd_read.c
 
 
 build_headers_priv=\
@@ -49,7 +51,8 @@ build_headers_priv=\
 build_headers_pub=\
   updjob.h \
   accountdata.h \
-  userdata.h
+  userdata.h \
+  upd_read.h
 
 
 

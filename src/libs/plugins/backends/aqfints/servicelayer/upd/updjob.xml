@@ -74,16 +74,12 @@
 
       <group title="Limit">
 
-        <member name="limitType" type="char_ptr" maxlen="1" >
-          <default>NULL</default>
-          <preset>NULL</preset>
+        <member name="limitType" type="int" maxlen="8" >
+          <default>0</default>
+          <preset>0</preset>
           <access>public</access>
-          <flags>own</flags>
-          <setflags>const dup</setflags>
-          <getflags>const</getflags>
         </member>
-  
-  
+
         <member name="limitValue" type="AB_VALUE" maxlen="256" >
           <access>public</access>
           <flags>own with_hash</flags>

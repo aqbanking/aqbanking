@@ -267,6 +267,11 @@ int AQFINTS_Parser_ReadIntoDb(AQFINTS_PARSER *parser,
     return rv;
   }
 
+#if 0
+  DBG_ERROR(0, "Got these segments");
+  AQFINTS_Parser_DumpSegmentList(segmentList, 2);
+#endif
+
   AQFINTS_Segment_List_free(segmentList);
   return 0;
 }

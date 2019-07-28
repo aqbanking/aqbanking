@@ -79,7 +79,7 @@ int test_parser()
   }
 
   mbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=readFile("/home/martin/testdata/bpd.test", mbuf);
+  rv=readFile("/home/martin/testdata/upd.test", mbuf);
   if (rv<0) {
     DBG_ERROR(0, "here (%d)", rv);
     return 2;
