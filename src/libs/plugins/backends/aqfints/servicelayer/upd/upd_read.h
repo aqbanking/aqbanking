@@ -18,7 +18,21 @@
 #include <gwenhywfar/db.h>
 
 
+/**
+ * Read a AQFINTS_USERDATA from a DB created by @ref AQFINTS_Parser_ReadSegmentListToDb().
+ *
+ * @return AQFINTS_USERDATA object (asserts on error)
+ * @param db db node with a "UserData" group
+ */
 AQFINTS_USERDATA *AQFINTS_Upd_ReadUserData(GWEN_DB_NODE *db);
+
+
+/**
+ * Read a AQFINTS_ACCOUNTDATA from a DB created by @ref AQFINTS_Parser_ReadSegmentListToDb().
+ *
+ * @return AQFINTS_ACCOUNTDATA object (asserts on error)
+ * @param db db node with a "AccountData" group
+ */
 AQFINTS_ACCOUNTDATA *AQFINTS_Upd_ReadAccountData(GWEN_DB_NODE *db);
 
 
