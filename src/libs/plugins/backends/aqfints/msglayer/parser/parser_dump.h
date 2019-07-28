@@ -22,5 +22,11 @@ void AQFINTS_Parser_DumpSegment(AQFINTS_SEGMENT *segment, int indent);
 void AQFINTS_Parser_DumpSegmentList(AQFINTS_SEGMENT_LIST *segmentList, int indent);
 
 
+void AQFINTS_Parser_DumpContext(AQFINTS_ELEMENT *elementDef,
+                                AQFINTS_ELEMENT *elementData,
+                                GWEN_DB_NODE *dbData,
+                                int indent);
+
+
 #endif
 

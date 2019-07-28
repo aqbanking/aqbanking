@@ -149,6 +149,7 @@ void normalizeSequence(AQFINTS_ELEMENT *elementTree)
 
       elementDeg=AQFINTS_Element_new();
       AQFINTS_Element_SetElementType(elementDeg, AQFINTS_ElementType_Deg);
+      AQFINTS_Element_SetVersion(elementDeg, AQFINTS_Element_GetVersion(element));
       AQFINTS_Element_SetMinNum(elementDeg, AQFINTS_Element_GetMinNum(element));
       AQFINTS_Element_SetMaxNum(elementDeg, AQFINTS_Element_GetMaxNum(element));
       AQFINTS_Element_Tree2_Replace(element, elementDeg);
@@ -186,6 +187,7 @@ void resolveGroups(AQFINTS_ELEMENT *elementTree, AQFINTS_ELEMENT *groupTree)
         int iGroupVersion;
 
         iGroupVersion=AQFINTS_Element_GetVersion(element);
+        DBG_ERROR(0, "Looking for group \"%s:%d\"", sGroupType, iGroupVersion);
         groupDefElement=findGroupInTree(groupTree, sGroupType, iGroupVersion);
         if (groupDefElement==NULL) {
           DBG_ERROR(0, "Group \"%s:%d\" not found", sGroupType, iGroupVersion);
@@ -194,6 +196,7 @@ void resolveGroups(AQFINTS_ELEMENT *elementTree, AQFINTS_ELEMENT *groupTree)
         else {
           AQFINTS_ELEMENT *groupElement;
 
+          DBG_ERROR(0, "Found group \"%s:%d\"", sGroupType, AQFINTS_Element_GetVersion(groupDefElement));
           groupElement=AQFINTS_Element_Tree2_GetFirstChild(groupDefElement);
           while(groupElement) {
             AQFINTS_ELEMENT *elementCopy;

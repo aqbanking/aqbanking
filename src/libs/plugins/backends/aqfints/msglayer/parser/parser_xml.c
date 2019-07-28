@@ -459,6 +459,9 @@ void readElement(AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlSource)
   if (s && *s)
     AQFINTS_Element_SetId(el, s);
 
+  i=GWEN_XMLNode_GetIntProperty(xmlSource, "version", 0);
+  AQFINTS_Element_SetVersion(el, i);
+
   s=GWEN_XMLNode_GetProperty(xmlSource, "type", NULL);
   if (s && *s)
     AQFINTS_Element_SetType(el, s);
@@ -526,6 +529,10 @@ void writeElement(const AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlDest)
   s=AQFINTS_Element_GetId(el);
   if (s && *s)
     GWEN_XMLNode_SetProperty(xmlDest, "id", s);
+
+  i=AQFINTS_Element_GetVersion(el);
+  if (i!=0)
+    GWEN_XMLNode_SetIntProperty(xmlDest, "version", i);
 
   s=AQFINTS_Element_GetType(el);
   if (s && *s)

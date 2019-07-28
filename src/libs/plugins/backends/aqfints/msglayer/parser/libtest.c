@@ -963,7 +963,7 @@ int test_parser()
   int rv;
 
   parser=AQFINTS_Parser_new();
-  AQFINTS_Parser_AddPath(parser, "../xml");
+  AQFINTS_Parser_AddPath(parser, "../..");
   rv=AQFINTS_Parser_ReadFiles(parser);
   if (rv<0) {
     fprintf(stderr, "Error reading files.\n");

@@ -193,5 +193,9 @@ AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefById(const AQFINTS_PARSER *parser, cons
 
 
 
+void AQFINTS_Parser_DumpDefinitions(AQFINTS_PARSER *parser, int indent);
+
+
+
 #endif
 

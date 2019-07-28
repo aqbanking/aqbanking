@@ -1,6 +1,6 @@
 SUBDIRS=msglayer servicelayer
 
-INCLUDES = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/..
+INCLUDES = -I$(srcdir) -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/..
 
 DEFS += -DBUILDING_AQFINTS
 
@@ -16,6 +16,20 @@ noinst_HEADERS=provider_l.h provider_p.h
 # static plugin library
 noinst_LTLIBRARIES=libaqfints.la 
 libaqfints_la_SOURCES=provider.c
+
+
+libaqfints_la_LIBADD=\
+  msglayer/libaqfintsmsg.la \
+  servicelayer/libaqfintsservice.la
+
+
+
+noinst_PROGRAMS = libtest
+
+libtest_SOURCES = libtest.c
+libtest_LDADD = libaqfints.la $(gwenhywfar_libs)
+
+
 
 sources:
 	for f in $(libaqfints_la_SOURCES); do \

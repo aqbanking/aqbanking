@@ -1,8 +1,14 @@
-aqfints_upd.tm2
-aqfints_upd_list.tm2
-upd.c
-upd.h
-upd_p.h
+aqfints_accountdata.tm2
+aqfints_accountdata_list.tm2
+accountdata.c
+accountdata.h
+accountdata_p.h
+
+aqfints_userdata.tm2
+aqfints_userdata_list.tm2
+userdata.c
+userdata.h
+userdata_p.h
 
 aqfints_updjob.tm2
 aqfints_updjob_list.tm2

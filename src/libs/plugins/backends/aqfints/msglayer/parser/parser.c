@@ -19,6 +19,7 @@
 #include "parser_hbci.h"
 #include "parser_normalize.h"
 #include "parser_dbread.h"
+#include "parser_dump.h"
 
 
 #include <gwenhywfar/debug.h>
@@ -312,8 +313,14 @@ int AQFINTS_Parser_ReadSegmentListToDb(AQFINTS_PARSER *parser,
       defSegment=AQFINTS_Parser_FindSegmentByCode(parser, sCode, segmentVersion, 0);
       if (defSegment) {
         int rv;
+        GWEN_DB_NODE *dbSegment;
+        const char *sGroupName;
 
-        rv=AQFINTS_Parser_Db_ReadSegment(defSegment, segment, db);
+        sGroupName=AQFINTS_Segment_GetId(defSegment);
+        if (!(sGroupName && *sGroupName))
+          sGroupName=AQFINTS_Segment_GetCode(defSegment);
+        dbSegment=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_CREATE_GROUP, sGroupName);
+        rv=AQFINTS_Parser_Db_ReadSegment(defSegment, segment, dbSegment);
         if (rv<0) {
           DBG_ERROR(0, "Error reading segment \"%s\" (version %d) into DB (%d)", sCode, segmentVersion, rv);
           return rv;
@@ -338,6 +345,14 @@ int AQFINTS_Parser_ReadSegmentListToDb(AQFINTS_PARSER *parser,
   }
 
   return 0;
+}
+
+
+
+
+void AQFINTS_Parser_DumpDefinitions(AQFINTS_PARSER *parser, int indent)
+{
+  AQFINTS_Parser_DumpSegmentList(parser->segmentList, indent);
 }
 
 

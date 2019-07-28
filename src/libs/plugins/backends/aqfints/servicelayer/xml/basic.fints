@@ -83,15 +83,15 @@
     <GROUPdef id="ktv" version="1">
       <!-- "Kontoverbindung" -->
       <DE  name="accountid"         type="ascii" maxsize="20" />
-      <DEG                          type="kik" version="1" />
+      <GROUP                        type="kik" version="1" />
     </GROUPdef>
   
 
     <GROUPdef id="ktv" version="2">
       <!-- "Kontoverbindung" -->
-      <DE  name="accountid"         type="ascii" maxsize="20" />
-      <DE  name="accountSubId"      type="ascii" minnum="0" maxsize="20" />
-      <GROUP type="kik" version="1" />
+      <DE    name="accountid"         type="ascii" maxsize="20" />
+      <DE    name="accountSubId"      type="ascii" minnum="0" maxsize="20" />
+      <GROUP                          type="kik" version="1" />
     </GROUPdef>
   
   
@@ -101,7 +101,7 @@
       <DE  name="bic"               type="ascii" minnum="0" />
       <DE  name="accountid"         type="ascii" minnum="0" />
       <DE  name="accountsubid"      type="ascii" minnum="0" />
-      <DEG                          type="kik" />
+      <GROUP                        type="kik" />
     </GROUPdef>
   
 

@@ -16,7 +16,8 @@ noinst_LTLIBRARIES=libafmsgupd.la
 
 typefiles= \
   updjob.xml \
-  upd.xml
+  accountdata.xml \
+  userdata.xml
 
 
 
@@ -35,17 +36,20 @@ dist_typedata_DATA=
 
 built_sources=\
   updjob.c \
-  upd.c
+  accountdata.c \
+  userdata.c
 
 
 build_headers_priv=\
   updjob_p.h \
-  upd_p.h
+  accountdata_p.h \
+  userdata_p.h
 
 
 build_headers_pub=\
   updjob.h \
-  upd.h
+  accountdata.h \
+  userdata.h
 
 
 
@@ -89,8 +93,12 @@ sources:
 	done
 
 
-types: $(typefiles)
+types: $(typefiles) typedefs
 	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" $(typefiles)
+
+
+typedefs: $(typefiles)
+	$(typemaker2_exe) --defs-only -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" $(typefiles)
 
 
 

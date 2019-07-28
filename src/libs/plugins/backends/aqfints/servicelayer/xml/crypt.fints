@@ -82,9 +82,9 @@
 
     <GROUPdef id="SecDetails" version="1" >
       <!-- Sicherheitsidentifikation, Details -->
-      <DE name="dir"               type="num" maxsize=3 />
-      <DE                          type="an" />
-      <DE name="SecId"             type="ascii" maxsize="256" minnum="1" />
+      <DE name="id"               type="num" maxsize=3 />
+      <DE name="cid"              type="an" minnum="0" />
+      <DE name="secId"            type="ascii" maxsize="256" minnum="0" />
     </GROUPdef>
 
 
@@ -125,14 +125,12 @@
       <!-- "Signaturabschluss" -->
       <DEG   name="head"             type="SegHead" />
       <DE    name="ctrlref"          type="ascii"      maxsize="14" />
-      <DE    name="signature_unused" type="bin"        maxsize="512" minnum="0" />
-      <DEG>
-        <GROUP>
-          <!-- maxsize should be 6 here and type should be AN, but then the 
-               logmanager has problems -->
-          <DE  name="pin"              type="ascii"      maxsize="35" />
-          <DE  name="tan"              type="an"         maxsize="35" minnum="0" />
-        </GROUP>
+      <DE    name="signature"        type="bin"        maxsize="512" minnum="0" />
+      <DEG   minnum="0" >
+        <!-- maxsize should be 6 here and type should be AN, but then the 
+             logmanager has problems -->
+        <DE  name="pin"              type="ascii"      maxsize="35" />
+        <DE  name="tan"              type="an"         maxsize="35" minnum="0" />
       </DEG>
       
     </SEGdef>

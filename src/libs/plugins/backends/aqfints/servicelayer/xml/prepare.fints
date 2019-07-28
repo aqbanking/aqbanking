@@ -8,7 +8,6 @@
     <SEGdef id="Prepare" 
             code="HKVVB" 
             segmentVersion="2"
-            protocolVersion="300"
     >
       <DEG   name="head"       type="SegHead" />
       <DE    name="bpdVersion" type="num"     maxsize="3" hide="1" />

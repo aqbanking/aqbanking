@@ -26,6 +26,8 @@ int AQFINTS_Parser_IsCharType(const char *sType)
     if (strcasecmp(sType, "AN")==0 ||
         strcasecmp(sType, "float")==0 ||
         strcasecmp(sType, "alpha")==0 ||
+        strcasecmp(sType, "date")==0 ||
+        strcasecmp(sType, "time")==0 ||
         strcasecmp(sType, "ascii")==0)
       return 1;
   }

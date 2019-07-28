@@ -14,6 +14,7 @@
 
 
 #include "parser_hbci.h"
+#include "parser_normalize.h"
 
 #include <gwenhywfar/syncio_memory.h>
 #include <gwenhywfar/debug.h>
@@ -78,6 +79,9 @@ int AQFINTS_Parser_Hbci_ReadBuffer(AQFINTS_SEGMENT_LIST *targetSegmentList,
       return rv;
     }
     parseSegHeader(targetSegment);
+
+    AQFINTS_Parser_Segment_RemoveTrailingEmptyElements(targetSegment);
+
     AQFINTS_Segment_List_Add(targetSegment, targetSegmentList);
 
     /* set pos and size */
