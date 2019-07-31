@@ -1,4 +1,4 @@
-SUBDIRS=msglayer servicelayer transportlayer
+SUBDIRS=msglayer servicelayer transportlayer sessionlayer
 
 INCLUDES = -I$(srcdir) -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/..
 
@@ -20,7 +20,8 @@ libaqfints_la_SOURCES=provider.c
 
 libaqfints_la_LIBADD=\
   msglayer/libaqfintsmsg.la \
-  servicelayer/libaqfintsservice.la
+  servicelayer/libaqfintsservice.la \
+  transportlayer/libaqfintstransport.la
 
 
 
