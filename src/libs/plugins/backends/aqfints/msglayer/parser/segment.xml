@@ -178,6 +178,14 @@
       </member>
 
 
+      <member name="dbData" type="GWEN_DB_NODE" >
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+
 
       <member name="runtimeFlags" type="uint32_t" maxlen="8">
         <default>0</default>
