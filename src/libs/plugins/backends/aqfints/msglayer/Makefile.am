@@ -15,7 +15,8 @@ DEFS+=-DAH_XMLDATADIR=\"$(aqbanking_data_searchdir)/aqbanking/backends/aqhbci\"
 noinst_LTLIBRARIES=libaqfintsmsg.la
 
 
-typefiles=
+typefiles=\
+  keyname.xml
 
 
 
@@ -24,9 +25,16 @@ dist_typedata_DATA=
 
 
 
-built_sources=
-build_headers_priv=
-build_headers_pub=
+built_sources=\
+  keyname.c
+
+
+build_headers_priv=\
+  keyname_p.h
+
+
+build_headers_pub=\
+  keyname.h
 
 
 build_headers=$(build_headers_priv) $(build_headers_pub)
@@ -36,7 +44,7 @@ build_headers=$(build_headers_priv) $(build_headers_pub)
 noinst_HEADERS= $(build_headers)
 
 
-libaqfintsmsg_la_SOURCES=\
+libaqfintsmsg_la_SOURCES=$(built_sources) \
   message.c
 
 

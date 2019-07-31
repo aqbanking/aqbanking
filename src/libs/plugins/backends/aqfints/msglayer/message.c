@@ -32,7 +32,8 @@ AQFINTS_MESSAGE *AQFINTS_Message_new(AQFINTS_PARSER *parser)
 
   GWEN_NEW_OBJECT(AQFINTS_MESSAGE, msg);
   msg->parser=parser;
-  msg->buffer=GWEN_Buffer_new(0, 256, 0, 1);
+  msg->signerList=AQFINTS_KeyName_List_new();
+
   return msg;
 }
 
@@ -41,42 +42,72 @@ AQFINTS_MESSAGE *AQFINTS_Message_new(AQFINTS_PARSER *parser)
 void AQFINTS_Message_free(AQFINTS_MESSAGE *msg)
 {
   if (msg) {
-    if (msg->buffer) {
-      GWEN_Buffer_free(msg->buffer);
-      msg->buffer=NULL;
-    }
+    AQFINTS_KeyName_List_free(msg->signerList);
+    AQFINTS_KeyName_free(msg->crypter);
     GWEN_FREE_OBJECT(msg);
   }
 }
 
 
 
-GWEN_BUFFER *AQFINTS_Message_GetBuffer(AQFINTS_MESSAGE *msg)
+AQFINTS_KEYNAME_LIST *AQFINTS_Message_GetSignerList(const AQFINTS_MESSAGE *msg)
 {
   assert(msg);
-  return msg->buffer;
+  return msg->signerList;
 }
 
 
 
-GWEN_BUFFER *AQFINTS_Message_TakeBuffer(AQFINTS_MESSAGE *msg)
+void AQFINTS_Message_AddSigner(AQFINTS_MESSAGE *msg, AQFINTS_KEYNAME *keyName)
 {
   assert(msg);
-  if (msg->buffer) {
-    GWEN_BUFFER *buffer;
-
-    buffer=msg->buffer;
-    msg->buffer=GWEN_Buffer_new(0, 256, 0, 1);
-    return buffer;
-  }
-  return NULL;
+  AQFINTS_KeyName_List_Add(keyName, msg->signerList);
 }
 
 
 
+AQFINTS_KEYNAME *AQFINTS_Message_GetCrypter(const AQFINTS_MESSAGE *msg)
+{
+  assert(msg);
+  return msg->crypter;
+}
+
+
+
+void AQFINTS_Message_SetCrypter(AQFINTS_MESSAGE *msg, AQFINTS_KEYNAME *keyName)
+{
+  assert(msg);
+  if (msg->crypter)
+    AQFINTS_KeyName_free(msg->crypter);
+  msg->crypter=keyName;
+}
+
+
+
+AQFINTS_SEGMENT_LIST *AQFINTS_Message_GetSegmentList(const AQFINTS_MESSAGE *msg)
+{
+  assert(msg);
+  return msg->segmentList;
+}
+
+
+
+void AQFINTS_Message_AddSegment(AQFINTS_MESSAGE *msg, AQFINTS_SEGMENT *segment)
+{
+  assert(msg);
+  assert(segment);
+  AQFINTS_Segment_List_Add(segment, msg->segmentList);
+}
+
+
+
+
+
+
+
+#if 0
 int AQFINTS_Message_AddSegment(AQFINTS_MESSAGE *msg,
-                               AQFINTS_SEGMENT *defSegment,
-                               GWEN_DB_NODE *dbData)
+                               AQFINTS_SEGMENT *defSegment)
 {
   AQFINTS_SEGMENT *segmentOut;
   int rv;
@@ -95,6 +126,10 @@ int AQFINTS_Message_AddSegment(AQFINTS_MESSAGE *msg,
   AQFINTS_Segment_free(segmentOut);
   return 0;
 }
+#endif
+
+
+
 
 
 

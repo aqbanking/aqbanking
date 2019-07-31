@@ -58,12 +58,12 @@ void AQFINTS_Parser_free(AQFINTS_PARSER *parser);
  * @param parser parser object
  * @param ptrBuf pointer to the buffer containing the HBCI message
  * @param lenBuf size of the HBCI message
- * @param db GWEN_DB_NODE to receive the data from the HBCI message
+ * @param dbData GWEN_DB_NODE tree to receive the parsed data
  */
 int AQFINTS_Parser_ReadIntoDb(AQFINTS_PARSER *parser,
                               const uint8_t *ptrBuf,
                               uint32_t lenBuf,
-                              GWEN_DB_NODE *db);
+                              GWEN_DB_NODE *dbData);
 
 
 /**
@@ -91,11 +91,9 @@ int AQFINTS_Parser_ReadIntoSegmentList(AQFINTS_PARSER *parser,
  * @return 0 if okay, errorcode otherwise
  * @param parser parser object
  * @param segmentList segment list to read data from
- * @param db GWEN_DB_NODE to receive the data from the HBCI message
  */
 int AQFINTS_Parser_ReadSegmentListToDb(AQFINTS_PARSER *parser,
-                                       AQFINTS_SEGMENT_LIST *segmentList,
-                                       GWEN_DB_NODE *db);
+                                       AQFINTS_SEGMENT_LIST *segmentList);
 /*@}*/
 
 

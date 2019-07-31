@@ -43,3 +43,39 @@
     - xml
   - parser
 
+
+
+- Session:
+  - haelt Nummer der naechsten zu sendenden Message
+  - haelt Nummer der naechsten zu empfangenen Message
+  - sendCommands()
+    - kuemmert sich intern um Signatur, Verschluesselung
+  - schickt Nachricht ueber TransportLayer
+  - empfaengt Nachricht ueber TransportLayer
+  - entschluesselt Nachricht, prueft ggf. Signatur
+  - parsed Nachricht in Segmente
+  - parsed Segmente in DB
+
+- Message:
+  - add Signer (KeyName)
+  - set Crypter (KeyName)
+
+- vor dem Senden:
+  - jedes segment in einen Puffer schreiben
+  - diesen Puffer im Segment speichern
+  - beim Signieren:
+    - fuer jeden Signierer:
+      - erzeuge SigHead segment
+      - fuege SigHead zu SigHead-Liste hinzu
+      - schreibe SigHead in buffer, speichere im Segment
+      - hashe SigHead
+      - hashe alle Daten-Segmente (alles ausser SigTail und SigHead)
+      - signiere hash
+      - erzeuge SigTail
+      - fuege SigTail zu SigTail-Liste hinzu
+    - addiere alle SigHead-Buffer in den Zielbuffer
+    - addiere alle Daten-Segmente in den Zielbuffer
+    - addiere alle SigTail-Buffer in den Zielbuffer
+
+
+- neue Klasse: KeyName (wie bei HBCI, also BLZ, UserId, KeyType, KeyVer, KeyNum)

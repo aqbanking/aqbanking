@@ -40,6 +40,8 @@
           <typeFlagsValue></typeFlagsValue>
           <content>
              void $(struct_prefix)_SetData($(struct_type) *st, uint8_t *ptr, uint32_t len) {
+               if (st-&gt;data.pointer &amp;&amp; st-&gt;data.length)
+                 free(st-&gt;data.pointer);
                st-&gt;data.pointer=ptr;
                st-&gt;data.length=len;
              }
@@ -100,6 +102,8 @@
       </define>
 
      <define id="AQFINTS_SEGMENT_FLAGS" prefix="AQFINTS_SEGMENT_FLAGS_">
+       <item name="CRYPT"       value="0x00000001" />
+       <item name="SIGN"        value="0x00000002" />
      </define>
 
     </defines>
@@ -164,7 +168,7 @@
 
       <member name="data" type="GWEN_BINDATA" maxlen="65536" >
         <access>private</access>
-        <flags>none</flags>
+        <flags>own</flags>
         <setflags>omit</setflags>
         <getflags>omit</getflags>
       </member>

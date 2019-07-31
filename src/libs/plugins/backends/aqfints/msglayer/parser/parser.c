@@ -246,9 +246,10 @@ AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefById(const AQFINTS_PARSER *parser, cons
 int AQFINTS_Parser_ReadIntoDb(AQFINTS_PARSER *parser,
                               const uint8_t *ptrBuf,
                               uint32_t lenBuf,
-                              GWEN_DB_NODE *db)
+                              GWEN_DB_NODE *dbData)
 {
   AQFINTS_SEGMENT_LIST *segmentList;
+  AQFINTS_SEGMENT *segment;
   int rv;
 
   segmentList=AQFINTS_Segment_List_new();
@@ -260,7 +261,7 @@ int AQFINTS_Parser_ReadIntoDb(AQFINTS_PARSER *parser,
     return rv;
   }
 
-  rv=AQFINTS_Parser_ReadSegmentListToDb(parser, segmentList, db);
+  rv=AQFINTS_Parser_ReadSegmentListToDb(parser, segmentList);
   if (rv<0) {
     DBG_INFO(0, "here (%d)", rv);
     AQFINTS_Segment_List_free(segmentList);
@@ -271,6 +272,16 @@ int AQFINTS_Parser_ReadIntoDb(AQFINTS_PARSER *parser,
   DBG_ERROR(0, "Got these segments");
   AQFINTS_Parser_DumpSegmentList(segmentList, 2);
 #endif
+
+  segment=AQFINTS_Segment_List_First(segmentList);
+  while(segment) {
+    GWEN_DB_NODE *dbSegment;
+
+    dbSegment=AQFINTS_Segment_GetDbData(segment);
+    if (dbSegment)
+      GWEN_DB_AddGroup(dbData, GWEN_DB_Group_dup(dbSegment));
+    segment=AQFINTS_Segment_List_Next(segment);
+  }
 
   AQFINTS_Segment_List_free(segmentList);
   return 0;
@@ -297,9 +308,7 @@ int AQFINTS_Parser_ReadIntoSegmentList(AQFINTS_PARSER *parser,
 
 
 
-int AQFINTS_Parser_ReadSegmentListToDb(AQFINTS_PARSER *parser,
-                                       AQFINTS_SEGMENT_LIST *segmentList,
-                                       GWEN_DB_NODE *db)
+int AQFINTS_Parser_ReadSegmentListToDb(AQFINTS_PARSER *parser, AQFINTS_SEGMENT_LIST *segmentList)
 {
   AQFINTS_SEGMENT *segment;
   int segmentsRead=0;
@@ -324,7 +333,8 @@ int AQFINTS_Parser_ReadSegmentListToDb(AQFINTS_PARSER *parser,
         sGroupName=AQFINTS_Segment_GetId(defSegment);
         if (!(sGroupName && *sGroupName))
           sGroupName=AQFINTS_Segment_GetCode(defSegment);
-        dbSegment=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_CREATE_GROUP, sGroupName);
+        dbSegment=GWEN_DB_Group_new(sGroupName);
+        AQFINTS_Segment_SetDbData(segment, dbSegment);
         rv=AQFINTS_Parser_Db_ReadSegment(defSegment, segment, dbSegment);
         if (rv<0) {
           DBG_ERROR(0, "Error reading segment \"%s\" (version %d) into DB (%d)", sCode, segmentVersion, rv);

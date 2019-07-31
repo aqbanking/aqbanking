@@ -18,7 +18,11 @@
 
 struct AQFINTS_MESSAGE {
   AQFINTS_PARSER *parser;
-  GWEN_BUFFER *buffer;
+
+  AQFINTS_KEYNAME_LIST *signerList;
+  AQFINTS_KEYNAME *crypter;
+
+  AQFINTS_SEGMENT_LIST *segmentList;
 };
 
 

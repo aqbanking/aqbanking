@@ -66,6 +66,7 @@ void AQFINTS_Parser_DumpSegment(AQFINTS_SEGMENT *segment, int indent)
   const char *s;
   AQFINTS_ELEMENT *elementTree;
   uint32_t rtflags;
+  GWEN_DB_NODE *db;
 
   for (i=0; i<indent; i++)
     fprintf(stderr, " ");
@@ -101,6 +102,14 @@ void AQFINTS_Parser_DumpSegment(AQFINTS_SEGMENT *segment, int indent)
     fprintf(stderr, " parsed");
 
   fprintf(stderr, "\n");
+
+  db=AQFINTS_Segment_GetDbData(segment);
+  if (db) {
+    for (i=0; i<indent+2; i++)
+      fprintf(stderr, " ");
+    fprintf(stderr, "DbData:\n");
+    GWEN_DB_Dump(db, indent+4);
+  }
 
   elementTree=AQFINTS_Segment_GetElements(segment);
   if (elementTree)
