@@ -1,0 +1,129 @@
+<?xml?>
+
+<tm2>
+  <type id="AQFINTS_TRANSPORT" type="pointer">
+    <descr>
+    </descr>
+
+    <lang id="c">
+      <identifier>AQFINTS_TRANSPORT</identifier>
+      <prefix>AQFINTS_Transport</prefix>
+      
+      <baseFileName>transport</baseFileName>
+      
+      <flags>
+        with_inherit
+        with_refcount
+        noCopy
+        noDup
+      </flags>
+      
+      <headers>
+        <header type="sys" loc="pre">aqbanking/error.h</header>
+        <header type="sys" loc="pre">gwenhywfar/buffer.h</header>
+
+      </headers>
+
+
+      <inlines>
+
+
+      </inlines>
+
+
+    </lang>
+
+    <enums>
+
+    </enums>
+
+    <defines>
+
+    </defines>
+
+
+    <members>
+
+
+      <member name="url" type="char_ptr" maxlen="256" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <flags>own with_hash</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+    </members>
+
+
+
+    <virtualFns>
+
+      <fn name="connect" location="post" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <returnType>int</returnType>
+        <defaultReturnValue>GWEN_ERROR_NOT_IMPLEMENTED</defaultReturnValue>
+        <params>
+        </params>
+      </fn>
+
+
+      <fn name="disconnect" location="post" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <returnType>int</returnType>
+        <defaultReturnValue>GWEN_ERROR_NOT_IMPLEMENTED</defaultReturnValue>
+        <params>
+        </params>
+      </fn>
+
+
+      <fn name="sendMessage" location="post" >
+        <descr>
+          Send a HBCI message.
+        </descr>
+        <access>public</access>
+        <returnType>int</returnType>
+        <defaultReturnValue>GWEN_ERROR_NOT_IMPLEMENTED</defaultReturnValue>
+        <params>
+          <param type="const char*"       name="ptrBuffer" >
+            <descr>
+            </descr>
+          </param>
+
+          <param type="int"               name="lenBuffer" >
+            <descr>
+            </descr>
+          </param>
+        </params>
+      </fn>
+
+
+      <fn name="receiveMessage" location="post" >
+        <descr>
+          Receive a HBCI message.
+        </descr>
+        <access>public</access>
+        <returnType>int</returnType>
+        <defaultReturnValue>GWEN_ERROR_NOT_IMPLEMENTED</defaultReturnValue>
+        <params>
+          <param type="GWEN_BUFFER*"      name="buffer" >
+            <descr>
+            </descr>
+          </param>
+        </params>
+      </fn>
+
+
+    </virtualFns>
+
+    
+  </type>
+  
+</tm2>
+

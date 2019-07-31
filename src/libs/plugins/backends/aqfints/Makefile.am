@@ -1,4 +1,4 @@
-SUBDIRS=msglayer servicelayer
+SUBDIRS=msglayer servicelayer transportlayer
 
 INCLUDES = -I$(srcdir) -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/..
 
