@@ -12,11 +12,10 @@
 # include <config.h>
 #endif
 
+#include "transportssl_p.h"
 
 #include "aqfints/aqfints.h"
 #include "i18n_l.h"
-
-#include "transportssl_p.h"
 
 #include <gwenhywfar/base64.h>
 #include <gwenhywfar/gui.h>
@@ -31,7 +30,7 @@
  */
 
 
-static void GWENHYWFAR_CB AQFINTS_TransportSsl_freeData(void *bp, void *p);
+static void GWENHYWFAR_CB freeData(void *bp, void *p);
 static int createIoLayer(AQFINTS_TRANSPORT *trans);
 static int transportConnect(AQFINTS_TRANSPORT *trans);
 static int transportDisconnect(AQFINTS_TRANSPORT *trans);
@@ -41,7 +40,6 @@ static int transportReallySendMessage(AQFINTS_TRANSPORT *trans, const char *ptrB
 static int transportReceiveMessage(AQFINTS_TRANSPORT *trans, GWEN_BUFFER *buffer);
 static int transportReallyReceiveMessage(AQFINTS_TRANSPORT *trans, GWEN_BUFFER *buffer);
 static int recvPacket(AQFINTS_TRANSPORT *trans, GWEN_BUFFER *tbuf);
-static int determineMessageSize(const char *ptr);
 static void trimBuffer(GWEN_BUFFER *tbuf);
 
 
@@ -64,7 +62,7 @@ AQFINTS_TRANSPORT *AQFINTS_TransportSsl_new(const char *url)
 
   trans=AQFINTS_Transport_new();
   GWEN_NEW_OBJECT(AQFINTS_TRANSPORT_SSL, xtrans);
-  GWEN_INHERIT_SETDATA(AQFINTS_TRANSPORT, AQFINTS_TRANSPORT_SSL, trans, xtrans, AQFINTS_TransportSsl_freeData);
+  GWEN_INHERIT_SETDATA(AQFINTS_TRANSPORT, AQFINTS_TRANSPORT_SSL, trans, xtrans, freeData);
 
   AQFINTS_Transport_SetUrl(trans, url);
 
@@ -79,7 +77,7 @@ AQFINTS_TRANSPORT *AQFINTS_TransportSsl_new(const char *url)
 
 
 
-void GWENHYWFAR_CB AQFINTS_TransportSsl_freeData(void *bp, void *p)
+void GWENHYWFAR_CB freeData(void *bp, void *p)
 {
   AQFINTS_TRANSPORT_SSL *xtrans;
 
@@ -442,46 +440,6 @@ int recvPacket(AQFINTS_TRANSPORT *trans, GWEN_BUFFER *tbuf)
 
 
 
-int determineMessageSize(const char *ptr)
-{
-  const char *p1;
-  const char *p2;
-  char *copiedString=NULL;
-  int msgSize;
-
-  /* seek to begin of size */
-  p1=strchr(ptr, '+');
-  if (p1==NULL) {
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "Bad data (missing '+')");
-    return GWEN_ERROR_BAD_DATA;
-  }
-  p1++;
-
-  /* seek to end of size */
-  p2=strchr(p1, '+');
-  if (p2==NULL) {
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "Bad data (missing second '+')");
-    return GWEN_ERROR_BAD_DATA;
-  }
-
-  /* read message size */
-  copiedString=strndup(p1, (p2-p1));
-  assert(copiedString);
-  if (1!=sscanf(p1, "%d", &msgSize)) {
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "Bad size field [%s]", copiedString);
-    free(copiedString);
-    GWEN_Gui_ProgressLog(0,
-                         GWEN_LoggerLevel_Error,
-                         I18N("Unparsable message received"));
-    return GWEN_ERROR_BAD_DATA;
-  }
-  free(copiedString);
-
-  return msgSize;
-}
-
-
-
 void trimBuffer(GWEN_BUFFER *tbuf)
 {
   const char *p;
@@ -554,9 +512,12 @@ int transportReallyReceiveMessage(AQFINTS_TRANSPORT *trans, GWEN_BUFFER *buffer)
   trimBuffer(tbuf);
 
   /* check message size */
-  msgSize=determineMessageSize(GWEN_Buffer_GetStart(tbuf));
+  msgSize=AQFINTS_Transport_DetermineMessageSize(GWEN_Buffer_GetStart(tbuf));
   if (msgSize<0) {
     DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", msgSize);
+    GWEN_Gui_ProgressLog(0,
+                         GWEN_LoggerLevel_Error,
+                         I18N("Unparsable message received"));
     /* for debugging purposes */
     GWEN_Buffer_Dump(tbuf, 2);
     GWEN_Buffer_free(tbuf);

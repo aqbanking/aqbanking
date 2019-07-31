@@ -21,11 +21,68 @@
       <headers>
         <header type="sys" loc="pre">aqbanking/error.h</header>
         <header type="sys" loc="pre">gwenhywfar/buffer.h</header>
+        <header type="sys" loc="pre">ctype.h</header>
+        <header type="local" loc="post">aqfints/aqfints.h</header>
 
       </headers>
 
 
       <inlines>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             /** \n
+             * Expects the given to contain the beginning of a HBCI message starting with a \n
+             * HNHBK segment. Reads the message size from the appropriate field of that segment. \n
+             */ \n
+             $(api) int $(struct_prefix)_DetermineMessageSize(const char *ptr);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             int $(struct_prefix)_DetermineMessageSize(const char *ptr) {
+               const char *p1;
+               const char *p2;
+               char *copiedString=NULL;
+               int msgSize;
+             
+               /* seek to begin of size */
+               p1=strchr(ptr, '+');
+               if (p1==NULL) {
+                 DBG_ERROR(AQFINTS_LOGDOMAIN, "Bad data (missing '+')");
+                 return GWEN_ERROR_BAD_DATA;
+               }
+               p1++;
+             
+               /* seek to end of size */
+               p2=strchr(p1, '+');
+               if (p2==NULL) {
+                 DBG_ERROR(AQFINTS_LOGDOMAIN, "Bad data (missing second '+')");
+                 return GWEN_ERROR_BAD_DATA;
+               }
+             
+               /* read message size */
+               copiedString=strndup(p1, (p2-p1));
+               assert(copiedString);
+               if (1!=sscanf(p1, "%d", &msgSize)) {
+                 DBG_ERROR(AQFINTS_LOGDOMAIN, "Bad size field [%s]", copiedString);
+                 free(copiedString);
+                 return GWEN_ERROR_BAD_DATA;
+               }
+               free(copiedString);
+             
+               return msgSize;
+             }
+          </content>
+        </inline>
+
+
 
 
       </inlines>
@@ -85,20 +142,18 @@
 
       <fn name="sendMessage" location="post" >
         <descr>
-          Send a HBCI message.
+          Send a HBCI message. Returns 0 if okay, error code otherwise.
         </descr>
         <access>public</access>
         <returnType>int</returnType>
         <defaultReturnValue>GWEN_ERROR_NOT_IMPLEMENTED</defaultReturnValue>
         <params>
           <param type="const char*"       name="ptrBuffer" >
-            <descr>
-            </descr>
+            <descr>Pointer to a buffer containing the message to be sent</descr>
           </param>
 
           <param type="int"               name="lenBuffer" >
-            <descr>
-            </descr>
+            <descr>size of the buffer containing the message to be sent</descr>
           </param>
         </params>
       </fn>
@@ -106,15 +161,14 @@
 
       <fn name="receiveMessage" location="post" >
         <descr>
-          Receive a HBCI message.
+          Receive a HBCI message. Returns 0 if okay, error code otherwise.
         </descr>
         <access>public</access>
         <returnType>int</returnType>
         <defaultReturnValue>GWEN_ERROR_NOT_IMPLEMENTED</defaultReturnValue>
         <params>
           <param type="GWEN_BUFFER*"      name="buffer" >
-            <descr>
-            </descr>
+            <descr>Pointer to a GWEN_BUFFER to receive the HBCI message</descr>
           </param>
         </params>
       </fn>

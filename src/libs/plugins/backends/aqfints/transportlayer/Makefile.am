@@ -46,12 +46,15 @@ build_headers=$(build_headers_priv) $(build_headers_pub)
 
 noinst_HEADERS= $(build_headers) \
   transportssl.h \
-  transportssl_p.h
+  transportssl_p.h \
+  transporthbci.h \
+  transporthbci_p.h
 
 
 
 libaqfintstransport_la_SOURCES=$(built_sources) \
-  transportssl.c
+  transportssl.c \
+  transporthbci.c
 
 
 
