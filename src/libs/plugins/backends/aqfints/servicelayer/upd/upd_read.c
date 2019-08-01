@@ -43,6 +43,178 @@ static AQFINTS_LIMIT_TYPE limitTypeFromChar(const char *s);
 
 
 
+AQFINTS_USERDATA_LIST *AQFINTS_Upd_SampleUpdFromSegmentList(AQFINTS_SEGMENT_LIST *segmentList,
+                                                            int removeFromSegList)
+{
+  AQFINTS_SEGMENT *segment;
+  AQFINTS_USERDATA_LIST *userDataList;
+
+  userDataList=AQFINTS_UserData_List_new();
+
+  segment=AQFINTS_Segment_List_First(segmentList);
+  while (segment) {
+    AQFINTS_SEGMENT *nextSegment;
+    const char *sCode;
+    int doRemoveSegment=0;
+
+    nextSegment=AQFINTS_Segment_List_Next(segment);
+
+    sCode=AQFINTS_Segment_GetCode(segment);
+    if (sCode && *sCode && strcasecmp(sCode, "HIUPA")==0) { /* read userData */
+      GWEN_DB_NODE *db;
+
+      db=AQFINTS_Segment_GetDbData(segment);
+      if (db) {
+        AQFINTS_USERDATA *userData;
+
+        userData=AQFINTS_Upd_ReadUserData(db);
+        if (userData) {
+          DBG_ERROR(AQFINTS_LOGDOMAIN, "Adding user data");
+          AQFINTS_UserData_List_Add(userData, userDataList);
+          if (removeFromSegList)
+            doRemoveSegment=1;
+        }
+      }
+    }
+    else if (sCode && *sCode && strcasecmp(sCode, "HIUPD")==0) { /* read accountData */
+      GWEN_DB_NODE *db;
+
+      db=AQFINTS_Segment_GetDbData(segment);
+      if (db) {
+        AQFINTS_ACCOUNTDATA *accountData;
+
+        accountData=AQFINTS_Upd_ReadAccountData(db);
+        if (accountData) {
+          AQFINTS_USERDATA *userData;
+
+          userData=AQFINTS_UserData_List_Last(userDataList);
+          if (userData) {
+            DBG_ERROR(AQFINTS_LOGDOMAIN, "Adding account data");
+            AQFINTS_UserData_AddAccountData(userData, accountData);
+          }
+          else {
+            DBG_ERROR(AQFINTS_LOGDOMAIN, "Got account data wihtout prior userData, ignoring accountData");
+            AQFINTS_AccountData_free(accountData);
+          }
+          if (removeFromSegList)
+            doRemoveSegment=1;
+        }
+      }
+    }
+
+    if (doRemoveSegment) {
+      AQFINTS_Segment_List_Del(segment);
+      AQFINTS_Segment_free(segment);
+    }
+
+    segment=nextSegment;
+  }
+
+  if (AQFINTS_UserData_List_GetCount(userDataList)==0) {
+    AQFINTS_UserData_List_free(userDataList);
+    return NULL;
+  }
+
+  return userDataList;
+}
+
+
+
+AQFINTS_USERDATA_LIST *AQFINTS_Upd_SampleUserDataFromSegmentList(AQFINTS_SEGMENT_LIST *segmentList,
+                                                                 int removeFromSegList)
+{
+  AQFINTS_SEGMENT *segment;
+  AQFINTS_USERDATA_LIST *userDataList;
+
+  userDataList=AQFINTS_UserData_List_new();
+
+  segment=AQFINTS_Segment_List_First(segmentList);
+  while (segment) {
+    AQFINTS_SEGMENT *nextSegment;
+    const char *sCode;
+
+    nextSegment=AQFINTS_Segment_List_Next(segment);
+
+    sCode=AQFINTS_Segment_GetCode(segment);
+    if (sCode && *sCode && strcasecmp(sCode, "HIUPA")==0) {
+      GWEN_DB_NODE *db;
+
+      db=AQFINTS_Segment_GetDbData(segment);
+      if (db) {
+        AQFINTS_USERDATA *userData;
+
+        userData=AQFINTS_Upd_ReadUserData(db);
+        if (userData) {
+          AQFINTS_UserData_List_Add(userData, userDataList);
+          if (removeFromSegList) {
+            AQFINTS_Segment_List_Del(segment);
+            AQFINTS_Segment_free(segment);
+          }
+        }
+      }
+    }
+
+    segment=nextSegment;
+  }
+
+  if (AQFINTS_UserData_List_GetCount(userDataList)==0) {
+    AQFINTS_UserData_List_free(userDataList);
+    return NULL;
+  }
+
+  return userDataList;
+}
+
+
+
+AQFINTS_ACCOUNTDATA_LIST *AQFINTS_Upd_SampleAccountDataFromSegmentList(AQFINTS_SEGMENT_LIST *segmentList,
+                                                                       int removeFromSegList)
+{
+  AQFINTS_SEGMENT *segment;
+  AQFINTS_ACCOUNTDATA_LIST *accountDataList;
+
+  accountDataList=AQFINTS_AccountData_List_new();
+
+  segment=AQFINTS_Segment_List_First(segmentList);
+  while (segment) {
+    AQFINTS_SEGMENT *nextSegment;
+    const char *sCode;
+
+    nextSegment=AQFINTS_Segment_List_Next(segment);
+
+    sCode=AQFINTS_Segment_GetCode(segment);
+    if (sCode && *sCode && strcasecmp(sCode, "HIUPA")==0) {
+      GWEN_DB_NODE *db;
+
+      db=AQFINTS_Segment_GetDbData(segment);
+      if (db) {
+        AQFINTS_ACCOUNTDATA *accountData;
+
+        accountData=AQFINTS_Upd_ReadAccountData(db);
+        if (accountData) {
+          AQFINTS_AccountData_List_Add(accountData, accountDataList);
+          if (removeFromSegList) {
+            AQFINTS_Segment_List_Del(segment);
+            AQFINTS_Segment_free(segment);
+          }
+        }
+      }
+    }
+
+    segment=nextSegment;
+  }
+
+  if (AQFINTS_AccountData_List_GetCount(accountDataList)==0) {
+    AQFINTS_AccountData_List_free(accountDataList);
+    return NULL;
+  }
+
+  return accountDataList;
+}
+
+
+
+
 AQFINTS_USERDATA *AQFINTS_Upd_ReadUserData(GWEN_DB_NODE *db)
 {
   AQFINTS_USERDATA *userData;
@@ -184,7 +356,8 @@ void readAccountDataLimit(AQFINTS_ACCOUNTDATA *accountData, GWEN_DB_NODE *db)
 }
 
 
-AQFINTS_UPDJOB *readUpdJob(GWEN_DB_NODE *db) {
+AQFINTS_UPDJOB *readUpdJob(GWEN_DB_NODE *db)
+{
   AQFINTS_UPDJOB *j;
   const char *s;
   int i;
@@ -227,7 +400,8 @@ AQFINTS_UPDJOB *readUpdJob(GWEN_DB_NODE *db) {
 
 
 
-AQFINTS_LIMIT_TYPE limitTypeFromChar(const char *s) {
+AQFINTS_LIMIT_TYPE limitTypeFromChar(const char *s)
+{
   if (strcasecmp(s, "E")==0)
     return AQFINTS_LimitType_JobLimit;
   else if (strcasecmp(s, "T")==0)

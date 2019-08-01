@@ -15,8 +15,7 @@ DEFS+=-DAH_XMLDATADIR=\"$(aqbanking_data_searchdir)/aqbanking/backends/aqfints\"
 noinst_LTLIBRARIES=libaqfintssession.la
 
 
-typefiles=\
-  session.xml
+typefiles=
 
 
 
@@ -25,17 +24,14 @@ dist_typedata_DATA=
 
 
 
-built_sources=\
-  session.c
+built_sources=
 
 
-build_headers_priv=\
-  session_p.h
+build_headers_priv=
 
 
 
-build_headers_pub=\
-  session.h
+build_headers_pub=
 
 
 
@@ -48,7 +44,8 @@ noinst_HEADERS= $(build_headers)
 
 
 
-libaqfintssession_la_SOURCES=$(built_sources)
+libaqfintssession_la_SOURCES=$(built_sources) \
+  session.c
 
 
 

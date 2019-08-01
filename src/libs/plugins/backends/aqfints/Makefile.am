@@ -28,7 +28,7 @@ libaqfints_la_LIBADD=\
 noinst_PROGRAMS = libtest
 
 libtest_SOURCES = libtest.c
-libtest_LDADD = libaqfints.la $(gwenhywfar_libs)
+libtest_LDADD = libaqfints.la $(gwenhywfar_libs) $(aqbanking_internal_libs)
 
 
 
