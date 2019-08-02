@@ -21,7 +21,8 @@ libaqfints_la_SOURCES=provider.c
 libaqfints_la_LIBADD=\
   msglayer/libaqfintsmsg.la \
   servicelayer/libaqfintsservice.la \
-  transportlayer/libaqfintstransport.la
+  transportlayer/libaqfintstransport.la \
+  sessionlayer/libaqfintssession.la
 
 
 

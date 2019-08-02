@@ -11,6 +11,8 @@
 
 #include "msglayer/parser/parser.h"
 #include "servicelayer/upd/upd_read.h"
+#include "transportlayer/transportssl.h"
+#include "sessionlayer/session.h"
 
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/db.h>
@@ -156,11 +158,44 @@ int test_upd()
 
 
 
+int test_getBpd()
+{
+  AQFINTS_PARSER *parser;
+  AQFINTS_SESSION *session;
+  AQFINTS_TRANSPORT *transport;
+  int rv;
+
+  parser=AQFINTS_Parser_new();
+  AQFINTS_Parser_AddPath(parser, ".");
+  rv=AQFINTS_Parser_ReadFiles(parser);
+  if (rv<0) {
+    fprintf(stderr, "Error reading files.\n");
+    return 2;
+  }
+
+  transport=AQFINTS_TransportSsl_new("https://xyz");
+
+  session=AQFINTS_Session_new(parser, transport);
+
+  rv=AQFINTS_Session_GetAnonBpd(session, "12345678");
+  if (rv<0) {
+    fprintf(stderr, "Error creating GetBPD request (%d).\n", rv);
+    return 2;
+  }
+
+  fprintf(stderr, "Success.\n");
+  return 0;
+}
+
+
+
+
 
 
 int main(int argc, char **argv) {
   //test_parser();
-  test_upd();
+  //test_upd();
+  test_getBpd();
   return 0;
 }
 

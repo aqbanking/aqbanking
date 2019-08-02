@@ -19,6 +19,24 @@
 #include <gwenhywfar/debug.h>
 
 
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+
+
 GWEN_INHERIT_FUNCTIONS(AQFINTS_SESSION)
 
 
@@ -246,8 +264,31 @@ int AQFINTS_Session_WriteSegment(AQFINTS_SESSION *sess, AQFINTS_SEGMENT *segment
 
 
 
-int AQFINTS_Session_CreateMessageHead(AQFINTS_SESSION *sess,
+int AQFINTS_Session_InsertMessageHead(AQFINTS_SESSION *sess,
                                       int msgNum, int refMsgNum,
+                                      GWEN_BUFFER *destBuffer)
+{
+  GWEN_BUFFER *tmpBuffer;
+  int rv;
+
+  tmpBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=AQFINTS_Session_CreateMessageHead(sess, msgNum, refMsgNum, GWEN_Buffer_GetUsedBytes(destBuffer), tmpBuffer);
+  if (rv<0) {
+    DBG_ERROR(0, "here (%d)", rv);
+    GWEN_Buffer_free(tmpBuffer);
+    return rv;
+  }
+
+  GWEN_Buffer_SetPos(destBuffer, 0);
+  GWEN_Buffer_InsertBytes(destBuffer, GWEN_Buffer_GetStart(tmpBuffer), GWEN_Buffer_GetUsedBytes(tmpBuffer));
+  GWEN_Buffer_SetPos(destBuffer, GWEN_Buffer_GetUsedBytes(destBuffer));
+  GWEN_Buffer_free(tmpBuffer);
+  return 0;
+}
+
+
+
+int AQFINTS_Session_CreateMessageHead(AQFINTS_SESSION *sess, int msgNum, int refMsgNum,
                                       int sizeOfMessageWithoutHead,
                                       GWEN_BUFFER *destBuffer)
 {
@@ -271,8 +312,10 @@ int AQFINTS_Session_CreateMessageHead(AQFINTS_SESSION *sess,
     DBG_ERROR(0, "No matching definition segment found for HNHBK (proto=%d)", hbciVersion);
     return GWEN_ERROR_INTERNAL;
   }
+
   segment=AQFINTS_Segment_new();
   AQFINTS_Segment_copy(segment, defSegment);
+  AQFINTS_Segment_SetSegmentNumber(segment, 1);
   dbSegment=GWEN_DB_Group_new("msgHead");
   AQFINTS_Segment_SetDbData(segment, dbSegment);
 
@@ -293,6 +336,9 @@ int AQFINTS_Session_CreateMessageHead(AQFINTS_SESSION *sess,
     return rv;
   }
 
+  /* reset segment */
+  AQFINTS_Segment_SetElements(segment, NULL);
+
   /* finally write the message header */
   GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "size", sizeOfMessageWithoutHead+GWEN_Buffer_GetUsedBytes(tmpBuffer));
   rv=AQFINTS_Session_WriteSegment(sess, segment, destBuffer);
@@ -307,7 +353,6 @@ int AQFINTS_Session_CreateMessageHead(AQFINTS_SESSION *sess,
 
   return 0;
 }
-
 
 
 

@@ -32,6 +32,7 @@ AQFINTS_MESSAGE *AQFINTS_Message_new(void)
 
   GWEN_NEW_OBJECT(AQFINTS_MESSAGE, msg);
   msg->signerList=AQFINTS_KeyName_List_new();
+  msg->segmentList=AQFINTS_Segment_List_new();
 
   return msg;
 }
@@ -41,6 +42,7 @@ AQFINTS_MESSAGE *AQFINTS_Message_new(void)
 void AQFINTS_Message_free(AQFINTS_MESSAGE *msg)
 {
   if (msg) {
+    AQFINTS_Segment_List_free(msg->segmentList);
     AQFINTS_KeyName_List_free(msg->signerList);
     AQFINTS_KeyName_free(msg->crypter);
     GWEN_FREE_OBJECT(msg);

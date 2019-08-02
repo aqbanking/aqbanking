@@ -19,13 +19,95 @@
 
 
 
-//AQFINTS_MESSAGE *mkGetAnonBpdMessage(AQFINTS_SESSION *sess, const char *bankCode)
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static AQFINTS_MESSAGE *createMessage(AQFINTS_SESSION *sess, const char *bankCode);
+static int mkGetAnonBpdMessage(AQFINTS_SESSION *sess, const char *bankCode, GWEN_BUFFER *destBuffer);
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+
+int AQFINTS_Session_GetAnonBpd(AQFINTS_SESSION *sess, const char *bankCode)
+{
+  GWEN_BUFFER *destBuffer;
+  int rv;
+
+  destBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=mkGetAnonBpdMessage(sess, bankCode, destBuffer);
+  if (rv<0) {
+    DBG_ERROR(0, "here (%d)", rv);
+    GWEN_Buffer_free(destBuffer);
+    return rv;
+  }
+
+  DBG_ERROR(0, "Would send this:");
+  GWEN_Buffer_Dump(destBuffer, 2);
+
+  /* TODO: Sent message, parse response */
+
+  return 0;
+}
 
 
 
 
 
-AQFINTS_MESSAGE *createBasicMessage(AQFINTS_SESSION *sess, const char *bankCode)
+
+int mkGetAnonBpdMessage(AQFINTS_SESSION *sess, const char *bankCode, GWEN_BUFFER *destBuffer)
+{
+  AQFINTS_MESSAGE *message;
+  AQFINTS_SEGMENT_LIST *segmentList;
+  GWEN_BUFFER *msgBuf;
+  int rv;
+
+  message=createMessage(sess, bankCode);
+  if (message==NULL) {
+    DBG_ERROR(0, "No message created");
+    return GWEN_ERROR_INVALID;
+  }
+
+  segmentList=AQFINTS_Message_GetSegmentList(message);
+  msgBuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=AQFINTS_Session_WriteSegmentList(sess, segmentList, 2, 0, msgBuf);
+  if (rv<0) {
+    DBG_ERROR(0, "here (%d)", rv);
+    GWEN_Buffer_free(msgBuf);
+    AQFINTS_Message_free(message);
+    return rv;
+  }
+
+  rv=AQFINTS_Session_CreateMessageHead(sess,
+                                       AQFINTS_Message_GetMessageNumber(message),
+                                       AQFINTS_Message_GetRefMessageNumber(message),
+                                       GWEN_Buffer_GetUsedBytes(msgBuf),
+                                       destBuffer);
+  if (rv<0) {
+    DBG_ERROR(0, "here (%d)", rv);
+    GWEN_Buffer_free(msgBuf);
+    AQFINTS_Message_free(message);
+    return rv;
+  }
+  GWEN_Buffer_AppendBuffer(destBuffer, msgBuf);
+  GWEN_Buffer_free(msgBuf);
+  AQFINTS_Message_free(message);
+  return 0;
+}
+
+
+
+
+
+
+AQFINTS_MESSAGE *createMessage(AQFINTS_SESSION *sess, const char *bankCode)
 {
   AQFINTS_PARSER *parser;
   int hbciVersion;

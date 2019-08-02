@@ -82,10 +82,18 @@ int AQFINTS_Session_WriteSegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIST
 
 int AQFINTS_Session_WriteSegment(AQFINTS_SESSION *sess, AQFINTS_SEGMENT *segment, GWEN_BUFFER *destBuffer);
 
+
+int AQFINTS_Session_InsertMessageHead(AQFINTS_SESSION *sess,
+                                      int msgNum, int refMsgNum,
+                                      GWEN_BUFFER *destBuffer);
+
 int AQFINTS_Session_CreateMessageHead(AQFINTS_SESSION *sess,
                                       int msgNum, int refMsgNum,
                                       int sizeOfMessageWithoutHead,
                                       GWEN_BUFFER *destBuffer);
+
+
+int AQFINTS_Session_GetAnonBpd(AQFINTS_SESSION *sess, const char *bankCode);
 
 
 #endif
