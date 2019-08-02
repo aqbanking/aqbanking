@@ -13,7 +13,7 @@
 #define AQFINTS_MESSAGE_H
 
 
-#include "msglayer/parser/parser.h"
+//#include "msglayer/parser/parser.h"
 #include "msglayer/parser/segment.h"
 #include "msglayer/keyname.h"
 
@@ -28,9 +28,17 @@ typedef struct AQFINTS_MESSAGE AQFINTS_MESSAGE;
  *
  */
 /*@{*/
-AQFINTS_MESSAGE *AQFINTS_Message_new(AQFINTS_PARSER *parser);
+AQFINTS_MESSAGE *AQFINTS_Message_new(void);
 void AQFINTS_Message_free(AQFINTS_MESSAGE *msg);
 /*@}*/
+
+
+int AQFINTS_Message_GetMessageNumber(const AQFINTS_MESSAGE *msg);
+void AQFINTS_Message_SetMessageNumber(AQFINTS_MESSAGE *msg, int v);
+
+int AQFINTS_Message_GetRefMessageNumber(const AQFINTS_MESSAGE *msg);
+void AQFINTS_Message_SetRefMessageNumber(AQFINTS_MESSAGE *msg, int v);
+
 
 
 /** @name Cryptography

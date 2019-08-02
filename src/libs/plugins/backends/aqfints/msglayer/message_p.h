@@ -17,7 +17,8 @@
 
 
 struct AQFINTS_MESSAGE {
-  AQFINTS_PARSER *parser;
+  int messageNumber;
+  int refMessageNumber;
 
   AQFINTS_KEYNAME_LIST *signerList;
   AQFINTS_KEYNAME *crypter;

@@ -19,6 +19,7 @@
 #include "parser_hbci.h"
 #include "parser_normalize.h"
 #include "parser_dbread.h"
+#include "parser_dbwrite.h"
 #include "parser_dump.h"
 
 
@@ -191,6 +192,41 @@ AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentById(const AQFINTS_PARSER *parser, co
 
 
 
+AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentHighestVersionForProto(const AQFINTS_PARSER *parser,
+                                                                  const char *id,
+                                                                  int protocolVersion)
+{
+  AQFINTS_SEGMENT *segment;
+  AQFINTS_SEGMENT *bestMatchSoFar=NULL;
+
+  assert( (id && *id) );
+  segment=AQFINTS_Segment_List_First(parser->segmentList);
+  while(segment) {
+    int possibleMatch=0;
+
+    if ((protocolVersion==0 || (protocolVersion>=AQFINTS_Segment_GetProtocolVersion(segment)))){
+      const char *s;
+
+      s=AQFINTS_Segment_GetCode(segment);
+      if (s && *s && strcasecmp(s, id)==0)
+        possibleMatch=1;
+    }
+    if (possibleMatch) {
+      if (bestMatchSoFar==NULL)
+        bestMatchSoFar=segment;
+      else {
+        if (AQFINTS_Segment_GetSegmentVersion(segment)>AQFINTS_Segment_GetSegmentVersion(bestMatchSoFar))
+          bestMatchSoFar=segment;
+      }
+    }
+    segment=AQFINTS_Segment_List_Next(segment);
+  }
+
+  return bestMatchSoFar;
+}
+
+
+
 AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefByCode(const AQFINTS_PARSER *parser, const char *id, int jobVersion, int protocolVersion)
 {
   AQFINTS_JOBDEF *jobDef;
@@ -232,7 +268,7 @@ AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefById(const AQFINTS_PARSER *parser, cons
 
         s=AQFINTS_JobDef_GetId(jobDef);
         if (s && *s && strcasecmp(s, id)==0)
-          return jobDef;
+	  return jobDef;
       }
     }
     jobDef=AQFINTS_JobDef_List_Next(jobDef);
@@ -364,12 +400,47 @@ int AQFINTS_Parser_ReadSegmentListToDb(AQFINTS_PARSER *parser, AQFINTS_SEGMENT_L
 
 
 
+int AQFINTS_Parser_WriteSegment(AQFINTS_PARSER *parser, AQFINTS_SEGMENT *segment, GWEN_BUFFER *destBuffer)
+{
+  AQFINTS_SEGMENT *defSegment;
+  int rv;
+  const char *sCode;
+  int sVersion;
+  int pVersion;
+  GWEN_DB_NODE *db;
+
+  sCode=AQFINTS_Segment_GetCode(segment);
+  sVersion=AQFINTS_Segment_GetSegmentVersion(segment);
+  pVersion=AQFINTS_Segment_GetProtocolVersion(segment);
+  defSegment=AQFINTS_Parser_FindSegmentByCode(parser, sCode, sVersion, pVersion);
+  if (defSegment==NULL) {
+    DBG_ERROR(0, "Segment \"%s\" (version %d, proto=%d) not found", sCode, sVersion, pVersion);
+    return GWEN_ERROR_INTERNAL;
+  }
+
+  db=AQFINTS_Segment_GetDbData(segment);
+  if (db==NULL) {
+    DBG_ERROR(0, "Segment \"%s\" (version %d, proto=%d): No DB data", sCode, sVersion, pVersion);
+    return GWEN_ERROR_INTERNAL;
+  }
+
+  rv=AQFINTS_Parser_Db_WriteSegment(defSegment, segment, db);
+  if (rv<0) {
+    DBG_INFO(0, "here (%d)", rv);
+    return rv;
+  }
+
+  AQFINTS_Parser_Hbci_WriteSegment(segment, destBuffer);
+
+  return 0;
+}
+
+
 
 void AQFINTS_Parser_DumpDefinitions(AQFINTS_PARSER *parser, int indent)
 {
   AQFINTS_Parser_DumpSegmentList(parser->segmentList, indent);
 }
-
 
 
 

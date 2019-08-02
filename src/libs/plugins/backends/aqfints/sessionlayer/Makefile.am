@@ -45,7 +45,8 @@ noinst_HEADERS= $(build_headers)
 
 
 libaqfintssession_la_SOURCES=$(built_sources) \
-  session.c
+  session.c \
+  s_getbpd.c
 
 
 

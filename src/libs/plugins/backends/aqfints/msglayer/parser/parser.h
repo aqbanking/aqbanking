@@ -98,6 +98,17 @@ int AQFINTS_Parser_ReadSegmentListToDb(AQFINTS_PARSER *parser,
 
 
 
+/** @name Write HBCI/FinTS Segments
+ *
+ */
+/*@{*/
+
+int AQFINTS_Parser_WriteSegment(AQFINTS_PARSER *parser, AQFINTS_SEGMENT *segment, GWEN_BUFFER *destBuffer);
+/*@}*/
+
+
+
+
 /** @name Load Definition Files
  *
  */
@@ -156,6 +167,20 @@ AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentById(const AQFINTS_PARSER *parser, co
  * @param protocolVersion protocol version (0 matches any)
  */
 AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentByCode(const AQFINTS_PARSER *parser, const char *code, int segmentVersion, int protocolVersion);
+
+
+/**
+ *  Find segment with highest version for the given protocol.
+ *
+ * @return segment found (NULL otherwise)
+ * @param parser parser object
+ * @param id HBCI segment code (like "HNSHK", see @ref AQFINTS_Segment_GetCode)
+ * @param protocolVersion protocol version (0 matches any)
+ */
+AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentHighestVersionForProto(const AQFINTS_PARSER *parser,
+                                                                  const char *id,
+                                                                  int protocolVersion);
+
 /*@}*/
 
 

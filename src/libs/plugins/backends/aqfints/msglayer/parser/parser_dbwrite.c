@@ -341,11 +341,15 @@ int writeIntElement(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *element
   int idx;
   int minNum;
   int maxNum;
+  int maxSize;
   const char *sDbName;
+  uint32_t eFlags;
 
   minNum=AQFINTS_Element_GetMinNum(elementDefinition);
   maxNum=AQFINTS_Element_GetMaxNum(elementDefinition);
+  maxSize=AQFINTS_Element_GetMaxSize(elementDefinition);
   sDbName=AQFINTS_Element_GetName(elementDefinition);
+  eFlags=AQFINTS_Element_GetFlags(elementDefinition);
 
   for (idx=0; idx<maxNum; idx++) {
     AQFINTS_ELEMENT *elementData;
@@ -363,7 +367,45 @@ int writeIntElement(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *element
       AQFINTS_Element_SetElementType(elementData, AQFINTS_ElementType_De);
       AQFINTS_Element_SetType(elementData, AQFINTS_Element_GetType(elementDefinition));
       AQFINTS_Element_SetTrustLevel(elementData, AQFINTS_Element_GetTrustLevel(elementDefinition));
-      AQFINTS_Element_SetDataAsInt(elementData, value);
+
+      if ((eFlags & (AQFINTS_ELEMENT_FLAGS_LEFTFILL | AQFINTS_ELEMENT_FLAGS_RIGHTFILL)) && maxSize) {
+        char numbuf[64];
+        int len;
+
+        len=snprintf(numbuf, sizeof(numbuf)-1, "%d", value);
+        if (len>=sizeof(numbuf)) {
+          DBG_ERROR(0, "Buffer too small to convert integer value (would need %d bytes)", len);
+          return GWEN_ERROR_INTERNAL;
+        }
+        numbuf[len]=0;
+        if (len>maxSize) {
+          DBG_ERROR(0, "Data bigger than allowed (%d > %d)", len, maxSize);
+          return GWEN_ERROR_INVALID;
+        }
+        else if (len<maxSize) {
+          GWEN_BUFFER *tbuf;
+
+          tbuf=GWEN_Buffer_new(0, maxSize, 0, 1);
+
+          if (eFlags & AQFINTS_ELEMENT_FLAGS_LEFTFILL) {
+            GWEN_Buffer_FillWithBytes(tbuf, '0', maxSize-len);
+            GWEN_Buffer_AppendString(tbuf, numbuf);
+          }
+          else if (eFlags & AQFINTS_ELEMENT_FLAGS_RIGHTFILL) {
+            GWEN_Buffer_AppendString(tbuf, numbuf);
+            GWEN_Buffer_FillWithBytes(tbuf, '0', maxSize-len);
+          }
+
+          AQFINTS_Element_SetTextDataCopy(elementData, GWEN_Buffer_GetStart(tbuf));
+          GWEN_Buffer_free(tbuf);
+        }
+        else {
+          AQFINTS_Element_SetTextDataCopy(elementData, numbuf);
+        }
+
+      }
+      else
+        AQFINTS_Element_SetDataAsInt(elementData, value);
       AQFINTS_Element_Tree2_AddChild(elementDataParent, elementData);
     }
     else

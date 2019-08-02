@@ -20,7 +20,13 @@ struct AQFINTS_SESSION {
   int lastMessageNumSent;
   int lastMessageNumReceived;
 
+  int hbciVersion;
+
+  char *dialogId;
+
   AQFINTS_PARSER *parser;
+  AQFINTS_TRANSPORT *transport;
+
   AQFINTS_SESSION_EXCHANGEMESSAGES_FN exchangeMessagesFn;
 };
 

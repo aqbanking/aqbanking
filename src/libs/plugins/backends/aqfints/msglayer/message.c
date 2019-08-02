@@ -26,12 +26,11 @@
 
 
 
-AQFINTS_MESSAGE *AQFINTS_Message_new(AQFINTS_PARSER *parser)
+AQFINTS_MESSAGE *AQFINTS_Message_new(void)
 {
   AQFINTS_MESSAGE *msg;
 
   GWEN_NEW_OBJECT(AQFINTS_MESSAGE, msg);
-  msg->parser=parser;
   msg->signerList=AQFINTS_KeyName_List_new();
 
   return msg;
@@ -47,6 +46,39 @@ void AQFINTS_Message_free(AQFINTS_MESSAGE *msg)
     GWEN_FREE_OBJECT(msg);
   }
 }
+
+
+
+int AQFINTS_Message_GetMessageNumber(const AQFINTS_MESSAGE *msg)
+{
+  assert(msg);
+  return msg->messageNumber;
+}
+
+
+
+void AQFINTS_Message_SetMessageNumber(AQFINTS_MESSAGE *msg, int v)
+{
+  assert(msg);
+  msg->messageNumber=v;
+}
+
+
+
+int AQFINTS_Message_GetRefMessageNumber(const AQFINTS_MESSAGE *msg)
+{
+  assert(msg);
+  return msg->refMessageNumber;
+}
+
+
+
+void AQFINTS_Message_SetRefMessageNumber(AQFINTS_MESSAGE *msg, int v)
+{
+  assert(msg);
+  msg->refMessageNumber=v;
+}
+
 
 
 

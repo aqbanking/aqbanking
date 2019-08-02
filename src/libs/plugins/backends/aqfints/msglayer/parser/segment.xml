@@ -176,7 +176,7 @@
 
       <member name="elements" type="AQFINTS_ELEMENT" >
         <access>public</access>
-        <flags>own</flags>
+        <flags>own noCopy</flags>
         <setflags>none</setflags>
         <getflags>none</getflags>
       </member>
