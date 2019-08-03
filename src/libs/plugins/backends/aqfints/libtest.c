@@ -17,6 +17,7 @@
 #include <gwenhywfar/buffer.h>
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/cgui.h>
 
 #include <errno.h>
 
@@ -160,10 +161,27 @@ int test_upd()
 
 int test_getBpd()
 {
+  GWEN_GUI *cgui;
   AQFINTS_PARSER *parser;
   AQFINTS_SESSION *session;
   AQFINTS_TRANSPORT *transport;
   int rv;
+  GWEN_DB_NODE *dbSettings;
+  const char *sUrl;
+  const char *sBankCode;
+  int httpVersionMajor;
+  int httpVersionMinor;
+  int hbciVersion;
+
+  cgui=GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(cgui);
+
+  dbSettings=GWEN_DB_Group_new("settings");
+  rv=GWEN_DB_ReadFile(dbSettings, "/home/martin/testdata/user1.cfg", GWEN_DB_FLAGS_DEFAULT);
+  if (rv<0) {
+    fprintf(stderr, "Error reading config file.\n");
+    return 2;
+  }
 
   parser=AQFINTS_Parser_new();
   AQFINTS_Parser_AddPath(parser, ".");
@@ -173,11 +191,28 @@ int test_getBpd()
     return 2;
   }
 
-  transport=AQFINTS_TransportSsl_new("https://xyz");
+  sUrl=GWEN_DB_GetCharValue(dbSettings, "url", 0, NULL);
+  if (sUrl==NULL) {
+    fprintf(stderr, "Settings: No url.\n");
+    return 2;
+  }
+  sBankCode=GWEN_DB_GetCharValue(dbSettings, "bankCode", 0, NULL);
+  if (sBankCode==NULL) {
+    fprintf(stderr, "Settings: No bank code.\n");
+    return 2;
+  }
+  httpVersionMajor=GWEN_DB_GetIntValue(dbSettings, "httpVersionMajor", 0, 1);
+  httpVersionMinor=GWEN_DB_GetIntValue(dbSettings, "httpVersionMinor", 0, 1);
+  hbciVersion=GWEN_DB_GetIntValue(dbSettings, "hbciVersion", 0, 300);
+
+  transport=AQFINTS_TransportSsl_new(sUrl);
+  AQFINTS_TransportSsl_SetVersionMajor(transport, httpVersionMajor);
+  AQFINTS_TransportSsl_SetVersionMinor(transport, httpVersionMinor);
 
   session=AQFINTS_Session_new(parser, transport);
+  AQFINTS_Session_SetHbciVersion(session, hbciVersion);
 
-  rv=AQFINTS_Session_GetAnonBpd(session, "12345678");
+  rv=AQFINTS_Session_GetAnonBpd(session, sBankCode);
   if (rv<0) {
     fprintf(stderr, "Error creating GetBPD request (%d).\n", rv);
     return 2;

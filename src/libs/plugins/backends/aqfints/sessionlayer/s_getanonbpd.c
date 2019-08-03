@@ -15,6 +15,8 @@
 
 #include "./session.h"
 
+#include "servicelayer/upd/upd_read.h"
+
 #include <gwenhywfar/debug.h>
 
 
@@ -26,6 +28,7 @@
 
 static AQFINTS_MESSAGE *createMessage(AQFINTS_SESSION *sess, const char *bankCode);
 static int mkGetAnonBpdMessage(AQFINTS_SESSION *sess, const char *bankCode, GWEN_BUFFER *destBuffer);
+static int handleResponse(AQFINTS_SESSION *sess, const uint8_t *ptrBuffer, uint32_t lenBuffer);
 
 
 
@@ -49,14 +52,84 @@ int AQFINTS_Session_GetAnonBpd(AQFINTS_SESSION *sess, const char *bankCode)
     return rv;
   }
 
-  DBG_ERROR(0, "Would send this:");
-  GWEN_Buffer_Dump(destBuffer, 2);
+  rv=AQFINTS_Session_Connect(sess);
+  if (rv<0) {
+    DBG_ERROR(0, "here (%d)", rv);
+    GWEN_Buffer_free(destBuffer);
+    return rv;
+  }
 
-  /* TODO: Sent message, parse response */
+  rv=AQFINTS_Session_SendMessage(sess,
+                                 GWEN_Buffer_GetStart(destBuffer),
+                                 GWEN_Buffer_GetUsedBytes(destBuffer));
+  if (rv<0) {
+    DBG_ERROR(0, "here (%d)", rv);
+    AQFINTS_Session_Disconnect(sess);
+    GWEN_Buffer_free(destBuffer);
+    return rv;
+  }
+
+  GWEN_Buffer_Reset(destBuffer);
+
+  rv=AQFINTS_Session_ReceiveMessage(sess, destBuffer);
+  if (rv<0) {
+    DBG_ERROR(0, "here (%d)", rv);
+    AQFINTS_Session_Disconnect(sess);
+    GWEN_Buffer_free(destBuffer);
+    return rv;
+  }
+
+  AQFINTS_Session_Disconnect(sess);
+
+  rv=handleResponse(sess,
+                    (const uint8_t*) GWEN_Buffer_GetStart(destBuffer),
+                    GWEN_Buffer_GetUsedBytes(destBuffer));
+  if (rv<0) {
+    DBG_ERROR(0, "here (%d)", rv);
+    GWEN_Buffer_free(destBuffer);
+    return rv;
+  }
+
+  GWEN_Buffer_free(destBuffer);
 
   return 0;
 }
 
+
+
+int handleResponse(AQFINTS_SESSION *sess, const uint8_t *ptrBuffer, uint32_t lenBuffer)
+{
+  AQFINTS_SEGMENT_LIST *segmentList;
+  AQFINTS_USERDATA_LIST *userDataList;
+  AQFINTS_PARSER *parser;
+  int rv;
+
+  parser=AQFINTS_Session_GetParser(sess);
+  segmentList=AQFINTS_Segment_List_new();
+  rv=AQFINTS_Parser_ReadIntoSegmentList(parser, segmentList, ptrBuffer, lenBuffer);
+  if (rv<0) {
+    DBG_ERROR(0, "here (%d)", rv);
+    AQFINTS_Segment_List_free(segmentList);
+    return rv;
+  }
+
+  rv=AQFINTS_Parser_ReadSegmentListToDb(parser, segmentList);
+  if (rv<0) {
+    DBG_ERROR(0, "here (%d)", rv);
+    AQFINTS_Segment_List_free(segmentList);
+    return rv;
+  }
+
+  userDataList=AQFINTS_Upd_SampleUpdFromSegmentList(segmentList, 0);
+  if (userDataList==NULL) {
+    DBG_ERROR(0, "Empty userDataList");
+  }
+  else
+    AQFINTS_Session_SetUserDataList(sess, userDataList);
+
+  AQFINTS_Segment_List_free(segmentList);
+  return 0;
+}
 
 
 
@@ -66,6 +139,7 @@ int mkGetAnonBpdMessage(AQFINTS_SESSION *sess, const char *bankCode, GWEN_BUFFER
 {
   AQFINTS_MESSAGE *message;
   AQFINTS_SEGMENT_LIST *segmentList;
+  AQFINTS_SEGMENT *segment;
   GWEN_BUFFER *msgBuf;
   int rv;
 
@@ -77,6 +151,8 @@ int mkGetAnonBpdMessage(AQFINTS_SESSION *sess, const char *bankCode, GWEN_BUFFER
 
   segmentList=AQFINTS_Message_GetSegmentList(message);
   msgBuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_ReserveBytes(msgBuf, 128); /* reserve space to insert MSG head later */
+
   rv=AQFINTS_Session_WriteSegmentList(sess, segmentList, 2, 0, msgBuf);
   if (rv<0) {
     DBG_ERROR(0, "here (%d)", rv);
@@ -85,11 +161,14 @@ int mkGetAnonBpdMessage(AQFINTS_SESSION *sess, const char *bankCode, GWEN_BUFFER
     return rv;
   }
 
-  rv=AQFINTS_Session_CreateMessageHead(sess,
-                                       AQFINTS_Message_GetMessageNumber(message),
-                                       AQFINTS_Message_GetRefMessageNumber(message),
-                                       GWEN_Buffer_GetUsedBytes(msgBuf),
-                                       destBuffer);
+  segment=AQFINTS_Segment_List_Last(segmentList);
+  assert(segment);
+
+  rv=AQFINTS_Session_WrapMessageHeadAndTail(sess,
+                                            AQFINTS_Message_GetMessageNumber(message),
+                                            AQFINTS_Message_GetRefMessageNumber(message),
+                                            AQFINTS_Segment_GetSegmentNumber(segment),
+                                            msgBuf);
   if (rv<0) {
     DBG_ERROR(0, "here (%d)", rv);
     GWEN_Buffer_free(msgBuf);

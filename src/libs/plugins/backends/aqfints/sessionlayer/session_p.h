@@ -27,6 +27,8 @@ struct AQFINTS_SESSION {
   AQFINTS_PARSER *parser;
   AQFINTS_TRANSPORT *transport;
 
+  AQFINTS_USERDATA_LIST *userDataList;
+
   AQFINTS_SESSION_EXCHANGEMESSAGES_FN exchangeMessagesFn;
 };
 

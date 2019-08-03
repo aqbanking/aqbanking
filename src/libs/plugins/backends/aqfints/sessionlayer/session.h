@@ -16,6 +16,7 @@
 #include "msglayer/message.h"
 #include "msglayer/parser/parser.h"
 #include "transportlayer/transport.h"
+#include "servicelayer/upd/userdata.h"
 
 #include <aqbanking/error.h>
 
@@ -56,8 +57,11 @@ int AQFINTS_Session_GetLastMessageNumReceived(const AQFINTS_SESSION *sess);
 void AQFINTS_Session_SetLastMessageNumReceived(AQFINTS_SESSION *sess, int p_src);
 
 
+AQFINTS_USERDATA_LIST *AQFINTS_Session_GetUserDataList(const AQFINTS_SESSION *sess);
+void AQFINTS_Session_SetUserDataList(AQFINTS_SESSION *sess, AQFINTS_USERDATA_LIST *userDataList);
+
+
 AQFINTS_PARSER *AQFINTS_Session_GetParser(const AQFINTS_SESSION *sess);
-void AQFINTS_Session_SetParser(AQFINTS_SESSION *sess, AQFINTS_PARSER *p_src);
 
 
 /* prototypes for virtual functions */
@@ -75,6 +79,15 @@ AQFINTS_SESSION_EXCHANGEMESSAGES_FN AQFINTS_Session_SetExchangeMessagesFn(AQFINT
 
 
 
+int AQFINTS_Session_Connect(AQFINTS_SESSION *sess);
+
+int AQFINTS_Session_Disconnect(AQFINTS_SESSION *sess);
+
+int AQFINTS_Session_SendMessage(AQFINTS_SESSION *sess, const char *ptrBuffer, int lenBuffer);
+
+int AQFINTS_Session_ReceiveMessage(AQFINTS_SESSION *sess, GWEN_BUFFER *buffer);
+
+
 
 int AQFINTS_Session_WriteSegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIST *segmentList,
                                      int firstSegNum, int refSegNum,
@@ -83,14 +96,9 @@ int AQFINTS_Session_WriteSegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIST
 int AQFINTS_Session_WriteSegment(AQFINTS_SESSION *sess, AQFINTS_SEGMENT *segment, GWEN_BUFFER *destBuffer);
 
 
-int AQFINTS_Session_InsertMessageHead(AQFINTS_SESSION *sess,
-                                      int msgNum, int refMsgNum,
-                                      GWEN_BUFFER *destBuffer);
-
-int AQFINTS_Session_CreateMessageHead(AQFINTS_SESSION *sess,
-                                      int msgNum, int refMsgNum,
-                                      int sizeOfMessageWithoutHead,
-                                      GWEN_BUFFER *destBuffer);
+int AQFINTS_Session_WrapMessageHeadAndTail(AQFINTS_SESSION *sess,
+                                           int msgNum, int refMsgNum, int lastSegNum,
+                                           GWEN_BUFFER *msgBuffer);
 
 
 int AQFINTS_Session_GetAnonBpd(AQFINTS_SESSION *sess, const char *bankCode);

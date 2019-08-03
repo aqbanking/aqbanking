@@ -17,6 +17,7 @@
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/text.h>
 
 
 
@@ -53,6 +54,7 @@ AQFINTS_SESSION *AQFINTS_Session_new(AQFINTS_PARSER *parser, AQFINTS_TRANSPORT *
   sess->hbciVersion=300;
 
   sess->parser=parser;
+  sess->transport=trans;
 
   return sess;
 }
@@ -133,26 +135,18 @@ int AQFINTS_Session_GetLastMessageNumSent(const AQFINTS_SESSION *sess)
 
 
 
-int AQFINTS_Session_GetLastMessageNumReceived(const AQFINTS_SESSION *sess)
-{
-  assert(sess);
-  return sess->lastMessageNumReceived;
-}
-
-
-
-AQFINTS_PARSER *AQFINTS_Session_GetParser(const AQFINTS_SESSION *sess)
-{
-  assert(sess);
-  return sess->parser;
-}
-
-
-
 void AQFINTS_Session_SetLastMessageNumSent(AQFINTS_SESSION *sess, int p_src)
 {
   assert(sess);
   sess->lastMessageNumSent=p_src;
+}
+
+
+
+int AQFINTS_Session_GetLastMessageNumReceived(const AQFINTS_SESSION *sess)
+{
+  assert(sess);
+  return sess->lastMessageNumReceived;
 }
 
 
@@ -165,10 +159,28 @@ void AQFINTS_Session_SetLastMessageNumReceived(AQFINTS_SESSION *sess, int p_src)
 
 
 
-void AQFINTS_Session_SetParser(AQFINTS_SESSION *sess, AQFINTS_PARSER *p_src)
+AQFINTS_PARSER *AQFINTS_Session_GetParser(const AQFINTS_SESSION *sess)
 {
   assert(sess);
-  sess->parser=p_src;
+  return sess->parser;
+}
+
+
+
+AQFINTS_USERDATA_LIST *AQFINTS_Session_GetUserDataList(const AQFINTS_SESSION *sess)
+{
+  assert(sess);
+  return sess->userDataList;
+}
+
+
+
+void AQFINTS_Session_SetUserDataList(AQFINTS_SESSION *sess, AQFINTS_USERDATA_LIST *userDataList)
+{
+  assert(sess);
+  if (sess->userDataList)
+    AQFINTS_UserData_List_free(sess->userDataList);
+  sess->userDataList=userDataList;
 }
 
 
@@ -251,7 +263,8 @@ int AQFINTS_Session_WriteSegment(AQFINTS_SESSION *sess, AQFINTS_SEGMENT *segment
   GWEN_DB_SetCharValue(dbHead, GWEN_DB_FLAGS_OVERWRITE_VARS, "code", sCode);
   GWEN_DB_SetIntValue(dbHead, GWEN_DB_FLAGS_OVERWRITE_VARS, "seq", segNum);
   GWEN_DB_SetIntValue(dbHead, GWEN_DB_FLAGS_OVERWRITE_VARS, "version", segVersion);
-  GWEN_DB_SetIntValue(dbHead, GWEN_DB_FLAGS_OVERWRITE_VARS, "ref", refSegNum);
+  if (refSegNum)
+    GWEN_DB_SetIntValue(dbHead, GWEN_DB_FLAGS_OVERWRITE_VARS, "ref", refSegNum);
 
   rv=AQFINTS_Parser_WriteSegment(sess->parser, segment, destBuffer);
   if (rv<0) {
@@ -264,95 +277,57 @@ int AQFINTS_Session_WriteSegment(AQFINTS_SESSION *sess, AQFINTS_SEGMENT *segment
 
 
 
-int AQFINTS_Session_InsertMessageHead(AQFINTS_SESSION *sess,
-                                      int msgNum, int refMsgNum,
-                                      GWEN_BUFFER *destBuffer)
+
+
+
+int AQFINTS_Session_Connect(AQFINTS_SESSION *sess)
 {
-  GWEN_BUFFER *tmpBuffer;
-  int rv;
-
-  tmpBuffer=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=AQFINTS_Session_CreateMessageHead(sess, msgNum, refMsgNum, GWEN_Buffer_GetUsedBytes(destBuffer), tmpBuffer);
-  if (rv<0) {
-    DBG_ERROR(0, "here (%d)", rv);
-    GWEN_Buffer_free(tmpBuffer);
-    return rv;
-  }
-
-  GWEN_Buffer_SetPos(destBuffer, 0);
-  GWEN_Buffer_InsertBytes(destBuffer, GWEN_Buffer_GetStart(tmpBuffer), GWEN_Buffer_GetUsedBytes(tmpBuffer));
-  GWEN_Buffer_SetPos(destBuffer, GWEN_Buffer_GetUsedBytes(destBuffer));
-  GWEN_Buffer_free(tmpBuffer);
-  return 0;
+  assert(sess);
+  return AQFINTS_Transport_Connect(sess->transport);
 }
 
 
 
-int AQFINTS_Session_CreateMessageHead(AQFINTS_SESSION *sess, int msgNum, int refMsgNum,
-                                      int sizeOfMessageWithoutHead,
-                                      GWEN_BUFFER *destBuffer)
+int AQFINTS_Session_Disconnect(AQFINTS_SESSION *sess)
 {
-  AQFINTS_PARSER *parser;
-  int hbciVersion;
-  AQFINTS_SEGMENT *defSegment;
-  AQFINTS_SEGMENT *segment;
-  GWEN_DB_NODE *dbSegment;
-  const char *dialogId;
-  GWEN_BUFFER *tmpBuffer;
+  assert(sess);
+  return AQFINTS_Transport_Disconnect(sess->transport);
+}
+
+
+
+int AQFINTS_Session_SendMessage(AQFINTS_SESSION *sess, const char *ptrBuffer, int lenBuffer)
+{
+  assert(sess);
+  /* TODO: add logging mechanism */
+  DBG_ERROR(0, "Sending this:");
+  GWEN_Text_LogString(ptrBuffer, lenBuffer, NULL, GWEN_LoggerLevel_Error);
+
+  return AQFINTS_Transport_SendMessage(sess->transport, ptrBuffer, lenBuffer);
+}
+
+
+
+int AQFINTS_Session_ReceiveMessage(AQFINTS_SESSION *sess, GWEN_BUFFER *buffer)
+{
   int rv;
 
-  parser=AQFINTS_Session_GetParser(sess);
-  hbciVersion=AQFINTS_Session_GetHbciVersion(sess);
-
-  dialogId=AQFINTS_Session_GetDialogId(sess);
-
-  /* HNHBK */
-  defSegment=AQFINTS_Parser_FindSegmentHighestVersionForProto(parser, "HNHBK", hbciVersion);
-  if (defSegment==NULL) {
-    DBG_ERROR(0, "No matching definition segment found for HNHBK (proto=%d)", hbciVersion);
-    return GWEN_ERROR_INTERNAL;
-  }
-
-  segment=AQFINTS_Segment_new();
-  AQFINTS_Segment_copy(segment, defSegment);
-  AQFINTS_Segment_SetSegmentNumber(segment, 1);
-  dbSegment=GWEN_DB_Group_new("msgHead");
-  AQFINTS_Segment_SetDbData(segment, dbSegment);
-
-  /* temp */
-  GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "size", sizeOfMessageWithoutHead);
-  GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "hversion", hbciVersion);
-  GWEN_DB_SetCharValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "dialogId", dialogId?dialogId:"0");
-  GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "msgnum", msgNum);
-  GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "msgref", refMsgNum);
-
-  /* create temporary version to determine the full message size */
-  tmpBuffer=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=AQFINTS_Session_WriteSegment(sess, segment, tmpBuffer);
+  /* TODO: add logging mechanism */
+  rv=AQFINTS_Transport_ReceiveMessage(sess->transport, buffer);
   if (rv<0) {
     DBG_ERROR(0, "here (%d)", rv);
-    GWEN_Buffer_free(tmpBuffer);
-    AQFINTS_Segment_free(segment);
     return rv;
   }
 
-  /* reset segment */
-  AQFINTS_Segment_SetElements(segment, NULL);
-
-  /* finally write the message header */
-  GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "size", sizeOfMessageWithoutHead+GWEN_Buffer_GetUsedBytes(tmpBuffer));
-  rv=AQFINTS_Session_WriteSegment(sess, segment, destBuffer);
-  if (rv<0) {
-    DBG_ERROR(0, "here (%d)", rv);
-    GWEN_Buffer_free(tmpBuffer);
-    AQFINTS_Segment_free(segment);
-    return rv;
-  }
-  GWEN_Buffer_free(tmpBuffer);
-  AQFINTS_Segment_free(segment);
-
-  return 0;
+  DBG_ERROR(0, "Received this:");
+  GWEN_Text_LogString(GWEN_Buffer_GetStart(buffer), GWEN_Buffer_GetUsedBytes(buffer), NULL, GWEN_LoggerLevel_Error);
+  return rv;
 }
+
+
+
+
+
 
 
 
