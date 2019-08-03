@@ -279,6 +279,32 @@ AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefById(const AQFINTS_PARSER *parser, cons
 
 
 
+AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefByParams(const AQFINTS_PARSER *parser, const char *params, int jobVersion, int protocolVersion)
+{
+  AQFINTS_JOBDEF *jobDef;
+
+  jobDef=AQFINTS_JobDef_List_First(parser->jobDefList);
+  while(jobDef) {
+    if ((jobVersion==0 || jobVersion==AQFINTS_JobDef_GetJobVersion(jobDef)) &&
+        (protocolVersion==0 || protocolVersion==AQFINTS_JobDef_GetProtocolVersion(jobDef))){
+      if (!(params && *params))
+        return jobDef;
+      else {
+        const char *s;
+
+        s=AQFINTS_JobDef_GetParams(jobDef);
+        if (s && *s && strcasecmp(s, params)==0)
+	  return jobDef;
+      }
+    }
+    jobDef=AQFINTS_JobDef_List_Next(jobDef);
+  }
+
+  return NULL;
+}
+
+
+
 int AQFINTS_Parser_ReadIntoDb(AQFINTS_PARSER *parser,
                               const uint8_t *ptrBuf,
                               uint32_t lenBuf,

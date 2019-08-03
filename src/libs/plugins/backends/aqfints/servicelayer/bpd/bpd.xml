@@ -19,6 +19,7 @@
       <headers>
         <header type="sys"   loc="pre">aqbanking/error.h</header>
         <header type="sys"   loc="code">string.h</header>
+        <header type="local" loc="post">servicelayer/bpd/bankdata.h</header>
         <header type="local" loc="post">servicelayer/bpd/bpdjob.h</header>
         <header type="local" loc="post">servicelayer/bpd/bpdaddr.h</header>
       </headers>
@@ -94,51 +95,11 @@
 
     <members>
   
-      <member name="bankName" type="char_ptr" maxlen="64" >
-        <default>NULL</default>
-        <preset>NULL</preset>
+      <member name="bankData" type="AQFINTS_BANKDATA" >
         <access>public</access>
         <flags>own</flags>
-        <setflags>const dup</setflags>
-        <getflags>const</getflags>
-      </member>
-
-
-      <member name="jobTypesPerMsg" type="int" maxlen="8" >
-        <default>0</default>
-        <preset>0</preset>
-        <access>public</access>
-      </member>
-
-      <member name="maxMsgSize" type="int" maxlen="8" >
-        <default>0</default>
-        <preset>0</preset>
-        <access>public</access>
-      </member>
-
-      <member name="minTimeout" type="int" maxlen="8" >
-        <default>0</default>
-        <preset>0</preset>
-        <access>public</access>
-      </member>
-
-      <member name="maxTimeout" type="int" maxlen="8" >
-        <default>0</default>
-        <preset>0</preset>
-        <access>public</access>
-      </member>
-
-
-      <member name="hbciVersions" type="int_array" maxlen="9" >
-        <default>0</default>
-        <preset>0</preset>
-        <access>public</access>
-      </member>
-
-      <member name="languages" type="int_array" maxlen="9" >
-        <default>0</default>
-        <preset>0</preset>
-        <access>public</access>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
       </member>
 
 

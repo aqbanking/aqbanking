@@ -5,6 +5,23 @@
 
   <GROUPs>
 
+    <GROUPdef id="BPDJob" version="1" >
+      <!-- "Geschaeftsvorfallparameter, allgemein" -->
+      <DEG name="head"              type="SegHead" />
+      <DE  name="jobspermsg"        type="num" maxsize="3" />
+      <DE  name="minsigs"           type="num" maxsize="3" />
+    </GROUPdef>
+  
+  
+    <GROUPdef id="BPDJob" version="2" >
+      <!-- "Geschaeftsvorfallparameter, allgemein" -->
+      <DEG name="head"              type="SegHead" />
+      <DE  name="jobspermsg"        type="num" maxsize="3" />
+      <DE  name="minsigs"           type="num" maxsize="3" />
+      <DE  name="secProfile"        type="num" maxsize="1" />
+    </GROUPdef>
+
+
     <GROUPdef id="language" version="1" >
       <DE      name="language"       type="num"      maxsize="3"  minnum="1" maxnum="9" />
     </GROUPdef>

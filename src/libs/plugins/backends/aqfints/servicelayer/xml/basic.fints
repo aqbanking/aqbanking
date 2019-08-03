@@ -15,34 +15,6 @@
     </GROUPdef>
 
 
-    <GROUPdef id="updjob" version="1">
-      <!-- "Erlaubter Geschaeftsvorfall" -->
-      <DE  name="job"               type="an"    maxsize="6" />
-      <DE  name="minsign"           type="num"   maxsize="3" />
-      <DE  name="limit/type"        type="alpha" maxsize="1"  minnum="0" />
-      <DE  name="limit/value"       type="float" maxsize="20" trustlevel="1" minnum="0" />
-      <DE  name="limit/currency"    type="alpha" maxsize="3"  minnum="0" />
-      <DE  name="limit/days"        type="num"   maxsize="3"  minnum="0" />
-    </GROUPdef>
-
-
-    <GROUPdef id="BPDJob" version="1" >
-      <!-- "Geschaeftsvorfallparameter, allgemein" -->
-      <DEG name="head"              type="SegHead" />
-      <DE  name="jobspermsg"        type="num" maxsize="3" />
-      <DE  name="minsigs"           type="num" maxsize="3" />
-    </GROUPdef>
-  
-  
-    <GROUPdef id="BPDJob" version="2" >
-      <!-- "Geschaeftsvorfallparameter, allgemein" -->
-      <DEG name="head"              type="SegHead" />
-      <DE  name="jobspermsg"        type="num" maxsize="3" />
-      <DE  name="minsigs"           type="num" maxsize="3" />
-      <DE  name="secProfile"        type="num" maxsize="1" />
-    </GROUPdef>
-  
-  
     <GROUPdef id="result" version="1">
       <!-- Rueckmeldung -->
       <DE  name="resultcode"        type="num" maxsize="4" />

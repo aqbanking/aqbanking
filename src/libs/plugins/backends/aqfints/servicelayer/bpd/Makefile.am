@@ -2,19 +2,21 @@
 AM_CFLAGS=-DBUILDING_AQFINTS @visibility_cflags@
 
 INCLUDES = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) \
+  -I$(srcdir)/../../.. \
   -I$(srcdir)/../.. \
   -I$(srcdir)/.. \
   -I$(aqbanking_symlinkdir) $(all_includes) \
   -I$(top_srcdir)/src/libs/aqbanking
 
 
-DEFS+=-DAH_XMLDATADIR=\"$(aqbanking_data_searchdir)/aqbanking/backends/aqhbci\"
+DEFS+=-DAH_XMLDATADIR=\"$(aqbanking_data_searchdir)/aqbanking/backends/aqfints\"
 
 
 noinst_LTLIBRARIES=libafmsgbpd.la
 
 
 typefiles= \
+  bankdata.xml \
   bpdjob.xml \
   bpdaddrservice.xml \
   bpdaddr.xml \
@@ -36,6 +38,7 @@ dist_typedata_DATA=
 
 
 built_sources=\
+  bankdata.c \
   bpdjob.c \
   bpd.c \
   bpdaddrservice.c \
@@ -43,6 +46,7 @@ built_sources=\
 
 
 build_headers_priv=\
+  bankdata_p.h \
   bpdjob_p.h \
   bpd_p.h \
   bpdaddrservice_p.h \
@@ -50,6 +54,7 @@ build_headers_priv=\
 
 
 build_headers_pub=\
+  bankdata.h \
   bpdjob.h \
   bpd.h \
   bpdaddrservice.h \
@@ -64,7 +69,8 @@ build_headers=$(build_headers_priv) $(build_headers_pub)
 noinst_HEADERS= $(build_headers)
 
 
-libafmsgbpd_la_SOURCES= $(built_sources)
+libafmsgbpd_la_SOURCES= $(built_sources) \
+  bpd_read.c
 
 
 

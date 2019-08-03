@@ -24,6 +24,30 @@
       
 
       <inlines>
+      
+
+        <!-- addService -->
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_AddService($(struct_type) *st, AQFINTS_BPDADDR_SERVICE *srv);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             void $(struct_prefix)_AddService($(struct_type) *st, AQFINTS_BPDADDR_SERVICE *srv) {
+               if (st-&gt;services==NULL)
+                 st-&gt;services=AQFINTS_BpdAddrService_List_new();
+               AQFINTS_BpdAddrService_List_Add(srv, st-&gt;services);
+             }
+          </content>
+        </inline>
+      
+      
       </inlines>
 
 
