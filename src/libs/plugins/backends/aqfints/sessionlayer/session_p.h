@@ -21,6 +21,8 @@ struct AQFINTS_SESSION {
   int lastMessageNumReceived;
 
   int hbciVersion;
+  char *secProfileCode;
+  int secProfileVersion;
 
   char *dialogId;
 
@@ -31,6 +33,13 @@ struct AQFINTS_SESSION {
   AQFINTS_BPD *bpd;
 
   AQFINTS_SESSION_EXCHANGEMESSAGES_FN exchangeMessagesFn;
+
+  AQFINTS_SESSION_FILLOUT_KEYNAME_FN filloutKeynameFn;
+  AQFINTS_SESSION_SIGN_FN signFn;
+  AQFINTS_SESSION_VERIFY_FN verifyFn;
+  AQFINTS_SESSION_ENCRYPT_FN encryptFn;
+  AQFINTS_SESSION_DECRYPT_FN decryptFn;
+
 };
 
 

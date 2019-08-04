@@ -23,6 +23,71 @@
       
       <inlines>
 
+        <!-- SetCid() -->
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_SetCid($(struct_type) *st, uint8_t *ptr, uint32_t len);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             void $(struct_prefix)_SetCid($(struct_type) *st, uint8_t *ptr, uint32_t len) {
+               if (st-&gt;cid.pointer &amp;&amp; st-&gt;cid.length)
+                 free(st-&gt;cid.pointer);
+               st-&gt;cid.pointer=ptr;
+               st-&gt;cid.length=len;
+             }
+          </content>
+        </inline>
+      
+
+        <!-- GetCidPointer() -->
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) uint8_t* $(struct_prefix)_GetCidPointer(const $(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code" >
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             uint8_t* $(struct_prefix)_GetCidPointer(const $(struct_type) *st) {
+               return st-&gt;cid.pointer;
+             }
+          </content>
+        </inline>
+
+
+        <!-- GetCidLength() -->
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) uint32_t $(struct_prefix)_GetCidLength(const $(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code" >
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             uint32_t $(struct_prefix)_GetCidLength(const $(struct_type) *st) {
+               return st-&gt;cid.length;
+             }
+          </content>
+        </inline>
+
       </inlines>
       
       
@@ -115,6 +180,31 @@
         <access>public</access>
       </member>
 
+
+
+
+      <member name="signatureCounter" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+      <member name="cid" type="GWEN_BINDATA" maxlen="256" >
+        <access>private</access>
+        <flags>own</flags>
+        <setflags>omit</setflags>
+        <getflags>omit</getflags>
+      </member>
+
+
+      <member name="systemId" type="char_ptr" maxlen="256" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
 
 
 

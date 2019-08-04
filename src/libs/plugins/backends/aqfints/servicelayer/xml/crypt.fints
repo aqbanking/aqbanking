@@ -83,7 +83,7 @@
     <GROUPdef id="SecDetails" version="1" >
       <!-- Sicherheitsidentifikation, Details -->
       <DE name="id"               type="num" maxsize=3 />
-      <DE name="cid"              type="an" minnum="0" />
+      <DE name="cid"              type="bin" minnum="0" />
       <DE name="secId"            type="ascii" maxsize="256" minnum="0" />
     </GROUPdef>
 

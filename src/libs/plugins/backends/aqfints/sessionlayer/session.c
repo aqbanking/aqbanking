@@ -118,6 +118,43 @@ void AQFINTS_Session_SetHbciVersion(AQFINTS_SESSION *sess, int v)
 
 
 
+const char *AQFINTS_Session_GetSecProfileCode(const AQFINTS_SESSION *sess)
+{
+  assert(sess);
+  return sess->secProfileCode;
+}
+
+
+
+void AQFINTS_Session_SetSecProfileCode(AQFINTS_SESSION *sess, const char *s)
+{
+  assert(sess);
+  if (sess->secProfileCode)
+    free(sess->secProfileCode);
+  if (s)
+    sess->secProfileCode=strdup(s);
+  else
+    sess->secProfileCode=NULL;
+}
+
+
+
+int AQFINTS_Session_GetSecProfileVersion(const AQFINTS_SESSION *sess)
+{
+  assert(sess);
+  return sess->secProfileVersion;
+}
+
+
+
+void AQFINTS_Session_SetSecProfileVersion(AQFINTS_SESSION *sess, int i)
+{
+  assert(sess);
+  sess->secProfileVersion=i;
+}
+
+
+
 const char *AQFINTS_Session_GetDialogId(const AQFINTS_SESSION *sess)
 {
   assert(sess);
@@ -228,6 +265,62 @@ int AQFINTS_Session_ExchangeMessages(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *mes
 
 
 
+int AQFINTS_Session_FilloutKeyname(AQFINTS_SESSION *sess, AQFINTS_KEYNAME *keyName)
+{
+  assert(sess);
+  if (sess->filloutKeynameFn)
+    return sess->filloutKeynameFn(sess, keyName);
+  else
+    return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
+int AQFINTS_Session_Sign(AQFINTS_SESSION *sess, AQFINTS_KEYNAME *keyName, GWEN_BUFFER *dataBuffer)
+{
+  assert(sess);
+  if (sess->signFn)
+    return sess->signFn(sess, keyName, dataBuffer);
+  else
+    return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
+int AQFINTS_Session_Verify(AQFINTS_SESSION *sess, AQFINTS_KEYNAME *keyName, GWEN_BUFFER *dataBuffer,
+			   const uint8_t *ptrSignature, uint32_t lenSignature)
+{
+  assert(sess);
+  if (sess->verifyFn)
+    return sess->verifyFn(sess, keyName, dataBuffer, ptrSignature, lenSignature);
+  else
+    return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
+int AQFINTS_Session_Encrypt(AQFINTS_SESSION *sess, AQFINTS_KEYNAME *keyName, GWEN_BUFFER *dataBuffer)
+{
+  assert(sess);
+  if (sess->encryptFn)
+    return sess->encryptFn(sess, keyName, dataBuffer);
+  else
+    return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
+int AQFINTS_Session_Decrypt(AQFINTS_SESSION *sess, AQFINTS_KEYNAME *keyName, GWEN_BUFFER *dataBuffer)
+{
+  assert(sess);
+  if (sess->decryptFn)
+    return sess->decryptFn(sess, keyName, dataBuffer);
+  else
+    return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
 AQFINTS_SESSION_EXCHANGEMESSAGES_FN AQFINTS_Session_SetExchangeMessagesFn(AQFINTS_SESSION *sess,
                                                                           AQFINTS_SESSION_EXCHANGEMESSAGES_FN fn)
 {
@@ -238,6 +331,73 @@ AQFINTS_SESSION_EXCHANGEMESSAGES_FN AQFINTS_Session_SetExchangeMessagesFn(AQFINT
   sess->exchangeMessagesFn=fn;
   return oldFn;
 }
+
+
+
+AQFINTS_SESSION_FILLOUT_KEYNAME_FN AQFINTS_Session_SetFilloutKeynameFn(AQFINTS_SESSION *sess,
+								       AQFINTS_SESSION_FILLOUT_KEYNAME_FN fn)
+{
+  AQFINTS_SESSION_FILLOUT_KEYNAME_FN oldFn;
+
+  assert(sess);
+  oldFn=sess->filloutKeynameFn;
+  sess->filloutKeynameFn=fn;
+  return oldFn;
+}
+
+
+
+AQFINTS_SESSION_SIGN_FN AQFINTS_Session_SetSignFn(AQFINTS_SESSION *sess, AQFINTS_SESSION_SIGN_FN fn)
+{
+  AQFINTS_SESSION_SIGN_FN oldFn;
+
+  assert(sess);
+  oldFn=sess->signFn;
+  sess->signFn=fn;
+  return oldFn;
+}
+
+
+
+AQFINTS_SESSION_VERIFY_FN AQFINTS_Session_SetVerifyFn(AQFINTS_SESSION *sess, AQFINTS_SESSION_VERIFY_FN fn)
+{
+  AQFINTS_SESSION_VERIFY_FN oldFn;
+
+  assert(sess);
+  oldFn=sess->verifyFn;
+  sess->verifyFn=fn;
+  return oldFn;
+}
+
+
+
+AQFINTS_SESSION_ENCRYPT_FN AQFINTS_Session_SetEncryptFn(AQFINTS_SESSION *sess, AQFINTS_SESSION_ENCRYPT_FN fn)
+{
+  AQFINTS_SESSION_ENCRYPT_FN oldFn;
+
+  assert(sess);
+  oldFn=sess->encryptFn;
+  sess->encryptFn=fn;
+  return oldFn;
+}
+
+
+
+AQFINTS_SESSION_DECRYPT_FN AQFINTS_Session_SetDecryptFn(AQFINTS_SESSION *sess, AQFINTS_SESSION_DECRYPT_FN fn)
+{
+  AQFINTS_SESSION_DECRYPT_FN oldFn;
+
+  assert(sess);
+  oldFn=sess->decryptFn;
+  sess->decryptFn=fn;
+  return oldFn;
+}
+
+
+
+
+
+
 
 
 

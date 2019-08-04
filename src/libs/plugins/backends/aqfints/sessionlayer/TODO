@@ -1,0 +1,6 @@
+Session->exchangeMsg:
+- wrap outMsg in HNHBK/HNHBS
+- if SIGN: sign message
+- if CRYPT: encrypt message
+- send message
+- receive message
