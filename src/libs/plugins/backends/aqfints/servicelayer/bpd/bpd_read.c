@@ -81,17 +81,15 @@ AQFINTS_BPD *AQFINTS_Bpd_SampleBpdFromSegmentList(AQFINTS_PARSER *parser,
             doRemoveSegment=1;
         }
       }
-      else if (strcasecmp(sCode, "HIPINS")==0) { /* read pinTanBpd */
-#if 0
-        AQFINTS_BPDADDR *bpdAddr;
+      else if (strcasecmp(sCode, "HIPINS")==0) { /* read tanInfo */
+        AQFINTS_TANINFO *ti;
 
-        bpdAddr=AQFINTS_Bpd_ReadBpdAddr(db);
-        if (bpdAddr) {
-          AQFINTS_Bpd_AddBpdAddr(bpd, bpdAddr);
+        ti=AQFINTS_Bpd_ReadTanInfo(db);
+        if (ti) {
+          AQFINTS_Bpd_SetTanInfo(bpd, ti);
           if (removeFromSegList)
             doRemoveSegment=1;
         }
-#endif
       }
       else if (AQFINTS_Parser_FindJobDefByParams(parser, sCode, 0, 0)) {
         AQFINTS_BPDJOB *j;
@@ -281,6 +279,55 @@ AQFINTS_BPDJOB *AQFINTS_Bpd_ReadBpdJob(GWEN_DB_NODE *db)
   return NULL;
 }
 
+
+
+AQFINTS_TANINFO *AQFINTS_Bpd_ReadTanInfo(GWEN_DB_NODE *db)
+{
+  AQFINTS_TANINFO *ti;
+  int i;
+  GWEN_DB_NODE *dbT;
+
+  ti=AQFINTS_TanInfo_new();
+
+  i=GWEN_DB_GetIntValue(db, "jobsPerMsg", 0, 0);
+  AQFINTS_TanInfo_SetJobsPerMsg(ti, i);
+
+  i=GWEN_DB_GetIntValue(db, "minSigs", 0, 0);
+  AQFINTS_TanInfo_SetMinSigs(ti, i);
+
+  i=GWEN_DB_GetIntValue(db, "securityClass", 0, 0);
+  AQFINTS_TanInfo_SetSecurityClass(ti, i);
+
+  dbT=GWEN_DB_FindFirstGroup(db, "job");
+  while(dbT) {
+    AQFINTS_TANJOBINFO *tj;
+
+    tj=AQFINTS_Bpd_ReadTanJobInfo(dbT);
+    AQFINTS_TanInfo_AddTanJobInfo(ti, tj);
+    dbT=GWEN_DB_FindNextGroup(dbT, "job");
+  }
+
+  return ti;
+}
+
+
+
+AQFINTS_TANJOBINFO *AQFINTS_Bpd_ReadTanJobInfo(GWEN_DB_NODE *db)
+{
+  AQFINTS_TANJOBINFO *tj;
+  const char *s;
+
+  tj=AQFINTS_TanJobInfo_new();
+
+  s=GWEN_DB_GetCharValue(db, "code", 0, NULL);
+  AQFINTS_TanJobInfo_SetCode(tj, s);
+
+  s=GWEN_DB_GetCharValue(db, "needTan", 0, NULL);
+  if (s && (*s=='j' || *s=='J'))
+    AQFINTS_TanJobInfo_AddFlags(tj, AQFINTS_TANJOBINFO_FLAGS_NEEDTAN);
+
+  return tj;
+}
 
 
 

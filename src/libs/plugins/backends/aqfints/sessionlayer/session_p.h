@@ -28,6 +28,7 @@ struct AQFINTS_SESSION {
   AQFINTS_TRANSPORT *transport;
 
   AQFINTS_USERDATA_LIST *userDataList;
+  AQFINTS_BPD *bpd;
 
   AQFINTS_SESSION_EXCHANGEMESSAGES_FN exchangeMessagesFn;
 };

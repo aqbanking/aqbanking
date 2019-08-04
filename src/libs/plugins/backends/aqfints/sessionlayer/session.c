@@ -14,6 +14,9 @@
 
 #include "./session_p.h"
 #include "msglayer/parser/parser.h"
+#include "servicelayer/upd/upd_read.h"
+#include "servicelayer/bpd/bpd_read.h"
+
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
@@ -71,6 +74,15 @@ void AQFINTS_Session_free(AQFINTS_SESSION *sess)
 
       if (sess->dialogId)
         free(sess->dialogId);
+
+      if (sess->userDataList)
+        AQFINTS_UserData_List_free(sess->userDataList);
+
+      if (sess->bpd)
+        AQFINTS_Bpd_free(sess->bpd);
+
+      if (sess->transport)
+        AQFINTS_Transport_free(sess->transport);
 
       GWEN_FREE_OBJECT(sess);
     }
@@ -185,6 +197,25 @@ void AQFINTS_Session_SetUserDataList(AQFINTS_SESSION *sess, AQFINTS_USERDATA_LIS
 
 
 
+AQFINTS_BPD *AQFINTS_Session_GetBpd(const AQFINTS_SESSION *sess)
+{
+  assert(sess);
+  return sess->bpd;
+}
+
+
+
+void AQFINTS_Session_SetBpd(AQFINTS_SESSION *sess, AQFINTS_BPD *bpd)
+{
+  assert(sess);
+  if (sess->bpd)
+    AQFINTS_Bpd_free(sess->bpd);
+  sess->bpd=bpd;
+}
+
+
+
+
 int AQFINTS_Session_ExchangeMessages(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *messageOut,
                                      AQFINTS_MESSAGE **pMessageIn)
 {
@@ -275,6 +306,28 @@ int AQFINTS_Session_WriteSegment(AQFINTS_SESSION *sess, AQFINTS_SEGMENT *segment
   return 0;
 }
 
+
+
+void AQFINTS_Session_ExtractBpdAndUpd(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIST *segmentList)
+{
+  AQFINTS_USERDATA_LIST *userDataList;
+  AQFINTS_BPD *bpd;
+
+  bpd=AQFINTS_Bpd_SampleBpdFromSegmentList(sess->parser, segmentList, 1);
+  if (bpd==NULL) {
+    DBG_ERROR(0, "Empty BPD");
+  }
+  else
+    AQFINTS_Session_SetBpd(sess, bpd);
+
+  userDataList=AQFINTS_Upd_SampleUpdFromSegmentList(segmentList, 1);
+  if (userDataList==NULL) {
+    DBG_ERROR(0, "Empty userDataList");
+  }
+  else
+    AQFINTS_Session_SetUserDataList(sess, userDataList);
+
+}
 
 
 

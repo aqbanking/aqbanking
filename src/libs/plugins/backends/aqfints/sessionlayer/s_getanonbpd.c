@@ -15,7 +15,6 @@
 
 #include "./session.h"
 
-#include "servicelayer/upd/upd_read.h"
 
 #include <gwenhywfar/debug.h>
 
@@ -100,7 +99,6 @@ int AQFINTS_Session_GetAnonBpd(AQFINTS_SESSION *sess, const char *bankCode)
 int handleResponse(AQFINTS_SESSION *sess, const uint8_t *ptrBuffer, uint32_t lenBuffer)
 {
   AQFINTS_SEGMENT_LIST *segmentList;
-  AQFINTS_USERDATA_LIST *userDataList;
   AQFINTS_PARSER *parser;
   int rv;
 
@@ -120,12 +118,7 @@ int handleResponse(AQFINTS_SESSION *sess, const uint8_t *ptrBuffer, uint32_t len
     return rv;
   }
 
-  userDataList=AQFINTS_Upd_SampleUpdFromSegmentList(segmentList, 0);
-  if (userDataList==NULL) {
-    DBG_ERROR(0, "Empty userDataList");
-  }
-  else
-    AQFINTS_Session_SetUserDataList(sess, userDataList);
+  AQFINTS_Session_ExtractBpdAndUpd(sess, segmentList);
 
   AQFINTS_Segment_List_free(segmentList);
   return 0;

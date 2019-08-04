@@ -22,6 +22,7 @@
         <header type="local" loc="post">servicelayer/bpd/bankdata.h</header>
         <header type="local" loc="post">servicelayer/bpd/bpdjob.h</header>
         <header type="local" loc="post">servicelayer/bpd/bpdaddr.h</header>
+        <header type="local" loc="post">servicelayer/bpd/taninfo.h</header>
       </headers>
       
 
@@ -96,6 +97,14 @@
     <members>
   
       <member name="bankData" type="AQFINTS_BANKDATA" >
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+
+      <member name="tanInfo" type="AQFINTS_TANINFO" >
         <access>public</access>
         <flags>own</flags>
         <setflags>none</setflags>

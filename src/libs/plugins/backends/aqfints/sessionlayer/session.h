@@ -17,6 +17,7 @@
 #include "msglayer/parser/parser.h"
 #include "transportlayer/transport.h"
 #include "servicelayer/upd/userdata.h"
+#include "servicelayer/bpd/bpd.h"
 
 #include <aqbanking/error.h>
 
@@ -60,6 +61,9 @@ void AQFINTS_Session_SetLastMessageNumReceived(AQFINTS_SESSION *sess, int p_src)
 AQFINTS_USERDATA_LIST *AQFINTS_Session_GetUserDataList(const AQFINTS_SESSION *sess);
 void AQFINTS_Session_SetUserDataList(AQFINTS_SESSION *sess, AQFINTS_USERDATA_LIST *userDataList);
 
+AQFINTS_BPD *AQFINTS_Session_GetBpd(const AQFINTS_SESSION *sess);
+void AQFINTS_Session_SetBpd(AQFINTS_SESSION *sess, AQFINTS_BPD *bpd);
+
 
 AQFINTS_PARSER *AQFINTS_Session_GetParser(const AQFINTS_SESSION *sess);
 
@@ -99,6 +103,8 @@ int AQFINTS_Session_WriteSegment(AQFINTS_SESSION *sess, AQFINTS_SEGMENT *segment
 int AQFINTS_Session_WrapMessageHeadAndTail(AQFINTS_SESSION *sess,
                                            int msgNum, int refMsgNum, int lastSegNum,
                                            GWEN_BUFFER *msgBuffer);
+
+void AQFINTS_Session_ExtractBpdAndUpd(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIST *segmentList);
 
 
 int AQFINTS_Session_GetAnonBpd(AQFINTS_SESSION *sess, const char *bankCode);

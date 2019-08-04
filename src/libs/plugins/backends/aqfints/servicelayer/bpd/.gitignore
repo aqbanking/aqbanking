@@ -29,3 +29,15 @@ bankdata.c
 bankdata.h
 bankdata_p.h
 
+aqfints_taninfo.tm2
+aqfints_taninfo_list.tm2
+taninfo.c
+taninfo.h
+taninfo_p.h
+
+aqfints_tanjobinfo.tm2
+aqfints_tanjobinfo_list.tm2
+tanjobinfo.c
+tanjobinfo.h
+tanjobinfo_p.h
+
