@@ -23,6 +23,7 @@ struct AQFINTS_SESSION {
   int hbciVersion;
   char *secProfileCode;
   int secProfileVersion;
+  AQFINTS_TANMETHOD *tanMethod;
 
   char *dialogId;
 

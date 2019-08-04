@@ -619,6 +619,10 @@ void readSegment(AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlSource)
 
   i=GWEN_XMLNode_GetIntProperty(xmlSource, "protocolVersion", -1);
   AQFINTS_Segment_SetProtocolVersion(segment, i);
+
+  i=GWEN_XMLNode_GetIntProperty(xmlSource, "isBpdJob", 0);
+  if (i)
+    AQFINTS_Segment_AddFlags(segment, AQFINTS_SEGMENT_FLAGS_ISBPD);
 }
 
 

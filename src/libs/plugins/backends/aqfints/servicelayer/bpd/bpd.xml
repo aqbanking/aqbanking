@@ -23,6 +23,7 @@
         <header type="local" loc="post">servicelayer/bpd/bpdjob.h</header>
         <header type="local" loc="post">servicelayer/bpd/bpdaddr.h</header>
         <header type="local" loc="post">servicelayer/bpd/taninfo.h</header>
+        <header type="local" loc="post">servicelayer/bpd/tanmethod.h</header>
       </headers>
       
 
@@ -127,6 +128,13 @@
         <getflags>none</getflags>
       </member>
 
+
+      <member name="tanMethodList" type="AQFINTS_TANMETHOD_LIST" >
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
 
 
 

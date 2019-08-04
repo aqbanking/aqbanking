@@ -84,6 +84,9 @@ void AQFINTS_Session_free(AQFINTS_SESSION *sess)
       if (sess->transport)
         AQFINTS_Transport_free(sess->transport);
 
+      if (sess->tanMethod)
+        AQFINTS_TanMethod_free(sess->tanMethod);
+
       GWEN_FREE_OBJECT(sess);
     }
     else
@@ -114,6 +117,24 @@ void AQFINTS_Session_SetHbciVersion(AQFINTS_SESSION *sess, int v)
 {
   assert(sess);
   sess->hbciVersion=v;
+}
+
+
+
+AQFINTS_TANMETHOD *AQFINTS_Session_GetTanMethod(const AQFINTS_SESSION *sess)
+{
+  assert(sess);
+  return sess->tanMethod;
+}
+
+
+
+void AQFINTS_Session_SetTanMethod(AQFINTS_SESSION *sess, AQFINTS_TANMETHOD *tm)
+{
+  assert(sess);
+  if (sess->tanMethod)
+    AQFINTS_TanMethod_free(sess->tanMethod);
+  sess->tanMethod=tm;
 }
 
 

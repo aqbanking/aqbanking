@@ -56,6 +56,7 @@ void AQFINTS_Session_free(AQFINTS_SESSION *sess);
 
 void AQFINTS_Session_Attach(AQFINTS_SESSION *sess);
 
+
 int AQFINTS_Session_GetHbciVersion(const AQFINTS_SESSION *sess);
 void AQFINTS_Session_SetHbciVersion(AQFINTS_SESSION *sess, int v);
 
@@ -69,6 +70,15 @@ void AQFINTS_Session_SetSecProfileCode(AQFINTS_SESSION *sess, const char *s);
  */
 int AQFINTS_Session_GetSecProfileVersion(const AQFINTS_SESSION *sess);
 void AQFINTS_Session_SetSecProfileVersion(AQFINTS_SESSION *sess, int i);
+
+
+
+AQFINTS_TANMETHOD *AQFINTS_Session_GetTanMethod(const AQFINTS_SESSION *sess);
+
+/**
+ * Takes over given tan method object
+ */
+void AQFINTS_Session_SetTanMethod(AQFINTS_SESSION *sess, AQFINTS_TANMETHOD *tm);
 
 
 const char *AQFINTS_Session_GetDialogId(const AQFINTS_SESSION *sess);

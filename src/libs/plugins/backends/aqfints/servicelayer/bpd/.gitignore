@@ -41,3 +41,9 @@ tanjobinfo.c
 tanjobinfo.h
 tanjobinfo_p.h
 
+aqfints_tanmethod.tm2
+aqfints_tanmethod_list.tm2
+tanmethod.c
+tanmethod.h
+tanmethod_p.h
+

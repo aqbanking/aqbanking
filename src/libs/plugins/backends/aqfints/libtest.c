@@ -165,6 +165,7 @@ int test_getBpd()
   AQFINTS_PARSER *parser;
   AQFINTS_SESSION *session;
   AQFINTS_TRANSPORT *transport;
+  AQFINTS_BPD *bpd;
   int rv;
   GWEN_DB_NODE *dbSettings;
   const char *sUrl;
@@ -216,6 +217,16 @@ int test_getBpd()
   if (rv<0) {
     fprintf(stderr, "Error creating GetBPD request (%d).\n", rv);
     return 2;
+  }
+
+  bpd=AQFINTS_Session_GetBpd(session);
+  if (bpd) {
+    GWEN_DB_NODE *dbBpd;
+
+    dbBpd=GWEN_DB_Group_new("Bpd");
+    AQFINTS_Bpd_toDb(bpd, dbBpd);
+    fprintf(stderr, "Got these BPD:\n");
+    GWEN_DB_Dump(dbBpd, 2);
   }
 
   fprintf(stderr, "Success.\n");

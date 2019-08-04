@@ -29,6 +29,10 @@
  */
 
 
+static void _readTanMethods(GWEN_DB_NODE *db, int segmentVersion, AQFINTS_TANMETHOD_LIST *tmList);
+
+
+
 
 /* ------------------------------------------------------------------------------------------------
  * implementations
@@ -59,6 +63,7 @@ AQFINTS_BPD *AQFINTS_Bpd_SampleBpdFromSegmentList(AQFINTS_PARSER *parser,
     db=AQFINTS_Segment_GetDbData(segment);
     segVer=AQFINTS_Segment_GetSegmentVersion(segment);
     sCode=AQFINTS_Segment_GetCode(segment);
+    DBG_ERROR(0, "Handling segment %s:%d", sCode?sCode:"(unnamed)", segVer);
     if (db && sCode && *sCode) {
       if (strcasecmp(sCode, "HIBPA")==0) { /* read bankData */
         AQFINTS_BANKDATA *bankData;
@@ -91,16 +96,35 @@ AQFINTS_BPD *AQFINTS_Bpd_SampleBpdFromSegmentList(AQFINTS_PARSER *parser,
             doRemoveSegment=1;
         }
       }
-      else if (AQFINTS_Parser_FindJobDefByParams(parser, sCode, 0, 0)) {
-        AQFINTS_BPDJOB *j;
+      else {
+        AQFINTS_SEGMENT *defSegment;
 
-        /* is a bpd job */
-        DBG_ERROR(0, "Job %s:%d is a BPD job", sCode, segVer);
-        j=AQFINTS_Bpd_ReadBpdJob(db);
-        if (j) {
-          AQFINTS_Bpd_AddBpdJob(bpd, j);
-          if (removeFromSegList)
-            doRemoveSegment=1;
+        defSegment=AQFINTS_Parser_FindSegmentByCode(parser, sCode, segVer, 0);
+        if (defSegment==NULL) {
+          DBG_ERROR(0, "Segment %s:%d not found in definitions", sCode?sCode:"(unnamed)", segVer);
+        }
+        if (defSegment && (AQFINTS_Segment_GetFlags(defSegment) & AQFINTS_SEGMENT_FLAGS_ISBPD)) {
+          AQFINTS_BPDJOB *j;
+
+          /* is a bpd job */
+          DBG_ERROR(0, "Job %s:%d is a BPD job", sCode, segVer);
+          j=AQFINTS_Bpd_ReadBpdJob(db);
+          if (j) {
+            AQFINTS_Bpd_AddBpdJob(bpd, j);
+            if (strcasecmp(sCode, "HITANS")==0) {
+              AQFINTS_TANMETHOD_LIST *tmList;
+
+              /* special handling for HITANS (parameters for HKTAN) */
+              tmList=AQFINTS_Bpd_GetTanMethodList(bpd);
+              if (tmList==NULL) {
+                tmList=AQFINTS_TanMethod_List_new();
+                AQFINTS_Bpd_SetTanMethodList(bpd, tmList);
+              }
+              _readTanMethods(db, segVer, tmList);
+            }
+            if (removeFromSegList)
+              doRemoveSegment=1;
+          }
         }
       }
     }
@@ -121,6 +145,28 @@ AQFINTS_BPD *AQFINTS_Bpd_SampleBpdFromSegmentList(AQFINTS_PARSER *parser,
   return bpd;
 }
 
+
+
+void _readTanMethods(GWEN_DB_NODE *db, int segmentVersion, AQFINTS_TANMETHOD_LIST *tmList)
+{
+  GWEN_DB_NODE *dbT;
+
+  dbT=GWEN_DB_FindFirstGroup(db, "tanMethod");
+  while(dbT) {
+    AQFINTS_TANMETHOD *tm;
+
+    tm=AQFINTS_Bpd_ReadTanMethod(dbT);
+    if (tm) {
+      int fn;
+
+      /* store segment version within function code */
+      fn=(segmentVersion*1000)+AQFINTS_TanMethod_GetFunction(tm);
+      AQFINTS_TanMethod_SetFunction(tm, fn);
+      AQFINTS_TanMethod_List_Add(tm, tmList);
+    }
+    dbT=GWEN_DB_FindNextGroup(dbT, "tanMethod");
+  }
+}
 
 
 
@@ -247,7 +293,7 @@ AQFINTS_BPDJOB *AQFINTS_Bpd_ReadBpdJob(GWEN_DB_NODE *db)
 {
   GWEN_DB_NODE *dbT;
 
-  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTNOTEXIST, "head");
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "head");
   if (dbT) {
     AQFINTS_BPDJOB *j;
     const char *s;
@@ -274,6 +320,10 @@ AQFINTS_BPDJOB *AQFINTS_Bpd_ReadBpdJob(GWEN_DB_NODE *db)
     AQFINTS_BpdJob_SetSettings(j, GWEN_DB_Group_dup(db));
 
     return j;
+  }
+  else {
+    DBG_ERROR(0, "BpdJob has no HEAD group");
+    GWEN_DB_Dump(db, 2);
   }
 
   return NULL;
@@ -327,6 +377,87 @@ AQFINTS_TANJOBINFO *AQFINTS_Bpd_ReadTanJobInfo(GWEN_DB_NODE *db)
     AQFINTS_TanJobInfo_AddFlags(tj, AQFINTS_TANJOBINFO_FLAGS_NEEDTAN);
 
   return tj;
+}
+
+
+
+AQFINTS_TANMETHOD *AQFINTS_Bpd_ReadTanMethod(GWEN_DB_NODE *db)
+{
+  AQFINTS_TANMETHOD *tm;
+  int i;
+  const char *s;
+
+  tm=AQFINTS_TanMethod_new();
+
+  i=GWEN_DB_GetIntValue(db, "function", 0, 0);
+  AQFINTS_TanMethod_SetFunction(tm, i);
+
+  i=GWEN_DB_GetIntValue(db, "process", 0, 0);
+  AQFINTS_TanMethod_SetProcess(tm, i);
+
+  s=GWEN_DB_GetCharValue(db, "methodId", 0, NULL);
+  AQFINTS_TanMethod_SetMethodId(tm, s);
+
+  s=GWEN_DB_GetCharValue(db, "zkaTanName", 0, NULL);
+  AQFINTS_TanMethod_SetZkaTanName(tm, s);
+
+  s=GWEN_DB_GetCharValue(db, "zkaTanVersion", 0, NULL);
+  AQFINTS_TanMethod_SetZkaTanVersion(tm, s);
+
+  s=GWEN_DB_GetCharValue(db, "methodName", 0, NULL);
+  AQFINTS_TanMethod_SetMethodName(tm, s);
+
+  i=GWEN_DB_GetIntValue(db, "tanMaxLen", 0, 0);
+  AQFINTS_TanMethod_SetTanMaxLen(tm, i);
+
+  i=GWEN_DB_GetIntValue(db, "formatId", 0, 0);
+  AQFINTS_TanMethod_SetFormatId(tm, i);
+
+  s=GWEN_DB_GetCharValue(db, "prompt", 0, NULL);
+  AQFINTS_TanMethod_SetPrompt(tm, s);
+
+  i=GWEN_DB_GetIntValue(db, "returnMaxLen", 0, 0);
+  AQFINTS_TanMethod_SetReturnMaxLen(tm, i);
+
+  s=GWEN_DB_GetCharValue(db, "multiTanAllowed", 0, "N");
+  if (s && (*s=='J' || *s=='j'))
+    AQFINTS_TanMethod_AddFlags(tm, AQFINTS_TANMETHOD_FLAGS_MULTITAN_ALLOWED);
+
+  i=GWEN_DB_GetIntValue(db, "timeShiftAllowed", 0, 0);
+  AQFINTS_TanMethod_SetTimeShiftAllowed(tm, i);
+
+  s=GWEN_DB_GetCharValue(db, "stornoAllowed", 0, "N");
+  if (s && (*s=='J' || *s=='j'))
+    AQFINTS_TanMethod_AddFlags(tm, AQFINTS_TANMETHOD_FLAGS_STORNO_ALLOWED);
+
+  i=GWEN_DB_GetIntValue(db, "needSmsAccount", 0, 0);
+  AQFINTS_TanMethod_SetNeedSmsAccount(tm, i);
+
+  i=GWEN_DB_GetIntValue(db, "needLocalAccount", 0, 0);
+  AQFINTS_TanMethod_SetNeedLocalAccount(tm, i);
+
+  s=GWEN_DB_GetCharValue(db, "needChallengeClass", 0, "N");
+  if (s && (*s=='J' || *s=='j'))
+    AQFINTS_TanMethod_AddFlags(tm, AQFINTS_TANMETHOD_FLAGS_NEED_CHALLENGE_CLASS);
+
+  s=GWEN_DB_GetCharValue(db, "challengeIsStructured", 0, "N");
+  if (s && (*s=='J' || *s=='j'))
+    AQFINTS_TanMethod_AddFlags(tm, AQFINTS_TANMETHOD_FLAGS_CHALLENGE_IS_STRUCTURED);
+
+  s=GWEN_DB_GetCharValue(db, "initMode", 0, 0);
+  AQFINTS_TanMethod_SetInitMode(tm, s);
+
+  i=GWEN_DB_GetIntValue(db, "needTanMediumId", 0, 0);
+  AQFINTS_TanMethod_SetNeedTanMediumId(tm, i);
+
+  s=GWEN_DB_GetCharValue(db, "needHhdUcResponse", 0, "N");
+  if (s && (*s=='J' || *s=='j'))
+    AQFINTS_TanMethod_AddFlags(tm, AQFINTS_TANMETHOD_FLAGS_NEED_HHDUC);
+
+  i=GWEN_DB_GetIntValue(db, "maxActiveTanMedia", 0, 0);
+  AQFINTS_TanMethod_SetMaxActiveTanMedia(tm, i);
+
+  return tm;
 }
 
 

@@ -18,6 +18,7 @@ noinst_LTLIBRARIES=libafmsgbpd.la
 typefiles= \
   tanjobinfo.xml \
   taninfo.xml \
+  tanmethod.xml \
   bankdata.xml \
   bpdjob.xml \
   bpdaddrservice.xml \
@@ -46,7 +47,8 @@ built_sources=\
   bpdaddrservice.c \
   bpdaddr.c \
   tanjobinfo.c \
-  taninfo.c
+  taninfo.c \
+  tanmethod.c
 
 
 build_headers_priv=\
@@ -56,7 +58,8 @@ build_headers_priv=\
   bpdaddrservice_p.h \
   bpdaddr_p.h \
   tanjobinfo_p.h \
-  taninfo_p.h
+  taninfo_p.h \
+  tanmethod_p.h
 
 
 build_headers_pub=\
@@ -66,7 +69,8 @@ build_headers_pub=\
   bpdaddrservice.h \
   bpdaddr.h \
   tanjobinfo.h \
-  taninfo.h
+  taninfo.h \
+  tanmethod.h
 
 
 
