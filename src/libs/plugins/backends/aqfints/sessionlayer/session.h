@@ -60,6 +60,9 @@ void AQFINTS_Session_Attach(AQFINTS_SESSION *sess);
 int AQFINTS_Session_GetHbciVersion(const AQFINTS_SESSION *sess);
 void AQFINTS_Session_SetHbciVersion(AQFINTS_SESSION *sess, int v);
 
+/**
+ * DDV, RDH, RAH, PIN
+ */
 const char *AQFINTS_Session_GetSecProfileCode(const AQFINTS_SESSION *sess);
 void AQFINTS_Session_SetSecProfileCode(AQFINTS_SESSION *sess, const char *s);
 
