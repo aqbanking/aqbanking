@@ -933,6 +933,9 @@ int AH_Msg_EncryptRxh(AH_MSG *hmsg)
   ek=AH_User_GetBankPubCryptKey(u);
   if (!ek) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bank Public Key not downloaded, please get it!");
+    GWEN_Gui_ProgressLog(0,
+                         GWEN_LoggerLevel_Error,
+                         I18N("The public key from the bank is not available, please download it. Aborting current dialog."));
     return GWEN_ERROR_INTERNAL;
   }
 
