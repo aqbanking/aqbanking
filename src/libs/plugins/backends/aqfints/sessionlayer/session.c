@@ -30,6 +30,7 @@
  */
 
 
+static void sampleAllowedTanMethods(int *ptrIntArray, int sizeIntArray, AQFINTS_SEGMENT_LIST *segmentList);
 
 
 
@@ -273,6 +274,40 @@ void AQFINTS_Session_SetBpd(AQFINTS_SESSION *sess, AQFINTS_BPD *bpd)
 
 
 
+int AQFINTS_Session_GetAllowedTanMethodAt(const AQFINTS_SESSION *sess, int idx)
+{
+  assert(sess);
+  if (idx<AQFINTS_SESSION_MAX_ALLOWED_TANMETHODS)
+    return sess->allowedTanMethods[idx];
+  return -1;
+}
+
+
+
+void AQFINTS_Session_SetAllowedTanMethodAt(AQFINTS_SESSION *sess, int idx, int v)
+{
+  assert(sess);
+  if (idx<AQFINTS_SESSION_MAX_ALLOWED_TANMETHODS)
+    sess->allowedTanMethods[idx]=v;
+}
+
+
+
+void AQFINTS_Session_PresetAllowedTanMethods(AQFINTS_SESSION *sess, int v)
+{
+  int i;
+
+  for (i=0; i<AQFINTS_SESSION_MAX_ALLOWED_TANMETHODS; i++)
+    sess->allowedTanMethods[i]=v;
+}
+
+
+
+
+
+
+
+
 
 int AQFINTS_Session_ExchangeMessages(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *messageOut,
                                      AQFINTS_MESSAGE **pMessageIn)
@@ -508,7 +543,71 @@ void AQFINTS_Session_ExtractBpdAndUpd(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIS
   else
     AQFINTS_Session_SetUserDataList(sess, userDataList);
 
+  sampleAllowedTanMethods(sess->allowedTanMethods, AQFINTS_SESSION_MAX_ALLOWED_TANMETHODS, segmentList);
+
 }
+
+
+
+void sampleAllowedTanMethods(int *ptrIntArray, int sizeIntArray,
+                             AQFINTS_SEGMENT_LIST *segmentList)
+{
+  AQFINTS_SEGMENT *segment;
+
+  segment=AQFINTS_Segment_List_First(segmentList);
+  while (segment) {
+    AQFINTS_SEGMENT *nextSegment;
+    const char *sCode;
+
+    nextSegment=AQFINTS_Segment_List_Next(segment);
+
+    sCode=AQFINTS_Segment_GetCode(segment);
+    if (sCode && *sCode && strcasecmp(sCode, "HIRMS")==0) { /* check result */
+      GWEN_DB_NODE *db;
+
+      db=AQFINTS_Segment_GetDbData(segment);
+      if (db) {
+        GWEN_DB_NODE *dbResult;
+
+        dbResult=GWEN_DB_FindFirstGroup(db, "result");
+        while(dbResult) {
+          int resultCode;
+          const char *resultText;
+
+          resultCode=GWEN_DB_GetIntValue(dbResult, "resultcode", 0, 0);
+          resultText=GWEN_DB_GetCharValue(dbResult, "text", 0, 0);
+          DBG_NOTICE(0, "Segment result: %d (%s)", resultCode, resultText?resultText:"<none>");
+          if (resultCode==3920) {
+            int i;
+
+            /* reset array */
+            for (i=0; i<sizeIntArray; i++)
+              ptrIntArray[i]=0;
+
+            for (i=0; i<sizeIntArray; i++) {
+              int j;
+
+              j=GWEN_DB_GetIntValue(dbResult, "param", i, 0);
+              if (j==0)
+                break;
+              DBG_NOTICE(0, "Adding allowed TAN method %d", j);
+              ptrIntArray[i]=j;
+            } /* for */
+            if (i==0) {
+              /* add single step if empty list */
+              DBG_INFO(0, "No allowed TAN method reported, assuming 999");
+              ptrIntArray[0]=999;
+            }
+          }
+          dbResult=GWEN_DB_FindNextGroup(dbResult, "result");
+        } /* while dbResult */
+      } /* if db */
+    }
+
+    segment=nextSegment;
+  } /* while segment */
+}
+
 
 
 

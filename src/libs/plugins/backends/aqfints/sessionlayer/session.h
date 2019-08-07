@@ -33,6 +33,11 @@ typedef struct AQFINTS_SESSION AQFINTS_SESSION;
 GWEN_INHERIT_FUNCTION_DEFS(AQFINTS_SESSION)
 
 
+/** @name Definitions for virtual functions
+ *
+ */
+/*@{*/
+
 
 /* definitions for virtual functions (post) */
 typedef int (*AQFINTS_SESSION_EXCHANGEMESSAGES_FN)(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *messageOut,
@@ -47,16 +52,28 @@ typedef int (*AQFINTS_SESSION_VERIFY_FN)(AQFINTS_SESSION *sess, AQFINTS_KEYNAME 
 
 typedef int (*AQFINTS_SESSION_ENCRYPT_FN)(AQFINTS_SESSION *sess, AQFINTS_KEYNAME *keyName, GWEN_BUFFER *dataBuffer);
 typedef int (*AQFINTS_SESSION_DECRYPT_FN)(AQFINTS_SESSION *sess, AQFINTS_KEYNAME *keyName, GWEN_BUFFER *dataBuffer);
+/*@}*/
 
 
 
 
+/** @name Constructor, destructor
+ *
+ */
+/*@{*/
 AQFINTS_SESSION *AQFINTS_Session_new(AQFINTS_PARSER *parser, AQFINTS_TRANSPORT *trans);
 void AQFINTS_Session_free(AQFINTS_SESSION *sess);
 
 void AQFINTS_Session_Attach(AQFINTS_SESSION *sess);
+/*@}*/
 
 
+
+
+/** @name Variables to set before working with sessions
+ *
+ */
+/*@{*/
 int AQFINTS_Session_GetHbciVersion(const AQFINTS_SESSION *sess);
 void AQFINTS_Session_SetHbciVersion(AQFINTS_SESSION *sess, int v);
 
@@ -83,16 +100,18 @@ AQFINTS_TANMETHOD *AQFINTS_Session_GetTanMethod(const AQFINTS_SESSION *sess);
  */
 void AQFINTS_Session_SetTanMethod(AQFINTS_SESSION *sess, AQFINTS_TANMETHOD *tm);
 
+/*@}*/
+
+
+
+
+/** @name Variables set when parsing received messages
+ *
+ */
+/*@{*/
 
 const char *AQFINTS_Session_GetDialogId(const AQFINTS_SESSION *sess);
 void AQFINTS_Session_SetDialogId(AQFINTS_SESSION *sess, const char *s);
-
-
-int AQFINTS_Session_GetLastMessageNumSent(const AQFINTS_SESSION *sess);
-void AQFINTS_Session_SetLastMessageNumSent(AQFINTS_SESSION *sess, int p_src);
-
-int AQFINTS_Session_GetLastMessageNumReceived(const AQFINTS_SESSION *sess);
-void AQFINTS_Session_SetLastMessageNumReceived(AQFINTS_SESSION *sess, int p_src);
 
 
 AQFINTS_USERDATA_LIST *AQFINTS_Session_GetUserDataList(const AQFINTS_SESSION *sess);
@@ -102,10 +121,39 @@ AQFINTS_BPD *AQFINTS_Session_GetBpd(const AQFINTS_SESSION *sess);
 void AQFINTS_Session_SetBpd(AQFINTS_SESSION *sess, AQFINTS_BPD *bpd);
 
 
+int AQFINTS_Session_GetAllowedTanMethodAt(const AQFINTS_SESSION *sess, int idx);
+void AQFINTS_Session_SetAllowedTanMethodAt(AQFINTS_SESSION *sess, int idx, int v);
+void AQFINTS_Session_PresetAllowedTanMethods(AQFINTS_SESSION *sess, int v);
+/*@}*/
+
+
+
+
+/** @name Internal functions to be used by the various session submodules
+ *
+ */
+/*@{*/
+
 AQFINTS_PARSER *AQFINTS_Session_GetParser(const AQFINTS_SESSION *sess);
 
 
-/* prototypes for virtual functions */
+
+int AQFINTS_Session_GetLastMessageNumSent(const AQFINTS_SESSION *sess);
+void AQFINTS_Session_SetLastMessageNumSent(AQFINTS_SESSION *sess, int p_src);
+
+int AQFINTS_Session_GetLastMessageNumReceived(const AQFINTS_SESSION *sess);
+void AQFINTS_Session_SetLastMessageNumReceived(AQFINTS_SESSION *sess, int p_src);
+
+/*@}*/
+
+
+
+
+/** @name Prototypes for virtual functions
+ *
+ */
+/*@{*/
+
 /**
  * @param messageOut Pointer to a message to be sent
  * @param pMessageIn Pointer to a pointer to receive a message
@@ -134,10 +182,16 @@ int AQFINTS_Session_Verify(AQFINTS_SESSION *sess, AQFINTS_KEYNAME *keyName, GWEN
 int AQFINTS_Session_Encrypt(AQFINTS_SESSION *sess, AQFINTS_KEYNAME *keyName, GWEN_BUFFER *dataBuffer);
 int AQFINTS_Session_Decrypt(AQFINTS_SESSION *sess, AQFINTS_KEYNAME *keyName, GWEN_BUFFER *dataBuffer);
 
+/*@}*/
 
 
 
-/* setters for virtual functions */
+
+/** @name Setters for virtual functions
+ *
+ */
+/*@{*/
+
 AQFINTS_SESSION_EXCHANGEMESSAGES_FN AQFINTS_Session_SetExchangeMessagesFn(AQFINTS_SESSION *sess,
                                                                           AQFINTS_SESSION_EXCHANGEMESSAGES_FN fn);
 
@@ -148,8 +202,14 @@ AQFINTS_SESSION_SIGN_FN AQFINTS_Session_SetSignFn(AQFINTS_SESSION *sess, AQFINTS
 AQFINTS_SESSION_VERIFY_FN AQFINTS_Session_SetVerifyFn(AQFINTS_SESSION *sess, AQFINTS_SESSION_VERIFY_FN fn);
 AQFINTS_SESSION_ENCRYPT_FN AQFINTS_Session_SetEncryptFn(AQFINTS_SESSION *sess, AQFINTS_SESSION_ENCRYPT_FN fn);
 AQFINTS_SESSION_DECRYPT_FN AQFINTS_Session_SetDecryptFn(AQFINTS_SESSION *sess, AQFINTS_SESSION_DECRYPT_FN fn);
+/*@}*/
 
 
+
+/** @name Internal functions
+ *
+ */
+/*@{*/
 
 int AQFINTS_Session_Connect(AQFINTS_SESSION *sess);
 
@@ -176,6 +236,8 @@ void AQFINTS_Session_ExtractBpdAndUpd(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIS
 
 
 int AQFINTS_Session_GetAnonBpd(AQFINTS_SESSION *sess, const char *bankCode);
+
+/*@}*/
 
 
 #endif

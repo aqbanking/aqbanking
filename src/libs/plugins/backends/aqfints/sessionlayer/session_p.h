@@ -14,6 +14,10 @@
 #include "session.h"
 
 
+#define AQFINTS_SESSION_MAX_ALLOWED_TANMETHODS 16
+
+
+
 struct AQFINTS_SESSION {
   GWEN_INHERIT_ELEMENT(AQFINTS_SESSION)
   int _refCount;
@@ -32,6 +36,8 @@ struct AQFINTS_SESSION {
 
   AQFINTS_USERDATA_LIST *userDataList;
   AQFINTS_BPD *bpd;
+
+  int allowedTanMethods[AQFINTS_SESSION_MAX_ALLOWED_TANMETHODS];
 
   AQFINTS_SESSION_EXCHANGEMESSAGES_FN exchangeMessagesFn;
 
