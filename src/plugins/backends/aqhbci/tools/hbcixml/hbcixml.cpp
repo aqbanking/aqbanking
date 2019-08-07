@@ -64,7 +64,7 @@ using namespace std;
 
 #define MYNAME "hbcixml2"
 #define PRG_VERSION_INFO \
-  MYNAME " v1.99  (part of AqHBCI v"AQHBCI_VERSION_STRING")\n"\
+  MYNAME " v1.99  (part of AqHBCI v" AQHBCI_VERSION_STRING ")\n"\
   "(c) 2005 Martin Preuss<martin@libchipcard.de>\n" \
   "This program is free software licensed under GPL.\n"\
   "See COPYING for details.\n"
