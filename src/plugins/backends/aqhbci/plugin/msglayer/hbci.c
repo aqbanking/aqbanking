@@ -65,7 +65,6 @@ AH_HBCI *AH_HBCI_new(AB_PROVIDER *pro){
   GWEN_NEW_OBJECT(AH_HBCI, hbci);
   hbci->provider=pro;
   hbci->banking=AB_Provider_GetBanking(pro);
-  hbci->productName=strdup("AQHBCI");
   rv=snprintf(numbuf, sizeof(numbuf), "%d.%d",
               AQHBCI_VERSION_MAJOR, AQHBCI_VERSION_MINOR);
   if (rv==-1 || rv>=sizeof(numbuf)) {
@@ -90,7 +89,6 @@ void AH_HBCI_free(AH_HBCI *hbci){
 
     GWEN_DB_Group_free(hbci->dbProviderConfig);
 
-    free(hbci->productName);
     free(hbci->productVersion);
 
     GWEN_XMLNode_free(hbci->defs);
@@ -217,32 +215,14 @@ GWEN_DB_NODE *AH_HBCI_GetProviderDb(const AH_HBCI *hbci) {
 
 const char *AH_HBCI_GetProductName(const AH_HBCI *hbci){
   assert(hbci);
-  return hbci->productName;
-}
-
-
-
-void AH_HBCI_SetProductName(AH_HBCI *hbci, const char *s){
-  assert(hbci);
-  assert(s);
-  free(hbci->productName);
-  hbci->productName=strdup(s);
+  return AB_Banking_RuntimeConfig_GetCharValue(hbci->banking, "fintsRegistrationKey", "AQHBCI");
 }
 
 
 
 const char *AH_HBCI_GetProductVersion(const AH_HBCI *hbci){
   assert(hbci);
-  return hbci->productVersion;
-}
-
-
-
-void AH_HBCI_SetProductVersion(AH_HBCI *hbci, const char *s){
-  assert(hbci);
-  assert(s);
-  free(hbci->productVersion);
-  hbci->productVersion=strdup(s);
+  return AB_Banking_RuntimeConfig_GetCharValue(hbci->banking, "fintsApplicationVersionString", hbci->productVersion);
 }
 
 

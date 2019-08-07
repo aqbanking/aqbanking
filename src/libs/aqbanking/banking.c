@@ -129,6 +129,7 @@ AB_BANKING *AB_Banking_new(const char *appName,
   ab->appName=strdup(appName);
   ab->activeProviders=GWEN_StringList_new();
   ab->cryptTokenList=GWEN_Crypt_Token_List2_new();
+  ab->dbRuntimeConfig=GWEN_DB_Group_new("runtimeConfig");
 
   GWEN_StringList_SetSenseCase(ab->activeProviders, 0);
 
@@ -165,6 +166,7 @@ void AB_Banking_free(AB_BANKING *ab){
 
     GWEN_INHERIT_FINI(AB_BANKING, ab);
 
+    GWEN_DB_Group_free(ab->dbRuntimeConfig);
     AB_Banking_ClearCryptTokenList(ab);
     GWEN_Crypt_Token_List2_free(ab->cryptTokenList);
     AB_Account_List_free(ab->accounts);
@@ -831,6 +833,42 @@ void AB_Banking_GetVersion(int *major,
     *patchlevel=AQBANKING_VERSION_PATCHLEVEL;
   if (build)
     *build=AQBANKING_VERSION_BUILD;
+}
+
+
+
+void AB_Banking_RuntimeConfig_SetCharValue(AB_BANKING *ab, const char *varName, const char *value)
+{
+  assert(ab);
+  assert(ab->dbRuntimeConfig);
+  GWEN_DB_SetCharValue(ab->dbRuntimeConfig, GWEN_DB_FLAGS_OVERWRITE_VARS, varName, value);
+}
+
+
+
+const char *AB_Banking_RuntimeConfig_GetCharValue(const AB_BANKING *ab, const char *varName, const char *defaultValue)
+{
+  assert(ab);
+  assert(ab->dbRuntimeConfig);
+  return GWEN_DB_GetCharValue(ab->dbRuntimeConfig, varName, 0, defaultValue);
+}
+
+
+
+void AB_Banking_RuntimeConfig_SetIntValue(AB_BANKING *ab, const char *varName, int value)
+{
+  assert(ab);
+  assert(ab->dbRuntimeConfig);
+  GWEN_DB_SetIntValue(ab->dbRuntimeConfig, GWEN_DB_FLAGS_OVERWRITE_VARS, varName, value);
+}
+
+
+
+int AB_Banking_RuntimeConfig_GetIntValue(const AB_BANKING *ab, const char *varName, int defaultValue)
+{
+  assert(ab);
+  assert(ab->dbRuntimeConfig);
+  return GWEN_DB_GetIntValue(ab->dbRuntimeConfig, varName, 0, defaultValue);
 }
 
 

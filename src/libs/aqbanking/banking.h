@@ -378,6 +378,65 @@ void AB_Banking_SetUserData(AB_BANKING *ab, void *user_data);
 
 
 
+/** @name Runtime Configuration
+ *
+ * AqBanking can store some runtime config data which is provided by application and used by banking backends.
+ * By this way applications can directly provide some runtime configuration to backends which are otherwise
+ * unaccessible to the applications.
+ *
+ * Runtime configuration data can be set at any time after calling @ref AB_Banking_new() and remains available
+ * until @ref AB_Banking_free() is called, so it survives calls to @ref AB_Banking_Init() and @ref AB_Banking_Fini().
+ *
+ * The following variables are recognized by AqBanking an the backends so far:
+ * <ul>
+ *   <li>fintsRegistrationKey (char): Registration key provided by the German ZKA to FinTS using applications
+ *       (see https://www.hbci-zka.de/register/prod_register.htm)</li>
+ *   <li>fintsApplicationVersionString (char): string containing the version of the application
+ *       (major and minor version only, e.g. "1.2")</li>
+ * </ul>
+ */
+/*@{*/
+
+/**
+ * Set runtime char variable. Overwrites the currently set value if any.
+ * @param ab pointer to the AB_BANKING object
+ * @param varName name of the variable to set
+ * @param value new value to set
+ */
+AQBANKING_API
+void AB_Banking_RuntimeConfig_SetCharValue(AB_BANKING *ab, const char *varName, const char *value);
+
+
+/**
+ * Get runtime char value (or default value if not set).
+ * @param ab pointer to the AB_BANKING object
+ * @param varName name of the variable to set
+ * @param defaultValue default value to return if there is no value set
+ */
+AQBANKING_API
+const char *AB_Banking_RuntimeConfig_GetCharValue(const AB_BANKING *ab, const char *varName, const char *defaultValue);
+
+/**
+ * Set runtime int variable. Overwrites the currently set value if any.
+ * @param ab pointer to the AB_BANKING object
+ * @param varName name of the variable to set
+ * @param value new value to set
+ */
+AQBANKING_API
+void AB_Banking_RuntimeConfig_SetIntValue(AB_BANKING *ab, const char *varName, int value);
+
+
+/**
+ * Get runtime int value (or default value if not set).
+ * @param ab pointer to the AB_BANKING object
+ * @param varName name of the variable to set
+ * @param defaultValue default value to return if there is no value set
+ */
+AQBANKING_API
+int AB_Banking_RuntimeConfig_GetIntValue(const AB_BANKING *ab, const char *varName, int defaultValue);
+
+/*@}*/
+
 
 
 

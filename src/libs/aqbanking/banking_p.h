@@ -89,6 +89,8 @@ struct AB_BANKING {
   GWEN_CRYPT_TOKEN_LIST2 *cryptTokenList;
 
   GWEN_CONFIGMGR *configMgr;
+
+  GWEN_DB_NODE *dbRuntimeConfig;
 };
 
 
