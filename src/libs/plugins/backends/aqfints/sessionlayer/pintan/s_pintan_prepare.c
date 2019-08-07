@@ -16,11 +16,17 @@
 
 
 
+static int createCtrlRef(char *ptrBuf, size_t lenBuf);
 
-int AQFINTS_Session_PinTan_PrepareSignSeg(AQFINTS_SESSION *sess,
-                                          const AQFINTS_KEYNAME *keyName,
-                                          const char *ctrlRef,
-                                          GWEN_DB_NODE *cfg)
+
+
+
+
+
+int prepareSignSeg(AQFINTS_SESSION *sess,
+                   const AQFINTS_KEYNAME *keyName,
+                   const char *ctrlRef,
+                   GWEN_DB_NODE *cfg)
 {
   char sdate[9];
   char stime[7];
@@ -65,7 +71,7 @@ int AQFINTS_Session_PinTan_PrepareSignSeg(AQFINTS_SESSION *sess,
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "signAlgo/algo", 10);
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "signAlgo/mode", 16);
 
-
+  /* keyname */
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "key/country", AQFINTS_KeyName_GetCountry(keyName));
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "key/bankcode", AQFINTS_KeyName_GetBankCode(keyName));
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "key/userid", AQFINTS_KeyName_GetUserId(keyName));
@@ -73,9 +79,54 @@ int AQFINTS_Session_PinTan_PrepareSignSeg(AQFINTS_SESSION *sess,
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "key/keynum", AQFINTS_KeyName_GetKeyNumber(keyName));
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "key/keyversion", AQFINTS_KeyName_GetKeyVersion(keyName));
 
+  /* security profile */
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "secProfile/code", AQFINTS_Session_SetSecProfileCode(session));
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "secProfile/version", AQFINTS_Session_SetSecProfileCode(session));
 
   return 0;
 }
+
+
+
+
+int wrapSignature(AQFINTS_SESSION *sess,
+                  int firstSegNum,
+                  int lastSegNum,
+                  GWEN_BUFFER *msgBuffer)
+{
+  int rv;
+  char ctrlref[15];
+
+  rv=createCtrlRef(ctrlref, sizeof(ctrlref));
+  if (rv<0) {
+    DBG_INFO(0, "here (%d)", rv);
+    return rv;
+  }
+
+
+
+}
+
+
+
+int createCtrlRef(char *ptrBuf, size_t lenBuf)
+{
+
+  struct tm *lt;
+  time_t tt;
+
+  tt=time(0);
+  lt=localtime(&tt);
+
+  if (!strftime(ptrBuf, lenBuf, "%Y%m%d%H%M%S", lt)) {
+    DBG_INFO(0, "CtrlRef string too long");
+    return GWEN_ERROR_INTERNAL;
+  }
+
+  return 0;
+}
+
+
+
+
 
