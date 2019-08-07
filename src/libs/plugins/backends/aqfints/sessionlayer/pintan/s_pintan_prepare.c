@@ -13,12 +13,29 @@
 #endif
 
 #include "sessionlayer/session.h"
+#include "msglayer/keyname.h"
 
+#include <gwenhywfar/debug.h>
+
+#include <time.h>
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 
 static int createCtrlRef(char *ptrBuf, size_t lenBuf);
 
 
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 
 
@@ -39,12 +56,12 @@ int prepareSignSeg(AQFINTS_SESSION *sess,
 
   /* create date */
   if (!strftime(sdate, sizeof(sdate), "%Y%m%d", lt)) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Date string too long");
+    DBG_INFO(AQFINTS_LOGDOMAIN, "Date string too long");
     return GWEN_ERROR_INTERNAL;
   }
   /* create time */
   if (!strftime(stime, sizeof(stime), "%H%M%S", lt)) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Date string too long");
+    DBG_INFO(AQFINTS_LOGDOMAIN, "Date string too long");
     return GWEN_ERROR_INTERNAL;
   }
 
@@ -80,8 +97,8 @@ int prepareSignSeg(AQFINTS_SESSION *sess,
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "key/keyversion", AQFINTS_KeyName_GetKeyVersion(keyName));
 
   /* security profile */
-  GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "secProfile/code", AQFINTS_Session_SetSecProfileCode(session));
-  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "secProfile/version", AQFINTS_Session_SetSecProfileCode(session));
+  GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "secProfile/code", AQFINTS_Session_GetSecProfileCode(sess));
+  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "secProfile/version", AQFINTS_Session_GetSecProfileVersion(sess));
 
   return 0;
 }

@@ -148,15 +148,12 @@
       </member>
 
 
-      <member name="country" type="char_ptr" maxlen="8" >
-        <default>NULL</default>
-        <preset>NULL</preset>
+      <member name="country" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
         <access>public</access>
-        <flags>own</flags>
-        <setflags>const dup</setflags>
-        <getflags>const</getflags>
       </member>
-
+      
 
       <member name="keyType" type="char_ptr" maxlen="8" >
         <default>NULL</default>
