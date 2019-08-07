@@ -532,12 +532,21 @@ int AQFINTS_Session_Disconnect(AQFINTS_SESSION *sess)
 
 int AQFINTS_Session_SendMessage(AQFINTS_SESSION *sess, const char *ptrBuffer, int lenBuffer)
 {
+  int rv;
+
   assert(sess);
   /* TODO: add logging mechanism */
   DBG_ERROR(0, "Sending this:");
   GWEN_Text_LogString(ptrBuffer, lenBuffer, NULL, GWEN_LoggerLevel_Error);
 
-  return AQFINTS_Transport_SendMessage(sess->transport, ptrBuffer, lenBuffer);
+  rv=AQFINTS_Transport_SendMessage(sess->transport, ptrBuffer, lenBuffer);
+  sess->lastMessageNumSent++;
+  if (rv<0) {
+    DBG_INFO(0, "here (%d)", rv);
+    return rv;
+  }
+
+  return rv;
 }
 
 
@@ -555,6 +564,7 @@ int AQFINTS_Session_ReceiveMessage(AQFINTS_SESSION *sess, GWEN_BUFFER *buffer)
 
   DBG_ERROR(0, "Received this:");
   GWEN_Text_LogString(GWEN_Buffer_GetStart(buffer), GWEN_Buffer_GetUsedBytes(buffer), NULL, GWEN_LoggerLevel_Error);
+  sess->lastMessageNumReceived++;
   return rv;
 }
 
