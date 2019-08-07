@@ -138,6 +138,7 @@ int transportConnect(AQFINTS_TRANSPORT *trans)
     GWEN_Gui_ProgressLog(0,
                          GWEN_LoggerLevel_Notice,
                          I18N("Connected."));
+    AQFINTS_Transport_AddRuntimeFlags(trans, AQFINTS_TRANSPORT_RTFLAGS_CONNECTED);
   }
   return 0;
 }
@@ -169,6 +170,7 @@ int transportDisconnect(AQFINTS_TRANSPORT *trans)
                          I18N("Disconnected."));
     GWEN_SyncIo_free(xtrans->ioLayer);
     xtrans->ioLayer=NULL;
+    AQFINTS_Transport_SubRuntimeFlags(trans, AQFINTS_TRANSPORT_RTFLAGS_CONNECTED);
   }
   return 0;
 }

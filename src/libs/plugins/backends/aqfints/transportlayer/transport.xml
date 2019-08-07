@@ -96,6 +96,10 @@
 
     <defines>
 
+      <define id="AQFINTS_TRANSPORT_RTFLAGS" prefix="AQFINTS_TRANSPORT_RTFLAGS_">
+        <item name="CONNECTED"       value="0x00000001" />
+      </define>
+
     </defines>
 
 
@@ -109,6 +113,14 @@
         <flags>own with_hash</flags>
         <setflags>const dup</setflags>
         <getflags>const</getflags>
+      </member>
+
+
+      <member name="runtimeFlags" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>volatile with_flags</flags>
+        <access>public</access>
       </member>
 
 

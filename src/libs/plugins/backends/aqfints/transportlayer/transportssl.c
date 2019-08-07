@@ -294,6 +294,7 @@ int transportConnect(AQFINTS_TRANSPORT *trans)
       DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
+    AQFINTS_Transport_AddRuntimeFlags(trans, AQFINTS_TRANSPORT_RTFLAGS_CONNECTED);
   }
 
   return 0;
@@ -313,6 +314,7 @@ int transportDisconnect(AQFINTS_TRANSPORT *trans)
     GWEN_HttpSession_Fini(xtrans->httpSession);
     GWEN_HttpSession_free(xtrans->httpSession);
     xtrans->httpSession=NULL;
+    AQFINTS_Transport_SubRuntimeFlags(trans, AQFINTS_TRANSPORT_RTFLAGS_CONNECTED);
   }
 
   return 0;
