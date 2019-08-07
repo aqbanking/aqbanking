@@ -918,6 +918,8 @@ void AH_User_SetBankPubCryptKey(AB_USER *u, GWEN_CRYPT_KEY *bankPubCryptKey)
 
   if (ue->bankPubCryptKey!=bankPubCryptKey) {
     //GWEN_Crypt_KeyRsa_free(ue->bankPubKey);
+    if(ue->bankPubCryptKey)
+      GWEN_Crypt_Key_free(ue->bankPubCryptKey);
     ue->bankPubCryptKey=GWEN_Crypt_KeyRsa_dup(bankPubCryptKey);
   }
 }
@@ -944,6 +946,8 @@ void AH_User_SetBankPubSignKey(AB_USER *u, GWEN_CRYPT_KEY *bankPubSignKey)
 
   if (ue->bankPubSignKey!=bankPubSignKey) {
     //GWEN_Crypt_KeyRsa_free(ue->bankPubKey);
+    if(ue->bankPubSignKey)
+      GWEN_Crypt_Key_free(ue->bankPubSignKey);
     ue->bankPubSignKey=GWEN_Crypt_KeyRsa_dup(bankPubSignKey);
   }
 }
@@ -2135,6 +2139,7 @@ int AH_User_VerifyInitialKey(GWEN_CRYPT_TOKEN *ct,
   uint32_t keyHashLen;
   char hashString[1024];
   int rv;
+  int i;
 
 
   /* check if NOTEPAD contained a key hash */
@@ -2227,9 +2232,14 @@ int AH_User_VerifyInitialKey(GWEN_CRYPT_TOKEN *ct,
     GWEN_Buffer_free(keyBuffer);
   }
 
+  memset(hashString, 0, 1024);
+  for (i=0; i<GWEN_MDigest_GetDigestSize(md); i++)
+    sprintf(hashString+3*i, "%02x ", *(mdPtr+i));
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Key Hash from the Bank Public %s key: Hash Length: %d, Hash: %s", keyName, keyHashLen,
+             hashString);
+
   if (canVerifyWithHash) {
 
-    int i;
     uint16_t matchingBytes=keySize;
 
     char cardHashString[1024];
@@ -2239,13 +2249,8 @@ int AH_User_VerifyInitialKey(GWEN_CRYPT_TOKEN *ct,
     memset(cardHashString, 0, 1024);
     for (i=0; i<keyHashLen; i++)
       sprintf(cardHashString+3*i, "%02x ", keyHash[i]);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Key Hash on the Card: Hash Length: %d, Hash: %s", keyHashLen, hashString);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Key Hash on the Card: Hash Length: %d, Hash: %s", keyHashLen, cardHashString);
 
-    memset(hashString, 0, 1024);
-    for (i=0; i<GWEN_MDigest_GetDigestSize(md); i++)
-      sprintf(hashString+3*i, "%02x ", *(mdPtr+i));
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Key Hash from the Bank Public %s key: Hash Length: %d, Hash: %s", keyName, keyHashLen,
-             hashString);
 
     if (keyHashLen==mdSize) {
       for (i = 0; i < mdSize; i++) {
@@ -2367,7 +2372,7 @@ int AH_User_VerifyInitialKey(GWEN_CRYPT_TOKEN *ct,
     snprintf(numBuf, sizeof(numBuf), "%d",
              keyNum);
     GWEN_Buffer_AppendString(msgBuffer, numBuf);
-    GWEN_Buffer_AppendString(msgBuffer, "Key Version: ");
+    GWEN_Buffer_AppendString(msgBuffer, "\nKey Version: ");
     snprintf(numBuf, sizeof(numBuf), "%d",
              keyNum);
     GWEN_Buffer_AppendString(msgBuffer, numBuf);
@@ -2375,7 +2380,7 @@ int AH_User_VerifyInitialKey(GWEN_CRYPT_TOKEN *ct,
     snprintf(numBuf, sizeof(numBuf), "%d",
              mdSize);
     GWEN_Buffer_AppendString(msgBuffer, numBuf);
-    GWEN_Buffer_AppendString(msgBuffer, "Hash Value ");
+    GWEN_Buffer_AppendString(msgBuffer, ", value ");
     if (keyHashAlgo==GWEN_Crypt_HashAlgoId_Sha256) {
       /*SHA256*/
       GWEN_Buffer_AppendString(msgBuffer, "(SHA256):\n");

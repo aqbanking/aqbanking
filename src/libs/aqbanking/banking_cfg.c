@@ -661,6 +661,7 @@ int AB_Banking_ReadConfigGroups(const AB_BANKING *ab,
         GWEN_StringList_free(sl);
         return GWEN_ERROR_PARTIAL;
       }
+	  GWEN_StringList_free(sl);
       return 0;
     }
     else {

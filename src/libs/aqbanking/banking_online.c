@@ -203,6 +203,7 @@ int AB_Banking_EndUseProvider(AB_BANKING *ab, AB_PROVIDER *pro)
     return rv;
   }
   GWEN_DB_Group_free(db);
+  AB_Provider_free(pro);
 
   return 0;
 }
