@@ -97,6 +97,7 @@ GWEN_DIALOG *AH_NewKeyFileDialog_new(AB_PROVIDER *pro)
   /* preset */
   xdlg->hbciVersion=210;
   xdlg->rdhVersion=0;
+  xdlg->cryptMode = AH_CryptMode_Rdh;
 
   /* done */
   return dlg;
@@ -873,7 +874,8 @@ int AH_NewKeyFileDialog_DoIt(GWEN_DIALOG *dlg)
   AH_User_SetTokenType(u, "ohbci");
   AH_User_SetTokenName(u, AH_NewKeyFileDialog_GetFileName(dlg));
   AH_User_SetTokenContextId(u, 1);
-  AH_User_SetCryptMode(u, AH_CryptMode_Rdh);
+  //AH_User_SetCryptMode(u, AH_CryptMode_Rdh);
+  AH_User_SetCryptMode(u, xdlg->cryptMode);
   AH_User_SetStatus(u, AH_UserStatusPending);
   AH_User_SetHbciVersion(u, xdlg->hbciVersion);
   AH_User_SetRdhType(u, xdlg->rdhVersion);
@@ -1301,6 +1303,7 @@ int AH_NewKeyFileDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg)
   else {
     xdlg->hbciVersion=AH_RdhSpecialDialog_GetHbciVersion(dlg2);
     xdlg->rdhVersion=AH_RdhSpecialDialog_GetRdhVersion(dlg2);
+    xdlg->cryptMode=AH_RdhSpecialDialog_GetCryptMode(dlg2);
     xdlg->flags=AH_RdhSpecialDialog_GetFlags(dlg2);
   }
 

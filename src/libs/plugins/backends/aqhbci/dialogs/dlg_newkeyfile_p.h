@@ -33,6 +33,7 @@ struct AH_NEWKEYFILE_DIALOG {
 
   int hbciVersion;
   int rdhVersion;
+  int cryptMode;
 
   uint32_t flags;
 
