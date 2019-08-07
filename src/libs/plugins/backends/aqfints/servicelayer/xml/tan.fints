@@ -255,7 +255,7 @@
 
     
     <SEGdef code="HITANS" 
-            version="6"
+            segmentVersion="6"
             isbpdjob="1"
     >
       <DEG     name="head"              type="SegHead" />
