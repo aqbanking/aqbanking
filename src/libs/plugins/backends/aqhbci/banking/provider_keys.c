@@ -61,7 +61,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
   assert(h);
 
   /* check crypt mode */
-  if (AH_User_GetCryptMode(u)!=AH_CryptMode_Rdh) {
+  if ((AH_User_GetCryptMode(u)!=AH_CryptMode_Rdh) && (AH_User_GetCryptMode(u)!=AH_CryptMode_Rah)) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "Key generation not supported with this token");
     return GWEN_ERROR_INVALID;
@@ -109,7 +109,8 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
     return GWEN_ERROR_INVALID;
   }
 
-  if (rdhType==10) {
+  // XXX RAH?
+  if ((AH_User_GetCryptMode(u)==AH_CryptMode_Rdh) && (rdhType==10)) {
     /* the specs say that for RDH-10 we must not create keys longer than the server's
      * sign key (or, if absent, the server's encipher key) */
     uint32_t skeyId;
@@ -181,40 +182,73 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
     }
   }
 
-  switch (rdhType) {
-  case 1:
-    GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 96);
-    GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, 768);
-    break;
-  case 2:
-    GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 256);
-    GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, 2048);
-    break;
-  case 3:
-    GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 256);
-    GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, 2048);
-    break;
-  case 5:
-    GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 256);
-    GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, 2048);
-    break;
-  case 10:
-    if (maxServerKeySizeInBits) {
-      int n=maxServerKeySizeInBits/8;
-
-      assert(maxServerKeySizeInBits%8==0);
-      GWEN_Crypt_CryptAlgo_SetChunkSize(algo, n);
-      GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, maxServerKeySizeInBits);
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating keys of size: %d bytes, %d bits", n, maxServerKeySizeInBits);
-    }
-    else {
+  if(AH_User_GetCryptMode(u)==AH_CryptMode_Rdh) {
+    switch (rdhType) {
+    case 1:
+      GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 96);
+      GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, 768);
+      break;
+    case 2:
       GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 256);
       GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, 2048);
+      break;
+    case 3:
+      GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 256);
+      GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, 2048);
+      break;
+    case 5:
+      GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 256);
+      GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, 2048);
+      break;
+    case 7:
+      GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 256);
+      GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, 2048);
+      break;
+    case 8:
+      GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 256);
+      GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, 2048);
+      break;
+    case 9:
+      GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 256);
+      GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, 2048);
+      break;
+    case 10:
+      if (maxServerKeySizeInBits) {
+        int n=maxServerKeySizeInBits/8;
+
+        assert(maxServerKeySizeInBits%8==0);
+        GWEN_Crypt_CryptAlgo_SetChunkSize(algo, n);
+        GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, maxServerKeySizeInBits);
+        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating keys of size: %d bytes, %d bits", n, maxServerKeySizeInBits);
+      }
+      else {
+        GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 256);
+        GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, 2048);
+      }
+      break;
+    default:
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "RDH %d not supported", AH_User_GetRdhType(u));
+      return GWEN_ERROR_INVALID;
     }
-    break;
-  default:
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "RDH %d not supported", AH_User_GetRdhType(u));
-    return GWEN_ERROR_INVALID;
+  }
+  if(AH_User_GetCryptMode(u)==AH_CryptMode_Rah) {
+    switch (rdhType) {
+    case 7:
+      GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 256);
+      GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, 2048);
+      break;
+    case 9:
+      GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 256);
+      GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, 2048);
+      break;
+    case 10:
+      GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 256);
+      GWEN_Crypt_CryptAlgo_SetKeySizeInBits(algo, 2048);
+      break;
+    default:
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "RAH %d not supported", AH_User_GetRdhType(u));
+      return GWEN_ERROR_INVALID;
+    }
   }
 
   GWEN_Gui_ProgressLog2(0,
