@@ -86,10 +86,10 @@ sources:
 
 
 %.c: %.xml
-	$(gwenhywfar_bindir)/typemaker2 -I $(top_srcdir)/src/lib/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" -D AQOFXCONNECT_API  $<
+	$(typemaker2_exe) -I $(top_srcdir)/src/lib/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" -D AQOFXCONNECT_API  $<
 
 %.h: %.xml
-	$(gwenhywfar_bindir)/typemaker2 -I $(top_srcdir)/src/lib/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" -D AQOFXCONNECT_API  $<
+	$(typemaker2_exe) -I $(top_srcdir)/src/lib/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" -D AQOFXCONNECT_API  $<
 
 SUFFIXES = .xml .c
 
