@@ -100,6 +100,11 @@ AQFINTS_TANMETHOD *AQFINTS_Session_GetTanMethod(const AQFINTS_SESSION *sess);
  */
 void AQFINTS_Session_SetTanMethod(AQFINTS_SESSION *sess, AQFINTS_TANMETHOD *tm);
 
+
+int AQFINTS_Session_GetIsServer(const AQFINTS_SESSION *sess);
+void AQFINTS_Session_SetIsServer(AQFINTS_SESSION *sess, int v);
+
+
 /*@}*/
 
 

@@ -46,7 +46,7 @@ noinst_HEADERS= $(build_headers)
 
 
 libaqfintssession_pin_la_SOURCES=$(built_sources) \
-  s_pintan_prepare.c
+  s_pintan_sign.c
 
 
 

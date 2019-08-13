@@ -177,6 +177,22 @@ void AQFINTS_Session_SetSecProfileVersion(AQFINTS_SESSION *sess, int i)
 
 
 
+int AQFINTS_Session_GetIsServer(const AQFINTS_SESSION *sess)
+{
+  assert(sess);
+  return sess->isServer;
+}
+
+
+
+void AQFINTS_Session_SetIsServer(AQFINTS_SESSION *sess, int v)
+{
+  assert(sess);
+  sess->isServer=v?1:0;
+}
+
+
+
 const char *AQFINTS_Session_GetDialogId(const AQFINTS_SESSION *sess)
 {
   assert(sess);

@@ -31,6 +31,8 @@ struct AQFINTS_SESSION {
 
   char *dialogId;
 
+  int isServer;
+
   AQFINTS_PARSER *parser;
   AQFINTS_TRANSPORT *transport;
 
