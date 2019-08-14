@@ -67,13 +67,14 @@ int AO_Provider__AddSignOn(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf)
   ti=GWEN_CurrentTime();
   assert(ti);
 
-  GWEN_Buffer_AppendString(buf, "<SIGNONMSGSRQV1>");
-  GWEN_Buffer_AppendString(buf, "<SONRQ>");
+  GWEN_Buffer_AppendString(buf, "<SIGNONMSGSRQV1>\r\n");
+  GWEN_Buffer_AppendString(buf, "<SONRQ>\r\n");
   GWEN_Buffer_AppendString(buf, "<DTCLIENT>");
   if (AO_User_GetFlags(u) & AO_USER_FLAGS_SEND_SHORT_DATE)
     GWEN_Time_toString(ti, "YYYYMMDDhhmmss", buf);
   else
     GWEN_Time_toString(ti, "YYYYMMDDhhmmss.000", buf);
+  GWEN_Buffer_AppendString(buf, "\r\n");
 
   s=AB_User_GetUserId(u);
   if (s) {
@@ -127,23 +128,25 @@ int AO_Provider__AddSignOn(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf)
   GWEN_Buffer_AppendString(buf, "\r\n");
   memset(userpass, 0, sizeof(userpass));
 
-  GWEN_Buffer_AppendString(buf, "<LANGUAGE>ENG");
+  GWEN_Buffer_AppendString(buf, "<LANGUAGE>ENG\r\n");
 
   /* possibly add FI */
   if (!(AO_User_GetFlags(u) & AO_USER_FLAGS_EMPTY_FID)) {
     if (AO_User_GetFid(u)) {
-      GWEN_Buffer_AppendString(buf, "<FI>");
+      GWEN_Buffer_AppendString(buf, "<FI>\r\n");
       s=AO_User_GetOrg(u);
       if (s) {
         GWEN_Buffer_AppendString(buf, "<ORG>");
         GWEN_Buffer_AppendString(buf, s);
+        GWEN_Buffer_AppendString(buf, "\r\n");
       }
       s=AO_User_GetFid(u);
       if (s) {
         GWEN_Buffer_AppendString(buf, "<FID>");
         GWEN_Buffer_AppendString(buf, s);
+        GWEN_Buffer_AppendString(buf, "\r\n");
       }
-      GWEN_Buffer_AppendString(buf, "</FI>");
+      GWEN_Buffer_AppendString(buf, "</FI>\r\n");
     }
   }
 
@@ -153,6 +156,7 @@ int AO_Provider__AddSignOn(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf)
     s="QWIN";
   GWEN_Buffer_AppendString(buf, "<APPID>");
   GWEN_Buffer_AppendString(buf, s);
+  GWEN_Buffer_AppendString(buf, "\r\n");
 
   /* add APPVER */
   s=AO_User_GetAppVer(u);
@@ -160,17 +164,19 @@ int AO_Provider__AddSignOn(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf)
     s="1200";
   GWEN_Buffer_AppendString(buf, "<APPVER>");
   GWEN_Buffer_AppendString(buf, s);
+  GWEN_Buffer_AppendString(buf, "\r\n");
 
   /* add CLIENTUID, if known */
   s=AO_User_GetClientUid(u);
   if (s && *s) {
     GWEN_Buffer_AppendString(buf, "<CLIENTUID>");
     GWEN_Buffer_AppendString(buf, s);
+    GWEN_Buffer_AppendString(buf, "\r\n");
   }
 
   /* close elements */
-  GWEN_Buffer_AppendString(buf, "</SONRQ>");
-  GWEN_Buffer_AppendString(buf, "</SIGNONMSGSRQV1>");
+  GWEN_Buffer_AppendString(buf, "</SONRQ>\r\n");
+  GWEN_Buffer_AppendString(buf, "</SIGNONMSGSRQV1>\r\n");
 
   GWEN_Time_free(ti);
 
@@ -191,12 +197,12 @@ int AO_Provider__WrapRequest(AB_PROVIDER *pro, AB_USER *u, const char *mTypeName
   /* begin: msg wrapper */
   GWEN_Buffer_AppendString(tbuf, "<");
   GWEN_Buffer_AppendString(tbuf, mTypeName);
-  GWEN_Buffer_AppendString(tbuf, "MSGSRQV1>");
+  GWEN_Buffer_AppendString(tbuf, "MSGSRQV1>\r\n");
 
   /* begin: transaction wrapper */
   GWEN_Buffer_AppendString(tbuf, "<");
   GWEN_Buffer_AppendString(tbuf, tTypeName);
-  GWEN_Buffer_AppendString(tbuf, "TRNRQ>");
+  GWEN_Buffer_AppendString(tbuf, "TRNRQ>\r\n");
   ti=GWEN_CurrentTime();
   assert(ti);
   GWEN_Buffer_AppendString(tbuf, "<TRNUID>");
@@ -204,16 +210,17 @@ int AO_Provider__WrapRequest(AB_PROVIDER *pro, AB_USER *u, const char *mTypeName
     GWEN_Time_toString(ti, "YYYYMMDDhhmmss", tbuf);
   else
     GWEN_Time_toString(ti, "YYYYMMDDhhmmss.000", tbuf);
-  GWEN_Buffer_AppendString(tbuf, "<CLTCOOKIE>1");
+  GWEN_Buffer_AppendString(buf, "\r\n");
+  GWEN_Buffer_AppendString(tbuf, "<CLTCOOKIE>1\r\n");
 
   /* append ends of elements to original buffer */
   GWEN_Buffer_AppendString(buf, "</");
   GWEN_Buffer_AppendString(buf, tTypeName);
-  GWEN_Buffer_AppendString(buf, "TRNRQ>");
+  GWEN_Buffer_AppendString(buf, "TRNRQ>\r\n");
 
   GWEN_Buffer_AppendString(buf, "</");
   GWEN_Buffer_AppendString(buf, mTypeName);
-  GWEN_Buffer_AppendString(buf, "MSGSRQV1>");
+  GWEN_Buffer_AppendString(buf, "MSGSRQV1>\r\n");
 
   /* go to start of buffer and insert leading elements there */
   GWEN_Buffer_SetPos(buf, 0);
@@ -246,7 +253,7 @@ int AO_Provider__WrapMessage(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf)
     GWEN_Buffer_free(tbuf);
     return rv;
   }
-  GWEN_Buffer_AppendString(tbuf, "<OFX>");
+  GWEN_Buffer_AppendString(tbuf, "<OFX>\r\n");
 
   rv=AO_Provider__AddSignOn(pro, u, tbuf);
   if (rv<0) {
@@ -257,7 +264,7 @@ int AO_Provider__WrapMessage(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf)
   }
 
   /* append end of OFX element to original buffer */
-  GWEN_Buffer_AppendString(buf, "</OFX>");
+  GWEN_Buffer_AppendString(buf, "</OFX>\r\n");
 
   /* go to start of buffer and insert leading elements there */
   GWEN_Buffer_SetPos(buf, 0);

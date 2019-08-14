@@ -35,6 +35,7 @@ int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a
   if (s) {
     GWEN_Buffer_AppendString(buf, "<ACCTID>");
     GWEN_Buffer_AppendString(buf, s);
+    GWEN_Buffer_AppendString(buf, "\r\n");
   }
 
   /* add account type */
@@ -60,10 +61,11 @@ int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a
     GWEN_Buffer_AppendString(buf, "CHECKING");
     break;
   }
-  GWEN_Buffer_AppendString(buf, "</BANKACCTFROM>");
+  GWEN_Buffer_AppendString(buf, "\r\n");
+  GWEN_Buffer_AppendString(buf, "</BANKACCTFROM>\r\n");
 
   /* add INCTRAN element */
-  GWEN_Buffer_AppendString(buf, "<INCTRAN>");
+  GWEN_Buffer_AppendString(buf, "<INCTRAN>\r\n");
   if (AB_Transaction_GetCommand(j)==AB_Transaction_CommandGetTransactions) {
     const GWEN_DATE *da;
 
@@ -74,6 +76,7 @@ int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a
         GWEN_Date_toStringWithTemplate(da, "YYYYMMDD000000", buf);
       else
         GWEN_Date_toStringWithTemplate(da, "YYYYMMDD000000.000", buf);
+      GWEN_Buffer_AppendString(buf, "\r\n");
     }
 
     da=AB_Transaction_GetLastDate(j);
@@ -83,15 +86,16 @@ int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a
         GWEN_Date_toStringWithTemplate(da, "YYYYMMDD000000", buf);
       else
         GWEN_Date_toStringWithTemplate(da, "YYYYMMDD000000.000", buf);
+      GWEN_Buffer_AppendString(buf, "\r\n");
     }
-    GWEN_Buffer_AppendString(buf, "<INCLUDE>Y");
+    GWEN_Buffer_AppendString(buf, "<INCLUDE>Y\r\n");
   }
   else {
-    GWEN_Buffer_AppendString(buf, "<INCLUDE>N");
+    GWEN_Buffer_AppendString(buf, "<INCLUDE>N\r\n");
   }
-  GWEN_Buffer_AppendString(buf, "</INCTRAN>");
+  GWEN_Buffer_AppendString(buf, "</INCTRAN>\r\n");
 
-  GWEN_Buffer_AppendString(buf, "</STMTRQ>");
+  GWEN_Buffer_AppendString(buf, "</STMTRQ>\r\n");
 
   /* wrap into request */
   rv=AO_Provider__WrapRequest(pro, u, "BANK", "STMT", buf);
@@ -114,17 +118,18 @@ int AO_Provider__AddCreditCardStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCO
   assert(a);
   assert(u);
 
-  GWEN_Buffer_AppendString(buf, "<CCSTMTRQ>");
-  GWEN_Buffer_AppendString(buf, "<CCACCTFROM>");
+  GWEN_Buffer_AppendString(buf, "<CCSTMTRQ>\r\n");
+  GWEN_Buffer_AppendString(buf, "<CCACCTFROM>\r\n");
   s=AB_Account_GetAccountNumber(a);
   if (s) {
     GWEN_Buffer_AppendString(buf, "<ACCTID>");
     GWEN_Buffer_AppendString(buf, s);
+    GWEN_Buffer_AppendString(buf, "\r\n");
   }
-  GWEN_Buffer_AppendString(buf, "</CCACCTFROM>");
+  GWEN_Buffer_AppendString(buf, "</CCACCTFROM>\r\n");
 
   /* add INCTRAN element */
-  GWEN_Buffer_AppendString(buf, "<INCTRAN>");
+  GWEN_Buffer_AppendString(buf, "<INCTRAN>\r\n");
   if (AB_Transaction_GetCommand(j)==AB_Transaction_CommandGetTransactions) {
     const GWEN_DATE *da;
 
@@ -132,21 +137,23 @@ int AO_Provider__AddCreditCardStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCO
     if (da) {
       GWEN_Buffer_AppendString(buf, "<DTSTART>");
       GWEN_Date_toStringWithTemplate(da, "YYYYMMDD000000", buf);
+      GWEN_Buffer_AppendString(buf, "\r\n");
     }
 
     da=AB_Transaction_GetLastDate(j);
     if (da) {
       GWEN_Buffer_AppendString(buf, "<DTEND>");
       GWEN_Date_toStringWithTemplate(da, "YYYYMMDD000000", buf);
+      GWEN_Buffer_AppendString(buf, "\r\n");
     }
-    GWEN_Buffer_AppendString(buf, "<INCLUDE>Y");
+    GWEN_Buffer_AppendString(buf, "<INCLUDE>Y\r\n");
   }
   else {
-    GWEN_Buffer_AppendString(buf, "<INCLUDE>N");
+    GWEN_Buffer_AppendString(buf, "<INCLUDE>N\r\n");
   }
-  GWEN_Buffer_AppendString(buf, "</INCTRAN>");
+  GWEN_Buffer_AppendString(buf, "</INCTRAN>\r\n");
 
-  GWEN_Buffer_AppendString(buf, "</CCSTMTRQ>");
+  GWEN_Buffer_AppendString(buf, "</CCSTMTRQ>\r\n");
 
   /* wrap into request */
   rv=AO_Provider__WrapRequest(pro, u, "CREDITCARD", "CCSTMT", buf);
@@ -168,22 +175,24 @@ int AO_Provider__AddInvStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a,
   assert(a);
   assert(u);
 
-  GWEN_Buffer_AppendString(buf, "<INVSTMTRQ>");
-  GWEN_Buffer_AppendString(buf, "<INVACCTFROM>");
+  GWEN_Buffer_AppendString(buf, "<INVSTMTRQ>\r\n");
+  GWEN_Buffer_AppendString(buf, "<INVACCTFROM>\r\n");
   s=AO_User_GetBrokerId(u);
   if (s) {
     GWEN_Buffer_AppendString(buf, "<BROKERID>");
     GWEN_Buffer_AppendString(buf, s);
+    GWEN_Buffer_AppendString(buf, "\r\n");
   }
   s=AB_Account_GetAccountNumber(a);
   if (s) {
     GWEN_Buffer_AppendString(buf, "<ACCTID>");
     GWEN_Buffer_AppendString(buf, s);
+    GWEN_Buffer_AppendString(buf, "\r\n");
   }
-  GWEN_Buffer_AppendString(buf, "</INVACCTFROM>");
+  GWEN_Buffer_AppendString(buf, "</INVACCTFROM>\r\n");
 
   /* add INCTRAN element */
-  GWEN_Buffer_AppendString(buf, "<INCTRAN>");
+  GWEN_Buffer_AppendString(buf, "<INCTRAN>\r\n");
   if (AB_Transaction_GetCommand(j)==AB_Transaction_CommandGetTransactions) {
     const GWEN_DATE *da;
 
@@ -191,23 +200,25 @@ int AO_Provider__AddInvStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a,
     if (da) {
       GWEN_Buffer_AppendString(buf, "<DTSTART>");
       GWEN_Date_toStringWithTemplate(da, "YYYYMMDD", buf);
+      GWEN_Buffer_AppendString(buf, "\r\n");
     }
 
     da=AB_Transaction_GetLastDate(j);
     if (da) {
       GWEN_Buffer_AppendString(buf, "<DTEND>");
       GWEN_Date_toStringWithTemplate(da, "YYYYMMDD", buf);
+      GWEN_Buffer_AppendString(buf, "\r\n");
     }
-    GWEN_Buffer_AppendString(buf, "<INCLUDE>Y");
+    GWEN_Buffer_AppendString(buf, "<INCLUDE>Y\r\n");
   }
   else {
-    GWEN_Buffer_AppendString(buf, "<INCLUDE>N");
+    GWEN_Buffer_AppendString(buf, "<INCLUDE>N\r\n");
   }
-  GWEN_Buffer_AppendString(buf, "</INCTRAN>");
+  GWEN_Buffer_AppendString(buf, "</INCTRAN>\r\n");
 
-  GWEN_Buffer_AppendString(buf, "<INCOO>Y");
+  GWEN_Buffer_AppendString(buf, "<INCOO>Y\r\n");
 
-  GWEN_Buffer_AppendString(buf, "<INCPOS>");
+  GWEN_Buffer_AppendString(buf, "<INCPOS>\r\n");
   if (AB_Transaction_GetCommand(j)==AB_Transaction_CommandGetTransactions) {
     GWEN_TIME *ti;
 
@@ -215,15 +226,16 @@ int AO_Provider__AddInvStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a,
     if (ti) {
       GWEN_Buffer_AppendString(buf, "<DTASOF>");
       GWEN_Time_toString(ti, "YYYYMMDDhhmmss.000", buf);
+      GWEN_Buffer_AppendString(buf, "\r\n");
     }
     GWEN_Time_free(ti);
-    GWEN_Buffer_AppendString(buf, "<INCLUDE>Y");
+    GWEN_Buffer_AppendString(buf, "<INCLUDE>Y\r\n");
   }
-  GWEN_Buffer_AppendString(buf, "</INCPOS>");
+  GWEN_Buffer_AppendString(buf, "</INCPOS>\r\n");
 
-  GWEN_Buffer_AppendString(buf, "<INCBAL>Y");
+  GWEN_Buffer_AppendString(buf, "<INCBAL>Y\r\n");
 
-  GWEN_Buffer_AppendString(buf, "</INVSTMTRQ>");
+  GWEN_Buffer_AppendString(buf, "</INVSTMTRQ>\r\n");
 
   /* wrap into request */
   rv=AO_Provider__WrapRequest(pro, u, "INVSTMT", "INVSTMT", buf);

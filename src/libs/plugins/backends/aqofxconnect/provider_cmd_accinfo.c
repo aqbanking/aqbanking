@@ -16,9 +16,9 @@ int AO_Provider__AddAccountInfoReq(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *bu
 {
   int rv;
 
-  GWEN_Buffer_AppendString(buf, "<ACCTINFORQ>");
-  GWEN_Buffer_AppendString(buf, "<DTACCTUP>19691231");
-  GWEN_Buffer_AppendString(buf, "</ACCTINFORQ>");
+  GWEN_Buffer_AppendString(buf, "<ACCTINFORQ>\r\n");
+  GWEN_Buffer_AppendString(buf, "<DTACCTUP>19691231\r\n");
+  GWEN_Buffer_AppendString(buf, "</ACCTINFORQ>\r\n");
 
   /* wrap into request */
   rv=AO_Provider__WrapRequest(pro, u, "SIGNUP", "ACCTINFO", buf);

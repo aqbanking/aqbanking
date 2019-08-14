@@ -16,8 +16,8 @@
 #include "provider_p.h"
 #include "account.h"
 #include "user.h"
-/*#include "dlg_edituser_l.h"*/
-/*#include "dlg_newuser_l.h"*/
+#include "dlg_edituser_l.h"
+#include "dlg_newuser_l.h"
 
 #include <aqbanking/backendsupport/account.h>
 #include <aqbanking/types/transaction.h>
@@ -264,7 +264,6 @@ AB_USER *AO_Provider_CreateUserObject(AB_PROVIDER *pro)
 
 GWEN_DIALOG *AO_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u)
 {
-#if 0
   AO_PROVIDER *xp;
   GWEN_DIALOG *dlg;
 
@@ -272,23 +271,19 @@ GWEN_DIALOG *AO_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u)
   xp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
   assert(xp);
 
-  dlg=AO_EditUserDialog_new(AB_Provider_GetBanking(pro), u, 1);
+  dlg=AO_EditUserDialog_new(pro, u, 1);
   if (dlg==NULL) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (no dialog)");
     return NULL;
   }
 
   return dlg;
-#else
-  return NULL;
-#endif
 }
 
 
 
 GWEN_DIALOG *AO_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i)
 {
-#if 0
   AO_PROVIDER *xp;
   GWEN_DIALOG *dlg;
 
@@ -296,16 +291,13 @@ GWEN_DIALOG *AO_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i)
   xp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
   assert(xp);
 
-  dlg=AO_NewUserDialog_new(AB_Provider_GetBanking(pro));
+  dlg=AO_NewUserDialog_new(pro);
   if (dlg==NULL) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (no dialog)");
     return NULL;
   }
 
   return dlg;
-#else
-  return NULL;
-#endif
 }
 
 
