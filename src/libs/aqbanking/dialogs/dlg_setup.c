@@ -809,6 +809,7 @@ int AB_SetupDialog_AddUser(GWEN_DIALOG *dlg)
       int selectedType;
       uint32_t flags;
 
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Selected provider [%s]", s);
       pro=AB_SetupDialog_GetProviderByName(dlg, s);
       if (pro==NULL) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Provider [%s] not found", s);
@@ -817,6 +818,7 @@ int AB_SetupDialog_AddUser(GWEN_DIALOG *dlg)
       }
       selectedType=AB_SetupNewUserDialog_GetSelectedType(dlg2);
       GWEN_Dialog_free(dlg2);
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Selected type is %d", selectedType);
 
       flags=AB_Provider_GetFlags(pro);
       if (flags & AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG) {
@@ -825,7 +827,7 @@ int AB_SetupDialog_AddUser(GWEN_DIALOG *dlg)
 
         dlg3=AB_Provider_GetNewUserDialog(pro, selectedType);
         if (dlg3==NULL) {
-          DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
+	  DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog (type=%d)", selectedType);
           return GWEN_DialogEvent_ResultHandled;
         }
 
