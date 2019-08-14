@@ -3,6 +3,7 @@
 <tm2>
   <type id="AQFINTS_TANINFO" type="pointer">
     <descr>
+      Content of a HIPINS segment.
     </descr>
     <lang id="c">
       <identifier>AQFINTS_TANINFO</identifier>
