@@ -27,6 +27,15 @@
  */
 
 
+static int wrapSignature(AQFINTS_SESSION *sess,
+			 const AQFINTS_KEYNAME *keyName,
+			 int firstSegNum,
+			 int lastSegNum,
+			 GWEN_BUFFER *msgBuffer,
+			 GWEN_BUFFER *sigHeadBuffer,
+			 GWEN_BUFFER *sigTailBuffer,
+			 const char *pin,
+			 const char *tan);
 static int createCtrlRef(char *ptrBuf, size_t lenBuf);
 static int createSigHead(AQFINTS_SESSION *sess,
 			 int segNum,
@@ -54,6 +63,66 @@ static int prepareSignSeg(AQFINTS_SESSION *sess,
  * ------------------------------------------------------------------------------------------------
  */
 
+
+
+int wrapSignatures(AQFINTS_SESSION *sess,
+                   AQFINTS_KEYNAME_LIST *keyNameList,
+                   int firstSegNum,
+                   int lastSegNum,
+                   GWEN_BUFFER *msgBuffer)
+{
+  AQFINTS_KEYNAME *keyName;
+  GWEN_BUFFER *sigHeadBuffer;
+  GWEN_BUFFER *sigTailBuffer;
+
+  DBG_INFO(0, "Wrapping signatures");
+  sigHeadBuffer=GWEN_Buffer_new(0, 512, 0, 1);
+  GWEN_Buffer_ReserveBytes(sigHeadBuffer, 256);
+  sigTailBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+
+  keyName=AQFINTS_KeyName_List_First(keyNameList);
+  while(keyName) {
+    const char *sUserId;
+    int rv;
+
+    sUserId=AQFINTS_KeyName_GetUserId(keyName);
+
+    DBG_INFO(0, "User [%s]: Filling out keyname", sUserId?sUserId:"<empty>");
+    rv=AQFINTS_Session_FilloutKeyname(sess, keyName);
+    if (rv<0) {
+      DBG_INFO(0, "here (%d)", rv);
+      GWEN_Buffer_free(sigTailBuffer);
+      GWEN_Buffer_free(sigHeadBuffer);
+      return rv;
+    }
+
+    /* TODO: determine pin and tan */
+    DBG_INFO(0, "User [%s]: Adding signature head and tail", sUserId?sUserId:"<empty>");
+    rv=wrapSignature(sess, keyName, firstSegNum, lastSegNum, msgBuffer, sigHeadBuffer, sigTailBuffer, NULL, NULL);
+    if (rv<0) {
+      DBG_INFO(0, "here (%d)", rv);
+      GWEN_Buffer_free(sigTailBuffer);
+      GWEN_Buffer_free(sigHeadBuffer);
+      return rv;
+    }
+
+    /* next */
+    firstSegNum--;
+    lastSegNum++;
+    keyName=AQFINTS_KeyName_List_Next(keyName);
+  }
+
+  /* combine message with signature heads and tails */
+  DBG_INFO(0, "Combining message with signature head and tail");
+  GWEN_Buffer_Rewind(msgBuffer);
+  GWEN_Buffer_InsertBuffer(msgBuffer, sigHeadBuffer);
+  GWEN_Buffer_SetPos(msgBuffer, GWEN_Buffer_GetUsedBytes(msgBuffer));
+  GWEN_Buffer_AppendBuffer(msgBuffer, sigTailBuffer);
+
+  GWEN_Buffer_free(sigTailBuffer);
+  GWEN_Buffer_free(sigHeadBuffer);
+  return 0;
+}
 
 
 
