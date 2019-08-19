@@ -733,11 +733,11 @@ static int AH_EditUserRdhDialog_HandleActivatedIniLetter(GWEN_DIALOG *dlg)
     return GWEN_DialogEvent_ResultHandled;
   }
 
-  // Crude workaround for missing GWEN_Gui_Print under qt4/5
+  /* show INI letter before printing (workaround for missing GWEN_Gui_Print under qt4/5) */
   GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
                       GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
                       GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
-                      I18N("Holgers INI Letter for HBCI"),
+                      I18N("INI Letter for HBCI"),
                       GWEN_Buffer_GetStart(tbuf),
                       I18N("Dismiss"), NULL, NULL, 0);
 
