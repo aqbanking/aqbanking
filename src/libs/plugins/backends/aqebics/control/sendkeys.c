@@ -27,6 +27,8 @@ int sendKeys(AB_PROVIDER *pro,
   uint32_t uid;
   AB_USER *u=NULL;
   int rv;
+  int sendIni=0;
+  int sendHia=0;
   const GWEN_ARGS args[]= {
     {
       GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
@@ -38,6 +40,28 @@ int sendKeys(AB_PROVIDER *pro,
       "user",                       /* long option */
       "Specify the unique user id",    /* short description */
       "Specify the unique user id"     /* long description */
+    },
+    {
+      0, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "hia",                        /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      0,                            /* short option */
+      "hia",                        /* long option */
+      "Send HIA request",           /* short description */
+      "Send HIA request"            /* long description */
+    },
+    {
+      0, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "ini",                        /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      0,                            /* short option */
+      "ini",                        /* long option */
+      "Send INI request",           /* short description */
+      "Send INI request"            /* long description */
     },
     {
       GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
@@ -81,6 +105,13 @@ int sendKeys(AB_PROVIDER *pro,
     return 1;
   }
 
+  sendIni=GWEN_DB_GetIntValue(db, "ini", 0, 0);
+  sendHia=GWEN_DB_GetIntValue(db, "hia", 0, 0);
+  if (sendIni==0 && sendHia==0) {
+    sendIni=1;
+    sendHia=1;
+  }
+
   rv=AB_Provider_GetUser(pro, uid, 1, 1, &u);
   if (rv<0) {
     fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) uid);
@@ -99,26 +130,31 @@ int sendKeys(AB_PROVIDER *pro,
                                  I18N("Now the request is send to the credit institute."),
                                  GWEN_GUI_PROGRESS_NONE,
                                  0);
-    if (!(EBC_User_GetFlags(u) & EBC_USER_FLAGS_INI)) {
-      rv=EBC_Provider_Send_INI(pro, u, 1);
-      if (rv) {
-        DBG_ERROR(0, "Error sending INI request (%d)", rv);
-        GWEN_Gui_ProgressEnd(guiid);
-        return 4;
-      }
-      else {
-        fprintf(stderr, "INI request sent.\n");
+    if (sendIni) {
+      if (!(EBC_User_GetFlags(u) & EBC_USER_FLAGS_INI)) {
+	rv=EBC_Provider_Send_INI(pro, u, 1);
+	if (rv) {
+	  DBG_ERROR(0, "Error sending INI request (%d)", rv);
+	  GWEN_Gui_ProgressEnd(guiid);
+	  return 4;
+	}
+	else {
+	  fprintf(stderr, "INI request sent.\n");
+	}
       }
     }
-    if (!(EBC_User_GetFlags(u) & EBC_USER_FLAGS_HIA)) {
-      rv=EBC_Provider_Send_HIA(pro, u, 1);
-      if (rv) {
-        DBG_ERROR(0, "Error sending HIA request (%d)", rv);
-        GWEN_Gui_ProgressEnd(guiid);
-        return 4;
-      }
-      else {
-        fprintf(stderr, "HIA request sent.\n");
+
+    if (sendHia) {
+      if (!(EBC_User_GetFlags(u) & EBC_USER_FLAGS_HIA)) {
+	rv=EBC_Provider_Send_HIA(pro, u, 1);
+	if (rv) {
+	  DBG_ERROR(0, "Error sending HIA request (%d)", rv);
+	  GWEN_Gui_ProgressEnd(guiid);
+	  return 4;
+	}
+	else {
+	  fprintf(stderr, "HIA request sent.\n");
+	}
       }
     }
     GWEN_Gui_ProgressEnd(guiid);
