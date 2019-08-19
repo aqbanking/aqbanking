@@ -1,0 +1,38 @@
+<?xml?>
+
+
+<FinTS>
+
+  <SEGs>
+
+    <SEGdef id="Prepare" 
+            code="HKVVB" 
+            segmentVersion="2"
+    >
+      <DEG   name="head"       type="SegHead" />
+      <DE    name="bpdVersion" type="num"     maxsize="3" hide="1" />
+      <DE    name="updVersion" type="num"     maxsize="3" hide="1" />
+      <DE    name="lang"       type="num"     maxsize="3" />
+      <DE    name="product"    type="an"      maxsize="25" />
+      <DE    name="version"    type="an"      maxsize="5" version="1" />
+    </SEGdef>
+  
+  
+    <SEGdef id="Prepare" 
+            code="HKVVB" 
+            segmentVersion="3"
+            protocolVersion="300"
+    >
+      <DEG   name="head"       type="SegHead" />
+      <DE    name="bpdVersion" type="num"     maxsize="3" hide="1" />
+      <DE    name="updVersion" type="num"     maxsize="3" hide="1" />
+      <DE    name="lang"       type="num"     maxsize="3" />
+      <DE    name="product"    type="an"      maxsize="25" />
+      <DE    name="version"    type="an"      maxsize="5" version="1" />
+    </SEGdef>
+
+
+  </SEGs>
+
+
+</FinTS>

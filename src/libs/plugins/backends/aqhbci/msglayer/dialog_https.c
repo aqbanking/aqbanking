@@ -141,6 +141,7 @@ int AH_Dialog_SendPacket_Https(AH_DIALOG *dlg, const char *buf, int blen)
     dlg->httpSession=NULL;
     return rv;
   }
+  GWEN_Buffer_free(tbuf);
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Message sent.");
   return 0;

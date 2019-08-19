@@ -243,7 +243,7 @@
           pversion="201"
           mode="RDH" 
           dlg="1" 
-          needsbpd="0"
+          needBPD="0"
           response="GetKeyResponse"
    >
     <MESSAGE name="open" crypt="0" sign="0" nosysid="1" >
@@ -279,7 +279,7 @@
           pversion="210"
           mode="RDH" 
           dlg="1" 
-          needsbpd="0"
+          needBPD="0"
           response="GetKeyResponse"
    >
     <MESSAGE name="open" crypt="0" sign="0" nosysid="1" >
@@ -314,7 +314,7 @@
           pversion="220"
           mode="RDH" 
           dlg="1" 
-          needsbpd="0"
+          needBPD="0"
           response="GetKeyResponse"
    >
     <MESSAGE name="open" crypt="0" sign="0" nosysid="1" >
@@ -349,7 +349,7 @@
           pversion="300"
           mode="RDH" 
           dlg="1" 
-          needsbpd="0"
+          needBPD="0"
           response="GetKeyResponse"
    >
     <MESSAGE name="open" crypt="0" sign="0" nosysid="1" >
@@ -389,7 +389,7 @@
            pversion="300"
            mode="RAH" 
            dlg="1" 
-           needsbpd="0"
+           needBPD="0"
            response="GetKeyResponse"
     >
      <MESSAGE name="open" crypt="0" sign="0" nosysid="1" >

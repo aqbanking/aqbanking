@@ -1,0 +1,132 @@
+<?xml?>
+
+<tm2>
+  <type id="AQFINTS_JOBDEF" type="pointer">
+    <descr>
+    </descr>
+    <lang id="c">
+      <identifier>AQFINTS_JOBDEF</identifier>
+      <prefix>AQFINTS_JobDef</prefix>
+
+      <baseFileName>jobdef</baseFileName>
+      
+      <flags>
+        with_db
+        with_list1
+        with_refcount
+      </flags>
+      
+      <headers>
+        <header type="sys"   loc="pre">aqbanking/error.h</header>
+        <header type="local" loc="post">msglayer/parser/segment.h</header>
+      </headers>
+      
+      
+      <inlines>
+
+      </inlines>
+      
+      
+    </lang>
+
+    <defines>
+
+      <define id="AQFINTS_JOBDEF_RTFLAGS" prefix="AQFINTS_JOBDEF_RTFLAGS_">
+      </define>
+
+     <define id="AQFINTS_JOBDEF_FLAGS" prefix="AQFINTS_JOBDEF_FLAGS_">
+       <item name="CRYPT"       value="0x00000001" />
+       <item name="SIGN"        value="0x00000002" />
+       <item name="NEED_BPD"    value="0x00000004" />
+       <item name="ATTACHABLE"  value="0x00000008" />
+       <item name="SINGLE"      value="0x00000010" />
+     </define>
+
+    </defines>
+
+    <enums>
+
+    </enums>
+
+
+
+    <members>
+  
+      <member name="flags" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>with_flags</flags>
+        <access>public</access>
+      </member>
+
+      <member name="id" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own with_getbymember</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="code" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own with_getbymember</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="jobVersion" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+      <member name="protocolVersion" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+      <member name="params" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own with_getbymember</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="response" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+
+      <member name="segments" type="AQFINTS_SEGMENT_LIST" >
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+
+
+      <member name="runtimeFlags" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>volatile with_flags</flags>
+        <access>public</access>
+      </member>
+
+    </members>
+    
+  </type>
+  
+</tm2>

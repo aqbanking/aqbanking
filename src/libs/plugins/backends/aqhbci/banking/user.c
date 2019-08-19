@@ -178,7 +178,7 @@ AB_USER *AH_User_new(AB_PROVIDER *pro)
 
   ue->msgEngine=AH_MsgEngine_new();
   GWEN_MsgEngine_SetEscapeChar(ue->msgEngine, '?');
-  GWEN_MsgEngine_SetCharsToEscape(ue->msgEngine, ":+\'");
+  GWEN_MsgEngine_SetCharsToEscape(ue->msgEngine, ":+\'@");
   AH_MsgEngine_SetUser(ue->msgEngine, u);
   GWEN_MsgEngine_SetDefinitions(ue->msgEngine, AH_HBCI_GetDefinitions(ue->hbci), 0);
 

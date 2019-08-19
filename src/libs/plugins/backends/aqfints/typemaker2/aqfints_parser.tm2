@@ -1,0 +1,9 @@
+<?xml?>
+
+<tm2>
+  <typedef id="AQFINTS_PARSER" type="pointer" lang="c" extends="struct_base">
+    <identifier>AQFINTS_PARSER</identifier>
+    <prefix>AQFINTS_Parser</prefix>
+  </typedef>
+</tm2>
+

@@ -240,6 +240,11 @@ for f in ${aqbanking_backends}; do
       aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqhbci/libaqhbci.la"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQHBCI, 1, [plugin availability])
       ;;
+    aqfints)
+      aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqfints"
+      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqfints/libaqfints.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQFINTS, 1, [plugin availability])
+      ;;
     aqebics)
       aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqebics"
       aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqebics/libaqebics.la"
@@ -1306,6 +1311,17 @@ AC_CONFIG_FILES([
   src/libs/plugins/backends/aqebics/msg/Makefile
   src/libs/plugins/backends/aqebics/control/Makefile
   src/libs/plugins/backends/aqebics/requests/Makefile
+  src/libs/plugins/backends/aqfints/Makefile
+  src/libs/plugins/backends/aqfints/aqfints.xml
+  src/libs/plugins/backends/aqfints/msglayer/Makefile
+  src/libs/plugins/backends/aqfints/msglayer/parser/Makefile
+  src/libs/plugins/backends/aqfints/servicelayer/Makefile
+  src/libs/plugins/backends/aqfints/servicelayer/xml/Makefile
+  src/libs/plugins/backends/aqfints/servicelayer/bpd/Makefile
+  src/libs/plugins/backends/aqfints/servicelayer/upd/Makefile
+  src/libs/plugins/backends/aqfints/transportlayer/Makefile
+  src/libs/plugins/backends/aqfints/sessionlayer/Makefile
+  src/libs/plugins/backends/aqfints/sessionlayer/pintan/Makefile
   src/test/Makefile
   src/tools/Makefile
   src/tools/aqbanking-cli/Makefile

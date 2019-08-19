@@ -1,0 +1,388 @@
+<?xml?>
+
+<tm2>
+  <type id="AQFINTS_ELEMENT" type="pointer">
+    <descr>
+    </descr>
+    <lang id="c">
+      <identifier>AQFINTS_ELEMENT</identifier>
+      <prefix>AQFINTS_Element</prefix>
+
+      <baseFileName>element</baseFileName>
+      
+      <flags>
+        with_db
+        with_tree2
+        with_refcount
+      </flags>
+      
+      <headers>
+        <header type="sys"   loc="pre">aqbanking/error.h</header>
+        <header type="sys"   loc="pre">gwenhywfar/bindata.h</header>
+        <header type="sys"   loc="code">string.h</header>
+      </headers>
+      
+
+      <inlines>
+
+        <!-- SetData() -->
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_SetData($(struct_type) *st, uint8_t *ptr, uint32_t len);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             void $(struct_prefix)_SetData($(struct_type) *st, uint8_t *ptr, uint32_t len) {
+               if (st-&gt;data.pointer &amp;&amp; st-&gt;data.length) {
+                 free(st-&gt;data.pointer);
+               }
+               st-&gt;data.pointer=ptr;
+               st-&gt;data.length=len;
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_SetDataCopy($(struct_type) *st, const uint8_t *ptr, uint32_t len);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             void $(struct_prefix)_SetDataCopy($(struct_type) *st, const uint8_t *ptr, uint32_t len) { \n
+               /* free previous data */ \n
+               if (st-&gt;data.pointer &amp;&amp; st-&gt;data.length) {
+                 free(st-&gt;data.pointer);
+               } \n
+
+               /* create copy if there is data to copy */ \n
+               if (ptr &amp;&amp; len) {
+                 uint8_t *ptrCopy;
+                 
+                 ptrCopy=(uint8_t*) malloc(len);
+                 assert(ptrCopy);
+                 memmove(ptrCopy, ptr, len);
+                 st-&gt;data.pointer=ptrCopy;
+                 st-&gt;data.length=len;
+               }
+               else {
+                 st-&gt;data.pointer=NULL;
+                 st-&gt;data.length=0;
+               }
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_SetTextDataCopy($(struct_type) *st, const char *ptr);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             void $(struct_prefix)_SetTextDataCopy($(struct_type) *st, const char *ptr) { \n
+               /* free previous data */ \n
+               if (st-&gt;data.pointer &amp;&amp; st-&gt;data.length) {
+                 free(st-&gt;data.pointer);
+               } \n
+
+               /* create copy if there is data to copy */ \n
+               if (ptr) {
+                 char *ptrCopy;
+                 
+                 ptrCopy=strdup(ptr);
+                 assert(ptrCopy);
+                 st-&gt;data.pointer=(uint8_t*) ptrCopy;
+                 st-&gt;data.length=strlen(ptrCopy)+1; /* count trailing zero */ \n
+               }
+               else {
+                 st-&gt;data.pointer=NULL;
+                 st-&gt;data.length=0;
+               }
+             }
+          </content>
+        </inline>
+      
+
+        <!-- GetDataPointer() -->
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) const uint8_t* $(struct_prefix)_GetDataPointer(const $(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code" >
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             const uint8_t* $(struct_prefix)_GetDataPointer(const $(struct_type) *st) {
+               return st-&gt;data.pointer;
+             }
+          </content>
+        </inline>
+
+
+        <!-- GetDataLength() -->
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) uint32_t $(struct_prefix)_GetDataLength(const $(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code" >
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             uint32_t $(struct_prefix)_GetDataLength(const $(struct_type) *st) {
+               return st-&gt;data.length;
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) const char* $(struct_prefix)_GetDataAsChar(const $(struct_type) *st, const char *defaultValue);
+          </content>
+        </inline>
+
+        <inline loc="code" >
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             const char* $(struct_prefix)_GetDataAsChar(const $(struct_type) *st, const char *defaultValue) {
+               if (st-&gt;data.length &amp;&amp; st-&gt;data.pointer &amp;&amp;
+                   !(st-&gt;flags &amp; AQFINTS_ELEMENT_FLAGS_ISBIN))
+                 return (const char*) (st-&gt;data.pointer);
+               return defaultValue;
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) int $(struct_prefix)_GetDataAsInt(const $(struct_type) *st, int defaultValue);
+          </content>
+        </inline>
+
+        <inline loc="code" >
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             int $(struct_prefix)_GetDataAsInt(const $(struct_type) *st, int defaultValue) {
+               const char *s;
+               
+               s=$(struct_prefix)_GetDataAsChar(st, NULL);
+               if (s &amp;&amp; *s) {
+                 long int retVal=0;
+                 
+                 if (1==sscanf(s, "%li", &retVal))
+                   return retVal;
+               }
+               return defaultValue;
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_SetDataAsInt($(struct_type) *st, int value);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             void $(struct_prefix)_SetDataAsInt($(struct_type) *st, int value) { \n
+               char numbuf[32];
+               int i;
+
+               i=snprintf(numbuf, sizeof(numbuf)-1, "%i", value);
+               assert(i&lt;=(sizeof(numbuf)-1));
+               numbuf[sizeof(numbuf)-1]=0;
+               $(struct_prefix)_SetTextDataCopy(st, numbuf);
+             }
+          </content>
+        </inline>
+
+      
+      </inlines>
+
+
+
+    </lang>
+
+    <defines>
+
+      <define id="AQFINTS_ELEMENT_RTFLAGS" prefix="AQFINTS_ELEMENT_RTFLAGS_">
+     </define>
+
+     <define id="AQFINTS_ELEMENT_FLAGS" prefix="AQFINTS_ELEMENT_FLAGS_">
+        <item name="ISBIN"       value="0x00000001" />
+        <item name="LEFTFILL"    value="0x00000002" />
+        <item name="RIGHTFILL"   value="0x00000004" />
+     </define>
+
+    </defines>
+
+    <enums>
+      <enum id="AQFINTS_ELEMENT_TYPE" prefix="AQFINTS_ElementType_" type="AQFINTS_ELEMENT_TYPE">
+        <item name="root" />
+        <item name="group" />
+        <item name="de" />
+        <item name="deg" />
+      </enum>
+
+      <enum id="AQFINTS_ELEMENT_DATATYPE" prefix="AQFINTS_ElementDataType_" type="AQFINTS_ELEMENT_DATATYPE">
+        <item name="int" />
+        <item name="char" />
+        <item name="bin" />
+      </enum>
+
+    </enums>
+
+
+
+    <members>
+  
+      <member name="flags" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>with_flags</flags>
+        <access>public</access>
+      </member>
+
+      <member name="elementType" type="int" enum="AQFINTS_ELEMENT_TYPE" maxlen="8">
+        <default>AQFINTS_ElementType_De</default>
+        <preset>AQFINTS_ElementType_De</preset>
+        <flags>enum</flags>
+        <access>public</access>
+      </member>
+
+
+      <member name="id" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+      <member name="name" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="version" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+      <member name="type" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="minNum" type="int" maxlen="8" >
+        <default>1</default>
+        <preset>1</preset>
+        <access>public</access>
+      </member>
+
+      <member name="maxNum" type="int" maxlen="8" >
+        <default>1</default>
+        <preset>1</preset>
+        <access>public</access>
+      </member>
+
+
+      <member name="minSize" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+      <member name="maxSize" type="int" maxlen="8" >
+        <default>-1</default>
+        <preset>-1</preset>
+        <access>public</access>
+      </member>
+
+
+      <member name="trustLevel" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+
+      <member name="data" type="GWEN_BINDATA" maxlen="65536" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>omit</setflags>
+        <getflags>omit</getflags>
+      </member>
+
+
+
+
+      <member name="runtimeFlags" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>volatile with_flags</flags>
+        <access>public</access>
+      </member>
+
+      
+    </members>
+    
+  </type>
+  
+</tm2>

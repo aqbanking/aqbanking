@@ -32,7 +32,7 @@ int AH_Dialog_CreateIoLayer_Hbci(AH_DIALOG *dlg)
   GWEN_Url_toString(url, tbuf);
   rv=GWEN_Gui_GetSyncIo(GWEN_Buffer_GetStart(tbuf), "hbci", 3000, &sio);
   if (rv<0) {
-    DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(tbuf);
     return GWEN_ERROR_GENERIC;
   }

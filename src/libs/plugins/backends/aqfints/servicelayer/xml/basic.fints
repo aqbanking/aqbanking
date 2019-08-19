@@ -1,0 +1,210 @@
+<?xml?>
+
+
+<FinTS>
+
+
+  <GROUPs>
+  
+    <GROUPdef id="SegHead" >
+      <!-- "Segmentkopf" -->
+      <DE  name="code"              type="AN"    maxsize="6" />
+      <DE  name="seq"               type="num"   maxsize="15" />
+      <DE  name="version"           type="num"   maxsize="3"/>
+      <DE  name="ref"               type="num"   maxsize="3" minnum=0 />
+    </GROUPdef>
+
+
+    <GROUPdef id="result" version="1">
+      <!-- Rueckmeldung -->
+      <DE  name="resultcode"        type="num" maxsize="4" />
+      <DE  name="elementref"        type="an" maxsize="7" minnum="0" />
+      <DE  name="text"              type="an" maxsize="80" />
+      <DE  name="param"             type="ascii" maxsize="35" minnum="0" maxnum="10" />
+    </GROUPdef>
+
+
+    <GROUPdef id="msgref" version="1" >
+      <!-- "Bezugsnachricht" -->
+      <DE  name="dialogId"          type="ascii" maxsize="35" />
+      <DE  name="msgnum"            type="num" maxsize="4" />
+    </GROUPdef>
+
+
+    <GROUPdef id="timespec" delimiter=":" terminator="" version="1">
+      <!-- Sicherheits-/ Gueltigkeitsdatum und -uhrzeit -->
+      <DE  name="date"              type="date" minsize="8" maxsize="8" minnum="0" />
+      <DE  name="time"              type="time" minsize="6" maxsize="6" minnum="0" />
+    </GROUPdef>
+  
+  
+    <GROUPdef id="btg" version="1">
+      <!-- "Betrag" -->
+      <de  name="value"             type="float" maxsize="20" trustlevel="1" />
+      <de  name="currency"          type="alpha" maxsize="3" />
+    </GROUPdef>
+    
+  
+    <GROUPdef id="kik" version="1">
+      <!-- "Kreditinstitutskennung" -->
+      <DE  name="country"           type="num"   maxsize="3" >280</DE>
+      <DE  name="bankcode"          type="ascii" maxsize="30" minnum="0" />
+    </GROUPdef>
+  
+  
+    <GROUPdef id="ktv" version="1">
+      <!-- "Kontoverbindung" -->
+      <DE  name="accountid"         type="ascii" maxsize="20" />
+      <GROUP                        type="kik" version="1" />
+    </GROUPdef>
+  
+
+    <GROUPdef id="ktv" version="2">
+      <!-- "Kontoverbindung" -->
+      <DE    name="accountid"         type="ascii" maxsize="20" />
+      <DE    name="accountSubId"      type="ascii" minnum="0" maxsize="20" />
+      <GROUP                          type="kik" version="1" />
+    </GROUPdef>
+  
+  
+    <GROUPdef id="kti" version="1">
+      <!-- "Kontoverbindung international" -->
+      <DE  name="iban"              type="ascii" minnum="0" />
+      <DE  name="bic"               type="ascii" minnum="0" />
+      <DE  name="accountid"         type="ascii" minnum="0" />
+      <DE  name="accountsubid"      type="ascii" minnum="0" />
+      <GROUP                        type="kik" />
+    </GROUPdef>
+  
+
+    <GROUPdef id="kti_i" version="1">
+      <!-- "Kontoverbindung international - nur international" -->
+      <DE  name="iban"              type="ascii" minnum="0" />
+      <DE  name="bic"               type="ascii" minnum="0" />
+      <DE  name="nop1_accountid"    type="ascii" minnum="0" />
+      <DE  name="nop2_accountsubid" type="ascii" minnum="0" />
+      <DE  name="nop3_country"      type="num"   minnum="0" maxsize="3" />
+      <DE  name="nop4_bankcode"     type="ascii" minnum="0" maxsize="30" />
+    </GROUPdef>
+  
+
+    <GROUPdef id="kti_i_forced_sepa" version="1">
+      <!-- "Kontoverbindung international - nur international" -->
+      <DE  name="iban"              type="ascii" minnum="1" />
+      <DE  name="bic"               type="ascii" minnum="1" />
+      <DE  name="nop1_accountid"    type="ascii" minnum="0" />
+      <DE  name="nop2_accountsubid" type="ascii" minnum="0" />
+      <DE  name="nop3_country"      type="num"   minnum="0" maxsize="3" />
+      <DE  name="nop4_bankcode"     type="ascii" minnum="0" maxsize="30"  />
+    </GROUPdef>
+  
+  
+    <GROUPdef id="ktz" version="1">
+      <!-- "Kontoverbindung ZV international" -->
+      <DE  name="sepa"              type="alpha" maxsize="1" />
+      <DE  name="iban"              type="ascii" minnum="0" />
+      <DE  name="bic"               type="ascii" minnum="0" />
+      <DE  name="accountid"         type="ascii" minnum="0" />
+      <DE  name="accountsubid"      type="ascii" minnum="0" />
+      <DEG                          type="kik" />
+    </GROUPdef>
+
+
+    <GROUPdef id="adr" version="1">
+      <!-- "Adresse" -->
+      <DE  name="name1"             type="ascii" maxsize="35" />
+      <DE  name="name2"             type="ascii" maxsize="35" minnum="0" />
+      <DE  name="street"            type="ascii" maxsize="35" trustlevel="2" />
+      <DE  name="city"              type="ascii" maxsize="35" trustlevel="2" />
+      <DE  name="phone"             type="ascii" maxsize="35" minnum="0" trustlevel="2" />
+    </GROUPdef>
+
+  
+    <GROUPdef id="adr" version="2">
+      <!-- "Adresse" -->
+      <DE  name="name1"             type="ascii" maxsize="35" />
+      <DE  name="name2"             type="ascii" maxsize="35" minnum="0" />
+      <DE  name="street"            type="ascii" maxsize="35" trustlevel="2" />
+      <DE  name="zipcode"           type="ascii" maxsize="10" trustlevel="2" />
+      <DE  name="city"              type="ascii" maxsize="35" trustlevel="2" />
+      <DE  name="country"           type="num"   maxsize="3" />
+      <DE  name="phone"             type="ascii" maxsize="35" minnum="0" trustlevel="2" />
+      <DE  name="fax"               type="ascii" maxsize="35" minnum="0" trustlevel="2" />
+      <DE  name="email"             type="ascii" maxsize="35" minnum="0" trustlevel="2" />
+    </GROUPdef>
+    
+    
+  </GROUPs>
+
+
+
+  <SEGs>
+
+
+    <SEGdef id="MsgHead" 
+            code="HNHBK" 
+            segmentVersion="2"
+    >
+      <!-- "Nachrichtenkopf" -->
+      <DEG name="head"              type="SegHead" />
+      <DE  name="size"              type="num"        maxsize="12" leftfill="1" />
+      <DE  name="hversion"          type="num"        maxsize="3" />
+      <DE  name="dialogId"          type="ascii"      maxsize="128" />
+      <DE  name="msgnum"            type="num"        maxsize="4" />
+      <DEG name="msgref"            type="msgref"     minnum="0" version="1"/>
+    </SEGdef>
+
+
+    <SEGdef id="MsgHead" 
+            code="HNHBK" 
+            segmentVersion="3"
+            protocolVersion="300"
+    >
+      <!-- "Nachrichtenkopf" -->
+      <DEG name="head"              type="SegHead" />
+      <DE  name="size"              type="num"        maxsize="12" leftfill="1" />
+      <DE  name="hversion"          type="num"        maxsize="3" />
+      <DE  name="dialogId"          type="ascii"      maxsize="128" />
+      <DE  name="msgnum"            type="num"        maxsize="4" />
+      <DEG name="msgref"            type="msgref"     minnum="0" version="1"/>
+    </SEGdef>
+  
+  
+    <SEGdef id="MsgTail" 
+            code="HNHBS" 
+            segmentVersion="1" 
+            protocolVersion="300"
+    >
+      <!-- "Nachrichtenabschluss" -->
+      <DEG name="head"              type="SegHead"     />
+      <DE  name="msgnum"            type="num"        maxsize="4" />
+    </SEGdef>
+  
+  
+    <SEGdef id="MsgResult" 
+            code="HIRMG" 
+            segmentVersion="2" 
+            protocolVersion="300"
+    >
+      <!-- "Rueckmeldungen zur Gesamtnachricht" -->
+      <DEG name="head"              type="SegHead" />
+      <DEG name="result"            type="result"     version="1" maxnum="99" />
+    </SEGdef>
+  
+  
+    <SEGdef id="SegResult" 
+            code="HIRMS" 
+            segmentVersion="2" 
+            protocolVersion="300"
+    >
+      <!-- "Rueckmeldungen zu Segmenten" -->
+      <DEG name="head"              type="SegHead" />
+      <DEG name="result"            type="result"     version="1" maxnum="99" />
+    </SEGdef>
+
+
+
+  </SEGs>
+
+
+</FinTS>
