@@ -91,8 +91,13 @@ void EBC_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "timestampFix1");
   if (flags & EBC_USER_FLAGS_NO_EU)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "noEu");
+#if 0
   if (flags & EBC_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "tlsIgnPrematureClose");
+#endif
+  if (flags & EBC_USER_FLAGS_TLS_ABORT_ON_PREMATURE_CLOSE)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "tlsAbortOnPrematureClose");
+
 }
 
 
@@ -132,8 +137,13 @@ uint32_t EBC_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name)
       fl|=EBC_USER_FLAGS_TIMESTAMP_FIX1;
     else if (strcasecmp(s, "noEu")==0)
       fl|=EBC_USER_FLAGS_NO_EU;
-    else if (strcasecmp(s, "tlsIgnPrematureClose")==0)
+    else if (strcasecmp(s, "tlsIgnPrematureClose")==0) { /* ignore deprecated flag */
+#if 0
       fl|=EBC_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE;
+#endif
+    }
+    else if (strcasecmp(s, "tlsAbortOnPrematureClose")==0)
+      fl|=EBC_USER_FLAGS_TLS_ABORT_ON_PREMATURE_CLOSE;
     else {
       DBG_WARN(AQEBICS_LOGDOMAIN, "Unknown user flag \"%s\"", s);
     }

@@ -54,7 +54,7 @@ GWEN_HTTP_SESSION *EBC_Dialog_new(AB_PROVIDER *pro, AB_USER *u)
   if (flags & EBC_USER_FLAGS_FORCE_SSLV3)
     GWEN_HttpSession_AddFlags(sess, GWEN_HTTP_SESSION_FLAGS_FORCE_SSL3);
 
-  if (flags & EBC_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE)
+  if (!(flags & EBC_USER_FLAGS_TLS_ABORT_ON_PREMATURE_CLOSE))
     GWEN_HttpSession_AddFlags(sess, GWEN_HTTP_SESSION_FLAGS_TLS_IGN_PREMATURE_CLOSE);
 
   /* set HTTP config according to user settings */
@@ -102,7 +102,7 @@ int EBC_Dialog_ExchangeMessages(GWEN_HTTP_SESSION *sess,
   /* convert message to buffer for sending */
   EB_Msg_toBuffer(msg, sendBuf);
 
-#if 0
+#if 1
   if (GWEN_Logger_GetLevel(AQEBICS_LOGDOMAIN)>=GWEN_LoggerLevel_Debug) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Sending this:");
     fprintf(stderr, "====================================\n");
@@ -132,7 +132,7 @@ int EBC_Dialog_ExchangeMessages(GWEN_HTTP_SESSION *sess,
     return rv;
   }
 
-#if 0
+#if 1
   if (GWEN_Logger_GetLevel(AQEBICS_LOGDOMAIN)>=GWEN_LoggerLevel_Debug) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Received this:");
     fprintf(stderr, "====================================\n");

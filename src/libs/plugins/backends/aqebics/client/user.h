@@ -24,20 +24,20 @@
 extern "C" {
 #endif
 
-#define EBC_USER_FLAGS_BANK_DOESNT_SIGN         0x00000001
-#define EBC_USER_FLAGS_FORCE_SSLV3              0x00000002
-#define EBC_USER_FLAGS_INI                      0x00000004
-#define EBC_USER_FLAGS_HIA                      0x00000008
-#define EBC_USER_FLAGS_CLIENT_DATA_DOWNLOAD_SPP 0x00000010
-#define EBC_USER_FLAGS_PREVALIDATION_SPP        0x00000020
-#define EBC_USER_FLAGS_RECOVERY_SPP             0x00000040
-#define EBC_USER_FLAGS_STA_SPP                  0x00000080
-#define EBC_USER_FLAGS_IZV_SPP                  0x00000100
-#define EBC_USER_FLAGS_USE_IZL                  0x00010000
-#define EBC_USER_FLAGS_TIMESTAMP_FIX1           0x00020000
-#define EBC_USER_FLAGS_NO_EU                    0x00040000
-#define EBC_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE  0x00080000
-
+#define EBC_USER_FLAGS_BANK_DOESNT_SIGN             0x00000001
+#define EBC_USER_FLAGS_FORCE_SSLV3                  0x00000002
+#define EBC_USER_FLAGS_INI                          0x00000004
+#define EBC_USER_FLAGS_HIA                          0x00000008
+#define EBC_USER_FLAGS_CLIENT_DATA_DOWNLOAD_SPP     0x00000010
+#define EBC_USER_FLAGS_PREVALIDATION_SPP            0x00000020
+#define EBC_USER_FLAGS_RECOVERY_SPP                 0x00000040
+#define EBC_USER_FLAGS_STA_SPP                      0x00000080
+#define EBC_USER_FLAGS_IZV_SPP                      0x00000100
+#define EBC_USER_FLAGS_USE_IZL                      0x00010000
+#define EBC_USER_FLAGS_TIMESTAMP_FIX1               0x00020000
+#define EBC_USER_FLAGS_NO_EU                        0x00040000
+/* #define EBC_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE      0x00080000 deprecated */
+#define EBC_USER_FLAGS_TLS_ABORT_ON_PREMATURE_CLOSE 0x00100000
 
 
 AQEBICS_API void EBC_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
