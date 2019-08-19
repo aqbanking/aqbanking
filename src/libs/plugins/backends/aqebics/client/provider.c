@@ -148,29 +148,6 @@ int EBC_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData)
     }
   }
 
-  DBG_INFO(AQEBICS_LOGDOMAIN, "Please remember to purchase a license if you want to use the EBICS backend.");
-
-
-  if (1) {
-    GWEN_STRINGLIST *sl=GWEN_PathManager_GetPaths(AB_PM_LIBNAME,
-                                                  AB_PM_LOCALEDIR);
-    const char *localedir=GWEN_StringList_FirstString(sl);
-    int rv;
-
-    rv=GWEN_I18N_BindTextDomain_Dir(PACKAGE, localedir);
-    if (rv) {
-      DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not bind textdomain (%d)", rv);
-    }
-    else {
-      rv=GWEN_I18N_BindTextDomain_Codeset(PACKAGE, "UTF-8");
-      if (rv) {
-        DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not set codeset (%d)", rv);
-      }
-    }
-
-    GWEN_StringList_free(sl);
-  }
-
   DBG_NOTICE(AQEBICS_LOGDOMAIN, "Initializing AqEBICS backend");
   dp->connectTimeout=GWEN_DB_GetIntValue(dbData, "connectTimeout", 0,
                                          EBC_DEFAULT_CONNECT_TIMEOUT);

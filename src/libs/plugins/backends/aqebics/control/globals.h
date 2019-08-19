@@ -15,7 +15,8 @@
 #include "aqebics/client/provider.h"
 #include "aqebics/client/user.h"
 
-#include <aqbanking/banking_be.h>
+#include "aqbanking/banking_be.h"
+#include "aqbanking/i18n_l.h"
 
 #include <gwenhywfar/args.h>
 #include <gwenhywfar/buffer.h>
@@ -26,9 +27,6 @@
 #include <gwenhywfar/i18n.h>
 
 
-
-#define I18N(msg) GWEN_I18N_Translate(PACKAGE, msg)
-#define I18S(msg) msg
 
 
 

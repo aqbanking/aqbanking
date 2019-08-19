@@ -12,12 +12,12 @@
 #define AQEBICS_AQEBICS_L_H
 
 
+#include "aqbanking/i18n_l.h"
 
 #include <aqebics/aqebics.h>
+
 #include <gwenhywfar/i18n.h>
 
-
-#define I18N(s) GWEN_I18N_Translate("aqebics", s)
 
 #endif
 

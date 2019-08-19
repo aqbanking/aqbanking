@@ -125,6 +125,7 @@ int main(int argc, char **argv)
                    GWEN_LoggerFacility_User);
   GWEN_Logger_SetLevel(0, GWEN_LoggerLevel_Warning);
 
+#if 0
   rv=GWEN_I18N_BindTextDomain_Dir(PACKAGE, LOCALEDIR);
   if (rv) {
     DBG_ERROR(0, "Could not bind textdomain (%d)", rv);
@@ -135,6 +136,7 @@ int main(int argc, char **argv)
       DBG_ERROR(0, "Could not set codeset (%d)", rv);
     }
   }
+#endif
 
   db=GWEN_DB_Group_new("arguments");
   rv=GWEN_Args_Check(argc, argv, 1,
