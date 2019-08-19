@@ -28,11 +28,28 @@
 #include <gwenhywfar/text.h>
 
 #include <assert.h>
+#include <ctype.h>
 
 
 
 GWEN_INHERIT(AH_JOB, AH_JOB_TRANSFERBASE);
 
+
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+static void _replaceCtrlCharsInPurpose(AB_TRANSACTION *t);
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 
 
@@ -135,6 +152,7 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
     ioc=AB_ImExporterContext_new();
     while (t) {
       cpy=AB_Transaction_dup(t);
+      _replaceCtrlCharsInPurpose(cpy);
       AB_Transaction_SetUniqueAccountId(cpy, AB_Account_GetUniqueId(a));
       AB_ImExporterContext_AddTransaction(ioc, cpy);
       t=AB_Transaction_List_Next(t);
@@ -162,6 +180,31 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
   }
 
   return 0;
+}
+
+
+
+/* --------------------------------------------------------------- FUNCTION */
+void _replaceCtrlCharsInPurpose(AB_TRANSACTION *trans)
+{
+  const char *s;
+
+  s=AB_Transaction_GetPurpose(trans);
+  if (s && *s) {
+    GWEN_BUFFER *buf;
+    char *t;
+
+    buf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(buf, s);
+    t=GWEN_Buffer_GetStart(buf);
+    while(*t) {
+      if (iscntrl(*t))
+	*t=' ';
+      t++;
+    }
+    AB_Transaction_SetPurpose(trans, GWEN_Buffer_GetStart(buf));
+    GWEN_Buffer_free(buf);
+  }
 }
 
 
