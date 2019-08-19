@@ -1,0 +1,14 @@
+<!-- 
+Collection name attribute represents the name of the menu, e.g., to use menu "File" use "file" or "Help" use "help". You can add new menus.
+
+
+If you type a relative script file beware that this script is located in $XDG_DATA_HOME/applicationname/
+
+The following example adds an action with the text "Export..." into the "File" menu
+
+<KrossScripting>
+<collection name="file" text="File" comment="File menu">
+<script name="export" text="Export..." comment="Export content" file="export.py" />
+</collection>
+</KrossScripting>
+-->
