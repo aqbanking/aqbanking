@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: aqbanking\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
 "POT-Creation-Date: 2019-08-19 15:58+0200\n"
-"PO-Revision-Date: 2019-08-19 16:05+0100\n"
+"PO-Revision-Date: 2019-08-19 16:23+0100\n"
 "Last-Translator: Martin Preuss <martin@aqbanking.de>\n"
 "Language-Team: German <>\n"
 "Language: de_DE\n"
@@ -1849,7 +1849,7 @@ msgstr "Elektronische Überweisung"
 #. FIXME: not sure
 #: src/libs/plugins/imexporters/ofx/parser/g_stmtrn.c:240
 msgid "Cash withdrawal"
-msgstr ""
+msgstr "Barauszahlung"
 
 #. FIXME: not sure
 #: src/libs/plugins/imexporters/ofx/parser/g_stmtrn.c:244
