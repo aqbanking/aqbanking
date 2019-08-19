@@ -63,7 +63,7 @@ sources:
 	for d in $(SUBDIRS); do \
 	  $(MAKE) -C $$d sources; \
 	done
-	for f in $(libclient_la_SOURCES) $(EXTRA_SOURCES); do \
+	for f in $(libclient_la_SOURCES) $(extra_sources); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 

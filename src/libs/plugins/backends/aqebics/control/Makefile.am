@@ -42,13 +42,13 @@ sources:
 	for d in $(SUBDIRS); do \
 	  $(MAKE) -C $$d sources; \
 	done
-	for f in $(aqebics_tool_SOURCES); do \
+	for f in $(libebicscontrol_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 
 
 cppcheck:
-	for f in $(aqebics_tool_SOURCES); do \
+	for f in $(libebicscontrol_la_SOURCES); do \
 	  cppcheck --force $$f ; \
 	done
 	for d in $(SUBDIRS); do \
