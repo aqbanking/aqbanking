@@ -1132,9 +1132,10 @@ int EBC_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
 
     sUserId=AB_User_GetUserId(u);
     sCustomerId=AB_User_GetCustomerId(u);
-    GWEN_Buffer_AppendString(lbuf, I18N("User           : "));
+    GWEN_Buffer_AppendString(lbuf, I18N("EBICS|User           : "));
     GWEN_Buffer_AppendString(lbuf, sUserId?sUserId:"");
     GWEN_Buffer_AppendString(lbuf, "\n");
+    GWEN_Buffer_AppendString(lbuf, I18N("EBICS|Customer       : "));
     GWEN_Buffer_AppendString(lbuf, sCustomerId?sCustomerId:"");
     GWEN_Buffer_AppendString(lbuf, "\n");
   }
@@ -1530,9 +1531,10 @@ int EBC_Provider_GetHiaLetterTxt(AB_PROVIDER *pro,
 
     sUserId=AB_User_GetUserId(u);
     sCustomerId=AB_User_GetCustomerId(u);
-    GWEN_Buffer_AppendString(lbuf, I18N("User           : "));
+    GWEN_Buffer_AppendString(lbuf, I18N("EBICS|User           : "));
     GWEN_Buffer_AppendString(lbuf, sUserId?sUserId:"");
     GWEN_Buffer_AppendString(lbuf, "\n");
+    GWEN_Buffer_AppendString(lbuf, I18N("EBICS|Customer       : "));
     GWEN_Buffer_AppendString(lbuf, sCustomerId?sCustomerId:"");
     GWEN_Buffer_AppendString(lbuf, "\n");
   }
