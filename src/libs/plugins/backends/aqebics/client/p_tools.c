@@ -1124,14 +1124,21 @@ int EBC_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
     GWEN_Buffer_AppendString(lbuf,
                              I18N("Bank Code      : "));
     GWEN_Buffer_AppendString(lbuf, AB_User_GetBankCode(u));
+    GWEN_Buffer_AppendString(lbuf, "\n");
   }
   else {
-    GWEN_Buffer_AppendString(lbuf,
-                             I18N("User           : "));
-    GWEN_Buffer_AppendString(lbuf, AB_User_GetUserId(u));
+    const char *sUserId;
+    const char *sCustomerId;
+
+    sUserId=AB_User_GetUserId(u);
+    sCustomerId=AB_User_GetCustomerId(u);
+    GWEN_Buffer_AppendString(lbuf, I18N("User           : "));
+    GWEN_Buffer_AppendString(lbuf, sUserId?sUserId:"");
+    GWEN_Buffer_AppendString(lbuf, "\n");
+    GWEN_Buffer_AppendString(lbuf, sCustomerId?sCustomerId:"");
+    GWEN_Buffer_AppendString(lbuf, "\n");
   }
 
-  GWEN_Buffer_AppendString(lbuf, "\n");
   GWEN_Buffer_AppendString(lbuf,
                            I18N("Public key for electronic signature"));
   GWEN_Buffer_AppendString(lbuf, "\n\n");
@@ -1515,13 +1522,21 @@ int EBC_Provider_GetHiaLetterTxt(AB_PROVIDER *pro,
     GWEN_Buffer_AppendString(lbuf,
                              I18N("Bank Code      : "));
     GWEN_Buffer_AppendString(lbuf, AB_User_GetBankCode(u));
+    GWEN_Buffer_AppendString(lbuf, "\n");
   }
   else {
-    GWEN_Buffer_AppendString(lbuf,
-                             I18N("User           : "));
-    GWEN_Buffer_AppendString(lbuf, AB_User_GetUserId(u));
+    const char *sUserId;
+    const char *sCustomerId;
+
+    sUserId=AB_User_GetUserId(u);
+    sCustomerId=AB_User_GetCustomerId(u);
+    GWEN_Buffer_AppendString(lbuf, I18N("User           : "));
+    GWEN_Buffer_AppendString(lbuf, sUserId?sUserId:"");
+    GWEN_Buffer_AppendString(lbuf, "\n");
+    GWEN_Buffer_AppendString(lbuf, sCustomerId?sCustomerId:"");
+    GWEN_Buffer_AppendString(lbuf, "\n");
   }
-  GWEN_Buffer_AppendString(lbuf, "\n\n");
+  GWEN_Buffer_AppendString(lbuf, "\n");
 
   /* add auth key */
   GWEN_Buffer_AppendString(lbuf, I18N("Public key for authentication signature ("));
