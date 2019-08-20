@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aqbanking\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
-"POT-Creation-Date: 2019-08-19 15:58+0200\n"
-"PO-Revision-Date: 2019-08-19 16:23+0100\n"
+"POT-Creation-Date: 2019-08-20 21:39+0200\n"
+"PO-Revision-Date: 2019-08-20 21:42+0100\n"
 "Last-Translator: Martin Preuss <martin@aqbanking.de>\n"
 "Language-Team: German <>\n"
 "Language: de_DE\n"
@@ -3424,18 +3424,18 @@ msgid ""
 "Choose the bank from list below and click OK."
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:236
+#: src/libs/plugins/backends/aqebics/client/provider.c:213
 #, fuzzy
 msgid "No user assigned to this account."
 msgstr ""
 "Dieses Konto ist keinem Benutzer zugeordnet. Bitte überprüfen Sie Ihre "
 "Konfiguration."
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:237
+#: src/libs/plugins/backends/aqebics/client/provider.c:214
 msgid "Setup Error"
 msgstr "Einrichtungsfehler"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:238
+#: src/libs/plugins/backends/aqebics/client/provider.c:215
 #, fuzzy
 msgid ""
 "No user assigned to this account. Please assign one in the online banking "
@@ -3444,276 +3444,275 @@ msgstr ""
 "Dieses Konto ist keinem Benutzer zugeordnet. Bitte überprüfen Sie Ihre "
 "Konfiguration."
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:578
-#: src/libs/plugins/backends/aqebics/client/provider.c:651
+#: src/libs/plugins/backends/aqebics/client/provider.c:555
+#: src/libs/plugins/backends/aqebics/client/provider.c:628
 msgid "Ok"
 msgstr "Ok"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:580
+#: src/libs/plugins/backends/aqebics/client/provider.c:557
 msgid "Download postproces done"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:582
+#: src/libs/plugins/backends/aqebics/client/provider.c:559
 msgid "Download postproces skipped"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:584
+#: src/libs/plugins/backends/aqebics/client/provider.c:561
 msgid "TX segment number underrun"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:586
+#: src/libs/plugins/backends/aqebics/client/provider.c:563
 msgid "Order params ignored"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:588
+#: src/libs/plugins/backends/aqebics/client/provider.c:565
 msgid "Authentication failed"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:590
+#: src/libs/plugins/backends/aqebics/client/provider.c:567
 #, fuzzy
 msgid "Invalid request"
 msgstr "Ungültiger Betrag"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:592
+#: src/libs/plugins/backends/aqebics/client/provider.c:569
 #, fuzzy
 msgid "Internal error"
 msgstr "Allgemeiner Fehler"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:594
+#: src/libs/plugins/backends/aqebics/client/provider.c:571
 msgid "TX recovery sync"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:596
+#: src/libs/plugins/backends/aqebics/client/provider.c:573
 msgid "Invalid user or invalid user state"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:598
+#: src/libs/plugins/backends/aqebics/client/provider.c:575
 #, fuzzy
 msgid "User unknown"
 msgstr "unbekannt"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:600
+#: src/libs/plugins/backends/aqebics/client/provider.c:577
 #, fuzzy
 msgid "Invalid user state"
 msgstr "Ungültiges Datum"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:602
+#: src/libs/plugins/backends/aqebics/client/provider.c:579
 #, fuzzy
 msgid "Invalid order type"
 msgstr "Ungültiges Datum"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:604
+#: src/libs/plugins/backends/aqebics/client/provider.c:581
 #, fuzzy
 msgid "Unsupported order type"
 msgstr "Version nicht unterstützt"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:606
+#: src/libs/plugins/backends/aqebics/client/provider.c:583
 msgid "Distributed signature authorisation failed"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:608
+#: src/libs/plugins/backends/aqebics/client/provider.c:585
 msgid "Bank pubkey update required"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:610
+#: src/libs/plugins/backends/aqebics/client/provider.c:587
 msgid "Segment size exceeded"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:612
+#: src/libs/plugins/backends/aqebics/client/provider.c:589
 #, fuzzy
 msgid "Invalid XML"
 msgstr "Ungültige URL"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:614
+#: src/libs/plugins/backends/aqebics/client/provider.c:591
 #, fuzzy
 msgid "TX unknown transaction id"
 msgstr "Transaktionskode"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:616
+#: src/libs/plugins/backends/aqebics/client/provider.c:593
 #, fuzzy
 msgid "TX abort"
 msgstr "Abbrechen"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:618
+#: src/libs/plugins/backends/aqebics/client/provider.c:595
 msgid "TX message replay"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:620
+#: src/libs/plugins/backends/aqebics/client/provider.c:597
 msgid "TX segment number exceeded"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:622
+#: src/libs/plugins/backends/aqebics/client/provider.c:599
 #, fuzzy
 msgid "Invalid order params"
 msgstr "Ungültiger Datumsbereich"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:624
+#: src/libs/plugins/backends/aqebics/client/provider.c:601
 #, fuzzy
 msgid "Invalid request content"
 msgstr "Ungültiges Konto"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:626
+#: src/libs/plugins/backends/aqebics/client/provider.c:603
 msgid "Max order data size exceeded"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:628
+#: src/libs/plugins/backends/aqebics/client/provider.c:605
 msgid "Max segments exceeded"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:630
+#: src/libs/plugins/backends/aqebics/client/provider.c:607
 #, fuzzy
 msgid "Max transactions exceeded"
 msgstr "Transaktionskode"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:632
+#: src/libs/plugins/backends/aqebics/client/provider.c:609
 msgid "Partner id mismatch"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:634
+#: src/libs/plugins/backends/aqebics/client/provider.c:611
 msgid "Incompatible order attribute"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:653
+#: src/libs/plugins/backends/aqebics/client/provider.c:630
 msgid "No online checks"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:655
+#: src/libs/plugins/backends/aqebics/client/provider.c:632
 msgid "Download signed only"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:657
+#: src/libs/plugins/backends/aqebics/client/provider.c:634
 msgid "Download unsigned only"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:659
+#: src/libs/plugins/backends/aqebics/client/provider.c:636
 msgid "Authorisation failed"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:661
+#: src/libs/plugins/backends/aqebics/client/provider.c:638
 #, fuzzy
 msgid "Invalid order data format"
 msgstr "Ungültiger Datumsbereich"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:663
+#: src/libs/plugins/backends/aqebics/client/provider.c:640
 msgid "No download data available"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:665
+#: src/libs/plugins/backends/aqebics/client/provider.c:642
 msgid "Unsupported request for order instance"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:667
+#: src/libs/plugins/backends/aqebics/client/provider.c:644
 msgid "Recovery not supported"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:669
+#: src/libs/plugins/backends/aqebics/client/provider.c:646
 #, fuzzy
 msgid "Invalid signature file format"
 msgstr "Ungültige Signatur!"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:671
+#: src/libs/plugins/backends/aqebics/client/provider.c:648
 #, fuzzy
 msgid "Order id unknown"
 msgstr "unbekannt"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:673
+#: src/libs/plugins/backends/aqebics/client/provider.c:650
 msgid "Order id already exists"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:675
+#: src/libs/plugins/backends/aqebics/client/provider.c:652
 #, fuzzy
 msgid "Processing error"
 msgstr "Nachbehandlung der Aufträge"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:677
+#: src/libs/plugins/backends/aqebics/client/provider.c:654
 #, fuzzy
 msgid "Keymgmt unsupported version of signature"
 msgstr "Version nicht unterstützt"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:679
+#: src/libs/plugins/backends/aqebics/client/provider.c:656
 msgid "Keymgmt unsupported version of authentication"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:681
+#: src/libs/plugins/backends/aqebics/client/provider.c:658
 #, fuzzy
 msgid "Keymgmt unsupported version of encryption"
 msgstr "Version nicht unterstützt"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:683
+#: src/libs/plugins/backends/aqebics/client/provider.c:660
 msgid "Keymgmt keylength error in signature"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:685
+#: src/libs/plugins/backends/aqebics/client/provider.c:662
 msgid "Keymgmt keylength error in authentication"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:687
+#: src/libs/plugins/backends/aqebics/client/provider.c:664
 msgid "Keymgmt keylength error in encryption"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:689
+#: src/libs/plugins/backends/aqebics/client/provider.c:666
 msgid "Keymgmt no X509 support"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:691
+#: src/libs/plugins/backends/aqebics/client/provider.c:668
 msgid "Signature verification failed"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:693
+#: src/libs/plugins/backends/aqebics/client/provider.c:670
 #, fuzzy
 msgid "Account authorisation failed"
 msgstr "Kontozugriff nicht erlaubt"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:695
+#: src/libs/plugins/backends/aqebics/client/provider.c:672
 #, fuzzy
 msgid "Amount check failed"
 msgstr "Betrag (Wert)"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:697
+#: src/libs/plugins/backends/aqebics/client/provider.c:674
 #, fuzzy
 msgid "Signer unknown"
 msgstr "unbekannt"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:699
+#: src/libs/plugins/backends/aqebics/client/provider.c:676
 #, fuzzy
 msgid "Invalid signer state"
 msgstr "Ungültige Signatur!"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:701
+#: src/libs/plugins/backends/aqebics/client/provider.c:678
 #, fuzzy
 msgid "Duplicate signature"
 msgstr "Doppeleinreichung"
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:723
+#: src/libs/plugins/backends/aqebics/client/provider.c:700
 msgid "EBICS (Technical Code):"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:745
+#: src/libs/plugins/backends/aqebics/client/provider.c:722
 msgid "EBICS (Technical Report):"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/client/provider.c:761
+#: src/libs/plugins/backends/aqebics/client/provider.c:738
 #, fuzzy
 msgid "EBICS (Bank Code):"
 msgstr "Bankleitzahl (BLZ)"
 
 #: src/libs/plugins/backends/aqebics/client/provider_sendcmd.c:81
-#, fuzzy, c-format
+#, c-format
 msgid "Could not lock user \"%lu\""
-msgstr "Für Benutzer %lu konnte kein exklusiver Zugriff erreicht werden (%d)\t"
+msgstr "Für Benutzer %lu konnte kein exklusiver Zugriff erreicht werden"
 
 #. while aq
 #: src/libs/plugins/backends/aqebics/client/provider_sendcmd.c:101
-#, fuzzy, c-format
+#, c-format
 msgid "Unlocking customer \"%lu\""
-msgstr "Exklusiver Zugriff auf Benutzer %s freigeben"
+msgstr "Exklusiver Zugriff auf Benutzer %lu freigeben"
 
 #: src/libs/plugins/backends/aqebics/client/provider_sendcmd.c:105
 #, c-format
 msgid "Could not unlock user \"%lu\""
 msgstr ""
-"Für den Benutzer %lu konnte der exklusive Zugriff nicht freigegeben werden "
-"(%d)"
+"Für den Benutzer %lu konnte der exklusive Zugriff nicht freigegeben werden"
 
 #: src/libs/plugins/backends/aqebics/client/provider_sendcmd.c:307
 #, fuzzy
@@ -3761,14 +3760,14 @@ msgid "Crypt key info not found on crypt token"
 msgstr "Crypto-Schlüssel wurde auf dem CryptToken nicht gefunden."
 
 #: src/libs/plugins/backends/aqebics/client/p_tools.c:1076
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1470
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1562
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1478
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1579
 msgid "Server keys missing, please get them first"
 msgstr "Der Serverschlüssel fehlt, diesen bitte zuerst abrufen."
 
 #: src/libs/plugins/backends/aqebics/client/p_tools.c:1100
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1494
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1586
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1502
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1603
 msgid "User keys missing, please generate them first"
 msgstr "Die Schlüssel des Benutzers fehlen, bitte erst generieren."
 
@@ -3788,69 +3787,74 @@ msgstr ""
 "\n"
 
 #: src/libs/plugins/backends/aqebics/client/p_tools.c:1113
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1504
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1512
 msgid "Date           : "
 msgstr "Datum          : "
 
 #: src/libs/plugins/backends/aqebics/client/p_tools.c:1116
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1507
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1515
 msgid "YYYY/MM/DD"
 msgstr "DD.MM.YYYY"
 
 #: src/libs/plugins/backends/aqebics/client/p_tools.c:1119
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1510
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1518
 msgid "Time           : "
 msgstr "Uhrzeit        : "
 
 #: src/libs/plugins/backends/aqebics/client/p_tools.c:1120
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1511
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1519
 msgid "hh:mm:ss"
 msgstr "hh:mm:ss"
 
 #: src/libs/plugins/backends/aqebics/client/p_tools.c:1125
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1516
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1524
 msgid "Bank Code      : "
 msgstr "Bankleitzahl    : "
 
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1130
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1521
-msgid "User           : "
-msgstr "Benutzerkennung : "
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1135
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1534
+msgid "EBICS|User           : "
+msgstr "Teilnehmer:"
 
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1136
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1138
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1537
+msgid "EBICS|Customer       : "
+msgstr "Kunde: "
+
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1144
 msgid "Public key for electronic signature"
 msgstr "Öffentlicher Schlüssel für die elektronische Signatur"
 
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1141
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1283
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1149
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1291
 msgid "Exponent"
 msgstr "Exponent"
 
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1150
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1183
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1292
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1333
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1158
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1191
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1300
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1341
 msgid "Bad key"
 msgstr "Ungültiger Schlüssel"
 
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1176
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1326
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1184
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1334
 msgid "Modulus"
 msgstr "Modulus"
 
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1208
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1358
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1216
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1366
 msgid "Hash"
 msgstr "Hash"
 
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1254
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1262
 msgid "I confirm that I created the above key for my electronic signature.\n"
 msgstr ""
-"Ich bestätige hiermit den obigen öffentlichen Schlüssel für meine"
-" elektronische Signatur.\n"
+"Ich bestätige hiermit den obigen öffentlichen Schlüssel für meine "
+"elektronische Signatur.\n"
 
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1258
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1616
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1266
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1633
 msgid ""
 "____________________________  ____________________________\n"
 "Place, date                   Signature\n"
@@ -3858,7 +3862,7 @@ msgstr ""
 "____________________________  ____________________________\n"
 "Ort, Datum                             Unterschrift\n"
 
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1502
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1510
 #, fuzzy
 msgid ""
 "\n"
@@ -3874,16 +3878,16 @@ msgstr ""
 "\n"
 
 #. add auth key
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1527
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1544
 msgid "Public key for authentication signature ("
 msgstr ""
 "Öffentlicher Schlüssel für die elektronische Authentifizierungssignatur ("
 
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1595
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1612
 msgid "Public key for encryption ("
 msgstr "Öffentlicher Schlüssel für Verschlüsselung ("
 
-#: src/libs/plugins/backends/aqebics/client/p_tools.c:1612
+#: src/libs/plugins/backends/aqebics/client/p_tools.c:1629
 msgid "I confirm that I created the above keys.\n"
 msgstr "Ich bestätige hiermit die obigen Schlüssel.\n"
 
@@ -3915,7 +3919,7 @@ msgstr "deaktiviert"
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_edituser.c:631
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_edituser.c:670
 #: src/libs/plugins/backends/aqebics/control/download.c:175
-#: src/libs/plugins/backends/aqebics/control/sendkeys.c:98
+#: src/libs/plugins/backends/aqebics/control/sendkeys.c:129
 #: src/libs/plugins/backends/aqebics/control/sendsignkey.c:113
 #: src/libs/plugins/backends/aqebics/control/getaccounts.c:98
 #: src/libs/plugins/backends/aqebics/control/getkeys.c:98
@@ -3923,14 +3927,13 @@ msgstr "deaktiviert"
 #: src/libs/plugins/backends/aqebics/control/sendhkd.c:101
 #: src/libs/plugins/backends/aqebics/control/upload.c:136
 #: src/libs/plugins/backends/aqebics/control/getcert.c:98
-#, fuzzy
 msgid "Executing Request"
 msgstr "Aufträge werden ausgeführt"
 
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_edituser.c:632
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_edituser.c:671
 #: src/libs/plugins/backends/aqebics/control/download.c:176
-#: src/libs/plugins/backends/aqebics/control/sendkeys.c:99
+#: src/libs/plugins/backends/aqebics/control/sendkeys.c:130
 #: src/libs/plugins/backends/aqebics/control/sendsignkey.c:114
 #: src/libs/plugins/backends/aqebics/control/getaccounts.c:99
 #: src/libs/plugins/backends/aqebics/control/getkeys.c:99
@@ -3953,14 +3956,12 @@ msgstr "HIA-Brief"
 
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_edituser.c:792
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_newkeyfile.c:1556
-#, fuzzy
 msgid "HIA Letter for EBICS"
-msgstr "Ini-Brief für HBCI"
+msgstr "HIA-Brief für EBICS"
 
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_newkeyfile.c:585
-#, fuzzy
 msgid "EBICS Keyfile Setup Wizard"
-msgstr "HBCI Schlüsseldatei Einrichtungsassistent"
+msgstr "EBICS Schlüsseldatei Einrichtungsassistent"
 
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_newkeyfile.c:604
 #, fuzzy
