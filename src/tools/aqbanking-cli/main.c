@@ -339,6 +339,9 @@ int main(int argc, char **argv) {
   ab=AB_Banking_new("aqbanking-cli", cfgDir, 0);
   AB_Gui_Extend(gui, ab);
 
+  AB_Banking_RuntimeConfig_SetCharValue(ab, "fintsRegistrationKey", "32F8A67FE34B57AB8D7E4FE70");
+  AB_Banking_RuntimeConfig_SetCharValue(ab, "fintsApplicationVersionString", AQBANKING_FINTS_VERSION_STRING);
+
   if (strcasecmp(cmd, "senddtazv")==0) {
     rv=sendDtazv(ab, db, argc, argv);
   }

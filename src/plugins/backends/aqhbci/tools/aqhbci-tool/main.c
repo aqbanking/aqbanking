@@ -299,8 +299,11 @@ int main(int argc, char **argv) {
   }
   GWEN_Gui_SetGui(gui);
 
-  ab=AB_Banking_new("aqhbci-tool", GWEN_DB_GetCharValue(db, "cfgfile", 0, 0),
-		    0);
+  ab=AB_Banking_new("aqhbci-tool", GWEN_DB_GetCharValue(db, "cfgfile", 0, 0), 0);
+
+  AB_Banking_RuntimeConfig_SetCharValue(ab, "fintsRegistrationKey", "32F8A67FE34B57AB8D7E4FE70");
+  AB_Banking_RuntimeConfig_SetCharValue(ab, "fintsApplicationVersionString", AQBANKING_FINTS_VERSION_STRING);
+
   AB_Gui_Extend(gui, ab);
 
   if (strcasecmp(cmd, "mkpinlist")==0) {
