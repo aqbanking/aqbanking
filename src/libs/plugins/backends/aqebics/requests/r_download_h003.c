@@ -27,6 +27,7 @@
 #include <gwenhywfar/httpsession.h>
 
 
+
 /* -------------------------------------------------------------------------------------------------------------------------
  * forward declarations
  * -------------------------------------------------------------------------------------------------------------------------
@@ -166,6 +167,12 @@ int EBC_Provider_XchgDownloadRequest_H003(AB_PROVIDER *pro,
     GWEN_Crypt_Key_free(skey);
     return rv;
   }
+
+  /* TODO: Disable this before release! */
+#if 0
+  DBG_ERROR(AQEBICS_LOGDOMAIN, "Received this data:");
+  fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(targetBuffer));
+#endif
 
   GWEN_Buffer_free(dbuffer);
   GWEN_Crypt_Key_free(skey);

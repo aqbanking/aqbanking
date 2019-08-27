@@ -96,7 +96,7 @@ int getAccounts(AB_PROVIDER *pro,
                                  GWEN_GUI_PROGRESS_KEEP_OPEN |
                                  GWEN_GUI_PROGRESS_SHOW_ABORT,
                                  I18N("Executing Request"),
-                                 I18N("Now the request is send to the credit institute."),
+                                 I18N("Now the request is sent to the credit institute."),
                                  GWEN_GUI_PROGRESS_NONE,
                                  0);
     fprintf(stderr, "Retrieving bank parameter data\n");
