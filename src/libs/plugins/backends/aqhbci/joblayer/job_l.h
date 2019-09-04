@@ -123,6 +123,8 @@ const char *AH_Job_GetName(const AH_JOB *j);
 const char *AH_Job_GetDescription(const AH_JOB *j);
 
 const char *AH_Job_GetCode(const AH_JOB *j);
+void AH_Job_SetCode(AH_JOB *j, const char *s);
+
 const char *AH_Job_GetResponseName(const AH_JOB *j);
 
 int AH_Job_GetMinSignatures(const AH_JOB *j);
@@ -146,6 +148,7 @@ AH_JOB_STATUS AH_Job_GetStatus(const AH_JOB *j);
 const char *AH_Job_StatusName(AH_JOB_STATUS st);
 
 void AH_Job_AddSigner(AH_JOB *j, const char *s);
+int AH_Job_AddSigners(AH_JOB *j, const GWEN_STRINGLIST *sl);
 
 int AH_Job_HasWarnings(const AH_JOB *j);
 int AH_Job_HasErrors(const AH_JOB *j);
@@ -176,7 +179,11 @@ int AH_Job_Commit(AH_JOB *j, int doLock);
  * case the result must be commited.
  * @return 0 if there is no such result, !=0 otherwise
  */
-int AH_Job_HasItanResult(AH_JOB *j);
+int AH_Job_HasItanResult(const AH_JOB *j);
+
+
+
+int AH_Job_HasResultWithCode(const AH_JOB *j, int code);
 
 
 /**

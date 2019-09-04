@@ -15,7 +15,11 @@ EXTRA_DIST=\
   README \
   itan.c \
   itan1.c \
-  itan2.c
+  itan2.c \
+  outbox_dialog.c \
+  outbox_hbci.c \
+  outbox_psd2.c
+
 
 noinst_LTLIBRARIES=libhbciapp.la
 

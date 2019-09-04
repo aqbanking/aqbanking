@@ -424,10 +424,10 @@
   </SEGdef>
   
   <SEGdef code="HITANS" version="6" delimiter="+" terminator="'" isbpdjob="1">
-    <GROUP type="SegHead" name="head" />
-    <ELEM name="jobspermsg" type="num" maxsize="3" />
-    <ELEM name="minsigs" type="num" maxsize="1" />
-    <ELEM name="securityClass" type="num" size="1" />
+    <GROUP name="head" type="SegHead"  />
+    <ELEM  name="jobspermsg" type="num" maxsize="3" />
+    <ELEM  name="minsigs" type="num" maxsize="1" />
+    <ELEM  name="securityClass" type="num" size="1" />
     <GROUP delimiter=":" terminator="">
       <ELEM name="singleStepAllowed" type="alpha" size="1" />
       <ELEM name="multiJobAllowed" type="alpha" size="1" />

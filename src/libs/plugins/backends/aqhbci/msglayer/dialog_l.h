@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -19,6 +19,7 @@ typedef struct AH_DIALOG AH_DIALOG;
 #define AH_DIALOG_FLAGS_SECURED       0x0008
 #define AH_DIALOG_FLAGS_ANONYMOUS     0x0010
 #define AH_DIALOG_FLAGS_HAVEKEYS      0x0020
+#define AH_DIALOG_FLAGS_SCA           0x0040 /* strong customer authentication */
 
 #include "hbci_l.h"
 #include "message_l.h"

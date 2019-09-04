@@ -801,6 +801,20 @@ const char *AH_Job_GetCode(const AH_JOB *j)
 
 
 
+void AH_Job_SetCode(AH_JOB *j, const char *s)
+{
+  assert(j);
+  assert(j->usage);
+  if (j->code)
+    free(j->code);
+  if (s)
+    j->code=strdup(s);
+  else
+    j->code=NULL;
+}
+
+
+
 const char *AH_Job_GetResponseName(const AH_JOB *j)
 {
   assert(j);
@@ -1081,6 +1095,26 @@ void AH_Job_AddSigner(AH_JOB *j, const char *s)
   }
   GWEN_Buffer_free(lbuf);
   j->flags|=AH_JOB_FLAGS_SIGN;
+}
+
+
+
+int AH_Job_AddSigners(AH_JOB *j, const GWEN_STRINGLIST *sl)
+{
+  int sCount=0;
+
+  if (sl) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(AH_Job_GetSigners(j));
+    while (se) {
+      AH_Job_AddSigner(j, GWEN_StringListEntry_Data(se));
+      sCount++;
+      se=GWEN_StringListEntry_Next(se);
+    } /* while */
+  }
+
+  return sCount;
 }
 
 
@@ -1389,7 +1423,15 @@ void AH_Job_Dump(const AH_JOB *j, FILE *f, unsigned int insert)
 
 
 
-int AH_Job_HasItanResult(AH_JOB *j)
+int AH_Job_HasItanResult(const AH_JOB *j)
+{
+
+  return AH_Job_HasResultWithCode(j, 3920);
+}
+
+
+
+int AH_Job_HasResultWithCode(const AH_JOB *j, int wantedCode)
 {
   GWEN_DB_NODE *dbCurr;
 
@@ -1412,13 +1454,11 @@ int AH_Job_HasItanResult(AH_JOB *j)
         while (dbRes) {
           if (strcasecmp(GWEN_DB_GroupName(dbRes), "result")==0) {
             int code;
-//            const char *text;
 
             code=GWEN_DB_GetIntValue(dbRes, "resultcode", 0, 0);
-//            text=GWEN_DB_GetCharValue(dbRes, "text", 0, 0);
-            if (code==3920) {
-              return 1;
-            }
+	    if (code==wantedCode) {
+	      return 1;
+	    }
           } /* if result */
           dbRes=GWEN_DB_GetNextGroup(dbRes);
         } /* while */
