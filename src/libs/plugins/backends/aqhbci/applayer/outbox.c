@@ -408,126 +408,26 @@ int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox)
 
 
 
-int AH_Outbox__CBox_SendQueue(AH_OUTBOX__CBOX *cbox,
-                              AH_DIALOG *dlg,
-                              AH_JOBQUEUE *jq)
+int AH_Outbox__CBox_SendAndRecvQueueNoTan(AH_OUTBOX__CBOX *cbox,
+                                          AH_DIALOG *dlg,
+                                          AH_JOBQUEUE *jq)
 {
-  AH_MSG *msg;
   int rv;
 
-  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding queue");
-  GWEN_Gui_ProgressLog(0,
-                       GWEN_LoggerLevel_Info,
-                       I18N("Encoding queue"));
-  msg=AH_JobQueue_ToMessage(jq, dlg);
-  if (!msg) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Could not encode queue");
-    GWEN_Gui_ProgressLog(0,
-                         GWEN_LoggerLevel_Error,
-                         I18N("Unable to encode"));
-    return GWEN_ERROR_GENERIC;
-  }
-  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Sending queue");
-  GWEN_Gui_ProgressLog(0,
-                       GWEN_LoggerLevel_Info,
-                       I18N("Sending queue"));
-
-  rv=AH_Dialog_SendMessage(dlg, msg);
-  AH_Msg_free(msg);
+  rv=AH_Outbox__CBox_SendQueue(cbox, dlg, jq);
   if (rv) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not send message");
-    GWEN_Gui_ProgressLog(0,
-                         GWEN_LoggerLevel_Error,
-                         I18N("Unable to send (network error)"));
-    return rv;
-  }
-  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Message sent");
-  return 0;
-}
-
-
-
-int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox,
-                              AH_DIALOG *dlg,
-                              AH_JOBQUEUE *jq)
-{
-  AH_MSG *msg;
-  GWEN_DB_NODE *rsp;
-  int rv;
-
-  assert(cbox);
-
-  GWEN_Gui_ProgressLog(0,
-                       GWEN_LoggerLevel_Info,
-                       I18N("Waiting for response"));
-
-  rv=AH_Dialog_RecvMessage(dlg, &msg);
-  if (rv>=200 && rv<300)
-    rv=0;
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Error receiving response (%d)", rv);
-    GWEN_Gui_ProgressLog2(0,
-                          GWEN_LoggerLevel_Error,
-                          I18N("Error receiving response (%d)"), rv);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Error sending queue");
     return rv;
   }
 
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Got a message");
-  GWEN_Gui_ProgressLog(0,
-                       GWEN_LoggerLevel_Info,
-                       I18N("Response received"));
+  AH_JobQueue_SetJobStatusOnMatch(jq, AH_JobStatusEncoded, AH_JobStatusSent);
 
-  /* try to dispatch the message */
-  rsp=GWEN_DB_Group_new("response");
-  if (AH_Msg_DecodeMsg(msg, rsp, GWEN_MSGENGINE_READ_FLAGS_DEFAULT)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not decode this message:");
-    AH_Msg_Dump(msg, 2);
-    GWEN_DB_Group_free(rsp);
-    GWEN_Gui_ProgressLog(0,
-                         GWEN_LoggerLevel_Error,
-                         I18N("Bad response (unable to decode)"));
-    return GWEN_ERROR_GENERIC;
-  }
-
-  /* transform from ISO 8859-1 to UTF8 */
-  AB_ImExporter_DbFromIso8859_1ToUtf8(rsp);
-
-  /* check for message reference */
-  if (AH_Msg_GetMsgRef(msg)==0) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unrequested message, deleting it");
-    AH_Msg_Dump(msg, 2);
-    GWEN_DB_Dump(rsp, 2);
-    GWEN_DB_Group_free(rsp);
-    AH_Msg_free(msg);
-    GWEN_Gui_ProgressLog(0,
-                         GWEN_LoggerLevel_Error,
-                         I18N("Bad response (bad message reference)"));
-    return GWEN_ERROR_GENERIC;
-  }
-
-  rv=AH_JobQueue_DispatchMessage(jq, msg, rsp);
+  rv=AH_Outbox__CBox_RecvQueue(cbox, dlg, jq);
   if (rv) {
-    if (rv==GWEN_ERROR_ABORTED) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog aborted by server");
-      GWEN_Gui_ProgressLog(0,
-                           GWEN_LoggerLevel_Error,
-                           I18N("Dialog aborted by server"));
-    }
-    else {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not dispatch response");
-      GWEN_Gui_ProgressLog(0,
-                           GWEN_LoggerLevel_Error,
-                           I18N("Bad response (unable to dispatch)"));
-    }
-    GWEN_DB_Group_free(rsp);
-    AH_Msg_free(msg);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Error receiving queue response");
     return rv;
   }
 
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Message dispatched");
-  GWEN_DB_Group_free(rsp);
-  AH_Msg_free(msg);
   return 0;
 }
 
@@ -541,9 +441,8 @@ int AH_Outbox__CBox_SendAndRecvQueue(AH_OUTBOX__CBOX *cbox,
 
   if ((AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN) &&
       AH_Dialog_GetItanProcessType(dlg)!=0) {
-    DBG_DEBUG(AQHBCI_LOGDOMAIN, "iTAN mode");
-
-    rv=AH_Outbox__CBox_Itan(cbox, dlg, jq);
+    DBG_DEBUG(AQHBCI_LOGDOMAIN, "TAN mode");
+    rv=AH_Outbox__CBox_SendAndReceiveQueueWithTan(cbox, dlg, jq);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -551,18 +450,9 @@ int AH_Outbox__CBox_SendAndRecvQueue(AH_OUTBOX__CBOX *cbox,
   }
   else {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Normal mode");
-    rv=AH_Outbox__CBox_SendQueue(cbox, dlg, jq);
+    rv=AH_Outbox__CBox_SendAndRecvQueueNoTan(cbox, dlg, jq);
     if (rv) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Error sending queue");
-      return rv;
-    }
-
-    AH_JobQueue_SetJobStatusOnMatch(jq, AH_JobStatusEncoded,
-                                    AH_JobStatusSent);
-
-    rv=AH_Outbox__CBox_RecvQueue(cbox, dlg, jq);
-    if (rv) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Error receiving queue response");
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
   }
@@ -1732,12 +1622,14 @@ AH_JOB *AH_Outbox_FindTransferJob(AH_OUTBOX *ob,
 
 
 
-#include "outbox_hbci.c"
-#include "outbox_psd2.c"
-#include "outbox_dialog.c"
+#include "outbox_send.c"
+#include "outbox_recv.c"
 #include "itan.c"
 #include "itan1.c"
 #include "itan2.c"
+#include "outbox_hbci.c"
+#include "outbox_psd2.c"
+#include "outbox_dialog.c"
 
 
 
