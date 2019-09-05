@@ -69,6 +69,7 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq,
 
 const AH_JOB_LIST *AH_JobQueue_GetJobList(const AH_JOBQUEUE *jq);
 AH_JOB_LIST *AH_JobQueue_TakeJobList(AH_JOBQUEUE *jq);
+AH_JOB *AH_JobQueue_GetFirstJob(const AH_JOBQUEUE *jq);
 
 AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg);
 

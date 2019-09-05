@@ -60,6 +60,7 @@ int AH_Outbox__CBox_SendTanJobQueue_Proc2(AH_OUTBOX__CBOX *cbox,
   qJob=AH_JobQueue_new(cbox->user);
 
   /* add original job to queue */
+  AH_Job_Attach(job);
   rv=AH_JobQueue_AddJob(qJob, job);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -106,10 +107,18 @@ int AH_Outbox__CBox_SendTanJobQueue_Proc2(AH_OUTBOX__CBOX *cbox,
     return rv;
   }
 
-  if (AH_Job_HasResultWithCode(job, 3076)) { /* SCA not needed */
+  if (AH_Job_HasResultWithCode(job, 3076) ||
+      AH_Job_HasResultWithCode(jTan1, 3076)) { /* SCA not needed */
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "No TAN needed");
   }
   else {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job has no 3076 result, getting TAN");
+    DBG_ERROR(0, "Original job:");
+    AH_Job_Dump(job, stderr, 2);
+
+    DBG_ERROR(0, "TAN job:");
+    AH_Job_Dump(jTan1, stderr, 2);
+
     rv=_sendAndReceiveTanResponseProc2(cbox, dlg, qJob, jTan1);
     if (rv) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -221,7 +230,6 @@ int _sendAndReceiveTanResponseProc2(AH_OUTBOX__CBOX *cbox,
 				    AH_JOB *jTan1)
 {
   int rv;
-  const AH_JOB_LIST *jl;
   AH_JOB *j;
   AB_USER *u;
   const char *challenge;
@@ -230,13 +238,11 @@ int _sendAndReceiveTanResponseProc2(AH_OUTBOX__CBOX *cbox,
   AH_MSG *msg2;
   AH_JOB *jTan2;
 
-  jl=AH_JobQueue_GetJobList(qJob);
-  assert(jl);
-  assert(AH_Job_List_GetCount(jl)==1);
+  assert(qJob);
+  assert(jTan1);
 
-  j=AH_Job_List_First(jl);
+  j=AH_JobQueue_GetFirstJob(qJob);
   assert(j);
-
   u=AH_Job_GetUser(j);
   assert(u);
 

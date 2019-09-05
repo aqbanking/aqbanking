@@ -251,7 +251,7 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j)
        * so simply copy the signers of this job */
       sl=AH_Job_GetSigners(j);
       if (sl) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Copying signers from job to queue");
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Copying %d signers from job to queue", GWEN_StringList_Count(sl));
         GWEN_StringList_free(jq->signers);
         jq->signers=GWEN_StringList_dup(sl);
       }
@@ -324,6 +324,18 @@ AH_JOB_LIST *AH_JobQueue_TakeJobList(AH_JOBQUEUE *jq)
   jl=jq->jobs;
   jq->jobs=AH_Job_List_new();
   return jl;
+}
+
+
+
+AH_JOB *AH_JobQueue_GetFirstJob(const AH_JOBQUEUE *jq)
+{
+  assert(jq);
+  assert(jq->usage);
+  if (jq->jobs)
+    return AH_Job_List_First(jq->jobs);
+
+  return NULL;
 }
 
 
