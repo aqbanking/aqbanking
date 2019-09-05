@@ -167,6 +167,7 @@ int _sendAndReceiveTanResponseProc2(AH_OUTBOX__CBOX *cbox,
   AH_JOBQUEUE *qJob2=NULL;
   AH_MSG *msg2;
   AH_JOB *jTan2;
+  char tanBuffer[64];
 
   assert(qJob);
   assert(jTan1);
@@ -187,6 +188,7 @@ int _sendAndReceiveTanResponseProc2(AH_OUTBOX__CBOX *cbox,
 
   /* prepare second message (the one with the TAN) */
   qJob2=AH_JobQueue_fromQueue(qJob);
+  AH_JobQueue_AddFlags(qJob2, AH_JOBQUEUE_FLAGS_NEEDTAN | AH_JOBQUEUE_FLAGS_CRYPT | AH_JOBQUEUE_FLAGS_SIGN);
 
   /* prepare HKTAN (process type 2) */
   jTan2=AH_Job_Tan_new(cbox->provider, u, 2, AH_Dialog_GetTanJobVersion(dlg));
@@ -195,12 +197,14 @@ int _sendAndReceiveTanResponseProc2(AH_OUTBOX__CBOX *cbox,
     return GWEN_ERROR_GENERIC;
   }
   AH_Job_AddFlags(jTan2, AH_JOB_FLAGS_NEEDTAN);
+  AH_Job_AddFlags(jTan2, AH_JOB_FLAGS_SIGN);
+  AH_Job_AddFlags(jTan2, AH_JOB_FLAGS_CRYPT);
   AH_Job_Tan_SetReference(jTan2, AH_Job_Tan_GetReference(jTan1));
   AH_Job_Tan_SetTanMediumId(jTan2, AH_User_GetTanMediumId(u));
 
   /* copy signers */
-  if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_SIGN)
-    AH_Job_AddSigners(jTan2, AH_Job_GetSigners(j));
+  //if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_SIGN)
+  AH_Job_AddSigners(jTan2, AH_Job_GetSigners(j));           // TODO: add signers in any way...
 
   /* add to queue */
   rv=AH_JobQueue_AddJob(qJob2, jTan2);
@@ -211,36 +215,30 @@ int _sendAndReceiveTanResponseProc2(AH_OUTBOX__CBOX *cbox,
     return rv;
   }
 
-  /* create message from queue */
-  msg2=AH_JobQueue_ToMessage(qJob2, dlg);
+  /* ask for TAN */
+  if (!(challenge || challengeHhd)) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No challenge received");
+    AH_Msg_free(msg2);
+    AH_JobQueue_free(qJob2);
+    return GWEN_ERROR_BAD_DATA;
+  }
+
+  memset(tanBuffer, 0, sizeof(tanBuffer));
+  rv=AH_Outbox__CBox_InputTanWithChallenge(cbox, dlg, challenge, challengeHhd, tanBuffer, 1, sizeof(tanBuffer)-1);
+  if (rv) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AH_Msg_free(msg2);
+    AH_JobQueue_free(qJob2);
+    return rv;
+  }
+
+  /* create message from queue with tan */
+  msg2=AH_JobQueue_ToMessageWithTan(qJob2, dlg, tanBuffer);
   if (!msg2) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Could not encode queue");
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Unable to encode"));
     AH_JobQueue_free(qJob2);
     return GWEN_ERROR_GENERIC;
-  }
-
-  /* ask for TAN */
-  if (challenge || challengeHhd) {
-    char tanBuffer[64];
-
-    memset(tanBuffer, 0, sizeof(tanBuffer));
-    rv=AH_Outbox__CBox_InputTanWithChallenge(cbox, dlg, challenge, challengeHhd, tanBuffer, 1, sizeof(tanBuffer)-1);
-    if (rv) {
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      AH_Msg_free(msg2);
-      AH_JobQueue_free(qJob2);
-      return rv;
-    }
-
-    /* set TAN in msg 2 */
-    AH_Msg_SetTan(msg2, tanBuffer);
-  }
-  else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No challenge received");
-    AH_Msg_free(msg2);
-    AH_JobQueue_free(qJob2);
-    return GWEN_ERROR_BAD_DATA;
   }
 
   /* send message */

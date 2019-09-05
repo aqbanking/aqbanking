@@ -480,37 +480,15 @@ int _extractChallengeAndText(AH_OUTBOX__CBOX *cbox,
     int rv;
 
     DBG_ERROR(AQHBCI_LOGDOMAIN, "ChallengeHHD is [%s]", sChallengeHhd);
-#if 0
+    GWEN_Buffer_AppendString(bufChallenge, "0");
     /* use hex-encoded challenge */
     rv=GWEN_Text_FromHexBuffer(sChallengeHhd, bufChallenge);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
-#else
-      {
-        int len;
-        char numbuf[32];
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Created challenge HHUD is [%s]", GWEN_Buffer_GetStart(bufChallenge));
 
-        len=strlen(sChallengeHhd)/2;
-        rv=snprintf(numbuf, sizeof(numbuf)-1, "%04d", len);
-        numbuf[sizeof(numbuf)-1]=0;
-        if (rv<5) {
-          GWEN_Buffer_AppendString(bufChallenge, numbuf);
-        }
-        else {
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "Size too high to represent with 16 digits (%d)", rv);
-          return GWEN_ERROR_BAD_DATA;
-        }
-        rv=GWEN_Text_FromHexBuffer(sChallengeHhd, bufChallenge);
-        if (rv<0) {
-          DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-          return rv;
-        }
-
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Created challenge HHUD is [%s]", GWEN_Buffer_GetStart(bufChallenge));
-      }
-#endif
     /* get text */
     if (GWEN_Buffer_GetUsedBytes(bufGuiText)>0)
       GWEN_Buffer_AppendString(bufGuiText, "\n");

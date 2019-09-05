@@ -551,7 +551,7 @@ int AH_Msg_EncodeMsg(AH_MSG *hmsg)
                           AH_Dialog_GetDialogId(hmsg->dialog));
 
   /* sign message */
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Letting all signers sign");
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Letting all signers sign");
   if (GWEN_StringList_Count(hmsg->signerIdList)) {
     GWEN_BUFFER *rawBuf;
     GWEN_STRINGLISTENTRY *se;
@@ -559,6 +559,7 @@ int AH_Msg_EncodeMsg(AH_MSG *hmsg)
     rawBuf=GWEN_Buffer_dup(hmsg->buffer);
     se=GWEN_StringList_FirstEntry(hmsg->signerIdList);
     while (se) {
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Letting signer [%s] sign", GWEN_StringListEntry_Data(se));
       rv=AH_Msg__Sign(hmsg, rawBuf, GWEN_StringListEntry_Data(se));
       if (rv) {
         GWEN_Buffer_free(rawBuf);
@@ -569,7 +570,10 @@ int AH_Msg_EncodeMsg(AH_MSG *hmsg)
     } /* while */
     GWEN_Buffer_free(rawBuf);
   } /* if signing is needed */
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Letting all signers sign: done");
+  else {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "No signers");
+  }
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Letting all signers sign: done");
 
   /* log unencrypted message */
   AH_Msg_LogMessage(hmsg, hmsg->buffer, 0, 0);

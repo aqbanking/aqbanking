@@ -300,7 +300,7 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j)
   AH_Job_List_Add(j, jq->jobs);
   AH_Job_SetStatus(j, AH_JobStatusEnqueued);
 
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Job added to the queue");
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Job added to the queue (flags: %08x)", jq->flags);
   return AH_JobQueueAddResultOk;
 }
 
@@ -342,6 +342,13 @@ AH_JOB *AH_JobQueue_GetFirstJob(const AH_JOBQUEUE *jq)
 
 AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg)
 {
+  return AH_JobQueue_ToMessageWithTan(jq, dlg, NULL);
+}
+
+
+
+AH_MSG *AH_JobQueue_ToMessageWithTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, const char *sTan)
+{
   AH_MSG *msg;
   AH_JOB *j;
   unsigned int encodedJobs;
@@ -361,20 +368,21 @@ AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg)
   AH_Msg_SetSecurityProfile(msg, jq->secProfile);
   AH_Msg_SetSecurityClass(msg, jq->secClass);
 
+  if (sTan && *sTan)
+    AH_Msg_SetTan(msg, sTan);
+
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding queue to message (flags: %08x)", jq->flags);
+
   if (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Queue needs a TAN");
   }
   else {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Queue doesn't need a TAN");
   }
-  AH_Msg_SetNeedTan(msg,
-                    (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN));
-
-  AH_Msg_SetNoSysId(msg,
-                    (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NOSYSID));
-
-  AH_Msg_SetSignSeqOne(msg,
-                       (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_SIGNSEQONE));
+  AH_Msg_SetNeedTan(msg, (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN));
+  AH_Msg_SetNoSysId(msg, (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NOSYSID));
+  AH_Msg_SetSignSeqOne(msg, (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_SIGNSEQONE));
 
   /* copy signers */
   if (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_SIGN) {
@@ -385,6 +393,7 @@ AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg)
       return 0;
     }
     while (se) {
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Addign signer [%s]", GWEN_StringListEntry_Data(se));
       AH_Msg_AddSignerId(msg, GWEN_StringListEntry_Data(se));
       se=GWEN_StringListEntry_Next(se);
     } /* while */
