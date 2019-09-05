@@ -1217,7 +1217,9 @@ unsigned int AH_JobQueue_GetCount(const AH_JOBQUEUE *jq)
 {
   assert(jq);
   assert(jq->usage);
-  return AH_Job_List_GetCount(jq->jobs);
+  if (jq->jobs)
+    return AH_Job_List_GetCount(jq->jobs);
+  return 0;
 }
 
 
