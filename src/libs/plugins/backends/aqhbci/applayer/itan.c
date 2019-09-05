@@ -538,6 +538,9 @@ int _extractChallengeAndText(AH_OUTBOX__CBOX *cbox,
       GWEN_Buffer_AppendString(bufChallenge, GWEN_Buffer_GetStart(cbuf));
       GWEN_Buffer_free(cbuf);
 
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Will use this challenge:");
+      GWEN_Buffer_Dump(bufChallenge, 2);
+
       /* extract text */
       if (GWEN_Buffer_GetUsedBytes(bufGuiText)>0)
 	GWEN_Buffer_AppendString(bufGuiText, "\n");

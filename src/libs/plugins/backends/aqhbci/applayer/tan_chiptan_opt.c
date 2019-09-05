@@ -93,6 +93,9 @@ int _getTan(AH_TAN_MECHANISM *tanMechanism,
     GWEN_BUFFER *bufToken;
     GWEN_DB_NODE *dbTanMethod;
 
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Will use this challenge:");
+    GWEN_Buffer_Dump(cbuf, 2);
+
     dbMethodParams=GWEN_DB_Group_new("methodParams");
 
     GWEN_DB_SetIntValue(dbMethodParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
