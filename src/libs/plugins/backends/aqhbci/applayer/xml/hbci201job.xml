@@ -54,14 +54,11 @@
          version="1" 
          pversion="201"
          dlg="1"
+         crypt="1" 
+         sign="1"
  >
-   <MESSAGE name="open" crypt="1" sign="1" >
-     <SEG type="Ident" name="ident" />
-     <SEG type="Prepare" name="prepare" />
-   </MESSAGE>
-   <MESSAGE name="close" sign="1" crypt="1" >
-     <SEG type="DialogEnd" />
-   </MESSAGE>
+   <SEG type="Ident" name="ident" />
+   <SEG type="Prepare" name="prepare" />
  </JOBdef>
 
 
@@ -70,20 +67,17 @@
          version="1" 
          pversion="201"
          dlg="1"
+         crypt="0" 
+         sign="0"
  >
-   <MESSAGE name="open" crypt="0" sign="0" >
-     <SEG type="Ident" name="ident" />
-     <SEG type="Prepare" name="prepare" />
+   <SEG type="Ident" name="ident" />
+   <SEG type="Prepare" name="prepare" />
 
-     <VALUES>
-       <VALUE path="ident/customerId">9999999999</VALUE>
-       <VALUE path="ident/systemId">0</VALUE>
-       <VALUE path="ident/status">0</VALUE>
-     </VALUES>
-   </MESSAGE>
-   <MESSAGE name="close" sign="0" crypt="0" >
-     <SEG type="DialogEnd" />
-   </MESSAGE>
+   <VALUES>
+     <VALUE path="ident/customerId">9999999999</VALUE>
+     <VALUE path="ident/systemId">0</VALUE>
+     <VALUE path="ident/status">0</VALUE>
+   </VALUES>
  </JOBdef>
 
 
@@ -92,29 +86,26 @@
          version="1"
          pversion="201"
          dlg="1"
+         crypt="1" 
+         sign="1"
  >
-   <MESSAGE name="open" crypt="1" sign="1" >
-     <SEG type="Ident" name="ident" />
-     <SEG type="Prepare" name="prepare" />
+   <SEG type="Ident" name="ident" />
+   <SEG type="Prepare" name="prepare" />
 
-     <VALUES>
-       <VALUE path="prepare/bpdversion">0</VALUE>
-       <VALUE path="prepare/updversion">0</VALUE>
-     </VALUES>
-   </MESSAGE>
-   <MESSAGE name="close" sign="1" crypt="1" >
-     <SEG type="DialogEnd" />
-   </MESSAGE>
+   <VALUES>
+     <VALUE path="prepare/bpdversion">0</VALUE>
+     <VALUE path="prepare/updversion">0</VALUE>
+   </VALUES>
  </JOBdef>
 
 
 
  <!-- Geschaeftsvorfall: Statusprotokoll abrufen (Version 2) -->
  <JOBdef id="JobGetStatus"
-    	   code="HKPRO"
+         code="HKPRO"
          params="HIPROS"
          version="2"
- 		     crypt="1"
+         crypt="1"
          sign="1" 
          needBPD="0"
          attachable="1"

@@ -698,8 +698,7 @@ int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
 
 
 
-int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox,
-                                       AH_JOBQUEUE *jq)
+int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox, AH_JOBQUEUE *jq)
 {
   AH_DIALOG *dlg;
   int rv;
@@ -712,8 +711,7 @@ int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox,
              "Could not begin a dialog for customer \"%s\" (%d)",
              AB_User_GetCustomerId(cbox->user), rv);
     /* finish all queues */
-    AH_Outbox__CBox_HandleQueueError(cbox, jq,
-                                     "Could not begin dialog");
+    AH_Outbox__CBox_HandleQueueError(cbox, jq, "Could not begin dialog");
     AH_Dialog_free(dlg);
     return rv;
   }
@@ -721,17 +719,53 @@ int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox,
   if (AH_User_GetCryptMode(cbox->user)==AH_CryptMode_Pintan) {
     /* select iTAN mode */
     if (!(AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NOITAN)) {
+      int selectedTanVersion;
+
       rv=AH_Outbox__CBox_SelectItanMode(cbox, dlg);
       if (rv) {
 	AH_Dialog_Disconnect(dlg);
 	AH_Dialog_free(dlg);
 	return rv;
       }
+
+      selectedTanVersion=AH_User_GetSelectedTanMethod(cbox->user)/1000;
+      if (selectedTanVersion>=6) {
+        AH_JOB *jTan;
+
+        DBG_INFO(AQHBCI_LOGDOMAIN, "User-selected TAN job version is 6 or newer (%d)", selectedTanVersion);
+  
+        /* check for PSD2: HKTAN version 6 available? if so -> use that */
+        jTan=AH_Job_Tan_new(cbox->provider, cbox->user, 4, 6);
+        if (jTan) {
+          AH_Job_free(jTan);
+          DBG_INFO(AQHBCI_LOGDOMAIN, "TAN job version 6 is available");
+          DBG_NOTICE(AQHBCI_LOGDOMAIN, "Using PSD2 code for dialog job");
+          AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_NEEDTAN);
+          AH_Dialog_AddFlags(dlg, AH_DIALOG_FLAGS_SCA);
+        }
+        else {
+          DBG_NOTICE(AQHBCI_LOGDOMAIN, "Not using PSD2 code: HKTAN version 6 not supported by the bank");
+        }
+      }
+      else {
+        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Not using PSD2 code: User selected HKTAN version lesser than 6.");
+      }
+    }
+    else {
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Not using PSD2 code: Job queue has flag NOITAN set.");
     }
   }
 
   /* handle queue */
   rv=AH_Outbox__CBox_PerformQueue(cbox, dlg, jq);
+  if (rv) {
+    AH_Dialog_Disconnect(dlg);
+    AH_Dialog_free(dlg);
+    return rv;
+  }
+
+  /* close dialog */
+  rv=AH_Outbox__CBox_CloseDialog(cbox, dlg, 0);
   if (rv) {
     AH_Dialog_Disconnect(dlg);
     AH_Dialog_free(dlg);

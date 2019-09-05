@@ -80,8 +80,7 @@ int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox,
   GWEN_Gui_ProgressLog(0,
                        GWEN_LoggerLevel_Notice,
                        I18N("Closing dialog"));
-  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Sending dialog close request (flags=%08x)",
-             jqFlags);
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Sending dialog close request (flags=%08x)", jqFlags);
   dlgFlags=AH_Dialog_GetFlags(dlg);
   jDlgClose=AH_Job_new("JobDialogEnd", cbox->provider, cbox->user, 0, 0);
   if (!jDlgClose) {
