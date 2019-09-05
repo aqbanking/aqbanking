@@ -41,37 +41,28 @@ static void _dispatchJobMsgResultsToQueue(AH_JOB *job, AH_JOBQUEUE *qJob);
  */
 
 
-
 int AH_Outbox__CBox_SendTanJobQueue_Proc2(AH_OUTBOX__CBOX *cbox,
-					  AH_DIALOG *dlg,
-					  AH_JOB *job)
+                                          AH_DIALOG *dlg,
+                                          AH_JOBQUEUE *qJob)
 {
   int rv;
-  AH_JOBQUEUE *qJob;
+  AH_JOB *job;
   AH_JOB *jTan1;
   AB_USER *u;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Sending job with TAN (process variant 2)");
 
+  assert(qJob);
+  assert(AH_JobQueue_GetCount(qJob)==1);
+  job=AH_JobQueue_GetFirstJob(qJob);
   assert(job);
   u=AH_Job_GetUser(job);
   assert(u);
-
-  qJob=AH_JobQueue_new(cbox->user);
-
-  /* add original job to queue */
-  AH_Job_Attach(job);
-  rv=AH_JobQueue_AddJob(qJob, job);
-  if (rv) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
 
   /* prepare HKTAN (process type 4) */
   jTan1=AH_Job_Tan_new(cbox->provider, u, 4, AH_Dialog_GetTanJobVersion(dlg));
   if (!jTan1) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
-    AH_JobQueue_free(qJob);
     return GWEN_ERROR_GENERIC;
   }
   AH_Job_Tan_SetTanMediumId(jTan1, AH_User_GetTanMediumId(u));
@@ -85,7 +76,6 @@ int AH_Outbox__CBox_SendTanJobQueue_Proc2(AH_OUTBOX__CBOX *cbox,
     rv=AH_Job_AddSigners(jTan1, AH_Job_GetSigners(job));
     if (rv<1) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Signatures needed but no signer given");
-      AH_JobQueue_free(qJob);
       return GWEN_ERROR_INVALID;
     }
   }
@@ -95,7 +85,6 @@ int AH_Outbox__CBox_SendTanJobQueue_Proc2(AH_OUTBOX__CBOX *cbox,
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Job_free(jTan1);
-    AH_JobQueue_free(qJob);
     return rv;
   }
 
@@ -103,7 +92,6 @@ int AH_Outbox__CBox_SendTanJobQueue_Proc2(AH_OUTBOX__CBOX *cbox,
   rv=_sendAndReceiveTanMessageProc2(cbox, dlg, qJob, job, jTan1);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AH_JobQueue_free(qJob);
     return rv;
   }
 
@@ -122,14 +110,43 @@ int AH_Outbox__CBox_SendTanJobQueue_Proc2(AH_OUTBOX__CBOX *cbox,
     rv=_sendAndReceiveTanResponseProc2(cbox, dlg, qJob, jTan1);
     if (rv) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      AH_JobQueue_free(qJob);
       return rv;
     }
   }
 
-  AH_JobQueue_free(qJob);
-
   return 0;
+}
+
+
+
+int AH_Outbox__CBox_SendTanJob_Proc2(AH_OUTBOX__CBOX *cbox,
+                                     AH_DIALOG *dlg,
+                                     AH_JOB *job)
+{
+  AH_JOBQUEUE *qJob;
+  int rv;
+
+  qJob=AH_JobQueue_new(cbox->user);
+
+  /* add original job to queue */
+  AH_Job_Attach(job);
+  rv=AH_JobQueue_AddJob(qJob, job);
+  if (rv) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AH_JobQueue_free(qJob);
+    return rv;
+  }
+
+  /* send queue */
+  rv=AH_Outbox__CBox_SendTanJobQueue_Proc2(cbox, dlg, qJob);
+  if (rv) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AH_JobQueue_free(qJob);
+    return rv;
+  }
+
+  AH_JobQueue_free(qJob);
+  return rv;
 }
 
 
@@ -529,7 +546,7 @@ int AH_Outbox__CBox_OpenDialogPsd2_Proc2(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg)
   /* need signature in any case */
   AH_Job_AddFlags(jDlgOpen, AH_JOB_FLAGS_SIGN);
 
-  rv=AH_Outbox__CBox_SendTanJobQueue_Proc2(cbox, dlg, jDlgOpen);
+  rv=AH_Outbox__CBox_SendTanJob_Proc2(cbox, dlg, jDlgOpen);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Job_free(jDlgOpen);
