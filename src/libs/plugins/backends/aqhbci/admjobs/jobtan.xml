@@ -533,7 +533,6 @@
 
   <!--  Geschaeftsvorfall: TAN einreichen (Version 6) -->
 
-  <!-- Not implemented, yet
   <JOBdef id="JobTan" 
           code="HKTAN"
           params="HITANS"
@@ -547,7 +546,6 @@
   >
     <SEG type="Tan" version="6" />
   </JOBdef>
-  -->
 
 </JOBs>
 

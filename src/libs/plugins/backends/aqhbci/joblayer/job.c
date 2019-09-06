@@ -1106,7 +1106,7 @@ int AH_Job_AddSigners(AH_JOB *j, const GWEN_STRINGLIST *sl)
   if (sl) {
     GWEN_STRINGLISTENTRY *se;
 
-    se=GWEN_StringList_FirstEntry(AH_Job_GetSigners(j));
+    se=GWEN_StringList_FirstEntry(sl);
     while (se) {
       AH_Job_AddSigner(j, GWEN_StringListEntry_Data(se));
       sCount++;
@@ -1416,6 +1416,13 @@ void AH_Job_Dump(const AH_JOB *j, FILE *f, unsigned int insert)
   for (k=0; k<insert; k++)
     fprintf(f, " ");
   fprintf(f, "Owner   : %s\n", AB_User_GetCustomerId(j->user));
+
+  if (j->jobResponses) {
+    for (k=0; k<insert; k++)
+      fprintf(f, " ");
+    fprintf(f, "Response Data:\n");
+    GWEN_DB_Dump(j->jobResponses, insert+2);
+  }
 }
 
 
@@ -1456,6 +1463,7 @@ int AH_Job_HasResultWithCode(const AH_JOB *j, int wantedCode)
             int code;
 
             code=GWEN_DB_GetIntValue(dbRes, "resultcode", 0, 0);
+            DBG_INFO(AQHBCI_LOGDOMAIN, "Checking result code %d against %d", code, wantedCode);
 	    if (code==wantedCode) {
 	      return 1;
 	    }

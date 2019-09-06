@@ -16,16 +16,52 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox,
                                AH_DIALOG *dlg,
                                uint32_t jqFlags)
 {
+  int rv;
 
   assert(cbox);
   assert(dlg);
 
   if (AH_User_GetCryptMode(cbox->user)==AH_CryptMode_Pintan) {
-    /* TODO: check for PSD2, use appropriate function */
+    int selectedTanVersion;
+
+    selectedTanVersion=AH_User_GetSelectedTanMethod(cbox->user)/1000;
+
+    DBG_INFO(AQHBCI_LOGDOMAIN, "CryptMode is PINTAN");
+    if (selectedTanVersion>=6) {
+      AH_JOB *jTan;
+
+      DBG_INFO(AQHBCI_LOGDOMAIN, "User-selected TAN job version is 6 or newer (%d)", selectedTanVersion);
+
+      /* check for PSD2: HKTAN version 6 available? if so -> use that */
+      jTan=AH_Job_Tan_new(cbox->provider, cbox->user, 4, 6);
+      if (jTan) {
+        AH_Job_free(jTan);
+        DBG_INFO(AQHBCI_LOGDOMAIN, "TAN job version is available");
+        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Using PSD2 code to init dialog");
+        rv=AH_Outbox__CBox_OpenDialogPsd2_Proc2(cbox, dlg);
+        if (rv!=0) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+          return rv;
+        }
+        return rv;
+      }
+      else {
+        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Not using PSD2 code: HKTAN version 6 not supported by the bank");
+      }
+    }
+    else {
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Not using PSD2 code: User selected HKTAN version lesser than 6.");
+    }
   }
 
-  /* hardcoded for now, will be selected in the next step */
-  return AH_Outbox__CBox_OpenDialog_Hbci(cbox, dlg, jqFlags);
+  /* fall back */
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Using standard HBCI code to init dialog");
+  rv=AH_Outbox__CBox_OpenDialog_Hbci(cbox, dlg, jqFlags);
+  if (rv!=0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+  return rv;
 }
 
 
@@ -44,8 +80,7 @@ int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox,
   GWEN_Gui_ProgressLog(0,
                        GWEN_LoggerLevel_Notice,
                        I18N("Closing dialog"));
-  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Sending dialog close request (flags=%08x)",
-             jqFlags);
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Sending dialog close request (flags=%08x)", jqFlags);
   dlgFlags=AH_Dialog_GetFlags(dlg);
   jDlgClose=AH_Job_new("JobDialogEnd", cbox->provider, cbox->user, 0, 0);
   if (!jDlgClose) {

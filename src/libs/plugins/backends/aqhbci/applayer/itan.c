@@ -225,34 +225,9 @@ int AH_Outbox__CBox_JobToMessage(AH_JOB *j, AH_MSG *msg, int doCopySigners)
 
 
 
-int AH_Outbox__CBox_Itan_SendMsg(AH_OUTBOX__CBOX *cbox,
-                                 AH_DIALOG *dlg,
-                                 AH_MSG *msg)
-{
-  int rv;
-
-  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Sending queue");
-  GWEN_Gui_ProgressLog(0,
-                       GWEN_LoggerLevel_Info,
-                       I18N("Sending queue"));
-  rv=AH_Dialog_SendMessage(dlg, msg);
-  if (rv) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not send message");
-    GWEN_Gui_ProgressLog(0,
-                         GWEN_LoggerLevel_Error,
-                         I18N("Unable to send (network error)"));
-    return rv;
-  }
-  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Message sent");
-
-  return 0;
-}
-
-
-
-int AH_Outbox__CBox_Itan(AH_OUTBOX__CBOX *cbox,
-                         AH_DIALOG *dlg,
-                         AH_JOBQUEUE *qJob)
+int AH_Outbox__CBox_SendAndReceiveQueueWithTan(AH_OUTBOX__CBOX *cbox,
+                                               AH_DIALOG *dlg,
+                                               AH_JOBQUEUE *qJob)
 {
   int rv;
   int process;
@@ -261,7 +236,7 @@ int AH_Outbox__CBox_Itan(AH_OUTBOX__CBOX *cbox,
   if (process==1)
     rv=AH_Outbox__CBox_Itan1(cbox, dlg, qJob);
   else if (process==2)
-    rv=AH_Outbox__CBox_Itan2(cbox, dlg, qJob);
+    rv=AH_Outbox__CBox_SendAndReceiveQueueWithTan2(cbox, dlg, qJob);
   else {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "iTAN method %d not supported", process);
@@ -505,12 +480,14 @@ int _extractChallengeAndText(AH_OUTBOX__CBOX *cbox,
     int rv;
 
     DBG_ERROR(AQHBCI_LOGDOMAIN, "ChallengeHHD is [%s]", sChallengeHhd);
+    GWEN_Buffer_AppendString(bufChallenge, "0");
     /* use hex-encoded challenge */
     rv=GWEN_Text_FromHexBuffer(sChallengeHhd, bufChallenge);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Created challenge HHUD is [%s]", GWEN_Buffer_GetStart(bufChallenge));
 
     /* get text */
     if (GWEN_Buffer_GetUsedBytes(bufGuiText)>0)

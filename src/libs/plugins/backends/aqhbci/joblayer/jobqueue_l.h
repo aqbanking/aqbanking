@@ -69,8 +69,10 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq,
 
 const AH_JOB_LIST *AH_JobQueue_GetJobList(const AH_JOBQUEUE *jq);
 AH_JOB_LIST *AH_JobQueue_TakeJobList(AH_JOBQUEUE *jq);
+AH_JOB *AH_JobQueue_GetFirstJob(const AH_JOBQUEUE *jq);
 
 AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg);
+AH_MSG *AH_JobQueue_ToMessageWithTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, const char *sTan);
 
 int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
                                 AH_MSG *msg,

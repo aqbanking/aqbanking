@@ -18,7 +18,9 @@ EXTRA_DIST=\
   itan2.c \
   outbox_dialog.c \
   outbox_hbci.c \
-  outbox_psd2.c
+  outbox_psd2.c \
+  outbox_recv.c \
+  outbox_send.c
 
 
 noinst_LTLIBRARIES=libhbciapp.la
