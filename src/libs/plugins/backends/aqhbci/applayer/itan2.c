@@ -167,6 +167,208 @@ int _sendAndReceiveTanResponseProc2(AH_OUTBOX__CBOX *cbox,
   AH_JOBQUEUE *qJob2=NULL;
   AH_MSG *msg2;
   AH_JOB *jTan2;
+
+  assert(qJob);
+  assert(jTan1);
+
+  j=AH_JobQueue_GetFirstJob(qJob);
+  assert(j);
+  u=AH_Job_GetUser(j);
+  assert(u);
+
+  rv=AH_Job_Process(jTan1, cbox->outbox->context);
+  if (rv) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+  challengeHhd=AH_Job_Tan_GetHhdChallenge(jTan1);
+  challenge=AH_Job_Tan_GetChallenge(jTan1);
+
+  /* prepare second message (the one with the TAN) */
+  qJob2=AH_JobQueue_fromQueue(qJob);
+  msg2=AH_Msg_new(dlg);
+  AH_Msg_SetNeedTan(msg2, 1);
+  AH_Msg_SetItanMethod(msg2, 0);
+  AH_Msg_SetItanHashMode(msg2, 0);
+
+  /* ask for TAN */
+  if (challenge || challengeHhd) {
+    char tanBuffer[64];
+
+    memset(tanBuffer, 0, sizeof(tanBuffer));
+    rv=AH_Outbox__CBox_InputTanWithChallenge(cbox,
+                                             dlg,
+                                             challenge,
+                                             challengeHhd,
+                                             tanBuffer,
+                                             1,
+                                             sizeof(tanBuffer)-1);
+    if (rv) {
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      AH_Msg_free(msg2);
+      return rv;
+    }
+
+    /* set TAN in msg 2 */
+    AH_Msg_SetTan(msg2, tanBuffer);
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No challenge received");
+    AH_Msg_free(msg2);
+    return GWEN_ERROR_BAD_DATA;
+  }
+
+
+  /* prepare HKTAN (process type 2) */
+  jTan2=AH_Job_Tan_new(cbox->provider, u, 2, AH_Dialog_GetTanJobVersion(dlg));
+  if (!jTan2) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
+    AH_Job_free(jTan2);
+    AH_Msg_free(msg2);
+    return GWEN_ERROR_GENERIC;
+  }
+  AH_Job_Tan_SetReference(jTan2, AH_Job_Tan_GetReference(jTan1));
+  AH_Job_Tan_SetTanMediumId(jTan2, AH_User_GetTanMediumId(u));
+  AH_Job_AddFlags(jTan2, AH_JOB_FLAGS_NEEDTAN);
+
+  /* With tan process "4" only with strong verification
+   if (AH_Dialog_GetFlags(dlg) & AH_DIALOG_FLAGS_SCA)
+   AH_Job_Tan_SetSegCode(jTan2, AH_Job_GetCode(j));
+  */
+
+  /* copy signers */
+  if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_SIGN) {
+    if (AH_Job_AddSigners(jTan2, AH_Job_GetSigners(j))<1) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Signatures needed but no signer given");
+      AH_Job_free(jTan2);
+      AH_Msg_free(msg2);
+      AH_JobQueue_free(qJob2);
+      return GWEN_ERROR_INVALID;
+    }
+  }
+
+  rv=AH_JobQueue_AddJob(qJob2, jTan2);
+  if (rv) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AH_Job_free(jTan2);
+    AH_Msg_free(msg2);
+    AH_JobQueue_free(qJob2);
+    return rv;
+  }
+
+  rv=AH_Outbox__CBox_JobToMessage(jTan2, msg2, 1);
+  if (rv) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AH_Msg_free(msg2);
+    AH_JobQueue_free(qJob2);
+    return rv;
+  }
+
+  /* encode HKTAN message */
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding queue");
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("Encoding queue"));
+  AH_Msg_SetNeedTan(msg2, 1);
+  rv=AH_Msg_EncodeMsg(msg2);
+  if (rv) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AH_Msg_free(msg2);
+    AH_JobQueue_free(qJob2);
+    return rv;
+  }
+
+  /* store used TAN in original job (if any) */
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Storing TAN in job [%s]", AH_Job_GetName(j));
+  AH_Job_SetUsedTan(j, AH_Msg_GetTan(msg2));
+
+  if (AH_Job_GetStatus(jTan2)==AH_JobStatusEncoded) {
+    const char *s;
+
+    AH_Job_SetMsgNum(jTan2, AH_Msg_GetMsgNum(msg2));
+    AH_Job_SetDialogId(jTan2, AH_Dialog_GetDialogId(dlg));
+    /* store expected signer and crypter (if any) */
+    s=AH_Msg_GetExpectedSigner(msg2);
+    if (s)
+      AH_Job_SetExpectedSigner(jTan2, s);
+    s=AH_Msg_GetExpectedCrypter(msg2);
+    if (s)
+      AH_Job_SetExpectedCrypter(jTan2, s);
+
+    /* store TAN in TAN job */
+    AH_Job_SetUsedTan(jTan2, AH_Msg_GetTan(msg2));
+  }
+  else {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "jTAN2 not encoded? (%d)", AH_Job_GetStatus(jTan2));
+  }
+
+  /* send message */
+  rv=AH_Outbox__CBox_SendMessage(cbox, dlg, msg2);
+  if (rv) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AH_Msg_free(msg2);
+    AH_JobQueue_free(qJob2);
+    return rv;
+  }
+
+  /* receive response */
+  rv=AH_Outbox__CBox_RecvQueue(cbox, dlg, qJob);
+  if (rv) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AH_Msg_free(msg2);
+    AH_JobQueue_free(qJob2);
+    return rv;
+  }
+  else {
+    rv=AH_Job_Process(jTan2, cbox->outbox->context);
+    if (rv) {
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      AH_Msg_free(msg2);
+      AH_JobQueue_free(qJob2);
+      return rv;
+    }
+
+    /* dispatch results from jTan2 to all members of the queue */
+    _dispatchJobSegResultsToQueue(jTan2, qJob);
+    _dispatchJobMsgResultsToQueue(jTan2, qJob);
+  }
+
+
+  /* store used TAN in original job (if any) */
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Storing TAN in job [%s]", AH_Job_GetName(j));
+  AH_Job_SetUsedTan(j, AH_Msg_GetTan(msg2));
+
+  AH_Msg_free(msg2);
+  AH_JobQueue_free(qJob2);
+
+  return 0;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#if 0
+  int rv;
+  AH_JOB *j;
+  AB_USER *u;
+  const char *challenge;
+  const char *challengeHhd;
+  AH_JOBQUEUE *qJob2=NULL;
+  AH_MSG *msg2;
+  AH_JOB *jTan2;
   char tanBuffer[64];
 
   assert(qJob);
@@ -281,6 +483,7 @@ int _sendAndReceiveTanResponseProc2(AH_OUTBOX__CBOX *cbox,
   AH_JobQueue_free(qJob2);
 
   return 0;
+#endif
 }
 
 
