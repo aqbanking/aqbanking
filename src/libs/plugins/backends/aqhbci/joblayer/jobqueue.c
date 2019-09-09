@@ -1191,6 +1191,14 @@ void AH_JobQueue_Dump(AH_JOBQUEUE *jq, FILE *f, unsigned int insert)
     fprintf(f, "SIGN ");
   if (jq->flags & AH_JOBQUEUE_FLAGS_ISDIALOG)
     fprintf(f, "ISDIALOG ");
+  if (jq->flags & AH_JOBQUEUE_FLAGS_NEEDTAN)
+    fprintf(f, "NEEDTAN ");
+  if (jq->flags & AH_JOBQUEUE_FLAGS_NOSYSID)
+    fprintf(f, "NOSYSID ");
+  if (jq->flags & AH_JOBQUEUE_FLAGS_NOITAN)
+    fprintf(f, "NOITAN ");
+  if (jq->flags & AH_JOBQUEUE_FLAGS_SIGNSEQONE)
+    fprintf(f, "SIGNSEQONE ");
   if (jq->flags & AH_JOBQUEUE_FLAGS_OUTBOX)
     fprintf(f, "OUTBOX ");
   if (jq->flags & AH_JOBQUEUE_FLAGS_HASWARNINGS)

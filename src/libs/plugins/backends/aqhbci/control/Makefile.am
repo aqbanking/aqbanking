@@ -50,6 +50,7 @@ libhbcicontrol_la_SOURCES=\
  setmaxtransfers.c \
  setsepaprofile.c \
  settanmediumid.c \
+ getbankinfo.c \
  test.c
 
 

@@ -67,6 +67,22 @@ const char *AH_Provider_GetProductVersion(const AB_PROVIDER *pro);
  * progress dialog by calling @ref AB_Banking_ProgressStart etc).
  */
 /*@{*/
+
+
+/**
+ * Anonymously retrieve BPD ("Bankparameterdaten") for the given user.
+ * @param pro pointer to the HBCI provider
+ * @param u user for which the BPD is to be received
+ * @param withTanSeg include "HKTAN:6"-Segment (needed for Strong Customer Authentication)
+ * @param nounmount if !=0 then the user's medium is not unmounted in the end.
+ *  This is used by setup wizards to avoid having to enter a pin too often.
+ */
+int AH_Provider_GetBankInfo(AB_PROVIDER *pro, AB_USER *u,
+                            AB_IMEXPORTER_CONTEXT *ctx,
+                            int withTanSeg,
+			    int withProgress, int nounmount, int doLock);
+
+
 /**
  * Retrieve a list of accounts. Not all banks support this. If the bank does
  * then the retrieved accounts are automatically added to AqBanking.

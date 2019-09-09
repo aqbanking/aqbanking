@@ -246,6 +246,9 @@ int AH_Control(AB_PROVIDER *pro, int argc, char **argv)
   else if (strcasecmp(cmd, "setsepaprofile")==0) {
     rv=AH_Control_SetSepaProfile(pro, db, argc, argv);
   }
+  else if (strcasecmp(cmd, "getbankinfo")==0) {
+    rv=AH_Control_GetBankInfo(pro, db, argc, argv);
+  }
   else if (strcasecmp(cmd, "versions")==0) {
     showVersions();
     rv=0;

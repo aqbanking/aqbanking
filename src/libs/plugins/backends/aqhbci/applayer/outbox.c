@@ -702,6 +702,9 @@ int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox, AH_JOBQUEUE *jq)
 {
   AH_DIALOG *dlg;
   int rv;
+  uint32_t jqFlags;
+
+  jqFlags=AH_JobQueue_GetFlags(jq);
 
   /* open connection */
   dlg=AH_Dialog_new(cbox->user, cbox->provider);
@@ -765,6 +768,12 @@ int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox, AH_JOBQUEUE *jq)
   }
 
   /* close dialog */
+  if (AH_User_GetCryptMode(cbox->user)==AH_CryptMode_Pintan &&
+      (jqFlags & AH_JOBQUEUE_FLAGS_NOITAN)) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Changing dialog to anonymous mode");
+    AH_Dialog_AddFlags(dlg, AH_DIALOG_FLAGS_ANONYMOUS);
+  }
+
   rv=AH_Outbox__CBox_CloseDialog(cbox, dlg, 0);
   if (rv) {
     AH_Dialog_Disconnect(dlg);

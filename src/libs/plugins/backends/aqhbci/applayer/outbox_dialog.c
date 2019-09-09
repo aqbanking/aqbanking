@@ -96,7 +96,12 @@ int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox,
                        "dialogId",
                        AH_Dialog_GetDialogId(dlg));
 
-  if (!(dlgFlags & AH_DIALOG_FLAGS_ANONYMOUS)) {
+  if (dlgFlags & AH_DIALOG_FLAGS_ANONYMOUS) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Will not encrypt and sign dialog close request");
+    AH_Job_SubFlags(jDlgClose, AH_JOB_FLAGS_CRYPT | AH_JOB_FLAGS_SIGN | AH_JOB_FLAGS_NEEDTAN);
+    AH_Job_AddFlags(jDlgClose, AH_JOB_FLAGS_NOITAN);
+  }
+  else {
     /* sign and encrypt job */
     DBG_INFO(AQHBCI_LOGDOMAIN, "Will encrypt and sign dialog close request");
     AH_Job_AddSigner(jDlgClose, AB_User_GetUserId(cbox->user));

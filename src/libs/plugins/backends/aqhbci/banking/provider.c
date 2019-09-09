@@ -49,6 +49,7 @@
 #include "jobsendkeys_l.h"
 #include "jobgetsepainfo_l.h"
 #include "jobgetsysid_l.h"
+#include "jobgetbankinfo_l.h"
 
 /*
 #include "dlg_newuser_l.h"

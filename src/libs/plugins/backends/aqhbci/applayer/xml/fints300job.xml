@@ -34,6 +34,7 @@
          sign="0" 
          internal="1"
          nosysid="1"
+         noitan="1"
  >
    <SEG type="Ident" name="ident" />
    <SEG type="Prepare" name="prepare" version="3" />
@@ -59,25 +60,6 @@
  >
    <SEG type="Ident" name="ident" />
    <SEG type="Prepare" name="prepare" version="3" />
- </JOBdef>
-
-
-
- <JOBdef id="JobGetBankInfo" 
-         version="3" 
-         pversion="300"
-         dlg="1"
-         crypt="0" 
-         sign="0"
- >
-   <SEG type="Ident" name="ident" />
-   <SEG type="Prepare" name="prepare" version="3" />
-
-   <VALUES>
-     <VALUE path="ident/customerId">9999999999</VALUE>
-     <VALUE path="ident/systemId">0</VALUE>
-     <VALUE path="ident/status">0</VALUE>
-   </VALUES>
  </JOBdef>
 
 

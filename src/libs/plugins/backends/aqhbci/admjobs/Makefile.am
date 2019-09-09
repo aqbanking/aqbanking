@@ -16,14 +16,17 @@ noinst_HEADERS=\
   jobsendkeys_l.h jobsendkeys_p.h \
   jobtan_l.h jobtan_p.h \
   jobgetsepainfo_l.h jobgetsepainfo_p.h \
-  jobgetsysid_l.h jobgetsysid_p.h
+  jobgetsysid_l.h jobgetsysid_p.h \
+  jobgetbankinfo_l.h jobgetbankinfo_p.h
 
 libhbciadmjobs_la_SOURCES=\
   jobgetkeys.c \
   jobsendkeys.c \
   jobtan.c \
   jobgetsepainfo.c \
-  jobgetsysid.c
+  jobgetsysid.c \
+  jobgetbankinfo.c
+
 
 
 sources:
@@ -39,7 +42,8 @@ xmlfiles=\
   $(srcdir)/jobsendkeys.xml \
   $(srcdir)/jobtan.xml \
   $(srcdir)/jobgetsepainfo.xml \
-  $(srcdir)/jobgetsysid.xml
+  $(srcdir)/jobgetsysid.xml \
+  $(srcdir)/jobgetbankinfo.xml
 
 
 EXTRA_DIST=$(xmlfiles)

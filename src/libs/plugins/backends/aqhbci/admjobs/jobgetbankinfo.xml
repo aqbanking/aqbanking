@@ -1,0 +1,73 @@
+ <!--
+/***************************************************************************
+    begin       : Mon Sep 09 2019
+    copyright   : (C) 2019 by Martin Preuss
+    email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+  -->
+
+
+<SEGs>
+
+
+
+</SEGs>
+
+
+
+<JOBs>
+
+  <JOBdef id="JobGetBankInfo" 
+          version="3" 
+          pversion="300"
+          dlg="1"
+          crypt="0" 
+          sign="0"
+          noitan="1"
+          nosysid="1"
+  >
+    <SEG type="Ident" name="ident" />
+    <SEG type="Prepare" name="prepare" version="3" />
+ 
+    <VALUES>
+      <VALUE path="ident/customerId">9999999999</VALUE>
+      <VALUE path="ident/systemId">0</VALUE>
+      <VALUE path="ident/status">0</VALUE>
+      <VALUE path="prepare/bpdversion">0</VALUE>
+      <VALUE path="prepare/updversion">0</VALUE>
+    </VALUES>
+  </JOBdef>
+
+
+
+  <JOBdef id="JobGetBankInfoWithTan" 
+          version="3" 
+          pversion="300"
+          dlg="1"
+          crypt="0" 
+          sign="0"
+          noitan="1"
+          nosysid="1"
+  >
+    <SEG type="Ident"   name="ident" />
+    <SEG type="Prepare" name="prepare" version="3" />
+    <SEG type="Tan"     name="tan"     version="6" />
+ 
+    <VALUES>
+      <VALUE path="ident/customerId">9999999999</VALUE>
+      <VALUE path="ident/systemId">0</VALUE>
+      <VALUE path="ident/status">0</VALUE>
+      <VALUE path="prepare/bpdversion">0</VALUE>
+      <VALUE path="prepare/updversion">0</VALUE>
+      <VALUE path="tan/process">2</VALUE>
+      <!-- <VALUE path="tan/segmentId">HKIDN</VALUE> -->
+      <VALUE path="tan/moreTans">N</VALUE>
+    </VALUES>
+  </JOBdef>
+
+
+</JOBs>
+
