@@ -37,10 +37,6 @@
         <VALUE path="ident/systemId">0</VALUE>
       </VALUES>
     </MESSAGE>
- 
-    <MESSAGE name="close" ignerrors="1" >
-      <SEG type="DialogEnd" />
-    </MESSAGE>
   </JOBdef>
 
 
@@ -61,10 +57,6 @@
       <VALUES>
         <VALUE path="ident/systemId">0</VALUE>
       </VALUES>
-    </MESSAGE>
- 
-    <MESSAGE name="close" ignerrors="1" >
-      <SEG type="DialogEnd" />
     </MESSAGE>
   </JOBdef>
  
@@ -89,10 +81,6 @@
       </VALUES>
     </MESSAGE>
  
-    <MESSAGE name="close" ignerrors="1" >
-      <SEG type="DialogEnd" />
-    </MESSAGE>
-    
   </JOBdef>
  
  
@@ -116,10 +104,6 @@
       </VALUES>
     </MESSAGE>
  
-    <MESSAGE name="close" ignerrors="1" nosysid="0" >
-      <SEG type="DialogEnd" />
-    </MESSAGE>
-    
   </JOBdef>
 
 
