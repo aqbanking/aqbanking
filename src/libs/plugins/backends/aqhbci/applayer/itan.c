@@ -480,7 +480,7 @@ int _extractChallengeAndText(AH_OUTBOX__CBOX *cbox,
     int rv;
 
     DBG_ERROR(AQHBCI_LOGDOMAIN, "ChallengeHHD is [%s]", sChallengeHhd);
-    GWEN_Buffer_AppendString(bufChallenge, "0");
+
     /* use hex-encoded challenge */
     rv=GWEN_Text_FromHexBuffer(sChallengeHhd, bufChallenge);
     if (rv<0) {

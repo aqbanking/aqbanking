@@ -33,6 +33,7 @@ static int _calcLuhnSum(const char *code, int len);
 static int _calcXorSum(const char *code, int len);
 static int __translate(const char *code, GWEN_BUFFER *cbuf);
 static int _translate(const char *code, GWEN_BUFFER *cbuf);
+static int __translateWithLen(const char *code, GWEN_BUFFER *cbuf, int sizeLen);
 static int _getTan(AH_TAN_MECHANISM *tanMechanism,
                    AB_USER *u,
                    const char *title,
@@ -158,11 +159,38 @@ int _translate(const char *code, GWEN_BUFFER *cbuf)
 
 int __translate(const char *code, GWEN_BUFFER *cbuf)
 {
-  /*unsigned int totalLength;*/ /*TODO: handle total length */
+  GWEN_BUFFER *tmpBuf;
+  int rv;
+
+  tmpBuf=GWEN_Buffer_new(0, 256, 0, 1);
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Trying 3 bytes length");
+  rv=__translateWithLen(code, tmpBuf, 3);
+  if (rv<0) {
+    GWEN_Buffer_Reset(tmpBuf);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Trying 2 bytes length");
+    rv=__translateWithLen(code, tmpBuf, 2);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Invalid challenge data (%d)", rv);
+      GWEN_Buffer_free(tmpBuf);
+      return rv;
+    }
+  }
+
+  GWEN_Buffer_AppendBuffer(cbuf, tmpBuf);
+  GWEN_Buffer_free(tmpBuf);
+  return rv;
+}
+
+
+
+int __translateWithLen(const char *code, GWEN_BUFFER *cbuf, int sizeLen)
+{
+  unsigned int totalLength; /*handle total length */
   unsigned int inLenAndFlags;
   unsigned int inLen;
   unsigned int outLenAndFlags;
   unsigned int outLen;
+  unsigned int codeLen;
   /* preset bit masks for HHD 1.4 */
   unsigned int maskLen = 0x3f;
   unsigned int maskAscFlag = 0x40;
@@ -176,18 +204,24 @@ int __translate(const char *code, GWEN_BUFFER *cbuf)
   unsigned int checkSum;
 
   assert(code);
+  codeLen=strlen(code);
 
   xbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
   /* read length */
-  rv=_readBytesDec(code, 3);
+  rv=_readBytesDec(code, sizeLen);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(xbuf);
     return rv;
   }
-  /*totalLength=(unsigned int) rv;*/
-  code+=3;
+  totalLength=(unsigned int) rv;
+  if ((totalLength+sizeLen)>codeLen) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Total length exceeds length of given code (%d+%d > %d)", totalLength, sizeLen, codeLen);
+    GWEN_Buffer_free(xbuf);
+    return GWEN_ERROR_BAD_DATA;
+  }
+  code+=sizeLen;
 
   /* translate startCode (length is in hex) */
   rv=_readBytesHex(code, 2);
@@ -374,8 +408,10 @@ int _readBytesDec(const char *p, int len)
     uint8_t c;
 
     c=*p;
-    if (c==0)
-      break;
+    if (c==0) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Premature end of string");
+      return GWEN_ERROR_PARTIAL;
+    }
     if (c<'0' || c>'9') {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad char in data (no decimal digit), pos=%d, byte=%02x", i, c);
       GWEN_Text_LogString(pSave, len, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error);
@@ -401,8 +437,10 @@ int _readBytesHex(const char *p, int len)
     uint8_t c;
 
     c=*p;
-    if (c==0)
-      break;
+    if (c==0) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Premature end of string");
+      return GWEN_ERROR_PARTIAL;
+    }
     c=toupper(c);
     if ((c>='0' && c<='9') || (c>='A' && c<='F')) {
       c-='0';
