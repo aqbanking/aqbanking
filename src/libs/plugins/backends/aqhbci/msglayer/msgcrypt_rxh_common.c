@@ -672,6 +672,8 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
     AH_OPMODE opMode;
     uint8_t  *digestPtr;
     unsigned int digestSize;
+    const char *tokenType = AH_User_GetTokenType(su);
+    uint8_t doSHA256inSW = 0;
 
     if (secProfile > 2) {
       hashAlg = rxh_parameter->hashAlgD;
@@ -682,7 +684,9 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
       opMode= rxh_parameter->opmodSignS;
     }
 
-    //uint8_t hash1[32];
+    /* https://www.aquamaniac.de/rdm/issues/41 */
+    if(tokenType && !strcasecmp(tokenType, "ohbci"))
+      doSHA256inSW = 1;
 
     /* hash sighead + data */
     switch (hashAlg) {
@@ -715,10 +719,29 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
         GWEN_Buffer_free(hbuf);
         return rv;
       }
-      else {
-        digestPtr=GWEN_MDigest_GetDigestPtr(md);
-        digestSize=GWEN_MDigest_GetDigestSize(md);
+      if((hashAlg == AH_HashAlg_Sha256Sha256) && doSHA256inSW)
+      {
+        DBG_NOTICE(AQHBCI_LOGDOMAIN, "%s(): doSHA256inSW (2nd).", __FUNCTION__);
+        rv = GWEN_MDigest_Begin(md);
+        if(rv == 0)
+        {
+          uint8_t h[32];
+          memcpy(h, GWEN_MDigest_GetDigestPtr(md), 32);
+          rv = GWEN_MDigest_Update(md, h, 32);
+          if(rv == 0)
+            rv = GWEN_MDigest_End(md);
+        }
+        if(rv < 0)
+        {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Hash error round 2 (%d)", rv);
+          GWEN_MDigest_free(md);
+          GWEN_Buffer_free(sigbuf);
+          GWEN_Buffer_free(hbuf);
+          return rv;
+        }
       }
+      digestPtr=GWEN_MDigest_GetDigestPtr(md);
+      digestSize=GWEN_MDigest_GetDigestSize(md);
     }
     else {
       digestPtr=(uint8_t *)GWEN_Buffer_GetStart(hbuf);
