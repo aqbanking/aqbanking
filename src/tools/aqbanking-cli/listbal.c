@@ -58,7 +58,7 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
                                   "$(iban)");
 
   /* determine balance type */
-  s=GWEN_DB_GetCharValue(db, "balanceType", 0, "noted");
+  s=GWEN_DB_GetCharValue(db, "balanceType", 0, "booked");
   if (s && *s) {
     AB_BALANCE_TYPE tempBalanceType;
 
