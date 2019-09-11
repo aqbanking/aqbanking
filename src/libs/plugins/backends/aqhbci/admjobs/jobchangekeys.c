@@ -82,8 +82,9 @@ struct AH_JOB_CHANGEKEYS {
 
 const char *strUpper(char *s)
 {
+  size_t i;
   size_t l = strlen(s);
-  for (size_t i = 0; i < l; i++) {
+  for (i = 0; i < l; i++) {
     if ((s[i] >= 'a') && (s[i] <= 'z'))
       s[i] -= 0x20;
 
@@ -96,6 +97,8 @@ int8_t getKeyInfo(AH_HBCI *h, const char *tt, const char *tn, uint32_t cid, GWEN
                   const GWEN_CRYPT_TOKEN_KEYINFO **kiV, const GWEN_CRYPT_TOKEN_KEYINFO **kiS, const GWEN_CRYPT_TOKEN_KEYINFO **kiA)
 {
   int8_t res = 0;
+  uint8_t i;
+
   uint32_t f = GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS | GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
                GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION | GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER;
   if (!*ct && (((AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h), tt, tn, ct) < 0)) || !*ct)) {
@@ -111,7 +114,7 @@ int8_t getKeyInfo(AH_HBCI *h, const char *tt, const char *tn, uint32_t cid, GWEN
     DBG_ERROR(AQHBCI_LOGDOMAIN, "GWEN_Crypt_Token_GetContext() failed (cid %ld).", (long)cid);
     return -1;
   }
-  for (uint8_t i = 0; i < 3; i++) {
+  for (i = 0; i < 3; i++) {
     uint32_t kid = 0;
     const GWEN_CRYPT_TOKEN_KEYINFO **ki = NULL;
     char kl = '?';
@@ -144,8 +147,9 @@ int8_t getKeyInfo(AH_HBCI *h, const char *tt, const char *tn, uint32_t cid, GWEN
 
 int8_t tokenHasKeys(GWEN_CRYPT_TOKEN *ct, const GWEN_CRYPT_TOKEN_CONTEXT *ctx)
 {
+  uint8_t i;
   int8_t res = 2;
-  for (uint8_t i = 0; (res > 0) && (i < 2); i++) {
+  for (i = 0; (res > 0) && (i < 2); i++) {
     const GWEN_CRYPT_TOKEN_KEYINFO *ki = NULL;
     int kn = 0, kv = 0;
     uint32_t flags = 0;
@@ -603,8 +607,10 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
 
   if (res == 0) {
     char *cm = strdup(AH_CryptMode_toString(cryptModeNew));
+    uint8_t i;
+
     strUpper(cm);
-    for (uint8_t i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++) {
       const char *kt = "?";
       GWEN_DB_NODE *db = NULL;
 
@@ -946,6 +952,7 @@ int AH_Job_ChangeKeys_NextMsg(AH_JOB *j)
         else if (!GWEN_Crypt_Token_IsOpen(jd->ct) && (GWEN_Crypt_Token_Open(jd->ct, 0, 0) < 0))
           rv = onError("GWEN_Crypt_Token_Open() failed.", -1);
         else {
+          uint8_t i;
           GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("Serverkeys imported."));
           DBG_NOTICE(AQHBCI_LOGDOMAIN, "%s(): serverkeys should be imported now.", __FUNCTION__);
           // some cryptmodes need length of serverkeys
@@ -955,7 +962,7 @@ int AH_Job_ChangeKeys_NextMsg(AH_JOB *j)
           //DBG_NOTICE(AQHBCI_LOGDOMAIN, "%s(): ctx %p.", __FUNCTION__, jd->ctx);
           jd->ctx = GWEN_Crypt_Token_GetContext(jd->ct, jd->tokenCtxId, 0);
           //DBG_NOTICE(AQHBCI_LOGDOMAIN, "%s(): -> ctx %p.", __FUNCTION__, jd->ctx);
-          for (uint8_t i = 0; (rv == 0) && (i < 2); i++) {
+          for (i = 0; (rv == 0) && (i < 2); i++) {
             const GWEN_CRYPT_TOKEN_KEYINFO *tmp = NULL;
             uint8_t *m = NULL, *e = NULL;
             uint32_t ml = 0, el = 0;
@@ -1040,10 +1047,12 @@ int AH_Job_ChangeKeys_NextMsg(AH_JOB *j)
             GWEN_Crypt_Key_free(bkCurrS);
           }
           if (rv == 0) {
+            uint8_t i;
+
             // update segment-data
             GWEN_DB_NODE *args = AH_Job_GetArguments(j);
             assert(args);
-            for (uint8_t i = 0; (rv == 0) && (i < 3); i++) {
+            for (i = 0; (rv == 0) && (i < 3); i++) {
               GWEN_DB_NODE *db = NULL;
               const GWEN_CRYPT_TOKEN_KEYINFO *ki = NULL;
               const uint8_t *kd = NULL;
