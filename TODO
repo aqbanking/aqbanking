@@ -1,11 +1,8 @@
 Next:
 =====
 - AQHBCI:
+  - getBankInfo: ignore dummy account (if any)
   - getAccounts: Use PSD2, if available
-  - PSD2:
-    - AH_Outbox__CBox_Itan_SendMsg/AH_Outbox__CBox_RecvQueue: dispatch correctly, dont use
-      AH_Outbox__CBox_RecvQueue because we need to decide after getting the response whether we need
-      to dispatch the message to the original message or need to wait for the 2nd response to dispatch that instead...
 
   - simplify functions:
     - AH_JobQueue_DispatchMessage()

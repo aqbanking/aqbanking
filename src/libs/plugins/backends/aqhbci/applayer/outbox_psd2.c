@@ -33,6 +33,12 @@ int AH_Outbox__CBox_OpenDialogPsd2_Proc2(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg)
       return rv;
     }
   }
+  else {
+    AH_Dialog_SetItanMethod(dlg, 999);
+    AH_Dialog_SetItanProcessType(dlg, 1);
+    AH_Dialog_SetTanJobVersion(dlg, 0);
+  }
+
 
   /* dialog open job */
   jDlgOpen=AH_Job_new("JobDialogInit", cbox->provider, cbox->user, 0, 0);

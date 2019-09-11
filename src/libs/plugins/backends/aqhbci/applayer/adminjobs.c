@@ -434,6 +434,7 @@ AH_JOB *AH_Job_GetItanModes_new(AB_PROVIDER *pro, AB_USER *u)
   jd->modeCount=0;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "JobGetItanModes created");
+
   return j;
 }
 

@@ -41,14 +41,15 @@ AH_JOB *AH_Job_GetSysId_new(AB_PROVIDER *pro, AB_USER *u)
   /* set arguments */
   args=AH_Job_GetArguments(j);
   assert(args);
-  GWEN_DB_SetIntValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS, "open/ident/country", 280);
-  GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS, "open/ident/bankCode", AB_User_GetBankCode(u));
-  GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS, "open/ident/customerId", AB_User_GetCustomerId(u));
+  GWEN_DB_SetIntValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS, "ident/country", 280);
+  GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS, "ident/bankCode", AB_User_GetBankCode(u));
+  GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS, "ident/customerId", AB_User_GetCustomerId(u));
 
-  GWEN_DB_SetIntValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS, "open/sync/mode", 0);
-  GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS, "open/sync/systemId", "0");
+  GWEN_DB_SetIntValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS, "sync/mode", 0);
+  GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS, "sync/systemId", "0");
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "JobGetSysId created");
+  AH_Job_Dump(j, stderr, 2);
   return j;
 }
 

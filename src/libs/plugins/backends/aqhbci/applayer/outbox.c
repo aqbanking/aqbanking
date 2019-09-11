@@ -719,11 +719,21 @@ int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox, AH_JOBQUEUE *jq)
     return rv;
   }
 
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "Handling this job queue:");
+  AH_JobQueue_Dump(jq, stderr, 2);
+
   if (AH_User_GetCryptMode(cbox->user)==AH_CryptMode_Pintan) {
-    /* select iTAN mode */
-    if (!(AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NOITAN)) {
+    if (jqFlags & AH_JOBQUEUE_FLAGS_NOITAN) {
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Not using PSD2 code: Job queue has flag NOITAN set (using single step).");
+      AH_Dialog_SetItanMethod(dlg, 999);
+      AH_Dialog_SetItanProcessType(dlg, 1);
+      AH_Dialog_SetTanJobVersion(dlg, 0);
+    }
+    else {
       int selectedTanVersion;
 
+      /* select iTAN mode */
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Job queue doesn't have flag NOITAN");
       rv=AH_Outbox__CBox_SelectItanMode(cbox, dlg);
       if (rv) {
         AH_Dialog_Disconnect(dlg);
@@ -753,9 +763,6 @@ int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox, AH_JOBQUEUE *jq)
       else {
         DBG_NOTICE(AQHBCI_LOGDOMAIN, "Not using PSD2 code: User selected HKTAN version lesser than 6.");
       }
-    }
-    else {
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Not using PSD2 code: Job queue has flag NOITAN set.");
     }
   }
 

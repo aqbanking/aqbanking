@@ -1417,6 +1417,54 @@ void AH_Job_Dump(const AH_JOB *j, FILE *f, unsigned int insert)
     fprintf(f, " ");
   fprintf(f, "Owner   : %s\n", AB_User_GetCustomerId(j->user));
 
+  for (k=0; k<insert; k++)
+    fprintf(f, " ");
+  fprintf(f, "Flags: %08x ( ", j->flags);
+  if (j->flags & AH_JOB_FLAGS_SIGNSEQONE)
+    fprintf(f, "SIGNSEQONE ");
+  if (j->flags & AH_JOB_FLAGS_IGNORE_ERROR)
+    fprintf(f, "IGNORE_ERROR ");
+  if (j->flags & AH_JOB_FLAGS_NOITAN)
+    fprintf(f, "NOITAN ");
+  if (j->flags & AH_JOB_FLAGS_TANUSED)
+    fprintf(f, "TANUSED ");
+  if (j->flags & AH_JOB_FLAGS_NOSYSID)
+    fprintf(f, "NOSYSID ");
+  if (j->flags & AH_JOB_FLAGS_NEEDCRYPT)
+    fprintf(f, "NEEDCRYPT ");
+  if (j->flags & AH_JOB_FLAGS_NEEDSIGN)
+    fprintf(f, "NEEDSIGN ");
+  if (j->flags & AH_JOB_FLAGS_ATTACHABLE)
+    fprintf(f, "ATTACHABLE ");
+  if (j->flags & AH_JOB_FLAGS_SINGLE)
+    fprintf(f, "SINGLE ");
+  if (j->flags & AH_JOB_FLAGS_DLGJOB)
+    fprintf(f, "DLGJOB ");
+  if (j->flags & AH_JOB_FLAGS_CRYPT)
+    fprintf(f, "CRYPT ");
+  if (j->flags & AH_JOB_FLAGS_SIGN)
+    fprintf(f, "SIGN ");
+  if (j->flags & AH_JOB_FLAGS_MULTIMSG)
+    fprintf(f, "MULTIMSG ");
+  if (j->flags & AH_JOB_FLAGS_HASATTACHPOINT)
+    fprintf(f, "HASATTACHPOINT ");
+  if (j->flags & AH_JOB_FLAGS_HASMOREMSGS)
+    fprintf(f, "HASMOREMSGS ");
+  if (j->flags & AH_JOB_FLAGS_HASWARNINGS)
+    fprintf(f, "HASWARNINGS ");
+  if (j->flags & AH_JOB_FLAGS_HASERRORS)
+    fprintf(f, "HASERRORS ");
+  if (j->flags & AH_JOB_FLAGS_PROCESSED)
+    fprintf(f, "PROCESSED ");
+  if (j->flags & AH_JOB_FLAGS_COMMITTED)
+    fprintf(f, "COMMITTED ");
+  if (j->flags & AH_JOB_FLAGS_NEEDTAN)
+    fprintf(f, "NEEDTAN ");
+  if (j->flags & AH_JOB_FLAGS_OUTBOX)
+    fprintf(f, "OUTBOX ");
+  fprintf(f, ")\n");
+
+
   if (j->jobResponses) {
     for (k=0; k<insert; k++)
       fprintf(f, " ");

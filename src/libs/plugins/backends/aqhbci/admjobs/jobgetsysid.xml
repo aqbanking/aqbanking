@@ -24,19 +24,18 @@
           pversion="201"
           crypt="1" 
           sign="1" 
+          nosysid="1"
           dlg="1" 
           needsbpd="0" 
           response="syncresponse"
    >
-    <MESSAGE name="open" nosysid="1" >
-      <SEG type="Ident" name="ident" />
-      <SEG type="Prepare" name="prepare" />
-      <SEG type="Sync" name="sync" />
- 
-      <VALUES>
-        <VALUE path="ident/systemId">0</VALUE>
-      </VALUES>
-    </MESSAGE>
+    <SEG type="Ident" name="ident" />
+    <SEG type="Prepare" name="prepare" />
+    <SEG type="Sync" name="sync" />
+
+    <VALUES>
+      <VALUE path="ident/systemId">0</VALUE>
+    </VALUES>
   </JOBdef>
 
 
@@ -46,18 +45,17 @@
           pversion="210"
           crypt="1" 
           sign="1" 
+          nosysid="1"
           dlg="1" 
           needsbpd="0" 
           response="syncresponse"
    >
-    <MESSAGE name="open" nosysid="1" >
-      <SEG type="Ident" name="ident" />
-      <SEG type="Prepare" name="prepare" />
-      <SEG type="Sync" name="sync" />
-      <VALUES>
-        <VALUE path="ident/systemId">0</VALUE>
-      </VALUES>
-    </MESSAGE>
+    <SEG type="Ident" name="ident" />
+    <SEG type="Prepare" name="prepare" />
+    <SEG type="Sync" name="sync" />
+    <VALUES>
+      <VALUE path="ident/systemId">0</VALUE>
+    </VALUES>
   </JOBdef>
  
  
@@ -68,18 +66,17 @@
           crypt="1" 
           sign="1" 
           dlg="1" 
+          nosysid="1"
           needsbpd="0" 
           response="syncresponse"
    >
-    <MESSAGE name="open" nosysid="1" >
-      <SEG type="Ident" name="ident" />
-      <SEG type="Prepare" name="prepare" />
-      <SEG type="Sync" name="sync" />
- 
-      <VALUES>
-        <VALUE path="ident/systemId">0</VALUE>
-      </VALUES>
-    </MESSAGE>
+    <SEG type="Ident" name="ident" />
+    <SEG type="Prepare" name="prepare" />
+    <SEG type="Sync" name="sync" />
+
+    <VALUES>
+      <VALUE path="ident/systemId">0</VALUE>
+    </VALUES>
  
   </JOBdef>
  
@@ -92,17 +89,17 @@
           sign="1" 
           dlg="1" 
           needsbpd="0" 
+          nosysid="1"
+          noitan="1"
           response="syncresponse"
    >
-    <MESSAGE name="open" nosysid="1" >
-      <SEG type="Ident" name="ident" />
-      <SEG type="Prepare" name="prepare" version="3" />
-      <SEG type="Sync" name="sync" />
- 
-      <VALUES>
-        <VALUE path="ident/systemId">0</VALUE>
-      </VALUES>
-    </MESSAGE>
+    <SEG type="Ident"   name="ident" />
+    <SEG type="Prepare" name="prepare" version="3" />
+    <SEG type="Sync"    name="sync" />
+
+    <VALUES>
+      <VALUE path="ident/systemId">0</VALUE>
+    </VALUES>
  
   </JOBdef>
 
