@@ -81,7 +81,7 @@ int AQFINTS_Session_GetAnonBpd(AQFINTS_SESSION *sess, const char *bankCode)
   AQFINTS_Session_Disconnect(sess);
 
   rv=handleResponse(sess,
-                    (const uint8_t*) GWEN_Buffer_GetStart(destBuffer),
+                    (const uint8_t *) GWEN_Buffer_GetStart(destBuffer),
                     GWEN_Buffer_GetUsedBytes(destBuffer));
   if (rv<0) {
     DBG_ERROR(0, "here (%d)", rv);

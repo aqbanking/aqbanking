@@ -75,7 +75,7 @@ void GWENHYWFAR_CB freeData(void *bp, void *p)
 {
   AQFINTS_TRANSPORT_HBCI *xtrans;
 
-  xtrans=(AQFINTS_TRANSPORT_HBCI*) p;
+  xtrans=(AQFINTS_TRANSPORT_HBCI *) p;
   GWEN_SyncIo_free(xtrans->ioLayer);
   GWEN_FREE_OBJECT(xtrans);
 }
@@ -191,7 +191,7 @@ int transportSendMessage(AQFINTS_TRANSPORT *trans, const char *ptrBuffer, int le
     return GWEN_ERROR_INVALID;
   }
 
-  rv=GWEN_SyncIo_WriteForced(xtrans->ioLayer, (const uint8_t *)ptrBuffer,lenBuffer);
+  rv=GWEN_SyncIo_WriteForced(xtrans->ioLayer, (const uint8_t *)ptrBuffer, lenBuffer);
   if (rv<0) {
     DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     return rv;

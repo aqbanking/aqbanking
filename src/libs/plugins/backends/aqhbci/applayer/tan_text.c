@@ -24,14 +24,14 @@
 /* forward declarations */
 
 static int _getTan(AH_TAN_MECHANISM *tanMechanism,
-		   AB_USER *u,
-		   const char *title,
-		   const char *text,
-		   const uint8_t *challengePtr,
-		   uint32_t challengeLen,
-		   char *passwordBuffer,
-		   int passwordMinLen,
-		   int passwordMaxLen);
+                   AB_USER *u,
+                   const char *title,
+                   const char *text,
+                   const uint8_t *challengePtr,
+                   uint32_t challengeLen,
+                   char *passwordBuffer,
+                   int passwordMinLen,
+                   int passwordMaxLen);
 
 
 
@@ -75,30 +75,30 @@ int _getTan(AH_TAN_MECHANISM *tanMechanism,
 
   GWEN_DB_SetIntValue(dbMethodParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "tanMethodId", AH_TanMechanism_GetTanMethodId(tanMechanism));
-  
+
   dbTanMethod=GWEN_DB_GetGroup(dbMethodParams, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "tanMethod");
   AH_TanMethod_toDb(tanMethod, dbTanMethod);
-  
+
   bufToken=GWEN_Buffer_new(0, 256, 0, 1);
-  AH_User_MkTanName(u, (const char*) challengePtr, bufToken);
-  
+  AH_User_MkTanName(u, (const char *) challengePtr, bufToken);
+
   rv=GWEN_Gui_GetPassword(GWEN_GUI_INPUT_FLAGS_TAN | GWEN_GUI_INPUT_FLAGS_SHOW | GWEN_GUI_INPUT_FLAGS_DIRECT,
-			  GWEN_Buffer_GetStart(bufToken),
-			  title,
-			  text,
-			  passwordBuffer,
-			  passwordMinLen,
-			  passwordMaxLen,
-			  GWEN_Gui_PasswordMethod_Text,
-			  dbMethodParams,
-			  0);
+                          GWEN_Buffer_GetStart(bufToken),
+                          title,
+                          text,
+                          passwordBuffer,
+                          passwordMinLen,
+                          passwordMaxLen,
+                          GWEN_Gui_PasswordMethod_Text,
+                          dbMethodParams,
+                          0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(bufToken);
     GWEN_DB_Group_free(dbMethodParams);
     return rv;
   }
-  
+
   GWEN_Buffer_free(bufToken);
   GWEN_DB_Group_free(dbMethodParams);
   return 0;

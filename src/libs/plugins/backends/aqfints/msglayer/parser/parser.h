@@ -154,7 +154,8 @@ int AQFINTS_Parser_ReadFiles(AQFINTS_PARSER *parser);
  * @param segmentVersion segment version (0 matches any)
  * @param protocolVersion protocol version (0 matches any)
  */
-AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentById(const AQFINTS_PARSER *parser, const char *id, int segmentVersion, int protocolVersion);
+AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentById(const AQFINTS_PARSER *parser, const char *id, int segmentVersion,
+                                                int protocolVersion);
 
 
 /**
@@ -166,7 +167,8 @@ AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentById(const AQFINTS_PARSER *parser, co
  * @param segmentVersion segment version (0 matches any)
  * @param protocolVersion protocol version (0 matches any)
  */
-AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentByCode(const AQFINTS_PARSER *parser, const char *code, int segmentVersion, int protocolVersion);
+AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentByCode(const AQFINTS_PARSER *parser, const char *code, int segmentVersion,
+                                                  int protocolVersion);
 
 
 /**
@@ -199,7 +201,8 @@ AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentHighestVersionForProto(const AQFINTS_
  * @param jobVersion segment version (0 matches any)
  * @param protocolVersion protocol version (0 matches any)
  */
-AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefByCode(const AQFINTS_PARSER *parser, const char *id, int jobVersion, int protocolVersion);
+AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefByCode(const AQFINTS_PARSER *parser, const char *id, int jobVersion,
+                                                int protocolVersion);
 
 
 /**
@@ -211,7 +214,8 @@ AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefByCode(const AQFINTS_PARSER *parser, co
  * @param jobVersion segment version (0 matches any)
  * @param protocolVersion protocol version (0 matches any)
  */
-AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefById(const AQFINTS_PARSER *parser, const char *id, int jobVersion, int protocolVersion);
+AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefById(const AQFINTS_PARSER *parser, const char *id, int jobVersion,
+                                              int protocolVersion);
 
 
 /**
@@ -223,7 +227,8 @@ AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefById(const AQFINTS_PARSER *parser, cons
  * @param jobVersion segment version (0 matches any)
  * @param protocolVersion protocol version (0 matches any)
  */
-AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefByParams(const AQFINTS_PARSER *parser, const char *params, int jobVersion, int protocolVersion);
+AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefByParams(const AQFINTS_PARSER *parser, const char *params, int jobVersion,
+                                                  int protocolVersion);
 
 /*@}*/
 

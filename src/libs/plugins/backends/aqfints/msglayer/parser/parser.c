@@ -79,7 +79,7 @@ int AQFINTS_Parser_ReadFiles(AQFINTS_PARSER *parser)
 
   /* sample file names */
   slEntry=GWEN_StringList_FirstEntry(parser->pathList);
-  while(slEntry) {
+  while (slEntry) {
     const char *s;
 
     s=GWEN_StringListEntry_Data(slEntry);
@@ -104,7 +104,7 @@ int AQFINTS_Parser_ReadFiles(AQFINTS_PARSER *parser)
 
   /* load files */
   slEntry=GWEN_StringList_FirstEntry(slFiles);
-  while(slEntry) {
+  while (slEntry) {
     const char *s;
 
     s=GWEN_StringListEntry_Data(slEntry);
@@ -140,14 +140,15 @@ int AQFINTS_Parser_ReadFiles(AQFINTS_PARSER *parser)
 
 
 
-AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentByCode(const AQFINTS_PARSER *parser, const char *id, int segmentVersion, int protocolVersion)
+AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentByCode(const AQFINTS_PARSER *parser, const char *id, int segmentVersion,
+                                                  int protocolVersion)
 {
   AQFINTS_SEGMENT *segment;
 
   segment=AQFINTS_Segment_List_First(parser->segmentList);
-  while(segment) {
+  while (segment) {
     if ((segmentVersion==0 || segmentVersion==AQFINTS_Segment_GetSegmentVersion(segment)) &&
-        (protocolVersion==0 || protocolVersion==AQFINTS_Segment_GetProtocolVersion(segment))){
+        (protocolVersion==0 || protocolVersion==AQFINTS_Segment_GetProtocolVersion(segment))) {
       if (!(id && *id))
         return segment;
       else {
@@ -166,14 +167,15 @@ AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentByCode(const AQFINTS_PARSER *parser, 
 
 
 
-AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentById(const AQFINTS_PARSER *parser, const char *id, int segmentVersion, int protocolVersion)
+AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentById(const AQFINTS_PARSER *parser, const char *id, int segmentVersion,
+                                                int protocolVersion)
 {
   AQFINTS_SEGMENT *segment;
 
   segment=AQFINTS_Segment_List_First(parser->segmentList);
-  while(segment) {
+  while (segment) {
     if ((segmentVersion==0 || segmentVersion==AQFINTS_Segment_GetSegmentVersion(segment)) &&
-        (protocolVersion==0 || protocolVersion==AQFINTS_Segment_GetProtocolVersion(segment))){
+        (protocolVersion==0 || protocolVersion==AQFINTS_Segment_GetProtocolVersion(segment))) {
       if (!(id && *id))
         return segment;
       else {
@@ -199,12 +201,12 @@ AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentHighestVersionForProto(const AQFINTS_
   AQFINTS_SEGMENT *segment;
   AQFINTS_SEGMENT *bestMatchSoFar=NULL;
 
-  assert( (id && *id) );
+  assert((id && *id));
   segment=AQFINTS_Segment_List_First(parser->segmentList);
-  while(segment) {
+  while (segment) {
     int possibleMatch=0;
 
-    if ((protocolVersion==0 || (protocolVersion>=AQFINTS_Segment_GetProtocolVersion(segment)))){
+    if ((protocolVersion==0 || (protocolVersion>=AQFINTS_Segment_GetProtocolVersion(segment)))) {
       const char *s;
 
       s=AQFINTS_Segment_GetCode(segment);
@@ -227,14 +229,15 @@ AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentHighestVersionForProto(const AQFINTS_
 
 
 
-AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefByCode(const AQFINTS_PARSER *parser, const char *id, int jobVersion, int protocolVersion)
+AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefByCode(const AQFINTS_PARSER *parser, const char *id, int jobVersion,
+                                                int protocolVersion)
 {
   AQFINTS_JOBDEF *jobDef;
 
   jobDef=AQFINTS_JobDef_List_First(parser->jobDefList);
-  while(jobDef) {
+  while (jobDef) {
     if ((jobVersion==0 || jobVersion==AQFINTS_JobDef_GetJobVersion(jobDef)) &&
-        (protocolVersion==0 || protocolVersion==AQFINTS_JobDef_GetProtocolVersion(jobDef))){
+        (protocolVersion==0 || protocolVersion==AQFINTS_JobDef_GetProtocolVersion(jobDef))) {
       if (!(id && *id))
         return jobDef;
       else {
@@ -253,14 +256,15 @@ AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefByCode(const AQFINTS_PARSER *parser, co
 
 
 
-AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefById(const AQFINTS_PARSER *parser, const char *id, int jobVersion, int protocolVersion)
+AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefById(const AQFINTS_PARSER *parser, const char *id, int jobVersion,
+                                              int protocolVersion)
 {
   AQFINTS_JOBDEF *jobDef;
 
   jobDef=AQFINTS_JobDef_List_First(parser->jobDefList);
-  while(jobDef) {
+  while (jobDef) {
     if ((jobVersion==0 || jobVersion==AQFINTS_JobDef_GetJobVersion(jobDef)) &&
-        (protocolVersion==0 || protocolVersion==AQFINTS_JobDef_GetProtocolVersion(jobDef))){
+        (protocolVersion==0 || protocolVersion==AQFINTS_JobDef_GetProtocolVersion(jobDef))) {
       if (!(id && *id))
         return jobDef;
       else {
@@ -268,7 +272,7 @@ AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefById(const AQFINTS_PARSER *parser, cons
 
         s=AQFINTS_JobDef_GetId(jobDef);
         if (s && *s && strcasecmp(s, id)==0)
-	  return jobDef;
+          return jobDef;
       }
     }
     jobDef=AQFINTS_JobDef_List_Next(jobDef);
@@ -279,14 +283,15 @@ AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefById(const AQFINTS_PARSER *parser, cons
 
 
 
-AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefByParams(const AQFINTS_PARSER *parser, const char *params, int jobVersion, int protocolVersion)
+AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefByParams(const AQFINTS_PARSER *parser, const char *params, int jobVersion,
+                                                  int protocolVersion)
 {
   AQFINTS_JOBDEF *jobDef;
 
   jobDef=AQFINTS_JobDef_List_First(parser->jobDefList);
-  while(jobDef) {
+  while (jobDef) {
     if ((jobVersion==0 || jobVersion==AQFINTS_JobDef_GetJobVersion(jobDef)) &&
-        (protocolVersion==0 || protocolVersion==AQFINTS_JobDef_GetProtocolVersion(jobDef))){
+        (protocolVersion==0 || protocolVersion==AQFINTS_JobDef_GetProtocolVersion(jobDef))) {
       if (!(params && *params))
         return jobDef;
       else {
@@ -294,7 +299,7 @@ AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefByParams(const AQFINTS_PARSER *parser, 
 
         s=AQFINTS_JobDef_GetParams(jobDef);
         if (s && *s && strcasecmp(s, params)==0)
-	  return jobDef;
+          return jobDef;
       }
     }
     jobDef=AQFINTS_JobDef_List_Next(jobDef);
@@ -336,7 +341,7 @@ int AQFINTS_Parser_ReadIntoDb(AQFINTS_PARSER *parser,
 #endif
 
   segment=AQFINTS_Segment_List_First(segmentList);
-  while(segment) {
+  while (segment) {
     GWEN_DB_NODE *dbSegment;
 
     dbSegment=AQFINTS_Segment_GetDbData(segment);
@@ -376,7 +381,7 @@ int AQFINTS_Parser_ReadSegmentListToDb(AQFINTS_PARSER *parser, AQFINTS_SEGMENT_L
   int segmentsRead=0;
 
   segment=AQFINTS_Segment_List_First(segmentList);
-  while(segment) {
+  while (segment) {
     const char *sCode;
     int segmentVersion;
 

@@ -79,7 +79,7 @@ int AQFINTS_Parser_Db_WriteSegment(AQFINTS_SEGMENT *segmentDefinition, AQFINTS_S
 
 int writeDegSequence(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDataParent, GWEN_DB_NODE *db)
 {
-  while(elementDefinition) {
+  while (elementDefinition) {
     int rv;
 
     if (AQFINTS_Element_GetElementType(elementDefinition)==AQFINTS_ElementType_Group)
@@ -121,7 +121,7 @@ int writeDegGroup(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDa
     int idx=0;
 
     dbForGroup=GWEN_DB_FindFirstGroup(db, sDbName);
-    while(dbForGroup) {
+    while (dbForGroup) {
       if (maxNum && idx>=maxNum) {
         DBG_ERROR(0, "Too many elements in DB (%d < %d)", idx, maxNum);
         return GWEN_ERROR_BAD_DATA;
@@ -179,7 +179,7 @@ int writeDeg(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDataPar
 
 int writeDeSequence(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDataParent, GWEN_DB_NODE *db)
 {
-  while(elementDefinition) {
+  while (elementDefinition) {
     int rv;
 
     if (AQFINTS_Element_GetElementType(elementDefinition)==AQFINTS_ElementType_Group)
@@ -221,7 +221,7 @@ int writeDeGroup(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDat
     int idx=0;
 
     dbForGroup=GWEN_DB_FindFirstGroup(db, sDbName);
-    while(dbForGroup) {
+    while (dbForGroup) {
       if (maxNum && idx>=maxNum) {
         DBG_ERROR(0, "Too many elements in DB (%d < %d)", idx, maxNum);
         return GWEN_ERROR_BAD_DATA;
@@ -454,7 +454,7 @@ int writeBinElement(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *element
       }
 
       len=0;
-      ptr=(const uint8_t*) GWEN_DB_GetBinValue(db, sDbName, idx, NULL, 0, &len);
+      ptr=(const uint8_t *) GWEN_DB_GetBinValue(db, sDbName, idx, NULL, 0, &len);
       if (ptr && len) {
         AQFINTS_ELEMENT *elementData;
 

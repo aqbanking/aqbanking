@@ -546,8 +546,8 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock)
                                   I18N("Received unknown server key: type=%s, num=%d, version=%d, hash=%s"),
                                   keytype, keynum, keyver, hashString);
           }
-		  if(bpk)
-		    GWEN_Crypt_Key_free(bpk);
+          if (bpk)
+            GWEN_Crypt_Key_free(bpk);
         }
       }
 

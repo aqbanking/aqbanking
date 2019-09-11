@@ -1464,9 +1464,9 @@ int AH_Job_HasResultWithCode(const AH_JOB *j, int wantedCode)
 
             code=GWEN_DB_GetIntValue(dbRes, "resultcode", 0, 0);
             DBG_INFO(AQHBCI_LOGDOMAIN, "Checking result code %d against %d", code, wantedCode);
-	    if (code==wantedCode) {
-	      return 1;
-	    }
+            if (code==wantedCode) {
+              return 1;
+            }
           } /* if result */
           dbRes=GWEN_DB_GetNextGroup(dbRes);
         } /* while */

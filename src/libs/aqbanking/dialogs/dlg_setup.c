@@ -827,7 +827,7 @@ int AB_SetupDialog_AddUser(GWEN_DIALOG *dlg)
 
         dlg3=AB_Provider_GetNewUserDialog(pro, selectedType);
         if (dlg3==NULL) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog (type=%d)", selectedType);
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog (type=%d)", selectedType);
           return GWEN_DialogEvent_ResultHandled;
         }
 

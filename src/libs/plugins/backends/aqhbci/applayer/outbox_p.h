@@ -160,8 +160,8 @@ static AH_JOB *AH_Outbox__FindTransferJobInCheckJobList(const AH_JOB_LIST *jl,
 
 static int AH_Outbox__CBox_JobToMessage(AH_JOB *j, AH_MSG *msg, int doCopySigners);
 static int AH_Outbox__CBox_SendMessage(AH_OUTBOX__CBOX *cbox,
-                                        AH_DIALOG *dlg,
-                                        AH_MSG *msg);
+                                       AH_DIALOG *dlg,
+                                       AH_MSG *msg);
 
 
 static int AH_Outbox__CBox_SendAndRecvQueue(AH_OUTBOX__CBOX *cbox,

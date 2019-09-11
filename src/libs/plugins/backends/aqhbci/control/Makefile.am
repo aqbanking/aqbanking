@@ -45,6 +45,7 @@ libhbcicontrol_la_SOURCES=\
  mkpinlist.c \
  logfile.c \
  sendkeys.c \
+ changekeys.c \
  sethbciversion.c \
  setitanmode.c \
  setmaxtransfers.c \

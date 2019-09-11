@@ -50,7 +50,7 @@ void AQFINTS_Parser_SegmentList_ResolveGroups(AQFINTS_SEGMENT_LIST *segmentList,
   AQFINTS_SEGMENT *segment;
 
   segment=AQFINTS_Segment_List_First(segmentList);
-  while(segment) {
+  while (segment) {
     segmentResolveGroups(segment, groupTree);
     segment=AQFINTS_Segment_List_Next(segment);
   }
@@ -63,7 +63,7 @@ void AQFINTS_Parser_SegmentList_Normalize(AQFINTS_SEGMENT_LIST *segmentList)
   AQFINTS_SEGMENT *segment;
 
   segment=AQFINTS_Segment_List_First(segmentList);
-  while(segment) {
+  while (segment) {
     normalizeSegment(segment);
     segment=AQFINTS_Segment_List_Next(segment);
   }
@@ -81,7 +81,7 @@ void AQFINTS_Parser_Segment_RemoveTrailingEmptyElements(AQFINTS_SEGMENT *segment
 
     /* shorten content of DEG's */
     element=AQFINTS_Element_Tree2_GetFirstChild(elementTree);
-    while(element) {
+    while (element) {
       removeTrailingEmptyDeChildren(element);
       element=AQFINTS_Element_Tree2_GetNext(element);
     }
@@ -97,7 +97,7 @@ AQFINTS_ELEMENT *findGroupInTree(AQFINTS_ELEMENT *groupTree, const char *id, int
   AQFINTS_ELEMENT *group;
 
   group=AQFINTS_Element_Tree2_GetFirstChild(groupTree);
-  while(group) {
+  while (group) {
     if (version==0 || version==AQFINTS_Element_GetVersion(group)) {
       if (!(id && *id))
         return group;
@@ -136,7 +136,7 @@ void normalizeSequence(AQFINTS_ELEMENT *elementTree)
 
   /* check top-level elements: if DE, prepend a DEG before it */
   element=AQFINTS_Element_Tree2_GetFirstChild(elementTree);
-  while(element) {
+  while (element) {
     AQFINTS_ELEMENT *nextElement;
 
     nextElement=AQFINTS_Element_Tree2_GetNext(element);
@@ -172,9 +172,9 @@ void segmentResolveGroups(AQFINTS_SEGMENT *segment, AQFINTS_ELEMENT *groupTree)
 void resolveGroups(AQFINTS_ELEMENT *elementTree, AQFINTS_ELEMENT *groupTree)
 {
   AQFINTS_ELEMENT *element;
-  
+
   element=AQFINTS_Element_Tree2_GetFirstChild(elementTree);
-  while(element) {
+  while (element) {
     const char *sGroupType;
     AQFINTS_ELEMENT_TYPE eType;
 
@@ -198,7 +198,7 @@ void resolveGroups(AQFINTS_ELEMENT *elementTree, AQFINTS_ELEMENT *groupTree)
 
           DBG_ERROR(0, "Found group \"%s:%d\"", sGroupType, AQFINTS_Element_GetVersion(groupDefElement));
           groupElement=AQFINTS_Element_Tree2_GetFirstChild(groupDefElement);
-          while(groupElement) {
+          while (groupElement) {
             AQFINTS_ELEMENT *elementCopy;
 
             elementCopy=AQFINTS_Element_dup(groupElement);
@@ -224,8 +224,8 @@ void resolveGroups(AQFINTS_ELEMENT *elementTree, AQFINTS_ELEMENT *groupTree)
 void removeTrailingEmptyDegChildren(AQFINTS_ELEMENT *elementTree)
 {
   AQFINTS_ELEMENT *element;
-  
-  while((element=AQFINTS_Element_Tree2_GetLastChild(elementTree))) {
+
+  while ((element=AQFINTS_Element_Tree2_GetLastChild(elementTree))) {
     if (AQFINTS_Element_GetElementType(element)==AQFINTS_ElementType_Deg) {
       if (AQFINTS_Element_Tree2_GetFirstChild(element)==NULL) {
         AQFINTS_Element_Tree2_Unlink(element);
@@ -244,8 +244,8 @@ void removeTrailingEmptyDegChildren(AQFINTS_ELEMENT *elementTree)
 void removeTrailingEmptyDeChildren(AQFINTS_ELEMENT *elementTree)
 {
   AQFINTS_ELEMENT *element;
-  
-  while((element=AQFINTS_Element_Tree2_GetLastChild(elementTree))) {
+
+  while ((element=AQFINTS_Element_Tree2_GetLastChild(elementTree))) {
     if (AQFINTS_Element_GetElementType(element)==AQFINTS_ElementType_De) {
       if (AQFINTS_Element_GetDataLength(element)==0 ||
           AQFINTS_Element_GetDataPointer(element)==NULL) {

@@ -77,6 +77,9 @@ static void showUsage(const char *prgName)
                            I18N("  sendkeys:\n"
                                 "    Send the user keys to the bank.\n\n"));
   GWEN_Buffer_AppendString(ubuf,
+                           I18N("  changekeys:\n"
+                                "    Change user keys (and media).\n\n"));
+  GWEN_Buffer_AppendString(ubuf,
                            I18N("  getaccounts:\n"
                                 "    Requests account list for a "
                                 "user\n\n"));
@@ -194,6 +197,9 @@ int AH_Control(AB_PROVIDER *pro, int argc, char **argv)
   }
   else if (strcasecmp(cmd, "sendkeys")==0) {
     rv=AH_Control_SendKeys(pro, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "changekeys")==0) {
+    rv=AH_Control_ChangeKeys(pro, db, argc, argv);
   }
   else if (strcasecmp(cmd, "listusers")==0) {
     rv=AH_Control_ListUsers(pro, db, argc, argv);

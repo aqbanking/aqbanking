@@ -28,32 +28,32 @@
 
 
 static int wrapSignature(AQFINTS_SESSION *sess,
-			 const AQFINTS_KEYNAME *keyName,
-			 int firstSegNum,
-			 int lastSegNum,
-			 GWEN_BUFFER *msgBuffer,
-			 GWEN_BUFFER *sigHeadBuffer,
-			 GWEN_BUFFER *sigTailBuffer,
-			 const char *pin,
-			 const char *tan);
+                         const AQFINTS_KEYNAME *keyName,
+                         int firstSegNum,
+                         int lastSegNum,
+                         GWEN_BUFFER *msgBuffer,
+                         GWEN_BUFFER *sigHeadBuffer,
+                         GWEN_BUFFER *sigTailBuffer,
+                         const char *pin,
+                         const char *tan);
 static int createCtrlRef(char *ptrBuf, size_t lenBuf);
 static int createSigHead(AQFINTS_SESSION *sess,
-			 int segNum,
-			 const AQFINTS_KEYNAME *keyName,
-			 const char *ctrlRef,
-			 GWEN_BUFFER *destBuffer);
+                         int segNum,
+                         const AQFINTS_KEYNAME *keyName,
+                         const char *ctrlRef,
+                         GWEN_BUFFER *destBuffer);
 static int createSigTail(AQFINTS_SESSION *sess,
-			 int segNum,
-			 const AQFINTS_KEYNAME *keyName,
-			 const char *ctrlRef,
+                         int segNum,
+                         const AQFINTS_KEYNAME *keyName,
+                         const char *ctrlRef,
                          GWEN_BUFFER *destBuffer,
                          const char *pin,
                          const char *tan);
 
 static int prepareSignSeg(AQFINTS_SESSION *sess,
-			  const AQFINTS_KEYNAME *keyName,
-			  const char *ctrlRef,
-			  GWEN_DB_NODE *cfg);
+                          const AQFINTS_KEYNAME *keyName,
+                          const char *ctrlRef,
+                          GWEN_DB_NODE *cfg);
 
 
 
@@ -81,7 +81,7 @@ int wrapSignatures(AQFINTS_SESSION *sess,
   sigTailBuffer=GWEN_Buffer_new(0, 256, 0, 1);
 
   keyName=AQFINTS_KeyName_List_First(keyNameList);
-  while(keyName) {
+  while (keyName) {
     const char *sUserId;
     int rv;
 
@@ -130,10 +130,10 @@ int wrapSignatures(AQFINTS_SESSION *sess,
 
 int wrapSignature(AQFINTS_SESSION *sess,
                   const AQFINTS_KEYNAME *keyName,
-		  int firstSegNum,
+                  int firstSegNum,
                   int lastSegNum,
-		  GWEN_BUFFER *msgBuffer,
-		  GWEN_BUFFER *sigHeadBuffer,
+                  GWEN_BUFFER *msgBuffer,
+                  GWEN_BUFFER *sigHeadBuffer,
                   GWEN_BUFFER *sigTailBuffer,
                   const char *pin,
                   const char *tan)
@@ -196,10 +196,10 @@ int createCtrlRef(char *ptrBuf, size_t lenBuf)
 
 
 int createSigHead(AQFINTS_SESSION *sess,
-		  int segNum,
-		  const AQFINTS_KEYNAME *keyName,
-		  const char *ctrlRef,
-		  GWEN_BUFFER *destBuffer)
+                  int segNum,
+                  const AQFINTS_KEYNAME *keyName,
+                  const char *ctrlRef,
+                  GWEN_BUFFER *destBuffer)
 {
   GWEN_DB_NODE *dbSegment;
   AQFINTS_PARSER *parser;
@@ -242,9 +242,9 @@ int createSigHead(AQFINTS_SESSION *sess,
 
 
 int createSigTail(AQFINTS_SESSION *sess,
-		  int segNum,
-		  const AQFINTS_KEYNAME *keyName,
-		  const char *ctrlRef,
+                  int segNum,
+                  const AQFINTS_KEYNAME *keyName,
+                  const char *ctrlRef,
                   GWEN_BUFFER *destBuffer,
                   const char *pin,
                   const char *tan)
@@ -321,7 +321,8 @@ int prepareSignSeg(AQFINTS_SESSION *sess,
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "area", 1);
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "role", 1);
 
-  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/dir", AQFINTS_Session_GetIsServer(sess)?2:1); /* 1 client, 2=server */
+  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/dir",
+                      AQFINTS_Session_GetIsServer(sess)?2:1); /* 1 client, 2=server */
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/secId", AQFINTS_KeyName_GetSystemId(keyName));
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "signseq", AQFINTS_KeyName_GetSignatureCounter(keyName));
 

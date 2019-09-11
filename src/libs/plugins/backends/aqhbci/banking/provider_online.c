@@ -89,7 +89,7 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
 int AH_Provider_GetBankInfo(AB_PROVIDER *pro, AB_USER *u,
                             AB_IMEXPORTER_CONTEXT *ctx,
                             int withTanSeg,
-			    int withProgress, int nounmount, int doLock)
+                            int withProgress, int nounmount, int doLock)
 {
   AB_BANKING *ab;
   AH_HBCI *h;
@@ -824,6 +824,65 @@ int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
   return AH_Provider_SendUserKeys2(pro, u, ctx, 0, withProgress, nounmount, doLock);
 }
 
+
+int AH_Provider_ChangeUserKeys(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, int withProgress, int nounmount,
+                               int doLock)
+{
+  int res = 0;
+  uint8_t canceled = 0;
+  AH_JOB *job = NULL;
+  AB_IMEXPORTER_CONTEXT *ctx = NULL;
+
+  assert(u);
+
+  job = AH_Job_ChangeKeys_new(pro, u, args, &canceled);
+  if (!job) {
+    res = -2;
+    if (!canceled) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Unexplainable, 'AH_Job_ChangeKeys_new' not supported.");
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Unexplainable, 'AH_Job_ChangeKeys_new' not supported."));
+      res = -1;
+    }
+    if (canceled == 2)
+      res = -1;
+  }
+
+  if (!res) {
+    ctx = AB_ImExporterContext_new();
+    if (!ctx) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error getting ctx.");
+      res = -1;
+    }
+  }
+  if (ctx) {
+    AH_OUTBOX *ob = AH_Outbox_new(pro);
+    if (!ob)
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Allocate outbox failed."));
+    else {
+      AH_Job_AddSigner(job, AB_User_GetUserId(u));
+      AH_Outbox_AddJob(ob, job);
+
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("Fetching serverkeys."));
+      res = AH_Outbox_Execute(ob, ctx, withProgress, 0, doLock);
+      AH_Outbox_free(ob);
+      if (res)
+        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Could not execute outbox."));
+      DBG_INFO(AQHBCI_LOGDOMAIN, "res %d, status %d.", res, AH_Job_GetStatus(job));
+      if (res || (AH_Job_GetStatus(job) == AH_JobStatusError))
+        res = -1;
+    }
+    AB_ImExporterContext_free(ctx);
+  }
+
+  res = AH_Job_ChangeKeys_finish(pro, job, res);
+
+  if (job)
+    AH_Job_free(job);
+
+  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(AH_Provider_GetHbci(pro)));
+
+  return (res == -2) ? 0 : res;
+}
 
 
 int AH_Provider_GetCert(AB_PROVIDER *pro,

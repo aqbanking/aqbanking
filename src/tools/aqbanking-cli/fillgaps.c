@@ -22,8 +22,8 @@
 /* forward declarations */
 static GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 static int _copyTransactionsAndFillGaps(AB_IMEXPORTER_CONTEXT *inCtx,
-					AB_ACCOUNT_SPEC_LIST *accountSpecList,
-					AB_IMEXPORTER_CONTEXT *outCtx);
+                                        AB_ACCOUNT_SPEC_LIST *accountSpecList,
+                                        AB_IMEXPORTER_CONTEXT *outCtx);
 
 
 
@@ -196,8 +196,8 @@ int _copyTransactionsAndFillGaps(AB_IMEXPORTER_CONTEXT *inCtx,
 
       as=pickAccountSpecForTransaction(accountSpecList, tCopy);
       if (as==NULL) {
-	DBG_ERROR(0, "Could not determine account for transaction %d", transactionCount);
-	allOk=0;
+        DBG_ERROR(0, "Could not determine account for transaction %d", transactionCount);
+        allOk=0;
         AB_Transaction_SetStatus(tCopy, AB_Transaction_StatusError);
       }
 

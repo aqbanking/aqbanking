@@ -918,7 +918,7 @@ void AH_User_SetBankPubCryptKey(AB_USER *u, GWEN_CRYPT_KEY *bankPubCryptKey)
 
   if (ue->bankPubCryptKey!=bankPubCryptKey) {
     //GWEN_Crypt_KeyRsa_free(ue->bankPubKey);
-    if(ue->bankPubCryptKey)
+    if (ue->bankPubCryptKey)
       GWEN_Crypt_Key_free(ue->bankPubCryptKey);
     ue->bankPubCryptKey=GWEN_Crypt_KeyRsa_dup(bankPubCryptKey);
   }
@@ -946,7 +946,7 @@ void AH_User_SetBankPubSignKey(AB_USER *u, GWEN_CRYPT_KEY *bankPubSignKey)
 
   if (ue->bankPubSignKey!=bankPubSignKey) {
     //GWEN_Crypt_KeyRsa_free(ue->bankPubKey);
-    if(ue->bankPubSignKey)
+    if (ue->bankPubSignKey)
       GWEN_Crypt_Key_free(ue->bankPubSignKey);
     ue->bankPubSignKey=GWEN_Crypt_KeyRsa_dup(bankPubSignKey);
   }
@@ -2236,7 +2236,7 @@ int AH_User_VerifyInitialKey(GWEN_CRYPT_TOKEN *ct,
   for (i=0; i<GWEN_MDigest_GetDigestSize(md); i++)
     sprintf(hashString+3*i, "%02x ", *(mdPtr+i));
   DBG_INFO(AQHBCI_LOGDOMAIN, "Key Hash from the Bank Public %s key: Hash Length: %d, Hash: %s", keyName, keyHashLen,
-             hashString);
+           hashString);
 
   if (canVerifyWithHash) {
 

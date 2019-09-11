@@ -726,9 +726,9 @@ int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox, AH_JOBQUEUE *jq)
 
       rv=AH_Outbox__CBox_SelectItanMode(cbox, dlg);
       if (rv) {
-	AH_Dialog_Disconnect(dlg);
-	AH_Dialog_free(dlg);
-	return rv;
+        AH_Dialog_Disconnect(dlg);
+        AH_Dialog_free(dlg);
+        return rv;
       }
 
       selectedTanVersion=AH_User_GetSelectedTanMethod(cbox->user)/1000;
@@ -736,7 +736,7 @@ int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox, AH_JOBQUEUE *jq)
         AH_JOB *jTan;
 
         DBG_INFO(AQHBCI_LOGDOMAIN, "User-selected TAN job version is 6 or newer (%d)", selectedTanVersion);
-  
+
         /* check for PSD2: HKTAN version 6 available? if so -> use that */
         jTan=AH_Job_Tan_new(cbox->provider, cbox->user, 4, 6);
         if (jTan) {

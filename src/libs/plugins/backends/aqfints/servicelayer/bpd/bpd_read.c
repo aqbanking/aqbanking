@@ -152,7 +152,7 @@ void _readTanMethods(GWEN_DB_NODE *db, int segmentVersion, AQFINTS_TANMETHOD_LIS
   GWEN_DB_NODE *dbT;
 
   dbT=GWEN_DB_FindFirstGroup(db, "tanMethod");
-  while(dbT) {
+  while (dbT) {
     AQFINTS_TANMETHOD *tm;
 
     tm=AQFINTS_Bpd_ReadTanMethod(dbT);
@@ -245,7 +245,7 @@ AQFINTS_BPDADDR *AQFINTS_Bpd_ReadBpdAddr(GWEN_DB_NODE *db)
   AQFINTS_BpdAddr_SetLanguage(addr, i);
 
   dbT=GWEN_DB_FindFirstGroup(db, "service");
-  while(dbT) {
+  while (dbT) {
     AQFINTS_BPDADDR_SERVICE *srv;
 
     srv=AQFINTS_Bpd_ReadBpdAddrService(dbT);
@@ -349,7 +349,7 @@ AQFINTS_TANINFO *AQFINTS_Bpd_ReadTanInfo(GWEN_DB_NODE *db)
   AQFINTS_TanInfo_SetSecurityClass(ti, i);
 
   dbT=GWEN_DB_FindFirstGroup(db, "job");
-  while(dbT) {
+  while (dbT) {
     AQFINTS_TANJOBINFO *tj;
 
     tj=AQFINTS_Bpd_ReadTanJobInfo(dbT);

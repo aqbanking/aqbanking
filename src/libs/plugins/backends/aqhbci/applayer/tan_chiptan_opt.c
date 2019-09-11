@@ -83,7 +83,7 @@ int _getTan(AH_TAN_MECHANISM *tanMechanism,
 
   /* translate challenge string to flicker code */
   cbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=_translate((const char*) challengePtr, cbuf);
+  rv=_translate((const char *) challengePtr, cbuf);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(cbuf);
@@ -109,7 +109,7 @@ int _getTan(AH_TAN_MECHANISM *tanMechanism,
     AH_TanMethod_toDb(tanMethod, dbTanMethod);
 
     bufToken=GWEN_Buffer_new(0, 256, 0, 1);
-    AH_User_MkTanName(u, (const char*) challengePtr, bufToken);
+    AH_User_MkTanName(u, (const char *) challengePtr, bufToken);
 
     rv=GWEN_Gui_GetPassword(GWEN_GUI_INPUT_FLAGS_TAN | GWEN_GUI_INPUT_FLAGS_SHOW | GWEN_GUI_INPUT_FLAGS_DIRECT,
                             GWEN_Buffer_GetStart(bufToken),

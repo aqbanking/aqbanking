@@ -131,7 +131,8 @@ int createMessageHead(AQFINTS_SESSION *sess, int msgNum, int refMsgNum,
   AQFINTS_Segment_SetElements(segment, NULL);
 
   /* finally write the message header */
-  GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "size", sizeOfMessageWithoutHead+GWEN_Buffer_GetUsedBytes(tmpBuffer));
+  GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "size",
+                      sizeOfMessageWithoutHead+GWEN_Buffer_GetUsedBytes(tmpBuffer));
   rv=AQFINTS_Session_WriteSegment(sess, segment, destBuffer);
   if (rv<0) {
     DBG_ERROR(0, "here (%d)", rv);

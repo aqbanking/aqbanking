@@ -1,0 +1,74 @@
+<!--
+/***************************************************************************
+
+***************************************************************************
+*          Please see toplevel file COPYING for license details           *
+***************************************************************************/
+ -->
+
+<SEGs>
+	<SEGdef id="ChangeKeys"
+			code="HKSAK"
+			version="3"
+			pversion="300"
+			delimiter="+"
+			terminator="'">
+		<GROUP type="SegHead" name="head" />
+		<ELEM name="context" type="num" maxsize="1" />
+		<ELEM name="fntyp" type="num" maxsize="3" />
+		<GROUP type="SecProfile" name="secProfile" />
+		<GROUP name="keyName" type="signkeyname" />
+		<GROUP name="key" type="signkey" trustlevel="3" />
+		<GROUP name="cert" type="cert" minnum="0" />
+		<VALUES>
+			<VALUE path="head/code">%code</VALUE>
+			<VALUE path="head/version">%version</VALUE>
+			<VALUE path="context">2</VALUE>
+			<VALUE path="fntyp">112</VALUE>
+		</VALUES>
+	</SEGdef>
+</SEGs>
+
+<JOBs>
+	<JOBdef id="JobChangeKeys"
+			version="4"
+			dlg="1"
+			needbpd="0"
+	>
+		<MESSAGE name="open" >
+			<SEG type="Ident" name="ident" />
+			<SEG type="Prepare" name="prepare" version="3" />
+			<SEG type="GetKey" version="3" name="getcryptKey" />
+			<SEG type="GetKey" version="3" name="getsignKey" />
+		</MESSAGE>
+		<MESSAGE>
+			<SEG type="ChangeKeys" version="3" name="setcryptKey" />
+			<SEG type="ChangeKeys" version="3" name="setsignKey" />
+		</MESSAGE>
+		<MESSAGE name="close" >
+			<SEG type="DialogEnd" />
+		</MESSAGE>
+	</JOBdef>
+
+	<JOBdef id="JobChangeKeysA"
+			version="4"
+			dlg="1"
+			needbpd="0"
+	>
+		<MESSAGE name="open" >
+			<SEG type="Ident" name="ident" />
+			<SEG type="Prepare" name="prepare" version="3" />
+			<SEG type="GetKey" version="3" name="getcryptKey" />
+			<SEG type="GetKey" version="3" name="getsignKey" />
+		</MESSAGE>
+		<MESSAGE>
+			<SEG type="ChangeKeys" version="3" name="setcryptKey" />
+			<SEG type="ChangeKeys" version="3" name="setsignKey" />
+			<SEG type="ChangeKeys" version="3" name="setauthKey" />
+		</MESSAGE>
+		<MESSAGE name="close" >
+			<SEG type="DialogEnd" />
+		</MESSAGE>
+	</JOBdef>
+</JOBs>
+

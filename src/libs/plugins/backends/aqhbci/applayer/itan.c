@@ -25,10 +25,10 @@ static int _addTextWithoutTags(const char *s, GWEN_BUFFER *obuf);
 static void _addPhrasePleaseEnterTanForUser(AH_OUTBOX__CBOX *cbox, GWEN_BUFFER *bufGuiText);
 
 static int _extractChallengeAndText(AH_OUTBOX__CBOX *cbox,
-				    const char *sChallengeHhd,
-				    const char *sChallenge,
-				    GWEN_BUFFER *bufChallenge,
-				    GWEN_BUFFER *bufGuiText);
+                                    const char *sChallengeHhd,
+                                    const char *sChallenge,
+                                    GWEN_BUFFER *bufChallenge,
+                                    GWEN_BUFFER *bufGuiText);
 static void _copyCompressedCodeIntoBuffer(const char *code, GWEN_BUFFER *cbuf);
 static void _keepHhdBytes(GWEN_BUFFER *cbuf);
 
@@ -142,12 +142,12 @@ int AH_Outbox__CBox_JobToMessage(AH_JOB *j, AH_MSG *msg, int doCopySigners)
 
       se=GWEN_StringList_FirstEntry(AH_Job_GetSigners(j));
       if (!se) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Signatures needed but no signer given");
-	return GWEN_ERROR_INVALID;
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Signatures needed but no signer given");
+        return GWEN_ERROR_INVALID;
       }
       while (se) {
-	AH_Msg_AddSignerId(msg, GWEN_StringListEntry_Data(se));
-	se=GWEN_StringListEntry_Next(se);
+        AH_Msg_AddSignerId(msg, GWEN_StringListEntry_Data(se));
+        se=GWEN_StringListEntry_Next(se);
       } /* while */
     }
   }
@@ -415,12 +415,12 @@ void AH_Outbox__CBox_CopyJobResultsToJobList(const AH_JOB *j,
 
 
 int AH_Outbox__CBox_InputTanWithChallenge(AH_OUTBOX__CBOX *cbox,
-					  AH_DIALOG *dialog,
-					  const char *sChallenge,
-					  const char *sChallengeHhd,
-					  char *passwordBuffer,
-					  int passwordMinLen,
-					  int passwordMaxLen)
+                                          AH_DIALOG *dialog,
+                                          const char *sChallenge,
+                                          const char *sChallengeHhd,
+                                          char *passwordBuffer,
+                                          int passwordMinLen,
+                                          int passwordMaxLen)
 {
   int rv;
   GWEN_BUFFER *bufGuiText;
@@ -451,14 +451,14 @@ int AH_Outbox__CBox_InputTanWithChallenge(AH_OUTBOX__CBOX *cbox,
   }
 
   rv=AH_TanMechanism_GetTan(tanMechanism,
-			    cbox->user,
-			    I18N("TAN Entry"),
-			    GWEN_Buffer_GetStart(bufGuiText),
-			    (const uint8_t*) GWEN_Buffer_GetStart(bufChallenge),
-			    GWEN_Buffer_GetUsedBytes(bufChallenge),
-			    passwordBuffer,
-			    passwordMinLen,
-			    passwordMaxLen);
+                            cbox->user,
+                            I18N("TAN Entry"),
+                            GWEN_Buffer_GetStart(bufGuiText),
+                            (const uint8_t *) GWEN_Buffer_GetStart(bufChallenge),
+                            GWEN_Buffer_GetUsedBytes(bufChallenge),
+                            passwordBuffer,
+                            passwordMinLen,
+                            passwordMaxLen);
 
   AH_TanMechanism_free(tanMechanism);
 
@@ -471,10 +471,10 @@ int AH_Outbox__CBox_InputTanWithChallenge(AH_OUTBOX__CBOX *cbox,
 
 
 int _extractChallengeAndText(AH_OUTBOX__CBOX *cbox,
-			     const char *sChallengeHhd,
-			     const char *sChallenge,
-			     GWEN_BUFFER *bufChallenge,
-			     GWEN_BUFFER *bufGuiText)
+                             const char *sChallengeHhd,
+                             const char *sChallenge,
+                             GWEN_BUFFER *bufChallenge,
+                             GWEN_BUFFER *bufGuiText)
 {
   if (sChallengeHhd && *sChallengeHhd) {
     int rv;
@@ -520,14 +520,14 @@ int _extractChallengeAndText(AH_OUTBOX__CBOX *cbox,
 
       /* extract text */
       if (GWEN_Buffer_GetUsedBytes(bufGuiText)>0)
-	GWEN_Buffer_AppendString(bufGuiText, "\n");
+        GWEN_Buffer_AppendString(bufGuiText, "\n");
 
       s=GWEN_Text_StrCaseStr(sChallenge, "CHLGTEXT");
       if (s) {
         /* skip "CHLGTEXT" and 4 digits */
         s+=12;
         /* add rest of the message (replace HTML tags, if any) */
-	_addTextWithoutTags(s, bufGuiText);
+        _addTextWithoutTags(s, bufGuiText);
       }
       else {
         /* create own text */
@@ -556,7 +556,7 @@ void _copyCompressedCodeIntoBuffer(const char *code, GWEN_BUFFER *cbuf)
 {
   const uint8_t *p;
 
-  p=(const uint8_t*)code;
+  p=(const uint8_t *)code;
   while (*p) {
     uint8_t c;
 
@@ -613,7 +613,7 @@ void _addPhrasePleaseEnterTanForUser(AH_OUTBOX__CBOX *cbox, GWEN_BUFFER *bufGuiT
     sBankName=AB_User_GetBankCode(user);
 
   snprintf(buffer, sizeof(buffer)-1,
-	   I18N("Please enter the TAN for user %s at %s.\n"), sUserName, sBankName);
+           I18N("Please enter the TAN for user %s at %s.\n"), sUserName, sBankName);
   buffer[sizeof(buffer)-1]=0;
   GWEN_Buffer_AppendString(bufGuiText, buffer);
   AB_BankInfo_free(bankInfo);

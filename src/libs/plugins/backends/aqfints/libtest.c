@@ -91,9 +91,9 @@ int test_parser()
 
   dbData=GWEN_DB_Group_new("testdata");
   rv=AQFINTS_Parser_ReadIntoDb(parser,
-			       (const uint8_t*) GWEN_Buffer_GetStart(mbuf),
-			       GWEN_Buffer_GetUsedBytes(mbuf),
-			       dbData);
+                               (const uint8_t *) GWEN_Buffer_GetStart(mbuf),
+                               GWEN_Buffer_GetUsedBytes(mbuf),
+                               dbData);
   if (rv<0) {
     //AQFINTS_Parser_DumpDefinitions(parser, 2);
     return 2;
@@ -132,7 +132,7 @@ int test_upd()
 
   segmentList=AQFINTS_Segment_List_new();
   rv=AQFINTS_Parser_ReadIntoSegmentList(parser, segmentList,
-                                        (const uint8_t*) GWEN_Buffer_GetStart(mbuf),
+                                        (const uint8_t *) GWEN_Buffer_GetStart(mbuf),
                                         GWEN_Buffer_GetUsedBytes(mbuf));
   if (rv<0) {
     fprintf(stderr, "Error reading HBCI message into segment list (%d)\n", rv);
@@ -238,7 +238,8 @@ int test_getBpd()
 
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   //test_parser();
   //test_upd();
   test_getBpd();

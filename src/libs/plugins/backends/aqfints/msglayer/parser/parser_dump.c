@@ -51,7 +51,7 @@ void dumpElementTreeToBuffer(AQFINTS_ELEMENT *element, GWEN_BUFFER *pbuf, int in
   appendElementInfo(element, pbuf, indent);
   GWEN_Buffer_AppendString(pbuf, "\n");
   childElement=AQFINTS_Element_Tree2_GetFirstChild(element);
-  while(childElement) {
+  while (childElement) {
     dumpElementTreeToBuffer(childElement, pbuf, indent+2);
     childElement=AQFINTS_Element_Tree2_GetNext(childElement);
   }
@@ -123,7 +123,7 @@ void AQFINTS_Parser_DumpSegmentList(AQFINTS_SEGMENT_LIST *segmentList, int inden
   AQFINTS_SEGMENT *segment;
 
   segment=AQFINTS_Segment_List_First(segmentList);
-  while(segment) {
+  while (segment) {
     AQFINTS_Parser_DumpSegment(segment, indent);
     segment=AQFINTS_Segment_List_Next(segment);
   }
@@ -190,12 +190,22 @@ void appendElementInfo(AQFINTS_ELEMENT *element, GWEN_BUFFER *pbuf, int indent)
   if (indent)
     GWEN_Buffer_FillWithBytes(pbuf, ' ', indent);
 
-  switch(AQFINTS_Element_GetElementType(element)) {
-  case AQFINTS_ElementType_Root:  s="ROOT "; break;
-  case AQFINTS_ElementType_Group: s="GROUP"; break;
-  case AQFINTS_ElementType_Deg:   s="DEG  "; break;
-  case AQFINTS_ElementType_De:    s="DE   "; break;
-  default:                        s="(UNK)"; break;
+  switch (AQFINTS_Element_GetElementType(element)) {
+  case AQFINTS_ElementType_Root:
+    s="ROOT ";
+    break;
+  case AQFINTS_ElementType_Group:
+    s="GROUP";
+    break;
+  case AQFINTS_ElementType_Deg:
+    s="DEG  ";
+    break;
+  case AQFINTS_ElementType_De:
+    s="DE   ";
+    break;
+  default:
+    s="(UNK)";
+    break;
   }
   GWEN_Buffer_AppendString(pbuf, s);
 
@@ -217,10 +227,10 @@ void appendElementInfo(AQFINTS_ELEMENT *element, GWEN_BUFFER *pbuf, int indent)
       GWEN_Buffer_AppendString(pbuf, " binary data: ");
       ptr=AQFINTS_Element_GetDataPointer(element);
       len=AQFINTS_Element_GetDataLength(element);
-      GWEN_Text_DumpString2Buffer((const char*) ptr, len, pbuf, indent+4);
+      GWEN_Text_DumpString2Buffer((const char *) ptr, len, pbuf, indent+4);
     }
     else {
-      s=(const char*) AQFINTS_Element_GetDataPointer(element);
+      s=(const char *) AQFINTS_Element_GetDataPointer(element);
       appendString("data", s, pbuf);
     }
   }
@@ -285,7 +295,7 @@ void dumpPath(AQFINTS_ELEMENT *element, GWEN_BUFFER *pbuf, int indent)
   /* determine indentation for root */
   i=0;
   parent=AQFINTS_Element_Tree2_GetParent(element);
-  while(parent) {
+  while (parent) {
     i++;
     parent=AQFINTS_Element_Tree2_GetParent(parent);
   }

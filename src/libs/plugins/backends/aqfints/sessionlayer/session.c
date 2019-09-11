@@ -360,7 +360,7 @@ int AQFINTS_Session_Sign(AQFINTS_SESSION *sess, AQFINTS_KEYNAME *keyName, GWEN_B
 
 
 int AQFINTS_Session_Verify(AQFINTS_SESSION *sess, AQFINTS_KEYNAME *keyName, GWEN_BUFFER *dataBuffer,
-			   const uint8_t *ptrSignature, uint32_t lenSignature)
+                           const uint8_t *ptrSignature, uint32_t lenSignature)
 {
   assert(sess);
   if (sess->verifyFn)
@@ -407,7 +407,7 @@ AQFINTS_SESSION_EXCHANGEMESSAGES_FN AQFINTS_Session_SetExchangeMessagesFn(AQFINT
 
 
 AQFINTS_SESSION_FILLOUT_KEYNAME_FN AQFINTS_Session_SetFilloutKeynameFn(AQFINTS_SESSION *sess,
-								       AQFINTS_SESSION_FILLOUT_KEYNAME_FN fn)
+                                                                       AQFINTS_SESSION_FILLOUT_KEYNAME_FN fn)
 {
   AQFINTS_SESSION_FILLOUT_KEYNAME_FN oldFn;
 
@@ -480,7 +480,7 @@ int AQFINTS_Session_WriteSegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIST
   int segNum=firstSegNum;
 
   segment=AQFINTS_Segment_List_First(segmentList);
-  while(segment) {
+  while (segment) {
     int rv;
 
     AQFINTS_Segment_SetSegmentNumber(segment, segNum++);
@@ -586,7 +586,7 @@ void sampleAllowedTanMethods(int *ptrIntArray, int sizeIntArray,
         GWEN_DB_NODE *dbResult;
 
         dbResult=GWEN_DB_FindFirstGroup(db, "result");
-        while(dbResult) {
+        while (dbResult) {
           int resultCode;
           const char *resultText;
 

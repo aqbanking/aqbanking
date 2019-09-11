@@ -25,9 +25,9 @@
 
 
 static int _sendAndReceiveTanResponseProc2(AH_OUTBOX__CBOX *cbox,
-					   AH_DIALOG *dlg,
-					   AH_JOBQUEUE *qJob,
-					   AH_JOB *jTan1);
+                                           AH_DIALOG *dlg,
+                                           AH_JOBQUEUE *qJob,
+                                           AH_JOB *jTan1);
 
 static void _dispatchJobSegResultsToQueue(AH_JOB *job, AH_JOBQUEUE *qJob);
 static void _dispatchJobMsgResultsToQueue(AH_JOB *job, AH_JOBQUEUE *qJob);
@@ -44,7 +44,7 @@ static void _dispatchJobMsgResultsToQueue(AH_JOB *job, AH_JOBQUEUE *qJob);
 int AH_Outbox__CBox_SendAndReceiveQueueWithTan2(AH_OUTBOX__CBOX *cbox,
                                                 AH_DIALOG *dlg,
                                                 AH_JOBQUEUE *qJob)
-  {
+{
   int rv;
   AH_JOB *job;
   AH_JOB *jTan1;
@@ -155,9 +155,9 @@ int AH_Outbox__CBox_SendAndReceiveJobWithTan2(AH_OUTBOX__CBOX *cbox,
 
 
 int _sendAndReceiveTanResponseProc2(AH_OUTBOX__CBOX *cbox,
-				    AH_DIALOG *dlg,
-				    AH_JOBQUEUE *qJob,
-				    AH_JOB *jTan1)
+                                    AH_DIALOG *dlg,
+                                    AH_JOBQUEUE *qJob,
+                                    AH_JOB *jTan1)
 {
   int rv;
   AH_JOB *j;
@@ -353,35 +353,35 @@ void _dispatchJobSegResultsToQueue(AH_JOB *job, AH_JOBQUEUE *qJob)
   qjl=AH_JobQueue_GetJobList(qJob);
   if (qjl) {
     AH_RESULT_LIST *rl;
-  
+
     /* segment results */
     rl=AH_Job_GetSegResults(job);
     if (rl) {
       AH_RESULT *origRes;
-  
+
       origRes=AH_Result_List_First(rl);
       if (origRes==NULL) {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "No segment result in job HKTAN");
+        DBG_INFO(AQHBCI_LOGDOMAIN, "No segment result in job HKTAN");
       }
       while (origRes) {
-	AH_JOB *qj;
-  
-	qj=AH_Job_List_First(qjl);
-	while (qj) {
-	  if (qj!=job) {
-	    AH_RESULT *nr;
-  
-	    nr=AH_Result_dup(origRes);
-	    DBG_ERROR(AQHBCI_LOGDOMAIN, "Adding result %d to job %s", AH_Result_GetCode(origRes), AH_Job_GetName(qj));
-	    AH_Result_List_Add(nr, AH_Job_GetSegResults(qj));
-	  }
-	  else {
-	    DBG_INFO(AQHBCI_LOGDOMAIN, "Not adding result to the same job");
-	  }
-	  qj=AH_Job_List_Next(qj);
-	}
-  
-	origRes=AH_Result_List_Next(origRes);
+        AH_JOB *qj;
+
+        qj=AH_Job_List_First(qjl);
+        while (qj) {
+          if (qj!=job) {
+            AH_RESULT *nr;
+
+            nr=AH_Result_dup(origRes);
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "Adding result %d to job %s", AH_Result_GetCode(origRes), AH_Job_GetName(qj));
+            AH_Result_List_Add(nr, AH_Job_GetSegResults(qj));
+          }
+          else {
+            DBG_INFO(AQHBCI_LOGDOMAIN, "Not adding result to the same job");
+          }
+          qj=AH_Job_List_Next(qj);
+        }
+
+        origRes=AH_Result_List_Next(origRes);
       } /* while origRes */
     } /* if rl */
     else {
@@ -409,21 +409,21 @@ void _dispatchJobMsgResultsToQueue(AH_JOB *job, AH_JOBQUEUE *qJob)
     rl=AH_Job_GetMsgResults(job);
     if (rl) {
       AH_RESULT *origRes;
-  
+
       origRes=AH_Result_List_First(rl);
       while (origRes) {
-	AH_JOB *qj;
-  
-	qj=AH_Job_List_First(qjl);
-	while (qj) {
-	  AH_RESULT *nr;
-  
-	  nr=AH_Result_dup(origRes);
-	  AH_Result_List_Add(nr, AH_Job_GetMsgResults(qj));
-	  qj=AH_Job_List_Next(qj);
-	}
-  
-	origRes=AH_Result_List_Next(origRes);
+        AH_JOB *qj;
+
+        qj=AH_Job_List_First(qjl);
+        while (qj) {
+          AH_RESULT *nr;
+
+          nr=AH_Result_dup(origRes);
+          AH_Result_List_Add(nr, AH_Job_GetMsgResults(qj));
+          qj=AH_Job_List_Next(qj);
+        }
+
+        origRes=AH_Result_List_Next(origRes);
       } /* while origRes */
     } /* if rl */
     else {

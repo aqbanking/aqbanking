@@ -173,7 +173,7 @@ void writeSegmentDefinitions(const AQFINTS_SEGMENT_LIST *segmentList, GWEN_XMLNO
   const AQFINTS_SEGMENT *segment;
 
   segment=AQFINTS_Segment_List_First(segmentList);
-  while(segment) {
+  while (segment) {
     GWEN_XMLNODE *xmlNode;
 
     xmlNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "SEGdef");
@@ -196,7 +196,7 @@ void readGroupsAndSegsAndJobs(AQFINTS_JOBDEF_LIST *jobDefList,
   GWEN_XMLNODE *xmlNode;
 
   xmlNode=GWEN_XMLNode_GetFirstTag(xmlSource);
-  while(xmlNode) {
+  while (xmlNode) {
     const char *s;
 
     s=GWEN_XMLNode_GetData(xmlNode);
@@ -226,7 +226,7 @@ void readGroups(AQFINTS_ELEMENT *groupTree, GWEN_XMLNODE *xmlSource)
   GWEN_XMLNODE *xmlNode;
 
   xmlNode=GWEN_XMLNode_GetFirstTag(xmlSource);
-  while(xmlNode) {
+  while (xmlNode) {
     const char *s;
 
     s=GWEN_XMLNode_GetData(xmlNode);
@@ -248,7 +248,7 @@ void readSegments(AQFINTS_SEGMENT_LIST *segmentList, GWEN_XMLNODE *xmlSource)
   GWEN_XMLNODE *xmlNode;
 
   xmlNode=GWEN_XMLNode_GetFirstTag(xmlSource);
-  while(xmlNode) {
+  while (xmlNode) {
     const char *s;
 
     s=GWEN_XMLNode_GetData(xmlNode);
@@ -270,7 +270,7 @@ void readJobDefs(AQFINTS_JOBDEF_LIST *jobDefList, GWEN_XMLNODE *xmlSource)
   GWEN_XMLNODE *xmlNode;
 
   xmlNode=GWEN_XMLNode_GetFirstTag(xmlSource);
-  while(xmlNode) {
+  while (xmlNode) {
     const char *s;
 
     s=GWEN_XMLNode_GetData(xmlNode);
@@ -305,7 +305,7 @@ void readElementWithChildren(AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlSource)
   readElement(el, xmlSource);
 
   /* read child elements for some groups */
-  switch(AQFINTS_Element_GetElementType(el)) {
+  switch (AQFINTS_Element_GetElementType(el)) {
   case AQFINTS_ElementType_Root:
   case AQFINTS_ElementType_Group:
   case AQFINTS_ElementType_Deg:
@@ -324,7 +324,7 @@ void readChildElements(AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlSource)
   GWEN_XMLNODE *xmlNode;
 
   xmlNode=GWEN_XMLNode_GetFirstTag(xmlSource);
-  while(xmlNode) {
+  while (xmlNode) {
     AQFINTS_ELEMENT *elChild;
 
     elChild=AQFINTS_Element_new();
@@ -358,7 +358,7 @@ void readSegmentChildren(AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlSource)
   }
 
   xmlNode=GWEN_XMLNode_GetFirstTag(xmlSource);
-  while(xmlNode) {
+  while (xmlNode) {
     AQFINTS_ELEMENT *elChild;
 
     elChild=AQFINTS_Element_new();
@@ -380,7 +380,7 @@ void writeSegmentWithElements(const AQFINTS_SEGMENT *segment, GWEN_XMLNODE *xmlD
     const AQFINTS_ELEMENT *el;
 
     el=AQFINTS_Element_Tree2_GetFirstChild(elements);
-    while(el) {
+    while (el) {
       writeElementTree(el, xmlDest);
       el=AQFINTS_Element_Tree2_GetNext(el);
     }
@@ -395,12 +395,22 @@ void writeElementTree(const AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlDest)
   const char *s;
 
   elementType=AQFINTS_Element_GetElementType(el);
-  switch(elementType) {
-  case AQFINTS_ElementType_Root:   s="root";  break;
-  case AQFINTS_ElementType_Group:  s="GROUP"; break;
-  case AQFINTS_ElementType_De:     s="DE";    break;
-  case AQFINTS_ElementType_Deg:    s="DEG";   break;
-  default:                         s=NULL;    break;
+  switch (elementType) {
+  case AQFINTS_ElementType_Root:
+    s="root";
+    break;
+  case AQFINTS_ElementType_Group:
+    s="GROUP";
+    break;
+  case AQFINTS_ElementType_De:
+    s="DE";
+    break;
+  case AQFINTS_ElementType_Deg:
+    s="DEG";
+    break;
+  default:
+    s=NULL;
+    break;
   }
   if (s) {
     GWEN_XMLNODE *xmlNode;
@@ -410,7 +420,7 @@ void writeElementTree(const AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlDest)
     writeElement(el, xmlNode);
 
     elChild=AQFINTS_Element_Tree2_GetFirstChild(el);
-    while(elChild) {
+    while (elChild) {
       writeElementTree(elChild, xmlNode);
       elChild=AQFINTS_Element_Tree2_GetNext(elChild);
     }
@@ -499,7 +509,7 @@ void readElement(AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlSource)
           binBuffer=GWEN_Buffer_new(0, 256, 0, 1);
           GWEN_Text_FromHexBuffer(s, binBuffer);
           AQFINTS_Element_SetDataCopy(el,
-                                      (const uint8_t*) GWEN_Buffer_GetStart(binBuffer),
+                                      (const uint8_t *) GWEN_Buffer_GetStart(binBuffer),
                                       GWEN_Buffer_GetUsedBytes(binBuffer));
           GWEN_Buffer_free(binBuffer);
         }
@@ -578,7 +588,7 @@ void writeElement(const AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlDest)
         GWEN_XMLNODE *xmlNode;
 
         hexBuffer=GWEN_Buffer_new(0, 256, 0, 1);
-        GWEN_Text_ToHexBuffer((const char*) ptrData, lenData, hexBuffer, 32, '\n', 0);
+        GWEN_Text_ToHexBuffer((const char *) ptrData, lenData, hexBuffer, 32, '\n', 0);
         xmlNode=GWEN_XMLNode_new(GWEN_XMLNodeTypeData, GWEN_Buffer_GetStart(hexBuffer));
         GWEN_XMLNode_AddChild(xmlDest, xmlNode);
         GWEN_Buffer_free(hexBuffer);

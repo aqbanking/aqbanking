@@ -31,7 +31,7 @@ typedef struct {
 } TAN_MAP_ENTRY;
 
 
-static TAN_MAP_ENTRY _zkaNameMap[]={
+static TAN_MAP_ENTRY _zkaNameMap[]= {
   {"HHD",       AB_BANKING_TANMETHOD_TEXT},
   {"mobileTAN", AB_BANKING_TANMETHOD_TEXT},
   {NULL,        0}
@@ -39,7 +39,7 @@ static TAN_MAP_ENTRY _zkaNameMap[]={
 
 
 
-static TAN_MAP_ENTRY _methodIdMap[]={
+static TAN_MAP_ENTRY _methodIdMap[]= {
   {"smsTAN",     AB_BANKING_TANMETHOD_TEXT},
   {"iTAN",       AB_BANKING_TANMETHOD_TEXT},
   {"HHD1.*OPT",  AB_BANKING_TANMETHOD_CHIPTAN_OPTIC},
@@ -83,8 +83,8 @@ void AH_TanMechanism_free(AH_TAN_MECHANISM *tanMechanism)
 {
   if (tanMechanism) {
     GWEN_INHERIT_FINI(AH_TAN_MECHANISM, tanMechanism)
-      if (tanMechanism->tanMethod)
-        AH_TanMethod_free(tanMechanism->tanMethod);
+    if (tanMechanism->tanMethod)
+      AH_TanMethod_free(tanMechanism->tanMethod);
     GWEN_FREE_OBJECT(tanMechanism);
   }
 }
@@ -173,7 +173,7 @@ AH_TAN_MECHANISM *AH_TanMechanism_Factory(const AH_TAN_METHOD *tanMethod)
 #endif
   }
 
-  switch(id) {
+  switch (id) {
   case AB_BANKING_TANMETHOD_CHIPTAN_OPTIC:
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Using TAN mechanism \"chipTAN optisch\"");
     tanMechanism=AH_TanMechanism_ChipTanOpt_new(tanMethod, id);
@@ -247,7 +247,7 @@ int _getTanMethodIdFromString(const char *name, const TAN_MAP_ENTRY *nameMap)
   const TAN_MAP_ENTRY *currentMapEntry;
 
   currentMapEntry=nameMap;
-  while(currentMapEntry->namePattern) {
+  while (currentMapEntry->namePattern) {
     if (-1!=GWEN_Text_ComparePattern(name, currentMapEntry->namePattern, 0))
       return currentMapEntry->id;
     currentMapEntry++;

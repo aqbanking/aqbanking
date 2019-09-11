@@ -685,7 +685,7 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
     }
 
     /* https://www.aquamaniac.de/rdm/issues/41 */
-    if(tokenType && !strcasecmp(tokenType, "ohbci"))
+    if (tokenType && !strcasecmp(tokenType, "ohbci"))
       doSHA256inSW = 1;
 
     /* hash sighead + data */
@@ -719,20 +719,17 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
         GWEN_Buffer_free(hbuf);
         return rv;
       }
-      if((hashAlg == AH_HashAlg_Sha256Sha256) && doSHA256inSW)
-      {
+      if ((hashAlg == AH_HashAlg_Sha256Sha256) && doSHA256inSW) {
         DBG_NOTICE(AQHBCI_LOGDOMAIN, "%s(): doSHA256inSW (2nd).", __FUNCTION__);
         rv = GWEN_MDigest_Begin(md);
-        if(rv == 0)
-        {
+        if (rv == 0) {
           uint8_t h[32];
           memcpy(h, GWEN_MDigest_GetDigestPtr(md), 32);
           rv = GWEN_MDigest_Update(md, h, 32);
-          if(rv == 0)
+          if (rv == 0)
             rv = GWEN_MDigest_End(md);
         }
-        if(rv < 0)
-        {
+        if (rv < 0) {
           DBG_ERROR(AQHBCI_LOGDOMAIN, "Hash error round 2 (%d)", rv);
           GWEN_MDigest_free(md);
           GWEN_Buffer_free(sigbuf);

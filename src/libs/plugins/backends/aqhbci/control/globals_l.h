@@ -91,6 +91,11 @@ int AH_Control_SendKeys(AB_PROVIDER *pro,
                         int argc,
                         char **argv);
 
+int AH_Control_ChangeKeys(AB_PROVIDER *pro,
+                          GWEN_DB_NODE *dbArgs,
+                          int argc,
+                          char **argv);
+
 int AH_Control_ListUsers(AB_PROVIDER *pro,
                          GWEN_DB_NODE *dbArgs,
                          int argc,

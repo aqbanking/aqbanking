@@ -78,7 +78,7 @@ int test_readHbci(void)
 
   segmentList=AQFINTS_Segment_List_new();
 
-  rv=AQFINTS_Parser_Hbci_ReadBuffer(segmentList, (const uint8_t*) testData, strlen(testData));
+  rv=AQFINTS_Parser_Hbci_ReadBuffer(segmentList, (const uint8_t *) testData, strlen(testData));
   if (rv<0) {
     fprintf(stderr, "Error reading HBCI data.\n");
     AQFINTS_Segment_List_free(segmentList);
@@ -147,7 +147,7 @@ int test_saveFile2(const char *filenameOut)
 
   segmentList=AQFINTS_Segment_List_new();
 
-  rv=AQFINTS_Parser_Hbci_ReadBuffer(segmentList, (const uint8_t*) testData, strlen(testData));
+  rv=AQFINTS_Parser_Hbci_ReadBuffer(segmentList, (const uint8_t *) testData, strlen(testData));
   if (rv<0) {
     fprintf(stderr, "Error reading HBCI data.\n");
     AQFINTS_Segment_List_free(segmentList);
@@ -182,7 +182,7 @@ int test_writeSegments()
 
   segmentList=AQFINTS_Segment_List_new();
 
-  rv=AQFINTS_Parser_Hbci_ReadBuffer(segmentList, (const uint8_t*) testData, strlen(testData));
+  rv=AQFINTS_Parser_Hbci_ReadBuffer(segmentList, (const uint8_t *) testData, strlen(testData));
   if (rv<0) {
     fprintf(stderr, "Error reading HBCI data.\n");
     AQFINTS_Segment_List_free(segmentList);
@@ -199,7 +199,7 @@ int test_writeSegments()
 
   if (strlen(testData)!=GWEN_Buffer_GetUsedBytes(destBuf)) {
     fprintf(stderr, "ERROR: Size differs (orig=%d, returned=%d)\n",
-	    (int) strlen(testData), GWEN_Buffer_GetUsedBytes(destBuf));
+            (int) strlen(testData), GWEN_Buffer_GetUsedBytes(destBuf));
   }
   if (memcmp(testData, GWEN_Buffer_GetStart(destBuf), GWEN_Buffer_GetUsedBytes(destBuf))) {
     fprintf(stderr, "ERROR: Data differs\n");
@@ -224,34 +224,34 @@ int test_segmentToDb1()
   int rv;
   const char *defData=
     "<FinTS>"
-       "<SEGs>"
-         "<SEGdef id=\"Segment1\" code=\"seg1\" segmentVersion=1 protocolVersion=300 >"
-           "<DEG name=\"deg1.1\">"
-             "<DE name=\"de1.1.1\" type=\"num\"></DE>"
-             "<DE name=\"de1.1.2\" type=\"an\"></DE>"
-           "</DEG>"
-           "<DEG>"
-             "<DE name=\"de1.2.1\" type=\"an\"></DE>"
-             "<DE name=\"de1.2.2\" type=\"an\"></DE>"
-           "</DEG>"
-         "</SEGdef>"
-      "</SEGs>"
+    "<SEGs>"
+    "<SEGdef id=\"Segment1\" code=\"seg1\" segmentVersion=1 protocolVersion=300 >"
+    "<DEG name=\"deg1.1\">"
+    "<DE name=\"de1.1.1\" type=\"num\"></DE>"
+    "<DE name=\"de1.1.2\" type=\"an\"></DE>"
+    "</DEG>"
+    "<DEG>"
+    "<DE name=\"de1.2.1\" type=\"an\"></DE>"
+    "<DE name=\"de1.2.2\" type=\"an\"></DE>"
+    "</DEG>"
+    "</SEGdef>"
+    "</SEGs>"
     "</FinTS>";
 
   const char *elemData=
     "<FinTS>"
-      "<SEGs>"
-        "<SEGdef id=\"Segment1\" code=\"seg1\" segmentVersion=1 protocolVersion=300 >"
-          "<DEG>"
-           "<DE>123</DE>"
-           "<DE>data 1.1.2</DE>"
-          "</DEG>"
-          "<DEG>"
-           "<DE>data 1.2.1</DE>"
-           "<DE>data 1.2.2</DE>"
-          "</DEG>"
-        "</SEGdef>"
-      "</SEGs>"
+    "<SEGs>"
+    "<SEGdef id=\"Segment1\" code=\"seg1\" segmentVersion=1 protocolVersion=300 >"
+    "<DEG>"
+    "<DE>123</DE>"
+    "<DE>data 1.1.2</DE>"
+    "</DEG>"
+    "<DEG>"
+    "<DE>data 1.2.1</DE>"
+    "<DE>data 1.2.2</DE>"
+    "</DEG>"
+    "</SEGdef>"
+    "</SEGs>"
     "</FinTS>";
 
   groupTree=AQFINTS_Element_new();
@@ -316,35 +316,35 @@ int test_segmentToDb2()
   int rv;
   const char *defData=
     "<FinTS>"
-       "<SEGs>"
-         "<SEGdef id=\"Segment1\" code=\"seg1\" segmentVersion=1 protocolVersion=300 >"
-           "<DEG name=\"deg1.1\">"
-             "<DE name=\"de1.1.1\" type=\"num\"></DE>"
-             "<DE name=\"de1.1.2\" type=\"an\"></DE>"
-           "</DEG>"
-           "<DEG>"
-             "<DE name=\"de1.2.1\" type=\"an\"></DE>"
-             "<DE name=\"de1.2.2\" type=\"an\" maxnum=99></DE>"
-           "</DEG>"
-         "</SEGdef>"
-      "</SEGs>"
+    "<SEGs>"
+    "<SEGdef id=\"Segment1\" code=\"seg1\" segmentVersion=1 protocolVersion=300 >"
+    "<DEG name=\"deg1.1\">"
+    "<DE name=\"de1.1.1\" type=\"num\"></DE>"
+    "<DE name=\"de1.1.2\" type=\"an\"></DE>"
+    "</DEG>"
+    "<DEG>"
+    "<DE name=\"de1.2.1\" type=\"an\"></DE>"
+    "<DE name=\"de1.2.2\" type=\"an\" maxnum=99></DE>"
+    "</DEG>"
+    "</SEGdef>"
+    "</SEGs>"
     "</FinTS>";
 
   const char *elemData=
     "<FinTS>"
-      "<SEGs>"
-        "<SEGdef id=\"Segment1\" code=\"seg1\" segmentVersion=1 protocolVersion=300 >"
-          "<DEG>"
-           "<DE>123</DE>"
-           "<DE>data 1.1.2</DE>"
-          "</DEG>"
-          "<DEG>"
-           "<DE>data 1.2.1</DE>"
-           "<DE>data 1.2.2</DE>"
-           "<DE>data 1.2.2b</DE>"
-          "</DEG>"
-        "</SEGdef>"
-      "</SEGs>"
+    "<SEGs>"
+    "<SEGdef id=\"Segment1\" code=\"seg1\" segmentVersion=1 protocolVersion=300 >"
+    "<DEG>"
+    "<DE>123</DE>"
+    "<DE>data 1.1.2</DE>"
+    "</DEG>"
+    "<DEG>"
+    "<DE>data 1.2.1</DE>"
+    "<DE>data 1.2.2</DE>"
+    "<DE>data 1.2.2b</DE>"
+    "</DEG>"
+    "</SEGdef>"
+    "</SEGs>"
     "</FinTS>";
 
   groupTree=AQFINTS_Element_new();
@@ -409,35 +409,35 @@ int test_segmentToDb3()
   int rv;
   const char *defData=
     "<FinTS>"
-       "<SEGs>"
-         "<SEGdef id=\"Segment1\" code=\"seg1\" segmentVersion=1 protocolVersion=300 >"
-           "<DEG name=\"deg1.1\">"
-             "<DE name=\"de1.1.1\" type=\"num\"></DE>"
-             "<DE name=\"de1.1.2\" type=\"an\"></DE>"
-           "</DEG>"
-           "<DEG>"
-             "<DE name=\"de1.2.1\" type=\"an\"></DE>"
-             "<DE name=\"de1.2.2\" type=\"an\"></DE>"
-             "<DE name=\"de1.2.3\" type=\"an\" minnum=0></DE>"
-           "</DEG>"
-         "</SEGdef>"
-      "</SEGs>"
+    "<SEGs>"
+    "<SEGdef id=\"Segment1\" code=\"seg1\" segmentVersion=1 protocolVersion=300 >"
+    "<DEG name=\"deg1.1\">"
+    "<DE name=\"de1.1.1\" type=\"num\"></DE>"
+    "<DE name=\"de1.1.2\" type=\"an\"></DE>"
+    "</DEG>"
+    "<DEG>"
+    "<DE name=\"de1.2.1\" type=\"an\"></DE>"
+    "<DE name=\"de1.2.2\" type=\"an\"></DE>"
+    "<DE name=\"de1.2.3\" type=\"an\" minnum=0></DE>"
+    "</DEG>"
+    "</SEGdef>"
+    "</SEGs>"
     "</FinTS>";
 
   const char *elemData=
     "<FinTS>"
-      "<SEGs>"
-        "<SEGdef id=\"Segment1\" code=\"seg1\" segmentVersion=1 protocolVersion=300 >"
-          "<DEG>"
-           "<DE>123</DE>"
-           "<DE>data 1.1.2</DE>"
-          "</DEG>"
-          "<DEG>"
-           "<DE>data 1.2.1</DE>"
-           "<DE>data 1.2.2</DE>"
-          "</DEG>"
-        "</SEGdef>"
-      "</SEGs>"
+    "<SEGs>"
+    "<SEGdef id=\"Segment1\" code=\"seg1\" segmentVersion=1 protocolVersion=300 >"
+    "<DEG>"
+    "<DE>123</DE>"
+    "<DE>data 1.1.2</DE>"
+    "</DEG>"
+    "<DEG>"
+    "<DE>data 1.2.1</DE>"
+    "<DE>data 1.2.2</DE>"
+    "</DEG>"
+    "</SEGdef>"
+    "</SEGs>"
     "</FinTS>";
 
   groupTree=AQFINTS_Element_new();
@@ -502,40 +502,40 @@ int test_segmentToDb4()
   int rv;
   const char *defData=
     "<FinTS>"
-       "<SEGs>"
-         "<SEGdef id=\"Segment1\" code=\"seg1\" segmentVersion=1 protocolVersion=300 >"
-           "<DEG name=\"deg1.1\">"
-             "<DE name=\"de1.1.1\" type=\"num\"></DE>"
-             "<DE name=\"de1.1.2\" type=\"an\"></DE>"
-           "</DEG>"
-           "<DEG>"
-             "<DE name=\"de1.2.1\" type=\"an\"></DE>"
-             "<DE name=\"de1.2.2\" type=\"an\"></DE>"
-             "<DE name=\"de1.2.3\" type=\"an\" minnum=0></DE>"
-           "</DEG>"
-           "<DEG name=\"deg2\" minnum=0>"
-             "<DE name=\"de2.2.1\" type=\"an\"></DE>"
-             "<DE name=\"de2.2.2\" type=\"an\"></DE>"
-             "<DE name=\"de2.2.3\" type=\"an\" minnum=0></DE>"
-           "</DEG>"
-         "</SEGdef>"
-      "</SEGs>"
+    "<SEGs>"
+    "<SEGdef id=\"Segment1\" code=\"seg1\" segmentVersion=1 protocolVersion=300 >"
+    "<DEG name=\"deg1.1\">"
+    "<DE name=\"de1.1.1\" type=\"num\"></DE>"
+    "<DE name=\"de1.1.2\" type=\"an\"></DE>"
+    "</DEG>"
+    "<DEG>"
+    "<DE name=\"de1.2.1\" type=\"an\"></DE>"
+    "<DE name=\"de1.2.2\" type=\"an\"></DE>"
+    "<DE name=\"de1.2.3\" type=\"an\" minnum=0></DE>"
+    "</DEG>"
+    "<DEG name=\"deg2\" minnum=0>"
+    "<DE name=\"de2.2.1\" type=\"an\"></DE>"
+    "<DE name=\"de2.2.2\" type=\"an\"></DE>"
+    "<DE name=\"de2.2.3\" type=\"an\" minnum=0></DE>"
+    "</DEG>"
+    "</SEGdef>"
+    "</SEGs>"
     "</FinTS>";
 
   const char *elemData=
     "<FinTS>"
-      "<SEGs>"
-        "<SEGdef id=\"Segment1\" code=\"seg1\" segmentVersion=1 protocolVersion=300 >"
-          "<DEG>"
-           "<DE>123</DE>"
-           "<DE>data 1.1.2</DE>"
-          "</DEG>"
-          "<DEG>"
-           "<DE>data 1.2.1</DE>"
-           "<DE>data 1.2.2</DE>"
-          "</DEG>"
-        "</SEGdef>"
-      "</SEGs>"
+    "<SEGs>"
+    "<SEGdef id=\"Segment1\" code=\"seg1\" segmentVersion=1 protocolVersion=300 >"
+    "<DEG>"
+    "<DE>123</DE>"
+    "<DE>data 1.1.2</DE>"
+    "</DEG>"
+    "<DEG>"
+    "<DE>data 1.2.1</DE>"
+    "<DE>data 1.2.2</DE>"
+    "</DEG>"
+    "</SEGdef>"
+    "</SEGs>"
     "</FinTS>";
 
   groupTree=AQFINTS_Element_new();
@@ -600,48 +600,49 @@ int test_segmentToDb5()
   int rv;
   const char *defData=
     "<FinTS>"
-      "<GROUPs>"
-	"<GROUPdef id=\"SegHead\" >"
-	  "<DE name=\"code\"            type=\"AN\"    maxsize=\"6\" />"
-	  "<DE name=\"seq\"             type=\"num\"   maxsize=\"15\" />"
-	  "<DE name=\"version\"         type=\"num\"   maxsize=\"3\"/>"
-	  "<DE name=\"ref\"             type=\"num\"   maxsize=\"3\" minnum=0 />"
-	"</GROUPdef>"
-	"<GROUPdef id=\"language\" version=\"1\" >"
-  	  "<DE     name=\"language\"       type=\"num\"      maxsize=\"3\"  minnum=\"1\" maxnum=\"9\" />"
-	"</GROUPdef>"
-	"<GROUPdef id=\"version\" version=\"1\" >"
-	  "<DE     name=\"version\"        type=\"num\"      maxsize=\"3\"  minnum=\"1\" maxnum=\"9\" />"
-        "</GROUPdef>"
-        "<GROUPdef id=\"needtan\" version=\"1\">"
-          "<DE     name=\"job\"            type=\"an\"       maxsize=\"6\" />"
-          "<DE     name=\"needTan\"        type=\"an\"       maxsize=\"1\" />"
-        "</GROUPdef>"
-      "</GROUPs>"
-      "<SEGs>"
-	"<SEGdef id=\"PinTanBPD\" code=\"HIPINS\" segmentVersion=\"1\" protocolVersion=\"300\">"
-	  "<DEG>"
-	    "<GROUP   name=\"head\"         type=\"SegHead\" />"
-	  "</DEG>"
-	  "<DE      name=\"jobspermsg\"     type=\"num\"      maxsize=\"3\" />"
-	  "<DE      name=\"minsigs\"        type=\"num\"      maxsize=\"3\" />"
-	  "<DE      name=\"securityClass\"  type=\"num\"      minsize=\"1\"  maxsize=\"1\" minnum=\"0\" />"
-	  "<DEG>"
-	    "<DE    name=\"minPinLen\"      type=\"num\"      maxsize=\"2\"  minnum=\"0\" />"
-	    "<DE    name=\"maxPinLen\"      type=\"num\"      maxsize=\"2\"  minnum=\"0\" />"
-	    "<DE    name=\"maxTanLen\"      type=\"num\"      maxsize=\"2\"  minnum=\"0\" />"
-	    "<DE    name=\"userIdText\"     type=\"ascii\"    maxsize=\"30\" minnum=\"0\" />"
-	    "<DE    name=\"customerIdText\" type=\"ascii\"    maxsize=\"30\" minnum=\"0\" />"
-	    "<GROUP name=\"job\"            type=\"NeedTAN\"  minnum=\"0\"   maxnum=\"999\" version=\"1\" />"
-	  "</DEG>"
-	"</SEGdef>"
-      "</SEGs>"
+    "<GROUPs>"
+    "<GROUPdef id=\"SegHead\" >"
+    "<DE name=\"code\"            type=\"AN\"    maxsize=\"6\" />"
+    "<DE name=\"seq\"             type=\"num\"   maxsize=\"15\" />"
+    "<DE name=\"version\"         type=\"num\"   maxsize=\"3\"/>"
+    "<DE name=\"ref\"             type=\"num\"   maxsize=\"3\" minnum=0 />"
+    "</GROUPdef>"
+    "<GROUPdef id=\"language\" version=\"1\" >"
+    "<DE     name=\"language\"       type=\"num\"      maxsize=\"3\"  minnum=\"1\" maxnum=\"9\" />"
+    "</GROUPdef>"
+    "<GROUPdef id=\"version\" version=\"1\" >"
+    "<DE     name=\"version\"        type=\"num\"      maxsize=\"3\"  minnum=\"1\" maxnum=\"9\" />"
+    "</GROUPdef>"
+    "<GROUPdef id=\"needtan\" version=\"1\">"
+    "<DE     name=\"job\"            type=\"an\"       maxsize=\"6\" />"
+    "<DE     name=\"needTan\"        type=\"an\"       maxsize=\"1\" />"
+    "</GROUPdef>"
+    "</GROUPs>"
+    "<SEGs>"
+    "<SEGdef id=\"PinTanBPD\" code=\"HIPINS\" segmentVersion=\"1\" protocolVersion=\"300\">"
+    "<DEG>"
+    "<GROUP   name=\"head\"         type=\"SegHead\" />"
+    "</DEG>"
+    "<DE      name=\"jobspermsg\"     type=\"num\"      maxsize=\"3\" />"
+    "<DE      name=\"minsigs\"        type=\"num\"      maxsize=\"3\" />"
+    "<DE      name=\"securityClass\"  type=\"num\"      minsize=\"1\"  maxsize=\"1\" minnum=\"0\" />"
+    "<DEG>"
+    "<DE    name=\"minPinLen\"      type=\"num\"      maxsize=\"2\"  minnum=\"0\" />"
+    "<DE    name=\"maxPinLen\"      type=\"num\"      maxsize=\"2\"  minnum=\"0\" />"
+    "<DE    name=\"maxTanLen\"      type=\"num\"      maxsize=\"2\"  minnum=\"0\" />"
+    "<DE    name=\"userIdText\"     type=\"ascii\"    maxsize=\"30\" minnum=\"0\" />"
+    "<DE    name=\"customerIdText\" type=\"ascii\"    maxsize=\"30\" minnum=\"0\" />"
+    "<GROUP name=\"job\"            type=\"NeedTAN\"  minnum=\"0\"   maxnum=\"999\" version=\"1\" />"
+    "</DEG>"
+    "</SEGdef>"
+    "</SEGs>"
     "</FinTS>";
-  const char *hbciData="HIPINS:4:1:5+1+1+0+5:6:6:Kunden-Nr aus dem TAN-Brief::HKCCS:J:HKKAN:N:HKSAL:J:HKPAE:J:HKTLA:J:HKTLF:J'";
+  const char *hbciData=
+    "HIPINS:4:1:5+1+1+0+5:6:6:Kunden-Nr aus dem TAN-Brief::HKCCS:J:HKKAN:N:HKSAL:J:HKPAE:J:HKTLA:J:HKTLF:J'";
 
   /* read HBCI data */
   segmentListData=AQFINTS_Segment_List_new();
-  rv=AQFINTS_Parser_Hbci_ReadBuffer(segmentListData, (const uint8_t*) hbciData, strlen(hbciData));
+  rv=AQFINTS_Parser_Hbci_ReadBuffer(segmentListData, (const uint8_t *) hbciData, strlen(hbciData));
   if (rv<0) {
     fprintf(stderr, "Error reading HBCI data.\n");
     AQFINTS_Segment_List_free(segmentListData);
@@ -706,49 +707,50 @@ int test_segmentFromDb()
   int rv;
   const char *defData=
     "<FinTS>"
-      "<GROUPs>"
-	"<GROUPdef id=\"SegHead\" >"
-	  "<DE name=\"code\"            type=\"AN\"    maxsize=\"6\" />"
-	  "<DE name=\"seq\"             type=\"num\"   maxsize=\"15\" />"
-	  "<DE name=\"version\"         type=\"num\"   maxsize=\"3\"/>"
-	  "<DE name=\"ref\"             type=\"num\"   maxsize=\"3\" minnum=0 />"
-	"</GROUPdef>"
-	"<GROUPdef id=\"language\" version=\"1\" >"
-  	  "<DE     name=\"language\"       type=\"num\"      maxsize=\"3\"  minnum=\"1\" maxnum=\"9\" />"
-	"</GROUPdef>"
-	"<GROUPdef id=\"version\" version=\"1\" >"
-	  "<DE     name=\"version\"        type=\"num\"      maxsize=\"3\"  minnum=\"1\" maxnum=\"9\" />"
-        "</GROUPdef>"
-        "<GROUPdef id=\"needtan\" version=\"1\">"
-          "<DE     name=\"job\"            type=\"an\"       maxsize=\"6\" />"
-          "<DE     name=\"needTan\"        type=\"an\"       maxsize=\"1\" />"
-        "</GROUPdef>"
-      "</GROUPs>"
-      "<SEGs>"
-	"<SEGdef id=\"PinTanBPD\" code=\"HIPINS\" segmentVersion=\"1\" protocolVersion=\"300\">"
-	  "<DEG>"
-	    "<GROUP   name=\"head\"         type=\"SegHead\" />"
-	  "</DEG>"
-	  "<DE      name=\"jobspermsg\"     type=\"num\"      maxsize=\"3\" />"
-	  "<DE      name=\"minsigs\"        type=\"num\"      maxsize=\"3\" />"
-	  "<DE      name=\"securityClass\"  type=\"num\"      minsize=\"1\"  maxsize=\"1\" minnum=\"0\" />"
-	  "<DEG>"
-	    "<DE    name=\"minPinLen\"      type=\"num\"      maxsize=\"2\"  minnum=\"0\" />"
-	    "<DE    name=\"maxPinLen\"      type=\"num\"      maxsize=\"2\"  minnum=\"0\" />"
-	    "<DE    name=\"maxTanLen\"      type=\"num\"      maxsize=\"2\"  minnum=\"0\" />"
-	    "<DE    name=\"userIdText\"     type=\"ascii\"    maxsize=\"30\" minnum=\"0\" />"
-	    "<DE    name=\"customerIdText\" type=\"ascii\"    maxsize=\"30\" minnum=\"0\" />"
-	    "<GROUP name=\"job\"            type=\"NeedTAN\"  minnum=\"0\"   maxnum=\"999\" version=\"1\" />"
-	  "</DEG>"
-	"</SEGdef>"
-      "</SEGs>"
+    "<GROUPs>"
+    "<GROUPdef id=\"SegHead\" >"
+    "<DE name=\"code\"            type=\"AN\"    maxsize=\"6\" />"
+    "<DE name=\"seq\"             type=\"num\"   maxsize=\"15\" />"
+    "<DE name=\"version\"         type=\"num\"   maxsize=\"3\"/>"
+    "<DE name=\"ref\"             type=\"num\"   maxsize=\"3\" minnum=0 />"
+    "</GROUPdef>"
+    "<GROUPdef id=\"language\" version=\"1\" >"
+    "<DE     name=\"language\"       type=\"num\"      maxsize=\"3\"  minnum=\"1\" maxnum=\"9\" />"
+    "</GROUPdef>"
+    "<GROUPdef id=\"version\" version=\"1\" >"
+    "<DE     name=\"version\"        type=\"num\"      maxsize=\"3\"  minnum=\"1\" maxnum=\"9\" />"
+    "</GROUPdef>"
+    "<GROUPdef id=\"needtan\" version=\"1\">"
+    "<DE     name=\"job\"            type=\"an\"       maxsize=\"6\" />"
+    "<DE     name=\"needTan\"        type=\"an\"       maxsize=\"1\" />"
+    "</GROUPdef>"
+    "</GROUPs>"
+    "<SEGs>"
+    "<SEGdef id=\"PinTanBPD\" code=\"HIPINS\" segmentVersion=\"1\" protocolVersion=\"300\">"
+    "<DEG>"
+    "<GROUP   name=\"head\"         type=\"SegHead\" />"
+    "</DEG>"
+    "<DE      name=\"jobspermsg\"     type=\"num\"      maxsize=\"3\" />"
+    "<DE      name=\"minsigs\"        type=\"num\"      maxsize=\"3\" />"
+    "<DE      name=\"securityClass\"  type=\"num\"      minsize=\"1\"  maxsize=\"1\" minnum=\"0\" />"
+    "<DEG>"
+    "<DE    name=\"minPinLen\"      type=\"num\"      maxsize=\"2\"  minnum=\"0\" />"
+    "<DE    name=\"maxPinLen\"      type=\"num\"      maxsize=\"2\"  minnum=\"0\" />"
+    "<DE    name=\"maxTanLen\"      type=\"num\"      maxsize=\"2\"  minnum=\"0\" />"
+    "<DE    name=\"userIdText\"     type=\"ascii\"    maxsize=\"30\" minnum=\"0\" />"
+    "<DE    name=\"customerIdText\" type=\"ascii\"    maxsize=\"30\" minnum=\"0\" />"
+    "<GROUP name=\"job\"            type=\"NeedTAN\"  minnum=\"0\"   maxnum=\"999\" version=\"1\" />"
+    "</DEG>"
+    "</SEGdef>"
+    "</SEGs>"
     "</FinTS>";
-  const char *hbciData="HIPINS:4:1:5+1+1+0+5:6:6:Kunden-Nr aus dem TAN-Brief::HKCCS:J:HKKAN:N:HKSAL:J:HKPAE:J:HKTLA:J:HKTLF:J'";
+  const char *hbciData=
+    "HIPINS:4:1:5+1+1+0+5:6:6:Kunden-Nr aus dem TAN-Brief::HKCCS:J:HKKAN:N:HKSAL:J:HKPAE:J:HKTLA:J:HKTLF:J'";
 
   /* read HBCI data */
   fprintf(stderr, "Reading HBCI data\n");
   segmentListData=AQFINTS_Segment_List_new();
-  rv=AQFINTS_Parser_Hbci_ReadBuffer(segmentListData, (const uint8_t*) hbciData, strlen(hbciData));
+  rv=AQFINTS_Parser_Hbci_ReadBuffer(segmentListData, (const uint8_t *) hbciData, strlen(hbciData));
   if (rv<0) {
     fprintf(stderr, "Error reading HBCI data.\n");
     AQFINTS_Segment_List_free(segmentListData);
@@ -832,49 +834,50 @@ int test_segmentFromDb2()
   int rv;
   const char *defData=
     "<FinTS>"
-      "<GROUPs>"
-	"<GROUPdef id=\"SegHead\" >"
-	  "<DE name=\"code\"            type=\"AN\"    maxsize=\"6\" />"
-	  "<DE name=\"seq\"             type=\"num\"   maxsize=\"15\" />"
-	  "<DE name=\"version\"         type=\"num\"   maxsize=\"3\"/>"
-	  "<DE name=\"ref\"             type=\"num\"   maxsize=\"3\" minnum=0 />"
-	"</GROUPdef>"
-	"<GROUPdef id=\"language\" version=\"1\" >"
-  	  "<DE     name=\"language\"       type=\"num\"      maxsize=\"3\"  minnum=\"1\" maxnum=\"9\" />"
-	"</GROUPdef>"
-	"<GROUPdef id=\"version\" version=\"1\" >"
-	  "<DE     name=\"version\"        type=\"num\"      maxsize=\"3\"  minnum=\"1\" maxnum=\"9\" />"
-        "</GROUPdef>"
-        "<GROUPdef id=\"needtan\" version=\"1\">"
-          "<DE     name=\"job\"            type=\"an\"       maxsize=\"6\" />"
-          "<DE     name=\"needTan\"        type=\"an\"       maxsize=\"1\" />"
-        "</GROUPdef>"
-      "</GROUPs>"
-      "<SEGs>"
-	"<SEGdef id=\"PinTanBPD\" code=\"HIPINS\" segmentVersion=\"1\" protocolVersion=\"300\">"
-	  "<DEG>"
-	    "<GROUP   name=\"head\"         type=\"SegHead\" />"
-	  "</DEG>"
-	  "<DE      name=\"jobspermsg\"     type=\"num\"      maxsize=\"3\" />"
-	  "<DE      name=\"minsigs\"        type=\"num\"      maxsize=\"3\" />"
-	  "<DE      name=\"securityClass\"  type=\"num\"      minsize=\"1\"  maxsize=\"1\" minnum=\"0\" />"
-	  "<DEG>"
-	    "<DE    name=\"minPinLen\"      type=\"num\"      maxsize=\"2\"  minnum=\"0\" />"
-	    "<DE    name=\"maxPinLen\"      type=\"num\"      maxsize=\"2\"  minnum=\"0\" />"
-	    "<DE    name=\"maxTanLen\"      type=\"num\"      maxsize=\"2\"  minnum=\"0\" />"
-	    "<DE    name=\"userIdText\"     type=\"ascii\"    maxsize=\"30\" minnum=\"0\" />"
-	    "<DE    name=\"customerIdText\" type=\"ascii\"    maxsize=\"30\" minnum=\"0\" />"
-	    "<GROUP name=\"job\"            type=\"NeedTAN\"  minnum=\"0\"   maxnum=\"999\" version=\"1\" />"
-	  "</DEG>"
-	"</SEGdef>"
-      "</SEGs>"
+    "<GROUPs>"
+    "<GROUPdef id=\"SegHead\" >"
+    "<DE name=\"code\"            type=\"AN\"    maxsize=\"6\" />"
+    "<DE name=\"seq\"             type=\"num\"   maxsize=\"15\" />"
+    "<DE name=\"version\"         type=\"num\"   maxsize=\"3\"/>"
+    "<DE name=\"ref\"             type=\"num\"   maxsize=\"3\" minnum=0 />"
+    "</GROUPdef>"
+    "<GROUPdef id=\"language\" version=\"1\" >"
+    "<DE     name=\"language\"       type=\"num\"      maxsize=\"3\"  minnum=\"1\" maxnum=\"9\" />"
+    "</GROUPdef>"
+    "<GROUPdef id=\"version\" version=\"1\" >"
+    "<DE     name=\"version\"        type=\"num\"      maxsize=\"3\"  minnum=\"1\" maxnum=\"9\" />"
+    "</GROUPdef>"
+    "<GROUPdef id=\"needtan\" version=\"1\">"
+    "<DE     name=\"job\"            type=\"an\"       maxsize=\"6\" />"
+    "<DE     name=\"needTan\"        type=\"an\"       maxsize=\"1\" />"
+    "</GROUPdef>"
+    "</GROUPs>"
+    "<SEGs>"
+    "<SEGdef id=\"PinTanBPD\" code=\"HIPINS\" segmentVersion=\"1\" protocolVersion=\"300\">"
+    "<DEG>"
+    "<GROUP   name=\"head\"         type=\"SegHead\" />"
+    "</DEG>"
+    "<DE      name=\"jobspermsg\"     type=\"num\"      maxsize=\"3\" />"
+    "<DE      name=\"minsigs\"        type=\"num\"      maxsize=\"3\" />"
+    "<DE      name=\"securityClass\"  type=\"num\"      minsize=\"1\"  maxsize=\"1\" minnum=\"0\" />"
+    "<DEG>"
+    "<DE    name=\"minPinLen\"      type=\"num\"      maxsize=\"2\"  minnum=\"0\" />"
+    "<DE    name=\"maxPinLen\"      type=\"num\"      maxsize=\"2\"  minnum=\"0\" />"
+    "<DE    name=\"maxTanLen\"      type=\"num\"      maxsize=\"2\"  minnum=\"0\" />"
+    "<DE    name=\"userIdText\"     type=\"ascii\"    maxsize=\"30\" minnum=\"0\" />"
+    "<DE    name=\"customerIdText\" type=\"ascii\"    maxsize=\"30\" minnum=\"0\" />"
+    "<GROUP name=\"job\"            type=\"NeedTAN\"  minnum=\"0\"   maxnum=\"999\" version=\"1\" />"
+    "</DEG>"
+    "</SEGdef>"
+    "</SEGs>"
     "</FinTS>";
-  const char *hbciData="HIPINS:4:1:5+1+1+0+5:6:6:Kunden-Nr aus dem TAN-Brief::HKCCS:J:HKKAN:N:HKSAL:J:HKPAE:J:HKTLA:J:HKTLF:J'";
+  const char *hbciData=
+    "HIPINS:4:1:5+1+1+0+5:6:6:Kunden-Nr aus dem TAN-Brief::HKCCS:J:HKKAN:N:HKSAL:J:HKPAE:J:HKTLA:J:HKTLF:J'";
 
   /* read HBCI data */
   fprintf(stderr, "Reading HBCI data\n");
   segmentListData=AQFINTS_Segment_List_new();
-  rv=AQFINTS_Parser_Hbci_ReadBuffer(segmentListData, (const uint8_t*) hbciData, strlen(hbciData));
+  rv=AQFINTS_Parser_Hbci_ReadBuffer(segmentListData, (const uint8_t *) hbciData, strlen(hbciData));
   if (rv<0) {
     fprintf(stderr, "Error reading HBCI data.\n");
     AQFINTS_Segment_List_free(segmentListData);

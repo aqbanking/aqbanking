@@ -80,7 +80,7 @@ const char *AH_Provider_GetProductVersion(const AB_PROVIDER *pro);
 int AH_Provider_GetBankInfo(AB_PROVIDER *pro, AB_USER *u,
                             AB_IMEXPORTER_CONTEXT *ctx,
                             int withTanSeg,
-			    int withProgress, int nounmount, int doLock);
+                            int withProgress, int nounmount, int doLock);
 
 
 /**
@@ -145,6 +145,11 @@ int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
                               AB_IMEXPORTER_CONTEXT *ctx,
                               int withAuthKey,
                               int withProgress, int nounmount, int doLock);
+
+/**
+ */
+int AH_Provider_ChangeUserKeys(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, int withProgress, int nounmount,
+                               int doLock);
 
 /**
  * Retrieve the SSL certificate for the given user. This is only needed for

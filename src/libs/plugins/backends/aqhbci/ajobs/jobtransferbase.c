@@ -197,9 +197,9 @@ void _replaceCtrlCharsInPurpose(AB_TRANSACTION *trans)
     buf=GWEN_Buffer_new(0, 256, 0, 1);
     GWEN_Buffer_AppendString(buf, s);
     t=GWEN_Buffer_GetStart(buf);
-    while(*t) {
+    while (*t) {
       if (iscntrl(*t))
-	*t=' ';
+        *t=' ';
       t++;
     }
     AB_Transaction_SetPurpose(trans, GWEN_Buffer_GetStart(buf));

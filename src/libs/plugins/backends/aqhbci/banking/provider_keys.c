@@ -182,7 +182,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
     }
   }
 
-  if(AH_User_GetCryptMode(u)==AH_CryptMode_Rdh) {
+  if (AH_User_GetCryptMode(u)==AH_CryptMode_Rdh) {
     switch (rdhType) {
     case 1:
       GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 96);
@@ -231,7 +231,7 @@ int AH_Provider_CreateKeys(AB_PROVIDER *pro,
       return GWEN_ERROR_INVALID;
     }
   }
-  if(AH_User_GetCryptMode(u)==AH_CryptMode_Rah) {
+  if (AH_User_GetCryptMode(u)==AH_CryptMode_Rah) {
     switch (rdhType) {
     case 7:
       GWEN_Crypt_CryptAlgo_SetChunkSize(algo, 256);

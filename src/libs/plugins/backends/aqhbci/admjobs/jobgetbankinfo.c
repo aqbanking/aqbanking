@@ -52,7 +52,7 @@ AH_JOB *AH_Job_GetBankInfo_new(AB_PROVIDER *pro, AB_USER *u, int withHkTan)
   if (withHkTan)
     j=AH_Job_new("JobGetBankInfoWithTan", pro, u, 0, 0);
   else
-  j=AH_Job_new("JobGetBankInfo", pro, u, 0, 0);
+    j=AH_Job_new("JobGetBankInfo", pro, u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "JobGetBankInfo not supported, should not happen");
     return 0;

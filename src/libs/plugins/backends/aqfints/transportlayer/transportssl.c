@@ -81,7 +81,7 @@ void GWENHYWFAR_CB freeData(void *bp, void *p)
 {
   AQFINTS_TRANSPORT_SSL *xtrans;
 
-  xtrans=(AQFINTS_TRANSPORT_SSL*) p;
+  xtrans=(AQFINTS_TRANSPORT_SSL *) p;
   free(xtrans->contentType);
   free(xtrans->userAgent);
   GWEN_HttpSession_free(xtrans->httpSession);

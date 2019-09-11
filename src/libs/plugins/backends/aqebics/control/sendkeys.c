@@ -132,29 +132,29 @@ int sendKeys(AB_PROVIDER *pro,
                                  0);
     if (sendIni) {
       if (!(EBC_User_GetFlags(u) & EBC_USER_FLAGS_INI)) {
-	rv=EBC_Provider_Send_INI(pro, u, 1);
-	if (rv) {
-	  DBG_ERROR(0, "Error sending INI request (%d)", rv);
-	  GWEN_Gui_ProgressEnd(guiid);
-	  return 4;
-	}
-	else {
-	  fprintf(stderr, "INI request sent.\n");
-	}
+        rv=EBC_Provider_Send_INI(pro, u, 1);
+        if (rv) {
+          DBG_ERROR(0, "Error sending INI request (%d)", rv);
+          GWEN_Gui_ProgressEnd(guiid);
+          return 4;
+        }
+        else {
+          fprintf(stderr, "INI request sent.\n");
+        }
       }
     }
 
     if (sendHia) {
       if (!(EBC_User_GetFlags(u) & EBC_USER_FLAGS_HIA)) {
-	rv=EBC_Provider_Send_HIA(pro, u, 1);
-	if (rv) {
-	  DBG_ERROR(0, "Error sending HIA request (%d)", rv);
-	  GWEN_Gui_ProgressEnd(guiid);
-	  return 4;
-	}
-	else {
-	  fprintf(stderr, "HIA request sent.\n");
-	}
+        rv=EBC_Provider_Send_HIA(pro, u, 1);
+        if (rv) {
+          DBG_ERROR(0, "Error sending HIA request (%d)", rv);
+          GWEN_Gui_ProgressEnd(guiid);
+          return 4;
+        }
+        else {
+          fprintf(stderr, "HIA request sent.\n");
+        }
       }
     }
     GWEN_Gui_ProgressEnd(guiid);

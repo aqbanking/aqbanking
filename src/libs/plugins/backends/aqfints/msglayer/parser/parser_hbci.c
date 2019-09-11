@@ -39,9 +39,11 @@ static int readString(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uin
 static int readBin(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenBuf);
 static void parseSegHeader(AQFINTS_SEGMENT *segment);
 
-static void writeDegSequence(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf, int elementCount, int *pEndOfLastNonEmptyElement);
+static void writeDegSequence(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf, int elementCount,
+                             int *pEndOfLastNonEmptyElement);
 static int writeDeg(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf);
-static void writeDeSequence(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf, int elementCount, int *pEndOfLastNonEmptyElement);
+static void writeDeSequence(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf, int elementCount,
+                            int *pEndOfLastNonEmptyElement);
 static int writeDe(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf);
 static void binWrite(const uint8_t *ptrBuf, uint32_t lenBuf, GWEN_BUFFER *destBuf);
 
@@ -66,7 +68,7 @@ int AQFINTS_Parser_Hbci_ReadBuffer(AQFINTS_SEGMENT_LIST *targetSegmentList,
   origPtrBuf=ptrBuf;
   origLenBuf=lenBuf;
 
-  while(lenBuf && *ptrBuf) {
+  while (lenBuf && *ptrBuf) {
     AQFINTS_SEGMENT *targetSegment;
     int rv;
 
@@ -102,7 +104,7 @@ int AQFINTS_Parser_Hbci_ReadBuffer(AQFINTS_SEGMENT_LIST *targetSegmentList,
     }
   } /* while */
 
-  return (int) (origLenBuf-lenBuf);
+  return (int)(origLenBuf-lenBuf);
 }
 
 
@@ -112,7 +114,7 @@ void AQFINTS_Parser_Hbci_WriteBuffer(AQFINTS_SEGMENT_LIST *segmentList, GWEN_BUF
   AQFINTS_SEGMENT *segment;
 
   segment=AQFINTS_Segment_List_First(segmentList);
-  while(segment) {
+  while (segment) {
     AQFINTS_Parser_Hbci_WriteSegment(segment, destBuf);
     segment=AQFINTS_Segment_List_Next(segment);
   }
@@ -137,9 +139,9 @@ void AQFINTS_Parser_Hbci_WriteSegment(AQFINTS_SEGMENT *segment, GWEN_BUFFER *des
     pos=GWEN_Buffer_GetPos(destBuf);
     if (pos>endOfLastNonEmptyElement) {
       uint32_t cropPos;
-  
+
       cropPos=endOfLastNonEmptyElement?endOfLastNonEmptyElement:segmentStartPos;
-  
+
       DBG_ERROR(0, "Crop destbuffer: %d->%d", pos, cropPos);
       GWEN_Buffer_Crop(destBuf, 0, cropPos);
     }
@@ -220,7 +222,7 @@ int readSeg(AQFINTS_SEGMENT *targetSegment, const uint8_t *ptrBuf, uint32_t lenB
   }
 
 
-  while(lenBuf && *ptrBuf) {
+  while (lenBuf && *ptrBuf) {
     AQFINTS_ELEMENT *targetDegElement;
     int rv;
 
@@ -243,7 +245,7 @@ int readSeg(AQFINTS_SEGMENT *targetSegment, const uint8_t *ptrBuf, uint32_t lenB
     if (lenBuf) {
       if (*ptrBuf!='+') {
         /* DE was terminated, but not by ':', so a higher syntax element ended */
-        return (int) (origLenBuf-lenBuf);
+        return (int)(origLenBuf-lenBuf);
       }
       ptrBuf++;
       lenBuf--;
@@ -262,7 +264,7 @@ int readDeg(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenB
 
   origLenBuf=lenBuf;
 
-  while(lenBuf && *ptrBuf) {
+  while (lenBuf && *ptrBuf) {
     AQFINTS_ELEMENT *targetDeElement;
     int rv;
 
@@ -285,7 +287,7 @@ int readDeg(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenB
     if (lenBuf) {
       if (*ptrBuf!=':') {
         /* DE was terminated, but not by ':', so a higher syntax element ended */
-        return (int) (origLenBuf-lenBuf);
+        return (int)(origLenBuf-lenBuf);
       }
       ptrBuf++;
       lenBuf--;
@@ -337,8 +339,8 @@ int readString(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t l
   origLenBuf=lenBuf;
   destBuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  while(*ptrBuf && lenBuf) {
-    switch(*ptrBuf) {
+  while (*ptrBuf && lenBuf) {
+    switch (*ptrBuf) {
     case '\'':
     case '+':
     case ':':
@@ -346,7 +348,7 @@ int readString(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t l
       if (GWEN_Buffer_GetUsedBytes(destBuf))
         AQFINTS_Element_SetTextDataCopy(targetElement, GWEN_Buffer_GetStart(destBuf));
       GWEN_Buffer_free(destBuf);
-      return (int) (origLenBuf-lenBuf);
+      return (int)(origLenBuf-lenBuf);
     case '?':
       /* escape character */
       ptrBuf++;
@@ -386,7 +388,7 @@ int readBin(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenB
     ptrBuf++;
     lenBuf--;
 
-    while(lenBuf && *ptrBuf && isdigit(*ptrBuf)) {
+    while (lenBuf && *ptrBuf && isdigit(*ptrBuf)) {
       lenBinary*=10;
       lenBinary+=((*ptrBuf)-'0');
       ptrBuf++;
@@ -408,7 +410,7 @@ int readBin(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenB
       AQFINTS_Element_AddFlags(targetElement, AQFINTS_ELEMENT_FLAGS_ISBIN);
       ptrBuf+=lenBinary;
       lenBuf-=lenBinary;
-      return (int) (origLenBuf-lenBuf);
+      return (int)(origLenBuf-lenBuf);
     }
   }
 
@@ -423,7 +425,7 @@ void writeDegSequence(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf, int elemen
   AQFINTS_ELEMENT *childElement;
 
   childElement=AQFINTS_Element_Tree2_GetFirstChild(element);
-  while(childElement) {
+  while (childElement) {
     if (elementCount)
       GWEN_Buffer_AppendByte(destBuf, '+');
 
@@ -476,7 +478,7 @@ void writeDeSequence(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf, int element
   AQFINTS_ELEMENT *childElement;
 
   childElement=AQFINTS_Element_Tree2_GetFirstChild(element);
-  while(childElement) {
+  while (childElement) {
     if (elementCount)
       GWEN_Buffer_AppendByte(destBuf, ':');
 
@@ -542,7 +544,7 @@ void binWrite(const uint8_t *ptrBuf, uint32_t lenBuf, GWEN_BUFFER *destBuf)
   GWEN_Buffer_AppendByte(destBuf, '@');
   GWEN_Buffer_AppendString(destBuf, numbuf);
   GWEN_Buffer_AppendByte(destBuf, '@');
-  GWEN_Buffer_AppendBytes(destBuf, (const char*) ptrBuf, lenBuf);
+  GWEN_Buffer_AppendBytes(destBuf, (const char *) ptrBuf, lenBuf);
 }
 
 
