@@ -186,11 +186,6 @@ static int AB_Banking_UnlockConfigGroup(AB_BANKING *ab, const char *groupName, u
 
 
 
-static int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2 *commandList, AB_IMEXPORTER_CONTEXT *ctx,
-                                    uint32_t pid);
-
-
-
 
 static AB_PROVIDER *AB_Banking__FindProvider(AB_BANKING *ab, const char *name);
 static AB_PROVIDER *AB_Banking__GetProvider(AB_BANKING *ab, const char *name);

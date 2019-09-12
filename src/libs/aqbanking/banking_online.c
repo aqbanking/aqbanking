@@ -34,6 +34,41 @@
 
 
 
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+static int _sendCommandsInsideProgress(AB_BANKING *ab, AB_TRANSACTION_LIST2 *commandList,
+				       AB_IMEXPORTER_CONTEXT *ctx,
+				       uint32_t pid);
+
+static int _sortCommandsByAccounts(AB_BANKING *ab,
+					  AB_TRANSACTION_LIST2 *commandList,
+					  AB_ACCOUNTQUEUE_LIST *aql,
+					  uint32_t pid);
+
+static int _sortAccountQueuesByProvider(AB_BANKING *ab,
+					AB_ACCOUNTQUEUE_LIST *aql,
+					AB_PROVIDERQUEUE_LIST *pql,
+					uint32_t pid);
+
+static int _sendProviderQueues(AB_BANKING *ab,
+			       AB_PROVIDERQUEUE_LIST *pql,
+			       AB_IMEXPORTER_CONTEXT *ctx,
+			       uint32_t pid);
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+
+
 AB_PROVIDER *AB_Banking__CreateInternalProvider(AB_BANKING *ab, const char *modname)
 {
   if (modname && *modname) {
@@ -464,20 +499,90 @@ int AB_Banking_GetCert(AB_BANKING *ab,
 
 
 
+int AB_Banking_SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2 *commandList, AB_IMEXPORTER_CONTEXT *ctx)
+{
+  uint32_t pid;
+  int rv;
 
-int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2 *commandList, AB_IMEXPORTER_CONTEXT *ctx,
-                             uint32_t pid)
+  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
+                             GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+                             GWEN_GUI_PROGRESS_SHOW_LOG |
+                             GWEN_GUI_PROGRESS_ALWAYS_SHOW_LOG |
+                             GWEN_GUI_PROGRESS_KEEP_OPEN |
+                             GWEN_GUI_PROGRESS_SHOW_ABORT,
+                             I18N("Executing Jobs"),
+                             I18N("Now the jobs are send via their "
+                                  "backends to the credit institutes."),
+                             0, /* no progress count */
+                             0);
+  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice, "AqBanking v"AQBANKING_VERSION_FULL_STRING);
+  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice, I18N("Sending jobs to the bank(s)"));
+
+  rv=_sendCommandsInsideProgress(ab, commandList, ctx, pid);
+  AB_Banking_ClearCryptTokenList(ab);
+  if (rv) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+  }
+
+  GWEN_Gui_ProgressEnd(pid);
+  return rv;
+}
+
+
+
+int _sendCommandsInsideProgress(AB_BANKING *ab, AB_TRANSACTION_LIST2 *commandList, AB_IMEXPORTER_CONTEXT *ctx, uint32_t pid)
 {
   AB_ACCOUNTQUEUE_LIST *aql;
   AB_PROVIDERQUEUE_LIST *pql;
-  AB_TRANSACTION_LIST2_ITERATOR *jit;
-  AB_ACCOUNTQUEUE *aq;
-  AB_PROVIDERQUEUE *pq;
   int rv;
 
   /* sort commands by account */
   GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Info, I18N("Sorting commands by account"));
   aql=AB_AccountQueue_List_new();
+  rv=_sortCommandsByAccounts(ab, commandList, aql, pid);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    AB_AccountQueue_List_free(aql);
+    return rv;
+  }
+
+  /* sort account queues by provider */
+  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Info, I18N("Sorting commands by provider"));
+  pql=AB_ProviderQueue_List_new();
+  rv=_sortAccountQueuesByProvider(ab, aql, pql, pid);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    AB_ProviderQueue_List_free(pql);
+    AB_AccountQueue_List_free(aql);
+    return rv;
+  }
+  AB_AccountQueue_List_free(aql); /* no longer needed */
+
+  /* send to each backend */
+  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Info, I18N("Send commands to providers"));
+  rv=_sendProviderQueues(ab, pql, ctx, pid);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+  AB_ProviderQueue_List_free(pql);
+
+  /* done */
+  return 0;
+}
+
+
+
+int _sortCommandsByAccounts(AB_BANKING *ab,
+			    AB_TRANSACTION_LIST2 *commandList,
+			    AB_ACCOUNTQUEUE_LIST *aql,
+			    uint32_t pid)
+{
+  AB_TRANSACTION_LIST2_ITERATOR *jit;
+  AB_ACCOUNTQUEUE *aq;
+
+  /* sort commands by account */
+  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Info, I18N("Sorting commands by account"));
   jit=AB_Transaction_List2_First(commandList);
   if (jit) {
     AB_TRANSACTION *t;
@@ -488,22 +593,21 @@ int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2 *commandList, 
 
       tStatus=AB_Transaction_GetStatus(t);
       if (tStatus==AB_Transaction_StatusUnknown || tStatus==AB_Transaction_StatusNone ||
-          tStatus==AB_Transaction_StatusEnqueued) {
-        uint32_t uid;
+	  tStatus==AB_Transaction_StatusEnqueued) {
+	uint32_t uid;
 
-        uid=AB_Transaction_GetUniqueAccountId(t);
-        if (uid==0) {
-          DBG_ERROR(AQBANKING_LOGDOMAIN, "No unique account id given in transaction, aborting");
-          AB_AccountQueue_List_free(aql);
-          return GWEN_ERROR_BAD_DATA;
-        }
+	uid=AB_Transaction_GetUniqueAccountId(t);
+	if (uid==0) {
+	  DBG_ERROR(AQBANKING_LOGDOMAIN, "No unique account id given in transaction, aborting");
+	  return GWEN_ERROR_BAD_DATA;
+	}
 
         /* get or create account queue */
         aq=AB_AccountQueue_List_GetByAccountId(aql, uid);
         if (aq==NULL) {
           aq=AB_AccountQueue_new();
-          AB_AccountQueue_SetAccountId(aq, uid);
-          AB_AccountQueue_List_Add(aq, aql);
+	  AB_AccountQueue_SetAccountId(aq, uid);
+	  AB_AccountQueue_List_Add(aq, aql);
         }
 
         /* assign unique id to job (if none) */
@@ -518,7 +622,7 @@ int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2 *commandList, 
       else {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Transaction with bad status, not enqueuing (%d: %s)",
                   tStatus, AB_Transaction_Status_toString(tStatus));
-        /* TODO: change status, add to im-/export context */
+	/* TODO: change status, add to im-/export context */
       }
 
       t=AB_Transaction_List2Iterator_Next(jit);
@@ -526,9 +630,21 @@ int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2 *commandList, 
     AB_Transaction_List2Iterator_free(jit);
   } /* if (jit) */
 
+  return 0;
+}
+
+
+
+int _sortAccountQueuesByProvider(AB_BANKING *ab,
+				 AB_ACCOUNTQUEUE_LIST *aql,
+				 AB_PROVIDERQUEUE_LIST *pql,
+				 uint32_t pid)
+{
+  AB_ACCOUNTQUEUE *aq;
+  AB_PROVIDERQUEUE *pq;
+  int rv;
+
   /* sort account queues by provider */
-  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Info, I18N("Sorting commands by provider"));
-  pql=AB_ProviderQueue_List_new();
   while ((aq=AB_AccountQueue_List_First(aql))) {
     uint32_t uid;
     AB_ACCOUNT_SPEC *as=NULL;
@@ -538,8 +654,6 @@ int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2 *commandList, 
     rv=AB_Banking_GetAccountSpecByUniqueId(ab, uid, &as);
     if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to load account spec for account %lu (%d)", (unsigned long int)uid, rv);
-      AB_ProviderQueue_List_free(pql);
-      AB_AccountQueue_List_free(aql);
       return GWEN_ERROR_BAD_DATA;
     }
     AB_AccountQueue_SetAccountSpec(aq, as);
@@ -547,8 +661,6 @@ int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2 *commandList, 
     s=AB_AccountSpec_GetBackendName(as);
     if (!(s && *s)) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Account spec for account %lu has no backend setting", (unsigned long int)uid);
-      AB_ProviderQueue_List_free(pql);
-      AB_AccountQueue_List_free(aql);
       return GWEN_ERROR_BAD_DATA;
     }
 
@@ -564,8 +676,19 @@ int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2 *commandList, 
     AB_ProviderQueue_AddAccountQueue(pq, aq);
   }
 
-  /* send to each backend */
-  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Info, I18N("Send commands to providers"));
+  return 0;
+}
+
+
+
+int _sendProviderQueues(AB_BANKING *ab,
+			AB_PROVIDERQUEUE_LIST *pql,
+			AB_IMEXPORTER_CONTEXT *ctx,
+			uint32_t pid)
+{
+  AB_PROVIDERQUEUE *pq;
+  int rv;
+
   pq=AB_ProviderQueue_List_First(pql);
   while (pq) {
     AB_PROVIDERQUEUE *pqNext;
@@ -602,44 +725,9 @@ int AB_Banking__SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2 *commandList, 
 
     pq=pqNext;
   }
-
-  /* done */
-  AB_ProviderQueue_List_free(pql);
-  AB_AccountQueue_List_free(aql);
-
   return 0;
 }
 
-
-
-int AB_Banking_SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2 *commandList, AB_IMEXPORTER_CONTEXT *ctx)
-{
-  uint32_t pid;
-  int rv;
-
-  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
-                             GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-                             GWEN_GUI_PROGRESS_SHOW_LOG |
-                             GWEN_GUI_PROGRESS_ALWAYS_SHOW_LOG |
-                             GWEN_GUI_PROGRESS_KEEP_OPEN |
-                             GWEN_GUI_PROGRESS_SHOW_ABORT,
-                             I18N("Executing Jobs"),
-                             I18N("Now the jobs are send via their "
-                                  "backends to the credit institutes."),
-                             0, /* no progress count */
-                             0);
-  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice, "AqBanking v"AQBANKING_VERSION_FULL_STRING);
-  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice, I18N("Sending jobs to the bank(s)"));
-
-  rv=AB_Banking__SendCommands(ab, commandList, ctx, pid);
-  AB_Banking_ClearCryptTokenList(ab);
-  if (rv) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-  }
-
-  GWEN_Gui_ProgressEnd(pid);
-  return rv;
-}
 
 
 
