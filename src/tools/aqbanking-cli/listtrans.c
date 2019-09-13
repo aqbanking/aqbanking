@@ -121,6 +121,7 @@ int listTrans(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
           GWEN_DB_NODE *dbTransaction;
           const AB_VALUE *v;
           const GWEN_DATE *dt;
+          const char *s;
 
           dbTransaction=GWEN_DB_Group_new("transaction");
           AB_Transaction_toDb(t, dbTransaction);
@@ -166,6 +167,29 @@ int listTrans(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
             GWEN_Buffer_Reset(dbuf);
           }
 
+          /* translate purpose into "purposeLine" entries */
+          s=AB_Transaction_GetPurpose(t);
+          if (s && *s) {
+            GWEN_STRINGLIST *stringList;
+
+            GWEN_DB_DeleteVar(dbTransaction, "purposeLine");
+            stringList=GWEN_StringList_fromString(s, "\n", 0);
+            if (stringList) {
+              GWEN_STRINGLISTENTRY *sEntry;
+
+              sEntry=GWEN_StringList_FirstEntry(stringList);
+              while(sEntry) {
+                const char *entryString;
+
+                entryString=GWEN_StringListEntry_Data(sEntry);
+                if (entryString && *entryString) {
+                  GWEN_DB_SetCharValue(dbTransaction, 0, "purposeLine", entryString);
+                }
+
+                sEntry=GWEN_StringListEntry_Next(sEntry);
+              }
+            }
+          }
 
           GWEN_DB_ReplaceVars(dbTransaction, tmplString, dbuf);
           fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(dbuf));
@@ -359,6 +383,7 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
     GWEN_Buffer_AppendString(ubuf, " $(valueAsString)       : Amount of the balance\n");
 
     GWEN_Buffer_AppendString(ubuf, " $(purpose)             : Memo/purpose (\"Verwendungszweck\")\n");
+    GWEN_Buffer_AppendString(ubuf, " $(purposeLine[n])      : Memo/purpose line n (\"Verwendungszweckzeile\")\n");
 
     GWEN_Buffer_AppendString(ubuf, " $(customerReference)   : Customer reference\n");
     GWEN_Buffer_AppendString(ubuf, " $(bankReference)       : Bank reference\n");
