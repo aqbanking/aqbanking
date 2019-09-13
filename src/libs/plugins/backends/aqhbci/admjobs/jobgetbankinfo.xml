@@ -28,6 +28,7 @@
           sign="0"
           noitan="1"
           nosysid="1"
+          ignoreAccounts="1"
   >
     <SEG type="Ident" name="ident" />
     <SEG type="Prepare" name="prepare" version="3" />

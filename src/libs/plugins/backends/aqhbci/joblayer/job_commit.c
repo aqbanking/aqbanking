@@ -634,11 +634,16 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock)
   }
 
   /* try to extract accounts */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Committing accounts");
-  rv=AH_Job__Commit_Accounts(j);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
+  if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_IGNOREACCOUNTS) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Ignoring possibly received accounts");
+  }
+  else {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Committing accounts");
+    rv=AH_Job__Commit_Accounts(j);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
   }
 
 
