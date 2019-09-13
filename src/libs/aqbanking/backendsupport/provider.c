@@ -392,7 +392,7 @@ GWEN_DIALOG *AB_Provider_GetEditAccountDialog(AB_PROVIDER *pro, AB_ACCOUNT *a)
 
 
 
-GWEN_DIALOG *AB_ProviderGetUserTypeDialog(AB_PROVIDER *pro)
+GWEN_DIALOG *AB_Provider_GetUserTypeDialog(AB_PROVIDER *pro)
 {
   assert(pro);
   if (pro->getUserTypeDialogFn)

@@ -163,11 +163,13 @@ AB_USER *AB_Provider_CreateUserObject(AB_PROVIDER *pro);
 /**
  * Update the given account spec.
  *
- * This callback gives a provider the means to set the transaction limits and other stuff.
+ * This callback gives a provider the opportunity to set the transaction limits and other stuff.
  * This function only needs to be implemented in the backend if it has some specials things to
  * setup (like transaction limits).
  *
  * @return 0 if okay, error code otherwise
+ * @param pro pointer to provider object
+ * @param as account spec object to update
  */
 int AB_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doLock);
 
@@ -180,6 +182,17 @@ int AB_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doL
  */
 /*@{*/
 
+/**
+ * Allow the backend to perform some tasks specific to the given provider.
+ *
+ * Most backends use this function to provide command line functions to retrieve account list,
+ * create accounts and user etc.
+ *
+ * @return depending on the task performed, generally negative on error
+ * @param pro pointer to provider object
+ * @param argc number of arguments in the argument list
+ * @param argv pointer to the argument list
+ */
 int AB_Provider_Control(AB_PROVIDER *pro, int argc, char **argv);
 
 
@@ -222,7 +235,7 @@ GWEN_DIALOG *AB_Provider_GetEditAccountDialog(AB_PROVIDER *pro, AB_ACCOUNT *a);
 
 
 
-GWEN_DIALOG *AB_ProviderGetUserTypeDialog(AB_PROVIDER *pro);
+GWEN_DIALOG *AB_Provider_GetUserTypeDialog(AB_PROVIDER *pro);
 
 
 

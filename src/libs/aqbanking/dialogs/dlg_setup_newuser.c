@@ -134,7 +134,7 @@ GWEN_DIALOG *AB_SetupNewUserDialog_new(AB_BANKING *ab)
               const char *s;
 
               if (AB_Provider_GetFlags(pro) & AB_PROVIDER_FLAGS_HAS_USERTYPE_DIALOG) {
-                cdlg=AB_ProviderGetUserTypeDialog(pro);
+                cdlg=AB_Provider_GetUserTypeDialog(pro);
                 if (cdlg==NULL) {
                   DBG_WARN(AQBANKING_LOGDOMAIN, "Backend [%s] does not return a userType dialog, using default", name);
                   cdlg=AB_UserTypePageDefaultDialog_new(ab);
