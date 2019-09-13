@@ -64,10 +64,6 @@
           <widget type="lineEdit" name="tanMediumIdEdit" columns="32" flags="fillX" />
 
         </widget>
-        <widget type="hlayout" name="hlayout1" flags="fillX" >
-          <widget type="checkBox" name="forceSslv3Check" text="Force SSLv3" />
-          <widget type="hspacer" name="hspacer1" flags="fillX" />
-        </widget>
 
         <widget type="hlayout" name="hlayout2" flags="fillX" >
           <widget type="checkBox" name="ignorePrematureCloseCheck" text="TLS: Ignore Premature Close" />
@@ -90,6 +86,7 @@
     <widget type="groupBox" text="Special Actions" flags="fillX" >
       <widget type="gridLayout" columns="2" flags="fillX equalWidth" >
         <widget type="pushButton" text="Get Certificate" name="getCertButton" />
+        <widget type="pushButton" text="Get Bank Info" name="getBankInfoButton" />
         <widget type="pushButton" text="Get System Id" name="getSysIdButton" />
         <widget type="pushButton" text="Get iTAN Modes" name="getItanModesButton" />
         <widget type="pushButton" text="Get Accounts" name="getAccountsButton" />

@@ -28,7 +28,6 @@
 
     </widget>
 
-    <widget type="checkBox" name="forceSslv3Check" text="Force SSLv3" />
     <widget type="checkBox" name="ignorePrematureCloseCheck" text="TLS: Ignore Premature Close" />
     <widget type="checkBox" name="noBase64Check" text="Disable Base64 Encoding" />
     <widget type="checkBox" name="omitSmsAccountCheck" text="Omit SMS Account" />

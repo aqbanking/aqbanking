@@ -298,10 +298,6 @@ void AH_PinTanSpecialDialog_Init(GWEN_DIALOG *dlg)
     break;
   }
 
-  GWEN_Dialog_SetIntProperty(dlg, "forceSslv3Check", GWEN_DialogProperty_Value, 0,
-                             (xdlg->flags & AH_USER_FLAGS_FORCE_SSL3)?1:0,
-                             0);
-
   GWEN_Dialog_SetIntProperty(dlg, "ignorePrematureCloseCheck", GWEN_DialogProperty_Value, 0,
                              (xdlg->flags & AH_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE)?1:0,
                              0);
@@ -376,8 +372,6 @@ void AH_PinTanSpecialDialog_Fini(GWEN_DIALOG *dlg)
   }
 
   flags=0;
-  if (GWEN_Dialog_GetIntProperty(dlg, "forceSslv3Check", GWEN_DialogProperty_Value, 0, 0))
-    flags|=AH_USER_FLAGS_FORCE_SSL3;
   if (GWEN_Dialog_GetIntProperty(dlg, "ignorePrematureCloseCheck", GWEN_DialogProperty_Value, 0, 0))
     flags|=AH_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE;
   if (GWEN_Dialog_GetIntProperty(dlg, "noBase64Check", GWEN_DialogProperty_Value, 0, 0))

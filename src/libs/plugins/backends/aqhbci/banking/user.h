@@ -47,16 +47,11 @@ extern "C" {
 #define AH_USER_FLAGS_BANK_USES_SIGNSEQ        0x00000002
 #define AH_USER_FLAGS_RESERVED1                0x00000004
 #define AH_USER_FLAGS_RESERVED2                0x00000008
-/** for pin/tan mode: keep HTTP connections alive (reuse for multiple
- * requests) */
-#define AH_USER_FLAGS_KEEPALIVE                0x00000010
-/** this flag is set automatically by AqHBCI upon BPD/UPD receiption. It
+
+  /** this flag is set automatically by AqHBCI upon BPD/UPD receiption. It
  * indicates that some jobs are supported even when there is no UPD job
  * description for it */
 #define AH_USER_FLAGS_IGNORE_UPD               0x00000020
-
-/** forces use of SSLv3 for Pin/TAN mode */
-#define AH_USER_FLAGS_FORCE_SSL3               0x00000040
 
 /** do not encode message in BASE64 (needed for APO bank) */
 #define AH_USER_FLAGS_NO_BASE64                0x00000080
@@ -72,8 +67,6 @@ extern "C" {
  * If this flag is set then the SMS account specification is omitted.
  */
 #define AH_USER_FLAGS_TAN_OMIT_SMS_ACCOUNT      0x00000200
-
-#define AH_USER_FLAGS_TLS_ONLY_SAFE_CIPHERS     0x00000400
 
 #define AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET   0x00000800
 
@@ -96,8 +89,7 @@ extern "C" {
 /*@{*/
 
 AQHBCI_API
-void AH_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
-                        uint32_t flags);
+void AH_User_Flags_toDb(GWEN_DB_NODE *db, const char *name, uint32_t flags);
 AQHBCI_API
 uint32_t AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name);
 

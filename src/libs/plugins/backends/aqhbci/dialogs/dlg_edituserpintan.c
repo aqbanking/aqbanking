@@ -312,10 +312,6 @@ void AH_EditUserPinTanDialog_Init(GWEN_DIALOG *dlg)
                               0);
 
   flags=AH_User_GetFlags(xdlg->user);
-  GWEN_Dialog_SetIntProperty(dlg, "forceSslv3Check", GWEN_DialogProperty_Value, 0,
-                             (flags & AH_USER_FLAGS_FORCE_SSL3)?1:0,
-                             0);
-
   GWEN_Dialog_SetIntProperty(dlg, "ignorePrematureCloseCheck", GWEN_DialogProperty_Value, 0,
                              (flags & AH_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE)?1:0,
                              0);
@@ -492,8 +488,6 @@ int AH_EditUserPinTanDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
   }
 
   flags=0;
-  if (GWEN_Dialog_GetIntProperty(dlg, "forceSslv3Check", GWEN_DialogProperty_Value, 0, 0))
-    flags|=AH_USER_FLAGS_FORCE_SSL3;
   if (GWEN_Dialog_GetIntProperty(dlg, "ignorePrematureCloseCheck", GWEN_DialogProperty_Value, 0, 0))
     flags|=AH_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE;
   if (GWEN_Dialog_GetIntProperty(dlg, "noBase64Check", GWEN_DialogProperty_Value, 0, 0))
@@ -693,6 +687,36 @@ static int AH_EditUserPinTanDialog_HandleActivatedGetSysId(GWEN_DIALOG *dlg)
 
 
 
+static int AH_EditUserPinTanDialog_HandleActivatedGetBankInfo(GWEN_DIALOG *dlg)
+{
+  AH_EDIT_USER_PINTAN_DIALOG *xdlg;
+  int rv;
+  AB_IMEXPORTER_CONTEXT *ctx;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_PINTAN_DIALOG, dlg);
+  assert(xdlg);
+
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_GetBankInfo(xdlg->provider,
+                             xdlg->user,
+                             ctx,
+                             0,   /* without TAN segment, maybe later add button for call with TAN segment */
+                             1,   /* withProgress */
+                             0,   /* nounmount */
+                             xdlg->doLock);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+  }
+
+  AH_EditUserPinTanDialog_UpdateTanMethods(dlg);
+
+  AB_ImExporterContext_free(ctx);
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
 static int AH_EditUserPinTanDialog_HandleActivatedGetItanModes(GWEN_DIALOG *dlg)
 {
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
@@ -757,6 +781,8 @@ int AH_EditUserPinTanDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender
     return AH_EditUserPinTanDialog_HandleActivatedBankCode(dlg);
   else if (strcasecmp(sender, "getCertButton")==0)
     return AH_EditUserPinTanDialog_HandleActivatedGetCert(dlg);
+  else if (strcasecmp(sender, "getBankInfoButton")==0)
+    return AH_EditUserPinTanDialog_HandleActivatedGetBankInfo(dlg);
   else if (strcasecmp(sender, "getSysIdButton")==0)
     return AH_EditUserPinTanDialog_HandleActivatedGetSysId(dlg);
   else if (strcasecmp(sender, "getItanModesButton")==0)

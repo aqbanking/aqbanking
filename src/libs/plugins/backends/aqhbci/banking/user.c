@@ -78,20 +78,14 @@ void AH_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "bankDoesntSign");
   if (flags & AH_USER_FLAGS_BANK_USES_SIGNSEQ)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "bankUsesSignSeq");
-  if (flags & AH_USER_FLAGS_KEEPALIVE)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "keepAlive");
   if (flags & AH_USER_FLAGS_IGNORE_UPD)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "ignoreUpd");
-  if (flags & AH_USER_FLAGS_FORCE_SSL3)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "forceSsl3");
   if (flags & AH_USER_FLAGS_NO_BASE64)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "noBase64");
   if (flags & AH_USER_FLAGS_KEEP_MULTIPLE_BLANKS)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "keepMultipleBlanks");
   if (flags & AH_USER_FLAGS_TAN_OMIT_SMS_ACCOUNT)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "omitSmsAccount");
-  if (flags & AH_USER_FLAGS_TLS_ONLY_SAFE_CIPHERS)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "tlsOnlySafeCiphers");
   if (flags & AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "useStrictSepaCharset");
   if (flags & AH_USER_FLAGS_TLS_IGN_PREMATURE_CLOSE)
@@ -117,21 +111,14 @@ uint32_t AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name)
       fl|=AH_USER_FLAGS_BANK_DOESNT_SIGN;
     else if (strcasecmp(s, "bankUsesSignSeq")==0)
       fl|=AH_USER_FLAGS_BANK_USES_SIGNSEQ;
-    else if (strcasecmp(s, "keepAlive")==0)
-      fl|=AH_USER_FLAGS_KEEPALIVE;
     else if (strcasecmp(s, "ignoreUpd")==0)
       fl|=AH_USER_FLAGS_IGNORE_UPD;
-    else if (strcasecmp(s, "forceSsl3")==0 ||
-             strcasecmp(s, "forceSslv3")==0)
-      fl|=AH_USER_FLAGS_FORCE_SSL3;
     else if (strcasecmp(s, "noBase64")==0)
       fl|=AH_USER_FLAGS_NO_BASE64;
     else if (strcasecmp(s, "keepMultipleBlanks")==0)
       fl|=AH_USER_FLAGS_KEEP_MULTIPLE_BLANKS;
     else if (strcasecmp(s, "omitSmsAccount")==0)
       fl|=AH_USER_FLAGS_TAN_OMIT_SMS_ACCOUNT;
-    else if (strcasecmp(s, "tlsOnlySafeCiphers")==0)
-      fl|=AH_USER_FLAGS_TLS_ONLY_SAFE_CIPHERS;
     else if (strcasecmp(s, "useStrictSepaCharset")==0)
       fl|=AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET;
     else if (strcasecmp(s, "tlsIgnPrematureClose")==0)
