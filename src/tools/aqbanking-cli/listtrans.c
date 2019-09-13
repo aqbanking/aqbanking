@@ -118,80 +118,10 @@ int listTrans(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
 
         t=AB_Transaction_List_FindFirstByType(tl, transactionType, transactionCommand);
         while (t) {
-          GWEN_DB_NODE *dbTransaction;
-          const AB_VALUE *v;
-          const GWEN_DATE *dt;
-          const char *s;
-
-          dbTransaction=GWEN_DB_Group_new("transaction");
-          AB_Transaction_toDb(t, dbTransaction);
-
-          /* translate value */
-          v=AB_Transaction_GetValue(t);
-          if (v) {
-            AB_Value_toHumanReadableString(v, dbuf, 2, 0);
-            GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS, "valueAsString", GWEN_Buffer_GetStart(dbuf));
-            GWEN_Buffer_Reset(dbuf);
+          rv=addTransactionToBufferByTemplate(t, tmplString, dbuf);
+          if (rv<0) {
           }
 
-          /* translate date */
-          dt=AB_Transaction_GetDate(t);
-          if (dt) {
-            rv=GWEN_Date_toStringWithTemplate(dt, I18N("DD.MM.YYYY"), dbuf);
-            if (rv>=0) {
-              GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS, "dateAsString", GWEN_Buffer_GetStart(dbuf));
-            }
-            GWEN_Buffer_Reset(dbuf);
-          }
-
-          /* translate valuta date */
-          dt=AB_Transaction_GetValutaDate(t);
-          if (dt) {
-            rv=GWEN_Date_toStringWithTemplate(dt, I18N("DD.MM.YYYY"), dbuf);
-            if (rv>=0) {
-              GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS, "valutaDateAsString", GWEN_Buffer_GetStart(dbuf));
-            }
-            GWEN_Buffer_Reset(dbuf);
-          }
-
-          /* translate date or valuta date */
-          dt=AB_Transaction_GetDate(t);
-          if (dt==NULL)
-            dt=AB_Transaction_GetValutaDate(t);
-          if (dt) {
-            rv=GWEN_Date_toStringWithTemplate(dt, I18N("DD.MM.YYYY"), dbuf);
-            if (rv>=0) {
-              GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS, "dateOrValutaDateAsString",
-                                   GWEN_Buffer_GetStart(dbuf));
-            }
-            GWEN_Buffer_Reset(dbuf);
-          }
-
-          /* translate purpose into "purposeLine" entries */
-          s=AB_Transaction_GetPurpose(t);
-          if (s && *s) {
-            GWEN_STRINGLIST *stringList;
-
-            GWEN_DB_DeleteVar(dbTransaction, "purposeLine");
-            stringList=GWEN_StringList_fromString(s, "\n", 0);
-            if (stringList) {
-              GWEN_STRINGLISTENTRY *sEntry;
-
-              sEntry=GWEN_StringList_FirstEntry(stringList);
-              while(sEntry) {
-                const char *entryString;
-
-                entryString=GWEN_StringListEntry_Data(sEntry);
-                if (entryString && *entryString) {
-                  GWEN_DB_SetCharValue(dbTransaction, 0, "purposeLine", entryString);
-                }
-
-                sEntry=GWEN_StringListEntry_Next(sEntry);
-              }
-            }
-          }
-
-          GWEN_DB_ReplaceVars(dbTransaction, tmplString, dbuf);
           fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(dbuf));
           GWEN_Buffer_Reset(dbuf);
 

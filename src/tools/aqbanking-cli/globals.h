@@ -118,6 +118,7 @@ int createAndAddRequests(AB_BANKING *ab,
                          const GWEN_DATE *toDate,
                          uint32_t requestFlags);
 
+int addTransactionToBufferByTemplate(const AB_TRANSACTION *t, const char *tmplString, GWEN_BUFFER *dbuf);
 
 
 
