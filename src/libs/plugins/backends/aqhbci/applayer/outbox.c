@@ -34,6 +34,9 @@
 #include <assert.h>
 
 
+/*#define EXTREME_DEBUGGING */
+
+
 GWEN_LIST_FUNCTIONS(AH_OUTBOX__CBOX, AH_Outbox__CBox);
 
 
@@ -719,8 +722,10 @@ int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox, AH_JOBQUEUE *jq)
     return rv;
   }
 
+#ifdef EXTREME_DEBUGGING
   DBG_ERROR(AQHBCI_LOGDOMAIN, "Handling this job queue:");
   AH_JobQueue_Dump(jq, stderr, 2);
+#endif
 
   if (AH_User_GetCryptMode(cbox->user)==AH_CryptMode_Pintan) {
     if (jqFlags & AH_JOBQUEUE_FLAGS_NOITAN) {
