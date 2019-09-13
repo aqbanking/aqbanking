@@ -33,7 +33,8 @@ libhbcijob_la_SOURCES=\
 EXTRA_DIST=$(typefiles) \
   job_commit.c \
   job_commit_account.c \
-  job_virtual.c
+  job_virtual.c \
+  job_new.c
 
 
 
