@@ -620,6 +620,50 @@
         </inline>
 
 
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             /**                                                                                                 \n
+             * The purpose fields may contain multiple purpose lines separated by a NEWLINE character (10).      \n
+             * If you need the old behaviour of previous versions you can use this function to get a string list \n
+             * representation of the purpose lines.                                                              \n
+             *                                                                                                   \n
+             * If the purpose field is empty NULL is returned (no empty list is ever returned).                  \n
+             *                                                                                                   \n
+             * The caller is responsible for freeing the object returned, if any.                                \n
+             *                                                                                                   \n
+             * @return stringlist (NULL if empty)                                                                \n
+             * @param t transaction object                                                                       \n
+             */                                                                                                  \n
+             $(api) GWEN_STRINGLIST *$(struct_prefix)_GetPurposeAsStringList(const $(struct_type) *t);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             GWEN_STRINGLIST *$(struct_prefix)_GetPurposeAsStringList(const $(struct_type) *t) {
+               const char *s;
+               assert(t);
+               
+               s=$(struct_prefix)_GetPurpose(t);
+               if (s &amp;&amp; *s) {
+                 GWEN_STRINGLIST *stringList;
+             
+                 stringList=GWEN_StringList_fromString(s, "\\n", 0);
+                 return stringList;
+               }
+               
+               return NULL;
+             }
+          </content>
+        </inline>
+
+
+
         <inline loc="end" access="public">
           <typeFlagsMask></typeFlagsMask>
           <typeFlagsValue></typeFlagsValue>
