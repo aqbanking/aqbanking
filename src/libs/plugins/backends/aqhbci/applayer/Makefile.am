@@ -40,6 +40,7 @@ libhbciapp_la_SOURCES=\
   hhd.c \
   tanmechanism.c \
   tan_chiptan_opt.c \
+  tan_image.c \
   tan_text.c
 
 
