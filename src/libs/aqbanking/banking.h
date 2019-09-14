@@ -89,6 +89,20 @@ extern "C" {
  * one of the values given in this section. This can be used by implementations of the function
  * @ref GWEN_Gui_GetPassword to determine how to present the TAN entry to the user.
  *
+ * This is a list of variables which are stored in the "methodParams" argument to GWEN_Gui_GetPassword.
+ *
+ * All
+ * - int "tanMethodId" : method id (e.g. "1" for AB_BANKING_TANMETHOD_TEXT, see definitions below)
+ *
+ * AB_BANKING_TANMETHOD_TEXT
+ * no special variables
+ *
+ * AB_BANKING_TANMETHOD_CHIPTAN_OPTIC
+ * - char "challenge" : string containing the HHD challenge to be sent to screen
+ *
+ * AB_BANKING_TANMETHOD_PHOTOTAN and AB_BANKING_TANMETHOD_CHIPTAN_QR
+ * - char "mimetype"  : mimetype of the image (e.g. "image/png")
+ * - bin  "imageData" : binary image data (use this to create an image in your GUI)
  */
 /*@{*/
 #define AB_BANKING_TANMETHOD_TEXT          0x00000001
