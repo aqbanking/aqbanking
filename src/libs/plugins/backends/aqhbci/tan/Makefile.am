@@ -15,7 +15,9 @@ noinst_HEADERS=\
   tanmethod.h \
   tanmechanism.h tanmechanism_p.h \
   tan_chiptan_opt.h \
-  tan_text.h
+  tan_text.h \
+  tan_image.h
+
 
 #iheaderdir=@aqbanking_headerdir_am@/aqhbci
 #iheader_HEADERS=
