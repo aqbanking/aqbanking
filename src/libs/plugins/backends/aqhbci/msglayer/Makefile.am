@@ -6,6 +6,7 @@ INCLUDES = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_incl
   -I$(srcdir)/.. -I$(srcdir)/../banking \
   -I$(srcdir)/../applayer \
   -I$(srcdir)/../joblayer \
+  -I$(srcdir)/../tan \
   -I$(aqbanking_symlinkdir) $(all_includes) \
   -I$(top_srcdir)/src/libs/aqbanking
 

@@ -1,5 +1,5 @@
-DIST_SUBDIRS=msglayer joblayer ajobs admjobs applayer banking dialogs control
-SUBDIRS=msglayer joblayer ajobs admjobs applayer banking dialogs control
+DIST_SUBDIRS=msglayer joblayer ajobs admjobs applayer banking tan dialogs control
+SUBDIRS=msglayer joblayer ajobs admjobs applayer banking tan dialogs control
 
 AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
 
@@ -52,7 +52,8 @@ libaqhbci_la_LIBADD=\
   applayer/libhbciapp.la \
   banking/libhbcibanking.la \
   control/libhbcicontrol.la \
-  dialogs/libaqhbci_dlgs.la
+  dialogs/libaqhbci_dlgs.la \
+  tan/libhbcitan.la
 
 
 built_sources: $(BUILT_SOURCES)

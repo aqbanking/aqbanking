@@ -2,6 +2,8 @@ INCLUDES = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_incl
   -I$(srcdir)/../.. \
   -I.. -I$(srcdir)/../banking \
   -I.. -I$(srcdir)/../msglayer \
+  -I.. -I$(srcdir)/../joblayer \
+  -I$(srcdir)/../tan \
   -I.. -I$(srcdir)/.. \
   -I$(top_srcdir)/src/libs/aqbanking $(gwenhywfar_includes)
 

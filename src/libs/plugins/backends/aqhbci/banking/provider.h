@@ -267,7 +267,6 @@ int AH_Provider_Test(AB_PROVIDER *pro);
 
 
 
-
 #ifdef __cplusplus
 }
 #endif

@@ -7,6 +7,7 @@ INCLUDES = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_incl
   -I$(srcdir)/../msglayer \
   -I$(srcdir)/../banking \
   -I$(srcdir)/../applayer \
+  -I$(srcdir)/../tan \
   -I$(srcdir)/..
 
 noinst_LTLIBRARIES=libhbciaccjobs.la

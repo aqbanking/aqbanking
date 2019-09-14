@@ -11,7 +11,7 @@
 #define AH_USER_H
 
 #include "aqhbci/aqhbci.h"
-#include "aqhbci/joblayer/tanmethod.h"
+#include "aqhbci/tan/tanmethod.h"
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/stringlist.h>

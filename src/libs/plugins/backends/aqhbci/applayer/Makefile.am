@@ -9,6 +9,7 @@ INCLUDES = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_incl
   -I$(srcdir)/../banking \
   -I$(srcdir)/../joblayer \
   -I$(srcdir)/../msglayer \
+  -I$(srcdir)/../tan \
   -I$(srcdir)/..
 
 EXTRA_DIST=\
@@ -28,20 +29,13 @@ noinst_LTLIBRARIES=libhbciapp.la
 noinst_HEADERS=\
   adminjobs_l.h adminjobs_p.h\
   outbox_l.h outbox_p.h \
-  hhd_l.h hhd_p.h \
-  tanmechanism.h tanmechanism_p.h \
-  tan_chiptan_opt.h \
-  tan_text.h
+  hhd_l.h hhd_p.h
 
 
 libhbciapp_la_SOURCES=\
   adminjobs.c \
   outbox.c \
-  hhd.c \
-  tanmechanism.c \
-  tan_chiptan_opt.c \
-  tan_image.c \
-  tan_text.c
+  hhd.c
 
 
 

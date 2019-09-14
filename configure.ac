@@ -1299,6 +1299,7 @@ AC_CONFIG_FILES([
   src/libs/plugins/backends/aqhbci/admjobs/Makefile
   src/libs/plugins/backends/aqhbci/applayer/xml/Makefile
   src/libs/plugins/backends/aqhbci/control/Makefile
+  src/libs/plugins/backends/aqhbci/tan/Makefile
   src/libs/plugins/backends/aqhbci/version.h
   src/libs/plugins/backends/aqofxconnect/Makefile
   src/libs/plugins/backends/aqofxconnect/aqofxconnect.xml

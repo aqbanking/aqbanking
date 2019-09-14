@@ -11,6 +11,7 @@
 #define AH_PROVIDER_L_H
 
 #include "provider.h"
+#include "aqhbci/tan/tanmethod.h"
 #include "hbci_l.h"
 
 
@@ -26,6 +27,19 @@ int AH_Provider_SendDtazv(AB_PROVIDER *pro,
                           int withProgress, int nounmount, int doLock);
 
 int AH_Provider_WriteValueToDb(const AB_VALUE *v, GWEN_DB_NODE *dbV);
+
+
+int AH_Provider_InputTanWithChallenge(AB_PROVIDER *pro,
+                                      AB_USER *u,
+                                      const AH_TAN_METHOD *tanMethodDescription,
+                                      const char *sChallenge,
+                                      const char *sChallengeHhd,
+                                      char *passwordBuffer,
+                                      int passwordMinLen,
+                                      int passwordMaxLen);
+
+
+
 
 
 #endif

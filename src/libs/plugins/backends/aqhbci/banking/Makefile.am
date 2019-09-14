@@ -5,6 +5,7 @@ INCLUDES = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_incl
   -I$(srcdir)/../.. \
   -I$(srcdir)/../msglayer -I$(srcdir)/../joblayer \
   -I$(srcdir)/../applayer -I$(srcdir)/.. \
+  -I$(srcdir)/../tan \
   -I$(srcdir)/../ajobs -I$(srcdir)/../admjobs \
   -I$(srcdir)/../dialogs  -I$(srcdir)/../control
 
@@ -44,7 +45,8 @@ EXTRA_DIST=\
   provider_keys.c \
   provider_online.c \
   provider_sendcmd.c \
-  provider_update.c
+  provider_update.c \
+  provider_tan.c
 
 
 
