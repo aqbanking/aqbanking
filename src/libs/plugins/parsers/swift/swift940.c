@@ -467,7 +467,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
                 AHB_SWIFT__SetCharValue(data, flags, "originatorId", GWEN_Buffer_GetStart(tbuf));
               }
               else if (strcasecmp(sVarName, "SVWZ+")==0) {
-                AHB_SWIFT__SetCharValue(data, flags, "purpose", GWEN_Buffer_GetStart(tbuf));
+                AHB_SWIFT__SetCharValue(data, flags | GWEN_DB_FLAGS_OVERWRITE_VARS, "purpose", GWEN_Buffer_GetStart(tbuf));
               }
               else if (strcasecmp(sVarName, "ABWA+")==0) {
                 /* "abweichender Auftraggeber" */
@@ -479,7 +479,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
               }
               else if (strcasecmp(sVarName, "_purpose")==0) {
                 /* manually added tag (i.e. data outside a tag)
-                * TODO: only add if there was no real purpose field (i.e. no "SVWZ+") */
+                * will be replaced if there was a real purpose field (i.e. "SVWZ+") */
                 AHB_SWIFT__SetCharValue(data, flags, "purpose", GWEN_Buffer_GetStart(tbuf));
               }
 
