@@ -6,8 +6,6 @@ INCLUDES = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_incl
   -I$(srcdir)/../tan \
   -I$(srcdir)/../msglayer -I$(srcdir)/..
 
-typefiles=tanmethod.xml
-
 noinst_LTLIBRARIES=libhbcijob.la
 
 noinst_HEADERS=\
@@ -27,7 +25,7 @@ libhbcijob_la_SOURCES=\
   result.c
 
 
-EXTRA_DIST=$(typefiles) \
+EXTRA_DIST=\
   job_commit.c \
   job_commit_account.c \
   job_virtual.c \
