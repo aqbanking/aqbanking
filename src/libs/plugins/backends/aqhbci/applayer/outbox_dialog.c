@@ -96,24 +96,49 @@ int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox,
                        "dialogId",
                        AH_Dialog_GetDialogId(dlg));
 
+  /* handle signing and encryption */
   if (dlgFlags & AH_DIALOG_FLAGS_ANONYMOUS) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Will not encrypt and sign dialog close request");
     AH_Job_SubFlags(jDlgClose, AH_JOB_FLAGS_CRYPT | AH_JOB_FLAGS_SIGN | AH_JOB_FLAGS_NEEDTAN);
     AH_Job_AddFlags(jDlgClose, AH_JOB_FLAGS_NOITAN);
   }
   else {
-    /* sign and encrypt job */
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Will encrypt and sign dialog close request");
-    AH_Job_AddSigner(jDlgClose, AB_User_GetUserId(cbox->user));
-    AH_Job_AddFlags(jDlgClose,
-                    AH_JOB_FLAGS_CRYPT |
-                    AH_JOB_FLAGS_SIGN);
+    /* possibly sign job */
+    if (jqFlags & AH_JOBQUEUE_FLAGS_SIGN) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Will sign dialog close request");
+      AH_Job_AddSigner(jDlgClose, AB_User_GetUserId(cbox->user));
+      AH_Job_AddFlags(jDlgClose, AH_JOB_FLAGS_SIGN | AH_JOB_FLAGS_NEEDSIGN);
+    }
+    else {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Will not sign dialog close request");
+      AH_Job_SubFlags(jDlgClose, AH_JOB_FLAGS_SIGN | AH_JOB_FLAGS_NEEDSIGN);
+    }
+
+    /* possibly encrypt job */
+    if (jqFlags & AH_JOBQUEUE_FLAGS_CRYPT) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Will encrypt dialog close request");
+      AH_Job_AddFlags(jDlgClose, AH_JOB_FLAGS_CRYPT | AH_JOB_FLAGS_NEEDCRYPT);
+    }
+    else {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Will not encrypt dialog close request");
+      AH_Job_SubFlags(jDlgClose, AH_JOB_FLAGS_CRYPT | AH_JOB_FLAGS_NEEDCRYPT);
+    }
+
+    /* possibly set NOITAN job */
+    if (jqFlags & AH_JOB_FLAGS_NOITAN) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Disable ITAN mode for dialog close request");
+      AH_Job_AddFlags(jDlgClose, AH_JOB_FLAGS_NOITAN);
+    }
+    else {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Will not disable ITAN mode for dialog close request");
+      AH_Job_SubFlags(jDlgClose, AH_JOB_FLAGS_NOITAN);
+    }
   }
+
   jqDlgClose=AH_JobQueue_new(cbox->user);
 
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Adding dialog close request to queue");
-  if (AH_JobQueue_AddJob(jqDlgClose, jDlgClose)!=
-      AH_JobQueueAddResultOk) {
+  if (AH_JobQueue_AddJob(jqDlgClose, jDlgClose)!=AH_JobQueueAddResultOk) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not add single job to queue");
     AH_JobQueue_free(jqDlgClose);
     return GWEN_ERROR_GENERIC;
