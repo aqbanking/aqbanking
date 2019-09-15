@@ -104,6 +104,7 @@ int AH_Control_ListItanModes(AB_PROVIDER *pro,
       fprintf(stdout, "TAN Methods\n");
       while (tm) {
         const char *mid;
+        const char *zkaName;
         const char *mname;
         int combinedVersion;
 
@@ -116,6 +117,7 @@ int AH_Control_ListItanModes(AB_PROVIDER *pro,
                 AH_TanMethod_GetProcess(tm));
         mid=AH_TanMethod_GetMethodId(tm);
         mname=AH_TanMethod_GetMethodName(tm);
+	zkaName=AH_TanMethod_GetZkaTanName(tm);
         if (mid && mname) {
           fprintf(stdout, ": %s (%s)", mid, mname);
         }
@@ -124,6 +126,13 @@ int AH_Control_ListItanModes(AB_PROVIDER *pro,
         }
         else if (!mid && mname) {
           fprintf(stdout, ": %s", mname);
+        }
+        else {
+	  fprintf(stdout, ": <no name>");
+	}
+
+        if (zkaName && *zkaName) {
+            fprintf(stdout, " ZKA-ID: %s", zkaName);
         }
 
         if (AH_User_HasTanMethod(u, AH_TanMethod_GetFunction(tm))) {

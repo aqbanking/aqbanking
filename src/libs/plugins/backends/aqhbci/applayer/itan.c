@@ -348,12 +348,19 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
       if (!s || !*s)
         s=AH_TanMethod_GetMethodId(tm);
 
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Selecting iTAN mode \"%s\" (needs HKTAN:%d)", s, AH_TanMethod_GetGvVersion(tm));
+      DBG_NOTICE(AQHBCI_LOGDOMAIN,
+                 "Selecting TAN mode \"%s\" (%d, version %d, process %d))",
+                 s,
+                 AH_TanMethod_GetFunction(tm),
+                 AH_TanMethod_GetGvVersion(tm),
+                 AH_TanMethod_GetProcess(tm));
       GWEN_Gui_ProgressLog2(0,
                             GWEN_LoggerLevel_Info,
-                            I18N("Selecting iTAN mode \"%s\" (%d)"),
+                            I18N("Selecting iTAN mode \"%s\" (%d, version %d, process %d)"),
                             s?s:I18N("(unnamed)"),
-                            AH_TanMethod_GetFunction(tm));
+                            AH_TanMethod_GetFunction(tm),
+                            AH_TanMethod_GetGvVersion(tm),
+                            AH_TanMethod_GetProcess(tm));
       AH_Dialog_SetItanMethod(dlg, AH_TanMethod_GetFunction(tm));
       AH_Dialog_SetItanProcessType(dlg, AH_TanMethod_GetProcess(tm));
       AH_Dialog_SetTanJobVersion(dlg, AH_TanMethod_GetGvVersion(tm));
