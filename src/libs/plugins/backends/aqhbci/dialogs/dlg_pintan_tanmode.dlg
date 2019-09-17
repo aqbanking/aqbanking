@@ -15,7 +15,7 @@
         flags="decorShrinkable decorStretchable decorMaximize decorMinimize decorClose decorMenu" >
   <widget type="vlayout" flags="fillX fillY" >
 
-    <widget type="textBrowser" name="logText" flags="fillX fillY readOnly" />
+    <widget type="label" name="messageLabel" flags="fillX fillY justifyLeft" />
 
     <widget type="label" text="Selected TAN Method" />
     <widget type="comboBox" name="tanMethodCombo"  columns="20" flags="fillX" />

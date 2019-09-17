@@ -72,13 +72,12 @@ GWEN_DIALOG *AH_PinTan_TanModeDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLoc
 {
   GWEN_DIALOG *dlg;
   AH_PINTAN_TANMODE_DIALOG *xdlg;
-  int rv;
 
   dlg=GWEN_Dialog_CreateAndLoadWithPath("ah_setup_pintan_tanmode",
                                         AB_PM_LIBNAME, AB_PM_DATADIR,
                                         "aqbanking/backends/aqhbci/dialogs/dlg_pintan_tanmode.dlg");
   if (dlg==NULL) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d).");
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here");
     return NULL;
   }
   GWEN_NEW_OBJECT(AH_PINTAN_TANMODE_DIALOG, xdlg);
@@ -128,6 +127,23 @@ void _init(GWEN_DIALOG *dlg)
                               0,
                               I18N("Select TAN Mode"),
                               0);
+
+  GWEN_Dialog_SetCharProperty(dlg,
+                              "messageLabel",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("<html>"
+                                   "<p>Please select the TAN method to use for authentication purposes.</p>"
+                                   "<p>You should choose a method with a version of 6 or higher, "
+                                   "otherwise \"Strong Customer Authentication\" is disabled and connecting to most "
+                                   "banks is not possible.</p>"
+                                   "</html>"
+                                   "Please select the TAN method to use for authentication purposes.\n"
+                                   "You should choose a method with a version of 6 or higher, "
+                                   "otherwise \"Strong Customer Authentication\" is disabled and connecting to most "
+                                   "banks is not possible."),
+                              0);
+
 
   /* also selects currently selected TAN method */
   _updateTanMethods(dlg);
