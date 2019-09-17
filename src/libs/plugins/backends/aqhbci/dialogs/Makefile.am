@@ -28,7 +28,8 @@ noinst_HEADERS=\
   dlg_rdh_special_l.h dlg_rdh_special_p.h \
   dlg_importkeyfile_l.h dlg_importkeyfile_p.h \
   dlg_choose_usertype_l.h dlg_choose_usertype_p.h \
-  dlg_editaccount_l.h dlg_editaccount_p.h
+  dlg_editaccount_l.h dlg_editaccount_p.h \
+  dlg_pintan_tanmode_l.h dlg_pintan_tanmode_p.h
 
 libaqhbci_dlgs_la_SOURCES=\
   dlg_edituserddv.c \
@@ -44,7 +45,8 @@ libaqhbci_dlgs_la_SOURCES=\
   dlg_importkeyfile.c \
   dlg_newuser.c \
   dlg_choose_usertype.c \
-  dlg_editaccount.c
+  dlg_editaccount.c \
+  dlg_pintan_tanmode.c
 
 
 dlgdatadir=$(aqbanking_pkgdatadir)/backends/aqhbci/dialogs
@@ -62,7 +64,9 @@ dlgdata_DATA=\
   dlg_importkeyfile.dlg \
   dlg_newuser.dlg \
   dlg_choose_usertype.dlg \
-  dlg_editaccount.dlg
+  dlg_editaccount.dlg \
+  dlg_pintan_tanmode.dlg
+
 
 dlgimagedir=$(aqbanking_pkgdatadir)/backends/aqhbci/dialogs
 dlgimage_DATA=\

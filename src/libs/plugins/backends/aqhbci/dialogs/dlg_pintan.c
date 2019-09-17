@@ -25,6 +25,7 @@
 #include "aqhbci/banking/user.h"
 #include "aqhbci/banking/provider.h"
 #include "dlg_pintan_special_l.h"
+#include "dlg_pintan_tanmode_l.h"
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>
@@ -43,6 +44,12 @@
 
 #define DIALOG_MINWIDTH  400
 #define DIALOG_MINHEIGHT 200
+
+
+
+static int _reallyDoIt(GWEN_DIALOG *dlg, AB_USER *u, uint32_t pid);
+static int _selectTanMethod(GWEN_DIALOG *dlg, AB_USER *u, int doLock);
+
 
 
 
@@ -791,7 +798,6 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg)
   GWEN_URL *url;
   int rv;
   uint32_t pid;
-  AB_IMEXPORTER_CONTEXT *ctx;
 
   DBG_NOTICE(0, "Doit");
   assert(dlg);
@@ -848,7 +854,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg)
                              GWEN_GUI_PROGRESS_SHOW_ABORT,
                              I18N("Setting Up PIN/TAN User"),
                              I18N("The system id and a list of accounts will be retrieved."),
-                             3,
+                             4,
                              0);
   /* lock new user */
   DBG_NOTICE(0, "Locking user");
@@ -863,87 +869,13 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg)
     return GWEN_DialogEvent_ResultHandled;
   }
 
-  /* get certificate */
-  DBG_NOTICE(0, "Getting certs (%08x)", AH_User_GetFlags(u));
-  GWEN_Gui_ProgressLog(pid,
-                       GWEN_LoggerLevel_Notice,
-                       I18N("Retrieving SSL certificate"));
-  rv=AH_Provider_GetCert(xdlg->provider, u, 0, 1, 0);
-  if (rv<0) {
-    // TODO: retry with SSLv3 if necessary
-    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
-    GWEN_Gui_ProgressEnd(pid);
-    return GWEN_DialogEvent_ResultHandled;
-  }
-
-  rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
-  if (rv==GWEN_ERROR_USER_ABORTED) {
-    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
-    GWEN_Gui_ProgressLog(pid,
-                         GWEN_LoggerLevel_Error,
-                         I18N("Aborted by user."));
-    GWEN_Gui_ProgressEnd(pid);
-    return GWEN_DialogEvent_ResultHandled;
-  }
-
-  /* get system id */
-  DBG_NOTICE(0, "Getting sysid");
-  GWEN_Gui_ProgressLog(pid,
-                       GWEN_LoggerLevel_Notice,
-                       I18N("Retrieving system id"));
-  ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetSysId(xdlg->provider, u, ctx, 0, 1, 0);
+  /* do all the magic stuff */
+  rv=_reallyDoIt(dlg, u, pid);
   if (rv<0) {
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
-    AB_ImExporterContext_free(ctx);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
-    GWEN_Gui_ProgressEnd(pid);
-    return GWEN_DialogEvent_ResultHandled;
-  }
-  AB_ImExporterContext_free(ctx);
-
-  rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
-  if (rv==GWEN_ERROR_USER_ABORTED) {
-    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
-    GWEN_Gui_ProgressLog(pid,
-                         GWEN_LoggerLevel_Error,
-                         I18N("Aborted by user."));
-    GWEN_Gui_ProgressEnd(pid);
-    return GWEN_DialogEvent_ResultHandled;
-  }
-
-  /* get account list */
-  DBG_NOTICE(0, "Getting account list");
-  GWEN_Gui_ProgressLog(pid,
-                       GWEN_LoggerLevel_Notice,
-                       I18N("Retrieving account list"));
-  ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetAccounts(xdlg->provider, u, ctx, 0, 1, 0);
-  if (rv<0) {
-    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
-    AB_ImExporterContext_free(ctx);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
-    GWEN_Gui_ProgressEnd(pid);
-    return GWEN_DialogEvent_ResultHandled;
-  }
-  AB_ImExporterContext_free(ctx);
-
-  rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
-  if (rv==GWEN_ERROR_USER_ABORTED) {
-    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
-    GWEN_Gui_ProgressLog(pid,
-                         GWEN_LoggerLevel_Error,
-                         I18N("Aborted by user."));
+    GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Error, I18N("Aborted by user."));
     GWEN_Gui_ProgressEnd(pid);
     return GWEN_DialogEvent_ResultHandled;
   }
@@ -977,6 +909,106 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg)
   xdlg->user=u;
 
   return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
+
+int _reallyDoIt(GWEN_DIALOG *dlg, AB_USER *u, uint32_t pid)
+{
+  AH_PINTAN_DIALOG *xdlg;
+  int rv;
+  AB_IMEXPORTER_CONTEXT *ctx;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_PINTAN_DIALOG, dlg);
+  assert(xdlg);
+
+
+  /* get certificate */
+  DBG_NOTICE(0, "Getting certs (%08x)", AH_User_GetFlags(u));
+  GWEN_Gui_ProgressLog(pid,
+                       GWEN_LoggerLevel_Notice,
+                       I18N("Retrieving SSL certificate"));
+  rv=AH_Provider_GetCert(xdlg->provider, u, 0, 1, 0);
+  if (rv<0) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+
+  /* get bank info (for SCA) */
+  DBG_NOTICE(0, "Getting generic bank info");
+  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice, I18N("Retrieving generic bank info (SCA)"));
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_GetBankInfo(xdlg->provider, u, ctx, 0 /* without HKTAN */, 0, 1, 0);
+  if (rv<0) {
+    AB_ImExporterContext_free(ctx);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+  AB_ImExporterContext_free(ctx);
+
+  rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
+  if (rv==GWEN_ERROR_USER_ABORTED) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+
+  /* get system id */
+  DBG_NOTICE(0, "Getting sysid");
+  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice, I18N("Retrieving system id"));
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_GetSysId(xdlg->provider, u, ctx, 0, 1, 0);
+  if (rv<0) {
+    AB_ImExporterContext_free(ctx);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+  AB_ImExporterContext_free(ctx);
+
+  rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
+  if (rv==GWEN_ERROR_USER_ABORTED) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+
+  /* select TAN method */
+  rv=_selectTanMethod(dlg, u, 0);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+
+  /* get account list */
+  DBG_NOTICE(0, "Getting account list");
+  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice, I18N("Retrieving account list"));
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_GetAccounts(xdlg->provider, u, ctx, 0, 1, 0);
+  if (rv<0) {
+    AB_ImExporterContext_free(ctx);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+  AB_ImExporterContext_free(ctx);
+
+  rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
+  if (rv==GWEN_ERROR_USER_ABORTED) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+
+  return 0;
 }
 
 
@@ -1258,6 +1290,36 @@ int GWENHYWFAR_CB AH_PinTanDialog_SignalHandler(GWEN_DIALOG *dlg,
   }
 
   return GWEN_DialogEvent_ResultNotHandled;
+}
+
+
+
+int _selectTanMethod(GWEN_DIALOG *dlg, AB_USER *u, int doLock)
+{
+  AH_PINTAN_DIALOG *xdlg;
+  GWEN_DIALOG *dlg2;
+  int rv;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_PINTAN_DIALOG, dlg);
+  assert(xdlg);
+
+  dlg2=AH_PinTan_TanModeDialog_new(xdlg->provider, u, doLock);
+  if (dlg2==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create dialog");
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  rv=GWEN_Gui_ExecDialog(dlg2, 0);
+  if (rv==0) {
+    /* rejected */
+    GWEN_Dialog_free(dlg2);
+    return GWEN_ERROR_USER_ABORTED;
+  }
+
+  GWEN_Dialog_free(dlg2);
+
+  return 0;
 }
 
 
