@@ -65,33 +65,18 @@ GWEN_DIALOG *AH_PinTanDialog_new(AB_PROVIDER *pro)
   GWEN_BUFFER *fbuf;
   int rv;
 
-  dlg=GWEN_Dialog_new("ah_setup_pintan");
+  dlg=GWEN_Dialog_CreateAndLoadWithPath("ah_setup_pintan",
+                                        AB_PM_LIBNAME,
+                                        AB_PM_DATADIR,
+                                        "aqbanking/backends/aqhbci/dialogs/dlg_pintan.dlg");
+  if (dlg==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here.");
+    return NULL;
+  }
   GWEN_NEW_OBJECT(AH_PINTAN_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AH_PINTAN_DIALOG, dlg, xdlg,
                        AH_PinTanDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AH_PinTanDialog_SignalHandler);
-
-  /* get path of dialog description file */
-  fbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-                               "aqbanking/backends/aqhbci/dialogs/dlg_pintan.dlg",
-                               fbuf);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
-    GWEN_Buffer_free(fbuf);
-    GWEN_Dialog_free(dlg);
-    return NULL;
-  }
-
-  /* read dialog from dialog description file */
-  rv=GWEN_Dialog_ReadXmlFile(dlg, GWEN_Buffer_GetStart(fbuf));
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d).", rv);
-    GWEN_Buffer_free(fbuf);
-    GWEN_Dialog_free(dlg);
-    return NULL;
-  }
-  GWEN_Buffer_free(fbuf);
 
   xdlg->banking=AB_Provider_GetBanking(pro);
   xdlg->provider=pro;
