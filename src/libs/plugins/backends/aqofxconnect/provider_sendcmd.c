@@ -551,6 +551,19 @@ int AO_Provider__ProcessImporterContext(AB_PROVIDER *pro, AB_USER *u, AB_IMEXPOR
   ab=AB_Provider_GetBanking(pro);
   assert(ab);
 
+#if 0
+  if (1) {
+    GWEN_DB_NODE *dbDebug;
+
+    dbDebug=GWEN_DB_Group_new("context");
+    AB_ImExporterContext_toDb(ictx, dbDebug);
+    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Got this context to process:");
+    GWEN_DB_Dump(dbDebug, 2);
+    GWEN_DB_Group_free(dbDebug);
+
+  }
+#endif
+
   ai=AB_ImExporterContext_GetFirstAccountInfo(ictx);
   if (!ai) {
     DBG_INFO(0, "No accounts");
