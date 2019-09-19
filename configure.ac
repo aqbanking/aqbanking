@@ -445,6 +445,7 @@ AC_GWENHYWFAR(4,99,10,0)
 
 all_includes="$all_includes $gwenhywfar_includes"
 
+AC_MSG_CHECKING(if gui-tests desired)
 AC_ARG_ENABLE(gui-tests,
   [  --enable-gui-tests         allow GUI tests (default=no)],
   enable_gui_tests="$enableval",
