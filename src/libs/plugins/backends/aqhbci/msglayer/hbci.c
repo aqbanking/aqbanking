@@ -196,7 +196,15 @@ const char *AH_HBCI_GetProductName(const AH_HBCI *hbci)
   assert(hbci);
   s=AB_Banking_RuntimeConfig_GetCharValue(hbci->banking, "fintsRegistrationKey", NULL);
   if (s && *s) {
+    int i;
+
     DBG_INFO(AQHBCI_LOGDOMAIN, "Using given FinTS registration key");
+    i=strlen(s);
+    if (i>25) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN,
+                "WARNING: The registration key is longer than allowed (maximum is 25, current size is %d), "
+                "bank servers might abort the next connection with or without error message.", i);
+    }
     return s;
   }
   else {
@@ -211,8 +219,23 @@ const char *AH_HBCI_GetProductName(const AH_HBCI *hbci)
 
 const char *AH_HBCI_GetProductVersion(const AH_HBCI *hbci)
 {
+  const char *s;
+
   assert(hbci);
-  return AB_Banking_RuntimeConfig_GetCharValue(hbci->banking, "fintsApplicationVersionString", hbci->productVersion);
+  s=AB_Banking_RuntimeConfig_GetCharValue(hbci->banking, "fintsApplicationVersionString", hbci->productVersion);
+  assert(s);
+  if (s) {
+    int i;
+
+    i=strlen(s);
+    if (i>5) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN,
+                "WARNING: The version number is longer than allowed (maximum is 5, current size is %d), "
+                "bank servers might abort the next connection with or without error message.", i);
+    }
+  }
+
+  return s;
 }
 
 
