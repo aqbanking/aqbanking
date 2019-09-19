@@ -25,7 +25,7 @@ if test -z "$4"; then vbld="0"; else vbld="$4"; fi
 
 AC_MSG_CHECKING(if gwenhywfar support desired)
 AC_ARG_ENABLE(gwenhywfar,
-  [  --enable-gwenhywfar      enable gwenhywfar support (default=yes)],
+  [  --enable-gwenhywfar     enable gwenhywfar support (default=yes)],
   enable_gwenhywfar="$enableval",
   enable_gwenhywfar="yes")
 AC_MSG_RESULT($enable_gwenhywfar)
@@ -40,48 +40,46 @@ gwenhywfar_includes=""
 gwenhywfar_has_crypt="yes"
 if test "$enable_gwenhywfar" != "no"; then
   AC_MSG_CHECKING(for gwenhywfar)
-  AC_ARG_WITH(gwen-dir, [  --with-gwen-dir=DIR
-                            uses gwenhywfar from given dir],
-    [lcc_dir="$withval"],
-    [lcc_dir="${prefix} \
-	     /usr/local \
-             /usr \
-	     /gwen \
-             /sw \
-             /"])
+  AC_ARG_WITH(gwen-dir,
+    [  --with-gwen-dir=DIR     obsolete - set PKG_CONFIG_PATH environment variable instead],
+    [AC_MSG_RESULT([obsolete configure option '--with-gwen-dir' used])
+     AC_MSG_ERROR([
+*** Configure switch '--with-gwen-dir' is obsolete.
+*** If you want to use gwenhywfar from a non-system location
+*** then locate the file 'gwenhywfar.pc' and add its parent directory
+*** to environment variable PKG_CONFIG_PATH. For example
+*** configure <options> PKG_CONFIG_PATH="<path-to-gwenhywfar.pc's-dir>:\${PKG_CONFIG_PATH}"])],
+    [])
 
-  for li in $lcc_dir; do
-      if test -x "$li/bin/gwenhywfar-config"; then
-          gwenhywfar_dir="$li";
-          break
-      fi
-  done
-  if test -z "$gwenhywfar_dir"; then
-      AC_MSG_RESULT([not found ])
+  $PKG_CONFIG --exists gwenhywfar
+  result=$?
+  if test $result -ne 0; then
+      AC_MSG_RESULT(not found)
       AC_MSG_ERROR([
-*** The library Gwenhywfar was not found. Obtain it from 
-*** http://www.aquamaniac.de . 
-*** If it is already installed (including the -devel package), 
-*** you might need to specify the location with the 
-*** option --with-gwen-dir=DIR.])
+*** Package gwenhywfar was not found in the pkg-config search path.
+*** Perhaps you should add the directory containing `gwenhywfar.pc'
+*** to the PKG_CONFIG_PATH environment variable])
   else
+      gwenhywfar_dir="`$PKG_CONFIG --variable=prefix gwenhywfar`"
       AC_MSG_RESULT($gwenhywfar_dir)
-      AC_MSG_CHECKING(for gwen libs)
-      gwenhywfar_libs="`$gwenhywfar_dir/bin/gwenhywfar-config --libraries`"
-      AC_MSG_RESULT($gwenhywfar_libs)
-      AC_MSG_CHECKING(for gwen includes)
-      gwenhywfar_includes="`$gwenhywfar_dir/bin/gwenhywfar-config --includes`"
-      AC_MSG_RESULT($gwenhywfar_includes)
-      AC_MSG_CHECKING(for gwen binary tools)
-      gwenhywfar_bindir="`$gwenhywfar_dir/bin/gwenhywfar-config --bindir`"
-      AC_MSG_RESULT($gwenhywfar_bindir)
-      AC_MSG_CHECKING(for gwen plugins)
-      gwenhywfar_plugins="`$gwenhywfar_dir/bin/gwenhywfar-config --plugins`"
-      AC_MSG_RESULT($gwenhywfar_plugins)
-      AC_MSG_CHECKING(for gwen headers)
-      gwenhywfar_headers="`$gwenhywfar_dir/bin/gwenhywfar-config --headers`"
-      AC_MSG_RESULT($gwenhywfar_headers)
   fi
+
+  AC_MSG_CHECKING(for gwen libs)
+  gwenhywfar_libs="`$PKG_CONFIG --libs gwenhywfar`"
+  AC_MSG_RESULT($gwenhywfar_libs)
+  AC_MSG_CHECKING(for gwen includes)
+  gwenhywfar_includes="`$PKG_CONFIG --cflags gwenhywfar`"
+  AC_MSG_RESULT($gwenhywfar_includes)
+  AC_MSG_CHECKING(for gwen binary tools)
+  gwenhywfar_bindir="`$PKG_CONFIG --variable=bindir gwenhywfar`"
+  AC_MSG_RESULT($gwenhywfar_bindir)
+  AC_MSG_CHECKING(for gwen plugins)
+  gwenhywfar_plugins="`$PKG_CONFIG --variable=plugindir gwenhywfar`"
+  AC_MSG_RESULT($gwenhywfar_plugins)
+  AC_MSG_CHECKING(for gwen headers)
+  gwenhywfar_headers="`$PKG_CONFIG --variable=headerdir gwenhywfar`"
+  AC_MSG_RESULT($gwenhywfar_headers)
+
   AC_MSG_CHECKING(if gwenhywfar test desired)
   AC_ARG_ENABLE(gwenhywfar,
     [  --enable-gwenhywfar-test   enable gwenhywfar-test (default=yes)],
@@ -90,24 +88,29 @@ if test "$enable_gwenhywfar" != "no"; then
   AC_MSG_RESULT($enable_gwenhywfar_test)
   AC_MSG_CHECKING(for Gwenhywfar version >=$vma.$vmi.$vpl.$vbld)
   if test "$enable_gwenhywfar_test" != "no"; then
-    gwen_versionstring="`$gwenhywfar_dir/bin/gwenhywfar-config --vstring`.`$gwenhywfar_dir/bin/gwenhywfar-config --vbuild`"
+    gwen_vmajor="`$PKG_CONFIG --variable=vmajor gwenhywfar`"
+    gwen_vminor="`$PKG_CONFIG --variable=vminor gwenhywfar`"
+    gwen_vpatchlevel="`$PKG_CONFIG --variable=vpatchlevel gwenhywfar`"
+    gwen_vstring="`$PKG_CONFIG --variable=vstring gwenhywfar`"
+    gwen_vbuild="`$PKG_CONFIG --variable=vbuild gwenhywfar`"
+    gwen_versionstring="$gwen_vstring.$gwen_vbuild"
     AC_MSG_RESULT([found $gwen_versionstring])
-    if test "$vma" -gt "`$gwenhywfar_dir/bin/gwenhywfar-config --vmajor`"; then
+    if test "$vma" -gt "$gwen_vmajor"; then
       AC_MSG_ERROR([Your Gwenhywfar version is way too old.
-      Please update from http://www.aquamaniac.de])
-    elif test "$vma" = "`$gwenhywfar_dir/bin/gwenhywfar-config --vmajor`"; then
-      if test "$vmi" -gt "`$gwenhywfar_dir/bin/gwenhywfar-config --vminor`"; then
+      Please update from https://www.aquamaniac.de])
+    elif test "$vma" = "$gwen_vmajor"; then
+      if test "$vmi" -gt "$gwen_vminor"; then
         AC_MSG_ERROR([Your Gwenhywfar version is too old.
-          Please update from http://www.aquamaniac.de])
-      elif test "$vmi" = "`$gwenhywfar_dir/bin/gwenhywfar-config --vminor`"; then
-          if test "$vpl" -gt "`$gwenhywfar_dir/bin/gwenhywfar-config --vpatchlevel`"; then
+          Please update from https://www.aquamaniac.de])
+      elif test "$vmi" = "$gwen_vminor"; then
+          if test "$vpl" -gt "$gwen_vpatchlevel"; then
             AC_MSG_ERROR([Your Gwenhywfar version is a little bit too old.
-            Please update from http://www.aquamaniac.de])
-          elif test "$vpl" = "`$gwenhywfar_dir/bin/gwenhywfar-config --vpatchlevel`"; then
-            if test "$vbld" -gt "`$gwenhywfar_dir/bin/gwenhywfar-config --vbuild`"; then
+            Please update from https://www.aquamaniac.de])
+          elif test "$vpl" = "$gwen_vpatchlevel"; then
+            if test "$vbld" -gt "$gwen_vbuild"; then
               AC_MSG_ERROR([Your Gwenhywfar version is a little bit too old. 
-  Please update to the latest SVN version. Instructions for accessing 
-  SVN can be found on http://www.aquamaniac.de])
+  Please update to the latest git version. Instructions for accessing
+  git can be found on https://www.aquamaniac.de])
              fi
            fi
       fi
@@ -117,6 +120,9 @@ if test "$enable_gwenhywfar" != "no"; then
   else
     have_gwenhywfar="yes"
     AC_MSG_RESULT(assuming yes)
+  fi
+  if test -n "$save_path"; then
+      export PGK_CONFIG_PATH="$save_path"
   fi
 dnl end of "if enable-gwenhywfar"
 fi
