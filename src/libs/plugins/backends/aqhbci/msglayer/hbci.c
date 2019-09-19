@@ -191,8 +191,20 @@ GWEN_DB_NODE *AH_HBCI_GetProviderDb(const AH_HBCI *hbci)
 
 const char *AH_HBCI_GetProductName(const AH_HBCI *hbci)
 {
+  const char *s;
+
   assert(hbci);
-  return AB_Banking_RuntimeConfig_GetCharValue(hbci->banking, "fintsRegistrationKey", "AQHBCI");
+  s=AB_Banking_RuntimeConfig_GetCharValue(hbci->banking, "fintsRegistrationKey", NULL);
+  if (s && *s) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Using given FinTS registration key");
+    return s;
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+              "WARNING: Your application doesn't set the FinTS registration key, "
+              "bank servers adhering to latest PSD2 guidelines will most likely reject the following connection.");
+    return "AQHBCI";
+  }
 }
 
 
