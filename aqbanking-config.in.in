@@ -1,70 +1,63 @@
 # $Id$
 # Author of this file: Martin Preuss<martin@libchipcard.de>
 
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-libdir=@libdir@
-datarootdir=@datarootdir@
-includedir=@includedir@
-datadir=@datadir@
-
 result=""
 
 for d in $*; do
     case $d in
 	--includes)
-	    result="$result @aqbanking_includes@ @gwenhywfar_includes@"
+	    result="$result `@PKG_CONFIG@ --cflags aqbanking`"
 	    ;;
 	--libraries)
-	    result="$result @aqbanking_ldflags@ @aqbanking_libs@"
+	    result="$result `@PKG_CONFIG@ --libs aqbanking`"
 	    ;;
 	--libraries++)
 	    result="$result "
 	    ;;
 	--plugins)
-	    result="$result @aqbanking_plugindir@"
+	    result="$result `@PKG_CONFIG@ --variable=plugindir aqbanking`"
 	    ;;
 	--data)
-	    result="$result @aqbanking_pkgdatadir@"
+	    result="$result `@PKG_CONFIG@ --variable=pkgdatadir aqbanking`"
 	    ;;
 
         --has-qbanking)
-            result=@with_qbanking@
+            result=`@PKG_CONFIG@ --variable=has-qbanking aqbanking`
             ;;
 	--qbanking-libraries)
-	    result="$result @aqbanking_ldflags@ @qbanking_libs@"
+	    result="$result `@PKG_CONFIG@ --variable=qbanking-libraries aqbanking`"
 	    ;;
 	--qbanking-plugins)
-	    result="$result @qbanking_plugindir@"
+	    result="$result `@PKG_CONFIG@ --variable=qbanking-plugins aqbanking`"
 	    ;;
 	--qbanking-helpdir)
-	    result="$result @qbanking_helpdir@"
+	    result="$result `@PKG_CONFIG@ --variable=qbanking-helpdir aqbanking`"
 	    ;;
 
         --has-aqhbci)
-            result=@with_aqhbci@
+            result=`@PKG_CONFIG@ --variable=has-aqhbci aqbanking`
             ;;
 	--aqhbci-libraries)
-	    result="$result @aqbanking_ldflags@ @aqhbci_libs@"
+	    result="$result `@PKG_CONFIG@ --variable=aqhbci-libraries aqbanking`"
 	    ;;
 
 	--vmajor)
-	    result="$result @AQBANKING_VERSION_MAJOR@"
+	    result="$result `@PKG_CONFIG@ --variable=vmajor aqbanking`"
 	    ;;
 	--vminor)
-	    result="$result @AQBANKING_VERSION_MINOR@"
+	    result="$result `@PKG_CONFIG@ --variable=vminor aqbanking`"
 	    ;;
 	--vpatchlevel)
-	    result="$result @AQBANKING_VERSION_PATCHLEVEL@"
+	    result="$result `@PKG_CONFIG@ --variable=vpatchlevel aqbanking`"
 	    ;;
 	--vbuild)
-	    result="$result @AQBANKING_VERSION_BUILD@"
+	    result="$result `@PKG_CONFIG@ --variable=vbuild aqbanking`"
 	    ;;
 	--vtag)
-	    result="$result @AQBANKING_VERSION_TAG@"
+	    result="$result `@PKG_CONFIG@ --variable=vtag aqbanking`"
 	    ;;
         --vstring)
-	    result="$result @AQBANKING_VERSION_MAJOR@.@AQBANKING_VERSION_MINOR@.@AQBANKING_VERSION_PATCHLEVEL@"
+	    result="$result `@PKG_CONFIG@ --variable=vstring aqbanking`"
             ;;
 	*)
 	    echo "Usage:"
