@@ -216,6 +216,8 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
         }
       }
 
+#if 0 /* disabled, will be removed later */
+
       /* ABWA+: replace remote name with ABWA+ content */
       s=GWEN_DB_GetCharValue(dbT, "sepa/ABWA", 0, NULL);
       if (s && *s) {
@@ -229,6 +231,34 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
           }
         }
       }
+#endif
+
+      /* read all lines of the remote name and concatenate them (addresses bug #57) */
+      if (1) {
+	const char *varName;
+	int i;
+	GWEN_BUFFER *nameBuf;
+
+	if (GWEN_DB_VariableExists(dbT, "sepa/ABWA"))
+	  varName="sepa/ABWA";
+	else
+	  varName="purpose";
+
+	nameBuf=GWEN_Buffer_new(0, 256, 0, 1);
+	for (i=0; i<2; i++) {
+	  s=GWEN_DB_GetCharValue(dbT, varName, i, NULL);
+	  if (s && *s) {
+#if 0 /* TODO: add separator? */
+	    if (i>0)
+	      GWEN_Buffer_AppendString(nameBuf, " ");
+#endif
+	    GWEN_Buffer_AppendString(nameBuf, s);
+	  }
+	}
+	if (GWEN_Buffer_GetUsedBytes(nameBuf))
+	  AB_Transaction_SetRemoteName(t, GWEN_Buffer_GetStart(nameBuf));
+      }
+
 
       /* ABWE+: replace local name with ABWE+ content */
       s=GWEN_DB_GetCharValue(dbT, "sepa/ABWE", 0, NULL);
