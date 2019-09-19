@@ -15,11 +15,25 @@ bindir=@bindir@
 plugindir=@aqbanking_plugindir@
 pkgdatadir=@aqbanking_pkgdatadir@
 all_includes=@all_includes@
+vmajor=@AQBANKING_VERSION_MAJOR@
+vminor=@AQBANKING_VERSION_MINOR@
+vpatchlevel=@AQBANKING_VERSION_PATCHLEVEL@
+vbuild=@AQBANKING_VERSION_BUILD@
+vtag=@AQBANKING_VERSION_TAG@
+vstring=@AQBANKING_VERSION_MAJOR@.@AQBANKING_VERSION_MINOR@.@AQBANKING_VERSION_PATCHLEVEL@
 
 # ... and particular variables of all included subpackages
 aqbanking_libs=@aqbanking_ldflags@ @aqbanking_libs@
 aqbanking_includes=@aqbanking_includes@
 aqbanking_plugindir=@aqbanking_plugindir@
+
+has-qbanking=@with_qbanking@
+qbanking-libraries=@aqbanking_ldflags@ @qbanking_libs@
+qbanking-plugins=@qbanking_plugindir@
+qbanking-helpdir=@qbanking_helpdir@
+
+has-aqhbci=@with_aqhbci@
+aqhbci-libraries=@aqbanking_ldflags@ @aqhbci_libs@
 
 # Human-readable name
 Name: AqBanking
