@@ -240,8 +240,10 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 	GWEN_BUFFER *nameBuf;
 
 	if (GWEN_DB_VariableExists(dbT, "sepa/ABWA"))
-	  varName="sepa/ABWA";
-	else
+          varName="sepa/ABWA";
+        else if (GWEN_DB_VariableExists(dbT, "sepa/ABWE"))
+          varName="sepa/ABWE";
+        else
 	  varName="remoteName";
 
 	nameBuf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -258,14 +260,6 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 	if (GWEN_Buffer_GetUsedBytes(nameBuf))
 	  AB_Transaction_SetRemoteName(t, GWEN_Buffer_GetStart(nameBuf));
       }
-
-
-      /* ABWE+: replace local name with ABWE+ content */
-      s=GWEN_DB_GetCharValue(dbT, "sepa/ABWE", 0, NULL);
-      if (s && *s) {
-        AB_Transaction_SetLocalName(t, s);
-      }
-
 
       /* add transaction */
       DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding transaction");
