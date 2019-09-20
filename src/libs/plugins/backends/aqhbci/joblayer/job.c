@@ -1109,7 +1109,13 @@ int AH_Job_HasResultWithCode(const AH_JOB *j, int wantedCode)
       dbRd=GWEN_DB_GetFirstGroup(dbRd);
     }
     if (dbRd) {
-      if (strcasecmp(GWEN_DB_GroupName(dbRd), "SegResult")==0) {
+      const char *sGroupName;
+
+      sGroupName=GWEN_DB_GroupName(dbRd);
+
+      if (sGroupName && *sGroupName &&
+          ((strcasecmp(sGroupName, "SegResult")==0) ||
+           (strcasecmp(sGroupName, "MsgResult")==0))) {
         GWEN_DB_NODE *dbRes;
 
         dbRes=GWEN_DB_GetFirstGroup(dbRd);
