@@ -62,8 +62,6 @@ GWEN_DIALOG *AH_PinTanDialog_new(AB_PROVIDER *pro)
 {
   GWEN_DIALOG *dlg;
   AH_PINTAN_DIALOG *xdlg;
-  GWEN_BUFFER *fbuf;
-  int rv;
 
   dlg=GWEN_Dialog_CreateAndLoadWithPath("ah_setup_pintan",
                                         AB_PM_LIBNAME,
