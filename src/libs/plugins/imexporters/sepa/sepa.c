@@ -431,8 +431,9 @@ int AH_ImExporterSEPA_Export(AB_IMEXPORTER *ie,
                                 GWEN_XML_FLAGS_HANDLE_HEADERS);
 
     rv=GWEN_XMLNode_WriteToStream(root, xmlctx, sio);
-    if (rv)
+    if (rv) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    }
     GWEN_XmlCtx_free(xmlctx);
     GWEN_XMLNode_free(root);
   }
@@ -458,6 +459,29 @@ int AH_ImExporterSEPA_CheckFile(AB_IMEXPORTER *ie, const char *fname)
   return GWEN_ERROR_NOT_IMPLEMENTED;
 #endif
 }
+
+
+
+int AH_ImExporterSEPA_XmlSetCharValueEscaped(GWEN_XMLNODE *n, const char *varName, const char *value)
+{
+  if (value && *value) {
+    GWEN_BUFFER *dbuf;
+    int rv;
+
+    dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    rv=GWEN_Text_EscapeXmlToBuffer(value, dbuf);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(dbuf);
+      return rv;
+    }
+
+    GWEN_XMLNode_SetCharValue(n, varName, GWEN_Buffer_GetStart(dbuf));
+    GWEN_Buffer_free(dbuf);
+  }
+  return 0;
+}
+
 
 
 

@@ -59,6 +59,9 @@ static int AH_ImExporterSEPA_Export(AB_IMEXPORTER *ie,
 static int AH_ImExporterSEPA_CheckFile(AB_IMEXPORTER *ie, const char *fname);
 
 
+static int AH_ImExporterSEPA_XmlSetCharValueEscaped(GWEN_XMLNODE *n, const char *varName, const char *value);
+
+
 static int AH_ImExporterSEPA_Export_Pain_001(AB_IMEXPORTER *ie,
                                              AB_IMEXPORTER_CONTEXT *ctx,
                                              GWEN_XMLNODE *painNode,

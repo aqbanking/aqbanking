@@ -1,5 +1,8 @@
 
 
+/* included by sepa.c */
+
+
 #include <aqbanking/banking_be.h>
 
 
@@ -48,16 +51,16 @@ int AH_ImExporterSEPA_Export_Pain_001(AB_IMEXPORTER *ie,
       GWEN_Time_toUtcString(ti, "YYYYMMDD-hh:mm:ss-", tbuf);
       snprintf(numbuf, sizeof(numbuf)-1, "%08x", uid);
       GWEN_Buffer_AppendString(tbuf, numbuf);
-      GWEN_XMLNode_SetCharValue(n, "PmtInfId", GWEN_Buffer_GetStart(tbuf));
+      AH_ImExporterSEPA_XmlSetCharValueEscaped(n, "PmtInfId", GWEN_Buffer_GetStart(tbuf));
       GWEN_Buffer_free(tbuf);
       GWEN_Time_free(ti);
     }
 
-    GWEN_XMLNode_SetCharValue(n, "PmtMtd", "TRF");
+    AH_ImExporterSEPA_XmlSetCharValueEscaped(n, "PmtMtd", "TRF");
 
     if (post_1_1_2) {
       /* store BtchBookg */
-      GWEN_XMLNode_SetCharValue(n, "BtchBookg",
+      AH_ImExporterSEPA_XmlSetCharValueEscaped(n, "BtchBookg",
                                 GWEN_DB_GetIntValue(params,
                                                     "singleBookingWanted", 0, 1)
                                 ? "false"
@@ -65,7 +68,7 @@ int AH_ImExporterSEPA_Export_Pain_001(AB_IMEXPORTER *ie,
       /* store NbOfTxs */
       GWEN_XMLNode_SetIntValue(n, "NbOfTxs", pmtinf->tcount);
       /* store CtrlSum */
-      GWEN_XMLNode_SetCharValue(n, "CtrlSum", pmtinf->ctrlsum);
+      AH_ImExporterSEPA_XmlSetCharValueEscaped(n, "CtrlSum", pmtinf->ctrlsum);
     }
 
     nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "PmtTpInf");
@@ -74,7 +77,7 @@ int AH_ImExporterSEPA_Export_Pain_001(AB_IMEXPORTER *ie,
 
       nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "SvcLvl");
       if (nnn) {
-        GWEN_XMLNode_SetCharValue(nnn, "Cd", "SEPA");
+        AH_ImExporterSEPA_XmlSetCharValueEscaped(nnn, "Cd", "SEPA");
         GWEN_XMLNode_AddChild(nn, nnn);
       }
 
@@ -88,18 +91,18 @@ int AH_ImExporterSEPA_Export_Pain_001(AB_IMEXPORTER *ie,
 
       tbuf=GWEN_Buffer_new(0, 64, 0, 1);
       GWEN_Date_toStringWithTemplate(tda, "YYYY-MM-DD", tbuf);
-      GWEN_XMLNode_SetCharValue(n, "ReqdExctnDt", GWEN_Buffer_GetStart(tbuf));
+      AH_ImExporterSEPA_XmlSetCharValueEscaped(n, "ReqdExctnDt", GWEN_Buffer_GetStart(tbuf));
       GWEN_Buffer_free(tbuf);
     }
     else {
-      GWEN_XMLNode_SetCharValue(n, "ReqdExctnDt", "1999-01-01");
+      AH_ImExporterSEPA_XmlSetCharValueEscaped(n, "ReqdExctnDt", "1999-01-01");
     }
 
     /* create "Dbtr" */
     nn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "Dbtr");
     if (nn) {
       GWEN_XMLNode_AddChild(n, nn);
-      GWEN_XMLNode_SetCharValue(nn, "Nm", pmtinf->localName);
+      AH_ImExporterSEPA_XmlSetCharValueEscaped(nn, "Nm", pmtinf->localName);
     }
 
     /* create "DbtrAcct" */
@@ -123,7 +126,7 @@ int AH_ImExporterSEPA_Export_Pain_001(AB_IMEXPORTER *ie,
       }
     }
 
-    GWEN_XMLNode_SetCharValue(n, "ChrgBr", "SLEV");
+    AH_ImExporterSEPA_XmlSetCharValueEscaped(n, "ChrgBr", "SLEV");
 
 
     it=AB_Transaction_List2_First(pmtinf->transactions);
@@ -148,7 +151,7 @@ int AH_ImExporterSEPA_Export_Pain_001(AB_IMEXPORTER *ie,
             s=AB_Transaction_GetCustomerReference(t);*/
           if (!(s && *s))
             s="NOTPROVIDED";
-          GWEN_XMLNode_SetCharValue(nnn, "EndToEndId", s);
+          AH_ImExporterSEPA_XmlSetCharValueEscaped(nnn, "EndToEndId", s);
         }
 
         tv=AB_Transaction_GetValue(t);
@@ -208,7 +211,7 @@ int AH_ImExporterSEPA_Export_Pain_001(AB_IMEXPORTER *ie,
             AH_ImExporter_Sepa_PmtInf_List_free(pl);
             return GWEN_ERROR_BAD_DATA;
           }
-          GWEN_XMLNode_SetCharValue(nnn, "Nm", s);
+          AH_ImExporterSEPA_XmlSetCharValueEscaped(nnn, "Nm", s);
         }
 
         /* create "CdtrAcct" */
@@ -228,7 +231,7 @@ int AH_ImExporterSEPA_Export_Pain_001(AB_IMEXPORTER *ie,
           nnnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "Id");
           if (nnnn) {
             GWEN_XMLNode_AddChild(nnn, nnnn);
-            GWEN_XMLNode_SetCharValue(nnnn, "IBAN", s);
+            AH_ImExporterSEPA_XmlSetCharValueEscaped(nnnn, "IBAN", s);
           }
         }
 
@@ -245,7 +248,7 @@ int AH_ImExporterSEPA_Export_Pain_001(AB_IMEXPORTER *ie,
             return GWEN_ERROR_BAD_DATA;
           }
 
-          GWEN_XMLNode_SetCharValue(nnn, "Ustrd", s);
+          AH_ImExporterSEPA_XmlSetCharValueEscaped(nnn, "Ustrd", s);
         }
       }
 
