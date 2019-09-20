@@ -1,9 +1,8 @@
 Next:
 =====
+- XML-Exporter:
+  - GWEN_XMLNode_SetCharValueByPath(): Add flag to specify whether to escape to XML (e.g. "&"->"&amp;")
 - AQHBCI:
-  - getBankInfo: ignore dummy account (if any)
-  - getAccounts: Use PSD2, if available
-
   - simplify functions:
     - AH_JobQueue_DispatchMessage()
     - AH_JobQueue_ToMessage()
