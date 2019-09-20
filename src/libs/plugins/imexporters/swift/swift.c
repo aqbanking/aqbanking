@@ -242,7 +242,7 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 	if (GWEN_DB_VariableExists(dbT, "sepa/ABWA"))
 	  varName="sepa/ABWA";
 	else
-	  varName="purpose";
+	  varName="remoteName";
 
 	nameBuf=GWEN_Buffer_new(0, 256, 0, 1);
 	for (i=0; i<2; i++) {
