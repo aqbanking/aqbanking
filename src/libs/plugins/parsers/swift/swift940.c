@@ -1217,8 +1217,6 @@ int _readSepaTags(const char *sPurpose, GWEN_DB_NODE *dbSepaTags)
   GWEN_Buffer_Dump(bufFullPurpose, 2);
 #endif
 
-  DBG_ERROR(0, "FullPurposeBuffer: [%s]", sPurpose);
-
   s=sPurpose;
   sLastTagStart=s;
 
