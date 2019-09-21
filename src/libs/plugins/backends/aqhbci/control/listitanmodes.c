@@ -132,7 +132,7 @@ int AH_Control_ListItanModes(AB_PROVIDER *pro,
 	}
 
         if (zkaName && *zkaName) {
-            fprintf(stdout, " ZKA-ID: %s", zkaName);
+            fprintf(stdout, " ZKA-ID=%s", zkaName);
         }
 
         if (AH_User_HasTanMethod(u, AH_TanMethod_GetFunction(tm))) {
