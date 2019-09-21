@@ -889,36 +889,44 @@ int AH_Msg_ReadMessage(AH_MSG *msg,
 int AH_Msg_SequenceCheck(GWEN_DB_NODE *gr)
 {
   GWEN_DB_NODE *n;
-  unsigned int sn;
+  unsigned int expectedSequenceNum;
   unsigned int errors;
 
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Sequence check");
 
-  sn=1;
+  expectedSequenceNum=1;
   errors=0;
   n=GWEN_DB_GetFirstGroup(gr);
   while (n) {
-    unsigned int rsn;
+    unsigned int receivedSequenceNum;
 
-    rsn=GWEN_DB_GetIntValue(n, "head/seq", 0, 0);
-    if (rsn<900) {
-      if (rsn!=sn) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN,
-                  "Unexpected sequence number (%d, expected %d)",
-                  rsn, sn);
-        GWEN_DB_Dump(n, 2);
+    receivedSequenceNum=GWEN_DB_GetIntValue(n, "head/seq", 0, 0);
+    if (receivedSequenceNum<900) {
+      if (receivedSequenceNum!=expectedSequenceNum) {
+        if (receivedSequenceNum<expectedSequenceNum) {
+          DBG_ERROR(AQHBCI_LOGDOMAIN,
+                    "Received sequence number is lower than expected (%d, expected %d)",
+                    receivedSequenceNum, expectedSequenceNum);
+          GWEN_DB_Dump(n, 2);
 
-        GWEN_DB_SetIntValue(n,
-                            GWEN_DB_FLAGS_OVERWRITE_VARS,
-                            "segment/error/code",
-                            9120);
-        GWEN_DB_SetCharValue(n,
-                             GWEN_DB_FLAGS_OVERWRITE_VARS,
-                             "segment/error/text",
-                             "Unerwartete Segmentnummer");
-        errors++;
+          GWEN_DB_SetIntValue(n,
+                              GWEN_DB_FLAGS_OVERWRITE_VARS,
+                              "segment/error/code",
+                              9120);
+          GWEN_DB_SetCharValue(n,
+                               GWEN_DB_FLAGS_OVERWRITE_VARS,
+                               "segment/error/text",
+                               "Unerwartete Segmentnummer");
+          errors++;
+        }
+        else {
+          DBG_WARN(AQHBCI_LOGDOMAIN,
+                   "Received sequence number is higher than expected (%d, expected %d), ignoring",
+                   receivedSequenceNum, expectedSequenceNum);
+        }
       }
-      sn++;
+      /* expect next to be at least current + 1 */
+      expectedSequenceNum=receivedSequenceNum+1;
     }
     n=GWEN_DB_GetNextGroup(n);
   } /* while */
