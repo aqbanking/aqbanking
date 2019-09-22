@@ -52,29 +52,6 @@ static GWEN_DIALOG *AH_Provider_GetEditAccountDialog(AB_PROVIDER *pro, AB_ACCOUN
 static int AH_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx);
 
 
-
-static int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
-                                        AB_USER *u,
-                                        int useBankKey,
-                                        GWEN_BUFFER *lbuf,
-                                        int nounmount);
-static int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
-                                         AB_USER *u,
-                                         int useBankKey,
-                                         GWEN_BUFFER *lbuf,
-                                         int nounmount);
-
-static int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
-                                        AB_USER *u,
-                                        int useBankKey,
-                                        GWEN_BUFFER *lbuf,
-                                        int nounmount);
-static int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
-                                         AB_USER *u,
-                                         int useBankKey,
-                                         GWEN_BUFFER *lbuf,
-                                         int nounmount);
-
 static int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, int cmd, AH_JOB **pHbciJob);
 static int AH_Provider__GetMultiHbciJob(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_USER *mu, AB_ACCOUNT *ma, int cmd,
                                         AH_JOB **pHbciJob);

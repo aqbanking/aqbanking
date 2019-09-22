@@ -2,6 +2,8 @@
     begin       : Tue Jun 03 2018
     copyright   : (C) 2018 by Martin Preuss
     email       : martin@libchipcard.de
+    modified    : Wed Sep 18 2019 by Thomas B.
+    email       : th.be@t-online.de
 
  ***************************************************************************
  *          Please see toplevel file COPYING for license details           *
@@ -13,1417 +15,618 @@
  */
 
 
+const char *fmtStr(char *buff, size_t buffLen, const char *fmt, ...)  __attribute__((format(printf, 3, 4)));
+#define FB fmtBuff, sizeof(fmtBuff)
 
-
-
-
-int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
-                                AB_USER *u,
-                                int useBankKey,
-                                int variant,
-                                GWEN_BUFFER *lbuf,
-                                int nounmount)
+void dbgHexOut(unsigned const char *d, uint32_t l)
 {
-  if (variant==0) {
-    switch (AH_User_GetRdhType(u)) {
-    case 0:
+#if 0
+  uint32_t j = 0;
+  printf("\n");
+  for(uint32_t i = 0; i < l; i++, j++)
+  {
+    if(j >= 32)
+    {
+      printf("\n");
+      j = 0;
+    }
+    printf(" %02X", d[i]);
+  }
+  printf("\n\n");
+#endif
+}
+
+int AH_Provider_GetIniLetter(AB_PROVIDER *pro, AB_USER *u, uint8_t useBankKey,
+                             uint8_t outHtml, GWEN_BUFFER *lbuf, int nounmount);
+
+int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro, AB_USER *u, int useBankKey, int variant,
+                                GWEN_BUFFER *lbuf, int nounmount)
+{
+  if(variant != 0)
+    DBG_WARN(AQHBCI_LOGDOMAIN, "'variant' ignored.");
+  return AH_Provider_GetIniLetter(pro, u, useBankKey, 0, lbuf, nounmount);
+}
+
+
+int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro, AB_USER *u, int useBankKey, int variant,
+                                 GWEN_BUFFER *lbuf, int nounmount)
+{
+  if(variant != 0)
+    DBG_WARN(AQHBCI_LOGDOMAIN, "'variant' ignored.");
+  return AH_Provider_GetIniLetter(pro, u, useBankKey, 1, lbuf, nounmount);
+}
+
+struct s_hashOut
+{
+  uint8_t isBankKey;
+  AB_PROVIDER *pro;
+  AB_USER *u;
+  GWEN_BUFFER *lbuf;
+  int kn;
+  int kv;
+  uint8_t *e;
+  uint8_t *m;
+  uint32_t kl;
+  uint8_t *h;
+  uint32_t hl;
+  const char *hn;
+};
+
+int IniLetterOutTxt(struct s_hashOut *h);
+int IniLetterOutHtml(struct s_hashOut *h);
+
+// XXX hash-len from algo-id?
+#define HASHOUT_MAXLEN  32
+
+int AH_Provider_GetIniLetter(AB_PROVIDER *pro, AB_USER *u, uint8_t useBankKey,
+                             uint8_t outHtml, GWEN_BUFFER *lbuf, int nounmount)
+{
+  char fmtBuff[256];
+  AH_HBCI *hbci = NULL;
+  AH_CRYPT_MODE cryptMode = AH_CryptMode_None;
+  int rdhType = 0;
+  int kn = 0, kv = 0;
+  GWEN_BUFFER *hBuff = NULL;
+  uint32_t eLen = 0, mLen = 0, hLen = 0;
+  uint8_t *mData = NULL, *eData = NULL;
+  GWEN_CRYPT_HASHALGOID hAlgo = GWEN_Crypt_HashAlgoId_Unknown;
+  uint8_t hOutBuff[HASHOUT_MAXLEN];
+  uint32_t hOutLen = 0;
+  const char *hName = NULL;
+  const char *emsg = NULL;
+  int rv = 0;
+
+  assert(pro);
+  assert(u);
+
+  hbci = AH_Provider_GetHbci(pro);
+
+  memset(hOutBuff, 0, HASHOUT_MAXLEN);
+
+  cryptMode = AH_User_GetCryptMode(u);
+  rdhType = AH_User_GetRdhType(u);
+  switch(cryptMode)
+  {
+  case AH_CryptMode_Rdh:
+    switch(rdhType)
+    {
     case 1:
-      variant=1;
-      break;
     case 2:
     case 3:
-    case 4:
     case 5:
     case 6:
     case 7:
-      variant=2;
-      break;
     case 8:
     case 9:
-      variant=2;
-      break;
     case 10:
-      variant=2;
       break;
     default:
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "RDH mode %d not supported", AH_User_GetRdhType(u));
-      return GWEN_ERROR_INVALID;
+      rv = GWEN_ERROR_INVALID;
     }
-  }
-
-  switch (variant) {
-  case 1:
-    return AH_Provider_GetIniLetterTxt1(pro, u, useBankKey, lbuf, nounmount);
-  case 2:
-    return AH_Provider_GetIniLetterTxt2(pro, u, useBankKey, lbuf, nounmount);
-  default:
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Variant %d not supported", variant);
-    return GWEN_ERROR_INVALID;
-  }
-}
-
-
-int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
-                                 AB_USER *u,
-                                 int useBankKey,
-                                 int variant,
-                                 GWEN_BUFFER *lbuf,
-                                 int nounmount)
-{
-  if (variant==0) {
-    switch (AH_User_GetRdhType(u)) {
-    case 0:
-    case 1:
-      variant=1;
-      break;
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
+    break;
+  case AH_CryptMode_Rah:
+    switch(rdhType)
+    {
     case 7:
-      variant=2;
-      break;
-    case 8:
     case 9:
-      variant=2;
-      break;
     case 10:
-      variant=2;
       break;
     default:
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "RDH mode %d not supported", AH_User_GetRdhType(u));
-      return GWEN_ERROR_INVALID;
+      rv = GWEN_ERROR_INVALID;
     }
-  }
-
-  switch (variant) {
-  case 1:
-    return AH_Provider_GetIniLetterHtml1(pro, u, useBankKey, lbuf, nounmount);
-  case 2:
-    return AH_Provider_GetIniLetterHtml2(pro, u, useBankKey, lbuf, nounmount);
+    break;
   default:
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Variant %d not supported", variant);
-    return GWEN_ERROR_INVALID;
-  }
-}
-
-
-
-int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
-                                 AB_USER *u,
-                                 int useBankKey,
-                                 GWEN_BUFFER *lbuf,
-                                 int nounmount)
-{
-  AB_BANKING *ab;
-  AH_HBCI *h;
-  const void *p;
-  unsigned int l;
-  GWEN_BUFFER *bbuf;
-  GWEN_BUFFER *keybuf;
-  int i;
-  GWEN_TIME *ti;
-  char numbuf[32];
-  char hashbuffer[21];
-  AH_PROVIDER *hp;
-  GWEN_CRYPT_TOKEN *ct;
-  const GWEN_CRYPT_TOKEN_CONTEXT *cctx;
-  const GWEN_CRYPT_TOKEN_KEYINFO *ki=NULL;
-  uint32_t kid;
-  int rv;
-
-  assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
-  assert(u);
-
-  ab=AB_Provider_GetBanking(pro);
-  assert(ab);
-
-  h=AH_Provider_GetHbci(pro);
-  assert(h);
-
-  rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),
-                              AH_User_GetTokenType(u),
-                              AH_User_GetTokenName(u),
-                              &ct);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not get crypt token (%d)", rv);
-    GWEN_Gui_ProgressLog(0,
-                         GWEN_LoggerLevel_Error,
-                         I18N("Error getting crypt token"));
-    if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-    return rv;
+    rv = GWEN_ERROR_INVALID;
   }
 
-  /* open crypt token */
-  rv=GWEN_Crypt_Token_Open(ct, 1, 0);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not open crypt token (%d)", rv);
-    GWEN_Gui_ProgressLog(0,
-                         GWEN_LoggerLevel_Error,
-                         I18N("Error opening crypt token"));
-    if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-    return rv;
-  }
+  if(rv != 0)
+    emsg = fmtStr(FB, "Cryptmode %s%d not valid.", AH_CryptMode_toString(cryptMode), rdhType);
 
-  /* get context */
-  cctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), 0);
-  if (!cctx) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "User context not found on crypt token");
-    GWEN_Gui_ProgressLog(0,
-                         GWEN_LoggerLevel_Error,
-                         I18N("User context not found on crypt token"));
-    if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-    return GWEN_ERROR_NOT_FOUND;
-  }
 
-  if (useBankKey) {
-    /* get sign key info */
-    kid=GWEN_Crypt_Token_Context_GetVerifyKeyId(cctx);
-    if (kid) {
-      ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-                                     0);
-    }
-    if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
-      kid=GWEN_Crypt_Token_Context_GetEncipherKeyId(cctx);
-      if (kid) {
-        ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-                                       0);
+  if(rv == 0)
+  {
+    if(useBankKey)
+    {
+      // read bank-keys from config, keys from token may differ.
+      // if bank uses ini-letter, that *must* checked against sent key, which is actually in config
+      GWEN_CRYPT_KEY *key = AH_User_GetBankPubSignKey(u);
+      eLen = 3;
+      if(!key)
+      {
+        DBG_NOTICE(AQHBCI_LOGDOMAIN, "No signkey for bank, using cryptkey.");
+        key = AH_User_GetBankPubCryptKey(u);
+      }
+      if(!key)
+      {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Server keys missing, please get them first.");
+        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Server keys missing, please get them first."));
+        return GWEN_ERROR_NOT_FOUND;
+      }
+      mLen = GWEN_Crypt_Key_GetKeySize(key);
+
+      if(key && eLen && mLen)
+      {
+        kn = GWEN_Crypt_Key_GetKeyNumber(key);
+        kv = GWEN_Crypt_Key_GetKeyVersion(key);
+        mData = malloc(mLen);
+        eData = malloc(eLen);
+        rv = GWEN_Crypt_KeyRsa_GetModulus(key, mData, &mLen);
+        if(rv == 0)
+          GWEN_Crypt_KeyRsa_GetExponent(key, eData, &eLen);
+        if(rv != 0)
+        {
+          emsg = "Bad key.";
+          rv = GWEN_ERROR_BAD_DATA;
+        }
       }
     }
-    if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
-      if (!nounmount)
-        AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Server keys missing, please get them first");
-      GWEN_Gui_ProgressLog(0,
-                           GWEN_LoggerLevel_Error,
-                           I18N("Server keys missing, "
-                                "please get them first"));
-      return GWEN_ERROR_NOT_FOUND;
+    else
+    {
+      GWEN_CRYPT_TOKEN *ct = NULL;
+      const GWEN_CRYPT_TOKEN_KEYINFO *ki = NULL;
+      const GWEN_CRYPT_TOKEN_CONTEXT *ctx = NULL;
+      rv = AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(hbci), AH_User_GetTokenType(u), AH_User_GetTokenName(u), &ct);
+      if((rv != 0) || !ct)
+      {
+        emsg = fmtStr(FB, "Could not get crypt token (%d)", rv);
+        rv = GWEN_ERROR_GENERIC;
+      }
+      if(rv == 0)
+      {
+        rv = GWEN_Crypt_Token_Open(ct, 1, 0);
+        if(rv != 0)
+        {
+          emsg = fmtStr(FB, "Could not open crypt token (%d)", rv);
+          rv = GWEN_ERROR_GENERIC;
+        }
+      }
+      if(rv == 0)
+      {
+        ctx = GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), 0);
+        if(!ctx)
+        {
+          emsg = fmtStr(FB, "User context %d not found on crypt token", AH_User_GetTokenContextId(u));
+          rv = GWEN_ERROR_GENERIC;
+        }
+      }
+      if(rv == 0)
+      {
+        uint32_t kf = 0;
+        uint32_t kid = GWEN_Crypt_Token_Context_GetSignKeyId(ctx);
+        if(kid)
+          ki = GWEN_Crypt_Token_GetKeyInfo(ct, kid, 0, 0);
+        if(ki)
+          kf = GWEN_Crypt_Token_KeyInfo_GetFlags(ki);
+        if(!ki || !(kf & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) | !(kf & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT))
+        {
+          emsg = "User keys missing, please generate them first.";
+          rv = GWEN_ERROR_NOT_FOUND;
+        }
+      }
+      if(rv == 0)
+      {
+        const uint8_t *e = GWEN_Crypt_Token_KeyInfo_GetExponentData(ki);
+        const uint8_t *m = GWEN_Crypt_Token_KeyInfo_GetModulusData(ki);
+        eLen = GWEN_Crypt_Token_KeyInfo_GetExponentLen(ki);
+        mLen = GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
+        if(!e || !eLen || !m || !mLen)
+        {
+          emsg = "Bad key.";
+          rv = GWEN_ERROR_BAD_DATA;
+        }
+        else
+        {
+          kn = GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ki);
+          kv = GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki);
+          mData = malloc(mLen);
+          eData = malloc(eLen);
+          memcpy(mData, m, mLen);
+          memcpy(eData, e, eLen);
+        }
+      }
     }
   }
-  else {
-    /* get sign key info */
-    kid=GWEN_Crypt_Token_Context_GetSignKeyId(cctx);
-    if (kid) {
-      ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-                                     0);
+
+  if(rv == 0)
+  {
+    switch(cryptMode)
+    {
+    case AH_CryptMode_Rdh:
+      switch(rdhType)
+      {
+      case 1:
+        hLen = 128 * 2;
+        hAlgo = GWEN_Crypt_HashAlgoId_Rmd160;
+        break;
+      case 2:
+      case 3:
+      case 5:
+        hLen = mLen * 2;
+        hAlgo = GWEN_Crypt_HashAlgoId_Rmd160;
+        break;
+      case 6:
+      case 7:
+      case 8:
+      case 9:
+      case 10:
+        // XXX EF_NOTEPAD, HBCI-Version C0=002
+        hAlgo = GWEN_Crypt_HashAlgoId_Sha256;
+        hLen = mLen * 2;
+        break;
+      default:;
+      }
+    case AH_CryptMode_Rah:
+      switch(rdhType)
+      {
+      case 7:
+      case 9:
+      case 10:
+        hAlgo = GWEN_Crypt_HashAlgoId_Sha256;
+        hLen = mLen * 2;
+        break;
+      default:;
+      }
+    default:;
     }
-    if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
-      if (!nounmount)
-        AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "User keys missing, please generate them first");
-      GWEN_Gui_ProgressLog(0,
-                           GWEN_LoggerLevel_Error,
-                           I18N("User keys missing, "
-                                "please generate them first"));
-      return GWEN_ERROR_NOT_FOUND;
+
+  }
+
+  if((rv == 0) && ((mLen > (hLen / 2)) || (eLen > (hLen / 2))))
+  {
+    emsg = fmtStr(FB, "Invalid size for e, m, or h (%ld, %ld, %ld).", (long)eLen, (long)mLen, (long)hLen);
+    rv = GWEN_ERROR_GENERIC;
+  }
+
+  if(rv == 0)
+  {
+    if(hLen && eLen && mLen)
+      hBuff = GWEN_Buffer_new(0, hLen, 0, 1);
+    if(hBuff)
+    {
+      GWEN_Buffer_FillWithBytes(hBuff, 0, (hLen / 2) - eLen);
+      GWEN_Buffer_AppendBytes(hBuff, (const char*)eData, eLen);
+      GWEN_Buffer_FillWithBytes(hBuff, 0, (hLen / 2) - mLen);
+      GWEN_Buffer_AppendBytes(hBuff, (const char*)mData, mLen);
+      GWEN_Buffer_Rewind(hBuff);
+      dbgHexOut((unsigned const char*)GWEN_Buffer_GetStart(hBuff), hLen);
+     }
+  }
+
+  if(rv == 0)
+  {
+    switch(hAlgo)
+    {
+    case GWEN_Crypt_HashAlgoId_Rmd160:
+      hName = "RMD-160";
+      hOutLen = 20;
+      rv = AH_Provider__HashRmd160((const uint8_t*)GWEN_Buffer_GetStart(hBuff),
+                                 GWEN_Buffer_GetUsedBytes(hBuff), hOutBuff);
+      if(rv != 0)
+        emsg = fmtStr(FB, "AH_Provider__HashRmd160() failed (%d).", rv);
+      break;
+    case GWEN_Crypt_HashAlgoId_Sha256:
+      hName = "SHA-256";
+      hOutLen = 32;
+      rv = AH_Provider__HashSha256((const uint8_t*)GWEN_Buffer_GetStart(hBuff),
+                                 GWEN_Buffer_GetUsedBytes(hBuff), hOutBuff);
+      if(rv != 0)
+        emsg = fmtStr(FB, "AH_Provider__HashSha256() failed (%d).", rv);
+      break;
+    default:
+      emsg = "Hash algo not specified.";
+      rv = GWEN_ERROR_GENERIC;
     }
+    dbgHexOut(hOutBuff, hOutLen);
   }
 
-
-  keybuf=GWEN_Buffer_new(0, 257, 0, 1);
-
-  /* prelude */
-  GWEN_Buffer_AppendString(lbuf,
-                           I18N("\n\n\nINI-Letter\n\n"));
-  GWEN_Buffer_AppendString(lbuf,
-                           I18N("Date           : "));
-  ti=GWEN_CurrentTime();
-  assert(ti);
-  GWEN_Time_toString(ti, I18N("YYYY/MM/DD"), lbuf);
-  GWEN_Buffer_AppendString(lbuf, "\n");
-  GWEN_Buffer_AppendString(lbuf,
-                           I18N("Time           : "));
-  GWEN_Time_toString(ti, I18N("hh:mm:ss"), lbuf);
-  GWEN_Buffer_AppendString(lbuf, "\n");
-
-  if (useBankKey) {
-    GWEN_Buffer_AppendString(lbuf,
-                             I18N("Bank Code      : "));
-    GWEN_Buffer_AppendString(lbuf, AB_User_GetBankCode(u));
-  }
-  else {
-    GWEN_Buffer_AppendString(lbuf,
-                             I18N("User           : "));
-    GWEN_Buffer_AppendString(lbuf, AB_User_GetUserId(u));
+  if((rv == 0) && (!hLen || !eLen || !eData || !mData || !hBuff || !hOutLen))
+  {
+    emsg = fmtStr(FB, "Internal error, bank %d, hLen %ld, eLen %ld, mLen %ld, e %p, m %p, hb %p, out %ld.",
+                    useBankKey, (long)hLen, (long)eLen, (long)mLen, eData, mData, hBuff, (long)hOutLen);
+    rv = GWEN_ERROR_GENERIC;
   }
 
-  GWEN_Buffer_AppendString(lbuf, "\n");
-  GWEN_Buffer_AppendString(lbuf,
-                           I18N("Key number     : "));
-  snprintf(numbuf, sizeof(numbuf), "%d",
-           GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ki));
-  GWEN_Buffer_AppendString(lbuf, numbuf);
-  GWEN_Buffer_AppendString(lbuf, "\n");
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "bank %d, hLen %ld, eLen %ld, mLen %ld, e %p, m %p, hb %p, out %ld.",
+                    useBankKey, (long)hLen, (long)eLen, (long)mLen, eData, mData, hBuff, (long)hOutLen);
 
-  GWEN_Buffer_AppendString(lbuf,
-                           I18N("Key version    : "));
-  snprintf(numbuf, sizeof(numbuf), "%d",
-           GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
-  GWEN_Buffer_AppendString(lbuf, numbuf);
-  GWEN_Buffer_AppendString(lbuf, "\n");
-
-  if (!useBankKey) {
-    GWEN_Buffer_AppendString(lbuf,
-                             I18N("Customer system: "));
-    GWEN_Buffer_AppendString(lbuf, AH_HBCI_GetProductName(h));
-    GWEN_Buffer_AppendString(lbuf, "\n");
+  if(rv == 0)
+  {
+    struct s_hashOut h;
+    uint8_t *eb = malloc(hLen / 2);
+    uint8_t *mb = malloc(hLen / 2);
+    memcpy(eb, GWEN_Buffer_GetStart(hBuff), hLen / 2);
+    memcpy(mb, GWEN_Buffer_GetStart(hBuff) + (hLen / 2), hLen / 2);
+    h.pro = pro;
+    h.isBankKey = useBankKey;
+    h.u = u;
+    h.lbuf = lbuf;
+    h.kn = kn;
+    h.kv = kv;
+    h.e = eb;
+    h.m = mb;
+    h.kl = hLen / 2;
+    h.h = hOutBuff;
+    h.hl = hOutLen;
+    h.hn = hName;
+    if(!outHtml)
+      rv = IniLetterOutTxt(&h);
+    else
+      rv = IniLetterOutHtml(&h);
+    free(eb);
+    free(mb);
   }
 
-  GWEN_Buffer_AppendString(lbuf, "\n");
-  GWEN_Buffer_AppendString(lbuf,
-                           I18N("Public key for electronic signature"));
-  GWEN_Buffer_AppendString(lbuf, "\n\n");
+  if(hBuff)
+    GWEN_Buffer_free(hBuff);
+  free(eData);
+  free(mData);
 
-  GWEN_Buffer_AppendString(lbuf, "  ");
-  GWEN_Buffer_AppendString(lbuf,
-                           I18N("Exponent"));
-  GWEN_Buffer_AppendString(lbuf, "\n\n");
-
-  /* exponent */
-  p=GWEN_Crypt_Token_KeyInfo_GetExponentData(ki);
-  l=GWEN_Crypt_Token_KeyInfo_GetExponentLen(ki);
-  if (!p || !l) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
-    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                         I18N("Bad key"));
-    return GWEN_ERROR_BAD_DATA;
+  if(rv != 0)
+  {
+    if(!emsg)
+      emsg = "Internal Error";
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "%s", emsg);
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N(emsg));
+    return rv;
   }
 
-  bbuf=GWEN_Buffer_new(0, 97, 0, 1);
-  GWEN_Buffer_AppendBytes(bbuf, p, l);
-  GWEN_Buffer_Rewind(bbuf);
-  if (l<96)
-    GWEN_Buffer_FillLeftWithBytes(bbuf, 0, 96-l);
-  p=GWEN_Buffer_GetStart(bbuf);
-  l=GWEN_Buffer_GetUsedBytes(bbuf);
-  for (i=0; i<6; i++) {
-    GWEN_Buffer_AppendString(lbuf, "  ");
-    if (GWEN_Text_ToHexBuffer(p, 16, lbuf, 2, ' ', 0)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
-      abort();
-    }
-    p+=16;
-    GWEN_Buffer_AppendString(lbuf, "\n");
-  }
-
-  GWEN_Buffer_FillWithBytes(keybuf, 0, 128-l);
-  GWEN_Buffer_AppendBuffer(keybuf, bbuf);
-  GWEN_Buffer_free(bbuf);
-
-  /* modulus */
-  GWEN_Buffer_AppendString(lbuf, "\n");
-  GWEN_Buffer_AppendString(lbuf, "  ");
-  GWEN_Buffer_AppendString(lbuf,
-                           I18N("Modulus"));
-  GWEN_Buffer_AppendString(lbuf, "\n\n");
-  p=GWEN_Crypt_Token_KeyInfo_GetModulusData(ki);
-  l=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
-  if (!p || !l) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
-    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                         I18N("Bad key"));
-    return GWEN_ERROR_BAD_DATA;
-  }
-
-  bbuf=GWEN_Buffer_new(0, 97, 0, 1);
-  GWEN_Buffer_AppendBytes(bbuf, p, l);
-  GWEN_Buffer_Rewind(bbuf);
-  if (l<96)
-    GWEN_Buffer_FillLeftWithBytes(bbuf, 0, 96-l);
-  p=GWEN_Buffer_GetStart(bbuf);
-  l=GWEN_Buffer_GetUsedBytes(bbuf);
-  for (i=0; i<6; i++) {
-    GWEN_Buffer_AppendString(lbuf, "  ");
-    if (GWEN_Text_ToHexBuffer(p, 16, lbuf, 2, ' ', 0)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
-      abort();
-    }
-    p+=16;
-    GWEN_Buffer_AppendString(lbuf, "\n");
-  }
-
-  GWEN_Buffer_FillWithBytes(keybuf, 0, 128-l);
-  GWEN_Buffer_AppendBuffer(keybuf, bbuf);
-  GWEN_Buffer_free(bbuf);
-
-  GWEN_Buffer_AppendString(lbuf, "\n");
-  GWEN_Buffer_AppendString(lbuf, "  ");
-  GWEN_Buffer_AppendString(lbuf,
-                           I18N("Hash"));
-  GWEN_Buffer_AppendString(lbuf, "\n\n");
-  rv=AH_Provider__HashRmd160((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
-                             GWEN_Buffer_GetUsedBytes(keybuf),
-                             (uint8_t *)hashbuffer);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error hashing (%d)", rv);
-    abort();
-  }
-  GWEN_Buffer_free(keybuf);
-
-  GWEN_Buffer_AppendString(lbuf, "  ");
-  if (GWEN_Text_ToHexBuffer(hashbuffer, 20, lbuf, 2, ' ', 0)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
-    abort();
-  }
-  GWEN_Buffer_AppendString(lbuf, "\n");
-
-  if (!useBankKey) {
-    GWEN_Buffer_AppendString(lbuf, "\n\n");
-    GWEN_Buffer_AppendString(lbuf,
-                             I18N("I confirm that I created the above key "
-                                  "for my electronic signature.\n"));
-    GWEN_Buffer_AppendString(lbuf, "\n\n");
-    GWEN_Buffer_AppendString(lbuf,
-                             I18N("____________________________  "
-                                  "____________________________\n"
-                                  "Place, date                   "
-                                  "Signature\n"));
-  }
-
+  if(!nounmount)
+    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(hbci));
   return 0;
 }
 
-
-
-int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
-                                  AB_USER *u,
-                                  int useBankKey,
-                                  GWEN_BUFFER *lbuf,
-                                  int nounmount)
+int IniLetterOutTxt(struct s_hashOut *h)
 {
-  AB_BANKING *ab;
-  AH_HBCI *h;
-  const void *p;
-  unsigned int l;
-  GWEN_BUFFER *bbuf;
-  GWEN_BUFFER *keybuf;
-  int i;
-  GWEN_TIME *ti;
-  char numbuf[32];
-  char hashbuffer[21];
-  AH_PROVIDER *hp;
-  GWEN_CRYPT_TOKEN *ct;
-  const GWEN_CRYPT_TOKEN_CONTEXT *cctx;
-  const GWEN_CRYPT_TOKEN_KEYINFO *ki=NULL;
-  uint32_t kid;
-  int rv;
+  char fmtBuff[128];
+  int rv = 0;
+  GWEN_TIME *ti = GWEN_CurrentTime();
+  GWEN_BUFFER *b = h->lbuf;
+  AH_HBCI *hbci = AH_Provider_GetHbci(h->pro);
+  uint32_t i = 0;
 
-  assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
-  assert(u);
-
-  ab=AB_Provider_GetBanking(pro);
-  assert(ab);
-
-  h=AH_Provider_GetHbci(pro);
   assert(h);
-
-  rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),
-                              AH_User_GetTokenType(u),
-                              AH_User_GetTokenName(u),
-                              &ct);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not get crypt token (%d)", rv);
-    GWEN_Gui_ProgressLog(0,
-                         GWEN_LoggerLevel_Error,
-                         I18N("Error getting crypt token"));
-    if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-    return rv;
-  }
-
-  /* open crypt token */
-  rv=GWEN_Crypt_Token_Open(ct, 1, 0);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not open crypt token (%d)", rv);
-    GWEN_Gui_ProgressLog(0,
-                         GWEN_LoggerLevel_Error,
-                         I18N("Error opening crypt token"));
-    if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-    return rv;
-  }
-
-  /* get context */
-  cctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), 0);
-  if (!cctx) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "User context not found on crypt token");
-    GWEN_Gui_ProgressLog(0,
-                         GWEN_LoggerLevel_Error,
-                         I18N("User context not found on crypt token"));
-    if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-    return GWEN_ERROR_NOT_FOUND;
-  }
-
-  if (useBankKey) {
-    /* get sign key info */
-    kid=GWEN_Crypt_Token_Context_GetVerifyKeyId(cctx);
-    if (kid) {
-      ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-                                     0);
-    }
-    if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
-      kid=GWEN_Crypt_Token_Context_GetEncipherKeyId(cctx);
-      if (kid) {
-        ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-                                       0);
-      }
-    }
-    if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
-      if (!nounmount)
-        AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Server keys missing, please get them first");
-      GWEN_Gui_ProgressLog(0,
-                           GWEN_LoggerLevel_Error,
-                           I18N("Server keys missing, "
-                                "please get them first"));
-      return GWEN_ERROR_NOT_FOUND;
-    }
-  }
-  else {
-    /* get sign key info */
-    kid=GWEN_Crypt_Token_Context_GetSignKeyId(cctx);
-    if (kid) {
-      ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-                                     0);
-    }
-    if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
-      if (!nounmount)
-        AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "User keys missing, please generate them first");
-      GWEN_Gui_ProgressLog(0,
-                           GWEN_LoggerLevel_Error,
-                           I18N("User keys missing, "
-                                "please generate them first"));
-      return GWEN_ERROR_NOT_FOUND;
-    }
-  }
-
-  keybuf=GWEN_Buffer_new(0, 257, 0, 1);
-
-  /* prelude */
-  GWEN_Buffer_AppendString(lbuf, "<h3>");
-  GWEN_Buffer_AppendString(lbuf, I18N("INI-Letter"));
-  GWEN_Buffer_AppendString(lbuf, "</h3>\n");
-  GWEN_Buffer_AppendString(lbuf, "<table>\n");
-  GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
-  GWEN_Buffer_AppendString(lbuf, I18N("Date"));
-  GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
-  ti=GWEN_CurrentTime();
   assert(ti);
-  GWEN_Time_toString(ti, I18N("YYYY/MM/DD"), lbuf);
-  GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
 
-  GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
-  GWEN_Buffer_AppendString(lbuf, I18N("Time"));
-  GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
-  GWEN_Time_toString(ti, I18N("hh:mm:ss"), lbuf);
-  GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
-
-  if (useBankKey) {
-    GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
-    GWEN_Buffer_AppendString(lbuf, I18N("Bank Code"));
-    GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
-    GWEN_Buffer_AppendString(lbuf, AB_User_GetBankCode(u));
-    GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
+  GWEN_Buffer_AppendString(b, I18N("\n\n\nINI-Letter\n\n"));
+  GWEN_Buffer_AppendString(b, I18N("Date            : "));
+  GWEN_Time_toString(ti, I18N("YYYY/MM/DD"), b);
+  GWEN_Buffer_AppendString(b, "\n");
+  GWEN_Buffer_AppendString(b, I18N("Time            : "));
+  GWEN_Time_toString(ti, I18N("hh:mm:ss"), b);
+  GWEN_Buffer_AppendString(b, "\n");
+  if(h->isBankKey)
+  {
+    GWEN_Buffer_AppendString(b, I18N("Bank Code       : "));
+    GWEN_Buffer_AppendString(b, AB_User_GetBankCode(h->u));
   }
-  else {
-    GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
-    GWEN_Buffer_AppendString(lbuf, I18N("User"));
-    GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
-    GWEN_Buffer_AppendString(lbuf, AB_User_GetUserId(u));
-    GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
+  else
+  {
+    GWEN_Buffer_AppendString(b, I18N("User            : "));
+    GWEN_Buffer_AppendString(b, AB_User_GetUserId(h->u));
   }
-
-  GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
-  GWEN_Buffer_AppendString(lbuf, I18N("Key number"));
-  GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
-  snprintf(numbuf, sizeof(numbuf), "%d",
-           GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ki));
-  GWEN_Buffer_AppendString(lbuf, numbuf);
-  GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
-
-  GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
-  GWEN_Buffer_AppendString(lbuf, I18N("Key version"));
-  GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
-  snprintf(numbuf, sizeof(numbuf), "%d",
-           GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
-  GWEN_Buffer_AppendString(lbuf, numbuf);
-  GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
-
-  if (!useBankKey) {
-    GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
-    GWEN_Buffer_AppendString(lbuf, I18N("Customer system"));
-    GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
-    GWEN_Buffer_AppendString(lbuf, AH_HBCI_GetProductName(h));
-    GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
+  GWEN_Buffer_AppendString(b, "\n");
+  GWEN_Buffer_AppendString(b, I18N("Key number      : "));
+  GWEN_Buffer_AppendString(b, fmtStr(FB, "%d", h->kn));
+  GWEN_Buffer_AppendString(b, "\n");
+  GWEN_Buffer_AppendString(b, I18N("Key version     : "));
+  GWEN_Buffer_AppendString(b, fmtStr(FB, "%d", h->kv));
+  GWEN_Buffer_AppendString(b, "\n");
+  if(h->isBankKey)
+  {
+    GWEN_Buffer_AppendString(b, I18N("Customer system: "));
+    GWEN_Buffer_AppendString(b, AH_HBCI_GetProductName(hbci));
+    GWEN_Buffer_AppendString(b, "\n");
   }
-  GWEN_Buffer_AppendString(lbuf, "</table>\n");
-
-  GWEN_Buffer_AppendString(lbuf, "<h3>");
-  GWEN_Buffer_AppendString(lbuf, I18N("Public key for electronic signature"));
-  GWEN_Buffer_AppendString(lbuf, "</h3>\n");
-
-  GWEN_Buffer_AppendString(lbuf, "<h4>");
-  GWEN_Buffer_AppendString(lbuf, I18N("Exponent"));
-  GWEN_Buffer_AppendString(lbuf, "</h4>\n");
-
-  /* exponent */
-  p=GWEN_Crypt_Token_KeyInfo_GetExponentData(ki);
-  l=GWEN_Crypt_Token_KeyInfo_GetExponentLen(ki);
-  if (!p || !l) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
-    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                         I18N("Bad key"));
-    return GWEN_ERROR_BAD_DATA;
-  }
-
-  GWEN_Buffer_AppendString(lbuf, "<font face=fixed>\n");
-  bbuf=GWEN_Buffer_new(0, 97, 0, 1);
-  GWEN_Buffer_AppendBytes(bbuf, p, l);
-  GWEN_Buffer_Rewind(bbuf);
-  if (l<96)
-    GWEN_Buffer_FillLeftWithBytes(bbuf, 0, 96-l);
-  p=GWEN_Buffer_GetStart(bbuf);
-  l=GWEN_Buffer_GetUsedBytes(bbuf);
-  for (i=0; i<6; i++) {
-    GWEN_Buffer_AppendString(lbuf, "  ");
-    if (GWEN_Text_ToHexBuffer(p, 16, lbuf, 2, ' ', 0)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
-      abort();
+  GWEN_Buffer_AppendString(b, "\n");
+  GWEN_Buffer_AppendString(b, I18N("Public key for electronic signature"));
+  GWEN_Buffer_AppendString(b, "\n\n");
+  GWEN_Buffer_AppendString(b, "  ");
+  GWEN_Buffer_AppendString(b, I18N("Exponent"));
+  GWEN_Buffer_AppendString(b, "\n\n");
+  for(i = 0; i < h->kl; i += 16)
+  {
+    uint32_t left = h->kl - i;
+    if(GWEN_Text_ToHexBuffer((const char*)h->e + i, (left < 16) ? left : 16, b, 2, ' ', 0))
+    {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "GWEN_Text_ToHexBuffer() failed.");
+      return GWEN_ERROR_GENERIC;
     }
-    p+=16;
-    GWEN_Buffer_AppendString(lbuf, "<br>\n");
+    GWEN_Buffer_AppendString(b, "\n");
   }
-
-  GWEN_Buffer_FillWithBytes(keybuf, 0, 128-l);
-  GWEN_Buffer_AppendBuffer(keybuf, bbuf);
-  GWEN_Buffer_free(bbuf);
-  GWEN_Buffer_AppendString(lbuf, "</font>\n");
-  GWEN_Buffer_AppendString(lbuf, "<br>\n");
-
-  /* modulus */
-  GWEN_Buffer_AppendString(lbuf, "\n");
-  GWEN_Buffer_AppendString(lbuf, "<h4>");
-  GWEN_Buffer_AppendString(lbuf, I18N("Modulus"));
-  GWEN_Buffer_AppendString(lbuf, "</h4>\n");
-  p=GWEN_Crypt_Token_KeyInfo_GetModulusData(ki);
-  l=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
-  if (!p || !l) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
-    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                         I18N("Bad key"));
-    return GWEN_ERROR_BAD_DATA;
-  }
-
-  GWEN_Buffer_AppendString(lbuf, "<font face=fixed>\n");
-  bbuf=GWEN_Buffer_new(0, 97, 0, 1);
-  GWEN_Buffer_AppendBytes(bbuf, p, l);
-  GWEN_Buffer_Rewind(bbuf);
-  if (l<96)
-    GWEN_Buffer_FillLeftWithBytes(bbuf, 0, 96-l);
-  p=GWEN_Buffer_GetStart(bbuf);
-  l=GWEN_Buffer_GetUsedBytes(bbuf);
-  for (i=0; i<6; i++) {
-    GWEN_Buffer_AppendString(lbuf, "  ");
-    if (GWEN_Text_ToHexBuffer(p, 16, lbuf, 2, ' ', 0)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
-      abort();
+  GWEN_Buffer_AppendString(b, "\n  ");
+  GWEN_Buffer_AppendString(b, I18N("Modulus"));
+  GWEN_Buffer_AppendString(b, "\n\n");
+  for(i = 0; i < h->kl; i += 16)
+  {
+    uint32_t left = h->kl - i;
+    if(GWEN_Text_ToHexBuffer((const char*)h->m + i, (left < 16) ? left : 16, b, 2, ' ', 0))
+    {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "GWEN_Text_ToHexBuffer() failed.");
+      return GWEN_ERROR_GENERIC;
     }
-    p+=16;
-    GWEN_Buffer_AppendString(lbuf, "<br>\n");
+    GWEN_Buffer_AppendString(b, "\n");
   }
-
-  GWEN_Buffer_FillWithBytes(keybuf, 0, 128-l);
-  GWEN_Buffer_AppendBuffer(keybuf, bbuf);
-  GWEN_Buffer_free(bbuf);
-  GWEN_Buffer_AppendString(lbuf, "</font>\n");
-  GWEN_Buffer_AppendString(lbuf, "<br>\n");
-
-  GWEN_Buffer_AppendString(lbuf, "<h4>");
-  GWEN_Buffer_AppendString(lbuf, I18N("Hash"));
-  GWEN_Buffer_AppendString(lbuf, "</h4>\n");
-  GWEN_Buffer_AppendString(lbuf, "<font face=fixed>\n");
-  rv=AH_Provider__HashRmd160((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
-                             GWEN_Buffer_GetUsedBytes(keybuf),
-                             (uint8_t *)hashbuffer);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error hashing (%d)", rv);
-    abort();
+  GWEN_Buffer_AppendString(b, "\n  ");
+  GWEN_Buffer_AppendString(b, I18N("Hash"));
+  GWEN_Buffer_AppendString(b, fmtStr(FB, " (%s)", h->hn));
+  GWEN_Buffer_AppendString(b, "\n\n");
+  for(i = 0; i < h->hl; i += 16)
+  {
+    uint32_t left = h->hl - i;
+    if(GWEN_Text_ToHexBuffer((const char*)h->h + i, (left < 16) ? left : 16, b, 2, ' ', 0))
+    {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "GWEN_Text_ToHexBuffer() failed.");
+      return GWEN_ERROR_GENERIC;
+    }
+    GWEN_Buffer_AppendString(b, "\n");
   }
-  GWEN_Buffer_free(keybuf);
-
-  GWEN_Buffer_AppendString(lbuf, "  ");
-  if (GWEN_Text_ToHexBuffer(hashbuffer, 20, lbuf, 2, ' ', 0)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
-    abort();
-  }
-  GWEN_Buffer_AppendString(lbuf, "</font>\n");
-  GWEN_Buffer_AppendString(lbuf, "<br>\n");
-
-  if (!useBankKey) {
-    GWEN_Buffer_AppendString(lbuf, "<br><br>\n");
-    GWEN_Buffer_AppendString(lbuf,
-                             I18N("I confirm that I created the above key "
+  if(!h->isBankKey)
+  {
+    GWEN_Buffer_AppendString(b, "\n\n");
+    GWEN_Buffer_AppendString(b, I18N("I confirm that I created the above key "
                                   "for my electronic signature.\n"));
-    GWEN_Buffer_AppendString(lbuf, "<br><br>\n");
-    GWEN_Buffer_AppendString(lbuf, "<table>\n");
-    GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
-    GWEN_Buffer_AppendString(lbuf, "____________________________  ");
-    GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
-    GWEN_Buffer_AppendString(lbuf, "____________________________  ");
-    GWEN_Buffer_AppendString(lbuf, "</td></tr><tr><td>\n");
-    GWEN_Buffer_AppendString(lbuf, I18N("Place, date"));
-    GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
-    GWEN_Buffer_AppendString(lbuf, I18N("Signature"));
-    GWEN_Buffer_AppendString(lbuf, "</td></tr></table>\n");
-    GWEN_Buffer_AppendString(lbuf, "<br>\n");
+    GWEN_Buffer_AppendString(b, "\n\n");
+    GWEN_Buffer_AppendString(b, I18N("____________________________  ____________________________\n"
+                                     "Place, date                   Signature\n"));
   }
 
-  return 0;
+  return rv;
 }
 
-
-
-int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
-                                 AB_USER *u,
-                                 int useBankKey,
-                                 GWEN_BUFFER *lbuf,
-                                 int nounmount)
+int IniLetterOutHtml(struct s_hashOut *h)
 {
-  AB_BANKING *ab;
-  AH_HBCI *h;
-  const void *p;
-  unsigned int l;
-  unsigned int modLen;
-  GWEN_BUFFER *bbuf;
-  GWEN_BUFFER *keybuf;
-  int i;
-  GWEN_TIME *ti;
-  char numbuf[32];
-  char hashbuffer[33];
-  AH_PROVIDER *hp;
-  GWEN_CRYPT_TOKEN *ct;
-  const GWEN_CRYPT_TOKEN_CONTEXT *cctx;
-  const GWEN_CRYPT_TOKEN_KEYINFO *ki=NULL;
-  uint32_t kid;
-  int rv;
+  char fmtBuff[128];
+  int rv = 0;
+  GWEN_TIME *ti = GWEN_CurrentTime();
+  GWEN_BUFFER *b = h->lbuf;
+  AH_HBCI *hbci = AH_Provider_GetHbci(h->pro);
+  uint32_t i = 0;
 
-  assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
-  assert(u);
-
-  ab=AB_Provider_GetBanking(pro);
-  assert(ab);
-
-  h=AH_Provider_GetHbci(pro);
   assert(h);
-
-  rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),
-                              AH_User_GetTokenType(u),
-                              AH_User_GetTokenName(u),
-                              &ct);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not get crypt token (%d)", rv);
-    GWEN_Gui_ProgressLog(0,
-                         GWEN_LoggerLevel_Error,
-                         I18N("Error getting crypt token"));
-    if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-    return rv;
-  }
-
-  /* open crypt token */
-  rv=GWEN_Crypt_Token_Open(ct, 1, 0);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not open crypt token (%d)", rv);
-    GWEN_Gui_ProgressLog(0,
-                         GWEN_LoggerLevel_Error,
-                         I18N("Error opening crypt token"));
-    if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-    return rv;
-  }
-
-  /* get context */
-  cctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), 0);
-  if (!cctx) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "User context not found on crypt token");
-    GWEN_Gui_ProgressLog(0,
-                         GWEN_LoggerLevel_Error,
-                         I18N("User context not found on crypt token"));
-    if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-    return GWEN_ERROR_NOT_FOUND;
-  }
-
-  if (useBankKey) {
-    /* get sign key info */
-    kid=GWEN_Crypt_Token_Context_GetVerifyKeyId(cctx);
-    if (kid) {
-      ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-                                     0);
-    }
-    if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
-      kid=GWEN_Crypt_Token_Context_GetEncipherKeyId(cctx);
-      if (kid) {
-        ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-                                       0);
-      }
-    }
-    if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
-      if (!nounmount)
-        AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Server keys missing, please get them first");
-      GWEN_Gui_ProgressLog(0,
-                           GWEN_LoggerLevel_Error,
-                           I18N("Server keys missing, "
-                                "please get them first"));
-      return GWEN_ERROR_NOT_FOUND;
-    }
-  }
-  else {
-    /* get sign key info */
-    kid=GWEN_Crypt_Token_Context_GetSignKeyId(cctx);
-    if (kid) {
-      ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-                                     0);
-    }
-    if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
-      if (!nounmount)
-        AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "User keys missing, please generate them first");
-      GWEN_Gui_ProgressLog(0,
-                           GWEN_LoggerLevel_Error,
-                           I18N("User keys missing, "
-                                "please generate them first"));
-      return GWEN_ERROR_NOT_FOUND;
-    }
-  }
-
-#if 0
-  modLen=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
-#else
-  /* use the real modulus length */
-  modLen=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
-#endif
-
-  keybuf=GWEN_Buffer_new(0, (modLen*2)+1, 0, 1);
-
-  /* prelude */
-  GWEN_Buffer_AppendString(lbuf,
-                           I18N("\n\n\nINI-Letter\n\n"));
-  GWEN_Buffer_AppendString(lbuf,
-                           I18N("Date           : "));
-  ti=GWEN_CurrentTime();
   assert(ti);
-  GWEN_Time_toString(ti, I18N("YYYY/MM/DD"), lbuf);
-  GWEN_Buffer_AppendString(lbuf, "\n");
-  GWEN_Buffer_AppendString(lbuf,
-                           I18N("Time           : "));
-  GWEN_Time_toString(ti, I18N("hh:mm:ss"), lbuf);
-  GWEN_Buffer_AppendString(lbuf, "\n");
 
-  if (useBankKey) {
-    GWEN_Buffer_AppendString(lbuf,
-                             I18N("Bank Code      : "));
-    GWEN_Buffer_AppendString(lbuf, AB_User_GetBankCode(u));
+  GWEN_Buffer_AppendString(b, "<h3>");
+  GWEN_Buffer_AppendString(b, I18N("INI-Letter"));
+  GWEN_Buffer_AppendString(b, "</h3>\n<table>\n<tr><td>\n");
+  GWEN_Buffer_AppendString(b, I18N("Date"));
+  GWEN_Buffer_AppendString(b, "</td><td>\n");
+  GWEN_Time_toString(ti, I18N("YYYY/MM/DD"), b);
+  GWEN_Buffer_AppendString(b, "</td></tr>\n<tr><td>\n");
+  GWEN_Buffer_AppendString(b, I18N("Time"));
+  GWEN_Buffer_AppendString(b, "</td><td>\n");
+  GWEN_Time_toString(ti, I18N("hh:mm:ss"), b);
+  GWEN_Buffer_AppendString(b, "</td></tr>\n");
+  if(h->isBankKey)
+  {
+    GWEN_Buffer_AppendString(b, "<tr><td>\n");
+    GWEN_Buffer_AppendString(b, I18N("Bank Code"));
+    GWEN_Buffer_AppendString(b, "</td><td>\n");
+    GWEN_Buffer_AppendString(b, AB_User_GetBankCode(h->u));
+    GWEN_Buffer_AppendString(b, "</td></tr>\n");
   }
-  else {
-    GWEN_Buffer_AppendString(lbuf,
-                             I18N("User           : "));
-    GWEN_Buffer_AppendString(lbuf, AB_User_GetUserId(u));
+  else
+  {
+    GWEN_Buffer_AppendString(b, "<tr><td>\n");
+    GWEN_Buffer_AppendString(b, I18N("User"));
+    GWEN_Buffer_AppendString(b, "</td><td>\n");
+    GWEN_Buffer_AppendString(b, AB_User_GetUserId(h->u));
+    GWEN_Buffer_AppendString(b, "</td></tr>\n");
   }
+  GWEN_Buffer_AppendString(b, "<tr><td>\n");
+  GWEN_Buffer_AppendString(b, I18N("Key number"));
+  GWEN_Buffer_AppendString(b, "</td><td>\n");
+  GWEN_Buffer_AppendString(b, fmtStr(FB, "%d", h->kn));
+  GWEN_Buffer_AppendString(b, "</td></tr>\n");
 
-  GWEN_Buffer_AppendString(lbuf, "\n");
-  GWEN_Buffer_AppendString(lbuf,
-                           I18N("Key number     : "));
-  snprintf(numbuf, sizeof(numbuf), "%d",
-           GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ki));
-  GWEN_Buffer_AppendString(lbuf, numbuf);
-  GWEN_Buffer_AppendString(lbuf, "\n");
-
-  GWEN_Buffer_AppendString(lbuf,
-                           I18N("Key version    : "));
-  snprintf(numbuf, sizeof(numbuf), "%d",
-           GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
-  GWEN_Buffer_AppendString(lbuf, numbuf);
-  GWEN_Buffer_AppendString(lbuf, "\n");
-
-  if (!useBankKey) {
-    GWEN_Buffer_AppendString(lbuf,
-                             I18N("Customer system: "));
-    GWEN_Buffer_AppendString(lbuf, AH_HBCI_GetProductName(h));
-    GWEN_Buffer_AppendString(lbuf, "\n");
+  GWEN_Buffer_AppendString(b, "<tr><td>\n");
+  GWEN_Buffer_AppendString(b, I18N("Key version"));
+  GWEN_Buffer_AppendString(b, "</td><td>\n");
+  GWEN_Buffer_AppendString(b, fmtStr(FB, "%d", h->kv));
+  GWEN_Buffer_AppendString(b, "</td></tr>\n");
+  if(h->isBankKey)
+  {
+    GWEN_Buffer_AppendString(b, "<tr><td>\n");
+    GWEN_Buffer_AppendString(b, I18N("Customer system"));
+    GWEN_Buffer_AppendString(b, "</td><td>\n");
+    GWEN_Buffer_AppendString(b, AH_HBCI_GetProductName(hbci));
+    GWEN_Buffer_AppendString(b, "</td></tr>\n");
   }
+  GWEN_Buffer_AppendString(b, "</table>\n");
 
-  GWEN_Buffer_AppendString(lbuf, "\n");
-  GWEN_Buffer_AppendString(lbuf,
-                           I18N("Public key for electronic signature"));
-  GWEN_Buffer_AppendString(lbuf, "\n\n");
+  GWEN_Buffer_AppendString(b, "<h3>");
+  GWEN_Buffer_AppendString(b, I18N("Public key for electronic signature"));
+  GWEN_Buffer_AppendString(b, "</h3>\n");
 
-  GWEN_Buffer_AppendString(lbuf, "  ");
-  GWEN_Buffer_AppendString(lbuf,
-                           I18N("Exponent"));
-  GWEN_Buffer_AppendString(lbuf, "\n\n");
+  GWEN_Buffer_AppendString(b, "<h4>");
+  GWEN_Buffer_AppendString(b, I18N("Exponent"));
+  GWEN_Buffer_AppendString(b, "</h4>\n");
 
-  /* exponent */
-  p=GWEN_Crypt_Token_KeyInfo_GetExponentData(ki);
-  l=GWEN_Crypt_Token_KeyInfo_GetExponentLen(ki);
-  if (!p || !l) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
-    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                         I18N("Bad key"));
-    return GWEN_ERROR_BAD_DATA;
-  }
-
-  bbuf=GWEN_Buffer_new(0, modLen+1, 0, 1);
-  GWEN_Buffer_AppendBytes(bbuf, p, l);
-  GWEN_Buffer_Rewind(bbuf);
-  if (l<modLen)
-    GWEN_Buffer_FillLeftWithBytes(bbuf, 0, modLen-l);
-  p=GWEN_Buffer_GetStart(bbuf);
-  l=GWEN_Buffer_GetUsedBytes(bbuf);
-  for (i=0; i<modLen; i+=16) {
-    int rl=modLen-i;
-    if (rl>16)
-      rl=16;
-
-    GWEN_Buffer_AppendString(lbuf, "  ");
-    if (GWEN_Text_ToHexBuffer(p, rl, lbuf, 2, ' ', 0)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
-      abort();
+  GWEN_Buffer_AppendString(b, "<font face=fixed>\n");
+  for(i = 0; i < h->kl; i += 16)
+  {
+    uint32_t left = h->kl - i;
+    if(GWEN_Text_ToHexBuffer((const char*)h->e + i, (left < 16) ? left : 16, b, 2, ' ', 0))
+    {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "GWEN_Text_ToHexBuffer() failed.");
+      return GWEN_ERROR_GENERIC;
     }
-    p+=rl;
-    GWEN_Buffer_AppendString(lbuf, "\n");
+    GWEN_Buffer_AppendString(b, "<br>\n");
   }
+  GWEN_Buffer_AppendString(b, "</font>\n<br>\n");
 
-  GWEN_Buffer_AppendBuffer(keybuf, bbuf);
-  GWEN_Buffer_free(bbuf);
+  GWEN_Buffer_AppendString(b, "<h4>");
+  GWEN_Buffer_AppendString(b, I18N("Modulus"));
+  GWEN_Buffer_AppendString(b, "</h4>\n");
 
-  /* modulus */
-  GWEN_Buffer_AppendString(lbuf, "\n");
-  GWEN_Buffer_AppendString(lbuf, "  ");
-  GWEN_Buffer_AppendString(lbuf,
-                           I18N("Modulus"));
-  GWEN_Buffer_AppendString(lbuf, "\n\n");
-  p=GWEN_Crypt_Token_KeyInfo_GetModulusData(ki);
-  l=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
-  if (!p || !l) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
-    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                         I18N("Bad key"));
-    return GWEN_ERROR_BAD_DATA;
-  }
-
-  bbuf=GWEN_Buffer_new(0, modLen+1, 0, 1);
-  GWEN_Buffer_AppendBytes(bbuf, p, l);
-  GWEN_Buffer_Rewind(bbuf);
-  p=GWEN_Buffer_GetStart(bbuf);
-  l=GWEN_Buffer_GetUsedBytes(bbuf);
-  for (i=0; i<modLen; i+=16) {
-    int rl=modLen-i;
-    if (rl>16)
-      rl=16;
-
-    GWEN_Buffer_AppendString(lbuf, "  ");
-    if (GWEN_Text_ToHexBuffer(p, rl, lbuf, 2, ' ', 0)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
-      abort();
+  GWEN_Buffer_AppendString(b, "<font face=fixed>\n");
+  for(i = 0; i < h->kl; i += 16)
+  {
+    uint32_t left = h->kl - i;
+    if(GWEN_Text_ToHexBuffer((const char*)h->m + i, (left < 16) ? left : 16, b, 2, ' ', 0))
+    {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "GWEN_Text_ToHexBuffer() failed.");
+      return GWEN_ERROR_GENERIC;
     }
-    p+=rl;
-    GWEN_Buffer_AppendString(lbuf, "\n");
+    GWEN_Buffer_AppendString(b, "<br>\n");
+  }
+  GWEN_Buffer_AppendString(b, "</font>\n<br>\n");
+
+  GWEN_Buffer_AppendString(b, "<h4>");
+  GWEN_Buffer_AppendString(b, I18N("Hash"));
+  GWEN_Buffer_AppendString(b, fmtStr(FB, " (%s)", h->hn));
+  GWEN_Buffer_AppendString(b, "</h4>\n");
+
+  GWEN_Buffer_AppendString(b, "<font face=fixed>\n");
+  for(i = 0; i < h->hl; i += 16)
+  {
+    uint32_t left = h->hl - i;
+    if(GWEN_Text_ToHexBuffer((const char*)h->h + i, (left < 16) ? left : 16, b, 2, ' ', 0))
+    {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "GWEN_Text_ToHexBuffer() failed.");
+      return GWEN_ERROR_GENERIC;
+    }
+    GWEN_Buffer_AppendString(b, "<br>\n");
+  }
+  GWEN_Buffer_AppendString(b, "</font>\n<br>\n");
+
+  if(!h->isBankKey)
+  {
+    GWEN_Buffer_AppendString(b, "<br><br>\n");
+    GWEN_Buffer_AppendString(b, I18N("I confirm that I created the above key for my electronic signature.\n"));
+    GWEN_Buffer_AppendString(b, "<br><br>\n");
+    GWEN_Buffer_AppendString(b, "<table>\n");
+    GWEN_Buffer_AppendString(b, "<tr><td>\n");
+    GWEN_Buffer_AppendString(b, "____________________________  ");
+    GWEN_Buffer_AppendString(b, "</td><td>\n");
+    GWEN_Buffer_AppendString(b, "____________________________  ");
+    GWEN_Buffer_AppendString(b, "</td></tr><tr><td>\n");
+    GWEN_Buffer_AppendString(b, I18N("Place, date"));
+    GWEN_Buffer_AppendString(b, "</td><td>\n");
+    GWEN_Buffer_AppendString(b, I18N("Signature"));
+    GWEN_Buffer_AppendString(b, "</td></tr></table>\n");
+    GWEN_Buffer_AppendString(b, "<br>\n");
   }
 
-  GWEN_Buffer_AppendBuffer(keybuf, bbuf);
-  GWEN_Buffer_free(bbuf);
-
-  GWEN_Buffer_AppendString(lbuf, "\n");
-  GWEN_Buffer_AppendString(lbuf, "  ");
-  GWEN_Buffer_AppendString(lbuf,
-                           I18N("Hash (RMD-160)"));
-  GWEN_Buffer_AppendString(lbuf, "\n\n");
-  rv=AH_Provider__HashRmd160((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
-                             GWEN_Buffer_GetUsedBytes(keybuf),
-                             (uint8_t *)hashbuffer);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error hashing (%d)", rv);
-    abort();
-  }
-
-  GWEN_Buffer_AppendString(lbuf, "  ");
-  if (GWEN_Text_ToHexBuffer(hashbuffer, 10, lbuf, 2, ' ', 0)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
-    abort();
-  }
-  GWEN_Buffer_AppendString(lbuf, "\n  ");
-  if (GWEN_Text_ToHexBuffer(hashbuffer+10, 10, lbuf, 2, ' ', 0)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
-    abort();
-  }
-  GWEN_Buffer_AppendString(lbuf, "\n");
-
-  GWEN_Buffer_AppendString(lbuf, "\n");
-  GWEN_Buffer_AppendString(lbuf, "  ");
-  GWEN_Buffer_AppendString(lbuf,
-                           I18N("Hash (SHA-256)"));
-  GWEN_Buffer_AppendString(lbuf, "\n\n");
-  rv=AH_Provider__HashSha256((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
-                             GWEN_Buffer_GetUsedBytes(keybuf),
-                             (uint8_t *)hashbuffer);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error hashing (%d)", rv);
-    abort();
-  }
-  GWEN_Buffer_free(keybuf);
-
-  GWEN_Buffer_AppendString(lbuf, "  ");
-  if (GWEN_Text_ToHexBuffer(hashbuffer, 16, lbuf, 2, ' ', 0)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
-    abort();
-  }
-  GWEN_Buffer_AppendString(lbuf, "\n  ");
-  if (GWEN_Text_ToHexBuffer(hashbuffer+16, 16, lbuf, 2, ' ', 0)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
-    abort();
-  }
-  GWEN_Buffer_AppendString(lbuf, "\n");
-
-  if (!useBankKey) {
-    GWEN_Buffer_AppendString(lbuf, "\n\n");
-    GWEN_Buffer_AppendString(lbuf,
-                             I18N("I confirm that I created the above key "
-                                  "for my electronic signature.\n"));
-    GWEN_Buffer_AppendString(lbuf, "\n\n");
-    GWEN_Buffer_AppendString(lbuf,
-                             I18N("____________________________  "
-                                  "____________________________\n"
-                                  "Place, date                   "
-                                  "Signature\n"));
-  }
-
-  return 0;
+  return rv;
 }
-
-
-int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
-                                  AB_USER *u,
-                                  int useBankKey,
-                                  GWEN_BUFFER *lbuf,
-                                  int nounmount)
-{
-  AB_BANKING *ab;
-  AH_HBCI *h;
-  const void *p;
-  unsigned int l;
-  GWEN_BUFFER *bbuf;
-  GWEN_BUFFER *keybuf;
-  int i;
-  GWEN_TIME *ti;
-  char numbuf[32];
-  char hashbuffer[33];
-  AH_PROVIDER *hp;
-  GWEN_CRYPT_TOKEN *ct;
-  const GWEN_CRYPT_TOKEN_CONTEXT *cctx;
-  const GWEN_CRYPT_TOKEN_KEYINFO *ki=NULL;
-  uint32_t kid;
-  int rv;
-  int modLen;
-
-  assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
-  assert(u);
-
-  ab=AB_Provider_GetBanking(pro);
-  assert(ab);
-
-  h=AH_Provider_GetHbci(pro);
-  assert(h);
-
-  rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),
-                              AH_User_GetTokenType(u),
-                              AH_User_GetTokenName(u),
-                              &ct);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not get crypt token (%d)", rv);
-    GWEN_Gui_ProgressLog(0,
-                         GWEN_LoggerLevel_Error,
-                         I18N("Error getting crypt token"));
-    if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-    return rv;
-  }
-
-  /* open crypt token */
-  rv=GWEN_Crypt_Token_Open(ct, 1, 0);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not open crypt token (%d)", rv);
-    GWEN_Gui_ProgressLog(0,
-                         GWEN_LoggerLevel_Error,
-                         I18N("Error opening crypt token"));
-    if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-    return rv;
-  }
-
-  /* get context */
-  cctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), 0);
-  if (!cctx) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "User context not found on crypt token");
-    GWEN_Gui_ProgressLog(0,
-                         GWEN_LoggerLevel_Error,
-                         I18N("User context not found on crypt token"));
-    if (!nounmount)
-      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-    return GWEN_ERROR_NOT_FOUND;
-  }
-
-  if (useBankKey) {
-    /* get sign key info */
-    kid=GWEN_Crypt_Token_Context_GetVerifyKeyId(cctx);
-    if (kid) {
-      ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-                                     0);
-    }
-    if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
-      kid=GWEN_Crypt_Token_Context_GetEncipherKeyId(cctx);
-      if (kid) {
-        ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-                                       GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-                                       0);
-      }
-    }
-    if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
-      if (!nounmount)
-        AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Server keys missing, please get them first");
-      GWEN_Gui_ProgressLog(0,
-                           GWEN_LoggerLevel_Error,
-                           I18N("Server keys missing, "
-                                "please get them first"));
-      return GWEN_ERROR_NOT_FOUND;
-    }
-  }
-  else {
-    /* get sign key info */
-    kid=GWEN_Crypt_Token_Context_GetSignKeyId(cctx);
-    if (kid) {
-      ki=GWEN_Crypt_Token_GetKeyInfo(ct, kid,
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYVERSION |
-                                     GWEN_CRYPT_TOKEN_KEYFLAGS_HASKEYNUMBER,
-                                     0);
-    }
-    if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
-      if (!nounmount)
-        AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "User keys missing, please generate them first");
-      GWEN_Gui_ProgressLog(0,
-                           GWEN_LoggerLevel_Error,
-                           I18N("User keys missing, "
-                                "please generate them first"));
-      return GWEN_ERROR_NOT_FOUND;
-    }
-  }
-
-#if 0
-  modLen=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
-#else
-  /* use the real modulus length */
-  modLen=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
-#endif
-
-  keybuf=GWEN_Buffer_new(0, 257, 0, 1);
-
-  /* prelude */
-  GWEN_Buffer_AppendString(lbuf, "<h3>");
-  GWEN_Buffer_AppendString(lbuf, I18N("INI-Letter"));
-  GWEN_Buffer_AppendString(lbuf, "</h3>\n");
-  GWEN_Buffer_AppendString(lbuf, "<table>\n");
-  GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
-  GWEN_Buffer_AppendString(lbuf, I18N("Date"));
-  GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
-  ti=GWEN_CurrentTime();
-  assert(ti);
-  GWEN_Time_toString(ti, I18N("YYYY/MM/DD"), lbuf);
-  GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
-
-  GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
-  GWEN_Buffer_AppendString(lbuf, I18N("Time"));
-  GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
-  GWEN_Time_toString(ti, I18N("hh:mm:ss"), lbuf);
-  GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
-
-  if (useBankKey) {
-    GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
-    GWEN_Buffer_AppendString(lbuf, I18N("Bank Code"));
-    GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
-    GWEN_Buffer_AppendString(lbuf, AB_User_GetBankCode(u));
-    GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
-  }
-  else {
-    GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
-    GWEN_Buffer_AppendString(lbuf, I18N("User"));
-    GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
-    GWEN_Buffer_AppendString(lbuf, AB_User_GetUserId(u));
-    GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
-  }
-
-  GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
-  GWEN_Buffer_AppendString(lbuf, I18N("Key number"));
-  GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
-  snprintf(numbuf, sizeof(numbuf), "%d",
-           GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ki));
-  GWEN_Buffer_AppendString(lbuf, numbuf);
-  GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
-
-  GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
-  GWEN_Buffer_AppendString(lbuf, I18N("Key version"));
-  GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
-  snprintf(numbuf, sizeof(numbuf), "%d",
-           GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki));
-  GWEN_Buffer_AppendString(lbuf, numbuf);
-  GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
-
-  if (!useBankKey) {
-    GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
-    GWEN_Buffer_AppendString(lbuf, I18N("Customer system"));
-    GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
-    GWEN_Buffer_AppendString(lbuf, AH_HBCI_GetProductName(h));
-    GWEN_Buffer_AppendString(lbuf, "</td></tr>\n");
-  }
-  GWEN_Buffer_AppendString(lbuf, "</table>\n");
-
-  GWEN_Buffer_AppendString(lbuf, "<h3>");
-  GWEN_Buffer_AppendString(lbuf, I18N("Public key for electronic signature"));
-  GWEN_Buffer_AppendString(lbuf, "</h3>\n");
-
-  GWEN_Buffer_AppendString(lbuf, "<h4>");
-  GWEN_Buffer_AppendString(lbuf, I18N("Exponent"));
-  GWEN_Buffer_AppendString(lbuf, "</h4>\n");
-
-  /* exponent */
-  p=GWEN_Crypt_Token_KeyInfo_GetExponentData(ki);
-  l=GWEN_Crypt_Token_KeyInfo_GetExponentLen(ki);
-  if (!p || !l) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
-    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                         I18N("Bad key"));
-    return GWEN_ERROR_BAD_DATA;
-  }
-
-  GWEN_Buffer_AppendString(lbuf, "<font face=fixed>\n");
-  bbuf=GWEN_Buffer_new(0, modLen+1, 0, 1);
-  GWEN_Buffer_AppendBytes(bbuf, p, l);
-  GWEN_Buffer_Rewind(bbuf);
-  if (l<modLen)
-    GWEN_Buffer_FillLeftWithBytes(bbuf, 0, modLen-l);
-  p=GWEN_Buffer_GetStart(bbuf);
-  l=GWEN_Buffer_GetUsedBytes(bbuf);
-  for (i=0; i<modLen; i+=16) {
-    int rl=modLen-i;
-    if (rl>16)
-      rl=16;
-
-    GWEN_Buffer_AppendString(lbuf, "  ");
-    if (GWEN_Text_ToHexBuffer(p, rl, lbuf, 2, ' ', 0)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
-      abort();
-    }
-    p+=rl;
-    GWEN_Buffer_AppendString(lbuf, "<br>\n");
-  }
-
-  GWEN_Buffer_AppendBuffer(keybuf, bbuf);
-  GWEN_Buffer_free(bbuf);
-  GWEN_Buffer_AppendString(lbuf, "</font>\n");
-  GWEN_Buffer_AppendString(lbuf, "<br>\n");
-
-  /* modulus */
-  GWEN_Buffer_AppendString(lbuf, "\n");
-  GWEN_Buffer_AppendString(lbuf, "<h4>");
-  GWEN_Buffer_AppendString(lbuf, I18N("Modulus"));
-  GWEN_Buffer_AppendString(lbuf, "</h4>\n");
-  p=GWEN_Crypt_Token_KeyInfo_GetModulusData(ki);
-  l=GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
-  if (!p || !l) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
-    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                         I18N("Bad key"));
-    return GWEN_ERROR_BAD_DATA;
-  }
-
-  GWEN_Buffer_AppendString(lbuf, "<font face=fixed>\n");
-  bbuf=GWEN_Buffer_new(0, modLen+1, 0, 1);
-  GWEN_Buffer_AppendBytes(bbuf, p, l);
-  GWEN_Buffer_Rewind(bbuf);
-  p=GWEN_Buffer_GetStart(bbuf);
-  l=GWEN_Buffer_GetUsedBytes(bbuf);
-  for (i=0; i<modLen; i+=16) {
-    int rl=modLen-i;
-    if (rl>16)
-      rl=16;
-
-    GWEN_Buffer_AppendString(lbuf, "  ");
-    if (GWEN_Text_ToHexBuffer(p, rl, lbuf, 2, ' ', 0)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
-      abort();
-    }
-    p+=rl;
-    GWEN_Buffer_AppendString(lbuf, "<br>\n");
-  }
-
-  GWEN_Buffer_AppendBuffer(keybuf, bbuf);
-  GWEN_Buffer_free(bbuf);
-  GWEN_Buffer_AppendString(lbuf, "</font>\n");
-  GWEN_Buffer_AppendString(lbuf, "<br>\n");
-
-  GWEN_Buffer_AppendString(lbuf, "<h4>");
-  GWEN_Buffer_AppendString(lbuf, I18N("Hash (RMD-160)"));
-  GWEN_Buffer_AppendString(lbuf, "</h4>\n");
-  GWEN_Buffer_AppendString(lbuf, "<font face=fixed>\n");
-  rv=AH_Provider__HashRmd160((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
-                             GWEN_Buffer_GetUsedBytes(keybuf),
-                             (uint8_t *)hashbuffer);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error hashing (%d)", rv);
-    abort();
-  }
-
-  GWEN_Buffer_AppendString(lbuf, "  ");
-  if (GWEN_Text_ToHexBuffer(hashbuffer, 20, lbuf, 2, ' ', 0)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
-    abort();
-  }
-  GWEN_Buffer_AppendString(lbuf, "</font>\n");
-  GWEN_Buffer_AppendString(lbuf, "<br>\n");
-
-  GWEN_Buffer_AppendString(lbuf, "<h4>");
-  GWEN_Buffer_AppendString(lbuf, I18N("Hash (SHA-256)"));
-  GWEN_Buffer_AppendString(lbuf, "</h4>\n");
-  GWEN_Buffer_AppendString(lbuf, "<font face=fixed>\n");
-  rv=AH_Provider__HashSha256((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
-                             GWEN_Buffer_GetUsedBytes(keybuf),
-                             (uint8_t *)hashbuffer);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error hashing (%d)", rv);
-    abort();
-  }
-  GWEN_Buffer_free(keybuf);
-
-  GWEN_Buffer_AppendString(lbuf, "  ");
-  if (GWEN_Text_ToHexBuffer(hashbuffer, 32, lbuf, 2, ' ', 0)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
-    abort();
-  }
-  GWEN_Buffer_AppendString(lbuf, "</font>\n");
-  GWEN_Buffer_AppendString(lbuf, "<br>\n");
-
-
-  if (!useBankKey) {
-    GWEN_Buffer_AppendString(lbuf, "<br><br>\n");
-    GWEN_Buffer_AppendString(lbuf,
-                             I18N("I confirm that I created the above key "
-                                  "for my electronic signature.\n"));
-    GWEN_Buffer_AppendString(lbuf, "<br><br>\n");
-    GWEN_Buffer_AppendString(lbuf, "<table>\n");
-    GWEN_Buffer_AppendString(lbuf, "<tr><td>\n");
-    GWEN_Buffer_AppendString(lbuf, "____________________________  ");
-    GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
-    GWEN_Buffer_AppendString(lbuf, "____________________________  ");
-    GWEN_Buffer_AppendString(lbuf, "</td></tr><tr><td>\n");
-    GWEN_Buffer_AppendString(lbuf, I18N("Place, date"));
-    GWEN_Buffer_AppendString(lbuf, "</td><td>\n");
-    GWEN_Buffer_AppendString(lbuf, I18N("Signature"));
-    GWEN_Buffer_AppendString(lbuf, "</td></tr></table>\n");
-    GWEN_Buffer_AppendString(lbuf, "<br>\n");
-  }
-
-  return 0;
-}
-
-
 
