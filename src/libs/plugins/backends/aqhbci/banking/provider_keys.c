@@ -506,13 +506,13 @@ int AH_Provider_GetKeyHash(AB_PROVIDER *pro, AB_USER *u, GWEN_CRYPT_KEY *bk, cha
 {
   AH_HBCI *hbci = AH_Provider_GetHbci(pro);
   GWEN_CRYPT_HASHALGOID hAlgo = GWEN_Crypt_HashAlgoId_Unknown;
-  uint32_t eLen = 0, mLen = 0, hLen = 0;
-  uint8_t *mData = NULL, *eData = NULL;
+  uint32_t hLen = 0;
   GWEN_BUFFER *hBuff = NULL;
+  GWEN_CRYPT_TOKEN *ct = NULL;
   int rv = 0;
 
-  DBG_NOTICE(AQHBCI_LOGDOMAIN, "%s(): u %p bk %p kt %c cm %s-%d ctx %p, isBK %d.", __FUNCTION__,
-              u, bk, keyType, AH_CryptMode_toString(cryptMode), rdhType, ctx, bankKey);
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "%s(): u %p bk %p kt %c cm %s-%d tt '%s' ctx %p, isBK %d.", __FUNCTION__,
+              u, bk, keyType, AH_CryptMode_toString(cryptMode), rdhType, tokenType, ctx, bankKey);
 
   if(!ctx && u)
   {
@@ -537,17 +537,17 @@ int AH_Provider_GetKeyHash(AB_PROVIDER *pro, AB_USER *u, GWEN_CRYPT_KEY *bk, cha
       return GWEN_ERROR_GENERIC;
     }
 
-    eLen = 3; // XXX
-    mLen = GWEN_Crypt_Key_GetKeySize(bk);
-    if(eLen && mLen)
+    res->eLen = 3; // XXX
+    res->mLen = GWEN_Crypt_Key_GetKeySize(bk);
+    if(res->eLen && res->mLen)
     {
       res->kn = GWEN_Crypt_Key_GetKeyNumber(bk);
       res->kv = GWEN_Crypt_Key_GetKeyVersion(bk);
-      mData = malloc(mLen);
-      eData = malloc(eLen);
-      rv = GWEN_Crypt_KeyRsa_GetModulus(bk, mData, &mLen);
+      res->m = malloc(res->mLen);
+      res->e = malloc(res->eLen);
+      rv = GWEN_Crypt_KeyRsa_GetModulus(bk, res->m, &res->mLen);
       if(rv == 0)
-        rv = GWEN_Crypt_KeyRsa_GetExponent(bk, eData, &eLen);
+        rv = GWEN_Crypt_KeyRsa_GetExponent(bk, res->e, &res->eLen);
       if(rv != 0)
       {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad key.");
@@ -556,11 +556,9 @@ int AH_Provider_GetKeyHash(AB_PROVIDER *pro, AB_USER *u, GWEN_CRYPT_KEY *bk, cha
     }
   }
 
-  if(!ctx)
+  if(!ctx && (!bankKey || (tokenType && strcasecmp(tokenType, "ohbci"))))
   {
-    GWEN_CRYPT_TOKEN *ct = NULL;
-    const GWEN_CRYPT_TOKEN_KEYINFO *ki = NULL;
-    const GWEN_CRYPT_TOKEN_CONTEXT *ctx = NULL;
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Open '%s' '%s'...", tokenType, tokenName);
     rv = AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(hbci), tokenType, tokenName, &ct);
     if((rv != 0) || !ct)
     {
@@ -585,39 +583,40 @@ int AH_Provider_GetKeyHash(AB_PROVIDER *pro, AB_USER *u, GWEN_CRYPT_KEY *bk, cha
         rv = GWEN_ERROR_NOT_FOUND;
       }
     }
-    if((rv == 0) && ctx)
+  }
+  if(!bankKey && (rv == 0) && ctx)
+  {
+    const GWEN_CRYPT_TOKEN_KEYINFO *ki = NULL;
+    uint32_t kf = 0;
+    uint32_t kid = 0;
+    if(keyType == 'V')
+      kid = GWEN_Crypt_Token_Context_GetEncipherKeyId(ctx);
+    else if(keyType == 'S')
+      kid = GWEN_Crypt_Token_Context_GetSignKeyId(ctx);
+    else
     {
-      uint32_t kf = 0;
-      uint32_t kid = 0;
-      if(keyType == 'V')
-        kid = GWEN_Crypt_Token_Context_GetEncipherKeyId(ctx);
-      else if(keyType == 'S')
-        kid = GWEN_Crypt_Token_Context_GetSignKeyId(ctx);
-      else
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "%s(): Key-type '%c' invalid.", __FUNCTION__, keyType);
+      rv = GWEN_ERROR_BAD_DATA;
+    }
+    if(rv == 0)
+    {
+      if(kid)
+        ki = GWEN_Crypt_Token_GetKeyInfo(ct, kid, 0, 0);
+      if(ki)
+        kf = GWEN_Crypt_Token_KeyInfo_GetFlags(ki);
+      if(!ki || !(kf & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) || !(kf & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT))
       {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "%s(): Key-type '%c' invalid.", __FUNCTION__, keyType);
-        rv = GWEN_ERROR_BAD_DATA;
-      }
-      if(rv == 0)
-      {
-        if(kid)
-          ki = GWEN_Crypt_Token_GetKeyInfo(ct, kid, 0, 0);
-        if(ki)
-          kf = GWEN_Crypt_Token_KeyInfo_GetFlags(ki);
-        if(!ki || !(kf & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) || !(kf & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT))
-        {
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "%s(): User keys missing (kid %ld, f 0x%04lX).", __FUNCTION__, (long)kid, (long)kf);
-          rv = GWEN_ERROR_NOT_FOUND;
-        }
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "%s(): User keys missing (kid %ld, f 0x%04lX).", __FUNCTION__, (long)kid, (long)kf);
+        rv = GWEN_ERROR_NOT_FOUND;
       }
     }
-    if(!bankKey && (rv == 0) && ki)
+    if((rv == 0) && ki)
     {
       const uint8_t *e = GWEN_Crypt_Token_KeyInfo_GetExponentData(ki);
       const uint8_t *m = GWEN_Crypt_Token_KeyInfo_GetModulusData(ki);
-      eLen = GWEN_Crypt_Token_KeyInfo_GetExponentLen(ki);
-      mLen = GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
-      if(!e || !eLen || !m || !mLen)
+      res->eLen = GWEN_Crypt_Token_KeyInfo_GetExponentLen(ki);
+      res->mLen = GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
+      if(!e || !res->eLen || !m || !res->mLen)
       {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "%s(): Bad key.", __FUNCTION__);
         rv = GWEN_ERROR_BAD_DATA;
@@ -626,10 +625,10 @@ int AH_Provider_GetKeyHash(AB_PROVIDER *pro, AB_USER *u, GWEN_CRYPT_KEY *bk, cha
       {
         res->kn = GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ki);
         res->kv = GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki);
-        mData = malloc(mLen);
-        eData = malloc(eLen);
-        memcpy(mData, m, mLen);
-        memcpy(eData, e, eLen);
+        res->m = malloc(res->mLen);
+        res->e = malloc(res->eLen);
+        memcpy(res->m, m, res->mLen);
+        memcpy(res->e, e, res->eLen);
       }
     }
   }
@@ -641,6 +640,7 @@ int AH_Provider_GetKeyHash(AB_PROVIDER *pro, AB_USER *u, GWEN_CRYPT_KEY *bk, cha
     // if so, that algo was selected regarding EF_NOTEPADs HBCI-Version
     // (RDH-6, 7, 8, 9, 10, RAH-7, 9, 10)
     // for sign-key, try load hash
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Hash-algo from card %ld '%s'.", (long)hAlgo, GWEN_Crypt_HashAlgoId_toString(hAlgo));
     if(hAlgo != GWEN_Crypt_HashAlgoId_None)
     {
       const uint8_t *h = NULL;
@@ -650,14 +650,14 @@ int AH_Provider_GetKeyHash(AB_PROVIDER *pro, AB_USER *u, GWEN_CRYPT_KEY *bk, cha
         h = GWEN_Crypt_Token_Context_GetKeyHashPtr(ctx);
         hl = GWEN_Crypt_Token_Context_GetKeyHashLen(ctx);
       }
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Hash-algo from card %ld '%s', hash %p %ld.", (long)hAlgo, GWEN_Crypt_HashAlgoId_toString(hAlgo), h, (long)hl);
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Hash from card %p %ld.", h, (long)hl);
       switch(hAlgo)
       {
       case GWEN_Crypt_HashAlgoId_Rmd160:
         hLen = 128 * 2;
         break;
       case GWEN_Crypt_HashAlgoId_Sha256:
-        hLen = mLen * 2;
+        hLen = res->mLen * 2;
         break;
       default:
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Unexpected hash-algo %ld '%s', hLen %ld.", (long)hAlgo, GWEN_Crypt_HashAlgoId_toString(hAlgo), (long)hLen);
@@ -667,7 +667,7 @@ int AH_Provider_GetKeyHash(AB_PROVIDER *pro, AB_USER *u, GWEN_CRYPT_KEY *bk, cha
       {
         uint32_t hNum = GWEN_Crypt_Token_Context_GetKeyHashNum(ctx);
         uint32_t hVer = GWEN_Crypt_Token_Context_GetKeyHashVer(ctx);
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Found bank key hash on the zka card! (Hash Algo Identifier: [%d], keyNum: [%d], keyVer: [%d]", hAlgo, hNum, hVer);
+        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Found bank key hash on the zka card! (Hash Algo Identifier: [%d], keyNum: [%d], keyVer: [%d]", hAlgo, hNum, hVer);
         if((hNum == res->kn) && (hVer == res->kv))
         {
           DBG_INFO(AQHBCI_LOGDOMAIN, "Key Number and Version of the Hash match transmitted key.");
@@ -699,7 +699,7 @@ int AH_Provider_GetKeyHash(AB_PROVIDER *pro, AB_USER *u, GWEN_CRYPT_KEY *bk, cha
       case 2:
       case 3:
       case 5:
-        hLen = mLen * 2;
+        hLen = res->mLen * 2;
         hAlgo = GWEN_Crypt_HashAlgoId_Rmd160;
         break;
       case 6:
@@ -708,7 +708,7 @@ int AH_Provider_GetKeyHash(AB_PROVIDER *pro, AB_USER *u, GWEN_CRYPT_KEY *bk, cha
       case 9:
       case 10:
         hAlgo = GWEN_Crypt_HashAlgoId_Sha256;
-        hLen = mLen * 2;
+        hLen = res->mLen * 2;
         break;
       default:;
       }
@@ -719,13 +719,13 @@ int AH_Provider_GetKeyHash(AB_PROVIDER *pro, AB_USER *u, GWEN_CRYPT_KEY *bk, cha
       case 9:
       case 10:
         hAlgo = GWEN_Crypt_HashAlgoId_Sha256;
-        hLen = mLen * 2;
+        hLen = res->mLen * 2;
         break;
       default:;
       }
     default:;
     }
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Hash-algo selected (%s %d) %ld '%s', hLen %ld.",
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Hash-algo selected from crypt-mode (%s %d) %ld '%s', hLen %ld.",
                AH_CryptMode_toString(cryptMode), rdhType, (long)hAlgo, GWEN_Crypt_HashAlgoId_toString(hAlgo), (long)hLen);
   }
 
@@ -742,22 +742,37 @@ int AH_Provider_GetKeyHash(AB_PROVIDER *pro, AB_USER *u, GWEN_CRYPT_KEY *bk, cha
   default:;
   }
 
-  if((rv == 0) && ((mLen > (hLen / 2)) || (eLen > (hLen / 2))))
+  if((rv == 0) && ((res->mLen > (hLen / 2)) || (res->eLen > (hLen / 2))))
   {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid size for e, m, or h (%ld, %ld, %ld).", (long)eLen, (long)mLen, (long)hLen);
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid size for e, m, or h (%ld, %ld, %ld).", (long)res->eLen, (long)res->mLen, (long)hLen);
     rv = GWEN_ERROR_GENERIC;
   }
 
   if(rv == 0)
   {
-    if(hLen && eLen && mLen)
+    if(hLen && res->eLen && res->mLen)
       hBuff = GWEN_Buffer_new(0, hLen, 0, 1);
     if(hBuff)
     {
-      GWEN_Buffer_FillWithBytes(hBuff, 0, (hLen / 2) - eLen);
-      GWEN_Buffer_AppendBytes(hBuff, (const char*)eData, eLen);
-      GWEN_Buffer_FillWithBytes(hBuff, 0, (hLen / 2) - mLen);
-      GWEN_Buffer_AppendBytes(hBuff, (const char*)mData, mLen);
+      uint32_t kl = hLen / 2;
+      uint32_t d = 0;
+      if((cryptMode == AH_CryptMode_Rdh) && (rdhType == 1))
+      {
+        d = kl - 96;
+        kl = 96;
+      }
+      GWEN_Buffer_FillWithBytes(hBuff, 0, (hLen / 2) - res->eLen);
+      GWEN_Buffer_AppendBytes(hBuff, (const char*)res->e, res->eLen);
+      free(res->e);
+      res->eLen = kl;
+      res->e = malloc(res->eLen);
+      memcpy(res->e, GWEN_Buffer_GetStart(hBuff) + d, res->eLen);
+      GWEN_Buffer_FillWithBytes(hBuff, 0, (hLen / 2) - res->mLen);
+      GWEN_Buffer_AppendBytes(hBuff, (const char*)res->m, res->mLen);
+      free(res->m);
+      res->mLen = kl;
+      res->m = malloc(res->mLen);
+      memcpy(res->m, GWEN_Buffer_GetStart(hBuff) + (hLen / 2) + d, res->mLen);
       GWEN_Buffer_Rewind(hBuff);
     }
   }
@@ -769,7 +784,6 @@ int AH_Provider_GetKeyHash(AB_PROVIDER *pro, AB_USER *u, GWEN_CRYPT_KEY *bk, cha
     switch(hAlgo)
     {
     case GWEN_Crypt_HashAlgoId_Rmd160:
-      //hName = "RMD-160";
       hOutLen = 20;
       rv = AH_Provider__HashRmd160((const uint8_t*)GWEN_Buffer_GetStart(hBuff),
                                  GWEN_Buffer_GetUsedBytes(hBuff), hOutBuff);
@@ -777,7 +791,6 @@ int AH_Provider_GetKeyHash(AB_PROVIDER *pro, AB_USER *u, GWEN_CRYPT_KEY *bk, cha
         DBG_ERROR(AQHBCI_LOGDOMAIN, "AH_Provider__HashRmd160() failed (%d).", rv);
       break;
     case GWEN_Crypt_HashAlgoId_Sha256:
-      //hName = "SHA-256";
       hOutLen = 32;
       rv = AH_Provider__HashSha256((const uint8_t*)GWEN_Buffer_GetStart(hBuff),
                                  GWEN_Buffer_GetUsedBytes(hBuff), hOutBuff);
@@ -794,21 +807,22 @@ int AH_Provider_GetKeyHash(AB_PROVIDER *pro, AB_USER *u, GWEN_CRYPT_KEY *bk, cha
       res->hash = malloc(res->hashLen);
       if(!res->hash)
       {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "allocate result-buffer failed (%d).", rv);
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "allocate result-buffer failed.");
         rv = GWEN_ERROR_GENERIC;
       }
       else
         memcpy(res->hash, hOutBuff, hOutLen);
     }
   }
-  DBG_NOTICE(AQHBCI_LOGDOMAIN, "bank %d, hLen %ld, eLen %ld, mLen %ld, e %p, m %p, hb %p.",
-                    bankKey, (long)hLen, (long)eLen, (long)mLen, eData, mData, hBuff);
+  if(rv != 0)
+    res->hashLen = res->eLen = res->mLen = 0;
+
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "bank %d, eLen %ld, mLen %ld, e %p, m %p, hLen %ld, hb %p.",
+                    bankKey, (long)res->eLen, (long)res->mLen, res->e, res->m, (long)hLen, hBuff);
 
 
   if(hBuff)
     GWEN_Buffer_free(hBuff);
-  free(eData);
-  free(mData);
 
   return rv;
 }
