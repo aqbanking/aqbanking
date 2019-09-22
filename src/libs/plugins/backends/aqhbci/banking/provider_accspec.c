@@ -36,7 +36,7 @@ int AH_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u,
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Creating transaction limits for account \"%u\"", (unsigned int)AB_Account_GetUniqueId(acc));
   DBG_ERROR(AQHBCI_LOGDOMAIN,
-            "You may see some messages like \"Job not supported with this account\" below, that's are okay, please ignore");
+            "You may see some messages like \"Job not supported with this account\" below, those are okay, please ignore");
 
 
   i=0;
