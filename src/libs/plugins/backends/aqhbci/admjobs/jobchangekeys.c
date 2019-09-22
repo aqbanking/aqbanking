@@ -654,9 +654,11 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
       GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "secProfile/code", cm);
       GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "secProfile/version", cryptTypeNew);
       GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "key/userid", AH_User_GetPeerId(u));
-      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "key/keyType", kt);
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "key/type", 10);
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "key/modname", 12);
+      GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "key/expname", 13);
       GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "keyName/keyType", kt);
-      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "keyName/userid", AH_User_GetPeerId(u));
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "keyName/userid", AB_User_GetUserId(u));
     }
     free(cm);
   }
@@ -738,9 +740,9 @@ int onServerKeysImported(AH_JOB_CHANGEKEYS *jd)
         ok = 2;
       }
 #else
-      m = fmtStr(FB, "Auf %s '%s' sind Schluessel vorhanden die verwendet werden koennen,\n"
-                 "wenn sie zum gewuehlten Verschluesselungsverfahren passen.\n"
-                 "Sollen neue Schluessel erzeugt werden?", jd->fm, jd->tn);
+      m = fmtStr(FB, "On %s '%s' keys exists that can be used,\n"
+                 "if they are compatible to new crypt-method.\n\n"
+                 "Should new keys created?\n", jd->fm, jd->tn);
       btn1 = "Abort";
       btn2 = "No";
       btn3 = "Yes";
@@ -791,18 +793,18 @@ int onServerKeysImported(AH_JOB_CHANGEKEYS *jd)
 #endif
     if (jd->flags & FJCK_CHKEY) {
       if (!jd->kiS || !GWEN_Crypt_Token_KeyInfo_GetKeyNumber(jd->kiS)) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Kein Signierschluessel.");
-        res = onError("Kein Signierschluessel auf dem Ziel-medium gefunden.", -1);
+        DBG_INFO(AQHBCI_LOGDOMAIN, "No sign-key.");
+        res = onError("No sign-key found on destination medium.", -1);
       }
       else {
         int sc = GWEN_Crypt_Token_KeyInfo_GetSignCounter(jd->kiS);
         DBG_INFO(AQHBCI_LOGDOMAIN, "%s(): sig counter %d.", __FUNCTION__, sc);
         if (sc > 1) {
           if (!(jd->flags & FJCK_DSTFILE))
-            res = onError("Der Sequenzzaehler kann nicht zurueckgesetzt werden.", -1);
+            res = onError("Sequence-counter could not reset.", -1);
           else {
             res = GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_INFO, I18N("Change keys: confirm"),
-                                      "Der Sequenzzaehler wird zurueckgesetzt.", I18N("Abort"), I18N("OK"), NULL, 0);
+                                      I18N("Sequence-counter will reset."), I18N("Abort"), I18N("OK"), NULL, 0);
             if (res != 2)
               res = -1;
             else
@@ -933,14 +935,35 @@ int AH_Job_ChangeKeys_NextMsg(AH_JOB *j)
       if (mn < 0) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "%s: find msgnum failed.", __FUNCTION__);
       }
-      else if ((mn == 1) && (jmn == mn)) {
+      else if ((mn == 1) && (jmn == mn))
+      {
         const GWEN_CRYPT_KEY *bk = NULL;
         GWEN_CRYPT_KEY *bkCurrV = NULL, *bkCurrS = NULL;
+        char *peerId = NULL;
+        const char *peerIdNew = NULL;
+        GWEN_DB_NODE *args = AH_Job_GetArguments(j);
+        GWEN_DB_NODE *dbkc = NULL;
+
         jd = GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_CHANGEKEYS, j);
         assert(jd);
+        assert(args);
+
+        dbkc = GWEN_DB_Group_new("keyChange");
+        GWEN_DB_AddGroup(args, dbkc);
+        GWEN_DB_SetCharValue(dbkc, GWEN_DB_FLAGS_OVERWRITE_VARS, "tokenType", AH_User_GetTokenType(jd->uTmp));
+        GWEN_DB_SetCharValue(dbkc, GWEN_DB_FLAGS_OVERWRITE_VARS, "tokenName", AH_User_GetTokenName(jd->uTmp));
+        GWEN_DB_SetIntValue(dbkc, GWEN_DB_FLAGS_OVERWRITE_VARS, "tokenCtxId", AH_User_GetTokenContextId(jd->uTmp));
+        GWEN_DB_SetIntValue(dbkc, GWEN_DB_FLAGS_OVERWRITE_VARS, "cryptMode", AH_User_GetCryptMode(jd->uTmp));
+        GWEN_DB_SetIntValue(dbkc, GWEN_DB_FLAGS_OVERWRITE_VARS, "rdhType", AH_User_GetRdhType(jd->uTmp));
+
+        // peer-id may changed in job-commit, must restored
+        // (new is set to tmp-user and to user if job finished)
+        if(AH_User_GetPeerId(jd->u))
+          peerId = strdup(AH_User_GetPeerId(jd->u));
+
         // get actual serverkeys to restore later
         bk = AH_User_GetBankPubCryptKey(jd->u);
-        if (bk)
+        if(bk)
           bkCurrV = GWEN_Crypt_KeyRsa_dup(bk);
         bk = AH_User_GetBankPubSignKey(jd->u);
         if (bk)
@@ -949,10 +972,19 @@ int AH_Job_ChangeKeys_NextMsg(AH_JOB *j)
         if (rv != 0) {
           DBG_ERROR(AQHBCI_LOGDOMAIN, "%s(): AH_Job_CommitSystemData() failed(%d).", __FUNCTION__, rv);
         }
-        else if (!GWEN_Crypt_Token_IsOpen(jd->ct) && (GWEN_Crypt_Token_Open(jd->ct, 0, 0) < 0))
+        else if(!GWEN_Crypt_Token_IsOpen(jd->ct) && (GWEN_Crypt_Token_Open(jd->ct, 0, 0) < 0))
           rv = onError("GWEN_Crypt_Token_Open() failed.", -1);
-        else {
-          uint8_t i;
+        GWEN_DB_DeleteGroup(args, "keyChange");
+
+        peerIdNew = AH_User_GetPeerId(jd->u);
+        if(peerIdNew)
+          AH_User_SetPeerId(jd->uTmp, peerIdNew);
+        if(peerId)
+          AH_User_SetPeerId(jd->u, peerId);
+        free(peerId);
+
+        if(rv == 0) {
+          uint8_t i = 0;
           GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("Serverkeys imported."));
           DBG_NOTICE(AQHBCI_LOGDOMAIN, "%s(): serverkeys should be imported now.", __FUNCTION__);
           // some cryptmodes need length of serverkeys
@@ -972,12 +1004,14 @@ int AH_Job_ChangeKeys_NextMsg(AH_JOB *j)
             case 0:
               bk = AH_User_GetBankPubCryptKey(jd->u);
               id = GWEN_Crypt_Token_Context_GetEncipherKeyId(jd->ctx);
-              AH_User_SetBankPubCryptKey(jd->uTmp, (GWEN_CRYPT_KEY *)bk);
+              if(bk)
+                AH_User_SetBankPubCryptKey(jd->uTmp, (GWEN_CRYPT_KEY*)bk);
               break;
             case 1:
               bk = AH_User_GetBankPubSignKey(jd->u);
               id = GWEN_Crypt_Token_Context_GetVerifyKeyId(jd->ctx);
-              AH_User_SetBankPubSignKey(jd->uTmp, (GWEN_CRYPT_KEY *)bk);
+              if(bk)
+                AH_User_SetBankPubSignKey(jd->uTmp, (GWEN_CRYPT_KEY*)bk);
               break;
             }
 
@@ -1050,8 +1084,6 @@ int AH_Job_ChangeKeys_NextMsg(AH_JOB *j)
             uint8_t i;
 
             // update segment-data
-            GWEN_DB_NODE *args = AH_Job_GetArguments(j);
-            assert(args);
             for (i = 0; (rv == 0) && (i < 3); i++) {
               GWEN_DB_NODE *db = NULL;
               const GWEN_CRYPT_TOKEN_KEYINFO *ki = NULL;
@@ -1117,10 +1149,39 @@ int AH_Job_ChangeKeys_NextMsg(AH_JOB *j)
 
               kn = GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ki);
               kv = GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki);
-              GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "key/keynum", kn);
-              GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "key/keyversion", kv);
+
               GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "keyName/keynum", kn);
               GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "keyName/keyversion", kv);
+              GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "key/keynum", kn);
+              GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "key/keyversion", kv);
+              if(i == 0) {
+                int om = 0;
+                GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "key/purpose", 5);
+                switch(AH_User_GetRdhType(jd->uTmp))
+                {
+                case 1:
+                case 2:
+                case 10: om = 2; break;
+                case 5:
+                case 7: om = 18; break;
+                default: om = 2;
+                }
+                GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "key/opmode", om);
+              }
+              else
+              {
+                int om = 0;
+                GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "key/purpose", 6);
+                switch(AH_User_GetRdhType(jd->uTmp))
+                {
+                case 2: om = 17; break;
+                case 5: om = 18; break;
+                case 7:
+                case 10: om = 19; break;
+                default: om = 16;
+                }
+                GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "key/opmode", om);
+              }
             }
           }
         }
@@ -1160,25 +1221,26 @@ int AH_Job_ChangeKeys_finish(AB_PROVIDER *pro, AH_JOB *job, int res)
     const char *btn2 = I18N("Finish");
     if (jd->resp == RSP_NOSRVRSP) {
       GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_INFO, I18N("Change keys: Error"),
-                          "Der Bankserver hat keine Antwort zur Schluesselaenderung gesendet.", I18N("OK"), NULL, NULL, 0);
+                          "There is no response from bank-server relating key-change.", I18N("OK"), NULL, NULL, 0);
       res = -1;
     }
     else {
       if ((jd->resp == RSP_WARN) || (jd->resp == RSP_ERR)) {
-        m = strdup(fmtStr(FB, "Der Bankserver meldet %s:\n\n'%s'\n\n"
-                          "Es ist moeglich, dass der neue Schluessel dennoch angenommenn wurde.\n"
-                          "Neue Schluessel / neues Medium uebernehmen?", (jd->resp == RSP_ERR) ? "Fehler" : "Warnungen",
+        m = strdup(fmtStr(FB, "The bank-server replied with %s:\n\n'%s'\n\n"
+                          "Possibly, the bank has accepted the keys.\n"
+                          "This should be seen from messages.\n\n"
+                          "Should key(s) / new medium imported?\n", (jd->resp == RSP_ERR) ? "error" : "warning",
                           GWEN_Buffer_GetStart(jd->emsg)));
         btn1 = I18N("No");
         btn2 = fmtStr(FB, "%s, %s", I18N("Yes"), I18N("finish"));
       }
       else {
-        m = strdup(fmtStr(FB, "Die Übermittlung der Schlüssel ergab keinen Fehler,\n"
-                          "aus den Meldungen des Bankservers sollte eine Uebernahme ersichtlich sein:\n\n%s\nNeue Schluessel / neues Medium\n"
-                          "wird uebernommen.", GWEN_Buffer_GetStart(jd->emsg)));
+        m = strdup(fmtStr(FB, "Keys are transfered without error,\n"
+                          "from messages should be seen, that the bank has keys accepted:\n\n"
+                          "%s\nNew key(s) / medium will imported\n", GWEN_Buffer_GetStart(jd->emsg)));
       }
       if (GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_INFO, I18N("Change keys: confirm"),
-                              m, btn1, btn2, NULL, 0) == 2)
+                              I18N(m), btn1, btn2, NULL, 0) == 2)
         res = 0;
     }
     if (m)
@@ -1195,8 +1257,15 @@ int AH_Job_ChangeKeys_finish(AB_PROVIDER *pro, AH_JOB *job, int res)
         res = -1;
       }
       else {
-        AH_User_SetBankPubCryptKey(u, AH_User_GetBankPubCryptKey(uTmp));
-        AH_User_SetBankPubSignKey(u, AH_User_GetBankPubSignKey(uTmp));
+        GWEN_CRYPT_KEY *bkc = AH_User_GetBankPubCryptKey(uTmp);
+        GWEN_CRYPT_KEY *bks = AH_User_GetBankPubSignKey(uTmp);
+        const char *peerId = AH_User_GetPeerId(uTmp);
+        if(bkc)
+          AH_User_SetBankPubCryptKey(u, bkc);
+        if(bks)
+          AH_User_SetBankPubSignKey(u, bks);
+        if(peerId)
+          AH_User_SetPeerId(u, peerId);
         AH_User_SetTokenType(u, AH_User_GetTokenType(uTmp));
         AH_User_SetTokenName(u, AH_User_GetTokenName(uTmp));
         AH_User_SetRdhType(u, AH_User_GetRdhType(uTmp));
