@@ -18,24 +18,6 @@
 const char *fmtStr(char *buff, size_t buffLen, const char *fmt, ...)  __attribute__((format(printf, 3, 4)));
 #define FB fmtBuff, sizeof(fmtBuff)
 
-void dbgHexOut(unsigned const char *d, uint32_t l)
-{
-#if 0
-  uint32_t j = 0;
-  printf("\n");
-  for(uint32_t i = 0; i < l; i++, j++)
-  {
-    if(j >= 32)
-    {
-      printf("\n");
-      j = 0;
-    }
-    printf(" %02X", d[i]);
-  }
-  printf("\n\n");
-#endif
-}
-
 int AH_Provider_GetIniLetter(AB_PROVIDER *pro, AB_USER *u, uint8_t useBankKey,
                              uint8_t outHtml, GWEN_BUFFER *lbuf, int nounmount);
 
@@ -64,10 +46,10 @@ struct s_hashOut
   GWEN_BUFFER *lbuf;
   int kn;
   int kv;
-  uint8_t *e;
-  uint8_t *m;
+  const uint8_t *e;
+  const uint8_t *m;
   uint32_t kl;
-  uint8_t *h;
+  const uint8_t *h;
   uint32_t hl;
   const char *hn;
 };
@@ -75,25 +57,13 @@ struct s_hashOut
 int IniLetterOutTxt(struct s_hashOut *h);
 int IniLetterOutHtml(struct s_hashOut *h);
 
-// XXX hash-len from algo-id?
-#define HASHOUT_MAXLEN  32
 
 int AH_Provider_GetIniLetter(AB_PROVIDER *pro, AB_USER *u, uint8_t useBankKey,
                              uint8_t outHtml, GWEN_BUFFER *lbuf, int nounmount)
 {
-  char fmtBuff[256];
   AH_HBCI *hbci = NULL;
-  AH_CRYPT_MODE cryptMode = AH_CryptMode_None;
-  int rdhType = 0;
-  int kn = 0, kv = 0;
-  GWEN_BUFFER *hBuff = NULL;
-  uint32_t eLen = 0, mLen = 0, hLen = 0;
-  uint8_t *mData = NULL, *eData = NULL;
-  GWEN_CRYPT_HASHALGOID hAlgo = GWEN_Crypt_HashAlgoId_Unknown;
-  uint8_t hOutBuff[HASHOUT_MAXLEN];
-  uint32_t hOutLen = 0;
-  const char *hName = NULL;
   const char *emsg = NULL;
+  struct AH_KEYHASH *kh = NULL;
   int rv = 0;
 
   assert(pro);
@@ -101,285 +71,63 @@ int AH_Provider_GetIniLetter(AB_PROVIDER *pro, AB_USER *u, uint8_t useBankKey,
 
   hbci = AH_Provider_GetHbci(pro);
 
-  memset(hOutBuff, 0, HASHOUT_MAXLEN);
-
-  cryptMode = AH_User_GetCryptMode(u);
-  rdhType = AH_User_GetRdhType(u);
-  switch(cryptMode)
+  kh = AH_Provider_KeyHash_new();
+  if(!kh)
   {
-  case AH_CryptMode_Rdh:
-    switch(rdhType)
-    {
-    case 1:
-    case 2:
-    case 3:
-    case 5:
-    case 6:
-    case 7:
-    case 8:
-    case 9:
-    case 10:
-      break;
-    default:
-      rv = GWEN_ERROR_INVALID;
-    }
-    break;
-  case AH_CryptMode_Rah:
-    switch(rdhType)
-    {
-    case 7:
-    case 9:
-    case 10:
-      break;
-    default:
-      rv = GWEN_ERROR_INVALID;
-    }
-    break;
-  default:
-    rv = GWEN_ERROR_INVALID;
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "AH_Provider_KeyHash_new() failed.");
+    return GWEN_ERROR_GENERIC;
   }
 
-  if(rv != 0)
-    emsg = fmtStr(FB, "Cryptmode %s%d not valid.", AH_CryptMode_toString(cryptMode), rdhType);
-
-
-  if(rv == 0)
+  if(useBankKey)
   {
-    if(useBankKey)
+    // read bank-keys from config, keys from token may differ.
+    // if bank uses ini-letter, that *must* checked against sent key, which is actually in config
+    GWEN_CRYPT_KEY *key = AH_User_GetBankPubSignKey(u);
+    char kt = 'S';
+    if(!key)
     {
-      // read bank-keys from config, keys from token may differ.
-      // if bank uses ini-letter, that *must* checked against sent key, which is actually in config
-      GWEN_CRYPT_KEY *key = AH_User_GetBankPubSignKey(u);
-      eLen = 3;
-      if(!key)
-      {
-        DBG_NOTICE(AQHBCI_LOGDOMAIN, "No signkey for bank, using cryptkey.");
-        key = AH_User_GetBankPubCryptKey(u);
-      }
-      if(!key)
-      {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Server keys missing, please get them first.");
-        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Server keys missing, please get them first."));
-        return GWEN_ERROR_NOT_FOUND;
-      }
-      mLen = GWEN_Crypt_Key_GetKeySize(key);
-
-      if(key && eLen && mLen)
-      {
-        kn = GWEN_Crypt_Key_GetKeyNumber(key);
-        kv = GWEN_Crypt_Key_GetKeyVersion(key);
-        mData = malloc(mLen);
-        eData = malloc(eLen);
-        rv = GWEN_Crypt_KeyRsa_GetModulus(key, mData, &mLen);
-        if(rv == 0)
-          GWEN_Crypt_KeyRsa_GetExponent(key, eData, &eLen);
-        if(rv != 0)
-        {
-          emsg = "Bad key.";
-          rv = GWEN_ERROR_BAD_DATA;
-        }
-      }
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "No signkey for bank, using cryptkey.");
+      key = AH_User_GetBankPubCryptKey(u);
+      kt = 'V';
     }
-    else
+    if(!key)
     {
-      GWEN_CRYPT_TOKEN *ct = NULL;
-      const GWEN_CRYPT_TOKEN_KEYINFO *ki = NULL;
-      const GWEN_CRYPT_TOKEN_CONTEXT *ctx = NULL;
-      rv = AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(hbci), AH_User_GetTokenType(u), AH_User_GetTokenName(u), &ct);
-      if((rv != 0) || !ct)
-      {
-        emsg = fmtStr(FB, "Could not get crypt token (%d)", rv);
-        rv = GWEN_ERROR_GENERIC;
-      }
-      if(rv == 0)
-      {
-        rv = GWEN_Crypt_Token_Open(ct, 1, 0);
-        if(rv != 0)
-        {
-          emsg = fmtStr(FB, "Could not open crypt token (%d)", rv);
-          rv = GWEN_ERROR_GENERIC;
-        }
-      }
-      if(rv == 0)
-      {
-        ctx = GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), 0);
-        if(!ctx)
-        {
-          emsg = fmtStr(FB, "User context %d not found on crypt token", AH_User_GetTokenContextId(u));
-          rv = GWEN_ERROR_GENERIC;
-        }
-      }
-      if(rv == 0)
-      {
-        uint32_t kf = 0;
-        uint32_t kid = GWEN_Crypt_Token_Context_GetSignKeyId(ctx);
-        if(kid)
-          ki = GWEN_Crypt_Token_GetKeyInfo(ct, kid, 0, 0);
-        if(ki)
-          kf = GWEN_Crypt_Token_KeyInfo_GetFlags(ki);
-        if(!ki || !(kf & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) | !(kf & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT))
-        {
-          emsg = "User keys missing, please generate them first.";
-          rv = GWEN_ERROR_NOT_FOUND;
-        }
-      }
-      if(rv == 0)
-      {
-        const uint8_t *e = GWEN_Crypt_Token_KeyInfo_GetExponentData(ki);
-        const uint8_t *m = GWEN_Crypt_Token_KeyInfo_GetModulusData(ki);
-        eLen = GWEN_Crypt_Token_KeyInfo_GetExponentLen(ki);
-        mLen = GWEN_Crypt_Token_KeyInfo_GetModulusLen(ki);
-        if(!e || !eLen || !m || !mLen)
-        {
-          emsg = "Bad key.";
-          rv = GWEN_ERROR_BAD_DATA;
-        }
-        else
-        {
-          kn = GWEN_Crypt_Token_KeyInfo_GetKeyNumber(ki);
-          kv = GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki);
-          mData = malloc(mLen);
-          eData = malloc(eLen);
-          memcpy(mData, m, mLen);
-          memcpy(eData, e, eLen);
-        }
-      }
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Server keys missing, please get them first.");
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Server keys missing, please get them first."));
+      rv = GWEN_ERROR_NOT_FOUND;
+    }
+    if(rv == 0)
+    {
+      rv = AH_Provider_GetKeyHash(AH_HBCI_GetProvider(hbci), u, key, kt, 0, 0, NULL, NULL, 0, NULL, 1, kh);
+      if(rv == GWEN_ERROR_NOT_FOUND)
+        emsg = "Server keys missing, please get them first.";
     }
   }
-
-  if(rv == 0)
+  else
   {
-    switch(cryptMode)
-    {
-    case AH_CryptMode_Rdh:
-      switch(rdhType)
-      {
-      case 1:
-        hLen = 128 * 2;
-        hAlgo = GWEN_Crypt_HashAlgoId_Rmd160;
-        break;
-      case 2:
-      case 3:
-      case 5:
-        hLen = mLen * 2;
-        hAlgo = GWEN_Crypt_HashAlgoId_Rmd160;
-        break;
-      case 6:
-      case 7:
-      case 8:
-      case 9:
-      case 10:
-        // XXX EF_NOTEPAD, HBCI-Version C0=002
-        hAlgo = GWEN_Crypt_HashAlgoId_Sha256;
-        hLen = mLen * 2;
-        break;
-      default:;
-      }
-    case AH_CryptMode_Rah:
-      switch(rdhType)
-      {
-      case 7:
-      case 9:
-      case 10:
-        hAlgo = GWEN_Crypt_HashAlgoId_Sha256;
-        hLen = mLen * 2;
-        break;
-      default:;
-      }
-    default:;
-    }
-
+    rv = AH_Provider_GetKeyHash(AH_HBCI_GetProvider(hbci), u, NULL, 'S', 0, 0, NULL, NULL, 0, NULL, 0, kh);
+    if(rv == GWEN_ERROR_NOT_FOUND)
+       emsg = "User keys missing, please generate them first.";
   }
-
-  if((rv == 0) && ((mLen > (hLen / 2)) || (eLen > (hLen / 2))))
-  {
-    emsg = fmtStr(FB, "Invalid size for e, m, or h (%ld, %ld, %ld).", (long)eLen, (long)mLen, (long)hLen);
-    rv = GWEN_ERROR_GENERIC;
-  }
-
-  if(rv == 0)
-  {
-    if(hLen && eLen && mLen)
-      hBuff = GWEN_Buffer_new(0, hLen, 0, 1);
-    if(hBuff)
-    {
-      GWEN_Buffer_FillWithBytes(hBuff, 0, (hLen / 2) - eLen);
-      GWEN_Buffer_AppendBytes(hBuff, (const char*)eData, eLen);
-      GWEN_Buffer_FillWithBytes(hBuff, 0, (hLen / 2) - mLen);
-      GWEN_Buffer_AppendBytes(hBuff, (const char*)mData, mLen);
-      GWEN_Buffer_Rewind(hBuff);
-      dbgHexOut((unsigned const char*)GWEN_Buffer_GetStart(hBuff), hLen);
-     }
-  }
-
-  if(rv == 0)
-  {
-    switch(hAlgo)
-    {
-    case GWEN_Crypt_HashAlgoId_Rmd160:
-      hName = "RMD-160";
-      hOutLen = 20;
-      rv = AH_Provider__HashRmd160((const uint8_t*)GWEN_Buffer_GetStart(hBuff),
-                                 GWEN_Buffer_GetUsedBytes(hBuff), hOutBuff);
-      if(rv != 0)
-        emsg = fmtStr(FB, "AH_Provider__HashRmd160() failed (%d).", rv);
-      break;
-    case GWEN_Crypt_HashAlgoId_Sha256:
-      hName = "SHA-256";
-      hOutLen = 32;
-      rv = AH_Provider__HashSha256((const uint8_t*)GWEN_Buffer_GetStart(hBuff),
-                                 GWEN_Buffer_GetUsedBytes(hBuff), hOutBuff);
-      if(rv != 0)
-        emsg = fmtStr(FB, "AH_Provider__HashSha256() failed (%d).", rv);
-      break;
-    default:
-      emsg = "Hash algo not specified.";
-      rv = GWEN_ERROR_GENERIC;
-    }
-    dbgHexOut(hOutBuff, hOutLen);
-  }
-
-  if((rv == 0) && (!hLen || !eLen || !eData || !mData || !hBuff || !hOutLen))
-  {
-    emsg = fmtStr(FB, "Internal error, bank %d, hLen %ld, eLen %ld, mLen %ld, e %p, m %p, hb %p, out %ld.",
-                    useBankKey, (long)hLen, (long)eLen, (long)mLen, eData, mData, hBuff, (long)hOutLen);
-    rv = GWEN_ERROR_GENERIC;
-  }
-
-  DBG_NOTICE(AQHBCI_LOGDOMAIN, "bank %d, hLen %ld, eLen %ld, mLen %ld, e %p, m %p, hb %p, out %ld.",
-                    useBankKey, (long)hLen, (long)eLen, (long)mLen, eData, mData, hBuff, (long)hOutLen);
-
   if(rv == 0)
   {
     struct s_hashOut h;
-    uint8_t *eb = malloc(hLen / 2);
-    uint8_t *mb = malloc(hLen / 2);
-    memcpy(eb, GWEN_Buffer_GetStart(hBuff), hLen / 2);
-    memcpy(mb, GWEN_Buffer_GetStart(hBuff) + (hLen / 2), hLen / 2);
     h.pro = pro;
     h.isBankKey = useBankKey;
     h.u = u;
     h.lbuf = lbuf;
-    h.kn = kn;
-    h.kv = kv;
-    h.e = eb;
-    h.m = mb;
-    h.kl = hLen / 2;
-    h.h = hOutBuff;
-    h.hl = hOutLen;
-    h.hn = hName;
+    AH_Provider_KeyHash_Info(kh, &h.kn, &h.kv, &h.hn);
+    h.e = AH_Provider_KeyHash_Exponent(kh, &h.kl);;
+    h.m = AH_Provider_KeyHash_Modulus(kh, &h.kl);
+    h.h = AH_Provider_KeyHash_Hash(kh, &h.hl);;
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "bank %d, kLen %ld, e %p, m %p, hb %p, out %ld.",
+                                                useBankKey, (long)h.kl, h.e, h.m, h.h, (long)h.hl);
     if(!outHtml)
       rv = IniLetterOutTxt(&h);
     else
       rv = IniLetterOutHtml(&h);
-    free(eb);
-    free(mb);
   }
-
-  if(hBuff)
-    GWEN_Buffer_free(hBuff);
-  free(eData);
-  free(mData);
+  AH_Provider_KeyHash_free(kh);
 
   if(rv != 0)
   {
@@ -392,6 +140,7 @@ int AH_Provider_GetIniLetter(AB_PROVIDER *pro, AB_USER *u, uint8_t useBankKey,
 
   if(!nounmount)
     AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(hbci));
+
   return 0;
 }
 
