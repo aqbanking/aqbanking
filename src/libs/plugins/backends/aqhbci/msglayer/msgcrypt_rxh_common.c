@@ -26,7 +26,7 @@ typedef enum {
   AH_HashAlg_Sha1=1,
   AH_HashAlg_Sha256=3,
   AH_HashAlg_Sha256Sha256=6,
-  AH_HashAlg_Ripmed160=999
+  AH_HashAlg_Ripemd160=999
 } AH_HASH_ALG;
 
 typedef enum {
@@ -64,7 +64,7 @@ RXH_PARAMETER  rdh1_parameter= {
   AH_Opmode_Iso9796_1,
   AH_Opmode_None,
   AH_UsageSign_OwnerSigning,
-  AH_HashAlg_Ripmed160,
+  AH_HashAlg_Ripemd160,
   AH_HashAlg_None,
   AH_CryptAlg_2_Key_Triple_Des,
   AH_Opmode_Cbc
@@ -77,7 +77,7 @@ RXH_PARAMETER  rdh2_parameter= {
   AH_Opmode_Iso9796_2,
   AH_Opmode_None,
   AH_UsageSign_OwnerSigning,
-  AH_HashAlg_Ripmed160,
+  AH_HashAlg_Ripemd160,
   AH_HashAlg_None,
   AH_CryptAlg_2_Key_Triple_Des,
   AH_Opmode_Cbc
@@ -91,7 +91,7 @@ RXH_PARAMETER  rdh3_parameter= {
   AH_Opmode_Iso9796_2,
   AH_UsageSign_OwnerSigning,
   AH_HashAlg_Sha1,
-  AH_HashAlg_Ripmed160,
+  AH_HashAlg_Ripemd160,
   AH_CryptAlg_2_Key_Triple_Des,
   AH_Opmode_Rsa_Pkcs1_v1_5
 };
@@ -240,7 +240,7 @@ RXH_PARAMETER *rah_parameter[11]= {
 };
 
 static
-GWEN_CRYPT_KEY *AH_MsgRxh_VerifyInitialSignKey(GWEN_CRYPT_TOKEN *ct,
+GWEN_CRYPT_KEY *AH_MsgRxh_VerifyInitialSignKey(AH_HBCI *h,
                                                const GWEN_CRYPT_TOKEN_CONTEXT *ctx,
                                                AB_USER *user,
                                                GWEN_DB_NODE *gr)
@@ -280,11 +280,9 @@ GWEN_CRYPT_KEY *AH_MsgRxh_VerifyInitialSignKey(GWEN_CRYPT_TOKEN *ct,
         unsigned int expLen;
         int msgKeyNum;
         int msgKeyVer;
-        uint16_t sentModulusLength;
         int keySize;
 
         exponent=GWEN_DB_GetBinValue(dbKeyResponse, "key/exponent", 0, 0, 0, &expLen);
-        sentModulusLength=bs;
         /* skip zero bytes if any */
         while (bs && *p==0) {
           p++;
@@ -308,7 +306,7 @@ GWEN_CRYPT_KEY *AH_MsgRxh_VerifyInitialSignKey(GWEN_CRYPT_TOKEN *ct,
           bpk=GWEN_Crypt_KeyRsa_fromModExp(keySize, p, bs, exponent, expLen);
           GWEN_Crypt_Key_SetKeyNumber(bpk, msgKeyNum);
           GWEN_Crypt_Key_SetKeyVersion(bpk, msgKeyVer);
-          verified=AH_User_VerifyInitialKey(ct, ctx, user, bpk, sentModulusLength, "sign");
+          verified=AH_User_VerifyInitialKey(h, bpk, "sign", AH_User_GetCryptMode(user), AH_User_GetRdhType(user), ctx);
           if (verified==1) {
             GWEN_Crypt_KeyRsa_AddFlags(bpk, GWEN_CRYPT_KEYRSA_FLAGS_ISVERIFIED);
             AH_User_SetBankPubSignKey(user, bpk);
@@ -698,7 +696,7 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
     case AH_HashAlg_Sha256Sha256:
       md=GWEN_MDigest_Sha256_new();
       break;
-    case AH_HashAlg_Ripmed160:
+    case AH_HashAlg_Ripemd160:
       md=GWEN_MDigest_Rmd160_new();
       break;
     default:
@@ -1701,9 +1699,9 @@ int AH_Msg_VerifyRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
      * * a certificate is sent with the message to verify
      * * INI letter
      *
-     * check message for "S"-KEy, look up if there is a hash on the chip card
+     * check message for "S"-Key, look up if there is a hash on the chip card
      */
-    bankPubSignKey=AH_MsgRxh_VerifyInitialSignKey(ct, ctx, u, gr);
+    bankPubSignKey=AH_MsgRxh_VerifyInitialSignKey(h, ctx, u, gr);
 
     if (bankPubSignKey==NULL) {
       DBG_INFO(AQHBCI_LOGDOMAIN,
@@ -1852,7 +1850,7 @@ int AH_Msg_VerifyRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
       case AH_HashAlg_Sha256Sha256:
         md=GWEN_MDigest_Sha256_new();
         break;
-      case AH_HashAlg_Ripmed160:
+      case AH_HashAlg_Ripemd160:
         md=GWEN_MDigest_Rmd160_new();
         break;
       default:

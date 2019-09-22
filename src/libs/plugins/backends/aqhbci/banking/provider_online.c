@@ -347,7 +347,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
   AH_PROVIDER *hp;
   GWEN_CRYPT_TOKEN *ct;
   const GWEN_CRYPT_TOKEN_CONTEXT *cctx;
-  const char *s;
+  //const char *s;
 
   assert(pro);
   hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
@@ -420,6 +420,8 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
     }
   }
 
+  // (thbe) doing this in AH_Job__CommitSystemData()
+#if 0
   s=AH_User_GetPeerId(u);
   if (!s || !*s) {
     s=AH_Job_GetKeys_GetPeerId(job);
@@ -434,7 +436,7 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
       AH_User_SetPeerId(u, s);
     }
   }
-
+#endif
   /* get crypt token */
   rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),
                               AH_User_GetTokenType(u),

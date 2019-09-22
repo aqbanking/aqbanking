@@ -16,6 +16,7 @@
 #include <aqbanking/backendsupport/user.h>
 
 #include <gwenhywfar/ct.h>
+#include <gwenhywfar/cryptkey.h>
 
 
 /** @defgroup G_AB_BE_AQHBCI HBCI Backend (AqHBCI)
@@ -259,6 +260,21 @@ int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
  */
 int AH_Provider_CreateKeys(AB_PROVIDER *pro, AB_USER *u, int nounmount);
 
+struct AH_KEYHASH;
+
+struct AH_KEYHASH *AH_Provider_KeyHash_new();
+const uint8_t *AH_Provider_KeyHash_Hash(struct AH_KEYHASH *kh, uint32_t *l);
+const uint8_t *AH_Provider_KeyHash_HashCard(struct AH_KEYHASH *kh, uint32_t *l);
+const uint8_t *AH_Provider_KeyHash_Exponent(struct AH_KEYHASH *kh, uint32_t *l);
+const uint8_t *AH_Provider_KeyHash_Modulus(struct AH_KEYHASH *kh, uint32_t *l);
+void AH_Provider_KeyHash_Info(struct AH_KEYHASH *kh, int *kn, int *kv, const char **hn);
+void AH_Provider_KeyHash_free(struct AH_KEYHASH *kh);
+
+/**
+ */
+int AH_Provider_GetKeyHash(AB_PROVIDER *pro, AB_USER *u, GWEN_CRYPT_KEY *bk, char keyType, int cryptMode, int rdhType,
+                            const char *tokenType, const char *tokenName, uint32_t tokenCtxId,
+                            const GWEN_CRYPT_TOKEN_CONTEXT *ctx, uint8_t bankKey, struct AH_KEYHASH *res);
 
 int AH_Provider_Test(AB_PROVIDER *pro);
 

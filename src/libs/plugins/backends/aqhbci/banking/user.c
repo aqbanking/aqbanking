@@ -2097,310 +2097,119 @@ void AH_User_SetSepaDebitNoteProfile(AB_USER *u, const char *profileName)
     ue->sepaDebitNoteProfile=NULL;
 }
 
-int AH_User_VerifyInitialKey(GWEN_CRYPT_TOKEN *ct,
-                             const GWEN_CRYPT_TOKEN_CONTEXT *ctx,
-                             AB_USER *user,
-                             GWEN_CRYPT_KEY *key,
-                             uint16_t sentModl,
-                             const char *keyName)
+int AH_User_VerifyInitialKey(AH_HBCI *h, GWEN_CRYPT_KEY *key, const char *keyName,
+                              AH_CRYPT_MODE cryptMode, int rdhType, const GWEN_CRYPT_TOKEN_CONTEXT *ctx)
 {
+  int rv = 0;
+  int verifyOK = 0;
+  char kt = 'V';
+  struct AH_KEYHASH *kh = AH_Provider_KeyHash_new();
 
+  if(!strcmp(keyName, "sign"))
+    kt = 'S';
 
-  uint32_t  keyHashAlgo;
-  uint32_t  keySize;
-  uint32_t  keyNum;
-  uint32_t  keyVer;
-  uint32_t  expLen;
-  uint8_t  *modulus;
-  uint8_t  *exponent;
-  GWEN_MDIGEST *md;
-  uint8_t *mdPtr;
-  unsigned int mdSize;
-  uint8_t   modBuffer[1024];
-  uint8_t   expBuffer[256];
-  uint32_t  keyHashNum;
-  uint32_t  keyHashVer;
-  uint8_t   canVerifyWithHash=0;
-  uint16_t  keySizeForHash=0;
-  const uint8_t    *keyHash;
-  uint32_t keyHashLen;
-  char hashString[1024];
-  int rv;
-  int i;
-
-
-  /* check if NOTEPAD contained a key hash */
-  keyHashAlgo=GWEN_Crypt_Token_Context_GetKeyHashAlgo(ctx);
-
-  modulus=&modBuffer[0];
-  exponent=&expBuffer[0];
-  keySize=1024;
-  expLen=256;
-  GWEN_Crypt_KeyRsa_GetModulus(key, modulus, &keySize);
-  GWEN_Crypt_KeyRsa_GetExponent(key, exponent, &expLen);
-  keyNum=GWEN_Crypt_Key_GetKeyNumber(key);
-  keyVer=GWEN_Crypt_Key_GetKeyVersion(key);
-
-  /* check if we got the keyHashAlgo from a card, otherwise determine it ourselves */
-
-  if (keyHashAlgo == GWEN_Crypt_HashAlgoId_None ||  keyHashAlgo == GWEN_Crypt_HashAlgoId_Unknown) {
-    uint8_t rxhVersion = AH_User_GetRdhType(user);
-    if (rxhVersion < 6) {
-      keyHashAlgo=GWEN_Crypt_HashAlgoId_Rmd160;
-    }
-    else {
-      keyHashAlgo=GWEN_Crypt_HashAlgoId_Sha256;
-    }
-  }
-  if (AH_User_GetCryptMode(user) == AH_CryptMode_Rdh && AH_User_GetRdhType(user) == 1) {
-    keySizeForHash=128;
-  }
-  else {
-    keySizeForHash=keySize;
-  }
-
-
-  keyHash=GWEN_Crypt_Token_Context_GetKeyHashPtr(ctx);
-  keyHashLen=GWEN_Crypt_Token_Context_GetKeyHashLen(ctx);
-
-  /* check if we got a hash from a banking card */
-  if (keyHash != NULL && keyHashLen > 0) {
-
-    keyHashNum=GWEN_Crypt_Token_Context_GetKeyHashNum(ctx);
-    keyHashVer=GWEN_Crypt_Token_Context_GetKeyHashVer(ctx);
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Found bank key hash on the zka card! (Hash Algo Identifier: [%d], keyNum: [%d], keyVer: [%d]", keyHashAlgo, keyHashNum,
-             keyHashVer);
-    if (keyHashNum == keyNum && keyHashVer==keyVer) {
-      DBG_INFO(AQHBCI_LOGDOMAIN,
-               "Key Number and Key Version of the Hash match transmitted key, try verifying with the Hash.");
-      canVerifyWithHash=1;
-    }
-  }
-
-  /* build key hash */
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "keyName '%s' kt '%c' ctx %p.", keyName, kt, ctx);
+  if(kh)
   {
-    int expPadBytes=keySizeForHash-expLen;
-    int modPadBytes=keySizeForHash-keySize;
+    char title[512];
+    snprintf(title, sizeof(title), "Received Public %s Bank Key", keyName);
 
-    /* pad exponent to length of modulus */
-    GWEN_BUFFER *keyBuffer;
-    keyBuffer=GWEN_Buffer_new(NULL, 2*keySize, 0, 0);
-    GWEN_Buffer_FillWithBytes(keyBuffer, 0x0, expPadBytes);
-    GWEN_Buffer_AppendBytes(keyBuffer, (const char *)exponent, expLen);
-    if (modPadBytes) {
-      GWEN_Buffer_FillWithBytes(keyBuffer, 0x0, modPadBytes);
-    }
-    GWEN_Buffer_AppendBytes(keyBuffer, (const char *)modulus, keySize);
-
-
-
-    if (keyHashAlgo==GWEN_Crypt_HashAlgoId_Sha256) {
-      /*SHA256*/
-      md=GWEN_MDigest_Sha256_new();
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Hash Algo for key verification is SHA256.");
-    }
-    else if (keyHashAlgo==GWEN_Crypt_HashAlgoId_Rmd160) {
-      md=GWEN_MDigest_Rmd160_new();
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Hash Algo for key verification is RIPMED160.");
-    }
-    else {
-      /* ERROR, wrong hash algo */
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Hash Algorithm of Bank Public %s Key not correct! (Hash Identifier %d)", keyName,
-                keyHashAlgo);
-      return 0;
-    }
-
-    GWEN_MDigest_Begin(md);
-    GWEN_MDigest_Update(md, (uint8_t *)GWEN_Buffer_GetStart(keyBuffer), 2*keySize);
-    GWEN_MDigest_End(md);
-    mdPtr=GWEN_MDigest_GetDigestPtr(md);
-    mdSize=GWEN_MDigest_GetDigestSize(md);
-    GWEN_Buffer_free(keyBuffer);
-  }
-
-  memset(hashString, 0, 1024);
-  for (i=0; i<GWEN_MDigest_GetDigestSize(md); i++)
-    sprintf(hashString+3*i, "%02x ", *(mdPtr+i));
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Key Hash from the Bank Public %s key: Hash Length: %d, Hash: %s", keyName, keyHashLen,
-           hashString);
-
-  if (canVerifyWithHash) {
-
-    uint16_t matchingBytes=keySize;
-
-    char cardHashString[1024];
-
-    /* compare hashes */
-
-    memset(cardHashString, 0, 1024);
-    for (i=0; i<keyHashLen; i++)
-      sprintf(cardHashString+3*i, "%02x ", keyHash[i]);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Key Hash on the Card: Hash Length: %d, Hash: %s", keyHashLen, cardHashString);
-
-
-    if (keyHashLen==mdSize) {
-      for (i = 0; i < mdSize; i++) {
-        if (mdPtr[i] != (uint8_t) keyHash[i]) {
-          matchingBytes--;
+    // TODO Not try get hash if mode/type of key to import differs from actual user-key
+    // (how get this for key to import? sent segment secprofile?)
+    rv = AH_Provider_GetKeyHash(AH_HBCI_GetProvider(h), NULL, key, kt, cryptMode, rdhType, NULL, NULL, 0, ctx, 1, kh);
+    if(rv == 0)
+    {
+      const uint8_t *h = NULL, *hc = NULL, *e = NULL, *m = NULL;
+      uint32_t hl = 0, hcl = 0, el = 0, ml = 0;
+      const char *hname = NULL;
+      int kn = 0, kv = 0;
+      h = AH_Provider_KeyHash_Hash(kh, &hl);
+      hc = AH_Provider_KeyHash_HashCard(kh, &hcl);
+      AH_Provider_KeyHash_Info(kh, &kn, &kv, &hname);
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "h '%s' %p %ld / %p %ld, e %p %ld, m %p %ld, kn %d, kv %d.",
+                      hname, h, (long)hl, hc, (long)hcl, e, (long)el, m, (long)ml, kn, kv);
+      if(h && hl)
+      {
+        uint32_t i = 0;
+        uint8_t *hstr = malloc((hl * 3) + 1);
+        hstr[hl * 3] = 0;
+        for(i = 0; i < hl; i++)
+          sprintf((char*)hstr + (i * 3), "%02X ", h[i]);
+        DBG_NOTICE(AQHBCI_LOGDOMAIN, "hash:            '%s'.", hstr);
+        if(hc && hcl)
+        {
+          // hash from card, compare...
+          if(hcl == hl)
+          {
+            uint8_t *hstrCard = malloc((hl * 3) + 1);
+            hstrCard[hcl * 3] = 0;
+            for(i = 0; i < hcl; i++)
+              sprintf((char*)hstrCard + (i * 3), "%02X ", hc[i]);
+            if(!memcmp(h, hc, hl))
+              verifyOK = 1;
+            DBG_NOTICE(AQHBCI_LOGDOMAIN, "hash card: (%s) '%s'.", verifyOK ? "OK " : "Bad", hstrCard);
+          }
         }
+        if(!verifyOK)
+        {
+          // show hash...
+          const char *altern = "(If your bank publishes their public keys on website, you can"
+              " compare with this)";
+          const char *contact = "Contact your bank immediately if the hash does not match!";
+          char msg[1024];
+          snprintf(msg, sizeof(msg), "Received new server %s key, please verify!", keyName);
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "%s", msg);
+          GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning, "%s", I18N(msg));
+          snprintf(msg, sizeof(msg), "num %d, version %d, hash: %s", kn, kv, hstr);
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "%s", msg);
+          GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning, "%s", I18N(msg));
+
+          if(hc && hcl)
+            snprintf(msg, sizeof(msg), "\nReceived a unverified public bank key!\n\nKey number: %d\nKey Version: %d\n\n"
+                     "Hash from transmitted key (%s, length %ld):\n\n%s\n"
+                     "\nIMPORTANT WARNING:\nThe hash on your bank card does not match the hash received.\n"
+                     "You should have received an INI letter from your bank.\n"
+                     "The received hash should match the hash in that INI letter.\n%s\n"
+                     "%s\n\n"
+                     "Do you really want to import this key?\n", kn, kv, hname, (long)hl, hstr, altern, contact);
+          else
+            snprintf(msg, sizeof(msg), "\nReceived a unverified public bank key!\n\nKey number: %d\nKey Version: %d\n\n"
+                   "Hash from transmitted key (%s, length %ld):\n\n%s\n"
+                   "\nIMPORTANT WARNING:\nThis hash should match the hash in an INI letter\nyou should"
+                   " have received from your bank!\n%s\n%s\n\n"
+                   "Do you really want to import this key?\n", kn, kv, hname, (long)hl, hstr, altern, contact);
+
+          rv = GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN | GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS, I18N(title), I18N(msg),
+                                 I18N("Import"), I18N("Abort"), NULL, 0);
+          if(rv != 1)
+          {
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "Public %s Key not accepted by user.", keyName);
+            rv = 0;
+          }
+          else
+          {
+            DBG_INFO(AQHBCI_LOGDOMAIN, "Bank's public %s key accepted by the user.", keyName);
+            verifyOK = 1;
+          }
+        }
+        free(hstr);
       }
     }
-    else {
-      matchingBytes = 0;
+    else
+    {
+      // Should not happen. Maybe
+      // - user will change crypt-mode/type and
+      // - bank was not signing, but does this at now
+      // - or local bank-keys was removed
+      char msg[1024];
+      snprintf(msg, sizeof(msg), "\nThe received new server %s key can not be verified.\n"
+               "Please do 'getkeys' to fix this.\n", keyName);
+      GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN, I18N(title), I18N(msg),
+                             I18N("OK"), NULL, NULL, 0);
     }
-    GWEN_MDigest_free(md);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Hash comparison: of %d bytes %d matched", keyHashLen, matchingBytes);
-    if (matchingBytes == keySize) {
-      DBG_INFO(AQHBCI_LOGDOMAIN,
-               "Verified the bank's public %s key with the hash from the zka card.", keyName);
-      return 1;
-    }
-    else {
-      GWEN_BUFFER *msgBuffer;
-      GWEN_BUFFER *titleBuffer;
-      char numBuf[32];
-      /* ERROR, hash sizes not identical */
-
-
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Hash Sizes of Bank Public %s Key do not match!", keyName);
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Verify new server %s key, please verify! (num: %d, version: %d, hash: %s)", keyName,
-                keyNum, keyVer, hashString);
-      GWEN_Gui_ProgressLog2(0,
-                            GWEN_LoggerLevel_Warning,
-                            I18N("Hash Sizes of Bank Public %s Key do not match!"),
-                            keyName);
-      GWEN_Gui_ProgressLog2(0,
-                            GWEN_LoggerLevel_Warning,
-                            I18N("Received new server %s key, please verify! (num: %d, version: %d, hash: %s)"),
-                            keyName, keyNum, keyVer, hashString);
-
-      titleBuffer=GWEN_Buffer_new(NULL, 256, 0, 1);
-      GWEN_Buffer_AppendString(titleBuffer, "Could not verify received public ");
-      GWEN_Buffer_AppendString(titleBuffer, keyName);
-      GWEN_Buffer_AppendString(titleBuffer, " bank key with card hash!");
-
-      msgBuffer=GWEN_Buffer_new(NULL, 2048, 0, 1);
-      GWEN_Buffer_AppendString(msgBuffer,
-                               "Could not verify the received key with the key hash stored on your banking card!\n");
-      GWEN_Buffer_AppendString(msgBuffer, "Hashes did not match!\n");
-      GWEN_Buffer_AppendString(msgBuffer, "Hash on the card has length ");
-      snprintf(numBuf, sizeof(numBuf), "%d, ",
-               keyHashLen);
-      GWEN_Buffer_AppendString(msgBuffer, numBuf);
-      GWEN_Buffer_AppendString(msgBuffer, "hash value ");
-      if (keyHashAlgo==GWEN_Crypt_HashAlgoId_Sha256) {
-        /*SHA256*/
-        GWEN_Buffer_AppendString(msgBuffer, "(SHA256):\n");
-
-      }
-      else if (keyHashAlgo==GWEN_Crypt_HashAlgoId_Rmd160) {
-        GWEN_Buffer_AppendString(msgBuffer, "(RIPEMD-160):\n");
-      }
-      GWEN_Buffer_AppendString(msgBuffer, cardHashString);
-      GWEN_Buffer_AppendString(msgBuffer, "\n\nHash from transmitted key has length ");
-      snprintf(numBuf, sizeof(numBuf), "%d, ",
-               mdSize);
-      GWEN_Buffer_AppendString(msgBuffer, numBuf);
-      GWEN_Buffer_AppendString(msgBuffer, "hash value ");
-      if (keyHashAlgo==GWEN_Crypt_HashAlgoId_Sha256) {
-        /*SHA256*/
-        GWEN_Buffer_AppendString(msgBuffer, "(SHA256):\n");
-
-      }
-      else if (keyHashAlgo==GWEN_Crypt_HashAlgoId_Rmd160) {
-        GWEN_Buffer_AppendString(msgBuffer, "(RIPEMD-160):\n");
-      }
-      GWEN_Buffer_AppendString(msgBuffer, hashString);
-      GWEN_Buffer_AppendString(msgBuffer, "\n\nIMPORTANT WARNING: you normally should only proceed if the hash matches!\n"
-                               "Contact your bank immediately if the hash does not match!\n\n");
-      GWEN_Buffer_AppendString(msgBuffer, "Do you really want to import this key?");
-      rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN | GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
-                             I18N(GWEN_Buffer_GetStart(titleBuffer)),
-                             I18N(GWEN_Buffer_GetStart(msgBuffer)),
-                             I18N("Import"), I18N("Abort"), NULL, 0);
-      GWEN_Buffer_free(msgBuffer);
-      GWEN_Buffer_free(titleBuffer);
-      if (rv!=1) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Public %s Key not accepted by user.", keyName);
-        return 0;
-      }
-      else {
-        DBG_INFO(AQHBCI_LOGDOMAIN,
-                 "Bank's public %s key accepted by the user.", keyName);
-        return 1;
-
-      }
-    }
+    AH_Provider_KeyHash_free(kh);
   }
-
-  {
-    GWEN_BUFFER *titleBuffer;
-    GWEN_BUFFER *msgBuffer;
-    char numBuf[32];
-
-    GWEN_MDigest_free(md);
-
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Received new server %s key, please verify! (num: %d, version: %d, hash: %s)", keyName,
-              keyNum, keyVer, hashString);
-    GWEN_Gui_ProgressLog2(0,
-                          GWEN_LoggerLevel_Warning,
-                          I18N("Received new server %s key, please verify! (num: %d, version: %d, hash: %s)"),
-                          keyName, keyNum, keyVer, hashString);
-
-    titleBuffer=GWEN_Buffer_new(NULL, 256, 0, 1);
-    GWEN_Buffer_AppendString(titleBuffer, "Received Public ");
-    GWEN_Buffer_AppendString(titleBuffer, keyName);
-    GWEN_Buffer_AppendString(titleBuffer, " Bank Key");
-
-    msgBuffer=GWEN_Buffer_new(NULL, 2048, 0, 1);
-    GWEN_Buffer_AppendString(msgBuffer, "Received a unverified public bank key!\n");
-    GWEN_Buffer_AppendString(msgBuffer, "Key Number: ");
-    snprintf(numBuf, sizeof(numBuf), "%d",
-             keyNum);
-    GWEN_Buffer_AppendString(msgBuffer, numBuf);
-    GWEN_Buffer_AppendString(msgBuffer, "\nKey Version: ");
-    snprintf(numBuf, sizeof(numBuf), "%d",
-             keyNum);
-    GWEN_Buffer_AppendString(msgBuffer, numBuf);
-    GWEN_Buffer_AppendString(msgBuffer, "\n\nHash from transmitted key has length ");
-    snprintf(numBuf, sizeof(numBuf), "%d",
-             mdSize);
-    GWEN_Buffer_AppendString(msgBuffer, numBuf);
-    GWEN_Buffer_AppendString(msgBuffer, ", value ");
-    if (keyHashAlgo==GWEN_Crypt_HashAlgoId_Sha256) {
-      /*SHA256*/
-      GWEN_Buffer_AppendString(msgBuffer, "(SHA256):\n");
-
-    }
-    else if (keyHashAlgo==GWEN_Crypt_HashAlgoId_Rmd160) {
-      GWEN_Buffer_AppendString(msgBuffer, "(RIPEMD-160):\n");
-    }
-    GWEN_Buffer_AppendString(msgBuffer, hashString);
-    GWEN_Buffer_AppendString(msgBuffer, "\n\nIMPORTANT WARNING: This hash should match the hash in an INI letter you should"
-                             "have received from your bank!\n"
-                             "Contact your bank immediately if the hash does not match!\n\n");
-    GWEN_Buffer_AppendString(msgBuffer, "Do you really want to import this key?");
-    rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN | GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
-                           I18N(GWEN_Buffer_GetStart(titleBuffer)),
-                           I18N(GWEN_Buffer_GetStart(msgBuffer)),
-                           I18N("Import"), I18N("Abort"), NULL, 0);
-    GWEN_Buffer_free(msgBuffer);
-    GWEN_Buffer_free(titleBuffer);
-    if (rv!=1) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Public %s Key not accepted by user.", keyName);
-      return 0;
-    }
-    else {
-      DBG_INFO(AQHBCI_LOGDOMAIN,
-               "Bank's public %s key accepted by the user.", keyName);
-      return 1;
-
-    }
-
-
-  }
-  return 0;
+  return (rv != 0) ? rv : verifyOK;
 }
 
 

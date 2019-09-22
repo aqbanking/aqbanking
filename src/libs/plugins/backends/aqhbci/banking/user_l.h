@@ -87,14 +87,8 @@ int AH_User_SetPinStatus(AB_USER *u,
 
 const GWEN_STRINGLIST *AH_User_GetSepaDescriptors(AB_USER *u);
 
-int AH_User_VerifyInitialKey(GWEN_CRYPT_TOKEN *ct,
-                             const GWEN_CRYPT_TOKEN_CONTEXT *ctx,
-                             AB_USER *user,
-                             GWEN_CRYPT_KEY *key,
-                             uint16_t sentModl,
-                             const char *keyName);
-
-
+int AH_User_VerifyInitialKey(AH_HBCI *h, GWEN_CRYPT_KEY *key, const char *keyName,
+                              AH_CRYPT_MODE cryptMode, int rdhType, const GWEN_CRYPT_TOKEN_CONTEXT *ctx);
 #endif /* AH_USER_L_H */
 
 

@@ -292,66 +292,46 @@ int AH_Job__Commit_Bpd(AH_JOB *j)
   return 0;
 }
 
-
-int AH_Job__VerifiyInitialKey(AB_USER *u,
-                              AH_HBCI *h,
-                              GWEN_CRYPT_KEY *key,
-                              uint16_t sentModl,
-                              const char *keyName)
+int AH_Job__VerifiyInitialKey(AH_HBCI *h, GWEN_CRYPT_KEY *key, const char *keyName, const char *tokenType,
+                               const char *tokenName, uint32_t tokenCtxId, AH_CRYPT_MODE cryptMode, int rdhType)
 {
+  GWEN_CRYPT_TOKEN *ct = NULL;
+  const GWEN_CRYPT_TOKEN_CONTEXT *ctx = NULL;
+  int rv = 0;
 
-  GWEN_CRYPT_TOKEN *ct;
-  const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
-  int rv;
-
-  /* get crypt token of signer */
-  rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),
-                              AH_User_GetTokenType(u),
-                              AH_User_GetTokenName(u),
-                              &ct);
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Could not get crypt token for user \"%s\" (%d)",
-             AB_User_GetUserId(u), rv);
+  rv = AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h), tokenType, tokenName, &ct);
+  if(rv != 0)
+  {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Could not get crypt token (%d).", rv);
     return rv;
   }
-
-  /* open CryptToken if necessary */
-  if (!GWEN_Crypt_Token_IsOpen(ct)) {
+  if(!GWEN_Crypt_Token_IsOpen(ct))
+  {
     GWEN_Crypt_Token_AddModes(ct, GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN);
-    rv=GWEN_Crypt_Token_Open(ct, 0, 0);
-    if (rv) {
-      DBG_INFO(AQHBCI_LOGDOMAIN,
-               "Could not open crypt token for user \"%s\" (%d)",
-               AB_User_GetUserId(u), rv);
+    rv = GWEN_Crypt_Token_Open(ct, 0, 0);
+    if(rv != 0)
+    {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Could not open crypt token (%d).", rv);
       return rv;
     }
   }
-
-  /* get context and key info */
-  ctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), 0);
-  if (ctx==NULL) {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Context %d not found on crypt token [%s:%s]",
-             AH_User_GetTokenContextId(u),
-             GWEN_Crypt_Token_GetTypeName(ct),
-             GWEN_Crypt_Token_GetTokenName(ct));
+  if((ctx = GWEN_Crypt_Token_GetContext(ct, tokenCtxId, 0)) == NULL)
+  {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Context %d not found on crypt token [%s:%s]", tokenCtxId, tokenType, tokenName);
     return GWEN_ERROR_NOT_FOUND;
   }
-
-  return AH_User_VerifyInitialKey(ct, ctx, u, key, sentModl, keyName);
-
+  return AH_User_VerifyInitialKey(h, key, keyName, cryptMode, rdhType, ctx);
 }
-
 
 int AH_Job__CommitSystemData(AH_JOB *j, int doLock)
 {
-  GWEN_DB_NODE *dbCurr;
+  GWEN_DB_NODE *dbCurr, *dbKeyRspV = NULL, *dbKeyRspS = NULL, *dbKeyRspO = NULL;
   AB_USER *u;
   AB_BANKING *ab;
   AH_HBCI *h;
   GWEN_MSGENGINE *e;
-  int rv;
+  uint8_t rspSigned = 0;
+  int rv = 0;
 
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Committing data");
   assert(j);
@@ -413,142 +393,29 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock)
           dbRes=GWEN_DB_GetNextGroup(dbRes);
         } /* while */
       }
-      else if (strcasecmp(GWEN_DB_GroupName(dbRd), "GetKeyResponse")==0) {
-        const char *keytype;
-
-        keytype=GWEN_DB_GetCharValue(dbRd, "keyname/keytype",  0, NULL);
-        if (keytype && *keytype) {
-          GWEN_CRYPT_KEY *bpk;
-          uint8_t *expp, *modp;
-          unsigned int expl, modl;
-          int keynum, keyver;
-          uint16_t sentModulusLength;
-          uint16_t nbits;
-
-
-
-          int keySize;
-          int verified=0;
-          GWEN_CRYPT_KEY *bpsk;
-
-          /* process received keys */
-          keynum=GWEN_DB_GetIntValue(dbRd, "keyname/keynum",  0, -1);
-          keyver=GWEN_DB_GetIntValue(dbRd, "keyname/keyversion",  0, -1);
-          modp=(uint8_t *)GWEN_DB_GetBinValue(dbRd, "key/modulus",  0, NULL, 0, &modl);
-          sentModulusLength=modl;
-          DBG_INFO(AQHBCI_LOGDOMAIN, "Got Key with modulus length %d.", modl);
-          /* skip zero bytes if any */
-          while (modl && *modp==0) {
-            modp++;
-            modl--;
-          }
-          /* calc real length in bits for information purposes */
-          nbits=modl*8;
-          if (modl) {
-            uint8_t b=*modp;
-            int i;
-            uint8_t mask=0x80;
-
-            for (i=0; i<8; i++) {
-              if (b & mask)
-                break;
-              nbits--;
-              mask>>=1;
-            }
-          }
-
-          /* calculate key size in bytes */
-          if (modl<=96) /* could only be for RDH1, in this case we have to pad to 768 bits */
-            keySize=96;
-          else {
-            keySize=modl;
-          }
-          DBG_INFO(AQHBCI_LOGDOMAIN, "Key has real modulus length %d bytes (%d bits) after skipping leading zero bits.", modl,
-                   nbits);
-          expp=(uint8_t *)GWEN_DB_GetBinValue(dbRd, "key/exponent", 0, NULL, 0, &expl);
-          bpk=GWEN_Crypt_KeyRsa_fromModExp(keySize, modp, modl, expp, expl);
-          GWEN_Crypt_Key_SetKeyNumber(bpk, keynum);
-          GWEN_Crypt_Key_SetKeyVersion(bpk, keyver);
-
-          /* check if it was already verified and saved at the signature verification stage
-           * (this is implemented for RDH7 and RDH9 only at the moment) */
-          bpsk=AH_User_GetBankPubSignKey(u);
-          if (bpsk) {
-            int hasVerifiedFlag = GWEN_Crypt_KeyRsa_GetFlags(bpsk) & GWEN_CRYPT_KEYRSA_FLAGS_ISVERIFIED ;
-            if (hasVerifiedFlag == GWEN_CRYPT_KEYRSA_FLAGS_ISVERIFIED)
-              verified=1;
-          }
-
-          /* commit the new key */
-          if (strcasecmp(keytype, "S")==0) {
-
-
-
-            if (verified == 0) {
-              verified = AH_Job__VerifiyInitialKey(u, h, bpk, sentModulusLength, "sign");
-            }
-
-            if (verified == 1) {
-              DBG_ERROR(AQHBCI_LOGDOMAIN, "Imported sign key.");
-              GWEN_Crypt_KeyRsa_AddFlags(bpk, GWEN_CRYPT_KEYRSA_FLAGS_ISVERIFIED);
-              AH_User_SetBankPubSignKey(u, bpk);
-            }
-            else {
-              DBG_ERROR(AQHBCI_LOGDOMAIN, "Crypt key not imported.");
-            }
-
-
-          }
-          else if (strcasecmp(keytype, "V")==0) {
-
-            if (verified == 0) {
-              verified = AH_Job__VerifiyInitialKey(u, h, bpk, sentModulusLength, "crypt");
-            }
-
-            if (verified == 1) {
-              DBG_ERROR(AQHBCI_LOGDOMAIN, "Imported crypt key.");
-              GWEN_Crypt_KeyRsa_AddFlags(bpk, GWEN_CRYPT_KEYRSA_FLAGS_ISVERIFIED);
-              AH_User_SetBankPubCryptKey(u, bpk);
-            }
-            else {
-              DBG_ERROR(AQHBCI_LOGDOMAIN, "Crypt key not imported.");
-            }
-
-          }
-          else {
-            char hashString[1024];
-            int expPadBytes=keySize-expl;
-            uint8_t *mdPtr;
-            unsigned int mdSize;
-            /* pad exponent to length of modulus */
-            GWEN_BUFFER *keyBuffer;
-            GWEN_MDIGEST *md;
-            uint16_t i;
-            keyBuffer=GWEN_Buffer_new(NULL, 2*keySize, 0, 0);
-            GWEN_Buffer_FillWithBytes(keyBuffer, 0x0, expPadBytes);
-            GWEN_Buffer_AppendBytes(keyBuffer, (const char *)expp, expl);
-            GWEN_Buffer_AppendBytes(keyBuffer, (const char *)modp, keySize);
-            /*SHA256*/
-            md=GWEN_MDigest_Sha256_new();
-            GWEN_MDigest_Begin(md);
-            GWEN_MDigest_Update(md, (uint8_t *)GWEN_Buffer_GetStart(keyBuffer), 2*keySize);
-            GWEN_MDigest_End(md);
-            mdPtr=GWEN_MDigest_GetDigestPtr(md);
-            mdSize=GWEN_MDigest_GetDigestSize(md);
-            memset(hashString, 0, 1024);
-            for (i=0; i<mdSize; i++)
-              sprintf(hashString+3*i, "%02x ", *(mdPtr+i));
-            GWEN_MDigest_free(md);
-            DBG_ERROR(AQHBCI_LOGDOMAIN, "Received unknown server key: type=%s, num=%d, version=%d, hash=%s", keytype, keynum,
-                      keyver, hashString);
-            GWEN_Gui_ProgressLog2(0,
-                                  GWEN_LoggerLevel_Warning,
-                                  I18N("Received unknown server key: type=%s, num=%d, version=%d, hash=%s"),
-                                  keytype, keynum, keyver, hashString);
-          }
-          if (bpk)
-            GWEN_Crypt_Key_free(bpk);
+      else if (strcasecmp(GWEN_DB_GroupName(dbRd), "GetKeyResponse")==0)
+      {
+        const char *keytype = GWEN_DB_GetCharValue(dbRd, "keyname/keytype",  0, NULL);
+        if(keytype && *keytype)
+        {
+#if 1
+          if(strcasecmp(keytype, "V") == 0)
+#else
+          // test 'unknown' key
+          if(strcasecmp(keytype, "X") == 0)
+#endif
+             dbKeyRspV = dbRd;
+          else if(strcasecmp(keytype, "S") == 0)
+             dbKeyRspS = dbRd;
+          else
+            dbKeyRspO = dbRd;
         }
+      }
+      else if (strcasecmp(GWEN_DB_GroupName(dbRd), "SigHead")==0)
+      {
+        DBG_NOTICE(AQHBCI_LOGDOMAIN, "%s(): Found sigHead", __FUNCTION__);
+        // assume if sigHead found, msg is signed *and* verified
+        rspSigned = 1;
       }
 
       else if (strcasecmp(GWEN_DB_GroupName(dbRd), "SecurityMethods")==0) {
@@ -624,6 +491,209 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock)
     } /* if response data found */
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
   } /* while */
+
+
+  if(dbKeyRspV || dbKeyRspS || dbKeyRspO)
+  {
+    uint8_t nDbKey = 0;
+    GWEN_CRYPT_KEY *bpk;
+    uint8_t *expp, *modp;
+    unsigned int expl, modl;
+    int keynum, keyver;
+    uint16_t nbits;
+    int keySize = 0;
+    int8_t verified = 0;
+    uint8_t signKeyVerifed = 0;
+    const char *peerId = NULL;
+    const char *tokenType = AH_User_GetTokenType(u);
+    const char *tokenName = AH_User_GetTokenName(u);
+    uint32_t tokenCtxId = AH_User_GetTokenContextId(u);
+    AH_CRYPT_MODE cryptMode = AH_User_GetCryptMode(u);
+    int rdhType = AH_User_GetRdhType(u);
+    GWEN_DB_NODE *jargs = AH_Job_GetArguments(j);
+    GWEN_DB_NODE *keyChange = GWEN_DB_GetGroup(jargs, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "keyChange");
+
+    if(keyChange)
+    {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "%s(): key-change in progress.", __FUNCTION__);
+      tokenType = GWEN_DB_GetCharValue(keyChange, "tokenType", 0, "");
+      tokenName = GWEN_DB_GetCharValue(keyChange, "tokenName", 0, "");
+      tokenCtxId = GWEN_DB_GetIntValue(keyChange, "tokenCtxId", 0, 0);
+      cryptMode = GWEN_DB_GetIntValue(keyChange, "cryptMode", 0, 0);
+      rdhType = GWEN_DB_GetIntValue(keyChange, "rdhType", 0, 0);
+    }
+
+    for(nDbKey = 0; (rv == 0) && (nDbKey < 3); nDbKey++)
+    {
+      const char *keyName = (nDbKey == 0) ? "sign" : (nDbKey == 1) ? "crypt" : "unknown";
+      GWEN_DB_NODE *dbk = (nDbKey == 0) ? dbKeyRspS : (nDbKey == 1) ? dbKeyRspV : dbKeyRspO;
+      if(!dbk)
+        continue;
+      keynum = GWEN_DB_GetIntValue(dbk, "keyname/keynum",  0, -1);
+      keyver = GWEN_DB_GetIntValue(dbk, "keyname/keyversion",  0, -1);
+      modp = (uint8_t*)GWEN_DB_GetBinValue(dbk, "key/modulus",  0, NULL, 0, &modl);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Got Key with modulus length %d.", modl);
+      /* skip zero bytes if any */
+      while(modl && (*modp==0))
+      {
+        modp++;
+        modl--;
+      }
+      /* calc real length in bits for information purposes */
+      nbits = modl * 8;
+      if(modl)
+      {
+        uint8_t b = *modp;
+        int j;
+        uint8_t mask = 0x80;
+        for(j = 0; j < 8; j++)
+        {
+          if(b & mask)
+            break;
+          nbits--;
+          mask >>= 1;
+        }
+      }
+
+      /* calculate key size in bytes */
+      if(modl <= 96) /* could only be for RDH1, in this case we have to pad to 768 bits */
+        keySize=96;
+      else
+        keySize = modl;
+
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Key has real modulus length %d bytes (%d bits) after skipping leading zero bits.", modl, nbits);
+      expp = (uint8_t*)GWEN_DB_GetBinValue(dbk, "key/exponent", 0, NULL, 0, &expl);
+      bpk = GWEN_Crypt_KeyRsa_fromModExp(keySize, modp, modl, expp, expl);
+      GWEN_Crypt_Key_SetKeyNumber(bpk, keynum);
+      GWEN_Crypt_Key_SetKeyVersion(bpk, keyver);
+
+      if(peerId == NULL)
+        peerId = GWEN_DB_GetCharValue(dbk, "keyname/userId", 0, NULL);
+
+      /* check if it was already verified and saved at the signature verification stage
+       * (this is implemented for RDH7 and RDH9 only at the moment) */
+      // if keyChange is in progress, users actual bankkey can not used to test if verified
+      // (and anyway test will fail)
+      if(rspSigned)
+      {
+        char msg[512];
+        snprintf(msg, sizeof(msg), "Received server %s key in signed message: num=%d, version=%d.", keyName, keynum, keyver);
+        DBG_NOTICE(AQHBCI_LOGDOMAIN, "%s(): %s", __FUNCTION__, msg);
+        GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning, I18N("%s"), msg);
+        verified = 1;
+      }
+      else if(!keyChange)
+      {
+        GWEN_CRYPT_KEY *bpkToVerify = (nDbKey == 0) ? AH_User_GetBankPubSignKey(u) : (nDbKey == 1) ? AH_User_GetBankPubCryptKey(u) : NULL;
+        DBG_NOTICE(AQHBCI_LOGDOMAIN, "%s(): #%d bkv %p.", __FUNCTION__, nDbKey, bpkToVerify);
+        if(bpkToVerify)
+        {
+          uint32_t l = GWEN_Crypt_Key_GetKeySize(bpk);
+          uint32_t lv = GWEN_Crypt_Key_GetKeySize(bpkToVerify);
+          uint32_t flags = GWEN_Crypt_KeyRsa_GetFlags(bpkToVerify);
+          DBG_NOTICE(AQHBCI_LOGDOMAIN, "bk l %ld %ld, f 0x%08lX.", (long)l, (long)lv, (long)flags);
+          if(l == lv)
+          {
+            uint8_t *m = malloc(l);
+            uint8_t *mv = malloc(l);
+            if(!GWEN_Crypt_KeyRsa_GetModulus(bpk, m, &l) && !GWEN_Crypt_KeyRsa_GetModulus(bpkToVerify, mv, &l))
+            {
+              int cmp = memcmp(m, mv, l);
+              if((cmp == 0) && (flags & GWEN_CRYPT_KEYRSA_FLAGS_ISVERIFIED))
+              {
+                DBG_NOTICE(AQHBCI_LOGDOMAIN, "---> keys matched and flag says key is verified. <---");
+                verified = 1;
+              }
+            }
+            else
+              DBG_ERROR(AQHBCI_LOGDOMAIN, "%s(): GWEN_Crypt_KeyRsa_GetModulus() failed.", __FUNCTION__);
+            free(m);
+            free(mv);
+          }
+        }
+      }
+
+      if(nDbKey < 2)
+      {
+        if(verified == 0)
+        {
+          if((nDbKey != 0) && dbKeyRspS)
+          {
+            if(signKeyVerifed)
+              verified = 1;
+            else verified = -1;
+          }
+          if(verified == 0)
+            verified = AH_Job__VerifiyInitialKey(h, bpk, keyName, tokenType, tokenName, tokenCtxId, cryptMode, rdhType);
+        }
+        if(verified == 1)
+        {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Imported %s key.", keyName);
+          GWEN_Crypt_KeyRsa_AddFlags(bpk, GWEN_CRYPT_KEYRSA_FLAGS_ISVERIFIED);
+          if(nDbKey == 0)
+            AH_User_SetBankPubSignKey(u, bpk);
+          else
+            AH_User_SetBankPubCryptKey(u, bpk);
+          if(nDbKey == 0)
+            signKeyVerifed = verified;
+        }
+        else
+        {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "%s key not imported.", keyName);
+          rv = GWEN_ERROR_USER_ABORTED;
+        }
+      }
+      else
+      {
+        // unknown key
+        struct AH_KEYHASH *kh = AH_Provider_KeyHash_new();
+        const char *kt = GWEN_DB_GetCharValue(dbk, "keyname/keytype",  0, "?");
+        rv = AH_Provider_GetKeyHash(AH_HBCI_GetProvider(h), NULL, bpk, (kt && *kt) ? kt[0] : '?',
+                                    cryptMode, rdhType, tokenType, tokenName, tokenCtxId, NULL, 1, kh);
+        if(rv != 0)
+        {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "%s(): AH_Provider_GetKeyHash() failed.", __FUNCTION__);
+        }
+        else
+        {
+          uint8_t j = 0;
+          char msg[512];
+          const char *hn = NULL;
+          uint8_t *hstr = NULL;
+          uint32_t hl = 0;
+          const uint8_t *h = AH_Provider_KeyHash_Hash(kh, &hl);
+          AH_Provider_KeyHash_Info(kh, NULL, NULL, &hn);
+          hstr = malloc((hl * 3) + 1);
+          hstr[hl * 3] = 0;
+          for(j = 0; j < hl; j++)
+            sprintf((char*)hstr + (j * 3), "%02X ", h[j]);
+          snprintf(msg, sizeof(msg), "Received unknown server key: type=%s, num=%d, version=%d, hash (%s)=%s", kt, keynum,
+                    keyver, hn, hstr);
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "%s", msg);
+          GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning, I18N("%s"), msg);
+          free(hstr);
+        }
+        AH_Provider_KeyHash_free(kh);
+      }
+    }
+    if(rv != 0)
+      return rv;
+    if(peerId)
+    {
+      const char *upid = AH_User_GetPeerId(u);
+      if(!upid || strcmp(peerId, upid))
+      {
+        char msg[256];
+        if(upid == NULL)
+          snprintf(msg, sizeof(msg), I18N("Setting peer ID to '%s'"), peerId);
+        else
+          snprintf(msg, sizeof(msg), I18N("Changing peer ID from '%s' to '%s'"), upid, peerId);
+        DBG_NOTICE(AQHBCI_LOGDOMAIN, "%s", msg);
+        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, msg);
+        AH_User_SetPeerId(u, peerId);
+      }
+    }
+  }
 
   /* try to extract bank parameter data */
   DBG_INFO(AQHBCI_LOGDOMAIN, "Committing BPD");
