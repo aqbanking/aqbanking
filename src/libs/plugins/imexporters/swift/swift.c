@@ -178,6 +178,7 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
     if (matches) {
       AB_TRANSACTION *t;
       const char *s;
+      const GWEN_DATE *dt;
 
       t=AB_Transaction_fromDb(dbT);
       if (!t) {
@@ -185,6 +186,14 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
         GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                              I18N("Error in config file"));
         return GWEN_ERROR_GENERIC;
+      }
+
+      /* check for date */
+      dt=AB_Transaction_GetDate(t);
+      if (dt==NULL) {
+	/* no date, use valutaDate for both fields */
+	dt=AB_Transaction_GetValutaDate(t);
+	AB_Transaction_SetDate(t, dt);
       }
 
       /* some translations */
