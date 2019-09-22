@@ -280,7 +280,7 @@ int EBC_Provider_XchgDownloadRequest_H002(AB_PROVIDER *pro,
     GWEN_Crypt_Key_free(skey);
 
     /*DBG_ERROR(0, "Got this data:");
-    GWEN_Buffer_Dump(targetBuffer, stderr, 2);*/
+    GWEN_Buffer_Dump(targetBuffer, 2);*/
 
     /* send receipt message */
     rv=_mkDownloadReceiptRequest_H002(pro, sess, u, transactionId, withReceipt?0:1, &msg);
