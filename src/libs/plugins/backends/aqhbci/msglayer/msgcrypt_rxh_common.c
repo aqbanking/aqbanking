@@ -191,8 +191,8 @@ RXH_PARAMETER *rdh_parameter[11]= {
 RXH_PARAMETER  rah7_parameter= {AH_CryptMode_Rah,
                                 7,
                                 AH_SignAlg_RSA,
-                                19,  /* RSASSA-PSS        */
-                                19,  /* RSASSA-PSS        */
+                                AH_Opmode_Rsa_Pss,
+                                AH_Opmode_Rsa_Pss,
                                 AH_UsageSign_OwnerSigning,
                                 AH_HashAlg_Sha256Sha256,
                                 AH_HashAlg_Sha256,
@@ -203,7 +203,7 @@ RXH_PARAMETER  rah7_parameter= {AH_CryptMode_Rah,
 RXH_PARAMETER  rah9_parameter= {AH_CryptMode_Rah,
                                 9,
                                 AH_SignAlg_RSA,
-                                19,  /* RSASSA-PSS        */
+                                AH_Opmode_Rsa_Pss,
                                 AH_Opmode_None,
                                 AH_UsageSign_OwnerSigning,
                                 AH_HashAlg_Sha256Sha256,
@@ -215,7 +215,7 @@ RXH_PARAMETER  rah9_parameter= {AH_CryptMode_Rah,
 RXH_PARAMETER  rah10_parameter= {AH_CryptMode_Rah,
                                  10,
                                  AH_SignAlg_RSA,
-                                 19,  /* RSASSA-PSS        */
+                                 AH_Opmode_Rsa_Pss,
                                  AH_Opmode_None,
                                  AH_UsageSign_OwnerSigning,
                                  AH_HashAlg_Sha256Sha256,
@@ -575,7 +575,7 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
 
   /* prepare config for segment */
   cfg=GWEN_DB_Group_new("sighead");
-  rv=AH_MsgRxh_PrepareCryptoSeg(hmsg, su, rxh_parameter, rxh_parameter->protocolVersion, 1, ki, cfg, 0, 1);
+  rv=AH_MsgRxh_PrepareCryptoSeg(hmsg, su, rxh_parameter, rxh_parameter->protocolVersion, GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki), ki, cfg, 0, 1);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_DB_Group_free(cfg);
