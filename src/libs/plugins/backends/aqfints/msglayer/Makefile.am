@@ -25,8 +25,8 @@ dist_typedata_DATA=
 
 
 
-built_sources=\
-  keyname.c
+#built_sources=\
+#  keyname.c
 
 
 build_headers_priv=\

@@ -591,15 +591,15 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
 
       /* TODO: maybe handle those types differently? */
       if (strcasecmp(s, "Transfer")==0) {
-        AB_Transaction_SetType(t, AB_Transaction_TypeTransaction);
+        AB_Transaction_SetType(t, AB_Transaction_TypeStatement);
         AB_Transaction_SetSubType(t, AB_Transaction_SubTypeStandard);
       }
       else if (strcasecmp(s, "Payment")==0) {
-        AB_Transaction_SetType(t, AB_Transaction_TypeTransaction);
+        AB_Transaction_SetType(t, AB_Transaction_TypeStatement);
         AB_Transaction_SetSubType(t, AB_Transaction_SubTypeStandard);
       }
       else {
-        AB_Transaction_SetType(t, AB_Transaction_TypeTransaction);
+        AB_Transaction_SetType(t, AB_Transaction_TypeStatement);
         AB_Transaction_SetSubType(t, AB_Transaction_SubTypeStandard);
       }
     }

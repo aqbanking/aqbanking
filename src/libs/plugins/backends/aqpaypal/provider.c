@@ -11,6 +11,7 @@
 # include <config.h>
 #endif
 
+#include <aqbanking/backendsupport/providerqueue.h>
 #include "provider_p.h"
 #include "user_l.h"
 #include "control/control_l.h"
@@ -69,7 +70,9 @@ AB_PROVIDER *APY_Provider_new(AB_BANKING *ab)
   AB_Provider_SetCreateAccountObjectsFn(pro, APY_Provider_CreateAccountObject);
   AB_Provider_SetCreateUserObjectsFn(pro, APY_Provider_CreateUserObject);
 
+  AB_Provider_SetUpdateAccountSpecFn(pro, APY_Provider_UpdateAccountSpec);
   AB_Provider_SetControlFn(pro, APY_Control);
+  AB_Provider_SetSendCommandsFn(pro, APY_Provider_SendCommands);
 
   AB_Provider_SetGetNewUserDialogFn(pro, APY_Provider_GetNewUserDialog);
   AB_Provider_SetGetEditUserDialogFn(pro, APY_Provider_GetEditUserDialog);
@@ -225,9 +228,35 @@ AB_ACCOUNT *APY_Provider_CreateAccountObject(AB_PROVIDER *pro)
   assert(a);
   AB_Account_SetProvider(a, pro);
   AB_Account_SetBackendName(a, APY_PROVIDER_NAME);
+  AB_Account_SetReadFromDbFn(a, APY_Account_ReadFromDb);
   return a;
 }
 
+
+int APY_Account_ReadFromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db)
+{
+  GWEN_DB_NODE *dbP;
+  int rv;
+  const char *s;
+  AB_PROVIDER *pro;
+
+  assert(a);
+
+  /* save provider, because AB_Account_ReadFromDb clears it */
+  pro=AB_Account_GetProvider(a);
+
+  /* read data for base class */
+  rv=AB_Account__ReadFromDb(a, db);
+  if (rv<0) {
+    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* set provider again */
+  AB_Account_SetProvider(a, pro);
+
+  return 0;
+}
 
 
 AB_USER *APY_Provider_CreateUserObject(AB_PROVIDER *pro)
@@ -328,6 +357,3 @@ int APY_Provider_ParseResponse(AB_PROVIDER *pro, const char *s, GWEN_DB_NODE *db
 #include "provider_getbalance.c"
 #include "provider_getstm.c"
 #include "provider_sendcmd.c"
-
-
-

@@ -26,6 +26,7 @@ int APY_Provider_WriteUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, const c
 int APY_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a);
 int APY_Provider_DeleteAccount(AB_PROVIDER *pro, uint32_t uid);
 
+static int APY_Account_ReadFromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db);
 
 
 

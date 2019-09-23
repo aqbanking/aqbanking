@@ -16,10 +16,10 @@ AC_CONFIG_HEADERS([config.h])
 
 AQBANKING_VERSION_MAJOR=5
 AQBANKING_VERSION_MINOR=99
-AQBANKING_VERSION_PATCHLEVEL=33
-AQBANKING_VERSION_BUILD=1
+AQBANKING_VERSION_PATCHLEVEL=28
+AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
-AQBANKING_VERSION_TAG="git"
+AQBANKING_VERSION_TAG="beta"
 
 
 
@@ -34,7 +34,7 @@ AQBANKING_VERSION_TAG="git"
 
 AQBANKING_SO_CURRENT=43
 AQBANKING_SO_AGE=0
-AQBANKING_SO_REVISION=33
+AQBANKING_SO_REVISION=28
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 
@@ -234,7 +234,7 @@ AC_ARG_WITH(backends,
 )
 
 if test "$aqbanking_backends" = "all"; then
-  aqbanking_backends="aqhbci aqofxconnect aqebics"
+  aqbanking_backends="aqhbci aqofxconnect aqebics aqpaypal"
 fi
 
 for f in ${aqbanking_backends}; do
@@ -1293,13 +1293,13 @@ AC_CONFIG_FILES([
   src/libs/plugins/backends/aqhbci/header.xml
   src/libs/plugins/backends/aqhbci/banking/Makefile
   src/libs/plugins/backends/aqhbci/msglayer/Makefile
+  src/libs/plugins/backends/aqhbci/tan/Makefile
   src/libs/plugins/backends/aqhbci/joblayer/Makefile
   src/libs/plugins/backends/aqhbci/applayer/Makefile
   src/libs/plugins/backends/aqhbci/ajobs/Makefile
   src/libs/plugins/backends/aqhbci/admjobs/Makefile
   src/libs/plugins/backends/aqhbci/applayer/xml/Makefile
   src/libs/plugins/backends/aqhbci/control/Makefile
-  src/libs/plugins/backends/aqhbci/tan/Makefile
   src/libs/plugins/backends/aqhbci/version.h
   src/libs/plugins/backends/aqofxconnect/Makefile
   src/libs/plugins/backends/aqofxconnect/aqofxconnect.xml
