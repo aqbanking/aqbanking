@@ -13,6 +13,7 @@
 #include "provider_l.h"
 
 #include <aqbanking/backendsupport/queue.h>
+#include <aqbanking/backendsupport/account_p.h>
 
 
 
@@ -59,16 +60,12 @@ static int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
 int APY_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doLock);
 
 /* from provider_sendcmd.c */
-static AB_TRANSACTION *APY_Provider_FindJobById(AB_TRANSACTION_LIST2 *jl, uint32_t jid);
 static int APY_Provider__AddJobToList2(AB_PROVIDER *pro, AB_TRANSACTION *j, AB_TRANSACTION_LIST2 *jobList);
 static int APY_Provider__SendJobList(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION_LIST2 *jl,
 				     AB_IMEXPORTER_CONTEXT *ctx, AB_IMEXPORTER_ACCOUNTINFO *ai);
-static void APY_Provider__FinishJobs(AB_PROVIDER *pro, AB_TRANSACTION_LIST2 *jobList, AB_IMEXPORTER_CONTEXT *ctx);
 static int APY_Provider__SendAccountQueue(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNTQUEUE *aq, AB_IMEXPORTER_CONTEXT *ctx);
 static int APY_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTER_CONTEXT *ctx);
 static int APY_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx);
-static void APY_Provider__AddOrModifyAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc);
-static int APY_Provider__ProcessImporterContext(AB_PROVIDER *pro, AB_USER *u, AB_IMEXPORTER_CONTEXT *ictx);
 
 
 #endif

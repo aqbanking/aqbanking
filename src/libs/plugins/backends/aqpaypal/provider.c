@@ -53,6 +53,16 @@ GWEN_INHERIT(AB_PROVIDER, APY_PROVIDER)
 
 
 
+void GWENHYWFAR_CB APY_Provider_FreeData(void *bp, void *p)
+{
+  APY_PROVIDER *xp;
+
+  xp=(APY_PROVIDER *) p;
+
+  GWEN_FREE_OBJECT(xp);
+}
+
+
 AB_PROVIDER *APY_Provider_new(AB_BANKING *ab)
 {
   AB_PROVIDER *pro;
@@ -84,16 +94,6 @@ AB_PROVIDER *APY_Provider_new(AB_BANKING *ab)
   return pro;
 }
 
-
-
-void GWENHYWFAR_CB APY_Provider_FreeData(void *bp, void *p)
-{
-  APY_PROVIDER *xp;
-
-  xp=(APY_PROVIDER *) p;
-
-  GWEN_FREE_OBJECT(xp);
-}
 
 
 
@@ -235,9 +235,7 @@ AB_ACCOUNT *APY_Provider_CreateAccountObject(AB_PROVIDER *pro)
 
 int APY_Account_ReadFromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db)
 {
-  GWEN_DB_NODE *dbP;
   int rv;
-  const char *s;
   AB_PROVIDER *pro;
 
   assert(a);
