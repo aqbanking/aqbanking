@@ -22,7 +22,11 @@ find_dependency(gwenhywfar "@GWENHYWFAR_MINIMUM_VERSION@")
 set_and_check(prefix "@prefix@")
 set_and_check(exec_prefix "@exec_prefix@")
 set_and_check(AQBANKING_INCLUDE_DIRS "@aqbanking_headerdir@")
-set_and_check(AQBANKING_LIBRARIES "@libdir@/libaqbanking.so.@AQBANKING_SO_EFFECTIVE@")
+if(WIN32)
+    set_and_check(AQBANKING_LIBRARIES "@libdir@/libaqbanking.dll.a")
+else()
+    set_and_check(AQBANKING_LIBRARIES "@libdir@/libaqbanking.so.@AQBANKING_SO_EFFECTIVE@")
+endif()
 set(AQBANKING_FOUND true)
 
 # The target is available since aqbanking 5.6.5
