@@ -1392,7 +1392,6 @@ void _transformSepaTags(GWEN_DB_NODE *dbData, GWEN_DB_NODE *dbSepaTags, uint32_t
 	* will be replaced if there was a real purpose field (i.e. "SVWZ+") */
 	AHB_SWIFT__SetCharValue(dbData, flags, "purpose", GWEN_Buffer_GetStart(tbuf));
       }
-
       GWEN_Buffer_free(tbuf);
     }
 

@@ -225,24 +225,7 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
         }
       }
 
-#if 0 /* disabled, will be removed later */
-
-      /* ABWA+: replace remote name with ABWA+ content */
-      s=GWEN_DB_GetCharValue(dbT, "sepa/ABWA", 0, NULL);
-      if (s && *s) {
-        int i;
-
-        //DBG_ERROR(AQBANKING_LOGDOMAIN, "Replacing remote name with ABWA value [%s]", s);
-        for (i=0; i<2; i++) {
-          s=GWEN_DB_GetCharValue(dbT, "sepa/ABWA", i, NULL);
-          if (s && *s) {
-            AB_Transaction_SetRemoteName(t, s);
-          }
-        }
-      }
-#endif
-
-      /* read all lines of the remote name and concatenate them (addresses bug #57) */
+#if 0   /* disable ABWA+ and ABWE+: We can't safely now when to change them */
       if (1) {
 	const char *varName;
 	int i;
@@ -254,21 +237,59 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
           varName="sepa/ABWE";
         else
 	  varName="remoteName";
-
 	nameBuf=GWEN_Buffer_new(0, 256, 0, 1);
 	for (i=0; i<2; i++) {
 	  s=GWEN_DB_GetCharValue(dbT, varName, i, NULL);
 	  if (s && *s) {
-#if 0 /* TODO: add separator? */
-	    if (i>0)
-	      GWEN_Buffer_AppendString(nameBuf, " ");
-#endif
 	    GWEN_Buffer_AppendString(nameBuf, s);
 	  }
 	}
 	if (GWEN_Buffer_GetUsedBytes(nameBuf))
 	  AB_Transaction_SetRemoteName(t, GWEN_Buffer_GetStart(nameBuf));
       }
+#endif
+
+      /* read all lines of the remote name and concatenate them (addresses bug #57) */
+      if (1) {
+        int i;
+        GWEN_BUFFER *nameBuf;
+
+        nameBuf=GWEN_Buffer_new(0, 256, 0, 1);
+        for (i=0; i<4; i++) {
+          s=GWEN_DB_GetCharValue(dbT, "remoteName", i, NULL);
+          if (s && *s)
+            GWEN_Buffer_AppendString(nameBuf, s);
+          else
+            break;
+        }
+        if (GWEN_Buffer_GetUsedBytes(nameBuf))
+          AB_Transaction_SetRemoteName(t, GWEN_Buffer_GetStart(nameBuf));
+        GWEN_Buffer_free(nameBuf);
+      }
+
+
+#if 0
+      /* for now ignore these variabled.*
+       * Who is the recipient and who the initiator depends on the type of transaction.
+       * Currently we have no safe way to determine whether the transaction was a
+       * - transfer (negative amount, we are the payee and the initiator)
+       * - or a debit note from someone else (also negative amount, we are the payee also but not the initiator)
+       * - debit note initiated by us (we are the recipient but also the initiator)
+       */
+      if (1) {
+        const char *s;
+
+        s=GWEN_DB_GetCharValue(dbT, "sepa/ABWA", 0, NULL);
+        if (s && *s) {
+          /* for now: ignore this "ABWA"="Abweichender Auftraggeber" */
+        }
+
+        s=GWEN_DB_GetCharValue(dbT, "sepa/ABWE", 0, NULL);
+        if (s && *s) {
+          /* for now: ignore this "ABWA"="Abweichender Empfaenger" */
+        }
+      }
+#endif
 
       /* add transaction */
       DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding transaction");
