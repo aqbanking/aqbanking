@@ -33,7 +33,25 @@ static AB_TRANSACTION *dbToTransaction(AB_IMEXPORTER *ie, GWEN_DB_NODE *db);
 static void handleTransactionDetails(AB_TRANSACTION *t, const char *sDetails);
 
 
+static char *my_strndup(const char *src, size_t n)
+{
+  int len;
 
+  len=strlen(src);
+  if (len<n)
+    return strdup(src);
+  else {
+    char *cpy;
+
+    cpy=(char *) malloc(n+1);
+    assert(cpy);
+    memmove(cpy, src, n);
+    cpy[n]=0;
+    return cpy;
+  }
+}
+
+#define strndup my_strndup
 
 AB_IMEXPORTER *AB_ImExporterXML_new(AB_BANKING *ab)
 {

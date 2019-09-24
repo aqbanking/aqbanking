@@ -2,10 +2,10 @@ SUBDIRS=libofxhome
 
 INCLUDES = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/..
 
-AM_CFLAGS=@visibility_cflags@
+AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
 localedir=$(datadir)/locale
-DEFS += -DLOCALEDIR=\"$(localedir)\" -DBUILDING_AQOFXCONNECT
+DEFS += -DLOCALEDIR=\"$(localedir)\"
 
 plugindir = $(aqbanking_plugindir)/providers
 plugin_DATA = aqofxconnect.xml

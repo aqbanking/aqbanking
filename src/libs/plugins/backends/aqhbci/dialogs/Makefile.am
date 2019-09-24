@@ -7,7 +7,7 @@ INCLUDES = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_incl
   -I.. -I$(srcdir)/.. \
   -I$(top_srcdir)/src/libs/aqbanking $(gwenhywfar_includes)
 
-AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
+AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
 noinst_LTLIBRARIES=libaqhbci_dlgs.la
 

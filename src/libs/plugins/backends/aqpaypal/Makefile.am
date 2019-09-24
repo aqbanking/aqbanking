@@ -2,9 +2,7 @@ SUBDIRS=control
 
 INCLUDES = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/..
 
-AM_CFLAGS=@visibility_cflags@
-
-DEFS += -DBUILDING_AQPAYPAL
+AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
 #iheaderdir=${includedir}/aqpaypal
 #iheader_HEADERS=

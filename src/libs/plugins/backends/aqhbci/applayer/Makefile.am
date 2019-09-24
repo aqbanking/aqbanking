@@ -1,6 +1,6 @@
 SUBDIRS=xml
 
-AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
+AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
 INCLUDES = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) \
   -I$(srcdir)/../../ \

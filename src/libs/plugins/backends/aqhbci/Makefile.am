@@ -1,7 +1,7 @@
 DIST_SUBDIRS=msglayer joblayer ajobs admjobs applayer banking tan dialogs control
 SUBDIRS=msglayer joblayer ajobs admjobs applayer banking tan dialogs control
 
-AM_CFLAGS=-DBUILDING_AQHBCI @visibility_cflags@
+AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
 EXTRA_DIST=aqhbci.xml.in header.xml.in
 

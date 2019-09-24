@@ -3,7 +3,7 @@ INCLUDES = \
   -I$(top_builddir)/src/libs \
   -I$(top_srcdir)/src/libs
 
-AM_CFLAGS=@visibility_cflags@
+AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
 EXTRA_DIST=README
 
