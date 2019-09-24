@@ -328,7 +328,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
      * However: if valuta date and booking date are in different years
      * the booking year might be too high.
      * We detect this case by comparing the months: If the booking month
-     * is and the valuta month differ by more than 10 months then the year
+     * and the valuta month differ by more than 10 months then the year
      * of the booking date will be adjusted.
      */
     if (d2b-d2a>7) {
@@ -344,7 +344,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
 
     dt=GWEN_Date_fromGregorian(d1b, d2b, d3b);
     assert(dt);
-    GWEN_DB_SetCharValue(data, GWEN_DB_FLAGS_DEFAULT, "date", GWEN_Date_GetString(dt));
+    GWEN_DB_SetCharValue(data, GWEN_DB_FLAGS_OVERWRITE_VARS, "date", GWEN_Date_GetString(dt));
     GWEN_Date_free(dt);
     p+=4;
     bleft-=4;
@@ -828,7 +828,7 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
   GWEN_DB_NODE *dbDay=NULL;
   GWEN_DB_NODE *dbTemplate=NULL;
   GWEN_DB_NODE *dbTransaction=NULL;
-  GWEN_DB_NODE *dbDate=NULL;
+  const char *sDate=NULL;
   uint32_t progressId;
   const char *acceptTag20="*";
   const char *rejectTag20=NULL;
@@ -924,9 +924,9 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
             return -1;
           }
           else {
-            dbDate=GWEN_DB_GetGroup(dbSaldo, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                                    "date");
-          }
+	    sDate=GWEN_DB_GetCharValue(dbSaldo, "date", 0, NULL);
+	    DBG_INFO(AQBANKING_LOGDOMAIN, "Storing date \"%s\" as default for maybe later", sDate?sDate:"(empty)");
+	  }
 
           curr=GWEN_DB_GetCharValue(dbSaldo, "value/currency", 0, 0);
           if (curr) {
@@ -975,15 +975,10 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
           dbTransaction=GWEN_DB_GetGroup(dbDay, GWEN_PATH_FLAGS_CREATE_GROUP,
                                          "transaction");
           GWEN_DB_AddGroupChildren(dbTransaction, dbTemplate);
-          if (dbDate) {
-            GWEN_DB_NODE *dbT;
-
-            /* dbDate is set upon parsing of tag 60F, use it as a default
-             * if possible */
-            dbT=GWEN_DB_GetGroup(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-                                 "date");
-            assert(dbT);
-            GWEN_DB_AddGroupChildren(dbT, dbDate);
+          if (sDate && *sDate) {
+	    /* dbDate is set upon parsing of tag 60F, use it as a default
+	     * if possible */
+	    GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS, "date", sDate);
           }
           if (AHB_SWIFT940_Parse_61(tg, flags, dbTransaction, cfg)) {
             DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
