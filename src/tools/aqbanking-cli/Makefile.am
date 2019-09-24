@@ -68,6 +68,10 @@ aqebics_tool_LDADD= \
 if IS_WINDOWS
 
 aqbanking_cli_LDFLAGS+=-mconsole
+aqhbci_tool4_LDFLAGS+=-mconsole
+aqpaypal_tool_LDFLAGS+=-mconsole
+aqebics_tool_LDFLAGS+=-mconsole
+
 
 endif
 
