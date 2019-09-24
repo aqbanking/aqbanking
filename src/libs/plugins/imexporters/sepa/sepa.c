@@ -324,7 +324,7 @@ static int AH_ImExporterSEPA_Export_Pain_Setup(AB_IMEXPORTER *ie,
     if (nn) {
       GWEN_XMLNode_AddChild(n, nn);
       pmtinf=AH_ImExporter_Sepa_PmtInf_List_First(pl);
-      GWEN_XMLNode_SetCharValue(nn, "Nm", pmtinf->localName);
+      AH_ImExporterSEPA_XmlSetCharValueEscaped(nn, "Nm", pmtinf->localName);
     }
   }
   free(ctrlsum);
