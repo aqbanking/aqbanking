@@ -37,6 +37,9 @@ aqbanking_cli_SOURCES= \
   control.c
 
 aqbanking_cli_LDFLAGS=
+aqhbci_tool4_LDFLAGS=
+aqpaypal_tool_LDFLAGS=
+aqebics_tool_LDFLAGS=
 #-Wl,-static
 
 DEFS += -DLOCALEDIR=\"$(localedir)\" -DAQBANKING_CLI_VERSION_STRING=\"@AQBANKING_CLI_VERSION_STRING@\"
