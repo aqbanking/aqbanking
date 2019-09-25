@@ -157,7 +157,7 @@ int AH_Job_SampleBpdVersions(const char *name,
       /* get version from BPD */
       version=atoi(GWEN_DB_GroupName(jobBPD));
       /* now get the correct version of the JOB */
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Checking Job %s (%d)", name, version);
+      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Checking Job %s (%d)", name, version);
       node=GWEN_MsgEngine_FindNodeByProperty(e,
                                              "JOB",
                                              "id",
@@ -209,7 +209,7 @@ int AH_Job_GetMaxVersionUpUntil(const char *name, AB_USER *u, int maxVersion)
       dbT=GWEN_DB_GetNextGroup(dbT);
     }
     GWEN_DB_Group_free(db);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Max version of [%s] up until %d: %d",
+    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Max version of [%s] up until %d: %d",
              name, maxVersion, m);
     return m;
   }
@@ -273,7 +273,7 @@ int AH_Job_PrepareNextMessage(AH_JOB *j)
     rv=j->nextMsgFn(j);
     if (rv==0) {
       /* callback flagged that no message follows */
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Job says: No more messages");
+      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Job says: No more messages");
       j->flags&=~AH_JOB_FLAGS_HASMOREMSGS;
       return 0;
     }
@@ -478,7 +478,7 @@ void AH_Job_SetFlags(AH_JOB *j, uint32_t f)
 {
   assert(j);
   assert(j->usage);
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Changing flags of job \"%s\" from %08x to %08x",
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Changing flags of job \"%s\" from %08x to %08x",
            j->name, j->flags, f);
   j->flags=f;
 }
@@ -489,7 +489,7 @@ void AH_Job_AddFlags(AH_JOB *j, uint32_t f)
 {
   assert(j);
   assert(j->usage);
-  DBG_INFO(AQHBCI_LOGDOMAIN,
+  DBG_DEBUG(AQHBCI_LOGDOMAIN,
            "Changing flags of job \"%s\" from %08x to %08x",
            j->name, j->flags, j->flags|f);
   j->flags|=f;
@@ -501,7 +501,7 @@ void AH_Job_SubFlags(AH_JOB *j, uint32_t f)
 {
   assert(j);
   assert(j->usage);
-  DBG_INFO(AQHBCI_LOGDOMAIN,
+  DBG_DEBUG(AQHBCI_LOGDOMAIN,
            "Changing flags of job \"%s\" from %08x to %08x",
            j->name, j->flags, j->flags&~f);
   j->flags&=~f;
@@ -576,7 +576,7 @@ int AH_Job_HasSegment(const AH_JOB *j, int seg)
 {
   assert(j);
   assert(j->usage);
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" checked for %d: first=%d, last=%d",
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Job \"%s\" checked for %d: first=%d, last=%d",
            j->name, seg,  j->firstSegment, j->lastSegment);
   return (seg<=j->lastSegment && seg>=j->firstSegment);
 }
@@ -747,7 +747,7 @@ GWEN_XMLNODE *AH_Job_GetXmlNode(const AH_JOB *j)
   assert(j);
   assert(j->usage);
   if (j->flags & AH_JOB_FLAGS_MULTIMSG) {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
+    DBG_DEBUG(AQHBCI_LOGDOMAIN,
              "Multi message node, returning current message node");
     return j->msgNode;
   }
@@ -1124,7 +1124,7 @@ int AH_Job_HasResultWithCode(const AH_JOB *j, int wantedCode)
             int code;
 
             code=GWEN_DB_GetIntValue(dbRes, "resultcode", 0, 0);
-            DBG_INFO(AQHBCI_LOGDOMAIN, "Checking result code %d against %d", code, wantedCode);
+            DBG_DEBUG(AQHBCI_LOGDOMAIN, "Checking result code %d against %d", code, wantedCode);
             if (code==wantedCode) {
               return 1;
             }
@@ -1247,7 +1247,7 @@ void AH_Job_SetExpectedCrypter(AH_JOB *j, const char *s)
 int AH_Job_CheckEncryption(AH_JOB *j, GWEN_DB_NODE *dbRsp)
 {
   if (AH_User_GetCryptMode(j->user)==AH_CryptMode_Pintan) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Not checking security in PIN/TAN mode");
+    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Not checking security in PIN/TAN mode");
   }
   else {
     GWEN_DB_NODE *dbSecurity;
@@ -1267,7 +1267,7 @@ int AH_Job_CheckEncryption(AH_JOB *j, GWEN_DB_NODE *dbRsp)
 
     s=GWEN_DB_GetCharValue(dbSecurity, "crypter", 0, 0);
     if (s) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Response encrypted with key [%s]", s);
+      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Response encrypted with key [%s]", s);
 
       if (*s=='!' || *s=='?') {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Encrypted with invalid key (%s)", s);
@@ -1305,7 +1305,7 @@ int AH_Job_CheckEncryption(AH_JOB *j, GWEN_DB_NODE *dbRsp)
       }
     }
     else {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "No specific encrypter expected");
+      DBG_DEBUG(AQHBCI_LOGDOMAIN, "No specific encrypter expected");
     }
   }
 
@@ -1317,7 +1317,7 @@ int AH_Job_CheckEncryption(AH_JOB *j, GWEN_DB_NODE *dbRsp)
 int AH_Job_CheckSignature(AH_JOB *j, GWEN_DB_NODE *dbRsp)
 {
   if (AH_User_GetCryptMode(j->user)==AH_CryptMode_Pintan) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Not checking signature in PIN/TAN mode");
+    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Not checking signature in PIN/TAN mode");
   }
   else {
     GWEN_DB_NODE *dbSecurity;
@@ -1451,7 +1451,7 @@ int AH_Job_CheckSignature(AH_JOB *j, GWEN_DB_NODE *dbRsp)
         }
         else {
           if (strcasecmp(s, j->expectedSigner)==0) {
-            DBG_INFO(AQHBCI_LOGDOMAIN,
+            DBG_DEBUG(AQHBCI_LOGDOMAIN,
                      "Jobs signed as expected with \"%s\"",
                      j->expectedSigner);
             break;
@@ -1465,10 +1465,10 @@ int AH_Job_CheckSignature(AH_JOB *j, GWEN_DB_NODE *dbRsp)
           }
         }
       } /* for */
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Signature check ok");
+      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Signature check ok");
     }
     else {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "No signature expected");
+      DBG_DEBUG(AQHBCI_LOGDOMAIN, "No signature expected");
     }
   }
   return 0;
@@ -1490,7 +1490,7 @@ void AH_Job_SetUsedTan(AH_JOB *j, const char *s)
   assert(j);
   assert(j->usage);
 
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Changing TAN in job [%s](%08x) from [%s] to [%s]",
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Changing TAN in job [%s](%08x) from [%s] to [%s]",
            j->name, j->id,
            (j->usedTan)?(j->usedTan):"(empty)",
            s?s:"(empty)");

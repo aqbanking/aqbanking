@@ -20,7 +20,7 @@ int AH_Job__GetJobGroup(GWEN_DB_NODE *dbJob, const char *groupName, GWEN_DB_NODE
 
   dbRd=GWEN_DB_GetGroup(dbJob, GWEN_PATH_FLAGS_NAMEMUSTEXIST, groupName);
   if (dbRd==NULL) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Group \"%s\" not found in response", groupName);
+    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Group \"%s\" not found in response", groupName);
     return GWEN_ERROR_NOT_FOUND;
   }
 
@@ -129,7 +129,7 @@ int AH_Job__Commit_Bpd(AH_JOB *j)
   if (rv==0) {
     GWEN_DB_NODE *currService;
 
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Found communication infos");
+    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Found communication infos");
 
     currService=GWEN_DB_FindFirstGroup(dbRd, "service");
     while (currService) {
@@ -186,7 +186,7 @@ int AH_Job__Commit_Bpd(AH_JOB *j)
             break;
           }
 
-          DBG_INFO(AQHBCI_LOGDOMAIN, "Server address found: %s", GWEN_Buffer_GetStart(tbuf));
+          DBG_DEBUG(AQHBCI_LOGDOMAIN, "Server address found: %s", GWEN_Buffer_GetStart(tbuf));
           GWEN_Gui_ProgressLog2(0,
                                 GWEN_LoggerLevel_Info,
                                 I18N("Server address found: %s"),
@@ -239,7 +239,7 @@ int AH_Job__Commit_Bpd(AH_JOB *j)
       int segver;
       /* check for BPD job */
 
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Checking whether \"%s\" is a BPD job", GWEN_DB_GroupName(dbRd));
+      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Checking whether \"%s\" is a BPD job", GWEN_DB_GroupName(dbRd));
       segver=GWEN_DB_GetIntValue(dbRd, "head/version", 0, 0);
       /* get segment description (first try id, then code) */
       bpdn=GWEN_MsgEngine_FindNodeByProperty(msgEngine, "SEG", "id", segver, GWEN_DB_GroupName(dbRd));
@@ -270,10 +270,10 @@ int AH_Job__Commit_Bpd(AH_JOB *j)
           /* remove "head" and "segment" group */
           GWEN_DB_DeleteGroup(bn, "head");
           GWEN_DB_DeleteGroup(bn, "segment");
-          DBG_INFO(AQHBCI_LOGDOMAIN, "Added BPD Job %s:%d", GWEN_DB_GroupName(dbRd), segver);
+          DBG_DEBUG(AQHBCI_LOGDOMAIN, "Added BPD Job %s:%d", GWEN_DB_GroupName(dbRd), segver);
         } /* if isbpdjob */
         else {
-          DBG_INFO(AQHBCI_LOGDOMAIN,
+          DBG_DEBUG(AQHBCI_LOGDOMAIN,
                    "Segment \"%s\" is known but not as a BPD job",
                    GWEN_DB_GroupName(dbRd));
         }
@@ -436,7 +436,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock)
           keyver=GWEN_DB_GetIntValue(dbRd, "keyname/keyversion",  0, -1);
           modp=(uint8_t *)GWEN_DB_GetBinValue(dbRd, "key/modulus",  0, NULL, 0, &modl);
           sentModulusLength=modl;
-          DBG_INFO(AQHBCI_LOGDOMAIN, "Got Key with modulus length %d.", modl);
+          DBG_DEBUG(AQHBCI_LOGDOMAIN, "Got Key with modulus length %d.", modl);
           /* skip zero bytes if any */
           while (modl && *modp==0) {
             modp++;
@@ -626,7 +626,7 @@ int AH_Job__CommitSystemData(AH_JOB *j, int doLock)
   } /* while */
 
   /* try to extract bank parameter data */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Committing BPD");
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Committing BPD");
   rv=AH_Job__Commit_Bpd(j);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);

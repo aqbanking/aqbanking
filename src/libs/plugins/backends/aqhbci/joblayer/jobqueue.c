@@ -251,7 +251,7 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j)
        * so simply copy the signers of this job */
       sl=AH_Job_GetSigners(j);
       if (sl) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Copying %d signers from job to queue", GWEN_StringList_Count(sl));
+        DBG_DEBUG(AQHBCI_LOGDOMAIN, "Copying %d signers from job to queue", GWEN_StringList_Count(sl));
         GWEN_StringList_free(jq->signers);
         jq->signers=GWEN_StringList_dup(sl);
       }
@@ -300,7 +300,7 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j)
   AH_Job_List_Add(j, jq->jobs);
   AH_Job_SetStatus(j, AH_JobStatusEnqueued);
 
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Job added to the queue (flags: %08x)", jq->flags);
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Job added to the queue (flags: %08x)", jq->flags);
   return AH_JobQueueAddResultOk;
 }
 
@@ -372,7 +372,7 @@ AH_MSG *AH_JobQueue_ToMessageWithTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, const char
     AH_Msg_SetTan(msg, sTan);
 
 
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding queue to message (flags: %08x)", jq->flags);
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Adding queue to message (flags: %08x)", jq->flags);
 
   if (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Queue needs a TAN");
@@ -423,7 +423,7 @@ AH_MSG *AH_JobQueue_ToMessageWithTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, const char
       GWEN_XMLNODE *jnode;
       GWEN_BUFFER *msgBuf;
 
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Encoding job \"%s\"", AH_Job_GetName(j));
+      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Encoding job \"%s\"", AH_Job_GetName(j));
       jargs=AH_Job_GetArguments(j);
       jnode=AH_Job_GetXmlNode(j);
       if (strcasecmp(GWEN_XMLNode_GetData(jnode), "message")==0) {
@@ -455,7 +455,7 @@ AH_MSG *AH_JobQueue_ToMessageWithTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, const char
         AH_Job_SetLastSegment(j, lastSeg);
 
         if (AH_Job_GetStatus(j)!=AH_JobStatusError) {
-          DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" encoded",
+          DBG_DEBUG(AQHBCI_LOGDOMAIN, "Job \"%s\" encoded",
                    AH_Job_GetName(j));
           AH_Job_SetStatus(j, AH_JobStatusEncoded);
           encodedJobs++;
@@ -516,7 +516,7 @@ AH_MSG *AH_JobQueue_ToMessageWithTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, const char
   } /* while */
 
 
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Job queue encoded and ready to be sent");
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Job queue encoded and ready to be sent");
   return msg;
 }
 
@@ -735,7 +735,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
     const char *p;
 
     p=GWEN_StringListEntry_Data(se);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Adding signer \"%s\"", p);
+    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Adding signer \"%s\"", p);
     GWEN_DB_SetCharValue(dbSecurity, GWEN_DB_FLAGS_DEFAULT, "signer", p);
     se=GWEN_StringListEntry_Next(se);
   } /* while */
@@ -743,7 +743,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
   /* set crypter */
   p=AH_Msg_GetCrypterId(msg);
   if (p) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Storing crypter \"%s\"", p);
+    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Storing crypter \"%s\"", p);
     GWEN_DB_SetCharValue(dbSecurity, GWEN_DB_FLAGS_DEFAULT, "crypter", p);
   }
 
@@ -762,7 +762,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
         /* remove the attach point */
         args=AH_Job_GetArguments(j);
         if (GWEN_DB_DeleteVar(args, "attach")) {
-          DBG_INFO(AQHBCI_LOGDOMAIN, "Attach point removed");
+          DBG_DEBUG(AQHBCI_LOGDOMAIN, "Attach point removed");
         }
       } /* if job is attachable */
     } /* if status matches */
@@ -776,7 +776,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
     GWEN_DB_NODE *dbData;
     int segNum;
 
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Handling response \"%s\"",
+    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Handling response \"%s\"",
              GWEN_DB_GroupName(dbCurr));
 
     /* use same name for main response group */
@@ -800,12 +800,12 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
         st=AH_Job_GetStatus(j);
         if (st==AH_JobStatusSent ||
             st==AH_JobStatusAnswered) {
-          DBG_INFO(AQHBCI_LOGDOMAIN,
+          DBG_DEBUG(AQHBCI_LOGDOMAIN,
                    "Checking whether job \"%s\" has segment %d",
                    AH_Job_GetName(j), segNum);
           if ((AH_Msg_GetMsgNum(msg)==AH_Job_GetMsgNum(j)) &&
               AH_Job_HasSegment(j, segNum)) {
-            DBG_INFO(AQHBCI_LOGDOMAIN,
+            DBG_DEBUG(AQHBCI_LOGDOMAIN,
                      "Job \"%s\" claims to have the segment %d",
                      AH_Job_GetName(j), segNum);
             break;
@@ -844,7 +844,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
                   GWEN_DB_NODE *args;
 
                   /* store the attach point */
-                  DBG_INFO(AQHBCI_LOGDOMAIN, "Storing attach point");
+                  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Storing attach point");
                   args=AH_Job_GetArguments(j);
                   GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS,
                                        "attach", p);
@@ -891,7 +891,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
           } /* while */
         } /* if SegResult */
 
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Adding response \"%s\" to job \"%s\"",
+        DBG_DEBUG(AQHBCI_LOGDOMAIN, "Adding response \"%s\" to job \"%s\"",
                  GWEN_DB_GroupName(dbCurr),
                  AH_Job_GetName(j));
         AH_Job_AddResponse(j, dbResponse);

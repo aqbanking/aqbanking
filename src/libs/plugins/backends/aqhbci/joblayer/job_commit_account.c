@@ -44,7 +44,7 @@ int AH_Job__Commit_Accounts(AH_JOB *j)
   AH_Job__Commit_Accounts_RemoveEmpty(j, accList);
 
   /* find out which accounts are new */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Checking for existing or to be added accounts");
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Checking for existing or to be added accounts");
   if (AB_Account_List_GetCount(accList)) {
     AB_ACCOUNT_SPEC_LIST *accountSpecList=NULL;
 
@@ -62,7 +62,7 @@ int AH_Job__Commit_Accounts(AH_JOB *j)
 
         storedUid=AH_Job__Commit_Accounts_FindStored(j, acc, accountSpecList);
         if (storedUid) {
-          DBG_INFO(AQHBCI_LOGDOMAIN, "Found a matching account (%x)", storedUid);
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Found a matching account (%x, %lu)", storedUid, (long unsigned int) storedUid);
           AB_Account_SetUniqueId(acc, storedUid);
         }
 
@@ -73,7 +73,7 @@ int AH_Job__Commit_Accounts(AH_JOB *j)
   }
 
   /* now either add new accounts or modify existing ones */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding new or modifying existing accounts");
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Adding new or modifying existing accounts");
   if (AB_Account_List_GetCount(accList)) {
     AB_ACCOUNT *acc;
 
@@ -124,7 +124,7 @@ static int AH_Job__Commit_Accounts_ReadAccounts(AH_JOB *j, AB_ACCOUNT_LIST *accL
       GWEN_DB_NODE *dbUpd;
       GWEN_DB_NODE *gr;
 
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Found an account");
+      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Found an account");
 
       /* account data found */
       acc=AB_Provider_CreateAccountObject(pro);
@@ -176,7 +176,7 @@ static int AH_Job__Commit_Accounts_ReadAccounts(AH_JOB *j, AB_ACCOUNT_LIST *accL
 static void AH_Job__Commit_Accounts_RemoveEmpty(AH_JOB *j, AB_ACCOUNT_LIST *accList)
 {
   /* only keep accounts which have at least IBAN or bankcode and account number */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Checking for empty accounts");
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Checking for empty accounts");
   if (AB_Account_List_GetCount(accList)) {
     AB_ACCOUNT *acc;
 
@@ -193,7 +193,7 @@ static void AH_Job__Commit_Accounts_RemoveEmpty(AH_JOB *j, AB_ACCOUNT_LIST *accL
       iban=AB_Account_GetIban(acc);
 
       if (!((iban && *iban) || (accountNum && *accountNum && bankCode && *bankCode))) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Removing empty account from import list");
+        DBG_DEBUG(AQHBCI_LOGDOMAIN, "Removing empty account from import list");
         AB_Account_List_Del(acc);
         AB_Account_free(acc);
       }
@@ -228,7 +228,7 @@ static uint32_t AH_Job__Commit_Accounts_FindStored(AH_JOB *j, const AB_ACCOUNT *
 	   accountType);
 
   if (iban && *iban && accountType>AB_AccountType_Unknown) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Comparing IBAN and old account specs");
+    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Comparing IBAN and old account specs");
     /* IBAN given, try that first */
     as=AB_AccountSpec_List_FindFirst(asl,
 				     AB_Provider_GetName(pro),
@@ -243,7 +243,7 @@ static uint32_t AH_Job__Commit_Accounts_FindStored(AH_JOB *j, const AB_ACCOUNT *
 
   if (as==NULL) {
     if (accountNum && *accountNum && bankCode && *bankCode && accountType>AB_AccountType_Unknown) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Comparing old account specs");
+      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Comparing old account specs");
       as=AB_AccountSpec_List_FindFirst(asl,
 				       AB_Provider_GetName(pro),
 				       AB_Account_GetCountry(acc),
@@ -260,7 +260,7 @@ static uint32_t AH_Job__Commit_Accounts_FindStored(AH_JOB *j, const AB_ACCOUNT *
     uint32_t uniqueId;
 
     uniqueId=AB_AccountSpec_GetUniqueId(as);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Found a matching account (%x)", uniqueId);
+    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Found a matching account (%lu)", (long unsigned int) uniqueId);
     return uniqueId;
   }
 
@@ -362,7 +362,7 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc)
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Coud not write new account (%d)", rv);
     }
     else {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Reading back added account");
+      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Reading back added account");
       rv=AB_Provider_GetAccount(pro, AB_Account_GetUniqueId(acc), 0, 0, &storedAcc); /* no-lock, no-unlock */
       if (rv<0) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Error getting referred account (%d)", rv);
@@ -376,9 +376,9 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc)
     GWEN_DB_NODE *gr;
     char numbuf[32];
 
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Setting UPD jobs for account %u in user %u",
-               (unsigned int) AB_Account_GetUniqueId(storedAcc),
-               (unsigned int) AB_User_GetUniqueId(j->user));
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Setting UPD jobs for account %u in user %u",
+             (unsigned int) AB_Account_GetUniqueId(storedAcc),
+             (unsigned int) AB_User_GetUniqueId(j->user));
 
     /* get UPD jobs */
     dbUpd=AH_User_GetUpd(j->user);
@@ -395,7 +395,7 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc)
     while (gr) {
       if (strcasecmp(GWEN_DB_GroupName(gr), "updjob")==0) {
         /* found an upd job */
-        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Adding UPD job");
+        DBG_DEBUG(AQHBCI_LOGDOMAIN, "Adding UPD job");
         GWEN_DB_AddGroup(dbUpd, GWEN_DB_Group_dup(gr));
       }
       gr=GWEN_DB_GetNextGroup(gr);
