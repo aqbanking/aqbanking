@@ -116,7 +116,7 @@ int AH_Job_HandleResults(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
   if (j->handleResultsFn)
     return j->handleResultsFn(j, ctx);
   else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No handleResultsFn set");
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No handleResultsFn set in job \"%s\"", (j->name)?(j->name):"(unnamed)");
     return GWEN_ERROR_NOT_SUPPORTED;
   }
 }

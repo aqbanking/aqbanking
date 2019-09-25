@@ -44,7 +44,7 @@ AH_JOB *AH_Job_GetTransactionsCAMT_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT 
   GWEN_DB_NODE *dbParams;
   int i;
 
-  DBG_ERROR(AQHBCI_LOGDOMAIN, "Trying to create CAMT job");
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Trying to create CAMT job");
   j=AH_AccountJob_new("JobGetTransactionsCAMT", pro, u, account);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "CAMT Job not found");
@@ -80,7 +80,7 @@ AH_JOB *AH_Job_GetTransactionsCAMT_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT 
     if (s==NULL)
       break;
     if (GWEN_Text_ComparePattern(s, "*camt.052.001.02", 0)!=-1) { /* TODO: widen the pattern later */
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Adding CAMT format  %s", s);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Adding CAMT format  %s", s);
       GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "SupportedFormats/format", s);
     }
   } /* for */

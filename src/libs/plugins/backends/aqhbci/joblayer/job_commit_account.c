@@ -245,7 +245,7 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc)
     int rv;
 
     /* account already exists, needs update */
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Account exists, modifying");
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Account exists, modifying");
     rv=AB_Provider_GetAccount(pro, AB_Account_GetUniqueId(acc), 1, 0, &storedAcc); /* lock, don't unlock */
     if (rv<0) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Error getting referred account (%d)", rv);
