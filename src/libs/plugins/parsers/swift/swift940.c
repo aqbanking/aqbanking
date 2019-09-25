@@ -1102,7 +1102,7 @@ void _readSubTagsIntoDb(AHB_SWIFT_SUBTAG_LIST *stlist, GWEN_DB_NODE *dbData, uin
     case 61:
     case 62:
     case 63: /* Verwendungszweck */
-      GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_DEFAULT, "purpose", s);
+      AHB_SWIFT__SetCharValue(dbData, flags, "purpose", s);
       break;
 
     case 30: /* BLZ Gegenseite */
