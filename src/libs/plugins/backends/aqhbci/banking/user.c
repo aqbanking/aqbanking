@@ -1250,6 +1250,32 @@ void AH_User_SubTanMethods(AB_USER *u, uint32_t m)
 
 
 
+int AH_User_GetSelectedTanInputMechanism(const AB_USER *u)
+{
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  return ue->selectedTanInputMechanism;
+}
+
+
+
+void AH_User_SetSelectedTanInputMechanism(AB_USER *u, int i)
+{
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  ue->selectedTanInputMechanism=i;
+}
+
+
+
 int AH_User_GetRdhType(const AB_USER *u)
 {
   AH_USER *ue;

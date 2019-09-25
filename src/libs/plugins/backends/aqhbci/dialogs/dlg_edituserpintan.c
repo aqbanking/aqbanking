@@ -274,6 +274,35 @@ void AH_EditUserPinTanDialog_Init(GWEN_DIALOG *dlg)
   s=AB_User_GetCustomerId(xdlg->user);
   GWEN_Dialog_SetCharProperty(dlg, "customerIdEdit", GWEN_DialogProperty_Value, 0, s, 0);
 
+  /* tan input mechanism */
+  GWEN_Dialog_SetCharProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_ToolTip, 0,
+                              I18N("Please only change this value if you know what you are doing, otherwise leave it at \"auto\"."),
+                              0);
+  GWEN_Dialog_SetCharProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_AddValue, 0, I18N("tanMechanism|auto"), 0);
+  GWEN_Dialog_SetCharProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_AddValue, 0, I18N("tanMechanism|text"), 0);
+  GWEN_Dialog_SetCharProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_AddValue, 0, I18N("tanMechanism|chipTAN optic"), 0);
+  GWEN_Dialog_SetCharProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_AddValue, 0, I18N("tanMechanism|QR image"), 0);
+  GWEN_Dialog_SetCharProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_AddValue, 0, I18N("tanMechanism|photoTAN"), 0);
+
+  switch(AH_User_GetSelectedTanInputMechanism(xdlg->user)) {
+  case AB_BANKING_TANMETHOD_TEXT:
+    GWEN_Dialog_SetIntProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_Value, 0, 1, 0);
+    break;
+  case AB_BANKING_TANMETHOD_CHIPTAN_OPTIC:
+    GWEN_Dialog_SetIntProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_Value, 0, 2, 0);
+    break;
+  case AB_BANKING_TANMETHOD_CHIPTAN_QR:
+    GWEN_Dialog_SetIntProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_Value, 0, 3, 0);
+    break;
+  case AB_BANKING_TANMETHOD_PHOTOTAN:
+    GWEN_Dialog_SetIntProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_Value, 0, 4, 0);
+    break;
+  default:
+    GWEN_Dialog_SetIntProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_Value, 0, 0, 0);
+    break;
+  }
+
+  /* hbci version */
   GWEN_Dialog_SetCharProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_AddValue, 0, "2.20", 0);
   GWEN_Dialog_SetCharProperty(dlg, "hbciVersionCombo", GWEN_DialogProperty_AddValue, 0, "3.0", 0);
 
@@ -443,6 +472,28 @@ int AH_EditUserPinTanDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
     break;
   }
 
+
+  /* tan mechanism */
+  i=GWEN_Dialog_GetIntProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_Value, 0, -1);
+  switch (i) {
+  case 1:
+    AH_User_SetSelectedTanInputMechanism(xdlg->user, AB_BANKING_TANMETHOD_TEXT);
+    break;
+  case 2:
+    AH_User_SetSelectedTanInputMechanism(xdlg->user, AB_BANKING_TANMETHOD_CHIPTAN_OPTIC);
+    break;
+  case 3:
+    AH_User_SetSelectedTanInputMechanism(xdlg->user, AB_BANKING_TANMETHOD_CHIPTAN_QR);
+    break;
+  case 4:
+    AH_User_SetSelectedTanInputMechanism(xdlg->user, AB_BANKING_TANMETHOD_PHOTOTAN);
+    break;
+  default:
+    AH_User_SetSelectedTanInputMechanism(xdlg->user, 0);
+    break;
+  }
+
+  /* tan method */
   tm=AH_EditUserPinTanDialog_GetCurrentTanMethod(dlg);
   if (tm) {
     int fn;

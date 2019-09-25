@@ -54,7 +54,13 @@ typedef int (*AH_TAN_MECHANISM_GETTAN_FN)(AH_TAN_MECHANISM *tanMechanism,
 
 
 
-AH_TAN_MECHANISM *AH_TanMechanism_Factory(const AH_TAN_METHOD *tanMethod);
+/**
+ * Select a TAN input mechanism for the given tan method description (or use preselected mechanism).
+ *
+ * @param tanMethod selected TAN method for which to determine the input mechanis to use
+ * @param preselectedId tan mechanism id selected by user (see @ref AB_BANKING_TANMETHOD_TEXT and following)
+ */
+AH_TAN_MECHANISM *AH_TanMechanism_Factory(const AH_TAN_METHOD *tanMethod, int preselectedId);
 
 
 

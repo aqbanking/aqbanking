@@ -56,6 +56,7 @@ int AH_Provider_InputTanWithChallenge(AB_PROVIDER *pro,
   GWEN_BUFFER *bufGuiText;
   GWEN_BUFFER *bufChallenge;
   AH_TAN_MECHANISM *tanMechanism;
+  int userSelectedTanMechanism;
 
   assert(tanMethodDescription);
 
@@ -72,7 +73,9 @@ int AH_Provider_InputTanWithChallenge(AB_PROVIDER *pro,
     return rv;
   }
 
-  tanMechanism=AH_TanMechanism_Factory(tanMethodDescription);
+  userSelectedTanMechanism=AH_User_GetSelectedTanInputMechanism(u);
+
+  tanMechanism=AH_TanMechanism_Factory(tanMethodDescription, userSelectedTanMechanism);
   if (tanMechanism==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not determine TAN mechanism to use");
     return rv;

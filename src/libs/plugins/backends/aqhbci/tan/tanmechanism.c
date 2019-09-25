@@ -35,6 +35,7 @@ typedef struct {
 static TAN_MAP_ENTRY _zkaNameMap[]= {
   {"HHD",       AB_BANKING_TANMETHOD_TEXT},
   {"mobileTAN", AB_BANKING_TANMETHOD_TEXT},
+  {"photoTAN",  AB_BANKING_TANMETHOD_PHOTOTAN},
   {NULL,        0}
 };
 
@@ -150,12 +151,15 @@ void AH_TanMechanism_SetGetTanFn(AH_TAN_MECHANISM *tanMechanism, AH_TAN_MECHANIS
 
 
 
-AH_TAN_MECHANISM *AH_TanMechanism_Factory(const AH_TAN_METHOD *tanMethod)
+AH_TAN_MECHANISM *AH_TanMechanism_Factory(const AH_TAN_METHOD *tanMethod, int preselectedId)
 {
   int id;
   AH_TAN_MECHANISM *tanMechanism=NULL;
 
-  id=_getTanMethodIdForTanMethod(tanMethod);
+  if (preselectedId)
+    id=preselectedId;
+  else
+    id=_getTanMethodIdForTanMethod(tanMethod);
   if (id==0) {
     int idFunction;
     const char *sZkaName;

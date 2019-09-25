@@ -48,6 +48,8 @@ struct AH_USER {
   uint32_t flags;
   uint32_t tanMethods;
 
+  int selectedTanInputMechanism;
+
   char *tokenType;
   char *tokenName;
   uint32_t tokenContextId;

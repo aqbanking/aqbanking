@@ -60,6 +60,9 @@
           <widget type="label" text="Selected TAN Method" />
           <widget type="comboBox" name="tanMethodCombo"  columns="20" flags="fillX" />
 
+          <widget type="label" text="Override TAN Input Mechanism" />
+          <widget type="comboBox" name="tanMechanismCombo"  columns="20" flags="fillX" />
+
           <widget type="label" text="TAN Medium ID" />
           <widget type="lineEdit" name="tanMediumIdEdit" columns="32" flags="fillX" />
 
@@ -84,7 +87,7 @@
 
 
     <widget type="groupBox" text="Special Actions" flags="fillX" >
-      <widget type="gridLayout" columns="2" flags="fillX equalWidth" >
+      <widget type="gridLayout" columns="3" flags="fillX equalWidth" >
         <widget type="pushButton" text="Get Certificate" name="getCertButton" />
         <widget type="pushButton" text="Get Bank Info" name="getBankInfoButton" />
         <widget type="pushButton" text="Get System Id" name="getSysIdButton" />

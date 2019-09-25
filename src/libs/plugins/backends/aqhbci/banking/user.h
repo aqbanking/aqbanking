@@ -157,6 +157,17 @@ AQHBCI_API
 void AH_User_SetSelectedTanMethod(AB_USER *u, int i);
 
 
+/**
+ * Return selected TAN inpout method (see @ref AB_BANKING_TANMETHOD_TEXT and following).
+ *
+ * @return selected mechanism (0 if none selected)
+ */
+int AH_User_GetSelectedTanInputMechanism(const AB_USER *u);
+
+
+void AH_User_SetSelectedTanInputMechanism(AB_USER *u, int i);
+
+
 AQHBCI_API
 const char *AH_User_GetHttpContentType(const AB_USER *u);
 AQHBCI_API
