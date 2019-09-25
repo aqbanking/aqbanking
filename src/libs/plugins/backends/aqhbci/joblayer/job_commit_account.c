@@ -206,28 +206,55 @@ static void AH_Job__Commit_Accounts_RemoveEmpty(AH_JOB *j, AB_ACCOUNT_LIST *accL
 
 static uint32_t AH_Job__Commit_Accounts_FindStored(AH_JOB *j, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC_LIST *asl)
 {
-  AB_ACCOUNT_SPEC *as=NULL;
   AB_PROVIDER *pro;
+  const char *accountNum;
+  const char *bankCode;
+  const char *iban;
+  int accountType;
+  AB_ACCOUNT_SPEC *as=NULL;
 
   pro=AH_Job_GetProvider(j);
   assert(pro);
 
-  /*
-   as=AB_Provider_FindMatchingAccountSpec(pro, acc, asl);
-   Disabled the code above, directly use for account spec in the list myself.
-   We want to find out whether this exact account already exists!
-   The fuzzy method above lead to improper merging of accounts.
-   */
-  as=AB_AccountSpec_List_FindFirst(asl,
-                                   AB_Provider_GetName(pro),
-                                   AB_Account_GetCountry(acc),
-                                   AB_Account_GetBankCode(acc),
-                                   AB_Account_GetAccountNumber(acc),
-                                   AB_Account_GetSubAccountId(acc),
-                                   AB_Account_GetIban(acc),
-                                   "*", /* any currency */
-                                   AB_Account_GetAccountType(acc));
+  accountNum=AB_Account_GetAccountNumber(acc);
+  bankCode=AB_Account_GetBankCode(acc);
+  iban=AB_Account_GetIban(acc);
+  accountType=AB_Account_GetAccountType(acc);
 
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Checking account [blz=%s, acc=%s, iban=%s, type=%d]",
+           bankCode?bankCode:"<none>",
+           accountNum?accountNum:"<none>",
+           iban?iban:"<none>",
+	   accountType);
+
+  if (iban && *iban && accountType>AB_AccountType_Unknown) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Comparing IBAN and old account specs");
+    /* IBAN given, try that first */
+    as=AB_AccountSpec_List_FindFirst(asl,
+				     AB_Provider_GetName(pro),
+				     NULL,                         /* country */
+				     NULL,                         /* bank code */
+				     NULL,                         /* account number */
+				     NULL,                         /* subAccountId */
+				     AB_Account_GetIban(acc),     /* iban */
+				     NULL, /* any currency */
+				     accountType);
+  }
+
+  if (as==NULL) {
+    if (accountNum && *accountNum && bankCode && *bankCode && accountType>AB_AccountType_Unknown) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Comparing old account specs");
+      as=AB_AccountSpec_List_FindFirst(asl,
+				       AB_Provider_GetName(pro),
+				       AB_Account_GetCountry(acc),
+				       AB_Account_GetBankCode(acc),
+				       AB_Account_GetAccountNumber(acc),
+				       AB_Account_GetSubAccountId(acc),
+				       NULL,
+				       NULL, /* any currency */
+				       accountType);
+    }
+  }
 
   if (as) {
     uint32_t uniqueId;
