@@ -212,7 +212,23 @@ static uint32_t AH_Job__Commit_Accounts_FindStored(AH_JOB *j, const AB_ACCOUNT *
   pro=AH_Job_GetProvider(j);
   assert(pro);
 
-  as=AB_Provider_FindMatchingAccountSpec(pro, acc, asl);
+  /*
+   as=AB_Provider_FindMatchingAccountSpec(pro, acc, asl);
+   Disabled the code above, directly use for account spec in the list myself.
+   We want to find out whether this exact account already exists!
+   The fuzzy method above lead to improper merging of accounts.
+   */
+  as=AB_AccountSpec_List_FindFirst(asl,
+                                   AB_Provider_GetName(pro),
+                                   AB_Account_GetCountry(acc),
+                                   AB_Account_GetBankCode(acc),
+                                   AB_Account_GetAccountNumber(acc),
+                                   AB_Account_GetSubAccountId(acc),
+                                   AB_Account_GetIban(acc),
+                                   "*", /* any currency */
+                                   AB_Account_GetAccountType(acc));
+
+
   if (as) {
     uint32_t uniqueId;
 
