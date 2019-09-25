@@ -17,9 +17,9 @@ AC_CONFIG_HEADERS([config.h])
 AQBANKING_VERSION_MAJOR=5
 AQBANKING_VERSION_MINOR=99
 AQBANKING_VERSION_PATCHLEVEL=34
-AQBANKING_VERSION_BUILD=0
+AQBANKING_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "svn"
-AQBANKING_VERSION_TAG="beta"
+AQBANKING_VERSION_TAG="git"
 
 
 
@@ -437,8 +437,8 @@ AC_SUBST(aqbanking_plugins_bankinfo_libs)
 #
 
 # Variable used in aqbanking-config.cmake
-AC_SUBST(GWENHYWFAR_MINIMUM_VERSION, "4.99.10.0")
-AC_GWENHYWFAR(4,99,10,0)
+AC_SUBST(GWENHYWFAR_MINIMUM_VERSION, "4.99.17.1")
+AC_GWENHYWFAR(4,99,17,1)
 
 all_includes="$all_includes $gwenhywfar_includes"
 
