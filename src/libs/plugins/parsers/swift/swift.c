@@ -1115,7 +1115,7 @@ GWEN_DBIO *GWEN_DBIO_SWIFT_Factory(GWEN_PLUGIN *pl)
 {
   GWEN_DBIO *dbio;
 
-  dbio=GWEN_DBIO_new("swift", "Imports and exports SWIFT data");
+  dbio=GWEN_DBIO_new("swift", "Imports SWIFT data");
   GWEN_DBIO_SetImportFn(dbio, AHB_SWIFT_Import);
   GWEN_DBIO_SetExportFn(dbio, AHB_SWIFT_Export);
   GWEN_DBIO_SetCheckFileFn(dbio, AHB_SWIFT_CheckFile);
