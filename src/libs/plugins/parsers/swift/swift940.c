@@ -55,26 +55,6 @@ static void _parseTransactionData(const char *p, GWEN_DB_NODE *dbData, uint32_t 
  */
 
 
-static char *my_strndup(const char *src, size_t n)
-{
-  int len;
-
-  len=strlen(src);
-  if (len<n)
-    return strdup(src);
-  else {
-    char *cpy;
-
-    cpy=(char *) malloc(n+1);
-    assert(cpy);
-    memmove(cpy, src, n);
-    cpy[n]=0;
-    return cpy;
-  }
-}
-
-
-
 static void _iso8859_1ToUtf8(const char *p, int size, GWEN_BUFFER *buf)
 {
   while (*p) {
@@ -1302,7 +1282,7 @@ int _storeSepaTag(const char *sTagStart, int tagLen, GWEN_DB_NODE *dbSepaTags)
     if (tagLen>0) {
       char *sCopyPayload;
 
-      sCopyPayload=my_strndup(sPayload, tagLen);
+      sCopyPayload=GWEN_Text_strndup(sPayload, tagLen);
       GWEN_DB_SetCharValue(dbSepaTags, GWEN_DB_FLAGS_DEFAULT, sIdentifier, sCopyPayload);
       free(sCopyPayload);
       isRealSepaTag=1;
@@ -1316,7 +1296,7 @@ int _storeSepaTag(const char *sTagStart, int tagLen, GWEN_DB_NODE *dbSepaTags)
     if (tagLen>0) {
       char *sCopyPayload;
 
-      sCopyPayload=my_strndup(sTagStart, tagLen);
+      sCopyPayload=GWEN_Text_strndup(sTagStart, tagLen);
       GWEN_DB_SetCharValue(dbSepaTags, GWEN_DB_FLAGS_DEFAULT, "_purpose", sCopyPayload);
       free(sCopyPayload);
     }
