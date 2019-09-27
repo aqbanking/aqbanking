@@ -120,6 +120,13 @@ int AB_Banking_GetAccountSpecList(const AB_BANKING *ab, AB_ACCOUNT_SPEC_LIST **p
       a=AB_AccountSpec_fromDb(db);
       if (a) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "Adding account spec");
+        if (1) {
+          int i;
+      
+          i=AB_AccountSpec_GetType(a);
+          if (i==AB_AccountType_Unknown)
+            AB_AccountSpec_SetType(a, AB_AccountType_Unspecified);
+        }
         AB_AccountSpec_List_Add(a, accountSpecList);
       }
 
