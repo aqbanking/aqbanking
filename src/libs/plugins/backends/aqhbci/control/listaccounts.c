@@ -93,8 +93,10 @@ int AH_Control_ListAccounts(AB_PROVIDER *pro,
             AB_Account_GetAccountNumber(a));
     if (verbose) {
       const char *subAccountId = AB_Account_GetSubAccountId(a);
-      fprintf(stdout, "  SubAccountId: %s  LocalUniqueId: %d",
+
+      fprintf(stdout, "  SubAccountId: %s  Account Type: %s LocalUniqueId: %d",
               subAccountId ? subAccountId : "(none)",
+              AB_AccountType_toChar(AB_Account_GetAccountType(a)),
               AB_Account_GetUniqueId(a));
     }
     fprintf(stdout, "\n");
