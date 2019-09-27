@@ -30,6 +30,15 @@ int AB_Banking_ReadAccountSpec(const AB_BANKING *ab, uint32_t uniqueId, AB_ACCOU
   AB_AccountSpec_ReadDb(accountSpec, db);
   AB_AccountSpec_SetUniqueId(accountSpec, uniqueId);
 
+  if (1) {
+    int i;
+
+    i=AB_AccountSpec_GetType(accountSpec);
+    if (i==AB_AccountType_Unknown)
+      AB_AccountSpec_SetType(accountSpec, AB_AccountType_Unspecified);
+  }
+
+
   GWEN_DB_Group_free(db);
 
   if (pAccountSpec)

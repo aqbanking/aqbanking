@@ -43,6 +43,14 @@ int AB_Provider_ReadAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUn
   }
 
   if (1) {
+    int i;
+
+    i=AB_Account_GetAccountType(account);
+    if (i==AB_AccountType_Unknown)
+      AB_Account_SetAccountType(account, AB_AccountType_Unspecified);
+  }
+
+  if (1) {
     const char *s;
 
     s=AB_Account_GetBackendName(account);
@@ -166,7 +174,14 @@ int AB_Provider_AddAccount(AB_PROVIDER *pro, AB_ACCOUNT *a, int lockCorrespondin
 {
   uint32_t uid;
   int rv;
+  const char *s;
 
+  s=AB_Account_GetBackendName(a);
+  assert(s && *s);
+  if (!(s && *s)) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Can not add account without backend name!");
+    return GWEN_ERROR_INVALID;
+  }
   /* add account */
   uid=AB_Banking_GetNamedUniqueId(AB_Provider_GetBanking(pro), "account", 1); /* startAtStdUniqueId=1 */
   AB_Account_SetUniqueId(a, uid);

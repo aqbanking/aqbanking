@@ -736,9 +736,9 @@ void AH_Job_ReadAccountDataSeg(AB_ACCOUNT *acc, GWEN_DB_NODE *dbAccountData)
   else if (t>=80 && t<=89)   /* Versicherungsvertrag */
     AB_Account_SetAccountType(acc, AB_AccountType_Savings);
   else if (t>=90 && t<=99)   /* sonstige */
-    AB_Account_SetAccountType(acc, AB_AccountType_Unknown);
+    AB_Account_SetAccountType(acc, AB_AccountType_Unspecified);
   else
-    AB_Account_SetAccountType(acc, AB_AccountType_Unknown);
+    AB_Account_SetAccountType(acc, AB_AccountType_Unspecified);
 }
 
 
