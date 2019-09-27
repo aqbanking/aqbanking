@@ -173,7 +173,7 @@ int listAccs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
   }
 
   tmplString=GWEN_DB_GetCharValue(db, "template", 0,
-                                  "Account\t$(bankcode)\t$(accountnumber)\t$(bic)\t$(iban)\t$(uniqueId)\t$(type)");
+                                  "Account\t$(bankcode)\t$(accountnumber)\t$(bic)\t$(iban)\t$(uniqueId)\t$(typeAsString)");
 
   as=AB_AccountSpec_List_First(al);
   if (as) {
