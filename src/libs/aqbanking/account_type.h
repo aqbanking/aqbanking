@@ -29,6 +29,7 @@ typedef enum {
   AB_AccountType_Cash,
   AB_AccountType_MoneyMarket,
   AB_AccountType_Credit,
+  AB_AccountType_Unspecified=100,
   AB_AccountType_Last
 } AB_ACCOUNT_TYPE;
 

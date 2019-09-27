@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Sat Jun 30 2018
- copyright   : (C) 2018 by Martin Preuss
+ copyright   : (C) 2019 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -41,6 +41,8 @@ const char *AB_AccountType_toChar(AB_ACCOUNT_TYPE ty)
     return "credit";
   case AB_AccountType_Unknown:
     return "unknown";
+  case AB_AccountType_Unspecified:
+    return "unspecified";
   case AB_AccountType_Invalid:
   case AB_AccountType_Last:
     break;
@@ -70,6 +72,8 @@ AB_ACCOUNT_TYPE AB_AccountType_fromChar(const char *s)
       return AB_AccountType_MoneyMarket;
     else if (strcasecmp(s, "credit")==0)
       return AB_AccountType_Credit;
+    else if (strcasecmp(s, "unspecified")==0)
+      return AB_AccountType_Unspecified;
     else if (strcasecmp(s, "unknown")==0)
       return AB_AccountType_Unknown;
   }
