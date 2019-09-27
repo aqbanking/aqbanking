@@ -171,12 +171,16 @@ int main(int argc, char **argv)
 
     fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(ubuf));
     GWEN_Buffer_free(ubuf);
-    GWEN_DB_Group_free(db);
-    return 0;
+
+    argc=0; /* only show help */
   }
-  if (rv) {
+  else if (rv>1) {
     argc-=rv-1;
     argv+=rv-1;
+  }
+  else {
+    /* no command */
+    argc=0;
   }
 
   nonInteractive=GWEN_DB_GetIntValue(db, "nonInteractive", 0, 0);
@@ -224,6 +228,9 @@ int main(int argc, char **argv)
   AB_Gui_Extend(gui, ab);
 
   rv=doControl(ab, db, argc, argv);
+
+  AB_Gui_Unextend(gui);
+  AB_Banking_free(ab);
 
   GWEN_DB_Group_free(db);
   return rv;
