@@ -48,9 +48,9 @@ applications. It has three major goals which are described in the
 following paragraphs.
 
 (Note: Information in German can be found on
-http://linuxwiki.de/AqBanking )
+https://linuxwiki.de/AqBanking )
 
-The homepage of AqBanking is http://www.aqbanking.de/
+The homepage of AqBanking is https://www.aqbanking.de/
 
 
 1.1. Generic Online Banking Interface
@@ -101,7 +101,7 @@ Currently AqBanking provides informations about:
 2. Supported Platforms
 ======================
 
-AqBanking uses the library Gwenhywfar (http://www.aqbanking.de/) for 
+AqBanking uses the library Gwenhywfar (https://www.aqbanking.de/) for 
 abstraction of the underlying system. So it should work on any system for 
 which Gwenhywfar is available. 
 
@@ -178,9 +178,9 @@ AqBanking has several direct dependencies:
 http://gwenhywfar.sf.net/, is absolutely required
 
 - "GMP", the GNU MP Bignum Library available from 
-  http://gmplib.org/index.html is required for calculations
+  https://gmplib.org/index.html is required for calculations
 
-- The python module "ctypes" http://sf.net/projects/ctypes is
+- The python module "ctypes" https://sf.net/projects/ctypes is
 required for the python wrappers of aqbanking. The python wrappers
 are installed by default (to disable it, use --disable-python),
 but they cannot be used unless "ctypes" is installed.
@@ -190,11 +190,11 @@ but they cannot be used unless "ctypes" is installed.
 -----------------
 
 These applications fully or partially support AqBanking:
- - AqFinance (http://www2.aquamaniac.de/sites/aqfinance/index.php)
- - Gnucash (http://www.gnucash.org/)
- - KMyMoney (http://www.kmymoney.org/)
- - OrgaMon (http://orgamon.org/)
- - Pecunia 0.2 (http://www.pecuniabanking.de/Pecunia/Home.html)
+ - AqFinance (https://www2.aquamaniac.de/sites/aqfinance/index.php)
+ - Gnucash (https://www.gnucash.org/)
+ - KMyMoney (https://www.kmymoney.org/)
+ - OrgaMon (https://www.orgamon.org/)
+ - Pecunia 0.2 (https://www.pecuniabanking.de/Pecunia/Home.html)
 
 The aqbanking package also includes several command-line tools
 (aqbanking-tool, aqhbci-tool).
