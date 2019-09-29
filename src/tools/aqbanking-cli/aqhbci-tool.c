@@ -232,6 +232,9 @@ int main(int argc, char **argv)
   AB_Gui_Unextend(gui);
   AB_Banking_free(ab);
 
+  GWEN_Gui_SetGui(NULL);
+  GWEN_Gui_free(gui);
+
   GWEN_DB_Group_free(db);
   return rv;
 }

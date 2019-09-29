@@ -185,6 +185,7 @@ void GWENHYWFAR_CB AH_User_freeData(void *bp, void *p)
   AH_USER *ue;
 
   ue=(AH_USER *)p;
+  free(ue->tanMediumId);
   free(ue->peerId);
   free(ue->systemId);
   free(ue->httpContentType);

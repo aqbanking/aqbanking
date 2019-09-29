@@ -76,6 +76,7 @@ void AB_Gui_Unextend(GWEN_GUI *gui)
   GWEN_Gui_SetReadDialogPrefsFn(gui, xgui->readDialogPrefsFn);
   GWEN_Gui_SetWriteDialogPrefsFn(gui, xgui->writeDialogPrefsFn);
   GWEN_INHERIT_UNLINK(GWEN_GUI, AB_GUI, gui);
+  GWEN_FREE_OBJECT(xgui);
 }
 
 

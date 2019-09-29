@@ -306,7 +306,7 @@ static void AB_SetupDialog_ActivateProviders(GWEN_DIALOG *dlg)
       }
       GWEN_PluginDescription_List2Iterator_free(it);
     }
-    GWEN_PluginDescription_List2_free(pdl);
+    GWEN_PluginDescription_List2_freeAll(pdl);
   }
 }
 
