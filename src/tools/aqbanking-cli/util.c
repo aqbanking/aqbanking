@@ -21,6 +21,11 @@
 
 
 
+static int _replaceVarsCb(void *cbPtr, const char *name, int index, int maxLen, GWEN_BUFFER *dstBuf);
+
+
+
+
 /* ========================================================================================================================
  *                                                readContext
  * ========================================================================================================================
@@ -1142,7 +1147,7 @@ int addTransactionToBufferByTemplate(const AB_TRANSACTION *t, const char *tmplSt
     }
   }
 
-  rv=GWEN_DB_ReplaceVars(dbTransaction, tmplString, dbuf);
+  rv=GWEN_Text_ReplaceVars(tmplString, dbuf, _replaceVarsCb, dbTransaction);
   if (rv<0) {
     DBG_ERROR(0, "Error on GWEN_DB_ReplaceVars(): %d", rv);
     GWEN_DB_Group_free(dbTransaction);
@@ -1150,6 +1155,45 @@ int addTransactionToBufferByTemplate(const AB_TRANSACTION *t, const char *tmplSt
   }
   GWEN_DB_Group_free(dbTransaction);
   return 0;
+}
+
+
+
+int _replaceVarsCb(void *cbPtr, const char *name, int index, int maxLen, GWEN_BUFFER *dstBuf)
+{
+  GWEN_DB_NODE *db;
+
+  db=(GWEN_DB_NODE*) cbPtr;
+  if (strcasecmp(name, "purposeInOneLine")==0) {
+    const char *s;
+
+    s=GWEN_DB_GetCharValue(db, "purpose", 0, NULL);
+    if (!(s && *s))
+      return GWEN_ERROR_NO_DATA;
+    else {
+      char *sCopy;
+
+      sCopy=strdup(s);
+      assert(sCopy);
+      if (sCopy==NULL)
+	return GWEN_ERROR_MEMORY_FULL;
+      else {
+	char *p;
+
+	/* replace control characters */
+	p=sCopy;
+	while(*p) {
+	  if (iscntrl(*p))
+	    *p=' ';
+	  p++;
+	} /* while */
+	GWEN_Buffer_AppendString(dstBuf, sCopy);
+	free(sCopy);
+	return 0;
+      }
+    }
+  }
+  return GWEN_DB_WriteVarValueToBuffer(db, name, index, dstBuf);
 }
 
 
