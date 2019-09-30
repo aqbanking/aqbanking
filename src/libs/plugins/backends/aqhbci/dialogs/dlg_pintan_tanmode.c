@@ -86,6 +86,7 @@ GWEN_DIALOG *AH_PinTan_TanModeDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLoc
 
   xdlg->banking=AB_Provider_GetBanking(pro);
   xdlg->provider=pro;
+  xdlg->user=u;
 
   /* preset */
   xdlg->doLock=doLock;
