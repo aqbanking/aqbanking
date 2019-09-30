@@ -175,13 +175,13 @@ AH_JOB *AH_Job_new(const char *name,
           /* now get the correct version of the JOB */
           DBG_INFO(AQHBCI_LOGDOMAIN, "Checking Job %s (%d)", name, version);
           node=GWEN_MsgEngine_FindNodeByProperty(e, "JOB", "id", version, name);
-	  if (node) {
-	    dbHighestVersion=jobBPD;
-	    highestVersion=version;
-	    jobNode=node;
-	  }
-	}
-	jobBPD=GWEN_DB_GetNextGroup(jobBPD);
+          if (node) {
+            dbHighestVersion=jobBPD;
+            highestVersion=version;
+            jobNode=node;
+          }
+        }
+        jobBPD=GWEN_DB_GetNextGroup(jobBPD);
       } /* while */
       jobBPD=dbHighestVersion;
     }
@@ -189,13 +189,13 @@ AH_JOB *AH_Job_new(const char *name,
     if (!jobBPD) {
       if (needsBPD) {
         if (AH_User_GetCryptMode(u)!=AH_CryptMode_Pintan &&
-	    strcasecmp(name, "JobTan")==0) {
+            strcasecmp(name, "JobTan")==0) {
           /* lower loglevel for JobTan in non-PINTAN mode because this is often confusing */
-	  DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" not supported by your bank", name);
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" not supported by your bank", name);
         }
         else {
           /* no BPD when needed, error */
-	  DBG_WARN(AQHBCI_LOGDOMAIN, "Job \"%s\" not supported by your bank", name);
+          DBG_WARN(AQHBCI_LOGDOMAIN, "Job \"%s\" not supported by your bank", name);
         }
         AH_Job_free(j);
         return 0;
@@ -227,9 +227,9 @@ AH_JOB *AH_Job_new(const char *name,
         DBG_NOTICE(AQHBCI_LOGDOMAIN, "Code is \"%s\"", code);
         updnode=GWEN_DB_GetFirstGroup(updgroup);
         while (updnode) {
-	  if (strcasecmp(GWEN_DB_GetCharValue(updnode, "job", 0, ""), code)==0) {
-	    break;
-	  }
+          if (strcasecmp(GWEN_DB_GetCharValue(updnode, "job", 0, ""), code)==0) {
+            break;
+          }
           updnode=GWEN_DB_GetNextGroup(updnode);
         } /* while */
       } /* if code given */

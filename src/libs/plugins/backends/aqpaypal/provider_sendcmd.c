@@ -52,8 +52,8 @@ int APY_Provider__AddJobToList2(AB_PROVIDER *pro, AB_TRANSACTION *j, AB_TRANSACT
         AB_TRANSACTION_COMMAND jt;
 
         jt=AB_Transaction_GetCommand(uj);
-	//if (jt==AB_Transaction_CommandGetBalance ||
-	//  jt==AB_Transaction_CommandGetTransactions) {
+        //if (jt==AB_Transaction_CommandGetBalance ||
+        //  jt==AB_Transaction_CommandGetTransactions) {
         if (jt==AB_Transaction_CommandGetBalance) {
           if (AB_Transaction_GetUniqueAccountId(uj)==aid) {
             /* let new job refer to the only already in queue */
@@ -135,7 +135,7 @@ int APY_Provider__AddJobToList2(AB_PROVIDER *pro, AB_TRANSACTION *j, AB_TRANSACT
 
 
 int APY_Provider__SendJobList(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION_LIST2 *jobList,
-			      AB_IMEXPORTER_CONTEXT *ctx, AB_IMEXPORTER_ACCOUNTINFO *ai)
+                              AB_IMEXPORTER_CONTEXT *ctx, AB_IMEXPORTER_ACCOUNTINFO *ai)
 {
   AB_TRANSACTION_LIST2_ITERATOR *jit;
 
@@ -331,11 +331,11 @@ int APY_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTE
 
       t=strchr(GWEN_Buffer_GetStart(xbuf), ':');
       if (t) {
-	*(t++)=0;
-	t2=strchr(t, ':');
-	if (t2) {
-	  *(t2++)=0;
-	}
+        *(t++)=0;
+        t2=strchr(t, ':');
+        if (t2) {
+          *(t2++)=0;
+        }
       }
 
       sbuf1=GWEN_Buffer_new(0, 256, 0, 1);
@@ -343,11 +343,11 @@ int APY_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTE
       sbuf3=GWEN_Buffer_new(0, 256, 0, 1);
       GWEN_Text_UnescapeToBufferTolerant(GWEN_Buffer_GetStart(xbuf), sbuf1);
       if (t) {
-	GWEN_Text_UnescapeToBufferTolerant(t, sbuf2);
-	t=GWEN_Buffer_GetStart(sbuf2);
-	if (t2) {
-	  GWEN_Text_UnescapeToBufferTolerant(t2, sbuf3);
-	}
+        GWEN_Text_UnescapeToBufferTolerant(t, sbuf2);
+        t=GWEN_Buffer_GetStart(sbuf2);
+        if (t2) {
+          GWEN_Text_UnescapeToBufferTolerant(t2, sbuf3);
+        }
       }
       APY_User_SetApiSecrets_l(u, GWEN_Buffer_GetStart(sbuf1), GWEN_Buffer_GetStart(sbuf2), GWEN_Buffer_GetStart(sbuf3));
       GWEN_Buffer_free(xbuf);

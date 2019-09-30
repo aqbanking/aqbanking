@@ -48,9 +48,9 @@ extern "C" {
 #define AH_USER_FLAGS_RESERVED1                0x00000004
 #define AH_USER_FLAGS_RESERVED2                0x00000008
 
-  /** this flag is set automatically by AqHBCI upon BPD/UPD receiption. It
- * indicates that some jobs are supported even when there is no UPD job
- * description for it */
+/** this flag is set automatically by AqHBCI upon BPD/UPD receiption. It
+* indicates that some jobs are supported even when there is no UPD job
+* description for it */
 #define AH_USER_FLAGS_IGNORE_UPD               0x00000020
 
 /** do not encode message in BASE64 (needed for APO bank) */

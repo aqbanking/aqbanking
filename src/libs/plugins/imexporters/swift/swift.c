@@ -191,9 +191,9 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
       /* check for date */
       dt=AB_Transaction_GetDate(t);
       if (dt==NULL) {
-	/* no date, use valutaDate for both fields */
-	dt=AB_Transaction_GetValutaDate(t);
-	AB_Transaction_SetDate(t, dt);
+        /* no date, use valutaDate for both fields */
+        dt=AB_Transaction_GetValutaDate(t);
+        AB_Transaction_SetDate(t, dt);
       }
 
       /* some translations */
@@ -227,25 +227,25 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
 #if 0   /* disable ABWA+ and ABWE+: We can't safely now when to change them */
       if (1) {
-	const char *varName;
-	int i;
-	GWEN_BUFFER *nameBuf;
+        const char *varName;
+        int i;
+        GWEN_BUFFER *nameBuf;
 
-	if (GWEN_DB_VariableExists(dbT, "sepa/ABWA"))
+        if (GWEN_DB_VariableExists(dbT, "sepa/ABWA"))
           varName="sepa/ABWA";
         else if (GWEN_DB_VariableExists(dbT, "sepa/ABWE"))
           varName="sepa/ABWE";
         else
-	  varName="remoteName";
-	nameBuf=GWEN_Buffer_new(0, 256, 0, 1);
-	for (i=0; i<2; i++) {
-	  s=GWEN_DB_GetCharValue(dbT, varName, i, NULL);
-	  if (s && *s) {
-	    GWEN_Buffer_AppendString(nameBuf, s);
-	  }
-	}
-	if (GWEN_Buffer_GetUsedBytes(nameBuf))
-	  AB_Transaction_SetRemoteName(t, GWEN_Buffer_GetStart(nameBuf));
+          varName="remoteName";
+        nameBuf=GWEN_Buffer_new(0, 256, 0, 1);
+        for (i=0; i<2; i++) {
+          s=GWEN_DB_GetCharValue(dbT, varName, i, NULL);
+          if (s && *s) {
+            GWEN_Buffer_AppendString(nameBuf, s);
+          }
+        }
+        if (GWEN_Buffer_GetUsedBytes(nameBuf))
+          AB_Transaction_SetRemoteName(t, GWEN_Buffer_GetStart(nameBuf));
       }
 #endif
 

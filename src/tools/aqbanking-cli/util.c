@@ -1134,7 +1134,7 @@ int addTransactionToBufferByTemplate(const AB_TRANSACTION *t, const char *tmplSt
       GWEN_STRINGLISTENTRY *sEntry;
 
       sEntry=GWEN_StringList_FirstEntry(stringList);
-      while(sEntry) {
+      while (sEntry) {
         const char *entryString;
 
         entryString=GWEN_StringListEntry_Data(sEntry);
@@ -1163,7 +1163,7 @@ int _replaceVarsCb(void *cbPtr, const char *name, int index, int maxLen, GWEN_BU
 {
   GWEN_DB_NODE *db;
 
-  db=(GWEN_DB_NODE*) cbPtr;
+  db=(GWEN_DB_NODE *) cbPtr;
   if (strcasecmp(name, "purposeInOneLine")==0) {
     const char *s;
 
@@ -1176,20 +1176,20 @@ int _replaceVarsCb(void *cbPtr, const char *name, int index, int maxLen, GWEN_BU
       sCopy=strdup(s);
       assert(sCopy);
       if (sCopy==NULL)
-	return GWEN_ERROR_MEMORY_FULL;
+        return GWEN_ERROR_MEMORY_FULL;
       else {
-	char *p;
+        char *p;
 
-	/* replace control characters */
-	p=sCopy;
-	while(*p) {
-	  if (iscntrl(*p))
-	    *p=' ';
-	  p++;
-	} /* while */
-	GWEN_Buffer_AppendString(dstBuf, sCopy);
-	free(sCopy);
-	return 0;
+        /* replace control characters */
+        p=sCopy;
+        while (*p) {
+          if (iscntrl(*p))
+            *p=' ';
+          p++;
+        } /* while */
+        GWEN_Buffer_AppendString(dstBuf, sCopy);
+        free(sCopy);
+        return 0;
       }
     }
   }

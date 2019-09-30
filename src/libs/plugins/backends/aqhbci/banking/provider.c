@@ -483,7 +483,7 @@ int AH_Provider__CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, in
 
   default:
     DBG_INFO(AQHBCI_LOGDOMAIN,
-              "Job not supported by AqHBCI");
+             "Job not supported by AqHBCI");
     return GWEN_ERROR_NOT_AVAILABLE;
   } /* switch */
   assert(mj);

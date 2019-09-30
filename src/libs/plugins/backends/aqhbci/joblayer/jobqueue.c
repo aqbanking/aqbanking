@@ -456,7 +456,7 @@ AH_MSG *AH_JobQueue_ToMessageWithTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, const char
 
         if (AH_Job_GetStatus(j)!=AH_JobStatusError) {
           DBG_DEBUG(AQHBCI_LOGDOMAIN, "Job \"%s\" encoded",
-                   AH_Job_GetName(j));
+                    AH_Job_GetName(j));
           AH_Job_SetStatus(j, AH_JobStatusEncoded);
           encodedJobs++;
         }
@@ -777,7 +777,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
     int segNum;
 
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Handling response \"%s\"",
-             GWEN_DB_GroupName(dbCurr));
+              GWEN_DB_GroupName(dbCurr));
 
     /* use same name for main response group */
     dbResponse=GWEN_DB_Group_new(GWEN_DB_GroupName(dbCurr));
@@ -801,13 +801,13 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
         if (st==AH_JobStatusSent ||
             st==AH_JobStatusAnswered) {
           DBG_DEBUG(AQHBCI_LOGDOMAIN,
-                   "Checking whether job \"%s\" has segment %d",
-                   AH_Job_GetName(j), segNum);
+                    "Checking whether job \"%s\" has segment %d",
+                    AH_Job_GetName(j), segNum);
           if ((AH_Msg_GetMsgNum(msg)==AH_Job_GetMsgNum(j)) &&
               AH_Job_HasSegment(j, segNum)) {
             DBG_DEBUG(AQHBCI_LOGDOMAIN,
-                     "Job \"%s\" claims to have the segment %d",
-                     AH_Job_GetName(j), segNum);
+                      "Job \"%s\" claims to have the segment %d",
+                      AH_Job_GetName(j), segNum);
             break;
           }
         }
@@ -892,8 +892,8 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
         } /* if SegResult */
 
         DBG_DEBUG(AQHBCI_LOGDOMAIN, "Adding response \"%s\" to job \"%s\"",
-                 GWEN_DB_GroupName(dbCurr),
-                 AH_Job_GetName(j));
+                  GWEN_DB_GroupName(dbCurr),
+                  AH_Job_GetName(j));
         AH_Job_AddResponse(j, dbResponse);
         AH_Job_SetStatus(j, AH_JobStatusAnswered);
       } /* if matching job found */

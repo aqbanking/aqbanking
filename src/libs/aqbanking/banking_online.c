@@ -41,23 +41,23 @@
 
 
 static int _sendCommandsInsideProgress(AB_BANKING *ab, AB_TRANSACTION_LIST2 *commandList,
-				       AB_IMEXPORTER_CONTEXT *ctx,
-				       uint32_t pid);
+                                       AB_IMEXPORTER_CONTEXT *ctx,
+                                       uint32_t pid);
 
 static int _sortCommandsByAccounts(AB_BANKING *ab,
-					  AB_TRANSACTION_LIST2 *commandList,
-					  AB_ACCOUNTQUEUE_LIST *aql,
-					  uint32_t pid);
+                                   AB_TRANSACTION_LIST2 *commandList,
+                                   AB_ACCOUNTQUEUE_LIST *aql,
+                                   uint32_t pid);
 
 static int _sortAccountQueuesByProvider(AB_BANKING *ab,
-					AB_ACCOUNTQUEUE_LIST *aql,
-					AB_PROVIDERQUEUE_LIST *pql,
-					uint32_t pid);
+                                        AB_ACCOUNTQUEUE_LIST *aql,
+                                        AB_PROVIDERQUEUE_LIST *pql,
+                                        uint32_t pid);
 
 static int _sendProviderQueues(AB_BANKING *ab,
-			       AB_PROVIDERQUEUE_LIST *pql,
-			       AB_IMEXPORTER_CONTEXT *ctx,
-			       uint32_t pid);
+                               AB_PROVIDERQUEUE_LIST *pql,
+                               AB_IMEXPORTER_CONTEXT *ctx,
+                               uint32_t pid);
 
 
 
@@ -530,7 +530,8 @@ int AB_Banking_SendCommands(AB_BANKING *ab, AB_TRANSACTION_LIST2 *commandList, A
 
 
 
-int _sendCommandsInsideProgress(AB_BANKING *ab, AB_TRANSACTION_LIST2 *commandList, AB_IMEXPORTER_CONTEXT *ctx, uint32_t pid)
+int _sendCommandsInsideProgress(AB_BANKING *ab, AB_TRANSACTION_LIST2 *commandList, AB_IMEXPORTER_CONTEXT *ctx,
+                                uint32_t pid)
 {
   AB_ACCOUNTQUEUE_LIST *aql;
   AB_PROVIDERQUEUE_LIST *pql;
@@ -574,9 +575,9 @@ int _sendCommandsInsideProgress(AB_BANKING *ab, AB_TRANSACTION_LIST2 *commandLis
 
 
 int _sortCommandsByAccounts(AB_BANKING *ab,
-			    AB_TRANSACTION_LIST2 *commandList,
-			    AB_ACCOUNTQUEUE_LIST *aql,
-			    uint32_t pid)
+                            AB_TRANSACTION_LIST2 *commandList,
+                            AB_ACCOUNTQUEUE_LIST *aql,
+                            uint32_t pid)
 {
   AB_TRANSACTION_LIST2_ITERATOR *jit;
   AB_ACCOUNTQUEUE *aq;
@@ -593,21 +594,21 @@ int _sortCommandsByAccounts(AB_BANKING *ab,
 
       tStatus=AB_Transaction_GetStatus(t);
       if (tStatus==AB_Transaction_StatusUnknown || tStatus==AB_Transaction_StatusNone ||
-	  tStatus==AB_Transaction_StatusEnqueued) {
-	uint32_t uid;
+          tStatus==AB_Transaction_StatusEnqueued) {
+        uint32_t uid;
 
-	uid=AB_Transaction_GetUniqueAccountId(t);
-	if (uid==0) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN, "No unique account id given in transaction, aborting");
-	  return GWEN_ERROR_BAD_DATA;
-	}
+        uid=AB_Transaction_GetUniqueAccountId(t);
+        if (uid==0) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "No unique account id given in transaction, aborting");
+          return GWEN_ERROR_BAD_DATA;
+        }
 
         /* get or create account queue */
         aq=AB_AccountQueue_List_GetByAccountId(aql, uid);
         if (aq==NULL) {
           aq=AB_AccountQueue_new();
-	  AB_AccountQueue_SetAccountId(aq, uid);
-	  AB_AccountQueue_List_Add(aq, aql);
+          AB_AccountQueue_SetAccountId(aq, uid);
+          AB_AccountQueue_List_Add(aq, aql);
         }
 
         /* assign unique id to job (if none) */
@@ -622,7 +623,7 @@ int _sortCommandsByAccounts(AB_BANKING *ab,
       else {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Transaction with bad status, not enqueuing (%d: %s)",
                   tStatus, AB_Transaction_Status_toString(tStatus));
-	/* TODO: change status, add to im-/export context */
+        /* TODO: change status, add to im-/export context */
       }
 
       t=AB_Transaction_List2Iterator_Next(jit);
@@ -636,9 +637,9 @@ int _sortCommandsByAccounts(AB_BANKING *ab,
 
 
 int _sortAccountQueuesByProvider(AB_BANKING *ab,
-				 AB_ACCOUNTQUEUE_LIST *aql,
-				 AB_PROVIDERQUEUE_LIST *pql,
-				 uint32_t pid)
+                                 AB_ACCOUNTQUEUE_LIST *aql,
+                                 AB_PROVIDERQUEUE_LIST *pql,
+                                 uint32_t pid)
 {
   AB_ACCOUNTQUEUE *aq;
   AB_PROVIDERQUEUE *pq;
@@ -682,9 +683,9 @@ int _sortAccountQueuesByProvider(AB_BANKING *ab,
 
 
 int _sendProviderQueues(AB_BANKING *ab,
-			AB_PROVIDERQUEUE_LIST *pql,
-			AB_IMEXPORTER_CONTEXT *ctx,
-			uint32_t pid)
+                        AB_PROVIDERQUEUE_LIST *pql,
+                        AB_IMEXPORTER_CONTEXT *ctx,
+                        uint32_t pid)
 {
   AB_PROVIDERQUEUE *pq;
   int rv;

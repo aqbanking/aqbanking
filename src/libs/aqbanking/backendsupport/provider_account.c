@@ -134,7 +134,7 @@ int AB_Provider_ReadAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accountList)
       else {
         if (1) {
           int i;
-      
+
           i=AB_Account_GetAccountType(a);
           if (i==AB_AccountType_Unknown)
             AB_Account_SetAccountType(a, AB_AccountType_Unspecified);

@@ -137,7 +137,7 @@ static void createUserString(const AB_USER *u, GWEN_BUFFER *tbuf)
   s=AB_User_GetUserName(u);
   if (s && *s)
     GWEN_Buffer_AppendString(tbuf, s);
- 
+
 }
 
 

@@ -210,7 +210,7 @@ int AH_Job_GetMaxVersionUpUntil(const char *name, AB_USER *u, int maxVersion)
     }
     GWEN_DB_Group_free(db);
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Max version of [%s] up until %d: %d",
-             name, maxVersion, m);
+              name, maxVersion, m);
     return m;
   }
 }
@@ -479,7 +479,7 @@ void AH_Job_SetFlags(AH_JOB *j, uint32_t f)
   assert(j);
   assert(j->usage);
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Changing flags of job \"%s\" from %08x to %08x",
-           j->name, j->flags, f);
+            j->name, j->flags, f);
   j->flags=f;
 }
 
@@ -490,8 +490,8 @@ void AH_Job_AddFlags(AH_JOB *j, uint32_t f)
   assert(j);
   assert(j->usage);
   DBG_DEBUG(AQHBCI_LOGDOMAIN,
-           "Changing flags of job \"%s\" from %08x to %08x",
-           j->name, j->flags, j->flags|f);
+            "Changing flags of job \"%s\" from %08x to %08x",
+            j->name, j->flags, j->flags|f);
   j->flags|=f;
 }
 
@@ -502,8 +502,8 @@ void AH_Job_SubFlags(AH_JOB *j, uint32_t f)
   assert(j);
   assert(j->usage);
   DBG_DEBUG(AQHBCI_LOGDOMAIN,
-           "Changing flags of job \"%s\" from %08x to %08x",
-           j->name, j->flags, j->flags&~f);
+            "Changing flags of job \"%s\" from %08x to %08x",
+            j->name, j->flags, j->flags&~f);
   j->flags&=~f;
 }
 
@@ -577,7 +577,7 @@ int AH_Job_HasSegment(const AH_JOB *j, int seg)
   assert(j);
   assert(j->usage);
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Job \"%s\" checked for %d: first=%d, last=%d",
-           j->name, seg,  j->firstSegment, j->lastSegment);
+            j->name, seg,  j->firstSegment, j->lastSegment);
   return (seg<=j->lastSegment && seg>=j->firstSegment);
 }
 
@@ -748,7 +748,7 @@ GWEN_XMLNODE *AH_Job_GetXmlNode(const AH_JOB *j)
   assert(j->usage);
   if (j->flags & AH_JOB_FLAGS_MULTIMSG) {
     DBG_DEBUG(AQHBCI_LOGDOMAIN,
-             "Multi message node, returning current message node");
+              "Multi message node, returning current message node");
     return j->msgNode;
   }
   return j->xmlNode;
@@ -1452,8 +1452,8 @@ int AH_Job_CheckSignature(AH_JOB *j, GWEN_DB_NODE *dbRsp)
         else {
           if (strcasecmp(s, j->expectedSigner)==0) {
             DBG_DEBUG(AQHBCI_LOGDOMAIN,
-                     "Jobs signed as expected with \"%s\"",
-                     j->expectedSigner);
+                      "Jobs signed as expected with \"%s\"",
+                      j->expectedSigner);
             break;
           }
           else if (*s!='!' && *s!='?') {
@@ -1491,9 +1491,9 @@ void AH_Job_SetUsedTan(AH_JOB *j, const char *s)
   assert(j->usage);
 
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Changing TAN in job [%s](%08x) from [%s] to [%s]",
-           j->name, j->id,
-           (j->usedTan)?(j->usedTan):"(empty)",
-           s?s:"(empty)");
+            j->name, j->id,
+            (j->usedTan)?(j->usedTan):"(empty)",
+            s?s:"(empty)");
   free(j->usedTan);
   if (s) {
     j->usedTan=strdup(s);

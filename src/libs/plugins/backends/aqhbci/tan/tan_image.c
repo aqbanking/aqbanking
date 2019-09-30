@@ -144,7 +144,7 @@ int _extractAndSetMimeTypeAndImageData(const uint8_t *challengePtr,
   if (tagLen) {
     char *mimeType;
 
-    mimeType=(char*) malloc(tagLen+1);
+    mimeType=(char *) malloc(tagLen+1);
     assert(mimeType);
     memmove(mimeType, p, tagLen);
     mimeType[tagLen]=0;

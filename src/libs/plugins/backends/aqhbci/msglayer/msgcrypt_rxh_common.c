@@ -575,7 +575,8 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
 
   /* prepare config for segment */
   cfg=GWEN_DB_Group_new("sighead");
-  rv=AH_MsgRxh_PrepareCryptoSeg(hmsg, su, rxh_parameter, rxh_parameter->protocolVersion, GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki), ki, cfg, 0, 1);
+  rv=AH_MsgRxh_PrepareCryptoSeg(hmsg, su, rxh_parameter, rxh_parameter->protocolVersion,
+                                GWEN_Crypt_Token_KeyInfo_GetKeyVersion(ki), ki, cfg, 0, 1);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_DB_Group_free(cfg);

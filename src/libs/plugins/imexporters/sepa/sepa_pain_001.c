@@ -61,10 +61,10 @@ int AH_ImExporterSEPA_Export_Pain_001(AB_IMEXPORTER *ie,
     if (post_1_1_2) {
       /* store BtchBookg */
       AH_ImExporterSEPA_XmlSetCharValueEscaped(n, "BtchBookg",
-                                GWEN_DB_GetIntValue(params,
-                                                    "singleBookingWanted", 0, 1)
-                                ? "false"
-                                : "true");
+                                               GWEN_DB_GetIntValue(params,
+                                                                   "singleBookingWanted", 0, 1)
+                                               ? "false"
+                                               : "true");
       /* store NbOfTxs */
       GWEN_XMLNode_SetIntValue(n, "NbOfTxs", pmtinf->tcount);
       /* store CtrlSum */

@@ -274,8 +274,8 @@ int AH_Job__Commit_Bpd(AH_JOB *j)
         } /* if isbpdjob */
         else {
           DBG_DEBUG(AQHBCI_LOGDOMAIN,
-                   "Segment \"%s\" is known but not as a BPD job",
-                   GWEN_DB_GroupName(dbRd));
+                    "Segment \"%s\" is known but not as a BPD job",
+                    GWEN_DB_GroupName(dbRd));
         }
       } /* if segment found */
       else {

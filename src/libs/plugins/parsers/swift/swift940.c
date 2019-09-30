@@ -210,17 +210,17 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
     }
     else {
       if (code<900) {
-	/* sepa */
-	DBG_INFO(AQBANKING_LOGDOMAIN, "Reading as SEPA tag (%d)", code);
-	_readSubTagsIntoDb(stlist, dbData, flags);
-	_extractAndHandleSepaTags(dbData, flags);
-	_transformPurposeIntoOneString(dbData, flags);
+        /* sepa */
+        DBG_INFO(AQBANKING_LOGDOMAIN, "Reading as SEPA tag (%d)", code);
+        _readSubTagsIntoDb(stlist, dbData, flags);
+        _extractAndHandleSepaTags(dbData, flags);
+        _transformPurposeIntoOneString(dbData, flags);
       }
       else {
-	/* non-sepa */
-	DBG_INFO(AQBANKING_LOGDOMAIN, "Reading as non-SEPA tag (%d)", code);
-	_readSubTagsIntoDb(stlist, dbData, flags);
-	_transformPurposeIntoOneString(dbData, flags);
+        /* non-sepa */
+        DBG_INFO(AQBANKING_LOGDOMAIN, "Reading as non-SEPA tag (%d)", code);
+        _readSubTagsIntoDb(stlist, dbData, flags);
+        _transformPurposeIntoOneString(dbData, flags);
       }
     } /* if really structured */
     AHB_SWIFT_SubTag_List_free(stlist);
@@ -904,9 +904,9 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
             return -1;
           }
           else {
-	    sDate=GWEN_DB_GetCharValue(dbSaldo, "date", 0, NULL);
-	    DBG_INFO(AQBANKING_LOGDOMAIN, "Storing date \"%s\" as default for maybe later", sDate?sDate:"(empty)");
-	  }
+            sDate=GWEN_DB_GetCharValue(dbSaldo, "date", 0, NULL);
+            DBG_INFO(AQBANKING_LOGDOMAIN, "Storing date \"%s\" as default for maybe later", sDate?sDate:"(empty)");
+          }
 
           curr=GWEN_DB_GetCharValue(dbSaldo, "value/currency", 0, 0);
           if (curr) {
@@ -956,9 +956,9 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
                                          "transaction");
           GWEN_DB_AddGroupChildren(dbTransaction, dbTemplate);
           if (sDate && *sDate) {
-	    /* dbDate is set upon parsing of tag 60F, use it as a default
-	     * if possible */
-	    GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS, "date", sDate);
+            /* dbDate is set upon parsing of tag 60F, use it as a default
+             * if possible */
+            GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS, "date", sDate);
           }
           if (AHB_SWIFT940_Parse_61(tg, flags, dbTransaction, cfg)) {
             DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
@@ -1101,10 +1101,10 @@ void _readSubTagsIntoDb(AHB_SWIFT_SUBTAG_LIST *stlist, GWEN_DB_NODE *dbData, uin
 
     case 34: /* Textschluesselergaenzung */
       if (1==sscanf(s, "%d", &intVal)) {
-	GWEN_DB_SetIntValue(dbData, flags, "textkeyExt", intVal);
+        GWEN_DB_SetIntValue(dbData, flags, "textkeyExt", intVal);
       }
       else {
-	DBG_WARN(AQBANKING_LOGDOMAIN, "Value [%s] is not a number (textkeyext)", s);
+        DBG_WARN(AQBANKING_LOGDOMAIN, "Value [%s] is not a number (textkeyext)", s);
       }
       break;
 
@@ -1126,11 +1126,11 @@ void _extractAndHandleSepaTags(GWEN_DB_NODE *dbData, uint32_t flags)
 {
   GWEN_BUFFER *tbuf;
   int i;
-  
+
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
   for (i=0; i<99; i++) {
     const char *s;
-  
+
     s=GWEN_DB_GetCharValue(dbData, "purpose", i, 0);
     if (s && *s)
       GWEN_Buffer_AppendString(tbuf, s);
@@ -1159,15 +1159,15 @@ void _transformPurposeIntoOneString(GWEN_DB_NODE *dbData, uint32_t flags)
 {
   GWEN_BUFFER *tbuf;
   int i;
-  
+
   tbuf=GWEN_Buffer_new(0, 256, 0, 1);
   for (i=0; i<99; i++) {
     const char *s;
-  
+
     s=GWEN_DB_GetCharValue(dbData, "purpose", i, 0);
     if (s && *s) {
       if (GWEN_Buffer_GetUsedBytes(tbuf))
-	GWEN_Buffer_AppendString(tbuf, "\n");
+        GWEN_Buffer_AppendString(tbuf, "\n");
       GWEN_Buffer_AppendString(tbuf, s);
     }
   }
@@ -1203,16 +1203,16 @@ int _readSepaTags(const char *sPurpose, GWEN_DB_NODE *dbSepaTags)
           (s[1] && isalpha(s[1])) &&
           (s[2] && isalpha(s[2])) &&
           (s[3] && isalpha(s[3])) &&
-	  s[4]=='+') {
-	if (strncasecmp(s, "EREF+", 5)==0 ||
-	    strncasecmp(s, "KREF+", 5)==0 ||
-	    strncasecmp(s, "MREF+", 5)==0 ||
-	    strncasecmp(s, "CRED+", 5)==0 ||
-	    strncasecmp(s, "DEBT+", 5)==0 ||
-	    strncasecmp(s, "SVWZ+", 5)==0 ||
-	    strncasecmp(s, "ABWA+", 5)==0 ||
-	    strncasecmp(s, "ABWE+", 5)==0)
-	  break;
+          s[4]=='+') {
+        if (strncasecmp(s, "EREF+", 5)==0 ||
+            strncasecmp(s, "KREF+", 5)==0 ||
+            strncasecmp(s, "MREF+", 5)==0 ||
+            strncasecmp(s, "CRED+", 5)==0 ||
+            strncasecmp(s, "DEBT+", 5)==0 ||
+            strncasecmp(s, "SVWZ+", 5)==0 ||
+            strncasecmp(s, "ABWA+", 5)==0 ||
+            strncasecmp(s, "ABWE+", 5)==0)
+          break;
       }
       /* not the beginning of a SEPA field, just skip */
       s++;
@@ -1226,7 +1226,7 @@ int _readSepaTags(const char *sPurpose, GWEN_DB_NODE *dbSepaTags)
       tagLen=s-sLastTagStart;
 
       if (_storeSepaTag(sLastTagStart, tagLen, dbSepaTags)>0)
-	realSepaTagCount++;
+        realSepaTagCount++;
     }
 
     if (*s) {
@@ -1272,9 +1272,9 @@ int _storeSepaTag(const char *sTagStart, int tagLen, GWEN_DB_NODE *dbSepaTags)
     /* remove trailing blanks */
     if (tagLen>0) {
       while (tagLen>0) {
-	if (!isblank(sPayload[tagLen-1]))
-	  break;
-	tagLen--;
+        if (!isblank(sPayload[tagLen-1]))
+          break;
+        tagLen--;
       }
     }
 
@@ -1332,45 +1332,45 @@ void _transformSepaTags(GWEN_DB_NODE *dbData, GWEN_DB_NODE *dbSepaTags, uint32_t
       tbuf=GWEN_Buffer_new(0, 128, 0, 1);
       dbValue=GWEN_DB_GetFirstValue(dbVar);
       while (dbValue) {
-	const char *s;
+        const char *s;
 
-	s=GWEN_DB_GetCharValueFromNode(dbValue);
-	if (s && *s)
-	  GWEN_Buffer_AppendString(tbuf, s);
+        s=GWEN_DB_GetCharValueFromNode(dbValue);
+        if (s && *s)
+          GWEN_Buffer_AppendString(tbuf, s);
 
-	dbValue=GWEN_DB_GetNextValue(dbValue);
+        dbValue=GWEN_DB_GetNextValue(dbValue);
       }
 
       if (strcasecmp(sVarName, "EREF+")==0) {
-	AHB_SWIFT__SetCharValue(dbData, flags, "endToEndReference", GWEN_Buffer_GetStart(tbuf));
+        AHB_SWIFT__SetCharValue(dbData, flags, "endToEndReference", GWEN_Buffer_GetStart(tbuf));
       }
       else if (strcasecmp(sVarName, "KREF+")==0) {
-	AHB_SWIFT__SetCharValue(dbData, flags, "customerReference", GWEN_Buffer_GetStart(tbuf));
+        AHB_SWIFT__SetCharValue(dbData, flags, "customerReference", GWEN_Buffer_GetStart(tbuf));
       }
       else if (strcasecmp(sVarName, "MREF+")==0) {
-	AHB_SWIFT__SetCharValue(dbData, flags, "mandateId", GWEN_Buffer_GetStart(tbuf));
+        AHB_SWIFT__SetCharValue(dbData, flags, "mandateId", GWEN_Buffer_GetStart(tbuf));
       }
       else if (strcasecmp(sVarName, "CRED+")==0) {
-	AHB_SWIFT__SetCharValue(dbData, flags, "creditorSchemeId", GWEN_Buffer_GetStart(tbuf));
+        AHB_SWIFT__SetCharValue(dbData, flags, "creditorSchemeId", GWEN_Buffer_GetStart(tbuf));
       }
       else if (strcasecmp(sVarName, "DEBT+")==0) {
-	AHB_SWIFT__SetCharValue(dbData, flags, "originatorId", GWEN_Buffer_GetStart(tbuf));
+        AHB_SWIFT__SetCharValue(dbData, flags, "originatorId", GWEN_Buffer_GetStart(tbuf));
       }
       else if (strcasecmp(sVarName, "SVWZ+")==0) {
-	AHB_SWIFT__SetCharValue(dbData, flags | GWEN_DB_FLAGS_OVERWRITE_VARS, "purpose", GWEN_Buffer_GetStart(tbuf));
+        AHB_SWIFT__SetCharValue(dbData, flags | GWEN_DB_FLAGS_OVERWRITE_VARS, "purpose", GWEN_Buffer_GetStart(tbuf));
       }
       else if (strcasecmp(sVarName, "ABWA+")==0) {
-	/* "abweichender Auftraggeber" */
-	AHB_SWIFT__SetCharValue(dbData, flags, "sepa/ABWA", GWEN_Buffer_GetStart(tbuf));
+        /* "abweichender Auftraggeber" */
+        AHB_SWIFT__SetCharValue(dbData, flags, "sepa/ABWA", GWEN_Buffer_GetStart(tbuf));
       }
       else if (strcasecmp(sVarName, "ABWE+")==0) {
-	/* "abweichender Empfaenger" */
-	AHB_SWIFT__SetCharValue(dbData, flags, "sepa/ABWE", GWEN_Buffer_GetStart(tbuf));
+        /* "abweichender Empfaenger" */
+        AHB_SWIFT__SetCharValue(dbData, flags, "sepa/ABWE", GWEN_Buffer_GetStart(tbuf));
       }
       else if (strcasecmp(sVarName, "_purpose")==0) {
-	/* manually added tag (i.e. data outside a tag)
-	* will be replaced if there was a real purpose field (i.e. "SVWZ+") */
-	AHB_SWIFT__SetCharValue(dbData, flags, "purpose", GWEN_Buffer_GetStart(tbuf));
+        /* manually added tag (i.e. data outside a tag)
+        * will be replaced if there was a real purpose field (i.e. "SVWZ+") */
+        AHB_SWIFT__SetCharValue(dbData, flags, "purpose", GWEN_Buffer_GetStart(tbuf));
       }
       GWEN_Buffer_free(tbuf);
     }
@@ -1405,30 +1405,30 @@ void _parseTransactionData(const char *p, GWEN_DB_NODE *dbData, uint32_t flags)
 
       p3=p1;
       while (*p3) {
-	*p3=toupper(*p3);
-	p3++;
+        *p3=toupper(*p3);
+        p3++;
       }
       kto=strstr(p1, "KTO/BLZ ");
       if (kto) {
-	char *blz;
+        char *blz;
 
-	kto+=8;
-	blz=strchr(kto, '/');
-	if (blz) {
-	  *blz=0;
-	  blz++;
+        kto+=8;
+        blz=strchr(kto, '/');
+        if (blz) {
+          *blz=0;
+          blz++;
 
-	  p3=blz;
-	  while (*p3 && isdigit(*p3))
-	    p3++;
-	  *p3=0;
+          p3=blz;
+          while (*p3 && isdigit(*p3))
+            p3++;
+          *p3=0;
 
-	  AHB_SWIFT__SetCharValue(dbData, flags, "remoteBankCode", blz);
-	  AHB_SWIFT__SetCharValue(dbData, flags, "remoteAccountNumber", kto);
-	}
+          AHB_SWIFT__SetCharValue(dbData, flags, "remoteBankCode", blz);
+          AHB_SWIFT__SetCharValue(dbData, flags, "remoteAccountNumber", kto);
+        }
       }
       else {
-	AHB_SWIFT__SetCharValue(dbData, flags, "purpose", p1);
+        AHB_SWIFT__SetCharValue(dbData, flags, "purpose", p1);
       }
     }
     else

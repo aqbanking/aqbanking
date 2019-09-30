@@ -84,9 +84,9 @@ int AH_Control_Test1(AB_PROVIDER *pro,
 
     challengeBuf=GWEN_Buffer_new(0, 256, 0, 1);
     rv=GWEN_Text_ToHexBuffer(GWEN_Buffer_GetStart(dbuf),
-			     GWEN_Buffer_GetUsedBytes(dbuf),
-			     challengeBuf,
-			     0, 0, 0);
+                             GWEN_Buffer_GetUsedBytes(dbuf),
+                             challengeBuf,
+                             0, 0, 0);
     if (rv<0) {
       fprintf(stderr, "ERROR: Could not hex encode file \"%s\": %d\n", challengFile, rv);
       GWEN_Buffer_free(challengeBuf);
@@ -121,13 +121,13 @@ int AH_Control_Test1(AB_PROVIDER *pro,
     }
 
     rv=AH_Provider_InputTanWithChallenge(pro,
-					 u,
-					 tanMethod,
-					 "Could be a real challenge string but it isn't",
-					 GWEN_Buffer_GetStart(challengeBuf),
-					 tanBuffer,
-					 1,
-					 sizeof(tanBuffer)-1);
+                                         u,
+                                         tanMethod,
+                                         "Could be a real challenge string but it isn't",
+                                         GWEN_Buffer_GetStart(challengeBuf),
+                                         tanBuffer,
+                                         1,
+                                         sizeof(tanBuffer)-1);
     if (rv<0) {
       fprintf(stderr, "ERROR: Error in TAN input (%d)\n", rv);
       GWEN_Buffer_free(challengeBuf);
@@ -274,12 +274,12 @@ const AH_TAN_METHOD *_getSelectedTanMethod(AB_USER *u, int tanMethodId)
     const AH_TAN_METHOD *tanMethod;
 
     tanMethod=AH_TanMethod_List_First(tanMethodList);
-    while(tanMethod) {
+    while (tanMethod) {
       int combinedVersion;
 
       combinedVersion=AH_TanMethod_GetFunction(tanMethod)+(AH_TanMethod_GetGvVersion(tanMethod)*1000);
       if (combinedVersion==tanMethodId)
-	return tanMethod;
+        return tanMethod;
       tanMethod=AH_TanMethod_List_Next(tanMethod);
     }
   }
