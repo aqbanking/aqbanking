@@ -305,11 +305,20 @@ int AB_Banking_Update_Account_SetBackendName(AB_BANKING *ab)
       else {
         const char *s;
 
-        /* create new var */
-        s=GWEN_DB_GetCharValue(db, "provider", 0, NULL);
-        GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "backendName", s);
-        /* delete old var */
-        GWEN_DB_DeleteVar(db, "provider");
+        /* create new var (only if not already set */
+        s=GWEN_DB_GetCharValue(db, "backendName", 0, NULL);
+        if (s==NULL) {
+	  s=GWEN_DB_GetCharValue(db, "provider", 0, NULL);
+	  if (!(s && *s)) {
+	    DBG_WARN(AQBANKING_LOGDOMAIN, "%s: Neither provider nor backendName set (%s), not modifying group",
+		     AB_CFG_GROUP_ACCOUNTS, subGroupName);
+	  }
+	  else {
+	    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "backendName", s);
+	    /* delete old var */
+	    GWEN_DB_DeleteVar(db, "provider");
+	  }
+	}
 
         /* write back */
         rv=AB_Banking_WriteConfigGroup(ab, AB_CFG_GROUP_ACCOUNTS, uid, 1, 1, db);
