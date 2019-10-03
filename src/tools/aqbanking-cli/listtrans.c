@@ -287,7 +287,7 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
     GWEN_Buffer_AppendString(ubuf, "Default is (all in one line): \n");
     GWEN_Buffer_AppendString(ubuf, "  $(dateOrValutaDateAsString)\\t$(valueAsString)\\t$(localBankcode)\\t\n");
     GWEN_Buffer_AppendString(ubuf,
-                             "   $(localAccountNumber)\\t$(localIban)\\t$(remoteName)\\t$(remoteIban)\\t$(purpose)\n");
+                             "   $(localAccountNumber)\\t$(localIban)\\t$(remoteName)\\t$(remoteIban)\\t$(purposeInOneLine)\n");
     GWEN_Buffer_AppendString(ubuf, "\n");
     GWEN_Buffer_AppendString(ubuf, "Often used variables are:\n");
     GWEN_Buffer_AppendString(ubuf, " $(status)              : Transaction status\n");
@@ -314,6 +314,7 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
 
     GWEN_Buffer_AppendString(ubuf, " $(purpose)             : Memo/purpose (\"Verwendungszweck\")\n");
     GWEN_Buffer_AppendString(ubuf, " $(purposeLine[n])      : Memo/purpose line n (\"Verwendungszweckzeile\")\n");
+    GWEN_Buffer_AppendString(ubuf, " $(purposeInOneLine)    : Full purpose in one line (\"Verwendungszweckzeile\")\n");
 
     GWEN_Buffer_AppendString(ubuf, " $(customerReference)   : Customer reference\n");
     GWEN_Buffer_AppendString(ubuf, " $(bankReference)       : Bank reference\n");
