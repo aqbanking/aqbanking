@@ -1,7 +1,7 @@
 #SUBDIRS=typemaker2
 
 
-INCLUDES = -I$(srcdir)/../.. -I$(srcdir)/.. \
+AM_CPPFLAGS = -I$(srcdir)/../.. -I$(srcdir)/.. \
 	-I$(top_builddir)/src/libs \
 	$(gwenhywfar_includes)
 

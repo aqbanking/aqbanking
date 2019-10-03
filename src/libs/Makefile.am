@@ -1,7 +1,7 @@
 DIST_SUBDIRS=aqbanking aqbankingpp plugins
 SUBDIRS=aqbanking plugins
 
-INCLUDES = $(gwenhywfar_includes) -I$(aqbanking_symlinkdir)
+AM_CPPFLAGS = $(gwenhywfar_includes) -I$(aqbanking_symlinkdir)
 
 
 lib_LTLIBRARIES=libaqbanking.la

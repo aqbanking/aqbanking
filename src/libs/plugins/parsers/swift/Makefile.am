@@ -1,4 +1,4 @@
-INCLUDES = \
+AM_CPPFLAGS = \
   $(gwenhywfar_includes) \
   -I$(top_builddir)/src/libs \
   -I$(top_srcdir)/src/libs

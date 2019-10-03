@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/../../ -I$(srcdir)/..
+AM_CPPFLAGS = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/../../ -I$(srcdir)/..
 
 AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 

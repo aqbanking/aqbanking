@@ -1,4 +1,4 @@
-INCLUDES=-I$(aqbanking_symlinkdir) $(gwenhywfar_includes)
+AM_CPPFLAGS=-I$(aqbanking_symlinkdir) $(gwenhywfar_includes)
 
 lib_LTLIBRARIES=libaqbankingpp.la
 

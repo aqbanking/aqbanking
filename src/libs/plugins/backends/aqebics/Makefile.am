@@ -1,6 +1,6 @@
 SUBDIRS=msg client dialogs control requests
 
-INCLUDES = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/.. $(AQEBICS_CFLAGS)
+AM_CPPFLAGS = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/.. $(AQEBICS_CFLAGS)
 
 AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 

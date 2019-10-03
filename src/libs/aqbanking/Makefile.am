@@ -1,6 +1,6 @@
 SUBDIRS=types gui backendsupport typemaker2 dialogs
 
-INCLUDES = \
+AM_CPPFLAGS = \
   -I$(srcdir)/.. \
   -I$(top_builddir)/src/libs \
   -I$(top_builddir)/src/libs/plugins/backends \
@@ -110,6 +110,6 @@ cppcheck:
 
 splint:
 	for f in $(libaqbanking_base_la_SOURCES); do \
-	  splint $(INCLUDES) $(DEFS) +enumint -unrecogcomments +posixlib -predboolint +boolint -boolops $$f ; \
+	  splint $(AM_CPPFLAGS) $(DEFS) +enumint -unrecogcomments +posixlib -predboolint +boolint -boolops $$f ; \
 	done
 	

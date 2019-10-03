@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/.. $(GWENGUI_GTK2_CFLAGS) $(GTK2_CFLAGS)
+AM_CPPFLAGS = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/.. $(GWENGUI_GTK2_CFLAGS) $(GTK2_CFLAGS)
 
 
 if WITH_GWENGUI_GTK2

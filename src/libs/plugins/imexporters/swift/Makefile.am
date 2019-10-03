@@ -1,6 +1,6 @@
 SUBDIRS=profiles
 
-INCLUDES = -I$(top_srcdir)/src/libs \
+AM_CPPFLAGS = -I$(top_srcdir)/src/libs \
   -I$(top_builddir)/src/libs \
   $(gwenhywfar_includes)
 
