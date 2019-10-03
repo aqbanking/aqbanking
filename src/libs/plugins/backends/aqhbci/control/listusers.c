@@ -87,7 +87,7 @@ int AH_Control_ListUsers(AB_PROVIDER *pro,
   ul=AB_User_List_new();
   rv=AB_Provider_ReadUsers(pro, ul);
   if (rv<0) {
-    if (if rv==GWEN_ERROR_NOT_FOUND) {
+    if (rv==GWEN_ERROR_NOT_FOUND) {
       DBG_ERROR(0, "No users found.");
     }
     else {
