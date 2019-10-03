@@ -80,7 +80,12 @@ int AH_Control_ListAccounts(AB_PROVIDER *pro,
   al=AB_Account_List_new();
   rv=AB_Provider_ReadAccounts(pro, al);
   if (rv<0) {
-    DBG_ERROR_ERR(0, rv);
+    if (if rv==GWEN_ERROR_NOT_FOUND) {
+      DBG_ERROR(0, "No accounts found.");
+    }
+    else {
+      DBG_ERROR_ERR(0, rv);
+    }
     AB_Account_List_free(al);
     return 3;
   }
