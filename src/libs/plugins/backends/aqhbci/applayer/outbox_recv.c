@@ -14,7 +14,7 @@
 
 AH_MSG *AH_Outbox__CBox_RecvMessage(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg, GWEN_DB_NODE *dbRsp)
 {
-  AH_MSG *msg;
+  AH_MSG *msg=NULL;
   int rv;
 
   assert(cbox);
@@ -27,7 +27,6 @@ AH_MSG *AH_Outbox__CBox_RecvMessage(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg, GWEN_
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error receiving response (%d)", rv);
     GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Error, I18N("Error receiving response (%d)"), rv);
-    AH_Msg_free(msg);
     return NULL;
   }
 
