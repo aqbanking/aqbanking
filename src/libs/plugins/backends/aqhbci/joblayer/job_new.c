@@ -380,6 +380,12 @@ AH_JOB *AH_Job_new(const char *name,
     }
   }
 
+  if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug) {
+    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Created this job:");
+    AH_Job_Dump(j, stderr, 2);
+  }
+
+
   AH_Job_Log(j, GWEN_LoggerLevel_Info, "HBCI-Job created");
 
   return j;

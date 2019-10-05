@@ -1004,23 +1004,72 @@ void AH_Job_Dump(const AH_JOB *j, FILE *f, unsigned int insert)
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
-  fprintf(f, "Name  : %s\n", j->name);
+  fprintf(f, "Name          : %s\n", j->name);
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
-  fprintf(f, "Status: %s (%d)\n", AH_Job_StatusName(j->status), j->status);
+  fprintf(f, "Code          : %s\n", (j->code)?(j->code):"(empty)");
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
-  fprintf(f, "Msgnum: %d\n", j->msgNum);
+  fprintf(f, "SegVer        : %d\n", j->segmentVersion);
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
-  fprintf(f, "DialogId: %s\n", j->dialogId);
+  fprintf(f, "FirstSegment  : %d\n", j->firstSegment);
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
-  fprintf(f, "Owner   : %s\n", AB_User_GetCustomerId(j->user));
+  fprintf(f, "LasttSegment  : %d\n", j->lastSegment);
+
+  for (k=0; k<insert; k++)
+    fprintf(f, " ");
+  fprintf(f, "ChallengeClass: %d\n", j->challengeClass);
+
+  for (k=0; k<insert; k++)
+    fprintf(f, " ");
+  fprintf(f, "MinSigs       : %d\n", j->minSigs);
+
+  for (k=0; k<insert; k++)
+    fprintf(f, " ");
+  fprintf(f, "SecProfile    : %d\n", j->secProfile);
+
+  for (k=0; k<insert; k++)
+    fprintf(f, " ");
+  fprintf(f, "SecClass      : %d\n", j->secClass);
+
+  for (k=0; k<insert; k++)
+    fprintf(f, " ");
+  fprintf(f, "JobsPerMsg    : %d\n", j->jobsPerMsg);
+
+
+  for (k=0; k<insert; k++)
+    fprintf(f, " ");
+  fprintf(f, "Status        : %s (%d)\n", AH_Job_StatusName(j->status), j->status);
+
+  for (k=0; k<insert; k++)
+    fprintf(f, " ");
+  fprintf(f, "Msgnum        : %d\n", j->msgNum);
+
+  for (k=0; k<insert; k++)
+    fprintf(f, " ");
+  fprintf(f, "DialogId      : %s\n", j->dialogId);
+
+  for (k=0; k<insert; k++)
+    fprintf(f, " ");
+  fprintf(f, "Owner         : %s\n", AB_User_GetCustomerId(j->user));
+
+  for (k=0; k<insert; k++)
+    fprintf(f, " ");
+  fprintf(f, "MaxTransfers  : %d\n", j->maxTransfers);
+
+  for (k=0; k<insert; k++)
+    fprintf(f, " ");
+  fprintf(f, "TransferCount : %d\n", j->transferCount);
+
+  for (k=0; k<insert; k++)
+    fprintf(f, " ");
+  fprintf(f, "SupportedCmd  : %s\n", AB_Transaction_Command_toString(j->supportedCommand));
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
