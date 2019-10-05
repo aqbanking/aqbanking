@@ -240,7 +240,7 @@ int AHB_SWIFT535_Parse_90B(const AHB_SWIFT_TAG *tg,
       return 0;
     }
     p+=strlen(s);
-    AHB_SWIFT__SetCharValue535(data, flags, "unitCurrency", s);
+    AHB_SWIFT__SetCharValue535(data, flags, "unitPriceValue/currency", s);
 
     if (sscanf(p, " %s ", s)!=1) {
       DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 90B: Cannot read price");
@@ -248,7 +248,7 @@ int AHB_SWIFT535_Parse_90B(const AHB_SWIFT_TAG *tg,
       return 0;
     }
     /*p+=strlen(s); */
-    AHB_SWIFT__SetCharValue535(data, flags, "unitPrice", s);
+    AHB_SWIFT__SetCharValue535(data, flags, "unitPriceValue/value", s);
 
     GWEN_Memory_dealloc(s);
   }

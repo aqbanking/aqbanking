@@ -26,6 +26,13 @@
 /*#define SWIFT_VERBOSE_DEBUG*/
 
 
+
+static void _replaceValueInDb(GWEN_DB_NODE *db, const char *grpName, const char *destName);
+
+
+
+
+
 GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_SWIFT);
 
 
@@ -179,6 +186,12 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
       AB_TRANSACTION *t;
       const char *s;
       const GWEN_DATE *dt;
+
+      /* replace "name/value" and "name/currency" by "name=value:currency" */
+      _replaceValueInDb(dbT, "value", "value");
+      _replaceValueInDb(dbT, "fees", "fees");
+      _replaceValueInDb(dbT, "unitPriceValue", "unitPriceValue");
+      _replaceValueInDb(dbT, "commissionValue", "commissionValue");
 
       t=AB_Transaction_fromDb(dbT);
       if (!t) {
@@ -375,6 +388,37 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
   DBG_INFO(AQBANKING_LOGDOMAIN, "Importing from DB group \"%s\": Done", GWEN_DB_GroupName(db));
   return 0;
 }
+
+
+
+void _replaceValueInDb(GWEN_DB_NODE *db, const char *grpName, const char *destName)
+{
+  GWEN_DB_NODE *dbGroup;
+
+  dbGroup=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, grpName);
+  if (dbGroup) {
+    const char *sValue;
+    const char *sCurrency;
+
+    sValue=GWEN_DB_GetCharValue(dbGroup, "value", 0, NULL);
+    sCurrency=GWEN_DB_GetCharValue(dbGroup, "currency", 0, NULL);
+    if (sValue && *sValue) {
+      GWEN_BUFFER *dbuf;
+
+      dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      GWEN_Buffer_AppendString(dbuf, sValue);
+      if (sCurrency && *sCurrency) {
+        GWEN_Buffer_AppendString(dbuf, ":");
+        GWEN_Buffer_AppendString(dbuf, sCurrency);
+      }
+      GWEN_DB_DeleteGroup(db, grpName);
+      dbGroup=NULL;
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, destName, GWEN_Buffer_GetStart(dbuf));
+      GWEN_Buffer_free(dbuf);
+    }
+  }
+}
+
 
 
 

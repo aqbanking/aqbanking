@@ -385,6 +385,7 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
     memmove(s, p, p2-p+1);
     s[p2-p]=0;
   }
+#if 0 /* in all other places we use "value/value" and "value/currency", we should do it here, too */
   if (1) {
     GWEN_BUFFER *tbuf;
     const char *cu;
@@ -398,6 +399,17 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
     }
     AHB_SWIFT__SetCharValue(data, flags, "value", GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_free(tbuf);
+  }
+#endif
+
+  if (1) {
+    const char *cu;
+
+    AHB_SWIFT__SetCharValue(data, GWEN_DB_FLAGS_OVERWRITE_VARS, "value/value", s);
+
+    cu=GWEN_DB_GetCharValue(cfg, "currency", 0, 0);
+    if (cu && *cu)
+      AHB_SWIFT__SetCharValue(data, GWEN_DB_FLAGS_OVERWRITE_VARS, "value/currency", cu);
   }
   GWEN_Memory_dealloc(s);
   bleft-=p2-p;
