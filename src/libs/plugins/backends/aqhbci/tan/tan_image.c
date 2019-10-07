@@ -68,52 +68,74 @@ int _getTan(AH_TAN_MECHANISM *tanMechanism,
             int passwordMaxLen)
 {
   const AH_TAN_METHOD *tanMethod;
-  GWEN_DB_NODE *dbMethodParams;
-  GWEN_BUFFER *bufToken;
-  GWEN_DB_NODE *dbTanMethod;
-  int rv;
 
   tanMethod=AH_TanMechanism_GetTanMethod(tanMechanism);
   assert(tanMethod);
 
-  dbMethodParams=GWEN_DB_Group_new("methodParams");
-
-  GWEN_DB_SetIntValue(dbMethodParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "tanMethodId", AH_TanMechanism_GetTanMethodId(tanMechanism));
-
-  dbTanMethod=GWEN_DB_GetGroup(dbMethodParams, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "tanMethod");
-  AH_TanMethod_toDb(tanMethod, dbTanMethod);
-
-  rv=_extractAndSetMimeTypeAndImageData(challengePtr, challengeLen, dbMethodParams);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    GWEN_DB_Group_free(dbMethodParams);
-    return rv;
-  }
-
-
-  bufToken=GWEN_Buffer_new(0, 256, 0, 1);
-  AH_User_MkTanName(u, (const char *) challengePtr, bufToken);
-
-  rv=GWEN_Gui_GetPassword(GWEN_GUI_INPUT_FLAGS_TAN | GWEN_GUI_INPUT_FLAGS_SHOW | GWEN_GUI_INPUT_FLAGS_DIRECT,
-                          GWEN_Buffer_GetStart(bufToken),
-                          title,
-                          text,
-                          passwordBuffer,
-                          passwordMinLen,
-                          passwordMaxLen,
-                          GWEN_Gui_PasswordMethod_OpticalHHD,
-                          dbMethodParams,
-                          0);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+  if (challengePtr && challengeLen) {
+    GWEN_BUFFER *bufToken;
+    GWEN_DB_NODE *dbTanMethod;
+    GWEN_DB_NODE *dbMethodParams;
+    int rv;
+  
+    dbMethodParams=GWEN_DB_Group_new("methodParams");
+  
+    GWEN_DB_SetIntValue(dbMethodParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
+			"tanMethodId", AH_TanMechanism_GetTanMethodId(tanMechanism));
+  
+    dbTanMethod=GWEN_DB_GetGroup(dbMethodParams, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "tanMethod");
+    AH_TanMethod_toDb(tanMethod, dbTanMethod);
+  
+    rv=_extractAndSetMimeTypeAndImageData(challengePtr, challengeLen, dbMethodParams);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      GWEN_DB_Group_free(dbMethodParams);
+      return rv;
+    }
+  
+  
+    bufToken=GWEN_Buffer_new(0, 256, 0, 1);
+    AH_User_MkTanName(u, (const char *) challengePtr, bufToken);
+  
+    rv=GWEN_Gui_GetPassword(GWEN_GUI_INPUT_FLAGS_TAN | GWEN_GUI_INPUT_FLAGS_SHOW | GWEN_GUI_INPUT_FLAGS_DIRECT,
+			    GWEN_Buffer_GetStart(bufToken),
+			    title,
+			    text,
+			    passwordBuffer,
+			    passwordMinLen,
+			    passwordMaxLen,
+			    GWEN_Gui_PasswordMethod_OpticalHHD,
+			    dbMethodParams,
+			    0);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(bufToken);
+      GWEN_DB_Group_free(dbMethodParams);
+      return rv;
+    }
+  
     GWEN_Buffer_free(bufToken);
     GWEN_DB_Group_free(dbMethodParams);
-    return rv;
+  }
+  else {
+    int rv;
+
+    rv=GWEN_Gui_GetPassword(GWEN_GUI_INPUT_FLAGS_TAN | GWEN_GUI_INPUT_FLAGS_SHOW | GWEN_GUI_INPUT_FLAGS_DIRECT,
+			    "TAN",
+			    title,
+			    text,
+			    passwordBuffer,
+			    passwordMinLen,
+			    passwordMaxLen,
+			    GWEN_Gui_PasswordMethod_Text,
+			    NULL,
+			    0);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
   }
 
-  GWEN_Buffer_free(bufToken);
-  GWEN_DB_Group_free(dbMethodParams);
   return 0;
 }
 
@@ -132,11 +154,15 @@ int _extractAndSetMimeTypeAndImageData(const uint8_t *challengePtr,
   p=challengePtr;
   len=challengeLen;
 
+  if (len<2) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "invalid data length in TAG1 (remaining data length: %d)", len);
+    return GWEN_ERROR_BAD_DATA;
+  }
 
   /* read 1st tag: mimetype */
   tagLen=(p[0]<<8)+p[1];
   p+=2;
-  len--;
+  len-=2;
   if (len<tagLen) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "invalid tag length %d (remaining data length: %d)", tagLen, len);
     return GWEN_ERROR_BAD_DATA;
@@ -157,14 +183,19 @@ int _extractAndSetMimeTypeAndImageData(const uint8_t *challengePtr,
   }
   else {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Empty mimetype");
-    return GWEN_ERROR_BAD_DATA;
+    return GWEN_ERROR_NO_DATA;
   }
 
 
   /* read 2nd tag: image data */
+  if (len<2) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "invalid data length in TAG2 (remaining data length: %d)", len);
+    return GWEN_ERROR_BAD_DATA;
+  }
+
   tagLen=(p[0]<<8)+p[1];
   p+=2;
-  len--;
+  len-=2;
   if (len<tagLen) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "invalid tag length %d (remaining data length: %d)", tagLen, len);
     return GWEN_ERROR_BAD_DATA;
