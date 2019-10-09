@@ -288,6 +288,8 @@ void AH_User__ReadDb(AB_USER *u, GWEN_DB_NODE *db)
 
   ue->hbciVersion=GWEN_DB_GetIntValue(db, "hbciVersion", 0, 210);
 
+  ue->selectedTanInputMechanism=GWEN_DB_GetIntValue(db, "selectedTanInputMechanism", 0, 0);
+
   /* load server address */
   GWEN_Url_free(ue->serverUrl);
   s=GWEN_DB_GetCharValue(db, "server", 0, 0);
@@ -476,6 +478,9 @@ void AH_User__WriteDb(const AB_USER *u, GWEN_DB_NODE *db)
 
   GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
                       "hbciVersion", ue->hbciVersion);
+
+  GWEN_DB_SetIntValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "selectedTanInputMechanism", ue->selectedTanInputMechanism);
 
   if (ue->httpContentType)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS,
