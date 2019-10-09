@@ -301,6 +301,7 @@ void AH_EditUserPinTanDialog_Init(GWEN_DIALOG *dlg)
     GWEN_Dialog_SetIntProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_Value, 0, 4, 0);
     break;
   default:
+    DBG_WARN(AQHBCI_LOGDOMAIN, "Using default tanMechanism");
     GWEN_Dialog_SetIntProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_Value, 0, 0, 0);
     break;
   }
