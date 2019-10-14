@@ -455,16 +455,16 @@
    </VALUES>
  </JOBdef>
 
- <JOBdef 
-                id="JobGetTransactionsCreditCard" 
-    code="DKKKU" params=""
-    version="2" 
-                crypt="1" 
-    sign="1" 
-    needBPD="1"
-    response="TransactionsCreditCard"
-    attachable="1"
-    single="1"
+
+ <JOBdef id="JobGetTransactionsCreditCard" 
+         code="DKKKU" params=""
+         version="2" 
+         crypt="1" 
+         sign="1" 
+         needBPD="0"
+         response="TransactionsCreditCard"
+         attachable="1"
+         single="1"
  >
    <SEG type="GetTransactionsCreditCard" version="2" />
 
