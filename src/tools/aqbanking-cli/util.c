@@ -582,7 +582,7 @@ AB_ACCOUNT_SPEC *pickAccountSpecForArgs(const AB_ACCOUNT_SPEC_LIST *accountSpecL
   if (uaid>0) {
     accountSpec=AB_AccountSpec_List_GetByUniqueId(accountSpecList, uaid);
     if (accountSpec==NULL) {
-      DBG_ERROR(0, "ERROR: No account spec with unique id %llu", (unsigned long long int) uaid);
+      DBG_ERROR(0, "ERROR: No account spec with unique id %" PRIu32, uaid);
       return NULL;
     }
   }
@@ -662,7 +662,7 @@ AB_ACCOUNT_SPEC *pickAccountSpecForTransaction(const AB_ACCOUNT_SPEC_LIST *accou
   if (uaid>0) {
     accountSpec=AB_AccountSpec_List_GetByUniqueId(accountSpecList, uaid);
     if (accountSpec==NULL) {
-      DBG_ERROR(0, "ERROR: No account spec with unique id %llu", (unsigned long long int) uaid);
+      DBG_ERROR(0, "ERROR: No account spec with unique id %" PRIu32, uaid);
       return NULL;
     }
   }

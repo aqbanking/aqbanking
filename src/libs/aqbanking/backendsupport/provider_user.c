@@ -29,7 +29,7 @@ int AB_Provider_ReadUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnloc
 
   uidInDb=GWEN_DB_GetIntValue(db, "uniqueId", 0, 0);
   if (uidInDb==0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "No unique id in config, so no user with id %llu", (unsigned long long int) uid);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No unique id in config, so no user with id %" PRIu32, uid);
     GWEN_DB_Group_free(db);
     return GWEN_ERROR_NOT_FOUND;
   }
