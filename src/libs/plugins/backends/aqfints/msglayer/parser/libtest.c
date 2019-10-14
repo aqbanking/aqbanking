@@ -94,6 +94,44 @@ int test_readHbci(void)
 
 
 
+int test_readHbci2(const char *fileName)
+{
+  int rv;
+  GWEN_BUFFER *tbuf;
+  AQFINTS_SEGMENT_LIST *segmentList;
+
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_SyncIo_Helper_ReadFile(fileName, tbuf);
+  if (rv<0) {
+    fprintf(stderr, "Error reading HBCI file.\n");
+    GWEN_Buffer_free(tbuf);
+    return 2;
+  }
+
+  segmentList=AQFINTS_Segment_List_new();
+
+  rv=AQFINTS_Parser_Hbci_ReadBuffer(segmentList,
+				    (const uint8_t *) GWEN_Buffer_GetStart(tbuf),
+				    GWEN_Buffer_GetUsedBytes(tbuf));
+  if (rv<0) {
+    fprintf(stderr, "Error reading HBCI data.\n");
+    AQFINTS_Segment_List_free(segmentList);
+    GWEN_Buffer_free(tbuf);
+    return 2;
+  }
+
+  fprintf(stderr, "Segments:\n");
+  AQFINTS_Parser_DumpSegmentList(segmentList, 2);
+
+  AQFINTS_Segment_List_free(segmentList);
+  GWEN_Buffer_free(tbuf);
+
+  fprintf(stderr, "Success.\n");
+  return 0;
+}
+
+
+
 int test_saveFile1(const char *filenameIn, const char *filenameOut)
 {
   int rv;
@@ -984,6 +1022,7 @@ int main(int args, char **argv)
 {
   //test_loadFile("example.xml");
   //test_readHbci();
+  //test_readHbci2("/tmp/test.hbci");
   //test_saveFile1("example.xml", "example.xml.out");
   //test_saveFile2("example.xml.out");
   //test_writeSegments();

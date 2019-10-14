@@ -10,6 +10,7 @@
 
 
 #include "msglayer/parser/parser.h"
+#include "msglayer/parser/parser_dump.h"
 #include "servicelayer/upd/upd_read.h"
 #include "transportlayer/transportssl.h"
 #include "sessionlayer/session.h"
@@ -159,6 +160,54 @@ int test_upd()
 
 
 
+int test_readHbci(const char *fileName)
+{
+  AQFINTS_PARSER *parser;
+  int rv;
+  GWEN_BUFFER *mbuf;
+  AQFINTS_SEGMENT_LIST *segmentList;
+
+  parser=AQFINTS_Parser_new();
+  AQFINTS_Parser_AddPath(parser, ".");
+  rv=AQFINTS_Parser_ReadFiles(parser);
+  if (rv<0) {
+    fprintf(stderr, "Error reading files.\n");
+    return 2;
+  }
+
+  mbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=readFile(fileName, mbuf);
+  if (rv<0) {
+    DBG_ERROR(0, "here (%d)", rv);
+    return 2;
+  }
+
+  segmentList=AQFINTS_Segment_List_new();
+  rv=AQFINTS_Parser_ReadIntoSegmentList(parser, segmentList,
+                                        (const uint8_t *) GWEN_Buffer_GetStart(mbuf),
+                                        GWEN_Buffer_GetUsedBytes(mbuf));
+  if (rv<0) {
+    fprintf(stderr, "Error reading HBCI message into segment list (%d)\n", rv);
+    //AQFINTS_Parser_DumpDefinitions(parser, 2);
+    return 2;
+  }
+
+  rv=AQFINTS_Parser_ReadSegmentListToDb(parser, segmentList);
+  if (rv<0) {
+    fprintf(stderr, "Error reading DB data for segment list (%d)\n", rv);
+    //AQFINTS_Parser_DumpDefinitions(parser, 2);
+    return 2;
+  }
+
+  AQFINTS_Parser_DumpSegmentList(segmentList, 2);
+
+
+  fprintf(stderr, "Success.\n");
+  return 0;
+}
+
+
+
 int test_getBpd()
 {
   GWEN_GUI *cgui;
@@ -242,7 +291,8 @@ int main(int argc, char **argv)
 {
   //test_parser();
   //test_upd();
-  test_getBpd();
+  //test_getBpd();
+  test_readHbci("/tmp/test.hbci");
   return 0;
 }
 
