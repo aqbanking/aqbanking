@@ -63,22 +63,6 @@ int onError(const char *m, int rv)
 }
 
 
-struct AH_JOB_CHANGEKEYS {
-  uint16_t flags;
-  uint8_t *canceled;
-  AB_PROVIDER *pro;
-  AB_USER *u;
-  AB_USER *uTmp;
-  const char *fm;
-  char *tt, *tn;
-  uint32_t kvVCurr, kvSCurr, kvACurr;
-  GWEN_CRYPT_TOKEN *ct;
-  const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
-  int tokenCtxId;
-  const GWEN_CRYPT_TOKEN_KEYINFO *kiV, *kiS, *kiA;
-  int8_t resp;
-  GWEN_BUFFER *emsg;
-};
 
 const char *strUpper(char *s)
 {
@@ -94,7 +78,7 @@ const char *strUpper(char *s)
 
 int8_t getKeyInfo(AH_HBCI *h, const char *tt, const char *tn, uint32_t cid, GWEN_CRYPT_TOKEN **ct,
                   const GWEN_CRYPT_TOKEN_CONTEXT **ctx,
-                  const GWEN_CRYPT_TOKEN_KEYINFO **kiV, const GWEN_CRYPT_TOKEN_KEYINFO **kiS, const GWEN_CRYPT_TOKEN_KEYINFO **kiA)
+                  const GWEN_CRYPT_TOKEN_KEYINFO **cryptKeyInfo, const GWEN_CRYPT_TOKEN_KEYINFO **signKeyInfo, const GWEN_CRYPT_TOKEN_KEYINFO **authKeyInfo)
 {
   int8_t res = 0;
   uint8_t i;
@@ -121,16 +105,16 @@ int8_t getKeyInfo(AH_HBCI *h, const char *tt, const char *tn, uint32_t cid, GWEN
     switch (i) {
     case 0:
       kid = GWEN_Crypt_Token_Context_GetDecipherKeyId(*ctx);
-      ki = kiV, kl = 'V';
+      ki = cryptKeyInfo, kl = 'V';
       break;
     case 1:
       kid = GWEN_Crypt_Token_Context_GetSignKeyId(*ctx);
-      ki = kiS;
+      ki = signKeyInfo;
       kl = 'S';
       break;
     case 2:
       kid = GWEN_Crypt_Token_Context_GetAuthSignKeyId(*ctx);
-      ki = kiA;
+      ki = authKeyInfo;
       kl = 'D';
       break;
     }
@@ -226,7 +210,7 @@ int8_t setKeyVersion(GWEN_CRYPT_TOKEN *ct, const GWEN_CRYPT_TOKEN_CONTEXT *ctx, 
 
 #define FJCK_CHMEDIA    1
 #define FJCK_CHKEY      2
-#define FJCK_CHPROFILE    4
+#define FJCK_CHPROFILE  4
 #define FJCK_SRCFILE    8
 #define FJCK_DSTFILE    16
 #define FJCK_DSTFILE_EXISTS 32
@@ -246,13 +230,13 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
   AH_CRYPT_MODE cryptModeNew = AH_CryptMode_None;
   int cryptTypeNew = -1;
   int tokenCtxIdNew = -1;
-  const char *tt = NULL;
-  const char *tn = NULL;
-  char *ttn = NULL, *tnn = NULL;
-  const char *scmn = NULL;
+  const char *tokenTypeFromToken = NULL;
+  const char *tokenNameFromToken = NULL;
+  char *wantedTokenType = NULL, *wantedTokenName = NULL;
+  const char *wantedCryptMode = NULL;
   GWEN_CRYPT_TOKEN *ct = NULL, *ctNew = NULL;
   const GWEN_CRYPT_TOKEN_CONTEXT *ctx = NULL, *ctxNew = NULL;
-  const GWEN_CRYPT_TOKEN_KEYINFO *kiV = NULL, *kiS = NULL, *kiA = NULL, *kiVNew = NULL, *kiSNew = NULL, *kiANew = NULL;
+  const GWEN_CRYPT_TOKEN_KEYINFO *cryptKeyInfo = NULL, *signKeyInfo = NULL, *authKeyInfo = NULL, *kiVNew = NULL, *kiSNew = NULL, *kiANew = NULL;
   GWEN_PLUGIN *plg = NULL;
   GWEN_PLUGIN_MANAGER *pm = GWEN_PluginManager_FindPluginManager(GWEN_CRYPT_TOKEN_PLUGIN_TYPENAME);
   const char *cmn = "?", *fm = "?", *fmn = "?";
@@ -260,70 +244,70 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
   assert(h);
 
   //GWEN_DB_Dump(args, 0);
-  ttn = strdup(GWEN_DB_GetCharValue(args, "tokenType", 0, ""));
-  tnn = strdup(GWEN_DB_GetCharValue(args, "tokenName", 0, ""));
-  scmn = GWEN_DB_GetCharValue(args, "cryptMode", 0, "");
+  wantedTokenType = strdup(GWEN_DB_GetCharValue(args, "tokenType", 0, ""));
+  wantedTokenName = strdup(GWEN_DB_GetCharValue(args, "tokenName", 0, ""));
+  wantedCryptMode = GWEN_DB_GetCharValue(args, "cryptMode", 0, "");
   cryptTypeNew = GWEN_DB_GetIntValue(args, "cryptType", 0, -1);
   tokenCtxIdNew = GWEN_DB_GetIntValue(args, "context", 0, -1);
 
-  if (scmn && *scmn) {
-    if (!strcasecmp(scmn, "RDH"))
+  if (wantedCryptMode && *wantedCryptMode) {
+    if (!strcasecmp(wantedCryptMode, "RDH"))
       cryptModeNew = AH_CryptMode_Rdh;
-    else if (!strcasecmp(scmn, "RAH"))
+    else if (!strcasecmp(wantedCryptMode, "RAH"))
       cryptModeNew = AH_CryptMode_Rah;
   }
 
-  tt = AH_User_GetTokenType(u);
-  tn = AH_User_GetTokenName(u);
-  if (!strcasecmp(tt, "ohbci"))
+  tokenTypeFromToken = AH_User_GetTokenType(u);
+  tokenNameFromToken = AH_User_GetTokenName(u);
+  if (!strcasecmp(tokenTypeFromToken, "ohbci"))
     flags |= FJCK_SRCFILE;
-  if (!*ttn) {
-    free(ttn);
-    ttn = NULL;
-    if (*tnn && !strchr(tnn, '/') && !strchr(tnn, '\\')) { // assume thats a card number
-      size_t l = strlen(tnn);
+  if (!*wantedTokenType) {
+    free(wantedTokenType);
+    wantedTokenType = NULL;
+    if (*wantedTokenName && !strchr(wantedTokenName, '/') && !strchr(wantedTokenName, '\\')) { // assume thats a card number
+      size_t l = strlen(wantedTokenName);
       size_t i = 0;
       for (; i < l; i++) {
-        if ((tnn[i] < '0') || (tnn[i] > '9'))
+        if ((wantedTokenName[i] < '0') || (wantedTokenName[i] > '9'))
           break;
       }
       if (i == l) {
-        ttn = strdup("card");
+        wantedTokenType = strdup("card");
         if (l < 10) {
           char *tmp = strdup("0000000000");
           for (i = 0; i < l; i++)
-            tmp[9 - i] = tnn[(l - 1) - i];
-          free(tnn);
-          tnn = tmp;
+            tmp[9 - i] = wantedTokenName[(l - 1) - i];
+          free(wantedTokenName);
+          wantedTokenName = tmp;
         }
       }
     }
   }
-  if (ttn && !*ttn) {
-    free(ttn);
-    ttn = NULL;
+  if (wantedTokenType && !*wantedTokenType) {
+    free(wantedTokenType);
+    wantedTokenType = NULL;
   }
-  if (!ttn)
-    ttn = strdup(tt);
-  if (!strcasecmp(ttn, "file") || !strcasecmp(ttn, "ohbci")) {
+  if (!wantedTokenType)
+    wantedTokenType = strdup(tokenTypeFromToken);
+  if (!strcasecmp(wantedTokenType, "file") || !strcasecmp(wantedTokenType, "ohbci")) {
     flags |= FJCK_DSTFILE;
-    free(ttn);
-    ttn = strdup("ohbci");
+    free(wantedTokenType);
+    wantedTokenType = strdup("ohbci");
   }
-  else if (!strstr(ttn, "card"))
-    res = onError(fmtStr(FB, "Invalid token-type '%s'.", ttn), -1);
-  if (!*tnn) {
-    free(tnn);
-    tnn = strdup(tn);
-    if (!strcasecmp(tt, "ohbci"))
+  else if (!strstr(wantedTokenType, "card"))
+    res = onError(fmtStr(FB, "Invalid token-type '%s'.", wantedTokenType), -1);
+  if (!*wantedTokenName) {
+    free(wantedTokenName);
+    wantedTokenName = strdup(tokenNameFromToken);
+    if (!strcasecmp(tokenTypeFromToken, "ohbci"))
       flags |= FJCK_DSTFILE;
   }
 
   if (res == 0) {
-    if (!access(tnn, F_OK))
+    if (!access(wantedTokenName, F_OK))
       flags |= FJCK_DSTFILE_EXISTS;
 
-    if (!strcasecmp(tt, ttn) && !strcmp(tn, tnn)) {
+    if (!strcasecmp(tokenTypeFromToken, wantedTokenType) && !strcmp(tokenNameFromToken, wantedTokenName)) {
       if (cryptModeNew == AH_CryptMode_None)
         cryptModeNew = AH_User_GetCryptMode(u);
       if (cryptTypeNew < 0)
@@ -341,13 +325,14 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
   fm = (flags & FJCK_SRCFILE) ? "Keyfile" : "Chipcard";
   fmn = (flags & FJCK_DSTFILE) ? "Keyfile" : "Chipcard";
 
-  DBG_INFO(AQHBCI_LOGDOMAIN, "'%s' '%s' -> '%s' '%s', file %d exists %d'.", tt, tn, ttn, tnn, (flags & FJCK_DSTFILE) != 0,
+  DBG_INFO(AQHBCI_LOGDOMAIN, "'%s' '%s' -> '%s' '%s', file %d exists %d'.",
+	   tokenTypeFromToken, tokenNameFromToken, wantedTokenType, wantedTokenName, (flags & FJCK_DSTFILE) != 0,
            (flags & FJCK_DSTFILE_EXISTS) != 0);
 
   if (res == 0) {
     if (
 	( !((flags & FJCK_SRCFILE)) == !((flags & FJCK_DSTFILE))) &&
-	!strcmp(tn, tnn)
+	!strcmp(tokenNameFromToken, wantedTokenName)
        )
       res = onError("Keychange without media change is not supported, yet.", -1);
   }
@@ -363,13 +348,13 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
     default:
       cmn = "unknown";
     }
-    if (!strcasecmp(tt, ttn) && !strcmp(tn, tnn))
+    if (!strcasecmp(tokenTypeFromToken, wantedTokenType) && !strcmp(tokenNameFromToken, wantedTokenName))
       flags &= ~FJCK_CHMEDIA;
     if ((AH_User_GetCryptMode(u) == cryptModeNew) && (AH_User_GetRdhType(u) == cryptTypeNew))
       flags &= ~FJCK_CHPROFILE;
     DBG_INFO(AQHBCI_LOGDOMAIN, "'%s %d' -> '%s' '%s' '%s %d', change: m %d, k %d, p %d.",
              AH_CryptMode_toString(AH_User_GetCryptMode(u)), AH_User_GetRdhType(u),
-             ttn, tnn, AH_CryptMode_toString(cryptModeNew), cryptTypeNew, (flags & FJCK_CHMEDIA) != 0, (flags & FJCK_CHKEY) != 0,
+             wantedTokenType, wantedTokenName, AH_CryptMode_toString(cryptModeNew), cryptTypeNew, (flags & FJCK_CHMEDIA) != 0, (flags & FJCK_CHKEY) != 0,
              (flags & FJCK_CHPROFILE) != 0);
     if (flags & FJCK_CHPROFILE) {
       res = -1;
@@ -416,13 +401,13 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
               }
             }
             if (res)
-              onError(fmtStr(FB, "Änderung des Schlüsselsprofils von %s RDH-%d nach %s RAH-%d nicht unterstützt.",
-                             fm, AH_User_GetRdhType(u), fmn, cryptTypeNew), -1);
-          }
+              onError(fmtStr(FB, "Aenderung des Schluesselsprofils von %s RDH-%d nach %s RAH-%d nicht unterstuetzt.",
+			     fm, AH_User_GetRdhType(u), fmn, cryptTypeNew), -1);
+	  }
         }
         break;
       default:
-        onError("Änderung des Sicherheitsprofils nur von RDH aus unterstützt.", -1);
+	onError("Aenderung des Sicherheitsprofils nur von RDH aus unterstuetzt.", -1);
       }
     }
     if (res)
@@ -431,10 +416,10 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
 
   if (res == 0) {
     // keyinfo current token
-    if (getKeyInfo(h, AH_User_GetTokenType(u), AH_User_GetTokenName(u), AH_User_GetTokenContextId(u), &ct, &ctx, &kiV, &kiS,
-                   &kiA)
-        || !ct || !ctx || !kiV || !kiS || !kiA) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "getKeyInfo() ct %p, ctx %p, ki %p %p %p.", ct, ctx, kiV, kiS, kiA);
+    if (getKeyInfo(h, AH_User_GetTokenType(u), AH_User_GetTokenName(u), AH_User_GetTokenContextId(u), &ct, &ctx, &cryptKeyInfo, &signKeyInfo,
+                   &authKeyInfo)
+        || !ct || !ctx || !cryptKeyInfo || !signKeyInfo || !authKeyInfo) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "getKeyInfo() ct %p, ctx %p, ki %p %p %p.", ct, ctx, cryptKeyInfo, signKeyInfo, authKeyInfo);
       if (!ct || !ctx)
         res = onError("Could not get token.", -1);
       else
@@ -444,7 +429,7 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
 
   if ((res == 0) && (flags & FJCK_CHMEDIA)) {
     char *tokenNew = NULL;
-    if (!strcmp(ttn, "card")) {
+    if (!strcmp(wantedTokenType, "card")) {
       GWEN_BUFFER *ctn = GWEN_Buffer_new(0, 64, 0, 1);
       GWEN_BUFFER *cmn = GWEN_Buffer_new(0, 64, 0, 1);
       for (; res == 0;) {
@@ -456,18 +441,18 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
           if (tokenNew)
             free(tokenNew);
           tokenNew = strdup(GWEN_Buffer_GetStart(ctn));
-          if (!strcmp(tnn, GWEN_Buffer_GetStart(cmn)))
+          if (!strcmp(wantedTokenName, GWEN_Buffer_GetStart(cmn)))
             break;
           if (GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_INFO, I18N("Change keys: insert card"),
-                                  fmtStr(FB, "Chipcard '%s' needed.", tnn), I18N("Abort"), I18N("OK"), NULL, 0) != 2)
+                                  fmtStr(FB, "Chipcard '%s' needed.", wantedTokenName), I18N("Abort"), I18N("OK"), NULL, 0) != 2)
             res = -2;
         }
       }
       GWEN_Buffer_free(ctn);
       GWEN_Buffer_free(cmn);
       if (tokenNew) {
-        free(ttn);
-        ttn = tokenNew;
+        free(wantedTokenType);
+        wantedTokenType = tokenNew;
         tokenNew = NULL;
       }
     }
@@ -476,12 +461,12 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
       free(tokenNew);
 
     if (res == 0)
-      plg = GWEN_PluginManager_GetPlugin(pm, ttn);
+      plg = GWEN_PluginManager_GetPlugin(pm, wantedTokenType);
     if (!plg && (res == 0))
-      res = onError(fmtStr(FB, "Could not get plugin for new tokentype '%s'.", ttn), -1);
+      res = onError(fmtStr(FB, "Could not get plugin for new tokentype '%s'.", wantedTokenType), -1);
     if (plg && (flags & FJCK_DSTFILE)) {
       // diff. context?
-      if ((flags & FJCK_SRCFILE) && !strcmp(tn, tnn))
+      if ((flags & FJCK_SRCFILE) && !strcmp(tokenNameFromToken, wantedTokenName))
         res = onError(fmtStr(FB, "New and old keyfile must be different."), -1);
       else {
         uint8_t del = 1;
@@ -489,18 +474,18 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
         if (flags & FJCK_DSTFILE_EXISTS) {
           del = 0;
           res = GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_INFO, I18N("Change keys: confirm"),
-                                    fmtStr(FB, "Keyfile '%s' already exists.", tnn), I18N("Abort"), I18N("Use"), I18N("Delete"), 0);
+                                    fmtStr(FB, "Keyfile '%s' already exists.", wantedTokenName), I18N("Abort"), I18N("Use"), I18N("Delete"), 0);
           if (res == 1)
             res = -1;
           else if (res == 2) { // use
             res = 0;
             //flags &= ~FJCK_CHKEY;
-            if (getKeyInfo(h, ttn, tnn, tokenCtxIdNew, &ctNew, &ctxNew, &kiVNew, &kiSNew, &kiANew)
+            if (getKeyInfo(h, wantedTokenType, wantedTokenName, tokenCtxIdNew, &ctNew, &ctxNew, &kiVNew, &kiSNew, &kiANew)
                 || !ctNew || !ctxNew || !kiVNew || !kiSNew || !kiANew)
               res = onError("Could not get token for new keyfile.", -1);
           }
           else if (GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_INFO, I18N("Change keys: confirm"),
-                                       fmtStr(FB, "Really delete keyfile '%s'?", tnn), I18N("Abort"), I18N("Delete"), NULL, 0) != 2)
+                                       fmtStr(FB, "Really delete keyfile '%s'?", wantedTokenName), I18N("Abort"), I18N("Delete"), NULL, 0) != 2)
             res = -1;
           else {
             res = 0;
@@ -511,18 +496,18 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
             *canceled = 1;
           }
           else if (del)
-            unlink(tnn);
+            unlink(wantedTokenName);
         }
         if ((res == 0) && del) {
           if (GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_INFO, I18N("Change keys: confirm"),
-                                  fmtStr(FB, "Schlüsseldatei '%s' wird erzeugt.", tnn), I18N("Abort"), I18N("OK"), NULL, 0) != 2) {
+                                  fmtStr(FB, "Schlüsseldatei '%s' wird erzeugt.", wantedTokenName), I18N("Abort"), I18N("OK"), NULL, 0) != 2) {
             res = onError("Canceled.", -1);
             *canceled = 1;
           }
           if (res == 0) {
-            ctNew = GWEN_Crypt_Token_Plugin_CreateToken(plg, tnn);
+            ctNew = GWEN_Crypt_Token_Plugin_CreateToken(plg, wantedTokenName);
             if (!ctNew)
-              res = onError(fmtStr(FB, "Could not create crypt token '%s'.", tnn), -1);
+              res = onError(fmtStr(FB, "Could not create crypt token '%s'.", wantedTokenName), -1);
             else if (GWEN_Crypt_Token_Create(ctNew, 0) < 0)
               res = onError(fmtStr(FB, "Could not create keyfile '%s'.", GWEN_Crypt_Token_GetTokenName(ctNew)), -1);
             else if (GWEN_Crypt_Token_Close(ctNew, 0, 0))
@@ -533,9 +518,9 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
     }
     // keyinfo dest. token
     if (res == 0) {
-      if (getKeyInfo(h, ttn, tnn, tokenCtxIdNew, &ctNew, &ctxNew, &kiVNew, &kiSNew, &kiANew)
+      if (getKeyInfo(h, wantedTokenType, wantedTokenName, tokenCtxIdNew, &ctNew, &ctxNew, &kiVNew, &kiSNew, &kiANew)
           || !ctNew || !ctxNew || !kiVNew || !kiSNew || !kiANew) {
-        DBG_NOTICE(AQHBCI_LOGDOMAIN, "getKeyInfo() ct %p, ctx %p, ki %p %p %p.", ct, ctx, kiV, kiS, kiA);
+        DBG_NOTICE(AQHBCI_LOGDOMAIN, "getKeyInfo() ct %p, ctx %p, ki %p %p %p.", ct, ctx, cryptKeyInfo, signKeyInfo, authKeyInfo);
         if (!ct || !ctx)
           res = onError("Could not get token.", -1);
         else
@@ -562,7 +547,7 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
     if (flags & FJCK_CHMEDIA) {
       char *cm = strdup(AH_CryptMode_toString(AH_User_GetCryptMode(u)));
       const char *m = fmtStr(FB, "Change crypt token from\n    %s '%s', %s-%d\nto\n    %s '%s', %s-%d?",
-                             fm, tn, strUpper(cm), AH_User_GetRdhType(u), fmn, tnn, cmn, cryptTypeNew);
+                             fm, tokenNameFromToken, strUpper(cm), AH_User_GetRdhType(u), fmn, wantedTokenName, cmn, cryptTypeNew);
       free(cm);
       if (GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_INFO, I18N("Change keys: confirm"),
                               m, I18N("Abort"), I18N("OK"), NULL, 0) != 2) {
@@ -576,8 +561,8 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
     uTmp = AB_Provider_CreateUserObject(pro);
     AH_User_SetCryptMode(uTmp, cryptModeNew);
     AH_User_SetRdhType(uTmp, cryptTypeNew);
-    AH_User_SetTokenType(uTmp, ttn);
-    AH_User_SetTokenName(uTmp, tnn);
+    AH_User_SetTokenType(uTmp, wantedTokenType);
+    AH_User_SetTokenName(uTmp, wantedTokenName);
     AH_User_SetTokenContextId(uTmp, tokenCtxIdNew);
     AB_User_SetBankCode(uTmp, AB_User_GetBankCode(u));
     AH_User_SetHbciVersion(uTmp, AH_User_GetHbciVersion(u));
@@ -678,17 +663,17 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
     jd->u = u;
     jd->uTmp = uTmp;
     jd->fm = fmn;
-    jd->tt = ttn;
-    jd->tn = tnn;
-    jd->kvVCurr = kiV ? GWEN_Crypt_Token_KeyInfo_GetKeyVersion(kiV) : 0;
-    jd->kvSCurr = kiS ? GWEN_Crypt_Token_KeyInfo_GetKeyVersion(kiS) : 0;
-    jd->kvACurr = kiA ? GWEN_Crypt_Token_KeyInfo_GetKeyVersion(kiA) : 0;
+    jd->tokenType = wantedTokenType;
+    jd->tokenName = wantedTokenName;
+    jd->currentCryptKeyVersion = cryptKeyInfo ? GWEN_Crypt_Token_KeyInfo_GetKeyVersion(cryptKeyInfo) : 0;
+    jd->currentSignKeyVersion = signKeyInfo ? GWEN_Crypt_Token_KeyInfo_GetKeyVersion(signKeyInfo) : 0;
+    jd->currentAuthKeyVersion = authKeyInfo ? GWEN_Crypt_Token_KeyInfo_GetKeyVersion(authKeyInfo) : 0;
     jd->ct = ctNew;
     jd->ctx = ctxNew;
     jd->tokenCtxId = tokenCtxIdNew;
-    jd->kiV = kiVNew;
-    jd->kiS = kiSNew;
-    jd->kiA = kiANew;
+    jd->cryptKeyInfo = kiVNew;
+    jd->signKeyInfo = kiSNew;
+    jd->authKeyInfo = kiANew;
     jd->resp = -1;
     jd->emsg = NULL;
   }
@@ -715,9 +700,9 @@ int onServerKeysImported(AH_JOB_CHANGEKEYS *jd)
 
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "%s(): flags 0x%04X.", __FUNCTION__, jd->flags);
   if (jd->flags & FJCK_CHKEY) {
-    //if(!jd->kiV || !GWEN_Crypt_Token_KeyInfo_GetKeyNumber(jd->kiV) || !jd->kiS || !GWEN_Crypt_Token_KeyInfo_GetKeyNumber(jd->kiS))
+    //if(!jd->cryptKeyInfo || !GWEN_Crypt_Token_KeyInfo_GetKeyNumber(jd->cryptKeyInfo) || !jd->signKeyInfo || !GWEN_Crypt_Token_KeyInfo_GetKeyNumber(jd->signKeyInfo))
     if (!tokenHasKeys(jd->ct, jd->ctx)) {
-      m = fmtStr(FB, "Creating new keys on %s '%s'.", jd->fm, jd->tn);
+      m = fmtStr(FB, "Creating new keys on %s '%s'.", jd->fm, jd->tokenName);
       btn1 = "Abort";
       btn2 = "OK";
       ok = 2;
@@ -727,7 +712,7 @@ int onServerKeysImported(AH_JOB_CHANGEKEYS *jd)
       // TODO check keys are compatible with cryptmode
       // if so, ...
       {
-        m = fmtStr(FB, "Auf %s '%s' sind Schluessel vorhanden,\nsollen dennoch neue Schluessel erzeugt werden?", fmn, tnn);
+        m = fmtStr(FB, "Auf %s '%s' sind Schluessel vorhanden,\nsollen dennoch neue Schluessel erzeugt werden?", fmn, wantedTokenName);
         btn1 = "Abort";
         btn2 = "No";
         btn3 = "Yes";
@@ -735,7 +720,7 @@ int onServerKeysImported(AH_JOB_CHANGEKEYS *jd)
       }
       else {
         m = fmtStr(FB, "Auf %s '%s' vorhandene Schluessel koennen nicht verwendet werden,\nneue Schluessel werden erzeugt.",
-                   fmn, tnn);
+                   fmn, wantedTokenName);
         btn1 = "Abort";
         btn2 = "OK";
         ok = 2;
@@ -743,7 +728,7 @@ int onServerKeysImported(AH_JOB_CHANGEKEYS *jd)
 #else
       m = fmtStr(FB, "Auf %s '%s' sind Schluessel vorhanden die verwendet werden koennen,\n"
                  "wenn sie zum gewuehlten Verschluesselungsverfahren passen.\n"
-                 "Sollen neue Schluessel erzeugt werden?", jd->fm, jd->tn);
+                 "Sollen neue Schluessel erzeugt werden?", jd->fm, jd->tokenName);
       btn1 = "Abort";
       btn2 = "No";
       btn3 = "Yes";
@@ -771,34 +756,35 @@ int onServerKeysImported(AH_JOB_CHANGEKEYS *jd)
   }
   else
     res = -1;
-  if ((res == 0) && (getKeyInfo(h, jd->tt, jd->tn, jd->tokenCtxId, &jd->ct, &jd->ctx, &jd->kiV, &jd->kiS, &jd->kiA)
-                     || !jd->ct || !jd->ctx || !jd->kiV || !jd->kiS || !jd->kiA))
+  if ((res == 0) && (getKeyInfo(h, jd->tokenType, jd->tokenName, jd->tokenCtxId, &jd->ct, &jd->ctx, &jd->cryptKeyInfo, &jd->signKeyInfo, &jd->authKeyInfo)
+                     || !jd->ct || !jd->ctx || !jd->cryptKeyInfo || !jd->signKeyInfo || !jd->authKeyInfo))
     res = onError("Could not get key-info.", -1);
 
   if (res == 0) {
 #if 1
     if (!(jd->flags & FJCK_CHPROFILE)) {
       // set keyversion from current token + 1 on dest.-token
-      uint32_t kvV = jd->kvVCurr ? (jd->kvVCurr + 1) : 0;
-      uint32_t kvS = jd->kvSCurr ? (jd->kvSCurr + 1) : 0;
-      uint32_t kvA = jd->kvACurr ? (jd->kvACurr + 1) : 0;
+      uint32_t kvV = jd->currentCryptKeyVersion ? (jd->currentCryptKeyVersion + 1) : 0;
+      uint32_t kvS = jd->currentSignKeyVersion ? (jd->currentSignKeyVersion + 1) : 0;
+      uint32_t kvA = jd->currentAuthKeyVersion ? (jd->currentAuthKeyVersion + 1) : 0;
+
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "set keyversions %ld -> %ld, %ld -> %ld, %ld -> %ld.",
-                 (long)jd->kvVCurr, (long)kvV, (long)jd->kvSCurr, (long)kvS, (long)jd->kvACurr, (long)kvA);
+		 (long)jd->currentCryptKeyVersion, (long)kvV, (long)jd->currentSignKeyVersion, (long)kvS, (long)jd->currentAuthKeyVersion, (long)kvA);
       if (kvV)
-        setKeyVersion((GWEN_CRYPT_TOKEN *)jd->ct, jd->ctx, jd->kiV, 'V', kvV);
+        setKeyVersion((GWEN_CRYPT_TOKEN *)jd->ct, jd->ctx, jd->cryptKeyInfo, 'V', kvV);
       if (kvS)
-        setKeyVersion((GWEN_CRYPT_TOKEN *)jd->ct, jd->ctx, jd->kiS, 'S', kvS);
+        setKeyVersion((GWEN_CRYPT_TOKEN *)jd->ct, jd->ctx, jd->signKeyInfo, 'S', kvS);
       if (!(jd->flags & FJCK_DSTFILE) && kvA)
-        setKeyVersion((GWEN_CRYPT_TOKEN *)jd->ct, jd->ctx, jd->kiA, 'A', kvA);
+        setKeyVersion((GWEN_CRYPT_TOKEN *)jd->ct, jd->ctx, jd->authKeyInfo, 'A', kvA);
     }
 #endif
     if (jd->flags & FJCK_CHKEY) {
-      if (!jd->kiS || !GWEN_Crypt_Token_KeyInfo_GetKeyNumber(jd->kiS)) {
+      if (!jd->signKeyInfo || !GWEN_Crypt_Token_KeyInfo_GetKeyNumber(jd->signKeyInfo)) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "Kein Signierschluessel.");
         res = onError("Kein Signierschluessel auf dem Ziel-medium gefunden.", -1);
       }
       else {
-        int sc = GWEN_Crypt_Token_KeyInfo_GetSignCounter(jd->kiS);
+        int sc = GWEN_Crypt_Token_KeyInfo_GetSignCounter(jd->signKeyInfo);
         DBG_INFO(AQHBCI_LOGDOMAIN, "%s(): sig counter %d.", __FUNCTION__, sc);
         if (sc > 1) {
           if (!(jd->flags & FJCK_DSTFILE))
@@ -813,7 +799,7 @@ int onServerKeysImported(AH_JOB_CHANGEKEYS *jd)
           }
           if (res == 0) {
             DBG_INFO(AQHBCI_LOGDOMAIN, "%s(): reset sig counter.", __FUNCTION__);
-            GWEN_Crypt_Token_KeyInfo_SetSignCounter((GWEN_CRYPT_TOKEN_KEYINFO *)jd->kiS, 1);
+            GWEN_Crypt_Token_KeyInfo_SetSignCounter((GWEN_CRYPT_TOKEN_KEYINFO *)jd->signKeyInfo, 1);
           }
         }
       }
@@ -821,8 +807,8 @@ int onServerKeysImported(AH_JOB_CHANGEKEYS *jd)
   }
 
   if (res == 0) {
-    if (getKeyInfo(h, jd->tt, jd->tn, jd->tokenCtxId, &jd->ct, &jd->ctx, &jd->kiV, &jd->kiS, &jd->kiA)
-        || !jd->ct || !jd->ctx || !jd->kiV || !jd->kiS || !jd->kiA)
+    if (getKeyInfo(h, jd->tokenType, jd->tokenName, jd->tokenCtxId, &jd->ct, &jd->ctx, &jd->cryptKeyInfo, &jd->signKeyInfo, &jd->authKeyInfo)
+        || !jd->ct || !jd->ctx || !jd->cryptKeyInfo || !jd->signKeyInfo || !jd->authKeyInfo)
       res = onError("Could not get key-info.", -1);
   }
 
@@ -897,10 +883,10 @@ void GWENHYWFAR_CB GWENHYWFAR_CB AH_Job_ChangeKeys_FreeData(void *bp, void *p)
 
   if (jd->uTmp)
     AB_User_free(jd->uTmp);
-  if (jd->tt)
-    free(jd->tt);
-  if (jd->tn)
-    free(jd->tn);
+  if (jd->tokenType)
+    free(jd->tokenType);
+  if (jd->tokenName)
+    free(jd->tokenName);
   if (jd->emsg)
     GWEN_Buffer_free(jd->emsg);
 
@@ -1066,17 +1052,17 @@ int AH_Job_ChangeKeys_NextMsg(AH_JOB *j)
               switch (i) {
               case 0:
                 kt = "V";
-                ki = jd->kiV;
+                ki = jd->cryptKeyInfo;
                 db = GWEN_DB_GetGroup(args, GWEN_DB_FLAGS_DEFAULT, "setcryptKey");
                 break;
               case 1:
                 kt = "S";
-                ki = jd->kiS;
+                ki = jd->signKeyInfo;
                 db = GWEN_DB_GetGroup(args, GWEN_DB_FLAGS_DEFAULT, "setsignKey");
                 break;
               case 2:
                 kt = "D";
-                ki = jd->kiA;
+                ki = jd->authKeyInfo;
                 db = GWEN_DB_GetGroup(args, GWEN_DB_FLAGS_DEFAULT, "setauthKey");
                 break;
               }
@@ -1176,7 +1162,7 @@ int AH_Job_ChangeKeys_finish(AB_PROVIDER *pro, AH_JOB *job, int res)
         btn2 = fmtStr(FB, "%s, %s", I18N("Yes"), I18N("finish"));
       }
       else {
-        m = strdup(fmtStr(FB, "Die Übermittlung der Schlüssel ergab keinen Fehler,\n"
+        m = strdup(fmtStr(FB, "Die Uebermittlung der Schluessel ergab keinen Fehler,\n"
                           "aus den Meldungen des Bankservers sollte eine Uebernahme ersichtlich sein:\n\n%s\nNeue Schluessel / neues Medium\n"
                           "wird uebernommen.", GWEN_Buffer_GetStart(jd->emsg)));
       }
@@ -1189,7 +1175,7 @@ int AH_Job_ChangeKeys_finish(AB_PROVIDER *pro, AH_JOB *job, int res)
   }
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "%s(): %d/%d %p %p.", __FUNCTION__, jd->resp, res, u, uTmp);
   if (uTmp) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "%s: tt '%s' tn '%s' rdh %d cm %d ctx-id %d.", __FUNCTION__,
+    DBG_INFO(AQHBCI_LOGDOMAIN, "%s: tokenTypeFromToken '%s' tokenNameFromToken '%s' rdh %d cm %d ctx-id %d.", __FUNCTION__,
              AH_User_GetTokenType(uTmp), AH_User_GetTokenName(uTmp), AH_User_GetRdhType(uTmp),
              AH_User_GetCryptMode(uTmp), AH_User_GetTokenContextId(uTmp));
     if (res == 0) {
