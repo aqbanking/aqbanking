@@ -345,8 +345,11 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
            (flags & FJCK_DSTFILE_EXISTS) != 0);
 
   if (res == 0) {
-    if ((((flags & FJCK_SRCFILE) != 1) == ((flags & FJCK_DSTFILE) != 1)) && !strcmp(tn, tnn))
-      res = onError("Schlüsseländerung ohne Medienänderung z.Zt. nicht unterstützt.", -1);
+    if (
+	( !((flags & FJCK_SRCFILE)) == !((flags & FJCK_DSTFILE))) &&
+	!strcmp(tn, tnn)
+       )
+      res = onError("Keychange without media change is not supported, yet.", -1);
   }
 
   if (res == 0) {
