@@ -81,9 +81,9 @@ sources:
 	done
 
 
-types: $(typefiles)
-	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)../msglayer/parser -I $(srcdir)/../typemaker2 --destfolder="$(srcdir)" $(typefiles)
+types:
 
+typedefs:
 
 
 cppcheck:

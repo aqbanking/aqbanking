@@ -101,8 +101,18 @@ sources:
 	done
 
 
+
 types: $(typefiles)
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d types; \
+	done
 	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" $(typefiles)
+
+typedefs: $(typefiles)
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d typedefs; \
+	done
+	$(typemaker2_exe) --defs-only -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" $(typefiles)
 
 
 
