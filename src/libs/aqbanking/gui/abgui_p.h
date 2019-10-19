@@ -29,7 +29,7 @@ static void GWENHYWFAR_CB AB_Gui_FreeData(void *bp, void *p);
 static int AB_Gui__HashPair(const char *token,
                             const char *pin,
                             GWEN_BUFFER *buf);
-static int AB_Gui_CheckCert(GWEN_GUI *gui,
+static int GWENHYWFAR_CB AB_Gui_CheckCert(GWEN_GUI *gui,
                             const GWEN_SSLCERTDESCR *cd,
                             GWEN_SYNCIO *sio, uint32_t guiid);
 
