@@ -21,7 +21,7 @@
 
 
 
-static int _replaceVarsCb(void *cbPtr, const char *name, int index, int maxLen, GWEN_BUFFER *dstBuf);
+static int GWENHYWFAR_CB _replaceVarsCb(void *cbPtr, const char *name, int index, int maxLen, GWEN_BUFFER *dstBuf);
 
 
 
@@ -1159,7 +1159,7 @@ int addTransactionToBufferByTemplate(const AB_TRANSACTION *t, const char *tmplSt
 
 
 
-int _replaceVarsCb(void *cbPtr, const char *name, int index, int maxLen, GWEN_BUFFER *dstBuf)
+int GWENHYWFAR_CB _replaceVarsCb(void *cbPtr, const char *name, int index, int maxLen, GWEN_BUFFER *dstBuf)
 {
   GWEN_DB_NODE *db;
 
