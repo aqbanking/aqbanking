@@ -875,8 +875,8 @@ GWEN_DB_NODE *AH_User_GetUpdForAccountUniqueId(const AB_USER *u, uint32_t uid)
     return NULL;
   }
 
-  snprintf(numbuf, sizeof(numbuf)-1, "uaid-%08llx",
-           (unsigned long long int) uid);
+  snprintf(numbuf, sizeof(numbuf)-1, "uaid-%08" PRIx32,
+           uid);
   numbuf[sizeof(numbuf)-1]=0;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Checking upd for \"%s\"", numbuf);

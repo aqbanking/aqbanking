@@ -38,6 +38,20 @@
 
 
 
+/* We need a printf format specifier for "size_t" but <inttypes.h>
+ * does not have one. So in this one single exception we define our
+ * own, inspired from here:
+ * https://stackoverflow.com/questions/44382862/how-to-printf-a-size-t-without-warning-in-mingw-w64-gcc-7-1
+ */
+#ifdef _WIN32
+#  ifdef _WIN64
+#    define PRI_SIZET PRIu64
+#  else
+#    define PRI_SIZET PRIu32
+#  endif
+#else
+#  define PRI_SIZET "zd"
+#endif
 
 AH_HBCI *AH_HBCI_new(AB_PROVIDER *pro)
 {
@@ -53,7 +67,7 @@ AH_HBCI *AH_HBCI_new(AB_PROVIDER *pro)
   rv=snprintf(numbuf, sizeof(numbuf), "%d.%d",
               AQBANKING_VERSION_MAJOR, AQBANKING_VERSION_MINOR);
   if (rv==-1 || rv>=sizeof(numbuf)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "What ?? %zd bytes isn't enough space for two decimals ?!",
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "What ?? %" PRI_SIZET " bytes isn't enough space for two decimals ?!",
               sizeof(numbuf));
     hbci->productVersion=strdup("0");
   }

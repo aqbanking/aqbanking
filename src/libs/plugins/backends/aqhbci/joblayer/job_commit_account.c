@@ -385,8 +385,8 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc)
     assert(dbUpd);
 
     /* create and clear group for each account */
-    snprintf(numbuf, sizeof(numbuf)-1, "uaid-%08llx",
-             (unsigned long long int) AB_Account_GetUniqueId(storedAcc));
+    snprintf(numbuf, sizeof(numbuf)-1, "uaid-%08" PRIx32,
+             AB_Account_GetUniqueId(storedAcc));
     numbuf[sizeof(numbuf)-1]=0;
 
     dbUpd=GWEN_DB_GetGroup(dbUpd, GWEN_DB_FLAGS_OVERWRITE_GROUPS, numbuf);
