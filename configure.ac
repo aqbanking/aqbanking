@@ -190,6 +190,9 @@ AC_CHECK_PROG(SED,sed,sed)
 
 PKG_PROG_PKG_CONFIG
 
+# Check for the tool "astyle", but if not found, replace its program call by the no-op "echo" instead
+AC_CHECK_PROG(ASTYLE, astyle, astyle, echo)
+
 # Checks for libraries.
 
 ###-------------------------------------------------------------------------

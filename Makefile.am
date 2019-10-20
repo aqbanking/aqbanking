@@ -241,7 +241,7 @@ clang-check:
 	scan-build $(MAKE)
 
 format:
-	find . -name '*.[c,h,cpp]' -exec astyle \
+	find . -name '*.[c,h,cpp]' -exec $(ASTYLE) \
 	  --style=stroustrup \
 	    -s2 \
 	    --min-conditional-indent=0 \
