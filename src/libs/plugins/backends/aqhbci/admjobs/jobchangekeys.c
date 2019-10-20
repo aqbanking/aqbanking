@@ -78,7 +78,8 @@ const char *strUpper(char *s)
 
 int8_t getKeyInfo(AH_HBCI *h, const char *tt, const char *tn, uint32_t cid, GWEN_CRYPT_TOKEN **ct,
                   const GWEN_CRYPT_TOKEN_CONTEXT **ctx,
-                  const GWEN_CRYPT_TOKEN_KEYINFO **cryptKeyInfo, const GWEN_CRYPT_TOKEN_KEYINFO **signKeyInfo, const GWEN_CRYPT_TOKEN_KEYINFO **authKeyInfo)
+                  const GWEN_CRYPT_TOKEN_KEYINFO **cryptKeyInfo, const GWEN_CRYPT_TOKEN_KEYINFO **signKeyInfo,
+                  const GWEN_CRYPT_TOKEN_KEYINFO **authKeyInfo)
 {
   int8_t res = 0;
   uint8_t i;
@@ -236,7 +237,8 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
   const char *wantedCryptMode = NULL;
   GWEN_CRYPT_TOKEN *ct = NULL, *ctNew = NULL;
   const GWEN_CRYPT_TOKEN_CONTEXT *ctx = NULL, *ctxNew = NULL;
-  const GWEN_CRYPT_TOKEN_KEYINFO *cryptKeyInfo = NULL, *signKeyInfo = NULL, *authKeyInfo = NULL, *kiVNew = NULL, *kiSNew = NULL, *kiANew = NULL;
+  const GWEN_CRYPT_TOKEN_KEYINFO *cryptKeyInfo = NULL, *signKeyInfo = NULL, *authKeyInfo = NULL, *kiVNew = NULL,
+                                  *kiSNew = NULL, *kiANew = NULL;
   GWEN_PLUGIN *plg = NULL;
   GWEN_PLUGIN_MANAGER *pm = GWEN_PluginManager_FindPluginManager(GWEN_CRYPT_TOKEN_PLUGIN_TYPENAME);
   const char *cmn = "?", *fm = "?", *fmn = "?";
@@ -326,14 +328,14 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
   fmn = (flags & FJCK_DSTFILE) ? "Keyfile" : "Chipcard";
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "'%s' '%s' -> '%s' '%s', file %d exists %d'.",
-	   tokenTypeFromToken, tokenNameFromToken, wantedTokenType, wantedTokenName, (flags & FJCK_DSTFILE) != 0,
+           tokenTypeFromToken, tokenNameFromToken, wantedTokenType, wantedTokenName, (flags & FJCK_DSTFILE) != 0,
            (flags & FJCK_DSTFILE_EXISTS) != 0);
 
   if (res == 0) {
     if (
-	( !((flags & FJCK_SRCFILE)) == !((flags & FJCK_DSTFILE))) &&
-	!strcmp(tokenNameFromToken, wantedTokenName)
-       )
+      (!((flags & FJCK_SRCFILE)) == !((flags & FJCK_DSTFILE))) &&
+      !strcmp(tokenNameFromToken, wantedTokenName)
+    )
       res = onError("Keychange without media change is not supported, yet.", -1);
   }
 
@@ -354,7 +356,8 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
       flags &= ~FJCK_CHPROFILE;
     DBG_INFO(AQHBCI_LOGDOMAIN, "'%s %d' -> '%s' '%s' '%s %d', change: m %d, k %d, p %d.",
              AH_CryptMode_toString(AH_User_GetCryptMode(u)), AH_User_GetRdhType(u),
-             wantedTokenType, wantedTokenName, AH_CryptMode_toString(cryptModeNew), cryptTypeNew, (flags & FJCK_CHMEDIA) != 0, (flags & FJCK_CHKEY) != 0,
+             wantedTokenType, wantedTokenName, AH_CryptMode_toString(cryptModeNew), cryptTypeNew, (flags & FJCK_CHMEDIA) != 0,
+             (flags & FJCK_CHKEY) != 0,
              (flags & FJCK_CHPROFILE) != 0);
     if (flags & FJCK_CHPROFILE) {
       res = -1;
@@ -402,12 +405,12 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
             }
             if (res)
               onError(fmtStr(FB, "Aenderung des Schluesselsprofils von %s RDH-%d nach %s RAH-%d nicht unterstuetzt.",
-			     fm, AH_User_GetRdhType(u), fmn, cryptTypeNew), -1);
-	  }
+                             fm, AH_User_GetRdhType(u), fmn, cryptTypeNew), -1);
+          }
         }
         break;
       default:
-	onError("Aenderung des Sicherheitsprofils nur von RDH aus unterstuetzt.", -1);
+        onError("Aenderung des Sicherheitsprofils nur von RDH aus unterstuetzt.", -1);
       }
     }
     if (res)
@@ -416,7 +419,8 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
 
   if (res == 0) {
     // keyinfo current token
-    if (getKeyInfo(h, AH_User_GetTokenType(u), AH_User_GetTokenName(u), AH_User_GetTokenContextId(u), &ct, &ctx, &cryptKeyInfo, &signKeyInfo,
+    if (getKeyInfo(h, AH_User_GetTokenType(u), AH_User_GetTokenName(u), AH_User_GetTokenContextId(u), &ct, &ctx,
+                   &cryptKeyInfo, &signKeyInfo,
                    &authKeyInfo)
         || !ct || !ctx || !cryptKeyInfo || !signKeyInfo || !authKeyInfo) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "getKeyInfo() ct %p, ctx %p, ki %p %p %p.", ct, ctx, cryptKeyInfo, signKeyInfo, authKeyInfo);
@@ -520,7 +524,8 @@ AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, 
     if (res == 0) {
       if (getKeyInfo(h, wantedTokenType, wantedTokenName, tokenCtxIdNew, &ctNew, &ctxNew, &kiVNew, &kiSNew, &kiANew)
           || !ctNew || !ctxNew || !kiVNew || !kiSNew || !kiANew) {
-        DBG_NOTICE(AQHBCI_LOGDOMAIN, "getKeyInfo() ct %p, ctx %p, ki %p %p %p.", ct, ctx, cryptKeyInfo, signKeyInfo, authKeyInfo);
+        DBG_NOTICE(AQHBCI_LOGDOMAIN, "getKeyInfo() ct %p, ctx %p, ki %p %p %p.", ct, ctx, cryptKeyInfo, signKeyInfo,
+                   authKeyInfo);
         if (!ct || !ctx)
           res = onError("Could not get token.", -1);
         else
@@ -756,8 +761,10 @@ int onServerKeysImported(AH_JOB_CHANGEKEYS *jd)
   }
   else
     res = -1;
-  if ((res == 0) && (getKeyInfo(h, jd->tokenType, jd->tokenName, jd->tokenCtxId, &jd->ct, &jd->ctx, &jd->cryptKeyInfo, &jd->signKeyInfo, &jd->authKeyInfo)
-                     || !jd->ct || !jd->ctx || !jd->cryptKeyInfo || !jd->signKeyInfo || !jd->authKeyInfo))
+  if ((res == 0) &&
+      (getKeyInfo(h, jd->tokenType, jd->tokenName, jd->tokenCtxId, &jd->ct, &jd->ctx, &jd->cryptKeyInfo, &jd->signKeyInfo,
+                  &jd->authKeyInfo)
+       || !jd->ct || !jd->ctx || !jd->cryptKeyInfo || !jd->signKeyInfo || !jd->authKeyInfo))
     res = onError("Could not get key-info.", -1);
 
   if (res == 0) {
@@ -769,7 +776,8 @@ int onServerKeysImported(AH_JOB_CHANGEKEYS *jd)
       uint32_t kvA = jd->currentAuthKeyVersion ? (jd->currentAuthKeyVersion + 1) : 0;
 
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "set keyversions %ld -> %ld, %ld -> %ld, %ld -> %ld.",
-		 (long)jd->currentCryptKeyVersion, (long)kvV, (long)jd->currentSignKeyVersion, (long)kvS, (long)jd->currentAuthKeyVersion, (long)kvA);
+                 (long)jd->currentCryptKeyVersion, (long)kvV, (long)jd->currentSignKeyVersion, (long)kvS,
+                 (long)jd->currentAuthKeyVersion, (long)kvA);
       if (kvV)
         setKeyVersion((GWEN_CRYPT_TOKEN *)jd->ct, jd->ctx, jd->cryptKeyInfo, 'V', kvV);
       if (kvS)
@@ -807,7 +815,8 @@ int onServerKeysImported(AH_JOB_CHANGEKEYS *jd)
   }
 
   if (res == 0) {
-    if (getKeyInfo(h, jd->tokenType, jd->tokenName, jd->tokenCtxId, &jd->ct, &jd->ctx, &jd->cryptKeyInfo, &jd->signKeyInfo, &jd->authKeyInfo)
+    if (getKeyInfo(h, jd->tokenType, jd->tokenName, jd->tokenCtxId, &jd->ct, &jd->ctx, &jd->cryptKeyInfo, &jd->signKeyInfo,
+                   &jd->authKeyInfo)
         || !jd->ct || !jd->ctx || !jd->cryptKeyInfo || !jd->signKeyInfo || !jd->authKeyInfo)
       res = onError("Could not get key-info.", -1);
   }

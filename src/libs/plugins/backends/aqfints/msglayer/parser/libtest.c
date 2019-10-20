@@ -111,8 +111,8 @@ int test_readHbci2(const char *fileName)
   segmentList=AQFINTS_Segment_List_new();
 
   rv=AQFINTS_Parser_Hbci_ReadBuffer(segmentList,
-				    (const uint8_t *) GWEN_Buffer_GetStart(tbuf),
-				    GWEN_Buffer_GetUsedBytes(tbuf));
+                                    (const uint8_t *) GWEN_Buffer_GetStart(tbuf),
+                                    GWEN_Buffer_GetUsedBytes(tbuf));
   if (rv<0) {
     fprintf(stderr, "Error reading HBCI data.\n");
     AQFINTS_Segment_List_free(segmentList);
