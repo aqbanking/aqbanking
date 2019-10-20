@@ -120,10 +120,10 @@ SUFFIXES = .xml .c
 
 
 types: $(typefiles)
-	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types --destfolder="$(srcdir)" $(typefiles)
+	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(gwenhywfar_dir)/share/gwenhywfar/typemaker2/c -I $(srcdir) -I $(srcdir)/../types --destfolder="$(srcdir)" $(typefiles)
 
 typedefs: $(typefiles)
-	$(typemaker2_exe) --defs-only -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(srcdir)/../types --destfolder="$(srcdir)" $(typefiles)
+	$(typemaker2_exe) --defs-only -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(gwenhywfar_dir)/share/gwenhywfar/typemaker2/c -I $(srcdir) -I $(srcdir)/../types --destfolder="$(srcdir)" $(typefiles)
 
 
 format_build_files:
