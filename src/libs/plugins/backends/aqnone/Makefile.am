@@ -37,7 +37,7 @@ cppcheck:
 	done
 
 
-types:
+typefiles:
 
 typedefs:
 

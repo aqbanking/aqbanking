@@ -275,7 +275,13 @@ dist-hook:
 
 types:
 	for d in $(SUBDIRS); do \
-	  $(MAKE) -C $$d types; \
+	  $(MAKE) -C $$d typefiles; \
+	done
+
+
+typefiles:
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d typefiles; \
 	done
 
 typedefs:

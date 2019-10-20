@@ -35,7 +35,7 @@ EXTRA_DIST=$(typefiles)
 
 
 
-types: $(typefiles)
+typefiles: $(typefiles)
 	$(gwenhywfar_bindir)/typemaker -d AQHBCI_API $(typefiles)
 
 sources:

@@ -83,9 +83,9 @@ sources:
 	done
 
 
-types: $(typefiles)
+typefiles: $(typefiles)
 	for d in $(SUBDIRS); do \
-	  $(MAKE) -C $$d types; \
+	  $(MAKE) -C $$d typefiles; \
 	done
 #	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(gwenhywfar_dir)/share/gwenhywfar/typemaker2/c -I $(srcdir) -I $(srcdir)../msglayer/parser -I $(srcdir)/../typemaker2 --destfolder="$(srcdir)" $(typefiles)
 

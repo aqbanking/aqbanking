@@ -111,7 +111,7 @@ MAINTAINERCLEANFILES = $(typedata_sources) $(built_headers) $(dist_typedata_DATA
 built_sources: $(typedata_sources)
 
 
-types: $(typefiles)
+typefiles: $(typefiles)
 	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(gwenhywfar_dir)/share/gwenhywfar/typemaker2/c -I $(srcdir) -I $(srcdir)/../types --destfolder="$(srcdir)" $(typefiles)
 
 typedefs: $(typefiles)

@@ -53,10 +53,10 @@ libclient_la_SOURCES=\
  provider.c
 
 
-#types: $(typefiles)
+#typefiles: $(typefiles)
 #	typemaker -d static $(typefiles)
 
-types: $(typefiles)
+typefiles: $(typefiles)
 	typemaker $(typefiles)
 
 sources:

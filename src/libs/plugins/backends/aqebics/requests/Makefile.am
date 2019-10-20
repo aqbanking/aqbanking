@@ -59,10 +59,10 @@ libaqebics_requests_la_SOURCES=\
 
 
 
-#types: $(typefiles)
+#typefiles: $(typefiles)
 #	typemaker -d static $(typefiles)
 
-types: $(typefiles)
+typefiles: $(typefiles)
 	typemaker $(typefiles)
 
 sources:

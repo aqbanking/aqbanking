@@ -3,7 +3,7 @@ SUBDIRS=c
 sources:
 
 
-types:
+typefiles:
 
 typedefs:
 

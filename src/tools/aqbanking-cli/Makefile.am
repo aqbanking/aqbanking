@@ -90,6 +90,11 @@ built_sources:
 	done ;
 
 
+typefiles:
+
+typedefs:
+
+
 cppcheck:
 	for f in $(aqbanking_cli_SOURCES); do \
 	  cppcheck --force $$f ; \

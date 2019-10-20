@@ -38,7 +38,7 @@ built_sources:
 
 cppcheck:
 
-types:
+typefiles:
 
 typedefs:
 

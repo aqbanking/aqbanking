@@ -1,5 +1,5 @@
 EXTRA_DIST=de.po
 
-types:
+typefiles:
 
 typedefs:

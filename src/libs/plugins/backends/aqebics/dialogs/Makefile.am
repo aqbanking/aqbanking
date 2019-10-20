@@ -31,7 +31,7 @@ dlgdata_DATA=\
 EXTRA_DIST=$(typefiles) $(dlgdata_DATA)
 
 
-types: $(typefiles)
+typefiles: $(typefiles)
 	typemaker $(typefiles)
 
 sources:

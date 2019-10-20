@@ -74,7 +74,7 @@ sources:
 	done
 
 
-types:
+typefiles:
 
 typedefs:
 

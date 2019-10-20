@@ -14,6 +14,6 @@ EXTRA_DIST=\
  gwenhywfar.m4
 
 
-types:
+typefiles:
 
 typedefs:

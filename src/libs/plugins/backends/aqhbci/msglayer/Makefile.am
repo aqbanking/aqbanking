@@ -59,7 +59,7 @@ sources:
 	done
 
 
-types: $(typefiles)
+typefiles: $(typefiles)
 	typemaker -d AQHBCI_API $(typefiles)
 
 

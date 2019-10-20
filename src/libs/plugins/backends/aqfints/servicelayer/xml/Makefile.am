@@ -8,9 +8,9 @@ fintsdata_DATA=\
   dialogend.fints
 
 
-types:
+typefiles:
 	for d in $(SUBDIRS); do \
-	  $(MAKE) -C $$d types; \
+	  $(MAKE) -C $$d typefiles; \
 	done
 
 typedefs:
