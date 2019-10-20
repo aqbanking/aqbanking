@@ -15,6 +15,7 @@ noinst_LTLIBRARIES=libabtypes.la
 typefiles=\
   transaction.xml \
   transactionlimits.xml \
+  security.xml \
   bankinfoservice.xml \
   bankinfo.xml \
   document.xml \
