@@ -128,16 +128,6 @@ sources:
 
 
 
-%.c: %.xml
-	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(builddir) --destfolder="$(builddir)" -D AQBANKING_API  $<
-
-%.h: %.xml
-	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(srcdir) -I $(builddir) --destfolder="$(builddir)" -D AQBANKING_API  $<
-
-
-SUFFIXES = .xml .c
-
-
 types: $(typefiles)
 	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(gwenhywfar_dir)/share/gwenhywfar/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" -D AQBANKING_API $(typefiles)
 
