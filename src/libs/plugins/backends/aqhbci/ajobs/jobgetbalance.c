@@ -297,23 +297,23 @@ int AH_Job_GetBalance__ReadSecurities(AH_JOB *j,
       AB_Value_free(aval);
     }
 
-    p=GWEN_DB_GetCharValue(dbSecurity, "unitPrice", 0, NULL);
+    p=GWEN_DB_GetCharValue(dbSecurity, "unitPriceValue/value", 0, NULL);
     if (p) {
       aval=AB_Value_fromString(p);
-      p=GWEN_DB_GetCharValue(dbSecurity, "unitCurrency", 0, NULL);
+      p=GWEN_DB_GetCharValue(dbSecurity, "unitPriceValue/currency", 0, NULL);
       if (p)
         AB_Value_SetCurrency(aval, p);
       AB_Security_SetUnitPriceValue(asec, aval);
       AB_Value_free(aval);
     }
 
-    gt=GWEN_Time_fromDb(GWEN_DB_GetGroup(dbSecurity,
-                                         GWEN_DB_FLAGS_DEFAULT,
-                                         "unitPriceDate"));
-    if (gt) {
-      AB_Security_SetUnitPriceDate(asec, gt);
+    p=GWEN_DB_GetCharValue(dbSecurity, "unitPriceDate", 0, NULL);
+    if (p) {
+      gt=GWEN_Time_fromString(p, "YYYYMMDD");
+      if (gt)
+	AB_Security_SetUnitPriceDate(asec, gt);
     }
-
+ 
     AB_ImExporterContext_AddSecurity(ctx, asec);
 
     GWEN_Time_free(gt);
