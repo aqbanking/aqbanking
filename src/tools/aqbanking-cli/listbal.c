@@ -249,17 +249,6 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
     },
     {
       GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-      GWEN_ArgsType_Char,            /* type */
-      "outFile",                    /* name */
-      0,                            /* minnum */
-      1,                            /* maxnum */
-      "o",                          /* short option */
-      "outfile",                    /* long option */
-      "Specify the file to store the data in",   /* short description */
-      "Specify the file to store the data in"      /* long description */
-    },
-    {
-      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
       GWEN_ArgsType_Char,           /* type */
       "balanceType",                /* name */
       0,                            /* minnum */
