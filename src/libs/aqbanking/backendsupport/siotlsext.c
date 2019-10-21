@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Fri Apr 21 2017
-    copyright   : (C) 2017 by Martin Preuss
+    copyright   : (C) 2019 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -20,8 +20,30 @@
 
 
 
-GWEN_INHERIT(GWEN_SYNCIO, AB_SIOTLS_EXT)
 
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+/** @return 0 if undecided, 1 if acceptable, negative on error */
+static int _checkCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert);
+static int _checkStoredUserCerts(AB_USER *u, const GWEN_SSLCERTDESCR *cert);
+static int _checkAgainstStoredCert(const GWEN_SSLCERTDESCR *cert, GWEN_SSLCERTDESCR *storedCert, GWEN_DB_NODE *dbC);
+static int _checkStoredUserResponse(GWEN_DB_NODE *dbC, const char *sFingerprint);
+static int _checkAutoDecision(const GWEN_SSLCERTDESCR *cert);
+static int _askUserAboutCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert);
+static void _storeAccessDate(GWEN_DB_NODE *dbCert);
+static void _storeCertAndUserResponseInUser(AB_USER *u, const GWEN_SSLCERTDESCR *cert, int response);
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+GWEN_INHERIT(GWEN_SYNCIO, AB_SIOTLS_EXT)
 
 
 
@@ -88,12 +110,29 @@ AB_USER *AB_SioTlsExt_GetUser(const GWEN_SYNCIO *sio) {
 
 int GWENHYWFAR_CB AB_SioTlsExt_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert)
 {
+  int rv;
+
+  rv=_checkCert(sio, cert);
+  if (rv==1) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Cert accepted.");
+    return 0;
+  }
+  else if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* undecided, abort */
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Undecided, assuming abort");
+  return GWEN_ERROR_USER_ABORTED;
+}
+
+
+
+int _checkCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert)
+{
   AB_SIOTLS_EXT *xsio;
-  GWEN_DB_NODE *dbCerts;
-  GWEN_DB_NODE *dbC;
-  const char *sFingerprint;
-  const char *sStatus;
-  uint32_t iStatus;
+  int rv;
 
   assert(sio);
   xsio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, AB_SIOTLS_EXT, sio);
@@ -101,37 +140,53 @@ int GWENHYWFAR_CB AB_SioTlsExt_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDES
 
   assert(xsio->user);
 
+  rv=_checkStoredUserCerts(xsio->user, cert);
+  if (rv!=0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=_checkAutoDecision(cert);
+  if (rv!=0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=_askUserAboutCert(sio, cert);
+  if (rv!=0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    _storeCertAndUserResponseInUser(xsio->user, cert, rv);
+    return rv;
+  }
+
+  /* undecided */
+  return 0;
+}
+
+
+
+int _checkStoredUserCerts(AB_USER *u, const GWEN_SSLCERTDESCR *cert)
+{
+  GWEN_DB_NODE *dbCerts;
+  GWEN_DB_NODE *dbC;
+  const char *sFingerprint;
+
+  assert(u);
+
   sFingerprint=GWEN_SslCertDescr_GetFingerPrint(cert);
-  if (!(sFingerprint && *sFingerprint)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "No fingerpint in certificate");
-    return GWEN_ERROR_BAD_DATA;
-  }
-
-  sStatus=GWEN_SslCertDescr_GetStatusText(cert);
-  if (!(sStatus && *sStatus)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "No status text in certificate");
-    return GWEN_ERROR_BAD_DATA;
-  }
-
-  iStatus=GWEN_SslCertDescr_GetStatusFlags(cert);
-  if (iStatus==0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Empty status flags in certificate \"%s\"", sFingerprint);
-    return GWEN_ERROR_BAD_DATA;
-  }
 
   /* get or create user-based certificate store */
-  dbCerts=AB_User_GetCertDb(xsio->user);
+  dbCerts=AB_User_GetCertDb(u);
   if (dbCerts==NULL) {
     dbCerts=GWEN_DB_Group_new("certs");
-    AB_User_SetCertDb(xsio->user, dbCerts);
+    AB_User_SetCertDb(u, dbCerts);
   }
 
   /* find group which contains the certificate with the given fingerprint */
   dbC=GWEN_DB_GetGroup(dbCerts, GWEN_PATH_FLAGS_PATHMUSTEXIST, sFingerprint);
   if (dbC) {
     GWEN_SSLCERTDESCR *storedCert;
-    uint32_t iStoredStatus;
-    GWEN_DATE *dt;
+    int rv;
 
     /* there is such a group, read stored certificate */
     storedCert=GWEN_SslCertDescr_fromDb(dbC);
@@ -140,125 +195,175 @@ int GWENHYWFAR_CB AB_SioTlsExt_CheckCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDES
       return GWEN_ERROR_INTERNAL;
     }
 
-    /* store last access date */
-    dt=GWEN_Date_CurrentDate();
-    GWEN_DB_SetCharValue(dbC, GWEN_DB_FLAGS_OVERWRITE_VARS, "lastAccessDate",
-                         GWEN_Date_GetString(dt));
-    GWEN_Date_free(dt);
+    _storeAccessDate(dbC);
 
-    /* get status of stored certificate */
-    iStoredStatus=GWEN_SslCertDescr_GetStatusFlags(storedCert);
-
-    /* compare status texts */
-    if (iStatus==iStoredStatus) {
-      int rv;
-
-      /* found matching cert, return user's previous answer */
-      DBG_NOTICE(AQBANKING_LOGDOMAIN, "Found matching certificate \"%s\" with same status", sFingerprint);
-      rv=GWEN_DB_GetIntValue(dbC, "userResponse", 0, -1);
-      if (rv==0) {
-        /* last user response was to accept the certificate so we're done */
-        DBG_NOTICE(AQBANKING_LOGDOMAIN,
-                   "Automatically accepting certificate [%s]",
-                   sFingerprint);
-        GWEN_SslCertDescr_free(storedCert);
-        return 0;
-      }
-      else {
-        /* last user response was to reject the certificate so we're done */
-        DBG_NOTICE(AQBANKING_LOGDOMAIN,
-                   "Automatically rejecting certificate [%s] (%d)",
-                   sFingerprint, rv);
-        GWEN_SslCertDescr_free(storedCert);
-        return rv;
-      }
-    } /* if same status */
-    else {
-      DBG_NOTICE(AQBANKING_LOGDOMAIN,
-                 "Status for certificate \%s\" has changed to \"%s\" (%08x->%08x), need to present",
-                 sFingerprint, sStatus,
-                 iStoredStatus, iStatus);
-    }
+    rv=_checkAgainstStoredCert(cert, storedCert, dbC);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     GWEN_SslCertDescr_free(storedCert);
+    return rv;
   } /* if dbC */
 
-  {
-    GWEN_GUI *gui;
+  /* undecided */
+  return 0;
+}
 
-    /* at this point the certificate was either not found or its status has changed,
-     * possibly ask the user how to preceed */
-    gui=GWEN_Gui_GetGui();
-    assert(gui);
 
-    if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_NONINTERACTIVE) {
-      uint32_t fl;
 
-      fl=GWEN_SslCertDescr_GetStatusFlags(cert);
-      if (fl==GWEN_SSL_CERT_FLAGS_OK) {
-        if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_ACCEPTVALIDCERTS) {
-          DBG_NOTICE(AQBANKING_LOGDOMAIN,
-                     "Automatically accepting valid new certificate [%s]",
-                     sFingerprint);
-          return 0;
-        }
-        else {
-          DBG_NOTICE(AQBANKING_LOGDOMAIN,
-                     "Automatically rejecting certificate [%s] (noninteractive)",
-                     sFingerprint);
-          return GWEN_ERROR_USER_ABORTED;
-        }
-      } /* if cert is valid */
-      else {
-        if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_REJECTINVALIDCERTS) {
-          DBG_NOTICE(AQBANKING_LOGDOMAIN,
-                     "Automatically rejecting invalid certificate [%s] (noninteractive)",
-                     sFingerprint);
-          return GWEN_ERROR_USER_ABORTED;
-        }
-      }
-    } /* if non-interactive */
+int _checkAgainstStoredCert(const GWEN_SSLCERTDESCR *cert, GWEN_SSLCERTDESCR *storedCert, GWEN_DB_NODE *dbC)
+{
+  const char *sFingerprint;
+  const char *sStatus;
+  uint32_t iStatus;
+  uint32_t iStoredStatus;
 
-    /* use previous checkCert function, which normally presents the certificate
-     * to the user and asks for a response */
-    if (xsio->oldCheckCertFn) {
-      int rv;
-      GWEN_DATE *dt;
+  sFingerprint=GWEN_SslCertDescr_GetFingerPrint(cert);
+  sStatus=GWEN_SslCertDescr_GetStatusText(cert);
+  iStatus=GWEN_SslCertDescr_GetStatusFlags(cert);
 
-      /* get user response */
-      rv=xsio->oldCheckCertFn(sio, cert);
+  /* get status of stored certificate */
+  iStoredStatus=GWEN_SslCertDescr_GetStatusFlags(storedCert);
+  
+  /* compare status texts */
+  if (iStatus==iStoredStatus) {
+    /* found matching cert, return user's previous answer */
+    DBG_NOTICE(AQBANKING_LOGDOMAIN, "Found matching certificate \"%s\" with same status", sFingerprint);
+    return _checkStoredUserResponse(dbC, sFingerprint);
+  } /* if same status */
+  else {
+    DBG_NOTICE(AQBANKING_LOGDOMAIN,
+               "Status for certificate \%s\" has changed to \"%s\" (%08x->%08x), need to present",
+               sFingerprint, sStatus,
+               iStoredStatus, iStatus);
+  }
+  return 0;
+}
 
-      /* store certificate in database */
-      dbC=GWEN_DB_GetGroup(dbCerts,
-                           GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-                           sFingerprint);
-      assert(dbC);
-      GWEN_SslCertDescr_toDb(cert, dbC);
 
-      /* store user response */
-      GWEN_DB_SetIntValue(dbC, GWEN_DB_FLAGS_OVERWRITE_VARS, "userResponse", rv);
-      DBG_NOTICE(AQBANKING_LOGDOMAIN,
-                 "User response to presentation of cert \"%s\" (%s): %d",
-                 sFingerprint, sStatus, rv);
 
-      /* store last access date */
-      dt=GWEN_Date_CurrentDate();
-      GWEN_DB_SetCharValue(dbC, GWEN_DB_FLAGS_OVERWRITE_VARS, "lastAccessDate",
-                           GWEN_Date_GetString(dt));
-      GWEN_Date_free(dt);
+int _checkStoredUserResponse(GWEN_DB_NODE *dbC, const char *sFingerprint)
+{
+  int rv;
 
-      return rv;
-    } /* if oldCheckCertFn */
-    else {
-      DBG_NOTICE(AQBANKING_LOGDOMAIN,
-                 "Internal error: No previous checkCert function while checking cert \"%s\"",
-                 sFingerprint);
-      return GWEN_ERROR_INTERNAL;
-    }
+  rv=GWEN_DB_GetIntValue(dbC, "userResponse", 0, -1);
+  if (rv==0) {
+    /* last user response was to accept the certificate so we're done */
+    DBG_NOTICE(AQBANKING_LOGDOMAIN, "Automatically accepting certificate [%s]", sFingerprint);
+    return 1;
+  }
+  else {
+    /* last user response was to reject the certificate so we're done */
+    DBG_NOTICE(AQBANKING_LOGDOMAIN, "Automatically rejecting certificate [%s] (%d)", sFingerprint, rv);
+    return rv;
   }
 }
 
 
 
+int _checkAutoDecision(const GWEN_SSLCERTDESCR *cert)
+{
+  GWEN_GUI *gui;
+  const char *sFingerprint;
+
+  sFingerprint=GWEN_SslCertDescr_GetFingerPrint(cert);
+
+  /* at this point the certificate was either not found or its status has changed,
+   * possibly ask the user how to preceed */
+  gui=GWEN_Gui_GetGui();
+  assert(gui);
+
+  if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_NONINTERACTIVE) {
+    uint32_t fl;
+
+    fl=GWEN_SslCertDescr_GetStatusFlags(cert);
+    if (fl==GWEN_SSL_CERT_FLAGS_OK) {
+      if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_ACCEPTVALIDCERTS) {
+        DBG_NOTICE(AQBANKING_LOGDOMAIN, "Automatically accepting valid new certificate [%s]", sFingerprint);
+        return 1;
+      }
+      else {
+        DBG_NOTICE(AQBANKING_LOGDOMAIN, "Automatically rejecting certificate [%s] (noninteractive)", sFingerprint);
+        return GWEN_ERROR_USER_ABORTED;
+      }
+    } /* if cert is valid */
+    else {
+      if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_REJECTINVALIDCERTS) {
+        DBG_NOTICE(AQBANKING_LOGDOMAIN, "Automatically rejecting invalid certificate [%s] (noninteractive)", sFingerprint);
+        return GWEN_ERROR_USER_ABORTED;
+      }
+    }
+  } /* if non-interactive */
+
+  /* undecided */
+  return 0;
+}
 
 
+
+int _askUserAboutCert(GWEN_SYNCIO *sio, const GWEN_SSLCERTDESCR *cert)
+{
+  AB_SIOTLS_EXT *xsio;
+
+  assert(sio);
+  xsio=GWEN_INHERIT_GETDATA(GWEN_SYNCIO, AB_SIOTLS_EXT, sio);
+  assert(xsio);
+
+  /* use previous checkCert function, which normally presents the certificate
+   * to the user and asks for a response */
+  if (xsio->oldCheckCertFn) {
+    int rv;
+
+    /* get user response */
+    rv=xsio->oldCheckCertFn(sio, cert);
+    if (rv==0)
+      return 1;
+    else {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+  else {
+    DBG_NOTICE(AQBANKING_LOGDOMAIN, "Internal error: No previous checkCert function");
+    return GWEN_ERROR_INTERNAL;
+  }
+}
+
+
+
+void _storeCertAndUserResponseInUser(AB_USER *u, const GWEN_SSLCERTDESCR *cert, int response)
+{
+  GWEN_DB_NODE *dbCerts;
+  GWEN_DB_NODE *dbC;
+  const char *sFingerprint;
+  const char *sStatus;
+
+  sFingerprint=GWEN_SslCertDescr_GetFingerPrint(cert);
+  sStatus=GWEN_SslCertDescr_GetStatusText(cert);
+
+  dbCerts=AB_User_GetCertDb(u);
+  assert(dbCerts);
+
+  /* store certificate in database */
+  dbC=GWEN_DB_GetGroup(dbCerts, GWEN_DB_FLAGS_OVERWRITE_GROUPS, sFingerprint);
+  assert(dbC);
+  GWEN_SslCertDescr_toDb(cert, dbC);
+
+  /* store user response */
+  GWEN_DB_SetIntValue(dbC, GWEN_DB_FLAGS_OVERWRITE_VARS, "userResponse", (response==1)?0:response);
+  DBG_NOTICE(AQBANKING_LOGDOMAIN,
+             "User response to presentation of cert \"%s\" (%s): %d",
+             sFingerprint, sStatus, (response==1)?0:response);
+
+  _storeAccessDate(dbC);
+}
+
+
+
+void _storeAccessDate(GWEN_DB_NODE *dbCert)
+{
+  GWEN_DATE *dt;
+
+  dt=GWEN_Date_CurrentDate();
+  GWEN_DB_SetCharValue(dbCert, GWEN_DB_FLAGS_OVERWRITE_VARS, "lastAccessDate", GWEN_Date_GetString(dt));
+  GWEN_Date_free(dt);
+}
 

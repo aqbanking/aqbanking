@@ -87,7 +87,7 @@ int AH_Control_GetCert(AB_PROVIDER *pro,
     fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) uid);
     return 2;
   }
-  rv=AB_Provider_GetUser(pro, uid, 1, 1, &u);
+  rv=AB_Provider_GetUser(pro, uid, 1, 0, &u);
   if (rv<0) {
     fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) uid);
     return 2;
@@ -96,9 +96,20 @@ int AH_Control_GetCert(AB_PROVIDER *pro,
     rv=AH_Provider_GetCert(pro, u, 1, 0, 1);
     if (rv) {
       DBG_ERROR_ERR(0, rv);
+      AB_Provider_EndExclUseUser(pro, u, 1); /* abort */
       AB_User_free(u);
       return 3;
     }
+
+    /* unlock user */
+    rv=AB_Provider_EndExclUseUser(pro, u, 0);
+    if (rv<0) {
+      fprintf(stderr, "ERROR: Could not unlock user (%d)\n", rv);
+      AB_Provider_EndExclUseUser(pro, u, 1); /* abort */
+      AB_User_free(u);
+      return 4;
+    }
+
   }
   AB_User_free(u);
 

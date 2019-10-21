@@ -133,9 +133,10 @@ int GWENHYWFAR_CB AB_Gui_CheckCert(GWEN_GUI *gui,
   const char *hash;
   const char *status;
   GWEN_BUFFER *hbuf;
-  GWEN_DB_NODE *dbCerts=NULL;
   int rv;
   int result=GWEN_ERROR_USER_ABORTED;
+
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Called.");
 
   assert(gui);
   xgui=GWEN_INHERIT_GETDATA(GWEN_GUI, AB_GUI, gui);
@@ -155,6 +156,7 @@ int GWENHYWFAR_CB AB_Gui_CheckCert(GWEN_GUI *gui,
     result=xgui->checkCertFn(gui, cd, sio, guiid);
   }
   else {
+    GWEN_DB_NODE *dbCerts=NULL;
     int i;
 
     /* load certificate data */
@@ -189,6 +191,7 @@ int GWENHYWFAR_CB AB_Gui_CheckCert(GWEN_GUI *gui,
                        hash);
             GWEN_Buffer_free(hbuf);
             AB_Banking_UnlockSharedConfig(xgui->banking, "certs");
+            GWEN_DB_Group_free(dbCerts);
             return 0;
           }
           else {
@@ -197,6 +200,7 @@ int GWENHYWFAR_CB AB_Gui_CheckCert(GWEN_GUI *gui,
                        hash);
             GWEN_Buffer_free(hbuf);
             AB_Banking_UnlockSharedConfig(xgui->banking, "certs");
+            GWEN_DB_Group_free(dbCerts);
             return GWEN_ERROR_USER_ABORTED;
           }
         } /* if cert is valid */
@@ -207,6 +211,7 @@ int GWENHYWFAR_CB AB_Gui_CheckCert(GWEN_GUI *gui,
                        hash);
             GWEN_Buffer_free(hbuf);
             AB_Banking_UnlockSharedConfig(xgui->banking, "certs");
+            GWEN_DB_Group_free(dbCerts);
             return GWEN_ERROR_USER_ABORTED;
           }
         }
@@ -234,6 +239,7 @@ int GWENHYWFAR_CB AB_Gui_CheckCert(GWEN_GUI *gui,
     if (rv<0) {
       DBG_NOTICE(AQBANKING_LOGDOMAIN, "Could not unlock certs db (%d)", rv);
     }
+    GWEN_DB_Group_free(dbCerts);
   }
 
   GWEN_Buffer_free(hbuf);
