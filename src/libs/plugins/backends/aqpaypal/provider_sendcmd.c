@@ -222,7 +222,7 @@ int APY_Provider__SendAccountQueue(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNTQUEUE
                                               AB_Account_GetIban(a),
                                               AB_Account_GetBankCode(a),
                                               AB_Account_GetAccountNumber(a),
-                                              AB_Account_GetAccountType(a));
+                                              AB_Transaction_TypeNone);
   if (ai==NULL) {
     DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Could not create account info");
     return GWEN_ERROR_GENERIC;
