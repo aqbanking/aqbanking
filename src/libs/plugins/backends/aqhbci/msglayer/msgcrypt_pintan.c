@@ -9,6 +9,28 @@
 
 
 
+int _generateAndAddSegment(GWEN_MSGENGINE *e, const char *segName, GWEN_DB_NODE *cfg, GWEN_BUFFER *hbuf)
+{
+  GWEN_XMLNODE *node;
+  int rv;
+
+  node=GWEN_MsgEngine_FindNodeByPropertyStrictProto(e, "SEG", "id", 0, segName);
+  if (!node) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Segment \"%s\" not found", segName);
+    return GWEN_ERROR_NOT_FOUND;
+  }
+
+  rv=GWEN_MsgEngine_CreateMessageFromNode(e, node, hbuf, cfg);
+  if (rv) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Could not create CryptHead (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
 int AH_MsgPinTan_PrepareCryptoSeg(AH_MSG *hmsg,
                                   AB_USER *u,
                                   GWEN_DB_NODE *cfg,
@@ -332,15 +354,12 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg,
 int AH_Msg_EncryptPinTan(AH_MSG *hmsg)
 {
   AH_HBCI *h;
-  GWEN_XMLNODE *node;
   GWEN_DB_NODE *cfg;
   GWEN_BUFFER *hbuf;
   int rv;
   const char *p;
   GWEN_MSGENGINE *e;
   AB_USER *u;
-  const char *peerId;
-//  uint32_t uFlags;
 
   assert(hmsg);
   h=AH_Dialog_GetHbci(hmsg->dialog);
@@ -350,96 +369,60 @@ int AH_Msg_EncryptPinTan(AH_MSG *hmsg)
   GWEN_MsgEngine_SetMode(e, "pintan");
 
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
-//  uFlags=AH_User_GetFlags(u);
 
-  peerId=AH_User_GetPeerId(u);
-  if (!peerId || *peerId==0)
-    peerId=AB_User_GetUserId(u);
+  /* buffer for final message */
+  hbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
   /* create crypt head */
-  node=GWEN_MsgEngine_FindNodeByPropertyStrictProto(e,
-                                                    "SEG",
-                                                    "id",
-                                                    0,
-                                                    "CryptHead");
-  if (!node) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Segment \"CryptHead\" not found");
-    return GWEN_ERROR_INTERNAL;
-  }
-
-  /* create CryptHead */
   cfg=GWEN_DB_Group_new("crypthead");
-  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-                      "head/seq", 998);
+  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "head/seq", 998);
 
   rv=AH_MsgPinTan_PrepareCryptoSeg(hmsg, u, cfg, 1, 0);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_DB_Group_free(cfg);
+    GWEN_Buffer_free(hbuf);
     return rv;
   }
 
   /* store system id */
-  p=NULL;
   if (!hmsg->noSysId)
     p=AH_User_GetSystemId(u);
-  if (!p)
-    p="0";
-  GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", p);
+  else
+    p=NULL;
+  GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", p?p:"0");
+  GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT, "CryptAlgo/MsgKey", "NOKEY", 5);
 
-  /* store encrypted message key */
-  GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-                      "CryptAlgo/MsgKey",
-                      "NOKEY", 5);
-
-  hbuf=GWEN_Buffer_new(0, 256+GWEN_Buffer_GetUsedBytes(hmsg->buffer), 0, 1);
-  rv=GWEN_MsgEngine_CreateMessageFromNode(e,
-                                          node,
-                                          hbuf,
-                                          cfg);
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Could not create CryptHead (%d)", rv);
-    GWEN_Buffer_free(hbuf);
+  rv=_generateAndAddSegment(e, "CryptHead", cfg, hbuf);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_DB_Group_free(cfg);
-    return rv;
+    GWEN_Buffer_free(hbuf);
+    return GWEN_ERROR_INTERNAL;
   }
   GWEN_DB_Group_free(cfg);
 
+
   /* create cryptdata */
   cfg=GWEN_DB_Group_new("cryptdata");
-  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-                      "head/seq", 999);
+  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "head/seq", 999);
   GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT,
                       "cryptdata",
                       GWEN_Buffer_GetStart(hmsg->buffer),
                       GWEN_Buffer_GetUsedBytes(hmsg->buffer));
 
-  node=GWEN_MsgEngine_FindNodeByPropertyStrictProto(e,
-                                                    "SEG",
-                                                    "id",
-                                                    0,
-                                                    "CryptData");
-  if (!node) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Segment \"CryptData\"not found");
+  rv=_generateAndAddSegment(e, "CryptData", cfg, hbuf);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(hbuf);
     GWEN_DB_Group_free(cfg);
-    return -1;
+    return GWEN_ERROR_INTERNAL;
   }
-  rv=GWEN_MsgEngine_CreateMessageFromNode(e,
-                                          node,
-                                          hbuf,
-                                          cfg);
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Could not create CryptData (%d)", rv);
-    GWEN_Buffer_free(hbuf);
-    GWEN_DB_Group_free(cfg);
-    return rv;
-  }
+  GWEN_DB_Group_free(cfg);
 
   /* replace existing buffer by encrypted one */
   GWEN_Buffer_free(hmsg->buffer);
   hmsg->buffer=hbuf;
-  GWEN_DB_Group_free(cfg);
 
   return 0;
 }
