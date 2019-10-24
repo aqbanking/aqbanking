@@ -270,7 +270,7 @@ int AH_Job_GetBalance__ReadSecurities(AH_JOB *j,
   while (dbSecurity) {
     AB_SECURITY *asec;
     AB_VALUE *aval;
-    GWEN_TIME *gt;
+    GWEN_TIME *gt = NULL;
     const char *p;
 
     asec=AB_Security_new();
