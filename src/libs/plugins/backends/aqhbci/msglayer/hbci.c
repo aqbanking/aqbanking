@@ -175,6 +175,7 @@ int AH_HBCI_Fini(AH_HBCI *hbci, GWEN_DB_NODE *db)
                       hbci->connectTimeout);
 
   GWEN_PathManager_UndefinePath(AH_PM_LIBNAME, AH_PM_XMLDATADIR);
+  GWEN_PathManager_RemovePaths(AH_PM_LIBNAME);
 
   GWEN_DB_Group_free(hbci->sharedRuntimeData);
   hbci->sharedRuntimeData=0;
