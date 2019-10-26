@@ -156,6 +156,17 @@
     </SEGdef>
 
 
+
+    <SEGdef id="CryptData" 
+            code="HNVSD" 
+            segmentVersion="1" 
+    >
+      <!-- "Verschluesselungskopf fuer PIN/TAN" -->
+      <DEG     name="head"             type="SegHead" />
+      <DE      name="CryptData"        type="bin"   />
+    </SEGdef>
+
+
   </SEGs>
 
 

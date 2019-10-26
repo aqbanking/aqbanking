@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Mon Mar 01 2004
- copyright   : (C) 2018 by Martin Preuss
+ copyright   : (C) 2019 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -29,6 +29,10 @@
 
 #ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQEBICS
 # include "src/libs/plugins/backends/aqebics/client/provider.h"
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQFINTS
+# include "src/libs/plugins/backends/aqfints/banking/provider.h"
 #endif
 
 
@@ -118,6 +122,16 @@ AB_PROVIDER *AB_Banking__CreateInternalProvider(AB_BANKING *ab, const char *modn
 
       DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] compiled-in", modname);
       pro=EBC_Provider_new(ab);
+      return pro;
+    }
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQFINTS
+    if (strcasecmp(modname, "aqfints")==0) {
+      AB_PROVIDER *pro;
+
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] compiled-in", modname);
+      pro=AF_Provider_new(ab);
       return pro;
     }
 #endif

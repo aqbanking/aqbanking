@@ -5,7 +5,8 @@ fintsdata_DATA=\
   crypt.fints \
   ident.fints \
   prepare.fints \
-  dialogend.fints
+  dialogend.fints \
+  tan.fints
 
 
 typefiles:

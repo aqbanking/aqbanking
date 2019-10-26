@@ -1,4 +1,4 @@
-SUBDIRS=msglayer servicelayer transportlayer sessionlayer
+SUBDIRS=msglayer servicelayer transportlayer sessionlayer banking
 
 AM_CPPFLAGS = -I$(srcdir) -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/..
 
@@ -20,7 +20,8 @@ libaqfints_la_LIBADD=\
   msglayer/libaqfintsmsg.la \
   servicelayer/libaqfintsservice.la \
   transportlayer/libaqfintstransport.la \
-  sessionlayer/libaqfintssession.la
+  sessionlayer/libaqfintssession.la \
+  banking/libaqfintsbanking.la
 
 
 
