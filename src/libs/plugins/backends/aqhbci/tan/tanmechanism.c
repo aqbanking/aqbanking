@@ -55,6 +55,7 @@ static TAN_MAP_ENTRY _methodIdMap[]= {
 
 static TAN_MAP_ENTRY _methodNameMap[]= {
   {"*photo*",     AB_BANKING_TANMETHOD_PHOTOTAN},
+  {"chipTAN-QR",  AB_BANKING_TANMETHOD_CHIPTAN_QR},
   {NULL,        0}
 };
 
