@@ -33,6 +33,7 @@ static AB_TRANSACTION *dbToTransaction(AB_IMEXPORTER *ie, GWEN_DB_NODE *db);
 static void handleTransactionDetails(AB_TRANSACTION *t, const char *sDetails);
 
 
+#ifndef strndup
 static char *my_strndup(const char *src, size_t n)
 {
   int len;
@@ -52,6 +53,7 @@ static char *my_strndup(const char *src, size_t n)
 }
 
 #define strndup my_strndup
+#endif
 
 AB_IMEXPORTER *AB_ImExporterXML_new(AB_BANKING *ab)
 {
