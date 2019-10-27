@@ -41,12 +41,19 @@ build_headers=$(build_headers_priv) $(build_headers_pub)
 
 
 
-noinst_HEADERS= $(build_headers)
+noinst_HEADERS= $(build_headers) \
+  s_pintan.h \
+  s_pintan_p.h \
+  s_pintan_sign.h \
+  s_pintan_crypt.h
 
 
 
 libaqfintssession_pin_la_SOURCES=$(built_sources) \
-  s_pintan_sign.c
+  s_pintan.c \
+  s_pintan_sign.c \
+  s_pintan_crypt.c
+
 
 
 

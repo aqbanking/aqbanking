@@ -52,7 +52,8 @@ libaqfintssession_la_SOURCES=$(built_sources) \
 
 
 
-#libaqfintssession_la_LIBADD=
+libaqfintssession_la_LIBADD=\
+  pintan/libaqfintssession_pin.la
 
 
 

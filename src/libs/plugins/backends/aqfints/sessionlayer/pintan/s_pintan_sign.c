@@ -12,8 +12,10 @@
 # include <config.h>
 #endif
 
-#include "sessionlayer/session.h"
-#include "msglayer/keyname.h"
+#include "s_pintan_sign.h"
+
+#include "aqfints/sessionlayer/session.h"
+#include "aqfints/msglayer/keyname.h"
 
 #include <gwenhywfar/debug.h>
 
@@ -27,15 +29,6 @@
  */
 
 
-static int wrapSignature(AQFINTS_SESSION *sess,
-                         const AQFINTS_KEYNAME *keyName,
-                         int firstSegNum,
-                         int lastSegNum,
-                         GWEN_BUFFER *msgBuffer,
-                         GWEN_BUFFER *sigHeadBuffer,
-                         GWEN_BUFFER *sigTailBuffer,
-                         const char *pin,
-                         const char *tan);
 static int createCtrlRef(char *ptrBuf, size_t lenBuf);
 static int createSigHead(AQFINTS_SESSION *sess,
                          int segNum,
@@ -47,8 +40,7 @@ static int createSigTail(AQFINTS_SESSION *sess,
                          const AQFINTS_KEYNAME *keyName,
                          const char *ctrlRef,
                          GWEN_BUFFER *destBuffer,
-                         const char *pin,
-                         const char *tan);
+                         const char *pin);
 
 static int prepareSignSeg(AQFINTS_SESSION *sess,
                           const AQFINTS_KEYNAME *keyName,
@@ -65,11 +57,11 @@ static int prepareSignSeg(AQFINTS_SESSION *sess,
 
 
 
-int wrapSignatures(AQFINTS_SESSION *sess,
-                   AQFINTS_KEYNAME_LIST *keyNameList,
-                   int firstSegNum,
-                   int lastSegNum,
-                   GWEN_BUFFER *msgBuffer)
+int AQFINTS_SessionPinTan_WWrapSignatures(AQFINTS_SESSION *sess,
+                                          AQFINTS_KEYNAME_LIST *keyNameList,
+                                          int firstSegNum,
+                                          int lastSegNum,
+                                          GWEN_BUFFER *msgBuffer)
 {
   AQFINTS_KEYNAME *keyName;
   GWEN_BUFFER *sigHeadBuffer;
@@ -98,7 +90,7 @@ int wrapSignatures(AQFINTS_SESSION *sess,
 
     /* TODO: determine pin and tan */
     DBG_INFO(0, "User [%s]: Adding signature head and tail", sUserId?sUserId:"<empty>");
-    rv=wrapSignature(sess, keyName, firstSegNum, lastSegNum, msgBuffer, sigHeadBuffer, sigTailBuffer, NULL, NULL);
+    rv=wrapSignature(sess, keyName, firstSegNum, lastSegNum, msgBuffer, sigHeadBuffer, sigTailBuffer);
     if (rv<0) {
       DBG_INFO(0, "here (%d)", rv);
       GWEN_Buffer_free(sigTailBuffer);
@@ -134,9 +126,7 @@ int wrapSignature(AQFINTS_SESSION *sess,
                   int lastSegNum,
                   GWEN_BUFFER *msgBuffer,
                   GWEN_BUFFER *sigHeadBuffer,
-                  GWEN_BUFFER *sigTailBuffer,
-                  const char *pin,
-                  const char *tan)
+                  GWEN_BUFFER *sigTailBuffer)
 {
   int rv;
   char ctrlref[15];
@@ -162,7 +152,7 @@ int wrapSignature(AQFINTS_SESSION *sess,
 
   /* signature tail */
   tmpBuffer=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=createSigTail(sess, lastSegNum+1, keyName, ctrlref, tmpBuffer, pin, tan);
+  rv=createSigTail(sess, lastSegNum+1, keyName, ctrlref, tmpBuffer, NULL); /* TODO: add pin */
   if (rv<0) {
     DBG_INFO(0, "here (%d)", rv);
     GWEN_Buffer_free(tmpBuffer);
@@ -246,8 +236,7 @@ int createSigTail(AQFINTS_SESSION *sess,
                   const AQFINTS_KEYNAME *keyName,
                   const char *ctrlRef,
                   GWEN_BUFFER *destBuffer,
-                  const char *pin,
-                  const char *tan)
+                  const char *pin)
 {
   GWEN_DB_NODE *dbSegment;
   AQFINTS_PARSER *parser;
@@ -255,9 +244,12 @@ int createSigTail(AQFINTS_SESSION *sess,
   AQFINTS_SEGMENT *defSegment;
   AQFINTS_SEGMENT *segment;
   int rv;
+  const char *tan;
 
   parser=AQFINTS_Session_GetParser(sess);
   hbciVersion=AQFINTS_Session_GetHbciVersion(sess);
+
+  tan=AQFINTS_KeyName_GetTan(keyName);
 
   /* HNSHA */
   defSegment=AQFINTS_Parser_FindSegmentHighestVersionForProto(parser, "HNSHA", hbciVersion);

@@ -40,18 +40,18 @@ GWEN_INHERIT_FUNCTION_DEFS(AQFINTS_SESSION)
 
 
 /* definitions for virtual functions (post) */
-typedef int (*AQFINTS_SESSION_EXCHANGEMESSAGES_FN)(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *messageOut,
-                                                   AQFINTS_MESSAGE **pMessageIn);
+typedef int GWENHYWFAR_CB (*AQFINTS_SESSION_EXCHANGEMESSAGES_FN)(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *messageOut,
+								 AQFINTS_MESSAGE **pMessageIn);
 
-typedef int (*AQFINTS_SESSION_FILLOUT_KEYNAME_FN)(AQFINTS_SESSION *sess, AQFINTS_KEYNAME *keyName);
+typedef int GWENHYWFAR_CB (*AQFINTS_SESSION_FILLOUT_KEYNAME_FN)(AQFINTS_SESSION *sess, AQFINTS_KEYNAME *keyName);
 
 
-typedef int (*AQFINTS_SESSION_SIGN_FN)(AQFINTS_SESSION *sess, AQFINTS_KEYNAME *keyName, GWEN_BUFFER *dataBuffer);
-typedef int (*AQFINTS_SESSION_VERIFY_FN)(AQFINTS_SESSION *sess, AQFINTS_KEYNAME *keyName, GWEN_BUFFER *dataBuffer,
-                                         const uint8_t *ptrSignature, uint32_t lenSignature);
+typedef int GWENHYWFAR_CB (*AQFINTS_SESSION_SIGN_FN)(AQFINTS_SESSION *sess, AQFINTS_KEYNAME *keyName, GWEN_BUFFER *dataBuffer);
+typedef int GWENHYWFAR_CB (*AQFINTS_SESSION_VERIFY_FN)(AQFINTS_SESSION *sess, AQFINTS_KEYNAME *keyName, GWEN_BUFFER *dataBuffer,
+						       const uint8_t *ptrSignature, uint32_t lenSignature);
 
-typedef int (*AQFINTS_SESSION_ENCRYPT_FN)(AQFINTS_SESSION *sess, AQFINTS_KEYNAME *keyName, GWEN_BUFFER *dataBuffer);
-typedef int (*AQFINTS_SESSION_DECRYPT_FN)(AQFINTS_SESSION *sess, AQFINTS_KEYNAME *keyName, GWEN_BUFFER *dataBuffer);
+typedef int GWENHYWFAR_CB (*AQFINTS_SESSION_ENCRYPT_FN)(AQFINTS_SESSION *sess, AQFINTS_KEYNAME *keyName, GWEN_BUFFER *dataBuffer);
+typedef int GWENHYWFAR_CB (*AQFINTS_SESSION_DECRYPT_FN)(AQFINTS_SESSION *sess, AQFINTS_KEYNAME *keyName, GWEN_BUFFER *dataBuffer);
 /*@}*/
 
 

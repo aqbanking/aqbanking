@@ -48,6 +48,9 @@ void AQFINTS_Message_SetRefMessageNumber(AQFINTS_MESSAGE *msg, int v);
 AQFINTS_KEYNAME_LIST *AQFINTS_Message_GetSignerList(const AQFINTS_MESSAGE *msg);
 void AQFINTS_Message_AddSigner(AQFINTS_MESSAGE *msg, AQFINTS_KEYNAME *keyName);
 
+AQFINTS_KEYNAME *AQFINTS_Message_FindSigner(AQFINTS_MESSAGE *msg, uint32_t uniqueUserId);
+
+
 AQFINTS_KEYNAME *AQFINTS_Message_GetCrypter(const AQFINTS_MESSAGE *msg);
 void AQFINTS_Message_SetCrypter(AQFINTS_MESSAGE *msg, AQFINTS_KEYNAME *keyName);
 /*@}*/
@@ -61,6 +64,8 @@ AQFINTS_SEGMENT_LIST *AQFINTS_Message_GetSegmentList(const AQFINTS_MESSAGE *msg)
 void AQFINTS_Message_AddSegment(AQFINTS_MESSAGE *msg, AQFINTS_SEGMENT *segment);
 /*@}*/
 
+
+void AQFINTS_Message_Reenumerate(AQFINTS_MESSAGE *msg);
 
 
 

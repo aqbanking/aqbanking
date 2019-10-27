@@ -16,12 +16,15 @@
 
 #include "message_p.h"
 
+#include "aqfints.h"
 #include "parser/parser_xml.h"
 #include "parser/parser_hbci.h"
 #include "parser/parser_normalize.h"
 #include "parser/parser_dbwrite.h"
 
 #include <gwenhywfar/debug.h>
+
+#include <inttypes.h>
 
 
 
@@ -94,8 +97,35 @@ AQFINTS_KEYNAME_LIST *AQFINTS_Message_GetSignerList(const AQFINTS_MESSAGE *msg)
 
 void AQFINTS_Message_AddSigner(AQFINTS_MESSAGE *msg, AQFINTS_KEYNAME *keyName)
 {
+  uint32_t uid;
+
   assert(msg);
-  AQFINTS_KeyName_List_Add(keyName, msg->signerList);
+  uid=AQFINTS_KeyName_GetUniqueUserId(keyName);
+
+  if (AQFINTS_Message_FindSigner(msg, uid)) {
+    DBG_WARN(AQFINTS_LOGDOMAIN, "Signer %" PRIx32 "already exists, not adding", uid);
+  }
+  else
+    AQFINTS_KeyName_List_Add(keyName, msg->signerList);
+}
+
+
+
+AQFINTS_KEYNAME *AQFINTS_Message_FindSigner(AQFINTS_MESSAGE *msg, uint32_t uniqueUserId)
+{
+  if (msg->signerList) {
+    AQFINTS_KEYNAME *keyName;
+
+    keyName=AQFINTS_KeyName_List_First(msg->signerList);
+    while(keyName) {
+      if (AQFINTS_KeyName_GetUniqueUserId(keyName)==uniqueUserId)
+        return keyName;
+
+      keyName=AQFINTS_KeyName_List_Next(keyName);
+    }
+  }
+
+  return NULL;
 }
 
 
@@ -134,6 +164,21 @@ void AQFINTS_Message_AddSegment(AQFINTS_MESSAGE *msg, AQFINTS_SEGMENT *segment)
 }
 
 
+
+void AQFINTS_Message_Reenumerate(AQFINTS_MESSAGE *msg)
+{
+  int segNum;
+  AQFINTS_SEGMENT *segment;
+
+  assert(msg);
+
+  segNum=AQFINTS_KeyName_List_GetCount(msg->signerList)+1;
+  segment=AQFINTS_Segment_List_First(msg->segmentList);
+  while(segment) {
+    AQFINTS_Segment_SetSegmentNumber(segment, segNum++);
+    segment=AQFINTS_Segment_List_Next(segment);
+  }
+}
 
 
 
