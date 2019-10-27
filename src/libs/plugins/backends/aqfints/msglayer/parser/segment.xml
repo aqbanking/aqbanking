@@ -89,6 +89,40 @@
              }
           </content>
         </inline>
+
+
+        <!-- GetDataLength() -->
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             $(api) uint32_t $(struct_prefix)_List_SampleFlags(const $(struct_type)_LIST *stl);
+          </content>
+        </inline>
+
+        <inline loc="code" >
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             uint32_t $(struct_prefix)_List_SampleFlags(const $(struct_type)_LIST *stl)
+             {
+               uint32_t flags=0;
+               
+               if (stl) {
+                 $(struct_type) *segment;
+               
+                 segment=$(struct_prefix)_List_Last(stl);
+                 while(segment) {
+                   flags|=$(struct_prefix)_GetFlags(segment);
+                   segment=$(struct_prefix)_List_Next(segment);
+                 }
+               }
+               return flags;
+             }
+          </content>
+        </inline>
+
       
       </inlines>
       

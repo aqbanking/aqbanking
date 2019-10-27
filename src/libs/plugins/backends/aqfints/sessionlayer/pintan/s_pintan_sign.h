@@ -16,11 +16,11 @@
 #include "aqfints/sessionlayer/session.h"
 
 
-int AQFINTS_SessionPinTan_WWrapSignatures(AQFINTS_SESSION *sess,
-                                          AQFINTS_KEYNAME_LIST *keyNameList,
-                                          int firstSegNum,
-                                          int lastSegNum,
-                                          GWEN_BUFFER *msgBuffer);
+int AQFINTS_SessionPinTan_WrapSignatures(AQFINTS_SESSION *sess,
+                                         AQFINTS_KEYNAME_LIST *keyNameList,
+                                         int firstSegNum,
+                                         int lastSegNum,
+                                         GWEN_BUFFER *msgBuffer);
 
 
 

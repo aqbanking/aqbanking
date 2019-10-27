@@ -182,6 +182,47 @@ void AQFINTS_Message_Reenumerate(AQFINTS_MESSAGE *msg)
 
 
 
+int AQFINTS_Message_GetFirstSegNum(const AQFINTS_MESSAGE *msg)
+{
+  AQFINTS_SEGMENT *segment;
+
+  assert(msg);
+
+  segment=AQFINTS_Segment_List_First(msg->segmentList);
+  if (segment)
+    return AQFINTS_Segment_GetSegmentNumber(segment);
+  return 0;
+}
+
+
+
+int AQFINTS_Message_GetLastSegNum(const AQFINTS_MESSAGE *msg)
+{
+  AQFINTS_SEGMENT *segment;
+
+  assert(msg);
+
+  segment=AQFINTS_Segment_List_Last(msg->segmentList);
+  if (segment)
+    return AQFINTS_Segment_GetSegmentNumber(segment);
+  return 0;
+}
+
+
+
+void AQFINTS_Message_WriteSegments(const AQFINTS_MESSAGE *msg, GWEN_BUFFER *msgBuffer)
+{
+  AQFINTS_SEGMENT *segment;
+
+  assert(msg);
+
+  while(segment) {
+    AQFINTS_Parser_Hbci_WriteSegment(segment, msgBuffer);
+    segment=AQFINTS_Segment_List_Next(segment);
+  }
+}
+
+
 
 
 #if 0

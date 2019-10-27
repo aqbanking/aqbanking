@@ -29,6 +29,13 @@
  */
 
 
+static int wrapSignature(AQFINTS_SESSION *sess,
+                         const AQFINTS_KEYNAME *keyName,
+                         int firstSegNum,
+                         int lastSegNum,
+                         GWEN_BUFFER *msgBuffer,
+                         GWEN_BUFFER *sigHeadBuffer,
+                         GWEN_BUFFER *sigTailBuffer);
 static int createCtrlRef(char *ptrBuf, size_t lenBuf);
 static int createSigHead(AQFINTS_SESSION *sess,
                          int segNum,
@@ -57,12 +64,12 @@ static int prepareSignSeg(AQFINTS_SESSION *sess,
 
 
 
-int AQFINTS_SessionPinTan_WWrapSignatures(AQFINTS_SESSION *sess,
-                                          AQFINTS_KEYNAME_LIST *keyNameList,
-                                          int firstSegNum,
-                                          int lastSegNum,
-                                          GWEN_BUFFER *msgBuffer)
-{
+int AQFINTS_SessionPinTan_WrapSignatures(AQFINTS_SESSION *sess,
+                                         AQFINTS_KEYNAME_LIST *keyNameList,
+                                         int firstSegNum,
+                                         int lastSegNum,
+                                         GWEN_BUFFER *msgBuffer)
+  {
   AQFINTS_KEYNAME *keyName;
   GWEN_BUFFER *sigHeadBuffer;
   GWEN_BUFFER *sigTailBuffer;
