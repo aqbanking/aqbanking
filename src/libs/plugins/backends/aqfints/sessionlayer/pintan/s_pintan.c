@@ -21,11 +21,23 @@
 
 
 
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
 
 static int GWENHYWFAR_CB _exchangeMessages(AQFINTS_SESSION *sess,
                                            AQFINTS_MESSAGE *messageOut,
                                            AQFINTS_MESSAGE **pMessageIn);
-GWEN_BUFFER *_encodeMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *msg);
+static GWEN_BUFFER *_encodeMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *msg);
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 
 
@@ -53,13 +65,23 @@ int _exchangeMessages(AQFINTS_SESSION *sess,
                       AQFINTS_MESSAGE **pMessageIn)
 {
   GWEN_BUFFER *msgBuffer;
-
+  int rv;
 
   msgBuffer=_encodeMessage(sess, messageOut);
   if (msgBuffer==NULL) {
     DBG_INFO(AQFINTS_LOGDOMAIN, "here");
     return GWEN_ERROR_GENERIC;
   }
+
+  rv=AQFINTS_Session_SendMessage(sess, GWEN_Buffer_GetStart(msgBuffer), GWEN_Buffer_GetUsedBytes(msgBuffer));
+  if (rv<0) {
+    DBG_INFO(AQFINTS_LOGDOMAIN, "here");
+    GWEN_Buffer_free(msgBuffer);
+    return GWEN_ERROR_GENERIC;
+  }
+
+
+
 
 
   return GWEN_ERROR_NOT_IMPLEMENTED;
@@ -91,6 +113,7 @@ GWEN_BUFFER *_encodeMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *msg)
   if (flags & AQFINTS_SEGMENT_FLAGS_SIGN) {
     AQFINTS_KEYNAME_LIST *signerKeyNameList;
 
+    DBG_INFO(AQFINTS_LOGDOMAIN, "Signing requested");
     signerKeyNameList=AQFINTS_Message_GetSignerList(msg);
     if (signerKeyNameList==NULL || AQFINTS_KeyName_List_GetCount(signerKeyNameList)==0) {
       DBG_ERROR(AQFINTS_LOGDOMAIN, "Signing requested but no signer in list");
@@ -112,6 +135,7 @@ GWEN_BUFFER *_encodeMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *msg)
     AQFINTS_KEYNAME *crypterKeyName;
     GWEN_BUFFER *tmpBuffer;
 
+    DBG_INFO(AQFINTS_LOGDOMAIN, "Encryption requested");
     crypterKeyName=AQFINTS_Message_GetCrypter(msg);
     if (crypterKeyName==NULL) {
       DBG_ERROR(AQFINTS_LOGDOMAIN, "Encryption requested but no crypter given");
@@ -134,6 +158,7 @@ GWEN_BUFFER *_encodeMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *msg)
     msgBuffer=tmpBuffer;
   }
 
+  DBG_INFO(AQFINTS_LOGDOMAIN, "Wrapping message head and tail");
   rv=AQFINTS_Session_WrapMessageHeadAndTail(sess,
                                             AQFINTS_Message_GetMessageNumber(msg),
                                             AQFINTS_Message_GetRefMessageNumber(msg),
