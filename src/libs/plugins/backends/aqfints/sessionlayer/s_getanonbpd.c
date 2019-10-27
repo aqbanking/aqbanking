@@ -15,6 +15,7 @@
 
 #include "./session.h"
 
+#include "servicelayer/bpd/bpd_read.h"
 
 #include <gwenhywfar/debug.h>
 
@@ -27,7 +28,7 @@
 
 static AQFINTS_MESSAGE *createMessage(AQFINTS_SESSION *sess, const char *bankCode);
 static int mkGetAnonBpdMessage(AQFINTS_SESSION *sess, const char *bankCode, GWEN_BUFFER *destBuffer);
-static int handleResponse(AQFINTS_SESSION *sess, const uint8_t *ptrBuffer, uint32_t lenBuffer);
+static AQFINTS_BPD *extractBpd(AQFINTS_SESSION *sess, const uint8_t *ptrBuffer, uint32_t lenBuffer);
 
 
 
@@ -38,10 +39,11 @@ static int handleResponse(AQFINTS_SESSION *sess, const uint8_t *ptrBuffer, uint3
 
 
 
-int AQFINTS_Session_GetAnonBpd(AQFINTS_SESSION *sess, const char *bankCode)
+int AQFINTS_Session_GetAnonBpd(AQFINTS_SESSION *sess, const char *bankCode, AQFINTS_BPD **pBpd)
 {
   GWEN_BUFFER *destBuffer;
   int rv;
+  AQFINTS_BPD *bpd;
 
   destBuffer=GWEN_Buffer_new(0, 256, 0, 1);
   rv=mkGetAnonBpdMessage(sess, bankCode, destBuffer);
@@ -80,26 +82,28 @@ int AQFINTS_Session_GetAnonBpd(AQFINTS_SESSION *sess, const char *bankCode)
 
   AQFINTS_Session_Disconnect(sess);
 
-  rv=handleResponse(sess,
-                    (const uint8_t *) GWEN_Buffer_GetStart(destBuffer),
-                    GWEN_Buffer_GetUsedBytes(destBuffer));
-  if (rv<0) {
-    DBG_ERROR(0, "here (%d)", rv);
+  bpd=extractBpd(sess,
+                 (const uint8_t *) GWEN_Buffer_GetStart(destBuffer),
+                 GWEN_Buffer_GetUsedBytes(destBuffer));
+  if (bpd==NULL) {
+    DBG_ERROR(0, "No BPD extracted");
     GWEN_Buffer_free(destBuffer);
     return rv;
   }
 
   GWEN_Buffer_free(destBuffer);
 
+  *pBpd=bpd;
   return 0;
 }
 
 
 
-int handleResponse(AQFINTS_SESSION *sess, const uint8_t *ptrBuffer, uint32_t lenBuffer)
+AQFINTS_BPD *extractBpd(AQFINTS_SESSION *sess, const uint8_t *ptrBuffer, uint32_t lenBuffer)
 {
   AQFINTS_SEGMENT_LIST *segmentList;
   AQFINTS_PARSER *parser;
+  AQFINTS_BPD *bpd;
   int rv;
 
   parser=AQFINTS_Session_GetParser(sess);
@@ -108,20 +112,25 @@ int handleResponse(AQFINTS_SESSION *sess, const uint8_t *ptrBuffer, uint32_t len
   if (rv<0) {
     DBG_ERROR(0, "here (%d)", rv);
     AQFINTS_Segment_List_free(segmentList);
-    return rv;
+    return NULL;
   }
 
   rv=AQFINTS_Parser_ReadSegmentListToDb(parser, segmentList);
   if (rv<0) {
     DBG_ERROR(0, "here (%d)", rv);
     AQFINTS_Segment_List_free(segmentList);
-    return rv;
+    return NULL;
   }
 
-  AQFINTS_Session_ExtractBpdAndUpd(sess, segmentList);
+  bpd=AQFINTS_Session_ExtractBpdFromSegmentList(sess, segmentList);
+  if (bpd==NULL) {
+    DBG_ERROR(0, "Empty BPD");
+    AQFINTS_Segment_List_free(segmentList);
+    return NULL;
+  }
 
   AQFINTS_Segment_List_free(segmentList);
-  return 0;
+  return bpd;
 }
 
 

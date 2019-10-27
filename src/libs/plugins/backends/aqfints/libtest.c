@@ -214,7 +214,7 @@ int test_getBpd()
   AQFINTS_PARSER *parser;
   AQFINTS_SESSION *session;
   AQFINTS_TRANSPORT *transport;
-  AQFINTS_BPD *bpd;
+  AQFINTS_BPD *bpd=NULL;
   int rv;
   GWEN_DB_NODE *dbSettings;
   const char *sUrl;
@@ -262,13 +262,12 @@ int test_getBpd()
   session=AQFINTS_Session_new(parser, transport);
   AQFINTS_Session_SetHbciVersion(session, hbciVersion);
 
-  rv=AQFINTS_Session_GetAnonBpd(session, sBankCode);
+  rv=AQFINTS_Session_GetAnonBpd(session, sBankCode, &bpd);
   if (rv<0) {
     fprintf(stderr, "Error creating GetBPD request (%d).\n", rv);
     return 2;
   }
 
-  bpd=AQFINTS_Session_GetBpd(session);
   if (bpd) {
     GWEN_DB_NODE *dbBpd;
 

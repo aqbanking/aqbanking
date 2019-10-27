@@ -36,7 +36,7 @@ struct AQFINTS_SESSION {
   AQFINTS_PARSER *parser;
   AQFINTS_TRANSPORT *transport;
 
-  AQFINTS_USERDATA_LIST *userDataList;
+  AQFINTS_USERDATA *userData;
   AQFINTS_BPD *bpd;
 
   int allowedTanMethods[AQFINTS_SESSION_MAX_ALLOWED_TANMETHODS];

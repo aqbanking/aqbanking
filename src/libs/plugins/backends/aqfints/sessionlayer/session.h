@@ -119,8 +119,8 @@ const char *AQFINTS_Session_GetDialogId(const AQFINTS_SESSION *sess);
 void AQFINTS_Session_SetDialogId(AQFINTS_SESSION *sess, const char *s);
 
 
-AQFINTS_USERDATA_LIST *AQFINTS_Session_GetUserDataList(const AQFINTS_SESSION *sess);
-void AQFINTS_Session_SetUserDataList(AQFINTS_SESSION *sess, AQFINTS_USERDATA_LIST *userDataList);
+AQFINTS_USERDATA *AQFINTS_Session_GetUserData(const AQFINTS_SESSION *sess);
+void AQFINTS_Session_SetUserData(AQFINTS_SESSION *sess, AQFINTS_USERDATA *userData);
 
 AQFINTS_BPD *AQFINTS_Session_GetBpd(const AQFINTS_SESSION *sess);
 void AQFINTS_Session_SetBpd(AQFINTS_SESSION *sess, AQFINTS_BPD *bpd);
@@ -237,10 +237,14 @@ int AQFINTS_Session_WrapMessageHeadAndTail(AQFINTS_SESSION *sess,
                                            int msgNum, int refMsgNum, int lastSegNum,
                                            GWEN_BUFFER *msgBuffer);
 
-void AQFINTS_Session_ExtractBpdAndUpd(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIST *segmentList);
+AQFINTS_BPD *AQFINTS_Session_ExtractBpdFromSegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIST *segmentList);
+AQFINTS_USERDATA_LIST *AQFINTS_Session_ExtractUpdFromSegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIST *segmentList);
+
+void AQFINTS_Session_SampleAllowedTanMethods(int *ptrIntArray, int sizeIntArray,
+                                             AQFINTS_SEGMENT_LIST *segmentList);
 
 
-int AQFINTS_Session_GetAnonBpd(AQFINTS_SESSION *sess, const char *bankCode);
+int AQFINTS_Session_GetAnonBpd(AQFINTS_SESSION *sess, const char *bankCode, AQFINTS_BPD **pBpd);
 
 /*@}*/
 

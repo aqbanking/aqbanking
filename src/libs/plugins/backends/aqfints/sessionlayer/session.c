@@ -30,8 +30,6 @@
  */
 
 
-static void sampleAllowedTanMethods(int *ptrIntArray, int sizeIntArray, AQFINTS_SEGMENT_LIST *segmentList);
-
 
 
 /* ------------------------------------------------------------------------------------------------
@@ -76,8 +74,8 @@ void AQFINTS_Session_free(AQFINTS_SESSION *sess)
       if (sess->dialogId)
         free(sess->dialogId);
 
-      if (sess->userDataList)
-        AQFINTS_UserData_List_free(sess->userDataList);
+      if (sess->userData)
+        AQFINTS_UserData_free(sess->userData);
 
       if (sess->bpd)
         AQFINTS_Bpd_free(sess->bpd);
@@ -254,20 +252,20 @@ AQFINTS_PARSER *AQFINTS_Session_GetParser(const AQFINTS_SESSION *sess)
 
 
 
-AQFINTS_USERDATA_LIST *AQFINTS_Session_GetUserDataList(const AQFINTS_SESSION *sess)
+AQFINTS_USERDATA *AQFINTS_Session_GetUserData(const AQFINTS_SESSION *sess)
 {
   assert(sess);
-  return sess->userDataList;
+  return sess->userData;
 }
 
 
 
-void AQFINTS_Session_SetUserDataList(AQFINTS_SESSION *sess, AQFINTS_USERDATA_LIST *userDataList)
+void AQFINTS_Session_SetUserData(AQFINTS_SESSION *sess, AQFINTS_USERDATA *userData)
 {
   assert(sess);
-  if (sess->userDataList)
-    AQFINTS_UserData_List_free(sess->userDataList);
-  sess->userDataList=userDataList;
+  if (sess->userData)
+    AQFINTS_UserData_free(sess->userData);
+  sess->userData=userData;
 }
 
 
@@ -540,33 +538,8 @@ int AQFINTS_Session_WriteSegment(AQFINTS_SESSION *sess, AQFINTS_SEGMENT *segment
 
 
 
-void AQFINTS_Session_ExtractBpdAndUpd(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIST *segmentList)
-{
-  AQFINTS_USERDATA_LIST *userDataList;
-  AQFINTS_BPD *bpd;
-
-  bpd=AQFINTS_Bpd_SampleBpdFromSegmentList(sess->parser, segmentList, 1);
-  if (bpd==NULL) {
-    DBG_ERROR(0, "Empty BPD");
-  }
-  else
-    AQFINTS_Session_SetBpd(sess, bpd);
-
-  userDataList=AQFINTS_Upd_SampleUpdFromSegmentList(segmentList, 1);
-  if (userDataList==NULL) {
-    DBG_ERROR(0, "Empty userDataList");
-  }
-  else
-    AQFINTS_Session_SetUserDataList(sess, userDataList);
-
-  sampleAllowedTanMethods(sess->allowedTanMethods, AQFINTS_SESSION_MAX_ALLOWED_TANMETHODS, segmentList);
-
-}
-
-
-
-void sampleAllowedTanMethods(int *ptrIntArray, int sizeIntArray,
-                             AQFINTS_SEGMENT_LIST *segmentList)
+void AQFINTS_Session_SampleAllowedTanMethods(int *ptrIntArray, int sizeIntArray,
+                                             AQFINTS_SEGMENT_LIST *segmentList)
 {
   AQFINTS_SEGMENT *segment;
 
@@ -686,6 +659,33 @@ int AQFINTS_Session_ReceiveMessage(AQFINTS_SESSION *sess, GWEN_BUFFER *buffer)
 
 
 
+AQFINTS_BPD *AQFINTS_Session_ExtractBpdFromSegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIST *segmentList)
+{
+  AQFINTS_BPD *bpd;
+
+  bpd=AQFINTS_Bpd_SampleBpdFromSegmentList(sess->parser, segmentList, 1);
+  if (bpd==NULL) {
+    DBG_ERROR(0, "Empty BPD");
+    return NULL;
+  }
+
+  return bpd;
+}
+
+
+
+AQFINTS_USERDATA_LIST *AQFINTS_Session_ExtractUpdFromSegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIST *segmentList)
+{
+  AQFINTS_USERDATA_LIST *userDataList;
+
+  userDataList=AQFINTS_Upd_SampleUpdFromSegmentList(segmentList, 1);
+  if (userDataList==NULL) {
+    DBG_ERROR(0, "Empty userDataList");
+    return NULL;
+  }
+
+  return userDataList;
+}
 
 
 
