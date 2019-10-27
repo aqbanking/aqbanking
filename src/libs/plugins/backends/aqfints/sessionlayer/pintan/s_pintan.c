@@ -30,6 +30,9 @@
 static int GWENHYWFAR_CB _exchangeMessages(AQFINTS_SESSION *sess,
                                            AQFINTS_MESSAGE *messageOut,
                                            AQFINTS_MESSAGE **pMessageIn);
+static int _directlyExchangeMessages(AQFINTS_SESSION *sess,
+                                     AQFINTS_MESSAGE *messageOut,
+                                     AQFINTS_MESSAGE **pMessageIn);
 static GWEN_BUFFER *_encodeMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *msg);
 
 
@@ -64,6 +67,16 @@ int _exchangeMessages(AQFINTS_SESSION *sess,
                       AQFINTS_MESSAGE *messageOut,
                       AQFINTS_MESSAGE **pMessageIn)
 {
+  /* for now */
+  return _directlyExchangeMessages(sess, messageOut, pMessageIn);
+}
+
+
+
+int _directlyExchangeMessages(AQFINTS_SESSION *sess,
+                              AQFINTS_MESSAGE *messageOut,
+                              AQFINTS_MESSAGE **pMessageIn)
+{
   GWEN_BUFFER *msgBuffer;
   int rv;
 
@@ -79,13 +92,21 @@ int _exchangeMessages(AQFINTS_SESSION *sess,
     GWEN_Buffer_free(msgBuffer);
     return GWEN_ERROR_GENERIC;
   }
+  GWEN_Buffer_Reset(msgBuffer);
 
-
+  rv=AQFINTS_Session_ReceiveMessage(sess, msgBuffer);
+  if (rv<0) {
+    DBG_INFO(AQFINTS_LOGDOMAIN, "here");
+    GWEN_Buffer_free(msgBuffer);
+    return GWEN_ERROR_GENERIC;
+  }
 
 
 
   return GWEN_ERROR_NOT_IMPLEMENTED;
 }
+
+
 
 
 
