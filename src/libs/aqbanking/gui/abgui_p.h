@@ -23,6 +23,8 @@ struct AB_GUI {
 
   GWEN_GUI_READ_DIALOG_PREFS_FN readDialogPrefsFn;
   GWEN_GUI_WRITE_DIALOG_PREFS_FN writeDialogPrefsFn;
+  GWEN_GUI_GETPASSWORD_FN getPasswordFn;
+  const char *opticalTanTool;
 };
 
 static void GWENHYWFAR_CB AB_Gui_FreeData(void *bp, void *p);

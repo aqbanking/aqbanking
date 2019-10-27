@@ -97,6 +97,12 @@ AQBANKING_API void AB_Gui_Extend(GWEN_GUI *gui, AB_BANKING *ab);
  */
 AQBANKING_API void AB_Gui_Unextend(GWEN_GUI *gui);
 
+/**
+ * This function extends Gwen's GetPassword function and registers an
+ * external tool to show the graphics used as challenge for optical
+ * TAN mechanisms.
+ */
+AQBANKING_API int AB_Gui_SetCliCallbackForOpticalTan(GWEN_GUI *gui, const char *tool);
 
 #ifdef __cplusplus
 }

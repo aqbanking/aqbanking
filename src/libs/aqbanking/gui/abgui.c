@@ -18,11 +18,148 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/directory.h>
 
+#ifdef OS_WIN32
+#  include <io.h>
+#endif
 
 GWEN_INHERIT(GWEN_GUI, AB_GUI)
 
+static int GWENHYWFAR_CB getPasswordCli(GWEN_GUI                *gui,
+                                        uint32_t                 flags,
+                                        const char              *token,
+                                        const char              *title,
+                                        const char              *text,
+                                        char                    *buffer,
+                                        int                      minLen,
+                                        int                      maxLen,
+                                        GWEN_GUI_PASSWORD_METHOD methodId,
+                                        GWEN_DB_NODE            *methodParams,
+                                        uint32_t                 guiid)
+{
 
+# ifndef MAX_PATH
+#   define MAX_PATH 256
+# endif
+
+  const char *challenge;
+  char        imageFile [MAX_PATH];
+  int         ret;
+  AB_GUI     *xgui;
+
+  assert(gui);
+  xgui=GWEN_INHERIT_GETDATA(GWEN_GUI, AB_GUI, gui);
+  assert(xgui);
+
+  challenge = NULL;
+
+  if ((NULL != xgui->opticalTanTool)
+      && (0 != (flags & GWEN_GUI_INPUT_FLAGS_TAN))
+      && (GWEN_Gui_PasswordMethod_OpticalHHD == methodId)) {
+
+    int         tanMethod;
+    const char *mimeType;
+    const char *imageData;
+    uint32_t    imageSize;
+
+    tanMethod = GWEN_DB_GetIntValue(methodParams, "tanMethodId", 0,
+                                    AB_BANKING_TANMETHOD_TEXT);
+    switch (tanMethod) {
+    case AB_BANKING_TANMETHOD_CHIPTAN_OPTIC:
+      mimeType = "text/x-flickercode";
+      challenge = GWEN_DB_GetCharValue(methodParams, "challenge", 0, NULL);
+
+      if ((NULL == challenge) || ('\0' == challenge [0])) {
+        DBG_WARN(AQBANKING_LOGDOMAIN, "no flicker code found");
+        challenge = NULL;
+      }
+      break;
+
+    case AB_BANKING_TANMETHOD_CHIPTAN_QR:
+    case AB_BANKING_TANMETHOD_PHOTOTAN:
+      mimeType  = GWEN_DB_GetCharValue(methodParams, "mimeType",  0, NULL);
+      imageData = GWEN_DB_GetBinValue(methodParams, "imageData", 0, NULL,
+                                      0, &imageSize);
+
+      if ((NULL == mimeType) || (NULL == imageData) || (0 == imageSize)) {
+        DBG_WARN(AQBANKING_LOGDOMAIN, "no optical challenge found");
+      }
+      else {
+
+        int   fd;
+        FILE *fp;
+
+        GWEN_Directory_GetTmpDirectory(imageFile, sizeof(imageFile) - 14);
+
+#ifdef OS_WIN32
+
+        strncat(imageFile, "\\image.XXXXXX", 14);
+        mktemp(imageFile);
+        fp = fopen(imageFile, "wb");
+#else
+        strncat(imageFile, "/image.XXXXXX", 14);
+        fd = mkstemp(imageFile);
+        if (0 > fd) {
+          fp = NULL;
+        }
+        else {
+          fp = fdopen(fd, "wb");
+        }
+#endif
+        if (NULL == fp) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "can't open %s", imageFile);
+        }
+        else {
+          if (imageSize != fwrite(imageData, 1, imageSize, fp)) {
+            DBG_ERROR(AQBANKING_LOGDOMAIN, "can't write %s", imageFile);
+          }
+          else {
+            challenge = imageFile;
+          }
+          fclose(fp);
+        }
+      }
+      break;
+
+    default:
+      mimeType  = NULL;
+      challenge = NULL;
+      break;
+    }
+
+    if ((NULL != mimeType) && (NULL != challenge)) {
+
+      size_t size;
+      char  *cmd;
+
+      size = strlen(xgui->opticalTanTool) + strlen(mimeType) + strlen(challenge) + 7;
+      cmd  = malloc(size);
+      if (NULL == cmd) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "malloc (%u) failed",
+                  (unsigned int) size);
+      }
+      else {
+        snprintf(cmd, size, "%s \"%s\" \"%s\"",
+                 xgui->opticalTanTool, mimeType, challenge);
+
+        ret = system(cmd);
+        if (0 != ret) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "system (%s) returned %d",
+                    cmd, ret);
+        }
+        free(cmd);
+      }
+    }
+  }
+
+  ret = xgui->getPasswordFn(gui, flags, token, title, text, buffer,
+                            minLen, maxLen, methodId, methodParams, guiid);
+  if (challenge == imageFile) {
+    remove(imageFile);
+  }
+  return (ret);
+}
 
 
 GWEN_GUI *AB_Gui_new(AB_BANKING *ab)
@@ -38,6 +175,8 @@ GWEN_GUI *AB_Gui_new(AB_BANKING *ab)
   xgui->checkCertFn=GWEN_Gui_SetCheckCertFn(gui, AB_Gui_CheckCert);
   xgui->readDialogPrefsFn=GWEN_Gui_SetReadDialogPrefsFn(gui, AB_Gui_ReadDialogPrefs);
   xgui->writeDialogPrefsFn=GWEN_Gui_SetWriteDialogPrefsFn(gui, AB_Gui_WriteDialogPrefs);
+  xgui->getPasswordFn = NULL;
+  xgui->opticalTanTool = NULL;
 
   return gui;
 }
@@ -56,6 +195,8 @@ void AB_Gui_Extend(GWEN_GUI *gui, AB_BANKING *ab)
   xgui->checkCertFn=GWEN_Gui_SetCheckCertFn(gui, AB_Gui_CheckCert);
   xgui->readDialogPrefsFn=GWEN_Gui_SetReadDialogPrefsFn(gui, AB_Gui_ReadDialogPrefs);
   xgui->writeDialogPrefsFn=GWEN_Gui_SetWriteDialogPrefsFn(gui, AB_Gui_WriteDialogPrefs);
+  xgui->getPasswordFn = NULL;
+  xgui->opticalTanTool = NULL;
 }
 
 
@@ -75,10 +216,33 @@ void AB_Gui_Unextend(GWEN_GUI *gui)
   DBG_INFO(AQBANKING_LOGDOMAIN, "Unlinking GUI from banking object");
   GWEN_Gui_SetReadDialogPrefsFn(gui, xgui->readDialogPrefsFn);
   GWEN_Gui_SetWriteDialogPrefsFn(gui, xgui->writeDialogPrefsFn);
+
+  if (NULL != xgui->getPasswordFn) {
+    GWEN_Gui_SetGetPasswordFn(gui, xgui->getPasswordFn);
+  }
   GWEN_INHERIT_UNLINK(GWEN_GUI, AB_GUI, gui);
   GWEN_FREE_OBJECT(xgui);
 }
 
+
+int AB_Gui_SetCliCallbackForOpticalTan(GWEN_GUI *gui, const char *tool)
+{
+  AB_GUI *xgui;
+  GWEN_GUI_GETPASSWORD_FN originalGetPassword;
+
+  assert(gui);
+  assert(tool);
+  xgui=GWEN_INHERIT_GETDATA(GWEN_GUI, AB_GUI, gui);
+  assert(xgui);
+
+  xgui->opticalTanTool = tool;
+  originalGetPassword = GWEN_Gui_SetGetPasswordFn(gui, getPasswordCli);
+
+  if (NULL == xgui->getPasswordFn) {
+    xgui->getPasswordFn = originalGetPassword;
+  }
+  return 0;
+}
 
 
 void GWENHYWFAR_CB AB_Gui_FreeData(void *bp, void *p)

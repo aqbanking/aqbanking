@@ -101,6 +101,17 @@ int main(int argc, char **argv)
       "Specify the PIN file"        /* long description */
     },
     {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,           /* type */
+      "opticalTan",                 /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      NULL,                         /* short option */
+      "opticaltan",                 /* long option */
+      "Tool for optical TAN challenges", /* short description */
+      "Specify an external tool to display optical TAN challenges" /* long description */
+    },
+    {
       GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
       GWEN_ArgsType_Int,            /* type */
       "help",                       /* name */
@@ -226,6 +237,13 @@ int main(int argc, char **argv)
   AB_Banking_RuntimeConfig_SetCharValue(ab, "fintsApplicationVersionString", AQBANKING_FINTS_VERSION_STRING);
 
   AB_Gui_Extend(gui, ab);
+
+  s = GWEN_DB_GetCharValue(db, "opticalTan", 0, NULL);
+  if ((NULL != s) && ('\0' != s [0]) && (0 != AB_Gui_SetCliCallbackForOpticalTan(gui, s))) {
+    fprintf(stderr, "Error registering \"%s\".\n", s);
+    GWEN_DB_Group_free(db);
+    return 2;
+  }
 
   rv=doControl(ab, db, argc, argv);
 
