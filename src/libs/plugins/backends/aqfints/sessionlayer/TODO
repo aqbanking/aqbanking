@@ -19,3 +19,32 @@ Things to do when creating a session (client):
 - AQFINTS_Session_SetAppVersion()
 
 
+
+Virtual functions:
+- encodeMsg()
+- decodeMsg()
+
+Oberhalb dieser Ebene hier:
+- AQFINTS_UserSession
+  - setzt die notwendigen Infos (siehe oben) aus dem User
+  - bei RxH/DDV:
+    - implementiert
+      - encodeMsg()
+      - decodeMsg()
+
+
+Vorgehen beim Server:
+- Session::receiveMsg()
+- cryptHead?
+  - ja: 
+    - ermittle Verfahren (PinTan, DDV, RDH)
+    - extend mit entsprechender Session (SessionPinTan, SessionDdv etc)    
+    - decodeMsg() (kuemmert sich auch um signatur)
+    - fertig
+- sigHead?
+  - ja
+    - ermittle Verfahren (PinTan, DDV, RDH)
+    - extend mit entsprechender Session (SessionPinTan, SessionDdv etc)    
+    - decodeMsg() (kuemmert sich auch um signatur)
+    - fertig
+
