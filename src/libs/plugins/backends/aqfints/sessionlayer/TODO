@@ -4,3 +4,18 @@ Session->exchangeMsg:
 - if CRYPT: encrypt message
 - send message
 - receive message
+
+
+Things to do when creating a session (client):
+- AQFINTS_Session_new()
+- AQFINTS_Session_SetHbciVersion()
+- AQFINTS_Session_SetSecProfileCode()
+- AQFINTS_Session_SetSecProfileVersion()
+- AQFINTS_Session_SetTanMethod()
+- AQFINTS_Session_SetBpd()
+- AQFINTS_Session_SetUserData()
+- AQFINTS_Session_SetLogFile()
+- AQFINTS_Session_SetAppRegKey()
+- AQFINTS_Session_SetAppVersion()
+
+

@@ -24,10 +24,15 @@ struct AQFINTS_SESSION {
   int lastMessageNumSent;
   int lastMessageNumReceived;
 
+  char *logFile;
+
   int hbciVersion;
   char *secProfileCode;
   int secProfileVersion;
   AQFINTS_TANMETHOD *tanMethod;
+
+  char *appRegKey;
+  char *appVersion;
 
   char *dialogId;
 

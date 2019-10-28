@@ -71,8 +71,10 @@ void AQFINTS_Session_free(AQFINTS_SESSION *sess)
       GWEN_INHERIT_FINI(AQFINTS_SESSION, sess)
       sess->_refCount=0;
 
-      if (sess->dialogId)
-        free(sess->dialogId);
+      free(sess->logFile);
+      free(sess->appRegKey);
+      free(sess->appVersion);
+      free(sess->dialogId);
 
       if (sess->userData)
         AQFINTS_UserData_free(sess->userData);
@@ -314,6 +316,71 @@ void AQFINTS_Session_PresetAllowedTanMethods(AQFINTS_SESSION *sess, int v)
   for (i=0; i<AQFINTS_SESSION_MAX_ALLOWED_TANMETHODS; i++)
     sess->allowedTanMethods[i]=v;
 }
+
+
+
+const char *AQFINTS_Session_GetLogFile(const AQFINTS_SESSION *sess)
+{
+  assert(sess);
+  return sess->logFile;
+}
+
+
+
+void AQFINTS_Session_SetLogFile(AQFINTS_SESSION *sess, const char *s)
+{
+  assert(sess);
+  if (sess->logFile)
+    free(sess->logFile);
+  if (s)
+    sess->logFile=strdup(s);
+  else
+    sess->logFile=NULL;
+}
+
+
+
+const char *AQFINTS_Session_GetAppRegKey(const AQFINTS_SESSION *sess)
+{
+  assert(sess);
+  return sess->appRegKey;
+}
+
+
+
+void AQFINTS_Session_SetAppRegKey(AQFINTS_SESSION *sess, const char *s)
+{
+  assert(sess);
+  if (sess->appRegKey)
+    free(sess->appRegKey);
+  if (s)
+    sess->appRegKey=strdup(s);
+  else
+    sess->appRegKey=NULL;
+}
+
+
+
+const char *AQFINTS_Session_GetAppVersion(const AQFINTS_SESSION *sess)
+{
+  assert(sess);
+  return sess->appVersion;
+}
+
+
+
+void AQFINTS_Session_SetAppVersion(AQFINTS_SESSION *sess, const char *s)
+{
+  assert(sess);
+  if (sess->appVersion)
+    free(sess->appVersion);
+  if (s)
+    sess->appVersion=strdup(s);
+  else
+    sess->appVersion=NULL;
+}
+
+
 
 
 
@@ -686,7 +753,6 @@ AQFINTS_USERDATA_LIST *AQFINTS_Session_ExtractUpdFromSegmentList(AQFINTS_SESSION
 
   return userDataList;
 }
-
 
 
 

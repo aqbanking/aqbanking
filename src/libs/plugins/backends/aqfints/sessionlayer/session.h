@@ -243,8 +243,25 @@ AQFINTS_USERDATA_LIST *AQFINTS_Session_ExtractUpdFromSegmentList(AQFINTS_SESSION
 void AQFINTS_Session_SampleAllowedTanMethods(int *ptrIntArray, int sizeIntArray,
                                              AQFINTS_SEGMENT_LIST *segmentList);
 
+void AQFINTS_Session_LogMessage(AQFINTS_SESSION *sess,
+                                const uint8_t *ptrLogData,
+                                uint32_t lenLogData,
+                                int rec,
+                                int crypt);
+
 
 int AQFINTS_Session_GetAnonBpd(AQFINTS_SESSION *sess, const char *bankCode, AQFINTS_BPD **pBpd);
+
+
+const char *AQFINTS_Session_GetLogFile(const AQFINTS_SESSION *sess);
+void AQFINTS_Session_SetLogFile(AQFINTS_SESSION *sess, const char *s);
+
+const char *AQFINTS_Session_GetAppRegKey(const AQFINTS_SESSION *sess);
+void AQFINTS_Session_SetAppRegKey(AQFINTS_SESSION *sess, const char *s);
+
+const char *AQFINTS_Session_GetAppVersion(const AQFINTS_SESSION *sess);
+void AQFINTS_Session_SetAppVersion(AQFINTS_SESSION *sess, const char *s);
+
 
 /*@}*/
 
