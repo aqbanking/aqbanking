@@ -45,6 +45,7 @@ AQFINTS_MESSAGE *AQFINTS_Message_new(void)
 void AQFINTS_Message_free(AQFINTS_MESSAGE *msg)
 {
   if (msg) {
+    free(msg->tanJobCode);
     AQFINTS_Segment_List_free(msg->segmentList);
     AQFINTS_KeyName_List_free(msg->signerList);
     AQFINTS_KeyName_free(msg->crypter);
@@ -82,6 +83,27 @@ void AQFINTS_Message_SetRefMessageNumber(AQFINTS_MESSAGE *msg, int v)
 {
   assert(msg);
   msg->refMessageNumber=v;
+}
+
+
+
+const char *AQFINTS_Message_GetTanJobCode(const AQFINTS_MESSAGE *msg)
+{
+  assert(msg);
+  return msg->tanJobCode;
+}
+
+
+
+void AQFINTS_Message_SetTanJobCode(AQFINTS_MESSAGE *msg, const char *s)
+{
+  assert(msg);
+  if (msg->tanJobCode)
+    free(msg->tanJobCode);
+  if (s)
+    msg->tanJobCode=strdup(s);
+  else
+    msg->tanJobCode=NULL;
 }
 
 

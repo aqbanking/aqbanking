@@ -74,5 +74,12 @@ int AQFINTS_Message_GetLastSegNum(const AQFINTS_MESSAGE *msg);
 void AQFINTS_Message_WriteSegments(const AQFINTS_MESSAGE *msg, GWEN_BUFFER *msgBuffer);
 
 
+/**
+ * Code of the TAN-relevant segment (i.e. code of the segment for which a tan is needed).
+ */
+const char *AQFINTS_Message_GetTanJobCode(const AQFINTS_MESSAGE *msg);
+void AQFINTS_Message_SetTanJobCode(AQFINTS_MESSAGE *msg, const char *s);
+
+
 #endif
 

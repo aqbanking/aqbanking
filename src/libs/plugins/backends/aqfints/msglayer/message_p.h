@@ -24,6 +24,8 @@ struct AQFINTS_MESSAGE {
   AQFINTS_KEYNAME *crypter;
 
   AQFINTS_SEGMENT_LIST *segmentList;
+
+  char *tanJobCode;
 };
 
 
