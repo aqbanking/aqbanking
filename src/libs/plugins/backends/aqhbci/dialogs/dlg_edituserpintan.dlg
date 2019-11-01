@@ -68,11 +68,6 @@
 
         </widget>
 
-        <widget type="hlayout" name="hlayout2" flags="fillX" >
-          <widget type="checkBox" name="ignorePrematureCloseCheck" text="TLS: Ignore Premature Close" />
-          <widget type="hspacer" name="hspacer2" flags="fillX" />
-        </widget>
-
         <widget type="hlayout" name="hlayout3" flags="fillX" >
           <widget type="checkBox" name="noBase64Check" text="Disable Base64 Encoding" />
           <widget type="hspacer" name="hspacer3" flags="fillX" />
