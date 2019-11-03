@@ -228,23 +228,11 @@ int main(int argc, char **argv)
     cmdAddHelpStr(ubuf, "export",
                   I18N("Export an import context file into a file (previously \"listtrans\")"));
 
-    cmdAddHelpStr(ubuf, "transfer",
-                  I18N("Issue a single transfer (data from command line)"));
-
-    cmdAddHelpStr(ubuf, "transfers",
-                  I18N("Issue a number of transfers (data from a file)"));
-
     cmdAddHelpStr(ubuf, "sepatransfer",
                   I18N("Issue a single SEPA transfer (data from command line)"));
 
     cmdAddHelpStr(ubuf, "sepatransfers",
                   I18N("Issue a number of SEPA transfers (data from a file)"));
-
-    cmdAddHelpStr(ubuf, "debitnote",
-                  I18N("Issue a single debit note (data from command line)"));
-
-    cmdAddHelpStr(ubuf, "debitnotes",
-                  I18N("Issue a number of debit notes (data from a file)"));
 
     cmdAddHelpStr(ubuf, "sepadebitnote",
                   I18N("Issue a single SEPA debit note (data from command line)"));
@@ -255,11 +243,14 @@ int main(int argc, char **argv)
     cmdAddHelpStr(ubuf, "sepadebitnotes",
                   I18N("Issue a number of SEPA debit notes (data from a file)"));
 
-    cmdAddHelpStr(ubuf, "addtransfer",
+    cmdAddHelpStr(ubuf, "addtrans",
                   I18N("Add a transfer to an existing import context file"));
 
     cmdAddHelpStr(ubuf, "addsepadebitnote",
                   I18N("Add a SEPA debit note to an existing import context file"));
+
+    cmdAddHelpStr(ubuf, "addflashsepadebitnote",
+                  I18N("Add a flash SEPA debit note to an existing import context file"));
 
     cmdAddHelpStr(ubuf, "sepasto",
                   I18N("Manage SEPA standing orders"));

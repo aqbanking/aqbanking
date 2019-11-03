@@ -80,6 +80,9 @@ static void showUsage(const char *prgName)
                            I18N("  changekeys:\n"
                                 "    Change user keys (and media).\n\n"));
   GWEN_Buffer_AppendString(ubuf,
+                           I18N("  getbankinfo:\n"
+                                "    Request bank information\n\n"));
+  GWEN_Buffer_AppendString(ubuf,
                            I18N("  getaccounts:\n"
                                 "    Requests account list for a "
                                 "user\n\n"));
@@ -99,6 +102,9 @@ static void showUsage(const char *prgName)
                            I18N("  listitanmodes:\n"
                                 "    Show a list of supported iTAN modes for the given "
                                 "user\n\n"));
+  GWEN_Buffer_AppendString(ubuf,
+                           I18N("  setitanmode:\n"
+                                "    Select an iTAN mode for the given user\n\n"));
   GWEN_Buffer_AppendString(ubuf,
                            I18N("  listusers:\n"
                                 "    List the users\n\n"));
@@ -134,6 +140,24 @@ static void showUsage(const char *prgName)
   GWEN_Buffer_AppendString(ubuf,
                            I18N("  setTanMediumId:\n"
                                 "    Set the medium id for some PIN/TAN methods (like mTAN) \n\n"));
+  GWEN_Buffer_AppendString(ubuf,
+                           I18N("  adduserflags:\n"
+                                "    Set special flags for the given user\n\n"));
+  GWEN_Buffer_AppendString(ubuf,
+                           I18N("  subuserflags:\n"
+                                "    Unset special flags for the given user\n\n"));
+  GWEN_Buffer_AppendString(ubuf,
+                           I18N("  addaccountflags:\n"
+                                "    Set special flags for the given account\n\n"));
+  GWEN_Buffer_AppendString(ubuf,
+                           I18N("  subaccountflags:\n"
+                                "    Reset special flags for the given account\n\n"));
+  GWEN_Buffer_AppendString(ubuf,
+                           I18N("  logfile:\n"
+                                "    Make an AqBanking log file anonymous\n\n"));
+  GWEN_Buffer_AppendString(ubuf,
+                           I18N("  versions:\n"
+                                "    Print the program and library versions"));
 
   fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(ubuf));
   GWEN_Buffer_free(ubuf);
