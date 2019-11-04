@@ -54,7 +54,7 @@ $(de_files): de_files_tmp
 
 de_files_tmp: de.tar.bz2
 	test -d de || mkdir -p de
-	bunzip2 -k -c $< | tar xmf -
+	bunzip2 -k -c $< | tar xmof -
 	touch $@
 
 .INTERMEDIATE: de_files_tmp
