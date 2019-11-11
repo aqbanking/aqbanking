@@ -21,6 +21,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/dbio.h>
+#include <gwenhywfar/cryptkey.h>
 
 #include <ctype.h>
 
@@ -390,6 +391,36 @@ const char *AH_MsgEngine_GetCharValue(GWEN_MSGENGINE *e,
       return p;
     return "0";
   }
+  else if (strcasecmp(name, "cryptkeyuserid")==0)
+  {
+      GWEN_CRYPT_KEY *key = AH_User_GetBankPubCryptKey(x->user);
+      if ( key != NULL )
+      {
+          return AH_User_GetPeerId(x->user);
+      }
+      else
+      {
+          return "9999999999";
+      }
+
+  }
+  else if (strcasecmp(name, "signkeyuserid")==0)
+  {
+      GWEN_CRYPT_KEY *key = AH_User_GetBankPubSignKey(x->user);
+      if ( key != NULL )
+      {
+          return AH_User_GetPeerId(x->user);
+      }
+      else
+      {
+          return "9999999999";
+      }
+
+  }
+  else if (strcasecmp(name, "authkeyuserid")==0)
+  {
+      return "9999999999";
+  }
   else {
     DBG_VERBOUS(AQHBCI_LOGDOMAIN,
                 "Unknown char variable \"%s\", returning default value",
@@ -427,6 +458,70 @@ int AH_MsgEngine_GetIntValue(GWEN_MSGENGINE *e,
     return AH_User_GetUpdVersion(x->user);
   else if (strcasecmp(name, "bpdversion")==0)
     return AH_User_GetBpdVersion(x->user);
+  else if (strcasecmp(name, "cryptkeynum")==0)
+  {
+      GWEN_CRYPT_KEY *key = AH_User_GetBankPubCryptKey(x->user);
+      if ( key != NULL )
+      {
+          return GWEN_Crypt_Key_GetKeyNumber(key);
+      }
+      else
+      {
+          return 999;
+      }
+
+  }
+  else if (strcasecmp(name, "cryptkeyver")==0)
+  {
+      GWEN_CRYPT_KEY *key = AH_User_GetBankPubCryptKey(x->user);
+      if ( key != NULL )
+      {
+          return GWEN_Crypt_Key_GetKeyVersion(key);
+      }
+      else
+      {
+          return 999;
+      }
+
+  }
+  else if (strcasecmp(name, "signkeynum")==0)
+  {
+      GWEN_CRYPT_KEY *key = AH_User_GetBankPubSignKey(x->user);
+      if ( key != NULL )
+      {
+          return GWEN_Crypt_Key_GetKeyNumber(key);
+      }
+      else
+      {
+          return 999;
+      }
+
+  }
+  else if (strcasecmp(name, "signkeyver")==0)
+  {
+      GWEN_CRYPT_KEY *key = AH_User_GetBankPubSignKey(x->user);
+      if ( key != NULL )
+      {
+          return GWEN_Crypt_Key_GetKeyVersion(key);
+      }
+      else
+      {
+          return 999;
+      }
+
+  }
+  else if (strcasecmp(name, "authkeynum")==0)
+  {
+      return 999;
+  }
+  else if (strcasecmp(name, "authkeyver")==0)
+  {
+      return 999;
+  }
+  else if (strcasecmp(name, "rxhversion")==0)
+  {
+      return AH_User_GetRdhType(x->user);
+  }
   else {
     DBG_VERBOUS(AQHBCI_LOGDOMAIN, "Unknown int variable \"%s\", returning default value",
                 name);

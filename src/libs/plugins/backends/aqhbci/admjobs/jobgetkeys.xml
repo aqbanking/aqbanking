@@ -170,7 +170,7 @@
     <GROUP type="SegHead" name="head" />
     <ELEM name="context" type="num" maxsize="1" />
     <ELEM name="id" type="num" maxsize="3" />
-    <GROUP type="SecProfile" name="secProfile" />
+    <GROUP type="SecProfileGetKey" name="secProfile" />
     <GROUP type="keyname" name="key" trustlevel="3" />
     <GROUP type="cert" name="cert" minnum="0" />
     
@@ -193,7 +193,7 @@
     <GROUP type="SegHead" name="head" />
     <ELEM name="context" type="num" maxsize="1" />
     <ELEM name="id" type="num" maxsize="3" />
-    <GROUP type="SecProfile" name="secProfile" />
+    <GROUP type="SecProfileGetKey" name="secProfile" />
     <GROUP type="keyname" name="key" trustlevel="3" />
     <GROUP type="cert" name="cert" minnum="0" />
     

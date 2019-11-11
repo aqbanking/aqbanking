@@ -235,6 +235,11 @@
     <ELEM name="version" type="num" maxsize="3" maxnum="9" />
   </GROUPdef>
 
+  <GROUPdef id="SecProfileGetKey" delimiter=":" version="1">
+    <!-- Sicherheitsprofil, ab FinTS3, nur fuer HKISA -->
+    <ELEM name="code" type="an" maxsize="16" />
+    <ELEM name="version" type="num" maxsize="3" maxnum="1" />
+  </GROUPdef>
 
   <GROUPdef id="key" delimiter=":" version="1">
     <!-- oeffentlicher Schluessel -->
