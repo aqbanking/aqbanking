@@ -4,7 +4,7 @@ compiler:
 #  - clang
 before_install:
   - sudo apt-get -y install libgnutls-dev libgtk-3-dev libgtk2.0-dev libgcrypt20-dev libgpg-error-dev
-  - ./admin/install-gwen.sh 210 4.99.24rc8
+  - ./admin/install-gwen.sh 223 4.99.25rc9
   - sudo apt-get -y install libgmp-dev libxmlsec1-dev
 addons:
   apt:
