@@ -26,8 +26,32 @@ int AH_Outbox__CBox_OpenDialog_Hbci(AH_OUTBOX__CBOX *cbox,
 
   if ((jqFlags & AH_JOBQUEUE_FLAGS_CRYPT) || (jqFlags & AH_JOBQUEUE_FLAGS_SIGN)) {
     /* sign and crypt, not anonymous */
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating non-anonymous dialog open request");
-    jDlgOpen=AH_Job_new("JobDialogInit", cbox->provider, cbox->user, 0, 0);
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating non-anonymous dialog open request");
+
+      /* for RAH or RDH choose right DialogInit containing the correct number of HKISAs */
+      if ( AH_User_GetCryptMode(cbox->user) == AH_CryptMode_Rah ||
+              AH_User_GetCryptMode(cbox->user) == AH_CryptMode_Rdh )
+      {
+          GWEN_CRYPT_KEY * signKey = AH_User_GetBankPubSignKey(cbox->user);
+          GWEN_CRYPT_KEY * cryptKey = AH_User_GetBankPubSignKey(cbox->user);
+          if ( signKey != NULL && cryptKey != NULL)
+          {
+              jDlgOpen=AH_Job_new("JobDialogInitRxHVS", cbox->provider, cbox->user, 0, 0);
+          }
+          else if ( cryptKey != NULL)
+          {
+              jDlgOpen=AH_Job_new("JobDialogInitRxHV", cbox->provider, cbox->user, 0, 0);
+          }
+          else
+          {
+              DBG_NOTICE(AQHBCI_LOGDOMAIN, "RxH should at least have a crypt key!");
+              jDlgOpen=AH_Job_new("JobDialogInit", cbox->provider, cbox->user, 0, 0);
+          }
+      }
+      else
+      {
+          jDlgOpen=AH_Job_new("JobDialogInit", cbox->provider, cbox->user, 0, 0);
+      }
     if (!jDlgOpen) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create job JobDialogInit");
       return GWEN_ERROR_GENERIC;

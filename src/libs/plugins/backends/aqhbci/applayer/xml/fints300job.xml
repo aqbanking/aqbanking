@@ -1,165 +1,166 @@
 <JOBs>
- <!-- 
-  --------------------------------------------------------------------
-                     Administrative Jobs
-  --------------------------------------------------------------------
- -->
+	<!-- -------------------------------------------------------------------- 
+		Administrative Jobs -------------------------------------------------------------------- -->
 
 
- <JOBdef id="JobDialogInit" 
-         version="3" 
-         pversion="300"
-         internal="1"
-         mode="PINTAN"
- >
-   <SEG type="Ident" name="ident" />
-   <SEG type="Prepare" name="prepare" version="3" />
- </JOBdef>
- 
-  <JOBdef id="JobDialogInit" 
-         version="3" 
-         pversion="300"
-         internal="1"
-         mode="DDV"
- >
-   <SEG type="Ident" name="ident" />
-   <SEG type="Prepare" name="prepare" version="3" />
- </JOBdef>
- 
-  <JOBdef id="JobDialogInit" version="3" pversion="300"
-	internal="1" mode="RDH">
-	<SEG type="Ident" name="ident" />
-	<SEG type="Prepare" name="prepare" version="3" />
-	<SEG type="getKey" name="cryptkey" />
-	<SEG type="getKey" name="signKey" />
-	<SEG type="getKey" name="authKey" />
-	<VALUES>
-		<VALUE path="cryptkey/key/keytype">V</VALUE>
-		<VALUE path="cryptkey/key/keynum">?cryptkeynum</VALUE>
-		<VALUE path="cryptkey/key/keyversion">?cryptkeyver</VALUE>
-		<VALUE path="cryptkey/key/userid">?cryptkeyuserid</VALUE>
-		<VALUE path="cryptKey/secprofile/code">RDH</VALUE>
-		<VALUE path="cryptKey/secprofile/version">?rxhversion</VALUE>
-		<VALUE path="signkey/key/keytype">S</VALUE>
-		<VALUE path="signkey/key/keynum">?signkeynum</VALUE>
-		<VALUE path="signkey/key/keyversion">?signkeyver</VALUE>
-		<VALUE path="signkey/key/userid">?signkeyuserid</VALUE>
-		<VALUE path="signKey/secprofile/code">RDH</VALUE>
-		<VALUE path="signKey/secprofile/version">?rxhversion</VALUE>
-		<VALUE path="authkey/key/keytype">D</VALUE>
-		<VALUE path="authkey/key/keynum">?authkeynum</VALUE>
-		<VALUE path="authkey/key/keyversion">?authkeyver</VALUE>
-		<VALUE path="authkey/key/userid">?authkeyuserid</VALUE>
-		<VALUE path="authKey/secprofile/code">RDH</VALUE>
-		<VALUE path="authKey/secprofile/version">?rxhversion</VALUE>
-	</VALUES>
-</JOBdef>
- 
-  <JOBdef id="JobDialogInit" 
-         version="3" 
-         pversion="300"
-         internal="1"
-         mode="RAH"
- >
-   <SEG type="Ident" name="ident" />
-   <SEG type="Prepare" name="prepare" version="3" />
- </JOBdef>
+	<JOBdef id="JobDialogInit" version="3" pversion="300"
+		internal="1" mode="PINTAN">
+		<SEG type="Ident" name="ident" />
+		<SEG type="Prepare" name="prepare" version="3" />
+	</JOBdef>
+
+	<JOBdef id="JobDialogInit" version="3" pversion="300"
+		internal="1" mode="DDV">
+		<SEG type="Ident" name="ident" />
+		<SEG type="Prepare" name="prepare" version="3" />
+	</JOBdef>
+
+	<JOBdef id="JobDialogInit" version="3" pversion="300"
+		internal="1" mode="RDH">
+		<SEG type="Ident" name="ident" />
+		<SEG type="Prepare" name="prepare" version="3" />
+	</JOBdef>
+
+	<JOBdef id="JobDialogInitRxHVS" version="3" pversion="300"
+		internal="1" mode="RDH">
+		<SEG type="Ident" name="ident" />
+		<SEG type="Prepare" name="prepare" version="3" />
+		<SEG type="getKey" name="cryptkey" />
+		<SEG type="getKey" name="signKey" />
+		<VALUES>
+			<VALUE path="cryptkey/key/keytype">V</VALUE>
+			<VALUE path="cryptkey/key/keynum">?cryptkeynum</VALUE>
+			<VALUE path="cryptkey/key/keyversion">?cryptkeyver</VALUE>
+			<VALUE path="cryptkey/key/userid">?cryptkeyuserid</VALUE>
+			<VALUE path="cryptKey/secprofile/code">RDH</VALUE>
+			<VALUE path="cryptKey/secprofile/version">?rxhversion</VALUE>
+			<VALUE path="signkey/key/keytype">S</VALUE>
+			<VALUE path="signkey/key/keynum">?signkeynum</VALUE>
+			<VALUE path="signkey/key/keyversion">?signkeyver</VALUE>
+			<VALUE path="signkey/key/userid">?signkeyuserid</VALUE>
+			<VALUE path="signKey/secprofile/code">RDH</VALUE>
+			<VALUE path="signKey/secprofile/version">?rxhversion</VALUE>
+		</VALUES>
+	</JOBdef>
+
+	<JOBdef id="JobDialogInitRxHV" version="3" pversion="300"
+		internal="1" mode="RDH">
+		<SEG type="Ident" name="ident" />
+		<SEG type="Prepare" name="prepare" version="3" />
+		<SEG type="getKey" name="cryptkey" />
+		<VALUES>
+			<VALUE path="cryptkey/key/keytype">V</VALUE>
+			<VALUE path="cryptkey/key/keynum">?cryptkeynum</VALUE>
+			<VALUE path="cryptkey/key/keyversion">?cryptkeyver</VALUE>
+			<VALUE path="cryptkey/key/userid">?cryptkeyuserid</VALUE>
+			<VALUE path="cryptKey/secprofile/code">RDH</VALUE>
+			<VALUE path="cryptKey/secprofile/version">?rxhversion</VALUE>
+		</VALUES>
+	</JOBdef>
+	
+
+	<JOBdef id="JobDialogInit" version="3" pversion="300"
+		internal="1" mode="RAH">
+		<SEG type="Ident" name="ident" />
+		<SEG type="Prepare" name="prepare" version="3" />
+	</JOBdef>
+
+        <JOBdef id="JobDialogInitRxHVS" version="3" pversion="300"
+                internal="1" mode="RAH">
+                <SEG type="Ident" name="ident" />
+                <SEG type="Prepare" name="prepare" version="3" />
+                <SEG type="getKey" name="cryptkey" />
+                <SEG type="getKey" name="signKey" />
+                <VALUES>
+                        <VALUE path="cryptkey/key/keytype">V</VALUE>
+                        <VALUE path="cryptkey/key/keynum">?cryptkeynum</VALUE>
+                        <VALUE path="cryptkey/key/keyversion">?cryptkeyver</VALUE>
+                        <VALUE path="cryptkey/key/userid">?cryptkeyuserid</VALUE>
+                        <VALUE path="cryptKey/secprofile/code">RDH</VALUE>
+                        <VALUE path="cryptKey/secprofile/version">?rxhversion</VALUE>
+                        <VALUE path="signkey/key/keytype">S</VALUE>
+                        <VALUE path="signkey/key/keynum">?signkeynum</VALUE>
+                        <VALUE path="signkey/key/keyversion">?signkeyver</VALUE>
+                        <VALUE path="signkey/key/userid">?signkeyuserid</VALUE>
+                        <VALUE path="signKey/secprofile/code">RDH</VALUE>
+                        <VALUE path="signKey/secprofile/version">?rxhversion</VALUE>
+                </VALUES>
+        </JOBdef>
+
+        <JOBdef id="JobDialogInitRxHV" version="3" pversion="300"
+                internal="1" mode="RAH">
+                <SEG type="Ident" name="ident" />
+                <SEG type="Prepare" name="prepare" version="3" />
+                <SEG type="getKey" name="cryptkey" />
+                <VALUES>
+                        <VALUE path="cryptkey/key/keytype">V</VALUE>
+                        <VALUE path="cryptkey/key/keynum">?cryptkeynum</VALUE>
+                        <VALUE path="cryptkey/key/keyversion">?cryptkeyver</VALUE>
+                        <VALUE path="cryptkey/key/userid">?cryptkeyuserid</VALUE>
+                        <VALUE path="cryptKey/secprofile/code">RDH</VALUE>
+                        <VALUE path="cryptKey/secprofile/version">?rxhversion</VALUE>
+                </VALUES>
+        </JOBdef>
 
 
-
- <JOBdef id="JobDialogEnd" 
-         version="3" 
-         pversion="300"
-         internal="1"
- >
-   <SEG type="DialogEnd" />
- </JOBdef>
-
-
-
- <JOBdef id="JobDialogInitAnon" 
-         version="3"
-         pversion="300"
-         crypt="0" 
-         sign="0" 
-         internal="1"
-         nosysid="1"
-         noitan="1"
- >
-   <SEG type="Ident" name="ident" />
-   <SEG type="Prepare" name="prepare" version="3" />
-
-   <VALUES>
-     <VALUE path="ident/customerId">9999999999</VALUE>
-     <VALUE path="ident/systemId">0</VALUE>
-     <VALUE path="ident/status">0</VALUE>
-     <VALUE path="prepare/bpdversion">0</VALUE>
-     <VALUE path="prepare/updversion">0</VALUE>
-   </VALUES>
- </JOBdef>
-
-
-
-
- <JOBdef id="JobGetAccounts" 
-         version="1" 
-         pversion="300"
-         dlg="1"
-         crypt="1" 
-         sign="1"
- >
-   <SEG type="Ident" name="ident" />
-   <SEG type="Prepare" name="prepare" version="3" />
- </JOBdef>
+	<JOBdef id="JobDialogEnd" version="3" pversion="300"
+		internal="1">
+		<SEG type="DialogEnd" />
+	</JOBdef>
 
 
 
- <JOBdef id="JobUpdateBankInfo" 
-         code="HKIDN"
-         version="3"
-         pversion="300"
-         dlg="1"
-         crypt="1" 
-         sign="1"
- >
-   <SEG type="Ident" name="ident" />
-   <SEG type="Prepare" name="prepare" version="3" />
+	<JOBdef id="JobDialogInitAnon" version="3" pversion="300"
+		crypt="0" sign="0" internal="1" nosysid="1" noitan="1">
+		<SEG type="Ident" name="ident" />
+		<SEG type="Prepare" name="prepare" version="3" />
 
-   <VALUES>
-     <VALUE path="prepare/bpdversion">0</VALUE>
-     <VALUE path="prepare/updversion">0</VALUE>
-   </VALUES>
- </JOBdef>
-
-
- <!--  Geschaeftsvorfall: Pin aendern (Version 1) -->
- <JOBdef id="JobChangePin" 
-         code="HKPAE"
-         params="HIPAES"
-         version="1"
-         mode="PINTAN" 
-         crypt="1" 
-         sign="1" 
-         needBPD="1" 
-         single="1"
-         pversion="300"
- >
-   <SEG type="ChangePin" version="1" />
- </JOBdef>
+		<VALUES>
+			<VALUE path="ident/customerId">9999999999</VALUE>
+			<VALUE path="ident/systemId">0</VALUE>
+			<VALUE path="ident/status">0</VALUE>
+			<VALUE path="prepare/bpdversion">0</VALUE>
+			<VALUE path="prepare/updversion">0</VALUE>
+		</VALUES>
+	</JOBdef>
 
 
 
- <JOBdef id="JobGetItanModes" 
-         version="1" 
-         pversion="300"
-         dlg="1"
-         crypt="1" 
-         sign="1"
-         noitan="1"
- >
-   <SEG type="Ident" name="ident" />
-   <SEG type="Prepare" name="prepare" version="3" />
- </JOBdef>
+
+	<JOBdef id="JobGetAccounts" version="1" pversion="300" dlg="1"
+		crypt="1" sign="1">
+		<SEG type="Ident" name="ident" />
+		<SEG type="Prepare" name="prepare" version="3" />
+	</JOBdef>
+
+
+
+	<JOBdef id="JobUpdateBankInfo" code="HKIDN" version="3"
+		pversion="300" dlg="1" crypt="1" sign="1">
+		<SEG type="Ident" name="ident" />
+		<SEG type="Prepare" name="prepare" version="3" />
+
+		<VALUES>
+			<VALUE path="prepare/bpdversion">0</VALUE>
+			<VALUE path="prepare/updversion">0</VALUE>
+		</VALUES>
+	</JOBdef>
+
+
+	<!-- Geschaeftsvorfall: Pin aendern (Version 1) -->
+	<JOBdef id="JobChangePin" code="HKPAE" params="HIPAES"
+		version="1" mode="PINTAN" crypt="1" sign="1" needBPD="1" single="1"
+		pversion="300">
+		<SEG type="ChangePin" version="1" />
+	</JOBdef>
+
+
+
+	<JOBdef id="JobGetItanModes" version="1" pversion="300" dlg="1"
+		crypt="1" sign="1" noitan="1">
+		<SEG type="Ident" name="ident" />
+		<SEG type="Prepare" name="prepare" version="3" />
+	</JOBdef>
 
 
 </JOBs>
