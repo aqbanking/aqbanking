@@ -222,7 +222,7 @@ int _checkAgainstStoredCert(const GWEN_SSLCERTDESCR *cert, GWEN_SSLCERTDESCR *st
 
   /* get status of stored certificate */
   iStoredStatus=GWEN_SslCertDescr_GetStatusFlags(storedCert);
-  
+
   /* compare status texts */
   if (iStatus==iStoredStatus) {
     /* found matching cert, return user's previous answer */

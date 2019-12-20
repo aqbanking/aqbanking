@@ -139,7 +139,7 @@ AQFINTS_KEYNAME *AQFINTS_Message_FindSigner(AQFINTS_MESSAGE *msg, uint32_t uniqu
     AQFINTS_KEYNAME *keyName;
 
     keyName=AQFINTS_KeyName_List_First(msg->signerList);
-    while(keyName) {
+    while (keyName) {
       if (AQFINTS_KeyName_GetUniqueUserId(keyName)==uniqueUserId)
         return keyName;
 
@@ -196,7 +196,7 @@ void AQFINTS_Message_Reenumerate(AQFINTS_MESSAGE *msg)
 
   segNum=AQFINTS_KeyName_List_GetCount(msg->signerList)+1;
   segment=AQFINTS_Segment_List_First(msg->segmentList);
-  while(segment) {
+  while (segment) {
     AQFINTS_Segment_SetSegmentNumber(segment, segNum++);
     segment=AQFINTS_Segment_List_Next(segment);
   }
@@ -238,7 +238,7 @@ void AQFINTS_Message_WriteSegments(const AQFINTS_MESSAGE *msg, GWEN_BUFFER *msgB
 
   assert(msg);
 
-  while(segment) {
+  while (segment) {
     AQFINTS_Parser_Hbci_WriteSegment(segment, msgBuffer);
     segment=AQFINTS_Segment_List_Next(segment);
   }

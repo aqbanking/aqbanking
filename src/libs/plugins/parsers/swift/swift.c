@@ -510,11 +510,11 @@ int AHB_SWIFT_ReadTextBlock(GWEN_FAST_BUFFER *fb,
       /* check whether the line starts with a ":" or "-" */
       /* CAVEAT: Some banks use "-" at end of line in ":86:" tags, we must not take that for the end of document */
       if (
-	  (GWEN_Buffer_GetUsedBytes(lbuf)<4 || strncasecmp(GWEN_Buffer_GetStart(lbuf), ":86:", 4) !=0) &&
-	  buffer[0]=='-' && buffer[1]==0
-	 ) {
-	/* it does, so the buffer contains the next line, go handle the
-	 * previous line */
+        (GWEN_Buffer_GetUsedBytes(lbuf)<4 || strncasecmp(GWEN_Buffer_GetStart(lbuf), ":86:", 4) !=0) &&
+        buffer[0]=='-' && buffer[1]==0
+      ) {
+        /* it does, so the buffer contains the next line, go handle the
+         * previous line */
         DBG_DEBUG(AQBANKING_LOGDOMAIN, "End of doc reached");
         break;
       }

@@ -311,9 +311,9 @@ int AH_Job_GetBalance__ReadSecurities(AH_JOB *j,
     if (p) {
       gt=GWEN_Time_fromString(p, "YYYYMMDD");
       if (gt)
-	AB_Security_SetUnitPriceDate(asec, gt);
+        AB_Security_SetUnitPriceDate(asec, gt);
     }
- 
+
     AB_ImExporterContext_AddSecurity(ctx, asec);
 
     GWEN_Time_free(gt);

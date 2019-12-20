@@ -191,7 +191,7 @@ AQFINTS_PARSER *AF_Provider_CreateParser(AB_PROVIDER *pro)
     parser=AQFINTS_Parser_new();
 
     se=GWEN_StringList_FirstEntry(paths);
-    while(se) {
+    while (se) {
       const char *s;
 
       s=GWEN_StringListEntry_Data(se);

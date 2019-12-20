@@ -69,7 +69,7 @@ int AQFINTS_SessionPinTan_WrapSignatures(AQFINTS_SESSION *sess,
                                          int firstSegNum,
                                          int lastSegNum,
                                          GWEN_BUFFER *msgBuffer)
-  {
+{
   AQFINTS_KEYNAME *keyName;
   GWEN_BUFFER *sigHeadBuffer;
   GWEN_BUFFER *sigTailBuffer;

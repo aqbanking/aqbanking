@@ -140,8 +140,8 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg, GWEN_UNUSED GWEN_BUFFER *rawBuf, const char 
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Inserting signature head");
     GWEN_Buffer_Rewind(hmsg->buffer);
     GWEN_Buffer_InsertBytes(hmsg->buffer,
-			    GWEN_Buffer_GetStart(hbuf),
-			    GWEN_Buffer_GetUsedBytes(hbuf));
+                            GWEN_Buffer_GetStart(hbuf),
+                            GWEN_Buffer_GetUsedBytes(hbuf));
     GWEN_Buffer_free(hbuf);
   }
 
@@ -162,7 +162,7 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg, GWEN_UNUSED GWEN_BUFFER *rawBuf, const char 
       return GWEN_ERROR_MEMORY_FULL;
     }
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Appending signature tail: done");
-  
+
     GWEN_Buffer_free(hbuf);
   }
   /* adjust segment numbers (for next signature and message tail */
@@ -634,10 +634,10 @@ GWEN_BUFFER *_pinTanCreateSigTail(AH_MSG *hmsg, AB_USER *su, GWEN_MSGENGINE *e, 
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Asking for TAN");
       rv=AH_User_InputTan(su, tan, 4, sizeof(tan));
       if (rv<0) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Error getting TAN from medium");
-	GWEN_DB_Group_free(cfg);
-	GWEN_Buffer_free(hbuf);
-	return NULL;
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Error getting TAN from medium");
+        GWEN_DB_Group_free(cfg);
+        GWEN_Buffer_free(hbuf);
+        return NULL;
       }
       GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "tan", tan);
       AH_Msg_SetTan(hmsg, tan);

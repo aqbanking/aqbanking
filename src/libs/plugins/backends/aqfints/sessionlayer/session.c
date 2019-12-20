@@ -741,7 +741,8 @@ AQFINTS_BPD *AQFINTS_Session_ExtractBpdFromSegmentList(AQFINTS_SESSION *sess, AQ
 
 
 
-AQFINTS_USERDATA_LIST *AQFINTS_Session_ExtractUpdFromSegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIST *segmentList)
+AQFINTS_USERDATA_LIST *AQFINTS_Session_ExtractUpdFromSegmentList(AQFINTS_SESSION *sess,
+                                                                 AQFINTS_SEGMENT_LIST *segmentList)
 {
   AQFINTS_USERDATA_LIST *userDataList;
 

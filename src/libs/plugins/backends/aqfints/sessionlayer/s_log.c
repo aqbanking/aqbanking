@@ -142,7 +142,7 @@ void AQFINTS_Session_LogMessage(AQFINTS_SESSION *sess,
       unsigned int slen;
 
       if (*p=='\'') {
-	rv=GWEN_SyncIo_WriteForced(sio, p, 1);
+        rv=GWEN_SyncIo_WriteForced(sio, p, 1);
         if (rv<0) {
           DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
           GWEN_SyncIo_Disconnect(sio);
@@ -155,7 +155,7 @@ void AQFINTS_Session_LogMessage(AQFINTS_SESSION *sess,
         bleft--;
       }
       else {
-        segEnd=(const uint8_t*) strchr((const char*) p, '\'');
+        segEnd=(const uint8_t *) strchr((const char *) p, '\'');
         if (segEnd==NULL) {
           /* no segment end found, write rest of the buffer */
           rv=GWEN_SyncIo_WriteForced(sio, p, bleft);
@@ -173,10 +173,10 @@ void AQFINTS_Session_LogMessage(AQFINTS_SESSION *sess,
         slen=segEnd-p+1;
         assert(slen);
 
-        if (strncasecmp((const char*) p, "HNSHA:", 6)==0)
+        if (strncasecmp((const char *) p, "HNSHA:", 6)==0)
           rv=_anonHnsha(p, slen, sio);
-	else if (strncasecmp((const char*) p, "HKPAE:", 6)==0 || strncasecmp((const char*) p, "DKPAE:", 6)==0)
-	  rv=_anonHkpae(p, slen, sio);
+        else if (strncasecmp((const char *) p, "HKPAE:", 6)==0 || strncasecmp((const char *) p, "DKPAE:", 6)==0)
+          rv=_anonHkpae(p, slen, sio);
         /* add more segments with confidential data here */
         else {
           unsigned int l;

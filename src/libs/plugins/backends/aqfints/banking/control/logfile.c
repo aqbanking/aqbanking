@@ -290,7 +290,7 @@ int parseMessages(AB_PROVIDER *pro, GWEN_DB_NODE *dbMessages, int doListSegments
         AQFINTS_Parser_free(parser);
         return rv;
       }
-    
+
       rv=AQFINTS_Parser_ReadSegmentListToDb(parser, segmentList);
       if (rv<0) {
         DBG_INFO(AQFINTS_LOGDOMAIN, "Error reading DB data for segment list (%d)", rv);
@@ -352,7 +352,7 @@ int dumpSegmentListToDb(AQFINTS_SEGMENT_LIST *segmentList, GWEN_DB_NODE *dbHeade
   dbOut=GWEN_DB_Group_new("Messages");
 
   segment=AQFINTS_Segment_List_First(segmentList);
-  while(segment) {
+  while (segment) {
     GWEN_DB_NODE *dbSegment;
 
     dbSegment=AQFINTS_Segment_GetDbData(segment);
@@ -428,7 +428,7 @@ int listSegments(AQFINTS_SEGMENT_LIST *segmentList, GWEN_DB_NODE *dbHeader, GWEN
   GWEN_Buffer_AppendString(bufSegmentList, ") ==========\n");
 
   segment=AQFINTS_Segment_List_First(segmentList);
-  while(segment) {
+  while (segment) {
     const char *segId;
     const char *segCode;
     int segNumber;

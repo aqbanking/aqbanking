@@ -166,7 +166,7 @@ GWEN_BUFFER *_encodeMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *msg)
 
     tmpBuffer=GWEN_Buffer_new(0, 256, 0, 1);
     rv=AQFINTS_SessionPinTan_WrapCrypt(sess, crypterKeyName,
-                                       (const uint8_t*) GWEN_Buffer_GetStart(msgBuffer),
+                                       (const uint8_t *) GWEN_Buffer_GetStart(msgBuffer),
                                        GWEN_Buffer_GetUsedBytes(msgBuffer),
                                        tmpBuffer);
     if (rv<0) {
