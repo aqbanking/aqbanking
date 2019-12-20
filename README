@@ -240,6 +240,7 @@ Compilation hints for specific platforms:
 ----------------------
 
 #>make -fMakefile.cvs
+#>./configure
 #>make typedefs
 #>make types
 
