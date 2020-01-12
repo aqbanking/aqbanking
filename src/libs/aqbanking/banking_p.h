@@ -137,6 +137,9 @@ static int AB_Banking_Update_Backend_InitDeinit(AB_BANKING *ab);
 int AB_Banking_Update(AB_BANKING *ab, uint32_t lastVersion, uint32_t currentVersion);
 
 
+int AB_Banking_CopyOldSettingsFolderIfNeeded(AB_BANKING *ab);
+
+
 
 
 /* ========================================================================================================================

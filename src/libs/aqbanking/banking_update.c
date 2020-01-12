@@ -11,6 +11,30 @@
 /* This file is included by banking.c */
 
 
+#include <gwenhywfar/directory.h>
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+static int _copyFile(const char *sourceFile, const char *destFile);
+static int _copyFolder(const char *sourceFolder, const char *destFolder);
+static void _getOldStandardSourceFolder(GWEN_BUFFER *dbuf);
+static void _getNewStandardSourceFolder(GWEN_BUFFER *dbuf);
+static int _haveConfigAtFolder(const char *cfgFolder);
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+
 
 
 int AB_Banking_UpdateConfList(AB_BANKING *ab, const char *groupName)
@@ -336,6 +360,258 @@ int AB_Banking_Update_Account_SetBackendName(AB_BANKING *ab)
 
   return 0;
 }
+
+
+
+int AB_Banking_CopyOldSettingsFolderIfNeeded(AB_BANKING *ab)
+{
+  GWEN_BUFFER *bufDest;
+  int rv;
+
+  bufDest=GWEN_Buffer_new(0, 256, 0, 1);
+  _getNewStandardSourceFolder(bufDest);
+  DBG_ERROR(AQBANKING_LOGDOMAIN, "New source folder: %s", GWEN_Buffer_GetStart(bufDest));
+
+  if (!_haveConfigAtFolder(GWEN_Buffer_GetStart(bufDest))) {
+    GWEN_BUFFER *bufSource;
+
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No current settings folder, trying to copying old one");
+    bufSource=GWEN_Buffer_new(0, 256, 0, 1);
+    _getOldStandardSourceFolder(bufSource);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Old source folder: %s", GWEN_Buffer_GetStart(bufSource));
+
+    if (_haveConfigAtFolder(GWEN_Buffer_GetStart(bufSource))) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "There is an old settings folder, copying that");
+      rv=_copyFolder(GWEN_Buffer_GetStart(bufSource), GWEN_Buffer_GetStart(bufDest));
+      if (rv<0) {
+	DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+	GWEN_Buffer_free(bufDest);
+	GWEN_Buffer_free(bufSource);
+	return rv;
+      }
+    }
+    else {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "There is no old settings folder, need initial setup");
+    }
+    GWEN_Buffer_free(bufSource);
+  }
+  else {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "There already is a current settings folder, no need to copy");
+  }
+  GWEN_Buffer_free(bufDest);
+  return 0;
+}
+
+
+
+
+
+int _copyFile(const char *sourceFile, const char *destFile)
+{
+  int rv;
+  GWEN_BUFFER *bufSource;
+
+  bufSource=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_SyncIo_Helper_ReadFile(sourceFile, bufSource);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(bufSource);
+    return rv;
+  }
+
+  rv=GWEN_SyncIo_Helper_WriteFile(destFile, (const uint8_t*) GWEN_Buffer_GetStart(bufSource), GWEN_Buffer_GetUsedBytes(bufSource));
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(bufSource);
+    return rv;
+  }
+
+  GWEN_Buffer_free(bufSource);
+  return 0;
+}
+
+
+
+int _copyFolder(const char *sourceFolder, const char *destFolder)
+{
+  int rv;
+  GWEN_STRINGLIST *slSourceEntries;
+  GWEN_STRINGLISTENTRY *se;
+  GWEN_BUFFER *bufDest;
+  uint32_t bufferPosDest;
+  GWEN_BUFFER *bufSource;
+  uint32_t bufferPosSource;
+
+  /* get source files and folders */
+  slSourceEntries=GWEN_StringList_new();
+
+  rv=GWEN_Directory_GetFileEntriesWithType(sourceFolder, slSourceEntries, NULL);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_StringList_free(slSourceEntries);
+    return rv;
+  }
+
+  GWEN_StringList_Sort(slSourceEntries, 1, GWEN_StringList_SortModeNoCase);
+
+  /* debug */
+  se=GWEN_StringList_FirstEntry(slSourceEntries);
+  while(se) {
+    const char *s;
+
+    s=GWEN_StringListEntry_Data(se);
+    if (s && *s) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Found entry: %s", s);
+    }
+    se=GWEN_StringListEntry_Next(se);
+  }
+
+  /* create destination folder */
+  rv=GWEN_Directory_GetPath(destFolder, GWEN_PATH_FLAGS_NAMEMUSTNOTEXIST | GWEN_PATH_FLAGS_CHECKROOT);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_StringList_free(slSourceEntries);
+    return rv;
+  }
+
+  /* prepare dest buffer */
+  bufDest=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(bufDest, destFolder);
+  GWEN_Buffer_AppendString(bufDest, GWEN_DIR_SEPARATOR_S);
+  bufferPosDest=GWEN_Buffer_GetPos(bufDest);
+
+  /* prepare source buffer */
+  bufSource=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(bufSource, sourceFolder);
+  GWEN_Buffer_AppendString(bufSource, GWEN_DIR_SEPARATOR_S);
+  bufferPosSource=GWEN_Buffer_GetPos(bufSource);
+
+  /* copy files */
+  se=GWEN_StringList_FirstEntry(slSourceEntries);
+  while(se) {
+    const char *s;
+
+    s=GWEN_StringListEntry_Data(se);
+    if (s && *s=='f') {
+
+      GWEN_Buffer_AppendString(bufSource, s+1);
+      GWEN_Buffer_AppendString(bufDest, s+1);
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Copying file \"%s\"", GWEN_Buffer_GetStart(bufSource));
+
+      rv=_copyFile(GWEN_Buffer_GetStart(bufSource), GWEN_Buffer_GetStart(bufDest));
+      if (rv<0) {
+	DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+	GWEN_Buffer_free(bufSource);
+	GWEN_Buffer_free(bufDest);
+	GWEN_StringList_free(slSourceEntries);
+	return rv;
+      }
+
+      GWEN_Buffer_Crop(bufSource, 0, bufferPosSource);
+      GWEN_Buffer_Crop(bufDest, 0, bufferPosDest);
+    }
+
+    se=GWEN_StringListEntry_Next(se);
+  }
+
+  /* create folders recursively */
+  se=GWEN_StringList_FirstEntry(slSourceEntries);
+  while(se) {
+    const char *s;
+
+    s=GWEN_StringListEntry_Data(se);
+    if (s && *s=='d') {
+      if (strcmp(s+1, ".")!=0 && strcmp(s+1, "..")!=0) {
+	GWEN_Buffer_AppendString(bufSource, s+1);
+	GWEN_Buffer_AppendString(bufDest, s+1);
+	DBG_ERROR(AQBANKING_LOGDOMAIN, "Copying folder \"%s\"", GWEN_Buffer_GetStart(bufDest));
+
+	rv=_copyFolder(GWEN_Buffer_GetStart(bufSource), GWEN_Buffer_GetStart(bufDest));
+	if (rv<0) {
+	  DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+	  GWEN_Buffer_free(bufSource);
+	  GWEN_Buffer_free(bufDest);
+	  GWEN_StringList_free(slSourceEntries);
+	  return rv;
+	}
+
+	GWEN_Buffer_Crop(bufSource, 0, bufferPosSource);
+	GWEN_Buffer_Crop(bufDest, 0, bufferPosDest);
+      }
+    }
+
+    se=GWEN_StringListEntry_Next(se);
+  }
+
+  GWEN_Buffer_free(bufSource);
+  GWEN_Buffer_free(bufDest);
+  GWEN_StringList_free(slSourceEntries);
+  return 0;
+}
+
+
+
+void _getOldStandardSourceFolder(GWEN_BUFFER *dbuf)
+{
+  char home[256];
+
+  if (GWEN_Directory_GetHomeDirectory(home, sizeof(home))) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Could not determine home directory, aborting.");
+    abort();
+  }
+
+  GWEN_Buffer_AppendString(dbuf, home);
+  GWEN_Buffer_AppendString(dbuf, GWEN_DIR_SEPARATOR_S);
+  GWEN_Buffer_AppendString(dbuf, AB_BANKING_USERDATADIR);
+  GWEN_Buffer_AppendString(dbuf, GWEN_DIR_SEPARATOR_S);
+  GWEN_Buffer_AppendString(dbuf, "settings");
+}
+
+
+
+void _getNewStandardSourceFolder(GWEN_BUFFER *dbuf)
+{
+  char home[256];
+
+  if (GWEN_Directory_GetHomeDirectory(home, sizeof(home))) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Could not determine home directory, aborting.");
+    abort();
+  }
+
+  GWEN_Buffer_AppendString(dbuf, home);
+  GWEN_Buffer_AppendString(dbuf, GWEN_DIR_SEPARATOR_S);
+  GWEN_Buffer_AppendString(dbuf, AB_BANKING_USERDATADIR);
+  GWEN_Buffer_AppendString(dbuf, GWEN_DIR_SEPARATOR_S);
+  GWEN_Buffer_AppendString(dbuf, AB_BANKING_SETTINGS_DIR);
+}
+
+
+
+int _haveConfigAtFolder(const char *cfgFolder)
+{
+  GWEN_BUFFER *dbuf;
+  int rv;
+
+  dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(dbuf, cfgFolder);
+  GWEN_Buffer_AppendString(dbuf, GWEN_DIR_SEPARATOR_S);
+  GWEN_Buffer_AppendString(dbuf, AB_CFG_GROUP_USERS);
+
+  rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(dbuf), GWEN_PATH_FLAGS_NAMEMUSTEXIST | GWEN_PATH_FLAGS_CHECKROOT);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No AqBanking config folder found at [%s] (%d)", GWEN_Buffer_GetStart(dbuf), rv);
+    GWEN_Buffer_free(dbuf);
+    return 0;
+  }
+  DBG_ERROR(AQBANKING_LOGDOMAIN, "AqBanking config folder found at [%s]", GWEN_Buffer_GetStart(dbuf));
+  GWEN_Buffer_free(dbuf);
+
+  return 1;
+}
+
+
 
 
 

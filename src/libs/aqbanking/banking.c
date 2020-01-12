@@ -121,6 +121,15 @@ AB_BANKING *AB_Banking_new(const char *appName,
 
   GWEN_Buffer_free(nbuf);
 
+    {
+      int rv;
+
+      rv=AB_Banking_CopyOldSettingsFolderIfNeeded(ab);
+      if (rv<0) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not copy old settings folder (%d), ignoring", rv);
+      }
+    }
+
   AB_Banking__GetConfigManager(ab, dname);
 
   ab->appExtensions=extensions;
