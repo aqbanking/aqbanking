@@ -57,7 +57,8 @@ static int _getTanUSB(AH_TAN_MECHANISM *tanMechanism,
                       int passwordMinLen,
                       int passwordMaxLen);
 
-typedef int(*GetTanfromUSB_GeneratorFn)(unsigned char* HHDCommand, int fullHHD_Len, int* pATC, char* pGeneratedTAN, uint32_t maxTanLen, char* pCardnummber, char* pEndDate, char* IssueDate);
+typedef int(*GetTanfromUSB_GeneratorFn)(unsigned char *HHDCommand, int fullHHD_Len, int *pATC, char *pGeneratedTAN,
+                                        uint32_t maxTanLen, char *pCardnummber, char *pEndDate, char *IssueDate);
 
 
 
@@ -67,13 +68,13 @@ typedef int(*GetTanfromUSB_GeneratorFn)(unsigned char* HHDCommand, int fullHHD_L
 
 AH_TAN_MECHANISM *AH_TanMechanism_ChipTanUSB_new(const AH_TAN_METHOD *tanMethod, int tanMethodId)
 {
-	AH_TAN_MECHANISM *tanMechanism;
+  AH_TAN_MECHANISM *tanMechanism;
 
-	tanMechanism = AH_TanMechanism_new(tanMethod, tanMethodId);
-	assert(tanMechanism);
+  tanMechanism = AH_TanMechanism_new(tanMethod, tanMethodId);
+  assert(tanMechanism);
 
-	AH_TanMechanism_SetGetTanFn(tanMechanism, _getTanUSB);
-	return tanMechanism;
+  AH_TanMechanism_SetGetTanFn(tanMechanism, _getTanUSB);
+  return tanMechanism;
 }
 
 
@@ -123,17 +124,17 @@ int _getTanUSB(AH_TAN_MECHANISM *tanMechanism,
     GWEN_BUFFER *bufToken;
     GWEN_DB_NODE *dbTanMethod;
     /* USB_TAN specific start */
-    static char cardPrefix[] = { 0,0,0,0,1,0,0 };
+    static char cardPrefix[] = { 0, 0, 0, 0, 1, 0, 0 };
     unsigned char HHDCommand[120];
     int HHD_Generator_Len;
-    unsigned char* pHHDDest;
-    char* pHHDSrc;
+    unsigned char *pHHDDest;
+    char *pHHDSrc;
     int fullHHD_Len;
     int i;
 
     GWEN_PLUGIN_MANAGER *pm;
     GWEN_PLUGIN *pl;
-    GWEN_LIBLOADER* ll;
+    GWEN_LIBLOADER *ll;
     void *p;
 
     int ATC;
@@ -201,8 +202,8 @@ int _getTanUSB(AH_TAN_MECHANISM *tanMechanism,
     }
 
     rv = ((GetTanfromUSB_GeneratorFn)p)(HHDCommand, fullHHD_Len, &ATC,
-					passwordBuffer, passwordMaxLen,
-					&Cardnummber[0], &EndDate[0], &IssueDate[0]);
+                                        passwordBuffer, passwordMaxLen,
+                                        &Cardnummber[0], &EndDate[0], &IssueDate[0]);
     GWEN_Gui_HideBox(0);
 
     if (rv<0) {
