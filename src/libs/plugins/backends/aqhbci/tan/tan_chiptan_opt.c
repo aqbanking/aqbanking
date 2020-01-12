@@ -22,6 +22,9 @@
 #include <ctype.h> /* for toupper() */
 
 
+#include <gwenhywfar/ct.h>       /* for USB_TAN */
+#include <gwenhywfar/ctplugin.h> /* for USB_TAN */
+
 
 /* forward declarations */
 
@@ -44,9 +47,35 @@ static int _getTan(AH_TAN_MECHANISM *tanMechanism,
                    int passwordMinLen,
                    int passwordMaxLen);
 
+static int _getTanUSB(AH_TAN_MECHANISM *tanMechanism,
+                      AB_USER *u,
+                      const char *title,
+                      const char *text,
+                      const uint8_t *challengePtr,
+                      uint32_t challengeLen,
+                      char *passwordBuffer,
+                      int passwordMinLen,
+                      int passwordMaxLen);
+
+typedef int(*GetTanfromUSB_GeneratorFn)(unsigned char* HHDCommand, int fullHHD_Len, int* pATC, char* pGeneratedTAN, uint32_t maxTanLen, char* pCardnummber, char* pEndDate, char* IssueDate);
+
 
 
 /* implementation */
+
+
+
+AH_TAN_MECHANISM *AH_TanMechanism_ChipTanUSB_new(const AH_TAN_METHOD *tanMethod, int tanMethodId)
+{
+	AH_TAN_MECHANISM *tanMechanism;
+
+	tanMechanism = AH_TanMechanism_new(tanMethod, tanMethodId);
+	assert(tanMechanism);
+
+	AH_TanMechanism_SetGetTanFn(tanMechanism, _getTanUSB);
+	return tanMechanism;
+}
+
 
 
 AH_TAN_MECHANISM *AH_TanMechanism_ChipTanOpt_new(const AH_TAN_METHOD *tanMethod, int tanMethodId)
@@ -60,6 +89,136 @@ AH_TAN_MECHANISM *AH_TanMechanism_ChipTanOpt_new(const AH_TAN_METHOD *tanMethod,
   return tanMechanism;
 }
 
+
+
+
+
+int _getTanUSB(AH_TAN_MECHANISM *tanMechanism,
+               AB_USER *u,
+               const char *title,
+               const char *text,
+               const uint8_t *challengePtr,
+               uint32_t challengeLen,
+               char *passwordBuffer,
+               int passwordMinLen,
+               int passwordMaxLen)
+{
+  int rv;
+  const AH_TAN_METHOD *tanMethod;
+  GWEN_BUFFER *cbuf;
+
+  tanMethod=AH_TanMechanism_GetTanMethod(tanMechanism);
+  assert(tanMethod);
+
+  /* translate challenge string to flicker code */
+  cbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=_translate((const char *) challengePtr, cbuf);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(cbuf);
+    return rv;
+  }
+  else {
+    GWEN_DB_NODE *dbMethodParams;
+    GWEN_BUFFER *bufToken;
+    GWEN_DB_NODE *dbTanMethod;
+    /* USB_TAN specific start */
+    static char cardPrefix[] = { 0,0,0,0,1,0,0 };
+    unsigned char HHDCommand[120];
+    int HHD_Generator_Len;
+    unsigned char* pHHDDest;
+    char* pHHDSrc;
+    int fullHHD_Len;
+    int i;
+
+    GWEN_PLUGIN_MANAGER *pm;
+    GWEN_PLUGIN *pl;
+    GWEN_LIBLOADER* ll;
+    void *p;
+
+    int ATC;
+    char Cardnummber[11];
+    char EndDate[5];
+    char IssueDate[7];
+    /* USB_TAN specific end */
+
+#if 0
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Will use this challenge:");
+    GWEN_Buffer_Dump(cbuf, 2);
+#endif
+
+    dbMethodParams=GWEN_DB_Group_new("methodParams");
+
+    GWEN_DB_SetIntValue(dbMethodParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                        "tanMethodId", AH_TanMechanism_GetTanMethodId(tanMechanism));
+
+    GWEN_DB_SetCharValue(dbMethodParams, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                         "challenge", GWEN_Buffer_GetStart(cbuf));
+
+    dbTanMethod=GWEN_DB_GetGroup(dbMethodParams, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "tanMethod");
+    AH_TanMethod_toDb(tanMethod, dbTanMethod);
+
+    bufToken=GWEN_Buffer_new(0, 256, 0, 1);
+    AH_User_MkTanName(u, (const char *) challengePtr, bufToken);
+
+    rv = GWEN_Gui_ShowBox(0, title, text, 0);
+
+    /* TODO: hmm, this should probably be changed to a more typesafe way...
+     * Maybe we need to add a virtual function for CryptTokens...
+     */
+    pm = GWEN_PluginManager_FindPluginManager("ct");
+    if (pm == 0) {
+      DBG_ERROR(0, "Plugin manager not found");
+      return GWEN_ERROR_NOT_FOUND;
+    }
+
+    pl = GWEN_PluginManager_GetPlugin(pm, "chiptanusb");
+    if (pl == 0) {
+      DBG_ERROR(0, "Plugin not found");
+      return GWEN_ERROR_NOT_FOUND;
+    }
+    DBG_INFO(0, "Plugin found");
+
+    ll = GWEN_Plugin_GetLibLoader(pl);
+
+    rv = GWEN_LibLoader_Resolve(ll, "GetTanfromUSB_Generator", &p);
+    if (rv<0) {
+      return rv;
+    }
+
+    /* Generate the binary input for the card */
+    pHHDDest = &HHDCommand[8];
+    HHD_Generator_Len = GWEN_Buffer_GetUsedBytes(cbuf) / 2;
+    fullHHD_Len = HHD_Generator_Len + sizeof(cardPrefix) + 1;
+    pHHDSrc = GWEN_Buffer_GetStart(cbuf);
+    memcpy(HHDCommand, cardPrefix, sizeof(cardPrefix));
+    HHDCommand[sizeof(cardPrefix)] = HHD_Generator_Len;
+
+    for (i = 0; i < HHD_Generator_Len; i++) {
+      *pHHDDest++ = (unsigned char)_readBytesHex(pHHDSrc, 2);
+      pHHDSrc++;
+      pHHDSrc++;
+    }
+
+    rv = ((GetTanfromUSB_GeneratorFn)p)(HHDCommand, fullHHD_Len, &ATC,
+					passwordBuffer, passwordMaxLen,
+					&Cardnummber[0], &EndDate[0], &IssueDate[0]);
+    GWEN_Gui_HideBox(0);
+
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(bufToken);
+      GWEN_Buffer_free(cbuf);
+      GWEN_DB_Group_free(dbMethodParams);
+      return rv;
+    }
+
+    GWEN_Buffer_free(bufToken);
+    GWEN_Buffer_free(cbuf);
+    GWEN_DB_Group_free(dbMethodParams);
+    return 0;
+  }
+}
 
 
 
@@ -128,6 +287,7 @@ int _getTan(AH_TAN_MECHANISM *tanMechanism,
       GWEN_DB_Group_free(dbMethodParams);
       return rv;
     }
+
 
     GWEN_Buffer_free(bufToken);
     GWEN_Buffer_free(cbuf);
