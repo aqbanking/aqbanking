@@ -384,7 +384,24 @@ int AB_Banking_CopyOldSettingsFolderIfNeeded(AB_BANKING *ab)
       DBG_ERROR(AQBANKING_LOGDOMAIN, "There is an old settings folder, copying that");
       rv=_copyFolder(GWEN_Buffer_GetStart(bufSource), GWEN_Buffer_GetStart(bufDest), 0);
       if (rv<0) {
-	DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+	DBG_ERROR(AQBANKING_LOGDOMAIN,
+		  "Error copying old settings, please copy the folder\n"
+		  "  %s\n"
+		  " manually to\n"
+		  "  %s\n"
+		  "(Error code was: %d)",
+		  GWEN_Buffer_GetStart(bufSource),
+		  GWEN_Buffer_GetStart(bufDest),
+		  rv);
+	GWEN_Gui_ShowError("Error Copying old Settings",
+			   "Error copying old settings, please copy the folder\n"
+			   "  %s\n"
+			   " manually to\n"
+			   "  %s\n"
+			   "(Error code was: %d)",
+			   GWEN_Buffer_GetStart(bufSource),
+			   GWEN_Buffer_GetStart(bufDest),
+			   rv);
 	GWEN_Buffer_free(bufDest);
 	GWEN_Buffer_free(bufSource);
 	return rv;
@@ -456,20 +473,8 @@ int _copyFolder(const char *sourceFolder, const char *destFolder, int depth)
 
   GWEN_StringList_Sort(slSourceEntries, 1, GWEN_StringList_SortModeNoCase);
 
-  /* debug */
-  se=GWEN_StringList_FirstEntry(slSourceEntries);
-  while(se) {
-    const char *s;
-
-    s=GWEN_StringListEntry_Data(se);
-    if (s && *s) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Found entry: %s", s);
-    }
-    se=GWEN_StringListEntry_Next(se);
-  }
-
-  /* create destination folder */
-  rv=GWEN_Directory_GetPath(destFolder, GWEN_PATH_FLAGS_NAMEMUSTNOTEXIST | GWEN_PATH_FLAGS_CHECKROOT);
+  /* create destination folder, if it does not exist */
+  rv=GWEN_Directory_GetPath(destFolder, GWEN_PATH_FLAGS_CHECKROOT);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     GWEN_StringList_free(slSourceEntries);
