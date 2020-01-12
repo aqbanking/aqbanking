@@ -14,6 +14,8 @@
 #include <gwenhywfar/directory.h>
 
 
+#define AQBANKING_COPYFOLDER_MAX_DEPTH 10
+
 
 /* ------------------------------------------------------------------------------------------------
  * forward declarations
@@ -22,7 +24,7 @@
 
 
 static int _copyFile(const char *sourceFile, const char *destFile);
-static int _copyFolder(const char *sourceFolder, const char *destFolder);
+static int _copyFolder(const char *sourceFolder, const char *destFolder, int depth);
 static void _getOldStandardSourceFolder(GWEN_BUFFER *dbuf);
 static void _getNewStandardSourceFolder(GWEN_BUFFER *dbuf);
 static int _haveConfigAtFolder(const char *cfgFolder);
@@ -382,7 +384,7 @@ int AB_Banking_CopyOldSettingsFolderIfNeeded(AB_BANKING *ab)
 
     if (_haveConfigAtFolder(GWEN_Buffer_GetStart(bufSource))) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "There is an old settings folder, copying that");
-      rv=_copyFolder(GWEN_Buffer_GetStart(bufSource), GWEN_Buffer_GetStart(bufDest));
+      rv=_copyFolder(GWEN_Buffer_GetStart(bufSource), GWEN_Buffer_GetStart(bufDest), 0);
       if (rv<0) {
 	DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
 	GWEN_Buffer_free(bufDest);
@@ -432,7 +434,7 @@ int _copyFile(const char *sourceFile, const char *destFile)
 
 
 
-int _copyFolder(const char *sourceFolder, const char *destFolder)
+int _copyFolder(const char *sourceFolder, const char *destFolder, int depth)
 {
   int rv;
   GWEN_STRINGLIST *slSourceEntries;
@@ -441,6 +443,11 @@ int _copyFolder(const char *sourceFolder, const char *destFolder)
   uint32_t bufferPosDest;
   GWEN_BUFFER *bufSource;
   uint32_t bufferPosSource;
+
+  if (depth>=AQBANKING_COPYFOLDER_MAX_DEPTH) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Recursion too deep, maybe some circular links? Aborting.");
+    return GWEN_ERROR_INTERNAL;
+  }
 
   /* get source files and folders */
   slSourceEntries=GWEN_StringList_new();
@@ -526,7 +533,7 @@ int _copyFolder(const char *sourceFolder, const char *destFolder)
 	GWEN_Buffer_AppendString(bufDest, s+1);
 	DBG_ERROR(AQBANKING_LOGDOMAIN, "Copying folder \"%s\"", GWEN_Buffer_GetStart(bufDest));
 
-	rv=_copyFolder(GWEN_Buffer_GetStart(bufSource), GWEN_Buffer_GetStart(bufDest));
+	rv=_copyFolder(GWEN_Buffer_GetStart(bufSource), GWEN_Buffer_GetStart(bufDest), depth+1);
 	if (rv<0) {
 	  DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
 	  GWEN_Buffer_free(bufSource);
