@@ -372,15 +372,13 @@ int AB_Banking_CopyOldSettingsFolderIfNeeded(AB_BANKING *ab)
 
   bufDest=GWEN_Buffer_new(0, 256, 0, 1);
   _getNewStandardSourceFolder(bufDest);
-  DBG_ERROR(AQBANKING_LOGDOMAIN, "New source folder: %s", GWEN_Buffer_GetStart(bufDest));
 
   if (!_haveConfigAtFolder(GWEN_Buffer_GetStart(bufDest))) {
     GWEN_BUFFER *bufSource;
 
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "No current settings folder, trying to copying old one");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No current settings folder, trying to copy old one");
     bufSource=GWEN_Buffer_new(0, 256, 0, 1);
     _getOldStandardSourceFolder(bufSource);
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Old source folder: %s", GWEN_Buffer_GetStart(bufSource));
 
     if (_haveConfigAtFolder(GWEN_Buffer_GetStart(bufSource))) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "There is an old settings folder, copying that");
@@ -396,9 +394,6 @@ int AB_Banking_CopyOldSettingsFolderIfNeeded(AB_BANKING *ab)
       DBG_ERROR(AQBANKING_LOGDOMAIN, "There is no old settings folder, need initial setup");
     }
     GWEN_Buffer_free(bufSource);
-  }
-  else {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "There already is a current settings folder, no need to copy");
   }
   GWEN_Buffer_free(bufDest);
   return 0;
@@ -503,7 +498,6 @@ int _copyFolder(const char *sourceFolder, const char *destFolder, int depth)
 
       GWEN_Buffer_AppendString(bufSource, s+1);
       GWEN_Buffer_AppendString(bufDest, s+1);
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Copying file \"%s\"", GWEN_Buffer_GetStart(bufSource));
 
       rv=_copyFile(GWEN_Buffer_GetStart(bufSource), GWEN_Buffer_GetStart(bufDest));
       if (rv<0) {
@@ -531,7 +525,6 @@ int _copyFolder(const char *sourceFolder, const char *destFolder, int depth)
       if (strcmp(s+1, ".")!=0 && strcmp(s+1, "..")!=0) {
 	GWEN_Buffer_AppendString(bufSource, s+1);
 	GWEN_Buffer_AppendString(bufDest, s+1);
-	DBG_ERROR(AQBANKING_LOGDOMAIN, "Copying folder \"%s\"", GWEN_Buffer_GetStart(bufDest));
 
 	rv=_copyFolder(GWEN_Buffer_GetStart(bufSource), GWEN_Buffer_GetStart(bufDest), depth+1);
 	if (rv<0) {
