@@ -163,7 +163,7 @@ int APY_Control_AddUser(AB_PROVIDER *pro,
   /* add user */
   rv=AB_Provider_AddUser(pro, user);
   if (rv<0) {
-    fprintf(stderr, "ERROR: Error on AB_Provider_AddUser (%d)\n", rv);
+    DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Error on AB_Provider_AddUser (%d)\n", rv);
     AB_User_free(user);
     return 3;
   }
@@ -177,7 +177,7 @@ int APY_Control_AddUser(AB_PROVIDER *pro,
 
   rv=APY_User_SetApiSecrets(user, apiPassword, apiSignature, apiUserId);
   if (rv<0) {
-    fprintf(stderr, "ERROR: Error on APY_User_SetApiSecrets (%d)\n", rv);
+    DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Error on APY_User_SetApiSecrets (%d)", rv);
     AB_Provider_EndExclUseUser(pro, user, 1);
     AB_User_free(user);
     return 3;
@@ -190,6 +190,33 @@ int APY_Control_AddUser(AB_PROVIDER *pro,
     AB_User_free(user);
     return rv;
   }
+
+  if (1) {
+    AB_ACCOUNT *account;
+    int rv;
+    static char accountname[256];
+
+    account=AB_Provider_CreateAccountObject(pro);
+    assert(account);
+    AB_Account_SetOwnerName(account, userName);
+    AB_Account_SetAccountNumber(account, userId);
+    AB_Account_SetBankCode(account, "PAYPAL");
+    AB_Account_SetBankName(account, "PAYPAL");
+    strcpy(accountname, "PP ");
+    strcat(accountname, userName);
+    AB_Account_SetAccountName(account, accountname);
+    AB_Account_SetUserId(account, AB_User_GetUniqueId(user));
+
+    rv=AB_Provider_AddAccount(pro, account, 1); /* do lock corresponding user */
+    if (rv<0) {
+      DBG_INFO(AQPAYPAL_LOGDOMAIN, "Error adding account (%d)", rv);
+      AB_Account_free(account);
+      AB_Provider_DeleteUser(pro, AB_User_GetUniqueId(user));
+      AB_User_free(user);
+      return rv;
+    }
+  }
+
 
   AB_User_free(user);
 

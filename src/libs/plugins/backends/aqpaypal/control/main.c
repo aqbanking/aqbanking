@@ -35,24 +35,20 @@ static void showUsage()
                            I18N("Commands:\n\n"));
   GWEN_Buffer_AppendString(ubuf,
                            I18N("  listusers:\n"
-                                "    blurb "
-                                "file\n\n"));
+                                "    show Paypal users "
+                                "\n\n"));
   GWEN_Buffer_AppendString(ubuf,
                            I18N("  listaccounts:\n"
-                                "    blurb "
-                                "file\n\n"));
+                                "    show Paypal accounts "
+                                "\n\n"));
   GWEN_Buffer_AppendString(ubuf,
                            I18N("  adduser:\n"
-                                "    blurb "
-                                "file\n\n"));
-  GWEN_Buffer_AppendString(ubuf,
-                           I18N("  addaccount:\n"
-                                "    blurb "
-                                "file\n\n"));
+                                "    add a Paypal user and a corresponding account "
+                                "\n\n"));
   GWEN_Buffer_AppendString(ubuf,
                            I18N("  setsecret:\n"
-                                "    blurb "
-                                "file\n\n"));
+                                "    set credentials for Paypal API "
+                                "n\n"));
 
   fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(ubuf));
   GWEN_Buffer_free(ubuf);
