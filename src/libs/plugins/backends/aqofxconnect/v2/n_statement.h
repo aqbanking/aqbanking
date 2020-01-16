@@ -12,8 +12,16 @@
 #define AO_N_STATEMENT_H
 
 
+/* plugin headers */
 #include <aqofxconnect/aqofxconnect.h>
-#include <aqbanking/backendsupport/provider.h>
+
+/* aqbanking headers */
+#include <aqbanking/backendsupport/user.h>
+#include <aqbanking/backendsupport/account.h>
+#include <aqbanking/types/transaction.h>
+
+/* gwenhywfar headers */
+#include <gwenhywfar/xml.h>
 
 
 

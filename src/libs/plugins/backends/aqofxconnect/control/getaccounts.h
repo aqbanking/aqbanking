@@ -1,5 +1,5 @@
 /***************************************************************************
- begin       : Mon Jan 13 2020
+ begin       : Thu Jan 16 2020
  copyright   : (C) 2020 by Martin Preuss
  email       : martin@libchipcard.de
 
@@ -8,26 +8,18 @@
  ***************************************************************************/
 
 
-#ifndef AO_N_ACCTINFO_H
-#define AO_N_ACCTINFO_H
+#ifndef AO_CONTROL_GETACCOUNTS_H
+#define AO_CONTROL_GETACCOUNTS_H
 
 
-/* plugin headers */
 #include <aqofxconnect/aqofxconnect.h>
 
-/* aqbanking headers */
-#include <aqbanking/backendsupport/user.h>
-
-/* gwenhywfar headers */
-#include <gwenhywfar/xml.h>
+#include <aqbanking/backendsupport/provider.h>
 
 
 
-GWEN_XMLNODE *AO_V2_MkAcctInfoRqNode(AB_USER *u);
-
+int AO_Control_GetAccounts(AB_PROVIDER *pro, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 
 
 #endif
-
-
 

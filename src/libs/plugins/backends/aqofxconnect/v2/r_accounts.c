@@ -15,12 +15,13 @@
 #include "n_header.h"
 #include "n_signon.h"
 #include "n_acctinfo.h"
+#include "io_network.h"
 
 
 
 
 
-int AO_V2_RequestAccounts(AB_USER *u, int keepOpen)
+int AO_V2_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, int keepOpen)
 {
   GWEN_XMLNODE *xmlRoot;
   GWEN_XMLNODE *xmlNode;
@@ -53,7 +54,7 @@ int AO_V2_RequestAccounts(AB_USER *u, int keepOpen)
   GWEN_XMLNode_free(xmlRoot);
 
   /* exchange messages */
-  rv=AO_V2_SendAndReceive(u,
+  rv=AO_V2_SendAndReceive(pro, u,
 			  (const uint8_t*) GWEN_Buffer_GetStart(bufRequest),
 			  GWEN_Buffer_GetUsedBytes(bufRequest),
 			  &bufResponse);

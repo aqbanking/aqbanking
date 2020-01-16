@@ -12,6 +12,15 @@
 #endif
 
 
+#include "n_statement.h"
+#include "n_utils.h"
+#include "aqofxconnect/user.h"
+
+#include <gwenhywfar/gwendate.h>
+
+
+
+
 
 /* ------------------------------------------------------------------------------------------------
  * forward declarations
@@ -24,9 +33,6 @@ static GWEN_XMLNODE *_mkCreditCardStatementRqNode(AB_USER *u, AB_ACCOUNT *a, AB_
 static GWEN_XMLNODE *_mkInvestmentStatementRqNode(AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j);
 
 static const char *_getOfxAccountType(int t);
-static void _setDateValue(GWEN_XMLNODE *xmlNode, GWEN_DATE *da, uint32_t userFlags, const char *varName);
-static void _setTimeValue(GWEN_XMLNODE *xmlNode, GWEN_TIME *ti, uint32_t userFlags, const char *varName);
-static void _setCurrentTimeValue(GWEN_XMLNODE *xmlNode, uint32_t userFlags, const char *varName);
 
 
 
@@ -39,16 +45,14 @@ static void _setCurrentTimeValue(GWEN_XMLNODE *xmlNode, uint32_t userFlags, cons
 
 GWEN_XMLNODE *AO_V2_MkStatementRqNode(AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j)
 {
-  GWEN_XMLNODE *xmlNode;
-
   assert(a);
 
   switch (AB_Account_GetAccountType(a)) {
   case AB_AccountType_CreditCard:
-    return _mkCreditCardStatementRqNode(pro, u, a, j);
+    return _mkCreditCardStatementRqNode(u, a, j);
 
   case AB_AccountType_Investment:
-    return _mkInvestmentStatementRqNode(pro, u, a, j);
+    return _mkInvestmentStatementRqNode(u, a, j);
 
   case AB_AccountType_Checking:
   case AB_AccountType_Savings:
@@ -56,7 +60,7 @@ GWEN_XMLNODE *AO_V2_MkStatementRqNode(AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION 
   case AB_AccountType_Cash:
   case AB_AccountType_Unknown:
   default:
-    return _mkBankStatementRqNode(pro, u, a, j);
+    return _mkBankStatementRqNode(u, a, j);
   }
 }
 
@@ -72,9 +76,9 @@ GWEN_XMLNODE *_mkBankStatementRqNode(AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *
 
   xmlMsg=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "BANKMSGSRQV1");
   xmlTrnRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "STMTTRNRQ");
-  GWEN_XMLNode_AddChild(xmlMsg, xmlRq);
+  GWEN_XMLNode_AddChild(xmlMsg, xmlTrnRq);
 
-  _setCurrentTimeValue(xmlTrnRq, AO_User_GetFlags(u), "TRNUID");
+  AO_V2_Util_SetCurrentTimeValue(xmlTrnRq, AO_User_GetFlags(u), "TRNUID");
 
   xmlRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "STMTRQ");
   GWEN_XMLNode_AddChild(xmlTrnRq, xmlRq);
@@ -102,11 +106,11 @@ GWEN_XMLNODE *_mkBankStatementRqNode(AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *
     GWEN_XMLNODE *xmlInc;
 
     xmlInc=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "INCTRAN");
-    GWEN_XMLNode_AddChild(xmlRq, xmlAInc);
+    GWEN_XMLNode_AddChild(xmlRq, xmlInc);
 
     if (AB_Transaction_GetCommand(j)==AB_Transaction_CommandGetTransactions) {
-      _setDateValue(xmlInc, AB_Transaction_GetFirstDate(j), AO_User_GetFlags(u), "DTSTART");
-      _setDateValue(xmlInc, AB_Transaction_GetLastDate(j), AO_User_GetFlags(u), "DTEND");
+      AO_V2_Util_SetDateValue(xmlInc, AB_Transaction_GetFirstDate(j), AO_User_GetFlags(u), "DTSTART");
+      AO_V2_Util_SetDateValue(xmlInc, AB_Transaction_GetLastDate(j), AO_User_GetFlags(u), "DTEND");
       GWEN_XMLNode_SetCharValue(xmlInc, "INCLUDE", "Y");
     }
     else
@@ -152,51 +156,6 @@ const char *_getOfxAccountType(int t)
   }
 }
 
-
-
-void _setDateValue(GWEN_XMLNODE *xmlNode, GWEN_DATE *da, uint32_t userFlags, const char *varName)
-{
-  if (da) {
-    GWEN_BUFFER *tbuf;
-  
-    tbuf=GWEN_Buffer_new(0, 32, 0, 1);
-    if (userFlags & AO_USER_FLAGS_SEND_SHORT_DATE)
-      GWEN_Date_toStringWithTemplate(da, "YYYYMMDD000000", tbuf);
-    else
-      GWEN_Date_toStringWithTemplate(da, "YYYYMMDD000000.000", tbuf);
-    GWEN_XMLNode_SetCharValue(xmlTrnRq, varName, GWEN_Buffer_GetStart(tbuf));
-    GWEN_Buffer_free(tbuf);
-  }
-}
-
-
-
-void _setTimeValue(GWEN_XMLNODE *xmlNode, GWEN_TIME *ti, uint32_t userFlags, const char *varName)
-{
-  GWEN_BUFFER *tbuf;
-
-  tbuf=GWEN_Buffer_new(0, 32, 0, 1);
-  if (userFlags & AO_USER_FLAGS_SEND_SHORT_DATE)
-    GWEN_Time_toString(ti, "YYYYMMDDhhmmss", tbuf);
-  else
-    GWEN_Time_toString(ti, "YYYYMMDDhhmmss.000", tbuf);
-  GWEN_Buffer_AppendString(buf, "\r\n");
-
-  GWEN_XMLNode_SetCharValue(xmlNode, varName, GWEN_Buffer_GetStart(tbuf));
-  GWEN_Buffer_free(tbuf);
-}
-
-
-
-void _setCurrentTimeValue(GWEN_XMLNODE *xmlNode, uint32_t userFlags, const char *varName)
-{
-  GWEN_TIME *ti;
-
-  ti=GWEN_CurrentTime();
-  assert(ti);
-  _setTimeValue(xmlNode, ti, userFlags, varName);
-  GWEN_Time_free(ti);
-}
 
 
 

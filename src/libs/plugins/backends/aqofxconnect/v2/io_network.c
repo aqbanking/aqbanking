@@ -12,6 +12,23 @@
 #endif
 
 
+/* plugin headers */
+#include "io_network.h"
+#include "aqofxconnect/user.h"
+
+/* aqbanking headers */
+#include "aqbanking/i18n_l.h"
+#include <aqbanking/backendsupport/httpsession.h>
+
+/* gwenhywfar headers */
+#include <gwenhywfar/gui.h>
+
+/* system headers */
+#include <stdio.h>
+#include <errno.h>
+
+
+
 
 /* ------------------------------------------------------------------------------------------------
  * forward declarations
@@ -20,7 +37,7 @@
 
 
 
-static int _createConnection(AB_USER *u, GWEN_HTTP_SESSION **pSess);
+static int _createConnection(AB_PROVIDER *pro, AB_USER *u, GWEN_HTTP_SESSION **pSess);
 
 
 
@@ -31,7 +48,7 @@ static int _createConnection(AB_USER *u, GWEN_HTTP_SESSION **pSess);
 
 
 
-int AO_V2_SendAndReceive(AB_USER *u, const uint8_t *p, unsigned int plen, GWEN_BUFFER **pRbuf)
+int AO_V2_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_t *p, unsigned int plen, GWEN_BUFFER **pRbuf)
 {
   GWEN_HTTP_SESSION *sess=NULL;
   GWEN_BUFFER *rbuf;
@@ -66,7 +83,7 @@ int AO_V2_SendAndReceive(AB_USER *u, const uint8_t *p, unsigned int plen, GWEN_B
   }
 
   /* setup connection */
-  rv=_createConnection(u, &sess);
+  rv=_createConnection(pro, u, &sess);
   if (rv) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Could not create connection");
     GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Error, I18N("Could not create connection (%d)"), rv);
@@ -141,11 +158,10 @@ int AO_V2_SendAndReceive(AB_USER *u, const uint8_t *p, unsigned int plen, GWEN_B
 
 
 
-int _createConnection(AB_USER *u, GWEN_HTTP_SESSION **pSess)
+int _createConnection(AB_PROVIDER *pro, AB_USER *u, GWEN_HTTP_SESSION **pSess)
 {
   int rv;
   GWEN_HTTP_SESSION *sess;
-  uint32_t flags;
   const char *addr;
   const char *s;
 
@@ -159,7 +175,6 @@ int _createConnection(AB_USER *u, GWEN_HTTP_SESSION **pSess)
   sess=AB_HttpSession_new(pro, u, addr, "https", 443);
 
   /* setup session */
-  flags=AO_User_GetFlags(u);
   GWEN_HttpSession_AddFlags(sess, GWEN_HTTP_SESSION_FLAGS_NO_CACHE);
 
   GWEN_HttpSession_SetHttpContentType(sess, "application/x-ofx");

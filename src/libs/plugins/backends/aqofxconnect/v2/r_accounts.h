@@ -12,8 +12,17 @@
 #define AO_R_ACCOUNTS_H
 
 
+/* plugin headers */
+#include <aqofxconnect/aqofxconnect.h>
 
-int AO_V2_RequestAccounts(AB_USER *u, int keepOpen);
+/* aqbanking headers */
+#include <aqbanking/backendsupport/provider.h>
+#include <aqbanking/backendsupport/user.h>
+
+
+
+
+int AO_V2_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, int keepOpen);
 
 
 

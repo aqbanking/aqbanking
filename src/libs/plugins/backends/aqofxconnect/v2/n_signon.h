@@ -12,8 +12,14 @@
 #define AO_N_SIGNON_H
 
 
+/* plugin headers */
 #include <aqofxconnect/aqofxconnect.h>
-#include <aqbanking/backendsupport/provider.h>
+
+/* aqbanking headers */
+#include <aqbanking/backendsupport/user.h>
+
+/* gwenhywfar headers */
+#include <gwenhywfar/xml.h>
 
 
 

@@ -14,10 +14,11 @@
 #define AO_PROVIDER_HEAVY_DEBUG
 
 #include "provider_p.h"
-#include "account.h"
-#include "user.h"
-#include "dlg_edituser_l.h"
-#include "dlg_newuser_l.h"
+#include "aqofxconnect/account.h"
+#include "aqofxconnect/user.h"
+#include "aqofxconnect/dlg_edituser_l.h"
+#include "aqofxconnect/dlg_newuser_l.h"
+#include "aqofxconnect/control/control.h"
 
 #include <aqbanking/backendsupport/account.h>
 #include <aqbanking/types/transaction.h>
@@ -112,6 +113,8 @@ AB_PROVIDER *AO_Provider_new(AB_BANKING *ab)
   AB_Provider_SetCreateUserObjectsFn(pro, AO_Provider_CreateUserObject);
 
   AB_Provider_SetUpdateAccountSpecFn(pro, AO_Provider_UpdateAccountSpec);
+
+  AB_Provider_SetControlFn(pro, AO_Control);
 
   AB_Provider_SetGetNewUserDialogFn(pro, AO_Provider_GetNewUserDialog);
   AB_Provider_AddFlags(pro, AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG);

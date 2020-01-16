@@ -1,4 +1,4 @@
-SUBDIRS=libofxhome
+SUBDIRS=libofxhome v2 control
 
 AM_CPPFLAGS = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/..
 
@@ -47,7 +47,10 @@ libaqofxconnect_la_SOURCES= \
   dlg_ofx_special.c
 
 libaqofxconnect_la_LIBADD= \
-  libofxhome/libofxhome.la
+  libofxhome/libofxhome.la \
+  v2/libofxdcv2.la \
+  control/libofxdccontrol.la
+
 
 
 EXTRA_DIST= $(dlgdata_DATA) $(dlgimage_DATA) \

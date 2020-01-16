@@ -11,6 +11,9 @@
 # include <config.h>
 #endif
 
+/* plugin headers */
+#include "n_acctinfo.h"
+
 
 
 /*
@@ -24,13 +27,12 @@
 
 GWEN_XMLNODE *AO_V2_MkAcctInfoRqNode(AB_USER *u)
 {
-  GWEN_XMLNODE *xmlACCTINFORQ;
-  const char *s;
+  GWEN_XMLNODE *xmlAcctInfoRq;
 
-  xmlACCTINFORQ=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "ACCTINFORQ");
-  GWEN_XMLNode_SetCharValue(xmlSignonRq, "DTACCTUP", "19691231");
+  xmlAcctInfoRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "ACCTINFORQ");
+  GWEN_XMLNode_SetCharValue(xmlAcctInfoRq, "DTACCTUP", "19691231");
 
-  return xmlACCTINFORQ;
+  return xmlAcctInfoRq;
 }
 
 

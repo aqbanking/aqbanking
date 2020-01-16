@@ -12,6 +12,16 @@
 #endif
 
 
+#include "n_signon.h"
+#include "n_utils.h"
+#include "aqofxconnect/user.h"
+
+#include "aqbanking/i18n_l.h"
+
+#include <gwenhywfar/gui.h>
+
+
+
 
 /*
  * <SIGNONMSGSRQV1>
@@ -43,23 +53,7 @@ GWEN_XMLNODE *AO_V2_MkSignOnNode(AB_USER *u)
   xmlSignonRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "SONRQ");
   GWEN_XMLNode_AddChild(xmlSignonMsg, xmlSignonRq);
 
-  if (1) {
-    GWEN_TIME *ti;
-    GWEN_BUFFER *tbuf;
-
-    tbuf=GWEN_Buffer_new(0, 32, 0, 1);
-    ti=GWEN_CurrentTime();
-    assert(ti);
-    if (AO_User_GetFlags(u) & AO_USER_FLAGS_SEND_SHORT_DATE)
-      GWEN_Time_toString(ti, "YYYYMMDDhhmmss", tbuf);
-    else
-      GWEN_Time_toString(ti, "YYYYMMDDhhmmss.000", tbuf);
-    GWEN_Buffer_AppendString(buf, "\r\n");
-
-    GWEN_XMLNode_SetCharValue(xmlSignonRq, "DTCLIENT", GWEN_Buffer_GetStart(tbuf));
-    GWEN_Buffer_free(tbuf);
-    GWEN_Time_free(ti);
-  }
+  AO_V2_Util_SetCurrentTimeValue(xmlSignonRq, AO_User_GetFlags(u), "DTCLIENT");
 
   s=AB_User_GetUserId(u);
   if (s && *s)
