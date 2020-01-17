@@ -65,64 +65,6 @@ static int AO_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, 
 
 
 
-/* ***************************************************************************************************************
- *
- *                                                provider_cmd_accinfo.c
- *
- * ***************************************************************************************************************/
-
-
-static int AO_Provider__AddAccountInfoReq(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf);
-
-
-
-/* ***************************************************************************************************************
- *
- *                                                provider_cmd_stm.c
- *
- * ***************************************************************************************************************/
-
-
-static int AO_Provider__AddBankStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j,
-                                            GWEN_BUFFER *buf);
-static int AO_Provider__AddCreditCardStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j,
-                                                  GWEN_BUFFER *buf);
-static int AO_Provider__AddInvStatementReq(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j,
-                                           GWEN_BUFFER *buf);
-static int AO_Provider__AddStatementRequest(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j,
-                                            GWEN_BUFFER *buf);
-static int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j,
-                                         AB_IMEXPORTER_CONTEXT *ictx);
-
-
-
-/* ***************************************************************************************************************
- *
- *                                                provider_network.c
- *
- * ***************************************************************************************************************/
-
-
-static int AO_Provider_CreateConnection(AB_PROVIDER *pro, AB_USER *u, GWEN_HTTP_SESSION **pSess);
-static int AO_Provider_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_t *p, unsigned int plen,
-                                      GWEN_BUFFER **pRbuf);
-
-
-
-/* ***************************************************************************************************************
- *
- *                                                provider_request.c
- *
- * ***************************************************************************************************************/
-
-
-static int AO_Provider__AddHeaders(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf);
-static int AO_Provider__AddSignOn(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf);
-static int AO_Provider__WrapRequest(AB_PROVIDER *pro, AB_USER *u, const char *mTypeName, const char *tTypeName,
-                                    GWEN_BUFFER *buf);
-static int AO_Provider__WrapMessage(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf);
-
-
 
 /* ***************************************************************************************************************
  *

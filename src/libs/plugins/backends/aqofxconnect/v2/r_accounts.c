@@ -11,6 +11,7 @@
 # include <config.h>
 #endif
 
+#include "r_accounts.h"
 
 #include "n_header.h"
 #include "n_signon.h"

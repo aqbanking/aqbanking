@@ -56,10 +56,6 @@ libaqofxconnect_la_LIBADD= \
 EXTRA_DIST= $(dlgdata_DATA) $(dlgimage_DATA) \
   aqofxconnect.xml.in \
   provider_accspec.c \
-  provider_cmd_accinfo.c \
-  provider_cmd_stm.c \
-  provider_network.c \
-  provider_request.c \
   provider_sendcmd.c \
   provider_update.c
 

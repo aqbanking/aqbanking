@@ -33,7 +33,8 @@ noinst_HEADERS=$(build_headers_priv) $(build_headers_pub) \
   n_signon.h \
   n_statement.h \
   n_utils.h \
-  r_accounts.h
+  r_accounts.h \
+  r_statements.h
 
 
 
@@ -49,7 +50,8 @@ libofxdcv2_la_SOURCES= $(build_sources) \
   n_signon.c \
   n_statement.c \
   n_utils.c \
-  r_accounts.c
+  r_accounts.c \
+  r_statements.c
 
 
 EXTRA_DIST=$(typefiles) $(dlgdata_DATA) $(dlgimage_DATA) $(build_sources) $(build_headers)

@@ -246,7 +246,7 @@ GWEN_DB_NODE *AB_ImExporterXML_ImportIntoDbWithSchemaDoc(AB_IMEXPORTER *ie, GWEN
 
   dbData=GWEN_DB_Group_new("data");
   rv=GWEN_Xml2Db(xmlDocData, xmlNodeSchema, dbData);
-#if 1
+#if 0
   DBG_ERROR(AQBANKING_LOGDOMAIN, "Data received:");
   GWEN_DB_Dump(dbData, 2);
 #endif
@@ -534,6 +534,7 @@ int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
     AB_ACCOUNT_SPEC *accountSpec;
     AB_IMEXPORTER_ACCOUNTINFO *accountInfo;
     GWEN_DB_NODE *dbCurrent;
+    const char *s;
 
     accountSpec=AB_AccountSpec_fromDb(dbAccount);
     assert(accountSpec);
@@ -545,6 +546,13 @@ int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
                                                          AB_AccountSpec_GetAccountNumber(accountSpec),
                                                          AB_AccountSpec_GetType(accountSpec));
     assert(accountInfo);
+
+    s=AB_ImExporterAccountInfo_GetCurrency(accountInfo);
+    if (!(s && *s)) {
+      s=AB_AccountSpec_GetCurrency(accountSpec);
+      if (s && *s)
+        AB_ImExporterAccountInfo_SetCurrency(accountInfo, s);
+    }
 
     /* import transactions */
     dbCurrent=GWEN_DB_FindFirstGroup(dbAccount, "transaction");
