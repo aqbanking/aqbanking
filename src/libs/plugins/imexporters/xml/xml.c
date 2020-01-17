@@ -534,6 +534,7 @@ int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
     AB_ACCOUNT_SPEC *accountSpec;
     AB_IMEXPORTER_ACCOUNTINFO *accountInfo;
     GWEN_DB_NODE *dbCurrent;
+    const char *s;
 
     accountSpec=AB_AccountSpec_fromDb(dbAccount);
     assert(accountSpec);
@@ -543,8 +544,15 @@ int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
                                                          AB_AccountSpec_GetIban(accountSpec),
                                                          AB_AccountSpec_GetBankCode(accountSpec),
                                                          AB_AccountSpec_GetAccountNumber(accountSpec),
-                                                         AB_AccountType_Unknown);
+                                                         AB_AccountSpec_GetType(accountSpec));
     assert(accountInfo);
+
+    s=AB_ImExporterAccountInfo_GetCurrency(accountInfo);
+    if (!(s && *s)) {
+      s=AB_AccountSpec_GetCurrency(accountSpec);
+      if (s && *s)
+        AB_ImExporterAccountInfo_SetCurrency(accountInfo, s);
+    }
 
     /* import transactions */
     dbCurrent=GWEN_DB_FindFirstGroup(dbAccount, "transaction");

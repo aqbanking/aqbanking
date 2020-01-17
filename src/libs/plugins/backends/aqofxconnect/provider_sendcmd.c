@@ -249,7 +249,7 @@ void AO_Provider__FinishJobs(AB_PROVIDER *pro, AB_TRANSACTION_LIST2 *jobList, AB
       }
 
       /* copy command to context */
-      AB_ImExporterContext_AddTransaction(ctx, AB_Transaction_dup(t));
+      /*AB_ImExporterContext_AddTransaction(ctx, AB_Transaction_dup(t));*/
 
       t=AB_Transaction_List2Iterator_Next(it);
     }

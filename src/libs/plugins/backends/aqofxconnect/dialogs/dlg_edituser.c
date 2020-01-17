@@ -16,14 +16,13 @@
 
 #include "dlg_edituser_p.h"
 #include "dlg_ofx_special_l.h"
-#include "libofxhome/dlg_getinst.h"
-#include "aqbanking/i18n_l.h"
-
-#include <aqbanking/backendsupport/user.h>
-#include <aqbanking/banking_be.h>
-
+#include "aqofxconnect/libofxhome/dlg_getinst.h"
 #include <aqofxconnect/user.h>
 #include <aqofxconnect/provider.h>
+
+#include "aqbanking/i18n_l.h"
+#include <aqbanking/backendsupport/user.h>
+#include <aqbanking/banking_be.h>
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>

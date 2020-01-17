@@ -1,0 +1,343 @@
+
+<!--
+/***************************************************************************
+    begin       : Sun Dec 16 2018
+    copyright   : (C) 2018 by Martin Preuss
+    email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+ 
+ This file can be used to import a OFX2 file.
+ 
+-->
+
+<Schema>
+
+  <DocMatches>
+    <Match path="?OFX@OFXHEADER">200</Match>
+  </DocMatches>
+
+
+  <Import>
+
+    <XmlIfPathExists path="OFX">
+      <XmlEnter path="OFX">
+      
+        <!-- Account Info -->
+        <XmlIfPathExists path="ACCTINFOTRNRS/ACCTINFORS">
+          <XmlEnter path="ACCTINFOTRNRS/ACCTINFORS">
+          
+            <XmlForEvery name="ACCTINFO">
+              <DbCreateAndEnterGroup name="account">
+
+                <XmlIfHasCharData path="DESC">
+                  <DbSetCharValue name="accountName" path="DESC" />
+                </XmlIfHasCharData>
+
+                <XmlIfPathExists path="BANKACCTINFO/BANKACCTFROM">
+                  <XmlEnter path="BANKACCTINFO/BANKACCTFROM">
+                  
+                    <XmlIfHasCharData path="BANKID">
+                      <DbSetCharValue name="bankCode" path="BANKID" />
+                    </XmlIfHasCharData>
+                    
+                    <XmlIfHasCharData path="ACCTID">
+                      <DbSetCharValue name="accountNumber" path="ACCTID" />
+                    </XmlIfHasCharData>
+                    
+                    <XmlIfHasCharData path="ACCTTYPE">
+                      <DbSetCharValue name="xAccountType" path="ACCTTYPE" />
+                    </XmlIfHasCharData>
+                    
+                    <XmlIfCharDataMatches path="ACCTTYPE" pattern="CHECKING">
+                      <DbSetCharValue name="type" value="3"/>
+                    </XmlIfCharDataMatches>
+                    
+                    <XmlIfCharDataMatches path="ACCTTYPE" pattern="SAVINGS">
+                      <DbSetCharValue name="type" value="4"/>
+                    </XmlIfCharDataMatches>
+
+                    <XmlIfCharDataMatches path="ACCTTYPE" pattern="MONEYMRKT">
+                      <DbSetCharValue name="type" value="7"/>
+                    </XmlIfCharDataMatches>
+                    
+
+                    <XmlIfHasCharData path="SUPTXDL">
+                      <DbSetCharValue name="xSUPTXDL" path="SUPTXDL" />
+                    </XmlIfHasCharData>
+
+                    <XmlIfHasCharData path="XFERSRC">
+                      <DbSetCharValue name="xXFERSRC" path="XFERSRC" />
+                    </XmlIfHasCharData>
+
+                    <XmlIfHasCharData path="XFERDEST">
+                      <DbSetCharValue name="xXFERDEST" path="XFERDEST" />
+                    </XmlIfHasCharData>
+
+                    <XmlIfHasCharData path="SVCSTATUS">
+                      <DbSetCharValue name="xSVCSTATUS" path="SVCSTATUS" />
+                    </XmlIfHasCharData>
+                  
+                  
+                  </XmlEnter>
+                </XmlIfPathExists>
+
+              
+              </DbCreateAndEnterGroup>
+            </XmlForEvery>
+          
+          </XmlEnter>
+        </XmlIfPathExists>
+
+        <!-- Statements -->
+        <XmlIfPathExists path="BANKMSGSRSV1/STMTTRNRS/STMTRS">
+          <XmlEnter path="BANKMSGSRSV1/STMTTRNRS/STMTRS">
+
+            <DbCreateAndEnterGroup name="account">
+
+              <XmlIfHasCharData path="CURDEF">
+                <DbSetCharValue name="currency" path="CURDEF"/>
+              </XmlIfHasCharData>
+
+              <!-- account -->
+              <XmlIfPathExists path="BANKACCTFROM">
+                <XmlEnter path="BANKACCTFROM">
+                
+                  <XmlIfHasCharData path="BANKID">
+                    <DbSetCharValue name="bankCode" path="BANKID" />
+                  </XmlIfHasCharData>
+                  
+                  <XmlIfHasCharData path="ACCTID">
+                    <DbSetCharValue name="accountNumber" path="ACCTID" />
+                  </XmlIfHasCharData>
+                  
+                  <XmlIfHasCharData path="ACCTTYPE">
+                    <DbSetCharValue name="xAccountType" path="ACCTTYPE" />
+                  </XmlIfHasCharData>
+                  
+                  <XmlIfCharDataMatches path="ACCTTYPE" pattern="CHECKING">
+                    <DbSetCharValue name="type" value="3"/>
+                  </XmlIfCharDataMatches>
+                  
+                  <XmlIfCharDataMatches path="ACCTTYPE" pattern="SAVINGS">
+                    <DbSetCharValue name="type" value="4"/>
+                  </XmlIfCharDataMatches>
+  
+                  <XmlIfCharDataMatches path="ACCTTYPE" pattern="MONEYMRKT">
+                    <DbSetCharValue name="type" value="7"/>
+                  </XmlIfCharDataMatches>
+            
+                </XmlEnter>
+              </XmlIfPathExists>
+
+
+              <XmlIfPathExists path="BANKTRANLIST">
+                <XmlEnter path="BANKTRANLIST">
+
+                  <XmlForEvery name="STMTTRN">
+                    <DbCreateAndEnterGroup name="transaction">
+
+                      <DbSetCharValue name="type" value="statement" />
+
+                      <!-- transaction type -->
+                      <XmlIfCharDataMatches path="TRNTYPE" pattern="CREDIT">
+                        <DbSetCharValue name="transactionKey" value="MSC"/>
+                        <DbSetCharValue name="transactionText" value="Generic credit"/>
+                      </XmlIfCharDataMatches>
+  
+                      <XmlIfCharDataMatches path="TRNTYPE" pattern="DEBIT">
+                        <DbSetCharValue name="transactionKey" value="MSC"/>
+                        <DbSetCharValue name="transactionText" value="Generic debit"/>
+                      </XmlIfCharDataMatches>
+  
+                      <XmlIfCharDataMatches path="TRNTYPE" pattern="INT">
+                        <DbSetCharValue name="transactionKey" value="INT"/>
+                        <DbSetCharValue name="transactionText" value="Interest earned or paid (Note: Depends on signage of amount)"/>
+                      </XmlIfCharDataMatches>
+  
+                      <XmlIfCharDataMatches path="TRNTYPE" pattern="DIV">
+                        <DbSetCharValue name="transactionKey" value="DIV"/>
+                        <DbSetCharValue name="transactionText" value="Dividend"/>
+                      </XmlIfCharDataMatches>
+  
+                      <XmlIfCharDataMatches path="TRNTYPE" pattern="FEE">
+                        <DbSetCharValue name="transactionKey" value="BRF"/>
+                        <DbSetCharValue name="transactionText" value="FI fee"/>
+                      </XmlIfCharDataMatches>
+  
+                      <XmlIfCharDataMatches path="TRNTYPE" pattern="SRVCHG">
+                        <DbSetCharValue name="transactionKey" value="CHGF"/>
+                        <DbSetCharValue name="transactionText" value="Service charge"/>
+                      </XmlIfCharDataMatches>
+  
+                      <XmlIfCharDataMatches path="TRNTYPE" pattern="DEP">  <!-- not sure -->
+                        <DbSetCharValue name="transactionKey" value="LDP"/>
+                        <DbSetCharValue name="transactionText" value="Deposit"/>
+                      </XmlIfCharDataMatches>
+  
+                      <XmlIfCharDataMatches path="TRNTYPE" pattern="ATM">
+                        <DbSetCharValue name="transactionKey" value="MSC"/>
+                        <DbSetCharValue name="transactionText" value="ATM debit or credit (Note: Depends on signage of amount)"/>
+                      </XmlIfCharDataMatches>
+  
+                      <XmlIfCharDataMatches path="TRNTYPE" pattern="POS">
+                        <DbSetCharValue name="transactionKey" value="MSC"/>
+                        <DbSetCharValue name="transactionText" value="Point of sale debit or credit (Note: Depends on signage of amount)"/>
+                      </XmlIfCharDataMatches>
+  
+                      <XmlIfCharDataMatches path="TRNTYPE" pattern="XFER">
+                        <DbSetCharValue name="transactionKey" value="TRF"/>
+                        <DbSetCharValue name="transactionText" value="Transfer"/>
+                      </XmlIfCharDataMatches>
+  
+                      <XmlIfCharDataMatches path="TRNTYPE" pattern="CHECK">
+                        <DbSetCharValue name="transactionKey" value="CHK"/>
+                        <DbSetCharValue name="transactionText" value="Check"/>
+                      </XmlIfCharDataMatches>
+  
+                      <XmlIfCharDataMatches path="TRNTYPE" pattern="PAYMENT">
+                        <DbSetCharValue name="transactionKey" value="TRF"/>   <!-- not sure -->
+                        <DbSetCharValue name="transactionText" value="Electronic payment"/>
+                      </XmlIfCharDataMatches>
+  
+                      <XmlIfCharDataMatches path="TRNTYPE" pattern="CASH">
+                        <DbSetCharValue name="transactionKey" value="MSC"/>   <!-- not sure -->
+                        <DbSetCharValue name="transactionText" value="Cash withdrawal"/>
+                      </XmlIfCharDataMatches>
+  
+                      <XmlIfCharDataMatches path="TRNTYPE" pattern="DIRECTDEP">
+                        <DbSetCharValue name="transactionKey" value="LDP"/>   <!-- not sure -->
+                        <DbSetCharValue name="transactionText" value="Direct deposit"/>
+                      </XmlIfCharDataMatches>
+  
+                      <XmlIfCharDataMatches path="TRNTYPE" pattern="DIRECTDEBIT">
+                        <DbSetCharValue name="transactionKey" value="MSC"/>
+                        <DbSetCharValue name="transactionText" value="Merchant initiated debit"/>
+                      </XmlIfCharDataMatches>
+  
+                      <XmlIfCharDataMatches path="TRNTYPE" pattern="REPEATPMT">
+                        <DbSetCharValue name="transactionKey" value="STO"/>
+                        <DbSetCharValue name="transactionText" value="Repeating payment/standing order"/>
+                      </XmlIfCharDataMatches>
+                      
+  
+                      <XmlIfCharDataMatches path="TRNTYPE" pattern="OTHER">
+                        <DbSetCharValue name="transactionKey" value="MSC"/>
+                        <DbSetCharValue name="transactionText" value="Other"/>
+                      </XmlIfCharDataMatches>
+  
+                      <!-- valuta date -->
+                      <XmlIfHasCharData path="DTPOSTED">
+                        <DbSetCharValue name="valutaDate" path="DTPOSTED" type="date" template="YYYYMMDD" />
+                      </XmlIfHasCharData>
+  
+                      <!-- booking date -->
+                      <XmlIfHasCharData path="DTUSER">
+                        <DbSetCharValue name="date" path="DTUSER" type="date" template="YYYYMMDD" />
+                      </XmlIfHasCharData>
+  
+                      <!-- amount -->
+                      <XmlIfHasCharData path="TRNAMT">
+                        <DbSetCharValue name="value" path="TRNAMT"/>
+                      </XmlIfHasCharData>
+  
+                      <XmlIfHasCharData path="FITID">
+                        <DbSetCharValue name="fiId" path="FITID"/>
+                      </XmlIfHasCharData>
+  
+                      <XmlIfHasCharData path="CHECKNUM">
+                        <DbSetCharValue name="customerReference" path="CHECKNUM"/>
+                      </XmlIfHasCharData>
+  
+                      <XmlIfHasCharData path="REFNUM">
+                        <DbSetCharValue name="customerReference" path="REFNUM"/>
+                      </XmlIfHasCharData>
+  
+                      <XmlIfHasCharData path="NAME">
+                        <DbSetCharValue name="remoteName" path="NAME"/>
+                      </XmlIfHasCharData>
+  
+                      <XmlIfHasCharData path="MEMO">
+                        <DbSetCharValue name="purpose" path="MEMO" mode="append" delimiter="\n"/>
+                      </XmlIfHasCharData>
+  
+                      <XmlIfHasCharData path="MEMO2">
+                        <DbSetCharValue name="purpose" path="MEMO2" mode="append" delimiter="\n"/>
+                      </XmlIfHasCharData>
+  
+                      <XmlIfHasCharData path="SRVRTID">
+                        <DbSetCharValue name="bankReference" path="SRVRTID"/>
+                      </XmlIfHasCharData>
+  
+                      <XmlIfHasCharData path="SRVRTID2">
+                        <DbSetCharValue name="bankReference" path="SRVRTID2"/>
+                      </XmlIfHasCharData>
+
+
+                    </DbCreateAndEnterGroup>
+                  </XmlForEvery>
+                
+                </XmlEnter>
+              </XmlIfPathExists>
+            
+            
+              <XmlIfPathExists path="LEDGERBAL">
+                <XmlEnter path="LEDGERBAL">
+                  <DbCreateAndEnterGroup name="balance">
+                    <DbSetCharValue name="type" value="booked"/>
+
+                    <!-- amount -->
+                    <XmlIfHasCharData path="BALAMT">
+                      <DbSetCharValue name="value" path="BALAMT"/>
+                    </XmlIfHasCharData>
+
+                    <!-- date -->
+                    <XmlIfHasCharData path="DTASOF">
+                      <DbSetCharValue name="date" path="DTASOF" type="date" template="YYYYMMDD" />
+                    </XmlIfHasCharData>
+
+                  </DbCreateAndEnterGroup>
+                  
+                </XmlEnter>
+              </XmlIfPathExists>
+
+
+              <XmlIfPathExists path="AVAILBAL">
+                <XmlEnter path="AVAILBAL">
+
+                  <DbCreateAndEnterGroup name="balance">
+                    <DbSetCharValue name="type" value="disposable"/>
+
+                    <!-- amount -->
+                    <XmlIfHasCharData path="BALAMT">
+                      <DbSetCharValue name="value" path="BALAMT"/>
+                    </XmlIfHasCharData>
+
+                    <!-- date -->
+                    <XmlIfHasCharData path="DTASOF">
+                      <DbSetCharValue name="date" path="DTASOF" type="date" template="YYYYMMDD" />
+                    </XmlIfHasCharData>
+
+                  </DbCreateAndEnterGroup>
+
+                </XmlEnter>
+              </XmlIfPathExists>
+            
+            
+            </DbCreateAndEnterGroup>
+
+          </XmlEnter>
+        </XmlIfPathExists>
+
+      
+      </XmlEnter>
+    </XmlIfPathExists>
+    
+    
+  </Import>
+
+
+</Schema>
+

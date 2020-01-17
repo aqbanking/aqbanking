@@ -6,7 +6,8 @@ profiles_DATA=\
   default.conf \
   camt_052_001_02.conf \
   camt_053_001_04.conf \
-  pain_001_003_03.conf
+  pain_001_003_03.conf \
+  ofx2.conf
 
 EXTRA_DIST=$(profiles_DATA)
 

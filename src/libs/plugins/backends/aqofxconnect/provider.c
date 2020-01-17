@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2020 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -14,10 +14,14 @@
 #define AO_PROVIDER_HEAVY_DEBUG
 
 #include "provider_p.h"
-#include "account.h"
-#include "user.h"
-#include "dlg_edituser_l.h"
-#include "dlg_newuser_l.h"
+
+#include "aqofxconnect/account.h"
+#include "aqofxconnect/user.h"
+#include "aqofxconnect/dialogs/dlg_edituser_l.h"
+#include "aqofxconnect/dialogs/dlg_newuser_l.h"
+#include "aqofxconnect/control/control.h"
+#include "aqofxconnect/v2/r_statements.h"
+#include "aqofxconnect/v2/r_accounts.h"
 
 #include <aqbanking/backendsupport/account.h>
 #include <aqbanking/types/transaction.h>
@@ -112,6 +116,8 @@ AB_PROVIDER *AO_Provider_new(AB_BANKING *ab)
   AB_Provider_SetCreateUserObjectsFn(pro, AO_Provider_CreateUserObject);
 
   AB_Provider_SetUpdateAccountSpecFn(pro, AO_Provider_UpdateAccountSpec);
+
+  AB_Provider_SetControlFn(pro, AO_Control);
 
   AB_Provider_SetGetNewUserDialogFn(pro, AO_Provider_GetNewUserDialog);
   AB_Provider_AddFlags(pro, AB_PROVIDER_FLAGS_HAS_NEWUSER_DIALOG);
@@ -366,11 +372,84 @@ int AO_Provider_GetCert(AB_PROVIDER *pro, AB_USER *u)
 
 
 
+int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j,
+                                  AB_IMEXPORTER_CONTEXT *ictx)
+{
+  int rv;
+
+  rv=AO_V2_RequestStatements(pro, u, a, j, ictx);
+  if (rv<0) {
+    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Error adding request element (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+int AO_Provider_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, int keepOpen)
+{
+  AO_PROVIDER *dp;
+  int rv;
+  uint32_t pid;
+  AB_IMEXPORTER_CONTEXT *ictx;
+
+  assert(pro);
+  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AO_PROVIDER, pro);
+  assert(dp);
+
+  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
+                             GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+                             GWEN_GUI_PROGRESS_SHOW_LOG |
+                             GWEN_GUI_PROGRESS_ALWAYS_SHOW_LOG |
+                             (keepOpen?GWEN_GUI_PROGRESS_KEEP_OPEN:0) |
+                             GWEN_GUI_PROGRESS_SHOW_ABORT,
+                             I18N("Requesting account list"),
+                             I18N("We are now requesting a list of "
+                                  "accounts\n"
+                                  "which can be managed via OFX.\n"
+                                  "<html>"
+                                  "We are now requesting a list of "
+                                  "accounts "
+                                  "which can be managed via <i>OFX</i>.\n"
+                                  "</html>"),
+                             1,
+                             0);
+
+  ictx=AB_ImExporterContext_new();
+  rv=AO_V2_RequestAccounts(pro, u, ictx);
+  if (rv<0) {
+    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Gui_ProgressEnd(pid);
+    AB_ImExporterContext_free(ictx);
+    return rv;
+  }
+
+  /* create accounts */
+  rv=AO_Provider__ProcessImporterContext(pro, u, ictx);
+  if (rv<0) {
+    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Error importing accounts (%d)", rv);
+    GWEN_Gui_ProgressLog(pid,
+                         GWEN_LoggerLevel_Error,
+                         I18N("Error importing accounts"));
+    AB_ImExporterContext_free(ictx);
+    GWEN_Gui_ProgressEnd(pid);
+    return rv;
+  }
+
+
+  AB_ImExporterContext_free(ictx);
+
+  GWEN_Gui_ProgressEnd(pid);
+  return 0;
+}
+
+
+
+
+
 #include "provider_accspec.c"
-#include "provider_network.c"
-#include "provider_cmd_accinfo.c"
-#include "provider_cmd_stm.c"
-#include "provider_request.c"
 #include "provider_sendcmd.c"
 #include "provider_update.c"
 
