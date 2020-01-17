@@ -376,7 +376,7 @@ int AB_Banking_CopyOldSettingsFolderIfNeeded(AB_BANKING *ab)
   if (!_haveConfigAtFolder(GWEN_Buffer_GetStart(bufDest))) {
     GWEN_BUFFER *bufSource;
 
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "No current settings folder, trying to copy old one");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No current settings folder, trying to copy old one");
     bufSource=GWEN_Buffer_new(0, 256, 0, 1);
     _getOldStandardSourceFolder(bufSource);
 
@@ -610,7 +610,7 @@ int _haveConfigAtFolder(const char *cfgFolder)
     GWEN_Buffer_free(dbuf);
     return 0;
   }
-  DBG_ERROR(AQBANKING_LOGDOMAIN, "AqBanking config folder found at [%s]", GWEN_Buffer_GetStart(dbuf));
+  DBG_INFO(AQBANKING_LOGDOMAIN, "AqBanking config folder found at [%s]", GWEN_Buffer_GetStart(dbuf));
   GWEN_Buffer_free(dbuf);
 
   return 1;
