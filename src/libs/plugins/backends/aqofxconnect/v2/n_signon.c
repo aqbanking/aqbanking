@@ -59,7 +59,7 @@ GWEN_XMLNODE *AO_V2_MkSignOnNode(AB_USER *u)
   if (s && *s)
     GWEN_XMLNode_SetCharValue(xmlSignonRq, "USERID", s);
 
-  if (1){
+  if (1) {
     char userpass[64];
 
     /* get password */
@@ -68,33 +68,33 @@ GWEN_XMLNODE *AO_V2_MkSignOnNode(AB_USER *u)
       GWEN_BUFFER *nbuf;
       int rv;
       char msg[]=I18S("Please enter the password for user %s"
-		      "<html>"
-		      "Please enter the password for user <b>%s</b>"
-		      "</html>");
+                      "<html>"
+                      "Please enter the password for user <b>%s</b>"
+                      "</html>");
       char msgbuf[512];
-  
+
       nbuf=GWEN_Buffer_new(0, 64, 0, 1);
       GWEN_Buffer_AppendString(nbuf, "OFX::userpass::");
       GWEN_Buffer_AppendString(nbuf, s);
       snprintf(msgbuf, sizeof(msgbuf), I18N(msg), s, s);
       rv=GWEN_Gui_GetPassword(0,
-			      GWEN_Buffer_GetStart(nbuf),
-			      I18N("Enter Password"),
-			      msgbuf,
-			      userpass,
-			      4,
-			      sizeof(userpass),
-			      GWEN_Gui_PasswordMethod_Text, NULL,
-			      0);
+                              GWEN_Buffer_GetStart(nbuf),
+                              I18N("Enter Password"),
+                              msgbuf,
+                              userpass,
+                              4,
+                              sizeof(userpass),
+                              GWEN_Gui_PasswordMethod_Text, NULL,
+                              0);
       GWEN_Buffer_free(nbuf);
       if (rv<0) {
-	DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
-	memset(userpass, 0, sizeof(userpass));
-	GWEN_XMLNode_free(xmlSignonMsg);
-	return NULL;
+        DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
+        memset(userpass, 0, sizeof(userpass));
+        GWEN_XMLNode_free(xmlSignonMsg);
+        return NULL;
       }
     } /* while */
-  
+
     GWEN_XMLNode_SetCharValue(xmlSignonRq, "USERPASS", userpass);
     memset(userpass, 0, sizeof(userpass));
   }

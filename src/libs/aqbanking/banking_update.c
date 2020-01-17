@@ -384,27 +384,27 @@ int AB_Banking_CopyOldSettingsFolderIfNeeded(AB_BANKING *ab)
       DBG_ERROR(AQBANKING_LOGDOMAIN, "There is an old settings folder, copying that");
       rv=_copyFolder(GWEN_Buffer_GetStart(bufSource), GWEN_Buffer_GetStart(bufDest), 0);
       if (rv<0) {
-	DBG_ERROR(AQBANKING_LOGDOMAIN,
-		  "Error copying old settings, please copy the folder\n"
-		  "  %s\n"
-		  " manually to\n"
-		  "  %s\n"
-		  "(Error code was: %d)",
-		  GWEN_Buffer_GetStart(bufSource),
-		  GWEN_Buffer_GetStart(bufDest),
-		  rv);
-	GWEN_Gui_ShowError("Error Copying old Settings",
-			   "Error copying old settings, please copy the folder\n"
-			   "  %s\n"
-			   " manually to\n"
-			   "  %s\n"
-			   "(Error code was: %d)",
-			   GWEN_Buffer_GetStart(bufSource),
-			   GWEN_Buffer_GetStart(bufDest),
-			   rv);
-	GWEN_Buffer_free(bufDest);
-	GWEN_Buffer_free(bufSource);
-	return rv;
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "Error copying old settings, please copy the folder\n"
+                  "  %s\n"
+                  " manually to\n"
+                  "  %s\n"
+                  "(Error code was: %d)",
+                  GWEN_Buffer_GetStart(bufSource),
+                  GWEN_Buffer_GetStart(bufDest),
+                  rv);
+        GWEN_Gui_ShowError("Error Copying old Settings",
+                           "Error copying old settings, please copy the folder\n"
+                           "  %s\n"
+                           " manually to\n"
+                           "  %s\n"
+                           "(Error code was: %d)",
+                           GWEN_Buffer_GetStart(bufSource),
+                           GWEN_Buffer_GetStart(bufDest),
+                           rv);
+        GWEN_Buffer_free(bufDest);
+        GWEN_Buffer_free(bufSource);
+        return rv;
       }
     }
     else {
@@ -433,7 +433,8 @@ int _copyFile(const char *sourceFile, const char *destFile)
     return rv;
   }
 
-  rv=GWEN_SyncIo_Helper_WriteFile(destFile, (const uint8_t*) GWEN_Buffer_GetStart(bufSource), GWEN_Buffer_GetUsedBytes(bufSource));
+  rv=GWEN_SyncIo_Helper_WriteFile(destFile, (const uint8_t *) GWEN_Buffer_GetStart(bufSource),
+                                  GWEN_Buffer_GetUsedBytes(bufSource));
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(bufSource);
@@ -495,7 +496,7 @@ int _copyFolder(const char *sourceFolder, const char *destFolder, int depth)
 
   /* copy files */
   se=GWEN_StringList_FirstEntry(slSourceEntries);
-  while(se) {
+  while (se) {
     const char *s;
 
     s=GWEN_StringListEntry_Data(se);
@@ -506,11 +507,11 @@ int _copyFolder(const char *sourceFolder, const char *destFolder, int depth)
 
       rv=_copyFile(GWEN_Buffer_GetStart(bufSource), GWEN_Buffer_GetStart(bufDest));
       if (rv<0) {
-	DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-	GWEN_Buffer_free(bufSource);
-	GWEN_Buffer_free(bufDest);
-	GWEN_StringList_free(slSourceEntries);
-	return rv;
+        DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+        GWEN_Buffer_free(bufSource);
+        GWEN_Buffer_free(bufDest);
+        GWEN_StringList_free(slSourceEntries);
+        return rv;
       }
 
       GWEN_Buffer_Crop(bufSource, 0, bufferPosSource);
@@ -522,26 +523,26 @@ int _copyFolder(const char *sourceFolder, const char *destFolder, int depth)
 
   /* create folders recursively */
   se=GWEN_StringList_FirstEntry(slSourceEntries);
-  while(se) {
+  while (se) {
     const char *s;
 
     s=GWEN_StringListEntry_Data(se);
     if (s && *s=='d') {
       if (strcmp(s+1, ".")!=0 && strcmp(s+1, "..")!=0) {
-	GWEN_Buffer_AppendString(bufSource, s+1);
-	GWEN_Buffer_AppendString(bufDest, s+1);
+        GWEN_Buffer_AppendString(bufSource, s+1);
+        GWEN_Buffer_AppendString(bufDest, s+1);
 
-	rv=_copyFolder(GWEN_Buffer_GetStart(bufSource), GWEN_Buffer_GetStart(bufDest), depth+1);
-	if (rv<0) {
-	  DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
-	  GWEN_Buffer_free(bufSource);
-	  GWEN_Buffer_free(bufDest);
-	  GWEN_StringList_free(slSourceEntries);
-	  return rv;
-	}
+        rv=_copyFolder(GWEN_Buffer_GetStart(bufSource), GWEN_Buffer_GetStart(bufDest), depth+1);
+        if (rv<0) {
+          DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+          GWEN_Buffer_free(bufSource);
+          GWEN_Buffer_free(bufDest);
+          GWEN_StringList_free(slSourceEntries);
+          return rv;
+        }
 
-	GWEN_Buffer_Crop(bufSource, 0, bufferPosSource);
-	GWEN_Buffer_Crop(bufDest, 0, bufferPosDest);
+        GWEN_Buffer_Crop(bufSource, 0, bufferPosSource);
+        GWEN_Buffer_Crop(bufDest, 0, bufferPosDest);
       }
     }
 
@@ -562,7 +563,7 @@ void _getOldStandardSourceFolder(GWEN_BUFFER *dbuf)
 
   if (GWEN_Directory_GetHomeDirectory(home, sizeof(home))) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Could not determine home directory, aborting.");
+              "Could not determine home directory, aborting.");
     abort();
   }
 
@@ -581,7 +582,7 @@ void _getNewStandardSourceFolder(GWEN_BUFFER *dbuf)
 
   if (GWEN_Directory_GetHomeDirectory(home, sizeof(home))) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Could not determine home directory, aborting.");
+              "Could not determine home directory, aborting.");
     abort();
   }
 

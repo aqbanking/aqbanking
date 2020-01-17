@@ -55,7 +55,7 @@ int AO_V2_RequestStatements(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRAN
   xmlNode=AO_V2_MkSignOnNode(u);
   if (xmlNode)
     GWEN_XMLNode_AddChild(xmlOfx, xmlNode);
-          
+
   xmlNode=AO_V2_MkStatementRqNode(u, a, j);
   if (xmlNode)
     GWEN_XMLNode_AddChild(xmlOfx, xmlNode);
@@ -81,9 +81,9 @@ int AO_V2_RequestStatements(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRAN
 
   /* exchange messages */
   rv=AO_V2_SendAndReceive(pro, u,
-			  (const uint8_t*) GWEN_Buffer_GetStart(bufRequest),
-			  GWEN_Buffer_GetUsedBytes(bufRequest),
-			  &bufResponse);
+                          (const uint8_t *) GWEN_Buffer_GetStart(bufRequest),
+                          GWEN_Buffer_GetUsedBytes(bufRequest),
+                          &bufResponse);
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(bufRequest);
@@ -103,14 +103,14 @@ int AO_V2_RequestStatements(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRAN
 
   /* parse response */
   rv=AB_Banking_ImportFromBufferLoadProfile(ab, "xml", ctx, "ofx2", NULL,
-                                            (const uint8_t*) GWEN_Buffer_GetStart(bufResponse),
+                                            (const uint8_t *) GWEN_Buffer_GetStart(bufResponse),
                                             GWEN_Buffer_GetUsedBytes(bufResponse));
   if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Bad data in OFX response (error: %d):", rv);
     GWEN_Text_LogString(GWEN_Buffer_GetStart(bufResponse),
-			GWEN_Buffer_GetUsedBytes(bufResponse),
-			AQOFXCONNECT_LOGDOMAIN,
-			GWEN_LoggerLevel_Error);
+                        GWEN_Buffer_GetUsedBytes(bufResponse),
+                        AQOFXCONNECT_LOGDOMAIN,
+                        GWEN_LoggerLevel_Error);
     GWEN_Buffer_free(bufResponse);
     return rv;
   }

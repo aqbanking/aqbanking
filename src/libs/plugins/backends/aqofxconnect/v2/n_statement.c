@@ -85,16 +85,16 @@ GWEN_XMLNODE *_mkBankStatementRqNode(AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *
 
   if (1) {
     GWEN_XMLNODE *xmlAcc;
-  
+
     xmlAcc=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "BANKACCTFROM");
     GWEN_XMLNode_AddChild(xmlRq, xmlAcc);
     if (!(AO_User_GetFlags(u) & AO_USER_FLAGS_EMPTY_BANKID)) {
       /* only copy bank code if not forbidden by user */
       s=AB_Account_GetBankCode(a);
       if (s)
-	GWEN_XMLNode_SetCharValue(xmlAcc, "BANKID", s);
+        GWEN_XMLNode_SetCharValue(xmlAcc, "BANKID", s);
     }
-  
+
     s=AB_Account_GetAccountNumber(a);
     if (s)
       GWEN_XMLNode_SetCharValue(xmlAcc, "ACCTID", s);
@@ -140,16 +140,16 @@ GWEN_XMLNODE *_mkCreditCardStatementRqNode(AB_USER *u, AB_ACCOUNT *a, AB_TRANSAC
 
   if (1) {
     GWEN_XMLNODE *xmlAcc;
-  
+
     xmlAcc=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "CCACCTFROM");
     GWEN_XMLNode_AddChild(xmlRq, xmlAcc);
     if (!(AO_User_GetFlags(u) & AO_USER_FLAGS_EMPTY_BANKID)) {
       /* only copy bank code if not forbidden by user */
       s=AB_Account_GetBankCode(a);
       if (s)
-	GWEN_XMLNode_SetCharValue(xmlAcc, "BANKID", s);
+        GWEN_XMLNode_SetCharValue(xmlAcc, "BANKID", s);
     }
-  
+
     s=AB_Account_GetAccountNumber(a);
     if (s)
       GWEN_XMLNode_SetCharValue(xmlAcc, "ACCTID", s);
@@ -193,7 +193,7 @@ GWEN_XMLNODE *_mkInvestmentStatementRqNode(AB_USER *u, AB_ACCOUNT *a, AB_TRANSAC
 
   if (1) {
     GWEN_XMLNODE *xmlAcc;
-  
+
     xmlAcc=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "INVACCTFROM");
     GWEN_XMLNode_AddChild(xmlRq, xmlAcc);
 

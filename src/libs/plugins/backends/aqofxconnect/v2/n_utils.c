@@ -22,7 +22,7 @@ void AO_V2_Util_SetDateValue(GWEN_XMLNODE *xmlNode, const GWEN_DATE *da, uint32_
 {
   if (da) {
     GWEN_BUFFER *tbuf;
-  
+
     tbuf=GWEN_Buffer_new(0, 32, 0, 1);
     if (userFlags & AO_USER_FLAGS_SEND_SHORT_DATE)
       GWEN_Date_toStringWithTemplate(da, "YYYYMMDD000000", tbuf);
