@@ -1310,6 +1310,7 @@ AC_CONFIG_FILES([
   src/libs/plugins/backends/aqofxconnect/libofxhome/Makefile
   src/libs/plugins/backends/aqofxconnect/v2/Makefile
   src/libs/plugins/backends/aqofxconnect/control/Makefile
+  src/libs/plugins/backends/aqofxconnect/dialogs/Makefile
   src/libs/plugins/backends/aqpaypal/Makefile
   src/libs/plugins/backends/aqpaypal/aqpaypal.xml
   src/libs/plugins/backends/aqpaypal/control/Makefile

@@ -1,4 +1,4 @@
-SUBDIRS=libofxhome v2 control
+SUBDIRS=libofxhome v2 control dialogs
 
 AM_CPPFLAGS = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/..
 
@@ -11,21 +11,11 @@ plugindir = $(aqbanking_plugindir)/providers
 plugin_DATA = aqofxconnect.xml
 
 
-dlgdatadir=$(aqbanking_pkgdatadir)/backends/aqofxconnect/dialogs
-dlgdata_DATA=\
-  dlg_edituser.dlg \
-  dlg_newuser.dlg \
-  dlg_ofx_special.dlg
-
-
 noinst_HEADERS=\
   account_p.h \
   aqofxconnect_l.h \
   provider_p.h \
   user_p.h \
-  dlg_edituser_p.h dlg_edituser_l.h \
-  dlg_newuser_p.h dlg_newuser_l.h \
-  dlg_ofx_special_p.h dlg_ofx_special_l.h \
   account.h \
   aqofxconnect.h \
   provider.h \
@@ -41,15 +31,13 @@ noinst_LTLIBRARIES=libaqofxconnect.la
 libaqofxconnect_la_SOURCES= \
   account.c \
   user.c \
-  provider.c \
-  dlg_edituser.c \
-  dlg_newuser.c \
-  dlg_ofx_special.c
+  provider.c
 
 libaqofxconnect_la_LIBADD= \
   libofxhome/libofxhome.la \
   v2/libofxdcv2.la \
-  control/libofxdccontrol.la
+  control/libofxdccontrol.la \
+  dialogs/libofxdcdialogs.la
 
 
 

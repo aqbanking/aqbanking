@@ -17,8 +17,8 @@
 
 #include "aqofxconnect/account.h"
 #include "aqofxconnect/user.h"
-#include "aqofxconnect/dlg_edituser_l.h"
-#include "aqofxconnect/dlg_newuser_l.h"
+#include "aqofxconnect/dialogs/dlg_edituser_l.h"
+#include "aqofxconnect/dialogs/dlg_newuser_l.h"
 #include "aqofxconnect/control/control.h"
 #include "aqofxconnect/v2/r_statements.h"
 #include "aqofxconnect/v2/r_accounts.h"
