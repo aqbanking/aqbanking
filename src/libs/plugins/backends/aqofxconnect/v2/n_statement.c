@@ -124,12 +124,121 @@ GWEN_XMLNODE *_mkBankStatementRqNode(AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *
 
 GWEN_XMLNODE *_mkCreditCardStatementRqNode(AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j)
 {
+  GWEN_XMLNODE *xmlMsg;
+  GWEN_XMLNODE *xmlTrnRq;
+  GWEN_XMLNODE *xmlRq;
+  const char *s;
+
+  xmlMsg=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "CREDITCARDMSGSRQV1");
+  xmlTrnRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "CCSTMTTRNRQ");
+  GWEN_XMLNode_AddChild(xmlMsg, xmlTrnRq);
+
+  AO_V2_Util_SetCurrentTimeValue(xmlTrnRq, AO_User_GetFlags(u), "TRNUID");
+
+  xmlRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "CCSTMTRQ");
+  GWEN_XMLNode_AddChild(xmlTrnRq, xmlRq);
+
+  if (1) {
+    GWEN_XMLNODE *xmlAcc;
+  
+    xmlAcc=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "CCACCTFROM");
+    GWEN_XMLNode_AddChild(xmlRq, xmlAcc);
+    if (!(AO_User_GetFlags(u) & AO_USER_FLAGS_EMPTY_BANKID)) {
+      /* only copy bank code if not forbidden by user */
+      s=AB_Account_GetBankCode(a);
+      if (s)
+	GWEN_XMLNode_SetCharValue(xmlAcc, "BANKID", s);
+    }
+  
+    s=AB_Account_GetAccountNumber(a);
+    if (s)
+      GWEN_XMLNode_SetCharValue(xmlAcc, "ACCTID", s);
+  }
+
+  if (1) {
+    GWEN_XMLNODE *xmlInc;
+
+    xmlInc=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "INCTRAN");
+    GWEN_XMLNode_AddChild(xmlRq, xmlInc);
+
+    if (AB_Transaction_GetCommand(j)==AB_Transaction_CommandGetTransactions) {
+      AO_V2_Util_SetDateValue(xmlInc, AB_Transaction_GetFirstDate(j), AO_User_GetFlags(u), "DTSTART");
+      AO_V2_Util_SetDateValue(xmlInc, AB_Transaction_GetLastDate(j), AO_User_GetFlags(u), "DTEND");
+      GWEN_XMLNode_SetCharValue(xmlInc, "INCLUDE", "Y");
+    }
+    else
+      GWEN_XMLNode_SetCharValue(xmlInc, "INCLUDE", "N");
+  }
+
+  return xmlMsg;
 }
 
 
 
 GWEN_XMLNODE *_mkInvestmentStatementRqNode(AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j)
 {
+  GWEN_XMLNODE *xmlMsg;
+  GWEN_XMLNODE *xmlTrnRq;
+  GWEN_XMLNODE *xmlRq;
+  const char *s;
+
+  xmlMsg=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "INVSTMTMSGSRQV1");
+  xmlTrnRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "INVSTMTTRNRQ");
+  GWEN_XMLNode_AddChild(xmlMsg, xmlTrnRq);
+
+  AO_V2_Util_SetCurrentTimeValue(xmlTrnRq, AO_User_GetFlags(u), "TRNUID");
+
+  xmlRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "INVSTMTRQ");
+  GWEN_XMLNode_AddChild(xmlTrnRq, xmlRq);
+
+  if (1) {
+    GWEN_XMLNODE *xmlAcc;
+  
+    xmlAcc=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "INVACCTFROM");
+    GWEN_XMLNode_AddChild(xmlRq, xmlAcc);
+
+    s=AO_User_GetBrokerId(u);
+    if (s)
+      GWEN_XMLNode_SetCharValue(xmlAcc, "BROKERID", s);
+
+    s=AB_Account_GetAccountNumber(a);
+    if (s)
+      GWEN_XMLNode_SetCharValue(xmlAcc, "ACCTID", s);
+  }
+
+  if (1) {
+    GWEN_XMLNODE *xmlInc;
+
+    xmlInc=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "INCTRAN");
+    GWEN_XMLNode_AddChild(xmlRq, xmlInc);
+
+    if (AB_Transaction_GetCommand(j)==AB_Transaction_CommandGetTransactions) {
+      AO_V2_Util_SetDateValue(xmlInc, AB_Transaction_GetFirstDate(j), AO_User_GetFlags(u), "DTSTART");
+      AO_V2_Util_SetDateValue(xmlInc, AB_Transaction_GetLastDate(j), AO_User_GetFlags(u), "DTEND");
+      GWEN_XMLNode_SetCharValue(xmlInc, "INCLUDE", "Y");
+    }
+    else
+      GWEN_XMLNode_SetCharValue(xmlInc, "INCLUDE", "N");
+  }
+
+  GWEN_XMLNode_SetCharValue(xmlRq, "INCOO", "Y");
+
+  if (1) {
+    GWEN_XMLNODE *xmlInc;
+
+    xmlInc=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "INCPOS");
+    GWEN_XMLNode_AddChild(xmlRq, xmlInc);
+
+    if (AB_Transaction_GetCommand(j)==AB_Transaction_CommandGetTransactions) {
+      AO_V2_Util_SetCurrentTimeValue(xmlTrnRq, AO_User_GetFlags(u), "DTASOF");
+      GWEN_XMLNode_SetCharValue(xmlInc, "INCLUDE", "Y");
+    }
+  }
+
+  GWEN_XMLNode_SetCharValue(xmlRq, "INCBAL", "Y");
+
+
+  return xmlMsg;
 }
 
 

@@ -6,12 +6,6 @@ AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 typefiles=
 
 
-#typedatadir=$(datadir)/aqbanking/aqofxconnect/typemaker2/c
-#nodist_typedata_DATA=\
-#  oh_institute_data.tm2 oh_institute_data_list.tm2 oh_institute_data_list2.tm2 \
-#  oh_institute_spec.tm2 oh_institute_spec_list.tm2 oh_institute_spec_list2.tm2
-
-
 dlgdatadir=$(aqbanking_pkgdatadir)/backends/aqofxconnect/dialogs
 dlgdata_DATA=
 
@@ -73,14 +67,6 @@ sources:
 	done
 
 
-
-#%.c: %.xml
-#	$(gwenhywfar_bindir)/typemaker2 -I $(top_srcdir)/src/lib/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" -D AQOFXCONNECT_API  $<
-#
-#%.h: %.xml
-#	$(gwenhywfar_bindir)/typemaker2 -I $(top_srcdir)/src/lib/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" -D AQOFXCONNECT_API  $<
-
-#SUFFIXES = .xml .c
 
 
 cppcheck:

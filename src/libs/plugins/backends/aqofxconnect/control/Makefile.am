@@ -49,3 +49,14 @@ cppcheck:
 	done
 
 
+built_sources:
+	list='$(SUBDIRS)'; for d in $$list; do \
+	  $(MAKE) -C $$d built_sources; \
+	done ;
+
+
+typefiles:
+
+typedefs:
+
+

@@ -69,13 +69,14 @@ int AO_V2_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, AB_IMEXPORTER_CONTEXT *c
   }
   GWEN_XMLNode_free(xmlRoot);
 
+#if 0
   DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "OFX request:");
   fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(bufRequest));
   GWEN_Text_LogString(GWEN_Buffer_GetStart(bufRequest),
                       GWEN_Buffer_GetUsedBytes(bufRequest),
                       AQOFXCONNECT_LOGDOMAIN,
                       GWEN_LoggerLevel_Error);
-
+#endif
 
   /* exchange messages */
   rv=AO_V2_SendAndReceive(pro, u,
@@ -90,12 +91,13 @@ int AO_V2_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, AB_IMEXPORTER_CONTEXT *c
   GWEN_Buffer_free(bufRequest);
 
 
+#if 0
   DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "OFX response:");
   GWEN_Text_LogString(GWEN_Buffer_GetStart(bufResponse),
                       GWEN_Buffer_GetUsedBytes(bufResponse),
                       AQOFXCONNECT_LOGDOMAIN,
                       GWEN_LoggerLevel_Error);
-
+#endif
 
   /* parse response */
   rv=AB_Banking_ImportFromBufferLoadProfile(ab, "xml", ctx, "ofx2", NULL,
