@@ -48,7 +48,7 @@ static void showUsage()
   GWEN_Buffer_AppendString(ubuf,
                            I18N("  setsecret:\n"
                                 "    set credentials for Paypal API "
-                                "n\n"));
+                                "\n\n"));
 
   fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(ubuf));
   GWEN_Buffer_free(ubuf);
@@ -65,7 +65,7 @@ int APY_Control(AB_PROVIDER *pro, int argc, char **argv)
   db=GWEN_DB_Group_new("arguments");
   if (argc<1) {
     showUsage();
-    return 1;
+    return 0;
   }
 
   cmd=argv[0];

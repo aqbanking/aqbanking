@@ -36,7 +36,7 @@ int AO_Control(AB_PROVIDER *pro, int argc, char **argv)
   db=GWEN_DB_Group_new("arguments");
   if (argc<1) {
     _showUsage();
-    return 1;
+    return 0;
   }
 
   cmd=argv[0];
