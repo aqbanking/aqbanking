@@ -33,7 +33,7 @@ libofxdcdialogs_la_SOURCES=\
 
 
 
-#EXTRA_DIST=
+EXTRA_DIST= $(dlgdata_DATA) $(dlgimage_DATA)
 
 
 
