@@ -543,7 +543,7 @@ int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
                                                          AB_AccountSpec_GetIban(accountSpec),
                                                          AB_AccountSpec_GetBankCode(accountSpec),
                                                          AB_AccountSpec_GetAccountNumber(accountSpec),
-                                                         AB_AccountType_Unknown);
+                                                         AB_AccountSpec_GetType(accountSpec));
     assert(accountInfo);
 
     /* import transactions */

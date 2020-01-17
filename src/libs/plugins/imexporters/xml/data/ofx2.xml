@@ -52,15 +52,15 @@
                     </XmlIfHasCharData>
                     
                     <XmlIfCharDataMatches path="ACCTTYPE" pattern="CHECKING">
-                      <DbSetCharValue name="accountType" value="3"/>
+                      <DbSetCharValue name="type" value="3"/>
                     </XmlIfCharDataMatches>
                     
                     <XmlIfCharDataMatches path="ACCTTYPE" pattern="SAVINGS">
-                      <DbSetCharValue name="accountType" value="4"/>
+                      <DbSetCharValue name="type" value="4"/>
                     </XmlIfCharDataMatches>
 
                     <XmlIfCharDataMatches path="ACCTTYPE" pattern="MONEYMRKT">
-                      <DbSetCharValue name="accountType" value="7"/>
+                      <DbSetCharValue name="type" value="7"/>
                     </XmlIfCharDataMatches>
                     
 
