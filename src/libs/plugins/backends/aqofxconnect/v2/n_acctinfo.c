@@ -13,6 +13,8 @@
 
 /* plugin headers */
 #include "n_acctinfo.h"
+#include "n_utils.h"
+#include "aqofxconnect/user.h"
 
 
 
@@ -27,12 +29,23 @@
 
 GWEN_XMLNODE *AO_V2_MkAcctInfoRqNode(AB_USER *u)
 {
-  GWEN_XMLNODE *xmlAcctInfoRq;
+  GWEN_XMLNODE *xmlMsg;
+  GWEN_XMLNODE *xmlTrnRq;
+  GWEN_XMLNODE *xmlRq;
 
-  xmlAcctInfoRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "ACCTINFORQ");
-  GWEN_XMLNode_SetCharValue(xmlAcctInfoRq, "DTACCTUP", "19691231");
+  xmlMsg=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "SIGNUPMSGSRQV1");
 
-  return xmlAcctInfoRq;
+  xmlTrnRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "ACCTINFOTRNRQ");
+  GWEN_XMLNode_AddChild(xmlMsg, xmlTrnRq);
+
+  AO_V2_Util_SetCurrentTimeValue(xmlTrnRq, AO_User_GetFlags(u), "TRNUID");
+
+  xmlRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "ACCTINFORQ");
+  GWEN_XMLNode_AddChild(xmlTrnRq, xmlRq);
+
+  GWEN_XMLNode_SetCharValue(xmlRq, "DTACCTUP", "19691231");
+
+  return xmlMsg;
 }
 
 

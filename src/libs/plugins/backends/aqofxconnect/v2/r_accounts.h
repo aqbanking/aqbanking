@@ -18,11 +18,12 @@
 /* aqbanking headers */
 #include <aqbanking/backendsupport/provider.h>
 #include <aqbanking/backendsupport/user.h>
+#include <aqbanking/types/imexporter_context.h>
 
 
 
 
-int AO_V2_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, int keepOpen);
+int AO_V2_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, AB_IMEXPORTER_CONTEXT *ctx);
 
 
 

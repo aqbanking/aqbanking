@@ -1,0 +1,102 @@
+
+<!--
+/***************************************************************************
+    begin       : Sun Dec 16 2018
+    copyright   : (C) 2018 by Martin Preuss
+    email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+ 
+ This file can be used to import a OFX2 file.
+ 
+-->
+
+<Schema>
+
+  <DocMatches>
+    <Match path="?OFX@OFXHEADER">200</Match>
+  </DocMatches>
+
+
+  <Import>
+
+    <XmlIfPathExists path="OFX">
+      <XmlEnter path="OFX">
+      
+      
+        <XmlIfPathExists path="ACCTINFOTRNRS/ACCTINFORS">
+          <XmlEnter path="ACCTINFOTRNRS/ACCTINFORS">
+          
+            <XmlForEvery name="ACCTINFO">
+              <DbCreateAndEnterGroup name="account">
+
+                <XmlIfHasCharData path="DESC">
+                  <DbSetCharValue name="accountName" path="DESC" />
+                </XmlIfHasCharData>
+
+                <XmlIfPathExists path="BANKACCTINFO/BANKACCTFROM">
+                  <XmlEnter path="BANKACCTINFO/BANKACCTFROM">
+                  
+                    <XmlIfHasCharData path="BANKID">
+                      <DbSetCharValue name="bankCode" path="BANKID" />
+                    </XmlIfHasCharData>
+                    
+                    <XmlIfHasCharData path="ACCTID">
+                      <DbSetCharValue name="accountNumber" path="ACCTID" />
+                    </XmlIfHasCharData>
+                    
+                    <XmlIfHasCharData path="ACCTTYPE">
+                      <DbSetCharValue name="xAccountType" path="ACCTTYPE" />
+                    </XmlIfHasCharData>
+                    
+                    <XmlIfCharDataMatches path="ACCTTYPE" pattern="CHECKING">
+                      <DbSetCharValue name="accountType" value="3"/>
+                    </XmlIfCharDataMatches>
+                    
+                    <XmlIfCharDataMatches path="ACCTTYPE" pattern="SAVINGS">
+                      <DbSetCharValue name="accountType" value="4"/>
+                    </XmlIfCharDataMatches>
+
+                    <XmlIfCharDataMatches path="ACCTTYPE" pattern="MONEYMRKT">
+                      <DbSetCharValue name="accountType" value="7"/>
+                    </XmlIfCharDataMatches>
+                    
+
+                    <XmlIfHasCharData path="SUPTXDL">
+                      <DbSetCharValue name="xSUPTXDL" path="SUPTXDL" />
+                    </XmlIfHasCharData>
+
+                    <XmlIfHasCharData path="XFERSRC">
+                      <DbSetCharValue name="xXFERSRC" path="XFERSRC" />
+                    </XmlIfHasCharData>
+
+                    <XmlIfHasCharData path="XFERDEST">
+                      <DbSetCharValue name="xXFERDEST" path="XFERDEST" />
+                    </XmlIfHasCharData>
+
+                    <XmlIfHasCharData path="SVCSTATUS">
+                      <DbSetCharValue name="xSVCSTATUS" path="SVCSTATUS" />
+                    </XmlIfHasCharData>
+                  
+                  
+                  </XmlEnter>
+                </XmlIfPathExists>
+
+              
+              </DbCreateAndEnterGroup>
+            </XmlForEvery>
+          
+          </XmlEnter>
+        </XmlIfPathExists>
+      
+      </XmlEnter>
+    </XmlIfPathExists>
+    
+    
+  </Import>
+
+
+</Schema>
+

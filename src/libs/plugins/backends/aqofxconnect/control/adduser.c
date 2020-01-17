@@ -21,7 +21,7 @@
 
 
 
-GWEN_DB_NODE *readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv);
+static GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 
 
 
@@ -45,7 +45,7 @@ int AO_Control_AddUser(AB_PROVIDER *pro, GWEN_DB_NODE *dbArgs, int argc, char **
   const char *clientUid;
 
   /* parse command line */
-  db=readCommandLine(dbArgs, argc, argv);
+  db=_readCommandLine(dbArgs, argc, argv);
   if (db==NULL) {
     fprintf(stderr, "ERROR: Could not parse arguments\n");
     return 1;
@@ -125,7 +125,7 @@ int AO_Control_AddUser(AB_PROVIDER *pro, GWEN_DB_NODE *dbArgs, int argc, char **
 
 
 
-GWEN_DB_NODE *readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
+GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
 {
   GWEN_DB_NODE *db;
   int rv;

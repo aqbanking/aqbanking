@@ -246,7 +246,7 @@ GWEN_DB_NODE *AB_ImExporterXML_ImportIntoDbWithSchemaDoc(AB_IMEXPORTER *ie, GWEN
 
   dbData=GWEN_DB_Group_new("data");
   rv=GWEN_Xml2Db(xmlDocData, xmlNodeSchema, dbData);
-#if 0
+#if 1
   DBG_ERROR(AQBANKING_LOGDOMAIN, "Data received:");
   GWEN_DB_Dump(dbData, 2);
 #endif

@@ -551,7 +551,7 @@ int AO_Provider__ProcessImporterContext(AB_PROVIDER *pro, AB_USER *u, AB_IMEXPOR
   ab=AB_Provider_GetBanking(pro);
   assert(ab);
 
-#if 0
+#if 1
   if (1) {
     GWEN_DB_NODE *dbDebug;
 

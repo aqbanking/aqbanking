@@ -14,6 +14,8 @@
 
 #include "control.h"
 #include "adduser.h"
+#include "listusers.h"
+#include "getaccounts.h"
 
 #include "aqbanking/i18n_l.h"
 
@@ -51,13 +53,13 @@ int AO_Control(AB_PROVIDER *pro, int argc, char **argv)
   else if (strcasecmp(cmd, "adduser")==0) {
     rv=AO_Control_AddUser(pro, db, argc, argv);
   }
-#if 0
   else if (strcasecmp(cmd, "getaccounts")==0) {
     rv=AO_Control_GetAccounts(pro, db, argc, argv);
   }
   else if (strcasecmp(cmd, "listusers")==0) {
     rv=AO_Control_ListUsers(pro, db, argc, argv);
   }
+#if 0
   else if (strcasecmp(cmd, "listaccounts")==0) {
     rv=AO_Control_ListAccounts(pro, db, argc, argv);
   }

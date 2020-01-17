@@ -11,7 +11,8 @@ noinst_LTLIBRARIES=libofxdccontrol.la
 noinst_HEADERS=\
  control.h \
  adduser.h \
- getaccounts.h
+ getaccounts.h \
+ listusers.h
 
 
 
@@ -21,7 +22,8 @@ noinst_HEADERS=\
 libofxdccontrol_la_SOURCES=\
  control.c \
  adduser.c \
- getaccounts.c
+ getaccounts.c \
+ listusers.c
 
 
 

@@ -12,7 +12,7 @@
 #endif
 
 
-#include "getaccounts.h"
+#include "listusers.h"
 
 #include "aqofxconnect/user.h"
 #include "aqofxconnect/provider.h"
@@ -29,12 +29,14 @@ static GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **arg
 
 
 
-int AO_Control_GetAccounts(AB_PROVIDER *pro, GWEN_DB_NODE *dbArgs, int argc, char **argv)
+int AO_Control_ListUsers(AB_PROVIDER *pro, GWEN_DB_NODE *dbArgs, int argc, char **argv)
 {
   GWEN_DB_NODE *db;
-  uint32_t uid;
-  AB_USER *u=NULL;
   int rv;
+  int xml=0;
+  AB_USER_LIST *ul;
+  AB_USER *u;
+  int i=0;
 
   /* parse command line */
   db=_readCommandLine(dbArgs, argc, argv);
@@ -43,31 +45,52 @@ int AO_Control_GetAccounts(AB_PROVIDER *pro, GWEN_DB_NODE *dbArgs, int argc, cha
     return 1;
   }
 
-  uid=(uint32_t) GWEN_DB_GetIntValue(db, "userId", 0, 0);
-  if (uid==0) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Invalid or missing unique user id\n");
-    return 1;
+  xml=GWEN_DB_VariableExists(db, "xml");
+  if (xml) {
+    fprintf(stdout, "<?xml version=\"1.0\"?>\n");
+    fprintf(stdout, "<users>\n");
   }
 
-  rv=AB_Provider_HasUser(pro, uid);
-  if (rv<0) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "User with id %lu not found\n", (unsigned long int) uid);
-    return 2;
+  ul=AB_User_List_new();
+  rv=AB_Provider_ReadUsers(pro, ul);
+  if (rv<0 && rv!=GWEN_ERROR_NOT_FOUND) {
+    DBG_ERROR_ERR(AQOFXCONNECT_LOGDOMAIN, rv);
+    AB_User_List_free(ul);
+    return 3;
   }
-  rv=AB_Provider_GetUser(pro, uid, 1, 1, &u);
-  if (rv<0) {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "User with id %lu not found\n", (unsigned long int) uid);
-    return 2;
-  }
-  else {
-    rv=AO_Provider_RequestAccounts(pro, u, 0);
-    if (rv) {
-      DBG_ERROR_ERR(0, rv);
-      AB_User_free(u);
-      return 3;
+
+  u=AB_User_List_First(ul);
+  while (u) {
+    if (!xml) {
+      fprintf(stdout, "User %d: Bank: %s/%s User Id: %s Unique Id: %lu\n",
+              i++,
+              AB_User_GetCountry(u),
+              AB_User_GetBankCode(u),
+              AB_User_GetUserId(u),
+              (unsigned long int) AB_User_GetUniqueId(u));
     }
+    else {
+      const char *name = AB_User_GetUserName(u);
+      fprintf(stdout, "  <user>\n");
+      fprintf(stdout, "    <userUniqueId>%lu</userUniqueId>\n", (unsigned long int) AB_User_GetUniqueId(u));
+      if (!name)
+        fprintf(stdout, "    <UserName></UserName>\n");
+      else
+        fprintf(stdout, "    <UserName><![CDATA[%s]]></UserName>\n", name);
+      fprintf(stdout, "    <UserId>%s</UserId>\n", AB_User_GetUserId(u));
+      fprintf(stdout, "    <BankCode>%s</BankCode>\n", AB_User_GetBankCode(u));
+      fprintf(stdout, "    <Country>%s</Country>\n", AB_User_GetCountry(u));
+      fprintf(stdout, "    <LastSessionId>%d</LastSessionId>\n", AB_User_GetLastSessionId(u));
+      fprintf(stdout, "  </user>\n\n");
+    }
+    u=AB_User_List_Next(u);
   }
-  AB_User_free(u);
+  AB_User_List_free(ul);
+
+
+  if (xml) {
+    fprintf(stdout, "</users>\n");
+  }
 
   return 0;
 }
@@ -81,15 +104,15 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
   int rv;
   const GWEN_ARGS args[]= {
     {
-      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-      GWEN_ArgsType_Int,            /* type */
-      "userId",                     /* name */
-      1,                            /* minnum */
+      0,                             /* flags */
+      GWEN_ArgsType_Int,             /* type */
+      "xml",                        /* name */
+      0,                            /* minnum */
       1,                            /* maxnum */
-      "u",                          /* short option */
-      "user",                       /* long option */
-      "Specify the unique user id", /* short description */
-      "Specify the unique user id"  /* long description */
+      0,                            /* short option */
+      "xml",                /* long option */
+      "Export as xml",  /* short description */
+      0
     },
     {
       GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
