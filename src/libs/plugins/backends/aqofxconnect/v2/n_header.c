@@ -17,6 +17,8 @@
 
 #include "aqofxconnect/user.h"
 
+#include <gwenhywfar/gui.h>
+
 
 
 
@@ -35,6 +37,11 @@ GWEN_XMLNODE *AO_V2_MkOfxHeader(AB_USER *u)
   GWEN_XMLNode_SetProperty(xmlOfx, "OFXHEADER", "200");
 
   s=AO_User_GetHeaderVer(u);
+  if (s && *s=='1') {
+    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Invalid header version \"%s\", using \"220\" instead.", s);
+    GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning, "Invalid header version \"%s\", using \"220\" instead.", s);
+    s=NULL;
+  }
   GWEN_XMLNode_SetProperty(xmlOfx, "VERSION", s?s:"220");
 
   s=AO_User_GetSecurityType(u);
