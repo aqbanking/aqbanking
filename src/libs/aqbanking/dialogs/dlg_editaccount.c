@@ -654,6 +654,20 @@ int AB_EditAccountDialog_HandleActivatedOk(GWEN_DIALOG *dlg)
     }
   }
 
+  rv=AB_Provider_WriteAccountSpecForAccount(xdlg->provider, xdlg->account, 1);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL |
+                        GWEN_GUI_MSG_FLAGS_TYPE_ERROR |
+                        GWEN_GUI_MSG_FLAGS_CONFIRM_B1,
+                        I18N("Error"),
+                        I18N("Unable to update account spec."),
+                        I18N("Dismiss"),
+                        NULL,
+                        NULL,
+                        0);
+  }
+
   return GWEN_DialogEvent_ResultAccept;
 }
 
