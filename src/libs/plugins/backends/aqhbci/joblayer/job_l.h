@@ -127,6 +127,7 @@ const char *AH_Job_GetCode(const AH_JOB *j);
 void AH_Job_SetCode(AH_JOB *j, const char *s);
 
 const char *AH_Job_GetResponseName(const AH_JOB *j);
+void AH_Job_SetResponseName(AH_JOB *j, const char *s);
 
 int AH_Job_GetMinSignatures(const AH_JOB *j);
 int AH_Job_GetSecurityProfile(const AH_JOB *j);

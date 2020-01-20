@@ -429,6 +429,20 @@ const char *AH_Job_GetResponseName(const AH_JOB *j)
 
 
 
+void AH_Job_SetResponseName(AH_JOB *j, const char *s)
+{
+  assert(j);
+  assert(j->usage);
+  if (j->responseName)
+    free(j->responseName);
+  if (s)
+    j->responseName=strdup(s);
+  else
+    j->responseName=NULL;
+}
+
+
+
 int AH_Job_GetMinSignatures(const AH_JOB *j)
 {
   assert(j);

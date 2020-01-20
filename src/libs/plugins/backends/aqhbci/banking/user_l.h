@@ -95,6 +95,9 @@ int AH_User_VerifyInitialKey(GWEN_CRYPT_TOKEN *ct,
                              const char *keyName);
 
 
+GWEN_DB_NODE *AH_User_GetBpdJobForParamNameAndVersion(const AB_USER *u, const char *paramName, int version);
+
+
 #endif /* AH_USER_L_H */
 
 

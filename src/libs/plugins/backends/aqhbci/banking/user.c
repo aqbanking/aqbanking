@@ -1000,6 +1000,39 @@ void AH_User_SetBpdVersion(AB_USER *u, int i)
 
 
 
+GWEN_DB_NODE *AH_User_GetBpdJobForParamNameAndVersion(const AB_USER *u, const char *paramName, int version)
+{
+  AH_USER *ue;
+
+  assert(u);
+  ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
+  assert(ue);
+
+  if (ue->bpd) {
+    GWEN_DB_NODE *dbJob;
+
+    dbJob=AH_Bpd_GetBpdJobs(ue->bpd, ue->hbciVersion);
+    if (dbJob) {
+      dbJob=GWEN_DB_GetGroup(dbJob, GWEN_PATH_FLAGS_NAMEMUSTEXIST, paramName);
+      if (dbJob) {
+        char numbuf[64];
+
+        if (snprintf(numbuf, sizeof(numbuf), "%d", version)>=sizeof(numbuf)) {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Error writing version number to buffer!");
+          return NULL;
+        }
+        dbJob=GWEN_DB_GetGroup(dbJob, GWEN_PATH_FLAGS_NAMEMUSTEXIST, numbuf);
+        if (dbJob)
+          return dbJob;
+      }
+    }
+  }
+
+  return NULL;
+}
+
+
+
 const char *AH_User_GetSystemId(const AB_USER *u)
 {
   AH_USER *ue;
