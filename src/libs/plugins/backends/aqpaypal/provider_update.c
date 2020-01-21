@@ -31,7 +31,6 @@ int APY_Provider_UpdatePreInit(AB_PROVIDER *pro, uint32_t lastVersion, uint32_t 
 
 int APY_Provider_UpdatePostInit(AB_PROVIDER *pro, uint32_t lastVersion, uint32_t currentVersion)
 {
-#if 0 /* no postinit for now */
   int rv;
 
   DBG_INFO(AQPAYPAL_LOGDOMAIN, "Update (post init): Previous version %d.%d.%d.%d, new version %d.%d.%d.%d",
@@ -49,6 +48,5 @@ int APY_Provider_UpdatePostInit(AB_PROVIDER *pro, uint32_t lastVersion, uint32_t
       return rv;
     }
   }
-#endif
   return 0;
 }
