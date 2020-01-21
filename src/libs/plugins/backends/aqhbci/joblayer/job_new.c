@@ -19,11 +19,12 @@
 
 
 static GWEN_XMLNODE *_jobGetJobNode(const AH_JOB *j, int jobVersion);
-static int _jobGetBpdJobForVersion(const AH_JOB *j, const char *paramName, int jobVersion);
+static int _jobGetBpdParamsForVersion(const AH_JOB *j, const char *paramName, int jobVersion);
 static GWEN_DB_NODE *_jobGetUpdJob(const AH_JOB *j, const AB_ACCOUNT *a);
+static GWEN_DB_NODE *_jobGetBpdPinTanParams(const AH_JOB *j);
 
 static void _jobReadFromDescriptorNode(AH_JOB *j, GWEN_XMLNODE *jobNode);
-static void _jobReadFromBpdNode(AH_JOB *j, GWEN_DB_NODE *jobBPD);
+static void _jobReadFromBpdParamsNode(AH_JOB *j, GWEN_DB_NODE *jobBPD);
 static void _jobReadFromUpdNode(AH_JOB *j, GWEN_DB_NODE *jobUPD);
 static void _jobReadSepaDescriptors(AH_JOB *j);
 
@@ -35,7 +36,7 @@ static void _jobReadSepaDescriptors(AH_JOB *j);
  * ------------------------------------------------------------------------------------------------
  */
 
-
+#if 1
 AH_JOB *AH_Job_new(const char *name,
 		   AB_PROVIDER *pro,
 		   AB_USER *u,
@@ -102,14 +103,25 @@ AH_JOB *AH_Job_new(const char *name,
     _jobReadFromDescriptorNode(j, jobNode);
   }
 
-  /* sample some info from BPD */
+  /* sample PinTan params */
   if (1) {
+    GWEN_DB_NODE *jobPinTan;
+
+    jobPinTan=_jobGetBpdPinTanParams(j);
+    if (jobPinTan) {
+      /* sample flag NEEDTAN */
+      j->flags|=(GWEN_DB_GetIntValue(jobPinTan, "needTan", 0, 0)!=0)?AH_JOB_FLAGS_NEEDTAN:0;
+    }
+  }
+
+  /* sample some info from BPD */
+  if (paramName && *paramName) {
     GWEN_DB_NODE *jobBPD;
 
     DBG_INFO(AQHBCI_LOGDOMAIN, "Reading info from BPD job (if any)");
     jobBPD=AH_User_GetBpdJobForParamNameAndVersion(j->user, paramName, j->segmentVersion);
     if (jobBPD)
-      _jobReadFromBpdNode(j, jobBPD);
+      _jobReadFromBpdParamsNode(j, jobBPD);
   }
 
   /* sample some info from UPD */
@@ -131,7 +143,6 @@ AH_JOB *AH_Job_new(const char *name,
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Created this job:");
     AH_Job_Dump(j, stderr, 2);
   }
-
 
   AH_Job_Log(j, GWEN_LoggerLevel_Info, "HBCI-Job created");
 
@@ -165,7 +176,7 @@ GWEN_XMLNODE *_jobGetJobNode(const AH_JOB *j, int jobVersion)
   paramName=GWEN_XMLNode_GetProperty(node, "params", NULL);
   needsBPD=GWEN_XMLNode_GetIntProperty(node, "needbpd", 0)!=0;
   if (paramName && *paramName) {
-    rv=_jobGetBpdJobForVersion(j, paramName, jobVersion);
+    rv=_jobGetBpdParamsForVersion(j, paramName, jobVersion);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       if (needsBPD) {
@@ -193,7 +204,38 @@ GWEN_XMLNODE *_jobGetJobNode(const AH_JOB *j, int jobVersion)
 
 
 
-int _jobGetBpdJobForVersion(const AH_JOB *j, const char *paramName, int jobVersion)
+GWEN_DB_NODE *_jobGetBpdPinTanParams(const AH_JOB *j)
+{
+  if (j->code) {
+    const AH_BPD *bpd;
+    GWEN_DB_NODE *bpdgrp;
+    GWEN_DB_NODE *jobPinTan;
+
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Searching BPD PinTan params for job \"%s\" (%s)", j->code, j->name);
+
+    bpd=AH_User_GetBpd(j->user);
+    if (!bpd) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "No BPD");
+      return NULL;
+    }
+
+    bpdgrp=AH_Bpd_GetBpdJobs(bpd, AH_User_GetHbciVersion(j->user));
+    if (bpdgrp==NULL) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "No BPD jobs in BPD");
+      return NULL;
+    }
+
+    jobPinTan=GWEN_DB_GetGroup(bpdgrp, GWEN_PATH_FLAGS_NAMEMUSTEXIST, j->code);
+    if (jobPinTan)
+      return jobPinTan;
+  }
+
+  return NULL;
+}
+
+
+
+int _jobGetBpdParamsForVersion(const AH_JOB *j, const char *paramName, int jobVersion)
 {
   const AH_BPD *bpd;
   GWEN_DB_NODE *bpdgrp;
@@ -385,7 +427,7 @@ void _jobReadFromDescriptorNode(AH_JOB *j, GWEN_XMLNODE *jobNode)
 
 
 
-void _jobReadFromBpdNode(AH_JOB *j, GWEN_DB_NODE *jobBPD)
+void _jobReadFromBpdParamsNode(AH_JOB *j, GWEN_DB_NODE *jobBPD)
 {
   GWEN_DB_AddGroupChildren(j->jobParams, jobBPD);
   /* sample some variables from BPD jobs */
@@ -398,6 +440,7 @@ void _jobReadFromBpdNode(AH_JOB *j, GWEN_DB_NODE *jobBPD)
     j->flags&=~(AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN);
     DBG_INFO(AQHBCI_LOGDOMAIN, "%s: No signature needed according to BPD", j->name);
   }
+
   j->secProfile=GWEN_DB_GetIntValue(jobBPD, "secProfile", 0, 1);
   j->secClass=GWEN_DB_GetIntValue(jobBPD, "securityClass", 0, 0);
   j->jobsPerMsg=GWEN_DB_GetIntValue(jobBPD, "jobspermsg", 0, 0);
@@ -413,7 +456,7 @@ void _jobReadFromUpdNode(AH_JOB *j, GWEN_DB_NODE *jobUPD)
   assert(dgr);
   GWEN_DB_AddGroupChildren(dgr, jobUPD);
 
-  j->minSigs=GWEN_DB_GetIntValue(jobUPD, "minsigs", 0, 0);
+  j->minSigs=GWEN_DB_GetIntValue(jobUPD, "minsign", 0, 0);
   if (j->minSigs>0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "%s: Signature needed according to UPD", j->name);
     j->flags|=AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN;
@@ -459,8 +502,8 @@ void _jobReadSepaDescriptors(AH_JOB *j)
 
 
 
-
-#if 0 /* old spaghetti code, soon to be removed */
+#else
+//#if 0 /* old spaghetti code, soon to be removed */
 AH_JOB *AH_Job_new(const char *name,
                    AB_PROVIDER *pro,
                    AB_USER *u,
@@ -832,7 +875,6 @@ AH_JOB *AH_Job_new(const char *name,
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Created this job:");
     AH_Job_Dump(j, stderr, 2);
   }
-
 
   AH_Job_Log(j, GWEN_LoggerLevel_Info, "HBCI-Job created");
 
