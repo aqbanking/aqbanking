@@ -32,6 +32,7 @@ int AB_Provider_AccountToAccountSpec(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB
 
   AB_AccountSpec_SetCountry(as, AB_Account_GetCountry(acc));
   AB_AccountSpec_SetBankCode(as, AB_Account_GetBankCode(acc));
+  AB_AccountSpec_SetBankName(as, AB_Account_GetBankName(acc));
   AB_AccountSpec_SetAccountNumber(as, AB_Account_GetAccountNumber(acc));
   AB_AccountSpec_SetSubAccountNumber(as, AB_Account_GetSubAccountId(acc));
 

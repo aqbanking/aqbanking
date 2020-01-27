@@ -535,6 +535,16 @@
           <setflags>const dup</setflags>
           <getflags>const</getflags>
         </member>
+
+        <member name="bankName" type="char_ptr" maxlen="64" >
+          <descr>
+            National bank name
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
   
         <member name="branchId" type="char_ptr" maxlen="64">
           <descr>
