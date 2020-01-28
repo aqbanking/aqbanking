@@ -37,10 +37,10 @@ static void _jobReadSepaDescriptors(AH_JOB *j);
  */
 
 AH_JOB *AH_Job_new(const char *name,
-		   AB_PROVIDER *pro,
-		   AB_USER *u,
-		   AB_ACCOUNT *acc,
-		   int jobVersion)
+                   AB_PROVIDER *pro,
+                   AB_USER *u,
+                   AB_ACCOUNT *acc,
+                   int jobVersion)
 {
   AH_JOB *j;
   GWEN_MSGENGINE *e;
@@ -179,8 +179,8 @@ GWEN_XMLNODE *_jobGetJobNode(const AH_JOB *j, int jobVersion)
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       if (needsBPD) {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "No BPD job found when needed");
-	return NULL;
+        DBG_INFO(AQHBCI_LOGDOMAIN, "No BPD job found when needed");
+        return NULL;
       }
     }
     else
@@ -274,14 +274,14 @@ int _jobGetBpdParamsForVersion(const AH_JOB *j, const char *paramName, int jobVe
       /* get version from BPD */
       version=atoi(GWEN_DB_GroupName(jobBPD));
       if (version==jobVersion) {
-	GWEN_XMLNODE *node;
+        GWEN_XMLNODE *node;
 
-	/* now get the correct version of the JOB */
-	DBG_INFO(AQHBCI_LOGDOMAIN, "Checking Job %s (%d)", j->name, version);
-	node=GWEN_MsgEngine_FindNodeByProperty(j->msgEngine, "JOB", "id", version, j->name);
-	if (node) {
-	  highestVersion=version;
-	}
+        /* now get the correct version of the JOB */
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Checking Job %s (%d)", j->name, version);
+        node=GWEN_MsgEngine_FindNodeByProperty(j->msgEngine, "JOB", "id", version, j->name);
+        if (node) {
+          highestVersion=version;
+        }
       }
       jobBPD=GWEN_DB_GetNextGroup(jobBPD);
     } /* while */
@@ -293,13 +293,13 @@ int _jobGetBpdParamsForVersion(const AH_JOB *j, const char *paramName, int jobVe
       /* get version from BPD */
       version=atoi(GWEN_DB_GroupName(jobBPD));
       if (version>highestVersion) {
-	GWEN_XMLNODE *node;
+        GWEN_XMLNODE *node;
 
-	/* now get the correct version of the JOB */
-	DBG_INFO(AQHBCI_LOGDOMAIN, "Checking Job %s (%d)", j->name, version);
-	node=GWEN_MsgEngine_FindNodeByProperty(j->msgEngine, "JOB", "id", version, j->name);
-	if (node)
-	  highestVersion=version;
+        /* now get the correct version of the JOB */
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Checking Job %s (%d)", j->name, version);
+        node=GWEN_MsgEngine_FindNodeByProperty(j->msgEngine, "JOB", "id", version, j->name);
+        if (node)
+          highestVersion=version;
       }
       jobBPD=GWEN_DB_GetNextGroup(jobBPD);
     } /* while */
@@ -326,9 +326,9 @@ GWEN_DB_NODE *_jobGetUpdJob(const AH_JOB *j, const AB_ACCOUNT *a)
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Code is \"%s\"", j->code);
       updnode=GWEN_DB_GetFirstGroup(updgroup);
       while (updnode) {
-	if (strcasecmp(GWEN_DB_GetCharValue(updnode, "job", 0, ""), j->code)==0)
-	  return updnode;
-	updnode=GWEN_DB_GetNextGroup(updnode);
+        if (strcasecmp(GWEN_DB_GetCharValue(updnode, "job", 0, ""), j->code)==0)
+          return updnode;
+        updnode=GWEN_DB_GetNextGroup(updnode);
       } /* while */
     } /* if updgroup for the given account found */
   } /* if account */
@@ -376,7 +376,7 @@ void _jobReadFromDescriptorNode(AH_JOB *j, GWEN_XMLNODE *jobNode)
 
       d=GWEN_XMLNode_GetData(dn);
       if (d) {
-	GWEN_Buffer_AppendString(descrBuf, d);
+        GWEN_Buffer_AppendString(descrBuf, d);
       }
       dn=GWEN_XMLNode_GetNextData(dn);
     } /* while */
@@ -481,10 +481,10 @@ void _jobReadSepaDescriptors(AH_JOB *j)
     descriptors=GWEN_StringList_new();
     while (dbT) {
       for (i=0; i<10; i++) {
-	s=GWEN_DB_GetCharValue(dbT, "format", i, NULL);
-	if (!(s && *s))
-	  break;
-	GWEN_StringList_AppendString(descriptors, s, 0, 1);
+        s=GWEN_DB_GetCharValue(dbT, "format", i, NULL);
+        if (!(s && *s))
+          break;
+        GWEN_StringList_AppendString(descriptors, s, 0, 1);
       }
       dbT=GWEN_DB_FindNextGroup(dbT, "SupportedSepaFormats");
     }
