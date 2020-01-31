@@ -8,7 +8,7 @@ noinst_PROGRAMS=abtest imptest
 endif
 
 abtest_SOURCES=abtest.c
-abtest_LDADD = $(aqbanking_internal_libs) $(gwenhywfar_libs) -lgwengui-gtk2
+abtest_LDADD = $(aqbanking_internal_libs) $(gwenhywfar_libs)
 
 imptest_SOURCES=imptest.c
 imptest_LDADD = $(aqbanking_internal_libs) $(gwenhywfar_libs)
