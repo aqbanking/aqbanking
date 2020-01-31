@@ -1089,7 +1089,8 @@ int test15(int argc, char **argv)
   return 0;
 }
 
-#include <gwen-gui-gtk2/gtk2_gui.h>
+/* #include <gwen-gui-gtk2/gtk2_gui.h> */
+#include <gwenhywfar/cgui.h>
 #include <aqbanking/gui/abgui.h>
 
 int test16(int argc, char **argv)
@@ -1116,7 +1117,7 @@ int test16(int argc, char **argv)
     return 2;
   }
 
-  gui = Gtk2_Gui_new();
+  gui = GWEN_Gui_CGui_new();
   GWEN_Gui_SetGui(gui);
   AB_Gui_Extend(gui, ab);
 
