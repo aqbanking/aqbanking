@@ -1717,7 +1717,7 @@
           <default>NULL</default>
           <preset>NULL</preset>
           <descr>
-            For standing orders this is the next date the transaction is executed.
+            Date of the unit price.
           </descr>
         </member>
 
