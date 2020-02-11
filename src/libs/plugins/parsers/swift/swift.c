@@ -34,6 +34,11 @@ GWEN_LIST_FUNCTIONS(AHB_SWIFT_TAG, AHB_SWIFT_Tag);
 GWEN_LIST_FUNCTIONS(AHB_SWIFT_SUBTAG, AHB_SWIFT_SubTag);
 
 
+static const char *_findStartOfSubTag(const char *sptr);
+
+
+
+
 
 int AHB_SWIFT_Condense(char *buffer, int keepMultipleBlanks)
 {
@@ -210,96 +215,86 @@ void AHB_SWIFT_SubTag_Condense(AHB_SWIFT_SUBTAG *stg, int keepMultipleBlanks)
 
 
 
+const char *_findStartOfSubTag(const char *sptr)
+{
+  while(*sptr) {
+    if (*sptr=='?') {
+      const char *t;
+
+      t=sptr;
+      t++;
+      if (*t==0x0a)
+	t++;
+      if (*t && isdigit(*t)) {
+	t++;
+	if (*t==0x0a)
+	  t++;
+	if (*t && isdigit(*t)) {
+	  return sptr;
+	}
+      }
+    }
+    sptr++;
+  }
+
+  return NULL;
+}
+
+
+
 int AHB_SWIFT_GetNextSubTag(const char **sptr, AHB_SWIFT_SUBTAG **tptr)
 {
   const char *s;
   int id=0;
   /*int nextId=0;*/
   const char *content=NULL;
+  const char *startOfSubTag;
   AHB_SWIFT_SUBTAG *stg;
 
   s=*sptr;
-  if (*s=='?') {
+  startOfSubTag=_findStartOfSubTag(s);
+  if (startOfSubTag) {
     const char *t;
+    const char *startOfNextSubTag;
 
-    t=s;
-    t++;
+    t=startOfSubTag;
+    t++; /* skip '?' */
     if (*t==0x0a)
       t++;
     if (*t && isdigit(*t)) {
       id=(*(t++)-'0')*10;
       if (*t==0x0a)
-        t++;
+	t++;
       if (*t && isdigit(*t)) {
-        id+=*(t++)-'0';
-        s=t;
+	id+=*(t++)-'0';
+	s=t;
       }
     }
-  }
-  content=s;
+    content=s;
 
-  /* find end of content */
-  for (;;) {
-    while (*s && *s!='?')
-      s++;
-
-    if (*s=='?') {
-      const char *t;
-
-      t=s;
-      t++;
-      if (*t==0x0a)
-        t++;
-      if (*t && isdigit(*t)) {
-        /*nextId=(*(t++)-'0')*10;*/
-        if (*t==0x0a)
-          t++;
-        if (*t && isdigit(*t)) {
-          /*nextId+=*(t++)-'0';*/
-          /* TODO: check nextId */
-          /* s is the beginning of a new subtag, so the end has been found */
-          break;
-        }
-        else {
-          /* next is not a digit, so this is not the begin of a new tag */
-          if (*s)
-            s++;
-          else
-            /* end of string, also end of content */
-            break;
-        }
-      }
-      else {
-        /* next is not a digit, so this is not the begin of a new tag */
-        if (*s)
-          s++;
-        else
-          /* end of string, also end of content */
-          break;
-      }
-    }
-    else if (*s)
-      /* not the beginning of a new tag, continue */
-      s++;
+    /* create subtag */
+    startOfNextSubTag=_findStartOfSubTag(s);
+    if (startOfNextSubTag)
+      stg=AHB_SWIFT_SubTag_new(id, content, startOfNextSubTag-content);
     else
-      /* end of string, also end of content */
-      break;
+      /* rest of line */
+      stg=AHB_SWIFT_SubTag_new(id, content, -1);
+    /* update return pointers */
+    *tptr=stg;
+    *sptr=startOfNextSubTag;
+    return 0;
   }
-
-  /* create subtag */
-  stg=AHB_SWIFT_SubTag_new(id, content, s-content);
-
-  /* update return pointers */
-  *tptr=stg;
-  *sptr=s;
-  return 0;
+  else {
+    DBG_ERROR(GWEN_LOGDOMAIN, "No subtag found");
+    return GWEN_ERROR_NO_DATA;
+  }
 }
 
 
 
 int AHB_SWIFT_ParseSubTags(const char *s, AHB_SWIFT_SUBTAG_LIST *stlist, int keepMultipleBlanks)
 {
-  while (*s) {
+  while (s && *s) {
     int rv;
     AHB_SWIFT_SUBTAG *stg=NULL;
 
@@ -309,6 +304,7 @@ int AHB_SWIFT_ParseSubTags(const char *s, AHB_SWIFT_SUBTAG_LIST *stlist, int kee
       return rv;
     }
     AHB_SWIFT_SubTag_Condense(stg, keepMultipleBlanks);
+    /*DBG_ERROR(GWEN_LOGDOMAIN, "Adding subtag %d: [%s]", AHB_SWIFT_SubTag_GetId(stg), AHB_SWIFT_SubTag_GetData(stg));*/
     AHB_SWIFT_SubTag_List_Add(stg, stlist);
   }
 
