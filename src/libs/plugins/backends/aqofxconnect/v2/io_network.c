@@ -126,8 +126,6 @@ int AO_V2_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_t *p, unsigne
   GWEN_HttpSession_free(sess);
 
   /* found a response, transform it */
-  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("Parsing response..."));
-
   *pRbuf=rbuf;
 
   if (getenv("AQOFX_LOG_COMM")) {
