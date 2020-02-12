@@ -55,7 +55,7 @@ AB_ACCOUNT_SPEC *AB_Banking_GetAccountSpecByAlias(AB_BANKING *ab, const char *al
   db=GWEN_DB_GetGroup(dbConfig, GWEN_DB_FLAGS_DEFAULT, "banking/aliases");
   aid=GWEN_DB_GetIntValue(db, alias, 0, 0);
   if (aid<1) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid account id for alias \"%s\"", alias);
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No account id for alias \"%s\"", alias);
     GWEN_DB_Group_free(dbConfig);
     return NULL;
   }

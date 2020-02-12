@@ -822,6 +822,7 @@ int AH_PinTanDialog_DoIt(GWEN_DIALOG *dlg)
   AH_User_SetHttpVMajor(u, xdlg->httpVMajor);
   AH_User_SetHttpVMinor(u, xdlg->httpVMinor);
   AH_User_SetFlags(u, xdlg->flags);
+  AH_User_SetTanMediumId(u, xdlg->tanMediumId);
 
   DBG_NOTICE(0, "Adding user");
   rv=AB_Provider_AddUser(xdlg->provider, u);

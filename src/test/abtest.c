@@ -1089,6 +1089,58 @@ int test15(int argc, char **argv)
   return 0;
 }
 
+/* #include <gwen-gui-gtk2/gtk2_gui.h> */
+#include <gwenhywfar/cgui.h>
+#include <aqbanking/gui/abgui.h>
+
+int test16(int argc, char **argv)
+{
+  AB_BANKING *ab;
+  GWEN_GUI *gui;
+  AB_ACCOUNT_SPEC *ab_acc;
+  int rv;
+  int i;
+  int tries = 1;
+
+  GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevel_Error);
+
+  if (argc == 3)
+      tries = atoi(argv[2]);
+
+  fprintf(stderr, "Creating AB_Banking...\n");
+  ab=AB_Banking_new("abtest", 0, 0);
+
+  fprintf(stderr, "Initializing AB_Banking...\n");
+  rv=AB_Banking_Init(ab);
+  if (rv) {
+    fprintf(stderr, "Could not init AqBanking (%d)\n", rv);
+    return 2;
+  }
+
+  gui = GWEN_Gui_CGui_new();
+  GWEN_Gui_SetGui(gui);
+  AB_Gui_Extend(gui, ab);
+
+  fprintf(stderr, "Fetching alias...\n");
+  for (i = 0; i < tries; i++) {
+    ab_acc = AB_Banking_GetAccountSpecByAlias(ab, "e6c8903a-85dc-4d6f-b489-7f7f1852067a-A000096");
+    if (tries == 1 && !ab_acc) {
+        fprintf(stderr, "Could not find alias\n");
+    }
+  }
+  fprintf(stderr, "Deinitializing AB_Banking...\n");
+  rv=AB_Banking_Fini(ab);
+  if (rv) {
+    fprintf(stderr, "Could not deinit AqBanking (%d)\n", rv);
+    return 2;
+  }
+
+  fprintf(stderr, "Freeing AB_Banking...\n");
+  AB_Banking_free(ab);
+
+  fprintf(stderr, "Finished\n");
+  return 0;
+}
 
 
 int main(int argc, char **argv)
@@ -1129,6 +1181,8 @@ int main(int argc, char **argv)
     rv=test13(argc, argv);
   else if (strcasecmp(cmd, "test15")==0)
     rv=test15(argc, argv);
+  else if (strcasecmp(cmd, "test16")==0)
+    rv=test16(argc, argv);
   else {
     fprintf(stderr, "Unknown command \"%s\"", cmd);
     rv=1;

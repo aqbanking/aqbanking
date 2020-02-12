@@ -179,6 +179,8 @@ int listAccs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
   if (as) {
     GWEN_BUFFER *dbuf;
 
+    fprintf(stdout, "       \tBankcode\tAccountnumber\tBic\tIban\tUniqueId\tType\n");
+
     dbuf=GWEN_Buffer_new(0, 256, 0, 1);
     while (as) {
       GWEN_DB_NODE *dbAccountSpec;

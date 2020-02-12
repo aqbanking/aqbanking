@@ -59,7 +59,7 @@ int listTrans(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
                                   "$(localIban)\t"
                                   "$(remoteName)\t"
                                   "$(remoteIban)\t"
-                                  "$(purpose)");
+                                  "$(purposeInOneLine)");
 
   s=GWEN_DB_GetCharValue(db, "transactionType", 0, NULL);
   if (s && *s) {
@@ -304,13 +304,16 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
     GWEN_Buffer_AppendString(ubuf, " $(remoteBankcode)      : Remote bank code (Bankleitzahl)\n");
     GWEN_Buffer_AppendString(ubuf, " $(remoteAccountnumber) : Remote account number\n");
 
-    GWEN_Buffer_AppendString(ubuf, " $(dateAsString)        : Date of the balance in format ");
+    GWEN_Buffer_AppendString(ubuf, " $(dateAsString)        : Date of the transaction in format ");
     GWEN_Buffer_AppendString(ubuf, I18N("DD.MM.YYYY"));
     GWEN_Buffer_AppendString(ubuf, " \n");
-    GWEN_Buffer_AppendString(ubuf, " $(valutaDateAsString)  : Valuta Date of the balance in format ");
+    GWEN_Buffer_AppendString(ubuf, " $(valutaDateAsString)  : Valuta Date of the transaction in format ");
     GWEN_Buffer_AppendString(ubuf, I18N("DD.MM.YYYY"));
     GWEN_Buffer_AppendString(ubuf, " \n");
-    GWEN_Buffer_AppendString(ubuf, " $(valueAsString)       : Amount of the balance\n");
+    GWEN_Buffer_AppendString(ubuf, " $(dateOrValutaDateAsString) : Date (or if missing: valuta date) of the transaction in format ");
+    GWEN_Buffer_AppendString(ubuf, I18N("DD.MM.YYYY"));
+    GWEN_Buffer_AppendString(ubuf, " \n");
+    GWEN_Buffer_AppendString(ubuf, " $(valueAsString)       : Amount of the transaction\n");
 
     GWEN_Buffer_AppendString(ubuf, " $(purpose)             : Memo/purpose (\"Verwendungszweck\")\n");
     GWEN_Buffer_AppendString(ubuf, " $(purposeLine[n])      : Memo/purpose line n (\"Verwendungszweckzeile\")\n");

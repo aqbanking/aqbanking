@@ -19,7 +19,10 @@
 #include "io_network.h"
 
 #include <aqbanking/banking_imex.h>
+#include "aqbanking/i18n_l.h"
 
+#include <gwenhywfar/gui.h>
+#include <gwenhywfar/text.h>
 
 
 
@@ -100,9 +103,21 @@ int AO_V2_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, AB_IMEXPORTER_CONTEXT *c
 #endif
 
   /* parse response */
-  rv=AB_Banking_ImportFromBufferLoadProfile(ab, "xml", ctx, "ofx2", NULL,
-                                            (const uint8_t *) GWEN_Buffer_GetStart(bufResponse),
-                                            GWEN_Buffer_GetUsedBytes(bufResponse));
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("Parsing response..."));
+
+  if (GWEN_Text_StrCaseStr(GWEN_Buffer_GetStart(bufResponse), "OFXSGML")) {
+    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Importing OFX version 1 (sgml)");
+    rv=AB_Banking_ImportFromBufferLoadProfile(ab, "ofx", ctx, "default", NULL,
+					      (const uint8_t *) GWEN_Buffer_GetStart(bufResponse),
+					      GWEN_Buffer_GetUsedBytes(bufResponse));
+  }
+  else {
+    /* parse response */
+    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Importing OFX version 2 (xml)");
+    rv=AB_Banking_ImportFromBufferLoadProfile(ab, "xml", ctx, "ofx2", NULL,
+					      (const uint8_t *) GWEN_Buffer_GetStart(bufResponse),
+					      GWEN_Buffer_GetUsedBytes(bufResponse));
+  }
   if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Bad data in OFX response (error: %d):", rv);
     GWEN_Text_LogString(GWEN_Buffer_GetStart(bufResponse),
