@@ -1105,7 +1105,7 @@ int test16(int argc, char **argv)
   GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevel_Error);
 
   if (argc == 3)
-      tries = atoi(argv[2]);
+    tries = atoi(argv[2]);
 
   fprintf(stderr, "Creating AB_Banking...\n");
   ab=AB_Banking_new("abtest", 0, 0);
@@ -1125,7 +1125,7 @@ int test16(int argc, char **argv)
   for (i = 0; i < tries; i++) {
     ab_acc = AB_Banking_GetAccountSpecByAlias(ab, "e6c8903a-85dc-4d6f-b489-7f7f1852067a-A000096");
     if (tries == 1 && !ab_acc) {
-        fprintf(stderr, "Could not find alias\n");
+      fprintf(stderr, "Could not find alias\n");
     }
   }
   fprintf(stderr, "Deinitializing AB_Banking...\n");

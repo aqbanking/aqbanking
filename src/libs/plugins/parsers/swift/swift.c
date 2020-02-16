@@ -217,21 +217,21 @@ void AHB_SWIFT_SubTag_Condense(AHB_SWIFT_SUBTAG *stg, int keepMultipleBlanks)
 
 const char *_findStartOfSubTag(const char *sptr)
 {
-  while(*sptr) {
+  while (*sptr) {
     if (*sptr=='?') {
       const char *t;
 
       t=sptr;
       t++;
       if (*t==0x0a)
-	t++;
+        t++;
       if (*t && isdigit(*t)) {
-	t++;
-	if (*t==0x0a)
-	  t++;
-	if (*t && isdigit(*t)) {
-	  return sptr;
-	}
+        t++;
+        if (*t==0x0a)
+          t++;
+        if (*t && isdigit(*t)) {
+          return sptr;
+        }
       }
     }
     sptr++;
@@ -264,10 +264,10 @@ int AHB_SWIFT_GetNextSubTag(const char **sptr, AHB_SWIFT_SUBTAG **tptr)
     if (*t && isdigit(*t)) {
       id=(*(t++)-'0')*10;
       if (*t==0x0a)
-	t++;
+        t++;
       if (*t && isdigit(*t)) {
-	id+=*(t++)-'0';
-	s=t;
+        id+=*(t++)-'0';
+        s=t;
       }
     }
     content=s;
