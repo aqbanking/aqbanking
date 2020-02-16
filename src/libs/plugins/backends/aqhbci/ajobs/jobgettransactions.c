@@ -493,6 +493,7 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
         t=AB_Transaction_new();
         if (ref)
           AB_Transaction_SetFiId(t, ref);
+        AB_Transaction_SetType(t, AB_Transaction_TypeStatement);
         AB_Transaction_SetUniqueAccountId(t, AB_Account_GetUniqueId(a));
         AB_Transaction_SetLocalBankCode(t, AB_User_GetBankCode(u));
         AB_Transaction_SetLocalAccountNumber(t, AB_Account_GetAccountNumber(a));
