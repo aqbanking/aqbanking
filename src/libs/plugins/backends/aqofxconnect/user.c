@@ -12,7 +12,7 @@
 #endif
 
 #include "user_p.h"
-
+#include "aqofxconnect/provider.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -106,7 +106,7 @@ AB_USER *AO_User_new(AB_PROVIDER *pro)
   GWEN_INHERIT_SETDATA(AB_USER, AO_USER, u, ue, AO_User_freeData);
 
   AB_User_SetProvider(u, pro);
-  AB_User_SetBackendName(u, "aqhbci");
+  AB_User_SetBackendName(u, AQOFXCONNECT_BACKENDNAME);
 
   ue->readFromDbFn=AB_User_SetReadFromDbFn(u, AO_User_ReadFromDb);
   ue->writeToDbFn=AB_User_SetWriteToDbFn(u, AO_User_WriteToDb);
