@@ -273,8 +273,8 @@
    <GROUP type="SegHead" name="head" />
    <GROUP type="ktv" version="2" />
    <ELEM name="accountNumber" type="an" maxsize="30" />
-   <ELEM name="fromDate" type="date" minsize="8" maxsize="8" minnum="0" /> <!-- Using this element is untested -->
    <ELEM name="toDate" type="date" minsize="8" maxsize="8" minnum="0" />   <!-- Using this element is untested -->
+   <ELEM name="fromDate" type="date" minsize="8" maxsize="8" minnum="0" /> <!-- Using this element is untested -->
 
    <VALUES>
      <VALUE path="head/code">%code</VALUE>

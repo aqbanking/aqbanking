@@ -178,7 +178,7 @@ AH_TAN_MECHANISM *AH_TanMechanism_Factory(const AH_TAN_METHOD *tanMethod, int pr
               sZkaName?sZkaName:"<empty>",
               sMethodId?sMethodId:"<empty>",
               sMethodName?sMethodName:"<empty>");
-#if 1
+#if 0
     if (1) {
       GWEN_DB_NODE *dbDump;
 

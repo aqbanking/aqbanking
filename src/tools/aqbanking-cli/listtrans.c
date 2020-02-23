@@ -310,7 +310,8 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
     GWEN_Buffer_AppendString(ubuf, " $(valutaDateAsString)  : Valuta Date of the transaction in format ");
     GWEN_Buffer_AppendString(ubuf, I18N("DD.MM.YYYY"));
     GWEN_Buffer_AppendString(ubuf, " \n");
-    GWEN_Buffer_AppendString(ubuf, " $(dateOrValutaDateAsString) : Date (or if missing: valuta date) of the transaction in format ");
+    GWEN_Buffer_AppendString(ubuf,
+                             " $(dateOrValutaDateAsString) : Date (or if missing: valuta date) of the transaction in format ");
     GWEN_Buffer_AppendString(ubuf, I18N("DD.MM.YYYY"));
     GWEN_Buffer_AppendString(ubuf, " \n");
     GWEN_Buffer_AppendString(ubuf, " $(valueAsString)       : Amount of the transaction\n");
