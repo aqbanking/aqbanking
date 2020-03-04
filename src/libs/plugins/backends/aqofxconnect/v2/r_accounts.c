@@ -86,13 +86,17 @@ int AO_V2_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, AB_IMEXPORTER_CONTEXT *c
                           (const uint8_t *) GWEN_Buffer_GetStart(bufRequest),
                           GWEN_Buffer_GetUsedBytes(bufRequest),
                           &bufResponse);
-  if (rv<0) {
+  if (rv) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(bufRequest);
     return rv;
   }
   GWEN_Buffer_free(bufRequest);
 
+  if (bufResponse==NULL) {
+    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "No response received, not expected.");
+    return GWEN_ERROR_GENERIC;
+  }
 
 #if 0
   DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "OFX response:");
