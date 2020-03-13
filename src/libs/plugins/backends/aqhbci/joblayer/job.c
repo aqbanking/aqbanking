@@ -1958,8 +1958,6 @@ void AH_Job_SetStatusOnCommands(AH_JOB *j, AB_TRANSACTION_STATUS status)
 
 
 #include "job_new.c"
-#include "job_commit.c"
-#include "job_commit_account.c"
 #include "job_virtual.c"
 
 
