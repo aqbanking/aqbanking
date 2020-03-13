@@ -53,6 +53,10 @@ all:
 	   prefix=`grep '@prefix@' config.status |cut -d , -f 3`; \
 	   gwen_prefix=`grep '@GWEN_PREFIX@' config.status |cut -d , -f 3`; \
 	 fi; \
+	 if test -z "$${gwen_prefix}" -a -z "$${ACLOCAL_FLAGS}"; then \
+	   gwen_bin_dir=`gwenhywfar-config --bindir`; \
+	   gwen_prefix=`dirname $${gwen_bin_dir}`; \
+	 fi; \
 	 for A in "$${gwen_prefix}/share/aclocal" "$${prefix}/share/aclocal" m4; do \
 	   if test -d "$${A}"; then \
 	     ACLOCAL_FLAGS="$${ACLOCAL_FLAGS} -I $${A}"; \
