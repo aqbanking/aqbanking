@@ -87,6 +87,10 @@ int AH_MsgPinTan_PrepareCryptoSeg(AH_MSG *hmsg,
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "key/keyversion", 1);
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "secProfile/code", "PIN");
 
+  if (hmsg->itanMethod==999) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Using itanMethod 999");
+  }
+
   /*
   if (crypt)
     GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
