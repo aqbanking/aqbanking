@@ -27,7 +27,7 @@
 
 
 
-GWEN_XMLNODE *AO_V2_MkAcctInfoRqNode(AB_USER *u)
+GWEN_XMLNODE *AO_Provider_MkAcctInfoRqNode(AB_USER *u)
 {
   GWEN_XMLNODE *xmlMsg;
   GWEN_XMLNODE *xmlTrnRq;
@@ -38,7 +38,7 @@ GWEN_XMLNODE *AO_V2_MkAcctInfoRqNode(AB_USER *u)
   xmlTrnRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "ACCTINFOTRNRQ");
   GWEN_XMLNode_AddChild(xmlMsg, xmlTrnRq);
 
-  AO_V2_Util_SetCurrentTimeValue(xmlTrnRq, AO_User_GetFlags(u), "TRNUID");
+  AO_Provider_Util_SetCurrentTimeValue(xmlTrnRq, AO_User_GetFlags(u), "TRNUID");
 
   xmlRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "ACCTINFORQ");
   GWEN_XMLNode_AddChild(xmlTrnRq, xmlRq);

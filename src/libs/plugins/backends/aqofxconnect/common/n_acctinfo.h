@@ -8,8 +8,8 @@
  ***************************************************************************/
 
 
-#ifndef AO_N_SIGNON_H
-#define AO_N_SIGNON_H
+#ifndef AO_N_ACCTINFO_H
+#define AO_N_ACCTINFO_H
 
 
 /* plugin headers */
@@ -23,7 +23,7 @@
 
 
 
-GWEN_XMLNODE *AO_V2_MkSignOnNode(AB_USER *u);
+GWEN_XMLNODE *AO_Provider_MkAcctInfoRqNode(AB_USER *u);
 
 
 

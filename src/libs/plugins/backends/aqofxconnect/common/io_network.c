@@ -49,7 +49,7 @@ static void _probablyWriteToLogFile(const char *sEnvVar, const char *sCaption, c
 
 
 
-int AO_V2_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_t *p, unsigned int plen, GWEN_BUFFER **pRbuf)
+int AO_Provider_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_t *p, unsigned int plen, GWEN_BUFFER **pRbuf)
 {
   GWEN_HTTP_SESSION *sess=NULL;
   GWEN_BUFFER *rbuf;
@@ -180,7 +180,6 @@ void _probablyWriteToLogFile(const char *sEnvVar, const char *sCaption, const ui
       }
     }
   }
-  return 0;
 }
 
 

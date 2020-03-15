@@ -18,7 +18,7 @@
 
 
 
-void AO_V2_Util_SetDateValue(GWEN_XMLNODE *xmlNode, const GWEN_DATE *da, uint32_t userFlags, const char *varName)
+void AO_Provider_Util_SetDateValue(GWEN_XMLNODE *xmlNode, const GWEN_DATE *da, uint32_t userFlags, const char *varName)
 {
   if (da) {
     GWEN_BUFFER *tbuf;
@@ -35,7 +35,7 @@ void AO_V2_Util_SetDateValue(GWEN_XMLNODE *xmlNode, const GWEN_DATE *da, uint32_
 
 
 
-void AO_V2_Util_SetTimeValue(GWEN_XMLNODE *xmlNode, const GWEN_TIME *ti, uint32_t userFlags, const char *varName)
+void AO_Provider_Util_SetTimeValue(GWEN_XMLNODE *xmlNode, const GWEN_TIME *ti, uint32_t userFlags, const char *varName)
 {
   GWEN_BUFFER *tbuf;
 
@@ -51,13 +51,13 @@ void AO_V2_Util_SetTimeValue(GWEN_XMLNODE *xmlNode, const GWEN_TIME *ti, uint32_
 
 
 
-void AO_V2_Util_SetCurrentTimeValue(GWEN_XMLNODE *xmlNode, uint32_t userFlags, const char *varName)
+void AO_Provider_Util_SetCurrentTimeValue(GWEN_XMLNODE *xmlNode, uint32_t userFlags, const char *varName)
 {
   GWEN_TIME *ti;
 
   ti=GWEN_CurrentTime();
   assert(ti);
-  AO_V2_Util_SetTimeValue(xmlNode, ti, userFlags, varName);
+  AO_Provider_Util_SetTimeValue(xmlNode, ti, userFlags, varName);
   GWEN_Time_free(ti);
 }
 

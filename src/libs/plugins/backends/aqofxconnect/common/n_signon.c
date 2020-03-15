@@ -43,7 +43,7 @@
 
 
 
-GWEN_XMLNODE *AO_V2_MkSignOnNode(AB_USER *u)
+GWEN_XMLNODE *AO_Provider_MkSignOnNode(AB_USER *u)
 {
   GWEN_XMLNODE *xmlSignonMsg;
   GWEN_XMLNODE *xmlSignonRq;
@@ -53,7 +53,7 @@ GWEN_XMLNODE *AO_V2_MkSignOnNode(AB_USER *u)
   xmlSignonRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "SONRQ");
   GWEN_XMLNode_AddChild(xmlSignonMsg, xmlSignonRq);
 
-  AO_V2_Util_SetCurrentTimeValue(xmlSignonRq, AO_User_GetFlags(u), "DTCLIENT");
+  AO_Provider_Util_SetCurrentTimeValue(xmlSignonRq, AO_User_GetFlags(u), "DTCLIENT");
 
   s=AB_User_GetUserId(u);
   if (s && *s)

@@ -1,4 +1,4 @@
-SUBDIRS=libofxhome v2 control dialogs
+SUBDIRS=libofxhome common v1 v2 control dialogs
 
 AM_CPPFLAGS = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/..
 
@@ -35,8 +35,10 @@ libaqofxconnect_la_SOURCES= \
 
 libaqofxconnect_la_LIBADD= \
   libofxhome/libofxhome.la \
+  v1/libofxdcv1.la \
   v2/libofxdcv2.la \
   control/libofxdccontrol.la \
+  common/libofxdccommon.la \
   dialogs/libofxdcdialogs.la
 
 

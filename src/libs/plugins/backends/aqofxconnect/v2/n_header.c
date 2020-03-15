@@ -47,7 +47,7 @@ GWEN_XMLNODE *AO_V2_MkOfxHeader(AB_USER *u)
   s=AO_User_GetSecurityType(u);
   GWEN_XMLNode_SetProperty(xmlOfx, "SECURITY", s?s:"NONE");
 
-  AO_V2_Util_SetCurrentTimeValue(xmlOfx, AO_User_GetFlags(u), "NEWFILEUID");
+  AO_Provider_Util_SetCurrentTimeValue(xmlOfx, AO_User_GetFlags(u), "NEWFILEUID");
 
   GWEN_XMLNode_SetProperty(xmlOfx, "OLDFILEUID", "NONE");
 
