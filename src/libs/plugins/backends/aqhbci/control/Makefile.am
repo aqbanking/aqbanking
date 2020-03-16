@@ -29,6 +29,7 @@ libhbcicontrol_la_SOURCES=\
  addsubuserflags.c \
  adduser.c \
  changepin.c \
+ unblockpin.c \
  createkeys.c \
  delaccount.c \
  deluser.c \

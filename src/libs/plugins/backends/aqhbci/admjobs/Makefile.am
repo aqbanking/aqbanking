@@ -19,7 +19,9 @@ noinst_HEADERS=\
   jobtan_l.h jobtan_p.h \
   jobgetsepainfo_l.h jobgetsepainfo_p.h \
   jobgetsysid_l.h jobgetsysid_p.h \
-  jobgetbankinfo_l.h jobgetbankinfo_p.h
+  jobgetbankinfo_l.h jobgetbankinfo_p.h \
+  jobunblockpin_l.h
+
 
 libhbciadmjobs_la_SOURCES=\
   jobgetkeys.c \
@@ -28,7 +30,8 @@ libhbciadmjobs_la_SOURCES=\
   jobtan.c \
   jobgetsepainfo.c \
   jobgetsysid.c \
-  jobgetbankinfo.c
+  jobgetbankinfo.c \
+  jobunblockpin.c
 
 
 
@@ -47,7 +50,8 @@ xmlfiles=\
   $(srcdir)/jobtan.xml \
   $(srcdir)/jobgetsepainfo.xml \
   $(srcdir)/jobgetsysid.xml \
-  $(srcdir)/jobgetbankinfo.xml
+  $(srcdir)/jobgetbankinfo.xml \
+  $(srcdir)/jobunblockpin.xml
 
 
 EXTRA_DIST=$(xmlfiles)

@@ -115,6 +115,9 @@ static void showUsage(const char *prgName)
                            I18N("  changepin:\n"
                                 "    Change the PIN of a key file\n\n"));
   GWEN_Buffer_AppendString(ubuf,
+                           I18N("  unblockpin:\n"
+                                "    Unblock the PIN in PIN TAN mode.\n\n"));
+  GWEN_Buffer_AppendString(ubuf,
                            I18N("  iniletter:\n"
                                 "    Print the INI letter for a given "
                                 "user\n\n"));
@@ -245,6 +248,9 @@ int AH_Control(AB_PROVIDER *pro, int argc, char **argv)
   }
   else if (strcasecmp(cmd, "changepin")==0) {
     rv=AH_Control_ChangePin(pro, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "unblockpin")==0) {
+    rv=AH_Control_UnblockPin(pro, db, argc, argv);
   }
   else if (strcasecmp(cmd, "sethbciversion")==0) {
     rv=AH_Control_SetHbciVersion(pro, db, argc, argv);

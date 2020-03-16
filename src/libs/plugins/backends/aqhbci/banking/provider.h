@@ -190,6 +190,20 @@ int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
 
 
 /**
+ * Unblock the PIN in Pin-TAN mode.
+ * @param pro pointer to the HBCI provider
+ * @param u user for which the pin is to be changed
+ * @param ctx im-/exporter context to receive info from the bank
+ * @param nounmount if !=0 then the user's medium is not unmounted in the end.
+ *  This is used by setup wizards to avoid having to enter a pin too often.
+ */
+int AH_Provider_UnblockPin(AB_PROVIDER *pro,
+                           AB_USER *u,
+                           AB_IMEXPORTER_CONTEXT *ctx,
+                           int withProgress, int nounmount, int doLock);
+
+
+/**
  * Request SEPA information for a given account. This info is then stored
  * within the AqBanking account information (IBAN, BIC).
  * @param pro pointer to the HBCI provider
