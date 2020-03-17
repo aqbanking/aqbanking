@@ -1,5 +1,9 @@
 Next:
 =====
+- HBCI:
+  - always look for HIUPA/HIUPD in bank responses, especially 1822 sends account lists
+    even when there is an error
+
 - XML-Exporter:
   - GWEN_XMLNode_SetCharValueByPath(): Add flag to specify whether to escape to XML (e.g. "&"->"&amp;")
 - AQHBCI:
