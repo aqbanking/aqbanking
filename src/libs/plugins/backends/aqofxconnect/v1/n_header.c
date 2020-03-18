@@ -35,13 +35,8 @@ int AO_V1_AddOfxHeaders(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf, const ch
   ti=GWEN_CurrentTime();
   assert(ti);
 
-  s=AO_User_GetHeaderVer(u);
-  if (!(s && *s))
-    s="100";
-
-  GWEN_Buffer_AppendString(buf, "OFXHEADER:");
-  GWEN_Buffer_AppendString(buf, s);
-  GWEN_Buffer_AppendString(buf, "\r\nDATA:OFXSGML\r\n");
+  GWEN_Buffer_AppendString(buf, "OFXHEADER:100\r\n");
+  GWEN_Buffer_AppendString(buf, "DATA:OFXSGML\r\n");
 
   GWEN_Buffer_AppendString(buf, "VERSION:");
   s=AO_User_GetHeaderVer(u);
