@@ -837,12 +837,16 @@ int AO_EditUserDialog_GetAppPageData(GWEN_DIALOG *dlg)
   if (s && *s)
     AO_EditUserDialog_SetHeaderVer(dlg, s);
   else {
+    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Setting empty header version to let the backend select default version");
+    AO_EditUserDialog_SetHeaderVer(dlg, s);
+#if 0
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Missing application version");
     /* switch to correct page, show error message, set focus */
     GWEN_Dialog_SetIntProperty(dlg, "wiz_tab_book", GWEN_DialogProperty_Value, 0, 2, 0);
     GWEN_Gui_ShowError(I18N("Missing Input"), I18N("Please enter a correct header version (default is 102)."));
     GWEN_Dialog_SetIntProperty(dlg, "wiz_headerver_edit", GWEN_DialogProperty_Focus, 0, 1, 0);
     return GWEN_ERROR_NO_DATA;
+#endif
   }
 
   return 0;
