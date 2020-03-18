@@ -12,6 +12,9 @@
 #define AO_N_UTILS_H
 
 
+#include <aqbanking/types/imexporter_context.h>
+
+
 /* gwenhywfar headers */
 #include <gwenhywfar/xml.h>
 #include <gwenhywfar/gwendate.h>
@@ -24,6 +27,7 @@ void AO_Provider_Util_SetTimeValue(GWEN_XMLNODE *xmlNode, const GWEN_TIME *ti, u
 void AO_Provider_Util_SetCurrentTimeValue(GWEN_XMLNODE *xmlNode, uint32_t userFlags, const char *varName);
 
 
+void AO_Provider_Util_ListAccounts(AB_IMEXPORTER_CONTEXT *ctx);
 
 
 #endif

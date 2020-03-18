@@ -25,6 +25,7 @@ build_headers=$(build_headers_priv) $(build_headers_pub)
 
 noinst_HEADERS=$(build_headers_priv) $(build_headers_pub) \
   n_header.h \
+  n_toofx.h \
   r_accounts.h \
   r_statements.h
 
@@ -37,6 +38,7 @@ noinst_HEADERS=$(build_headers_priv) $(build_headers_pub) \
 noinst_LTLIBRARIES=libofxdcv1.la
 libofxdcv1_la_SOURCES= $(build_sources) \
   n_header.c \
+  n_toofx.c \
   r_accounts.c \
   r_statements.c
 

@@ -14,6 +14,9 @@
 
 #include "n_utils.h"
 #include "aqofxconnect/user.h"
+#include "aqbanking/i18n_l.h"
+
+#include <gwenhywfar/gui.h>
 
 
 
@@ -60,4 +63,42 @@ void AO_Provider_Util_SetCurrentTimeValue(GWEN_XMLNODE *xmlNode, uint32_t userFl
   AO_Provider_Util_SetTimeValue(xmlNode, ti, userFlags, varName);
   GWEN_Time_free(ti);
 }
+
+
+
+void AO_Provider_Util_ListAccounts(AB_IMEXPORTER_CONTEXT *ctx)
+{
+  if (ctx) {
+    AB_IMEXPORTER_ACCOUNTINFO_LIST *accInfoList;
+
+    accInfoList=AB_ImExporterContext_GetAccountInfoList(ctx);
+    if (accInfoList) {
+      AB_IMEXPORTER_ACCOUNTINFO *accInfo;
+
+      accInfo=AB_ImExporterAccountInfo_List_First(accInfoList);
+      while(accInfo) {
+        const char *sBankCode;
+        const char *sBankName;
+        const char *sAccountNumber;
+        const char *sAccountName;
+
+        sBankCode=AB_ImExporterAccountInfo_GetBankCode(accInfo);
+        sBankName=AB_ImExporterAccountInfo_GetBankName(accInfo);
+        sAccountNumber=AB_ImExporterAccountInfo_GetAccountNumber(accInfo);
+        sAccountName=AB_ImExporterAccountInfo_GetAccountName(accInfo);
+
+        GWEN_Gui_ProgressLog2(0,
+                              GWEN_LoggerLevel_Notice,
+                              I18N("Received account %s/%s (%s/%s)"),
+                              sBankCode?sBankCode:"(no bank code)",
+                              sAccountNumber?sAccountNumber:"(no account number)",
+                              sBankName?sBankName:"(no bank name)",
+                              sAccountName?sAccountName:"(no account name)");
+
+        accInfo=AB_ImExporterAccountInfo_List_Next(accInfo);
+      }
+    }
+  }
+}
+
 

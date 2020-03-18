@@ -14,8 +14,10 @@
 #include "r_accounts.h"
 
 #include "n_header.h"
+#include "n_toofx.h"
 #include "n_signon.h"
 #include "n_acctinfo.h"
+#include "n_utils.h"
 #include "io_network.h"
 
 #include <aqbanking/banking_imex.h>
@@ -57,7 +59,7 @@ int AO_V1_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, AB_IMEXPORTER_CONTEXT *c
   /* create and fill request buffer */
   bufRequest=GWEN_Buffer_new(0, 256, 0, 1);
 
-  rv=AO_V1_AddOfxHeaders(pro, u, bufRequest);
+  rv=AO_V1_AddOfxHeaders(pro, u, bufRequest, "USASCII");
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(bufRequest);
@@ -65,7 +67,7 @@ int AO_V1_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, AB_IMEXPORTER_CONTEXT *c
     return rv;
   }
 
-  rv=GWEN_XMLNode_toBuffer(xmlRoot, bufRequest, GWEN_XML_FLAGS_HANDLE_HEADERS | GWEN_XML_FLAGS_SIMPLE);
+  rv=AO_V1_XmlToOfx(xmlOfx, bufRequest, "USASCII");
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(bufRequest);
@@ -127,6 +129,7 @@ int AO_V1_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, AB_IMEXPORTER_CONTEXT *c
 
   GWEN_Buffer_free(bufResponse);
 
+  AO_Provider_Util_ListAccounts(ctx);
 
   return 0;
 }

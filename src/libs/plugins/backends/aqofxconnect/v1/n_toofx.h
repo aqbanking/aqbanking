@@ -8,8 +8,8 @@
  ***************************************************************************/
 
 
-#ifndef AO_V1_N_MESSAGE_H
-#define AO_V1_N_MESSAGE_H
+#ifndef AO_V1_N_TOOFX_H
+#define AO_V1_N_TOOFX_H
 
 
 /* plugin headers */
@@ -24,7 +24,7 @@
 
 
 
-int AO_V1_AddOfxHeaders(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf, const char *encoding);
+int AO_V1_XmlToOfx(GWEN_XMLNODE *xmlNode, GWEN_BUFFER *buf, const char *encoding);
 
 
 #endif

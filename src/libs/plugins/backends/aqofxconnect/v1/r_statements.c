@@ -15,6 +15,7 @@
 #include "r_statements.h"
 
 #include "n_header.h"
+#include "n_toofx.h"
 #include "n_signon.h"
 #include "n_statement.h"
 #include "io_network.h"
@@ -59,7 +60,7 @@ int AO_V1_RequestStatements(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRAN
   /* create and fill request buffer */
   bufRequest=GWEN_Buffer_new(0, 256, 0, 1);
 
-  rv=AO_V1_AddOfxHeaders(pro, u, bufRequest);
+  rv=AO_V1_AddOfxHeaders(pro, u, bufRequest, "USASCII");
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(bufRequest);
@@ -67,7 +68,7 @@ int AO_V1_RequestStatements(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRAN
     return rv;
   }
 
-  rv=GWEN_XMLNode_toBuffer(xmlRoot, bufRequest, GWEN_XML_FLAGS_HANDLE_HEADERS | GWEN_XML_FLAGS_SIMPLE);
+  rv=AO_V1_XmlToOfx(xmlOfx, bufRequest, "USASCII");
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(bufRequest);

@@ -27,7 +27,7 @@
 
  */
 
-int AO_V1_AddOfxHeaders(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf)
+int AO_V1_AddOfxHeaders(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf, const char *encoding)
 {
   GWEN_TIME *ti;
   const char *s;
@@ -57,8 +57,10 @@ int AO_V1_AddOfxHeaders(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf)
   GWEN_Buffer_AppendString(buf, s);
   GWEN_Buffer_AppendString(buf, "\r\n");
 
+  GWEN_Buffer_AppendString(buf, "ENCODING:");
+  GWEN_Buffer_AppendString(buf, encoding?encoding:"USASCII");
+  GWEN_Buffer_AppendString(buf, "\r\n");
   GWEN_Buffer_AppendString(buf,
-                           "ENCODING:USASCII\r\n"
                            "CHARSET:1252\r\n"
                            "COMPRESSION:NONE\r\n"
                            "OLDFILEUID:NONE\r\n");
