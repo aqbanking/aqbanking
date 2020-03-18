@@ -99,7 +99,7 @@ GWEN_XMLNODE *AO_Provider_MkSignOnNode(AB_USER *u)
     memset(userpass, 0, sizeof(userpass));
   }
 
-  GWEN_XMLNode_SetCharValue(xmlSignonRq, "LANG", "ENG");
+  GWEN_XMLNode_SetCharValue(xmlSignonRq, "LANGUAGE", "ENG");
 
   if (!(AO_User_GetFlags(u) & AO_USER_FLAGS_EMPTY_FID) && AO_User_GetFid(u)) {
     GWEN_XMLNODE *xmlFi;
