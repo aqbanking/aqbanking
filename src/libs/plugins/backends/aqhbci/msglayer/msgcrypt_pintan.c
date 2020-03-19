@@ -218,7 +218,8 @@ int AH_Msg_EncryptPinTan(AH_MSG *hmsg)
   else
     p=NULL;
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", p?p:"0");
-  GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT, "CryptAlgo/MsgKey", "NOKEY", 5);
+  GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT, "CryptAlgo/MsgKey", "XXXXXXXX", 8);
+  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "CryptAlgo/keytype", 5);
 
   rv=_pinTanGenerateAndAddSegment(e, "CryptHead", cfg, hbuf);
   if (rv<0) {
