@@ -514,6 +514,10 @@ int AH_EditUserPinTanDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
       AH_User_SetTanMediumId(u, GWEN_Buffer_GetStart(tbuf));
     GWEN_Buffer_free(tbuf);
   }
+  else {
+    if (u)
+      AH_User_SetTanMediumId(u, NULL);
+  }
 
   s=GWEN_Dialog_GetCharProperty(dlg, "urlEdit", GWEN_DialogProperty_Value, 0, NULL);
   if (s && *s) {
