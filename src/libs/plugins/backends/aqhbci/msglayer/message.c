@@ -477,7 +477,7 @@ unsigned int AH_Msg_AddNode(AH_MSG *hmsg,
   usedBefore=GWEN_Buffer_GetUsedBytes(hmsg->buffer);
   //rv=GWEN_MsgEngine_CreateMessageFromNode(e, node, hmsg->buffer, data);
   rv=_createMessageFromNode(e, node, hmsg->buffer, data);
-#if 1
+#if 0
   DBG_ERROR(AQHBCI_LOGDOMAIN, "Buffer:");
   GWEN_Buffer_Dump(hmsg->buffer, 2);
 #endif
