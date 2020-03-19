@@ -59,23 +59,22 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
     return rv;
   }
 
+  /* always try to commit, even when there are errors */
+  rv=AH_Job_Commit(job, doLock);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
+    AH_Job_free(job);
+    if (!nounmount)
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+    return rv;
+  }
+
   if (AH_Job_HasErrors(job)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job has errors");
-    // TODO: show errors
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job has errors, but accounts may have been received.");
     AH_Job_free(job);
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return GWEN_ERROR_GENERIC;
-  }
-  else {
-    rv=AH_Job_Commit(job, doLock);
-    if (rv) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
-      AH_Job_free(job);
-      if (!nounmount)
-        AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-      return rv;
-    }
   }
 
   AH_Job_free(job);
