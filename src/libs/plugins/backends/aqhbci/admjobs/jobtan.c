@@ -47,7 +47,7 @@ AH_JOB *AH_Job_Tan_new(AB_PROVIDER *pro, AB_USER *u, int process, int jobVersion
   assert(dbParams);
 
   GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "process", process);
-//  if (process==1 || process==2)
+  if (process==1 || process==2)
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "moreTans", "N");
 
   /* set tanmedium id (if any) */
@@ -276,6 +276,8 @@ void AH_Job_Tan_SetSegCode(AH_JOB *j, const char *p)
   if (p && *p) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Setting segment id in TAN to [%s]", p);
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "segmentId", p);
+    if (p && strcasecmp(p, "HKIDN")==0)
+      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "moreTans", "N");
   }
   else {
     GWEN_DB_DeleteVar(dbArgs, "segmentId");
