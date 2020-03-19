@@ -145,12 +145,15 @@ GWEN_XMLNODE *_mkCreditCardStatementRqNode(AB_USER *u, AB_ACCOUNT *a, AB_TRANSAC
 
     xmlAcc=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "CCACCTFROM");
     GWEN_XMLNode_AddChild(xmlRq, xmlAcc);
+
+#if 0
     if (!(AO_User_GetFlags(u) & AO_USER_FLAGS_EMPTY_BANKID)) {
       /* only copy bank code if not forbidden by user */
       s=AB_Account_GetBankCode(a);
       if (s)
         GWEN_XMLNode_SetCharValue(xmlAcc, "BANKID", s);
     }
+#endif
 
     s=AB_Account_GetAccountNumber(a);
     if (s)
