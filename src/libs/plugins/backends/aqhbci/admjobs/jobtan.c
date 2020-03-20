@@ -276,6 +276,8 @@ void AH_Job_Tan_SetSegCode(AH_JOB *j, const char *p)
   if (p && *p) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Setting segment id in TAN to [%s]", p);
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "segmentId", p);
+    if (p && strcasecmp(p, "HKIDN")==0)
+      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "moreTans", "N");
   }
   else {
     GWEN_DB_DeleteVar(dbArgs, "segmentId");

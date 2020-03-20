@@ -11,6 +11,10 @@ noinst_LTLIBRARIES=libhbcijob.la
 noinst_HEADERS=\
   job_l.h \
   job_p.h \
+  job_commit.h \
+  job_commit_account.h \
+  job_commit_bpd.h \
+  job_commit_key.h \
   jobqueue_l.h \
   jobqueue_p.h \
   result_l.h \
@@ -21,13 +25,15 @@ noinst_HEADERS=\
 
 libhbcijob_la_SOURCES=\
   job.c \
+  job_commit.c \
+  job_commit_account.c \
+  job_commit_bpd.c \
+  job_commit_key.c \
   jobqueue.c \
   result.c
 
 
 EXTRA_DIST=\
-  job_commit.c \
-  job_commit_account.c \
   job_virtual.c \
   job_new.c
 

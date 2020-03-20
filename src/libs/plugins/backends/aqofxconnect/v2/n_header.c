@@ -38,16 +38,16 @@ GWEN_XMLNODE *AO_V2_MkOfxHeader(AB_USER *u)
 
   s=AO_User_GetHeaderVer(u);
   if (s && *s=='1') {
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Invalid header version \"%s\", using \"220\" instead.", s);
-    GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning, "Invalid header version \"%s\", using \"220\" instead.", s);
+    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Invalid header version \"%s\", using \"200\" instead.", s);
+    GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning, "Invalid header version \"%s\", using \"200\" instead.", s);
     s=NULL;
   }
-  GWEN_XMLNode_SetProperty(xmlOfx, "VERSION", s?s:"220");
+  GWEN_XMLNode_SetProperty(xmlOfx, "VERSION", s?s:"200");
 
   s=AO_User_GetSecurityType(u);
   GWEN_XMLNode_SetProperty(xmlOfx, "SECURITY", s?s:"NONE");
 
-  AO_V2_Util_SetCurrentTimeValue(xmlOfx, AO_User_GetFlags(u), "NEWFILEUID");
+  AO_Provider_Util_SetCurrentTimeValue(xmlOfx, AO_User_GetFlags(u), "NEWFILEUID");
 
   GWEN_XMLNode_SetProperty(xmlOfx, "OLDFILEUID", "NONE");
 

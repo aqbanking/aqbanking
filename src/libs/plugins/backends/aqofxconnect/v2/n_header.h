@@ -8,8 +8,8 @@
  ***************************************************************************/
 
 
-#ifndef AO_N_MESSAGE_H
-#define AO_N_MESSAGE_H
+#ifndef AO_V2_N_MESSAGE_H
+#define AO_V2_N_MESSAGE_H
 
 
 /* plugin headers */

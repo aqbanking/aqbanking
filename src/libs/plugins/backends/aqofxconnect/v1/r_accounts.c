@@ -14,8 +14,10 @@
 #include "r_accounts.h"
 
 #include "n_header.h"
+#include "n_toofx.h"
 #include "n_signon.h"
 #include "n_acctinfo.h"
+#include "n_utils.h"
 #include "io_network.h"
 
 #include <aqbanking/banking_imex.h>
@@ -27,7 +29,7 @@
 
 
 
-int AO_V2_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, AB_IMEXPORTER_CONTEXT *ctx)
+int AO_V1_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, AB_IMEXPORTER_CONTEXT *ctx)
 {
   AB_BANKING *ab;
   GWEN_XMLNODE *xmlRoot;
@@ -43,14 +45,6 @@ int AO_V2_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, AB_IMEXPORTER_CONTEXT *c
   /* prepare XML request */
   xmlRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "root");
 
-  xmlNode=AO_V2_MkXmlHeader();
-  if (xmlNode)
-    GWEN_XMLNode_AddHeader(xmlRoot, xmlNode);
-
-  xmlNode=AO_V2_MkOfxHeader(u);
-  if (xmlNode)
-    GWEN_XMLNode_AddHeader(xmlRoot, xmlNode);
-
   xmlOfx=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "OFX");
   GWEN_XMLNode_AddChild(xmlRoot, xmlOfx);
 
@@ -62,8 +56,18 @@ int AO_V2_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, AB_IMEXPORTER_CONTEXT *c
   if (xmlNode)
     GWEN_XMLNode_AddChild(xmlOfx, xmlNode);
 
+  /* create and fill request buffer */
   bufRequest=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=GWEN_XMLNode_toBuffer(xmlRoot, bufRequest, GWEN_XML_FLAGS_HANDLE_HEADERS | GWEN_XML_FLAGS_SIMPLE);
+
+  rv=AO_V1_AddOfxHeaders(pro, u, bufRequest, "USASCII");
+  if (rv<0) {
+    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(bufRequest);
+    GWEN_XMLNode_free(xmlRoot);
+    return rv;
+  }
+
+  rv=AO_V1_XmlToOfx(xmlOfx, bufRequest, "USASCII");
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(bufRequest);
@@ -108,8 +112,8 @@ int AO_V2_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, AB_IMEXPORTER_CONTEXT *c
 
   /* parse response */
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("Parsing response..."));
-  DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Importing OFX version 2 (xml)");
-  rv=AB_Banking_ImportFromBufferLoadProfile(ab, "xml", ctx, "ofx2", NULL,
+  DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Importing OFX version 1 (sgml)");
+  rv=AB_Banking_ImportFromBufferLoadProfile(ab, "ofx", ctx, "default", NULL,
                                             (const uint8_t *) GWEN_Buffer_GetStart(bufResponse),
                                             GWEN_Buffer_GetUsedBytes(bufResponse));
   if (rv<0) {
@@ -125,6 +129,7 @@ int AO_V2_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, AB_IMEXPORTER_CONTEXT *c
 
   GWEN_Buffer_free(bufResponse);
 
+  AO_Provider_Util_ListAccounts(ctx);
 
   return 0;
 }

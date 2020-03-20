@@ -20,6 +20,8 @@
 #include "aqofxconnect/dialogs/dlg_edituser_l.h"
 #include "aqofxconnect/dialogs/dlg_newuser_l.h"
 #include "aqofxconnect/control/control.h"
+#include "aqofxconnect/v1/r_statements.h"
+#include "aqofxconnect/v1/r_accounts.h"
 #include "aqofxconnect/v2/r_statements.h"
 #include "aqofxconnect/v2/r_accounts.h"
 
@@ -377,7 +379,12 @@ int AO_Provider_RequestStatements(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, A
 {
   int rv;
 
-  rv=AO_V2_RequestStatements(pro, u, a, j, ictx);
+  if (1) { /* TODO: Select OFX version */
+    rv=AO_V1_RequestStatements(pro, u, a, j, ictx);
+  }
+  else {
+    rv=AO_V2_RequestStatements(pro, u, a, j, ictx);
+  }
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Error adding request element (%d)", rv);
     return rv;
@@ -418,7 +425,12 @@ int AO_Provider_RequestAccounts(AB_PROVIDER *pro, AB_USER *u, int keepOpen)
                              0);
 
   ictx=AB_ImExporterContext_new();
-  rv=AO_V2_RequestAccounts(pro, u, ictx);
+  if (1) { /* TODO: Select OFX version */
+    rv=AO_V1_RequestAccounts(pro, u, ictx);
+  }
+  else {
+    rv=AO_V2_RequestAccounts(pro, u, ictx);
+  }
   if (rv<0) {
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
     GWEN_Gui_ProgressEnd(pid);

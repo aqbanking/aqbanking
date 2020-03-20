@@ -38,6 +38,7 @@
 
 
 static int _createConnection(AB_PROVIDER *pro, AB_USER *u, GWEN_HTTP_SESSION **pSess);
+static void _probablyWriteToLogFile(const char *sEnvVar, const char *sCaption, const uint8_t *p, uint32_t len);
 
 
 
@@ -48,39 +49,16 @@ static int _createConnection(AB_PROVIDER *pro, AB_USER *u, GWEN_HTTP_SESSION **p
 
 
 
-int AO_V2_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_t *p, unsigned int plen, GWEN_BUFFER **pRbuf)
+int AO_Provider_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_t *p, unsigned int plen, GWEN_BUFFER **pRbuf)
 {
   GWEN_HTTP_SESSION *sess=NULL;
   GWEN_BUFFER *rbuf;
   int rv;
+  const char *sEnvVar;
 
-  if (getenv("AQOFX_LOG_COMM")) {
-    FILE *f;
+  sEnvVar=getenv("AQOFX_LOG_COMM");
 
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN,
-              "Saving response in \"/tmp/ofx.log\" ...");
-    GWEN_Gui_ProgressLog(0,
-                         GWEN_LoggerLevel_Warning,
-                         I18N("Saving communication log to /tmp/ofx.log"));
-
-    f=fopen("/tmp/ofx.log", "a+");
-    if (!f) {
-      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fopen: %s", strerror(errno));
-    }
-    else {
-      fprintf(f, "\n\nSending:\n");
-      fprintf(f, "-------------------------------------\n");
-      if (fwrite(p,
-                 plen,
-                 1,
-                 f)!=1) {
-        DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fwrite: %s", strerror(errno));
-      }
-      if (fclose(f)) {
-        DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fclose: %s", strerror(errno));
-      }
-    }
-  }
+  _probablyWriteToLogFile(sEnvVar, "Sending", p, plen);
 
   /* setup connection */
   rv=_createConnection(pro, u, &sess);
@@ -95,6 +73,7 @@ int AO_V2_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_t *p, unsigne
   rv=GWEN_HttpSession_SendPacket(sess, "POST", p, plen);
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Network error while sending request"));
     GWEN_HttpSession_Fini(sess);
     GWEN_HttpSession_free(sess);
     return rv;
@@ -128,28 +107,7 @@ int AO_V2_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_t *p, unsigne
   /* found a response, transform it */
   *pRbuf=rbuf;
 
-  if (getenv("AQOFX_LOG_COMM")) {
-    FILE *f;
-
-    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Saving response in \"/tmp/ofx.log\" ...");
-    f=fopen("/tmp/ofx.log", "a+");
-    if (!f) {
-      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fopen: %s", strerror(errno));
-    }
-    else {
-      fprintf(f, "\n\nReceived:\n");
-      fprintf(f, "-------------------------------------\n");
-      if (fwrite(GWEN_Buffer_GetStart(rbuf),
-                 GWEN_Buffer_GetUsedBytes(rbuf),
-                 1,
-                 f)!=1) {
-        DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fwrite: %s", strerror(errno));
-      }
-      if (fclose(f)) {
-        DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fclose: %s", strerror(errno));
-      }
-    }
-  }
+  _probablyWriteToLogFile(sEnvVar, "Received", (const uint8_t*) GWEN_Buffer_GetStart(rbuf), GWEN_Buffer_GetUsedBytes(rbuf));
 
   return 0;
 }
@@ -193,6 +151,35 @@ int _createConnection(AB_PROVIDER *pro, AB_USER *u, GWEN_HTTP_SESSION **pSess)
 
   *pSess=sess;
   return 0;
+}
+
+
+
+void _probablyWriteToLogFile(const char *sEnvVar, const char *sCaption, const uint8_t *p, uint32_t len)
+{
+  if (sEnvVar) {
+    FILE *f;
+
+    if (strcasecmp(sEnvVar, "1"))
+      sEnvVar="/tmp/ofx.log";
+    DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Saving OFX log to \"%s\" ...", sEnvVar);
+    GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning, I18N("Saving communication log to %s"), sEnvVar);
+
+    f=fopen(sEnvVar, "a+");
+    if (!f) {
+      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fopen: %s", strerror(errno));
+    }
+    else {
+      fprintf(f, "\n\n%s:\n", sCaption);
+      fprintf(f, "-------------------------------------\n");
+      if (fwrite(p, len, 1, f)!=1) {
+	DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fwrite: %s", strerror(errno));
+      }
+      if (fclose(f)) {
+        DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fclose: %s", strerror(errno));
+      }
+    }
+  }
 }
 
 

@@ -59,23 +59,22 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
     return rv;
   }
 
+  /* always try to commit, even when there are errors */
+  rv=AH_Job_Commit(job, doLock);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
+    AH_Job_free(job);
+    if (!nounmount)
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+    return rv;
+  }
+
   if (AH_Job_HasErrors(job)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job has errors");
-    // TODO: show errors
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job has errors, but accounts may have been received.");
     AH_Job_free(job);
     if (!nounmount)
       AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
     return GWEN_ERROR_GENERIC;
-  }
-  else {
-    rv=AH_Job_Commit(job, doLock);
-    if (rv) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not commit result.\n");
-      AH_Job_free(job);
-      if (!nounmount)
-        AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
-      return rv;
-    }
   }
 
   AH_Job_free(job);
@@ -1154,6 +1153,61 @@ int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
   }
 
   AH_Job_free(job);
+
+  if (!nounmount)
+    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+
+  return 0;
+}
+
+
+
+int AH_Provider_UnblockPin(AB_PROVIDER *pro,
+                           AB_USER *u,
+                           AB_IMEXPORTER_CONTEXT *ctx,
+                           int withProgress, int nounmount, int doLock)
+{
+  AH_PROVIDER *hp;
+  AB_BANKING *ab;
+  AH_HBCI *h;
+  AH_OUTBOX *ob;
+  int rv;
+  AH_JOB *job;
+
+  assert(pro);
+  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
+  assert(hp);
+
+  ab=AB_Provider_GetBanking(pro);
+  assert(ab);
+
+  h=AH_Provider_GetHbci(pro);
+  assert(h);
+
+  ob=AH_Outbox_new(pro);
+
+  /* TODO: store user to free it later */
+  job=AH_Job_UnblockPin_new(pro, u);
+  if (!job) {
+    DBG_WARN(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+    AH_Outbox_free(ob);
+    return GWEN_ERROR_GENERIC;
+  }
+  AH_Job_AddSigner(job, AB_User_GetUserId(u));
+
+  AH_Outbox_AddJob(ob, job);
+  AH_Job_free(job);
+
+  rv=AH_Outbox_Execute(ob, ctx, withProgress, nounmount, doLock);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not execute outbox.\n");
+    AH_Outbox_free(ob);
+    if (!nounmount)
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+    return rv;
+  }
+
+  AH_Outbox_free(ob);
 
   if (!nounmount)
     AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));

@@ -25,6 +25,7 @@ build_headers=$(build_headers_priv) $(build_headers_pub)
 
 noinst_HEADERS=$(build_headers_priv) $(build_headers_pub) \
   n_header.h \
+  n_toofx.h \
   r_accounts.h \
   r_statements.h
 
@@ -34,9 +35,10 @@ noinst_HEADERS=$(build_headers_priv) $(build_headers_pub) \
 #iheader_HEADERS=
 
 
-noinst_LTLIBRARIES=libofxdcv2.la
-libofxdcv2_la_SOURCES= $(build_sources) \
+noinst_LTLIBRARIES=libofxdcv1.la
+libofxdcv1_la_SOURCES= $(build_sources) \
   n_header.c \
+  n_toofx.c \
   r_accounts.c \
   r_statements.c
 
@@ -49,7 +51,7 @@ built_sources: $(build_sources)
 
 
 sources:
-	for f in $(libofxdcv2_la_SOURCES); do \
+	for f in $(libofxdcv1_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 	for f in $(dlgdata_DATA); do \
@@ -63,7 +65,7 @@ sources:
 
 
 cppcheck:
-	for f in $(libofxdcv2_la_SOURCES); do \
+	for f in $(libofxdcv1_la_SOURCES); do \
 	  cppcheck --force $$f ; \
 	done
 	for d in $(SUBDIRS); do \

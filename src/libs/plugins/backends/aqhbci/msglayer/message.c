@@ -400,6 +400,52 @@ unsigned int AH_Msg_GetCurrentSegmentNumber(AH_MSG *hmsg)
 
 
 
+static int _createMessageFromNode(GWEN_MSGENGINE *e,
+                                  GWEN_XMLNODE *node,
+                                  GWEN_BUFFER *msgBuf,
+                                  GWEN_DB_NODE *data)
+{
+  int rv;
+  GWEN_BUFFER *dbuf;
+  uint32_t len;
+
+  dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=GWEN_MsgEngine_CreateMessageFromNode(e, node, dbuf, data);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(dbuf);
+    return rv;
+  }
+
+  /* remove trailing "+" */
+  len=GWEN_Buffer_GetUsedBytes(dbuf);
+  if (len>2) {
+    char *ptr;
+    int pos;
+
+    pos=len-2;
+    ptr=GWEN_Buffer_GetStart(dbuf)+pos;
+    while(pos>0) {
+      if (*ptr=='+')
+        *ptr=0;
+      else {
+        ptr[1]='\'';
+        GWEN_Buffer_AppendBytes(msgBuf, GWEN_Buffer_GetStart(dbuf), pos+2);
+        GWEN_Buffer_free(dbuf);
+        return 0;
+      }
+      pos--;
+      ptr--;
+    }
+  }
+
+  GWEN_Buffer_AppendBytes(msgBuf, GWEN_Buffer_GetStart(dbuf), GWEN_Buffer_GetUsedBytes(dbuf));
+  GWEN_Buffer_free(dbuf);
+  return 0;
+}
+
+
+
 /* --------------------------------------------------------------- FUNCTION */
 unsigned int AH_Msg_AddNode(AH_MSG *hmsg,
                             GWEN_XMLNODE *node,
@@ -429,10 +475,12 @@ unsigned int AH_Msg_AddNode(AH_MSG *hmsg,
   }
 
   usedBefore=GWEN_Buffer_GetUsedBytes(hmsg->buffer);
-  rv=GWEN_MsgEngine_CreateMessageFromNode(e,
-                                          node,
-                                          hmsg->buffer,
-                                          data);
+  //rv=GWEN_MsgEngine_CreateMessageFromNode(e, node, hmsg->buffer, data);
+  rv=_createMessageFromNode(e, node, hmsg->buffer, data);
+#if 0
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "Buffer:");
+  GWEN_Buffer_Dump(hmsg->buffer, 2);
+#endif
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_Crop(hmsg->buffer, 0, usedBefore);

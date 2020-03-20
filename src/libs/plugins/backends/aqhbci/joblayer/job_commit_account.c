@@ -7,13 +7,44 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
-/*
- * This file is included by job.c
+
+#include "job_commit_account.h"
+#include "aqhbci/banking/user_l.h"
+#include "aqhbci/banking/account_l.h"
+
+#include "aqbanking/i18n_l.h"
+
+#include <gwenhywfar/db.h>
+#include <gwenhywfar/debug.h>
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
  */
 
 
-int AH_Job__Commit_Accounts(AH_JOB *j)
+static int _readAccounts(AH_JOB *j, AB_ACCOUNT_LIST *accList);
+static void _removeEmpty(AH_JOB *j, AB_ACCOUNT_LIST *accList);
+static uint32_t _findStored(AH_JOB *j, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC_LIST *asl);
+static void _addOrModify(AH_JOB *j, AB_ACCOUNT *acc);
+
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+
+int AH_Job_Commit_Accounts(AH_JOB *j)
 {
   int rv;
   AB_ACCOUNT_LIST *accList;
@@ -28,7 +59,7 @@ int AH_Job__Commit_Accounts(AH_JOB *j)
   accList=AB_Account_List_new();
 
   /* read accounts from job data */
-  rv=AH_Job__Commit_Accounts_ReadAccounts(j, accList);
+  rv=_readAccounts(j, accList);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
   }
@@ -41,7 +72,7 @@ int AH_Job__Commit_Accounts(AH_JOB *j)
 #endif
 
   /* only keep accounts which have at least IBAN or bankcode and account number */
-  AH_Job__Commit_Accounts_RemoveEmpty(j, accList);
+  _removeEmpty(j, accList);
 
   /* find out which accounts are new */
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Checking for existing or to be added accounts");
@@ -60,7 +91,7 @@ int AH_Job__Commit_Accounts(AH_JOB *j)
       while (acc) {
         uint32_t storedUid=0;
 
-        storedUid=AH_Job__Commit_Accounts_FindStored(j, acc, accountSpecList);
+        storedUid=_findStored(j, acc, accountSpecList);
         if (storedUid) {
           DBG_INFO(AQHBCI_LOGDOMAIN, "Found a matching account (%x, %lu)", storedUid, (long unsigned int) storedUid);
           AB_Account_SetUniqueId(acc, storedUid);
@@ -83,7 +114,7 @@ int AH_Job__Commit_Accounts(AH_JOB *j)
        * freed later */
       AB_Account_List_Del(acc);
       /* add new or modify existing account */
-      AH_Job__Commit_Accounts_AddOrModify(j, acc);
+      _addOrModify(j, acc);
 
       /* free local representation */
       AB_Account_free(acc);
@@ -98,10 +129,11 @@ int AH_Job__Commit_Accounts(AH_JOB *j)
 
 
 
-static int AH_Job__Commit_Accounts_ReadAccounts(AH_JOB *j, AB_ACCOUNT_LIST *accList)
+static int _readAccounts(AH_JOB *j, AB_ACCOUNT_LIST *accList)
 {
   AB_BANKING *ab;
   AB_PROVIDER *pro;
+  AB_USER *user;
   AH_BPD *bpd;
   GWEN_DB_NODE *dbJob;
   GWEN_DB_NODE *dbCurr;
@@ -110,9 +142,11 @@ static int AH_Job__Commit_Accounts_ReadAccounts(AH_JOB *j, AB_ACCOUNT_LIST *accL
   assert(ab);
   pro=AH_Job_GetProvider(j);
   assert(pro);
-  bpd=AH_User_GetBpd(j->user);
 
-  dbJob=j->jobResponses;
+  user=AH_Job_GetUser(j);
+  bpd=AH_User_GetBpd(user);
+
+  dbJob=AH_Job_GetResponses(j);
 
   dbCurr=GWEN_DB_FindFirstGroup(dbJob, "AccountData");
   while (dbCurr) {
@@ -173,7 +207,7 @@ static int AH_Job__Commit_Accounts_ReadAccounts(AH_JOB *j, AB_ACCOUNT_LIST *accL
 
 
 
-static void AH_Job__Commit_Accounts_RemoveEmpty(AH_JOB *j, AB_ACCOUNT_LIST *accList)
+static void _removeEmpty(AH_JOB *j, AB_ACCOUNT_LIST *accList)
 {
   /* only keep accounts which have at least IBAN or bankcode and account number */
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Checking for empty accounts");
@@ -204,7 +238,7 @@ static void AH_Job__Commit_Accounts_RemoveEmpty(AH_JOB *j, AB_ACCOUNT_LIST *accL
 
 
 
-static uint32_t AH_Job__Commit_Accounts_FindStored(AH_JOB *j, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC_LIST *asl)
+static uint32_t _findStored(AH_JOB *j, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC_LIST *asl)
 {
   AB_PROVIDER *pro;
   const char *accountNum;
@@ -268,10 +302,11 @@ static uint32_t AH_Job__Commit_Accounts_FindStored(AH_JOB *j, const AB_ACCOUNT *
 }
 
 
-static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc)
+static void _addOrModify(AH_JOB *j, AB_ACCOUNT *acc)
 {
   AB_BANKING *ab;
   AB_PROVIDER *pro;
+  AB_USER *user;
   AB_ACCOUNT *storedAcc=NULL;
   GWEN_DB_NODE *dbTempUpd=NULL;
 
@@ -279,6 +314,8 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc)
   assert(ab);
   pro=AH_Job_GetProvider(j);
   assert(pro);
+  user=AH_Job_GetUser(j);
+  assert(user);
 
   dbTempUpd=AH_Account_GetDbTempUpd(acc);
   if (dbTempUpd)
@@ -341,7 +378,7 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc)
       AH_Account_AddFlags(storedAcc, AH_Account_GetFlags(acc));
 
       /* handle users */
-      AB_Account_SetUserId(storedAcc, AB_User_GetUniqueId(j->user));
+      AB_Account_SetUserId(storedAcc, AB_User_GetUniqueId(user));
 
       /* unlock account */
       rv=AB_Provider_EndExclUseAccount(pro, storedAcc, 0);
@@ -356,7 +393,7 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc)
 
     /* account is new, add it */
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Account is new, adding");
-    AB_Account_SetUserId(acc, AB_User_GetUniqueId(j->user));
+    AB_Account_SetUserId(acc, AB_User_GetUniqueId(user));
     rv=AB_Provider_AddAccount(pro, acc, 0); /* do not lock corresponding user because it already is locked! */
     if (rv<0) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Coud not write new account (%d)", rv);
@@ -378,10 +415,10 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc)
 
     DBG_INFO(AQHBCI_LOGDOMAIN, "Setting UPD jobs for account %u in user %u",
              (unsigned int) AB_Account_GetUniqueId(storedAcc),
-             (unsigned int) AB_User_GetUniqueId(j->user));
+             (unsigned int) AB_User_GetUniqueId(user));
 
     /* get UPD jobs */
-    dbUpd=AH_User_GetUpd(j->user);
+    dbUpd=AH_User_GetUpd(user);
     assert(dbUpd);
 
     /* create and clear group for each account */
@@ -408,7 +445,7 @@ static void AH_Job__Commit_Accounts_AddOrModify(AH_JOB *j, AB_ACCOUNT *acc)
 
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Updating account spec for account %u in user %u",
                (unsigned int) AB_Account_GetUniqueId(storedAcc),
-               (unsigned int) AB_User_GetUniqueId(j->user));
+               (unsigned int) AB_User_GetUniqueId(user));
 
     rv=AB_Provider_WriteAccountSpecForAccount(pro, storedAcc, 0); /* dont lock */
     if (rv<0) {

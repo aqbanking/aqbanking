@@ -83,9 +83,13 @@ int AH_MsgPinTan_PrepareCryptoSeg(AH_MSG *hmsg,
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "key/bankcode", AB_User_GetBankCode(u));
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "key/userid", crypt?peerId:userId);
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "key/keytype", crypt?"V":"S");
-  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "key/keynum", 1);
-  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "key/keyversion", 1);
+  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "key/keynum", 0);
+  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "key/keyversion", 0);
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "secProfile/code", "PIN");
+
+  if (hmsg->itanMethod==999) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Using itanMethod 999");
+  }
 
   /*
   if (crypt)
@@ -214,7 +218,8 @@ int AH_Msg_EncryptPinTan(AH_MSG *hmsg)
   else
     p=NULL;
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", p?p:"0");
-  GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT, "CryptAlgo/MsgKey", "NOKEY", 5);
+  GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT, "CryptAlgo/MsgKey", "XXXXXXXX", 8);
+  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "CryptAlgo/keytype", 5);
 
   rv=_pinTanGenerateAndAddSegment(e, "CryptHead", cfg, hbuf);
   if (rv<0) {

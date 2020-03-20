@@ -51,6 +51,7 @@
 #include "jobgetsepainfo_l.h"
 #include "jobgetsysid_l.h"
 #include "jobgetbankinfo_l.h"
+#include "jobunblockpin_l.h"
 
 /*
 #include "dlg_newuser_l.h"

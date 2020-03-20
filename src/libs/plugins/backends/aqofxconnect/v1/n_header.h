@@ -8,8 +8,8 @@
  ***************************************************************************/
 
 
-#ifndef AO_N_SIGNON_H
-#define AO_N_SIGNON_H
+#ifndef AO_V1_N_MESSAGE_H
+#define AO_V1_N_MESSAGE_H
 
 
 /* plugin headers */
@@ -20,11 +20,11 @@
 
 /* gwenhywfar headers */
 #include <gwenhywfar/xml.h>
+#include <gwenhywfar/buffer.h>
 
 
 
-GWEN_XMLNODE *AO_V2_MkSignOnNode(AB_USER *u);
-
+int AO_V1_AddOfxHeaders(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf, const char *encoding);
 
 
 #endif

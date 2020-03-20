@@ -16,7 +16,7 @@ AC_CONFIG_HEADERS([config.h])
 
 AQBANKING_VERSION_MAJOR=6
 AQBANKING_VERSION_MINOR=1
-AQBANKING_VERSION_PATCHLEVEL=2
+AQBANKING_VERSION_PATCHLEVEL=3
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="stable"
@@ -34,7 +34,7 @@ AQBANKING_VERSION_TAG="stable"
 
 AQBANKING_SO_CURRENT=45
 AQBANKING_SO_AGE=1
-AQBANKING_SO_REVISION=2
+AQBANKING_SO_REVISION=3
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 
@@ -1308,8 +1308,10 @@ AC_CONFIG_FILES([
   src/libs/plugins/backends/aqofxconnect/Makefile
   src/libs/plugins/backends/aqofxconnect/aqofxconnect.xml
   src/libs/plugins/backends/aqofxconnect/libofxhome/Makefile
+  src/libs/plugins/backends/aqofxconnect/v1/Makefile
   src/libs/plugins/backends/aqofxconnect/v2/Makefile
   src/libs/plugins/backends/aqofxconnect/control/Makefile
+  src/libs/plugins/backends/aqofxconnect/common/Makefile
   src/libs/plugins/backends/aqofxconnect/dialogs/Makefile
   src/libs/plugins/backends/aqpaypal/Makefile
   src/libs/plugins/backends/aqpaypal/aqpaypal.xml

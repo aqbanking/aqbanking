@@ -8,8 +8,8 @@
  ***************************************************************************/
 
 
-#ifndef AO_R_ACCOUNTS_H
-#define AO_R_ACCOUNTS_H
+#ifndef AO_V2_R_ACCOUNTS_H
+#define AO_V2_R_ACCOUNTS_H
 
 
 /* plugin headers */

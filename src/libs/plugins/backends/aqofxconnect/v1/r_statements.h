@@ -8,26 +8,27 @@
  ***************************************************************************/
 
 
-#ifndef AO_N_ACCTINFO_H
-#define AO_N_ACCTINFO_H
+#ifndef AO_V1_R_STATEMENTS_H
+#define AO_V1_R_STATEMENTS_H
 
 
 /* plugin headers */
 #include <aqofxconnect/aqofxconnect.h>
 
 /* aqbanking headers */
+#include <aqbanking/backendsupport/provider.h>
 #include <aqbanking/backendsupport/user.h>
+#include <aqbanking/backendsupport/account.h>
+#include <aqbanking/types/imexporter_context.h>
+#include <aqbanking/types/transaction.h>
 
-/* gwenhywfar headers */
-#include <gwenhywfar/xml.h>
 
 
 
-GWEN_XMLNODE *AO_V2_MkAcctInfoRqNode(AB_USER *u);
+int AO_V1_RequestStatements(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *j,
+                            AB_IMEXPORTER_CONTEXT *ictx);
 
 
 
 #endif
-
-
 

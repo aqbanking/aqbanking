@@ -34,6 +34,10 @@ int AH_Outbox__CBox_OpenDialogPsd2_Proc2(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg)
     }
   }
   else {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "We have no list of allowed two-step TAN methods, maybe you should request TAN methods.");
+    GWEN_Gui_ProgressLog(0,
+                         GWEN_LoggerLevel_Warning,
+                         I18N("We have no list of allowed two-step TAN methods, maybe you should request TAN methods."));
     AH_Dialog_SetItanMethod(dlg, 999);
     AH_Dialog_SetItanProcessType(dlg, 1);
     AH_Dialog_SetTanJobVersion(dlg, 0);
