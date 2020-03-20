@@ -187,6 +187,9 @@ int AIO_OfxGroup_STMTRN_AddData(AIO_OFX_GROUP *g, const char *data)
         AB_TRANSACTION *t;
 
         t=xg->transaction;
+        AB_Transaction_SetType(t, AB_Transaction_TypeStatement);
+        AB_Transaction_SetSubType(t, AB_Transaction_SubTypeStandard);
+
         if (strcasecmp(s, "CREDIT")==0) {
           AB_Transaction_SetTransactionKey(t, "MSC");
           AB_Transaction_SetTransactionText(t, I18N("Generic credit"));
