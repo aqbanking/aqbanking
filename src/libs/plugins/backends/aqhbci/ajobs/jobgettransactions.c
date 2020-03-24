@@ -372,10 +372,11 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
 
   dbResponses=AH_Job_GetResponses(j);
   assert(dbResponses);
+#if 0
   DBG_INFO(AQHBCI_LOGDOMAIN, "Response:");
   GWEN_DB_Dump(dbResponses, 2);
   DBG_INFO(AQHBCI_LOGDOMAIN, "Response end");
-
+#endif
 
   a=AH_AccountJob_GetAccount(j);
   assert(a);

@@ -49,7 +49,9 @@ AH_JOB *AH_Job_GetSysId_new(AB_PROVIDER *pro, AB_USER *u)
   GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS, "sync/systemId", "0");
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "JobGetSysId created");
+#if 0
   AH_Job_Dump(j, stderr, 2);
+#endif
   return j;
 }
 
