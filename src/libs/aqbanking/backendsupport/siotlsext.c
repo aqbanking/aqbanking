@@ -252,8 +252,10 @@ int _checkStoredUserResponse(GWEN_DB_NODE *dbC, const char *sFingerprint)
   }
   else {
     /* last user response was to reject the certificate so we're done */
-    DBG_NOTICE(AQBANKING_LOGDOMAIN, "Automatically rejecting certificate [%s] (%d)", sFingerprint, rv);
-    return rv;
+    /* DBG_NOTICE(AQBANKING_LOGDOMAIN, "Automatically rejecting certificate [%s] (%d)", sFingerprint, rv);
+     return rv; */
+    /* undecided (ask user again) */
+    return 0;
   }
 }
 
@@ -281,13 +283,19 @@ int _checkAutoDecision(const GWEN_SSLCERTDESCR *cert)
         return 1;
       }
       else {
-        DBG_NOTICE(AQBANKING_LOGDOMAIN, "Automatically rejecting certificate [%s] (noninteractive)", sFingerprint);
-        return GWEN_ERROR_USER_ABORTED;
+	DBG_NOTICE(AQBANKING_LOGDOMAIN, "Automatically rejecting certificate [%s] (noninteractive)", sFingerprint);
+	GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning,
+			      "Automatically rejecting certificate [%s] (noninteractive)",
+			      sFingerprint);
+	return GWEN_ERROR_USER_ABORTED;
       }
     } /* if cert is valid */
     else {
       if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_REJECTINVALIDCERTS) {
         DBG_NOTICE(AQBANKING_LOGDOMAIN, "Automatically rejecting invalid certificate [%s] (noninteractive)", sFingerprint);
+	GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning,
+			      "Automatically rejecting invalid certificate [%s] (noninteractive)",
+			      sFingerprint);
         return GWEN_ERROR_USER_ABORTED;
       }
     }
