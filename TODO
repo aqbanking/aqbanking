@@ -1,5 +1,8 @@
 Next:
 =====
+- AqBanking
+  - let AB_ImExporterAccountInfo_List_Find() check account type etc as well
+
 - HBCI:
   - always look for HIUPA/HIUPD in bank responses, especially 1822 sends account lists
     even when there is an error
