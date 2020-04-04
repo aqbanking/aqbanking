@@ -1,0 +1,195 @@
+<?xml?>
+
+<tm2>
+  <type id="AB_IMEXPORTER_XML_PAYMENTGROUP" type="pointer">
+    <descr>
+    </descr>
+
+    <lang id="c">
+      <identifier>AB_IMEXPORTER_XML_PAYMENTGROUP</identifier>
+      <prefix>AB_ImExporterXML_PaymentGroup</prefix>
+
+      <baseFileName>paymentgroup</baseFileName>
+
+      <flags>
+        with_list1
+      </flags>
+
+      <headers>
+        <header type="sys" loc="pre">aqbanking/error.h</header>
+        <header type="sys" loc="pre">aqbanking/types/value.h</header>
+        <header type="sys" loc="pre">aqbanking/types/transaction.h</header>
+
+        <header type="sys" loc="pre">gwenhywfar/gwendate.h</header>
+
+        <header type="sys" loc="pre">gwenhywfar/buffer.h</header>
+        <header type="sys" loc="pre">gwenhywfar/db.h</header>
+        <header type="sys" loc="pre">gwenhywfar/debug.h</header>
+
+      </headers>
+
+      <inlines>
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_AddTransaction($(struct_type) *st, AB_TRANSACTION *t);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+
+             void $(struct_prefix)_AddTransaction($(struct_type) *st, AB_TRANSACTION *t) { \n
+               const AB_VALUE *v;                                                          \n
+                                                                                           \n
+               assert(st);                                                                 \n
+                                                                                           \n
+               if (st-&gt;transactionList2==NULL)                                          \n
+                 st-&gt;transactionList2=AB_Transaction_List2_new();                       \n
+               if (st-&gt;controlSum==NULL)                                                \n
+                 st-&gt;controlSum=AB_Value_new();                                         \n
+                                                                                           \n
+               AB_Transaction_List2_PushBack(st-&gt;transactionList2, t);                  \n
+               st-&gt;transactionCount++;                                                  \n
+                                                                                           \n
+               v=AB_Transaction_GetValue(t);                                               \n
+               if (v) {                                                                    \n
+                 AB_Value_AddValue(st-&gt;controlSum, v);                                  \n
+               }                                                                           \n
+             }
+          </content>
+        </inline>
+
+
+
+      </inlines>
+
+    </lang>
+
+    <enums>
+    </enums>
+
+    <defines>
+    </defines>
+
+  <!--
+    <typedefs>
+      <typedef id="AB_IMEXPORTER_XML_PAYMENTGROUP_FLAGS" prefix="AB_ImExporterXML_PaymentGroup_Flags">
+     </typedef>
+    </typedefs>
+   -->
+
+    <members>
+
+      <member name="id" type="char_ptr" maxlen="64" >
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="transactionCount" type="int" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+        <flags>none</flags>
+        <descr>
+        </descr>
+      </member>
+
+      <member name="controlSum" type="AB_VALUE" maxlen="256" >
+        <access>public</access>
+        <flags>own with_hash</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+        <default>NULL</default>
+        <preset>NULL</preset>
+      </member>
+
+      <member name="transactionDate" type="gwen_date" maxlen="16" >
+        <aqdb_type>AQDB_DataType_String</aqdb_type>
+        <access>public</access>
+        <flags>own with_hash</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+        <default>NULL</default>
+        <preset>NULL</preset>
+      </member>
+
+      <member name="sequence" type="int" >
+        <default>AB_Transaction_SequenceUnknown</default>
+        <preset>AB_Transaction_SequenceUnknown</preset>
+        <access>public</access>
+        <flags>with_hash</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+      <member name="creditorSchemeId" type="char_ptr" maxlen="32">
+        <access>public</access>
+        <flags>own with_hash</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+        <descr>
+          Creditor Scheme Identification" ("Glaeubiger-ID", assigned by Deutsche Bundesbank).
+        </descr>
+      </member>
+
+      <member name="localIban" type="char_ptr" maxlen="32" >
+        <access>public</access>
+        <flags>own with_hash</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="localBic" type="char_ptr" maxlen="32" >
+        <access>public</access>
+        <flags>own with_hash</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="localName" type="char_ptr" maxlen="32" >
+        <access>public</access>
+        <flags>own with_hash</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+      <member name="transactionList2" type="AB_TRANSACTION_LIST2" elementName="transaction">
+        <descr>
+          List of transactions.
+          This list contains any kind of transactions all in one list. You can differentiate the type
+          of the transaction (e.g. bank statement, debit note, transfer etc) by looking at the transaction type
+          (see @ref AB_Transaction_GetType).
+        </descr>
+        <default>NULL</default>
+        <preset>AB_Transaction_List2_new()</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>nodup</setflags>
+        <getflags>none</getflags>
+      </member>
+
+
+
+      <member name="hash" type="char_ptr" maxlen="64" >
+        <access>public</access>
+        <flags>own volatile</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+    </members>
+
+
+  </type>
+
+</tm2>
+
