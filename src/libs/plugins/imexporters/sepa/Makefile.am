@@ -22,6 +22,11 @@ imexporterplugin_DATA=sepa.xml
 libabimexporters_sepa_la_SOURCES=sepa.c
 
 
+typefiles:
+
+typedefs:
+
+
 sources:
 	for f in $(libabimexporters_sepa_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \

@@ -16,7 +16,13 @@ imexporterplugin_DATA=ofx.xml
 
 libabimexporters_ofx_la_SOURCES=ofx.c
 libabimexporters_ofx_la_LIBADD=parser/libofxparser.la
-  
+
+
+
+typefiles:
+
+typedefs:
+
 
 
 sources:

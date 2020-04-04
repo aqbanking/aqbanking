@@ -20,6 +20,12 @@ dist_imexporterdata_DATA=eriformat.xml
 
 libabimexporters_eri2_la_SOURCES=eri2.c
 
+
+typefiles:
+
+typedefs:
+
+
 sources:
 	for f in $(libabimexporters_eri2_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \

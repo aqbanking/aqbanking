@@ -17,6 +17,11 @@ imexporterplugin_DATA=xmldb.xml
 libabimexporters_xmldb_la_SOURCES=xmldb.c
 
 
+typefiles:
+
+typedefs:
+
+
 sources:
 	for f in $(libabimexporters_xmldb_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
