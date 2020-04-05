@@ -46,8 +46,8 @@
               <DbCreateAndEnterGroup   name="transaction">
                 <DbSetCharValue        name="type"                    value="standingOrder" />
                 <DbSetCharValue        name="endToEndReference"       path="PmtId/EndToEndId"/>
-                <DbSetTempCharValue    name="value_value"             path="Amt/InstdAmt" />
-                <DbSetTempCharValue    name="value_currency"          path="Amt/InstdAmt@Ccy" />
+                <DbSetCharValue        name="value_value"             path="Amt/InstdAmt" />
+                <DbSetCharValue        name="value_currency"          path="Amt/InstdAmt@Ccy" />
                 <DbSetCharValue        name="remoteBic"               path="CdtrAgt/FinInstnId/BIC"/>
                 <DbSetCharValue        name="remoteName"              path="Cdtr/Nm"/>
                 <DbSetCharValue        name="remoteIban"              path="CdtrAcct/Id/IBAN"/>
