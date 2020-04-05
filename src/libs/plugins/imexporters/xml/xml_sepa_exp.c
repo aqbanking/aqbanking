@@ -416,28 +416,9 @@ void _writeTransactions(const AB_IMEXPORTER_XML_PAYMENTGROUP *paymentGroup, GWEN
 
 void _writeTransaction(const AB_TRANSACTION *t, GWEN_DB_NODE *dbData)
 {
-  const char *s;
   const AB_VALUE *v;
 
-  s=AB_Transaction_GetEndToEndReference(t);
-  if (s && *s)
-    GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS, "endToEndReference", s);
-
-  s=AB_Transaction_GetRemoteBic(t);
-  if (s && *s)
-    GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteBic", s);
-
-  s=AB_Transaction_GetRemoteIban(t);
-  if (s && *s)
-    GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteIban", s);
-
-  s=AB_Transaction_GetRemoteName(t);
-  if (s && *s)
-    GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteName", s);
-
-  s=AB_Transaction_GetPurpose(t);
-  if (s && *s)
-    GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS, "purpose", s);
+  AB_Transaction_toDb(t, dbData);
 
   v=AB_Transaction_GetValue(t);
   if (v)
