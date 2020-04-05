@@ -331,6 +331,14 @@ void _writePaymentGroups(const AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroup
      bic
      */
 
+    /* copy stuff from params */
+    s=GWEN_DB_GetCharValue(dbParams, "LocalInstrumentSEPACode", 0, "CORE");
+    GWEN_DB_SetCharValue(dbPaymentGroup, GWEN_DB_FLAGS_OVERWRITE_VARS, "LocalInstrumentSEPACode", s);
+
+    GWEN_DB_SetCharValue(dbPaymentGroup, GWEN_DB_FLAGS_OVERWRITE_VARS, "batchBooking",
+			 GWEN_DB_GetIntValue(dbParams, "singleBookingWanted", 0, 1)? "false": "true");
+
+    /* write data from AB_IMEXPORTER_XML_PAYMENTGROUP */
     controlSum=AB_ImExporterXML_PaymentGroup_GetControlSum(paymentGroup);
     if (controlSum)
       _writeAmountToDbWithoutCurrency(controlSum, "controlSum", dbPaymentGroup);
@@ -341,9 +349,6 @@ void _writePaymentGroups(const AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroup
     s=AB_ImExporterXML_PaymentGroup_GetId(paymentGroup);
     if (s && *s)
       GWEN_DB_SetCharValue(dbPaymentGroup, GWEN_DB_FLAGS_OVERWRITE_VARS, "paymentInfoId", s);
-
-    GWEN_DB_SetCharValue(dbPaymentGroup, GWEN_DB_FLAGS_OVERWRITE_VARS, "batchBooking",
-                         GWEN_DB_GetIntValue(dbParams, "singleBookingWanted", 0, 1)? "false": "true");
 
     s=AB_ImExporterXML_PaymentGroup_GetLocalName(paymentGroup);
     if (s && *s)
