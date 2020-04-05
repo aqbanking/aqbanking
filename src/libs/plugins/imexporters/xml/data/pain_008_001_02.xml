@@ -24,39 +24,41 @@
   <Import>
   
     <XmlIfPathExists path="Document/CstmrDrctDbtInitn">
-      <XmlEnter                                                     path="Document/CstmrDrctDbtInitn">
+      <XmlEnter                                                       path="Document/CstmrDrctDbtInitn">
         <XmlForEvery                  name="PmtInf">
           <DbCreateAndEnterGroup      name="paymentGroup">
-            <DbSetCharValue           name="sequence"               path="PmtTpInf/SeqTp" />
-            <DbSetCharValue           name="requestedExecutionDate" path="ReqdColltnDt" type="date" template="YYYY-MM-DD" />
-            <DbSetCharValue           name="ownerName"              path="Cdtr/Nm"/>
-            <DbSetCharValue           name="iban"                   path="CdtrAcct/Id/IBAN"/>
-            <DbSetCharValue           name="bic"                    path="CdtrAgt/FinInstnId/BIC"/>
-            <DbSetCharValue           name="creditorSchemeId"       path="CdtrSchmeId/Id/PrvtId/Othr/Id"/>
+            <DbSetCharValue           name="sequence"                 path="PmtTpInf/SeqTp" />
+            <DbSetCharValue           name="requestedExecutionDate"   path="ReqdColltnDt" type="date" template="YYYY-MM-DD" />
+            <DbSetCharValue           name="ownerName"                path="Cdtr/Nm"/>
+            <DbSetCharValue           name="iban"                     path="CdtrAcct/Id/IBAN"/>
+            <DbSetCharValue           name="bic"                      path="CdtrAgt/FinInstnId/BIC"/>
+            <DbSetCharValue           name="creditorSchemeId"         path="CdtrSchmeId/Id/PrvtId/Othr/Id"/>
 
             <XmlForEvery              name="DrctDbtTxInf">
               <DbCreateAndEnterGroup  name="transaction">
-                <DbSetCharValue       name="type"                   value="debitNote" />
-                <DbSetCharValue       name="endToEndReference"      path="PmtId/EndToEndId"/>
-                <DbSetCharValue       name="value_value"            path="InstdAmt" />
-                <DbSetCharValue       name="value_currency"         path="InstdAmt@Ccy" />
+                <DbSetCharValue       name="type"                     value="debitNote" />
+                <DbSetCharValue       name="endToEndReference"        path="PmtId/EndToEndId"/>
+                <DbSetCharValue       name="value_value"              path="InstdAmt" />
+                <DbSetCharValue       name="value_currency"           path="InstdAmt@Ccy" />
 
-                <XmlIfPathExists                                    path="DrctDbtTx">
-                  <XmlEnter                                         path="DrctDbtTx">
-                    <DbSetCharValue   name="mandateId"              path="MndtRltdInf/MndtId"/>
-                    <DbSetCharValue   name="mandateDate"            path="MndtRltdInf/DtOfSgntr" type="date" template="YYYY-MM-DD" />
+                <XmlIfPathExists                                      path="DrctDbtTx/MndtRltdInf">
+                  <XmlEnter                                           path="DrctDbtTx/MndtRltdInf">
+                    <DbSetCharValue   name="mandateId"                path="MndtId"/>
+                    <DbSetCharValue   name="mandateDate"              path="DtOfSgntr"   type="date" template="YYYY-MM-DD" />
+                    <DbSetCharValue   name="originalCreditorName"     path="AmdmntInfDtls/OrgnlCdtrSchmeId/Nm"/>
+                    <DbSetCharValue   name="originalCreditorSchemeId" path="AmdmntInfDtls/OrgnlCdtrSchmeId/Id/PrvtId/Othr/Id"/>
                   </XmlEnter>
                 </XmlIfPathExists>
-                
-                <DbSetCharValue       name="remoteBic"              path="DbtrAgt/FinInstnId/BIC"/>
-                <DbSetCharValue       name="remoteName"             path="Dbtr/Nm"/>
-                <DbSetCharValue       name="remoteIban"             path="DbtrAcct/Id/IBAN"/>
+
+                <DbSetCharValue       name="remoteBic"                path="DbtrAgt/FinInstnId/BIC"/>
+                <DbSetCharValue       name="remoteName"               path="Dbtr/Nm"/>
+                <DbSetCharValue       name="remoteIban"               path="DbtrAcct/Id/IBAN"/>
   
                 <!-- purpose lines -->
-                <XmlIfPathExists                                    path="RmtInf">
-                  <XmlEnter                                         path="RmtInf">
+                <XmlIfPathExists                                      path="RmtInf">
+                  <XmlEnter                                           path="RmtInf">
                     <XmlForEvery      name="Ustrd">
-                      <DbSetCharValue name="purpose"                path="." mode="append" delimiter="\n"/>
+                      <DbSetCharValue name="purpose"                  path="." mode="append" delimiter="\n"/>
                     </XmlForEvery>
                   </XmlEnter> <!-- RmtInf -->
                 </XmlIfPathExists>
@@ -127,11 +129,11 @@
                   <XmlSetCharValue               path="MndtId"                     name="mandateId" />
                   <XmlSetCharValue               path="DtOfSgntr"                  name="mandateDate" type="date" template="YYYY-MM-DD" />
 
-                  <DbIfNotHasCharData                                              name=" originalCreditorSchemeId">
+                  <DbIfNotHasCharData                                              name="originalCreditorSchemeId">
                     <XmlSetCharValue             path="AmdmntInd"                  value="false" />
                   </DbIfNotHasCharData>
                   
-                  <DbIfHasCharData                                                 name=" originalCreditorSchemeId">
+                  <DbIfHasCharData                                                 name="originalCreditorSchemeId">
                     <XmlSetCharValue             path="AmdmntInd"                  value="true" />
                     <XmlCreateAndEnterElement    path="AmdmntInfDtls/OrgnlCdtrSchmeId">
                       <XmlSetCharValue           path="Nm"                         name="originalCreditorName" />
