@@ -34,8 +34,8 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-static GWEN_DB_NODE *_ctxToSepaDb(AB_IMEXPORTER *ie, const AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *dbSubParams);
-static AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *_sortIntoPaymentGroups(const AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *dbSubParams);
+static GWEN_DB_NODE *_ctxToSepaDb(AB_IMEXPORTER *ie, const AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *dbParams);
+static AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *_sortIntoPaymentGroups(const AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *dbParams);
 static AB_IMEXPORTER_XML_PAYMENTGROUP *_getMatchingPaymentGroupForTransaction(AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroupList,
 									      const AB_IMEXPORTER_ACCOUNTINFO *accountInfo,
 									      const AB_TRANSACTION *t);
@@ -46,7 +46,7 @@ static void _createPaymentInfoIds(AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGr
 
 static void _writePaymentGroups(const AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroupList,
 				GWEN_DB_NODE *dbData,
-				GWEN_DB_NODE *dbSubParams);
+                                GWEN_DB_NODE *dbParams);
 static void _writeTransactions(const AB_IMEXPORTER_XML_PAYMENTGROUP *paymentGroup, GWEN_DB_NODE *dbData);
 static void _writeTransaction(const AB_TRANSACTION *t, GWEN_DB_NODE *dbData);
 
@@ -73,7 +73,6 @@ int AB_ImExporterXML_ExportSepa(AB_IMEXPORTER *ie,
                                 GWEN_SYNCIO *sio,
 				GWEN_DB_NODE *dbParams)
 {
-  GWEN_DB_NODE *dbSubParams;
   const char *schemaName;
   GWEN_XMLNODE *xmlDocData;
   GWEN_XMLNODE *xmlDocSchema;
@@ -83,13 +82,7 @@ int AB_ImExporterXML_ExportSepa(AB_IMEXPORTER *ie,
   GWEN_XML_CONTEXT *xmlCtx;
   int rv;
 
-  dbSubParams=GWEN_DB_GetGroup(dbParams, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "params");
-  if (!dbSubParams) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing \"params\" section in profile");
-    return GWEN_ERROR_INVALID;
-  }
-
-  schemaName=GWEN_DB_GetCharValue(dbSubParams, "schema", 0, NULL);
+  schemaName=GWEN_DB_GetCharValue(dbParams, "params/schema", 0, NULL);
   if (!(schemaName && *schemaName)) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Schema not specified.");
     return GWEN_ERROR_INVALID;
@@ -116,7 +109,7 @@ int AB_ImExporterXML_ExportSepa(AB_IMEXPORTER *ie,
   }
 
   /* prepare dbData */
-  dbData=_ctxToSepaDb(ie, ctx, dbSubParams);
+  dbData=_ctxToSepaDb(ie, ctx, dbParams);
   if (dbData==NULL) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here");
     GWEN_XMLNode_free(xmlDocData);
@@ -156,7 +149,7 @@ int AB_ImExporterXML_ExportSepa(AB_IMEXPORTER *ie,
 
 
 
-GWEN_DB_NODE *_ctxToSepaDb(AB_IMEXPORTER *ie, const AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *dbSubParams)
+GWEN_DB_NODE *_ctxToSepaDb(AB_IMEXPORTER *ie, const AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *dbParams)
 {
   GWEN_DB_NODE *dbData;
   AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroupList;
@@ -164,7 +157,7 @@ GWEN_DB_NODE *_ctxToSepaDb(AB_IMEXPORTER *ie, const AB_IMEXPORTER_CONTEXT *ctx, 
 
   dbData=GWEN_DB_Group_new("dbRoot");
 
-  paymentGroupList=_sortIntoPaymentGroups(ctx, dbSubParams);
+  paymentGroupList=_sortIntoPaymentGroups(ctx, dbParams);
   if (paymentGroupList==NULL) {
     GWEN_DB_Group_free(dbData);
     return NULL;
@@ -192,14 +185,14 @@ GWEN_DB_NODE *_ctxToSepaDb(AB_IMEXPORTER *ie, const AB_IMEXPORTER_CONTEXT *ctx, 
   _sampleTotalTransactions(paymentGroupList, dbData);
 
   _createPaymentInfoIds(paymentGroupList, messageId);
-  _writePaymentGroups(paymentGroupList, dbData, dbSubParams);
+  _writePaymentGroups(paymentGroupList, dbData, dbParams);
 
   return dbData;
 }
 
 
 
-AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *_sortIntoPaymentGroups(const AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *dbSubParams)
+AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *_sortIntoPaymentGroups(const AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *dbParams)
 {
   const AB_IMEXPORTER_ACCOUNTINFO *accountInfo;
 
@@ -313,7 +306,7 @@ void _createPaymentInfoIds(AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroupList
 
 
 
-void _writePaymentGroups(const AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroupList, GWEN_DB_NODE *dbData, GWEN_DB_NODE *dbSubParams)
+void _writePaymentGroups(const AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroupList, GWEN_DB_NODE *dbData, GWEN_DB_NODE *dbParams)
 { /* write payment groups */
   AB_IMEXPORTER_XML_PAYMENTGROUP *paymentGroup;
 
@@ -348,6 +341,9 @@ void _writePaymentGroups(const AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroup
     s=AB_ImExporterXML_PaymentGroup_GetId(paymentGroup);
     if (s && *s)
       GWEN_DB_SetCharValue(dbPaymentGroup, GWEN_DB_FLAGS_OVERWRITE_VARS, "paymentInfoId", s);
+
+    GWEN_DB_SetCharValue(dbPaymentGroup, GWEN_DB_FLAGS_OVERWRITE_VARS, "batchBooking",
+                         GWEN_DB_GetIntValue(dbParams, "singleBookingWanted", 0, 1)? "false": "true");
 
     s=AB_ImExporterXML_PaymentGroup_GetLocalName(paymentGroup);
     if (s && *s)
