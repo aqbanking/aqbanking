@@ -82,7 +82,7 @@ int AB_ImExporterXML_ImportSepa(AB_IMEXPORTER *ie,
 
   dbData=GWEN_DB_Group_new("data");
   rv=GWEN_Xml2Db(xmlDocData, xmlNodeSchema, dbData);
-#if 1
+#if 0
   DBG_ERROR(AQBANKING_LOGDOMAIN, "Data received:");
   GWEN_DB_Dump(dbData, 2);
 #endif

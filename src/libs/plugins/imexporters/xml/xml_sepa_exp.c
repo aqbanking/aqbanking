@@ -117,8 +117,10 @@ int AB_ImExporterXML_ExportSepa(AB_IMEXPORTER *ie,
     return GWEN_ERROR_BAD_DATA;
   }
 
+#if 0
   DBG_ERROR(AQBANKING_LOGDOMAIN, "Got this DB data:");
   GWEN_DB_Dump(dbData, 2);
+#endif
 
   /* dbData -> XML node */
   rv=GWEN_XmlFromDb(xmlDocData, xmlNodeExport, dbData);
@@ -366,7 +368,7 @@ void _writePaymentGroups(const AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroup
     if (date)
       GWEN_DB_SetCharValue(dbPaymentGroup, GWEN_DB_FLAGS_OVERWRITE_VARS, "requestedExecutionDate", GWEN_Date_GetString(date));
     else
-      GWEN_DB_SetCharValue(dbPaymentGroup, GWEN_DB_FLAGS_OVERWRITE_VARS, "requestedExecutionDate", "1999-01-01");
+      GWEN_DB_SetCharValue(dbPaymentGroup, GWEN_DB_FLAGS_OVERWRITE_VARS, "requestedExecutionDate", "19990101");
 
     s=AB_ImExporterXML_PaymentGroup_GetCreditorSchemeId(paymentGroup);
     if (s && *s)

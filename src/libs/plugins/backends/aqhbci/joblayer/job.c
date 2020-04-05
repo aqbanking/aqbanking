@@ -1718,11 +1718,14 @@ static int AH_Job__SepaProfileSupported(GWEN_DB_NODE *profile, const GWEN_STRING
   se=GWEN_StringList_FirstEntry(descriptors);
   while (se) {
     s=GWEN_StringListEntry_Data(se);
+    /*DBG_ERROR(AQHBCI_LOGDOMAIN, "Checking \"%s\" against pattern \"%s\"", s, pattern);*/
     if (s && GWEN_Text_ComparePattern(s, pattern, 1)!=-1) {
       /* record the descriptor matching this profile */
       GWEN_DB_SetCharValue(profile, GWEN_DB_FLAGS_OVERWRITE_VARS, "descriptor", s);
+      /*DBG_ERROR(AQHBCI_LOGDOMAIN, "Match.");*/
       break;
     }
+    /*DBG_ERROR(AQHBCI_LOGDOMAIN, "No match.");*/
     se=GWEN_StringListEntry_Next(se);
   }
   if (se)
@@ -1739,6 +1742,8 @@ GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *sepaTypePattern, con
   GWEN_DB_NODE *dbMatchingProfile;
 
   assert(j);
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Looking for profile matching \"%s\" (\"%s\")", sepaTypePattern, name?name:"<noname>");
 
   if (j->sepaDescriptors)
     descriptors=j->sepaDescriptors;
@@ -1778,7 +1783,7 @@ GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *sepaTypePattern, con
 
   dbMatchingProfile=_getHighestMatchingSepaProfile(j, descriptors, sepaTypePattern);
   if (dbMatchingProfile==NULL) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No matching XML profile found");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No matching profile found for \"%s\" (\"%s\")", sepaTypePattern, name?name:"<noname>");
     return NULL;
   }
 
@@ -1831,15 +1836,27 @@ void _removeNonMatchingSepaProfiles(GWEN_DB_NODE *dbProfiles, const char *sepaTy
   n=GWEN_DB_GetFirstGroup(dbProfiles);
   while (n) {
     const char *sSepaType;
+    int doRemove=0;
 
     nn=n;
     n=GWEN_DB_GetNextGroup(n);
 
     sSepaType=GWEN_DB_GetCharValue(nn, "params/sepaType", 0, "");
-    if (GWEN_Text_ComparePattern(sSepaType, sepaTypePattern, 1)==-1 ||
-	!AH_Job__SepaProfileSupported(nn, descriptors))
+
+    if (GWEN_Text_ComparePattern(sSepaType, sepaTypePattern, 1)==-1) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Profile \"%s\" does not match given pattern (%s)", sSepaType, sepaTypePattern);
+      doRemove=1;
+    }
+
+    if (!AH_Job__SepaProfileSupported(nn, descriptors)) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Profile \"%s\" not supported", sSepaType);
+      doRemove=1;
+    }
+
+    if (doRemove) {
       GWEN_DB_UnlinkGroup(nn);
-    GWEN_DB_Group_free(nn);
+      GWEN_DB_Group_free(nn);
+    }
   }
 }
 
