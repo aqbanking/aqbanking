@@ -1398,6 +1398,26 @@
           </descr>
         </member>
 
+        <member name="ultimateCreditor" type="char_ptr" maxlen="64" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <descr>
+            "Abweichender Empfaenger" (ABWE+).
+          </descr>
+        </member>
+
+        <member name="ultimateDebtor" type="char_ptr" maxlen="64" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <descr>
+            "Abweichender Auftraggeber" (ABWA+).
+          </descr>
+        </member>
+
 
         <group title="Additional Data for SEPA Debit Notes">
 
