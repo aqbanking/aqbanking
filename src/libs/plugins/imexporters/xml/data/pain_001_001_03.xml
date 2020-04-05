@@ -76,7 +76,7 @@
     <XmlCreateAndEnterElement path="Document">
       <XmlSetCharValue path=".@xmlns" value="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03" />
       <XmlSetCharValue path=".@xmlns:xsi" value="http://www.w3.org/2001/XMLSchema-instance" />
-      <XmlSetCharValue path=".@xsi:schemaLocation" value="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03pain.001.001.03.xsd" />
+      <XmlSetCharValue path=".@xsi:schemaLocation" value="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03 pain.001.001.03.xsd" />
 
       <XmlCreateAndEnterElement path="CstmrCdtTrfInitn">
         
