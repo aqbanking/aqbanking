@@ -148,7 +148,7 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
     AB_TRANSACTION *cpy;
     GWEN_BUFFER *dbuf;
 
-    /* add transfers as transactions for export (exporters only use transactions) */
+    /* add copies of transfers */
     ioc=AB_ImExporterContext_new();
     while (t) {
       cpy=AB_Transaction_dup(t);
@@ -159,7 +159,7 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
     }
 
     dbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    rv=AB_Banking_ExportToBuffer(ab, "sepa", ioc, dbuf, profile);
+    rv=AB_Banking_ExportToBuffer(ab, "xml", ioc, dbuf, profile);
     AB_ImExporterContext_free(ioc);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);

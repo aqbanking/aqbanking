@@ -96,7 +96,7 @@
             <XmlSetCharValue                     path="CtrlSum"                    name="controlSum" />
             <XmlCreateAndEnterElement            path="PmtTpInf">
               <XmlSetCharValue                   path="SvcLvl/Cd"                  value="SEPA" />
-              <XmlSetCharValue                   path="LclInstrm/Cd"               value="CORE" />
+              <XmlSetCharValue                   path="LclInstrm/Cd"               name="localInstrumentSEPACode" />
               <XmlSetCharValue                   path="SeqTp"                      name="sequence" />
             </XmlCreateAndEnterElement>
             
