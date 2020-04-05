@@ -39,7 +39,7 @@ GWEN_INHERIT(AB_IMEXPORTER, AB_IMEXPORTER_XML);
  * ------------------------------------------------------------------------------------------------
  */
 
-static AB_TRANSACTION *dbToTransaction(AB_IMEXPORTER *ie, GWEN_DB_NODE *db);
+static AB_TRANSACTION *dbToTransaction(AB_IMEXPORTER *ie, GWEN_DB_NODE *dbAccount, GWEN_DB_NODE *dbTransaction);
 static void handleTransactionDetails(AB_TRANSACTION *t, const char *sDetails);
 
 
@@ -77,6 +77,7 @@ static int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
                                      AB_IMEXPORTER_CONTEXT *ctx,
                                      GWEN_DB_NODE *dbData);
 
+static void _transformValue(GWEN_DB_NODE *dbData, const char *varNameValue, const char *varNameCurrency, const char *destVarName);
 
 
 
@@ -629,7 +630,7 @@ int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
     while (dbCurrent) {
       AB_TRANSACTION *t;
 
-      t=dbToTransaction(ie, dbCurrent);
+      t=dbToTransaction(ie, dbAccount, dbCurrent);
       assert(t);
 
       AB_ImExporterAccountInfo_AddTransaction(accountInfo, t);
@@ -657,14 +658,32 @@ int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
 
 
 
-AB_TRANSACTION *dbToTransaction(AB_IMEXPORTER *ie, GWEN_DB_NODE *db)
+AB_TRANSACTION *dbToTransaction(AB_IMEXPORTER *ie, GWEN_DB_NODE *dbAccount, GWEN_DB_NODE *dbTransaction)
 {
   AB_TRANSACTION *t;
   const char *s;
 
-  t=AB_Transaction_fromDb(db);
+  if (NULL==GWEN_DB_GetCharValue(dbTransaction, "value", 0, NULL))
+      /* translate "value_value" + "value_currency" to "value" */
+      _transformValue(dbTransaction, "value_value", "value_currency", "value");
+
+  t=AB_Transaction_fromDb(dbTransaction);
   assert(t);
-  s=GWEN_DB_GetCharValue(db, "transactionDetails", 0, NULL);
+
+  s=AB_Transaction_GetLocalIban(t);
+  if (!(s && *s))
+    AB_Transaction_SetLocalIban(t, GWEN_DB_GetCharValue(dbAccount, "iban", 0, NULL));
+
+  s=AB_Transaction_GetLocalBic(t);
+  if (!(s && *s))
+    AB_Transaction_SetLocalBic(t, GWEN_DB_GetCharValue(dbAccount, "bic", 0, NULL));
+
+  s=AB_Transaction_GetLocalName(t);
+  if (!(s && *s))
+    AB_Transaction_SetLocalName(t, GWEN_DB_GetCharValue(dbAccount, "ownerName", 0, NULL));
+
+
+  s=GWEN_DB_GetCharValue(dbTransaction, "transactionDetails", 0, NULL);
   if (s && *s)
     handleTransactionDetails(t, s);
 
@@ -745,6 +764,35 @@ void handleTransactionDetails(AB_TRANSACTION *t, const char *sDetails)
   }
 #endif
 }
+
+
+
+
+void _transformValue(GWEN_DB_NODE *dbData, const char *varNameValue, const char *varNameCurrency, const char *destVarName)
+{
+  const char *sValue;
+  const char *sCurrency=NULL;
+  GWEN_BUFFER *tbuf;
+
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  sValue=GWEN_DB_GetCharValue(dbData, varNameValue, 0, NULL);
+
+  if (sValue)
+    GWEN_Buffer_AppendString(tbuf, sValue);
+  if (varNameCurrency)
+    sCurrency=GWEN_DB_GetCharValue(dbData, varNameCurrency, 0, NULL);
+
+  if (sCurrency) {
+    GWEN_Buffer_AppendString(tbuf, ":");
+    GWEN_Buffer_AppendString(tbuf, sCurrency);
+  }
+
+  if (destVarName)
+    GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS, destVarName, GWEN_Buffer_GetStart(tbuf));
+
+  GWEN_Buffer_free(tbuf);
+}
+
 
 
 
