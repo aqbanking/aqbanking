@@ -105,8 +105,8 @@
             <DbForEvery name="transaction">
               <XmlCreateAndEnterElement path="CdtTrfTxInf">
                 <XmlSetCharValue        path="PmtId/EndToEndId"       name="endToEndReference" />
-                <XmlSetCharValue        path="Amt"                    name="value_value" />
-                <XmlSetCharValue        path="Amt@Ccy"                name="value_currency" />
+                <XmlSetCharValue        path="Amt/InstdAmt"           name="value_value" />
+                <XmlSetCharValue        path="Amt/InstdAmt@Ccy"       name="value_currency" />
                 <XmlSetCharValue        path="CdtrAgt/FinInstnId/BIC" name="remoteBic" />
                 <XmlSetCharValue        path="Cdtr/Nm"                name="remoteName" />
                 <XmlSetCharValue        path="CdtrAcct/Id/IBAN"       name="remoteIban" />
