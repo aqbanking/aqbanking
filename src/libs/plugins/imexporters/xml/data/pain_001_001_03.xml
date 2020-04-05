@@ -24,7 +24,6 @@
   <Import>
   
     <XmlIfPathExists                                                path="Document/CstmrCdtTrfInitn">
-  
       <XmlEnter                                                     path="Document/CstmrCdtTrfInitn">
         <XmlIfPathExists                                            path="GrpHdr">
           <XmlEnter                                                 path="GrpHdr">
@@ -45,6 +44,7 @@
 
             <XmlForEvery              name="CdtTrfTxInf">
               <DbCreateAndEnterGroup  name="transaction">
+                <DbSetCharValue       name="type"                   value="transfer" />
                 <DbSetCharValue       name="endToEndReference"      path="PmtId/EndToEndId"/>
                 <DbSetCharValue       name="value_value"            path="Amt/InstdAmt" />
                 <DbSetCharValue       name="value_currency"         path="Amt/InstdAmt@Ccy" />
@@ -102,9 +102,14 @@
             <XmlSetCharValue            path="DbtrAgt/FinInstnId/BIC" name="bic" />
             <XmlSetCharValue            path="ChrgBr"                 value="SLEV" />
 
-            <DbForEvery name="transaction">
+            <DbForEvery                                               name="transaction">
               <XmlCreateAndEnterElement path="CdtTrfTxInf">
-                <XmlSetCharValue        path="PmtId/EndToEndId"       name="endToEndReference" />
+                <DbIfHasCharData                                      name="endToEndReference">
+                  <XmlSetCharValue      path="PmtId/EndToEndId"       name="endToEndReference" />
+                </DbIfHasCharData>
+                <DbIfNotHasCharData                                   name="endToEndReference">
+                  <XmlSetCharValue      path="PmtId/EndToEndId"       value="NOTPROVIDED" />
+                </DbIfNotHasCharData>
                 <XmlSetCharValue        path="Amt/InstdAmt"           name="value_value" />
                 <XmlSetCharValue        path="Amt/InstdAmt@Ccy"       name="value_currency" />
                 <XmlSetCharValue        path="CdtrAgt/FinInstnId/BIC" name="remoteBic" />
