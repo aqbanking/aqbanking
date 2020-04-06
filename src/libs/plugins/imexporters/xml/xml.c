@@ -221,7 +221,7 @@ int AB_ImExporterXML_Export(AB_IMEXPORTER *ie,
 
   sDocumentType=GWEN_DB_GetCharValue(dbParams, "params/documentType", 0, NULL);
   if (sDocumentType && strcasecmp(sDocumentType, "SEPA")==0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Exporting as SEPA document");
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Exporting as SEPA document");
     return AB_ImExporterXML_ExportSepa(ie, ctx, sio, dbParams);
   }
 
