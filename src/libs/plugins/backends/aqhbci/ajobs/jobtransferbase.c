@@ -26,6 +26,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/gui.h>
 
 #include <assert.h>
 #include <ctype.h>
@@ -140,6 +141,10 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
   assert(descriptor);
   DBG_INFO(AQHBCI_LOGDOMAIN, "Using SEPA descriptor %s and profile %s",
            descriptor, GWEN_DB_GetCharValue(profile, "name", 0, 0));
+  GWEN_Gui_ProgressLog2(0,
+                        GWEN_LoggerLevel_Notice,
+                        I18N("Using SEPA descriptor %s and profile %s"),
+                        descriptor, GWEN_DB_GetCharValue(profile, "name", 0, 0));
 
   /* set data in job */
   t=AH_Job_GetFirstTransfer(j);
