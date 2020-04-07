@@ -12,6 +12,9 @@
 #endif
 
 #include "xml_p.h"
+#include "xml_sepa_exp.h"
+#include "xml_sepa_imp.h"
+
 #include "aqbanking/i18n_l.h"
 
 #include <aqbanking/banking.h>
@@ -29,8 +32,61 @@
 GWEN_INHERIT(AB_IMEXPORTER, AB_IMEXPORTER_XML);
 
 
-static AB_TRANSACTION *dbToTransaction(AB_IMEXPORTER *ie, GWEN_DB_NODE *db);
+
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static AB_TRANSACTION *dbToTransaction(AB_IMEXPORTER *ie, GWEN_DB_NODE *dbAccount, GWEN_DB_NODE *dbTransaction);
 static void handleTransactionDetails(AB_TRANSACTION *t, const char *sDetails);
+
+
+static void GWENHYWFAR_CB AB_ImExporterXML_FreeData(void *bp, void *p);
+
+
+static int AB_ImExporterXML_Import(AB_IMEXPORTER *ie,
+                                   AB_IMEXPORTER_CONTEXT *ctx,
+                                   GWEN_SYNCIO *sio,
+                                   GWEN_DB_NODE *params);
+
+static int AB_ImExporterXML_Export(AB_IMEXPORTER *ie,
+                                   AB_IMEXPORTER_CONTEXT *ctx,
+                                   GWEN_SYNCIO *sio,
+                                   GWEN_DB_NODE *params);
+
+static int AB_ImExporterXML_CheckFile(AB_IMEXPORTER *ie, const char *fname);
+
+static GWEN_DB_NODE *AB_ImExporterXML_ImportIntoDbWithSchema(AB_IMEXPORTER *ie, GWEN_XMLNODE *xmlDocData,
+                                                             const char *schemaName);
+static GWEN_DB_NODE *AB_ImExporterXML_ImportIntoDbWithoutSchema(AB_IMEXPORTER *ie, GWEN_XMLNODE *xmlDocData);
+
+static GWEN_DB_NODE *AB_ImExporterXML_ImportIntoDbWithSchemaDoc(AB_IMEXPORTER *ie, GWEN_XMLNODE *xmlDocData,
+                                                                GWEN_XMLNODE *xmlDocSchema);
+
+
+static GWEN_XMLNODE *AB_ImExporterXML_ReadSchemaFiles(AB_IMEXPORTER *ie);
+
+static GWEN_XMLNODE *AB_ImExporterXML_FindMatchingSchema(AB_IMEXPORTER *ie, GWEN_XMLNODE *xmlNodeAllSchemata,
+                                                         GWEN_XMLNODE *xmlDocData);
+static const char *AB_ImExporterXML_GetCharValueByPath(GWEN_XMLNODE *xmlNode, const char *path, const char *defValue);
+
+
+static int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
+                                     AB_IMEXPORTER_CONTEXT *ctx,
+                                     GWEN_DB_NODE *dbData);
+
+static void _transformValue(GWEN_DB_NODE *dbData, const char *varNameValue, const char *varNameCurrency, const char *destVarName);
+
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
+
 
 
 #ifndef strndup
@@ -89,56 +145,64 @@ int AB_ImExporterXML_Import(AB_IMEXPORTER *ie,
                             GWEN_DB_NODE *dbParams)
 {
   AB_IMEXPORTER_XML *ieh;
-  GWEN_DB_NODE *dbSubParams;
-  const char *schemaName;
-  GWEN_XMLNODE *xmlDocData;
-  GWEN_DB_NODE *dbData;
-  int rv;
+  const char *sDocumentType;
 
   assert(ie);
   ieh=GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AB_IMEXPORTER_XML, ie);
   assert(ieh);
 
-  dbSubParams=GWEN_DB_GetGroup(dbParams, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "params");
-  if (!dbSubParams) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing \"params\" section in profile");
-    return GWEN_ERROR_INVALID;
-  }
-
-  xmlDocData=AB_ImExporterXML_ReadXmlFromSio(ie, sio);
-  if (xmlDocData==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not read XML input");
-    return GWEN_ERROR_INVALID;
-  }
-
-  schemaName=GWEN_DB_GetCharValue(dbSubParams, "schema", 0, NULL);
-  if (!(schemaName && *schemaName)) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Importing file without specified schema.");
-    dbData=AB_ImExporterXML_ImportIntoDbWithoutSchema(ie, xmlDocData);
+  sDocumentType=GWEN_DB_GetCharValue(dbParams, "params/documentType", 0, NULL);
+  if (sDocumentType && strcasecmp(sDocumentType, "SEPA")==0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Importing as SEPA document");
+    return AB_ImExporterXML_ImportSepa(ie, ctx, sio, dbParams);
   }
   else {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Importing file with schema \"%s\".", schemaName);
-    dbData=AB_ImExporterXML_ImportIntoDbWithSchema(ie, xmlDocData, schemaName);
-  }
-  if (dbData==NULL) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+    GWEN_DB_NODE *dbSubParams;
+    const char *schemaName;
+    GWEN_XMLNODE *xmlDocData;
+    GWEN_DB_NODE *dbData;
+    int rv;
+
+    dbSubParams=GWEN_DB_GetGroup(dbParams, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "params");
+    if (!dbSubParams) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing \"params\" section in profile");
+      return GWEN_ERROR_INVALID;
+    }
+  
+    xmlDocData=AB_ImExporterXML_ReadXmlFromSio(ie, sio);
+    if (xmlDocData==NULL) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not read XML input");
+      return GWEN_ERROR_INVALID;
+    }
+  
+    schemaName=GWEN_DB_GetCharValue(dbSubParams, "schema", 0, NULL);
+    if (!(schemaName && *schemaName)) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Importing file without specified schema.");
+      dbData=AB_ImExporterXML_ImportIntoDbWithoutSchema(ie, xmlDocData);
+    }
+    else {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Importing file with schema \"%s\".", schemaName);
+      dbData=AB_ImExporterXML_ImportIntoDbWithSchema(ie, xmlDocData, schemaName);
+    }
+    if (dbData==NULL) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+      GWEN_XMLNode_free(xmlDocData);
+      return GWEN_ERROR_BAD_DATA;
+    }
     GWEN_XMLNode_free(xmlDocData);
-    return GWEN_ERROR_BAD_DATA;
-  }
-  GWEN_XMLNode_free(xmlDocData);
-
-  /* import into context */
-  rv=AB_ImExporterXML_ImportDb(ie, ctx, dbData);
-  if (rv<0) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+  
+    /* import into context */
+    rv=AB_ImExporterXML_ImportDb(ie, ctx, dbData);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      GWEN_DB_Group_free(dbData);
+      return rv;
+    }
+  
+    /* done */
     GWEN_DB_Group_free(dbData);
-    return rv;
+    return 0;
   }
-
-  /* done */
-  GWEN_DB_Group_free(dbData);
-
-  return 0;
 }
 
 
@@ -146,13 +210,20 @@ int AB_ImExporterXML_Import(AB_IMEXPORTER *ie,
 int AB_ImExporterXML_Export(AB_IMEXPORTER *ie,
                             AB_IMEXPORTER_CONTEXT *ctx,
                             GWEN_SYNCIO *sio,
-                            GWEN_DB_NODE *params)
+                            GWEN_DB_NODE *dbParams)
 {
   AB_IMEXPORTER_XML *ieh;
+  const char *sDocumentType;
 
   assert(ie);
   ieh=GWEN_INHERIT_GETDATA(AB_IMEXPORTER, AB_IMEXPORTER_XML, ie);
   assert(ieh);
+
+  sDocumentType=GWEN_DB_GetCharValue(dbParams, "params/documentType", 0, NULL);
+  if (sDocumentType && strcasecmp(sDocumentType, "SEPA")==0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Exporting as SEPA document");
+    return AB_ImExporterXML_ExportSepa(ie, ctx, sio, dbParams);
+  }
 
   return GWEN_ERROR_NOT_SUPPORTED;
 }
@@ -559,7 +630,7 @@ int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
     while (dbCurrent) {
       AB_TRANSACTION *t;
 
-      t=dbToTransaction(ie, dbCurrent);
+      t=dbToTransaction(ie, dbAccount, dbCurrent);
       assert(t);
 
       AB_ImExporterAccountInfo_AddTransaction(accountInfo, t);
@@ -587,14 +658,32 @@ int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
 
 
 
-AB_TRANSACTION *dbToTransaction(AB_IMEXPORTER *ie, GWEN_DB_NODE *db)
+AB_TRANSACTION *dbToTransaction(AB_IMEXPORTER *ie, GWEN_DB_NODE *dbAccount, GWEN_DB_NODE *dbTransaction)
 {
   AB_TRANSACTION *t;
   const char *s;
 
-  t=AB_Transaction_fromDb(db);
+  if (NULL==GWEN_DB_GetCharValue(dbTransaction, "value", 0, NULL))
+      /* translate "value_value" + "value_currency" to "value" */
+      _transformValue(dbTransaction, "value_value", "value_currency", "value");
+
+  t=AB_Transaction_fromDb(dbTransaction);
   assert(t);
-  s=GWEN_DB_GetCharValue(db, "transactionDetails", 0, NULL);
+
+  s=AB_Transaction_GetLocalIban(t);
+  if (!(s && *s))
+    AB_Transaction_SetLocalIban(t, GWEN_DB_GetCharValue(dbAccount, "iban", 0, NULL));
+
+  s=AB_Transaction_GetLocalBic(t);
+  if (!(s && *s))
+    AB_Transaction_SetLocalBic(t, GWEN_DB_GetCharValue(dbAccount, "bic", 0, NULL));
+
+  s=AB_Transaction_GetLocalName(t);
+  if (!(s && *s))
+    AB_Transaction_SetLocalName(t, GWEN_DB_GetCharValue(dbAccount, "ownerName", 0, NULL));
+
+
+  s=GWEN_DB_GetCharValue(dbTransaction, "transactionDetails", 0, NULL);
   if (s && *s)
     handleTransactionDetails(t, s);
 
@@ -675,6 +764,35 @@ void handleTransactionDetails(AB_TRANSACTION *t, const char *sDetails)
   }
 #endif
 }
+
+
+
+
+void _transformValue(GWEN_DB_NODE *dbData, const char *varNameValue, const char *varNameCurrency, const char *destVarName)
+{
+  const char *sValue;
+  const char *sCurrency=NULL;
+  GWEN_BUFFER *tbuf;
+
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  sValue=GWEN_DB_GetCharValue(dbData, varNameValue, 0, NULL);
+
+  if (sValue)
+    GWEN_Buffer_AppendString(tbuf, sValue);
+  if (varNameCurrency)
+    sCurrency=GWEN_DB_GetCharValue(dbData, varNameCurrency, 0, NULL);
+
+  if (sCurrency) {
+    GWEN_Buffer_AppendString(tbuf, ":");
+    GWEN_Buffer_AppendString(tbuf, sCurrency);
+  }
+
+  if (destVarName)
+    GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS, destVarName, GWEN_Buffer_GetStart(tbuf));
+
+  GWEN_Buffer_free(tbuf);
+}
+
 
 
 

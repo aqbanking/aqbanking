@@ -160,7 +160,7 @@ void _probablyWriteToLogFile(const char *sEnvVar, const char *sCaption, const ui
   if (sEnvVar) {
     FILE *f;
 
-    if (strcasecmp(sEnvVar, "1"))
+    if (strcasecmp(sEnvVar, "1")==0)
       sEnvVar="/tmp/ofx.log";
     DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Saving OFX log to \"%s\" ...", sEnvVar);
     GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning, I18N("Saving communication log to %s"), sEnvVar);

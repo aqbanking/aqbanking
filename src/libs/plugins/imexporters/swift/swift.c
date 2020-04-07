@@ -238,7 +238,7 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
         }
       }
 
-#if 0   /* disable ABWA+ and ABWE+: We can't safely now when to change them */
+#if 0   /* disable ABWA+ and ABWE+: We can't safely know when to change them */
       if (1) {
         const char *varName;
         int i;
@@ -282,7 +282,8 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
 
 #if 0
-      /* for now ignore these variabled.*
+      /* for now ignore these variables.
+       *
        * Who is the recipient and who the initiator depends on the type of transaction.
        * Currently we have no safe way to determine whether the transaction was a
        * - transfer (negative amount, we are the payee and the initiator)

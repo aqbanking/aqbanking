@@ -19,6 +19,11 @@ imexporterplugin_DATA=swift.xml
 libabimexporters_swift_la_SOURCES=swift.c
 
 
+typefiles:
+
+typedefs:
+
+
 sources:
 	for f in $(libabimexporters_swift_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \

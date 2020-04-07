@@ -1,15 +1,15 @@
 
 <!--
 /***************************************************************************
-    begin       : Sun Dec 16 2018
-    copyright   : (C) 2018 by Martin Preuss
+    begin       : Sat Apr 04 2020
+    copyright   : (C) 2020 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
  
- This file can be used to import a PAIN.001.003.03 file.
+ This file can be used to import a PAIN.001.001.03 file.
  
 -->
 
@@ -17,63 +17,66 @@
 <Schema documentType="sepa">
 
   <DocMatches>
-    <Match path="Document@xmlns">*pain.001.003.03*</Match>
+    <Match path="Document@xmlns">*pain.001.001.03*</Match>
   </DocMatches>
 
 
   <Import>
   
-    <XmlIfPathExists                                                  path="Document/CstmrCdtTrfInitn">
-      <XmlEnter                                                       path="Document/CstmrCdtTrfInitn">
-
-        <XmlIfPathExists                                              path="GrpHdr">
-          <XmlEnter                                                   path="GrpHdr">
-            <DbSetCharValue            name="numberOfTransactions"    path="NbOfTxs"/>
-            <DbSetCharValue            name="controlSum"              path="CtrlSum"/>
+    <XmlIfPathExists                                                path="Document/CstmrCdtTrfInitn">
+      <XmlEnter                                                     path="Document/CstmrCdtTrfInitn">
+        <XmlIfPathExists                                            path="GrpHdr">
+          <XmlEnter                                                 path="GrpHdr">
+            <DbSetCharValue           name="numberOfTransactions"   path="NbOfTxs"/>
+            <DbSetCharValue           name="controlSum"             path="CtrlSum"/>
           </XmlEnter>
         </XmlIfPathExists>
 
-        <XmlForEvery                   name="PmtInf">
-          <DbCreateAndEnterGroup       name="paymentGroup">
-            <DbSetCharValue            name="numberOfTransactions"    path="NbOfTxs"/>
-            <DbSetCharValue            name="controlSum"              path="CtrlSum"/>
-            <DbSetCharValue            name="requestedExecutionDate"  path="ReqdExctnDt" type="date" template="YYYY-MM-DD" />
-            <DbSetCharValue            name="ownerName"               path="Dbtr/Nm"/>
-            <DbSetCharValue            name="iban"                    path="DbtrAcct/Id/IBAN"/>
-            <DbSetCharValue            name="bic"                     path="DbtrAgt/FinInstnId/BIC"/>
+        <XmlForEvery                  name="PmtInf">
+          <DbCreateAndEnterGroup      name="paymentGroup">
+            <DbSetCharValue           name="numberOfTransactions"   path="NbOfTxs"/>
+            <DbSetCharValue           name="controlSum"             path="CtrlSum"/>
+            <DbSetCharValue           name="requestedExecutionDate" path="ReqdExctnDt" type="date" template="YYYY-MM-DD" />
+            <DbSetCharValue           name="ownerName"              path="Dbtr/Nm"/>
+            <DbSetCharValue           name="iban"                   path="DbtrAcct/Id/IBAN"/>
+            <DbSetCharValue           name="bic"                    path="DbtrAgt/FinInstnId/BIC"/>
 
-            <XmlForEvery               name="CdtTrfTxInf">
-              <DbCreateAndEnterGroup   name="transaction">
-                <DbSetCharValue        name="type"                    value="standingOrder" />
-                <DbSetCharValue        name="endToEndReference"       path="PmtId/EndToEndId"/>
-                <DbSetCharValue        name="value_value"             path="Amt/InstdAmt" />
-                <DbSetCharValue        name="value_currency"          path="Amt/InstdAmt@Ccy" />
-                <DbSetCharValue        name="remoteBic"               path="CdtrAgt/FinInstnId/BIC"/>
-                <DbSetCharValue        name="remoteName"              path="Cdtr/Nm"/>
-                <DbSetCharValue        name="remoteIban"              path="CdtrAcct/Id/IBAN"/>
+
+            <XmlForEvery              name="CdtTrfTxInf">
+              <DbCreateAndEnterGroup  name="transaction">
+                <DbSetCharValue       name="type"                   value="transfer" />
+                <DbSetCharValue       name="endToEndReference"      path="PmtId/EndToEndId"/>
+                <DbSetCharValue       name="value_value"            path="Amt/InstdAmt" />
+                <DbSetCharValue       name="value_currency"         path="Amt/InstdAmt@Ccy" />
+                <DbSetCharValue       name="remoteBic"              path="CdtrAgt/FinInstnId/BIC"/>
+                <DbSetCharValue       name="remoteName"             path="Cdtr/Nm"/>
+                <DbSetCharValue       name="remoteIban"             path="CdtrAcct/Id/IBAN"/>
   
                 <!-- purpose lines -->
-                <XmlIfPathExists                                      path="RmtInf">
-                  <XmlEnter                                           path="RmtInf">
-                    <XmlForEvery       name="Ustrd">
-                      <DbSetCharValue  name="purpose"                 path="." mode="append" delimiter="\n"/>
+                <XmlIfPathExists                                    path="RmtInf">
+                  <XmlEnter                                         path="RmtInf">
+                    <XmlForEvery      name="Ustrd">
+                      <DbSetCharValue name="purpose"                path="." mode="append" delimiter="\n"/>
                     </XmlForEvery>
                   </XmlEnter> <!-- RmtInf -->
                 </XmlIfPathExists>
               </DbCreateAndEnterGroup> <!-- transaction -->
             </XmlForEvery> <!-- CdtTrfTxInf -->
-          </DbCreateAndEnterGroup>  <!-- account -->
+          </DbCreateAndEnterGroup>  <!-- paymentGroup -->
         </XmlForEvery> <!-- PmtInf -->
+  
       </XmlEnter> <!-- Document/CstmrCdtTrfInitn -->
+  
     </XmlIfPathExists> <!-- Document/CstmrCdtTrfInitn -->
+  
   </Import>
 
 
   <Export>
     <XmlCreateAndEnterElement path="Document">
-      <XmlSetCharValue path=".@xmlns" value="urn:iso:std:iso:20022:tech:xsd:pain.001.003.03" />
+      <XmlSetCharValue path=".@xmlns" value="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03" />
       <XmlSetCharValue path=".@xmlns:xsi" value="http://www.w3.org/2001/XMLSchema-instance" />
-      <XmlSetCharValue path=".@xsi:schemaLocation" value="urn:iso:std:iso:20022:tech:xsd:pain.001.003.03 pain.001.003.03.xsd" />
+      <XmlSetCharValue path=".@xsi:schemaLocation" value="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03 pain.001.001.03.xsd" />
 
       <XmlCreateAndEnterElement path="CstmrCdtTrfInitn">
         
@@ -81,6 +84,7 @@
           <XmlSetCharValue              path="MsgId"                  name="messageId" />
           <XmlSetCharValue              path="CreDtTm"                name="messageDateTime" />
           <XmlSetCharValue              path="NbOfTxs"                name="numberOfTransactions" />
+          <XmlSetCharValue              path="CtrlSum"                name="controlSum" />
           <XmlSetCharValue              path="InitgPty/Nm"            name="initiatorName" />
         </XmlCreateAndEnterElement>
 
@@ -98,7 +102,7 @@
             <XmlSetCharValue            path="DbtrAgt/FinInstnId/BIC" name="bic" />
             <XmlSetCharValue            path="ChrgBr"                 value="SLEV" />
 
-            <DbForEvery name="transaction">
+            <DbForEvery                                               name="transaction">
               <XmlCreateAndEnterElement path="CdtTrfTxInf">
                 <DbIfHasCharData                                      name="endToEndReference">
                   <XmlSetCharValue      path="PmtId/EndToEndId"       name="endToEndReference" />

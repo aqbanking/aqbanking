@@ -1383,11 +1383,11 @@ void _transformSepaTags(GWEN_DB_NODE *dbData, GWEN_DB_NODE *dbSepaTags, uint32_t
       }
       else if (strcasecmp(sVarName, "ABWA+")==0) {
         /* "abweichender Auftraggeber" */
-        AHB_SWIFT__SetCharValue(dbData, flags, "sepa/ABWA", GWEN_Buffer_GetStart(tbuf));
+        AHB_SWIFT__SetCharValue(dbData, flags, "ultimateDebtor", GWEN_Buffer_GetStart(tbuf));
       }
       else if (strcasecmp(sVarName, "ABWE+")==0) {
         /* "abweichender Empfaenger" */
-        AHB_SWIFT__SetCharValue(dbData, flags, "sepa/ABWE", GWEN_Buffer_GetStart(tbuf));
+        AHB_SWIFT__SetCharValue(dbData, flags, "ultimateCreditor", GWEN_Buffer_GetStart(tbuf));
       }
       else if (strcasecmp(sVarName, "_purpose")==0) {
         /* manually added tag (i.e. data outside a tag)

@@ -17,6 +17,11 @@ imexporterplugin_DATA=yellownet.xml
 libabimexporters_yellownet_la_SOURCES=yellownet.c
 
 
+typefiles:
+
+typedefs:
+
+
 sources:
 	for f in $(libabimexporters_yellownet_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \

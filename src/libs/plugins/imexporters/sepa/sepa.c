@@ -65,6 +65,8 @@ AB_IMEXPORTER *AB_ImExporterSEPA_new(AB_BANKING *ab)
   AB_IMEXPORTER *ie;
   AH_IMEXPORTER_SEPA *ieh;
 
+  DBG_ERROR(AQBANKING_LOGDOMAIN, "SEPA plugin is deprecated, please use the XML plugin");
+
   ie=AB_ImExporter_new(ab, "sepa");
   GWEN_NEW_OBJECT(AH_IMEXPORTER_SEPA, ieh);
   GWEN_INHERIT_SETDATA(AB_IMEXPORTER, AH_IMEXPORTER_SEPA, ie, ieh,

@@ -1,5 +1,5 @@
 # norootforbuild
-# neededforbuild gwenhywfar gwenhywfar-devel ktoblzcheck python python-ctypes pyyxml libchipcard2-devel libchipcard2 pkgconfig gettext-devel libacl-devel libacl libattr-devel libattr
+# neededforbuild gwenhywfar gwenhywfar-devel python python-ctypes pyyxml libchipcard2-devel libchipcard2 pkgconfig gettext-devel libacl-devel libacl libattr-devel libattr
 
 %define name @PACKAGE@
 %define version @VERSION@
@@ -88,7 +88,7 @@ Obsoletes:     aqhbci
 Obsoletes:     kbanking
 Obsoletes:     aqofxconnect
 
-%description 
+%description
 The intention of AqBanking is to provide a middle layer between
 the program and the various Online Banking libraries
 (e.g. AqHBCI). The first backend which is already supported is

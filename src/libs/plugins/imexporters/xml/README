@@ -2,12 +2,48 @@
 This is a very simple parser for XML files.
 
 
-1. Available Commands
-=====================
 
-The following XML elements can be used inside a Schema file.
+                                                  Content
 
-<XmlIfPathExists path="path">
+1. Available Commands for Import
+1.1.  <XmlEnter path="path">
+1.2.  <XmlForEvery name="path">
+1.3.  <DbCreateAndEnterDbGroup name="group">
+1.4.  <DbCreateAndEnterTempDbGroup name="group">
+1.5.  <DbSetCharValue name="varname" path="path" >
+1.6.  <DbSetCharValue name="varname" value="$(tempVariable1) - $(tempVariable2)" >
+1.7.  <DbSetTempCharValue name="varname" path="path" >
+1.8.  <XmlIfCharDataMatches path="path" pattern="pattern">
+1.9.  <XmlIfNotCharDataMatches path="path" pattern="pattern">
+1.10. <XmlIfHasCharData path="path">
+1.11. <XmlIfNotHasCharData path="path">
+1.12. <XmlIfPathExists path="path">
+
+2. Available Commands for Export
+2.1.  <DbEnter name="name">
+2.2.  <DbForEvery name="name">
+2.3.  <XmlCreateAndEnterElement path="path">
+2.4.  <XmlSetCharValue path="path" value="$(tempVariable1) - $(tempVariable2)">
+2.5.  <XmlSetCharValue path="path" name="name">
+2.6.  <DbIfCharDataMatches name="name" pattern="pattern">
+2.7.  <DbIfNotCharDataMatches name="name" pattern="pattern">
+2.8.  <DbIfHasCharData name="name">
+2.9.  <DbIfNotHasCharData name="name">
+2.10. <DbIfPathExists name="name">
+2.11. <DbIfNotPathExists name="name">
+
+3. Structure of GWEN_DB Data
+3.1. Basic Data Structure
+3.2. Detailed Data Structure in Standard Mode
+3.3. Detailed Data Structure in SEPA Mode
+
+
+
+
+1. Available Commands for Import
+================================
+
+The following XML elements can be used inside a the "<Import>" element of a Schema file.
 
 
 1.1. <XmlEnter path="path">
@@ -88,7 +124,83 @@ Iterate through all children of the schema node if the given path exists in the 
 
 
 
-2. Structure of GWEN_DB Data
+
+2. Available Commands for Export
+================================
+
+The following XML elements can be used inside a the "<Import>" element of a Schema file.
+
+
+2.1. <DbEnter name="name">
+--------------------------
+
+Enter the given db group. Iterate through all children of the schema node.
+
+
+2.2. <DbForEvery name="name">
+-----------------------------
+
+For every matching dbGroup iterate through all children of the schema node.
+
+
+2.3. <XmlCreateAndEnterElement path="path">
+-------------------------------------------
+
+Create the given path inside the output document.
+
+
+2.4. <XmlSetCharValue path="path" value="$(tempVariable1) - $(tempVariable2)">
+------------------------------------------------------------------------------
+
+Set the given value as new data for the XML element specified by "path" (accepts full xpath).
+
+
+2.5. <XmlSetCharValue path="path" name="name">
+----------------------------------------------
+
+Set the given value as new data for the XML element specified by "path" (accepts full xpath) using
+data stored in the dbGroup variable "name".
+
+
+2.6. <DbIfCharDataMatches name="name" pattern="pattern">
+--------------------------------------------------------
+
+Iterate through all children of the schema node if the given variable in dbGroup matches the given pattern.
+
+
+2.7. <DbIfNotCharDataMatches name="name" pattern="pattern">
+-----------------------------------------------------------
+
+Same as <DbIfCharDataMatches> except reversed.
+
+
+2.8. <DbIfHasCharData name="name">
+----------------------------------
+
+Iterate through all children of the schema node if the given variable in dbGroup has content.
+
+
+2.9. <DbIfNotHasCharData name="name">
+-------------------------------------
+
+Same as <DbIfHasCharData> except reversed.
+
+
+2.10. <DbIfPathExists name="name">
+----------------------------------
+
+Iterate through all children of the schema node if the given path in dbGroup exists.
+
+
+2.11. <DbIfNotPathExists name="name">
+-------------------------------------
+
+Same as <DbIfPathExists> except reversed.
+
+
+
+
+3. Structure of GWEN_DB Data
 ============================
 
 A GWEN_DB structure is a tree of data containing "groups" and "vars", the latter containing "values".
@@ -100,9 +212,9 @@ Groups can be created with
 Variables can be set with 
 
   <DbSetCharValue name="VARNAME" path="PATH_IN_XML_DOCUMENT"/>
-  
 
-2.1. Basic Data Structure
+
+3.1. Basic Data Structure
 -------------------------
 
 The group structure is very simple:
@@ -122,8 +234,29 @@ group account
     info for balance N
 
 
-2.2. Detailed Data Structure
-----------------------------
+Or in SEPA mode:
+
+
+info regarding the whole document
+
+group paymentGroup
+  info for paymentGroup1
+  
+  group transaction
+    info for transaction 1
+  ...
+  group transaction
+    info for transaction N
+  group balance
+    info for balance 1
+  ...
+  group balance
+    info for balance N
+
+
+
+3.2. Detailed Data Structure in Standard Mode
+---------------------------------------------
 
 group account  (AB_ACCOUNT_SPEC)
   int type
@@ -184,6 +317,135 @@ group account  (AB_ACCOUNT_SPEC)
     
     # amount
     string value (AB_VALUE)
+    string value_value (AB_VALUE: value)
+    string value_currency (AB_VALUE: currency)
+    string fees (AB_VALUE)
+    
+    # codes, memos, purpose etc
+    int transactionCode
+    string transactionText
+    string transactionKey
+    int textKey
+    string primanota
+    string purpose
+    string category
+    
+    string customerReference
+    string bankReference
+    string endToEndReference
+    
+    # SEPA debit notes
+    string creditorSchemeId
+    string originatorId
+    string mandateId
+    string mandateDate
+    string mandateDebitorName
+    string originalCreditorSchemeId
+    string originalMandateId
+    string originalCreditorName
+    string sequence
+    int charge
+    
+    # foreign transfers
+    string remoteAddrStreet
+    string remoteAddrZipcode
+    string remoteAddrCity
+    string remoteAddrPhone
+    
+    # standing orders
+    int period
+    int cycle
+    int executionDay
+    string firstDate (GWEN_DATE)
+    string lastDate  (GWEN_DATE)
+    string nextDate  (GWEN_DATE)
+    
+    # securities
+    string unitId
+    string unitIdNameSpace
+    string tickerSymbol
+    string units           (AB_VALUE)
+    string unitPriceValue  (AB_VALUE)
+    string unitPriceDate   (GWEN_DATE)
+    string commissionValue (AB_VALUE)
+    
+    # others
+    string memo
+    
+
+  group balance
+    string date  (GWEN_DATE)
+    string value (AB_VALUE)
+    int type (0:none, 1:noted, 2:booked, 3:bankLine, 4:disposable, 5:temporary)
+
+
+
+
+3.3. Detailed Data Structure in SEPA Mode
+-----------------------------------------
+
+string messageId
+string messageDateTime
+string numberOfTransactions
+string controlSum (AB_VALUE: value, no currency)
+
+
+group paymentGroup
+  string paymentInfoId
+  string batchBooking ("true" or "false")
+  string numberOfTransactions
+  string controlSum
+  string requestedExecutionDate
+  string ownerName
+  string iban
+  string bic
+  string sequence (for direct debit, already translated into SEPA sequence strings like OOF, FRST, RCUR etc).
+  string creditorSchemeId (for direct debit)
+  
+
+  group transaction (AB_TRANSACTION)
+
+    # types, ids etc
+    int type
+    int subType
+    int command
+    int status
+    int uniqueAccountId
+    int uniqueId
+    int refUniqueId
+    int idForApplication
+    string stringIdForApplication
+    int sessionId
+    int groupId
+    string fiId
+    
+    # local account
+    string localIban
+    string localBic
+    string localCountry
+    string localBankCode
+    string localBranchId
+    string localAccountNumber
+    string localSuffix
+    string localName
+    
+    # remote account
+    string remoteCountry
+    string remoteBankCode
+    string remoteBranchId
+    string remoteAccountNumber
+    string remoteSuffix
+    string remoteIban
+    string remoteBic
+    string remoteName
+    
+    string date
+    string valutaDate
+    
+    # amount
+    string value (AB_VALUE)
+    string value_value (AB_VALUE: value)
+    string value_currency (AB_VALUE: currency)
     string fees (AB_VALUE)
     
     # codes, memos, purpose etc

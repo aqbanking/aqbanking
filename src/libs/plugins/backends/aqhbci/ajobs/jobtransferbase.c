@@ -26,6 +26,7 @@
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/gui.h>
 
 #include <assert.h>
 #include <ctype.h>
@@ -140,6 +141,10 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
   assert(descriptor);
   DBG_INFO(AQHBCI_LOGDOMAIN, "Using SEPA descriptor %s and profile %s",
            descriptor, GWEN_DB_GetCharValue(profile, "name", 0, 0));
+  GWEN_Gui_ProgressLog2(0,
+                        GWEN_LoggerLevel_Notice,
+                        I18N("Using SEPA descriptor %s and profile %s"),
+                        descriptor, GWEN_DB_GetCharValue(profile, "name", 0, 0));
 
   /* set data in job */
   t=AH_Job_GetFirstTransfer(j);
@@ -148,7 +153,7 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
     AB_TRANSACTION *cpy;
     GWEN_BUFFER *dbuf;
 
-    /* add transfers as transactions for export (exporters only use transactions) */
+    /* add copies of transfers */
     ioc=AB_ImExporterContext_new();
     while (t) {
       cpy=AB_Transaction_dup(t);
@@ -159,7 +164,7 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
     }
 
     dbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    rv=AB_Banking_ExportToBuffer(ab, "sepa", ioc, dbuf, profile);
+    rv=AB_Banking_ExportToBuffer(ab, "xml", ioc, dbuf, profile);
     AB_ImExporterContext_free(ioc);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -405,12 +410,17 @@ int AH_Job_TransferBase_GetLimits_SepaStandingOrder(AH_JOB *j, AB_TRANSACTION_LI
         if (*x=='0')
           x++;
 
-        rv=sscanf(x, "%d", &d);
-        if (rv!=1) {
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (%s)", x);
-        }
-        else
-          AB_TransactionLimits_ValuesExecutionDayWeekAdd(lim, d);
+	if (*x) {
+	  rv=sscanf(x, "%d", &d);
+	  if (rv!=1) {
+	    DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (current is [%s],  remaining string is [%s])", x, s);
+	  }
+	  else
+	    AB_TransactionLimits_ValuesExecutionDayWeekAdd(lim, d);
+	}
+	else {
+	  DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid empty param starting with [%s])", s);
+	}
         s++;
       } /* while */
     }

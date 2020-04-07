@@ -1,1 +1,6 @@
 xml.xml
+ab_imexporter_xml_paymentgroup.tm2
+ab_imexporter_xml_paymentgroup_list.tm2
+paymentgroup.c
+paymentgroup.h
+paymentgroup_p.h

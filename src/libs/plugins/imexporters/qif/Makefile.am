@@ -15,6 +15,12 @@ libabimexporters_qif_la_SOURCES=\
  qif.c
 
 
+
+typefiles:
+
+typedefs:
+
+
 sources:
 	for f in $(libabimexporters_qif_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \

@@ -17,6 +17,12 @@ noinst_HEADERS=q43_p.h q43.h
 
 libabimexporters_q43_la_SOURCES=q43.c
 
+
+typefiles:
+
+typedefs:
+
+
 sources:
 	for f in $(libabimexporters_q43_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \

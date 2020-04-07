@@ -17,6 +17,13 @@ noinst_HEADERS=openhbci1_p.h openhbci1.h
 
 libabimexporters_openhbci1_la_SOURCES=openhbci1.c
 
+
+typefiles:
+
+typedefs:
+
+
+
 sources:
 	for f in $(libabimexporters_openhbci1_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \

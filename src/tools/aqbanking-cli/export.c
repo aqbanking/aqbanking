@@ -250,7 +250,7 @@ int exportCtx(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
   /* load ctx file */
   ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
   rv=readContext(ctxFile, &ctx, 1);
-  if (rv<0) {
+  if (rv!=0) {
     DBG_ERROR(0, "Error reading context (%d)", rv);
     AB_ImExporterContext_free(ctx);
     return 4;

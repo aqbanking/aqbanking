@@ -26,6 +26,11 @@ noinst_HEADERS=\
 EXTRA_DIST=README $(dialogdata_DATA)
 
 
+typefiles:
+
+typedefs:
+
+
 sources:
 	for f in $(libabimexporters_csv_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \

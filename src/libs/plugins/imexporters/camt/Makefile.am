@@ -21,6 +21,11 @@ imexporterplugin_DATA=camt.xml
 libabimexporters_camt_la_SOURCES=camt.c
 
 
+typefiles:
+
+typedefs:
+
+
 sources:
 	for f in $(libabimexporters_camt_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \

@@ -41,6 +41,12 @@ GWEN_INHERIT_FUNCTIONS(AH_JOB);
 
 
 
+static GWEN_DB_NODE *_getHighestMatchingSepaProfile(AH_JOB *j, const GWEN_STRINGLIST *descriptors, const char *sepaType);
+static void _removeNonMatchingSepaProfiles(GWEN_DB_NODE *dbProfiles, const char *sepaTypePattern, const GWEN_STRINGLIST *descriptors);
+static void _sortSepaProfilesDescending(GWEN_DB_NODE *dbProfiles);
+static int _sortSepaProfilesXML_cb(const void *a, const void *b);
+
+
 
 
 
@@ -1696,8 +1702,7 @@ void AH_Job_AddTransfer(AH_JOB *j, AB_TRANSACTION *t)
 
 
 
-static int AH_Job__SepaProfileSupported(GWEN_DB_NODE *profile,
-                                        const GWEN_STRINGLIST *descriptors)
+static int AH_Job__SepaProfileSupported(GWEN_DB_NODE *profile, const GWEN_STRINGLIST *descriptors)
 {
   GWEN_STRINGLISTENTRY *se;
   char pattern[13];
@@ -1709,16 +1714,18 @@ static int AH_Job__SepaProfileSupported(GWEN_DB_NODE *profile,
 
   /* Well formed type strings are exactly 10 characters long. Others
    * will either not match or be rejected by the exporter. */
-  strncpy(pattern+1, GWEN_DB_GetCharValue(profile, "type", 0, ""), 10);
+  strncpy(pattern+1, GWEN_DB_GetCharValue(profile, "params/sepaType", 0, ""), 10);
   se=GWEN_StringList_FirstEntry(descriptors);
   while (se) {
     s=GWEN_StringListEntry_Data(se);
+    /*DBG_ERROR(AQHBCI_LOGDOMAIN, "Checking \"%s\" against pattern \"%s\"", s, pattern);*/
     if (s && GWEN_Text_ComparePattern(s, pattern, 1)!=-1) {
       /* record the descriptor matching this profile */
-      GWEN_DB_SetCharValue(profile, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                           "descriptor", s);
+      GWEN_DB_SetCharValue(profile, GWEN_DB_FLAGS_OVERWRITE_VARS, "descriptor", s);
+      /*DBG_ERROR(AQHBCI_LOGDOMAIN, "Match.");*/
       break;
     }
+    /*DBG_ERROR(AQHBCI_LOGDOMAIN, "No match.");*/
     se=GWEN_StringListEntry_Next(se);
   }
   if (se)
@@ -1729,7 +1736,166 @@ static int AH_Job__SepaProfileSupported(GWEN_DB_NODE *profile,
 
 
 
-static int AH_Job__SortSepaProfiles(const void *a, const void *b)
+GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *sepaTypePattern, const char *name)
+{
+  const GWEN_STRINGLIST *descriptors;
+  GWEN_DB_NODE *dbMatchingProfile;
+
+  assert(j);
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Looking for profile matching \"%s\" (\"%s\")", sepaTypePattern, name?name:"<noname>");
+
+  if (j->sepaDescriptors)
+    descriptors=j->sepaDescriptors;
+  else
+    descriptors=AH_User_GetSepaDescriptors(j->user);
+  if (GWEN_StringList_Count(descriptors)==0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No SEPA descriptor found, please update your account information");
+    return NULL;
+  }
+
+  if (name) {
+    GWEN_DB_NODE *profile;
+
+    profile=AB_Banking_GetImExporterProfile(AH_Job_GetBankingApi(j), "xml", name);
+    if (!profile) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Profile \"%s\" not available", name);
+      return NULL;
+    }
+    if (GWEN_Text_ComparePattern(GWEN_DB_GetCharValue(profile, "params/sepaType", 0, ""), sepaTypePattern, 1)==-1) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Profile \"%s\" does not match type specification (\"%s\")", name, sepaTypePattern);
+      return NULL;
+    }
+    if (!AH_Job__SepaProfileSupported(profile, descriptors)) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Profile \"%s\" not supported by bank server", name);
+      return NULL;
+    }
+    j->sepaProfile=profile;
+    return profile;
+  }
+
+  if (!sepaTypePattern)
+    return j->sepaProfile;
+
+  if (j->sepaProfile &&
+      GWEN_Text_ComparePattern(GWEN_DB_GetCharValue(j->sepaProfile, "params/sepaType", 0, ""), sepaTypePattern, 1)!=-1)
+    return j->sepaProfile;
+
+  dbMatchingProfile=_getHighestMatchingSepaProfile(j, descriptors, sepaTypePattern);
+  if (dbMatchingProfile==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No matching profile found for \"%s\" (\"%s\")", sepaTypePattern, name?name:"<noname>");
+    return NULL;
+  }
+
+  /* set new profile */
+  if (j->sepaProfile)
+    GWEN_DB_Group_free(j->sepaProfile);
+  j->sepaProfile=dbMatchingProfile;
+
+  return j->sepaProfile;
+}
+
+
+
+GWEN_DB_NODE *_getHighestMatchingSepaProfile(AH_JOB *j, const GWEN_STRINGLIST *descriptors, const char *sepaTypePattern)
+{
+  GWEN_DB_NODE *dbProfiles;
+
+  assert(j);
+
+  dbProfiles=AB_Banking_GetImExporterProfiles(AH_Job_GetBankingApi(j), "xml");
+  if (dbProfiles) {
+    GWEN_DB_NODE *dbMatchingProfile;
+
+    _removeNonMatchingSepaProfiles(dbProfiles, sepaTypePattern, descriptors);
+    _sortSepaProfilesDescending(dbProfiles);
+
+    dbMatchingProfile=GWEN_DB_GetFirstGroup(dbProfiles);
+    if (dbMatchingProfile==NULL) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "No supported SEPA format found for job \"%s\"", j->name);
+      GWEN_DB_Group_free(dbProfiles);
+      return NULL;
+    }
+    GWEN_DB_UnlinkGroup(dbMatchingProfile);
+    GWEN_DB_Group_free(dbProfiles);
+    return dbMatchingProfile;
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No XML profiles found");
+  }
+
+  return NULL;
+}
+
+
+
+void _removeNonMatchingSepaProfiles(GWEN_DB_NODE *dbProfiles, const char *sepaTypePattern, const GWEN_STRINGLIST *descriptors)
+{
+  GWEN_DB_NODE *n, *nn;
+  
+  n=GWEN_DB_GetFirstGroup(dbProfiles);
+  while (n) {
+    const char *sSepaType;
+    int doRemove=0;
+
+    nn=n;
+    n=GWEN_DB_GetNextGroup(n);
+
+    sSepaType=GWEN_DB_GetCharValue(nn, "params/sepaType", 0, "");
+
+    if (GWEN_Text_ComparePattern(sSepaType, sepaTypePattern, 1)==-1) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Profile \"%s\" does not match given pattern (%s)", sSepaType, sepaTypePattern);
+      doRemove=1;
+    }
+
+    if (!AH_Job__SepaProfileSupported(nn, descriptors)) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Profile \"%s\" not supported", sSepaType);
+      doRemove=1;
+    }
+
+    if (doRemove) {
+      GWEN_DB_UnlinkGroup(nn);
+      GWEN_DB_Group_free(nn);
+    }
+  }
+}
+
+
+
+void _sortSepaProfilesDescending(GWEN_DB_NODE *dbProfiles)
+{
+  int pCount;
+
+  pCount=GWEN_DB_Groups_Count(dbProfiles)>1;
+  if (pCount) {
+    GWEN_DB_NODE **orderedProfiles;
+    unsigned int i;
+
+    /* cut groups out of the tree, add to flat list */
+    orderedProfiles=malloc(pCount*sizeof(GWEN_DB_NODE *));
+    assert(orderedProfiles);
+    for (i=0; i<pCount; i++) {
+      GWEN_DB_NODE *n;
+
+      n=GWEN_DB_GetFirstGroup(dbProfiles);
+      assert(n);
+      GWEN_DB_UnlinkGroup(n);
+      orderedProfiles[i]=n;
+    }
+    assert(i==pCount);
+
+    /* sort flat list */
+    qsort(orderedProfiles, pCount, sizeof(GWEN_DB_NODE *), _sortSepaProfilesXML_cb);
+
+    /* put sorted groups back into tree */
+    for (i=0; i<pCount; i++)
+      GWEN_DB_AddGroup(dbProfiles, orderedProfiles[i]);
+    free(orderedProfiles);
+  }
+}
+
+
+int _sortSepaProfilesXML_cb(const void *a, const void *b)
 {
   GWEN_DB_NODE **ppa=(GWEN_DB_NODE **)a;
   GWEN_DB_NODE **ppb=(GWEN_DB_NODE **)b;
@@ -1739,8 +1905,8 @@ static int AH_Job__SortSepaProfiles(const void *a, const void *b)
 
   /* This function is supposed to return a list of profiles in order
    * of decreasing precedence. */
-  res=strcmp(GWEN_DB_GetCharValue(pb, "type", 0, ""),
-             GWEN_DB_GetCharValue(pa, "type", 0, ""));
+  res=strcmp(GWEN_DB_GetCharValue(pb, "params/sepaType", 0, ""),
+             GWEN_DB_GetCharValue(pa, "params/sepaType", 0, ""));
   if (res)
     return res;
 
@@ -1748,118 +1914,6 @@ static int AH_Job__SortSepaProfiles(const void *a, const void *b)
              GWEN_DB_GetCharValue(pa, "name", 0, ""));
 
   return res;
-}
-
-
-
-GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *type,
-                                     const char *name)
-{
-  const GWEN_STRINGLIST *descriptors;
-  GWEN_DB_NODE *dbProfiles;
-
-  assert(j);
-
-  if (j->sepaDescriptors)
-    descriptors=j->sepaDescriptors;
-  else
-    descriptors=AH_User_GetSepaDescriptors(j->user);
-  if (GWEN_StringList_Count(descriptors)==0) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "No SEPA descriptor found, please update your account information");
-    return NULL;
-  }
-
-  if (name) {
-    GWEN_DB_NODE *profile;
-
-    profile=AB_Banking_GetImExporterProfile(AH_Job_GetBankingApi(j),
-                                            "sepa", name);
-    if (!profile) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN,
-                "Profile \"%s\" not available", name);
-      return NULL;
-    }
-    if (GWEN_Text_ComparePattern(GWEN_DB_GetCharValue(profile, "type", 0, ""),
-                                 type, 1)==-1) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN,
-                "Profile \"%s\" does not match type speecification (\"%s\")",
-                name, type);
-      return NULL;
-    }
-    if (!AH_Job__SepaProfileSupported(profile, descriptors)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN,
-                "Profile \"%s\" not supported by bank server", name);
-      return NULL;
-    }
-    j->sepaProfile=profile;
-    return profile;
-  }
-
-  if (!type)
-    return j->sepaProfile;
-
-  if (j->sepaProfile) {
-    if (GWEN_Text_ComparePattern(GWEN_DB_GetCharValue(j->sepaProfile, "type",
-                                                      0, ""),
-                                 type, 1)!=-1)
-      return j->sepaProfile;
-    else {
-      GWEN_DB_Group_free(j->sepaProfile);
-      j->sepaProfile=NULL;
-    }
-  }
-
-  dbProfiles=AB_Banking_GetImExporterProfiles(AH_Job_GetBankingApi(j), "sepa");
-  if (dbProfiles) {
-    GWEN_DB_NODE *n, *nn;
-    unsigned int pCount=0;
-
-    n=GWEN_DB_GetFirstGroup(dbProfiles);
-    while (n) {
-      nn=n;
-      n=GWEN_DB_GetNextGroup(n);
-
-      if (GWEN_Text_ComparePattern(GWEN_DB_GetCharValue(nn, "type", 0, ""),
-                                   type, 1)!=-1 &&
-          AH_Job__SepaProfileSupported(nn, descriptors))
-        pCount++;
-      else {
-        GWEN_DB_UnlinkGroup(nn);
-        GWEN_DB_Group_free(nn);
-      }
-    }
-
-    if (pCount) {
-      GWEN_DB_NODE **orderedProfiles;
-      unsigned int i;
-
-      orderedProfiles=malloc(pCount*sizeof(GWEN_DB_NODE *));
-      assert(orderedProfiles);
-      n=GWEN_DB_GetFirstGroup(dbProfiles);
-      for (i=0; i<pCount && n; i++) {
-        orderedProfiles[i]=n;
-        n=GWEN_DB_GetNextGroup(n);
-      }
-      assert(i==pCount && !n);
-      qsort(orderedProfiles, pCount, sizeof(GWEN_DB_NODE *),
-            AH_Job__SortSepaProfiles);
-      GWEN_DB_UnlinkGroup(orderedProfiles[0]);
-      j->sepaProfile=orderedProfiles[0];
-      free(orderedProfiles);
-    }
-    else {
-      DBG_ERROR(AQHBCI_LOGDOMAIN,
-                "No supported SEPA format found for job \"%s\"", j->name);
-    }
-    GWEN_DB_Group_free(dbProfiles);
-  }
-  else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "No SEPA profiles found");
-  }
-
-  return j->sepaProfile;
 }
 
 

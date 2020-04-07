@@ -17,7 +17,7 @@
 <Schema>
 
   <DocMatches>
-    <Match path="Document@xmlns">*pain.008.003.02*</Match>
+    <Match path="Document@xmlns">*pain.008.001.02*</Match>
   </DocMatches>
 
 
@@ -74,9 +74,9 @@
 
   <Export>
     <XmlCreateAndEnterElement path="Document">
-      <XmlSetCharValue path=".@xmlns" value="urn:iso:std:iso:20022:tech:xsd:pain.008.003.02" />
+      <XmlSetCharValue path=".@xmlns" value="urn:iso:std:iso:20022:tech:xsd:pain.008.001.02" />
       <XmlSetCharValue path=".@xmlns:xsi" value="http://www.w3.org/2001/XMLSchema-instance" />
-      <XmlSetCharValue path=".@xsi:schemaLocation" value="urn:iso:std:iso:20022:tech:xsd:pain.008.003.02 pain.008.003.02.xsd" />
+      <XmlSetCharValue path=".@xsi:schemaLocation" value="urn:iso:std:iso:20022:tech:xsd:pain.008.001.02 pain.008.001.02.xsd" />
 
       <XmlCreateAndEnterElement path="CstmrDrctDbtInitn">
         
@@ -84,6 +84,7 @@
           <XmlSetCharValue                       path="MsgId"                      name="messageId" />
           <XmlSetCharValue                       path="CreDtTm"                    name="messageDateTime" />
           <XmlSetCharValue                       path="NbOfTxs"                    name="numberOfTransactions" />
+          <XmlSetCharValue                       path="CtrlSum"                    name="controlSum" />
           <XmlSetCharValue                       path="InitgPty/Nm"                name="initiatorName" />
         </XmlCreateAndEnterElement>
 
