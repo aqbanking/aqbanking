@@ -399,6 +399,8 @@ group paymentGroup
   string ownerName
   string iban
   string bic
+  string sequence (for direct debit, already translated into SEPA sequence strings like OOF, FRST, RCUR etc).
+  string creditorSchemeId (for direct debit)
   
 
   group transaction (AB_TRANSACTION)
