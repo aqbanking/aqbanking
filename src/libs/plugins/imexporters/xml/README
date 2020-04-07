@@ -6,20 +6,31 @@ This is a very simple parser for XML files.
                                                   Content
 
 1. Available Commands for Import
-1.1. <XmlEnter path="path">
-1.2. <XmlForEvery name="path">
-1.3. <DbCreateAndEnterDbGroup name="group">
-1.4. <DbCreateAndEnterTempDbGroup name="group">
-1.5. <DbSetCharValue name="varname" path="path" >
-1.6. <DbSetCharValue name="varname" value="$(tempVariable1) - $(tempVariable2)" >
-1.7. <DbSetTempCharValue name="varname" path="path" >
-1.8. <XmlIfCharDataMatches path="path" pattern="pattern">
-1.9. <XmlIfNotCharDataMatches path="path" pattern="pattern">
+1.1.  <XmlEnter path="path">
+1.2.  <XmlForEvery name="path">
+1.3.  <DbCreateAndEnterDbGroup name="group">
+1.4.  <DbCreateAndEnterTempDbGroup name="group">
+1.5.  <DbSetCharValue name="varname" path="path" >
+1.6.  <DbSetCharValue name="varname" value="$(tempVariable1) - $(tempVariable2)" >
+1.7.  <DbSetTempCharValue name="varname" path="path" >
+1.8.  <XmlIfCharDataMatches path="path" pattern="pattern">
+1.9.  <XmlIfNotCharDataMatches path="path" pattern="pattern">
 1.10. <XmlIfHasCharData path="path">
 1.11. <XmlIfNotHasCharData path="path">
 1.12. <XmlIfPathExists path="path">
 
 2. Available Commands for Export
+2.1.  <DbEnter name="name">
+2.2.  <DbForEvery name="name">
+2.3.  <XmlCreateAndEnterElement path="path">
+2.4.  <XmlSetCharValue path="path" value="$(tempVariable1) - $(tempVariable2)">
+2.5.  <XmlSetCharValue path="path" name="name">
+2.6.  <DbIfCharDataMatches name="name" pattern="pattern">
+2.7.  <DbIfNotCharDataMatches name="name" pattern="pattern">
+2.8.  <DbIfHasCharData name="name">
+2.9.  <DbIfNotHasCharData name="name">
+2.10. <DbIfPathExists name="name">
+2.11. <DbIfNotPathExists name="name">
 
 3. Structure of GWEN_DB Data
 3.1. Basic Data Structure
@@ -113,8 +124,79 @@ Iterate through all children of the schema node if the given path exists in the 
 
 
 
+
 2. Available Commands for Export
 ================================
+
+The following XML elements can be used inside a the "<Import>" element of a Schema file.
+
+
+2.1. <DbEnter name="name">
+--------------------------
+
+Enter the given db group. Iterate through all children of the schema node.
+
+
+2.2. <DbForEvery name="name">
+-----------------------------
+
+For every matching dbGroup iterate through all children of the schema node.
+
+
+2.3. <XmlCreateAndEnterElement path="path">
+-------------------------------------------
+
+Create the given path inside the output document.
+
+
+2.4. <XmlSetCharValue path="path" value="$(tempVariable1) - $(tempVariable2)">
+------------------------------------------------------------------------------
+
+Set the given value as new data for the XML element specified by "path" (accepts full xpath).
+
+
+2.5. <XmlSetCharValue path="path" name="name">
+----------------------------------------------
+
+Set the given value as new data for the XML element specified by "path" (accepts full xpath) using
+data stored in the dbGroup variable "name".
+
+
+2.6. <DbIfCharDataMatches name="name" pattern="pattern">
+--------------------------------------------------------
+
+Iterate through all children of the schema node if the given variable in dbGroup matches the given pattern.
+
+
+2.7. <DbIfNotCharDataMatches name="name" pattern="pattern">
+-----------------------------------------------------------
+
+Same as <DbIfCharDataMatches> except reversed.
+
+
+2.8. <DbIfHasCharData name="name">
+----------------------------------
+
+Iterate through all children of the schema node if the given variable in dbGroup has content.
+
+
+2.9. <DbIfNotHasCharData name="name">
+-------------------------------------
+
+Same as <DbIfHasCharData> except reversed.
+
+
+2.10. <DbIfPathExists name="name">
+----------------------------------
+
+Iterate through all children of the schema node if the given path in dbGroup exists.
+
+
+2.11. <DbIfNotPathExists name="name">
+-------------------------------------
+
+Same as <DbIfPathExists> except reversed.
+
 
 
 
