@@ -1382,17 +1382,19 @@ int AH_Msg_DecryptRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
   /* unpadd message */
   switch (rxh_parameter->protocol) {
   case AH_CryptMode_Rdh:
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Unpadding with ANSI X9.23");
     rv=GWEN_Padd_UnpaddWithAnsiX9_23(mbuf);
     break;
   case AH_CryptMode_Rah:
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Unpadding with ZKA padding");
     rv=GWEN_Padd_UnpaddWithZka(mbuf);
     break;
   default:
     return GWEN_ERROR_INTERNAL;
   }
   if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Error unpadding message with ANSI X9.23 (%d)", rv);
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error unpadding this message (%d)", rv);
+    GWEN_Buffer_Dump(mbuf, 2);
     GWEN_Buffer_free(mbuf);
     return rv;
   }
