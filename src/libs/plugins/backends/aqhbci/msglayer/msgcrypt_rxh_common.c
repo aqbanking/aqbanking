@@ -975,6 +975,16 @@ int AH_Msg_EncryptRxh(AH_MSG *hmsg)
       DBG_INFO(AQHBCI_LOGDOMAIN, "Could not generate DES key");
       return GWEN_ERROR_INTERNAL;
     }
+
+    if (1) {
+      uint8_t *p;
+      uint32_t len;
+
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "DES key for message");
+      p=GWEN_Crypt_KeyDes3K_GetKeyDataPtr(sk);
+      len=GWEN_Crypt_KeyDes3K_GetKeyDataLen(sk);
+      GWEN_Text_LogString((const char*)p, len, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error);
+    }
     break;
   case AH_CryptMode_Rah:
     rv=GWEN_Padd_PaddWithZka(hmsg->buffer);
