@@ -877,6 +877,8 @@ int AH_Msg_EncryptRxh(AH_MSG *hmsg)
   RXH_PARAMETER *rxh_parameter;
   int rxhVersion;
 
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "RXH-encrypting message");
+
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
 
   /* get correct parameters */
@@ -962,6 +964,7 @@ int AH_Msg_EncryptRxh(AH_MSG *hmsg)
 
   switch (rxh_parameter->protocol) {
   case AH_CryptMode_Rdh:
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Padding message with ANSI X9.23");
     rv=GWEN_Padd_PaddWithAnsiX9_23(hmsg->buffer);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error padding message with ANSI X9.23 (%d)", rv);
@@ -986,7 +989,9 @@ int AH_Msg_EncryptRxh(AH_MSG *hmsg)
       GWEN_Text_LogString((const char*)p, len, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error);
     }
     break;
+
   case AH_CryptMode_Rah:
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Padding message with ZKA method");
     rv=GWEN_Padd_PaddWithZka(hmsg->buffer);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN,
@@ -1002,6 +1007,7 @@ int AH_Msg_EncryptRxh(AH_MSG *hmsg)
       return GWEN_ERROR_INTERNAL;
     }
     break;
+
   default:
     DBG_INFO(AQHBCI_LOGDOMAIN, "Protocol not supported!");
     return GWEN_ERROR_INTERNAL;
