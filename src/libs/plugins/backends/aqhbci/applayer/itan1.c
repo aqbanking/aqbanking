@@ -248,6 +248,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   AH_Outbox__CBox_CopyJobResultsToJobList(jTan, jl);
 
   /* get challenge */
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Processing job \"%s\"", AH_Job_GetName(jTan));
   rv=AH_Job_Process(jTan, cbox->outbox->context);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
