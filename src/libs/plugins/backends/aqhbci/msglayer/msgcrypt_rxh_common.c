@@ -1334,8 +1334,15 @@ int AH_Msg_DecryptRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
     default:
       return GWEN_ERROR_INTERNAL;
     }
+
     /* unpadd and generate key */
     p=decKey+(elen-decKeySize);
+
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+              "DES key provided in message (padded key size=%d, unpadded keysize=%d, keyPos=%d):",
+              elen, decKeySize, (elen-decKeySize));
+    GWEN_Text_LogString((const char*)decKey, elen, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error);
+
     switch (rxh_parameter->protocol) {
     case AH_CryptMode_Rdh:
       sk=GWEN_Crypt_KeyDes3K_fromData(GWEN_Crypt_CryptMode_Cbc, 24, p, 16);
