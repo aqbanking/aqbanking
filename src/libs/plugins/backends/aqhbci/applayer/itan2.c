@@ -178,6 +178,7 @@ int _sendAndReceiveTanResponseProc2(AH_OUTBOX__CBOX *cbox,
   u=AH_Job_GetUser(j);
   assert(u);
 
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Processing job \"%s\"", AH_Job_GetName(jTan1));
   rv=AH_Job_Process(jTan1, cbox->outbox->context);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -320,6 +321,7 @@ int _sendAndReceiveTanResponseProc2(AH_OUTBOX__CBOX *cbox,
     return rv;
   }
   else {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Processing job \"%s\"", AH_Job_GetName(jTan2));
     rv=AH_Job_Process(jTan2, cbox->outbox->context);
     if (rv) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);

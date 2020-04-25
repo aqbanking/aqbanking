@@ -1229,6 +1229,7 @@ void AH_Outbox__FinishCBox(AH_OUTBOX *ob, AH_OUTBOX__CBOX *cbox)
   AH_Outbox__CBox_Finish(cbox);
   jl=AH_Outbox__CBox_TakeFinishedJobs(cbox);
   assert(jl);
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Finishing customer outbox");
   while ((j=AH_Job_List_First(jl))) {
     int rv;
     AH_JOB_STATUS st;
@@ -1236,6 +1237,7 @@ void AH_Outbox__FinishCBox(AH_OUTBOX *ob, AH_OUTBOX__CBOX *cbox)
     AH_Job_List_Del(j);
     st=AH_Job_GetStatus(j);
     if (st==AH_JobStatusAnswered) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Letting job \"%s\" process", AH_Job_GetName(j));
       rv=AH_Job_Process(j, ob->context);
       if (rv) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Error in job \"%s\": %d", AH_Job_GetName(j), rv);
@@ -1357,13 +1359,14 @@ void AH_Outbox_Process(AH_OUTBOX *ob)
   AH_JOB *j;
 
   assert(ob);
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Processing outbox jobs");
   j=AH_Job_List_First(ob->finishedJobs);
   while (j) {
     if (AH_Job_GetStatus(j)==AH_JobStatusAnswered) {
       int rv;
 
       /* only process answered jobs */
-      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Processing job \"%s\"", AH_Job_GetName(j));
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Processing job \"%s\"", AH_Job_GetName(j));
       rv=AH_Job_Process(j, ob->context);
       if (rv) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "Error processing job \"%s\": %d", AH_Job_GetName(j), rv);
