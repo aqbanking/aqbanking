@@ -226,10 +226,12 @@ GWEN_CRYPT_KEY *_rxhDecrypt_ExtractMessageKey(AH_MSG *hmsg, int rxhProtocol, GWE
     /* unpadd and generate key */
     p=decKey+(elen-decKeySize);
 
+#if 0
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "DES key provided in message (padded key size=%d, unpadded keysize=%d, keyPos=%d):",
               elen, decKeySize, (elen-decKeySize));
     GWEN_Text_LogString((const char*)decKey, elen, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error);
+#endif
 
     switch (rxhProtocol) {
     case AH_CryptMode_Rdh:

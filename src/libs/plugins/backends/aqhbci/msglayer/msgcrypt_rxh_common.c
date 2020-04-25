@@ -979,7 +979,7 @@ int AH_Msg_EncryptRxh(AH_MSG *hmsg)
       return GWEN_ERROR_INTERNAL;
     }
 
-    if (1) {
+    if (0) {
       uint8_t *p;
       uint32_t len;
 
