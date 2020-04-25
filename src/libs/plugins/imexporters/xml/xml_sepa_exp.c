@@ -282,7 +282,7 @@ void _sampleTotalTransactions(AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroupL
 
 
 void _createPaymentInfoIds(AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroupList, const char *messageId)
-{ /* create controlSum and tx count for GrpHdr */
+{
   AB_IMEXPORTER_XML_PAYMENTGROUP *paymentGroup;
   int num=0;
   GWEN_BUFFER *tbuf;
