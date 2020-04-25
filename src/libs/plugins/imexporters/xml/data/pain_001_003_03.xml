@@ -81,6 +81,7 @@
           <XmlSetCharValue              path="MsgId"                  name="messageId" />
           <XmlSetCharValue              path="CreDtTm"                name="messageDateTime" />
           <XmlSetCharValue              path="NbOfTxs"                name="numberOfTransactions" />
+          <XmlSetCharValue              path="CtrlSum"                name="controlSum" />
           <XmlSetCharValue              path="InitgPty/Nm"            name="initiatorName" />
         </XmlCreateAndEnterElement>
 
