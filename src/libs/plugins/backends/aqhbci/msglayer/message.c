@@ -425,7 +425,7 @@ static int _createMessageFromNode(GWEN_MSGENGINE *e,
 
     pos=len-2;
     ptr=GWEN_Buffer_GetStart(dbuf)+pos;
-    while(pos>0) {
+    while (pos>0) {
       if (*ptr=='+')
         *ptr=0;
       else {

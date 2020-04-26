@@ -280,10 +280,14 @@ void AH_EditUserPinTanDialog_Init(GWEN_DIALOG *dlg)
                               0);
   GWEN_Dialog_SetCharProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_AddValue, 0, I18N("tanMechanism|auto"), 0);
   GWEN_Dialog_SetCharProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_AddValue, 0, I18N("tanMechanism|text"), 0);
-  GWEN_Dialog_SetCharProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_AddValue, 0, I18N("tanMechanism|chipTAN optic"), 0);
-  GWEN_Dialog_SetCharProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_AddValue, 0, I18N("tanMechanism|QR image"), 0);
-  GWEN_Dialog_SetCharProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_AddValue, 0, I18N("tanMechanism|photoTAN"), 0);
-  GWEN_Dialog_SetCharProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_AddValue, 0, I18N("tanMechanism|chipTAN USB"), 0);
+  GWEN_Dialog_SetCharProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_AddValue, 0,
+                              I18N("tanMechanism|chipTAN optic"), 0);
+  GWEN_Dialog_SetCharProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_AddValue, 0, I18N("tanMechanism|QR image"),
+                              0);
+  GWEN_Dialog_SetCharProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_AddValue, 0, I18N("tanMechanism|photoTAN"),
+                              0);
+  GWEN_Dialog_SetCharProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_AddValue, 0, I18N("tanMechanism|chipTAN USB"),
+                              0);
 
   switch (AH_User_GetSelectedTanInputMechanism(xdlg->user)) {
   case AB_BANKING_TANMETHOD_TEXT:

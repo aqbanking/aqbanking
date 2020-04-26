@@ -15,7 +15,8 @@
  */
 
 static GWEN_CRYPT_KEY *_rxhDecrypt_ExtractMessageKey(AH_MSG *hmsg, int rxhProtocol, GWEN_DB_NODE *grHead);
-static GWEN_BUFFER *_rxhDecrypt_GetDecryptedMessage(GWEN_CRYPT_KEY *sk, int rxhProtocol, const uint8_t *pSource, uint32_t lSource);
+static GWEN_BUFFER *_rxhDecrypt_GetDecryptedMessage(GWEN_CRYPT_KEY *sk, int rxhProtocol, const uint8_t *pSource,
+                                                    uint32_t lSource);
 
 
 
@@ -173,7 +174,8 @@ GWEN_CRYPT_KEY *_rxhDecrypt_ExtractMessageKey(AH_MSG *hmsg, int rxhProtocol, GWE
   /* get context and key info */
   ctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), gid);
   if (ctx==NULL) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Context %d not found on crypt token [%s:%s]", AH_User_GetTokenContextId(u), sTokenType, sTokenName);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Context %d not found on crypt token [%s:%s]", AH_User_GetTokenContextId(u), sTokenType,
+             sTokenName);
     return NULL;
   }
 
@@ -230,7 +232,7 @@ GWEN_CRYPT_KEY *_rxhDecrypt_ExtractMessageKey(AH_MSG *hmsg, int rxhProtocol, GWE
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "DES key provided in message (padded key size=%d, unpadded keysize=%d, keyPos=%d):",
               elen, decKeySize, (elen-decKeySize));
-    GWEN_Text_LogString((const char*)decKey, elen, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error);
+    GWEN_Text_LogString((const char *)decKey, elen, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error);
 #endif
 
     switch (rxhProtocol) {
@@ -258,7 +260,8 @@ GWEN_CRYPT_KEY *_rxhDecrypt_ExtractMessageKey(AH_MSG *hmsg, int rxhProtocol, GWE
 
 
 
-GWEN_BUFFER *_rxhDecrypt_GetDecryptedMessage(GWEN_CRYPT_KEY *sk, int rxhProtocol, const uint8_t *pSource, uint32_t lSource)
+GWEN_BUFFER *_rxhDecrypt_GetDecryptedMessage(GWEN_CRYPT_KEY *sk, int rxhProtocol, const uint8_t *pSource,
+                                             uint32_t lSource)
 {
   GWEN_BUFFER *mbuf;
   int rv;
@@ -269,9 +272,9 @@ GWEN_BUFFER *_rxhDecrypt_GetDecryptedMessage(GWEN_CRYPT_KEY *sk, int rxhProtocol
   lDest=lSource+1024;                        /* maybe the size should be increased even more */
   mbuf=GWEN_Buffer_new(0, lDest, 0, 1);
   rv=GWEN_Crypt_Key_Decipher(sk,
-			     (const uint8_t *)pSource, lSource,
-			     (uint8_t *)GWEN_Buffer_GetPosPointer(mbuf),
-			     &lDest);
+                             (const uint8_t *)pSource, lSource,
+                             (uint8_t *)GWEN_Buffer_GetPosPointer(mbuf),
+                             &lDest);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Could not decipher with DES session key (%d)", rv);
     GWEN_Buffer_free(mbuf);

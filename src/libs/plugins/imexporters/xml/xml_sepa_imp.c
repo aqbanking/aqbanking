@@ -33,7 +33,8 @@ static int _importDbData(GWEN_DB_NODE *dbSource, AB_IMEXPORTER_CONTEXT *ctx);
 static AB_TRANSACTION *_dbToTransaction(AB_IMEXPORTER_ACCOUNTINFO *accountInfo,
                                         GWEN_DB_NODE *dbPaymentGroup,
                                         GWEN_DB_NODE *dbTransaction);
-static void _transformValue(GWEN_DB_NODE *dbData, const char *varNameValue, const char *varNameCurrency, const char *destVarName);
+static void _transformValue(GWEN_DB_NODE *dbData, const char *varNameValue, const char *varNameCurrency,
+                            const char *destVarName);
 
 
 
@@ -111,7 +112,7 @@ int _importDbData(GWEN_DB_NODE *dbSource, AB_IMEXPORTER_CONTEXT *ctx)
   GWEN_DB_NODE *dbPaymentGroup;
 
   dbPaymentGroup=GWEN_DB_FindFirstGroup(dbSource, "paymentGroup");
-  while(dbPaymentGroup) {
+  while (dbPaymentGroup) {
     AB_IMEXPORTER_ACCOUNTINFO *accountInfo;
     GWEN_DB_NODE *dbTransaction;
 
@@ -124,7 +125,7 @@ int _importDbData(GWEN_DB_NODE *dbSource, AB_IMEXPORTER_CONTEXT *ctx)
     assert(accountInfo);
 
     dbTransaction=GWEN_DB_FindFirstGroup(dbPaymentGroup, "transaction");
-    while(dbTransaction) {
+    while (dbTransaction) {
       AB_TRANSACTION *t;
 
       t=_dbToTransaction(accountInfo, dbPaymentGroup, dbTransaction);
@@ -197,7 +198,8 @@ AB_TRANSACTION *_dbToTransaction(AB_IMEXPORTER_ACCOUNTINFO *accountInfo,
 
 
 
-void _transformValue(GWEN_DB_NODE *dbData, const char *varNameValue, const char *varNameCurrency, const char *destVarName)
+void _transformValue(GWEN_DB_NODE *dbData, const char *varNameValue, const char *varNameCurrency,
+                     const char *destVarName)
 {
   const char *sValue;
   const char *sCurrency=NULL;

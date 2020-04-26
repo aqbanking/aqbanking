@@ -77,7 +77,8 @@ static int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
                                      AB_IMEXPORTER_CONTEXT *ctx,
                                      GWEN_DB_NODE *dbData);
 
-static void _transformValue(GWEN_DB_NODE *dbData, const char *varNameValue, const char *varNameCurrency, const char *destVarName);
+static void _transformValue(GWEN_DB_NODE *dbData, const char *varNameValue, const char *varNameCurrency,
+                            const char *destVarName);
 
 
 
@@ -168,13 +169,13 @@ int AB_ImExporterXML_Import(AB_IMEXPORTER *ie,
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing \"params\" section in profile");
       return GWEN_ERROR_INVALID;
     }
-  
+
     xmlDocData=AB_ImExporterXML_ReadXmlFromSio(ie, sio);
     if (xmlDocData==NULL) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not read XML input");
       return GWEN_ERROR_INVALID;
     }
-  
+
     schemaName=GWEN_DB_GetCharValue(dbSubParams, "schema", 0, NULL);
     if (!(schemaName && *schemaName)) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Importing file without specified schema.");
@@ -190,7 +191,7 @@ int AB_ImExporterXML_Import(AB_IMEXPORTER *ie,
       return GWEN_ERROR_BAD_DATA;
     }
     GWEN_XMLNode_free(xmlDocData);
-  
+
     /* import into context */
     rv=AB_ImExporterXML_ImportDb(ie, ctx, dbData);
     if (rv<0) {
@@ -198,7 +199,7 @@ int AB_ImExporterXML_Import(AB_IMEXPORTER *ie,
       GWEN_DB_Group_free(dbData);
       return rv;
     }
-  
+
     /* done */
     GWEN_DB_Group_free(dbData);
     return 0;
@@ -664,8 +665,8 @@ AB_TRANSACTION *dbToTransaction(AB_IMEXPORTER *ie, GWEN_DB_NODE *dbAccount, GWEN
   const char *s;
 
   if (NULL==GWEN_DB_GetCharValue(dbTransaction, "value", 0, NULL))
-      /* translate "value_value" + "value_currency" to "value" */
-      _transformValue(dbTransaction, "value_value", "value_currency", "value");
+    /* translate "value_value" + "value_currency" to "value" */
+    _transformValue(dbTransaction, "value_value", "value_currency", "value");
 
   t=AB_Transaction_fromDb(dbTransaction);
   assert(t);
@@ -768,7 +769,8 @@ void handleTransactionDetails(AB_TRANSACTION *t, const char *sDetails)
 
 
 
-void _transformValue(GWEN_DB_NODE *dbData, const char *varNameValue, const char *varNameCurrency, const char *destVarName)
+void _transformValue(GWEN_DB_NODE *dbData, const char *varNameValue, const char *varNameCurrency,
+                     const char *destVarName)
 {
   const char *sValue;
   const char *sCurrency=NULL;

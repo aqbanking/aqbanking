@@ -254,12 +254,12 @@ void _readSegmentResult(AH_JOB *j, GWEN_DB_NODE *dbRd)
 void _readSecurityProfile(AH_JOB *j, GWEN_DB_NODE *dbRd)
 {
   GWEN_DB_NODE *dbT;
-  
+
   dbT=GWEN_DB_FindFirstGroup(dbRd, "SecProfile");
   while (dbT) {
     const char *code;
     int version;
-  
+
     code=GWEN_DB_GetCharValue(dbT, "code", 0, NULL);
     version=GWEN_DB_GetIntValue(dbT, "version", 0, -1);
     if (code && (version>0)) {
@@ -291,7 +291,7 @@ void _readBankMessage(AH_JOB *j, GWEN_DB_NODE *dbRd)
   if (subject && text) {
     AB_MESSAGE *amsg;
     GWEN_TIME *ti;
-  
+
     ti=GWEN_CurrentTime();
     amsg=AB_Message_new();
     AB_Message_SetSource(amsg, AB_Message_SourceBank);
@@ -301,10 +301,10 @@ void _readBankMessage(AH_JOB *j, GWEN_DB_NODE *dbRd)
     GWEN_Time_free(ti);
     AB_Message_SetUserId(amsg, AB_User_GetUniqueId(user));
     AB_Message_List_Add(amsg, messageList);
-  
+
     if (1) {
       GWEN_DB_NODE *dbTmp;
-  
+
       /* save message, later this will no longer be necessary */
       dbTmp=GWEN_DB_Group_new("bank message");
       GWEN_DB_SetCharValue(dbTmp, GWEN_DB_FLAGS_OVERWRITE_VARS, "subject", subject);

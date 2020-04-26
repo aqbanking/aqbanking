@@ -76,7 +76,7 @@ void AO_Provider_Util_ListAccounts(AB_IMEXPORTER_CONTEXT *ctx)
       AB_IMEXPORTER_ACCOUNTINFO *accInfo;
 
       accInfo=AB_ImExporterAccountInfo_List_First(accInfoList);
-      while(accInfo) {
+      while (accInfo) {
         const char *sBankCode;
         const char *sBankName;
         const char *sAccountNumber;

@@ -21,7 +21,7 @@
 int AH_Control_UnblockPin(AB_PROVIDER *pro,
                           GWEN_DB_NODE *dbArgs,
                           int argc,
-			  char **argv)
+                          char **argv)
 {
   GWEN_DB_NODE *db;
   uint32_t uid;

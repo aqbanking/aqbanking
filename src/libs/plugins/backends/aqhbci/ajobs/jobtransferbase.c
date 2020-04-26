@@ -410,17 +410,17 @@ int AH_Job_TransferBase_GetLimits_SepaStandingOrder(AH_JOB *j, AB_TRANSACTION_LI
         if (*x=='0')
           x++;
 
-	if (*x) {
-	  rv=sscanf(x, "%d", &d);
-	  if (rv!=1) {
-	    DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (current is [%s],  remaining string is [%s])", x, s);
-	  }
-	  else
-	    AB_TransactionLimits_ValuesExecutionDayWeekAdd(lim, d);
-	}
-	else {
-	  DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid empty param starting with [%s])", s);
-	}
+        if (*x) {
+          rv=sscanf(x, "%d", &d);
+          if (rv!=1) {
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params (current is [%s],  remaining string is [%s])", x, s);
+          }
+          else
+            AB_TransactionLimits_ValuesExecutionDayWeekAdd(lim, d);
+        }
+        else {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid empty param starting with [%s])", s);
+        }
         s++;
       } /* while */
     }

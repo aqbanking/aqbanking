@@ -35,26 +35,28 @@
  */
 
 static GWEN_DB_NODE *_ctxToSepaDb(AB_IMEXPORTER *ie, const AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *dbParams);
-static AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *_sortIntoPaymentGroups(const AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *dbParams);
-static AB_IMEXPORTER_XML_PAYMENTGROUP *_getMatchingPaymentGroupForTransaction(AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroupList,
-									      const AB_IMEXPORTER_ACCOUNTINFO *accountInfo,
-									      const AB_TRANSACTION *t);
+static AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *_sortIntoPaymentGroups(const AB_IMEXPORTER_CONTEXT *ctx,
+                                                                   GWEN_DB_NODE *dbParams);
+static AB_IMEXPORTER_XML_PAYMENTGROUP *_getMatchingPaymentGroupForTransaction(AB_IMEXPORTER_XML_PAYMENTGROUP_LIST
+                                                                              *paymentGroupList,
+                                                                              const AB_IMEXPORTER_ACCOUNTINFO *accountInfo,
+                                                                              const AB_TRANSACTION *t);
 static void _sampleTotalTransactions(AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroupList, GWEN_DB_NODE *dbData);
 
 static const char *_createAndWriteMessageId(AB_IMEXPORTER *ie, const char *varName, GWEN_DB_NODE *dbData);
 static void _createPaymentInfoIds(AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroupList, const char *messageId);
 
 static void _writePaymentGroups(const AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroupList,
-				GWEN_DB_NODE *dbData,
+                                GWEN_DB_NODE *dbData,
                                 GWEN_DB_NODE *dbParams);
 static void _writeTransactions(const AB_IMEXPORTER_XML_PAYMENTGROUP *paymentGroup, GWEN_DB_NODE *dbData);
 static void _writeTransaction(const AB_TRANSACTION *t, GWEN_DB_NODE *dbData);
 
 static void _writeAmountToDbWithoutCurrency(const AB_VALUE *v, const char *varName, GWEN_DB_NODE *dbGroup);
 static void _writeAmountToDbWithCurrency(const AB_VALUE *v,
-					const char *varNameAmount,
-					const char *varNameCurrency,
-					GWEN_DB_NODE *dbData);
+                                         const char *varNameAmount,
+                                         const char *varNameCurrency,
+                                         GWEN_DB_NODE *dbData);
 
 static void _writeCurrentDateTime(const char *varName, GWEN_DB_NODE *dbData);
 
@@ -71,7 +73,7 @@ static void _writeCurrentDateTime(const char *varName, GWEN_DB_NODE *dbData);
 int AB_ImExporterXML_ExportSepa(AB_IMEXPORTER *ie,
                                 AB_IMEXPORTER_CONTEXT *ctx,
                                 GWEN_SYNCIO *sio,
-				GWEN_DB_NODE *dbParams)
+                                GWEN_DB_NODE *dbParams)
 {
   const char *schemaName;
   GWEN_XMLNODE *xmlDocData;
@@ -173,7 +175,7 @@ GWEN_DB_NODE *_ctxToSepaDb(AB_IMEXPORTER *ie, const AB_IMEXPORTER_CONTEXT *ctx, 
 
       s=AB_ImExporterXML_PaymentGroup_GetLocalName(paymentGroup);
       if (s && *s)
-	GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS, "initiatorName", s);
+        GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS, "initiatorName", s);
     }
   }
 
@@ -203,23 +205,23 @@ AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *_sortIntoPaymentGroups(const AB_IMEXPORTER_
     AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroupList;
 
     paymentGroupList=AB_ImExporterXML_PaymentGroup_List_new();
-    while(accountInfo) {
+    while (accountInfo) {
       AB_TRANSACTION *t;
 
       t=AB_ImExporterAccountInfo_GetFirstTransaction(accountInfo, 0, 0);
-      while(t) {
-	AB_IMEXPORTER_XML_PAYMENTGROUP *paymentGroup;
+      while (t) {
+        AB_IMEXPORTER_XML_PAYMENTGROUP *paymentGroup;
 
-	paymentGroup=_getMatchingPaymentGroupForTransaction(paymentGroupList, accountInfo, t);
-	if (paymentGroup) {
-	  AB_ImExporterXML_PaymentGroup_AddTransaction(paymentGroup, t);
-	}
-	else {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN, "No payment group found?? SNH!");
-	  AB_ImExporterXML_PaymentGroup_List_free(paymentGroupList);
-	  return NULL;
-	}
-	t=AB_Transaction_List_Next(t);
+        paymentGroup=_getMatchingPaymentGroupForTransaction(paymentGroupList, accountInfo, t);
+        if (paymentGroup) {
+          AB_ImExporterXML_PaymentGroup_AddTransaction(paymentGroup, t);
+        }
+        else {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "No payment group found?? SNH!");
+          AB_ImExporterXML_PaymentGroup_List_free(paymentGroupList);
+          return NULL;
+        }
+        t=AB_Transaction_List_Next(t);
       }
       accountInfo=AB_ImExporterAccountInfo_List_Next(accountInfo);
     }
@@ -241,10 +243,10 @@ const char *_createAndWriteMessageId(AB_IMEXPORTER *ie, const char *varName, GWE
   GWEN_BUFFER *tbuf;
   uint32_t uid;
   char numbuf[32];
-  
+
   ti=GWEN_CurrentTime();
   tbuf=GWEN_Buffer_new(0, 64, 0, 1);
-  
+
   uid=AB_Banking_GetNamedUniqueId(AB_ImExporter_GetBanking(ie), "sepamsg", 1);
   GWEN_Time_toUtcString(ti, "YYYYMMDD-hh:mm:ss-", tbuf);
   snprintf(numbuf, sizeof(numbuf)-1, "%08x", uid);
@@ -258,14 +260,15 @@ const char *_createAndWriteMessageId(AB_IMEXPORTER *ie, const char *varName, GWE
 
 
 void _sampleTotalTransactions(AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroupList, GWEN_DB_NODE *dbData)
-{ /* create controlSum and tx count for GrpHdr */
+{
+  /* create controlSum and tx count for GrpHdr */
   AB_IMEXPORTER_XML_PAYMENTGROUP *paymentGroup;
   int totalNumOfTx=0;
   AB_VALUE *totalControlSum;
 
   totalControlSum=AB_Value_new();
   paymentGroup=AB_ImExporterXML_PaymentGroup_List_First(paymentGroupList);
-  while(paymentGroup) {
+  while (paymentGroup) {
     const AB_VALUE *controlSum;
 
     controlSum=AB_ImExporterXML_PaymentGroup_GetControlSum(paymentGroup);
@@ -294,7 +297,7 @@ void _createPaymentInfoIds(AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroupList
   pos=GWEN_Buffer_GetPos(tbuf);
 
   paymentGroup=AB_ImExporterXML_PaymentGroup_List_First(paymentGroupList);
-  while(paymentGroup) {
+  while (paymentGroup) {
     char numbuf[32];
 
     snprintf(numbuf, sizeof(numbuf)-1, "%0d", (++num));
@@ -308,12 +311,14 @@ void _createPaymentInfoIds(AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroupList
 
 
 
-void _writePaymentGroups(const AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroupList, GWEN_DB_NODE *dbData, GWEN_DB_NODE *dbParams)
-{ /* write payment groups */
+void _writePaymentGroups(const AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroupList, GWEN_DB_NODE *dbData,
+                         GWEN_DB_NODE *dbParams)
+{
+  /* write payment groups */
   AB_IMEXPORTER_XML_PAYMENTGROUP *paymentGroup;
 
   paymentGroup=AB_ImExporterXML_PaymentGroup_List_First(paymentGroupList);
-  while(paymentGroup) {
+  while (paymentGroup) {
     GWEN_DB_NODE *dbPaymentGroup;
     const char *s;
     const AB_VALUE *controlSum;
@@ -338,15 +343,15 @@ void _writePaymentGroups(const AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroup
     GWEN_DB_SetCharValue(dbPaymentGroup, GWEN_DB_FLAGS_OVERWRITE_VARS, "LocalInstrumentSEPACode", s);
 
     GWEN_DB_SetCharValue(dbPaymentGroup, GWEN_DB_FLAGS_OVERWRITE_VARS, "batchBooking",
-			 GWEN_DB_GetIntValue(dbParams, "singleBookingWanted", 0, 1)? "false": "true");
+                         GWEN_DB_GetIntValue(dbParams, "singleBookingWanted", 0, 1)? "false": "true");
 
     /* write data from AB_IMEXPORTER_XML_PAYMENTGROUP */
     controlSum=AB_ImExporterXML_PaymentGroup_GetControlSum(paymentGroup);
     if (controlSum)
       _writeAmountToDbWithoutCurrency(controlSum, "controlSum", dbPaymentGroup);
     GWEN_DB_SetCharValueFromInt(dbPaymentGroup, GWEN_DB_FLAGS_OVERWRITE_VARS,
-				"numberOfTransactions",
-				AB_ImExporterXML_PaymentGroup_GetTransactionCount(paymentGroup));
+                                "numberOfTransactions",
+                                AB_ImExporterXML_PaymentGroup_GetTransactionCount(paymentGroup));
 
     s=AB_ImExporterXML_PaymentGroup_GetId(paymentGroup);
     if (s && *s)
@@ -376,12 +381,22 @@ void _writePaymentGroups(const AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroup
 
     /* write sequence (if any) */
     sequence=AB_ImExporterXML_PaymentGroup_GetSequence(paymentGroup);
-    switch(sequence) {
-    case AB_Transaction_SequenceOnce:       s="OOFF"; break;
-    case AB_Transaction_SequenceFirst:      s="FRST"; break;
-    case AB_Transaction_SequenceFollowing:  s="RCUR"; break;
-    case AB_Transaction_SequenceFinal:      s="FNAL"; break;
-    default:                                s=NULL;   break;
+    switch (sequence) {
+    case AB_Transaction_SequenceOnce:
+      s="OOFF";
+      break;
+    case AB_Transaction_SequenceFirst:
+      s="FRST";
+      break;
+    case AB_Transaction_SequenceFollowing:
+      s="RCUR";
+      break;
+    case AB_Transaction_SequenceFinal:
+      s="FNAL";
+      break;
+    default:
+      s=NULL;
+      break;
     }
     if (s && *s)
       GWEN_DB_SetCharValue(dbPaymentGroup, GWEN_DB_FLAGS_OVERWRITE_VARS, "sequence", s);
@@ -408,11 +423,11 @@ void _writeTransactions(const AB_IMEXPORTER_XML_PAYMENTGROUP *paymentGroup, GWEN
 
       t=AB_Transaction_List2Iterator_Data(it);
       while (t) {
-	GWEN_DB_NODE *dbTransaction;
+        GWEN_DB_NODE *dbTransaction;
 
-	dbTransaction=GWEN_DB_GetGroup(dbData, GWEN_PATH_FLAGS_CREATE_GROUP, "transaction");
-	_writeTransaction(t, dbTransaction);
-	t=AB_Transaction_List2Iterator_Next(it);
+        dbTransaction=GWEN_DB_GetGroup(dbData, GWEN_PATH_FLAGS_CREATE_GROUP, "transaction");
+        _writeTransaction(t, dbTransaction);
+        t=AB_Transaction_List2Iterator_Next(it);
       }
       AB_Transaction_List2Iterator_free(it);
     }
@@ -449,9 +464,9 @@ void _writeAmountToDbWithoutCurrency(const AB_VALUE *v, const char *varName, GWE
 
 
 void _writeAmountToDbWithCurrency(const AB_VALUE *v,
-				  const char *varNameAmount,
-				  const char *varNameCurrency,
-				  GWEN_DB_NODE *dbData)
+                                  const char *varNameAmount,
+                                  const char *varNameCurrency,
+                                  GWEN_DB_NODE *dbData)
 {
   GWEN_BUFFER *tbuf;
   const char *s;
@@ -482,9 +497,10 @@ void _writeCurrentDateTime(const char *varName, GWEN_DB_NODE *dbData)
 
 
 
-AB_IMEXPORTER_XML_PAYMENTGROUP *_getMatchingPaymentGroupForTransaction(AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroupList,
-								       const AB_IMEXPORTER_ACCOUNTINFO *accountInfo,
-								       const AB_TRANSACTION *t)
+AB_IMEXPORTER_XML_PAYMENTGROUP *_getMatchingPaymentGroupForTransaction(AB_IMEXPORTER_XML_PAYMENTGROUP_LIST
+                                                                       *paymentGroupList,
+                                                                       const AB_IMEXPORTER_ACCOUNTINFO *accountInfo,
+                                                                       const AB_TRANSACTION *t)
 {
   const char *tLocalName;
   const char *tLocalBic;
@@ -521,7 +537,7 @@ AB_IMEXPORTER_XML_PAYMENTGROUP *_getMatchingPaymentGroupForTransaction(AB_IMEXPO
   tSequence=AB_Transaction_GetSequence(t);
 
   paymentGroup=AB_ImExporterXML_PaymentGroup_List_First(paymentGroupList);
-  while(paymentGroup) {
+  while (paymentGroup) {
     const char *pLocalName;
     const char *pLocalBic;
     const char *pLocalIban;
@@ -546,12 +562,12 @@ AB_IMEXPORTER_XML_PAYMENTGROUP *_getMatchingPaymentGroupForTransaction(AB_IMEXPO
     pExecDate=AB_ImExporterXML_PaymentGroup_GetTransactionDate(paymentGroup);
     pSequence=AB_ImExporterXML_PaymentGroup_GetSequence(paymentGroup);
 
-    if ( (tSequence==pSequence) &&
-	(strcasecmp(tLocalName, pLocalName)==0) &&
-	(strcasecmp(tLocalBic, pLocalBic)==0) &&
-	(strcasecmp(tLocalIban, pLocalIban)==0) &&
-	(strcasecmp(tCreditorSchemeId, pCreditorSchemeId)==0) &&
-	(GWEN_Date_Compare(tExecDate, pExecDate)==0) )
+    if ((tSequence==pSequence) &&
+        (strcasecmp(tLocalName, pLocalName)==0) &&
+        (strcasecmp(tLocalBic, pLocalBic)==0) &&
+        (strcasecmp(tLocalIban, pLocalIban)==0) &&
+        (strcasecmp(tCreditorSchemeId, pCreditorSchemeId)==0) &&
+        (GWEN_Date_Compare(tExecDate, pExecDate)==0))
       return paymentGroup;
     paymentGroup=AB_ImExporterXML_PaymentGroup_List_Next(paymentGroup);
   }

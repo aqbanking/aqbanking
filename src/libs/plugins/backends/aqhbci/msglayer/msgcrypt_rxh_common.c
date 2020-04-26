@@ -986,7 +986,7 @@ int AH_Msg_EncryptRxh(AH_MSG *hmsg)
       DBG_ERROR(AQHBCI_LOGDOMAIN, "DES key for message");
       p=GWEN_Crypt_KeyDes3K_GetKeyDataPtr(sk);
       len=GWEN_Crypt_KeyDes3K_GetKeyDataLen(sk);
-      GWEN_Text_LogString((const char*)p, len, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error);
+      GWEN_Text_LogString((const char *)p, len, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error);
     }
     break;
 

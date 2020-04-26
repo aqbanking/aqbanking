@@ -41,8 +41,10 @@ GWEN_INHERIT_FUNCTIONS(AH_JOB);
 
 
 
-static GWEN_DB_NODE *_getHighestMatchingSepaProfile(AH_JOB *j, const GWEN_STRINGLIST *descriptors, const char *sepaType);
-static void _removeNonMatchingSepaProfiles(GWEN_DB_NODE *dbProfiles, const char *sepaTypePattern, const GWEN_STRINGLIST *descriptors);
+static GWEN_DB_NODE *_getHighestMatchingSepaProfile(AH_JOB *j, const GWEN_STRINGLIST *descriptors,
+                                                    const char *sepaType);
+static void _removeNonMatchingSepaProfiles(GWEN_DB_NODE *dbProfiles, const char *sepaTypePattern,
+                                           const GWEN_STRINGLIST *descriptors);
 static void _sortSepaProfilesDescending(GWEN_DB_NODE *dbProfiles);
 static int _sortSepaProfilesXML_cb(const void *a, const void *b);
 
@@ -1829,10 +1831,11 @@ GWEN_DB_NODE *_getHighestMatchingSepaProfile(AH_JOB *j, const GWEN_STRINGLIST *d
 
 
 
-void _removeNonMatchingSepaProfiles(GWEN_DB_NODE *dbProfiles, const char *sepaTypePattern, const GWEN_STRINGLIST *descriptors)
+void _removeNonMatchingSepaProfiles(GWEN_DB_NODE *dbProfiles, const char *sepaTypePattern,
+                                    const GWEN_STRINGLIST *descriptors)
 {
   GWEN_DB_NODE *n, *nn;
-  
+
   n=GWEN_DB_GetFirstGroup(dbProfiles);
   while (n) {
     const char *sSepaType;
