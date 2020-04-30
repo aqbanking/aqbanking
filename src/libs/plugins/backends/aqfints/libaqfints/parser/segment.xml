@@ -1,0 +1,347 @@
+<?xml?>
+
+<tm2>
+  <type id="AQFINTS_SEGMENT" type="pointer">
+    <descr>
+    </descr>
+    <lang id="c">
+      <identifier>AQFINTS_SEGMENT</identifier>
+      <prefix>AQFINTS_Segment</prefix>
+
+      <baseFileName>segment</baseFileName>
+      
+      <flags>
+        with_db
+        with_list1
+        with_refcount
+      </flags>
+      
+      <headers>
+        <header type="sys"   loc="pre">libaqfints/aqfints.h</header>
+        <header type="sys"   loc="pre">gwenhywfar/bindata.h</header>
+        <header type="sys"   loc="pre">gwenhywfar/buffer.h</header>
+        <header type="local" loc="post">parser/element.h</header>
+      </headers>
+      
+      
+      <inlines>
+
+        <!-- SetData() -->
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_SetData($(struct_type) *st, uint8_t *ptr, uint32_t len);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             void $(struct_prefix)_SetData($(struct_type) *st, uint8_t *ptr, uint32_t len) {
+               if (st-&gt;data.pointer &amp;&amp; st-&gt;data.length)
+                 free(st-&gt;data.pointer);
+               st-&gt;data.pointer=ptr;
+               st-&gt;data.length=len;
+             }
+          </content>
+        </inline>
+
+
+
+        <!-- SetDataFromCopy() -->
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_SetDataAsCopy($(struct_type) *st, const uint8_t *ptr, uint32_t len);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             void $(struct_prefix)_SetDataAsCopy($(struct_type) *st, const uint8_t *ptr, uint32_t len) {
+               if (st-&gt;data.pointer &amp;&amp; st-&gt;data.length)
+                 free(st-&gt;data.pointer);
+               if (ptr &amp;&amp; len&gt;0) {
+                 void *ptrCopy;
+                 
+                 ptrCopy=malloc(len);
+                 assert(ptrCopy);
+                 memmove(ptrCopy, ptr, len);
+                 st-&gt;data.pointer=ptrCopy;
+                 st-&gt;data.length=len;
+               }
+               else {
+                 st-&gt;data.pointer=NULL;
+                 st-&gt;data.length=0;
+               }
+             }
+          </content>
+        </inline>
+      
+
+        <!-- GetDataPointer() -->
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) uint8_t* $(struct_prefix)_GetDataPointer(const $(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code" >
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             uint8_t* $(struct_prefix)_GetDataPointer(const $(struct_type) *st) {
+               return st-&gt;data.pointer;
+             }
+          </content>
+        </inline>
+
+
+        <!-- GetDataLength() -->
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) uint32_t $(struct_prefix)_GetDataLength(const $(struct_type) *st);
+          </content>
+        </inline>
+
+        <inline loc="code" >
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             uint32_t $(struct_prefix)_GetDataLength(const $(struct_type) *st) {
+               return st-&gt;data.length;
+             }
+          </content>
+        </inline>
+
+
+        <!-- List_SampleFlags() -->
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             $(api) uint32_t $(struct_prefix)_List_SampleFlags(const $(struct_type)_LIST *stl);
+          </content>
+        </inline>
+
+        <inline loc="code" >
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             uint32_t $(struct_prefix)_List_SampleFlags(const $(struct_type)_LIST *stl)
+             {
+               uint32_t flags=0;
+               
+               if (stl) {
+                 $(struct_type) *segment;
+               
+                 segment=$(struct_prefix)_List_Last(stl);
+                 while(segment) {
+                   flags|=$(struct_prefix)_GetFlags(segment);
+                   segment=$(struct_prefix)_List_Next(segment);
+                 }
+               }
+               return flags;
+             }
+          </content>
+        </inline>
+
+
+
+        <!-- List_SampleSizes() -->
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             $(api) uint32_t $(struct_prefix)_List_SampleSizes(const $(struct_type)_LIST *stl);
+          </content>
+        </inline>
+
+        <inline loc="code" >
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             uint32_t $(struct_prefix)_List_SampleSizes(const $(struct_type)_LIST *stl)
+             {
+               uint32_t len=0;
+               
+               if (stl) {
+                 $(struct_type) *segment;
+               
+                 segment=$(struct_prefix)_List_Last(stl);
+                 while(segment) {
+                   len+=segment-&gt;data.length;
+                   segment=$(struct_prefix)_List_Next(segment);
+                 }
+               }
+               return len;
+             }
+          </content>
+        </inline>
+
+
+
+        <!-- List_SampleBuffers() -->
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_List_SampleBuffers(const $(struct_type)_LIST *segmentList, GWEN_BUFFER *destBuf);
+          </content>
+        </inline>
+
+        <inline loc="code" >
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             void $(struct_prefix)_List_SampleBuffers(const $(struct_type)_LIST *segmentList, GWEN_BUFFER *destBuf)
+             {
+               if (segmentList) {
+                 $(struct_type) *segment;
+               
+                 segment=$(struct_prefix)_List_First(segmentList);
+                 while (segment) {
+                   if (segment-&gt;data.pointer &amp;&amp; segment-&gt;data.length&gt;0)
+                     GWEN_Buffer_AppendBytes(destBuf, (const char*) segment-&gt;data.pointer, segment-&gt;data.length);
+               
+                   segment=$(struct_prefix)_List_Next(segment);
+                 }
+               }
+             }
+          </content>
+        </inline>
+
+      </inlines>
+      
+      
+    </lang>
+
+    <defines>
+
+      <define id="AQFINTS_SEGMENT_RTFLAGS" prefix="AQFINTS_SEGMENT_RTFLAGS_">
+        <item name="PARSED"       value="0x00000001" />
+        <item name="SIGNED"       value="0x00000002" />
+        <item name="ENCRYPTED"    value="0x00000004" />
+      </define>
+
+     <define id="AQFINTS_SEGMENT_FLAGS" prefix="AQFINTS_SEGMENT_FLAGS_">
+       <item name="CRYPT"       value="0x00000001" />
+       <item name="SIGN"        value="0x00000002" />
+       <item name="NEEDTAN"     value="0x00000004" />
+       <item name="ISBPD"       value="0x00000008" />
+     </define>
+
+    </defines>
+
+    <enums>
+
+    </enums>
+
+
+
+    <members>
+  
+      <member name="flags" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>with_flags</flags>
+        <access>public</access>
+      </member>
+
+      <member name="id" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="code" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own with_getbymember</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="segmentVersion" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+      <member name="segmentNumber" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+        <flags>with_getbymember</flags>
+      </member>
+
+      <member name="refSegmentNumber" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+      <member name="protocolVersion" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+
+      <member name="data" type="GWEN_BINDATA" maxlen="65536" >
+        <access>private</access>
+        <flags>own</flags>
+        <setflags>omit</setflags>
+        <getflags>omit</getflags>
+      </member>
+
+
+      <member name="elements" type="AQFINTS_ELEMENT" >
+        <access>public</access>
+        <flags>own noCopy</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+
+      <member name="dbData" type="GWEN_DB_NODE" >
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+
+
+      <member name="runtimeFlags" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>volatile with_flags</flags>
+        <access>public</access>
+      </member>
+
+    </members>
+    
+  </type>
+  
+</tm2>

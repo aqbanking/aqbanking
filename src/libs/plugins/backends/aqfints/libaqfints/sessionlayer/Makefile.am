@@ -1,18 +1,17 @@
-SUBDIRS=control
+SUBDIRS=pintan
+
 
 AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 
-AM_CPPFLAGS = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) \
+AM_CPPFLAGS = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) $(aqbanking_includes) \
   -I$(srcdir)/../.. \
-  -I$(srcdir)/.. \
-  -I$(srcdir)/../libaqfints \
-  -I$(top_srcdir)/src/libs/aqbanking
+  -I$(srcdir)/..
 
 
-DEFS+=-DAF_FINTSDATADIR=\"$(aqbanking_data_searchdir)/aqbanking/backends/aqfints\"
+DEFS+=-DAH_XMLDATADIR=\"$(aqbanking_data_searchdir)/aqbanking/backends/aqfints\"
 
 
-noinst_LTLIBRARIES=libaqfintsbanking.la
+noinst_LTLIBRARIES=libaqfintssession.la
 
 
 typefiles=
@@ -30,7 +29,10 @@ built_sources=
 build_headers_priv=
 
 
+
 build_headers_pub=
+
+
 
 
 build_headers=$(build_headers_priv) $(build_headers_pub)
@@ -38,18 +40,36 @@ build_headers=$(build_headers_priv) $(build_headers_pub)
 
 
 noinst_HEADERS= $(build_headers) \
-  provider.h \
-  provider_l.h \
-  provider_p.h
+  s_decode.h \
+  s_decrypt.h \
+  s_decrypt_rdh.h \
+  s_message.h \
+  s_verify.h \
+  s_verify_rdh.h \
+  s_sign.h \
+  s_encrypt.h \
+  s_encode.h
 
 
 
-libaqfintsbanking_la_SOURCES=$(built_sources) \
-  provider.c
+libaqfintssession_la_SOURCES=$(built_sources) \
+  session.c \
+  s_getanonbpd.c \
+  s_message.c \
+  s_log.c \
+  s_decode.c \
+  s_decrypt.c \
+  s_decrypt_rdh.c \
+  s_verify.c \
+  s_verify_rdh.c \
+  s_sign.c \
+  s_encrypt.c \
+  s_encode.c
 
 
 
-libaqfintsbanking_la_LIBADD=control/libafcontrol.la
+libaqfintssession_la_LIBADD=\
+  pintan/libaqfintssession_pin.la
 
 
 
@@ -72,7 +92,7 @@ format_built_files:
 
 
 sources:
-	for f in $(libaqfintsbanking_la_SOURCES) $(EXTRA_DIST); do \
+	for f in $(libaqfintssession_la_SOURCES) $(EXTRA_DIST); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 	for d in $(SUBDIRS); do \
@@ -84,18 +104,17 @@ typefiles: $(typefiles)
 	for d in $(SUBDIRS); do \
 	  $(MAKE) -C $$d typefiles; \
 	done
-	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(gwenhywfar_dir)/share/gwenhywfar/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" $(typefiles)
+#	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(gwenhywfar_dir)/share/gwenhywfar/typemaker2/c -I $(srcdir) -I $(srcdir)../msglayer/parser -I $(srcdir)/../typemaker2 --destfolder="$(srcdir)" $(typefiles)
 
 typedefs: $(typefiles)
 	for d in $(SUBDIRS); do \
 	  $(MAKE) -C $$d typedefs; \
 	done
-	$(typemaker2_exe) --defs-only -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(gwenhywfar_dir)/share/gwenhywfar/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" $(typefiles)
-
+#	$(typemaker2_exe) --defs-only -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(gwenhywfar_dir)/share/gwenhywfar/typemaker2/c -I $(srcdir) -I $(srcdir)../msglayer/parser -I $(srcdir)/../typemaker2 --destfolder="$(srcdir)" $(typefiles)
 
 
 cppcheck:
-	for f in $(libaqfintsbanking_la_SOURCES); do \
+	for f in $(libaqfintssession_la_SOURCES); do \
 	  cppcheck --force $$f ; \
 	done
 	for d in $(SUBDIRS); do \

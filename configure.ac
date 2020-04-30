@@ -249,7 +249,7 @@ for f in ${aqbanking_backends}; do
       ;;
     aqfints)
       aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqfints"
-      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqfints/libaqfints.la"
+      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqfints/libaqfintsplugin.la"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQFINTS, 1, [plugin availability])
       ;;
     aqebics)
@@ -1327,17 +1327,18 @@ AC_CONFIG_FILES([
   src/libs/plugins/backends/aqebics/requests/Makefile
   src/libs/plugins/backends/aqfints/Makefile
   src/libs/plugins/backends/aqfints/aqfints.xml
-  src/libs/plugins/backends/aqfints/msglayer/Makefile
-  src/libs/plugins/backends/aqfints/msglayer/parser/Makefile
-  src/libs/plugins/backends/aqfints/servicelayer/Makefile
-  src/libs/plugins/backends/aqfints/servicelayer/xml/Makefile
-  src/libs/plugins/backends/aqfints/servicelayer/bpd/Makefile
-  src/libs/plugins/backends/aqfints/servicelayer/upd/Makefile
-  src/libs/plugins/backends/aqfints/transportlayer/Makefile
-  src/libs/plugins/backends/aqfints/sessionlayer/Makefile
-  src/libs/plugins/backends/aqfints/sessionlayer/pintan/Makefile
   src/libs/plugins/backends/aqfints/banking/Makefile
   src/libs/plugins/backends/aqfints/banking/control/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/msglayer/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/parser/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/servicelayer/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/servicelayer/xml/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/servicelayer/bpd/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/servicelayer/upd/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/transportlayer/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/sessionlayer/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/sessionlayer/pintan/Makefile
   src/test/Makefile
   src/tools/Makefile
   src/tools/aqbanking-cli/Makefile

@@ -15,8 +15,8 @@
 #include "logfile.h"
 
 #include "aqfints.h"
-#include "msglayer/parser/parser.h"
-#include "msglayer/parser/parser_dump.h"
+#include "parser/parser.h"
+#include "parser/parser_dump.h"
 #include "banking/provider_l.h"
 
 #include <gwenhywfar/text.h>

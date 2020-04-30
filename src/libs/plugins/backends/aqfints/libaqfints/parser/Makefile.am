@@ -1,55 +1,72 @@
-SUBDIRS=control
 
-AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
+AM_CFLAGS=@visibility_cflags@
 
-AM_CPPFLAGS = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) \
-  -I$(srcdir)/../.. \
-  -I$(srcdir)/.. \
-  -I$(srcdir)/../libaqfints \
-  -I$(top_srcdir)/src/libs/aqbanking
+AM_CPPFLAGS = -I$(top_srcdir)/src/lib -I$(top_builddir)/src/lib $(gwenhywfar_includes) -I$(srcdir)/../.. -I$(srcdir)/..
 
 
-DEFS+=-DAF_FINTSDATADIR=\"$(aqbanking_data_searchdir)/aqbanking/backends/aqfints\"
+DEFS+=-DAH_XMLDATADIR=\"$(aqbankservers_data_searchdir)/aqbankservers/fints\"
 
 
-noinst_LTLIBRARIES=libaqfintsbanking.la
+noinst_LTLIBRARIES=libaqfintsparser.la
 
 
-typefiles=
+typefiles=\
+  element.xml \
+  segment.xml \
+  jobdef.xml
 
 
 
 typedatadir=$(datadir)/aqbanking/typemaker2/c
-dist_typedata_DATA=
+dist_typedata_DATA=\
+  aqfints_element.tm2 aqfints_element_tree2.tm2 \
+  aqfints_segment.tm2 aqfints_segment_list.tm2 \
+  aqfints_jobdef.tm2 aqfints_jobdef_list.tm2
 
 
 
-built_sources=
+built_sources=  \
+  element.c \
+  segment.c \
+  jobdef.c
 
 
-build_headers_priv=
+build_headers_priv= \
+  element_p.h \
+  segment_p.h
 
 
-build_headers_pub=
+build_headers_pub= \
+  element.h \
+  segment.h \
+  jobdef.h
 
 
 build_headers=$(build_headers_priv) $(build_headers_pub)
 
 
 
-noinst_HEADERS= $(build_headers) \
-  provider.h \
-  provider_l.h \
-  provider_p.h
+noinst_HEADERS= $(build_headers)
+
+
+libaqfintsparser_la_SOURCES= $(built_sources) \
+  parser.c \
+  parser_xml.c \
+  parser_normalize.c \
+  parser_dump.c \
+  parser_hbci.c \
+  parser_dbread.c \
+  parser_dbwrite.c \
+  parser_internal.c
 
 
 
-libaqfintsbanking_la_SOURCES=$(built_sources) \
-  provider.c
+noinst_PROGRAMS = libtest
 
 
+libtest_SOURCES = libtest.c
+libtest_LDADD = libaqfintsparser.la $(gwenhywfar_libs)
 
-libaqfintsbanking_la_LIBADD=control/libafcontrol.la
 
 
 
@@ -72,12 +89,13 @@ format_built_files:
 
 
 sources:
-	for f in $(libaqfintsbanking_la_SOURCES) $(EXTRA_DIST); do \
+	for f in $(libaqfintsparser_la_SOURCES) $(EXTRA_DIST); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 	for d in $(SUBDIRS); do \
 	  $(MAKE) -C $$d sources; \
 	done
+
 
 
 typefiles: $(typefiles)
@@ -95,7 +113,7 @@ typedefs: $(typefiles)
 
 
 cppcheck:
-	for f in $(libaqfintsbanking_la_SOURCES); do \
+	for f in $(libaqfintsparser_la_SOURCES); do \
 	  cppcheck --force $$f ; \
 	done
 	for d in $(SUBDIRS); do \

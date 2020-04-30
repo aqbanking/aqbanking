@@ -1,4 +1,4 @@
-SUBDIRS=msglayer servicelayer transportlayer sessionlayer banking
+SUBDIRS=libaqfints banking
 
 AM_CPPFLAGS = -I$(srcdir) -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) -I$(srcdir)/..
 
@@ -9,31 +9,21 @@ EXTRA_DIST=aqfints.xml.in
 plugindir=@aqbanking_plugindir@/providers
 plugin_DATA=aqfints.xml
 
-noinst_HEADERS=provider_l.h provider_p.h
+noinst_HEADERS=
 
 # static plugin library
-noinst_LTLIBRARIES=libaqfints.la 
-libaqfints_la_SOURCES=provider.c
+noinst_LTLIBRARIES=libaqfintsplugin.la 
+libaqfintsplugin_la_SOURCES=dummy.c
 
 
-libaqfints_la_LIBADD=\
-  msglayer/libaqfintsmsg.la \
-  servicelayer/libaqfintsservice.la \
-  transportlayer/libaqfintstransport.la \
-  sessionlayer/libaqfintssession.la \
+libaqfintsplugin_la_LIBADD=\
+  libaqfints/libaqfints.la \
   banking/libaqfintsbanking.la
 
 
 
-noinst_PROGRAMS = libtest
-
-libtest_SOURCES = libtest.c
-libtest_LDADD = libaqfints.la $(top_builddir)/src/libs/aqbanking/libaqbanking_base.la $(gwenhywfar_libs) $(gmp_libs) $(i18n_libs)
-
-
-
 sources:
-	for f in $(libaqfints_la_SOURCES); do \
+	for f in $(libaqfintsplugin_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 	for f in $(plugin_DATA); do \
@@ -47,7 +37,7 @@ built_sources:
 
 
 cppcheck:
-	for f in $(libaqfints_la_SOURCES); do \
+	for f in $(libaqfintsplugin_la_SOURCES); do \
 	  cppcheck --force $$f ; \
 	done
 	for d in $(SUBDIRS); do \

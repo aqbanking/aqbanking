@@ -12,7 +12,7 @@
 
 
 #include "banking/provider.h"
-#include "msglayer/parser/parser.h"
+#include "parser/parser.h"
 
 
 AQFINTS_PARSER *AF_Provider_GetParser(AB_PROVIDER *pro);
