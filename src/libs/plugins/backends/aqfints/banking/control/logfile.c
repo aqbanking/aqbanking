@@ -303,7 +303,7 @@ int parseMessages(AB_PROVIDER *pro, GWEN_DB_NODE *dbMessages, int doListSegments
       if (sioDb) {
         rv=dumpSegmentListToDb(segmentList, dbHeader, sioDb);
         if (rv<0) {
-          DBG_INFO(AQFINTS_LOGDOMAIN, "Error writing DB data for segment list (%d)", rv);
+          DBG_ERROR(AQFINTS_LOGDOMAIN, "Error writing DB data for segment list (%d)", rv);
           //AQFINTS_Parser_DumpDefinitions(parser, 2);
           AQFINTS_Segment_List_free(segmentList);
           AQFINTS_Parser_free(parser);
@@ -314,7 +314,7 @@ int parseMessages(AB_PROVIDER *pro, GWEN_DB_NODE *dbMessages, int doListSegments
       if (doListSegments) {
         rv=listSegments(segmentList, dbHeader, bufSegmentList);
         if (rv<0) {
-          DBG_INFO(AQFINTS_LOGDOMAIN, "Error listing segment list (%d)", rv);
+          DBG_ERROR(AQFINTS_LOGDOMAIN, "Error listing segment list (%d)", rv);
           //AQFINTS_Parser_DumpDefinitions(parser, 2);
           AQFINTS_Segment_List_free(segmentList);
           AQFINTS_Parser_free(parser);

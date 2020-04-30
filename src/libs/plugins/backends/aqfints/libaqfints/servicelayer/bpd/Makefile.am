@@ -8,9 +8,6 @@ AM_CPPFLAGS = -I$(top_srcdir)/src/lib -I$(top_builddir)/src/lib $(gwenhywfar_inc
   $(all_includes)
 
 
-DEFS+=-DAH_XMLDATADIR=\"$(aqbankservers_data_searchdir)/aqbankservers/fints\"
-
-
 noinst_LTLIBRARIES=libafmsgbpd.la
 
 
@@ -26,7 +23,7 @@ typefiles= \
 
 
 
-fintsdatadir=$(aqbanking_pkgdatadir)/backends/aqfints
+fintsdatadir=$(aqfints_datadir)/fints
 fintsdata_DATA=\
   bpd.fints
 

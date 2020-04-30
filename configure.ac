@@ -282,7 +282,6 @@ AC_SUBST(aqbanking_plugins_backends_dirs)
 AC_SUBST(aqbanking_plugins_backends_libs)
 
 
-
 ###-------------------------------------------------------------------------
 #
 # ImExporters. Those do not have a required ordering.
@@ -667,6 +666,11 @@ fi
 
 AC_SUBST(aqbanking_data_searchdir)
 AC_MSG_RESULT($aqbanking_data_searchdir)
+
+
+# special variables for AqFinTS
+aqfints_datadir="\$(pkgdatadir)/backends/aqfints"
+AC_SUBST(aqfints_datadir)
 
 
 

@@ -7,9 +7,6 @@ AM_CPPFLAGS = -I$(top_srcdir)/src/lib -I$(top_builddir)/src/lib $(gwenhywfar_inc
   -I$(srcdir)/..
 
 
-DEFS+=-DAH_XMLDATADIR=\"$(aqbankservers_data_searchdir)/aqbankservers/fints\"
-
-
 noinst_LTLIBRARIES=libaqfintsservice.la
 
 

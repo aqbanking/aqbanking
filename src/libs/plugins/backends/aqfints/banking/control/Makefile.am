@@ -8,9 +8,6 @@ AM_CPPFLAGS = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_i
   -I$(top_srcdir)/src/libs/aqbanking
 
 
-DEFS+=-DAH_XMLDATADIR=\"$(aqbanking_data_searchdir)/aqbanking/backends/aqhbci\"
-
-
 noinst_LTLIBRARIES=libafcontrol.la
 
 
