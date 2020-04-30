@@ -14,11 +14,22 @@
 
 #include "transportlayer/transport.h"
 
+#include <gwenhywfar/httpsession.h>
+
+
 
 /**
  * Create a transport layer for HTTPS (used for PIN/TAN).
  */
 AQFINTS_TRANSPORT *AQFINTS_TransportSsl_new(const char *url);
+
+
+/**
+ * Create a transport layer for HTTPS using an already open http session.
+ *
+ * @param httpSession pointer to the open http session (will be taken over)
+ */
+AQFINTS_TRANSPORT *AQFINTS_TransportSsl_fromHttpSession(GWEN_HTTP_SESSION *httpSession);
 
 
 /**

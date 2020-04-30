@@ -78,6 +78,28 @@ AQFINTS_TRANSPORT *AQFINTS_TransportSsl_new(const char *url)
 
 
 
+AQFINTS_TRANSPORT *AQFINTS_TransportSsl_fromHttpSession(GWEN_HTTP_SESSION *httpSession)
+{
+  AQFINTS_TRANSPORT *trans;
+  AQFINTS_TRANSPORT_SSL *xtrans;
+
+  trans=AQFINTS_Transport_new();
+  GWEN_NEW_OBJECT(AQFINTS_TRANSPORT_SSL, xtrans);
+  GWEN_INHERIT_SETDATA(AQFINTS_TRANSPORT, AQFINTS_TRANSPORT_SSL, trans, xtrans, freeData);
+
+  /* set virtual functions */
+  AQFINTS_Transport_SetConnectFn(trans, transportConnect);
+  AQFINTS_Transport_SetDisconnectFn(trans, transportDisconnect);
+  AQFINTS_Transport_SetSendMessageFn(trans, transportSendMessage);
+  AQFINTS_Transport_SetReceiveMessageFn(trans, transportReceiveMessage);
+
+  xtrans->httpSession=httpSession;
+
+  return trans;
+}
+
+
+
 void GWENHYWFAR_CB freeData(void *bp, void *p)
 {
   AQFINTS_TRANSPORT_SSL *xtrans;

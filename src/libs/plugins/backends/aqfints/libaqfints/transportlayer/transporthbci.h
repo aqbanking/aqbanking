@@ -14,12 +14,19 @@
 
 #include "transportlayer/transport.h"
 
+#include <gwenhywfar/syncio.h>
+
+
 
 /**
  * Create a transport layer for traditional HBCI (port 3000).
  */
 AQFINTS_TRANSPORT *AQFINTS_TransportHbci_new(const char *url);
 
+/**
+ * Create a transport layer for traditional HBCI (port 3000) using an already open GWEN_SYNCIO.
+ */
+AQFINTS_TRANSPORT *AQFINTS_TransportHbci_fromSyncIo(GWEN_SYNCIO* sio);
 
 
 
