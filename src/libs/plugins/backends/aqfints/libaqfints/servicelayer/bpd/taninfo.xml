@@ -1,0 +1,149 @@
+<?xml?>
+
+<tm2>
+  <type id="AQFINTS_TANINFO" type="pointer">
+    <descr>
+      Content of a HIPINS segment.
+    </descr>
+    <lang id="c">
+      <identifier>AQFINTS_TANINFO</identifier>
+      <prefix>AQFINTS_TanInfo</prefix>
+
+      <baseFileName>taninfo</baseFileName>
+      
+      <flags>
+        with_db
+        with_list1
+        with_refcount
+      </flags>
+      
+      <headers>
+        <header type="sys"   loc="pre">libaqfints/aqfints.h</header>
+        <header type="local" loc="post">servicelayer/bpd/tanjobinfo.h</header>
+      </headers>
+      
+
+      <inlines>
+
+        <!-- addTanInfoJob -->
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_AddTanJobInfo($(struct_type) *st, AQFINTS_TANJOBINFO *tj);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             void $(struct_prefix)_AddTanJobInfo($(struct_type) *st, AQFINTS_TANJOBINFO *tj) {
+               if (st-&gt;tanJobInfoList==NULL)
+                 st-&gt;tanJobInfoList=AQFINTS_TanJobInfo_List_new();
+               AQFINTS_TanJobInfo_List_Add(tj, st-&gt;tanJobInfoList);
+             }
+          </content>
+        </inline>
+
+      </inlines>
+
+
+
+    </lang>
+
+    <defines>
+
+      <define id="AQFINTS_TANINFO_RTFLAGS" prefix="AQFINTS_TANINFO_RTFLAGS_">
+     </define>
+
+     <define id="AQFINTS_TANINFO_FLAGS" prefix="AQFINTS_TANINFO_FLAGS_">
+     </define>
+
+    </defines>
+
+    <enums>
+    </enums>
+
+
+
+    <members>
+
+      <member name="jobsPerMsg" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+      <member name="minSigs" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+      <member name="securityClass" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+      <member name="minPinLen" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+      <member name="maxPinLen" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+      <member name="maxTanLen" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+
+      <member name="userIdText" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="customerIdText" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="tanJobInfoList" type="AQFINTS_TANJOBINFO_LIST" >
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+
+
+
+      <member name="runtimeFlags" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>volatile with_flags</flags>
+        <access>public</access>
+      </member>
+
+      
+    </members>
+    
+  </type>
+  
+</tm2>

@@ -1,0 +1,126 @@
+<?xml?>
+
+<tm2>
+  <type id="AQFINTS_UPDJOB" type="pointer">
+    <descr>
+    </descr>
+    <lang id="c">
+      <identifier>AQFINTS_UPDJOB</identifier>
+      <prefix>AQFINTS_UpdJob</prefix>
+
+      <baseFileName>updjob</baseFileName>
+      
+      <flags>
+        with_db
+        with_list1
+        with_refcount
+      </flags>
+      
+      <headers>
+        <header type="sys"   loc="pre">libaqfints/aqfints.h</header>
+        <header type="sys" loc="pre">aqbanking/types/value.h</header>
+        <header type="sys"   loc="code">string.h</header>
+      </headers>
+      
+
+      <inlines>
+      </inlines>
+
+
+
+    </lang>
+
+    <defines>
+
+      <define id="AQFINTS_UPDJOB_RTFLAGS" prefix="AQFINTS_UPDJOB_RTFLAGS_">
+     </define>
+
+     <define id="AQFINTS_UPDJOB_FLAGS" prefix="AQFINTS_UPDJOB_FLAGS_">
+     </define>
+
+    </defines>
+
+    <enums>
+    </enums>
+
+
+
+    <members>
+  
+      <member name="flags" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>with_flags</flags>
+        <access>public</access>
+      </member>
+
+
+      <member name="code" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+      <member name="minSigs" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+
+      <group title="Limit">
+
+        <member name="limitType" type="int" maxlen="8" >
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+
+        <member name="limitValue" type="AB_VALUE" maxlen="256" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <default>NULL</default>
+          <preset>NULL</preset>
+        </member>
+  
+  
+        <member name="limitCurrency" type="char_ptr" maxlen="64" >
+          <default>NULL</default>
+          <preset>NULL</preset>
+          <access>public</access>
+          <flags>own</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+  
+        <member name="limitDays" type="int" maxlen="8" >
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+        </member>
+
+      </group>
+
+
+
+
+      <member name="runtimeFlags" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>volatile with_flags</flags>
+        <access>public</access>
+      </member>
+
+      
+    </members>
+    
+  </type>
+  
+</tm2>

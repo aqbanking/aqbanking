@@ -1,17 +1,27 @@
 
-AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
+AM_CFLAGS=@visibility_cflags@
 
-AM_CPPFLAGS = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) \
+AM_CPPFLAGS = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) $(aqbanking_includes) \
+  -I$(srcdir)/../../.. \
   -I$(srcdir)/../.. \
-  -I$(srcdir)/.. \
-  -I$(srcdir)/../../libaqfints \
-  -I$(top_srcdir)/src/libs/aqbanking
+  -I$(srcdir)/..
 
 
-noinst_LTLIBRARIES=libafcontrol.la
+noinst_LTLIBRARIES=libafmsgupd.la
 
 
-typefiles=
+typefiles= \
+  updjob.xml \
+  accountdata.xml \
+  userdata.xml
+
+
+
+fintsdatadir=$(aqfints_datadir)/fints
+fintsdata_DATA=\
+  upd.fints
+
+
 
 
 
@@ -20,26 +30,37 @@ dist_typedata_DATA=
 
 
 
-built_sources=
+built_sources=\
+  updjob.c \
+  accountdata.c \
+  userdata.c \
+  upd_read.c
 
 
-build_headers_priv=
+build_headers_priv=\
+  updjob_p.h \
+  accountdata_p.h \
+  userdata_p.h
 
-build_headers_pub=
+
+build_headers_pub=\
+  updjob.h \
+  accountdata.h \
+  userdata.h \
+  upd_read.h
+
 
 
 build_headers=$(build_headers_priv) $(build_headers_pub)
 
 
 
-noinst_HEADERS= $(build_headers) \
-  control.h \
-  logfile.h
+noinst_HEADERS= $(build_headers)
 
 
-libafcontrol_la_SOURCES= $(built_sources) \
-  control.c \
-  logfile.c
+libafmsgupd_la_SOURCES= $(built_sources)
+
+
 
 
 
@@ -62,7 +83,7 @@ format_built_files:
 
 
 sources:
-	for f in $(libafcontrol_la_SOURCES) $(EXTRA_DIST); do \
+	for f in $(libafmsgupd_la_SOURCES) $(EXTRA_DIST); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 	for d in $(SUBDIRS); do \
@@ -70,23 +91,22 @@ sources:
 	done
 
 
-
 typefiles: $(typefiles)
 	for d in $(SUBDIRS); do \
 	  $(MAKE) -C $$d typefiles; \
 	done
-	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(gwenhywfar_dir)/share/gwenhywfar/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" $(typefiles)
+	$(typemaker2_exe) -I $(aqbanking_dir)/share/aqbanking/aqbanking/typemaker2/c -I $(gwenhywfar_dir)/share/gwenhywfar/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" $(typefiles)
 
 typedefs: $(typefiles)
 	for d in $(SUBDIRS); do \
 	  $(MAKE) -C $$d typedefs; \
 	done
-	$(typemaker2_exe) --defs-only -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(gwenhywfar_dir)/share/gwenhywfar/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" $(typefiles)
+	$(typemaker2_exe) --defs-only -I $(aqbanking_dir)/share/aqbanking/aqbanking/typemaker2/c -I $(gwenhywfar_dir)/share/gwenhywfar/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" $(typefiles)
 
 
 
 cppcheck:
-	for f in $(libafcontrol_la_SOURCES); do \
+	for f in $(libafmsgupd_la_SOURCES); do \
 	  cppcheck --force $$f ; \
 	done
 	for d in $(SUBDIRS); do \

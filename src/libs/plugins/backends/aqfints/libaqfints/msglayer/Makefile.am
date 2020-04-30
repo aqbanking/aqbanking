@@ -1,21 +1,17 @@
-SUBDIRS=control
 
-AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
+AM_CFLAGS=@visibility_cflags@
 
 AM_CPPFLAGS = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) \
   -I$(srcdir)/../.. \
   -I$(srcdir)/.. \
-  -I$(srcdir)/../libaqfints \
-  -I$(top_srcdir)/src/libs/aqbanking
+  $(all_includes)
 
 
-DEFS+=-DAF_FINTSDATADIR=\"$(aqbanking_data_searchdir)/aqbanking/backends/aqfints/fints\"
+noinst_LTLIBRARIES=libaqfintsmsg.la
 
 
-noinst_LTLIBRARIES=libaqfintsbanking.la
-
-
-typefiles=
+typefiles=\
+  keydescr.xml
 
 
 
@@ -24,32 +20,27 @@ dist_typedata_DATA=
 
 
 
-built_sources=
+built_sources=\
+  keydescr.c
 
 
-build_headers_priv=
+build_headers_priv=\
+  keydescr_p.h
 
 
-build_headers_pub=
+build_headers_pub=\
+  keydescr.h
 
 
 build_headers=$(build_headers_priv) $(build_headers_pub)
 
 
 
-noinst_HEADERS= $(build_headers) \
-  provider.h \
-  provider_l.h \
-  provider_p.h
+noinst_HEADERS= $(build_headers)
 
 
-
-libaqfintsbanking_la_SOURCES=$(built_sources) \
-  provider.c
-
-
-
-libaqfintsbanking_la_LIBADD=control/libafcontrol.la
+libaqfintsmsg_la_SOURCES=$(built_sources) \
+  message.c
 
 
 
@@ -72,7 +63,7 @@ format_built_files:
 
 
 sources:
-	for f in $(libaqfintsbanking_la_SOURCES) $(EXTRA_DIST); do \
+	for f in $(libaqfintsmsg_la_SOURCES) $(EXTRA_DIST); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 	for d in $(SUBDIRS); do \
@@ -95,7 +86,7 @@ typedefs: $(typefiles)
 
 
 cppcheck:
-	for f in $(libaqfintsbanking_la_SOURCES); do \
+	for f in $(libaqfintsmsg_la_SOURCES); do \
 	  cppcheck --force $$f ; \
 	done
 	for d in $(SUBDIRS); do \

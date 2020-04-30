@@ -1,0 +1,115 @@
+<?xml?>
+
+<tm2>
+  <type id="AQFINTS_BANKDATA" type="pointer">
+    <descr>
+    </descr>
+    <lang id="c">
+      <identifier>AQFINTS_BANKDATA</identifier>
+      <prefix>AQFINTS_BankData</prefix>
+
+      <baseFileName>bankdata</baseFileName>
+      
+      <flags>
+        with_db
+        with_list1
+        with_refcount
+      </flags>
+      
+      <headers>
+        <header type="sys"   loc="pre">libaqfints/aqfints.h</header>
+      </headers>
+      
+
+      <inlines>
+      </inlines>
+
+
+
+    </lang>
+
+    <defines>
+
+      <define id="AQFINTS_BANKDATA_RTFLAGS" prefix="AQFINTS_BANKDATA_RTFLAGS_">
+     </define>
+
+     <define id="AQFINTS_BANKDATA_FLAGS" prefix="AQFINTS_BANKDATA_FLAGS_">
+     </define>
+
+    </defines>
+
+    <enums>
+    </enums>
+
+
+
+    <members>
+
+      <member name="version" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+  
+      <member name="bankName" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+      <member name="jobTypesPerMsg" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+      <member name="maxMsgSize" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+      <member name="minTimeout" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+      <member name="maxTimeout" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+
+      <member name="hbciVersions" type="int_array" maxlen="9" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+      <member name="languages" type="int_array" maxlen="9" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+
+
+      <member name="runtimeFlags" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>volatile with_flags</flags>
+        <access>public</access>
+      </member>
+
+      
+    </members>
+    
+  </type>
+  
+</tm2>

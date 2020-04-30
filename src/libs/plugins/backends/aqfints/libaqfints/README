@@ -1,0 +1,39 @@
+AqFinTS Backend
+
+This module was created in an attempt to create a test HBCI server, because it is
+not easy to get supported access to HBCI test servers at banks.
+
+This module is generic regarding its usability for client and server libraries/apps.
+The idea is to reuse the code for client and server code which may lead to a new FINTS module
+in the process.
+
+This module is shared across AqBanking and AqBankServers.
+
+
+parser
+------
+This folder contains the HBCI encoder/decoder.
+
+
+msglayer
+--------
+Code to organize segments into messages.
+
+
+servicelayer
+------------
+The module in this folder makes use of the HBCI codec and defines segments and
+jobs pertaining to the HBCI/FinTS protocol.
+
+
+sessionlayer
+------------
+Code in this folder handles encoding and decoding messages of the HBCI protocol including
+handling of the cryptographic mechanisms defined by that protocol (e.g. signing and encryption).
+
+
+transportlayer
+--------------
+This layer contains code for exchanging messages between clients and servers.
+
+
