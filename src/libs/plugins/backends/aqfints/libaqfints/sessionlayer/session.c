@@ -284,11 +284,11 @@ AQFINTS_MESSAGE *_exchangeMessagesInternal(AQFINTS_SESSION *sess, AQFINTS_MESSAG
 
 
 
-int AQFINTS_Session_FilloutKeyname(AQFINTS_SESSION *sess, AQFINTS_KEYDESCR *keyDescr)
+int AQFINTS_Session_FilloutKeyname(AQFINTS_SESSION *sess, AQFINTS_KEYDESCR *keyDescr, int mode)
 {
   assert(sess);
   if (sess->filloutKeynameFn)
-    return sess->filloutKeynameFn(sess, keyDescr);
+    return sess->filloutKeynameFn(sess, keyDescr, mode);
   else
     return GWEN_ERROR_NOT_IMPLEMENTED;
 }

@@ -73,7 +73,7 @@ int AQFINTS_Session_SignMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *message)
       sUserId=AQFINTS_KeyDescr_GetUserId(keyDescr);
 
       DBG_INFO(0, "User [%s]: Filling out keyname", sUserId?sUserId:"<empty>");
-      rv=AQFINTS_Session_FilloutKeyname(sess, keyDescr);
+      rv=AQFINTS_Session_FilloutKeyname(sess, keyDescr, AQFINTS_SESSION_CRYPTOP_SIGN);
       if (rv<0) {
         DBG_INFO(0, "here (%d)", rv);
         return rv;

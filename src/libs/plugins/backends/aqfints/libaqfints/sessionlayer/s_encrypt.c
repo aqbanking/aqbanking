@@ -37,13 +37,20 @@
 
 int AQFINTS_Session_EncryptMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *message)
 {
-  const AQFINTS_KEYDESCR *keyDescr;
+  AQFINTS_KEYDESCR *keyDescr;
   const char *sSecProfileCode;
+  int rv;
 
   keyDescr=AQFINTS_Message_GetCrypter(message);
   if (keyDescr==NULL) {
     DBG_ERROR(AQFINTS_LOGDOMAIN, "No crypter set");
     return GWEN_ERROR_GENERIC;
+  }
+
+  rv=AQFINTS_Session_FilloutKeyname(sess, keyDescr, AQFINTS_SESSION_CRYPTOP_ENCRYPT);
+  if (rv<0) {
+    DBG_INFO(0, "here (%d)", rv);
+    return rv;
   }
 
   sSecProfileCode=AQFINTS_KeyDescr_GetSecurityProfileName(keyDescr);
