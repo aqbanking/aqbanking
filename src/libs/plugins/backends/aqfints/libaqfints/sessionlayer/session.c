@@ -295,17 +295,15 @@ int AQFINTS_Session_FilloutKeyname(AQFINTS_SESSION *sess, AQFINTS_KEYDESCR *keyD
 
 
 
-GWEN_CRYPT_KEY *AQFINTS_Session_DecryptSessionKey(AQFINTS_SESSION *sess, AQFINTS_KEYDESCR *keyDescr,
-                                                  const char *secProfileName,
-                                                  int secProfileVersion,
+GWEN_CRYPT_KEY *AQFINTS_Session_DecryptSessionKey(AQFINTS_SESSION *sess,
+                                                  AQFINTS_KEYDESCR *keyDescr,
                                                   GWEN_CRYPT_PADDALGO *paddAlgo,
-                                                  const uint8_t *ptrEncryptedKey, uint32_t lenEncryptedKey)
+                                                  const uint8_t *ptrEncryptedKey,
+                                                  uint32_t lenEncryptedKey)
 {
   assert(sess);
   if (sess->decryptSessionKeyFn)
-    return sess->decryptSessionKeyFn(sess,
-                                     keyDescr, secProfileName, secProfileVersion, paddAlgo,
-                                     ptrEncryptedKey, lenEncryptedKey);
+    return sess->decryptSessionKeyFn(sess, keyDescr, paddAlgo, ptrEncryptedKey, lenEncryptedKey);
   else
     return NULL;
 }

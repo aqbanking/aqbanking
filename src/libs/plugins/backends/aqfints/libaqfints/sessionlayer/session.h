@@ -47,11 +47,32 @@ typedef AQFINTS_MESSAGE* GWENHYWFAR_CB(*AQFINTS_SESSION_EXCHANGEMESSAGES_FN)(AQF
 typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_FILLOUT_KEYDESCR_FN)(AQFINTS_SESSION *sess, AQFINTS_KEYDESCR *keyDescr);
 
 
-typedef GWEN_CRYPT_KEY *GWENHYWFAR_CB(*AQFINTS_SESSION_DECRYPT_SKEY_FN)(AQFINTS_SESSION *sess, AQFINTS_KEYDESCR *keyDescr,
-                                                                        const char *secProfileName,
-                                                                        int secProfileVersion,
+typedef GWEN_CRYPT_KEY *GWENHYWFAR_CB(*AQFINTS_SESSION_DECRYPT_SKEY_FN)(AQFINTS_SESSION *sess,
+                                                                        AQFINTS_KEYDESCR *keyDescr,
                                                                         GWEN_CRYPT_PADDALGO *paddAlgo,
-                                                                        const uint8_t *ptrEncryptedKey, uint32_t lenEncryptedKey);
+                                                                        const uint8_t *ptrEncryptedKey,
+                                                                        uint32_t lenEncryptedKey);
+
+typedef GWEN_BUFFER* GWENHYWFAR_CB(*AQFINTS_SESSION_ENCRYPT_SKEY_FN)(AQFINTS_SESSION *sess,
+                                                                     AQFINTS_KEYDESCR *keyDescr,
+                                                                     GWEN_CRYPT_PADDALGO *a,
+                                                                     const GWEN_CRYPT_KEY *key);
+
+typedef GWEN_BUFFER* GWENHYWFAR_CB(AQFINTS_SESSION_SIGN_FN)(AQFINTS_SESSION *sess,
+                                                            AQFINTS_KEYDESCR *keyDescr,
+                                                            GWEN_CRYPT_PADDALGO *a,
+                                                            const uint8_t *ptrInData,
+                                                            uint32_t inLen);
+
+typedef int GWENHYWFAR_CB(AQFINTS_SESSION_VERIFY_FN)(AQFINTS_SESSION *sess,
+                                                     AQFINTS_KEYDESCR *keyDescr,
+                                                     GWEN_CRYPT_PADDALGO *a,
+                                                     const uint8_t *pInData,
+                                                     uint32_t inLen,
+                                                     const uint8_t *ptrSignatureData,
+                                                     uint32_t signatureLen);
+
+
 
 typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_VERIFYPIN_FN)(AQFINTS_SESSION *sess, const AQFINTS_KEYDESCR *keyDescr, const char *pin);
 
@@ -154,11 +175,11 @@ int AQFINTS_Session_ReceiveMessage(AQFINTS_SESSION *sess, GWEN_BUFFER *buffer);
 
 int AQFINTS_Session_FilloutKeyname(AQFINTS_SESSION *sess, AQFINTS_KEYDESCR *keyDescr);
 
-GWEN_CRYPT_KEY *AQFINTS_Session_DecryptSessionKey(AQFINTS_SESSION *sess, AQFINTS_KEYDESCR *keyDescr,
-                                                  const char *secProfileName,
-                                                  int secProfileVersion,
+GWEN_CRYPT_KEY *AQFINTS_Session_DecryptSessionKey(AQFINTS_SESSION *sess,
+                                                  AQFINTS_KEYDESCR *keyDescr,
                                                   GWEN_CRYPT_PADDALGO *paddAlgo,
-                                                  const uint8_t *ptrEncryptedData, uint32_t lenEncryptedData);
+                                                  const uint8_t *ptrEncryptedData,
+                                                  uint32_t lenEncryptedData);
 
 int AQFINTS_Session_VerifyPin(AQFINTS_SESSION *sess, const AQFINTS_KEYDESCR *keyDescr, const char *pin);
 
