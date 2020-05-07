@@ -1107,7 +1107,7 @@ AC_MSG_RESULT($aqebics_datadir)
 if test "$with_aqebics" = "yes"; then
   AC_MSG_CHECKING(for build requirements needed by EBICS backend)
   AC_MSG_RESULT()
-  PKG_CHECK_MODULES(XMLSEC,  [xmlsec1-gnutls >= 1.0.0])
+  PKG_CHECK_MODULES(XMLSEC,  [xmlsec1 >= 1.0.0])
   PKG_CHECK_MODULES(LIBXML,  [libxml-2.0])
   PKG_CHECK_MODULES(LIBXSLT, [libxslt])
   AQEBICS_CFLAGS="$XMLSEC_CFLAGS $LIBXML_CFLAGS $LIBXSLT_CFLAGS"
