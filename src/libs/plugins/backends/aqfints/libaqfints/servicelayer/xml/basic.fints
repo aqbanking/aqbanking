@@ -17,7 +17,7 @@
 
     <GROUPdef id="result" version="1">
       <!-- Rueckmeldung -->
-      <DE  name="resultcode"        type="num" maxsize="4" />
+      <DE  name="resultcode"        type="num" maxsize="4" leftFill="1" />
       <DE  name="elementref"        type="an" maxsize="7" minnum="0" />
       <DE  name="text"              type="an" maxsize="80" />
       <DE  name="param"             type="ascii" maxsize="35" minnum="0" maxnum="10" />
