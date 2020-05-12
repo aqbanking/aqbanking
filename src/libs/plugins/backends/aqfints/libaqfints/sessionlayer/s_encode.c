@@ -57,7 +57,12 @@ GWEN_BUFFER *AQFINTS_Session_EncodeMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAG
   flags=AQFINTS_Segment_List_SampleFlags(segmentList);
 
   AQFINTS_Message_Reenumerate(message);
-  AQFINTS_Message_WriteSegments(message);
+
+  rv=AQFINTS_Session_WriteSegmentList(sess, segmentList);
+  if (rv<0) {
+    DBG_INFO(0, "here (%d)", rv);
+    return NULL;
+  }
 
   if (flags & AQFINTS_SEGMENT_FLAGS_SIGN) {
     DBG_INFO(AQFINTS_LOGDOMAIN, "Signing requested");

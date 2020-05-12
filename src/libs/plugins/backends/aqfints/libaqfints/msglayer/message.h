@@ -79,9 +79,6 @@ int AQFINTS_Message_GetFirstSegNum(const AQFINTS_MESSAGE *msg);
 int AQFINTS_Message_GetLastSegNum(const AQFINTS_MESSAGE *msg);
 
 
-void AQFINTS_Message_WriteSegments(const AQFINTS_MESSAGE *msg);
-
-
 /**
  * Code of the TAN-relevant segment (i.e. code of the segment for which a tan is needed).
  */

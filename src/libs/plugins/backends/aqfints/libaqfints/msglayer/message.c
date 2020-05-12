@@ -233,7 +233,8 @@ void AQFINTS_Message_Reenumerate(AQFINTS_MESSAGE *msg)
 
   assert(msg);
 
-  segNum=AQFINTS_KeyDescr_List_GetCount(msg->signerList)+1;
+  /* first segment number if 2 + number of signers (1 x HNHBK, n x HNSHK) */
+  segNum=AQFINTS_KeyDescr_List_GetCount(msg->signerList)+2;
   segment=AQFINTS_Segment_List_First(msg->segmentList);
   while (segment) {
     AQFINTS_Segment_SetSegmentNumber(segment, segNum++);
@@ -268,51 +269,6 @@ int AQFINTS_Message_GetLastSegNum(const AQFINTS_MESSAGE *msg)
     return AQFINTS_Segment_GetSegmentNumber(segment);
   return 0;
 }
-
-
-
-void AQFINTS_Message_WriteSegments(const AQFINTS_MESSAGE *msg)
-{
-  AQFINTS_SEGMENT *segment;
-
-  assert(msg);
-
-  while (segment) {
-    AQFINTS_Parser_Hbci_WriteSegment(segment);
-    segment=AQFINTS_Segment_List_Next(segment);
-  }
-}
-
-
-
-
-#if 0
-int AQFINTS_Message_AddSegment(AQFINTS_MESSAGE *msg,
-                               AQFINTS_SEGMENT *defSegment)
-{
-  AQFINTS_SEGMENT *segmentOut;
-  int rv;
-
-  segmentOut=AQFINTS_Segment_new();
-  rv=AQFINTS_Parser_Db_WriteSegment(defSegment, segmentOut, dbData);
-  if (rv<0) {
-    DBG_INFO(0, "here (%d)", rv);
-    AQFINTS_Segment_free(segmentOut);
-    return rv;
-  }
-  AQFINTS_Parser_Segment_RemoveTrailingEmptyElements(segmentOut);
-
-  AQFINTS_Parser_Hbci_WriteSegment(segmentOut, msg->buffer);
-
-  AQFINTS_Segment_free(segmentOut);
-  return 0;
-}
-#endif
-
-
-
-
-
 
 
 

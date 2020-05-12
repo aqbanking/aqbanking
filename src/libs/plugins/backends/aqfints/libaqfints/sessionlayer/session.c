@@ -370,18 +370,13 @@ AQFINTS_SESSION_DECRYPT_SKEY_FN AQFINTS_Session_SetDecryptKeySessionFn(AQFINTS_S
 
 
 
-int AQFINTS_Session_WriteSegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIST *segmentList,
-                                     int firstSegNum, int refSegNum)
+int AQFINTS_Session_WriteSegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIST *segmentList)
 {
   AQFINTS_SEGMENT *segment;
-  int segNum=firstSegNum;
 
   segment=AQFINTS_Segment_List_First(segmentList);
   while (segment) {
     int rv;
-
-    AQFINTS_Segment_SetSegmentNumber(segment, segNum++);
-    AQFINTS_Segment_SetRefSegmentNumber(segment, refSegNum);
 
     rv=AQFINTS_Session_WriteSegment(sess, segment);
     if (rv<0) {
