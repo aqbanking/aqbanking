@@ -163,7 +163,7 @@
       <DE      name="storno"            type="ascii" maxsize="1" minnum="0" />
       <DEG     name="smsAccount"        type="kti" version="1" minnum="0" />
       <DE      name="challengeClass"    type="num" maxsize="2" minnum="0" />
-      <DEF     name="challengeParams"   type="challengeParams" version="1" minnum="0" />
+      <DEG     name="challengeParams"   type="challengeParams" version="1" minnum="0" />
       <DE      name="tanMediumId"       type="ascii" maxsize="32" minnum="0" />
     </SEGdef>
    
