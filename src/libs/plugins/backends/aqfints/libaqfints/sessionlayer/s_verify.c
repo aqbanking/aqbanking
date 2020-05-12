@@ -165,7 +165,7 @@ int _verifySegment(AQFINTS_SESSION *sess,
     int rv;
 
     DBG_INFO(AQFINTS_LOGDOMAIN, "Selected security profile is \"%s\" (version %d)", s, v);
-    if (strcasecmp(s, "PINTAN")==0)
+    if (strcasecmp(s, "PIN")==0)
       rv=AQFINTS_Session_VerifySegmentsPinTan(sess, segSigHead, segSigTail, segFirstSigned, segLastSigned, v, keyDescr);
     else if (strcasecmp(s, "RDH")==0)
       rv=AQFINTS_Session_VerifySegmentsRdh(sess, segSigHead, segSigTail, segFirstSigned, segLastSigned, v, keyDescr);

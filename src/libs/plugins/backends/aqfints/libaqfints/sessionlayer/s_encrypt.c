@@ -57,7 +57,7 @@ int AQFINTS_Session_EncryptMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *messa
   if (sSecProfileCode && *sSecProfileCode) {
     int rv;
 
-    if (strcasecmp(sSecProfileCode, "PINTAN")==0)
+    if (strcasecmp(sSecProfileCode, "PIN")==0)
       rv=AQFINTS_Session_EncryptMessagePinTan(sess, message);
     else {
       DBG_ERROR(AQFINTS_LOGDOMAIN, "Unhandled security profile \"%s\"", sSecProfileCode);

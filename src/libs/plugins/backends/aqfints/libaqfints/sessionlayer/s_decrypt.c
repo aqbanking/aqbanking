@@ -90,7 +90,7 @@ int AQFINTS_Session_DecryptSegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LI
       DBG_ERROR(AQFINTS_LOGDOMAIN, "No message data");
       return GWEN_ERROR_INVALID;
     }
-    segCryptHead=segment;
+    segCryptData=segment;
 
     segment=AQFINTS_Segment_List_Next(segment);
     if (segment==NULL)
@@ -162,7 +162,7 @@ int _decryptSegment(AQFINTS_SESSION *sess,
     int rv;
 
     DBG_INFO(AQFINTS_LOGDOMAIN, "Selected security profile is \"%s\" (version %d)", s, v);
-    if (strcasecmp(s, "PINTAN")==0)
+    if (strcasecmp(s, "PIN")==0)
       rv=AQFINTS_Session_DecryptSegmentPinTan(sess, segCryptHead, segCryptData, v, keyDescr, segmentList);
     else if (strcasecmp(s, "RDH")==0)
       rv=AQFINTS_Session_DecryptSegmentRdh(sess, segCryptHead, segCryptData, v, keyDescr, segmentList);

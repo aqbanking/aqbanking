@@ -111,6 +111,7 @@ int AQFINTS_Parser_ReadFiles(AQFINTS_PARSER *parser)
     if (s && *s) {
       int rv;
 
+      DBG_ERROR(AQFINTS_LOGDOMAIN, "Reading parser file %s", s);
       rv=AQFINTS_Parser_Xml_ReadFile(parser->jobDefList, parser->segmentList, groupTree, s);
       if (rv<0) {
         DBG_ERROR(0, "Error reading file \"%s\" (%d), ignoring", s, rv);

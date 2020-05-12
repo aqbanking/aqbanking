@@ -120,7 +120,7 @@ int _signSegment(AQFINTS_SESSION *sess,
   if (sSecProfileCode && *sSecProfileCode) {
     int rv;
 
-    if (strcasecmp(sSecProfileCode, "PINTAN")==0)
+    if (strcasecmp(sSecProfileCode, "PIN")==0)
       rv=AQFINTS_Session_SignSegmentPinTan(sess, message, keyDescr, segFirstToSign, segLastToSign, sigHeadNum, sigTailNum);
     else {
       DBG_ERROR(AQFINTS_LOGDOMAIN, "Unhandled security profile \"%s\"", sSecProfileCode);

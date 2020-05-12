@@ -19,6 +19,7 @@
 #include "sessionlayer/s_verify.h"
 
 #include "parser/parser.h"
+#include "parser/parser_dump.h"
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
@@ -55,6 +56,7 @@ AQFINTS_MESSAGE *AQFINTS_Session_DecodeMessage(AQFINTS_SESSION *sess, const uint
   segmentList=AQFINTS_Message_GetSegmentList(message);
 
   /* parse HBCI message into a segment list */
+  DBG_ERROR(AQFINTS_LOGDOMAIN, "Reading message into segment list");
   rv=AQFINTS_Parser_ReadIntoSegmentList(parser, segmentList, ptrBuffer, lenBuffer);
   if (rv<0) {
     DBG_ERROR(0, "here (%d)", rv);
@@ -63,6 +65,7 @@ AQFINTS_MESSAGE *AQFINTS_Session_DecodeMessage(AQFINTS_SESSION *sess, const uint
   }
 
   /* interprete segment list and extract data */
+  DBG_ERROR(AQFINTS_LOGDOMAIN, "Reading segment list into dbs");
   rv=AQFINTS_Parser_ReadSegmentListToDb(parser, segmentList);
   if (rv<0) {
     DBG_ERROR(0, "here (%d)", rv);
@@ -70,7 +73,13 @@ AQFINTS_MESSAGE *AQFINTS_Session_DecodeMessage(AQFINTS_SESSION *sess, const uint
     return NULL;
   }
 
+#if 0
+  DBG_ERROR(AQFINTS_LOGDOMAIN, "Received this segment list:");
+  AQFINTS_Parser_DumpSegmentList(segmentList, 2);
+#endif
+
   /* read basic message info from message head */
+  DBG_ERROR(AQFINTS_LOGDOMAIN, "Reading basic message info from db");
   rv=_setMessageInfoFromHeadSegment(message, segmentList);
   if (rv<0) {
     DBG_ERROR(0, "here (%d)", rv);
@@ -112,17 +121,20 @@ AQFINTS_KEYDESCR *AQFINTS_Session_ReadKeyDescrFromDbHead(GWEN_DB_NODE *dbHead)
   dbKey=GWEN_DB_GetGroup(dbHead, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "key");
   if (dbKey==NULL) {
     DBG_ERROR(AQFINTS_LOGDOMAIN, "No keyDescr in segment");
+    GWEN_DB_Dump(dbHead, 2);
     return NULL;
   }
   dbSecDetails=GWEN_DB_GetGroup(dbHead, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "secDetails");
   if (dbSecDetails==NULL) {
     DBG_ERROR(AQFINTS_LOGDOMAIN, "No security details in segment");
+    GWEN_DB_Dump(dbHead, 2);
     return NULL;
   }
 
   dbSecProfile=GWEN_DB_GetGroup(dbHead, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "secProfile");
   if (dbSecProfile==NULL) {
     DBG_ERROR(AQFINTS_LOGDOMAIN, "No security profile info in segment");
+    GWEN_DB_Dump(dbHead, 2);
     return NULL;
   }
 
