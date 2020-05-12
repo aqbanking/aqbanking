@@ -14,6 +14,7 @@
 
 
 #include "./session.h"
+#include "s_message.h"
 
 #include "servicelayer/bpd/bpd_read.h"
 
@@ -156,6 +157,7 @@ int mkGetAnonBpdMessage(AQFINTS_SESSION *sess, const char *bankCode, GWEN_BUFFER
   assert(segment);
 
   rv=AQFINTS_Session_WrapMessageHeadAndTail(sess, segmentList,
+                                            AQFINTS_Message_GetDialogId(message),
                                             AQFINTS_Message_GetMessageNumber(message),
                                             AQFINTS_Message_GetRefMessageNumber(message),
                                             AQFINTS_Segment_GetSegmentNumber(segment));

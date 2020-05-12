@@ -19,6 +19,7 @@
 
 int AQFINTS_Session_WrapMessageHeadAndTail(AQFINTS_SESSION *sess,
                                            AQFINTS_SEGMENT_LIST *segmentList,
+                                           const char *dialogId,
                                            int msgNum, int refMsgNum, int lastSegNum);
 
 

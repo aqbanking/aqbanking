@@ -13,7 +13,7 @@
 #endif
 
 
-#include "sessionlayer/session.h"
+#include "s_message.h"
 #include "parser/parser.h"
 
 #include <gwenhywfar/misc.h>
@@ -26,7 +26,9 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-static AQFINTS_SEGMENT *createMessageHead(AQFINTS_SESSION *sess, int msgNum, int refMsgNum,
+static AQFINTS_SEGMENT *createMessageHead(AQFINTS_SESSION *sess,
+                                          const char *dialogId,
+                                          int msgNum, int refMsgNum,
                                           int sizeOfMessageWithoutHead);
 static AQFINTS_SEGMENT *createMessageTail(AQFINTS_SESSION *sess, int msgNum, int segNum);
 
@@ -42,6 +44,7 @@ static AQFINTS_SEGMENT *createMessageTail(AQFINTS_SESSION *sess, int msgNum, int
 
 int AQFINTS_Session_WrapMessageHeadAndTail(AQFINTS_SESSION *sess,
                                            AQFINTS_SEGMENT_LIST *segmentList,
+                                           const char *dialogId,
                                            int msgNum, int refMsgNum, int lastSegNum)
 {
   int msgSizeWithoutHead;
@@ -59,7 +62,7 @@ int AQFINTS_Session_WrapMessageHeadAndTail(AQFINTS_SESSION *sess,
   msgSizeWithoutHead=AQFINTS_Segment_List_SampleSizes(segmentList);
 
   /* create and insert msg tail */
-  segment=createMessageHead(sess, msgNum, refMsgNum, msgSizeWithoutHead);
+  segment=createMessageHead(sess, dialogId, msgNum, refMsgNum, msgSizeWithoutHead);
   if (segment==NULL) {
     DBG_ERROR(0, "here");
     return GWEN_ERROR_INTERNAL;
@@ -72,27 +75,26 @@ int AQFINTS_Session_WrapMessageHeadAndTail(AQFINTS_SESSION *sess,
 
 
 
-AQFINTS_SEGMENT *createMessageHead(AQFINTS_SESSION *sess, int msgNum, int refMsgNum, int sizeOfMessageWithoutHead)
+AQFINTS_SEGMENT *createMessageHead(AQFINTS_SESSION *sess,
+                                   const char *dialogId,
+                                   int msgNum, int refMsgNum, int sizeOfMessageWithoutHead)
 {
   AQFINTS_PARSER *parser;
   int hbciVersion;
   AQFINTS_SEGMENT *defSegment;
   AQFINTS_SEGMENT *segment;
   GWEN_DB_NODE *dbSegment;
-  const char *dialogId;
   uint32_t segSize;
   int rv;
 
   parser=AQFINTS_Session_GetParser(sess);
   hbciVersion=AQFINTS_Session_GetHbciVersion(sess);
 
-  dialogId=AQFINTS_Session_GetDialogId(sess);
-
   /* HNHBK */
   defSegment=AQFINTS_Parser_FindSegmentHighestVersionForProto(parser, "HNHBK", hbciVersion);
   if (defSegment==NULL) {
     DBG_ERROR(0, "No matching definition segment found for HNHBK (proto=%d)", hbciVersion);
-    return NULL;;
+    return NULL;
   }
 
   segment=AQFINTS_Segment_new();

@@ -79,6 +79,7 @@ GWEN_BUFFER *AQFINTS_Session_EncodeMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAG
   }
 
   rv=AQFINTS_Session_WrapMessageHeadAndTail(sess, segmentList,
+                                            AQFINTS_Message_GetDialogId(message),
                                             AQFINTS_Message_GetMessageNumber(message),
                                             AQFINTS_Message_GetRefMessageNumber(message),
                                             lastSegNum);

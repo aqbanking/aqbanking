@@ -242,10 +242,6 @@ int AQFINTS_Session_WriteSegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIST
 int AQFINTS_Session_WriteSegment(AQFINTS_SESSION *sess, AQFINTS_SEGMENT *segment);
 
 
-int AQFINTS_Session_WrapMessageHeadAndTail(AQFINTS_SESSION *sess,
-                                           AQFINTS_SEGMENT_LIST *segmentList,
-                                           int msgNum, int refMsgNum, int lastSegNum);
-
 AQFINTS_BPD *AQFINTS_Session_ExtractBpdFromSegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIST *segmentList);
 AQFINTS_USERDATA_LIST *AQFINTS_Session_ExtractUpdFromSegmentList(AQFINTS_SESSION *sess,
                                                                  AQFINTS_SEGMENT_LIST *segmentList);
