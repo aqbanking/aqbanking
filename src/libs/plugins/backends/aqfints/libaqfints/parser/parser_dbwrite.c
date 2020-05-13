@@ -28,6 +28,7 @@ static int writeDegSequence(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT 
 static int writeDegGroup(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDataParent, GWEN_DB_NODE *db);
 static int writeDeg(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDataParent, GWEN_DB_NODE *db);
 static int writeDeGroup(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDataParent, GWEN_DB_NODE *db);
+static int writeDeSequence(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDataParent, GWEN_DB_NODE *db);
 static int writeElement(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDataParent, GWEN_DB_NODE *db);
 static int writeCharElement(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDataParent, GWEN_DB_NODE *db);
 static int writeIntElement(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDataParent, GWEN_DB_NODE *db);
@@ -168,15 +169,82 @@ int writeDegGroup(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDa
 
 int writeDeg(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDataParent, GWEN_DB_NODE *db)
 {
-  AQFINTS_ELEMENT *elementData;
+  AQFINTS_ELEMENT *childDefinitionData;
+  int minNum;
+  int maxNum;
+  const char *sDbName;
+  int rv;
 
-  elementData=AQFINTS_Element_new();
-  AQFINTS_Element_SetElementType(elementData, AQFINTS_ElementType_Deg);
-  AQFINTS_Element_SetTrustLevel(elementData, AQFINTS_Element_GetTrustLevel(elementDefinition));
-  AQFINTS_Element_Tree2_AddChild(elementDataParent, elementData);
+  minNum=AQFINTS_Element_GetMinNum(elementDefinition);
+  maxNum=AQFINTS_Element_GetMaxNum(elementDefinition);
+  sDbName=AQFINTS_Element_GetName(elementDefinition);
 
-  return writeDeGroup(elementDefinition, elementData, db);
+  childDefinitionData=AQFINTS_Element_Tree2_GetFirstChild(elementDefinition);
+  if (childDefinitionData==NULL) {
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "Definition has no children");
+    return GWEN_ERROR_BAD_DATA;
+  }
+
+  if (sDbName && *sDbName) {
+    GWEN_DB_NODE *dbForGroup;
+    int idx=0;
+
+    dbForGroup=GWEN_DB_FindFirstGroup(db, sDbName);
+    while (dbForGroup) {
+      AQFINTS_ELEMENT *elementData;
+
+      if (maxNum && idx>=maxNum) {
+        DBG_ERROR(AQFINTS_LOGDOMAIN, "Too many elements in DB (%d < %d)", idx, maxNum);
+        return GWEN_ERROR_BAD_DATA;
+      }
+
+      elementData=AQFINTS_Element_new();
+      AQFINTS_Element_SetElementType(elementData, AQFINTS_ElementType_Deg);
+      AQFINTS_Element_SetTrustLevel(elementData, AQFINTS_Element_GetTrustLevel(elementDefinition));
+      AQFINTS_Element_Tree2_AddChild(elementDataParent, elementData);
+
+      rv=writeDeSequence(childDefinitionData, elementData, dbForGroup);
+      if (rv<0) {
+        DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+
+      idx++;
+
+      dbForGroup=GWEN_DB_FindNextGroup(dbForGroup, sDbName);
+    }
+    if (minNum && idx<minNum) {
+      DBG_ERROR(AQFINTS_LOGDOMAIN, "Too few elements in DB (%d < %d) [%s]", idx, minNum, sDbName?sDbName:"");
+      return GWEN_ERROR_BAD_DATA;
+    }
+  }
+  else {
+    AQFINTS_ELEMENT *elementData;
+
+   /* if no deg name given the occurrence must be 0 or 1 (i.e. maxNum=1)
+     * because with no group name we wouldn't know how to determine the number of instances
+     * of the group to generate
+     */
+    if (maxNum!=1) {
+      DBG_ERROR(AQFINTS_LOGDOMAIN, "Definition has no name while maxNum!=1");
+      return GWEN_ERROR_BAD_DATA;
+    }
+
+    elementData=AQFINTS_Element_new();
+    AQFINTS_Element_SetElementType(elementData, AQFINTS_ElementType_Deg);
+    AQFINTS_Element_SetTrustLevel(elementData, AQFINTS_Element_GetTrustLevel(elementDefinition));
+    AQFINTS_Element_Tree2_AddChild(elementDataParent, elementData);
+
+    rv=writeDeSequence(childDefinitionData, elementData, db);
+    if (rv<0) {
+      DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
+  return 0;
 }
+
 
 
 
