@@ -13,11 +13,11 @@
 
 
 #include "sessionlayer/session.h"
-#include "parser/segment.h"
+#include "msglayer/message.h"
 
 
 
-int AQFINTS_Session_VerifySegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIST *segmentList);
+int AQFINTS_Session_VerifyMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *message);
 
 #endif
 

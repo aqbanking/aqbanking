@@ -89,7 +89,7 @@ AQFINTS_MESSAGE *AQFINTS_Session_DecodeMessage(AQFINTS_SESSION *sess, const uint
 
 
   /* decrypt message, if necessary */
-  rv=AQFINTS_Session_DecryptSegmentList(sess, segmentList);
+  rv=AQFINTS_Session_DecryptMessage(sess, message);
   if (rv<0) {
     DBG_ERROR(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     AQFINTS_Message_free(message);
@@ -97,7 +97,7 @@ AQFINTS_MESSAGE *AQFINTS_Session_DecodeMessage(AQFINTS_SESSION *sess, const uint
   }
 
   /* verify signatures, if any */
-  rv=AQFINTS_Session_VerifySegmentList(sess, segmentList);
+  rv=AQFINTS_Session_VerifyMessage(sess, message);
   if (rv<0) {
     DBG_ERROR(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     AQFINTS_Message_free(message);

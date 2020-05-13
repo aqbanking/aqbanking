@@ -28,11 +28,12 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-static int _verifySegment(AQFINTS_SESSION *sess,
+static int _verifyMessage(AQFINTS_SESSION *sess,
                           AQFINTS_SEGMENT *segSigHead,
                           AQFINTS_SEGMENT *segSigTail,
                           AQFINTS_SEGMENT *segFirstSigned,
-                          AQFINTS_SEGMENT *segLastSigned);
+                          AQFINTS_SEGMENT *segLastSigned,
+                          AQFINTS_MESSAGE *message);
 static int _verifySegmentsRah(AQFINTS_SESSION *sess,
                               AQFINTS_SEGMENT *segSigHead,
                               AQFINTS_SEGMENT *segSigTail,
@@ -64,13 +65,15 @@ static AQFINTS_SEGMENT *_getLastSignedSegment(AQFINTS_SEGMENT *segment);
 
 
 
-int AQFINTS_Session_VerifySegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIST *segmentList)
+int AQFINTS_Session_VerifyMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *message)
 {
+  AQFINTS_SEGMENT_LIST *segmentList;
   AQFINTS_SEGMENT *segSigHead;
   AQFINTS_SEGMENT *segFirstSigned;
   AQFINTS_SEGMENT *segLastSigned;
   AQFINTS_SEGMENT *segment;
 
+  segmentList=AQFINTS_Message_GetSegmentList(message);
   segSigHead=_getFirstSegmentByCode(segmentList, "HNSHK");
   if (segSigHead==NULL) {
     DBG_INFO(AQFINTS_LOGDOMAIN, "No signatures in segment list");
@@ -109,7 +112,7 @@ int AQFINTS_Session_VerifySegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIS
       return GWEN_ERROR_BAD_DATA;
     }
 
-    rv=_verifySegment(sess, segSigHead, segSigTail, segFirstSigned, segLastSigned);
+    rv=_verifyMessage(sess, segSigHead, segSigTail, segFirstSigned, segLastSigned, message);
     if (rv<0) {
       DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -133,11 +136,12 @@ int AQFINTS_Session_VerifySegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIS
 
 
 
-int _verifySegment(AQFINTS_SESSION *sess,
+int _verifyMessage(AQFINTS_SESSION *sess,
                    AQFINTS_SEGMENT *segSigHead,
                    AQFINTS_SEGMENT *segSigTail,
                    AQFINTS_SEGMENT *segFirstSigned,
-                   AQFINTS_SEGMENT *segLastSigned)
+                   AQFINTS_SEGMENT *segLastSigned,
+                   AQFINTS_MESSAGE *message)
 {
   GWEN_DB_NODE *dbSigHead;
   GWEN_DB_NODE *dbSigTail;
@@ -178,15 +182,17 @@ int _verifySegment(AQFINTS_SESSION *sess,
       AQFINTS_KeyDescr_free(keyDescr);
       return GWEN_ERROR_BAD_DATA;
     }
-    AQFINTS_KeyDescr_free(keyDescr);
     if (rv<0) {
       DBG_ERROR(0, "here (%d)", rv);
+      AQFINTS_KeyDescr_free(keyDescr);
       return rv;
     }
+    AQFINTS_Message_AddSigner(message, keyDescr);
     return 0;
   }
   else {
     DBG_ERROR(AQFINTS_LOGDOMAIN, "Missing security profile code");
+    AQFINTS_KeyDescr_free(keyDescr);
     return GWEN_ERROR_BAD_DATA;
   }
 }

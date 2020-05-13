@@ -29,10 +29,10 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-static int _decryptSegment(AQFINTS_SESSION *sess,
+static int _decryptMessage(AQFINTS_SESSION *sess,
                            AQFINTS_SEGMENT *segCryptHead,
                            AQFINTS_SEGMENT *segCryptData,
-                           AQFINTS_SEGMENT_LIST *segmentList);
+                           AQFINTS_MESSAGE *message);
 static int _decryptSegmentRah(AQFINTS_SESSION *sess,
                               AQFINTS_SEGMENT *segCryptHead,
                               AQFINTS_SEGMENT *segCryptData,
@@ -56,11 +56,13 @@ static int _decryptSegmentDdv(AQFINTS_SESSION *sess,
 
 
 
-int AQFINTS_Session_DecryptSegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIST *segmentList)
+int AQFINTS_Session_DecryptMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *message)
 {
+  AQFINTS_SEGMENT_LIST *segmentList;
   AQFINTS_SEGMENT *segment;
   const char *sCode;
 
+  segmentList=AQFINTS_Message_GetSegmentList(message);
   segment=AQFINTS_Segment_List_First(segmentList);
   if (segment==NULL)
     return GWEN_ERROR_NO_DATA;
@@ -107,7 +109,7 @@ int AQFINTS_Session_DecryptSegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LI
       return GWEN_ERROR_INVALID;
     }
 
-    rv=_decryptSegment(sess, segCryptHead, segCryptData, segmentList);
+    rv=_decryptMessage(sess, segCryptHead, segCryptData, message);
     if (rv<0) {
       DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -141,16 +143,18 @@ int AQFINTS_Session_DecryptSegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LI
 
 
 
-int _decryptSegment(AQFINTS_SESSION *sess,
+int _decryptMessage(AQFINTS_SESSION *sess,
                     AQFINTS_SEGMENT *segCryptHead,
                     AQFINTS_SEGMENT *segCryptData,
-                    AQFINTS_SEGMENT_LIST *segmentList)
+                    AQFINTS_MESSAGE *message)
 {
+  AQFINTS_SEGMENT_LIST *segmentList;
   GWEN_DB_NODE *dbCryptHead;
   AQFINTS_KEYDESCR *keyDescr;
   const char *s;
   int v;
 
+  segmentList=AQFINTS_Message_GetSegmentList(message);
   dbCryptHead=AQFINTS_Segment_GetDbData(segCryptHead);
   assert(dbCryptHead);
 
@@ -175,15 +179,17 @@ int _decryptSegment(AQFINTS_SESSION *sess,
       AQFINTS_KeyDescr_free(keyDescr);
       return GWEN_ERROR_BAD_DATA;
     }
-    AQFINTS_KeyDescr_free(keyDescr);
     if (rv<0) {
       DBG_ERROR(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+      AQFINTS_KeyDescr_free(keyDescr);
       return rv;
     }
+    AQFINTS_Message_SetCrypter(message, keyDescr);
     return 0;
   }
   else {
     DBG_ERROR(AQFINTS_LOGDOMAIN, "Missing security profile code");
+    AQFINTS_KeyDescr_free(keyDescr);
     return GWEN_ERROR_BAD_DATA;
   }
 }

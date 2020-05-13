@@ -14,12 +14,12 @@
 
 #include "./session.h"
 
-#include "parser/segment.h"
+#include "msglayer/message.h"
 
 
 
 
-int AQFINTS_Session_DecryptSegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIST *segmentList);
+int AQFINTS_Session_DecryptMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *message);
 
 
 #endif
