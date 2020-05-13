@@ -74,6 +74,8 @@ void AQFINTS_Message_AddSegment(AQFINTS_MESSAGE *msg, AQFINTS_SEGMENT *segment);
 
 
 void AQFINTS_Message_Reenumerate(AQFINTS_MESSAGE *msg);
+void AQFINTS_Message_MoveResultSegsToFront(AQFINTS_MESSAGE *msg);
+
 
 int AQFINTS_Message_GetFirstSegNum(const AQFINTS_MESSAGE *msg);
 int AQFINTS_Message_GetLastSegNum(const AQFINTS_MESSAGE *msg);

@@ -34,7 +34,7 @@
 
     <GROUPdef id="needtan" version="1">
       <!-- "Angabe: Braucht Geschaeftsvorfall TAN?" -->
-      <DE      name="job"            type="an"       maxsize="6" />
+      <DE      name="code"           type="an"       maxsize="6" />
       <DE      name="needTan"        type="an"       maxsize="1" />
     </GROUPdef>
 

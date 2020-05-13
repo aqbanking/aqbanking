@@ -56,6 +56,7 @@ GWEN_BUFFER *AQFINTS_Session_EncodeMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAG
 
   flags=AQFINTS_Segment_List_SampleFlags(segmentList);
 
+  AQFINTS_Message_MoveResultSegsToFront(message);
   AQFINTS_Message_Reenumerate(message);
 
   rv=AQFINTS_Session_WriteSegmentList(sess, segmentList);

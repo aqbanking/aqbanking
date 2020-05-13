@@ -29,6 +29,24 @@
 
 
 
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static void _moveSegmentsBetweenLists(AQFINTS_SEGMENT_LIST *segmentList1, AQFINTS_SEGMENT_LIST *segmentList2);
+static void _moveSegmentsByCodeBetweenLists(AQFINTS_SEGMENT_LIST *segmentList1, AQFINTS_SEGMENT_LIST *segmentList2, const char *code);
+
+
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
 AQFINTS_MESSAGE *AQFINTS_Message_new(void)
 {
   AQFINTS_MESSAGE *msg;
@@ -233,7 +251,7 @@ void AQFINTS_Message_Reenumerate(AQFINTS_MESSAGE *msg)
 
   assert(msg);
 
-  /* first segment number if 2 + number of signers (1 x HNHBK, n x HNSHK) */
+  /* first segment number is 2 + number of signers (1 x HNHBK, n x HNSHK) */
   segNum=AQFINTS_KeyDescr_List_GetCount(msg->signerList)+2;
   segment=AQFINTS_Segment_List_First(msg->segmentList);
   while (segment) {
@@ -268,6 +286,55 @@ int AQFINTS_Message_GetLastSegNum(const AQFINTS_MESSAGE *msg)
   if (segment)
     return AQFINTS_Segment_GetSegmentNumber(segment);
   return 0;
+}
+
+
+
+void AQFINTS_Message_MoveResultSegsToFront(AQFINTS_MESSAGE *msg)
+{
+  AQFINTS_SEGMENT_LIST *tmpSegmentList;
+
+  tmpSegmentList=AQFINTS_Segment_List_new();
+
+  _moveSegmentsBetweenLists(msg->segmentList, tmpSegmentList);
+  _moveSegmentsByCodeBetweenLists(tmpSegmentList, msg->segmentList, "HIRMG");
+  _moveSegmentsByCodeBetweenLists(tmpSegmentList, msg->segmentList, "HIRMS");
+  _moveSegmentsBetweenLists(tmpSegmentList, msg->segmentList);
+
+  AQFINTS_Segment_List_free(tmpSegmentList);
+  AQFINTS_Message_Reenumerate(msg);
+}
+
+
+
+void _moveSegmentsBetweenLists(AQFINTS_SEGMENT_LIST *segmentList1, AQFINTS_SEGMENT_LIST *segmentList2)
+{
+  AQFINTS_SEGMENT *segment;
+
+  while( (segment=AQFINTS_Segment_List_First(segmentList1)) ) {
+    AQFINTS_Segment_List_Del(segment);
+    AQFINTS_Segment_List_Add(segment, segmentList2);
+  }
+}
+
+
+
+void _moveSegmentsByCodeBetweenLists(AQFINTS_SEGMENT_LIST *segmentList1, AQFINTS_SEGMENT_LIST *segmentList2, const char *code)
+{
+
+  AQFINTS_SEGMENT *segment;
+  /* move all HIRMG segments back to old list */
+  segment=AQFINTS_Segment_List_First(segmentList1);
+  while(segment) {
+    AQFINTS_SEGMENT *nextSegment;
+
+    nextSegment=AQFINTS_Segment_List_Next(segment);
+    if (strcasecmp(AQFINTS_Segment_GetCode(segment), code)==0) {
+      AQFINTS_Segment_List_Del(segment);
+      AQFINTS_Segment_List_Add(segment, segmentList2);
+    }
+    segment=nextSegment;
+  }
 }
 
 
