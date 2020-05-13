@@ -14,7 +14,9 @@ fintsdata_DATA=\
   ident.fints \
   prepare.fints \
   dialogend.fints \
-  tan.fints
+  tan.fints \
+  sync.fints
+
 
 
 typefiles:
