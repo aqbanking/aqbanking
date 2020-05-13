@@ -177,7 +177,7 @@ int _decryptSegment(AQFINTS_SESSION *sess,
     }
     AQFINTS_KeyDescr_free(keyDescr);
     if (rv<0) {
-      DBG_ERROR(0, "here (%d)", rv);
+      DBG_ERROR(AQFINTS_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
     return 0;

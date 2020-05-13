@@ -187,16 +187,16 @@ void resolveGroups(AQFINTS_ELEMENT *elementTree, AQFINTS_ELEMENT *groupTree)
         int iGroupVersion;
 
         iGroupVersion=AQFINTS_Element_GetVersion(element);
-        DBG_ERROR(0, "Looking for group \"%s:%d\"", sGroupType, iGroupVersion);
+        DBG_ERROR(AQFINTS_LOGDOMAIN, "Looking for group \"%s:%d\"", sGroupType, iGroupVersion);
         groupDefElement=findGroupInTree(groupTree, sGroupType, iGroupVersion);
         if (groupDefElement==NULL) {
-          DBG_ERROR(0, "Group \"%s:%d\" not found", sGroupType, iGroupVersion);
+          DBG_ERROR(AQFINTS_LOGDOMAIN, "Group \"%s:%d\" not found", sGroupType, iGroupVersion);
           assert(0);
         }
         else {
           AQFINTS_ELEMENT *groupElement;
 
-          DBG_ERROR(0, "Found group \"%s:%d\"", sGroupType, AQFINTS_Element_GetVersion(groupDefElement));
+          DBG_ERROR(AQFINTS_LOGDOMAIN, "Found group \"%s:%d\"", sGroupType, AQFINTS_Element_GetVersion(groupDefElement));
           groupElement=AQFINTS_Element_Tree2_GetFirstChild(groupDefElement);
           while (groupElement) {
             AQFINTS_ELEMENT *elementCopy;

@@ -7,10 +7,11 @@ AM_CFLAGS=@visibility_cflags@
 # static plugin library
 noinst_LTLIBRARIES=libaqfints.la 
 libaqfints_la_SOURCES=\
-  dummy.c
+  aqfints.c
 
 
-noinst_HEADERS=
+noinst_HEADERS= \
+  aqfints.h
 
 
 libaqfints_la_LIBADD=\

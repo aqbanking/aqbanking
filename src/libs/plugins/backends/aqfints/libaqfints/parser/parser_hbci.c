@@ -74,7 +74,7 @@ int AQFINTS_Parser_Hbci_ReadBuffer(AQFINTS_SEGMENT_LIST *targetSegmentList,
 
     rv=readSeg(targetSegment, ptrBuf, lenBuf);
     if (rv<0) {
-      DBG_INFO(0, "here (%d)", rv);
+      DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
       AQFINTS_Segment_free(targetSegment);
       return rv;
     }
@@ -141,7 +141,7 @@ void AQFINTS_Parser_Hbci_WriteSegment(AQFINTS_SEGMENT *segment)
 
       cropPos=endOfLastNonEmptyElement?endOfLastNonEmptyElement:segmentStartPos;
 
-      DBG_ERROR(0, "Crop destbuffer: %d->%d", pos, cropPos);
+      DBG_ERROR(AQFINTS_LOGDOMAIN, "Crop destbuffer: %d->%d", pos, cropPos);
       GWEN_Buffer_Crop(destBuf, 0, cropPos);
     }
   }
@@ -235,7 +235,7 @@ int readSeg(AQFINTS_SEGMENT *targetSegment, const uint8_t *ptrBuf, uint32_t lenB
 
     rv=readDeg(targetDegElement, ptrBuf, lenBuf);
     if (rv<0) {
-      DBG_INFO(0, "here (%d)", rv);
+      DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
       AQFINTS_Element_free(targetDegElement);
       return rv;
     }
@@ -255,7 +255,7 @@ int readSeg(AQFINTS_SEGMENT *targetSegment, const uint8_t *ptrBuf, uint32_t lenB
     }
   } /* while */
 
-  DBG_ERROR(0, "No delimiter at end of data");
+  DBG_ERROR(AQFINTS_LOGDOMAIN, "No delimiter at end of data");
   return GWEN_ERROR_BAD_DATA;
 }
 
@@ -277,7 +277,7 @@ int readDeg(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenB
 
     rv=readDe(targetDeElement, ptrBuf, lenBuf);
     if (rv<0) {
-      DBG_INFO(0, "here (%d)", rv);
+      DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
       AQFINTS_Element_free(targetDeElement);
       return rv;
     }
@@ -297,7 +297,7 @@ int readDeg(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenB
     }
   } /* while */
 
-  DBG_ERROR(0, "No delimiter at end of data");
+  DBG_ERROR(AQFINTS_LOGDOMAIN, "No delimiter at end of data");
   return GWEN_ERROR_BAD_DATA;
 }
 
@@ -312,7 +312,7 @@ int readDe(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenBu
 
       rv=readBin(targetElement, ptrBuf, lenBuf);
       if (rv<0) {
-        DBG_INFO(0, "here (%d)", rv);
+        DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
         return rv;
       }
       return rv;
@@ -322,13 +322,13 @@ int readDe(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenBu
 
       rv=readString(targetElement, ptrBuf, lenBuf);
       if (rv<0) {
-        DBG_INFO(0, "here (%d)", rv);
+        DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
         return rv;
       }
       return rv;
     }
   }
-  DBG_ERROR(0, "Empty data buffer");
+  DBG_ERROR(AQFINTS_LOGDOMAIN, "Empty data buffer");
   return GWEN_ERROR_NO_DATA;
 }
 
@@ -359,7 +359,7 @@ int readString(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t l
       if (lenBuf && *ptrBuf)
         GWEN_Buffer_AppendByte(destBuf, *ptrBuf);
       else {
-        DBG_ERROR(0, "Premature end of data (question mark was last character)");
+        DBG_ERROR(AQFINTS_LOGDOMAIN, "Premature end of data (question mark was last character)");
         GWEN_Buffer_free(destBuf);
         return GWEN_ERROR_BAD_DATA;
       }
@@ -372,7 +372,7 @@ int readString(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t l
     lenBuf--;
   } /* while */
 
-  DBG_ERROR(0, "No delimiter at end of data");
+  DBG_ERROR(AQFINTS_LOGDOMAIN, "No delimiter at end of data");
   GWEN_Buffer_free(destBuf);
   return GWEN_ERROR_BAD_DATA;
 }
@@ -402,7 +402,7 @@ int readBin(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenB
       lenBuf--;
 
       if (lenBuf<lenBinary) {
-        DBG_ERROR(0, "Invalid size of binary data (%lu < %lu)",
+        DBG_ERROR(AQFINTS_LOGDOMAIN, "Invalid size of binary data (%lu < %lu)",
                   (unsigned long int) lenBuf,
                   (unsigned long int) lenBinary);
         return GWEN_ERROR_BAD_DATA;
@@ -417,7 +417,7 @@ int readBin(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenB
     }
   }
 
-  DBG_ERROR(0, "Error in binary data spec");
+  DBG_ERROR(AQFINTS_LOGDOMAIN, "Error in binary data spec");
   return GWEN_ERROR_BAD_DATA;
 }
 

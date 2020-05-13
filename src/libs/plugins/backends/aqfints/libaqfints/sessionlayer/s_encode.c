@@ -61,7 +61,7 @@ GWEN_BUFFER *AQFINTS_Session_EncodeMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAG
 
   rv=AQFINTS_Session_WriteSegmentList(sess, segmentList);
   if (rv<0) {
-    DBG_INFO(0, "here (%d)", rv);
+    DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     return NULL;
   }
 

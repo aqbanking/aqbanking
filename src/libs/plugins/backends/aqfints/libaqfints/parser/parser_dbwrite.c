@@ -47,10 +47,13 @@ int AQFINTS_Parser_Db_WriteSegment(AQFINTS_SEGMENT *segmentDefinition, AQFINTS_S
   AQFINTS_ELEMENT *elementDefinition;
   AQFINTS_ELEMENT *childDefinitionData;
   AQFINTS_ELEMENT *elementDataParent;
+  const char *segCode;
   int rv;
 
   elementDefinition=AQFINTS_Segment_GetElements(segmentDefinition);
   assert(elementDefinition);
+
+  segCode=AQFINTS_Segment_GetCode(segmentDefinition);
 
   elementDataParent=AQFINTS_Segment_GetElements(segmentData);
   if (elementDataParent==NULL) {
@@ -62,13 +65,13 @@ int AQFINTS_Parser_Db_WriteSegment(AQFINTS_SEGMENT *segmentDefinition, AQFINTS_S
 
   childDefinitionData=AQFINTS_Element_Tree2_GetFirstChild(elementDefinition);
   if (childDefinitionData==NULL) {
-    DBG_ERROR(0, "Definition has no children");
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "Definition has no children");
     return GWEN_ERROR_BAD_DATA;
   }
 
   rv=writeDegSequence(childDefinitionData, elementDataParent, db);
   if (rv<0) {
-    DBG_INFO(0, "here (%d)", rv);
+    DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d) [%s]", rv, segCode?segCode:"");
     return rv;
   }
 
@@ -87,7 +90,7 @@ int writeDegSequence(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elemen
     else
       rv=writeDeg(elementDefinition, elementDataParent, db);
     if (rv<0) {
-      DBG_INFO(0, "here (%d)", rv);
+      DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
     elementDefinition=AQFINTS_Element_Tree2_GetNext(elementDefinition);
@@ -112,7 +115,7 @@ int writeDegGroup(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDa
 
   childDefinitionData=AQFINTS_Element_Tree2_GetFirstChild(elementDefinition);
   if (childDefinitionData==NULL) {
-    DBG_ERROR(0, "Definition has no children");
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "Definition has no children");
     return GWEN_ERROR_BAD_DATA;
   }
 
@@ -123,12 +126,12 @@ int writeDegGroup(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDa
     dbForGroup=GWEN_DB_FindFirstGroup(db, sDbName);
     while (dbForGroup) {
       if (maxNum && idx>=maxNum) {
-        DBG_ERROR(0, "Too many elements in DB (%d < %d)", idx, maxNum);
+        DBG_ERROR(AQFINTS_LOGDOMAIN, "Too many elements in DB (%d < %d)", idx, maxNum);
         return GWEN_ERROR_BAD_DATA;
       }
       rv=writeDegSequence(childDefinitionData, elementDataParent, dbForGroup);
       if (rv<0) {
-        DBG_INFO(0, "here (%d)", rv);
+        DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
         return rv;
       }
 
@@ -137,7 +140,7 @@ int writeDegGroup(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDa
       dbForGroup=GWEN_DB_FindNextGroup(dbForGroup, sDbName);
     }
     if (minNum && idx<minNum) {
-      DBG_ERROR(0, "Too few elements in DB (%d < %d)", idx, minNum);
+      DBG_ERROR(AQFINTS_LOGDOMAIN, "Too few elements in DB (%d < %d)", idx, minNum);
       return GWEN_ERROR_BAD_DATA;
     }
   }
@@ -147,13 +150,13 @@ int writeDegGroup(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDa
      * of the group to generate
      */
     if (minNum!=1 || maxNum!=1) {
-      DBG_ERROR(0, "Definition has no name while minNum and/or maxNum !=1");
+      DBG_ERROR(AQFINTS_LOGDOMAIN, "Definition has no name while minNum and/or maxNum !=1");
       return GWEN_ERROR_BAD_DATA;
     }
 
     rv=writeDegSequence(childDefinitionData, elementDataParent, db);
     if (rv<0) {
-      DBG_INFO(0, "here (%d)", rv);
+      DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
   }
@@ -187,7 +190,7 @@ int writeDeSequence(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *element
     else
       rv=writeElement(elementDefinition, elementDataParent, db);
     if (rv<0) {
-      DBG_INFO(0, "here (%d)", rv);
+      DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
     elementDefinition=AQFINTS_Element_Tree2_GetNext(elementDefinition);
@@ -212,7 +215,7 @@ int writeDeGroup(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDat
 
   childDefinitionData=AQFINTS_Element_Tree2_GetFirstChild(elementDefinition);
   if (childDefinitionData==NULL) {
-    DBG_ERROR(0, "Definition has no children");
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "Definition has no children");
     return GWEN_ERROR_BAD_DATA;
   }
 
@@ -223,12 +226,12 @@ int writeDeGroup(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDat
     dbForGroup=GWEN_DB_FindFirstGroup(db, sDbName);
     while (dbForGroup) {
       if (maxNum && idx>=maxNum) {
-        DBG_ERROR(0, "Too many elements in DB (%d < %d)", idx, maxNum);
+        DBG_ERROR(AQFINTS_LOGDOMAIN, "Too many elements in DB (%d < %d)", idx, maxNum);
         return GWEN_ERROR_BAD_DATA;
       }
       rv=writeDeSequence(childDefinitionData, elementDataParent, dbForGroup);
       if (rv<0) {
-        DBG_INFO(0, "here (%d)", rv);
+        DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
         return rv;
       }
 
@@ -237,7 +240,7 @@ int writeDeGroup(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDat
       dbForGroup=GWEN_DB_FindNextGroup(dbForGroup, sDbName);
     }
     if (minNum && idx<minNum) {
-      DBG_ERROR(0, "Too few elements in DB (%d < %d)", idx, minNum);
+      DBG_ERROR(AQFINTS_LOGDOMAIN, "Too few elements in DB (%d < %d) [%s]", idx, minNum, sDbName?sDbName:"");
       return GWEN_ERROR_BAD_DATA;
     }
   }
@@ -247,13 +250,13 @@ int writeDeGroup(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDat
      * of the group to generate
      */
     if (maxNum!=1) {
-      DBG_ERROR(0, "Definition has no name while maxNum!=1");
+      DBG_ERROR(AQFINTS_LOGDOMAIN, "Definition has no name while maxNum!=1");
       return GWEN_ERROR_BAD_DATA;
     }
 
     rv=writeDeSequence(childDefinitionData, elementDataParent, db);
     if (rv<0) {
-      DBG_INFO(0, "here (%d)", rv);
+      DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
   }
@@ -275,12 +278,12 @@ int writeElement(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDat
     else if (AQFINTS_Parser_IsBinType(sType))
       return writeBinElement(elementDefinition, elementDataParent, db);
     else {
-      DBG_ERROR(0, "Unknown element data type \"%s\"", sType);
+      DBG_ERROR(AQFINTS_LOGDOMAIN, "Unknown element data type \"%s\"", sType);
       return GWEN_ERROR_BAD_DATA;
     }
   }
   else {
-    DBG_ERROR(0, "No element data type given");
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "No element data type given");
     return GWEN_ERROR_BAD_DATA;
   }
 }
@@ -306,7 +309,7 @@ int writeCharElement(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elemen
     if (s==NULL)
       break;
     if (maxNum && idx>=maxNum) {
-      DBG_ERROR(0, "Too many elements in DB (%d < %d)", idx, maxNum);
+      DBG_ERROR(AQFINTS_LOGDOMAIN, "Too many elements in DB (%d < %d)", idx, maxNum);
       return GWEN_ERROR_BAD_DATA;
     }
     elementData=AQFINTS_Element_new();
@@ -318,7 +321,7 @@ int writeCharElement(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elemen
   }
 
   if (minNum && idx<minNum) {
-    DBG_ERROR(0, "Too few elements in DB (%d < %d)", idx, minNum);
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "Too few elements in DB (%d < %d)", idx, minNum);
   }
 
   /* create empty DE element if no data */
@@ -358,7 +361,7 @@ int writeIntElement(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *element
       int value;
 
       if (maxNum && idx>=maxNum) {
-        DBG_ERROR(0, "Too many elements in DB (%d < %d)", idx, maxNum);
+        DBG_ERROR(AQFINTS_LOGDOMAIN, "Too many elements in DB (%d < %d)", idx, maxNum);
         return GWEN_ERROR_BAD_DATA;
       }
 
@@ -374,12 +377,12 @@ int writeIntElement(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *element
 
         len=snprintf(numbuf, sizeof(numbuf)-1, "%d", value);
         if (len>=sizeof(numbuf)) {
-          DBG_ERROR(0, "Buffer too small to convert integer value (would need %d bytes)", len);
+          DBG_ERROR(AQFINTS_LOGDOMAIN, "Buffer too small to convert integer value (would need %d bytes)", len);
           return GWEN_ERROR_INTERNAL;
         }
         numbuf[len]=0;
         if (len>maxSize) {
-          DBG_ERROR(0, "Data bigger than allowed (%d > %d)", len, maxSize);
+          DBG_ERROR(AQFINTS_LOGDOMAIN, "Data bigger than allowed (%d > %d)", len, maxSize);
           return GWEN_ERROR_INVALID;
         }
         else if (len<maxSize) {
@@ -413,7 +416,7 @@ int writeIntElement(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *element
   }
 
   if (minNum && idx<minNum) {
-    DBG_ERROR(0, "Too few elements in DB (%d < %d)", idx, minNum);
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "Too few elements in DB (%d < %d) [%s]", idx, minNum, sDbName?sDbName:"");
   }
 
   /* create empty DE element if no data */
@@ -449,7 +452,7 @@ int writeBinElement(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *element
       unsigned int len;
 
       if (maxNum && idx>=maxNum) {
-        DBG_ERROR(0, "Too many elements in DB (%d < %d)", idx, maxNum);
+        DBG_ERROR(AQFINTS_LOGDOMAIN, "Too many elements in DB (%d < %d)", idx, maxNum);
         return GWEN_ERROR_BAD_DATA;
       }
 
@@ -466,7 +469,7 @@ int writeBinElement(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *element
         AQFINTS_Element_Tree2_AddChild(elementDataParent, elementData);
       }
       else {
-        DBG_ERROR(0, "Empty binary data");
+        DBG_ERROR(AQFINTS_LOGDOMAIN, "Empty binary data");
         break;
       }
     }
@@ -475,7 +478,7 @@ int writeBinElement(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *element
   }
 
   if (minNum && idx<minNum) {
-    DBG_ERROR(0, "Too few elements in DB (%d < %d)", idx, minNum);
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "Too few elements in DB (%d < %d)", idx, minNum);
   }
 
   /* create empty DE element if no data */

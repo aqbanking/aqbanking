@@ -53,7 +53,7 @@ int AQFINTS_Session_WrapMessageHeadAndTail(AQFINTS_SESSION *sess,
   /* create and append msg tail */
   segment=createMessageTail(sess, msgNum, lastSegNum+1);
   if (segment==NULL) {
-    DBG_ERROR(0, "here");
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "here");
     return GWEN_ERROR_INTERNAL;
   }
   AQFINTS_Segment_List_Add(segment, segmentList);
@@ -64,7 +64,7 @@ int AQFINTS_Session_WrapMessageHeadAndTail(AQFINTS_SESSION *sess,
   /* create and insert msg tail */
   segment=createMessageHead(sess, dialogId, msgNum, refMsgNum, msgSizeWithoutHead);
   if (segment==NULL) {
-    DBG_ERROR(0, "here");
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "here");
     return GWEN_ERROR_INTERNAL;
   }
   AQFINTS_Segment_List_Insert(segment, segmentList);
@@ -93,7 +93,7 @@ AQFINTS_SEGMENT *createMessageHead(AQFINTS_SESSION *sess,
   /* HNHBK */
   defSegment=AQFINTS_Parser_FindSegmentHighestVersionForProto(parser, "HNHBK", hbciVersion);
   if (defSegment==NULL) {
-    DBG_ERROR(0, "No matching definition segment found for HNHBK (proto=%d)", hbciVersion);
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "No matching definition segment found for HNHBK (proto=%d)", hbciVersion);
     return NULL;
   }
 
@@ -114,7 +114,7 @@ AQFINTS_SEGMENT *createMessageHead(AQFINTS_SESSION *sess,
   /* create temporary version to determine the full message size */
   rv=AQFINTS_Session_WriteSegment(sess, segment);
   if (rv<0) {
-    DBG_ERROR(0, "here (%d)", rv);
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     AQFINTS_Segment_free(segment);
     return NULL;
   }
@@ -128,7 +128,7 @@ AQFINTS_SEGMENT *createMessageHead(AQFINTS_SESSION *sess,
   GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "size", sizeOfMessageWithoutHead+segSize);
   rv=AQFINTS_Session_WriteSegment(sess, segment);
   if (rv<0) {
-    DBG_ERROR(0, "here (%d)", rv);
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     AQFINTS_Segment_free(segment);
     return NULL;
   }
@@ -153,7 +153,7 @@ AQFINTS_SEGMENT *createMessageTail(AQFINTS_SESSION *sess, int msgNum, int segNum
   /* HNHBS */
   defSegment=AQFINTS_Parser_FindSegmentHighestVersionForProto(parser, "HNHBS", hbciVersion);
   if (defSegment==NULL) {
-    DBG_ERROR(0, "No matching definition segment found for HNHBS (proto=%d)", hbciVersion);
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "No matching definition segment found for HNHBS (proto=%d)", hbciVersion);
     return NULL;
   }
 
@@ -168,7 +168,7 @@ AQFINTS_SEGMENT *createMessageTail(AQFINTS_SESSION *sess, int msgNum, int segNum
 
   rv=AQFINTS_Session_WriteSegment(sess, segment);
   if (rv<0) {
-    DBG_ERROR(0, "here (%d)", rv);
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     AQFINTS_Segment_free(segment);
     return NULL;
   }

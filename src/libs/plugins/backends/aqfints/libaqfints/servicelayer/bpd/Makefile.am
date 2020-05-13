@@ -74,11 +74,14 @@ build_headers=$(build_headers_priv) $(build_headers_pub)
 
 
 
-noinst_HEADERS= $(build_headers)
+noinst_HEADERS= $(build_headers) \
+  bpd_read.h \
+  bpd_write.h
 
 
 libafmsgbpd_la_SOURCES= $(built_sources) \
-  bpd_read.c
+  bpd_read.c \
+  bpd_write.c
 
 
 

@@ -49,14 +49,14 @@ int AQFINTS_Session_GetAnonBpd(AQFINTS_SESSION *sess, const char *bankCode, AQFI
   destBuffer=GWEN_Buffer_new(0, 256, 0, 1);
   rv=mkGetAnonBpdMessage(sess, bankCode, destBuffer);
   if (rv<0) {
-    DBG_ERROR(0, "here (%d)", rv);
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(destBuffer);
     return rv;
   }
 
   rv=AQFINTS_Session_Connect(sess);
   if (rv<0) {
-    DBG_ERROR(0, "here (%d)", rv);
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(destBuffer);
     return rv;
   }
@@ -65,7 +65,7 @@ int AQFINTS_Session_GetAnonBpd(AQFINTS_SESSION *sess, const char *bankCode, AQFI
                                  GWEN_Buffer_GetStart(destBuffer),
                                  GWEN_Buffer_GetUsedBytes(destBuffer));
   if (rv<0) {
-    DBG_ERROR(0, "here (%d)", rv);
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     AQFINTS_Session_Disconnect(sess);
     GWEN_Buffer_free(destBuffer);
     return rv;
@@ -75,7 +75,7 @@ int AQFINTS_Session_GetAnonBpd(AQFINTS_SESSION *sess, const char *bankCode, AQFI
 
   rv=AQFINTS_Session_ReceiveMessage(sess, destBuffer);
   if (rv<0) {
-    DBG_ERROR(0, "here (%d)", rv);
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     AQFINTS_Session_Disconnect(sess);
     GWEN_Buffer_free(destBuffer);
     return rv;
@@ -87,7 +87,7 @@ int AQFINTS_Session_GetAnonBpd(AQFINTS_SESSION *sess, const char *bankCode, AQFI
                  (const uint8_t *) GWEN_Buffer_GetStart(destBuffer),
                  GWEN_Buffer_GetUsedBytes(destBuffer));
   if (bpd==NULL) {
-    DBG_ERROR(0, "No BPD extracted");
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "No BPD extracted");
     GWEN_Buffer_free(destBuffer);
     return rv;
   }
@@ -111,21 +111,21 @@ AQFINTS_BPD *extractBpd(AQFINTS_SESSION *sess, const uint8_t *ptrBuffer, uint32_
   segmentList=AQFINTS_Segment_List_new();
   rv=AQFINTS_Parser_ReadIntoSegmentList(parser, segmentList, ptrBuffer, lenBuffer);
   if (rv<0) {
-    DBG_ERROR(0, "here (%d)", rv);
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     AQFINTS_Segment_List_free(segmentList);
     return NULL;
   }
 
   rv=AQFINTS_Parser_ReadSegmentListToDb(parser, segmentList);
   if (rv<0) {
-    DBG_ERROR(0, "here (%d)", rv);
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     AQFINTS_Segment_List_free(segmentList);
     return NULL;
   }
 
   bpd=AQFINTS_Session_ExtractBpdFromSegmentList(sess, segmentList);
   if (bpd==NULL) {
-    DBG_ERROR(0, "Empty BPD");
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "Empty BPD");
     AQFINTS_Segment_List_free(segmentList);
     return NULL;
   }
@@ -147,7 +147,7 @@ int mkGetAnonBpdMessage(AQFINTS_SESSION *sess, const char *bankCode, GWEN_BUFFER
 
   message=createMessage(sess, bankCode);
   if (message==NULL) {
-    DBG_ERROR(0, "No message created");
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "No message created");
     return GWEN_ERROR_INVALID;
   }
 
@@ -162,7 +162,7 @@ int mkGetAnonBpdMessage(AQFINTS_SESSION *sess, const char *bankCode, GWEN_BUFFER
                                             AQFINTS_Message_GetRefMessageNumber(message),
                                             AQFINTS_Segment_GetSegmentNumber(segment));
   if (rv<0) {
-    DBG_ERROR(0, "here (%d)", rv);
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     AQFINTS_Message_free(message);
     return rv;
   }
@@ -195,7 +195,7 @@ AQFINTS_MESSAGE *createMessage(AQFINTS_SESSION *sess, const char *bankCode)
   /* ident */
   defSegment=AQFINTS_Parser_FindSegmentHighestVersionForProto(parser, "HKIDN", hbciVersion);
   if (defSegment==NULL) {
-    DBG_ERROR(0, "No matching definition segment found for HKIDN (proto=%d)", hbciVersion);
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "No matching definition segment found for HKIDN (proto=%d)", hbciVersion);
     return NULL;
   }
   segment=AQFINTS_Segment_new();
@@ -212,7 +212,7 @@ AQFINTS_MESSAGE *createMessage(AQFINTS_SESSION *sess, const char *bankCode)
   /* prepare */
   defSegment=AQFINTS_Parser_FindSegmentHighestVersionForProto(parser, "HKVVB", hbciVersion);
   if (defSegment==NULL) {
-    DBG_ERROR(0, "No matching definition segment found for HKVVB (proto=%d)", hbciVersion);
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "No matching definition segment found for HKVVB (proto=%d)", hbciVersion);
     return NULL;
   }
   segment=AQFINTS_Segment_new();

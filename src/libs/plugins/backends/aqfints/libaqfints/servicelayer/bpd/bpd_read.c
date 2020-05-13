@@ -181,6 +181,16 @@ AQFINTS_BANKDATA *AQFINTS_Bpd_ReadBankData(GWEN_DB_NODE *db)
 
   bankData=AQFINTS_BankData_new();
 
+  i=GWEN_DB_GetIntValue(db, "version", 0, 0);
+  AQFINTS_BankData_SetVersion(bankData, i);
+
+  i=GWEN_DB_GetIntValue(db, "country", 0, 0);
+  AQFINTS_BankData_SetCountry(bankData, i);
+
+  s=GWEN_DB_GetCharValue(db, "bankCode", 0, NULL);
+  if (s && *s)
+    AQFINTS_BankData_SetBankCode(bankData, s);
+
   s=GWEN_DB_GetCharValue(db, "name", 0, NULL);
   if (s && *s)
     AQFINTS_BankData_SetBankName(bankData, s);
@@ -188,7 +198,7 @@ AQFINTS_BANKDATA *AQFINTS_Bpd_ReadBankData(GWEN_DB_NODE *db)
   i=GWEN_DB_GetIntValue(db, "jobTypesPerMsg", 0, 0);
   AQFINTS_BankData_SetJobTypesPerMsg(bankData, i);
 
-  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTNOTEXIST, "languages");
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "languages");
   if (dbT) {
     for (i=0; i<9; i++) {
       int v;
@@ -200,7 +210,7 @@ AQFINTS_BANKDATA *AQFINTS_Bpd_ReadBankData(GWEN_DB_NODE *db)
     }
   }
 
-  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTNOTEXIST, "versions");
+  dbT=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "versions");
   if (dbT) {
     for (i=0; i<9; i++) {
       int v;

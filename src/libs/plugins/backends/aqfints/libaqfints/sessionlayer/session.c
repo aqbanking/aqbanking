@@ -16,6 +16,7 @@
 #include "sessionlayer/s_encode.h"
 #include "sessionlayer/s_decode.h"
 #include "parser/parser.h"
+#include "parser/parser_dump.h"
 #include "servicelayer/upd/upd_read.h"
 #include "servicelayer/bpd/bpd_read.h"
 
@@ -380,7 +381,7 @@ int AQFINTS_Session_WriteSegmentList(AQFINTS_SESSION *sess, AQFINTS_SEGMENT_LIST
 
     rv=AQFINTS_Session_WriteSegment(sess, segment);
     if (rv<0) {
-      DBG_INFO(0, "here (%d)", rv);
+      DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
     segment=AQFINTS_Segment_List_Next(segment);
@@ -408,7 +409,7 @@ int AQFINTS_Session_WriteSegment(AQFINTS_SESSION *sess, AQFINTS_SEGMENT *segment
 
   db=AQFINTS_Segment_GetDbData(segment);
   if (db==NULL) {
-    DBG_ERROR(0, "Segment has no DB data");
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "Segment has no DB data");
     return GWEN_ERROR_INTERNAL;
   }
 
@@ -423,7 +424,8 @@ int AQFINTS_Session_WriteSegment(AQFINTS_SESSION *sess, AQFINTS_SEGMENT *segment
 
   rv=AQFINTS_Parser_WriteSegment(sess->parser, segment);
   if (rv<0) {
-    DBG_INFO(0, "here (%d)", rv);
+    DBG_INFO(AQFINTS_LOGDOMAIN, "Error writing segment [%s] (%d)", AQFINTS_Segment_GetCode(segment), rv);
+    AQFINTS_Parser_DumpSegment(segment, 2);
     return rv;
   }
 
@@ -487,7 +489,7 @@ int AQFINTS_Session_SampleAllowedTanMethods(int *ptrIntArray, int sizeIntArray, 
   } /* while segment */
   if (numMethodsAdded<1) {
     /* add single step if empty list */
-    DBG_INFO(0, "No allowed TAN method reported, assuming 999");
+    DBG_INFO(AQFINTS_LOGDOMAIN, "No allowed TAN method reported, assuming 999");
     ptrIntArray[0]=999;
     numMethodsAdded=1;
   }
@@ -522,13 +524,13 @@ int AQFINTS_Session_SendMessage(AQFINTS_SESSION *sess, const char *ptrBuffer, in
 
   assert(sess);
   /* TODO: add logging mechanism */
-  DBG_ERROR(0, "Sending this:");
+  DBG_ERROR(AQFINTS_LOGDOMAIN, "Sending this:");
   GWEN_Text_LogString(ptrBuffer, lenBuffer, NULL, GWEN_LoggerLevel_Error);
 
   rv=AQFINTS_Transport_SendMessage(sess->transport, ptrBuffer, lenBuffer);
   sess->lastMessageNumSent++;
   if (rv<0) {
-    DBG_INFO(0, "here (%d)", rv);
+    DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
@@ -544,11 +546,11 @@ int AQFINTS_Session_ReceiveMessage(AQFINTS_SESSION *sess, GWEN_BUFFER *buffer)
   /* TODO: add logging mechanism */
   rv=AQFINTS_Transport_ReceiveMessage(sess->transport, buffer);
   if (rv<0) {
-    DBG_ERROR(0, "here (%d)", rv);
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
-  DBG_ERROR(0, "Received this:");
+  DBG_ERROR(AQFINTS_LOGDOMAIN, "Received this:");
   GWEN_Text_LogString(GWEN_Buffer_GetStart(buffer), GWEN_Buffer_GetUsedBytes(buffer), NULL, GWEN_LoggerLevel_Error);
   sess->lastMessageNumReceived++;
   return rv;
@@ -563,7 +565,7 @@ AQFINTS_BPD *AQFINTS_Session_ExtractBpdFromSegmentList(AQFINTS_SESSION *sess, AQ
 
   bpd=AQFINTS_Bpd_SampleBpdFromSegmentList(sess->parser, segmentList, 1);
   if (bpd==NULL) {
-    DBG_ERROR(0, "Empty BPD");
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "Empty BPD");
     return NULL;
   }
 
@@ -579,7 +581,7 @@ AQFINTS_USERDATA_LIST *AQFINTS_Session_ExtractUpdFromSegmentList(AQFINTS_SESSION
 
   userDataList=AQFINTS_Upd_SampleUpdFromSegmentList(segmentList, 1);
   if (userDataList==NULL) {
-    DBG_ERROR(0, "Empty userDataList");
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "Empty userDataList");
     return NULL;
   }
 

@@ -49,7 +49,7 @@ int AQFINTS_Session_EncryptMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *messa
 
   rv=AQFINTS_Session_FilloutKeyname(sess, keyDescr, AQFINTS_SESSION_CRYPTOP_ENCRYPT);
   if (rv<0) {
-    DBG_INFO(0, "here (%d)", rv);
+    DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
