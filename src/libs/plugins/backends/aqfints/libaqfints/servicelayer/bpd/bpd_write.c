@@ -31,6 +31,7 @@
 AQFINTS_SEGMENT *_mkSegBankData(AQFINTS_PARSER *parser, int hbciVersion, const AQFINTS_BANKDATA *bankData);
 AQFINTS_SEGMENT *_mkSegBankAddr(AQFINTS_PARSER *parser, int hbciVersion, const AQFINTS_BPDADDR *bpdAddr);
 AQFINTS_SEGMENT *_mkSegTanInfo(AQFINTS_PARSER *parser, int hbciVersion, const AQFINTS_TANINFO *tanInfo);
+AQFINTS_SEGMENT *_mkSegBpdJob(AQFINTS_PARSER *parser, int hbciVersion, const AQFINTS_BPDJOB *bpdJob);
 
 
 
@@ -48,6 +49,7 @@ int AQFINTS_Bpd_Write(const AQFINTS_BPD *bpd, AQFINTS_PARSER *parser, int hbciVe
   AQFINTS_BANKDATA *bankData;
   AQFINTS_BPDADDR_LIST *addrList;
   AQFINTS_TANINFO *tanInfo;
+  AQFINTS_BPDJOB_LIST *bpdJobList;
 
   bankData=AQFINTS_Bpd_GetBankData(bpd);
   if (bankData) {
@@ -93,6 +95,29 @@ int AQFINTS_Bpd_Write(const AQFINTS_BPD *bpd, AQFINTS_PARSER *parser, int hbciVe
     }
     AQFINTS_Segment_SetRefSegmentNumber(segment, refSegNum);
     AQFINTS_Segment_List_Add(segment, segmentList);
+  }
+
+  bpdJobList=AQFINTS_Bpd_GetBpdJobs(bpd);
+  if (bpdJobList) {
+    AQFINTS_BPDJOB *bpdJob;
+
+    bpdJob=AQFINTS_BpdJob_List_First(bpdJobList);
+    while(bpdJob) {
+      AQFINTS_SEGMENT *segment;
+
+      segment=_mkSegBpdJob(parser, hbciVersion, bpdJob);
+      if (segment==NULL) {
+        DBG_ERROR(AQFINTS_LOGDOMAIN, "here");
+        return GWEN_ERROR_GENERIC;
+      }
+      AQFINTS_Segment_SetRefSegmentNumber(segment, refSegNum);
+      AQFINTS_Segment_List_Add(segment, segmentList);
+
+      bpdJob=AQFINTS_BpdJob_List_Next(bpdJob);
+    }
+  }
+  else {
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "No BPD jobs");
   }
 
   return 0;
@@ -327,6 +352,55 @@ AQFINTS_SEGMENT *_mkSegTanInfo(AQFINTS_PARSER *parser, int hbciVersion, const AQ
 
 
 
+AQFINTS_SEGMENT *_mkSegBpdJob(AQFINTS_PARSER *parser, int hbciVersion, const AQFINTS_BPDJOB *bpdJob)
+{
+  AQFINTS_SEGMENT *defSegment;
+  AQFINTS_SEGMENT *segment;
+  GWEN_DB_NODE *dbSegment;
+  GWEN_DB_NODE *dbSettings;
+  const char *segCode;
+  int segVersion;
+  int i;
+
+  segCode=AQFINTS_BpdJob_GetCode(bpdJob);
+  if (!(segCode && *segCode)) {
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "BPD job has no code (proto=%d), internal error", hbciVersion);
+    return NULL;
+  }
+
+  segVersion=AQFINTS_BpdJob_GetVersion(bpdJob);
+  if (segVersion<1) {
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "BPD job \"%s\" has no version (proto=%d), internal error", segCode, hbciVersion);
+    return NULL;
+  }
+
+  defSegment=AQFINTS_Parser_FindSegmentByCode(parser, segCode, segVersion, 0);
+  if (defSegment==NULL) {
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "No matching definition segment found for %s (proto=%d)", segCode, hbciVersion);
+    return NULL;
+  }
+
+  segment=AQFINTS_Segment_new();
+  AQFINTS_Segment_copy(segment, defSegment);
+
+  dbSettings=AQFINTS_BpdJob_GetSettings(bpdJob);
+  if (dbSettings)
+    dbSegment=GWEN_DB_Group_dup(dbSettings);
+  else
+    dbSegment=GWEN_DB_Group_new("tanInfo");
+  AQFINTS_Segment_SetDbData(segment, dbSegment);
+
+  i=AQFINTS_BpdJob_GetJobsPerMsg(bpdJob);
+  GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "jobspermsg", i);
+
+  i=AQFINTS_BpdJob_GetMinSigs(bpdJob);
+  GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "minsigs", i);
+
+  i=AQFINTS_BpdJob_GetSecurityClass(bpdJob);
+  GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "securityClass", i);
+
+  return segment;
+}
 
 
 

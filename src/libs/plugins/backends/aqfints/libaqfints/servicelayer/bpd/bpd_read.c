@@ -308,8 +308,8 @@ AQFINTS_BPDJOB *AQFINTS_Bpd_ReadBpdJob(GWEN_DB_NODE *db)
     i=GWEN_DB_GetIntValue(db, "minSigs", 0, 0);
     AQFINTS_BpdJob_SetMinSigs(j, i);
 
-    i=GWEN_DB_GetIntValue(db, "secProfile", 0, 0);
-    AQFINTS_BpdJob_SetSecProfile(j, i);
+    i=GWEN_DB_GetIntValue(db, "securityClass", 0, 0);
+    AQFINTS_BpdJob_SetSecurityClass(j, i);
 
     AQFINTS_BpdJob_SetSettings(j, GWEN_DB_Group_dup(db));
 
