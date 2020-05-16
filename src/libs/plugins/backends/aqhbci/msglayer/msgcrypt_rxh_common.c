@@ -1272,6 +1272,8 @@ int AH_MsgRxh__Verify_Internal(GWEN_CRYPT_KEY *k,
       GWEN_MDigest_free(md);
       if (rv<0) {
         DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Error verifying this data:");
+        GWEN_Buffer_Dump(tbuf, 2);
         GWEN_Buffer_free(tbuf);
         return rv;
       }
