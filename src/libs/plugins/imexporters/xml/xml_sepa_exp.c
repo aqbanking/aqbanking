@@ -445,8 +445,6 @@ void _writeTransaction(const AB_TRANSACTION *t, GWEN_DB_NODE *dbData)
   v=AB_Transaction_GetValue(t);
   if (v)
     _writeAmountToDbWithCurrency(v, "value_value", "value_currency", dbData);
-
-  // TODO: creditorSchemeId, mandateId, sequence etc
 }
 
 
@@ -476,8 +474,9 @@ void _writeAmountToDbWithCurrency(const AB_VALUE *v,
   GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS, varNameAmount, GWEN_Buffer_GetStart(tbuf));
   GWEN_Buffer_free(tbuf);
   s=AB_Value_GetCurrency(v);
-  if (s && *s)
-    GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS, varNameCurrency, s);
+  if (!(s && *s))
+    s="EUR";
+  GWEN_DB_SetCharValue(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS, varNameCurrency, s);
 }
 
 
