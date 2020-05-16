@@ -1070,7 +1070,7 @@ int AH_Msg_EncryptRxh(AH_MSG *hmsg)
     rv=GWEN_Padd_ApplyPaddAlgo(algo, skbuf);
     GWEN_Crypt_PaddAlgo_free(algo);
     if (rv) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(skbuf);
       return rv;
     }
@@ -1217,7 +1217,7 @@ int AH_MsgRxh__Verify_Internal(GWEN_CRYPT_KEY *k,
                                (uint8_t *)GWEN_Buffer_GetStart(tbuf),
                                &l);
     if (rv<0) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(tbuf);
       return rv;
     }
@@ -1257,7 +1257,7 @@ int AH_MsgRxh__Verify_Internal(GWEN_CRYPT_KEY *k,
       }
 
       if (nbits==0) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Empty modulus");
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Empty modulus");
         GWEN_Buffer_free(tbuf);
         return GWEN_ERROR_GENERIC;
       }
@@ -1271,8 +1271,8 @@ int AH_MsgRxh__Verify_Internal(GWEN_CRYPT_KEY *k,
                                   md);
       GWEN_MDigest_free(md);
       if (rv<0) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "here (%d)", rv);
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Error verifying this data:");
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Error verifying this data:");
         GWEN_Buffer_Dump(tbuf, 2);
         GWEN_Buffer_free(tbuf);
         return rv;
@@ -1281,19 +1281,19 @@ int AH_MsgRxh__Verify_Internal(GWEN_CRYPT_KEY *k,
     else {
       rv=GWEN_Padd_UnapplyPaddAlgo(a, tbuf);
       if (rv<0) {
-        DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
         GWEN_Buffer_free(tbuf);
         return rv;
       }
       l=GWEN_Buffer_GetUsedBytes(tbuf);
 
       if (l!=inLen) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Signature length doesn't match");
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Signature length doesn't match");
         GWEN_Buffer_free(tbuf);
         return GWEN_ERROR_VERIFY;
       }
       if (memcmp(pInData, GWEN_Buffer_GetStart(tbuf), l)!=0) {
-        DBG_ERROR(GWEN_LOGDOMAIN, "Signature doesn't match:");
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Signature doesn't match:");
         GWEN_Buffer_free(tbuf);
         return GWEN_ERROR_VERIFY;
       }
@@ -1310,7 +1310,7 @@ int AH_MsgRxh__Verify_Internal(GWEN_CRYPT_KEY *k,
     /* padd according to given algo */
     rv=GWEN_Padd_ApplyPaddAlgo(a, srcBuf);
     if (rv) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(srcBuf);
       return rv;
     }
@@ -1323,7 +1323,7 @@ int AH_MsgRxh__Verify_Internal(GWEN_CRYPT_KEY *k,
                              signatureLen);
     GWEN_Buffer_free(srcBuf);
     if (rv) {
-      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
   }
