@@ -230,6 +230,7 @@ int transportReceiveMessage(AQFINTS_TRANSPORT *trans, GWEN_BUFFER *buffer)
   AQFINTS_TRANSPORT_HBCI *xtrans;
   int rv;
   char header[32];
+  int headerBytesRead;
   int msgSize;
 
   assert(trans);
@@ -251,7 +252,8 @@ int transportReceiveMessage(AQFINTS_TRANSPORT *trans, GWEN_BUFFER *buffer)
     DBG_ERROR(AQFINTS_LOGDOMAIN, "EOF met");
     return GWEN_ERROR_EOF;
   }
-  header[rv]=0;
+  headerBytesRead=rv;
+  header[headerBytesRead]=0;
 
   /* check for beginning of HBCI message */
   if (strncmp(header, "HNHBK:", 6)!=0) {
@@ -273,6 +275,8 @@ int transportReceiveMessage(AQFINTS_TRANSPORT *trans, GWEN_BUFFER *buffer)
 
   /* make room for the rest of the message */
   GWEN_Buffer_AllocRoom(buffer, msgSize);
+
+  GWEN_Buffer_AppendBytes(buffer, header, headerBytesRead);
 
   /* receive rest of the message */
   rv=GWEN_SyncIo_ReadForced(xtrans->ioLayer,
