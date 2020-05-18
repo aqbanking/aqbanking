@@ -15,7 +15,8 @@ fintsdata_DATA=\
   prepare.fints \
   dialogend.fints \
   tan.fints \
-  sync.fints
+  sync.fints \
+  keymgt.fints
 
 
 
