@@ -79,7 +79,7 @@ GWEN_XMLNODE *_mkBankStatementRqNode(AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *
   GWEN_XMLNode_AddChild(xmlMsg, xmlTrnRq);
 
   AO_Provider_Util_SetCurrentTimeValue(xmlTrnRq, AO_User_GetFlags(u), "TRNUID");
-  GWEN_XMLNode_SetCharValue(xmlTrnRq, "CLTCOOKIE","1");
+  GWEN_XMLNode_SetCharValue(xmlTrnRq, "CLTCOOKIE", "1");
 
   xmlRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "STMTRQ");
   GWEN_XMLNode_AddChild(xmlTrnRq, xmlRq);
@@ -135,7 +135,7 @@ GWEN_XMLNODE *_mkCreditCardStatementRqNode(AB_USER *u, AB_ACCOUNT *a, AB_TRANSAC
   GWEN_XMLNode_AddChild(xmlMsg, xmlTrnRq);
 
   AO_Provider_Util_SetCurrentTimeValue(xmlTrnRq, AO_User_GetFlags(u), "TRNUID");
-  GWEN_XMLNode_SetCharValue(xmlTrnRq, "CLTCOOKIE","1");
+  GWEN_XMLNode_SetCharValue(xmlTrnRq, "CLTCOOKIE", "1");
 
   xmlRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "CCSTMTRQ");
   GWEN_XMLNode_AddChild(xmlTrnRq, xmlRq);
@@ -192,7 +192,7 @@ GWEN_XMLNODE *_mkInvestmentStatementRqNode(AB_USER *u, AB_ACCOUNT *a, AB_TRANSAC
   GWEN_XMLNode_AddChild(xmlMsg, xmlTrnRq);
 
   AO_Provider_Util_SetCurrentTimeValue(xmlTrnRq, AO_User_GetFlags(u), "TRNUID");
-  GWEN_XMLNode_SetCharValue(xmlTrnRq, "CLTCOOKIE","1");
+  GWEN_XMLNode_SetCharValue(xmlTrnRq, "CLTCOOKIE", "1");
 
   xmlRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "INVSTMTRQ");
   GWEN_XMLNode_AddChild(xmlTrnRq, xmlRq);

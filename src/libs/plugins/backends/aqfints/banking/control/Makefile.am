@@ -4,10 +4,8 @@ AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
 AM_CPPFLAGS = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_includes) \
   -I$(srcdir)/../.. \
   -I$(srcdir)/.. \
+  -I$(srcdir)/../../libaqfints \
   -I$(top_srcdir)/src/libs/aqbanking
-
-
-DEFS+=-DAH_XMLDATADIR=\"$(aqbanking_data_searchdir)/aqbanking/backends/aqhbci\"
 
 
 noinst_LTLIBRARIES=libafcontrol.la

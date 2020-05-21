@@ -46,7 +46,7 @@ static void showUsage()
                                 "    add a Paypal user and a corresponding account "
                                 "\n\n"));
   GWEN_Buffer_AppendString(ubuf,
-                           I18N("  setsecret:\n"
+                           I18N("  setsecrets:\n"
                                 "    set credentials for Paypal API "
                                 "\n\n"));
 

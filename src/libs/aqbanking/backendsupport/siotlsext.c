@@ -283,19 +283,19 @@ int _checkAutoDecision(const GWEN_SSLCERTDESCR *cert)
         return 1;
       }
       else {
-	DBG_NOTICE(AQBANKING_LOGDOMAIN, "Automatically rejecting certificate [%s] (noninteractive)", sFingerprint);
-	GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning,
-			      "Automatically rejecting certificate [%s] (noninteractive)",
-			      sFingerprint);
-	return GWEN_ERROR_USER_ABORTED;
+        DBG_NOTICE(AQBANKING_LOGDOMAIN, "Automatically rejecting certificate [%s] (noninteractive)", sFingerprint);
+        GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning,
+                              "Automatically rejecting certificate [%s] (noninteractive)",
+                              sFingerprint);
+        return GWEN_ERROR_USER_ABORTED;
       }
     } /* if cert is valid */
     else {
       if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_REJECTINVALIDCERTS) {
         DBG_NOTICE(AQBANKING_LOGDOMAIN, "Automatically rejecting invalid certificate [%s] (noninteractive)", sFingerprint);
-	GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning,
-			      "Automatically rejecting invalid certificate [%s] (noninteractive)",
-			      sFingerprint);
+        GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning,
+                              "Automatically rejecting invalid certificate [%s] (noninteractive)",
+                              sFingerprint);
         return GWEN_ERROR_USER_ABORTED;
       }
     }

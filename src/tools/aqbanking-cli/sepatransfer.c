@@ -74,6 +74,10 @@ int sepaTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
   }
   AB_Transaction_SetUniqueAccountId(t, AB_AccountSpec_GetUniqueId(as));
 
+  /* check for date; if given create a dated transfer */
+  if (AB_Transaction_GetDate(t))
+    AB_Transaction_SetCommand(t, AB_Transaction_CommandCreateDatedTransfer);
+
   /* set local account info from selected AB_ACCOUNT_SPEC */
   AB_Banking_FillTransactionFromAccountSpec(t, as);
 

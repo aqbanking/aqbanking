@@ -134,7 +134,7 @@ int AH_Control_ChangePin(AB_PROVIDER *pro,
 int AH_Control_UnblockPin(AB_PROVIDER *pro,
                           GWEN_DB_NODE *dbArgs,
                           int argc,
-			  char **argv);
+                          char **argv);
 
 
 int AH_Control_GetCert(AB_PROVIDER *pro,

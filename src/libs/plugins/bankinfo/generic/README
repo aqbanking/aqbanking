@@ -13,7 +13,7 @@ folder "data":
 German Banks:
 - blz.csv 
   The most recent CSV file of the Deutsche Bundesbank containing information about German
-  banks from https://www.bundesbank.de/Redaktion/DE/Standardartikel/Aufgaben/Unbarer_Zahlungsverkehr/bankleitzahlen_download.html
+  banks from https://www.bundesbank.de/de/aufgaben/unbarer-zahlungsverkehr/serviceangebot/bankleitzahlen/download-bankleitzahlen-602592)
   (quarterly updates)
 - fints_institute.csv
   CSV file containing information about banks supporting FinTS. This requires a registration via 

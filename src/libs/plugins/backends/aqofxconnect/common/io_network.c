@@ -107,7 +107,8 @@ int AO_Provider_SendAndReceive(AB_PROVIDER *pro, AB_USER *u, const uint8_t *p, u
   /* found a response, transform it */
   *pRbuf=rbuf;
 
-  _probablyWriteToLogFile(sEnvVar, "Received", (const uint8_t*) GWEN_Buffer_GetStart(rbuf), GWEN_Buffer_GetUsedBytes(rbuf));
+  _probablyWriteToLogFile(sEnvVar, "Received", (const uint8_t *) GWEN_Buffer_GetStart(rbuf),
+                          GWEN_Buffer_GetUsedBytes(rbuf));
 
   return 0;
 }
@@ -173,7 +174,7 @@ void _probablyWriteToLogFile(const char *sEnvVar, const char *sCaption, const ui
       fprintf(f, "\n\n%s:\n", sCaption);
       fprintf(f, "-------------------------------------\n");
       if (fwrite(p, len, 1, f)!=1) {
-	DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fwrite: %s", strerror(errno));
+        DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fwrite: %s", strerror(errno));
       }
       if (fclose(f)) {
         DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "fclose: %s", strerror(errno));

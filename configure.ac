@@ -16,10 +16,10 @@ AC_CONFIG_HEADERS([config.h])
 
 AQBANKING_VERSION_MAJOR=6
 AQBANKING_VERSION_MINOR=2
-AQBANKING_VERSION_PATCHLEVEL=0
+AQBANKING_VERSION_PATCHLEVEL=1
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
-AQBANKING_VERSION_TAG="beta"
+AQBANKING_VERSION_TAG="stable"
 
 
 
@@ -34,7 +34,7 @@ AQBANKING_VERSION_TAG="beta"
 
 AQBANKING_SO_CURRENT=46
 AQBANKING_SO_AGE=2
-AQBANKING_SO_REVISION=0
+AQBANKING_SO_REVISION=1
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 
@@ -249,7 +249,7 @@ for f in ${aqbanking_backends}; do
       ;;
     aqfints)
       aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqfints"
-      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqfints/libaqfints.la"
+      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqfints/libaqfintsplugin.la"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQFINTS, 1, [plugin availability])
       ;;
     aqebics)
@@ -280,7 +280,6 @@ AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQNONE, 1, [plugin availability])
 
 AC_SUBST(aqbanking_plugins_backends_dirs)
 AC_SUBST(aqbanking_plugins_backends_libs)
-
 
 
 ###-------------------------------------------------------------------------
@@ -667,6 +666,11 @@ fi
 
 AC_SUBST(aqbanking_data_searchdir)
 AC_MSG_RESULT($aqbanking_data_searchdir)
+
+
+# special variables for AqFinTS
+aqfints_datadir="\$(pkgdatadir)/backends/aqfints"
+AC_SUBST(aqfints_datadir)
 
 
 
@@ -1103,7 +1107,7 @@ AC_MSG_RESULT($aqebics_datadir)
 if test "$with_aqebics" = "yes"; then
   AC_MSG_CHECKING(for build requirements needed by EBICS backend)
   AC_MSG_RESULT()
-  PKG_CHECK_MODULES(XMLSEC,  [xmlsec1-gnutls >= 1.0.0])
+  PKG_CHECK_MODULES(XMLSEC,  [xmlsec1 >= 1.0.0])
   PKG_CHECK_MODULES(LIBXML,  [libxml-2.0])
   PKG_CHECK_MODULES(LIBXSLT, [libxslt])
   AQEBICS_CFLAGS="$XMLSEC_CFLAGS $LIBXML_CFLAGS $LIBXSLT_CFLAGS"
@@ -1327,17 +1331,18 @@ AC_CONFIG_FILES([
   src/libs/plugins/backends/aqebics/requests/Makefile
   src/libs/plugins/backends/aqfints/Makefile
   src/libs/plugins/backends/aqfints/aqfints.xml
-  src/libs/plugins/backends/aqfints/msglayer/Makefile
-  src/libs/plugins/backends/aqfints/msglayer/parser/Makefile
-  src/libs/plugins/backends/aqfints/servicelayer/Makefile
-  src/libs/plugins/backends/aqfints/servicelayer/xml/Makefile
-  src/libs/plugins/backends/aqfints/servicelayer/bpd/Makefile
-  src/libs/plugins/backends/aqfints/servicelayer/upd/Makefile
-  src/libs/plugins/backends/aqfints/transportlayer/Makefile
-  src/libs/plugins/backends/aqfints/sessionlayer/Makefile
-  src/libs/plugins/backends/aqfints/sessionlayer/pintan/Makefile
   src/libs/plugins/backends/aqfints/banking/Makefile
   src/libs/plugins/backends/aqfints/banking/control/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/msglayer/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/parser/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/servicelayer/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/servicelayer/xml/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/servicelayer/bpd/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/servicelayer/upd/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/transportlayer/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/sessionlayer/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/sessionlayer/pintan/Makefile
   src/test/Makefile
   src/tools/Makefile
   src/tools/aqbanking-cli/Makefile

@@ -48,7 +48,7 @@ void AH_Job_Commit_Key(AH_JOB *j, GWEN_DB_NODE *dbRd)
 
   user=AH_Job_GetUser(j);
   hbci=AH_Job_GetHbci(j);
-  
+
   keytype=GWEN_DB_GetCharValue(dbRd, "keyname/keytype",  0, NULL);
   if (keytype && *keytype) {
     GWEN_CRYPT_KEY *bpk;
@@ -60,7 +60,7 @@ void AH_Job_Commit_Key(AH_JOB *j, GWEN_DB_NODE *dbRd)
     int keySize;
     int verified=0;
     GWEN_CRYPT_KEY *bpsk;
-  
+
     /* process received keys */
     keynum=GWEN_DB_GetIntValue(dbRd, "keyname/keynum",  0, -1);
     keyver=GWEN_DB_GetIntValue(dbRd, "keyname/keyversion",  0, -1);
@@ -78,7 +78,7 @@ void AH_Job_Commit_Key(AH_JOB *j, GWEN_DB_NODE *dbRd)
       uint8_t b=*modp;
       int i;
       uint8_t mask=0x80;
-  
+
       for (i=0; i<8; i++) {
         if (b & mask)
           break;
@@ -86,7 +86,7 @@ void AH_Job_Commit_Key(AH_JOB *j, GWEN_DB_NODE *dbRd)
         mask>>=1;
       }
     }
-  
+
     /* calculate key size in bytes */
     if (modl<=96) /* could only be for RDH1, in this case we have to pad to 768 bits */
       keySize=96;
@@ -99,7 +99,7 @@ void AH_Job_Commit_Key(AH_JOB *j, GWEN_DB_NODE *dbRd)
     bpk=GWEN_Crypt_KeyRsa_fromModExp(keySize, modp, modl, expp, expl);
     GWEN_Crypt_Key_SetKeyNumber(bpk, keynum);
     GWEN_Crypt_Key_SetKeyVersion(bpk, keyver);
-  
+
     /* check if it was already verified and saved at the signature verification stage
      * (this is implemented for RDH7 and RDH9 only at the moment) */
     bpsk=AH_User_GetBankPubSignKey(user);
@@ -108,34 +108,34 @@ void AH_Job_Commit_Key(AH_JOB *j, GWEN_DB_NODE *dbRd)
       if (hasVerifiedFlag == GWEN_CRYPT_KEYRSA_FLAGS_ISVERIFIED)
         verified=1;
     }
-  
+
     /* commit the new key */
     if (strcasecmp(keytype, "S")==0) {
       if (verified == 0) {
-	verified=_verifiyInitialKey(user, hbci, bpk, sentModulusLength, "sign");
+        verified=_verifiyInitialKey(user, hbci, bpk, sentModulusLength, "sign");
       }
 
       if (verified == 1) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Imported sign key.");
-	GWEN_Crypt_KeyRsa_AddFlags(bpk, GWEN_CRYPT_KEYRSA_FLAGS_ISVERIFIED);
-	AH_User_SetBankPubSignKey(user, bpk);
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Imported sign key.");
+        GWEN_Crypt_KeyRsa_AddFlags(bpk, GWEN_CRYPT_KEYRSA_FLAGS_ISVERIFIED);
+        AH_User_SetBankPubSignKey(user, bpk);
       }
       else {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Crypt key not imported.");
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Crypt key not imported.");
       }
     }
     else if (strcasecmp(keytype, "V")==0) {
       if (verified == 0) {
         verified = _verifiyInitialKey(user, hbci, bpk, sentModulusLength, "crypt");
       }
-  
+
       if (verified == 1) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Imported crypt key.");
-	GWEN_Crypt_KeyRsa_AddFlags(bpk, GWEN_CRYPT_KEYRSA_FLAGS_ISVERIFIED);
-	AH_User_SetBankPubCryptKey(user, bpk);
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Imported crypt key.");
+        GWEN_Crypt_KeyRsa_AddFlags(bpk, GWEN_CRYPT_KEYRSA_FLAGS_ISVERIFIED);
+        AH_User_SetBankPubCryptKey(user, bpk);
       }
       else {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Crypt key not imported.");
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Crypt key not imported.");
       }
     }
     else {

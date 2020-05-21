@@ -176,6 +176,14 @@
                       <XmlIfHasCharData path="NtryDtls/TxDtls/RltdPties/CdtrAcct/Id/IBAN">
                         <DbSetCharValue name="remoteIban" path="NtryDtls/TxDtls/RltdPties/CdtrAcct/Id/IBAN"/>
                       </XmlIfHasCharData>
+
+                      <XmlIfHasCharData path="NtryDtls/TxDtls/RltdPties/UltmtCdtr/Nm">
+                        <DbSetCharValue name="ultimateCreditor" path="NtryDtls/TxDtls/RltdPties/UltmtCdtr/Nm"/>
+                      </XmlIfHasCharData>
+
+                      <XmlIfHasCharData path="NtryDtls/TxDtls/RltdPties/UltmtDbtrr/Nm">
+                        <DbSetCharValue name="ultimateDebitor" path="NtryDtls/TxDtls/RltdPties/UltmtDbtr/Nm"/>
+                      </XmlIfHasCharData>
             
                       <XmlIfHasCharData path="Amt">
                         <XmlIfHasCharData path="Amt@Ccy">
@@ -207,6 +215,14 @@
                       
                       <XmlIfHasCharData path="NtryDtls/TxDtls/RltdPties/CdtrAcct/Id/IBAN">
                         <DbSetCharValue name="localIban" path="NtryDtls/TxDtls/RltdPties/CdtrAcct/Id/IBAN"/>
+                      </XmlIfHasCharData>
+
+                      <XmlIfHasCharData path="NtryDtls/TxDtls/RltdPties/UltmtCdtr/Nm">
+                        <DbSetCharValue name="ultimateCreditor" path="NtryDtls/TxDtls/RltdPties/UltmtCdtr/Nm"/>
+                      </XmlIfHasCharData>
+
+                      <XmlIfHasCharData path="NtryDtls/TxDtls/RltdPties/UltmtDbtrr/Nm">
+                        <DbSetCharValue name="ultimateDebitor" path="NtryDtls/TxDtls/RltdPties/UltmtDbtr/Nm"/>
                       </XmlIfHasCharData>
             
                       <XmlIfHasCharData path="Amt">

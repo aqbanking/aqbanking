@@ -14,7 +14,7 @@ bankinfodatadir = $(aqbanking_pkgdatadir)/bankinfo
 #DEFS += -DPLUGIN_DATADIR=\"$(bankinfodatadir)\"
 
 
-MKDEINFO=./mkdeinfo
+MKDEINFO=$(top_builddir)/src/tools/mkdeinfo/mkdeinfo
 
 noinst_LTLIBRARIES=libbankinfo_generic.la
 noinst_HEADERS=\
@@ -41,12 +41,12 @@ debankdata_DATA = $(de_files)
 #cabankdata_DATA = $(ca_files)
 
 de.tar.bz2:
-	$MKDEINFO build data/de/blz.csv data/de/fints_institute.csv tmp.banks
+	$(MKDEINFO) build data/de/blz.csv data/de/fints_institute.csv tmp.banks
 	test -d de || mkdir -p de
 	if test -f data/de/aux.conf; then \
-	  $MKDEINFO update tmp.banks data/de/aux.conf tmp.banks; \
+	  $(MKDEINFO) update tmp.banks data/de/aux.conf tmp.banks; \
 	fi
-	$MKDEINFO install tmp.banks de
+	$(MKDEINFO) install tmp.banks de
 	tar cf de.tar de && bzip2 -9 de.tar
 	rm -rf tmp.banks
 

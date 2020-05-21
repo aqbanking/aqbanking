@@ -286,6 +286,8 @@ void AH_EditUserPinTanDialog_Init(GWEN_DIALOG *dlg)
                               0);
   GWEN_Dialog_SetCharProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_AddValue, 0, I18N("tanMechanism|photoTAN"),
                               0);
+  GWEN_Dialog_SetCharProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_AddValue, 0, I18N("tanMechanism|chipTAN USB"),
+                              0);
 
   switch (AH_User_GetSelectedTanInputMechanism(xdlg->user)) {
   case AB_BANKING_TANMETHOD_TEXT:
@@ -299,6 +301,9 @@ void AH_EditUserPinTanDialog_Init(GWEN_DIALOG *dlg)
     break;
   case AB_BANKING_TANMETHOD_PHOTOTAN:
     GWEN_Dialog_SetIntProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_Value, 0, 4, 0);
+    break;
+  case AB_BANKING_TANMETHOD_CHIPTAN_USB:
+    GWEN_Dialog_SetIntProperty(dlg, "tanMechanismCombo", GWEN_DialogProperty_Value, 0, 5, 0);
     break;
   default:
     DBG_WARN(AQHBCI_LOGDOMAIN, "Using default tanMechanism");
@@ -487,6 +492,9 @@ int AH_EditUserPinTanDialog_fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
     break;
   case 4:
     AH_User_SetSelectedTanInputMechanism(xdlg->user, AB_BANKING_TANMETHOD_PHOTOTAN);
+    break;
+  case 5:
+    AH_User_SetSelectedTanInputMechanism(xdlg->user, AB_BANKING_TANMETHOD_CHIPTAN_USB);
     break;
   default:
     AH_User_SetSelectedTanInputMechanism(xdlg->user, 0);

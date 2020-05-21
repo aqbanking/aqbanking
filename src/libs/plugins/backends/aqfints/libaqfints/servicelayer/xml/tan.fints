@@ -1,0 +1,277 @@
+<?xml?>
+
+
+<FinTS>
+  <GROUPs>
+
+    <GROUPdef id="challengeParams" version="1">
+      <DE name="param" type="ascii" maxsize="999" minnum="0" maxnum="99"/>
+    </GROUPdef>
+
+
+    <GROUPdef id="tanMethod" version="1" >
+      <DE name="function" type="num" maxsize="3" />
+      <DE name="process" type="num" size="1" />
+      <DE name="methodId" type="ascii" />
+      <DE name="methodName" type="ascii" maxsize="30" />
+      <DE name="tanMaxLen" type="num" maxsize="2" />
+      <DE name="formatId" type="ascii" />
+      <DE name="prompt" type="ascii" maxsize="30" />
+      <DE name="returnMaxLen" type="num" maxsize="4" />
+      <DE name="maxActiveLists" type="num" size="1" minnum="0" />
+      <DE name="multiTanAllowed" type="alpha" size="1" />
+      <DE name="timeShiftAllowed" type="alpha" size="1" />
+    </GROUPdef>
+
+ 
+    <GROUPdef id="tanMethod" version="2" >
+      <DE name="function" type="num" maxsize="3" />
+      <DE name="process" type="num" size="1" />
+      <DE name="methodId" type="ascii" />
+      <DE name="methodName" type="ascii" maxsize="30" />
+      <DE name="tanMaxLen" type="num" maxsize="2" />
+      <DE name="formatId" type="ascii" />
+      <DE name="prompt" type="ascii" maxsize="30" />
+      <DE name="returnMaxLen" type="num" maxsize="4" />
+      <DE name="maxActiveLists" type="num" size="1" minnum="0" />
+      <DE name="multiTanAllowed" type="alpha" size="1" />
+      <DE name="timeShiftAllowed" type="num" size="3" />
+      <DE name="tanListMode" type="num" size="1" />
+      <DE name="stornoAllowed" type="alpha" size="1" />
+      <DE name="needChallengeClass" type="alpha" size="1" />
+      <DE name="needChallengeAmount" type="alpha" size="1" />
+      <DE name="initMode" type="num" size="3" />
+      <DE name="tanMediumIdNeeded" type="num" size="3" />
+      <DE name="maxActiveMedia" type="num" size="1" minnum="0" />
+    </GROUPdef>
+
+ 
+    <GROUPdef id="tanMethod" version="3" >
+      <DE name="function" type="num" maxsize="3" />
+      <DE name="process" type="num" size="1" />
+      <DE name="methodId" type="ascii" />
+      <DE name="methodName" type="ascii" maxsize="30" />
+      <DE name="tanMaxLen" type="num" maxsize="2" />
+      <DE name="formatId" type="ascii" />
+      <DE name="prompt" type="ascii" maxsize="30" />
+      <DE name="returnMaxLen" type="num" maxsize="4" />
+      <DE name="maxActiveLists" type="num" size="1" minnum="0" />
+      <DE name="multiTanAllowed" type="alpha" size="1" />
+      <DE name="timeShiftAllowed" type="num" size="3" />
+      <DE name="tanListMode" type="num" size="1" />
+      <DE name="stornoAllowed" type="alpha" size="1" />
+      <DE name="needChallengeClass" type="alpha" size="1" />
+      <DE name="needChallengeAmount" type="alpha" size="1" />
+    </GROUPdef>
+
+ 
+    <GROUPdef id="tanMethod" version="4" >
+      <DE      name="function"              type="num" maxsize="3" />
+      <DE      name="process"               type="num" size="1" />
+      <DE      name="methodId"              type="ascii" />
+      <DE      name="zkaTanName"            type="ascii" maxsize="32" minnum="0" />
+      <DE      name="zkaTanVersion"         type="ascii" maxsize="10" minnum="0" />
+      <DE      name="methodName"            type="ascii" maxsize="30" />
+      <DE      name="tanMaxLen"             type="num" maxsize="2" />
+      <DE      name="formatId"              type="ascii" />
+      <DE      name="prompt"                type="ascii" maxsize="30" />
+      <DE      name="returnMaxLen"          type="num" maxsize="4" />
+      <DE      name="maxActiveLists"        type="num" size="1" minnum="0" />
+      <DE      name="multiTanAllowed"       type="alpha" size="1" />
+      <DE      name="timeShiftAllowed"      type="num" size="3" />
+      <DE      name="tanListMode"           type="num" size="1" />
+      <DE      name="stornoAllowed"         type="alpha" size="1" />
+      <DE      name="needSmsAccount"        type="alpha" size="1" />
+      <DE      name="needLocalAccount"      type="alpha" size="1" />
+      <DE      name="needChallengeClass"    type="alpha" size="1" />
+      <DE      name="needChallengeAmount"   type="alpha" size="1" />
+      <DE      name="challengeIsStructured" type="alpha" size="1" />
+      <DE      name="initMode"              type="ascii" maxsize="2" />
+      <DE      name="needTanMediumId"       type="alpha" size="1" />
+      <DE      name="maxActiveTanMedia"     type="ascii" maxsize="16" minnum="0" />
+    </GROUPdef>
+ 
+ 
+    <GROUPdef id="tanMethod" version="5" >
+      <DE      name="function"              type="num" maxsize="3" />
+      <DE      name="process"               type="num" size="1" />
+      <DE      name="methodId"              type="ascii" />
+      <DE      name="zkaTanName"            type="ascii" maxsize="32" minnum="0" />
+      <DE      name="zkaTanVersion"         type="ascii" maxsize="10" minnum="0" />
+      <DE      name="methodName"            type="ascii" maxsize="30" />
+      <DE      name="tanMaxLen"             type="num" maxsize="2" />
+      <DE      name="formatId"              type="ascii" />
+      <DE      name="prompt"                type="ascii" maxsize="30" />
+      <DE      name="returnMaxLen"          type="num" maxsize="4" />
+      <DE      name="maxActiveLists"        type="num" size="1" minnum="0" />
+      <DE      name="multiTanAllowed"       type="alpha" size="1" />
+      <DE      name="timeShiftAllowed"      type="num" size="3" />
+      <DE      name="tanListMode"           type="num" size="1" />
+      <DE      name="stornoAllowed"         type="alpha" size="1" />
+      <DE      name="needSmsAccount"        type="alpha" size="1" />
+      <DE      name="needLocalAccount"      type="alpha" size="1" />
+      <DE      name="needChallengeClass"    type="alpha" size="1" />
+      <DE      name="challengeIsStructured" type="alpha" size="1" />
+      <DE      name="initMode"              type="ascii" maxsize="2" />
+      <DE      name="needTanMediumId"       type="alpha" size="1" />
+      <DE      name="maxActiveTanMedia"     type="ascii" maxsize="16" minnum="0" />
+    </GROUPdef>
+ 
+ 
+    <GROUPdef id="tanMethod" version="6" >
+      <DE      name="function"              type="num"   maxsize="3" />
+      <DE      name="process"               type="num"   size="1" />
+      <DE      name="methodId"              type="ascii" />
+      <DE      name="zkaTanName"            type="ascii" maxsize="32" minnum="0" />
+      <DE      name="zkaTanVersion"         type="ascii" maxsize="10" minnum="0" />
+      <DE      name="methodName"            type="ascii" maxsize="30" />
+      <DE      name="tanMaxLen"             type="num"   maxsize="2" />
+      <DE      name="formatId"              type="num" />                   <!-- 1: numeric, 2:alphanumeric -->
+      <DE      name="prompt"                type="ascii" maxsize="30" />
+      <DE      name="returnMaxLen"          type="num"   maxsize="4" />
+      <DE      name="multiTanAllowed"       type="alpha" size="1" />          <!-- J, N -->
+      <DE      name="timeShiftAllowed"      type="num"   size="3" />          <!-- 1: not allowed, 2: allowed, 3:both allowed -->
+      <DE      name="stornoAllowed"         type="alpha" size="1" />          <!-- J, N -->
+      <DE      name="needSmsAccount"        type="alpha" size="1" />          <!-- 0: must not, 1: may, 2: must -->
+      <DE      name="needLocalAccount"      type="alpha" size="1" />          <!-- 0: must not,         2: must -->
+      <DE      name="needChallengeClass"    type="alpha" size="1" />          <!-- J, N -->
+      <DE      name="challengeIsStructured" type="alpha" size="1" />          <!-- J, N -->
+      <DE      name="initMode"              type="ascii" maxsize="2" />       <!-- 00: PIN, no TAN, 01: Template 01, 02: reserved -->
+      <DE      name="needTanMediumId"       type="alpha" size="1" />          <!-- 0: must not, 1: may, 2: must -->
+      <DE      name="needHhdUcResponse"     type="alpha" size="1" />          <!-- J, N -->
+      <DE      name="maxActiveTanMedia"     type="num"   minnum="0" />
+    </GROUPdef>
+  
+  </GROUPs>
+
+
+
+  <SEGs>
+
+    <SEGdef id="Tan"
+            code="HKTAN"
+            segmentVersion="5"
+    >
+      <DEG     name="head"              type="SegHead" />
+      <DE      name="process"           type="num" size="1" />
+      <DE      name="segmentId"         type="ascii" maxsize="6" minnum="0" />
+      <DEG     name="localAccount"      type="kti" version="1" minnum="0" />
+      <DE      name="jobHash"           type="bin" maxsize="256" minnum="0" />
+      <DE      name="jobReference"      type="ascii" maxsize="35" minnum="0" />
+      <DE      name="tanList"           type="ascii" maxsize="20" minnum="0" />
+      <DE      name="moreTans"          type="ascii" maxsize="1" minnum="0" />
+      <DE      name="storno"            type="ascii" maxsize="1" minnum="0" />
+      <DEG     name="smsAccount"        type="kti" version="1" minnum="0" />
+      <DE      name="challengeClass"    type="num" maxsize="2" minnum="0" />
+      <DEG     name="challengeParams"   type="challengeParams" version="1" minnum="0" />
+      <DE      name="tanMediumId"       type="ascii" maxsize="32" minnum="0" />
+    </SEGdef>
+   
+   
+    <SEGdef id="TanResponse" 
+            code="HITAN" 
+            segmentVersion="5"
+    >
+      <DEG     name="head"              type="SegHead" />
+      <DE      name="process"           type="num" maxsize="1" />
+      <DE      name="jobHash"           type="bin" maxsize="256" minnum="0" />
+      <DE      name="jobReference"      type="ascii" maxsize="35" minnum="0" />
+      <DE      name="challenge"         type="ascii" minnum="0" />
+      <DE      name="challengeHHD"      type="bin" maxsize="10240" minnum="0" />
+      <DEG     minnum="0">
+        <DE    name="expireDate"        type="ascii" minnum="0" />
+        <DE    name="expireTime"        type="ascii" minnum="0" />
+      </DEG>
+   
+      <DE      name="tanList"           type="ascii" maxsize="20" minnum="0" />
+      <DE      name="ben"               type="ascii" maxsize="20" minnum="0" maxnum="99" />
+      <DE      name="tanInfo"           type="ascii" maxsize="99" minnum="0" />
+    </SEGdef>
+
+    
+    <SEGdef code="HITANS" 
+            segmentVersion="5" 
+            isbpdjob="1"
+    >
+      <DEG     name="head"              type="SegHead" />
+      <DE      name="jobspermsg"        type="num" maxsize="3" />
+      <DE      name="minsigs"           type="num" maxsize="1" />
+      <DE      name="securityClass"     type="num" size="1" />
+      <DEG>
+        <DE    name="singleStepAllowed" type="alpha" size="1" />
+        <DE    name="multiJobAllowed"   type="alpha" size="1" />
+        <DE    name="hashMethod"        type="num" size="1" />
+        <GROUP name="tanMethod"         type="tanMethod" version="5" minnum="1" maxnum="98"/>
+      </DEG>
+    </SEGdef>
+
+
+
+
+    <SEGdef id="Tan"
+            code="HKTAN"
+            segmentVersion="6"
+    >
+      <DEG     name="head"                  type="SegHead" />
+      <DE      name="process"               type="num" size="1" />
+      <DE      name="segmentId"             type="ascii" maxsize="6" minnum="0" />
+      <DEG     name="localAccount"          type="kti" version="1" minnum="0" />
+      <DE      name="jobHash"               type="bin" maxsize="256" minnum="0" />
+      <DE      name="jobReference"          type="ascii" maxsize="35" minnum="0" />
+      <DE      name="moreTans"              type="ascii" maxsize="1" minnum="0" />
+      <DE      name="storno"                type="ascii" maxsize="1" minnum="0" />
+      <DEG     name="smsAccount"            type="kti" version="1" minnum="0" />
+      <DE      name="challengeClass"        type="num" maxsize="2" minnum="0" />
+      <DEG     name="challengeParams"       type="challengeParams" version="1" minnum="0" />
+      <DE      name="tanMediumId"           type="ascii" maxsize="32" minnum="0" />
+  
+      <DEG minnum="0">
+        <DE    name="atc"                   type="alpha" maxsize="5" minsize="0" />
+        <DE    name="appCryptogram"         type="bin" maxsize="256" minnum="1" />
+        <DE    name="ef_id_data"            type="bin" maxsize="256" minnum="1" />
+        <DE    name="cvr"                   type="bin" maxsize="256" minnum="1" />
+        <DE    name="chipTanAppVersionInfo" type="bin" maxsize="256" minnum="1" />
+      </DEG>
+    </SEGdef>
+   
+   
+    <SEGdef id="TanResponse" 
+            code="HITAN" 
+            segmentVersion="6"
+    >
+      <DEG     name="head"              type="SegHead" />
+      <DE      name="process"           type="num" maxsize="1" />
+      <DE      name="jobHash"           type="bin" maxsize="256" minnum="0" />
+      <DE      name="jobReference"      type="ascii" maxsize="35" minnum="0" />
+      <DE      name="challenge"         type="ascii" minnum="0" />
+      <DE      name="challengeHHD"      type="bin" maxsize="10240" minnum="0" />
+      <DEG     minnum="0">
+        <DE    name="expireDate"        type="ascii" minnum="0" />
+        <DE    name="expireTime"        type="ascii" minnum="0" />
+      </DEG>
+   
+      <DE name="tanMediumId"            type="ascii" maxsize="32" minnum="0" />
+    </SEGdef>
+
+    
+    <SEGdef code="HITANS" 
+            segmentVersion="6"
+            isbpdjob="1"
+    >
+      <DEG     name="head"              type="SegHead" />
+      <DE      name="jobspermsg" type="num" maxsize="3" />
+      <DE      name="minsigs" type="num" maxsize="1" />
+      <DE      name="securityClass" type="num" size="1" />
+      <DEG>
+        <DE    name="singleStepAllowed" type="alpha" size="1" />
+        <DE    name="multiJobAllowed" type="alpha" size="1" />
+        <DE    name="hashMethod" type="num" size="1" /> <!-- 0 none, 1: RMD160, 2:SHA-1 -->
+        <GROUP type="tanMethod" version="6" name="tanMethod" minnum="1" maxnum="98" />
+      </DEG>
+    </SEGdef>
+
+
+  </SEGs>
+
+
+</FinTS>

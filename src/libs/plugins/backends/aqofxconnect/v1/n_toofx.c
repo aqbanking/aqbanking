@@ -60,7 +60,7 @@ int _writeToStream(const GWEN_XMLNODE *n, GWEN_BUFFER *buf, const char *encoding
 
   assert(n);
 
-  switch(GWEN_XMLNode_GetType(n)) {
+  switch (GWEN_XMLNode_GetType(n)) {
   case GWEN_XMLNodeTypeTag:
     rv=_writeElementToStream(n, buf, encoding);
     if (rv<0) {

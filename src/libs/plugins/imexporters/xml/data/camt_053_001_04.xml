@@ -167,10 +167,20 @@
                     <XmlIfHasCharData path="RltdPties/Cdtr/Nm">
                       <DbSetCharValue name="remoteName" path="RltdPties/Cdtr/Nm"/>
                     </XmlIfHasCharData>
+
                     <XmlIfHasCharData path="RltdPties/CdtrAcct/Id/IBAN">
                       <DbSetCharValue name="remoteIban" path="RltdPties/CdtrAcct/Id/IBAN"/>
                     </XmlIfHasCharData>
-          
+                    
+                    <XmlIfHasCharData path="RltdPties/UltmtCdtr/Nm">
+                      <DbSetCharValue name="ultimateCreditor" path="RltdPties/UltmtCdtr/Nm"/>
+                    </XmlIfHasCharData>
+
+                    <XmlIfHasCharData path="RltdPties/UltmtDbtrr/Nm">
+                      <DbSetCharValue name="ultimateDebitor" path="RltdPties/UltmtDbtr/Nm"/>
+                    </XmlIfHasCharData>
+                    
+
                     <XmlIfHasCharData path="Amt">
                       <XmlIfHasCharData path="Amt@Ccy">
                         <DbCreateAndEnterTempGroup name="amount" >
@@ -198,10 +208,18 @@
                     <XmlIfHasCharData path="RltdPties/Cdtr/Nm">
                       <DbSetCharValue name="localName" path="RltdPties/Cdtr/Nm"/>
                     </XmlIfHasCharData>
+
                     <XmlIfHasCharData path="RltdPties/CdtrAcct/Id/IBAN">
                       <DbSetCharValue name="localIban" path="RltdPties/CdtrAcct/Id/IBAN"/>
                     </XmlIfHasCharData>
   
+                    <XmlIfHasCharData path="RltdPties/UltmtCdtr/Nm">
+                      <DbSetCharValue name="ultimateCreditor" path="RltdPties/UltmtCdtr/Nm"/>
+                    </XmlIfHasCharData>
+
+                    <XmlIfHasCharData path="RltdPties/UltmtDbtrr/Nm">
+                      <DbSetCharValue name="ultimateDebitor" path="RltdPties/UltmtDbtr/Nm"/>
+                    </XmlIfHasCharData>
           
                     <XmlIfHasCharData path="Amt">
                       <XmlIfHasCharData path="Amt@Ccy">

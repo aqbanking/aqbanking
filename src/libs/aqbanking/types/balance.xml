@@ -177,6 +177,8 @@
         <item name="bankLine"/>
         <item name="disposable"/>
         <item name="temporary"/>
+        <item name="dayStart"/>
+        <item name="dayEnd"/>
       </enum>
 
     </enums>

@@ -27,6 +27,8 @@ int AH_Job_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
   assert(j);
   assert(j->usage);
 
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Processing job \"%s\" (%llu)", AH_Job_GetName(j), (unsigned long long int) AH_Job_GetId(j));
+
   AH_Job_SampleResults(j);
 
   if (j->processFn)
@@ -289,7 +291,7 @@ int AH_Job_HandleResults_Empty(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
         DBG_INFO(AQBANKING_LOGDOMAIN, "Has10: %d (%s)", rcode, AH_Result_GetText(r));
         has10=1;
       }
-      else if (rcode>=20 && rcode <=29) {
+      else if ((rcode>=20 && rcode <=29) || rcode==3010) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "Has20: %d (%s)", rcode, AH_Result_GetText(r));
         has20=1;
       }

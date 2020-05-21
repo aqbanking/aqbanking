@@ -55,7 +55,7 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
   tmplString=GWEN_DB_GetCharValue(db, "template", 0,
                                   "$(dateAsString)\t"
                                   "$(valueAsString)\t"
-                                  "$(iban)");
+                                  "$(ibanOrAccountNumber)");
 
   /* determine balance type */
   s=GWEN_DB_GetCharValue(db, "balanceType", 0, "booked");
@@ -119,6 +119,12 @@ int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
       s=AB_ImExporterAccountInfo_GetIban(iea);
       if (s && *s)
         GWEN_DB_SetCharValue(dbAccount, GWEN_DB_FLAGS_OVERWRITE_VARS, "iban", s);
+
+      s=AB_ImExporterAccountInfo_GetIban(iea);
+      if (!(s && *s))
+        s=AB_ImExporterAccountInfo_GetAccountNumber(iea);
+      if (s && *s)
+        GWEN_DB_SetCharValue(dbAccount, GWEN_DB_FLAGS_OVERWRITE_VARS, "ibanOrAccountNumber", s);
 
       bal=AB_Balance_List_GetLatestByType(AB_ImExporterAccountInfo_GetBalanceList(iea), bt);
       if (bal) {
