@@ -291,7 +291,7 @@ int AH_Job_HandleResults_Empty(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
         DBG_INFO(AQBANKING_LOGDOMAIN, "Has10: %d (%s)", rcode, AH_Result_GetText(r));
         has10=1;
       }
-      else if (rcode>=20 && rcode <=29) {
+      else if ((rcode>=20 && rcode <=29) || rcode==3010) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "Has20: %d (%s)", rcode, AH_Result_GetText(r));
         has20=1;
       }
