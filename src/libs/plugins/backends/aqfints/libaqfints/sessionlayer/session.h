@@ -19,6 +19,7 @@
 #include "transportlayer/transport.h"
 #include "servicelayer/upd/userdata.h"
 #include "servicelayer/bpd/bpd.h"
+#include "sessionlayer/cryptparams.h"
 
 #include <aqbanking/error.h>
 
@@ -73,23 +74,23 @@ typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_ENCRYPT_SKEY_FN)(AQFINTS_SESSION *ses
                                                             uint8_t *pOutData,
                                                             uint32_t *pOutLen);
 
-typedef int GWENHYWFAR_CB(AQFINTS_SESSION_SIGN_FN)(AQFINTS_SESSION *sess,
-                                                   AQFINTS_KEYDESCR *keyDescr,
-                                                   GWEN_CRYPT_PADDALGO *a,
-                                                   const uint8_t *pInData,
-                                                   uint32_t inLen,
-                                                   uint8_t *pSignatureData,
-                                                   uint32_t *pSignatureLen,
-                                                   uint32_t *pSeqCounter);
+typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_SIGN_FN)(AQFINTS_SESSION *sess,
+                                                    const AQFINTS_KEYDESCR *keyDescr,
+                                                    const AQFINTS_CRYPTPARAMS *cryptParams,
+                                                    const uint8_t *pInData,
+                                                    uint32_t inLen,
+                                                    uint8_t *pSignatureData,
+                                                    uint32_t *pSignatureLen);
 
-typedef int GWENHYWFAR_CB(AQFINTS_SESSION_VERIFY_FN)(AQFINTS_SESSION *sess,
-                                                     AQFINTS_KEYDESCR *keyDescr,
-                                                     GWEN_CRYPT_PADDALGO *a,
-                                                     const uint8_t *pInData,
-                                                     uint32_t inLen,
-                                                     const uint8_t *pSignatureData,
-                                                     uint32_t signatureLen,
-                                                     uint32_t seqCounter);
+
+typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_VERIFY_FN)(AQFINTS_SESSION *sess,
+                                                      AQFINTS_KEYDESCR *keyDescr,
+                                                      const AQFINTS_CRYPTPARAMS *cryptParams,
+                                                      const uint8_t *pInData,
+                                                      uint32_t inLen,
+                                                      const uint8_t *pSignatureData,
+                                                      uint32_t signatureLen,
+                                                      uint32_t seqCounter);
 
 
 
@@ -204,6 +205,15 @@ int AQFINTS_Session_DecryptSessionKey(AQFINTS_SESSION *sess,
 int AQFINTS_Session_VerifyPin(AQFINTS_SESSION *sess, const AQFINTS_KEYDESCR *keyDescr, const char *pin);
 
 
+int AQFINTS_Session_Sign(AQFINTS_SESSION *sess,
+                         const AQFINTS_KEYDESCR *keyDescr,
+                         const AQFINTS_CRYPTPARAMS *cryptParams,
+                         const uint8_t *pInData,
+                         uint32_t inLen,
+                         uint8_t *pSignatureData,
+                         uint32_t *pSignatureLen);
+
+
 /*@}*/
 
 
@@ -225,6 +235,9 @@ AQFINTS_SESSION_VERIFYPIN_FN AQFINTS_Session_SetVerifyPinFn(AQFINTS_SESSION *ses
 
 AQFINTS_SESSION_FILLOUT_KEYDESCR_FN AQFINTS_Session_SetFilloutKeynameFn(AQFINTS_SESSION *sess,
                                                                        AQFINTS_SESSION_FILLOUT_KEYDESCR_FN fn);
+
+AQFINTS_SESSION_SIGN_FN AQFINTS_Session_SetSignFn(AQFINTS_SESSION *sess, AQFINTS_SESSION_SIGN_FN fn);
+
 
 /*@}*/
 

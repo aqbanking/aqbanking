@@ -1,4 +1,4 @@
-SUBDIRS=pintan
+SUBDIRS=pintan hbci
 
 
 AM_CFLAGS=-DBUILDING_AQBANKING @visibility_cflags@
@@ -11,7 +11,9 @@ AM_CPPFLAGS = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_i
 noinst_LTLIBRARIES=libaqfintssession.la
 
 
-typefiles=
+typefiles=\
+  cryptparams.xml
+
 
 
 
@@ -20,14 +22,17 @@ dist_typedata_DATA=
 
 
 
-built_sources=
+built_sources=\
+  cryptparams.c
 
 
-build_headers_priv=
+build_headers_priv=\
+  cryptparams_p.h
 
 
 
-build_headers_pub=
+build_headers_pub=\
+  cryptparams.h
 
 
 
@@ -66,7 +71,8 @@ libaqfintssession_la_SOURCES=$(built_sources) \
 
 
 libaqfintssession_la_LIBADD=\
-  pintan/libaqfintssession_pin.la
+  pintan/libaqfintssession_pin.la \
+  hbci/libaqfintssession_hbci.la
 
 
 
@@ -101,13 +107,13 @@ typefiles: $(typefiles)
 	for d in $(SUBDIRS); do \
 	  $(MAKE) -C $$d typefiles; \
 	done
-#	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(gwenhywfar_dir)/share/gwenhywfar/typemaker2/c -I $(srcdir) -I $(srcdir)../msglayer/parser -I $(srcdir)/../typemaker2 --destfolder="$(srcdir)" $(typefiles)
+	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(gwenhywfar_dir)/share/gwenhywfar/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" $(typefiles)
 
 typedefs: $(typefiles)
 	for d in $(SUBDIRS); do \
 	  $(MAKE) -C $$d typedefs; \
 	done
-#	$(typemaker2_exe) --defs-only -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(gwenhywfar_dir)/share/gwenhywfar/typemaker2/c -I $(srcdir) -I $(srcdir)../msglayer/parser -I $(srcdir)/../typemaker2 --destfolder="$(srcdir)" $(typefiles)
+	$(typemaker2_exe) --defs-only -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(gwenhywfar_dir)/share/gwenhywfar/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" $(typefiles)
 
 
 cppcheck:

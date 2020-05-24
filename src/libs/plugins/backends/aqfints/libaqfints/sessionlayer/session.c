@@ -324,6 +324,27 @@ int AQFINTS_Session_VerifyPin(AQFINTS_SESSION *sess, const AQFINTS_KEYDESCR *key
 
 
 
+int AQFINTS_Session_Sign(AQFINTS_SESSION *sess,
+                         const AQFINTS_KEYDESCR *keyDescr,
+                         const AQFINTS_CRYPTPARAMS *cryptParams,
+                         const uint8_t *pInData,
+                         uint32_t inLen,
+                         uint8_t *pSignatureData,
+                         uint32_t *pSignatureLen)
+{
+  assert(sess);
+  if (sess->signFn)
+    return sess->signFn(sess, keyDescr, cryptParams, pInData, inLen, pSignatureData, pSignatureLen);
+  else
+    return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
+
+
+
+
 
 
 
@@ -348,6 +369,18 @@ AQFINTS_SESSION_FILLOUT_KEYDESCR_FN AQFINTS_Session_SetFilloutKeynameFn(AQFINTS_
   assert(sess);
   oldFn=sess->filloutKeynameFn;
   sess->filloutKeynameFn=fn;
+  return oldFn;
+}
+
+
+
+AQFINTS_SESSION_SIGN_FN AQFINTS_Session_SetSignFn(AQFINTS_SESSION *sess, AQFINTS_SESSION_SIGN_FN fn)
+{
+  AQFINTS_SESSION_SIGN_FN oldFn;
+
+  assert(sess);
+  oldFn=sess->signFn;
+  sess->signFn=fn;
   return oldFn;
 }
 
