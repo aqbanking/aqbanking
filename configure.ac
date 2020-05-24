@@ -1343,6 +1343,7 @@ AC_CONFIG_FILES([
   src/libs/plugins/backends/aqfints/libaqfints/transportlayer/Makefile
   src/libs/plugins/backends/aqfints/libaqfints/sessionlayer/Makefile
   src/libs/plugins/backends/aqfints/libaqfints/sessionlayer/pintan/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/sessionlayer/hbci/Makefile
   src/test/Makefile
   src/tools/Makefile
   src/tools/aqbanking-cli/Makefile
