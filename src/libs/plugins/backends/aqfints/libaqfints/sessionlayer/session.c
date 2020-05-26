@@ -298,7 +298,7 @@ int AQFINTS_Session_FilloutKeyname(AQFINTS_SESSION *sess, AQFINTS_KEYDESCR *keyD
 
 int AQFINTS_Session_DecryptSessionKey(AQFINTS_SESSION *sess,
                                       AQFINTS_KEYDESCR *keyDescr,
-                                      GWEN_CRYPT_PADDALGO *paddAlgo,
+                                      const AQFINTS_CRYPTPARAMS *cryptParams,
                                       const uint8_t *pInData,
                                       uint32_t inLen,
                                       uint8_t *pOutData,
@@ -306,7 +306,7 @@ int AQFINTS_Session_DecryptSessionKey(AQFINTS_SESSION *sess,
 {
   assert(sess);
   if (sess->decryptSessionKeyFn)
-      return sess->decryptSessionKeyFn(sess, keyDescr, paddAlgo, pInData, inLen, pOutData, pOutLen);
+      return sess->decryptSessionKeyFn(sess, keyDescr, cryptParams, pInData, inLen, pOutData, pOutLen);
   else
     return GWEN_ERROR_NOT_IMPLEMENTED;
 }

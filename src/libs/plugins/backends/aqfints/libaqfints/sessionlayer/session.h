@@ -60,7 +60,7 @@ typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_FILLOUT_KEYDESCR_FN)(AQFINTS_SESSION 
 
 typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_DECRYPT_SKEY_FN)(AQFINTS_SESSION *sess,
                                                             AQFINTS_KEYDESCR *keyDescr,
-                                                            GWEN_CRYPT_PADDALGO *paddAlgo,
+                                                            const AQFINTS_CRYPTPARAMS *cryptParams,
                                                             const uint8_t *pInData,
                                                             uint32_t inLen,
                                                             uint8_t *pOutData,
@@ -197,7 +197,7 @@ int AQFINTS_Session_FilloutKeyname(AQFINTS_SESSION *sess, AQFINTS_KEYDESCR *keyD
 
 int AQFINTS_Session_DecryptSessionKey(AQFINTS_SESSION *sess,
                                       AQFINTS_KEYDESCR *keyDescr,
-                                      GWEN_CRYPT_PADDALGO *paddAlgo,
+                                      const AQFINTS_CRYPTPARAMS *cryptParams,
                                       const uint8_t *pInData,
                                       uint32_t inLen,
                                       uint8_t *pOutData,
