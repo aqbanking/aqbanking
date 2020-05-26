@@ -149,7 +149,7 @@
                if (stl) {
                  $(struct_type) *segment;
                
-                 segment=$(struct_prefix)_List_Last(stl);
+                 segment=$(struct_prefix)_List_First(stl);
                  while(segment) {
                    flags|=$(struct_prefix)_GetFlags(segment);
                    segment=$(struct_prefix)_List_Next(segment);
@@ -183,7 +183,7 @@
                if (stl) {
                  $(struct_type) *segment;
                
-                 segment=$(struct_prefix)_List_Last(stl);
+                 segment=$(struct_prefix)_List_First(stl);
                  while(segment) {
                    len+=segment-&gt;data.length;
                    segment=$(struct_prefix)_List_Next(segment);
