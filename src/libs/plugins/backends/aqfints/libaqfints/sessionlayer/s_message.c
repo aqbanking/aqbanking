@@ -60,6 +60,7 @@ int AQFINTS_Session_WrapMessageHeadAndTail(AQFINTS_SESSION *sess,
 
   /* take msg tail into account */
   msgSizeWithoutHead=AQFINTS_Segment_List_SampleSizes(segmentList);
+  DBG_ERROR(AQFINTS_LOGDOMAIN, "======= Message size so far is: %d ======", msgSizeWithoutHead);
 
   /* create and insert msg tail */
   segment=createMessageHead(sess, dialogId, msgNum, refMsgNum, msgSizeWithoutHead);
@@ -108,8 +109,10 @@ AQFINTS_SEGMENT *createMessageHead(AQFINTS_SESSION *sess,
   GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "hversion", hbciVersion);
   GWEN_DB_SetCharValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "dialogId", dialogId?dialogId:"0");
   GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "msgnum", msgNum);
-  if (refMsgNum)
-    GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "msgref", refMsgNum);
+  if (refMsgNum) {
+    GWEN_DB_SetCharValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "msgref/dialogId", dialogId?dialogId:"0");
+    GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "msgref/msgnum", refMsgNum);
+  }
 
   /* create temporary version to determine the full message size */
   rv=AQFINTS_Session_WriteSegment(sess, segment);
