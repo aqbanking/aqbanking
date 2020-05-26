@@ -14,7 +14,8 @@
 
 
 
-#define AQFINTS_LOGDOMAIN "aqfints"
+#define AQFINTS_LOGDOMAIN         "aqfints"
+#define AQFINTS_PARSER_LOGDOMAIN "aqfints-parser"
 
 
 

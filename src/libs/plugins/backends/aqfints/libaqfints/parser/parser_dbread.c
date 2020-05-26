@@ -50,7 +50,7 @@ int AQFINTS_Parser_Db_ReadSegment(AQFINTS_SEGMENT *definitionSegment, AQFINTS_SE
   elementData=AQFINTS_Segment_GetElements(dataSegment);
   rv=readSeg(elementDefinition, elementData, db);
   if (rv<0) {
-    DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+    DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
@@ -73,13 +73,13 @@ int readSeg(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementData, GW
 
     childDefinitionData=AQFINTS_Element_Tree2_GetFirstChild(elementDefinition);
     if (childDefinitionData==NULL) {
-      DBG_ERROR(AQFINTS_LOGDOMAIN, "DEG Definition has no children");
+      DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "DEG Definition has no children");
       return GWEN_ERROR_BAD_DATA;
     }
 
     childElementData=AQFINTS_Element_Tree2_GetFirstChild(elementData);
     if (childElementData==NULL) {
-      DBG_ERROR(AQFINTS_LOGDOMAIN, "DEG Data has no children");
+      DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "DEG Data has no children");
       return GWEN_ERROR_BAD_DATA;
     }
 
@@ -89,17 +89,17 @@ int readSeg(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementData, GW
       dbForDeg=db;
     rv=readDegSequence(childDefinitionData, &childElementData, dbForDeg);
     if (rv<0) {
-      DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+      DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
 
     if (childElementData) {
-      DBG_ERROR(AQFINTS_LOGDOMAIN, "Too many data elements for definition element \"%s\"", sDbName?sDbName:"unnamed");
+      DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Too many data elements for definition element \"%s\"", sDbName?sDbName:"unnamed");
       return GWEN_ERROR_BAD_DATA;
     }
   }
   else {
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "No data elements for definition element \"%s\"", sDbName?sDbName:"unnamed");
+    DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "No data elements for definition element \"%s\"", sDbName?sDbName:"unnamed");
     return GWEN_ERROR_BAD_DATA;
   }
 
@@ -137,7 +137,7 @@ int readDegSequence(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT **pEleme
           dbForGroup=db;
         rv=readDegSequence(childElementDefinition, &elementData, dbForGroup);
         if (rv<0) {
-          DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+          DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "here (%d)", rv);
           return rv;
         }
       }
@@ -148,13 +148,13 @@ int readDegSequence(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT **pEleme
       if (elementData) {
         rv=readDeg(elementDefinition, &elementData, db);
         if (rv<0) {
-          DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+          DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "here (%d)", rv);
           return rv;
         }
       }
       else {
         if (minNum>0) {
-          DBG_ERROR(AQFINTS_LOGDOMAIN, "Too few data elements for definition element \"%s\"", sDbName?sDbName:"unnamed");
+          DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Too few data elements for definition element \"%s\"", sDbName?sDbName:"unnamed");
           AQFINTS_Parser_DumpContext(elementDefinition, elementData, NULL, 2);
           return GWEN_ERROR_BAD_DATA;
         }
@@ -184,25 +184,25 @@ int readDeg(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT **pElementData, 
   maxNum=AQFINTS_Element_GetMaxNum(elementDefinition);
   sType=AQFINTS_Element_GetType(elementDefinition);
 
-  DBG_ERROR(AQFINTS_LOGDOMAIN, "Reading DEG (name=%s, type=%s)", sDbName?sDbName:"(unnamed)", sType?sType:"(unnamed)");
+  DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "Reading DEG (name=%s, type=%s)", sDbName?sDbName:"(unnamed)", sType?sType:"(unnamed)");
 
   while (elementData) {
     AQFINTS_ELEMENT *childElementData;
 
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "Reading DEG %d (name=%s, type=%s)", idx, sDbName?sDbName:"(unnamed)", sType?sType:"(unnamed)");
-    AQFINTS_Parser_DumpContext(elementDefinition, elementData, NULL, 2);
+    DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "Reading DEG %d (name=%s, type=%s)", idx, sDbName?sDbName:"(unnamed)", sType?sType:"(unnamed)");
+    /*AQFINTS_Parser_DumpContext(elementDefinition, elementData, NULL, 2);*/
 
     childElementData=AQFINTS_Element_Tree2_GetFirstChild(elementData);
     if (childElementData==NULL) {
-      DBG_ERROR(AQFINTS_LOGDOMAIN, "DEG Data has no children, checking for fillers");
+      DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "DEG Data has no children, checking for fillers");
       if (maxNum) {
         int j;
 
         /* empty element, and there is a maxnum, so these might be fillers */
         for (j=idx; j<maxNum; j++) {
-          DBG_ERROR(AQFINTS_LOGDOMAIN, "Skipping element %d (%d)", j+1, j-idx+1);
+          DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "Skipping element %d (%d)", j+1, j-idx+1);
           if (AQFINTS_Element_Tree2_GetFirstChild(elementData)!=NULL) {
-            DBG_ERROR(AQFINTS_LOGDOMAIN, "Element %d (%d) is not expected to have sub elements", j, j-idx);
+            DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Element %d (%d) is not expected to have sub elements", j, j-idx);
             return GWEN_ERROR_BAD_DATA;
           }
           elementData=AQFINTS_Element_Tree2_GetNext(elementData);
@@ -218,7 +218,7 @@ int readDeg(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT **pElementData, 
 
       childDefinitionData=AQFINTS_Element_Tree2_GetFirstChild(elementDefinition);
       if (childDefinitionData==NULL) {
-        DBG_ERROR(AQFINTS_LOGDOMAIN, "DEG Definition has no children");
+        DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "DEG Definition has no children");
         return GWEN_ERROR_BAD_DATA;
       }
 
@@ -226,17 +226,17 @@ int readDeg(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT **pElementData, 
         dbForDeg=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_CREATE_GROUP, sDbName);
       else
         dbForDeg=db;
-      DBG_ERROR(AQFINTS_LOGDOMAIN, "Entering sequence for DEG %d (name=%s, type=%s)", idx, sDbName?sDbName:"(unnamed)",
-                sType?sType:"(unnamed)");
+      DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "Entering sequence for DEG %d (name=%s, type=%s)", idx, sDbName?sDbName:"(unnamed)",
+               sType?sType:"(unnamed)");
       rv=readDeSequence(childDefinitionData, &childElementData, dbForDeg);
-      DBG_ERROR(AQFINTS_LOGDOMAIN, "Left sequence for DEG (name=%s)", sDbName?sDbName:"(unnamed)");
+      DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "Left sequence for DEG (name=%s)", sDbName?sDbName:"(unnamed)");
       if (rv<0) {
-        DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+        DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "here (%d)", rv);
         return rv;
       }
 
       if (childElementData) {
-        DBG_ERROR(AQFINTS_LOGDOMAIN, "Too many data elements for definition element \"%s\"", sDbName?sDbName:"unnamed");
+        DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Too many data elements for definition element \"%s\"", sDbName?sDbName:"unnamed");
         return GWEN_ERROR_BAD_DATA;
       }
     }
@@ -247,7 +247,7 @@ int readDeg(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT **pElementData, 
   }
 
   if (minNum && idx<minNum) {
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "Too few data elements for DEG definition element \"%s\"", sDbName?sDbName:"unnamed");
+    DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Too few data elements for DEG definition element \"%s\"", sDbName?sDbName:"unnamed");
     return GWEN_ERROR_BAD_DATA;
   }
 
@@ -272,7 +272,7 @@ int readDeGroup(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT **pElementDa
   minNum=AQFINTS_Element_GetMinNum(elementDefinition);
   maxNum=AQFINTS_Element_GetMaxNum(elementDefinition);
 
-  DBG_ERROR(AQFINTS_LOGDOMAIN, "Reading group (name=%s, type=%s)", sDbName?sDbName:"(unnamed)", sType?sType:"(unnamed)");
+  DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "Reading group (name=%s, type=%s)", sDbName?sDbName:"(unnamed)", sType?sType:"(unnamed)");
 
   while (elementData) {
     AQFINTS_ELEMENT *childDefinitionData;
@@ -281,7 +281,7 @@ int readDeGroup(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT **pElementDa
 
     childDefinitionData=AQFINTS_Element_Tree2_GetFirstChild(elementDefinition);
     if (childDefinitionData==NULL) {
-      DBG_ERROR(AQFINTS_LOGDOMAIN, "DEG Definition has no children");
+      DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "DEG Definition has no children");
       return GWEN_ERROR_BAD_DATA;
     }
 
@@ -289,11 +289,11 @@ int readDeGroup(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT **pElementDa
       dbForDeg=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_CREATE_GROUP, sDbName);
     else
       dbForDeg=db;
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "Entering sequence for group (name=%s)", sDbName?sDbName:"(unnamed)");
+    DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "Entering sequence for group (name=%s)", sDbName?sDbName:"(unnamed)");
     rv=readDeSequence(childDefinitionData, &elementData, dbForDeg);
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "Left sequence for group (name=%s)", sDbName?sDbName:"(unnamed)");
+    DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "Left sequence for group (name=%s)", sDbName?sDbName:"(unnamed)");
     if (rv<0) {
-      DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+      DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
 #if 0
@@ -306,7 +306,7 @@ int readDeGroup(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT **pElementDa
   }
 
   if (minNum && idx<minNum) {
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "Too few data DE group elements for definition element \"%s\"", sDbName?sDbName:"unnamed");
+    DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Too few data DE group elements for definition element \"%s\"", sDbName?sDbName:"unnamed");
     AQFINTS_Parser_DumpContext(elementDefinition, elementData, db, 2);
     return GWEN_ERROR_BAD_DATA;
   }
@@ -321,7 +321,7 @@ int readDeSequence(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT **pElemen
 {
   AQFINTS_ELEMENT *elementData;
 
-  DBG_ERROR(AQFINTS_LOGDOMAIN, "Reading DE sequence");
+  DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "Reading DE sequence");
   elementData=*pElementData;
 
   while (elementDefinition) {
@@ -331,14 +331,14 @@ int readDeSequence(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT **pElemen
     sDbName=AQFINTS_Element_GetName(elementDefinition);
     minNum=AQFINTS_Element_GetMinNum(elementDefinition);
 
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "Handling DE sequence element (name=%s)", sDbName?sDbName:"(unnamed)");
+    DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "Handling DE sequence element (name=%s)", sDbName?sDbName:"(unnamed)");
 
     if (AQFINTS_Element_GetElementType(elementDefinition)==AQFINTS_ElementType_Group) {
       int rv;
 
       rv=readDeGroup(elementDefinition, &elementData, db);
       if (rv<0) {
-        DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+        DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "here (%d)", rv);
         return rv;
       }
     } /* if group */
@@ -348,13 +348,13 @@ int readDeSequence(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT **pElemen
       if (elementData) {
         rv=readDe(elementDefinition, &elementData, db);
         if (rv<0) {
-          DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+          DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "here (%d)", rv);
           return rv;
         }
       }
       else {
         if (minNum>0) {
-          DBG_ERROR(AQFINTS_LOGDOMAIN, "Too few data elements for definition element \"%s\"", sDbName?sDbName:"unnamed");
+          DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Too few data elements for definition element \"%s\"", sDbName?sDbName:"unnamed");
           AQFINTS_Parser_DumpContext(elementDefinition, elementData, db, 2);
           return GWEN_ERROR_BAD_DATA;
         }
@@ -384,7 +384,7 @@ int readDe(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT **pElementData, G
   minNum=AQFINTS_Element_GetMinNum(elementDefinition);
   maxNum=AQFINTS_Element_GetMaxNum(elementDefinition);
 
-  DBG_ERROR(AQFINTS_LOGDOMAIN, "Reading DE (name=%s)", sDbName?sDbName:"(unnamed)");
+  DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "Reading DE (name=%s)", sDbName?sDbName:"(unnamed)");
 
   while (elementData) {
     if (sDbName && *sDbName) {
@@ -394,7 +394,7 @@ int readDe(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT **pElementData, G
         sData=AQFINTS_Element_GetDataAsChar(elementData, NULL);
         if (sData && *sData) {
           // TODO: check limits
-          DBG_ERROR(AQFINTS_LOGDOMAIN, "Read char value %s", sData);
+          DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "Read char value %s", sData);
           GWEN_DB_SetCharValue(db, 0, sDbName, sData);
         }
       }
@@ -411,7 +411,7 @@ int readDe(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT **pElementData, G
           GWEN_DB_SetBinValue(db, 0, sDbName, (const void *) val, valSize);
       }
       else {
-        DBG_ERROR(AQFINTS_LOGDOMAIN, "Unknown data type \"%s\"", sType);
+        DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Unknown data type \"%s\"", sType);
         return GWEN_ERROR_BAD_DATA;
       }
     }
@@ -421,10 +421,10 @@ int readDe(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT **pElementData, G
     if (maxNum && idx>=maxNum)
       break;
   }
-  DBG_ERROR(AQFINTS_LOGDOMAIN, "Read DE %d times (name=%s, ptr=%p)", idx, sDbName?sDbName:"(unnamed)", (void *)elementData);
+  DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "Read DE %d times (name=%s, ptr=%p)", idx, sDbName?sDbName:"(unnamed)", (void *)elementData);
 
   if (minNum && idx<minNum) {
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "Too few data elements for definition element \"%s\"", sDbName?sDbName:"unnamed");
+    DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Too few data elements for definition element \"%s\"", sDbName?sDbName:"unnamed");
     return GWEN_ERROR_BAD_DATA;
   }
 
