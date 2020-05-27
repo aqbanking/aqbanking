@@ -30,6 +30,7 @@
 
 
 static void _readTanMethods(GWEN_DB_NODE *db, int segmentVersion, AQFINTS_TANMETHOD_LIST *tmList);
+static void _readSecurityProfiles(GWEN_DB_NODE *db, AQFINTS_BPD_SECPROFILE_LIST *securityProfileList);
 
 
 
@@ -95,6 +96,16 @@ AQFINTS_BPD *AQFINTS_Bpd_SampleBpdFromSegmentList(AQFINTS_PARSER *parser,
           if (removeFromSegList)
             doRemoveSegment=1;
         }
+      }
+      else if (strcasecmp(sCode, "HISHV")==0) { /* read security profiles */
+        AQFINTS_BPD_SECPROFILE_LIST *securityProfileList;
+
+        securityProfileList=AQFINTS_Bpd_GetSecurityProfiles(bpd);
+        if (securityProfileList==NULL) {
+          securityProfileList=AQFINTS_BpdSecProfile_List_new();
+          AQFINTS_Bpd_SetSecurityProfiles(bpd, securityProfileList);
+        }
+        _readSecurityProfiles(db, securityProfileList);
       }
       else {
         AQFINTS_SEGMENT *defSegment;
@@ -455,4 +466,34 @@ AQFINTS_TANMETHOD *AQFINTS_Bpd_ReadTanMethod(GWEN_DB_NODE *db)
 }
 
 
+
+void _readSecurityProfiles(GWEN_DB_NODE *db, AQFINTS_BPD_SECPROFILE_LIST *securityProfileList)
+{
+  GWEN_DB_NODE *dbT;
+
+  dbT=GWEN_DB_FindFirstGroup(db, "secProfile");
+  while (dbT) {
+    AQFINTS_BPD_SECPROFILE *securityProfile;
+    const char *securityProfileName;
+
+    securityProfileName=GWEN_DB_GetCharValue(dbT, "code", 0, NULL);
+    if (securityProfileName && *securityProfileName) {
+      int i;
+
+      securityProfile=AQFINTS_BpdSecProfile_new();
+      AQFINTS_BpdSecProfile_SetCode(securityProfile, securityProfileName);
+      for (i=0; i<10; i++) {
+        int securityProfileVersion;
+
+        securityProfileVersion=GWEN_DB_GetIntValue(dbT, "versions", i, 0);
+        if (securityProfileVersion<1)
+          break;
+        AQFINTS_BpdSecProfile_SetVersionsAt(securityProfile, i, securityProfileVersion);
+      }
+      AQFINTS_BpdSecProfile_List_Add(securityProfile, securityProfileList);
+    }
+
+    dbT=GWEN_DB_FindNextGroup(dbT, "tanMethod");
+  }
+}
 
