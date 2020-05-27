@@ -22,7 +22,7 @@
 int AQFINTS_Session_DecryptSegmentPinTan(AQFINTS_SESSION *sess,
                                          AQFINTS_SEGMENT *segCryptHead,
                                          AQFINTS_SEGMENT *segCryptData,
-                                         int secProfileVersion,
+                                         const AQFINTS_CRYPTPARAMS *cryptParams,
                                          const AQFINTS_KEYDESCR *keyDescr,
                                          AQFINTS_SEGMENT_LIST *segmentList);
 
