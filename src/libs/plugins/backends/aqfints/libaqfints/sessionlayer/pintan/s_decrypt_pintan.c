@@ -38,7 +38,7 @@
 int AQFINTS_Session_DecryptSegmentPinTan(AQFINTS_SESSION *sess,
                                          AQFINTS_SEGMENT *segCryptHead,
                                          AQFINTS_SEGMENT *segCryptData,
-                                         int secProfileVersion,
+                                         const AQFINTS_CRYPTPARAMS *cryptParams,
                                          const AQFINTS_KEYDESCR *keyDescr,
                                          AQFINTS_SEGMENT_LIST *segmentList)
 {
@@ -77,6 +77,7 @@ int AQFINTS_Session_DecryptSegmentPinTan(AQFINTS_SESSION *sess,
 
     /* move new segments to given segment list, delete new segment list */
     while ((segment=AQFINTS_Segment_List_First(newSegmentList))) {
+      AQFINTS_Segment_AddRuntimeFlags(segment, AQFINTS_SEGMENT_RTFLAGS_ENCRYPTED);
       AQFINTS_Segment_List_Del(segment);
       AQFINTS_Segment_List_Add(segment, segmentList);
     }

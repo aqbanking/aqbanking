@@ -46,6 +46,7 @@ int AQFINTS_Session_VerifySegmentsPinTan(AQFINTS_SESSION *sess,
   GWEN_DB_NODE *dbSigTail;
   const char *sPin;
   int rv;
+  AQFINTS_SEGMENT *segment;
 
   dbSigTail=AQFINTS_Segment_GetDbData(segSigTail);
   assert(dbSigTail);
@@ -56,6 +57,14 @@ int AQFINTS_Session_VerifySegmentsPinTan(AQFINTS_SESSION *sess,
   if (rv<0) {
     DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     return rv;
+  }
+
+  segment=segFirstSigned;
+  while(segment) {
+    AQFINTS_Segment_AddRuntimeFlags(segment, AQFINTS_SEGMENT_RTFLAGS_SIGNED);
+    if (segment==segLastSigned)
+      break;
+    segment=AQFINTS_Segment_List_Next(segment);
   }
 
   return 0;
