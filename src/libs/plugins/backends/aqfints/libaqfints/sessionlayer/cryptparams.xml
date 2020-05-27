@@ -221,9 +221,11 @@
              {                                                                                    \n
                int i;                                                                             \n
                const AQFINTS_CRYPTPARAMS *p;                                                      \n
+               int arrayMemberCount;                                                              \n
                                                                                                   \n
+               arrayMemberCount=*(&amp;cryptParamArray+1)-cryptParamArray;                        \n
                p=cryptParamArray;                                                                 \n
-               for (i=0; i&lt; sizeof(cryptParamArray); i++) {                                    \n
+               for (i=0; i&lt; arrayMemberCount; i++) {                                           \n
                  if ((strcasecmp(p->securityProfileName, securityProfileName)==0) &amp;&amp;      \n
                      (p->securityProfileVersion==securityProfileVersion))                         \n
                    return p;                                                                      \n
