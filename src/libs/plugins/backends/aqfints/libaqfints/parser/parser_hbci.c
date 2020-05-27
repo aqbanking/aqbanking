@@ -141,7 +141,7 @@ void AQFINTS_Parser_Hbci_WriteSegment(AQFINTS_SEGMENT *segment)
 
       cropPos=endOfLastNonEmptyElement?endOfLastNonEmptyElement:segmentStartPos;
 
-      DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Crop destbuffer: %d->%d", pos, cropPos);
+      /*DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Crop destbuffer: %d->%d", pos, cropPos);*/
       GWEN_Buffer_Crop(destBuf, 0, cropPos);
     }
   }
