@@ -28,10 +28,12 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-AQFINTS_SEGMENT *_mkSegBankData(AQFINTS_PARSER *parser, int hbciVersion, const AQFINTS_BANKDATA *bankData);
-AQFINTS_SEGMENT *_mkSegBankAddr(AQFINTS_PARSER *parser, int hbciVersion, const AQFINTS_BPDADDR *bpdAddr);
-AQFINTS_SEGMENT *_mkSegTanInfo(AQFINTS_PARSER *parser, int hbciVersion, const AQFINTS_TANINFO *tanInfo);
-AQFINTS_SEGMENT *_mkSegBpdJob(AQFINTS_PARSER *parser, int hbciVersion, const AQFINTS_BPDJOB *bpdJob);
+static AQFINTS_SEGMENT *_mkSegBankData(AQFINTS_PARSER *parser, int hbciVersion, const AQFINTS_BANKDATA *bankData);
+static AQFINTS_SEGMENT *_mkSegBankAddr(AQFINTS_PARSER *parser, int hbciVersion, const AQFINTS_BPDADDR *bpdAddr);
+static AQFINTS_SEGMENT *_mkSegTanInfo(AQFINTS_PARSER *parser, int hbciVersion, const AQFINTS_TANINFO *tanInfo);
+static AQFINTS_SEGMENT *_mkSegBpdJob(AQFINTS_PARSER *parser, int hbciVersion, const AQFINTS_BPDJOB *bpdJob);
+static AQFINTS_SEGMENT *_mkSegBankSecProfiles(AQFINTS_PARSER *parser, int hbciVersion,
+                                              const AQFINTS_BPD_SECPROFILE_LIST *secProfileList);
 
 
 
@@ -50,6 +52,7 @@ int AQFINTS_Bpd_Write(const AQFINTS_BPD *bpd, AQFINTS_PARSER *parser, int hbciVe
   AQFINTS_BPDADDR_LIST *addrList;
   AQFINTS_TANINFO *tanInfo;
   AQFINTS_BPDJOB_LIST *bpdJobList;
+  AQFINTS_BPD_SECPROFILE_LIST *secProfileList;
 
   bankData=AQFINTS_Bpd_GetBankData(bpd);
   if (bankData) {
@@ -82,6 +85,19 @@ int AQFINTS_Bpd_Write(const AQFINTS_BPD *bpd, AQFINTS_PARSER *parser, int hbciVe
 
       bpdAddr=AQFINTS_BpdAddr_List_Next(bpdAddr);
     }
+  }
+
+  secProfileList=AQFINTS_Bpd_GetSecurityProfiles(bpd);
+  if (secProfileList) {
+    AQFINTS_SEGMENT *segment;
+
+    segment=_mkSegBankSecProfiles(parser, hbciVersion, secProfileList);
+    if (segment==NULL) {
+      DBG_ERROR(AQFINTS_LOGDOMAIN, "here");
+      return GWEN_ERROR_GENERIC;
+    }
+    AQFINTS_Segment_SetRefSegmentNumber(segment, refSegNum);
+    AQFINTS_Segment_List_Add(segment, segmentList);
   }
 
   tanInfo=AQFINTS_Bpd_GetTanInfo(bpd);
@@ -166,15 +182,18 @@ AQFINTS_SEGMENT *_mkSegBankData(AQFINTS_PARSER *parser, int hbciVersion, const A
   GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "jobTypesPerMsg", i);
 
   i=AQFINTS_BankData_GetMaxMsgSize(bankData);
-  GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxMsgSize", i);
+  if (i>0)
+    GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxMsgSize", i);
 
   i=AQFINTS_BankData_GetMinTimeout(bankData);
-  GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "minTimeout", i);
+  if (i>0)
+    GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "minTimeout", i);
 
   i=AQFINTS_BankData_GetMaxTimeout(bankData);
-  GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxTimeout", i);
+  if (i>0)
+    GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "maxTimeout", i);
 
-  dbGroup=GWEN_DB_GetGroup(dbSegment, GWEN_PATH_FLAGS_CREATE_GROUP, "languages");
+  dbGroup=GWEN_DB_GetGroup(dbSegment, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "languages");
   assert(dbGroup);
   for (i=0; i<9; i++){
     int v;
@@ -187,7 +206,7 @@ AQFINTS_SEGMENT *_mkSegBankData(AQFINTS_PARSER *parser, int hbciVersion, const A
   if (i==0)
     GWEN_DB_SetIntValue(dbGroup, GWEN_DB_FLAGS_OVERWRITE_VARS, "language", 1);
 
-  dbGroup=GWEN_DB_GetGroup(dbSegment, GWEN_PATH_FLAGS_CREATE_GROUP, "versions");
+  dbGroup=GWEN_DB_GetGroup(dbSegment, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "versions");
   assert(dbGroup);
   for (i=0; i<9; i++){
     int v;
@@ -398,6 +417,55 @@ AQFINTS_SEGMENT *_mkSegBpdJob(AQFINTS_PARSER *parser, int hbciVersion, const AQF
 
   i=AQFINTS_BpdJob_GetSecurityClass(bpdJob);
   GWEN_DB_SetIntValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "securityClass", i);
+
+  return segment;
+}
+
+
+
+AQFINTS_SEGMENT *_mkSegBankSecProfiles(AQFINTS_PARSER *parser, int hbciVersion, const AQFINTS_BPD_SECPROFILE_LIST *secProfileList)
+{
+  AQFINTS_SEGMENT *defSegment;
+  AQFINTS_SEGMENT *segment;
+  GWEN_DB_NODE *dbSegment;
+  AQFINTS_BPD_SECPROFILE *secProfile;
+
+  defSegment=AQFINTS_Parser_FindSegmentHighestVersionForProto(parser, "HISHV", hbciVersion);
+  if (defSegment==NULL) {
+    DBG_ERROR(0, "No matching definition segment found for HISHV (proto=%d)", hbciVersion);
+    return NULL;
+  }
+
+  segment=AQFINTS_Segment_new();
+  AQFINTS_Segment_copy(segment, defSegment);
+
+  dbSegment=GWEN_DB_Group_new("bpdSecProfile");
+  AQFINTS_Segment_SetDbData(segment, dbSegment);
+
+  GWEN_DB_SetCharValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "mixingAllowed", "J");
+
+  secProfile=AQFINTS_BpdSecProfile_List_First(secProfileList);
+  while(secProfile) {
+    GWEN_DB_NODE *dbSecProfile;
+    const char *s;
+    int i;
+
+    dbSecProfile=GWEN_DB_GetGroup(dbSegment, GWEN_PATH_FLAGS_CREATE_GROUP, "secProfile");
+    s=AQFINTS_BpdSecProfile_GetCode(secProfile);
+    if (s)
+      GWEN_DB_SetCharValue(dbSecProfile, GWEN_DB_FLAGS_OVERWRITE_VARS, "code", s);
+
+    for (i=0; i<9; i++){
+      int v;
+
+      v=AQFINTS_BpdSecProfile_GetVersionsAt(secProfile, i);
+      if (v<1)
+        break;
+      GWEN_DB_SetIntValue(dbSecProfile, 0, "versions", v);
+    }
+
+    secProfile=AQFINTS_BpdSecProfile_List_Next(secProfile);
+  }
 
   return segment;
 }

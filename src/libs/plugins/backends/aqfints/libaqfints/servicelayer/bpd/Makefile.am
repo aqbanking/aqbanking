@@ -19,7 +19,8 @@ typefiles= \
   bpdjob.xml \
   bpdaddrservice.xml \
   bpdaddr.xml \
-  bpd.xml
+  bpd.xml \
+  bpdsecprofile.xml
 
 
 
@@ -42,6 +43,7 @@ built_sources=\
   bpd.c \
   bpdaddrservice.c \
   bpdaddr.c \
+  bpdsecprofile.c \
   tanjobinfo.c \
   taninfo.c \
   tanmethod.c
@@ -53,6 +55,7 @@ build_headers_priv=\
   bpd_p.h \
   bpdaddrservice_p.h \
   bpdaddr_p.h \
+  bpdsecprofile_p.h \
   tanjobinfo_p.h \
   taninfo_p.h \
   tanmethod_p.h
@@ -64,6 +67,7 @@ build_headers_pub=\
   bpd.h \
   bpdaddrservice.h \
   bpdaddr.h \
+  bpdsecprofile.h \
   tanjobinfo.h \
   taninfo.h \
   tanmethod.h

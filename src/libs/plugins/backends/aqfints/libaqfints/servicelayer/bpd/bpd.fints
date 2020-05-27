@@ -39,6 +39,12 @@
     </GROUPdef>
 
 
+    <GROUPdef id="secProfile" version="1">
+      <DE      name="code"           type="an"       maxsize="3" />
+      <DE      name="versions"       type="num"      maxsize="3"  minnum="1" maxnum="9" />
+    </GROUPdef>
+
+
   </GROUPs>
 
 
@@ -150,6 +156,16 @@
        <DE     name="filter"         type="an"       minnum="0"   maxsize="3" />
        <DE     name="filterVersion"  type="num"      minnum="0"   maxsize="3" />
      </DEG>
+    </SEGdef>
+
+
+    <SEGdef id="BpdSecProfiles" 
+            code="HISHV" 
+            segmentVersion="3"
+    >
+     <DEG      name="head"           type="SegHead" />
+      <DE      name="mixingAllowed"  type="an"         maxsize="1" />
+      <DEG     name="secProfile"     type="secProfile" version="1" maxnum="9" />
     </SEGdef>
 
 

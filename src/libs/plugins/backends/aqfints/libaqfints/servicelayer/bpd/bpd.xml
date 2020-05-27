@@ -22,6 +22,7 @@
         <header type="local" loc="post">servicelayer/bpd/bankdata.h</header>
         <header type="local" loc="post">servicelayer/bpd/bpdjob.h</header>
         <header type="local" loc="post">servicelayer/bpd/bpdaddr.h</header>
+        <header type="local" loc="post">servicelayer/bpd/bpdsecprofile.h</header>
         <header type="local" loc="post">servicelayer/bpd/taninfo.h</header>
         <header type="local" loc="post">servicelayer/bpd/tanmethod.h</header>
       </headers>
@@ -69,6 +70,28 @@
                if (st-&gt;addresses==NULL)
                  st-&gt;addresses=AQFINTS_BpdAddr_List_new();
                AQFINTS_BpdAddr_List_Add(addr, st-&gt;addresses);
+             }
+          </content>
+        </inline>
+
+
+        <!-- addBpdSecurityProfile -->
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_AddBpdSecurityProfile($(struct_type) *st, AQFINTS_BPD_SECPROFILE *secProfile);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             void $(struct_prefix)_AddBpdSecurityProfile($(struct_type) *st, AQFINTS_BPD_SECPROFILE *secProfile) {
+               if (st-&gt;securityProfiles==NULL)
+                 st-&gt;securityProfiles=AQFINTS_BpdSecProfile_List_new();
+               AQFINTS_BpdSecProfile_List_Add(secProfile, st-&gt;securityProfiles);
              }
           </content>
         </inline>
@@ -122,6 +145,13 @@
 
 
       <member name="addresses" type="AQFINTS_BPDADDR_LIST" >
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+      <member name="securityProfiles" type="AQFINTS_BPD_SECPROFILE_LIST" >
         <access>public</access>
         <flags>own</flags>
         <setflags>none</setflags>

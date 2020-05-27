@@ -47,3 +47,9 @@ tanmethod.c
 tanmethod.h
 tanmethod_p.h
 
+aqfints_bpd_secprofile.tm2
+aqfints_bpd_secprofile_list.tm2
+bpdsecprofile.c
+bpdsecprofile.h
+bpdsecprofile_p.h
+
