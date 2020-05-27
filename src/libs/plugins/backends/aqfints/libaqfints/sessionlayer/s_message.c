@@ -60,7 +60,6 @@ int AQFINTS_Session_WrapMessageHeadAndTail(AQFINTS_SESSION *sess,
 
   /* take msg tail into account */
   msgSizeWithoutHead=AQFINTS_Segment_List_SampleSizes(segmentList);
-  DBG_ERROR(AQFINTS_LOGDOMAIN, "======= Message size so far is: %d ======", msgSizeWithoutHead);
 
   /* create and insert msg tail */
   segment=createMessageHead(sess, dialogId, msgNum, refMsgNum, msgSizeWithoutHead);

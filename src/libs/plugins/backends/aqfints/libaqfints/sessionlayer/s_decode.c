@@ -56,7 +56,7 @@ AQFINTS_MESSAGE *AQFINTS_Session_DecodeMessage(AQFINTS_SESSION *sess, const uint
   segmentList=AQFINTS_Message_GetSegmentList(message);
 
   /* parse HBCI message into a segment list */
-  DBG_ERROR(AQFINTS_LOGDOMAIN, "Reading message into segment list");
+  DBG_DEBUG(AQFINTS_LOGDOMAIN, "Reading message into segment list");
   rv=AQFINTS_Parser_ReadIntoSegmentList(parser, segmentList, ptrBuffer, lenBuffer);
   if (rv<0) {
     DBG_ERROR(AQFINTS_LOGDOMAIN, "here (%d)", rv);
@@ -65,7 +65,7 @@ AQFINTS_MESSAGE *AQFINTS_Session_DecodeMessage(AQFINTS_SESSION *sess, const uint
   }
 
   /* interprete segment list and extract data */
-  DBG_ERROR(AQFINTS_LOGDOMAIN, "Reading segment list into dbs");
+  DBG_DEBUG(AQFINTS_LOGDOMAIN, "Reading segment list into dbs");
   rv=AQFINTS_Parser_ReadSegmentListToDb(parser, segmentList);
   if (rv<0) {
     DBG_ERROR(AQFINTS_LOGDOMAIN, "here (%d)", rv);
@@ -79,7 +79,7 @@ AQFINTS_MESSAGE *AQFINTS_Session_DecodeMessage(AQFINTS_SESSION *sess, const uint
 #endif
 
   /* read basic message info from message head */
-  DBG_ERROR(AQFINTS_LOGDOMAIN, "Reading basic message info from db");
+  DBG_INFO(AQFINTS_LOGDOMAIN, "Reading basic message info from db");
   rv=_setMessageInfoFromHeadSegment(message, segmentList);
   if (rv<0) {
     DBG_ERROR(AQFINTS_LOGDOMAIN, "here (%d)", rv);
@@ -89,6 +89,7 @@ AQFINTS_MESSAGE *AQFINTS_Session_DecodeMessage(AQFINTS_SESSION *sess, const uint
 
 
   /* decrypt message, if necessary */
+  DBG_INFO(AQFINTS_LOGDOMAIN, "Decrypting message");
   rv=AQFINTS_Session_DecryptMessage(sess, message);
   if (rv<0) {
     DBG_ERROR(AQFINTS_LOGDOMAIN, "here (%d)", rv);
@@ -97,6 +98,7 @@ AQFINTS_MESSAGE *AQFINTS_Session_DecodeMessage(AQFINTS_SESSION *sess, const uint
   }
 
   /* verify signatures, if any */
+  DBG_INFO(AQFINTS_LOGDOMAIN, "Verifying signatures");
   rv=AQFINTS_Session_VerifyMessage(sess, message);
   if (rv<0) {
     DBG_ERROR(AQFINTS_LOGDOMAIN, "here (%d)", rv);
@@ -104,6 +106,7 @@ AQFINTS_MESSAGE *AQFINTS_Session_DecodeMessage(AQFINTS_SESSION *sess, const uint
     return NULL;
   }
 
+  DBG_INFO(AQFINTS_LOGDOMAIN, "Message decoded.");
   return message;
 }
 
