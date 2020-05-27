@@ -238,6 +238,7 @@
         <item name="PARSED"       value="0x00000001" />
         <item name="SIGNED"       value="0x00000002" />
         <item name="ENCRYPTED"    value="0x00000004" />
+        <item name="HANDLED"      value="0x00000008" />
       </define>
 
      <define id="AQFINTS_SEGMENT_FLAGS" prefix="AQFINTS_SEGMENT_FLAGS_">
