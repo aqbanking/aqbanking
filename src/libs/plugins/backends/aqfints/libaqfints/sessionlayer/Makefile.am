@@ -44,10 +44,8 @@ build_headers=$(build_headers_priv) $(build_headers_pub)
 noinst_HEADERS= $(build_headers) \
   s_decode.h \
   s_decrypt.h \
-  s_decrypt_rdh.h \
   s_message.h \
   s_verify.h \
-  s_verify_rdh.h \
   s_sign.h \
   s_encrypt.h \
   s_encode.h
@@ -61,9 +59,7 @@ libaqfintssession_la_SOURCES=$(built_sources) \
   s_log.c \
   s_decode.c \
   s_decrypt.c \
-  s_decrypt_rdh.c \
   s_verify.c \
-  s_verify_rdh.c \
   s_sign.c \
   s_encrypt.c \
   s_encode.c

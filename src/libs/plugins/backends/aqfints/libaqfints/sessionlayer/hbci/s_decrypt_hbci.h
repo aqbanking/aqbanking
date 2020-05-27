@@ -8,8 +8,8 @@
  * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
-#ifndef AQFINTS_SESSION_VERIFY_RDH_H
-#define AQFINTS_SESSION_VERIFY_RDH_H
+#ifndef AQFINTS_SESSION_DECRYPT_HBCI_H
+#define AQFINTS_SESSION_DECRYPT_HBCI_H
 
 
 #include "sessionlayer/session.h"
@@ -17,13 +17,14 @@
 
 
 
-int AQFINTS_Session_VerifySegmentsRdh(AQFINTS_SESSION *sess,
-                                      AQFINTS_SEGMENT *segSigHead,
-                                      AQFINTS_SEGMENT *segSigTail,
-                                      AQFINTS_SEGMENT *segFirstSigned,
-                                      AQFINTS_SEGMENT *segLastSigned,
-                                      int secProfileVersion,
-                                      const AQFINTS_KEYDESCR *keyDescr);
+
+int AQFINTS_Session_DecryptSegmentHbci(AQFINTS_SESSION *sess,
+                                       AQFINTS_SEGMENT *segCryptHead,
+                                       AQFINTS_SEGMENT *segCryptData,
+                                       const AQFINTS_CRYPTPARAMS *cryptParams,
+                                       const AQFINTS_KEYDESCR *keyDescr,
+                                       AQFINTS_SEGMENT_LIST *segmentList);
+
 
 #endif
 

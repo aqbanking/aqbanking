@@ -14,7 +14,7 @@
 
 #include "sessionlayer/s_decrypt.h"
 #include "sessionlayer/pintan/s_decrypt_pintan.h"
-#include "sessionlayer/s_decrypt_rdh.h"
+#include "sessionlayer/hbci/s_decrypt_hbci.h"
 #include "sessionlayer/s_decode.h"
 #include "parser/parser.h"
 
@@ -33,16 +33,10 @@ static int _decryptMessage(AQFINTS_SESSION *sess,
                            AQFINTS_SEGMENT *segCryptHead,
                            AQFINTS_SEGMENT *segCryptData,
                            AQFINTS_MESSAGE *message);
-static int _decryptSegmentRah(AQFINTS_SESSION *sess,
-                              AQFINTS_SEGMENT *segCryptHead,
-                              AQFINTS_SEGMENT *segCryptData,
-                              int secProfileVersion,
-                              const AQFINTS_KEYDESCR *keyDescr,
-                              AQFINTS_SEGMENT_LIST *segmentList);
 static int _decryptSegmentDdv(AQFINTS_SESSION *sess,
                               AQFINTS_SEGMENT *segCryptHead,
                               AQFINTS_SEGMENT *segCryptData,
-                              int secProfileVersion,
+                              const AQFINTS_CRYPTPARAMS *cryptParams,
                               const AQFINTS_KEYDESCR *keyDescr,
                               AQFINTS_SEGMENT_LIST *segmentList);
 
@@ -151,8 +145,8 @@ int _decryptMessage(AQFINTS_SESSION *sess,
   AQFINTS_SEGMENT_LIST *segmentList;
   GWEN_DB_NODE *dbCryptHead;
   AQFINTS_KEYDESCR *keyDescr;
-  const char *s;
-  int v;
+  const char *securityProfileName;
+  int securityProfileVersion;
 
   segmentList=AQFINTS_Message_GetSegmentList(message);
   dbCryptHead=AQFINTS_Segment_GetDbData(segCryptHead);
@@ -160,22 +154,37 @@ int _decryptMessage(AQFINTS_SESSION *sess,
 
   keyDescr=AQFINTS_Session_ReadKeyDescrFromDbHead(dbCryptHead);
 
-  v=GWEN_DB_GetIntValue(dbCryptHead, "secProfile/version", 0, 0);
-  s=GWEN_DB_GetCharValue(dbCryptHead, "secProfile/code", 0, NULL);
-  if (s && *s) {
-    int rv;
+  securityProfileName=GWEN_DB_GetCharValue(dbCryptHead, "secProfile/code", 0, NULL);
+  securityProfileVersion=GWEN_DB_GetIntValue(dbCryptHead, "secProfile/version", 0, 0);
 
-    DBG_INFO(AQFINTS_LOGDOMAIN, "Selected security profile is \"%s\" (version %d)", s, v);
-    if (strcasecmp(s, "PIN")==0)
-      rv=AQFINTS_Session_DecryptSegmentPinTan(sess, segCryptHead, segCryptData, v, keyDescr, segmentList);
-    else if (strcasecmp(s, "RDH")==0)
-      rv=AQFINTS_Session_DecryptSegmentRdh(sess, segCryptHead, segCryptData, v, keyDescr, segmentList);
-    else if (strcasecmp(s, "RAH")==0)
-      rv=_decryptSegmentRah(sess, segCryptHead, segCryptData, v, keyDescr, segmentList);
-    else if (strcasecmp(s, "DDV")==0)
-      rv=_decryptSegmentDdv(sess, segCryptHead, segCryptData, v, keyDescr, segmentList);
+  /* hack for hibiscus */
+  if (securityProfileVersion==0) {
+    if (securityProfileName && strcasecmp(securityProfileName, "RDH")==0)
+      securityProfileVersion=10;
+  }
+
+
+  if (securityProfileName && *securityProfileName) {
+    int rv;
+    const AQFINTS_CRYPTPARAMS *cryptParams;
+
+    DBG_INFO(AQFINTS_LOGDOMAIN, "Selected security profile is \"%s\" (version %d)", securityProfileName, securityProfileVersion);
+    cryptParams=AQFINTS_CryptParams_GetParamsForSecurityProfile(securityProfileName, securityProfileVersion);
+    if (cryptParams==NULL) {
+      DBG_INFO(AQFINTS_LOGDOMAIN, "Security profile \"%s\" (version %d) no found", securityProfileName, securityProfileVersion);
+      AQFINTS_KeyDescr_free(keyDescr);
+      return GWEN_ERROR_GENERIC;
+    }
+    if (strcasecmp(securityProfileName, "PIN")==0)
+      rv=AQFINTS_Session_DecryptSegmentPinTan(sess, segCryptHead, segCryptData, cryptParams, keyDescr, segmentList);
+    else if (strcasecmp(securityProfileName, "RDH")==0)
+      rv=AQFINTS_Session_DecryptSegmentHbci(sess, segCryptHead, segCryptData, cryptParams, keyDescr, segmentList);
+    else if (strcasecmp(securityProfileName, "RAH")==0)
+      rv=AQFINTS_Session_DecryptSegmentHbci(sess, segCryptHead, segCryptData, cryptParams, keyDescr, segmentList);
+    else if (strcasecmp(securityProfileName, "DDV")==0)
+      rv=_decryptSegmentDdv(sess, segCryptHead, segCryptData, cryptParams, keyDescr, segmentList);
     else {
-      DBG_ERROR(AQFINTS_LOGDOMAIN, "Invalid security profile \"%s\"", s);
+      DBG_ERROR(AQFINTS_LOGDOMAIN, "Invalid security profile \"%s\"", securityProfileName);
       AQFINTS_KeyDescr_free(keyDescr);
       return GWEN_ERROR_BAD_DATA;
     }
@@ -196,22 +205,10 @@ int _decryptMessage(AQFINTS_SESSION *sess,
 
 
 
-int _decryptSegmentRah(AQFINTS_SESSION *sess,
-                       AQFINTS_SEGMENT *segCryptHead,
-                       AQFINTS_SEGMENT *segCryptData,
-                       int secProfileVersion,
-                       const AQFINTS_KEYDESCR *keyDescr,
-                       AQFINTS_SEGMENT_LIST *segmentList)
-{
-  return GWEN_ERROR_NOT_IMPLEMENTED;
-}
-
-
-
 int _decryptSegmentDdv(AQFINTS_SESSION *sess,
                        AQFINTS_SEGMENT *segCryptHead,
                        AQFINTS_SEGMENT *segCryptData,
-                       int secProfileVersion,
+                       const AQFINTS_CRYPTPARAMS *cryptParams,
                        const AQFINTS_KEYDESCR *keyDescr,
                        AQFINTS_SEGMENT_LIST *segmentList)
 {

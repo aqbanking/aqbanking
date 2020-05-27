@@ -39,13 +39,17 @@ build_headers=$(build_headers_priv) $(build_headers_pub)
 
 noinst_HEADERS= $(build_headers) \
   s_hbci.h \
-  s_sign_hbci.h
+  s_sign_hbci.h \
+  s_decrypt_hbci.h \
+  s_verify_hbci.h
 
 
 
 libaqfintssession_hbci_la_SOURCES=$(built_sources) \
   s_hbci.c \
-  s_sign_hbci.c
+  s_sign_hbci.c \
+  s_decrypt_hbci.c \
+  s_verify_hbci.c
 
 
 

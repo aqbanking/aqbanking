@@ -13,7 +13,7 @@
 #endif
 
 #include "sessionlayer/pintan/s_verify_pintan.h"
-#include "sessionlayer/s_verify_rdh.h"
+#include "sessionlayer/hbci/s_verify_hbci.h"
 #include "sessionlayer/s_decode.h"
 #include "parser/parser.h"
 
@@ -34,13 +34,6 @@ static int _verifyMessage(AQFINTS_SESSION *sess,
                           AQFINTS_SEGMENT *segFirstSigned,
                           AQFINTS_SEGMENT *segLastSigned,
                           AQFINTS_MESSAGE *message);
-static int _verifySegmentsRah(AQFINTS_SESSION *sess,
-                              AQFINTS_SEGMENT *segSigHead,
-                              AQFINTS_SEGMENT *segSigTail,
-                              AQFINTS_SEGMENT *segFirstSigned,
-                              AQFINTS_SEGMENT *segLastSigned,
-                              int secProfileVersion,
-                              const AQFINTS_KEYDESCR *keyDescr);
 static int _verifySegmentsDdv(AQFINTS_SESSION *sess,
                               AQFINTS_SEGMENT *segSigHead,
                               AQFINTS_SEGMENT *segSigTail,
@@ -54,6 +47,7 @@ static AQFINTS_SEGMENT *_getSigTailByControlReference(AQFINTS_SEGMENT *segment, 
 static AQFINTS_SEGMENT *_getFirstSignedSegment(AQFINTS_SEGMENT *segment);
 static AQFINTS_SEGMENT *_getLastSignedSegment(AQFINTS_SEGMENT *segment);
 
+static void _dumpKeyDescr(const char *s, const AQFINTS_KEYDESCR *keyDescr);
 
 
 
@@ -114,8 +108,15 @@ int AQFINTS_Session_VerifyMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *messag
 
     rv=_verifyMessage(sess, segSigHead, segSigTail, segFirstSigned, segLastSigned, message);
     if (rv<0) {
-      DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
-      return rv;
+      if (rv==GWEN_ERROR_TRY_AGAIN) {
+        DBG_INFO(AQFINTS_LOGDOMAIN, "Signature not yet verified, try again later");
+        AQFINTS_Message_AddFlags(message, AQFINTS_MESSAGE_FLAGS_DELAYED_VERIFY);
+        return 0;
+      }
+      else {
+	DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
     }
 
     segSigHead=AQFINTS_Segment_List_Next(segSigHead);
@@ -129,6 +130,7 @@ int AQFINTS_Session_VerifyMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *messag
       break;
     segment=AQFINTS_Segment_List_Next(segment);
   }
+  AQFINTS_Message_SubFlags(message, AQFINTS_MESSAGE_FLAGS_DELAYED_VERIFY);
 
   /* done */
   return 0;
@@ -162,6 +164,8 @@ int _verifyMessage(AQFINTS_SESSION *sess,
   s=GWEN_DB_GetCharValue(dbSigTail, "tan", 0, NULL);
   AQFINTS_KeyDescr_SetTan(keyDescr, s);
 
+  _dumpKeyDescr("Signer", keyDescr);
+
   /* call appropriate function according to security profile */
   v=GWEN_DB_GetIntValue(dbSigHead, "secProfile/version", 0, 0);
   s=GWEN_DB_GetCharValue(dbSigHead, "secProfile/code", 0, NULL);
@@ -172,9 +176,9 @@ int _verifyMessage(AQFINTS_SESSION *sess,
     if (strcasecmp(s, "PIN")==0)
       rv=AQFINTS_Session_VerifySegmentsPinTan(sess, segSigHead, segSigTail, segFirstSigned, segLastSigned, v, keyDescr);
     else if (strcasecmp(s, "RDH")==0)
-      rv=AQFINTS_Session_VerifySegmentsRdh(sess, segSigHead, segSigTail, segFirstSigned, segLastSigned, v, keyDescr);
+      rv=AQFINTS_Session_VerifySegmentHbci(sess, message, keyDescr, segSigHead, segSigTail, segFirstSigned, segLastSigned);
     else if (strcasecmp(s, "RAH")==0)
-      rv=_verifySegmentsRah(sess, segSigHead, segSigTail, segFirstSigned, segLastSigned, v, keyDescr);
+      rv=AQFINTS_Session_VerifySegmentHbci(sess, message, keyDescr, segSigHead, segSigTail, segFirstSigned, segLastSigned);
     else if (strcasecmp(s, "DDV")==0)
       rv=_verifySegmentsDdv(sess, segSigHead, segSigTail, segFirstSigned, segLastSigned, v, keyDescr);
     else {
@@ -183,7 +187,12 @@ int _verifyMessage(AQFINTS_SESSION *sess,
       return GWEN_ERROR_BAD_DATA;
     }
     if (rv<0) {
-      DBG_ERROR(0, "here (%d)", rv);
+      if (rv==GWEN_ERROR_TRY_AGAIN) {
+	DBG_INFO(AQFINTS_LOGDOMAIN, "Signature not yet available, probably key not yet processed, retry later");
+      }
+      else {
+	DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+      }
       AQFINTS_KeyDescr_free(keyDescr);
       return rv;
     }
@@ -199,17 +208,21 @@ int _verifyMessage(AQFINTS_SESSION *sess,
 
 
 
-int _verifySegmentsRah(AQFINTS_SESSION *sess,
-                       AQFINTS_SEGMENT *segSigHead,
-                       AQFINTS_SEGMENT *segSigTail,
-                       AQFINTS_SEGMENT *segFirstSigned,
-                       AQFINTS_SEGMENT *segLastSigned,
-                       int secProfileVersion,
-                       const AQFINTS_KEYDESCR *keyDescr)
+void _dumpKeyDescr(const char *s, const AQFINTS_KEYDESCR *keyDescr)
 {
-  return GWEN_ERROR_NOT_IMPLEMENTED;
-}
+  const char *sKeyName;
+  const char *sKeyType;
 
+  sKeyName=AQFINTS_KeyDescr_GetUserId(keyDescr);
+  sKeyType=AQFINTS_KeyDescr_GetKeyType(keyDescr);
+  DBG_ERROR(AQFINTS_LOGDOMAIN,
+            "%s: %s:%s:%d:%d",
+            s?s:"",
+            sKeyName?sKeyName:"<unnamed>",
+            sKeyType?sKeyType:"<unnamed>",
+            AQFINTS_KeyDescr_GetKeyNumber(keyDescr),
+            AQFINTS_KeyDescr_GetKeyVersion(keyDescr));
+}
 
 
 int _verifySegmentsDdv(AQFINTS_SESSION *sess,
@@ -277,7 +290,7 @@ AQFINTS_SEGMENT *_getFirstSignedSegment(AQFINTS_SEGMENT *segment)
     const char *sCode;
 
     sCode=AQFINTS_Segment_GetCode(segment);
-    if (!(sCode && *sCode && strcasecmp(sCode, "HNSHK")==0))
+    if (sCode && *sCode && strcasecmp(sCode, "HNSHK")!=0)
       return segment;
     segment=AQFINTS_Segment_List_Next(segment);
   }
@@ -290,12 +303,17 @@ AQFINTS_SEGMENT *_getFirstSignedSegment(AQFINTS_SEGMENT *segment)
 AQFINTS_SEGMENT *_getLastSignedSegment(AQFINTS_SEGMENT *segment)
 {
   while(segment) {
-    const char *sCode;
+    AQFINTS_SEGMENT *nextSegment;
 
-    sCode=AQFINTS_Segment_GetCode(segment);
-    if (!(sCode && *sCode && strcasecmp(sCode, "HNSHA")==0))
-      return segment;
-    segment=AQFINTS_Segment_List_Next(segment);
+    nextSegment=AQFINTS_Segment_List_Next(segment);
+    if (nextSegment) {
+      const char *sCode;
+
+      sCode=AQFINTS_Segment_GetCode(nextSegment);
+      if (sCode && *sCode && strcasecmp(sCode, "HNSHA")==0)
+        return segment;
+    }
+    segment=nextSegment;
   }
 
   return NULL;

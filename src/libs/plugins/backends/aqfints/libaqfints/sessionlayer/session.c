@@ -297,7 +297,7 @@ int AQFINTS_Session_FilloutKeyname(AQFINTS_SESSION *sess, AQFINTS_KEYDESCR *keyD
 
 
 int AQFINTS_Session_DecryptSessionKey(AQFINTS_SESSION *sess,
-                                      AQFINTS_KEYDESCR *keyDescr,
+                                      const AQFINTS_KEYDESCR *keyDescr,
                                       const AQFINTS_CRYPTPARAMS *cryptParams,
                                       const uint8_t *pInData,
                                       uint32_t inLen,
@@ -339,6 +339,23 @@ int AQFINTS_Session_Sign(AQFINTS_SESSION *sess,
     return GWEN_ERROR_NOT_IMPLEMENTED;
 }
 
+
+
+int AQFINTS_Session_Verify(AQFINTS_SESSION *sess,
+                           const AQFINTS_KEYDESCR *keyDescr,
+                           const AQFINTS_CRYPTPARAMS *cryptParams,
+                           const uint8_t *pInData,
+                           uint32_t inLen,
+                           const uint8_t *pSignatureData,
+                           uint32_t signatureLen,
+                           uint32_t seqCounter)
+{
+  assert(sess);
+  if (sess->verifyFn)
+    return sess->verifyFn(sess, keyDescr, cryptParams, pInData, inLen, pSignatureData, signatureLen, seqCounter);
+  else
+    return GWEN_ERROR_NOT_IMPLEMENTED;
+}
 
 
 
@@ -386,7 +403,19 @@ AQFINTS_SESSION_SIGN_FN AQFINTS_Session_SetSignFn(AQFINTS_SESSION *sess, AQFINTS
 
 
 
-AQFINTS_SESSION_DECRYPT_SKEY_FN AQFINTS_Session_SetDecryptKeySessionFn(AQFINTS_SESSION *sess,
+AQFINTS_SESSION_VERIFY_FN AQFINTS_Session_SetVerifyFn(AQFINTS_SESSION *sess, AQFINTS_SESSION_VERIFY_FN fn)
+{
+  AQFINTS_SESSION_VERIFY_FN oldFn;
+
+  assert(sess);
+  oldFn=sess->verifyFn;
+  sess->verifyFn=fn;
+  return oldFn;
+}
+
+
+
+AQFINTS_SESSION_DECRYPT_SKEY_FN AQFINTS_Session_SetDecryptSessionKeyFn(AQFINTS_SESSION *sess,
                                                                        AQFINTS_SESSION_DECRYPT_SKEY_FN fn)
 {
   AQFINTS_SESSION_DECRYPT_SKEY_FN oldFn;
@@ -663,6 +692,55 @@ AQFINTS_MESSAGE *AQFINTS_Session_DirectlyExchangeMessages(AQFINTS_SESSION *sess,
   GWEN_Buffer_free(msgBuffer);
 
   return message;
+}
+
+
+
+int AQFINTS_Session_SampleDataToHash(AQFINTS_SEGMENT *segSigHead,
+                                     AQFINTS_SEGMENT *segFirstToSign,
+                                     AQFINTS_SEGMENT *segLastToSign,
+                                     GWEN_BUFFER *destBuf)
+{
+
+  AQFINTS_SEGMENT *segment;
+  int rv;
+
+  /* add signature head */
+  rv=GWEN_Buffer_AppendBytes(destBuf,
+                             (const char*) AQFINTS_Segment_GetDataPointer(segSigHead),
+			     AQFINTS_Segment_GetDataLength(segSigHead));
+  if (rv<0) {
+    DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+  rv=GWEN_Buffer_AppendByte(destBuf, '\'');
+  if (rv<0) {
+    DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* hash data segments */
+  segment=segFirstToSign;
+  while(segment) {
+    rv=GWEN_Buffer_AppendBytes(destBuf,
+			       (const char*) AQFINTS_Segment_GetDataPointer(segment),
+			       AQFINTS_Segment_GetDataLength(segment));
+    if (rv<0) {
+      DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+
+    rv=GWEN_Buffer_AppendByte(destBuf, '\'');
+    if (rv<0) {
+      DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+    if (segment==segLastToSign)
+      break;
+    segment=AQFINTS_Segment_List_Next(segment);
+  }
+
+  return 0;
 }
 
 

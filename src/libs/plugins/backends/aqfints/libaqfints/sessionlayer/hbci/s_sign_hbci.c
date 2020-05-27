@@ -57,11 +57,6 @@ static int _signSegments(AQFINTS_SESSION *sess,
                          AQFINTS_SEGMENT *segLastToSign,
                          GWEN_BUFFER *sigBuf);
 
-static int _sampleDataToHash(AQFINTS_SEGMENT *segSigHead,
-			     AQFINTS_SEGMENT *segFirstToSign,
-			     AQFINTS_SEGMENT *segLastToSign,
-			     GWEN_BUFFER *destBuf);
-
 
 
 /* ------------------------------------------------------------------------------------------------
@@ -150,7 +145,7 @@ int _signSegments(AQFINTS_SESSION *sess,
   GWEN_BUFFER *hashSrcBuffer;
 
   hashSrcBuffer=GWEN_Buffer_new(0, 1024, 0, 1);
-  rv=_sampleDataToHash(segSigHead, segFirstToSign, segLastToSign, hashSrcBuffer);
+  rv=AQFINTS_Session_SampleDataToHash(segSigHead, segFirstToSign, segLastToSign, hashSrcBuffer);
   if (rv<0) {
     DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -175,43 +170,6 @@ int _signSegments(AQFINTS_SESSION *sess,
   return 0;
 }
 
-
-
-int _sampleDataToHash(AQFINTS_SEGMENT *segSigHead,
-		      AQFINTS_SEGMENT *segFirstToSign,
-		      AQFINTS_SEGMENT *segLastToSign,
-		      GWEN_BUFFER *destBuf)
-{
-
-  AQFINTS_SEGMENT *segment;
-  int rv;
-
-  /* add signature head */
-  rv=GWEN_Buffer_AppendBytes(destBuf,
-                             (const char*) AQFINTS_Segment_GetDataPointer(segSigHead),
-			     AQFINTS_Segment_GetDataLength(segSigHead));
-  if (rv<0) {
-    DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  /* hash data segments */
-  segment=segFirstToSign;
-  while(segment) {
-    rv=GWEN_Buffer_AppendBytes(destBuf,
-			       (const char*) AQFINTS_Segment_GetDataPointer(segment),
-			       AQFINTS_Segment_GetDataLength(segment));
-    if (segment==segLastToSign)
-      break;
-    segment=AQFINTS_Segment_List_Next(segment);
-  }
-  if (rv<0) {
-    DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  return 0;
-}
 
 
 

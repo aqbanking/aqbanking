@@ -59,7 +59,7 @@ typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_FILLOUT_KEYDESCR_FN)(AQFINTS_SESSION 
 
 
 typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_DECRYPT_SKEY_FN)(AQFINTS_SESSION *sess,
-                                                            AQFINTS_KEYDESCR *keyDescr,
+                                                            const AQFINTS_KEYDESCR *keyDescr,
                                                             const AQFINTS_CRYPTPARAMS *cryptParams,
                                                             const uint8_t *pInData,
                                                             uint32_t inLen,
@@ -67,7 +67,7 @@ typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_DECRYPT_SKEY_FN)(AQFINTS_SESSION *ses
                                                             uint32_t *pOutLen);
 
 typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_ENCRYPT_SKEY_FN)(AQFINTS_SESSION *sess,
-                                                            AQFINTS_KEYDESCR *keyDescr,
+                                                            const AQFINTS_KEYDESCR *keyDescr,
                                                             GWEN_CRYPT_PADDALGO *a,
                                                             const uint8_t *pInData,
                                                             uint32_t inLen,
@@ -83,8 +83,11 @@ typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_SIGN_FN)(AQFINTS_SESSION *sess,
                                                     uint32_t *pSignatureLen);
 
 
+/**
+ * GWEN_ERROR_TRY_AGAIN: retry after handling the message
+ */
 typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_VERIFY_FN)(AQFINTS_SESSION *sess,
-                                                      AQFINTS_KEYDESCR *keyDescr,
+                                                      const AQFINTS_KEYDESCR *keyDescr,
                                                       const AQFINTS_CRYPTPARAMS *cryptParams,
                                                       const uint8_t *pInData,
                                                       uint32_t inLen,
@@ -196,7 +199,7 @@ int AQFINTS_Session_ReceiveMessage(AQFINTS_SESSION *sess, GWEN_BUFFER *buffer);
 int AQFINTS_Session_FilloutKeyname(AQFINTS_SESSION *sess, AQFINTS_KEYDESCR *keyDescr, int mode);
 
 int AQFINTS_Session_DecryptSessionKey(AQFINTS_SESSION *sess,
-                                      AQFINTS_KEYDESCR *keyDescr,
+                                      const AQFINTS_KEYDESCR *keyDescr,
                                       const AQFINTS_CRYPTPARAMS *cryptParams,
                                       const uint8_t *pInData,
                                       uint32_t inLen,
@@ -213,6 +216,18 @@ int AQFINTS_Session_Sign(AQFINTS_SESSION *sess,
                          uint8_t *pSignatureData,
                          uint32_t *pSignatureLen);
 
+/**
+ *
+ * @return GWEN_ERROR_TRY_AGAIN if the sign key is not yet available, 0 if okay, error code otherwise
+ */
+int AQFINTS_Session_Verify(AQFINTS_SESSION *sess,
+                           const AQFINTS_KEYDESCR *keyDescr,
+                           const AQFINTS_CRYPTPARAMS *cryptParams,
+                           const uint8_t *pInData,
+                           uint32_t inLen,
+                           const uint8_t *pSignatureData,
+                           uint32_t signatureLen,
+                           uint32_t seqCounter);
 
 /*@}*/
 
@@ -238,6 +253,8 @@ AQFINTS_SESSION_FILLOUT_KEYDESCR_FN AQFINTS_Session_SetFilloutKeynameFn(AQFINTS_
 
 AQFINTS_SESSION_SIGN_FN AQFINTS_Session_SetSignFn(AQFINTS_SESSION *sess, AQFINTS_SESSION_SIGN_FN fn);
 
+AQFINTS_SESSION_VERIFY_FN AQFINTS_Session_SetVerifyFn(AQFINTS_SESSION *sess, AQFINTS_SESSION_VERIFY_FN fn);
+
 
 /*@}*/
 
@@ -262,6 +279,13 @@ AQFINTS_USERDATA_LIST *AQFINTS_Session_ExtractUpdFromSegmentList(AQFINTS_SESSION
  * Returns the number of TAN methods added.
  */
 int AQFINTS_Session_SampleAllowedTanMethods(int *ptrIntArray, int sizeIntArray, AQFINTS_SEGMENT_LIST *segmentList);
+
+
+int AQFINTS_Session_SampleDataToHash(AQFINTS_SEGMENT *segSigHead,
+                                     AQFINTS_SEGMENT *segFirstToSign,
+                                     AQFINTS_SEGMENT *segLastToSign,
+                                     GWEN_BUFFER *destBuf);
+
 
 void AQFINTS_Session_LogMessage(AQFINTS_SESSION *sess,
                                 const uint8_t *ptrLogData,
