@@ -29,6 +29,8 @@ struct AQFINTS_MESSAGE {
   char *dialogId;
 
   char *tanJobCode;
+
+  uint32_t flags;
 };
 
 

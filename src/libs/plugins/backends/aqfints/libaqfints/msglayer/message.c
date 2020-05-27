@@ -74,6 +74,38 @@ void AQFINTS_Message_free(AQFINTS_MESSAGE *msg)
 
 
 
+uint32_t AQFINTS_Message_GetFlags(const AQFINTS_MESSAGE *msg)
+{
+  assert(msg);
+  return msg->flags;
+}
+
+
+
+void AQFINTS_Message_SetFlags(AQFINTS_MESSAGE *msg, uint32_t f)
+{
+  assert(msg);
+  msg->flags=f;
+}
+
+
+
+void AQFINTS_Message_AddFlags(AQFINTS_MESSAGE *msg, uint32_t f)
+{
+  assert(msg);
+  msg->flags|=f;
+}
+
+
+
+void AQFINTS_Message_SubFlags(AQFINTS_MESSAGE *msg, uint32_t f)
+{
+  assert(msg);
+  msg->flags&=~f;
+}
+
+
+
 int AQFINTS_Message_GetMessageNumber(const AQFINTS_MESSAGE *msg)
 {
   assert(msg);
@@ -205,6 +237,16 @@ AQFINTS_KEYDESCR *AQFINTS_Message_FindSigner(AQFINTS_MESSAGE *msg, uint32_t uniq
   }
 
   return NULL;
+}
+
+
+
+void AQFINTS_Message_ClearSigners(AQFINTS_MESSAGE *msg)
+{
+  assert(msg);
+  if (msg->signerList) {
+    AQFINTS_KeyDescr_List_Clear(msg->signerList);
+  }
 }
 
 

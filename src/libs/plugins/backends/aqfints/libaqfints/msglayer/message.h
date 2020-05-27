@@ -21,6 +21,9 @@
 
 
 
+#define AQFINTS_MESSAGE_FLAGS_DELAYED_VERIFY 0x00000001
+
+
 typedef struct AQFINTS_MESSAGE AQFINTS_MESSAGE;
 
 
@@ -56,6 +59,8 @@ void AQFINTS_Message_SetHbciVersion(AQFINTS_MESSAGE *msg, int i);
 AQFINTS_KEYDESCR_LIST *AQFINTS_Message_GetSignerList(const AQFINTS_MESSAGE *msg);
 void AQFINTS_Message_AddSigner(AQFINTS_MESSAGE *msg, AQFINTS_KEYDESCR *keyDescr);
 
+void AQFINTS_Message_ClearSigners(AQFINTS_MESSAGE *msg);
+
 AQFINTS_KEYDESCR *AQFINTS_Message_FindSigner(AQFINTS_MESSAGE *msg, uint32_t uniqueUserId);
 
 
@@ -86,6 +91,12 @@ int AQFINTS_Message_GetLastSegNum(const AQFINTS_MESSAGE *msg);
  */
 const char *AQFINTS_Message_GetTanJobCode(const AQFINTS_MESSAGE *msg);
 void AQFINTS_Message_SetTanJobCode(AQFINTS_MESSAGE *msg, const char *s);
+
+
+uint32_t AQFINTS_Message_GetFlags(const AQFINTS_MESSAGE *msg);
+void AQFINTS_Message_SetFlags(AQFINTS_MESSAGE *msg, uint32_t f);
+void AQFINTS_Message_AddFlags(AQFINTS_MESSAGE *msg, uint32_t f);
+void AQFINTS_Message_SubFlags(AQFINTS_MESSAGE *msg, uint32_t f);
 
 
 #endif

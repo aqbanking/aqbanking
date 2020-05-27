@@ -92,6 +92,12 @@ void AQFINTS_Parser_DumpSegment(AQFINTS_SEGMENT *segment, int indent)
   rtflags=AQFINTS_Segment_GetRuntimeFlags(segment);
   if (rtflags & AQFINTS_SEGMENT_RTFLAGS_PARSED)
     fprintf(stderr, " parsed");
+  if (rtflags & AQFINTS_SEGMENT_RTFLAGS_SIGNED)
+    fprintf(stderr, " signed");
+  if (rtflags & AQFINTS_SEGMENT_RTFLAGS_ENCRYPTED)
+    fprintf(stderr, " encrypted");
+  if (rtflags & AQFINTS_SEGMENT_RTFLAGS_HANDLED)
+    fprintf(stderr, " handled");
 
   fprintf(stderr, "\n");
 
