@@ -39,7 +39,7 @@
     </GROUPdef>
 
 
-    <GROUPdef id="secProfile" version="1">
+    <GROUPdef id="bpdSecProfile" version="1">
       <DE      name="code"           type="an"       maxsize="3" />
       <DE      name="versions"       type="num"      maxsize="3"  minnum="1" maxnum="9" />
     </GROUPdef>
@@ -165,7 +165,7 @@
     >
      <DEG      name="head"           type="SegHead" />
       <DE      name="mixingAllowed"  type="an"         maxsize="1" />
-      <DEG     name="secProfile"     type="secProfile" version="1" maxnum="9" />
+      <DEG     name="secProfile"     type="bpdSecProfile" version="1" maxnum="9" />
     </SEGdef>
 
 

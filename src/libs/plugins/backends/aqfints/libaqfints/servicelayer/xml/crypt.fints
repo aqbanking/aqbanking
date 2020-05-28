@@ -53,29 +53,29 @@
 
     <GROUPdef id="HashAlgo" version="1">
       <!-- Hash-Algo -->
-      <DE name="purpose"           type="an"    maxsize="3" />
-      <DE name="algo"              type="an"    maxsize="3" />
-      <DE name="pname"             type="an"    maxsize="3" />
+      <DE name="purpose"           type="num"    maxsize="3" />
+      <DE name="algo"              type="num"    maxsize="3" />
+      <DE name="pname"             type="num"    maxsize="3" />
       <DE name="param"             type="bin"   maxsize="512" minnum="0" />
     </GROUPdef>
 
 
     <GROUPdef id="SignAlgo" version="1">
       <!-- Signatur-Algo -->
-      <DE name="purpose"           type="an" maxsize="3" />
-      <DE name="algo"              type="an" maxsize="3" />
-      <DE name="mode"              type="an" maxsize="3" />
+      <DE name="purpose"           type="num" maxsize="3" />
+      <DE name="algo"              type="num" maxsize="3" />
+      <DE name="mode"              type="num" maxsize="3" />
     </GROUPdef>
 
 
     <GROUPdef id="CryptAlgo" version="1">
       <!-- Crypt-Algo -->
-      <DE name="purpose"           type="an" maxsize="3" />
-      <DE name="mode"              type="an" maxsize="3" />
-      <DE name="algo"              type="an" maxsize="3" />
+      <DE name="purpose"           type="num" maxsize="3" />
+      <DE name="mode"              type="num" maxsize="3" />
+      <DE name="algo"              type="num" maxsize="3" />
       <DE name="MsgKey"            type="bin" maxsize="512" />
-      <DE name="KeyType"           type="an" maxsize="3" />
-      <DE name="pname"             type="an" maxsize="3" />
+      <DE name="KeyType"           type="num" maxsize="3" />
+      <DE name="pname"             type="num" maxsize="3" />
       <DE name="param"             type="bin" maxsize="512" minnum="0" />
     </GROUPdef>
 
