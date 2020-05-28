@@ -129,7 +129,7 @@
       <DEG   minnum="0" >
         <!-- maxsize should be 6 here and type should be AN, but then the 
              logmanager has problems -->
-        <DE  name="pin"              type="ascii"      maxsize="35" />
+        <DE  name="pin"              type="ascii"      maxsize="35" minnum="0" />
         <DE  name="tan"              type="an"         maxsize="35" minnum="0" />
       </DEG>
       
