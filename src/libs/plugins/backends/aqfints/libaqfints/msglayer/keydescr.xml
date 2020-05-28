@@ -178,6 +178,11 @@
         <access>public</access>
       </member>
 
+      <member name="keySizeInBytes" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
 
 
 
