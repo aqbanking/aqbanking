@@ -377,7 +377,7 @@ int writeCharElement(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elemen
     if (s==NULL)
       break;
     if (maxNum && idx>=maxNum) {
-      DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Too many elements in DB (%d < %d)", idx, maxNum);
+      DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Too many elements in DB (%d < %d [%s])", idx, maxNum, sDbName?sDbName:"");
       return GWEN_ERROR_BAD_DATA;
     }
     elementData=AQFINTS_Element_new();
@@ -389,7 +389,7 @@ int writeCharElement(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elemen
   }
 
   if (minNum && idx<minNum) {
-    DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Too few elements in DB (%d < %d)", idx, minNum);
+      DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Too few elements in DB (%d < %d) [%s]", idx, minNum, sDbName?sDbName:"");
   }
 
   /* create empty DE element if no data */
