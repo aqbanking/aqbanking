@@ -17,6 +17,7 @@
 #include "sessionlayer/session.h"
 #include "sessionlayer/s_decrypt.h"
 #include "sessionlayer/s_verify.h"
+#include "sessionlayer/s_log.h"
 
 #include "parser/parser.h"
 #include "parser/parser_dump.h"
@@ -72,6 +73,8 @@ AQFINTS_MESSAGE *AQFINTS_Session_DecodeMessage(AQFINTS_SESSION *sess, const uint
     AQFINTS_Message_free(message);
     return NULL;
   }
+
+  AQFINTS_Session_LogMessage(sess, ptrBuffer, lenBuffer, 1, 1); /* rec, crypt */
 
 #if 0
   DBG_ERROR(AQFINTS_LOGDOMAIN, "Received this segment list:");

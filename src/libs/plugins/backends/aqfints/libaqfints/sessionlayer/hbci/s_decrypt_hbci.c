@@ -102,6 +102,11 @@ int AQFINTS_Session_DecryptSegmentHbci(AQFINTS_SESSION *sess,
     AQFINTS_SEGMENT *segment;
     int rv;
 
+    AQFINTS_Session_LogMessage(sess,
+                               (const uint8_t*) GWEN_Buffer_GetStart(bufDecodedMessage),
+                               GWEN_Buffer_GetUsedBytes(bufDecodedMessage),
+                               1, 0); /* rec, crypt */
+
     parser=AQFINTS_Session_GetParser(sess);
     newSegmentList=AQFINTS_Segment_List_new();
     rv=AQFINTS_Parser_ReadIntoSegmentList(parser, newSegmentList,

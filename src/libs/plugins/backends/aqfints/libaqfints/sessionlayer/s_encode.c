@@ -18,6 +18,7 @@
 #include "sessionlayer/s_encrypt.h"
 #include "sessionlayer/s_sign.h"
 #include "sessionlayer/s_message.h"
+#include "parser/parser_dump.h"
 
 #include "parser/parser.h"
 
@@ -65,6 +66,18 @@ GWEN_BUFFER *AQFINTS_Session_EncodeMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAG
     return NULL;
   }
 
+#if 0
+  if (1) {
+    AQFINTS_SEGMENT_LIST *segmentList;
+
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "Segment list before encoding:");
+    segmentList=AQFINTS_Message_GetSegmentList(message);
+    if (segmentList)
+      AQFINTS_Parser_DumpSegmentList(segmentList, 2);
+  }
+#endif
+
+
   if (flags & AQFINTS_SEGMENT_FLAGS_SIGN) {
     DBG_INFO(AQFINTS_LOGDOMAIN, "Signing requested");
     rv=AQFINTS_Session_SignMessage(sess, message);
@@ -94,9 +107,28 @@ GWEN_BUFFER *AQFINTS_Session_EncodeMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAG
     return NULL;
   }
 
+#if 0
+  if (1) {
+    AQFINTS_SEGMENT_LIST *segmentList;
+
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "Segment list after encoding:");
+    segmentList=AQFINTS_Message_GetSegmentList(message);
+    if (segmentList)
+      AQFINTS_Parser_DumpSegmentList(segmentList, 2);
+  }
+#endif
+
+
   messageSize=AQFINTS_Segment_List_SampleSizes(segmentList);
   msgBuffer=GWEN_Buffer_new(0, messageSize, 0, 1);
   AQFINTS_Segment_List_SampleBuffers(segmentList, msgBuffer);
+
+  AQFINTS_Session_LogMessage(sess,
+                             (const uint8_t*) GWEN_Buffer_GetStart(msgBuffer),
+                             GWEN_Buffer_GetUsedBytes(msgBuffer),
+                             0, 1); /* !rec, crypt */
+
+
   return msgBuffer;
 }
 
