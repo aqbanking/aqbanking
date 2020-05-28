@@ -92,10 +92,15 @@ int AQFINTS_Session_SignSegmentHbci(AQFINTS_SESSION *sess,
     return GWEN_ERROR_INVALID;
   }
 
-
   segmentList=AQFINTS_Message_GetSegmentList(message);
 
   rv=_createCtrlRef(ctrlref, sizeof(ctrlref));
+  if (rv<0) {
+    DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=AQFINTS_Session_FilloutKeyname(sess, keyDescr, AQFINTS_SESSION_CRYPTOP_SIGN);
   if (rv<0) {
     DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -306,6 +311,7 @@ int _prepareSignSeg(AQFINTS_SESSION *sess,
   char stime[7];
   struct tm *lt;
   time_t tt;
+  const char *s;
 
   /* some preparations */
   tt=time(0);
@@ -328,9 +334,12 @@ int _prepareSignSeg(AQFINTS_SESSION *sess,
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "area", 1);
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "role", 1);
 
-  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/dir",
+  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/id",
                       AQFINTS_Session_GetIsServer(sess)?2:1); /* 1 client, 2=server */
-  GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/secId", AQFINTS_KeyDescr_GetSystemId(keyDescr));
+
+  s=AQFINTS_KeyDescr_GetSystemId(keyDescr);
+  if (s && *s)
+    GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/secId", s);
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "signseq", AQFINTS_KeyDescr_GetSignatureCounter(keyDescr));
 
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecStamp/date", sdate);
