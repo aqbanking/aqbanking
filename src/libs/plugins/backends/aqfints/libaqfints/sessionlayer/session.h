@@ -68,7 +68,7 @@ typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_DECRYPT_SKEY_FN)(AQFINTS_SESSION *ses
 
 typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_ENCRYPT_SKEY_FN)(AQFINTS_SESSION *sess,
                                                             const AQFINTS_KEYDESCR *keyDescr,
-                                                            GWEN_CRYPT_PADDALGO *a,
+                                                            const AQFINTS_CRYPTPARAMS *cryptParams,
                                                             const uint8_t *pInData,
                                                             uint32_t inLen,
                                                             uint8_t *pOutData,
@@ -205,6 +205,15 @@ int AQFINTS_Session_DecryptSessionKey(AQFINTS_SESSION *sess,
                                       uint32_t inLen,
                                       uint8_t *pOutData,
                                       uint32_t *pOutLen);
+
+int AQFINTS_Session_EncryptSessionKey(AQFINTS_SESSION *sess,
+                                      const AQFINTS_KEYDESCR *keyDescr,
+                                      const AQFINTS_CRYPTPARAMS *cryptParams,
+                                      const uint8_t *pInData,
+                                      uint32_t inLen,
+                                      uint8_t *pOutData,
+                                      uint32_t *pOutLen);
+
 int AQFINTS_Session_VerifyPin(AQFINTS_SESSION *sess, const AQFINTS_KEYDESCR *keyDescr, const char *pin);
 
 
@@ -243,6 +252,9 @@ AQFINTS_SESSION_EXCHANGEMESSAGES_FN AQFINTS_Session_SetExchangeMessagesFn(AQFINT
 
 AQFINTS_SESSION_DECRYPT_SKEY_FN AQFINTS_Session_SetDecryptSessionKeyFn(AQFINTS_SESSION *sess,
                                                                        AQFINTS_SESSION_DECRYPT_SKEY_FN fn);
+
+AQFINTS_SESSION_ENCRYPT_SKEY_FN AQFINTS_Session_SetEncryptSessionKeyFn(AQFINTS_SESSION *sess,
+                                                                       AQFINTS_SESSION_ENCRYPT_SKEY_FN fn);
 
 AQFINTS_SESSION_VERIFYPIN_FN AQFINTS_Session_SetVerifyPinFn(AQFINTS_SESSION *sess,
                                                             AQFINTS_SESSION_VERIFYPIN_FN fn);

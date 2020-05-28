@@ -313,6 +313,23 @@ int AQFINTS_Session_DecryptSessionKey(AQFINTS_SESSION *sess,
 
 
 
+int AQFINTS_Session_EncryptSessionKey(AQFINTS_SESSION *sess,
+                                      const AQFINTS_KEYDESCR *keyDescr,
+                                      const AQFINTS_CRYPTPARAMS *cryptParams,
+                                      const uint8_t *pInData,
+                                      uint32_t inLen,
+                                      uint8_t *pOutData,
+                                      uint32_t *pOutLen)
+{
+  assert(sess);
+  if (sess->encryptSessionKeyFn)
+      return sess->encryptSessionKeyFn(sess, keyDescr, cryptParams, pInData, inLen, pOutData, pOutLen);
+  else
+    return GWEN_ERROR_NOT_IMPLEMENTED;
+}
+
+
+
 int AQFINTS_Session_VerifyPin(AQFINTS_SESSION *sess, const AQFINTS_KEYDESCR *keyDescr, const char *pin)
 {
   assert(sess);
@@ -426,6 +443,31 @@ AQFINTS_SESSION_DECRYPT_SKEY_FN AQFINTS_Session_SetDecryptSessionKeyFn(AQFINTS_S
   return oldFn;
 }
 
+
+
+AQFINTS_SESSION_ENCRYPT_SKEY_FN AQFINTS_Session_SetEncryptSessionKeyFn(AQFINTS_SESSION *sess,
+                                                                       AQFINTS_SESSION_ENCRYPT_SKEY_FN fn)
+{
+  AQFINTS_SESSION_ENCRYPT_SKEY_FN oldFn;
+
+  assert(sess);
+  oldFn=sess->encryptSessionKeyFn;
+  sess->encryptSessionKeyFn=fn;
+  return oldFn;
+}
+
+
+
+AQFINTS_SESSION_VERIFYPIN_FN AQFINTS_Session_SetVerifyPinFn(AQFINTS_SESSION *sess,
+                                                            AQFINTS_SESSION_VERIFYPIN_FN fn)
+{
+  AQFINTS_SESSION_VERIFYPIN_FN oldFn;
+
+  assert(sess);
+  oldFn=sess->verifyPinFn;
+  sess->verifyPinFn=fn;
+  return oldFn;
+}
 
 
 
@@ -585,10 +627,6 @@ int AQFINTS_Session_SendMessage(AQFINTS_SESSION *sess, const char *ptrBuffer, in
   int rv;
 
   assert(sess);
-  /* TODO: add logging mechanism */
-  DBG_ERROR(AQFINTS_LOGDOMAIN, "Sending this:");
-  GWEN_Text_LogString(ptrBuffer, lenBuffer, NULL, GWEN_LoggerLevel_Error);
-
   rv=AQFINTS_Transport_SendMessage(sess->transport, ptrBuffer, lenBuffer);
   sess->lastMessageNumSent++;
   if (rv<0) {
@@ -612,8 +650,6 @@ int AQFINTS_Session_ReceiveMessage(AQFINTS_SESSION *sess, GWEN_BUFFER *buffer)
     return rv;
   }
 
-  DBG_ERROR(AQFINTS_LOGDOMAIN, "Received this:");
-  GWEN_Text_LogString(GWEN_Buffer_GetStart(buffer), GWEN_Buffer_GetUsedBytes(buffer), NULL, GWEN_LoggerLevel_Error);
   sess->lastMessageNumReceived++;
   return rv;
 }
@@ -713,12 +749,6 @@ int AQFINTS_Session_SampleDataToHash(AQFINTS_SEGMENT *segSigHead,
     DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
-  rv=GWEN_Buffer_AppendByte(destBuf, '\'');
-  if (rv<0) {
-    DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
   /* hash data segments */
   segment=segFirstToSign;
   while(segment) {
@@ -730,11 +760,6 @@ int AQFINTS_Session_SampleDataToHash(AQFINTS_SEGMENT *segSigHead,
       return rv;
     }
 
-    rv=GWEN_Buffer_AppendByte(destBuf, '\'');
-    if (rv<0) {
-      DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
     if (segment==segLastToSign)
       break;
     segment=AQFINTS_Segment_List_Next(segment);
