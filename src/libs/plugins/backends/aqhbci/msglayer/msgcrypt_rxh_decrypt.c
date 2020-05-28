@@ -207,7 +207,9 @@ GWEN_CRYPT_KEY *_rxhDecrypt_ExtractMessageKey(AH_MSG *hmsg, int rxhProtocol, GWE
 
     algo=GWEN_Crypt_PaddAlgo_new(GWEN_Crypt_PaddAlgoId_None);
     elen=sizeof(decKey);
+
     rv=GWEN_Crypt_Token_Decipher(ct, keyId, algo, encKey, ksize, decKey, &elen, gid);
+
     GWEN_Crypt_PaddAlgo_free(algo);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -226,6 +228,10 @@ GWEN_CRYPT_KEY *_rxhDecrypt_ExtractMessageKey(AH_MSG *hmsg, int rxhProtocol, GWE
     }
 
     /* unpadd and generate key */
+    if (elen<decKeySize) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Decrypted data too small for a key (%d < %d)", elen, decKeySize);
+      return NULL;
+    }
     p=decKey+(elen-decKeySize);
 
 #if 0
