@@ -8,10 +8,5 @@ GWEN:
   - GWEN_Gui_GetSyncIo() should not be called for server mode
 
 
-
-# create relative patch
-git format-patch --relative HEAD~xx
-
-# apply relative patch:
-git am --directory src/libs/plugins/backends/aqfints/libaqfints PATCHFILE
+- escape special HBCI characters!!
 

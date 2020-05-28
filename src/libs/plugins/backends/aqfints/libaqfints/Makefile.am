@@ -14,7 +14,7 @@ noinst_HEADERS= \
   aqfints.h
 
 
-libaqfints_la_LIBADD=\
+libaqfints_la_LIBADD= $(gwenhywfar_libs) $(aqbanking_libs) \
   parser/libaqfintsparser.la \
   msglayer/libaqfintsmsg.la \
   servicelayer/libaqfintsservice.la \
