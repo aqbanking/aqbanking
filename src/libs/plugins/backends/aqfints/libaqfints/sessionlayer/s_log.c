@@ -74,6 +74,7 @@ void AQFINTS_Session_LogMessage(AQFINTS_SESSION *sess,
 
   _setCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "crypt", crypt?"yes":"no");
   _setCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "sender", rec?"bank":"user");
+  _setCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "direction", rec?"inbound":"outbound");
   GWEN_Version(&vmajor, &vminor, &vpatchlevel, &vbuild);
   snprintf(vbuf, sizeof(vbuf)-1, "%d.%d.%d.%d", vmajor, vminor, vpatchlevel, vbuild);
   vbuf[sizeof(vbuf)-1]=0;
