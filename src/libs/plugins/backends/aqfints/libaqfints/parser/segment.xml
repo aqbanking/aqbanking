@@ -219,7 +219,6 @@
                  while (segment) {
                    if (segment-&gt;data.pointer &amp;&amp; segment-&gt;data.length&gt;0)
                      GWEN_Buffer_AppendBytes(destBuf, (const char*) segment-&gt;data.pointer, segment-&gt;data.length);
-               
                    segment=$(struct_prefix)_List_Next(segment);
                  }
                }
