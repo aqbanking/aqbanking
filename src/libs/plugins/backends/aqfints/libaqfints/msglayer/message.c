@@ -206,6 +206,17 @@ AQFINTS_KEYDESCR_LIST *AQFINTS_Message_GetSignerList(const AQFINTS_MESSAGE *msg)
 
 
 
+int AQFINTS_Message_HasAnySigner(const AQFINTS_MESSAGE *msg)
+{
+  assert(msg);
+  if (msg->signerList && AQFINTS_KeyDescr_List_GetCount(msg->signerList)>0)
+    return 1;
+
+  return 0;
+}
+
+
+
 void AQFINTS_Message_AddSigner(AQFINTS_MESSAGE *msg, AQFINTS_KEYDESCR *keyDescr)
 {
   uint32_t uid;
@@ -377,6 +388,17 @@ void _moveSegmentsByCodeBetweenLists(AQFINTS_SEGMENT_LIST *segmentList1, AQFINTS
     }
     segment=nextSegment;
   }
+}
+
+
+
+uint32_t AQFINTS_Message_SampleSegmentFlags(const AQFINTS_MESSAGE *msg)
+{
+  uint32_t flags=0;
+
+  if (msg->segmentList)
+    flags=AQFINTS_Segment_List_SampleFlags(msg->segmentList);
+  return flags;
 }
 
 

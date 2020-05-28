@@ -59,6 +59,8 @@ void AQFINTS_Message_SetHbciVersion(AQFINTS_MESSAGE *msg, int i);
 AQFINTS_KEYDESCR_LIST *AQFINTS_Message_GetSignerList(const AQFINTS_MESSAGE *msg);
 void AQFINTS_Message_AddSigner(AQFINTS_MESSAGE *msg, AQFINTS_KEYDESCR *keyDescr);
 
+int AQFINTS_Message_HasAnySigner(const AQFINTS_MESSAGE *msg);
+
 void AQFINTS_Message_ClearSigners(AQFINTS_MESSAGE *msg);
 
 AQFINTS_KEYDESCR *AQFINTS_Message_FindSigner(AQFINTS_MESSAGE *msg, uint32_t uniqueUserId);
@@ -97,6 +99,9 @@ uint32_t AQFINTS_Message_GetFlags(const AQFINTS_MESSAGE *msg);
 void AQFINTS_Message_SetFlags(AQFINTS_MESSAGE *msg, uint32_t f);
 void AQFINTS_Message_AddFlags(AQFINTS_MESSAGE *msg, uint32_t f);
 void AQFINTS_Message_SubFlags(AQFINTS_MESSAGE *msg, uint32_t f);
+
+
+uint32_t AQFINTS_Message_SampleSegmentFlags(const AQFINTS_MESSAGE *msg);
 
 
 #endif
