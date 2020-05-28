@@ -14,6 +14,7 @@
 
 #include "sessionlayer/s_encrypt.h"
 #include "sessionlayer/pintan/s_encrypt_pintan.h"
+#include "sessionlayer/hbci/s_encrypt_hbci.h"
 #include "parser/parser.h"
 
 #include <gwenhywfar/misc.h>
@@ -39,18 +40,11 @@ int AQFINTS_Session_EncryptMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *messa
 {
   AQFINTS_KEYDESCR *keyDescr;
   const char *sSecProfileCode;
-  int rv;
 
   keyDescr=AQFINTS_Message_GetCrypter(message);
   if (keyDescr==NULL) {
     DBG_ERROR(AQFINTS_LOGDOMAIN, "No crypter set");
     return GWEN_ERROR_GENERIC;
-  }
-
-  rv=AQFINTS_Session_FilloutKeyname(sess, keyDescr, AQFINTS_SESSION_CRYPTOP_ENCRYPT);
-  if (rv<0) {
-    DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
-    return rv;
   }
 
   sSecProfileCode=AQFINTS_KeyDescr_GetSecurityProfileName(keyDescr);
@@ -59,6 +53,10 @@ int AQFINTS_Session_EncryptMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *messa
 
     if (strcasecmp(sSecProfileCode, "PIN")==0)
       rv=AQFINTS_Session_EncryptMessagePinTan(sess, message);
+    else if (strcasecmp(sSecProfileCode, "RDH")==0)
+      rv=AQFINTS_Session_EncryptMessageHbci(sess, message);
+    else if (strcasecmp(sSecProfileCode, "RAH")==0)
+      rv=AQFINTS_Session_EncryptMessageHbci(sess, message);
     else {
       DBG_ERROR(AQFINTS_LOGDOMAIN, "Unhandled security profile \"%s\"", sSecProfileCode);
       return GWEN_ERROR_GENERIC;
