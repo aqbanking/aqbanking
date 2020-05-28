@@ -85,7 +85,17 @@ int AQFINTS_Parser_Hbci_ReadBuffer(AQFINTS_SEGMENT_LIST *targetSegmentList,
     AQFINTS_Segment_List_Add(targetSegment, targetSegmentList);
 
     /* store copy of segment data */
-    AQFINTS_Segment_SetDataAsCopy(targetSegment, ptrBuf, rv);
+    if (lenBuf>rv) {
+      if (ptrBuf[rv]!='\'') {
+        DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Segment not terminated by quotation mark");
+        return GWEN_ERROR_BAD_DATA;
+      }
+      AQFINTS_Segment_SetDataAsCopy(targetSegment, ptrBuf, rv+1);
+    }
+    else {
+      DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Segment too small (no room for terminating quotation mark)");
+      return GWEN_ERROR_BAD_DATA;
+    }
 
     /* advance pointer and size */
     lenBuf-=rv;
