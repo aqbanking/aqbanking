@@ -45,7 +45,8 @@ static int writeDeg(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf);
 static void writeDeSequence(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf, int elementCount,
                             int *pEndOfLastNonEmptyElement);
 static int writeDe(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf);
-static void binWrite(const uint8_t *ptrBuf, uint32_t lenBuf, GWEN_BUFFER *destBuf);
+static void writeBin(const uint8_t *ptrBuf, uint32_t lenBuf, GWEN_BUFFER *destBuf);
+static void writeString(const char *s, GWEN_BUFFER *destBuf);
 
 
 
@@ -530,14 +531,14 @@ int writeDe(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf)
     lenBuf=AQFINTS_Element_GetDataLength(element);
     ptrBuf=AQFINTS_Element_GetDataPointer(element);
     if (lenBuf && ptrBuf)
-      binWrite(ptrBuf, lenBuf, destBuf);
+      writeBin(ptrBuf, lenBuf, destBuf);
   }
   else {
     const char *s;
 
     s=AQFINTS_Element_GetDataAsChar(element, NULL);
     if (s && *s)
-      GWEN_Buffer_AppendString(destBuf, s);
+      writeString(s, destBuf);
   }
 
   elementSize=GWEN_Buffer_GetPos(destBuf)-elementStartPos;
@@ -546,7 +547,7 @@ int writeDe(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf)
 
 
 
-void binWrite(const uint8_t *ptrBuf, uint32_t lenBuf, GWEN_BUFFER *destBuf)
+void writeBin(const uint8_t *ptrBuf, uint32_t lenBuf, GWEN_BUFFER *destBuf)
 {
   char numbuf[32];
   int i;
@@ -562,5 +563,16 @@ void binWrite(const uint8_t *ptrBuf, uint32_t lenBuf, GWEN_BUFFER *destBuf)
 
 
 
+void writeString(const char *s, GWEN_BUFFER *destBuf)
+{
+  if (s) {
+    while(*s) {
+      if (NULL!=strchr("+:@?'", *s))
+	GWEN_Buffer_AppendByte(destBuf, '?');    /* prepend by '?' */
+      GWEN_Buffer_AppendByte(destBuf, *s);
+      s++;
+    }
+  }
+}
 
 
