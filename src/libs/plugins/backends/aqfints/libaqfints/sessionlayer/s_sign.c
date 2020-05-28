@@ -14,6 +14,7 @@
 
 #include "sessionlayer/s_sign.h"
 #include "sessionlayer/pintan/s_sign_pintan.h"
+#include "sessionlayer/hbci/s_sign_hbci.h"
 #include "sessionlayer/s_decode.h"
 #include "parser/parser.h"
 
@@ -30,7 +31,7 @@
 
 static int _signSegment(AQFINTS_SESSION *sess,
                         AQFINTS_MESSAGE *message,
-                        const AQFINTS_KEYDESCR *keyDescr,
+                        AQFINTS_KEYDESCR *keyDescr,
                         AQFINTS_SEGMENT *segFirstToSign,
                         AQFINTS_SEGMENT *segLastToSign,
                         int sigHeadNum,
@@ -108,7 +109,7 @@ int AQFINTS_Session_SignMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *message)
 
 int _signSegment(AQFINTS_SESSION *sess,
                  AQFINTS_MESSAGE *message,
-                 const AQFINTS_KEYDESCR *keyDescr,
+                 AQFINTS_KEYDESCR *keyDescr,
                  AQFINTS_SEGMENT *segFirstToSign,
                  AQFINTS_SEGMENT *segLastToSign,
                  int sigHeadNum,
@@ -122,6 +123,10 @@ int _signSegment(AQFINTS_SESSION *sess,
 
     if (strcasecmp(sSecProfileCode, "PIN")==0)
       rv=AQFINTS_Session_SignSegmentPinTan(sess, message, keyDescr, segFirstToSign, segLastToSign, sigHeadNum, sigTailNum);
+    else if (strcasecmp(sSecProfileCode, "RDH")==0)
+      rv=AQFINTS_Session_SignSegmentHbci(sess, message, keyDescr, segFirstToSign, segLastToSign, sigHeadNum, sigTailNum);
+    else if (strcasecmp(sSecProfileCode, "RAH")==0)
+      rv=AQFINTS_Session_SignSegmentHbci(sess, message, keyDescr, segFirstToSign, segLastToSign, sigHeadNum, sigTailNum);
     else {
       DBG_ERROR(AQFINTS_LOGDOMAIN, "Unhandled security profile \"%s\"", sSecProfileCode);
       return GWEN_ERROR_GENERIC;

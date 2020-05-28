@@ -86,6 +86,12 @@ int AQFINTS_Session_SignSegmentHbci(AQFINTS_SESSION *sess,
   securityProfileName=AQFINTS_KeyDescr_GetSecurityProfileName(keyDescr);
   securityProfileVersion=AQFINTS_KeyDescr_GetSecurityProfileVersion(keyDescr);
 
+  /* hack for hibiscus */
+  if (securityProfileVersion==0) {
+    if (securityProfileName && strcasecmp(securityProfileName, "RDH")==0)
+      securityProfileVersion=10;
+  }
+
   cryptParams=AQFINTS_CryptParams_GetParamsForSecurityProfile(securityProfileName, securityProfileVersion);
   if (cryptParams==NULL) {
     DBG_ERROR(AQFINTS_LOGDOMAIN, "No crypt params for [%s:%d]", securityProfileName?securityProfileName:"<empty>", securityProfileVersion);
@@ -312,6 +318,8 @@ int _prepareSignSeg(AQFINTS_SESSION *sess,
   struct tm *lt;
   time_t tt;
   const char *s;
+  const char *securityProfileName;
+  int securityProfileVersion;
 
   /* some preparations */
   tt=time(0);
@@ -329,6 +337,20 @@ int _prepareSignSeg(AQFINTS_SESSION *sess,
   }
 
   /* store info */
+
+  /* security profile */
+  securityProfileName=AQFINTS_KeyDescr_GetSecurityProfileName(keyDescr);
+  securityProfileVersion=AQFINTS_KeyDescr_GetSecurityProfileVersion(keyDescr);
+
+  /* hack for hibiscus */
+  if (securityProfileVersion==0) {
+    if (securityProfileName && strcasecmp(securityProfileName, "RDH")==0)
+      securityProfileVersion=10;
+  }
+
+  GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "secProfile/code", securityProfileName);
+  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "secProfile/version", securityProfileVersion);
+
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "function", 2); /* sign with digital signature key */
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "ctrlref", ctrlRef);
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "area", 1);
@@ -342,6 +364,7 @@ int _prepareSignSeg(AQFINTS_SESSION *sess,
     GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/secId", s);
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "signseq", AQFINTS_KeyDescr_GetSignatureCounter(keyDescr));
 
+  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecStamp/stampCode", 1);
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecStamp/date", sdate);
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecStamp/time", stime);
 
@@ -362,10 +385,6 @@ int _prepareSignSeg(AQFINTS_SESSION *sess,
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "key/keytype", AQFINTS_KeyDescr_GetKeyType(keyDescr));
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "key/keynum", AQFINTS_KeyDescr_GetKeyNumber(keyDescr));
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "key/keyversion", AQFINTS_KeyDescr_GetKeyVersion(keyDescr));
-
-  /* security profile */
-  GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "secProfile/code", AQFINTS_KeyDescr_GetSecurityProfileName(keyDescr));
-  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "secProfile/version", AQFINTS_KeyDescr_GetSecurityProfileVersion(keyDescr));
 
   /* TODO: add certificate data */
 
