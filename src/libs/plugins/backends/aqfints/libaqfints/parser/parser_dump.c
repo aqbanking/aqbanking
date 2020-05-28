@@ -109,6 +109,20 @@ void AQFINTS_Parser_DumpSegment(AQFINTS_SEGMENT *segment, int indent)
     GWEN_DB_Dump(db, indent+4);
   }
 
+  if (1) {
+    uint8_t *ptr;
+    uint32_t len;
+
+    ptr=AQFINTS_Segment_GetDataPointer(segment);
+    len=AQFINTS_Segment_GetDataLength(segment);
+    if (ptr && len) {
+      for (i=0; i<indent+2; i++)
+        fprintf(stderr, " ");
+      fprintf(stderr, "Buffer:\n");
+      GWEN_Text_DumpString((const char*) ptr, len, indent+4);
+    }
+  }
+
   elementTree=AQFINTS_Segment_GetElements(segment);
   if (elementTree)
     AQFINTS_Parser_DumpElementTree(elementTree, indent+2);
