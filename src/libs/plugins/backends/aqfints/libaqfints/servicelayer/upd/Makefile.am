@@ -34,7 +34,8 @@ built_sources=\
   updjob.c \
   accountdata.c \
   userdata.c \
-  upd_read.c
+  upd_read.c \
+  upd_write.c
 
 
 build_headers_priv=\
@@ -47,7 +48,8 @@ build_headers_pub=\
   updjob.h \
   accountdata.h \
   userdata.h \
-  upd_read.h
+  upd_read.h \
+  upd_write.h
 
 
 
