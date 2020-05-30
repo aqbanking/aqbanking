@@ -8,8 +8,8 @@
  * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
-#ifndef UPD_READ_H
-#define UPD_READ_H
+#ifndef AQFINTS_UPD_READ_H
+#define AQFINTS_UPD_READ_H
 
 
 #include "servicelayer/upd/accountdata.h"
