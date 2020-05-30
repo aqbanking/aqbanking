@@ -1,12 +1,3 @@
-
-AqFINTS:
-- create transport layer with a given socket (needed for server mode)
-
-GWEN:
-- httpsession:
-  - needs to be able to take over a given socket (needed for server mode)
-  - GWEN_Gui_GetSyncIo() should not be called for server mode
-
-
-- escape special HBCI characters!!
+Next:
+- upd_write (HIUPD, HIUPA)
 
