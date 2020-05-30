@@ -230,6 +230,31 @@ AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentHighestVersionForProto(const AQFINTS_
 
 
 
+AQFINTS_SEGMENT *AQFINTS_Parser_CreateSegmentByCode(const AQFINTS_PARSER *parser, const char *code, int segmentVersion)
+{
+  AQFINTS_SEGMENT *defSegment;
+  AQFINTS_SEGMENT *segment;
+  GWEN_DB_NODE *dbSegment;
+
+  if (segmentVersion)
+    defSegment=AQFINTS_Parser_FindSegmentByCode(parser, code, segmentVersion, 0);
+  else
+    defSegment=AQFINTS_Parser_FindSegmentHighestVersionForProto(parser, code, 0);
+  if (defSegment==NULL) {
+    DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "Segment %s:%d not found", code, segmentVersion);
+    return NULL;
+  }
+
+  segment=AQFINTS_Segment_new();
+  AQFINTS_Segment_copy(segment, defSegment);
+
+  dbSegment=GWEN_DB_Group_new(code);
+  AQFINTS_Segment_SetDbData(segment, dbSegment);
+  return segment;
+}
+
+
+
 AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefByCode(const AQFINTS_PARSER *parser, const char *id, int jobVersion,
                                                 int protocolVersion)
 {
@@ -298,7 +323,7 @@ AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefByParams(const AQFINTS_PARSER *parser, 
       else {
         const char *s;
 
-        s=AQFINTS_JobDef_GetParams(jobDef);
+        s=AQFINTS_JobDef_GetParamsSegmentCode(jobDef);
         if (s && *s && strcasecmp(s, params)==0)
           return jobDef;
       }

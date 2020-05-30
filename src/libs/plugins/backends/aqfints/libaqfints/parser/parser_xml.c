@@ -276,18 +276,9 @@ void readJobDefs(AQFINTS_JOBDEF_LIST *jobDefList, GWEN_XMLNODE *xmlSource)
     s=GWEN_XMLNode_GetData(xmlNode);
     if (s && *s && strcasecmp(s, "JOBdef")==0) {
       AQFINTS_JOBDEF *jobDef;
-      AQFINTS_SEGMENT_LIST *segmentList;
 
       jobDef=AQFINTS_JobDef_new();
-      segmentList=AQFINTS_JobDef_GetSegments(jobDef);
-      if (segmentList==NULL) {
-        segmentList=AQFINTS_Segment_List_new();
-        AQFINTS_JobDef_SetSegments(jobDef, segmentList);
-      }
-      assert(segmentList);
-
       readJobDef(jobDef, xmlNode);
-      readSegments(segmentList, xmlSource);
       AQFINTS_JobDef_List_Add(jobDef, jobDefList);
     }
     xmlNode=GWEN_XMLNode_GetNextTag(xmlNode);
@@ -684,11 +675,11 @@ void readJobDef(AQFINTS_JOBDEF *jobDef, GWEN_XMLNODE *xmlSource)
 
   s=GWEN_XMLNode_GetProperty(xmlSource, "params", NULL);
   if (s && *s)
-    AQFINTS_JobDef_SetParams(jobDef, s);
+    AQFINTS_JobDef_SetParamsSegmentCode(jobDef, s);
 
   s=GWEN_XMLNode_GetProperty(xmlSource, "response", NULL);
   if (s && *s)
-    AQFINTS_JobDef_SetResponse(jobDef, s);
+    AQFINTS_JobDef_SetResponseSegmentCode(jobDef, s);
 
   i=GWEN_XMLNode_GetIntProperty(xmlSource, "jobVersion", -1);
   AQFINTS_JobDef_SetJobVersion(jobDef, i);
@@ -723,11 +714,11 @@ void writeJobDef(const AQFINTS_JOBDEF *jobDef, GWEN_XMLNODE *xmlDest)
   if (s && *s)
     GWEN_XMLNode_SetProperty(xmlDest, "code", s);
 
-  s=AQFINTS_JobDef_GetParams(jobDef);
+  s=AQFINTS_JobDef_GetParamsSegmentCode(jobDef);
   if (s && *s)
     GWEN_XMLNode_SetProperty(xmlDest, "params", s);
 
-  s=AQFINTS_JobDef_GetResponse(jobDef);
+  s=AQFINTS_JobDef_GetResponseSegmentCode(jobDef);
   if (s && *s)
     GWEN_XMLNode_SetProperty(xmlDest, "response", s);
 

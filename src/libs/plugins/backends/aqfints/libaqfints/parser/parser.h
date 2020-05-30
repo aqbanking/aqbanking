@@ -176,12 +176,26 @@ AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentByCode(const AQFINTS_PARSER *parser, 
  *
  * @return segment found (NULL otherwise)
  * @param parser parser object
- * @param id HBCI segment code (like "HNSHK", see @ref AQFINTS_Segment_GetCode)
+ * @param code HBCI segment code (like "HNSHK", see @ref AQFINTS_Segment_GetCode)
  * @param protocolVersion protocol version (0 matches any)
  */
 AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentHighestVersionForProto(const AQFINTS_PARSER *parser,
-                                                                  const char *id,
+                                                                  const char *code,
                                                                   int protocolVersion);
+
+
+/**
+ * Creates segment ready to be used by the caller.
+ *
+ * This function looks up the segment definition using given id and segment version and makes a copy of that
+ * definition. It also creates and sets a GWEN_DB_NODE for the segment and stores it with the new segment.
+ *
+ * @return prepared segment
+ * @param parser parser object
+ * @param code HBCI segment code (like "HNSHK", see @ref AQFINTS_Segment_GetCode)
+ * @param segmentVersion segment version (0 matches any)
+ */
+AQFINTS_SEGMENT *AQFINTS_Parser_CreateSegmentByCode(const AQFINTS_PARSER *parser, const char *code, int segmentVersion);
 
 /*@}*/
 
