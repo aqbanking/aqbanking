@@ -1,0 +1,234 @@
+<?xml?>
+
+<tm2>
+  <type id="AQFINTS_ACCOUNTDATA" type="pointer">
+    <descr>
+    </descr>
+    <lang id="c">
+      <identifier>AQFINTS_ACCOUNTDATA</identifier>
+      <prefix>AQFINTS_AccountData</prefix>
+
+      <baseFileName>accountdata</baseFileName>
+      
+      <flags>
+        with_db
+        with_list1
+        with_refcount
+      </flags>
+      
+      <headers>
+        <header type="sys"   loc="pre">libaqfints/aqfints.h</header>
+        <header type="sys"   loc="code">string.h</header>
+        <header type="local" loc="post">service/upd/updjob.h</header>
+      </headers>
+      
+
+      <inlines>
+
+
+        <!-- addUpdJob -->
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) void $(struct_prefix)_AddUpdJob($(struct_type) *st, AQFINTS_UPDJOB *j);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             void $(struct_prefix)_AddUpdJob($(struct_type) *st, AQFINTS_UPDJOB *j) {
+               if (st-&gt;updJobs==NULL)
+                 st-&gt;updJobs=AQFINTS_UpdJob_List_new();
+               AQFINTS_UpdJob_List_Add(j, st-&gt;updJobs);
+             }
+          </content>
+        </inline>
+
+
+      </inlines>
+
+
+
+    </lang>
+
+    <defines>
+
+      <define id="AQFINTS_ACCOUNTDATA_RTFLAGS" prefix="AQFINTS_ACCOUNTDATA_RTFLAGS_">
+     </define>
+
+     <define id="AQFINTS_ACCOUNTDATA_FLAGS" prefix="AQFINTS_ACCOUNTDATA_FLAGS_">
+     </define>
+
+    </defines>
+
+    <enums>
+    </enums>
+
+
+
+    <members>
+  
+      <member name="accountNumber" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+      <member name="accountSuffix" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+      <member name="bankCode" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+      <member name="country" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+
+      <member name="iban" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+      <member name="accountName" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+      <member name="customerId" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+      <member name="accountType" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+
+      <member name="currency" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+      <member name="name1" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+      <member name="name2" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+      <member name="limitType" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+
+      <member name="limitValue" type="AB_VALUE" maxlen="256" >
+        <access>public</access>
+        <flags>own with_hash</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+        <default>NULL</default>
+        <preset>NULL</preset>
+      </member>
+
+
+      <member name="limitDays" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+
+      <member name="updJobs" type="AQFINTS_UPDJOB_LIST" >
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+
+      <member name="genericExtension" type="char_ptr" maxlen="2048" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+
+
+      <member name="runtimeFlags" type="uint32_t" maxlen="8">
+        <default>0</default>
+        <preset>0</preset>
+        <flags>volatile with_flags</flags>
+        <access>public</access>
+      </member>
+
+      
+    </members>
+    
+  </type>
+  
+</tm2>
