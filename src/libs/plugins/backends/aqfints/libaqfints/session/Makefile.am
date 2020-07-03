@@ -42,13 +42,16 @@ build_headers=$(build_headers_priv) $(build_headers_pub)
 
 
 noinst_HEADERS= $(build_headers) \
+  session.h \
+  session_p.h \
   s_decode.h \
   s_decrypt.h \
-  s_message.h \
-  s_verify.h \
-  s_sign.h \
   s_encrypt.h \
-  s_encode.h
+  s_encode.h \
+  s_log.h \
+  s_message.h \
+  s_sign.h \
+  s_verify.h
 
 
 

@@ -20,6 +20,9 @@ fintsdata_DATA=\
 
 
 
+EXTRA_DIST=$(fintsdata_DATA)
+
+
 typefiles:
 	for d in $(SUBDIRS); do \
 	  $(MAKE) -C $$d typefiles; \

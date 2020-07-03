@@ -36,7 +36,9 @@ build_headers=$(build_headers_priv) $(build_headers_pub)
 
 
 
-noinst_HEADERS= $(build_headers)
+noinst_HEADERS= $(build_headers) \
+  message.h \
+  message_p.h
 
 
 libaqfintsmsg_la_SOURCES=$(built_sources) \

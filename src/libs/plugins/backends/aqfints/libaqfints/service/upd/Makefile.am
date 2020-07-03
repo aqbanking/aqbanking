@@ -66,7 +66,7 @@ libafmsgupd_la_SOURCES= $(built_sources)
 
 
 
-EXTRA_DIST=$(typefiles) $(built_sources) $(build_headers)
+EXTRA_DIST=$(typefiles) $(built_sources) $(build_headers) $(fintsdata_DATA)
 
 
 
