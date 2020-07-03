@@ -1,4 +1,4 @@
-SUBDIRS=xml bpd upd
+SUBDIRS=xml bpd upd jobs
 
 AM_CFLAGS=@visibility_cflags@
 

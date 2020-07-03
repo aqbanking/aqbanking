@@ -107,6 +107,20 @@
       </member>
 
 
+      <member name="neededSignatures" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+
+      <member name="securityClass" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+
 
       <member name="runtimeFlags" type="uint32_t" maxlen="8">
         <default>0</default>

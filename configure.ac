@@ -1340,6 +1340,7 @@ AC_CONFIG_FILES([
   src/libs/plugins/backends/aqfints/libaqfints/service/xml/Makefile
   src/libs/plugins/backends/aqfints/libaqfints/service/bpd/Makefile
   src/libs/plugins/backends/aqfints/libaqfints/service/upd/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/service/jobs/Makefile
   src/libs/plugins/backends/aqfints/libaqfints/transport/Makefile
   src/libs/plugins/backends/aqfints/libaqfints/session/Makefile
   src/libs/plugins/backends/aqfints/libaqfints/session/pintan/Makefile

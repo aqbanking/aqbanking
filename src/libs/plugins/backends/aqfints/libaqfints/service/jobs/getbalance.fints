@@ -1,0 +1,72 @@
+<?xml?>
+
+
+<FinTS>
+
+  <JOBs>
+    <JOBdef id="GetBalance" code="HKSAL" jobVersion="6" paramsSegmentCode="HISALS" responseSegmentCode="HISAL" />
+  </JOBs>
+
+
+
+
+  <SEGs>
+
+    <SEGdef id="GetBalance" 
+            code="HKSAL" 
+            segmentVersion="6"
+    >
+      <DEG   name="head"         type="SegHead" />
+      <DEG                       type="ktv"  version="2"   trustlevel="4" />
+      <DE    name="allAccounts"  type="alpha" maxsize="1" />
+      <DE    name="currency"     type="an"    maxsize="128" />
+      <DE    name="attach"       type="ascii" maxsize="128" />
+    </SEGdef>
+
+
+
+    <SEGdef id="GetBalanceResponse" 
+            code="HISAL" 
+            segmentVersion="6"
+    >
+      <DEG   name="head"         type="SegHead" />
+      <DEG                       type="ktv"       version="2" />
+      <DE    name="accountName"  type="an"        maxsize="30" />
+      <DE    name="currency"     type="an"        maxsize="128" />
+      <DEG   name="booked"       type="saldo"     minnum="0"  version="1" trustlevel="4" />
+      <DEG   name="noted"        type="saldo"     minnum="0"  version="1" trustlevel="4" />
+      <DEG   name="creditLine"   type="btg"       minnum="0"              trustlevel="4" />
+      <DEG   name="available"    type="btg"       minnum="0"              trustlevel="4" />
+      <DEG   name="spent"        type="btg"       minnum="0"              trustlevel="4" />
+      <DEG   name="overdraft"    type="btg"       minnum="0"              trustlevel="4" />
+      <DEG   name="timeSpec"     type="timespec"  version="1"             trustlevel="0" />
+      <DE    type="dueDate"      type="date"      minsize="8" maxsize="8" trustlevel="0" />
+    </SEGdef>
+
+
+
+    <SEGdef id="GetBalanceParams" 
+            code="HISALS" 
+            segmentVersion="6"
+    >
+      <GROUP                       type="bpdJob"    version="2" />
+    </SEGdef>
+
+  </SEGs>
+
+
+
+
+  <GROUPs>
+  
+    <GROUPdef id="saldo"           version="1">
+      <DE    name="debitMark"      type="alpha"  maxsize="1" />
+      <DEG                         type="btg"    trustlevel="4" minnum="0" />
+      <DE    name="date"           type="date"   minsize="8"    maxsize="8" trustlevel="0" />
+      <DE    name="time"           type="time"   minsize="6"    maxsize="6" minnum="0" trustlevel="0" />
+    </GROUPdef>
+  
+  </GROUPs>
+  
+
+</FinTS>
