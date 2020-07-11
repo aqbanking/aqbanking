@@ -236,7 +236,7 @@ GWEN_XMLNODE *_mkInvestmentStatementRqNode(AB_USER *u, AB_ACCOUNT *a, AB_TRANSAC
     GWEN_XMLNode_AddChild(xmlRq, xmlInc);
 
     if (AB_Transaction_GetCommand(j)==AB_Transaction_CommandGetTransactions) {
-      AO_Provider_Util_SetCurrentTimeValue(xmlTrnRq, AO_User_GetFlags(u), "DTASOF");
+      AO_Provider_Util_SetCurrentTimeValue(xmlInc, AO_User_GetFlags(u), "DTASOF");
       GWEN_XMLNode_SetCharValue(xmlInc, "INCLUDE", "Y");
     }
   }
