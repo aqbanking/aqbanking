@@ -53,6 +53,7 @@ libhbcicontrol_la_SOURCES=\
  setsepaprofile.c \
  settanmediumid.c \
  getbankinfo.c \
+ settanmechanism.c \
  test.c
 
 

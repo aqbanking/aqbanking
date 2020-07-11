@@ -200,6 +200,12 @@ int AH_Control_GetBankInfo(AB_PROVIDER *pro,
                            char **argv);
 
 
+int AH_Control_SetTanMechanism(AB_PROVIDER *pro,
+                               GWEN_DB_NODE *dbArgs,
+                               int argc,
+                               char **argv);
+
+
 #endif
 
 
