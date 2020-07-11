@@ -1,0 +1,402 @@
+<?xml?>
+
+<tm2>
+  <type id="AQFINTS_CRYPTPARAMS" type="pointer">
+    <descr>
+    </descr>
+    <lang id="c">
+      <identifier>AQFINTS_CRYPTPARAMS</identifier>
+      <prefix>AQFINTS_CryptParams</prefix>
+
+      <baseFileName>cryptparams</baseFileName>
+      
+      <flags>
+        <!-- with_db with_xml -->
+        none
+      </flags>
+      
+      <headers>
+        <header type="sys"   loc="pre">libaqfints/aqfints.h</header>
+        <header type="sys"   loc="pre">gwenhywfar/bindata.h</header>
+      </headers>
+      
+      
+      <inlines>
+
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+          
+            static const AQFINTS_CRYPTPARAMS cryptParamArray[]={       \n
+              {                                                        \n
+                "RDH",                                                 \n
+                1,                                                     \n
+                $(struct_prefix)_SignAlgoRsa,                          \n
+                $(struct_prefix)_OpModeIso9796_1,                      \n
+                $(struct_prefix)_OpModeNone,                           \n
+                $(struct_prefix)_SigUsageOwnerSigning,                 \n
+                $(struct_prefix)_HashAlgoRipeMd160,                    \n
+                $(struct_prefix)_HashAlgoNone,                         \n
+                $(struct_prefix)_CryptAlgoTwoKeyTripleDes,             \n
+                $(struct_prefix)_OpModeCbc                             \n
+              },                                                       \n
+                                                                       \n
+                                                                       \n
+              {                                                        \n
+                "RDH",                                                 \n
+                2,                                                     \n
+                $(struct_prefix)_SignAlgoRsa,                          \n
+                $(struct_prefix)_OpModeIso9796_2,                      \n
+                $(struct_prefix)_OpModeNone,                           \n
+                $(struct_prefix)_SigUsageOwnerSigning,                 \n
+                $(struct_prefix)_HashAlgoRipeMd160,                    \n
+                $(struct_prefix)_HashAlgoNone,                         \n
+                $(struct_prefix)_CryptAlgoTwoKeyTripleDes,             \n
+                $(struct_prefix)_OpModeCbc                             \n
+              },                                                       \n
+                                                                       \n
+                                                                       \n
+              {                                                        \n
+                "RDH",                                                 \n
+                3,                                                     \n
+                $(struct_prefix)_SignAlgoRsa,                          \n
+                $(struct_prefix)_OpModeRsa_Pkcs1_v1_5,                 \n
+                $(struct_prefix)_OpModeIso9796_2,                      \n
+                $(struct_prefix)_SigUsageOwnerSigning,                 \n
+                $(struct_prefix)_HashAlgoSha1,                         \n
+                $(struct_prefix)_HashAlgoRipeMd160,                    \n
+                $(struct_prefix)_CryptAlgoTwoKeyTripleDes,             \n
+                $(struct_prefix)_OpModeRsa_Pkcs1_v1_5                  \n
+              },                                                       \n
+                                                                       \n
+                                                                       \n
+              {                                                        \n
+                "RDH",                                                 \n
+                5,                                                     \n
+                $(struct_prefix)_SignAlgoRsa,                          \n
+                $(struct_prefix)_OpModeRsa_Pkcs1_v1_5,                 \n
+                $(struct_prefix)_OpModeNone,                           \n
+                $(struct_prefix)_SigUsageOwnerSigning,                 \n
+                $(struct_prefix)_HashAlgoSha1,                         \n
+                $(struct_prefix)_HashAlgoNone,                         \n
+                $(struct_prefix)_CryptAlgoTwoKeyTripleDes,             \n
+                $(struct_prefix)_OpModeRsa_Pkcs1_v1_5                  \n
+              },                                                       \n
+                                                                       \n
+                                                                       \n
+              {                                                        \n
+                "RDH",                                                 \n
+                6,                                                     \n
+                $(struct_prefix)_SignAlgoRsa,                          \n
+                $(struct_prefix)_OpModeRsa_Pkcs1_v1_5,                 \n
+                $(struct_prefix)_OpModeRsa_Pkcs1_v1_5,                 \n
+                $(struct_prefix)_SigUsageOwnerSigning,                 \n
+                $(struct_prefix)_HashAlgoSha256,                       \n
+                $(struct_prefix)_HashAlgoSha256,                       \n
+                $(struct_prefix)_CryptAlgoTwoKeyTripleDes,             \n
+                $(struct_prefix)_OpModeRsa_Pkcs1_v1_5                  \n
+              },                                                       \n
+                                                                       \n
+                                                                       \n
+              {                                                        \n
+                "RDH",                                                 \n
+                7,                                                     \n
+                $(struct_prefix)_SignAlgoRsa,                          \n
+                $(struct_prefix)_OpModeRsa_Pss,                        \n
+                $(struct_prefix)_OpModeRsa_Pss,                        \n
+                $(struct_prefix)_SigUsageOwnerSigning,                 \n
+                $(struct_prefix)_HashAlgoSha256sha256,                 \n
+                $(struct_prefix)_HashAlgoSha256,                       \n
+                $(struct_prefix)_CryptAlgoTwoKeyTripleDes,             \n
+                $(struct_prefix)_OpModeRsa_Pkcs1_v1_5                  \n
+              },                                                       \n
+                                                                       \n
+                                                                       \n
+              {                                                        \n
+                "RDH",                                                 \n
+                8,                                                     \n
+                $(struct_prefix)_SignAlgoRsa,                          \n
+                $(struct_prefix)_OpModeRsa_Pkcs1_v1_5,                 \n
+                $(struct_prefix)_OpModeNone,                           \n
+                $(struct_prefix)_SigUsageOwnerSigning,                 \n
+                $(struct_prefix)_HashAlgoSha256,                       \n
+                $(struct_prefix)_HashAlgoNone,                         \n
+                $(struct_prefix)_CryptAlgoTwoKeyTripleDes,             \n
+                $(struct_prefix)_OpModeRsa_Pkcs1_v1_5                  \n
+              },                                                       \n
+                                                                       \n
+                                                                       \n
+              {                                                        \n
+                "RDH",                                                 \n
+                9,                                                     \n
+                $(struct_prefix)_SignAlgoRsa,                          \n
+                $(struct_prefix)_OpModeRsa_Pss,                        \n
+                $(struct_prefix)_OpModeNone,                           \n
+                $(struct_prefix)_SigUsageOwnerSigning,                 \n
+                $(struct_prefix)_HashAlgoSha256sha256,                 \n
+                $(struct_prefix)_HashAlgoNone,                         \n
+                $(struct_prefix)_CryptAlgoTwoKeyTripleDes,             \n
+                $(struct_prefix)_OpModeRsa_Pkcs1_v1_5                  \n
+              },                                                       \n
+                                                                       \n
+                                                                       \n
+              {                                                        \n
+                "RDH",                                                 \n
+                10,                                                    \n
+                $(struct_prefix)_SignAlgoRsa,                          \n
+                $(struct_prefix)_OpModeRsa_Pss,                        \n
+                $(struct_prefix)_OpModeNone,                           \n
+                $(struct_prefix)_SigUsageOwnerSigning,                 \n
+                $(struct_prefix)_HashAlgoSha256sha256,                 \n
+                $(struct_prefix)_HashAlgoNone,                         \n
+                $(struct_prefix)_CryptAlgoTwoKeyTripleDes,             \n
+                $(struct_prefix)_OpModeCbc                             \n
+              },                                                       \n
+                                                                       \n
+                                                                       \n
+              {                                                        \n
+                "RAH",                                                 \n
+                7,                                                     \n
+                $(struct_prefix)_SignAlgoRsa,                          \n
+                $(struct_prefix)_OpModeRsa_Pss,                        \n
+                $(struct_prefix)_OpModeRsa_Pss,                        \n
+                $(struct_prefix)_SigUsageOwnerSigning,                 \n
+                $(struct_prefix)_HashAlgoSha256sha256,                 \n
+                $(struct_prefix)_HashAlgoSha256,                       \n
+                $(struct_prefix)_CryptAlgoAes256,                      \n
+                $(struct_prefix)_OpModeRsa_Pkcs1_v1_5                  \n
+              },                                                       \n
+                                                                       \n
+                                                                       \n
+              {                                                        \n
+                "RAH",                                                 \n
+                9,                                                     \n
+                $(struct_prefix)_SignAlgoRsa,                          \n
+                $(struct_prefix)_OpModeRsa_Pss,                        \n
+                $(struct_prefix)_OpModeNone,                           \n
+                $(struct_prefix)_SigUsageOwnerSigning,                 \n
+                $(struct_prefix)_HashAlgoSha256sha256,                 \n
+                $(struct_prefix)_HashAlgoNone,                         \n
+                $(struct_prefix)_CryptAlgoAes256,                      \n
+                $(struct_prefix)_OpModeRsa_Pkcs1_v1_5                  \n
+              },                                                       \n
+                                                                       \n
+                                                                       \n
+              {                                                        \n
+                "RAH",                                                 \n
+                10,                                                    \n
+                $(struct_prefix)_SignAlgoRsa,                          \n
+                $(struct_prefix)_OpModeRsa_Pss,                        \n
+                $(struct_prefix)_OpModeNone,                           \n
+                $(struct_prefix)_SigUsageOwnerSigning,                 \n
+                $(struct_prefix)_HashAlgoSha256sha256,                 \n
+                $(struct_prefix)_HashAlgoNone,                         \n
+                $(struct_prefix)_CryptAlgoAes256,                      \n
+                $(struct_prefix)_OpModeCbc                             \n
+              }                                                        \n
+            };                                                         \n
+                                                                       \n
+          
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             $(api) const AQFINTS_CRYPTPARAMS* $(struct_prefix)_GetParamsForSecurityProfile(const char *securityProfileName, 
+                                                                                            int securityProfileVersion);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             const AQFINTS_CRYPTPARAMS* $(struct_prefix)_GetParamsForSecurityProfile(const char *securityProfileName, 
+                                                                                     int securityProfileVersion)      \n
+             {                                                                                    \n
+               int i;                                                                             \n
+               const AQFINTS_CRYPTPARAMS *p;                                                      \n
+               int arrayMemberCount;                                                              \n
+                                                                                                  \n
+               arrayMemberCount=*(&amp;cryptParamArray+1)-cryptParamArray;                        \n
+               p=cryptParamArray;                                                                 \n
+               for (i=0; i&lt; arrayMemberCount; i++) {                                           \n
+                 if ((strcasecmp(p->securityProfileName, securityProfileName)==0) &amp;&amp;      \n
+                     (p->securityProfileVersion==securityProfileVersion))                         \n
+                   return p;                                                                      \n
+                 p++;                                                                             \n
+               }                                                                                  \n
+                                                                                                  \n
+               return NULL;                                                                       \n
+             }                                                                                    \n
+          </content>
+        </inline>
+
+
+
+      </inlines>
+      
+      
+    </lang>
+
+    <defines>
+
+    </defines>
+
+    <enums>
+
+      <enum id="AQFINTS_CRYPTPARAMS_OPMODE" prefix="AQFINTS_CryptParams_OpMode" type="AQFINTS_CRYPTPARAMS_OPMODE">
+        <item name="none"              value="0" />
+        <item name="cbc"               value="2" />
+        <item name="iso9796_1"         value="16" />
+        <item name="iso9796_2"         value="17" />
+        <item name="rsa_Pkcs1_v1_5"    value="18" />
+        <item name="rsa_Pss"           value="19" />
+        <item name="retail_MAC"        value="999" />
+      </enum>
+
+
+      <enum id="AQFINTS_CRYPTPARAMS_HASHALGO" prefix="AQFINTS_CryptParams_HashAlgo" type="AQFINTS_CRYPTPARAMS_HASHALGO">
+        <item name="none"              value="0" />
+        <item name="sha1"              value="1" />
+        <item name="sha256"            value="3" />
+        <item name="sha256sha256"      value="6" />
+        <item name="ripeMd160"         value="999" />
+      </enum>
+
+
+      <enum id="AQFINTS_CRYPTPARAMS_SIGNALGO" prefix="AQFINTS_CryptParams_SignAlgo" type="AQFINTS_CRYPTPARAMS_SIGNALGO">
+        <item name="none"              value="0" />
+        <item name="des"               value="1" />
+        <item name="rsa"               value="10" />
+      </enum>
+
+
+      <enum id="AQFINTS_CRYPTPARAMS_CRYPTALGO" prefix="AQFINTS_CryptParams_CryptAlgo" type="AQFINTS_CRYPTPARAMS_CRYPTALGO">
+        <item name="none"              value="0" />
+        <item name="twoKeyTripleDes"   value="13" />
+        <item name="aes256"            value="14" />
+      </enum>
+
+
+      <enum id="AQFINTS_CRYPTPARAMS_SIGUSAGE" prefix="AQFINTS_CryptParams_SigUsage" type="AQFINTS_CRYPTPARAMS_SIGUSAGE">
+        <item name="none"              value="0" />
+        <item name="ownerSigning"      value="6" />
+      </enum>
+
+
+    </enums>
+
+
+
+    <members>
+  
+      <member name="securityProfileName" type="char_ptr" maxlen="64" >
+        <default>NULL</default>
+        <preset>NULL</preset>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+      <member name="securityProfileVersion" type="int" maxlen="8" >
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+      </member>
+
+
+      <member name="signAlgo" type="int" maxlen="32" enum="AQFINTS_CRYPTPARAMS_SIGNALGO" >
+        <default>AQFINTS_CryptParams_SignAlgoUnknown</default>
+        <preset>AQFINTS_CryptParams_SignAlgoUnknown</preset>
+        <access>public</access>
+        <flags>enum</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+
+      <member name="opModeSign" type="int" maxlen="32" enum="AQFINTS_CRYPTPARAMS_OPMODE" >
+        <default>AQFINTS_CryptParams_OpModeUnknown</default>
+        <preset>AQFINTS_CryptParams_OpModeUnknown</preset>
+        <access>public</access>
+        <flags>enum</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+
+      <member name="opModeAuth" type="int" maxlen="32" enum="AQFINTS_CRYPTPARAMS_OPMODE" >
+        <default>AQFINTS_CryptParams_OpModeUnknown</default>
+        <preset>AQFINTS_CryptParams_OpModeUnknown</preset>
+        <access>public</access>
+        <flags>enum</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+
+      <member name="sigUsage" type="int" maxlen="32" enum="AQFINTS_CRYPTPARAMS_SIGUSAGE" >
+        <default>AQFINTS_CryptParams_SigUsageUnknown</default>
+        <preset>AQFINTS_CryptParams_SigUsageUnknown</preset>
+        <access>public</access>
+        <flags>enum</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+
+      <member name="hashAlgoSign" type="int" maxlen="32" enum="AQFINTS_CRYPTPARAMS_HASHALGO" >
+        <default>AQFINTS_CryptParams_HashAlgoUnknown</default>
+        <preset>AQFINTS_CryptParams_HashAlgoUnknown</preset>
+        <access>public</access>
+        <flags>enum</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+
+      <member name="hashAlgoAuth" type="int" maxlen="32" enum="AQFINTS_CRYPTPARAMS_HASHALGO" >
+        <default>AQFINTS_CryptParams_HashAlgoUnknown</default>
+        <preset>AQFINTS_CryptParams_HashAlgoUnknown</preset>
+        <access>public</access>
+        <flags>enum</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+
+      <member name="cryptAlgo" type="int" maxlen="32" enum="AQFINTS_CRYPTPARAMS_CRYPTALGO" >
+        <default>AQFINTS_CryptParams_CryptAlgoUnknown</default>
+        <preset>AQFINTS_CryptParams_CryptAlgoUnknown</preset>
+        <access>public</access>
+        <flags>enum</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+
+      <member name="opModeCrypt" type="int" maxlen="32" enum="AQFINTS_CRYPTPARAMS_OPMODE" >
+        <default>AQFINTS_CryptParams_OpModeUnknown</default>
+        <preset>AQFINTS_CryptParams_OpModeUnknown</preset>
+        <access>public</access>
+        <flags>enum</flags>
+        <setflags>none</setflags>
+        <getflags>none</getflags>
+      </member>
+
+    </members>
+    
+  </type>
+  
+</tm2>
+
+
+

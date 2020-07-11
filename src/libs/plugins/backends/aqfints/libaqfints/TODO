@@ -1,17 +1,3 @@
-
-AqFINTS:
-- create transport layer with a given socket (needed for server mode)
-
-GWEN:
-- httpsession:
-  - needs to be able to take over a given socket (needed for server mode)
-  - GWEN_Gui_GetSyncIo() should not be called for server mode
-
-
-
-# create relative patch
-git format-patch --relative HEAD~xx
-
-# apply relative patch:
-git am --directory src/libs/plugins/backends/aqfints/libaqfints PATCHFILE
+Next:
+- upd_write (HIUPD, HIUPA)
 

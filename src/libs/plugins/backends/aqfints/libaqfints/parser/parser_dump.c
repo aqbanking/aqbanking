@@ -92,6 +92,12 @@ void AQFINTS_Parser_DumpSegment(AQFINTS_SEGMENT *segment, int indent)
   rtflags=AQFINTS_Segment_GetRuntimeFlags(segment);
   if (rtflags & AQFINTS_SEGMENT_RTFLAGS_PARSED)
     fprintf(stderr, " parsed");
+  if (rtflags & AQFINTS_SEGMENT_RTFLAGS_SIGNED)
+    fprintf(stderr, " signed");
+  if (rtflags & AQFINTS_SEGMENT_RTFLAGS_ENCRYPTED)
+    fprintf(stderr, " encrypted");
+  if (rtflags & AQFINTS_SEGMENT_RTFLAGS_HANDLED)
+    fprintf(stderr, " handled");
 
   fprintf(stderr, "\n");
 
@@ -101,6 +107,20 @@ void AQFINTS_Parser_DumpSegment(AQFINTS_SEGMENT *segment, int indent)
       fprintf(stderr, " ");
     fprintf(stderr, "DbData:\n");
     GWEN_DB_Dump(db, indent+4);
+  }
+
+  if (1) {
+    uint8_t *ptr;
+    uint32_t len;
+
+    ptr=AQFINTS_Segment_GetDataPointer(segment);
+    len=AQFINTS_Segment_GetDataLength(segment);
+    if (ptr && len) {
+      for (i=0; i<indent+2; i++)
+        fprintf(stderr, " ");
+      fprintf(stderr, "Buffer:\n");
+      GWEN_Text_DumpString((const char*) ptr, len, indent+4);
+    }
   }
 
   elementTree=AQFINTS_Segment_GetElements(segment);

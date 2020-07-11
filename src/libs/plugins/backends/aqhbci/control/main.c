@@ -144,6 +144,9 @@ static void showUsage(const char *prgName)
                            I18N("  setTanMediumId:\n"
                                 "    Set the medium id for some PIN/TAN methods (like mTAN) \n\n"));
   GWEN_Buffer_AppendString(ubuf,
+                           I18N("  setTanMechanism:\n"
+                                "    Overwrite TAN mechanism to use \n\n"));
+  GWEN_Buffer_AppendString(ubuf,
                            I18N("  adduserflags:\n"
                                 "    Set special flags for the given user\n\n"));
   GWEN_Buffer_AppendString(ubuf,
@@ -284,6 +287,9 @@ int AH_Control(AB_PROVIDER *pro, int argc, char **argv)
   }
   else if (strcasecmp(cmd, "getbankinfo")==0) {
     rv=AH_Control_GetBankInfo(pro, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "setTanMechanism")==0) {
+    rv=AH_Control_SetTanMechanism(pro, db, argc, argv);
   }
   else if (strcasecmp(cmd, "versions")==0) {
     showVersions();

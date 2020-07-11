@@ -241,7 +241,7 @@ int _jobGetBpdParamsForVersion(const AH_JOB *j, const char *paramName, int jobVe
   GWEN_DB_NODE *jobBPD;
   int highestVersion;
 
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Searching BPD job \"%s\" for Job \"%s\"", paramName, j->name);
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Searching BPD job \"%s\" for Job \"%s\" (version %d)", paramName, j->name, jobVersion);
 
   bpd=AH_User_GetBpd(j->user);
   if (!bpd) {
@@ -273,15 +273,18 @@ int _jobGetBpdParamsForVersion(const AH_JOB *j, const char *paramName, int jobVe
 
       /* get version from BPD */
       version=atoi(GWEN_DB_GroupName(jobBPD));
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Checking Job %s (%d)", j->name, version);
       if (version==jobVersion) {
         GWEN_XMLNODE *node;
 
         /* now get the correct version of the JOB */
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Checking Job %s (%d)", j->name, version);
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Checking whether job %s (%d) can be instantiated", j->name, version);
         node=GWEN_MsgEngine_FindNodeByProperty(j->msgEngine, "JOB", "id", version, j->name);
-        if (node) {
-          highestVersion=version;
-        }
+	if (node) {
+	  DBG_INFO(AQHBCI_LOGDOMAIN, "Found BPD job");
+	  highestVersion=version;
+	  break;
+	}
       }
       jobBPD=GWEN_DB_GetNextGroup(jobBPD);
     } /* while */
@@ -292,14 +295,17 @@ int _jobGetBpdParamsForVersion(const AH_JOB *j, const char *paramName, int jobVe
 
       /* get version from BPD */
       version=atoi(GWEN_DB_GroupName(jobBPD));
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Checking Job %s (%d)", j->name, version);
       if (version>highestVersion) {
         GWEN_XMLNODE *node;
 
         /* now get the correct version of the JOB */
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Checking Job %s (%d)", j->name, version);
+	DBG_INFO(AQHBCI_LOGDOMAIN, "Checking whether job %s (%d) can be instantiated", j->name, version);
         node=GWEN_MsgEngine_FindNodeByProperty(j->msgEngine, "JOB", "id", version, j->name);
-        if (node)
-          highestVersion=version;
+	if (node) {
+	  DBG_INFO(AQHBCI_LOGDOMAIN, "Found BPD job candidate version %d", version);
+	  highestVersion=version;
+	}
       }
       jobBPD=GWEN_DB_GetNextGroup(jobBPD);
     } /* while */

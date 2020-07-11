@@ -77,7 +77,7 @@ int AQFINTS_Parser_Xml_ReadFile(AQFINTS_JOBDEF_LIST *jobDefList,
                        GWEN_XML_FLAGS_HANDLE_HEADERS |
                        GWEN_XML_FLAGS_SIMPLE);
   if (rv<0) {
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "Error reading XML file \"%s\" (%d)", filename, rv);
+    DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Error reading XML file \"%s\" (%d)", filename, rv);
     GWEN_XMLNode_free(xmlNodeFile);
     return rv;
   }
@@ -111,7 +111,7 @@ int AQFINTS_Parser_Xml_ReadBuffer(AQFINTS_JOBDEF_LIST *jobDefList,
                                       GWEN_XML_FLAGS_HANDLE_HEADERS |
                                       GWEN_XML_FLAGS_SIMPLE);
   if (xmlNodeFile==NULL) {
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "Error reading XML data from buffer");
+    DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Error reading XML data from buffer");
     return GWEN_ERROR_BAD_DATA;
   }
   else {
@@ -122,7 +122,7 @@ int AQFINTS_Parser_Xml_ReadBuffer(AQFINTS_JOBDEF_LIST *jobDefList,
       readGroupsAndSegsAndJobs(jobDefList, segmentList, groupTree, xmlNodeFints);
     }
     else {
-      DBG_ERROR(AQFINTS_LOGDOMAIN, "No FinTS group.");
+      DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "No FinTS group.");
       GWEN_XMLNode_free(xmlNodeFile);
       return GWEN_ERROR_BAD_DATA;
     }
@@ -157,7 +157,7 @@ int AQFINTS_Parser_Xml_WriteSegmentDefinitionFile(const AQFINTS_SEGMENT_LIST *se
                             GWEN_XML_FLAGS_HANDLE_HEADERS |
                             GWEN_XML_FLAGS_SIMPLE);
   if (rv<0) {
-    DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+    DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "here (%d)", rv);
     GWEN_XMLNode_free(xmlFile);
     return rv;
   }
@@ -211,7 +211,7 @@ void readGroupsAndSegsAndJobs(AQFINTS_JOBDEF_LIST *jobDefList,
         readJobDefs(jobDefList, xmlNode);
       }
       else {
-        DBG_INFO(AQFINTS_LOGDOMAIN, "Ignoring XML element \"%s\"", s);
+        DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "Ignoring XML element \"%s\"", s);
       }
     }
     xmlNode=GWEN_XMLNode_GetNextTag(xmlNode);
@@ -276,18 +276,9 @@ void readJobDefs(AQFINTS_JOBDEF_LIST *jobDefList, GWEN_XMLNODE *xmlSource)
     s=GWEN_XMLNode_GetData(xmlNode);
     if (s && *s && strcasecmp(s, "JOBdef")==0) {
       AQFINTS_JOBDEF *jobDef;
-      AQFINTS_SEGMENT_LIST *segmentList;
 
       jobDef=AQFINTS_JobDef_new();
-      segmentList=AQFINTS_JobDef_GetSegments(jobDef);
-      if (segmentList==NULL) {
-        segmentList=AQFINTS_Segment_List_new();
-        AQFINTS_JobDef_SetSegments(jobDef, segmentList);
-      }
-      assert(segmentList);
-
       readJobDef(jobDef, xmlNode);
-      readSegments(segmentList, xmlSource);
       AQFINTS_JobDef_List_Add(jobDef, jobDefList);
     }
     xmlNode=GWEN_XMLNode_GetNextTag(xmlNode);
@@ -456,7 +447,7 @@ void readElement(AQFINTS_ELEMENT *el, GWEN_XMLNODE *xmlSource)
     else if (strcasecmp(s, "Group")==0 || strcasecmp(s, "GROUPdef")==0)
       AQFINTS_Element_SetElementType(el, AQFINTS_ElementType_Group);
     else {
-      DBG_ERROR(AQFINTS_LOGDOMAIN, "Invalid element type \"%s\"", s);
+      DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Invalid element type \"%s\"", s);
       return;
     }
   }
@@ -684,11 +675,11 @@ void readJobDef(AQFINTS_JOBDEF *jobDef, GWEN_XMLNODE *xmlSource)
 
   s=GWEN_XMLNode_GetProperty(xmlSource, "params", NULL);
   if (s && *s)
-    AQFINTS_JobDef_SetParams(jobDef, s);
+    AQFINTS_JobDef_SetParamsSegmentCode(jobDef, s);
 
   s=GWEN_XMLNode_GetProperty(xmlSource, "response", NULL);
   if (s && *s)
-    AQFINTS_JobDef_SetResponse(jobDef, s);
+    AQFINTS_JobDef_SetResponseSegmentCode(jobDef, s);
 
   i=GWEN_XMLNode_GetIntProperty(xmlSource, "jobVersion", -1);
   AQFINTS_JobDef_SetJobVersion(jobDef, i);
@@ -723,11 +714,11 @@ void writeJobDef(const AQFINTS_JOBDEF *jobDef, GWEN_XMLNODE *xmlDest)
   if (s && *s)
     GWEN_XMLNode_SetProperty(xmlDest, "code", s);
 
-  s=AQFINTS_JobDef_GetParams(jobDef);
+  s=AQFINTS_JobDef_GetParamsSegmentCode(jobDef);
   if (s && *s)
     GWEN_XMLNode_SetProperty(xmlDest, "params", s);
 
-  s=AQFINTS_JobDef_GetResponse(jobDef);
+  s=AQFINTS_JobDef_GetResponseSegmentCode(jobDef);
   if (s && *s)
     GWEN_XMLNode_SetProperty(xmlDest, "response", s);
 

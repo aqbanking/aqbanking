@@ -43,7 +43,17 @@ build_headers=$(build_headers_priv) $(build_headers_pub)
 
 
 
-noinst_HEADERS= $(build_headers)
+noinst_HEADERS= $(build_headers) \
+  parser.h \
+  parser_p.h \
+  parser_xml.h \
+  parser_normalize.h \
+  parser_dump.h \
+  parser_hbci.h \
+  parser_dbread.h \
+  parser_dbwrite.h \
+  parser_internal.h
+
 
 
 libaqfintsparser_la_SOURCES= $(built_sources) \

@@ -16,7 +16,7 @@ AC_CONFIG_HEADERS([config.h])
 
 AQBANKING_VERSION_MAJOR=6
 AQBANKING_VERSION_MINOR=2
-AQBANKING_VERSION_PATCHLEVEL=1
+AQBANKING_VERSION_PATCHLEVEL=2
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="stable"
@@ -34,7 +34,7 @@ AQBANKING_VERSION_TAG="stable"
 
 AQBANKING_SO_CURRENT=46
 AQBANKING_SO_AGE=2
-AQBANKING_SO_REVISION=1
+AQBANKING_SO_REVISION=2
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 
@@ -85,7 +85,7 @@ case "$AQBANKING_VERSION_TAG" in
      AQBANKING_VERSION_RELEASE_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.r${AQBANKING_VERSION_BUILD}"
      ;;
   git)
-     AQBANKING_VERSION_RELEASE_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.${AQBANKING_VERSION_BUILD}-${AQBANKING_VERSION_TAG}"
+     AQBANKING_VERSION_RELEASE_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL.${AQBANKING_VERSION_BUILD}${AQBANKING_VERSION_TAG}"
      ;;
   stable)
      AQBANKING_VERSION_RELEASE_STRING="$AQBANKING_VERSION_MAJOR.$AQBANKING_VERSION_MINOR.$AQBANKING_VERSION_PATCHLEVEL"
@@ -1334,15 +1334,17 @@ AC_CONFIG_FILES([
   src/libs/plugins/backends/aqfints/banking/Makefile
   src/libs/plugins/backends/aqfints/banking/control/Makefile
   src/libs/plugins/backends/aqfints/libaqfints/Makefile
-  src/libs/plugins/backends/aqfints/libaqfints/msglayer/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/msg/Makefile
   src/libs/plugins/backends/aqfints/libaqfints/parser/Makefile
-  src/libs/plugins/backends/aqfints/libaqfints/servicelayer/Makefile
-  src/libs/plugins/backends/aqfints/libaqfints/servicelayer/xml/Makefile
-  src/libs/plugins/backends/aqfints/libaqfints/servicelayer/bpd/Makefile
-  src/libs/plugins/backends/aqfints/libaqfints/servicelayer/upd/Makefile
-  src/libs/plugins/backends/aqfints/libaqfints/transportlayer/Makefile
-  src/libs/plugins/backends/aqfints/libaqfints/sessionlayer/Makefile
-  src/libs/plugins/backends/aqfints/libaqfints/sessionlayer/pintan/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/service/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/service/xml/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/service/bpd/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/service/upd/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/service/jobs/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/transport/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/session/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/session/pintan/Makefile
+  src/libs/plugins/backends/aqfints/libaqfints/session/hbci/Makefile
   src/test/Makefile
   src/tools/Makefile
   src/tools/aqbanking-cli/Makefile

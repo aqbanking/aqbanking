@@ -45,7 +45,8 @@ static int writeDeg(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf);
 static void writeDeSequence(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf, int elementCount,
                             int *pEndOfLastNonEmptyElement);
 static int writeDe(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf);
-static void binWrite(const uint8_t *ptrBuf, uint32_t lenBuf, GWEN_BUFFER *destBuf);
+static void writeBin(const uint8_t *ptrBuf, uint32_t lenBuf, GWEN_BUFFER *destBuf);
+static void writeString(const char *s, GWEN_BUFFER *destBuf);
 
 
 
@@ -74,7 +75,7 @@ int AQFINTS_Parser_Hbci_ReadBuffer(AQFINTS_SEGMENT_LIST *targetSegmentList,
 
     rv=readSeg(targetSegment, ptrBuf, lenBuf);
     if (rv<0) {
-      DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+      DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "here (%d)", rv);
       AQFINTS_Segment_free(targetSegment);
       return rv;
     }
@@ -85,7 +86,17 @@ int AQFINTS_Parser_Hbci_ReadBuffer(AQFINTS_SEGMENT_LIST *targetSegmentList,
     AQFINTS_Segment_List_Add(targetSegment, targetSegmentList);
 
     /* store copy of segment data */
-    AQFINTS_Segment_SetDataAsCopy(targetSegment, ptrBuf, rv);
+    if (lenBuf>rv) {
+      if (ptrBuf[rv]!='\'') {
+        DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Segment not terminated by quotation mark");
+        return GWEN_ERROR_BAD_DATA;
+      }
+      AQFINTS_Segment_SetDataAsCopy(targetSegment, ptrBuf, rv+1);
+    }
+    else {
+      DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Segment too small (no room for terminating quotation mark)");
+      return GWEN_ERROR_BAD_DATA;
+    }
 
     /* advance pointer and size */
     lenBuf-=rv;
@@ -141,7 +152,7 @@ void AQFINTS_Parser_Hbci_WriteSegment(AQFINTS_SEGMENT *segment)
 
       cropPos=endOfLastNonEmptyElement?endOfLastNonEmptyElement:segmentStartPos;
 
-      DBG_ERROR(AQFINTS_LOGDOMAIN, "Crop destbuffer: %d->%d", pos, cropPos);
+      /*DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Crop destbuffer: %d->%d", pos, cropPos);*/
       GWEN_Buffer_Crop(destBuf, 0, cropPos);
     }
   }
@@ -153,7 +164,7 @@ void AQFINTS_Parser_Hbci_WriteSegment(AQFINTS_SEGMENT *segment)
   AQFINTS_Segment_SetData(segment, (uint8_t *) GWEN_Buffer_GetStart(destBuf), GWEN_Buffer_GetUsedBytes(destBuf));
   rv=GWEN_Buffer_Relinquish(destBuf);
   if (rv<0) {
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+    DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "here (%d)", rv);
     abort();
   }
   GWEN_Buffer_free(destBuf);
@@ -235,7 +246,7 @@ int readSeg(AQFINTS_SEGMENT *targetSegment, const uint8_t *ptrBuf, uint32_t lenB
 
     rv=readDeg(targetDegElement, ptrBuf, lenBuf);
     if (rv<0) {
-      DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+      DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "here (%d)", rv);
       AQFINTS_Element_free(targetDegElement);
       return rv;
     }
@@ -255,7 +266,7 @@ int readSeg(AQFINTS_SEGMENT *targetSegment, const uint8_t *ptrBuf, uint32_t lenB
     }
   } /* while */
 
-  DBG_ERROR(AQFINTS_LOGDOMAIN, "No delimiter at end of data");
+  DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "No delimiter at end of data");
   return GWEN_ERROR_BAD_DATA;
 }
 
@@ -277,7 +288,7 @@ int readDeg(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenB
 
     rv=readDe(targetDeElement, ptrBuf, lenBuf);
     if (rv<0) {
-      DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+      DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "here (%d)", rv);
       AQFINTS_Element_free(targetDeElement);
       return rv;
     }
@@ -297,7 +308,7 @@ int readDeg(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenB
     }
   } /* while */
 
-  DBG_ERROR(AQFINTS_LOGDOMAIN, "No delimiter at end of data");
+  DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "No delimiter at end of data");
   return GWEN_ERROR_BAD_DATA;
 }
 
@@ -312,7 +323,7 @@ int readDe(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenBu
 
       rv=readBin(targetElement, ptrBuf, lenBuf);
       if (rv<0) {
-        DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+        DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "here (%d)", rv);
         return rv;
       }
       return rv;
@@ -322,13 +333,13 @@ int readDe(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenBu
 
       rv=readString(targetElement, ptrBuf, lenBuf);
       if (rv<0) {
-        DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+        DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "here (%d)", rv);
         return rv;
       }
       return rv;
     }
   }
-  DBG_ERROR(AQFINTS_LOGDOMAIN, "Empty data buffer");
+  DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Empty data buffer");
   return GWEN_ERROR_NO_DATA;
 }
 
@@ -359,7 +370,7 @@ int readString(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t l
       if (lenBuf && *ptrBuf)
         GWEN_Buffer_AppendByte(destBuf, *ptrBuf);
       else {
-        DBG_ERROR(AQFINTS_LOGDOMAIN, "Premature end of data (question mark was last character)");
+        DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Premature end of data (question mark was last character)");
         GWEN_Buffer_free(destBuf);
         return GWEN_ERROR_BAD_DATA;
       }
@@ -372,7 +383,7 @@ int readString(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t l
     lenBuf--;
   } /* while */
 
-  DBG_ERROR(AQFINTS_LOGDOMAIN, "No delimiter at end of data");
+  DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "No delimiter at end of data");
   GWEN_Buffer_free(destBuf);
   return GWEN_ERROR_BAD_DATA;
 }
@@ -402,7 +413,7 @@ int readBin(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenB
       lenBuf--;
 
       if (lenBuf<lenBinary) {
-        DBG_ERROR(AQFINTS_LOGDOMAIN, "Invalid size of binary data (%lu < %lu)",
+        DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Invalid size of binary data (%lu < %lu)",
                   (unsigned long int) lenBuf,
                   (unsigned long int) lenBinary);
         return GWEN_ERROR_BAD_DATA;
@@ -417,7 +428,7 @@ int readBin(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t lenB
     }
   }
 
-  DBG_ERROR(AQFINTS_LOGDOMAIN, "Error in binary data spec");
+  DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Error in binary data spec");
   return GWEN_ERROR_BAD_DATA;
 }
 
@@ -465,7 +476,7 @@ int writeDeg(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf)
 
     cropPos=endOfLastNonEmptyElement?endOfLastNonEmptyElement:elementStartPos;
 
-    DBG_DEBUG(0, "Crop destbuffer: %d->%d", pos, cropPos);
+    DBG_DEBUG(AQFINTS_PARSER_LOGDOMAIN, "Crop destbuffer: %d->%d", pos, cropPos);
     GWEN_Buffer_Crop(destBuf, 0, cropPos);
   }
 
@@ -493,10 +504,10 @@ void writeDeSequence(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf, int element
       rv=writeDe(childElement, destBuf);
       if (rv>0) {
         *pEndOfLastNonEmptyElement=GWEN_Buffer_GetPos(destBuf);
-        DBG_DEBUG(0, "Nonempty element ends at %d", GWEN_Buffer_GetPos(destBuf));
+        DBG_DEBUG(AQFINTS_PARSER_LOGDOMAIN, "Nonempty element ends at %d", GWEN_Buffer_GetPos(destBuf));
       }
       else {
-        DBG_DEBUG(0, "Empty element ends at %d", GWEN_Buffer_GetPos(destBuf));
+        DBG_DEBUG(AQFINTS_PARSER_LOGDOMAIN, "Empty element ends at %d", GWEN_Buffer_GetPos(destBuf));
       }
     }
     elementCount++;
@@ -520,14 +531,14 @@ int writeDe(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf)
     lenBuf=AQFINTS_Element_GetDataLength(element);
     ptrBuf=AQFINTS_Element_GetDataPointer(element);
     if (lenBuf && ptrBuf)
-      binWrite(ptrBuf, lenBuf, destBuf);
+      writeBin(ptrBuf, lenBuf, destBuf);
   }
   else {
     const char *s;
 
     s=AQFINTS_Element_GetDataAsChar(element, NULL);
     if (s && *s)
-      GWEN_Buffer_AppendString(destBuf, s);
+      writeString(s, destBuf);
   }
 
   elementSize=GWEN_Buffer_GetPos(destBuf)-elementStartPos;
@@ -536,7 +547,7 @@ int writeDe(AQFINTS_ELEMENT *element, GWEN_BUFFER *destBuf)
 
 
 
-void binWrite(const uint8_t *ptrBuf, uint32_t lenBuf, GWEN_BUFFER *destBuf)
+void writeBin(const uint8_t *ptrBuf, uint32_t lenBuf, GWEN_BUFFER *destBuf)
 {
   char numbuf[32];
   int i;
@@ -552,5 +563,16 @@ void binWrite(const uint8_t *ptrBuf, uint32_t lenBuf, GWEN_BUFFER *destBuf)
 
 
 
+void writeString(const char *s, GWEN_BUFFER *destBuf)
+{
+  if (s) {
+    while(*s) {
+      if (NULL!=strchr("+:@?'", *s))
+	GWEN_Buffer_AppendByte(destBuf, '?');    /* prepend by '?' */
+      GWEN_Buffer_AppendByte(destBuf, *s);
+      s++;
+    }
+  }
+}
 
 

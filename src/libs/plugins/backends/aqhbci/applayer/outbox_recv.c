@@ -50,7 +50,6 @@ AH_MSG *AH_Outbox__CBox_RecvMessage(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg, GWEN_
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Unrequested message, deleting it");
     AH_Msg_Dump(msg, 2);
     GWEN_DB_Dump(dbRsp, 2);
-    AH_Msg_free(msg);
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Bad response (bad message reference)"));
     AH_Msg_free(msg);
     return NULL;

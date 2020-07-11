@@ -88,7 +88,7 @@ int AQFINTS_Parser_ReadFiles(AQFINTS_PARSER *parser)
 
       rv=GWEN_Directory_GetMatchingFilesRecursively(s, slFiles, "*.fints");
       if (rv<0) {
-        DBG_ERROR(AQFINTS_LOGDOMAIN, "Error reading file names from \"%s\", ignoring", s);
+        DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Error reading file names from \"%s\", ignoring", s);
       }
     }
     slEntry=GWEN_StringListEntry_Next(slEntry);
@@ -96,7 +96,7 @@ int AQFINTS_Parser_ReadFiles(AQFINTS_PARSER *parser)
 
   /* check whether we have files to load */
   if (GWEN_StringList_Count(slFiles)<1) {
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "No files found to load");
+    DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "No files found to load");
     GWEN_StringList_free(slFiles);
     AQFINTS_Element_free(groupTree);
     return GWEN_ERROR_GENERIC;
@@ -111,10 +111,10 @@ int AQFINTS_Parser_ReadFiles(AQFINTS_PARSER *parser)
     if (s && *s) {
       int rv;
 
-      DBG_ERROR(AQFINTS_LOGDOMAIN, "Reading parser file %s", s);
+      DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Reading parser file %s", s);
       rv=AQFINTS_Parser_Xml_ReadFile(parser->jobDefList, parser->segmentList, groupTree, s);
       if (rv<0) {
-        DBG_ERROR(AQFINTS_LOGDOMAIN, "Error reading file \"%s\" (%d), ignoring", s, rv);
+        DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Error reading file \"%s\" (%d), ignoring", s, rv);
       }
       else
         filesLoaded++;
@@ -122,7 +122,7 @@ int AQFINTS_Parser_ReadFiles(AQFINTS_PARSER *parser)
     slEntry=GWEN_StringListEntry_Next(slEntry);
   }
   if (filesLoaded<1) {
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "No files loaded");
+    DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "No files loaded");
     GWEN_StringList_free(slFiles);
     AQFINTS_Element_free(groupTree);
     return GWEN_ERROR_GENERIC;
@@ -230,6 +230,31 @@ AQFINTS_SEGMENT *AQFINTS_Parser_FindSegmentHighestVersionForProto(const AQFINTS_
 
 
 
+AQFINTS_SEGMENT *AQFINTS_Parser_CreateSegmentByCode(const AQFINTS_PARSER *parser, const char *code, int segmentVersion)
+{
+  AQFINTS_SEGMENT *defSegment;
+  AQFINTS_SEGMENT *segment;
+  GWEN_DB_NODE *dbSegment;
+
+  if (segmentVersion)
+    defSegment=AQFINTS_Parser_FindSegmentByCode(parser, code, segmentVersion, 0);
+  else
+    defSegment=AQFINTS_Parser_FindSegmentHighestVersionForProto(parser, code, 0);
+  if (defSegment==NULL) {
+    DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "Segment %s:%d not found", code, segmentVersion);
+    return NULL;
+  }
+
+  segment=AQFINTS_Segment_new();
+  AQFINTS_Segment_copy(segment, defSegment);
+
+  dbSegment=GWEN_DB_Group_new(code);
+  AQFINTS_Segment_SetDbData(segment, dbSegment);
+  return segment;
+}
+
+
+
 AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefByCode(const AQFINTS_PARSER *parser, const char *id, int jobVersion,
                                                 int protocolVersion)
 {
@@ -298,7 +323,7 @@ AQFINTS_JOBDEF *AQFINTS_Parser_FindJobDefByParams(const AQFINTS_PARSER *parser, 
       else {
         const char *s;
 
-        s=AQFINTS_JobDef_GetParams(jobDef);
+        s=AQFINTS_JobDef_GetParamsSegmentCode(jobDef);
         if (s && *s && strcasecmp(s, params)==0)
           return jobDef;
       }
@@ -324,20 +349,20 @@ int AQFINTS_Parser_ReadIntoDb(AQFINTS_PARSER *parser,
 
   rv=AQFINTS_Parser_ReadIntoSegmentList(parser, segmentList, ptrBuf, lenBuf);
   if (rv<0) {
-    DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+    DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "here (%d)", rv);
     AQFINTS_Segment_List_free(segmentList);
     return rv;
   }
 
   rv=AQFINTS_Parser_ReadSegmentListToDb(parser, segmentList);
   if (rv<0) {
-    DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+    DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "here (%d)", rv);
     AQFINTS_Segment_List_free(segmentList);
     return rv;
   }
 
 #if 0
-  DBG_ERROR(AQFINTS_LOGDOMAIN, "Got these segments");
+  DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Got these segments");
   AQFINTS_Parser_DumpSegmentList(segmentList, 2);
 #endif
 
@@ -367,7 +392,7 @@ int AQFINTS_Parser_ReadIntoSegmentList(AQFINTS_PARSER *parser,
 
   rv=AQFINTS_Parser_Hbci_ReadBuffer(targetSegmentList, ptrBuf, lenBuf);
   if (rv<0) {
-    DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+    DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
@@ -405,25 +430,25 @@ int AQFINTS_Parser_ReadSegmentListToDb(AQFINTS_PARSER *parser, AQFINTS_SEGMENT_L
         AQFINTS_Segment_SetDbData(segment, dbSegment);
         rv=AQFINTS_Parser_Db_ReadSegment(defSegment, segment, dbSegment);
         if (rv<0) {
-          DBG_ERROR(AQFINTS_LOGDOMAIN, "Error reading segment \"%s\" (version %d) into DB (%d)", sCode, segmentVersion, rv);
+          DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Error reading segment \"%s\" (version %d) into DB (%d)", sCode, segmentVersion, rv);
           return rv;
         }
         AQFINTS_Segment_AddRuntimeFlags(segment, AQFINTS_SEGMENT_RTFLAGS_PARSED);
         segmentsRead++;
       }
       else {
-        DBG_ERROR(AQFINTS_LOGDOMAIN, "Segment \"%s\" (version %d) not found, ignoring", sCode, segmentVersion);
+        DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Segment \"%s\" (version %d) not found, ignoring", sCode, segmentVersion);
       }
     }
     else {
-      DBG_ERROR(AQFINTS_LOGDOMAIN, "Unnamed segment, ignoring");
+      DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Unnamed segment, ignoring");
     }
 
     segment=AQFINTS_Segment_List_Next(segment);
   }
 
   if (segmentsRead<1) {
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "No segment read into DB");
+    DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "No segment read into DB");
     return GWEN_ERROR_GENERIC;
   }
 
@@ -446,19 +471,19 @@ int AQFINTS_Parser_WriteSegment(AQFINTS_PARSER *parser, AQFINTS_SEGMENT *segment
   pVersion=AQFINTS_Segment_GetProtocolVersion(segment);
   defSegment=AQFINTS_Parser_FindSegmentByCode(parser, sCode, sVersion, pVersion);
   if (defSegment==NULL) {
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "Segment \"%s\" (version %d, proto=%d) not found", sCode, sVersion, pVersion);
+    DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Segment \"%s\" (version %d, proto=%d) not found", sCode, sVersion, pVersion);
     return GWEN_ERROR_INTERNAL;
   }
 
   db=AQFINTS_Segment_GetDbData(segment);
   if (db==NULL) {
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "Segment \"%s\" (version %d, proto=%d): No DB data", sCode, sVersion, pVersion);
+    DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Segment \"%s\" (version %d, proto=%d): No DB data", sCode, sVersion, pVersion);
     return GWEN_ERROR_INTERNAL;
   }
 
   rv=AQFINTS_Parser_Db_WriteSegment(defSegment, segment, db);
   if (rv<0) {
-    DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+    DBG_INFO(AQFINTS_PARSER_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 

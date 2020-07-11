@@ -1,4 +1,4 @@
-SUBDIRS=parser msglayer servicelayer transportlayer sessionlayer
+SUBDIRS=parser msg service transport session
 
 AM_CPPFLAGS = -I$(srcdir) -I$(top_srcdir)/src/lib -I$(top_builddir)/src/lib $(gwenhywfar_includes) $(aqbanking_includes) -I$(srcdir)/..
 
@@ -14,12 +14,12 @@ noinst_HEADERS= \
   aqfints.h
 
 
-libaqfints_la_LIBADD=\
+libaqfints_la_LIBADD= $(gwenhywfar_libs) \
   parser/libaqfintsparser.la \
-  msglayer/libaqfintsmsg.la \
-  servicelayer/libaqfintsservice.la \
-  transportlayer/libaqfintstransport.la \
-  sessionlayer/libaqfintssession.la
+  msg/libaqfintsmsg.la \
+  service/libaqfintsservice.la \
+  transport/libaqfintstransport.la \
+  session/libaqfintssession.la
 
 
 
