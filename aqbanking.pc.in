@@ -27,9 +27,6 @@ aqbanking_libs=@aqbanking_ldflags@ @aqbanking_libs@
 aqbanking_includes=@aqbanking_includes@
 aqbanking_plugindir=@aqbanking_plugindir@
 
-has-aqhbci=@with_aqhbci@
-aqhbci-libraries=@aqbanking_ldflags@ @aqhbci_libs@
-
 # Human-readable name
 Name: AqBanking
 # Human-readable description
