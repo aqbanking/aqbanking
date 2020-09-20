@@ -1,3 +1,77 @@
 
 This folder contains all sub-libraries.
 
+
+
+
+SendCommands:
+- SortProviderQueuesIntoUserQueues
+- AddCommandsToOutbox
+- OutBox_Execute
+  - OutBox_StartSending
+    - OutBox_Prepare
+      - for ever CBox:
+        - CBox_Prepare
+          - for every ToDoJob:
+            - Job_Prepare
+          - sort jobs into jobQueues
+  - OutBox_SendAndReceive
+    - for every CBox:
+      - CBox_SendAndReceive
+        - CBox_SendAndRecvDialogQueues
+          - for every dialog queue:
+            - CBox_PerformDialogQueues
+              - CBox_SelectTanMode
+              - possibly create and add JOB_TAN (for PSD2)
+              - CBox_PerformQueue
+                - FOR every job in the queue
+                  - IF status==finished
+                    - Job_PrepareNextMessage
+                      - Job_Next
+                    - add job to todo queue
+                  - ELSE IF status==enqueued
+                    - add job to todo queue
+                  - ELSE
+                    - error
+                - CBox_SendAndRecvQueue
+                  - IF NEEDTAN:
+                    - CBox_SendAndReceiveQueueWithTan
+                      - CBox_SendAndReceiveQueueWithTan2
+                        - create HKTAN, add to jobQueue
+                        - CBox_SendAndRecvQueueNoTan
+                          - CBox_SendQueue
+                            - JobQueue_ToMessage
+                              - FOR every job
+                                - Msg_AddNode
+                              - Msg_EncodeMsg
+                                - sign
+                                - encrypt
+                                - add msg head and tail
+                            - CBox_SendMessage
+                              - Dialog_SendMessage
+                                - Dialog_SendPacket
+                          - CBox_RecvQueue
+                            - CBox_RecvMessage
+                            - JobQueue_DispatchMessage
+                        - IF no result 3076:
+                          - _sendAndReceiveTanResponseProc2
+                  - ELSE
+                    - CBox_SendAndRecvQueueNoTan
+              - CBox_CloseDialog
+        - CBox_SendAndRecvSelected(nonDialog, unSigned, unCrypted)
+          - CBox_PerformNonDialogQueues
+        - CBox_SendAndRecvSelected(nonDialog, unSigned, crypted)
+          - CBox_PerformNonDialogQueues
+        - CBox_SendAndRecvSelected(nonDialog, signed, unCrypted)
+          - CBox_PerformNonDialogQueues
+        - CBox_SendAndRecvSelected(nonDialog, signed, crypted)
+          - CBox_PerformNonDialogQueues
+      - OutBox_Finish_CBox
+        - Job_Process
+    - OutBox_FinishOutbox
+      - FOR every cbox:
+        - OutBox_Finish_CBox
+
+- SampleResults
+- FreeUsersAndAccountsFromUserQueueList
+
