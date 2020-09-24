@@ -103,6 +103,8 @@ int AH_Job_SampleBpdVersions(const char *name,
   assert(name);
   assert(u);
 
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Sampling BPD versions for job \"%s\"", name?name:"<noname>");
+
   /* get job descriptions */
   e=AH_User_GetMsgEngine(u);
   assert(e);

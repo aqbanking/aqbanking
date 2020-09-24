@@ -110,6 +110,10 @@ int AH_Provider_CreateAndWriteAccountSpecWithUserAndAccount(AB_PROVIDER *pro, AB
   AB_ACCOUNT_SPEC *as;
   int rv;
 
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Creating account spec for user %u / account %u",
+           (unsigned int) AB_User_GetUniqueId(u),
+           (unsigned int) AB_Account_GetUniqueId(a));
+
   /* create account spec from given account using given user */
   as=_createAccountSpecWithUserAndAccount(pro, u, a);
   if (as==NULL) {

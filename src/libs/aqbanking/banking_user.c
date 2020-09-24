@@ -17,6 +17,8 @@ int AB_Banking_Read_UserConfig(const AB_BANKING *ab, uint32_t uid, int doLock, i
 {
   int rv;
 
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Reading user config (%u)", (unsigned int) uid);
+
   rv=AB_Banking_ReadConfigGroup(ab, AB_CFG_GROUP_USERS, uid, doLock, doUnlock, pDb);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
