@@ -26,7 +26,7 @@ noinst_HEADERS=\
  provider_keys.h \
  provider_online.h \
  provider_sendcmd.h \
- provider_tan.c \
+ provider_tan.h \
  provider_update.h \
  user.h \
  user_p.h \
