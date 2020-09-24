@@ -20,6 +20,7 @@
 
 #include "aqhbci/banking/account.h"
 #include "aqhbci/banking/provider.h"
+#include "aqhbci/banking/provider_online.h"
 
 #include <aqbanking/backendsupport/account.h>
 #include <aqbanking/banking_be.h>

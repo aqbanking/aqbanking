@@ -7,10 +7,16 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-/* This file is included by provider.c */
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
+#include "provider_tan.h"
 
-#include "tanmechanism.h"
+#include "aqhbci/banking/provider_l.h"
+#include "aqhbci/tan/tanmechanism.h"
+
+#include <aqbanking/i18n_l.h>
 
 #include <gwenhywfar/text.h>
 

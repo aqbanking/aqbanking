@@ -7,13 +7,43 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
-/*
- * This file is included by provider.c
+#include "provider_iniletter.h"
+
+#include "aqhbci/banking/provider_l.h"
+#include "aqhbci/banking/user.h"
+#include "aqhbci/msglayer/hbci_l.h"
+
+#include <aqbanking/banking_be.h>
+#include <aqbanking/i18n_l.h>
+
+#include <gwenhywfar/gui.h>
+
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
  */
 
+static int _getIniLetterTxt1(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER *lbuf, int nounmount);
+static int _getIniLetterHtml1(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER *lbuf, int nounmount);
+static int _getIniLetterTxt2(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER *lbuf, int nounmount);
+static int _getIniLetterHtml2(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER *lbuf, int nounmount);
+
+static int _hashRmd160(const uint8_t *p, unsigned int l, uint8_t *buf);
+static int _hashSha256(const uint8_t *p, unsigned int l, uint8_t *buf);
 
 
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 
 
@@ -53,14 +83,15 @@ int AH_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
 
   switch (variant) {
   case 1:
-    return AH_Provider_GetIniLetterTxt1(pro, u, useBankKey, lbuf, nounmount);
+    return _getIniLetterTxt1(pro, u, useBankKey, lbuf, nounmount);
   case 2:
-    return AH_Provider_GetIniLetterTxt2(pro, u, useBankKey, lbuf, nounmount);
+    return _getIniLetterTxt2(pro, u, useBankKey, lbuf, nounmount);
   default:
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Variant %d not supported", variant);
     return GWEN_ERROR_INVALID;
   }
 }
+
 
 
 int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
@@ -99,9 +130,9 @@ int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
 
   switch (variant) {
   case 1:
-    return AH_Provider_GetIniLetterHtml1(pro, u, useBankKey, lbuf, nounmount);
+    return _getIniLetterHtml1(pro, u, useBankKey, lbuf, nounmount);
   case 2:
-    return AH_Provider_GetIniLetterHtml2(pro, u, useBankKey, lbuf, nounmount);
+    return _getIniLetterHtml2(pro, u, useBankKey, lbuf, nounmount);
   default:
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Variant %d not supported", variant);
     return GWEN_ERROR_INVALID;
@@ -110,11 +141,7 @@ int AH_Provider_GetIniLetterHtml(AB_PROVIDER *pro,
 
 
 
-int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
-                                 AB_USER *u,
-                                 int useBankKey,
-                                 GWEN_BUFFER *lbuf,
-                                 int nounmount)
+int _getIniLetterTxt1(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER *lbuf, int nounmount)
 {
   AB_BANKING *ab;
   AH_HBCI *h;
@@ -126,7 +153,6 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
   GWEN_TIME *ti;
   char numbuf[32];
   char hashbuffer[21];
-  AH_PROVIDER *hp;
   GWEN_CRYPT_TOKEN *ct;
   const GWEN_CRYPT_TOKEN_CONTEXT *cctx;
   const GWEN_CRYPT_TOKEN_KEYINFO *ki=NULL;
@@ -134,9 +160,6 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
   int rv;
 
   assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
   assert(u);
 
   ab=AB_Provider_GetBanking(pro);
@@ -377,9 +400,9 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(lbuf,
                            I18N("Hash"));
   GWEN_Buffer_AppendString(lbuf, "\n\n");
-  rv=AH_Provider__HashRmd160((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
-                             GWEN_Buffer_GetUsedBytes(keybuf),
-                             (uint8_t *)hashbuffer);
+  rv=_hashRmd160((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
+                 GWEN_Buffer_GetUsedBytes(keybuf),
+                 (uint8_t *)hashbuffer);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error hashing (%d)", rv);
     abort();
@@ -411,11 +434,7 @@ int AH_Provider_GetIniLetterTxt1(AB_PROVIDER *pro,
 
 
 
-int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
-                                  AB_USER *u,
-                                  int useBankKey,
-                                  GWEN_BUFFER *lbuf,
-                                  int nounmount)
+int _getIniLetterHtml1(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER *lbuf, int nounmount)
 {
   AB_BANKING *ab;
   AH_HBCI *h;
@@ -427,7 +446,6 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
   GWEN_TIME *ti;
   char numbuf[32];
   char hashbuffer[21];
-  AH_PROVIDER *hp;
   GWEN_CRYPT_TOKEN *ct;
   const GWEN_CRYPT_TOKEN_CONTEXT *cctx;
   const GWEN_CRYPT_TOKEN_KEYINFO *ki=NULL;
@@ -435,9 +453,6 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
   int rv;
 
   assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
   assert(u);
 
   ab=AB_Provider_GetBanking(pro);
@@ -691,9 +706,9 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(lbuf, I18N("Hash"));
   GWEN_Buffer_AppendString(lbuf, "</h4>\n");
   GWEN_Buffer_AppendString(lbuf, "<font face=fixed>\n");
-  rv=AH_Provider__HashRmd160((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
-                             GWEN_Buffer_GetUsedBytes(keybuf),
-                             (uint8_t *)hashbuffer);
+  rv=_hashRmd160((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
+                 GWEN_Buffer_GetUsedBytes(keybuf),
+                 (uint8_t *)hashbuffer);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error hashing (%d)", rv);
     abort();
@@ -732,11 +747,7 @@ int AH_Provider_GetIniLetterHtml1(AB_PROVIDER *pro,
 
 
 
-int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
-                                 AB_USER *u,
-                                 int useBankKey,
-                                 GWEN_BUFFER *lbuf,
-                                 int nounmount)
+int _getIniLetterTxt2(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER *lbuf, int nounmount)
 {
   AB_BANKING *ab;
   AH_HBCI *h;
@@ -749,7 +760,6 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
   GWEN_TIME *ti;
   char numbuf[32];
   char hashbuffer[33];
-  AH_PROVIDER *hp;
   GWEN_CRYPT_TOKEN *ct;
   const GWEN_CRYPT_TOKEN_CONTEXT *cctx;
   const GWEN_CRYPT_TOKEN_KEYINFO *ki=NULL;
@@ -757,9 +767,6 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
   int rv;
 
   assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
   assert(u);
 
   ab=AB_Provider_GetBanking(pro);
@@ -1010,9 +1017,9 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(lbuf,
                            I18N("Hash (RMD-160)"));
   GWEN_Buffer_AppendString(lbuf, "\n\n");
-  rv=AH_Provider__HashRmd160((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
-                             GWEN_Buffer_GetUsedBytes(keybuf),
-                             (uint8_t *)hashbuffer);
+  rv=_hashRmd160((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
+                 GWEN_Buffer_GetUsedBytes(keybuf),
+                 (uint8_t *)hashbuffer);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error hashing (%d)", rv);
     abort();
@@ -1035,9 +1042,9 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(lbuf,
                            I18N("Hash (SHA-256)"));
   GWEN_Buffer_AppendString(lbuf, "\n\n");
-  rv=AH_Provider__HashSha256((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
-                             GWEN_Buffer_GetUsedBytes(keybuf),
-                             (uint8_t *)hashbuffer);
+  rv=_hashSha256((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
+                 GWEN_Buffer_GetUsedBytes(keybuf),
+                 (uint8_t *)hashbuffer);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error hashing (%d)", rv);
     abort();
@@ -1073,11 +1080,7 @@ int AH_Provider_GetIniLetterTxt2(AB_PROVIDER *pro,
 }
 
 
-int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
-                                  AB_USER *u,
-                                  int useBankKey,
-                                  GWEN_BUFFER *lbuf,
-                                  int nounmount)
+int _getIniLetterHtml2(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER *lbuf, int nounmount)
 {
   AB_BANKING *ab;
   AH_HBCI *h;
@@ -1089,7 +1092,6 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
   GWEN_TIME *ti;
   char numbuf[32];
   char hashbuffer[33];
-  AH_PROVIDER *hp;
   GWEN_CRYPT_TOKEN *ct;
   const GWEN_CRYPT_TOKEN_CONTEXT *cctx;
   const GWEN_CRYPT_TOKEN_KEYINFO *ki=NULL;
@@ -1098,9 +1100,6 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
   int modLen;
 
   assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
   assert(u);
 
   ab=AB_Provider_GetBanking(pro);
@@ -1365,9 +1364,9 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(lbuf, I18N("Hash (RMD-160)"));
   GWEN_Buffer_AppendString(lbuf, "</h4>\n");
   GWEN_Buffer_AppendString(lbuf, "<font face=fixed>\n");
-  rv=AH_Provider__HashRmd160((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
-                             GWEN_Buffer_GetUsedBytes(keybuf),
-                             (uint8_t *)hashbuffer);
+  rv=_hashRmd160((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
+                 GWEN_Buffer_GetUsedBytes(keybuf),
+                 (uint8_t *)hashbuffer);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error hashing (%d)", rv);
     abort();
@@ -1385,9 +1384,9 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
   GWEN_Buffer_AppendString(lbuf, I18N("Hash (SHA-256)"));
   GWEN_Buffer_AppendString(lbuf, "</h4>\n");
   GWEN_Buffer_AppendString(lbuf, "<font face=fixed>\n");
-  rv=AH_Provider__HashSha256((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
-                             GWEN_Buffer_GetUsedBytes(keybuf),
-                             (uint8_t *)hashbuffer);
+  rv=_hashSha256((const uint8_t *)GWEN_Buffer_GetStart(keybuf),
+                 GWEN_Buffer_GetUsedBytes(keybuf),
+                 (uint8_t *)hashbuffer);
   if (rv) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error hashing (%d)", rv);
     abort();
@@ -1424,6 +1423,67 @@ int AH_Provider_GetIniLetterHtml2(AB_PROVIDER *pro,
 
   return 0;
 }
+
+
+
+int _hashRmd160(const uint8_t *p, unsigned int l, uint8_t *buf)
+{
+  GWEN_MDIGEST *md;
+  int rv;
+
+  md=GWEN_MDigest_Rmd160_new();
+  assert(md);
+  rv=GWEN_MDigest_Begin(md);
+  if (rv<0) {
+    GWEN_MDigest_free(md);
+    return rv;
+  }
+  rv=GWEN_MDigest_Update(md, p, l);
+  if (rv<0) {
+    GWEN_MDigest_free(md);
+    return rv;
+  }
+  rv=GWEN_MDigest_End(md);
+  if (rv<0) {
+    GWEN_MDigest_free(md);
+    return rv;
+  }
+
+  memmove(buf, GWEN_MDigest_GetDigestPtr(md), GWEN_MDigest_GetDigestSize(md));
+  GWEN_MDigest_free(md);
+  return 0;
+}
+
+
+
+int _hashSha256(const uint8_t *p, unsigned int l, uint8_t *buf)
+{
+  GWEN_MDIGEST *md;
+  int rv;
+
+  md=GWEN_MDigest_Sha256_new();
+  assert(md);
+  rv=GWEN_MDigest_Begin(md);
+  if (rv<0) {
+    GWEN_MDigest_free(md);
+    return rv;
+  }
+  rv=GWEN_MDigest_Update(md, p, l);
+  if (rv<0) {
+    GWEN_MDigest_free(md);
+    return rv;
+  }
+  rv=GWEN_MDigest_End(md);
+  if (rv<0) {
+    GWEN_MDigest_free(md);
+    return rv;
+  }
+
+  memmove(buf, GWEN_MDigest_GetDigestPtr(md), GWEN_MDigest_GetDigestSize(md));
+  GWEN_MDigest_free(md);
+  return 0;
+}
+
 
 
 

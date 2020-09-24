@@ -15,6 +15,7 @@
 #include "globals_l.h"
 #include "aqhbci/banking/user.h"
 #include "aqhbci/banking/provider_l.h"
+#include "aqhbci/banking/provider_tan.h"
 
 #include <gwenhywfar/text.h>
 

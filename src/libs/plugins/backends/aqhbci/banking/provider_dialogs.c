@@ -7,26 +7,31 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
-/*
- * This file is included by provider.c
- */
+#include "provider_dialogs.h"
+#include "aqhbci/banking/provider.h"
+#include "aqhbci/banking/user.h"
 
 
 #include "dlg_edituserpintan_l.h"
 #include "dlg_edituserddv_l.h"
 #include "dlg_edituserrdh_l.h"
-
 #include "dlg_editaccount_l.h"
-
 #include "dlg_newuser_l.h"
 #include "dlg_ddvcard_l.h"
 #include "dlg_zkacard_l.h"
 #include "dlg_pintan_l.h"
 #include "dlg_newkeyfile_l.h"
 #include "dlg_importkeyfile_l.h"
-
 #include "dlg_choose_usertype_l.h"
+
+#include <aqbanking/banking_be.h>
+#include <aqbanking/i18n_l.h>
+
+#include <gwenhywfar/gui.h>
 
 
 
@@ -123,14 +128,11 @@ GWEN_DIALOG *AH_Provider_GetNewCardUserDialog(AB_PROVIDER *pro)
 
 GWEN_DIALOG *AH_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u)
 {
-  AH_PROVIDER *hp;
   GWEN_DIALOG *dlg;
 
   DBG_ERROR(AQBANKING_LOGDOMAIN, "GetEditUserDialog");
 
   assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
 
   switch (AH_User_GetCryptMode(u)) {
   case AH_CryptMode_Pintan:
@@ -163,12 +165,9 @@ GWEN_DIALOG *AH_Provider_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u)
 
 GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i)
 {
-  AH_PROVIDER *hp;
   GWEN_DIALOG *dlg;
 
   assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Get user dialog %d", i);
 
@@ -208,12 +207,9 @@ GWEN_DIALOG *AH_Provider_GetNewUserDialog(AB_PROVIDER *pro, int i)
 
 GWEN_DIALOG *AH_Provider_GetEditAccountDialog(AB_PROVIDER *pro, AB_ACCOUNT *a)
 {
-  AH_PROVIDER *hp;
   GWEN_DIALOG *dlg;
 
   assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
 
   dlg=AH_EditAccountDialog_new(pro, a, 1);
   if (dlg==NULL) {
@@ -228,14 +224,11 @@ GWEN_DIALOG *AH_Provider_GetEditAccountDialog(AB_PROVIDER *pro, AB_ACCOUNT *a)
 
 GWEN_DIALOG *AH_Provider_GetUserTypeDialog(AB_PROVIDER *pro)
 {
-  AH_PROVIDER *hp;
   GWEN_DIALOG *dlg;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "AH_Provider_GetUserTypeDialog called");
 
   assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
 
   dlg=AH_ChooseUserTypeDialog_new(pro);
   if (dlg==NULL) {

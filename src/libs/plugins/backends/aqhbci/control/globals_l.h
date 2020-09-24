@@ -28,6 +28,7 @@
 
 #include "aqhbci/aqhbci.h"
 #include "aqhbci/banking/provider.h"
+#include "aqhbci/banking/provider_online.h"
 
 #include <aqbanking/banking.h>
 #include <aqbanking/banking_be.h>

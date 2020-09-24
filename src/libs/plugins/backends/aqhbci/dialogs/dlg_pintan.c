@@ -24,6 +24,7 @@
 
 #include "aqhbci/banking/user.h"
 #include "aqhbci/banking/provider.h"
+#include "aqhbci/banking/provider_online.h"
 #include "dlg_pintan_special_l.h"
 #include "dlg_pintan_tanmode_l.h"
 

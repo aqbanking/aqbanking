@@ -7,44 +7,23 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
-/*
- * This file is included by provider.c
- */
+#include "provider_keys.h"
 
+#include "aqhbci/banking/provider_l.h"
 
+#include <aqbanking/i18n_l.h>
 
-
-int AH_Provider_CheckCryptToken(AB_PROVIDER *pro,
-                                GWEN_CRYPT_TOKEN_DEVICE devt,
-                                GWEN_BUFFER *typeName,
-                                GWEN_BUFFER *tokenName)
-{
-  GWEN_PLUGIN_MANAGER *pm;
-  int rv;
-
-  /* get crypt token */
-  pm=GWEN_PluginManager_FindPluginManager(GWEN_CRYPT_TOKEN_PLUGIN_TYPENAME);
-  if (pm==0) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "CryptToken plugin manager not found");
-    return GWEN_ERROR_NOT_FOUND;
-  }
-
-  /* try to determine the type and name */
-  rv=GWEN_Crypt_Token_PluginManager_CheckToken(pm, devt, typeName, tokenName, 0);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  return 0;
-}
+#include <gwenhywfar/gui.h>
+#include <gwenhywfar/ctplugin.h>
 
 
 
-int AH_Provider_CreateKeys(AB_PROVIDER *pro,
-                           AB_USER *u,
-                           int nounmount)
+
+int AH_Provider_CreateKeys(AB_PROVIDER *pro, AB_USER *u, int nounmount)
 {
   GWEN_CRYPT_TOKEN *ct;
   const GWEN_CRYPT_TOKEN_CONTEXT *ctx;

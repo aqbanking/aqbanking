@@ -7,10 +7,12 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
-/*
- * This file is included by provider.c
- */
+#include "provider_update.h"
+#include "aqhbci/banking/provider_l.h"
 
 
 

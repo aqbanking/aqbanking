@@ -23,6 +23,7 @@
 
 #include "aqhbci/banking/user.h"
 #include "aqhbci/banking/provider.h"
+#include "aqhbci/banking/provider_online.h"
 #include "dlg_ddvcard_special_l.h"
 
 #include <gwenhywfar/gwenhywfar.h>
