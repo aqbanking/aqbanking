@@ -10,9 +10,10 @@
 /* This file is included by outbox.c */
 
 
-#include "message_l.h"
-#include "hhd_l.h"
-#include "tanmechanism.h"
+#include "aqhbci/msglayer/message_l.h"
+#include "aqhbci/applayer/hhd_l.h"
+#include "aqhbci/tan/tanmechanism.h"
+#include "aqhbci/banking/provider_tan.h"
 
 #include <gwenhywfar/mdigest.h>
 

@@ -1,20 +1,103 @@
 /***************************************************************************
     begin       : Tue Jun 03 2018
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2020 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
-/*
- * This file is included by provider.c
+#include "provider_sendcmd.h"
+#include "aqhbci/banking/provider_job.h"
+
+#include <aqbanking/i18n_l.h>
+
+#include <gwenhywfar/gui.h>
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static int _addCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *t, AH_OUTBOX *outbox);
+static int _addCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, AB_IMEXPORTER_CONTEXT *ctx,
+                                AH_OUTBOX *outbox);
+static int _sampleResults(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_IMEXPORTER_CONTEXT *ctx);
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
  */
 
 
 
-int AH_Provider__AddCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *t, AH_OUTBOX *outbox)
+int AH_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx)
+{
+  AB_USERQUEUE_LIST *uql;
+  int rv;
+  int rv2;
+  AH_OUTBOX *outbox;
+
+  assert(pro);
+
+  /* sort into user queue list */
+  uql=AB_UserQueue_List_new();
+  rv=AB_Provider_SortProviderQueueIntoUserQueueList(pro, pq, uql);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_Provider_FreeUsersAndAccountsFromUserQueueList(pro, uql);
+    AB_UserQueue_List_free(uql);
+    return rv;
+  }
+
+  /* add users to outbox */
+  outbox=AH_Outbox_new(pro);
+  rv=_addCommandsToOutbox(pro, uql, ctx, outbox);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_Provider_FreeUsersAndAccountsFromUserQueueList(pro, uql);
+    AB_UserQueue_List_free(uql);
+    return rv;
+  }
+
+  /* actually send commands */
+  rv=AH_Outbox_Execute(outbox, ctx, 0, 1, 1);
+  if (rv<0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error executing outbox (%d).", rv);
+    rv=GWEN_ERROR_GENERIC;
+  }
+
+  /* gather results */
+  rv2=_sampleResults(pro, outbox, ctx);
+  if (rv2<0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error sampling results (%d)", rv2);
+  }
+
+  AH_Outbox_free(outbox);
+
+
+  /* release accounts and users we loaded */
+  AB_Provider_FreeUsersAndAccountsFromUserQueueList(pro, uql);
+
+  /* error code from AH_Outbox_Execute is more important than that from _sampleResults */
+  if (rv>=0)
+    rv=rv2;
+
+  return rv;
+}
+
+
+
+
+int _addCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *t, AH_OUTBOX *outbox)
 {
   int rv;
   int cmd;
@@ -24,7 +107,7 @@ int AH_Provider__AddCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a,
   cmd=AB_Transaction_GetCommand(t);
 
   /* try to get an existing multi job to add the new one to */
-  rv=AH_Provider__GetMultiHbciJob(pro, outbox, u, a, cmd, &mj);
+  rv=AH_Provider_GetMultiHbciJob(pro, outbox, u, a, cmd, &mj);
   if (rv==0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Reusing existing multi job");
     jobIsNew=0;
@@ -37,7 +120,7 @@ int AH_Provider__AddCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a,
 
   /* create new job if necessary */
   if (mj==NULL) {
-    rv=AH_Provider__CreateHbciJob(pro, u, a, cmd, &mj);
+    rv=AH_Provider_CreateHbciJob(pro, u, a, cmd, &mj);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -95,15 +178,12 @@ int AH_Provider__AddCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a,
 
 
 
-int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, AB_IMEXPORTER_CONTEXT *ctx,
-                                     AH_OUTBOX *outbox)
+int _addCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, AB_IMEXPORTER_CONTEXT *ctx,
+                         AH_OUTBOX *outbox)
 {
-  AH_PROVIDER *hp;
   AB_USERQUEUE *uq;
 
   assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
 
   uq=AB_UserQueue_List_First(uql);
   while (uq) {
@@ -138,7 +218,7 @@ int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, A
             while (t) {
               int rv;
 
-              rv=AH_Provider__AddCommandToOutbox(pro, u, a, t, outbox);
+              rv=_addCommandToOutbox(pro, u, a, t, outbox);
               if (rv<0) {
                 DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
                 AB_Transaction_SetStatus(t, AB_Transaction_StatusError);
@@ -163,15 +243,12 @@ int AH_Provider__AddCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, A
 
 
 
-int AH_Provider__SampleResults(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_IMEXPORTER_CONTEXT *ctx)
+int _sampleResults(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_IMEXPORTER_CONTEXT *ctx)
 {
-  AH_PROVIDER *hp;
   AH_JOB_LIST *mjl;
   AH_JOB *j;
 
   assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
 
   assert(outbox);
 
@@ -228,81 +305,5 @@ int AH_Provider__SampleResults(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_IMEXPORTE
 
   return 0;
 }
-
-
-
-int AH_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx)
-{
-  AH_PROVIDER *hp;
-  AB_USERQUEUE_LIST *uql;
-  int rv;
-  int rv2;
-  AH_OUTBOX *outbox;
-
-  assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
-  /* sort into user queue list */
-  uql=AB_UserQueue_List_new();
-  rv=AB_Provider_SortProviderQueueIntoUserQueueList(pro, pq, uql);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_Provider_FreeUsersAndAccountsFromUserQueueList(pro, uql);
-    AB_UserQueue_List_free(uql);
-    return rv;
-  }
-
-  /* add users to outbox */
-  outbox=AH_Outbox_new(pro);
-  rv=AH_Provider__AddCommandsToOutbox(pro, uql, ctx, outbox);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AB_Provider_FreeUsersAndAccountsFromUserQueueList(pro, uql);
-    AB_UserQueue_List_free(uql);
-    return rv;
-  }
-
-  /* actually send commands */
-  rv=AH_Outbox_Execute(outbox, ctx, 0, 1, 1);
-  if (rv<0) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error executing outbox (%d).", rv);
-    rv=GWEN_ERROR_GENERIC;
-  }
-
-  /* gather results */
-  rv2=AH_Provider__SampleResults(pro, outbox, ctx);
-  if (rv2<0) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error sampling results (%d)", rv2);
-  }
-
-  AH_Outbox_free(outbox);
-
-
-  /* release accounts and users we loaded */
-  AB_Provider_FreeUsersAndAccountsFromUserQueueList(pro, uql);
-
-  /* error code from AH_Outbox_Execute is more important than that from AH_Provider__SampleResults */
-  if (rv>=0)
-    rv=rv2;
-
-  return rv;
-}
-
-
-
-AB_ACCOUNT *AH_Provider_CreateAccountObject(AB_PROVIDER *pro)
-{
-  return AH_Account_new(pro);
-}
-
-
-
-AB_USER *AH_Provider_CreateUserObject(AB_PROVIDER *pro)
-{
-  return AH_User_new(pro);
-}
-
-
 
 

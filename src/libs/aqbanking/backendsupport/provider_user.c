@@ -21,6 +21,8 @@ int AB_Provider_ReadUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnloc
   GWEN_DB_NODE *db=NULL;
   uint32_t uidInDb;
 
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Reading user (%u)", (unsigned int) uid);
+
   rv=AB_Banking_Read_UserConfig(AB_Provider_GetBanking(pro), uid, doLock, doUnlock, &db);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
@@ -89,6 +91,8 @@ int AB_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList)
   GWEN_DB_NODE *dbAll=NULL;
   GWEN_DB_NODE *db;
 
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Reading users");
+
   /* read all config groups for users which have a unique id and which belong to this backend */
   rv=AB_Banking_ReadConfigGroups(AB_Provider_GetBanking(pro), AB_CFG_GROUP_USERS, "uniqueId",
                                  "backendName", pro->name, &dbAll);
@@ -106,6 +110,7 @@ int AB_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList)
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Error creating user for backend [%s], ignoring", pro->name);
     }
     else {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Reading user %u", (unsigned int) GWEN_DB_GetIntValue(db, "uniqueId", 0, 0));
       rv=AB_User_ReadFromDb(u, db);
       if (rv<0) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading user (%d), ignoring", rv);

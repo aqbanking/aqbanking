@@ -19,6 +19,15 @@ noinst_HEADERS=\
  provider_l.h \
  provider_p.h \
  provider.h \
+ provider_accspec.h \
+ provider_dialogs.h \
+ provider_iniletter.h \
+ provider_job.h \
+ provider_keys.h \
+ provider_online.h \
+ provider_sendcmd.h \
+ provider_tan.h \
+ provider_update.h \
  user.h \
  user_p.h \
  user_l.h \
@@ -32,21 +41,21 @@ noinst_HEADERS=\
 
 libhbcibanking_la_SOURCES=\
  provider.c \
+ provider_accspec.c \
+ provider_dialogs.c \
+ provider_iniletter.c \
+ provider_job.c \
+ provider_keys.c \
+ provider_online.c \
+ provider_sendcmd.c \
+ provider_tan.c \
+ provider_update.c \
  account.c \
  user.c
 
 
-
 EXTRA_DIST=\
-  provider_accspec.c \
-  provider_dialogs.c \
-  provider_dtazv.c \
-  provider_iniletter.c \
-  provider_keys.c \
-  provider_online.c \
-  provider_sendcmd.c \
-  provider_update.c \
-  provider_tan.c
+  provider_dtazv.c
 
 
 

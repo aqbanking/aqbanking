@@ -8,10 +8,25 @@
  ***************************************************************************/
 
 
-/*
- * This file is included by provider.c
- */
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
+#include "provider_online.h"
+
+#include "aqhbci/banking/provider_l.h"
+#include "aqhbci/applayer/adminjobs_l.h"
+#include "aqhbci/msglayer/dialog_l.h"
+
+#include "aqhbci/admjobs/jobgetkeys_l.h"
+#include "aqhbci/admjobs/jobsendkeys_l.h"
+#include "aqhbci/admjobs/jobchangekeys_l.h"
+#include "aqhbci/admjobs/jobgetsepainfo_l.h"
+#include "aqhbci/admjobs/jobgetsysid_l.h"
+#include "aqhbci/admjobs/jobgetbankinfo_l.h"
+#include "aqhbci/admjobs/jobunblockpin_l.h"
+
+#include <gwenhywfar/gui.h>
 
 
 
@@ -25,12 +40,8 @@ int AH_Provider_GetAccounts(AB_PROVIDER *pro, AB_USER *u,
   AH_JOB *job;
   AH_OUTBOX *ob;
   int rv;
-  AH_PROVIDER *hp;
 
   assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
   assert(u);
 
   ab=AB_Provider_GetBanking(pro);
@@ -95,12 +106,8 @@ int AH_Provider_GetBankInfo(AB_PROVIDER *pro, AB_USER *u,
   AH_JOB *job;
   AH_OUTBOX *ob;
   int rv;
-  AH_PROVIDER *hp;
 
   assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
   assert(u);
 
   ab=AB_Provider_GetBanking(pro);
@@ -163,15 +170,11 @@ int AH_Provider_GetSysId(AB_PROVIDER *pro, AB_USER *u,
   AH_HBCI *h;
   AH_JOB *job;
   int rv;
-  AH_PROVIDER *hp;
   const char *s;
   int i;
   char tbuf[256];
 
   assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
   assert(u);
 
   ab=AB_Provider_GetBanking(pro);
@@ -343,15 +346,11 @@ int AH_Provider_GetServerKeys(AB_PROVIDER *pro, AB_USER *u,
   AH_JOB *job;
   AH_OUTBOX *ob;
   int rv;
-  AH_PROVIDER *hp;
   GWEN_CRYPT_TOKEN *ct;
   const GWEN_CRYPT_TOKEN_CONTEXT *cctx;
   const char *s;
 
   assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
   assert(u);
 
   ab=AB_Provider_GetBanking(pro);
@@ -586,7 +585,6 @@ int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
   AH_JOB *job;
   AH_OUTBOX *ob;
   int rv;
-  AH_PROVIDER *hp;
   GWEN_CRYPT_TOKEN *ct;
   uint32_t kid;
   const GWEN_CRYPT_TOKEN_CONTEXT *cctx;
@@ -596,9 +594,6 @@ int AH_Provider_SendUserKeys2(AB_PROVIDER *pro, AB_USER *u,
   int mounted=0;
 
   assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
   assert(u);
 
   ab=AB_Provider_GetBanking(pro);
@@ -824,17 +819,17 @@ int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
 }
 
 
-int AH_Provider_ChangeUserKeys(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, int withProgress, int nounmount,
-                               int doLock)
+
+int AH_Provider_ChangeUserKeys(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, int withProgress, int nounmount, int doLock)
 {
-  int res = 0;
-  uint8_t canceled = 0;
-  AH_JOB *job = NULL;
-  AB_IMEXPORTER_CONTEXT *ctx = NULL;
+  int res=0;
+  uint8_t canceled=0;
+  AH_JOB *job=NULL;
+  AB_IMEXPORTER_CONTEXT *ctx=NULL;
 
   assert(u);
 
-  job = AH_Job_ChangeKeys_new(pro, u, args, &canceled);
+  job=AH_Job_ChangeKeys_new(pro, u, args, &canceled);
   if (!job) {
     res = -2;
     if (!canceled) {
@@ -884,6 +879,7 @@ int AH_Provider_ChangeUserKeys(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args,
 }
 
 
+
 int AH_Provider_GetCert(AB_PROVIDER *pro,
                         AB_USER *u,
                         int withProgress, int nounmount, int doLock)
@@ -891,14 +887,10 @@ int AH_Provider_GetCert(AB_PROVIDER *pro,
   AB_BANKING *ab;
   AH_HBCI *h;
   int rv;
-  AH_PROVIDER *hp;
   AH_DIALOG *dialog;
   uint32_t pid;
 
   assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
   assert(u);
 
   ab=AB_Provider_GetBanking(pro);
@@ -950,14 +942,10 @@ int AH_Provider_GetItanModes(AB_PROVIDER *pro, AB_USER *u,
   AH_JOB *job;
   AH_OUTBOX *ob;
   int rv;
-  AH_PROVIDER *hp;
   const int *tm;
   char tbuf[256];
 
   assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
   assert(u);
 
   ab=AB_Provider_GetBanking(pro);
@@ -1078,13 +1066,9 @@ int AH_Provider_ChangePin(AB_PROVIDER *pro, AB_USER *u,
   AH_JOB *job;
   AH_OUTBOX *ob;
   int rv;
-  AH_PROVIDER *hp;
   char pwbuf[32];
 
   assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
-
   assert(u);
 
   ab=AB_Provider_GetBanking(pro);
@@ -1167,7 +1151,6 @@ int AH_Provider_UnblockPin(AB_PROVIDER *pro,
                            AB_IMEXPORTER_CONTEXT *ctx,
                            int withProgress, int nounmount, int doLock)
 {
-  AH_PROVIDER *hp;
   AB_BANKING *ab;
   AH_HBCI *h;
   AH_OUTBOX *ob;
@@ -1175,8 +1158,6 @@ int AH_Provider_UnblockPin(AB_PROVIDER *pro,
   AH_JOB *job;
 
   assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
 
   ab=AB_Provider_GetBanking(pro);
   assert(ab);
@@ -1222,7 +1203,6 @@ int AH_Provider_GetAccountSepaInfo(AB_PROVIDER *pro,
                                    AB_IMEXPORTER_CONTEXT *ctx,
                                    int withProgress, int nounmount, int doLock)
 {
-  AH_PROVIDER *hp;
   AB_BANKING *ab;
   AH_HBCI *h;
   AH_OUTBOX *ob;
@@ -1230,8 +1210,6 @@ int AH_Provider_GetAccountSepaInfo(AB_PROVIDER *pro,
   int rv;
 
   assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, AH_PROVIDER, pro);
-  assert(hp);
 
   ab=AB_Provider_GetBanking(pro);
   assert(ab);

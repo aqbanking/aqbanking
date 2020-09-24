@@ -15,6 +15,8 @@
 #include "job_commit_account.h"
 #include "aqhbci/banking/user_l.h"
 #include "aqhbci/banking/account_l.h"
+#include "aqhbci/banking/provider_l.h"
+#include "aqhbci/banking/provider_accspec.h"
 
 #include "aqbanking/i18n_l.h"
 
@@ -447,7 +449,7 @@ static void _addOrModify(AH_JOB *j, AB_ACCOUNT *acc)
                (unsigned int) AB_Account_GetUniqueId(storedAcc),
                (unsigned int) AB_User_GetUniqueId(user));
 
-    rv=AB_Provider_WriteAccountSpecForAccount(pro, storedAcc, 0); /* dont lock */
+    rv=AH_Provider_CreateAndWriteAccountSpecWithUserAndAccount(pro, user, storedAcc);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     }

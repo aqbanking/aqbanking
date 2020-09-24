@@ -12,6 +12,23 @@
 
 
 
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static const char *_nonEmptyString(const char *s, const char *altstring);
+static void _logAccountSpec(const AB_ACCOUNT_SPEC *a, const char *logMessage);
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+
+
 int AB_Banking_ReadAccountSpec(const AB_BANKING *ab, uint32_t uniqueId, AB_ACCOUNT_SPEC **pAccountSpec)
 {
   AB_ACCOUNT_SPEC *accountSpec;
@@ -101,6 +118,8 @@ int AB_Banking_GetAccountSpecList(const AB_BANKING *ab, AB_ACCOUNT_SPEC_LIST **p
   GWEN_DB_NODE *dbAll=NULL;
   int rv;
 
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Reading account spec list");
+
   rv=AB_Banking_ReadConfigGroups(ab, AB_CFG_GROUP_ACCOUNTSPECS, "uniqueId", NULL, NULL, &dbAll);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
@@ -119,7 +138,7 @@ int AB_Banking_GetAccountSpecList(const AB_BANKING *ab, AB_ACCOUNT_SPEC_LIST **p
       assert(db);
       a=AB_AccountSpec_fromDb(db);
       if (a) {
-        DBG_INFO(AQBANKING_LOGDOMAIN, "Adding account spec");
+        _logAccountSpec(a, "Adding account spec");
         if (1) {
           int i;
 
@@ -164,6 +183,38 @@ int AB_Banking_GetAccountSpecByUniqueId(const AB_BANKING *ab, uint32_t uniqueAcc
 
 
 
+void _logAccountSpec(const AB_ACCOUNT_SPEC *a, const char *logMessage)
+{
+  const char *sBankCode;
+  const char *sAccountNumber;
+  const char *sIban;
+  const char *sBic;
+
+  sBankCode=_nonEmptyString(AB_AccountSpec_GetBankCode(a), "<empty>");
+  sAccountNumber=_nonEmptyString(AB_AccountSpec_GetAccountNumber(a), "<empty>");
+  sIban=_nonEmptyString(AB_AccountSpec_GetIban(a), "<empty>");
+  sBic=_nonEmptyString(AB_AccountSpec_GetBic(a), "<empty>");
+
+  if (logMessage && *logMessage) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "%s (id=%u, bank code=%s, acc num=%s, bic=%s, iban=%s)",
+             logMessage,
+             AB_AccountSpec_GetUniqueId(a),
+             sBankCode, sAccountNumber, sBic, sIban);
+  }
+  else {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Account spec (id=%u, bank code=%s, acc num=%s, bic=%s, iban=%s)",
+             AB_AccountSpec_GetUniqueId(a),
+             sBankCode, sAccountNumber, sBic, sIban);
+  }
+}
+
+
+const char *_nonEmptyString(const char *s, const char *altstring)
+{
+  if (s && *s)
+    return s;
+  return altstring;
+}
 
 
 

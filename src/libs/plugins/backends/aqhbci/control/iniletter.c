@@ -14,6 +14,7 @@
 
 #include "globals_l.h"
 #include "aqhbci/banking/user.h"
+#include "aqhbci/banking/provider_iniletter.h"
 
 #include <gwenhywfar/text.h>
 

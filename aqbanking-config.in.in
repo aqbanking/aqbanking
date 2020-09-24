@@ -21,26 +21,6 @@ for d in $*; do
 	    result="$result `@PKG_CONFIG@ --variable=pkgdatadir aqbanking`"
 	    ;;
 
-        --has-qbanking)
-            result=`@PKG_CONFIG@ --variable=has-qbanking aqbanking`
-            ;;
-	--qbanking-libraries)
-	    result="$result `@PKG_CONFIG@ --variable=qbanking-libraries aqbanking`"
-	    ;;
-	--qbanking-plugins)
-	    result="$result `@PKG_CONFIG@ --variable=qbanking-plugins aqbanking`"
-	    ;;
-	--qbanking-helpdir)
-	    result="$result `@PKG_CONFIG@ --variable=qbanking-helpdir aqbanking`"
-	    ;;
-
-        --has-aqhbci)
-            result=`@PKG_CONFIG@ --variable=has-aqhbci aqbanking`
-            ;;
-	--aqhbci-libraries)
-	    result="$result `@PKG_CONFIG@ --variable=aqhbci-libraries aqbanking`"
-	    ;;
-
 	--vmajor)
 	    result="$result `@PKG_CONFIG@ --variable=vmajor aqbanking`"
 	    ;;

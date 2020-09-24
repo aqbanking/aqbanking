@@ -30,12 +30,13 @@ static int _readLogFile(const char *fname, GWEN_DB_NODE *db)
   GWEN_FAST_BUFFER *fb;
   int rv;
   GWEN_BUFFER *tbuf = NULL;
+  int msgNum=0;
 
   sio=GWEN_SyncIo_File_new(fname, GWEN_SyncIo_File_CreationMode_OpenExisting);
   GWEN_SyncIo_AddFlags(sio, GWEN_SYNCIO_FILE_FLAGS_READ);
   rv=GWEN_SyncIo_Connect(sio);
   if (rv<0) {
-    DBG_ERROR(0, "Error opening file [%s] (%d)", fname, rv);
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error opening file [%s] (%d)", fname, rv);
     return rv;
   }
 
@@ -46,6 +47,8 @@ static int _readLogFile(const char *fname, GWEN_DB_NODE *db)
     GWEN_DB_NODE *dbMsg;
     GWEN_DB_NODE *dbHeader;
     unsigned int size;
+
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Reading message %d", msgNum);
 
     /* read header */
     dbMsg=GWEN_DB_Group_new("Message");
@@ -62,7 +65,7 @@ static int _readLogFile(const char *fname, GWEN_DB_NODE *db)
         GWEN_FastBuffer_free(fb);
         GWEN_SyncIo_Disconnect(sio);
         GWEN_SyncIo_free(sio);
-        DBG_ERROR(0, "Error reading header from file [%s] (%d)", fname, rv);
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Error reading header %d from file [%s] (%d)", msgNum, fname, rv);
         GWEN_DB_Dump(db, 2);
         return rv;
       }
@@ -85,7 +88,7 @@ static int _readLogFile(const char *fname, GWEN_DB_NODE *db)
         GWEN_FastBuffer_free(fb);
         GWEN_SyncIo_Disconnect(sio);
         GWEN_SyncIo_free(sio);
-        DBG_ERROR(0, "Error reading body from file [%s] (%d)", fname, rv);
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Error reading body %d from file [%s] (%d)", msgNum, fname, rv);
         return rv;
       }
       GWEN_Buffer_AppendBytes(tbuf, (const char *)buffer, lsize);
@@ -98,12 +101,15 @@ static int _readLogFile(const char *fname, GWEN_DB_NODE *db)
     GWEN_Buffer_Reset(tbuf);
 
     GWEN_DB_AddGroup(db, dbMsg);
+    msgNum++;
   }
   GWEN_Buffer_free(tbuf);
 
   GWEN_FastBuffer_free(fb);
   GWEN_SyncIo_Disconnect(sio);
   GWEN_SyncIo_free(sio);
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "%d message(s) read", msgNum);
 
   return 0;
 }
@@ -123,14 +129,14 @@ static int dumpMsg(GWEN_SYNCIO *sio,
                        GWEN_DB_FLAGS_USE_COLON|
                        GWEN_DB_FLAGS_OMIT_TYPES);
   if (rv<0) {
-    DBG_INFO(0, "here (%d)", rv);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
   /* append empty line to separate header from data */
   rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t *) "\n", 1);
   if (rv<0) {
-    DBG_INFO(0, "here (%d)", rv);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
@@ -138,7 +144,7 @@ static int dumpMsg(GWEN_SYNCIO *sio,
   if (p && len) {
     rv=GWEN_SyncIo_WriteForced(sio, p, len);
     if (rv<0) {
-      DBG_INFO(0, "here (%d)", rv);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
   }
@@ -146,7 +152,7 @@ static int dumpMsg(GWEN_SYNCIO *sio,
   /* append CR for better readability */
   rv=GWEN_SyncIo_WriteForced(sio, (const uint8_t *) "\n", 1);
   if (rv<0) {
-    DBG_INFO(0, "here (%d)", rv);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
@@ -276,7 +282,7 @@ int AH_Control_LogFile(AB_PROVIDER *pro,
   dbMessages=GWEN_DB_Group_new("Messages");
   rv=_readLogFile(inFile, dbMessages);
   if (rv<0) {
-    DBG_ERROR(0, "Error reading message (%d)", rv);
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error reading message (%d)", rv);
     return 2;
   }
 
@@ -421,7 +427,7 @@ int AH_Control_LogFile(AB_PROVIDER *pro,
           size=GWEN_MsgEngine_TrustedData_GetSize(ntd);
           pos=GWEN_MsgEngine_TrustedData_GetFirstPos(ntd);
           while (pos>=0) {
-            DBG_INFO(0, "Replacing %d bytes at %d", size, pos);
+            DBG_INFO(AQHBCI_LOGDOMAIN, "Replacing %d bytes at %d", size, pos);
             GWEN_Buffer_SetPos(tbuf, pos);
             GWEN_Buffer_ReplaceBytes(tbuf,
                                      size,
@@ -481,19 +487,19 @@ int AH_Control_LogFile(AB_PROVIDER *pro,
                                    GWEN_Buffer_GetUsedBytes(xbuf));
         GWEN_Buffer_free(xbuf);
         if (rv<0) {
-          DBG_INFO(0, "here (%d)", rv);
+          DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
           return rv;
         }
         rv=GWEN_DB_WriteToIo(dbOut, sioDb, GWEN_DB_FLAGS_DEFAULT);
         if (rv<0) {
-          DBG_INFO(0, "here (%d)", rv);
+          DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
           return 2;
         }
 
         /* append empty line to separate header from data */
         rv=GWEN_SyncIo_WriteForced(sioDb, (const uint8_t *) "\n", 1);
         if (rv<0) {
-          DBG_INFO(0, "here (%d)", rv);
+          DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
           return rv;
         }
       }

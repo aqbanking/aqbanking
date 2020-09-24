@@ -216,6 +216,8 @@ int AH_User_ReadFromDb(AB_USER *u, GWEN_DB_NODE *db)
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Reading user from db (%u)", (unsigned int) GWEN_DB_GetIntValue(db, "uniqueId", 0, 0));
+
   /* save provider, because AB_User_ReadFromDb clears it */
   pro=AB_User_GetProvider(u);
 
@@ -251,6 +253,8 @@ int AH_User_WriteToDb(const AB_USER *u, GWEN_DB_NODE *db)
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Writing user db (%u)", (unsigned int) AB_User_GetUniqueId(u));
+
   /* write data for base class */
   rv=(ue->writeToDbFn)(u, db);
   if (rv<0) {
@@ -274,6 +278,8 @@ void AH_User__ReadDb(AB_USER *u, GWEN_DB_NODE *db)
   const char *s;
   GWEN_DB_NODE *gr;
   int i;
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Reading HBCI data for user (%u)", (unsigned int) AB_User_GetUniqueId(u));
 
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
@@ -410,6 +416,7 @@ void AH_User__ReadDb(AB_USER *u, GWEN_DB_NODE *db)
     ue->rdhType=1;
 
   /* read supported TAN methods */
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Reading supported TAN methods (max %d)", AH_USER_MAX_TANMETHODS);
   for (i=0; i<AH_USER_MAX_TANMETHODS; i++)
     ue->tanMethodList[i]=-1;
   ue->tanMethodCount=0;
@@ -421,7 +428,8 @@ void AH_User__ReadDb(AB_USER *u, GWEN_DB_NODE *db)
     if (method==-1)
       break;
     ue->tanMethodList[ue->tanMethodCount++]=method;
-    ue->tanMethodList[ue->tanMethodCount]=-1;
+    /*ue->tanMethodList[ue->tanMethodCount]=-1;*/
+    DBG_INFO(AQHBCI_LOGDOMAIN, "- added TAN method %d (%d)", method, ue->tanMethodCount);
   }
 
   ue->selectedTanMethod=GWEN_DB_GetIntValue(db, "selectedTanMethod", 0, 0);
@@ -464,6 +472,8 @@ void AH_User__WriteDb(const AB_USER *u, GWEN_DB_NODE *db)
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Writing HBCI data for user (%u)", (unsigned int) AB_User_GetUniqueId(u));
 
   /* save crypt mode */
   s=AH_CryptMode_toString(ue->cryptMode);
@@ -1756,11 +1766,22 @@ int AH_User_HasTanMethodOtherThan(const AB_USER *u, int method)
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
-  for (i=0; i<AH_USER_MAX_TANMETHODS; i++) {
-    if (ue->tanMethodList[i]!=method && ue->tanMethodList[i]!=-1)
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Checking for methods other than %d in list of %d TAN methods",
+           method,
+           ue->tanMethodCount);
+
+  for (i=0; i<ue->tanMethodCount; i++) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, " - Tan method %d=%d", i, ue->tanMethodList[i]);
+    if (ue->tanMethodList[i]!=method && ue->tanMethodList[i]!=-1) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "   match");
       return 1;
+    }
+    else {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "   no match");
+    }
   }
 
+  DBG_INFO(AQHBCI_LOGDOMAIN, " No methods other than %d found", method);
   return 0;
 }
 
@@ -1774,10 +1795,13 @@ void AH_User_AddTanMethod(AB_USER *u, int method)
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
 
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding TAN method %d", method);
+
   if (!AH_User_HasTanMethod(u, method)) {
     if (ue->tanMethodCount<AH_USER_MAX_TANMETHODS) {
       ue->tanMethodList[ue->tanMethodCount++]=method;
       ue->tanMethodList[ue->tanMethodCount]=-1;
+      DBG_INFO(AQHBCI_LOGDOMAIN, "  Added TAN method %d", method);
     }
   }
 }
@@ -1968,6 +1992,8 @@ void AH_User_LoadSepaDescriptors(AB_USER *u)
   assert(u);
   ue=GWEN_INHERIT_GETDATA(AB_USER, AH_USER, u);
   assert(ue);
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Loading SEPA descriptors");
 
   /* read directly from BPD */
 
