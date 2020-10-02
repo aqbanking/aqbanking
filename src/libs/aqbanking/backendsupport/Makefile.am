@@ -10,7 +10,9 @@ typefiles= \
   jobqueue.xml \
   queue.xml \
   account.xml \
-  user.xml
+  user.xml \
+  swiftdescr.xml
+
 
 
 typedatadir=$(aqbanking_pkgdatadir)/typemaker2/c
@@ -21,7 +23,8 @@ dist_typedata_DATA=\
   ab_providerqueue.tm2 ab_providerqueue_list.tm2 \
   ab_queue.tm2 \
   ab_user.tm2 ab_user_list.tm2 ab_user_list2.tm2 \
-  ab_userqueue.tm2 ab_userqueue_list.tm2
+  ab_userqueue.tm2 ab_userqueue_list.tm2 \
+  ab_swift_descr.tm2 ab_swift_descr_list.tm2
 
 
 # order is important here
@@ -32,7 +35,8 @@ typedata_sources= \
   providerqueue.c \
   queue.c \
   account.c \
-  user.c
+  user.c \
+  swiftdescr.c
 
 built_headers_priv= \
   accountqueue_p.h \
@@ -41,7 +45,8 @@ built_headers_priv= \
   jobqueue_p.h \
   queue_p.h \
   account_p.h \
-  user_p.h
+  user_p.h \
+  swiftdescr_p.h
 
 built_headers_pub= \
   accountqueue.h \
@@ -50,7 +55,8 @@ built_headers_pub= \
   jobqueue.h \
   queue.h \
   account.h \
-  user.h
+  user.h \
+  swiftdescr.h
 
 
 

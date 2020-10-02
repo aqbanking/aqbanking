@@ -1,0 +1,297 @@
+<?xml?>
+
+<tm2>
+  <type id="AB_SWIFT_DESCR" type="pointer">
+    <descr>
+      This class holds a SWIFT document descriptor like "pain.001.002.03".
+    </descr>
+
+    <lang id="c">
+      <identifier>AB_SWIFT_DESCR</identifier>
+      <prefix>AB_SwiftDescr</prefix>
+      
+      <baseFileName>swiftdescr</baseFileName>
+      
+      <flags>
+        with_db
+        with_xml
+        with_refcount
+        with_list1
+      </flags>
+      
+      <headers>
+        <header type="sys" loc="pre">aqbanking/error.h</header>
+        <header type="sys" loc="pre">gwenhywfar/types.h</header>
+        <header type="sys" loc="pre">gwenhywfar/text.h</header>
+      </headers>
+
+
+
+      <inlines>
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list2</typeFlagsMask>
+          <typeFlagsValue>with_list2</typeFlagsValue>
+          <content>
+             $(api) int $(struct_prefix)_List2_freeAll($(struct_type)_LIST2 *tl);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask>with_list2</typeFlagsMask>
+          <typeFlagsValue>with_list2</typeFlagsValue>
+          <content>
+             static $(struct_type) *$(struct_prefix)_List2__freeAll_cb($(struct_type) *t, void *user_data) {
+               $(struct_prefix)_free(t);
+               return NULL;
+             }
+
+
+             int $(struct_prefix)_List2_freeAll($(struct_type)_LIST2 *tl) {
+               if (tl) {
+                 $(struct_prefix)_List2_ForEach(tl, $(struct_prefix)_List2__freeAll_cb, NULL);
+                 $(struct_prefix)_List2_free(tl); 
+               }
+               else {
+                 DBG_ERROR(AQBANKING_LOGDOMAIN, "List missing");
+                 return GWEN_ERROR_INVALID;
+               }
+               return 0;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             /** \n
+              * Check whether a given SWIFT descriptor matches the given criteria.                          \n
+              * @param a descriptor to match against                                                        \n
+              * @param wantedFamily descriptor family, e.g. "pain" or "camt" (wildcards and jokers allowed) \n
+              * @param wantedVersion1 first part of the version to match (0 matches all)                    \n
+              * @param wantedVersion2 second part of the version to match (0 matches all)                   \n
+              * @param wantedVersion3 third part of the version to match (0 matches all)                    \n
+              */                                                                                            \n
+             $(api) int $(struct_prefix)_Matches(const $(struct_type) *a,
+                                                 const char *wantedFamily,
+                                                 int wantedVersion1,
+                                                 int wantedVersion2,
+                                                 int wantedVersion3);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             int $(struct_prefix)_Matches(const $(struct_type) *d,
+                                          const char *wantedFamily,
+                                          int wantedVersion1,
+                                          int wantedVersion2,
+                                          int wantedVersion3) {
+               const char *family;
+               int version1;
+               int version2;
+               int version3;
+  
+               if (!wantedFamily)
+                 wantedFamily="*";
+
+               family=$(struct_prefix)_GetFamily(d);
+               version1=$(struct_prefix)_GetVersion1(d);
+               version2=$(struct_prefix)_GetVersion2(d);
+               version3=$(struct_prefix)_GetVersion3(d);
+
+               if (family==NULL)
+                 family="";
+
+               if ((-1!=GWEN_Text_ComparePattern(family, wantedFamily, 0)) &amp;&amp;
+                   (wantedVersion1==0 || version1==wantedVersion1) &amp;&amp;
+                   (wantedVersion2==0 || version2==wantedVersion2) &amp;&amp;
+                   (wantedVersion3==0 || version3==wantedVersion3))
+                 return 1;
+               return 0;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="private">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             /** \n
+              * Find a SWIFT descriptor in a list by given criteria.                                        \n
+              * @param a descriptor object with which to start searching                                    \n
+              * @param wantedFamily descriptor family, e.g. "pain" or "camt" (wildcards and jokers allowed) \n
+              * @param wantedVersion1 first part of the version to match (0 matches all)                    \n
+              * @param wantedVersion2 second part of the version to match (0 matches all)                   \n
+              * @param wantedVersion3 third part of the version to match (0 matches all)                    \n
+              */                                                                                            \n
+             $(struct_type) *$(struct_prefix)_List__FindInternal($(struct_type) *d,
+                                                                 const char *wantedFamily,
+                                                                 int wantedVersion1,
+                                                                 int wantedVersion2,
+                                                                 int wantedVersion3);
+          </content>
+        </inline>
+
+
+
+        <inline loc="code">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             $(struct_type) *$(struct_prefix)_List__FindInternal($(struct_type) *d,
+                                                                 const char *wantedFamily,
+                                                                 int wantedVersion1,
+                                                                 int wantedVersion2,
+                                                                 int wantedVersion3){
+               if (!wantedFamily)
+                 wantedFamily="*";
+             
+               while(d) {
+                 if (1==$(struct_prefix)_Matches(d, wantedFamily, wantedVersion1, wantedVersion2, wantedVersion3))
+                   break;
+                 d=$(struct_prefix)_List_Next(d);
+               } /* while */
+             
+               return d;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             $(api) $(struct_type) *$(struct_prefix)_List_FindFirst(const $(struct_type)_LIST *dl, 
+                                                                    const char *wantedFamily,
+                                                                    int wantedVersion1, int wantedVersion2, int wantedVersion3);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             $(struct_type) *$(struct_prefix)_List_FindFirst(const $(struct_type)_LIST *dl, 
+                                                             const char *wantedFamily,
+                                                             int wantedVersion1, int wantedVersion2, int wantedVersion3) {
+               $(struct_type) *d;
+             
+               if ($(struct_prefix)_List_GetCount(dl)==0) {
+                 DBG_INFO(AQBANKING_LOGDOMAIN, "empty list");
+                 return NULL;
+               }
+               d=$(struct_prefix)_List_First(dl);
+               assert(d);
+
+               return $(struct_prefix)_List__FindInternal(d, wantedFamily, wantedVersion1, wantedVersion2, wantedVersion3);
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             $(api) $(struct_type) *$(struct_prefix)_List_FindNext($(struct_type) *d, 
+                                                                   const char *wantedFamily,
+                                                                   int wantedVersion1, int wantedVersion2, int wantedVersion3);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             $(struct_type) *$(struct_prefix)_List_FindNext($(struct_type) *d, 
+                                                            const char *wantedFamily,
+                                                            int wantedVersion1, int wantedVersion2, int wantedVersion3){
+               assert(d);
+               d=$(struct_prefix)_List_Next(d);
+               if (d==NULL) {
+                 DBG_INFO(AQBANKING_LOGDOMAIN, "No more entries in list");
+                 return NULL;
+               }
+               return $(struct_prefix)_List__FindInternal(d, wantedFamily, wantedVersion1, wantedVersion2, wantedVersion3);
+             }
+          </content>
+        </inline>
+
+
+      </inlines>
+
+
+    </lang>
+
+    <enums>
+
+    </enums>
+
+    <defines>
+
+    </defines>
+
+
+    <members>
+
+      <member name="family" type="char_ptr" maxlen="32" >
+        <descr>
+          Family of descriptors (e.g. "pain" in "pain.001.001.03")
+        </descr>
+        <access>public</access>
+        <flags>own with_hash</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+
+      <member name="version1" type="int" maxlen="4">
+        <descr>
+          First part of the version (i.e. the "001" in "pain.001.002.03")
+        </descr>
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+        <flags>with_hash</flags>
+      </member>
+
+
+      <member name="version2" type="int" maxlen="4">
+        <descr>
+          Second part of the version (i.e. the "002" in "pain.001.002.03")
+        </descr>
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+        <flags>with_hash</flags>
+      </member>
+
+
+      <member name="version3" type="int" maxlen="4">
+        <descr>
+          Second part of the version (i.e. the "03" in "pain.001.002.03")
+        </descr>
+        <default>0</default>
+        <preset>0</preset>
+        <access>public</access>
+        <flags>with_hash</flags>
+      </member>
+
+
+    </members>
+
+    
+  </type>
+  
+</tm2>
+
