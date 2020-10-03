@@ -820,7 +820,8 @@ int AH_Provider_SendUserKeys(AB_PROVIDER *pro, AB_USER *u,
 
 
 
-int AH_Provider_ChangeUserKeys(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, int withProgress, int nounmount, int doLock)
+int AH_Provider_ChangeUserKeys(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, int withProgress, int nounmount,
+                               int doLock)
 {
   int res=0;
   uint8_t canceled=0;

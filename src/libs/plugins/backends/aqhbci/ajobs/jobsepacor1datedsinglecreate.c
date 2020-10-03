@@ -66,24 +66,22 @@ AH_JOB *AH_Job_SepaCor1DebitDatedSingleCreate_new(AB_PROVIDER *pro, AB_USER *u, 
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_SepaCor1DebitDatedSingleCreate_Prepare(AH_JOB *j)
 {
-  GWEN_DB_NODE *profile;
   int rv;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing transfer");
 
-  /* find the right profile to produce pain.008 messages */
-  profile=AH_Job_FindSepaProfile(j, "008*", AH_User_GetSepaDebitNoteProfile(AH_Job_GetUser(j)));
-  if (!profile) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No suitable profile found");
-    return GWEN_ERROR_GENERIC;
+  /* select pain profile from group "008" */
+  rv=AH_Job_TransferBase_SelectPainProfile(j, 8);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
   }
 
   /* adjust parameters for COR1 transactions */
-  GWEN_DB_SetCharValue(profile, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "LocalInstrumentSEPACode", "COR1");
+  AH_Job_TransferBase_SetLocalInstrumentationCode(j, "COR1");
 
   /* export transfers to SEPA */
-  rv=AH_Job_TransferBase_SepaExportTransactions(j, profile);
+  rv=AH_Job_TransferBase_SepaExportTransactions(j);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;

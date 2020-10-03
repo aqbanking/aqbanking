@@ -53,9 +53,11 @@ enum {
 
 
 /* definitions for virtual functions (post) */
-typedef AQFINTS_MESSAGE* GWENHYWFAR_CB(*AQFINTS_SESSION_EXCHANGEMESSAGES_FN)(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *messageOut);
+typedef AQFINTS_MESSAGE *GWENHYWFAR_CB(*AQFINTS_SESSION_EXCHANGEMESSAGES_FN)(AQFINTS_SESSION *sess,
+                                                                             AQFINTS_MESSAGE *messageOut);
 
-typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_FILLOUT_KEYDESCR_FN)(AQFINTS_SESSION *sess, AQFINTS_KEYDESCR *keyDescr, int mode);
+typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_FILLOUT_KEYDESCR_FN)(AQFINTS_SESSION *sess, AQFINTS_KEYDESCR *keyDescr,
+                                                                int mode);
 
 
 typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_DECRYPT_SKEY_FN)(AQFINTS_SESSION *sess,
@@ -97,7 +99,8 @@ typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_VERIFY_FN)(AQFINTS_SESSION *sess,
 
 
 
-typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_VERIFYPIN_FN)(AQFINTS_SESSION *sess, const AQFINTS_KEYDESCR *keyDescr, const char *pin);
+typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_VERIFYPIN_FN)(AQFINTS_SESSION *sess, const AQFINTS_KEYDESCR *keyDescr,
+                                                         const char *pin);
 
 /*@}*/
 
@@ -261,7 +264,7 @@ AQFINTS_SESSION_VERIFYPIN_FN AQFINTS_Session_SetVerifyPinFn(AQFINTS_SESSION *ses
 
 
 AQFINTS_SESSION_FILLOUT_KEYDESCR_FN AQFINTS_Session_SetFilloutKeynameFn(AQFINTS_SESSION *sess,
-                                                                       AQFINTS_SESSION_FILLOUT_KEYDESCR_FN fn);
+                                                                        AQFINTS_SESSION_FILLOUT_KEYDESCR_FN fn);
 
 AQFINTS_SESSION_SIGN_FN AQFINTS_Session_SetSignFn(AQFINTS_SESSION *sess, AQFINTS_SESSION_SIGN_FN fn);
 

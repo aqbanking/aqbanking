@@ -29,8 +29,10 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-static AQFINTS_SEGMENT *_createSigHead(AQFINTS_SESSION *sess, int segNum, const AQFINTS_KEYDESCR *keyDescr, const char *ctrlRef);
-static AQFINTS_SEGMENT *_createSigTail(AQFINTS_SESSION *sess, int segNum, const AQFINTS_KEYDESCR *keyDescr, const char *ctrlRef);
+static AQFINTS_SEGMENT *_createSigHead(AQFINTS_SESSION *sess, int segNum, const AQFINTS_KEYDESCR *keyDescr,
+                                       const char *ctrlRef);
+static AQFINTS_SEGMENT *_createSigTail(AQFINTS_SESSION *sess, int segNum, const AQFINTS_KEYDESCR *keyDescr,
+                                       const char *ctrlRef);
 
 static int _createCtrlRef(char *ptrBuf, size_t lenBuf);
 static int _prepareSignSeg(AQFINTS_SESSION *sess,
@@ -89,7 +91,8 @@ int AQFINTS_Session_SignSegmentPinTan(AQFINTS_SESSION *sess,
 
 
 
-AQFINTS_SEGMENT *_createSigHead(AQFINTS_SESSION *sess, int segNum, const AQFINTS_KEYDESCR *keyDescr, const char *ctrlRef)
+AQFINTS_SEGMENT *_createSigHead(AQFINTS_SESSION *sess, int segNum, const AQFINTS_KEYDESCR *keyDescr,
+                                const char *ctrlRef)
 {
   GWEN_DB_NODE *dbSegment;
   AQFINTS_PARSER *parser;
@@ -263,7 +266,8 @@ int _prepareSignSeg(AQFINTS_SESSION *sess,
 
   /* security profile */
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "secProfile/code", AQFINTS_KeyDescr_GetSecurityProfileName(keyDescr));
-  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "secProfile/version", AQFINTS_KeyDescr_GetSecurityProfileVersion(keyDescr));
+  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "secProfile/version",
+                      AQFINTS_KeyDescr_GetSecurityProfileVersion(keyDescr));
 
   return 0;
 }

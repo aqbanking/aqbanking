@@ -280,11 +280,11 @@ int _jobGetBpdParamsForVersion(const AH_JOB *j, const char *paramName, int jobVe
         /* now get the correct version of the JOB */
         DBG_INFO(AQHBCI_LOGDOMAIN, "Checking whether job %s (%d) can be instantiated", j->name, version);
         node=GWEN_MsgEngine_FindNodeByProperty(j->msgEngine, "JOB", "id", version, j->name);
-	if (node) {
-	  DBG_INFO(AQHBCI_LOGDOMAIN, "Found BPD job");
-	  highestVersion=version;
-	  break;
-	}
+        if (node) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Found BPD job");
+          highestVersion=version;
+          break;
+        }
       }
       jobBPD=GWEN_DB_GetNextGroup(jobBPD);
     } /* while */
@@ -300,12 +300,12 @@ int _jobGetBpdParamsForVersion(const AH_JOB *j, const char *paramName, int jobVe
         GWEN_XMLNODE *node;
 
         /* now get the correct version of the JOB */
-	DBG_INFO(AQHBCI_LOGDOMAIN, "Checking whether job %s (%d) can be instantiated", j->name, version);
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Checking whether job %s (%d) can be instantiated", j->name, version);
         node=GWEN_MsgEngine_FindNodeByProperty(j->msgEngine, "JOB", "id", version, j->name);
-	if (node) {
-	  DBG_INFO(AQHBCI_LOGDOMAIN, "Found BPD job candidate version %d", version);
-	  highestVersion=version;
-	}
+        if (node) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Found BPD job candidate version %d", version);
+          highestVersion=version;
+        }
       }
       jobBPD=GWEN_DB_GetNextGroup(jobBPD);
     } /* while */

@@ -71,7 +71,8 @@ int AQFINTS_Session_VerifySegmentHbci(AQFINTS_SESSION *sess,
 
   cryptParams=AQFINTS_CryptParams_GetParamsForSecurityProfile(securityProfileName, securityProfileVersion);
   if (cryptParams==NULL) {
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "No crypt params for [%s:%d]", securityProfileName?securityProfileName:"<empty>", securityProfileVersion);
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "No crypt params for [%s:%d]", securityProfileName?securityProfileName:"<empty>",
+              securityProfileVersion);
     return GWEN_ERROR_INVALID;
   }
 
@@ -96,7 +97,7 @@ int AQFINTS_Session_VerifySegmentHbci(AQFINTS_SESSION *sess,
   }
 
   rv=AQFINTS_Session_Verify(sess, keyDescr, cryptParams,
-                            (const uint8_t*) GWEN_Buffer_GetStart(bufHashData), GWEN_Buffer_GetUsedBytes(bufHashData),
+                            (const uint8_t *) GWEN_Buffer_GetStart(bufHashData), GWEN_Buffer_GetUsedBytes(bufHashData),
                             ptr, len, sigCounter);
   if (rv<0) {
     if (rv==GWEN_ERROR_TRY_AGAIN) {

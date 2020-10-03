@@ -43,9 +43,9 @@ static const char *_limitTypeToChar(AQFINTS_LIMIT_TYPE t);
 
 
 int AQFINTS_Upd_Write(const AQFINTS_USERDATA *userData,
-		      AQFINTS_PARSER *parser,
-		      int refSegNum,
-		      AQFINTS_SEGMENT_LIST *segmentList)
+                      AQFINTS_PARSER *parser,
+                      int refSegNum,
+                      AQFINTS_SEGMENT_LIST *segmentList)
 {
   AQFINTS_SEGMENT *segment;
   GWEN_DB_NODE *dbSegment;
@@ -67,11 +67,11 @@ int AQFINTS_Upd_Write(const AQFINTS_USERDATA *userData,
     AQFINTS_ACCOUNTDATA *accountData;
 
     accountData=AQFINTS_AccountData_List_First(accountDataList);
-    while(accountData) {
+    while (accountData) {
       segment=AQFINTS_Parser_CreateSegmentByCode(parser, "HIUPD", 0);
       if (segment==NULL) {
-	DBG_INFO(AQFINTS_LOGDOMAIN, "Segment definition not found");
-	return GWEN_ERROR_GENERIC;
+        DBG_INFO(AQFINTS_LOGDOMAIN, "Segment definition not found");
+        return GWEN_ERROR_GENERIC;
       }
       dbSegment=AQFINTS_Segment_GetDbData(segment);
       _writeAccountData(accountData, dbSegment);
@@ -192,7 +192,7 @@ void _writeAccountData(const AQFINTS_ACCOUNTDATA *accountData, GWEN_DB_NODE *db)
     AQFINTS_UPDJOB *updJob;
 
     updJob=AQFINTS_UpdJob_List_First(updJobList);
-    while(updJob) {
+    while (updJob) {
       GWEN_DB_NODE *dbUpdJob;
 
       dbUpdJob=GWEN_DB_GetGroup(db, GWEN_PATH_FLAGS_CREATE_GROUP, "updjob");
@@ -252,13 +252,19 @@ void _writeUpdJob(const AQFINTS_UPDJOB *updJob, GWEN_DB_NODE *db)
 
 const char *_limitTypeToChar(AQFINTS_LIMIT_TYPE t)
 {
-  switch(t) {
-  case AQFINTS_LimitType_JobLimit:   return "E";
-  case AQFINTS_LimitType_DayLimit:   return "T";
-  case AQFINTS_LimitType_WeekLimit:  return "W";
-  case AQFINTS_LimitType_MonthLimit: return "M";
-  case AQFINTS_LimitType_TimeLimit:  return "Z";
-  default:                           break;
+  switch (t) {
+  case AQFINTS_LimitType_JobLimit:
+    return "E";
+  case AQFINTS_LimitType_DayLimit:
+    return "T";
+  case AQFINTS_LimitType_WeekLimit:
+    return "W";
+  case AQFINTS_LimitType_MonthLimit:
+    return "M";
+  case AQFINTS_LimitType_TimeLimit:
+    return "Z";
+  default:
+    break;
   }
 
   return NULL;

@@ -15,6 +15,8 @@
 
 #include "jobgetsepainfo_p.h"
 
+#include "aqhbci/joblayer/job_crypt.h"
+
 
 
 GWEN_INHERIT(AH_JOB, AH_JOB_GETACCSEPAINFO)

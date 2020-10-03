@@ -71,7 +71,7 @@ int AQFINTS_Session_EncryptMessagePinTan(AQFINTS_SESSION *sess, AQFINTS_MESSAGE 
   }
 
   segCryptData=_createCryptData(sess, keyDescr,
-                                (const uint8_t*) GWEN_Buffer_GetStart(bufDataToEncrypt),
+                                (const uint8_t *) GWEN_Buffer_GetStart(bufDataToEncrypt),
                                 GWEN_Buffer_GetUsedBytes(bufDataToEncrypt));
   if (segCryptData==NULL) {
     DBG_INFO(AQFINTS_LOGDOMAIN, "here");
@@ -215,7 +215,8 @@ int _prepareCryptSeg(AQFINTS_SESSION *sess, const AQFINTS_KEYDESCR *keyDescr, GW
 
   /* security profile */
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "secProfile/code", AQFINTS_KeyDescr_GetSecurityProfileName(keyDescr));
-  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "secProfile/version", AQFINTS_KeyDescr_GetSecurityProfileVersion(keyDescr));
+  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "secProfile/version",
+                      AQFINTS_KeyDescr_GetSecurityProfileVersion(keyDescr));
 
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "function", 998);
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "role", 1);

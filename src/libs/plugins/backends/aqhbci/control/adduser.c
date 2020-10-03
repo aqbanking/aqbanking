@@ -518,12 +518,12 @@ int fillFromToken(AB_USER *user, const char *tokenType, const char *tokenName, u
 
       rdhType=AH_User_GetRdhType(user);
       if (rdhType>1 && rdhType!=GWEN_Crypt_Token_Context_GetProtocolVersion(cryptTokenContext)) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Specified RDH version %d differs from RDH version %d on card!",
-		  rdhType, GWEN_Crypt_Token_Context_GetProtocolVersion(cryptTokenContext));
-	return 3;
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Specified RDH version %d differs from RDH version %d on card!",
+                  rdhType, GWEN_Crypt_Token_Context_GetProtocolVersion(cryptTokenContext));
+        return 3;
       }
       else {
-	AH_User_SetRdhType(user, GWEN_Crypt_Token_Context_GetProtocolVersion(cryptTokenContext));
+        AH_User_SetRdhType(user, GWEN_Crypt_Token_Context_GetProtocolVersion(cryptTokenContext));
       }
     } /* if RDH */
   } /* if card */

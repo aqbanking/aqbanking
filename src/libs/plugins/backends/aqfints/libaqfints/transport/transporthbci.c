@@ -72,7 +72,7 @@ AQFINTS_TRANSPORT *AQFINTS_TransportHbci_new(const char *url)
 
 
 
-AQFINTS_TRANSPORT *AQFINTS_TransportHbci_fromSyncIo(GWEN_SYNCIO* sio)
+AQFINTS_TRANSPORT *AQFINTS_TransportHbci_fromSyncIo(GWEN_SYNCIO *sio)
 {
   AQFINTS_TRANSPORT *trans;
   AQFINTS_TRANSPORT_HBCI *xtrans;

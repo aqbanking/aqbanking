@@ -29,7 +29,7 @@
  */
 
 static int _createTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc,
-					      AB_TRANSACTION_LIMITS_LIST *tll);
+                                              AB_TRANSACTION_LIMITS_LIST *tll);
 static AB_ACCOUNT_SPEC *_createAccountSpecWithUserAndAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a);
 static int _updateAccountSpecWithUserAndAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_ACCOUNT_SPEC *as);
 static void _copyAccountToAccountSpec(const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC *as);
@@ -203,7 +203,7 @@ void _copyAccountToAccountSpec(const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC *as)
 
 
 int _createTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc,
-				       AB_TRANSACTION_LIMITS_LIST *tll)
+                                       AB_TRANSACTION_LIMITS_LIST *tll)
 {
   int rv;
   int i;

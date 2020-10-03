@@ -109,20 +109,19 @@ int AH_Job_SepaDebitSingle_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_N
 /* --------------------------------------------------------------- FUNCTION */
 int AH_Job_SepaDebitSingle_Prepare(AH_JOB *j)
 {
-  GWEN_DB_NODE *profile;
   int rv;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing transfer");
 
-  /* find the right profile to produce pain.008 messages */
-  profile=AH_Job_FindSepaProfile(j, "008*", AH_User_GetSepaDebitNoteProfile(AH_Job_GetUser(j)));
-  if (!profile) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No suitable profile found");
-    return GWEN_ERROR_GENERIC;
+  /* select from pain group "008" */
+  rv=AH_Job_TransferBase_SelectPainProfile(j, 8);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
   }
 
   /* export transfers to SEPA */
-  rv=AH_Job_TransferBase_SepaExportTransactions(j, profile);
+  rv=AH_Job_TransferBase_SepaExportTransactions(j);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;

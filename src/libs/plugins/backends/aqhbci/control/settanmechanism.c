@@ -99,7 +99,7 @@ int AH_Control_SetTanMechanism(AB_PROVIDER *pro,
   iTanMechanism=_tanMechnismFromString(sTanMechanism);
   if (iTanMechanism<0) {
     fprintf(stderr, "Invalid TAN mechanism %s\n",
-	    (sTanMechanism && sTanMechanism)?sTanMechanism:"<none>");
+            (sTanMechanism && sTanMechanism)?sTanMechanism:"<none>");
     return 1;
   }
 

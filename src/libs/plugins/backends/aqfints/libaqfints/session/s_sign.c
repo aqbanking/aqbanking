@@ -93,7 +93,7 @@ int AQFINTS_Session_SignMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *message)
 
     /* mark segments as signed */
     segment=segFirstToSign;
-    while(segment) {
+    while (segment) {
       AQFINTS_Segment_AddRuntimeFlags(segment, AQFINTS_SEGMENT_RTFLAGS_SIGNED);
       if (segment==segLastToSign)
         break;

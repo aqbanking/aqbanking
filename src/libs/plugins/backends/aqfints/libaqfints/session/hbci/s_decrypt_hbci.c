@@ -103,14 +103,14 @@ int AQFINTS_Session_DecryptSegmentHbci(AQFINTS_SESSION *sess,
     int rv;
 
     AQFINTS_Session_LogMessage(sess,
-                               (const uint8_t*) GWEN_Buffer_GetStart(bufDecodedMessage),
+                               (const uint8_t *) GWEN_Buffer_GetStart(bufDecodedMessage),
                                GWEN_Buffer_GetUsedBytes(bufDecodedMessage),
                                1, 0); /* rec, crypt */
 
     parser=AQFINTS_Session_GetParser(sess);
     newSegmentList=AQFINTS_Segment_List_new();
     rv=AQFINTS_Parser_ReadIntoSegmentList(parser, newSegmentList,
-                                          (const uint8_t*) GWEN_Buffer_GetStart(bufDecodedMessage),
+                                          (const uint8_t *) GWEN_Buffer_GetStart(bufDecodedMessage),
                                           GWEN_Buffer_GetUsedBytes(bufDecodedMessage));
     if (rv<0) {
       DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
@@ -170,11 +170,16 @@ GWEN_CRYPT_KEY *_getDecryptedMessageKey(AQFINTS_SESSION *sess,
 
   /* get resulting keysize */
   cryptAlgo=AQFINTS_CryptParams_GetCryptAlgo(cryptParams);
-  switch(cryptAlgo) {
-  case AQFINTS_CryptParams_CryptAlgoTwoKeyTripleDes: decKeySize=16; break;
-  case AQFINTS_CryptParams_CryptAlgoAes256:          decKeySize=32; break;
+  switch (cryptAlgo) {
+  case AQFINTS_CryptParams_CryptAlgoTwoKeyTripleDes:
+    decKeySize=16;
+    break;
+  case AQFINTS_CryptParams_CryptAlgoAes256:
+    decKeySize=32;
+    break;
   default:
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "Unhandled crypt algo %d (%s)", cryptAlgo, AQFINTS_CryptParams_CryptAlgo_toString(cryptAlgo));
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "Unhandled crypt algo %d (%s)", cryptAlgo,
+              AQFINTS_CryptParams_CryptAlgo_toString(cryptAlgo));
     return NULL;
   }
 
@@ -188,7 +193,7 @@ GWEN_CRYPT_KEY *_getDecryptedMessageKey(AQFINTS_SESSION *sess,
 #endif
 
   /* generate key */
-  switch(cryptAlgo) {
+  switch (cryptAlgo) {
   case AQFINTS_CryptParams_CryptAlgoTwoKeyTripleDes:
     key=GWEN_Crypt_KeyDes3K_fromData(GWEN_Crypt_CryptMode_Cbc, 24, pKeyStart, 16);
     break;
@@ -196,7 +201,8 @@ GWEN_CRYPT_KEY *_getDecryptedMessageKey(AQFINTS_SESSION *sess,
     key=GWEN_Crypt_KeyAes256_fromData(GWEN_Crypt_CryptMode_Cbc, 32, pKeyStart, 32);
     break;
   default:
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "Unhandled crypt algo %d (%s)", cryptAlgo, AQFINTS_CryptParams_CryptAlgo_toString(cryptAlgo));
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "Unhandled crypt algo %d (%s)", cryptAlgo,
+              AQFINTS_CryptParams_CryptAlgo_toString(cryptAlgo));
     return NULL;
   }
   if (key==NULL) {
@@ -237,7 +243,7 @@ GWEN_BUFFER *_getDecryptedMessage(GWEN_CRYPT_KEY *sk,
 
   /* unpadd message */
   cryptAlgo=AQFINTS_CryptParams_GetCryptAlgo(cryptParams);
-  switch(cryptAlgo) {
+  switch (cryptAlgo) {
   case AQFINTS_CryptParams_CryptAlgoTwoKeyTripleDes:
     DBG_DEBUG(AQFINTS_LOGDOMAIN, "Unpadding with ANSI X9.23");
     rv=GWEN_Padd_UnpaddWithAnsiX9_23(mbuf);
@@ -247,7 +253,8 @@ GWEN_BUFFER *_getDecryptedMessage(GWEN_CRYPT_KEY *sk,
     rv=GWEN_Padd_UnpaddWithZka(mbuf);
     break;
   default:
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "Unhandled crypt algo %d (%s)", cryptAlgo, AQFINTS_CryptParams_CryptAlgo_toString(cryptAlgo));
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "Unhandled crypt algo %d (%s)", cryptAlgo,
+              AQFINTS_CryptParams_CryptAlgo_toString(cryptAlgo));
     GWEN_Buffer_free(mbuf);
     return NULL;
   }

@@ -164,7 +164,6 @@ int AH_Job_SepaCor1DebitDatedMultiCreate_Prepare(AH_JOB *j)
 {
   AH_JOB_CREATESEPAMULTICOR1 *aj;
   GWEN_DB_NODE *dbArgs;
-  GWEN_DB_NODE *profile;
   int rv;
   AB_TRANSACTION *t;
 
@@ -195,31 +194,21 @@ int AH_Job_SepaCor1DebitDatedMultiCreate_Prepare(AH_JOB *j)
     t=AB_Transaction_List_Next(t);
   }
 
-  /* find the right profile to produce pain.008 messages */
-  profile=AH_Job_FindSepaProfile(j, "008*", AH_User_GetSepaDebitNoteProfile(AH_Job_GetUser(j)));
-  if (!profile) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No suitable profile found");
-    return GWEN_ERROR_GENERIC;
+  /* select pain profile from group "008" */
+  rv=AH_Job_TransferBase_SelectPainProfile(j, 8);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
   }
 
   /* set singleBookingWanted */
-  if (aj->singleBookingAllowed &&
-      GWEN_DB_GetIntValue(profile, "singleBookingWanted", 0, 1))
-    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "singleBookingWanted", "J");
-  else {
-    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "singleBookingWanted", "N");
-    GWEN_DB_SetIntValue(profile, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                        "singleBookingWanted", 0);
-  }
+  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "singleBookingWanted", (aj->singleBookingAllowed)?"J":"N");
 
   /* adjust parameters for COR1 transactions */
-  GWEN_DB_SetCharValue(profile, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "LocalInstrumentSEPACode", "COR1");
+  AH_Job_TransferBase_SetLocalInstrumentationCode(j, "COR1");
 
   /* export transfers to SEPA */
-  rv=AH_Job_TransferBase_SepaExportTransactions(j, profile);
+  rv=AH_Job_TransferBase_SepaExportTransactions(j);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;

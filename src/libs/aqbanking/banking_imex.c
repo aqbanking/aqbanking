@@ -10,6 +10,8 @@
 
 /* This file is included by banking.c */
 
+#include "aqbanking/backendsupport/swiftdescr.h"
+
 
 #ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_CSV
 # include "src/libs/plugins/imexporters/csv/csv.h"
@@ -59,6 +61,7 @@
 #ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_XML
 # include "src/libs/plugins/imexporters/xml/xml.h"
 #endif
+
 
 
 
@@ -1086,6 +1089,111 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfile(AB_BANKING *ab,
 
   return NULL;
 }
+
+
+
+GWEN_DB_NODE *AB_Banking_FindMatchingSwiftImExporterProfile(AB_BANKING *ab,
+                                                            const char *imExporterName,
+                                                            const char *family,
+                                                            int version1,
+                                                            int version2,
+                                                            int version3)
+{
+  GWEN_DB_NODE *dbProfiles;
+
+  dbProfiles=AB_Banking_GetImExporterProfiles(ab, imExporterName);
+  if (dbProfiles) {
+    GWEN_DB_NODE *dbProfile;
+
+    dbProfile=GWEN_DB_GetFirstGroup(dbProfiles);
+    while (dbProfile) {
+      const char *name;
+      AB_SWIFT_DESCR *swiftDescr;
+
+      name=GWEN_DB_GetCharValue(dbProfile, "name", 0, 0);
+      assert(name);
+
+      swiftDescr=AB_SwiftDescr_FromString(name);
+      if (swiftDescr) {
+        if (AB_SwiftDescr_Matches(swiftDescr, family, version1, version2, version3)) {
+          AB_SwiftDescr_free(swiftDescr);
+          break;
+        }
+      }
+      AB_SwiftDescr_free(swiftDescr);
+
+      dbProfile=GWEN_DB_GetNextGroup(dbProfile);
+    }
+    if (!dbProfile) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+                "Profile \"%s.%03d.%03d.%02d\" for exporter \"%s\" not found",
+                family, version1, version2, version3,
+                imExporterName);
+      GWEN_DB_Group_free(dbProfiles);
+      return NULL;
+    }
+
+    GWEN_DB_UnlinkGroup(dbProfile);
+    GWEN_DB_Group_free(dbProfiles);
+    return dbProfile;
+  }
+  else {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "No profiles found for exporter \"%s\"",
+              imExporterName);
+    return NULL;
+  }
+
+  return NULL;
+}
+
+
+
+AB_SWIFT_DESCR_LIST *AB_Banking_GetSwiftDescriptorsForImExporter(AB_BANKING *ab, const char *imExporterName)
+{
+  GWEN_DB_NODE *dbProfiles;
+
+  dbProfiles=AB_Banking_GetImExporterProfiles(ab, imExporterName);
+  if (dbProfiles) {
+    GWEN_DB_NODE *dbProfile;
+    AB_SWIFT_DESCR_LIST *descrList;
+
+    descrList=AB_SwiftDescr_List_new();
+    dbProfile=GWEN_DB_GetFirstGroup(dbProfiles);
+    while (dbProfile) {
+      const char *name;
+      AB_SWIFT_DESCR *descr;
+
+      name=GWEN_DB_GetCharValue(dbProfile, "name", 0, 0);
+      assert(name);
+
+      descr=AB_SwiftDescr_FromString(name);
+      if (descr) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Adding matching profile [%s]", name);
+        AB_SwiftDescr_SetAlias1(descr, name);
+        AB_SwiftDescr_List_Add(descr, descrList);
+      }
+
+      dbProfile=GWEN_DB_GetNextGroup(dbProfile);
+    }
+
+    if (AB_SwiftDescr_List_GetCount(descrList)==0) {
+      AB_SwiftDescr_List_free(descrList);
+      return NULL;
+    }
+
+    return descrList;
+  }
+  else {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "No profiles found for exporter \"%s\"",
+              imExporterName);
+    return NULL;
+  }
+
+  return NULL;
+}
+
 
 
 

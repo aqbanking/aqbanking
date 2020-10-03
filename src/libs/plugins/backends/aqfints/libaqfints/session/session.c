@@ -33,7 +33,7 @@
  */
 
 
-static AQFINTS_MESSAGE* GWENHYWFAR_CB _exchangeMessagesInternal(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *messageOut);
+static AQFINTS_MESSAGE *GWENHYWFAR_CB _exchangeMessagesInternal(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *messageOut);
 
 
 
@@ -306,7 +306,7 @@ int AQFINTS_Session_DecryptSessionKey(AQFINTS_SESSION *sess,
 {
   assert(sess);
   if (sess->decryptSessionKeyFn)
-      return sess->decryptSessionKeyFn(sess, keyDescr, cryptParams, pInData, inLen, pOutData, pOutLen);
+    return sess->decryptSessionKeyFn(sess, keyDescr, cryptParams, pInData, inLen, pOutData, pOutLen);
   else
     return GWEN_ERROR_NOT_IMPLEMENTED;
 }
@@ -323,7 +323,7 @@ int AQFINTS_Session_EncryptSessionKey(AQFINTS_SESSION *sess,
 {
   assert(sess);
   if (sess->encryptSessionKeyFn)
-      return sess->encryptSessionKeyFn(sess, keyDescr, cryptParams, pInData, inLen, pOutData, pOutLen);
+    return sess->encryptSessionKeyFn(sess, keyDescr, cryptParams, pInData, inLen, pOutData, pOutLen);
   else
     return GWEN_ERROR_NOT_IMPLEMENTED;
 }
@@ -396,7 +396,7 @@ AQFINTS_SESSION_EXCHANGEMESSAGES_FN AQFINTS_Session_SetExchangeMessagesFn(AQFINT
 
 
 AQFINTS_SESSION_FILLOUT_KEYDESCR_FN AQFINTS_Session_SetFilloutKeynameFn(AQFINTS_SESSION *sess,
-                                                                       AQFINTS_SESSION_FILLOUT_KEYDESCR_FN fn)
+                                                                        AQFINTS_SESSION_FILLOUT_KEYDESCR_FN fn)
 {
   AQFINTS_SESSION_FILLOUT_KEYDESCR_FN oldFn;
 
@@ -579,11 +579,11 @@ int AQFINTS_Session_SampleAllowedTanMethods(int *ptrIntArray, int sizeIntArray, 
               j=GWEN_DB_GetIntValue(dbResult, "param", i, 0);
               if (j==0)
                 break;
-	      DBG_NOTICE(0, "Adding allowed TAN method %d", j);
-	      ptrIntArray[i]=j;
-	      numMethodsAdded++;
+              DBG_NOTICE(0, "Adding allowed TAN method %d", j);
+              ptrIntArray[i]=j;
+              numMethodsAdded++;
             } /* for */
-	  }
+          }
           dbResult=GWEN_DB_FindNextGroup(dbResult, "result");
         } /* while dbResult */
       } /* if db */
@@ -718,7 +718,8 @@ AQFINTS_MESSAGE *AQFINTS_Session_DirectlyExchangeMessages(AQFINTS_SESSION *sess,
     return NULL;
   }
 
-  message=AQFINTS_Session_DecodeMessage(sess, (const uint8_t*) GWEN_Buffer_GetStart(msgBuffer), GWEN_Buffer_GetUsedBytes(msgBuffer));
+  message=AQFINTS_Session_DecodeMessage(sess, (const uint8_t *) GWEN_Buffer_GetStart(msgBuffer),
+                                        GWEN_Buffer_GetUsedBytes(msgBuffer));
   if (message==NULL) {
     DBG_ERROR(AQFINTS_LOGDOMAIN, "Could not decode this message:");
     GWEN_Buffer_Dump(msgBuffer, 2);
@@ -743,18 +744,18 @@ int AQFINTS_Session_SampleDataToHash(AQFINTS_SEGMENT *segSigHead,
 
   /* add signature head */
   rv=GWEN_Buffer_AppendBytes(destBuf,
-                             (const char*) AQFINTS_Segment_GetDataPointer(segSigHead),
-			     AQFINTS_Segment_GetDataLength(segSigHead));
+                             (const char *) AQFINTS_Segment_GetDataPointer(segSigHead),
+                             AQFINTS_Segment_GetDataLength(segSigHead));
   if (rv<0) {
     DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
   /* hash data segments */
   segment=segFirstToSign;
-  while(segment) {
+  while (segment) {
     rv=GWEN_Buffer_AppendBytes(destBuf,
-			       (const char*) AQFINTS_Segment_GetDataPointer(segment),
-			       AQFINTS_Segment_GetDataLength(segment));
+                               (const char *) AQFINTS_Segment_GetDataPointer(segment),
+                               AQFINTS_Segment_GetDataLength(segment));
     if (rv<0) {
       DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
       return rv;

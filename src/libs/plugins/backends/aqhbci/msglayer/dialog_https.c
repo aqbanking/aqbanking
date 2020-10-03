@@ -45,6 +45,8 @@ int AH_Dialog_CreateIoLayer_Https(AH_DIALOG *dlg)
   s=AH_User_GetHttpContentType(dlg->dialogOwner);
   if (s && *s)
     GWEN_HttpSession_SetHttpContentType(sess, s);
+  else
+    GWEN_HttpSession_SetHttpContentType(sess, "application/octet-stream");
 
   s=AH_User_GetHttpUserAgent(dlg->dialogOwner);
   if (s && *s)

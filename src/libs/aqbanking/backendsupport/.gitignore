@@ -43,3 +43,10 @@ user.c
 user.h
 user_p.h
 
+ab_swift_descr.tm2
+ab_swift_descr_list.tm2
+ab_swift_descr_list2.tm2
+swiftdescr.c
+swiftdescr.h
+swiftdescr_p.h
+

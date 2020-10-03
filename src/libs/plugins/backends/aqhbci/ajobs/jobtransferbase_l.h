@@ -24,8 +24,22 @@ AH_JOB *AH_Job_TransferBase_new(const char *jobName,
 
 const char *AH_Job_TransferBase_GetFiid(const AH_JOB *j);
 
+/**
+ * Select SEPA PAIN profile to be used.
+ *
+ * Lookupo SWIFT descriptor which is supported by the user BPD/UPD and by the XML imexporter.
+ */
+int AH_Job_TransferBase_SelectPainProfile(AH_JOB *j, int version1);
 
-int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile);
+
+void AH_Job_TransferBase_SetLocalInstrumentationCode(AH_JOB *j, const char *s);
+
+
+/**
+ * Export the transactions stored with this job and export them to SEPA using the
+ * previously selected SEPA profile (see @ref AH_Job_TransferBase_SelectPainProfile).
+ */
+int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j);
 
 /**
  * Returns AB_TRANSACTION_LIMITS for undated SEPA transfers and debit notes.

@@ -124,7 +124,7 @@ GWEN_BUFFER *AQFINTS_Session_EncodeMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAG
   AQFINTS_Segment_List_SampleBuffers(segmentList, msgBuffer);
 
   AQFINTS_Session_LogMessage(sess,
-                             (const uint8_t*) GWEN_Buffer_GetStart(msgBuffer),
+                             (const uint8_t *) GWEN_Buffer_GetStart(msgBuffer),
                              GWEN_Buffer_GetUsedBytes(msgBuffer),
                              0, 1); /* !rec, crypt */
 

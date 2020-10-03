@@ -17,6 +17,8 @@
 #include "aqhbci_l.h"
 #include "accountjob_l.h"
 #include "job_l.h"
+#include "aqhbci/joblayer/job_swift.h"
+#include "aqhbci/joblayer/job_crypt.h"
 #include "user_l.h"
 
 #include <gwenhywfar/debug.h>
@@ -62,33 +64,33 @@ AH_JOB *AH_Job_SepaStandingOrderGet_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT
 int AH_Job_SepaStandingOrderGet_Prepare(AH_JOB *j)
 {
   GWEN_DB_NODE *dbArgs;
-  GWEN_DB_NODE *profile;
+  AB_SWIFT_DESCR_LIST *descrList;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing job");
 
+  /* get arguments DB */
   dbArgs=AH_Job_GetArguments(j);
+  assert(dbArgs);
 
-  /* find the right profile to produce pain.001 messages */
-  profile=AH_Job_FindSepaProfile(j, "001*", AH_User_GetSepaTransferProfile(AH_Job_GetUser(j)));
-  if (!profile) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No suitable profile found");
-    return GWEN_ERROR_GENERIC;
+  /* check for "pain.001.*" (dont use leading zeros because that would make it an octadecimal! */
+  descrList=AH_Job_GetSwiftDescriptorsSupportedByUser(j, "pain", 1);
+  if (descrList) {
+    AB_SWIFT_DESCR *descr;
+
+    descr=AB_SwiftDescr_List_First(descrList);
+    while (descr) {
+      const char *s;
+
+      s=AB_SwiftDescr_GetAlias2(descr);
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Adding supported PAIN format [%s]", s);
+      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "SupportedSepaFormats/Format", s);
+      descr=AB_SwiftDescr_List_Next(descr);
+    }
+    AB_SwiftDescr_List_free(descrList);
   }
   else {
-    const char *s;
-
-    s=GWEN_DB_GetCharValue(profile, "descriptor", 0, 0);
-    if (s) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Using SEPA format \"%s\"", s);
-      GWEN_DB_SetCharValue(dbArgs,
-                           GWEN_DB_FLAGS_OVERWRITE_VARS,
-                           "SupportedSepaFormats/Format",
-                           s);
-    }
-    else {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "No matching SEPA descriptor found");
-      return GWEN_ERROR_GENERIC;
-    }
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No supported PAIN profile found, job not supported");
+    return GWEN_ERROR_GENERIC;
   }
 
   return 0;
@@ -167,64 +169,45 @@ int AH_Job_SepaStandingOrdersGet_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 AB_TRANSACTION *_readTransactionFromResponse(AH_JOB *j, GWEN_DB_NODE *dbXA)
 {
   const char *fiId;
-  const char *descriptor;
+  const void *p;
+  unsigned int bs;
 
   fiId=GWEN_DB_GetCharValue(dbXA, "fiId", 0, NULL);
-  descriptor=GWEN_DB_GetCharValue(dbXA, "descriptor", 0, NULL);
-  if (descriptor && *descriptor) {
-    const char *profileName;
 
-    if (-1!=GWEN_Text_ComparePattern(descriptor, "*001?003?03*", 0))
-      profileName="pain_001_003_03";
-    else
-      profileName=NULL;
+  p=GWEN_DB_GetBinValue(dbXA, "transfer", 0, 0, 0, &bs);
+  if (p && bs) {
+    AB_TRANSACTION *t;
 
-    if (profileName) {
-      const void *p;
-      unsigned int bs;
+    t=_readSto(j, "sepa", p, bs); /* use generic profile "sepa" */
+    if (t) {
+      const char *s;
 
-      p=GWEN_DB_GetBinValue(dbXA, "transfer", 0, 0, 0, &bs);
-      if (p && bs) {
-        AB_TRANSACTION *t;
+      AB_Transaction_SetFiId(t, fiId);
 
-        t=_readSto(j, profileName, p, bs);
-        if (t) {
-          const char *s;
+      s=GWEN_DB_GetCharValue(dbXA, "xfirstExecutionDate", 0, NULL);
+      if (s && *s) {
+        GWEN_DATE *dt;
 
-          AB_Transaction_SetFiId(t, fiId);
-
-          s=GWEN_DB_GetCharValue(dbXA, "xfirstExecutionDate", 0, NULL);
-          if (s && *s) {
-            GWEN_DATE *dt;
-
-            dt=GWEN_Date_fromStringWithTemplate(s, "YYYYMMDD");
-            if (dt) {
-              AB_Transaction_SetFirstDate(t, dt);
-              GWEN_Date_free(dt);
-            }
-          }
-
-          s=GWEN_DB_GetCharValue(dbXA, "xperiod", 0, NULL);
-          AB_Transaction_SetPeriod(t, _getPeriod(s));
-
-          AB_Transaction_SetCycle(t, GWEN_DB_GetIntValue(dbXA, "cycle", 0, 0));
-          AB_Transaction_SetExecutionDay(t, GWEN_DB_GetIntValue(dbXA, "executionDay", 0, 0));
-
-          /* done */
-          return t;
-        } /* if t */
-        else {
-          DBG_WARN(AQHBCI_LOGDOMAIN, "Error reading standing order from data, ignoring");
+        dt=GWEN_Date_fromStringWithTemplate(s, "YYYYMMDD");
+        if (dt) {
+          AB_Transaction_SetFirstDate(t, dt);
+          GWEN_Date_free(dt);
         }
-      } /* if transaction bindata */
-    } /* if profileNAme */
+      }
+
+      s=GWEN_DB_GetCharValue(dbXA, "xperiod", 0, NULL);
+      AB_Transaction_SetPeriod(t, _getPeriod(s));
+
+      AB_Transaction_SetCycle(t, GWEN_DB_GetIntValue(dbXA, "cycle", 0, 0));
+      AB_Transaction_SetExecutionDay(t, GWEN_DB_GetIntValue(dbXA, "executionDay", 0, 0));
+
+      /* done */
+      return t;
+    } /* if t */
     else {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "SEPA descriptor \"%s\" not supported, ignoring transaction", descriptor);
+      DBG_WARN(AQHBCI_LOGDOMAIN, "Error reading standing order from data, ignoring");
     }
-  } /* if descriptor */
-  else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing SEPA descriptor, ignoring transaction");
-  }
+  } /* if transaction bindata */
 
   return NULL;
 }

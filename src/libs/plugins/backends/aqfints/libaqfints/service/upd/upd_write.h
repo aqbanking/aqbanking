@@ -23,9 +23,9 @@
 
 
 int AQFINTS_Upd_Write(const AQFINTS_USERDATA *userData,
-		      AQFINTS_PARSER *parser,
-		      int refSegNum,
-		      AQFINTS_SEGMENT_LIST *segmentList);
+                      AQFINTS_PARSER *parser,
+                      int refSegNum,
+                      AQFINTS_SEGMENT_LIST *segmentList);
 
 
 

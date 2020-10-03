@@ -72,9 +72,9 @@ int AQFINTS_Bpd_Write(const AQFINTS_BPD *bpd, AQFINTS_PARSER *parser, int hbciVe
     AQFINTS_BPDADDR *bpdAddr;
 
     bpdAddr=AQFINTS_BpdAddr_List_First(addrList);
-    while(bpdAddr) {
+    while (bpdAddr) {
       AQFINTS_SEGMENT *segment;
-  
+
       segment=_mkSegBankAddr(parser, hbciVersion, bpdAddr);
       if (segment==NULL) {
         DBG_ERROR(AQFINTS_LOGDOMAIN, "here");
@@ -118,7 +118,7 @@ int AQFINTS_Bpd_Write(const AQFINTS_BPD *bpd, AQFINTS_PARSER *parser, int hbciVe
     AQFINTS_BPDJOB *bpdJob;
 
     bpdJob=AQFINTS_BpdJob_List_First(bpdJobList);
-    while(bpdJob) {
+    while (bpdJob) {
       AQFINTS_SEGMENT *segment;
 
       segment=_mkSegBpdJob(parser, hbciVersion, bpdJob);
@@ -195,7 +195,7 @@ AQFINTS_SEGMENT *_mkSegBankData(AQFINTS_PARSER *parser, int hbciVersion, const A
 
   dbGroup=GWEN_DB_GetGroup(dbSegment, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "languages");
   assert(dbGroup);
-  for (i=0; i<9; i++){
+  for (i=0; i<9; i++) {
     int v;
 
     v=AQFINTS_BankData_GetLanguagesAt(bankData, i);
@@ -208,7 +208,7 @@ AQFINTS_SEGMENT *_mkSegBankData(AQFINTS_PARSER *parser, int hbciVersion, const A
 
   dbGroup=GWEN_DB_GetGroup(dbSegment, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "versions");
   assert(dbGroup);
-  for (i=0; i<9; i++){
+  for (i=0; i<9; i++) {
     int v;
 
     v=AQFINTS_BankData_GetHbciVersionsAt(bankData, i);
@@ -261,7 +261,7 @@ AQFINTS_SEGMENT *_mkSegBankAddr(AQFINTS_PARSER *parser, int hbciVersion, const A
     AQFINTS_BPDADDR_SERVICE *service;
 
     service=AQFINTS_BpdAddrService_List_First(serviceList);
-    while(service) {
+    while (service) {
       GWEN_DB_NODE *dbService;
 
       dbService=GWEN_DB_GetGroup(dbSegment, GWEN_PATH_FLAGS_CREATE_GROUP, "service");
@@ -349,7 +349,7 @@ AQFINTS_SEGMENT *_mkSegTanInfo(AQFINTS_PARSER *parser, int hbciVersion, const AQ
     AQFINTS_TANJOBINFO *tanJob;
 
     tanJob=AQFINTS_TanJobInfo_List_First(tanJobList);
-    while(tanJob) {
+    while (tanJob) {
       GWEN_DB_NODE *dbTanJob;
 
       dbTanJob=GWEN_DB_GetGroup(dbSegment, GWEN_PATH_FLAGS_CREATE_GROUP, "job");
@@ -423,7 +423,8 @@ AQFINTS_SEGMENT *_mkSegBpdJob(AQFINTS_PARSER *parser, int hbciVersion, const AQF
 
 
 
-AQFINTS_SEGMENT *_mkSegBankSecProfiles(AQFINTS_PARSER *parser, int hbciVersion, const AQFINTS_BPD_SECPROFILE_LIST *secProfileList)
+AQFINTS_SEGMENT *_mkSegBankSecProfiles(AQFINTS_PARSER *parser, int hbciVersion,
+                                       const AQFINTS_BPD_SECPROFILE_LIST *secProfileList)
 {
   AQFINTS_SEGMENT *defSegment;
   AQFINTS_SEGMENT *segment;
@@ -445,7 +446,7 @@ AQFINTS_SEGMENT *_mkSegBankSecProfiles(AQFINTS_PARSER *parser, int hbciVersion, 
   GWEN_DB_SetCharValue(dbSegment, GWEN_DB_FLAGS_OVERWRITE_VARS, "mixingAllowed", "J");
 
   secProfile=AQFINTS_BpdSecProfile_List_First(secProfileList);
-  while(secProfile) {
+  while (secProfile) {
     GWEN_DB_NODE *dbSecProfile;
     const char *s;
     int i;
@@ -455,7 +456,7 @@ AQFINTS_SEGMENT *_mkSegBankSecProfiles(AQFINTS_PARSER *parser, int hbciVersion, 
     if (s)
       GWEN_DB_SetCharValue(dbSecProfile, GWEN_DB_FLAGS_OVERWRITE_VARS, "code", s);
 
-    for (i=0; i<9; i++){
+    for (i=0; i<9; i++) {
       int v;
 
       v=AQFINTS_BpdSecProfile_GetVersionsAt(secProfile, i);

@@ -430,7 +430,8 @@ int AQFINTS_Parser_ReadSegmentListToDb(AQFINTS_PARSER *parser, AQFINTS_SEGMENT_L
         AQFINTS_Segment_SetDbData(segment, dbSegment);
         rv=AQFINTS_Parser_Db_ReadSegment(defSegment, segment, dbSegment);
         if (rv<0) {
-          DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Error reading segment \"%s\" (version %d) into DB (%d)", sCode, segmentVersion, rv);
+          DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Error reading segment \"%s\" (version %d) into DB (%d)", sCode, segmentVersion,
+                    rv);
           return rv;
         }
         AQFINTS_Segment_AddRuntimeFlags(segment, AQFINTS_SEGMENT_RTFLAGS_PARSED);

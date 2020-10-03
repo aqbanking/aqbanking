@@ -309,9 +309,6 @@ void AH_Job_SetExpectedSigner(AH_JOB *j, const char *s);
 const char *AH_Job_GetExpectedCrypter(const AH_JOB *j);
 void AH_Job_SetExpectedCrypter(AH_JOB *j, const char *s);
 
-int AH_Job_CheckEncryption(AH_JOB *j, GWEN_DB_NODE *dbRsp);
-int AH_Job_CheckSignature(AH_JOB *j, GWEN_DB_NODE *dbRsp);
-
 const char *AH_Job_GetUsedTan(const AH_JOB *j);
 void AH_Job_SetUsedTan(AH_JOB *j, const char *s);
 
@@ -371,17 +368,6 @@ int AH_Job_HandleCommand_Accept(AH_JOB *j, const AB_TRANSACTION *t);
  * Implementation of AH_Job_HandleResults which does nothing.
  */
 int AH_Job_HandleResults_Empty(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
-
-
-
-/**
- * Finds a profile of the SEPA ImExporter whose type option matches
- * the pattern provided in the tmpl parameter. The pattern "001", for
- * instance, will choose a profile suitable for credit transfer jobs.
- * Specifying the NULL pointer for tmpl will return the profile
- * selected during an earlier call to this function for the same job.
- */
-GWEN_DB_NODE *AH_Job_FindSepaProfile(AH_JOB *j, const char *type, const char *name);
 
 
 

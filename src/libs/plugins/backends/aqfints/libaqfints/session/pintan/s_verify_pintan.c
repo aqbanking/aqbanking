@@ -60,7 +60,7 @@ int AQFINTS_Session_VerifySegmentsPinTan(AQFINTS_SESSION *sess,
   }
 
   segment=segFirstSigned;
-  while(segment) {
+  while (segment) {
     AQFINTS_Segment_AddRuntimeFlags(segment, AQFINTS_SEGMENT_RTFLAGS_SIGNED);
     if (segment==segLastSigned)
       break;

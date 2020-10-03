@@ -20,6 +20,8 @@
 
 #include <aqbanking/banking.h>
 #include <aqbanking/backendsupport/provider_be.h>
+#include <aqbanking/backendsupport/swiftdescr.h>
+
 
 #include <gwenhywfar/httpsession.h>
 #include <gwenhywfar/ct.h>
@@ -235,6 +237,15 @@ int AB_Banking_ReadConfigGroups(const AB_BANKING *ab,
  * @param t transaction to fill
  */
 void AB_Banking_FillGapsInTransaction(AB_BANKING *ab, AB_ACCOUNT *localAccount, AB_TRANSACTION *t);
+
+
+/**
+ * Get a list of SWIFT descriptors supported by the given imExporter.
+ *
+ * a SWIFT descriptor is an object holding the elements of a SWIFT format name (e.g. "pain.001.002.03").
+ * Normally you would use "xml" for the name of the imexporter.
+ */
+AB_SWIFT_DESCR_LIST *AB_Banking_GetSwiftDescriptorsForImExporter(AB_BANKING *ab, const char *imExporterName);
 
 
 #ifdef __cplusplus

@@ -15,9 +15,12 @@
 
 #include "jobgetkeys_p.h"
 
+#include "aqhbci/joblayer/job_crypt.h"
 
 
 GWEN_INHERIT(AH_JOB, AH_JOB_GETKEYS);
+
+
 
 
 AH_JOB *AH_Job_GetKeys_new(AB_PROVIDER *pro, AB_USER *u)
