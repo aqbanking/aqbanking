@@ -119,7 +119,7 @@ void AQFINTS_Parser_DumpSegment(AQFINTS_SEGMENT *segment, int indent)
       for (i=0; i<indent+2; i++)
         fprintf(stderr, " ");
       fprintf(stderr, "Buffer:\n");
-      GWEN_Text_DumpString((const char*) ptr, len, indent+4);
+      GWEN_Text_DumpString((const char *) ptr, len, indent+4);
     }
   }
 

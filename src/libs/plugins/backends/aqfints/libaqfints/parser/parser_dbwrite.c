@@ -221,10 +221,10 @@ int writeDeg(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elementDataPar
   else {
     AQFINTS_ELEMENT *elementData;
 
-   /* if no deg name given the occurrence must be 0 or 1 (i.e. maxNum=1)
-     * because with no group name we wouldn't know how to determine the number of instances
-     * of the group to generate
-     */
+    /* if no deg name given the occurrence must be 0 or 1 (i.e. maxNum=1)
+      * because with no group name we wouldn't know how to determine the number of instances
+      * of the group to generate
+      */
     if (maxNum!=1) {
       DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Definition has no name while maxNum!=1");
       return GWEN_ERROR_BAD_DATA;
@@ -389,7 +389,7 @@ int writeCharElement(AQFINTS_ELEMENT *elementDefinition, AQFINTS_ELEMENT *elemen
   }
 
   if (minNum && idx<minNum) {
-      DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Too few elements in DB (%d < %d) [%s]", idx, minNum, sDbName?sDbName:"");
+    DBG_ERROR(AQFINTS_PARSER_LOGDOMAIN, "Too few elements in DB (%d < %d) [%s]", idx, minNum, sDbName?sDbName:"");
   }
 
   /* create empty DE element if no data */

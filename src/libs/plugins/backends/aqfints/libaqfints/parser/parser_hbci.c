@@ -566,9 +566,9 @@ void writeBin(const uint8_t *ptrBuf, uint32_t lenBuf, GWEN_BUFFER *destBuf)
 void writeString(const char *s, GWEN_BUFFER *destBuf)
 {
   if (s) {
-    while(*s) {
+    while (*s) {
       if (NULL!=strchr("+:@?'", *s))
-	GWEN_Buffer_AppendByte(destBuf, '?');    /* prepend by '?' */
+        GWEN_Buffer_AppendByte(destBuf, '?');    /* prepend by '?' */
       GWEN_Buffer_AppendByte(destBuf, *s);
       s++;
     }

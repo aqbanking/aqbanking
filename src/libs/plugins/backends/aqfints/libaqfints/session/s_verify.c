@@ -85,7 +85,7 @@ int AQFINTS_Session_VerifyMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *messag
     return GWEN_ERROR_BAD_DATA;
   }
 
-  while(segSigHead && segSigHead!=segFirstSigned) {
+  while (segSigHead && segSigHead!=segFirstSigned) {
     GWEN_DB_NODE *dbSigHead;
     const char *sCtrlRef;
     AQFINTS_SEGMENT *segSigTail;
@@ -114,7 +114,7 @@ int AQFINTS_Session_VerifyMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *messag
         return 0;
       }
       else {
-	DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+        DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
         return rv;
       }
     }
@@ -124,7 +124,7 @@ int AQFINTS_Session_VerifyMessage(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *messag
 
   /* mark segments as signed */
   segment=segFirstSigned;
-  while(segment) {
+  while (segment) {
     AQFINTS_Segment_AddRuntimeFlags(segment, AQFINTS_SEGMENT_RTFLAGS_SIGNED);
     if (segment==segLastSigned)
       break;
@@ -188,10 +188,10 @@ int _verifyMessage(AQFINTS_SESSION *sess,
     }
     if (rv<0) {
       if (rv==GWEN_ERROR_TRY_AGAIN) {
-	DBG_INFO(AQFINTS_LOGDOMAIN, "Signature not yet available, probably key not yet processed, retry later");
+        DBG_INFO(AQFINTS_LOGDOMAIN, "Signature not yet available, probably key not yet processed, retry later");
       }
       else {
-	DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+        DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
       }
       AQFINTS_KeyDescr_free(keyDescr);
       return rv;
@@ -245,7 +245,7 @@ AQFINTS_SEGMENT *_getFirstSegmentByCode(AQFINTS_SEGMENT_LIST *segmentList, const
   AQFINTS_SEGMENT *segment;
 
   segment=AQFINTS_Segment_List_First(segmentList);
-  while(segment) {
+  while (segment) {
     const char *s;
 
     s=AQFINTS_Segment_GetCode(segment);
@@ -261,7 +261,7 @@ AQFINTS_SEGMENT *_getFirstSegmentByCode(AQFINTS_SEGMENT_LIST *segmentList, const
 
 AQFINTS_SEGMENT *_getSigTailByControlReference(AQFINTS_SEGMENT *segment, const char *ctrlRef)
 {
-  while(segment) {
+  while (segment) {
     const char *sCode;
 
     sCode=AQFINTS_Segment_GetCode(segment);
@@ -286,7 +286,7 @@ AQFINTS_SEGMENT *_getSigTailByControlReference(AQFINTS_SEGMENT *segment, const c
 
 AQFINTS_SEGMENT *_getFirstSignedSegment(AQFINTS_SEGMENT *segment)
 {
-  while(segment) {
+  while (segment) {
     const char *sCode;
 
     sCode=AQFINTS_Segment_GetCode(segment);
@@ -302,7 +302,7 @@ AQFINTS_SEGMENT *_getFirstSignedSegment(AQFINTS_SEGMENT *segment)
 
 AQFINTS_SEGMENT *_getLastSignedSegment(AQFINTS_SEGMENT *segment)
 {
-  while(segment) {
+  while (segment) {
     AQFINTS_SEGMENT *nextSegment;
 
     nextSegment=AQFINTS_Segment_List_Next(segment);

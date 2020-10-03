@@ -35,7 +35,8 @@
  */
 
 static void _moveSegmentsBetweenLists(AQFINTS_SEGMENT_LIST *segmentList1, AQFINTS_SEGMENT_LIST *segmentList2);
-static void _moveSegmentsByCodeBetweenLists(AQFINTS_SEGMENT_LIST *segmentList1, AQFINTS_SEGMENT_LIST *segmentList2, const char *code);
+static void _moveSegmentsByCodeBetweenLists(AQFINTS_SEGMENT_LIST *segmentList1, AQFINTS_SEGMENT_LIST *segmentList2,
+                                            const char *code);
 
 
 
@@ -364,7 +365,7 @@ void _moveSegmentsBetweenLists(AQFINTS_SEGMENT_LIST *segmentList1, AQFINTS_SEGME
 {
   AQFINTS_SEGMENT *segment;
 
-  while( (segment=AQFINTS_Segment_List_First(segmentList1)) ) {
+  while ((segment=AQFINTS_Segment_List_First(segmentList1))) {
     AQFINTS_Segment_List_Del(segment);
     AQFINTS_Segment_List_Add(segment, segmentList2);
   }
@@ -372,13 +373,14 @@ void _moveSegmentsBetweenLists(AQFINTS_SEGMENT_LIST *segmentList1, AQFINTS_SEGME
 
 
 
-void _moveSegmentsByCodeBetweenLists(AQFINTS_SEGMENT_LIST *segmentList1, AQFINTS_SEGMENT_LIST *segmentList2, const char *code)
+void _moveSegmentsByCodeBetweenLists(AQFINTS_SEGMENT_LIST *segmentList1, AQFINTS_SEGMENT_LIST *segmentList2,
+                                     const char *code)
 {
 
   AQFINTS_SEGMENT *segment;
   /* move all HIRMG segments back to old list */
   segment=AQFINTS_Segment_List_First(segmentList1);
-  while(segment) {
+  while (segment) {
     AQFINTS_SEGMENT *nextSegment;
 
     nextSegment=AQFINTS_Segment_List_Next(segment);

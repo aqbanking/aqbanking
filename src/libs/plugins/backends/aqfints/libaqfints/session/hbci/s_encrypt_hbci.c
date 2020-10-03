@@ -124,7 +124,8 @@ int AQFINTS_Session_EncryptMessageHbci(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *m
 
   cryptParams=AQFINTS_CryptParams_GetParamsForSecurityProfile(securityProfileName, securityProfileVersion);
   if (cryptParams==NULL) {
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "No crypt params for [%s:%d]", securityProfileName?securityProfileName:"<empty>", securityProfileVersion);
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "No crypt params for [%s:%d]", securityProfileName?securityProfileName:"<empty>",
+              securityProfileVersion);
     return GWEN_ERROR_INVALID;
   }
 
@@ -135,7 +136,7 @@ int AQFINTS_Session_EncryptMessageHbci(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *m
 
 
   AQFINTS_Session_LogMessage(sess,
-                             (const uint8_t*) GWEN_Buffer_GetStart(bufDataToEncrypt),
+                             (const uint8_t *) GWEN_Buffer_GetStart(bufDataToEncrypt),
                              GWEN_Buffer_GetUsedBytes(bufDataToEncrypt),
                              0, 0); /* !rec, !crypt */
 
@@ -158,7 +159,7 @@ int AQFINTS_Session_EncryptMessageHbci(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *m
   segCryptHead=_createCryptHead(sess,
                                 cryptParams,
                                 keyDescr,
-                                (const uint8_t*) GWEN_Buffer_GetStart(bufEncryptedKey),
+                                (const uint8_t *) GWEN_Buffer_GetStart(bufEncryptedKey),
                                 GWEN_Buffer_GetUsedBytes(bufEncryptedKey));
   if (segCryptHead==NULL) {
     DBG_INFO(AQFINTS_LOGDOMAIN, "here");
@@ -172,7 +173,7 @@ int AQFINTS_Session_EncryptMessageHbci(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *m
   /* create crypt data segment */
   segCryptData=_createCryptData(sess,
                                 keyDescr,
-                                (const uint8_t*) GWEN_Buffer_GetStart(bufEncryptedData),
+                                (const uint8_t *) GWEN_Buffer_GetStart(bufEncryptedData),
                                 GWEN_Buffer_GetUsedBytes(bufEncryptedData));
   if (segCryptData==NULL) {
     DBG_INFO(AQFINTS_LOGDOMAIN, "here");
@@ -204,7 +205,7 @@ int _encrypt(AQFINTS_SESSION *sess,
   int rv;
 
   cryptAlgo=AQFINTS_CryptParams_GetCryptAlgo(cryptParams);
-  switch(cryptAlgo) {
+  switch (cryptAlgo) {
   case AQFINTS_CryptParams_CryptAlgoTwoKeyTripleDes:
     rv=_encryptDes(sess,
                    bufInRawData,
@@ -266,7 +267,7 @@ int _encryptDes(AQFINTS_SESSION *sess,
     return GWEN_ERROR_GENERIC;
   }
   bufRawKeyData=GWEN_Buffer_new(0, cryptKeySizeInBytes, 0, 1);
-  GWEN_Buffer_AppendBytes(bufRawKeyData, (const char*) GWEN_Crypt_KeyDes3K_GetKeyDataPtr(keyMessage), messageKeySize);
+  GWEN_Buffer_AppendBytes(bufRawKeyData, (const char *) GWEN_Crypt_KeyDes3K_GetKeyDataPtr(keyMessage), messageKeySize);
   GWEN_Buffer_Rewind(bufRawKeyData);
 
   rv=_encryptMessageAndKey(sess,
@@ -323,7 +324,7 @@ int _encryptAes(AQFINTS_SESSION *sess,
     return GWEN_ERROR_GENERIC;
   }
   bufRawKeyData=GWEN_Buffer_new(0, cryptKeySizeInBytes, 0, 1);
-  GWEN_Buffer_AppendBytes(bufRawKeyData, (const char*) GWEN_Crypt_KeyAes256_GetKeyDataPtr(keyMessage), messageKeySize);
+  GWEN_Buffer_AppendBytes(bufRawKeyData, (const char *) GWEN_Crypt_KeyAes256_GetKeyDataPtr(keyMessage), messageKeySize);
   GWEN_Buffer_Rewind(bufRawKeyData);
 
   rv=_encryptMessageAndKey(sess,
@@ -384,7 +385,7 @@ int _encryptMessageAndKey(AQFINTS_SESSION *sess,
   cryptKeySizeInBytes=AQFINTS_KeyDescr_GetKeySizeInBytes(keyDescr); /* valid size already checked by caller */
 
   opMode=AQFINTS_CryptParams_GetOpModeCrypt(cryptParams);
-  switch(opMode) {
+  switch (opMode) {
   case AQFINTS_CryptParams_OpModeCbc:
     paddAlgo=GWEN_Crypt_PaddAlgo_new(GWEN_Crypt_PaddAlgoId_LeftZero);
     break;

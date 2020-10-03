@@ -33,7 +33,7 @@
  */
 
 static AQFINTS_SEGMENT *_createSigHead(AQFINTS_SESSION *sess, const AQFINTS_CRYPTPARAMS *cryptParams,
-				       int segNum, const AQFINTS_KEYDESCR *keyDescr, const char *ctrlRef);
+                                       int segNum, const AQFINTS_KEYDESCR *keyDescr, const char *ctrlRef);
 static AQFINTS_SEGMENT *_createSigTail(AQFINTS_SESSION *sess,
                                        const AQFINTS_CRYPTPARAMS *cryptParams,
                                        int segNum,
@@ -44,7 +44,7 @@ static AQFINTS_SEGMENT *_createSigTail(AQFINTS_SESSION *sess,
 
 static int _createCtrlRef(char *ptrBuf, size_t lenBuf);
 static int _prepareSignSeg(AQFINTS_SESSION *sess,
-			   const AQFINTS_CRYPTPARAMS *cryptParams,
+                           const AQFINTS_CRYPTPARAMS *cryptParams,
                            const AQFINTS_KEYDESCR *keyDescr,
                            const char *ctrlRef,
                            GWEN_DB_NODE *cfg);
@@ -68,7 +68,7 @@ static int _signSegments(AQFINTS_SESSION *sess,
 
 int AQFINTS_Session_SignSegmentHbci(AQFINTS_SESSION *sess,
                                     AQFINTS_MESSAGE *message,
-				    AQFINTS_KEYDESCR *keyDescr,
+                                    AQFINTS_KEYDESCR *keyDescr,
                                     AQFINTS_SEGMENT *segFirstToSign,
                                     AQFINTS_SEGMENT *segLastToSign,
                                     int sigHeadNum,
@@ -94,7 +94,8 @@ int AQFINTS_Session_SignSegmentHbci(AQFINTS_SESSION *sess,
 
   cryptParams=AQFINTS_CryptParams_GetParamsForSecurityProfile(securityProfileName, securityProfileVersion);
   if (cryptParams==NULL) {
-    DBG_ERROR(AQFINTS_LOGDOMAIN, "No crypt params for [%s:%d]", securityProfileName?securityProfileName:"<empty>", securityProfileVersion);
+    DBG_ERROR(AQFINTS_LOGDOMAIN, "No crypt params for [%s:%d]", securityProfileName?securityProfileName:"<empty>",
+              securityProfileVersion);
     return GWEN_ERROR_INVALID;
   }
 
@@ -128,7 +129,7 @@ int AQFINTS_Session_SignSegmentHbci(AQFINTS_SESSION *sess,
   }
 
   segment=_createSigTail(sess, cryptParams, sigTailNum, keyDescr, ctrlref,
-                         (const uint8_t*) GWEN_Buffer_GetStart(sigBuf),
+                         (const uint8_t *) GWEN_Buffer_GetStart(sigBuf),
                          GWEN_Buffer_GetUsedBytes(sigBuf));
   if (segment==NULL) {
     DBG_INFO(AQFINTS_LOGDOMAIN, "here");
@@ -144,12 +145,12 @@ int AQFINTS_Session_SignSegmentHbci(AQFINTS_SESSION *sess,
 
 
 int _signSegments(AQFINTS_SESSION *sess,
-		  const AQFINTS_CRYPTPARAMS *cryptParams,
-		  const AQFINTS_KEYDESCR *keyDescr,
-		  AQFINTS_SEGMENT *segSigHead,
-		  AQFINTS_SEGMENT *segFirstToSign,
-		  AQFINTS_SEGMENT *segLastToSign,
-		  GWEN_BUFFER *sigBuf)
+                  const AQFINTS_CRYPTPARAMS *cryptParams,
+                  const AQFINTS_KEYDESCR *keyDescr,
+                  AQFINTS_SEGMENT *segSigHead,
+                  AQFINTS_SEGMENT *segFirstToSign,
+                  AQFINTS_SEGMENT *segLastToSign,
+                  GWEN_BUFFER *sigBuf)
 {
   uint32_t signLen;
   int rv;
@@ -165,10 +166,10 @@ int _signSegments(AQFINTS_SESSION *sess,
   signLen=GWEN_Buffer_GetMaxUnsegmentedWrite(sigBuf);
   GWEN_Buffer_AllocRoom(sigBuf, 256);
   rv=AQFINTS_Session_Sign(sess, keyDescr, cryptParams,
-                          (const uint8_t*) GWEN_Buffer_GetStart(hashSrcBuffer),
-			  GWEN_Buffer_GetUsedBytes(hashSrcBuffer),
-			  (uint8_t *)GWEN_Buffer_GetStart(sigBuf),
-			  &signLen);
+                          (const uint8_t *) GWEN_Buffer_GetStart(hashSrcBuffer),
+                          GWEN_Buffer_GetUsedBytes(hashSrcBuffer),
+                          (uint8_t *)GWEN_Buffer_GetStart(sigBuf),
+                          &signLen);
   if (rv<0) {
     DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(hashSrcBuffer);
@@ -231,8 +232,8 @@ AQFINTS_SEGMENT *_createSigHead(AQFINTS_SESSION *sess,
 
 
 AQFINTS_SEGMENT *_createSigTail(AQFINTS_SESSION *sess,
-				const AQFINTS_CRYPTPARAMS *cryptParams,
-				int segNum,
+                                const AQFINTS_CRYPTPARAMS *cryptParams,
+                                int segNum,
                                 const AQFINTS_KEYDESCR *keyDescr,
                                 const char *ctrlRef,
                                 const uint8_t *ptrSignature, uint32_t lenSignature)
@@ -308,8 +309,8 @@ int _createCtrlRef(char *ptrBuf, size_t lenBuf)
 
 
 int _prepareSignSeg(AQFINTS_SESSION *sess,
-		    const AQFINTS_CRYPTPARAMS *cryptParams,
-		    const AQFINTS_KEYDESCR *keyDescr,
+                    const AQFINTS_CRYPTPARAMS *cryptParams,
+                    const AQFINTS_KEYDESCR *keyDescr,
                     const char *ctrlRef,
                     GWEN_DB_NODE *cfg)
 {

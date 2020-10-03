@@ -72,7 +72,7 @@ void _openLogger(const char *sLogdomainId, const char *sLogdomainLabel, const ch
   s=getenv(sEnvName);
   if (s && *s) {
     GWEN_LOGGER_LEVEL ll;
-  
+
     ll=GWEN_Logger_Name2Level(s);
     GWEN_Logger_SetLevel(sLogdomainId, ll);
   }

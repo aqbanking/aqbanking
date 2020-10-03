@@ -168,10 +168,12 @@ int _decryptMessage(AQFINTS_SESSION *sess,
     int rv;
     const AQFINTS_CRYPTPARAMS *cryptParams;
 
-    DBG_INFO(AQFINTS_LOGDOMAIN, "Selected security profile is \"%s\" (version %d)", securityProfileName, securityProfileVersion);
+    DBG_INFO(AQFINTS_LOGDOMAIN, "Selected security profile is \"%s\" (version %d)", securityProfileName,
+             securityProfileVersion);
     cryptParams=AQFINTS_CryptParams_GetParamsForSecurityProfile(securityProfileName, securityProfileVersion);
     if (cryptParams==NULL) {
-      DBG_INFO(AQFINTS_LOGDOMAIN, "Security profile \"%s\" (version %d) no found", securityProfileName, securityProfileVersion);
+      DBG_INFO(AQFINTS_LOGDOMAIN, "Security profile \"%s\" (version %d) no found", securityProfileName,
+               securityProfileVersion);
       AQFINTS_KeyDescr_free(keyDescr);
       return GWEN_ERROR_GENERIC;
     }

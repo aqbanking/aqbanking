@@ -25,7 +25,7 @@
  */
 
 
-static AQFINTS_MESSAGE* GWENHYWFAR_CB _exchangeMessages(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *messageOut);
+static AQFINTS_MESSAGE *GWENHYWFAR_CB _exchangeMessages(AQFINTS_SESSION *sess, AQFINTS_MESSAGE *messageOut);
 
 
 
