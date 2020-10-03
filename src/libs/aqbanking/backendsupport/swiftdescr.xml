@@ -4,6 +4,12 @@
   <type id="AB_SWIFT_DESCR" type="pointer">
     <descr>
       This class holds a SWIFT document descriptor like "pain.001.002.03".
+      Such a descriptor can be parsed into an object of this class via AB_SwiftDescr_FromString(). The element of the
+      string given above will go into the following fields:
+      pain -&gt; family
+      001 -&gt; version1
+      002 -&gt; version2
+      03 -&gt; version3
     </descr>
 
     <lang id="c">
@@ -23,6 +29,8 @@
         <header type="sys" loc="pre">aqbanking/error.h</header>
         <header type="sys" loc="pre">gwenhywfar/types.h</header>
         <header type="sys" loc="pre">gwenhywfar/text.h</header>
+        <header type="sys" loc="pre">gwenhywfar/stringlist.h</header>
+        <header type="sys" loc="pre">ctype.h</header>
       </headers>
 
 
@@ -171,6 +179,14 @@
           <typeFlagsMask>with_list1</typeFlagsMask>
           <typeFlagsValue>with_list1</typeFlagsValue>
           <content>
+             /** \n
+              * Find first SWIFT descriptor in a list by given criteria.                                    \n
+              * @param dl list of descriptors to search in                                                  \n
+              * @param wantedFamily descriptor family, e.g. "pain" or "camt" (wildcards and jokers allowed) \n
+              * @param wantedVersion1 first part of the version to match (0 matches all)                    \n
+              * @param wantedVersion2 second part of the version to match (0 matches all)                   \n
+              * @param wantedVersion3 third part of the version to match (0 matches all)                    \n
+              */                                                                                            \n
              $(api) $(struct_type) *$(struct_prefix)_List_FindFirst(const $(struct_type)_LIST *dl, 
                                                                     const char *wantedFamily,
                                                                     int wantedVersion1, int wantedVersion2, int wantedVersion3);
@@ -203,6 +219,14 @@
           <typeFlagsMask>with_list1</typeFlagsMask>
           <typeFlagsValue>with_list1</typeFlagsValue>
           <content>
+             /** \n
+              * Find next SWIFT descriptor in a list by given criteria.                                     \n
+              * @param d last descriptor checked (i.e. search in the following descriptors)                 \n
+              * @param wantedFamily descriptor family, e.g. "pain" or "camt" (wildcards and jokers allowed) \n
+              * @param wantedVersion1 first part of the version to match (0 matches all)                    \n
+              * @param wantedVersion2 second part of the version to match (0 matches all)                   \n
+              * @param wantedVersion3 third part of the version to match (0 matches all)                    \n
+              */                                                                                            \n
              $(api) $(struct_type) *$(struct_prefix)_List_FindNext($(struct_type) *d, 
                                                                    const char *wantedFamily,
                                                                    int wantedVersion1, int wantedVersion2, int wantedVersion3);
@@ -223,6 +247,111 @@
                  return NULL;
                }
                return $(struct_prefix)_List__FindInternal(d, wantedFamily, wantedVersion1, wantedVersion2, wantedVersion3);
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="public">
+          <content>
+             /** \n
+             * Create a SWIFT descriptor from a given string. \n
+             *
+             * Example strings are "pain.001.002.03" or "camt_054_001_02". \n
+             * @return created descriptor (NULL for invalid string) \n
+             */ \n
+             $(api) $(struct_type) *$(struct_prefix)_FromString(const char *s);
+          </content>
+        </inline>
+
+
+        <inline loc="code" access="public">
+          <content>
+             $(struct_type) *$(struct_prefix)_FromString(const char *inputName) {
+               GWEN_STRINGLIST *slist;
+             
+               /* add delimiters here if needed */
+               slist=GWEN_StringList_fromString(inputName, "._- \\t", 0);
+               if (slist==NULL) {
+                 DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not parse string [%s] into list", inputName);
+                 return NULL;
+               }
+               if (GWEN_StringList_Count(slist)&gt;=3) {
+                 GWEN_STRINGLISTENTRY *se;
+                 const char *lastNonDigitString=NULL;
+                 int num1=0;
+                 int num2=0;
+                 int num3=0;
+             
+                 /* sample last non-number and 3 numbers (e.g. pain 001 001 03) */
+                 se=GWEN_StringList_FirstEntry(slist);
+                 while(se) {
+                   const char *s;
+             
+                   s=GWEN_StringListEntry_Data(se);
+                   if (!isdigit(*s)) {
+                     /* this is a string, store it (last string before number should be "pain" or "camt" */
+                     lastNonDigitString=s;
+                   }
+                   else {
+                     /* found a number */
+                     break;
+                   }
+                   se=GWEN_StringListEntry_Next(se);
+                 }
+             
+                 if (se) {
+                   const char *s;
+             
+                   s=GWEN_StringListEntry_Data(se);
+                   if (1==sscanf(s, "%d", &amp;num1)) {
+                     se=GWEN_StringListEntry_Next(se);
+                     if (se) {
+                       s=GWEN_StringListEntry_Data(se);
+                       if (1==sscanf(s, "%d", &amp;num2)) {
+                         se=GWEN_StringListEntry_Next(se);
+                         if (se) {
+                           s=GWEN_StringListEntry_Data(se);
+                           if (1==sscanf(s, "%d", &amp;num3)) {
+                             $(struct_type) *d;
+                             
+                             d=$(struct_prefix)_new();
+                             $(struct_prefix)_SetFamily(d, lastNonDigitString);
+                             $(struct_prefix)_SetVersion1(d, num1);
+                             $(struct_prefix)_SetVersion2(d, num2);
+                             $(struct_prefix)_SetVersion3(d, num3);
+                             GWEN_StringList_free(slist);
+                             return d;
+                           } /* if num3 */
+                           else {
+                             DBG_ERROR(AQBANKING_LOGDOMAIN, "String for num3 [%s] is not a number", s);
+                           }
+                         } /* if se */
+                         else {
+                           DBG_ERROR(AQBANKING_LOGDOMAIN, "No string left for num3 (source: [%s])", inputName);
+                         }
+                       } /* if num2 */
+                       else {
+                         DBG_ERROR(AQBANKING_LOGDOMAIN, "String for num2 [%s] is not a number", s);
+                       }
+                     } /* if se */
+                     else {
+                       DBG_ERROR(AQBANKING_LOGDOMAIN, "No string left for num2 (source: [%s])", inputName);
+                     }
+                   } /* if num1 */
+                   else {
+                     DBG_ERROR(AQBANKING_LOGDOMAIN, "String for num1 [%s] is not a number", s);
+                   }
+                 } /* if se */
+                 else {
+                   DBG_ERROR(AQBANKING_LOGDOMAIN, "No string left for num1 (source: [%s])", inputName);
+                 }
+               } /* if 3 or more strings */
+               else {
+                 DBG_ERROR(AQBANKING_LOGDOMAIN, "Too few strings in list  (source: [%s])", inputName);
+               }
+               GWEN_StringList_free(slist);
+               return NULL;
              }
           </content>
         </inline>
@@ -285,6 +414,30 @@
         <preset>0</preset>
         <access>public</access>
         <flags>with_hash</flags>
+      </member>
+
+      <member name="alias1" type="char_ptr" maxlen="32" >
+        <descr>
+          Alias string for the given descriptor. This can be used to store additional names with descriptor
+          (e.g. when searching for a special descriptor by a given name you can store the name of the originally
+          searched name here).
+        </descr>
+        <access>public</access>
+        <flags>own with_hash with_getbyname</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="alias2" type="char_ptr" maxlen="32" >
+        <descr>
+          Another alias string for the given descriptor. This can be used to store additional names with descriptor
+          (e.g. when searching for a special descriptor by a given name you can store the name of the originally
+          searched name here).
+        </descr>
+        <access>public</access>
+        <flags>own with_hash with_getbyname</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
       </member>
 
 
