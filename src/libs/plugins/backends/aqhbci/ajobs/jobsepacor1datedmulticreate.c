@@ -195,6 +195,8 @@ int AH_Job_SepaCor1DebitDatedMultiCreate_Prepare(AH_JOB *j)
     t=AB_Transaction_List_Next(t);
   }
 
+  /* TODO: use AH_Job_GetSwiftDescriptorsSupportedByUser(j, "pain", 8); */
+
   /* find the right profile to produce pain.008 messages */
   profile=AH_Job_FindSepaProfile(j, "008*", AH_User_GetSepaDebitNoteProfile(AH_Job_GetUser(j)));
   if (!profile) {

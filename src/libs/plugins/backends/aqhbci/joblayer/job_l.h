@@ -54,6 +54,7 @@ void AH_Job_List2_FreeAll(AH_JOB_LIST2 *jl);
 #include <aqhbci/aqhbci.h>
 
 #include <aqbanking/backendsupport/user.h>
+#include <aqbanking/backendsupport/swiftdescr.h>
 #include <aqbanking/types/message.h>
 #include <aqbanking/banking_be.h>
 
@@ -397,6 +398,33 @@ AH_JOB *AH_Job_List_GetById(AH_JOB_LIST *jl, uint32_t id);
 
 
 void AH_Job_SetStatusOnCommands(AH_JOB *j, AB_TRANSACTION_STATUS status);
+
+
+/**
+ * Return SWIFT descriptors which are supported by both the job's BPD/UPD and the XML importer.
+ *
+ * @return list of supported descriptiors
+ * @param j job object
+ * @param paramDbGroupName db group within the job params db (below @ref AH_Job_GetParams)
+ * @param paramDbVarName db variable within the job params db (below @ref AH_Job_GetParams)
+ * @param family document family (e.g. "camt", "pain")
+ * @param version1 major version (as "001" in pain.001.002.03). Please don't use leading zeros here!!
+ */
+AB_SWIFT_DESCR_LIST *AH_Job_GetSwiftDescriptorsSupportedByJob(AH_JOB *j,
+                                                              const char *paramDbGroupName,
+                                                              const char *paramDbVarName,
+                                                              const char *family,
+                                                              int version1);
+
+/**
+ * Return SWIFT descriptors which are supported by both the user and the XML importer.
+ *
+ * @return list of supported descriptiors
+ * @param j job object
+ * @param family document family (e.g. "camt", "pain")
+ * @param version1 major version (as "001" in pain.001.002.03). Please don't use leading zeros here!!
+ */
+AB_SWIFT_DESCR_LIST *AH_Job_GetSwiftDescriptorsSupportedByUser(AH_JOB *j, const char *family, int version1);
 
 
 #endif /* AH_JOB_L_H */

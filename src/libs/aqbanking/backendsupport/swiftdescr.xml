@@ -269,87 +269,81 @@
           <content>
              $(struct_type) *$(struct_prefix)_FromString(const char *inputName) {
                GWEN_STRINGLIST *slist;
+               int count;
              
                /* add delimiters here if needed */
-               slist=GWEN_StringList_fromString(inputName, "._- \\t", 0);
+               slist=GWEN_StringList_fromString(inputName, ":._- \\t", 0);
                if (slist==NULL) {
                  DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not parse string [%s] into list", inputName);
                  return NULL;
                }
-               if (GWEN_StringList_Count(slist)&gt;=3) {
-                 GWEN_STRINGLISTENTRY *se;
-                 const char *lastNonDigitString=NULL;
-                 int num1=0;
-                 int num2=0;
-                 int num3=0;
-             
-                 /* sample last non-number and 3 numbers (e.g. pain 001 001 03) */
-                 se=GWEN_StringList_FirstEntry(slist);
-                 while(se) {
+
+               count=GWEN_StringList_Count(slist);
+               if (count&gt;2) {
+                 int i;
+                 
+                 for (i=count-1; i&gt;=0; i--) {
                    const char *s;
-             
-                   s=GWEN_StringListEntry_Data(se);
-                   if (!isdigit(*s)) {
-                     /* this is a string, store it (last string before number should be "pain" or "camt" */
-                     lastNonDigitString=s;
-                   }
-                   else {
-                     /* found a number */
-                     break;
-                   }
-                   se=GWEN_StringListEntry_Next(se);
-                 }
-             
-                 if (se) {
-                   const char *s;
-             
-                   s=GWEN_StringListEntry_Data(se);
-                   if (1==sscanf(s, "%d", &amp;num1)) {
-                     se=GWEN_StringListEntry_Next(se);
-                     if (se) {
-                       s=GWEN_StringListEntry_Data(se);
-                       if (1==sscanf(s, "%d", &amp;num2)) {
-                         se=GWEN_StringListEntry_Next(se);
-                         if (se) {
-                           s=GWEN_StringListEntry_Data(se);
-                           if (1==sscanf(s, "%d", &amp;num3)) {
-                             $(struct_type) *d;
-                             
-                             d=$(struct_prefix)_new();
-                             $(struct_prefix)_SetFamily(d, lastNonDigitString);
-                             $(struct_prefix)_SetVersion1(d, num1);
-                             $(struct_prefix)_SetVersion2(d, num2);
-                             $(struct_prefix)_SetVersion3(d, num3);
-                             GWEN_StringList_free(slist);
-                             return d;
-                           } /* if num3 */
-                           else {
-                             DBG_ERROR(AQBANKING_LOGDOMAIN, "String for num3 [%s] is not a number", s);
-                           }
-                         } /* if se */
-                         else {
-                           DBG_ERROR(AQBANKING_LOGDOMAIN, "No string left for num3 (source: [%s])", inputName);
-                         }
-                       } /* if num2 */
-                       else {
-                         DBG_ERROR(AQBANKING_LOGDOMAIN, "String for num2 [%s] is not a number", s);
-                       }
-                     } /* if se */
-                     else {
-                       DBG_ERROR(AQBANKING_LOGDOMAIN, "No string left for num2 (source: [%s])", inputName);
+                   
+                   s=GWEN_StringList_StringAt(slist, i);
+                   DBG_DEBUG(AQBANKING_LOGDOMAIN, "Handling string[%d of %d]: \"%s\"", i, count, s?s:"&lt;empty&gt;");
+                   if (s &amp;&amp; (strcasecmp(s, "camt")==0 || strcasecmp(s, "pain")==0)) {
+                     if ((count-i)&lt;4) {
+                       DBG_ERROR(AQBANKING_LOGDOMAIN, "Too few entries left in string list (source: [%s])", inputName);
+                       break;
                      }
-                   } /* if num1 */
-                   else {
-                     DBG_ERROR(AQBANKING_LOGDOMAIN, "String for num1 [%s] is not a number", s);
-                   }
-                 } /* if se */
-                 else {
-                   DBG_ERROR(AQBANKING_LOGDOMAIN, "No string left for num1 (source: [%s])", inputName);
-                 }
-               } /* if 3 or more strings */
+                     else {
+                       const char *family;
+                       int version1;
+                       int version2;
+                       int version3;
+                       $(struct_type) *d;
+                       
+                       family=s;
+                       i++;
+                       
+                       s=GWEN_StringList_StringAt(slist, i);
+                       if (!(s &amp;&amp; *s &amp;&amp; 1==sscanf(s, "%d", &amp;version1))) {
+                         DBG_ERROR(AQBANKING_LOGDOMAIN, "No valid string for version1 [%s] ", s?s:"&lt;empty&gt;");
+                         GWEN_StringList_free(slist);
+                         return NULL;
+                       }
+                       i++;
+
+                       s=GWEN_StringList_StringAt(slist, i);
+                       if (!(s &amp;&amp; *s &amp;&amp; 1==sscanf(s, "%d", &amp;version2))) {
+                         DBG_ERROR(AQBANKING_LOGDOMAIN, "No valid string for version2 [%s] ", s?s:"&lt;empty&gt;");
+                         GWEN_StringList_free(slist);
+                         return NULL;
+                       }
+                       i++;
+
+                       s=GWEN_StringList_StringAt(slist, i);
+                       if (!(s &amp;&amp; *s &amp;&amp; 1==sscanf(s, "%d", &amp;version3))) {
+                         DBG_ERROR(AQBANKING_LOGDOMAIN, "No valid string for version3 [%s] ", s?s:"&lt;empty&gt;");
+                         GWEN_StringList_free(slist);
+                         return NULL;
+                       }
+                       i++;
+
+                       DBG_INFO(AQBANKING_LOGDOMAIN, "Creating descriptor %s.%03d.%03d.%02d",
+                                family?family:"&lt;empty&gt;", version1, version2, version3);
+                       d=$(struct_prefix)_new();
+                       $(struct_prefix)_SetFamily(d, family);
+                       $(struct_prefix)_SetVersion1(d, version1);
+                       $(struct_prefix)_SetVersion2(d, version2);
+                       $(struct_prefix)_SetVersion3(d, version3);
+                       GWEN_StringList_free(slist);
+                       return d;
+                     }
+                   } /* if camt or pain */
+                 } /* for */  
+                 
+               } /* if enough entries in string list to be a valid descriptor */
                else {
-                 DBG_ERROR(AQBANKING_LOGDOMAIN, "Too few strings in list  (source: [%s])", inputName);
+                 DBG_ERROR(AQBANKING_LOGDOMAIN, "Too few entries in string list (source: [%s])", inputName);
                }
+               
                GWEN_StringList_free(slist);
                return NULL;
              }

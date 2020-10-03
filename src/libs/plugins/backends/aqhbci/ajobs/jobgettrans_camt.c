@@ -42,7 +42,6 @@ AH_JOB *AH_Job_GetTransactionsCAMT_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT 
   AH_JOB_GETTRANS_CAMT *aj;
   GWEN_DB_NODE *dbArgs;
   GWEN_DB_NODE *dbParams;
-  int i;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Trying to create CAMT job");
   j=AH_AccountJob_new("JobGetTransactionsCAMT", pro, u, account);
@@ -73,17 +72,30 @@ AH_JOB *AH_Job_GetTransactionsCAMT_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT 
 
   /*GWEN_DB_Dump(dbParams, 2); */
 
-  for (i=0; i<10; i++) {
-    const char *s;
+  {
+    AB_SWIFT_DESCR_LIST *descrList;
 
-    s=GWEN_DB_GetCharValue(dbParams, "supportedFormat", i, NULL);
-    if (s==NULL)
-      break;
-    if (GWEN_Text_ComparePattern(s, "*camt.052.001.02", 0)!=-1) { /* TODO: widen the pattern later */
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Adding CAMT format  %s", s);
-      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "SupportedFormats/format", s);
+    descrList=AH_Job_GetSwiftDescriptorsSupportedByJob(j, NULL, "supportedFormat", "camt", 52);
+    if (descrList) {
+      AB_SWIFT_DESCR *descr;
+
+      descr=AB_SwiftDescr_List_First(descrList);
+      while (descr) {
+        const char *s;
+
+        s=AB_SwiftDescr_GetAlias2(descr);
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Adding supported CAMT format [%s]", s);
+        GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "SupportedFormats/format", s);
+        descr=AB_SwiftDescr_List_Next(descr);
+      }
+      AB_SwiftDescr_List_First(descrList);
     }
-  } /* for */
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "No supported CAMT profile found, job not supported");
+      AH_Job_free(j);
+      return NULL;
+    }
+  }
 
   /* set some known arguments */
   GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "allAccounts", "N");

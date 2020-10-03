@@ -110,6 +110,8 @@ int AH_Job_SepaTransferSingle_Prepare(AH_JOB *j)
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing transfer");
 
+  /* TODO: use AH_Job_GetSwiftDescriptorsSupportedByUser(j, "pain", 1); */
+
   /* find the right profile to produce pain.001 messages */
   profile=AH_Job_FindSepaProfile(j, "001*", AH_User_GetSepaTransferProfile(AH_Job_GetUser(j)));
   if (!profile) {
