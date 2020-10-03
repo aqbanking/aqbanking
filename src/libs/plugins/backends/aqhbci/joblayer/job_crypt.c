@@ -129,11 +129,11 @@ int AH_Job_CheckSignature(AH_JOB *j, GWEN_DB_NODE *dbRsp)
                                 "security");
     if (!dbSecurity) {
       DBG_ERROR(AQHBCI_LOGDOMAIN,
-		"No security settings, should not happen");
+                "No security settings, should not happen");
       GWEN_Gui_ProgressLog(
-			   0,
-			   GWEN_LoggerLevel_Error,
-			   I18N("Response without security info (internal)"));
+        0,
+        GWEN_LoggerLevel_Error,
+        I18N("Response without security info (internal)"));
       return GWEN_ERROR_GENERIC;
     }
 
@@ -172,39 +172,39 @@ int AH_Job_CheckSignature(AH_JOB *j, GWEN_DB_NODE *dbRsp)
 
             /* check whether the user want's to accept the unsigned message */
             button=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_WARN |
-				       GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
-				       GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
-				       I18N("Security Warning"),
-				       I18N("The HBCI response of the bank has not been signed by the bank, \n"
-					    "contrary to what has been expected. This can be the case because the \n"
-					    "bank just stopped signing their HBCI responses. This error message \n"
-					    "would also occur if there were a replay attack against your computer \n"
-					    "in progress right now, which is probably quite unlikely. \n"
-					    " \n"
-					    "Please contact your bank and ask them whether their HBCI server \n"
-					    "stopped signing the HBCI responses. If the bank is concerned about \n"
-					    "your security, it should not stop signing the HBCI responses. \n"
-					    " \n"
-					    "Do you nevertheless want to accept this response this time or always?"
-					    "<html><p>"
-					    "The HBCI response of the bank has not been signed by the bank, \n"
-					    "contrary to what has been expected. This can be the case because the \n"
-					    "bank just stopped signing their HBCI responses. This error message \n"
-					    "would also occur if there were a replay attack against your computer \n"
-					    "in progress right now, which is probably quite unlikely. \n"
-					    "</p><p>"
-					    "Please contact your bank and ask them whether their HBCI server \n"
-					    "stopped signing the HBCI responses. If the bank is concerned about \n"
-					    "your security, it should not stop signing the HBCI responses. \n"
-					    "</p><p>"
-					    "Do you nevertheless want to accept this response this time or always?"
-					    "</p></html>"
-					   ),
-				       I18N("Accept this time"),
-				       I18N("Accept always"),
-				       I18N("Abort"), 0);
-	    if (button==1) {
-	      GWEN_Gui_ProgressLog(0,
+                                       GWEN_GUI_MSG_FLAGS_CONFIRM_B1 |
+                                       GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
+                                       I18N("Security Warning"),
+                                       I18N("The HBCI response of the bank has not been signed by the bank, \n"
+                                            "contrary to what has been expected. This can be the case because the \n"
+                                            "bank just stopped signing their HBCI responses. This error message \n"
+                                            "would also occur if there were a replay attack against your computer \n"
+                                            "in progress right now, which is probably quite unlikely. \n"
+                                            " \n"
+                                            "Please contact your bank and ask them whether their HBCI server \n"
+                                            "stopped signing the HBCI responses. If the bank is concerned about \n"
+                                            "your security, it should not stop signing the HBCI responses. \n"
+                                            " \n"
+                                            "Do you nevertheless want to accept this response this time or always?"
+                                            "<html><p>"
+                                            "The HBCI response of the bank has not been signed by the bank, \n"
+                                            "contrary to what has been expected. This can be the case because the \n"
+                                            "bank just stopped signing their HBCI responses. This error message \n"
+                                            "would also occur if there were a replay attack against your computer \n"
+                                            "in progress right now, which is probably quite unlikely. \n"
+                                            "</p><p>"
+                                            "Please contact your bank and ask them whether their HBCI server \n"
+                                            "stopped signing the HBCI responses. If the bank is concerned about \n"
+                                            "your security, it should not stop signing the HBCI responses. \n"
+                                            "</p><p>"
+                                            "Do you nevertheless want to accept this response this time or always?"
+                                            "</p></html>"
+                                           ),
+                                       I18N("Accept this time"),
+                                       I18N("Accept always"),
+                                       I18N("Abort"), 0);
+            if (button==1) {
+              GWEN_Gui_ProgressLog(0,
                                    GWEN_LoggerLevel_Notice,
                                    I18N("User accepts this unsigned "
                                         "response"));
@@ -254,8 +254,8 @@ int AH_Job_CheckSignature(AH_JOB *j, GWEN_DB_NODE *dbRsp)
           else if (*s!='!' && *s!='?') {
             DBG_INFO(AQHBCI_LOGDOMAIN,
                      "Signer name does not match expected name (%s!=%s), "
-		     "but we accept it anyway",
-		     s, sExpectedSigner);
+                     "but we accept it anyway",
+                     s, sExpectedSigner);
             break;
           }
         }

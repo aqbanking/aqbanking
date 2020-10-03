@@ -164,19 +164,19 @@ AB_SWIFT_DESCR_LIST *AH_Job_GetSwiftDescriptorsSupportedByUser(AH_JOB *j, const 
 
   returnDescrList=AB_SwiftDescr_List_new();
   se=GWEN_StringList_FirstEntry(userDescriptors);
-  while(se) {
+  while (se) {
     const char *s;
 
     s=GWEN_StringListEntry_Data(se);
     if (s && *s) {
       AB_SWIFT_DESCR *tmpDescr;
-  
+
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Handling user supported param [%s] (job \"%s\")", s, AH_Job_GetName(j));
       tmpDescr=AB_SwiftDescr_FromString(s);
       if (tmpDescr) {
         if (AB_SwiftDescr_Matches(tmpDescr, family, version1, 0, 0)) {
           AB_SWIFT_DESCR *descrFromList;
-  
+
           /* found a candidate */
           descrFromList=AB_SwiftDescr_List_FindFirst(descrList,
                                                      AB_SwiftDescr_GetFamily(tmpDescr),
@@ -185,7 +185,7 @@ AB_SWIFT_DESCR_LIST *AH_Job_GetSwiftDescriptorsSupportedByUser(AH_JOB *j, const 
                                                      AB_SwiftDescr_GetVersion3(tmpDescr));
           if (descrFromList) {
             AB_SWIFT_DESCR *descrCopy;
-  
+
             /* store name of selected profile */
             AB_SwiftDescr_SetAlias2(descrFromList, s);
             DBG_ERROR(AQHBCI_LOGDOMAIN,

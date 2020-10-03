@@ -156,8 +156,8 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j)
   DBG_INFO(AQHBCI_LOGDOMAIN, "Using SEPA descriptor %s and profile %s", aj->descriptor, aj->profileName);
   GWEN_Gui_ProgressLog2(0,
                         GWEN_LoggerLevel_Notice,
-			I18N("Using SEPA descriptor %s and profile %s"),
-			aj->descriptor, aj->profileName);
+                        I18N("Using SEPA descriptor %s and profile %s"),
+                        aj->descriptor, aj->profileName);
 
   dbProfile=AB_Banking_GetImExporterProfile(ab, "xml", aj->profileName);
   if (dbProfile==NULL) {
