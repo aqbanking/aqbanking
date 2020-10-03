@@ -44,6 +44,8 @@ GWEN_INHERIT(AH_JOB, AH_JOB_TRANSFERBASE);
 
 
 static void _replaceCtrlCharsInPurpose(AB_TRANSACTION *t);
+static void _setProfileName(AH_JOB *j, const char *s);
+static void _setDescriptor(AH_JOB *j, const char *s);
 
 
 
@@ -90,6 +92,8 @@ void GWENHYWFAR_CB AH_Job_TransferBase_FreeData(void *bp, void *p)
   AH_JOB_TRANSFERBASE *aj;
 
   aj=(AH_JOB_TRANSFERBASE *)p;
+  free(aj->localInstrumentationCode);
+  free(aj->profileName);
   free(aj->fiid);
 
   GWEN_FREE_OBJECT(aj);
@@ -112,15 +116,15 @@ const char *AH_Job_TransferBase_GetFiid(const AH_JOB *j)
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
+int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j)
 {
   AH_JOB_TRANSFERBASE *aj;
   GWEN_DB_NODE *dbArgs;
   AB_BANKING *ab;
-  const char *descriptor;
   const AB_TRANSACTION *t;
   int rv;
   AB_ACCOUNT *a;
+  GWEN_DB_NODE *dbProfile;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Exporting transaction");
 
@@ -137,14 +141,30 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
   a=AH_AccountJob_GetAccount(j);
   assert(a);
 
-  descriptor=GWEN_DB_GetCharValue(profile, "descriptor", 0, 0);
-  assert(descriptor);
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Using SEPA descriptor %s and profile %s",
-           descriptor, GWEN_DB_GetCharValue(profile, "name", 0, 0));
+  if (aj->profileName==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No profile set. SNH!!");
+    return GWEN_ERROR_INTERNAL;
+  }
+
+  if (aj->descriptor==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No descriptor set. SNH!!");
+    return GWEN_ERROR_INTERNAL;
+  }
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Using SEPA descriptor %s and profile %s", aj->descriptor, aj->profileName);
   GWEN_Gui_ProgressLog2(0,
                         GWEN_LoggerLevel_Notice,
-                        I18N("Using SEPA descriptor %s and profile %s"),
-                        descriptor, GWEN_DB_GetCharValue(profile, "name", 0, 0));
+			I18N("Using SEPA descriptor %s and profile %s"),
+			aj->descriptor, aj->profileName);
+
+  dbProfile=AB_Banking_GetImExporterProfile(ab, "xml", aj->profileName);
+  if (dbProfile==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Profile \"%s\" not found.", aj->profileName);
+    return GWEN_ERROR_INTERNAL;
+  }
+
+  if (aj->localInstrumentationCode)
+    GWEN_DB_SetCharValue(dbProfile, GWEN_DB_FLAGS_OVERWRITE_VARS, "LocalInstrumentSEPACode", aj->localInstrumentationCode);
 
   /* set data in job */
   t=AH_Job_GetFirstTransfer(j);
@@ -164,23 +184,26 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j, GWEN_DB_NODE *profile)
     }
 
     dbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    rv=AB_Banking_ExportToBuffer(ab, "xml", ioc, dbuf, profile);
+    rv=AB_Banking_ExportToBuffer(ab, "xml", ioc, dbuf, dbProfile);
     AB_ImExporterContext_free(ioc);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(dbuf);
+      GWEN_DB_Group_free(dbProfile);
       return rv;
     }
 
     /* store descriptor */
-    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "descriptor", descriptor);
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "descriptor", aj->descriptor);
     /* store transfer */
     GWEN_DB_SetBinValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "transfer", GWEN_Buffer_GetStart(dbuf),
                         GWEN_Buffer_GetUsedBytes(dbuf));
     GWEN_Buffer_free(dbuf);
+    GWEN_DB_Group_free(dbProfile);
   }
   else {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
+    GWEN_DB_Group_free(dbProfile);
     return GWEN_ERROR_INTERNAL;
   }
 
@@ -986,6 +1009,97 @@ int AH_Job_TransferBase_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 
   return 0;
 }
+
+
+
+int AH_Job_TransferBase_SelectPainProfile(AH_JOB *j, int version1)
+{
+  GWEN_DB_NODE *dbArgs;
+  AB_SWIFT_DESCR_LIST *descrList;
+
+  /* get arguments DB */
+  dbArgs=AH_Job_GetArguments(j);
+  assert(dbArgs);
+
+  /* check for "pain.VERSION1.*" */
+  descrList=AH_Job_GetSwiftDescriptorsSupportedByUser(j, "pain", version1);
+  if (descrList) {
+    AB_SWIFT_DESCR *descr;
+    const char *s;
+
+    descr=AB_SwiftDescr_List_First(descrList);
+    assert(descr);
+
+    s=AB_SwiftDescr_GetAlias2(descr);
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Selecting PAIN format [%s]", s);
+    _setDescriptor(j, s);
+    _setProfileName(j, AB_SwiftDescr_GetAlias1(descr));
+
+    AB_SwiftDescr_List_free(descrList);
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No supported PAIN profile found, job not supported");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  return 0;
+}
+
+
+
+void AH_Job_TransferBase_SetLocalInstrumentationCode(AH_JOB *j, const char *s)
+{
+  AH_JOB_TRANSFERBASE *aj;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j);
+  assert(aj);
+
+  if (aj->localInstrumentationCode)
+    free(aj->localInstrumentationCode);
+  if (s)
+    aj->localInstrumentationCode=strdup(s);
+  else
+    aj->localInstrumentationCode=NULL;
+}
+
+
+
+void _setProfileName(AH_JOB *j, const char *s)
+{
+  AH_JOB_TRANSFERBASE *aj;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j);
+  assert(aj);
+
+  if (aj->profileName)
+    free(aj->profileName);
+  if (s)
+    aj->profileName=strdup(s);
+  else
+    aj->profileName=NULL;
+}
+
+
+
+void _setDescriptor(AH_JOB *j, const char *s)
+{
+  AH_JOB_TRANSFERBASE *aj;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j);
+  assert(aj);
+
+  if (aj->descriptor)
+    free(aj->descriptor);
+  if (s)
+    aj->descriptor=strdup(s);
+  else
+    aj->descriptor=NULL;
+}
+
+
 
 
 

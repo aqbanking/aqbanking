@@ -84,7 +84,7 @@ int AH_Job_SepaStandingOrderGet_Prepare(AH_JOB *j)
       GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "SupportedSepaFormats/Format", s);
       descr=AB_SwiftDescr_List_Next(descr);
     }
-    AB_SwiftDescr_List_First(descrList);
+    AB_SwiftDescr_List_free(descrList);
   }
   else {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No supported PAIN profile found, job not supported");
