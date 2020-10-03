@@ -246,7 +246,7 @@ format:
 	    -s2 \
 	    --min-conditional-indent=0 \
 	    --indent-labels \
-	    --max-continuation-indent=80 \
+	    --max-continuation-indent=100 \
 	    --pad-comma \
 	    --pad-header \
 	    --unpad-paren \
