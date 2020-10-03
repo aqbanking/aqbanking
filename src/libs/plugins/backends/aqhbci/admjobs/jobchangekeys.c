@@ -13,6 +13,7 @@
 #include "jobchangekeys_p.h"
 #include "../banking/user_l.h"
 #include "../banking/provider_l.h"
+#include "aqhbci/joblayer/job_crypt.h"
 #include <gwenhywfar/ctplugin.h>
 #include <gwenhywfar/ctfile_be.h>
 

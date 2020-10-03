@@ -15,6 +15,8 @@ noinst_HEADERS=\
   job_commit_account.h \
   job_commit_bpd.h \
   job_commit_key.h \
+  job_crypt.h \
+  job_swift.h \
   jobqueue_l.h \
   jobqueue_p.h \
   result_l.h \
@@ -29,6 +31,8 @@ libhbcijob_la_SOURCES=\
   job_commit_account.c \
   job_commit_bpd.c \
   job_commit_key.c \
+  job_crypt.c \
+  job_swift.c \
   jobqueue.c \
   result.c
 

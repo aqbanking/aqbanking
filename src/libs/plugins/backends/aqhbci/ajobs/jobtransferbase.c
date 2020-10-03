@@ -17,6 +17,8 @@
 #include "aqhbci_l.h"
 #include "accountjob_l.h"
 #include "job_l.h"
+#include "aqhbci/joblayer/job_swift.h"
+#include "aqhbci/joblayer/job_crypt.h"
 #include "provider_l.h"
 #include "hhd_l.h"
 
