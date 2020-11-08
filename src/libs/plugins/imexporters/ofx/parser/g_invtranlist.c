@@ -1,6 +1,4 @@
 /***************************************************************************
- $RCSfile$
- -------------------
  begin       : Mon Jan 07 2008
  copyright   : (C) 2008 by Martin Preuss
  email       : martin@libchipcard.de
@@ -30,6 +28,7 @@
 #include "g_stmtrn_l.h"
 #include "g_buymf_l.h"
 #include "g_reinvest_l.h"
+#include "g_banktran_l.h"
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
@@ -131,7 +130,7 @@ int AIO_OfxGroup_INVTRANLIST_StartTag(AIO_OFX_GROUP *g,
   else if (strcasecmp(tagName, "INCOME")==0)
     gNew=AIO_OfxGroup_INCOME_new(tagName, g, ctx);
   else if (strcasecmp(tagName, "INVBANKTRAN")==0)
-    gNew=AIO_OfxGroup_STMTRN_new(tagName, g, ctx);
+    gNew=AIO_OfxGroup_BANKTRAN_new(tagName, g, ctx);
   else if (strcasecmp(tagName, "BUYMF")==0 ||
            strcasecmp(tagName, "SELLMF")==0)
     gNew=AIO_OfxGroup_BUYMF_new(tagName, g, ctx);
@@ -203,7 +202,7 @@ int AIO_OfxGroup_INVTRANLIST_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg)
   AIO_OFX_GROUP_INVTRANLIST *xg;
   const char *s;
   GWEN_XML_CONTEXT *ctx;
-  AB_TRANSACTION *t;
+  AB_TRANSACTION *t=NULL;
 
   /*First connect to the data list. Throw a hissy if either the group object or the inherited group object is invalid*/
 
@@ -219,18 +218,39 @@ int AIO_OfxGroup_INVTRANLIST_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg)
    and push it into the transaction list.*/
 
   s=AIO_OfxGroup_GetGroupName(sg);
-  if (strcasecmp(s, "BUYSTOCK")==0 ||
-      strcasecmp(s, "SELLSTOCK")==0)
+  if (strcasecmp(s, "BUYSTOCK")==0) {
     t=AIO_OfxGroup_BUYSTOCK_TakeTransaction(sg);
-  else if (strcasecmp(s, "INCOME")==0)
+    AB_Transaction_SetType(t, AB_Transaction_TypeBrokerage);
+    AB_Transaction_SetSubType(t, AB_Transaction_SubTypeBuy);
+  }
+  else if (strcasecmp(s, "SELLSTOCK")==0) {
+    t=AIO_OfxGroup_BUYSTOCK_TakeTransaction(sg);
+    AB_Transaction_SetType(t, AB_Transaction_TypeBrokerage);
+    AB_Transaction_SetSubType(t, AB_Transaction_SubTypeSell);
+  }
+  else if (strcasecmp(s, "INCOME")==0) {
     t=AIO_OfxGroup_INCOME_TakeTransaction(sg);
-  else if (strcasecmp(s, "INVBANKTRAN")==0)
-    t=AIO_OfxGroup_STMTRN_TakeTransaction(sg);
-  else if (strcasecmp(s, "BUYMF")==0 ||
-           strcasecmp(s, "SELLMF")==0)
+    AB_Transaction_SetType(t, AB_Transaction_TypeBrokerage);
+  }
+  else if (strcasecmp(s, "INVBANKTRAN")==0) {
+    t=AIO_OfxGroup_BANKTRAN_TakeTransaction(sg);
+    AB_Transaction_SetType(t, AB_Transaction_TypeStatement);
+  }
+  else if (strcasecmp(s, "BUYMF")==0) {
     t=AIO_OfxGroup_BUYMF_TakeTransaction(sg);
-  else if (strcasecmp(s, "REINVEST")==0)
+    AB_Transaction_SetType(t, AB_Transaction_TypeBrokerage);
+    AB_Transaction_SetSubType(t, AB_Transaction_SubTypeBuy);
+  }
+  else if (strcasecmp(s, "SELLMF")==0) {
+    t=AIO_OfxGroup_BUYMF_TakeTransaction(sg);
+    AB_Transaction_SetType(t, AB_Transaction_TypeBrokerage);
+    AB_Transaction_SetSubType(t, AB_Transaction_SubTypeSell);
+  }
+  else if (strcasecmp(s, "REINVEST")==0) {
     t=AIO_OfxGroup_REINVEST_TakeTransaction(sg);
+    AB_Transaction_SetType(t, AB_Transaction_TypeBrokerage);
+    AB_Transaction_SetSubType(t, AB_Transaction_SubTypeReinvest);
+  }
   else
     return 0;
 

@@ -213,7 +213,6 @@ AB_TRANSACTION *AIO_OfxGroup_SECID_TakeData(const AIO_OFX_GROUP *g)
 
   t=xg->transaction;
   xg->transaction=NULL;
-  free(xg->transaction);
 
   return t;
 }

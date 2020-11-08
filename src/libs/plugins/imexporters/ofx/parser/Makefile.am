@@ -16,6 +16,7 @@ libofxparser_la_SOURCES=\
  g_bankacc.c \
  g_bankacctinfo.c \
  g_bankmsgsrsv1.c \
+ g_banktran.c \
  g_banktranlist.c \
  g_buymf.c \
  g_buystock.c \
@@ -61,6 +62,7 @@ noinst_HEADERS=\
  g_bankacc_l.h g_bankacc_p.h \
  g_bankacctinfo_l.h g_bankacctinfo_p.h \
  g_bankmsgsrsv1_l.h g_bankmsgsrsv1_p.h \
+ g_banktran_l.h g_banktran_p.h \
  g_banktranlist_l.h g_banktranlist_p.h \
  g_buymf_l.h g_buymf_p.h \
  g_buystock_l.h g_buystock_p.h \

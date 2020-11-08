@@ -180,6 +180,7 @@ int AIO_OfxGroup_BUYMF_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg)
     t=AIO_OfxGroup_INVBUY_TakeTransaction(sg);
     if (t) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Adding transaction");
+      free(xg->transaction);
       xg->transaction=t;
       /*TODO*/
     }
@@ -201,7 +202,6 @@ AB_TRANSACTION *AIO_OfxGroup_BUYMF_TakeTransaction(const AIO_OFX_GROUP *g)
 
   t=xg->transaction;
   xg->transaction=NULL;
-  free(xg->transaction);
 
   return t;
 }

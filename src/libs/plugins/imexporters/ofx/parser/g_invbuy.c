@@ -247,14 +247,9 @@ int AIO_OfxGroup_INVBUY_EndSubGroup(AIO_OFX_GROUP *g, AIO_OFX_GROUP *sg)
     }
   }
   else if (strcasecmp(s, "SECID")==0) {
-    AB_TRANSACTION *t;
-
-    t=AIO_OfxGroup_SECID_TakeData(sg);
-    if (t) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Adding data");
-      AB_Transaction_SetUnitId(xg->transaction, AB_Transaction_GetUnitId(t));
-      AB_Transaction_SetUnitIdNameSpace(xg->transaction, AB_Transaction_GetUnitIdNameSpace(t));
-    }
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Adding data");
+    AB_Transaction_SetUnitId(xg->transaction, AIO_OfxGroup_SECID_GetUniqueId(sg));
+    AB_Transaction_SetUnitIdNameSpace(xg->transaction, AIO_OfxGroup_SECID_GetNameSpace(sg));
   }
   else {
     DBG_INFO(AQBANKING_LOGDOMAIN,
@@ -277,7 +272,6 @@ AB_TRANSACTION *AIO_OfxGroup_INVBUY_TakeTransaction(const AIO_OFX_GROUP *g)
 
   t=xg->transaction;
   xg->transaction=NULL;
-  free(xg->transaction);
 
   return t;
 }
