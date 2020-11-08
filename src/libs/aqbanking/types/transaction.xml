@@ -795,6 +795,7 @@
         <item name="debitNote"/>
         <item name="standingOrder"/>
         <item name="internalTransfer"/>
+        <item name="brokerage"/>
 
         <!-- double entry bookkeeping -->
         <item name="transaction"         value="2048"/>
