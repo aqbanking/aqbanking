@@ -1527,7 +1527,7 @@ int AH_User_InputPin(AB_USER *u,
   if (bi)
     bn=AB_BankInfo_GetBankName(bi);
   if (!bn)
-    AB_User_GetBankCode(u);
+    bn=AB_User_GetBankCode(u);
 
   buffer[0]=0;
   buffer[sizeof(buffer)-1]=0;
