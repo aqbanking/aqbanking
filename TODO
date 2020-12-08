@@ -1,5 +1,9 @@
 Next:
 =====
+- HBCI:
+  - show name and number of segment a result segment refers to in log messages
+  - check BPD "StoreDays" for segment HKKAZ
+
 - AqBanking
   - let AB_ImExporterAccountInfo_List_Find() check account type etc as well
 
