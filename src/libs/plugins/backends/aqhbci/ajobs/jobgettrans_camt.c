@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Sat Dec 15 2018
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2020 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -34,6 +34,22 @@
 
 GWEN_INHERIT(AH_JOB, AH_JOB_GETTRANS_CAMT);
 
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static int _readBooked(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai, GWEN_DB_NODE *dbBooked);
+static int _readTransactionsFromResponse(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai, GWEN_DB_NODE *dbXA);
+static void _possiblyDumpTransactions(const AB_IMEXPORTER_ACCOUNTINFO *ai);
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 
 
@@ -197,7 +213,6 @@ int AH_Job_GetTransactionsCAMT_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
   AB_IMEXPORTER_ACCOUNTINFO *ai;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
-  int rv;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Processing JobGetTransactionsCAMT");
 
@@ -223,7 +238,7 @@ int AH_Job_GetTransactionsCAMT_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
   /* search for "Transactions" */
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
   while (dbCurr) {
-    GWEN_DB_NODE *dbXA;
+    int rv;
 
     rv=AH_Job_CheckEncryption(j, dbCurr);
     if (rv) {
@@ -238,55 +253,88 @@ int AH_Job_GetTransactionsCAMT_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
       return rv;
     }
 
-    dbXA=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/transactionsCAMT");
-    if (dbXA) {
-      const void *p;
-      unsigned int bs;
-      GWEN_DB_NODE *dbBooked;
+    rv=_readTransactionsFromResponse(j, ai, GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/transactionsCAMT"));
+    if (rv) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      AH_Job_SetStatus(j, AH_JobStatusError);
+      return rv;
+    }
 
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Found response group");
-
-      if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
-        GWEN_DB_Dump(dbXA, 2);
-
-      dbBooked=GWEN_DB_GetGroup(dbXA, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "booked");
-      if (dbBooked) {
-        int i=0;
-
-        /* get booked transactions (daily reports!) */
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Found booked transaction group");
-
-        for (i=0; i<10000; i++) {
-          p=GWEN_DB_GetBinValue(dbBooked, "dayData", i, 0, 0, &bs);
-          if (p && bs) {
-            DBG_INFO(AQHBCI_LOGDOMAIN, "Reading booked day data (%d)", i+1);
-            rv=AH_Job_GetTransCAMT__ReadTransactions(j, ai, "camt_052_001_02", AB_Transaction_TypeStatement, p, bs);
-            if (rv<0) {
-              DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-              AH_Job_SetStatus(j, AH_JobStatusError);
-              return rv;
-            }
-          }
-          else
-            break;
-        } /* for i */
-      } /* if dbBooked */
-
-      /* get noted transactions */
-      p=GWEN_DB_GetBinValue(dbXA, "noted", 0, 0, 0, &bs);
-      if (p && bs) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Reading noted data");
-        rv=AH_Job_GetTransCAMT__ReadTransactions(j, ai, "camt_052_001_02", AB_Transaction_TypeNotedStatement, p, bs);
-        if (rv<0) {
-          DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-          AH_Job_SetStatus(j, AH_JobStatusError);
-          return rv;
-        }
-      }
-    } /* if "Transactions" */
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
   }
 
+  _possiblyDumpTransactions(ai);
+
+  return 0;
+}
+
+
+
+int _readTransactionsFromResponse(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai, GWEN_DB_NODE *dbXA)
+{
+  if (dbXA) {
+    int rv;
+    const void *p;
+    unsigned int bs;
+
+    rv=_readBooked(j, ai, GWEN_DB_GetGroup(dbXA, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "booked"));
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+
+    /* get noted transactions */
+    p=GWEN_DB_GetBinValue(dbXA, "noted", 0, 0, 0, &bs);
+    if (p && bs) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Reading noted data");
+      rv=AH_Job_GetTransCAMT__ReadTransactions(j, ai, "camt_052_001_02", AB_Transaction_TypeNotedStatement, p, bs);
+      if (rv<0) {
+	DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+	return rv;
+      }
+    }
+  }
+
+  return 0;
+}
+
+
+
+int _readBooked(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai, GWEN_DB_NODE *dbBooked)
+{
+  if (dbBooked) {
+    int i=0;
+
+    /* get booked transactions (daily reports!) */
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Found booked transaction group");
+
+    for (i=0; i<10000; i++) {
+      const void *p;
+      unsigned int bs;
+
+      p=GWEN_DB_GetBinValue(dbBooked, "dayData", i, 0, 0, &bs);
+      if (p && bs) {
+	int rv;
+
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Reading booked day data (%d)", i+1);
+        rv=AH_Job_GetTransCAMT__ReadTransactions(j, ai, "camt_052_001_02", AB_Transaction_TypeStatement, p, bs);
+        if (rv<0) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+          return rv;
+        }
+      }
+      else
+        break;
+    } /* for i */
+  } /* if dbBooked */
+
+  return 0;
+}
+
+
+
+void _possiblyDumpTransactions(const AB_IMEXPORTER_ACCOUNTINFO *ai)
+{
   if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug) {
     GWEN_DB_NODE *gn;
     AB_TRANSACTION *ttmp;
@@ -304,8 +352,6 @@ int AH_Job_GetTransactionsCAMT_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 
     DBG_INFO(AQHBCI_LOGDOMAIN, "*** End dumping transactions ***************");
   }
-
-  return 0;
 }
 
 
