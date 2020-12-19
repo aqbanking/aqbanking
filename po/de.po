@@ -1,21 +1,21 @@
 # translation of de.po to deutsch
 # Markus Frisch, 2005.
-# Martin Preuss <martin@libchipcard.de>, 2005, 2007, 2008.
-# Martin Preuss <martin@aqbanking.de>, 2010, 2011, 2019.
+# Martin Preuss <martin@aqbanking.de>, 2005, 2007, 2008, 2010, 2011, 2019, 2020.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: aqbanking\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
 "POT-Creation-Date: 2020-12-19 01:15+0100\n"
-"PO-Revision-Date: 2019-08-20 21:42+0100\n"
+"PO-Revision-Date: 2020-12-19 01:38+0100\n"
 "Last-Translator: Martin Preuss <martin@aqbanking.de>\n"
-"Language-Team: German <>\n"
-"Language: de_DE\n"
+"Language-Team: Deutsch <>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Lokalize 2.0\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Content-Transfer-Encoding: 8bits\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"X-Generator: Gtranslator 2.91.7\n"
 "X-Poedit-Basepath: /home/martin/projekte/c/aqbanking/aqbanking-git/"
 "aqbanking\n"
 
@@ -106,9 +106,9 @@ msgid "Week day \"%d\" not supported by bank"
 msgstr "Wochentag \"%d\" wird von der Bank nicht unterstützt"
 
 #: src/libs/aqbanking/banking_transaction.c:235
-#, fuzzy, c-format
+#, c-format
 msgid "Execution week day \"%d\" not supported by bank"
-msgstr "Ausführungs-Monatstag \"%d\" wird von der Bank nicht unterstützt"
+msgstr "Ausführungs-Wochentag \"%d\" wird von der Bank nicht unterstützt"
 
 #: src/libs/aqbanking/banking_transaction.c:274
 #: src/libs/aqbanking/banking_transaction.c:321
@@ -131,16 +131,16 @@ msgstr ""
 "als %d Tage in der Zukunft liegen"
 
 #: src/libs/aqbanking/banking_transaction.c:396
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Minimum setup time violated. Dated transactions need to be at least %d days "
 "away but %d days are requested"
 msgstr ""
-"Vorlaufzeit unterschritten. Datierte Überweisungen benötigen mindestens %d "
-"Tage Vorlaufzeit"
+"Minimale Vorlaufzeit überschritten. Datierte Überweisungen benötigen "
+"mindestens %d Tage Vorlaufzeit"
 
 #: src/libs/aqbanking/banking_transaction.c:409
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Maximum setup time violated. Dated transactions need to be at most %d days "
 "away but %d days are requested"
@@ -499,9 +499,8 @@ msgstr "Exklusiver Zugriff auf das Konto konnte nicht freigegeben werden."
 
 #: src/libs/aqbanking/dialogs/dlg_editaccount.c:664
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_editaccount.c:705
-#, fuzzy
 msgid "Unable to update account spec."
-msgstr "Exklusiver Zugriff auf das Konto konnte nicht freigegeben werden."
+msgstr "Kontospezifikation konnte nicht aktualisiert werden."
 
 #. init
 #: src/libs/aqbanking/dialogs/dlg_edituser.c:118
@@ -2809,7 +2808,7 @@ msgstr "Fehler: Mehrfachsignaturen sind bisher noch nicht unterstützt"
 
 #: src/libs/plugins/backends/aqhbci/banking/provider_tan.c:92
 msgid "TAN Entry"
-msgstr ""
+msgstr "TAN-Eingabe"
 
 #. create own text
 #: src/libs/plugins/backends/aqhbci/banking/provider_tan.c:136
@@ -2822,11 +2821,9 @@ msgid "The server provided the following challenge:"
 msgstr "Die Bank sendet folgende Angaben als Aufforderung:"
 
 #: src/libs/plugins/backends/aqhbci/banking/provider_tan.c:252
-#, fuzzy, c-format
+#, c-format
 msgid "Please enter the TAN for user %s at %s.\n"
-msgstr ""
-"Bitte geben Sie die TAN für \n"
-"Benutzer %s bei %s ein.\n"
+msgstr "Bitte geben Sie die TAN für Benutzer %s bei %s ein.\n"
 
 #: src/libs/plugins/backends/aqhbci/banking/user.c:1535
 msgid " You must only enter numbers, not letters."
@@ -3989,34 +3986,30 @@ msgid "Saving communication log to %s"
 msgstr ""
 
 #: src/libs/plugins/backends/aqofxconnect/common/n_signon.c:70
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Please enter the password for user %s<html>Please enter the password for "
 "user <b>%s</b></html>"
 msgstr ""
-"Bitte geben Sie das Passwort für \n"
-"Benutzer %s bei %s\n"
-"ein.%s<html>Bitte geben Sie das Passwort für Benutzer <i>%s</i> bei <i>%s</"
-"i> ein.<br>%s</html>"
+"Bitte geben Sie das Passwort für Benutzer %s ein.<html>Bitte geben Sie das "
+"Passwort für Benutzer <b>%s</b> ein.<br></html>"
 
 #: src/libs/plugins/backends/aqofxconnect/common/n_signon.c:82
-#, fuzzy
 msgid "Enter Password"
 msgstr "Passwort eingeben"
 
 #: src/libs/plugins/backends/aqofxconnect/common/n_utils.c:92
-#, fuzzy, c-format
+#, c-format
 msgid "Received account %s/%s (%s/%s)"
-msgstr "Empfangenes Konto:"
+msgstr "Empfangenes Konto %s/%s (%s/%s)"
 
 #. parse response
 #: src/libs/plugins/backends/aqofxconnect/v1/r_accounts.c:114
 #: src/libs/plugins/backends/aqofxconnect/v1/r_statements.c:111
 #: src/libs/plugins/backends/aqofxconnect/v2/r_accounts.c:110
 #: src/libs/plugins/backends/aqofxconnect/v2/r_statements.c:108
-#, fuzzy
 msgid "Parsing response..."
-msgstr "Untersuche Antwort"
+msgstr "Untersuche Antwort..."
 
 #: src/libs/plugins/backends/aqofxconnect/control/control.c:85
 #: src/libs/plugins/backends/aqpaypal/control/main.c:35
@@ -4024,9 +4017,7 @@ msgstr "Untersuche Antwort"
 msgid ""
 "Commands:\n"
 "\n"
-msgstr ""
-"\n"
-"Kommandos:\n"
+msgstr "Kommandos:\n"
 
 #: src/libs/plugins/backends/aqofxconnect/control/control.c:87
 msgid ""
