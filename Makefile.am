@@ -173,7 +173,7 @@ catalogs: $(I18NLINGUAS)
 	  filecat=$(top_builddir)/po/$$i.mo; \
 	  fileqm=$(top_builddir)/po/$$i.qm; \
 	  echo "Creating translation catalogs for language \"$$i\""; \
-	  $(MSGFMT) -o $${filecat} $${filelingua} || touch $${filelingua}; \
+	  $(MSGFMT) -c -o $${filecat} $${filelingua} || touch $${filelingua}; \
 	  if test $(MSGFMT_SUPPORTS_QT) = "yes"; then \
 	    $(MSGFMT) -o $${fileqm} --qt $${filelingua} || touch $${filelingua}; \
 	  else \

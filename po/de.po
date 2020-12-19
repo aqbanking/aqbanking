@@ -137,7 +137,7 @@ msgid ""
 "away but %d days are requested"
 msgstr ""
 "Minimale Vorlaufzeit überschritten. Datierte Überweisungen benötigen "
-"mindestens %d Tage Vorlaufzeit"
+"mindestens %d Tage Vorlaufzeit (%d Tage im vorliegenden Fall)"
 
 #: src/libs/aqbanking/banking_transaction.c:409
 #, c-format
@@ -146,7 +146,7 @@ msgid ""
 "away but %d days are requested"
 msgstr ""
 "Maximale Vorlaufzeit überschritten. Datierte Überweisungen dürfen nicht mehr "
-"als %d Tage in der Zukunft liegen"
+"als %d Tage in der Zukunft liegen (%d Tage im vorliegenden Fall)"
 
 #: src/libs/aqbanking/dialogs/dlg_importer.c:220
 msgid "File Import Wizard"
