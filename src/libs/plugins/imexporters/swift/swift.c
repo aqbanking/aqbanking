@@ -23,10 +23,11 @@
 #include <gwenhywfar/inherit.h>
 
 
-/*#define SWIFT_VERBOSE_DEBUG*/
+#define SWIFT_VERBOSE_DEBUG
 
 
 
+static int _importSecuritiesFromGroup(AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *db);
 static void _replaceValueInDb(GWEN_DB_NODE *db, const char *grpName, const char *destName);
 
 
@@ -126,8 +127,15 @@ int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
                        "Data imported, transforming to transactions");
   rv=AH_ImExporterSWIFT__ImportFromGroup(ctx, dbData, params);
   if (rv) {
-    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                         "Error importing data");
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, "Error importing data");
+    GWEN_DB_Group_free(dbData);
+    return rv;
+  }
+
+  /* read securities (if any) */
+  rv=_importSecuritiesFromGroup(ctx, dbData);
+  if (rv) {
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, "Error importing data");
     GWEN_DB_Group_free(dbData);
     return rv;
   }
@@ -387,6 +395,61 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
   GWEN_Gui_ProgressEnd(progressId);
   DBG_INFO(AQBANKING_LOGDOMAIN, "Importing from DB group \"%s\": Done", GWEN_DB_GroupName(db));
+  return 0;
+}
+
+
+
+int _importSecuritiesFromGroup(AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *db)
+{
+  GWEN_DB_NODE *dbT;
+
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Importing securities from DB group \"%s\"", GWEN_DB_GroupName(db));
+
+  dbT=GWEN_DB_GetFirstGroup(db);
+  while (dbT) {
+    const char *gn;
+
+    gn=GWEN_DB_GroupName(dbT);
+    if (gn && strcasecmp(gn, "security")==0) {
+      AB_SECURITY *sec;
+
+      sec=AB_Security_fromDb(dbT);
+      if (sec) {
+        const char *s;
+
+        /* read date */
+        s=GWEN_DB_GetCharValue(dbT, "unitPriceDate", 0, NULL);
+        if (s && *s) {
+          GWEN_TIME *ti;
+
+          ti=GWEN_Time_fromString(s, "YYYYMMTThhmmss");
+          if (ti==NULL) {
+            GWEN_DATE *dt;
+
+            dt=GWEN_Date_fromString(s);
+            if (dt) {
+              ti=GWEN_Time_new(GWEN_Date_GetYear(dt), GWEN_Date_GetMonth(dt)-1, GWEN_Date_GetDay(dt), 0, 0, 0, 0);
+              GWEN_Date_free(dt);
+            }
+          }
+          if (ti==NULL) {
+            DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad date in unit price date");
+          }
+          else {
+            AB_Security_SetUnitPriceDate(sec, ti);
+          }
+        }
+
+        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug, "Adding security");
+        AB_ImExporterContext_AddSecurity(ctx, sec);
+      }
+    }
+
+    dbT=GWEN_DB_GetNextGroup(dbT);
+  } // while
+
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Importing securites from DB group \"%s\": Done", GWEN_DB_GroupName(db));
   return 0;
 }
 
