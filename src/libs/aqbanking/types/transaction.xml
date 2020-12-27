@@ -849,6 +849,8 @@
 
         <item name="internalTransfer"/>
 
+        <item name="getDepot"/>
+
         <!-- Bit 8 set: transfer jobs, bit 9 set: SEPA -->
         <item name="sepaTransfer"        value="1536"/>
         <item name="sepaDebitNote"/>
