@@ -7,13 +7,30 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-/* This file is included by outbox.c */
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
 
-#include "message_l.h"
-#include "user_l.h"
+#include "aqhbci/applayer/itan1.h"
+#include "aqhbci/applayer/outbox_send.h"
+#include "aqhbci/applayer/outbox_recv.h"
+
+#include "aqhbci/msglayer/message_l.h"
+#include "aqhbci/applayer/hhd_l.h"
+#include "aqhbci/tan/tanmechanism.h"
+#include "aqhbci/banking/provider_tan.h"
+#include "aqhbci/banking/user_l.h"
+#include "aqhbci/banking/account_l.h"
+#include "aqhbci/admjobs/jobtan_l.h"
+#include "aqhbci/ajobs/accountjob_l.h"
+
+#include "aqbanking/i18n_l.h"
 
 #include <gwenhywfar/mdigest.h>
+#include <gwenhywfar/gui.h>
+
+#include <ctype.h>
 
 
 
@@ -23,6 +40,8 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
                           AH_JOBQUEUE *qJob)
 {
   const AH_JOB_LIST *jl;
+  AH_OUTBOX *outbox;
+  AB_PROVIDER *provider;
   AH_MSG *msg1;
   AH_MSG *msg2;
   int rv;
@@ -39,6 +58,9 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   AB_ACCOUNT *acc=NULL;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Handling iTAN process type 1");
+
+  provider=AH_OutboxCBox_GetProvider(cbox);
+  outbox=AH_OutboxCBox_GetOutbox(cbox);
 
   jl=AH_JobQueue_GetJobList(qJob);
   assert(jl);
@@ -68,7 +90,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   }
 
   /* prepare HKTAN */
-  jTan=AH_Job_Tan_new(cbox->provider, u, 1, AH_Dialog_GetTanJobVersion(dlg));
+  jTan=AH_Job_Tan_new(provider, u, 1, AH_Dialog_GetTanJobVersion(dlg));
   if (!jTan) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
     return -1;
@@ -249,7 +271,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
 
   /* get challenge */
   DBG_INFO(AQHBCI_LOGDOMAIN, "Processing job \"%s\"", AH_Job_GetName(jTan));
-  rv=AH_Job_Process(jTan, cbox->outbox->context);
+  rv=AH_Job_Process(jTan, AH_Outbox_GetImExContext(outbox));
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg1);

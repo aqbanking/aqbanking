@@ -7,14 +7,20 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
-/* included by outbox.c */
+#include "aqhbci/applayer/outbox_send.h"
+
+#include "aqbanking/i18n_l.h"
+
+#include <gwenhywfar/gui.h>
 
 
 
-int AH_Outbox__CBox_SendMessage(AH_OUTBOX__CBOX *cbox,
-                                AH_DIALOG *dlg,
-                                AH_MSG *msg)
+
+int AH_Outbox__CBox_SendMessage(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg, AH_MSG *msg)
 {
   int rv;
 
