@@ -12,10 +12,10 @@
 #endif
 
 
-#include "aqhbci/applayer/outbox_dialog.h"
+#include "aqhbci/applayer/cbox_dialog.h"
 
-#include "aqhbci/applayer/outbox_psd2.h"
-#include "aqhbci/applayer/outbox_hbci.h"
+#include "aqhbci/applayer/cbox_psd2.h"
+#include "aqhbci/applayer/cbox_hbci.h"
 #include "aqhbci/admjobs/jobtan_l.h"
 
 #include "aqbanking/i18n_l.h"
@@ -24,7 +24,7 @@
 
 
 
-int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox,
+int AH_OutboxCBox_OpenDialog(AH_OUTBOX_CBOX *cbox,
                                AH_DIALOG *dlg,
                                uint32_t jqFlags)
 {
@@ -55,7 +55,7 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox,
         AH_Job_free(jTan);
         DBG_INFO(AQHBCI_LOGDOMAIN, "TAN job version is available");
         DBG_NOTICE(AQHBCI_LOGDOMAIN, "Using PSD2 code to init dialog");
-        rv=AH_Outbox__CBox_OpenDialogPsd2_Proc2(cbox, dlg);
+        rv=AH_OutboxCBox_OpenDialogPsd2_Proc2(cbox, dlg);
         if (rv!=0) {
           DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
           return rv;
@@ -73,7 +73,7 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox,
 
   /* fall back */
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Using standard HBCI code to init dialog");
-  rv=AH_Outbox__CBox_OpenDialog_Hbci(cbox, dlg, jqFlags);
+  rv=AH_OutboxCBox_OpenDialog_Hbci(cbox, dlg, jqFlags);
   if (rv!=0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -84,7 +84,7 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox,
 
 
 
-int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg, uint32_t jqFlags)
+int AH_OutboxCBox_CloseDialog(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t jqFlags)
 {
   AB_PROVIDER *provider;
   AB_USER *user;
@@ -162,7 +162,7 @@ int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg, uint32_t 
     return GWEN_ERROR_GENERIC;
   }
 
-  rv=AH_Outbox__CBox_SendAndRecvQueue(cbox, dlg, jqDlgClose);
+  rv=AH_OutboxCBox_SendAndRecvQueue(cbox, dlg, jqDlgClose);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not exchange message");
     AH_JobQueue_free(jqDlgClose);
