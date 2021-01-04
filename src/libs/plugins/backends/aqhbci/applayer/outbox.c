@@ -27,6 +27,7 @@
 #include "aqhbci/applayer/cbox_send.h"
 #include "aqhbci/applayer/cbox_recv.h"
 #include "aqhbci/applayer/cbox_dialog.h"
+#include "aqhbci/applayer/cbox_prepare.h"
 
 #include <aqbanking/banking_be.h>
 #include <aqbanking/backendsupport/imexporter.h>
@@ -42,6 +43,11 @@
 
 
 
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
 static unsigned int _countTodoJobs(AH_OUTBOX *ob);
 static int _reallyExecute(AH_OUTBOX *ob);
 static AH_JOB *_findTransferJobInCheckJobList(const AH_JOB_LIST *jl, AB_USER *u, AB_ACCOUNT *a, const char *jobName);
@@ -51,7 +57,14 @@ static int _startSending(AH_OUTBOX *ob);
 static int _sendAndRecv(AH_OUTBOX *ob);
 static int _lockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers);
 static int _unlockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers, int abandon);
+static void _finishOutbox(AH_OUTBOX *ob);
+static AH_OUTBOX_CBOX *_findCBox(const AH_OUTBOX *ob, const AB_USER *u);
 
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 
 
@@ -92,8 +105,6 @@ void AH_Outbox_Attach(AH_OUTBOX *ob)
   assert(ob);
   ob->usage++;
 }
-
-
 
 
 
@@ -194,7 +205,7 @@ int _unlockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers, int abandon)
 
 
 
-static AH_OUTBOX_CBOX *AH_Outbox__FindCBox(const AH_OUTBOX *ob, const AB_USER *u)
+AH_OUTBOX_CBOX *_findCBox(const AH_OUTBOX *ob, const AB_USER *u)
 {
   AH_OUTBOX_CBOX *cbox;
 
@@ -227,7 +238,7 @@ void AH_Outbox_AddJob(AH_OUTBOX *ob, AH_JOB *j)
   u=AH_Job_GetUser(j);
   assert(u);
 
-  cbox=AH_Outbox__FindCBox(ob, u);
+  cbox=_findCBox(ob, u);
   if (!cbox) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating CBox for customer \"%s\"", AB_User_GetCustomerId(u));
     cbox=AH_OutboxCBox_new(ob->provider, u, ob);
@@ -260,15 +271,13 @@ int _prepare(AH_OUTBOX *ob)
     AB_USER *u;
 
     u=AH_OutboxCBox_GetUser(cbox);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing queues for customer \"%s\"",
-             AB_User_GetCustomerId(u));
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing queues for customer \"%s\"", AB_User_GetCustomerId(u));
     if (AH_OutboxCBox_Prepare(cbox)) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error preparing cbox");
       errors++;
     }
     else {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing queues for customer \"%s\": done",
-               AB_User_GetCustomerId(u));
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing queues for customer \"%s\": done", AB_User_GetCustomerId(u));
     }
     cbox=AH_OutboxCBox_List_Next(cbox);
   } /* while */
@@ -326,7 +335,7 @@ void _finishCBox(AH_OUTBOX *ob, AH_OUTBOX_CBOX *cbox)
 
 
 
-static void AH_Outbox__FinishOutbox(AH_OUTBOX *ob)
+void _finishOutbox(AH_OUTBOX *ob)
 {
   AH_OUTBOX_CBOX *cbox;
 
@@ -362,12 +371,12 @@ int _sendAndRecv(AH_OUTBOX *ob)
     if (rv)
       errors++;
     if (rv==GWEN_ERROR_USER_ABORTED) {
-      AH_Outbox__FinishOutbox(ob);
+      _finishOutbox(ob);
       return rv;
     }
   } /* while */
 
-  AH_Outbox__FinishOutbox(ob);
+  _finishOutbox(ob);
   return 0;
 }
 
@@ -377,7 +386,7 @@ AH_JOB_LIST *AH_Outbox_GetFinishedJobs(AH_OUTBOX *ob)
 {
   assert(ob);
   assert(ob->usage);
-  AH_Outbox__FinishOutbox(ob);
+  _finishOutbox(ob);
   return ob->finishedJobs;
 }
 

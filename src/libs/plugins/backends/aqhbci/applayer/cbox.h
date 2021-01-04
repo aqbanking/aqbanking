@@ -35,10 +35,6 @@ void AH_OutboxCBox_AddTodoJob(AH_OUTBOX_CBOX *cbox, AH_JOB *j);
 AH_JOB_LIST *AH_OutboxCBox_TakeFinishedJobs(AH_OUTBOX_CBOX *cbox);
 
 
-int AH_OutboxCBox_Prepare(AH_OUTBOX_CBOX *cbox);
-
-
-
 int AH_OutboxCBox_PerformQueue(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jq);
 void AH_OutboxCBox_HandleQueueError(AH_OUTBOX_CBOX *cbox, AH_JOBQUEUE *jq, const char *logStr);
 void AH_OutboxCBox_HandleQueueListError(AH_OUTBOX_CBOX *cbox, AH_JOBQUEUE_LIST *jql, const char *logStr);
