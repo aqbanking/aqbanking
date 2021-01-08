@@ -148,11 +148,11 @@ int _performQueue(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jq)
     rv=AH_OutboxCBox_SendAndRecvQueue(cbox, dlg, jq);
     if (rv) {
       _handleQueueError(cbox, jq, "Error performing queue");
+      AH_JobQueue_free(jq);
       return rv;
     } /* if error */
   } /* for */
 
-  AH_JobQueue_free(jq);
   return 0;
 }
 
