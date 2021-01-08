@@ -13,9 +13,6 @@
 
 #include "aqhbci/applayer/cbox_itan.h"
 
-#include "aqhbci/msglayer/message_l.h"
-#include "aqhbci/applayer/hhd_l.h"
-#include "aqhbci/tan/tanmechanism.h"
 #include "aqhbci/banking/provider_tan.h"
 #include "aqhbci/applayer/cbox_itan1.h"
 #include "aqhbci/applayer/cbox_itan2.h"

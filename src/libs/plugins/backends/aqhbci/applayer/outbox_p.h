@@ -11,8 +11,9 @@
 #define AH_OUTBOX_P_H
 
 
-#include "aqhbci/joblayer/jobqueue_l.h"
 #include "aqhbci/applayer/outbox_l.h"
+
+#include "aqhbci/joblayer/jobqueue_l.h"
 #include "aqhbci/applayer/cbox.h"
 
 #include <gwenhywfar/inherit.h>
