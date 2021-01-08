@@ -15,7 +15,6 @@
 
 #include "cbox_queue.h"
 
-#include "aqhbci/aqhbci_l.h"
 #include "aqhbci/admjobs/jobtan_l.h"
 
 #include "aqhbci/applayer/cbox_send.h"
@@ -303,7 +302,7 @@ int _performNonDialogQueues(AH_OUTBOX_CBOX *cbox, AH_JOBQUEUE_LIST *jql)
   rv=0;
   while ((jq=AH_JobQueue_List_First(jql))) {
     AH_JobQueue_List_Del(jq);
-    rv=_performQueue(cbox, dlg, jq);
+    rv=_performQueue(cbox, dlg, jq); /* frees jq */
     if (rv)
       break;
   } /* while */
