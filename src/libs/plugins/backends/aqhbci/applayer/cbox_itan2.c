@@ -15,6 +15,7 @@
 
 #include "aqhbci/applayer/cbox_send.h"
 #include "aqhbci/applayer/cbox_recv.h"
+#include "aqhbci/applayer/cbox_queue.h"
 #include "aqhbci/applayer/hhd_l.h"
 #include "aqhbci/msglayer/message_l.h"
 #include "aqhbci/tan/tanmechanism.h"
