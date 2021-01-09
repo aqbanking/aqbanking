@@ -16,7 +16,6 @@
 
 
 
-int AH_OutboxCBox__Hash(int mode, const uint8_t *p, unsigned int l, AH_MSG *msg);
 int AH_OutboxCBox_JobToMessage(AH_JOB *j, AH_MSG *msg, int doCopySigners);
 
 int AH_OutboxCBox_SendAndReceiveQueueWithTan(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *qJob);
