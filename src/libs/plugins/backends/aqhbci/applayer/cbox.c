@@ -92,22 +92,6 @@ AB_USER *AH_OutboxCBox_GetUser(const AH_OUTBOX_CBOX *cbox)
 
 
 
-int AH_OutboxCBox_GetIsLocked(const AH_OUTBOX_CBOX *cbox)
-{
-  assert(cbox);
-  return cbox->isLocked;
-}
-
-
-
-void AH_OutboxCBox_SetIsLocked(AH_OUTBOX_CBOX *cbox, int i)
-{
-  assert(cbox);
-  cbox->isLocked=i;
-}
-
-
-
 AH_JOB_LIST *AH_OutboxCBox_GetTodoJobs(const AH_OUTBOX_CBOX *cbox)
 {
   assert(cbox);

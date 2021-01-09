@@ -31,8 +31,6 @@ struct AH_OUTBOX_CBOX {
   AH_JOB_LIST *todoJobs;
   AH_JOB_LIST *finishedJobs;
 
-  int isLocked;
-
   uint32_t usage;
 };
 

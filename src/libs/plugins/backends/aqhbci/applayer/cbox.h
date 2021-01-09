@@ -34,9 +34,6 @@ AH_OUTBOX *AH_OutboxCBox_GetOutbox(const AH_OUTBOX_CBOX *cbox);
 AB_PROVIDER *AH_OutboxCBox_GetProvider(const AH_OUTBOX_CBOX *cbox);
 AB_USER *AH_OutboxCBox_GetUser(const AH_OUTBOX_CBOX *cbox);
 
-int AH_OutboxCBox_GetIsLocked(const AH_OUTBOX_CBOX *cbox);
-void AH_OutboxCBox_SetIsLocked(AH_OUTBOX_CBOX *cbox, int i);
-
 AH_JOB_LIST *AH_OutboxCBox_GetTodoJobs(const AH_OUTBOX_CBOX *cbox);
 AH_JOB_LIST *AH_OutboxCBox_GetFinishedJobs(const AH_OUTBOX_CBOX *cbox);
 AH_JOB_LIST *AH_OutboxCBox_TakeFinishedJobs(AH_OUTBOX_CBOX *cbox);
