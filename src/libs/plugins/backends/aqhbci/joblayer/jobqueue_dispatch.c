@@ -28,14 +28,14 @@
  */
 
 
-static void _handleResultSegments(AH_JOBQUEUE *jq, GWEN_DB_NODE *db, uint32_t guiid);
+static void _scanAllResultSegments(AH_JOBQUEUE *jq, GWEN_DB_NODE *db, uint32_t guiid);
 static GWEN_DB_NODE *_sampleSecuritySegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db);
 static void _removeAttachPoints(const AH_JOBQUEUE *jq);
 static void _setUsedTanStatusInJobs(const AH_JOBQUEUE *jq);
 static void _adjustSystemTanStatus(AH_JOBQUEUE *jq, uint32_t guiid);
 static AH_JOB *_findReferencedJob(AH_JOBQUEUE *jq, int refMsgNum, int refSegNum);
 static void _possiblyExtractAttachPoint(AH_JOB *j, GWEN_DB_NODE *dbSegment);
-static void _handleSegmentResultForAllJob(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbSegment);
+static void _handleSegmentResultForAllJobs(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbSegment);
 static void _handleSegmentResult(AH_JOBQUEUE *jq, AH_JOB *j, GWEN_DB_NODE *dbSegment);
 static void _addResponseToAllJobs(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbPreparedJobResponse);
 static void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWEN_DB_NODE *dbSecurity);
@@ -64,7 +64,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db)
   guiid=0;
 
   _removeAttachPoints(jq);
-  _handleResultSegments(jq, db, guiid);
+  _scanAllResultSegments(jq, db, guiid);
 
   dbSecurity=_sampleSecuritySegments(jq, msg, db);
   _handleResponseSegments(jq, msg, db, dbSecurity);
@@ -101,7 +101,7 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db)
 
 
 
-void _handleResultSegments(AH_JOBQUEUE *jq, GWEN_DB_NODE *db, uint32_t guiid)
+void _scanAllResultSegments(AH_JOBQUEUE *jq, GWEN_DB_NODE *db, uint32_t guiid)
 {
   AB_USER *user;
   GWEN_DB_NODE *dbCurr;
@@ -411,7 +411,7 @@ void _possiblyExtractAttachPoint(AH_JOB *j, GWEN_DB_NODE *dbSegment)
 
 
 
-void _handleSegmentResultForAllJob(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbSegment)
+void _handleSegmentResultForAllJobs(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbSegment)
 {
   AH_JOB *j;
 
@@ -427,31 +427,47 @@ void _handleSegmentResultForAllJob(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbSegment)
 void _handleSegmentResult(AH_JOBQUEUE *jq, AH_JOB *j, GWEN_DB_NODE *dbSegment)
 {
   if (strcasecmp(GWEN_DB_GroupName(dbSegment), "SegResult")==0) {
+    AH_RESULT_LIST *resultList;
     GWEN_DB_NODE *dbResult;
+
+    resultList=AH_Job_GetSegResults(j);
 
     dbResult=GWEN_DB_FindFirstGroup(dbSegment, "result");
     while (dbResult) {
+      AH_RESULT *r;
       int rcode;
-      const char *p;
+      const char *rtext;
+      const char *rref;
+      const char *rparam;
 
       rcode=GWEN_DB_GetIntValue(dbResult, "resultcode", 0, 0);
-      p=GWEN_DB_GetCharValue(dbResult, "text", 0, "");
+      rtext=GWEN_DB_GetCharValue(dbResult, "text", 0, "");
+      rref=GWEN_DB_GetCharValue(dbResult, "ref", 0, 0);
+      rparam=GWEN_DB_GetCharValue(dbResult, "param", 0, NULL);
+
+      r=AH_Result_new(rcode, rtext, rref, rparam, 0); /* seg result */
+      DBG_ERROR(AQHBCI_LOGDOMAIN,
+		"Adding result to job \"%s\": %d:%s",
+		AH_Job_GetName(j),
+		rcode, rtext?rtext:"<no text>");
+      AH_Result_List_Add(r, resultList);
+
       if (rcode>=9000 && rcode<10000) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Segment result: Error (%d: %s)", rcode, p);
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Segment result: Error (%d: %s)", rcode, rtext);
         if (!(AH_Job_GetFlags(j) & AH_JOB_FLAGS_IGNORE_ERROR)) {
           AH_Job_AddFlags(j, AH_JOB_FLAGS_HASERRORS);
           AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASERRORS);
         }
       }
       else if (rcode>=3000 && rcode<4000) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Segment result: Warning (%d: %s)", rcode, p);
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Segment result: Warning (%d: %s)", rcode, rtext);
         if (!(AH_Job_GetFlags(j) & AH_JOB_FLAGS_IGNORE_ERROR)) {
           AH_Job_AddFlags(j, AH_JOB_FLAGS_HASWARNINGS);
           AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASWARNINGS);
         }
       }
       else {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Segment result: Ok (%d: %s)", rcode, p);
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Segment result: Ok (%d: %s)", rcode, rtext);
       }
       dbResult=GWEN_DB_FindNextGroup(dbResult, "result");
     } /* while */
@@ -515,8 +531,8 @@ void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWE
         if (strcasecmp(GWEN_DB_GroupName(dbCurr), "SegResult")==0)
           _handleSegmentResult(jq, j, dbCurr);
 
-        DBG_DEBUG(AQHBCI_LOGDOMAIN, "Adding response \"%s\" to job \"%s\"", GWEN_DB_GroupName(dbCurr), AH_Job_GetName(j));
-        AH_Job_AddResponse(j, dbPreparedJobResponse);
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Adding response \"%s\" to job \"%s\"", GWEN_DB_GroupName(dbCurr), AH_Job_GetName(j));
+        AH_Job_AddResponse(j, GWEN_DB_Group_dup(dbPreparedJobResponse));
         AH_Job_SetStatus(j, AH_JobStatusAnswered);
       } /* if matching job found */
       else {
@@ -524,7 +540,7 @@ void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWE
 
         /* add response to all jobs (as queue response) and to queue */
         if (strcasecmp(GWEN_DB_GroupName(dbCurr), "SegResult")==0) {
-          _handleSegmentResultForAllJob(jq, dbCurr);
+          _handleSegmentResultForAllJobs(jq, dbCurr);
           _addResponseToAllJobs(jq, dbPreparedJobResponse);
         }
       }
@@ -538,7 +554,7 @@ void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWE
 
       /* add response to all jobs (as queue response) and to queue */
       if (strcasecmp(GWEN_DB_GroupName(dbCurr), "SegResult")==0)
-        _handleSegmentResultForAllJob(jq, dbCurr);
+        _handleSegmentResultForAllJobs(jq, dbCurr);
 
       else if (strcasecmp(GWEN_DB_GroupName(dbCurr), "MsgResult")==0)
         _addResponseToAllJobs(jq, dbPreparedJobResponse);

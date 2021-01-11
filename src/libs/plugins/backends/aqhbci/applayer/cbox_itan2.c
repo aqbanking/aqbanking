@@ -116,7 +116,7 @@ int AH_OutboxCBox_SendAndReceiveQueueWithTan2(AH_OUTBOX_CBOX *cbox,
   }
   else {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job has no 3076 result, getting TAN");
-#if 0
+#if 1
     DBG_ERROR(0, "Original job:");
     AH_Job_Dump(job, stderr, 2);
 
