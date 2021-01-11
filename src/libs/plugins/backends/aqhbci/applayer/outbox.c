@@ -290,6 +290,7 @@ int _lockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers)
       _unlockUsers(ob, lockedUsers, 1); /* abandon */
       return rv;
     }
+    AH_OutboxCBox_SetIsLocked(cbox, 1);
     AB_User_List2_PushBack(lockedUsers, user);
 
     cbox=AH_OutboxCBox_List_Next(cbox);

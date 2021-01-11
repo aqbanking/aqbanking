@@ -31,10 +31,10 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-static int _hashAndSetAsItanHash(int mode, const uint8_t *p, unsigned int l, AH_MSG *msg);
 static int _setupNeedTanAndSignersAndCrypter(AH_JOB *j, AH_MSG *msg, int doCopySigners);
 static int _addJobNodesToMessage(AH_JOB *j, AH_MSG *msg);
 static GWEN_DB_NODE *_getMessageSpecificArgsOrJobArgs(AH_JOB *j, const GWEN_XMLNODE *jnode);
+
 static const AH_TAN_METHOD *_getAndCheckUserSelectedTanMethod(AB_USER *u, const AH_TAN_METHOD_LIST *tml);
 static const AH_TAN_METHOD *_getAndCheckAutoSelectedTanMethod(AB_USER *u, const AH_TAN_METHOD_LIST *tml);
 
@@ -43,6 +43,80 @@ static const AH_TAN_METHOD *_getAndCheckAutoSelectedTanMethod(AB_USER *u, const 
  * implementations
  * ------------------------------------------------------------------------------------------------
  */
+
+
+
+int AH_OutboxCBox__Hash(int mode,
+                          const uint8_t *p,
+                          unsigned int l,
+                          AH_MSG *msg)
+{
+  GWEN_MDIGEST *md=NULL;
+  int rv;
+  GWEN_BUFFER *hbuf;
+
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Hashmode: %d", mode);
+
+  switch (mode) {
+  case 0:
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "No ITAN hash mode, assuming RMD160");
+  /* fall through */
+  case 1:  /* RMD160 over buffer */
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Using RMD160");
+    md=GWEN_MDigest_Rmd160_new();
+    if (md==NULL) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create MD RMD160");
+    }
+    break;
+
+  case 2:  /* SHA over buffer */
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Using SHA1");
+    md=GWEN_MDigest_Sha1_new();
+    if (md==NULL) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create MD SHA1");
+    }
+    break;
+
+  default: /* invalid mode */
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+              "Invalid ITAN hash mode \"%d\"",
+              mode);
+    return GWEN_ERROR_INVALID;
+  }
+
+  if (md==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+              "No message digestion algo (mode %d)", mode);
+    return GWEN_ERROR_INVALID;
+  }
+
+  rv=GWEN_MDigest_Begin(md);
+  if (rv<0) {
+    GWEN_MDigest_free(md);
+    return rv;
+  }
+  rv=GWEN_MDigest_Update(md, p, l);
+  if (rv<0) {
+    GWEN_MDigest_free(md);
+    return rv;
+  }
+  rv=GWEN_MDigest_End(md);
+  if (rv<0) {
+    GWEN_MDigest_free(md);
+    return rv;
+  }
+
+  hbuf=GWEN_Buffer_new(0, 32, 0, 1);
+  GWEN_Buffer_AppendBytes(hbuf,
+                          (const char *)GWEN_MDigest_GetDigestPtr(md),
+                          GWEN_MDigest_GetDigestSize(md));
+  GWEN_MDigest_free(md);
+  AH_Msg_SetItanHashBuffer(msg, hbuf);
+
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Hashed job segment");
+
+  return 0;
+}
 
 
 
@@ -76,153 +150,6 @@ int AH_OutboxCBox_JobToMessage(AH_JOB *j, AH_MSG *msg, int doCopySigners)
   }
 
   return 0;
-}
-
-
-
-int AH_OutboxCBox_SendAndReceiveQueueWithTan(AH_OUTBOX_CBOX *cbox,
-                                             AH_DIALOG *dlg,
-                                             AH_JOBQUEUE *qJob)
-{
-  int rv;
-  int process;
-
-  process=AH_Dialog_GetItanProcessType(dlg);
-  if (process==1)
-    rv=AH_OutboxCBox_Itan1(cbox, dlg, qJob);
-  else if (process==2)
-    rv=AH_OutboxCBox_SendAndReceiveQueueWithTan2(cbox, dlg, qJob);
-  else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "iTAN method %d not supported", process);
-    return GWEN_ERROR_INVALID;
-  }
-
-  return rv;
-}
-
-
-
-int AH_OutboxCBox_SelectItanMode(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg)
-{
-  AB_USER *u;
-  const AH_TAN_METHOD_LIST *tml;
-  const AH_TAN_METHOD *tm;
-  const char *s;
-
-  u=AH_OutboxCBox_GetUser(cbox);
-  assert(u);
-
-  tml=AH_User_GetTanMethodDescriptions(u);
-  if (tml==NULL || AH_TanMethod_List_GetCount(tml)<1) {
-    /* no or empty list, select 999 */
-    DBG_WARN(AQHBCI_LOGDOMAIN, "No tan methods, trying One-Step TAN");
-    GWEN_Gui_ProgressLog(0,
-                         GWEN_LoggerLevel_Warning,
-                         I18N("There are no tan method descriptions (yet), trying One-Step TAN."));
-    AH_Dialog_SetItanMethod(dlg, 999);
-    AH_Dialog_SetItanProcessType(dlg, 1);
-    AH_Dialog_SetTanJobVersion(dlg, 0);
-    return 0;
-  }
-
-  tm=_getAndCheckUserSelectedTanMethod(u, tml);
-  if (tm==NULL)
-    tm=_getAndCheckAutoSelectedTanMethod(u, tml);
-
-  if (tm==NULL) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No matching iTAN mode found");
-    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("No valid iTAN method found"));
-    return GWEN_ERROR_NOT_FOUND;
-  }
-
-  s=AH_TanMethod_GetMethodName(tm);
-  if (!s || !*s)
-    s=AH_TanMethod_GetMethodId(tm);
-
-  DBG_NOTICE(AQHBCI_LOGDOMAIN,
-             "Selecting TAN mode \"%s\" (%d, version %d, process %d))",
-             s,
-             AH_TanMethod_GetFunction(tm),
-             AH_TanMethod_GetGvVersion(tm),
-             AH_TanMethod_GetProcess(tm));
-  GWEN_Gui_ProgressLog2(0,
-                        GWEN_LoggerLevel_Info,
-                        I18N("Selecting iTAN mode \"%s\" (%d, version %d, process %d)"),
-                        s?s:I18N("(unnamed)"),
-                        AH_TanMethod_GetFunction(tm),
-                        AH_TanMethod_GetGvVersion(tm),
-                        AH_TanMethod_GetProcess(tm));
-  AH_Dialog_SetItanMethod(dlg, AH_TanMethod_GetFunction(tm));
-  AH_Dialog_SetItanProcessType(dlg, AH_TanMethod_GetProcess(tm));
-  AH_Dialog_SetTanJobVersion(dlg, AH_TanMethod_GetGvVersion(tm));
-  AH_Dialog_SetTanMethodDescription(dlg, tm);
-
-  return 0;
-}
-
-
-
-int AH_OutboxCBox_InputTanWithChallenge(AH_OUTBOX_CBOX *cbox,
-                                        AH_DIALOG *dialog,
-                                        const char *sChallenge,
-                                        const char *sChallengeHhd,
-                                        char *passwordBuffer,
-                                        int passwordMinLen,
-                                        int passwordMaxLen)
-{
-  int rv;
-  const AH_TAN_METHOD *tanMethodDescription=NULL;
-  AB_PROVIDER *provider;
-  AB_USER *user;
-
-  provider=AH_OutboxCBox_GetProvider(cbox);
-  user=AH_OutboxCBox_GetUser(cbox);
-
-  tanMethodDescription=AH_Dialog_GetTanMethodDescription(dialog);
-  assert(tanMethodDescription);
-
-  rv=AH_Provider_InputTanWithChallenge(provider,
-                                       user,
-                                       tanMethodDescription,
-                                       sChallenge, sChallengeHhd,
-                                       passwordBuffer, passwordMinLen, passwordMaxLen);
-
-  return rv;
-}
-
-
-
-void AH_OutboxCBox_CopyJobResultsToJobList(const AH_JOB *j, const AH_JOB_LIST *qjl)
-{
-  /* dispatch results from jTan to all other members of the queue */
-  if (qjl) {
-    AH_RESULT_LIST *rl;
-
-    /* segment results */
-    rl=AH_Job_GetSegResults(j);
-    if (rl) {
-      AH_RESULT *or;
-
-      or=AH_Result_List_First(rl);
-      while (or) {
-        AH_JOB *qj;
-
-        qj=AH_Job_List_First(qjl);
-        while (qj) {
-          if (qj!=j) {
-            AH_RESULT *nr;
-
-            nr=AH_Result_dup(or);
-            AH_Result_List_Add(nr, AH_Job_GetSegResults(qj));
-          }
-          qj=AH_Job_List_Next(qj);
-        }
-
-        or=AH_Result_List_Next(or);
-      } /* while or */
-    } /* if rl */
-  } /* if qjl */
 }
 
 
@@ -269,9 +196,6 @@ int _setupNeedTanAndSignersAndCrypter(AH_JOB *j, AH_MSG *msg, int doCopySigners)
 
 
 
-
-
-
 int _addJobNodesToMessage(AH_JOB *j, AH_MSG *msg)
 {
   GWEN_DB_NODE *jargs;
@@ -308,10 +232,10 @@ int _addJobNodesToMessage(AH_JOB *j, AH_MSG *msg)
     uint32_t endPos;
 
     endPos=GWEN_Buffer_GetPos(msgBuf);
-    rv=_hashAndSetAsItanHash(AH_Msg_GetItanHashMode(msg),
-                             (const uint8_t *)GWEN_Buffer_GetStart(msgBuf)+startPos,
-                             endPos-startPos,
-                             msg);
+    rv=AH_OutboxCBox__Hash(AH_Msg_GetItanHashMode(msg),
+			     (const uint8_t *)GWEN_Buffer_GetStart(msgBuf)+startPos,
+			     endPos-startPos,
+			     msg);
     if (rv) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not hash data (%d)", rv);
       AH_Job_SetStatus(j, AH_JobStatusError);
@@ -345,6 +269,92 @@ GWEN_DB_NODE *_getMessageSpecificArgsOrJobArgs(AH_JOB *j, const GWEN_XMLNODE *jn
   }
 
   return jargs;
+}
+
+
+
+int AH_OutboxCBox_SendAndReceiveQueueWithTan(AH_OUTBOX_CBOX *cbox,
+                                               AH_DIALOG *dlg,
+                                               AH_JOBQUEUE *qJob)
+{
+  int rv;
+  int process;
+
+  process=AH_Dialog_GetItanProcessType(dlg);
+  if (process==1)
+    rv=AH_OutboxCBox_Itan1(cbox, dlg, qJob);
+  else if (process==2)
+    rv=AH_OutboxCBox_SendAndReceiveQueueWithTan2(cbox, dlg, qJob);
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+              "iTAN method %d not supported", process);
+    return GWEN_ERROR_INVALID;
+  }
+
+  return rv;
+}
+
+
+
+int AH_OutboxCBox_SelectItanMode(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg)
+{
+  AB_USER *u;
+  const AH_TAN_METHOD_LIST *tml;
+
+  u=AH_OutboxCBox_GetUser(cbox);
+  assert(u);
+
+  tml=AH_User_GetTanMethodDescriptions(u);
+  if (tml==NULL || AH_TanMethod_List_GetCount(tml)<1) {
+    /* no or empty list, select 999 */
+    DBG_WARN(AQHBCI_LOGDOMAIN, "No tan methods, trying One-Step TAN");
+    GWEN_Gui_ProgressLog(0,
+                         GWEN_LoggerLevel_Warning,
+                         I18N("There are no tan method descriptions (yet), trying One-Step TAN."));
+    AH_Dialog_SetItanMethod(dlg, 999);
+    AH_Dialog_SetItanProcessType(dlg, 1);
+    AH_Dialog_SetTanJobVersion(dlg, 0);
+    return 0;
+  }
+  else {
+    const AH_TAN_METHOD *tm;
+
+    tm=_getAndCheckUserSelectedTanMethod(u, tml);
+    if (tm==NULL)
+      tm=_getAndCheckAutoSelectedTanMethod(u, tml);
+
+    if (tm==NULL) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "No matching iTAN mode found");
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("No valid iTAN method found"));
+      return GWEN_ERROR_NOT_FOUND;
+    }
+    else {
+      const char *s;
+
+      s=AH_TanMethod_GetMethodName(tm);
+      if (!s || !*s)
+        s=AH_TanMethod_GetMethodId(tm);
+
+      DBG_NOTICE(AQHBCI_LOGDOMAIN,
+                 "Selecting TAN mode \"%s\" (%d, version %d, process %d))",
+                 s,
+                 AH_TanMethod_GetFunction(tm),
+                 AH_TanMethod_GetGvVersion(tm),
+                 AH_TanMethod_GetProcess(tm));
+      GWEN_Gui_ProgressLog2(0,
+                            GWEN_LoggerLevel_Info,
+                            I18N("Selecting iTAN mode \"%s\" (%d, version %d, process %d)"),
+                            s?s:I18N("(unnamed)"),
+                            AH_TanMethod_GetFunction(tm),
+                            AH_TanMethod_GetGvVersion(tm),
+                            AH_TanMethod_GetProcess(tm));
+      AH_Dialog_SetItanMethod(dlg, AH_TanMethod_GetFunction(tm));
+      AH_Dialog_SetItanProcessType(dlg, AH_TanMethod_GetProcess(tm));
+      AH_Dialog_SetTanJobVersion(dlg, AH_TanMethod_GetGvVersion(tm));
+      AH_Dialog_SetTanMethodDescription(dlg, tm);
+      return 0;
+    }
+  }
 }
 
 
@@ -440,70 +450,68 @@ const AH_TAN_METHOD *_getAndCheckAutoSelectedTanMethod(AB_USER *u, const AH_TAN_
 
 
 
-int _hashAndSetAsItanHash(int mode, const uint8_t *p, unsigned int l, AH_MSG *msg)
+
+
+void AH_OutboxCBox_CopyJobResultsToJobList(const AH_JOB *j, const AH_JOB_LIST *qjl)
 {
-  GWEN_MDIGEST *md=NULL;
+  /* dispatch results from jTan to all other members of the queue */
+  if (qjl) {
+    AH_RESULT_LIST *rl;
+
+    /* segment results */
+    rl=AH_Job_GetSegResults(j);
+    if (rl) {
+      AH_RESULT *or;
+
+      or=AH_Result_List_First(rl);
+      while (or) {
+        AH_JOB *qj;
+
+        qj=AH_Job_List_First(qjl);
+        while (qj) {
+          if (qj!=j) {
+            AH_RESULT *nr;
+
+            nr=AH_Result_dup(or);
+            AH_Result_List_Add(nr, AH_Job_GetSegResults(qj));
+          }
+          qj=AH_Job_List_Next(qj);
+        }
+
+        or=AH_Result_List_Next(or);
+      } /* while or */
+    } /* if rl */
+  } /* if qjl */
+}
+
+
+
+int AH_OutboxCBox_InputTanWithChallenge(AH_OUTBOX_CBOX *cbox,
+                                        AH_DIALOG *dialog,
+                                        const char *sChallenge,
+                                        const char *sChallengeHhd,
+                                        char *passwordBuffer,
+                                        int passwordMinLen,
+                                        int passwordMaxLen)
+{
   int rv;
-  GWEN_BUFFER *hbuf;
+  const AH_TAN_METHOD *tanMethodDescription=NULL;
+  AB_PROVIDER *provider;
+  AB_USER *user;
 
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Hashmode: %d", mode);
+  provider=AH_OutboxCBox_GetProvider(cbox);
+  user=AH_OutboxCBox_GetUser(cbox);
 
-  switch (mode) {
-  case 0:
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "No ITAN hash mode, assuming RMD160");
-  /* fall through */
-  case 1:  /* RMD160 over buffer */
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Using RMD160");
-    md=GWEN_MDigest_Rmd160_new();
-    if (md==NULL) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create MD RMD160");
-    }
-    break;
+  tanMethodDescription=AH_Dialog_GetTanMethodDescription(dialog);
+  assert(tanMethodDescription);
 
-  case 2:  /* SHA over buffer */
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Using SHA1");
-    md=GWEN_MDigest_Sha1_new();
-    if (md==NULL) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create MD SHA1");
-    }
-    break;
+  rv=AH_Provider_InputTanWithChallenge(provider,
+                                       user,
+                                       tanMethodDescription,
+                                       sChallenge, sChallengeHhd,
+                                       passwordBuffer, passwordMinLen, passwordMaxLen);
 
-  default: /* invalid mode */
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid ITAN hash mode \"%d\"", mode);
-    return GWEN_ERROR_INVALID;
-  }
-
-  if (md==NULL) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No message digestion algo (mode %d)", mode);
-    return GWEN_ERROR_INVALID;
-  }
-
-  rv=GWEN_MDigest_Begin(md);
-  if (rv<0) {
-    GWEN_MDigest_free(md);
-    return rv;
-  }
-  rv=GWEN_MDigest_Update(md, p, l);
-  if (rv<0) {
-    GWEN_MDigest_free(md);
-    return rv;
-  }
-  rv=GWEN_MDigest_End(md);
-  if (rv<0) {
-    GWEN_MDigest_free(md);
-    return rv;
-  }
-
-  hbuf=GWEN_Buffer_new(0, 32, 0, 1);
-  GWEN_Buffer_AppendBytes(hbuf,
-                          (const char *)GWEN_MDigest_GetDigestPtr(md),
-                          GWEN_MDigest_GetDigestSize(md));
-  GWEN_MDigest_free(md);
-  AH_Msg_SetItanHashBuffer(msg, hbuf);
-
-  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Hashed job segment");
-
-  return 0;
+  return rv;
 }
 
 
