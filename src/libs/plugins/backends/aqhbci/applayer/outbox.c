@@ -45,7 +45,7 @@ static void _finishCBox(AH_OUTBOX *ob, AH_OUTBOX_CBOX *cbox);
 static int _sendAndRecvCustomerBoxes(AH_OUTBOX *ob);
 static int _lockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers);
 static int _unlockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers, int abandon);
-static void _finishOutbox(AH_OUTBOX *ob);
+static void _finishRemainingCustomerBoxes(AH_OUTBOX *ob);
 static AH_OUTBOX_CBOX *_findCBox(const AH_OUTBOX *ob, const AB_USER *u);
 
 
@@ -108,7 +108,6 @@ AH_JOB_LIST *AH_Outbox_GetFinishedJobs(AH_OUTBOX *ob)
 {
   assert(ob);
   assert(ob->usage);
-  _finishOutbox(ob);
   return ob->finishedJobs;
 }
 
@@ -470,7 +469,7 @@ void _finishCBox(AH_OUTBOX *ob, AH_OUTBOX_CBOX *cbox)
 
 
 
-void _finishOutbox(AH_OUTBOX *ob)
+void _finishRemainingCustomerBoxes(AH_OUTBOX *ob)
 {
   AH_OUTBOX_CBOX *cbox;
 
@@ -506,12 +505,11 @@ int _sendAndRecvCustomerBoxes(AH_OUTBOX *ob)
     if (rv)
       errors++;
     if (rv==GWEN_ERROR_USER_ABORTED) {
-      _finishOutbox(ob);
+      _finishRemainingCustomerBoxes(ob);
       return rv;
     }
   } /* while */
 
-  _finishOutbox(ob);
   return 0;
 }
 
