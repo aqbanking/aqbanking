@@ -35,14 +35,6 @@ GWEN_LIST_FUNCTIONS(AH_JOBQUEUE, AH_JobQueue);
 
 
 
-
-static int _messageSetupWithCryptoAndTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *msg, const char *sTan);
-static int _encodeJobs(AH_JOBQUEUE *jq, AH_MSG *msg);
-static void _updateJobsAfterEncodingMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *msg);
-
-
-
-
 AH_JOBQUEUE *AH_JobQueue_new(AB_USER *u)
 {
   AH_JOBQUEUE *jq;
@@ -358,6 +350,9 @@ AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg)
 AH_MSG *AH_JobQueue_ToMessageWithTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, const char *sTan)
 {
   AH_MSG *msg;
+  AH_JOB *j;
+  unsigned int encodedJobs;
+  GWEN_STRINGLISTENTRY *se;
   int rv;
 
   assert(jq);
@@ -369,45 +364,13 @@ AH_MSG *AH_JobQueue_ToMessageWithTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, const char
     return 0;
   }
   msg=AH_Msg_new(dlg);
-
-  rv=_messageSetupWithCryptoAndTan(jq, dlg, msg, sTan);
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AH_Msg_free(msg);
-    return NULL;
-  }
-
-  rv=_encodeJobs(jq, msg);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AH_Msg_free(msg);
-    return NULL;
-  }
-
-  rv=AH_Msg_EncodeMsg(msg);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not encode message (%d)", rv);
-    AH_JobQueue_SetJobStatusOnMatch(jq, AH_JobStatusEncoded, AH_JobStatusError);
-    AH_Msg_free(msg);
-    return 0;
-  }
-
-  _updateJobsAfterEncodingMessage(jq, dlg, msg);
-
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Job queue encoded and ready to be sent");
-  return msg;
-}
-
-
-
-int _messageSetupWithCryptoAndTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *msg, const char *sTan)
-{
   AH_Msg_SetHbciVersion(msg, AH_User_GetHbciVersion(jq->user));
   AH_Msg_SetSecurityProfile(msg, jq->secProfile);
   AH_Msg_SetSecurityClass(msg, jq->secClass);
 
   if (sTan && *sTan)
     AH_Msg_SetTan(msg, sTan);
+
 
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Adding queue to message (flags: %08x)", jq->flags);
 
@@ -423,12 +386,11 @@ int _messageSetupWithCryptoAndTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *msg, 
 
   /* copy signers */
   if (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_SIGN) {
-    GWEN_STRINGLISTENTRY *se;
-
     se=GWEN_StringList_FirstEntry(jq->signers);
     if (!se) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Signatures needed but no signer given");
-      return GWEN_ERROR_GENERIC;
+      AH_Msg_free(msg);
+      return 0;
     }
     while (se) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Addign signer [%s]", GWEN_StringListEntry_Data(se));
@@ -447,16 +409,7 @@ int _messageSetupWithCryptoAndTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *msg, 
     AH_Msg_SetCrypterId(msg, s);
   }
 
-  return 0;
-}
-
-
-
-int _encodeJobs(AH_JOBQUEUE *jq, AH_MSG *msg)
-{
-  AH_JOB *j;
-  unsigned int encodedJobs=0;
-
+  encodedJobs=0;
   j=AH_Job_List_First(jq->jobs);
   while (j) {
     AH_JOB_STATUS st;
@@ -478,7 +431,8 @@ int _encodeJobs(AH_JOBQUEUE *jq, AH_MSG *msg)
 
         s=GWEN_XMLNode_GetProperty(jnode, "name", 0);
         if (s) {
-          DBG_NOTICE(AQHBCI_LOGDOMAIN, "Getting message specific data (%s)", s);
+          DBG_NOTICE(AQHBCI_LOGDOMAIN,
+                     "Getting for message specific data (%s)", s);
           jargs=GWEN_DB_GetGroup(jargs, GWEN_PATH_FLAGS_NAMEMUSTEXIST, s);
           if (!jargs) {
             DBG_NOTICE(AQHBCI_LOGDOMAIN, "No message specific data");
@@ -492,7 +446,8 @@ int _encodeJobs(AH_JOBQUEUE *jq, AH_MSG *msg)
       assert(msgBuf);
       lastSeg=AH_Msg_AddNode(msg, jnode, jargs);
       if (!lastSeg) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Could not encode job \"%s\"", AH_Job_GetName(j));
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Could not encode job \"%s\"",
+                 AH_Job_GetName(j));
         AH_Job_SetStatus(j, AH_JobStatusError);
       }
       else {
@@ -500,7 +455,8 @@ int _encodeJobs(AH_JOBQUEUE *jq, AH_MSG *msg)
         AH_Job_SetLastSegment(j, lastSeg);
 
         if (AH_Job_GetStatus(j)!=AH_JobStatusError) {
-          DBG_DEBUG(AQHBCI_LOGDOMAIN, "Job \"%s\" encoded", AH_Job_GetName(j));
+          DBG_DEBUG(AQHBCI_LOGDOMAIN, "Job \"%s\" encoded",
+                    AH_Job_GetName(j));
           AH_Job_SetStatus(j, AH_JobStatusEncoded);
           encodedJobs++;
         }
@@ -509,19 +465,24 @@ int _encodeJobs(AH_JOBQUEUE *jq, AH_MSG *msg)
     j=AH_Job_List_Next(j);
   } /* while */
 
-  if (encodedJobs<1) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No job in queue encoded");
-    return GWEN_ERROR_GENERIC;
+  if (!encodedJobs) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No job encoded");
+    AH_Msg_free(msg);
+    return 0;
   }
+  rv=AH_Msg_EncodeMsg(msg);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not encode message (%d)", rv);
 
-  return 0;
-}
-
-
-
-void _updateJobsAfterEncodingMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *msg)
-{
-  AH_JOB *j;
+    j=AH_Job_List_First(jq->jobs);
+    while (j) {
+      if (AH_Job_GetStatus(j)==AH_JobStatusEncoded)
+        AH_Job_SetStatus(j, AH_JobStatusError);
+      j=AH_Job_List_Next(j);
+    } /* while */
+    AH_Msg_free(msg);
+    return 0;
+  }
 
   /*
    * inform all jobs that they have been encoded
@@ -532,9 +493,9 @@ void _updateJobsAfterEncodingMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *ms
   AH_JobQueue_SetUsedTan(jq, AH_Msg_GetTan(msg));
   AH_JobQueue_SetUsedPin(jq, AH_Msg_GetPin(msg));
   while (j) {
-    if (AH_Job_GetStatus(j)==AH_JobStatusEncoded) {
-      const char *s;
+    const char *s;
 
+    if (AH_Job_GetStatus(j)==AH_JobStatusEncoded) {
       /* store some information about the message in the job */
       AH_Job_SetMsgNum(j, AH_Msg_GetMsgNum(msg));
       AH_Job_SetDialogId(j, AH_Dialog_GetDialogId(dlg));
@@ -553,6 +514,10 @@ void _updateJobsAfterEncodingMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *ms
     }
     j=AH_Job_List_Next(j);
   } /* while */
+
+
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Job queue encoded and ready to be sent");
+  return msg;
 }
 
 

@@ -34,8 +34,6 @@ static void _readVersions(GWEN_DB_NODE *dbRd, AH_BPD *bpd);
 static void _readCommParams(GWEN_DB_NODE *dbJob, AH_BPD *bpd);
 static void _readPinTanBpd(GWEN_DB_NODE *dbJob, AH_BPD *bpd, int protocolVersion);
 static void _readBpdJobs(GWEN_DB_NODE *dbJob, AH_BPD *bpd, GWEN_MSGENGINE *msgEngine);
-static int _isBpdJobSegment(GWEN_MSGENGINE *msgEngine, const char *segmentName, int segmentVersion);
-static void _dumpBpdAddr(const AH_BPD_ADDR *ba);
 
 
 
@@ -205,7 +203,64 @@ void _readCommParams(GWEN_DB_NODE *dbJob, AH_BPD *bpd)
 
       ba=AH_BpdAddr_FromDb(currService);
       if (ba) {
-        _dumpBpdAddr(ba); /* debug */
+        if (1) { /* dump info */
+          GWEN_BUFFER *tbuf;
+          const char *s;
+
+          tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+          switch (AH_BpdAddr_GetType(ba)) {
+          case AH_BPD_AddrTypeTCP:
+            GWEN_Buffer_AppendString(tbuf, "TCP: ");
+            break;
+          case AH_BPD_AddrTypeBTX:
+            GWEN_Buffer_AppendString(tbuf, "BTX: ");
+            break;
+          case AH_BPD_AddrTypeSSL:
+            GWEN_Buffer_AppendString(tbuf, "SSL: ");
+            break;
+          default:
+            GWEN_Buffer_AppendString(tbuf, "<UNK>: ");
+            break;
+          }
+
+          s=AH_BpdAddr_GetAddr(ba);
+          if (s && *s)
+            GWEN_Buffer_AppendString(tbuf, s);
+          else
+            GWEN_Buffer_AppendString(tbuf, "<empty>");
+
+          s=AH_BpdAddr_GetSuffix(ba);
+          if (s && *s) {
+            GWEN_Buffer_AppendString(tbuf, ", ");
+            GWEN_Buffer_AppendString(tbuf, s);
+          }
+
+          GWEN_Buffer_AppendString(tbuf, ", ");
+          switch (AH_BpdAddr_GetFType(ba)) {
+          case AH_BPD_FilterTypeNone:
+            GWEN_Buffer_AppendString(tbuf, "none");
+            break;
+          case AH_BPD_FilterTypeBase64:
+            GWEN_Buffer_AppendString(tbuf, "base64");
+            break;
+          case AH_BPD_FilterTypeUUE:
+            GWEN_Buffer_AppendString(tbuf, "uue");
+            break;
+          default:
+            GWEN_Buffer_AppendString(tbuf, "<unk>");
+            break;
+          }
+
+          DBG_DEBUG(AQHBCI_LOGDOMAIN, "Server address found: %s", GWEN_Buffer_GetStart(tbuf));
+          GWEN_Gui_ProgressLog2(0,
+                                GWEN_LoggerLevel_Info,
+                                I18N("Server address found: %s"),
+                                GWEN_Buffer_GetStart(tbuf));
+          GWEN_Buffer_free(tbuf);
+        }
+
+        /* add service */
         AH_Bpd_AddAddr(bpd, ba);
       }
       currService=GWEN_DB_FindNextGroup(currService, "service");
@@ -261,35 +316,52 @@ void _readBpdJobs(GWEN_DB_NODE *dbJob, AH_BPD *bpd, GWEN_MSGENGINE *msgEngine)
     if (dbRd)
       dbRd=GWEN_DB_GetFirstGroup(dbRd);
     if (dbRd) {
-      const char *segmentName;
-      int segmentVersion;
-
+      GWEN_XMLNODE *bpdn;
+      int segver;
       /* check for BPD job */
-      segmentName=GWEN_DB_GroupName(dbRd);
-      segmentVersion=GWEN_DB_GetIntValue(dbRd, "head/version", 0, 0);
-      if (_isBpdJobSegment(msgEngine, segmentName, segmentVersion)) {
-        GWEN_DB_NODE *dbBpdJobs;
-        GWEN_DB_NODE *dbNewBpdJob;
-        char numbuffer[32];
 
-        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Found BPD job \"%s\"", segmentName);
-        dbBpdJobs=AH_Bpd_GetBpdJobs(bpd, GWEN_MsgEngine_GetProtocolVersion(msgEngine));
-        assert(dbBpdJobs);
-        dbNewBpdJob=GWEN_DB_GetGroup(dbBpdJobs, GWEN_DB_FLAGS_DEFAULT, segmentName);
-        assert(dbNewBpdJob);
+      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Checking whether \"%s\" is a BPD job", GWEN_DB_GroupName(dbRd));
+      segver=GWEN_DB_GetIntValue(dbRd, "head/version", 0, 0);
+      /* get segment description (first try id, then code) */
+      bpdn=GWEN_MsgEngine_FindNodeByProperty(msgEngine, "SEG", "id", segver, GWEN_DB_GroupName(dbRd));
+      if (!bpdn)
+        bpdn=GWEN_MsgEngine_FindNodeByProperty(msgEngine, "SEG", "code", segver, GWEN_DB_GroupName(dbRd));
+      if (bpdn) {
+        DBG_DEBUG(AQHBCI_LOGDOMAIN, "Found a candidate");
+        if (atoi(GWEN_XMLNode_GetProperty(bpdn, "isbpdjob", "0"))) {
+          /* segment contains a BPD job, move contents */
+          GWEN_DB_NODE *bn;
+          char numbuffer[32];
 
-        if (GWEN_Text_NumToString(segmentVersion, numbuffer, sizeof(numbuffer)-1, 0)<1) {
-          DBG_NOTICE(AQHBCI_LOGDOMAIN, "Buffer too small");
-          abort();
+          DBG_NOTICE(AQHBCI_LOGDOMAIN, "Found BPD job \"%s\"", GWEN_DB_GroupName(dbRd));
+          bn=AH_Bpd_GetBpdJobs(bpd, GWEN_MsgEngine_GetProtocolVersion(msgEngine));
+          assert(bn);
+          bn=GWEN_DB_GetGroup(bn, GWEN_DB_FLAGS_DEFAULT,
+                              GWEN_DB_GroupName(dbRd));
+          assert(bn);
+
+          if (GWEN_Text_NumToString(segver, numbuffer, sizeof(numbuffer)-1, 0)<1) {
+            DBG_NOTICE(AQHBCI_LOGDOMAIN, "Buffer too small");
+            abort();
+          }
+          bn=GWEN_DB_GetGroup(bn, GWEN_DB_FLAGS_OVERWRITE_GROUPS, numbuffer);
+          assert(bn);
+
+          GWEN_DB_AddGroupChildren(bn, dbRd);
+          /* remove "head" and "segment" group */
+          GWEN_DB_DeleteGroup(bn, "head");
+          GWEN_DB_DeleteGroup(bn, "segment");
+          DBG_DEBUG(AQHBCI_LOGDOMAIN, "Added BPD Job %s:%d", GWEN_DB_GroupName(dbRd), segver);
+        } /* if isbpdjob */
+        else {
+          DBG_DEBUG(AQHBCI_LOGDOMAIN,
+                    "Segment \"%s\" is known but not as a BPD job",
+                    GWEN_DB_GroupName(dbRd));
         }
-        dbNewBpdJob=GWEN_DB_GetGroup(dbNewBpdJob, GWEN_DB_FLAGS_OVERWRITE_GROUPS, numbuffer);
-        assert(dbNewBpdJob);
-
-        GWEN_DB_AddGroupChildren(dbNewBpdJob, dbRd);
-        /* remove "head" and "segment" group */
-        GWEN_DB_DeleteGroup(dbNewBpdJob, "head");
-        GWEN_DB_DeleteGroup(dbNewBpdJob, "segment");
-        DBG_DEBUG(AQHBCI_LOGDOMAIN, "Added BPD Job %s:%d", segmentName, segmentVersion);
+      } /* if segment found */
+      else {
+        DBG_WARN(AQHBCI_LOGDOMAIN, "Did not find segment \"%s\" (%d) ignoring",
+                 GWEN_DB_GroupName(dbRd), segver);
       }
     }
     n=GWEN_DB_GetNextGroup(n);
@@ -298,89 +370,5 @@ void _readBpdJobs(GWEN_DB_NODE *dbJob, AH_BPD *bpd, GWEN_MSGENGINE *msgEngine)
 
 
 
-int _isBpdJobSegment(GWEN_MSGENGINE *msgEngine, const char *segmentName, int segmentVersion)
-{
-  GWEN_XMLNODE *xmlDescrForSegNameAndVer;
-
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Checking whether \"%s\" version %d is a BPD job", segmentName, segmentVersion);
-  /* get segment description (first try id, then code) */
-  xmlDescrForSegNameAndVer=GWEN_MsgEngine_FindNodeByProperty(msgEngine, "SEG", "id", segmentVersion, segmentName);
-  if (xmlDescrForSegNameAndVer==NULL)
-    xmlDescrForSegNameAndVer=GWEN_MsgEngine_FindNodeByProperty(msgEngine, "SEG", "code", segmentVersion, segmentName);
-  if (xmlDescrForSegNameAndVer) {
-    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Found a candidate");
-    if (atoi(GWEN_XMLNode_GetProperty(xmlDescrForSegNameAndVer, "isbpdjob", "0"))) {
-      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Segment \"%s\" is a BPD job", segmentName);
-      return 1;
-    }
-    else {
-      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Segment \"%s\" is known but not as a BPD job", segmentName);
-    }
-  }
-  else {
-    DBG_WARN(AQHBCI_LOGDOMAIN, "Did not find segment \"%s\" (%d)", segmentName, segmentVersion);
-  }
-  return 0;
-}
-
-
-
-void _dumpBpdAddr(const AH_BPD_ADDR *ba)
-{
-  GWEN_BUFFER *tbuf;
-  const char *s;
-
-  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-
-  switch (AH_BpdAddr_GetType(ba)) {
-  case AH_BPD_AddrTypeTCP:
-    GWEN_Buffer_AppendString(tbuf, "TCP: ");
-    break;
-  case AH_BPD_AddrTypeBTX:
-    GWEN_Buffer_AppendString(tbuf, "BTX: ");
-    break;
-  case AH_BPD_AddrTypeSSL:
-    GWEN_Buffer_AppendString(tbuf, "SSL: ");
-    break;
-  default:
-    GWEN_Buffer_AppendString(tbuf, "<UNK>: ");
-    break;
-  }
-
-  s=AH_BpdAddr_GetAddr(ba);
-  if (s && *s)
-    GWEN_Buffer_AppendString(tbuf, s);
-  else
-    GWEN_Buffer_AppendString(tbuf, "<empty>");
-
-  s=AH_BpdAddr_GetSuffix(ba);
-  if (s && *s) {
-    GWEN_Buffer_AppendString(tbuf, ", ");
-    GWEN_Buffer_AppendString(tbuf, s);
-  }
-
-  GWEN_Buffer_AppendString(tbuf, ", ");
-  switch (AH_BpdAddr_GetFType(ba)) {
-  case AH_BPD_FilterTypeNone:
-    GWEN_Buffer_AppendString(tbuf, "none");
-    break;
-  case AH_BPD_FilterTypeBase64:
-    GWEN_Buffer_AppendString(tbuf, "base64");
-    break;
-  case AH_BPD_FilterTypeUUE:
-    GWEN_Buffer_AppendString(tbuf, "uue");
-    break;
-  default:
-    GWEN_Buffer_AppendString(tbuf, "<unk>");
-    break;
-  }
-
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Server address found: %s", GWEN_Buffer_GetStart(tbuf));
-  GWEN_Gui_ProgressLog2(0,
-                        GWEN_LoggerLevel_Info,
-                        I18N("Server address found: %s"),
-                        GWEN_Buffer_GetStart(tbuf));
-  GWEN_Buffer_free(tbuf);
-}
 
 

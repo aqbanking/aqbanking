@@ -32,7 +32,6 @@
  */
 
 static int _commitSystemData(AH_JOB *j, int doLock);
-static void _readSomeKnownSegments(AH_JOB *j, GWEN_DB_NODE *dbResponses);
 static void _readSegmentResult(AH_JOB *j, GWEN_DB_NODE *dbRd);
 static void _readSecurityProfile(AH_JOB *j, GWEN_DB_NODE *dbRd);
 static void _readBankMessage(AH_JOB *j, GWEN_DB_NODE *dbRd);
@@ -134,45 +133,15 @@ void AH_Job_ReadAccountDataSeg(AB_ACCOUNT *acc, GWEN_DB_NODE *dbAccountData)
 
 int _commitSystemData(AH_JOB *j, int doLock)
 {
+  AB_USER *user;
+  GWEN_DB_NODE *dbCurr;
   int rv;
 
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Committing data");
+  user=AH_Job_GetUser(j);
   /* GWEN_DB_Dump(j->jobResponses, 2); */
 
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Reading segment results, bank messages etc");
-  _readSomeKnownSegments(j, AH_Job_GetResponses(j));
-
-  /* try to extract bank parameter data */
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Committing BPD");
-  rv=AH_Job_Commit_Bpd(j);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  /* try to extract accounts */
-  if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_IGNOREACCOUNTS) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Ignoring possibly received accounts");
-  }
-  else {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Committing accounts");
-    AH_Job_Commit_Accounts(j);
-  }
-
-  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Finished.");
-  return 0;
-}
-
-
-
-void _readSomeKnownSegments(AH_JOB *j, GWEN_DB_NODE *dbResponses)
-{
-  AB_USER *user;
-  GWEN_DB_NODE *dbCurr;
-
-  user=AH_Job_GetUser(j);
-
-  dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
+  dbCurr=GWEN_DB_GetFirstGroup(AH_Job_GetResponses(j));
   while (dbCurr) {
     GWEN_DB_NODE *dbRd;
 
@@ -212,6 +181,30 @@ void _readSomeKnownSegments(AH_JOB *j, GWEN_DB_NODE *dbResponses)
     } /* if response data found */
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
   } /* while */
+
+  /* try to extract bank parameter data */
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Committing BPD");
+  rv=AH_Job_Commit_Bpd(j);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* try to extract accounts */
+  if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_IGNOREACCOUNTS) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Ignoring possibly received accounts");
+  }
+  else {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Committing accounts");
+    rv=AH_Job_Commit_Accounts(j);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Finished.");
+  return 0;
 }
 
 
