@@ -41,6 +41,7 @@ AH_OUTBOX_CBOX *AH_OutboxCBox_new(AB_PROVIDER *pro, AB_USER *u, AH_OUTBOX *ob)
   GWEN_LIST_INIT(AH_OUTBOX_CBOX, cbox);
   cbox->user=u;
   cbox->todoQueues=AH_JobQueue_List_new();
+  cbox->finishedQueues=AH_JobQueue_List_new();
   cbox->todoJobs=AH_Job_List_new();
   cbox->finishedJobs=AH_Job_List_new();
   cbox->provider=pro;
@@ -58,6 +59,7 @@ void AH_OutboxCBox_free(AH_OUTBOX_CBOX *cbox)
     if (--(cbox->usage)==0) {
       GWEN_LIST_FINI(AH_OUTBOX_CBOX, cbox);
       AH_JobQueue_List_free(cbox->todoQueues);
+      AH_JobQueue_List_free(cbox->finishedQueues);
       AH_Job_List_free(cbox->todoJobs);
       AH_Job_List_free(cbox->finishedJobs);
 
@@ -138,6 +140,14 @@ void AH_OutboxCBox_SetTodoQueues(AH_OUTBOX_CBOX *cbox, AH_JOBQUEUE_LIST *nl)
   if (cbox->todoQueues)
     AH_JobQueue_List_free(cbox->todoQueues);
   cbox->todoQueues=nl;
+}
+
+
+
+AH_JOBQUEUE_LIST *AH_OutboxCBox_GetFinishedQueues(const AH_OUTBOX_CBOX *cbox)
+{
+  assert(cbox);
+  return cbox->finishedQueues;
 }
 
 

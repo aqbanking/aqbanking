@@ -626,6 +626,7 @@ void _handleQueueError(AH_OUTBOX_CBOX *cbox, AH_JOBQUEUE *jq, const char *logStr
 
 void AH_OutboxCBox_Finish(AH_OUTBOX_CBOX *cbox)
 {
+  AH_JOBQUEUE_LIST *finishedQueues;
   AH_JOB_LIST *finishedJobs;
   AH_JOBQUEUE_LIST *todoQueues;
   AH_JOB_LIST *todoJobs;
@@ -633,11 +634,26 @@ void AH_OutboxCBox_Finish(AH_OUTBOX_CBOX *cbox)
 
   assert(cbox);
 
+  finishedQueues=AH_OutboxCBox_GetFinishedQueues(cbox);
   finishedJobs=AH_OutboxCBox_GetFinishedJobs(cbox);
   todoQueues=AH_OutboxCBox_GetTodoQueues(cbox);
   todoJobs=AH_OutboxCBox_GetTodoJobs(cbox);
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Finishing customer box");
+  while ((jq=AH_JobQueue_List_First(finishedQueues))) {
+    AH_JOB_LIST *jl;
+    AH_JOB *j;
+
+    jl=AH_JobQueue_TakeJobList(jq);
+    assert(jl);
+    while ((j=AH_Job_List_First(jl))) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Moving job \"%s\" from finished queue to finished jobs", AH_Job_GetName(j));
+      AH_Job_List_Del(j);
+      AH_Job_List_Add(j, finishedJobs);
+    } /* while */
+    AH_Job_List_free(jl);
+    AH_JobQueue_free(jq);
+  } /* while */
 
   while ((jq=AH_JobQueue_List_First(todoQueues))) {
     AH_JOB_LIST *jl;

@@ -43,6 +43,7 @@ AH_JOB_LIST *AH_OutboxCBox_TakeFinishedJobs(AH_OUTBOX_CBOX *cbox);
 
 AH_JOBQUEUE_LIST *AH_OutboxCBox_GetTodoQueues(const AH_OUTBOX_CBOX *cbox);
 void AH_OutboxCBox_SetTodoQueues(AH_OUTBOX_CBOX *cbox, AH_JOBQUEUE_LIST *nl);
+AH_JOBQUEUE_LIST *AH_OutboxCBox_GetFinishedQueues(const AH_OUTBOX_CBOX *cbox);
 
 
 

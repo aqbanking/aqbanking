@@ -27,6 +27,7 @@ struct AH_OUTBOX_CBOX {
   AB_PROVIDER *provider;
   AB_USER *user;
   AH_JOBQUEUE_LIST *todoQueues;
+  AH_JOBQUEUE_LIST *finishedQueues;
 
   AH_JOB_LIST *todoJobs;
   AH_JOB_LIST *finishedJobs;
