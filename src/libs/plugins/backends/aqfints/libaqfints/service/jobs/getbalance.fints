@@ -17,7 +17,7 @@
             segmentVersion="6"
     >
       <DEG   name="head"         type="SegHead" />
-      <DEG                       type="ktv"  version="2"   trustlevel="4" />
+      <DEG                       type="ktv"   version="2"   trustlevel="4" />
       <DE    name="allAccounts"  type="alpha" maxsize="1" />
       <DE    name="currency"     type="an"    maxsize="128" />
       <DE    name="attach"       type="ascii" maxsize="128" />
@@ -48,8 +48,9 @@
     <SEGdef id="GetBalanceParams" 
             code="HISALS" 
             segmentVersion="6"
+            isBpdJob="1"
     >
-      <GROUP                       type="bpdJob"    version="2" />
+      <GROUP                     type="bpdJob"    version="2" />
     </SEGdef>
 
   </SEGs>
@@ -59,11 +60,11 @@
 
   <GROUPs>
   
-    <GROUPdef id="saldo"           version="1">
-      <DE    name="debitMark"      type="alpha"  maxsize="1" />
-      <DEG                         type="btg"    trustlevel="4" minnum="0" />
-      <DE    name="date"           type="date"   minsize="8"    maxsize="8" trustlevel="0" />
-      <DE    name="time"           type="time"   minsize="6"    maxsize="6" minnum="0" trustlevel="0" />
+    <GROUPdef id="saldo"         version="1">
+      <DE    name="debitMark"    type="alpha"     maxsize="1" />
+      <DEG                       type="btg"       trustlevel="4" minnum="0" />
+      <DE    name="date"         type="date"      minsize="8"    maxsize="8" trustlevel="0" />
+      <DE    name="time"         type="time"      minsize="6"    maxsize="6" minnum="0" trustlevel="0" />
     </GROUPdef>
   
   </GROUPs>
