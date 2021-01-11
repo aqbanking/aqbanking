@@ -427,30 +427,15 @@ void _handleSegmentResultForAllJobs(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbSegment)
 void _handleSegmentResult(AH_JOBQUEUE *jq, AH_JOB *j, GWEN_DB_NODE *dbSegment)
 {
   if (strcasecmp(GWEN_DB_GroupName(dbSegment), "SegResult")==0) {
-    AH_RESULT_LIST *resultList;
     GWEN_DB_NODE *dbResult;
-
-    resultList=AH_Job_GetSegResults(j);
 
     dbResult=GWEN_DB_FindFirstGroup(dbSegment, "result");
     while (dbResult) {
-      AH_RESULT *r;
       int rcode;
       const char *rtext;
-      const char *rref;
-      const char *rparam;
 
       rcode=GWEN_DB_GetIntValue(dbResult, "resultcode", 0, 0);
       rtext=GWEN_DB_GetCharValue(dbResult, "text", 0, "");
-      rref=GWEN_DB_GetCharValue(dbResult, "ref", 0, 0);
-      rparam=GWEN_DB_GetCharValue(dbResult, "param", 0, NULL);
-
-      r=AH_Result_new(rcode, rtext, rref, rparam, 0); /* seg result */
-      DBG_ERROR(AQHBCI_LOGDOMAIN,
-		"Adding result to job \"%s\": %d:%s",
-		AH_Job_GetName(j),
-		rcode, rtext?rtext:"<no text>");
-      AH_Result_List_Add(r, resultList);
 
       if (rcode>=9000 && rcode<10000) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "Segment result: Error (%d: %s)", rcode, rtext);
