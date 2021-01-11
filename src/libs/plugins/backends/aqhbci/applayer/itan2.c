@@ -7,27 +7,14 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+/* This file is included by outbox.c */
 
-#include "aqhbci/applayer/itan1.h"
 
-#include "aqhbci/applayer/outbox_send.h"
-#include "aqhbci/applayer/outbox_recv.h"
-#include "aqhbci/applayer/hhd_l.h"
-#include "aqhbci/msglayer/message_l.h"
-#include "aqhbci/tan/tanmechanism.h"
-#include "aqhbci/banking/provider_tan.h"
-#include "aqhbci/banking/user_l.h"
-#include "aqhbci/admjobs/jobtan_l.h"
-
-#include "aqbanking/i18n_l.h"
+#include "message_l.h"
+#include "user_l.h"
 
 #include <gwenhywfar/mdigest.h>
-#include <gwenhywfar/gui.h>
 
-#include <ctype.h>
 
 
 
@@ -59,14 +46,11 @@ int AH_Outbox__CBox_SendAndReceiveQueueWithTan2(AH_OUTBOX__CBOX *cbox,
                                                 AH_JOBQUEUE *qJob)
 {
   int rv;
-  AB_PROVIDER *provider;
   AH_JOB *job;
   AH_JOB *jTan1;
   AB_USER *u;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Sending job with TAN (process variant 2)");
-
-  provider=AH_OutboxCBox_GetProvider(cbox);
 
   assert(qJob);
   assert(AH_JobQueue_GetCount(qJob)==1);
@@ -79,7 +63,7 @@ int AH_Outbox__CBox_SendAndReceiveQueueWithTan2(AH_OUTBOX__CBOX *cbox,
   AH_JobQueue_SubFlags(qJob, AH_JOBQUEUE_FLAGS_NEEDTAN);
 
   /* prepare HKTAN (process type 4) */
-  jTan1=AH_Job_Tan_new(provider, u, 4, AH_Dialog_GetTanJobVersion(dlg));
+  jTan1=AH_Job_Tan_new(cbox->provider, u, 4, AH_Dialog_GetTanJobVersion(dlg));
   if (!jTan1) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
     return GWEN_ERROR_GENERIC;
@@ -144,13 +128,10 @@ int AH_Outbox__CBox_SendAndReceiveJobWithTan2(AH_OUTBOX__CBOX *cbox,
                                               AH_DIALOG *dlg,
                                               AH_JOB *job)
 {
-  AB_USER *user;
   AH_JOBQUEUE *qJob;
   int rv;
 
-  user=AH_OutboxCBox_GetUser(cbox);
-
-  qJob=AH_JobQueue_new(user);
+  qJob=AH_JobQueue_new(cbox->user);
 
   /* add original job to queue */
   AH_Job_Attach(job);
@@ -180,8 +161,6 @@ int _sendAndReceiveTanResponseProc2(AH_OUTBOX__CBOX *cbox,
                                     AH_JOBQUEUE *qJob,
                                     AH_JOB *jTan1)
 {
-  AH_OUTBOX *outbox;
-  AB_PROVIDER *provider;
   int rv;
   AH_JOB *j;
   AB_USER *u;
@@ -194,16 +173,13 @@ int _sendAndReceiveTanResponseProc2(AH_OUTBOX__CBOX *cbox,
   assert(qJob);
   assert(jTan1);
 
-  provider=AH_OutboxCBox_GetProvider(cbox);
-  outbox=AH_OutboxCBox_GetOutbox(cbox);
-
   j=AH_JobQueue_GetFirstJob(qJob);
   assert(j);
   u=AH_Job_GetUser(j);
   assert(u);
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Processing job \"%s\"", AH_Job_GetName(jTan1));
-  rv=AH_Job_Process(jTan1, AH_Outbox_GetImExContext(outbox));
+  rv=AH_Job_Process(jTan1, cbox->outbox->context);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -247,7 +223,7 @@ int _sendAndReceiveTanResponseProc2(AH_OUTBOX__CBOX *cbox,
 
 
   /* prepare HKTAN (process type 2) */
-  jTan2=AH_Job_Tan_new(provider, u, 2, AH_Dialog_GetTanJobVersion(dlg));
+  jTan2=AH_Job_Tan_new(cbox->provider, u, 2, AH_Dialog_GetTanJobVersion(dlg));
   if (!jTan2) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
     AH_Job_free(jTan2);
@@ -346,7 +322,7 @@ int _sendAndReceiveTanResponseProc2(AH_OUTBOX__CBOX *cbox,
   }
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Processing job \"%s\"", AH_Job_GetName(jTan2));
-    rv=AH_Job_Process(jTan2, AH_Outbox_GetImExContext(outbox));
+    rv=AH_Job_Process(jTan2, cbox->outbox->context);
     if (rv) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       AH_Msg_free(msg2);

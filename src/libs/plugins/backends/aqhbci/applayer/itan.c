@@ -7,23 +7,15 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+/* This file is included by outbox.c */
 
-#include "aqhbci/applayer/itan.h"
 
 #include "aqhbci/msglayer/message_l.h"
 #include "aqhbci/applayer/hhd_l.h"
 #include "aqhbci/tan/tanmechanism.h"
 #include "aqhbci/banking/provider_tan.h"
-#include "aqhbci/applayer/itan1.h"
-#include "aqhbci/applayer/itan2.h"
-
-#include "aqbanking/i18n_l.h"
 
 #include <gwenhywfar/mdigest.h>
-#include <gwenhywfar/gui.h>
 
 #include <ctype.h>
 
@@ -304,7 +296,7 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg)
   AB_USER *u;
   const AH_TAN_METHOD_LIST *tml;
 
-  u=AH_OutboxCBox_GetUser(cbox);
+  u=cbox->user;
   assert(u);
 
   tml=AH_User_GetTanMethodDescriptions(u);
@@ -455,7 +447,8 @@ const AH_TAN_METHOD *_getAndCheckAutoSelectedTanMethod(AB_USER *u, const AH_TAN_
 
 
 
-void AH_Outbox__CBox_CopyJobResultsToJobList(const AH_JOB *j, const AH_JOB_LIST *qjl)
+void AH_Outbox__CBox_CopyJobResultsToJobList(const AH_JOB *j,
+                                             const AH_JOB_LIST *qjl)
 {
   /* dispatch results from jTan to all other members of the queue */
   if (qjl) {
@@ -499,17 +492,12 @@ int AH_Outbox__CBox_InputTanWithChallenge(AH_OUTBOX__CBOX *cbox,
 {
   int rv;
   const AH_TAN_METHOD *tanMethodDescription=NULL;
-  AB_PROVIDER *provider;
-  AB_USER *user;
-
-  provider=AH_OutboxCBox_GetProvider(cbox);
-  user=AH_OutboxCBox_GetUser(cbox);
 
   tanMethodDescription=AH_Dialog_GetTanMethodDescription(dialog);
   assert(tanMethodDescription);
 
-  rv=AH_Provider_InputTanWithChallenge(provider,
-                                       user,
+  rv=AH_Provider_InputTanWithChallenge(cbox->provider,
+                                       cbox->user,
                                        tanMethodDescription,
                                        sChallenge, sChallengeHhd,
                                        passwordBuffer, passwordMinLen, passwordMaxLen);

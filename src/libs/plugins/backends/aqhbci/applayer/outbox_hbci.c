@@ -7,50 +7,37 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 
-
-#include "aqhbci/applayer/outbox_hbci.h"
-
-#include "aqhbci/applayer/itan.h"
-
-#include "aqbanking/i18n_l.h"
-
-#include <gwenhywfar/gui.h>
+/* included by outbox.c */
 
 
 
-int AH_Outbox__CBox_OpenDialog_Hbci(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg, uint32_t jqFlags)
+
+int AH_Outbox__CBox_OpenDialog_Hbci(AH_OUTBOX__CBOX *cbox,
+                                    AH_DIALOG *dlg,
+                                    uint32_t jqFlags)
 {
-  AB_PROVIDER *provider;
-  AB_USER *user;
   AH_JOBQUEUE *jqDlgOpen;
   AH_JOB *jDlgOpen;
   int rv;
 
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating dialog open request");
-
-  provider=AH_OutboxCBox_GetProvider(cbox);
-  user=AH_OutboxCBox_GetUser(cbox);
-
   AH_Dialog_SetItanProcessType(dlg, 0);
 
   if ((jqFlags & AH_JOBQUEUE_FLAGS_CRYPT) || (jqFlags & AH_JOBQUEUE_FLAGS_SIGN)) {
     /* sign and crypt, not anonymous */
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating non-anonymous dialog open request");
-    jDlgOpen=AH_Job_new("JobDialogInit", provider, user, 0, 0);
+    jDlgOpen=AH_Job_new("JobDialogInit", cbox->provider, cbox->user, 0, 0);
     if (!jDlgOpen) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create job JobDialogInit");
       return GWEN_ERROR_GENERIC;
     }
     if (jqFlags & AH_JOBQUEUE_FLAGS_SIGN)
-      AH_Job_AddSigner(jDlgOpen, AB_User_GetUserId(user));
+      AH_Job_AddSigner(jDlgOpen, AB_User_GetUserId(cbox->user));
     AH_Dialog_SubFlags(dlg, AH_DIALOG_FLAGS_ANONYMOUS);
 
-    if (AH_User_GetCryptMode(user)==AH_CryptMode_Pintan) {
-      if (AH_User_HasTanMethodOtherThan(user, 999) &&
+    if (AH_User_GetCryptMode(cbox->user)==AH_CryptMode_Pintan) {
+      if (AH_User_HasTanMethodOtherThan(cbox->user, 999) &&
           !(jqFlags & AH_JOBQUEUE_FLAGS_NOITAN)) {
         /* only use itan if any other mode than singleStep is available
          * and the job queue does not request non-ITAN mode
@@ -66,7 +53,7 @@ int AH_Outbox__CBox_OpenDialog_Hbci(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg, uint3
   else {
     /* neither sign nor crypt, use anonymous dialog */
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating anonymous dialog open request");
-    jDlgOpen=AH_Job_new("JobDialogInitAnon", provider, user, 0, 0);
+    jDlgOpen=AH_Job_new("JobDialogInitAnon", cbox->provider, cbox->user, 0, 0);
     if (!jDlgOpen) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create job JobDialogInitAnon");
       return GWEN_ERROR_GENERIC;
@@ -75,7 +62,7 @@ int AH_Outbox__CBox_OpenDialog_Hbci(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg, uint3
   }
 
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("Opening dialog"));
-  jqDlgOpen=AH_JobQueue_new(user);
+  jqDlgOpen=AH_JobQueue_new(cbox->user);
   AH_JobQueue_AddFlags(jqDlgOpen, AH_JOBQUEUE_FLAGS_OUTBOX);
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Enqueueing dialog open request");
   if (AH_JobQueue_AddJob(jqDlgOpen, jDlgOpen)!=AH_JobQueueAddResultOk) {

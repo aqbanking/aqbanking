@@ -22,15 +22,10 @@
 
 typedef struct AH_OUTBOX AH_OUTBOX;
 
-typedef struct AH_OUTBOX__CBOX AH_OUTBOX__CBOX;
-
-
 #include "hbci_l.h"
 #include "job_l.h"
 
 #include "aqhbci/banking/user.h"
-#include "aqhbci/msglayer/dialog_l.h"
-#include "aqhbci/joblayer/jobqueue_l.h"
 
 #include <aqbanking/backendsupport/imexporter.h>
 
@@ -38,15 +33,9 @@ typedef struct AH_OUTBOX__CBOX AH_OUTBOX__CBOX;
 #include <gwenhywfar/gwentime.h>
 
 
-GWEN_LIST_FUNCTION_DEFS(AH_OUTBOX__CBOX, AH_Outbox__CBox);
-
-
 AH_OUTBOX *AH_Outbox_new(AB_PROVIDER *pro);
 void AH_Outbox_free(AH_OUTBOX *ob);
 void AH_Outbox_Attach(AH_OUTBOX *ob);
-
-AB_IMEXPORTER_CONTEXT *AH_Outbox_GetImExContext(const AH_OUTBOX *outbox);
-
 
 void AH_Outbox_AddJob(AH_OUTBOX *ob, AH_JOB *j);
 
@@ -81,16 +70,6 @@ AH_JOB *AH_Outbox_FindTransferJob(AH_OUTBOX *ob,
 
 
 AH_JOB_LIST *AH_Outbox_GetFinishedJobs(AH_OUTBOX *ob);
-
-
-int AH_Outbox__CBox_SendAndRecvQueueNoTan(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jq);
-int AH_Outbox__CBox_SendAndRecvQueue(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jq);
-
-
-
-AH_OUTBOX *AH_OutboxCBox_GetOutbox(const AH_OUTBOX__CBOX *cbox);
-AB_PROVIDER *AH_OutboxCBox_GetProvider(const AH_OUTBOX__CBOX *cbox);
-AB_USER *AH_OutboxCBox_GetUser(const AH_OUTBOX__CBOX *cbox);
 
 
 #endif /* AH_OUTBOX_L_H */

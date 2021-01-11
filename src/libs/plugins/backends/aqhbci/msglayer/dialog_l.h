@@ -22,10 +22,10 @@ typedef struct AH_DIALOG AH_DIALOG;
 #define AH_DIALOG_FLAGS_SCA           0x0040 /* strong customer authentication */
 
 #include "hbci_l.h"
+#include "message_l.h"
+#include "tanmethod.h"
 
-#include "aqhbci/aqhbci.h"
-#include "aqhbci/msglayer/message_l.h"
-#include "aqhbci/tan/tanmethod.h"
+#include <aqhbci/aqhbci.h>
 
 #include <aqbanking/banking.h>
 #include <aqbanking/backendsupport/user.h>

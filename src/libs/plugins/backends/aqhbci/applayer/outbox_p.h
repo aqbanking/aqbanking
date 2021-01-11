@@ -31,7 +31,10 @@ typedef enum {
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 #include "outbox_l.h"
-#include "itan.h"
+
+
+typedef struct AH_OUTBOX__CBOX AH_OUTBOX__CBOX;
+GWEN_LIST_FUNCTION_DEFS(AH_OUTBOX__CBOX, AH_Outbox__CBox);
 
 
 /** Customer's outbox */
@@ -70,6 +73,11 @@ AH_Outbox__CBox_TakeFinishedJobs(AH_OUTBOX__CBOX *cbox);
 
 static int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox);
 
+static int AH_Outbox__CBox__Hash(int mode,
+                                 const uint8_t *p,
+                                 unsigned int l,
+                                 AH_MSG *msg);
+
 
 
 struct AH_OUTBOX {
@@ -96,6 +104,12 @@ static int AH_Outbox_StartSending(AH_OUTBOX *ob);
 static unsigned int AH_Outbox__CountJobList(const AH_JOB_LIST *jl);
 
 
+static int AH_Outbox__CBox_SendQueue(AH_OUTBOX__CBOX *cbox,
+                                     AH_DIALOG *dlg,
+                                     AH_JOBQUEUE *jq);
+static int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox,
+                                     AH_DIALOG *dlg,
+                                     AH_JOBQUEUE *jq);
 static int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
                                         AH_DIALOG *dlg,
                                         AH_JOBQUEUE *jq);
@@ -105,6 +119,16 @@ static void AH_Outbox__CBox_HandleQueueError(AH_OUTBOX__CBOX *cbox,
 static void AH_Outbox__CBox_HandleQueueListError(AH_OUTBOX__CBOX *cbox,
                                                  AH_JOBQUEUE_LIST *jql,
                                                  const char *logStr);
+
+static AH_MSG *AH_Outbox__CBox_RecvMessage(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg, GWEN_DB_NODE *dbRsp);
+
+
+static int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox,
+                                      AH_DIALOG *dlg,
+                                      uint32_t jqFlags);
+static int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox,
+                                       AH_DIALOG *dlg,
+                                       uint32_t jqFlags);
 
 static int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
                                                   AH_JOBQUEUE_LIST *jql);
@@ -132,6 +156,51 @@ static AH_JOB *AH_Outbox__FindTransferJobInCheckJobList(const AH_JOB_LIST *jl,
                                                         AB_USER *u,
                                                         AB_ACCOUNT *a,
                                                         const char *jobName);
+
+
+static int AH_Outbox__CBox_JobToMessage(AH_JOB *j, AH_MSG *msg, int doCopySigners);
+static int AH_Outbox__CBox_SendMessage(AH_OUTBOX__CBOX *cbox,
+                                       AH_DIALOG *dlg,
+                                       AH_MSG *msg);
+
+
+static int AH_Outbox__CBox_SendAndRecvQueue(AH_OUTBOX__CBOX *cbox,
+                                            AH_DIALOG *dlg,
+                                            AH_JOBQUEUE *jq);
+static int AH_Outbox__CBox_SendAndReceiveQueueWithTan(AH_OUTBOX__CBOX *cbox,
+                                                      AH_DIALOG *dlg,
+                                                      AH_JOBQUEUE *qJob);
+static int AH_Outbox__CBox_SendAndReceiveQueueWithTan2(AH_OUTBOX__CBOX *cbox,
+                                                       AH_DIALOG *dlg,
+                                                       AH_JOBQUEUE *qJob);
+
+static int AH_Outbox__CBox_SendAndReceiveJobWithTan2(AH_OUTBOX__CBOX *cbox,
+                                                     AH_DIALOG *dlg,
+                                                     AH_JOB *job);
+
+
+
+static int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
+                                 AH_DIALOG *dlg,
+                                 AH_JOBQUEUE *jq);
+
+
+
+static int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
+                                          AH_DIALOG *dlg);
+
+
+static void AH_Outbox__CBox_CopyJobResultsToJobList(const AH_JOB *j,
+                                                    const AH_JOB_LIST *qjl);
+
+static int AH_Outbox__CBox_InputTanWithChallenge(AH_OUTBOX__CBOX *cbox,
+                                                 AH_DIALOG *dialog,
+                                                 const char *sChallenge,
+                                                 const char *sChallengeHhd,
+                                                 char *passwordBuffer,
+                                                 int passwordMinLen,
+                                                 int passwordMaxLen);
+
 
 
 static int AH_Outbox_LockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers);

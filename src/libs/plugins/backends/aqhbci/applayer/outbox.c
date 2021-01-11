@@ -24,10 +24,6 @@
 #include "dialog_l.h"
 #include "provider_l.h"
 
-#include "aqhbci/applayer/outbox_send.h"
-#include "aqhbci/applayer/outbox_recv.h"
-#include "aqhbci/applayer/outbox_dialog.h"
-
 #include <aqbanking/banking_be.h>
 #include <aqbanking/backendsupport/imexporter.h>
 
@@ -84,30 +80,6 @@ void AH_Outbox__CBox_free(AH_OUTBOX__CBOX *cbox)
       GWEN_FREE_OBJECT(cbox);
     }
   }
-}
-
-
-
-AH_OUTBOX *AH_OutboxCBox_GetOutbox(const AH_OUTBOX__CBOX *cbox)
-{
-  assert(cbox);
-  return cbox->outbox;
-}
-
-
-
-AB_PROVIDER *AH_OutboxCBox_GetProvider(const AH_OUTBOX__CBOX *cbox)
-{
-  assert(cbox);
-  return cbox->provider;
-}
-
-
-
-AB_USER *AH_OutboxCBox_GetUser(const AH_OUTBOX__CBOX *cbox)
-{
-  assert(cbox);
-  return cbox->user;
 }
 
 
@@ -1068,14 +1040,6 @@ void AH_Outbox_Attach(AH_OUTBOX *ob)
 
 
 
-AB_IMEXPORTER_CONTEXT *AH_Outbox_GetImExContext(const AH_OUTBOX *ob)
-{
-  assert(ob);
-  return ob->context;
-}
-
-
-
 int AH_Outbox_Prepare(AH_OUTBOX *ob)
 {
   AH_OUTBOX__CBOX *cbox;
@@ -1715,6 +1679,18 @@ AH_JOB *AH_Outbox_FindTransferJob(AH_OUTBOX *ob,
   DBG_INFO(AQHBCI_LOGDOMAIN, "No matching multi job found");
   return 0;
 }
+
+
+
+#include "outbox_send.c"
+#include "outbox_recv.c"
+#include "itan.c"
+#include "itan1.c"
+#include "itan2.c"
+#include "outbox_hbci.c"
+#include "outbox_psd2.c"
+#include "outbox_dialog.c"
+
 
 
 
