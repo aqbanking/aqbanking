@@ -12,6 +12,7 @@
 #endif
 
 #include "aqhbci/applayer/cbox_send.h"
+#include "aqhbci/joblayer/jobqueue_tomsg.h"
 
 #include "aqbanking/i18n_l.h"
 
