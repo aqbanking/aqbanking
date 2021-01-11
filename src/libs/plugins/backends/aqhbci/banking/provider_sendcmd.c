@@ -26,7 +26,7 @@
  */
 
 static int _addCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *t, AH_OUTBOX *outbox);
-static int _addCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, AB_IMEXPORTER_CONTEXT *ctx,
+static int _addCommandsToOutbox(AB_PROVIDER *pro, const AB_USERQUEUE_LIST *uql, AB_IMEXPORTER_CONTEXT *ctx,
                                 AH_OUTBOX *outbox);
 static int _sampleResults(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_IMEXPORTER_CONTEXT *ctx);
 
@@ -86,6 +86,8 @@ int AH_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORT
 
   /* release accounts and users we loaded */
   AB_Provider_FreeUsersAndAccountsFromUserQueueList(pro, uql);
+
+  AB_UserQueue_List_free(uql);
 
   /* error code from AH_Outbox_Execute is more important than that from _sampleResults */
   if (rv>=0)
@@ -178,7 +180,7 @@ int _addCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACT
 
 
 
-int _addCommandsToOutbox(AB_PROVIDER *pro, AB_USERQUEUE_LIST *uql, AB_IMEXPORTER_CONTEXT *ctx,
+int _addCommandsToOutbox(AB_PROVIDER *pro, const AB_USERQUEUE_LIST *uql, AB_IMEXPORTER_CONTEXT *ctx,
                          AH_OUTBOX *outbox)
 {
   AB_USERQUEUE *uq;
