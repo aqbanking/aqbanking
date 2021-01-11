@@ -21,11 +21,6 @@
 
 
 
-/* ------------------------------------------------------------------------------------------------
- * forward declarations
- * ------------------------------------------------------------------------------------------------
- */
-
 static int _setupNeedTanAndSignersAndCrypter(AH_JOB *j, AH_MSG *msg, int doCopySigners);
 static int _addJobNodesToMessage(AH_JOB *j, AH_MSG *msg);
 static GWEN_DB_NODE *_getMessageSpecificArgsOrJobArgs(AH_JOB *j, const GWEN_XMLNODE *jnode);
@@ -33,11 +28,6 @@ static GWEN_DB_NODE *_getMessageSpecificArgsOrJobArgs(AH_JOB *j, const GWEN_XMLN
 static const AH_TAN_METHOD *_getAndCheckUserSelectedTanMethod(AB_USER *u, const AH_TAN_METHOD_LIST *tml);
 static const AH_TAN_METHOD *_getAndCheckAutoSelectedTanMethod(AB_USER *u, const AH_TAN_METHOD_LIST *tml);
 
-
-/* ------------------------------------------------------------------------------------------------
- * implementations
- * ------------------------------------------------------------------------------------------------
- */
 
 
 
