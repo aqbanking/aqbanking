@@ -21,10 +21,6 @@
 
 
 
-static int _setupNeedTanAndSignersAndCrypter(AH_JOB *j, AH_MSG *msg, int doCopySigners);
-static int _addJobNodesToMessage(AH_JOB *j, AH_MSG *msg);
-static GWEN_DB_NODE *_getMessageSpecificArgsOrJobArgs(AH_JOB *j, const GWEN_XMLNODE *jnode);
-
 static const AH_TAN_METHOD *_getAndCheckUserSelectedTanMethod(AB_USER *u, const AH_TAN_METHOD_LIST *tml);
 static const AH_TAN_METHOD *_getAndCheckAutoSelectedTanMethod(AB_USER *u, const AH_TAN_METHOD_LIST *tml);
 
@@ -108,7 +104,13 @@ int AH_Outbox__CBox__Hash(int mode,
 int AH_Outbox__CBox_JobToMessage(AH_JOB *j, AH_MSG *msg, int doCopySigners)
 {
   AB_USER *user;
-  int rv;
+  unsigned int firstSeg;
+  unsigned int lastSeg;
+  GWEN_DB_NODE *jargs;
+  GWEN_XMLNODE *jnode;
+  GWEN_BUFFER *msgBuf;
+  uint32_t startPos;
+  uint32_t endPos;
 
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding job \"%s\"", AH_Job_GetName(j));
   user=AH_Job_GetUser(j);
@@ -116,39 +118,14 @@ int AH_Outbox__CBox_JobToMessage(AH_JOB *j, AH_MSG *msg, int doCopySigners)
 
   /* setup message */
   AH_Msg_SetHbciVersion(msg, AH_User_GetHbciVersion(user));
-
-  rv=_setupNeedTanAndSignersAndCrypter(j, msg, doCopySigners);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  rv=_addJobNodesToMessage(j, msg);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  if (AH_Job_GetStatus(j)!=AH_JobStatusError) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" encoded", AH_Job_GetName(j));
-    AH_Job_SetStatus(j, AH_JobStatusEncoded);
-  }
-
-  return 0;
-}
-
-
-
-int _setupNeedTanAndSignersAndCrypter(AH_JOB *j, AH_MSG *msg, int doCopySigners)
-{
-
   if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_NEEDTAN) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job needs a TAN");
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Queue needs a TAN");
   }
   else {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Jobs doesn't need a TAN");
   }
-  AH_Msg_SetNeedTan(msg, (AH_Job_GetFlags(j) & AH_JOB_FLAGS_NEEDTAN));
+  AH_Msg_SetNeedTan(msg,
+                    (AH_Job_GetFlags(j) & AH_JOB_FLAGS_NEEDTAN));
 
   if (doCopySigners) {
     /* copy signers */
@@ -176,75 +153,17 @@ int _setupNeedTanAndSignersAndCrypter(AH_JOB *j, AH_MSG *msg, int doCopySigners)
      */
     AH_Msg_SetCrypterId(msg, "owner");
   }
-  return 0;
-}
-
-
-
-int _addJobNodesToMessage(AH_JOB *j, AH_MSG *msg)
-{
-  GWEN_DB_NODE *jargs;
-  GWEN_XMLNODE *jnode;
-  unsigned int firstSeg;
-  unsigned int lastSeg;
-  GWEN_BUFFER *msgBuf;
-  uint32_t startPos;
 
   /* get arguments and XML node */
-  jnode=AH_Job_GetXmlNode(j);
-  jargs=_getMessageSpecificArgsOrJobArgs(j, jnode);
-
-  /* add job node to message */
-  firstSeg=AH_Msg_GetCurrentSegmentNumber(msg);
-  msgBuf=AH_Msg_GetBuffer(msg);
-  assert(msgBuf);
-
-  startPos=GWEN_Buffer_GetPos(msgBuf);
-  lastSeg=AH_Msg_AddNode(msg, jnode, jargs);
-  if (!lastSeg) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not encode job \"%s\"",
-               AH_Job_GetName(j));
-    AH_Job_SetStatus(j, AH_JobStatusError);
-    return GWEN_ERROR_INTERNAL;
-  }
-
-  AH_Job_SetFirstSegment(j, firstSeg);
-  AH_Job_SetLastSegment(j, lastSeg);
-
-  /* iTAN management */
-  if (AH_Msg_GetItanHashBuffer(msg)==NULL) {
-    int rv;
-    uint32_t endPos;
-
-    endPos=GWEN_Buffer_GetPos(msgBuf);
-    rv=AH_Outbox__CBox__Hash(AH_Msg_GetItanHashMode(msg),
-			     (const uint8_t *)GWEN_Buffer_GetStart(msgBuf)+startPos,
-			     endPos-startPos,
-			     msg);
-    if (rv) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not hash data (%d)", rv);
-      AH_Job_SetStatus(j, AH_JobStatusError);
-      return rv;
-    }
-  }
-
-  return 0;
-}
-
-
-
-GWEN_DB_NODE *_getMessageSpecificArgsOrJobArgs(AH_JOB *j, const GWEN_XMLNODE *jnode)
-{
-  GWEN_DB_NODE *jargs;
-
   jargs=AH_Job_GetArguments(j);
-
+  jnode=AH_Job_GetXmlNode(j);
   if (strcasecmp(GWEN_XMLNode_GetData(jnode), "message")==0) {
     const char *s;
 
     s=GWEN_XMLNode_GetProperty(jnode, "name", 0);
     if (s) {
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Getting for message specific data (%s)", s);
+      DBG_NOTICE(AQHBCI_LOGDOMAIN,
+                 "Getting for message specific data (%s)", s);
       jargs=GWEN_DB_GetGroup(jargs, GWEN_PATH_FLAGS_NAMEMUSTEXIST, s);
       if (!jargs) {
         DBG_NOTICE(AQHBCI_LOGDOMAIN, "No message specific data");
@@ -253,7 +172,47 @@ GWEN_DB_NODE *_getMessageSpecificArgsOrJobArgs(AH_JOB *j, const GWEN_XMLNODE *jn
     }
   }
 
-  return jargs;
+  /* add job node to message */
+  firstSeg=AH_Msg_GetCurrentSegmentNumber(msg);
+  msgBuf=AH_Msg_GetBuffer(msg);
+  assert(msgBuf);
+  startPos=GWEN_Buffer_GetPos(msgBuf);
+  lastSeg=AH_Msg_AddNode(msg, jnode, jargs);
+  if (!lastSeg) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not encode job \"%s\"",
+               AH_Job_GetName(j));
+    AH_Job_SetStatus(j, AH_JobStatusError);
+    return GWEN_ERROR_INTERNAL;
+  }
+  else {
+    AH_Job_SetFirstSegment(j, firstSeg);
+    AH_Job_SetLastSegment(j, lastSeg);
+
+    /* iTAN management */
+    if (AH_Msg_GetItanHashBuffer(msg)==0) {
+      int rv;
+
+      endPos=GWEN_Buffer_GetPos(msgBuf);
+      rv=AH_Outbox__CBox__Hash(AH_Msg_GetItanHashMode(msg),
+                               (const uint8_t *)GWEN_Buffer_GetStart(msgBuf)+startPos,
+                               endPos-startPos,
+                               msg);
+      if (rv) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN,
+                  "Could not hash data (%d)", rv);
+        AH_Job_SetStatus(j, AH_JobStatusError);
+        return rv;
+      }
+    }
+
+    if (AH_Job_GetStatus(j)!=AH_JobStatusError) {
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" encoded",
+                 AH_Job_GetName(j));
+      AH_Job_SetStatus(j, AH_JobStatusEncoded);
+    }
+  }
+
+  return 0;
 }
 
 
