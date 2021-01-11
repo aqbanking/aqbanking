@@ -21,11 +21,6 @@
 
 
 
-static const AH_TAN_METHOD *_getAndCheckUserSelectedTanMethod(AB_USER *u, const AH_TAN_METHOD_LIST *tml);
-static const AH_TAN_METHOD *_getAndCheckAutoSelectedTanMethod(AB_USER *u, const AH_TAN_METHOD_LIST *tml);
-
-
-
 
 int AH_Outbox__CBox__Hash(int mode,
                           const uint8_t *p,
@@ -240,7 +235,8 @@ int AH_Outbox__CBox_SendAndReceiveQueueWithTan(AH_OUTBOX__CBOX *cbox,
 
 
 
-int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg)
+int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox,
+                                   AH_DIALOG *dlg)
 {
   AB_USER *u;
   const AH_TAN_METHOD_LIST *tml;
@@ -261,15 +257,89 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg)
     return 0;
   }
   else {
-    const AH_TAN_METHOD *tm;
+    const AH_TAN_METHOD *tm=NULL;
+    int fn;
 
-    tm=_getAndCheckUserSelectedTanMethod(u, tml);
-    if (tm==NULL)
-      tm=_getAndCheckAutoSelectedTanMethod(u, tml);
+    fn=AH_User_GetSelectedTanMethod(u);
+    if (fn) {
+      int utFunction;
+      int utJobVersion;
+
+      utFunction=fn % 1000;
+      utJobVersion=fn / 1000;
+
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Selected TAN method: %d (Job version %d, Function %d)", fn, utFunction, utJobVersion);
+      if (AH_User_HasTanMethod(u, utFunction)) {
+        tm=AH_TanMethod_List_First(tml);
+        while (tm) {
+          int proc;
+
+          if (AH_TanMethod_GetFunction(tm)==utFunction && AH_TanMethod_GetGvVersion(tm)==utJobVersion) {
+            proc=AH_TanMethod_GetProcess(tm);
+            if (proc==1 || proc==2) {
+              DBG_INFO(AQHBCI_LOGDOMAIN, "Found description for selected TAN method %d (process: %d)",
+                       fn, proc);
+              break;
+            }
+            else {
+              DBG_NOTICE(AQHBCI_LOGDOMAIN,
+                         "iTan process type \"%d\" not supported, ignoring", proc);
+            }
+          }
+
+          tm=AH_TanMethod_List_Next(tm);
+        }
+        if (tm==NULL) {
+          GWEN_Gui_ProgressLog2(0,
+                                GWEN_LoggerLevel_Warning,
+                                I18N("TAN method (%d) selected by user is no longer valid,"
+                                     "please choose another one"),
+                                fn);
+        }
+      }
+      else {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "AH_User_HasTanMethod(%d): no", fn);
+      }
+    }
+    else {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "No Tan method selected");
+    }
 
     if (tm==NULL) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "No matching iTAN mode found");
-      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("No valid iTAN method found"));
+      /* choose a method */
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Autoselecting a usable TAN method");
+
+      tm=AH_TanMethod_List_First(tml);
+      while (tm) {
+        int proc;
+
+        proc=AH_TanMethod_GetProcess(tm);
+        if (proc==1 || proc==2) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Found description for selected TAN method %d (process: %d)",
+                   fn, proc);
+          if (AH_User_HasTanMethod(u, AH_TanMethod_GetFunction(tm))) {
+            DBG_INFO(AQHBCI_LOGDOMAIN, "AH_User_HasTanMethod(%d): yes", AH_TanMethod_GetFunction(tm));
+            break;
+          }
+          else {
+            DBG_INFO(AQHBCI_LOGDOMAIN, "AH_User_HasTanMethod(%d): no", AH_TanMethod_GetFunction(tm));
+          }
+        }
+        else {
+          DBG_NOTICE(AQHBCI_LOGDOMAIN,
+                     "iTan process type \"%d\" not supported, ignoring", proc);
+        }
+
+        tm=AH_TanMethod_List_Next(tm);
+      }
+    }
+
+    if (tm==NULL) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN,
+                "No matching iTAN mode found (fn=%d)", fn);
+      GWEN_Gui_ProgressLog(0,
+                           GWEN_LoggerLevel_Info,
+                           I18N("No iTAN method available for automatic selection"));
       return GWEN_ERROR_NOT_FOUND;
     }
     else {
@@ -300,99 +370,6 @@ int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg)
     }
   }
 }
-
-
-
-const AH_TAN_METHOD *_getAndCheckUserSelectedTanMethod(AB_USER *u, const AH_TAN_METHOD_LIST *tml)
-{
-  const AH_TAN_METHOD *tm=NULL;
-  int fn;
-  
-  fn=AH_User_GetSelectedTanMethod(u);
-  if (fn) {
-    int utFunction;
-    int utJobVersion;
-  
-    utFunction=fn % 1000;
-    utJobVersion=fn / 1000;
-  
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Selected TAN method: %d (Job version %d, Function %d)", fn, utFunction, utJobVersion);
-    if (AH_User_HasTanMethod(u, utFunction)) {
-      tm=AH_TanMethod_List_First(tml);
-      while (tm) {
-        int proc;
-  
-        if (AH_TanMethod_GetFunction(tm)==utFunction && AH_TanMethod_GetGvVersion(tm)==utJobVersion) {
-          proc=AH_TanMethod_GetProcess(tm);
-          if (proc==1 || proc==2) {
-	    DBG_INFO(AQHBCI_LOGDOMAIN, "Found description for selected TAN method %d (process: %d)", fn, proc);
-	    break;
-	  }
-	  else {
-	    DBG_NOTICE(AQHBCI_LOGDOMAIN, "iTan process type \"%d\" not supported, ignoring", proc);
-	  }
-        }
-
-        tm=AH_TanMethod_List_Next(tm);
-      }
-      if (tm==NULL) {
-        GWEN_Gui_ProgressLog2(0,
-                              GWEN_LoggerLevel_Warning,
-                              I18N("TAN method (%d) selected by user is no longer valid,"
-                                   "please choose another one"),
-                              fn);
-      }
-    }
-    else {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "AH_User_HasTanMethod(%d): no", fn);
-    }
-  }
-  else {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "No Tan method selected");
-  }
-
-  return tm;
-}
-
-
-
-const AH_TAN_METHOD *_getAndCheckAutoSelectedTanMethod(AB_USER *u, const AH_TAN_METHOD_LIST *tml)
-{
-  const AH_TAN_METHOD *tm;
-
-  /* choose a method */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Autoselecting a usable TAN method");
-
-  tm=AH_TanMethod_List_First(tml);
-  while (tm) {
-    int proc;
-    int fn;
-
-    proc=AH_TanMethod_GetProcess(tm);
-    fn=AH_TanMethod_GetFunction(tm);
-
-    if (proc==1 || proc==2) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Found a possible description (fn=%d, process: %d)", fn, proc);
-      if (AH_User_HasTanMethod(u, AH_TanMethod_GetFunction(tm))) {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "AH_User_HasTanMethod(%d): yes", fn);
-	break;
-      }
-      else {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "AH_User_HasTanMethod(%d): no", fn);
-      }
-    }
-    else {
-      DBG_NOTICE(AQHBCI_LOGDOMAIN,
-		 "iTan process type \"%d\" not supported, ignoring", proc);
-    }
-
-    tm=AH_TanMethod_List_Next(tm);
-  }
-
-  return tm;
-}
-
-
 
 
 
