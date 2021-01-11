@@ -14,6 +14,7 @@
 
 #include "aqhbci/applayer/cbox_hbci.h"
 
+#include "aqhbci/applayer/cbox_itan.h"
 #include "aqhbci/applayer/cbox_queue.h"
 
 #include "aqbanking/i18n_l.h"

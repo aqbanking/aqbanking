@@ -14,15 +14,27 @@
 
 
 #include "outbox_p.h"
+#include "aqhbci_l.h"
+#include "job_l.h"
+#include "accountjob_l.h"
+#include "jobtan_l.h"
+#include "jobqueue_l.h"
+#include "hbci_l.h"
+#include "adminjobs_l.h"
+#include "dialog_l.h"
+#include "provider_l.h"
 
-#include "aqhbci/ajobs/accountjob_l.h"
-
+#include "aqhbci/applayer/cbox_send.h"
+#include "aqhbci/applayer/cbox_recv.h"
+#include "aqhbci/applayer/cbox_dialog.h"
 #include "aqhbci/applayer/cbox_prepare.h"
 #include "aqhbci/applayer/cbox_queue.h"
 
-#include "aqbanking/i18n_l.h"
+#include <aqbanking/banking_be.h>
+#include <aqbanking/backendsupport/imexporter.h>
 
 #include <gwenhywfar/debug.h>
+#include <gwenhywfar/misc.h>
 #include <gwenhywfar/gui.h>
 
 #include <assert.h>
@@ -38,11 +50,12 @@
  */
 
 static unsigned int _countTodoJobs(AH_OUTBOX *ob);
-static int _sendOutboxWithProbablyLockedUsers(AH_OUTBOX *ob);
+static int _reallyExecute(AH_OUTBOX *ob);
 static AH_JOB *_findTransferJobInCheckJobList(const AH_JOB_LIST *jl, AB_USER *u, AB_ACCOUNT *a, const char *jobName);
 static int _prepare(AH_OUTBOX *ob);
 static void _finishCBox(AH_OUTBOX *ob, AH_OUTBOX_CBOX *cbox);
-static int _sendAndRecvCustomerBoxes(AH_OUTBOX *ob);
+static int _startSending(AH_OUTBOX *ob);
+static int _sendAndRecv(AH_OUTBOX *ob);
 static int _lockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers);
 static int _unlockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers, int abandon);
 static void _finishOutbox(AH_OUTBOX *ob);
@@ -104,162 +117,6 @@ AB_IMEXPORTER_CONTEXT *AH_Outbox_GetImExContext(const AH_OUTBOX *ob)
 
 
 
-AH_JOB_LIST *AH_Outbox_GetFinishedJobs(AH_OUTBOX *ob)
-{
-  assert(ob);
-  assert(ob->usage);
-  _finishOutbox(ob);
-  return ob->finishedJobs;
-}
-
-
-
-int AH_Outbox_Execute(AH_OUTBOX *ob,
-                      AB_IMEXPORTER_CONTEXT *ctx,
-                      int withProgress, int nounmount, int doLock)
-{
-  int rv;
-  uint32_t pid=0;
-  AB_USER_LIST2 *lockedUsers=NULL;
-
-  assert(ob);
-
-  if (withProgress) {
-    pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
-                               GWEN_GUI_PROGRESS_ALLOW_EMBED |
-                               GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-                               GWEN_GUI_PROGRESS_SHOW_ABORT,
-                               I18N("Executing Jobs"),
-                               I18N("Now the jobs are sent via their "
-                                    "backends to the credit institutes."),
-                               _countTodoJobs(ob),
-                               0);
-  }
-
-  ob->context=ctx;
-
-  if (doLock) {
-    lockedUsers=AB_User_List2_new();
-    rv=_lockUsers(ob, lockedUsers);
-    if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      AB_User_List2_free(lockedUsers);
-    }
-  }
-  else
-    rv=0;
-
-  if (rv==0) {
-    rv=_sendOutboxWithProbablyLockedUsers(ob);
-    if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    }
-    if (doLock) {
-      int rv2;
-
-      rv2=_unlockUsers(ob, lockedUsers, 0);
-      if (rv2<0) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv2);
-      }
-      AB_User_List2_free(lockedUsers);
-      if (rv==0 && rv2!=0)
-        rv=rv2;
-    }
-  }
-
-  if (!nounmount)
-    AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(ob->provider));
-
-  if (withProgress) {
-    GWEN_Gui_ProgressEnd(pid);
-  }
-
-  ob->context=NULL;
-  return rv;
-}
-
-
-
-AH_JOB *AH_Outbox_FindTransferJob(AH_OUTBOX *ob, AB_USER *u, AB_ACCOUNT *a, const char *jobName)
-{
-  AH_OUTBOX_CBOX *cbox;
-  AH_JOB *j;
-
-  assert(ob);
-  assert(u);
-  assert(a);
-  assert(jobName);
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Searching for %s job", jobName);
-  cbox=AH_OutboxCBox_List_First(ob->userBoxes);
-  while (cbox) {
-    if (AH_OutboxCBox_GetUser(cbox)==u) {
-      AH_JOBQUEUE *jq;
-
-      /* check jobs in lists */
-      j=_findTransferJobInCheckJobList(AH_OutboxCBox_GetTodoJobs(cbox), u, a, jobName);
-      if (j)
-        return j;
-
-      /* check jobs in queues */
-      jq=AH_JobQueue_List_First(AH_OutboxCBox_GetTodoQueues(cbox));
-      while (jq) {
-        const AH_JOB_LIST *jl;
-
-        jl=AH_JobQueue_GetJobList(jq);
-        if (jl) {
-          j=_findTransferJobInCheckJobList(jl, u, a, jobName);
-          if (j)
-            return j;
-        }
-        jq=AH_JobQueue_List_Next(jq);
-      } /* while */
-    }
-    else {
-      DBG_WARN(AQHBCI_LOGDOMAIN, "Customer doesn't match");
-    }
-
-    cbox=AH_OutboxCBox_List_Next(cbox);
-  } /* while */
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "No matching multi job found");
-  return 0;
-}
-
-
-
-int _sendOutboxWithProbablyLockedUsers(AH_OUTBOX *ob)
-{
-  unsigned int jobCount;
-  int rv;
-
-  assert(ob);
-  jobCount=_countTodoJobs(ob);
-  if (jobCount==0) {
-    DBG_WARN(AQHBCI_LOGDOMAIN, "Empty outbox");
-    return 0;
-  }
-
-  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("AqHBCI started"));
-
-  rv=_prepare(ob);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error preparing jobs for sending.");
-    return rv;
-  }
-
-  rv=_sendAndRecvCustomerBoxes(ob);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error while sending outbox.");
-    return rv;
-  }
-
-  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("AqHBCI finished."));
-  return 0;
-}
-
-
-
 int _lockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers)
 {
   AH_OUTBOX_CBOX *cbox;
@@ -281,7 +138,8 @@ int _lockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers)
 			  (unsigned long int) AB_User_GetUniqueId(user));
     rv=AB_Provider_BeginExclUseUser(ob->provider, user);
     if (rv<0) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not lock customer [%lu] (%d)", (unsigned long int) AB_User_GetUniqueId(user), rv);
+      DBG_ERROR(AQHBCI_LOGDOMAIN,
+                "Could not lock customer [%lu] (%d)", (unsigned long int) AB_User_GetUniqueId(user), rv);
       GWEN_Gui_ProgressLog2(0,
                             GWEN_LoggerLevel_Error,
                             I18N("Could not lock user %lu (%d)"),
@@ -394,6 +252,13 @@ void AH_Outbox_AddJob(AH_OUTBOX *ob, AH_JOB *j)
 
 
 
+int _startSending(AH_OUTBOX *ob)
+{
+  return _prepare(ob);
+}
+
+
+
 int _prepare(AH_OUTBOX *ob)
 {
   AH_OUTBOX_CBOX *cbox;
@@ -485,7 +350,7 @@ void _finishOutbox(AH_OUTBOX *ob)
 
 
 
-int _sendAndRecvCustomerBoxes(AH_OUTBOX *ob)
+int _sendAndRecv(AH_OUTBOX *ob)
 {
   AH_OUTBOX_CBOX *cbox;
   int rv;
@@ -497,7 +362,7 @@ int _sendAndRecvCustomerBoxes(AH_OUTBOX *ob)
 
     u=AH_OutboxCBox_GetUser(cbox);
     DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Sending messages for customer \"%s\"",
+             "Sending next message for customer \"%s\"",
              AB_User_GetCustomerId(u));
 
     rv=AH_OutboxCBox_SendAndRecvBox(cbox);
@@ -514,6 +379,81 @@ int _sendAndRecvCustomerBoxes(AH_OUTBOX *ob)
 
   _finishOutbox(ob);
   return 0;
+}
+
+
+
+AH_JOB_LIST *AH_Outbox_GetFinishedJobs(AH_OUTBOX *ob)
+{
+  assert(ob);
+  assert(ob->usage);
+  _finishOutbox(ob);
+  return ob->finishedJobs;
+}
+
+
+
+void AH_Outbox_Commit(AH_OUTBOX *ob, int doLock)
+{
+  AH_JOB *j;
+
+  assert(ob);
+  j=AH_Job_List_First(ob->finishedJobs);
+  while (j) {
+    if (AH_Job_GetStatus(j)==AH_JobStatusAnswered) {
+      /* only commit answered jobs */
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Committing job \"%s\"", AH_Job_GetName(j));
+      AH_Job_Commit(j, doLock);
+    }
+    j=AH_Job_List_Next(j);
+  } /* while */
+}
+
+
+
+void AH_Outbox_CommitSystemData(AH_OUTBOX *ob, int doLock)
+{
+  AH_JOB *j;
+
+  assert(ob);
+  j=AH_Job_List_First(ob->finishedJobs);
+  while (j) {
+    if (AH_Job_GetStatus(j)==AH_JobStatusAnswered) {
+      /* only commit answered jobs */
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Committing job \"%s\"", AH_Job_GetName(j));
+      AH_Job_DefaultCommitHandler(j, doLock);
+    }
+    j=AH_Job_List_Next(j);
+  } /* while */
+}
+
+
+
+void AH_Outbox_Process(AH_OUTBOX *ob)
+{
+  AH_JOB *j;
+
+  assert(ob);
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Processing outbox jobs");
+  j=AH_Job_List_First(ob->finishedJobs);
+  while (j) {
+    if (AH_Job_GetStatus(j)==AH_JobStatusAnswered) {
+      int rv;
+
+      /* only process answered jobs */
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Processing job \"%s\"", AH_Job_GetName(j));
+      rv=AH_Job_Process(j, ob->context);
+      if (rv) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Error processing job \"%s\": %d", AH_Job_GetName(j), rv);
+        AH_Job_SetStatus(j, AH_JobStatusError);
+        GWEN_Gui_ProgressLog2(0,
+                              GWEN_LoggerLevel_Error,
+                              I18N("Error processing job %s"),
+                              AH_Job_GetName(j));
+      }
+    }
+    j=AH_Job_List_Next(j);
+  } /* while */
 }
 
 
@@ -560,6 +500,164 @@ unsigned int _countTodoJobs(AH_OUTBOX *ob)
 
 
 
+int AH_Outbox_Execute(AH_OUTBOX *ob,
+                      AB_IMEXPORTER_CONTEXT *ctx,
+                      int withProgress, int nounmount, int doLock)
+{
+  int rv;
+  uint32_t pid=0;
+  AB_USER_LIST2 *lockedUsers = NULL;
+
+  assert(ob);
+
+  if (withProgress) {
+    pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
+                               GWEN_GUI_PROGRESS_ALLOW_EMBED |
+                               GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+                               GWEN_GUI_PROGRESS_SHOW_ABORT,
+                               I18N("Executing Jobs"),
+                               I18N("Now the jobs are sent via their "
+                                    "backends to the credit institutes."),
+                               _countTodoJobs(ob),
+                               0);
+  }
+
+  ob->context=ctx;
+
+  if (doLock) {
+    GWEN_Gui_ProgressLog(pid,
+                         GWEN_LoggerLevel_Info,
+                         I18N("Locking users"));
+    lockedUsers=AB_User_List2_new();
+    rv=_lockUsers(ob, lockedUsers);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Gui_ProgressLog(pid,
+                           GWEN_LoggerLevel_Error,
+                           I18N("Unable to lock users"));
+      AB_User_List2_free(lockedUsers);
+    }
+  }
+  else
+    rv=0;
+
+  if (rv==0) {
+    GWEN_Gui_ProgressLog(pid,
+                         GWEN_LoggerLevel_Info,
+                         I18N("Executing HBCI jobs"));
+    rv=_reallyExecute(ob);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    }
+    if (doLock) {
+      int rv2;
+
+      rv2=_unlockUsers(ob, lockedUsers, 0);
+      if (rv2<0) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+        GWEN_Gui_ProgressLog(pid,
+                             GWEN_LoggerLevel_Error,
+                             I18N("Unable to unlock users"));
+      }
+      AB_User_List2_free(lockedUsers);
+      if (rv==0 && rv2!=0)
+        rv=rv2;
+    }
+  }
+
+  /* unmount currently mounted medium */
+  if (!nounmount)
+    AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(ob->provider));
+  if (withProgress) {
+    GWEN_Gui_ProgressEnd(pid);
+  }
+
+  ob->context=0;
+  return rv;
+}
+
+
+
+int _reallyExecute(AH_OUTBOX *ob)
+{
+  unsigned int jobCount;
+  int rv;
+
+  assert(ob);
+  jobCount=_countTodoJobs(ob);
+  if (jobCount==0) {
+    DBG_WARN(AQHBCI_LOGDOMAIN, "Empty outbox");
+    return 0;
+  }
+
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("AqHBCI started"));
+
+  rv=_startSending(ob);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not start sending outbox.");
+    return rv;
+  }
+
+  rv=_sendAndRecv(ob);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error while sending outbox.");
+    return rv;
+  }
+
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("AqHBCI finished."));
+  return 0;
+}
+
+
+
+AH_JOB *AH_Outbox_FindTransferJob(AH_OUTBOX *ob, AB_USER *u, AB_ACCOUNT *a, const char *jobName)
+{
+  AH_OUTBOX_CBOX *cbox;
+  AH_JOB *j;
+
+  assert(ob);
+  assert(u);
+  assert(a);
+  assert(jobName);
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Searching for %s job", jobName);
+  cbox=AH_OutboxCBox_List_First(ob->userBoxes);
+  while (cbox) {
+    if (AH_OutboxCBox_GetUser(cbox)==u) {
+      AH_JOBQUEUE *jq;
+
+      /* check jobs in lists */
+      j=_findTransferJobInCheckJobList(AH_OutboxCBox_GetTodoJobs(cbox), u, a, jobName);
+      if (j)
+        return j;
+
+      /* check jobs in queues */
+      jq=AH_JobQueue_List_First(AH_OutboxCBox_GetTodoQueues(cbox));
+      while (jq) {
+        const AH_JOB_LIST *jl;
+
+        jl=AH_JobQueue_GetJobList(jq);
+        if (jl) {
+          j=_findTransferJobInCheckJobList(jl, u, a, jobName);
+          if (j)
+            return j;
+        }
+        jq=AH_JobQueue_List_Next(jq);
+      } /* while */
+    }
+    else {
+      DBG_WARN(AQHBCI_LOGDOMAIN, "Customer doesn't match");
+    }
+
+    cbox=AH_OutboxCBox_List_Next(cbox);
+  } /* while */
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "No matching multi job found");
+  return 0;
+}
+
+
+
 AH_JOB *_findTransferJobInCheckJobList(const AH_JOB_LIST *jl, AB_USER *u, AB_ACCOUNT *a, const char *jobName)
 {
   AH_JOB *j;
@@ -567,7 +665,8 @@ AH_JOB *_findTransferJobInCheckJobList(const AH_JOB_LIST *jl, AB_USER *u, AB_ACC
   assert(jl);
   j=AH_Job_List_First(jl);
   while (j) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Checking job \"%s\"", AH_Job_GetName(j));
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Checking job \"%s\"",
+             AH_Job_GetName(j));
     if (strcasecmp(AH_Job_GetName(j), jobName)==0 &&
         AH_AccountJob_GetAccount(j)==a) {
       if (AH_Job_GetTransferCount(j)<AH_Job_GetMaxTransfers(j))

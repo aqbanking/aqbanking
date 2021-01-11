@@ -20,11 +20,17 @@
 
 typedef struct AH_OUTBOX AH_OUTBOX;
 
-#include "aqhbci/joblayer/job_l.h"
+#include "hbci_l.h"
+#include "job_l.h"
 
-#include "aqbanking/backendsupport/imexporter.h"
-#include "aqbanking/backendsupport/provider.h"
+#include "aqhbci/banking/user.h"
+#include "aqhbci/msglayer/dialog_l.h"
+#include "aqhbci/joblayer/jobqueue_l.h"
 
+#include <aqbanking/backendsupport/imexporter.h>
+
+#include <gwenhywfar/inherit.h>
+#include <gwenhywfar/gwentime.h>
 
 
 AH_OUTBOX *AH_Outbox_new(AB_PROVIDER *pro);
@@ -36,8 +42,20 @@ AB_IMEXPORTER_CONTEXT *AH_Outbox_GetImExContext(const AH_OUTBOX *outbox);
 
 void AH_Outbox_AddJob(AH_OUTBOX *ob, AH_JOB *j);
 
+/* makes all jobs commit their data */
+void AH_Outbox_Commit(AH_OUTBOX *ob, int doLock);
+
+
 /* makes all jobs process their data */
 void AH_Outbox_Process(AH_OUTBOX *ob);
+
+/* makes all jobs commit their system data (only calls
+ * @ref AH_Job_DefaultCommitHandler which only commits system data
+ * like account data, bank parameter data etc according to the flags in
+ * @ref AH_HBCIClient).
+ */
+void AH_Outbox_CommitSystemData(AH_OUTBOX *ob, int doLock);
+
 
 int AH_Outbox_Execute(AH_OUTBOX *ob,
                       AB_IMEXPORTER_CONTEXT *ctx,
