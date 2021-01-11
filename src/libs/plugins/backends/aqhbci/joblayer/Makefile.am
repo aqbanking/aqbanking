@@ -19,9 +19,6 @@ noinst_HEADERS=\
   job_swift.h \
   jobqueue_l.h \
   jobqueue_p.h \
-  jobqueue_dispatch.h \
-  jobqueue_tomsg.h \
-  jobqueue_addjob.h \
   result_l.h \
   result_p.h
 
@@ -37,9 +34,6 @@ libhbcijob_la_SOURCES=\
   job_crypt.c \
   job_swift.c \
   jobqueue.c \
-  jobqueue_dispatch.c \
-  jobqueue_tomsg.c \
-  jobqueue_addjob.c \
   result.c
 
 

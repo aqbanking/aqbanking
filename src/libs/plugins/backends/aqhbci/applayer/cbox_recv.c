@@ -12,7 +12,6 @@
 #endif
 
 #include "aqhbci/applayer/cbox_recv.h"
-#include "aqhbci/joblayer/jobqueue_dispatch.h"
 
 #include "aqbanking/i18n_l.h"
 

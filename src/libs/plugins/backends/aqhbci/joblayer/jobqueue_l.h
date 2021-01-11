@@ -76,11 +76,19 @@ AH_JOBQUEUE *AH_JobQueue_fromQueue(AH_JOBQUEUE *oldq);
 
 AB_USER *AH_JobQueue_GetUser(const AH_JOBQUEUE *jq);
 
-AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j);
+AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq,
+                                         AH_JOB *j);
 
-AH_JOB_LIST *AH_JobQueue_GetJobList(const AH_JOBQUEUE *jq);
+const AH_JOB_LIST *AH_JobQueue_GetJobList(const AH_JOBQUEUE *jq);
 AH_JOB_LIST *AH_JobQueue_TakeJobList(AH_JOBQUEUE *jq);
 AH_JOB *AH_JobQueue_GetFirstJob(const AH_JOBQUEUE *jq);
+
+AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg);
+AH_MSG *AH_JobQueue_ToMessageWithTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, const char *sTan);
+
+int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq,
+                                AH_MSG *msg,
+                                GWEN_DB_NODE *db);
 
 unsigned int AH_JobQueue_GetCount(const AH_JOBQUEUE *jq);
 
@@ -88,7 +96,7 @@ void AH_JobQueue_Dump(AH_JOBQUEUE *jq, FILE *f, unsigned int insert);
 
 
 
-uint32_t AH_JobQueue_GetFlags(const AH_JOBQUEUE *jq);
+uint32_t AH_JobQueue_GetFlags(AH_JOBQUEUE *jq);
 void AH_JobQueue_SetFlags(AH_JOBQUEUE *jq, uint32_t f);
 void AH_JobQueue_AddFlags(AH_JOBQUEUE *jq, uint32_t f);
 void AH_JobQueue_SubFlags(AH_JOBQUEUE *jq, uint32_t f);
@@ -96,22 +104,6 @@ void AH_JobQueue_SubFlags(AH_JOBQUEUE *jq, uint32_t f);
 void AH_JobQueue_SetJobStatusOnMatch(AH_JOBQUEUE *jq,
                                      AH_JOB_STATUS matchSt,
                                      AH_JOB_STATUS newSt);
-
-const char *AH_JobQueue_GetUsedTan(const AH_JOBQUEUE *jq);
-void AH_JobQueue_SetUsedTan(AH_JOBQUEUE *jq, const char *s);
-
-const char *AH_JobQueue_GetUsedPin(const AH_JOBQUEUE *jq);
-void AH_JobQueue_SetUsedPin(AH_JOBQUEUE *jq, const char *s);
-
-
-int AH_JobQueue_GetSecProfile(const AH_JOBQUEUE *jq);
-void AH_JobQueue_SetSecProfile(AH_JOBQUEUE *jq, int i);
-
-int AH_JobQueue_GetSecClass(const AH_JOBQUEUE *jq);
-void AH_JobQueue_SetSecClass(AH_JOBQUEUE *jq, int i);
-
-GWEN_STRINGLIST *AH_JobQueue_GetSigners(const AH_JOBQUEUE *jq);
-void AH_JobQueue_SetSigners(AH_JOBQUEUE *jq, GWEN_STRINGLIST *signers);
 
 
 #endif /* AH_JOBQUEUE_L_H */

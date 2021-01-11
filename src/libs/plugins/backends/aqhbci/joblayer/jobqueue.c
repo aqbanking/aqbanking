@@ -15,7 +15,7 @@
 
 #include "jobqueue_p.h"
 #include "aqhbci_l.h"
-#include "aqhbci/joblayer/job_l.h"
+#include "job_l.h"
 #include "aqhbci/banking/user_l.h"
 #include "message_l.h"
 #include "hbci_l.h"
@@ -33,6 +33,35 @@
 
 GWEN_LIST_FUNCTIONS(AH_JOBQUEUE, AH_JobQueue);
 
+
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+static int _messageSetupWithCryptoAndTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *msg, const char *sTan);
+static int _encodeJobs(AH_JOBQUEUE *jq, AH_MSG *msg);
+static void _updateJobsAfterEncodingMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *msg);
+static void _handleResultSegments(AH_JOBQUEUE *jq, GWEN_DB_NODE *db, uint32_t guiid);
+static GWEN_DB_NODE *_sampleSecuritySegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db);
+static void _removeAttachPoints(const AH_JOBQUEUE *jq);
+static void _setUsedTanStatusInJobs(const AH_JOBQUEUE *jq);
+static void _adjustSystemTanStatus(AH_JOBQUEUE *jq, uint32_t guiid);
+static AH_JOB *_findReferencedJob(AH_JOBQUEUE *jq, int refMsgNum, int refSegNum);
+static void _possiblyExtractAttachPoint(AH_JOB *j, GWEN_DB_NODE *dbSegment);
+static void _handleSegmentResultForAllJob(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbSegment);
+static void _handleSegmentResult(AH_JOBQUEUE *jq, AH_JOB *j, GWEN_DB_NODE *dbSegment);
+static void _addResponseToAllJobs(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbPreparedJobResponse);
+static void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWEN_DB_NODE *dbSecurity);
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 
 AH_JOBQUEUE *AH_JobQueue_new(AB_USER *u)
@@ -79,7 +108,7 @@ void AH_JobQueue_Attach(AH_JOBQUEUE *jq)
 
 
 
-uint32_t AH_JobQueue_GetFlags(const AH_JOBQUEUE *jq)
+uint32_t AH_JobQueue_GetFlags(AH_JOBQUEUE *jq)
 {
   assert(jq);
   assert(jq->usage);
@@ -121,64 +150,6 @@ AB_USER *AH_JobQueue_GetUser(const AH_JOBQUEUE *jq)
   assert(jq->usage);
   return jq->user;
 }
-
-
-
-int AH_JobQueue_GetSecProfile(const AH_JOBQUEUE *jq)
-{
-  assert(jq);
-  assert(jq->usage);
-  return jq->secProfile;
-}
-
-
-
-void AH_JobQueue_SetSecProfile(AH_JOBQUEUE *jq, int i)
-{
-  assert(jq);
-  assert(jq->usage);
-  jq->secProfile=i;
-}
-
-
-
-int AH_JobQueue_GetSecClass(const AH_JOBQUEUE *jq)
-{
-  assert(jq);
-  assert(jq->usage);
-  return jq->secClass;
-}
-
-
-
-void AH_JobQueue_SetSecClass(AH_JOBQUEUE *jq, int i)
-{
-  assert(jq);
-  assert(jq->usage);
-  jq->secClass=i;
-}
-
-
-
-GWEN_STRINGLIST *AH_JobQueue_GetSigners(const AH_JOBQUEUE *jq)
-{
-  assert(jq);
-  assert(jq->usage);
-  return jq->signers;
-}
-
-
-
-void AH_JobQueue_SetSigners(AH_JOBQUEUE *jq, GWEN_STRINGLIST *signers)
-{
-  assert(jq);
-  assert(jq->usage);
-  if (jq->signers)
-    GWEN_StringList_free(jq->signers);
-  jq->signers=signers;
-}
-
-
 
 
 
@@ -228,7 +199,188 @@ void AH_JobQueue_SetUsedPin(AH_JOBQUEUE *jq, const char *s)
 
 
 
-AH_JOB_LIST *AH_JobQueue_GetJobList(const AH_JOBQUEUE *jq)
+AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j)
+{
+  int jobsPerMsg;
+  int maxJobTypes;
+  int jobCount;
+  int jobTypeCount;
+  int thisJobTypeCount;
+  int hasSingle;
+  int crypt;
+  int needTAN;
+  int noSysId;
+  int signSeqOne;
+  int noItan;
+  GWEN_STRINGLIST *jobTypes;
+  AH_JOB *cj;
+  AH_BPD *bpd;
+
+  assert(jq);
+  assert(jq->usage);
+
+  /* job owner must equal queue owner */
+  if (AH_Job_GetUser(j)!=jq->user) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Owner of the job doesn't match");
+    return AH_JobQueueAddResultJobLimit;
+  }
+
+  /* sample some variables */
+  bpd=AH_User_GetBpd(jq->user);
+  jobsPerMsg=AH_Job_GetJobsPerMsg(j);
+  maxJobTypes=AH_Bpd_GetJobTypesPerMsg(bpd);
+
+  jobCount=0;
+  jobTypeCount=0;
+  thisJobTypeCount=0;
+  hasSingle=0;
+  crypt=0;
+  needTAN=0;
+  noSysId=0;
+  signSeqOne=0;
+  noItan=0;
+  jobTypes=GWEN_StringList_new();
+  cj=AH_Job_List_First(jq->jobs);
+  while (cj) {
+    jobCount++;
+    GWEN_StringList_AppendString(jobTypes, AH_Job_GetName(cj), 0, 1);
+    if (strcasecmp(AH_Job_GetName(cj), AH_Job_GetName(j))==0)
+      thisJobTypeCount++;
+    hasSingle|=((AH_Job_GetFlags(cj) & AH_JOB_FLAGS_SINGLE) ||
+                (AH_Job_GetFlags(cj) & AH_JOB_FLAGS_DLGJOB));
+    crypt|=(AH_Job_GetFlags(cj) & AH_JOB_FLAGS_CRYPT);
+    needTAN|=(AH_Job_GetFlags(cj) & AH_JOB_FLAGS_NEEDTAN);
+    noSysId|=(AH_Job_GetFlags(cj) & AH_JOB_FLAGS_NOSYSID);
+    signSeqOne|=(AH_Job_GetFlags(cj) & AH_JOB_FLAGS_SIGNSEQONE);
+    noItan|=(AH_Job_GetFlags(cj) & AH_JOB_FLAGS_NOITAN);
+    cj=AH_Job_List_Next(cj);
+  } /* while */
+  /* Account for new job when checking limits for thisJobTypeCount and
+   * jobTypeCount */
+  thisJobTypeCount++;
+  GWEN_StringList_AppendString(jobTypes, AH_Job_GetName(j), 0, 1);
+  jobTypeCount=GWEN_StringList_Count(jobTypes);
+  GWEN_StringList_free(jobTypes);
+
+  if (strcasecmp(AH_Job_GetName(j), "JobTan")!=0) {
+    if (jobCount &&
+        (
+          (crypt!=(AH_Job_GetFlags(j) & AH_JOB_FLAGS_CRYPT)) ||
+          (needTAN!=(AH_Job_GetFlags(j) & AH_JOB_FLAGS_NEEDTAN)) ||
+          (noSysId!=(AH_Job_GetFlags(j) & AH_JOB_FLAGS_NOSYSID)) ||
+          (noItan!=(AH_Job_GetFlags(j) & AH_JOB_FLAGS_NOITAN))
+        )
+       ) {
+
+      DBG_INFO(AQHBCI_LOGDOMAIN,
+               "Encryption/TAN/SysId flags for queue and this job differ");
+      return AH_JobQueueAddResultJobLimit;
+    }
+
+    /* check for single jobs */
+    if (hasSingle) {
+      DBG_INFO(AQHBCI_LOGDOMAIN,
+               "Queue already contains a job which wants to be left alone");
+      return AH_JobQueueAddResultQueueFull;
+    }
+
+    /* check if this job is single and there already are jobs in the queue */
+    if (((AH_Job_GetFlags(j) & AH_JOB_FLAGS_SINGLE) ||
+         (AH_Job_GetFlags(j) & AH_JOB_FLAGS_DLGJOB)) && jobCount) {
+      DBG_INFO(AQHBCI_LOGDOMAIN,
+               "Queue already contains jobs and this one has the SINGLE flag");
+      return AH_JobQueueAddResultJobLimit;
+    }
+
+    /* check if adding this job would exceed the limit of jobs of this kind */
+    if (jobsPerMsg && thisJobTypeCount>jobsPerMsg) {
+      DBG_INFO(AQHBCI_LOGDOMAIN,
+               "Too many jobs of this kind (limit is %d)", jobsPerMsg);
+      return AH_JobQueueAddResultJobLimit;
+    }
+
+    /* check for maximum of different job types per message */
+    if (maxJobTypes && jobTypeCount>maxJobTypes) {
+      DBG_INFO(AQHBCI_LOGDOMAIN,
+               "Too many different job types (limit is %d)", maxJobTypes);
+      return AH_JobQueueAddResultJobLimit;
+    }
+
+    /* check security class */
+    if (jq->secClass==0)
+      jq->secClass=AH_Job_GetSecurityClass(j);
+    else {
+      if (jq->secClass!=AH_Job_GetSecurityClass(j)) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Job's security class doesn't match that of the queue (%d != %d)",
+                 jq->secClass, AH_Job_GetSecurityClass(j));
+        return AH_JobQueueAddResultJobLimit;
+      }
+    }
+
+    /* check for signers */
+    if (!jobCount && !GWEN_StringList_Count(jq->signers)) {
+      const GWEN_STRINGLIST *sl;
+
+      /* no jobs in queue and no signers,
+       * so simply copy the signers of this job */
+      sl=AH_Job_GetSigners(j);
+      if (sl) {
+        DBG_DEBUG(AQHBCI_LOGDOMAIN, "Copying %d signers from job to queue", GWEN_StringList_Count(sl));
+        GWEN_StringList_free(jq->signers);
+        jq->signers=GWEN_StringList_dup(sl);
+      }
+    }
+    else {
+      const GWEN_STRINGLIST *sl;
+      GWEN_STRINGLISTENTRY *se;
+
+      sl=AH_Job_GetSigners(j);
+      if (GWEN_StringList_Count(sl)!=GWEN_StringList_Count(jq->signers)) {
+        DBG_INFO(AQHBCI_LOGDOMAIN,
+                 "Number of signers of the job differs from that of the queue");
+        return AH_JobQueueAddResultJobLimit;
+      }
+      se=GWEN_StringList_FirstEntry(sl);
+      while (se) {
+        if (!GWEN_StringList_HasString(jq->signers,
+                                       GWEN_StringListEntry_Data(se))) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Signers of the job differ from those of the queue");
+          return AH_JobQueueAddResultJobLimit;
+        }
+        se=GWEN_StringListEntry_Next(se);
+      } /* while se */
+    }
+
+    /* adjust queue flags according to current job */
+    if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_CRYPT)
+      jq->flags|=AH_JOBQUEUE_FLAGS_CRYPT;
+    if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_SIGN)
+      jq->flags|=AH_JOBQUEUE_FLAGS_SIGN;
+    if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_NEEDTAN)
+      jq->flags|=AH_JOBQUEUE_FLAGS_NEEDTAN;
+    if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_NOSYSID)
+      jq->flags|=AH_JOBQUEUE_FLAGS_NOSYSID;
+    if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_SIGNSEQONE)
+      jq->flags|=AH_JOBQUEUE_FLAGS_SIGNSEQONE;
+    if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_NOITAN)
+      jq->flags|=AH_JOBQUEUE_FLAGS_NOITAN;
+  }
+
+  /* update maximum security profile */
+  if (AH_Job_GetSecurityProfile(j)>jq->secProfile)
+    jq->secProfile=AH_Job_GetSecurityProfile(j);
+
+  /* actually add job to queue */
+  AH_Job_List_Add(j, jq->jobs);
+  AH_Job_SetStatus(j, AH_JobStatusEnqueued);
+
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Job added to the queue (flags: %08x)", jq->flags);
+  return AH_JobQueueAddResultOk;
+}
+
+
+
+const AH_JOB_LIST *AH_JobQueue_GetJobList(const AH_JOBQUEUE *jq)
 {
   assert(jq);
   assert(jq->usage);
@@ -258,6 +410,215 @@ AH_JOB *AH_JobQueue_GetFirstJob(const AH_JOBQUEUE *jq)
     return AH_Job_List_First(jq->jobs);
 
   return NULL;
+}
+
+
+
+AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg)
+{
+  return AH_JobQueue_ToMessageWithTan(jq, dlg, NULL);
+}
+
+
+
+AH_MSG *AH_JobQueue_ToMessageWithTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, const char *sTan)
+{
+  AH_MSG *msg;
+  int rv;
+
+  assert(jq);
+  assert(jq->usage);
+  assert(dlg);
+
+  if (!AH_Job_List_GetCount(jq->jobs)) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Empty queue");
+    return 0;
+  }
+  msg=AH_Msg_new(dlg);
+
+  rv=_messageSetupWithCryptoAndTan(jq, dlg, msg, sTan);
+  if (rv) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AH_Msg_free(msg);
+    return NULL;
+  }
+
+  rv=_encodeJobs(jq, msg);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AH_Msg_free(msg);
+    return NULL;
+  }
+
+  rv=AH_Msg_EncodeMsg(msg);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not encode message (%d)", rv);
+    AH_JobQueue_SetJobStatusOnMatch(jq, AH_JobStatusEncoded, AH_JobStatusError);
+    AH_Msg_free(msg);
+    return 0;
+  }
+
+  _updateJobsAfterEncodingMessage(jq, dlg, msg);
+
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Job queue encoded and ready to be sent");
+  return msg;
+}
+
+
+
+int _messageSetupWithCryptoAndTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *msg, const char *sTan)
+{
+  AH_Msg_SetHbciVersion(msg, AH_User_GetHbciVersion(jq->user));
+  AH_Msg_SetSecurityProfile(msg, jq->secProfile);
+  AH_Msg_SetSecurityClass(msg, jq->secClass);
+
+  if (sTan && *sTan)
+    AH_Msg_SetTan(msg, sTan);
+
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Adding queue to message (flags: %08x)", jq->flags);
+
+  if (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Queue needs a TAN");
+  }
+  else {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Queue doesn't need a TAN");
+  }
+  AH_Msg_SetNeedTan(msg, (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN));
+  AH_Msg_SetNoSysId(msg, (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NOSYSID));
+  AH_Msg_SetSignSeqOne(msg, (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_SIGNSEQONE));
+
+  /* copy signers */
+  if (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_SIGN) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(jq->signers);
+    if (!se) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Signatures needed but no signer given");
+      return GWEN_ERROR_GENERIC;
+    }
+    while (se) {
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Addign signer [%s]", GWEN_StringListEntry_Data(se));
+      AH_Msg_AddSignerId(msg, GWEN_StringListEntry_Data(se));
+      se=GWEN_StringListEntry_Next(se);
+    } /* while */
+  }
+
+  /* copy crypter */
+  if (jq->flags & AH_JOBQUEUE_FLAGS_CRYPT) {
+    const char *s;
+
+    s=AH_User_GetPeerId(jq->user);
+    if (!s)
+      s=AB_User_GetUserId(jq->user);
+    AH_Msg_SetCrypterId(msg, s);
+  }
+
+  return 0;
+}
+
+
+
+int _encodeJobs(AH_JOBQUEUE *jq, AH_MSG *msg)
+{
+  AH_JOB *j;
+  unsigned int encodedJobs=0;
+
+  j=AH_Job_List_First(jq->jobs);
+  while (j) {
+    AH_JOB_STATUS st;
+
+    st=AH_Job_GetStatus(j);
+    /* only encode jobs which have not already been sent or which have no errors */
+    if (st==AH_JobStatusEnqueued) {
+      unsigned int firstSeg;
+      unsigned int lastSeg;
+      GWEN_DB_NODE *jargs;
+      GWEN_XMLNODE *jnode;
+      GWEN_BUFFER *msgBuf;
+
+      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Encoding job \"%s\"", AH_Job_GetName(j));
+      jargs=AH_Job_GetArguments(j);
+      jnode=AH_Job_GetXmlNode(j);
+      if (strcasecmp(GWEN_XMLNode_GetData(jnode), "message")==0) {
+        const char *s;
+
+        s=GWEN_XMLNode_GetProperty(jnode, "name", 0);
+        if (s) {
+          DBG_NOTICE(AQHBCI_LOGDOMAIN, "Getting message specific data (%s)", s);
+          jargs=GWEN_DB_GetGroup(jargs, GWEN_PATH_FLAGS_NAMEMUSTEXIST, s);
+          if (!jargs) {
+            DBG_NOTICE(AQHBCI_LOGDOMAIN, "No message specific data");
+            jargs=AH_Job_GetArguments(j);
+          }
+        }
+      }
+
+      firstSeg=AH_Msg_GetCurrentSegmentNumber(msg);
+      msgBuf=AH_Msg_GetBuffer(msg);
+      assert(msgBuf);
+      lastSeg=AH_Msg_AddNode(msg, jnode, jargs);
+      if (!lastSeg) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Could not encode job \"%s\"", AH_Job_GetName(j));
+        AH_Job_SetStatus(j, AH_JobStatusError);
+      }
+      else {
+        AH_Job_SetFirstSegment(j, firstSeg);
+        AH_Job_SetLastSegment(j, lastSeg);
+
+        if (AH_Job_GetStatus(j)!=AH_JobStatusError) {
+          DBG_DEBUG(AQHBCI_LOGDOMAIN, "Job \"%s\" encoded", AH_Job_GetName(j));
+          AH_Job_SetStatus(j, AH_JobStatusEncoded);
+          encodedJobs++;
+        }
+      }
+    } /* if status matches */
+    j=AH_Job_List_Next(j);
+  } /* while */
+
+  if (encodedJobs<1) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No job in queue encoded");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  return 0;
+}
+
+
+
+void _updateJobsAfterEncodingMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *msg)
+{
+  AH_JOB *j;
+
+  /*
+   * inform all jobs that they have been encoded
+   * this is needed for multi-message jobs so that they can prepare
+   * themselves for the next message
+   */
+  j=AH_Job_List_First(jq->jobs);
+  AH_JobQueue_SetUsedTan(jq, AH_Msg_GetTan(msg));
+  AH_JobQueue_SetUsedPin(jq, AH_Msg_GetPin(msg));
+  while (j) {
+    if (AH_Job_GetStatus(j)==AH_JobStatusEncoded) {
+      const char *s;
+
+      /* store some information about the message in the job */
+      AH_Job_SetMsgNum(j, AH_Msg_GetMsgNum(msg));
+      AH_Job_SetDialogId(j, AH_Dialog_GetDialogId(dlg));
+      /* store expected signer and crypter (if any) */
+      s=AH_Msg_GetExpectedSigner(msg);
+      if (s)
+        AH_Job_SetExpectedSigner(j, s);
+      s=AH_Msg_GetExpectedCrypter(msg);
+      if (s)
+        AH_Job_SetExpectedCrypter(j, s);
+
+      /* store used TAN (if any) */
+      s=AH_Msg_GetTan(msg);
+      if (s)
+        AH_Job_SetUsedTan(j, s);
+    }
+    j=AH_Job_List_Next(j);
+  } /* while */
 }
 
 
@@ -360,22 +721,503 @@ unsigned int AH_JobQueue_GetCount(const AH_JOBQUEUE *jq)
 
 
 
-const char *AH_JobQueue_GetUsedTan(const AH_JOBQUEUE *jq)
+int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db)
 {
+  GWEN_DB_NODE *dbSecurity;
+  AH_DIALOG *dlg;
+  uint32_t guiid;
+
   assert(jq);
   assert(jq->usage);
+  assert(msg);
+  assert(db);
 
-  return jq->usedTan;
+  dlg=AH_Msg_GetDialog(msg);
+  assert(dlg);
+  guiid=0;
+
+  _handleResultSegments(jq, db, guiid);
+
+  dbSecurity=_sampleSecuritySegments(jq, msg, db);
+  _removeAttachPoints(jq);
+  _handleResponseSegments(jq, msg, db, dbSecurity);
+  GWEN_DB_Group_free(dbSecurity);
+
+  _setUsedTanStatusInJobs(jq);
+  _adjustSystemTanStatus(jq, guiid);
+
+  if (jq->flags & (AH_JOBQUEUE_FLAGS_ACCESS_PROBLEM | AH_JOBQUEUE_FLAGS_DIALOG_ABORTED)) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Dialog logically aborted by peer, assuming bad PIN");
+    if (jq->usedPin) {
+      GWEN_Gui_ProgressLog(guiid,
+                           GWEN_LoggerLevel_Info,
+                           I18N("Dialog aborted by bank, assuming bad PIN"));
+      AH_User_SetPinStatus(jq->user, jq->usedPin,
+                           GWEN_Gui_PasswordStatus_Bad);
+    }
+    return GWEN_ERROR_ABORTED;
+  }
+
+  if (!(jq->flags & AH_JOBQUEUE_FLAGS_BAD_PIN)) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog not aborted, assuming correct PIN");
+    if (jq->usedPin) {
+      GWEN_Gui_ProgressLog(guiid,
+                           GWEN_LoggerLevel_Info,
+                           I18N("Dialog not aborted, assuming PIN is ok"));
+      AH_User_SetPinStatus(jq->user, jq->usedPin, GWEN_Gui_PasswordStatus_Ok);
+    }
+  }
+
+  return 0;
 }
 
 
 
-const char *AH_JobQueue_GetUsedPin(const AH_JOBQUEUE *jq)
+void _handleResultSegments(AH_JOBQUEUE *jq, GWEN_DB_NODE *db, uint32_t guiid)
 {
-  assert(jq);
-  assert(jq->usage);
+  GWEN_DB_NODE *dbCurr;
 
-  return jq->usedPin;
+  dbCurr=GWEN_DB_GetFirstGroup(db);
+  while (dbCurr) {
+    if (strcasecmp(GWEN_DB_GroupName(dbCurr), "SegResult")==0 ||
+        strcasecmp(GWEN_DB_GroupName(dbCurr), "MsgResult")==0) {
+      int rcode;
+      const char *p;
+      int isMsgResult;
+      GWEN_BUFFER *logmsg;
+      GWEN_LOGGER_LEVEL level;
+      GWEN_DB_NODE *dbResult;
+
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Found a result");
+
+      level=GWEN_LoggerLevel_Notice;
+      isMsgResult=(strcasecmp(GWEN_DB_GroupName(dbCurr), "MsgResult")==0);
+
+      dbResult=GWEN_DB_FindFirstGroup(dbCurr, "result");
+      while (dbResult) {
+        rcode=GWEN_DB_GetIntValue(dbResult, "resultcode", 0, 0);
+        p=GWEN_DB_GetCharValue(dbResult, "text", 0, "");
+
+        if (rcode>=9000 && rcode<10000) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Result: Error (%d: %s)", rcode, p);
+          AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASERRORS);
+          level=GWEN_LoggerLevel_Error;
+
+          if (isMsgResult) {
+            if (rcode==9800)
+              AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_DIALOG_ABORTED);
+            else if (rcode>9300 && rcode<9400)
+              AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_ACCESS_PROBLEM);
+          }
+
+          /* check for bad pins here */
+          if (rcode==9340 || rcode==9942) {
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad PIN flagged: %d", rcode);
+            AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_BAD_PIN | AH_JOBQUEUE_FLAGS_DIALOG_ABORTED);
+            if (jq->usedPin) {
+              GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Error, I18N("PIN invalid according to server"));
+              AH_User_SetPinStatus(jq->user, jq->usedPin, GWEN_Gui_PasswordStatus_Bad);
+            }
+          }
+        }
+        else if (rcode>=3000 && rcode<4000) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Result: Warning (%d: %s)", rcode, p);
+          AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASWARNINGS);
+          level=GWEN_LoggerLevel_Warning;
+          if (rcode==3910)
+            AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_RECYCLE_TAN);
+          else if (rcode==3920) {
+            int i;
+
+            AH_User_ClearTanMethodList(jq->user);
+            for (i=0; ; i++) {
+              int j;
+
+              j=GWEN_DB_GetIntValue(dbResult, "param", i, 0);
+              if (j==0)
+                break;
+              AH_User_AddTanMethod(jq->user, j);
+            } /* for */
+            if (i==0)
+              /* add single step if empty list */
+              AH_User_AddTanMethod(jq->user, 999);
+          }
+        }
+        else {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Segment result: Ok (%d: %s)", rcode, p);
+          level=GWEN_LoggerLevel_Notice;
+        }
+
+        logmsg=GWEN_Buffer_new(0, 256, 0, 1);
+        if (p)
+          GWEN_Buffer_AppendArgs(logmsg, "HBCI: %04d - %s (%s)", rcode, p, isMsgResult?"M":"S");
+        else
+          GWEN_Buffer_AppendArgs(logmsg, "HBCI: %04d - (no text) (%s)", rcode, isMsgResult?"M":"S");
+        GWEN_Gui_ProgressLog(guiid, level, GWEN_Buffer_GetStart(logmsg));
+        GWEN_Buffer_free(logmsg);
+
+        dbResult=GWEN_DB_FindNextGroup(dbResult, "result");
+      } /* while results */
+    }
+
+    dbCurr=GWEN_DB_GetNextGroup(dbCurr);
+  }
+}
+
+
+
+GWEN_DB_NODE *_sampleSecuritySegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db)
+{
+  AH_DIALOG *dlg;
+  const GWEN_STRINGLIST *msgSignerList;
+  GWEN_DB_NODE *dbSecurity;
+  const char *p;
+
+  dlg=AH_Msg_GetDialog(msg);
+
+  /* prepare security group */
+  dbSecurity=GWEN_DB_Group_new("security");
+  p=AH_Dialog_GetDialogId(dlg);
+  assert(p);
+  GWEN_DB_SetIntValue(dbSecurity, GWEN_DB_FLAGS_DEFAULT, "msgnum", AH_Msg_GetMsgNum(msg));
+  GWEN_DB_SetCharValue(dbSecurity, GWEN_DB_FLAGS_DEFAULT, "dialogId", p);
+
+  /* get all signers */
+  msgSignerList=AH_Msg_GetSignerIdList(msg);
+  if (msgSignerList) {
+    GWEN_STRINGLISTENTRY *se;
+
+    se=GWEN_StringList_FirstEntry(AH_Msg_GetSignerIdList(msg));
+    while (se) {
+      const char *p;
+
+      p=GWEN_StringListEntry_Data(se);
+      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Adding signer \"%s\"", p);
+      GWEN_DB_SetCharValue(dbSecurity, GWEN_DB_FLAGS_DEFAULT, "signer", p);
+      se=GWEN_StringListEntry_Next(se);
+    } /* while */
+  }
+
+  /* set crypter */
+  p=AH_Msg_GetCrypterId(msg);
+  if (p) {
+    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Storing crypter \"%s\"", p);
+    GWEN_DB_SetCharValue(dbSecurity, GWEN_DB_FLAGS_DEFAULT, "crypter", p);
+  }
+
+  return dbSecurity;
+}
+
+
+
+void _removeAttachPoints(const AH_JOBQUEUE *jq)
+{
+  AH_JOB *j;
+
+  /* remove attach points of all jobs */
+  j=AH_Job_List_First(jq->jobs);
+  while (j) {
+    AH_JOB_STATUS st;
+
+    st=AH_Job_GetStatus(j);
+    if (st==AH_JobStatusSent) {
+      if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_ATTACHABLE) {
+        GWEN_DB_NODE *args;
+
+        AH_Job_SubFlags(j, AH_JOB_FLAGS_HASATTACHPOINT);
+
+        /* remove the attach point */
+        args=AH_Job_GetArguments(j);
+        if (GWEN_DB_DeleteVar(args, "attach")) {
+          DBG_DEBUG(AQHBCI_LOGDOMAIN, "Attach point removed");
+        }
+      } /* if job is attachable */
+    } /* if status matches */
+
+    j=AH_Job_List_Next(j);
+  } /* while */
+}
+
+
+
+void _setUsedTanStatusInJobs(const AH_JOBQUEUE *jq)
+{
+  AH_JOB *j;
+
+  /* set usedTan status accordingly */
+  j=AH_Job_List_First(jq->jobs);
+  while (j) {
+    const char *usedTan;
+
+    usedTan=AH_Job_GetUsedTan(j);
+    if (usedTan) {
+      AH_JOB_STATUS st;
+
+      AH_Job_AddFlags(j, AH_JOB_FLAGS_TANUSED);
+      st=AH_Job_GetStatus(j);
+      if (st==AH_JobStatusSent || st==AH_JobStatusAnswered) {
+        if (jq->flags & AH_JOBQUEUE_FLAGS_RECYCLE_TAN)
+          AH_Job_SubFlags(j, AH_JOB_FLAGS_TANUSED);
+      }
+    }
+    else {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "No TAN in job [%s]", AH_Job_GetName(j));
+    }
+    j=AH_Job_List_Next(j);
+  } /* while */
+}
+
+
+
+void _adjustSystemTanStatus(AH_JOBQUEUE *jq, uint32_t guiid)
+{
+  AH_JOB *j;
+
+  assert(jq);
+  j=AH_Job_List_First(jq->jobs);
+  while (j) {
+    const char *tan;
+    AB_USER *u;
+
+    u=AH_Job_GetUser(j);
+    assert(u);
+
+    tan=AH_Job_GetUsedTan(j);
+    if (tan) {
+      int rv;
+
+      if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_TANUSED) {
+        char tbuf[256];
+
+        DBG_INFO(AQHBCI_LOGDOMAIN, "TAN \"%s\" used", tan);
+        snprintf(tbuf, sizeof(tbuf)-1, I18N("TAN \"%s\" has been used, please strike it out."), tan);
+        tbuf[sizeof(tbuf)-1]=0;
+        GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Notice, tbuf);
+        rv=AH_User_SetTanStatus(jq->user, NULL, tan, GWEN_Gui_PasswordStatus_Used);
+      }
+      else {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "TAN not used");
+        rv=AH_User_SetTanStatus(jq->user, NULL, tan, GWEN_Gui_PasswordStatus_Unused);
+      }
+      if (rv) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Error adjusting TAN status (%d), ignoring", rv);
+        /*return rv;*/
+      }
+    } /* if tan */
+    j=AH_Job_List_Next(j);
+  }
+}
+
+
+AH_JOB *_findReferencedJob(AH_JOBQUEUE *jq, int refMsgNum, int refSegNum)
+{
+  AH_JOB *j;
+
+  j=AH_Job_List_First(jq->jobs);
+  while (j) {
+    AH_JOB_STATUS jobStatus;
+    const char *jobName;
+
+    jobName=AH_Job_GetName(j);
+    jobStatus=AH_Job_GetStatus(j);
+
+    if (jobStatus==AH_JobStatusSent || jobStatus==AH_JobStatusAnswered) {
+      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Checking whether job \"%s\" has segment %d", jobName, refSegNum);
+      if ((AH_Job_GetMsgNum(j)==refMsgNum) && AH_Job_HasSegment(j, refSegNum)) {
+        DBG_DEBUG(AQHBCI_LOGDOMAIN, "Job \"%s\" claims to have the segment %d", jobName, refSegNum);
+        return j;
+      }
+    }
+    else {
+      DBG_INFO(AQHBCI_LOGDOMAIN,
+               "Skipping job \"%s\" because of status \"%s\" (%d)",
+               jobName, AH_Job_StatusName(jobStatus), jobStatus);
+    }
+    j=AH_Job_List_Next(j);
+  } /* while j */
+
+  return NULL;
+}
+
+
+
+void _possiblyExtractAttachPoint(AH_JOB *j, GWEN_DB_NODE *dbSegment)
+{
+  if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_ATTACHABLE) {
+    /* job is attachable, check whether this is segment result */
+    if (strcasecmp(GWEN_DB_GroupName(dbSegment), "SegResult")==0) {
+      GWEN_DB_NODE *dbResult;
+  
+      dbResult=GWEN_DB_FindFirstGroup(dbSegment, "result");
+      while (dbResult) {
+        int rcode;
+  
+        rcode=GWEN_DB_GetIntValue(dbResult, "resultcode", 0, 0);
+        /* it is a segment result, does it contain an attach point ? */
+        if (rcode==3040) {
+          const char *p;
+  
+          /* it should... */
+          p=GWEN_DB_GetCharValue(dbResult, "param", 0, 0);
+          if (!p) {
+            DBG_ERROR(AQHBCI_LOGDOMAIN,
+                      "Segment result 3040 without attachpoint");
+          }
+          else {
+            GWEN_DB_NODE *args;
+  
+            /* store the attach point */
+            DBG_DEBUG(AQHBCI_LOGDOMAIN, "Storing attach point");
+            args=AH_Job_GetArguments(j);
+            GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS,
+                                 "attach", p);
+            AH_Job_AddFlags(j, AH_JOB_FLAGS_HASATTACHPOINT);
+          }
+        } /* if code 3040 (means "more data available") */
+        dbResult=GWEN_DB_FindNextGroup(dbResult, "result");
+      } /* while */
+    } /* if segresult */
+  } /* if attachable */
+}
+
+
+
+void _handleSegmentResultForAllJob(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbSegment)
+{
+  AH_JOB *j;
+
+  j=AH_Job_List_First(jq->jobs);
+  while (j) {
+    _handleSegmentResult(jq, j, dbSegment);
+    j=AH_Job_List_Next(j);
+  } /* while j */
+}
+
+
+
+void _handleSegmentResult(AH_JOBQUEUE *jq, AH_JOB *j, GWEN_DB_NODE *dbSegment)
+{
+  if (strcasecmp(GWEN_DB_GroupName(dbSegment), "SegResult")==0) {
+    GWEN_DB_NODE *dbResult;
+
+    dbResult=GWEN_DB_FindFirstGroup(dbSegment, "result");
+    while (dbResult) {
+      int rcode;
+      const char *p;
+
+      rcode=GWEN_DB_GetIntValue(dbResult, "resultcode", 0, 0);
+      p=GWEN_DB_GetCharValue(dbResult, "text", 0, "");
+      if (rcode>=9000 && rcode<10000) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Segment result: Error (%d: %s)", rcode, p);
+        if (!(AH_Job_GetFlags(j) & AH_JOB_FLAGS_IGNORE_ERROR)) {
+          AH_Job_AddFlags(j, AH_JOB_FLAGS_HASERRORS);
+          AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASERRORS);
+        }
+      }
+      else if (rcode>=3000 && rcode<4000) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Segment result: Warning (%d: %s)", rcode, p);
+        if (!(AH_Job_GetFlags(j) & AH_JOB_FLAGS_IGNORE_ERROR)) {
+          AH_Job_AddFlags(j, AH_JOB_FLAGS_HASWARNINGS);
+          AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASWARNINGS);
+        }
+      }
+      else {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Segment result: Ok (%d: %s)", rcode, p);
+      }
+      dbResult=GWEN_DB_FindNextGroup(dbResult, "result");
+    } /* while */
+  } /* if SegResult */
+}
+
+
+
+void _addResponseToAllJobs(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbPreparedJobResponse)
+{
+  AH_JOB *j;
+
+  j=AH_Job_List_First(jq->jobs);
+  while (j) {
+    AH_JOB_STATUS jobStatus;
+
+    jobStatus=AH_Job_GetStatus(j);
+    if (jobStatus==AH_JobStatusSent || jobStatus==AH_JobStatusAnswered)
+      AH_Job_AddResponse(j, GWEN_DB_Group_dup(dbPreparedJobResponse));
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Status %d of job doesn't match", jobStatus);
+    }
+    j=AH_Job_List_Next(j);
+  } /* while */
+}
+
+
+
+void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWEN_DB_NODE *dbSecurity)
+{
+  GWEN_DB_NODE *dbCurr;
+
+  dbCurr=GWEN_DB_GetFirstGroup(db);
+  while (dbCurr) {
+    GWEN_DB_NODE *dbPreparedJobResponse;
+    GWEN_DB_NODE *dbData;
+    int refSegNum;
+
+    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Handling response \"%s\"", GWEN_DB_GroupName(dbCurr));
+
+    /* use same name for main response group */
+    dbPreparedJobResponse=GWEN_DB_Group_new(GWEN_DB_GroupName(dbCurr));
+    /* add security group */
+    GWEN_DB_AddGroup(dbPreparedJobResponse, GWEN_DB_Group_dup(dbSecurity));
+    /* create data group */
+    dbData=GWEN_DB_GetGroup(dbPreparedJobResponse, GWEN_DB_FLAGS_DEFAULT, "data");
+    assert(dbData);
+    /* store copy of original response there */
+    GWEN_DB_AddGroup(dbData, GWEN_DB_Group_dup(dbCurr));
+
+    refSegNum=GWEN_DB_GetIntValue(dbCurr, "head/ref", 0, 0);
+    if (refSegNum) {
+      AH_JOB *j;
+
+      /* search for job to which this response belongs */
+      j=_findReferencedJob(jq, AH_Msg_GetMsgNum(msg), refSegNum);
+      if (j) {
+        _possiblyExtractAttachPoint(j, dbCurr);
+
+        /* check for segment results */
+        if (strcasecmp(GWEN_DB_GroupName(dbCurr), "SegResult")==0)
+          _handleSegmentResult(jq, j, dbCurr);
+
+        DBG_DEBUG(AQHBCI_LOGDOMAIN, "Adding response \"%s\" to job \"%s\"", GWEN_DB_GroupName(dbCurr), AH_Job_GetName(j));
+        AH_Job_AddResponse(j, dbPreparedJobResponse);
+        AH_Job_SetStatus(j, AH_JobStatusAnswered);
+      } /* if matching job found */
+      else {
+        DBG_WARN(AQHBCI_LOGDOMAIN, "No job found, adding response \"%s\" to all jobs", GWEN_DB_GroupName(dbCurr));
+
+        /* add response to all jobs (as queue response) and to queue */
+        if (strcasecmp(GWEN_DB_GroupName(dbCurr), "SegResult")==0) {
+          _handleSegmentResultForAllJob(jq, dbCurr);
+          _addResponseToAllJobs(jq, dbPreparedJobResponse);
+        }
+      }
+    } /* if refSegNum */
+    else {
+      /* no reference segment number, add response to all jobs */
+      DBG_DEBUG(AQHBCI_LOGDOMAIN,
+                "No segment reference number, "
+                "adding response \"%s\" to all jobs",
+                GWEN_DB_GroupName(dbCurr));
+
+      /* add response to all jobs (as queue response) and to queue */
+      if (strcasecmp(GWEN_DB_GroupName(dbCurr), "SegResult")==0)
+        _handleSegmentResultForAllJob(jq, dbCurr);
+
+      else if (strcasecmp(GWEN_DB_GroupName(dbCurr), "MsgResult")==0)
+        _addResponseToAllJobs(jq, dbPreparedJobResponse);
+    }
+    GWEN_DB_Group_free(dbPreparedJobResponse);
+
+    dbCurr=GWEN_DB_GetNextGroup(dbCurr);
+  } /* while */
 }
 
 
