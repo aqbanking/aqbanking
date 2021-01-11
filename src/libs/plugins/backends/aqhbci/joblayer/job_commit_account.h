@@ -13,7 +13,7 @@
 #include "aqhbci/joblayer/job_l.h"
 
 
-int AH_Job_Commit_Accounts(AH_JOB *j);
+void AH_Job_Commit_Accounts(AH_JOB *j);
 
 
 

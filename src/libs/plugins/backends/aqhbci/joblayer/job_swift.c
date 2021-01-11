@@ -23,6 +23,20 @@
 #include <gwenhywfar/debug.h>
 
 
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static void _parseAndProbablyAddDescriptor(const char *sName, const char *family, int version1,
+                                           AB_SWIFT_DESCR_LIST *descrList,
+                                           AB_SWIFT_DESCR_LIST *returnDescrList);
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 
 
@@ -72,52 +86,12 @@ AB_SWIFT_DESCR_LIST *AH_Job_GetSwiftDescriptorsSupportedByJob(AH_JOB *j,
       }
       break;
     }
-    else {
-      AB_SWIFT_DESCR *tmpDescr;
-
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Supported param %s/%s[%i]=%s)",
-                paramDbGroupName?paramDbGroupName:"<no group name>",
-                paramDbVarName?paramDbVarName:"<no var name>",
-                i, s);
-
-      tmpDescr=AB_SwiftDescr_FromString(s);
-      if (tmpDescr) {
-        if (AB_SwiftDescr_Matches(tmpDescr, family, version1, 0, 0)) {
-          AB_SWIFT_DESCR *descrFromList;
-
-          /* found a candidate */
-          descrFromList=AB_SwiftDescr_List_FindFirst(descrList,
-                                                     AB_SwiftDescr_GetFamily(tmpDescr),
-                                                     AB_SwiftDescr_GetVersion1(tmpDescr),
-                                                     AB_SwiftDescr_GetVersion2(tmpDescr),
-                                                     AB_SwiftDescr_GetVersion3(tmpDescr));
-          if (descrFromList) {
-            AB_SWIFT_DESCR *descrCopy;
-
-            /* store name of selected profile */
-            AB_SwiftDescr_SetAlias2(descrFromList, s);
-            DBG_ERROR(AQHBCI_LOGDOMAIN,
-                      "Adding matching profile [%s] (%s)",
-                      AB_SwiftDescr_GetAlias1(tmpDescr),
-                      AB_SwiftDescr_GetAlias2(tmpDescr));
-            /* copy to return list */
-            descrCopy=AB_SwiftDescr_dup(descrFromList);
-            AB_SwiftDescr_List_Add(descrCopy, returnDescrList);
-          }
-        }
-        else {
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "Param [%s] does not match family %s.%d", s, family, version1);
-        }
-      }
-      else {
-        DBG_ERROR(AQHBCI_LOGDOMAIN,
-                  "Could not create SWIFT descriptor from string \"%s\" (job \"%s\"), ignoring",
-                  s, AH_Job_GetName(j));
-      }
-    }
+    else
+      _parseAndProbablyAddDescriptor(s, family, version1, descrList, returnDescrList);
   } /* for */
 
   AB_SwiftDescr_List_free(descrList);
+
   if (AB_SwiftDescr_List_GetCount(returnDescrList)==0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No matching descriptors found for %s_%03d_* (job %s)",
               family?family:"<none>", version1,
@@ -127,6 +101,48 @@ AB_SWIFT_DESCR_LIST *AH_Job_GetSwiftDescriptorsSupportedByJob(AH_JOB *j,
   }
 
   return returnDescrList;
+}
+
+
+
+void _parseAndProbablyAddDescriptor(const char *sName, const char *family, int version1,
+                                    AB_SWIFT_DESCR_LIST *descrList,
+                                    AB_SWIFT_DESCR_LIST *returnDescrList)
+{
+  AB_SWIFT_DESCR *tmpDescr;
+
+  tmpDescr=AB_SwiftDescr_FromString(sName);
+  if (tmpDescr) {
+    if (AB_SwiftDescr_Matches(tmpDescr, family, version1, 0, 0)) {
+      AB_SWIFT_DESCR *descrFromList;
+
+      /* found a candidate */
+      descrFromList=AB_SwiftDescr_List_FindFirst(descrList,
+                                                 AB_SwiftDescr_GetFamily(tmpDescr),
+                                                 AB_SwiftDescr_GetVersion1(tmpDescr),
+                                                 AB_SwiftDescr_GetVersion2(tmpDescr),
+                                                 AB_SwiftDescr_GetVersion3(tmpDescr));
+      if (descrFromList) {
+        AB_SWIFT_DESCR *descrCopy;
+
+        /* store name of selected profile */
+        AB_SwiftDescr_SetAlias2(descrFromList, sName);
+        DBG_ERROR(AQHBCI_LOGDOMAIN,
+                  "Adding matching profile [%s] (%s)",
+                  AB_SwiftDescr_GetAlias1(tmpDescr),
+                  AB_SwiftDescr_GetAlias2(tmpDescr));
+        /* copy to return list */
+        descrCopy=AB_SwiftDescr_dup(descrFromList);
+        AB_SwiftDescr_List_Add(descrCopy, returnDescrList);
+      }
+    }
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Param [%s] does not match family %s.%d", sName, family, version1);
+    }
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create SWIFT descriptor from string \"%s\", ignoring", sName);
+  }
 }
 
 
