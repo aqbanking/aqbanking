@@ -34,9 +34,6 @@ struct AH_JOBQUEUE {
 };
 
 
-static void AH_JobQueue_SetUsedTan(AH_JOBQUEUE *jq, const char *s);
-static void AH_JobQueue_SetUsedPin(AH_JOBQUEUE *jq, const char *s);
-
 
 #endif /* AH_JOBQUEUE_P_H */
 
