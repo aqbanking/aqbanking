@@ -485,11 +485,12 @@ int _sendAndRecvDialogQueues(AH_OUTBOX_CBOX *cbox)
   AH_JOBQUEUE_LIST *jqlRest;
   int rv;
 
-  todoQueues=AH_OutboxCBox_GetTodoQueues(cbox);
+  todoQueues=AH_OutboxCBox_TakeTodoQueues(cbox);
 
   jqlWanted=AH_JobQueue_List_new();
   jqlRest=AH_JobQueue_List_new();
   _extractMatchingQueues(todoQueues, jqlWanted, jqlRest, AH_JOBQUEUE_FLAGS_ISDIALOG, AH_JOBQUEUE_FLAGS_ISDIALOG);
+  AH_JobQueue_List_free(todoQueues); /* is empty now */
   AH_OutboxCBox_SetTodoQueues(cbox, jqlRest);
   todoQueues=jqlRest;
 
@@ -503,8 +504,8 @@ int _sendAndRecvDialogQueues(AH_OUTBOX_CBOX *cbox)
       if (rv) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "Error performing queue (%d)", rv);
         _handleQueueListError(cbox, jqlWanted, "Could not perform dialog queue");
-        _handleQueueListError(cbox, todoQueues, "Could not perform dialog queue");
-        AH_OutboxCBox_SetTodoQueues(cbox, AH_JobQueue_List_new());
+        //_handleQueueListError(cbox, todoQueues, "Could not perform dialog queue");
+        //AH_OutboxCBox_SetTodoQueues(cbox, AH_JobQueue_List_new());
         return rv;
       }
     } /* while */
@@ -522,21 +523,22 @@ int _sendAndRecvSelected(AH_OUTBOX_CBOX *cbox, uint32_t jqflags, uint32_t jqmask
   AH_JOBQUEUE_LIST *jqlRest;
   int rv;
 
-  todoQueues=AH_OutboxCBox_GetTodoQueues(cbox);
+  todoQueues=AH_OutboxCBox_TakeTodoQueues(cbox);
 
   jqlWanted=AH_JobQueue_List_new();
   jqlRest=AH_JobQueue_List_new();
   _extractMatchingQueues(todoQueues, jqlWanted, jqlRest, jqflags, jqmask);
+  AH_JobQueue_List_free(todoQueues); /* is empty now */
   AH_OutboxCBox_SetTodoQueues(cbox, jqlRest);
   todoQueues=jqlRest;
 
   if (AH_JobQueue_List_GetCount(jqlWanted)) {
     /* there are matching queues, handle them */
     rv=_performNonDialogQueues(cbox, jqlWanted);
-    if (rv) {
+    if (rv<0) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Error performing queue (%d)", rv);
-      _handleQueueListError(cbox, todoQueues, "Error performing selected jobs");
-      AH_OutboxCBox_SetTodoQueues(cbox, AH_JobQueue_List_new());
+      //_handleQueueListError(cbox, todoQueues, "Error performing selected jobs");
+      //AH_OutboxCBox_SetTodoQueues(cbox, AH_JobQueue_List_new());
       return rv;
     }
   } /* if matching queuees */

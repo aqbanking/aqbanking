@@ -116,6 +116,19 @@ AH_JOBQUEUE_LIST *AH_OutboxCBox_GetTodoQueues(const AH_OUTBOX_CBOX *cbox)
 
 
 
+AH_JOBQUEUE_LIST *AH_OutboxCBox_TakeTodoQueues(AH_OUTBOX_CBOX *cbox)
+{
+  AH_JOBQUEUE_LIST *jql;
+
+  assert(cbox);
+  jql=cbox->todoQueues;
+  cbox->todoQueues=NULL;
+
+  return jql;
+}
+
+
+
 void AH_OutboxCBox_SetTodoQueues(AH_OUTBOX_CBOX *cbox, AH_JOBQUEUE_LIST *nl)
 {
   assert(cbox);
