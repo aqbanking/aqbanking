@@ -22,33 +22,28 @@ noinst_HEADERS=\
   adminjobs_l.h adminjobs_p.h\
   outbox_l.h outbox_p.h \
   hhd_l.h hhd_p.h \
-  cbox.h \
-  cbox_p.h \
-  cbox_itan.h \
-  cbox_itan1.h \
-  cbox_itan2.h \
-  cbox_send.h \
-  cbox_recv.h \
-  cbox_psd2.h \
-  cbox_hbci.h \
-  cbox_dialog.h \
-  cbox_prepare.h
+  itan.h \
+  itan1.h \
+  itan2.h \
+  outbox_send.h \
+  outbox_recv.h \
+  outbox_psd2.h \
+  outbox_hbci.h \
+  outbox_dialog.h
 
 
 libhbciapp_la_SOURCES=\
   adminjobs.c \
-  hhd.c \
   outbox.c \
-  cbox.c \
-  cbox_recv.c \
-  cbox_send.c \
-  cbox_psd2.c \
-  cbox_hbci.c \
-  cbox_dialog.c \
-  cbox_itan.c \
-  cbox_itan1.c \
-  cbox_itan2.c \
-  cbox_prepare.c
+  outbox_recv.c \
+  outbox_send.c \
+  outbox_psd2.c \
+  outbox_hbci.c \
+  outbox_dialog.c \
+  hhd.c \
+  itan.c \
+  itan1.c \
+  itan2.c
 
 
 

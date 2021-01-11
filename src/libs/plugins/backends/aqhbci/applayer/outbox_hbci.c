@@ -12,9 +12,9 @@
 #endif
 
 
-#include "aqhbci/applayer/cbox_hbci.h"
+#include "aqhbci/applayer/outbox_hbci.h"
 
-#include "aqhbci/applayer/cbox_itan.h"
+#include "aqhbci/applayer/itan.h"
 
 #include "aqbanking/i18n_l.h"
 
@@ -22,7 +22,7 @@
 
 
 
-int AH_OutboxCBox_OpenDialog_Hbci(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t jqFlags)
+int AH_Outbox__CBox_OpenDialog_Hbci(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg, uint32_t jqFlags)
 {
   AB_PROVIDER *provider;
   AB_USER *user;
@@ -55,7 +55,7 @@ int AH_OutboxCBox_OpenDialog_Hbci(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t
         /* only use itan if any other mode than singleStep is available
          * and the job queue does not request non-ITAN mode
          */
-        rv=AH_OutboxCBox_SelectItanMode(cbox, dlg);
+        rv=AH_Outbox__CBox_SelectItanMode(cbox, dlg);
         if (rv) {
           DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
           return rv;
@@ -85,7 +85,7 @@ int AH_OutboxCBox_OpenDialog_Hbci(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t
     return GWEN_ERROR_GENERIC;
   }
 
-  rv=AH_OutboxCBox_SendAndRecvQueue(cbox, dlg, jqDlgOpen);
+  rv=AH_Outbox__CBox_SendAndRecvQueue(cbox, dlg, jqDlgOpen);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not exchange message");
     AH_JobQueue_free(jqDlgOpen);

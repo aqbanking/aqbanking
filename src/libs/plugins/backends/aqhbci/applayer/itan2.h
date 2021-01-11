@@ -7,17 +7,16 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef AH_OUTBOX_CBOX_DIALOG_H
-#define AH_OUTBOX_CBOX_DIALOG_H
+#ifndef AH_OUTBOX_ITAN2_H
+#define AH_OUTBOX_ITAN2_H
 
 
-#include "aqhbci/applayer/cbox.h"
+#include "aqhbci/applayer/itan.h"
 
 
-int AH_OutboxCBox_OpenDialog(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t jqFlags);
-int AH_OutboxCBox_CloseDialog(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t jqFlags);
 
-
+int AH_Outbox__CBox_SendAndReceiveQueueWithTan2(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *qJob);
+int AH_Outbox__CBox_SendAndReceiveJobWithTan2(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg, AH_JOB *job);
 
 
 #endif

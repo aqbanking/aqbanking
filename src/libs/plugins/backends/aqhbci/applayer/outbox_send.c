@@ -11,7 +11,7 @@
 # include <config.h>
 #endif
 
-#include "aqhbci/applayer/cbox_send.h"
+#include "aqhbci/applayer/outbox_send.h"
 
 #include "aqbanking/i18n_l.h"
 
@@ -20,7 +20,7 @@
 
 
 
-int AH_OutboxCBox_SendMessage(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_MSG *msg)
+int AH_Outbox__CBox_SendMessage(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg, AH_MSG *msg)
 {
   int rv;
 
@@ -40,7 +40,7 @@ int AH_OutboxCBox_SendMessage(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_MSG *msg)
 
 
 
-int AH_OutboxCBox_SendQueue(AH_OUTBOX_CBOX *cbox,
+int AH_Outbox__CBox_SendQueue(AH_OUTBOX__CBOX *cbox,
                               AH_DIALOG *dlg,
                               AH_JOBQUEUE *jq)
 {
@@ -56,7 +56,7 @@ int AH_OutboxCBox_SendQueue(AH_OUTBOX_CBOX *cbox,
     return GWEN_ERROR_GENERIC;
   }
 
-  rv=AH_OutboxCBox_SendMessage(cbox, dlg, msg);
+  rv=AH_Outbox__CBox_SendMessage(cbox, dlg, msg);
   AH_Msg_free(msg);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);

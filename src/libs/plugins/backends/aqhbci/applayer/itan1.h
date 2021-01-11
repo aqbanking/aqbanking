@@ -7,16 +7,16 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef AH_OUTBOX_CBOX_ITAN2_H
-#define AH_OUTBOX_CBOX_ITAN2_H
+#ifndef AH_OUTBOX_ITAN1_H
+#define AH_OUTBOX_ITAN1_H
 
 
-#include "aqhbci/applayer/cbox_itan.h"
+#include "aqhbci/applayer/itan.h"
 
 
 
-int AH_OutboxCBox_SendAndReceiveQueueWithTan2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *qJob);
-int AH_OutboxCBox_SendAndReceiveJobWithTan2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *job);
+int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *qJob);
+
 
 
 #endif

@@ -11,10 +11,10 @@
 # include <config.h>
 #endif
 
-#include "aqhbci/applayer/cbox_itan2.h"
+#include "aqhbci/applayer/itan1.h"
 
-#include "aqhbci/applayer/cbox_send.h"
-#include "aqhbci/applayer/cbox_recv.h"
+#include "aqhbci/applayer/outbox_send.h"
+#include "aqhbci/applayer/outbox_recv.h"
 #include "aqhbci/applayer/hhd_l.h"
 #include "aqhbci/msglayer/message_l.h"
 #include "aqhbci/tan/tanmechanism.h"
@@ -37,7 +37,7 @@
  */
 
 
-static int _sendAndReceiveTanResponseProc2(AH_OUTBOX_CBOX *cbox,
+static int _sendAndReceiveTanResponseProc2(AH_OUTBOX__CBOX *cbox,
                                            AH_DIALOG *dlg,
                                            AH_JOBQUEUE *qJob,
                                            AH_JOB *jTan1);
@@ -54,7 +54,7 @@ static void _dispatchJobMsgResultsToQueue(AH_JOB *job, AH_JOBQUEUE *qJob);
  */
 
 
-int AH_OutboxCBox_SendAndReceiveQueueWithTan2(AH_OUTBOX_CBOX *cbox,
+int AH_Outbox__CBox_SendAndReceiveQueueWithTan2(AH_OUTBOX__CBOX *cbox,
                                                 AH_DIALOG *dlg,
                                                 AH_JOBQUEUE *qJob)
 {
@@ -108,7 +108,7 @@ int AH_OutboxCBox_SendAndReceiveQueueWithTan2(AH_OUTBOX_CBOX *cbox,
   }
 
   /* send original job with HKTAN, receive response and dispatch it to those jobs */
-  rv=AH_OutboxCBox_SendAndRecvQueueNoTan(cbox, dlg, qJob);
+  rv=AH_Outbox__CBox_SendAndRecvQueueNoTan(cbox, dlg, qJob);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -140,7 +140,7 @@ int AH_OutboxCBox_SendAndReceiveQueueWithTan2(AH_OUTBOX_CBOX *cbox,
 
 
 
-int AH_OutboxCBox_SendAndReceiveJobWithTan2(AH_OUTBOX_CBOX *cbox,
+int AH_Outbox__CBox_SendAndReceiveJobWithTan2(AH_OUTBOX__CBOX *cbox,
                                               AH_DIALOG *dlg,
                                               AH_JOB *job)
 {
@@ -162,7 +162,7 @@ int AH_OutboxCBox_SendAndReceiveJobWithTan2(AH_OUTBOX_CBOX *cbox,
   }
 
   /* send queue */
-  rv=AH_OutboxCBox_SendAndReceiveQueueWithTan2(cbox, dlg, qJob);
+  rv=AH_Outbox__CBox_SendAndReceiveQueueWithTan2(cbox, dlg, qJob);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_JobQueue_free(qJob);
@@ -175,7 +175,7 @@ int AH_OutboxCBox_SendAndReceiveJobWithTan2(AH_OUTBOX_CBOX *cbox,
 
 
 
-int _sendAndReceiveTanResponseProc2(AH_OUTBOX_CBOX *cbox,
+int _sendAndReceiveTanResponseProc2(AH_OUTBOX__CBOX *cbox,
                                     AH_DIALOG *dlg,
                                     AH_JOBQUEUE *qJob,
                                     AH_JOB *jTan1)
@@ -223,7 +223,7 @@ int _sendAndReceiveTanResponseProc2(AH_OUTBOX_CBOX *cbox,
     char tanBuffer[64];
 
     memset(tanBuffer, 0, sizeof(tanBuffer));
-    rv=AH_OutboxCBox_InputTanWithChallenge(cbox,
+    rv=AH_Outbox__CBox_InputTanWithChallenge(cbox,
                                              dlg,
                                              challenge,
                                              challengeHhd,
@@ -283,7 +283,7 @@ int _sendAndReceiveTanResponseProc2(AH_OUTBOX_CBOX *cbox,
     return rv;
   }
 
-  rv=AH_OutboxCBox_JobToMessage(jTan2, msg2, 1);
+  rv=AH_Outbox__CBox_JobToMessage(jTan2, msg2, 1);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg2);
@@ -328,7 +328,7 @@ int _sendAndReceiveTanResponseProc2(AH_OUTBOX_CBOX *cbox,
   }
 
   /* send message */
-  rv=AH_OutboxCBox_SendMessage(cbox, dlg, msg2);
+  rv=AH_Outbox__CBox_SendMessage(cbox, dlg, msg2);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg2);
@@ -337,7 +337,7 @@ int _sendAndReceiveTanResponseProc2(AH_OUTBOX_CBOX *cbox,
   }
 
   /* receive response */
-  rv=AH_OutboxCBox_RecvQueue(cbox, dlg, qJob);
+  rv=AH_Outbox__CBox_RecvQueue(cbox, dlg, qJob);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg2);

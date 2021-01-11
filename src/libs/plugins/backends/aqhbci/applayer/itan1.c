@@ -12,9 +12,9 @@
 #endif
 
 
-#include "aqhbci/applayer/cbox_itan1.h"
-#include "aqhbci/applayer/cbox_send.h"
-#include "aqhbci/applayer/cbox_recv.h"
+#include "aqhbci/applayer/itan1.h"
+#include "aqhbci/applayer/outbox_send.h"
+#include "aqhbci/applayer/outbox_recv.h"
 
 #include "aqhbci/msglayer/message_l.h"
 #include "aqhbci/applayer/hhd_l.h"
@@ -35,7 +35,7 @@
 
 
 
-int AH_OutboxCBox_Itan1(AH_OUTBOX_CBOX *cbox,
+int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
                           AH_DIALOG *dlg,
                           AH_JOBQUEUE *qJob)
 {
@@ -169,7 +169,7 @@ int AH_OutboxCBox_Itan1(AH_OUTBOX_CBOX *cbox,
   AH_Msg_SetItanMethod(msg1, um);
   AH_Msg_SetItanHashMode(msg1,
                          GWEN_DB_GetIntValue(dbParams, "hashMethod", 0, 0));
-  rv=AH_OutboxCBox_JobToMessage(j, msg1, 1);
+  rv=AH_Outbox__CBox_JobToMessage(j, msg1, 1);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg1);
@@ -208,7 +208,7 @@ int AH_OutboxCBox_Itan1(AH_OUTBOX_CBOX *cbox,
     return rv;
   }
 
-  rv=AH_OutboxCBox_JobToMessage(jTan, msg2, 1);
+  rv=AH_Outbox__CBox_JobToMessage(jTan, msg2, 1);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg2);
@@ -247,7 +247,7 @@ int AH_OutboxCBox_Itan1(AH_OUTBOX_CBOX *cbox,
   }
 
   /* send HKTAN message */
-  rv=AH_OutboxCBox_SendMessage(cbox, dlg, msg2);
+  rv=AH_Outbox__CBox_SendMessage(cbox, dlg, msg2);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg2);
@@ -259,15 +259,15 @@ int AH_OutboxCBox_Itan1(AH_OUTBOX_CBOX *cbox,
   AH_Job_SetStatus(jTan, AH_JobStatusSent);
 
   /* wait for response, dispatch it */
-  rv=AH_OutboxCBox_RecvQueue(cbox, dlg, jq);
+  rv=AH_Outbox__CBox_RecvQueue(cbox, dlg, jq);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AH_OutboxCBox_CopyJobResultsToJobList(jTan, jl);
+    AH_Outbox__CBox_CopyJobResultsToJobList(jTan, jl);
     AH_Msg_free(msg1);
     AH_JobQueue_free(jq);
     return rv;
   }
-  AH_OutboxCBox_CopyJobResultsToJobList(jTan, jl);
+  AH_Outbox__CBox_CopyJobResultsToJobList(jTan, jl);
 
   /* get challenge */
   DBG_INFO(AQHBCI_LOGDOMAIN, "Processing job \"%s\"", AH_Job_GetName(jTan));
@@ -286,7 +286,7 @@ int AH_OutboxCBox_Itan1(AH_OUTBOX_CBOX *cbox,
     char tanBuffer[64];
 
     memset(tanBuffer, 0, sizeof(tanBuffer));
-    rv=AH_OutboxCBox_InputTanWithChallenge(cbox,
+    rv=AH_Outbox__CBox_InputTanWithChallenge(cbox,
                                              dlg,
                                              challenge,
                                              challengeHhd,
@@ -347,7 +347,7 @@ int AH_OutboxCBox_Itan1(AH_OUTBOX_CBOX *cbox,
   }
 
   /* send job message */
-  rv=AH_OutboxCBox_SendMessage(cbox, dlg, msg1);
+  rv=AH_Outbox__CBox_SendMessage(cbox, dlg, msg1);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg1);
@@ -357,7 +357,7 @@ int AH_OutboxCBox_Itan1(AH_OUTBOX_CBOX *cbox,
   AH_Job_SetStatus(j, AH_JobStatusSent);
 
   /* wait for response, dispatch it */
-  rv=AH_OutboxCBox_RecvQueue(cbox, dlg, qJob);
+  rv=AH_Outbox__CBox_RecvQueue(cbox, dlg, qJob);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;

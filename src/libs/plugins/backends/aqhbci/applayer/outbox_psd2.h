@@ -7,17 +7,14 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef AH_OUTBOX_CBOX_RECV_H
-#define AH_OUTBOX_CBOX_RECV_H
+#ifndef AH_OUTBOX_PSD2_H
+#define AH_OUTBOX_PSD2_H
 
 
-#include "aqhbci/applayer/cbox.h"
+#include "aqhbci/applayer/outbox_l.h"
 
 
-
-AH_MSG *AH_OutboxCBox_RecvMessage(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, GWEN_DB_NODE *dbRsp);
-int AH_OutboxCBox_RecvQueue(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jq);
-
+int AH_Outbox__CBox_OpenDialogPsd2_Proc2(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg);
 
 
 #endif

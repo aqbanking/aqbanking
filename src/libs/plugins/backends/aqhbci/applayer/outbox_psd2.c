@@ -12,9 +12,9 @@
 #endif
 
 
-#include "aqhbci/applayer/cbox_psd2.h"
+#include "aqhbci/applayer/outbox_psd2.h"
 
-#include "aqhbci/applayer/cbox_itan2.h"
+#include "aqhbci/applayer/itan2.h"
 
 #include "aqbanking/i18n_l.h"
 
@@ -22,7 +22,7 @@
 
 
 
-int AH_OutboxCBox_OpenDialogPsd2_Proc2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg)
+int AH_Outbox__CBox_OpenDialogPsd2_Proc2(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg)
 {
   AB_PROVIDER *provider;
   AB_USER *user;
@@ -43,7 +43,7 @@ int AH_OutboxCBox_OpenDialogPsd2_Proc2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg)
     /* only use itan if any other mode than singleStep is available
      * and the job queue does not request non-ITAN mode
      */
-    rv=AH_OutboxCBox_SelectItanMode(cbox, dlg);
+    rv=AH_Outbox__CBox_SelectItanMode(cbox, dlg);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -72,7 +72,7 @@ int AH_OutboxCBox_OpenDialogPsd2_Proc2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg)
   /* need signature in any case */
   AH_Job_AddFlags(jDlgOpen, AH_JOB_FLAGS_SIGN);
 
-  rv=AH_OutboxCBox_SendAndReceiveJobWithTan2(cbox, dlg, jDlgOpen);
+  rv=AH_Outbox__CBox_SendAndReceiveJobWithTan2(cbox, dlg, jDlgOpen);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Job_free(jDlgOpen);

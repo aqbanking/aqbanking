@@ -11,14 +11,14 @@
 # include <config.h>
 #endif
 
-#include "aqhbci/applayer/cbox_itan.h"
+#include "aqhbci/applayer/itan.h"
 
 #include "aqhbci/msglayer/message_l.h"
 #include "aqhbci/applayer/hhd_l.h"
 #include "aqhbci/tan/tanmechanism.h"
 #include "aqhbci/banking/provider_tan.h"
-#include "aqhbci/applayer/cbox_itan1.h"
-#include "aqhbci/applayer/cbox_itan2.h"
+#include "aqhbci/applayer/itan1.h"
+#include "aqhbci/applayer/itan2.h"
 
 #include "aqbanking/i18n_l.h"
 
@@ -49,7 +49,7 @@ static const AH_TAN_METHOD *_getAndCheckAutoSelectedTanMethod(AB_USER *u, const 
 
 
 
-int AH_OutboxCBox__Hash(int mode,
+int AH_Outbox__CBox__Hash(int mode,
                           const uint8_t *p,
                           unsigned int l,
                           AH_MSG *msg)
@@ -123,7 +123,7 @@ int AH_OutboxCBox__Hash(int mode,
 
 
 
-int AH_OutboxCBox_JobToMessage(AH_JOB *j, AH_MSG *msg, int doCopySigners)
+int AH_Outbox__CBox_JobToMessage(AH_JOB *j, AH_MSG *msg, int doCopySigners)
 {
   AB_USER *user;
   int rv;
@@ -235,7 +235,7 @@ int _addJobNodesToMessage(AH_JOB *j, AH_MSG *msg)
     uint32_t endPos;
 
     endPos=GWEN_Buffer_GetPos(msgBuf);
-    rv=AH_OutboxCBox__Hash(AH_Msg_GetItanHashMode(msg),
+    rv=AH_Outbox__CBox__Hash(AH_Msg_GetItanHashMode(msg),
 			     (const uint8_t *)GWEN_Buffer_GetStart(msgBuf)+startPos,
 			     endPos-startPos,
 			     msg);
@@ -276,7 +276,7 @@ GWEN_DB_NODE *_getMessageSpecificArgsOrJobArgs(AH_JOB *j, const GWEN_XMLNODE *jn
 
 
 
-int AH_OutboxCBox_SendAndReceiveQueueWithTan(AH_OUTBOX_CBOX *cbox,
+int AH_Outbox__CBox_SendAndReceiveQueueWithTan(AH_OUTBOX__CBOX *cbox,
                                                AH_DIALOG *dlg,
                                                AH_JOBQUEUE *qJob)
 {
@@ -285,9 +285,9 @@ int AH_OutboxCBox_SendAndReceiveQueueWithTan(AH_OUTBOX_CBOX *cbox,
 
   process=AH_Dialog_GetItanProcessType(dlg);
   if (process==1)
-    rv=AH_OutboxCBox_Itan1(cbox, dlg, qJob);
+    rv=AH_Outbox__CBox_Itan1(cbox, dlg, qJob);
   else if (process==2)
-    rv=AH_OutboxCBox_SendAndReceiveQueueWithTan2(cbox, dlg, qJob);
+    rv=AH_Outbox__CBox_SendAndReceiveQueueWithTan2(cbox, dlg, qJob);
   else {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
               "iTAN method %d not supported", process);
@@ -299,7 +299,7 @@ int AH_OutboxCBox_SendAndReceiveQueueWithTan(AH_OUTBOX_CBOX *cbox,
 
 
 
-int AH_OutboxCBox_SelectItanMode(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg)
+int AH_Outbox__CBox_SelectItanMode(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg)
 {
   AB_USER *u;
   const AH_TAN_METHOD_LIST *tml;
@@ -455,7 +455,7 @@ const AH_TAN_METHOD *_getAndCheckAutoSelectedTanMethod(AB_USER *u, const AH_TAN_
 
 
 
-void AH_OutboxCBox_CopyJobResultsToJobList(const AH_JOB *j, const AH_JOB_LIST *qjl)
+void AH_Outbox__CBox_CopyJobResultsToJobList(const AH_JOB *j, const AH_JOB_LIST *qjl)
 {
   /* dispatch results from jTan to all other members of the queue */
   if (qjl) {
@@ -489,13 +489,13 @@ void AH_OutboxCBox_CopyJobResultsToJobList(const AH_JOB *j, const AH_JOB_LIST *q
 
 
 
-int AH_OutboxCBox_InputTanWithChallenge(AH_OUTBOX_CBOX *cbox,
-                                        AH_DIALOG *dialog,
-                                        const char *sChallenge,
-                                        const char *sChallengeHhd,
-                                        char *passwordBuffer,
-                                        int passwordMinLen,
-                                        int passwordMaxLen)
+int AH_Outbox__CBox_InputTanWithChallenge(AH_OUTBOX__CBOX *cbox,
+                                          AH_DIALOG *dialog,
+                                          const char *sChallenge,
+                                          const char *sChallengeHhd,
+                                          char *passwordBuffer,
+                                          int passwordMinLen,
+                                          int passwordMaxLen)
 {
   int rv;
   const AH_TAN_METHOD *tanMethodDescription=NULL;
