@@ -28,7 +28,6 @@
 #include "aqhbci/applayer/cbox_recv.h"
 #include "aqhbci/applayer/cbox_dialog.h"
 #include "aqhbci/applayer/cbox_prepare.h"
-#include "aqhbci/applayer/cbox_queue.h"
 
 #include <aqbanking/banking_be.h>
 #include <aqbanking/backendsupport/imexporter.h>

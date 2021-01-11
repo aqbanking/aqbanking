@@ -16,7 +16,6 @@
 
 #include "aqhbci/applayer/cbox_psd2.h"
 #include "aqhbci/applayer/cbox_hbci.h"
-#include "aqhbci/applayer/cbox_queue.h"
 #include "aqhbci/admjobs/jobtan_l.h"
 
 #include "aqbanking/i18n_l.h"
@@ -26,8 +25,8 @@
 
 
 int AH_OutboxCBox_OpenDialog(AH_OUTBOX_CBOX *cbox,
-                             AH_DIALOG *dlg,
-                             uint32_t jqFlags)
+                               AH_DIALOG *dlg,
+                               uint32_t jqFlags)
 {
   AB_PROVIDER *provider;
   AB_USER *user;
