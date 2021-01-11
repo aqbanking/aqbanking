@@ -17,42 +17,30 @@
 typedef struct AH_JOBQUEUE AH_JOBQUEUE;
 
 /** jobs in the queue need encrytion */
-#define AH_JOBQUEUE_FLAGS_CRYPT          0x00000001
+#define AH_JOBQUEUE_FLAGS_CRYPT       0x00000001
 /** jobs in the queue need signature */
-#define AH_JOBQUEUE_FLAGS_SIGN           0x00000002
+#define AH_JOBQUEUE_FLAGS_SIGN        0x00000002
 /** job queue contains a dialog job */
-#define AH_JOBQUEUE_FLAGS_ISDIALOG       0x00000004
+#define AH_JOBQUEUE_FLAGS_ISDIALOG    0x00000004
 /** jobs in the queue need a TAN */
-#define AH_JOBQUEUE_FLAGS_NEEDTAN        0x00000010
+#define AH_JOBQUEUE_FLAGS_NEEDTAN     0x00000010
 /** set systemid "0" instead of real value */
-#define AH_JOBQUEUE_FLAGS_NOSYSID        0x00000020
+#define AH_JOBQUEUE_FLAGS_NOSYSID     0x00000020
 /** dont select iTAN mode for this queue (i.e. use single step mode) */
-#define AH_JOBQUEUE_FLAGS_NOITAN         0x00000040
+#define AH_JOBQUEUE_FLAGS_NOITAN      0x00000040
 /** use "1" as signature counter value in signatures, not the real sequence counter */
-#define AH_JOBQUEUE_FLAGS_SIGNSEQONE     0x00000080
+#define AH_JOBQUEUE_FLAGS_SIGNSEQONE  0x00000080
 
-#define AH_JOBQUEUE_FLAGS_COPYMASK       0x0000ffff
+#define AH_JOBQUEUE_FLAGS_COPYMASK    0x0000ffff
 /** job queue has been sent to outbox */
-#define AH_JOBQUEUE_FLAGS_OUTBOX         0x00040000
+#define AH_JOBQUEUE_FLAGS_OUTBOX      0x00040000
 
 /** at least on job in the queue has warnings */
-#define AH_JOBQUEUE_FLAGS_HASWARNINGS    0x00080000
+#define AH_JOBQUEUE_FLAGS_HASWARNINGS 0x00080000
 
 /** at least on job in the queue has errors */
-#define AH_JOBQUEUE_FLAGS_HASERRORS      0x00100000
-
-/** dialog was aborted by peer */
-#define AH_JOBQUEUE_FLAGS_DIALOG_ABORTED 0x00200000
-
-/** received an error code about access problems (e.g. user key blocked at the bank) */
-#define AH_JOBQUEUE_FLAGS_ACCESS_PROBLEM 0x00400000
-
-/** used tan was not really used, free to reuse */
-#define AH_JOBQUEUE_FLAGS_RECYCLE_TAN    0x00800000
-
-/** bad pin flagged by server */
-#define AH_JOBQUEUE_FLAGS_BAD_PIN        0x01000000
-
+#define AH_JOBQUEUE_FLAGS_HASERRORS   0x00100000
+/** a dialog job has been started */
 
 #include <gwenhywfar/misc.h>
 
