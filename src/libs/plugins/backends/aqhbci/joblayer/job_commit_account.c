@@ -37,7 +37,8 @@ static void _removeEmpty(AH_JOB *j, AB_ACCOUNT_LIST *accList);
 static void _matchAccountsWithStoredAccountsAndAssignStoredId(AH_JOB *j, AB_ACCOUNT_LIST *accList);
 static uint32_t _findStored(AH_JOB *j, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC_LIST *asl);
 static void _addOrModify(AH_JOB *j, AB_ACCOUNT *acc);
-static void _possiblyReplaceUpdJobsForAccountInLockedUser(AB_USER *user, AB_ACCOUNT *storedAcc, GWEN_DB_NODE *dbTempUpd);
+static void _possiblyReplaceUpdJobsForAccountInLockedUser(AB_USER *user, AB_ACCOUNT *storedAcc,
+                                                          GWEN_DB_NODE *dbTempUpd);
 static AB_ACCOUNT *_getLoadedAndUpdatedOrCreatedAccount(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *acc);
 static void _possiblyUpdateAndWriteAccountSpec(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *storedAcc);
 static void _updateAccountInfo(AB_ACCOUNT *targetAccount, const AB_ACCOUNT *sourceAccount);
@@ -67,9 +68,9 @@ void AH_Job_Commit_Accounts(AH_JOB *j)
       AB_ACCOUNT *acc;
 
       while ((acc=AB_Account_List_First(accList))) {
-	AB_Account_List_Del(acc);
-	_addOrModify(j, acc);
-	AB_Account_free(acc);
+        AB_Account_List_Del(acc);
+        _addOrModify(j, acc);
+        AB_Account_free(acc);
       } /* while */
     } /* if accounts */
     AB_Account_List_free(accList);
@@ -140,7 +141,7 @@ AB_ACCOUNT *_readAndSanitizeAccountData(AB_PROVIDER *pro, AH_BPD *bpd, GWEN_DB_N
 
       s=AH_Bpd_GetBankName(bpd);
       if (s && *s)
-	AB_Account_SetBankName(acc, s);
+        AB_Account_SetBankName(acc, s);
     }
 
     /* Fixes a bug where the bank sends an account with no bank & account name */
@@ -156,7 +157,7 @@ AB_ACCOUNT *_readAndSanitizeAccountData(AB_PROVIDER *pro, AH_BPD *bpd, GWEN_DB_N
     gr=GWEN_DB_GetFirstGroup(dbAccountData);
     while (gr) {
       if (strcasecmp(GWEN_DB_GroupName(gr), "updjob")==0)
-	GWEN_DB_AddGroup(dbUpd, GWEN_DB_Group_dup(gr));
+        GWEN_DB_AddGroup(dbUpd, GWEN_DB_Group_dup(gr));
       gr=GWEN_DB_GetNextGroup(gr);
     }
     AH_Account_SetDbTempUpd(acc, dbUpd);
@@ -221,7 +222,7 @@ void _matchAccountsWithStoredAccountsAndAssignStoredId(AH_JOB *j, AB_ACCOUNT_LIS
 
       acc=AB_Account_List_First(accList);
       while (acc) {
-	uint32_t storedUid;
+        uint32_t storedUid;
 
         storedUid=_findStored(j, acc, accountSpecList);
         if (storedUid) {
@@ -383,10 +384,10 @@ AB_ACCOUNT *_getLoadedAndUpdatedOrCreatedAccount(AB_PROVIDER *pro, AB_USER *user
       /* unlock account */
       rv=AB_Provider_EndExclUseAccount(pro, storedAcc, 0);
       if (rv<0) {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-	AB_Provider_EndExclUseAccount(pro, storedAcc, 1); /* abort */
-	AB_Account_free(storedAcc);
-	return NULL;
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+        AB_Provider_EndExclUseAccount(pro, storedAcc, 1); /* abort */
+        AB_Account_free(storedAcc);
+        return NULL;
       }
 
       return storedAcc;
@@ -409,8 +410,8 @@ AB_ACCOUNT *_getLoadedAndUpdatedOrCreatedAccount(AB_PROVIDER *pro, AB_USER *user
       DBG_DEBUG(AQHBCI_LOGDOMAIN, "Reading back added account");
       rv=AB_Provider_GetAccount(pro, AB_Account_GetUniqueId(acc), 0, 0, &storedAcc); /* no-lock, no-unlock */
       if (rv<0) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Error getting referred account (%d)", rv);
-	return NULL;
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Error getting referred account (%d)", rv);
+        return NULL;
       }
       return storedAcc;
     }

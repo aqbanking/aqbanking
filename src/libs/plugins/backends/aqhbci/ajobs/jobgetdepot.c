@@ -99,7 +99,7 @@ int AH_Job_GetDepot_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     return GWEN_ERROR_GENERIC;
   }
 
-  rv=_readDepotInfo(j, ctx, (const uint8_t*) GWEN_Buffer_GetStart(dataBuf), GWEN_Buffer_GetUsedBytes(dataBuf));
+  rv=_readDepotInfo(j, ctx, (const uint8_t *) GWEN_Buffer_GetStart(dataBuf), GWEN_Buffer_GetUsedBytes(dataBuf));
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(dataBuf);
@@ -148,9 +148,9 @@ GWEN_BUFFER *_sampleDepotInfo(AH_JOB *j, GWEN_DB_NODE *dbResponses)
       /* get noted transactions */
       p=GWEN_DB_GetBinValue(dbXA, "depotInfo", 0, 0, 0, &bs);
       if (p && bs)
-	GWEN_Buffer_AppendBytes(dataBuf, p, bs);
+        GWEN_Buffer_AppendBytes(dataBuf, p, bs);
       else {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "No depot info in response %d", loop);
+        DBG_INFO(AQHBCI_LOGDOMAIN, "No depot info in response %d", loop);
       }
     }
 
@@ -201,7 +201,7 @@ int _readDepotInfo(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx, const uint8_t *ptr, ui
   if (tmpSecurityList) {
     AB_SECURITY *sec;
 
-    while( (sec=AB_Security_List_First(tmpSecurityList)) ) {
+    while ((sec=AB_Security_List_First(tmpSecurityList))) {
       AB_Security_List_Del(sec);
       AB_ImExporterContext_AddSecurity(ctx, sec);
     }

@@ -275,9 +275,9 @@ int _lockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers)
     DBG_INFO(AQHBCI_LOGDOMAIN, "Locking customer \"%lu\"",
              (unsigned long int) AB_User_GetUniqueId(user));
     GWEN_Gui_ProgressLog2(0,
-			  GWEN_LoggerLevel_Info,
-			  "Locking customer \"%lu\"",
-			  (unsigned long int) AB_User_GetUniqueId(user));
+                          GWEN_LoggerLevel_Info,
+                          "Locking customer \"%lu\"",
+                          (unsigned long int) AB_User_GetUniqueId(user));
     rv=AB_Provider_BeginExclUseUser(ob->provider, user);
     if (rv<0) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not lock customer [%lu] (%d)", (unsigned long int) AB_User_GetUniqueId(user), rv);

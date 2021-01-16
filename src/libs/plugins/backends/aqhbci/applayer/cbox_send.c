@@ -42,8 +42,8 @@ int AH_OutboxCBox_SendMessage(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_MSG *msg)
 
 
 int AH_OutboxCBox_SendQueue(AH_OUTBOX_CBOX *cbox,
-                              AH_DIALOG *dlg,
-                              AH_JOBQUEUE *jq)
+                            AH_DIALOG *dlg,
+                            AH_JOBQUEUE *jq)
 {
   AH_MSG *msg;
   int rv;

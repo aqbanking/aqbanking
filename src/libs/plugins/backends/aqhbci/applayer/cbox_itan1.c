@@ -31,8 +31,8 @@
 
 
 int AH_OutboxCBox_Itan1(AH_OUTBOX_CBOX *cbox,
-                          AH_DIALOG *dlg,
-                          AH_JOBQUEUE *qJob)
+                        AH_DIALOG *dlg,
+                        AH_JOBQUEUE *qJob)
 {
   const AH_JOB_LIST *jl;
   AH_OUTBOX *outbox;
@@ -282,12 +282,12 @@ int AH_OutboxCBox_Itan1(AH_OUTBOX_CBOX *cbox,
 
     memset(tanBuffer, 0, sizeof(tanBuffer));
     rv=AH_OutboxCBox_InputTanWithChallenge(cbox,
-                                             dlg,
-                                             challenge,
-                                             challengeHhd,
-                                             tanBuffer,
-                                             1,
-                                             sizeof(tanBuffer)-1);
+                                           dlg,
+                                           challenge,
+                                           challengeHhd,
+                                           tanBuffer,
+                                           1,
+                                           sizeof(tanBuffer)-1);
     if (rv) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       AH_Msg_free(msg1);

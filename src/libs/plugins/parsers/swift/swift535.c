@@ -103,8 +103,8 @@ int AHB_SWIFT535_Parse_97A(const AHB_SWIFT_TAG *tg,
       memmove(s, p, p2-p+1);
       s[p2-p]=0;
       AHB_SWIFT__SetCharValue535(data,
-				 GWEN_DB_FLAGS_OVERWRITE_VARS,
-				 "localBankCode", s);
+                                 GWEN_DB_FLAGS_OVERWRITE_VARS,
+                                 "localBankCode", s);
       GWEN_Memory_dealloc(s);
       p=p2+1;
     }
@@ -116,24 +116,24 @@ int AHB_SWIFT535_Parse_97A(const AHB_SWIFT_TAG *tg,
     if (*p) {
       p2=p;
       while (*p2 && isdigit(*p2))
-	p2++;
+        p2++;
       if (p2==p) {
-	DBG_INFO(AQBANKING_LOGDOMAIN,
-		 "LocalAccountNumber starts with nondigits (%s)", p);
-	AHB_SWIFT__SetCharValue535(data,
-				   GWEN_DB_FLAGS_OVERWRITE_VARS,
-				   "localAccountNumber", p);
+        DBG_INFO(AQBANKING_LOGDOMAIN,
+                 "LocalAccountNumber starts with nondigits (%s)", p);
+        AHB_SWIFT__SetCharValue535(data,
+                                   GWEN_DB_FLAGS_OVERWRITE_VARS,
+                                   "localAccountNumber", p);
       }
       else {
-	char *s;
+        char *s;
 
-	s=(char *)GWEN_Memory_malloc(p2-p+1);
-	memmove(s, p, p2-p+1);
-	s[p2-p]=0;
-	AHB_SWIFT__SetCharValue535(data,
-				   GWEN_DB_FLAGS_OVERWRITE_VARS,
-				   "localAccountNumber", s);
-	GWEN_Memory_dealloc(s);
+        s=(char *)GWEN_Memory_malloc(p2-p+1);
+        memmove(s, p, p2-p+1);
+        s[p2-p]=0;
+        AHB_SWIFT__SetCharValue535(data,
+                                   GWEN_DB_FLAGS_OVERWRITE_VARS,
+                                   "localAccountNumber", s);
+        GWEN_Memory_dealloc(s);
       }
     }
   }
@@ -243,8 +243,8 @@ int AHB_SWIFT535_Parse_90B(const AHB_SWIFT_TAG *tg,
     sCurrency=p;
     for (i=0; i<3; i++) {
       if (*p==0) {
-	DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 90B: Tag too short");
-	return GWEN_ERROR_BAD_DATA;
+        DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 90B: Tag too short");
+        return GWEN_ERROR_BAD_DATA;
       }
       p++;
     }
@@ -255,8 +255,8 @@ int AHB_SWIFT535_Parse_90B(const AHB_SWIFT_TAG *tg,
       dbuf=GWEN_Buffer_new(0, 32, 0, 1);
       GWEN_Buffer_AppendString(dbuf, p);
       if (sCurrency) {
-	GWEN_Buffer_AppendByte(dbuf, ':');
-	GWEN_Buffer_AppendBytes(dbuf, sCurrency, 3); /* auto terminated with ZERO by GWEN_BUFFER */
+        GWEN_Buffer_AppendByte(dbuf, ':');
+        GWEN_Buffer_AppendBytes(dbuf, sCurrency, 3); /* auto terminated with ZERO by GWEN_BUFFER */
       }
       AHB_SWIFT__SetCharValue535(data, flags, "unitPriceValue", GWEN_Buffer_GetStart(dbuf));
       GWEN_Buffer_free(dbuf);

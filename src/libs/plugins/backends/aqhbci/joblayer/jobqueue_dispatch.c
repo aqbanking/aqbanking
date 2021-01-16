@@ -378,16 +378,16 @@ void _possiblyExtractAttachPoint(AH_JOB *j, GWEN_DB_NODE *dbSegment)
     /* job is attachable, check whether this is segment result */
     if (strcasecmp(GWEN_DB_GroupName(dbSegment), "SegResult")==0) {
       GWEN_DB_NODE *dbResult;
-  
+
       dbResult=GWEN_DB_FindFirstGroup(dbSegment, "result");
       while (dbResult) {
         int rcode;
-  
+
         rcode=GWEN_DB_GetIntValue(dbResult, "resultcode", 0, 0);
         /* it is a segment result, does it contain an attach point ? */
         if (rcode==3040) {
           const char *p;
-  
+
           /* it should... */
           p=GWEN_DB_GetCharValue(dbResult, "param", 0, 0);
           if (!p) {
@@ -395,7 +395,7 @@ void _possiblyExtractAttachPoint(AH_JOB *j, GWEN_DB_NODE *dbSegment)
           }
           else {
             GWEN_DB_NODE *args;
-  
+
             /* store the attach point */
             DBG_DEBUG(AQHBCI_LOGDOMAIN, "Storing attach point");
             args=AH_Job_GetArguments(j);

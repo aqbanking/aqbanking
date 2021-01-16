@@ -22,9 +22,12 @@
  */
 
 static int _prepareTodoJobs(AH_JOB_LIST *todoJobs, AH_JOB_LIST *finishedJobs);
-static int _prepareDialogJobs(AB_USER *user, AH_JOB_LIST *todoJobs, AH_JOB_LIST *finishedJobs, AH_JOBQUEUE_LIST *todoQueues);
-static int _sortTodoJobsIntoQueues(AB_USER *user, AH_JOB_LIST *todoJobs, AH_JOB_LIST *finishedJobs, AH_JOBQUEUE_LIST *todoQueues);
-static void _fillQueueWithTodoJobs(AH_JOB_LIST *todoJobs, AH_JOB_LIST *finishedJobs, AH_JOB_LIST *retryJobs, AH_JOBQUEUE *jq);
+static int _prepareDialogJobs(AB_USER *user, AH_JOB_LIST *todoJobs, AH_JOB_LIST *finishedJobs,
+                              AH_JOBQUEUE_LIST *todoQueues);
+static int _sortTodoJobsIntoQueues(AB_USER *user, AH_JOB_LIST *todoJobs, AH_JOB_LIST *finishedJobs,
+                                   AH_JOBQUEUE_LIST *todoQueues);
+static void _fillQueueWithTodoJobs(AH_JOB_LIST *todoJobs, AH_JOB_LIST *finishedJobs, AH_JOB_LIST *retryJobs,
+                                   AH_JOBQUEUE *jq);
 static void _moveJobsAndSetErrorStatus(AH_JOB_LIST *todoJobs, AH_JOB_LIST *finishedJobs);
 
 
@@ -169,7 +172,8 @@ int _prepareDialogJobs(AB_USER *user, AH_JOB_LIST *todoJobs, AH_JOB_LIST *finish
 
 
 
-int _sortTodoJobsIntoQueues(AB_USER *user, AH_JOB_LIST *todoJobs, AH_JOB_LIST *finishedJobs, AH_JOBQUEUE_LIST *todoQueues)
+int _sortTodoJobsIntoQueues(AB_USER *user, AH_JOB_LIST *todoJobs, AH_JOB_LIST *finishedJobs,
+                            AH_JOBQUEUE_LIST *todoQueues)
 {
   DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing non-dialog jobs");
   while (AH_Job_List_GetCount(todoJobs)) {
@@ -204,7 +208,7 @@ void _fillQueueWithTodoJobs(AH_JOB_LIST *todoJobs, AH_JOB_LIST *finishedJobs, AH
 {
   AH_JOB *j;
 
-  while ( (j=AH_Job_List_First(todoJobs)) ) {
+  while ((j=AH_Job_List_First(todoJobs))) {
     AH_JOBQUEUE_ADDRESULT res;
 
     DBG_INFO(AQHBCI_LOGDOMAIN, "Queueing job \"%s\"", AH_Job_GetName(j));

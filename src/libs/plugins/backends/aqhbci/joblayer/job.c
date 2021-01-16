@@ -1142,7 +1142,7 @@ void AH_Job_Dump(const AH_JOB *j, FILE *f, unsigned int insert)
       fprintf(f, " ");
     fprintf(f, "Segment results:\n");
     r=AH_Result_List_First(j->segResults);
-    while(r) {
+    while (r) {
       int code;
       const char *text;
 

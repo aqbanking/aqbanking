@@ -34,8 +34,8 @@ GWEN_INHERIT(AIO_OFX_GROUP, AIO_OFX_GROUP_BANKTRAN)
 
 
 AIO_OFX_GROUP *AIO_OfxGroup_BANKTRAN_new(const char *groupName,
-					 AIO_OFX_GROUP *parent,
-					 GWEN_XML_CONTEXT *ctx)
+                                         AIO_OFX_GROUP *parent,
+                                         GWEN_XML_CONTEXT *ctx)
 {
   AIO_OFX_GROUP *g;
   AIO_OFX_GROUP_BANKTRAN *xg;
@@ -150,14 +150,14 @@ int AIO_OfxGroup_BANKTRAN_AddData(AIO_OFX_GROUP *g, const char *data)
     s=GWEN_Buffer_GetStart(buf);
     if (*s) {
       DBG_INFO(AQBANKING_LOGDOMAIN,
-	       "AddData: %s=[%s]", xg->currentElement, s);
+               "AddData: %s=[%s]", xg->currentElement, s);
       if (strcasecmp(xg->currentElement, "SUBACCTFUND")==0) {
-	AB_Transaction_SetRemoteName(xg->transaction, s);
+        AB_Transaction_SetRemoteName(xg->transaction, s);
       }
       else {
-	DBG_INFO(AQBANKING_LOGDOMAIN,
-		 "Ignoring data for unknown element [%s]",
-		 xg->currentElement);
+        DBG_INFO(AQBANKING_LOGDOMAIN,
+                 "Ignoring data for unknown element [%s]",
+                 xg->currentElement);
       }
     }
     GWEN_Buffer_free(buf);

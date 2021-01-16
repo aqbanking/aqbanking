@@ -71,8 +71,8 @@ AH_MSG *AH_OutboxCBox_RecvMessage(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, GWEN_DB_
 
 
 int AH_OutboxCBox_RecvQueue(AH_OUTBOX_CBOX *cbox,
-                              AH_DIALOG *dlg,
-                              AH_JOBQUEUE *jq)
+                            AH_DIALOG *dlg,
+                            AH_JOBQUEUE *jq)
 {
   AH_MSG *msg;
   GWEN_DB_NODE *dbRsp;

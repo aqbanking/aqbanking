@@ -72,31 +72,31 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j)
 
       jobQueueResult=_checkJobFlags(jq, j);
       if (jobQueueResult!=AH_JobQueueAddResultOk) {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", jobQueueResult);
-	return jobQueueResult;
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", jobQueueResult);
+        return jobQueueResult;
       }
 
       jobQueueResult=_checkJobTypes(jq, j);
       if (jobQueueResult!=AH_JobQueueAddResultOk) {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", jobQueueResult);
-	return jobQueueResult;
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", jobQueueResult);
+        return jobQueueResult;
       }
 
       jobQueueResult=_checkSigners(jq, j);
       if (jobQueueResult!=AH_JobQueueAddResultOk) {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", jobQueueResult);
-	return jobQueueResult;
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", jobQueueResult);
+        return jobQueueResult;
       }
 
       if (AH_JobQueue_GetSecClass(jq)==0)
-	AH_JobQueue_SetSecClass(jq, AH_Job_GetSecurityClass(j));
+        AH_JobQueue_SetSecClass(jq, AH_Job_GetSecurityClass(j));
       else {
-	if (AH_JobQueue_GetSecClass(jq)!=AH_Job_GetSecurityClass(j)) {
-	  DBG_INFO(AQHBCI_LOGDOMAIN,
-		   "Job's security class doesn't match that of the queue (%d != %d)",
-		   AH_JobQueue_GetSecClass(jq), AH_Job_GetSecurityClass(j));
-	  return AH_JobQueueAddResultJobLimit;
-	}
+        if (AH_JobQueue_GetSecClass(jq)!=AH_Job_GetSecurityClass(j)) {
+          DBG_INFO(AQHBCI_LOGDOMAIN,
+                   "Job's security class doesn't match that of the queue (%d != %d)",
+                   AH_JobQueue_GetSecClass(jq), AH_Job_GetSecurityClass(j));
+          return AH_JobQueueAddResultJobLimit;
+        }
       }
     } /* if not JobTan */
   }
@@ -250,14 +250,14 @@ AH_JOBQUEUE_ADDRESULT _checkJobFlags(AH_JOBQUEUE *jq, AH_JOB *jobToAdd)
     }
 
     if ((flagsInJobToAdd & (AH_JOB_FLAGS_CRYPT |
-			    AH_JOB_FLAGS_NEEDTAN |
-			    AH_JOB_FLAGS_NOSYSID |
-			    AH_JOB_FLAGS_NOITAN))
-	!=
-	(flagsInFirstJob & (AH_JOB_FLAGS_CRYPT |
-			    AH_JOB_FLAGS_NEEDTAN |
-			    AH_JOB_FLAGS_NOSYSID |
-			    AH_JOB_FLAGS_NOITAN))){
+                            AH_JOB_FLAGS_NEEDTAN |
+                            AH_JOB_FLAGS_NOSYSID |
+                            AH_JOB_FLAGS_NOITAN))
+        !=
+        (flagsInFirstJob & (AH_JOB_FLAGS_CRYPT |
+                            AH_JOB_FLAGS_NEEDTAN |
+                            AH_JOB_FLAGS_NOSYSID |
+                            AH_JOB_FLAGS_NOITAN))) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Encryption/TAN/SysId flags for queue and this job differ");
       return AH_JobQueueAddResultJobLimit;
     }
@@ -273,7 +273,7 @@ AH_JOBQUEUE_ADDRESULT _checkSigners(AH_JOBQUEUE *jq, AH_JOB *jobToAdd)
 
   if (strcasecmp(AH_Job_GetName(jobToAdd), "JobTan")!=0) {
     if (!_list2HasAllEntriesOfList1(AH_Job_GetSigners(jobToAdd), AH_JobQueue_GetSigners(jq)) ||
-	!_list2HasAllEntriesOfList1(AH_JobQueue_GetSigners(jq), AH_Job_GetSigners(jobToAdd))) {
+        !_list2HasAllEntriesOfList1(AH_JobQueue_GetSigners(jq), AH_Job_GetSigners(jobToAdd))) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Signers of the job differ from those of the queue");
       return AH_JobQueueAddResultJobLimit;
     }

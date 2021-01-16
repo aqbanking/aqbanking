@@ -353,30 +353,30 @@ const AH_TAN_METHOD *_getAndCheckUserSelectedTanMethod(AB_USER *u, const AH_TAN_
 {
   const AH_TAN_METHOD *tm=NULL;
   int fn;
-  
+
   fn=AH_User_GetSelectedTanMethod(u);
   if (fn) {
     int utFunction;
     int utJobVersion;
-  
+
     utFunction=fn % 1000;
     utJobVersion=fn / 1000;
-  
+
     DBG_INFO(AQHBCI_LOGDOMAIN, "Selected TAN method: %d (Job version %d, Function %d)", fn, utFunction, utJobVersion);
     if (AH_User_HasTanMethod(u, utFunction)) {
       tm=AH_TanMethod_List_First(tml);
       while (tm) {
         int proc;
-  
+
         if (AH_TanMethod_GetFunction(tm)==utFunction && AH_TanMethod_GetGvVersion(tm)==utJobVersion) {
           proc=AH_TanMethod_GetProcess(tm);
           if (proc==1 || proc==2) {
-	    DBG_INFO(AQHBCI_LOGDOMAIN, "Found description for selected TAN method %d (process: %d)", fn, proc);
-	    break;
-	  }
-	  else {
-	    DBG_NOTICE(AQHBCI_LOGDOMAIN, "iTan process type \"%d\" not supported, ignoring", proc);
-	  }
+            DBG_INFO(AQHBCI_LOGDOMAIN, "Found description for selected TAN method %d (process: %d)", fn, proc);
+            break;
+          }
+          else {
+            DBG_NOTICE(AQHBCI_LOGDOMAIN, "iTan process type \"%d\" not supported, ignoring", proc);
+          }
         }
 
         tm=AH_TanMethod_List_Next(tm);
@@ -420,16 +420,16 @@ const AH_TAN_METHOD *_getAndCheckAutoSelectedTanMethod(AB_USER *u, const AH_TAN_
     if (proc==1 || proc==2) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Found a possible description (fn=%d, process: %d)", fn, proc);
       if (AH_User_HasTanMethod(u, AH_TanMethod_GetFunction(tm))) {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "AH_User_HasTanMethod(%d): yes", fn);
-	break;
+        DBG_INFO(AQHBCI_LOGDOMAIN, "AH_User_HasTanMethod(%d): yes", fn);
+        break;
       }
       else {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "AH_User_HasTanMethod(%d): no", fn);
+        DBG_INFO(AQHBCI_LOGDOMAIN, "AH_User_HasTanMethod(%d): no", fn);
       }
     }
     else {
       DBG_NOTICE(AQHBCI_LOGDOMAIN,
-		 "iTan process type \"%d\" not supported, ignoring", proc);
+                 "iTan process type \"%d\" not supported, ignoring", proc);
     }
 
     tm=AH_TanMethod_List_Next(tm);

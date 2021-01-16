@@ -33,7 +33,8 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-static AH_JOBQUEUE *_createNextQueueFromTodoList(AB_USER *user, AH_JOB_LIST *jl, uint32_t jqFlags, AH_JOB_LIST *finishedJobs);
+static AH_JOBQUEUE *_createNextQueueFromTodoList(AB_USER *user, AH_JOB_LIST *jl, uint32_t jqFlags,
+                                                 AH_JOB_LIST *finishedJobs);
 static int _performQueue(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jq);
 static int _performNonDialogQueues(AH_OUTBOX_CBOX *cbox, AH_JOBQUEUE_LIST *jql);
 static int _performDialogQueue(AH_OUTBOX_CBOX *cbox, AH_JOBQUEUE *jq);
