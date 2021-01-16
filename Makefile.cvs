@@ -182,3 +182,21 @@ mp-w32:
 git-log:
 	git-log --pretty="format:%ad %an%n%s%n%b" --since="2008-08-26" >git.log
 
+
+sanitize:
+	libtoolize -f --automake
+	aclocal -I ./m4
+	autoheader
+	if test ! -f i18nsources; then echo > i18nsources; fi
+	automake --add-missing
+	autoconf
+	PKG_CONFIG_PATH="$(PKG_CONFIG_PATH):./m4" \
+	  CC=clang \
+	  CXX=clang \
+	  CXXFLAGS="-ggdb -Wall" \
+	  CFLAGS="-ggdb -Wall -fsanitize=undefined -fsanitize=address" \
+	  ./configure $(MP_CONF_FLAGS) \
+	    --with-backends="aqfints aqhbci aqofxconnect aqnone aqpaypal aqebics"  \
+	    --prefix=/usr/local --enable-full-doc=yes
+	make sources
+

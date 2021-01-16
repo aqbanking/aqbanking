@@ -7,31 +7,35 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef AH_OUTBOX_P_H
-#define AH_OUTBOX_P_H
+#ifndef AH_OUTBOX_CBOX_P_H
+#define AH_OUTBOX_CBOX_P_H
 
 
-#include "aqhbci/applayer/outbox_l.h"
+#include "jobqueue_l.h"
+#include "outbox_l.h"
+#include "cbox_itan.h"
 
-#include "aqhbci/joblayer/jobqueue_l.h"
-#include "aqhbci/applayer/cbox.h"
-
+#include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
 
 
-struct AH_OUTBOX {
-  GWEN_INHERIT_ELEMENT(AH_OUTBOX);
+
+/** Customer's outbox */
+struct AH_OUTBOX_CBOX {
+  GWEN_LIST_ELEMENT(AH_OUTBOX_CBOX);
+  AH_OUTBOX *outbox;
   AB_PROVIDER *provider;
-  AH_OUTBOX_CBOX_LIST *userBoxes;
+  AB_USER *user;
+  AH_JOBQUEUE_LIST *todoQueues;
+
+  AH_JOB_LIST *todoJobs;
   AH_JOB_LIST *finishedJobs;
-  AB_IMEXPORTER_CONTEXT *context;
 
   uint32_t usage;
 };
 
 
-
-#endif /* AH_OUTBOX_P_H */
+#endif /* AH_OUTBOX_CBOX_P_H */
 
 
 

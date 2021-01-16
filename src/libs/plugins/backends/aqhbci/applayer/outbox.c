@@ -14,21 +14,15 @@
 
 
 #include "outbox_p.h"
-#include "aqhbci_l.h"
-#include "job_l.h"
-#include "accountjob_l.h"
-#include "jobtan_l.h"
-#include "jobqueue_l.h"
-#include "hbci_l.h"
-#include "adminjobs_l.h"
-#include "dialog_l.h"
-#include "provider_l.h"
 
-#include <aqbanking/banking_be.h>
-#include <aqbanking/backendsupport/imexporter.h>
+#include "aqhbci/ajobs/accountjob_l.h"
+
+#include "aqhbci/applayer/cbox_prepare.h"
+#include "aqhbci/applayer/cbox_queue.h"
+
+#include "aqbanking/i18n_l.h"
 
 #include <gwenhywfar/debug.h>
-#include <gwenhywfar/misc.h>
 #include <gwenhywfar/gui.h>
 
 #include <assert.h>
@@ -37,964 +31,28 @@
 /*#define EXTREME_DEBUGGING */
 
 
-GWEN_LIST_FUNCTIONS(AH_OUTBOX__CBOX, AH_Outbox__CBox);
 
-
-
-
-AH_OUTBOX__CBOX *AH_Outbox__CBox_new(AB_PROVIDER *pro,
-                                     AB_USER *u,
-                                     AH_OUTBOX *ob)
-{
-  AH_OUTBOX__CBOX *cbox;
-
-  assert(pro);
-  assert(u);
-  GWEN_NEW_OBJECT(AH_OUTBOX__CBOX, cbox);
-  cbox->usage=1;
-  GWEN_LIST_INIT(AH_OUTBOX__CBOX, cbox);
-  cbox->user=u;
-  cbox->todoQueues=AH_JobQueue_List_new();
-  cbox->finishedQueues=AH_JobQueue_List_new();
-  cbox->todoJobs=AH_Job_List_new();
-  cbox->finishedJobs=AH_Job_List_new();
-  cbox->provider=pro;
-  cbox->outbox=ob;
-
-  return cbox;
-}
-
-
-
-void AH_Outbox__CBox_free(AH_OUTBOX__CBOX *cbox)
-{
-  if (cbox) {
-    assert(cbox->usage);
-    if (--(cbox->usage)==0) {
-      GWEN_LIST_FINI(AH_OUTBOX__CBOX, cbox);
-      AH_JobQueue_List_free(cbox->todoQueues);
-      AH_JobQueue_List_free(cbox->finishedQueues);
-      AH_Job_List_free(cbox->todoJobs);
-      AH_Job_List_free(cbox->finishedJobs);
-
-      GWEN_FREE_OBJECT(cbox);
-    }
-  }
-}
-
-
-
-void AH_Outbox__CBox_AddTodoJob(AH_OUTBOX__CBOX *cbox, AH_JOB *j)
-{
-  assert(cbox);
-  assert(j);
-
-  AH_Job_SetStatus(j, AH_JobStatusToDo);
-  AH_Job_List_Add(j, cbox->todoJobs);
-}
-
-
-
-void AH_Outbox__CBox_Finish(AH_OUTBOX__CBOX *cbox)
-{
-  AH_JOBQUEUE *jq;
-
-  assert(cbox);
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Finishing customer box");
-  while ((jq=AH_JobQueue_List_First(cbox->finishedQueues))) {
-    AH_JOB_LIST *jl;
-    AH_JOB *j;
-
-    jl=AH_JobQueue_TakeJobList(jq);
-    assert(jl);
-    while ((j=AH_Job_List_First(jl))) {
-      DBG_INFO(AQHBCI_LOGDOMAIN,
-               "Moving job \"%s\" from finished queue to finished jobs",
-               AH_Job_GetName(j));
-      AH_Job_List_Del(j);
-      AH_Job_List_Add(j, cbox->finishedJobs);
-    } /* while */
-    AH_Job_List_free(jl);
-    AH_JobQueue_free(jq);
-  } /* while */
-
-  while ((jq=AH_JobQueue_List_First(cbox->todoQueues))) {
-    AH_JOB_LIST *jl;
-    AH_JOB *j;
-
-    jl=AH_JobQueue_TakeJobList(jq);
-    assert(jl);
-    while ((j=AH_Job_List_First(jl))) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Moving job \"%s\" from todo queue to finished jobs",
-               AH_Job_GetName(j));
-      AH_Job_List_Del(j);
-      AH_Job_List_Add(j, cbox->finishedJobs);
-    } /* while */
-    AH_Job_List_free(jl);
-    AH_JobQueue_free(jq);
-  } /* while */
-
-  if (AH_Job_List_GetCount(cbox->todoJobs)) {
-    AH_JOB *j;
-
-    while ((j=AH_Job_List_First(cbox->todoJobs))) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Moving job \"%s\" from todo queue to finished jobs",
-               AH_Job_GetName(j));
-      AH_Job_List_Del(j);
-      AH_Job_List_Add(j, cbox->finishedJobs);
-    } /* while */
-  }
-}
-
-
-
-AB_USER *AH_Outbox__CBox_GetUser(const AH_OUTBOX__CBOX *cbox)
-{
-  assert(cbox);
-  return cbox->user;
-}
-
-
-
-AH_JOB_LIST *AH_Outbox__CBox_TakeFinishedJobs(AH_OUTBOX__CBOX *cbox)
-{
-  AH_JOB_LIST *jl;
-
-  assert(cbox);
-  jl=cbox->finishedJobs;
-  cbox->finishedJobs=AH_Job_List_new();
-  return jl;
-}
-
-
-
-int AH_Outbox__CBox_Prepare(AH_OUTBOX__CBOX *cbox)
-{
-  AH_JOB *j;
-  unsigned int errors;
-  AH_JOBQUEUE *jq;
-  int firstJob;
-
-  assert(cbox);
-
-  errors=0;
-
-  /* call AH_Job_Prepare() for all jobs */
-  j=AH_Job_List_First(cbox->todoJobs);
-  while (j) {
-    AH_JOB_STATUS st;
-    AH_JOB *next;
-
-    next=AH_Job_List_Next(j);
-    st=AH_Job_GetStatus(j);
-    if (st==AH_JobStatusToDo) {
-      int rv=AH_Job_Prepare(j);
-      if (rv<0 && rv!=GWEN_ERROR_NOT_SUPPORTED) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-        AH_Job_SetStatus(j, AH_JobStatusError);
-        AH_Job_List_Del(j);
-        AH_Job_List_Add(j, cbox->finishedJobs);
-        errors++;
-      }
-    } /* if status TODO */
-    else {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Skip job \"%s\" for its status \"%s\" (%d)",
-               AH_Job_GetName(j), AH_Job_StatusName(st), st);
-      AH_Job_SetStatus(j, AH_JobStatusError);
-      AH_Job_List_Del(j);
-      AH_Job_List_Add(j, cbox->finishedJobs);
-      errors++;
-    }
-
-    j=next;
-  } /* while */
-
-
-  /* move all dialog jobs to new queues or to the list of finished jobs */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing dialog jobs");
-  j=AH_Job_List_First(cbox->todoJobs);
-  while (j) {
-    AH_JOB_STATUS st;
-    AH_JOB *next;
-
-    next=AH_Job_List_Next(j);
-    st=AH_Job_GetStatus(j);
-    if (st==AH_JobStatusToDo) {
-      if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_DLGJOB) {
-        /* this is a dialog job, create a new queue for it */
-        AH_JOBQUEUE *jq;
-
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing dialog job \"%s\"",
-                 AH_Job_GetName(j));
-        jq=AH_JobQueue_new(cbox->user);
-        AH_Job_List_Del(j);
-        if (AH_JobQueue_AddJob(jq, j)!=AH_JobQueueAddResultOk) {
-          /* error adding a single job to the queue */
-          DBG_ERROR(AQHBCI_LOGDOMAIN,
-                    "Could not add dialog job \"%s\" to queue",
-                    AH_Job_GetName(j));
-          /* set status to ERROR and move to finished queue */
-          AH_Job_SetStatus(j, AH_JobStatusError);
-          AH_Job_List_Add(j, cbox->finishedJobs);
-          AH_JobQueue_free(jq);
-          errors++;
-        }
-        else {
-          AH_Job_Log(j, GWEN_LoggerLevel_Info,
-                     "Dialog job enqueued");
-          /* job added. This is a dialog job */
-          AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_ISDIALOG);
-          AH_JobQueue_List_Add(jq, cbox->todoQueues);
-        } /* if added to queue */
-      } /* if dialog job */
-    } /* if status TODO */
-    else {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Skip job \"%s\" for its status \"%s\" (%d)",
-               AH_Job_GetName(j), AH_Job_StatusName(st), st);
-      AH_Job_List_Add(j, cbox->finishedJobs);
-    }
-
-    j=next;
-  } /* while */
-
-  /* now todoJobs only contains non-dialog jobs with a correct status,
-   * append them to new queues as needed */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing non-dialog jobs");
-  jq=AH_JobQueue_new(cbox->user);
-  firstJob=1;
-  DBG_INFO(AQHBCI_LOGDOMAIN, "We have %d jobs to handle",
-           AH_Job_List_GetCount(cbox->todoJobs));
-  while (AH_Job_List_GetCount(cbox->todoJobs)) {
-    int jobsAdded;
-    int queueCreated;
-    AH_JOB_LIST *retryJobs;
-
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Still some jobs left todo");
-    jobsAdded=0;
-    queueCreated=0;
-    retryJobs=AH_Job_List_new();
-    while ((j=AH_Job_List_First(cbox->todoJobs))) {
-      AH_JOBQUEUE_ADDRESULT res;
-
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Queueing job \"%s\"", AH_Job_GetName(j));
-      AH_Job_List_Del(j);
-      res=AH_JobQueue_AddJob(jq, j);
-      if (res!=AH_JobQueueAddResultOk) {
-        DBG_INFO(AQHBCI_LOGDOMAIN,
-                 "Could not add job \"%s\" to the current queue",
-                 AH_Job_GetName(j));
-
-        if (firstJob) {
-          /* error adding a single job to the queue */
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not add single non-dialog job \"%s\" to queue",
-                    AH_Job_GetName(j));
-          /* set status to ERROR and move to finished queue */
-          AH_Job_SetStatus(j, AH_JobStatusError);
-          AH_Job_List_Add(j, cbox->finishedJobs);
-          AH_Job_Log(j, GWEN_LoggerLevel_Error,
-                     "Could not enqueing HBCI-job");
-          errors++;
-        } /* if first job failed */
-        else {
-          /* not the first job, check for reason of failure */
-          if (res==AH_JobQueueAddResultQueueFull) {
-            /* queue is full, so add it to the todo queue list and start
-             * a new queue */
-            DBG_INFO(AQHBCI_LOGDOMAIN, "Queue full, starting next one");
-            AH_JobQueue_List_Add(jq, cbox->todoQueues);
-            jq=AH_JobQueue_new(cbox->user);
-            firstJob=1;
-            queueCreated=1;
-            /* put job back into queue (same pos, try it again in next loop)*/
-            AH_Job_List_Insert(j, cbox->todoJobs);
-            break;
-          }
-          else if (res==AH_JobQueueAddResultJobLimit) {
-            DBG_INFO(AQHBCI_LOGDOMAIN,
-                     "Job \"%s\" does not fit into queue, will retry later",
-                     AH_Job_GetName(j));
-            /* move job to the end of the queue (retry it later) */
-            AH_Job_List_Add(j, retryJobs);
-          }
-          else {
-            /* error adding a job to the queue */
-            DBG_ERROR(AQHBCI_LOGDOMAIN,
-                      "Could not add non-dialog job \"%s\" to queue for "
-                      "unknown reason %d",
-                      AH_Job_GetName(j), res);
-            /* set status to ERROR and move to finished queue */
-            AH_Job_SetStatus(j, AH_JobStatusError);
-            AH_Job_List_Add(j, cbox->finishedJobs);
-            errors++;
-          }
-        } /* if it wasn't the first job to fail */
-      } /* if adding to the queue failed */
-      else {
-        /* job added successfully */
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" successfully added",
-                 AH_Job_GetName(j));
-        AH_Job_Log(j, GWEN_LoggerLevel_Info,
-                   "HBCI-job enqueued (1)");
-        firstJob=0;
-        jobsAdded++;
-      }
-    } /* while */
-
-    /* put back all jobs we dismissed */
-    j=AH_Job_List_First(retryJobs);
-    if (j) {
-      while (j) {
-        AH_JOB *jnext;
-        jnext=AH_Job_List_Next(j);
-        DBG_NOTICE(AQHBCI_LOGDOMAIN,
-                   "Moving job \"%s\" back to queue",
-                   AH_Job_GetName(j));
-        AH_Job_List_Del(j);
-        AH_Job_List_Add(j, cbox->todoJobs);
-        j=jnext;
-      }
-
-      /* there are some retry jobs, retry them */
-      if (AH_JobQueue_GetCount(jq)!=0) {
-        AH_JobQueue_List_Add(jq, cbox->todoQueues);
-        jq=AH_JobQueue_new(cbox->user);
-        firstJob=1;
-        queueCreated=1;
-      }
-    }
-    AH_Job_List_free(retryJobs);
-    retryJobs=NULL;
-
-    /* check whether we could do something in the last loop */
-    if (!jobsAdded && !queueCreated) {
-      AH_JOB *j;
-
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could do nothing in last loop, "
-                "discarding remaining jobs");
-      j=AH_Job_List_First(cbox->todoJobs);
-      while (j) {
-        AH_Job_SetStatus(j, AH_JobStatusError);
-        AH_Job_List_Del(j);
-        AH_Job_List_Add(j, cbox->finishedJobs);
-        errors++;
-        j=AH_Job_List_Next(j);
-      } /* while */
-
-      /* break the loop */
-      break;
-    } /* if we couldn't do anything */
-    else {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Still something to do");
-    }
-  } /* while still todoJobs */
-
-  /* check whether to free the current queue */
-  if (AH_JobQueue_GetCount(jq)==0) {
-    /* current queue is empty, free it */
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Last queue is empty, deleting it");
-    AH_JobQueue_free(jq);
-  }
-  else {
-    /* it is not, so add it to the todo list */
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Adding last queue");
-    AH_JobQueue_List_Add(jq, cbox->todoQueues);
-  }
-
-  if (errors) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Some errors (%d) occurred", errors);
-    return -1;
-  }
-
-  return 0;
-}
-
-
-
-int AH_Outbox__CBox_SendAndRecvQueueNoTan(AH_OUTBOX__CBOX *cbox,
-                                          AH_DIALOG *dlg,
-                                          AH_JOBQUEUE *jq)
-{
-  int rv;
-
-  rv=AH_Outbox__CBox_SendQueue(cbox, dlg, jq);
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Error sending queue");
-    return rv;
-  }
-
-  AH_JobQueue_SetJobStatusOnMatch(jq, AH_JobStatusEncoded, AH_JobStatusSent);
-
-  rv=AH_Outbox__CBox_RecvQueue(cbox, dlg, jq);
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Error receiving queue response");
-    return rv;
-  }
-
-  return 0;
-}
-
-
-
-int AH_Outbox__CBox_SendAndRecvQueue(AH_OUTBOX__CBOX *cbox,
-                                     AH_DIALOG *dlg,
-                                     AH_JOBQUEUE *jq)
-{
-  int rv;
-
-  if ((AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN) &&
-      AH_Dialog_GetItanProcessType(dlg)!=0) {
-    DBG_DEBUG(AQHBCI_LOGDOMAIN, "TAN mode");
-    rv=AH_Outbox__CBox_SendAndReceiveQueueWithTan(cbox, dlg, jq);
-    if (rv) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
-  }
-  else {
-    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Normal mode");
-    rv=AH_Outbox__CBox_SendAndRecvQueueNoTan(cbox, dlg, jq);
-    if (rv) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
-  }
-
-  return 0;
-}
-
-
-
-
-void AH_Outbox__CBox_HandleQueueError(AH_OUTBOX__CBOX *cbox,
-                                      AH_JOBQUEUE *jq,
-                                      const char *logStr)
-{
-  AH_JOB *j;
-  AH_JOB_LIST *jl;
-
-  jl=AH_JobQueue_TakeJobList(jq);
-  assert(jl);
-
-  while ((j=AH_Job_List_First(jl))) {
-    AH_Job_List_Del(j);
-    if (AH_Job_GetStatus(j)!=AH_JobStatusAnswered) {
-      DBG_INFO(AQHBCI_LOGDOMAIN,
-               "Setting status of job \"%s\" to ERROR",
-               AH_Job_GetName(j));
-      AH_Job_SetStatus(j, AH_JobStatusError);
-      if (logStr)
-        AH_Job_Log(j, GWEN_LoggerLevel_Error, logStr);
-    }
-    AH_Job_List_Add(j, cbox->finishedJobs);
-  }
-  AH_Job_List_free(jl);
-  AH_JobQueue_free(jq);
-}
-
-
-
-int AH_Outbox__CBox_PerformQueue(AH_OUTBOX__CBOX *cbox,
-                                 AH_DIALOG *dlg,
-                                 AH_JOBQUEUE *jq)
-{
-  int rv;
-
-  for (;;) {
-    AH_JOBQUEUE *jqTodo;
-    int jobsTodo;
-    uint32_t jqFlags;
-    AH_JOB *j;
-    AH_JOB_LIST *jl;
-
-    jobsTodo=0;
-    jl=AH_JobQueue_TakeJobList(jq);
-    assert(jl);
-    jqTodo=AH_JobQueue_new(AH_JobQueue_GetUser(jq));
-    /* copy some flags */
-    jqFlags=AH_JobQueue_GetFlags(jq);
-    jqFlags&=~(AH_JOBQUEUE_FLAGS_CRYPT |
-               AH_JOBQUEUE_FLAGS_SIGN |
-               AH_JOBQUEUE_FLAGS_NOSYSID |
-               AH_JOBQUEUE_FLAGS_NOITAN);
-    AH_JobQueue_SetFlags(jqTodo, (jqFlags&AH_JOBQUEUE_FLAGS_COPYMASK));
-
-    /* copy todo jobs */
-    while ((j=AH_Job_List_First(jl))) {
-      AH_Job_List_Del(j);
-      if (AH_Job_GetStatus(j)==AH_JobStatusAnswered) {
-        DBG_DEBUG(AQHBCI_LOGDOMAIN, "Message finished");
-        /* prepare job for next message
-         * (if attachpoint or multi-message job)
-         */
-        AH_Job_PrepareNextMessage(j);
-        if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_HASMOREMSGS) {
-          DBG_NOTICE(AQHBCI_LOGDOMAIN, "Requeueing job");
-          /* we shall redo this job */
-          if (AH_JobQueue_AddJob(jqTodo, j)!=
-              AH_JobQueueAddResultOk) {
-            DBG_ERROR(AQHBCI_LOGDOMAIN,
-                      "That's weird, I could not add the job to redo queue");
-            AH_Job_Log(j, GWEN_LoggerLevel_Error,
-                       "Could not re-enqueue HBCI-job");
-            AH_Job_SetStatus(j, AH_JobStatusError);
-          }
-          else {
-            jobsTodo++;
-            AH_Job_Log(j, GWEN_LoggerLevel_Info,
-                       "HBCI-job re-enqueued (multi-message job)");
-            j=0; /* mark that this job has been dealt with */
-          }
-        } /* if more messages */
-        else {
-          DBG_NOTICE(AQHBCI_LOGDOMAIN, "Not requeing job");
-        }
-      } /* if status matches */
-      else if (AH_Job_GetStatus(j)==AH_JobStatusEnqueued) {
-        if (AH_JobQueue_AddJob(jqTodo, j)!=
-            AH_JobQueueAddResultOk) {
-          DBG_ERROR(AQHBCI_LOGDOMAIN,
-                    "That's weird, I could not add the job to redo queue");
-          AH_Job_SetStatus(j, AH_JobStatusError);
-          AH_Job_Log(j, GWEN_LoggerLevel_Error,
-                     "Could not enqueue HBCI-job");
-        }
-        else {
-          jobsTodo++;
-          AH_Job_Log(j, GWEN_LoggerLevel_Info,
-                     "HBCI-job enqueued (2)");
-          j=0; /* mark that this job has been dealt with */
-        }
-      }
-      else {
-        DBG_DEBUG(AQHBCI_LOGDOMAIN, "Bad status \"%s\" (%d)",
-                  AH_Job_StatusName(AH_Job_GetStatus(j)),
-                  AH_Job_GetStatus(j));
-        if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
-          AH_Job_Dump(j, stderr, 4);
-      }
-      if (j) {
-        /* move job to finished list if we still have the job */
-        AH_Job_List_Add(j, cbox->finishedJobs);
-      }
-    } /* while */
-
-    AH_Job_List_free(jl);
-    AH_JobQueue_free(jq);
-    jq=jqTodo;
-
-    if (!jobsTodo)
-      break;
-
-    /* jq now contains all jobs to be executed */
-    rv=AH_Outbox__CBox_SendAndRecvQueue(cbox, dlg, jq);
-    if (rv) {
-      AH_Outbox__CBox_HandleQueueError(cbox, jq,
-                                       "Error performing queue");
-      return rv;
-    } /* if error */
-  } /* for */
-
-  AH_JobQueue_free(jq);
-  return 0;
-}
-
-
-
-int AH_Outbox__CBox_PerformNonDialogQueues(AH_OUTBOX__CBOX *cbox,
-                                           AH_JOBQUEUE_LIST *jql)
-{
-  AH_DIALOG *dlg;
-  AH_JOBQUEUE *jq;
-  int rv=0;
-  int i;
-  uint32_t jqflags;
-
-  if (AH_JobQueue_List_GetCount(jql)==0) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "No queues to handle, doing nothing");
-    AH_JobQueue_List_free(jql);
-    return 0;
-  }
-
-  for (i=0; i<2; i++) {
-    dlg=AH_Dialog_new(cbox->user, cbox->provider);
-    rv=AH_Dialog_Connect(dlg);
-    if (rv) {
-      DBG_INFO(AQHBCI_LOGDOMAIN,
-               "Could not begin a dialog for customer \"%s\" (%d)",
-               AB_User_GetCustomerId(cbox->user), rv);
-      /* finish all queues */
-      AH_Outbox__CBox_HandleQueueListError(cbox, jql,
-                                           "Could not begin dialog");
-      AH_Dialog_free(dlg);
-      return rv;
-    }
-
-    jq=AH_JobQueue_List_First(jql);
-    jqflags=AH_JobQueue_GetFlags(jq);
-
-    /* open dialog */
-    rv=AH_Outbox__CBox_OpenDialog(cbox, dlg, jqflags);
-    if (rv==0)
-      break;
-    else if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Could not open dialog");
-      AH_Dialog_Disconnect(dlg);
-      /* finish all queues */
-      AH_Outbox__CBox_HandleQueueListError(cbox, jql,
-                                           "Could not open dialog");
-      AH_Dialog_free(dlg);
-      return rv;
-    }
-    else if (rv==1) {
-      AH_Dialog_Disconnect(dlg);
-      AH_Dialog_free(dlg);
-      GWEN_Gui_ProgressLog(0,
-                           GWEN_LoggerLevel_Info,
-                           I18N("Retrying to open dialog"));
-    }
-  }
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Could not open dialog");
-    AH_Dialog_Disconnect(dlg);
-    /* finish all queues */
-    AH_Outbox__CBox_HandleQueueListError(cbox, jql,
-                                         "Could not open dialog");
-    AH_Dialog_free(dlg);
-    return rv;
-  }
-
-  /* handle queues */
-  rv=0;
-  while ((jq=AH_JobQueue_List_First(jql))) {
-    AH_JobQueue_List_Del(jq);
-    rv=AH_Outbox__CBox_PerformQueue(cbox, dlg, jq);
-    if (rv)
-      break;
-  } /* while */
-
-  if (rv) {
-    /* finish all remaining queues */
-    AH_Outbox__CBox_HandleQueueListError(cbox, jql,
-                                         "Could not send ");
-    AH_Dialog_Disconnect(dlg);
-    AH_Dialog_free(dlg);
-    return rv;
-  }
-
-  /* close dialog */
-  rv=AH_Outbox__CBox_CloseDialog(cbox, dlg, jqflags);
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Could not close dialog, ignoring");
-    /*AH_HBCI_EndDialog(cbox->hbci, dlg);
-     return rv;*/
-  }
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Closing connection");
-  AH_Dialog_Disconnect(dlg);
-  AH_Dialog_free(dlg);
-
-  AH_JobQueue_List_free(jql);
-  return 0;
-}
-
-
-
-int AH_Outbox__CBox_PerformDialogQueue(AH_OUTBOX__CBOX *cbox, AH_JOBQUEUE *jq)
-{
-  AH_DIALOG *dlg;
-  int rv;
-  uint32_t jqFlags;
-
-  jqFlags=AH_JobQueue_GetFlags(jq);
-
-  /* open connection */
-  dlg=AH_Dialog_new(cbox->user, cbox->provider);
-  rv=AH_Dialog_Connect(dlg);
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Could not begin a dialog for customer \"%s\" (%d)",
-             AB_User_GetCustomerId(cbox->user), rv);
-    /* finish all queues */
-    AH_Outbox__CBox_HandleQueueError(cbox, jq, "Could not begin dialog");
-    AH_Dialog_free(dlg);
-    return rv;
-  }
-
-#ifdef EXTREME_DEBUGGING
-  DBG_ERROR(AQHBCI_LOGDOMAIN, "Handling this job queue:");
-  AH_JobQueue_Dump(jq, stderr, 2);
-#endif
-
-  if (AH_User_GetCryptMode(cbox->user)==AH_CryptMode_Pintan) {
-    if (jqFlags & AH_JOBQUEUE_FLAGS_NOITAN) {
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Not using PSD2 code: Job queue has flag NOITAN set (using single step).");
-      AH_Dialog_SetItanMethod(dlg, 999);
-      AH_Dialog_SetItanProcessType(dlg, 1);
-      AH_Dialog_SetTanJobVersion(dlg, 0);
-    }
-    else {
-      int selectedTanVersion;
-
-      /* select iTAN mode */
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Job queue doesn't have flag NOITAN");
-      rv=AH_Outbox__CBox_SelectItanMode(cbox, dlg);
-      if (rv) {
-        AH_Dialog_Disconnect(dlg);
-        AH_Dialog_free(dlg);
-        return rv;
-      }
-
-      selectedTanVersion=AH_User_GetSelectedTanMethod(cbox->user)/1000;
-      if (selectedTanVersion>=6) {
-        AH_JOB *jTan;
-
-        DBG_INFO(AQHBCI_LOGDOMAIN, "User-selected TAN job version is 6 or newer (%d)", selectedTanVersion);
-
-        /* check for PSD2: HKTAN version 6 available? if so -> use that */
-        jTan=AH_Job_Tan_new(cbox->provider, cbox->user, 4, 6);
-        if (jTan) {
-          AH_Job_free(jTan);
-          DBG_INFO(AQHBCI_LOGDOMAIN, "TAN job version 6 is available");
-          DBG_NOTICE(AQHBCI_LOGDOMAIN, "Using PSD2 code for dialog job");
-          AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_NEEDTAN);
-          AH_Dialog_AddFlags(dlg, AH_DIALOG_FLAGS_SCA);
-        }
-        else {
-          DBG_NOTICE(AQHBCI_LOGDOMAIN, "Not using PSD2 code: HKTAN version 6 not supported by the bank");
-        }
-      }
-      else {
-        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Not using PSD2 code: User selected HKTAN version lesser than 6.");
-      }
-    }
-  }
-
-  /* handle queue */
-  rv=AH_Outbox__CBox_PerformQueue(cbox, dlg, jq);
-  if (rv) {
-    AH_Dialog_Disconnect(dlg);
-    AH_Dialog_free(dlg);
-    return rv;
-  }
-
-  /* close dialog */
-#if 0
-  if (AH_User_GetCryptMode(cbox->user)==AH_CryptMode_Pintan &&
-      (jqFlags & AH_JOBQUEUE_FLAGS_NOITAN)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Changing dialog to anonymous mode");
-    AH_Dialog_AddFlags(dlg, AH_DIALOG_FLAGS_ANONYMOUS);
-  }
-#endif
-
-  rv=AH_Outbox__CBox_CloseDialog(cbox, dlg, jqFlags);
-  if (rv) {
-    AH_Dialog_Disconnect(dlg);
-    AH_Dialog_free(dlg);
-    return rv;
-  }
-
-  /* close connection */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Closing connection");
-  AH_Dialog_Disconnect(dlg);
-  AH_Dialog_free(dlg);
-
-  return 0;
-}
-
-
-
-void AH_Outbox__CBox_ExtractMatchingQueues(AH_JOBQUEUE_LIST *jql,
-                                           AH_JOBQUEUE_LIST *jqlWanted,
-                                           AH_JOBQUEUE_LIST *jqlRest,
-                                           uint32_t jqflags,
-                                           uint32_t jqmask)
-{
-  AH_JOBQUEUE *jq;
-
-  while ((jq=AH_JobQueue_List_First(jql))) {
-    uint32_t flags;
-
-    AH_JobQueue_List_Del(jq);
-    flags=AH_JobQueue_GetFlags(jq);
-    if ((flags^jqflags)  & jqmask)
-      /* no match */
-      AH_JobQueue_List_Add(jq, jqlRest);
-    else
-      AH_JobQueue_List_Add(jq, jqlWanted);
-  } /* while */
-}
-
-
-
-void AH_Outbox__CBox_HandleQueueListError(AH_OUTBOX__CBOX *cbox,
-                                          AH_JOBQUEUE_LIST *jql,
-                                          const char *logStr)
-{
-  AH_JOBQUEUE *jq;
-
-  while ((jq=AH_JobQueue_List_First(jql))) {
-    AH_JobQueue_List_Del(jq);
-    AH_Outbox__CBox_HandleQueueError(cbox, jq, logStr);
-  } /* while */
-  AH_JobQueue_List_free(jql);
-}
-
-
-
-int AH_Outbox__CBox_SendAndRecvDialogQueues(AH_OUTBOX__CBOX *cbox)
-{
-  AH_JOBQUEUE_LIST *jqlWanted;
-  AH_JOBQUEUE_LIST *jqlRest;
-  int rv;
-
-  jqlWanted=AH_JobQueue_List_new();
-  jqlRest=AH_JobQueue_List_new();
-  AH_Outbox__CBox_ExtractMatchingQueues(cbox->todoQueues,
-                                        jqlWanted,
-                                        jqlRest,
-                                        AH_JOBQUEUE_FLAGS_ISDIALOG,
-                                        AH_JOBQUEUE_FLAGS_ISDIALOG);
-  AH_JobQueue_List_free(cbox->todoQueues);
-  cbox->todoQueues=jqlRest;
-  if (AH_JobQueue_List_GetCount(jqlWanted)) {
-    AH_JOBQUEUE *jq;
-
-    /* there are matching queues, handle them */
-    while ((jq=AH_JobQueue_List_First(jqlWanted))) {
-      AH_JobQueue_List_Del(jq);
-      rv=AH_Outbox__CBox_PerformDialogQueue(cbox, jq);
-      if (rv) {
-        DBG_INFO(AQHBCI_LOGDOMAIN,
-                 "Error performing queue (%d)", rv);
-        AH_Outbox__CBox_HandleQueueListError(cbox, jqlWanted,
-                                             "Could not perform "
-                                             "dialog queue");
-        AH_Outbox__CBox_HandleQueueListError(cbox, cbox->todoQueues,
-                                             "Could not perform "
-                                             "dialog queue");
-        cbox->todoQueues=AH_JobQueue_List_new();
-        return rv;
-      }
-    } /* while */
-  }
-  AH_JobQueue_List_free(jqlWanted);
-  return 0;
-}
-
-
-
-int AH_Outbox__CBox_SendAndRecvSelected(AH_OUTBOX__CBOX *cbox,
-                                        uint32_t jqflags,
-                                        uint32_t jqmask)
-{
-  AH_JOBQUEUE_LIST *jqlWanted;
-  AH_JOBQUEUE_LIST *jqlRest;
-  int rv;
-
-  jqlWanted=AH_JobQueue_List_new();
-  jqlRest=AH_JobQueue_List_new();
-  AH_Outbox__CBox_ExtractMatchingQueues(cbox->todoQueues,
-                                        jqlWanted,
-                                        jqlRest, jqflags, jqmask);
-  AH_JobQueue_List_free(cbox->todoQueues);
-  cbox->todoQueues=jqlRest;
-  if (AH_JobQueue_List_GetCount(jqlWanted)) {
-    /* there are matching queues, handle them */
-    rv=AH_Outbox__CBox_PerformNonDialogQueues(cbox, jqlWanted);
-    if (rv) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN,
-                "Error performing queue (%d)", rv);
-      AH_Outbox__CBox_HandleQueueListError(cbox, cbox->todoQueues,
-                                           "Error performing "
-                                           "selected jobs");
-      cbox->todoQueues=AH_JobQueue_List_new();
-      return rv;
-    }
-  } /* if matching queuees */
-  else
-    AH_JobQueue_List_free(jqlWanted);
-  return 0;
-}
-
-
-
-int AH_Outbox__CBox_SendAndRecvBox(AH_OUTBOX__CBOX *cbox)
-{
-  int rv;
-
-  /* dialog queues */
-  rv=AH_Outbox__CBox_SendAndRecvDialogQueues(cbox);
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Error performing dialog queues (%d)", rv);
-    return rv;
-  }
-
-  /* non-dialog queues: unsigned, uncrypted */
-  rv=AH_Outbox__CBox_SendAndRecvSelected(cbox,
-                                         0,
-                                         AH_JOBQUEUE_FLAGS_ISDIALOG |
-                                         AH_JOBQUEUE_FLAGS_SIGN |
-                                         AH_JOBQUEUE_FLAGS_CRYPT);
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Error performing queues (-S, -C: %d)", rv);
-    return rv;
-  }
-
-  /* non-dialog queues: unsigned, crypted */
-  rv=AH_Outbox__CBox_SendAndRecvSelected(cbox,
-                                         AH_JOBQUEUE_FLAGS_CRYPT,
-                                         AH_JOBQUEUE_FLAGS_ISDIALOG |
-                                         AH_JOBQUEUE_FLAGS_SIGN |
-                                         AH_JOBQUEUE_FLAGS_CRYPT);
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Error performing queues (-S, +C: %d)", rv);
-    return rv;
-  }
-
-  /* non-dialog queues: signed, uncrypted */
-  rv=AH_Outbox__CBox_SendAndRecvSelected(cbox,
-                                         AH_JOBQUEUE_FLAGS_SIGN,
-                                         AH_JOBQUEUE_FLAGS_ISDIALOG |
-                                         AH_JOBQUEUE_FLAGS_SIGN |
-                                         AH_JOBQUEUE_FLAGS_CRYPT);
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Error performing queues (+S, -C: %d)", rv);
-    return rv;
-  }
-
-  /* non-dialog queues: signed, crypted */
-  rv=AH_Outbox__CBox_SendAndRecvSelected(cbox,
-                                         AH_JOBQUEUE_FLAGS_SIGN |
-                                         AH_JOBQUEUE_FLAGS_CRYPT,
-                                         AH_JOBQUEUE_FLAGS_ISDIALOG |
-                                         AH_JOBQUEUE_FLAGS_SIGN |
-                                         AH_JOBQUEUE_FLAGS_CRYPT);
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Error performing queues (+S, +C: %d)", rv);
-    return rv;
-  }
-
-  return 0;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static unsigned int _countTodoJobs(AH_OUTBOX *ob);
+static int _sendOutboxWithProbablyLockedUsers(AH_OUTBOX *ob);
+static AH_JOB *_findTransferJobInCheckJobList(const AH_JOB_LIST *jl, AB_USER *u, AB_ACCOUNT *a, const char *jobName);
+static int _prepare(AH_OUTBOX *ob);
+static void _finishCBox(AH_OUTBOX *ob, AH_OUTBOX_CBOX *cbox);
+static int _sendAndRecvCustomerBoxes(AH_OUTBOX *ob);
+static int _lockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers);
+static int _unlockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers, int abandon);
+static void _finishRemainingCustomerBoxes(AH_OUTBOX *ob);
+static AH_OUTBOX_CBOX *_findCBox(const AH_OUTBOX *ob, const AB_USER *u);
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 
 
@@ -1007,7 +65,7 @@ AH_OUTBOX *AH_Outbox_new(AB_PROVIDER *pro)
   GWEN_INHERIT_INIT(AH_OUTBOX, ob);
 
   ob->provider=pro;
-  ob->userBoxes=AH_Outbox__CBox_List_new();
+  ob->userBoxes=AH_OutboxCBox_List_new();
   ob->finishedJobs=AH_Job_List_new();
   ob->usage=1;
   return ob;
@@ -1020,7 +78,7 @@ void AH_Outbox_free(AH_OUTBOX *ob)
   if (ob) {
     assert(ob->usage);
     if (--(ob->usage)==0) {
-      AH_Outbox__CBox_List_free(ob->userBoxes);
+      AH_OutboxCBox_List_free(ob->userBoxes);
       AH_Job_List_free(ob->finishedJobs);
       GWEN_INHERIT_FINI(AH_OUTBOX, ob);
       GWEN_FREE_OBJECT(ob);
@@ -1038,76 +96,202 @@ void AH_Outbox_Attach(AH_OUTBOX *ob)
 
 
 
-
-
-int AH_Outbox_Prepare(AH_OUTBOX *ob)
+AB_IMEXPORTER_CONTEXT *AH_Outbox_GetImExContext(const AH_OUTBOX *ob)
 {
-  AH_OUTBOX__CBOX *cbox;
-  unsigned int errors;
+  assert(ob);
+  return ob->context;
+}
+
+
+
+AH_JOB_LIST *AH_Outbox_GetFinishedJobs(AH_OUTBOX *ob)
+{
+  assert(ob);
+  assert(ob->usage);
+  return ob->finishedJobs;
+}
+
+
+
+int AH_Outbox_Execute(AH_OUTBOX *ob,
+                      AB_IMEXPORTER_CONTEXT *ctx,
+                      int withProgress, int nounmount, int doLock)
+{
+  int rv;
+  uint32_t pid=0;
+  AB_USER_LIST2 *lockedUsers=NULL;
 
   assert(ob);
 
-  errors=0;
-  cbox=AH_Outbox__CBox_List_First(ob->userBoxes);
-  while (cbox) {
-    AB_USER *u;
-
-    u=AH_Outbox__CBox_GetUser(cbox);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing queues for customer \"%s\"",
-             AB_User_GetCustomerId(u));
-    if (AH_Outbox__CBox_Prepare(cbox)) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Error preparing cbox");
-      errors++;
-    }
-    else {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing queues for customer \"%s\": done",
-               AB_User_GetCustomerId(u));
-    }
-    cbox=AH_Outbox__CBox_List_Next(cbox);
-  } /* while */
-
-  if (errors) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "%d errors occurred", errors);
-    return GWEN_ERROR_GENERIC;
+  if (withProgress) {
+    pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
+                               GWEN_GUI_PROGRESS_ALLOW_EMBED |
+                               GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+                               GWEN_GUI_PROGRESS_SHOW_ABORT,
+                               I18N("Executing Jobs"),
+                               I18N("Now the jobs are sent via their "
+                                    "backends to the credit institutes."),
+                               _countTodoJobs(ob),
+                               0);
   }
 
+  ob->context=ctx;
+
+  if (doLock) {
+    lockedUsers=AB_User_List2_new();
+    rv=_lockUsers(ob, lockedUsers);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      AB_User_List2_free(lockedUsers);
+    }
+  }
+  else
+    rv=0;
+
+  if (rv==0) {
+    rv=_sendOutboxWithProbablyLockedUsers(ob);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    }
+    if (doLock) {
+      int rv2;
+
+      rv2=_unlockUsers(ob, lockedUsers, 0);
+      if (rv2<0) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv2);
+      }
+      AB_User_List2_free(lockedUsers);
+      if (rv==0 && rv2!=0)
+        rv=rv2;
+    }
+  }
+
+  if (!nounmount)
+    AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(ob->provider));
+
+  if (withProgress) {
+    GWEN_Gui_ProgressEnd(pid);
+  }
+
+  ob->context=NULL;
+  return rv;
+}
+
+
+
+AH_JOB *AH_Outbox_FindTransferJob(AH_OUTBOX *ob, AB_USER *u, AB_ACCOUNT *a, const char *jobName)
+{
+  AH_OUTBOX_CBOX *cbox;
+  AH_JOB *j;
+
+  assert(ob);
+  assert(u);
+  assert(a);
+  assert(jobName);
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Searching for %s job", jobName);
+  cbox=AH_OutboxCBox_List_First(ob->userBoxes);
+  while (cbox) {
+    if (AH_OutboxCBox_GetUser(cbox)==u) {
+      AH_JOBQUEUE *jq;
+
+      /* check jobs in lists */
+      j=_findTransferJobInCheckJobList(AH_OutboxCBox_GetTodoJobs(cbox), u, a, jobName);
+      if (j)
+        return j;
+
+      /* check jobs in queues */
+      jq=AH_JobQueue_List_First(AH_OutboxCBox_GetTodoQueues(cbox));
+      while (jq) {
+        const AH_JOB_LIST *jl;
+
+        jl=AH_JobQueue_GetJobList(jq);
+        if (jl) {
+          j=_findTransferJobInCheckJobList(jl, u, a, jobName);
+          if (j)
+            return j;
+        }
+        jq=AH_JobQueue_List_Next(jq);
+      } /* while */
+    }
+    else {
+      DBG_WARN(AQHBCI_LOGDOMAIN, "Customer doesn't match");
+    }
+
+    cbox=AH_OutboxCBox_List_Next(cbox);
+  } /* while */
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "No matching multi job found");
   return 0;
 }
 
 
 
-int AH_Outbox_LockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers)
+int _sendOutboxWithProbablyLockedUsers(AH_OUTBOX *ob)
 {
-  AH_OUTBOX__CBOX *cbox;
+  unsigned int jobCount;
+  int rv;
+
+  assert(ob);
+  jobCount=_countTodoJobs(ob);
+  if (jobCount==0) {
+    DBG_WARN(AQHBCI_LOGDOMAIN, "Empty outbox");
+    return 0;
+  }
+
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("AqHBCI started"));
+
+  rv=_prepare(ob);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error preparing jobs for sending.");
+    return rv;
+  }
+
+  rv=_sendAndRecvCustomerBoxes(ob);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error while sending outbox.");
+    return rv;
+  }
+
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("AqHBCI finished."));
+  return 0;
+}
+
+
+
+int _lockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers)
+{
+  AH_OUTBOX_CBOX *cbox;
 
   assert(ob);
 
-  cbox=AH_Outbox__CBox_List_First(ob->userBoxes);
+  cbox=AH_OutboxCBox_List_First(ob->userBoxes);
   while (cbox) {
     int rv;
+    AB_USER *user;
+
+    user=AH_OutboxCBox_GetUser(cbox);
 
     DBG_INFO(AQHBCI_LOGDOMAIN, "Locking customer \"%lu\"",
-             (unsigned long int) AB_User_GetUniqueId(cbox->user));
+             (unsigned long int) AB_User_GetUniqueId(user));
     GWEN_Gui_ProgressLog2(0,
-                          GWEN_LoggerLevel_Info,
-                          "Locking customer \"%lu\"",
-                          (unsigned long int) AB_User_GetUniqueId(cbox->user));
-    rv=AB_Provider_BeginExclUseUser(ob->provider, cbox->user);
+			  GWEN_LoggerLevel_Info,
+			  "Locking customer \"%lu\"",
+			  (unsigned long int) AB_User_GetUniqueId(user));
+    rv=AB_Provider_BeginExclUseUser(ob->provider, user);
     if (rv<0) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN,
-                "Could not lock customer [%lu] (%d)", (unsigned long int) AB_User_GetUniqueId(cbox->user), rv);
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not lock customer [%lu] (%d)", (unsigned long int) AB_User_GetUniqueId(user), rv);
       GWEN_Gui_ProgressLog2(0,
                             GWEN_LoggerLevel_Error,
                             I18N("Could not lock user %lu (%d)"),
-                            (unsigned long int) AB_User_GetUniqueId(cbox->user),
+                            (unsigned long int) AB_User_GetUniqueId(user),
                             rv);
-      AH_Outbox_UnlockUsers(ob, lockedUsers, 1); /* abandon */
+      _unlockUsers(ob, lockedUsers, 1); /* abandon */
       return rv;
     }
-    cbox->isLocked=1;
-    AB_User_List2_PushBack(lockedUsers, cbox->user);
+    AB_User_List2_PushBack(lockedUsers, user);
 
-    cbox=AH_Outbox__CBox_List_Next(cbox);
+    cbox=AH_OutboxCBox_List_Next(cbox);
   } /* while */
 
   return 0;
@@ -1115,7 +299,7 @@ int AH_Outbox_LockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers)
 
 
 
-int AH_Outbox_UnlockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers, int abandon)
+int _unlockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers, int abandon)
 {
   int errors=0;
   AB_USER_LIST2_ITERATOR *it;
@@ -1162,24 +346,21 @@ int AH_Outbox_UnlockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers, int abandon
 
 
 
-static AH_OUTBOX__CBOX *AH_Outbox__FindCBox(const AH_OUTBOX *ob,
-                                            const AB_USER *u)
+AH_OUTBOX_CBOX *_findCBox(const AH_OUTBOX *ob, const AB_USER *u)
 {
-  AH_OUTBOX__CBOX *cbox;
+  AH_OUTBOX_CBOX *cbox;
 
   assert(ob);
   assert(u);
-  cbox=AH_Outbox__CBox_List_First(ob->userBoxes);
+  cbox=AH_OutboxCBox_List_First(ob->userBoxes);
   while (cbox) {
-    if (AH_Outbox__CBox_GetUser(cbox)==u) {
-      DBG_DEBUG(AQHBCI_LOGDOMAIN, "CBox for customer \"%s\" found",
-                AB_User_GetCustomerId(u));
+    if (AH_OutboxCBox_GetUser(cbox)==u) {
+      DBG_DEBUG(AQHBCI_LOGDOMAIN, "CBox for customer \"%s\" found", AB_User_GetCustomerId(u));
       return cbox;
     }
-    cbox=AH_Outbox__CBox_List_Next(cbox);
+    cbox=AH_OutboxCBox_List_Next(cbox);
   } /* while */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "CBox for customer \"%s\" not found",
-           AB_User_GetCustomerId(u));
+  DBG_INFO(AQHBCI_LOGDOMAIN, "CBox for customer \"%s\" not found", AB_User_GetCustomerId(u));
   return 0;
 }
 
@@ -1190,7 +371,7 @@ static AH_OUTBOX__CBOX *AH_Outbox__FindCBox(const AH_OUTBOX *ob,
 void AH_Outbox_AddJob(AH_OUTBOX *ob, AH_JOB *j)
 {
   AB_USER *u;
-  AH_OUTBOX__CBOX *cbox;
+  AH_OUTBOX_CBOX *cbox;
 
   assert(ob);
   assert(j);
@@ -1198,27 +379,54 @@ void AH_Outbox_AddJob(AH_OUTBOX *ob, AH_JOB *j)
   u=AH_Job_GetUser(j);
   assert(u);
 
-  cbox=AH_Outbox__FindCBox(ob, u);
+  cbox=_findCBox(ob, u);
   if (!cbox) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating CBox for customer \"%s\"", AB_User_GetCustomerId(u));
-    cbox=AH_Outbox__CBox_new(ob->provider, u, ob);
-    AH_Outbox__CBox_List_Add(cbox, ob->userBoxes);
+    cbox=AH_OutboxCBox_new(ob->provider, u, ob);
+    AH_OutboxCBox_List_Add(cbox, ob->userBoxes);
   }
   /* attach to job so that it will never be destroyed from me */
   AH_Job_Attach(j);
-  AH_Outbox__CBox_AddTodoJob(cbox, j);
+  AH_OutboxCBox_AddTodoJob(cbox, j);
 }
 
 
 
-int AH_Outbox_StartSending(AH_OUTBOX *ob)
+int _prepare(AH_OUTBOX *ob)
 {
-  return AH_Outbox_Prepare(ob);
+  AH_OUTBOX_CBOX *cbox;
+  unsigned int errors;
+
+  assert(ob);
+
+  errors=0;
+  cbox=AH_OutboxCBox_List_First(ob->userBoxes);
+  while (cbox) {
+    AB_USER *u;
+
+    u=AH_OutboxCBox_GetUser(cbox);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing queues for customer \"%s\"", AB_User_GetCustomerId(u));
+    if (AH_OutboxCBox_Prepare(cbox)) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Error preparing cbox");
+      errors++;
+    }
+    else {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing queues for customer \"%s\": done", AB_User_GetCustomerId(u));
+    }
+    cbox=AH_OutboxCBox_List_Next(cbox);
+  } /* while */
+
+  if (errors) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "%d errors occurred", errors);
+    return GWEN_ERROR_GENERIC;
+  }
+
+  return 0;
 }
 
 
 
-void AH_Outbox__FinishCBox(AH_OUTBOX *ob, AH_OUTBOX__CBOX *cbox)
+void _finishCBox(AH_OUTBOX *ob, AH_OUTBOX_CBOX *cbox)
 {
   AH_JOB_LIST *jl;
   AH_JOB *j;
@@ -1226,8 +434,8 @@ void AH_Outbox__FinishCBox(AH_OUTBOX *ob, AH_OUTBOX__CBOX *cbox)
   assert(ob);
   assert(cbox);
 
-  AH_Outbox__CBox_Finish(cbox);
-  jl=AH_Outbox__CBox_TakeFinishedJobs(cbox);
+  AH_OutboxCBox_Finish(cbox);
+  jl=AH_OutboxCBox_TakeFinishedJobs(cbox);
   assert(jl);
   DBG_INFO(AQHBCI_LOGDOMAIN, "Finishing customer outbox");
   while ((j=AH_Job_List_First(jl))) {
@@ -1261,141 +469,67 @@ void AH_Outbox__FinishCBox(AH_OUTBOX *ob, AH_OUTBOX__CBOX *cbox)
 
 
 
-static void AH_Outbox__FinishOutbox(AH_OUTBOX *ob)
+void _finishRemainingCustomerBoxes(AH_OUTBOX *ob)
 {
-  AH_OUTBOX__CBOX *cbox;
+  AH_OUTBOX_CBOX *cbox;
 
   assert(ob);
-  while ((cbox=AH_Outbox__CBox_List_First(ob->userBoxes))) {
-    AH_Outbox__FinishCBox(ob, cbox);
-    AH_Outbox__CBox_List_Del(cbox);
-    AH_Outbox__CBox_free(cbox);
+  while ((cbox=AH_OutboxCBox_List_First(ob->userBoxes))) {
+    _finishCBox(ob, cbox);
+    AH_OutboxCBox_List_Del(cbox);
+    AH_OutboxCBox_free(cbox);
   } /* while */
 }
 
 
 
-int AH_Outbox_SendAndRecv(AH_OUTBOX *ob)
+int _sendAndRecvCustomerBoxes(AH_OUTBOX *ob)
 {
-  AH_OUTBOX__CBOX *cbox;
+  AH_OUTBOX_CBOX *cbox;
   int rv;
   int errors;
 
   errors=0;
-  while ((cbox=AH_Outbox__CBox_List_First(ob->userBoxes))) {
+  while ((cbox=AH_OutboxCBox_List_First(ob->userBoxes))) {
     AB_USER *u;
 
-    u=AH_Outbox__CBox_GetUser(cbox);
+    u=AH_OutboxCBox_GetUser(cbox);
     DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Sending next message for customer \"%s\"",
+             "Sending messages for customer \"%s\"",
              AB_User_GetCustomerId(u));
 
-    rv=AH_Outbox__CBox_SendAndRecvBox(cbox);
-    AH_Outbox__FinishCBox(ob, cbox);
-    AH_Outbox__CBox_List_Del(cbox);
-    AH_Outbox__CBox_free(cbox);
+    rv=AH_OutboxCBox_SendAndRecvBox(cbox);
+    _finishCBox(ob, cbox);
+    AH_OutboxCBox_List_Del(cbox);
+    AH_OutboxCBox_free(cbox);
     if (rv)
       errors++;
     if (rv==GWEN_ERROR_USER_ABORTED) {
-      AH_Outbox__FinishOutbox(ob);
+      _finishRemainingCustomerBoxes(ob);
       return rv;
     }
   } /* while */
 
-  AH_Outbox__FinishOutbox(ob);
   return 0;
 }
 
 
 
-AH_JOB_LIST *AH_Outbox_GetFinishedJobs(AH_OUTBOX *ob)
-{
-  assert(ob);
-  assert(ob->usage);
-  AH_Outbox__FinishOutbox(ob);
-  return ob->finishedJobs;
-}
-
-
-
-void AH_Outbox_Commit(AH_OUTBOX *ob, int doLock)
-{
-  AH_JOB *j;
-
-  assert(ob);
-  j=AH_Job_List_First(ob->finishedJobs);
-  while (j) {
-    if (AH_Job_GetStatus(j)==AH_JobStatusAnswered) {
-      /* only commit answered jobs */
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Committing job \"%s\"", AH_Job_GetName(j));
-      AH_Job_Commit(j, doLock);
-    }
-    j=AH_Job_List_Next(j);
-  } /* while */
-}
-
-
-
-void AH_Outbox_CommitSystemData(AH_OUTBOX *ob, int doLock)
-{
-  AH_JOB *j;
-
-  assert(ob);
-  j=AH_Job_List_First(ob->finishedJobs);
-  while (j) {
-    if (AH_Job_GetStatus(j)==AH_JobStatusAnswered) {
-      /* only commit answered jobs */
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Committing job \"%s\"", AH_Job_GetName(j));
-      AH_Job_DefaultCommitHandler(j, doLock);
-    }
-    j=AH_Job_List_Next(j);
-  } /* while */
-}
-
-
-
-void AH_Outbox_Process(AH_OUTBOX *ob)
-{
-  AH_JOB *j;
-
-  assert(ob);
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Processing outbox jobs");
-  j=AH_Job_List_First(ob->finishedJobs);
-  while (j) {
-    if (AH_Job_GetStatus(j)==AH_JobStatusAnswered) {
-      int rv;
-
-      /* only process answered jobs */
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Processing job \"%s\"", AH_Job_GetName(j));
-      rv=AH_Job_Process(j, ob->context);
-      if (rv) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Error processing job \"%s\": %d", AH_Job_GetName(j), rv);
-        AH_Job_SetStatus(j, AH_JobStatusError);
-        GWEN_Gui_ProgressLog2(0,
-                              GWEN_LoggerLevel_Error,
-                              I18N("Error processing job %s"),
-                              AH_Job_GetName(j));
-      }
-    }
-    j=AH_Job_List_Next(j);
-  } /* while */
-}
-
-
-
-unsigned int AH_Outbox_CountTodoJobs(AH_OUTBOX *ob)
+unsigned int _countTodoJobs(AH_OUTBOX *ob)
 {
   unsigned int cnt;
-  AH_OUTBOX__CBOX *cbox;
+  AH_OUTBOX_CBOX *cbox;
 
   assert(ob);
   cnt=0;
-  cbox=AH_Outbox__CBox_List_First(ob->userBoxes);
+  cbox=AH_OutboxCBox_List_First(ob->userBoxes);
   while (cbox) {
+    AH_JOB_LIST *todoJobs;
     AH_JOBQUEUE *jq;
 
-    cnt+=AH_Job_List_GetCount(cbox->todoJobs);
-    jq=AH_JobQueue_List_First(cbox->todoQueues);
+    todoJobs=AH_OutboxCBox_GetTodoJobs(cbox);
+    cnt+=AH_Job_List_GetCount(todoJobs);
+    jq=AH_JobQueue_List_First(todoJobs);
     while (jq) {
       if (!(AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_OUTBOX)) {
         const AH_JOB_LIST *jl;
@@ -1415,7 +549,7 @@ unsigned int AH_Outbox_CountTodoJobs(AH_OUTBOX *ob)
       }
       jq=AH_JobQueue_List_Next(jq);
     } /* while */
-    cbox=AH_Outbox__CBox_List_Next(cbox);
+    cbox=AH_OutboxCBox_List_Next(cbox);
   } /* while */
 
   return cnt;
@@ -1423,194 +557,14 @@ unsigned int AH_Outbox_CountTodoJobs(AH_OUTBOX *ob)
 
 
 
-unsigned int AH_Outbox__CountJobList(const AH_JOB_LIST *jl)
-{
-  AH_JOB *j;
-  unsigned int cnt;
-
-  assert(jl);
-  cnt=0;
-  j=AH_Job_List_First(jl);
-  while (j) {
-    if (!(AH_Job_GetFlags(j) & AH_JOB_FLAGS_OUTBOX))
-      cnt++;
-    j=AH_Job_List_Next(j);
-  } /* while */
-
-  return cnt;
-}
-
-
-
-unsigned int AH_Outbox_CountFinishedJobs(AH_OUTBOX *ob)
-{
-  unsigned int cnt;
-  AH_OUTBOX__CBOX *cbox;
-
-  assert(ob);
-  cnt=0;
-
-  cnt+=AH_Outbox__CountJobList(ob->finishedJobs);
-
-  cbox=AH_Outbox__CBox_List_First(ob->userBoxes);
-  while (cbox) {
-    AH_JOBQUEUE *jq;
-
-    /* count jobs in queues */
-    jq=AH_JobQueue_List_First(cbox->finishedQueues);
-    while (jq) {
-      if (!(AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_OUTBOX)) {
-        const AH_JOB_LIST *jl;
-
-        jl=AH_JobQueue_GetJobList(jq);
-        if (jl) {
-          AH_JOB *j;
-
-          j=AH_Job_List_First(jl);
-          while (j) {
-            if (!(AH_Job_GetFlags(j) & AH_JOB_FLAGS_OUTBOX))
-              cnt++;
-
-            j=AH_Job_List_Next(j);
-          } /* while */
-        }
-      }
-      jq=AH_JobQueue_List_Next(jq);
-    } /* while */
-
-    /* count other finished jobs */
-    cnt+=AH_Outbox__CountJobList(cbox->finishedJobs);
-
-    cbox=AH_Outbox__CBox_List_Next(cbox);
-  } /* while */
-
-  return cnt;
-}
-
-
-
-int AH_Outbox__Execute(AH_OUTBOX *ob)
-{
-  unsigned int jobCount;
-  int rv;
-
-  assert(ob);
-  jobCount=AH_Outbox_CountTodoJobs(ob);
-  if (jobCount==0) {
-    DBG_WARN(AQHBCI_LOGDOMAIN, "Empty outbox");
-    return 0;
-  }
-
-  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("AqHBCI started"));
-
-  rv=AH_Outbox_StartSending(ob);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not start sending outbox.");
-    return rv;
-  }
-
-  rv=AH_Outbox_SendAndRecv(ob);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error while sending outbox.");
-    return rv;
-  }
-
-  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("AqHBCI finished."));
-  return 0;
-}
-
-
-
-int AH_Outbox_Execute(AH_OUTBOX *ob,
-                      AB_IMEXPORTER_CONTEXT *ctx,
-                      int withProgress, int nounmount, int doLock)
-{
-  int rv;
-  uint32_t pid=0;
-  AB_USER_LIST2 *lockedUsers = NULL;
-
-  assert(ob);
-
-  if (withProgress) {
-    pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
-                               GWEN_GUI_PROGRESS_ALLOW_EMBED |
-                               GWEN_GUI_PROGRESS_SHOW_PROGRESS |
-                               GWEN_GUI_PROGRESS_SHOW_ABORT,
-                               I18N("Executing Jobs"),
-                               I18N("Now the jobs are sent via their "
-                                    "backends to the credit institutes."),
-                               AH_Outbox_CountTodoJobs(ob),
-                               0);
-  }
-
-  ob->context=ctx;
-
-  if (doLock) {
-    GWEN_Gui_ProgressLog(pid,
-                         GWEN_LoggerLevel_Info,
-                         I18N("Locking users"));
-    lockedUsers=AB_User_List2_new();
-    rv=AH_Outbox_LockUsers(ob, lockedUsers);
-    if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      GWEN_Gui_ProgressLog(pid,
-                           GWEN_LoggerLevel_Error,
-                           I18N("Unable to lock users"));
-      AB_User_List2_free(lockedUsers);
-    }
-  }
-  else
-    rv=0;
-
-  if (rv==0) {
-    GWEN_Gui_ProgressLog(pid,
-                         GWEN_LoggerLevel_Info,
-                         I18N("Executing HBCI jobs"));
-    rv=AH_Outbox__Execute(ob);
-    if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    }
-    if (doLock) {
-      int rv2;
-
-      rv2=AH_Outbox_UnlockUsers(ob, lockedUsers, 0);
-      if (rv2<0) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-        GWEN_Gui_ProgressLog(pid,
-                             GWEN_LoggerLevel_Error,
-                             I18N("Unable to unlock users"));
-      }
-      AB_User_List2_free(lockedUsers);
-      if (rv==0 && rv2!=0)
-        rv=rv2;
-    }
-  }
-
-  /* unmount currently mounted medium */
-  if (!nounmount)
-    AB_Banking_ClearCryptTokenList(AB_Provider_GetBanking(ob->provider));
-  if (withProgress) {
-    GWEN_Gui_ProgressEnd(pid);
-  }
-
-  ob->context=0;
-  return rv;
-}
-
-
-
-AH_JOB *AH_Outbox__FindTransferJobInCheckJobList(const AH_JOB_LIST *jl,
-                                                 AB_USER *u,
-                                                 AB_ACCOUNT *a,
-                                                 const char *jobName)
+AH_JOB *_findTransferJobInCheckJobList(const AH_JOB_LIST *jl, AB_USER *u, AB_ACCOUNT *a, const char *jobName)
 {
   AH_JOB *j;
 
   assert(jl);
   j=AH_Job_List_First(jl);
   while (j) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Checking job \"%s\"",
-             AH_Job_GetName(j));
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Checking job \"%s\"", AH_Job_GetName(j));
     if (strcasecmp(AH_Job_GetName(j), jobName)==0 &&
         AH_AccountJob_GetAccount(j)==a) {
       if (AH_Job_GetTransferCount(j)<AH_Job_GetMaxTransfers(j))
@@ -1628,69 +582,6 @@ AH_JOB *AH_Outbox__FindTransferJobInCheckJobList(const AH_JOB_LIST *jl,
 
   return j;
 }
-
-
-
-AH_JOB *AH_Outbox_FindTransferJob(AH_OUTBOX *ob,
-                                  AB_USER *u,
-                                  AB_ACCOUNT *a,
-                                  const char *jobName)
-{
-  AH_OUTBOX__CBOX *cbox;
-  AH_JOB *j;
-
-  assert(ob);
-  assert(u);
-  assert(a);
-  assert(jobName);
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Searching for %s job", jobName);
-  cbox=AH_Outbox__CBox_List_First(ob->userBoxes);
-  while (cbox) {
-    if (cbox->user==u) {
-      AH_JOBQUEUE *jq;
-
-      /* check jobs in lists */
-      j=AH_Outbox__FindTransferJobInCheckJobList(cbox->todoJobs, u, a, jobName);
-      if (j)
-        return j;
-
-      /* check jobs in queues */
-      jq=AH_JobQueue_List_First(cbox->todoQueues);
-      while (jq) {
-        const AH_JOB_LIST *jl;
-
-        jl=AH_JobQueue_GetJobList(jq);
-        if (jl) {
-          j=AH_Outbox__FindTransferJobInCheckJobList(jl, u, a, jobName);
-          if (j)
-            return j;
-        }
-        jq=AH_JobQueue_List_Next(jq);
-      } /* while */
-    }
-    else {
-      DBG_WARN(AQHBCI_LOGDOMAIN, "Customer doesn't match");
-    }
-
-    cbox=AH_Outbox__CBox_List_Next(cbox);
-  } /* while */
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "No matching multi job found");
-  return 0;
-}
-
-
-
-#include "outbox_send.c"
-#include "outbox_recv.c"
-#include "itan.c"
-#include "itan1.c"
-#include "itan2.c"
-#include "outbox_hbci.c"
-#include "outbox_psd2.c"
-#include "outbox_dialog.c"
-
 
 
 

@@ -7,22 +7,36 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-/* This file is included by outbox.c */
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
 
-#include "message_l.h"
-#include "user_l.h"
+#include "aqhbci/applayer/cbox_itan1.h"
+
+#include "aqhbci/applayer/cbox_send.h"
+#include "aqhbci/applayer/cbox_recv.h"
+
+#include "aqhbci/admjobs/jobtan_l.h"
+#include "aqhbci/ajobs/accountjob_l.h"
+
+#include "aqbanking/i18n_l.h"
 
 #include <gwenhywfar/mdigest.h>
+#include <gwenhywfar/gui.h>
+
+#include <ctype.h>
 
 
 
 
-int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
+int AH_OutboxCBox_Itan1(AH_OUTBOX_CBOX *cbox,
                           AH_DIALOG *dlg,
                           AH_JOBQUEUE *qJob)
 {
   const AH_JOB_LIST *jl;
+  AH_OUTBOX *outbox;
+  AB_PROVIDER *provider;
   AH_MSG *msg1;
   AH_MSG *msg2;
   int rv;
@@ -39,6 +53,9 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   AB_ACCOUNT *acc=NULL;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Handling iTAN process type 1");
+
+  provider=AH_OutboxCBox_GetProvider(cbox);
+  outbox=AH_OutboxCBox_GetOutbox(cbox);
 
   jl=AH_JobQueue_GetJobList(qJob);
   assert(jl);
@@ -68,7 +85,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   }
 
   /* prepare HKTAN */
-  jTan=AH_Job_Tan_new(cbox->provider, u, 1, AH_Dialog_GetTanJobVersion(dlg));
+  jTan=AH_Job_Tan_new(provider, u, 1, AH_Dialog_GetTanJobVersion(dlg));
   if (!jTan) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
     return -1;
@@ -147,7 +164,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   AH_Msg_SetItanMethod(msg1, um);
   AH_Msg_SetItanHashMode(msg1,
                          GWEN_DB_GetIntValue(dbParams, "hashMethod", 0, 0));
-  rv=AH_Outbox__CBox_JobToMessage(j, msg1, 1);
+  rv=AH_OutboxCBox_JobToMessage(j, msg1, 1);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg1);
@@ -186,7 +203,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
     return rv;
   }
 
-  rv=AH_Outbox__CBox_JobToMessage(jTan, msg2, 1);
+  rv=AH_OutboxCBox_JobToMessage(jTan, msg2, 1);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg2);
@@ -225,7 +242,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   }
 
   /* send HKTAN message */
-  rv=AH_Outbox__CBox_SendMessage(cbox, dlg, msg2);
+  rv=AH_OutboxCBox_SendMessage(cbox, dlg, msg2);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg2);
@@ -237,19 +254,19 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   AH_Job_SetStatus(jTan, AH_JobStatusSent);
 
   /* wait for response, dispatch it */
-  rv=AH_Outbox__CBox_RecvQueue(cbox, dlg, jq);
+  rv=AH_OutboxCBox_RecvQueue(cbox, dlg, jq);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AH_Outbox__CBox_CopyJobResultsToJobList(jTan, jl);
+    AH_OutboxCBox_CopyJobResultsToJobList(jTan, jl);
     AH_Msg_free(msg1);
     AH_JobQueue_free(jq);
     return rv;
   }
-  AH_Outbox__CBox_CopyJobResultsToJobList(jTan, jl);
+  AH_OutboxCBox_CopyJobResultsToJobList(jTan, jl);
 
   /* get challenge */
   DBG_INFO(AQHBCI_LOGDOMAIN, "Processing job \"%s\"", AH_Job_GetName(jTan));
-  rv=AH_Job_Process(jTan, cbox->outbox->context);
+  rv=AH_Job_Process(jTan, AH_Outbox_GetImExContext(outbox));
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg1);
@@ -264,7 +281,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
     char tanBuffer[64];
 
     memset(tanBuffer, 0, sizeof(tanBuffer));
-    rv=AH_Outbox__CBox_InputTanWithChallenge(cbox,
+    rv=AH_OutboxCBox_InputTanWithChallenge(cbox,
                                              dlg,
                                              challenge,
                                              challengeHhd,
@@ -325,7 +342,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   }
 
   /* send job message */
-  rv=AH_Outbox__CBox_SendMessage(cbox, dlg, msg1);
+  rv=AH_OutboxCBox_SendMessage(cbox, dlg, msg1);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg1);
@@ -335,7 +352,7 @@ int AH_Outbox__CBox_Itan1(AH_OUTBOX__CBOX *cbox,
   AH_Job_SetStatus(j, AH_JobStatusSent);
 
   /* wait for response, dispatch it */
-  rv=AH_Outbox__CBox_RecvQueue(cbox, dlg, qJob);
+  rv=AH_OutboxCBox_RecvQueue(cbox, dlg, qJob);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
