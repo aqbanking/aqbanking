@@ -2,12 +2,6 @@
 This file describes the key concepts behind the API changes in AqBanking6.
 
 
-==================================================================================================================
-PLEASE NOTE: AqBanking6 is work in progress, it is by no means stable or fit for use in production environments!!
-==================================================================================================================
-
-
-
 Trying the GIT Version of AqBanking6
 ====================================
 
@@ -107,5 +101,5 @@ Also, AB_BALANCE now has a "type" field (e.g. "Booked", "Noted", "Temporary" etc
 
 
 ----------
-2019/01/05
+2021/01/16
 
