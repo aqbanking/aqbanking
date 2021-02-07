@@ -43,7 +43,7 @@ GWEN_XMLNODE *AO_Provider_MkAcctInfoRqNode(AB_USER *u)
   xmlRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "ACCTINFORQ");
   GWEN_XMLNode_AddChild(xmlTrnRq, xmlRq);
 
-  GWEN_XMLNode_SetCharValue(xmlRq, "DTACCTUP", "19691231");
+  GWEN_XMLNode_SetCharValue(xmlRq, "DTACCTUP", "19900101");
 
   return xmlMsg;
 }
