@@ -26,6 +26,7 @@ struct AO_EDITUSER_DIALOG {
   char *userName;
   char *userId;
   char *url;
+  char *userAgent;
 
   char *bankName;
   char *brokerId;

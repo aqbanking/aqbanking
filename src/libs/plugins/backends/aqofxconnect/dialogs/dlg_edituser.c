@@ -105,6 +105,7 @@ void GWENHYWFAR_CB AO_EditUserDialog_FreeData(void *bp, void *p)
   free(xdlg->userName);
   free(xdlg->userId);
   free(xdlg->url);
+  free(xdlg->userAgent);
   free(xdlg->brokerId);
   free(xdlg->org);
   free(xdlg->fid);
@@ -432,6 +433,36 @@ void AO_EditUserDialog_SetUrl(GWEN_DIALOG *dlg, const char *s)
 
 
 
+const char *AO_EditUserDialog_GetUserAgent(const GWEN_DIALOG *dlg)
+{
+  AO_EDITUSER_DIALOG *xdlg;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AO_EDITUSER_DIALOG, dlg);
+  assert(xdlg);
+
+  return xdlg->userAgent;
+}
+
+
+
+void AO_EditUserDialog_SetUserAgent(GWEN_DIALOG *dlg, const char *s)
+{
+  AO_EDITUSER_DIALOG *xdlg;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AO_EDITUSER_DIALOG, dlg);
+  assert(xdlg);
+
+  free(xdlg->userAgent);
+  if (s)
+    xdlg->userAgent=strdup(s);
+  else
+    xdlg->userAgent=NULL;
+}
+
+
+
 const char *AO_EditUserDialog_GetClientUid(const GWEN_DIALOG *dlg)
 {
   AO_EDITUSER_DIALOG *xdlg;
@@ -627,6 +658,9 @@ void AO_EditUserDialog_Init(GWEN_DIALOG *dlg)
   s=AO_User_GetServerAddr(xdlg->user);
   GWEN_Dialog_SetCharProperty(dlg, "wiz_url_edit", GWEN_DialogProperty_Value, 0, s, 0);
 
+  s=AO_User_GetHttpUserAgent(xdlg->user);
+  GWEN_Dialog_SetCharProperty(dlg, "wiz_user_agent_edit", GWEN_DialogProperty_Value, 0, s, 0);
+
   s=AO_User_GetAppId(xdlg->user);
   if (s && *s) {
     GWEN_Dialog_SetIntProperty(dlg, "wiz_app_combo", GWEN_DialogProperty_Value, 0, 0, 0);
@@ -750,6 +784,12 @@ int AO_EditUserDialog_GetBankPageData(GWEN_DIALOG *dlg)
     GWEN_Dialog_SetIntProperty(dlg, "wiz_url_edit", GWEN_DialogProperty_Focus, 0, 1, 0);
     return GWEN_ERROR_NO_DATA;
   }
+
+  s=GWEN_Dialog_GetCharProperty(dlg, "wiz_user_agent_edit", GWEN_DialogProperty_Value, 0, NULL);
+  if (s && *s)
+    AO_EditUserDialog_SetUserAgent(dlg, s);
+  else
+    AO_EditUserDialog_SetUserAgent(dlg, NULL);
 
   return 0;
 }
@@ -911,6 +951,7 @@ int AO_EditUserDialog_FromGui(GWEN_DIALOG *dlg)
   AO_User_SetSecurityType(xdlg->user, xdlg->securityType);
 
   AO_User_SetServerAddr(xdlg->user, xdlg->url);
+  AO_User_SetHttpUserAgent(xdlg->user, xdlg->userAgent);
   AO_User_SetHttpVMajor(xdlg->user, xdlg->httpVMajor);
   AO_User_SetHttpVMinor(xdlg->user, xdlg->httpVMinor);
 
