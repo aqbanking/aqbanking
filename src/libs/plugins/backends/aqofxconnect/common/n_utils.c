@@ -153,7 +153,7 @@ char *AO_Provider_Util_GenerateUuid()
   GWEN_Text_ToHex((const char*) rawUuid+8, 2, returnBuffer+19, 5);
   returnBuffer[23]='-';
 
-  GWEN_Text_ToHex((const char*) rawUuid+10, 3, returnBuffer+24, 7);
+  GWEN_Text_ToHex((const char*) rawUuid+10, 6, returnBuffer+24, 13);
   returnBuffer[36]=0;
 
   return returnBuffer;
