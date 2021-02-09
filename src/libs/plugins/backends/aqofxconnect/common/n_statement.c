@@ -78,7 +78,19 @@ GWEN_XMLNODE *_mkBankStatementRqNode(AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION *
   xmlTrnRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "STMTTRNRQ");
   GWEN_XMLNode_AddChild(xmlMsg, xmlTrnRq);
 
-  AO_Provider_Util_SetCurrentTimeValue(xmlTrnRq, AO_User_GetFlags(u), "TRNUID");
+  if (1) {
+    char *uuid;
+
+    uuid=AO_Provider_Util_GenerateUuid();
+    if (uuid) {
+      GWEN_XMLNode_SetCharValue(xmlTrnRq, "TRNUID", uuid);
+      free(uuid);
+    }
+    else {
+      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "No uuid generated, falling back to current time");
+      AO_Provider_Util_SetCurrentTimeValue(xmlTrnRq, AO_User_GetFlags(u), "TRNUID");
+    }
+  }
   GWEN_XMLNode_SetCharValue(xmlTrnRq, "CLTCOOKIE", "1");
 
   xmlRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "STMTRQ");
@@ -134,7 +146,19 @@ GWEN_XMLNODE *_mkCreditCardStatementRqNode(AB_USER *u, AB_ACCOUNT *a, AB_TRANSAC
   xmlTrnRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "CCSTMTTRNRQ");
   GWEN_XMLNode_AddChild(xmlMsg, xmlTrnRq);
 
-  AO_Provider_Util_SetCurrentTimeValue(xmlTrnRq, AO_User_GetFlags(u), "TRNUID");
+  if (1) {
+    char *uuid;
+
+    uuid=AO_Provider_Util_GenerateUuid();
+    if (uuid) {
+      GWEN_XMLNode_SetCharValue(xmlTrnRq, "TRNUID", uuid);
+      free(uuid);
+    }
+    else {
+      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "No uuid generated, falling back to current time");
+      AO_Provider_Util_SetCurrentTimeValue(xmlTrnRq, AO_User_GetFlags(u), "TRNUID");
+    }
+  }
   GWEN_XMLNode_SetCharValue(xmlTrnRq, "CLTCOOKIE", "1");
 
   xmlRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "CCSTMTRQ");
@@ -191,7 +215,19 @@ GWEN_XMLNODE *_mkInvestmentStatementRqNode(AB_USER *u, AB_ACCOUNT *a, AB_TRANSAC
   xmlTrnRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "INVSTMTTRNRQ");
   GWEN_XMLNode_AddChild(xmlMsg, xmlTrnRq);
 
-  AO_Provider_Util_SetCurrentTimeValue(xmlTrnRq, AO_User_GetFlags(u), "TRNUID");
+  if (1) {
+    char *uuid;
+
+    uuid=AO_Provider_Util_GenerateUuid();
+    if (uuid) {
+      GWEN_XMLNode_SetCharValue(xmlTrnRq, "TRNUID", uuid);
+      free(uuid);
+    }
+    else {
+      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "No uuid generated, falling back to current time");
+      AO_Provider_Util_SetCurrentTimeValue(xmlTrnRq, AO_User_GetFlags(u), "TRNUID");
+    }
+  }
   GWEN_XMLNode_SetCharValue(xmlTrnRq, "CLTCOOKIE", "1");
 
   xmlRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "INVSTMTRQ");

@@ -17,6 +17,8 @@
 #include "aqbanking/i18n_l.h"
 
 #include <gwenhywfar/gui.h>
+#include <gwenhywfar/text.h>
+#include <gwenhywfar/cryptkeysym.h>
 
 
 
@@ -100,5 +102,64 @@ void AO_Provider_Util_ListAccounts(AB_IMEXPORTER_CONTEXT *ctx)
     }
   }
 }
+
+
+/* XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ * 012345678901234567890123456789012345
+ *           1         2         3
+ * 0        9    14   19   24
+ *         8    13   18   23
+*/
+char *AO_Provider_Util_GenerateUuid()
+{
+  GWEN_CRYPT_KEY *temporaryCryptKey;
+  uint8_t *ptrKeyData;
+  uint32_t lenKeyData;
+  uint8_t rawUuid[16];
+  char *returnBuffer;
+
+  temporaryCryptKey=GWEN_Crypt_KeyBlowFish_Generate(GWEN_Crypt_CryptMode_Cbc, 16, 0);
+  if (temporaryCryptKey==NULL) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No random data generated");
+    return NULL;
+  }
+
+  ptrKeyData=GWEN_Crypt_KeyBlowFish_GetKeyDataPtr(temporaryCryptKey);
+  lenKeyData=GWEN_Crypt_KeyBlowFish_GetKeyDataLen(temporaryCryptKey);
+  if (ptrKeyData==NULL || lenKeyData<16) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Too few bytes in random data");
+    GWEN_Crypt_Key_free(temporaryCryptKey);
+    return NULL;
+  }
+  memmove(rawUuid, ptrKeyData, 16);
+  GWEN_Crypt_Key_free(temporaryCryptKey);
+
+  /* some adjustments for RFC 4122 */
+  rawUuid[6]=0x40 | (rawUuid[6] & 0xf);  /* mark as randomly generated */
+  rawUuid[8]=0x80 | (rawUuid[8] & 0x3f); /* set high nibble to 8, 9, A or B */
+
+  returnBuffer=(char*) malloc(37);
+  assert(returnBuffer);
+
+  GWEN_Text_ToHex((const char*) rawUuid, 4, returnBuffer, 9);
+  returnBuffer[8]='-';
+
+  GWEN_Text_ToHex((const char*) rawUuid+4, 2, returnBuffer+9, 5);
+  returnBuffer[13]='-';
+
+  GWEN_Text_ToHex((const char*) rawUuid+6, 2, returnBuffer+14, 5);
+  returnBuffer[18]='-';
+
+  GWEN_Text_ToHex((const char*) rawUuid+8, 2, returnBuffer+19, 5);
+  returnBuffer[23]='-';
+
+  GWEN_Text_ToHex((const char*) rawUuid+10, 3, returnBuffer+24, 7);
+  returnBuffer[36]=0;
+
+  return returnBuffer;
+}
+
+
+
 
 
