@@ -58,10 +58,8 @@ int AO_V1_AddOfxHeaders(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *buf, const ch
   GWEN_Buffer_AppendString(buf,
                            "CHARSET:1252\r\n"
                            "COMPRESSION:NONE\r\n"
-                           "OLDFILEUID:NONE\r\n");
-  GWEN_Buffer_AppendString(buf, "NEWFILEUID:");
-  GWEN_Time_toString(ti, "YYYYMMDDhhmmss.000", buf);
-  GWEN_Buffer_AppendString(buf, "\r\n");
+                           "OLDFILEUID:NONE\r\n"
+                           "NEWFILEUID:NONE\r\n");
 
   /* header finished */
   GWEN_Buffer_AppendString(buf, "\r\n");
