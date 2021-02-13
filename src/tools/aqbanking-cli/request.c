@@ -62,6 +62,8 @@ int request(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
     requestFlags|=AQBANKING_TOOL_REQUEST_SEPASTO;
   if (GWEN_DB_GetIntValue(db, "reqEStatements", 0, 0))
     requestFlags|=AQBANKING_TOOL_REQUEST_ESTATEMENTS;
+  if (GWEN_DB_GetIntValue(db, "reqDepot", 0, 0))
+    requestFlags|=AQBANKING_TOOL_REQUEST_DEPOT;
   if (GWEN_DB_GetIntValue(db, "ignoreUnsupported", 0, 0))
     requestFlags|=AQBANKING_TOOL_REQUEST_IGNORE_UNSUP;
 
@@ -340,6 +342,17 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
       "estatements",                   /* long option */
       "Request electronic statements", /* short description */
       "Request electronic statements"  /* long description */
+    },
+    {
+      0,                            /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "reqDepot",                   /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      0,                            /* short option */
+      "depot",                      /* long option */
+      "Request depot (security list)", /* short description */
+      "Request depot (security list)"  /* long description */
     },
     {
       0,

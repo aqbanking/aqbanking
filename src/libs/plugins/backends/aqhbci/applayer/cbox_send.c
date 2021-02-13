@@ -7,14 +7,21 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
-/* included by outbox.c */
+#include "aqhbci/applayer/cbox_send.h"
+#include "aqhbci/joblayer/jobqueue_tomsg.h"
+
+#include "aqbanking/i18n_l.h"
+
+#include <gwenhywfar/gui.h>
 
 
 
-int AH_Outbox__CBox_SendMessage(AH_OUTBOX__CBOX *cbox,
-                                AH_DIALOG *dlg,
-                                AH_MSG *msg)
+
+int AH_OutboxCBox_SendMessage(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_MSG *msg)
 {
   int rv;
 
@@ -34,9 +41,9 @@ int AH_Outbox__CBox_SendMessage(AH_OUTBOX__CBOX *cbox,
 
 
 
-int AH_Outbox__CBox_SendQueue(AH_OUTBOX__CBOX *cbox,
-                              AH_DIALOG *dlg,
-                              AH_JOBQUEUE *jq)
+int AH_OutboxCBox_SendQueue(AH_OUTBOX_CBOX *cbox,
+                            AH_DIALOG *dlg,
+                            AH_JOBQUEUE *jq)
 {
   AH_MSG *msg;
   int rv;
@@ -50,7 +57,7 @@ int AH_Outbox__CBox_SendQueue(AH_OUTBOX__CBOX *cbox,
     return GWEN_ERROR_GENERIC;
   }
 
-  rv=AH_Outbox__CBox_SendMessage(cbox, dlg, msg);
+  rv=AH_OutboxCBox_SendMessage(cbox, dlg, msg);
   AH_Msg_free(msg);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);

@@ -21,6 +21,7 @@ find_dependency(gwenhywfar "@GWENHYWFAR_MINIMUM_VERSION@")
 
 set_and_check(prefix "@prefix@")
 set_and_check(exec_prefix "@exec_prefix@")
+set_and_check(includedir "@includedir@")
 set_and_check(AQBANKING_INCLUDE_DIRS "@aqbanking_headerdir@")
 if(WIN32)
     set_and_check(AQBANKING_LIBRARIES "@libdir@/libaqbanking.dll.a")

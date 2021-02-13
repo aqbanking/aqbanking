@@ -795,6 +795,7 @@
         <item name="debitNote"/>
         <item name="standingOrder"/>
         <item name="internalTransfer"/>
+        <item name="brokerage"/>
 
         <!-- double entry bookkeeping -->
         <item name="transaction"         value="2048"/>
@@ -847,6 +848,8 @@
         <item name="deleteDatedTransfer"/>
 
         <item name="internalTransfer"/>
+
+        <item name="getDepot"/>
 
         <!-- Bit 8 set: transfer jobs, bit 9 set: SEPA -->
         <item name="sepaTransfer"        value="1536"/>

@@ -30,8 +30,6 @@
 /* #define ENABLE_FULL_SEPA_LOG */
 
 
-#define CENTURY_CUTOFF_YEAR 79
-
 
 
 static void _iso8859_1ToUtf8(const char *p, int size, GWEN_BUFFER *buf)
@@ -92,45 +90,51 @@ int AHB_SWIFT535_Parse_97A(const AHB_SWIFT_TAG *tg,
     return 0;
   }
 
-  p2=strchr(p, '/');
-  if (p2) {
-    char *s;
+  if (strncasecmp(p, ":SAFE//", 7)==0) {
+    p+=7;
 
-    /* "BLZ/Konto" */
-    s=(char *)GWEN_Memory_malloc(p2-p+1);
-    memmove(s, p, p2-p+1);
-    s[p2-p]=0;
-    AHB_SWIFT__SetCharValue535(data,
-                               GWEN_DB_FLAGS_OVERWRITE_VARS,
-                               "localBankCode", s);
-    GWEN_Memory_dealloc(s);
-    p=p2+1;
-  }
-
-  while (*p && *p==32)
-    p++;
-
-  if (*p) {
-    p2=p;
-    while (*p2 && isdigit(*p2))
-      p2++;
-    if (p2==p) {
-      DBG_INFO(AQBANKING_LOGDOMAIN,
-               "LocalAccountNumber starts with nondigits (%s)", p);
-      AHB_SWIFT__SetCharValue535(data,
-                                 GWEN_DB_FLAGS_OVERWRITE_VARS,
-                                 "localAccountNumber", p);
-    }
-    else {
+    /* get blz */
+    p2=strchr(p, '/');
+    if (p2) {
       char *s;
 
+      /* "BLZ/Konto" */
       s=(char *)GWEN_Memory_malloc(p2-p+1);
       memmove(s, p, p2-p+1);
       s[p2-p]=0;
       AHB_SWIFT__SetCharValue535(data,
                                  GWEN_DB_FLAGS_OVERWRITE_VARS,
-                                 "localAccountNumber", s);
+                                 "localBankCode", s);
       GWEN_Memory_dealloc(s);
+      p=p2+1;
+    }
+
+    while (*p && *p==32)
+      p++;
+
+    /* get account number */
+    if (*p) {
+      p2=p;
+      while (*p2 && isdigit(*p2))
+        p2++;
+      if (p2==p) {
+        DBG_INFO(AQBANKING_LOGDOMAIN,
+                 "LocalAccountNumber starts with nondigits (%s)", p);
+        AHB_SWIFT__SetCharValue535(data,
+                                   GWEN_DB_FLAGS_OVERWRITE_VARS,
+                                   "localAccountNumber", p);
+      }
+      else {
+        char *s;
+
+        s=(char *)GWEN_Memory_malloc(p2-p+1);
+        memmove(s, p, p2-p+1);
+        s[p2-p]=0;
+        AHB_SWIFT__SetCharValue535(data,
+                                   GWEN_DB_FLAGS_OVERWRITE_VARS,
+                                   "localAccountNumber", s);
+        GWEN_Memory_dealloc(s);
+      }
     }
   }
   return 0;
@@ -218,7 +222,7 @@ int AHB_SWIFT535_Parse_90B(const AHB_SWIFT_TAG *tg,
                            GWEN_DB_NODE *data,
                            GWEN_DB_NODE *cfg)
 {
-  char *p, *s;
+  char *p;
 
   p=(char *)AHB_SWIFT_Tag_GetData(tg);
   assert(p);
@@ -232,25 +236,34 @@ int AHB_SWIFT535_Parse_90B(const AHB_SWIFT_TAG *tg,
 
   // get price
   if (strncasecmp(p, ":MRKT//ACTU/", 12)==0) {
+    const char *sCurrency=NULL;
+    int i;
+
     p+=12;
-    s=(char *)GWEN_Memory_malloc(1024);
-    if (sscanf(p, " %3s ", s)!=1) {
-      DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 90B: Cannot read currency");
-      GWEN_Memory_dealloc(s);
-      return 0;
+    sCurrency=p;
+    for (i=0; i<3; i++) {
+      if (*p==0) {
+        DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 90B: Tag too short");
+        return GWEN_ERROR_BAD_DATA;
+      }
+      p++;
     }
-    p+=strlen(s);
-    AHB_SWIFT__SetCharValue535(data, flags, "unitPriceValue/currency", s);
 
-    if (sscanf(p, " %s ", s)!=1) {
-      DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 90B: Cannot read price");
-      GWEN_Memory_dealloc(s);
-      return 0;
+    if (*p) {
+      GWEN_BUFFER *dbuf;
+
+      dbuf=GWEN_Buffer_new(0, 32, 0, 1);
+      GWEN_Buffer_AppendString(dbuf, p);
+      if (sCurrency) {
+        GWEN_Buffer_AppendByte(dbuf, ':');
+        GWEN_Buffer_AppendBytes(dbuf, sCurrency, 3); /* auto terminated with ZERO by GWEN_BUFFER */
+      }
+      AHB_SWIFT__SetCharValue535(data, flags, "unitPriceValue", GWEN_Buffer_GetStart(dbuf));
+      GWEN_Buffer_free(dbuf);
     }
-    /*p+=strlen(s); */
-    AHB_SWIFT__SetCharValue535(data, flags, "unitPriceValue/value", s);
-
-    GWEN_Memory_dealloc(s);
+  }
+  else {
+    DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 90B: Unexpected value %s", p);
   }
 
   return 0;

@@ -7,24 +7,42 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
-/* included by outbox.c */
+
+#include "aqhbci/applayer/cbox_dialog.h"
+
+#include "aqhbci/applayer/cbox_psd2.h"
+#include "aqhbci/applayer/cbox_hbci.h"
+#include "aqhbci/applayer/cbox_queue.h"
+#include "aqhbci/admjobs/jobtan_l.h"
+
+#include "aqbanking/i18n_l.h"
+
+#include <gwenhywfar/gui.h>
 
 
 
-int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox,
-                               AH_DIALOG *dlg,
-                               uint32_t jqFlags)
+int AH_OutboxCBox_OpenDialog(AH_OUTBOX_CBOX *cbox,
+                             AH_DIALOG *dlg,
+                             uint32_t jqFlags)
 {
+  AB_PROVIDER *provider;
+  AB_USER *user;
   int rv;
 
   assert(cbox);
   assert(dlg);
 
-  if (AH_User_GetCryptMode(cbox->user)==AH_CryptMode_Pintan) {
+  provider=AH_OutboxCBox_GetProvider(cbox);
+  user=AH_OutboxCBox_GetUser(cbox);
+
+  if (AH_User_GetCryptMode(user)==AH_CryptMode_Pintan) {
     int selectedTanVersion;
 
-    selectedTanVersion=AH_User_GetSelectedTanMethod(cbox->user)/1000;
+    selectedTanVersion=AH_User_GetSelectedTanMethod(user)/1000;
 
     DBG_INFO(AQHBCI_LOGDOMAIN, "CryptMode is PINTAN");
     if (selectedTanVersion>=6) {
@@ -33,12 +51,12 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox,
       DBG_INFO(AQHBCI_LOGDOMAIN, "User-selected TAN job version is 6 or newer (%d)", selectedTanVersion);
 
       /* check for PSD2: HKTAN version 6 available? if so -> use that */
-      jTan=AH_Job_Tan_new(cbox->provider, cbox->user, 4, 6);
+      jTan=AH_Job_Tan_new(provider, user, 4, 6);
       if (jTan) {
         AH_Job_free(jTan);
         DBG_INFO(AQHBCI_LOGDOMAIN, "TAN job version is available");
         DBG_NOTICE(AQHBCI_LOGDOMAIN, "Using PSD2 code to init dialog");
-        rv=AH_Outbox__CBox_OpenDialogPsd2_Proc2(cbox, dlg);
+        rv=AH_OutboxCBox_OpenDialogPsd2_Proc2(cbox, dlg);
         if (rv!=0) {
           DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
           return rv;
@@ -56,7 +74,7 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox,
 
   /* fall back */
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Using standard HBCI code to init dialog");
-  rv=AH_Outbox__CBox_OpenDialog_Hbci(cbox, dlg, jqFlags);
+  rv=AH_OutboxCBox_OpenDialog_Hbci(cbox, dlg, jqFlags);
   if (rv!=0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -67,22 +85,23 @@ int AH_Outbox__CBox_OpenDialog(AH_OUTBOX__CBOX *cbox,
 
 
 
-int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox,
-                                AH_DIALOG *dlg,
-                                uint32_t jqFlags)
+int AH_OutboxCBox_CloseDialog(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t jqFlags)
 {
+  AB_PROVIDER *provider;
+  AB_USER *user;
   AH_JOBQUEUE *jqDlgClose;
   AH_JOB *jDlgClose;
   GWEN_DB_NODE *db;
   uint32_t dlgFlags;
   int rv;
 
-  GWEN_Gui_ProgressLog(0,
-                       GWEN_LoggerLevel_Notice,
-                       I18N("Closing dialog"));
+  provider=AH_OutboxCBox_GetProvider(cbox);
+  user=AH_OutboxCBox_GetUser(cbox);
+
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("Closing dialog"));
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Sending dialog close request (flags=%08x)", jqFlags);
   dlgFlags=AH_Dialog_GetFlags(dlg);
-  jDlgClose=AH_Job_new("JobDialogEnd", cbox->provider, cbox->user, 0, 0);
+  jDlgClose=AH_Job_new("JobDialogEnd", provider, user, 0, 0);
   if (!jDlgClose) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create job JobDialogEnd");
     return GWEN_ERROR_GENERIC;
@@ -106,7 +125,7 @@ int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox,
     /* possibly sign job */
     if (jqFlags & AH_JOBQUEUE_FLAGS_SIGN) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Will sign dialog close request");
-      AH_Job_AddSigner(jDlgClose, AB_User_GetUserId(cbox->user));
+      AH_Job_AddSigner(jDlgClose, AB_User_GetUserId(user));
       AH_Job_AddFlags(jDlgClose, AH_JOB_FLAGS_SIGN | AH_JOB_FLAGS_NEEDSIGN);
     }
     else {
@@ -135,7 +154,7 @@ int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox,
     }
   }
 
-  jqDlgClose=AH_JobQueue_new(cbox->user);
+  jqDlgClose=AH_JobQueue_new(user);
 
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Adding dialog close request to queue");
   if (AH_JobQueue_AddJob(jqDlgClose, jDlgClose)!=AH_JobQueueAddResultOk) {
@@ -144,7 +163,7 @@ int AH_Outbox__CBox_CloseDialog(AH_OUTBOX__CBOX *cbox,
     return GWEN_ERROR_GENERIC;
   }
 
-  rv=AH_Outbox__CBox_SendAndRecvQueue(cbox, dlg, jqDlgClose);
+  rv=AH_OutboxCBox_SendAndRecvQueue(cbox, dlg, jqDlgClose);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not exchange message");
     AH_JobQueue_free(jqDlgClose);

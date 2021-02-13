@@ -38,12 +38,24 @@ GWEN_XMLNODE *AO_Provider_MkAcctInfoRqNode(AB_USER *u)
   xmlTrnRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "ACCTINFOTRNRQ");
   GWEN_XMLNode_AddChild(xmlMsg, xmlTrnRq);
 
-  AO_Provider_Util_SetCurrentTimeValue(xmlTrnRq, AO_User_GetFlags(u), "TRNUID");
+  if (1) {
+    char *uuid;
+
+    uuid=AO_Provider_Util_GenerateUuid();
+    if (uuid) {
+      GWEN_XMLNode_SetCharValue(xmlTrnRq, "TRNUID", uuid);
+      free(uuid);
+    }
+    else {
+      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "No uuid generated, falling back to current time");
+      AO_Provider_Util_SetCurrentTimeValue(xmlTrnRq, AO_User_GetFlags(u), "TRNUID");
+    }
+  }
 
   xmlRq=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "ACCTINFORQ");
   GWEN_XMLNode_AddChild(xmlTrnRq, xmlRq);
 
-  GWEN_XMLNode_SetCharValue(xmlRq, "DTACCTUP", "19691231");
+  GWEN_XMLNode_SetCharValue(xmlRq, "DTACCTUP", "19900101");
 
   return xmlMsg;
 }

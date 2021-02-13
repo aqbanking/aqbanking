@@ -30,6 +30,9 @@ void AO_Provider_Util_SetCurrentTimeValue(GWEN_XMLNODE *xmlNode, uint32_t userFl
 void AO_Provider_Util_ListAccounts(AB_IMEXPORTER_CONTEXT *ctx);
 
 
+char *AO_Provider_Util_GenerateUuid(void);
+
+
 #endif
 
 

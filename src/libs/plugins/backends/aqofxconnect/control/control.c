@@ -74,8 +74,6 @@ int AO_Control(AB_PROVIDER *pro, int argc, char **argv)
 
 
 
-
-
 void _showUsage()
 {
   GWEN_BUFFER *ubuf;

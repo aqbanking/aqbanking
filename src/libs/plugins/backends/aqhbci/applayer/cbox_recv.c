@@ -7,12 +7,21 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
-/* included by outbox.c */
+#include "aqhbci/applayer/cbox_recv.h"
+#include "aqhbci/joblayer/jobqueue_dispatch.h"
+
+#include "aqbanking/i18n_l.h"
+
+#include <gwenhywfar/gui.h>
 
 
 
-AH_MSG *AH_Outbox__CBox_RecvMessage(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg, GWEN_DB_NODE *dbRsp)
+
+AH_MSG *AH_OutboxCBox_RecvMessage(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, GWEN_DB_NODE *dbRsp)
 {
   AH_MSG *msg=NULL;
   int rv;
@@ -61,9 +70,9 @@ AH_MSG *AH_Outbox__CBox_RecvMessage(AH_OUTBOX__CBOX *cbox, AH_DIALOG *dlg, GWEN_
 
 
 
-int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox,
-                              AH_DIALOG *dlg,
-                              AH_JOBQUEUE *jq)
+int AH_OutboxCBox_RecvQueue(AH_OUTBOX_CBOX *cbox,
+                            AH_DIALOG *dlg,
+                            AH_JOBQUEUE *jq)
 {
   AH_MSG *msg;
   GWEN_DB_NODE *dbRsp;
@@ -72,7 +81,7 @@ int AH_Outbox__CBox_RecvQueue(AH_OUTBOX__CBOX *cbox,
   assert(cbox);
 
   dbRsp=GWEN_DB_Group_new("response");
-  msg=AH_Outbox__CBox_RecvMessage(cbox, dlg, dbRsp);
+  msg=AH_OutboxCBox_RecvMessage(cbox, dlg, dbRsp);
   if (msg==NULL) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here");
     GWEN_DB_Group_free(dbRsp);

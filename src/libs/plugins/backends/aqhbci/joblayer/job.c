@@ -1135,6 +1135,25 @@ void AH_Job_Dump(const AH_JOB *j, FILE *f, unsigned int insert)
     fprintf(f, "OUTBOX ");
   fprintf(f, ")\n");
 
+  if (j->segResults) {
+    AH_RESULT *r;
+
+    for (k=0; k<insert; k++)
+      fprintf(f, " ");
+    fprintf(f, "Segment results:\n");
+    r=AH_Result_List_First(j->segResults);
+    while (r) {
+      int code;
+      const char *text;
+
+      code=AH_Result_GetCode(r);
+      text=AH_Result_GetText(r);
+      for (k=0; k<insert+2; k++)
+        fprintf(f, " ");
+      fprintf(f, "%04d: %s\n", code, text?text:"<no text>");
+      r=AH_Result_List_Next(r);
+    }
+  }
 
   if (j->jobResponses) {
     for (k=0; k<insert; k++)
