@@ -194,7 +194,7 @@ int _addCommandsToOutbox(AB_PROVIDER *pro, const AB_USERQUEUE_LIST *uql, AB_IMEX
 
     u=AB_UserQueue_GetUser(uq);
     assert(u);
-    DBG_ERROR(0, "Handling user \"%s\"", AB_User_GetUserId(u));
+    DBG_NOTICE(0, "Handling user \"%s\"", AB_User_GetUserId(u));
     aql=AB_UserQueue_GetAccountQueueList(uq);
     if (aql) {
       AB_ACCOUNTQUEUE *aq;
