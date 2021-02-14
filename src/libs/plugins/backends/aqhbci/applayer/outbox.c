@@ -524,12 +524,14 @@ unsigned int _countTodoJobs(AH_OUTBOX *ob)
   cnt=0;
   cbox=AH_OutboxCBox_List_First(ob->userBoxes);
   while (cbox) {
+    AH_JOBQUEUE_LIST *todoQueues;
     AH_JOB_LIST *todoJobs;
     AH_JOBQUEUE *jq;
 
+    todoQueues=AH_OutboxCBox_GetTodoQueues(cbox);
     todoJobs=AH_OutboxCBox_GetTodoJobs(cbox);
     cnt+=AH_Job_List_GetCount(todoJobs);
-    jq=AH_JobQueue_List_First(todoJobs);
+    jq=AH_JobQueue_List_First(todoQueues);
     while (jq) {
       if (!(AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_OUTBOX)) {
         const AH_JOB_LIST *jl;
@@ -539,12 +541,12 @@ unsigned int _countTodoJobs(AH_OUTBOX *ob)
           AH_JOB *j;
 
           j=AH_Job_List_First(jl);
-          while (j) {
-            if (!(AH_Job_GetFlags(j) & AH_JOB_FLAGS_OUTBOX))
-              cnt++;
+	  while (j) {
+	    if (!(AH_Job_GetFlags(j) & AH_JOB_FLAGS_OUTBOX))
+	      cnt++;
 
-            j=AH_Job_List_Next(j);
-          } /* while */
+	    j=AH_Job_List_Next(j);
+	  } /* while */
         }
       }
       jq=AH_JobQueue_List_Next(jq);
