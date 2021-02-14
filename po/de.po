@@ -6,9 +6,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aqbanking\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
-"POT-Creation-Date: 2020-12-19 01:15+0100\n"
-"PO-Revision-Date: 2020-12-19 01:38+0100\n"
-"Last-Translator: Martin Preuss <martin@aqbanking.de>\n"
+"POT-Creation-Date: 2021-02-14 18:10+0100\n"
+"PO-Revision-Date: 2021-02-14 18:21+0100\n"
+"Last-Translator: Christian Stimming <christian@cstimming.de>\n"
 "Language-Team: Deutsch <>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -16,8 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bits\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
 "X-Generator: Gtranslator 2.91.7\n"
-"X-Poedit-Basepath: /home/martin/projekte/c/aqbanking/aqbanking-git/"
-"aqbanking\n"
+"X-Poedit-Basepath: /home/martin/projekte/c/aqbanking/aqbanking-git/aqbanking\n"
 
 #: src/libs/aqbanking/banking_online.c:487
 #, c-format
@@ -34,7 +33,7 @@ msgid "Connection ok, certificate probably received"
 msgstr "Verbindung ok, Zertifikat vermutlich empfangen"
 
 #: src/libs/aqbanking/banking_online.c:527
-#: src/libs/plugins/backends/aqhbci/applayer/outbox.c:1539
+#: src/libs/plugins/backends/aqhbci/applayer/outbox.c:131
 msgid "Executing Jobs"
 msgstr "Aufträge werden ausgeführt"
 
@@ -402,7 +401,7 @@ msgstr "Wählen Sie Banking-Modul (Backend)"
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_edituserpintan.c:193
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_editaccount.c:217
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_pintan_tanmode.c:390
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:585
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:616
 #: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:656
 msgid "-- select --"
 msgstr "-- auswählen --"
@@ -602,14 +601,14 @@ msgid "Swift document successfully imported"
 msgstr "SWIFT-Dokument erfolgreich importiert"
 
 #: src/libs/plugins/parsers/swift/swift940.c:852
-#: src/libs/plugins/parsers/swift/swift535.c:348
+#: src/libs/plugins/parsers/swift/swift535.c:361
 msgid "Importing SWIFT tags..."
 msgstr "Importiere SWIFT-Elemente..."
 
 #: src/libs/plugins/parsers/swift/swift940.c:1056
-#: src/libs/plugins/parsers/swift/swift535.c:470
+#: src/libs/plugins/parsers/swift/swift535.c:483
 #: src/libs/plugins/imexporters/csv/csv.c:489
-#: src/libs/plugins/imexporters/swift/swift.c:381
+#: src/libs/plugins/imexporters/swift/swift.c:389
 msgid "Aborted by user"
 msgstr "Die Aktion wurde durch den Benutzer abgebrochen."
 
@@ -621,7 +620,7 @@ msgid "Data imported, transforming to UTF-8"
 msgstr "Daten werden importiert. Konvertierung auf UTF-8"
 
 #: src/libs/plugins/imexporters/csv/csv.c:209
-#: src/libs/plugins/imexporters/swift/swift.c:154
+#: src/libs/plugins/imexporters/swift/swift.c:162
 msgid "Importing parsed data..."
 msgstr "Buchungen importieren..."
 
@@ -1898,21 +1897,21 @@ msgstr ""
 msgid "Status for transaction statement request"
 msgstr "Status des Umsatzabrufes"
 
-#: src/libs/plugins/imexporters/swift/swift.c:93
+#: src/libs/plugins/imexporters/swift/swift.c:94
 #: src/libs/plugins/imexporters/xmldb/xmldb.c:86
 msgid "Reading file..."
 msgstr "Datei wird eingelesen..."
 
-#: src/libs/plugins/imexporters/swift/swift.c:113
+#: src/libs/plugins/imexporters/swift/swift.c:114
 #: src/libs/plugins/imexporters/xmldb/xmldb.c:97
 msgid "Error importing data"
 msgstr "Fehler beim Importieren der Daten"
 
-#: src/libs/plugins/imexporters/swift/swift.c:200
+#: src/libs/plugins/imexporters/swift/swift.c:208
 msgid "Error in config file"
 msgstr "Fehler in der Konfigurationsdatei"
 
-#: src/libs/plugins/imexporters/swift/swift.c:310
+#: src/libs/plugins/imexporters/swift/swift.c:318
 msgid "Adding transaction"
 msgstr "Buchung wird hinzugefügt"
 
@@ -2045,11 +2044,11 @@ msgstr "Signatur konnte nicht überprüft werden"
 msgid "Connecting to bank..."
 msgstr "Verbindungsaufbau zur Bank..."
 
-#: src/libs/plugins/backends/aqhbci/joblayer/job_commit.c:287
+#: src/libs/plugins/backends/aqhbci/joblayer/job_commit.c:294
 msgid "Bank message received"
 msgstr "Banknachricht erhalten"
 
-#: src/libs/plugins/backends/aqhbci/joblayer/job_commit_bpd.c:258
+#: src/libs/plugins/backends/aqhbci/joblayer/job_commit_bpd.c:381
 #, c-format
 msgid "Server address found: %s"
 msgstr ""
@@ -2173,22 +2172,22 @@ msgstr "Benutzer akzeptiert unsignierte Antworten dauerhaft"
 msgid "Aborted"
 msgstr "Abgebrochen"
 
-#: src/libs/plugins/backends/aqhbci/joblayer/jobqueue.c:548
-#, c-format
-msgid "TAN \"%s\" has been used, please strike it out."
-msgstr "Die TAN \"%s\" wurde benutzt, Sie können sie streichen."
-
-#: src/libs/plugins/backends/aqhbci/joblayer/jobqueue.c:708
-msgid "PIN seems to be invalid"
-msgstr "Die PIN scheint ungültig zu sein"
-
-#: src/libs/plugins/backends/aqhbci/joblayer/jobqueue.c:1070
+#: src/libs/plugins/backends/aqhbci/joblayer/jobqueue_dispatch.c:83
 msgid "Dialog aborted by bank, assuming bad PIN"
 msgstr "Dialog wurde von der Bank abgebrochen. PIN scheint ungültig zu sein"
 
-#: src/libs/plugins/backends/aqhbci/joblayer/jobqueue.c:1090
+#: src/libs/plugins/backends/aqhbci/joblayer/jobqueue_dispatch.c:94
 msgid "Dialog not aborted, assuming PIN is ok"
 msgstr "Dialog wurde nicht abgebrochen, PIN scheint gültig zu sein"
+
+#: src/libs/plugins/backends/aqhbci/joblayer/jobqueue_dispatch.c:149
+msgid "PIN invalid according to server"
+msgstr "PIN ungültig laut Antwort des Servers"
+
+#: src/libs/plugins/backends/aqhbci/joblayer/jobqueue_dispatch.c:324
+#, c-format
+msgid "TAN \"%s\" has been used, please strike it out."
+msgstr "Die TAN \"%s\" wurde benutzt, Sie können sie streichen."
 
 #: src/libs/plugins/backends/aqhbci/ajobs/accountjob.c:88
 msgid ""
@@ -2226,11 +2225,11 @@ msgstr ""
 #: src/libs/plugins/backends/aqhbci/admjobs/jobchangekeys.c:803
 #: src/libs/plugins/backends/aqhbci/admjobs/jobchangekeys.c:1162
 msgid "OK"
-msgstr ""
+msgstr "Ok"
 
 #: src/libs/plugins/backends/aqhbci/admjobs/jobchangekeys.c:451
 msgid "Change keys: insert card"
-msgstr ""
+msgstr "Schlüsselwechsel: Karte einschieben"
 
 #: src/libs/plugins/backends/aqhbci/admjobs/jobchangekeys.c:481
 #: src/libs/plugins/backends/aqhbci/admjobs/jobchangekeys.c:492
@@ -2240,12 +2239,11 @@ msgstr ""
 #: src/libs/plugins/backends/aqhbci/admjobs/jobchangekeys.c:802
 #: src/libs/plugins/backends/aqhbci/admjobs/jobchangekeys.c:1179
 msgid "Change keys: confirm"
-msgstr ""
+msgstr "Schlüsselwechsel: Bestätigen"
 
 #: src/libs/plugins/backends/aqhbci/admjobs/jobchangekeys.c:482
-#, fuzzy
 msgid "Use"
-msgstr "Benutzerkennung"
+msgstr "Benutzen"
 
 #: src/libs/plugins/backends/aqhbci/admjobs/jobchangekeys.c:482
 #: src/libs/plugins/backends/aqhbci/admjobs/jobchangekeys.c:493
@@ -2254,7 +2252,7 @@ msgstr "Entfernen"
 
 #: src/libs/plugins/backends/aqhbci/admjobs/jobchangekeys.c:955
 msgid "Serverkeys imported."
-msgstr ""
+msgstr "Server-Schlüssel importiert."
 
 #: src/libs/plugins/backends/aqhbci/admjobs/jobchangekeys.c:1159
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_pintan.c:763
@@ -2270,67 +2268,144 @@ msgstr "Fertig"
 
 #: src/libs/plugins/backends/aqhbci/admjobs/jobchangekeys.c:1161
 msgid "Change keys: Error"
-msgstr ""
+msgstr "Schlüsselwechsel: Fehler"
 
 #: src/libs/plugins/backends/aqhbci/admjobs/jobchangekeys.c:1172
-#, fuzzy
 msgid "finish"
 msgstr "Fertig"
 
-#: src/libs/plugins/backends/aqhbci/applayer/outbox.c:654
-msgid "Retrying to open dialog"
-msgstr "Versuche erneut den Dialog zu eröffnen"
+#: src/libs/plugins/backends/aqhbci/applayer/outbox.c:132
+msgid "Now the jobs are sent via their backends to the credit institutes."
+msgstr ""
+"Die Aufträge werden durch die zuständigen Module zu den Kreditinstituten "
+"gesendet."
 
-#: src/libs/plugins/backends/aqhbci/applayer/outbox.c:1101
+#: src/libs/plugins/backends/aqhbci/applayer/outbox.c:242
+msgid "AqHBCI started"
+msgstr "AqHBCI gestartet"
+
+#: src/libs/plugins/backends/aqhbci/applayer/outbox.c:256
+msgid "AqHBCI finished."
+msgstr "AqHBCI abgeschlossen."
+
+#: src/libs/plugins/backends/aqhbci/applayer/outbox.c:286
 #, c-format
 msgid "Could not lock user %lu (%d)"
 msgstr "Für Benutzer %lu konnte kein exklusiver Zugriff erreicht werden (%d)\t"
 
-#: src/libs/plugins/backends/aqhbci/applayer/outbox.c:1147
+#: src/libs/plugins/backends/aqhbci/applayer/outbox.c:331
 #, c-format
 msgid "Could not unlock user %lu (%d)"
 msgstr ""
 "Für den Benutzer %lu konnte der exklusive Zugriff nicht freigegeben werden "
 "(%d)"
 
-#: src/libs/plugins/backends/aqhbci/applayer/outbox.c:1248
-#: src/libs/plugins/backends/aqhbci/applayer/outbox.c:1376
+#: src/libs/plugins/backends/aqhbci/applayer/outbox.c:456
 #, c-format
 msgid "Error processing job %s"
 msgstr "Fehler bei der Bearbeitung des Jobs %s"
 
-#: src/libs/plugins/backends/aqhbci/applayer/outbox.c:1504
-msgid "AqHBCI started"
-msgstr "AqHBCI gestartet"
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_recv.c:31
+msgid "Waiting for response"
+msgstr "Auf Antwort warten"
 
-#: src/libs/plugins/backends/aqhbci/applayer/outbox.c:1518
-msgid "AqHBCI finished."
-msgstr "AqHBCI abgeschlossen."
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_recv.c:38
+#, c-format
+msgid "Error receiving response (%d)"
+msgstr "Fehler beim Empfangen der Antwort (%d)"
 
-#: src/libs/plugins/backends/aqhbci/applayer/outbox.c:1540
-msgid "Now the jobs are sent via their backends to the credit institutes."
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_recv.c:43
+msgid "Response received"
+msgstr "Antwort erhalten"
+
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_recv.c:49
+msgid "Bad response (unable to decode)"
+msgstr "Fehlerhafte Antwort (konnte nicht dekodiert werden)"
+
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_recv.c:62
+msgid "Bad response (bad message reference)"
+msgstr "Fehlerhafte Antwort (falsche Nachrichtenreferenz)"
+
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_recv.c:95
+msgid "Dialog aborted by server"
+msgstr "Dialog-Abbruch durch den Server."
+
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_recv.c:99
+msgid "Bad response (unable to dispatch)"
+msgstr "Fehlerhafte Antwort (konnte nicht den Aufträgen zugeordnet werden)"
+
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_send.c:29
+msgid "Sending message"
+msgstr "Nachricht senden"
+
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_send.c:33
+msgid "Unable to send (network error)"
+msgstr "Fehler beim Senden (Netzwerk-Fehler)"
+
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_send.c:37
+msgid "Message sent"
+msgstr "Nachricht gesendet"
+
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_send.c:52
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_itan1.c:219
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_itan1.c:316
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_itan2.c:292
+msgid "Encoding queue"
+msgstr "Aufträge werden kodiert"
+
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_send.c:56
+msgid "Unable to encode"
+msgstr "Aufträge konnten nicht kodiert werden"
+
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_send.c:67
+msgid "Queue sent"
+msgstr "Aufträge gesendet"
+
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_psd2.c:56
+msgid ""
+"We have no list of allowed two-step TAN methods, maybe you should request "
+"TAN methods."
 msgstr ""
-"Die Aufträge werden durch die zuständigen Module zu den Kreditinstituten "
-"gesendet."
 
-#: src/libs/plugins/backends/aqhbci/applayer/outbox.c:1551
-msgid "Locking users"
-msgstr "Exklusiver Zugriff auf Benutzer"
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_hbci.c:77
+msgid "Opening dialog"
+msgstr "Öffne Dialog mit dem Server"
 
-#: src/libs/plugins/backends/aqhbci/applayer/outbox.c:1558
-#: src/libs/plugins/backends/aqhbci/dialogs/dlg_pintan.c:851
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:1024
-#: src/libs/plugins/backends/aqpaypal/dlg_newuser.c:766
-msgid "Unable to lock users"
-msgstr "Für die Benutzer konnte kein exklusiver Zugriff erreicht werden"
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_hbci.c:98
+#: src/libs/plugins/backends/aqhbci/banking/provider_online.c:229
+msgid "Adjusting to iTAN modes of the server"
+msgstr "Anpassung an die iTAN-Methoden des Servers"
 
-#: src/libs/plugins/backends/aqhbci/applayer/outbox.c:1568
-msgid "Executing HBCI jobs"
-msgstr "HBCI-Aufträge werden ausgeführt"
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_dialog.c:101
+msgid "Closing dialog"
+msgstr "Beende Dialog mit dem Server"
 
-#: src/libs/plugins/backends/aqhbci/applayer/outbox.c:1581
-msgid "Unable to unlock users"
-msgstr "Für die Benutzer konnte der exklusive Zugriff nicht freigegeben werden"
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_itan.c:122
+msgid "There are no tan method descriptions (yet), trying One-Step TAN."
+msgstr ""
+
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_itan.c:135
+msgid "No valid iTAN method found"
+msgstr ""
+
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_itan.c:151
+#, c-format
+msgid "Selecting iTAN mode \"%s\" (%d, version %d, process %d)"
+msgstr ""
+
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_itan.c:152
+msgid "(unnamed)"
+msgstr ""
+
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_itan.c:387
+#, c-format
+msgid ""
+"TAN method (%d) selected by user is no longer valid,please choose another one"
+msgstr ""
+
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_queue.c:290
+msgid "Retrying to open dialog"
+msgstr "Versuche erneut den Dialog zu eröffnen"
 
 #: src/libs/plugins/backends/aqhbci/banking/provider_dialogs.c:60
 msgid "Chipcard Error"
@@ -2404,7 +2479,6 @@ msgstr "Die Schlüssel des Benutzers fehlen, bitte erst generieren."
 
 #: src/libs/plugins/backends/aqhbci/banking/provider_iniletter.c:276
 #: src/libs/plugins/backends/aqhbci/banking/provider_iniletter.c:889
-#, fuzzy
 msgid ""
 "\n"
 "\n"
@@ -2459,9 +2533,8 @@ msgstr "Bankleitzahl    : "
 
 #: src/libs/plugins/backends/aqhbci/banking/provider_iniletter.c:295
 #: src/libs/plugins/backends/aqhbci/banking/provider_iniletter.c:908
-#, fuzzy
 msgid "User           : "
-msgstr "Teilnehmer:"
+msgstr "Benutzer        : "
 
 #: src/libs/plugins/backends/aqhbci/banking/provider_iniletter.c:301
 #: src/libs/plugins/backends/aqhbci/banking/provider_iniletter.c:914
@@ -2569,7 +2642,6 @@ msgstr "Bankleitzahl (BLZ)"
 
 #: src/libs/plugins/backends/aqhbci/banking/provider_iniletter.c:594
 #: src/libs/plugins/backends/aqhbci/banking/provider_iniletter.c:1248
-#, fuzzy
 msgid "User"
 msgstr "Benutzer"
 
@@ -2595,7 +2667,6 @@ msgstr "Ort, Datum"
 
 #: src/libs/plugins/backends/aqhbci/banking/provider_iniletter.c:740
 #: src/libs/plugins/backends/aqhbci/banking/provider_iniletter.c:1419
-#, fuzzy
 msgid "Signature"
 msgstr "Unterschrift"
 
@@ -2637,10 +2708,6 @@ msgstr "Fehler beim Erstellen des Signierschlüssels (%d)"
 #, c-format
 msgid "Error creating auth key (%d)"
 msgstr "Fehler beim Erstellen des Authentifizierungs-Schlüssels (%d)"
-
-#: src/libs/plugins/backends/aqhbci/banking/provider_online.c:229
-msgid "Adjusting to iTAN modes of the server"
-msgstr "Anpassung an die iTAN-Methoden des Servers"
 
 #: src/libs/plugins/backends/aqhbci/banking/provider_online.c:255
 msgid "Retrying to get system id."
@@ -2749,17 +2816,16 @@ msgid "Allocate outbox failed."
 msgstr ""
 
 #: src/libs/plugins/backends/aqhbci/banking/provider_online.c:860
-#, fuzzy
 msgid "Fetching serverkeys."
-msgstr "Server-Schlüssel abrufen"
+msgstr "Server-Schlüssel abrufen."
 
 #: src/libs/plugins/backends/aqhbci/banking/provider_online.c:906
-#: src/libs/plugins/backends/aqofxconnect/provider.c:343
+#: src/libs/plugins/backends/aqofxconnect/provider.c:348
 msgid "Getting Certificate"
 msgstr "Abruf des Zertifikats"
 
 #: src/libs/plugins/backends/aqhbci/banking/provider_online.c:907
-#: src/libs/plugins/backends/aqofxconnect/provider.c:344
+#: src/libs/plugins/backends/aqofxconnect/provider.c:349
 msgid "We are now asking the server for its SSL certificate"
 msgstr "Jetzt wird das SSL-Zertifikat vom Server abgerufen."
 
@@ -2772,11 +2838,9 @@ msgid "Got certificate"
 msgstr "Zertifikat erhalten"
 
 #: src/libs/plugins/backends/aqhbci/banking/provider_online.c:965
-#, fuzzy, c-format
+#, c-format
 msgid "Could not lock user %s (%d)"
-msgstr ""
-"Für den Benutzer %s konnte der exklusive Zugriff nicht freigegeben werden "
-"(%d)"
+msgstr "Für den Benutzer %s konnte kein exklusiver Zugriff erreicht werden (%d)"
 
 #: src/libs/plugins/backends/aqhbci/banking/provider_online.c:1003
 msgid "No iTAN modes reported."
@@ -2802,7 +2866,7 @@ msgstr ""
 "<html><p>Bitte geben Sie eine neue Banking-PIN ein.</p><p>Sie dürfen nur "
 "Zahlen eingeben, keine Buchstaben.</p></html>"
 
-#: src/libs/plugins/backends/aqhbci/banking/provider_sendcmd.c:141
+#: src/libs/plugins/backends/aqhbci/banking/provider_sendcmd.c:143
 msgid "ERROR: Multiple signatures not yet supported"
 msgstr "Fehler: Mehrfachsignaturen sind bisher noch nicht unterstützt"
 
@@ -2889,9 +2953,8 @@ msgstr ""
 
 #: src/libs/plugins/backends/aqhbci/banking/user.c:2411
 #: src/libs/plugins/backends/aqhbci/banking/user.c:2477
-#, fuzzy
 msgid "Import"
-msgstr "Schlüsseldatei importieren"
+msgstr "Importieren"
 
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_edituserddv.c:355
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_edituserpintan.c:607
@@ -3071,6 +3134,12 @@ msgstr "PIN/TAN einrichten"
 msgid "The system id and a list of accounts will be retrieved."
 msgstr "Die Systemkennung und Kontenliste werden angefordert."
 
+#: src/libs/plugins/backends/aqhbci/dialogs/dlg_pintan.c:851
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:1024
+#: src/libs/plugins/backends/aqpaypal/dlg_newuser.c:766
+msgid "Unable to lock users"
+msgstr "Für die Benutzer konnte kein exklusiver Zugriff erreicht werden"
+
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_pintan.c:863
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_ddvcard.c:884
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_zkacard.c:939
@@ -3212,9 +3281,8 @@ msgstr ""
 "fehlerhaft?"
 
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_zkacard.c:495
-#, fuzzy
 msgid "HBCI ZKA-Card Setup Wizard"
-msgstr "Einrichtung von HBCI-DDV-Karten"
+msgstr "Einrichtung von HBCI ZKA-Karten"
 
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_zkacard.c:506
 #, fuzzy
@@ -3571,9 +3639,8 @@ msgstr ""
 "Klicken Sie auf den »Ausführen«-Knopf, um den Benutzer zu erstellen."
 
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_pintan_tanmode.c:129
-#, fuzzy
 msgid "Select TAN Mode"
-msgstr "Ausgewählte TAN-Methode"
+msgstr "TAN-Methode auswählen"
 
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_pintan_tanmode.c:136
 msgid ""
@@ -3825,107 +3892,126 @@ msgstr ""
 
 #. got this list from https://microsoftmoneyoffline.wordpress.com/appid-appver/
 #: src/libs/plugins/backends/aqofxconnect/provider.c:61
+msgid "Intuit Quicken Windows 2020"
+msgstr "Intuit Quicken Windows 2020"
+
+#: src/libs/plugins/backends/aqofxconnect/provider.c:62
+msgid "Intuit Quicken Windows 2017"
+msgstr "Intuit Quicken Windows 2017"
+
+#: src/libs/plugins/backends/aqofxconnect/provider.c:63
+msgid "Intuit Quicken Windows 2016"
+msgstr "Intuit Quicken Windows 2016"
+
+#: src/libs/plugins/backends/aqofxconnect/provider.c:64
+msgid "Intuit Quicken Windows 2015"
+msgstr "Intuit Quicken Windows 2015"
+
+#: src/libs/plugins/backends/aqofxconnect/provider.c:65
+msgid "Intuit Quicken Windows 2014"
+msgstr "Intuit Quicken Windows 2014"
+
+#: src/libs/plugins/backends/aqofxconnect/provider.c:66
 msgid "Intuit Quicken Windows 2013"
 msgstr "Intuit Quicken Windows 2013"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:62
+#: src/libs/plugins/backends/aqofxconnect/provider.c:67
 msgid "Intuit Quicken Windows 2012"
 msgstr "Intuit Quicken Windows 2012"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:63
+#: src/libs/plugins/backends/aqofxconnect/provider.c:68
 msgid "Intuit Quicken Windows 2011"
 msgstr "Intuit Quicken Windows 2011"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:64
+#: src/libs/plugins/backends/aqofxconnect/provider.c:69
 msgid "Intuit Quicken Windows 2010"
 msgstr "Intuit Quicken Windows 2010"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:65
+#: src/libs/plugins/backends/aqofxconnect/provider.c:70
 msgid "Intuit Quicken Windows 2009"
 msgstr "Intuit Quicken Windows 2009"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:66
+#: src/libs/plugins/backends/aqofxconnect/provider.c:71
 msgid "Intuit Quicken Windows 2008"
 msgstr "Intuit Quicken Windows 2008"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:67
+#: src/libs/plugins/backends/aqofxconnect/provider.c:72
 msgid "Intuit Quicken Windows 2007"
 msgstr "Intuit Quicken Windows 2007"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:68
+#: src/libs/plugins/backends/aqofxconnect/provider.c:73
 msgid "Intuit Quicken Windows 2006"
 msgstr "Intuit Quicken Windows 2006"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:69
+#: src/libs/plugins/backends/aqofxconnect/provider.c:74
 msgid "Intuit Quicken Windows 2005"
 msgstr "Intuit Quicken Windows 2005"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:71
+#: src/libs/plugins/backends/aqofxconnect/provider.c:76
 msgid "Intuit Quicken Mac 2008"
 msgstr "Intuit Quicken Mac 2008"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:72
+#: src/libs/plugins/backends/aqofxconnect/provider.c:77
 msgid "Intuit Quicken Mac 2007"
 msgstr "Intuit Quicken Mac 2007"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:73
+#: src/libs/plugins/backends/aqofxconnect/provider.c:78
 msgid "Intuit Quicken Mac 2006"
 msgstr "Intuit Quicken Mac 2006"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:74
+#: src/libs/plugins/backends/aqofxconnect/provider.c:79
 msgid "Intuit Quicken Mac 2005"
 msgstr "Intuit Quicken Mac 2005"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:76
+#: src/libs/plugins/backends/aqofxconnect/provider.c:81
 msgid "Intuit QuickBooks Windows 2008"
 msgstr "Intuit QuickBooks Windows 2008"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:77
+#: src/libs/plugins/backends/aqofxconnect/provider.c:82
 msgid "Intuit QuickBooks Windows 2007"
 msgstr "Intuit QuickBooks Windows 2007"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:78
+#: src/libs/plugins/backends/aqofxconnect/provider.c:83
 msgid "Intuit QuickBooks Windows 2006"
 msgstr "Intuit QuickBooks Windows 2006"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:79
+#: src/libs/plugins/backends/aqofxconnect/provider.c:84
 msgid "Intuit QuickBooks Windows 2005"
 msgstr "Intuit QuickBooks Windows 2005"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:81
+#: src/libs/plugins/backends/aqofxconnect/provider.c:86
 msgid "Microsoft Money Plus"
 msgstr "Microsoft Money Plus"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:82
+#: src/libs/plugins/backends/aqofxconnect/provider.c:87
 msgid "Microsoft Money 2007"
 msgstr "Microsoft Money 2007"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:83
+#: src/libs/plugins/backends/aqofxconnect/provider.c:88
 msgid "Microsoft Money 2006"
 msgstr "Microsoft Money 2006"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:84
+#: src/libs/plugins/backends/aqofxconnect/provider.c:89
 msgid "Microsoft Money 2005"
 msgstr "Microsoft Money 2005"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:85
+#: src/libs/plugins/backends/aqofxconnect/provider.c:90
 msgid "Microsoft Money 2004"
 msgstr "Microsoft Money 2004"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:86
+#: src/libs/plugins/backends/aqofxconnect/provider.c:91
 msgid "Microsoft Money 2003"
 msgstr "Microsoft Money 2003"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:88
-#, fuzzy
+#: src/libs/plugins/backends/aqofxconnect/provider.c:93
 msgid "ProSaldo Money 2013"
-msgstr "Microsoft Money 2003"
+msgstr "ProSaldo Money 2013"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:415
+#: src/libs/plugins/backends/aqofxconnect/provider.c:420
 msgid "Requesting account list"
 msgstr "Anforderung der Kontenliste"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:416
+#: src/libs/plugins/backends/aqofxconnect/provider.c:421
 msgid ""
 "We are now requesting a list of accounts\n"
 "which can be managed via OFX.\n"
@@ -3936,7 +4022,7 @@ msgstr ""
 "Eine Liste der über OFX verfügbaren Konten wird nun angefordert. <html> Eine "
 "Liste der über <i>OFX</i> verfügbaren Konten wird nun angefordert. </html>"
 
-#: src/libs/plugins/backends/aqofxconnect/provider.c:447
+#: src/libs/plugins/backends/aqofxconnect/provider.c:452
 msgid "Error importing accounts"
 msgstr "Fehler beim Importieren der Konten"
 
@@ -3955,15 +4041,14 @@ msgid ""
 msgstr ""
 
 #: src/libs/plugins/backends/aqofxconnect/common/io_network.c:67
-#, fuzzy, c-format
+#, c-format
 msgid "Could not create connection (%d)"
 msgstr "Konnte keine Verbindung herstellen (%d)"
 
 #. send request
 #: src/libs/plugins/backends/aqofxconnect/common/io_network.c:72
-#, fuzzy
 msgid "Sending request..."
-msgstr "Aufträge werden gesendet"
+msgstr "Aufträge werden gesendet..."
 
 #: src/libs/plugins/backends/aqofxconnect/common/io_network.c:76
 msgid "Network error while sending request"
@@ -3971,14 +4056,12 @@ msgstr ""
 
 #. wait for response
 #: src/libs/plugins/backends/aqofxconnect/common/io_network.c:83
-#, fuzzy
 msgid "Waiting for response..."
-msgstr "Warte auf Antwort"
+msgstr "Warte auf Antwort..."
 
 #: src/libs/plugins/backends/aqofxconnect/common/io_network.c:88
-#, fuzzy
 msgid "Network error while waiting for response"
-msgstr "Warte auf Antwort"
+msgstr ""
 
 #: src/libs/plugins/backends/aqofxconnect/common/io_network.c:167
 #, c-format
@@ -3998,7 +4081,7 @@ msgstr ""
 msgid "Enter Password"
 msgstr "Passwort eingeben"
 
-#: src/libs/plugins/backends/aqofxconnect/common/n_utils.c:92
+#: src/libs/plugins/backends/aqofxconnect/common/n_utils.c:94
 #, c-format
 msgid "Received account %s/%s (%s/%s)"
 msgstr "Empfangenes Konto %s/%s (%s/%s)"
@@ -4011,7 +4094,7 @@ msgstr "Empfangenes Konto %s/%s (%s/%s)"
 msgid "Parsing response..."
 msgstr "Untersuche Antwort..."
 
-#: src/libs/plugins/backends/aqofxconnect/control/control.c:85
+#: src/libs/plugins/backends/aqofxconnect/control/control.c:83
 #: src/libs/plugins/backends/aqpaypal/control/main.c:35
 #, fuzzy
 msgid ""
@@ -4019,28 +4102,28 @@ msgid ""
 "\n"
 msgstr "Kommandos:\n"
 
-#: src/libs/plugins/backends/aqofxconnect/control/control.c:87
+#: src/libs/plugins/backends/aqofxconnect/control/control.c:85
 msgid ""
 "  listusers:\n"
 "    blurb file\n"
 "\n"
 msgstr ""
 
-#: src/libs/plugins/backends/aqofxconnect/control/control.c:91
+#: src/libs/plugins/backends/aqofxconnect/control/control.c:89
 msgid ""
 "  listaccounts:\n"
 "    blurb file\n"
 "\n"
 msgstr ""
 
-#: src/libs/plugins/backends/aqofxconnect/control/control.c:95
+#: src/libs/plugins/backends/aqofxconnect/control/control.c:93
 msgid ""
 "  adduser:\n"
 "    Add a user. \n"
 "\n"
 msgstr ""
 
-#: src/libs/plugins/backends/aqofxconnect/control/control.c:99
+#: src/libs/plugins/backends/aqofxconnect/control/control.c:97
 #, fuzzy
 msgid ""
 "  getaccounts:\n"
@@ -4048,52 +4131,52 @@ msgid ""
 "\n"
 msgstr "Anzeigen der Kontenliste"
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:578
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:609
 msgid "OFX DirectConnect User Setup"
 msgstr "OFX DirectConnect Benutzereinrichtung"
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:707
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:725
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:737
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:749
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:775
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:787
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:819
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:831
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:846
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:741
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:759
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:771
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:783
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:815
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:827
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:859
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:871
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:886
 msgid "Missing Input"
 msgstr "Fehlende Eingabe"
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:707
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:741
 msgid "Please enter the name of your bank."
 msgstr "Bitte geben Sie den Namen der Bank ein."
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:725
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:759
 msgid "Please enter a valid FID code."
 msgstr "Bitte machen Sie eine Angabe zu FID."
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:737
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:771
 msgid "Please enter a valid ORG code."
 msgstr "Bitte machen Sie eine Angabe zu ORG."
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:749
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:783
 msgid "Please enter a server address."
 msgstr "Bitte geben Sie eine Server-Adresse ein."
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:775
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:815
 msgid "Please enter your name."
 msgstr "Bitte geben Sie Ihren Namen ein."
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:787
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:827
 msgid "Please enter your User ID."
 msgstr "Bitte geben Sie Ihre Benutzerkennung (User ID) ein."
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:819
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:831
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:859
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:871
 msgid "Please select a valid application to emulate."
 msgstr "Bitte wählen Sie eine Anwendung, die emuliert werden soll."
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:846
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:886
 msgid "Please enter a correct header version (default is 102)."
 msgstr "Bitte wählen Sie eine Header-Version (voreingestellt ist 102)."
 
@@ -4227,14 +4310,12 @@ msgid "Authentication failed"
 msgstr ""
 
 #: src/libs/plugins/backends/aqebics/client/provider.c:567
-#, fuzzy
 msgid "Invalid request"
-msgstr "Ungültiger Betrag"
+msgstr ""
 
 #: src/libs/plugins/backends/aqebics/client/provider.c:569
-#, fuzzy
 msgid "Internal error"
-msgstr "Allgemeiner Fehler"
+msgstr "Interner Fehler"
 
 #: src/libs/plugins/backends/aqebics/client/provider.c:571
 msgid "TX recovery sync"
@@ -4245,9 +4326,8 @@ msgid "Invalid user or invalid user state"
 msgstr ""
 
 #: src/libs/plugins/backends/aqebics/client/provider.c:575
-#, fuzzy
 msgid "User unknown"
-msgstr "unbekannt"
+msgstr "Benutzer unbekannt"
 
 #: src/libs/plugins/backends/aqebics/client/provider.c:577
 #, fuzzy
@@ -4287,9 +4367,8 @@ msgid "TX unknown transaction id"
 msgstr "Transaktionskode"
 
 #: src/libs/plugins/backends/aqebics/client/provider.c:593
-#, fuzzy
 msgid "TX abort"
-msgstr "Abbrechen"
+msgstr ""
 
 #: src/libs/plugins/backends/aqebics/client/provider.c:595
 msgid "TX message replay"
@@ -5145,8 +5224,8 @@ msgstr ""
 #: src/tools/aqbanking-cli/listbal.c:151 src/tools/aqbanking-cli/listbal.c:314
 #: src/tools/aqbanking-cli/listtrans.c:308
 #: src/tools/aqbanking-cli/listtrans.c:311
-#: src/tools/aqbanking-cli/listtrans.c:315 src/tools/aqbanking-cli/util.c:1096
-#: src/tools/aqbanking-cli/util.c:1106 src/tools/aqbanking-cli/util.c:1118
+#: src/tools/aqbanking-cli/listtrans.c:315 src/tools/aqbanking-cli/util.c:1102
+#: src/tools/aqbanking-cli/util.c:1112 src/tools/aqbanking-cli/util.c:1124
 msgid "DD.MM.YYYY"
 msgstr ""
 
@@ -6044,1405 +6123,3 @@ msgstr ""
 #: src/libs/plugins/backends/aqpaypal/aqpaypal.xml:6
 msgid "This backend provides support for Paypal."
 msgstr ""
-
-#~ msgid "User Settings"
-#~ msgstr "Benutzer-Einstellungen"
-
-#~ msgid "Client UID"
-#~ msgstr "Kunden UID"
-
-#~ msgid "Bank Settings"
-#~ msgstr "Bank-Einstellungen"
-
-#~ msgid "Broker Id"
-#~ msgstr "Broker-Kennung"
-
-#~ msgid "FID"
-#~ msgstr "FID"
-
-#~ msgid "ORG"
-#~ msgstr "ORG"
-
-#~ msgid "Retrieve Account List"
-#~ msgstr "Kontenliste abrufen"
-
-#~ msgid "Application Settings"
-#~ msgstr "Anwendungs-Einstellungen"
-
-#~ msgid "Emulated Application"
-#~ msgstr "Simulierte Anwendung"
-
-#~ msgid "Application ID"
-#~ msgstr "Anwendungs ID"
-
-#~ msgid "Application Version"
-#~ msgstr "Anwendungsversion"
-
-#~ msgid "Header Version"
-#~ msgstr "Header Version"
-
-#~ msgid "Security Type"
-#~ msgstr "Wertpapierart"
-
-#~ msgid "Send Empty Bank Id"
-#~ msgstr "Leere Bankleitzahl senden"
-
-#~ msgid "Send Empty FID"
-#~ msgstr "Leere FID senden"
-
-#~ msgid "Send Short Date"
-#~ msgstr "Kurzes Datum senden"
-
-#~ msgid "Encoding queue"
-#~ msgstr "Aufträge werden kodiert"
-
-#~ msgid "Unable to encode"
-#~ msgstr "Antwort konnte nicht kodiert werden"
-
-#~ msgid "Unable to send (network error)"
-#~ msgstr "Fehler beim Senden (Netzwerk-Fehler)"
-
-#~ msgid "Error receiving response (%d)"
-#~ msgstr "Fehler beim Empfangen der Antwort (%d)"
-
-#~ msgid "Response received"
-#~ msgstr "Antwort erhalten"
-
-#~ msgid "Bad response (unable to decode)"
-#~ msgstr "Fehlerhafte Antwort (konnte nicht dekodiert werden)"
-
-#~ msgid "Bad response (bad message reference)"
-#~ msgstr "Fehlerhafte Antwort (falsche Nachrichtenreferenz)"
-
-#~ msgid "Dialog aborted by server"
-#~ msgstr "Dialog-Abbruch durch den Server."
-
-#~ msgid "Bad response (unable to dispatch)"
-#~ msgstr "Fehlerhafte Antwort (konnte nicht den Aufträgen zugeordnet werden)"
-
-#~ msgid "Opening dialog"
-#~ msgstr "Öffne Dialog mit dem Server"
-
-#~ msgid "Closing dialog"
-#~ msgstr "Beende Dialog mit dem Server"
-
-#, fuzzy
-#~ msgid "Holgers INI Letter for HBCI"
-#~ msgstr "Ini-Brief für HBCI"
-
-#~ msgid "Albania"
-#~ msgstr "Albanien"
-
-#~ msgid "Lek"
-#~ msgstr "Lek"
-
-#~ msgid "Algeria"
-#~ msgstr "Algerien"
-
-#~ msgid "Algerian Dinar"
-#~ msgstr "Algerischer Dinar"
-
-#~ msgid "American Samoa"
-#~ msgstr "Amerikanisch Samoa"
-
-#~ msgid "US Dollar"
-#~ msgstr "US-Dollar"
-
-#~ msgid "Andorra"
-#~ msgstr "Andorra"
-
-#~ msgid "Euro"
-#~ msgstr "Euro"
-
-#~ msgid "Angola"
-#~ msgstr "Angola"
-
-#~ msgid "New Kwanza "
-#~ msgstr "Neuer Kwanza"
-
-#~ msgid "Anguilla"
-#~ msgstr "Anguilla"
-
-#~ msgid "East Caribbean Dollar"
-#~ msgstr "Ostkaribischer Dollar"
-
-#~ msgid "Antarctica"
-#~ msgstr "Antarktis"
-
-#~ msgid "Norwegian Krone"
-#~ msgstr "Norwegische Krone"
-
-#~ msgid "Antigua and Barbuda"
-#~ msgstr "Antigua und Barbuda"
-
-#~ msgid "Argentina"
-#~ msgstr "Argentinien"
-
-#~ msgid "Austral and Argenintinian Neuvo Peso "
-#~ msgstr "Südlicher und Argentinischer Neuer Peso"
-
-#~ msgid "Armenia"
-#~ msgstr "Armenien"
-
-#~ msgid "Dram "
-#~ msgstr "Dram"
-
-#~ msgid "Aruba"
-#~ msgstr "Aruba"
-
-#~ msgid "Aruban Guilder "
-#~ msgstr "Aruba Florin"
-
-#~ msgid "Australia"
-#~ msgstr "Australien"
-
-#~ msgid "Australian Dollar"
-#~ msgstr "Australischer Dollar"
-
-#~ msgid "Austria"
-#~ msgstr "Österreich"
-
-#~ msgid "Azerbaijan"
-#~ msgstr "Aserbaidschan"
-
-#~ msgid "Azerbaijani Manat "
-#~ msgstr "Aserbaidschan-Manat"
-
-#~ msgid "Bahrain"
-#~ msgstr "Bahrain"
-
-#~ msgid "Bahraini Dinar"
-#~ msgstr "Bahrain Dinar"
-
-#~ msgid "Bangladesh"
-#~ msgstr "Bangladesch"
-
-#~ msgid "Taka"
-#~ msgstr "Taka"
-
-#~ msgid "Barbados"
-#~ msgstr "Barbados"
-
-#~ msgid "Barbados Dollar"
-#~ msgstr "Barbados Dollar"
-
-#~ msgid "Belgium"
-#~ msgstr "Belgien"
-
-#~ msgid "Belize"
-#~ msgstr "Belize"
-
-#~ msgid "Belize Dollar"
-#~ msgstr "Belize Dollar"
-
-#~ msgid "Benin"
-#~ msgstr "Benin"
-
-#~ msgid "Franc de la Communaut&eacute; financi&egrave;re africaine"
-#~ msgstr "Franc des afrikanischen Finanzverbundes"
-
-#~ msgid "Bermuda"
-#~ msgstr "Bermuda"
-
-#~ msgid "Bermudian Dollar"
-#~ msgstr "Bermuda Dollar"
-
-#~ msgid "Bhutan"
-#~ msgstr "Bhutan"
-
-#~ msgid "Ngultrum "
-#~ msgstr "Ngultrum"
-
-#~ msgid "Bolivia"
-#~ msgstr "Bolivien"
-
-#~ msgid "Boliviano and Bolivian Peso"
-#~ msgstr "Boliviano und Bolivien Peso"
-
-#~ msgid "Bosnia & Herzegowina"
-#~ msgstr "Bosnien-Herzogowina"
-
-#~ msgid "Convertible Mark"
-#~ msgstr "Tausch-Mark"
-
-#~ msgid "Botswana"
-#~ msgstr "Botswana"
-
-#~ msgid "Pula"
-#~ msgstr "Pula"
-
-#~ msgid "Bouvet Island"
-#~ msgstr "Bouvet-Insel"
-
-#~ msgid "Brazil"
-#~ msgstr "Brasilien"
-
-#~ msgid "Cruzeiro Real"
-#~ msgstr "Cruzeiro·Real"
-
-#~ msgid "British Indian Ocean Territory"
-#~ msgstr "Britisches Territorium im Indischen Ozean"
-
-#~ msgid "Pound Sterling "
-#~ msgstr "Pfund Sterling"
-
-#~ msgid "Brunei Darussalam"
-#~ msgstr "Brunei-Darussalam"
-
-#~ msgid "Brunei Dollar"
-#~ msgstr "Brunei·Dollar"
-
-#~ msgid "Bulgaria"
-#~ msgstr "Bulgarien"
-
-#~ msgid "Lev"
-#~ msgstr "Lev"
-
-#~ msgid "Burkina Faso"
-#~ msgstr "Burkina·Faso"
-
-#~ msgid "Burundi"
-#~ msgstr "Burundi"
-
-#~ msgid "Burundi Franc"
-#~ msgstr "Burundi-Franc"
-
-#~ msgid "Cameroon"
-#~ msgstr "Kamerun"
-
-#~ msgid "Canada"
-#~ msgstr "Kanada"
-
-#~ msgid "Canadian Dollar"
-#~ msgstr "Kanadischer Dollar"
-
-#~ msgid "Cape Verde"
-#~ msgstr "Kap Verde"
-
-#~ msgid "Escudo Caboverdiano"
-#~ msgstr "Capverdischer Escudo"
-
-#~ msgid "Cayman Islands"
-#~ msgstr "Cayman Inseln"
-
-#~ msgid "Cayman Islands Dollar"
-#~ msgstr "Cayman Inseln Dollar"
-
-#~ msgid "Central African Republic"
-#~ msgstr "Zentralafrikanische Republik"
-
-#~ msgid "Chad"
-#~ msgstr "Tschad"
-
-#~ msgid "Chili"
-#~ msgstr "Chile"
-
-#~ msgid "Unidades de Fomento and Chilean Peso"
-#~ msgstr "Peso"
-
-#~ msgid "China"
-#~ msgstr "China"
-
-#~ msgid "Yuan Renminbi"
-#~ msgstr "Renminbi"
-
-#~ msgid "Christmas Island"
-#~ msgstr "Weihnachtsinseln"
-
-#~ msgid "Cocos "
-#~ msgstr "Cocos "
-
-#~ msgid "Colombia"
-#~ msgstr "Kolumbien"
-
-#~ msgid "Colombian Peso"
-#~ msgstr "Kolumbianischer Peso"
-
-#~ msgid "Comoros"
-#~ msgstr "Komoren"
-
-#~ msgid "Comorian Franc"
-#~ msgstr "Komoreanischer Franc"
-
-#~ msgid "Congo"
-#~ msgstr "Kongo"
-
-#~ msgid "Cook Islands"
-#~ msgstr "Cook Inseln"
-
-#~ msgid "New Zealand Dollar"
-#~ msgstr "Neuseeländischer Dollar"
-
-#~ msgid "Costa Rica"
-#~ msgstr "Costa Rica"
-
-#~ msgid "Costa Rican Col&oacute;n"
-#~ msgstr "Col&oacute;n"
-
-#~ msgid "Cuba"
-#~ msgstr "Kuba"
-
-#~ msgid "Cuban Peso"
-#~ msgstr "Kubanischer Peso"
-
-#~ msgid "Cyprus"
-#~ msgstr "Zypern"
-
-#~ msgid "Cypriot Pound"
-#~ msgstr "Zyprisches Pfund"
-
-#~ msgid "Djibouti"
-#~ msgstr "Dschibuti"
-
-#~ msgid "Djibouti Franc"
-#~ msgstr "Dschibutischer Franc"
-
-#~ msgid "Dominica"
-#~ msgstr "Dominica"
-
-#~ msgid "Dominican Republic"
-#~ msgstr "Dominikanische Republik"
-
-#~ msgid "Dominican Republic Peso"
-#~ msgstr "Peso der Dominikanischen Rebublik"
-
-#~ msgid "Ecuador"
-#~ msgstr "Equador"
-
-#~ msgid "Egypt"
-#~ msgstr "Ägypten"
-
-#~ msgid "Egytian Pound"
-#~ msgstr "Ägyptisches Pfund"
-
-#~ msgid "El Salvador"
-#~ msgstr "El·Salvador"
-
-#~ msgid "El Salvadorian Col&oacute;n"
-#~ msgstr "Col&oacute;n Dollar"
-
-#~ msgid "Equatorial Guinea"
-#~ msgstr "Äquatorialguinea"
-
-#~ msgid "Franc de la Communaut&eacute; financi&egrave;re africaine and Ekwele"
-#~ msgstr "CFA Franc"
-
-#~ msgid "Eritrea"
-#~ msgstr "Eritrea"
-
-#~ msgid "Eritreian Nakfa, Ethiopian Birr"
-#~ msgstr "Eritreischer Nakfa, Äthiopischer Birr"
-
-#~ msgid "Estonia"
-#~ msgstr "Estland"
-
-#~ msgid "Kroon"
-#~ msgstr "Estnische Krone"
-
-#~ msgid "Ethiopia"
-#~ msgstr "Äthiopien"
-
-#~ msgid "Birr"
-#~ msgstr "Birr"
-
-#~ msgid "European Community"
-#~ msgstr "Europäische Gemeinschaft"
-
-#~ msgid "Euro "
-#~ msgstr "Euro"
-
-#~ msgid "Falkland Islands"
-#~ msgstr "Falklandinseln"
-
-#~ msgid "Falkland Pound"
-#~ msgstr "Pfund der Falklandinseln"
-
-#~ msgid "Faroe Islands"
-#~ msgstr "Faröer"
-
-#~ msgid "Danish Krone"
-#~ msgstr "Dänische Krone"
-
-#~ msgid "Fiji Islands"
-#~ msgstr "Fidschi Inseln"
-
-#~ msgid "Fiji Dollar"
-#~ msgstr "Fidschi-Dollar"
-
-#~ msgid "Finland"
-#~ msgstr "Finnland"
-
-#~ msgid "France"
-#~ msgstr "Frankreich"
-
-#~ msgid "France, Metropolitan"
-#~ msgstr "Frankreich"
-
-#~ msgid "French Guiana"
-#~ msgstr "Französich-Guiana"
-
-#~ msgid "French Polynesia"
-#~ msgstr "Französisch-Polynesien"
-
-#~ msgid "Franc des Comptoirs fran&ccedil;ais du Pacifique"
-#~ msgstr "CFP-Franc"
-
-#~ msgid "French Southern and Antarctic Territories"
-#~ msgstr "Französiche Süd- und Antarktikgebiete"
-
-#~ msgid "Gambia"
-#~ msgstr "Gambia"
-
-#~ msgid "Dalasi"
-#~ msgstr "Dalasi"
-
-#~ msgid "Georgia"
-#~ msgstr "Georgien"
-
-#~ msgid "Lari "
-#~ msgstr "Lari"
-
-#~ msgid "Germany "
-#~ msgstr "Deutschland"
-
-#~ msgid "Ghana"
-#~ msgstr "Ghana"
-
-#~ msgid "Cedi"
-#~ msgstr "Cedi"
-
-#~ msgid "Gibraltar"
-#~ msgstr "Gibraltar"
-
-#~ msgid "Gibraltar Pound"
-#~ msgstr "Gibraltisches Pfund"
-
-#~ msgid "Greece"
-#~ msgstr "Griechenland"
-
-#~ msgid "Greenland"
-#~ msgstr "Grönland"
-
-#~ msgid "Grenada"
-#~ msgstr "Grenada"
-
-#~ msgid "Guadeloupe"
-#~ msgstr "Guadeloupe"
-
-#~ msgid "Guam"
-#~ msgstr "Guam"
-
-#~ msgid "Guatemala"
-#~ msgstr "Guatemala"
-
-#~ msgid "Quetzal"
-#~ msgstr "Quetzal"
-
-#~ msgid "Guinea"
-#~ msgstr "Guinea"
-
-#~ msgid "Guinea Syli"
-#~ msgstr "Guinea Syli"
-
-#~ msgid "Guinea-Bissau"
-#~ msgstr "Guinea-Bissau"
-
-#~ msgid ""
-#~ "Guinea-Bissau Peso and Franc de la Communaut&eacute; financi&egrave;re "
-#~ "africaine"
-#~ msgstr "Franc Guin&eacute;en"
-
-#~ msgid "Guyana"
-#~ msgstr "Guyana"
-
-#~ msgid "Guyana Dollar"
-#~ msgstr "Guyana-Dollar"
-
-#~ msgid "Heard and McDonald Islands"
-#~ msgstr "Heard und Mc Donald-Inseln"
-
-#~ msgid "Honduras"
-#~ msgstr "Honduras"
-
-#~ msgid "Lempira"
-#~ msgstr "Lempira"
-
-#~ msgid "Hong Kong"
-#~ msgstr "Hong·Kong"
-
-#~ msgid "Hong Kong Dollar"
-#~ msgstr "Hong·Kong·Dollar"
-
-#~ msgid "Hungary"
-#~ msgstr "Ungarn"
-
-#~ msgid "Forint"
-#~ msgstr "Forint"
-
-#~ msgid "India"
-#~ msgstr "Indien"
-
-#~ msgid "Indian Rupee"
-#~ msgstr "Indische Rupie"
-
-#~ msgid "Iran, Islamic Republic of"
-#~ msgstr "Iran, Islamische Republik"
-
-#~ msgid "Iranian Rial"
-#~ msgstr "Iranischer Rial"
-
-#~ msgid "Iraq"
-#~ msgstr "Irak"
-
-#~ msgid "Iraqi Dinar"
-#~ msgstr "Irakischer Dinar"
-
-#~ msgid "Ireland"
-#~ msgstr "Irland"
-
-#~ msgid "Israel"
-#~ msgstr "Israel"
-
-#~ msgid "Shekel"
-#~ msgstr "Schekel"
-
-#~ msgid "Italy"
-#~ msgstr "Italien"
-
-#~ msgid "Japan"
-#~ msgstr "Japan"
-
-#~ msgid "Yen"
-#~ msgstr "Yen"
-
-#~ msgid "Jordan"
-#~ msgstr "Jordanien"
-
-#~ msgid "Jordanian Dinar"
-#~ msgstr "Jordanischer Dinar"
-
-#~ msgid "Kazakhstan"
-#~ msgstr "Kasachstan"
-
-#~ msgid "Tenge "
-#~ msgstr "Tenge "
-
-#~ msgid "Kenya"
-#~ msgstr "Kenia"
-
-#~ msgid "Kenyan Shilling"
-#~ msgstr "Kenianischer Schilling"
-
-#~ msgid "Kiribati"
-#~ msgstr "Kiribati"
-
-#~ msgid "Korea, Democratic People's Republic of "
-#~ msgstr "Korea, Volksrepublik"
-
-#~ msgid "North Korean Won"
-#~ msgstr "Nordkoreanischer Won"
-
-#~ msgid "Korea, Republic of "
-#~ msgstr "Korea, Republik"
-
-#~ msgid "South Korean Won"
-#~ msgstr "Südkoreanischer Won"
-
-#~ msgid "Kuwait"
-#~ msgstr "Kuwait"
-
-#~ msgid "Kuwaiti Dinar"
-#~ msgstr "Kuwaitischer·Dinar"
-
-#~ msgid "Kyrgyzstan"
-#~ msgstr "Kirgisien"
-
-#~ msgid "Kyrgyzstani Som"
-#~ msgstr "Kirgisischer Som"
-
-#~ msgid "Latvia"
-#~ msgstr "Lettland"
-
-#~ msgid "Lats"
-#~ msgstr "Lats"
-
-#~ msgid "Lebanon"
-#~ msgstr "Libanon"
-
-#~ msgid "Lebanese Pound"
-#~ msgstr "Libanesisches Pfund"
-
-#~ msgid "Lesotho"
-#~ msgstr "Lesotho"
-
-#~ msgid "Loti, Maloti and South African Rand"
-#~ msgstr "Loti,·Maloti·und Südafrikanischer·Rand"
-
-#~ msgid "Liberia"
-#~ msgstr "Liberia"
-
-#~ msgid "Liberian Dollar"
-#~ msgstr "Liberischer Dollar"
-
-#~ msgid "Libyan Arab Jamahiriya"
-#~ msgstr "Libyen"
-
-#~ msgid "Libyan Dinar"
-#~ msgstr "Libyscher Dinar"
-
-#~ msgid "Liechtenstein"
-#~ msgstr "Liechtenstein"
-
-#~ msgid "Swiss Franc"
-#~ msgstr "Schweizer Franken"
-
-#~ msgid "Lithuania"
-#~ msgstr "Litauen"
-
-#~ msgid "Litas"
-#~ msgstr "Litas"
-
-#~ msgid "Luxembourg"
-#~ msgstr "Luxemburg"
-
-#~ msgid "Macedonia, the Former Yugoslav Republic of"
-#~ msgstr "Mazedonien, ehm. Jogoslawische Republik"
-
-#~ msgid "Macedonian Dinar"
-#~ msgstr "Mazedonischer Dinar"
-
-#~ msgid "Madagascar"
-#~ msgstr "Madagaskar"
-
-#~ msgid "Malagasy Franc"
-#~ msgstr "Madagaskar-Franc"
-
-#~ msgid "Malawi"
-#~ msgstr "Malawi"
-
-#~ msgid "Malawian Kwacha"
-#~ msgstr "Malawischer Kwacha"
-
-#~ msgid "Malaysia"
-#~ msgstr "Malaysia"
-
-#~ msgid "Ringgit "
-#~ msgstr "Ringgit "
-
-#~ msgid "Maldives"
-#~ msgstr "Malediven"
-
-#~ msgid "Rufiyaa"
-#~ msgstr "Malediven Rupie"
-
-#~ msgid "Mali"
-#~ msgstr "Mali"
-
-#~ msgid ""
-#~ "Franc de la Communaut&eacute; financi&egrave;re africaine and Malian Franc"
-#~ msgstr "CFA Franc"
-
-#~ msgid "Malta"
-#~ msgstr "Malta"
-
-#~ msgid "Maltese Lira "
-#~ msgstr "Malteser Lira"
-
-#~ msgid "Marshall Islands"
-#~ msgstr "Marshallinseln"
-
-#~ msgid "Martinique"
-#~ msgstr "Martinique"
-
-#~ msgid "Mauritania"
-#~ msgstr "Mauritanien"
-
-#~ msgid "Ouguiya"
-#~ msgstr "Ouguiya"
-
-#~ msgid "Mauritius"
-#~ msgstr "Mauritius"
-
-#~ msgid "Mauritius Rupee"
-#~ msgstr "Mauretanische Rupie"
-
-#~ msgid "Mayotte"
-#~ msgstr "Mayotte"
-
-#~ msgid "Mexico"
-#~ msgstr "Mexico"
-
-#~ msgid "Mexican New Peso "
-#~ msgstr "Mexikanischer Neuer Peso"
-
-#~ msgid "Micronesia, Federated States of"
-#~ msgstr "Mikronesien"
-
-#~ msgid "Moldova, Republic of"
-#~ msgstr "Moldavien, Republik"
-
-#~ msgid "Moldovian Leu"
-#~ msgstr "Moldavischer Leu"
-
-#~ msgid "Monaco"
-#~ msgstr "Monaco"
-
-#~ msgid "Mongolia"
-#~ msgstr "Mongolei"
-
-#~ msgid "Tugrik"
-#~ msgstr "Tugrik"
-
-#~ msgid "Montserrat"
-#~ msgstr "Montserrat"
-
-#~ msgid "Morocco"
-#~ msgstr "Marokko"
-
-#~ msgid "Moroccan Dirham"
-#~ msgstr "Marokkanischer Dirham"
-
-#~ msgid "Mozambique"
-#~ msgstr "Mosambik"
-
-#~ msgid "Metical"
-#~ msgstr "Metical"
-
-#~ msgid "Nauru"
-#~ msgstr "Nauru"
-
-#~ msgid "Nepal"
-#~ msgstr "Nepal"
-
-#~ msgid "Nepalese Rupee"
-#~ msgstr "Nepalesische Rupie"
-
-#~ msgid "Netherlands"
-#~ msgstr "Niederlande"
-
-#~ msgid "Netherlands Antilles"
-#~ msgstr "Niederländische Antillen"
-
-#~ msgid "Netherlands Antilles Guilder "
-#~ msgstr "Gulden der Nierderländischen Antillen"
-
-#~ msgid "New Caledonia"
-#~ msgstr "Neukaledonien"
-
-#~ msgid "New Zealand"
-#~ msgstr "Neuseeland"
-
-#~ msgid "Nicaragua"
-#~ msgstr "Nikaragua"
-
-#~ msgid "C&oacute;rdoba"
-#~ msgstr "C&oacute;rdoba"
-
-#~ msgid "Niger"
-#~ msgstr "Niger"
-
-#~ msgid ""
-#~ "West African Franc and Franc de la Communaut&eacute; financi&egrave;re "
-#~ "africaine"
-#~ msgstr "Westafrikanischer Franc"
-
-#~ msgid "Nigeria"
-#~ msgstr "Nigeria"
-
-#~ msgid "Naira"
-#~ msgstr "Naira"
-
-#~ msgid "Niue"
-#~ msgstr "Niue"
-
-#~ msgid "Norfolk Island"
-#~ msgstr "Norfolkinsel"
-
-#~ msgid "Northern Mariana Islands"
-#~ msgstr "Nördliche Marianen-Inseln"
-
-#~ msgid "Norway"
-#~ msgstr "Norwegen"
-
-#~ msgid "Palau"
-#~ msgstr "Palau"
-
-#~ msgid "Panama"
-#~ msgstr "Panama"
-
-#~ msgid "Balboa and US Dollar"
-#~ msgstr "Balboa und US Dollar"
-
-#~ msgid "Papua New Guinea"
-#~ msgstr "Papua-Neuguinea"
-
-#~ msgid "Kina"
-#~ msgstr "Kina"
-
-#~ msgid "Paraguay"
-#~ msgstr "Paraguay"
-
-#~ msgid "Guarani"
-#~ msgstr "Guarani"
-
-#~ msgid "Peru"
-#~ msgstr "Peru"
-
-#~ msgid "Inti and New Sol "
-#~ msgstr "Inti und Neuer Sol "
-
-#~ msgid "Philippines"
-#~ msgstr "Philippinen"
-
-#~ msgid "Philippines Peso"
-#~ msgstr "Philippinischer Peso"
-
-#~ msgid "Pitcairn Island"
-#~ msgstr "Pitcairninseln"
-
-#~ msgid "Poland"
-#~ msgstr "Polen"
-
-#~ msgid "New Zloty "
-#~ msgstr "Neuer Sloty"
-
-#~ msgid "Portugal"
-#~ msgstr "Portugal"
-
-#~ msgid "Puerto Rico"
-#~ msgstr "Puerto·Rico"
-
-#~ msgid "Romania"
-#~ msgstr "Rumänien"
-
-#~ msgid "Romanian Leu"
-#~ msgstr "Rumänischer Leu"
-
-#~ msgid "Russian Federation"
-#~ msgstr "Russische Förderation"
-
-#~ msgid "Russian Federation Rouble"
-#~ msgstr "Rubel der Russischen Förderation"
-
-#~ msgid "Rwanda"
-#~ msgstr "Ruanda"
-
-#~ msgid "Rwanda Franc"
-#~ msgstr "Ruanda-Franc"
-
-#~ msgid "Saint Kitts "
-#~ msgstr "St. Kitts und Nevis"
-
-#~ msgid "Saint Lucia"
-#~ msgstr "St. Lucia"
-
-#~ msgid "Saint Vincent and the Grenadines"
-#~ msgstr "St. Vincent/Grenadinen"
-
-#~ msgid "Samoa"
-#~ msgstr "Samoa"
-
-#~ msgid "Tala"
-#~ msgstr "Tala"
-
-#~ msgid "San Marino"
-#~ msgstr "San·Marino"
-
-#~ msgid "S&atilde;o Tom&eacute; and Pr&iacute;ncipe"
-#~ msgstr "S&atilde;o Tom&eacute; and Pr&iacute;ncipe"
-
-#~ msgid "Dobra"
-#~ msgstr "Dobra"
-
-#~ msgid "Saudi Arabia"
-#~ msgstr "Saudi-Arabien"
-
-#~ msgid "Saudi Riyal"
-#~ msgstr "Saudischer Rial"
-
-#~ msgid "Senegal"
-#~ msgstr "Senegal"
-
-#~ msgid "Seychelles"
-#~ msgstr "Seychellen"
-
-#~ msgid "Seychelles Rupee"
-#~ msgstr "Seychellen-Rupie"
-
-#~ msgid "Sierra Leone"
-#~ msgstr "Sierra·Leone"
-
-#~ msgid "Leone"
-#~ msgstr "Leone"
-
-#~ msgid "Singapore"
-#~ msgstr "Singapur"
-
-#~ msgid "Singapore Dollar"
-#~ msgstr "Singapur-Dollar"
-
-#~ msgid "Slovenia"
-#~ msgstr "Slowenien"
-
-#~ msgid "Tolar"
-#~ msgstr "Tolar"
-
-#~ msgid "Solomon Islands"
-#~ msgstr "Salomonen"
-
-#~ msgid "Solomon Islands Dollar"
-#~ msgstr "Salomonen-Dollar"
-
-#~ msgid "Somalia"
-#~ msgstr "Somalia"
-
-#~ msgid "Somali Shilling"
-#~ msgstr "Somalischer Schilling"
-
-#~ msgid "South Africa"
-#~ msgstr "Südafrika"
-
-#~ msgid "Rand"
-#~ msgstr "Rand"
-
-#~ msgid "South Georgia and the South Sandwich Islands"
-#~ msgstr "Süd-Georgien und südliche Sandwichinseln"
-
-#~ msgid "Pound Sterling"
-#~ msgstr "Pfund Sterling"
-
-#~ msgid "Spain"
-#~ msgstr "Spanien"
-
-#~ msgid "Sri Lanka"
-#~ msgstr "Sri·Lanka"
-
-#~ msgid "Sri Lankan Rupee"
-#~ msgstr "Sri·Lanka-Rupie"
-
-#~ msgid "St Helena"
-#~ msgstr "St.·Helena"
-
-#~ msgid "St Helena Pound"
-#~ msgstr "St.-Helena-Pfund"
-
-#~ msgid "St Pierre and Miquelon"
-#~ msgstr "St. Pierre und Miquelon"
-
-#~ msgid "Sudan"
-#~ msgstr "Sudan"
-
-#~ msgid "Sudanese Pound and Sudanese Dinar"
-#~ msgstr "Sudanesisches Pfund und -Dinar"
-
-#~ msgid "Suriname"
-#~ msgstr "Surinam"
-
-#~ msgid "Surinam Guilder "
-#~ msgstr "Surinam-Gulden"
-
-#~ msgid "Svalbard and Jan Mayen Islands"
-#~ msgstr "Svalbard und Jan Mayen Insel"
-
-#~ msgid "Swaziland"
-#~ msgstr "Swasiland"
-
-#~ msgid "Lilangeni"
-#~ msgstr "Lilangeni"
-
-#~ msgid "Sweden"
-#~ msgstr "Schweden"
-
-#~ msgid "Swedish Krona"
-#~ msgstr "Schwedische Krone"
-
-#~ msgid "Switzerland"
-#~ msgstr "Schweiz"
-
-#~ msgid "Syrian Arab Republic"
-#~ msgstr "Syrische Arabische Republik"
-
-#~ msgid "Syrian Pound"
-#~ msgstr "Syrisches Pfund"
-
-#~ msgid "Tajikistan"
-#~ msgstr "Tadshikistan"
-
-#~ msgid "Tajik Rouble "
-#~ msgstr "Tadshikischer Rubel"
-
-#~ msgid "Tanzania, United Republic of"
-#~ msgstr "Tansania, Vereinigte Rebublik·"
-
-#~ msgid "Tanzanian Shilling"
-#~ msgstr "Tansania-Schilling"
-
-#~ msgid "Thailand"
-#~ msgstr "Thailand"
-
-#~ msgid "Baht"
-#~ msgstr "Baht"
-
-#~ msgid "Togo"
-#~ msgstr "Togo"
-
-#~ msgid "Tokelau"
-#~ msgstr "Tokelau"
-
-#~ msgid "Tonga"
-#~ msgstr "Tonga"
-
-#~ msgid "Pa'anga"
-#~ msgstr "Pa'anga"
-
-#~ msgid "Trinidad and Tobago"
-#~ msgstr "Trinidad und Tobago"
-
-#~ msgid "Trinidad and Tobago Dollar"
-#~ msgstr "Trinidad- und Tobago-Dollar"
-
-#~ msgid "Tunisia"
-#~ msgstr "Tunesien"
-
-#~ msgid "Tunisian Dinar"
-#~ msgstr "Tunesischer Dinar"
-
-#~ msgid "Turkey"
-#~ msgstr "Türkei"
-
-#~ msgid "Turkish Lira"
-#~ msgstr "Türkische Lira"
-
-#~ msgid "Turkmenistan"
-#~ msgstr "Turkmenistan"
-
-#~ msgid "Turkmenistani Manat"
-#~ msgstr "Turkmenischer Manat"
-
-#~ msgid "Turks and Caicos Islands"
-#~ msgstr "Turks- und Caicosinseln"
-
-#~ msgid "Tuvalu"
-#~ msgstr "Tuvalu"
-
-#~ msgid "Ukraine"
-#~ msgstr "Ukraine"
-
-#~ msgid "Hryvna and Karbovanet"
-#~ msgstr "Hryvna und Karbovanet"
-
-#~ msgid "Union of Soviet Socialist Republics"
-#~ msgstr "UDSSR"
-
-#~ msgid "USSR Rouble"
-#~ msgstr "UDSSR Rubel"
-
-#~ msgid "United Arab Emirates"
-#~ msgstr "Vereinigte Arabische Emirate"
-
-#~ msgid "UAE Dirham"
-#~ msgstr "Dirham der VAE"
-
-#~ msgid "United Kingdom"
-#~ msgstr "Vereinigtes Königreich"
-
-#~ msgid "United States of America"
-#~ msgstr "Vereinigte Staaten von Amerika"
-
-#~ msgid "United States Minor Outlying Islands"
-#~ msgstr "Minor·Outlying·Islands, den USA zugehörig"
-
-#~ msgid "Uruguay"
-#~ msgstr "Uruguay"
-
-#~ msgid "Uruguayan New Peso "
-#~ msgstr "Uruguayischer Neuer Peso"
-
-#~ msgid "Uzbekistan"
-#~ msgstr "Usbekistan"
-
-#~ msgid "Uzbekistani Som "
-#~ msgstr "Usbekischer Som"
-
-#~ msgid "Venezuela"
-#~ msgstr "Venezuela"
-
-#~ msgid "Bolivar"
-#~ msgstr "Bolivar"
-
-#~ msgid "Viet Nam"
-#~ msgstr "Vietnam"
-
-#~ msgid "D&ocirc;ng"
-#~ msgstr "Dong"
-
-#~ msgid "Virgin Islands "
-#~ msgstr "Jungferninseln"
-
-#~ msgid "West Africa"
-#~ msgstr "Westafrika"
-
-#~ msgid "West African Franc"
-#~ msgstr "Westafrika Franc"
-
-#~ msgid "Western Sahara"
-#~ msgstr "West-Sahara"
-
-#~ msgid "Moroccan Dirham and Mauritanian Ouguiya"
-#~ msgstr "Marokkanischer Dirham und Mauretanischer Ouguiya"
-
-#~ msgid "Yugoslavia"
-#~ msgstr "Jogoslawien"
-
-#~ msgid "New Dinar"
-#~ msgstr "Neuer Dinar"
-
-#~ msgid "Zambia"
-#~ msgstr "Sambia"
-
-#~ msgid "Zambian Kwacha"
-#~ msgstr "Sambischer Kwacha"
-
-#~ msgid "Zimbabwe"
-#~ msgstr "Simbabwe"
-
-#~ msgid "Zimbabwe Dollar"
-#~ msgstr "Simbabwe Dollar"
-
-#~ msgid "Get Balance"
-#~ msgstr "Saldoabruf"
-
-#~ msgid "Get Transactions"
-#~ msgstr "Umsatzabruf"
-
-#~ msgid "EU Transfer"
-#~ msgstr "EU Überweisung"
-
-#~ msgid "Get Standing Orders"
-#~ msgstr "Daueraufträge abrufen"
-
-#~ msgid "Get Dated Transfers"
-#~ msgstr "Terminierte Überweisungen abrufen"
-
-#~ msgid "Create Standing Order"
-#~ msgstr "Dauerauftrag erstellen"
-
-#~ msgid "Modify Standing Order"
-#~ msgstr "Dauerauftrag ändern"
-
-#~ msgid "Delete Standing Order"
-#~ msgstr "Dauerauftrag löschen"
-
-#~ msgid "Create Dated Transfer"
-#~ msgstr "Terminierte Überweisung erstellen"
-
-#~ msgid "Modify Dated Transfer"
-#~ msgstr "Terminierte Überweisung ändern"
-
-#~ msgid "Delete Dated Transfer"
-#~ msgstr "Terminierte Überweisung löschen"
-
-#~ msgid "Internal Transfer"
-#~ msgstr "Interne Umbuchung"
-
-#~ msgid "Load Cellphone"
-#~ msgstr "Handy aufladen"
-
-#~ msgid "SEPA Transfer"
-#~ msgstr "SEPA Überweisung"
-
-#~ msgid "SEPA Debit Note"
-#~ msgstr "SEPA-Lastschrift"
-
-#~ msgid "SEPA Create Standing Order"
-#~ msgstr "SEPA-Dauerauftrag erstellen"
-
-#~ msgid "SEPA Modify Standing Order"
-#~ msgstr "SEPA-Dauerauftrag ändern"
-
-#~ msgid "SEPA Delete Standing Order"
-#~ msgstr "SEPA-Dauerauftrag löschen"
-
-#~ msgid "SEPA Flash Debit Note"
-#~ msgstr "SEPA-Eillastschrift"
-
-#~ msgid "SEPA Get Standing Orders"
-#~ msgstr "SEPA-Daueraufträge abrufen"
-
-#~ msgid "Postprocessing jobs"
-#~ msgstr "Nachbehandlung der Aufträge"
-
-#~ msgid "Job %s: never been sent"
-#~ msgstr "Auftrag %s: Wurde nicht abgeschickt"
-
-#~ msgid "Job %s: pending"
-#~ msgstr "Auftrag %s: Noch nicht erledigt"
-
-#~ msgid "Job %s: sent"
-#~ msgstr "Auftrag %s: Abgeschickt"
-
-#~ msgid "Job %s: error"
-#~ msgstr "Auftrag %s: Fehler"
-
-#~ msgid "Resetting provider queues"
-#~ msgstr "Module zurücksetzen"
-
-#~ msgid "Text key \"%d\" not supported by the bank"
-#~ msgstr "Der Textschlüssel \"%d\" wird von der Bank nicht unterstützt"
-
-#~ msgid "Transactions with multiple bank codes found"
-#~ msgstr "Umsätze mit verschiedenen Bankleitzahlen gefunden"
-
-#~ msgid "Transactions with multiple account numbers found"
-#~ msgstr "Umsätze mit verschiedenen Kontonummern gefunden"
-
-#~ msgid "Transactions with multiple local names found"
-#~ msgstr "Umsätze mit verschiedenen eigenen Namen gefunden"
-
-#~ msgid "AqBanking Settings Database Error"
-#~ msgstr "AqBanking-Datenbankfehler"
-
-#~ msgid "Your settings database might be in an inconsistent state!"
-#~ msgstr "Ihre AqBanking-Konfiguration ist möglicherweise inkonsistent! "
-
-#~ msgid ""
-#~ "Please enter a new password for \n"
-#~ "user %s at %s\n"
-#~ "The input must be at least %d characters long.%s<html><p>Please enter a "
-#~ "new password for user <i>%s</i> at <i>%s</i>.</p><p>The input must be at "
-#~ "least %d characters long.%s</p></html>"
-#~ msgstr ""
-#~ "Bitte geben Sie ein neues Passwort für \n"
-#~ "Benutzer %s bei %s\n"
-#~ "ein. Das Passwort muß mindestens %d Zeichen lang sein.%s<html><p>Bitte "
-#~ "geben Sie ein neues Passwort für Benutzer <i>%s</i> bei <i>%s</i> ein.</"
-#~ "p><p>Das Passwort muß mindestens %d Zeichen lang sein.%s</p></html>"
-
-#~ msgid "Please enter the TAN for user <i>%s</i> at <i>%s</i>."
-#~ msgstr "Bitte geben Sie die TAN für Benutzer <i>%s</i> bei <i>%s</i> ein."
-
-#~ msgid "Locking user %s"
-#~ msgstr "Exklusiver Zugriff auf Benutzer %s"
-
-#~ msgid "AqHBCI-Notice"
-#~ msgstr "AqHBCI-Anmerkung"
-
-#~ msgid ""
-#~ "The version of AqBanking/AqHBCI previously used is too old to be\n"
-#~ "upgraded automatically.\n"
-#~ "Therefore you should delete the settings file and setup AqBanking\n"
-#~ "completely from scratch.\n"
-#~ "The settings file usually is\n"
-#~ "  $HOME/.banking/settings.conf\n"
-#~ "<html><p>The version of AqBanking/AqHBCI previously used is too old to "
-#~ "be\n"
-#~ "upgraded automatically.\n"
-#~ "</p><p>Therefore you should delete the settings file and setup AqBanking\n"
-#~ "completely from scratch.\n"
-#~ "</p><p>The settings file usually is: \n"
-#~ "<i>$HOME/.banking/settings.conf\n"
-#~ "</i>.\n"
-#~ "</p></html>"
-#~ msgstr ""
-#~ "Die zuletzt verwendete Version von AqBanking ist zu alt um automatisch "
-#~ "angepasst zu werden.\n"
-#~ "Sie sollten daher das Verzeichnis $HOME/.banking\n"
-#~ " entfernen und AqBanking vollstaendig neu einrichten.\n"
-#~ "<html><p>Die zuletzt verwendete Version von AqBanking ist zu alt um "
-#~ "automatisch angepasst zu werden.</p><p>Sie sollten daher das Verzeichnis "
-#~ "<i>$HOME/.banking</i> entfernen und AqBanking vollstaendig neu einrichten."
-#~ "</p> </html>"
-
-#~ msgid "Bank does not use a sign key."
-#~ msgstr "Die Bank benutzt keinen Signaturschlüssel."
-
-#~ msgid "Could not find backend, maybe some plugins are not installed?"
-#~ msgstr ""
-#~ "Das Banking-Modul wurde nicht gefunden, eventuell sind nicht alle Module "
-#~ "installiert?"
-
-#~ msgid "No user assigned to this account. Please check your configuration."
-#~ msgstr ""
-#~ "Dieses Konto ist keinem Benutzer zugeordnet. Bitte überprüfen Sie Ihre "
-#~ "Konfiguration."
-
-#~ msgid "Adding account %s to bank %s"
-#~ msgstr "Füge Konto %s zur Bank %s hinzu"
-
-#~ msgid "Error parsing response"
-#~ msgstr "Fehler beim Untersuchen der Antwort"
-
-#~ msgid "Error parsing server response"
-#~ msgstr "Fehler beim Untersuchen der Serverantwort"
-
-#, fuzzy
-#~ msgid "User aborted"
-#~ msgstr "Benutzername"
-
-#, fuzzy
-#~ msgid "Locking account"
-#~ msgstr "Scheckkonto"
-
-#, fuzzy
-#~ msgid "Could not lock account"
-#~ msgstr "Exklusiver Zugriff auf das Konto konnte nicht freigegeben werden."
-
-#, fuzzy
-#~ msgid "Executing account queue"
-#~ msgstr "Anforderung der Kontenliste"
-
-#, fuzzy
-#~ msgid "Unlocking account"
-#~ msgstr "Scheckkonto"
-
-#, fuzzy
-#~ msgid "Could not unlock account"
-#~ msgstr "Exklusiver Zugriff auf das Konto konnte nicht freigegeben werden."
-
-#, fuzzy
-#~ msgid "Locking user"
-#~ msgstr "Exklusiver Zugriff auf Benutzer"
-
-#, fuzzy
-#~ msgid "Executing user queue"
-#~ msgstr "Aufträge werden ausgeführt"
-
-#, fuzzy
-#~ msgid "Unlocking user"
-#~ msgstr "Exklusiver Zugriff auf Benutzer %s freigeben"
-
-#~ msgid "Sends a DTAZV file to the bank"
-#~ msgstr "Eine DTAZV-Datei zur Bank senden"
-
-#~ msgid "Update configuration from previous AqBanking versions"
-#~ msgstr "Die Konfiguration aus früheren AqBanking-Versionen aktualisieren"
-
-#~ msgid "Init a chipcard"
-#~ msgstr "Chipkarte initialisieren"
-
-#~ msgid "Importer and Exporter for DTAUS"
-#~ msgstr "Im- und Exporter für DTAUS"
-
-#~ msgid "This plugin imports and exports German DTAUS data."
-#~ msgstr "Dieses Modul im-/exportiert DTAUS-Dateien."
-
-#~ msgid "DTAUS"
-#~ msgstr "DTAUS"
-
-#~ msgid "Bank info provider for the United States of America"
-#~ msgstr "Bankinformationen für die USA"
-
-#~ msgid "AH_JOB|-- no account id --"
-#~ msgstr "-- keine Kontonummer --"
-
-#~ msgid "AH_JOB|-- no bank code --"
-#~ msgstr "-- keine Bankleitzahl --"
-
-#~ msgid "Extended account information available"
-#~ msgstr "Erweiterte Konteninformationen vorhanden"
-
-#~ msgid ""
-#~ "Extended account information is not available, some jobs might not work"
-#~ msgstr ""
-#~ "Erweiterte Konteninformationen nicht vorhanden. Manche Aufträge sind "
-#~ "nicht verfügbar."
