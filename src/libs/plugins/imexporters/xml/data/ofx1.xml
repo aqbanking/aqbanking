@@ -35,27 +35,16 @@
             <XmlForEvery name="ACCTINFO">
               <DbCreateAndEnterGroup name="account">
 
-                <XmlIfHasCharData path="DESC">
-                  <DbSetCharValue name="accountName" path="DESC" mode="replace" />
-                </XmlIfHasCharData>
+                <DbSetCharValue name="accountName" path="DESC" mode="replace" />
 
                 <!-- bank account -->
                 <XmlIfPathExists path="BANKACCTINFO/BANKACCTFROM">
                   <XmlEnter path="BANKACCTINFO/BANKACCTFROM">
                   
                     <DbSetCharValue name="bankName" value="$(bankName)" /> <!-- read above from SIGNONMSGSRSV1/FI/ORG -->
-                    
-                    <XmlIfHasCharData path="BANKID">
-                      <DbSetCharValue name="bankCode" path="BANKID" />
-                    </XmlIfHasCharData>
-                    
-                    <XmlIfHasCharData path="ACCTID">
-                      <DbSetCharValue name="accountNumber" path="ACCTID" />
-                    </XmlIfHasCharData>
-                    
-                    <XmlIfHasCharData path="ACCTTYPE">
-                      <DbSetCharValue name="xAccountType" path="ACCTTYPE" />
-                    </XmlIfHasCharData>
+                    <DbSetCharValue name="bankCode" path="BANKID" />
+                    <DbSetCharValue name="accountNumber" path="ACCTID" />
+                    <DbSetCharValue name="xAccountType" path="ACCTTYPE" />
                     
                     <XmlIfCharDataMatches path="ACCTTYPE" pattern="CREDITLINE">
                       <DbSetCharValue name="type" value="2"/>
@@ -72,23 +61,11 @@
                     <XmlIfCharDataMatches path="ACCTTYPE" pattern="MONEYMRKT">
                       <DbSetCharValue name="type" value="7"/>
                     </XmlIfCharDataMatches>
-                    
 
-                    <XmlIfHasCharData path="SUPTXDL">
-                      <DbSetCharValue name="xSUPTXDL" path="SUPTXDL" />
-                    </XmlIfHasCharData>
-
-                    <XmlIfHasCharData path="XFERSRC">
-                      <DbSetCharValue name="xXFERSRC" path="XFERSRC" />
-                    </XmlIfHasCharData>
-
-                    <XmlIfHasCharData path="XFERDEST">
-                      <DbSetCharValue name="xXFERDEST" path="XFERDEST" />
-                    </XmlIfHasCharData>
-
-                    <XmlIfHasCharData path="SVCSTATUS">
-                      <DbSetCharValue name="xSVCSTATUS" path="SVCSTATUS" />
-                    </XmlIfHasCharData>
+                    <DbSetCharValue name="xSUPTXDL" path="SUPTXDL" />
+                    <DbSetCharValue name="xXFERSRC" path="XFERSRC" />
+                    <DbSetCharValue name="xXFERDEST" path="XFERDEST" />
+                    <DbSetCharValue name="xSVCSTATUS" path="SVCSTATUS" />
 
                   </XmlEnter>
                 </XmlIfPathExists>
@@ -96,31 +73,13 @@
                 <!-- credit card -->
                 <XmlIfPathExists path="CCACCTINFO/CCACCTFROM">
                   <XmlEnter path="CCACCTINFO/CCACCTFROM">
-                  
                     <DbSetCharValue name="bankName" value="$(bankName)" /> <!-- read above from SIGNONMSGSRSV1/FI/ORG -->
-                    
-                    <XmlIfHasCharData path="ACCTID">
-                      <DbSetCharValue name="accountNumber" path="ACCTID" />
-                    </XmlIfHasCharData>
-                    
+                    <DbSetCharValue name="accountNumber" path="ACCTID" />
                     <DbSetCharValue name="type" value="2" /> <!-- credit card -->
-                    
-                    <XmlIfHasCharData path="SUPTXDL">
-                      <DbSetCharValue name="xSUPTXDL" path="SUPTXDL" />
-                    </XmlIfHasCharData>
-
-                    <XmlIfHasCharData path="XFERSRC">
-                      <DbSetCharValue name="xXFERSRC" path="XFERSRC" />
-                    </XmlIfHasCharData>
-
-                    <XmlIfHasCharData path="XFERDEST">
-                      <DbSetCharValue name="xXFERDEST" path="XFERDEST" />
-                    </XmlIfHasCharData>
-
-                    <XmlIfHasCharData path="SVCSTATUS">
-                      <DbSetCharValue name="xSVCSTATUS" path="SVCSTATUS" />
-                    </XmlIfHasCharData>
-
+                    <DbSetCharValue name="xSUPTXDL" path="SUPTXDL" />
+                    <DbSetCharValue name="xXFERSRC" path="XFERSRC" />
+                    <DbSetCharValue name="xXFERDEST" path="XFERDEST" />
+                    <DbSetCharValue name="xSVCSTATUS" path="SVCSTATUS" />
                   </XmlEnter>
                 </XmlIfPathExists>
 
@@ -141,27 +100,15 @@
         
                 <DbCreateAndEnterGroup name="account">
     
-                  <XmlIfHasCharData path="CURDEF">
-                    <DbSetCharValue name="currency" path="CURDEF"/>
-                  </XmlIfHasCharData>
+                  <DbSetCharValue name="currency" path="CURDEF"/>
     
                   <!-- account -->
                   <XmlIfPathExists path="BANKACCTFROM">
                     <XmlEnter path="BANKACCTFROM">
-                    
                       <DbSetCharValue name="bankName" value="$(bankName)" /> <!-- read above from SIGNONMSGSRSV1/FI/ORG -->
-                    
-                      <XmlIfHasCharData path="BANKID">
-                        <DbSetCharValue name="bankCode" path="BANKID" />
-                      </XmlIfHasCharData>
-                      
-                      <XmlIfHasCharData path="ACCTID">
-                        <DbSetCharValue name="accountNumber" path="ACCTID" />
-                      </XmlIfHasCharData>
-                      
-                      <XmlIfHasCharData path="ACCTTYPE">
-                        <DbSetCharValue name="xAccountType" path="ACCTTYPE" />
-                      </XmlIfHasCharData>
+                      <DbSetCharValue name="bankCode" path="BANKID" />
+                      <DbSetCharValue name="accountNumber" path="ACCTID" />
+                      <DbSetCharValue name="xAccountType" path="ACCTTYPE" />
 
                       <XmlIfCharDataMatches path="ACCTTYPE" pattern="CREDITLINE">
                         <DbSetCharValue name="type" value="2"/>
@@ -293,39 +240,14 @@
                             <DbSetCharValue name="value" path="TRNAMT"/>
                           </XmlIfHasCharData>
       
-                          <XmlIfHasCharData path="FITID">
-                            <DbSetCharValue name="fiId" path="FITID"/>
-                          </XmlIfHasCharData>
-      
-                          <XmlIfHasCharData path="CHECKNUM">
-                            <DbSetCharValue name="customerReference" path="CHECKNUM"/>
-                          </XmlIfHasCharData>
-      
-                          <XmlIfHasCharData path="REFNUM">
-                            <DbSetCharValue name="customerReference" path="REFNUM"/>
-                          </XmlIfHasCharData>
-      
-                          <XmlIfHasCharData path="NAME">
-                            <DbSetCharValue name="remoteName" path="NAME"/>
-                          </XmlIfHasCharData>
-      
-                          <XmlIfHasCharData path="MEMO">
-                            <DbSetCharValue name="purpose" path="MEMO" mode="append" delimiter="\n"/>
-                          </XmlIfHasCharData>
-      
-                          <XmlIfHasCharData path="MEMO2">
-                            <DbSetCharValue name="purpose" path="MEMO2" mode="append" delimiter="\n"/>
-                          </XmlIfHasCharData>
-      
-                          <XmlIfHasCharData path="SRVRTID">
-                            <DbSetCharValue name="bankReference" path="SRVRTID"/>
-                          </XmlIfHasCharData>
-      
-                          <XmlIfHasCharData path="SRVRTID2">
-                            <DbSetCharValue name="bankReference" path="SRVRTID2"/>
-                          </XmlIfHasCharData>
-    
-    
+                          <DbSetCharValue name="fiId" path="FITID"/>
+                          <DbSetCharValue name="customerReference" path="CHECKNUM"/>
+                          <DbSetCharValue name="customerReference" path="REFNUM"/>
+                          <DbSetCharValue name="remoteName" path="NAME"/>
+                          <DbSetCharValue name="purpose" path="MEMO" mode="append" delimiter="\n"/>
+                          <DbSetCharValue name="purpose" path="MEMO2" mode="append" delimiter="\n"/>
+                          <DbSetCharValue name="bankReference" path="SRVRTID"/>
+                          <DbSetCharValue name="bankReference" path="SRVRTID2"/>
                         </DbCreateAndEnterGroup>
                       </XmlForEvery>
 
