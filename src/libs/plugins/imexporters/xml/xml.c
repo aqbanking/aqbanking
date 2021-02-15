@@ -619,6 +619,10 @@ int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
                                                          AB_AccountSpec_GetType(accountSpec));
     assert(accountInfo);
 
+    s=AB_ImExporterAccountInfo_GetBankName(accountInfo);
+    if (!(s && *s))
+      AB_ImExporterAccountInfo_SetBankName(accountInfo, AB_AccountSpec_GetBankName(accountSpec));
+
     s=AB_ImExporterAccountInfo_GetCurrency(accountInfo);
     if (!(s && *s)) {
       s=AB_AccountSpec_GetCurrency(accountSpec);

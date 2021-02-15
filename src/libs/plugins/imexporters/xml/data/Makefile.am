@@ -7,6 +7,7 @@ imexdata_DATA=\
   pain_001_001_03.xml \
   pain_008_003_02.xml \
   pain_008_001_02.xml \
+  ofx1.xml \
   ofx2.xml
 
 EXTRA_DIST=$(imexdata_DATA)
