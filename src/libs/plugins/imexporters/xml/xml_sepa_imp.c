@@ -53,7 +53,7 @@ int AB_ImExporterXML_ImportSepa(AB_IMEXPORTER *ie,
   GWEN_DB_NODE *dbData;
   int rv;
 
-  xmlDocData=AB_ImExporterXML_ReadXmlFromSio(ie, sio);
+  xmlDocData=AB_ImExporterXML_ReadXmlFromSio(ie, sio, GWEN_XML_FLAGS_HANDLE_COMMENTS | GWEN_XML_FLAGS_HANDLE_HEADERS);
   if (xmlDocData==NULL) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not read XML input");
     return GWEN_ERROR_INVALID;

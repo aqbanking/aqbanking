@@ -163,6 +163,8 @@ int AB_ImExporterXML_Import(AB_IMEXPORTER *ie,
     GWEN_XMLNODE *xmlDocData;
     GWEN_DB_NODE *dbData;
     int rv;
+    uint32_t xmlFlags=GWEN_XML_FLAGS_HANDLE_COMMENTS | GWEN_XML_FLAGS_HANDLE_HEADERS;
+    const char *s;
 
     dbSubParams=GWEN_DB_GetGroup(dbParams, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "params");
     if (!dbSubParams) {
@@ -170,7 +172,11 @@ int AB_ImExporterXML_Import(AB_IMEXPORTER *ie,
       return GWEN_ERROR_INVALID;
     }
 
-    xmlDocData=AB_ImExporterXML_ReadXmlFromSio(ie, sio);
+    s=GWEN_DB_GetCharValue(dbSubParams, "xmlFlags", 0, NULL);
+    if (s && strcasecmp(s, "sgml")==0)
+      xmlFlags|=GWEN_XML_FLAGS_SGML|GWEN_XML_FLAGS_TOLERANT_ENDTAGS;
+
+    xmlDocData=AB_ImExporterXML_ReadXmlFromSio(ie, sio, xmlFlags);
     if (xmlDocData==NULL) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not read XML input");
       return GWEN_ERROR_INVALID;
@@ -572,7 +578,7 @@ const char *AB_ImExporterXML_GetCharValueByPath(GWEN_XMLNODE *xmlNode, const cha
 
 
 
-GWEN_XMLNODE *AB_ImExporterXML_ReadXmlFromSio(AB_IMEXPORTER *ie, GWEN_SYNCIO *sio)
+GWEN_XMLNODE *AB_ImExporterXML_ReadXmlFromSio(AB_IMEXPORTER *ie, GWEN_SYNCIO *sio, uint32_t xmlFlags)
 {
   int rv;
   GWEN_XMLNODE *xmlDocRoot;
@@ -580,7 +586,7 @@ GWEN_XMLNODE *AB_ImExporterXML_ReadXmlFromSio(AB_IMEXPORTER *ie, GWEN_SYNCIO *si
 
   /* read whole document into XML tree */
   xmlDocRoot=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "xmlDocRoot");
-  xmlCtx=GWEN_XmlCtxStore_new(xmlDocRoot, GWEN_XML_FLAGS_HANDLE_COMMENTS | GWEN_XML_FLAGS_HANDLE_HEADERS);
+  xmlCtx=GWEN_XmlCtxStore_new(xmlDocRoot, xmlFlags);
   rv=GWEN_XMLContext_ReadFromIo(xmlCtx, sio);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
