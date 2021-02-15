@@ -36,7 +36,7 @@
               <DbCreateAndEnterGroup name="account">
 
                 <XmlIfHasCharData path="DESC">
-                  <DbSetCharValue name="accountName" path="DESC" />
+                  <DbSetCharValue name="accountName" path="DESC" mode="replace" />
                 </XmlIfHasCharData>
 
                 <!-- bank account -->
