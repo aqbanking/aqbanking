@@ -23,7 +23,7 @@
 #include <gwenhywfar/inherit.h>
 
 
-#define SWIFT_VERBOSE_DEBUG
+/*#define SWIFT_VERBOSE_DEBUG*/
 
 
 

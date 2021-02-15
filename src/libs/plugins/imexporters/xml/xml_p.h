@@ -31,7 +31,7 @@ struct AB_IMEXPORTER_XML {
 
 GWEN_XMLNODE *AB_ImExporterXML_ReadSchemaFromFile(AB_IMEXPORTER *ie, const char *schemaName);
 GWEN_XMLNODE *AB_ImExporterXML_DetermineSchema(AB_IMEXPORTER *ie, GWEN_XMLNODE *xmlDocData);
-GWEN_XMLNODE *AB_ImExporterXML_ReadXmlFromSio(AB_IMEXPORTER *ie, GWEN_SYNCIO *sio);
+GWEN_XMLNODE *AB_ImExporterXML_ReadXmlFromSio(AB_IMEXPORTER *ie, GWEN_SYNCIO *sio, uint32_t xmlFlags);
 
 
 

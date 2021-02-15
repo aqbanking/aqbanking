@@ -877,7 +877,7 @@ int AH_Msg_EncryptRxh(AH_MSG *hmsg)
   RXH_PARAMETER *rxh_parameter;
   int rxhVersion;
 
-  DBG_ERROR(AQHBCI_LOGDOMAIN, "RXH-encrypting message");
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "RXH-encrypting message");
 
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
 
