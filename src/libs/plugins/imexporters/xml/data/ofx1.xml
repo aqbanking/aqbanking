@@ -91,7 +91,7 @@
         </XmlIfPathExists>
 
 
-        <!-- Statements -->
+        <!-- bank statements -->
         <XmlIfPathExists path="BANKMSGSRSV1">
           <XmlEnter path="BANKMSGSRSV1">
           
@@ -304,8 +304,138 @@
           </XmlEnter>
         </XmlIfPathExists>
       
+        <XmlIfPathExists path="INVSTMTMSGSRSV1">
+          <XmlEnter path="INVSTMTMSGSRSV1">
+          
+            <XmlForEvery   name="INVSTMTTRNRS">
+              <XmlForEvery name="INVSTMTRS">
+          
+                <DbCreateAndEnterGroup name="account">
+    
+                  <DbSetCharValue name="currency" path="CURDEF"/>
+    
+                  <!-- account -->
+                  <XmlIfPathExists path="INVACCTFROM">
+                    <XmlEnter path="INVACCTFROM">
+                      <DbSetCharValue name="bankName" value="$(bankName)" /> <!-- read above from SIGNONMSGSRSV1/FI/ORG -->
+                      <DbSetCharValue name="brokerId" path="BANKID" />
+                      <DbSetTempCharValue name="brokerId" path="BANKID" />
+                      <DbSetCharValue name="accountNumber" path="ACCTID" />
+                    </XmlEnter>
+                  </XmlIfPathExists>
+    
+    
+                  <XmlIfPathExists path="INVTRANLIST">
+                    <XmlEnter path="INVTRANLIST">
+                      <XmlForEvery name="BUYMF">
+                        <DbCreateAndEnterGroup name="transaction">
+                          <DbSetCharValue name="type" value="statement" />
+  
+                          <XmlIfPathExists path="INVBUY">
+                            <XmlEnter path="INVBUY">
+  
+                              <XmlIfPathExists path="INVTRAN">
+                                <XmlEnter path="INVTRAN">
+                                  <DbSetCharValue name="fiId" path="FITID"/>
+  
+                                  <XmlIfHasCharData path="DTTRADE">
+                                    <DbSetCharValue name="valutaDate" path="DTTRADE" type="date" template="YYYYMMDD" />
+                                    <DbSetCharValue name="date" path="DTTRADE" type="date" template="YYYYMMDD" />
+                                  </XmlIfHasCharData>
+                                  
+                                  <XmlIfHasCharData path="DTSETTLE">
+                                    <DbSetCharValue name="date" path="DTTRADE" type="date" template="YYYYMMDD" />
+                                  </XmlIfHasCharData>
+                                  
+                                  <DbSetCharValue name="purpose" path="MEMO" />
+  
+                                </XmlEnter>
+                              </XmlIfPathExists> <!-- INVTRAN -->
+  
+                              <XmlIfPathExists path="SECID">
+                                <XmlEnter path="SECID">
+  
+                                  <DbSetCharValue name="unitId" path="UNIQUEID" />
+                                  <DbSetCharValue name="unitIdNameSpace" path="UNIQUEIDTYPE" />
+  
+                                </XmlEnter>
+                              </XmlIfPathExists> <!-- SECID -->
+  
+                            <DbSetCharValue name="units" path="UNITS" />
+                            <DbSetCharValue name="unitPriceValue" path="UNITPRICE" />
+                            <DbSetCharValue name="commissionValue" path="COMMISSION" />
+                            <DbSetCharValue name="fees" path="FEES" />
+    
+                            <XmlIfHasCharData path="TOTAL">
+                              <DbSetCharValue name="value" path="TOTAL"/>
+                            </XmlIfHasCharData>
+                            
+                            
+                            
+                            </XmlEnter>
+                          </XmlIfPathExists> <!-- INVBUY -->
+  
+                        </DbCreateAndEnterGroup>
+                      </XmlForEvery> <!-- BUYMF -->
+  
+                    
+                    </XmlEnter>
+                  </XmlIfPathExists> <!-- INVTRANLIST -->
+      
+                </DbCreateAndEnterGroup> <!-- account -->
+
+              </XmlForEvery> <!-- INVSTMTRS -->
+            </XmlForEvery> <!-- INVSTMTTRNRS -->
+      
+          </XmlEnter>
+        </XmlIfPathExists> <!-- INVSTMTMSGSRSV1 -->
+
+
+        <XmlIfPathExists path="SECLISTMSGSRSV1">
+          <XmlEnter path="SECLISTMSGSRSV1">
+
+            <XmlIfPathExists path="SECLIST">
+              <XmlEnter path="SECLIST">
+                <XmlForEvery name="MFINFO">
+                
+                  <XmlIfPathExists path="SECINFO">
+                    <XmlEnter path="SECINFO">
+                
+                      <DbCreateAndEnterGroup name="security">
+    
+                        <XmlIfPathExists path="SECID">
+                          <XmlEnter path="SECID">
+                            <DbSetCharValue name="unitId" path="UNIQUEID" />
+                            <DbSetCharValue name="nameSpace" path="UNIQUEIDTYPE" />
+                          </XmlEnter>
+                        </XmlIfPathExists> <!-- SECID -->
+                        
+                        <DbSetCharValue name="name" path="SECNAME" />
+                        <DbSetCharValue name="tickerSymbol" path="TICKER" />
+    
+                        <XmlIfHasCharData path="UNITPRICE">
+                          <DbSetCharValue name="unitPriceValue" path="UNITPRICE"/>
+                        </XmlIfHasCharData>
+                        
+                        <XmlIfHasCharData path="DTASOF">
+                          <DbSetCharValue name="unitPriceDate" path="DTASOF" type="time" template="YYYYMMDDhhmmss" />
+                        </XmlIfHasCharData>
+                        
+                      </DbCreateAndEnterGroup>
+                    
+                    </XmlEnter>
+                  </XmlIfPathExists> <!-- SECINFO -->
+                </XmlForEvery>
+              </XmlEnter>
+            </XmlIfPathExists> <!-- SECLIST -->
+
+
+          </XmlEnter>
+        </XmlIfPathExists> <!-- SECLISTMSGSRSV1 -->
+      
+      
       </XmlEnter>
-    </XmlIfPathExists>
+    </XmlIfPathExists> <!-- OFX -->
     
     
   </Import>

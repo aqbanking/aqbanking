@@ -39,7 +39,9 @@ GWEN_INHERIT(AB_IMEXPORTER, AB_IMEXPORTER_XML);
  * ------------------------------------------------------------------------------------------------
  */
 
-static AB_TRANSACTION *dbToTransaction(AB_IMEXPORTER *ie, GWEN_DB_NODE *dbAccount, GWEN_DB_NODE *dbTransaction);
+static void _readAccountsFromDb(AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *dbData);
+static int _readSecuritiesFromDb(AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *dbData);
+static AB_TRANSACTION *dbToTransaction(GWEN_DB_NODE *dbAccount, GWEN_DB_NODE *dbTransaction);
 static void handleTransactionDetails(AB_TRANSACTION *t, const char *sDetails);
 
 
@@ -601,10 +603,20 @@ GWEN_XMLNODE *AB_ImExporterXML_ReadXmlFromSio(AB_IMEXPORTER *ie, GWEN_SYNCIO *si
 
 
 
-int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
-                              AB_IMEXPORTER_CONTEXT *ctx,
-                              GWEN_DB_NODE *dbData)
+int AB_ImExporterXML_ImportDb(GWEN_UNUSED AB_IMEXPORTER *ie,
+			      AB_IMEXPORTER_CONTEXT *ctx,
+			      GWEN_DB_NODE *dbData)
 {
+
+  _readAccountsFromDb(ctx, dbData);
+  return _readSecuritiesFromDb(ctx, dbData);
+}
+
+
+
+void _readAccountsFromDb(AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *dbData)
+{
+
   GWEN_DB_NODE *dbAccount;
 
   dbAccount=GWEN_DB_FindFirstGroup(dbData, "account");
@@ -641,7 +653,7 @@ int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
     while (dbCurrent) {
       AB_TRANSACTION *t;
 
-      t=dbToTransaction(ie, dbAccount, dbCurrent);
+      t=dbToTransaction(dbAccount, dbCurrent);
       assert(t);
 
       AB_ImExporterAccountInfo_AddTransaction(accountInfo, t);
@@ -663,13 +675,45 @@ int AB_ImExporterXML_ImportDb(AB_IMEXPORTER *ie,
 
     dbAccount=GWEN_DB_FindNextGroup(dbAccount, "account");
   }
+}
+
+
+
+int _readSecuritiesFromDb(AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *dbData)
+{
+  GWEN_DB_NODE *dbSecurity;
+
+  dbSecurity=GWEN_DB_FindFirstGroup(dbData, "security");
+  while (dbSecurity) {
+    AB_SECURITY *sec;
+
+    sec=AB_Security_fromDb(dbSecurity);
+    if (sec) {
+      const char *s;
+
+      s=GWEN_DB_GetCharValue(dbSecurity, "unitPriceDate", 0, NULL);
+      if (s && *s) {
+	GWEN_TIME *ti;
+
+	ti=GWEN_Time_fromString(s, "YYYYMMDDhhmmss");
+	if (ti==NULL) {
+	  DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value for unitPriceDate: %s", s);
+	  return GWEN_ERROR_GENERIC;
+	}
+	AB_Security_SetUnitPriceDate(sec, ti);
+	GWEN_Time_free(ti);
+      }
+      AB_ImExporterContext_AddSecurity(ctx, sec);
+    }
+    dbSecurity=GWEN_DB_FindNextGroup(dbSecurity, "security");
+  }
 
   return 0;
 }
 
 
 
-AB_TRANSACTION *dbToTransaction(AB_IMEXPORTER *ie, GWEN_DB_NODE *dbAccount, GWEN_DB_NODE *dbTransaction)
+AB_TRANSACTION *dbToTransaction(GWEN_DB_NODE *dbAccount, GWEN_DB_NODE *dbTransaction)
 {
   AB_TRANSACTION *t;
   const char *s;
