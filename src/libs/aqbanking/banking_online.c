@@ -562,7 +562,7 @@ int _sendCommandsInsideProgress(AB_BANKING *ab, AB_TRANSACTION_LIST2 *commandLis
   }
 
   /* sort account queues by provider */
-  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Info, I18N("Sorting commands by provider"));
+  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Info, I18N("Sorting account queues by provider"));
   pql=AB_ProviderQueue_List_new();
   rv=_sortAccountQueuesByProvider(ab, aql, pql, pid);
   if (rv<0) {
@@ -597,7 +597,6 @@ int _sortCommandsByAccounts(AB_BANKING *ab,
   AB_ACCOUNTQUEUE *aq;
 
   /* sort commands by account */
-  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Info, I18N("Sorting commands by account"));
   jit=AB_Transaction_List2_First(commandList);
   if (jit) {
     AB_TRANSACTION *t;

@@ -276,7 +276,7 @@ int _lockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers)
              (unsigned long int) AB_User_GetUniqueId(user));
     GWEN_Gui_ProgressLog2(0,
                           GWEN_LoggerLevel_Info,
-                          "Locking customer \"%lu\"",
+                          I18N("Locking customer \"%lu\""),
                           (unsigned long int) AB_User_GetUniqueId(user));
     rv=AB_Provider_BeginExclUseUser(ob->provider, user);
     if (rv<0) {
@@ -318,7 +318,7 @@ int _unlockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers, int abandon)
                (unsigned long int) AB_User_GetUniqueId(u));
       GWEN_Gui_ProgressLog2(0,
                             GWEN_LoggerLevel_Info,
-                            "Unlocking customer \"%lu\"",
+                            I18N("Unlocking customer \"%lu\""),
                             (unsigned long int) AB_User_GetUniqueId(u));
       rv=AB_Provider_EndExclUseUser(ob->provider, u, abandon);
       if (rv<0) {
