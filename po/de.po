@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aqbanking\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
-"POT-Creation-Date: 2021-02-16 21:57+0100\n"
-"PO-Revision-Date: 2021-02-16 22:12+0100\n"
+"POT-Creation-Date: 2021-02-16 22:31+0100\n"
+"PO-Revision-Date: 2021-02-16 22:35+0100\n"
 "Last-Translator: Christian Stimming <christian@cstimming.de>\n"
 "Language-Team: Deutsch <>\n"
 "Language: de\n"
@@ -653,14 +653,13 @@ msgstr "Sende Aufträge an die Bank(en)"
 
 #. sort commands by account
 #: src/libs/aqbanking/banking_online.c:555
-#: src/libs/aqbanking/banking_online.c:600
 msgid "Sorting commands by account"
 msgstr "Aufträge nach Konto sortieren"
 
 #. sort account queues by provider
 #: src/libs/aqbanking/banking_online.c:565
-msgid "Sorting commands by provider"
-msgstr "Aufträge nach Provider sortieren"
+msgid "Sorting account queues by provider"
+msgstr "Konten-Aufträge nach Providern sortieren"
 
 #. no longer needed
 #. send to each backend
@@ -668,17 +667,17 @@ msgstr "Aufträge nach Provider sortieren"
 msgid "Send commands to providers"
 msgstr "Aufträge an Provider verteilen"
 
-#: src/libs/aqbanking/banking_online.c:723
+#: src/libs/aqbanking/banking_online.c:722
 #, c-format
 msgid "Send commands to provider \"%s\""
 msgstr "Aufträge an Provider \"%s\" übergeben"
 
-#: src/libs/aqbanking/banking_online.c:727
+#: src/libs/aqbanking/banking_online.c:726
 #, c-format
 msgid "Error sending commands to provider \"%s\":%d"
 msgstr "Fehler beim Übergeben der Aufträge an Provider \"%s\":%d"
 
-#: src/libs/aqbanking/banking_online.c:735
+#: src/libs/aqbanking/banking_online.c:734
 #, c-format
 msgid "Provider \"%s\" is not available."
 msgstr "Provider \"%s\" ist nicht verfügbar."
@@ -2669,6 +2668,14 @@ msgstr ""
 msgid "Error importing accounts"
 msgstr "Fehler beim Importieren der Konten"
 
+#: src/libs/plugins/backends/aqofxconnect/provider_sendcmd.c:363
+#: src/libs/plugins/backends/aqhbci/applayer/outbox.c:279
+#: src/libs/plugins/backends/aqebics/client/provider_sendcmd.c:77
+#: src/libs/plugins/backends/aqpaypal/provider_sendcmd.c:307
+#, c-format
+msgid "Locking customer \"%lu\""
+msgstr "Zugriff auf Benutzer \"%lu\""
+
 #: src/libs/plugins/backends/aqofxconnect/provider_sendcmd.c:367
 #: src/libs/plugins/backends/aqebics/client/provider_sendcmd.c:81
 #: src/libs/plugins/backends/aqpaypal/provider_sendcmd.c:311
@@ -2678,11 +2685,12 @@ msgstr "Für Benutzer %lu konnte kein exklusiver Zugriff erreicht werden"
 
 #. while aq
 #: src/libs/plugins/backends/aqofxconnect/provider_sendcmd.c:385
+#: src/libs/plugins/backends/aqhbci/applayer/outbox.c:321
 #: src/libs/plugins/backends/aqebics/client/provider_sendcmd.c:101
 #: src/libs/plugins/backends/aqpaypal/provider_sendcmd.c:374
 #, c-format
 msgid "Unlocking customer \"%lu\""
-msgstr "Exklusiver Zugriff auf Benutzer %lu freigeben"
+msgstr "Freigeben von Benutzer \"%lu\""
 
 #: src/libs/plugins/backends/aqofxconnect/provider_sendcmd.c:389
 #: src/libs/plugins/backends/aqebics/client/provider_sendcmd.c:105
@@ -4115,7 +4123,8 @@ msgstr "(ohne Bezeichnung)"
 #: src/libs/plugins/backends/aqhbci/applayer/cbox_itan.c:387
 #, c-format
 msgid ""
-"TAN method (%d) selected by user is no longer valid,please choose another one"
+"TAN method (%d) selected by user is no longer valid, please choose another "
+"one"
 msgstr ""
 "Vom Benutzer gewählte TAN-Methode (%d) ist nicht mehr gültig, bitte wählen "
 "Sie eine neue"
