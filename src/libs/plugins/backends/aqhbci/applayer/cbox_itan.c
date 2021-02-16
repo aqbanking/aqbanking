@@ -384,7 +384,7 @@ const AH_TAN_METHOD *_getAndCheckUserSelectedTanMethod(AB_USER *u, const AH_TAN_
       if (tm==NULL) {
         GWEN_Gui_ProgressLog2(0,
                               GWEN_LoggerLevel_Warning,
-                              I18N("TAN method (%d) selected by user is no longer valid,"
+                              I18N("TAN method (%d) selected by user is no longer valid, "
                                    "please choose another one"),
                               fn);
       }

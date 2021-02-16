@@ -724,7 +724,7 @@ int _sendProviderQueues(AB_BANKING *ab,
         localCtx=AB_ImExporterContext_new();
         rv=AB_Provider_SendCommands(pro, pq, localCtx);
         if (rv<0) {
-          GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Error, I18N("Error Sending commands to provider \"%s\":%d"), providerName,
+          GWEN_Gui_ProgressLog2(pid, GWEN_LoggerLevel_Error, I18N("Error sending commands to provider \"%s\":%d"), providerName,
                                 rv);
           DBG_INFO(AQBANKING_LOGDOMAIN, "Error sending commands to provider \"%s\" (%d)", AB_Provider_GetName(pro), rv);
         }
