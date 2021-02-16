@@ -79,7 +79,7 @@ aqebics_tool_LDFLAGS+=-mconsole
 endif
 
 sources:
-	for f in $(aqbanking_cli_SOURCES); do \
+	for f in $(aqbanking_cli_SOURCES) $(aqhbci_tool4_SOURCES) $(aqpaypal_tool_SOURCES) $(aqebics_tool_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 

@@ -68,13 +68,13 @@ dist-local: de.tar.bz2
 CLEANFILES = $(at_files) $(ch_files) $(de_files) $(ca_files) $(us_files)
 
 sources:
-	for f in $(libbankinfo_la_SOURCES); do \
+	for f in $(libbankinfo_generic_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 
 
 cppcheck:
-	for f in $(libbankinfo_la_SOURCES); do \
+	for f in $(libbankinfo_generic_la_SOURCES); do \
 	  cppcheck --force $$f ; \
 	done
 	for d in $(SUBDIRS); do \
