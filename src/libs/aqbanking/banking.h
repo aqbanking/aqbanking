@@ -266,7 +266,7 @@ int AB_Banking_GetSharedDataDir(const AB_BANKING *ab,
  * @param name name of the configuration subgroup
  * @param pDb pointer to a variable to receive the configuration loaded
  */
-AQBANKING_API
+AQBANKING_API AQBANKING_DEPRECATED
 int AB_Banking_LoadSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE **pDb);
 
 
@@ -281,7 +281,7 @@ int AB_Banking_LoadSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE *
  * @param name name of the configuration subgroup
  * @param db pointer to the configuration to store
  */
-AQBANKING_API
+AQBANKING_API AQBANKING_DEPRECATED
 int AB_Banking_SaveSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE *db);
 
 
@@ -295,7 +295,7 @@ int AB_Banking_SaveSharedConfig(AB_BANKING *ab, const char *name, GWEN_DB_NODE *
  * @param ab pointer to the AB_BANKING object
  * @param name name of the configuration subgroup
  */
-AQBANKING_API
+AQBANKING_API AQBANKING_DEPRECATED
 int AB_Banking_LockSharedConfig(AB_BANKING *ab, const char *name);
 
 
@@ -309,7 +309,7 @@ int AB_Banking_LockSharedConfig(AB_BANKING *ab, const char *name);
  * @param ab pointer to the AB_BANKING object
  * @param name name of the configuration subgroup
  */
-AQBANKING_API
+AQBANKING_API AQBANKING_DEPRECATED
 int AB_Banking_UnlockSharedConfig(AB_BANKING *ab, const char *name);
 
 
@@ -326,7 +326,7 @@ int AB_Banking_UnlockSharedConfig(AB_BANKING *ab, const char *name);
  * Runtime configuration data can be set at any time after calling @ref AB_Banking_new() and remains available
  * until @ref AB_Banking_free() is called, so it survives calls to @ref AB_Banking_Init() and @ref AB_Banking_Fini().
  *
- * The following variables are recognized by AqBanking an the backends so far:
+ * The following variables are recognized by AqBanking and the backends so far:
  * <ul>
  *   <li>fintsRegistrationKey (char): Registration key provided by the German ZKA to FinTS using applications
  *       (see https://www.hbci-zka.de/register/prod_register.htm)</li>
