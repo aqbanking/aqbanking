@@ -1,5 +1,20 @@
 Next:
 =====
+
+- AqBanking
+  - remove AB_Gui_CheckCert()
+  - remove AB_Banking_MakeGermanIban()
+  - remove AB_ERROR
+  - mark following functions as deprecated:
+    - AB_Banking_LoadSharedConfig()
+    - AB_Banking_SaveSharedConfig()
+    - AB_Banking_LockSharedConfig()
+    - AB_Banking_UnlockSharedConfig()
+    - AB_Banking_GetAppName()
+    - AB_Banking_GetEscapedAppName()
+    - AB_Banking_GetUserDataDir()
+    - AB_Banking_GetSharedDataDir()
+
 - HBCI:
   - show name and number of segment a result segment refers to in log messages
   - check BPD "StoreDays" for segment HKKAZ
@@ -30,8 +45,6 @@ Next:
   - fix apidoc for provider.h
   - create APIDOC for banking jobs
 
-- remove AB_ERROR
-- remove AB_Banking_MakeGermanIban()
 - remove class aqhbci (move to ah_provider)
 - sort "#include" directives in backends, make them more specific
 
@@ -49,7 +62,7 @@ Mid-term
 Long-term
 =========
 
-- remove message engine stuff, use gparser instead
+- remove message engine stuff, use parser from AqFints instead
 
 
 
