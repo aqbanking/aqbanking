@@ -147,8 +147,7 @@ int _performQueue(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jq)
     /* jq now contains all jobs to be executed */
     rv=AH_OutboxCBox_SendAndRecvQueue(cbox, dlg, jq);
     if (rv) {
-      _handleQueueError(cbox, jq, "Error performing queue");
-      AH_JobQueue_free(jq);
+      _handleQueueError(cbox, jq, "Error performing queue"); /* frees jobQueue */
       return rv;
     } /* if error */
   } /* for */
@@ -468,13 +467,15 @@ void _extractMatchingQueues(AH_JOBQUEUE_LIST *jql,
 
 void _handleQueueListError(AH_OUTBOX_CBOX *cbox, AH_JOBQUEUE_LIST *jql, const char *logStr)
 {
-  AH_JOBQUEUE *jq;
+  if (jql) {
+    AH_JOBQUEUE *jq;
 
-  while ((jq=AH_JobQueue_List_First(jql))) {
-    AH_JobQueue_List_Del(jq);
-    _handleQueueError(cbox, jq, logStr);
-  } /* while */
-  AH_JobQueue_List_free(jql);
+    while ((jq=AH_JobQueue_List_First(jql))) {
+      AH_JobQueue_List_Del(jq);
+      _handleQueueError(cbox, jq, logStr);
+    } /* while */
+    AH_JobQueue_List_free(jql);
+  }
 }
 
 
