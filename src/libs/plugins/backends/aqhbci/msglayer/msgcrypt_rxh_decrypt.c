@@ -303,8 +303,22 @@ GWEN_BUFFER *_rxhDecrypt_GetDecryptedMessage(GWEN_CRYPT_KEY *sk, int rxhProtocol
     return NULL;
   }
   if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error unpadding this message (%d)", rv);
-    GWEN_Buffer_Dump(mbuf, 2);
+    uint8_t *keyData;
+    uint32_t  keyLen;
+
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error unpadding message (%d), details follow", rv);
+    keyData=GWEN_Crypt_KeySym_GetKeyDataPtr(sk);
+    keyLen=GWEN_Crypt_KeySym_GetKeyDataLen(sk);
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Key data (rxhProtocol: %d):", rxhProtocol);
+    GWEN_Text_LogString((const char*) keyData, keyLen, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error);
+
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Encrypted data:");
+    GWEN_Text_LogString((const char*) pSource, lSource, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error);
+
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Decrypted data (after unpadding):");
+    GWEN_Text_LogString(GWEN_Buffer_GetStart(mbuf),
+                        GWEN_Buffer_GetUsedBytes(mbuf),
+                        AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error);
     GWEN_Buffer_free(mbuf);
     return NULL;
   }

@@ -53,11 +53,11 @@ sources:
 	for f in $(plugin_DATA); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/pdsources; \
 	done
-	for f in $(libaqpaypal_la_SOURCES); do \
+	for f in $(libaqpaypal_la_SOURCES) $(INCLUDED_SOURCEFILES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 
-EXTRA_DIST=aqpaypal.xml.in $(dlgdata_DATA) $(dlgimage_DATA) \
+INCLUDED_SOURCEFILES=\
   provider_accspec.c \
   provider_credentials.c \
   provider_dialogs.c \
@@ -65,6 +65,9 @@ EXTRA_DIST=aqpaypal.xml.in $(dlgdata_DATA) $(dlgimage_DATA) \
   provider_getstm.c \
   provider_sendcmd.c \
   provider_update.c
+
+EXTRA_DIST=aqpaypal.xml.in $(dlgdata_DATA) $(dlgimage_DATA) \
+  $(INCLUDED_SOURCEFILES)
 
 
 built_sources:

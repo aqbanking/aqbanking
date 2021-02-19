@@ -42,16 +42,17 @@ libaqofxconnect_la_LIBADD= \
   dialogs/libofxdcdialogs.la
 
 
-
-EXTRA_DIST= $(dlgdata_DATA) $(dlgimage_DATA) \
-  aqofxconnect.xml.in \
+INCLUDED_SOURCEFILES=\
   provider_accspec.c \
   provider_sendcmd.c \
   provider_update.c
 
+EXTRA_DIST= $(dlgdata_DATA) $(dlgimage_DATA) \
+  aqofxconnect.xml.in \
+  $(INCLUDED_SOURCEFILES)
 
 sources:
-	for f in $(libaqofxconnect_la_SOURCES) $(aqofxconnect_la_SOURCES); do \
+	for f in $(libaqofxconnect_la_SOURCES) $(aqofxconnect_la_SOURCES) $(INCLUDED_SOURCEFILES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 	for f in $(dlgdata_DATA); do \

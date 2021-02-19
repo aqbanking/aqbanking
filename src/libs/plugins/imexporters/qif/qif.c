@@ -254,7 +254,7 @@ int AH_ImExporterQIF__GetValue(AB_IMEXPORTER *ie,
                   " 2) \',\' (as in \"123,45\")\n"
                   "What is the fixpoint in the value above?");
       const char *t1h=
-        I18N_NOOP("<htlm>The following value could not be parsed: <br>");
+        I18N_NOOP("<html>The following value could not be parsed: <br>");
       const char *t2h=
         I18N_NOOP("<br>"
                   "There are now two possibilities of what character "
