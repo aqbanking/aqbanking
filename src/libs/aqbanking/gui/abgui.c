@@ -12,6 +12,8 @@
 # include <config.h>
 #endif
 
+#define AQBANKING_NOWARN_DEPRECATED
+
 #include "abgui_p.h"
 
 #include <gwenhywfar/mdigest.h>
