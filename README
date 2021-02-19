@@ -81,10 +81,12 @@ Currently there are plugins for the following formats:
   - OpenHBCI1 transactions
   - ERI
   - Q43
+  - XML (various formats like SEPA-PAIN, CAMT, OFX)
   
 - Exporters
   - DTAUS (German financial format)
   - CSV
+  - XML (various formats like SEPA-PAIN, CAMT, OFX)
 
 
 1.3. Bank/Account Information
@@ -175,15 +177,10 @@ are not managed by any online banking backend.
 AqBanking has several direct dependencies:
 
 - "Gwenhywfar" >= 3.99.0, available from
-http://gwenhywfar.sf.net/, is absolutely required
+https://www.aqbanking.de/, is absolutely required
 
 - "GMP", the GNU MP Bignum Library available from 
   https://gmplib.org/index.html is required for calculations
-
-- The python module "ctypes" https://sf.net/projects/ctypes is
-required for the python wrappers of aqbanking. The python wrappers
-are installed by default (to disable it, use --disable-python),
-but they cannot be used unless "ctypes" is installed.
 
 
 4.2. Applications
@@ -479,6 +476,6 @@ AqBanking6:
 - Includes:                    - some header files have been moved to subfolders (e.g. aqbanking/value.h -> aqbanking/types/value.h>)
                                  If your compiler complains about missing headers try "aqbanking/types/" instead of "aqbanking".
 
-Martin Preuss, Wilhelmshaven/Germany, 2019/03/05
+Martin Preuss, Hamburg/Germany, 2021/02/19
 
 
