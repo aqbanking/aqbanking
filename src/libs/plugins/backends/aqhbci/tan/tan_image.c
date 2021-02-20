@@ -170,11 +170,19 @@ int _extractAndSetMimeTypeAndImageData(const uint8_t *challengePtr,
   }
   if (tagLen) {
     char *mimeType;
+    int i;
 
     mimeType=(char *) malloc(tagLen+1);
     assert(mimeType);
     memmove(mimeType, p, tagLen);
     mimeType[tagLen]=0;
+
+    for (i=(tagLen-1); i>0; i--) {
+      if (mimeType[i]==32)
+	mimeType[i]=0;
+      else
+	break;
+    }
 
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Image mimetype: \"%s\"", mimeType);
     GWEN_DB_SetCharValue(dbMethodParams, GWEN_DB_FLAGS_OVERWRITE_VARS, "mimeType", mimeType);
