@@ -332,8 +332,10 @@ int _sendAndReceiveTanResponseProc2(AH_OUTBOX_CBOX *cbox,
     return rv;
   }
 
+  AH_JobQueue_SetJobStatusOnMatch(qJob2, AH_JobStatusEncoded, AH_JobStatusSent);
+
   /* receive response */
-  rv=AH_OutboxCBox_RecvQueue(cbox, dlg, qJob);
+  rv=AH_OutboxCBox_RecvQueue(cbox, dlg, qJob2);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg2);
@@ -386,6 +388,11 @@ void _dispatchJobSegResultsToQueue(AH_JOB *job, AH_JOBQUEUE *qJob)
       origRes=AH_Result_List_First(rl);
       if (origRes==NULL) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "No segment result in job HKTAN");
+      }
+      else {
+        DBG_INFO(AQHBCI_LOGDOMAIN,
+                 "We have segment results in TAN job, setting status of all sent jobs to ANSWERED");
+        AH_JobQueue_SetJobStatusOnMatch(qJob, AH_JobStatusSent, AH_JobStatusAnswered);
       }
       while (origRes) {
         AH_JOB *qj;

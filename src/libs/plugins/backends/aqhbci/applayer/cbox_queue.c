@@ -171,16 +171,24 @@ AH_JOBQUEUE *_createNextQueueFromTodoList(AB_USER *user, AH_JOB_LIST *jl, uint32
   AH_JobQueue_SetFlags(jqTodo, (jqFlags&AH_JOBQUEUE_FLAGS_COPYMASK));
 
   while ((j=AH_Job_List_First(jl))) {
+    const char *jobName;
+
+    jobName=AH_Job_GetName(j);
+    if (!(jobName && *jobName))
+      jobName="<unnamed>";
+
     AH_Job_List_Del(j);
 
     if (AH_Job_GetStatus(j)==AH_JobStatusAnswered) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Job status \"answered\", checking whether it needs to be re-enqueued");
+      DBG_INFO(AQHBCI_LOGDOMAIN,
+	       "Job \"%s\" with status \"answered\", checking whether it needs to be re-enqueued",
+	       jobName);
       /* prepare job for next message
        * (if attachpoint or multi-message job)
        */
       AH_Job_PrepareNextMessage(j);
       if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_HASMOREMSGS) {
-        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Requeueing job");
+        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Requeueing job \"%s\"", jobName);
         /* we shall redo this job */
         if (AH_JobQueue_AddJob(jqTodo, j)!=AH_JobQueueAddResultOk) {
           DBG_ERROR(AQHBCI_LOGDOMAIN, "Job could not be re-added to queue, SNH!");
@@ -188,17 +196,19 @@ AH_JOBQUEUE *_createNextQueueFromTodoList(AB_USER *user, AH_JOB_LIST *jl, uint32
           AH_Job_SetStatus(j, AH_JobStatusError);
         }
         else {
-          AH_Job_Log(j, GWEN_LoggerLevel_Info, "Job re-enqueued (multi-message job)");
+	  AH_Job_Log(j, GWEN_LoggerLevel_Info, "Job re-enqueued (multi-message job)");
           j=NULL; /* mark that this job has been dealt with */
         }
       } /* if more messages */
       else {
-        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job has no messages left, not re-enqueing");
+        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" has no messages left, not re-enqueing", jobName);
       }
     } /* if status "answered" */
 
     else if (AH_Job_GetStatus(j)==AH_JobStatusEnqueued) {
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job status \"enqueued\", trying to re-enqueue (TODO: Is this really used?)");
+      DBG_NOTICE(AQHBCI_LOGDOMAIN,
+		 "Job \"%s\" with status \"enqueued\", trying to re-enqueue (TODO: Is this really used?)",
+		 jobName);
       if (AH_JobQueue_AddJob(jqTodo, j)!=AH_JobQueueAddResultOk) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Job could not be re-added to queue, SNH!");
         AH_Job_SetStatus(j, AH_JobStatusError);
@@ -211,8 +221,9 @@ AH_JOBQUEUE *_createNextQueueFromTodoList(AB_USER *user, AH_JOB_LIST *jl, uint32
     } /* if status "enqueued" */
 
     else {
-      DBG_WARN(AQHBCI_LOGDOMAIN, "Bad status \"%s\" (%d)",
-               AH_Job_StatusName(AH_Job_GetStatus(j)),
+      DBG_WARN(AQHBCI_LOGDOMAIN, "Job \"%s\" has unexpected status \"%s\" (%d)",
+	       jobName,
+	       AH_Job_StatusName(AH_Job_GetStatus(j)),
                AH_Job_GetStatus(j));
       if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
         AH_Job_Dump(j, stderr, 4);

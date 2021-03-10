@@ -355,7 +355,7 @@ AH_JOB *_findReferencedJob(AH_JOBQUEUE *jq, int refMsgNum, int refSegNum)
     if (jobStatus==AH_JobStatusSent || jobStatus==AH_JobStatusAnswered) {
       DBG_DEBUG(AQHBCI_LOGDOMAIN, "Checking whether job \"%s\" has segment %d", jobName, refSegNum);
       if ((AH_Job_GetMsgNum(j)==refMsgNum) && AH_Job_HasSegment(j, refSegNum)) {
-        DBG_DEBUG(AQHBCI_LOGDOMAIN, "Job \"%s\" claims to have the segment %d", jobName, refSegNum);
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" claims to have the segment %d for msg %d", jobName, refSegNum, refMsgNum);
         return j;
       }
     }
@@ -485,13 +485,22 @@ void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWE
 {
   GWEN_DB_NODE *dbCurr;
 
+  DBG_INFO(AQHBCI_LOGDOMAIN,
+	   "Handling responses for message %d (received message num is %d)",
+	   AH_Msg_GetMsgRef(msg), AH_Msg_GetMsgNum(msg));
+
   dbCurr=GWEN_DB_GetFirstGroup(db);
   while (dbCurr) {
     GWEN_DB_NODE *dbPreparedJobResponse;
     GWEN_DB_NODE *dbData;
     int refSegNum;
+    int segNum;
 
-    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Handling response \"%s\"", GWEN_DB_GroupName(dbCurr));
+    refSegNum=GWEN_DB_GetIntValue(dbCurr, "head/ref", 0, 0);
+    segNum=GWEN_DB_GetIntValue(dbCurr, "head/seq", 0, 0);
+    DBG_INFO(AQHBCI_LOGDOMAIN,
+	     "Checking response \"%s\" (seg num %d, ref seg num %d)",
+	     GWEN_DB_GroupName(dbCurr), segNum, refSegNum);
 
     /* use same name for main response group */
     dbPreparedJobResponse=GWEN_DB_Group_new(GWEN_DB_GroupName(dbCurr));
@@ -503,14 +512,22 @@ void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWE
     /* store copy of original response there */
     GWEN_DB_AddGroup(dbData, GWEN_DB_Group_dup(dbCurr));
 
-    refSegNum=GWEN_DB_GetIntValue(dbCurr, "head/ref", 0, 0);
     if (refSegNum) {
       AH_JOB *j;
 
       /* search for job to which this response belongs */
-      j=_findReferencedJob(jq, AH_Msg_GetMsgNum(msg), refSegNum);
+      j=_findReferencedJob(jq, AH_Msg_GetMsgRef(msg), refSegNum);
       if (j) {
-        _possiblyExtractAttachPoint(j, dbCurr);
+	DBG_INFO(AQHBCI_LOGDOMAIN,
+		 "Job \"%s\" (%d:%d-%d) claims response \"%s\" (%d:%d)",
+		 AH_Job_GetName(j),
+		 AH_Job_GetMsgNum(j),
+		 AH_Job_GetFirstSegment(j),
+		 AH_Job_GetLastSegment(j),
+		 GWEN_DB_GroupName(dbCurr),
+		 AH_Msg_GetMsgRef(msg),
+		 refSegNum);
+	_possiblyExtractAttachPoint(j, dbCurr);
 
         /* check for segment results */
         if (strcasecmp(GWEN_DB_GroupName(dbCurr), "SegResult")==0)
