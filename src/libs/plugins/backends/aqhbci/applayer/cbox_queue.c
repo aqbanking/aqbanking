@@ -206,9 +206,7 @@ AH_JOBQUEUE *_createNextQueueFromTodoList(AB_USER *user, AH_JOB_LIST *jl, uint32
     } /* if status "answered" */
 
     else if (AH_Job_GetStatus(j)==AH_JobStatusEnqueued) {
-      DBG_NOTICE(AQHBCI_LOGDOMAIN,
-		 "Job \"%s\" with status \"enqueued\", trying to re-enqueue (TODO: Is this really used?)",
-		 jobName);
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" with status \"enqueued\", trying to re-enqueue", jobName);
       if (AH_JobQueue_AddJob(jqTodo, j)!=AH_JobQueueAddResultOk) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Job could not be re-added to queue, SNH!");
         AH_Job_SetStatus(j, AH_JobStatusError);
