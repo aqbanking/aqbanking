@@ -833,6 +833,7 @@
         <item name="loadCellPhone"/>
 
         <item name="getEStatements"/>
+        <item name="getEStatements2"/>
 
 
         <!-- Bit 8 set: transfer jobs, bit 9 cleared: non-SEPA -->

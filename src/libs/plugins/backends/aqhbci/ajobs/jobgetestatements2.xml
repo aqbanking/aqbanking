@@ -1,0 +1,76 @@
+<SEGs>
+ <SEGdef id="GetEStatements2" code="HKEKA" version="5" delimiter="+" terminator="'" >
+   <GROUP type="SegHead"        name="head" />
+   <GROUP type="kti_i"          version="1" />
+   <ELEM  name="eStatementFmt"  type="num" maxsize="1"  minnum="0" />
+   <ELEM  name="eStatementNum"  type="num"   maxsize="5"  minnum="0" />
+   <ELEM  name="eStatementYear" type="num"   maxsize="4"  minnum="0" />
+   <ELEM  name="maxEntries"     type="num"   maxsize="4"  minnum="0" />
+   <ELEM  name="attach"         type="ascii" maxsize="35" minnum="0" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <SEGdef id="EStatement2" code="HIEKA" version="5" delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <ELEM  name="eStatementFmt"  type="num" maxsize="1"  minnum="0" />
+   <GROUP name="ReportTimespam" delimiter=":" minnum="0" maxnum="1" >
+     <ELEM name="startDate"   type="date"  minsize="8" maxsize="8" minnum="1" />
+     <ELEM name="endDate"     type="date"  minsize="8" maxsize="8" minnum="0" />
+   </GROUP>
+   <ELEM name="date"          type="date"  minsize="8" maxsize="8" minnum="0" />
+   <ELEM name="year"          type="num"   maxsize="4" minnum="0" />
+   <ELEM name="num"           type="num"   maxsize="5" minnum="0" />
+   <ELEM name="eStatement" type="bin" trustlevel="2" />
+   <ELEM name="balanceInfo" type="ascii" maxsize="65536" minnum="0" />
+   <ELEM name="custTerms" type="ascii" maxsize="65536" minnum="0" />
+   <ELEM name="adText" type="ascii" maxsize="65536" minnum="0" />
+   <ELEM name="iban"          type="ascii" maxsize="34" minnum="0" />
+   <ELEM name="bic"           type="ascii" maxsize="11" minnum="0" />
+   <ELEM name="name1"         type="ascii" maxsize="35" minnum="0" />
+   <ELEM name="name2"         type="ascii" maxsize="35" minnum="0" />
+   <ELEM name="suffix"        type="ascii" maxsize="35" minnum="0" />
+   <ELEM name="ackCode"       type="bin"   minnum="0" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <SEGdef code="HIEKAS" version="5" isbpdjob="1" delimiter="+" terminator="'">
+   <GROUP type="BPDJob" version="2"></GROUP>
+   <GROUP delimiter=":">
+     <ELEM name="eStatementNumAllowed" type="alpha" maxsize="1"></ELEM>
+     <ELEM name="ackNeeded" type="alpha" maxsize="1"></ELEM>
+     <ELEM name="maxEntriesAllowed" type="alpha" maxsize="1"></ELEM>
+     <ELEM name="eStatementFmtSupported" type="num" maxsize="9"></ELEM>
+   </GROUP>
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+</SEGs>
+
+
+<JOBs>
+ <JOBdef  id="JobGetEStatements2" 
+          code="HKEKA"
+          params="HIEKAS"
+          version="5" 
+          crypt="1" 
+          sign="1" 
+          needBPD="1" 
+          response="EStatement2"
+          attachable="1"
+          single="1"
+ >
+   <SEG type="GetEStatements2" version="5" />
+ </JOBdef>
+</JOBs>
