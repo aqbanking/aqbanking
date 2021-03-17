@@ -97,48 +97,48 @@ int AH_Job_GetEStatements2_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     }
 
     if (responseName && *responseName) {
-//      GWEN_DB_NODE *dbXA;
-//
-//      dbXA=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data");
-//      if (dbXA)
-//        dbXA=GWEN_DB_GetGroup(dbXA, GWEN_PATH_FLAGS_NAMEMUSTEXIST, responseName);
-//      if (dbXA) {
-//        const void *p;
-//        unsigned int bs;
-//
-//        p=GWEN_DB_GetBinValue(dbXA, "eStatement", 0, 0, 0, &bs);
-//        if (p && bs) {
-//          AB_DOCUMENT *doc;
-//
-//          /* TODO: base64-decode if necessary */
-//
-//          /* add eStatement (PDF) to imExporterContext */
-//          doc=AB_Document_new();
-//          AB_Document_SetOwnerId(doc, AB_Account_GetUniqueId(acc));
-//
-//          AB_Document_SetData(doc, p, bs);
-//
-//          p=GWEN_DB_GetBinValue(dbXA, "ackCode", 0, 0, 0, &bs);
-//          if (p && bs) {
-//            AB_Document_SetAcknowledgeCode(doc, p, bs);
-//          }
-//
-//          /* get account info for this account */
-//          if (iea==NULL) {
-//            /* not set yet, find or create it */
-//            iea=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
-//                                                         AB_Account_GetUniqueId(acc),
-//                                                         AB_Account_GetIban(acc),
-//                                                         AB_Account_GetBankCode(acc),
-//                                                         AB_Account_GetAccountNumber(acc),
-//                                                         AB_Account_GetAccountType(acc));
-//            assert(iea);
-//          }
-//
-//          /* add document to imexporter context */
-//          AB_ImExporterAccountInfo_AddEStatement(iea, doc);
-//        }
-//      }
+      GWEN_DB_NODE *dbXA;
+
+      dbXA=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data");
+      if (dbXA)
+        dbXA=GWEN_DB_GetGroup(dbXA, GWEN_PATH_FLAGS_NAMEMUSTEXIST, responseName);
+      if (dbXA) {
+        const void *p;
+        unsigned int bs;
+
+        p=GWEN_DB_GetBinValue(dbXA, "eStatement", 0, 0, 0, &bs);
+        if (p && bs) {
+          AB_DOCUMENT *doc;
+
+          /* TODO: base64-decode if necessary */
+
+          /* add eStatement (PDF) to imExporterContext */
+          doc=AB_Document_new();
+          AB_Document_SetOwnerId(doc, AB_Account_GetUniqueId(acc));
+
+          AB_Document_SetData(doc, p, bs);
+
+          p=GWEN_DB_GetBinValue(dbXA, "ackCode", 0, 0, 0, &bs);
+          if (p && bs) {
+            AB_Document_SetAcknowledgeCode(doc, p, bs);
+          }
+
+          /* get account info for this account */
+          if (iea==NULL) {
+            /* not set yet, find or create it */
+            iea=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
+                                                         AB_Account_GetUniqueId(acc),
+                                                         AB_Account_GetIban(acc),
+                                                         AB_Account_GetBankCode(acc),
+                                                         AB_Account_GetAccountNumber(acc),
+                                                         AB_Account_GetAccountType(acc));
+            assert(iea);
+          }
+
+          /* add document to imexporter context */
+          AB_ImExporterAccountInfo_AddEStatement(iea, doc);
+        }
+      }
     }
 
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
