@@ -19,22 +19,22 @@
    <GROUP type="SegHead" name="head" />
    <ELEM  name="eStatementFmt"  type="num" maxsize="1"  minnum="0" />
    <GROUP name="ReportTimespam" delimiter=":" minnum="0" maxnum="1" >
-     <ELEM name="startDate"   type="date"  minsize="8" maxsize="8" minnum="1" />
-     <ELEM name="endDate"     type="date"  minsize="8" maxsize="8" minnum="0" />
+     <ELEM name="startDate"     type="date"  minsize="8" maxsize="8" minnum="1" />
+     <ELEM name="endDate"       type="date"  minsize="8" maxsize="8" minnum="0" />
    </GROUP>
-   <ELEM name="date"          type="date"  minsize="8" maxsize="8" minnum="0" />
-   <ELEM name="year"          type="num"   maxsize="4" minnum="0" />
-   <ELEM name="num"           type="num"   maxsize="5" minnum="0" />
-   <ELEM name="eStatement" type="bin" trustlevel="2" />
-   <ELEM name="balanceInfo" type="ascii" maxsize="65536" minnum="0" />
-   <ELEM name="custTerms" type="ascii" maxsize="65536" minnum="0" />
-   <ELEM name="adText" type="ascii" maxsize="65536" minnum="0" />
-   <ELEM name="iban"          type="ascii" maxsize="34" minnum="0" />
-   <ELEM name="bic"           type="ascii" maxsize="11" minnum="0" />
-   <ELEM name="name1"         type="ascii" maxsize="35" minnum="0" />
-   <ELEM name="name2"         type="ascii" maxsize="35" minnum="0" />
-   <ELEM name="suffix"        type="ascii" maxsize="35" minnum="0" />
-   <ELEM name="ackCode"       type="bin"   minnum="0" />
+   <ELEM name="date"            type="date"  minsize="8" maxsize="8" minnum="0" />
+   <ELEM name="year"            type="num"   maxsize="4" minnum="0" />
+   <ELEM name="num"             type="num"   maxsize="5" minnum="0" />
+   <ELEM name="eStatement"      type="bin" trustlevel="2" />
+   <ELEM name="balanceInfo"     type="ascii" maxsize="65536" minnum="0" />
+   <ELEM name="custTerms"       type="ascii" maxsize="65536" minnum="0" />
+   <ELEM name="adText"          type="ascii" maxsize="65536" minnum="0" />
+   <ELEM name="iban"            type="ascii" maxsize="34" minnum="0" />
+   <ELEM name="bic"             type="ascii" maxsize="11" minnum="0" />
+   <ELEM name="name1"           type="ascii" maxsize="35" minnum="0" />
+   <ELEM name="name2"           type="ascii" maxsize="35" minnum="0" />
+   <ELEM name="suffix"          type="ascii" maxsize="35" minnum="0" />
+   <ELEM name="ackCode"         type="bin"   minnum="0" />
 
    <VALUES>
      <VALUE path="head/code">%code</VALUE>
