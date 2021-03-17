@@ -1061,12 +1061,6 @@ int createAndAddRequests(AB_BANKING *ab,
       return rv;
   }
 
-  if (requestFlags & AQBANKING_TOOL_REQUEST_ESTATEMENTS2) {
-    rv=createAndAddRequest(ab, tList, as, AB_Transaction_CommandGetEStatements2, fromDate, toDate, ignoreUnsupported);
-    if (rv)
-      return rv;
-  }
-
   if (requestFlags & AQBANKING_TOOL_REQUEST_DEPOT) {
     rv=createAndAddRequest(ab, tList, as, AB_Transaction_CommandGetDepot, fromDate, toDate, ignoreUnsupported);
     if (rv)

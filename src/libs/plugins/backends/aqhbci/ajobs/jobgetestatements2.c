@@ -44,7 +44,7 @@ AH_JOB *AH_Job_GetEStatements2_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc
   if (!j) 
     return NULL;
 
-  AH_Job_SetSupportedCommand(j, AB_Transaction_CommandGetEStatements2);
+  AH_Job_SetSupportedCommand(j, AB_Transaction_CommandGetEStatements);
 
   /* overwrite some virtual functions */
   AH_Job_SetProcessFn(j, AH_Job_GetEStatements2_Process);
