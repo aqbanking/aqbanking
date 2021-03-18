@@ -20,7 +20,6 @@ noinst_HEADERS=\
   jobgettransactions_l.h \
   jobgettransactions_p.h \
   jobgettrans_camt_l.h \
-  jobgettrans_camt_p.h \
   jobforeignxferwh_l.h \
   jobforeignxferwh_p.h \
   jobloadcellphone_l.h \

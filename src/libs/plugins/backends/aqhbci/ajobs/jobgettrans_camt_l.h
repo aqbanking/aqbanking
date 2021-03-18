@@ -14,8 +14,6 @@
 
 #include "accountjob_l.h"
 
-#include <gwenhywfar/gwentime.h>
-
 
 AH_JOB *AH_Job_GetTransactionsCAMT_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account);
 
