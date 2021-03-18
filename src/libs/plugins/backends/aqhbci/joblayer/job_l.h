@@ -385,6 +385,9 @@ AH_JOB *AH_Job_List_GetById(AH_JOB_LIST *jl, uint32_t id);
 void AH_Job_SetStatusOnCommands(AH_JOB *j, AB_TRANSACTION_STATUS status);
 
 
+char *AH_Job_GenerateIdFromDateTimeAndJobId(const AH_JOB *j, int runningNumber);
+
+
 #endif /* AH_JOB_L_H */
 
 

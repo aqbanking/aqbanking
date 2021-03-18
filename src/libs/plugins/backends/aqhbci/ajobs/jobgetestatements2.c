@@ -66,6 +66,7 @@ int AH_Job_GetEStatements2_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
   AB_ACCOUNT *acc;
   int rv;
   AB_IMEXPORTER_ACCOUNTINFO *iea=NULL;
+  int runningDocNumber=0;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Processing JobGetEStatements2");
 
@@ -109,6 +110,7 @@ int AH_Job_GetEStatements2_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
         p=GWEN_DB_GetBinValue(dbXA, "eStatement", 0, 0, 0, &bs);
         if (p && bs) {
           AB_DOCUMENT *doc;
+          char *docId;
 
           /* TODO: base64-decode if necessary */
 
@@ -134,6 +136,14 @@ int AH_Job_GetEStatements2_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
                                                          AB_Account_GetAccountType(acc));
             assert(iea);
           }
+
+          /* assign document id derived from current datetime, job id and running number */
+          docId=AH_Job_GenerateIdFromDateTimeAndJobId(j, ++runningDocNumber);
+          if (docId) {
+            AB_Document_SetId(doc, docId);
+            free(docId);
+          }
+          AB_Document_SetMimeType(doc, "application/pdf");
 
           /* add document to imexporter context */
           AB_ImExporterAccountInfo_AddEStatement(iea, doc);
