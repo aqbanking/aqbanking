@@ -53,7 +53,6 @@ static void _possiblyDumpTransactions(const AB_IMEXPORTER_ACCOUNTINFO *ai);
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_GetTransactionsCAMT_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 {
   AH_JOB *j;
@@ -122,7 +121,6 @@ AH_JOB *AH_Job_GetTransactionsCAMT_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT 
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
 void GWENHYWFAR_CB AH_Job_GetTransactionsCAMT_FreeData(void *bp, void *p)
 {
   AH_JOB_GETTRANS_CAMT *aj;
@@ -134,7 +132,6 @@ void GWENHYWFAR_CB AH_Job_GetTransactionsCAMT_FreeData(void *bp, void *p)
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
 int AH_Job_GetTransCAMT__ReadTransactions(AH_JOB *j,
                                           AB_IMEXPORTER_ACCOUNTINFO *ai,
                                           const char *docType,
@@ -205,7 +202,6 @@ int AH_Job_GetTransCAMT__ReadTransactions(AH_JOB *j,
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
 int AH_Job_GetTransactionsCAMT_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 {
   AH_JOB_GETTRANS_CAMT *aj;
@@ -226,12 +222,13 @@ int AH_Job_GetTransactionsCAMT_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
   dbResponses=AH_Job_GetResponses(j);
   assert(dbResponses);
 
-  ai=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
+  ai=AB_ImExporterContext_GetOrAddAccountInfo(
+					      ctx,
                                               AB_Account_GetUniqueId(a),
                                               AB_Account_GetIban(a),
-                                              AB_Account_GetBankCode(a),
-                                              AB_Account_GetAccountNumber(a),
-                                              AB_Account_GetAccountType(a));
+					      AB_Account_GetBankCode(a),
+					      AB_Account_GetAccountNumber(a),
+					      AB_Account_GetAccountType(a));
   assert(ai);
 
 
@@ -357,7 +354,6 @@ void _possiblyDumpTransactions(const AB_IMEXPORTER_ACCOUNTINFO *ai)
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
 int AH_Job_GetTransactionsCAMT_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits)
 {
   AB_TRANSACTION_LIMITS *tl;
@@ -375,7 +371,6 @@ int AH_Job_GetTransactionsCAMT_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLim
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
 int AH_Job_GetTransactionsCAMT_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t)
 {
   const GWEN_DATE *da;

@@ -49,7 +49,6 @@ static int _process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
  */
 
 
-/* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_GetEStatements_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 {
   return _createJob(pro, u, account, "JobGetEStatements");
@@ -85,7 +84,6 @@ AH_JOB *_createJob(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account, const char
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
 int _process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 {
   GWEN_DB_NODE *dbResponses;
