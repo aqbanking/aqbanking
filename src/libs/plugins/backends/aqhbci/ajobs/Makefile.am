@@ -44,8 +44,7 @@ noinst_HEADERS=\
   jobsepastandingorderget_l.h jobsepastandingorderget_p.h \
   jobsepastandingordermodify_l.h \
   jobsepastandingorderdelete_l.h \
-  jobgetestatements_l.h jobgetestatements_p.h \
-  jobgetestatements2_l.h jobgetestatements2_p.h \
+  jobgetestatements_l.h \
   jobgetdepot_l.h
 
 libhbciaccjobs_la_SOURCES=\
@@ -68,7 +67,6 @@ libhbciaccjobs_la_SOURCES=\
   jobsepastandingordermodify.c \
   jobsepastandingorderdelete.c \
   jobgetestatements.c \
-  jobgetestatements2.c \
   jobgetdepot.c
 
 

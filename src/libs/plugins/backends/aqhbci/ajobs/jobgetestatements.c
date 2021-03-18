@@ -13,7 +13,7 @@
 #endif
 
 
-#include "jobgetestatements_p.h"
+#include "jobgetestatements_l.h"
 #include "aqhbci_l.h"
 #include "accountjob_l.h"
 #include "job_l.h"
@@ -33,21 +33,49 @@
 
 
 
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static AH_JOB *_createJob(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account, const char *jobName);
+static int _process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 
 /* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_GetEStatements_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 {
+  return _createJob(pro, u, account, "JobGetEStatements");
+}
+
+
+
+AH_JOB *AH_Job_GetEStatements2_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
+{
+  return _createJob(pro, u, account, "JobGetEStatements2");
+}
+
+
+
+AH_JOB *_createJob(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account, const char *jobName)
+{
   AH_JOB *j;
 
-  j=AH_AccountJob_new("JobGetEStatements", pro, u, account);
-  if (!j)
+  j=AH_AccountJob_new(jobName, pro, u, account);
+  if (!j) 
     return NULL;
 
   AH_Job_SetSupportedCommand(j, AB_Transaction_CommandGetEStatements);
 
   /* overwrite some virtual functions */
-  AH_Job_SetProcessFn(j, AH_Job_GetEStatements_Process);
+  AH_Job_SetProcessFn(j, _process);
   AH_Job_SetGetLimitsFn(j, AH_Job_GetLimits_EmptyLimits);
   AH_Job_SetHandleCommandFn(j, AH_Job_HandleCommand_Accept);
   AH_Job_SetHandleResultsFn(j, AH_Job_HandleResults_Empty);
@@ -58,7 +86,7 @@ AH_JOB *AH_Job_GetEStatements_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acco
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetEStatements_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+int _process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 {
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
