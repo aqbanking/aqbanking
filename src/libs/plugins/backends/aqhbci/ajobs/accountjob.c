@@ -29,7 +29,22 @@
 GWEN_INHERIT(AH_JOB, AH_ACCOUNTJOB);
 
 
-/* --------------------------------------------------------------- FUNCTION */
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static int _getJobVersionToUse(const char *name, AB_USER *u, const AB_ACCOUNT *account);
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+
 AH_JOB *AH_AccountJob_new(const char *name,
                           AB_PROVIDER *pro,
                           AB_USER *u,
@@ -45,65 +60,12 @@ AH_JOB *AH_AccountJob_new(const char *name,
   assert(u);
   assert(account);
 
-  if (!(AH_Account_GetFlags(account) & AH_BANK_FLAGS_KTV2)) {
-    int maxVer=0;
-
-    /* no account suffix, so we try to determine the highest usable
-     * version of the job which still doesn't need the suffix
-     */
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "No account suffix [%u], determining highest possible job version for \"%s\" (%08x)",
-               AB_Account_GetUniqueId(account), name, AH_Account_GetFlags(account));
-    if (strcasecmp(name, "JobGetTransactions")==0)
-      maxVer=4;
-    else if (strcasecmp(name, "JobGetBalance")==0)
-      maxVer=4;
-    else if (strcasecmp(name, "JobSingleTransfer")==0)
-      maxVer=3;
-    else if (strcasecmp(name, "JobSingleDebitNote")==0)
-      maxVer=3;
-    else if (strcasecmp(name, "JobInternalTransfer")==0 ||
-             strcasecmp(name, "JobLoadCellPhone")==0)
-      /* this job needs a suffix, so if there is none you don't get it */
-      maxVer=-1;
-    else if (strcasecmp(name, "JobGetDatedTransfers")==0)
-      maxVer=1;
-    else if (strcasecmp(name, "JobCreateDatedTransfer")==0)
-      maxVer=2;
-    else if (strcasecmp(name, "JobModifyDatedTransfer")==0)
-      maxVer=2;
-    else if (strcasecmp(name, "JobDeleteDatedTransfer")==0)
-      maxVer=1;
-    else if (strcasecmp(name, "JobCreateStandingOrder")==0)
-      maxVer=2;
-    else if (strcasecmp(name, "JobModifyStandingOrder")==0)
-      maxVer=2;
-    else if (strcasecmp(name, "JobDeleteStandingOrder")==0)
-      maxVer=1;
-    if (maxVer==-1) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN,
-                "This job needs an account suffix, but your bank didn't provide one. "
-                "Therefore this job is not supported with your account.");
-      GWEN_Gui_ProgressLog(0,
-                           GWEN_LoggerLevel_Error,
-                           I18N("This job needs an account suffix, but your bank did not provide one. "
-                                "Therefore this job is not supported with your account.\n"
-                                "Setting a higher HBCI version in the user settings might fix "
-                                "the problem."));
-      return NULL;
-    }
-    if (maxVer>0) {
-      jobVersion=AH_Job_GetMaxVersionUpUntil(name, u, maxVer);
-      if (jobVersion<1) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "No job [%s] below version %d, falling back to 0", name, maxVer);
-        GWEN_Gui_ProgressLog2(0,
-                              GWEN_LoggerLevel_Warning,
-                              "No version for job [%s] up to %d found, falling back to 0", name, maxVer);
-        jobVersion=0;
-      }
-      else {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Reducing version of job [%s] to %d", name, jobVersion);
-      }
-    }
+  /* this might later be removed, since all accounts should now have a suffix reported by the bank,
+   * and if an account doesn't, it is just not needed anymore */
+  jobVersion=_getJobVersionToUse(name, u, account);
+  if (jobVersion<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here");
+    return NULL;
   }
 
   j=AH_Job_new(name, pro, u, account, jobVersion);
@@ -147,7 +109,6 @@ AH_JOB *AH_AccountJob_new(const char *name,
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
 AB_ACCOUNT *AH_AccountJob_GetAccount(const AH_JOB *j)
 {
   AH_ACCOUNTJOB *aj;
@@ -161,7 +122,6 @@ AB_ACCOUNT *AH_AccountJob_GetAccount(const AH_JOB *j)
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
 void GWENHYWFAR_CB AH_AccountJob_FreeData(void *bp, void *p)
 {
   AH_ACCOUNTJOB *aj;
@@ -172,7 +132,6 @@ void GWENHYWFAR_CB AH_AccountJob_FreeData(void *bp, void *p)
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
 int AH_AccountJob_IsAccountJob(const AH_JOB *j)
 {
   return GWEN_INHERIT_ISOFTYPE(AH_JOB, AH_ACCOUNTJOB, j);
@@ -180,50 +139,74 @@ int AH_AccountJob_IsAccountJob(const AH_JOB *j)
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-int AH_AccountJob_AddCurrentTime(GWEN_BUFFER *buf)
+int _getJobVersionToUse(const char *name, AB_USER *u, const AB_ACCOUNT *account)
 {
-  GWEN_TIME *t;
-  int hours, mins, secs;
-  char numbuf[16];
+  int jobVersion=0;
 
-  t=GWEN_CurrentTime();
-  assert(t);
-  if (GWEN_Time_GetBrokenDownTime(t, &hours, &mins, &secs)) {
-    GWEN_Time_free(t);
-    return -1;
+  if (!(AH_Account_GetFlags(account) & AH_BANK_FLAGS_KTV2)) {
+    int maxVer=0;
+
+    /* no account suffix, so we try to determine the highest usable
+     * version of the job which still doesn't need the suffix
+     */
+    DBG_NOTICE(AQHBCI_LOGDOMAIN,
+               "No account suffix [%u], determining highest possible job version for \"%s\" (%08x)",
+               AB_Account_GetUniqueId(account), name, AH_Account_GetFlags(account));
+    if (strcasecmp(name, "JobGetTransactions")==0)
+      maxVer=4;
+    else if (strcasecmp(name, "JobGetBalance")==0)
+      maxVer=4;
+    else if (strcasecmp(name, "JobSingleTransfer")==0)
+      maxVer=3;
+    else if (strcasecmp(name, "JobSingleDebitNote")==0)
+      maxVer=3;
+    else if (strcasecmp(name, "JobInternalTransfer")==0 ||
+             strcasecmp(name, "JobLoadCellPhone")==0)
+      /* this job needs a suffix, so if there is none you don't get it */
+      maxVer=-1;
+    else if (strcasecmp(name, "JobGetDatedTransfers")==0)
+      maxVer=1;
+    else if (strcasecmp(name, "JobCreateDatedTransfer")==0)
+      maxVer=2;
+    else if (strcasecmp(name, "JobModifyDatedTransfer")==0)
+      maxVer=2;
+    else if (strcasecmp(name, "JobDeleteDatedTransfer")==0)
+      maxVer=1;
+    else if (strcasecmp(name, "JobCreateStandingOrder")==0)
+      maxVer=2;
+    else if (strcasecmp(name, "JobModifyStandingOrder")==0)
+      maxVer=2;
+    else if (strcasecmp(name, "JobDeleteStandingOrder")==0)
+      maxVer=1;
+    if (maxVer==-1) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN,
+                "This job needs an account suffix, but your bank didn't provide one. "
+                "Therefore this job is not supported with your account.");
+      GWEN_Gui_ProgressLog(0,
+                           GWEN_LoggerLevel_Error,
+                           I18N("This job needs an account suffix, but your bank did not provide one. "
+                                "Therefore this job is not supported with your account.\n"
+                                "Setting a higher HBCI version in the user settings might fix "
+                                "the problem."));
+      return GWEN_ERROR_GENERIC;
+    }
+    if (maxVer>0) {
+      jobVersion=AH_Job_GetMaxVersionUpUntil(name, u, maxVer);
+      if (jobVersion<1) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "No job [%s] below version %d, falling back to 0", name, maxVer);
+        GWEN_Gui_ProgressLog2(0,
+                              GWEN_LoggerLevel_Warning,
+                              "No version for job [%s] up to %d found, falling back to 0", name, maxVer);
+        jobVersion=0;
+      }
+      else {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Reducing version of job [%s] to %d", name, jobVersion);
+      }
+    }
   }
-  snprintf(numbuf, sizeof(numbuf), "%02d%02d%02d", hours, mins, secs);
-  GWEN_Buffer_AppendString(buf, numbuf);
-  GWEN_Time_free(t);
-  return 0;
+
+  return jobVersion;
 }
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_AccountJob_AddCurrentDate(GWEN_BUFFER *buf)
-{
-  GWEN_TIME *t;
-  int year, month, day;
-  char numbuf[16];
-
-  t=GWEN_CurrentTime();
-  assert(t);
-  if (GWEN_Time_GetBrokenDownDate(t, &day, &month, &year)) {
-    GWEN_Time_free(t);
-    return -1;
-  }
-  snprintf(numbuf, sizeof(numbuf), "%04d%02d%02d", year, month, day);
-  GWEN_Buffer_AppendString(buf, numbuf);
-  GWEN_Time_free(t);
-  return 0;
-}
-
-
-
-
-
 
 
 

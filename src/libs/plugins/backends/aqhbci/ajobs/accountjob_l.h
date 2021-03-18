@@ -25,9 +25,6 @@ int AH_AccountJob_IsAccountJob(const AH_JOB *j);
 
 AB_ACCOUNT *AH_AccountJob_GetAccount(const AH_JOB *j);
 
-int AH_AccountJob_AddCurrentTime(GWEN_BUFFER *buf);
-int AH_AccountJob_AddCurrentDate(GWEN_BUFFER *buf);
-
 
 #endif /* AH_ACCOUNTJOBS_L_H */
 
