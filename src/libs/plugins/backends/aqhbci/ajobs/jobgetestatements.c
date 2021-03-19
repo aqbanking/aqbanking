@@ -26,6 +26,7 @@
 #include <gwenhywfar/dbio.h>
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/text.h>
+#include <gwenhywfar/directory.h>
 
 #include <aqbanking/types/document.h>
 
@@ -40,6 +41,7 @@
 
 static AH_JOB *_createJob(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account, const char *jobName);
 static int _process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
+static int _writeDocToDataDirAndStorePath(AH_JOB *j, AB_DOCUMENT *doc, const char *fileNameExt);
 
 
 
@@ -169,7 +171,16 @@ int _process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
             AB_Document_SetId(doc, docId);
             free(docId);
           }
-          AB_Document_SetMimeType(doc, "application/pdf");
+	  AB_Document_SetMimeType(doc, "application/pdf");
+
+	  rv=_writeDocToDataDirAndStorePath(j, doc, "pdf");
+	  if (rv<0) {
+	    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not write document to storage, keeping data in document (%d)", rv);
+	  }
+	  else {
+	    /* clear data in document, because it is written to disk (AB_Document_GetFilePath() has the path) */
+	    AB_Document_SetData(doc, NULL, 0);
+	  }
 
           /* add document to imexporter context */
           AB_ImExporterAccountInfo_AddEStatement(iea, doc);
@@ -182,6 +193,66 @@ int _process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 
   return 0;
 }
+
+
+
+int _writeDocToDataDirAndStorePath(AH_JOB *j, AB_DOCUMENT *doc, const char *fileNameExt)
+{
+  AH_HBCI *hbci;
+  AB_USER *user;
+  GWEN_BUFFER *pathBuffer;
+  int rv;
+
+  hbci=AH_Job_GetHbci(j);
+  user=AH_Job_GetUser(j);
+
+  /* pathname: customer data dir / docs / docId.ext */
+  pathBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  if (AH_HBCI_AddCustomerPath(hbci, user, pathBuffer)) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not add customer path, cannot store document");
+    GWEN_Buffer_free(pathBuffer);
+    return GWEN_ERROR_GENERIC;
+  }
+  GWEN_Buffer_AppendString(pathBuffer, GWEN_DIR_SEPARATOR_S "docs");
+
+  /* create folder if it not already exists */
+  rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(pathBuffer), 0);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(pathBuffer);
+    return rv;
+  }
+
+  /* add file name to full path */
+  GWEN_Buffer_AppendString(pathBuffer, GWEN_DIR_SEPARATOR_S);
+  GWEN_Buffer_AppendString(pathBuffer, AB_Document_GetId(doc));
+  GWEN_Buffer_AppendString(pathBuffer, ".");
+  GWEN_Buffer_AppendString(pathBuffer, fileNameExt);
+
+  /* check whether the full path (including filename) exists, it should not! */
+  rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(pathBuffer), GWEN_PATH_FLAGS_NAMEMUSTNOTEXIST);
+  if (rv<0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Path \"%s\" already exists (%d)", GWEN_Buffer_GetStart(pathBuffer), rv);
+    GWEN_Buffer_free(pathBuffer);
+    return rv;
+  }
+
+  /* path exists, file does not, write file now */
+  rv=GWEN_SyncIo_Helper_WriteFile(GWEN_Buffer_GetStart(pathBuffer),
+				  AB_Document_GetDataPtr(doc),
+				  AB_Document_GetDataLen(doc));
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(pathBuffer);
+    return rv;
+  }
+
+  AB_Document_SetFilePath(doc, GWEN_Buffer_GetStart(pathBuffer));
+  GWEN_Buffer_free(pathBuffer);
+  return 0;
+}
+
+
 
 
 
