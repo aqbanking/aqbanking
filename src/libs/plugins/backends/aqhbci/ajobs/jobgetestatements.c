@@ -208,7 +208,7 @@ int _writeDocToDataDirAndStorePath(AH_JOB *j, AB_DOCUMENT *doc, const char *file
 
   /* pathname: customer data dir / docs / docId.ext */
   pathBuffer=GWEN_Buffer_new(0, 256, 0, 1);
-  if (AH_HBCI_AddCustomerPath(hbci, user, pathBuffer)) {
+  if (AH_HBCI_AddUserPath(hbci, user, pathBuffer)) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not add customer path, cannot store document");
     GWEN_Buffer_free(pathBuffer);
     return GWEN_ERROR_GENERIC;
