@@ -21,6 +21,7 @@
 
 #define LISTDOC_FLAGS_SHOW_ACCOUNT  0x0001
 #define LISTDOC_FLAGS_SHOW_MIMETYPE 0x0002
+#define LISTDOC_FLAGS_SHOW_PATH     0x0004
 
 
 
@@ -59,6 +60,7 @@ int listDoc(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
   iban=GWEN_DB_GetCharValue(db, "iban", 0, 0);
   flags|=(GWEN_DB_GetIntValue(db, "showAccount", 0, 0)>0)?LISTDOC_FLAGS_SHOW_ACCOUNT:0;
   flags|=(GWEN_DB_GetIntValue(db, "showMimeType", 0, 0)>0)?LISTDOC_FLAGS_SHOW_MIMETYPE:0;
+  flags|=(GWEN_DB_GetIntValue(db, "showPath", 0, 0)>0)?LISTDOC_FLAGS_SHOW_PATH:0;
 
   /* init AqBanking */
   rv=AB_Banking_Init(ab);
@@ -146,16 +148,19 @@ void _printDoc(const AB_DOCUMENT *doc, uint32_t flags)
 {
   const char *sId;
   const char *sMimeType;
+  const char *sPath;
 
   sId=AB_Document_GetId(doc);
   sMimeType=AB_Document_GetMimeType(doc);
+  sPath=AB_Document_GetFilePath(doc);
+
+  fprintf(stdout, "%s", sId?sId:"<no id>");
+
   if (flags & LISTDOC_FLAGS_SHOW_MIMETYPE)
-    fprintf(stdout,
-            "%s\t%s\n",
-            sId?sId:"<no id>",
-            sMimeType?sMimeType:"<no mimetype>");
-  else
-    fprintf(stdout, "%s\n", sId?sId:"<no id>");
+    fprintf(stdout, "\t%s", sMimeType?sMimeType:"<no mimetype>");
+  if (flags & LISTDOC_FLAGS_SHOW_PATH)
+    fprintf(stdout, "\t%s", sPath?sPath:"<no path>");
+  fprintf(stdout, "\n");
 }
 
 
@@ -242,6 +247,17 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
       "showMimeType",               /* long option */
       "Show mimetype",              /* short description */
       "Show mimetype"               /* long description */
+    },
+    {
+      0, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "showPath",                   /* name */
+      0,                            /* minnum */
+      1,                            /* maxnum */
+      "",                           /* short option */
+      "showPath",                   /* long option */
+      "Show path of the file containing document's data", /* short description */
+      "Show path of the file containing document's data"  /* long description */
     },
     {
       GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
