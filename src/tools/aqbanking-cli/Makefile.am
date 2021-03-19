@@ -26,6 +26,7 @@ aqbanking_cli_SOURCES= \
   listbal.c \
   listprofiles.c \
   listtrans.c \
+  listdoc.c \
   request.c \
   util.c \
   versions.c \

@@ -229,7 +229,9 @@ int AH_Job_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
  * The transaction contains the command and parameters for a given job.
  * The job should test the given transaction. If the transaction is not acceptable an
  * error code should be returned.
- * If zero is returned the given transaction is taken over by the job (otherwise it is not).
+ * If zero is returned the job should have taken all the data from the given command,
+ * e.g. a transfer job will add the transfer represented by the command to its internal list.
+ * Don't call AH_Job_AddCommand() within that function, this will be done outside.
  */
 int AH_Job_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t);
 
@@ -332,7 +334,7 @@ int AH_Job_SampleBpdVersions(const char *name,
                              AB_USER *u,
                              GWEN_DB_NODE *dbResult);
 
-int AH_Job_GetMaxVersionUpUntil(const char *name, const AB_USER *u, int maxVersion);
+int AH_Job_GetMaxVersionUpUntil(const char *name, AB_USER *u, int maxVersion);
 
 int AH_Job_GetSegmentVersion(const AH_JOB *j);
 
