@@ -230,8 +230,8 @@ int _writeDocToDataDirAndStorePath(AH_JOB *j, AB_DOCUMENT *doc, const char *file
   GWEN_Buffer_AppendString(pathBuffer, fileNameExt);
 
   /* check whether the full path (including filename) exists, it should not! */
-  rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(pathBuffer), GWEN_PATH_FLAGS_NAMEMUSTNOTEXIST|GWEN_PATH_FLAGS_VARIABLE);
-  if (rv<0) {
+  rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(pathBuffer), GWEN_PATH_FLAGS_NAMEMUSTEXIST|GWEN_PATH_FLAGS_VARIABLE);
+  if (rv==0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Path \"%s\" already exists (%d)", GWEN_Buffer_GetStart(pathBuffer), rv);
     GWEN_Buffer_free(pathBuffer);
     return rv;
