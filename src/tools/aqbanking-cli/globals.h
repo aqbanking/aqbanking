@@ -140,6 +140,7 @@ int listAccs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int listTrans(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int listDoc(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
+int getDoc(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int listProfiles(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int request(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int sepaDebitNote(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv, int use_flash_debitnote);

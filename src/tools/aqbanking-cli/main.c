@@ -358,6 +358,9 @@ int main(int argc, char **argv)
     else if (strcasecmp(cmd, "listdoc")==0) {
       rv=listDoc(ab, db, argc, argv);
     }
+    else if (strcasecmp(cmd, "getdoc")==0) {
+      rv=getDoc(ab, db, argc, argv);
+    }
     else if (strcasecmp(cmd, "request")==0) {
       rv=request(ab, db, argc, argv);
     }
