@@ -234,7 +234,7 @@ int _writeDocToDataDirAndStorePath(AH_JOB *j, AB_DOCUMENT *doc, const char *file
   if (rv==0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Path \"%s\" already exists (%d)", GWEN_Buffer_GetStart(pathBuffer), rv);
     GWEN_Buffer_free(pathBuffer);
-    return rv;
+    return GWEN_ERROR_FOUND;
   }
 
   /* path exists, file does not, write file now */
