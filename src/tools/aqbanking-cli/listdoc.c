@@ -1,6 +1,6 @@
 /***************************************************************************
- begin       : Tue May 03 2005
- copyright   : (C) 2018 by Martin Preuss
+ begin       : Fri Mar 20 2021
+ copyright   : (C) 2021 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
