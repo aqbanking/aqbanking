@@ -34,6 +34,7 @@ static void _removeAttachPoints(const AH_JOBQUEUE *jq);
 static void _setUsedTanStatusInJobs(const AH_JOBQUEUE *jq);
 static void _adjustSystemTanStatus(AH_JOBQUEUE *jq, uint32_t guiid);
 static AH_JOB *_findReferencedJob(AH_JOBQUEUE *jq, int refMsgNum, int refSegNum);
+static void _possiblyExtractJobAckCode(AH_JOB *j, GWEN_DB_NODE *dbSegment);
 static void _possiblyExtractAttachPoint(AH_JOB *j, GWEN_DB_NODE *dbSegment);
 static void _handleSegmentResultForAllJobs(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbSegment);
 static void _handleSegmentResult(AH_JOBQUEUE *jq, AH_JOB *j, GWEN_DB_NODE *dbSegment);
@@ -371,6 +372,22 @@ AH_JOB *_findReferencedJob(AH_JOBQUEUE *jq, int refMsgNum, int refSegNum)
 }
 
 
+void _possiblyExtractJobAckCode(AH_JOB *j, GWEN_DB_NODE *dbSegment) {
+  if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_ACKNOWLEDGE) {
+    const char *responseName=AH_Job_GetResponseName(j);
+    if (strcasecmp(GWEN_DB_GroupName(dbSegment), responseName)==0) {
+      unsigned int byteSize = 0;
+      const void* ackCode;
+      ackCode = GWEN_DB_GetBinValue(dbSegment, "ackCode", 0, NULL, 0, &byteSize);
+      if (ackCode) {
+        GWEN_DB_NODE *args = AH_Job_GetArguments(j);
+        GWEN_DB_SetBinValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS, "_tmpAckCode", ackCode, byteSize);
+        DBG_DEBUG(AQHBCI_LOGDOMAIN, "Found acknoledge code in job response, storing it.");
+      }
+    }
+  }
+}
+
 
 void _possiblyExtractAttachPoint(AH_JOB *j, GWEN_DB_NODE *dbSegment)
 {
@@ -527,7 +544,9 @@ void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWE
 		 GWEN_DB_GroupName(dbCurr),
 		 AH_Msg_GetMsgRef(msg),
 		 refSegNum);
-	_possiblyExtractAttachPoint(j, dbCurr);
+
+        _possiblyExtractJobAckCode(j, dbCurr);
+        _possiblyExtractAttachPoint(j, dbCurr);
 
         /* check for segment results */
         if (strcasecmp(GWEN_DB_GroupName(dbCurr), "SegResult")==0)

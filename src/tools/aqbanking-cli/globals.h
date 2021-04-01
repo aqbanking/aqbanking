@@ -49,6 +49,7 @@ typedef enum {
 #define AQBANKING_TOOL_REQUEST_ESTATEMENTS   0x0008
 #define AQBANKING_TOOL_REQUEST_DEPOT         0x0010
 
+#define AQBANKING_TOOL_REQUEST_ACKNOWLEDGE   0x4000
 #define AQBANKING_TOOL_REQUEST_IGNORE_UNSUP  0x8000
 
 
@@ -106,6 +107,7 @@ int createAndAddRequest(AB_BANKING *ab,
                         const GWEN_DATE *fromDate,
                         const GWEN_DATE *toDate,
                         int ignoreUnsupported,
+                        AB_TRANSACTION_ACK ackMethod,
                         uint32_t number);
 
 /**
