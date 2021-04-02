@@ -40,6 +40,7 @@
  */
 
 static AH_JOB *_createJob(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account, const char *jobName);
+static int AH_Job_GetEstatements_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t);
 static int _process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 static int _writeDocToDataDirAndStorePath(AH_JOB *j, AB_DOCUMENT *doc, const char *fileNameExt);
 
@@ -65,6 +66,54 @@ AH_JOB *AH_Job_GetEStatements2_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc
 
 
 
+static int AH_Job_GetEstatements_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t)
+{
+  const char *s;
+  GWEN_DB_NODE *dbArgs=AH_Job_GetArguments(j);
+  GWEN_DB_NODE *dbParams=AH_Job_GetParams(j);
+  assert(dbArgs && dbParams);
+
+  /*
+   * FinTS restriction (for both HKEKA and HKEKP):
+   * Filtering by "Kontoauszugsnummer" and "Kontoauszugsjahr" is optionally allowed
+   * if "Kontoauszugsnummer erlaubt" (BPD) == "J". Else not allowd.
+   */
+  s=GWEN_DB_GetCharValue(dbParams, "eStatementNumAllowed", 0, 0);
+  if (s && !strcmp(s, "J")) {
+    const GWEN_DATE *da=AB_Transaction_GetFirstDate(t);
+    uint32_t estatementNumber=AB_Transaction_GetEstatementNumber(t);
+
+    if (da) {
+      char dbuf[16];
+      /* AB_TRANSACTION API specifies YYYYMMDD for the from-date,
+       * but estatements can only be filtered by year + document number.
+       * Take YYYY from the from-date, and discard the MMDD. */
+      snprintf(dbuf, sizeof(dbuf), "%04d",
+               GWEN_Date_GetYear(da));
+      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "eStatementYear", dbuf);
+    }
+    if (estatementNumber>0) {
+      GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "eStatementNum", estatementNumber);
+    }
+  }
+
+  /*
+   * FinTS restriction (for both HKEKA and HKEKP):
+   * Element "Maximale Anzahl Eintraege" is optionally allowed
+   * if "Eingabe Anzahl Eintraege erlaubt" (BPD) == "J". Else not allowed.
+   */
+  s=GWEN_DB_GetCharValue(dbParams, "maxEntriesAllowed", 0, 0);
+  if (s && !strcmp(s, "J")) {
+    uint32_t maxEntries=AB_Transaction_GetEstatementMaxEntries(t);
+    if (maxEntries>0) {
+      GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "maxEntries", maxEntries);
+    }
+  }
+  return 0;
+}
+
+
+
 AH_JOB *_createJob(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account, const char *jobName)
 {
   AH_JOB *j;
@@ -78,7 +127,8 @@ AH_JOB *_createJob(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account, const char
   /* overwrite some virtual functions */
   AH_Job_SetProcessFn(j, _process);
   AH_Job_SetGetLimitsFn(j, AH_Job_GetLimits_EmptyLimits);
-  AH_Job_SetHandleCommandFn(j, AH_Job_HandleCommand_Accept);
+  AH_Job_SetHandleCommandFn(j, AH_Job_GetEstatements_HandleCommand);
+
   AH_Job_SetHandleResultsFn(j, AH_Job_HandleResults_Empty);
 
   return j;
@@ -251,8 +301,6 @@ int _writeDocToDataDirAndStorePath(AH_JOB *j, AB_DOCUMENT *doc, const char *file
   GWEN_Buffer_free(pathBuffer);
   return 0;
 }
-
-
 
 
 

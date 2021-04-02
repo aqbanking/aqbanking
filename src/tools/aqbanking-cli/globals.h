@@ -105,7 +105,8 @@ int createAndAddRequest(AB_BANKING *ab,
                         AB_TRANSACTION_COMMAND cmd,
                         const GWEN_DATE *fromDate,
                         const GWEN_DATE *toDate,
-                        int ignoreUnsupported);
+                        int ignoreUnsupported,
+                        uint32_t number);
 
 /**
  * Create requests (getBalance, getStatements etc.) according to the given flags.
@@ -117,7 +118,8 @@ int createAndAddRequests(AB_BANKING *ab,
                          AB_ACCOUNT_SPEC *as,
                          const GWEN_DATE *fromDate,
                          const GWEN_DATE *toDate,
-                         uint32_t requestFlags);
+                         uint32_t requestFlags,
+                         uint32_t number);
 
 int addTransactionToBufferByTemplate(const AB_TRANSACTION *t, const char *tmplString, GWEN_BUFFER *dbuf);
 
