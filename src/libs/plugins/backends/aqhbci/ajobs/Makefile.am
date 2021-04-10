@@ -108,6 +108,18 @@ all-local: accountjobs.xml
 CLEANFILES = accountjobs.xml
 
 
+typefiles:
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d typefiles; \
+	done
+
+typedefs:
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d typedefs; \
+	done
+
+
+
 cppcheck:
 	for f in $(libhbciaccjobs_la_SOURCES); do \
 	  cppcheck --force $$f ; \

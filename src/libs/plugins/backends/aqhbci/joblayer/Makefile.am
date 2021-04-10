@@ -49,6 +49,11 @@ EXTRA_DIST=\
 
 
 
+typedefs:
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d typedefs; \
+	done
+
 
 typefiles: $(typefiles)
 	$(gwenhywfar_bindir)/typemaker -d AQHBCI_API $(typefiles)

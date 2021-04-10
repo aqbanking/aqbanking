@@ -10,7 +10,7 @@ typefiles=tanmethod.xml
 noinst_LTLIBRARIES=libhbcitan.la
 
 noinst_HEADERS=\
-  tanmethod_l.h \
+  tanmethod.h \
   tanmethod_p.h \
   tanmethod.h \
   tanmechanism.h tanmechanism_p.h \
