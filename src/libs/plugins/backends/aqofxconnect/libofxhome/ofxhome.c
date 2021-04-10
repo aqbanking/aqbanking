@@ -14,7 +14,7 @@
 
 #include "ofxhome_p.h"
 
-#include <aqbanking/error.h>
+#include <aqbanking/version.h>
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
