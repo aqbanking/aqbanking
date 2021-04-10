@@ -116,7 +116,7 @@
 
 
     <!-- compatibility defines with Makefile.am -->
-    <setVar name="AQBANKING_VERSION_TAG">testing</setVar>
+    <setVar name="AQBANKING_VERSION_TAG">$(project_vtag)</setVar>
     <setVar name="AQBANKING_SO_CURRENT">$(project_so_current)</setVar>
     <setVar name="AQBANKING_SO_REVISION">$(project_so_revision)</setVar>
     <setVar name="AQBANKING_SO_AGE">$(project_so_age)</setVar>
