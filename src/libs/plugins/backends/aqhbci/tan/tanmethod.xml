@@ -1,48 +1,208 @@
+<?xml?>
 
+<tm2>
 
-<types>
-  <type id="AH_TAN_METHOD" 
-        prefix="AH_TanMethod" 
-        class="AH_TanMethod"
-        access="public"
-        filename="tanmethod"
-        inherit="public"
-        list="public"
-        list2="public" >
+  <type id="AH_TAN_METHOD" type="pointer">
     <descr>
       This group represents a TAN method within AqHBCI.
     </descr>
 
-    <pre-headers>
-      <header type="sys" >aqhbci/aqhbci.h</header>
-    </pre-headers>
+    <lang id="c">
+      <identifier>AH_TAN_METHOD</identifier>
+      <prefix>AH_TanMethod</prefix>
+      
+      <baseFileName>tanmethod</baseFileName>
 
-    <elem name="function" type="int" />
-    <elem name="process" type="int" />
-    <elem name="methodId" type="char" ptr="1" />
-    <elem name="methodName" type="char" ptr="1" />
-    <elem name="zkaTanName" type="char" ptr="1" />
-    <elem name="zkaTanVersion" type="char" ptr="1" />
-    <elem name="tanMaxLen" type="int" />
-    <elem name="formatId" type="char" ptr="1" />
-    <elem name="prompt" type="char" ptr="1" />
-    <elem name="returnMaxLen" type="int" />
-    <elem name="maxActiveLists" type="int" />
-    <elem name="multiTanAllowed" type="int" />
-    <elem name="timeShiftAllowed" type="int" />
-    <elem name="tanListMode" type="int" />
-    <elem name="stornoAllowed" type="int" />
-    <elem name="needSmsAccount" type="int" />
-    <elem name="needLocalAccount" type="int" />
-    <elem name="needChallengeClass" type="int" />
-    <elem name="needChallengeAmount" type="int" />
-    <elem name="challengeIsStructured" type="int" />
-    <elem name="initMode" type="int" />
-    <elem name="needTanMediumId" type="int" />
-    <elem name="maxActiveTanMedia" type="int" />
-    <elem name="gvVersion" type="int" />
+      <flags>
+        with_db
+        with_list1
+        with_list2
+        with_inherit
+        with_refcount
+      </flags>
+
+      <headers>
+        <header type="local" loc="pre">aqhbci/aqhbci.h</header>
+      </headers>
+      
+    </lang>
+
+    <enums>
+    </enums>
+
+    <defines>
+    </defines>
+      
+
+    <members>
+
+      <member name="function" type="int" maxlen="8" >
+        <descr>
+        </descr>
+        <access>public</access>
+      </member>
+
+      <member name="process" type="int" maxlen="8" >
+        <descr>
+        </descr>
+        <access>public</access>
+      </member>
+
+      <member name="methodId" type="char_ptr" maxlen="64" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="methodName" type="char_ptr" maxlen="64" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+      
+      <member name="zkaTanName" type="char_ptr" maxlen="64" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="zkaTanVersion" type="char_ptr" maxlen="64" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+      
+      <member name="tanMaxLen" type="int" maxlen="8" >
+        <descr>
+        </descr>
+        <access>public</access>
+      </member>
+      
+      <member name="formatId" type="char_ptr" maxlen="64" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="prompt" type="char_ptr" maxlen="64" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <flags>own</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="returnMaxLen" type="int" maxlen="8" >
+        <descr>
+        </descr>
+        <access>public</access>
+      </member>
+
+      <member name="maxActiveLists" type="int" maxlen="8" >
+        <descr>
+        </descr>
+        <access>public</access>
+      </member>
+
+      <member name="multiTanAllowed" type="int" maxlen="8" >
+        <descr>
+        </descr>
+        <access>public</access>
+      </member>
+
+      <member name="timeShiftAllowed" type="int" maxlen="8" >
+        <descr>
+        </descr>
+        <access>public</access>
+      </member>
+
+      <member name="tanListMode" type="int" maxlen="8" >
+        <descr>
+        </descr>
+        <access>public</access>
+      </member>
+
+      <member name="stornoAllowed" type="int" maxlen="8" >
+        <descr>
+        </descr>
+        <access>public</access>
+      </member>
+
+      <member name="needSmsAccount" type="int" maxlen="8" >
+        <descr>
+        </descr>
+        <access>public</access>
+      </member>
+
+      <member name="needLocalAccount" type="int" maxlen="8" >
+        <descr>
+        </descr>
+        <access>public</access>
+      </member>
+
+      <member name="needChallengeClass" type="int" maxlen="8" >
+        <descr>
+        </descr>
+        <access>public</access>
+      </member>
+
+      <member name="needChallengeAmount" type="int" maxlen="8" >
+        <descr>
+        </descr>
+        <access>public</access>
+      </member>
+
+      <member name="challengeIsStructured" type="int" maxlen="8" >
+        <descr>
+        </descr>
+        <access>public</access>
+      </member>
+
+      <member name="initMode" type="int" maxlen="8" >
+        <descr>
+        </descr>
+        <access>public</access>
+      </member>
+
+      <member name="needTanMediumId" type="int" maxlen="8" >
+        <descr>
+        </descr>
+        <access>public</access>
+      </member>
+
+      <member name="maxActiveTanMedia" type="int" maxlen="8" >
+        <descr>
+        </descr>
+        <access>public</access>
+      </member>
+
+      <member name="gvVersion" type="int" maxlen="8" >
+        <descr>
+        </descr>
+        <access>public</access>
+      </member>
+
+    </members>
+
+    
   </type>
   
-  
-  
-</types>
+</tm2>
+
+
