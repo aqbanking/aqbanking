@@ -1,0 +1,122 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="abdialogs" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)/src/libs/plugins/file
+      -I$(topsrcdir)/src/libs/plugins/file
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(builddir)
+      --include=$(srcdir)
+      --include=$(builddir)/../types
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+      --api=AQBANKING_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+  
+    <setVar name="local/built_headers_priv" >
+    </setVar>
+  
+  
+    <headers dist="true" install="$(pkgincludedir)" >
+      $(local/built_headers_pub)
+
+      dlg_importer.h
+      dlg_selectbankinfo.h
+      dlg_setup.h
+      dlg_selectbackend.h
+      dlg_editaccount.h
+      dlg_edituser.h
+      dlg_usertype_page_be.h
+      dlg_setup_newuser.h
+      dlg_importer_p.h
+      dlg_selectbankinfo_p.h
+      dlg_setup_p.h
+      dlg_selectbackend_p.h
+      dlg_editaccount_p.h
+      dlg_edituser_p.h
+      dlg_usertype_page_p.h
+      dlg_setup_newuser_p.h
+      dlg_usertype_pagedefault_l.h
+      dlg_usertype_pagedefault_p.h
+      dlg_newaccount_be.h
+      dlg_newaccount_p.h
+      dlg_newuser_be.h
+      dlg_newuser_p.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      dlg_importer.c
+      dlg_selectbankinfo.c
+      dlg_setup.c
+      dlg_selectbackend.c
+      dlg_editaccount.c
+      dlg_edituser.c
+      dlg_usertype_page.c
+      dlg_setup_newuser.c
+      dlg_usertype_pagedefault.c
+      dlg_newaccount.c
+      dlg_newuser.c
+    </sources>
+
+
+    <data dist="true" install="$(pkgdatadir)/dialogs">
+      dlg_importer.dlg
+      dlg_selectbankinfo.dlg
+      dlg_setup.dlg
+      dlg_selectbackend.dlg
+      dlg_editaccount.dlg
+      dlg_edituser.dlg
+      dlg_setup_newuser.dlg
+      dlg_usertype_pagedefault.dlg
+    </data>
+    
+
+    <extradist>
+    </extradist>
+
+
+    <useTargets>
+    </useTargets>
+
+    <subdirs>
+    </subdirs>
+
+  
+  
+
+  </target>
+  
+</gwbuild>

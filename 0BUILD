@@ -1,0 +1,209 @@
+<?xml?>
+
+
+<gwbuild>
+
+  <project name="aqbanking"
+           vmajor="6" vminor="2" vpatchlevel="10" vbuild="1" 
+           so_current="46" so_age="2" so_revision="10"
+           write_config_h="TRUE"
+           >
+
+    <setVar name="package">$(project_name)</setVar>
+    <define name="PACKAGE" value="$(package)"  quoted="TRUE" />
+
+
+    <!-- prefix handling -->
+    <option id="prefix" type="string">
+      <default>/usr/local</default>
+    </option>
+    <setVar name="prefix">$(option_prefix)</setVar>
+    <setVar name="sysconfdir">$(option_prefix)/etc</setVar>
+    <setVar name="bindir">$(option_prefix)/bin</setVar>
+    <setVar name="libdir">$(option_prefix)/lib</setVar>
+    <setVar name="includedir">$(option_prefix)/include</setVar>
+    <setVar name="datadir">$(option_prefix)/share</setVar>
+    <setVar name="localedir">$(option_prefix)/share/locale</setVar>
+
+    <setVar name="pkglibdir">$(libdir)/$(package)</setVar>
+    <setVar name="pkgincludedir">$(includedir)/$(package)</setVar>
+    <setVar name="pkgdatadir">$(datadir)/$(package)</setVar>
+
+
+    <option id="backends" type="stringlist" definePrefix="AQBANKING_WITH_PLUGIN_BACKEND_" >
+      <choices>aqhbci aqofxconnect aqebics aqpaypal aqfints</choices>
+      <alias name="all">aqhbci aqofxconnect aqebics aqpaypal</alias>
+      <default>all</default>
+    </option>
+    <define name="AQBANKING_WITH_PLUGIN_BACKEND_AQNONE" value="1" quoted="FALSE" />
+
+
+    <option id="imexporters" type="stringlist" definePrefix="AQBANKING_WITH_PLUGIN_IMEXPORTER_" >
+      <choices>csv eri2 ofx openhbci1 swift xmldb yellownet sepa ctxfile q43 camt xml</choices>
+      <alias name="all">csv eri2 ofx openhbci1 swift xmldb yellownet sepa ctxfile q43 camt xml</alias>
+      <default>all</default>
+    </option>
+
+
+    <option id="parsers" type="stringlist" definePrefix="AQBANKING_WITH_PLUGIN_PARSER_">
+      <choices>swift</choices>
+      <alias name="all">swift</alias>
+      <default>all</default>
+    </option>
+
+    <option id="bankinfos" type="stringlist" definePrefix="AQBANKING_WITH_PLUGIN_BANKINFO_">
+      <choices>de</choices>
+      <alias name="all">de</alias>
+      <default>all</default>
+    </option>
+
+
+    <option id="enable_testcode" type="string">
+      <default>TRUE</default>
+      <choices>TRUE FALSE</choices>
+    </option>
+    <ifVarMatches name="option_enable_testcode" value="TRUE" >
+      <define name="AQBANKING_ENABLE_TESTCODE" value="1" />
+    </ifVarMatches>
+
+    <option id="enable_gui_tests" type="string">
+      <default>TRUE</default>
+      <choices>TRUE FALSE</choices>
+    </option>
+
+    <option id="local_install" type="string">
+      <default>FALSE</default>
+      <choices>TRUE FALSE</choices>
+    </option>
+    <ifVarMatches name="option_local_install" value="TRUE" >
+      <define name="ENABLE_LOCAL_INSTALL" value="1" />
+    </ifVarMatches>
+
+
+    <!-- paths -->
+    <setVar name="aqbanking_plugin_installdir">$(pkglibdir)/plugins/$(project_so_effective)</setVar>
+    <ifVarMatches name="GWBUILD_SYSTEM" value="windows" > <!-- long version of IF statement with THEN and ELSE -->
+      <then>
+        <define name="OS_WIN32" value="1" />
+        <setVar name="aqbanking_sys_is_windows">1</setVar>
+        <setVar name="aqbanking_plugin_searchdir">lib/aqbanking/plugins/$(project_so_effective)</setVar>
+        <setVar name="aqbanking_cfg_searchdir">etc</setVar>
+        <setVar name="aqbanking_locale_searchdir">share/locale</setVar>
+        <setVar name="aqbanking_data_searchdir">share"</setVar>
+        <setVar name="aqfints_datadir">share/aqbanking/backends/aqfints</setVar>
+      </then>
+      <else>
+        <define       name="OS_POSIX" value="1" />
+        <setVar       name="aqbanking_sys_is_windows">0</setVar>
+        <ifVarMatches name="option_local_install"     value="TRUE" >
+          <then>
+            <setVar   name="aqbanking_plugin_searchdir">etc</setVar>
+            <setVar   name="aqbanking_cfg_searchdir">etc</setVar>
+            <setVar   name="aqbanking_locale_searchdir">share/locale</setVar>
+            <setVar   name="aqbanking_data_searchdir">share</setVar>
+            <setVar   name="aqfints_datadir">share/aqbanking/backends/aqfints</setVar>
+          </then>
+          <else>
+            <setVar name="aqbanking_plugin_searchdir">$(pkglibdir)/plugins/$(project_so_effective)"</setVar>
+            <setVar name="aqbanking_cfg_searchdir">$(sysconfdir)</setVar>
+            <setVar name="aqbanking_locale_searchdir">$(datadir)/locale</setVar>
+            <setVar name="aqbanking_data_searchdir">$(datadir)</setVar>
+            <setVar name="aqfints_datadir">$(pkgdatadir)/backends/aqfints</setVar>
+          </else>
+        </ifVarMatches>
+      </else>
+    </ifVarMatches>
+
+
+
+    <define name="AQDB_VERSION_TAG"             value="testing" quoted="TRUE" />
+    
+    <define name="AQBANKING_VERSION_MAJOR"      value="$(project_vmajor)" />
+    <define name="AQBANKING_VERSION_MINOR"      value="$(project_vminor)" />
+    <define name="AQBANKING_VERSION_PATCHLEVEL" value="$(project_vpatchlevel)" />
+    <define name="AQBANKING_VERSION_BUILD"      value="$(project_vbuild)" />
+    <define name="AQBANKING_VERSION_FULL_STRING" quoted="TRUE" 
+            value="$(project_vmajor).$(project_vminor).$(project_vpatchlevel).$(project_vbuild)-testing" />
+    <define name="AQBANKING_VERSION_STRING"      quoted="TRUE" 
+            value="$(project_vmajor).$(project_vminor).$(project_vpatchlevel).$(project_vbuild)" />
+
+    <define name="AQBANKING_SO_CURRENT"         value="$(project_so_current)" />
+    <define name="AQBANKING_SO_REVISION"        value="$(project_so_revision)" />
+    <define name="AQBANKING_SO_AGE"             value="$(project_so_age)" />
+    <define name="AQBANKING_SO_EFFECTIVE"       value="$(project_so_effective)" />
+
+
+
+ 
+    <!-- dependencies ( pkg-config and libs) -->
+    <dependencies>
+      <dep id="gwenhywfar" name="gwenhywfar" minversion="5.5.1.1" required="TRUE" >
+        <variables>plugindir gwengui-gtk2</variables>
+      </dep>
+
+      <ifVarMatches name="option_enable_gui_tests" value="TRUE" >
+        <dep id="gtk2" name="gtk+-2.0" required="TRUE" />
+      </ifVarMatches>
+
+      <ifVarHasValue name="option_backends" value="aqebics" >
+        <dep id="xmlsec" name="xmlsec1" minversion="1.0.0" required="TRUE" />
+        <dep id="xml" name="libxml-2.0" required="TRUE" />
+        <dep id="xslt" name="libxslt" required="TRUE" />
+        <dep id="zlib" name="zlib" required="TRUE" />
+      </ifVarHasValue>
+      
+    </dependencies>
+  
+
+    <checklibs>
+      <lib id="gmp" name="gmp" function="__gmpz_init" />
+    </checklibs>
+
+
+    <!-- symbol visibility -->
+    <checkCompiler>
+      <arg name="has_symbol_visibility">-fvisibility=hidden</arg>
+    </checkCompiler>
+    
+    <ifVarMatches name="has_symbol_visibility" value="TRUE" >
+      <setVar name="visibility_cflags">-fvisibility=hidden</setVar>
+      <define name="GCC_WITH_VISIBILITY_ATTRIBUTE" />
+    </ifVarMatches>
+
+
+
+
+    <checkheaders>
+      locale.h libintl.h iconv.h
+      fcntl.h stdlib.h string.h unistd.h
+      assert.h ctype.h errno.h fcntl.h stdio.h stdlib.h string.h strings.h locale.h
+      netinet/in.h signal.h
+    </checkheaders>
+  
+  
+    <checkfunctions type="c" >
+      setlocale
+      memmove 
+      memset 
+      strcasecmp 
+      strdup 
+      strerror 
+      snprintf
+    </checkfunctions>
+
+
+    <define name="LOCALEDIR"              value="$(datadir)/locale"                           quoted="TRUE" />
+    <define name="AQBANKING_DATA_DIR"     value="$(prefix)/share/aqdatabase"                  quoted="TRUE" />
+    <define name="AQBANKING_PLUGINS"      value="$(pkglibdir)/plugins/$(target_so_effective)" quoted="TRUE" />
+
+    <define name="OS_TYPE"      value="$(GWBUILD_SYSTEM)"    quoted="TRUE" />
+    <define name="OS_SHORTNAME" value="$(GWBUILD_SYSTEM)"    quoted="TRUE" />
+
+    <subdirs>
+      src
+    </subdirs>
+
+  </project>
+  
+</gwbuild>
+

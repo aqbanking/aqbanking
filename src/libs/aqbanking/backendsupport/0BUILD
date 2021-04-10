@@ -1,0 +1,137 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="abbesupport" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)/src/libs/plugins/file
+      -I$(topsrcdir)/src/libs/plugins/file
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(builddir)
+      --include=$(srcdir)
+      --include=$(builddir)/../types
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+      --api=AQBANKING_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+      accountqueue.xml
+      userqueue.xml
+      providerqueue.xml
+      jobqueue.xml
+      queue.xml
+      account.xml
+      user.xml
+      swiftdescr.xml
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+      jobqueue.c
+      accountqueue.c
+      userqueue.c
+      providerqueue.c
+      queue.c
+      account.c
+      user.c
+      swiftdescr.c
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+      accountqueue.h
+      userqueue.h
+      providerqueue.h
+      jobqueue.h
+      queue.h
+      account.h
+      user.h
+      swiftdescr.h
+    </setVar>
+  
+  
+    <setVar name="local/built_headers_priv" >
+      accountqueue_p.h
+      userqueue_p.h
+      providerqueue_p.h
+      jobqueue_p.h
+      queue_p.h
+      account_p.h
+      user_p.h
+      swiftdescr_p.h
+    </setVar>
+  
+  
+    <headers dist="true" install="$(pkgincludedir)" >
+      $(local/built_headers_pub)
+
+      siotlsext.h
+      httpsession.h
+      msgengine.h
+      provider.h
+      provider_be.h
+      bankinfoplugin.h
+      bankinfoplugin_be.h
+      siotlsext_p.h
+      httpsession_p.h
+      msgengine_p.h
+      provider_l.h
+      provider_p.h
+      bankinfoplugin_l.h
+      bankinfoplugin_p.h
+      imexporter_be.h
+      imexporter_l.h
+      imexporter_p.h
+      imexporter.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      siotlsext.c
+      httpsession.c
+      msgengine.c
+      provider.c
+      bankinfoplugin.c
+      imexporter.c
+    </sources>
+
+
+    <extradist>
+      provider_account.c
+      provider_accspec.c
+      provider_user.c
+      provider_queues.c
+    </extradist>
+
+
+    <useTargets>
+    </useTargets>
+
+    <subdirs>
+    </subdirs>
+
+  
+  
+
+  </target>
+  
+</gwbuild>

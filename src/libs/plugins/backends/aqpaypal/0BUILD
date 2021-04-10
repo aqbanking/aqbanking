@@ -1,0 +1,107 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="aqpaypal" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/..
+      -I$(srcdir)/..
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+      --api=AQBANKING_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+    </setVar>
+  
+  
+    <headers dist="true" install="$(pkgincludedir)" >
+      $(local/built_headers_pub)
+
+      aqpaypal.h
+      provider.h
+      user.h
+      aqpaypal_l.h
+      provider_l.h provider_p.h
+      user_p.h user_l.h
+      dlg_newuser_p.h dlg_newuser_l.h
+      dlg_edituser_p.h dlg_edituser_l.h
+      dlg_editsecret_p.h dlg_editsecret_l.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      user.c
+      provider.c
+      dlg_newuser.c
+      dlg_edituser.c
+      dlg_editsecret.c
+    </sources>
+
+    <data install="$(aqbanking_plugin_installdir)/providers" >
+      aqpaypal.xml
+    </data>
+
+    <data install="$(pkgdatadir)/backends/aqpaypal/dialogs" >
+      dlg_newuser.dlg
+      dlg_edituser.dlg
+      dlg_editsecret.dlg
+    </data>
+
+    <extradist>
+      provider_accspec.c
+      provider_credentials.c
+      provider_dialogs.c
+      provider_getbalance.c
+      provider_getstm.c
+      provider_sendcmd.c
+      provider_update.c
+    </extradist>
+
+    <useTargets>
+      paypalcontrol
+    </useTargets>
+
+    <subdirs>
+      control
+    </subdirs>
+
+  
+  
+  </target>
+  
+</gwbuild>
