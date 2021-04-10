@@ -14,12 +14,13 @@
 
 
 #include "jobqueue_p.h"
-#include "aqhbci_l.h"
+
+#include "aqhbci/aqhbci_l.h"
 #include "aqhbci/joblayer/job_l.h"
 #include "aqhbci/banking/user_l.h"
-#include "message_l.h"
-#include "hbci_l.h"
-#include "dialog_l.h"
+#include "aqhbci/msglayer/message_l.h"
+#include "aqhbci/msglayer/hbci_l.h"
+#include "aqhbci/msglayer/dialog_l.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>

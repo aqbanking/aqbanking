@@ -16,7 +16,7 @@
 
 #include "dlg_edituserpintan_p.h"
 #include "banking/provider_l.h"
-#include "i18n_l.h"
+#include "aqbanking/i18n_l.h"
 
 #include "aqhbci/banking/user.h"
 #include "aqhbci/banking/provider.h"

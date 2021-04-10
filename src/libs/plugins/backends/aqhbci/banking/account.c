@@ -13,9 +13,10 @@
 
 
 #include "account_p.h"
-#include "aqhbci_l.h"
-#include "provider_l.h"
-#include "hbci-updates_l.h"
+
+#include "aqhbci/aqhbci_l.h"
+#include "aqhbci/banking/provider_l.h"
+#include "aqhbci/msglayer/hbci-updates_l.h"
 #include "aqhbci/banking/provider.h"
 
 #include <aqbanking/banking_be.h>

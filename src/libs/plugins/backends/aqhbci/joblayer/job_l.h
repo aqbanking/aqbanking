@@ -49,8 +49,8 @@ GWEN_INHERIT_FUNCTION_DEFS(AH_JOB);
 GWEN_LIST2_FUNCTION_DEFS(AH_JOB, AH_Job);
 void AH_Job_List2_FreeAll(AH_JOB_LIST2 *jl);
 
-#include "hbci_l.h"
-#include "result_l.h"
+#include "aqhbci/msglayer/hbci_l.h"
+#include "aqhbci/joblayer/result_l.h"
 #include <aqhbci/aqhbci.h>
 
 #include <aqbanking/backendsupport/user.h>

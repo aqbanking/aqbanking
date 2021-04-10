@@ -13,7 +13,7 @@
 
 
 #include "n_header.h"
-#include "n_utils.h"
+#include "aqofxconnect/common/n_utils.h"
 
 #include "aqofxconnect/user.h"
 

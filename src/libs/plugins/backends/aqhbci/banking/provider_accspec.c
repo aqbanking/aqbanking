@@ -19,7 +19,7 @@
 #include "aqhbci/banking/provider_job.h"
 #include "aqhbci/joblayer/job_l.h"
 #include "aqhbci/tan/tanmethod.h"
-#include "hbci_l.h"
+#include "aqhbci/msglayer/hbci_l.h"
 
 
 

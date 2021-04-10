@@ -12,8 +12,8 @@
 #define AH_JOBACKNOWLEDGE_L_H
 
 
-#include "aqhbci_l.h"
-#include "job_l.h"
+#include "aqhbci/aqhbci_l.h"
+#include "aqhbci/joblayer/job_l.h"
 
 
 AH_JOB *AH_Job_Acknowledge_new(AB_PROVIDER *pro, AB_USER *u,
