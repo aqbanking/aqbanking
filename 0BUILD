@@ -4,7 +4,7 @@
 <gwbuild>
 
   <project name="aqbanking"
-           vmajor="6" vminor="2" vpatchlevel="10" vbuild="1" 
+           vmajor="6" vminor="2" vpatchlevel="10" vbuild="1" vtag="beta"
            so_current="46" so_age="2" so_revision="10"
            write_config_h="TRUE"
            >
@@ -115,26 +115,14 @@
     </ifVarMatches>
 
 
-
-    <define name="AQDB_VERSION_TAG"             value="testing" quoted="TRUE" />
-    
-    <define name="AQBANKING_VERSION_MAJOR"      value="$(project_vmajor)" />
-    <define name="AQBANKING_VERSION_MINOR"      value="$(project_vminor)" />
-    <define name="AQBANKING_VERSION_PATCHLEVEL" value="$(project_vpatchlevel)" />
-    <define name="AQBANKING_VERSION_BUILD"      value="$(project_vbuild)" />
-    <define name="AQBANKING_VERSION_FULL_STRING" quoted="TRUE" 
-            value="$(project_vmajor).$(project_vminor).$(project_vpatchlevel).$(project_vbuild)-testing" />
-    <define name="AQBANKING_VERSION_STRING"      quoted="TRUE" 
-            value="$(project_vmajor).$(project_vminor).$(project_vpatchlevel).$(project_vbuild)" />
-
-    <define name="AQBANKING_SO_CURRENT"         value="$(project_so_current)" />
-    <define name="AQBANKING_SO_REVISION"        value="$(project_so_revision)" />
-    <define name="AQBANKING_SO_AGE"             value="$(project_so_age)" />
-    <define name="AQBANKING_SO_EFFECTIVE"       value="$(project_so_effective)" />
+    <!-- compatibility defines with Makefile.am -->
+    <setVar name="AQBANKING_VERSION_TAG">testing</setVar>
+    <setVar name="AQBANKING_SO_CURRENT">$(project_so_current)</setVar>
+    <setVar name="AQBANKING_SO_REVISION">$(project_so_revision)</setVar>
+    <setVar name="AQBANKING_SO_AGE">$(project_so_age)</setVar>
+    <setVar name="AQBANKING_SO_EFFECTIVE">$(project_so_effective)</setVar>
 
 
-
- 
     <!-- dependencies ( pkg-config and libs) -->
     <dependencies>
       <dep id="gwenhywfar" name="gwenhywfar" minversion="5.5.1.1" required="TRUE" >
