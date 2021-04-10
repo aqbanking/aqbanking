@@ -32,7 +32,7 @@ typedef struct AB_BANKING AB_BANKING;
 #include <gwenhywfar/dialog.h>
 
 #include <aqbanking/error.h> /* for AQBANKING_API */
-#include <aqbanking/version.h>
+//#include <aqbanking/version.h>
 
 /* outsourced */
 #include <aqbanking/banking_imex.h>
