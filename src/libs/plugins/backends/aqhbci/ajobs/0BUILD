@@ -153,8 +153,8 @@
         accountjobs.xml
       </output>
       
-      <cmd>
-        xmlmerge -v --compact -o $(OUTPUT) $(INPUT)
+      <cmd tool="$(xmlmerge)" checkDates="true" >
+        -v --compact -o $(OUTPUT[]) $(INPUT[])
       </cmd>
       <buildMessage>
         Merging XML files into $(OUTPUT[0])

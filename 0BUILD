@@ -180,6 +180,22 @@
     </checkfunctions>
 
 
+    <checkProgs>
+      <prog cmd="xmlmerge" id="xmlmerge" >
+        <alternativeNames>
+          xmlmerge
+        </alternativeNames>
+        
+        <paths>
+          /usr/local/bin
+          /usr/bin
+          /bin
+        </paths>
+      </prog>
+    </checkProgs>
+    
+
+
     <define name="LOCALEDIR"              value="$(datadir)/locale"                           quoted="TRUE" />
     <define name="AQBANKING_DATA_DIR"     value="$(prefix)/share/aqdatabase"                  quoted="TRUE" />
     <define name="AQBANKING_PLUGINS"      value="$(pkglibdir)/plugins/$(target_so_effective)" quoted="TRUE" />
