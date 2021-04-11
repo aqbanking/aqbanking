@@ -181,17 +181,7 @@
 
 
     <checkProgs>
-      <prog cmd="xmlmerge" id="xmlmerge" >
-        <alternativeNames>
-          xmlmerge
-        </alternativeNames>
-        
-        <paths>
-          /usr/local/bin
-          /usr/bin
-          /bin
-        </paths>
-      </prog>
+      <prog cmd="xmlmerge" id="xmlmerge" />
     </checkProgs>
     
 
