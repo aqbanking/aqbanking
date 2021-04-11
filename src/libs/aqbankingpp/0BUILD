@@ -1,0 +1,117 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="aqbankingpp" >
+
+    <includes type="cxx" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)/src/libs/plugins/file
+      -I$(topsrcdir)/src/libs/plugins/file
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+    <define name="AQBANKING_SYSCONF_DIR" value="$(aqbanking_cfg_searchdir)" quoted="TRUE" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+      --api=AQBANKING_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+    </setVar>
+  
+  
+    <headers dist="true" install="$(includedir)/aqbankingpp" >
+      $(local/built_headers_pub)
+
+      accountstatus.hpp
+      aqbankingppdecl.hpp
+      balance.hpp
+      cxxwrap.hpp
+      stringlist.hpp
+      time.hpp
+      value.hpp
+
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      stringlist.cpp
+    </sources>
+
+
+    <useTargets>
+    </useTargets>
+
+    <subdirs>
+    </subdirs>
+
+  
+  
+    <extradist>
+    </extradist>
+
+
+  </target>
+
+
+  <target type="Program" name="testlibcc" >
+
+
+    <includes type="cxx" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)/src/libs/plugins/file
+      -I$(topsrcdir)/src/libs/plugins/file
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+
+
+    <sources>
+      testlibcc.cpp
+    </sources>
+
+
+    <useTargets>
+      aqbanking
+    </useTargets>
+
+    <libraries>
+      $(gwenhywfar_libs)
+      -lc
+    </libraries>
+
+
+  </target>
+
+</gwbuild>
