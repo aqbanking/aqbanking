@@ -96,6 +96,7 @@
     </useTargets>
 
     <subdirs>
+      xml
     </subdirs>
 
   

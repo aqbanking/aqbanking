@@ -93,6 +93,32 @@
     </extradist>
 
 
+    <buildFiles>
+      <input>
+        jobgetkeys.xml
+        jobsendkeys.xml
+        jobchangekeys.xml
+        jobtan.xml
+        jobgetsepainfo.xml
+        jobgetsysid.xml
+        jobgetbankinfo.xml
+        jobunblockpin.xml
+        jobacknowledge.xml
+      </input>
+
+      <output>
+        adminjobs.xml
+      </output>
+      
+      <cmd tool="$(xmlmerge)" checkDates="true" >
+        -v --compact -o $(OUTPUT[]) $(INPUT[])
+      </cmd>
+      <buildMessage>
+        Merging XML files into $(OUTPUT[0])
+      </buildMessage>
+    </buildFiles>
+
+
   </target>
   
 </gwbuild>

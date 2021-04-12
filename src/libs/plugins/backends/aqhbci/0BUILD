@@ -95,6 +95,27 @@
     </extradist>
 
 
+
+    <buildFiles>
+      <input>
+        applayer/xml/base.xml
+        ajobs/accountjobs.xml
+        admjobs/adminjobs.xml
+      </input>
+
+      <output>
+        hbci.xml
+      </output>
+      
+      <cmd tool="$(xmlmerge)" checkDates="true" >
+        -v --compact -o $(OUTPUT[]) $(INPUT[])
+      </cmd>
+      <buildMessage>
+        Merging XML files into $(OUTPUT[0])
+      </buildMessage>
+    </buildFiles>
+
+
   </target>
   
 </gwbuild>
