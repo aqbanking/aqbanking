@@ -49,11 +49,6 @@
     <headers dist="true" install="$(pkgincludedir)" >
       $(local/built_headers_pub)
 
-      banking_be.h
-      banking_l.h
-      banking_p.h
-      i18n_l.h
-
       account_type.h
       banking.h
       banking_dialogs.h
@@ -64,7 +59,16 @@
       error.h
       system.h
       version.h
+    </headers>
 
+
+    <headers dist="true" >
+      $(local/built_headers_private)
+
+      banking_be.h
+      banking_l.h
+      banking_p.h
+      i18n_l.h
     </headers>
   
   

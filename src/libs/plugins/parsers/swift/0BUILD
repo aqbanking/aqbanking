@@ -2,15 +2,13 @@
 
 <gwbuild>
 
-  <target type="ConvenienceLibrary" name="abplugins" >
+  <target type="Module" name="swift" install="$(aqbanking_plugin_installdir)/dbio" >
 
     <includes type="c" >
       $(gmp_cflags)
       $(gwenhywfar_cflags)
       -I$(topsrcdir)/src/libs
       -I$(topbuilddir)/src/libs
-      -I$(topbuilddir)/src/libs/plugins/file
-      -I$(topsrcdir)/src/libs/plugins/file
       -I$(topbuilddir)
       -I$(topsrcdir)
     </includes>
@@ -45,30 +43,42 @@
     </setVar>
   
   
-    <headers dist="true" install="$(pkgincludedir)" >
+    <headers dist="true" >
       $(local/built_headers_pub)
 
+      swift.h
+      swift_l.h
+      swift_p.h
+      swift940_l.h
+      swift940_p.h
+      swift535_l.h
+      swift535_p.h
     </headers>
   
   
     <sources>
       $(local/typefiles)
 
-      dummy.c
+      swift.c
+      swift940.c
+      swift535.c
     </sources>
 
+    <data install="$(aqbanking_plugin_installdir)/dbio" >
+      swift.xml
+    </data>
 
     <useTargets>
-      abbankinfo
-      abimexporters
-      abbackends
     </useTargets>
 
+    <libraries>
+      $(gmp_libs)
+      $(gwenhywfar_libs)
+      -lc
+    </libraries>
+
+
     <subdirs>
-      bankinfo
-      imexporters
-      backends
-      parsers
     </subdirs>
 
   

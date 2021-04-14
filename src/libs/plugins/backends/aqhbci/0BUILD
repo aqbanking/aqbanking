@@ -107,7 +107,7 @@
         hbci.xml
       </output>
       
-      <cmd tool="$(xmlmerge)" checkDates="true" >
+      <cmd tool="$(xmlmerge)" checkDates="true" deleteOutFileFirst="TRUE" >
         -v --compact -o $(OUTPUT[]) $(INPUT[])
       </cmd>
       <buildMessage>
