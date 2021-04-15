@@ -1,0 +1,30 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="Program" name="mkdeinfo" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+    </includes>
+  
+    <xdefine name="AQBANKING_CLI_VERSION_STRING"   value="$(AQBANKING_VERSION_STRING)" quoted="TRUE" />
+    <xdefine name="AQBANKING_FINTS_VERSION_STRING" value="$(AQBANKING_VERSION_STRING)" quoted="TRUE" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+    <sources>mkdeinfo.c</sources>
+    <useTargets>aqbanking</useTargets>
+    <libraries>$(gwenhywfar_libs) -lc</libraries>
+
+  </target>
+
+
+
+
+  
+</gwbuild>

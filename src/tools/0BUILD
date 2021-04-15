@@ -4,6 +4,7 @@
 
   <subdirs>
     aqbanking-cli
+    mkdeinfo
   </subdirs>
 
 </gwbuild>
