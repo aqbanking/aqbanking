@@ -49,7 +49,7 @@
     </setVar>
   
   
-    <headers dist="true" install="$(pkgincludedir)" >
+    <headers dist="true" >
       $(local/built_headers_pub)
 
       adminjobs_l.h adminjobs_p.h

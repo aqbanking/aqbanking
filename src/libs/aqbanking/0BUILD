@@ -92,6 +92,7 @@
       gui
       backendsupport
       dialogs
+      typemaker2
     </subdirs>
 
   

@@ -79,7 +79,7 @@
     </setVar>
   
   
-    <headers dist="true" install="$(pkgincludedir)" >
+    <headers dist="true" >
       $(local/built_headers_pub)
 
       siotlsext.h
@@ -114,6 +114,17 @@
       imexporter.c
     </sources>
 
+
+    <data install="$(pkgdatadir)/typemaker2/c" DIST="FALSE" generated="TRUE" >
+      ab_account.tm2 ab_account_list.tm2 ab_account_list2.tm2
+      ab_accountqueue.tm2 ab_accountqueue_list.tm2
+      ab_jobqueue.tm2 ab_jobqueue_list.tm2
+      ab_providerqueue.tm2 ab_providerqueue_list.tm2
+      ab_queue.tm2
+      ab_user.tm2 ab_user_list.tm2 ab_user_list2.tm2
+      ab_userqueue.tm2 ab_userqueue_list.tm2
+      ab_swift_descr.tm2 ab_swift_descr_list.tm2
+    </data>
 
     <extradist>
       provider_account.c

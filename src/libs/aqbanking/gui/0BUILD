@@ -47,10 +47,15 @@
     </setVar>
   
   
-    <headers dist="true" >
+    <headers dist="true" install="$(pkgincludedir)/gui" >
       $(local/built_headers_pub)
-
       abgui.h
+    </headers>
+
+
+    <headers dist="true" >
+      $(local/built_headers_priv)
+
       abgui_p.h
     </headers>
   

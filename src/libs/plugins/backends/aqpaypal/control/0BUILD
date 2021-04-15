@@ -51,7 +51,7 @@
     </setVar>
   
   
-    <headers dist="true" install="$(pkgincludedir)" >
+    <headers dist="true" >
       $(local/built_headers_pub)
 
       globals_l.h

@@ -46,7 +46,7 @@
     </setVar>
   
   
-    <headers dist="true" install="$(pkgincludedir)" >
+    <headers dist="true" >
       $(local/built_headers_pub)
 
       n_header.h

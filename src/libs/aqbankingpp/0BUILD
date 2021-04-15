@@ -46,7 +46,7 @@
     </setVar>
   
   
-    <headers dist="true" install="$(includedir)/aqbankingpp" >
+    <headers dist="true" >
       $(local/built_headers_pub)
 
       accountstatus.hpp
