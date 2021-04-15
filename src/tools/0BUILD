@@ -3,8 +3,7 @@
 <gwbuild>
 
   <subdirs>
-    libs
-    tools
+    aqbanking-cli
   </subdirs>
 
 </gwbuild>

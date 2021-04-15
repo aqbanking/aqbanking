@@ -121,6 +121,12 @@
     <setVar name="AQBANKING_SO_REVISION">$(project_so_revision)</setVar>
     <setVar name="AQBANKING_SO_AGE">$(project_so_age)</setVar>
     <setVar name="AQBANKING_SO_EFFECTIVE">$(project_so_effective)</setVar>
+    <setVar name="AQBANKING_VERSION_STRING">
+      $(project_vmajor).$(project_vminor).$(project_vpatchlevel)
+    </setVar>
+    <setVar name="AQBANKING_VERSION_FULL_STRING">
+      $(project_vmajor).$(project_vminor).$(project_vpatchlevel).$(project_vbuild)$(project_vtag)
+    </setVar>
 
 
     <!-- dependencies ( pkg-config and libs) -->
