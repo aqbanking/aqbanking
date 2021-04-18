@@ -74,7 +74,6 @@
     <libraries>
       $(gmp_libs)
       $(gwenhywfar_libs)
-      -lc
     </libraries>
 
 

@@ -19,7 +19,7 @@
 
     <sources>mkdeinfo.c</sources>
     <useTargets>aqbanking</useTargets>
-    <libraries>$(gwenhywfar_libs) -lc</libraries>
+    <libraries>$(gwenhywfar_libs)</libraries>
 
   </target>
 

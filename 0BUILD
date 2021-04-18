@@ -97,7 +97,7 @@
         <setVar       name="aqbanking_sys_is_windows">0</setVar>
         <ifVarMatches name="option_local_install"     value="TRUE" >
           <then>
-            <setVar   name="aqbanking_plugin_searchdir">etc</setVar>
+            <setVar   name="aqbanking_plugin_searchdir">lib/aqbanking/plugins/$(project_so_effective)</setVar>
             <setVar   name="aqbanking_cfg_searchdir">etc</setVar>
             <setVar   name="aqbanking_locale_searchdir">share/locale</setVar>
             <setVar   name="aqbanking_data_searchdir">share</setVar>
@@ -113,6 +113,7 @@
         </ifVarMatches>
       </else>
     </ifVarMatches>
+    <define name="AQBANKING_SYS_IS_WINDOWS" value="$(aqbanking_sys_is_windows)" />
 
 
     <!-- compatibility defines with Makefile.am -->

@@ -68,7 +68,6 @@
       $(xslt_libs)
       $(xml_libs)
       $(zlib_libs)
-      -lc
     </libraries>
 
 

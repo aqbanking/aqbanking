@@ -81,7 +81,6 @@
 
     <libraries>
       $(gwenhywfar_libs)
-      -lc
     </libraries>
 
 
