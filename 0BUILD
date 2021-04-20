@@ -15,6 +15,23 @@
     </setVar>
     <define name="PACKAGE" value="$(package)"  quoted="TRUE" />
 
+    <!-- version -->
+    <setVar name="AQBANKING_VERSION_MAJOR">$(project_vmajor)</setVar>
+    <setVar name="AQBANKING_VERSION_MINOR">$(project_vminor)</setVar>
+    <setVar name="AQBANKING_VERSION_PATCHLEVEL">$(project_vpatchlevel)</setVar>
+    <setVar name="AQBANKING_VERSION_BUILD">$(project_vbuild)</setVar>
+    <setVar name="AQBANKING_VERSION_TAG">$(project_vtag)</setVar>
+    <setVar name="AQBANKING_SO_CURRENT">$(project_so_current)</setVar>
+    <setVar name="AQBANKING_SO_REVISION">$(project_so_revision)</setVar>
+    <setVar name="AQBANKING_SO_AGE">$(project_so_age)</setVar>
+    <setVar name="AQBANKING_SO_EFFECTIVE">$(project_so_effective)</setVar>
+    <setVar name="AQBANKING_VERSION_STRING">
+      $(project_vmajor).$(project_vminor).$(project_vpatchlevel)
+    </setVar>
+    <setVar name="AQBANKING_VERSION_FULL_STRING">
+      $(project_vmajor).$(project_vminor).$(project_vpatchlevel).$(project_vbuild)$(project_vtag)
+    </setVar>
+
 
     <!-- prefix handling -->
     <option id="prefix" type="string">
@@ -157,8 +174,6 @@
     </ifVarMatches>
 
 
-
-
     <checkheaders>
       locale.h libintl.h iconv.h
       fcntl.h stdlib.h string.h unistd.h
@@ -183,42 +198,26 @@
     </checkProgs>
 
 
-    <!-- compatibility defines with Makefile.am -->
-    <setVar name="AQBANKING_VERSION_MAJOR">$(project_vmajor)</setVar>
-    <setVar name="AQBANKING_VERSION_MINOR">$(project_vminor)</setVar>
-    <setVar name="AQBANKING_VERSION_PATCHLEVEL">$(project_vpatchlevel)</setVar>
-    <setVar name="AQBANKING_VERSION_BUILD">$(project_vbuild)</setVar>
-    <setVar name="AQBANKING_VERSION_TAG">$(project_vtag)</setVar>
-    <setVar name="AQBANKING_SO_CURRENT">$(project_so_current)</setVar>
-    <setVar name="AQBANKING_SO_REVISION">$(project_so_revision)</setVar>
-    <setVar name="AQBANKING_SO_AGE">$(project_so_age)</setVar>
-    <setVar name="AQBANKING_SO_EFFECTIVE">$(project_so_effective)</setVar>
-    <setVar name="AQBANKING_VERSION_STRING">
-      $(project_vmajor).$(project_vminor).$(project_vpatchlevel)
-    </setVar>
-    <setVar name="AQBANKING_VERSION_FULL_STRING">
-      $(project_vmajor).$(project_vminor).$(project_vpatchlevel).$(project_vbuild)$(project_vtag)
-    </setVar>
+    <!-- compatibility defines/vars with Makefile.am -->
     <setVar name="aqbanking_ldflags">-L$${libdir}</setVar>
     <setVar name="aqbanking_libs">-laqbanking</setVar>
     <setVar name="aqbanking_includes">-I$${includedir}/aqbanking6</setVar>
-    <setVar name="aqbanking_plugindir">$${libdir}/aqbanking/plugins/$${AQBANKING_SO_EFFECTIVE}</setVar>
+    <setVar name="aqbanking_plugindir">$${libdir}/aqbanking/plugins/$(AQBANKING_SO_EFFECTIVE)</setVar>
     <setVar name="aqbanking_pkgdatadir">$${datadir}/aqbanking</setVar>
     <setVar name="gwenhywfar_includes">$(gwenhywfar_cflags)</setVar>
+    <setVar name="OSYSTEM">$(GWBUILD_SYSTEM)</setVar>
 
     <define name="LOCALEDIR"              value="$(datadir)/locale"                           quoted="TRUE" />
     <define name="AQBANKING_DATA_DIR"     value="$(prefix)/share/aqbanking"                   quoted="TRUE" />
     <define name="AQBANKING_PLUGINS"      value="$(pkglibdir)/plugins/$(target_so_effective)" quoted="TRUE" />
 
     <define name="OS_TYPE"      value="$(GWBUILD_SYSTEM)"    quoted="TRUE" />
-    <define name="OSYSTEM"      value="$(GWBUILD_SYSTEM)"    quoted="TRUE" />
     <define name="OS_SHORTNAME" value="$(GWBUILD_SYSTEM)"    quoted="TRUE" />
 
     <subdirs>
       src
       admin
     </subdirs>
-
 
 
     <data dist="TRUE" install="$(libdir)/pkgconfig">
