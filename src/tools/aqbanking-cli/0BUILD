@@ -79,9 +79,23 @@
       aqbanking
     </useTargets>
 
-    <libraries>
-      $(gwenhywfar_libs)
-    </libraries>
+    <ifVarMatches name="GWBUILD_LIBTYPE"     value="sharedlib" >
+      <then>
+        <libraries>
+          $(gwenhywfar_libs)
+        </libraries>
+      </then>
+      <else>
+        <libraries>
+          $(gmp_libs)
+          $(gwenhywfar_libs)
+          $(xmlsec_libs)
+          $(xslt_libs)
+          $(xml_libs)
+          $(zlib_libs)
+        </libraries>
+      </else>
+    </ifVarMatches>
 
 
     <subdirs>
@@ -116,7 +130,23 @@
     <setVar name="local/cflags">$(visibility_cflags)</setVar>
     <sources>aqhbci-tool.c</sources>
     <useTargets>aqbanking</useTargets>
-    <libraries>$(gwenhywfar_libs) -lc</libraries>
+    <ifVarMatches name="GWBUILD_LIBTYPE"     value="sharedlib" >
+      <then>
+        <libraries>
+          $(gwenhywfar_libs)
+        </libraries>
+      </then>
+      <else>
+        <libraries>
+          $(gmp_libs)
+          $(gwenhywfar_libs)
+          $(xmlsec_libs)
+          $(xslt_libs)
+          $(xml_libs)
+          $(zlib_libs)
+        </libraries>
+      </else>
+    </ifVarMatches>
   </target>
 
 
@@ -141,7 +171,23 @@
     <setVar name="local/cflags">$(visibility_cflags)</setVar>
     <sources>aqpaypal-tool.c</sources>
     <useTargets>aqbanking</useTargets>
-    <libraries>$(gwenhywfar_libs) -lc</libraries>
+    <ifVarMatches name="GWBUILD_LIBTYPE"     value="sharedlib" >
+      <then>
+        <libraries>
+          $(gwenhywfar_libs)
+        </libraries>
+      </then>
+      <else>
+        <libraries>
+          $(gmp_libs)
+          $(gwenhywfar_libs)
+          $(xmlsec_libs)
+          $(xslt_libs)
+          $(xml_libs)
+          $(zlib_libs)
+        </libraries>
+      </else>
+    </ifVarMatches>
   </target>
 
 
@@ -166,7 +212,23 @@
     <setVar name="local/cflags">$(visibility_cflags)</setVar>
     <sources>aqebics-tool.c</sources>
     <useTargets>aqbanking</useTargets>
-    <libraries>$(gwenhywfar_libs) -lc</libraries>
+    <ifVarMatches name="GWBUILD_LIBTYPE"     value="sharedlib" >
+      <then>
+        <libraries>
+          $(gwenhywfar_libs)
+        </libraries>
+      </then>
+      <else>
+        <libraries>
+          $(gmp_libs)
+          $(gwenhywfar_libs)
+          $(xmlsec_libs)
+          $(xslt_libs)
+          $(xml_libs)
+          $(zlib_libs)
+        </libraries>
+      </else>
+    </ifVarMatches>
   </target>
 
   
