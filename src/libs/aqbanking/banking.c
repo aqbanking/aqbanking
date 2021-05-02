@@ -370,30 +370,20 @@ GWEN_DIALOG *AB_Banking_GetNewUserDialog(AB_BANKING *ab,
 
 void AB_Banking_LogMsgForJobId(const AB_BANKING *ab, uint32_t jobId, const char *fmt, ...)
 {
-  GWEN_BUFFER *bf;
-  va_list list;
-  char *p;
-  int maxUnsegmentedWrite;
-  int rv;
-
-  bf=GWEN_Buffer_new(0, 256, 0, 1);
-
-  maxUnsegmentedWrite=GWEN_Buffer_GetMaxUnsegmentedWrite(bf);
-  p=GWEN_Buffer_GetStart(bf)+GWEN_Buffer_GetPos(bf);
-
-  /* prepare list for va_arg */
-  va_start(list, fmt);
-  rv=vsnprintf(p, maxUnsegmentedWrite, fmt, list);
-  if (rv<0) {
-    DBG_ERROR(GWEN_LOGDOMAIN, "Error on vnsprintf (%d)", rv);
-    GWEN_Buffer_free(bf);
-    va_end(list);
-    return;
-  }
-  else if (rv>=maxUnsegmentedWrite) {
-    GWEN_Buffer_AllocRoom(bf, rv+1);
+  if (jobId>0) {
+    GWEN_BUFFER *bf;
+    va_list list;
+    char *p;
+    int maxUnsegmentedWrite;
+    int rv;
+  
+    bf=GWEN_Buffer_new(0, 256, 0, 1);
+  
     maxUnsegmentedWrite=GWEN_Buffer_GetMaxUnsegmentedWrite(bf);
     p=GWEN_Buffer_GetStart(bf)+GWEN_Buffer_GetPos(bf);
+  
+    /* prepare list for va_arg */
+    va_start(list, fmt);
     rv=vsnprintf(p, maxUnsegmentedWrite, fmt, list);
     if (rv<0) {
       DBG_ERROR(GWEN_LOGDOMAIN, "Error on vnsprintf (%d)", rv);
@@ -401,27 +391,41 @@ void AB_Banking_LogMsgForJobId(const AB_BANKING *ab, uint32_t jobId, const char 
       va_end(list);
       return;
     }
+    else if (rv>=maxUnsegmentedWrite) {
+      GWEN_Buffer_AllocRoom(bf, rv+1);
+      maxUnsegmentedWrite=GWEN_Buffer_GetMaxUnsegmentedWrite(bf);
+      p=GWEN_Buffer_GetStart(bf)+GWEN_Buffer_GetPos(bf);
+      rv=vsnprintf(p, maxUnsegmentedWrite, fmt, list);
+      if (rv<0) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Error on vnsprintf (%d)", rv);
+        GWEN_Buffer_free(bf);
+        va_end(list);
+        return;
+      }
+    }
+    if (rv>0) {
+      GWEN_Buffer_IncrementPos(bf, rv);
+      GWEN_Buffer_AdjustUsedBytes(bf);
+      _logMsgForJobId(ab, jobId, GWEN_Buffer_GetStart(bf));
+    }
+    GWEN_Buffer_free(bf);
+    va_end(list);
   }
-  if (rv>0) {
-    GWEN_Buffer_IncrementPos(bf, rv);
-    GWEN_Buffer_AdjustUsedBytes(bf);
-    _logMsgForJobId(ab, jobId, GWEN_Buffer_GetStart(bf));
-  }
-  GWEN_Buffer_free(bf);
-  va_end(list);
 }
 
 
 
 void AB_Banking_LogCmdInfoMsgForJob(const AB_BANKING *ab, const AB_TRANSACTION *t, uint32_t jid, const char *msg)
 {
-  GWEN_BUFFER *tbuf;
+  if (jid>0) {
+    GWEN_BUFFER *tbuf;
 
-  tbuf=GWEN_Buffer_new(0, 64, 0, 1);
-  GWEN_Buffer_AppendString(tbuf, msg);
-  AB_Banking_AddJobInfoToBuffer(t, tbuf);
-  AB_Banking_LogMsgForJobId(ab, jid, GWEN_Buffer_GetStart(tbuf));
-  GWEN_Buffer_free(tbuf);
+    tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+    GWEN_Buffer_AppendString(tbuf, msg);
+    AB_Banking_AddJobInfoToBuffer(t, tbuf);
+    AB_Banking_LogMsgForJobId(ab, jid, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
 }
 
 
