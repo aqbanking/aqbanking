@@ -638,6 +638,12 @@ void AH_Job_SetStatus(AH_JOB *j, AH_JOB_STATUS st)
 
     AH_Job_Log(j, GWEN_LoggerLevel_Info, GWEN_Buffer_GetStart(lbuf));
     GWEN_Buffer_free(lbuf);
+
+    AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j),
+                              "Changing status from \"%s\" (%d) to \"%s\" (%d)",
+                              AH_Job_StatusName(j->status), j->status,
+                              AH_Job_StatusName(st), st);
+
     j->status=st;
 
     /* set status to original command */
@@ -679,6 +685,10 @@ void AH_Job_SetStatus(AH_JOB *j, AH_JOB_STATUS st)
 
         t=AB_Transaction_List2Iterator_Data(jit);
         while (t) {
+          AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j),
+                                    AB_Transaction_GetUniqueId(t),
+                                    "Changing command status to \"%s\" (%d)",
+                                    AB_Transaction_Status_toString(ts), ts);
           AB_Transaction_SetStatus(t, ts);
           t=AB_Transaction_List2Iterator_Next(jit);
         }
@@ -713,6 +723,7 @@ void AH_Job_AddSigner(AH_JOB *j, const char *s)
     GWEN_Buffer_AppendString(lbuf, "\" added");
     AH_Job_Log(j, GWEN_LoggerLevel_Info,
                GWEN_Buffer_GetStart(lbuf));
+    AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Adding signer \"%s\"", s?s:"<empty>");
   }
   GWEN_Buffer_free(lbuf);
   j->flags|=AH_JOB_FLAGS_SIGN;
@@ -905,6 +916,9 @@ void AH_Job_SampleResults(AH_JOB *j)
             AH_Job_Log(j, ll,
                        GWEN_Buffer_GetStart(lbuf));
             GWEN_Buffer_free(lbuf);
+            AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j),
+                                      "SegResult: %d (%s)",
+                                      code, text?text:"<empty>");
           }
 
           /* found a result */
@@ -966,6 +980,9 @@ void AH_Job_SampleResults(AH_JOB *j)
               AH_Job_Log(j, ll,
                          GWEN_Buffer_GetStart(lbuf));
               GWEN_Buffer_free(lbuf);
+              AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j),
+                                        "MsgResult: %d (%s)",
+                                        code, text?text:"<empty>");
             }
 
             /* found a result */

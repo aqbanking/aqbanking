@@ -93,18 +93,23 @@ int _prepareTodoJobs(AH_JOB_LIST *todoJobs, AH_JOB_LIST *finishedJobs)
     next=AH_Job_List_Next(j);
     st=AH_Job_GetStatus(j);
     if (st==AH_JobStatusToDo) {
-      int rv=AH_Job_Prepare(j);
+      int rv;
+
+      AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Preparing job");
+      rv=AH_Job_Prepare(j);
       if (rv<0 && rv!=GWEN_ERROR_NOT_SUPPORTED) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
         AH_Job_SetStatus(j, AH_JobStatusError);
         AH_Job_List_Del(j);
         AH_Job_List_Add(j, finishedJobs);
+        AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Error on AH_Job_Prepare(): %d", rv);
         errors++;
       }
     } /* if status TODO */
     else {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Skip job \"%s\" for its status \"%s\" (%d)",
                AH_Job_GetName(j), AH_Job_StatusName(st), st);
+      AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Skip job due to status(%s)", AH_Job_StatusName(st));
       AH_Job_SetStatus(j, AH_JobStatusError);
       AH_Job_List_Del(j);
       AH_Job_List_Add(j, finishedJobs);
@@ -212,6 +217,8 @@ void _fillQueueWithTodoJobs(AH_JOB_LIST *todoJobs, AH_JOB_LIST *finishedJobs, AH
     AH_JOBQUEUE_ADDRESULT res;
 
     DBG_INFO(AQHBCI_LOGDOMAIN, "Queueing job \"%s\"", AH_Job_GetName(j));
+    AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Adding job to run-queue");
+
     AH_Job_List_Del(j);
 
     res=AH_JobQueue_AddJob(jq, j);
@@ -220,6 +227,7 @@ void _fillQueueWithTodoJobs(AH_JOB_LIST *todoJobs, AH_JOB_LIST *finishedJobs, AH
       if (AH_JobQueue_GetCount(jq)==0) {
         /* error adding a job to an empty queue */
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not add non-dialog job \"%s\" to empty queue", AH_Job_GetName(j));
+        AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Could not add to empty run-queue");
         /* set status to ERROR and move to finished queue */
         AH_Job_SetStatus(j, AH_JobStatusError);
         AH_Job_List_Add(j, finishedJobs);
@@ -231,11 +239,13 @@ void _fillQueueWithTodoJobs(AH_JOB_LIST *todoJobs, AH_JOB_LIST *finishedJobs, AH
           /* queue is full, so add it to the todo queue list and start
            * a new queue */
           DBG_INFO(AQHBCI_LOGDOMAIN, "Queue full");
+          AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Queue full, retrying later");
           AH_Job_List_Add(j, retryJobs);
           break;
         }
         else if (res==AH_JobQueueAddResultJobLimit) {
           DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" does not fit into queue, will retry later", AH_Job_GetName(j));
+          AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Job limit reached for queue, retrying later");
           /* move job to the end of the queue (retry it later) */
           AH_Job_List_Add(j, retryJobs);
         }
@@ -245,6 +255,7 @@ void _fillQueueWithTodoJobs(AH_JOB_LIST *todoJobs, AH_JOB_LIST *finishedJobs, AH
                     "Could not add non-dialog job \"%s\" to queue for "
                     "unknown reason %d",
                     AH_Job_GetName(j), res);
+          AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Could not add job (AddJob res=%d)", res);
           /* set status to ERROR and move to finished queue */
           AH_Job_SetStatus(j, AH_JobStatusError);
           AH_Job_List_Add(j, finishedJobs);
@@ -254,6 +265,7 @@ void _fillQueueWithTodoJobs(AH_JOB_LIST *todoJobs, AH_JOB_LIST *finishedJobs, AH
     else {
       /* job added successfully */
       DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" successfully added", AH_Job_GetName(j));
+      AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Job successfully added to run-queue");
       AH_Job_Log(j, GWEN_LoggerLevel_Info, "HBCI-job enqueued (1)");
     }
   }
