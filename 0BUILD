@@ -195,6 +195,8 @@
 
     <checkProgs>
       <prog cmd="xmlmerge" id="xmlmerge" />
+      <prog cmd="xgettext" id="xgettext" />
+      <prog cmd="astyle"   id="astyle" />
     </checkProgs>
 
 
@@ -233,6 +235,71 @@
       NEWS
       README
     </extradist>
+
+
+    <!-- Build with "gwbuild -B gettext-src" -->
+    <ifVarMatches name="xgettext_EXISTS" value="TRUE" >
+      <buildFiles name="gettext-src" auto="FALSE" >
+        <input>
+          <files match="*.c" />
+          <files match="*.cpp" />
+        </input>
+  
+        <output>
+          aqbanking.pot
+        </output>
+        
+        <cmd tool="$(xgettext)" checkDates="TRUE" deleteOutFileFirst="TRUE" >
+          -C -c -ki18n -ktr2i18n -kI18N -kI18S -kI18N_NOOP -ktranslate -kaliasLocale -ktr -ktrUtf8
+          --msgid-bugs-address=aqbanking-user@lists.aqbanking.de
+          -o $(OUTPUT[0]) $(INPUT[])
+        </cmd>
+  
+        <buildMessage>
+          Extracting I18N strings into $(OUTPUT[0])
+        </buildMessage>
+      </buildFiles>
+    </ifVarMatches>
+
+
+    <!-- Build with "gwbuild -B format-src" -->
+    <ifVarMatches name="astyle_EXISTS" value="TRUE" >
+      <buildFiles name="format-src" auto="FALSE" >
+        <input>
+          <files match="*.c" />
+          <files match="*.cpp" />
+          <files match="*.h" />
+        </input>
+  
+        <output>
+        </output>
+        
+        <cmd tool="$(astyle)" checkDates="FALSE"  >
+          --style=stroustrup
+          -s2
+          --min-conditional-indent=0
+          --indent-labels
+          --max-continuation-indent=80
+          --pad-comma
+          --pad-header
+          --unpad-paren
+          --align-pointer=name
+          --break-closing-braces
+          --break-one-line-headers
+          --attach-return-type
+          --convert-tabs
+          --max-code-length=120
+          --break-after-logical
+          --preserve-date
+          --suffix=none
+             $(INPUT[])
+        </cmd>
+  
+        <buildMessage>
+          Formatting source files in-place.
+        </buildMessage>
+      </buildFiles>
+    </ifVarMatches>
 
 
     <writeFile name="aqbanking.pc" />
