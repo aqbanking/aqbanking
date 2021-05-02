@@ -248,6 +248,24 @@ void AB_Banking_FillGapsInTransaction(AB_BANKING *ab, AB_ACCOUNT *localAccount, 
 AB_SWIFT_DESCR_LIST *AB_Banking_GetSwiftDescriptorsForImExporter(AB_BANKING *ab, const char *imExporterName);
 
 
+
+/**
+ * Append a log message to a log file for the given job id.
+ * The file is created if it doesn't exist.
+ */
+void AB_Banking_LogMsgForJobId(const AB_BANKING *ab, uint32_t jobId, const char *fmt, ...);
+
+/**
+ * Append small bits of information about a given transaction to buffer.
+ */
+void AB_Banking_AddJobInfoToBuffer(const AB_TRANSACTION *t, GWEN_BUFFER *buf);
+
+/**
+ * Write a log message for the given job id using info from the given transaction.
+ */
+void AB_Banking_LogCmdInfoMsgForJob(const AB_BANKING *ab, const AB_TRANSACTION *t, uint32_t jid, const char *msg);
+
+
 #ifdef __cplusplus
 }
 #endif
