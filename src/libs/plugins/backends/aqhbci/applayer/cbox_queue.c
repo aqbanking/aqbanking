@@ -258,16 +258,10 @@ AH_JOBQUEUE *_createNextQueueFromTodoList(AB_USER *user, AH_JOB_LIST *jl, uint32
 
 int _performNonDialogQueues(AH_OUTBOX_CBOX *cbox, AH_JOBQUEUE_LIST *jql)
 {
-  AB_USER *user;
-  AB_PROVIDER *provider;
   AH_DIALOG *dlg;
   AH_JOBQUEUE *jq;
   int rv=0;
-  int i;
   uint32_t jqflags;
-
-  user=AH_OutboxCBox_GetUser(cbox);
-  provider=AH_OutboxCBox_GetProvider(cbox);
 
   if (AH_JobQueue_List_GetCount(jql)==0) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "No queues to handle, doing nothing");
