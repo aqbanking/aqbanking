@@ -293,8 +293,8 @@ int _addJobNodesToMessage(AH_JOB *j, AH_MSG *msg)
   startPos=GWEN_Buffer_GetPos(msgBuf);
   lastSeg=AH_Msg_AddNode(msg, jnode, jargs);
   if (!lastSeg) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not encode job \"%s\"",
-               AH_Job_GetName(j));
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not encode job \"%s\"",
+              AH_Job_GetName(j));
     AH_Job_SetStatus(j, AH_JobStatusError);
     return GWEN_ERROR_INTERNAL;
   }
