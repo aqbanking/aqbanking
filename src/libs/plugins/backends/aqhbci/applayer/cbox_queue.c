@@ -192,12 +192,12 @@ AH_JOBQUEUE *_createNextQueueFromTodoList(AB_USER *user, AH_JOB_LIST *jl, uint32
       AH_Job_PrepareNextMessage(j);
       if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_HASMOREMSGS) {
         DBG_NOTICE(AQHBCI_LOGDOMAIN, "Requeueing job \"%s\"", jobName);
-        AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Re-enqueing job");
+        AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Re-enqueueing job");
         /* we shall redo this job */
         if (AH_JobQueue_AddJob(jqTodo, j)!=AH_JobQueueAddResultOk) {
           DBG_ERROR(AQHBCI_LOGDOMAIN, "Job could not be re-added to queue, SNH!");
           AH_Job_Log(j, GWEN_LoggerLevel_Error, "Could not re-enqueue job");
-          AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Error re-enqueing job");
+          AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Error re-enqueueing job");
           AH_Job_SetStatus(j, AH_JobStatusError);
         }
         else {
@@ -207,22 +207,22 @@ AH_JOBQUEUE *_createNextQueueFromTodoList(AB_USER *user, AH_JOB_LIST *jl, uint32
         }
       } /* if more messages */
       else {
-        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" has no messages left, not re-enqueing", jobName);
+        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" has no messages left, not re-enqueueing", jobName);
       }
     } /* if status "answered" */
 
     else if (AH_Job_GetStatus(j)==AH_JobStatusEnqueued) {
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" with status \"enqueued\", trying to re-enqueue", jobName);
-      AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Job status \"enqueued\", trying to re-enqueing");
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" with status \"enqueued\", trying to enqueue", jobName);
+      AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Job status \"enqueued\", trying to enqueue");
       if (AH_JobQueue_AddJob(jqTodo, j)!=AH_JobQueueAddResultOk) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Job could not be re-added to queue, SNH!");
-        AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Error re-enqueing job (internal)");
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Job could not be added to queue, SNH!");
+        AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Error enqueueing job (internal)");
         AH_Job_SetStatus(j, AH_JobStatusError);
         AH_Job_Log(j, GWEN_LoggerLevel_Error, "Could not enqueue job");
       }
       else {
         AH_Job_Log(j, GWEN_LoggerLevel_Info, "Job enqueued (2)");
-        AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Job successfully re-enqueued (2)");
+        AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Job successfully enqueued (2)");
         j=NULL; /* mark that this job has been dealt with */
       }
     } /* if status "enqueued" */
