@@ -13,9 +13,9 @@
 #define AQFINTS_PARSER_H
 
 
-#include "parser/element.h"
-#include "parser/segment.h"
-#include "parser/jobdef.h"
+#include "libaqfints/parser/element.h"
+#include "libaqfints/parser/segment.h"
+#include "libaqfints/parser/jobdef.h"
 
 #include <gwenhywfar/xml.h>
 

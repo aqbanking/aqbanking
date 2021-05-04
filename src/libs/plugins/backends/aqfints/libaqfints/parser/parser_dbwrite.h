@@ -11,8 +11,8 @@
 #ifndef AQFINTS_PARSER_DBWRITE_H
 #define AQFINTS_PARSER_DBWRITE_H
 
-#include "parser/element.h"
-#include "parser/segment.h"
+#include "libaqfints/parser/element.h"
+#include "libaqfints/parser/segment.h"
 
 #include <gwenhywfar/db.h>
 

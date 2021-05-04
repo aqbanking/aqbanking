@@ -13,7 +13,7 @@
 #define AQFINTS_MESSAGE_P_H
 
 
-#include "msg/message.h"
+#include "libaqfints/msg/message.h"
 
 
 struct AQFINTS_MESSAGE {

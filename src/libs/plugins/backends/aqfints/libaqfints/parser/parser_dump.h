@@ -12,7 +12,7 @@
 #define AQFINTS_PARSER_DUMP_H
 
 
-#include "parser/segment.h"
+#include "libaqfints/parser/segment.h"
 
 
 void AQFINTS_Parser_DumpElementTree(AQFINTS_ELEMENT *element, int indent);

@@ -9,13 +9,13 @@
  ***************************************************************************/
 
 
-#include "parser.h"
-#include "parser_xml.h"
-#include "parser_dump.h"
-#include "parser_normalize.h"
-#include "parser_hbci.h"
-#include "parser_dbread.h"
-#include "parser_dbwrite.h"
+#include "libaqfints/parser/parser.h"
+#include "libaqfints/parser/parser_xml.h"
+#include "libaqfints/parser/parser_dump.h"
+#include "libaqfints/parser/parser_normalize.h"
+#include "libaqfints/parser/parser_hbci.h"
+#include "libaqfints/parser/parser_dbread.h"
+#include "libaqfints/parser/parser_dbwrite.h"
 
 
 

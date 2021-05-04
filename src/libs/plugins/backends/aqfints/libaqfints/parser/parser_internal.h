@@ -11,8 +11,8 @@
 #ifndef AQFINTS_PARSER_INTERNAL_H
 #define AQFINTS_PARSER_INTERNAL_H
 
-#include "parser/element.h"
-#include "parser/segment.h"
+#include "libaqfints/parser/element.h"
+#include "libaqfints/parser/segment.h"
 
 
 /**
