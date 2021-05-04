@@ -12,8 +12,8 @@
 #define AQFINTS_SESSION_MESSAGE_H
 
 
-#include "session/session.h"
-#include "parser/segment.h"
+#include "libaqfints/session/session.h"
+#include "libaqfints/parser/segment.h"
 
 
 

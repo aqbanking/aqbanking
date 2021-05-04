@@ -13,12 +13,12 @@
 #endif
 
 #include "./session_p.h"
-#include "session/s_encode.h"
-#include "session/s_decode.h"
-#include "parser/parser.h"
-#include "parser/parser_dump.h"
-#include "service/upd/upd_read.h"
-#include "service/bpd/bpd_read.h"
+#include "libaqfints/session/s_encode.h"
+#include "libaqfints/session/s_decode.h"
+#include "libaqfints/parser/parser.h"
+#include "libaqfints/parser/parser_dump.h"
+#include "libaqfints/service/upd/upd_read.h"
+#include "libaqfints/service/bpd/bpd_read.h"
 
 
 #include <gwenhywfar/misc.h>

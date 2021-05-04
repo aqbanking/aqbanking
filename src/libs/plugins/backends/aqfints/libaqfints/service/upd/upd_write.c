@@ -15,9 +15,9 @@
 #include "upd_write.h"
 
 #include "libaqfints/aqfints.h"
-#include "service/upd/updjob.h"
-#include "service/upd/accountdata.h"
-#include "service/upd/userdata.h"
+#include "libaqfints/service/upd/updjob.h"
+#include "libaqfints/service/upd/accountdata.h"
+#include "libaqfints/service/upd/userdata.h"
 
 #include <gwenhywfar/debug.h>
 

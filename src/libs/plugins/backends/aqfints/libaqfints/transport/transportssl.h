@@ -12,7 +12,7 @@
 #define AQFINTS_TRANSPORTSSL_H
 
 
-#include "transport/transport.h"
+#include "libaqfints/transport/transport.h"
 
 #include <gwenhywfar/httpsession.h>
 

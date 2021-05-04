@@ -16,7 +16,7 @@
 #include "./session.h"
 #include "s_message.h"
 
-#include "service/bpd/bpd_read.h"
+#include "libaqfints/service/bpd/bpd_read.h"
 
 #include <gwenhywfar/debug.h>
 

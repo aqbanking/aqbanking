@@ -12,10 +12,10 @@
 # include <config.h>
 #endif
 
-#include "session/s_encrypt.h"
-#include "session/pintan/s_encrypt_pintan.h"
-#include "session/hbci/s_encrypt_hbci.h"
-#include "parser/parser.h"
+#include "libaqfints/session/s_encrypt.h"
+#include "libaqfints/session/pintan/s_encrypt_pintan.h"
+#include "libaqfints/session/hbci/s_encrypt_hbci.h"
+#include "libaqfints/parser/parser.h"
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>

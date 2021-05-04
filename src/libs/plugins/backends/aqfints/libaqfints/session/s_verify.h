@@ -12,8 +12,8 @@
 #define AQFINTS_SESSION_VERIFY_H
 
 
-#include "session/session.h"
-#include "msg/message.h"
+#include "libaqfints/session/session.h"
+#include "libaqfints/msg/message.h"
 
 
 

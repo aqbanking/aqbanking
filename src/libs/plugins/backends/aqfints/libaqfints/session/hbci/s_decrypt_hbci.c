@@ -12,8 +12,8 @@
 # include <config.h>
 #endif
 
-#include "session/hbci/s_decrypt_hbci.h"
-#include "parser/parser.h"
+#include "libaqfints/session/hbci/s_decrypt_hbci.h"
+#include "libaqfints/parser/parser.h"
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>

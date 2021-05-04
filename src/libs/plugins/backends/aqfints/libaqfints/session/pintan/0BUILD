@@ -9,12 +9,8 @@
       $(gwenhywfar_cflags)
       -I$(builddir)
       -I$(srcdir)
-      -I$(builddir)/..
-      -I$(srcdir)/..
       -I$(topsrcdir)/src/libs
       -I$(topbuilddir)/src/libs
-      -I$(srcdir)/../..
-      -I$(builddir)/../..
       -I$(srcdir)/../../..
       -I$(builddir)/../../..
       -I$(topbuilddir)
