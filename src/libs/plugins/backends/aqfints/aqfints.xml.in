@@ -1,6 +1,6 @@
 <plugin name="aqfints" type="provider" i18n="aqbanking" >
   <version>@AQBANKING_VERSION_STRING@</version>
-  <author>Martin Preuss(martin@libchipcard.de)</author>
+  <author>Martin Preuss(martin(AT)libchipcard.de)</author>
   <short>FinTS backend</short>
   <descr>
     This backend allows using FinTS.
