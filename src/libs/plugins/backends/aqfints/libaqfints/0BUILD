@@ -2,15 +2,17 @@
 
 <gwbuild>
 
-  <target type="ConvenienceLibrary" name="abbackends" >
+  <target type="ConvenienceLibrary" name="aqfints" >
 
     <includes type="c" >
       $(gmp_cflags)
       $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/..
+      -I$(srcdir)/..
       -I$(topsrcdir)/src/libs
       -I$(topbuilddir)/src/libs
-      -I$(topbuilddir)/src/libs/plugins/file
-      -I$(topsrcdir)/src/libs/plugins/file
       -I$(topbuilddir)
       -I$(topsrcdir)
     </includes>
@@ -48,39 +50,39 @@
     <headers dist="true" >
       $(local/built_headers_pub)
 
+      aqfints.h
     </headers>
   
   
     <sources>
       $(local/typefiles)
 
-      dummy.c
+      aqfints.c
     </sources>
 
+    <data install="$(aqbanking_plugin_installdir)/providers" >
+    </data>
 
-    <useTargets>
-      aqhbci
-      aqnone
-      aqofxconnect
-      aqpaypal
-      aqebics
-      aqfints
-    </useTargets>
-
-    <subdirs>
-      aqhbci
-      aqnone
-      aqofxconnect
-      aqpaypal
-      aqebics
-      aqfints
-    </subdirs>
-
-  
-  
     <extradist>
     </extradist>
 
+
+    <useTargets>
+      aqfintsmsg
+      aqfintsparser
+      aqfintsservice
+      aqfintssession
+      aqfintstransport
+    </useTargets>
+
+    <subdirs>
+      msg
+      parser
+      service
+      session
+      transport
+      typemaker2
+    </subdirs>
 
   </target>
   

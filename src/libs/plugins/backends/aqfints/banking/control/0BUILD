@@ -2,15 +2,19 @@
 
 <gwbuild>
 
-  <target type="ConvenienceLibrary" name="abbackends" >
+  <target type="ConvenienceLibrary" name="afcontrol" >
 
     <includes type="c" >
       $(gmp_cflags)
       $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/../..
+      -I$(srcdir)/../..
       -I$(topsrcdir)/src/libs
       -I$(topbuilddir)/src/libs
-      -I$(topbuilddir)/src/libs/plugins/file
-      -I$(topsrcdir)/src/libs/plugins/file
+      -I$(srcdir)/../../libaqfints
+      -I$(builddir)/../../libaqfints
       -I$(topbuilddir)
       -I$(topsrcdir)
     </includes>
@@ -48,39 +52,28 @@
     <headers dist="true" >
       $(local/built_headers_pub)
 
+      control.h
+      logfile.h
     </headers>
   
   
     <sources>
       $(local/typefiles)
 
-      dummy.c
+      control.c
+      logfile.c
     </sources>
 
 
-    <useTargets>
-      aqhbci
-      aqnone
-      aqofxconnect
-      aqpaypal
-      aqebics
-      aqfints
-    </useTargets>
-
-    <subdirs>
-      aqhbci
-      aqnone
-      aqofxconnect
-      aqpaypal
-      aqebics
-      aqfints
-    </subdirs>
-
-  
-  
     <extradist>
     </extradist>
 
+
+    <useTargets>
+    </useTargets>
+
+    <subdirs>
+    </subdirs>
 
   </target>
   

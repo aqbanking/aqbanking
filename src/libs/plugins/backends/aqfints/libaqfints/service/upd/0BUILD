@@ -2,15 +2,21 @@
 
 <gwbuild>
 
-  <target type="ConvenienceLibrary" name="abbackends" >
+  <target type="ConvenienceLibrary" name="afmsgupd" >
 
     <includes type="c" >
       $(gmp_cflags)
       $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/..
+      -I$(srcdir)/..
       -I$(topsrcdir)/src/libs
       -I$(topbuilddir)/src/libs
-      -I$(topbuilddir)/src/libs/plugins/file
-      -I$(topsrcdir)/src/libs/plugins/file
+      -I$(srcdir)/../..
+      -I$(builddir)/../..
+      -I$(srcdir)/../../..
+      -I$(builddir)/../../..
       -I$(topbuilddir)
       -I$(topsrcdir)
     </includes>
@@ -28,59 +34,69 @@
 
   
     <setVar name="tm2flags" >
-      --api=AQBANKING_API
     </setVar>
 
 
     <setVar name="local/typefiles" >
+      updjob.xml
+      accountdata.xml
+      userdata.xml
     </setVar>
   
     <setVar name="local/built_sources" >
+      updjob.c
+      accountdata.c
+      userdata.c
     </setVar>
+
   
     <setVar name="local/built_headers_pub">
+      updjob.h
+      accountdata.h
+      userdata.h
     </setVar>
+
   
     <setVar name="local/built_headers_priv" >
+      updjob_p.h
+      accountdata_p.h
+      userdata_p.h
     </setVar>
   
   
-    <headers dist="true" >
+    <headers dist="false" >
+      $(local/built_headers_priv)
       $(local/built_headers_pub)
+    </headers>
 
+
+    <headers dist="true" >
+      upd_read.h
+      upd_write.h
     </headers>
   
   
     <sources>
       $(local/typefiles)
-
-      dummy.c
+      upd_read.c
+      upd_write.c
     </sources>
 
 
-    <useTargets>
-      aqhbci
-      aqnone
-      aqofxconnect
-      aqpaypal
-      aqebics
-      aqfints
-    </useTargets>
+    <data install="$(pkgdatadir)/fints" DIST="FALSE" generated="TRUE" >
+      upd.fints
+    </data>
 
-    <subdirs>
-      aqhbci
-      aqnone
-      aqofxconnect
-      aqpaypal
-      aqebics
-      aqfints
-    </subdirs>
 
-  
-  
     <extradist>
     </extradist>
 
+
+    <useTargets>
+    </useTargets>
+
+    <subdirs>
+    </subdirs>
 
   </target>
   

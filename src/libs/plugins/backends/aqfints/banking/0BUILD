@@ -2,15 +2,19 @@
 
 <gwbuild>
 
-  <target type="ConvenienceLibrary" name="abbackends" >
+  <target type="ConvenienceLibrary" name="aqfintsbanking" >
 
     <includes type="c" >
       $(gmp_cflags)
       $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/..
+      -I$(srcdir)/..
+      -I$(topsrcdir)/src/libs/plugins/backends/aqfints/libaqfints
+      -I$(topbuilddir)/src/libs/plugins/backends/aqfints/libaqfints
       -I$(topsrcdir)/src/libs
       -I$(topbuilddir)/src/libs
-      -I$(topbuilddir)/src/libs/plugins/file
-      -I$(topsrcdir)/src/libs/plugins/file
       -I$(topbuilddir)
       -I$(topsrcdir)
     </includes>
@@ -23,6 +27,7 @@
     </includes>
   
     <define name="BUILDING_AQBANKING" />
+    <define name="AF_FINTSDATADIR" value="$(aqbanking_data_searchdir)/aqbanking/backends/aqfints/fints" quoted="TRUE" />
 
     <setVar name="local/cflags">$(visibility_cflags)</setVar>
 
@@ -48,39 +53,32 @@
     <headers dist="true" >
       $(local/built_headers_pub)
 
+      provider.h
+      provider_l.h
+      provider_p.h
     </headers>
   
   
     <sources>
       $(local/typefiles)
 
-      dummy.c
+      provider.c
     </sources>
 
+    <data install="$(aqbanking_plugin_installdir)/providers" >
+    </data>
 
-    <useTargets>
-      aqhbci
-      aqnone
-      aqofxconnect
-      aqpaypal
-      aqebics
-      aqfints
-    </useTargets>
-
-    <subdirs>
-      aqhbci
-      aqnone
-      aqofxconnect
-      aqpaypal
-      aqebics
-      aqfints
-    </subdirs>
-
-  
-  
     <extradist>
     </extradist>
 
+
+    <useTargets>
+      afcontrol
+    </useTargets>
+
+    <subdirs>
+      control
+    </subdirs>
 
   </target>
   

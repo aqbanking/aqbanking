@@ -2,15 +2,19 @@
 
 <gwbuild>
 
-  <target type="ConvenienceLibrary" name="abbackends" >
+  <target type="ConvenienceLibrary" name="aqfintsmsg" >
 
     <includes type="c" >
       $(gmp_cflags)
       $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/..
+      -I$(srcdir)/..
       -I$(topsrcdir)/src/libs
       -I$(topbuilddir)/src/libs
-      -I$(topbuilddir)/src/libs/plugins/file
-      -I$(topsrcdir)/src/libs/plugins/file
+      -I$(srcdir)/../..
+      -I$(builddir)/../..
       -I$(topbuilddir)
       -I$(topsrcdir)
     </includes>
@@ -28,59 +32,55 @@
 
   
     <setVar name="tm2flags" >
-      --api=AQBANKING_API
     </setVar>
 
 
     <setVar name="local/typefiles" >
+      keydescr.xml
     </setVar>
   
     <setVar name="local/built_sources" >
     </setVar>
   
     <setVar name="local/built_headers_pub">
+      keydescr.h
     </setVar>
   
     <setVar name="local/built_headers_priv" >
+      keydescr_p.h
     </setVar>
   
   
-    <headers dist="true" >
+    <headers dist="false" >
+      $(local/built_headers_priv)
       $(local/built_headers_pub)
+    </headers>
 
+
+    <headers dist="true" >
+      message.h
+      message_p.h
     </headers>
   
   
     <sources>
       $(local/typefiles)
 
-      dummy.c
+      message.c
     </sources>
 
+    <data install="$(aqbanking_plugin_installdir)/providers" >
+    </data>
 
-    <useTargets>
-      aqhbci
-      aqnone
-      aqofxconnect
-      aqpaypal
-      aqebics
-      aqfints
-    </useTargets>
-
-    <subdirs>
-      aqhbci
-      aqnone
-      aqofxconnect
-      aqpaypal
-      aqebics
-      aqfints
-    </subdirs>
-
-  
-  
     <extradist>
     </extradist>
 
+
+    <useTargets>
+    </useTargets>
+
+    <subdirs>
+    </subdirs>
 
   </target>
   

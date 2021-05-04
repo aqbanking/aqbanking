@@ -2,15 +2,21 @@
 
 <gwbuild>
 
-  <target type="ConvenienceLibrary" name="abbackends" >
+  <target type="ConvenienceLibrary" name="aqfintssession_pin" >
 
     <includes type="c" >
       $(gmp_cflags)
       $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/..
+      -I$(srcdir)/..
       -I$(topsrcdir)/src/libs
       -I$(topbuilddir)/src/libs
-      -I$(topbuilddir)/src/libs/plugins/file
-      -I$(topsrcdir)/src/libs/plugins/file
+      -I$(srcdir)/../..
+      -I$(builddir)/../..
+      -I$(srcdir)/../../..
+      -I$(builddir)/../../..
       -I$(topbuilddir)
       -I$(topsrcdir)
     </includes>
@@ -28,7 +34,6 @@
 
   
     <setVar name="tm2flags" >
-      --api=AQBANKING_API
     </setVar>
 
 
@@ -45,42 +50,46 @@
     </setVar>
   
   
-    <headers dist="true" >
+    <headers dist="false" >
+      $(local/built_headers_priv)
       $(local/built_headers_pub)
+    </headers>
 
+
+    <headers dist="true" >
+      s_pintan.h
+      s_pintan_p.h
+      s_decrypt_pintan.h
+      s_verify_pintan.h
+      s_sign_pintan.h
+      s_encrypt_pintan.h
     </headers>
   
   
     <sources>
       $(local/typefiles)
 
-      dummy.c
+      s_pintan.c
+      s_decrypt_pintan.c
+      s_verify_pintan.c
+      s_sign_pintan.c
+      s_encrypt_pintan.c
     </sources>
 
 
-    <useTargets>
-      aqhbci
-      aqnone
-      aqofxconnect
-      aqpaypal
-      aqebics
-      aqfints
-    </useTargets>
+    <data install="$(pkgdatadir)/typemaker2/c" DIST="FALSE" generated="TRUE" >
+    </data>
 
-    <subdirs>
-      aqhbci
-      aqnone
-      aqofxconnect
-      aqpaypal
-      aqebics
-      aqfints
-    </subdirs>
 
-  
-  
     <extradist>
     </extradist>
 
+
+    <useTargets>
+    </useTargets>
+
+    <subdirs>
+    </subdirs>
 
   </target>
   

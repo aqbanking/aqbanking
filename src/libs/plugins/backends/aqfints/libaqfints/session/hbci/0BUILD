@@ -2,15 +2,21 @@
 
 <gwbuild>
 
-  <target type="ConvenienceLibrary" name="abbackends" >
+  <target type="ConvenienceLibrary" name="aqfintssession_hbci" >
 
     <includes type="c" >
       $(gmp_cflags)
       $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/..
+      -I$(srcdir)/..
       -I$(topsrcdir)/src/libs
       -I$(topbuilddir)/src/libs
-      -I$(topbuilddir)/src/libs/plugins/file
-      -I$(topsrcdir)/src/libs/plugins/file
+      -I$(srcdir)/../..
+      -I$(builddir)/../..
+      -I$(srcdir)/../../..
+      -I$(builddir)/../../..
       -I$(topbuilddir)
       -I$(topsrcdir)
     </includes>
@@ -28,7 +34,6 @@
 
   
     <setVar name="tm2flags" >
-      --api=AQBANKING_API
     </setVar>
 
 
@@ -45,42 +50,45 @@
     </setVar>
   
   
-    <headers dist="true" >
+    <headers dist="false" >
+      $(local/built_headers_priv)
       $(local/built_headers_pub)
+    </headers>
 
+
+    <headers dist="true" >
+      s_hbci.h
+      s_sign_hbci.h
+      s_decrypt_hbci.h
+      s_encrypt_hbci.h
+      s_verify_hbci.h
     </headers>
   
   
     <sources>
       $(local/typefiles)
 
-      dummy.c
+      s_hbci.c
+      s_sign_hbci.c
+      s_decrypt_hbci.c
+      s_encrypt_hbci.c
+      s_verify_hbci.c
     </sources>
 
 
-    <useTargets>
-      aqhbci
-      aqnone
-      aqofxconnect
-      aqpaypal
-      aqebics
-      aqfints
-    </useTargets>
+    <data install="$(pkgdatadir)/typemaker2/c" DIST="FALSE" generated="TRUE" >
+    </data>
 
-    <subdirs>
-      aqhbci
-      aqnone
-      aqofxconnect
-      aqpaypal
-      aqebics
-      aqfints
-    </subdirs>
 
-  
-  
     <extradist>
     </extradist>
 
+
+    <useTargets>
+    </useTargets>
+
+    <subdirs>
+    </subdirs>
 
   </target>
   

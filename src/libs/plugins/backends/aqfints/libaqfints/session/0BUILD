@@ -2,15 +2,19 @@
 
 <gwbuild>
 
-  <target type="ConvenienceLibrary" name="abbackends" >
+  <target type="ConvenienceLibrary" name="aqfintssession" >
 
     <includes type="c" >
       $(gmp_cflags)
       $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/..
+      -I$(srcdir)/..
+      -I$(builddir)/../..
+      -I$(srcdir)/../..
       -I$(topsrcdir)/src/libs
       -I$(topbuilddir)/src/libs
-      -I$(topbuilddir)/src/libs/plugins/file
-      -I$(topsrcdir)/src/libs/plugins/file
       -I$(topbuilddir)
       -I$(topsrcdir)
     </includes>
@@ -28,59 +32,78 @@
 
   
     <setVar name="tm2flags" >
-      --api=AQBANKING_API
     </setVar>
 
 
     <setVar name="local/typefiles" >
+      cryptparams.xml
     </setVar>
   
     <setVar name="local/built_sources" >
+      cryptparams.c
     </setVar>
   
     <setVar name="local/built_headers_pub">
+      cryptparams.h
     </setVar>
   
     <setVar name="local/built_headers_priv" >
+      cryptparams_p.h
     </setVar>
   
   
-    <headers dist="true" >
+    <headers dist="false" >
+      $(local/built_headers_priv)
       $(local/built_headers_pub)
+    </headers>
 
+
+    <headers dist="true" >
+      session.h
+      session_p.h
+      s_decode.h
+      s_decrypt.h
+      s_encrypt.h
+      s_encode.h
+      s_log.h
+      s_message.h
+      s_sign.h
+      s_verify.h
     </headers>
   
   
     <sources>
       $(local/typefiles)
-
-      dummy.c
+      session.c
+      s_getanonbpd.c
+      s_message.c
+      s_log.c
+      s_decode.c
+      s_decrypt.c
+      s_verify.c
+      s_sign.c
+      s_encrypt.c
+      s_encode.c
     </sources>
 
 
-    <useTargets>
-      aqhbci
-      aqnone
-      aqofxconnect
-      aqpaypal
-      aqebics
-      aqfints
-    </useTargets>
+    <data install="$(pkgdatadir)/typemaker2/c" DIST="FALSE" generated="TRUE" >
+    </data>
 
-    <subdirs>
-      aqhbci
-      aqnone
-      aqofxconnect
-      aqpaypal
-      aqebics
-      aqfints
-    </subdirs>
 
-  
-  
     <extradist>
     </extradist>
 
+
+    <useTargets>
+      aqfintssession_hbci
+      aqfintssession_pin
+    </useTargets>
+
+    <subdirs>
+      hbci
+      pintan
+    </subdirs>
 
   </target>
   

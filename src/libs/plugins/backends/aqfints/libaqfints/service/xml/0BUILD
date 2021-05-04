@@ -1,0 +1,16 @@
+<?xml?>
+
+<gwbuild>
+
+    <data install="$(pkgdatadir)/fints" DIST="FALSE" generated="TRUE" >
+      basic.fints
+      crypt.fints
+      ident.fints
+      prepare.fints
+      dialogend.fints
+      tan.fints
+      sync.fints
+      keymgt.fints
+    </data>
+
+</gwbuild>
