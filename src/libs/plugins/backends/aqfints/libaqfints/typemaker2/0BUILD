@@ -1,0 +1,9 @@
+<?xml?>
+
+<gwbuild>
+
+    <data install="$(pkgdatadir)/typemaker2/c" DIST="FALSE" generated="TRUE" >
+      aqfints_parser.tm2
+    </data>
+
+</gwbuild>

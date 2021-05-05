@@ -1,0 +1,9 @@
+<?xml?>
+
+<gwbuild>
+
+  <subdirs>
+    c
+  </subdirs>
+
+</gwbuild>

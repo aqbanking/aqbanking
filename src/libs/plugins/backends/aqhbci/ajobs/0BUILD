@@ -1,0 +1,167 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="hbciaccjobs" >
+
+    <includes type="c" >
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/..
+      -I$(srcdir)/..
+      -I$(builddir)/../..
+      -I$(srcdir)/../..
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+      --api=AQHBCI_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+    </setVar>
+  
+  
+    <headers dist="true" >
+      $(local/built_headers_pub)
+
+      accountjob_l.h
+      accountjob_p.h
+      jobgetbalance_l.h
+      jobgetbalance_p.h
+      jobgettransactions_l.h
+      jobgettransactions_p.h
+      jobgettrans_camt_l.h
+      jobforeignxferwh_l.h
+      jobforeignxferwh_p.h
+      jobloadcellphone_l.h
+      jobloadcellphone_p.h
+      jobsepadebitdatedsinglecreate_l.h
+      jobsepadebitdatedsinglecreate_p.h
+      jobsepadebitdatedmulticreate_l.h
+      jobsepadebitdatedmulticreate_p.h
+      jobsepacor1datedmulticreate_l.h
+      jobsepacor1datedmulticreate_p.h
+      jobsepaxfermulti_l.h
+      jobsepaxfermulti_p.h
+      jobsepaxfersingle_l.h
+      jobsepaxfersingle_p.h
+      jobsepadebitsingle_l.h
+      jobsepadebitsingle_p.h
+      jobsepacor1datedsinglecreate_l.h
+      jobsepacor1datedsinglecreate_p.h
+      jobtransferbase_l.h jobtransferbase_p.h
+      jobsepastandingordercreate_l.h 
+      jobsepastandingorderget_l.h jobsepastandingorderget_p.h
+      jobsepastandingordermodify_l.h
+      jobsepastandingorderdelete_l.h
+      jobgetestatements_l.h
+      jobgetdepot_l.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      accountjob.c
+      jobgetbalance.c
+      jobgettransactions.c
+      jobgettrans_camt.c
+      jobforeignxferwh.c
+      jobloadcellphone.c
+      jobsepadebitdatedsinglecreate.c
+      jobsepadebitdatedmulticreate.c
+      jobsepacor1datedmulticreate.c
+      jobsepaxfermulti.c
+      jobsepaxfersingle.c
+      jobsepadebitsingle.c
+      jobsepacor1datedsinglecreate.c
+      jobtransferbase.c
+      jobsepastandingordercreate.c
+      jobsepastandingorderget.c
+      jobsepastandingordermodify.c
+      jobsepastandingorderdelete.c
+      jobgetestatements.c
+      jobgetdepot.c
+    </sources>
+
+    <data install="$(aqbanking_plugin_installdir)/providers" >
+    </data>
+
+    <useTargets>
+    </useTargets>
+
+    <subdirs>
+    </subdirs>
+
+  
+  
+    <extradist>
+    </extradist>
+
+    <buildFiles>
+      <input>
+        jobgetbalance.xml
+        jobgettransactions.xml
+        jobgettrans_camt.xml
+        jobforeignxferwh.xml
+        jobloadcellphone.xml
+        jobsepadebitdatedsinglecreate.xml
+        jobsepadebitdatedmulticreate.xml
+        jobsepacor1datedmulticreate.xml
+        jobsepaxfermulti.xml
+        jobsepaxfersingle.xml
+        jobsepadebitsingle.xml
+        jobsepacor1datedsinglecreate.xml
+        jobsepastandingordercreate.xml
+        jobsepastandingorderget.xml
+        jobsepastandingordermodify.xml
+        jobsepastandingorderdelete.xml
+        jobgetestatements.xml
+        jobgetestatements2.xml
+        jobgetdepot.xml
+      </input>
+
+      <output>
+        accountjobs.xml
+      </output>
+      
+      <cmd tool="$(xmlmerge)" checkDates="true" >
+        -v --compact -o $(OUTPUT[]) $(INPUT[])
+      </cmd>
+      <buildMessage>
+        Merging XML files into $(OUTPUT[0])
+      </buildMessage>
+    </buildFiles>
+
+
+  </target>
+  
+</gwbuild>

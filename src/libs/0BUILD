@@ -1,0 +1,86 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="InstallLibrary" name="aqbanking"
+          so_current="$(project_so_current)" 
+          so_age="$(project_so_age)"
+          so_revision="$(project_so_revision)"
+          install="$(libdir)" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+      --api=AQBANKING_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+    </setVar>
+  
+  
+    <headers dist="true" >
+      $(local/built_headers_pub)
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+      dummy.c
+    </sources>
+
+    <useTargets>
+      aqbanking_base
+      abplugins
+    </useTargets>
+
+    <libraries>
+      $(gmp_libs)
+      $(gwenhywfar_libs)
+      $(xmlsec_libs)
+      $(xslt_libs)
+      $(xml_libs)
+      $(zlib_libs)
+    </libraries>
+
+
+    <subdirs>
+      aqbanking
+      plugins
+    </subdirs>
+
+
+    <extradist>
+    </extradist>
+
+
+  </target>
+  
+</gwbuild>

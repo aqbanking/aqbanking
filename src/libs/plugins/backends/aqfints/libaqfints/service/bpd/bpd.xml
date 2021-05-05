@@ -19,12 +19,12 @@
       <headers>
         <header type="sys"   loc="pre">libaqfints/aqfints.h</header>
         <header type="sys"   loc="code">string.h</header>
-        <header type="local" loc="post">service/bpd/bankdata.h</header>
-        <header type="local" loc="post">service/bpd/bpdjob.h</header>
-        <header type="local" loc="post">service/bpd/bpdaddr.h</header>
-        <header type="local" loc="post">service/bpd/bpdsecprofile.h</header>
-        <header type="local" loc="post">service/bpd/taninfo.h</header>
-        <header type="local" loc="post">service/bpd/tanmethod.h</header>
+        <header type="local" loc="post">libaqfints/service/bpd/bankdata.h</header>
+        <header type="local" loc="post">libaqfints/service/bpd/bpdjob.h</header>
+        <header type="local" loc="post">libaqfints/service/bpd/bpdaddr.h</header>
+        <header type="local" loc="post">libaqfints/service/bpd/bpdsecprofile.h</header>
+        <header type="local" loc="post">libaqfints/service/bpd/taninfo.h</header>
+        <header type="local" loc="post">libaqfints/service/bpd/tanmethod.h</header>
       </headers>
       
 

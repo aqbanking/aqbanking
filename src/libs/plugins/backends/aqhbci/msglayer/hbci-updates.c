@@ -12,10 +12,11 @@
 #endif
 
 
-#include "i18n_l.h"
-#include "hbci-updates_p.h"
-#include "user_l.h"
-#include "account_l.h"
+#include "aqhbci/msglayer/hbci-updates_p.h"
+#include "aqhbci/banking/user_l.h"
+#include "aqhbci/banking/account_l.h"
+
+#include "aqbanking/i18n_l.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gui.h>

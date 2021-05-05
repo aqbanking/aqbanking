@@ -12,13 +12,13 @@
 # include <config.h>
 #endif
 
-#include "aqhbci/aqhbci_l.h"
-
 #include "adminjobs_p.h"
-#include "job_l.h"
-#include "jobqueue_l.h"
-#include "hbci_l.h"
-#include "provider_l.h"
+
+#include "aqhbci/aqhbci_l.h"
+#include "aqhbci/joblayer/job_l.h"
+#include "aqhbci/joblayer/jobqueue_l.h"
+#include "aqhbci/msglayer/hbci_l.h"
+#include "aqhbci/banking/provider_l.h"
 
 #include <aqbanking/banking_be.h>
 #include <aqbanking/backendsupport/account.h>

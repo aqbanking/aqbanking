@@ -1,0 +1,111 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="hbcibanking" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/..
+      -I$(srcdir)/..
+      -I$(builddir)/../..
+      -I$(srcdir)/../..
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+      --api=AQBANKING_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+    </setVar>
+  
+  
+    <headers dist="true" >
+      $(local/built_headers_pub)
+
+      provider_l.h
+      provider_p.h
+      provider.h
+      provider_accspec.h
+      provider_dialogs.h
+      provider_iniletter.h
+      provider_job.h
+      provider_keys.h
+      provider_online.h
+      provider_sendcmd.h
+      provider_tan.h
+      provider_update.h
+      user.h
+      user_p.h
+      user_l.h
+      account.h
+      account_l.h
+      account_p.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      provider.c
+      provider_accspec.c
+      provider_dialogs.c
+      provider_iniletter.c
+      provider_job.c
+      provider_keys.c
+      provider_online.c
+      provider_sendcmd.c
+      provider_tan.c
+      provider_update.c
+      account.c
+      user.c
+    </sources>
+
+    <data install="$(aqbanking_plugin_installdir)/providers" >
+    </data>
+
+    <extradist>
+      provider_dtazv.c
+    </extradist>
+
+
+    <useTargets>
+    </useTargets>
+
+    <subdirs>
+    </subdirs>
+
+  
+  
+  </target>
+  
+</gwbuild>

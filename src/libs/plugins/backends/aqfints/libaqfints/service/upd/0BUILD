@@ -1,0 +1,103 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="afmsgupd" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/..
+      -I$(srcdir)/..
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(srcdir)/../..
+      -I$(builddir)/../..
+      -I$(srcdir)/../../..
+      -I$(builddir)/../../..
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+      updjob.xml
+      accountdata.xml
+      userdata.xml
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+      updjob.c
+      accountdata.c
+      userdata.c
+    </setVar>
+
+  
+    <setVar name="local/built_headers_pub">
+      updjob.h
+      accountdata.h
+      userdata.h
+    </setVar>
+
+  
+    <setVar name="local/built_headers_priv" >
+      updjob_p.h
+      accountdata_p.h
+      userdata_p.h
+    </setVar>
+  
+  
+    <headers dist="false" >
+      $(local/built_headers_priv)
+      $(local/built_headers_pub)
+    </headers>
+
+
+    <headers dist="true" >
+      upd_read.h
+      upd_write.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+      upd_read.c
+      upd_write.c
+    </sources>
+
+
+    <data install="$(pkgdatadir)/fints" DIST="FALSE" generated="TRUE" >
+      upd.fints
+    </data>
+
+
+    <extradist>
+    </extradist>
+
+
+    <useTargets>
+    </useTargets>
+
+    <subdirs>
+    </subdirs>
+
+  </target>
+  
+</gwbuild>

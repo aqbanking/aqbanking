@@ -1,0 +1,10 @@
+<?xml?>
+
+<gwbuild>
+
+  <subdirs>
+    aqbanking-cli
+    mkdeinfo
+  </subdirs>
+
+</gwbuild>

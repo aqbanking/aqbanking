@@ -1,0 +1,108 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="aqfintssession" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/../..
+      -I$(srcdir)/../..
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+      cryptparams.xml
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+      cryptparams.c
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+      cryptparams.h
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+      cryptparams_p.h
+    </setVar>
+  
+  
+    <headers dist="false" >
+      $(local/built_headers_priv)
+      $(local/built_headers_pub)
+    </headers>
+
+
+    <headers dist="true" >
+      session.h
+      session_p.h
+      s_decode.h
+      s_decrypt.h
+      s_encrypt.h
+      s_encode.h
+      s_log.h
+      s_message.h
+      s_sign.h
+      s_verify.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+      session.c
+      s_getanonbpd.c
+      s_message.c
+      s_log.c
+      s_decode.c
+      s_decrypt.c
+      s_verify.c
+      s_sign.c
+      s_encrypt.c
+      s_encode.c
+    </sources>
+
+
+    <data install="$(pkgdatadir)/typemaker2/c" DIST="FALSE" generated="TRUE" >
+    </data>
+
+
+    <extradist>
+    </extradist>
+
+
+    <useTargets>
+      aqfintssession_hbci
+      aqfintssession_pin
+    </useTargets>
+
+    <subdirs>
+      hbci
+      pintan
+    </subdirs>
+
+  </target>
+  
+</gwbuild>

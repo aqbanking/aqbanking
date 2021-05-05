@@ -48,6 +48,8 @@ static void _handleQueueListError(AH_OUTBOX_CBOX *cbox, AH_JOBQUEUE_LIST *jql, c
 static int _sendAndRecvDialogQueues(AH_OUTBOX_CBOX *cbox);
 static int _sendAndRecvSelected(AH_OUTBOX_CBOX *cbox, uint32_t jqflags, uint32_t jqmask);
 static void _handleQueueError(AH_OUTBOX_CBOX *cbox, AH_JOBQUEUE *jq, const char *logStr);
+static AH_DIALOG *_pndqOpenDialog(AH_OUTBOX_CBOX *cbox, uint32_t jqflags);
+
 
 /* ------------------------------------------------------------------------------------------------
  * implementations
@@ -183,39 +185,44 @@ AH_JOBQUEUE *_createNextQueueFromTodoList(AB_USER *user, AH_JOB_LIST *jl, uint32
       DBG_INFO(AQHBCI_LOGDOMAIN,
 	       "Job \"%s\" with status \"answered\", checking whether it needs to be re-enqueued",
 	       jobName);
+      AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Job status \"answered\", checking for re-enqueing");
       /* prepare job for next message
        * (if attachpoint or multi-message job)
        */
       AH_Job_PrepareNextMessage(j);
       if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_HASMOREMSGS) {
         DBG_NOTICE(AQHBCI_LOGDOMAIN, "Requeueing job \"%s\"", jobName);
+        AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Re-enqueueing job");
         /* we shall redo this job */
         if (AH_JobQueue_AddJob(jqTodo, j)!=AH_JobQueueAddResultOk) {
           DBG_ERROR(AQHBCI_LOGDOMAIN, "Job could not be re-added to queue, SNH!");
           AH_Job_Log(j, GWEN_LoggerLevel_Error, "Could not re-enqueue job");
+          AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Error re-enqueueing job");
           AH_Job_SetStatus(j, AH_JobStatusError);
         }
         else {
 	  AH_Job_Log(j, GWEN_LoggerLevel_Info, "Job re-enqueued (multi-message job)");
+          AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Job successfuly re-enqueued (multi-msg job)");
           j=NULL; /* mark that this job has been dealt with */
         }
       } /* if more messages */
       else {
-        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" has no messages left, not re-enqueing", jobName);
+        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" has no messages left, not re-enqueueing", jobName);
       }
     } /* if status "answered" */
 
     else if (AH_Job_GetStatus(j)==AH_JobStatusEnqueued) {
-      DBG_NOTICE(AQHBCI_LOGDOMAIN,
-		 "Job \"%s\" with status \"enqueued\", trying to re-enqueue (TODO: Is this really used?)",
-		 jobName);
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" with status \"enqueued\", trying to enqueue", jobName);
+      AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Job status \"enqueued\", trying to enqueue");
       if (AH_JobQueue_AddJob(jqTodo, j)!=AH_JobQueueAddResultOk) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Job could not be re-added to queue, SNH!");
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Job could not be added to queue, SNH!");
+        AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Error enqueueing job (internal)");
         AH_Job_SetStatus(j, AH_JobStatusError);
         AH_Job_Log(j, GWEN_LoggerLevel_Error, "Could not enqueue job");
       }
       else {
         AH_Job_Log(j, GWEN_LoggerLevel_Info, "Job enqueued (2)");
+        AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Job successfully enqueued (2)");
         j=NULL; /* mark that this job has been dealt with */
       }
     } /* if status "enqueued" */
@@ -225,6 +232,8 @@ AH_JOBQUEUE *_createNextQueueFromTodoList(AB_USER *user, AH_JOB_LIST *jl, uint32
 	       jobName,
 	       AH_Job_StatusName(AH_Job_GetStatus(j)),
                AH_Job_GetStatus(j));
+      AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Job status \"%s\", unexpected",
+                                AH_Job_StatusName(AH_Job_GetStatus(j)));
       if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
         AH_Job_Dump(j, stderr, 4);
     }
@@ -249,16 +258,10 @@ AH_JOBQUEUE *_createNextQueueFromTodoList(AB_USER *user, AH_JOB_LIST *jl, uint32
 
 int _performNonDialogQueues(AH_OUTBOX_CBOX *cbox, AH_JOBQUEUE_LIST *jql)
 {
-  AB_USER *user;
-  AB_PROVIDER *provider;
   AH_DIALOG *dlg;
   AH_JOBQUEUE *jq;
   int rv=0;
-  int i;
   uint32_t jqflags;
-
-  user=AH_OutboxCBox_GetUser(cbox);
-  provider=AH_OutboxCBox_GetProvider(cbox);
 
   if (AH_JobQueue_List_GetCount(jql)==0) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "No queues to handle, doing nothing");
@@ -266,47 +269,12 @@ int _performNonDialogQueues(AH_OUTBOX_CBOX *cbox, AH_JOBQUEUE_LIST *jql)
     return 0;
   }
 
-  for (i=0; i<2; i++) {
-    dlg=AH_Dialog_new(user, provider);
-    rv=AH_Dialog_Connect(dlg);
-    if (rv) {
-      DBG_INFO(AQHBCI_LOGDOMAIN,
-               "Could not begin a dialog for customer \"%s\" (%d)",
-               AB_User_GetCustomerId(user), rv);
-      /* finish all queues */
-      _handleQueueListError(cbox, jql, "Could not begin dialog");
-      AH_Dialog_free(dlg);
-      return rv;
-    }
-
-    jq=AH_JobQueue_List_First(jql);
-    jqflags=AH_JobQueue_GetFlags(jq);
-
-    /* open dialog */
-    rv=AH_OutboxCBox_OpenDialog(cbox, dlg, jqflags);
-    if (rv==0)
-      break;
-    else if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Could not open dialog");
-      AH_Dialog_Disconnect(dlg);
-      /* finish all queues */
-      _handleQueueListError(cbox, jql, "Could not open dialog");
-      AH_Dialog_free(dlg);
-      return rv;
-    }
-    else if (rv==1) {
-      AH_Dialog_Disconnect(dlg);
-      AH_Dialog_free(dlg);
-      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("Retrying to open dialog"));
-    }
-  }
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Could not open dialog");
-    AH_Dialog_Disconnect(dlg);
+  jqflags=AH_JobQueue_GetFlags(AH_JobQueue_List_First(jql));
+  dlg=_pndqOpenDialog(cbox, jqflags);
+  if (dlg==NULL) {
     /* finish all queues */
     _handleQueueListError(cbox, jql, "Could not open dialog");
-    AH_Dialog_free(dlg);
-    return rv;
+    return GWEN_ERROR_GENERIC;
   }
 
   /* handle queues */
@@ -340,6 +308,55 @@ int _performNonDialogQueues(AH_OUTBOX_CBOX *cbox, AH_JOBQUEUE_LIST *jql)
 
   AH_JobQueue_List_free(jql);
   return 0;
+}
+
+
+
+AH_DIALOG *_pndqOpenDialog(AH_OUTBOX_CBOX *cbox, uint32_t jqflags)
+{
+  AB_PROVIDER *provider;
+  AB_USER *user;
+  int i;
+
+  user=AH_OutboxCBox_GetUser(cbox);
+  provider=AH_OutboxCBox_GetProvider(cbox);
+
+  for (i=0; i<2; i++) {
+    AH_DIALOG *dlg;
+    int rv;
+
+    dlg=AH_Dialog_new(user, provider);
+    rv=AH_Dialog_Connect(dlg);
+    if (rv) {
+      DBG_INFO(AQHBCI_LOGDOMAIN,
+               "Could not begin a dialog for customer \"%s\" (%d)",
+               AB_User_GetCustomerId(user), rv);
+      AH_Dialog_free(dlg);
+      return NULL;
+    }
+
+    /* open dialog */
+    rv=AH_OutboxCBox_OpenDialog(cbox, dlg, jqflags);
+    if (rv==0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog open.");
+      return dlg;
+    }
+    else if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Could not open dialog (%d)", rv);
+      AH_Dialog_Disconnect(dlg);
+      AH_Dialog_free(dlg);
+      return NULL;
+    }
+    else if (rv==1) {
+      /* TODO: Is this really needed?? I believe this was needed before when we had to try different SSL modi... */
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Retrying to open dialog.");
+      AH_Dialog_Disconnect(dlg);
+      AH_Dialog_free(dlg);
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("Retrying to open dialog"));
+    }
+  }
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Could not open dialog");
+  return NULL;
 }
 
 
@@ -626,10 +643,12 @@ void _handleQueueError(AH_OUTBOX_CBOX *cbox, AH_JOBQUEUE *jq, const char *logStr
   while ((j=AH_Job_List_First(jl))) {
     AH_Job_List_Del(j);
     if (AH_Job_GetStatus(j)!=AH_JobStatusAnswered) {
+      if (logStr) {
+        AH_Job_Log(j, GWEN_LoggerLevel_Error, logStr);
+        AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), logStr);
+      }
       DBG_INFO(AQHBCI_LOGDOMAIN, "Setting status of job \"%s\" to ERROR", AH_Job_GetName(j));
       AH_Job_SetStatus(j, AH_JobStatusError);
-      if (logStr)
-        AH_Job_Log(j, GWEN_LoggerLevel_Error, logStr);
     }
     AH_Job_List_Add(j, finishedJobs);
   }

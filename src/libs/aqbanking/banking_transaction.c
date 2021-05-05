@@ -669,6 +669,35 @@ void AB_Banking_FillTransactionFromAccountSpec(AB_TRANSACTION *t, const AB_ACCOU
 
 
 
+void AB_Banking_AddJobInfoToBuffer(const AB_TRANSACTION *t, GWEN_BUFFER *buf)
+{
+  AB_TRANSACTION_COMMAND cmd;
+  const char *sIban;
+  const char *sAccountNum;
+  const char *sName;
+
+  cmd=AB_Transaction_GetCommand(t);
+  if (cmd>AB_Transaction_CommandNone) {
+    GWEN_Buffer_AppendString(buf, AB_Transaction_Command_toString(cmd));
+    GWEN_Buffer_AppendString(buf, " ");
+  }
+  GWEN_Buffer_AppendArgs(buf, "for account %0x8", AB_Transaction_GetUniqueAccountId(t));
+
+  sIban=AB_Transaction_GetRemoteIban(t);
+  sAccountNum=AB_Transaction_GetRemoteAccountNumber(t);
+  sName=AB_Transaction_GetRemoteName(t);
+  if (sIban || sAccountNum || sName) {
+    const AB_VALUE *value;
+
+    value=AB_Transaction_GetValue(t);
+    if (value) {
+      GWEN_Buffer_AppendString(buf, "Amount=");
+      AB_Value_toHbciString(value, buf);
+    }
+    GWEN_Buffer_AppendString(buf, "Remote=");
+    GWEN_Buffer_AppendString(buf, sName?sName:(sIban?sIban:sAccountNum));
+  }
+}
 
 
 

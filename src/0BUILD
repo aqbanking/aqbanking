@@ -1,0 +1,10 @@
+<?xml?>
+
+<gwbuild>
+
+  <subdirs>
+    libs
+    tools
+  </subdirs>
+
+</gwbuild>

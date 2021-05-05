@@ -105,7 +105,8 @@ int createAndAddRequest(AB_BANKING *ab,
                         AB_TRANSACTION_COMMAND cmd,
                         const GWEN_DATE *fromDate,
                         const GWEN_DATE *toDate,
-                        int ignoreUnsupported);
+                        int ignoreUnsupported,
+                        uint32_t number);
 
 /**
  * Create requests (getBalance, getStatements etc.) according to the given flags.
@@ -117,7 +118,8 @@ int createAndAddRequests(AB_BANKING *ab,
                          AB_ACCOUNT_SPEC *as,
                          const GWEN_DATE *fromDate,
                          const GWEN_DATE *toDate,
-                         uint32_t requestFlags);
+                         uint32_t requestFlags,
+                         uint32_t number);
 
 int addTransactionToBufferByTemplate(const AB_TRANSACTION *t, const char *tmplString, GWEN_BUFFER *dbuf);
 
@@ -139,6 +141,8 @@ int exportCtx(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int listAccs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int listTrans(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
+int listDoc(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
+int getDoc(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int listProfiles(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int request(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int sepaDebitNote(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv, int use_flash_debitnote);

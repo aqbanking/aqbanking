@@ -12,7 +12,7 @@
 #define AQFINTS_PARSER_NORMALIZE_H
 
 
-#include "parser/segment.h"
+#include "libaqfints/parser/segment.h"
 
 #include <gwenhywfar/xml.h>
 

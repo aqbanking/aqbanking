@@ -12,8 +12,8 @@
 # include <config.h>
 #endif
 
-#include "parser_dbwrite.h"
-#include "parser_internal.h"
+#include "libaqfints/parser/parser_dbwrite.h"
+#include "libaqfints/parser/parser_internal.h"
 
 #include <gwenhywfar/debug.h>
 

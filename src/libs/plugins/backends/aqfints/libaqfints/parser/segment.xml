@@ -20,7 +20,7 @@
         <header type="sys"   loc="pre">libaqfints/aqfints.h</header>
         <header type="sys"   loc="pre">gwenhywfar/bindata.h</header>
         <header type="sys"   loc="pre">gwenhywfar/buffer.h</header>
-        <header type="local" loc="post">parser/element.h</header>
+        <header type="local" loc="post">libaqfints/parser/element.h</header>
       </headers>
       
       

@@ -13,8 +13,8 @@
 #define AH_PROVIDER_DATADIR ".libaqhbci"
 
 #include "provider_l.h"
-#include "job_l.h"
-#include "outbox_l.h"
+#include "aqhbci/joblayer/job_l.h"
+#include "aqhbci/applayer/outbox_l.h"
 
 
 #include <aqbanking/backendsupport/userqueue.h>

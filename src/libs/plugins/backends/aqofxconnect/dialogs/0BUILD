@@ -1,0 +1,90 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="ofxdcdialogs" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/../..
+      -I$(srcdir)/../..
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+      --api=AQBANKING_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+    </setVar>
+  
+  
+    <headers dist="true" >
+      $(local/built_headers_pub)
+
+      dlg_edituser_p.h dlg_edituser_l.h
+      dlg_newuser_p.h dlg_newuser_l.h
+      dlg_ofx_special_p.h dlg_ofx_special_l.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      dlg_edituser.c
+      dlg_newuser.c
+      dlg_ofx_special.c
+    </sources>
+
+    <data install="$(pkgdatadir)/backends/aqofxconnect/dialogs" >
+      dlg_edituser.dlg
+      dlg_newuser.dlg
+      dlg_ofx_special.dlg
+    </data>
+
+
+    <extradist>
+    </extradist>
+
+
+    <useTargets>
+    </useTargets>
+
+
+    <subdirs>
+    </subdirs>
+
+  
+  
+
+  </target>
+  
+</gwbuild>

@@ -14,7 +14,7 @@
 #ifndef AB_ACCOUNTSTATUS_HPP
 #define AB_ACCOUNTSTATUS_HPP
 
-#include <aqbanking/accstatus.h>
+#include <aqbanking/types/accstatus.h>
 
 #include <aqbankingpp/cxxwrap.hpp>
 #include <aqbankingpp/balance.hpp>

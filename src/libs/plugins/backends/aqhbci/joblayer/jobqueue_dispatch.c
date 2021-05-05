@@ -519,7 +519,7 @@ void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWE
       j=_findReferencedJob(jq, AH_Msg_GetMsgRef(msg), refSegNum);
       if (j) {
 	DBG_INFO(AQHBCI_LOGDOMAIN,
-		 "Job \"%s\" (%d:%d-%d) claims response \"%s\" (%d:%d)",
+		 "Job \"%s\" (msg %d, segs :%d-%d) claims response \"%s\" (ref msg %d, ref seg %d)",
 		 AH_Job_GetName(j),
 		 AH_Job_GetMsgNum(j),
 		 AH_Job_GetFirstSegment(j),

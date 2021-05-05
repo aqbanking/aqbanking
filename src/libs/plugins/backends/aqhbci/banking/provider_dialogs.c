@@ -16,17 +16,17 @@
 #include "aqhbci/banking/user.h"
 
 
-#include "dlg_edituserpintan_l.h"
-#include "dlg_edituserddv_l.h"
-#include "dlg_edituserrdh_l.h"
-#include "dlg_editaccount_l.h"
-#include "dlg_newuser_l.h"
-#include "dlg_ddvcard_l.h"
-#include "dlg_zkacard_l.h"
-#include "dlg_pintan_l.h"
-#include "dlg_newkeyfile_l.h"
-#include "dlg_importkeyfile_l.h"
-#include "dlg_choose_usertype_l.h"
+#include "aqhbci/dialogs/dlg_edituserpintan_l.h"
+#include "aqhbci/dialogs/dlg_edituserddv_l.h"
+#include "aqhbci/dialogs/dlg_edituserrdh_l.h"
+#include "aqhbci/dialogs/dlg_editaccount_l.h"
+#include "aqhbci/dialogs/dlg_newuser_l.h"
+#include "aqhbci/dialogs/dlg_ddvcard_l.h"
+#include "aqhbci/dialogs/dlg_zkacard_l.h"
+#include "aqhbci/dialogs/dlg_pintan_l.h"
+#include "aqhbci/dialogs/dlg_newkeyfile_l.h"
+#include "aqhbci/dialogs/dlg_importkeyfile_l.h"
+#include "aqhbci/dialogs/dlg_choose_usertype_l.h"
 
 #include <aqbanking/banking_be.h>
 #include <aqbanking/i18n_l.h>

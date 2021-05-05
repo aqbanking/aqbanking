@@ -12,11 +12,11 @@
 #define AQFINTS_UPD_WRITE_H
 
 
-#include "service/upd/accountdata.h"
-#include "service/upd/userdata.h"
+#include "libaqfints/service/upd/accountdata.h"
+#include "libaqfints/service/upd/userdata.h"
 
-#include "parser/parser.h"
-#include "parser/segment.h"
+#include "libaqfints/parser/parser.h"
+#include "libaqfints/parser/segment.h"
 
 #include <gwenhywfar/db.h>
 

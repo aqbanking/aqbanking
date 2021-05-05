@@ -13,11 +13,11 @@
 #endif
 
 
-#include "bpd_read.h"
+#include "libaqfints/service/bpd/bpd_read.h"
 
 #include "libaqfints/aqfints.h"
 
-#include "service/bpd/bpd.h"
+#include "libaqfints/service/bpd/bpd.h"
 
 #include <gwenhywfar/debug.h>
 

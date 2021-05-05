@@ -123,6 +123,9 @@ typefiles: $(typefiles)
 typedefs: $(typefiles)
 	$(typemaker2_exe) --defs-only -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(gwenhywfar_dir)/share/gwenhywfar/typemaker2/c -I $(srcdir) -I $(srcdir)/../types --destfolder="$(srcdir)" $(typefiles)
 
+clean_build_files:
+	rm -f $(typedata_sources) $(built_headers)
+
 
 format_build_files:
 	for f in $(typedata_sources) $(built_headers); do \

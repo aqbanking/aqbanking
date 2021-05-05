@@ -13,13 +13,13 @@
 
 
 #include "libaqfints/aqfints.h"
-#include "msg/message.h"
-#include "msg/keydescr.h"
-#include "parser/parser.h"
-#include "transport/transport.h"
-#include "service/upd/userdata.h"
-#include "service/bpd/bpd.h"
-#include "session/cryptparams.h"
+#include "libaqfints/msg/message.h"
+#include "libaqfints/msg/keydescr.h"
+#include "libaqfints/parser/parser.h"
+#include "libaqfints/transport/transport.h"
+#include "libaqfints/service/upd/userdata.h"
+#include "libaqfints/service/bpd/bpd.h"
+#include "libaqfints/session/cryptparams.h"
 
 #include <aqbanking/error.h>
 

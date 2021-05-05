@@ -1,0 +1,32 @@
+<?xml?>
+
+<gwbuild>
+
+  <buildFiles>
+    <input>
+      hbciallgrp.xml
+      hbci210seg.xml
+      hbci210job.xml
+      hbci201seg.xml
+      hbci201job.xml
+      hbci220seg.xml
+      hbci220job.xml
+      fints300seg.xml
+      fints300job.xml
+      hbciallseg.xml
+    </input>
+
+    <output>
+      base.xml
+    </output>
+    
+    <cmd tool="$(xmlmerge)" checkDates="true" >
+      -v --compact -o $(OUTPUT[]) $(INPUT[])
+    </cmd>
+    <buildMessage>
+      Merging XML files into $(OUTPUT[0])
+    </buildMessage>
+  </buildFiles>
+
+
+</gwbuild>

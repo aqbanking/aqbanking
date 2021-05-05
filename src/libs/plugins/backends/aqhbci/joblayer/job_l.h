@@ -49,8 +49,8 @@ GWEN_INHERIT_FUNCTION_DEFS(AH_JOB);
 GWEN_LIST2_FUNCTION_DEFS(AH_JOB, AH_Job);
 void AH_Job_List2_FreeAll(AH_JOB_LIST2 *jl);
 
-#include "hbci_l.h"
-#include "result_l.h"
+#include "aqhbci/msglayer/hbci_l.h"
+#include "aqhbci/joblayer/result_l.h"
 #include <aqhbci/aqhbci.h>
 
 #include <aqbanking/backendsupport/user.h>
@@ -229,7 +229,9 @@ int AH_Job_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
  * The transaction contains the command and parameters for a given job.
  * The job should test the given transaction. If the transaction is not acceptable an
  * error code should be returned.
- * If zero is returned the given transaction is taken over by the job (otherwise it is not).
+ * If zero is returned the job should have taken all the data from the given command,
+ * e.g. a transfer job will add the transfer represented by the command to its internal list.
+ * Don't call AH_Job_AddCommand() within that function, this will be done outside.
  */
 int AH_Job_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t);
 
@@ -383,6 +385,9 @@ AH_JOB *AH_Job_List_GetById(AH_JOB_LIST *jl, uint32_t id);
 
 
 void AH_Job_SetStatusOnCommands(AH_JOB *j, AB_TRANSACTION_STATUS status);
+
+
+char *AH_Job_GenerateIdFromDateTimeAndJobId(const AH_JOB *j, int runningNumber);
 
 
 #endif /* AH_JOB_L_H */

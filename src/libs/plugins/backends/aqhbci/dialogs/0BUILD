@@ -1,0 +1,129 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="aqhbci_dlgs" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/..
+      -I$(srcdir)/..
+      -I$(builddir)/../..
+      -I$(srcdir)/../..
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+      --api=AQBANKING_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+    </setVar>
+  
+  
+    <headers dist="true" >
+      $(local/built_headers_pub)
+
+      dlg_edituserddv_l.h dlg_edituserddv_p.h
+      dlg_edituserpintan_l.h dlg_edituserpintan_p.h
+      dlg_edituserrdh_l.h dlg_edituserrdh_p.h
+      dlg_pintan_l.h dlg_pintan_p.h
+      dlg_pintan_special_l.h dlg_pintan_special_p.h
+      dlg_newuser_l.h dlg_newuser_p.h
+      dlg_ddvcard_l.h dlg_ddvcard_p.h
+      dlg_zkacard_l.h dlg_zkacard_p.h
+      dlg_ddvcard_special_l.h dlg_ddvcard_special_p.h
+      dlg_newkeyfile_l.h dlg_newkeyfile_p.h
+      dlg_rdh_special_l.h dlg_rdh_special_p.h
+      dlg_importkeyfile_l.h dlg_importkeyfile_p.h
+      dlg_choose_usertype_l.h dlg_choose_usertype_p.h
+      dlg_editaccount_l.h dlg_editaccount_p.h
+      dlg_pintan_tanmode_l.h dlg_pintan_tanmode_p.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      dlg_edituserddv.c
+      dlg_ddvcard_special.c
+      dlg_edituserpintan.c
+      dlg_edituserrdh.c
+      dlg_pintan.c
+      dlg_pintan_special.c
+      dlg_ddvcard.c
+      dlg_zkacard.c
+      dlg_newkeyfile.c
+      dlg_rdh_special.c
+      dlg_importkeyfile.c
+      dlg_newuser.c
+      dlg_choose_usertype.c
+      dlg_editaccount.c
+      dlg_pintan_tanmode.c
+    </sources>
+
+    <data install="$(pkgdatadir)/backends/aqhbci/dialogs" >
+      dlg_edituserddv.dlg
+      dlg_edituserpintan.dlg
+      dlg_edituserrdh.dlg
+      dlg_ddvcard.dlg
+      dlg_zkacard.dlg
+      dlg_ddvcard_special.dlg
+      dlg_pintan.dlg
+      dlg_pintan_special.dlg
+      dlg_newkeyfile.dlg
+      dlg_rdh_special.dlg
+      dlg_importkeyfile.dlg
+      dlg_newuser.dlg
+      dlg_choose_usertype.dlg
+      dlg_editaccount.dlg
+      dlg_pintan_tanmode.dlg
+
+      chipcard.png
+      keyfile.png
+      pintan.png
+    </data>
+
+    <extradist>
+    </extradist>
+
+
+    <useTargets>
+    </useTargets>
+
+    <subdirs>
+    </subdirs>
+
+  
+  
+  </target>
+  
+</gwbuild>

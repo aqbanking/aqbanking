@@ -632,10 +632,15 @@ int _sortCommandsByAccounts(AB_BANKING *ab,
         AB_Transaction_SetStatus(t, AB_Transaction_StatusEnqueued);
         /* add to queue */
         AB_AccountQueue_AddTransaction(aq, t);
+        AB_Banking_LogMsgForJobId(ab,
+                                  AB_Transaction_GetUniqueId(t),
+                                  "Job added to queue for account %08x",
+                                  (unsigned int) uid);
       } /* if status matches */
       else {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Transaction with bad status, not enqueuing (%d: %s)",
                   tStatus, AB_Transaction_Status_toString(tStatus));
+        AB_Banking_LogMsgForJobId(ab, AB_Transaction_GetUniqueId(t), "%s", "Job not added to account queue due to bad status");
         /* TODO: change status, add to im-/export context */
       }
 

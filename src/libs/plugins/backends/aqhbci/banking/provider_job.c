@@ -13,25 +13,25 @@
 
 #include "provider_job.h"
 
-#include "jobgetbalance_l.h"
-#include "jobgettransactions_l.h"
-#include "jobgettrans_camt_l.h"
-#include "jobloadcellphone_l.h"
-#include "jobsepaxfersingle_l.h"
-#include "jobsepaxfermulti_l.h"
-#include "jobsepadebitdatedsinglecreate_l.h"
-#include "jobsepadebitdatedmulticreate_l.h"
-#include "jobsepacor1datedsinglecreate_l.h"
-#include "jobsepacor1datedmulticreate_l.h"
+#include "aqhbci/ajobs/jobgetbalance_l.h"
+#include "aqhbci/ajobs/jobgettransactions_l.h"
+#include "aqhbci/ajobs/jobgettrans_camt_l.h"
+#include "aqhbci/ajobs/jobloadcellphone_l.h"
+#include "aqhbci/ajobs/jobsepaxfersingle_l.h"
+#include "aqhbci/ajobs/jobsepaxfermulti_l.h"
+#include "aqhbci/ajobs/jobsepadebitdatedsinglecreate_l.h"
+#include "aqhbci/ajobs/jobsepadebitdatedmulticreate_l.h"
+#include "aqhbci/ajobs/jobsepacor1datedsinglecreate_l.h"
+#include "aqhbci/ajobs/jobsepacor1datedmulticreate_l.h"
 
-#include "jobsepastandingorderdelete_l.h"
-#include "jobsepastandingordercreate_l.h"
-#include "jobsepastandingordermodify_l.h"
-#include "jobsepastandingorderget_l.h"
-#include "jobgetestatements_l.h"
-#include "jobgetdepot_l.h"
+#include "aqhbci/ajobs/jobsepastandingorderdelete_l.h"
+#include "aqhbci/ajobs/jobsepastandingordercreate_l.h"
+#include "aqhbci/ajobs/jobsepastandingordermodify_l.h"
+#include "aqhbci/ajobs/jobsepastandingorderget_l.h"
+#include "aqhbci/ajobs/jobgetestatements_l.h"
+#include "aqhbci/ajobs/jobgetdepot_l.h"
 
-#include "jobsepadebitsingle_l.h" /* deprecated job */
+#include "aqhbci/ajobs/jobsepadebitsingle_l.h" /* deprecated job */
 
 
 
@@ -226,8 +226,12 @@ int AH_Provider_CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, int
   case AB_Transaction_CommandGetEStatements:
     mj=AH_Job_GetEStatements_new(pro, mu, ma);
     if (!mj) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Job not supported with this account");
-      return GWEN_ERROR_NOT_AVAILABLE;
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Job GetEStatements not supported with this account, trying GetEStatements2");
+      mj=AH_Job_GetEStatements2_new(pro, mu, ma);
+      if (!mj) {
+	DBG_INFO(AQHBCI_LOGDOMAIN, "Neither job GetEStatements nor GetEStatements2 supported with this account");
+	return GWEN_ERROR_NOT_AVAILABLE;
+      }
     }
     break;
 

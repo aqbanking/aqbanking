@@ -12,8 +12,8 @@
 #define AH_ACCOUNT_P_H
 
 
-#include "hbci_l.h"
-#include "account_l.h"
+#include "aqhbci/msglayer/hbci_l.h"
+#include "aqhbci/banking/account_l.h"
 
 
 typedef struct AH_ACCOUNT AH_ACCOUNT;

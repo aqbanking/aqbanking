@@ -10,7 +10,7 @@ typefiles=tanmethod.xml
 noinst_LTLIBRARIES=libhbcitan.la
 
 noinst_HEADERS=\
-  tanmethod_l.h \
+  tanmethod.h \
   tanmethod_p.h \
   tanmethod.h \
   tanmechanism.h tanmechanism_p.h \
@@ -36,7 +36,11 @@ EXTRA_DIST=$(typefiles)
 
 
 typefiles: $(typefiles)
-	$(gwenhywfar_bindir)/typemaker -d AQHBCI_API $(typefiles)
+	$(typemaker2_exe) -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(gwenhywfar_dir)/share/gwenhywfar/typemaker2/c -I $(srcdir) --destfolder="$(srcdir)" -D AQHBCI_API $(typefiles)
+
+typedefs: $(typefiles)
+	$(typemaker2_exe) --defs-only -I $(top_srcdir)/src/libs/aqbanking/typemaker2/c -I $(gwenhywfar_dir)/share/gwenhywfar/typemaker2/c  -I $(srcdir) --destfolder="$(srcdir)" -D AQHBCI_API $(typefiles)
+
 
 sources:
 	for f in $(libhbcitan_la_SOURCES); do \

@@ -15,11 +15,12 @@
 /* #define AH_MSG_HEAVY_DEBUG */
 
 #include "message_p.h"
-#include "aqhbci_l.h"
-#include "hbci_l.h"
-#include "dialog_l.h"
-#include "msgengine_l.h"
-#include "user_l.h"
+
+#include "aqhbci/aqhbci_l.h"
+#include "aqhbci/msglayer/hbci_l.h"
+#include "aqhbci/msglayer/dialog_l.h"
+#include "aqhbci/msglayer/msgengine_l.h"
+#include "aqhbci/banking/user_l.h"
 #include "aqhbci/banking/provider.h"
 
 #include <gwenhywfar/gwenhywfar.h>

@@ -1756,6 +1756,39 @@
 
       </group>
 
+      <group title="Additional Data for Estatements">
+
+        <descr>
+          <p>These properties are only used in estatement requests.</p>
+        </descr>
+
+        <member name="estatementNumber" type="uint32_t" maxlen="4">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <flags>with_hash</flags>
+	  <descr>
+            To select a specific estatment document.
+            Estatements are numbered increasingly, starting over at number 1 each year.
+            Year can be given by additionally setting startDate. If no year is given,
+            the current year is taken as base.
+            0 means no specific selection, return all.
+          </descr>
+        </member>
+
+        <member name="estatementMaxEntries" type="uint32_t" maxlen="4">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <flags>with_hash</flags>
+          <descr>
+            How many estatements to retrieve at most with this transaction.
+          </descr>
+        </member>
+
+
+      </group>
+
 
       <member name="memo" type="char_ptr" maxlen="1024" >
         <access>public</access>

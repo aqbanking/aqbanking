@@ -17,15 +17,15 @@
 #include "provider_dialogs.h"
 #include "provider_sendcmd.h"
 #include "provider_update.h"
-#include "aqhbci_l.h"
-#include "account_l.h"
-#include "hbci_l.h"
-#include "dialog_l.h"
-#include "outbox_l.h"
-#include "user_l.h"
-#include "control_l.h"
+#include "aqhbci/aqhbci_l.h"
+#include "aqhbci/banking/account_l.h"
+#include "aqhbci/msglayer/hbci_l.h"
+#include "aqhbci/msglayer/dialog_l.h"
+#include "aqhbci/applayer/outbox_l.h"
+#include "aqhbci/banking/user_l.h"
+#include "aqhbci/control/control_l.h"
 
-#include "message_l.h" /* for test4 */
+#include "aqhbci/msglayer/message_l.h" /* for test4 */
 
 /*
 #include "dlg_newuser_l.h"
@@ -41,7 +41,7 @@
 #include "dlg_editaccount_l.h"
 */
 
-#include "adminjobs_l.h"
+#include "aqhbci/applayer/adminjobs_l.h"
 #include "aqhbci/banking/user.h"
 
 #include <aqbanking/banking_be.h>

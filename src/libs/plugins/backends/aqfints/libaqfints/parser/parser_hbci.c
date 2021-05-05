@@ -13,8 +13,8 @@
 #endif
 
 
-#include "parser_hbci.h"
-#include "parser_normalize.h"
+#include "libaqfints/parser/parser_hbci.h"
+#include "libaqfints/parser/parser_normalize.h"
 
 #include <gwenhywfar/syncio_memory.h>
 #include <gwenhywfar/debug.h>

@@ -14,8 +14,8 @@
 
 
 //#include "msglayer/parser/parser.h"
-#include "parser/segment.h"
-#include "msg/keydescr.h"
+#include "libaqfints/parser/segment.h"
+#include "libaqfints/msg/keydescr.h"
 
 #include <gwenhywfar/buffer.h>
 

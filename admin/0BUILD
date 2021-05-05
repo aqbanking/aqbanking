@@ -1,0 +1,10 @@
+<?xml?>
+
+<gwbuild>
+
+  <extradist>
+    0BUILD.tmpl
+  </extradist>
+
+
+</gwbuild>

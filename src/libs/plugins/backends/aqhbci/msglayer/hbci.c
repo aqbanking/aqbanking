@@ -245,8 +245,8 @@ const char *AH_HBCI_GetProductVersion(const AH_HBCI *hbci)
     i=strlen(s);
     if (i>5) {
       DBG_ERROR(AQHBCI_LOGDOMAIN,
-                "WARNING: The version number is longer than allowed (maximum is 5, current size is %d), "
-                "bank servers might abort the next connection with or without error message.", i);
+                "WARNING: The version number \"%s\" is longer than allowed (maximum is 5, current size is %d), "
+                "bank servers might abort the next connection with or without error message.", s, i);
     }
   }
 

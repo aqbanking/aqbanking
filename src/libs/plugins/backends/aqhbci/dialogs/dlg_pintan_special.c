@@ -15,8 +15,8 @@
 
 
 #include "dlg_pintan_special_p.h"
-#include "i18n_l.h"
 
+#include "aqbanking/i18n_l.h"
 #include <aqbanking/backendsupport/user.h>
 #include <aqbanking/banking_be.h>
 

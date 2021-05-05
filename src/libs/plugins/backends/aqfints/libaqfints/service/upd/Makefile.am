@@ -33,9 +33,7 @@ dist_typedata_DATA=
 built_sources=\
   updjob.c \
   accountdata.c \
-  userdata.c \
-  upd_read.c \
-  upd_write.c
+  userdata.c
 
 
 build_headers_priv=\
@@ -47,9 +45,7 @@ build_headers_priv=\
 build_headers_pub=\
   updjob.h \
   accountdata.h \
-  userdata.h \
-  upd_read.h \
-  upd_write.h
+  userdata.h
 
 
 
@@ -57,10 +53,14 @@ build_headers=$(build_headers_priv) $(build_headers_pub)
 
 
 
-noinst_HEADERS= $(build_headers)
+noinst_HEADERS= $(build_headers) \
+  upd_read.h \
+  upd_write.h
 
 
-libafmsgupd_la_SOURCES= $(built_sources)
+libafmsgupd_la_SOURCES= $(built_sources) \
+  upd_read.c \
+  upd_write.c
 
 
 

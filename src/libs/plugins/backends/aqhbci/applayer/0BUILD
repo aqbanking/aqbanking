@@ -1,0 +1,110 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="hbciapp" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/..
+      -I$(srcdir)/..
+      -I$(builddir)/../..
+      -I$(srcdir)/../..
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+      --api=AQBANKING_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+    </setVar>
+  
+  
+    <headers dist="true" >
+      $(local/built_headers_pub)
+
+      adminjobs_l.h adminjobs_p.h
+      outbox_l.h outbox_p.h
+      hhd_l.h hhd_p.h
+      cbox.h
+      cbox_p.h
+      cbox_itan.h
+      cbox_itan1.h
+      cbox_itan2.h
+      cbox_send.h
+      cbox_recv.h
+      cbox_psd2.h
+      cbox_hbci.h
+      cbox_dialog.h
+      cbox_prepare.h
+      cbox_queue.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      adminjobs.c
+      hhd.c
+      outbox.c
+      cbox.c
+      cbox_recv.c
+      cbox_send.c
+      cbox_psd2.c
+      cbox_hbci.c
+      cbox_dialog.c
+      cbox_itan.c
+      cbox_itan1.c
+      cbox_itan2.c
+      cbox_prepare.c
+      cbox_queue.c
+    </sources>
+
+    <data install="$(aqbanking_plugin_installdir)/providers" >
+    </data>
+
+    <useTargets>
+    </useTargets>
+
+    <subdirs>
+      xml
+    </subdirs>
+
+  
+  
+    <extradist>
+    </extradist>
+
+
+  </target>
+  
+</gwbuild>

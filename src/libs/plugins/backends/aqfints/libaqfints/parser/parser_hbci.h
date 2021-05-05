@@ -12,8 +12,8 @@
 #define AQFINTS_PARSER_HBCI_H
 
 
-#include "parser/element.h"
-#include "parser/segment.h"
+#include "libaqfints/parser/element.h"
+#include "libaqfints/parser/segment.h"
 
 
 

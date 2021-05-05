@@ -12,7 +12,7 @@
 #define AQFINTS_TRANSPORTHBCI_H
 
 
-#include "transport/transport.h"
+#include "libaqfints/transport/transport.h"
 
 #include <gwenhywfar/syncio.h>
 

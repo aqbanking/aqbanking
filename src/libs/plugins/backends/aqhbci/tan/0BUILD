@@ -1,0 +1,93 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="hbcitan" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/..
+      -I$(srcdir)/..
+      -I$(builddir)/../..
+      -I$(srcdir)/../..
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+    
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+      --api=AQHBCI_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+      tanmethod.xml
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+      tanmethod.c
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+      tanmethod_l.h
+      tanmethod_p.h
+      tanmethod.h
+    </setVar>
+  
+  
+    <headers dist="true" >
+      $(local/built_headers_pub)
+
+      tanmechanism.h tanmechanism_p.h
+      tan_chiptan_opt.h
+      tan_text.h
+      tan_image.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      tanmechanism.c
+      tan_chiptan_opt.c
+      tan_image.c
+      tan_text.c
+    </sources>
+
+    <data install="$(pkgdatadir)/backends/aqhbci/dialogs" >
+    </data>
+
+    <extradist>
+    </extradist>
+
+
+    <useTargets>
+    </useTargets>
+
+    <subdirs>
+    </subdirs>
+
+  
+  
+  </target>
+  
+</gwbuild>

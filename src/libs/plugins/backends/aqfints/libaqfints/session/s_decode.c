@@ -13,14 +13,14 @@
 #endif
 
 
-#include "session/s_decode.h"
-#include "session/session.h"
-#include "session/s_decrypt.h"
-#include "session/s_verify.h"
-#include "session/s_log.h"
+#include "libaqfints/session/s_decode.h"
+#include "libaqfints/session/session.h"
+#include "libaqfints/session/s_decrypt.h"
+#include "libaqfints/session/s_verify.h"
+#include "libaqfints/session/s_log.h"
 
-#include "parser/parser.h"
-#include "parser/parser_dump.h"
+#include "libaqfints/parser/parser.h"
+#include "libaqfints/parser/parser_dump.h"
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
