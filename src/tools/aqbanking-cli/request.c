@@ -397,10 +397,10 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
       GWEN_ArgsType_Int,            /* type */
       "number",                     /* name */
       0,                            /* minnum */
-      99999,                        /* maxnum */
+      0,                            /* maxnum */
       0,                            /* short option */
-      "number",                     /* long option */
-      "Document number",           /* short description */
+      "docnumber",                  /* long option */
+      "Document number",            /* short description */
       "Fetch a specific document number"  /* long description */
     },
 
