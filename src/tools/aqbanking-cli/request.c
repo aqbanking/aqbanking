@@ -396,7 +396,7 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
       GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
       GWEN_ArgsType_Int,            /* type */
       "number",                     /* name */
-      1,                            /* minnum */
+      0,                            /* minnum */
       99999,                        /* maxnum */
       0,                            /* short option */
       "number",                     /* long option */
