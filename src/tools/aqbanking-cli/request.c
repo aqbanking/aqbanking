@@ -68,6 +68,8 @@ int request(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
     requestFlags|=AQBANKING_TOOL_REQUEST_DEPOT;
   if (GWEN_DB_GetIntValue(db, "ignoreUnsupported", 0, 0))
     requestFlags|=AQBANKING_TOOL_REQUEST_IGNORE_UNSUP;
+  if (GWEN_DB_GetIntValue(db, "acknowledge", 0, 0))
+    requestFlags|=AQBANKING_TOOL_REQUEST_ACKNOWLEDGE;
 
   /* read command line arguments */
   ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
@@ -360,6 +362,17 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
       "Request depot (security list)"  /* long description */
     },
     {
+      0,                              /* flags */
+      GWEN_ArgsType_Int,              /* type */
+      "acknowledge",                  /* name */
+      0,                              /* minnum */
+      1,                              /* maxnum */
+      0,                              /* short option */
+      "acknowledge",                  /* long option */
+      "Acknowledge jobs",             /* short description */
+      "Acknowledge each job where the bank supports."   /* long description */
+    },
+    {
       0,
       GWEN_ArgsType_Int,
       "ignoreUnsupported",
@@ -396,11 +409,11 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
       GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
       GWEN_ArgsType_Int,            /* type */
       "number",                     /* name */
-      1,                            /* minnum */
-      99999,                        /* maxnum */
+      0,                            /* minnum */
+      0,                            /* maxnum */
       0,                            /* short option */
-      "number",                     /* long option */
-      "Document number",           /* short description */
+      "docnumber",                  /* long option */
+      "Document number",            /* short description */
       "Fetch a specific document number"  /* long description */
     },
 

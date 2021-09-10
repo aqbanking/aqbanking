@@ -908,6 +908,11 @@
         <item name="final"/>
       </enum>
 
+      <enum id="AB_TRANSACTION_ACK" prefix="AB_Transaction_Ack" type="AB_TRANSACTION_ACK">
+        <item name="never" value="0"/>
+        <item name="jobsWithAckCode"/>
+      </enum>
+
     </enums>
 
     <defines>
@@ -969,6 +974,15 @@
           <descr>
             This is a unique id of the local account for banking commands.
           </descr>
+        </member>
+
+        <member name="acknowledge" type="int" maxlen="32" enum="AB_TRANSACTION_ACK" >
+          <default>AB_Transaction_AckNever</default>
+          <preset>AB_Transaction_AckNever</preset>
+          <access>public</access>
+          <flags>enum with_hash</flags>
+          <setflags>none</setflags>
+          <getflags>none</getflags>
         </member>
 
       </group>

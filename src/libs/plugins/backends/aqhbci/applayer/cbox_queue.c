@@ -15,6 +15,7 @@
 
 #include "cbox_queue.h"
 
+#include "aqhbci/admjobs/jobacknowledge_l.h"
 #include "aqhbci/admjobs/jobtan_l.h"
 
 #include "aqhbci/applayer/cbox_send.h"
@@ -33,6 +34,7 @@
  * ------------------------------------------------------------------------------------------------
  */
 
+static AH_JOBQUEUE *_createAckQueueFromTodoList(AB_USER *user, AH_JOB_LIST *jl, uint32_t jqFlags);
 static AH_JOBQUEUE *_createNextQueueFromTodoList(AB_USER *user, AH_JOB_LIST *jl, uint32_t jqFlags,
                                                  AH_JOB_LIST *finishedJobs);
 static int _performQueue(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jq);
@@ -131,32 +133,123 @@ int _performQueue(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jq)
   finishedJobs=AH_OutboxCBox_GetFinishedJobs(cbox);
 
   for (;;) {
+    AH_JOBQUEUE *jqAck;
     AH_JOBQUEUE *jqTodo;
     AH_JOB_LIST *jl;
 
     jl=AH_JobQueue_TakeJobList(jq);
     assert(jl);
 
+    jqAck=_createAckQueueFromTodoList(user, jl, AH_JobQueue_GetFlags(jq));
     jqTodo=_createNextQueueFromTodoList(user, jl, AH_JobQueue_GetFlags(jq), finishedJobs);
     AH_Job_List_free(jl);
     AH_JobQueue_free(jq);
+
+    if (jqAck != NULL) {
+      rv=AH_OutboxCBox_SendAndRecvQueue(cbox, dlg, jqAck);
+      if (rv) {
+        _handleQueueError(cbox, jqAck, "Error performing acknowledge queue");
+        return rv;
+      } /* if error during acknowledgement (jqAck freed by _handleQueueError */
+      AH_JobQueue_free(jqAck);
+    }
+
     if (jqTodo==NULL) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "No more jobs left");
       break;
     }
-    jq=jqTodo;
-
-    /* jq now contains all jobs to be executed */
-    rv=AH_OutboxCBox_SendAndRecvQueue(cbox, dlg, jq);
-    if (rv) {
-      _handleQueueError(cbox, jq, "Error performing queue"); /* frees jobQueue */
-      return rv;
-    } /* if error */
+    else { 
+      jq=jqTodo;
+      /* jq now contains all jobs to be executed */
+      // Execute NEXT send-recv round, syhcnrounously.
+      rv=AH_OutboxCBox_SendAndRecvQueue(cbox, dlg, jq);
+      if (rv) {
+        _handleQueueError(cbox, jq, "Error performing queue"); /* frees jobQueue */
+        return rv;
+      } /* if error */
+    }
   } /* for */
 
   return 0;
 }
 
+
+AH_JOBQUEUE *_createAckQueueFromTodoList(AB_USER *user, AH_JOB_LIST *jl, uint32_t jqFlags)
+{
+  AH_JOB *j;
+  AH_JOBQUEUE *jqAck;
+
+  jqAck=AH_JobQueue_new(user);
+  /* copy some flags */
+  jqFlags&=~(AH_JOBQUEUE_FLAGS_CRYPT |
+             AH_JOBQUEUE_FLAGS_SIGN |
+             AH_JOBQUEUE_FLAGS_NOSYSID |
+             AH_JOBQUEUE_FLAGS_NOITAN);
+  AH_JobQueue_SetFlags(jqAck, (jqFlags&AH_JOBQUEUE_FLAGS_COPYMASK));
+
+  /* insert intermediate round for possible acknowledgements */
+  j=AH_Job_List_First(jl);
+  while (j) {
+    const char *jobName;
+
+    jobName=AH_Job_GetName(j);
+    if (!(jobName && *jobName))
+      jobName="<unnamed>";
+
+    if (AH_Job_GetStatus(j)==AH_JobStatusAnswered) {
+      /* Should we send an acknowledgement for the previously executed job? */
+      const void* ackCode = NULL;
+      AH_JOB* jAck = NULL;
+      unsigned int lenAckCode = 0;
+      GWEN_DB_NODE *args = AH_Job_GetArguments(j);
+
+      DBG_INFO(AQHBCI_LOGDOMAIN,
+               "Job \"%s\" with status \"answered\", checking whether it needs acknowledgement",
+               jobName);
+      ackCode = GWEN_DB_GetBinValue(args, "_tmpAckCode", 0, 0, 0, &lenAckCode);
+      if (ackCode != NULL && lenAckCode > 0) {
+         jAck = AH_Job_Acknowledge_new(AH_Job_GetProvider(j), AH_Job_GetUser(j), ackCode, lenAckCode);
+         DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" received acknowledge code, prepare acknowledge job", jobName);
+         if (GWEN_DB_DeleteVar(args, "_tmpAckCode")) {
+           DBG_DEBUG(AQHBCI_LOGDOMAIN, "Temporary acknowledge code removed");
+         }
+      }
+      else {
+        DBG_DEBUG(AQHBCI_LOGDOMAIN, "Job \"%s\" didn't receive an acknowledge code, no acknowledge job needed.", jobName);
+      }
+
+      /* Job received acknowledge code in previous response and acknowledge is allowed by BPD and user wants to acknowledge - so do it. */
+      if (jAck != NULL) {
+        /* copy signers to new job */
+        if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_SIGN) {
+          GWEN_STRINGLISTENTRY *se;
+          se=GWEN_StringList_FirstEntry(AH_Job_GetSigners(j));
+          while (se) {
+            AH_Job_AddSigner(jAck, GWEN_StringListEntry_Data(se));
+            se=GWEN_StringListEntry_Next(se);
+          } /* while */
+        }
+
+        if (AH_JobQueue_AddJob(jqAck, jAck)!=AH_JobQueueAddResultOk) {
+          DBG_DEBUG(AQHBCI_LOGDOMAIN, "Couldn't add ack job to todo list.");
+          AH_Job_SetStatus(j, AH_JobStatusError);
+        }
+        else {
+          AH_Job_Log(j, GWEN_LoggerLevel_Info, "Acknwoledge Job enqueued");
+        }
+      }
+    }
+    j=AH_Job_List_Next(j);
+  }
+
+  if (AH_JobQueue_GetCount(jqAck)==0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No acknwoledge jobs enqueued.");
+    AH_JobQueue_free(jqAck);
+    return NULL;
+  }
+
+  return jqAck;
+}
 
 
 AH_JOBQUEUE *_createNextQueueFromTodoList(AB_USER *user, AH_JOB_LIST *jl, uint32_t jqFlags, AH_JOB_LIST *finishedJobs)

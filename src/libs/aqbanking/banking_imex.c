@@ -1169,7 +1169,7 @@ AB_SWIFT_DESCR_LIST *AB_Banking_GetSwiftDescriptorsForImExporter(AB_BANKING *ab,
 
       descr=AB_SwiftDescr_FromString(name);
       if (descr) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Adding matching profile [%s]", name);
+        DBG_INFO(AQBANKING_LOGDOMAIN, "Adding matching profile [%s]", name);
         AB_SwiftDescr_SetAlias1(descr, name);
         AB_SwiftDescr_List_Add(descr, descrList);
       }

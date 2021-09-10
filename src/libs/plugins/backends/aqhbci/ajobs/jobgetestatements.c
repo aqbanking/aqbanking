@@ -111,6 +111,18 @@ static int AH_Job_GetEstatements_HandleCommand(AH_JOB *j, const AB_TRANSACTION *
       GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "maxEntries", maxEntries);
     }
   }
+
+  /*
+   * If the user reqeusted to acknowledge this job,
+   * and the bank also wants to acknowledge the job, flag it for acknowledgement.
+   */
+  if (AB_Transaction_GetAcknowledge(t) == AB_Transaction_AckJobsWithAckCode) {
+    s=GWEN_DB_GetCharValue(dbParams, "ackNeeded", 0, 0);
+    if (s && !strcmp(s, "J")) {
+      AH_Job_AddFlags(j, AH_JOB_FLAGS_ACKNOWLEDGE);
+    }
+  }
+
   return 0;
 }
 

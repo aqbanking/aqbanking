@@ -289,7 +289,7 @@
                    DBG_DEBUG(AQBANKING_LOGDOMAIN, "Handling string[%d of %d]: \"%s\"", i, count, s?s:"&lt;empty&gt;");
                    if (s &amp;&amp; (strcasecmp(s, "camt")==0 || strcasecmp(s, "pain")==0)) {
                      if ((count-i)&lt;4) {
-                       DBG_ERROR(AQBANKING_LOGDOMAIN, "Too few entries left in string list (source: [%s])", inputName);
+                       DBG_INFO(AQBANKING_LOGDOMAIN, "Too few entries left in string list (source: [%s])", inputName);
                        break;
                      }
                      else {
@@ -341,7 +341,7 @@
                  
                } /* if enough entries in string list to be a valid descriptor */
                else {
-                 DBG_ERROR(AQBANKING_LOGDOMAIN, "Too few entries in string list (source: [%s])", inputName);
+                 DBG_INFO(AQBANKING_LOGDOMAIN, "Too few entries in string list (source: [%s])", inputName);
                }
                
                GWEN_StringList_free(slist);

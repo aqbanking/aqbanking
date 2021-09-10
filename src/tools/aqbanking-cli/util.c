@@ -981,6 +981,7 @@ int createAndAddRequest(AB_BANKING *ab,
                         const GWEN_DATE *fromDate,
                         const GWEN_DATE *toDate,
                         int ignoreUnsupported,
+                        AB_TRANSACTION_ACK ackMethod,
                         uint32_t number)
 {
   uint32_t aid;
@@ -1003,6 +1004,7 @@ int createAndAddRequest(AB_BANKING *ab,
       if (number>0)
         AB_Transaction_SetEstatementNumber(j, number);
     }
+    AB_Transaction_SetAcknowledge(j, ackMethod);
     AB_Transaction_List2_PushBack(tList, j);
     return 0;
   }
@@ -1038,39 +1040,44 @@ int createAndAddRequests(AB_BANKING *ab,
                          uint32_t number)
 {
   int ignoreUnsupported=requestFlags & AQBANKING_TOOL_REQUEST_IGNORE_UNSUP;
+  int ackMethod=AB_Transaction_AckNever;
   int rv;
 
   assert(ab);
   assert(tList);
   assert(as);
 
+  if (requestFlags & AQBANKING_TOOL_REQUEST_ACKNOWLEDGE) {
+    ackMethod=AB_Transaction_AckJobsWithAckCode;
+  }
+
   /* create and add requests */
   if (requestFlags & AQBANKING_TOOL_REQUEST_BALANCE) {
-    rv=createAndAddRequest(ab, tList, as, AB_Transaction_CommandGetBalance, fromDate, toDate, ignoreUnsupported, number);
+    rv=createAndAddRequest(ab, tList, as, AB_Transaction_CommandGetBalance, fromDate, toDate, ignoreUnsupported, ackMethod, number);
     if (rv)
       return rv;
   }
 
   if (requestFlags & AQBANKING_TOOL_REQUEST_STATEMENTS) {
-    rv=createAndAddRequest(ab, tList, as, AB_Transaction_CommandGetTransactions, fromDate, toDate, ignoreUnsupported, number);
+    rv=createAndAddRequest(ab, tList, as, AB_Transaction_CommandGetTransactions, fromDate, toDate, ignoreUnsupported, ackMethod, number);
     if (rv)
       return rv;
   }
 
   if (requestFlags & AQBANKING_TOOL_REQUEST_SEPASTO) {
-    rv=createAndAddRequest(ab, tList, as, AB_Transaction_CommandSepaGetStandingOrders, fromDate, toDate, ignoreUnsupported, number);
+    rv=createAndAddRequest(ab, tList, as, AB_Transaction_CommandSepaGetStandingOrders, fromDate, toDate, ignoreUnsupported, ackMethod, number);
     if (rv)
       return rv;
   }
 
   if (requestFlags & AQBANKING_TOOL_REQUEST_ESTATEMENTS) {
-    rv=createAndAddRequest(ab, tList, as, AB_Transaction_CommandGetEStatements, fromDate, toDate, ignoreUnsupported, number);
+    rv=createAndAddRequest(ab, tList, as, AB_Transaction_CommandGetEStatements, fromDate, toDate, ignoreUnsupported, ackMethod, number);
     if (rv)
       return rv;
   }
 
   if (requestFlags & AQBANKING_TOOL_REQUEST_DEPOT) {
-    rv=createAndAddRequest(ab, tList, as, AB_Transaction_CommandGetDepot, fromDate, toDate, ignoreUnsupported, number);
+    rv=createAndAddRequest(ab, tList, as, AB_Transaction_CommandGetDepot, fromDate, toDate, ignoreUnsupported, ackMethod, number);
     if (rv)
       return rv;
   }
