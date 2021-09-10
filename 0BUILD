@@ -4,8 +4,8 @@
 <gwbuild>
 
   <project name="aqbanking"
-           vmajor="6" vminor="2" vpatchlevel="10" vbuild="1" vtag="beta"
-           so_current="46" so_age="2" so_revision="10"
+           vmajor="6" vminor="3" vpatchlevel="1" vbuild="1" vtag="stable"
+           so_current="47" so_age="3" so_revision="1"
            write_config_h="TRUE"
            >
 
