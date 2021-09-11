@@ -162,7 +162,7 @@ int _getTanUSB(AH_TAN_MECHANISM *tanMechanism,
     bufToken=GWEN_Buffer_new(0, 256, 0, 1);
     AH_User_MkTanName(u, (const char *) challengePtr, bufToken);
 
-    rv = GWEN_Gui_ShowBox(0, title, text, 0);
+    rv=GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Warning, text);
 
     /* TODO: hmm, this should probably be changed to a more typesafe way...
      * Maybe we need to add a virtual function for CryptTokens...
@@ -204,8 +204,6 @@ int _getTanUSB(AH_TAN_MECHANISM *tanMechanism,
     rv = ((GetTanfromUSB_GeneratorFn)p)(HHDCommand, fullHHD_Len, &ATC,
                                         passwordBuffer, passwordMaxLen,
                                         &Cardnummber[0], &EndDate[0], &IssueDate[0]);
-    GWEN_Gui_HideBox(0);
-
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(bufToken);
