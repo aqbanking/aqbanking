@@ -3190,7 +3190,7 @@ msgid ""
 "Received new server %s key, please verify! (num: %d, version: %d, hash: %s)"
 msgstr ""
 "Neuen Bank %s Schlüssel empfangen, bitte verifizieren! (Nummer: %d, Version: "
-"%d, Hash: %d)"
+"%d, Hash: %s)"
 
 #: src/libs/plugins/backends/aqhbci/banking/user.c:2411
 #: src/libs/plugins/backends/aqhbci/banking/user.c:2477
