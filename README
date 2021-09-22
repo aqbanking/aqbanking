@@ -397,7 +397,7 @@ making AqBanking work:
 
 To work on translation of this project you need the following packages on
 Debian based systems:
-- po4edit 
+- po4a
 - translate-toolkit (for "msghack")
 
 You can then create the necessary files with:
