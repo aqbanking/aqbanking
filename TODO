@@ -2,6 +2,7 @@ Next:
 =====
 
 - AqBanking
+  - check SEPA conformity, show warning!!
   - remove AB_Gui_CheckCert()
   - remove AB_Banking_MakeGermanIban()
   - remove AB_ERROR
