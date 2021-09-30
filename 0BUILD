@@ -197,6 +197,7 @@
       <prog cmd="xmlmerge" id="xmlmerge" />
       <prog cmd="xgettext" id="xgettext" />
       <prog cmd="astyle"   id="astyle" />
+      <prog cmd="msgmerge" id="msgmerge" />
     </checkProgs>
 
 
@@ -217,6 +218,7 @@
     <define name="OS_SHORTNAME" value="$(GWBUILD_SYSTEM)"    quoted="TRUE" />
 
     <subdirs>
+      po
       src
       admin
     </subdirs>
@@ -237,9 +239,9 @@
     </extradist>
 
 
-    <!-- Build with "gwbuild -B gettext-src" -->
+    <!-- Build with "gwbuild -B i18n-src" -->
     <ifVarMatches name="xgettext_EXISTS" value="TRUE" >
-      <buildFiles name="gettext-src" auto="FALSE" >
+      <buildFiles name="i18n-src" auto="FALSE" >
         <input>
           <files match="*.c" />
           <files match="*.cpp" />
