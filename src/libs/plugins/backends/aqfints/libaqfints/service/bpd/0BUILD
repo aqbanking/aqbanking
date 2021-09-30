@@ -107,7 +107,7 @@
     </sources>
 
 
-    <data install="$(pkgdatadir)/fints" DIST="FALSE" generated="TRUE" >
+    <data dist="true" install="$(pkgdatadir)/fints" >
       bpd.fints
     </data>
 

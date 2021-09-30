@@ -2,7 +2,7 @@
 
 <gwbuild>
 
-    <data install="$(pkgdatadir)/typemaker2/c" DIST="FALSE" generated="TRUE" >
+    <data dist="true" install="$(pkgdatadir)/typemaker2/c" >
       aqfints_parser.tm2
     </data>
 
