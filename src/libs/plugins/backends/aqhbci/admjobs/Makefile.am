@@ -21,7 +21,8 @@ noinst_HEADERS=\
   jobgetsysid_l.h jobgetsysid_p.h \
   jobgetbankinfo_l.h jobgetbankinfo_p.h \
   jobunblockpin_l.h \
-  jobacknowledge_l.h
+  jobacknowledge_l.h \
+  jobgettargetacc_l.h jobgettargetacc_p.h 
 
 
 libhbciadmjobs_la_SOURCES=\
@@ -33,7 +34,8 @@ libhbciadmjobs_la_SOURCES=\
   jobgetsysid.c \
   jobgetbankinfo.c \
   jobunblockpin.c \
-  jobacknowledge.c
+  jobacknowledge.c \
+  jobgettargetacc.c
 
 
 
@@ -54,7 +56,8 @@ xmlfiles=\
   $(srcdir)/jobgetsysid.xml \
   $(srcdir)/jobgetbankinfo.xml \
   $(srcdir)/jobunblockpin.xml \
-  $(srcdir)/jobacknowledge.xml
+  $(srcdir)/jobacknowledge.xml \
+  $(srcdir)/jobgettargetacc.xml
 
 
 EXTRA_DIST=$(xmlfiles)

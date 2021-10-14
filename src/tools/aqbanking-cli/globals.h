@@ -152,6 +152,7 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv,
                   AQBANKING_TOOL_MULTISEPA_TYPE multisepa_type);
 int sepaRecurTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int sepaTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
+int sepaInternalTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int updateConf(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int versions(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 

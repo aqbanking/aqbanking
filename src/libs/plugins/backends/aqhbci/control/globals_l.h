@@ -206,6 +206,10 @@ int AH_Control_SetTanMechanism(AB_PROVIDER *pro,
                                int argc,
                                char **argv);
 
+int AH_Control_GetTargetAcc(AB_PROVIDER *pro,
+                          GWEN_DB_NODE *dbArgs,
+                          int argc,
+                          char **argv);
 
 #endif
 

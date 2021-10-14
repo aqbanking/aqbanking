@@ -32,6 +32,7 @@ aqbanking_cli_SOURCES= \
   util.c \
   versions.c \
   sepatransfer.c \
+  sepainternaltransfer.c \
   sepadebitnote.c \
   sepamultijobs.c \
   separecurtransfer.c \
