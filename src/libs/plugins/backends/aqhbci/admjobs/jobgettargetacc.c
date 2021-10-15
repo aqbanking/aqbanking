@@ -1,6 +1,6 @@
 /***************************************************************************
- begin       : Thu Jan 31 2019
- copyright   : (C) 2019 by Martin Preuss
+ begin       : Tue Oct 12 2021
+ copyright   : (C) 2021 by Stefan Bayer, Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
