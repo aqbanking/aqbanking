@@ -4,7 +4,7 @@
 
  <!-- 
   ---------------------------------------------------------------------
-   Geschaeftsvorfall: SEPA Terminierte Einzellastschrift (Version 1)
+   Geschaeftsvorfall: SEPA Uebertrag (Version 1)
   --------------------------------------------------------------------- 
   -->
 
@@ -48,7 +48,7 @@
 
 <JOBs>
 
- <!-- Geschaeftsvorfall: SEPA Terminierte Einzellastschrift (Version 1) -->
+ <!-- Geschaeftsvorfall: SEPA Uebertrag (Version 1) -->
  <JOBdef id="JobSepaInternalTransfer"
          code="HKCUM"
          params="HICUMS"

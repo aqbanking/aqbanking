@@ -1,7 +1,7 @@
 /***************************************************************************
-    begin       : Tue Dec 31 2013
-    copyright   : (C) 2004-2013 by Martin Preuss
-    email       : martin@libchipcard.de
+ begin       : Tue Oct 12 2021
+ copyright   : (C) 2021 by Stefan Bayer, Martin Preuss
+ email       : martin@libchipcard.de
 
  ***************************************************************************
  *          Please see toplevel file COPYING for license details           *
