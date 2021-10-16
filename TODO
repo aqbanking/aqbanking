@@ -1,6 +1,10 @@
 Next:
 =====
 
+- HBCI:
+  - when TAN is requested on GetAccounts:
+    - dispatch response to first message, not to TAN request (#244)!
+
 - AqBanking
   - check SEPA conformity, show warning!!
   - remove AB_Gui_CheckCert()
