@@ -10,7 +10,7 @@
       <identifier>AB_REFERENCE_ACCOUNT</identifier>
       <prefix>AB_ReferenceAccount</prefix>
       
-      <baseFileName>reference_account</baseFileName>
+      <baseFileName>refaccount</baseFileName>
       
       <flags>
         with_xml
@@ -380,7 +380,7 @@
         <member name="subAccountNumber" type="char_ptr" maxlen="64" >
           <descr>
             If your account has subaccounts which are distinguished by
-            different suffixes, then this is that suffix. Otherwise it's
+            different suffixes, then this is that suffix. Otherwise it is
             empty. (HBCI only)
           </descr>
           <access>public</access>
