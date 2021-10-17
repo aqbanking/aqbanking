@@ -178,6 +178,7 @@ int _updateAccountSpecWithUserAndAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUN
     AB_REFERENCE_ACCOUNT_LIST *ral=AB_AccountSpec_GetRefAccountList(as_old);
     AB_ReferenceAccount_List_ForEach(ral,_copyRefAccountCb,(void *) as);
     AB_ReferenceAccount_List_free(ral);
+    AB_AccountSpec_free(as_old);
   }
 
   /* create and set transaction limits per command */

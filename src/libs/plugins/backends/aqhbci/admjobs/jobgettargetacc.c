@@ -235,6 +235,7 @@ int AH_Job_GetTargetAccount_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
       } /* while (dbTargetAccount) */
 
       rv = AB_Banking_WriteAccountSpec(AB_Provider_GetBanking(pro), as);
+      AB_AccountSpec_free(as);
     } /* if (dbXA) */
     dbCurr = GWEN_DB_GetNextGroup(dbCurr);
   } /* while dbCurr */
