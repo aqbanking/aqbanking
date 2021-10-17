@@ -167,17 +167,17 @@ int _updateAccountSpecWithUserAndAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUN
 {
   int rv;
   AB_TRANSACTION_LIMITS_LIST *tll;
-    AB_ACCOUNT_SPEC *as_old = NULL;
+  AB_ACCOUNT_SPEC *as_old = NULL;
+  AB_REFERENCE_ACCOUNT_LIST *ral = NULL;
   DBG_INFO(AQHBCI_LOGDOMAIN, "Updating account spec for account %u", (unsigned int) AB_Account_GetUniqueId(a));
 
   /* copy reference accounts */
   rv=AB_Banking_GetAccountSpecByUniqueId(AB_Provider_GetBanking(pro), AB_Account_GetUniqueId(a), &as_old);
-  if ( rv == 0 && as_old != NULL)
+  if ( rv >= 0)
   {
     /* we have an account spec alread, copy the reference account list to the new one */
-    AB_REFERENCE_ACCOUNT_LIST *ral=AB_AccountSpec_GetRefAccountList(as_old);
+    ral=AB_AccountSpec_GetRefAccountList(as_old);
     AB_ReferenceAccount_List_ForEach(ral,_copyRefAccountCb,(void *) as);
-    AB_ReferenceAccount_List_free(ral);
     AB_AccountSpec_free(as_old);
   }
 
