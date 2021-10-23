@@ -210,9 +210,9 @@
     <setVar name="gwenhywfar_includes">$(gwenhywfar_cflags)</setVar>
     <setVar name="OSYSTEM">$(GWBUILD_SYSTEM)</setVar>
 
-    <define name="LOCALEDIR"              value="$(datadir)/locale"                           quoted="TRUE" />
-    <define name="AQBANKING_DATA_DIR"     value="$(prefix)/share/aqbanking"                   quoted="TRUE" />
-    <define name="AQBANKING_PLUGINS"      value="$(pkglibdir)/plugins/$(target_so_effective)" quoted="TRUE" />
+    <define name="LOCALEDIR"              value="$(aqbanking_locale_searchdir)"   quoted="TRUE" />
+    <define name="AQBANKING_DATA_DIR"     value="$(aqbanking_data_searchdir)"     quoted="TRUE" />
+    <define name="AQBANKING_PLUGINS"      value="$(aqbanking_plugin_searchdir)"   quoted="TRUE" />
 
     <define name="OS_TYPE"      value="$(GWBUILD_SYSTEM)"    quoted="TRUE" />
     <define name="OS_SHORTNAME" value="$(GWBUILD_SYSTEM)"    quoted="TRUE" />
