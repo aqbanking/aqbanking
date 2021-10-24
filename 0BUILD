@@ -102,6 +102,16 @@
     </ifVarMatches>
 
 
+    <option id="debug" type="string">
+      <default>TRUE</default>
+      <choices>TRUE FALSE</choices>
+    </option>
+    <ifVarMatches name="option_debug" value="TRUE" >
+      <setVar name="CFLAGS">-ggdb -O0</setVar>
+      <setVar name="CXXFLAGS">-ggdb -O0</setVar>
+    </ifVarMatches>
+
+
     <!-- paths -->
     <setVar name="aqbanking_plugin_installdir">$(pkglibdir)/plugins/$(project_so_effective)</setVar>
     <ifVarMatches name="GWBUILD_SYSTEM" value="windows" > <!-- long version of IF statement with THEN and ELSE -->
@@ -126,7 +136,7 @@
             <setVar   name="aqfints_datadir">share/aqbanking/backends/aqfints</setVar>
           </then>
           <else>
-            <setVar name="aqbanking_plugin_searchdir">$(pkglibdir)/plugins/$(project_so_effective)"</setVar>
+            <setVar name="aqbanking_plugin_searchdir">$(pkglibdir)/plugins/$(project_so_effective)</setVar>
             <setVar name="aqbanking_cfg_searchdir">$(sysconfdir)</setVar>
             <setVar name="aqbanking_locale_searchdir">$(datadir)/locale</setVar>
             <setVar name="aqbanking_data_searchdir">$(datadir)</setVar>
