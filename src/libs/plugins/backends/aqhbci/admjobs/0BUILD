@@ -61,6 +61,7 @@
       jobgetbankinfo_l.h jobgetbankinfo_p.h
       jobunblockpin_l.h
       jobacknowledge_l.h
+      jobgettargetacc_l.h
     </headers>
   
   
@@ -76,6 +77,7 @@
       jobgetbankinfo.c
       jobunblockpin.c
       jobacknowledge.c
+      jobgettargetacc.c
     </sources>
 
     <data install="$(aqbanking_plugin_installdir)/providers" >
@@ -104,6 +106,7 @@
         jobgetbankinfo.xml
         jobunblockpin.xml
         jobacknowledge.xml
+        jobgettargetacc.xml
       </input>
 
       <output>

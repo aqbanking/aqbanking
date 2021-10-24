@@ -33,6 +33,8 @@
 
         <header type="sys" loc="post">aqbanking/types/transaction.h</header>
         <header type="sys" loc="post">aqbanking/types/transactionlimits.h</header>
+        <header type="sys" loc="post">aqbanking/types/refaccount.h</header>
+        
 
       </headers>
 
@@ -394,6 +396,24 @@
              }
           </content>
         </inline>
+        
+        <inline loc="end" access="public">
+          <content>
+             $(api) void $(struct_prefix)_AddReferenceAccount($(struct_type) *st, AB_REFERENCE_ACCOUNT *l);
+          </content>
+        </inline>
+
+        <inline loc="code">
+          <content>
+             void $(struct_prefix)_AddReferenceAccount($(struct_type) *st, AB_REFERENCE_ACCOUNT *l) {
+               assert(st);
+               assert(l);
+               if (NULL==st->refAccountList)
+                 st->refAccountList=AB_ReferenceAccount_List_new();
+               AB_ReferenceAccount_List_Add(l, st->refAccountList);
+             }
+          </content>
+        </inline>
 
 
 
@@ -591,6 +611,22 @@
           </descr>
           <default>NULL</default>
           <preset>AB_TransactionLimits_List_new()</preset>
+          <access>public</access>
+          <flags>own</flags>
+          <setflags>nodup</setflags>
+          <getflags>none</getflags>
+        </member>
+
+      </group>
+      
+      <group title="Reference Accounts">
+      
+        <member name="refAccountList" type="AB_REFERENCE_ACCOUNT_LIST">
+          <descr>
+                This list contains the reference accounts for internal transfers
+          </descr>
+          <default>NULL</default>
+          <preset>AB_ReferenceAccount_List_new()</preset>
           <access>public</access>
           <flags>own</flags>
           <setflags>nodup</setflags>

@@ -18,6 +18,7 @@
 #include "aqhbci/ajobs/jobgettrans_camt_l.h"
 #include "aqhbci/ajobs/jobloadcellphone_l.h"
 #include "aqhbci/ajobs/jobsepaxfersingle_l.h"
+#include "aqhbci/ajobs/jobsepainternalxfer_l.h"
 #include "aqhbci/ajobs/jobsepaxfermulti_l.h"
 #include "aqhbci/ajobs/jobsepadebitdatedsinglecreate_l.h"
 #include "aqhbci/ajobs/jobsepadebitdatedmulticreate_l.h"
@@ -112,6 +113,14 @@ int AH_Provider_CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, int
         }
       }
     }
+    break;
+
+  case AB_Transaction_CommandSepaInternalTransfer:
+      mj=AH_Job_SepaInternalTransfer_new(pro, mu, ma);
+      if (!mj) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+        return GWEN_ERROR_NOT_AVAILABLE;
+      }
     break;
 
   case AB_Transaction_CommandSepaDebitNote:

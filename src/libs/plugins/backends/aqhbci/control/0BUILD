@@ -93,6 +93,7 @@
       settanmediumid.c
       getbankinfo.c
       settanmechanism.c
+      gettargetacc.c
       test.c
     </sources>
 

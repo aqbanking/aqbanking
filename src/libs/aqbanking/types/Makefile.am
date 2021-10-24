@@ -15,6 +15,7 @@ noinst_LTLIBRARIES=libabtypes.la
 typefiles=\
   transaction.xml \
   transactionlimits.xml \
+  refaccount.xml \
   security.xml \
   bankinfoservice.xml \
   bankinfo.xml \
@@ -23,7 +24,8 @@ typefiles=\
   balance.xml \
   imexporter_accountinfo.xml \
   imexporter_context.xml \
-  account_spec.xml
+  account_spec.xml 
+  
 
 
 typedatadir=$(datadir)/aqbanking/typemaker2/c
@@ -38,12 +40,14 @@ dist_typedata_DATA=\
   ab_message.tm2 ab_message_list.tm2 ab_message_list2.tm2 \
   ab_security.tm2 ab_security_list.tm2 ab_security_list2.tm2 \
   ab_transaction.tm2 ab_transaction_list.tm2 ab_transaction_list2.tm2 \
-  ab_transaction_limits.tm2 ab_transaction_limits_list.tm2 ab_transaction_limits_list2.tm2
+  ab_transaction_limits.tm2 ab_transaction_limits_list.tm2 ab_transaction_limits_list2.tm2 \
+  ab_reference_account.tm2 ab_reference_account_list.tm2 ab_reference_account_list2.tm2
 
 
 built_sources=  \
   transaction.c \
   transactionlimits.c \
+  refaccount.c \
   bankinfoservice.c \
   bankinfo.c \
   document.c \
@@ -58,6 +62,7 @@ built_sources=  \
 build_headers_priv= \
   transaction_p.h   \
   transactionlimits_p.h \
+  refaccount_p.h \
   bankinfoservice_p.h \
   bankinfo_p.h \
   document_p.h \
@@ -72,6 +77,7 @@ build_headers_priv= \
 build_headers_pub= \
   transaction.h    \
   transactionlimits.h \
+  refaccount.h \
   bankinfoservice.h \
   bankinfo.h \
   document.h \

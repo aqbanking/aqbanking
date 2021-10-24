@@ -41,6 +41,7 @@
       imexporter_accountinfo.xml
       imexporter_context.xml
       account_spec.xml
+      refaccount.xml
     </setVar>
   
 
@@ -56,6 +57,7 @@
       imexporter_accountinfo.c
       imexporter_context.c
       account_spec.c
+      refaccount.c
     </setVar>
   
 
@@ -71,6 +73,7 @@
       imexporter_accountinfo.h
       imexporter_context.h
       account_spec.h
+      refaccount.h
     </setVar>
   
   
@@ -86,6 +89,7 @@
       imexporter_accountinfo_p.h
       imexporter_context_p.h
       account_spec_p.h
+      ref_account_p.h
     </setVar>
 
 
@@ -115,6 +119,7 @@
       ab_security.tm2 ab_security_list.tm2 ab_security_list2.tm2
       ab_transaction.tm2 ab_transaction_list.tm2 ab_transaction_list2.tm2
       ab_transaction_limits.tm2 ab_transaction_limits_list.tm2 ab_transaction_limits_list2.tm2
+      ab_reference_account.tm2 ab_reference_account_list.tm2 ab_reference_account_list2.tm2
     </data>
 
 
