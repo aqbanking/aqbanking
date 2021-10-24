@@ -73,6 +73,7 @@
       separecurtransfer.c
       updateconf.c
       control.c
+      sepainternaltransfer.c
     </sources>
 
     <useTargets>

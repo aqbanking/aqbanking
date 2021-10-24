@@ -84,8 +84,8 @@
       jobsepastandingorderdelete_l.h
       jobgetestatements_l.h
       jobgetdepot_l.h
-      jobsepainternalxfersingle_l.h
-      jobsepainternalxfersingle_p.h
+      jobsepainternalxfer_l.h
+      jobsepainternalxfer_p.h
     </headers>
   
   
@@ -112,7 +112,7 @@
       jobsepastandingorderdelete.c
       jobgetestatements.c
       jobgetdepot.c
-      jobsepainternalxfersingle.c
+      jobsepainternalxfer.c
     </sources>
 
     <data install="$(aqbanking_plugin_installdir)/providers" >
@@ -150,7 +150,7 @@
         jobgetestatements.xml
         jobgetestatements2.xml
         jobgetdepot.xml
-        jobsepainternalxfersingle.xml
+        jobsepainternalxfer.xml
       </input>
 
       <output>
