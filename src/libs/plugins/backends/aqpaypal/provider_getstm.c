@@ -269,6 +269,9 @@ int APY_Provider_UpdateTrans(AB_PROVIDER *pro,
   s=GWEN_DB_GetCharValue(dbResponse, "BUYERID", 0, NULL);
   if (s && *s)
     AB_Transaction_SetBankReference(t, s);
+  s=GWEN_DB_GetCharValue(dbResponse, "NOTE", 0, NULL);
+  if (s && *s)
+    AB_Transaction_SetMemo(t, s);
 
   dbT=GWEN_DB_GetFirstGroup(dbResponse);
   while (dbT) {
