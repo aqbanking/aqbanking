@@ -58,7 +58,7 @@
         <widget type="lineEdit" name="countryEdit"  columns="20" flags="fillX readOnly" />
 
         <widget type="label" text="Bank Code" flags="noWordWrap" />
-        <widget type="hlayout" flags="fillX" >
+        <widget type="hlayout" flags="fillX " >
           <widget type="lineEdit" name="bankCodeEdit" flags="fillX" />
           <widget type="pushButton" name="bankCodeButton" text="Select" />
         </widget>
@@ -79,10 +79,17 @@
     <widget type="groupBox" text="Special Actions" flags="fillX" >
       <widget type="gridLayout" columns="2" flags="fillX equalWidth" >
         <widget type="pushButton" text="Get SEPA Info" name="getSepaButton" />
+       
       </widget>
     </widget>     <!-- groupBox -->
 
-
+    <widget type="groupBox" text="Sepa Internal Transfer Target Accounts" flags="fillX" >
+      <widget type="vlayout" flags="fillX fillY" >
+        <widget type="listBox" name="targetAccountListBox" flags="fillX" />
+        <widget type="pushButton" text="Get target accounts" name="getTargetAccButton" />
+      </widget>
+    </widget>     <!-- groupBox -->
+    
     <!-- wizard controls -->
     <widget type="hLine" flags="fillX" />
     <widget type="hlayout" flags="fillX equalWidth" >
