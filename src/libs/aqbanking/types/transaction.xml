@@ -1282,6 +1282,15 @@
           <preset>NULL</preset>
         </member>
 
+        <member name="taxes" type="AB_VALUE" maxlen="256" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <default>NULL</default>
+          <preset>NULL</preset>
+        </member>
+
       </group>
 
 
