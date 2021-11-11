@@ -396,6 +396,15 @@ void _readDates(AB_TRANSACTION *t, GWEN_DB_NODE *dbT, const char *dateFormat)
       AB_Transaction_SetNextDate(t, da);
     GWEN_Date_free(da);
   }
+  p=GWEN_DB_GetCharValue(dbT, "unitPriceDate", 0, NULL);
+  if (p) {
+    GWEN_DATE *da;
+  
+    da=GWEN_Date_fromStringWithTemplate(p, dateFormat);
+    if (da)
+      AB_Transaction_SetUnitPriceDate(t, da);
+    GWEN_Date_free(da);
+  }
 }
 
 
