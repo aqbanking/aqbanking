@@ -25,6 +25,22 @@
 GWEN_INHERIT(AB_IMEXPORTER, AH_IMEXPORTER_CSV);
 
 
+static int _importCsv(AB_IMEXPORTER *ie,
+                      AB_IMEXPORTER_CONTEXT *ctx,
+                      GWEN_SYNCIO *sio,
+                      GWEN_DB_NODE *params);
+
+static int _exportCsv(AB_IMEXPORTER *ie,
+                      AB_IMEXPORTER_CONTEXT *ctx,
+                      GWEN_SYNCIO *sio,
+                      GWEN_DB_NODE *params);
+
+static int _checkCsv(AB_IMEXPORTER *ie, const char *fname);
+
+static int _getEditProfileDialog(AB_IMEXPORTER *ie,
+                                 GWEN_DB_NODE *params,
+                                 const char *testFileName,
+                                 GWEN_DIALOG **pDlg);
 
 static AB_VALUE *_valueFromDb(GWEN_DB_NODE *dbV, int commaThousands, int commaDecimal);
 static void _unsplitInOutValue(GWEN_DB_NODE *dbT, int commaThousands, int commaDecimal);
@@ -36,6 +52,10 @@ static int _mustNegate(GWEN_DB_NODE *dbT, GWEN_DB_NODE *dbParams);
 static void _switchLocalRemoteAccordingToSign(AB_TRANSACTION *t, int switchOnNegative);
 static int _groupNameMatches(const char *groupName, GWEN_DB_NODE *dbParams);
 
+static void GWENHYWFAR_CB _freeData(void *bp, void *p);
+
+static int _importFromGroup(AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *db, GWEN_DB_NODE *dbParams);
+
 
 
 
@@ -46,7 +66,7 @@ AB_IMEXPORTER *AB_ImExporterCSV_new(AB_BANKING *ab)
 
   ie=AB_ImExporter_new(ab, "csv");
   GWEN_NEW_OBJECT(AH_IMEXPORTER_CSV, ieh);
-  GWEN_INHERIT_SETDATA(AB_IMEXPORTER, AH_IMEXPORTER_CSV, ie, ieh, AH_ImExporterCSV_FreeData);
+  GWEN_INHERIT_SETDATA(AB_IMEXPORTER, AH_IMEXPORTER_CSV, ie, ieh, _freeData);
   ieh->dbio=GWEN_DBIO_GetPlugin("csv");
   if (!ieh->dbio) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "GWEN DBIO plugin \"CSV\" not available");
@@ -54,10 +74,10 @@ AB_IMEXPORTER *AB_ImExporterCSV_new(AB_BANKING *ab)
     return NULL;
   }
 
-  AB_ImExporter_SetImportFn(ie, AH_ImExporterCSV_Import);
-  AB_ImExporter_SetExportFn(ie, AH_ImExporterCSV_Export);
-  AB_ImExporter_SetCheckFileFn(ie, AH_ImExporterCSV_CheckFile);
-  AB_ImExporter_SetGetEditProfileDialogFn(ie, AH_ImExporterCSV_GetEditProfileDialog);
+  AB_ImExporter_SetImportFn(ie, _importCsv);
+  AB_ImExporter_SetExportFn(ie, _exportCsv);
+  AB_ImExporter_SetCheckFileFn(ie, _checkCsv);
+  AB_ImExporter_SetGetEditProfileDialogFn(ie, _getEditProfileDialog);
 
   /* announce special features */
   AB_ImExporter_AddFlags(ie, AB_IMEXPORTER_FLAGS_GETPROFILEEDITOR_SUPPORTED);
@@ -67,7 +87,7 @@ AB_IMEXPORTER *AB_ImExporterCSV_new(AB_BANKING *ab)
 
 
 
-void GWENHYWFAR_CB AH_ImExporterCSV_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB _freeData(void *bp, void *p)
 {
   AH_IMEXPORTER_CSV *ieh;
 
@@ -78,10 +98,10 @@ void GWENHYWFAR_CB AH_ImExporterCSV_FreeData(void *bp, void *p)
 
 
 
-int AH_ImExporterCSV_Import(AB_IMEXPORTER *ie,
-                            AB_IMEXPORTER_CONTEXT *ctx,
-                            GWEN_SYNCIO *sio,
-                            GWEN_DB_NODE *params)
+int _importCsv(AB_IMEXPORTER *ie,
+               AB_IMEXPORTER_CONTEXT *ctx,
+               GWEN_SYNCIO *sio,
+               GWEN_DB_NODE *params)
 {
   AH_IMEXPORTER_CSV *ieh;
   GWEN_DB_NODE *dbData;
@@ -122,7 +142,7 @@ int AH_ImExporterCSV_Import(AB_IMEXPORTER *ie,
   }
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
                        "Transforming data to transactions");
-  rv=AH_ImExporterCSV__ImportFromGroup(ctx, dbData, params);
+  rv=_importFromGroup(ctx, dbData, params);
   if (rv) {
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
                          "Error importing data");
@@ -136,7 +156,7 @@ int AH_ImExporterCSV_Import(AB_IMEXPORTER *ie,
 
 
 
-int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *db, GWEN_DB_NODE *dbParams)
+int _importFromGroup(AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *db, GWEN_DB_NODE *dbParams)
 {
   GWEN_DB_NODE *dbT;
   AB_TRANSACTION_TYPE defaultType=AB_Transaction_TypeStatement;
@@ -213,7 +233,7 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *
 
       DBG_INFO(AQBANKING_LOGDOMAIN, "Not a transaction, checking subgroups");
       /* not a transaction, check subgroups */
-      rv=AH_ImExporterCSV__ImportFromGroup(ctx, dbT, dbParams);
+      rv=_importFromGroup(ctx, dbT, dbParams);
       if (rv) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "here");
         return rv;
@@ -304,7 +324,7 @@ void _readValues(AB_TRANSACTION *t, GWEN_DB_NODE *dbT, int commaThousands, int c
     AB_Value_free(v);
   }
 
-  dbV=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "priceValue");
+  dbV=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "unitPriceValue");
   if (dbV) {
     v=_valueFromDb(dbV, commaThousands, commaDecimal);
     AB_Transaction_SetUnitPriceValue(t, v);
@@ -486,13 +506,11 @@ void _translateValuesSign(AB_TRANSACTION *t, GWEN_DB_NODE *dbT, GWEN_DB_NODE *db
 
 int _mustNegate(GWEN_DB_NODE *dbT, GWEN_DB_NODE *dbParams)
 {
-  int usePosNegField;
   const char *posNegFieldName;
   int defaultIsPositive;
   const char *s;
   int determined=0;
 
-  usePosNegField=GWEN_DB_GetIntValue(dbParams, "usePosNegField", 0, 0);
   defaultIsPositive=GWEN_DB_GetIntValue(dbParams, "defaultIsPositive", 0, 1);
   posNegFieldName=GWEN_DB_GetCharValue(dbParams, "posNegFieldName", 0, "posNeg");
   
@@ -604,7 +622,7 @@ int _groupNameMatches(const char *groupName, GWEN_DB_NODE *dbParams)
 
 
 
-int AH_ImExporterCSV_CheckFile(AB_IMEXPORTER *ie, const char *fname)
+int _checkCsv(AB_IMEXPORTER *ie, const char *fname)
 {
   AH_IMEXPORTER_CSV *ieh;
   GWEN_DBIO_CHECKFILE_RESULT rv;
@@ -629,10 +647,10 @@ int AH_ImExporterCSV_CheckFile(AB_IMEXPORTER *ie, const char *fname)
 
 
 
-int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
-                            AB_IMEXPORTER_CONTEXT *ctx,
-                            GWEN_SYNCIO *sio,
-                            GWEN_DB_NODE *params)
+int _exportCsv(AB_IMEXPORTER *ie,
+               AB_IMEXPORTER_CONTEXT *ctx,
+               GWEN_SYNCIO *sio,
+               GWEN_DB_NODE *params)
 {
   AH_IMEXPORTER_CSV *ieh;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
@@ -885,7 +903,7 @@ int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
 
 
 
-int AH_ImExporterCSV_GetEditProfileDialog(AB_IMEXPORTER *ie,
+int _getEditProfileDialog(AB_IMEXPORTER *ie,
                                           GWEN_DB_NODE *dbProfile,
                                           const char *testFileName,
                                           GWEN_DIALOG **pDlg)
