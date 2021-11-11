@@ -33,6 +33,7 @@
     sepadebitnotes.conf
     homebank.conf
     onvista-trans.conf
+    onvista-prices.conf
   </data>
 
 </gwbuild>
