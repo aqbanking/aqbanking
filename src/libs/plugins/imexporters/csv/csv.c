@@ -509,7 +509,6 @@ int _mustNegate(GWEN_DB_NODE *dbT, GWEN_DB_NODE *dbParams)
   const char *posNegFieldName;
   int defaultIsPositive;
   const char *s;
-  int determined=0;
 
   defaultIsPositive=GWEN_DB_GetIntValue(dbParams, "defaultIsPositive", 0, 1);
   posNegFieldName=GWEN_DB_GetCharValue(dbParams, "posNegFieldName", 0, "posNeg");
@@ -527,27 +526,24 @@ int _mustNegate(GWEN_DB_NODE *dbT, GWEN_DB_NODE *dbParams)
       if (!patt)
 	break;
       if (-1!=GWEN_Text_ComparePattern(s, patt, 0)) {
-	/* value already is positive, keep it that way */
-	determined=1;
-	break;
+          /* value already is positive, keep it that way */
+	return 0;
       }
     } /* for */
 
-    if (!determined) {
-      for (j=0; ; j++) {
-	const char *patt;
+    for (j=0; ; j++) {
+      const char *patt;
 
-	patt=GWEN_DB_GetCharValue(dbParams, "negativeValues", j, 0);
-	if (!patt)
-	  break;
-	if (-1!=GWEN_Text_ComparePattern(s, patt, 0))
-	  return 1;
-      } /* for */
-    }
+      patt=GWEN_DB_GetCharValue(dbParams, "negativeValues", j, 0);
+      if (!patt)
+	break;
+      if (-1!=GWEN_Text_ComparePattern(s, patt, 0))
+	return 1;
+    } /* for */
   }
 
   /* still undecided? */
-  if (!determined && !defaultIsPositive)
+  if (!defaultIsPositive)
     return 1;
 
   return 0;
@@ -904,9 +900,9 @@ int _exportCsv(AB_IMEXPORTER *ie,
 
 
 int _getEditProfileDialog(AB_IMEXPORTER *ie,
-                                          GWEN_DB_NODE *dbProfile,
-                                          const char *testFileName,
-                                          GWEN_DIALOG **pDlg)
+                          GWEN_DB_NODE *dbProfile,
+                          const char *testFileName,
+                          GWEN_DIALOG **pDlg)
 {
   GWEN_DIALOG *dlg;
 
