@@ -136,9 +136,7 @@ int AH_ImExporterCSV_Import(AB_IMEXPORTER *ie,
 
 
 
-int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
-                                      GWEN_DB_NODE *db,
-                                      GWEN_DB_NODE *dbParams)
+int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *db, GWEN_DB_NODE *dbParams)
 {
   GWEN_DB_NODE *dbT;
   AB_TRANSACTION_TYPE defaultType=AB_Transaction_TypeStatement;
@@ -175,8 +173,6 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
   dbT=GWEN_DB_GetFirstGroup(db);
   while (dbT) {
-    int i;
-
     if (_groupNameMatches(GWEN_DB_GroupName(dbT), dbParams)) {
       /* possibly merge in/out values */
       if (splitValueInOut)
@@ -184,8 +180,6 @@ int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
 
       if (GWEN_DB_GetCharValue(dbT, "value/value", 0, NULL) || GWEN_DB_GetCharValue(dbT, "units", 0, NULL)) {
         AB_TRANSACTION *t;
-        const char *p;
-        GWEN_DB_NODE *dbV;
 
         t=AB_Transaction_fromDb(dbT);
         if (!t) {
