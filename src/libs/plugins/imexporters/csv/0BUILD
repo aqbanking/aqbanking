@@ -74,6 +74,7 @@
     </useTargets>
 
     <subdirs>
+      profiles
     </subdirs>
 
   
