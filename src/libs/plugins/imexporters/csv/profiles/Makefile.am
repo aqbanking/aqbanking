@@ -8,6 +8,7 @@ profiles_DATA=default.conf aqmoney1.conf aqmoney2.conf \
   hypovereinsbank.conf postbankffm.conf cli-transfers.conf \
   sns.conf consors-tagesgeld.conf \
   transfers.conf sepadebitnotes.conf \
-  homebank.conf
+  homebank.conf \
+  onvista-trans.conf
 
 EXTRA_DIST=$(profiles_DATA)
