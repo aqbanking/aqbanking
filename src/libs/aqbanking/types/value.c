@@ -209,7 +209,7 @@ AB_VALUE *AB_Value_fromString(const char *s)
   free(tmpString);
 
   if (!conversion_succeeded) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "[%s] is not a valid value", s);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "[%s] is not a valid value", s);
     AB_Value_free(v);
     return NULL;
   }

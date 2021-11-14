@@ -1,0 +1,106 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="ebicscontrol" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(xml_cflags)
+      $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/../..
+      -I$(srcdir)/../..
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+
+    <define name="LOCALEDIR" value="$(localedir)" quoted="true" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+      --api=AQBANKING_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+    </setVar>
+  
+  
+    <headers dist="true" >
+      $(local/built_headers_pub)
+
+      globals.h
+      control_l.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      addaccount.c
+      addsubuserflags.c
+      adduser.c
+      createkeys.c
+      createtempkey.c
+      download.c
+      sendkeys.c
+      sendsignkey.c
+      getaccounts.c
+      getkeys.c
+      iniletter.c
+      hialetter.c
+      main.c
+      sendhpd.c
+      sendhkd.c
+      upload.c
+      utils.c
+      mkpinlist.c
+      resetuser.c
+      getcert.c
+      listusers.c
+      listaccounts.c
+      setebicsversion.c
+    </sources>
+
+    <data install="$(aqbanking_plugin_installdir)/providers" >
+    </data>
+
+    <extradist>
+    </extradist>
+
+
+    <useTargets>
+    </useTargets>
+
+    <subdirs>
+    </subdirs>
+
+  
+  
+  </target>
+  
+</gwbuild>

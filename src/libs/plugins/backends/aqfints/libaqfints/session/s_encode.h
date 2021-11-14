@@ -13,9 +13,9 @@
 
 
 #include "libaqfints/aqfints.h"
-#include "msg/message.h"
-#include "msg/keydescr.h"
-#include "session/session.h"
+#include "libaqfints/msg/message.h"
+#include "libaqfints/msg/keydescr.h"
+#include "libaqfints/session/session.h"
 
 #include <gwenhywfar/types.h>
 #include <gwenhywfar/db.h>

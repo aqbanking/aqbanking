@@ -26,10 +26,13 @@ aqbanking_cli_SOURCES= \
   listbal.c \
   listprofiles.c \
   listtrans.c \
+  listdoc.c \
+  getdoc.c \
   request.c \
   util.c \
   versions.c \
   sepatransfer.c \
+  sepainternaltransfer.c \
   sepadebitnote.c \
   sepamultijobs.c \
   separecurtransfer.c \

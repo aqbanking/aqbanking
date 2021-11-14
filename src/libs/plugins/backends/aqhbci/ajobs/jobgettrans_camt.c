@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Sat Dec 15 2018
-    copyright   : (C) 2020 by Martin Preuss
+    copyright   : (C) 2021 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -13,21 +13,9 @@
 #endif
 
 
-#include "jobgettrans_camt_p.h"
-#include "aqhbci_l.h"
-#include "accountjob_l.h"
-#include "aqhbci/joblayer/job_l.h"
+#include "jobgettrans_camt_l.h"
 #include "aqhbci/joblayer/job_swift.h"
 #include "aqhbci/joblayer/job_crypt.h"
-#include "user_l.h"
-
-#include <gwenhywfar/debug.h>
-#include <gwenhywfar/misc.h>
-#include <gwenhywfar/inherit.h>
-#include <gwenhywfar/dbio.h>
-#include <gwenhywfar/gui.h>
-
-#include <gwenhywfar/syncio_memory.h>
 
 #include <assert.h>
 
@@ -40,9 +28,19 @@ GWEN_INHERIT(AH_JOB, AH_JOB_GETTRANS_CAMT);
  * ------------------------------------------------------------------------------------------------
  */
 
+static int _process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
+static int _getLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
+static int _handleCommand(AH_JOB *j, const AB_TRANSACTION *t);
+
 static int _readBooked(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai, GWEN_DB_NODE *dbBooked);
 static int _readTransactionsFromResponse(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai, GWEN_DB_NODE *dbXA);
 static void _possiblyDumpTransactions(const AB_IMEXPORTER_ACCOUNTINFO *ai);
+static int _readTransactions(AH_JOB *j,
+			     AB_IMEXPORTER_ACCOUNTINFO *ai,
+			     const char *docType,
+			     int ty,
+			     const uint8_t *ptr,
+			     uint32_t len);
 
 
 
@@ -53,11 +51,9 @@ static void _possiblyDumpTransactions(const AB_IMEXPORTER_ACCOUNTINFO *ai);
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_GetTransactionsCAMT_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 {
   AH_JOB *j;
-  AH_JOB_GETTRANS_CAMT *aj;
   GWEN_DB_NODE *dbArgs;
   GWEN_DB_NODE *dbParams;
 
@@ -68,16 +64,12 @@ AH_JOB *AH_Job_GetTransactionsCAMT_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT 
     return NULL;
   }
 
-  GWEN_NEW_OBJECT(AH_JOB_GETTRANS_CAMT, aj);
-  GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_GETTRANS_CAMT, j, aj, AH_Job_GetTransactionsCAMT_FreeData);
-
   AH_Job_SetSupportedCommand(j, AB_Transaction_CommandGetTransactions);
 
   /* overwrite some virtual functions */
-  AH_Job_SetProcessFn(j, AH_Job_GetTransactionsCAMT_Process);
-
-  AH_Job_SetGetLimitsFn(j, AH_Job_GetTransactionsCAMT_GetLimits);
-  AH_Job_SetHandleCommandFn(j, AH_Job_GetTransactionsCAMT_HandleCommand);
+  AH_Job_SetProcessFn(j, _process);
+  AH_Job_SetGetLimitsFn(j, _getLimits);
+  AH_Job_SetHandleCommandFn(j, _handleCommand);
   AH_Job_SetHandleResultsFn(j, AH_Job_HandleResults_Empty);
 
   /* get params DB */
@@ -122,25 +114,12 @@ AH_JOB *AH_Job_GetTransactionsCAMT_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT 
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-void GWENHYWFAR_CB AH_Job_GetTransactionsCAMT_FreeData(void *bp, void *p)
-{
-  AH_JOB_GETTRANS_CAMT *aj;
-
-  aj=(AH_JOB_GETTRANS_CAMT *)p;
-
-  GWEN_FREE_OBJECT(aj);
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetTransCAMT__ReadTransactions(AH_JOB *j,
-                                          AB_IMEXPORTER_ACCOUNTINFO *ai,
-                                          const char *docType,
-                                          int ty,
-                                          const uint8_t *ptr,
-                                          uint32_t len)
+int _readTransactions(AH_JOB *j,
+		      AB_IMEXPORTER_ACCOUNTINFO *ai,
+		      const char *docType,
+		      int ty,
+		      const uint8_t *ptr,
+		      uint32_t len)
 {
   AB_PROVIDER *pro;
   AB_IMEXPORTER_CONTEXT *tempContext;
@@ -205,10 +184,8 @@ int AH_Job_GetTransCAMT__ReadTransactions(AH_JOB *j,
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetTransactionsCAMT_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+int _process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 {
-  AH_JOB_GETTRANS_CAMT *aj;
   AB_ACCOUNT *a;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
   GWEN_DB_NODE *dbResponses;
@@ -216,22 +193,19 @@ int AH_Job_GetTransactionsCAMT_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Processing JobGetTransactionsCAMT");
 
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETTRANS_CAMT, j);
-  assert(aj);
-
   a=AH_AccountJob_GetAccount(j);
   assert(a);
 
   dbResponses=AH_Job_GetResponses(j);
   assert(dbResponses);
 
-  ai=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
+  ai=AB_ImExporterContext_GetOrAddAccountInfo(
+					      ctx,
                                               AB_Account_GetUniqueId(a),
                                               AB_Account_GetIban(a),
-                                              AB_Account_GetBankCode(a),
-                                              AB_Account_GetAccountNumber(a),
-                                              AB_Account_GetAccountType(a));
+					      AB_Account_GetBankCode(a),
+					      AB_Account_GetAccountNumber(a),
+					      AB_Account_GetAccountType(a));
   assert(ai);
 
 
@@ -288,7 +262,7 @@ int _readTransactionsFromResponse(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai, GWEN
     p=GWEN_DB_GetBinValue(dbXA, "noted", 0, 0, 0, &bs);
     if (p && bs) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Reading noted data");
-      rv=AH_Job_GetTransCAMT__ReadTransactions(j, ai, "camt_052_001_02", AB_Transaction_TypeNotedStatement, p, bs);
+      rv=_readTransactions(j, ai, "camt_052_001_02", AB_Transaction_TypeNotedStatement, p, bs);
       if (rv<0) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
         return rv;
@@ -318,7 +292,7 @@ int _readBooked(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai, GWEN_DB_NODE *dbBooked
         int rv;
 
         DBG_INFO(AQHBCI_LOGDOMAIN, "Reading booked day data (%d)", i+1);
-        rv=AH_Job_GetTransCAMT__ReadTransactions(j, ai, "camt_052_001_02", AB_Transaction_TypeStatement, p, bs);
+        rv=_readTransactions(j, ai, "camt_052_001_02", AB_Transaction_TypeStatement, p, bs);
         if (rv<0) {
           DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
           return rv;
@@ -357,8 +331,7 @@ void _possiblyDumpTransactions(const AB_IMEXPORTER_ACCOUNTINFO *ai)
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetTransactionsCAMT_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits)
+int _getLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits)
 {
   AB_TRANSACTION_LIMITS *tl;
   GWEN_DB_NODE *dbParams;
@@ -375,8 +348,7 @@ int AH_Job_GetTransactionsCAMT_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLim
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetTransactionsCAMT_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t)
+int _handleCommand(AH_JOB *j, const AB_TRANSACTION *t)
 {
   const GWEN_DATE *da;
 

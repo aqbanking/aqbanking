@@ -231,6 +231,9 @@ int main(int argc, char **argv)
     cmdAddHelpStr(ubuf, "sepatransfer",
                   I18N("Issue a single SEPA transfer (data from command line)"));
 
+    cmdAddHelpStr(ubuf, "sepainternaltransfer",
+                  I18N("Issue a single SEPA transfer (data from command line)"));
+
     cmdAddHelpStr(ubuf, "sepatransfers",
                   I18N("Issue a number of SEPA transfers (data from a file)"));
 
@@ -355,6 +358,12 @@ int main(int argc, char **argv)
       GWEN_DB_Group_free(db);
       return 1;
     }
+    else if (strcasecmp(cmd, "listdoc")==0) {
+      rv=listDoc(ab, db, argc, argv);
+    }
+    else if (strcasecmp(cmd, "getdoc")==0) {
+      rv=getDoc(ab, db, argc, argv);
+    }
     else if (strcasecmp(cmd, "request")==0) {
       rv=request(ab, db, argc, argv);
     }
@@ -369,6 +378,9 @@ int main(int argc, char **argv)
     }
     else if (strcasecmp(cmd, "sepatransfer")==0) {
       rv=sepaTransfer(ab, db, argc, argv);
+    }
+    else if (strcasecmp(cmd, "sepainternaltransfer")==0) {
+      rv=sepaInternalTransfer(ab, db, argc, argv);
     }
     else if (strcasecmp(cmd, "sepatransfers")==0) {
       rv=sepaMultiJobs(ab, db, argc, argv, AQBANKING_TOOL_SEPA_TRANSFERS);

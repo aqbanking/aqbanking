@@ -1,0 +1,463 @@
+<?xml?>
+
+<tm2>
+  <type id="AB_REFERENCE_ACCOUNT" type="pointer">
+    <descr>
+      This type contains all information on reference accounts
+    </descr>
+
+    <lang id="c">
+      <identifier>AB_REFERENCE_ACCOUNT</identifier>
+      <prefix>AB_ReferenceAccount</prefix>
+      
+      <baseFileName>refaccount</baseFileName>
+      
+      <flags>
+        with_xml
+        with_db
+        with_list1
+        with_list2
+        with_refcount
+      </flags>
+      
+      <headers>
+        <header type="sys" loc="pre">aqbanking/error.h</header>
+        <header type="sys" loc="pre">gwenhywfar/text.h</header>
+      </headers>
+
+      <inlines>
+              <inline loc="end" access="public">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             /** \n
+              * Check whether a given reference account info object matches the given criteria.     \n
+              * @param a account info object to match                                               \n
+              * @param iban IBAN to search for (wildcards and jokers allowed)                       \n
+              * @param bic BIC to search for (wildcards and jokers allowed)                         \n
+              * @param accountNumber account number to search for (wildcards and jokers allowed)    \n
+              * @param subAccountNumber sub account number (wildcards and jokers allowed)           \n
+              * @param country ISO code of the country (wildcards and jokers allowed)               \n
+              * @param bankCode bank code to search for (wildcards and jokers allowed)              \n
+              * @param ownerName owner name to search for (wildcards and jokers allowed)            \n
+              * @param accountName account name to search for (wildcards and jokers allowed)        \n
+              */                                                                                    \n
+             $(api) int $(struct_prefix)_Matches(const $(struct_type) *a,
+                                                 const char *iban,
+                                                 const char *bic,
+                                                 const char *accountNumber,
+                                                 const char *subAccountNumber,
+                                                 const char *country,
+                                                 const char *bankCode,
+                                                 const char *ownerName,
+                                                 const char *accountName);
+          </content>
+        </inline>
+
+
+
+        <inline loc="code">
+          <typeFlagsMask></typeFlagsMask>
+          <typeFlagsValue></typeFlagsValue>
+          <content>
+             int $(struct_prefix)_Matches(const $(struct_type) *a,
+                                                 const char *iban,
+                                                 const char *bic,
+                                                 const char *accountNumber,
+                                                 const char *subAccountNumber,
+                                                 const char *country,
+                                                 const char *bankCode,
+                                                 const char *ownerName,
+                                                 const char *accountName) {
+               const char *liban;
+               const char *lbic;
+               const char *laccountNumber;
+               const char *lsubAccountNumber;
+               const char *lcountry;
+               const char *lbankCode;
+               const char *lownerName;
+               const char *laccountName;
+               
+  
+               if (!iban) iban="*";
+               if (!bic) bic="*";
+               if (!accountNumber) accountNumber="*";
+               if (!subAccountNumber) subAccountNumber="*";
+               if (!country) country="*";
+               if (!bankCode) bankCode="*";
+               if (!ownerName) ownerName="*";
+               if (!accountName) accountName="*";
+                            
+           
+               liban=$(struct_prefix)_GetIban(a);
+               lbic=$(struct_prefix)_GetBic(a);
+               laccountNumber=$(struct_prefix)_GetAccountNumber(a);
+               lsubAccountNumber=$(struct_prefix)_GetSubAccountNumber(a);
+               lcountry=$(struct_prefix)_GetCountry(a);
+               lbankCode=$(struct_prefix)_GetBankCode(a);
+               lownerName=$(struct_prefix)_GetOwnerName(a);
+               laccountName=$(struct_prefix)_GetAccountName(a);
+           
+               if (!liban) liban="";
+               if (!lbic) lbic="";
+               if (!laccountNumber) laccountNumber="";
+               if (!lsubAccountNumber) lsubAccountNumber="";
+               if (!lcountry) lcountry="";
+               if (!lbankCode) lbankCode="";
+               if (!lownerName) lownerName="";
+               if (!laccountName) laccountName="";
+           
+               if ((-1!=GWEN_Text_ComparePattern(liban, iban, 0)) &amp;&amp;
+                   (-1!=GWEN_Text_ComparePattern(lbic, bic, 0)) &amp;&amp;
+                   (-1!=GWEN_Text_ComparePattern(laccountNumber, accountNumber, 0)) &amp;&amp;
+                   (-1!=GWEN_Text_ComparePattern(lsubAccountNumber, subAccountNumber, 0)) &amp;&amp;
+                   (-1!=GWEN_Text_ComparePattern(lcountry, country, 0)) &amp;&amp;
+                   (-1!=GWEN_Text_ComparePattern(lbankCode, bankCode, 0)) &amp;&amp;
+                   (-1!=GWEN_Text_ComparePattern(lownerName, ownerName, 0)) &amp;&amp;
+                   (-1!=GWEN_Text_ComparePattern(laccountName, accountName, 0)))
+                 return 1;
+             
+               return 0;
+             }
+          </content>
+        </inline>
+
+
+        <inline loc="end" access="private">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             /** \n
+              * Find an account info object in a list of account info objects.                   \n
+              * @param a account info object with which to start searching                       \n
+              * @param iban IBAN to search for (wildcards and jokers allowed)                       \n
+              * @param bic BIC to search for (wildcards and jokers allowed)                         \n
+              * @param accountNumber account number to search for (wildcards and jokers allowed)    \n
+              * @param subAccountNumber sub account number (wildcards and jokers allowed)           \n
+              * @param country ISO code of the country (wildcards and jokers allowed)               \n
+              * @param bankCode bank code to search for (wildcards and jokers allowed)              \n
+              * @param ownerName owner name to search for (wildcards and jokers allowed)            \n
+              * @param accountName account name to search for (wildcards and jokers allowed)        \n
+              */                                                                                    \n
+             $(struct_type) *$(struct_prefix)_List__FindInternal($(struct_type) *a,
+                                                                 const char *iban,
+                                                                 const char *bic,
+                                                                 const char *accountNumber,
+                                                                 const char *subAccountNumber,
+                                                                 const char *country,
+                                                                 const char *bankCode,
+                                                                 const char *ownerName,
+                                                                 const char *accountName);
+          </content>
+        </inline>
+
+
+
+        <inline loc="code">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             $(struct_type) *$(struct_prefix)_List__FindInternal($(struct_type) *a,
+                                                                const char *iban,
+                                                 const char *bic,
+                                                 const char *accountNumber,
+                                                 const char *subAccountNumber,
+                                                 const char *country,
+                                                 const char *bankCode,
+                                                 const char *ownerName,
+                                                 const char *accountName) {
+
+               int rv;
+
+               if (!iban) iban="*";
+               if (!bic) bic="*";
+               if (!accountNumber) accountNumber="*";
+               if (!subAccountNumber) subAccountNumber="*";
+               if (!country) country="*";
+               if (!bankCode) bankCode="*";
+               if (!ownerName) ownerName="*";
+               if (!accountName) accountName="*";
+             
+               while(a) {
+
+   
+                  
+                   rv=$(struct_prefix)_Matches(a,
+                                               iban,
+                                               bic,
+                                               accountNumber,
+                                               subAccountNumber,
+                                               country,
+                                               bankCode,
+                                               ownerName,
+                                               accountName);
+                   if (rv==1)
+                     break;
+           
+                 a=$(struct_prefix)_List_Next(a);
+               } /* while */
+             
+               return a;
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             /** \n
+              * Find the first matching account info object in a list of account info objects.     \n
+              * @param al list of account info objects among to search                             \n
+               @param iban IBAN to search for (wildcards and jokers allowed)                       \n
+              * @param bic BIC to search for (wildcards and jokers allowed)                         \n
+              * @param accountNumber account number to search for (wildcards and jokers allowed)    \n
+              * @param subAccountNumber sub account number (wildcards and jokers allowed)           \n
+              * @param country ISO code of the country (wildcards and jokers allowed)               \n
+              * @param bankCode bank code to search for (wildcards and jokers allowed)              \n
+              * @param ownerName owner name to search for (wildcards and jokers allowed)            \n
+              * @param accountName account name to search for (wildcards and jokers allowed)        \n
+              */                                                                                    \n
+             $(api) $(struct_type) *$(struct_prefix)_List_FindFirst(const $(struct_type)_LIST *al, \n
+                                                                    const char *iban,
+                                                 const char *bic,
+                                                 const char *accountNumber,
+                                                 const char *subAccountNumber,
+                                                 const char *country,
+                                                 const char *bankCode,
+                                                 const char *ownerName,
+                                                 const char *accountName);                      
+          </content>
+        </inline>
+
+
+
+        <inline loc="code">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             $(struct_type) *$(struct_prefix)_List_FindFirst(const $(struct_type)_LIST *al,
+                                                             const char *iban,
+                                                 const char *bic,
+                                                 const char *accountNumber,
+                                                 const char *subAccountNumber,
+                                                 const char *country,
+                                                 const char *bankCode,
+                                                 const char *ownerName,
+                                                 const char *accountName) {
+               $(struct_type) *a;
+             
+               if ($(struct_prefix)_List_GetCount(al)==0) {
+                 DBG_INFO(AQBANKING_LOGDOMAIN, "No reference accounts");
+                 return NULL;
+               }
+               a=$(struct_prefix)_List_First(al);
+               assert(a);
+
+               return $(struct_prefix)_List__FindInternal(a, 
+                                                          iban,
+                                               bic,
+                                               accountNumber,
+                                               subAccountNumber,
+                                               country,
+                                               bankCode,
+                                               ownerName,
+                                               accountName);
+             }
+          </content>
+        </inline>
+
+
+
+        <inline loc="end" access="public">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             /** \n
+              * Find the next matching account info object in a list of account info objects.    \n
+              * @param a previous matching account info objects among to search                  \n
+              * @param iban IBAN to search for (wildcards and jokers allowed)                       \n
+              * @param bic BIC to search for (wildcards and jokers allowed)                         \n
+              * @param accountNumber account number to search for (wildcards and jokers allowed)    \n
+              * @param subAccountNumber sub account number (wildcards and jokers allowed)           \n
+              * @param country ISO code of the country (wildcards and jokers allowed)               \n
+              * @param bankCode bank code to search for (wildcards and jokers allowed)              \n
+              * @param ownerName owner name to search for (wildcards and jokers allowed)            \n
+              * @param accountName account name to search for (wildcards and jokers allowed)        \n
+              */                                                                          \n
+             $(api) $(struct_type) *$(struct_prefix)_List_FindNext($(struct_type) *a,
+                                                                     const char *iban,
+                                                 const char *bic,
+                                                 const char *accountNumber,
+                                                 const char *subAccountNumber,
+                                                 const char *country,
+                                                 const char *bankCode,
+                                                 const char *ownerName,
+                                                 const char *accountName);
+          </content>
+        </inline>
+
+
+
+        <inline loc="code">
+          <typeFlagsMask>with_list1</typeFlagsMask>
+          <typeFlagsValue>with_list1</typeFlagsValue>
+          <content>
+             $(struct_type) *$(struct_prefix)_List_FindNext($(struct_type) *a,
+                                                              const char *iban,
+                                                 const char *bic,
+                                                 const char *accountNumber,
+                                                 const char *subAccountNumber,
+                                                 const char *country,
+                                                 const char *bankCode,
+                                                 const char *ownerName,
+                                                 const char *accountName) {
+               assert(a);
+
+               a=$(struct_prefix)_List_Next(a);
+               if (a==NULL) {
+                 DBG_INFO(AQBANKING_LOGDOMAIN, "No more reference accounts");
+                 return NULL;
+               }
+               return $(struct_prefix)_List__FindInternal(a, 
+                                                          iban,
+                                               bic,
+                                               accountNumber,
+                                               subAccountNumber,
+                                               country,
+                                               bankCode,
+                                               ownerName,
+                                               accountName);
+             }
+          </content>
+        </inline>
+      </inlines>
+
+    </lang>
+
+    <enums>
+    </enums>
+
+    <defines>
+    </defines>
+
+
+    <members>
+
+
+         <member name="iban" type="char_ptr" maxlen="32" >
+          <descr>
+            International bank account number as specified by the SEPA specs.
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="bic" type="char_ptr" maxlen="16" >
+          <descr>
+            SWIFT code of the bank at which this account is registered.
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+        
+        <member name="accountNumber" type="char_ptr" maxlen="64" >
+          <descr>
+            Account number in national account specification.
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="subAccountNumber" type="char_ptr" maxlen="64" >
+          <descr>
+            If your account has subaccounts which are distinguished by
+            different suffixes, then this is that suffix. Otherwise it is
+            empty. (HBCI only)
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+
+      
+          <member name="country" type="char_ptr" maxlen="16" >
+          <descr>
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="bankCode" type="char_ptr" maxlen="64" >
+          <descr>
+            National bank code (e.g. BLZ in Germany, routing number in other countries).
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+
+        <member name="ownerName" type="char_ptr" maxlen="64" >
+          <descr>
+            Name of the account owner as it is stored with the bank.
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+        
+        <member name="ownerName2" type="char_ptr" maxlen="64" >
+          <descr>
+            Name of the account owner as it is stored with the bank.
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+  
+        <member name="accountName" type="char_ptr" maxlen="64" >
+          <descr>
+            Name of the account.
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+        
+        <member name="accountType" type="uint8_t">
+          <descr>
+            Name of the account.
+          </descr>
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+        </member>
+        
+        
+
+
+
+
+    </members>
+
+    
+  </type>
+  
+</tm2>
+

@@ -242,7 +242,7 @@
 
     <members>
 
-      <member name="id" type="char_ptr" maxlen="32" >
+      <member name="id" type="char_ptr" maxlen="64" >
         <descr>
         </descr>
         <access>public</access>
@@ -265,6 +265,15 @@
 
 
       <member name="mimeType" type="char_ptr" maxlen="32" >
+        <descr>
+        </descr>
+        <access>public</access>
+        <flags>own with_hash</flags>
+        <setflags>const dup</setflags>
+        <getflags>const</getflags>
+      </member>
+
+      <member name="filePath" type="char_ptr" maxlen="256" >
         <descr>
         </descr>
         <access>public</access>

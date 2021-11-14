@@ -11,10 +11,10 @@
 # include <config.h>
 #endif
 
-#include "aqhbci_l.h"
-#include "job_l.h"
-
 #include "hhd_p.h"
+
+#include "aqhbci_l.h"
+#include "aqhbci/joblayer/job_l.h"
 
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>

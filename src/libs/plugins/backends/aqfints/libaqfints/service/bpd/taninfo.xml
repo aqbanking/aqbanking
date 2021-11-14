@@ -19,7 +19,7 @@
       
       <headers>
         <header type="sys"   loc="pre">libaqfints/aqfints.h</header>
-        <header type="local" loc="post">service/bpd/tanjobinfo.h</header>
+        <header type="local" loc="post">libaqfints/service/bpd/tanjobinfo.h</header>
       </headers>
       
 

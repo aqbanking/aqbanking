@@ -1,0 +1,127 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="hbciadmjobs" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/..
+      -I$(srcdir)/..
+      -I$(builddir)/../..
+      -I$(srcdir)/../..
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+      --api=AQBANKING_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+    </setVar>
+  
+  
+    <headers dist="true" >
+      $(local/built_headers_pub)
+
+      jobgetkeys_l.h jobgetkeys_p.h
+      jobsendkeys_l.h jobsendkeys_p.h
+      jobchangekeys_l.h jobchangekeys_p.h
+      jobtan_l.h jobtan_p.h
+      jobgetsepainfo_l.h jobgetsepainfo_p.h
+      jobgetsysid_l.h jobgetsysid_p.h
+      jobgetbankinfo_l.h jobgetbankinfo_p.h
+      jobunblockpin_l.h
+      jobacknowledge_l.h
+      jobgettargetacc_l.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      jobgetkeys.c
+      jobsendkeys.c
+      jobchangekeys.c
+      jobtan.c
+      jobgetsepainfo.c
+      jobgetsysid.c
+      jobgetbankinfo.c
+      jobunblockpin.c
+      jobacknowledge.c
+      jobgettargetacc.c
+    </sources>
+
+    <data install="$(aqbanking_plugin_installdir)/providers" >
+    </data>
+
+    <useTargets>
+    </useTargets>
+
+    <subdirs>
+    </subdirs>
+
+  
+  
+    <extradist>
+    </extradist>
+
+
+    <buildFiles>
+      <input>
+        jobgetkeys.xml
+        jobsendkeys.xml
+        jobchangekeys.xml
+        jobtan.xml
+        jobgetsepainfo.xml
+        jobgetsysid.xml
+        jobgetbankinfo.xml
+        jobunblockpin.xml
+        jobacknowledge.xml
+        jobgettargetacc.xml
+      </input>
+
+      <output>
+        adminjobs.xml
+      </output>
+      
+      <cmd tool="$(xmlmerge)" checkDates="true" >
+        -v --compact -o $(OUTPUT[]) $(INPUT[])
+      </cmd>
+      <buildMessage>
+        Merging XML files into $(OUTPUT[0])
+      </buildMessage>
+    </buildFiles>
+
+
+  </target>
+  
+</gwbuild>

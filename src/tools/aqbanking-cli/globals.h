@@ -49,6 +49,7 @@ typedef enum {
 #define AQBANKING_TOOL_REQUEST_ESTATEMENTS   0x0008
 #define AQBANKING_TOOL_REQUEST_DEPOT         0x0010
 
+#define AQBANKING_TOOL_REQUEST_ACKNOWLEDGE   0x4000
 #define AQBANKING_TOOL_REQUEST_IGNORE_UNSUP  0x8000
 
 
@@ -105,7 +106,9 @@ int createAndAddRequest(AB_BANKING *ab,
                         AB_TRANSACTION_COMMAND cmd,
                         const GWEN_DATE *fromDate,
                         const GWEN_DATE *toDate,
-                        int ignoreUnsupported);
+                        int ignoreUnsupported,
+                        AB_TRANSACTION_ACK ackMethod,
+                        uint32_t number);
 
 /**
  * Create requests (getBalance, getStatements etc.) according to the given flags.
@@ -117,7 +120,8 @@ int createAndAddRequests(AB_BANKING *ab,
                          AB_ACCOUNT_SPEC *as,
                          const GWEN_DATE *fromDate,
                          const GWEN_DATE *toDate,
-                         uint32_t requestFlags);
+                         uint32_t requestFlags,
+                         uint32_t number);
 
 int addTransactionToBufferByTemplate(const AB_TRANSACTION *t, const char *tmplString, GWEN_BUFFER *dbuf);
 
@@ -139,6 +143,8 @@ int exportCtx(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int listAccs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int listTrans(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
+int listDoc(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
+int getDoc(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int listProfiles(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int request(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int sepaDebitNote(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv, int use_flash_debitnote);
@@ -146,6 +152,7 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv,
                   AQBANKING_TOOL_MULTISEPA_TYPE multisepa_type);
 int sepaRecurTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int sepaTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
+int sepaInternalTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int updateConf(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int versions(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 

@@ -23,32 +23,6 @@ struct AH_IMEXPORTER_CSV {
 };
 
 
-static void GWENHYWFAR_CB AH_ImExporterCSV_FreeData(void *bp, void *p);
-
-static int AH_ImExporterCSV_Import(AB_IMEXPORTER *ie,
-                                   AB_IMEXPORTER_CONTEXT *ctx,
-                                   GWEN_SYNCIO *sio,
-                                   GWEN_DB_NODE *params);
-
-static int AH_ImExporterCSV_Export(AB_IMEXPORTER *ie,
-                                   AB_IMEXPORTER_CONTEXT *ctx,
-                                   GWEN_SYNCIO *sio,
-                                   GWEN_DB_NODE *params);
-
-static int AH_ImExporterCSV_CheckFile(AB_IMEXPORTER *ie, const char *fname);
-
-static int AH_ImExporterCSV_GetEditProfileDialog(AB_IMEXPORTER *ie,
-                                                 GWEN_DB_NODE *params,
-                                                 const char *testFileName,
-                                                 GWEN_DIALOG **pDlg);
-
-static int AH_ImExporterCSV__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
-                                             GWEN_DB_NODE *db,
-                                             GWEN_DB_NODE *dbParams);
-
-static AB_VALUE *AH_ImExporterCSV__ValueFromDb(GWEN_DB_NODE *dbV,
-                                               int commaThousands,
-                                               int commaDecimal);
 
 
 #endif /* AQHBCI_IMEX_CSV_P_H */

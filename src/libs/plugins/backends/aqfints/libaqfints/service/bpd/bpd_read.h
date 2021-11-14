@@ -13,9 +13,9 @@
 #define AQFINTS_BPD_READ_H
 
 
-#include "service/bpd/bpd.h"
-#include "parser/parser.h"
-#include "parser/segment.h"
+#include "libaqfints/service/bpd/bpd.h"
+#include "libaqfints/parser/parser.h"
+#include "libaqfints/parser/segment.h"
 
 #include <gwenhywfar/db.h>
 

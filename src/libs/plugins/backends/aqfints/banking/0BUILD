@@ -1,0 +1,85 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="aqfintsbanking" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/..
+      -I$(srcdir)/..
+      -I$(topsrcdir)/src/libs/plugins/backends/aqfints/libaqfints
+      -I$(topbuilddir)/src/libs/plugins/backends/aqfints/libaqfints
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+    <define name="AF_FINTSDATADIR" value="$(aqbanking_data_searchdir)/aqbanking/backends/aqfints/fints" quoted="TRUE" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+      --api=AQBANKING_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+    </setVar>
+  
+  
+    <headers dist="true" >
+      $(local/built_headers_pub)
+
+      provider.h
+      provider_l.h
+      provider_p.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      provider.c
+    </sources>
+
+    <data install="$(aqbanking_plugin_installdir)/providers" >
+    </data>
+
+    <extradist>
+    </extradist>
+
+
+    <useTargets>
+      afcontrol
+    </useTargets>
+
+    <subdirs>
+      control
+    </subdirs>
+
+  </target>
+  
+</gwbuild>

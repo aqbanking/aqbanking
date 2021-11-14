@@ -187,7 +187,7 @@ AB_SWIFT_DESCR_LIST *AH_Job_GetSwiftDescriptorsSupportedByUser(AH_JOB *j, const 
     if (s && *s) {
       AB_SWIFT_DESCR *tmpDescr;
 
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Checking user supported param [%s] (job \"%s\")", s, AH_Job_GetName(j));
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Checking user supported param [%s] (job \"%s\")", s, AH_Job_GetName(j));
       tmpDescr=AB_SwiftDescr_FromString(s);
       if (tmpDescr) {
         if (AB_SwiftDescr_Matches(tmpDescr, family, version1, 0, 0)) {
@@ -204,17 +204,17 @@ AB_SWIFT_DESCR_LIST *AH_Job_GetSwiftDescriptorsSupportedByUser(AH_JOB *j, const 
 
             /* store name of selected profile */
             AB_SwiftDescr_SetAlias2(descrFromList, s);
-            DBG_ERROR(AQHBCI_LOGDOMAIN,
-                      "Adding matching profile [%s] (%s)",
-                      AB_SwiftDescr_GetAlias1(descrFromList),
-                      AB_SwiftDescr_GetAlias2(descrFromList));
+            DBG_INFO(AQHBCI_LOGDOMAIN,
+                     "Adding matching profile [%s] (%s)",
+                     AB_SwiftDescr_GetAlias1(descrFromList),
+                     AB_SwiftDescr_GetAlias2(descrFromList));
             /* copy to return list */
             descrCopy=AB_SwiftDescr_dup(descrFromList);
             AB_SwiftDescr_List_Add(descrCopy, returnDescrList);
           }
         }
         else {
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "Param [%s] does not match family %s.%03d", s, family, version1);
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Param [%s] does not match family %s.%03d", s, family, version1);
         }
       }
       else {

@@ -12,8 +12,8 @@
 
 
 #include "aqhbci/banking/user.h"
-#include "bpd_l.h"
-#include "hbci_l.h"
+#include "aqhbci/msglayer/bpd_l.h"
+#include "aqhbci/msglayer/hbci_l.h"
 
 #include <aqbanking/backendsupport/provider_be.h>
 

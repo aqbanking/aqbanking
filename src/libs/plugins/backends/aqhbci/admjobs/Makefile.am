@@ -20,7 +20,9 @@ noinst_HEADERS=\
   jobgetsepainfo_l.h jobgetsepainfo_p.h \
   jobgetsysid_l.h jobgetsysid_p.h \
   jobgetbankinfo_l.h jobgetbankinfo_p.h \
-  jobunblockpin_l.h
+  jobunblockpin_l.h \
+  jobacknowledge_l.h \
+  jobgettargetacc_l.h jobgettargetacc_p.h 
 
 
 libhbciadmjobs_la_SOURCES=\
@@ -31,7 +33,9 @@ libhbciadmjobs_la_SOURCES=\
   jobgetsepainfo.c \
   jobgetsysid.c \
   jobgetbankinfo.c \
-  jobunblockpin.c
+  jobunblockpin.c \
+  jobacknowledge.c \
+  jobgettargetacc.c
 
 
 
@@ -51,7 +55,9 @@ xmlfiles=\
   $(srcdir)/jobgetsepainfo.xml \
   $(srcdir)/jobgetsysid.xml \
   $(srcdir)/jobgetbankinfo.xml \
-  $(srcdir)/jobunblockpin.xml
+  $(srcdir)/jobunblockpin.xml \
+  $(srcdir)/jobacknowledge.xml \
+  $(srcdir)/jobgettargetacc.xml
 
 
 EXTRA_DIST=$(xmlfiles)
@@ -62,6 +68,18 @@ adminjobs.xml: $(xmlfiles)
 all-local: adminjobs.xml
 
 CLEANFILES = adminjobs.xml
+
+
+typefiles:
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d typefiles; \
+	done
+
+typedefs:
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d typedefs; \
+	done
+
 
 
 cppcheck:

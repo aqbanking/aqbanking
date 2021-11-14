@@ -1,0 +1,236 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="Program" name="aqbanking-cli" install="$(bindir)" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="AQBANKING_CLI_VERSION_STRING"   value="$(AQBANKING_VERSION_STRING)" quoted="TRUE" />
+    <define name="AQBANKING_FINTS_VERSION_STRING" value="$(AQBANKING_VERSION_STRING)" quoted="TRUE" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+      --api=AQBANKING_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+    </setVar>
+  
+  
+    <headers dist="true" >
+      $(local/built_headers_pub)
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      main.c
+      addsepadebitnote.c
+      addtransaction.c
+      chkiban.c
+      fillgaps.c
+      import.c
+      export.c
+      listaccs.c
+      listbal.c
+      listprofiles.c
+      listtrans.c
+      listdoc.c
+      getdoc.c
+      request.c
+      util.c
+      versions.c
+      sepatransfer.c
+      sepadebitnote.c
+      sepamultijobs.c
+      separecurtransfer.c
+      updateconf.c
+      control.c
+      sepainternaltransfer.c
+    </sources>
+
+    <useTargets>
+      aqbanking
+    </useTargets>
+
+    <ifVarMatches name="GWBUILD_LIBTYPE"     value="sharedlib" >
+      <then>
+        <libraries>
+          $(gwenhywfar_libs)
+        </libraries>
+      </then>
+      <else>
+        <libraries>
+          $(gmp_libs)
+          $(gwenhywfar_libs)
+          $(xmlsec_libs)
+          $(xslt_libs)
+          $(xml_libs)
+          $(zlib_libs)
+        </libraries>
+      </else>
+    </ifVarMatches>
+
+
+    <subdirs>
+    </subdirs>
+
+
+    <extradist>
+    </extradist>
+
+
+  </target>
+
+
+
+  <target type="Program" name="aqhbci-tool4" install="$(bindir)" >
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="AQBANKING_FINTS_VERSION_STRING" value="$(AQBANKING_VERSION_STRING)" quoted="TRUE" />
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+    <sources>aqhbci-tool.c</sources>
+    <useTargets>aqbanking</useTargets>
+    <ifVarMatches name="GWBUILD_LIBTYPE"     value="sharedlib" >
+      <then>
+        <libraries>
+          $(gwenhywfar_libs)
+        </libraries>
+      </then>
+      <else>
+        <libraries>
+          $(gmp_libs)
+          $(gwenhywfar_libs)
+          $(xmlsec_libs)
+          $(xslt_libs)
+          $(xml_libs)
+          $(zlib_libs)
+        </libraries>
+      </else>
+    </ifVarMatches>
+  </target>
+
+
+
+  <target type="Program" name="aqpaypal-tool" install="$(bindir)" >
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="AQBANKING_FINTS_VERSION_STRING" value="$(AQBANKING_VERSION_STRING)" quoted="TRUE" />
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+    <sources>aqpaypal-tool.c</sources>
+    <useTargets>aqbanking</useTargets>
+    <ifVarMatches name="GWBUILD_LIBTYPE"     value="sharedlib" >
+      <then>
+        <libraries>
+          $(gwenhywfar_libs)
+        </libraries>
+      </then>
+      <else>
+        <libraries>
+          $(gmp_libs)
+          $(gwenhywfar_libs)
+          $(xmlsec_libs)
+          $(xslt_libs)
+          $(xml_libs)
+          $(zlib_libs)
+        </libraries>
+      </else>
+    </ifVarMatches>
+  </target>
+
+
+
+  <target type="Program" name="aqebics-tool" install="$(bindir)" >
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="AQBANKING_FINTS_VERSION_STRING" value="$(AQBANKING_VERSION_STRING)" quoted="TRUE" />
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+    <sources>aqebics-tool.c</sources>
+    <useTargets>aqbanking</useTargets>
+    <ifVarMatches name="GWBUILD_LIBTYPE"     value="sharedlib" >
+      <then>
+        <libraries>
+          $(gwenhywfar_libs)
+        </libraries>
+      </then>
+      <else>
+        <libraries>
+          $(gmp_libs)
+          $(gwenhywfar_libs)
+          $(xmlsec_libs)
+          $(xslt_libs)
+          $(xml_libs)
+          $(zlib_libs)
+        </libraries>
+      </else>
+    </ifVarMatches>
+  </target>
+
+  
+</gwbuild>

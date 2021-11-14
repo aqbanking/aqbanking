@@ -11,7 +11,7 @@
 #ifndef AH_JOBQUEUE_L_H
 #define AH_JOBQUEUE_L_H
 
-#include "job_l.h"
+#include "aqhbci/joblayer/job_l.h"
 
 
 typedef struct AH_JOBQUEUE AH_JOBQUEUE;
@@ -56,7 +56,7 @@ typedef struct AH_JOBQUEUE AH_JOBQUEUE;
 
 #include <gwenhywfar/misc.h>
 
-#include "message_l.h"
+#include "aqhbci/msglayer/message_l.h"
 
 typedef enum {
   AH_JobQueueAddResultOk=0,

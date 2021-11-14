@@ -1,0 +1,172 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="abtypes" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+
+    <setVar name="tm2flags" >
+      --api=AQBANKING_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+      transaction.xml
+      transactionlimits.xml
+      security.xml
+      bankinfoservice.xml
+      bankinfo.xml
+      document.xml
+      message.xml
+      balance.xml
+      imexporter_accountinfo.xml
+      imexporter_context.xml
+      account_spec.xml
+      refaccount.xml
+    </setVar>
+  
+
+    <setVar name="local/built_sources" >
+      transaction.c
+      transactionlimits.c
+      bankinfoservice.c
+      bankinfo.c
+      document.c
+      message.c
+      security.c
+      balance.c
+      imexporter_accountinfo.c
+      imexporter_context.c
+      account_spec.c
+      refaccount.c
+    </setVar>
+  
+
+    <setVar name="local/built_headers_pub">
+      transaction.h   
+      transactionlimits.h
+      bankinfoservice.h
+      bankinfo.h
+      document.h
+      message.h
+      security.h
+      balance.h
+      imexporter_accountinfo.h
+      imexporter_context.h
+      account_spec.h
+      refaccount.h
+    </setVar>
+  
+  
+    <setVar name="local/built_headers_priv" >
+      transaction_p.h  
+      transactionlimits_p.h
+      bankinfoservice_p.h
+      bankinfo_p.h
+      document_p.h
+      message_p.h
+      security_p.h
+      balance_p.h
+      imexporter_accountinfo_p.h
+      imexporter_context_p.h
+      account_spec_p.h
+      ref_account_p.h
+    </setVar>
+
+
+    <setVar name="local/headers_priv" >
+      value_p.h
+    </setVar>
+
+    <setVar name="local/headers_pub" >
+      value.h
+    </setVar>
+
+
+    <setVar name="local/sources" >
+      value.c
+    </setVar>
+
+
+    <data install="$(pkgdatadir)/typemaker2/c" DIST="FALSE" generated="TRUE" >
+      ab_account_spec.tm2 ab_account_spec_list.tm2 ab_account_spec_list2.tm2
+      ab_balance.tm2 ab_balance_list.tm2
+      ab_bankinfo.tm2 ab_bankinfo_list.tm2 ab_bankinfo_list2.tm2
+      ab_bankinfo_service.tm2 ab_bankinfo_service_list.tm2 ab_bankinfo_service_list2.tm2
+      ab_document.tm2 ab_document_list.tm2 ab_document_list2.tm2
+      ab_imexporter_accountinfo.tm2 ab_imexporter_accountinfo_list.tm2 ab_imexporter_accountinfo_list2.tm2
+      ab_imexporter_context.tm2 ab_imexporter_context_list.tm2 ab_imexporter_context_list2.tm2
+      ab_message.tm2 ab_message_list.tm2 ab_message_list2.tm2
+      ab_security.tm2 ab_security_list.tm2 ab_security_list2.tm2
+      ab_transaction.tm2 ab_transaction_list.tm2 ab_transaction_list2.tm2
+      ab_transaction_limits.tm2 ab_transaction_limits_list.tm2 ab_transaction_limits_list2.tm2
+      ab_reference_account.tm2 ab_reference_account_list.tm2 ab_reference_account_list2.tm2
+    </data>
+
+
+    <extradist>
+    </extradist>
+
+
+    <useTargets>
+    </useTargets>
+
+
+
+
+    <!-- install but don't distribute -->
+    <headers dist="false" install="$(pkgincludedir)/types" >
+      $(local/built_headers_pub)
+    </headers>
+
+
+    <!-- don't install, don't distribute -->
+    <headers dist="false" >
+      $(local/built_headers_priv)
+    </headers>
+
+
+    <!--install and distribute -->
+    <headers dist="true" install="$(pkgincludedir)/types" >
+      $(local/headers_pub)
+    </headers>
+
+
+    <!-- don't install but distribute -->
+    <headers dist="true" >
+      $(local/headers_priv)
+    </headers>
+
+
+    <sources>
+      $(local/typefiles)
+      $(local/sources)
+    </sources>
+
+
+
+    <subdirs>
+    </subdirs>
+
+  </target>
+
+</gwbuild>

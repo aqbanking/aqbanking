@@ -1,0 +1,107 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="ebicsclient" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(xml_cflags)
+      $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/../..
+      -I$(srcdir)/../..
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+      --api=AQBANKING_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+    </setVar>
+  
+  
+    <headers dist="true" >
+      $(local/built_headers_pub)
+
+      account_l.h
+      account_p.h
+      dialog_l.h
+      dialog_p.h
+      provider_l.h
+      provider_p.h
+      user_l.h
+      user_p.h
+      account.h
+      provider.h
+      user.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      account.c
+      user.c
+      dialog.c
+      provider.c
+    </sources>
+
+    <data install="$(aqbanking_plugin_installdir)/providers" >
+    </data>
+
+    <extradist>
+      provider_sendcmd.c
+      provider_accspec.c
+      p_encipher.c
+      p_encipher_e001.c
+      p_encipher_e002.c
+      p_decipher.c
+      p_eu.c
+      p_eu_a004.c
+      p_eu_a005.c
+      p_sign.c
+      p_sign_x001.c
+      p_sign_x002.c
+      p_tools.c
+    </extradist>
+
+
+    <useTargets>
+    </useTargets>
+
+    <subdirs>
+    </subdirs>
+
+  
+  
+  </target>
+  
+</gwbuild>

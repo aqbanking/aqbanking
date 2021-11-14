@@ -12,11 +12,11 @@
 # include <config.h>
 #endif
 
-#include "session/s_decrypt.h"
-#include "session/pintan/s_decrypt_pintan.h"
-#include "session/hbci/s_decrypt_hbci.h"
-#include "session/s_decode.h"
-#include "parser/parser.h"
+#include "libaqfints/session/s_decrypt.h"
+#include "libaqfints/session/pintan/s_decrypt_pintan.h"
+#include "libaqfints/session/hbci/s_decrypt_hbci.h"
+#include "libaqfints/session/s_decode.h"
+#include "libaqfints/parser/parser.h"
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>

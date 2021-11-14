@@ -3,6 +3,11 @@ This folder contains all sub-libraries.
 
 
 
+- remove flag "AH_BANK_FLAGS_KTV2"
+  This was needed with old HBCI versions and should no longer be needed.
+
+
+
 
 SendCommands:
 - SortProviderQueuesIntoUserQueues

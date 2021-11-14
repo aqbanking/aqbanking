@@ -12,9 +12,9 @@
 # include <config.h>
 #endif
 
-#include "parser_dbread.h"
-#include "parser_dump.h"
-#include "parser_internal.h"
+#include "libaqfints/parser/parser_dbread.h"
+#include "libaqfints/parser/parser_dump.h"
+#include "libaqfints/parser/parser_internal.h"
 
 #include <gwenhywfar/debug.h>
 

@@ -1,0 +1,127 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="afmsgbpd" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/..
+      -I$(srcdir)/..
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(srcdir)/../..
+      -I$(builddir)/../..
+      -I$(srcdir)/../../..
+      -I$(builddir)/../../..
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+      tanjobinfo.xml
+      taninfo.xml
+      tanmethod.xml
+      bankdata.xml
+      bpdjob.xml
+      bpdaddrservice.xml
+      bpdaddr.xml
+      bpd.xml
+      bpdsecprofile.xml
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+      bankdata.c
+      bpdjob.c
+      bpd.c
+      bpdaddrservice.c
+      bpdaddr.c
+      bpdsecprofile.c
+      tanjobinfo.c
+      taninfo.c
+      tanmethod.c
+    </setVar>
+
+  
+    <setVar name="local/built_headers_pub">
+      bankdata.h
+      bpdjob.h
+      bpd.h
+      bpdaddrservice.h
+      bpdaddr.h
+      bpdsecprofile.h
+      tanjobinfo.h
+      taninfo.h
+      tanmethod.h
+    </setVar>
+
+  
+    <setVar name="local/built_headers_priv" >
+      bankdata_p.h
+      bpdjob_p.h
+      bpd_p.h
+      bpdaddrservice_p.h
+      bpdaddr_p.h
+      bpdsecprofile_p.h
+      tanjobinfo_p.h
+      taninfo_p.h
+      tanmethod_p.h
+    </setVar>
+  
+  
+    <headers dist="false" >
+      $(local/built_headers_priv)
+      $(local/built_headers_pub)
+    </headers>
+
+
+    <headers dist="true" >
+      bpd_read.h
+      bpd_write.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+      bpd_read.c
+      bpd_write.c
+    </sources>
+
+
+    <data dist="true" install="$(pkgdatadir)/fints" >
+      bpd.fints
+    </data>
+
+
+    <extradist>
+    </extradist>
+
+
+    <useTargets>
+    </useTargets>
+
+    <subdirs>
+    </subdirs>
+
+  </target>
+  
+</gwbuild>

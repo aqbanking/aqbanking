@@ -12,18 +12,17 @@
 # include <config.h>
 #endif
 
-#include "aqbanking/i18n_l.h"
 #include "user_p.h"
-#include "hbci_l.h"
-#include "provider_l.h"
-#include "hbci-updates_l.h"
-#include "msgengine_l.h"
-#include "tanmethod_l.h"
+#include "aqhbci/msglayer/hbci_l.h"
+#include "aqhbci/banking/provider_l.h"
+#include "aqhbci/msglayer/hbci-updates_l.h"
+#include "aqhbci/msglayer/msgengine_l.h"
+#include "aqhbci/tan/tanmethod.h"
 #include "aqhbci/banking/provider.h"
-#include "adminjobs_l.h"
+#include "aqhbci/applayer/adminjobs_l.h"
+#include "aqhbci/applayer/hhd_l.h"
 
-#include "hhd_l.h"
-
+#include "aqbanking/i18n_l.h"
 #include <aqbanking/banking_be.h>
 
 #include <gwenhywfar/debug.h>

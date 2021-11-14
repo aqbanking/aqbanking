@@ -1,0 +1,86 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="abimexporters_ofx" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/parser
+      -I$(srcdir)/parser
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)/src/libs/plugins/file
+      -I$(topsrcdir)/src/libs/plugins/file
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+      --api=AQBANKING_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+    </setVar>
+  
+  
+    <headers dist="true" >
+      $(local/built_headers_pub)
+
+      ofx_p.h
+      ofx.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      ofx.c
+    </sources>
+
+    <data install="$(aqbanking_plugin_installdir)/imexporters" >
+      ofx.xml
+    </data>
+
+    <useTargets>
+      ofxparser
+    </useTargets>
+
+    <subdirs>
+      parser
+    </subdirs>
+
+  
+  
+    <extradist>
+    </extradist>
+
+
+  </target>
+  
+</gwbuild>

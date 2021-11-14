@@ -50,7 +50,7 @@ xmlDocPtr EB_Msg_GetDoc(const EB_MSG *m);
 xmlNodePtr EB_Msg_GetRootNode(EB_MSG *m);
 xmlNodeSetPtr EB_Msg_GetNodes(EB_MSG *m, const char *xpathExpr);
 
-DEPRECATED int EB_Msg_BuildHash(EB_MSG *m, GWEN_BUFFER *hbuf);
+AQBANKING_DEPRECATED int EB_Msg_BuildHash(EB_MSG *m, GWEN_BUFFER *hbuf);
 
 int EB_Msg_BuildHashSha1(EB_MSG *m, GWEN_BUFFER *hbuf);
 int EB_Msg_BuildHashSha256(EB_MSG *m, GWEN_BUFFER *hbuf);

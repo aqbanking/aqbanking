@@ -61,9 +61,7 @@ int AB_Banking_PluginSystemInit(void)
     DBG_INFO(AQBANKING_LOGDOMAIN,
              "AqBanking v"
              AQBANKING_VERSION_FULL_STRING
-             " (compiled at "
-             COMPILE_DATETIME
-             "): initialising");
+             ": initialising");
 
     /* define locale paths */
     GWEN_PathManager_DefinePath(AB_PM_LIBNAME, AB_PM_LOCALEDIR);

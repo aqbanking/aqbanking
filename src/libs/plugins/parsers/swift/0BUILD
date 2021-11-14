@@ -1,0 +1,91 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="Module" name="swift" install="$(aqbanking_plugin_installdir)/dbio" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+      --api=AQBANKING_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+    </setVar>
+  
+  
+    <headers dist="true" >
+      $(local/built_headers_pub)
+
+      swift.h
+      swift_l.h
+      swift_p.h
+      swift940_l.h
+      swift940_p.h
+      swift535_l.h
+      swift535_p.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      swift.c
+      swift940.c
+      swift535.c
+    </sources>
+
+    <data install="$(aqbanking_plugin_installdir)/dbio" >
+      swift.xml
+    </data>
+
+    <useTargets>
+    </useTargets>
+
+    <libraries>
+      $(gmp_libs)
+      $(gwenhywfar_libs)
+    </libraries>
+
+
+    <subdirs>
+    </subdirs>
+
+  
+  
+    <extradist>
+    </extradist>
+
+
+  </target>
+  
+</gwbuild>

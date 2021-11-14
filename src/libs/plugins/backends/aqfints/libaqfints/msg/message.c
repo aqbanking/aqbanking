@@ -16,11 +16,11 @@
 
 #include "message_p.h"
 
-#include "aqfints.h"
-#include "parser/parser_xml.h"
-#include "parser/parser_hbci.h"
-#include "parser/parser_normalize.h"
-#include "parser/parser_dbwrite.h"
+#include "libaqfints/aqfints.h"
+#include "libaqfints/parser/parser_xml.h"
+#include "libaqfints/parser/parser_hbci.h"
+#include "libaqfints/parser/parser_normalize.h"
+#include "libaqfints/parser/parser_dbwrite.h"
 
 #include <gwenhywfar/debug.h>
 

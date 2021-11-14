@@ -112,11 +112,19 @@ int _addCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACT
   rv=AH_Provider_GetMultiHbciJob(pro, outbox, u, a, cmd, &mj);
   if (rv==0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Reusing existing multi job");
+    AB_Banking_LogMsgForJobId(AB_Provider_GetBanking(pro),
+                              AB_Transaction_GetUniqueId(t),
+                              "Reusing existing HBCI job %08x, look there for further logs",
+                              AH_Job_GetId(mj));
     jobIsNew=0;
   }
   else {
     if (rv!=GWEN_ERROR_NOT_FOUND) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Error looking for multi job (%d), ignoring", rv);
+      AB_Banking_LogMsgForJobId(AB_Provider_GetBanking(pro),
+                                AB_Transaction_GetUniqueId(t),
+                                "Error searching for multi-job (%d)",
+                                rv);
     }
   }
 
@@ -125,10 +133,24 @@ int _addCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACT
     rv=AH_Provider_CreateHbciJob(pro, u, a, cmd, &mj);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      AB_Banking_LogMsgForJobId(AB_Provider_GetBanking(pro),
+                                AB_Transaction_GetUniqueId(t),
+                                "Error creating HbciJob (%d)",
+                                rv);
       return rv;
     }
+    AB_Banking_LogMsgForJobId(AB_Provider_GetBanking(pro), AB_Transaction_GetUniqueId(t), "Created new HBCI job");
   }
   assert(mj);
+
+  if (AH_Job_GetId(mj)==0) {
+    int jid;
+
+    /*jid=AB_Banking_GetNamedUniqueId(AB_Provider_GetBanking(pro), "job", 1);*/
+    jid=AB_Transaction_GetUniqueId(t); /* reuse unique id */
+    assert(jid);
+    AH_Job_SetId(mj, jid);
+  }
 
   if (jobIsNew) {
     int sigs;
@@ -141,6 +163,7 @@ int _addCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACT
         GWEN_Gui_ProgressLog(0,
                              GWEN_LoggerLevel_Error,
                              I18N("ERROR: Multiple signatures not yet supported"));
+        AB_Banking_LogMsgForJobId(AB_Provider_GetBanking(pro), AH_Job_GetId(mj), "Multiple signatures not supported");
         AH_Job_free(mj);
         return GWEN_ERROR_GENERIC;
       }
@@ -148,33 +171,32 @@ int _addCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACT
     }
   }
 
-  /* store HBCI job, link both jobs */
-  if (AH_Job_GetId(mj)==0) {
-    int jid;
-
-    jid=AB_Banking_GetNamedUniqueId(AB_Provider_GetBanking(pro), "job", 1);
-    assert(jid);
-    AH_Job_SetId(mj, jid);
-  }
-
   /* exchange arguments */
+  AB_Banking_LogMsgForJobId(AB_Provider_GetBanking(pro), AH_Job_GetId(mj),
+                            "Letting job handle command %08x",
+                            (unsigned int) AB_Transaction_GetUniqueId(t));
   rv=AH_Job_HandleCommand(mj, t);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AH_Job_free(mj);
+    AB_Banking_LogMsgForJobId(AB_Provider_GetBanking(pro), AH_Job_GetId(mj),
+                              "Error on AH_Job_HandleCommand(): %d", rv);
+    if (jobIsNew)
+      AH_Job_free(mj);
     return rv;
   }
 
   /* add command to job */
   AH_Job_AddCommand(mj, t);
+  AB_Banking_LogCmdInfoMsgForJob(AB_Provider_GetBanking(pro), t, AH_Job_GetId(mj), "Added command to job: ");
 
   if (jobIsNew) {
     /* add job to outbox */
     AH_Outbox_AddJob(outbox, mj);
+    AB_Banking_LogMsgForJobId(AB_Provider_GetBanking(pro), AH_Job_GetId(mj), "Job added to outbox");
     AH_Job_free(mj);
   }
 
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Job successfully added");
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Command successfully added");
   return 0;
 }
 
@@ -307,5 +329,7 @@ int _sampleResults(AB_PROVIDER *pro, AH_OUTBOX *outbox, AB_IMEXPORTER_CONTEXT *c
 
   return 0;
 }
+
+
 
 

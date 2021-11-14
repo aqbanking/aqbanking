@@ -91,6 +91,10 @@ static void showUsage(const char *prgName)
                                 "    Requests SEPA account list for a "
                                 "user\n\n"));
   GWEN_Buffer_AppendString(ubuf,
+                           I18N("  gettargetacc:\n"
+                                "    Requests target account list for a "
+                                "user\n\n"));
+  GWEN_Buffer_AppendString(ubuf,
                            I18N("  getsysid:\n"
                                 "    Requests a system id for the given "
                                 "user\n\n"));
@@ -281,6 +285,9 @@ int AH_Control(AB_PROVIDER *pro, int argc, char **argv)
   }
   else if (strcasecmp(cmd, "getaccsepa")==0) {
     rv=AH_Control_GetAccSepa(pro, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "gettargetacc")==0) {
+    rv=AH_Control_GetTargetAcc(pro, db, argc, argv);
   }
   else if (strcasecmp(cmd, "setsepaprofile")==0) {
     rv=AH_Control_SetSepaProfile(pro, db, argc, argv);

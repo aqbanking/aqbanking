@@ -3,7 +3,6 @@
 #include "value.hpp"
 #include "balance.hpp"
 #include "time.hpp"
-#include "accountstatus.hpp"
 #include "stringlist.hpp"
 
 const char *input = "1,361.54";

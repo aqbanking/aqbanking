@@ -15,7 +15,7 @@
 
 #include "./session.h"
 
-#include "parser/parser.h"
+#include "libaqfints/parser/parser.h"
 
 #include "aqbanking/version.h"
 

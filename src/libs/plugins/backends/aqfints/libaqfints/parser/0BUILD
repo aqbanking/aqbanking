@@ -1,0 +1,112 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="aqfintsparser" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(srcdir)/../..
+      -I$(builddir)/../..
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+      element.xml
+      segment.xml
+      jobdef.xml
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+      element.c
+      segment.c
+      jobdef.c
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+      element.h
+      segment.h
+      jobdef.h
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+      element_p.h
+      segment_p.h
+    </setVar>
+  
+  
+    <headers dist="false" >
+      $(local/built_headers_priv)
+      $(local/built_headers_pub)
+    </headers>
+
+
+    <headers dist="true" >
+      parser.h
+      parser_p.h
+      parser_xml.h
+      parser_normalize.h
+      parser_dump.h
+      parser_hbci.h
+      parser_dbread.h
+      parser_dbwrite.h
+      parser_internal.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      parser.c
+      parser_xml.c
+      parser_normalize.c
+      parser_dump.c
+      parser_hbci.c
+      parser_dbread.c
+      parser_dbwrite.c
+      parser_internal.c
+    </sources>
+
+
+    <data install="$(pkgdatadir)/typemaker2/c" DIST="FALSE" generated="TRUE" >
+      aqfints_element.tm2 aqfints_element_tree2.tm2
+      aqfints_segment.tm2 aqfints_segment_list.tm2
+      aqfints_jobdef.tm2 aqfints_jobdef_list.tm2
+    </data>
+
+
+    <extradist>
+    </extradist>
+
+
+    <useTargets>
+    </useTargets>
+
+    <subdirs>
+    </subdirs>
+
+  </target>
+  
+</gwbuild>

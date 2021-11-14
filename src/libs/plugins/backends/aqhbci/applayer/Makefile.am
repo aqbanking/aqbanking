@@ -65,6 +65,18 @@ sources:
 CLEANFILES = $(xmldata_DATA) tmp.xml
 
 
+typefiles:
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d typefiles; \
+	done
+
+typedefs:
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d typedefs; \
+	done
+
+
+
 
 cppcheck:
 	for f in $(libhbciapp_la_SOURCES); do \

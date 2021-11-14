@@ -14,7 +14,7 @@
 
 
 #include "s_message.h"
-#include "parser/parser.h"
+#include "libaqfints/parser/parser.h"
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>

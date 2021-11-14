@@ -19,7 +19,7 @@
 #include "aqhbci/banking/provider_job.h"
 #include "aqhbci/joblayer/job_l.h"
 #include "aqhbci/tan/tanmethod.h"
-#include "hbci_l.h"
+#include "aqhbci/msglayer/hbci_l.h"
 
 
 
@@ -31,9 +31,11 @@
 static int _createTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc,
                                               AB_TRANSACTION_LIMITS_LIST *tll);
 static AB_ACCOUNT_SPEC *_createAccountSpecWithUserAndAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a);
+AB_REFERENCE_ACCOUNT *_copyRefAccountCb(AB_REFERENCE_ACCOUNT *ra, void *user_data);
 static int _updateAccountSpecWithUserAndAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_ACCOUNT_SPEC *as);
 static void _copyAccountToAccountSpec(const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC *as);
-
+static int _updateAccountSpecWithRefAccounts(AB_PROVIDER *pro, AB_ACCOUNT *a,
+    AB_ACCOUNT_SPEC *as);
 
 
 /* ------------------------------------------------------------------------------------------------
@@ -84,6 +86,9 @@ int AH_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doL
     AB_Account_free(a);
     return rv;
   }
+
+  /* copy reference accounts */
+  _updateAccountSpecWithRefAccounts(pro, a, as);
 
   /* create and set transaction limits per command */
   tll=AB_TransactionLimits_List_new();
@@ -154,6 +159,32 @@ AB_ACCOUNT_SPEC *_createAccountSpecWithUserAndAccount(AB_PROVIDER *pro, AB_USER 
 }
 
 
+AB_REFERENCE_ACCOUNT *_copyRefAccountCb(AB_REFERENCE_ACCOUNT *ra, void *user_data)
+{
+    AB_ACCOUNT_SPEC *as = (AB_ACCOUNT_SPEC *) user_data;
+    AB_REFERENCE_ACCOUNT *ra_new = AB_ReferenceAccount_dup(ra);
+    AB_AccountSpec_AddReferenceAccount(as,ra_new);
+    return NULL;
+}
+
+int _updateAccountSpecWithRefAccounts(AB_PROVIDER *pro, AB_ACCOUNT *a,
+    AB_ACCOUNT_SPEC *as) {
+
+  int rv;
+  AB_ACCOUNT_SPEC *as_old = NULL;
+  AB_REFERENCE_ACCOUNT_LIST *ral = NULL;
+  /* copy reference accounts */
+  rv = AB_Banking_GetAccountSpecByUniqueId(AB_Provider_GetBanking(pro),
+      AB_Account_GetUniqueId(a), &as_old);
+  if (rv >= 0) {
+    /* we have an account spec alread, copy the reference account list to the new one */
+    ral = AB_AccountSpec_GetRefAccountList(as_old);
+    AB_ReferenceAccount_List_ForEach(ral, _copyRefAccountCb, (void*) as);
+    AB_AccountSpec_free(as_old);
+  }
+
+  return 0;
+}
 
 int _updateAccountSpecWithUserAndAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_ACCOUNT_SPEC *as)
 {
@@ -162,6 +193,8 @@ int _updateAccountSpecWithUserAndAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUN
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Updating account spec for account %u", (unsigned int) AB_Account_GetUniqueId(a));
 
+  /* copy reference accounts */
+  _updateAccountSpecWithRefAccounts(pro, a, as);
   /* create and set transaction limits per command */
   tll=AB_TransactionLimits_List_new();
   rv=_createTransactionLimitsForAccount(pro, u, a, tll);
@@ -212,6 +245,7 @@ int _createTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT 
     AB_Transaction_CommandGetTransactions,
     /*AB_Transaction_CommandLoadCellPhone, */
     AB_Transaction_CommandSepaTransfer,
+    AB_Transaction_CommandSepaInternalTransfer,
     AB_Transaction_CommandSepaDebitNote,
     AB_Transaction_CommandSepaFlashDebitNote,
     AB_Transaction_CommandSepaCreateStandingOrder,

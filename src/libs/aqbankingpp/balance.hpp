@@ -14,7 +14,7 @@
 #ifndef AB_BALANCE_HPP
 #define AB_BALANCE_HPP
 
-#include <aqbanking/balance.h>
+#include <aqbanking/types/balance.h>
 
 #include <aqbankingpp/cxxwrap.hpp>
 #include <aqbankingpp/time.hpp>

@@ -13,8 +13,8 @@
 
 #include "jobtan_l.h"
 
-#include "aqhbci_l.h"
-#include "job_l.h"
+#include "aqhbci/aqhbci_l.h"
+#include "aqhbci/joblayer/job_l.h"
 
 
 typedef struct AH_JOB_TAN AH_JOB_TAN;

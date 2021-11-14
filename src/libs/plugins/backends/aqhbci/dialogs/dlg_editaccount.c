@@ -264,7 +264,62 @@ void AH_EditAccountDialog_RebuildUserLists(GWEN_DIALOG *dlg)
   GWEN_StringList_free(sl);
 }
 
+static void createTargetAccountListBoxString(const AB_REFERENCE_ACCOUNT *ra, GWEN_BUFFER *tbuf)
+{
+    GWEN_Buffer_AppendString(tbuf, AB_ReferenceAccount_GetAccountName(ra));
+    GWEN_Buffer_AppendString(tbuf, "\t");
+    GWEN_Buffer_AppendString(tbuf, AB_ReferenceAccount_GetIban(ra));
+}
 
+void AH_EditAccountDialog_RebuildTargetAccountList(GWEN_DIALOG *dlg)
+{
+ int i;
+ int rv;
+ AH_EDIT_ACCOUNT_DIALOG *xdlg;
+ AB_REFERENCE_ACCOUNT_LIST *ral;
+ AB_REFERENCE_ACCOUNT *ra;
+ AB_ACCOUNT_SPEC *as;
+
+ assert(dlg);
+ xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_ACCOUNT_DIALOG, dlg);
+ assert(xdlg);
+  /* target account list */
+    i=0;
+    GWEN_Dialog_SetIntProperty(dlg, "targetAccountListBox", GWEN_DialogProperty_ClearValues, 0, 0, 0);
+
+    rv = AB_Banking_GetAccountSpecByUniqueId(AB_Provider_GetBanking(xdlg->provider),
+          AB_Account_GetUniqueId(xdlg->account), &as);
+    ral = AB_AccountSpec_GetRefAccountList(as);
+    if (AB_ReferenceAccount_List_GetCount(ral)) {
+      GWEN_BUFFER *tbuf;
+
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+      ra=AB_ReferenceAccount_List_First(ral);
+      while (ra) {
+        createTargetAccountListBoxString(ra, tbuf);
+        GWEN_Dialog_SetCharProperty(dlg,
+                                    "targetAccountListBox",
+                                    GWEN_DialogProperty_AddValue,
+                                    0,
+                                    GWEN_Buffer_GetStart(tbuf),
+                                    0);
+        i++;
+        GWEN_Buffer_Reset(tbuf);
+
+        ra=AB_ReferenceAccount_List_Next(ra);
+      }
+      GWEN_Buffer_free(tbuf);
+    } /* if account list not empty */
+    AB_AccountSpec_free(as);
+    GWEN_Dialog_SetIntProperty(dlg, "targetAccountListBox", GWEN_DialogProperty_Sort, 0, 0, 0);
+    if (i)
+      GWEN_Dialog_SetIntProperty(dlg, "targetAccountListBox", GWEN_DialogProperty_Value, 0, 0, 0);
+
+
+
+
+}
 
 void AH_EditAccountDialog_Init(GWEN_DIALOG *dlg)
 {
@@ -375,6 +430,15 @@ void AH_EditAccountDialog_Init(GWEN_DIALOG *dlg)
   GWEN_Dialog_SetIntProperty(dlg, "preferCamtDownloadCheck", GWEN_DialogProperty_Value, 0,
                              (aflags & AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD)?1:0,
                              0);
+
+  /* get reference accounts */
+  GWEN_Dialog_SetCharProperty(dlg,
+                              "targetAccountListBox",
+                              GWEN_DialogProperty_Title,
+                              0,
+                              I18N("Account Name\tIBAN"),
+                              0);
+  AH_EditAccountDialog_RebuildTargetAccountList(dlg);
 
 
   /* read width */
@@ -766,6 +830,36 @@ int AH_EditAccountDialog_HandleActivatedSepa(GWEN_DIALOG *dlg)
 }
 
 
+int AH_EditAccountDialog_HandleActivatedTargetAcc(GWEN_DIALOG *dlg)
+{
+  AH_EDIT_ACCOUNT_DIALOG *xdlg;
+  int rv;
+  AB_IMEXPORTER_CONTEXT *ctx;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_ACCOUNT_DIALOG, dlg);
+  assert(xdlg);
+
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_GetTargetAccount(xdlg->provider,
+                                    xdlg->account,
+                                    ctx,
+                                    1,   /* withProgress */
+                                    0,   /* nounmount */
+                                    xdlg->doLock);
+  AB_ImExporterContext_free(ctx);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+  }
+  else {
+    /* update target account list */
+    AH_EditAccountDialog_RebuildTargetAccountList(dlg);
+  }
+
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
 
 int AH_EditAccountDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
 {
@@ -773,6 +867,8 @@ int AH_EditAccountDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
     return AH_EditAccountDialog_HandleActivatedBankCode(dlg);
   else if (strcasecmp(sender, "getSepaButton")==0)
     return AH_EditAccountDialog_HandleActivatedSepa(dlg);
+  else if (strcasecmp(sender, "getTargetAccButton")==0)
+    return AH_EditAccountDialog_HandleActivatedTargetAcc(dlg);
   else if (strcasecmp(sender, "okButton")==0)
     return AH_EditAccountDialog_HandleActivatedOk(dlg);
   else if (strcasecmp(sender, "abortButton")==0)

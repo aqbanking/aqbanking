@@ -229,7 +229,7 @@ int _countJobsOtherThanTan(const AH_JOBQUEUE *jq)
 
 AH_JOBQUEUE_ADDRESULT _checkJobFlags(AH_JOBQUEUE *jq, AH_JOB *jobToAdd)
 {
-  if (strcasecmp(AH_Job_GetName(jobToAdd), "JobTan")!=0) {
+  if (strcasecmp(AH_Job_GetName(jobToAdd), "JobTan")!=0 && strcasecmp(AH_Job_GetName(jobToAdd), "JobAcknowledge")!=0) {
     uint32_t flagsInJobToAdd;
     uint32_t flagsInFirstJob;
     AH_JOB *firstJob;

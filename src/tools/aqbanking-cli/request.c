@@ -30,7 +30,8 @@ static int _createAndAndSendRequests(AB_BANKING *ab,
                                      const GWEN_DATE *fromDate,
                                      const GWEN_DATE *toDate,
                                      uint32_t requestFlags,
-                                     const char *ctxFile);
+                                     const char *ctxFile,
+                                     uint32_t number);
 
 
 
@@ -40,6 +41,7 @@ int request(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
   GWEN_DB_NODE *db;
   AB_ACCOUNT_SPEC_LIST *al=NULL;
   uint32_t requestFlags=0;
+  uint32_t number;
   const char *s;
   int rv;
   const char *ctxFile;
@@ -66,6 +68,8 @@ int request(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
     requestFlags|=AQBANKING_TOOL_REQUEST_DEPOT;
   if (GWEN_DB_GetIntValue(db, "ignoreUnsupported", 0, 0))
     requestFlags|=AQBANKING_TOOL_REQUEST_IGNORE_UNSUP;
+  if (GWEN_DB_GetIntValue(db, "acknowledge", 0, 0))
+    requestFlags|=AQBANKING_TOOL_REQUEST_ACKNOWLEDGE;
 
   /* read command line arguments */
   ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
@@ -87,6 +91,8 @@ int request(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
     }
   }
 
+  number = GWEN_DB_GetIntValue(db, "number", 0, 0);
+
   /* init AqBanking */
   rv=AB_Banking_Init(ab);
   if (rv) {
@@ -107,7 +113,7 @@ int request(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
   }
 
   /* create requests for every account spec and send them */
-  rv=_createAndAndSendRequests(ab, al, fromDate, toDate, requestFlags, ctxFile);
+  rv=_createAndAndSendRequests(ab, al, fromDate, toDate, requestFlags, ctxFile, number);
   if (rv) {
     AB_AccountSpec_List_free(al);
     GWEN_Date_free(toDate);
@@ -138,7 +144,8 @@ int _createAndAndSendRequests(AB_BANKING *ab,
                               const GWEN_DATE *fromDate,
                               const GWEN_DATE *toDate,
                               uint32_t requestFlags,
-                              const char *ctxFile)
+                              const char *ctxFile,
+                              uint32_t number)
 {
   AB_ACCOUNT_SPEC *as;
   AB_TRANSACTION_LIST2 *jobList;
@@ -150,7 +157,7 @@ int _createAndAndSendRequests(AB_BANKING *ab,
   while (as) {
     int rv;
 
-    rv=createAndAddRequests(ab, jobList, as, fromDate, toDate, requestFlags);
+    rv=createAndAddRequests(ab, jobList, as, fromDate, toDate, requestFlags, number);
     if (rv) {
       AB_Transaction_List2_free(jobList);
       return 3;
@@ -355,6 +362,17 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
       "Request depot (security list)"  /* long description */
     },
     {
+      0,                              /* flags */
+      GWEN_ArgsType_Int,              /* type */
+      "acknowledge",                  /* name */
+      0,                              /* minnum */
+      1,                              /* maxnum */
+      0,                              /* short option */
+      "acknowledge",                  /* long option */
+      "Acknowledge jobs",             /* short description */
+      "Acknowledge each job where the bank supports."   /* long description */
+    },
+    {
       0,
       GWEN_ArgsType_Int,
       "ignoreUnsupported",
@@ -386,6 +404,17 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
       "todate",                     /* long option */
       "Specify the last date for which transactions are wanted (YYYYMMDD)", /* short */
       "Specify the last date for which transactions are wanted (YYYYMMDD)" /* long */
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Int,            /* type */
+      "number",                     /* name */
+      0,                            /* minnum */
+      0,                            /* maxnum */
+      0,                            /* short option */
+      "docnumber",                  /* long option */
+      "Document number",            /* short description */
+      "Fetch a specific document number"  /* long description */
     },
 
     {

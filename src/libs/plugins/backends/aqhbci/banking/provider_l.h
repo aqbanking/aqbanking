@@ -13,7 +13,7 @@
 #include "provider.h"
 #include "aqhbci/tan/tanmethod.h"
 #include "aqhbci/joblayer/job_l.h"
-#include "hbci_l.h"
+#include "aqhbci/msglayer/hbci_l.h"
 
 
 AH_HBCI *AH_Provider_GetHbci(const AB_PROVIDER *pro);

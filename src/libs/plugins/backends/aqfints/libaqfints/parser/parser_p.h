@@ -13,7 +13,7 @@
 #define AQFINTS_PARSER_P_H
 
 
-#include "parser/parser.h"
+#include "libaqfints/parser/parser.h"
 
 #include <gwenhywfar/stringlist.h>
 

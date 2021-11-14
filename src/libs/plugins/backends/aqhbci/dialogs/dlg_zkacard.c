@@ -15,17 +15,17 @@
 
 
 #include "dlg_zkacard_p.h"
-#include "aqbanking/i18n_l.h"
-#include "provider_l.h"
 
-#include <aqbanking/dialogs/dlg_selectbankinfo.h>
-#include <aqbanking/backendsupport/user.h>
-#include <aqbanking/banking_be.h>
-
+#include "aqhbci/banking/provider_l.h"
 #include "aqhbci/banking/user.h"
 #include "aqhbci/banking/provider.h"
 #include "aqhbci/banking/provider_online.h"
 #include "dlg_rdh_special_l.h"
+
+#include "aqbanking/i18n_l.h"
+#include <aqbanking/dialogs/dlg_selectbankinfo.h>
+#include <aqbanking/backendsupport/user.h>
+#include <aqbanking/banking_be.h>
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>

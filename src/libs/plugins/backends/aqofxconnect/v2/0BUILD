@@ -1,0 +1,86 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="ofxdcv2" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/../..
+      -I$(srcdir)/../..
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+    </setVar>
+  
+  
+    <headers dist="true" >
+      $(local/built_headers_pub)
+
+      n_header.h
+      r_accounts.h
+      r_statements.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      n_header.c
+      r_accounts.c
+      r_statements.c
+    </sources>
+
+    <data install="$(aqbanking_plugin_installdir)/providers" >
+    </data>
+
+
+    <extradist>
+    </extradist>
+
+
+    <useTargets>
+    </useTargets>
+
+
+    <subdirs>
+    </subdirs>
+
+  
+  
+
+  </target>
+  
+</gwbuild>

@@ -908,6 +908,11 @@
         <item name="final"/>
       </enum>
 
+      <enum id="AB_TRANSACTION_ACK" prefix="AB_Transaction_Ack" type="AB_TRANSACTION_ACK">
+        <item name="never" value="0"/>
+        <item name="jobsWithAckCode"/>
+      </enum>
+
     </enums>
 
     <defines>
@@ -969,6 +974,15 @@
           <descr>
             This is a unique id of the local account for banking commands.
           </descr>
+        </member>
+
+        <member name="acknowledge" type="int" maxlen="32" enum="AB_TRANSACTION_ACK" >
+          <default>AB_Transaction_AckNever</default>
+          <preset>AB_Transaction_AckNever</preset>
+          <access>public</access>
+          <flags>enum with_hash</flags>
+          <setflags>none</setflags>
+          <getflags>none</getflags>
         </member>
 
       </group>
@@ -1260,6 +1274,15 @@
         </member>
 
         <member name="fees" type="AB_VALUE" maxlen="256" >
+          <access>public</access>
+          <flags>own with_hash</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <default>NULL</default>
+          <preset>NULL</preset>
+        </member>
+
+        <member name="taxes" type="AB_VALUE" maxlen="256" >
           <access>public</access>
           <flags>own with_hash</flags>
           <setflags>const dup</setflags>
@@ -1751,6 +1774,39 @@
           <getflags>const</getflags>
           <default>NULL</default>
           <preset>NULL</preset>
+        </member>
+
+
+      </group>
+
+      <group title="Additional Data for Estatements">
+
+        <descr>
+          <p>These properties are only used in estatement requests.</p>
+        </descr>
+
+        <member name="estatementNumber" type="uint32_t" maxlen="4">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <flags>with_hash</flags>
+	  <descr>
+            To select a specific estatment document.
+            Estatements are numbered increasingly, starting over at number 1 each year.
+            Year can be given by additionally setting startDate. If no year is given,
+            the current year is taken as base.
+            0 means no specific selection, return all.
+          </descr>
+        </member>
+
+        <member name="estatementMaxEntries" type="uint32_t" maxlen="4">
+          <default>0</default>
+          <preset>0</preset>
+          <access>public</access>
+          <flags>with_hash</flags>
+          <descr>
+            How many estatements to retrieve at most with this transaction.
+          </descr>
         </member>
 
 

@@ -60,6 +60,13 @@ sources:
 	done
 
 
+
+typedefs:
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d typedefs; \
+	done
+
+
 typefiles: $(typefiles)
 	typemaker -d AQHBCI_API $(typefiles)
 

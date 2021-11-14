@@ -1,0 +1,124 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="aqbanking_base" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)/src/libs/plugins/file
+      -I$(topsrcdir)/src/libs/plugins/file
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+    <define name="AQBANKING_SYSCONF_DIR" value="$(aqbanking_cfg_searchdir)" quoted="TRUE" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+      --api=AQBANKING_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+    </setVar>
+  
+  
+    <headers dist="true" install="$(pkgincludedir)" >
+      $(local/built_headers_pub)
+
+      account_type.h
+      banking.h
+      banking_dialogs.h
+      banking_imex.h
+      banking_bankinfo.h
+      banking_online.h
+      banking_transaction.h
+      error.h
+      system.h
+      version.h
+    </headers>
+
+
+    <headers dist="true" >
+      $(local/built_headers_private)
+
+      banking_be.h
+      banking_l.h
+      banking_p.h
+      i18n_l.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      account_type.c
+      banking.c
+    </sources>
+
+
+    <useTargets>
+      abtypes
+      abgui
+      abbesupport
+      abdialogs
+    </useTargets>
+
+    <subdirs>
+      types
+      gui
+      backendsupport
+      dialogs
+      typemaker2
+    </subdirs>
+
+  
+  
+    <extradist>
+      banking_account.c
+      banking_accspec.c
+      banking_bankinfo.c
+      banking_cfg.c
+      banking_dialogs.c
+      banking_imex.c
+      banking_init.c
+      banking_online.c
+      banking_transaction.c
+      banking_update.c
+      banking_user.c
+      banking_compat.c
+      system.h.in
+      version.h.in
+    </extradist>
+
+
+    <writeFile name="version.h" />
+    <writeFile name="system.h" />
+    
+
+  </target>
+  
+</gwbuild>

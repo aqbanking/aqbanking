@@ -13,7 +13,7 @@
 #endif
 
 
-#include "parser_normalize.h"
+#include "libaqfints/parser/parser_normalize.h"
 
 #include <gwenhywfar/text.h>
 

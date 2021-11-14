@@ -20,7 +20,6 @@ noinst_HEADERS=\
   jobgettransactions_l.h \
   jobgettransactions_p.h \
   jobgettrans_camt_l.h \
-  jobgettrans_camt_p.h \
   jobforeignxferwh_l.h \
   jobforeignxferwh_p.h \
   jobloadcellphone_l.h \
@@ -44,8 +43,10 @@ noinst_HEADERS=\
   jobsepastandingorderget_l.h jobsepastandingorderget_p.h \
   jobsepastandingordermodify_l.h \
   jobsepastandingorderdelete_l.h \
-  jobgetestatements_l.h jobgetestatements_p.h \
-  jobgetdepot_l.h
+  jobgetestatements_l.h \
+  jobgetdepot_l.h \
+  jobsepainternalxfer_l.h \
+  jobsepainternalxfer_p.h 
 
 libhbciaccjobs_la_SOURCES=\
   accountjob.c \
@@ -67,7 +68,8 @@ libhbciaccjobs_la_SOURCES=\
   jobsepastandingordermodify.c \
   jobsepastandingorderdelete.c \
   jobgetestatements.c \
-  jobgetdepot.c
+  jobgetdepot.c \
+  jobsepainternalxfer.c 
 
 
 sources:
@@ -96,7 +98,9 @@ xmlfiles=\
   $(srcdir)/jobsepastandingordermodify.xml \
   $(srcdir)/jobsepastandingorderdelete.xml \
   $(srcdir)/jobgetestatements.xml \
-  $(srcdir)/jobgetdepot.xml
+  $(srcdir)/jobgetestatements2.xml \
+  $(srcdir)/jobgetdepot.xml \
+  $(srcdir)/jobsepainternalxfer.xml
 
 EXTRA_DIST=$(xmlfiles)
 
@@ -106,6 +110,18 @@ accountjobs.xml: $(xmlfiles)
 all-local: accountjobs.xml
 
 CLEANFILES = accountjobs.xml
+
+
+typefiles:
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d typefiles; \
+	done
+
+typedefs:
+	for d in $(SUBDIRS); do \
+	  $(MAKE) -C $$d typedefs; \
+	done
+
 
 
 cppcheck:

@@ -44,6 +44,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <ctype.h>
+#include <stdarg.h>
 
 
 #ifdef OS_WIN32
@@ -72,6 +73,10 @@ GWEN_INHERIT_FUNCTIONS(AB_BANKING)
 #include "banking_bankinfo.c"
 #include "banking_dialogs.c"
 #include "banking_compat.c"
+
+
+
+static void _logMsgForJobId(const AB_BANKING *ab, uint32_t jobId, const char *msg);
 
 
 
@@ -363,6 +368,114 @@ GWEN_DIALOG *AB_Banking_GetNewUserDialog(AB_BANKING *ab,
 
 
 
+void AB_Banking_LogMsgForJobId(const AB_BANKING *ab, uint32_t jobId, const char *fmt, ...)
+{
+  if (jobId>0) {
+    GWEN_BUFFER *bf;
+    va_list list;
+    char *p;
+    int maxUnsegmentedWrite;
+    int rv;
+  
+    bf=GWEN_Buffer_new(0, 256, 0, 1);
+  
+    maxUnsegmentedWrite=GWEN_Buffer_GetMaxUnsegmentedWrite(bf);
+    p=GWEN_Buffer_GetStart(bf)+GWEN_Buffer_GetPos(bf);
+  
+    /* prepare list for va_arg */
+    va_start(list, fmt);
+    rv=vsnprintf(p, maxUnsegmentedWrite, fmt, list);
+    if (rv<0) {
+      DBG_ERROR(GWEN_LOGDOMAIN, "Error on vnsprintf (%d)", rv);
+      GWEN_Buffer_free(bf);
+      va_end(list);
+      return;
+    }
+    else if (rv>=maxUnsegmentedWrite) {
+      GWEN_Buffer_AllocRoom(bf, rv+1);
+      maxUnsegmentedWrite=GWEN_Buffer_GetMaxUnsegmentedWrite(bf);
+      p=GWEN_Buffer_GetStart(bf)+GWEN_Buffer_GetPos(bf);
+      rv=vsnprintf(p, maxUnsegmentedWrite, fmt, list);
+      if (rv<0) {
+        DBG_ERROR(GWEN_LOGDOMAIN, "Error on vnsprintf (%d)", rv);
+        GWEN_Buffer_free(bf);
+        va_end(list);
+        return;
+      }
+    }
+    if (rv>0) {
+      GWEN_Buffer_IncrementPos(bf, rv);
+      GWEN_Buffer_AdjustUsedBytes(bf);
+      _logMsgForJobId(ab, jobId, GWEN_Buffer_GetStart(bf));
+    }
+    GWEN_Buffer_free(bf);
+    va_end(list);
+  }
+}
 
+
+
+void AB_Banking_LogCmdInfoMsgForJob(const AB_BANKING *ab, const AB_TRANSACTION *t, uint32_t jid, const char *msg)
+{
+  if (jid>0) {
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 64, 0, 1);
+    GWEN_Buffer_AppendString(tbuf, msg);
+    AB_Banking_AddJobInfoToBuffer(t, tbuf);
+    AB_Banking_LogMsgForJobId(ab, jid, GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
+  }
+}
+
+
+
+void _logMsgForJobId(const AB_BANKING *ab, uint32_t jobId, const char *msg)
+{
+  GWEN_BUFFER *pathBuffer;
+  int rv;
+  FILE *f;
+
+  pathBuffer=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(pathBuffer, ab->dataDir);
+  GWEN_Buffer_AppendString(pathBuffer, GWEN_DIR_SEPARATOR_S "jobs" GWEN_DIR_SEPARATOR_S);
+  GWEN_Buffer_AppendArgs(pathBuffer, "%02x/", (unsigned int) (jobId>>24) & 0xff);
+  GWEN_Buffer_AppendArgs(pathBuffer, "%02x/", (unsigned int) (jobId>>16) & 0xff);
+  GWEN_Buffer_AppendArgs(pathBuffer, "%02x/", (unsigned int) (jobId>>8) & 0xff);
+  GWEN_Buffer_AppendArgs(pathBuffer, "%02x.log", (unsigned int) (jobId & 0xff));
+  rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(pathBuffer), GWEN_PATH_FLAGS_VARIABLE | GWEN_PATH_FLAGS_CHECKROOT);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+              "Error preparing path for logfile \"%s\": %d",
+              GWEN_Buffer_GetStart(pathBuffer),
+              rv);
+    GWEN_Buffer_free(pathBuffer);
+    return;
+  }
+
+  f=fopen(GWEN_Buffer_GetStart(pathBuffer), "a");
+  if (f==NULL) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "Error opening/creating logfile \"%s\": %s",
+	      GWEN_Buffer_GetStart(pathBuffer),
+	      strerror(errno));
+    GWEN_Buffer_free(pathBuffer);
+    return;
+  }
+  else {
+    GWEN_TIME *ti;
+    GWEN_BUFFER *tiBuffer;
+
+    ti=GWEN_CurrentTime();
+    tiBuffer=GWEN_Buffer_new(0, 32, 0, 1);
+    GWEN_Time_toString(ti, "YYYY/MM/DD-hh:mm:ss", tiBuffer);
+
+    fprintf(f, "%s %s\n", GWEN_Buffer_GetStart(tiBuffer), msg?msg:"<empty>");
+    GWEN_Buffer_free(tiBuffer);
+    fclose(f);
+    GWEN_Buffer_free(pathBuffer);
+    GWEN_Time_free(ti);
+  }
+}
 
 

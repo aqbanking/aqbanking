@@ -15,9 +15,9 @@
 #include "r_statements.h"
 
 #include "n_header.h"
-#include "n_signon.h"
-#include "n_statement.h"
-#include "io_network.h"
+#include "aqofxconnect/common/n_signon.h"
+#include "aqofxconnect/common/n_statement.h"
+#include "aqofxconnect/common/io_network.h"
 
 #include <aqbanking/banking_imex.h>
 #include "aqbanking/i18n_l.h"

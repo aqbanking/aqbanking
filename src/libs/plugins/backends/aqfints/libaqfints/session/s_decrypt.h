@@ -14,7 +14,7 @@
 
 #include "./session.h"
 
-#include "msg/message.h"
+#include "libaqfints/msg/message.h"
 
 
 

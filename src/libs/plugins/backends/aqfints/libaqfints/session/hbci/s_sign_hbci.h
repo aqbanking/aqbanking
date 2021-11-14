@@ -12,10 +12,10 @@
 #define AQFINTS_SESSION_SIGN_HBCI_H
 
 
-#include "session/session.h"
-#include "msg/message.h"
-#include "msg/keydescr.h"
-#include "parser/segment.h"
+#include "libaqfints/session/session.h"
+#include "libaqfints/msg/message.h"
+#include "libaqfints/msg/keydescr.h"
+#include "libaqfints/parser/segment.h"
 
 
 

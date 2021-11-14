@@ -14,7 +14,7 @@
 #ifndef AB_VALUE_HPP
 #define AB_VALUE_HPP
 
-#include <aqbanking/value.h>
+#include <aqbanking/types/value.h>
 #include <aqbankingpp/cxxwrap.hpp>
 #include <string>
   

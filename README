@@ -236,10 +236,10 @@ Compilation hints for specific platforms:
 5.2. Building from GIT
 ----------------------
 
-#>make -fMakefile.cvs
-#>./configure
-#>make typedefs
-#>make types
+#> make -fMakefile.cvs
+#> ./configure
+#> make typedefs
+#> make types
 
 and continue as described in "5.1. Building from the Tar File".
 
@@ -252,11 +252,26 @@ and continue as described in "5.1. Building from the Tar File".
 If you want to install a linked API documentation (which links against the
 API documentations of the projects AqBanking depends on) use this:
 
-#>make install-srcdoc
+#> make install-srcdoc
 
 This installs the linked doc to the path you gave to ./configure
 by "--with-docpath=PATH". It defaults to "$HOME/apidoc", which
 means it does *not* obey the --prefix argument.
+
+
+5.4. Building using gwbuild
+---------------------------
+
+Download the git version or a tarball of AqBanking. Create a folder "build" somewhere (e.g. completely outside
+the source tree or in its main folder), change into that "build" folder and perform the following steps:
+
+#> gwbuild -s PATH_TO_SOURCE_TREE
+#> gwbuild -p
+#> gwbuild -B tm2builder
+#> gwbuild
+
+The last two steps accept the argument "-j XX" which lets you specify the number of parallel build processes
+to use.
 
 
 
@@ -382,7 +397,7 @@ making AqBanking work:
 
 To work on translation of this project you need the following packages on
 Debian based systems:
-- po4edit 
+- po4a
 - translate-toolkit (for "msghack")
 
 You can then create the necessary files with:

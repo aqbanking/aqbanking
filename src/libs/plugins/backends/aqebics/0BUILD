@@ -1,0 +1,93 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="aqebics" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/..
+      -I$(srcdir)/..
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+      --api=AQBANKING_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+    </setVar>
+  
+  
+    <headers dist="true" >
+      $(local/built_headers_pub)
+
+      aqebics.h
+      aqebics_l.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      dummy.c
+    </sources>
+
+    <data install="$(aqbanking_plugin_installdir)/providers" >
+      aqebics.xml
+    </data>
+
+
+    <useTargets>
+      ebicsclient
+      ebicscontrol
+      ebicsdialogs
+      ebicsmsg
+      ebicsrequests
+    </useTargets>
+
+    <subdirs>
+      client
+      dialogs
+      msg
+      requests
+      control
+    </subdirs>
+
+  
+  
+    <extradist>
+    </extradist>
+
+
+  </target>
+  
+</gwbuild>

@@ -1,0 +1,89 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="abimexporters_xml" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)/src/libs/plugins/file
+      -I$(topsrcdir)/src/libs/plugins/file
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/types
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+      --api=AQBANKING_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+      paymentgroup.xml
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+      paymentgroup.c
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+      paymentgroup_p.h
+      paymentgroup.h
+    </setVar>
+  
+  
+    <headers dist="true" >
+      $(local/built_headers_pub)
+
+      xml_p.h
+      xml.h
+      xml_sepa_exp.h
+      xml_sepa_imp.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      xml.c
+      xml_sepa_exp.c
+      xml_sepa_imp.c
+    </sources>
+
+    <data install="$(aqbanking_plugin_installdir)/imexporters" >
+      xml.xml
+    </data>
+
+    <useTargets>
+    </useTargets>
+
+    <subdirs>
+    </subdirs>
+
+  
+  
+    <extradist>
+    </extradist>
+
+
+  </target>
+  
+</gwbuild>

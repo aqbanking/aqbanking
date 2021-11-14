@@ -14,8 +14,9 @@
 
 
 #include "job_p.h"
-#include "aqhbci_l.h"
-#include "hbci_l.h"
+
+#include "aqhbci/aqhbci_l.h"
+#include "aqhbci/msglayer/hbci_l.h"
 #include "aqhbci/banking/user_l.h"
 #include "aqhbci/banking/account_l.h"
 #include "aqhbci/banking/provider_l.h"
@@ -637,6 +638,12 @@ void AH_Job_SetStatus(AH_JOB *j, AH_JOB_STATUS st)
 
     AH_Job_Log(j, GWEN_LoggerLevel_Info, GWEN_Buffer_GetStart(lbuf));
     GWEN_Buffer_free(lbuf);
+
+    AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j),
+                              "Changing status from \"%s\" (%d) to \"%s\" (%d)",
+                              AH_Job_StatusName(j->status), j->status,
+                              AH_Job_StatusName(st), st);
+
     j->status=st;
 
     /* set status to original command */
@@ -678,6 +685,10 @@ void AH_Job_SetStatus(AH_JOB *j, AH_JOB_STATUS st)
 
         t=AB_Transaction_List2Iterator_Data(jit);
         while (t) {
+          AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j),
+                                    AB_Transaction_GetUniqueId(t),
+                                    "Changing command status to \"%s\" (%d)",
+                                    AB_Transaction_Status_toString(ts), ts);
           AB_Transaction_SetStatus(t, ts);
           t=AB_Transaction_List2Iterator_Next(jit);
         }
@@ -712,6 +723,7 @@ void AH_Job_AddSigner(AH_JOB *j, const char *s)
     GWEN_Buffer_AppendString(lbuf, "\" added");
     AH_Job_Log(j, GWEN_LoggerLevel_Info,
                GWEN_Buffer_GetStart(lbuf));
+    AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Adding signer \"%s\"", s?s:"<empty>");
   }
   GWEN_Buffer_free(lbuf);
   j->flags|=AH_JOB_FLAGS_SIGN;
@@ -904,6 +916,9 @@ void AH_Job_SampleResults(AH_JOB *j)
             AH_Job_Log(j, ll,
                        GWEN_Buffer_GetStart(lbuf));
             GWEN_Buffer_free(lbuf);
+            AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j),
+                                      "SegResult: %d (%s)",
+                                      code, text?text:"<empty>");
           }
 
           /* found a result */
@@ -965,6 +980,9 @@ void AH_Job_SampleResults(AH_JOB *j)
               AH_Job_Log(j, ll,
                          GWEN_Buffer_GetStart(lbuf));
               GWEN_Buffer_free(lbuf);
+              AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j),
+                                        "MsgResult: %d (%s)",
+                                        code, text?text:"<empty>");
             }
 
             /* found a result */
@@ -1573,6 +1591,36 @@ void AH_Job_SetStatusOnCommands(AH_JOB *j, AB_TRANSACTION_STATUS status)
       AB_Transaction_List2Iterator_free(it);
     }
   }
+}
+
+
+
+char *AH_Job_GenerateIdFromDateTimeAndJobId(const AH_JOB *j, int runningNumber)
+{
+  GWEN_TIME *ti;
+  int days, month, year;
+  int hours, mins, secs;
+  char *string31;
+  int rv;
+
+  ti=GWEN_CurrentTime();
+  assert(ti);
+
+  GWEN_Time_GetBrokenDownDate(ti, &days, &month, &year);
+  GWEN_Time_GetBrokenDownTime(ti, &hours, &mins, &secs);
+  GWEN_Time_free(ti);
+
+  string31=(char*) malloc(31);
+  /* YYYYMMDDhhmmssJJJJJJJJRRRRRRRR */
+  rv=snprintf(string31, 31, "%04d%02d%02d%02d%02d%02d%08x%08x",
+	      year, month+1, days, hours, mins, secs, j->id, runningNumber);
+  if (rv<0 || rv>30) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error on snprintf (%d)", rv);
+    free(string31);
+    return NULL;
+  }
+
+  return string31;
 }
 
 

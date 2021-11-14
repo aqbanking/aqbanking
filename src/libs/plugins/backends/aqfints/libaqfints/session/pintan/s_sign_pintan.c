@@ -12,9 +12,9 @@
 # include <config.h>
 #endif
 
-#include "session/pintan/s_sign_pintan.h"
-#include "session/s_decode.h"
-#include "parser/parser.h"
+#include "libaqfints/session/pintan/s_sign_pintan.h"
+#include "libaqfints/session/s_decode.h"
+#include "libaqfints/parser/parser.h"
 
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>

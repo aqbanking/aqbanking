@@ -1,0 +1,109 @@
+<?xml?>
+
+<gwbuild>
+
+  <target type="ConvenienceLibrary" name="hbcimsg" >
+
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/..
+      -I$(srcdir)/..
+      -I$(builddir)/../..
+      -I$(srcdir)/../..
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+      -I$(topsrcdir)
+    </includes>
+  
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+  
+    <define name="BUILDING_AQBANKING" />
+    
+    <define name="AH_XMLDATADIR" value="$(aqbanking_data_searchdir)/aqbanking/backends/aqhbci" quoted="true" />
+    
+
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+
+  
+    <setVar name="tm2flags" >
+      --api=AQBANKING_API
+    </setVar>
+
+
+    <setVar name="local/typefiles" >
+    </setVar>
+  
+    <setVar name="local/built_sources" >
+    </setVar>
+  
+    <setVar name="local/built_headers_pub">
+    </setVar>
+  
+    <setVar name="local/built_headers_priv" >
+    </setVar>
+  
+  
+    <headers dist="true" >
+      $(local/built_headers_pub)
+
+      bpd_l.h
+      bpd_p.h
+      dialog_l.h
+      dialog_p.h
+      hbci_l.h
+      hbci_p.h
+      hbci-updates_l.h
+      hbci-updates_p.h
+      message_l.h
+      message_p.h
+      msgengine_l.h
+      msgengine_p.h
+      msgengine.h
+    </headers>
+  
+  
+    <sources>
+      $(local/typefiles)
+
+      bpd.c
+      dialog.c
+      hbci.c
+      hbci-updates.c
+      message.c
+      msgengine.c
+    </sources>
+
+    <data install="$(pkgdatadir)/backends/aqhbci/dialogs" >
+    </data>
+
+    <extradist>
+      msgcrypt.c
+      msgcrypt_ddv.c
+      msgcrypt_rxh_common.c
+      msgcrypt_rxh_decrypt.c
+      msgcrypt_pintan.c
+      dialog_hbci.c
+      dialog_https.c
+    </extradist>
+
+
+    <useTargets>
+    </useTargets>
+
+    <subdirs>
+    </subdirs>
+
+  
+  
+  </target>
+  
+</gwbuild>

@@ -25,6 +25,7 @@
 #include "aqhbci/admjobs/jobgetsysid_l.h"
 #include "aqhbci/admjobs/jobgetbankinfo_l.h"
 #include "aqhbci/admjobs/jobunblockpin_l.h"
+#include "aqhbci/admjobs/jobgettargetacc_l.h"
 
 #include <gwenhywfar/gui.h>
 
@@ -1265,7 +1266,71 @@ int AH_Provider_GetAccountSepaInfo(AB_PROVIDER *pro,
   return 0;
 }
 
+int AH_Provider_GetTargetAccount(AB_PROVIDER *pro,
+                                   AB_ACCOUNT *a,
+                                   AB_IMEXPORTER_CONTEXT *ctx,
+                                   int withProgress, int nounmount, int doLock)
+{
+  AB_BANKING *ab;
+  AH_HBCI *h;
+  AH_OUTBOX *ob;
+  uint32_t uid;
+  int rv;
 
+  assert(pro);
+
+  ab=AB_Provider_GetBanking(pro);
+  assert(ab);
+
+  h=AH_Provider_GetHbci(pro);
+  assert(h);
+
+
+  ob=AH_Outbox_new(pro);
+
+  uid=AB_Account_GetUserId(a);
+  if (uid==0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No user for this account");
+  }
+  else {
+    AB_USER *u;
+
+    rv=AB_Provider_GetUser(pro, uid, 1, 1, &u);
+    if (rv<0) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown user for this account");
+    }
+    else {
+      AH_JOB *job;
+
+      /* TODO: store user to free it later */
+      job=AH_Job_GetTargetAccount_new(pro, u, a);
+      if (!job) {
+        DBG_WARN(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+        AH_Outbox_free(ob);
+        return GWEN_ERROR_GENERIC;
+      }
+      AH_Job_AddSigner(job, AB_User_GetUserId(u));
+      AH_Outbox_AddJob(ob, job);
+      AH_Job_free(job);
+    }
+  }
+
+  rv=AH_Outbox_Execute(ob, ctx, withProgress, nounmount, doLock);
+  if (rv) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not execute outbox.\n");
+    AH_Outbox_free(ob);
+    if (!nounmount)
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+    return rv;
+  }
+
+  AH_Outbox_free(ob);
+
+  if (!nounmount)
+    AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
+
+  return 0;
+}
 
 
 

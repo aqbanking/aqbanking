@@ -11,8 +11,8 @@
 #ifndef AQFINTS_PARSER_DBREAD_H
 #define AQFINTS_PARSER_DBREAD_H
 
-#include "parser/element.h"
-#include "parser/segment.h"
+#include "libaqfints/parser/element.h"
+#include "libaqfints/parser/segment.h"
 
 
 int AQFINTS_Parser_Db_ReadSegment(AQFINTS_SEGMENT *definitionSegment, AQFINTS_SEGMENT *dataSegment, GWEN_DB_NODE *db);
