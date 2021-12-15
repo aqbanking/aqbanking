@@ -64,6 +64,12 @@
 
 
 
+static GWEN_DB_NODE *_getProfileFromFileOrSystem(AB_BANKING *ab,
+						 const char *importerName,
+						 const char *profileName,
+						 const char *profileFile);
+
+
 
 AB_IMEXPORTER *AB_Banking__CreateImExporterPlugin(AB_BANKING *ab, const char *modname)
 {
@@ -308,13 +314,9 @@ int AB_Banking_ImportLoadProfile(AB_BANKING *ab,
   GWEN_DB_NODE *dbProfile;
   int rv;
 
-  if (profileName && *profileName)
-    dbProfile=AB_Banking_GetImExporterProfile(ab, importerName, profileName);
-  else
-    dbProfile=GWEN_DB_Group_new("profile");
+  dbProfile=_getProfileFromFileOrSystem(ab, importerName, profileName, profileFile);
   if (dbProfile==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Profile [%s] not found",
-              profileName?profileName:"(null)");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Profile [%s] not found", profileName?profileName:"(null)");
     return GWEN_ERROR_NO_DATA;
   }
 
@@ -341,13 +343,9 @@ int AB_Banking_ExportLoadProfile(AB_BANKING *ab,
   GWEN_DB_NODE *dbProfile;
   int rv;
 
-  if (profileName && *profileName)
-    dbProfile=AB_Banking_GetImExporterProfile(ab, exporterName, profileName);
-  else
-    dbProfile=GWEN_DB_Group_new("profile");
+  dbProfile=_getProfileFromFileOrSystem(ab, exporterName, profileName, profileFile);
   if (dbProfile==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Profile [%s] not found",
-              profileName?profileName:"(null)");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Profile [%s] not found", profileName?profileName:"(null)");
     return GWEN_ERROR_NO_DATA;
   }
 
@@ -466,13 +464,9 @@ int AB_Banking_ImportFromFileLoadProfile(AB_BANKING *ab,
   GWEN_DB_NODE *dbProfile;
   int rv;
 
-  if (profileName && *profileName)
-    dbProfile=AB_Banking_GetImExporterProfile(ab, importerName, profileName);
-  else
-    dbProfile=GWEN_DB_Group_new("profile");
+  dbProfile=_getProfileFromFileOrSystem(ab, importerName, profileName, profileFile);
   if (dbProfile==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Profile [%s] not found",
-              profileName?profileName:"(null)");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Profile [%s] not found", profileName?profileName:"(null)");
     return GWEN_ERROR_NO_DATA;
   }
 
@@ -499,13 +493,9 @@ int AB_Banking_ExportToFileLoadProfile(AB_BANKING *ab,
   GWEN_DB_NODE *dbProfile;
   int rv;
 
-  if (profileName && *profileName)
-    dbProfile=AB_Banking_GetImExporterProfile(ab, exporterName, profileName);
-  else
-    dbProfile=GWEN_DB_Group_new("profile");
+  dbProfile=_getProfileFromFileOrSystem(ab, exporterName, profileName, profileFile);
   if (dbProfile==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Profile [%s] not found",
-              profileName?profileName:"(null)");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Profile [%s] not found", profileName?profileName:"(null)");
     return GWEN_ERROR_NO_DATA;
   }
 
@@ -588,13 +578,9 @@ int AB_Banking_ImportFromBufferLoadProfile(AB_BANKING *ab,
   GWEN_DB_NODE *dbProfile;
   int rv;
 
-  if (profileName && *profileName)
-    dbProfile=AB_Banking_GetImExporterProfile(ab, importerName, profileName);
-  else
-    dbProfile=GWEN_DB_Group_new("profile");
+  dbProfile=_getProfileFromFileOrSystem(ab, importerName, profileName, profileFile);
   if (dbProfile==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Profile [%s] not found",
-              profileName?profileName:"(null)");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Profile [%s] not found", profileName?profileName:"(null)");
     return GWEN_ERROR_NO_DATA;
   }
 
@@ -621,13 +607,9 @@ int AB_Banking_ExportToBufferLoadProfile(AB_BANKING *ab,
   GWEN_DB_NODE *dbProfile;
   int rv;
 
-  if (profileName && *profileName)
-    dbProfile=AB_Banking_GetImExporterProfile(ab, exporterName, profileName);
-  else
-    dbProfile=GWEN_DB_Group_new("profile");
+  dbProfile=_getProfileFromFileOrSystem(ab, exporterName, profileName, profileFile);
   if (dbProfile==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Profile [%s] not found",
-              profileName?profileName:"(null)");
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Profile [%s] not found", profileName?profileName:"(null)");
     return GWEN_ERROR_NO_DATA;
   }
 
@@ -1196,4 +1178,38 @@ AB_SWIFT_DESCR_LIST *AB_Banking_GetSwiftDescriptorsForImExporter(AB_BANKING *ab,
 
 
 
+GWEN_DB_NODE *_getProfileFromFileOrSystem(AB_BANKING *ab,
+                                          const char *importerName,
+                                          const char *profileName,
+                                          const char *profileFile)
+{
+  GWEN_DB_NODE *dbProfile=NULL;
+
+  if (profileFile && *profileFile) {
+    int rv;
+
+    dbProfile=GWEN_DB_Group_new("profile");
+    rv=GWEN_DB_ReadFile(dbProfile, profileFile, GWEN_DB_FLAGS_DEFAULT);
+    if (rv<0) {
+      DBG_INFO(GWEN_LOGDOMAIN, "here (%d)", rv);
+      GWEN_DB_Group_free(dbProfile);
+      return NULL;
+    }
+  }
+  else if (profileName && *profileName) {
+    dbProfile=AB_Banking_GetImExporterProfile(ab, importerName, profileName);
+  }
+  else {
+    dbProfile=AB_Banking_GetImExporterProfile(ab, importerName, "default");
+  }
+
+  if (dbProfile==NULL) {
+    DBG_ERROR(GWEN_LOGDOMAIN, "Unable to load profile for imexporter \"%s\" (file=%s, name=%s)",
+	      importerName,
+	      profileFile?profileFile:"-none-",
+	      profileName?profileName:"-none");
+  }
+
+  return dbProfile;
+}
 
