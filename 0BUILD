@@ -106,8 +106,8 @@
       <choices>TRUE FALSE</choices>
     </option>
     <ifVarMatches name="option_debug" value="TRUE" >
-      <setVar name="CFLAGS">-ggdb -O0</setVar>
-      <setVar name="CXXFLAGS">-ggdb -O0</setVar>
+      <setVar name="CFLAGS">-ggdb -Wall -O0</setVar>
+      <setVar name="CXXFLAGS">-ggdb -Wall -O0</setVar>
     </ifVarMatches>
 
 
