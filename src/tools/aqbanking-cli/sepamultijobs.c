@@ -42,6 +42,7 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv,
   const char *profileName;
   const char *profileFile;
   int use_flash_debitnote;
+  int use_b2b_debitnote;
   AB_IMEXPORTER_CONTEXT *ctx=0;
   AB_ACCOUNT_SPEC *forcedAccount=NULL;
   AB_TRANSACTION_LIST2 *jobList;
@@ -66,6 +67,7 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv,
   ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
   inFile=GWEN_DB_GetCharValue(db, "inFile", 0, 0);
   use_flash_debitnote=GWEN_DB_GetIntValue(db, "useCOR1", 0, 0);
+  use_b2b_debitnote=GWEN_DB_GetIntValue(db, "useB2B", 0, 0);
   dryRun=GWEN_DB_GetIntValue(db, "dryRun", 0, 0);
 
   rv=AB_Banking_Init(ab);
@@ -115,8 +117,12 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv,
       : (use_flash_debitnote
          // Did we have --use-COR1? Use this extra job type
          ? AB_Transaction_CommandSepaFlashDebitNote
-         // No COR1, just standard CORE debit note
-         : AB_Transaction_CommandSepaDebitNote);
+         // No COR1, did we have --use-B2B ?
+         : (use_b2b_debitnote
+	    ? AB_Transaction_CommandSepaB2bDebitNote
+	    // just standard CORE debit note
+	    : AB_Transaction_CommandSepaDebitNote)
+	);
 
   /* populate job list */
   jobList=AB_Transaction_List2_new();
@@ -299,6 +305,17 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
       "use-COR1",                   /* long option */
       "If given, use COR1 variant of debit notes (faster), otherwise CORE (slower)",    /* short description */
       "If given, use COR1 variant of debit notes (faster), otherwise CORE (slower)"     /* long description */
+    },
+    {
+      0, /* flags */
+      GWEN_ArgsType_Int,           /* type */
+      "useB2B",                    /* name */
+      0,                           /* minnum */
+      1,                           /* maxnum */
+      0,                           /* short option */
+      "use-B2B",                   /* long option */
+      "If given, use B2B variant of debit notes (business-to-business), otherwise CORE (normal)",    /* short description */
+      "If given, use B2B variant of debit notes (business-to-business), otherwise CORE (normal)"     /* long description */
     },
     {
       0, /* flags */
