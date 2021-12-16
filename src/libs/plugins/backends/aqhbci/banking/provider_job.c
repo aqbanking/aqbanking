@@ -31,6 +31,7 @@
 #include "aqhbci/ajobs/jobsepastandingorderget_l.h"
 #include "aqhbci/ajobs/jobgetestatements_l.h"
 #include "aqhbci/ajobs/jobgetdepot_l.h"
+#include "aqhbci/ajobs/jobsepab2bdatedmulticreate_l.h"
 
 #include "aqhbci/ajobs/jobsepadebitsingle_l.h" /* deprecated job */
 
@@ -251,6 +252,15 @@ int AH_Provider_CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, int
       return GWEN_ERROR_NOT_AVAILABLE;
     }
     break;
+
+  case AB_Transaction_CommandSepaB2bDebitNote:
+    mj=AH_Job_SepaB2bDebitDatedMultiCreate_new(pro, mu, ma);
+    if (!mj) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
 
   default:
     DBG_INFO(AQHBCI_LOGDOMAIN,
