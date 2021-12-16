@@ -128,6 +128,20 @@ void GWENHYWFAR_CB _freeData(void *bp, void *p)
 
 
 
+const AB_VALUE *AH_Job_SepaGenericMultiCreate_GetSumValues(const AH_JOB *j)
+{
+  AH_JOB_CREATESEPAMULTIGENERIC *aj;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_CREATESEPAMULTIGENERIC, j);
+  assert(aj);
+
+  return aj->sumValues;
+}
+
+
+
+
 int _addChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod)
 {
   AH_JOB_CREATESEPAMULTIGENERIC *aj;

@@ -23,6 +23,9 @@ AH_JOB *AH_Job_SepaGenericMultiCreate_new(const char *jobName,
                                           AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account);
 
 
+const AB_VALUE *AH_Job_SepaGenericMultiCreate_GetSumValues(const AH_JOB *j);
+
+
 #endif /* AH_JOBSEPACOR1DATEDMULTICREATE_L_H */
 
 

@@ -31,7 +31,6 @@ noinst_HEADERS=\
   jobsepacor1datedmulticreate_l.h \
   jobsepacor1datedmulticreate_p.h \
   jobsepaxfermulti_l.h \
-  jobsepaxfermulti_p.h \
   jobsepaxfersingle_l.h \
   jobsepaxfersingle_p.h \
   jobsepadebitsingle_l.h \
