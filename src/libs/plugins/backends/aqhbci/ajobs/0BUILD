@@ -87,6 +87,7 @@
       jobsepainternalxfer_p.h
       jobsepagenericmulticreate_l.h
       jobsepagenericmulticreate_p.h
+      jobsepab2bdatedmulticreate_l.h
     </headers>
   
   
@@ -115,6 +116,7 @@
       jobgetdepot.c
       jobsepainternalxfer.c
       jobsepagenericmulticreate.c
+      jobsepab2bdatedmulticreate.c
     </sources>
 
     <data install="$(aqbanking_plugin_installdir)/providers" >
