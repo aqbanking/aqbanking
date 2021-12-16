@@ -69,7 +69,8 @@ libhbciaccjobs_la_SOURCES=\
   jobsepastandingorderdelete.c \
   jobgetestatements.c \
   jobgetdepot.c \
-  jobsepainternalxfer.c 
+  jobsepainternalxfer.c \
+  jobsepagenericmulticreate.c
 
 
 sources:
@@ -100,7 +101,8 @@ xmlfiles=\
   $(srcdir)/jobgetestatements.xml \
   $(srcdir)/jobgetestatements2.xml \
   $(srcdir)/jobgetdepot.xml \
-  $(srcdir)/jobsepainternalxfer.xml
+  $(srcdir)/jobsepainternalxfer.xml \
+  $(srcdir)/jobsepab2bdatedmulticreate.xml
 
 EXTRA_DIST=$(xmlfiles)
 
