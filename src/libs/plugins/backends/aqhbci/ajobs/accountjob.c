@@ -34,8 +34,8 @@ GWEN_INHERIT(AH_JOB, AH_ACCOUNTJOB);
  * ------------------------------------------------------------------------------------------------
  */
 
-static int _getJobVersionToUse(const char *name, AB_USER *u, const AB_ACCOUNT *account);
 
+/* none for now */
 
 
 /* ------------------------------------------------------------------------------------------------
@@ -54,21 +54,12 @@ AH_JOB *AH_AccountJob_new(const char *name,
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
   const char *s;
-  int jobVersion=0;
 
   assert(name);
   assert(u);
   assert(account);
 
-  /* this might later be removed, since all accounts should now have a suffix reported by the bank,
-   * and if an account doesn't, it is just not needed anymore */
-  jobVersion=_getJobVersionToUse(name, u, account);
-  if (jobVersion<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here");
-    return NULL;
-  }
-
-  j=AH_Job_new(name, pro, u, account, jobVersion);
+  j=AH_Job_new(name, pro, u, account, 0);
   if (!j)
     return 0;
 
@@ -136,78 +127,6 @@ int AH_AccountJob_IsAccountJob(const AH_JOB *j)
 {
   return GWEN_INHERIT_ISOFTYPE(AH_JOB, AH_ACCOUNTJOB, j);
 }
-
-
-
-int _getJobVersionToUse(const char *name, AB_USER *u, const AB_ACCOUNT *account)
-{
-  int jobVersion=0;
-
-  if (!(AH_Account_GetFlags(account) & AH_BANK_FLAGS_KTV2)) {
-    int maxVer=0;
-
-    /* no account suffix, so we try to determine the highest usable
-     * version of the job which still doesn't need the suffix
-     */
-    DBG_NOTICE(AQHBCI_LOGDOMAIN,
-               "No account suffix [%u], determining highest possible job version for \"%s\" (%08x)",
-               AB_Account_GetUniqueId(account), name, AH_Account_GetFlags(account));
-    if (strcasecmp(name, "JobGetTransactions")==0)
-      maxVer=4;
-    else if (strcasecmp(name, "JobGetBalance")==0)
-      maxVer=4;
-    else if (strcasecmp(name, "JobSingleTransfer")==0)
-      maxVer=3;
-    else if (strcasecmp(name, "JobSingleDebitNote")==0)
-      maxVer=3;
-    else if (strcasecmp(name, "JobInternalTransfer")==0 ||
-             strcasecmp(name, "JobLoadCellPhone")==0)
-      /* this job needs a suffix, so if there is none you don't get it */
-      maxVer=-1;
-    else if (strcasecmp(name, "JobGetDatedTransfers")==0)
-      maxVer=1;
-    else if (strcasecmp(name, "JobCreateDatedTransfer")==0)
-      maxVer=2;
-    else if (strcasecmp(name, "JobModifyDatedTransfer")==0)
-      maxVer=2;
-    else if (strcasecmp(name, "JobDeleteDatedTransfer")==0)
-      maxVer=1;
-    else if (strcasecmp(name, "JobCreateStandingOrder")==0)
-      maxVer=2;
-    else if (strcasecmp(name, "JobModifyStandingOrder")==0)
-      maxVer=2;
-    else if (strcasecmp(name, "JobDeleteStandingOrder")==0)
-      maxVer=1;
-    if (maxVer==-1) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN,
-                "This job needs an account suffix, but your bank didn't provide one. "
-                "Therefore this job is not supported with your account.");
-      GWEN_Gui_ProgressLog(0,
-                           GWEN_LoggerLevel_Error,
-                           I18N("This job needs an account suffix, but your bank did not provide one. "
-                                "Therefore this job is not supported with your account.\n"
-                                "Setting a higher HBCI version in the user settings might fix "
-                                "the problem."));
-      return GWEN_ERROR_GENERIC;
-    }
-    if (maxVer>0) {
-      jobVersion=AH_Job_GetMaxVersionUpUntil(name, u, maxVer);
-      if (jobVersion<1) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "No job [%s] below version %d, falling back to 0", name, maxVer);
-        GWEN_Gui_ProgressLog2(0,
-                              GWEN_LoggerLevel_Warning,
-                              "No version for job [%s] up to %d found, falling back to 0", name, maxVer);
-        jobVersion=0;
-      }
-      else {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Reducing version of job [%s] to %d", name, jobVersion);
-      }
-    }
-  }
-
-  return jobVersion;
-}
-
 
 
 

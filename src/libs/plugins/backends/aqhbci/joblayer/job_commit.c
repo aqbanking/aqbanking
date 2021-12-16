@@ -98,12 +98,6 @@ void AH_Job_ReadAccountDataSeg(AB_ACCOUNT *acc, GWEN_DB_NODE *dbAccountData)
   AB_Account_SetSubAccountId(acc, GWEN_DB_GetCharValue(dbAccountData, "accountsubid", 0, 0));
   AB_Account_SetOwnerName(acc, GWEN_DB_GetCharValue(dbAccountData, "name1", 0, 0));
 
-  if (GWEN_DB_GetIntValue(dbAccountData, "head/version", 0, 1)>=4)
-    /* KTV in version 2 available */
-    AH_Account_AddFlags(acc, AH_BANK_FLAGS_KTV2);
-  else
-    AH_Account_SubFlags(acc, AH_BANK_FLAGS_KTV2);
-
   /* account type (from FinTS_3.0_Formals) */
   t=GWEN_DB_GetIntValue(dbAccountData, "type", 0, 1);
   if (t>=1 && t<=9)          /* Kontokorrent-/Girokonto */

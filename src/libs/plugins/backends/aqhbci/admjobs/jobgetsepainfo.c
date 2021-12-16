@@ -212,7 +212,6 @@ int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
           else {
             if (accountSuffix)
               AB_Account_SetSubAccountId(jd->account, accountSuffix);
-            AH_Account_AddFlags(jd->account, AH_BANK_FLAGS_KTV2); /* we have a sub id (even if emtpy), set flag */
 
             if (useWithSepa) {
               DBG_INFO(AQHBCI_LOGDOMAIN, "SEPA available with this account");
@@ -274,15 +273,14 @@ int AH_Job_GetAccountSepaInfo_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
         else {
           if (accountSuffix)
             AB_Account_SetSubAccountId(jd->account, accountSuffix);
-          AH_Account_AddFlags(jd->account, AH_BANK_FLAGS_KTV2); /* we have a sub id (even if emtpy), set flag */
 
           if (useWithSepa) {
             DBG_INFO(AQHBCI_LOGDOMAIN, "SEPA available with this account");
-            AH_Account_AddFlags(jd->account, AH_BANK_FLAGS_SEPA); /* we have a sub id (even if emtpy), set flag */
+            AH_Account_AddFlags(jd->account, AH_BANK_FLAGS_SEPA); /* we have SEPA info, set flag */
           }
           else {
             DBG_INFO(AQHBCI_LOGDOMAIN, "SEPA not available with this account");
-            AH_Account_SubFlags(jd->account, AH_BANK_FLAGS_SEPA); /* we have a sub id (even if emtpy), set flag */
+            AH_Account_SubFlags(jd->account, AH_BANK_FLAGS_SEPA);
           }
 
           if (iban && *iban) {

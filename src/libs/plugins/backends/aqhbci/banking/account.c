@@ -86,7 +86,6 @@ int AH_Account_ReadFromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db)
 
   s=GWEN_DB_GetCharValue(dbP, "suffix", 0, NULL);
   if (s && *s) {
-    ae->flags|=AH_BANK_FLAGS_KTV2;
     if (strcasecmp(s, "<empty>")!=0)
       AB_Account_SetSubAccountId(a, s);
   }
@@ -157,8 +156,6 @@ void AH_Account_Flags_toDb(GWEN_DB_NODE *db, const char *name,
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "preferSingleTransfer");
   if (flags & AH_BANK_FLAGS_PREFER_SINGLE_DEBITNOTE)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "preferSingleDebitNote");
-  if (flags & AH_BANK_FLAGS_KTV2)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "ktv2");
   if (flags & AH_BANK_FLAGS_SEPA)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "sepa");
   if (flags & AH_BANK_FLAGS_SEPA_PREFER_SINGLE_TRANSFER)
@@ -186,8 +183,6 @@ uint32_t AH_Account_Flags_fromDb(GWEN_DB_NODE *db, const char *name)
       fl|=AH_BANK_FLAGS_PREFER_SINGLE_TRANSFER;
     else if (strcasecmp(s, "preferSingleDebitNote")==0)
       fl|=AH_BANK_FLAGS_PREFER_SINGLE_DEBITNOTE;
-    else if (strcasecmp(s, "ktv2")==0)
-      fl|=AH_BANK_FLAGS_KTV2;
     else if (strcasecmp(s, "sepa")==0)
       fl|=AH_BANK_FLAGS_SEPA;
     else if (strcasecmp(s, "sepaPreferSingleTransfer")==0)
