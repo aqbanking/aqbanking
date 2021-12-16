@@ -866,6 +866,8 @@
 
         <item name="sepaInternalTransfer"/>
 
+        <item name="sepaB2bDebitNote"/>
+
       </enum>
 
 

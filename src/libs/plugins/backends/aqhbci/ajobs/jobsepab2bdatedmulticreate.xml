@@ -1,0 +1,190 @@
+
+<SEGs>
+
+
+ <!-- 
+  ---------------------------------------------------------------------
+   Geschaeftsvorfall: SEPA Terminierte Firmen-Sammellastschrift einreichen (Version 1)
+  --------------------------------------------------------------------- 
+  -->
+
+
+ <!-- Kundennachricht -->
+ <SEGdef id="SepaB2bDebitDatedMultiCreate"
+         code="HKBME"
+         version="1"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="kti_i_forced_sepa" version="1" />
+   <GROUP type="btg" name="totalSum" minnum="0" version="1" />
+   <ELEM name="singleBookingWanted" type="alpha" maxsize="1" />
+   <ELEM name="descriptor" type="ascii" maxsize="256" />
+   <ELEM name="transfer" type="bin" trustlevel="4" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Banknachricht -->
+ <SEGdef id="SepaB2bDebitDatedMultiCreateResponse" code="HIBME" version="1"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="referenceId" type="AN" maxsize="99" minnum="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HIBMES" version="1"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="2" />
+
+   <ELEM name="minDelay_FNAL_RCUR"   type="num" maxsize="4" />
+   <ELEM name="maxdelay_FNAL_RCUR"   type="num" maxsize="4" />
+   <ELEM name="minDelay_FRST_OOFF"   type="num" maxsize="4" />
+   <ELEM name="maxdelay_FRST_OOFF"   type="num" maxsize="4" />
+
+   <ELEM name="maxTransfers"         type="num" maxsize="4" />
+   <ELEM name="sumFieldNeeded"       type="alpha" maxsize="1" />
+   <ELEM name="singleBookingAllowed" type="alpha" maxsize="1" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+
+
+ <!-- 
+  ---------------------------------------------------------------------
+   Geschaeftsvorfall: SEPA Terminierte Firmen-Sammellastschrift einreichen (Version 2)
+  --------------------------------------------------------------------- 
+  -->
+
+
+ <!-- Kundennachricht -->
+ <SEGdef id="SepaB2bDebitDatedMultiCreate"
+         code="HKBME"
+         version="2"
+         delimiter="+" 
+         terminator="'" 
+ >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="kti_i_forced_sepa" version="1" />
+   <GROUP type="btg" name="totalSum" minnum="0" version="1" />
+   <ELEM name="singleBookingWanted" type="alpha" maxsize="1" />
+   <ELEM name="descriptor" type="ascii" maxsize="256" />
+   <ELEM name="transfer" type="bin" trustlevel="4" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Banknachricht -->
+ <SEGdef id="SepaB2bDebitDatedMultiCreateResponse" code="HIBME" version="2"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="referenceId" type="AN" maxsize="99" minnum="0" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HIBMES" version="2"
+         delimiter=":" terminator="'" isbpdjob="1" >
+   <GROUP type="BPDJob" version="2" />
+
+   <ELEM name="minDelay"             type="num" maxsize="4" />
+   <ELEM name="maxdelay"             type="num" maxsize="4" />
+
+   <ELEM name="maxTransfers"         type="num" maxsize="4" />
+   <ELEM name="sumFieldNeeded"       type="alpha" maxsize="1" />
+   <ELEM name="singleBookingAllowed" type="alpha" maxsize="1" />
+
+
+   <GROUP name="SupportedPurposeCodes" delimiter=":" terminator="" >
+     <ELEM name="Code" type="ascii" maxsize="4096" minnum="0" maxnum="99" />
+   </GROUP>
+   <GROUP name="SupportedSepaFormats" delimiter=":" terminator="" >
+     <ELEM name="Format" type="ascii" maxsize="256" minnum="0" maxnum="9" />
+   </GROUP>
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+
+</SEGs>
+
+
+
+<JOBs>
+
+ <!-- Geschaeftsvorfall: SEPA Terminierte Firmen-Sammellastschrift (Version 1) -->
+ <JOBdef id="JobSepaB2bDebitDatedMultiCreate"
+         code="HKBME"
+         params="HIBMES"
+         version="1"
+         crypt="1"
+         sign="1" 
+         needBPD="1"
+         response="SepaB2bDebitDatedMultiCreateResponse"
+  >
+   <SEG type="SepaB2bDebitDatedMultiCreate" version="1" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </JOBdef>
+
+
+ <!-- Geschaeftsvorfall: SEPA Terminierte Firmen-Sammellastschrift (Version 2) -->
+ <JOBdef id="JobSepaB2bDebitDatedMultiCreate"
+         code="HKBME"
+         params="HIBMES"
+         version="2"
+         crypt="1"
+         sign="1" 
+         needBPD="1"
+         response="SepaB2bDebitDatedMultiCreateResponse"
+  >
+   <SEG type="SepaB2bDebitDatedMultiCreate" version="2" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </JOBdef>
+
+
+
+</JOBs>
+
+
+
+
+
+
+
+
+
+
+
+
+

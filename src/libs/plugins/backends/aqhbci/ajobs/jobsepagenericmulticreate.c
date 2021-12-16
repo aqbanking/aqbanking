@@ -35,6 +35,10 @@
 GWEN_INHERIT(AH_JOB, AH_JOB_CREATESEPAMULTIGENERIC);
 
 
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 static void GWENHYWFAR_CB _freeData(void *bp, void *p);
 static int _addChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
@@ -42,6 +46,10 @@ static int _prepare(AH_JOB *j);
 
 
 
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 
 AH_JOB *AH_Job_SepaGenericMultiCreate_new(const char *jobName,

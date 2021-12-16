@@ -31,11 +31,6 @@ struct AH_JOB_CREATESEPAMULTICOR1 {
   char *localIban;
 
 };
-static void GWENHYWFAR_CB AH_Job_SepaCor1DebitDatedMultiCreate_FreeData(void *bp, void *p);
-
-static int AH_Job_SepaCor1DebitDatedMultiCreate_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
-
-static int AH_Job_SepaCor1DebitDatedMultiCreate_Prepare(AH_JOB *j);
 
 
 #endif /* AH_JOBSEPACOR1DATEDMULTICREATE_P_H */
