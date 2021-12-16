@@ -55,6 +55,7 @@ AH_JOB *AH_Job_SepaTransferMulti_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a
     return NULL;
 
   AH_Job_SetChallengeClass(j, 13);
+  AH_Job_SetSupportedCommand(j, AB_Transaction_CommandSepaTransfer);
 
   AH_Job_SetGetLimitsFn(j, AH_Job_TransferBase_GetLimits_SepaUndated);
   AH_Job_SetHandleCommandFn(j, AH_Job_TransferBase_HandleCommand_SepaUndated);
