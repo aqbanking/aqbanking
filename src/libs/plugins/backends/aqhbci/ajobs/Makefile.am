@@ -27,7 +27,6 @@ noinst_HEADERS=\
   jobsepadebitdatedsinglecreate_l.h \
   jobsepadebitdatedsinglecreate_p.h \
   jobsepadebitdatedmulticreate_l.h \
-  jobsepadebitdatedmulticreate_p.h \
   jobsepacor1datedmulticreate_l.h \
   jobsepacor1datedmulticreate_p.h \
   jobsepaxfermulti_l.h \
