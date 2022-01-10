@@ -192,22 +192,22 @@ AH_TAN_MECHANISM *AH_TanMechanism_Factory(const AH_TAN_METHOD *tanMethod, int pr
 
   switch (id) {
   case AB_BANKING_TANMETHOD_CHIPTAN_OPTIC:
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Using TAN mechanism \"chipTAN optisch\"");
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Using TAN mechanism \"chipTAN optisch\"");
     tanMechanism=AH_TanMechanism_ChipTanOpt_new(tanMethod, id);
     break;
   case AB_BANKING_TANMETHOD_PHOTOTAN:
   case AB_BANKING_TANMETHOD_CHIPTAN_QR:
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Using TAN mechanism \"image\"");
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Using TAN mechanism \"image\"");
     tanMechanism=AH_TanMechanism_Image_new(tanMethod, id);
     break;
   case AB_BANKING_TANMETHOD_CHIPTAN_USB:
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Using TAN mechanism \"chipTAN USB\"");   /* USB_TAN */
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Using TAN mechanism \"chipTAN USB\"");   /* USB_TAN */
     tanMechanism= AH_TanMechanism_ChipTanUSB_new(tanMethod, id);      /* USB_TAN */
     break;                                  /* USB_TAN */
   case AB_BANKING_TANMETHOD_CHIPTAN:
   case AB_BANKING_TANMETHOD_TEXT:
   default:
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Using TAN mechanism \"text\"");
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Using TAN mechanism \"text\"");
     tanMechanism=AH_TanMechanism_Text_new(tanMethod, id);
     break;
   }

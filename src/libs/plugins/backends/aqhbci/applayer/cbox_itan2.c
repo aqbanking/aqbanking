@@ -116,7 +116,7 @@ int AH_OutboxCBox_SendAndReceiveQueueWithTan2(AH_OUTBOX_CBOX *cbox,
   }
   else {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job has no 3076 result, getting TAN");
-#if 1
+#if 0
     DBG_ERROR(0, "Original job:");
     AH_Job_Dump(job, stderr, 2);
 
@@ -403,7 +403,7 @@ void _dispatchJobSegResultsToQueue(AH_JOB *job, AH_JOBQUEUE *qJob)
             AH_RESULT *nr;
 
             nr=AH_Result_dup(origRes);
-            DBG_ERROR(AQHBCI_LOGDOMAIN, "Adding result %d to job %s", AH_Result_GetCode(origRes), AH_Job_GetName(qj));
+            DBG_INFO(AQHBCI_LOGDOMAIN, "Adding result %d to job %s", AH_Result_GetCode(origRes), AH_Job_GetName(qj));
             AH_Result_List_Add(nr, AH_Job_GetSegResults(qj));
           }
           else {
