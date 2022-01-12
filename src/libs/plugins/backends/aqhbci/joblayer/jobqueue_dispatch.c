@@ -41,6 +41,9 @@ static void _handleSegmentResult(AH_JOBQUEUE *jq, AH_JOB *j, GWEN_DB_NODE *dbSeg
 static void _addResponseToAllJobs(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbPreparedJobResponse);
 static void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWEN_DB_NODE *dbSecurity);
 
+static GWEN_DB_NODE *_sampleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWEN_DB_NODE *dbSecurity);
+static void _dispatchResponsesToJobQueue(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses);
+
 
 /* ------------------------------------------------------------------------------------------------
  * implementations
@@ -500,90 +503,15 @@ void _addResponseToAllJobs(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbPreparedJobResponse)
 
 void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWEN_DB_NODE *dbSecurity)
 {
-  GWEN_DB_NODE *dbCurr;
+  GWEN_DB_NODE *dbAllResponses;
 
-  DBG_INFO(AQHBCI_LOGDOMAIN,
-	   "Handling responses for message %d (received message num is %d)",
-	   AH_Msg_GetMsgRef(msg), AH_Msg_GetMsgNum(msg));
 
-  dbCurr=GWEN_DB_GetFirstGroup(db);
-  while (dbCurr) {
-    GWEN_DB_NODE *dbPreparedJobResponse;
-    GWEN_DB_NODE *dbData;
-    int refSegNum;
-    int segNum;
-
-    refSegNum=GWEN_DB_GetIntValue(dbCurr, "head/ref", 0, 0);
-    segNum=GWEN_DB_GetIntValue(dbCurr, "head/seq", 0, 0);
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-	     "Checking response \"%s\" (seg num %d, ref seg num %d)",
-	     GWEN_DB_GroupName(dbCurr), segNum, refSegNum);
-
-    /* use same name for main response group */
-    dbPreparedJobResponse=GWEN_DB_Group_new(GWEN_DB_GroupName(dbCurr));
-    /* add security group */
-    GWEN_DB_AddGroup(dbPreparedJobResponse, GWEN_DB_Group_dup(dbSecurity));
-    /* create data group */
-    dbData=GWEN_DB_GetGroup(dbPreparedJobResponse, GWEN_DB_FLAGS_DEFAULT, "data");
-    assert(dbData);
-    /* store copy of original response there */
-    GWEN_DB_AddGroup(dbData, GWEN_DB_Group_dup(dbCurr));
-
-    if (refSegNum) {
-      AH_JOB *j;
-
-      /* search for job to which this response belongs */
-      j=_findReferencedJob(jq, AH_Msg_GetMsgRef(msg), refSegNum);
-      if (j) {
-	DBG_INFO(AQHBCI_LOGDOMAIN,
-		 "Job \"%s\" (msg %d, segs :%d-%d) claims response \"%s\" (ref msg %d, ref seg %d)",
-		 AH_Job_GetName(j),
-		 AH_Job_GetMsgNum(j),
-		 AH_Job_GetFirstSegment(j),
-		 AH_Job_GetLastSegment(j),
-		 GWEN_DB_GroupName(dbCurr),
-		 AH_Msg_GetMsgRef(msg),
-		 refSegNum);
-
-        _possiblyExtractJobAckCode(j, dbCurr);
-        _possiblyExtractAttachPoint(j, dbCurr);
-
-        /* check for segment results */
-        if (strcasecmp(GWEN_DB_GroupName(dbCurr), "SegResult")==0)
-          _handleSegmentResult(jq, j, dbCurr);
-
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Adding response \"%s\" to job \"%s\"", GWEN_DB_GroupName(dbCurr), AH_Job_GetName(j));
-        AH_Job_AddResponse(j, GWEN_DB_Group_dup(dbPreparedJobResponse));
-        AH_Job_SetStatus(j, AH_JobStatusAnswered);
-      } /* if matching job found */
-      else {
-        DBG_WARN(AQHBCI_LOGDOMAIN, "No job found, adding response \"%s\" to all jobs", GWEN_DB_GroupName(dbCurr));
-
-        /* add response to all jobs (as queue response) and to queue */
-        if (strcasecmp(GWEN_DB_GroupName(dbCurr), "SegResult")==0) {
-          _handleSegmentResultForAllJobs(jq, dbCurr);
-          _addResponseToAllJobs(jq, dbPreparedJobResponse);
-        }
-      }
-    } /* if refSegNum */
-    else {
-      /* no reference segment number, add response to all jobs */
-      DBG_DEBUG(AQHBCI_LOGDOMAIN,
-                "No segment reference number, "
-                "adding response \"%s\" to all jobs",
-                GWEN_DB_GroupName(dbCurr));
-
-      /* add response to all jobs (as queue response) and to queue */
-      if (strcasecmp(GWEN_DB_GroupName(dbCurr), "SegResult")==0)
-        _handleSegmentResultForAllJobs(jq, dbCurr);
-
-      else if (strcasecmp(GWEN_DB_GroupName(dbCurr), "MsgResult")==0)
-        _addResponseToAllJobs(jq, dbPreparedJobResponse);
-    }
-    GWEN_DB_Group_free(dbPreparedJobResponse);
-
-    dbCurr=GWEN_DB_GetNextGroup(dbCurr);
-  } /* while */
+  dbAllResponses=_sampleResponseSegments(jq, msg, db, dbSecurity);
+  if (dbAllResponses) {
+    _dispatchResponsesToJobQueue(jq, dbAllResponses);
+    /* TODO: extract BPD, UPD, account data etc  */
+    GWEN_DB_Group_free(dbAllResponses);
+  }
 }
 
 
