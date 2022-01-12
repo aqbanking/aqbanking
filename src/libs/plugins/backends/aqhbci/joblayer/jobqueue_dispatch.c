@@ -638,12 +638,17 @@ void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWE
   if (dbAllResponses) {
     /* first extract all interesting data */
     AH_JobQueue_ReadBpd(jq, dbAllResponses);
-    AH_JobQueue_ReadAccounts(jq, dbAllResponses);
+    if (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_IGNOREACCOUNTS) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Ignoring possibly received accounts");
+    }
+    else
+      AH_JobQueue_ReadAccounts(jq, dbAllResponses);
 
     /* then dispatch to jobs */
     _dispatchResponsesToJobQueue(jq, dbAllResponses);
     GWEN_DB_Group_free(dbAllResponses);
   }
 }
+
 
 

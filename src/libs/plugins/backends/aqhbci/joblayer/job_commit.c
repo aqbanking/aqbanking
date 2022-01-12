@@ -137,17 +137,6 @@ int _commitSystemData(AH_JOB *j, int doLock)
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Reading segment results, bank messages etc");
   _readSomeKnownSegments(j, AH_Job_GetResponses(j));
 
-#if 0
-  /* try to extract accounts */
-  if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_IGNOREACCOUNTS) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Ignoring possibly received accounts");
-  }
-  else {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Committing accounts");
-    AH_Job_Commit_Accounts(j);
-  }
-#endif
-
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Finished.");
   return 0;
 }
