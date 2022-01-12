@@ -12,6 +12,7 @@
 #endif
 
 #include "jobqueue_dispatch.h"
+#include "jobqueue_bpd.h"
 
 #include "aqhbci/banking/user_l.h"
 
@@ -508,8 +509,11 @@ void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWE
 
   dbAllResponses=_sampleResponseSegments(jq, msg, db, dbSecurity);
   if (dbAllResponses) {
+    /* first extract all interesting data */
+    AH_JobQueue_Read_Bpd(jq, dbAllResponses);
+
+    /* then dispatch to jobs */
     _dispatchResponsesToJobQueue(jq, dbAllResponses);
-    /* TODO: extract BPD, UPD, account data etc  */
     GWEN_DB_Group_free(dbAllResponses);
   }
 }
@@ -574,6 +578,7 @@ void _dispatchResponsesToJobQueue(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses)
 {
   GWEN_DB_NODE *dbPreparedJobResponse;
 
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Dispatching response to job queue");
   dbPreparedJobResponse=GWEN_DB_GetFirstGroup(dbResponses);
   while (dbPreparedJobResponse) {
     const char *groupName;

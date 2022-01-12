@@ -134,21 +134,11 @@ void AH_Job_ReadAccountDataSeg(AB_ACCOUNT *acc, GWEN_DB_NODE *dbAccountData)
 
 int _commitSystemData(AH_JOB *j, int doLock)
 {
-  int rv;
-
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Committing data");
   /* GWEN_DB_Dump(j->jobResponses, 2); */
 
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Reading segment results, bank messages etc");
   _readSomeKnownSegments(j, AH_Job_GetResponses(j));
-
-  /* try to extract bank parameter data */
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Committing BPD");
-  rv=AH_Job_Commit_Bpd(j);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
 
   /* try to extract accounts */
   if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_IGNOREACCOUNTS) {
