@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2021 by Martin Preuss
+    copyright   : (C) 2022 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -13,6 +13,7 @@
 
 #include "jobqueue_dispatch.h"
 #include "jobqueue_bpd.h"
+#include "jobqueue_account.h"
 
 #include "aqhbci/banking/user_l.h"
 
@@ -502,24 +503,6 @@ void _addResponseToAllJobs(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbPreparedJobResponse)
 
 
 
-void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWEN_DB_NODE *dbSecurity)
-{
-  GWEN_DB_NODE *dbAllResponses;
-
-
-  dbAllResponses=_sampleResponseSegments(jq, msg, db, dbSecurity);
-  if (dbAllResponses) {
-    /* first extract all interesting data */
-    AH_JobQueue_Read_Bpd(jq, dbAllResponses);
-
-    /* then dispatch to jobs */
-    _dispatchResponsesToJobQueue(jq, dbAllResponses);
-    GWEN_DB_Group_free(dbAllResponses);
-  }
-}
-
-
-
 GWEN_DB_NODE *_sampleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWEN_DB_NODE *dbSecurity)
 {
   GWEN_DB_NODE *dbAllResponses;
@@ -643,4 +626,24 @@ void _dispatchResponsesToJobQueue(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses)
     dbPreparedJobResponse=GWEN_DB_GetNextGroup(dbPreparedJobResponse);
   } /* while */
 }
+
+
+
+void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWEN_DB_NODE *dbSecurity)
+{
+  GWEN_DB_NODE *dbAllResponses;
+
+
+  dbAllResponses=_sampleResponseSegments(jq, msg, db, dbSecurity);
+  if (dbAllResponses) {
+    /* first extract all interesting data */
+    AH_JobQueue_ReadBpd(jq, dbAllResponses);
+    AH_JobQueue_ReadAccounts(jq, dbAllResponses);
+
+    /* then dispatch to jobs */
+    _dispatchResponsesToJobQueue(jq, dbAllResponses);
+    GWEN_DB_Group_free(dbAllResponses);
+  }
+}
+
 

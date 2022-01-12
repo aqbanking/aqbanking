@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2022 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -12,9 +12,6 @@
 #endif
 
 #include "job_commit.h"
-#include "job_commit_key.h"
-#include "job_commit_bpd.h"
-#include "job_commit_account.h"
 #include "job_commit_key.h"
 #include "aqhbci/banking/user_l.h"
 #include "aqhbci/banking/account_l.h"
@@ -140,6 +137,7 @@ int _commitSystemData(AH_JOB *j, int doLock)
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Reading segment results, bank messages etc");
   _readSomeKnownSegments(j, AH_Job_GetResponses(j));
 
+#if 0
   /* try to extract accounts */
   if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_IGNOREACCOUNTS) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Ignoring possibly received accounts");
@@ -148,6 +146,7 @@ int _commitSystemData(AH_JOB *j, int doLock)
     DBG_INFO(AQHBCI_LOGDOMAIN, "Committing accounts");
     AH_Job_Commit_Accounts(j);
   }
+#endif
 
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Finished.");
   return 0;

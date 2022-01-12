@@ -46,7 +46,7 @@ static void _dumpBpdAddr(const AH_BPD_ADDR *ba);
 
 
 
-void AH_JobQueue_Read_Bpd(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses)
+void AH_JobQueue_ReadBpd(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses)
 {
   GWEN_DB_NODE *dbBpd=NULL;
   AH_BPD *bpd;
