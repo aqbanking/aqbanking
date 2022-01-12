@@ -588,4 +588,58 @@ void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWE
 
 
 
+GWEN_DB_NODE *_sampleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWEN_DB_NODE *dbSecurity)
+{
+  GWEN_DB_NODE *dbAllResponses;
+  GWEN_DB_NODE *dbCurr;
+  int responsesAdded=0;
+
+  DBG_INFO(AQHBCI_LOGDOMAIN,
+	   "Handling responses for message %d (received message num is %d)",
+	   AH_Msg_GetMsgRef(msg), AH_Msg_GetMsgNum(msg));
+
+  dbAllResponses=GWEN_DB_Group_new("responses");
+
+  dbCurr=GWEN_DB_GetFirstGroup(db);
+  while (dbCurr) {
+    GWEN_DB_NODE *dbPreparedJobResponse;
+    GWEN_DB_NODE *dbData;
+    int refSegNum;
+    int segNum;
+
+    refSegNum=GWEN_DB_GetIntValue(dbCurr, "head/ref", 0, 0);
+    segNum=GWEN_DB_GetIntValue(dbCurr, "head/seq", 0, 0);
+    DBG_INFO(AQHBCI_LOGDOMAIN,
+	     "Checking response \"%s\" (seg num %d, ref seg num %d)",
+	     GWEN_DB_GroupName(dbCurr), segNum, refSegNum);
+
+    /* use same name for main response group */
+    dbPreparedJobResponse=GWEN_DB_Group_new(GWEN_DB_GroupName(dbCurr));
+    GWEN_DB_SetIntValue(dbPreparedJobResponse, GWEN_DB_FLAGS_DEFAULT, "refMsgNum", refSegNum);
+    GWEN_DB_SetIntValue(dbPreparedJobResponse, GWEN_DB_FLAGS_DEFAULT, "refSegNum", AH_Msg_GetMsgRef(msg));
+
+    /* add security group */
+    GWEN_DB_AddGroup(dbPreparedJobResponse, GWEN_DB_Group_dup(dbSecurity));
+    /* create data group */
+    dbData=GWEN_DB_GetGroup(dbPreparedJobResponse, GWEN_DB_FLAGS_DEFAULT, "data");
+    assert(dbData);
+    /* store copy of original response there */
+    GWEN_DB_AddGroup(dbData, GWEN_DB_Group_dup(dbCurr));
+
+    GWEN_DB_AddGroup(dbAllResponses, dbPreparedJobResponse);
+    responsesAdded++;
+
+    dbCurr=GWEN_DB_GetNextGroup(dbCurr);
+  } /* while */
+
+  if (responsesAdded<1) {
+    GWEN_DB_Group_free(dbAllResponses);
+    return NULL;
+  }
+
+  return dbAllResponses;
+}
+
+
+
 
