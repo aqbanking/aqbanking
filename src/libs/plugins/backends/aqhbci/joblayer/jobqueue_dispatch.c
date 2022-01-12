@@ -642,4 +642,72 @@ GWEN_DB_NODE *_sampleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE
 
 
 
+void _dispatchResponsesToJobQueue(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses)
+{
+  GWEN_DB_NODE *dbPreparedJobResponse;
+
+  dbPreparedJobResponse=GWEN_DB_GetFirstGroup(dbResponses);
+  while (dbPreparedJobResponse) {
+    const char *groupName;
+    int refSegNum;
+    int refMsgNum;
+    GWEN_DB_NODE *dbData;
+
+    refMsgNum=GWEN_DB_GetIntValue(dbPreparedJobResponse, "refMsgNum", 0, 0);
+    refSegNum=GWEN_DB_GetIntValue(dbPreparedJobResponse, "refSegNum", 0, 0);
+    groupName=GWEN_DB_GroupName(dbPreparedJobResponse);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Checking response \"%s\" (ref seg num %d)", groupName, refSegNum);
+    dbData=GWEN_DB_GetGroup(dbPreparedJobResponse, GWEN_DB_FLAGS_DEFAULT, "data");
+    assert(dbData);
+
+    if (refSegNum) {
+      AH_JOB *j;
+
+      /* search for job to which this response belongs */
+      j=_findReferencedJob(jq, refMsgNum, refSegNum);
+      if (j) {
+	DBG_INFO(AQHBCI_LOGDOMAIN,
+		 "Job \"%s\" (msg %d, segs :%d-%d) claims response \"%s\" (ref msg %d, ref seg %d)",
+		 AH_Job_GetName(j),
+		 AH_Job_GetMsgNum(j),
+		 AH_Job_GetFirstSegment(j),
+		 AH_Job_GetLastSegment(j),
+		 groupName,
+		 refMsgNum,
+		 refSegNum);
+
+        _possiblyExtractJobAckCode(j, dbData);
+        _possiblyExtractAttachPoint(j, dbData);
+
+        /* check for segment results */
+        if (strcasecmp(groupName, "SegResult")==0)
+          _handleSegmentResult(jq, j, dbData);
+
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Adding response \"%s\" to job \"%s\"", groupName, AH_Job_GetName(j));
+	AH_Job_AddResponse(j, GWEN_DB_Group_dup(dbPreparedJobResponse));
+	AH_Job_SetStatus(j, AH_JobStatusAnswered);
+      } /* if matching job found */
+      else {
+        DBG_WARN(AQHBCI_LOGDOMAIN, "No job found, adding response \"%s\" to all jobs", groupName);
+	if (strcasecmp(groupName, "SegResult")==0) {
+	  _handleSegmentResultForAllJobs(jq, dbData);
+          _addResponseToAllJobs(jq, dbPreparedJobResponse);
+        }
+      }
+    } /* if refSegNum */
+    else {
+      /* no reference segment number, add response to all jobs */
+      DBG_DEBUG(AQHBCI_LOGDOMAIN,
+		"No segment reference number, adding response \"%s\" to all jobs",
+		groupName);
+      if (strcasecmp(groupName, "SegResult")==0)
+        _handleSegmentResultForAllJobs(jq, dbData);
+
+      else if (strcasecmp(groupName, "MsgResult")==0)
+        _addResponseToAllJobs(jq, dbPreparedJobResponse);
+    }
+
+    dbPreparedJobResponse=GWEN_DB_GetNextGroup(dbPreparedJobResponse);
+  } /* while */
+}
 
