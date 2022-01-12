@@ -31,12 +31,12 @@
  */
 
 
-static AB_ACCOUNT_LIST *_readAccounts(AH_JOB *j);
+static AB_ACCOUNT_LIST *_readAccounts(AB_PROVIDER *pro, AB_USER *user, GWEN_DB_NODE *dbResponses);
 static AB_ACCOUNT *_readAndSanitizeAccountData(AB_PROVIDER *pro, AH_BPD *bpd, GWEN_DB_NODE *dbAccountData);
-static void _removeEmpty(AH_JOB *j, AB_ACCOUNT_LIST *accList);
-static void _matchAccountsWithStoredAccountsAndAssignStoredId(AH_JOB *j, AB_ACCOUNT_LIST *accList);
-static uint32_t _findStored(AH_JOB *j, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC_LIST *asl);
-static void _addOrModify(AH_JOB *j, AB_ACCOUNT *acc);
+static void _removeEmpty(AB_ACCOUNT_LIST *accList);
+static void _matchAccountsWithStoredAccountsAndAssignStoredId(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accList);
+static uint32_t _findStored(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC_LIST *asl);
+static void _addOrModify(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *acc);
 static void _possiblyReplaceUpdJobsForAccountInLockedUser(AB_USER *user, AB_ACCOUNT *storedAcc,
                                                           GWEN_DB_NODE *dbTempUpd);
 static AB_ACCOUNT *_getLoadedAndUpdatedOrCreatedAccount(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *acc);
@@ -55,12 +55,16 @@ static void _updateAccountInfo(AB_ACCOUNT *targetAccount, const AB_ACCOUNT *sour
 
 void AH_Job_Commit_Accounts(AH_JOB *j)
 {
+  AB_PROVIDER *pro;
+  AB_USER *user;
   AB_ACCOUNT_LIST *accList;
 
-  accList=_readAccounts(j);
+  pro=AH_Job_GetProvider(j);
+  user=AH_Job_GetUser(j);
+  accList=_readAccounts(pro, user, AH_Job_GetResponses(j));
   if (accList) {
-    _removeEmpty(j, accList);
-    _matchAccountsWithStoredAccountsAndAssignStoredId(j, accList);
+    _removeEmpty(accList);
+    _matchAccountsWithStoredAccountsAndAssignStoredId(pro, accList);
 
     /* now either add new accounts or modify existing ones */
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Adding new or modifying existing accounts");
@@ -69,7 +73,7 @@ void AH_Job_Commit_Accounts(AH_JOB *j)
 
       while ((acc=AB_Account_List_First(accList))) {
         AB_Account_List_Del(acc);
-        _addOrModify(j, acc);
+        _addOrModify(pro, user, acc);
         AB_Account_free(acc);
       } /* while */
     } /* if accounts */
@@ -79,25 +83,17 @@ void AH_Job_Commit_Accounts(AH_JOB *j)
 
 
 
-AB_ACCOUNT_LIST *_readAccounts(AH_JOB *j)
+AB_ACCOUNT_LIST *_readAccounts(AB_PROVIDER *pro, AB_USER *user, GWEN_DB_NODE *dbResponses)
 {
   AB_ACCOUNT_LIST *accList;
-  AB_PROVIDER *pro;
-  AB_USER *user;
   AH_BPD *bpd;
-  GWEN_DB_NODE *dbJob;
   GWEN_DB_NODE *dbCurr;
 
-  pro=AH_Job_GetProvider(j);
-
-  user=AH_Job_GetUser(j);
   bpd=AH_User_GetBpd(user);
 
   accList=AB_Account_List_new();
 
-  dbJob=AH_Job_GetResponses(j);
-
-  dbCurr=GWEN_DB_FindFirstGroup(dbJob, "AccountData");
+  dbCurr=GWEN_DB_FindFirstGroup(dbResponses, "AccountData");
   while (dbCurr) {
     AB_ACCOUNT *acc;
 
@@ -170,7 +166,7 @@ AB_ACCOUNT *_readAndSanitizeAccountData(AB_PROVIDER *pro, AH_BPD *bpd, GWEN_DB_N
 
 
 
-static void _removeEmpty(AH_JOB *j, AB_ACCOUNT_LIST *accList)
+static void _removeEmpty(AB_ACCOUNT_LIST *accList)
 {
   /* only keep accounts which have at least IBAN or bankcode and account number */
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Checking for empty accounts");
@@ -201,7 +197,7 @@ static void _removeEmpty(AH_JOB *j, AB_ACCOUNT_LIST *accList)
 
 
 
-void _matchAccountsWithStoredAccountsAndAssignStoredId(AH_JOB *j, AB_ACCOUNT_LIST *accList)
+void _matchAccountsWithStoredAccountsAndAssignStoredId(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accList)
 {
   /* find out which accounts are new */
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Checking for existing or to be added accounts");
@@ -210,8 +206,7 @@ void _matchAccountsWithStoredAccountsAndAssignStoredId(AH_JOB *j, AB_ACCOUNT_LIS
     AB_ACCOUNT_SPEC_LIST *accountSpecList=NULL;
     int rv;
 
-    ab=AH_Job_GetBankingApi(j);
-
+    ab=AB_Provider_GetBanking(pro);
     accountSpecList=AB_AccountSpec_List_new();
     rv=AB_Banking_GetAccountSpecList(ab, &accountSpecList);
     if (rv<0) {
@@ -224,7 +219,7 @@ void _matchAccountsWithStoredAccountsAndAssignStoredId(AH_JOB *j, AB_ACCOUNT_LIS
       while (acc) {
         uint32_t storedUid;
 
-        storedUid=_findStored(j, acc, accountSpecList);
+        storedUid=_findStored(pro, acc, accountSpecList);
         if (storedUid) {
           DBG_INFO(AQHBCI_LOGDOMAIN, "Found a matching account (%x, %lu)", storedUid, (long unsigned int) storedUid);
           AB_Account_SetUniqueId(acc, storedUid);
@@ -239,17 +234,13 @@ void _matchAccountsWithStoredAccountsAndAssignStoredId(AH_JOB *j, AB_ACCOUNT_LIS
 
 
 
-static uint32_t _findStored(AH_JOB *j, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC_LIST *asl)
+static uint32_t _findStored(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC_LIST *asl)
 {
-  AB_PROVIDER *pro;
   const char *accountNum;
   const char *bankCode;
   const char *iban;
   int accountType;
   AB_ACCOUNT_SPEC *as=NULL;
-
-  pro=AH_Job_GetProvider(j);
-  assert(pro);
 
   accountNum=AB_Account_GetAccountNumber(acc);
   bankCode=AB_Account_GetBankCode(acc);
@@ -303,15 +294,10 @@ static uint32_t _findStored(AH_JOB *j, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC_LI
 }
 
 
-static void _addOrModify(AH_JOB *j, AB_ACCOUNT *acc)
+static void _addOrModify(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *acc)
 {
-  AB_PROVIDER *pro;
-  AB_USER *user;
   AB_ACCOUNT *storedAcc;
   GWEN_DB_NODE *dbTempUpd;
-
-  pro=AH_Job_GetProvider(j);
-  user=AH_Job_GetUser(j);
 
   dbTempUpd=AH_Account_GetDbTempUpd(acc);
   if (dbTempUpd)
