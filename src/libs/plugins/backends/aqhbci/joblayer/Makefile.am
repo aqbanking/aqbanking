@@ -12,8 +12,6 @@ noinst_HEADERS=\
   job_l.h \
   job_p.h \
   job_commit.h \
-  job_commit_account.h \
-  job_commit_bpd.h \
   job_commit_key.h \
   job_crypt.h \
   job_swift.h \
@@ -22,6 +20,8 @@ noinst_HEADERS=\
   jobqueue_dispatch.h \
   jobqueue_tomsg.h \
   jobqueue_addjob.h \
+  jobqueue_bpd.h \
+  jobqueue_account.h \
   result_l.h \
   result_p.h
 
@@ -31,8 +31,6 @@ noinst_HEADERS=\
 libhbcijob_la_SOURCES=\
   job.c \
   job_commit.c \
-  job_commit_account.c \
-  job_commit_bpd.c \
   job_commit_key.c \
   job_crypt.c \
   job_swift.c \
@@ -40,6 +38,8 @@ libhbcijob_la_SOURCES=\
   jobqueue_dispatch.c \
   jobqueue_tomsg.c \
   jobqueue_addjob.c \
+  jobqueue_bpd.c \
+  jobqueue_account.c \
   result.c
 
 

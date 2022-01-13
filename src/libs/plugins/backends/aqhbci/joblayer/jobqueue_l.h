@@ -53,6 +53,8 @@ typedef struct AH_JOBQUEUE AH_JOBQUEUE;
 /** bad pin flagged by server */
 #define AH_JOBQUEUE_FLAGS_BAD_PIN        0x01000000
 
+#define AH_JOBQUEUE_FLAGS_IGNOREACCOUNTS 0x02000000
+
 
 #include <gwenhywfar/misc.h>
 
