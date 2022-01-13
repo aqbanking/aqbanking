@@ -127,6 +127,26 @@
   
   
     <extradist>
+      jobgetbalance.xml
+      jobgettransactions.xml
+      jobgettrans_camt.xml
+      jobforeignxferwh.xml
+      jobloadcellphone.xml
+      jobsepadebitdatedsinglecreate.xml
+      jobsepadebitdatedmulticreate.xml
+      jobsepacor1datedmulticreate.xml
+      jobsepaxfermulti.xml
+      jobsepaxfersingle.xml
+      jobsepadebitsingle.xml
+      jobsepacor1datedsinglecreate.xml
+      jobsepastandingordercreate.xml
+      jobsepastandingorderget.xml
+      jobsepastandingordermodify.xml
+      jobsepastandingorderdelete.xml
+      jobgetestatements.xml
+      jobgetestatements2.xml
+      jobgetdepot.xml
+      jobsepainternalxfer.xml
     </extradist>
 
     <buildFiles>

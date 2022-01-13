@@ -61,7 +61,7 @@
       jobgetbankinfo_l.h jobgetbankinfo_p.h
       jobunblockpin_l.h
       jobacknowledge_l.h
-      jobgettargetacc_l.h
+      jobgettargetacc_l.h jobgettargetacc_p.h
     </headers>
   
   
@@ -92,6 +92,16 @@
   
   
     <extradist>
+      jobgetkeys.xml
+      jobsendkeys.xml
+      jobchangekeys.xml
+      jobtan.xml
+      jobgetsepainfo.xml
+      jobgetsysid.xml
+      jobgetbankinfo.xml
+      jobunblockpin.xml
+      jobacknowledge.xml
+      jobgettargetacc.xml
     </extradist>
 
 

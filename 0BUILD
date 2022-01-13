@@ -3,8 +3,8 @@
 
 <gwbuild>
 
-  <project name="aqbanking" version="6.4.1-stable"
-           so_current="48" so_age="4" so_revision="1"
+  <project name="aqbanking" version="6.4.3-beta"
+           so_current="48" so_age="4" so_revision="3"
            write_config_h="TRUE"
            >
 

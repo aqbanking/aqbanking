@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2021 by Martin Preuss
+    copyright   : (C) 2022 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -12,6 +12,8 @@
 #endif
 
 #include "jobqueue_dispatch.h"
+#include "jobqueue_bpd.h"
+#include "jobqueue_account.h"
 
 #include "aqhbci/banking/user_l.h"
 
@@ -40,6 +42,9 @@ static void _handleSegmentResultForAllJobs(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbSegm
 static void _handleSegmentResult(AH_JOBQUEUE *jq, AH_JOB *j, GWEN_DB_NODE *dbSegment);
 static void _addResponseToAllJobs(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbPreparedJobResponse);
 static void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWEN_DB_NODE *dbSecurity);
+
+static GWEN_DB_NODE *_sampleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWEN_DB_NODE *dbSecurity);
+static void _dispatchResponsesToJobQueue(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses);
 
 
 /* ------------------------------------------------------------------------------------------------
@@ -498,13 +503,17 @@ void _addResponseToAllJobs(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbPreparedJobResponse)
 
 
 
-void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWEN_DB_NODE *dbSecurity)
+GWEN_DB_NODE *_sampleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWEN_DB_NODE *dbSecurity)
 {
+  GWEN_DB_NODE *dbAllResponses;
   GWEN_DB_NODE *dbCurr;
+  int responsesAdded=0;
 
   DBG_INFO(AQHBCI_LOGDOMAIN,
 	   "Handling responses for message %d (received message num is %d)",
 	   AH_Msg_GetMsgRef(msg), AH_Msg_GetMsgNum(msg));
+
+  dbAllResponses=GWEN_DB_Group_new("responses");
 
   dbCurr=GWEN_DB_GetFirstGroup(db);
   while (dbCurr) {
@@ -521,6 +530,9 @@ void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWE
 
     /* use same name for main response group */
     dbPreparedJobResponse=GWEN_DB_Group_new(GWEN_DB_GroupName(dbCurr));
+    GWEN_DB_SetIntValue(dbPreparedJobResponse, GWEN_DB_FLAGS_DEFAULT, "refSegNum", refSegNum);
+    GWEN_DB_SetIntValue(dbPreparedJobResponse, GWEN_DB_FLAGS_DEFAULT, "refMsgNum", AH_Msg_GetMsgRef(msg));
+
     /* add security group */
     GWEN_DB_AddGroup(dbPreparedJobResponse, GWEN_DB_Group_dup(dbSecurity));
     /* create data group */
@@ -529,11 +541,51 @@ void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWE
     /* store copy of original response there */
     GWEN_DB_AddGroup(dbData, GWEN_DB_Group_dup(dbCurr));
 
+    GWEN_DB_AddGroup(dbAllResponses, dbPreparedJobResponse);
+    responsesAdded++;
+
+    dbCurr=GWEN_DB_GetNextGroup(dbCurr);
+  } /* while */
+
+  if (responsesAdded<1) {
+    GWEN_DB_Group_free(dbAllResponses);
+    return NULL;
+  }
+
+  return dbAllResponses;
+}
+
+
+
+void _dispatchResponsesToJobQueue(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses)
+{
+  GWEN_DB_NODE *dbPreparedJobResponse;
+
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Dispatching response to job queue");
+  dbPreparedJobResponse=GWEN_DB_GetFirstGroup(dbResponses);
+  while (dbPreparedJobResponse) {
+    const char *groupName;
+    int refSegNum;
+    int refMsgNum;
+    GWEN_DB_NODE *dbData;
+
+    if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Dispatching this message:");
+      GWEN_DB_Dump(dbPreparedJobResponse, 2);
+    }
+
+    refMsgNum=GWEN_DB_GetIntValue(dbPreparedJobResponse, "refMsgNum", 0, 0);
+    refSegNum=GWEN_DB_GetIntValue(dbPreparedJobResponse, "refSegNum", 0, 0);
+    groupName=GWEN_DB_GroupName(dbPreparedJobResponse);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Checking response \"%s\" (ref seg num %d)", groupName, refSegNum);
+    dbData=GWEN_DB_GetGroup(dbPreparedJobResponse, GWEN_DB_FLAGS_DEFAULT, "data");
+    assert(dbData);
+
     if (refSegNum) {
       AH_JOB *j;
 
       /* search for job to which this response belongs */
-      j=_findReferencedJob(jq, AH_Msg_GetMsgRef(msg), refSegNum);
+      j=_findReferencedJob(jq, refMsgNum, refSegNum);
       if (j) {
 	DBG_INFO(AQHBCI_LOGDOMAIN,
 		 "Job \"%s\" (msg %d, segs :%d-%d) claims response \"%s\" (ref msg %d, ref seg %d)",
@@ -541,27 +593,25 @@ void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWE
 		 AH_Job_GetMsgNum(j),
 		 AH_Job_GetFirstSegment(j),
 		 AH_Job_GetLastSegment(j),
-		 GWEN_DB_GroupName(dbCurr),
-		 AH_Msg_GetMsgRef(msg),
+		 groupName,
+		 refMsgNum,
 		 refSegNum);
 
-        _possiblyExtractJobAckCode(j, dbCurr);
-        _possiblyExtractAttachPoint(j, dbCurr);
+        _possiblyExtractJobAckCode(j, dbData);
+        _possiblyExtractAttachPoint(j, dbData);
 
         /* check for segment results */
-        if (strcasecmp(GWEN_DB_GroupName(dbCurr), "SegResult")==0)
-          _handleSegmentResult(jq, j, dbCurr);
+        if (strcasecmp(groupName, "SegResult")==0)
+          _handleSegmentResult(jq, j, dbData);
 
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Adding response \"%s\" to job \"%s\"", GWEN_DB_GroupName(dbCurr), AH_Job_GetName(j));
-        AH_Job_AddResponse(j, GWEN_DB_Group_dup(dbPreparedJobResponse));
-        AH_Job_SetStatus(j, AH_JobStatusAnswered);
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Adding response \"%s\" to job \"%s\"", groupName, AH_Job_GetName(j));
+	AH_Job_AddResponse(j, GWEN_DB_Group_dup(dbPreparedJobResponse));
+	AH_Job_SetStatus(j, AH_JobStatusAnswered);
       } /* if matching job found */
       else {
-        DBG_WARN(AQHBCI_LOGDOMAIN, "No job found, adding response \"%s\" to all jobs", GWEN_DB_GroupName(dbCurr));
-
-        /* add response to all jobs (as queue response) and to queue */
-        if (strcasecmp(GWEN_DB_GroupName(dbCurr), "SegResult")==0) {
-          _handleSegmentResultForAllJobs(jq, dbCurr);
+        DBG_WARN(AQHBCI_LOGDOMAIN, "No job found, adding response \"%s\" to all jobs", groupName);
+	if (strcasecmp(groupName, "SegResult")==0) {
+	  _handleSegmentResultForAllJobs(jq, dbData);
           _addResponseToAllJobs(jq, dbPreparedJobResponse);
         }
       }
@@ -569,23 +619,41 @@ void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWE
     else {
       /* no reference segment number, add response to all jobs */
       DBG_DEBUG(AQHBCI_LOGDOMAIN,
-                "No segment reference number, "
-                "adding response \"%s\" to all jobs",
-                GWEN_DB_GroupName(dbCurr));
+		"No segment reference number, adding response \"%s\" to all jobs",
+		groupName);
+      if (strcasecmp(groupName, "SegResult")==0)
+        _handleSegmentResultForAllJobs(jq, dbData);
 
-      /* add response to all jobs (as queue response) and to queue */
-      if (strcasecmp(GWEN_DB_GroupName(dbCurr), "SegResult")==0)
-        _handleSegmentResultForAllJobs(jq, dbCurr);
-
-      else if (strcasecmp(GWEN_DB_GroupName(dbCurr), "MsgResult")==0)
+      else if (strcasecmp(groupName, "MsgResult")==0)
         _addResponseToAllJobs(jq, dbPreparedJobResponse);
     }
-    GWEN_DB_Group_free(dbPreparedJobResponse);
 
-    dbCurr=GWEN_DB_GetNextGroup(dbCurr);
+    dbPreparedJobResponse=GWEN_DB_GetNextGroup(dbPreparedJobResponse);
   } /* while */
 }
 
+
+
+void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWEN_DB_NODE *dbSecurity)
+{
+  GWEN_DB_NODE *dbAllResponses;
+
+
+  dbAllResponses=_sampleResponseSegments(jq, msg, db, dbSecurity);
+  if (dbAllResponses) {
+    /* first extract all interesting data */
+    AH_JobQueue_ReadBpd(jq, dbAllResponses);
+    if (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_IGNOREACCOUNTS) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Ignoring possibly received accounts");
+    }
+    else
+      AH_JobQueue_ReadAccounts(jq, dbAllResponses);
+
+    /* then dispatch to jobs */
+    _dispatchResponsesToJobQueue(jq, dbAllResponses);
+    GWEN_DB_Group_free(dbAllResponses);
+  }
+}
 
 
 

@@ -119,6 +119,8 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j)
       AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_SIGNSEQONE);
     if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_NOITAN)
       AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_NOITAN);
+    if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_IGNOREACCOUNTS)
+      AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_IGNOREACCOUNTS);
   }
 
   /* actually add job to queue */

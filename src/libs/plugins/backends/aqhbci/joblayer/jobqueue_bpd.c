@@ -1,5 +1,5 @@
 /***************************************************************************
-    begin       : Mon Mar 01 2004
+    begin       : Wed Jan 12 2022
     copyright   : (C) 2020 by Martin Preuss
     email       : martin@libchipcard.de
 
@@ -12,7 +12,7 @@
 #endif
 
 
-#include "job_commit_bpd.h"
+#include "jobqueue_bpd.h"
 #include "aqhbci/banking/user_l.h"
 
 #include "aqbanking/i18n_l.h"
@@ -46,60 +46,51 @@ static void _dumpBpdAddr(const AH_BPD_ADDR *ba);
 
 
 
-int AH_Job_Commit_Bpd(AH_JOB *j)
+void AH_JobQueue_ReadBpd(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses)
 {
-  GWEN_DB_NODE *dbJob    ;
-  GWEN_DB_NODE *dbRd=NULL;
+  GWEN_DB_NODE *dbBpd=NULL;
   AH_BPD *bpd;
   const char *p;
   int rv;
   AB_USER *user;
   GWEN_MSGENGINE *msgEngine;
 
-  user=AH_Job_GetUser(j);
+  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Extracting BPD");
+  user=AH_JobQueue_GetUser(jq);
   msgEngine=AH_User_GetMsgEngine(user);
   assert(msgEngine);
 
-  //dbJob=GWEN_DB_GetFirstGroup(j->jobResponses);
-  dbJob=AH_Job_GetResponses(j);
+  rv=_getJobGroup(dbResponses, "bpd", &dbBpd);
+  if (rv>=0) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Found BPD, replacing existing");
 
-  rv=_getJobGroup(dbJob, "bpd", &dbRd);
-  if (rv<0) {
-    if (rv!=GWEN_ERROR_NOT_FOUND) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
-    DBG_INFO(AQHBCI_LOGDOMAIN, "No BPD in response for job %s", AH_Job_GetName(j));
-    /*GWEN_DB_Dump(j->jobResponses, 2);*/
-    return 0;
+    /* create new BPD */
+    bpd=AH_Bpd_new();
+
+    /* read version */
+    AH_Bpd_SetBpdVersion(bpd, GWEN_DB_GetIntValue(dbBpd, "version", 0, 0));
+
+    /* read bank name */
+    p=GWEN_DB_GetCharValue(dbBpd, "name", 0, 0);
+    if (p)
+      AH_Bpd_SetBankName(bpd, p);
+
+    /* read message and job limits */
+    AH_Bpd_SetJobTypesPerMsg(bpd, GWEN_DB_GetIntValue(dbBpd, "jobtypespermsg", 0, 0));
+    AH_Bpd_SetMaxMsgSize(bpd, GWEN_DB_GetIntValue(dbBpd, "maxmsgsize", 0, 0));
+
+    _readLanguages(dbBpd, bpd);
+    _readVersions(dbBpd, bpd);
+    _readCommParams(dbResponses, bpd);
+    _readPinTanBpd(dbResponses, bpd, GWEN_MsgEngine_GetProtocolVersion(msgEngine));
+    _readBpdJobs(dbResponses, bpd, msgEngine);
+
+    /* set BPD */
+    AH_User_SetBpd(user, bpd);
   }
-
-  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Found BPD, replacing existing");
-
-  /* create new BPD */
-  bpd=AH_Bpd_new();
-
-  /* read version */
-  AH_Bpd_SetBpdVersion(bpd, GWEN_DB_GetIntValue(dbRd, "version", 0, 0));
-
-  /* read bank name */
-  p=GWEN_DB_GetCharValue(dbRd, "name", 0, 0);
-  if (p)
-    AH_Bpd_SetBankName(bpd, p);
-
-  /* read message and job limits */
-  AH_Bpd_SetJobTypesPerMsg(bpd, GWEN_DB_GetIntValue(dbRd, "jobtypespermsg", 0, 0));
-  AH_Bpd_SetMaxMsgSize(bpd, GWEN_DB_GetIntValue(dbRd, "maxmsgsize", 0, 0));
-
-  _readLanguages(dbRd, bpd);
-  _readVersions(dbRd, bpd);
-  _readCommParams(dbJob, bpd);
-  _readPinTanBpd(dbJob, bpd, GWEN_MsgEngine_GetProtocolVersion(msgEngine));
-  _readBpdJobs(dbJob, bpd, msgEngine);
-
-  /* set BPD */
-  AH_User_SetBpd(user, bpd);
-  return 0;
+  else {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No BPD in responses");
+  }
 }
 
 
