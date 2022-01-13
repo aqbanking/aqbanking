@@ -530,8 +530,8 @@ GWEN_DB_NODE *_sampleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE
 
     /* use same name for main response group */
     dbPreparedJobResponse=GWEN_DB_Group_new(GWEN_DB_GroupName(dbCurr));
-    GWEN_DB_SetIntValue(dbPreparedJobResponse, GWEN_DB_FLAGS_DEFAULT, "refMsgNum", refSegNum);
-    GWEN_DB_SetIntValue(dbPreparedJobResponse, GWEN_DB_FLAGS_DEFAULT, "refSegNum", AH_Msg_GetMsgRef(msg));
+    GWEN_DB_SetIntValue(dbPreparedJobResponse, GWEN_DB_FLAGS_DEFAULT, "refSegNum", refSegNum);
+    GWEN_DB_SetIntValue(dbPreparedJobResponse, GWEN_DB_FLAGS_DEFAULT, "refMsgNum", AH_Msg_GetMsgRef(msg));
 
     /* add security group */
     GWEN_DB_AddGroup(dbPreparedJobResponse, GWEN_DB_Group_dup(dbSecurity));
@@ -568,6 +568,11 @@ void _dispatchResponsesToJobQueue(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses)
     int refSegNum;
     int refMsgNum;
     GWEN_DB_NODE *dbData;
+
+    if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Dispatching this message:");
+      GWEN_DB_Dump(dbPreparedJobResponse, 2);
+    }
 
     refMsgNum=GWEN_DB_GetIntValue(dbPreparedJobResponse, "refMsgNum", 0, 0);
     refSegNum=GWEN_DB_GetIntValue(dbPreparedJobResponse, "refSegNum", 0, 0);
