@@ -37,6 +37,7 @@
     </setVar>
   
     <setVar name="local/built_headers_pub">
+      globals.h
     </setVar>
   
     <setVar name="local/built_headers_priv" >

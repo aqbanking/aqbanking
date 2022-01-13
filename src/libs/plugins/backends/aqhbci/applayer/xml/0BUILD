@@ -28,5 +28,18 @@
     </buildMessage>
   </buildFiles>
 
+  <extradist>
+      hbciallgrp.xml
+      hbci210seg.xml
+      hbci210job.xml
+      hbci201seg.xml
+      hbci201job.xml
+      hbci220seg.xml
+      hbci220job.xml
+      fints300seg.xml
+      fints300job.xml
+      hbciallseg.xml
+  </extradist>
+
 
 </gwbuild>
