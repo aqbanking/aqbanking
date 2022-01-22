@@ -83,9 +83,9 @@
       </widget>
     </widget>     <!-- groupBox -->
 
-    <widget type="groupBox" text="Sepa Internal Transfer Target Accounts" flags="fillX" >
+    <widget type="groupBox" text="Sepa Internal Transfer Target Accounts" flags="fillX fillY" >
       <widget type="vlayout" flags="fillX fillY" >
-        <widget type="listBox" name="targetAccountListBox" flags="fillX" />
+        <widget type="listBox" name="targetAccountListBox" flags="fillX fillY" />
         <widget type="pushButton" text="Get target accounts" name="getTargetAccButton" />
       </widget>
     </widget>     <!-- groupBox -->
