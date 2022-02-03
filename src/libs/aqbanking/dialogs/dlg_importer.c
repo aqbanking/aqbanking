@@ -62,8 +62,7 @@ GWEN_DIALOG *AB_ImporterDialog_new(AB_BANKING *ab,
   }
 
   GWEN_NEW_OBJECT(AB_IMPORTER_DIALOG, xdlg);
-  GWEN_INHERIT_SETDATA(GWEN_DIALOG, AB_IMPORTER_DIALOG, dlg, xdlg,
-                       AB_ImporterDialog_FreeData);
+  GWEN_INHERIT_SETDATA(GWEN_DIALOG, AB_IMPORTER_DIALOG, dlg, xdlg, AB_ImporterDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AB_ImporterDialog_SignalHandler);
 
   xdlg->banking=ab;

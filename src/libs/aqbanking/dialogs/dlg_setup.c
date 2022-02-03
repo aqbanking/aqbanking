@@ -56,8 +56,7 @@ GWEN_DIALOG *AB_SetupDialog_new(AB_BANKING *ab)
   }
 
   GWEN_NEW_OBJECT(AB_SETUP_DIALOG, xdlg);
-  GWEN_INHERIT_SETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg, xdlg,
-                       AB_SetupDialog_FreeData);
+  GWEN_INHERIT_SETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg, xdlg, AB_SetupDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AB_SetupDialog_SignalHandler);
 
   xdlg->banking=ab;

@@ -45,36 +45,16 @@ GWEN_DIALOG *AB_EditUserDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock)
 {
   GWEN_DIALOG *dlg;
   AB_EDIT_USER_DIALOG *xdlg;
-  GWEN_BUFFER *fbuf;
-  int rv;
 
-  dlg=GWEN_Dialog_new("ab_edit_user");
+  dlg=GWEN_Dialog_CreateAndLoadWithPath("ab_edit_user", AB_PM_LIBNAME, AB_PM_DATADIR, "aqbanking/dialogs/dlg_edituser.dlg");
+  if (dlg==NULL) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog \"ab_edit_user\".");
+    return NULL;
+  }
+
   GWEN_NEW_OBJECT(AB_EDIT_USER_DIALOG, xdlg);
-  GWEN_INHERIT_SETDATA(GWEN_DIALOG, AB_EDIT_USER_DIALOG, dlg, xdlg,
-                       AB_EditUserDialog_FreeData);
+  GWEN_INHERIT_SETDATA(GWEN_DIALOG, AB_EDIT_USER_DIALOG, dlg, xdlg, AB_EditUserDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AB_EditUserDialog_SignalHandler);
-
-  /* get path of dialog description file */
-  fbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-                               "aqbanking/dialogs/dlg_edituser.dlg",
-                               fbuf);
-  if (rv<0) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Dialog description file not found (%d).", rv);
-    GWEN_Buffer_free(fbuf);
-    GWEN_Dialog_free(dlg);
-    return NULL;
-  }
-
-  /* read dialog from dialog description file */
-  rv=GWEN_Dialog_ReadXmlFile(dlg, GWEN_Buffer_GetStart(fbuf));
-  if (rv<0) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d).", rv);
-    GWEN_Buffer_free(fbuf);
-    GWEN_Dialog_free(dlg);
-    return NULL;
-  }
-  GWEN_Buffer_free(fbuf);
 
   xdlg->provider=pro;
   xdlg->banking=AB_Provider_GetBanking(pro);
@@ -412,6 +392,7 @@ int GWENHYWFAR_CB AB_EditUserDialog_SignalHandler(GWEN_DIALOG *dlg,
   case GWEN_DialogEvent_TypeClose:
 
   case GWEN_DialogEvent_TypeLast:
+  default:
     return GWEN_DialogEvent_ResultNotHandled;
 
   }
