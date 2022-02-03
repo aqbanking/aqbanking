@@ -198,6 +198,9 @@ void AB_ImporterDialog_Init(GWEN_DIALOG *dlg)
                               I18N("File Import Wizard"),
                               0);
 
+  if (xdlg->fileName)
+    GWEN_Dialog_SetCharProperty(dlg, "wiz_file_edit", GWEN_DialogProperty_Value, 0, xdlg->fileName, 0);
+
   /* select first page */
   GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, 0, 0);
 
@@ -318,8 +321,6 @@ void AB_ImporterDialog_Fini(GWEN_DIALOG *dlg)
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_IMPORTER_DIALOG, dlg);
   assert(xdlg);
-
-  DBG_ERROR(AQBANKING_LOGDOMAIN, "Writing config");
 
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
@@ -617,7 +618,6 @@ int AB_ImporterDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards)
     if (forwards) {
       AB_ImporterDialog_DetermineFilename(dlg);
       AB_ImporterDialog_UpdateImporterList(dlg);
-      GWEN_Dialog_SetIntProperty(dlg, "wiz_importer_list", GWEN_DialogProperty_Value, 0, 0, 0);
     }
     if (xdlg->importerName==NULL)
       AB_ImporterDialog_DetermineSelectedImporter(dlg);
@@ -632,7 +632,6 @@ int AB_ImporterDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards)
     if (forwards) {
       AB_ImporterDialog_DetermineSelectedImporter(dlg);
       AB_ImporterDialog_UpdateProfileList(dlg);
-      GWEN_Dialog_SetIntProperty(dlg, "wiz_profile_list", GWEN_DialogProperty_Value, 0, 0, 0);
     }
     if (xdlg->profileName==NULL)
       AB_ImporterDialog_DetermineSelectedProfile(dlg);
