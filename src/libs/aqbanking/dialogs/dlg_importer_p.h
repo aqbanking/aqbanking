@@ -41,6 +41,16 @@ static const char *AB_ImporterDialog_GetProfileName(const GWEN_DIALOG *dlg);
 static void AB_ImporterDialog_SetProfileName(GWEN_DIALOG *dlg, const char *s);
 #endif
 
+static int AB_ImporterDialog_DetermineSelectedImporter(GWEN_DIALOG *dlg);
+static int AB_ImporterDialog_DetermineSelectedProfile(GWEN_DIALOG *dlg);
+
+static void AB_ImporterDialog_UpdateImporterList(GWEN_DIALOG *dlg);
+static void AB_ImporterDialog_UpdateProfileList(GWEN_DIALOG *dlg);
+
+static void AB_ImporterDialog_SelectImporter(GWEN_DIALOG *dlg, const char *importerName);
+static void AB_ImporterDialog_SelectProfile(GWEN_DIALOG *dlg, const char *profileName);
+
+
 static int AB_ImporterDialog_FindIndexOfProfile(GWEN_DIALOG *dlg, const char *proname);
 
 static int AB_ImporterDialog_EditProfile(GWEN_DIALOG *dlg);

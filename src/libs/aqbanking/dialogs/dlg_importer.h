@@ -52,6 +52,18 @@ GWEN_DIALOG *AB_ImporterDialog_new(AB_BANKING *ab,
                                    const char *finishedMessage);
 
 
+const char *AB_ImporterDialog_GetFileName(const GWEN_DIALOG *dlg);
+void AB_ImporterDialog_SetFileName(GWEN_DIALOG *dlg, const char *s);
+
+
+const char *AB_ImporterDialog_GetImporterName(const GWEN_DIALOG *dlg);
+void AB_ImporterDialog_SetImporterName(GWEN_DIALOG *dlg, const char *s);
+
+const char *AB_ImporterDialog_GetProfileName(const GWEN_DIALOG *dlg);
+void AB_ImporterDialog_SetProfileName(GWEN_DIALOG *dlg, const char *s);
+
+
+
 #ifdef __cplusplus
 }
 #endif
