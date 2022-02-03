@@ -3,7 +3,7 @@
 
 <gwbuild>
 
-  <project name="aqbanking" version="6.4.3-beta"
+  <project name="aqbanking" version="6.4.3.1-git"
            so_current="48" so_age="4" so_revision="3"
            write_config_h="TRUE"
            >
@@ -149,7 +149,7 @@
 
     <!-- dependencies ( pkg-config and libs) -->
     <dependencies>
-      <dep id="gwenhywfar" name="gwenhywfar" minversion="5.5.1.1" required="TRUE" >
+      <dep id="gwenhywfar" name="gwenhywfar" minversion="5.8.2.1" required="TRUE" >
         <variables>plugindir gwengui-gtk2</variables>
       </dep>
 
