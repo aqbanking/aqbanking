@@ -47,7 +47,7 @@
     <setVar name="localedir">$(option_prefix)/share/locale</setVar>
 
     <setVar name="pkglibdir">$(libdir)/$(package)</setVar>
-    <setVar name="pkgincludedir">$(includedir)/$(package)</setVar>
+    <setVar name="pkgincludedir">$(includedir)/aqbanking6/$(package)</setVar>
     <setVar name="pkgdatadir">$(datadir)/$(package)</setVar>
 
 
