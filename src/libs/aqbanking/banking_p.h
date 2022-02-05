@@ -190,10 +190,6 @@ static int AB_Banking_UnlockConfigGroup(AB_BANKING *ab, const char *groupName, u
 
 
 
-static AB_PROVIDER *AB_Banking__FindProvider(AB_BANKING *ab, const char *name);
-static AB_PROVIDER *AB_Banking__GetProvider(AB_BANKING *ab, const char *name);
-
-
 static AB_IMEXPORTER *AB_Banking_GetImExporter(AB_BANKING *ab, const char *name);
 
 
