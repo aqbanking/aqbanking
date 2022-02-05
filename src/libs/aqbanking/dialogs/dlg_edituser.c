@@ -287,16 +287,10 @@ int AB_EditUserDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg)
 int AB_EditUserDialog_HandleActivatedOk(GWEN_DIALOG *dlg)
 {
   AB_EDIT_USER_DIALOG *xdlg;
-  int rv;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_EDIT_USER_DIALOG, dlg);
   assert(xdlg);
-
-  rv=AB_EditUserDialog_fromGui(dlg, NULL, 0);
-  if (rv<0) {
-    return GWEN_DialogEvent_ResultHandled;
-  }
 
   if (xdlg->doLock) {
     int rv;
