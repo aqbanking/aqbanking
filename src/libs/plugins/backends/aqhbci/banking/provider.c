@@ -75,9 +75,7 @@ AB_PROVIDER *AH_Provider_new(AB_BANKING *ab, const char *name)
 {
   AB_PROVIDER *pro;
   AH_PROVIDER *hp;
-  GWEN_BUFFER *pbuf;
 
-  pbuf=0;
   pro=AB_Provider_new(ab, name);
   assert(pro);
 
@@ -108,7 +106,6 @@ AB_PROVIDER *AH_Provider_new(AB_BANKING *ab, const char *name)
 
   hp->hbci=AH_HBCI_new(pro);
   assert(hp->hbci);
-  GWEN_Buffer_free(pbuf);
 
   hp->dbTempConfig=GWEN_DB_Group_new("tmpConfig");
 
