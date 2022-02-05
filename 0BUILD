@@ -52,11 +52,11 @@
 
 
     <option id="backends" type="stringlist" definePrefix="AQBANKING_WITH_PLUGIN_BACKEND_" >
-      <choices>aqhbci aqofxconnect aqebics aqpaypal aqfints</choices>
-      <alias name="all">aqhbci aqofxconnect aqebics aqpaypal</alias>
+      <choices>aqhbci aqofxconnect aqebics aqpaypal aqfints aqnone</choices>
+      <alias name="all">aqhbci aqofxconnect aqebics aqpaypal aqnone</alias>
       <default>all</default>
     </option>
-    <define name="AQBANKING_WITH_PLUGIN_BACKEND_AQNONE" value="1" quoted="FALSE" />
+<!--    <define name="AQBANKING_WITH_PLUGIN_BACKEND_AQNONE" value="1" quoted="FALSE" /> -->
 
 
     <option id="imexporters" type="stringlist" definePrefix="AQBANKING_WITH_PLUGIN_IMEXPORTER_" >

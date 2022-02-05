@@ -1,9 +1,9 @@
-SUBDIRS = $(aqbanking_plugins_backends_dirs) aqnone
+SUBDIRS = $(aqbanking_plugins_backends_dirs)
 DIST_SUBDIRS = aqfints aqhbci aqofxconnect aqnone aqebics aqpaypal
 
 noinst_LTLIBRARIES=libabbackends.la
 libabbackends_la_SOURCES=dummy.c
-libabbackends_la_LIBADD=@aqbanking_plugins_backends_libs@ aqnone/libaqnone.la
+libabbackends_la_LIBADD=@aqbanking_plugins_backends_libs@
 
 sources:
 	for d in $(DIST_SUBDIRS); do \
