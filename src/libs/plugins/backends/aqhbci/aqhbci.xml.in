@@ -1,5 +1,5 @@
 <plugin name="aqhbci" type="provider" i18n="aqbanking" >
-  <version>@AQHBCI_VERSION_STRING@</version>
+  <version>@AQBANKING_VERSION_STRING@</version>
   <author>Martin Preuss(martin@libchipcard.de)</author>
   <short>HBCI backend using AqHBCI</short>
   <descr>
