@@ -110,7 +110,6 @@ int APY_Provider_ExecGetBal(AB_PROVIDER *pro,
   }
 
   GWEN_DB_Group_free(dbResponse);
-  GWEN_Buffer_free(tbuf);
   AB_Transaction_SetStatus(j, AB_Transaction_StatusAccepted);
 
   return 0;

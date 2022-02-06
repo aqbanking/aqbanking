@@ -163,7 +163,7 @@ int _requestTransactionDetails(AB_PROVIDER *pro, AB_USER *u, AB_TRANSACTION *t)
     AB_Transaction_SetBankReference(t, s);
   s=GWEN_DB_GetCharValue(dbResponse, "NOTE", 0, NULL);
   if (s && *s)
-    AB_Transaction_SetMemo(t, s);
+    AB_Transaction_AddPurposeLine(t, s);
 
   _readPurposeLinesFromDetailsResponse(dbResponse, t);
 
@@ -204,7 +204,6 @@ AB_TRANSACTION_LIST *_readTransactionsFromSearchResponse(GWEN_DB_NODE *dbRespons
     }
     dbT=GWEN_DB_GetNextGroup(dbT);
   } /* while(dbT) */
-  GWEN_DB_Group_free(dbResponse);
 
   /* dont return empty list */
   if (transactionList && AB_Transaction_List_GetCount(transactionList)<1) {
@@ -248,8 +247,28 @@ AB_TRANSACTION *readOneTransactionFromSearchResponse(GWEN_DB_NODE *dbT)
   }
   
   s=GWEN_DB_GetCharValue(dbT, "L_NAME", 0, NULL);
-  if (s && *s)
-    AB_Transaction_SetRemoteName(t, s);
+  if (s && *s) {
+    const char *sEmail;
+
+    sEmail=GWEN_DB_GetCharValue(dbT, "L_EMAIL", 0, NULL);
+    if (sEmail && *sEmail) {
+      GWEN_BUFFER *pbuf;
+
+      pbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      GWEN_Buffer_AppendArgs(pbuf, "%s (%s)", s, sEmail);
+      AB_Transaction_SetRemoteName(t, GWEN_Buffer_GetStart(pbuf));
+      GWEN_Buffer_free(pbuf);
+    }
+    else
+      AB_Transaction_SetRemoteName(t, s);
+  }
+  else {
+    const char *sEmail;
+
+    sEmail=GWEN_DB_GetCharValue(dbT, "L_EMAIL", 0, NULL);
+    if (sEmail && *sEmail)
+      AB_Transaction_SetRemoteName(t, sEmail);
+  }
   
   s=GWEN_DB_GetCharValue(dbT, "L_TRANSACTIONID", 0, NULL);
   if (s && *s)
@@ -336,8 +355,8 @@ int _possiblyReadTransactionDetails(AB_PROVIDER *pro, AB_USER *u, AB_TRANSACTION
 	}
 	else
 	  AB_Transaction_SetCommand(transaction, AB_Transaction_CommandNone); /* remove mark */
+        i++;
       }
-      i++;
       transaction=AB_Transaction_List_Next(transaction);
     }
   }
