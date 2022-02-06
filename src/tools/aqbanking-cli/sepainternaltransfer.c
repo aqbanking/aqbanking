@@ -342,7 +342,6 @@ AB_REFERENCE_ACCOUNT* _chooseReferenceAccount(AB_REFERENCE_ACCOUNT_LIST *ral) {
   AB_REFERENCE_ACCOUNT *ra = NULL;
   GWEN_BUFFER *ubuf;
   int16_t numAccounts;
-  int16_t rv;
   char inputBuffer[ACC_CHOOSER_INPUT_SIZE];
   int chosenAccount;
   uint32_t flags;
@@ -373,9 +372,9 @@ AB_REFERENCE_ACCOUNT* _chooseReferenceAccount(AB_REFERENCE_ACCOUNT_LIST *ral) {
   flags = 0;
   ra = NULL;
   while (scan_result == EOF) {
-    rv = GWEN_Gui_InputBox(flags, I18N("Choose a reference account"),
-        GWEN_Buffer_GetStart(ubuf), inputBuffer, 0,
-        ACC_CHOOSER_INPUT_SIZE - 1, 0);
+    /*rv =*/ GWEN_Gui_InputBox(flags, I18N("Choose a reference account"),
+                               GWEN_Buffer_GetStart(ubuf), inputBuffer, 0,
+                               ACC_CHOOSER_INPUT_SIZE - 1, 0);
 
     scan_result = sscanf(inputBuffer, "%d", &chosenAccount);
     if (scan_result != EOF) {
