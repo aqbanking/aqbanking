@@ -1,25 +1,81 @@
 /***************************************************************************
     begin       : Sat Dec 01 2018
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2022 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
-/* included from provider.c */
+#include "aqpaypal/provider_sendcmd.h"
+
+#include "aqpaypal/provider_credentials.h"
+#include "aqpaypal/provider_getbalance.h"
+#include "aqpaypal/provider_getstm.h"
+#include "aqpaypal/user_l.h"
+
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/gui.h>
+#include <gwenhywfar/i18n.h>
 
 
-int APY_Provider__AddJobToList2(AB_PROVIDER *pro, AB_TRANSACTION *j, AB_TRANSACTION_LIST2 *jobList)
+#define I18N(msg) GWEN_I18N_Translate(PACKAGE, msg)
+
+
+
+static int _addJobToList2(AB_PROVIDER *pro, AB_TRANSACTION *j, AB_TRANSACTION_LIST2 *jobList);
+static int _sendJobList(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION_LIST2 *jobList,
+                        AB_IMEXPORTER_CONTEXT *ctx, AB_IMEXPORTER_ACCOUNTINFO *ai);
+static int _sendAccountQueue(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNTQUEUE *aq, AB_IMEXPORTER_CONTEXT *ctx);
+static int _sendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTER_CONTEXT *ctx);
+
+
+
+
+
+int APY_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx)
 {
-  APY_PROVIDER *dp;
+  AB_USERQUEUE_LIST *uql;
+  AB_USERQUEUE *uq;
+  int rv;
+
+  /* sort into user queue list */
+  uql=AB_UserQueue_List_new();
+  rv=AB_Provider_SortProviderQueueIntoUserQueueList(pro, pq, uql);
+  if (rv<0) {
+    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
+    AB_Provider_FreeUsersAndAccountsFromUserQueueList(pro, uql);
+    AB_UserQueue_List_free(uql);
+    return rv;
+  }
+
+  uq=AB_UserQueue_List_First(uql);
+  while (uq) {
+    int rv;
+
+    rv=_sendUserQueue(pro, uq, ctx);
+    if (rv<0) {
+      DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
+    }
+    uq=AB_UserQueue_List_Next(uq);
+  }
+
+  /* release accounts and users we loaded */
+  AB_Provider_FreeUsersAndAccountsFromUserQueueList(pro, uql);
+
+  return 0;
+}
+
+
+
+int _addJobToList2(AB_PROVIDER *pro, AB_TRANSACTION *j, AB_TRANSACTION_LIST2 *jobList)
+{
   uint32_t aid=0;
   int doAdd=1;
-
-  assert(pro);
-  dp=GWEN_INHERIT_GETDATA(AB_PROVIDER, APY_PROVIDER, pro);
-  assert(dp);
 
   aid=AB_Transaction_GetUniqueAccountId(j);
   assert(aid);
@@ -134,8 +190,8 @@ int APY_Provider__AddJobToList2(AB_PROVIDER *pro, AB_TRANSACTION *j, AB_TRANSACT
 
 
 
-int APY_Provider__SendJobList(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION_LIST2 *jobList,
-                              AB_IMEXPORTER_CONTEXT *ctx, AB_IMEXPORTER_ACCOUNTINFO *ai)
+int _sendJobList(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACTION_LIST2 *jobList,
+                 AB_IMEXPORTER_CONTEXT *ctx, AB_IMEXPORTER_ACCOUNTINFO *ai)
 {
   AB_TRANSACTION_LIST2_ITERATOR *jit;
 
@@ -206,7 +262,7 @@ int APY_Provider__SendJobList(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TR
 }
 
 
-int APY_Provider__SendAccountQueue(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNTQUEUE *aq, AB_IMEXPORTER_CONTEXT *ctx)
+int _sendAccountQueue(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNTQUEUE *aq, AB_IMEXPORTER_CONTEXT *ctx)
 {
   AB_ACCOUNT *a;
   AB_TRANSACTION_LIST2 *tl2;
@@ -245,7 +301,7 @@ int APY_Provider__SendAccountQueue(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNTQUEUE
         int rv;
 
         /* add job to the list of jobs to send */
-        rv=APY_Provider__AddJobToList2(pro, t, toSend);
+        rv=_addJobToList2(pro, t, toSend);
         if (rv<0) {
           AB_TRANSACTION *tCopy;
 
@@ -274,7 +330,7 @@ int APY_Provider__SendAccountQueue(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNTQUEUE
   if (AB_Transaction_List2_GetSize(toSend)) {
     int rv;
 
-    rv=APY_Provider__SendJobList(pro, u, a, toSend, ctx, ai);
+    rv=_sendJobList(pro, u, a, toSend, ctx, ai);
     if (rv<0) {
       DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
     }
@@ -287,7 +343,7 @@ int APY_Provider__SendAccountQueue(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNTQUEUE
 
 
 
-int APY_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTER_CONTEXT *ctx)
+int _sendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTER_CONTEXT *ctx)
 {
   AB_ACCOUNTQUEUE_LIST *aql;
   AB_USER *u;
@@ -360,7 +416,7 @@ int APY_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTE
     while (aq) {
       int rv;
 
-      rv=APY_Provider__SendAccountQueue(pro, u, aq, ctx);
+      rv=_sendAccountQueue(pro, u, aq, ctx);
       if (rv<0) {
         DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
       }
@@ -386,41 +442,5 @@ int APY_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTE
 }
 
 
-int APY_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx)
-{
-  APY_PROVIDER *hp;
-  AB_USERQUEUE_LIST *uql;
-  AB_USERQUEUE *uq;
-  int rv;
 
-  assert(pro);
-  hp=GWEN_INHERIT_GETDATA(AB_PROVIDER, APY_PROVIDER, pro);
-  assert(hp);
-
-  /* sort into user queue list */
-  uql=AB_UserQueue_List_new();
-  rv=AB_Provider_SortProviderQueueIntoUserQueueList(pro, pq, uql);
-  if (rv<0) {
-    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
-    AB_Provider_FreeUsersAndAccountsFromUserQueueList(pro, uql);
-    AB_UserQueue_List_free(uql);
-    return rv;
-  }
-
-  uq=AB_UserQueue_List_First(uql);
-  while (uq) {
-    int rv;
-
-    rv=APY_Provider__SendUserQueue(pro, uq, ctx);
-    if (rv<0) {
-      DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
-    }
-    uq=AB_UserQueue_List_Next(uq);
-  }
-
-  /* release accounts and users we loaded */
-  AB_Provider_FreeUsersAndAccountsFromUserQueueList(pro, uql);
-
-  return 0;
-}
 

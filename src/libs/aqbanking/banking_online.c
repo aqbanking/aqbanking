@@ -24,7 +24,7 @@
 #endif
 
 #ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQPAYPAL
-# include "src/libs/plugins/backends/aqpaypal/provider_l.h"
+# include "src/libs/plugins/backends/aqpaypal/provider.h"
 #endif
 
 #ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQEBICS

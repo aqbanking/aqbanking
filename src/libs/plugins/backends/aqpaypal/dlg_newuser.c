@@ -52,35 +52,18 @@ GWEN_DIALOG *APY_NewUserDialog_new(AB_PROVIDER *pro)
 {
   GWEN_DIALOG *dlg;
   APY_NEWUSER_DIALOG *xdlg;
-  GWEN_BUFFER *fbuf;
-  int rv;
 
-  dlg=GWEN_Dialog_new("apy_newuser");
+  dlg=GWEN_Dialog_CreateAndLoadWithPath("apy_newuser",
+                                        AB_PM_LIBNAME, AB_PM_DATADIR,
+                                        "aqbanking/backends/aqpaypal/dialogs/dlg_newuser.dlg");
+  if (dlg==NULL) {
+    DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Could not create dialog \"apy_newuser\".");
+    return NULL;
+  }
+
   GWEN_NEW_OBJECT(APY_NEWUSER_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, APY_NEWUSER_DIALOG, dlg, xdlg, APY_NewUserDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, APY_NewUserDialog_SignalHandler);
-
-  /* get path of dialog description file */
-  fbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-                               "aqbanking/backends/aqpaypal/dialogs/dlg_newuser.dlg",
-                               fbuf);
-  if (rv<0) {
-    DBG_INFO(AQPAYPAL_LOGDOMAIN, "Dialog description file not found (%d).", rv);
-    GWEN_Buffer_free(fbuf);
-    GWEN_Dialog_free(dlg);
-    return NULL;
-  }
-
-  /* read dialog from dialog description file */
-  rv=GWEN_Dialog_ReadXmlFile(dlg, GWEN_Buffer_GetStart(fbuf));
-  if (rv<0) {
-    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d).", rv);
-    GWEN_Buffer_free(fbuf);
-    GWEN_Dialog_free(dlg);
-    return NULL;
-  }
-  GWEN_Buffer_free(fbuf);
 
   xdlg->provider=pro;
   xdlg->banking=AB_Provider_GetBanking(pro);
@@ -1039,6 +1022,7 @@ int GWENHYWFAR_CB APY_NewUserDialog_SignalHandler(GWEN_DIALOG *dlg,
   case GWEN_DialogEvent_TypeClose:
 
   case GWEN_DialogEvent_TypeLast:
+  default:
     return GWEN_DialogEvent_ResultNotHandled;
 
   }

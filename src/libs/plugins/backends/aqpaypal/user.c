@@ -14,7 +14,8 @@
 
 
 #include "user_p.h"
-#include "provider_l.h"
+#include "aqpaypal/provider_l.h"
+#include "aqpaypal/provider_credentials.h"
 
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>

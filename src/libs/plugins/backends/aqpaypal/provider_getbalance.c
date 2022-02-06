@@ -1,14 +1,27 @@
 /***************************************************************************
     begin       : Sat Dec 01 2018
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2022 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
-/* included from provider.c */
+#include "aqpaypal/provider_getbalance.h"
+
+#include "aqpaypal/provider_request.h"
+
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/gui.h>
+#include <gwenhywfar/i18n.h>
+
+
+#define I18N(msg) GWEN_I18N_Translate(PACKAGE, msg)
+
 
 
 
@@ -18,214 +31,35 @@ int APY_Provider_ExecGetBal(AB_PROVIDER *pro,
                             AB_USER *u,
                             AB_TRANSACTION *j)
 {
-  GWEN_HTTP_SESSION *sess;
   GWEN_BUFFER *tbuf;
-  const char *s;
-  int vmajor;
-  int vminor;
   int rv;
   GWEN_DB_NODE *dbResponse;
   GWEN_DB_NODE *dbCurr;
 
-  sess=AB_HttpSession_new(pro, u, APY_User_GetServerUrl(u), "https", 443);
-  if (sess==NULL) {
-    DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Could not create http session for user [%s]", AB_User_GetUserId(u));
+  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=APY_Provider_SetupUrlString(pro, u, tbuf);
+  if (rv<0) {
+    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(tbuf);
+    AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
+    return rv;
+  }
+
+  GWEN_Buffer_AppendString(tbuf, "&method=GetBalance");
+
+  /* send and receive */
+  AB_Transaction_SetStatus(j, AB_Transaction_StatusSending);
+  dbResponse=APY_Provider_SendRequestParseResponse(pro, u, GWEN_Buffer_GetStart(tbuf), "getBalance");
+  GWEN_Buffer_free(tbuf);
+  if (dbResponse==NULL) {
+    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here");
     AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
     return GWEN_ERROR_GENERIC;
   }
 
-  vmajor=APY_User_GetHttpVMajor(u);
-  vminor=APY_User_GetHttpVMinor(u);
-  if (vmajor==0 && vminor==0) {
-    vmajor=1;
-    vminor=0;
-  }
-  GWEN_HttpSession_SetHttpVMajor(sess, vmajor);
-  GWEN_HttpSession_SetHttpVMinor(sess, vminor);
-  GWEN_HttpSession_SetHttpContentType(sess, "application/x-www-form-urlencoded");
 
-  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-
-  GWEN_Buffer_AppendString(tbuf, "user=");
-  s=APY_User_GetApiUserId(u);
-  if (s && *s)
-    GWEN_Text_EscapeToBuffer(s, tbuf);
-  else {
-    DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Missing user id");
-    GWEN_Buffer_free(tbuf);
-    GWEN_HttpSession_free(sess);
-    AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
-    return GWEN_ERROR_INVALID;
-  }
-
-  GWEN_Buffer_AppendString(tbuf, "&pwd=");
-  s=APY_User_GetApiPassword(u);
-  if (s && *s)
-    GWEN_Text_EscapeToBuffer(s, tbuf);
-  else {
-    DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Missing API password");
-    GWEN_Buffer_free(tbuf);
-    GWEN_HttpSession_free(sess);
-    AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
-    return GWEN_ERROR_INVALID;
-  }
-
-  GWEN_Buffer_AppendString(tbuf, "&signature=");
-  s=APY_User_GetApiSignature(u);
-  if (s && *s)
-    GWEN_Text_EscapeToBuffer(s, tbuf);
-  else {
-    DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Missing API signature");
-    GWEN_Buffer_free(tbuf);
-    GWEN_HttpSession_free(sess);
-    AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
-    return GWEN_ERROR_INVALID;
-  }
-
-  GWEN_Buffer_AppendString(tbuf, "&version=");
-  GWEN_Text_EscapeToBuffer(AQPAYPAL_API_VER, tbuf);
-
-  GWEN_Buffer_AppendString(tbuf, "&method=GetBalance");
-
-  /* init session */
-  rv=GWEN_HttpSession_Init(sess);
-  if (rv<0) {
-    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Buffer_free(tbuf);
-    GWEN_HttpSession_free(sess);
-    AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
-    return rv;
-  }
-
-  if (getenv("AQPAYPAL_LOG_COMM")) {
-    int len;
-    FILE *f;
-
-    len=GWEN_Buffer_GetUsedBytes(tbuf);
-
-    f=fopen("paypal.log", "a+");
-    if (f) {
-      fprintf(f, "\n============================================\n");
-      fprintf(f, "Sending (GetBal):\n");
-      if (len>0) {
-        if (1!=fwrite(GWEN_Buffer_GetStart(tbuf), GWEN_Buffer_GetUsedBytes(tbuf), 1, f)) {
-          DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-          fclose(f);
-        }
-        else {
-          if (fclose(f)) {
-            DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-          }
-        }
-      }
-      else {
-        fprintf(f, "Empty data.\n");
-        if (fclose(f)) {
-          DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-        }
-      }
-    }
-  }
-
-
-  /* send request */
-  rv=GWEN_HttpSession_SendPacket(sess, "POST",
-                                 (const uint8_t *) GWEN_Buffer_GetStart(tbuf),
-                                 GWEN_Buffer_GetUsedBytes(tbuf));
-  if (rv<0) {
-    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
-    GWEN_HttpSession_Fini(sess);
-    GWEN_Buffer_free(tbuf);
-    GWEN_HttpSession_free(sess);
-    AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
-    return rv;
-  }
-  AB_Transaction_SetStatus(j, AB_Transaction_StatusSending);
-
-  /* get response */
-  GWEN_Buffer_Reset(tbuf);
-  rv=GWEN_HttpSession_RecvPacket(sess, tbuf);
-  if (rv<0 || rv<200 || rv>299) {
-    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
-    GWEN_HttpSession_Fini(sess);
-    GWEN_Buffer_free(tbuf);
-    GWEN_HttpSession_free(sess);
-    AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
-    return rv;
-  }
-
-  if (getenv("AQPAYPAL_LOG_COMM")) {
-    int len;
-    FILE *f;
-
-    len=GWEN_Buffer_GetUsedBytes(tbuf);
-    f=fopen("paypal.log", "a+");
-    if (f) {
-      fprintf(f, "\n============================================\n");
-      fprintf(f, "Received (GetBal):\n");
-      if (len>0) {
-        if (1!=fwrite(GWEN_Buffer_GetStart(tbuf), GWEN_Buffer_GetUsedBytes(tbuf), 1, f)) {
-          DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-          fclose(f);
-        }
-        else {
-          if (fclose(f)) {
-            DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-          }
-        }
-      }
-      else {
-        fprintf(f, "Empty data.\n");
-        if (fclose(f)) {
-          DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-        }
-      }
-    }
-  }
-
-
-  /* deinit (ignore result because it isn't important) */
-  GWEN_HttpSession_Fini(sess);
-  GWEN_HttpSession_free(sess);
-
-  /* parse response */
-  dbResponse=GWEN_DB_Group_new("response");
-  rv=APY_Provider_ParseResponse(pro, GWEN_Buffer_GetStart(tbuf), dbResponse);
-#ifdef DEBUG_PAYPAL
-  GWEN_DB_WriteFile(dbResponse, "paypal.db", GWEN_DB_FLAGS_DEFAULT);
-#endif
-  if (rv<0) {
-    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
-    GWEN_DB_Group_free(dbResponse);
-    GWEN_Buffer_free(tbuf);
-    AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
-    return rv;
-  }
-
-  /* check result */
-  s=GWEN_DB_GetCharValue(dbResponse, "ACK", 0, NULL);
-  if (s && *s) {
-    if (strcasecmp(s, "Success")==0 ||
-        strcasecmp(s, "SuccessWithWarning")==0) {
-      DBG_INFO(AQPAYPAL_LOGDOMAIN, "Success");
-    }
-    else {
-      DBG_INFO(AQPAYPAL_LOGDOMAIN, "No positive response from server");
-      GWEN_DB_Group_free(dbResponse);
-      GWEN_Buffer_free(tbuf);
-      AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
-      return GWEN_ERROR_BAD_DATA;
-    }
-  }
-  else {
-    DBG_INFO(AQPAYPAL_LOGDOMAIN, "No ACK response from server");
-    GWEN_DB_Group_free(dbResponse);
-    GWEN_Buffer_free(tbuf);
-    AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
-    return GWEN_ERROR_BAD_DATA;
-  }
-
-  /* now get the transactions */
+  /* handle response */
+  AB_Transaction_SetStatus(j, AB_Transaction_StatusAccepted);
   dbCurr=GWEN_DB_GetFirstGroup(dbResponse);
   while (dbCurr) {
     AB_BALANCE *bal;
@@ -278,6 +112,7 @@ int APY_Provider_ExecGetBal(AB_PROVIDER *pro,
   GWEN_DB_Group_free(dbResponse);
   GWEN_Buffer_free(tbuf);
   AB_Transaction_SetStatus(j, AB_Transaction_StatusAccepted);
+
   return 0;
 }
 

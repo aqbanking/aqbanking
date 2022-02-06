@@ -1,18 +1,61 @@
 /***************************************************************************
     begin       : Sat Dec 01 2018
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2022 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
-/* included from provider.c */
+
+#include "aqpaypal/provider_accspec.h"
+#include "aqpaypal/aqpaypal.h"
+
+#include "aqbanking/backendsupport/provider_be.h"
+
+#include <gwenhywfar/debug.h>
 
 
-int APY_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, const AB_ACCOUNT *acc,
-                                                    AB_TRANSACTION_LIMITS_LIST *tll)
+
+static int _createTransactionLimitsForAccount(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB_TRANSACTION_LIMITS_LIST *tll);
+
+
+
+
+int APY_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doLock)
+{
+  int rv;
+  AB_ACCOUNT *a=NULL;
+  AB_TRANSACTION_LIMITS_LIST *tll;
+
+  rv=AB_Provider_GetAccount(pro, AB_AccountSpec_GetUniqueId(as), doLock, doLock, &a);
+  if (rv<0) {
+    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  tll=AB_TransactionLimits_List_new();
+  rv=_createTransactionLimitsForAccount(pro, a, tll);
+  if (rv<0) {
+    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
+    AB_TransactionLimits_List_free(tll);
+    AB_Account_free(a);
+    return rv;
+  }
+  AB_AccountSpec_SetTransactionLimitsList(as, tll);
+
+  AB_Account_free(a);
+
+  return 0;
+}
+
+
+
+int _createTransactionLimitsForAccount(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB_TRANSACTION_LIMITS_LIST *tll)
 {
   int i;
   int jobList[]= {
@@ -48,33 +91,5 @@ int APY_Provider__CreateTransactionLimitsForAccount(AB_PROVIDER *pro, const AB_A
   return 0;
 }
 
-
-
-int APY_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doLock)
-{
-  int rv;
-  AB_ACCOUNT *a=NULL;
-  AB_TRANSACTION_LIMITS_LIST *tll;
-
-  rv=AB_Provider_GetAccount(pro, AB_AccountSpec_GetUniqueId(as), doLock, doLock, &a);
-  if (rv<0) {
-    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  tll=AB_TransactionLimits_List_new();
-  rv=APY_Provider__CreateTransactionLimitsForAccount(pro, a, tll);
-  if (rv<0) {
-    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
-    AB_TransactionLimits_List_free(tll);
-    AB_Account_free(a);
-    return rv;
-  }
-  AB_AccountSpec_SetTransactionLimitsList(as, tll);
-
-  AB_Account_free(a);
-
-  return 0;
-}
 
 

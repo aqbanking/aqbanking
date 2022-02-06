@@ -7,20 +7,22 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef AQPAYPAL_PROVIDER_L_H
-#define AQPAYPAL_PROVIDER_L_H
+#ifndef AQPAYPAL_PROVIDER_REQUEST_H
+#define AQPAYPAL_PROVIDER_REQUEST_H
 
 
-#include "aqpaypal/provider.h"
+#include <aqpaypal/user.h>
+#include <aqpaypal/provider.h>
+
+#include <gwenhywfar/db.h>
 
 
-#define AQPAYPAL_API_VER    "56.0"
 
+GWEN_DB_NODE *APY_Provider_SendRequestParseResponse(AB_PROVIDER *pro, AB_USER *u, const char *requestString, const char *jobName);
 
+int APY_Provider_SetupUrlString(AB_PROVIDER *pro, AB_USER *u, GWEN_BUFFER *tbuf);
 
 
 
 #endif
-
-
 
