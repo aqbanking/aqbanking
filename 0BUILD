@@ -233,11 +233,6 @@
     </subdirs>
 
 
-    <data dist="TRUE" install="$(libdir)/pkgconfig">
-      aqbanking.pc
-    </data>
-
-
     <extradist>
       AUTHORS
       COPYING
@@ -313,8 +308,7 @@
     </ifVarMatches>
 
 
-    <writeFile name="aqbanking.pc" />
-
+    <writeFile name="aqbanking.pc" install="$(libdir)/pkgconfig" />
 
   </project>
   
