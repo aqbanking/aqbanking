@@ -103,7 +103,11 @@ AH_JOB *AH_AccountJob_new(const char *name,
   s=AB_Account_GetBic(account);
   if (s && *s)
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "bic", s);
-
+  else {
+    DBG_WARN(AQHBCI_LOGDOMAIN, "No BIC in account, maybe you need to request SEPA infos for your account?");
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Warning,
+			 I18N("No SWIFT-BIC in account data, maybe you need to request SEPA info for this account?"));
+  }
   return j;
 }
 
