@@ -31,6 +31,8 @@ struct AH_JOBQUEUE {
 
   char *usedTan;
   char *usedPin; /* used for checking bad pins in AH_JobQueue_DispatchMessage */
+
+  AH_JOBQUEUE *referenceQueue;
 };
 
 

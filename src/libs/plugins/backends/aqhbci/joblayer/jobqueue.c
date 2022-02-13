@@ -64,6 +64,9 @@ void AH_JobQueue_free(AH_JOBQUEUE *jq)
       free(jq->usedTan);
       free(jq->usedPin);
 
+      if (jq->referenceQueue)
+        AH_JobQueue_free(jq->referenceQueue);
+
       GWEN_LIST_FINI(AH_JOBQUEUE, jq);
       GWEN_FREE_OBJECT(jq);
     }
@@ -378,6 +381,32 @@ const char *AH_JobQueue_GetUsedPin(const AH_JOBQUEUE *jq)
 
   return jq->usedPin;
 }
+
+
+
+AH_JOBQUEUE *AH_JobQueue_GetReferenceQueue(const AH_JOBQUEUE *jq)
+{
+  assert(jq);
+  assert(jq->usage);
+
+  return jq->referenceQueue;
+}
+
+
+
+void AH_JobQueue_SetReferenceQueue(AH_JOBQUEUE *jq, AH_JOBQUEUE *refq)
+{
+  assert(jq);
+  assert(jq->usage);
+
+  if (refq)
+    AH_JobQueue_Attach(refq);
+  if (jq->referenceQueue)
+    AH_JobQueue_free(jq->referenceQueue);
+  jq->referenceQueue=refq;
+}
+
+
 
 
 

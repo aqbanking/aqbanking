@@ -116,6 +116,13 @@ GWEN_STRINGLIST *AH_JobQueue_GetSigners(const AH_JOBQUEUE *jq);
 void AH_JobQueue_SetSigners(AH_JOBQUEUE *jq, GWEN_STRINGLIST *signers);
 
 
+AH_JOBQUEUE *AH_JobQueue_GetReferenceQueue(const AH_JOBQUEUE *jq);
+/**
+ * Internally calls @ref AH_JobQueue_Attach.
+ */
+void AH_JobQueue_SetReferenceQueue(AH_JOBQUEUE *jq, AH_JOBQUEUE *refq);
+
+
 #endif /* AH_JOBQUEUE_L_H */
 
 

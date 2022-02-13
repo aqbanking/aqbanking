@@ -662,26 +662,37 @@ void _dispatchResponsesToJobQueue(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses)
       /* search for job to which this response belongs */
       j=_findReferencedJob(jq, refMsgNum, refSegNum);
       if (j) {
-	DBG_INFO(AQHBCI_LOGDOMAIN,
+        const char *refJobName;
+
+        refJobName=AH_Job_GetName(j);
+        DBG_INFO(AQHBCI_LOGDOMAIN,
 		 "Job \"%s\" (msg %d, segs :%d-%d) claims response \"%s\" (ref msg %d, ref seg %d)",
-		 AH_Job_GetName(j),
+                 refJobName,
 		 AH_Job_GetMsgNum(j),
 		 AH_Job_GetFirstSegment(j),
 		 AH_Job_GetLastSegment(j),
 		 groupName,
 		 refMsgNum,
 		 refSegNum);
+        if (!(strcasecmp(refJobName, "JobTan")==0 &&
+              strcasecmp(groupName, "TanResponse")!=0 &&
+              strcasecmp(groupName, "SegResult")!=0)) {
+          _possiblyExtractJobAckCode(j, dbData);
+          _possiblyExtractAttachPoint(j, dbData);
 
-        _possiblyExtractJobAckCode(j, dbData);
-        _possiblyExtractAttachPoint(j, dbData);
+          /* check for segment results */
+          if (strcasecmp(groupName, "SegResult")==0)
+            _handleSegmentResult(jq, j, dbData);
 
-        /* check for segment results */
-        if (strcasecmp(groupName, "SegResult")==0)
-          _handleSegmentResult(jq, j, dbData);
-
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Adding response \"%s\" to job \"%s\"", groupName, AH_Job_GetName(j));
-	AH_Job_AddResponse(j, GWEN_DB_Group_dup(dbPreparedJobResponse));
-	AH_Job_SetStatus(j, AH_JobStatusAnswered);
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Adding response \"%s\" to job \"%s\"", groupName, AH_Job_GetName(j));
+          AH_Job_AddResponse(j, GWEN_DB_Group_dup(dbPreparedJobResponse));
+          AH_Job_SetStatus(j, AH_JobStatusAnswered);
+        }
+        else {
+          DBG_NOTICE(AQHBCI_LOGDOMAIN,
+                     "Not adding response \"%s\" to job \"%s\" (neither TanResponse nor SegResult)",
+                     groupName, refJobName);
+        }
       } /* if matching job found */
       else {
         DBG_WARN(AQHBCI_LOGDOMAIN, "No job found, adding response \"%s\" to all jobs", groupName);
@@ -716,6 +727,8 @@ void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWE
 
   dbAllResponses=_sampleResponseSegments(jq, msg, db, dbSecurity);
   if (dbAllResponses) {
+    AH_JOBQUEUE *jqRun;
+
     /* first extract all interesting data */
     AH_JobQueue_ReadBpd(jq, dbAllResponses);
     if (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_IGNOREACCOUNTS) {
@@ -724,8 +737,12 @@ void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWE
     else
       AH_JobQueue_ReadAccounts(jq, dbAllResponses);
 
-    /* then dispatch to jobs */
-    _dispatchResponsesToJobQueue(jq, dbAllResponses);
+    jqRun=jq;
+    while(jqRun) {
+      /* then dispatch to jobs in this and in reference queue */
+      _dispatchResponsesToJobQueue(jqRun, dbAllResponses);
+      jqRun=AH_JobQueue_GetReferenceQueue(jqRun);
+    }
     GWEN_DB_Group_free(dbAllResponses);
   }
 }

@@ -209,6 +209,8 @@ int _sendAndReceiveTanResponseProc2(AH_OUTBOX_CBOX *cbox,
 
   /* prepare second message (the one with the TAN) */
   qJob2=AH_JobQueue_fromQueue(qJob);
+  AH_JobQueue_SetReferenceQueue(qJob2, qJob);
+
   msg2=AH_Msg_new(dlg);
   AH_Msg_SetNeedTan(msg2, 1);
   AH_Msg_SetItanMethod(msg2, 0);
