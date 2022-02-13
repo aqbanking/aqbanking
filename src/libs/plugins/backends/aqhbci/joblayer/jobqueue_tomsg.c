@@ -108,10 +108,10 @@ int _messageSetupWithCryptoAndTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *msg, 
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Adding queue to message (flags: %08x)", AH_JobQueue_GetFlags(jq));
 
   if (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Queue needs a TAN");
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Queue needs a TAN");
   }
   else {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Queue doesn't need a TAN");
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Queue doesn't need a TAN");
   }
   AH_Msg_SetNeedTan(msg, (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN));
   AH_Msg_SetNoSysId(msg, (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NOSYSID));
@@ -127,7 +127,7 @@ int _messageSetupWithCryptoAndTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *msg, 
       return GWEN_ERROR_GENERIC;
     }
     while (se) {
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Addign signer [%s]", GWEN_StringListEntry_Data(se));
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Adding signer [%s]", GWEN_StringListEntry_Data(se));
       AH_Msg_AddSignerId(msg, GWEN_StringListEntry_Data(se));
       se=GWEN_StringListEntry_Next(se);
     } /* while */
