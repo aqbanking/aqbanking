@@ -434,7 +434,7 @@ AH_JOB *_findReferencedJob(AH_JOBQUEUE *jq, int refMsgNum, int refSegNum)
     jobStatus=AH_Job_GetStatus(j);
 
     if (jobStatus==AH_JobStatusSent || jobStatus==AH_JobStatusAnswered) {
-      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Checking whether job \"%s\" has segment %d", jobName, refSegNum);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Checking whether job \"%s\" has segment %d", jobName, refSegNum);
       if ((AH_Job_GetMsgNum(j)==refMsgNum) && AH_Job_HasSegment(j, refSegNum)) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" claims to have the segment %d for msg %d", jobName, refSegNum, refMsgNum);
         return j;
@@ -695,8 +695,9 @@ void _dispatchResponsesToJobQueue(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses)
         }
       } /* if matching job found */
       else {
-        DBG_WARN(AQHBCI_LOGDOMAIN, "No job found, adding response \"%s\" to all jobs", groupName);
-	if (strcasecmp(groupName, "SegResult")==0) {
+        DBG_WARN(AQHBCI_LOGDOMAIN, "No job found for response \"%s\"", groupName);
+        if (strcasecmp(groupName, "SegResult")==0) {
+          DBG_WARN(AQHBCI_LOGDOMAIN, "Adding response \"%s\" to all jobs", groupName);
 	  _handleSegmentResultForAllJobs(jq, dbData);
           _addResponseToAllJobs(jq, dbPreparedJobResponse);
         }
@@ -724,10 +725,10 @@ void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWE
 {
   GWEN_DB_NODE *dbAllResponses;
 
-
   dbAllResponses=_sampleResponseSegments(jq, msg, db, dbSecurity);
   if (dbAllResponses) {
     AH_JOBQUEUE *jqRun;
+    int queueNum=0;
 
     /* first extract all interesting data */
     AH_JobQueue_ReadBpd(jq, dbAllResponses);
@@ -739,9 +740,17 @@ void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWE
 
     jqRun=jq;
     while(jqRun) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Dispatching responses to queue %d", queueNum);
       /* then dispatch to jobs in this and in reference queue */
       _dispatchResponsesToJobQueue(jqRun, dbAllResponses);
+      queueNum++;
       jqRun=AH_JobQueue_GetReferenceQueue(jqRun);
+      if (jqRun) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Queue %d has a reference queue", queueNum);
+      }
+      else {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Queue %d has no reference queue", queueNum);
+      }
     }
     GWEN_DB_Group_free(dbAllResponses);
   }
