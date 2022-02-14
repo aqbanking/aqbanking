@@ -435,7 +435,7 @@ AH_JOB *_findReferencedJob(AH_JOBQUEUE *jq, int refMsgNum, int refSegNum)
 
     if (jobStatus==AH_JobStatusSent || jobStatus==AH_JobStatusAnswered) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Checking whether job \"%s\" has segment %d", jobName, refSegNum);
-      if ((AH_Job_GetMsgNum(j)==refMsgNum) && AH_Job_HasSegment(j, refSegNum)) {
+      if ((refMsgNum==0 || AH_Job_GetMsgNum(j)==refMsgNum) && AH_Job_HasSegment(j, refSegNum)) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" claims to have the segment %d for msg %d", jobName, refSegNum, refMsgNum);
         return j;
       }
@@ -661,6 +661,10 @@ void _dispatchResponsesToJobQueue(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses)
 
       /* search for job to which this response belongs */
       j=_findReferencedJob(jq, refMsgNum, refSegNum);
+      if (j==NULL) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "No job for response \"%s\" found in refmsg %d, trying ANY msg num", groupName, refMsgNum);
+        j=_findReferencedJob(jq, 0, refSegNum); /* try without ref msg num */
+      }
       if (j) {
         const char *refJobName;
 
