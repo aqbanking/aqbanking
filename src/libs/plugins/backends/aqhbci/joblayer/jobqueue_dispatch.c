@@ -44,7 +44,7 @@ static void _addResponseToAllJobs(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbPreparedJobRe
 static void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWEN_DB_NODE *dbSecurity);
 
 static GWEN_DB_NODE *_sampleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWEN_DB_NODE *dbSecurity);
-static void _dispatchResponsesToJobQueue(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses);
+static void _dispatchResponsesToJobQueue(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses, int anyMsg);
 
 static void _logResultSegment(int rcode, const char *p, int isMsgResult, GWEN_LOGGER_LEVEL level, uint32_t guiid);
 static void _scanSingleResultSegment(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResult, int isMsgResult, uint32_t guiid);
@@ -632,7 +632,7 @@ GWEN_DB_NODE *_sampleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE
 
 
 
-void _dispatchResponsesToJobQueue(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses)
+void _dispatchResponsesToJobQueue(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses, int anyMsg)
 {
   GWEN_DB_NODE *dbPreparedJobResponse;
 
@@ -660,11 +660,7 @@ void _dispatchResponsesToJobQueue(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses)
       AH_JOB *j;
 
       /* search for job to which this response belongs */
-      j=_findReferencedJob(jq, refMsgNum, refSegNum);
-      if (j==NULL) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "No job for response \"%s\" found in refmsg %d, trying ANY msg num", groupName, refMsgNum);
-        j=_findReferencedJob(jq, 0, refSegNum); /* try without ref msg num */
-      }
+      j=_findReferencedJob(jq, anyMsg?0:refMsgNum, refSegNum);
       if (j) {
         const char *refJobName;
 
@@ -748,7 +744,7 @@ void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWE
       if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Info)
         AH_JobQueue_DumpJobList(jqRun, stderr, 2);
       /* then dispatch to jobs in this and in reference queue */
-      _dispatchResponsesToJobQueue(jqRun, dbAllResponses);
+      _dispatchResponsesToJobQueue(jqRun, dbAllResponses, (queueNum>0)?1:0);
       queueNum++;
       jqRun=AH_JobQueue_GetReferenceQueue(jqRun);
       if (jqRun) {
