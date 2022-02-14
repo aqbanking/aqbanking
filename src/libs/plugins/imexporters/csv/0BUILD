@@ -62,10 +62,6 @@
       csv_editprofile.c
     </sources>
 
-    <data install="$(aqbanking_plugin_installdir)/imexporters" >
-      csv.xml
-    </data>
-
     <data install="$(pkgdatadir)/imexporters/csv/dialogs" >
       csv_editprofile.dlg
     </data>
@@ -82,6 +78,7 @@
     <extradist>
     </extradist>
 
+    <writeFile name="csv.xml" install="$(aqbanking_plugin_installdir)/imexporters" />
 
   </target>
   

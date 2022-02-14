@@ -61,10 +61,6 @@
       aqhbci.c
     </sources>
 
-    <data install="$(aqbanking_plugin_installdir)/providers" >
-      aqhbci.xml
-    </data>
-
     <useTargets>
       hbciadmjobs
       hbciaccjobs
@@ -94,6 +90,7 @@
     <extradist>
     </extradist>
 
+    <writeFile name="aqhbci.xml" install="$(aqbanking_plugin_installdir)/providers" />
 
 
     <buildFiles>

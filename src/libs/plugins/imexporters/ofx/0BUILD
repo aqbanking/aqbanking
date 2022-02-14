@@ -63,10 +63,6 @@
       ofx.c
     </sources>
 
-    <data install="$(aqbanking_plugin_installdir)/imexporters" >
-      ofx.xml
-    </data>
-
     <useTargets>
       ofxparser
     </useTargets>
@@ -80,6 +76,7 @@
     <extradist>
     </extradist>
 
+    <writeFile name="ofx.xml" install="$(aqbanking_plugin_installdir)/imexporters" />
 
   </target>
   

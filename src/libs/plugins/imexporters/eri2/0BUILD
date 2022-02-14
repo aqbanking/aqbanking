@@ -59,10 +59,6 @@
       eri2.c
     </sources>
 
-    <data install="$(aqbanking_plugin_installdir)/imexporters" >
-      eri2.xml
-    </data>
-
     <useTargets>
     </useTargets>
 
@@ -73,6 +69,8 @@
   
     <extradist>
     </extradist>
+
+    <writeFile name="eri2.xml" install="$(aqbanking_plugin_installdir)/imexporters" />
 
 
   </target>
