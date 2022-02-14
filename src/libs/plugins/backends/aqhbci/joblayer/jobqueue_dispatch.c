@@ -741,6 +741,8 @@ void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWE
     jqRun=jq;
     while(jqRun) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Dispatching responses to queue %d", queueNum);
+      if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Info)
+        AH_JobQueue_DumpJobList(jqRun, stderr, 2);
       /* then dispatch to jobs in this and in reference queue */
       _dispatchResponsesToJobQueue(jqRun, dbAllResponses);
       queueNum++;

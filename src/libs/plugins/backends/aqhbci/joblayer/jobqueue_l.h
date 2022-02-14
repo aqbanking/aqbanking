@@ -87,6 +87,7 @@ AH_JOB *AH_JobQueue_GetFirstJob(const AH_JOBQUEUE *jq);
 unsigned int AH_JobQueue_GetCount(const AH_JOBQUEUE *jq);
 
 void AH_JobQueue_Dump(AH_JOBQUEUE *jq, FILE *f, unsigned int insert);
+void AH_JobQueue_DumpJobList(const AH_JOBQUEUE *jq, FILE *f, unsigned int insert);
 
 
 

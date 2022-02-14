@@ -1183,6 +1183,17 @@ void AH_Job_Dump(const AH_JOB *j, FILE *f, unsigned int insert)
 
 
 
+void AH_Job_DumpShort(const AH_JOB *j, FILE *f, unsigned int insert)
+{
+  uint32_t k;
+
+  for (k=0; k<insert; k++)
+    fprintf(f, " ");
+  fprintf(f, "- %s(%s)[%d] (%d-%d): %s(%d)\n",
+          j->name, j->code, j->segmentVersion, j->firstSegment, j->lastSegment,
+          AH_Job_StatusName(j->status), j->status);
+}
+
 
 
 
