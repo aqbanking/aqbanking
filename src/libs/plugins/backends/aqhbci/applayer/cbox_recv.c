@@ -28,7 +28,7 @@ AH_MSG *AH_OutboxCBox_RecvMessage(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, GWEN_DB_
 
   assert(cbox);
 
-  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("Waiting for response"));
+  /*GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("Waiting for response"));*/
 
   rv=AH_Dialog_RecvMessage(dlg, &msg);
   if (rv>=200 && rv<300)
@@ -39,7 +39,7 @@ AH_MSG *AH_OutboxCBox_RecvMessage(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, GWEN_DB_
     return NULL;
   }
 
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Got a message");
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Response received");
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("Response received"));
 
   /* try to dispatch the message */

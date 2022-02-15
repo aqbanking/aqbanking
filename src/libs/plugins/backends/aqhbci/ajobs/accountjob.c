@@ -54,6 +54,7 @@ AH_JOB *AH_AccountJob_new(const char *name,
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
   const char *s;
+  /*const char *sAccountNumOrIban=NULL;*/
   int jobVersion=0;
 
   assert(name);
@@ -81,8 +82,10 @@ AH_JOB *AH_AccountJob_new(const char *name,
   assert(dbArgs);
 
   s=AB_Account_GetAccountNumber(account);
-  if (s && *s)
+  if (s && *s) {
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountId", s);
+    /*sAccountNumOrIban=s;*/
+  }
 
   s=AB_Account_GetSubAccountId(account);
   if (s && *s)
@@ -97,16 +100,24 @@ AH_JOB *AH_AccountJob_new(const char *name,
 
   /* new for SEPA jobs */
   s=AB_Account_GetIban(account);
-  if (s && *s)
+  if (s && *s) {
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "iban", s);
+    /*sAccountNumOrIban=s;*/
+  }
 
   s=AB_Account_GetBic(account);
   if (s && *s)
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "bic", s);
   else {
-    DBG_WARN(AQHBCI_LOGDOMAIN, "No BIC in account, maybe you need to request SEPA infos for your account?");
-    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Warning,
-			 I18N("No SWIFT-BIC in account data, maybe you need to request SEPA info for this account?"));
+    DBG_WARN(AQHBCI_LOGDOMAIN,
+             "No BIC in account \"%s\", maybe you need to request SEPA infos for your account?",
+             sAccountNumOrIban?sAccountNumOrIban:"<no name>");
+#if 0
+    GWEN_Gui_ProgressLog2(0,
+                          GWEN_LoggerLevel_Info,
+                          I18N("No SWIFT-BIC in account \"%s\", maybe you need to request SEPA info for this account?"),
+                          sAccountNumOrIban?sAccountNumOrIban:"<no name>");
+#endif
   }
   return j;
 }

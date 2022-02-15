@@ -291,7 +291,7 @@ int _sendAndReceiveTanResponseProc2(AH_OUTBOX_CBOX *cbox,
 
   /* encode HKTAN message */
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding queue");
-  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("Encoding queue"));
+  /*GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("Encoding queue"));*/
   AH_Msg_SetNeedTan(msg2, 1);
   rv=AH_Msg_EncodeMsg(msg2);
   if (rv) {
