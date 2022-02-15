@@ -54,7 +54,7 @@ AH_JOB *AH_AccountJob_new(const char *name,
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
   const char *s;
-  /*const char *sAccountNumOrIban=NULL;*/
+  const char *sAccountNumOrIban=NULL;
   int jobVersion=0;
 
   assert(name);
@@ -84,7 +84,7 @@ AH_JOB *AH_AccountJob_new(const char *name,
   s=AB_Account_GetAccountNumber(account);
   if (s && *s) {
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountId", s);
-    /*sAccountNumOrIban=s;*/
+    sAccountNumOrIban=s;
   }
 
   s=AB_Account_GetSubAccountId(account);
@@ -102,7 +102,7 @@ AH_JOB *AH_AccountJob_new(const char *name,
   s=AB_Account_GetIban(account);
   if (s && *s) {
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "iban", s);
-    /*sAccountNumOrIban=s;*/
+    sAccountNumOrIban=s;
   }
 
   s=AB_Account_GetBic(account);
