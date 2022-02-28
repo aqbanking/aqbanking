@@ -150,11 +150,11 @@
     <!-- dependencies ( pkg-config and libs) -->
     <dependencies>
       <dep id="gwenhywfar" name="gwenhywfar" minversion="5.8.2.1" required="TRUE" >
-        <variables>plugindir gwengui-gtk2</variables>
+        <variables>plugindir gwengui-gtk3</variables>
       </dep>
 
       <ifVarMatches name="option_enable_gui_tests" value="TRUE" >
-        <dep id="gtk2" name="gtk+-2.0" required="TRUE" />
+        <dep id="gtk3" name="gtk+-3.0" required="TRUE" />
       </ifVarMatches>
 
       <ifVarHasValue name="option_backends" value="aqebics" >
