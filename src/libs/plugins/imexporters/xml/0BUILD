@@ -71,9 +71,11 @@
     </useTargets>
 
     <subdirs>
+      data
+      profiles
     </subdirs>
 
-  
+
   
     <extradist>
     </extradist>

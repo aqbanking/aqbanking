@@ -53,7 +53,10 @@
       aqhbci.h
       aqhbci_l.h
     </headers>
-  
+
+    <data dist="false" install="$(pkgdatadir)/backends/aqhbci" generated="true">
+      hbci.xml
+    </data>
   
     <sources>
       $(local/typefiles)
