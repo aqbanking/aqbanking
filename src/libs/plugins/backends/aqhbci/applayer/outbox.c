@@ -355,12 +355,12 @@ AH_OUTBOX_CBOX *_findCBox(const AH_OUTBOX *ob, const AB_USER *u)
   cbox=AH_OutboxCBox_List_First(ob->userBoxes);
   while (cbox) {
     if (AH_OutboxCBox_GetUser(cbox)==u) {
-      DBG_DEBUG(AQHBCI_LOGDOMAIN, "CBox for customer \"%s\" found", AB_User_GetCustomerId(u));
+      DBG_DEBUG(AQHBCI_LOGDOMAIN, "CBox for customer \"%lu\" found", (unsigned long int) AB_User_GetUniqueId(u));
       return cbox;
     }
     cbox=AH_OutboxCBox_List_Next(cbox);
   } /* while */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "CBox for customer \"%s\" not found", AB_User_GetCustomerId(u));
+  DBG_INFO(AQHBCI_LOGDOMAIN, "CBox for customer \"%lu\" not found", (unsigned long int) AB_User_GetUniqueId(u));
   return 0;
 }
 
@@ -381,7 +381,7 @@ void AH_Outbox_AddJob(AH_OUTBOX *ob, AH_JOB *j)
 
   cbox=_findCBox(ob, u);
   if (!cbox) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating CBox for customer \"%s\"", AB_User_GetCustomerId(u));
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating CBox for customer \"%lu\"", (unsigned long int) AB_User_GetUniqueId(u));
     cbox=AH_OutboxCBox_new(ob->provider, u, ob);
     AH_OutboxCBox_List_Add(cbox, ob->userBoxes);
   }
@@ -405,13 +405,13 @@ int _prepare(AH_OUTBOX *ob)
     AB_USER *u;
 
     u=AH_OutboxCBox_GetUser(cbox);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing queues for customer \"%s\"", AB_User_GetCustomerId(u));
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing queues for customer \"%lu\"", (unsigned long int) AB_User_GetUniqueId(u));
     if (AH_OutboxCBox_Prepare(cbox)) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error preparing cbox");
       errors++;
     }
     else {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing queues for customer \"%s\": done", AB_User_GetCustomerId(u));
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing queues for customer \"%lu\": done", (unsigned long int) AB_User_GetUniqueId(u));
     }
     cbox=AH_OutboxCBox_List_Next(cbox);
   } /* while */
@@ -494,9 +494,7 @@ int _sendAndRecvCustomerBoxes(AH_OUTBOX *ob)
     AB_USER *u;
 
     u=AH_OutboxCBox_GetUser(cbox);
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Sending messages for customer \"%s\"",
-             AB_User_GetCustomerId(u));
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Sending messages for customer \"%lu\"", (unsigned long int) AB_User_GetUniqueId(u));
 
     rv=AH_OutboxCBox_SendAndRecvBox(cbox);
     _finishCBox(ob, cbox);

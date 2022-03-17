@@ -58,10 +58,6 @@
       de.c
     </sources>
 
-    <data install="$(aqbanking_plugin_installdir)/bankinfo" >
-      de.xml
-    </data>
-
     <useTargets>
       bankinfo_generic
     </useTargets>
@@ -74,6 +70,7 @@
     <extradist>
     </extradist>
 
+    <writeFile name="de.xml" install="$(aqbanking_plugin_installdir)/bankinfo" />
 
   </target>
   

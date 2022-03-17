@@ -59,10 +59,6 @@
       openhbci1.c
     </sources>
 
-    <data install="$(aqbanking_plugin_installdir)/imexporters" >
-      openhbci1.xml
-    </data>
-
     <useTargets>
     </useTargets>
 
@@ -74,7 +70,8 @@
     <extradist>
     </extradist>
 
-
+    <writeFile name="openhbci1.xml" install="$(aqbanking_plugin_installdir)/imexporters" />
+ 
   </target>
   
 </gwbuild>

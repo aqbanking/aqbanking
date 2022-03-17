@@ -27,8 +27,7 @@ GWEN_DIALOG *AB_UserTypePageDialog_new(AB_BANKING *ab, const char *dname)
 
   dlg=GWEN_Dialog_new(dname);
   GWEN_NEW_OBJECT(AB_USERTYPE_PAGE_DIALOG, xdlg);
-  GWEN_INHERIT_SETDATA(GWEN_DIALOG, AB_USERTYPE_PAGE_DIALOG, dlg, xdlg,
-                       AB_UserTypePageDialog_FreeData);
+  GWEN_INHERIT_SETDATA(GWEN_DIALOG, AB_USERTYPE_PAGE_DIALOG, dlg, xdlg, AB_UserTypePageDialog_FreeData);
 
   xdlg->banking=ab;
   return dlg;

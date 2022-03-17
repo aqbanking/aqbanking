@@ -7,17 +7,19 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef AQPAYPAL_PROVIDER_H
-#define AQPAYPAL_PROVIDER_H
+#ifndef AQPAYPAL_PROVIDER_SENDCMD_H
+#define AQPAYPAL_PROVIDER_SENDCMD_H
 
 
-#include <aqbanking/backendsupport/provider_be.h>
+#include <aqbanking/backendsupport/provider.h>
+#include <aqbanking/backendsupport/providerqueue.h>
+#include <aqbanking/types/imexporter_context.h>
 
 
-AB_PROVIDER *APY_Provider_new(AB_BANKING *ab);
 
+
+int APY_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx);
 
 
 #endif
-
 

@@ -3,8 +3,8 @@
 
 <gwbuild>
 
-  <project name="aqbanking" version="6.4.3-beta"
-           so_current="48" so_age="4" so_revision="3"
+  <project name="aqbanking" version="6.5.0.0-stable"
+           so_current="49" so_age="5" so_revision="0"
            write_config_h="TRUE"
            >
 
@@ -47,16 +47,16 @@
     <setVar name="localedir">$(option_prefix)/share/locale</setVar>
 
     <setVar name="pkglibdir">$(libdir)/$(package)</setVar>
-    <setVar name="pkgincludedir">$(includedir)/$(package)</setVar>
+    <setVar name="pkgincludedir">$(includedir)/aqbanking6/$(package)</setVar>
     <setVar name="pkgdatadir">$(datadir)/$(package)</setVar>
 
 
     <option id="backends" type="stringlist" definePrefix="AQBANKING_WITH_PLUGIN_BACKEND_" >
-      <choices>aqhbci aqofxconnect aqebics aqpaypal aqfints</choices>
-      <alias name="all">aqhbci aqofxconnect aqebics aqpaypal</alias>
+      <choices>aqhbci aqofxconnect aqebics aqpaypal aqfints aqnone</choices>
+      <alias name="all">aqhbci aqofxconnect aqebics aqpaypal aqnone</alias>
       <default>all</default>
     </option>
-    <define name="AQBANKING_WITH_PLUGIN_BACKEND_AQNONE" value="1" quoted="FALSE" />
+<!--    <define name="AQBANKING_WITH_PLUGIN_BACKEND_AQNONE" value="1" quoted="FALSE" /> -->
 
 
     <option id="imexporters" type="stringlist" definePrefix="AQBANKING_WITH_PLUGIN_IMEXPORTER_" >
@@ -149,12 +149,12 @@
 
     <!-- dependencies ( pkg-config and libs) -->
     <dependencies>
-      <dep id="gwenhywfar" name="gwenhywfar" minversion="5.5.1.1" required="TRUE" >
-        <variables>plugindir gwengui-gtk2</variables>
+      <dep id="gwenhywfar" name="gwenhywfar" minversion="5.8.2.1" required="TRUE" >
+        <variables>plugindir gwengui-gtk3</variables>
       </dep>
 
       <ifVarMatches name="option_enable_gui_tests" value="TRUE" >
-        <dep id="gtk2" name="gtk+-2.0" required="TRUE" />
+        <dep id="gtk3" name="gtk+-3.0" required="TRUE" />
       </ifVarMatches>
 
       <ifVarHasValue name="option_backends" value="aqebics" >
@@ -233,11 +233,6 @@
     </subdirs>
 
 
-    <data dist="TRUE" install="$(libdir)/pkgconfig">
-      aqbanking.pc
-    </data>
-
-
     <extradist>
       AUTHORS
       COPYING
@@ -313,8 +308,7 @@
     </ifVarMatches>
 
 
-    <writeFile name="aqbanking.pc" />
-
+    <writeFile name="aqbanking.pc" install="$(libdir)/pkgconfig" />
 
   </project>
   

@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Sat May 08 2010
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2022 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -12,12 +12,19 @@
 #endif
 
 #include <aqbanking/backendsupport/providerqueue.h>
-#include "provider_p.h"
-#include "user_l.h"
-#include "control/control_l.h"
+#include "aqpaypal/provider_accspec.h"
+#include "aqpaypal/provider_credentials.h"
+#include "aqpaypal/provider_request.h"
+#include "aqpaypal/provider_getstm.h"
+#include "aqpaypal/provider_getbalance.h"
+#include "aqpaypal/provider_sendcmd.h"
+#include "aqpaypal/provider_update.h"
+#include "aqpaypal/provider_p.h"
+#include "aqpaypal/user_l.h"
+#include "aqpaypal/control/control_l.h"
 
-#include "dlg_newuser_l.h"
-#include "dlg_edituser_l.h"
+#include "aqpaypal/dlg_newuser_l.h"
+#include "aqpaypal/dlg_edituser_l.h"
 
 #include <aqbanking/backendsupport/httpsession.h>
 #include <aqbanking/types/transaction.h>
@@ -36,12 +43,6 @@
 #include <errno.h>
 
 
-#define AQPAYPAL_PASSWORD_ITERATIONS 1467
-#define AQPAYPAL_CRYPT_ITERATIONS    648
-
-#define AQPAYPAL_API_VER    "56.0"
-
-
 #define I18N(msg) GWEN_I18N_Translate(PACKAGE, msg)
 
 
@@ -53,14 +54,13 @@ GWEN_INHERIT(AB_PROVIDER, APY_PROVIDER)
 
 
 
-void GWENHYWFAR_CB APY_Provider_FreeData(void *bp, void *p)
-{
-  APY_PROVIDER *xp;
+static void GWENHYWFAR_CB _providerFreeData(void *bp, void *p);
+static int _providerInit(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
+static int _providerFini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
+static AB_USER *_createUserObject(AB_PROVIDER *pro);
+static GWEN_DIALOG *_getNewUserDialog(AB_PROVIDER *pro, int i);
+static GWEN_DIALOG *_getEditUserDialog(AB_PROVIDER *pro, AB_USER *u);
 
-  xp=(APY_PROVIDER *) p;
-
-  GWEN_FREE_OBJECT(xp);
-}
 
 
 AB_PROVIDER *APY_Provider_new(AB_BANKING *ab)
@@ -70,22 +70,20 @@ AB_PROVIDER *APY_Provider_new(AB_BANKING *ab)
 
   pro=AB_Provider_new(ab, APY_PROVIDER_NAME);
   GWEN_NEW_OBJECT(APY_PROVIDER, xp);
-  GWEN_INHERIT_SETDATA(AB_PROVIDER, APY_PROVIDER, pro, xp,
-                       APY_Provider_FreeData);
+  GWEN_INHERIT_SETDATA(AB_PROVIDER, APY_PROVIDER, pro, xp, _providerFreeData);
 
 
-  AB_Provider_SetInitFn(pro, APY_Provider_Init);
-  AB_Provider_SetFiniFn(pro, APY_Provider_Fini);
+  AB_Provider_SetInitFn(pro, _providerInit);
+  AB_Provider_SetFiniFn(pro, _providerFini);
 
-  AB_Provider_SetCreateAccountObjectsFn(pro, APY_Provider_CreateAccountObject);
-  AB_Provider_SetCreateUserObjectsFn(pro, APY_Provider_CreateUserObject);
+  AB_Provider_SetCreateUserObjectsFn(pro, _createUserObject);
 
   AB_Provider_SetUpdateAccountSpecFn(pro, APY_Provider_UpdateAccountSpec);
   AB_Provider_SetControlFn(pro, APY_Control);
   AB_Provider_SetSendCommandsFn(pro, APY_Provider_SendCommands);
 
-  AB_Provider_SetGetNewUserDialogFn(pro, APY_Provider_GetNewUserDialog);
-  AB_Provider_SetGetEditUserDialogFn(pro, APY_Provider_GetEditUserDialog);
+  AB_Provider_SetGetNewUserDialogFn(pro, _getNewUserDialog);
+  AB_Provider_SetGetEditUserDialogFn(pro, _getEditUserDialog);
 
   AB_Provider_AddFlags(pro,
                        AB_PROVIDER_FLAGS_HAS_EDITUSER_DIALOG |
@@ -96,8 +94,17 @@ AB_PROVIDER *APY_Provider_new(AB_BANKING *ab)
 
 
 
+void GWENHYWFAR_CB _providerFreeData(void *bp, void *p)
+{
+  APY_PROVIDER *xp;
 
-int APY_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData)
+  xp=(APY_PROVIDER *) p;
+  GWEN_FREE_OBJECT(xp);
+}
+
+
+
+int _providerInit(AB_PROVIDER *pro, GWEN_DB_NODE *dbData)
 {
   APY_PROVIDER *dp;
   const char *logLevelName;
@@ -192,7 +199,7 @@ int APY_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData)
 
 
 
-int APY_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData)
+int _providerFini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData)
 {
   APY_PROVIDER *dp;
   uint32_t currentVersion;
@@ -220,138 +227,42 @@ int APY_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData)
 
 
 
-AB_ACCOUNT *APY_Provider_CreateAccountObject(AB_PROVIDER *pro)
-{
-  AB_ACCOUNT *a;
-
-  a=AB_Account_new();
-  assert(a);
-  AB_Account_SetProvider(a, pro);
-  AB_Account_SetBackendName(a, APY_PROVIDER_NAME);
-  AB_Account_SetReadFromDbFn(a, APY_Account_ReadFromDb);
-  return a;
-}
-
-
-int APY_Account_ReadFromDb(AB_ACCOUNT *a, GWEN_DB_NODE *db)
-{
-  int rv;
-  AB_PROVIDER *pro;
-
-  assert(a);
-
-  /* save provider, because AB_Account_ReadFromDb clears it */
-  pro=AB_Account_GetProvider(a);
-
-  /* read data for base class */
-  rv=AB_Account__ReadFromDb(a, db);
-  if (rv<0) {
-    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  /* set provider again */
-  AB_Account_SetProvider(a, pro);
-
-  return 0;
-}
-
-
-AB_USER *APY_Provider_CreateUserObject(AB_PROVIDER *pro)
+AB_USER *_createUserObject(AB_PROVIDER *pro)
 {
   return APY_User_new(pro);
 }
 
 
 
-
-
-
-
-
-
-int APY_Provider_ParseResponse(AB_PROVIDER *pro, const char *s, GWEN_DB_NODE *db)
+GWEN_DIALOG *_getNewUserDialog(AB_PROVIDER *pro, int i)
 {
-  /* read vars */
-  while (*s) {
-    GWEN_BUFFER *bName;
-    GWEN_BUFFER *bValue;
-    const char *p;
-    GWEN_DB_NODE *dbT;
+  GWEN_DIALOG *dlg;
 
-    bName=GWEN_Buffer_new(0, 256, 0, 1);
-    bValue=GWEN_Buffer_new(0, 256, 0, 1);
-    p=s;
-    while (*p && *p!='&' && *p!='=')
-      p++;
-    if (p!=s)
-      GWEN_Buffer_AppendBytes(bName, s, (p-s));
-    s=p;
-    if (*p=='=') {
-      s++;
-      p=s;
-      while (*p && *p!='&')
-        p++;
-      if (p!=s)
-        GWEN_Buffer_AppendBytes(bValue, s, (p-s));
-      s=p;
-    }
-
-    dbT=db;
-    if (strncasecmp(GWEN_Buffer_GetStart(bName), "L_ERRORCODE", 11)!=0 &&
-        strncasecmp(GWEN_Buffer_GetStart(bName), "L_SHORTMESSAGE", 14)!=0 &&
-        strncasecmp(GWEN_Buffer_GetStart(bName), "L_LONGMESSAGE", 13)!=0 &&
-        strncasecmp(GWEN_Buffer_GetStart(bName), "L_SEVERITYCODE", 14)!=0 &&
-        strncasecmp(GWEN_Buffer_GetStart(bName), "SHIPTOSTREET2", 13)!=0) {
-      int i;
-
-      i=GWEN_Buffer_GetUsedBytes(bName)-1;
-      if (i>0) {
-        char *t;
-
-        t=GWEN_Buffer_GetStart(bName)+i;
-        while (i && isdigit(*t)) {
-          i--;
-          t--;
-        }
-        if (i>0) {
-          t++;
-          if (*t) {
-            dbT=GWEN_DB_GetGroup(db, GWEN_DB_FLAGS_DEFAULT, t);
-            *t=0;
-          }
-        }
-      }
-    }
-
-    /* store variable/value pair */
-    if (strlen(GWEN_Buffer_GetStart(bName))) {
-      GWEN_BUFFER *xbuf;
-
-      xbuf=GWEN_Buffer_new(0, 256, 0, 1);
-      GWEN_Text_UnescapeToBufferTolerant(GWEN_Buffer_GetStart(bValue), xbuf);
-      GWEN_DB_SetCharValue(dbT,
-                           GWEN_DB_FLAGS_DEFAULT,
-                           GWEN_Buffer_GetStart(bName),
-                           GWEN_Buffer_GetStart(xbuf));
-      GWEN_Buffer_free(xbuf);
-    }
-
-    GWEN_Buffer_free(bValue);
-    GWEN_Buffer_free(bName);
-    if (*s!='&')
-      break;
-    s++;
+  dlg=APY_NewUserDialog_new(pro);
+  if (dlg==NULL) {
+    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (no dialog)");
+    return NULL;
   }
 
-  return 0;
+  return dlg;
 }
 
 
-#include "provider_accspec.c"
-#include "provider_update.c"
-#include "provider_credentials.c"
-#include "provider_dialogs.c"
-#include "provider_getbalance.c"
-#include "provider_getstm.c"
-#include "provider_sendcmd.c"
+
+GWEN_DIALOG *_getEditUserDialog(AB_PROVIDER *pro, AB_USER *u)
+{
+  GWEN_DIALOG *dlg;
+
+  dlg=APY_EditUserDialog_new(pro, u, 1);
+  if (dlg==NULL) {
+    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (no dialog)");
+    return NULL;
+  }
+
+  return dlg;
+}
+
+
+
+
+

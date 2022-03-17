@@ -1,0 +1,15 @@
+<?xml?>
+
+
+<gwbuild>
+
+  <data DIST="TRUE" install="$(pkgdatadir)/imexporters/swift/profiles" >
+    swiftmt940.conf
+    swiftmt942.conf
+    swiftmt535.conf
+    amro942.conf
+    amro940.conf
+  </data>
+
+</gwbuild>
+

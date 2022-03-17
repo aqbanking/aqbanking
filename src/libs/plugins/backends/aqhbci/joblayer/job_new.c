@@ -421,7 +421,7 @@ void _jobReadFromDescriptorNode(AH_JOB *j, GWEN_XMLNODE *jobNode)
   }
 
   if (j->flags & (AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN)) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "%s: Signature needed according to job description in XML our files", j->name);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "%s: Signature needed according to job description in our XML files", j->name);
     j->minSigs=1;
   }
   else {

@@ -265,6 +265,7 @@ void AH_Job_SetHandleResultsFn(AH_JOB *j, AH_JOB_HANDLERESULTS_FN f);
 
 
 void AH_Job_Dump(const AH_JOB *j, FILE *f, unsigned int insert);
+void AH_Job_DumpShort(const AH_JOB *j, FILE *f, unsigned int insert);
 
 const GWEN_STRINGLIST *AH_Job_GetLogs(const AH_JOB *j);
 

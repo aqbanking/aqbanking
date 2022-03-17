@@ -16,11 +16,11 @@ AC_CONFIG_MACRO_DIRS([m4])
 #
 
 AQBANKING_VERSION_MAJOR=6
-AQBANKING_VERSION_MINOR=4
-AQBANKING_VERSION_PATCHLEVEL=3
+AQBANKING_VERSION_MINOR=5
+AQBANKING_VERSION_PATCHLEVEL=0
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
-AQBANKING_VERSION_TAG="beta"
+AQBANKING_VERSION_TAG="stable"
 
 
 
@@ -33,9 +33,9 @@ AQBANKING_VERSION_TAG="beta"
 # AqBanking
 #
 
-AQBANKING_SO_CURRENT=48
-AQBANKING_SO_AGE=4
-AQBANKING_SO_REVISION=3
+AQBANKING_SO_CURRENT=49
+AQBANKING_SO_AGE=5
+AQBANKING_SO_REVISION=0
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 
@@ -238,7 +238,7 @@ AC_ARG_WITH(backends,
 )
 
 if test "$aqbanking_backends" = "all"; then
-  aqbanking_backends="aqhbci aqofxconnect aqebics aqpaypal"
+  aqbanking_backends="aqhbci aqofxconnect aqebics aqpaypal aqnone"
 fi
 
 for f in ${aqbanking_backends}; do
@@ -269,6 +269,9 @@ for f in ${aqbanking_backends}; do
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQPAYPAL, 1, [plugin availability])
       ;;
     aqnone)
+      aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqnone"
+      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqnone/libaqnone.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQNONE, 1, [plugin availability])
       ;;
     *)
       AC_MSG_ERROR("ERROR: Unknown plugin $f")
@@ -440,8 +443,8 @@ AC_SUBST(aqbanking_plugins_bankinfo_libs)
 #
 
 # Variable used in aqbanking-config.cmake
-AC_SUBST(GWENHYWFAR_MINIMUM_VERSION, "5.5.1.1")
-AC_GWENHYWFAR(5,5,1,1)
+AC_SUBST(GWENHYWFAR_MINIMUM_VERSION, "5.8.2.1")
+AC_GWENHYWFAR(5,8,2,1)
 
 all_includes="$all_includes $gwenhywfar_includes"
 

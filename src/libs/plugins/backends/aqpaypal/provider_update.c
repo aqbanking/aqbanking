@@ -7,9 +7,18 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
-/* included by provider.c */
 
+#include "aqpaypal/provider_update.h"
+
+#include "aqpaypal/aqpaypal.h"
+
+#include "aqbanking/backendsupport/provider_be.h"
+
+#include <gwenhywfar/debug.h>
 
 
 
@@ -50,3 +59,4 @@ int APY_Provider_UpdatePostInit(AB_PROVIDER *pro, uint32_t lastVersion, uint32_t
   }
   return 0;
 }
+

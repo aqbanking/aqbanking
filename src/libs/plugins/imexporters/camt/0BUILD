@@ -59,10 +59,6 @@
       camt.c
     </sources>
 
-    <data install="$(aqbanking_plugin_installdir)/imexporters" >
-      camt.xml
-    </data>
-
     <useTargets>
     </useTargets>
 
@@ -75,6 +71,7 @@
       camt52_001_02.c
     </extradist>
 
+    <writeFile name="camt.xml" install="$(aqbanking_plugin_installdir)/imexporters" />
 
   </target>
   

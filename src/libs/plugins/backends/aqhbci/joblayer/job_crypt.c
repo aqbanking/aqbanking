@@ -130,10 +130,9 @@ int AH_Job_CheckSignature(AH_JOB *j, GWEN_DB_NODE *dbRsp)
     if (!dbSecurity) {
       DBG_ERROR(AQHBCI_LOGDOMAIN,
                 "No security settings, should not happen");
-      GWEN_Gui_ProgressLog(
-        0,
-        GWEN_LoggerLevel_Error,
-        I18N("Response without security info (internal)"));
+      GWEN_Gui_ProgressLog(0,
+                           GWEN_LoggerLevel_Error,
+                           I18N("Response without security info (internal)"));
       return GWEN_ERROR_GENERIC;
     }
 

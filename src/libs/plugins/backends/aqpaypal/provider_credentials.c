@@ -1,120 +1,47 @@
 /***************************************************************************
     begin       : Sat Dec 01 2018
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2022 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-
-/* included from provider.c */
-
-
-
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
 
-static int readFile(const char *fname, GWEN_BUFFER *dbuf)
-{
-  FILE *f;
+#include "aqpaypal/provider_credentials.h"
+#include "aqpaypal/aqpaypal.h"
 
-  f=fopen(fname, "rb");
-  if (f) {
-    while (!feof(f)) {
-      uint32_t l;
-      ssize_t s;
-      char *p;
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/i18n.h>
+#include <gwenhywfar/gui.h>
+#include <gwenhywfar/smalltresor.h>
+#include <gwenhywfar/directory.h>
 
-      GWEN_Buffer_AllocRoom(dbuf, 1024);
-      l=GWEN_Buffer_GetMaxUnsegmentedWrite(dbuf);
-      p=GWEN_Buffer_GetPosPointer(dbuf);
-      s=fread(p, 1, l, f);
-      if (s==0)
-        break;
-      if (s==(ssize_t)-1) {
-        DBG_ERROR(AQPAYPAL_LOGDOMAIN,
-                  "fread(%s): %s",
-                  fname, strerror(errno));
-        fclose(f);
-        return GWEN_ERROR_IO;
-      }
-
-      GWEN_Buffer_IncrementPos(dbuf, s);
-      GWEN_Buffer_AdjustUsedBytes(dbuf);
-    }
-
-    fclose(f);
-    return 0;
-  }
-  else {
-    DBG_ERROR(AQPAYPAL_LOGDOMAIN,
-              "fopen(%s): %s",
-              fname, strerror(errno));
-    return GWEN_ERROR_IO;
-  }
-}
+#include <stdio.h>
+#include <ctype.h>
+#include <errno.h>
 
 
+#define I18N(msg) GWEN_I18N_Translate(PACKAGE, msg)
 
-static int writeToFile(FILE *f, const char *p, int len)
-{
-  while (len>0) {
-    ssize_t l;
-    ssize_t s;
-
-    l=1024;
-    if (l>len)
-      l=len;
-    s=fwrite(p, 1, l, f);
-    if (s==(ssize_t)-1 || s==0) {
-      DBG_ERROR(AQPAYPAL_LOGDOMAIN,
-                "fwrite: %s",
-                strerror(errno));
-      return GWEN_ERROR_IO;
-    }
-    p+=s;
-    len-=s;
-  }
-
-  return 0;
-}
+#define AQPAYPAL_PASSWORD_ITERATIONS 1467
+#define AQPAYPAL_CRYPT_ITERATIONS    648
 
 
+static int _readFile(const char *fname, GWEN_BUFFER *dbuf);
+static int _writeToFile(FILE *f, const char *p, int len);
+static int _writeFile(const char *fname, const char *p, int len);
 
-static int writeFile(const char *fname, const char *p, int len)
-{
-  FILE *f;
-
-  f=fopen(fname, "wb");
-  if (f) {
-    int rv;
-
-    rv=writeToFile(f, p, len);
-    if (rv<0) {
-      DBG_ERROR(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
-      fclose(f);
-      return rv;
-    }
-    if (fclose(f)) {
-      DBG_ERROR(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
-  }
-  else {
-    DBG_ERROR(AQPAYPAL_LOGDOMAIN, "fopen(%s): %s",
-              fname, strerror(errno));
-    return GWEN_ERROR_IO;
-  }
-
-  return 0;
-}
 
 
 
 
 int APY_Provider_ReadUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, GWEN_BUFFER *secbuf)
 {
-  APY_PROVIDER *xp;
   int rv;
   GWEN_BUFFER *pbuf;
   GWEN_BUFFER *sbuf;
@@ -122,10 +49,6 @@ int APY_Provider_ReadUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, GWEN_BUF
   const char *uid;
   char text[512];
   char pw[129];
-
-  assert(pro);
-  xp=GWEN_INHERIT_GETDATA(AB_PROVIDER, APY_PROVIDER, pro);
-  assert(xp);
 
   uid=AB_User_GetUserId(u);
   if (!(uid && *uid)) {
@@ -146,7 +69,7 @@ int APY_Provider_ReadUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, GWEN_BUF
   GWEN_Buffer_AppendString(pbuf, ".sec");
 
   sbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=readFile(GWEN_Buffer_GetStart(pbuf), sbuf);
+  rv=_readFile(GWEN_Buffer_GetStart(pbuf), sbuf);
   if (rv<0) {
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(sbuf);
@@ -207,7 +130,6 @@ int APY_Provider_ReadUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, GWEN_BUF
 
 int APY_Provider_WriteUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, const char *sec)
 {
-  APY_PROVIDER *xp;
   int rv;
   GWEN_BUFFER *pbuf;
   GWEN_BUFFER *sbuf;
@@ -215,10 +137,6 @@ int APY_Provider_WriteUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, const c
   const char *uid;
   char text[512];
   char pw[129];
-
-  assert(pro);
-  xp=GWEN_INHERIT_GETDATA(AB_PROVIDER, APY_PROVIDER, pro);
-  assert(xp);
 
   uid=AB_User_GetUserId(u);
   if (!(uid && *uid)) {
@@ -294,9 +212,7 @@ int APY_Provider_WriteUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, const c
   }
 
   /* write file */
-  rv=writeFile(GWEN_Buffer_GetStart(pbuf),
-               GWEN_Buffer_GetStart(sbuf),
-               GWEN_Buffer_GetUsedBytes(sbuf));
+  rv=_writeFile(GWEN_Buffer_GetStart(pbuf), GWEN_Buffer_GetStart(sbuf), GWEN_Buffer_GetUsedBytes(sbuf));
   if (rv<0) {
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(sbuf);
@@ -309,4 +225,103 @@ int APY_Provider_WriteUserApiSecrets(AB_PROVIDER *pro, const AB_USER *u, const c
 
   return 0;
 }
+
+
+
+int _readFile(const char *fname, GWEN_BUFFER *dbuf)
+{
+  FILE *f;
+
+  f=fopen(fname, "rb");
+  if (f) {
+    while (!feof(f)) {
+      uint32_t l;
+      ssize_t s;
+      char *p;
+
+      GWEN_Buffer_AllocRoom(dbuf, 1024);
+      l=GWEN_Buffer_GetMaxUnsegmentedWrite(dbuf);
+      p=GWEN_Buffer_GetPosPointer(dbuf);
+      s=fread(p, 1, l, f);
+      if (s==0)
+        break;
+      if (s==(ssize_t)-1) {
+        DBG_ERROR(AQPAYPAL_LOGDOMAIN,
+                  "fread(%s): %s",
+                  fname, strerror(errno));
+        fclose(f);
+        return GWEN_ERROR_IO;
+      }
+
+      GWEN_Buffer_IncrementPos(dbuf, s);
+      GWEN_Buffer_AdjustUsedBytes(dbuf);
+    }
+
+    fclose(f);
+    return 0;
+  }
+  else {
+    DBG_ERROR(AQPAYPAL_LOGDOMAIN,
+              "fopen(%s): %s",
+              fname, strerror(errno));
+    return GWEN_ERROR_IO;
+  }
+}
+
+
+
+int _writeToFile(FILE *f, const char *p, int len)
+{
+  while (len>0) {
+    ssize_t l;
+    ssize_t s;
+
+    l=1024;
+    if (l>len)
+      l=len;
+    s=fwrite(p, 1, l, f);
+    if (s==(ssize_t)-1 || s==0) {
+      DBG_ERROR(AQPAYPAL_LOGDOMAIN, "fwrite: %s", strerror(errno));
+      return GWEN_ERROR_IO;
+    }
+    p+=s;
+    len-=s;
+  }
+
+  return 0;
+}
+
+
+
+int _writeFile(const char *fname, const char *p, int len)
+{
+  FILE *f;
+
+  f=fopen(fname, "wb");
+  if (f) {
+    int rv;
+
+    rv=_writeToFile(f, p, len);
+    if (rv<0) {
+      DBG_ERROR(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
+      fclose(f);
+      return rv;
+    }
+    if (fclose(f)) {
+      DBG_ERROR(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+  else {
+    DBG_ERROR(AQPAYPAL_LOGDOMAIN, "fopen(%s): %s",
+              fname, strerror(errno));
+    return GWEN_ERROR_IO;
+  }
+
+  return 0;
+}
+
+
+
+
 

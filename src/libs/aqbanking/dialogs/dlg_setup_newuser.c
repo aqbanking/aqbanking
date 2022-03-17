@@ -59,8 +59,7 @@ GWEN_DIALOG *AB_SetupNewUserDialog_new(AB_BANKING *ab)
 
   dlg=GWEN_Dialog_new("ab_setup_newuser");
   GWEN_NEW_OBJECT(AB_SETUP_NEWUSER_DIALOG, xdlg);
-  GWEN_INHERIT_SETDATA(GWEN_DIALOG, AB_SETUP_NEWUSER_DIALOG, dlg, xdlg,
-                       AB_SetupNewUserDialog_FreeData);
+  GWEN_INHERIT_SETDATA(GWEN_DIALOG, AB_SETUP_NEWUSER_DIALOG, dlg, xdlg, AB_SetupNewUserDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AB_SetupNewUserDialog_SignalHandler);
 
   xdlg->backendDialogs=GWEN_Dialog_List2_new();
@@ -529,6 +528,7 @@ int GWENHYWFAR_CB AB_SetupNewUserDialog_SignalHandler(GWEN_DIALOG *dlg,
   case GWEN_DialogEvent_TypeClose:
 
   case GWEN_DialogEvent_TypeLast:
+  default:
     return GWEN_DialogEvent_ResultNotHandled;
 
   }

@@ -43,39 +43,21 @@ GWEN_DIALOG *APY_EditSecretDialog_new(AB_BANKING *ab)
 {
   GWEN_DIALOG *dlg;
   APY_EDITSECRET_DIALOG *xdlg;
-  GWEN_BUFFER *fbuf;
-  int rv;
 
-  dlg=GWEN_Dialog_new("apy_editsecret");
+  dlg=GWEN_Dialog_CreateAndLoadWithPath("apy_editsecret",
+                                        AB_PM_LIBNAME, AB_PM_DATADIR,
+                                        "aqbanking/backends/aqpaypal/dialogs/dlg_editsecret.dlg");
+  if (dlg==NULL) {
+    DBG_ERROR(AQPAYPAL_LOGDOMAIN, "Could not create dialog \"apy_editsecret\".");
+    return NULL;
+  }
+
+
   GWEN_NEW_OBJECT(APY_EDITSECRET_DIALOG, xdlg);
-  GWEN_INHERIT_SETDATA(GWEN_DIALOG, APY_EDITSECRET_DIALOG, dlg, xdlg,
-                       APY_EditSecretDialog_FreeData);
+  GWEN_INHERIT_SETDATA(GWEN_DIALOG, APY_EDITSECRET_DIALOG, dlg, xdlg, APY_EditSecretDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, APY_EditSecretDialog_SignalHandler);
 
-  /* get path of dialog description file */
-  fbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-                               "aqbanking/backends/aqpaypal/dialogs/dlg_editsecret.dlg",
-                               fbuf);
-  if (rv<0) {
-    DBG_INFO(AQPAYPAL_LOGDOMAIN, "Dialog description file not found (%d).", rv);
-    GWEN_Buffer_free(fbuf);
-    GWEN_Dialog_free(dlg);
-    return NULL;
-  }
-
-  /* read dialog from dialog description file */
-  rv=GWEN_Dialog_ReadXmlFile(dlg, GWEN_Buffer_GetStart(fbuf));
-  if (rv<0) {
-    DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d).", rv);
-    GWEN_Buffer_free(fbuf);
-    GWEN_Dialog_free(dlg);
-    return NULL;
-  }
-  GWEN_Buffer_free(fbuf);
-
   xdlg->banking=ab;
-
 
   /* done */
   return dlg;
@@ -357,6 +339,7 @@ int GWENHYWFAR_CB APY_EditSecretDialog_SignalHandler(GWEN_DIALOG *dlg,
   case GWEN_DialogEvent_TypeClose:
 
   case GWEN_DialogEvent_TypeLast:
+  default:
     return GWEN_DialogEvent_ResultNotHandled;
 
   }

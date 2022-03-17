@@ -59,14 +59,11 @@
       swift.c
     </sources>
 
-    <data install="$(aqbanking_plugin_installdir)/imexporters" >
-      swift.xml
-    </data>
-
     <useTargets>
     </useTargets>
 
     <subdirs>
+      profiles
     </subdirs>
 
   
@@ -74,6 +71,7 @@
     <extradist>
     </extradist>
 
+    <writeFile name="swift.xml" install="$(aqbanking_plugin_installdir)/imexporters" />
 
   </target>
   

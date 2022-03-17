@@ -300,8 +300,15 @@ AB_ACCOUNT *AB_Provider_CreateAccountObject(AB_PROVIDER *pro)
   assert(pro);
   if (pro->createAccountObjectFn)
     return pro->createAccountObjectFn(pro);
-  else
-    return NULL;
+  else {
+    AB_ACCOUNT *account;
+
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Function \"createAccountObject\" not implemented, returning AB_ACCOUNT");
+    account=AB_Account_new();
+    AB_Account_SetProvider(account, pro);
+    AB_Account_SetBackendName(account, AB_Provider_GetName(pro));
+    return account;
+  }
 }
 
 
@@ -311,8 +318,15 @@ AB_USER *AB_Provider_CreateUserObject(AB_PROVIDER *pro)
   assert(pro);
   if (pro->createUserObjectFn)
     return pro->createUserObjectFn(pro);
-  else
-    return NULL;
+  else {
+    AB_USER *user;
+
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Function \"createUserObject\" not implemented, returning AB_USER");
+    user=AB_User_new();
+    AB_User_SetProvider(user, pro);
+    AB_User_SetBackendName(user, AB_Provider_GetName(pro));
+    return user;
+  }
 }
 
 
@@ -322,8 +336,10 @@ int AB_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doL
   assert(pro);
   if (pro->updateAccountSpecFn)
     return pro->updateAccountSpecFn(pro, as, doLock);
-  else
-    return GWEN_ERROR_NOT_IMPLEMENTED;
+  else {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Function \"updateAccountSpec\" not implemented, ignoring.");
+    return 0;
+  }
 }
 
 

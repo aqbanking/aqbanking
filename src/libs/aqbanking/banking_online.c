@@ -24,7 +24,7 @@
 #endif
 
 #ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQPAYPAL
-# include "src/libs/plugins/backends/aqpaypal/provider_l.h"
+# include "src/libs/plugins/backends/aqpaypal/provider.h"
 #endif
 
 #ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQEBICS
@@ -37,12 +37,13 @@
 
 
 
-
 /* ------------------------------------------------------------------------------------------------
  * forward declarations
  * ------------------------------------------------------------------------------------------------
  */
 
+
+static AB_PROVIDER *_getProvider(AB_BANKING *ab, const char *name);
 
 static int _sendCommandsInsideProgress(AB_BANKING *ab, AB_TRANSACTION_LIST2 *commandList,
                                        AB_IMEXPORTER_CONTEXT *ctx,
@@ -145,40 +146,19 @@ AB_PROVIDER *AB_Banking__CreateInternalProvider(AB_BANKING *ab, const char *modn
 
 
 
-AB_PROVIDER *AB_Banking__FindProvider(AB_BANKING *ab, const char *name)
-{
-  AB_PROVIDER *pro;
-
-  assert(ab);
-  assert(name);
-  pro=AB_Provider_List_First(ab_providers);
-  while (pro) {
-    if (strcasecmp(AB_Provider_GetName(pro), name)==0)
-      break;
-    pro=AB_Provider_List_Next(pro);
-  } /* while */
-
-  return pro;
-}
-
-
-
-AB_PROVIDER *AB_Banking__GetProvider(AB_BANKING *ab, const char *name)
+AB_PROVIDER *_getProvider(AB_BANKING *ab, const char *name)
 {
   AB_PROVIDER *pro;
 
   assert(ab);
   assert(name);
 
-  pro=AB_Banking__FindProvider(ab, name);
-  if (pro)
-    return pro;
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Creating provider \"%s\"", name?name:"<noname>");
   pro=AB_Banking__CreateInternalProvider(ab, name);
-  if (pro)
-    return pro;
-
-  if (pro)
-    AB_Provider_List_Add(pro, ab_providers);
+  if (pro==NULL) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+    return NULL;
+  }
 
   return pro;
 }
@@ -189,7 +169,7 @@ AB_PROVIDER *AB_Banking_BeginUseProvider(AB_BANKING *ab, const char *modname)
 {
   AB_PROVIDER *pro;
 
-  pro=AB_Banking__GetProvider(ab, modname);
+  pro=_getProvider(ab, modname);
   if (pro) {
     GWEN_DB_NODE *db=NULL;
     int rv;

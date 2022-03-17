@@ -280,6 +280,7 @@ void AB_Provider_SetGetUserTypeDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_USERTY
 
 /** @name Account Management Functions
  *
+ * Functions in this group can only be used if the callback for @ref AB_Provider_CreateAccountObject is set.
  */
 /*@{*/
 
@@ -307,6 +308,8 @@ int AB_Provider_ReadAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUn
  * If both the parameters doLock and doUnlock are !=0 you can later call @ref AB_Provider_EndExclUseAccount on the
  * object returned (if any).
  *
+ * Internally calls callback function @ref AB_Provider_CreateAccountObject.
+ *
  * @return 0 if okay, <0 on error
  * @param pro provider (THIS in C++ speak)
  * @param uid unique id of the object to read
@@ -319,6 +322,9 @@ int AB_Provider_GetAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnl
 
 /**
  * Read all account objects belonging to this provider.
+ *
+ * Internally calls callback function @ref AB_Provider_CreateAccountObject.
+ *
  * @return 0 if okay, <0 on error
  * @param pro provider (THIS in C++ speak)
  * @param accountList list to receive all objects read
@@ -421,6 +427,7 @@ AB_ACCOUNT_SPEC *AB_Provider_FindMatchingAccountSpec(AB_PROVIDER *pro, const AB_
 
 /** @name User Management Functions
  *
+ * Functions in this group can only be used if the callback for @ref AB_Provider_CreateUserObject is set.
  */
 /*@{*/
 
@@ -430,6 +437,8 @@ AB_ACCOUNT_SPEC *AB_Provider_FindMatchingAccountSpec(AB_PROVIDER *pro, const AB_
  * When reading the user object it will be locked and/or unlocked as requestd.
  * If both the parameters doLock and doUnlock are !=0 you can later call @ref AB_Provider_EndExclUseUser on the
  * user object returned (if any).
+ *
+ * Internally calls callback function @ref AB_Provider_CreateUserObject.
  *
  * @param pro pointer to provider object
  * @param uid unique id of the user to read
@@ -445,6 +454,8 @@ int AB_Provider_GetUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnlock
  *
  * The caller is responsible for releasing the list and the contained users (if any),
  * e.g. by calling @ref AB_User_List_free().
+ *
+ * Internally calls callback function @ref AB_Provider_CreateUserObject.
  *
  * @return 0 on success, error code otherwise
  * @param pro pointer to provider object
@@ -533,6 +544,11 @@ int AB_Provider_EndExclUseUser(AB_PROVIDER *pro, AB_USER *u, int abandon);
 
 int AB_Provider_AccountToAccountSpec(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC *as, int doLock);
 int AB_Provider_WriteAccountSpecForAccount(AB_PROVIDER *pro, const AB_ACCOUNT *acc, int doLock);
+
+/**
+ *
+ * Internally calls callback function @ref AB_Provider_CreateAccountObject(.
+ */
 int AB_Provider_CreateInitialAccountSpecs(AB_PROVIDER *pro);
 
 

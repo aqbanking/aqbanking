@@ -128,10 +128,13 @@ void AB_BankInfoPluginGENERIC__GetDataDir(AB_BANKINFO_PLUGIN *bip,
         se=GWEN_StringListEntry_Next(se);
       }
       GWEN_Buffer_free(buf);
+      GWEN_StringList_free(sl);
     }
-    GWEN_StringList_free(sl);
   }
-  assert(gotit);
+  if (gotit==0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No folder found for country \"%s\"", (bde->country)?(bde->country):"<no country>");
+  }
+  /*assert(gotit);*/
 }
 
 

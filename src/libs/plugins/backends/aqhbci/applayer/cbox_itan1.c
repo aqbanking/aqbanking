@@ -214,9 +214,7 @@ int AH_OutboxCBox_Itan1(AH_OUTBOX_CBOX *cbox,
 
   /* encode HKTAN message */
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding queue");
-  GWEN_Gui_ProgressLog(0,
-                       GWEN_LoggerLevel_Info,
-                       I18N("Encoding queue"));
+  /*GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("Encoding queue"));*/
   AH_Msg_SetNeedTan(msg2, 0);
   rv=AH_Msg_EncodeMsg(msg2);
   if (rv) {
@@ -311,9 +309,7 @@ int AH_OutboxCBox_Itan1(AH_OUTBOX_CBOX *cbox,
   /* now handle the real job */
   /* encode job message */
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding queue");
-  GWEN_Gui_ProgressLog(0,
-                       GWEN_LoggerLevel_Info,
-                       I18N("Encoding queue"));
+  /*GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, I18N("Encoding queue"));*/
   rv=AH_Msg_EncodeMsg(msg1);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);

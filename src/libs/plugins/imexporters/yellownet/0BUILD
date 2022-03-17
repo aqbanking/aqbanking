@@ -59,10 +59,6 @@
       yellownet.c
     </sources>
 
-    <data install="$(aqbanking_plugin_installdir)/imexporters" >
-      yellownet.xml
-    </data>
-
     <useTargets>
     </useTargets>
 
@@ -74,6 +70,7 @@
     <extradist>
     </extradist>
 
+    <writeFile name="yellownet.xml" install="$(aqbanking_plugin_installdir)/imexporters" />
 
   </target>
   

@@ -61,10 +61,6 @@
       provider.c
     </sources>
 
-    <data install="$(aqbanking_plugin_installdir)/providers" >
-      aqnone.xml
-    </data>
-
     <useTargets>
     </useTargets>
 
@@ -75,6 +71,8 @@
   
     <extradist>
     </extradist>
+
+    <writeFile name="aqnone.xml" install="$(aqbanking_plugin_installdir)/providers" />
 
 
   </target>

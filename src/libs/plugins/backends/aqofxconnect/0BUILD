@@ -69,11 +69,6 @@
       provider.c
     </sources>
 
-    <data install="$(aqbanking_plugin_installdir)/providers" >
-      aqofxconnect.xml
-    </data>
-
-
     <extradist>
       provider_accspec.c
       provider_sendcmd.c
@@ -101,6 +96,7 @@
     </subdirs>
 
   
+    <writeFile name="aqofxconnect.xml" install="$(aqbanking_plugin_installdir)/providers" />
   
 
   </target>

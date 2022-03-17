@@ -61,11 +61,6 @@
       dummy.c
     </sources>
 
-    <data install="$(aqbanking_plugin_installdir)/providers" >
-      aqebics.xml
-    </data>
-
-
     <useTargets>
       ebicsclient
       ebicscontrol
@@ -87,6 +82,7 @@
     <extradist>
     </extradist>
 
+    <writeFile name="aqebics.xml" install="$(aqbanking_plugin_installdir)/providers" />
 
   </target>
   

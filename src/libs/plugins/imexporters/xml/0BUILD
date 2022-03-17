@@ -67,21 +67,20 @@
       xml_sepa_imp.c
     </sources>
 
-    <data install="$(aqbanking_plugin_installdir)/imexporters" >
-      xml.xml
-    </data>
-
     <useTargets>
     </useTargets>
 
     <subdirs>
+      data
+      profiles
     </subdirs>
 
-  
+
   
     <extradist>
     </extradist>
 
+    <writeFile name="xml.xml" install="$(aqbanking_plugin_installdir)/imexporters" />
 
   </target>
   

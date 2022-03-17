@@ -37,11 +37,16 @@
 #define DIALOG_MINWIDTH  400
 #define DIALOG_MINHEIGHT 300
 
-#define USER_LIST_MINCOLWIDTH 50
+#define USER_LIST_MINCOLWIDTH            50
+#define TARGET_ACCOUNT_LIST_MINCOLWIDTH 100
 
 
 
 GWEN_INHERIT(GWEN_DIALOG, AH_EDIT_ACCOUNT_DIALOG)
+
+
+
+static void _createTargetAccountListBoxString(const AB_REFERENCE_ACCOUNT *ra, GWEN_BUFFER *tbuf);
 
 
 
@@ -264,68 +269,81 @@ void AH_EditAccountDialog_RebuildUserLists(GWEN_DIALOG *dlg)
   GWEN_StringList_free(sl);
 }
 
-static void createTargetAccountListBoxString(const AB_REFERENCE_ACCOUNT *ra, GWEN_BUFFER *tbuf)
+
+
+void _createTargetAccountListBoxString(const AB_REFERENCE_ACCOUNT *ra, GWEN_BUFFER *tbuf)
 {
-    GWEN_Buffer_AppendString(tbuf, AB_ReferenceAccount_GetAccountName(ra));
-    GWEN_Buffer_AppendString(tbuf, "\t");
-    GWEN_Buffer_AppendString(tbuf, AB_ReferenceAccount_GetIban(ra));
+  const char *s;
+
+  s=AB_ReferenceAccount_GetAccountName(ra);
+  GWEN_Buffer_AppendString(tbuf, s?s:"");
+  GWEN_Buffer_AppendString(tbuf, "\t");
+  s=AB_ReferenceAccount_GetIban(ra);
+  GWEN_Buffer_AppendString(tbuf, s?s:"");
 }
+
+
 
 void AH_EditAccountDialog_RebuildTargetAccountList(GWEN_DIALOG *dlg)
 {
- int i;
- int rv;
  AH_EDIT_ACCOUNT_DIALOG *xdlg;
- AB_REFERENCE_ACCOUNT_LIST *ral;
- AB_REFERENCE_ACCOUNT *ra;
- AB_ACCOUNT_SPEC *as;
+ int i;
+ AB_ACCOUNT_SPEC *as=NULL;
 
  assert(dlg);
  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_ACCOUNT_DIALOG, dlg);
  assert(xdlg);
-  /* target account list */
-    i=0;
-    GWEN_Dialog_SetIntProperty(dlg, "targetAccountListBox", GWEN_DialogProperty_ClearValues, 0, 0, 0);
 
-    rv = AB_Banking_GetAccountSpecByUniqueId(AB_Provider_GetBanking(xdlg->provider),
-          AB_Account_GetUniqueId(xdlg->account), &as);
-    ral = AB_AccountSpec_GetRefAccountList(as);
-    if (AB_ReferenceAccount_List_GetCount(ral)) {
-      GWEN_BUFFER *tbuf;
+ /* target account list */
+ i=0;
+ GWEN_Dialog_SetIntProperty(dlg, "targetAccountListBox", GWEN_DialogProperty_ClearValues, 0, 0, 0);
 
-      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+ AB_Banking_GetAccountSpecByUniqueId(AB_Provider_GetBanking(xdlg->provider),
+				     AB_Account_GetUniqueId(xdlg->account),
+				     &as);
+ if (as) {
+   AB_REFERENCE_ACCOUNT_LIST *ral;
+   AB_REFERENCE_ACCOUNT *ra;
 
-      ra=AB_ReferenceAccount_List_First(ral);
-      while (ra) {
-        createTargetAccountListBoxString(ra, tbuf);
-        GWEN_Dialog_SetCharProperty(dlg,
-                                    "targetAccountListBox",
-                                    GWEN_DialogProperty_AddValue,
-                                    0,
-                                    GWEN_Buffer_GetStart(tbuf),
-                                    0);
-        i++;
-        GWEN_Buffer_Reset(tbuf);
+   ral=AB_AccountSpec_GetRefAccountList(as);
+   if (AB_ReferenceAccount_List_GetCount(ral)) {
+     GWEN_BUFFER *tbuf;
 
-        ra=AB_ReferenceAccount_List_Next(ra);
-      }
-      GWEN_Buffer_free(tbuf);
-    } /* if account list not empty */
-    AB_AccountSpec_free(as);
-    GWEN_Dialog_SetIntProperty(dlg, "targetAccountListBox", GWEN_DialogProperty_Sort, 0, 0, 0);
-    if (i)
-      GWEN_Dialog_SetIntProperty(dlg, "targetAccountListBox", GWEN_DialogProperty_Value, 0, 0, 0);
+     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
+     ra=AB_ReferenceAccount_List_First(ral);
+     while (ra) {
+       _createTargetAccountListBoxString(ra, tbuf);
+       GWEN_Dialog_SetCharProperty(dlg,
+				   "targetAccountListBox",
+				   GWEN_DialogProperty_AddValue,
+				   0,
+				   GWEN_Buffer_GetStart(tbuf),
+				   0);
+       i++;
+       GWEN_Buffer_Reset(tbuf);
 
+       ra=AB_ReferenceAccount_List_Next(ra);
+     }
+     GWEN_Buffer_free(tbuf);
+   } /* if account list not empty */
+   AB_AccountSpec_free(as);
+ }
 
-
+ GWEN_Dialog_SetIntProperty(dlg, "targetAccountListBox", GWEN_DialogProperty_Sort, 0, 0, 0);
+ if (i)
+   GWEN_Dialog_SetIntProperty(dlg, "targetAccountListBox", GWEN_DialogProperty_Value, 0, 0, 0);
 }
+
+
+
 
 void AH_EditAccountDialog_Init(GWEN_DIALOG *dlg)
 {
   AH_EDIT_ACCOUNT_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
+  int j;
   const char *s;
   AB_ACCOUNT_TYPE t;
   uint32_t aflags;
@@ -439,6 +457,20 @@ void AH_EditAccountDialog_Init(GWEN_DIALOG *dlg)
                               I18N("Account Name\tIBAN"),
                               0);
   AH_EditAccountDialog_RebuildTargetAccountList(dlg);
+
+
+  /* read account column widths */
+  for (i=0; i<2; i++) {
+    j=GWEN_DB_GetIntValue(dbPrefs, "target_account_list_columns", i, -1);
+    if (j<TARGET_ACCOUNT_LIST_MINCOLWIDTH)
+      j=TARGET_ACCOUNT_LIST_MINCOLWIDTH;
+    GWEN_Dialog_SetIntProperty(dlg, "targetAccountListBox", GWEN_DialogProperty_ColumnWidth, i, j, 0);
+  }
+  /* get sort column */
+  i=GWEN_DB_GetIntValue(dbPrefs, "target_account_list_sortbycolumn", 0, -1);
+  j=GWEN_DB_GetIntValue(dbPrefs, "target_account_list_sortdir", 0, -1);
+  if (i>=0 && j>=0)
+    GWEN_Dialog_SetIntProperty(dlg, "targetAccountListBox", GWEN_DialogProperty_SortDirection, i, j, 0);
 
 
   /* read width */
@@ -625,6 +657,40 @@ void AH_EditAccountDialog_Fini(GWEN_DIALOG *dlg)
   assert(xdlg);
 
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
+
+  /* store column widths of target account list */
+  GWEN_DB_DeleteVar(dbPrefs, "target_account_list_columns");
+  for (i=0; i<2; i++) {
+    int j;
+
+    j=GWEN_Dialog_GetIntProperty(dlg, "targetAccountListBox", GWEN_DialogProperty_ColumnWidth, i, -1);
+    if (j<TARGET_ACCOUNT_LIST_MINCOLWIDTH)
+      j=TARGET_ACCOUNT_LIST_MINCOLWIDTH;
+    GWEN_DB_SetIntValue(dbPrefs,
+                        GWEN_DB_FLAGS_DEFAULT,
+                        "target_account_list_columns",
+                        j);
+  }
+  /* store column sorting */
+  GWEN_DB_SetIntValue(dbPrefs,
+                      GWEN_DB_FLAGS_OVERWRITE_VARS,
+                      "target_account_list_sortbycolumn",
+                      -1);
+  for (i=0; i<7; i++) {
+    int j;
+
+    j=GWEN_Dialog_GetIntProperty(dlg, "targetAccountListBox", GWEN_DialogProperty_SortDirection, i,
+                                 GWEN_DialogSortDirection_None);
+    if (j!=GWEN_DialogSortDirection_None) {
+      GWEN_DB_SetIntValue(dbPrefs, GWEN_DB_FLAGS_OVERWRITE_VARS, "target_account_list_sortbycolumn", i);
+      GWEN_DB_SetIntValue(dbPrefs,
+			  GWEN_DB_FLAGS_OVERWRITE_VARS,
+			  "target_account_list_sortdir",
+			  (j==GWEN_DialogSortDirection_Up)?1:0);
+      break;
+    }
+  }
+
 
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
@@ -913,6 +979,7 @@ int GWENHYWFAR_CB AH_EditAccountDialog_SignalHandler(GWEN_DIALOG *dlg,
   case GWEN_DialogEvent_TypeClose:
 
   case GWEN_DialogEvent_TypeLast:
+  default:
     return GWEN_DialogEvent_ResultNotHandled;
 
   }

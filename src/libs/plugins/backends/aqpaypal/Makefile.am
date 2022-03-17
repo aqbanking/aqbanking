@@ -14,6 +14,13 @@ plugin_DATA=aqpaypal.xml
 noinst_HEADERS=\
  aqpaypal.h \
  provider.h \
+ provider_accspec.h \
+ provider_credentials.h \
+ provider_request.h \
+ provider_getstm.h \
+ provider_getbalance.h \
+ provider_sendcmd.h \
+  provider_update.h \
  user.h \
  aqpaypal_l.h \
  provider_l.h provider_p.h \
@@ -31,6 +38,13 @@ libaqpaypal_la_LIBADD=\
 libaqpaypal_la_SOURCES=\
   user.c \
   provider.c \
+  provider_accspec.c \
+  provider_credentials.c \
+  provider_request.c \
+  provider_getstm.c \
+  provider_getbalance.c \
+  provider_sendcmd.c \
+  provider_update.c \
   dlg_newuser.c \
   dlg_edituser.c \
   dlg_editsecret.c
@@ -57,17 +71,8 @@ sources:
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 
-INCLUDED_SOURCEFILES=\
-  provider_accspec.c \
-  provider_credentials.c \
-  provider_dialogs.c \
-  provider_getbalance.c \
-  provider_getstm.c \
-  provider_sendcmd.c \
-  provider_update.c
 
-EXTRA_DIST=aqpaypal.xml.in $(dlgdata_DATA) $(dlgimage_DATA) \
-  $(INCLUDED_SOURCEFILES)
+EXTRA_DIST=aqpaypal.xml.in $(dlgdata_DATA) $(dlgimage_DATA)
 
 
 built_sources:
