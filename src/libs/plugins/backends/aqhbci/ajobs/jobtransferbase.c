@@ -789,14 +789,14 @@ int AH_Job_TransferBase_AddChallengeParams29(AH_JOB *j, int hkTanVer, GWEN_DB_NO
 
   s=GWEN_DB_GetCharValue(dbMethod, "zkaTanVersion", 0, NULL);
   if (s && *s && strncasecmp(s, "1.3", 3)==0) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "TAN version is 1.3 (%s)", s);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "TAN version is 1.3 (%s)", s);
     tanVer=AH_JOB_TANVER_1_3;
   }
 
   if (tanVer==AH_JOB_TANVER_1_4) {
     int rv;
 
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "TAN version is 1.4.x");
+    DBG_INFO(AQHBCI_LOGDOMAIN, "TAN version is 1.4.x");
     rv=AH_HHD14_AddChallengeParams_29(j,
                                       AB_Transaction_GetValue(t),
                                       AB_Transaction_GetRemoteIban(t),
@@ -822,8 +822,6 @@ int AH_Job_TransferBase_AddChallengeParams35(AH_JOB *j, int hkTanVer, GWEN_DB_NO
   const char *s;
   int tanVer=AH_JOB_TANVER_1_4;
 
-  DBG_ERROR(AQHBCI_LOGDOMAIN, "AddChallengeParams function called");
-
   t=AH_Job_GetFirstTransfer(j);
   if (t==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No validated transaction");
@@ -832,14 +830,14 @@ int AH_Job_TransferBase_AddChallengeParams35(AH_JOB *j, int hkTanVer, GWEN_DB_NO
 
   s=GWEN_DB_GetCharValue(dbMethod, "zkaTanVersion", 0, NULL);
   if (s && *s && strncasecmp(s, "1.3", 3)==0) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "TAN version is 1.3 (%s)", s);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "TAN version is 1.3 (%s)", s);
     tanVer=AH_JOB_TANVER_1_3;
   }
 
   if (tanVer==AH_JOB_TANVER_1_4) {
     int rv;
 
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "TAN version is 1.4.x");
+    DBG_INFO(AQHBCI_LOGDOMAIN, "TAN version is 1.4.x");
     rv=AH_HHD14_AddChallengeParams_35(j,
                                       AB_Transaction_GetValue(t),
                                       AB_Transaction_GetRemoteIban(t));
@@ -1033,7 +1031,7 @@ int AH_Job_TransferBase_SelectPainProfile(AH_JOB *j, int version1)
     assert(descr);
 
     s=AB_SwiftDescr_GetAlias2(descr);
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Selecting PAIN format [%s]", s);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Selecting PAIN format [%s]", s);
     _setDescriptor(j, s);
     _setProfileName(j, AB_SwiftDescr_GetAlias1(descr));
 

@@ -61,7 +61,7 @@
                  $(struct_prefix)_List2_free(tl); 
                }
                else {
-                 DBG_ERROR(AQBANKING_LOGDOMAIN, "List missing");
+                 DBG_INFO(AQBANKING_LOGDOMAIN, "List missing");
                  return GWEN_ERROR_INVALID;
                }
                return 0;
@@ -274,7 +274,7 @@
                /* add delimiters here if needed */
                slist=GWEN_StringList_fromString(inputName, ":._- \\t", 0);
                if (slist==NULL) {
-                 DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not parse string [%s] into list", inputName);
+                 DBG_INFO(AQBANKING_LOGDOMAIN, "Could not parse string [%s] into list", inputName);
                  return NULL;
                }
 
@@ -304,7 +304,7 @@
                        
                        s=GWEN_StringList_StringAt(slist, i);
                        if (!(s &amp;&amp; *s &amp;&amp; 1==sscanf(s, "%d", &amp;version1))) {
-                         DBG_ERROR(AQBANKING_LOGDOMAIN, "No valid string for version1 [%s] ", s?s:"&lt;empty&gt;");
+                         DBG_INFO(AQBANKING_LOGDOMAIN, "No valid string for version1 [%s] ", s?s:"&lt;empty&gt;");
                          GWEN_StringList_free(slist);
                          return NULL;
                        }
@@ -312,7 +312,7 @@
 
                        s=GWEN_StringList_StringAt(slist, i);
                        if (!(s &amp;&amp; *s &amp;&amp; 1==sscanf(s, "%d", &amp;version2))) {
-                         DBG_ERROR(AQBANKING_LOGDOMAIN, "No valid string for version2 [%s] ", s?s:"&lt;empty&gt;");
+                         DBG_INFO(AQBANKING_LOGDOMAIN, "No valid string for version2 [%s] ", s?s:"&lt;empty&gt;");
                          GWEN_StringList_free(slist);
                          return NULL;
                        }
@@ -320,7 +320,7 @@
 
                        s=GWEN_StringList_StringAt(slist, i);
                        if (!(s &amp;&amp; *s &amp;&amp; 1==sscanf(s, "%d", &amp;version3))) {
-                         DBG_ERROR(AQBANKING_LOGDOMAIN, "No valid string for version3 [%s] ", s?s:"&lt;empty&gt;");
+                         DBG_INFO(AQBANKING_LOGDOMAIN, "No valid string for version3 [%s] ", s?s:"&lt;empty&gt;");
                          GWEN_StringList_free(slist);
                          return NULL;
                        }
