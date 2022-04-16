@@ -98,7 +98,7 @@ AH_JOB *AH_Job_GetTransactionsCAMT_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT 
         GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "SupportedFormats/format", s);
         descr=AB_SwiftDescr_List_Next(descr);
       }
-      AB_SwiftDescr_List_First(descrList);
+      AB_SwiftDescr_List_free(descrList);
     }
     else {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "No supported CAMT profile found, job not supported");

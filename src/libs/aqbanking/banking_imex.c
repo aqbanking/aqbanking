@@ -1158,6 +1158,7 @@ AB_SWIFT_DESCR_LIST *AB_Banking_GetSwiftDescriptorsForImExporter(AB_BANKING *ab,
 
       dbProfile=GWEN_DB_GetNextGroup(dbProfile);
     }
+    GWEN_DB_Group_free(dbProfiles);
 
     if (AB_SwiftDescr_List_GetCount(descrList)==0) {
       AB_SwiftDescr_List_free(descrList);

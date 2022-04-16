@@ -273,8 +273,11 @@ GWEN_DB_NODE *AB_ImExporterXML_ImportIntoDbWithSchema(AB_IMEXPORTER *ie, GWEN_XM
   dbData=AB_ImExporterXML_ImportIntoDbWithSchemaDoc(ie, xmlDocData, xmlDocSchema);
   if (dbData==NULL) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+    GWEN_XMLNode_free(xmlDocSchema);
     return NULL;
   }
+  GWEN_XMLNode_free(xmlDocSchema);
+
   return dbData;
 }
 
@@ -299,8 +302,11 @@ GWEN_DB_NODE *AB_ImExporterXML_ImportIntoDbWithoutSchema(AB_IMEXPORTER *ie, GWEN
   dbData=AB_ImExporterXML_ImportIntoDbWithSchemaDoc(ie, xmlDocData, xmlDocSchema);
   if (dbData==NULL) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+    GWEN_XMLNode_free(xmlDocSchema);
     return NULL;
   }
+  GWEN_XMLNode_free(xmlDocSchema);
+
   return dbData;
 }
 
