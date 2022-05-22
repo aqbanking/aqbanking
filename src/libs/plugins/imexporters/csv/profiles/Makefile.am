@@ -10,6 +10,7 @@ profiles_DATA=default.conf aqmoney1.conf aqmoney2.conf \
   transfers.conf sepadebitnotes.conf \
   homebank.conf \
   onvista-trans.conf \
-  onvista-prices.conf
+  onvista-prices.conf \
+  onvista-account.conf
 
 EXTRA_DIST=$(profiles_DATA)
