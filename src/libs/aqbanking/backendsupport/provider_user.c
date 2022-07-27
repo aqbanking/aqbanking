@@ -44,6 +44,9 @@ int AB_Provider_ReadUser(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUnloc
   }
   GWEN_DB_Group_free(db);
 
+  AB_User_SetProvider(user, pro);
+  AB_User_SetBackendName(user, AB_Provider_GetName(pro));
+
   return 0;
 }
 
@@ -116,8 +119,11 @@ int AB_Provider_ReadUsers(AB_PROVIDER *pro, AB_USER_LIST *userList)
         DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading user (%d), ignoring", rv);
         AB_User_free(u);
       }
-      else
+      else {
+        AB_User_SetProvider(u, pro);
+        AB_User_SetBackendName(u, AB_Provider_GetName(pro));
         AB_User_List_Add(u, userList);
+      }
     }
     /* next */
     db=GWEN_DB_GetNextGroup(db);
