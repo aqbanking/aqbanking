@@ -49,6 +49,7 @@
       swift.h
       swift_l.h
       swift_p.h
+      swift_tag.h
       swift940_l.h
       swift940_p.h
       swift940_60.h
@@ -63,6 +64,7 @@
       $(local/typefiles)
 
       swift.c
+      swift_tag.c
       swift940.c
       swift940_60.c
       swift940_61.c

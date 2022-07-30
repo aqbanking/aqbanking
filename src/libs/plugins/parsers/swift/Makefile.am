@@ -11,6 +11,8 @@ noinst_HEADERS=\
   swift.h \
   swift_l.h \
   swift_p.h \
+  swift_tag.h \
+  swift_tag_p.h \
   swift940_l.h \
   swift940_p.h \
   swift940_60.h \
@@ -24,6 +26,7 @@ dbioplugin_DATA=swift.xml
 dbioplugin_LTLIBRARIES=swift.la
 swift_la_SOURCES=\
  swift.c \
+ swift_tag.c \
  swift940.c \
  swift940_60.c \
  swift940_61.c \

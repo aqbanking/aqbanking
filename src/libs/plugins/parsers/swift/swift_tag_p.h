@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Fri Apr 02 2004
- copyright   : (C) 2004,2010 by Martin Preuss
+ copyright   : (C) 2004-2010 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -8,18 +8,26 @@
  ***************************************************************************/
 
 
-#ifndef AQHBCIBANK_SWIFT_P_H
-#define AQHBCIBANK_SWIFT_P_H
+#ifndef AQHBCIBANK_SWIFT_TAG_P_H
+#define AQHBCIBANK_SWIFT_TAG_P_H
 
-#include <gwenhywfar/misc.h>
-#include <gwenhywfar/dbio.h>
-#include <gwenhywfar/fastbuffer.h>
+#include "swift_tag.h"
 
 
-#include "swift_l.h"
+struct AHB_SWIFT_TAG {
+  GWEN_LIST_ELEMENT(AHB_SWIFT_TAG);
+  char *id;
+  char *content;
+};
+
+
+struct AHB_SWIFT_SUBTAG {
+  GWEN_LIST_ELEMENT(AHB_SWIFT_SUBTAG);
+  int id;
+  char *content;
+};
 
 
 
-
-#endif /* AQHBCIBANK_SWIFT_P_H */
+#endif /* AQHBCIBANK_SWIDT_TAG_H */
 
