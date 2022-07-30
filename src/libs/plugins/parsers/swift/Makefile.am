@@ -14,6 +14,7 @@ noinst_HEADERS=\
   swift_tag_p.h \
   swift940_l.h \
   swift940_p.h \
+  swift940_25.h \
   swift940_60.h \
   swift940_61.h \
   swift940_86.h \
@@ -27,6 +28,7 @@ swift_la_SOURCES=\
  swift.c \
  swift_tag.c \
  swift940.c \
+ swift940_25.c \
  swift940_60.c \
  swift940_61.c \
  swift940_86.c \
