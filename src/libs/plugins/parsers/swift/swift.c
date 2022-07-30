@@ -36,6 +36,7 @@ GWEN_LIST_FUNCTIONS(AHB_SWIFT_SUBTAG, AHB_SWIFT_SubTag);
 
 static const char *_findStartOfSubTag(const char *sptr);
 static void _iso8859_1ToUtf8(const char *p, int size, GWEN_BUFFER *buf);
+static GWEN_DATE *_dateFromYMD(int dateYear, int dateMonth, int dateDay);
 
 
 
@@ -1188,6 +1189,132 @@ void _iso8859_1ToUtf8(const char *p, int size, GWEN_BUFFER *buf)
       size--;
   } /* while */
 }
+
+
+
+GWEN_DATE *AHB_SWIFT_ReadDateYYMMDD(const char **pCurrentChar, unsigned int *pBytesLeft)
+{
+  const char *p;
+  unsigned int bleft;
+  int dateYear, dateMonth, dateDay;
+  GWEN_DATE *dt=NULL;
+
+  p=*pCurrentChar;
+  bleft=*pBytesLeft;
+
+  if (bleft<6) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No date (%s)", p);
+    return NULL;
+  }
+  dateYear=((p[0]-'0')*10) + (p[1]-'0');
+  if (dateYear>AHB_SWIFT_CENTURY_CUTOFF_YEAR)
+    dateYear+=1900;
+  else
+    dateYear+=2000;
+  dateMonth=((p[2]-'0')*10) + (p[3]-'0');
+  dateDay=((p[4]-'0')*10) + (p[5]-'0');
+
+  dt=_dateFromYMD(dateYear, dateMonth, dateDay);
+  if (dt==NULL) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "Invalid date (%s)", p);
+    return NULL;
+  }
+
+  p+=6;
+  bleft-=6;
+
+  *pCurrentChar=p;
+  *pBytesLeft=bleft;
+  return dt;
+}
+
+
+
+GWEN_DATE *AHB_SWIFT_ReadDateMMDDWithReference(const char **pCurrentChar, unsigned int *pBytesLeft, const GWEN_DATE *refDate)
+{
+  const char *p;
+  unsigned int bleft;
+  int dateYear, dateMonth, dateDay;
+  GWEN_DATE *dt=NULL;
+
+  p=*pCurrentChar;
+  bleft=*pBytesLeft;
+
+  if (*p && isdigit(*p)) {
+    int refYear, refMonth;
+
+    refYear=GWEN_Date_GetYear(refDate);
+    refMonth=GWEN_Date_GetMonth(refDate);
+
+    if (bleft<4) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Bad date (%s)", p);
+      return NULL;
+    }
+    dateMonth=((p[0]-'0')*10) + (p[1]-'0');
+    dateDay=((p[2]-'0')*10) + (p[3]-'0');
+    /* use year from reference date.
+     * However: if reference date and this date are in different years
+     * the year might be too high.
+     * We detect this case by comparing the months: If this month
+     * and the reference month differ by more than 7 months then this year
+     * will be adjusted.
+     */
+    if (dateMonth-refMonth>7) {
+      /* this date before reference date */
+      dateYear=refYear-1;
+    }
+    else if (refMonth-dateMonth>7) {
+      /* reference date before this date */
+      dateYear=refYear+1;
+    }
+    else
+      dateYear=refYear;
+
+    dt=_dateFromYMD(dateYear, dateMonth, dateDay);
+    if (dt==NULL) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid date (%s)", p);
+      return NULL;
+    }
+    p+=4;
+    bleft-=4;
+  }
+
+  *pCurrentChar=p;
+  *pBytesLeft=bleft;
+  return dt;
+}
+
+
+
+GWEN_DATE *_dateFromYMD(int dateYear, int dateMonth, int dateDay)
+{
+  GWEN_DATE *dt=NULL;
+
+  if (dateDay==30 && dateMonth==2) {
+    /* date is Feb 30, this date is invalid. However, some banks use this
+     * to indicate the last day of February, so we move along */
+    dateDay=1;
+    dateMonth=3;
+    dt=GWEN_Date_fromGregorian(dateYear, dateMonth, dateDay);
+    if (dt==NULL) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Bad date %04d/%02d/%02d", dateYear, dateMonth, dateDay);
+      return NULL;
+    }
+    /* subtract a day to get the last day in FEB */
+    GWEN_Date_SubDays(dt, 1);
+  }
+  else {
+    dt=GWEN_Date_fromGregorian(dateYear, dateMonth, dateDay);
+    if (dt==NULL) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Bad date %04d/%02d/%02d", dateYear, dateMonth, dateDay);
+      return NULL;
+    }
+  }
+
+  return dt;
+}
+
+
 
 
 

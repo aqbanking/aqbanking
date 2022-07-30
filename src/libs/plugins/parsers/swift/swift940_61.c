@@ -26,9 +26,6 @@
 
 
 
-#define CENTURY_CUTOFF_YEAR 79
-
-
 
 /* ------------------------------------------------------------------------------------------------
  * forward declarations
@@ -151,88 +148,30 @@ int _readValutaAndBookingDate(const char **pCurrentChar, unsigned int *pBytesLef
 {
   const char *p;
   unsigned int bleft;
-  int valutaDateYear, valutaDateMonth, valutaDateDay;
-  int bookingDateYear, bookingDateMonth, bookingDateDay;
-  GWEN_DATE *dt;
+  GWEN_DATE *valutaDate;
+  GWEN_DATE *bookingDate;
 
   p=*pCurrentChar;
   bleft=*pBytesLeft;
 
-  /* valuata date (M) */
-  if (bleft<6) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing valuta date (%s)", p);
-    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, "SWIFT: Missing valuta date");
+  valutaDate=AHB_SWIFT_ReadDateYYMMDD(&p, &bleft);
+  if (valutaDate==NULL) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing or invalid valuta date (%s)", p);
+    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, "SWIFT: Missing or invalid valuta date");
     return GWEN_ERROR_GENERIC;
   }
-  valutaDateYear=((p[0]-'0')*10) + (p[1]-'0');
-  if (valutaDateYear>CENTURY_CUTOFF_YEAR)
-    valutaDateYear+=1900;
-  else
-    valutaDateYear+=2000;
-  valutaDateMonth=((p[2]-'0')*10) + (p[3]-'0');
-  valutaDateDay=((p[4]-'0')*10) + (p[5]-'0');
 
-  if (valutaDateDay==30 && valutaDateMonth==2) {
-    /* date is Feb 30, this date is invalid. However, some banks use this
-     * to indicate the last day of February, so we move along */
-    valutaDateDay=1;
-    valutaDateMonth=3;
-    dt=GWEN_Date_fromGregorian(valutaDateYear, valutaDateMonth, valutaDateDay);
-    assert(dt);
-    /* subtract a day to get the last day in FEB */
-    GWEN_Date_SubDays(dt, 1);
+  bookingDate=AHB_SWIFT_ReadDateMMDDWithReference(&p, &bleft, valutaDate);
+  if (bookingDate==NULL) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No or bad booking date in transaction (%s), ignoring", p);
   }
-  else {
-    dt=GWEN_Date_fromGregorian(valutaDateYear, valutaDateMonth, valutaDateDay);
-    if (dt==NULL) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid valuta date (%s)", p);
-      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, "SWIFT: Invalid valuta date");
-      return GWEN_ERROR_GENERIC;
-    }
-  }
-  GWEN_DB_SetCharValue(data, GWEN_DB_FLAGS_DEFAULT, "valutaDate", GWEN_Date_GetString(dt));
-  GWEN_Date_free(dt);
-  p+=6;
-  bleft-=6;
 
-  /* booking date (K) */
-  if (*p && isdigit(*p)) {
-    if (bleft<4) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad booking date (%s)", p);
-      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info, "SWIFT: Bad booking date");
-      return GWEN_ERROR_GENERIC;
-    }
-    bookingDateMonth=((p[0]-'0')*10) + (p[1]-'0');
-    bookingDateDay=((p[2]-'0')*10) + (p[3]-'0');
-    /* use year from valutaDate.
-     * However: if valuta date and booking date are in different years
-     * the booking year might be too high.
-     * We detect this case by comparing the months: If the booking month
-     * and the valuta month differ by more than 7 months then the year
-     * of the booking date will be adjusted.
-     */
-    if (bookingDateMonth-valutaDateMonth>7) {
-      /* booked before actually withdrawn */
-      bookingDateYear=valutaDateYear-1;
-    }
-    else if (valutaDateMonth-bookingDateMonth>7) {
-      /* withdrawn and booked later */
-      bookingDateYear=valutaDateYear+1;
-    }
-    else
-      bookingDateYear=valutaDateYear;
+  GWEN_DB_SetCharValue(data, GWEN_DB_FLAGS_OVERWRITE_VARS, "valutaDate", GWEN_Date_GetString(valutaDate));
+  if (bookingDate)
+    GWEN_DB_SetCharValue(data, GWEN_DB_FLAGS_OVERWRITE_VARS, "date", GWEN_Date_GetString(bookingDate));
 
-    dt=GWEN_Date_fromGregorian(bookingDateYear, bookingDateMonth, bookingDateDay);
-    if (dt==NULL) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid booking date (%s)", p);
-      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, "SWIFT: Invalid booking date");
-      return GWEN_ERROR_GENERIC;
-    }
-    GWEN_DB_SetCharValue(data, GWEN_DB_FLAGS_OVERWRITE_VARS, "date", GWEN_Date_GetString(dt));
-    GWEN_Date_free(dt);
-    p+=4;
-    bleft-=4;
-  }
+  GWEN_Date_free(bookingDate);
+  GWEN_Date_free(valutaDate);
 
   *pCurrentChar=p;
   *pBytesLeft=bleft;
