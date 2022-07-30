@@ -12,7 +12,7 @@
 # include <config.h>
 #endif
 
-#include "swift_p.h"
+#include "swift_l.h"
 #include "swift940_l.h"
 #include "swift535_l.h"
 #include "aqbanking/i18n_l.h"

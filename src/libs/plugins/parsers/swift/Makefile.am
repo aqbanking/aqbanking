@@ -10,7 +10,6 @@ EXTRA_DIST=README
 noinst_HEADERS=\
   swift.h \
   swift_l.h \
-  swift_p.h \
   swift_tag.h \
   swift_tag_p.h \
   swift940_l.h \

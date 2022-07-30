@@ -48,7 +48,6 @@
 
       swift.h
       swift_l.h
-      swift_p.h
       swift_tag.h
       swift940_l.h
       swift940_p.h
