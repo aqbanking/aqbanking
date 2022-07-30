@@ -55,6 +55,7 @@
       swift940_60.h
       swift940_61.h
       swift940_86.h
+      swift940_ns.h
       swift535_l.h
       swift535_p.h
     </headers>
@@ -70,6 +71,7 @@
       swift940_60.c
       swift940_61.c
       swift940_86.c
+      swift940_ns.c
       swift535.c
     </sources>
 
