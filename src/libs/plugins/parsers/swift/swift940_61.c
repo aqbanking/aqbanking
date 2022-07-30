@@ -15,11 +15,8 @@
 
 
 #include <aqbanking/error.h>
-#include <aqbanking/backendsupport/imexporter_be.h>
 
-#include <gwenhywfar/text.h>
 #include <gwenhywfar/debug.h>
-#include <gwenhywfar/gwentime.h>
 #include <gwenhywfar/gui.h>
 
 #include <ctype.h>

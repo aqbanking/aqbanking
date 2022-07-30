@@ -15,6 +15,7 @@ noinst_HEADERS=\
   swift940_p.h \
   swift940_60.h \
   swift940_61.h \
+  swift940_86.h \
   swift535_l.h \
   swift535_p.h
 
@@ -26,6 +27,7 @@ swift_la_SOURCES=\
  swift940.c \
  swift940_60.c \
  swift940_61.c \
+ swift940_86.c \
  swift535.c
 
 swift_la_LIBADD = $(gwenhywfar_libs) 
