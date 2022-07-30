@@ -59,15 +59,11 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg, uint32_t flags, GWEN_DB_NODE 
   assert(p);
   isStructured=0;
   code=999;
-  if (strlen(p)>3) {
-    if (isdigit(p[0]) && isdigit(p[1]) && isdigit(p[2])) {
-      /* starts with a three digit number */
-      code=(((p[0]-'0')*100) + ((p[1]-'0')*10) + (p[2]-'0'));
-      if (p[3]=='?')
-        /* it is structured, get the code */
-        isStructured=1;
-      p+=3;
-    }
+  if ((strlen(p)>3) && isdigit(p[0]) && isdigit(p[1]) && isdigit(p[2]) && p[3]=='?') {
+    /* it is structured, get the code */
+    code=(((p[0]-'0')*100) + ((p[1]-'0')*10) + (p[2]-'0'));
+    isStructured=1;
+    p+=3;
   }
 
   if (isStructured) {
