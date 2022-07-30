@@ -35,6 +35,7 @@ GWEN_LIST_FUNCTIONS(AHB_SWIFT_SUBTAG, AHB_SWIFT_SubTag);
 
 
 static const char *_findStartOfSubTag(const char *sptr);
+static void _iso8859_1ToUtf8(const char *p, int size, GWEN_BUFFER *buf);
 
 
 
@@ -1140,6 +1141,53 @@ GWEN_PLUGIN *dbio_swift_factory(GWEN_PLUGIN_MANAGER *pm,
 }
 
 
+
+
+
+int AHB_SWIFT_SetCharValue(GWEN_DB_NODE *db, uint32_t flags, const char *name, const char *s)
+{
+  GWEN_BUFFER *vbuf;
+  int rv;
+
+  vbuf=GWEN_Buffer_new(0, strlen(s)+32, 0, 1);
+  _iso8859_1ToUtf8(s, -1, vbuf);
+  rv=GWEN_DB_SetCharValue(db, flags, name, GWEN_Buffer_GetStart(vbuf));
+  GWEN_Buffer_free(vbuf);
+  return rv;
+}
+
+
+
+void _iso8859_1ToUtf8(const char *p, int size, GWEN_BUFFER *buf)
+{
+  while (*p) {
+    unsigned int c;
+
+    if (!size)
+      break;
+
+    c=(unsigned char)(*(p++));
+    if (c<32 || c==127)
+      c=32;
+    else {
+      /* Dirty hack to support Unicode code points */
+      /* U+00A0..U+00FF already in UTF-8 encoding. */
+      /* E.g. German Umlaute from Consorsbank      */
+      unsigned int c2 = (unsigned char)(*p);
+      if ((c & ~0x01)==0xC2 && (c2 & ~0x3F)==0x80) {
+        GWEN_Buffer_AppendByte(buf, c);
+        c=(unsigned char)(*(p++));
+      }
+      else if (c & 0x80) {
+        GWEN_Buffer_AppendByte(buf, 0xc0 | c>>6);
+        c &= ~0x40;
+      }
+    }
+    GWEN_Buffer_AppendByte(buf, c);
+    if (size!=-1)
+      size--;
+  } /* while */
+}
 
 
 

@@ -12,6 +12,7 @@
 #endif
 
 #include "swift940_p.h"
+#include "swift940_61.h"
 #include "aqbanking/i18n_l.h"
 
 /* #include <aqhbci/aqhbci.h> */
@@ -55,57 +56,6 @@ static void _parseTransactionData(const char *p, GWEN_DB_NODE *dbData, uint32_t 
  */
 
 
-static void _iso8859_1ToUtf8(const char *p, int size, GWEN_BUFFER *buf)
-{
-  while (*p) {
-    unsigned int c;
-
-    if (!size)
-      break;
-
-    c=(unsigned char)(*(p++));
-    if (c<32 || c==127)
-      c=32;
-    else {
-      /* Dirty hack to support Unicode code points */
-      /* U+00A0..U+00FF already in UTF-8 encoding. */
-      /* E.g. German Umlaute from Consorsbank      */
-      unsigned int c2 = (unsigned char)(*p);
-      if ((c & ~0x01)==0xC2 && (c2 & ~0x3F)==0x80) {
-        GWEN_Buffer_AppendByte(buf, c);
-        c=(unsigned char)(*(p++));
-      }
-      else if (c & 0x80) {
-        GWEN_Buffer_AppendByte(buf, 0xc0 | c>>6);
-        c &= ~0x40;
-      }
-    }
-    GWEN_Buffer_AppendByte(buf, c);
-    if (size!=-1)
-      size--;
-  } /* while */
-}
-
-
-
-
-int AHB_SWIFT__SetCharValue(GWEN_DB_NODE *db,
-                            uint32_t flags,
-                            const char *name,
-                            const char *s)
-{
-  GWEN_BUFFER *vbuf;
-  int rv;
-
-  vbuf=GWEN_Buffer_new(0, strlen(s)+32, 0, 1);
-  _iso8859_1ToUtf8(s, -1, vbuf);
-  rv=GWEN_DB_SetCharValue(db, flags, name, GWEN_Buffer_GetStart(vbuf));
-  GWEN_Buffer_free(vbuf);
-  return rv;
-}
-
-
-
 int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
                           uint32_t flags,
                           GWEN_DB_NODE *data,
@@ -132,7 +82,7 @@ int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
     s=(char *)GWEN_Memory_malloc(p2-p+1);
     memmove(s, p, p2-p+1);
     s[p2-p]=0;
-    AHB_SWIFT__SetCharValue(data,
+    AHB_SWIFT_SetCharValue(data,
                             GWEN_DB_FLAGS_OVERWRITE_VARS,
                             "localBankCode", s);
     GWEN_Memory_dealloc(s);
@@ -161,7 +111,7 @@ int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
     s=(char *)GWEN_Memory_malloc(ll+1); /* account for trailing zero */
     memmove(s, p, ll);                 /* copy string without trailing zero */
     s[ll]=0;                           /* ensure terminating zero */
-    AHB_SWIFT__SetCharValue(data,
+    AHB_SWIFT_SetCharValue(data,
                             GWEN_DB_FLAGS_OVERWRITE_VARS,
                             "localAccountNumber", s);
     GWEN_Memory_dealloc(s);
@@ -169,7 +119,7 @@ int AHB_SWIFT940_Parse_25(const AHB_SWIFT_TAG *tg,
   else {
     DBG_INFO(AQBANKING_LOGDOMAIN,
              "LocalAccountNumber is empty (%s)", p);
-    AHB_SWIFT__SetCharValue(data,
+    AHB_SWIFT_SetCharValue(data,
                             GWEN_DB_FLAGS_OVERWRITE_VARS,
                             "localAccountNumber", p);
   }
@@ -245,360 +195,6 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg,
 
 
 
-int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg,
-                          uint32_t flags,
-                          GWEN_DB_NODE *data,
-                          GWEN_DB_NODE *cfg)
-{
-  const char *p;
-  const char *p2;
-  char *s;
-  char buffer[32];
-  unsigned int bleft;
-  int d1a, d2a, d3a;
-  int d1b, d2b, d3b;
-  int neg;
-  GWEN_DATE *dt;
-  //char curr3=0;
-
-  p=AHB_SWIFT_Tag_GetData(tg);
-  assert(p);
-  bleft=strlen(p);
-
-  /* valuata date (M) */
-  if (bleft<6) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing valuta date (%s)", p);
-    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                         "SWIFT: Missing valuta date");
-    return -1;
-  }
-  d1a=((p[0]-'0')*10) + (p[1]-'0');
-  if (d1a>CENTURY_CUTOFF_YEAR)
-    d1a+=1900;
-  else
-    d1a+=2000;
-  d2a=((p[2]-'0')*10) + (p[3]-'0');
-  d3a=((p[4]-'0')*10) + (p[5]-'0');
-
-  if (d3a==30 && d2a==2) {
-    int ju;
-
-    /* date is Feb 30, this date is invalid. However, some banks use this
-     * to indicate the last day of February, so we move along */
-    d3a=1;
-    d2a=3;
-    dt=GWEN_Date_fromGregorian(d1a, d2a, d3a);
-    assert(dt);
-    ju=GWEN_Date_GetJulian(dt);
-    /* subtract a day to get the last day in FEB */
-    ju--;
-    GWEN_Date_free(dt);
-    dt=GWEN_Date_fromJulian(ju);
-  }
-  else {
-    dt=GWEN_Date_fromGregorian(d1a, d2a, d3a);
-    assert(dt);
-  }
-  GWEN_DB_SetCharValue(data, GWEN_DB_FLAGS_DEFAULT, "valutaDate", GWEN_Date_GetString(dt));
-  GWEN_Date_free(dt);
-  p+=6;
-  bleft-=6;
-
-  /* booking date (K) */
-  if (*p && isdigit(*p)) {
-    if (bleft<4) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad booking date (%s)", p);
-      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Info,
-                           "SWIFT: Bad booking date");
-      return -1;
-    }
-    d2b=((p[0]-'0')*10) + (p[1]-'0');
-    d3b=((p[2]-'0')*10) + (p[3]-'0');
-    /* use year from valutaDate.
-     * However: if valuta date and booking date are in different years
-     * the booking year might be too high.
-     * We detect this case by comparing the months: If the booking month
-     * and the valuta month differ by more than 10 months then the year
-     * of the booking date will be adjusted.
-     */
-    if (d2b-d2a>7) {
-      /* booked before actually withdrawn */
-      d1b=d1a-1;
-    }
-    else if (d2a-d2b>7) {
-      /* withdrawn and booked later */
-      d1b=d1a+1;
-    }
-    else
-      d1b=d1a;
-
-    dt=GWEN_Date_fromGregorian(d1b, d2b, d3b);
-    assert(dt);
-    GWEN_DB_SetCharValue(data, GWEN_DB_FLAGS_OVERWRITE_VARS, "date", GWEN_Date_GetString(dt));
-    GWEN_Date_free(dt);
-    p+=4;
-    bleft-=4;
-  }
-
-  /* credit/debit mark (M) */
-  if (bleft<2) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value string (%s)", p);
-    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                         "SWIFT: Bad value string");
-    return -1;
-  }
-  neg=0;
-  if (*p=='R') {
-    if (p[1]=='C' || p[1]=='c')
-      neg=1;
-    p+=2;
-    bleft-=2;
-  }
-  else {
-    if (*p=='D' || *p=='d')
-      neg=1;
-    p++;
-    bleft--;
-  }
-
-  /* third character of currency (K) */
-  if (bleft<1) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad data (%s)", p);
-    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                         "SWIFT: Bad currency");
-    return -1;
-  }
-  if (!isdigit(*p)) {
-    /* found third character, skip it */
-    //curr3=*p;
-    p++;
-    bleft--;
-  }
-
-  /* value (M) */
-  p2=p;
-  while (*p2 && (isdigit(*p2) || *p2==','))
-    p2++;
-  if (p2==p) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "No value (%s)", p);
-    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                         "SWIFT: Bad value");
-    return -1;
-  }
-  s=(char *)GWEN_Memory_malloc(p2-p+1+(neg?1:0));
-  if (neg) {
-    s[0]='-';
-    memmove(s+1, p, p2-p+1);
-    s[p2-p+1]=0;
-  }
-  else {
-    memmove(s, p, p2-p+1);
-    s[p2-p]=0;
-  }
-#if 0 /* in all other places we use "value/value" and "value/currency", we should do it here, too */
-  if (1) {
-    GWEN_BUFFER *tbuf;
-    const char *cu;
-
-    tbuf=GWEN_Buffer_new(0, 64, 0, 1);
-    GWEN_Buffer_AppendString(tbuf, s);
-    cu=GWEN_DB_GetCharValue(cfg, "currency", 0, 0);
-    if (cu) {
-      GWEN_Buffer_AppendString(tbuf, ":");
-      GWEN_Buffer_AppendString(tbuf, cu);
-    }
-    AHB_SWIFT__SetCharValue(data, flags, "value", GWEN_Buffer_GetStart(tbuf));
-    GWEN_Buffer_free(tbuf);
-  }
-#endif
-
-  if (1) {
-    const char *cu;
-
-    AHB_SWIFT__SetCharValue(data, GWEN_DB_FLAGS_OVERWRITE_VARS, "value/value", s);
-
-    cu=GWEN_DB_GetCharValue(cfg, "currency", 0, 0);
-    if (cu && *cu)
-      AHB_SWIFT__SetCharValue(data, GWEN_DB_FLAGS_OVERWRITE_VARS, "value/currency", cu);
-  }
-  GWEN_Memory_dealloc(s);
-  bleft-=p2-p;
-  p=p2;
-
-  /* skip 'N' */
-  p++;
-  bleft--;
-
-  /* key (M) */
-  if (bleft<3) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing booking key (%s)", p);
-    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                         "SWIFT: Missing booking key");
-    return -1;
-  }
-  memmove(buffer, p, 3);
-  buffer[3]=0;
-  AHB_SWIFT__SetCharValue(data, flags, "transactionKey", buffer);
-  p+=3;
-  bleft-=3;
-
-  /* customer reference (M) */
-  if (bleft>0) {
-    if (bleft>1) {
-      if (*p=='/' && p[1]!='/') {
-        p++;
-        bleft--;
-      }
-    }
-
-    p2=p;
-    while (*p2 && *p2!='/' && *p2!=10)
-      p2++;
-
-    if (p2==p) {
-      DBG_WARN(AQBANKING_LOGDOMAIN, "Missing customer reference (%s)", p);
-      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                           "SWIFT: Missing customer reference");
-    }
-    else {
-      s=(char *)GWEN_Memory_malloc(p2-p+1);
-      memmove(s, p, p2-p);
-      s[p2-p]=0;
-      if (strcasecmp(s, "NONREF")!=0)
-        AHB_SWIFT__SetCharValue(data, flags, "customerReference", s);
-      GWEN_Memory_dealloc(s);
-    }
-    bleft-=p2-p;
-    p=p2;
-    assert(bleft>=0);
-  }
-
-  /* bank reference (K) */
-  if (bleft>1) {
-    if (*p=='/' && p[1]=='/') {
-      /* found bank reference */
-      p+=2;
-      bleft-=2;
-
-      p2=p;
-      while (*p2 && *p2!='/' && *p2!=10)
-        p2++;
-      if (p2==p) {
-        DBG_WARN(AQBANKING_LOGDOMAIN, "Missing bank reference (%s) - ignored", p);
-        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Warning,
-                             "SWIFT: Non-Standard MT940 file: Missing bank reference field in :61: line - ignored.");
-        return 0;
-      }
-      s=(char *)GWEN_Memory_malloc(p2-p+1);
-      memmove(s, p, p2-p+1);
-      s[p2-p]=0;
-      AHB_SWIFT__SetCharValue(data, flags, "bankReference", s);
-      GWEN_Memory_dealloc(s);
-      bleft-=p2-p;
-      p=p2;
-      assert(bleft>=0);
-    }
-  }
-
-  /* more information ? */
-  if (*p==10) {
-    /* yes... */
-    p++;
-    bleft--;
-
-    while (*p) {
-      /* read extra information */
-      if (*p=='/') {
-        if (p[1]==0)
-          return 0;
-
-        if (bleft<6) {
-          DBG_WARN(AQBANKING_LOGDOMAIN,
-                   "Unknown extra data, ignoring (%s)", p);
-          return 0;
-        }
-        if (strncasecmp(p, "/OCMT/", 6)==0) {
-          /* original value */
-          p+=6;
-          bleft-=6;
-          /* get currency */
-          memmove(buffer, p, 3);
-          buffer[3]=0;
-          AHB_SWIFT__SetCharValue(data, flags, "origvalue/currency", buffer);
-          p+=3;
-          bleft-=3;
-          if (*p=='/') { /* Deutsche Bank seems to be sending */
-            p++;         /* a "/" between currency and amount */
-            bleft--;
-          }
-          /* get value */
-          p2=p;
-          while (*p2 && *p2!='/')
-            p2++;
-          if (p2==p) {
-            DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad original value (%s)", p);
-            GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                                 "SWIFT: Bad original value");
-            return -1;
-          }
-          s=(char *)GWEN_Memory_malloc(p2-p+1);
-          memmove(s, p, p2-p+1);
-          s[p2-p]=0;
-          AHB_SWIFT__SetCharValue(data, flags, "origvalue", s);
-          GWEN_Memory_dealloc(s);
-          bleft-=p2-p;
-          p=p2;
-        }
-        else if (strncasecmp(p, "/CHGS/", 6)==0) {
-          /* charges */
-          p+=6;
-          bleft-=6;
-          /* get currency */
-          memmove(buffer, p, 3);
-          buffer[3]=0;
-          AHB_SWIFT__SetCharValue(data, flags, "charges/currency", buffer);
-          p+=3;
-          bleft-=3;
-          if (*p=='/') { /* Deutsche Bank seems to be sending */
-            p++;         /* a "/" between currency and amount */
-            bleft--;
-          }
-          /* get value */
-          p2=p;
-          while (*p2 && *p2!='/')
-            p2++;
-          if (p2==p) {
-            DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad charges value (%s)", p);
-            GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                                 "SWIFT: Bad charges value");
-            return -1;
-          }
-          s=(char *)GWEN_Memory_malloc(p2-p+1);
-          memmove(s, p, p2-p+1);
-          s[p2-p]=0;
-          AHB_SWIFT__SetCharValue(data, flags, "charges", s);
-          GWEN_Memory_dealloc(s);
-          bleft-=p2-p;
-          p=p2;
-        }
-        else {
-          DBG_WARN(AQBANKING_LOGDOMAIN,
-                   "Unknown extra data, ignoring (%s)", p);
-          return 0;
-        }
-      }
-      else {
-        DBG_WARN(AQBANKING_LOGDOMAIN, "Bad extra data, ignoring (%s)", p);
-        return 0;
-      }
-    } /* while */
-  } /* if there is extra data */
-
-  return 0;
-}
-
-
-
 int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
                              uint32_t flags,
                              GWEN_DB_NODE *data,
@@ -665,7 +261,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
     }
     memmove(buffer, p, 3);
     buffer[3]=0;
-    AHB_SWIFT__SetCharValue(data, GWEN_DB_FLAGS_OVERWRITE_VARS, "value/currency", buffer);
+    AHB_SWIFT_SetCharValue(data, GWEN_DB_FLAGS_OVERWRITE_VARS, "value/currency", buffer);
     p+=3;
     bleft-=3;
   }
@@ -697,7 +293,7 @@ int AHB_SWIFT940_Parse_6_0_2(const AHB_SWIFT_TAG *tg,
     memmove(s, p, p2-p+1);
     s[p2-p]=0;
   }
-  AHB_SWIFT__SetCharValue(data, GWEN_DB_FLAGS_OVERWRITE_VARS, "value/value", s);
+  AHB_SWIFT_SetCharValue(data, GWEN_DB_FLAGS_OVERWRITE_VARS, "value/value", s);
   GWEN_Memory_dealloc(s);
   /*bleft-=p2-p;*/
   /*p=p2;*/
@@ -771,20 +367,20 @@ int AHB_SWIFT940_Parse_NS(const AHB_SWIFT_TAG *tg,
         case 12:
         case 13:
         case 14:
-          AHB_SWIFT__SetCharValue(data, flags, "purpose", s);
+          AHB_SWIFT_SetCharValue(data, flags, "purpose", s);
           break;
 
         case 15: /* Auftraggeber1 */
         case 16: /* Auftraggeber2 */
-          AHB_SWIFT__SetCharValue(data, flags, "localName", s);
+          AHB_SWIFT_SetCharValue(data, flags, "localName", s);
           break;
 
         case 17: /* Buchungstext */
-          AHB_SWIFT__SetCharValue(data, flags, "transactionText", s);
+          AHB_SWIFT_SetCharValue(data, flags, "transactionText", s);
           break;
 
         case 18: /* Primanota */
-          AHB_SWIFT__SetCharValue(data, flags, "primanota", s);
+          AHB_SWIFT_SetCharValue(data, flags, "primanota", s);
           break;
 
         case 19: /* Uhrzeit der Buchung */
@@ -932,7 +528,7 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
 
           curr=GWEN_DB_GetCharValue(dbSaldo, "value/currency", 0, 0);
           if (curr) {
-            AHB_SWIFT__SetCharValue(dbTemplate, flags,
+            AHB_SWIFT_SetCharValue(dbTemplate, flags,
                                     "value/currency", curr);
           }
           if (strcasecmp(id, "60F")==0)
@@ -1084,10 +680,10 @@ void _readSubTagsIntoDb(AHB_SWIFT_SUBTAG_LIST *stlist, GWEN_DB_NODE *dbData, uin
     s=AHB_SWIFT_SubTag_GetData(stg);
     switch (id) {
     case 0: /* Buchungstext */
-      AHB_SWIFT__SetCharValue(dbData, flags, "transactionText", s);
+      AHB_SWIFT_SetCharValue(dbData, flags, "transactionText", s);
       break;
     case 10: /* Primanota */
-      AHB_SWIFT__SetCharValue(dbData, flags, "primanota", s);
+      AHB_SWIFT_SetCharValue(dbData, flags, "primanota", s);
       break;
 
     case 20:
@@ -1104,21 +700,21 @@ void _readSubTagsIntoDb(AHB_SWIFT_SUBTAG_LIST *stlist, GWEN_DB_NODE *dbData, uin
     case 61:
     case 62:
     case 63: /* Verwendungszweck */
-      AHB_SWIFT__SetCharValue(dbData, flags, "purpose", s);
+      AHB_SWIFT_SetCharValue(dbData, flags, "purpose", s);
       break;
 
     case 30: /* BLZ Gegenseite */
-      AHB_SWIFT__SetCharValue(dbData, flags, "remoteBankCode", s);
+      AHB_SWIFT_SetCharValue(dbData, flags, "remoteBankCode", s);
       break;
 
     case 31: /* Kontonummer Gegenseite */
-      AHB_SWIFT__SetCharValue(dbData, flags, "remoteAccountNumber", s);
+      AHB_SWIFT_SetCharValue(dbData, flags, "remoteAccountNumber", s);
       break;
 
     case 32:
     case 33: /* Name Auftraggeber */
       //DBG_ERROR(AQBANKING_LOGDOMAIN, "Setting remote name: [%s]", s);
-      AHB_SWIFT__SetCharValue(dbData, flags, "remoteName", s);
+      AHB_SWIFT_SetCharValue(dbData, flags, "remoteName", s);
       break;
 
     case 34: /* Textschluesselergaenzung */
@@ -1131,7 +727,7 @@ void _readSubTagsIntoDb(AHB_SWIFT_SUBTAG_LIST *stlist, GWEN_DB_NODE *dbData, uin
       break;
 
     case 38: /* IBAN */
-      AHB_SWIFT__SetCharValue(dbData, flags, "remoteIban", s);
+      AHB_SWIFT_SetCharValue(dbData, flags, "remoteIban", s);
       break;
 
     default: /* ignore all other fields (if any) */
@@ -1364,35 +960,35 @@ void _transformSepaTags(GWEN_DB_NODE *dbData, GWEN_DB_NODE *dbSepaTags, uint32_t
       }
 
       if (strcasecmp(sVarName, "EREF+")==0) {
-        AHB_SWIFT__SetCharValue(dbData, flags, "endToEndReference", GWEN_Buffer_GetStart(tbuf));
+        AHB_SWIFT_SetCharValue(dbData, flags, "endToEndReference", GWEN_Buffer_GetStart(tbuf));
       }
       else if (strcasecmp(sVarName, "KREF+")==0) {
-        AHB_SWIFT__SetCharValue(dbData, flags, "customerReference", GWEN_Buffer_GetStart(tbuf));
+        AHB_SWIFT_SetCharValue(dbData, flags, "customerReference", GWEN_Buffer_GetStart(tbuf));
       }
       else if (strcasecmp(sVarName, "MREF+")==0) {
-        AHB_SWIFT__SetCharValue(dbData, flags, "mandateId", GWEN_Buffer_GetStart(tbuf));
+        AHB_SWIFT_SetCharValue(dbData, flags, "mandateId", GWEN_Buffer_GetStart(tbuf));
       }
       else if (strcasecmp(sVarName, "CRED+")==0) {
-        AHB_SWIFT__SetCharValue(dbData, flags, "creditorSchemeId", GWEN_Buffer_GetStart(tbuf));
+        AHB_SWIFT_SetCharValue(dbData, flags, "creditorSchemeId", GWEN_Buffer_GetStart(tbuf));
       }
       else if (strcasecmp(sVarName, "DEBT+")==0) {
-        AHB_SWIFT__SetCharValue(dbData, flags, "originatorId", GWEN_Buffer_GetStart(tbuf));
+        AHB_SWIFT_SetCharValue(dbData, flags, "originatorId", GWEN_Buffer_GetStart(tbuf));
       }
       else if (strcasecmp(sVarName, "SVWZ+")==0) {
-        AHB_SWIFT__SetCharValue(dbData, flags | GWEN_DB_FLAGS_OVERWRITE_VARS, "purpose", GWEN_Buffer_GetStart(tbuf));
+        AHB_SWIFT_SetCharValue(dbData, flags | GWEN_DB_FLAGS_OVERWRITE_VARS, "purpose", GWEN_Buffer_GetStart(tbuf));
       }
       else if (strcasecmp(sVarName, "ABWA+")==0) {
         /* "abweichender Auftraggeber" */
-        AHB_SWIFT__SetCharValue(dbData, flags, "ultimateDebtor", GWEN_Buffer_GetStart(tbuf));
+        AHB_SWIFT_SetCharValue(dbData, flags, "ultimateDebtor", GWEN_Buffer_GetStart(tbuf));
       }
       else if (strcasecmp(sVarName, "ABWE+")==0) {
         /* "abweichender Empfaenger" */
-        AHB_SWIFT__SetCharValue(dbData, flags, "ultimateCreditor", GWEN_Buffer_GetStart(tbuf));
+        AHB_SWIFT_SetCharValue(dbData, flags, "ultimateCreditor", GWEN_Buffer_GetStart(tbuf));
       }
       else if (strcasecmp(sVarName, "_purpose")==0) {
         /* manually added tag (i.e. data outside a tag)
         * will be replaced if there was a real purpose field (i.e. "SVWZ+") */
-        AHB_SWIFT__SetCharValue(dbData, flags, "purpose", GWEN_Buffer_GetStart(tbuf));
+        AHB_SWIFT_SetCharValue(dbData, flags, "purpose", GWEN_Buffer_GetStart(tbuf));
       }
       GWEN_Buffer_free(tbuf);
     }
@@ -1445,16 +1041,16 @@ void _parseTransactionData(const char *p, GWEN_DB_NODE *dbData, uint32_t flags)
             p3++;
           *p3=0;
 
-          AHB_SWIFT__SetCharValue(dbData, flags, "remoteBankCode", blz);
-          AHB_SWIFT__SetCharValue(dbData, flags, "remoteAccountNumber", kto);
+          AHB_SWIFT_SetCharValue(dbData, flags, "remoteBankCode", blz);
+          AHB_SWIFT_SetCharValue(dbData, flags, "remoteAccountNumber", kto);
         }
       }
       else {
-        AHB_SWIFT__SetCharValue(dbData, flags, "purpose", p1);
+        AHB_SWIFT_SetCharValue(dbData, flags, "purpose", p1);
       }
     }
     else
-      AHB_SWIFT__SetCharValue(dbData, flags, "purpose", p1);
+      AHB_SWIFT_SetCharValue(dbData, flags, "purpose", p1);
     p1=p2;
   }
   free(pcopy);

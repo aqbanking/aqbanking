@@ -44,6 +44,8 @@ int AHB_SWIFT_ParseSubTags(const char *s, AHB_SWIFT_SUBTAG_LIST *stlist, int kee
 
 int AHB_SWIFT_Condense(char *buffer, int keepDoubleBlanks);
 
+int AHB_SWIFT_SetCharValue(GWEN_DB_NODE *db, uint32_t flags, const char *name, const char *s);
+
 
 #endif /* AQHBCIBANK_SWIFT_L_H */
 

@@ -13,6 +13,7 @@ noinst_HEADERS=\
   swift_p.h \
   swift940_l.h \
   swift940_p.h \
+  swift940_61.h \
   swift535_l.h \
   swift535_p.h
 
@@ -22,6 +23,7 @@ dbioplugin_LTLIBRARIES=swift.la
 swift_la_SOURCES=\
  swift.c \
  swift940.c \
+ swift940_61.c \
  swift535.c
 
 swift_la_LIBADD = $(gwenhywfar_libs) 
