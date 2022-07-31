@@ -282,7 +282,7 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 
     if (AH_Job_GetTransactions__ReadTransactions(j,
                                                  ai,
-                                                 "SWIFT-MT940",
+                                                 "fints940",
                                                  AB_Transaction_TypeStatement,
                                                  (const uint8_t *) GWEN_Buffer_GetStart(tbooked),
                                                  GWEN_Buffer_GetUsedBytes(tbooked))) {
@@ -313,7 +313,7 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 
     if (AH_Job_GetTransactions__ReadTransactions(j,
                                                  ai,
-                                                 "SWIFT-MT942",
+                                                 "fints942",
                                                  AB_Transaction_TypeNotedStatement,
                                                  (const uint8_t *) GWEN_Buffer_GetStart(tnoted),
                                                  GWEN_Buffer_GetUsedBytes(tnoted))) {
