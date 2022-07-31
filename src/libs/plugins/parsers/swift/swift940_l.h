@@ -23,6 +23,7 @@
  *   Fallback mode for booking date in transaction when none given in input
  *   - "balanceDate": Use date from previous balance (default)
  *   - "valutaDate" : Use valuta date of transaction also for booking date
+ *   - "none"       : no fallback, leave date empty if non given
  */
 int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
                         GWEN_DB_NODE *data,

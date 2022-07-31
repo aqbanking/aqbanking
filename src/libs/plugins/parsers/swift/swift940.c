@@ -216,6 +216,9 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
 	      if (s && *s)
 		GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS, "date", s);
 	    }
+	    else if (strcasecmp(dateFallback, "none")==0) {
+	      /* leave date empty */
+	    }
 	  }
         }
         else if (strcasecmp(id, "86")==0) {
