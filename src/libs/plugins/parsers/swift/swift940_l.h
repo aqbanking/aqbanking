@@ -24,6 +24,7 @@
  *   - "balanceDate": Use date from previous balance (default)
  *   - "valutaDate" : Use valuta date of transaction also for booking date
  *   - "none"       : no fallback, leave date empty if non given
+ * - readExtraData61: if "yes" then extra data in :61: tags is added to purpose lines
  */
 int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
                         GWEN_DB_NODE *data,
