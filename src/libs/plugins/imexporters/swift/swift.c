@@ -246,30 +246,6 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
         }
       }
 
-#if 0   /* disable ABWA+ and ABWE+: We can't safely know when to change them */
-      if (1) {
-        const char *varName;
-        int i;
-        GWEN_BUFFER *nameBuf;
-
-        if (GWEN_DB_VariableExists(dbT, "sepa/ABWA"))
-          varName="sepa/ABWA";
-        else if (GWEN_DB_VariableExists(dbT, "sepa/ABWE"))
-          varName="sepa/ABWE";
-        else
-          varName="remoteName";
-        nameBuf=GWEN_Buffer_new(0, 256, 0, 1);
-        for (i=0; i<2; i++) {
-          s=GWEN_DB_GetCharValue(dbT, varName, i, NULL);
-          if (s && *s) {
-            GWEN_Buffer_AppendString(nameBuf, s);
-          }
-        }
-        if (GWEN_Buffer_GetUsedBytes(nameBuf))
-          AB_Transaction_SetRemoteName(t, GWEN_Buffer_GetStart(nameBuf));
-      }
-#endif
-
       /* read all lines of the remote name and concatenate them (addresses bug #57) */
       if (1) {
         int i;
@@ -287,31 +263,6 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
           AB_Transaction_SetRemoteName(t, GWEN_Buffer_GetStart(nameBuf));
         GWEN_Buffer_free(nameBuf);
       }
-
-
-#if 0
-      /* for now ignore these variables.
-       *
-       * Who is the recipient and who the initiator depends on the type of transaction.
-       * Currently we have no safe way to determine whether the transaction was a
-       * - transfer (negative amount, we are the payee and the initiator)
-       * - or a debit note from someone else (also negative amount, we are the payee also but not the initiator)
-       * - debit note initiated by us (we are the recipient but also the initiator)
-       */
-      if (1) {
-        const char *s;
-
-        s=GWEN_DB_GetCharValue(dbT, "sepa/ABWA", 0, NULL);
-        if (s && *s) {
-          /* for now: ignore this "ABWA"="Abweichender Auftraggeber" */
-        }
-
-        s=GWEN_DB_GetCharValue(dbT, "sepa/ABWE", 0, NULL);
-        if (s && *s) {
-          /* for now: ignore this "ABWA"="Abweichender Empfaenger" */
-        }
-      }
-#endif
 
       /* add transaction */
       DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding transaction");
