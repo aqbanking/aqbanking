@@ -98,7 +98,8 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg, uint32_t flags, GWEN_DB_NODE 
   } /* if isStructured */
   else {
     /* unstructured :86:, simply store as mutliple purpose lines */
-    _parseTransactionData(p, dbData, flags);
+    _parseTransactionData(p, dbData, GWEN_DB_FLAGS_DEFAULT);
+    _transformPurposeIntoOneString(dbData, flags);
   }
 
   return 0;
