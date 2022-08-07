@@ -139,7 +139,8 @@ int _addCommandToOutbox(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_TRANSACT
                                 rv);
       return rv;
     }
-    AB_Banking_LogMsgForJobId(AB_Provider_GetBanking(pro), AB_Transaction_GetUniqueId(t), "Created new HBCI job");
+    AB_Banking_LogMsgForJobId(AB_Provider_GetBanking(pro), AB_Transaction_GetUniqueId(t), "Created new HBCI job (%08x)",
+                              AH_Job_GetFlags(mj));
   }
   assert(mj);
 

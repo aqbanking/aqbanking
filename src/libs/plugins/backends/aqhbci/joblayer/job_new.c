@@ -67,10 +67,10 @@ AH_JOB *AH_Job_new(const char *name,
   j->msgResults=AH_Result_List_new();
   j->messages=AB_Message_List_new();
 
-  j->flags|=AH_JOB_FLAGS_HASMOREMSGS;
+  AH_Job_AddFlags(j, AH_JOB_FLAGS_HASMOREMSGS);
   if (AH_User_GetCryptMode(u)==AH_CryptMode_Pintan)
     /* always make jobs single when in PIN/TAN mode */
-    j->flags|=AH_JOB_FLAGS_SINGLE;
+    AH_Job_AddFlags(j, AH_JOB_FLAGS_SINGLE);
 
   /* setup message engine */
   e=AH_User_GetMsgEngine(u);
@@ -109,7 +109,7 @@ AH_JOB *AH_Job_new(const char *name,
     jobPinTan=_jobGetBpdPinTanParams(j);
     if (jobPinTan) {
       /* sample flag NEEDTAN */
-      j->flags|=(GWEN_DB_GetIntValue(jobPinTan, "needTan", 0, 0)!=0)?AH_JOB_FLAGS_NEEDTAN:0;
+      AH_Job_AddFlags(j, (GWEN_DB_GetIntValue(jobPinTan, "needTan", 0, 0)!=0)?AH_JOB_FLAGS_NEEDTAN:0);
     }
   }
 
@@ -362,12 +362,12 @@ void _jobReadFromDescriptorNode(AH_JOB *j, GWEN_XMLNODE *jobNode)
 
   /* sample flags from XML file */
   if (GWEN_XMLNode_GetIntProperty(jobNode, "dlg", 0)!=0) {
-    j->flags|=AH_JOB_FLAGS_DLGJOB;
-    j->flags|=AH_JOB_FLAGS_SINGLE;
+    AH_Job_AddFlags(j, AH_JOB_FLAGS_DLGJOB);
+    AH_Job_AddFlags(j, AH_JOB_FLAGS_SINGLE);
   }
-  j->flags|=(GWEN_XMLNode_GetIntProperty(jobNode, "attachable", 0)!=0)?AH_JOB_FLAGS_ATTACHABLE:0;
-  j->flags|=(GWEN_XMLNode_GetIntProperty(jobNode, "single", 0)!=0)?AH_JOB_FLAGS_SINGLE:0;
-  j->flags|=(GWEN_XMLNode_GetIntProperty(jobNode, "ignoreAccounts", 0)!=0)?AH_JOB_FLAGS_IGNOREACCOUNTS:0;
+  AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(jobNode, "attachable", 0)!=0)?AH_JOB_FLAGS_ATTACHABLE:0);
+  AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(jobNode, "single", 0)!=0)?AH_JOB_FLAGS_SINGLE:0);
+  AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(jobNode, "ignoreAccounts", 0)!=0)?AH_JOB_FLAGS_IGNOREACCOUNTS:0);
 
   /* get description */
   descrNode=GWEN_XMLNode_FindFirstTag(jobNode, "DESCR", 0, 0);
@@ -399,28 +399,28 @@ void _jobReadFromDescriptorNode(AH_JOB *j, GWEN_XMLNODE *jobNode)
     /* we have <MESSAGE> nodes, so this is not a simple case */
     DBG_INFO(AQHBCI_LOGDOMAIN, "Multi message job");
     /* GWEN_XMLNode_Dump(msgNode, stderr, 2); */
-    j->flags|=(AH_JOB_FLAGS_MULTIMSG);
+    AH_Job_AddFlags(j, AH_JOB_FLAGS_MULTIMSG);
     /* a multi message job must be single, too */
-    j->flags|=AH_JOB_FLAGS_SINGLE;
+    AH_Job_AddFlags(j, AH_JOB_FLAGS_SINGLE);
     j->msgNode=msgNode;
-    j->flags|=(GWEN_XMLNode_GetIntProperty(msgNode, "sign", 1)!=0)?(AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN):0;
-    j->flags|=(GWEN_XMLNode_GetIntProperty(msgNode, "crypt", 1)!=0)?(AH_JOB_FLAGS_NEEDCRYPT | AH_JOB_FLAGS_CRYPT):0;
-    j->flags|=(GWEN_XMLNode_GetIntProperty(msgNode, "needtan", 0)!=0)?AH_JOB_FLAGS_NEEDTAN:0;
-    j->flags|=(GWEN_XMLNode_GetIntProperty(msgNode, "nosysid", 0)!=0)?(AH_JOB_FLAGS_NOSYSID | AH_JOB_FLAGS_SINGLE):0;
-    j->flags|=(GWEN_XMLNode_GetIntProperty(msgNode, "signseqone", 0)!=0)?AH_JOB_FLAGS_SIGNSEQONE:0;
-    j->flags|=(GWEN_XMLNode_GetIntProperty(msgNode, "noitan", 0)!=0)?AH_JOB_FLAGS_NOITAN:0;
+    AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(msgNode, "sign", 1)!=0)?(AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN):0);
+    AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(msgNode, "crypt", 1)!=0)?(AH_JOB_FLAGS_NEEDCRYPT | AH_JOB_FLAGS_CRYPT):0);
+    AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(msgNode, "needtan", 0)!=0)?AH_JOB_FLAGS_NEEDTAN:0);
+    AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(msgNode, "nosysid", 0)!=0)?(AH_JOB_FLAGS_NOSYSID | AH_JOB_FLAGS_SINGLE):0);
+    AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(msgNode, "signseqone", 0)!=0)?AH_JOB_FLAGS_SIGNSEQONE:0);
+    AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(msgNode, "noitan", 0)!=0)?AH_JOB_FLAGS_NOITAN:0);
   } /* if msgNode */
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Single message job");
-    j->flags|=(GWEN_XMLNode_GetIntProperty(jobNode, "sign", 1)!=0)?(AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN):0;
-    j->flags|=(GWEN_XMLNode_GetIntProperty(jobNode, "crypt", 1)!=0)?(AH_JOB_FLAGS_NEEDCRYPT | AH_JOB_FLAGS_CRYPT):0;
-    j->flags|=(GWEN_XMLNode_GetIntProperty(jobNode, "needtan", 0)!=0)?AH_JOB_FLAGS_NEEDTAN:0;
-    j->flags|=(GWEN_XMLNode_GetIntProperty(jobNode, "nosysid", 0)!=0)?(AH_JOB_FLAGS_NOSYSID | AH_JOB_FLAGS_SINGLE):0;
-    j->flags|=(GWEN_XMLNode_GetIntProperty(jobNode, "signseqone", 0)!=0)?AH_JOB_FLAGS_SIGNSEQONE:0;
-    j->flags|=(GWEN_XMLNode_GetIntProperty(jobNode, "noitan", 0)!=0)?AH_JOB_FLAGS_NOITAN:0;
+    AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(jobNode, "sign", 1)!=0)?(AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN):0);
+    AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(jobNode, "crypt", 1)!=0)?(AH_JOB_FLAGS_NEEDCRYPT | AH_JOB_FLAGS_CRYPT):0);
+    AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(jobNode, "needtan", 0)!=0)?AH_JOB_FLAGS_NEEDTAN:0);
+    AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(jobNode, "nosysid", 0)!=0)?(AH_JOB_FLAGS_NOSYSID | AH_JOB_FLAGS_SINGLE):0);
+    AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(jobNode, "signseqone", 0)!=0)?AH_JOB_FLAGS_SIGNSEQONE:0);
+    AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(jobNode, "noitan", 0)!=0)?AH_JOB_FLAGS_NOITAN:0);
   }
 
-  if (j->flags & (AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN)) {
+  if (AH_Job_GetFlags(j) & (AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN)) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "%s: Signature needed according to job description in our XML files", j->name);
     j->minSigs=1;
   }
@@ -439,10 +439,10 @@ void _jobReadFromBpdParamsNode(AH_JOB *j, GWEN_DB_NODE *jobBPD)
   j->minSigs=GWEN_DB_GetIntValue(jobBPD, "minsigs", 0, 0);
   if (j->minSigs>0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "%s: Signature needed according to BPD", j->name);
-    j->flags|=AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN;
+    AH_Job_AddFlags(j, AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN);
   }
   else {
-    j->flags&=~(AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN);
+    AH_Job_SubFlags(j, AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN);
     DBG_INFO(AQHBCI_LOGDOMAIN, "%s: No signature needed according to BPD", j->name);
   }
 
@@ -464,10 +464,10 @@ void _jobReadFromUpdNode(AH_JOB *j, GWEN_DB_NODE *jobUPD)
   j->minSigs=GWEN_DB_GetIntValue(jobUPD, "minsign", 0, 0);
   if (j->minSigs>0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "%s: Signature needed according to UPD", j->name);
-    j->flags|=AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN;
+    AH_Job_AddFlags(j, AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN);
   }
   else {
-    j->flags&=~(AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN);
+    AH_Job_SubFlags(j, AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN);
     DBG_INFO(AQHBCI_LOGDOMAIN, "%s: No signature needed according to UPD", j->name);
   }
 }

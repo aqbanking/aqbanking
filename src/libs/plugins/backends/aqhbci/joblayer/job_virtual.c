@@ -217,7 +217,7 @@ int AH_Job_DefaultProcessHandler(AH_JOB *j)
 {
   assert(j);
   assert(j->usage);
-  if (j->flags & AH_JOB_FLAGS_PROCESSED) {
+  if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_PROCESSED) {
     DBG_WARN(AQHBCI_LOGDOMAIN, "Already processed job \"%s\"", j->name);
     return 0;
   }
@@ -232,12 +232,12 @@ int AH_Job_DefaultCommitHandler(AH_JOB *j, int doLock)
 
   assert(j);
   assert(j->usage);
-  if (j->flags & AH_JOB_FLAGS_COMMITTED) {
+  if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_COMMITTED) {
     DBG_WARN(AQHBCI_LOGDOMAIN, "Already committed job \"%s\"", j->name);
     return 0;
   }
   rv=AH_Job_CommitSystemData(j, doLock);
-  j->flags|=AH_JOB_FLAGS_COMMITTED;
+  AH_Job_AddFlags(j, AH_JOB_FLAGS_COMMITTED);
   return rv;
 }
 

@@ -128,14 +128,21 @@ int _performQueue(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jq)
   int rv;
   AB_USER *user;
   AH_JOB_LIST *finishedJobs;
+  int loopNum;
 
   user=AH_OutboxCBox_GetUser(cbox);
   finishedJobs=AH_OutboxCBox_GetFinishedJobs(cbox);
 
-  for (;;) {
+  for (loopNum=1; loopNum++;) {
     AH_JOBQUEUE *jqAck;
     AH_JOBQUEUE *jqTodo;
     AH_JOB_LIST *jl;
+
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Performing queue (loop %d)", loopNum);
+    if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Info)
+      AH_JobQueue_DumpJobList(jq, stderr, 2);
+    else if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug)
+      AH_JobQueue_Dump(jq, stderr, 2);
 
     jl=AH_JobQueue_TakeJobList(jq);
     assert(jl);
@@ -146,6 +153,7 @@ int _performQueue(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jq)
     AH_JobQueue_free(jq);
 
     if (jqAck != NULL) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Handling ACK jobs");
       rv=AH_OutboxCBox_SendAndRecvQueue(cbox, dlg, jqAck);
       if (rv) {
         _handleQueueError(cbox, jqAck, "Error performing acknowledge queue");
@@ -159,9 +167,11 @@ int _performQueue(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jq)
       break;
     }
     else { 
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Handling TODO jobs");
       jq=jqTodo;
       /* jq now contains all jobs to be executed */
-      // Execute NEXT send-recv round, syhcnrounously.
+        
+      /* Execute NEXT send-recv round, synchrounously. */
       rv=AH_OutboxCBox_SendAndRecvQueue(cbox, dlg, jq);
       if (rv) {
         _handleQueueError(cbox, jq, "Error performing queue"); /* frees jobQueue */

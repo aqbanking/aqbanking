@@ -454,17 +454,26 @@ AH_JOB *_findReferencedJob(AH_JOBQUEUE *jq, int refMsgNum, int refSegNum)
 
 void _possiblyExtractJobAckCode(AH_JOB *j, GWEN_DB_NODE *dbSegment) {
   if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_ACKNOWLEDGE) {
-    const char *responseName=AH_Job_GetResponseName(j);
+    const char *responseName;
+
+    responseName=AH_Job_GetResponseName(j);
     if (strcasecmp(GWEN_DB_GroupName(dbSegment), responseName)==0) {
       unsigned int byteSize = 0;
       const void* ackCode;
       ackCode = GWEN_DB_GetBinValue(dbSegment, "ackCode", 0, NULL, 0, &byteSize);
       if (ackCode) {
-        GWEN_DB_NODE *args = AH_Job_GetArguments(j);
+        GWEN_DB_NODE *args;
+
+        args=AH_Job_GetArguments(j);
         GWEN_DB_SetBinValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS, "_tmpAckCode", ackCode, byteSize);
-        DBG_DEBUG(AQHBCI_LOGDOMAIN, "Found acknoledge code in job response, storing it.");
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Found acknowledge code in job response, storing it.");
+        AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Job has acknowledge code");
       }
     }
+  }
+  else {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" has no ACKNOWLEDGE flag", AH_Job_GetName(j));
+    AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Job has no ACKNOWLEDGE flag, ignoring");
   }
 }
 
@@ -494,16 +503,21 @@ void _possiblyExtractAttachPoint(AH_JOB *j, GWEN_DB_NODE *dbSegment)
             GWEN_DB_NODE *args;
 
             /* store the attach point */
-            DBG_DEBUG(AQHBCI_LOGDOMAIN, "Storing attach point");
+            DBG_INFO(AQHBCI_LOGDOMAIN, "Storing attach point");
             args=AH_Job_GetArguments(j);
             GWEN_DB_SetCharValue(args, GWEN_DB_FLAGS_OVERWRITE_VARS, "attach", p);
             AH_Job_AddFlags(j, AH_JOB_FLAGS_HASATTACHPOINT);
+            AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Job has attach point \"%s\"", p);
           }
         } /* if code 3040 (means "more data available") */
         dbResult=GWEN_DB_FindNextGroup(dbResult, "result");
       } /* while */
     } /* if segresult */
   } /* if attachable */
+  else {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" not attachable", AH_Job_GetName(j));
+    AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Job not attachable, ignoring");
+  }
 }
 
 
@@ -527,32 +541,37 @@ void _handleSegmentResult(AH_JOBQUEUE *jq, AH_JOB *j, GWEN_DB_NODE *dbSegment)
     GWEN_DB_NODE *dbResult;
 
     dbResult=GWEN_DB_FindFirstGroup(dbSegment, "result");
-    while (dbResult) {
-      int rcode;
-      const char *rtext;
-
-      rcode=GWEN_DB_GetIntValue(dbResult, "resultcode", 0, 0);
-      rtext=GWEN_DB_GetCharValue(dbResult, "text", 0, "");
-
-      if (rcode>=9000 && rcode<10000) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Segment result: Error (%d: %s)", rcode, rtext);
-        if (!(AH_Job_GetFlags(j) & AH_JOB_FLAGS_IGNORE_ERROR)) {
-          AH_Job_AddFlags(j, AH_JOB_FLAGS_HASERRORS);
-          AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASERRORS);
+    if (dbResult==NULL) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Segment result has no \"result\" group");
+    }
+    else {
+      while (dbResult) {
+        int rcode;
+        const char *rtext;
+  
+        rcode=GWEN_DB_GetIntValue(dbResult, "resultcode", 0, 0);
+        rtext=GWEN_DB_GetCharValue(dbResult, "text", 0, "");
+  
+        if (rcode>=9000 && rcode<10000) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Segment result: Error (%d: %s)", rcode, rtext);
+          if (!(AH_Job_GetFlags(j) & AH_JOB_FLAGS_IGNORE_ERROR)) {
+            AH_Job_AddFlags(j, AH_JOB_FLAGS_HASERRORS);
+            AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASERRORS);
+          }
         }
-      }
-      else if (rcode>=3000 && rcode<4000) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Segment result: Warning (%d: %s)", rcode, rtext);
-        if (!(AH_Job_GetFlags(j) & AH_JOB_FLAGS_IGNORE_ERROR)) {
-          AH_Job_AddFlags(j, AH_JOB_FLAGS_HASWARNINGS);
-          AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASWARNINGS);
+        else if (rcode>=3000 && rcode<4000) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Segment result: Warning (%d: %s)", rcode, rtext);
+          if (!(AH_Job_GetFlags(j) & AH_JOB_FLAGS_IGNORE_ERROR)) {
+            AH_Job_AddFlags(j, AH_JOB_FLAGS_HASWARNINGS);
+            AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_HASWARNINGS);
+          }
         }
-      }
-      else {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Segment result: Ok (%d: %s)", rcode, rtext);
-      }
-      dbResult=GWEN_DB_FindNextGroup(dbResult, "result");
-    } /* while */
+        else {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Segment result: Ok (%d: %s)", rcode, rtext);
+        }
+        dbResult=GWEN_DB_FindNextGroup(dbResult, "result");
+      } /* while */
+    } /* if dbResult */
   } /* if SegResult */
 }
 

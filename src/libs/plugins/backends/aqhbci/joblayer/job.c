@@ -43,6 +43,9 @@ GWEN_INHERIT_FUNCTIONS(AH_JOB);
 
 
 
+static void _flagsToBuffer(uint32_t flags, GWEN_BUFFER *dbuf);
+
+
 
 
 void AH_Job_free(AH_JOB *j)
@@ -275,51 +278,53 @@ int AH_Job_PrepareNextMessage(AH_JOB *j)
     rv=j->nextMsgFn(j);
     if (rv==0) {
       /* callback flagged that no message follows */
-      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Job says: No more messages");
-      j->flags&=~AH_JOB_FLAGS_HASMOREMSGS;
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" says: No more messages", j->name);
+      AH_Job_SubFlags(j, AH_JOB_FLAGS_HASMOREMSGS);
       return 0;
     }
     else if (rv!=1) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Job says: Error");
-      j->flags&=~AH_JOB_FLAGS_HASMOREMSGS;
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" says: Error", j->name);
+      AH_Job_SubFlags(j, AH_JOB_FLAGS_HASMOREMSGS);
       return rv;
     }
   }
 
   if (j->status==AH_JobStatusUnknown ||
       j->status==AH_JobStatusError) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "At least one message had errors, aborting job");
-    j->flags&=~AH_JOB_FLAGS_HASMOREMSGS;
+    DBG_INFO(AQHBCI_LOGDOMAIN, "At least one message had errors, aborting job \"%s\"", j->name);
+    AH_Job_SubFlags(j, AH_JOB_FLAGS_HASMOREMSGS);
     return 0;
   }
 
   if (j->status==AH_JobStatusToDo) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN,
-               "Hmm, job has never been sent, so we do nothing here");
-    j->flags&=~AH_JOB_FLAGS_HASMOREMSGS;
+               "Hmm, job \"%s\" has never been sent, so we do nothing here", j->name);
+    AH_Job_SubFlags(j, AH_JOB_FLAGS_HASMOREMSGS);
     return 0;
   }
 
-  if (j->flags & AH_JOB_FLAGS_HASATTACHPOINT) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN,
-               "Job has an attachpoint, so yes, we need more messages");
-    j->flags|=AH_JOB_FLAGS_HASMOREMSGS;
-    AH_Job_Log(j, GWEN_LoggerLevel_Debug,
-               "Job has an attachpoint");
+  if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_HASATTACHPOINT) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" has an attachpoint, so yes, we need more messages", j->name);
+    AH_Job_AddFlags(j, AH_JOB_FLAGS_HASMOREMSGS);
+    AH_Job_Log(j, GWEN_LoggerLevel_Debug, "Job has an attachpoint");
     return 1;
   }
+  else {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"%s\" has no attachpoint", j->name);
+  }
 
-  if (!(j->flags & AH_JOB_FLAGS_MULTIMSG)) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Not a Multi-message job, so we don't need more messages");
-    j->flags&=~AH_JOB_FLAGS_HASMOREMSGS;
+  if (!(AH_Job_GetFlags(j) & AH_JOB_FLAGS_MULTIMSG)) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Not a multi-message job \"%s\", so we don't need more messages", j->name);
+    AH_Job_SubFlags(j, AH_JOB_FLAGS_HASMOREMSGS);
     return 0;
   }
 
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Multi-message job \"%s\", looking for next message", j->name);
   assert(j->msgNode);
   j->msgNode=GWEN_XMLNode_FindNextTag(j->msgNode, "MESSAGE", 0, 0);
   if (j->msgNode) {
     /* there is another message, so set flags accordingly */
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Multi-message job, still more messages");
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Multi-message job \"%s\", still more messages", j->name);
     AH_Job_Log(j, GWEN_LoggerLevel_Debug,
                "Job has more messages");
 
@@ -327,45 +332,45 @@ int AH_Job_PrepareNextMessage(AH_JOB *j)
     if (atoi(GWEN_XMLNode_GetProperty(j->msgNode, "sign", "1"))!=0) {
       if (j->minSigs==0)
         j->minSigs=1;
-      j->flags|=(AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN);
+      AH_Job_AddFlags(j, AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN);
     }
     else {
-      j->flags&=~(AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN);
+      AH_Job_SubFlags(j, AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN);
     }
     if (atoi(GWEN_XMLNode_GetProperty(j->msgNode, "crypt", "1"))!=0)
-      j->flags|=(AH_JOB_FLAGS_NEEDCRYPT| AH_JOB_FLAGS_CRYPT);
+      AH_Job_AddFlags(j, AH_JOB_FLAGS_NEEDCRYPT| AH_JOB_FLAGS_CRYPT);
     else
-      j->flags&=~(AH_JOB_FLAGS_NEEDCRYPT| AH_JOB_FLAGS_CRYPT);
+      AH_Job_SubFlags(j, AH_JOB_FLAGS_NEEDCRYPT| AH_JOB_FLAGS_CRYPT);
 
     if (atoi(GWEN_XMLNode_GetProperty(j->msgNode, "nosysid", "0"))!=0)
-      j->flags|=AH_JOB_FLAGS_NOSYSID;
+      AH_Job_AddFlags(j, AH_JOB_FLAGS_NOSYSID);
     else
-      j->flags&=~AH_JOB_FLAGS_NOSYSID;
+      AH_Job_SubFlags(j, AH_JOB_FLAGS_NOSYSID);
 
     if (atoi(GWEN_XMLNode_GetProperty(j->msgNode, "signseqone", "0"))!=0)
-      j->flags|=AH_JOB_FLAGS_SIGNSEQONE;
+      AH_Job_AddFlags(j, AH_JOB_FLAGS_SIGNSEQONE);
     else
-      j->flags&=~AH_JOB_FLAGS_SIGNSEQONE;
+      AH_Job_SubFlags(j, AH_JOB_FLAGS_SIGNSEQONE);
 
     if (atoi(GWEN_XMLNode_GetProperty(j->msgNode, "noitan", "0"))!=0) {
-      j->flags|=AH_JOB_FLAGS_NOITAN;
+      AH_Job_AddFlags(j, AH_JOB_FLAGS_NOITAN);
     }
     else
-      j->flags&=~AH_JOB_FLAGS_NOITAN;
+      AH_Job_SubFlags(j, AH_JOB_FLAGS_NOITAN);
 
     if (atoi(GWEN_XMLNode_GetProperty(j->msgNode, "ignerrors", "0"))!=0)
-      j->flags|=AH_JOB_FLAGS_IGNORE_ERROR;
+      AH_Job_AddFlags(j, AH_JOB_FLAGS_IGNORE_ERROR);
     else
-      j->flags&=~AH_JOB_FLAGS_IGNORE_ERROR;
+      AH_Job_SubFlags(j, AH_JOB_FLAGS_IGNORE_ERROR);
 
-    j->flags|=AH_JOB_FLAGS_HASMOREMSGS;
+    AH_Job_AddFlags(j, AH_JOB_FLAGS_HASMOREMSGS);
     return 1;
   }
   else {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" is finished", j->name);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Multi-message job \"%s\" is finished", j->name);
     AH_Job_Log(j, GWEN_LoggerLevel_Debug,
                "Job has no more messages");
-    j->flags&=~AH_JOB_FLAGS_HASMOREMSGS;
+    AH_Job_SubFlags(j, AH_JOB_FLAGS_HASMOREMSGS);
     return 0;
   }
 }
@@ -494,33 +499,44 @@ void AH_Job_SetFlags(AH_JOB *j, uint32_t f)
 {
   assert(j);
   assert(j->usage);
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Changing flags of job \"%s\" from %08x to %08x",
-            j->name, j->flags, f);
-  j->flags=f;
+
+  if (j->flags!=f) {
+    GWEN_BUFFER *bufBefore;
+    GWEN_BUFFER *bufAfter;
+
+    bufBefore=GWEN_Buffer_new(0, 128, 0, 1);
+    bufAfter=GWEN_Buffer_new(0, 128, 0, 1);
+
+    _flagsToBuffer(j->flags, bufBefore);
+    _flagsToBuffer(f, bufAfter);
+
+    DBG_INFO(AQHBCI_LOGDOMAIN,
+             "Changing flags of job \"%s\" to %08x: %s, was %08x: %s",
+             j->name,
+             f, GWEN_Buffer_GetStart(bufAfter),
+             j->flags, GWEN_Buffer_GetStart(bufBefore));
+    AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j),
+                              "Changing flags to %08x: %s (was %08x: %s)",
+                              j->flags, GWEN_Buffer_GetStart(bufBefore),
+                              f, GWEN_Buffer_GetStart(bufAfter));
+    GWEN_Buffer_free(bufAfter);
+    GWEN_Buffer_free(bufBefore);
+    j->flags=f;
+  }
 }
 
 
 
 void AH_Job_AddFlags(AH_JOB *j, uint32_t f)
 {
-  assert(j);
-  assert(j->usage);
-  DBG_DEBUG(AQHBCI_LOGDOMAIN,
-            "Changing flags of job \"%s\" from %08x to %08x",
-            j->name, j->flags, j->flags|f);
-  j->flags|=f;
+  AH_Job_SetFlags(j, j->flags|f);
 }
 
 
 
 void AH_Job_SubFlags(AH_JOB *j, uint32_t f)
 {
-  assert(j);
-  assert(j->usage);
-  DBG_DEBUG(AQHBCI_LOGDOMAIN,
-            "Changing flags of job \"%s\" from %08x to %08x",
-            j->name, j->flags, j->flags&~f);
-  j->flags&=~f;
+  AH_Job_SetFlags(j, j->flags&~f);
 }
 
 
@@ -726,7 +742,7 @@ void AH_Job_AddSigner(AH_JOB *j, const char *s)
     AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Adding signer \"%s\"", s?s:"<empty>");
   }
   GWEN_Buffer_free(lbuf);
-  j->flags|=AH_JOB_FLAGS_SIGN;
+  AH_Job_AddFlags(j, AH_JOB_FLAGS_SIGN);
 }
 
 
@@ -773,7 +789,7 @@ GWEN_XMLNODE *AH_Job_GetXmlNode(const AH_JOB *j)
 {
   assert(j);
   assert(j->usage);
-  if (j->flags & AH_JOB_FLAGS_MULTIMSG) {
+  if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_MULTIMSG) {
     DBG_DEBUG(AQHBCI_LOGDOMAIN,
               "Multi message node, returning current message node");
     return j->msgNode;
@@ -852,7 +868,7 @@ int AH_Job_HasWarnings(const AH_JOB *j)
 {
   assert(j);
   assert(j->usage);
-  return (j->flags & AH_JOB_FLAGS_HASWARNINGS);
+  return (AH_Job_GetFlags(j) & AH_JOB_FLAGS_HASWARNINGS);
 }
 
 
@@ -863,7 +879,7 @@ int AH_Job_HasErrors(const AH_JOB *j)
   assert(j->usage);
   return
     (j->status==AH_JobStatusError) ||
-    (j->flags & AH_JOB_FLAGS_HASERRORS);
+    (AH_Job_GetFlags(j) & AH_JOB_FLAGS_HASERRORS);
 }
 
 
@@ -935,9 +951,9 @@ void AH_Job_SampleResults(AH_JOB *j)
 
           /* check result */
           if (code>=9000)
-            j->flags|=AH_JOB_FLAGS_HASERRORS;
+            AH_Job_AddFlags(j, AH_JOB_FLAGS_HASERRORS);
           else if (code>=3000 && code<4000)
-            j->flags|=AH_JOB_FLAGS_HASWARNINGS;
+            AH_Job_AddFlags(j, AH_JOB_FLAGS_HASWARNINGS);
         } /* if result */
         dbRes=GWEN_DB_GetNextGroup(dbRes);
       } /* while */
@@ -1000,10 +1016,10 @@ void AH_Job_SampleResults(AH_JOB *j)
             if (code>=9000) {
               /* FIXME: Maybe disable here, let only the segment results
                * influence the error flags */
-              j->flags|=AH_JOB_FLAGS_HASERRORS;
+              AH_Job_AddFlags(j, AH_JOB_FLAGS_HASERRORS);
             }
             else if (code>=3000 && code<4000)
-              j->flags|=AH_JOB_FLAGS_HASWARNINGS;
+              AH_Job_AddFlags(j, AH_JOB_FLAGS_HASWARNINGS);
           } /* if result */
           dbRes=GWEN_DB_GetNextGroup(dbRes);
         } /* while */
@@ -1185,13 +1201,25 @@ void AH_Job_Dump(const AH_JOB *j, FILE *f, unsigned int insert)
 
 void AH_Job_DumpShort(const AH_JOB *j, FILE *f, unsigned int insert)
 {
-  uint32_t k;
+  if (j) {
+    uint32_t k;
+    GWEN_BUFFER *dbuf;
 
-  for (k=0; k<insert; k++)
-    fprintf(f, " ");
-  fprintf(f, "- %s(%s)[%d] (%d-%d): %s(%d)\n",
-          j->name, j->code, j->segmentVersion, j->firstSegment, j->lastSegment,
-          AH_Job_StatusName(j->status), j->status);
+    dbuf=GWEN_Buffer_new(0, 128, 0, 1);
+
+    _flagsToBuffer(AH_Job_GetFlags(j), dbuf);
+
+    for (k=0; k<insert; k++)
+      fprintf(f, " ");
+    fprintf(f, "- %s(%s)[%d] (%d-%d): %s(%d) [%s]\n",
+            j->name, j->code, j->segmentVersion, j->firstSegment, j->lastSegment,
+            AH_Job_StatusName(j->status), j->status,
+            GWEN_Buffer_GetStart(dbuf));
+    GWEN_Buffer_free(dbuf);
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No job");
+  }
 }
 
 
@@ -1634,6 +1662,59 @@ char *AH_Job_GenerateIdFromDateTimeAndJobId(const AH_JOB *j, int runningNumber)
   return string31;
 }
 
+
+
+void _flagsToBuffer(uint32_t flags, GWEN_BUFFER *dbuf)
+{
+  if (flags==0)
+    GWEN_Buffer_AppendString(dbuf, "<NONE> ");
+  else if (flags & AH_JOB_FLAGS_ACKNOWLEDGE)
+    GWEN_Buffer_AppendString(dbuf, "ACKNOWLEDGE ");
+  else if (flags & AH_JOB_FLAGS_IGNOREACCOUNTS)
+    GWEN_Buffer_AppendString(dbuf, "IGNOREACCOUNTS ");
+  if (flags & AH_JOB_FLAGS_SIGNSEQONE)
+    GWEN_Buffer_AppendString(dbuf, "SIGNSEQONE ");
+  if (flags & AH_JOB_FLAGS_IGNORE_ERROR)
+    GWEN_Buffer_AppendString(dbuf, "IGNORE_ERROR ");
+  if (flags & AH_JOB_FLAGS_NOITAN)
+    GWEN_Buffer_AppendString(dbuf, "NOITAN ");
+  if (flags & AH_JOB_FLAGS_TANUSED)
+    GWEN_Buffer_AppendString(dbuf, "TANUSED ");
+  if (flags & AH_JOB_FLAGS_NOSYSID)
+    GWEN_Buffer_AppendString(dbuf, "NOSYSID ");
+  if (flags & AH_JOB_FLAGS_NEEDCRYPT)
+    GWEN_Buffer_AppendString(dbuf, "NEEDCRYPT ");
+  if (flags & AH_JOB_FLAGS_NEEDSIGN)
+    GWEN_Buffer_AppendString(dbuf, "NEEDSIGN ");
+  if (flags & AH_JOB_FLAGS_ATTACHABLE)
+    GWEN_Buffer_AppendString(dbuf, "ATTACHABLE ");
+  if (flags & AH_JOB_FLAGS_SINGLE)
+    GWEN_Buffer_AppendString(dbuf, "SINGLE ");
+  if (flags & AH_JOB_FLAGS_DLGJOB)
+    GWEN_Buffer_AppendString(dbuf, "DLGJOB ");
+  if (flags & AH_JOB_FLAGS_CRYPT)
+    GWEN_Buffer_AppendString(dbuf, "CRYPT ");
+  if (flags & AH_JOB_FLAGS_SIGN)
+    GWEN_Buffer_AppendString(dbuf, "SIGN ");
+  if (flags & AH_JOB_FLAGS_MULTIMSG)
+    GWEN_Buffer_AppendString(dbuf, "MULTIMSG ");
+  if (flags & AH_JOB_FLAGS_HASATTACHPOINT)
+    GWEN_Buffer_AppendString(dbuf, "HASATTACHPOINT ");
+  if (flags & AH_JOB_FLAGS_HASMOREMSGS)
+    GWEN_Buffer_AppendString(dbuf, "HASMOREMSGS ");
+  if (flags & AH_JOB_FLAGS_HASWARNINGS)
+    GWEN_Buffer_AppendString(dbuf, "HASWARNINGS ");
+  if (flags & AH_JOB_FLAGS_HASERRORS)
+    GWEN_Buffer_AppendString(dbuf, "HASERRORS ");
+  if (flags & AH_JOB_FLAGS_PROCESSED)
+    GWEN_Buffer_AppendString(dbuf, "PROCESSED ");
+  if (flags & AH_JOB_FLAGS_COMMITTED)
+    GWEN_Buffer_AppendString(dbuf, "COMMITTED ");
+  if (flags & AH_JOB_FLAGS_NEEDTAN)
+    GWEN_Buffer_AppendString(dbuf, "NEEDTAN ");
+  if (flags & AH_JOB_FLAGS_OUTBOX)
+    GWEN_Buffer_AppendString(dbuf, "OUTBOX ");
+}
 
 
 #include "job_new.c"
