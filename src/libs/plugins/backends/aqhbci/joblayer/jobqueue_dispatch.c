@@ -32,7 +32,6 @@
 
 static void _scanAllResultSegments(AH_JOBQUEUE *jq, GWEN_DB_NODE *db, uint32_t guiid);
 static GWEN_DB_NODE *_sampleSecuritySegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db);
-static void _removeAttachPoints(const AH_JOBQUEUE *jq);
 static void _setUsedTanStatusInJobs(const AH_JOBQUEUE *jq);
 static void _adjustSystemTanStatus(AH_JOBQUEUE *jq, uint32_t guiid);
 static AH_JOB *_findReferencedJob(AH_JOBQUEUE *jq, int refMsgNum, int refSegNum);
@@ -76,7 +75,6 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db)
   assert(dlg);
   guiid=0;
 
-  _removeAttachPoints(jq);
   _scanAllResultSegments(jq, db, guiid);
 
   dbSecurity=_sampleSecuritySegments(jq, msg, db);
@@ -318,36 +316,6 @@ GWEN_DB_NODE *_sampleSecuritySegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE
   }
 
   return dbSecurity;
-}
-
-
-
-void _removeAttachPoints(const AH_JOBQUEUE *jq)
-{
-  AH_JOB *j;
-
-  /* remove attach points of all jobs */
-  j=AH_JobQueue_GetFirstJob(jq);
-  while (j) {
-    AH_JOB_STATUS st;
-
-    st=AH_Job_GetStatus(j);
-    if (st==AH_JobStatusSent) {
-      if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_ATTACHABLE) {
-        GWEN_DB_NODE *args;
-
-        AH_Job_SubFlags(j, AH_JOB_FLAGS_HASATTACHPOINT);
-
-        /* remove the attach point */
-        args=AH_Job_GetArguments(j);
-        if (GWEN_DB_DeleteVar(args, "attach")) {
-          DBG_DEBUG(AQHBCI_LOGDOMAIN, "Attach point removed");
-        }
-      } /* if job is attachable */
-    } /* if status matches */
-
-    j=AH_Job_List_Next(j);
-  } /* while */
 }
 
 
