@@ -630,9 +630,10 @@ void _dispatchResponsesToJobQueue(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses, in
     int refSegNum;
     int refMsgNum;
     GWEN_DB_NODE *dbData;
+    GWEN_DB_NODE *dbDataSegment;
 
     if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Dispatching this message:");
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Dispatching this response:");
       GWEN_DB_Dump(dbPreparedJobResponse, 2);
     }
 
@@ -642,6 +643,8 @@ void _dispatchResponsesToJobQueue(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses, in
     DBG_INFO(AQHBCI_LOGDOMAIN, "Checking response \"%s\" (ref seg num %d)", groupName, refSegNum);
     dbData=GWEN_DB_GetGroup(dbPreparedJobResponse, GWEN_DB_FLAGS_DEFAULT, "data");
     assert(dbData);
+    dbDataSegment=GWEN_DB_GetGroup(dbData, GWEN_DB_FLAGS_DEFAULT, groupName);
+    assert(dbDataSegment);
 
     if (refSegNum) {
       AH_JOB *j;
@@ -664,12 +667,12 @@ void _dispatchResponsesToJobQueue(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses, in
         if (!(strcasecmp(refJobName, "JobTan")==0 &&
               strcasecmp(groupName, "TanResponse")!=0 &&
               strcasecmp(groupName, "SegResult")!=0)) {
-          _possiblyExtractJobAckCode(j, dbData);
-          _possiblyExtractAttachPoint(j, dbData);
+          _possiblyExtractJobAckCode(j, dbDataSegment);
+          _possiblyExtractAttachPoint(j, dbDataSegment);
 
           /* check for segment results */
           if (strcasecmp(groupName, "SegResult")==0)
-            _handleSegmentResult(jq, j, dbData);
+            _handleSegmentResult(jq, j, dbDataSegment);
 
           DBG_INFO(AQHBCI_LOGDOMAIN, "Adding response \"%s\" to job \"%s\"", groupName, AH_Job_GetName(j));
           AH_Job_AddResponse(j, GWEN_DB_Group_dup(dbPreparedJobResponse));
@@ -685,7 +688,7 @@ void _dispatchResponsesToJobQueue(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses, in
         DBG_WARN(AQHBCI_LOGDOMAIN, "No job found for response \"%s\"", groupName);
         if (strcasecmp(groupName, "SegResult")==0) {
           DBG_WARN(AQHBCI_LOGDOMAIN, "Adding response \"%s\" to all jobs", groupName);
-	  _handleSegmentResultForAllJobs(jq, dbData);
+	  _handleSegmentResultForAllJobs(jq, dbDataSegment);
           _addResponseToAllJobs(jq, dbPreparedJobResponse);
         }
       }
