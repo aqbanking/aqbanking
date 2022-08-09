@@ -376,6 +376,7 @@ int _sendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTER_CONTEXT *ct
     if (rv<0) {
       DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(xbuf);
+      AB_Provider_EndExclUseUser(pro, u, 1);  /* abandon */
       return rv;
     }
     else {
