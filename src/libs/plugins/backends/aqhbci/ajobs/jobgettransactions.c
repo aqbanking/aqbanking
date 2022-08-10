@@ -36,6 +36,20 @@ GWEN_INHERIT(AH_JOB, AH_JOB_GETTRANSACTIONS);
 
 
 
+static int _readTransIntoAccountInfo(AH_JOB *j,
+                                     AB_IMEXPORTER_ACCOUNTINFO *ai,
+                                     const char *docType,
+                                     int ty,
+                                     const uint8_t *ptr,
+                                     uint32_t len);
+static int _readCheckAndConcatTransDataFromResponses(AH_JOB *j, GWEN_DB_NODE *dbResponses, GWEN_BUFFER *tbooked, GWEN_BUFFER *tnoted);
+static int _parseTransData(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai,
+                           const uint8_t *ptrBooked, uint32_t lenBooked,
+                           const uint8_t *ptrNoted, uint32_t lenNoted);
+static void _appendBufferToFile(const char *fname, const char *ptr, uint32_t length);
+static void _dumpTransactions(const AB_IMEXPORTER_ACCOUNTINFO *ai);
+
+
 
 /* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_GetTransactions_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
@@ -110,12 +124,12 @@ void GWENHYWFAR_CB AH_Job_GetTransactions_FreeData(void *bp, void *p)
 
 
 /* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
-                                             AB_IMEXPORTER_ACCOUNTINFO *ai,
-                                             const char *docType,
-                                             int ty,
-                                             const uint8_t *ptr,
-                                             uint32_t len)
+int _readTransIntoAccountInfo(AH_JOB *j,
+                              AB_IMEXPORTER_ACCOUNTINFO *ai,
+                              const char *docType,
+                              int ty,
+                              const uint8_t *ptr,
+                              uint32_t len)
 {
   AB_PROVIDER *pro;
   AB_IMEXPORTER_CONTEXT *tempContext;
@@ -192,7 +206,6 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
   AB_ACCOUNT *a;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
   GWEN_DB_NODE *dbResponses;
-  GWEN_DB_NODE *dbCurr;
   GWEN_BUFFER *tbooked;
   GWEN_BUFFER *tnoted;
   int rv;
@@ -203,13 +216,61 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
   aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETTRANSACTIONS, j);
   assert(aj);
 
-  tbooked=GWEN_Buffer_new(0, 1024, 0, 1);
-  tnoted=GWEN_Buffer_new(0, 1024, 0, 1);
+  a=AH_AccountJob_GetAccount(j);
+  assert(a);
 
   dbResponses=AH_Job_GetResponses(j);
   assert(dbResponses);
 
-  /* search for "Transactions" */
+  tbooked=GWEN_Buffer_new(0, 1024, 0, 1);
+  tnoted=GWEN_Buffer_new(0, 1024, 0, 1);
+
+  rv=_readCheckAndConcatTransDataFromResponses(j, dbResponses, tbooked, tnoted);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    GWEN_Buffer_free(tbooked);
+    GWEN_Buffer_free(tnoted);
+    AH_Job_SetStatus(j, AH_JobStatusError);
+    return rv;
+  }
+  GWEN_Buffer_Rewind(tbooked);
+  GWEN_Buffer_Rewind(tnoted);
+
+  if (getenv("AQHBCI_LOGBOOKED"))
+    _appendBufferToFile("/tmp/booked.mt", GWEN_Buffer_GetStart(tbooked), GWEN_Buffer_GetUsedBytes(tbooked));
+  if (getenv("AQHBCI_LOGNOTED"))
+    _appendBufferToFile("/tmp/noted.mt", GWEN_Buffer_GetStart(tnoted), GWEN_Buffer_GetUsedBytes(tnoted));
+
+  ai=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
+                                              AB_Account_GetUniqueId(a),
+                                              AB_Account_GetIban(a),
+                                              AB_Account_GetBankCode(a),
+                                              AB_Account_GetAccountNumber(a),
+                                              AB_Account_GetAccountType(a));
+  rv=_parseTransData(j, ai,
+                     (const uint8_t *) GWEN_Buffer_GetStart(tbooked), GWEN_Buffer_GetUsedBytes(tbooked),
+                     (const uint8_t *) GWEN_Buffer_GetStart(tnoted), GWEN_Buffer_GetUsedBytes(tnoted));
+  GWEN_Buffer_free(tbooked);
+  GWEN_Buffer_free(tnoted);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AH_Job_SetStatus(j, AH_JobStatusError);
+    return rv;
+  }
+
+  if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug)
+    _dumpTransactions(ai);
+
+  return 0;
+}
+
+
+
+int _readCheckAndConcatTransDataFromResponses(AH_JOB *j, GWEN_DB_NODE *dbResponses, GWEN_BUFFER *tbooked, GWEN_BUFFER *tnoted)
+{
+  GWEN_DB_NODE *dbCurr;
+  int rv;
+
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
   while (dbCurr) {
     GWEN_DB_NODE *dbXA;
@@ -217,22 +278,15 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     rv=AH_Job_CheckEncryption(j, dbCurr);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (encryption)");
-      GWEN_Buffer_free(tbooked);
-      GWEN_Buffer_free(tnoted);
-      AH_Job_SetStatus(j, AH_JobStatusError);
       return rv;
     }
     rv=AH_Job_CheckSignature(j, dbCurr);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (signature)");
-      GWEN_Buffer_free(tbooked);
-      GWEN_Buffer_free(tnoted);
-      AH_Job_SetStatus(j, AH_JobStatusError);
       return rv;
     }
 
-    dbXA=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                          "data/transactions");
+    dbXA=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/transactions");
     if (dbXA) {
       const void *p;
       unsigned int bs;
@@ -248,105 +302,40 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     } /* if "Transactions" */
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
   }
+  return 0;
+}
 
-  GWEN_Buffer_Rewind(tbooked);
-  GWEN_Buffer_Rewind(tnoted);
 
-  /* now the buffers contain data to be parsed by DBIOs */
-  a=AH_AccountJob_GetAccount(j);
-  assert(a);
-  ai=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
-                                              AB_Account_GetUniqueId(a),
-                                              AB_Account_GetIban(a),
-                                              AB_Account_GetBankCode(a),
-                                              AB_Account_GetAccountNumber(a),
-                                              AB_Account_GetAccountType(a));
-  assert(ai);
+
+int _parseTransData(AH_JOB *j,
+                    AB_IMEXPORTER_ACCOUNTINFO *ai,
+                    const uint8_t *ptrBooked, uint32_t lenBooked,
+                    const uint8_t *ptrNoted, uint32_t lenNoted)
+{
+  int rv;
 
   /* read booked transactions */
-  if (GWEN_Buffer_GetUsedBytes(tbooked)) {
-    if (getenv("AQHBCI_LOGBOOKED")) {
-      FILE *f;
-
-      f=fopen("/tmp/booked.mt", "w+");
-      if (f) {
-        if (fwrite(GWEN_Buffer_GetStart(tbooked),
-                   GWEN_Buffer_GetUsedBytes(tbooked), 1, f)!=1) {
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "fwrite: %s", strerror(errno));
-        }
-        if (fclose(f)) {
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "fclose: %s", strerror(errno));
-        }
-      }
-    }
-
-    if (AH_Job_GetTransactions__ReadTransactions(j,
-                                                 ai,
-                                                 "fints940",
-                                                 AB_Transaction_TypeStatement,
-                                                 (const uint8_t *) GWEN_Buffer_GetStart(tbooked),
-                                                 GWEN_Buffer_GetUsedBytes(tbooked))) {
-      GWEN_Buffer_free(tbooked);
-      GWEN_Buffer_free(tnoted);
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Error parsing booked transactions");
-      AH_Job_SetStatus(j, AH_JobStatusError);
-      return -1;
+  if (ptrBooked && lenBooked) {
+    rv=_readTransIntoAccountInfo(j, ai, "fints940", AB_Transaction_TypeStatement, ptrBooked, lenBooked);
+    if (rv<0){
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Error parsing booked transactions (%d)", rv);
+      return rv;
     }
   }
 
   /* read noted transactions */
-  if (GWEN_Buffer_GetUsedBytes(tnoted)) {
-    if (getenv("AQHBCI_LOGNOTED")) {
-      FILE *f;
-
-      f=fopen("/tmp/noted.mt", "w+");
-      if (f) {
-        if (fwrite(GWEN_Buffer_GetStart(tnoted),
-                   GWEN_Buffer_GetUsedBytes(tnoted), 1, f)!=1) {
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "fwrite: %s", strerror(errno));
-        }
-        if (fclose(f)) {
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "fclose: %s", strerror(errno));
-        }
-      }
-    }
-
-    if (AH_Job_GetTransactions__ReadTransactions(j,
-                                                 ai,
-                                                 "fints942",
-                                                 AB_Transaction_TypeNotedStatement,
-                                                 (const uint8_t *) GWEN_Buffer_GetStart(tnoted),
-                                                 GWEN_Buffer_GetUsedBytes(tnoted))) {
-      GWEN_Buffer_free(tbooked);
-      GWEN_Buffer_free(tnoted);
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Error parsing noted transactions");
-      AH_Job_SetStatus(j, AH_JobStatusError);
-      return -1;
+  if (ptrNoted && lenNoted) {
+    rv=_readTransIntoAccountInfo(j, ai, "fints942", AB_Transaction_TypeNotedStatement, ptrNoted, lenNoted);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Error parsing noted transactions (%d)", rv);
+      return rv;
     }
   }
 
-  if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug) {
-    GWEN_DB_NODE *gn;
-    AB_TRANSACTION *ttmp;
-
-    DBG_INFO(AQHBCI_LOGDOMAIN, "*** Dumping transactions *******************");
-    ttmp=AB_ImExporterAccountInfo_GetFirstTransaction(ai, 0, 0);
-    while (ttmp) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "*** --------------------------------------");
-      gn=GWEN_DB_Group_new("transaction");
-      AB_Transaction_toDb(ttmp, gn);
-      GWEN_DB_Dump(gn, 2);
-      GWEN_DB_Group_free(gn);
-      ttmp=AB_Transaction_List_Next(ttmp);
-    }
-
-    DBG_INFO(AQHBCI_LOGDOMAIN, "*** End dumping transactions ***************");
-  }
-
-  GWEN_Buffer_free(tbooked);
-  GWEN_Buffer_free(tnoted);
   return 0;
 }
+
+
 
 
 
@@ -574,6 +563,46 @@ int AH_Job_GetTransactions_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t)
   return 0;
 }
 
+
+
+void _appendBufferToFile(const char *fname, const char *ptr, uint32_t length)
+{
+  if (ptr && length) {
+    FILE *f;
+
+    f=fopen(fname, "w+");
+    if (f) {
+      if (fwrite(ptr, length, 1, f)!=1) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "fwrite: %s", strerror(errno));
+      }
+      if (fclose(f)) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "fclose: %s", strerror(errno));
+      }
+    }
+  }
+}
+
+
+
+
+void _dumpTransactions(const AB_IMEXPORTER_ACCOUNTINFO *ai)
+{
+  GWEN_DB_NODE *gn;
+  AB_TRANSACTION *ttmp;
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "*** Dumping transactions *******************");
+  ttmp=AB_ImExporterAccountInfo_GetFirstTransaction(ai, 0, 0);
+  while (ttmp) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "*** --------------------------------------");
+    gn=GWEN_DB_Group_new("transaction");
+    AB_Transaction_toDb(ttmp, gn);
+    GWEN_DB_Dump(gn, 2);
+    GWEN_DB_Group_free(gn);
+    ttmp=AB_Transaction_List_Next(ttmp);
+  }
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "*** End dumping transactions ***************");
+}
 
 
 

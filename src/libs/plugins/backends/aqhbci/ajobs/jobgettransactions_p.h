@@ -29,13 +29,6 @@ static int AH_Job_GetTransactions_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **p
 static int AH_Job_GetTransactions_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t);
 
 
-static int AH_Job_GetTransactions__ReadTransactions(AH_JOB *j,
-                                                    AB_IMEXPORTER_ACCOUNTINFO *ai,
-                                                    const char *docType,
-                                                    int ty,
-                                                    const uint8_t *ptr,
-                                                    uint32_t len);
-
 
 #endif /* AH_JOBGETTRANSACTIONS_P_H */
 
