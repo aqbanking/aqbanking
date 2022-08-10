@@ -75,6 +75,7 @@
       updateconf.c
       control.c
       sepainternaltransfer.c
+      accountcmds.c
     </sources>
 
     <useTargets>

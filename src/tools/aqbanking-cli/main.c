@@ -264,6 +264,9 @@ int main(int argc, char **argv)
     cmdAddHelpStr(ubuf, "listprofiles",
                   I18N("Print existing profiles"));
 
+    cmdAddHelpStr(ubuf, "accountcmds",
+                  I18N("Print available jobs for given (or all) accounts"));
+
     cmdAddHelpStr(ubuf, "versions",
                   I18N("Print the program and library versions"));
 
@@ -411,6 +414,9 @@ int main(int argc, char **argv)
     }
     else if (strcasecmp(cmd, "listprofiles")==0) {
       rv=listProfiles(ab, db, argc, argv);
+    }
+    else if (strcasecmp(cmd, "accountcmds")==0) {
+      rv=showAccountCommands(ab, db, argc, argv);
     }
     else if (strcasecmp(cmd, "versions")==0) {
       rv=versions(ab, db, argc, argv);

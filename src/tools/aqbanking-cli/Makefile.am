@@ -37,7 +37,8 @@ aqbanking_cli_SOURCES= \
   sepamultijobs.c \
   separecurtransfer.c \
   updateconf.c \
-  control.c
+  control.c \
+  accountcmds.c
 
 aqbanking_cli_LDFLAGS=
 aqhbci_tool4_LDFLAGS=
