@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Tue Dec 31 2013
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2022 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -15,19 +15,12 @@
 
 #include "jobtransferbase_p.h"
 #include "aqhbci/aqhbci_l.h"
-#include "accountjob_l.h"
-#include "aqhbci/joblayer/job_l.h"
 #include "aqhbci/joblayer/job_swift.h"
 #include "aqhbci/joblayer/job_crypt.h"
-#include "aqhbci/banking/provider_l.h"
 #include "aqhbci/applayer/hhd_l.h"
 
-#include <aqbanking/types/transaction.h>
-
 #include <gwenhywfar/debug.h>
-#include <gwenhywfar/misc.h>
 #include <gwenhywfar/inherit.h>
-#include <gwenhywfar/text.h>
 #include <gwenhywfar/gui.h>
 
 #include <assert.h>
@@ -44,6 +37,14 @@ GWEN_INHERIT(AH_JOB, AH_JOB_TRANSFERBASE);
  * ------------------------------------------------------------------------------------------------
  */
 
+static void GWENHYWFAR_CB _freeData(void *bp, void *p);
+static int _process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
+static int _handleResults(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
+
+/**
+ * Set given status on all transfers and add copies of them to the given context.
+ */
+static void _setStatusOnTransfersAndAddToCtx(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx, AB_TRANSACTION_STATUS status);
 
 static void _replaceCtrlCharsInPurpose(AB_TRANSACTION *t);
 static void _setProfileName(AH_JOB *j, const char *s);
@@ -77,21 +78,21 @@ AH_JOB *AH_Job_TransferBase_new(const char *jobName,
     return 0;
 
   GWEN_NEW_OBJECT(AH_JOB_TRANSFERBASE, aj);
-  GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j, aj, AH_Job_TransferBase_FreeData);
+  GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j, aj, _freeData);
 
   aj->transactionType=tt;
   aj->transactionSubType=tst;
 
   /* overwrite some virtual functions */
-  AH_Job_SetProcessFn(j, AH_Job_TransferBase_Process);
-  AH_Job_SetHandleResultsFn(j, AH_Job_TransferBase_HandleResults);
+  AH_Job_SetProcessFn(j, _process);
+  AH_Job_SetHandleResultsFn(j, _handleResults);
 
   return j;
 }
 
 
 
-void GWENHYWFAR_CB AH_Job_TransferBase_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB _freeData(void *bp, void *p)
 {
   AH_JOB_TRANSFERBASE *aj;
 
@@ -736,8 +737,7 @@ int AH_Job_TransferBase_AddChallengeParams35(AH_JOB *j, int hkTanVer, GWEN_DB_NO
 
 
 
-void AH_Job_TransferBase_SetStatusOnTransfersAndAddToCtx(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx,
-                                                         AB_TRANSACTION_STATUS status)
+void _setStatusOnTransfersAndAddToCtx(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx, AB_TRANSACTION_STATUS status)
 {
   AH_JOB_TRANSFERBASE *aj;
   const AB_TRANSACTION *t;
@@ -777,7 +777,7 @@ void AH_Job_TransferBase_SetStatusOnTransfersAndAddToCtx(AH_JOB *j, AB_IMEXPORTE
 
 
 
-int AH_Job_TransferBase_HandleResults(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+int _handleResults(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 {
   AH_JOB_TRANSFERBASE *aj;
   AH_RESULT_LIST *rl;
@@ -823,14 +823,14 @@ int AH_Job_TransferBase_HandleResults(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
       tStatus=AB_Transaction_StatusRejected;
   }
 
-  AH_Job_TransferBase_SetStatusOnTransfersAndAddToCtx(j, ctx, tStatus);
+  _setStatusOnTransfersAndAddToCtx(j, ctx, tStatus);
   AH_Job_SetStatusOnCommands(j, tStatus);
   return 0;
 }
 
 
 
-int AH_Job_TransferBase_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+int _process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 {
   AH_JOB_TRANSFERBASE *aj;
   GWEN_DB_NODE *dbResponses;
