@@ -44,6 +44,7 @@
 static AH_JOB *_createJob(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account, const char *jobName);
 static int AH_Job_GetEstatements_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t);
 static int _process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
+static AB_DOCUMENT *_createDocFromResponseDb(AH_JOB *j, GWEN_DB_NODE *dbResponse, int runningDocNumber);
 static int _writeDocToDataDirAndStorePath(AH_JOB *j, AB_DOCUMENT *doc, const char *fileNameExt);
 
 
@@ -163,13 +164,9 @@ int _process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
   DBG_INFO(AQHBCI_LOGDOMAIN, "Processing JobGetEStatements");
 
   assert(j);
-
   acc=AH_AccountJob_GetAccount(j);
   assert(acc);
-
   responseName=AH_Job_GetResponseName(j);
-
-
   dbResponses=AH_Job_GetResponses(j);
   assert(dbResponses);
 
@@ -196,66 +193,72 @@ int _process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
       if (dbXA)
         dbXA=GWEN_DB_GetGroup(dbXA, GWEN_PATH_FLAGS_NAMEMUSTEXIST, responseName);
       if (dbXA) {
-        const void *p;
-        unsigned int bs;
+	AB_DOCUMENT *doc;
 
-        p=GWEN_DB_GetBinValue(dbXA, "eStatement", 0, 0, 0, &bs);
-        if (p && bs) {
-          AB_DOCUMENT *doc;
-          char *docId;
-
-          /* TODO: base64-decode if necessary */
-
-          /* add eStatement (PDF) to imExporterContext */
-          doc=AB_Document_new();
-          AB_Document_SetOwnerId(doc, AB_Account_GetUniqueId(acc));
-
-          AB_Document_SetData(doc, p, bs);
-
-          p=GWEN_DB_GetBinValue(dbXA, "ackCode", 0, 0, 0, &bs);
-          if (p && bs) {
-            AB_Document_SetAcknowledgeCode(doc, p, bs);
-          }
-
-          /* get account info for this account */
-          if (iea==NULL) {
-            /* not set yet, find or create it */
-            iea=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
-                                                         AB_Account_GetUniqueId(acc),
-                                                         AB_Account_GetIban(acc),
-                                                         AB_Account_GetBankCode(acc),
-                                                         AB_Account_GetAccountNumber(acc),
-                                                         AB_Account_GetAccountType(acc));
-            assert(iea);
-          }
-
-          /* assign document id derived from current datetime, job id and running number */
-          docId=AH_Job_GenerateIdFromDateTimeAndJobId(j, ++runningDocNumber);
-          if (docId) {
-            AB_Document_SetId(doc, docId);
-            free(docId);
-          }
-	  AB_Document_SetMimeType(doc, "application/pdf");
-
-	  rv=_writeDocToDataDirAndStorePath(j, doc, "pdf");
-	  if (rv<0) {
-	    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not write document to storage, keeping data in document (%d)", rv);
-	  }
-	  else {
-	    /* clear data in document, because it is written to disk (AB_Document_GetFilePath() has the path) */
-	    AB_Document_SetData(doc, NULL, 0);
-	  }
-
-          /* add document to imexporter context */
-          AB_ImExporterAccountInfo_AddEStatement(iea, doc);
-        }
+	doc=_createDocFromResponseDb(j, dbXA, ++runningDocNumber);
+	if (doc) {
+	  AB_Document_SetOwnerId(doc, AB_Account_GetUniqueId(acc));
+	  if (iea==NULL)
+	    iea=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
+							 AB_Account_GetUniqueId(acc),
+							 AB_Account_GetIban(acc),
+							 AB_Account_GetBankCode(acc),
+							 AB_Account_GetAccountNumber(acc),
+							 AB_Account_GetAccountType(acc));
+	  AB_ImExporterAccountInfo_AddEStatement(iea, doc);
+	}
       }
     }
 
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
-  }
+  } /* while */
 
   return 0;
+}
+
+
+
+AB_DOCUMENT *_createDocFromResponseDb(AH_JOB *j, GWEN_DB_NODE *dbResponse, int runningDocNumber)
+{
+  const void *p;
+  unsigned int bs;
+  
+  p=GWEN_DB_GetBinValue(dbResponse, "eStatement", 0, 0, 0, &bs);
+  if (p && bs) {
+    AB_DOCUMENT *doc;
+    char *docId;
+    int rv;
+  
+    /* TODO: base64-decode if necessary */
+  
+    /* add eStatement (PDF) to imExporterContext */
+    doc=AB_Document_new();
+    AB_Document_SetData(doc, p, bs);
+    AB_Document_SetMimeType(doc, "application/pdf");
+  
+    docId=AH_Job_GenerateIdFromDateTimeAndJobId(j, runningDocNumber);
+    if (docId) {
+      AB_Document_SetId(doc, docId);
+      free(docId);
+    }
+
+    p=GWEN_DB_GetBinValue(dbResponse, "ackCode", 0, 0, 0, &bs);
+    if (p && bs) {
+      AB_Document_SetAcknowledgeCode(doc, p, bs);
+    }
+
+    rv=_writeDocToDataDirAndStorePath(j, doc, "pdf");
+    if (rv<0) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not write document to storage, keeping data in document (%d)", rv);
+    }
+    else {
+      /* clear data in document, because it is written to disk (AB_Document_GetFilePath() has the path) */
+      AB_Document_SetData(doc, NULL, 0);
+    }
+    return doc;
+  }
+
+  return NULL;
 }
 
 
