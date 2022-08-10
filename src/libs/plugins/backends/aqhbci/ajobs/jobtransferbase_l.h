@@ -27,7 +27,7 @@ const char *AH_Job_TransferBase_GetFiid(const AH_JOB *j);
 /**
  * Select SEPA PAIN profile to be used.
  *
- * Lookupo SWIFT descriptor which is supported by the user BPD/UPD and by the XML imexporter.
+ * Lookup SWIFT descriptor which is supported by the user BPD/UPD and by the XML imexporter.
  */
 int AH_Job_TransferBase_SelectPainProfile(AH_JOB *j, int version1);
 
