@@ -116,14 +116,7 @@ int AH_Job_SepaStandingOrdersGet_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     GWEN_DB_NODE *dbResponses;
     GWEN_DB_NODE *dbCurr;
 
-    ai=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
-                                                AB_Account_GetUniqueId(a),
-                                                AB_Account_GetIban(a),
-                                                AB_Account_GetBankCode(a),
-                                                AB_Account_GetAccountNumber(a),
-                                                AB_Account_GetAccountType(a));
-    assert(ai);
-
+    ai=AB_Provider_GetOrAddAccountInfoForAccount(ctx, a);
     dbResponses=AH_Job_GetResponses(j);
     assert(dbResponses);
 

@@ -199,12 +199,7 @@ int _process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 	if (doc) {
 	  AB_Document_SetOwnerId(doc, AB_Account_GetUniqueId(acc));
 	  if (iea==NULL)
-	    iea=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
-							 AB_Account_GetUniqueId(acc),
-							 AB_Account_GetIban(acc),
-							 AB_Account_GetBankCode(acc),
-							 AB_Account_GetAccountNumber(acc),
-							 AB_Account_GetAccountType(acc));
+            iea=AB_Provider_GetOrAddAccountInfoForAccount(ctx, acc);
 	  AB_ImExporterAccountInfo_AddEStatement(iea, doc);
 	}
       }

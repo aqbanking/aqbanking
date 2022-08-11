@@ -378,14 +378,7 @@ int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 
       a=AH_AccountJob_GetAccount(j);
       assert(a);
-      ai=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
-                                                  AB_Account_GetUniqueId(a),
-                                                  AB_Account_GetIban(a),
-                                                  AB_Account_GetBankCode(a),
-                                                  AB_Account_GetAccountNumber(a),
-                                                  AB_Account_GetAccountType(a));
-      assert(ai);
-
+      ai=AB_Provider_GetOrAddAccountInfoForAccount(ctx, a);
 
       /* read booked balance */
       dbT=GWEN_DB_GetGroup(dbBalance, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "booked");
@@ -446,8 +439,6 @@ int AH_Job_GetBalanceInvestment_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
   GWEN_BUFFER *tbooked;
-  AB_ACCOUNT *a;
-  AB_IMEXPORTER_ACCOUNTINFO *ai;
   int rv;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Processing JobGetBalance");
@@ -481,8 +472,7 @@ int AH_Job_GetBalanceInvestment_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
       return rv;
     }
 
-    dbBalance=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                               "data/BalanceInvestment");
+    dbBalance=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/BalanceInvestment");
 
     if (dbBalance) {
       const void *p;
@@ -503,17 +493,7 @@ int AH_Job_GetBalanceInvestment_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
   } /* while(dbCurr) */
 
   GWEN_Buffer_Rewind(tbooked);
-
   /* now the buffers contain data to be parsed by DBIOs */
-  a=AH_AccountJob_GetAccount(j);
-  assert(a);
-  ai=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
-                                              AB_Account_GetUniqueId(a),
-                                              AB_Account_GetIban(a),
-                                              AB_Account_GetBankCode(a),
-                                              AB_Account_GetAccountNumber(a),
-                                              AB_Account_GetAccountType(a));
-  assert(ai);
 
   /* read received securities */
   if (GWEN_Buffer_GetUsedBytes(tbooked)) {

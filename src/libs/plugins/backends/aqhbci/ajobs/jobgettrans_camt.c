@@ -104,13 +104,7 @@ int _jobApi_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
   a=AH_AccountJob_GetAccount(j);
   dbResponses=AH_Job_GetResponses(j);
 
-  ai=AB_ImExporterContext_GetOrAddAccountInfo(
-					      ctx,
-                                              AB_Account_GetUniqueId(a),
-                                              AB_Account_GetIban(a),
-					      AB_Account_GetBankCode(a),
-					      AB_Account_GetAccountNumber(a),
-					      AB_Account_GetAccountType(a));
+  ai=AB_Provider_GetOrAddAccountInfoForAccount(ctx, a);
 
   /* search for "Transactions" */
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);

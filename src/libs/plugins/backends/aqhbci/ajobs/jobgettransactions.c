@@ -192,12 +192,7 @@ int _jobApi_ProcessForBankAccount(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
   if (getenv("AQHBCI_LOGNOTED"))
     _appendBufferToFile("/tmp/noted.mt", GWEN_Buffer_GetStart(tnoted), GWEN_Buffer_GetUsedBytes(tnoted));
 
-  ai=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
-                                              AB_Account_GetUniqueId(a),
-                                              AB_Account_GetIban(a),
-                                              AB_Account_GetBankCode(a),
-                                              AB_Account_GetAccountNumber(a),
-                                              AB_Account_GetAccountType(a));
+  ai=AB_Provider_GetOrAddAccountInfoForAccount(ctx, a);
   rv=_parseTransData(j, ai,
                      (const uint8_t *) GWEN_Buffer_GetStart(tbooked), GWEN_Buffer_GetUsedBytes(tbooked),
                      (const uint8_t *) GWEN_Buffer_GetStart(tnoted), GWEN_Buffer_GetUsedBytes(tnoted));
@@ -305,12 +300,7 @@ int _jobApi_ProcessForCreditCard(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 
   a=AH_AccountJob_GetAccount(j);
   u=AH_Job_GetUser(j);
-  ai=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
-                                              AB_Account_GetUniqueId(a),
-                                              AB_Account_GetIban(a),
-                                              AB_Account_GetBankCode(a),
-                                              AB_Account_GetAccountNumber(a),
-                                              AB_Account_GetAccountType(a));
+  ai=AB_Provider_GetOrAddAccountInfoForAccount(ctx, a);
   AB_ImExporterAccountInfo_SetAccountId(ai, AB_Account_GetUniqueId(a));
 
   /* search for "Transactions" */
