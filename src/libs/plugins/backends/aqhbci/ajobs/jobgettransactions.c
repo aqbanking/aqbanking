@@ -55,6 +55,9 @@ static int _readCheckAndConcatTransDataFromResponses(AH_JOB *j, GWEN_DB_NODE *db
 static int _parseTransData(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai,
                            const uint8_t *ptrBooked, uint32_t lenBooked,
                            const uint8_t *ptrNoted, uint32_t lenNoted);
+static AB_TRANSACTION *_readCreditCardTransactionFromResponse(AB_USER *u, AB_ACCOUNT *a, GWEN_DB_NODE *dbTransaction);
+static AB_VALUE *_readValueFromCreditCardTransResp(GWEN_DB_NODE *dbTransaction);
+
 static void _appendBufferToFile(const char *fname, const char *ptr, uint32_t length);
 static void _dumpTransactions(const AB_IMEXPORTER_ACCOUNTINFO *ai);
 
@@ -335,36 +338,22 @@ int _jobApi_ProcessForCreditCard(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
   AB_USER *u;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
-  GWEN_BUFFER *tbooked;
-  GWEN_BUFFER *tnoted;
   int rv;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Processing JobGetTransactionsCreditCard");
 
-  tbooked=GWEN_Buffer_new(0, 1024, 0, 1);
-  tnoted=GWEN_Buffer_new(0, 1024, 0, 1);
-
   dbResponses=AH_Job_GetResponses(j);
   assert(dbResponses);
-#if 0
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Response:");
-  GWEN_DB_Dump(dbResponses, 2);
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Response end");
-#endif
 
   a=AH_AccountJob_GetAccount(j);
-  assert(a);
+  u=AH_Job_GetUser(j);
   ai=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
                                               AB_Account_GetUniqueId(a),
                                               AB_Account_GetIban(a),
                                               AB_Account_GetBankCode(a),
                                               AB_Account_GetAccountNumber(a),
                                               AB_Account_GetAccountType(a));
-  assert(ai);
   AB_ImExporterAccountInfo_SetAccountId(ai, AB_Account_GetUniqueId(a));
-
-  u=AH_Job_GetUser(j);
-  assert(u);
 
   /* search for "Transactions" */
   dbCurr=GWEN_DB_GetFirstGroup(dbResponses);
@@ -374,117 +363,30 @@ int _jobApi_ProcessForCreditCard(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     rv=AH_Job_CheckEncryption(j, dbCurr);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (encryption)");
-      GWEN_Buffer_free(tbooked);
-      GWEN_Buffer_free(tnoted);
       AH_Job_SetStatus(j, AH_JobStatusError);
       return rv;
     }
     rv=AH_Job_CheckSignature(j, dbCurr);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (signature)");
-      GWEN_Buffer_free(tbooked);
-      GWEN_Buffer_free(tnoted);
       AH_Job_SetStatus(j, AH_JobStatusError);
       return rv;
     }
 
-    dbXA=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                          "data/transactionscreditcard");
+    dbXA=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/transactionscreditcard");
     if (dbXA) {
       GWEN_DB_NODE *dbT;
-      GWEN_DB_NODE *dbV;
-      GWEN_DATE *date;
-      GWEN_DATE *valutaDate;
-      const char *p;
-      const char *ref;
-      int i;
 
-      dbT=GWEN_DB_GetGroup(dbXA, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                           "entries");
+      dbT=GWEN_DB_GetGroup(dbXA, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "entries");
       while (dbT) {
-        AB_VALUE *v1;
-        AB_VALUE *v2;
-        GWEN_STRINGLIST *purpose;
         AB_TRANSACTION *t;
 
-        /* read date (Buchungsdatum) */
-        p=GWEN_DB_GetCharValue(dbT, "date", 0, 0);
-        if (p)
-          date=GWEN_Date_fromStringWithTemplate(p, "YYYYMMDD");
-        else
-          date=NULL;
-
-        /* read valutaData (Umsatzdatum) */
-        p=GWEN_DB_GetCharValue(dbT, "valutaDate", 0, 0);
-        if (p)
-          valutaDate=GWEN_Date_fromStringWithTemplate(p, "YYYYMMDD");
-        else
-          valutaDate=NULL;
-
-        /* read value */
-        dbV=GWEN_DB_GetGroup(dbT, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-                             "value");
-        if (dbV)
-          v1=AB_Value_fromDb(dbV);
-        else
-          v1=NULL;
-        v2=0;
-        if (!v1) {
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "Error parsing value from DB");
+        t=_readCreditCardTransactionFromResponse(u, a, dbT);
+        if (t) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Adding transaction");
+          AB_ImExporterAccountInfo_AddTransaction(ai, t);
         }
-        else {
-          p=GWEN_DB_GetCharValue(dbT, "debitMark", 0, 0);
-          if (p) {
-            if (strcasecmp(p, "D")==0 ||
-                strcasecmp(p, "RC")==0) {
-              v2=AB_Value_dup(v1);
-              AB_Value_Negate(v2);
-            }
-            else if (strcasecmp(p, "C")==0 ||
-                     strcasecmp(p, "RD")==0)
-              v2=AB_Value_dup(v1);
-            else {
-              DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad debit mark \"%s\"", p);
-              v2=0;
-            }
-          }
-          AB_Value_free(v1);
-        }
-
-        /* read purpose */
-        purpose=GWEN_StringList_new();
-        for (i=0; i<10; i++) {
-          p=GWEN_DB_GetCharValue(dbT, "purpose", i, 0);
-          if (!p)
-            break;
-          GWEN_StringList_AppendString(purpose, p, 0, 0);
-        }
-
-        /* read reference */
-        ref=GWEN_DB_GetCharValue(dbT, "reference", 0, 0);
-        if (ref)
-          GWEN_StringList_AppendString(purpose, ref, 0, 0);
-
-        t=AB_Transaction_new();
-        if (ref)
-          AB_Transaction_SetFiId(t, ref);
-        AB_Transaction_SetType(t, AB_Transaction_TypeStatement);
-        AB_Transaction_SetUniqueAccountId(t, AB_Account_GetUniqueId(a));
-        AB_Transaction_SetLocalBankCode(t, AB_User_GetBankCode(u));
-        AB_Transaction_SetLocalAccountNumber(t, AB_Account_GetAccountNumber(a));
-        AB_Transaction_SetValutaDate(t, valutaDate);
-        AB_Transaction_SetDate(t, date);
-        AB_Transaction_SetValue(t, v2);
-        AB_Transaction_SetPurposeFromStringList(t, purpose);
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Adding transaction");
-        AB_ImExporterAccountInfo_AddTransaction(ai, t);
-
-        GWEN_StringList_free(purpose);
-        AB_Value_free(v2);
-        GWEN_Date_free(date);
-        GWEN_Date_free(valutaDate);
-
-        dbT = GWEN_DB_FindNextGroup(dbT, "entries");
+        dbT=GWEN_DB_FindNextGroup(dbT, "entries");
       } //while (dbT)
     } //if (dbXA)
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
@@ -493,6 +395,98 @@ int _jobApi_ProcessForCreditCard(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
   return 0;
 }
 
+
+
+AB_TRANSACTION *_readCreditCardTransactionFromResponse(AB_USER *u, AB_ACCOUNT *a, GWEN_DB_NODE *dbTransaction)
+{
+  GWEN_DATE *date=NULL;
+  GWEN_DATE *valutaDate=NULL;
+  AB_VALUE *value=NULL;
+  const char *p;
+  const char *ref;
+  int i;
+  GWEN_STRINGLIST *purpose;
+  AB_TRANSACTION *t;
+
+  p=GWEN_DB_GetCharValue(dbTransaction, "date", 0, 0); /* "Buchungsdatum" */
+  if (p)
+    date=GWEN_Date_fromStringWithTemplate(p, "YYYYMMDD");
+
+  p=GWEN_DB_GetCharValue(dbTransaction, "valutaDate", 0, 0); /* "Umsatzdatum" */
+  if (p)
+    valutaDate=GWEN_Date_fromStringWithTemplate(p, "YYYYMMDD");
+
+  value=_readValueFromCreditCardTransResp(dbTransaction);
+  if (value==NULL || (date==NULL && valutaDate==NULL)) {
+    DBG_WARN(AQHBCI_LOGDOMAIN, "Incomplete credit card transaction received");
+  }
+
+  /* read purpose */
+  purpose=GWEN_StringList_new();
+  for (i=0; i<10; i++) {
+    p=GWEN_DB_GetCharValue(dbTransaction, "purpose", i, 0);
+    if (!p)
+      break;
+    GWEN_StringList_AppendString(purpose, p, 0, 0);
+  }
+  
+  /* read reference */
+  ref=GWEN_DB_GetCharValue(dbTransaction, "reference", 0, 0);
+  if (ref)
+    GWEN_StringList_AppendString(purpose, ref, 0, 0);
+  
+  t=AB_Transaction_new();
+  if (ref)
+    AB_Transaction_SetFiId(t, ref);
+  AB_Transaction_SetType(t, AB_Transaction_TypeStatement);
+  AB_Transaction_SetUniqueAccountId(t, AB_Account_GetUniqueId(a));
+  AB_Transaction_SetLocalBankCode(t, AB_User_GetBankCode(u));
+  AB_Transaction_SetLocalAccountNumber(t, AB_Account_GetAccountNumber(a));
+  AB_Transaction_SetValutaDate(t, valutaDate);
+  AB_Transaction_SetDate(t, date);
+  AB_Transaction_SetValue(t, value);
+  AB_Transaction_SetPurposeFromStringList(t, purpose);
+
+  GWEN_StringList_free(purpose);
+  AB_Value_free(value);
+  GWEN_Date_free(date);
+  GWEN_Date_free(valutaDate);
+
+  return t;
+}
+
+
+
+AB_VALUE *_readValueFromCreditCardTransResp(GWEN_DB_NODE *dbTransaction)
+{
+  GWEN_DB_NODE *dbV;
+  const char *p;
+  AB_VALUE *value=NULL;
+
+  dbV=GWEN_DB_GetGroup(dbTransaction, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "value");
+  if (dbV)
+    value=AB_Value_fromDb(dbV);
+  if (value==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error parsing value from DB");
+    return NULL;
+  }
+
+  p=GWEN_DB_GetCharValue(dbTransaction, "debitMark", 0, 0);
+  if (p) {
+    if (strcasecmp(p, "D")==0 || strcasecmp(p, "RC")==0) {
+      AB_Value_Negate(value);
+    }
+    else if (strcasecmp(p, "C")==0 || strcasecmp(p, "RD")==0) {
+    }
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad debit mark \"%s\"", p);
+      AB_Value_free(value);
+      return NULL;
+    }
+  }
+
+  return value;
+}
 
 
 int _jobApi_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits)
