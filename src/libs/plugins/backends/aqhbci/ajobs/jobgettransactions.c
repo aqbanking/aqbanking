@@ -59,7 +59,6 @@ static AB_TRANSACTION *_readCreditCardTransactionFromResponse(AB_USER *u, AB_ACC
 static AB_VALUE *_readValueFromCreditCardTransResp(GWEN_DB_NODE *dbTransaction);
 
 static void _appendBufferToFile(const char *fname, const char *ptr, uint32_t length);
-static void _dumpTransactions(const AB_IMEXPORTER_ACCOUNTINFO *ai);
 
 
 
@@ -250,8 +249,7 @@ int _jobApi_ProcessForBankAccount(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     return rv;
   }
 
-  if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug)
-    _dumpTransactions(ai);
+  AB_Provider_DumpTransactionsIfDebug(ai, AQHBCI_LOGDOMAIN);
 
   return 0;
 }
@@ -391,6 +389,8 @@ int _jobApi_ProcessForCreditCard(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     } //if (dbXA)
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
   }
+
+  AB_Provider_DumpTransactionsIfDebug(ai, AQHBCI_LOGDOMAIN);
 
   return 0;
 }
@@ -559,25 +559,6 @@ void _appendBufferToFile(const char *fname, const char *ptr, uint32_t length)
 }
 
 
-
-void _dumpTransactions(const AB_IMEXPORTER_ACCOUNTINFO *ai)
-{
-  GWEN_DB_NODE *gn;
-  AB_TRANSACTION *ttmp;
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "*** Dumping transactions *******************");
-  ttmp=AB_ImExporterAccountInfo_GetFirstTransaction(ai, 0, 0);
-  while (ttmp) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "*** --------------------------------------");
-    gn=GWEN_DB_Group_new("transaction");
-    AB_Transaction_toDb(ttmp, gn);
-    GWEN_DB_Dump(gn, 2);
-    GWEN_DB_Group_free(gn);
-    ttmp=AB_Transaction_List_Next(ttmp);
-  }
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "*** End dumping transactions ***************");
-}
 
 
 

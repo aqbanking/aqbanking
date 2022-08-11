@@ -34,7 +34,6 @@ static int _handleCommand(AH_JOB *j, const AB_TRANSACTION *t);
 
 static int _readBooked(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai, GWEN_DB_NODE *dbBooked);
 static int _readTransactionsFromResponse(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai, GWEN_DB_NODE *dbXA);
-static void _possiblyDumpTransactions(const AB_IMEXPORTER_ACCOUNTINFO *ai);
 static int _readTransactions(AH_JOB *j,
 			     AB_IMEXPORTER_ACCOUNTINFO *ai,
 			     const char *docType,
@@ -238,7 +237,7 @@ int _process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
   }
 
-  _possiblyDumpTransactions(ai);
+  AB_Provider_DumpTransactionsIfDebug(ai, AQHBCI_LOGDOMAIN);
 
   return 0;
 }
@@ -262,7 +261,9 @@ int _readTransactionsFromResponse(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai, GWEN
     p=GWEN_DB_GetBinValue(dbXA, "noted", 0, 0, 0, &bs);
     if (p && bs) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Reading noted data");
-      rv=_readTransactions(j, ai, "camt_052_001_02", AB_Transaction_TypeNotedStatement, p, bs);
+      /*rv=_readTransactions(j, ai, "camt_052_001_02", AB_Transaction_TypeNotedStatement, p, bs);*/
+      /* let the importer determine the correct format */
+      rv=_readTransactions(j, ai, "default", AB_Transaction_TypeNotedStatement, p, bs);
       if (rv<0) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
         return rv;
@@ -292,7 +293,9 @@ int _readBooked(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai, GWEN_DB_NODE *dbBooked
         int rv;
 
         DBG_INFO(AQHBCI_LOGDOMAIN, "Reading booked day data (%d)", i+1);
-        rv=_readTransactions(j, ai, "camt_052_001_02", AB_Transaction_TypeStatement, p, bs);
+        /* rv=_readTransactions(j, ai, "camt_052_001_02", AB_Transaction_TypeStatement, p, bs); */
+        /* let the importer determine the correct format */
+        rv=_readTransactions(j, ai, "default", AB_Transaction_TypeStatement, p, bs);
         if (rv<0) {
           DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
           return rv;
@@ -304,29 +307,6 @@ int _readBooked(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai, GWEN_DB_NODE *dbBooked
   } /* if dbBooked */
 
   return 0;
-}
-
-
-
-void _possiblyDumpTransactions(const AB_IMEXPORTER_ACCOUNTINFO *ai)
-{
-  if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug) {
-    GWEN_DB_NODE *gn;
-    AB_TRANSACTION *ttmp;
-
-    DBG_INFO(AQHBCI_LOGDOMAIN, "*** Dumping transactions *******************");
-    ttmp=AB_ImExporterAccountInfo_GetFirstTransaction(ai, 0, 0);
-    while (ttmp) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "*** --------------------------------------");
-      gn=GWEN_DB_Group_new("transaction");
-      AB_Transaction_toDb(ttmp, gn);
-      GWEN_DB_Dump(gn, 2);
-      GWEN_DB_Group_free(gn);
-      ttmp=AB_Transaction_List_Next(ttmp);
-    }
-
-    DBG_INFO(AQHBCI_LOGDOMAIN, "*** End dumping transactions ***************");
-  }
 }
 
 
