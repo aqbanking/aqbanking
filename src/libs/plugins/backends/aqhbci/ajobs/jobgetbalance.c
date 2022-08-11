@@ -38,7 +38,7 @@
 static int _jobApi_ProcessBankAccount(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 static int _jobApi_ProcessInvestmentAccount(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 
-static AB_BALANCE *_readBalance(GWEN_DB_NODE *dbT);
+static AB_BALANCE *_readBalance(GWEN_DB_NODE *dbBalance);
 static int _readSecurities(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx, const char *docType, int noted, GWEN_BUFFER *buf);
 
 static AB_VALUE *_readAmountFromResponseDb(GWEN_DB_NODE *dbBalance);
@@ -114,7 +114,7 @@ AH_JOB *AH_Job_GetBalance_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 
 
 
-AB_BALANCE *_readBalance(GWEN_DB_NODE *dbT)
+AB_BALANCE *_readBalance(GWEN_DB_NODE *dbBalance)
 {
   AB_BALANCE *bal;
   AB_VALUE *value;
@@ -122,11 +122,11 @@ AB_BALANCE *_readBalance(GWEN_DB_NODE *dbT)
 
   bal=AB_Balance_new();
 
-  value=_readAmountFromResponseDb(dbT);
+  value=_readAmountFromResponseDb(dbBalance);
   AB_Balance_SetValue(bal, value);
   AB_Value_free(value);
 
-  dt=_readDateFromResponseDb(dbT);
+  dt=_readDateFromResponseDb(dbBalance);
   AB_Balance_SetDate(bal, dt);
   GWEN_Date_free(dt);
 
@@ -382,7 +382,10 @@ int _jobApi_ProcessInvestmentAccount(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 }
 
 
-
+/* the following is ancient code. We should probably switch to using AqBanking's import functions like in
+ * JobGetBalance, but I have no way of testing changes (I don't have a credit card for which HBCI is available)
+ * and this code seems to work, so I don't want to touch it ATM.
+ */
 int _readSecurities(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx, const char *docType, int noted, GWEN_BUFFER *buf)
 {
   GWEN_DBIO *dbio;
