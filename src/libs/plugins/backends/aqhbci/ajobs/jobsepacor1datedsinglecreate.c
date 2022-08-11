@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Tue Dec 31 2013
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2022 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -13,7 +13,7 @@
 #endif
 
 
-#include "jobsepacor1datedsinglecreate_p.h"
+#include "jobsepacor1datedsinglecreate_l.h"
 #include "jobtransferbase_l.h"
 #include "aqhbci/aqhbci_l.h"
 #include "accountjob_l.h"
@@ -31,8 +31,10 @@
 
 
 
+static int _jobApi_Prepare(AH_JOB *j);
 
-/* --------------------------------------------------------------- FUNCTION */
+
+
 AH_JOB *AH_Job_SepaCor1DebitDatedSingleCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 {
   AH_JOB *j;
@@ -49,7 +51,7 @@ AH_JOB *AH_Job_SepaCor1DebitDatedSingleCreate_new(AB_PROVIDER *pro, AB_USER *u, 
   AH_Job_SetSupportedCommand(j, AB_Transaction_CommandSepaFlashDebitNote);
 
   /* overwrite some virtual functions */
-  AH_Job_SetPrepareFn(j, AH_Job_SepaCor1DebitDatedSingleCreate_Prepare);
+  AH_Job_SetPrepareFn(j, _jobApi_Prepare);
   AH_Job_SetAddChallengeParamsFn(j, AH_Job_TransferBase_AddChallengeParams29);
   AH_Job_SetGetLimitsFn(j, AH_Job_TransferBase_GetLimits_SepaDated);
   AH_Job_SetHandleCommandFn(j, AH_Job_TransferBase_HandleCommand_SepaDatedDebit);
@@ -63,8 +65,7 @@ AH_JOB *AH_Job_SepaCor1DebitDatedSingleCreate_new(AB_PROVIDER *pro, AB_USER *u, 
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaCor1DebitDatedSingleCreate_Prepare(AH_JOB *j)
+int _jobApi_Prepare(AH_JOB *j)
 {
   int rv;
 

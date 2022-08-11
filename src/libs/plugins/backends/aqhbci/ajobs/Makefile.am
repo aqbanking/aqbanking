@@ -35,7 +35,6 @@ noinst_HEADERS=\
   jobsepadebitsingle_l.h \
   jobsepadebitsingle_p.h \
   jobsepacor1datedsinglecreate_l.h \
-  jobsepacor1datedsinglecreate_p.h \
   jobtransferbase_l.h jobtransferbase_p.h \
   jobsepastandingordercreate_l.h  \
   jobsepastandingorderget_l.h jobsepastandingorderget_p.h \
