@@ -34,8 +34,12 @@ GWEN_INHERIT(AH_JOB, AH_JOB_GETBALANCE);
 
 
 
+static AB_VALUE *_readAmountFromResponseDb(GWEN_DB_NODE *dbBalance);
+static GWEN_DATE *_readDateFromResponseDb(GWEN_DB_NODE *dbBalance);
 
-/* --------------------------------------------------------------- FUNCTION */
+
+
+
 AH_JOB *AH_Job_GetBalance_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 {
   AH_JOB *j;
@@ -101,7 +105,6 @@ AH_JOB *AH_Job_GetBalance_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
 void GWENHYWFAR_CB AH_Job_GetBalance_FreeData(void *bp, void *p)
 {
   AH_JOB_GETBALANCE *aj;
@@ -112,80 +115,84 @@ void GWENHYWFAR_CB AH_Job_GetBalance_FreeData(void *bp, void *p)
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
 AB_BALANCE *AH_Job_GetBalance__ReadBalance(GWEN_DB_NODE *dbT)
 {
-  AB_VALUE *v;
-  const char *p;
   AB_BALANCE *bal;
-  int isCredit=0;
+  AB_VALUE *value;
+  GWEN_DATE *dt;
 
   bal=AB_Balance_new();
 
-  /* get isCredit */
-  p=GWEN_DB_GetCharValue(dbT, "debitMark", 0, 0);
-  if (p) {
-    if (strcasecmp(p, "D")==0 ||
-        strcasecmp(p, "RC")==0) {
-      isCredit=0;
-    }
-    else if (strcasecmp(p, "C")==0 ||
-             strcasecmp(p, "RD")==0)
-      isCredit=1;
-    else {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad debit mark \"%s\"", p);
-      AB_Balance_free(bal);
-      return NULL;
-    }
-  }
+  value=_readAmountFromResponseDb(dbT);
+  AB_Balance_SetValue(bal, value);
+  AB_Value_free(value);
 
-  /* read date */
-  p=GWEN_DB_GetCharValue(dbT, "date", 0, 0);
-  if (p) {
-    GWEN_DATE *dt;
-
-    dt=GWEN_Date_fromStringWithTemplate(p, "YYYYMMDD");
-    if (dt) {
-      AB_Balance_SetDate(bal, dt);
-      GWEN_Date_free(dt);
-    }
-    else {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad date \"%s\"", p);
-      AB_Balance_free(bal);
-      return NULL;
-    }
-  }
-  else {
-    GWEN_DATE *dt;
-
-    DBG_WARN(AQHBCI_LOGDOMAIN, "No date, using current date");
-    dt=GWEN_Date_CurrentDate();
-    assert(dt);
-    AB_Balance_SetDate(bal, dt);
-    GWEN_Date_free(dt);
-  }
-
-  /* get value */
-  v=AB_Value_fromDb(dbT);
-  if (!v) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error parsing value from DB");
-    AB_Balance_free(bal);
-    return NULL;
-  }
-  else {
-    if (!isCredit)
-      AB_Value_Negate(v);
-
-    AB_Balance_SetValue(bal, v);
-    AB_Value_free(v);
-  }
+  dt=_readDateFromResponseDb(dbT);
+  AB_Balance_SetDate(bal, dt);
+  GWEN_Date_free(dt);
 
   return bal;
 }
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
+AB_VALUE *_readAmountFromResponseDb(GWEN_DB_NODE *dbBalance)
+{
+  AB_VALUE *value;
+  const char *p;
+
+  /* get value */
+  value=AB_Value_fromDb(dbBalance);
+  if (!value) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error parsing value from DB");
+    return NULL;
+  }
+
+  /* get isCredit */
+  p=GWEN_DB_GetCharValue(dbBalance, "debitMark", 0, 0);
+  if (p) {
+    if (strcasecmp(p, "D")==0 || strcasecmp(p, "RC")==0) {
+      /* nothing to do */
+    }
+    else if (strcasecmp(p, "C")==0 || strcasecmp(p, "RD")==0)
+      AB_Value_Negate(value);
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad debit mark \"%s\"", p);
+      AB_Value_free(value);
+      return NULL;
+    }
+  }
+
+  return value;
+}
+
+
+
+GWEN_DATE *_readDateFromResponseDb(GWEN_DB_NODE *dbBalance)
+{
+  GWEN_DATE *dt=NULL;
+  const char *p;
+
+  /* read date */
+  p=GWEN_DB_GetCharValue(dbBalance, "date", 0, 0);
+  if (p) {
+    dt=GWEN_Date_fromStringWithTemplate(p, "YYYYMMDD");
+    if (dt==NULL) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad date \"%s\"", p);
+      return NULL;
+    }
+  }
+  else {
+    DBG_WARN(AQHBCI_LOGDOMAIN, "No date, using current date");
+    dt=GWEN_Date_CurrentDate();
+    assert(dt);
+  }
+
+  return dt;
+}
+
+
+
 int AH_Job_GetBalance__ReadSecurities(AH_JOB *j,
                                       AB_IMEXPORTER_CONTEXT *ctx,
                                       const char *docType,
@@ -329,7 +336,6 @@ int AH_Job_GetBalance__ReadSecurities(AH_JOB *j,
 }
 
 
-/* --------------------------------------------------------------- FUNCTION */
 int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 {
   AH_JOB_GETBALANCE *aj;
@@ -432,7 +438,6 @@ int AH_Job_GetBalance_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
 int AH_Job_GetBalanceInvestment_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 {
   AH_JOB_GETBALANCE *aj;
