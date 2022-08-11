@@ -79,3 +79,19 @@ void AB_Provider_MergeContextsSetTypeAndFreeSrc(AB_IMEXPORTER_ACCOUNTINFO *destA
 
 
 
+AB_IMEXPORTER_ACCOUNTINFO *AB_Provider_GetOrAddAccountInfoForAccount(AB_IMEXPORTER_CONTEXT *ctx, const AB_ACCOUNT *a)
+{
+  if (a)
+    return AB_ImExporterContext_GetOrAddAccountInfo(ctx,
+						    AB_Account_GetUniqueId(a),
+						    AB_Account_GetIban(a),
+						    AB_Account_GetBankCode(a),
+						    AB_Account_GetAccountNumber(a),
+						    AB_Account_GetAccountType(a));
+  else
+    return AB_ImExporterContext_GetOrAddAccountInfo(ctx, 0, NULL, NULL, NULL, AB_AccountType_Unknown);
+}
+
+
+
+

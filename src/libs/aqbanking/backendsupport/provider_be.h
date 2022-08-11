@@ -598,6 +598,12 @@ void AB_Provider_DumpTransactionsIfDebug(const AB_IMEXPORTER_ACCOUNTINFO *ai, co
 void AB_Provider_MergeContextsSetTypeAndFreeSrc(AB_IMEXPORTER_ACCOUNTINFO *destAccountInfo, AB_IMEXPORTER_CONTEXT *srcContext, int ty);
 
 
+/**
+ * Get or create and add an account info to an ImExporterContext for the given account.
+ */
+AB_IMEXPORTER_ACCOUNTINFO *AB_Provider_GetOrAddAccountInfoForAccount(AB_IMEXPORTER_CONTEXT *ctx, const AB_ACCOUNT *a);
+
+
 /*@}*/
 
 
