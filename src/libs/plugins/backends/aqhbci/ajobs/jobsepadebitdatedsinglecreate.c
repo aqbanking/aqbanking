@@ -13,7 +13,7 @@
 #endif
 
 
-#include "jobsepadebitdatedsinglecreate_p.h"
+#include "jobsepadebitdatedsinglecreate_l.h"
 #include "jobtransferbase_l.h"
 #include "aqhbci/aqhbci_l.h"
 #include "accountjob_l.h"
@@ -30,8 +30,20 @@
 #include <assert.h>
 
 
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
 
-/* --------------------------------------------------------------- FUNCTION */
+static int _jobApi_Prepare(AH_JOB *j);
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
 AH_JOB *AH_Job_SepaDebitDatedSingleCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 {
   AH_JOB *j;
@@ -48,7 +60,7 @@ AH_JOB *AH_Job_SepaDebitDatedSingleCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_A
   AH_Job_SetSupportedCommand(j, AB_Transaction_CommandSepaDebitNote);
 
   /* overwrite some virtual functions */
-  AH_Job_SetPrepareFn(j, AH_Job_SepaDebitDatedSingleCreate_Prepare);
+  AH_Job_SetPrepareFn(j, _jobApi_Prepare);
   AH_Job_SetAddChallengeParamsFn(j, AH_Job_TransferBase_AddChallengeParams29);
   AH_Job_SetGetLimitsFn(j, AH_Job_TransferBase_GetLimits_SepaDated);
   AH_Job_SetHandleCommandFn(j, AH_Job_TransferBase_HandleCommand_SepaDatedDebit);
@@ -62,8 +74,7 @@ AH_JOB *AH_Job_SepaDebitDatedSingleCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_A
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaDebitDatedSingleCreate_Prepare(AH_JOB *j)
+int _jobApi_Prepare(AH_JOB *j)
 {
   int rv;
 

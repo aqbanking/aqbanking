@@ -23,7 +23,6 @@ noinst_HEADERS=\
   jobloadcellphone_l.h \
   jobloadcellphone_p.h \
   jobsepadebitdatedsinglecreate_l.h \
-  jobsepadebitdatedsinglecreate_p.h \
   jobsepadebitdatedmulticreate_l.h \
   jobsepadebitdatedmulticreate_p.h \
   jobsepacor1datedmulticreate_l.h \
@@ -31,19 +30,16 @@ noinst_HEADERS=\
   jobsepaxfermulti_l.h \
   jobsepaxfermulti_p.h \
   jobsepaxfersingle_l.h \
-  jobsepaxfersingle_p.h \
   jobsepadebitsingle_l.h \
-  jobsepadebitsingle_p.h \
   jobsepacor1datedsinglecreate_l.h \
   jobtransferbase_l.h jobtransferbase_p.h \
   jobsepastandingordercreate_l.h  \
-  jobsepastandingorderget_l.h jobsepastandingorderget_p.h \
+  jobsepastandingorderget_l.h \
   jobsepastandingordermodify_l.h \
   jobsepastandingorderdelete_l.h \
   jobgetestatements_l.h \
   jobgetdepot_l.h \
-  jobsepainternalxfer_l.h \
-  jobsepainternalxfer_p.h 
+  jobsepainternalxfer_l.h
 
 libhbciaccjobs_la_SOURCES=\
   accountjob.c \

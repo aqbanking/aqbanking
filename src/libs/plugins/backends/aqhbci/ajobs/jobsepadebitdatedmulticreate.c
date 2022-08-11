@@ -35,9 +35,24 @@
 GWEN_INHERIT(AH_JOB, AH_JOB_CREATESEPAMULTIDEBIT);
 
 
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static void GWENHYWFAR_CB _jobApi_FreeData(void *bp, void *p);
+static int _jobApi_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
+static int _jobApi_Prepare(AH_JOB *j);
 
 
-/* --------------------------------------------------------------- FUNCTION */
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+
 AH_JOB *AH_Job_SepaDebitDatedMultiCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 {
   AH_JOB *j;
@@ -57,12 +72,11 @@ AH_JOB *AH_Job_SepaDebitDatedMultiCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_AC
   AH_Job_SetSupportedCommand(j, AB_Transaction_CommandSepaDebitNote);
 
   GWEN_NEW_OBJECT(AH_JOB_CREATESEPAMULTIDEBIT, aj);
-  GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_CREATESEPAMULTIDEBIT, j, aj,
-                       AH_Job_SepaDebitDatedMultiCreate_FreeData);
+  GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_CREATESEPAMULTIDEBIT, j, aj, _jobApi_FreeData);
 
   /* overwrite some virtual functions */
-  AH_Job_SetPrepareFn(j, AH_Job_SepaDebitDatedMultiCreate_Prepare);
-  AH_Job_SetAddChallengeParamsFn(j, AH_Job_SepaDebitDatedMultiCreate_AddChallengeParams);
+  AH_Job_SetPrepareFn(j, _jobApi_Prepare);
+  AH_Job_SetAddChallengeParamsFn(j, _jobApi_AddChallengeParams);
   AH_Job_SetGetLimitsFn(j, AH_Job_TransferBase_GetLimits_SepaDated);
   AH_Job_SetHandleCommandFn(j, AH_Job_TransferBase_HandleCommand_SepaDatedDebit);
 
@@ -94,8 +108,7 @@ AH_JOB *AH_Job_SepaDebitDatedMultiCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_AC
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-void GWENHYWFAR_CB AH_Job_SepaDebitDatedMultiCreate_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB _jobApi_FreeData(void *bp, void *p)
 {
   AH_JOB_CREATESEPAMULTIDEBIT *aj;
 
@@ -109,8 +122,7 @@ void GWENHYWFAR_CB AH_Job_SepaDebitDatedMultiCreate_FreeData(void *bp, void *p)
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaDebitDatedMultiCreate_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod)
+int _jobApi_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod)
 {
   AH_JOB_CREATESEPAMULTIDEBIT *aj;
   const AB_TRANSACTION *t;
@@ -159,8 +171,7 @@ int AH_Job_SepaDebitDatedMultiCreate_AddChallengeParams(AH_JOB *j, int hkTanVer,
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaDebitDatedMultiCreate_Prepare(AH_JOB *j)
+int _jobApi_Prepare(AH_JOB *j)
 {
   AH_JOB_CREATESEPAMULTIDEBIT *aj;
   GWEN_DB_NODE *dbArgs;

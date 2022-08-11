@@ -18,9 +18,6 @@
 AH_JOB *AH_Job_SepaStandingOrderCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account);
 
 
-int AH_Job_SepaStandingOrderCreate_Prepare(AH_JOB *j);
-
-
 #endif /* AH_JOBSEPASTANDINGORDERCREATE_L_H */
 
 

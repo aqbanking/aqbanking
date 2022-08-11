@@ -13,7 +13,7 @@
 #endif
 
 
-#include "jobsepadebitsingle_p.h"
+#include "jobsepadebitsingle_l.h"
 #include "jobtransferbase_l.h"
 #include "aqhbci/aqhbci_l.h"
 #include "accountjob_l.h"
@@ -30,10 +30,22 @@
 #include <assert.h>
 
 
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static int _jobApi_Prepare(AH_JOB *j);
+static int _jobApi_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_SepaDebitSingle_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 {
   AH_JOB *j;
@@ -50,8 +62,8 @@ AH_JOB *AH_Job_SepaDebitSingle_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc
   AH_Job_SetSupportedCommand(j, AB_Transaction_CommandSepaDebitNote);
 
   /* overwrite some virtual functions */
-  AH_Job_SetPrepareFn(j, AH_Job_SepaDebitSingle_Prepare);
-  AH_Job_SetAddChallengeParamsFn(j, AH_Job_SepaDebitSingle_AddChallengeParams);
+  AH_Job_SetPrepareFn(j, _jobApi_Prepare);
+  AH_Job_SetAddChallengeParamsFn(j, _jobApi_AddChallengeParams);
   AH_Job_SetGetLimitsFn(j, AH_Job_TransferBase_GetLimits_SepaUndated);
   AH_Job_SetHandleCommandFn(j, AH_Job_TransferBase_HandleCommand_SepaUndated);
 
@@ -64,8 +76,7 @@ AH_JOB *AH_Job_SepaDebitSingle_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaDebitSingle_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod)
+int _jobApi_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod)
 {
   const AB_TRANSACTION *t;
   const char *s;
@@ -106,8 +117,7 @@ int AH_Job_SepaDebitSingle_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_N
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaDebitSingle_Prepare(AH_JOB *j)
+int _jobApi_Prepare(AH_JOB *j)
 {
   int rv;
 

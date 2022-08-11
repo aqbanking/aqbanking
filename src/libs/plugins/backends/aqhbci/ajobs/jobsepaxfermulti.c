@@ -35,9 +35,24 @@
 GWEN_INHERIT(AH_JOB, AH_JOB_SEPAXFERMULTI);
 
 
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static void GWENHYWFAR_CB _jobApi_FreeData(void *bp, void *p);
+static int _jobApi_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
+static int _jobApi_Prepare(AH_JOB *j);
 
 
-/* --------------------------------------------------------------- FUNCTION */
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+
 AH_JOB *AH_Job_SepaTransferMulti_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 {
   AH_JOB *j;
@@ -55,16 +70,15 @@ AH_JOB *AH_Job_SepaTransferMulti_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a
   AH_Job_SetChallengeClass(j, 13);
 
   GWEN_NEW_OBJECT(AH_JOB_SEPAXFERMULTI, aj);
-  GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_SEPAXFERMULTI, j, aj,
-                       AH_Job_SepaTransferMulti_FreeData);
+  GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_SEPAXFERMULTI, j, aj, _jobApi_FreeData);
 
   AH_Job_SetSupportedCommand(j, AB_Transaction_CommandSepaTransfer);
 
   /* overwrite some virtual functions */
-  AH_Job_SetPrepareFn(j, AH_Job_SepaTransferMulti_Prepare);
+  AH_Job_SetPrepareFn(j, _jobApi_Prepare);
   AH_Job_SetGetLimitsFn(j, AH_Job_TransferBase_GetLimits_SepaUndated);
   AH_Job_SetHandleCommandFn(j, AH_Job_TransferBase_HandleCommand_SepaUndated);
-  AH_Job_SetAddChallengeParamsFn(j, AH_Job_SepaTransferMulti_AddChallengeParams);
+  AH_Job_SetAddChallengeParamsFn(j, _jobApi_AddChallengeParams);
 
   /* get params */
   dbParams=AH_Job_GetParams(j);
@@ -89,8 +103,7 @@ AH_JOB *AH_Job_SepaTransferMulti_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-void GWENHYWFAR_CB AH_Job_SepaTransferMulti_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB _jobApi_FreeData(void *bp, void *p)
 {
   AH_JOB_SEPAXFERMULTI *aj;
 
@@ -103,8 +116,7 @@ void GWENHYWFAR_CB AH_Job_SepaTransferMulti_FreeData(void *bp, void *p)
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaTransferMulti_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod)
+int _jobApi_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod)
 {
   AH_JOB_SEPAXFERMULTI *aj;
   const AB_TRANSACTION *t;
@@ -152,8 +164,7 @@ int AH_Job_SepaTransferMulti_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaTransferMulti_Prepare(AH_JOB *j)
+int _jobApi_Prepare(AH_JOB *j)
 {
   AH_JOB_SEPAXFERMULTI *aj;
   GWEN_DB_NODE *dbArgs;

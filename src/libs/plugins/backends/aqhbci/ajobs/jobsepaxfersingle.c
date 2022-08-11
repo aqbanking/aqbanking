@@ -13,7 +13,7 @@
 #endif
 
 
-#include "jobsepaxfersingle_p.h"
+#include "jobsepaxfersingle_l.h"
 #include "jobtransferbase_l.h"
 #include "aqhbci_l.h"
 #include "accountjob_l.h"
@@ -31,10 +31,23 @@
 
 
 
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static int _jobApi_Prepare(AH_JOB *j);
+static int _jobApi_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+
 AH_JOB *AH_Job_SepaTransferSingle_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 {
   AH_JOB *j;
@@ -50,8 +63,8 @@ AH_JOB *AH_Job_SepaTransferSingle_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *
   AH_Job_SetSupportedCommand(j, AB_Transaction_CommandSepaTransfer);
 
   /* overwrite some virtual functions */
-  AH_Job_SetPrepareFn(j, AH_Job_SepaTransferSingle_Prepare);
-  AH_Job_SetAddChallengeParamsFn(j, AH_Job_SepaTransferSingle_AddChallengeParams);
+  AH_Job_SetPrepareFn(j, _jobApi_Prepare);
+  AH_Job_SetAddChallengeParamsFn(j, _jobApi_AddChallengeParams);
   AH_Job_SetHandleCommandFn(j, AH_Job_TransferBase_HandleCommand_SepaUndated);
   AH_Job_SetGetLimitsFn(j, AH_Job_TransferBase_GetLimits_SepaUndated);
 
@@ -60,8 +73,7 @@ AH_JOB *AH_Job_SepaTransferSingle_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaTransferSingle_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod)
+int _jobApi_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod)
 {
   const AB_TRANSACTION *t;
   const char *s;
@@ -102,8 +114,7 @@ int AH_Job_SepaTransferSingle_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_D
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaTransferSingle_Prepare(AH_JOB *j)
+int _jobApi_Prepare(AH_JOB *j)
 {
   int rv;
 

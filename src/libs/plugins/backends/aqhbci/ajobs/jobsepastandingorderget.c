@@ -13,7 +13,7 @@
 #endif
 
 
-#include "jobsepastandingorderget_p.h"
+#include "jobsepastandingorderget_l.h"
 #include "aqhbci/aqhbci_l.h"
 #include "accountjob_l.h"
 #include "aqhbci/joblayer/job_l.h"
@@ -31,6 +31,25 @@
 #include <assert.h>
 
 
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static int _jobApi_Prepare(AH_JOB *j);
+static int _jobApi_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
+
+static AB_TRANSACTION *_readSto(AH_JOB *j, const char *docType, const uint8_t *ptr, uint32_t len);
+
+static AB_TRANSACTION_PERIOD _getPeriod(const char *s);
+static AB_TRANSACTION *_readTransactionFromResponse(AH_JOB *j, GWEN_DB_NODE *dbXA);
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 
 
@@ -46,8 +65,8 @@ AH_JOB *AH_Job_SepaStandingOrderGet_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT
   AH_Job_SetSupportedCommand(j, AB_Transaction_CommandSepaGetStandingOrders);
 
   /* overwrite some virtual functions */
-  AH_Job_SetPrepareFn(j, AH_Job_SepaStandingOrderGet_Prepare);
-  AH_Job_SetProcessFn(j, AH_Job_SepaStandingOrdersGet_Process);
+  AH_Job_SetPrepareFn(j, _jobApi_Prepare);
+  AH_Job_SetProcessFn(j, _jobApi_Process);
   AH_Job_SetGetLimitsFn(j, AH_Job_GetLimits_EmptyLimits);
   AH_Job_SetHandleCommandFn(j, AH_Job_HandleCommand_Accept);
   AH_Job_SetHandleResultsFn(j, AH_Job_HandleResults_Empty);
@@ -61,7 +80,7 @@ AH_JOB *AH_Job_SepaStandingOrderGet_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT
 
 
 
-int AH_Job_SepaStandingOrderGet_Prepare(AH_JOB *j)
+int _jobApi_Prepare(AH_JOB *j)
 {
   GWEN_DB_NODE *dbArgs;
   AB_SWIFT_DESCR_LIST *descrList;
@@ -98,7 +117,7 @@ int AH_Job_SepaStandingOrderGet_Prepare(AH_JOB *j)
 
 
 
-int AH_Job_SepaStandingOrdersGet_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+int _jobApi_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 {
   const char *responseName;
   int rv;

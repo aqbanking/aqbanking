@@ -30,8 +30,6 @@
 #include <assert.h>
 
 
-
-/* --------------------------------------------------------------- FUNCTION */
 AH_JOB *AH_Job_SepaStandingOrderCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 {
   AH_JOB *j;
@@ -47,7 +45,7 @@ AH_JOB *AH_Job_SepaStandingOrderCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCO
   AH_Job_SetSupportedCommand(j, AB_Transaction_CommandSepaCreateStandingOrder);
 
   /* overwrite some virtual functions */
-  AH_Job_SetPrepareFn(j, AH_Job_SepaStandingOrderCreate_Prepare);
+  AH_Job_SetPrepareFn(j, AH_Job_TransferBase_Prepare_SepaStandingOrder);
   AH_Job_SetAddChallengeParamsFn(j, AH_Job_TransferBase_AddChallengeParams35);
   AH_Job_SetGetLimitsFn(j, AH_Job_TransferBase_GetLimits_SepaStandingOrder);
   AH_Job_SetHandleCommandFn(j, AH_Job_TransferBase_HandleCommand_SepaStandingOrder);
@@ -57,124 +55,3 @@ AH_JOB *AH_Job_SepaStandingOrderCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCO
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_SepaStandingOrderCreate_Prepare(AH_JOB *j)
-{
-  GWEN_DB_NODE *dbArgs;
-  int rv;
-  const GWEN_DATE *da;
-  GWEN_BUFFER *tbuf;
-  const char *s;
-  AB_TRANSACTION *t;
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing transfer");
-
-  dbArgs=AH_Job_GetArguments(j);
-
-  t=AH_Job_GetFirstTransfer(j);
-  if (t==NULL) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
-    assert(t); /* debug */
-    return GWEN_ERROR_INTERNAL;
-  }
-
-  /* select pain profile from group "001" */
-  rv=AH_Job_TransferBase_SelectPainProfile(j, 1);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-
-  /* export transfers to SEPA */
-  rv=AH_Job_TransferBase_SepaExportTransactions(j);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  /* execution date */
-  tbuf=GWEN_Buffer_new(0, 16, 0, 1);
-  da=AB_Transaction_GetDate(t);
-  if (da) {
-    GWEN_Date_toStringWithTemplate(da, "YYYYMMDD", tbuf);
-    GWEN_DB_SetCharValue(dbArgs,
-                         GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "xnextExecutionDate",
-                         GWEN_Buffer_GetStart(tbuf));
-    GWEN_Buffer_Reset(tbuf);
-  }
-  else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing execution date.");
-  }
-
-  /* first execution date */
-  da=AB_Transaction_GetFirstDate(t);
-  if (da) {
-    GWEN_Date_toStringWithTemplate(da, "YYYYMMDD", tbuf);
-    GWEN_DB_SetCharValue(dbArgs,
-                         GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "details/xfirstExecutionDate",
-                         GWEN_Buffer_GetStart(tbuf));
-    GWEN_Buffer_Reset(tbuf);
-  }
-  else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing first execution date.");
-  }
-
-  /* last execution date */
-  da=AB_Transaction_GetLastDate(t);
-  if (da) {
-    GWEN_Date_toStringWithTemplate(da, "YYYYMMDD", tbuf);
-    GWEN_DB_SetCharValue(dbArgs,
-                         GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "details/xlastExecutionDate",
-                         GWEN_Buffer_GetStart(tbuf));
-  }
-  else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing last execution date.");
-  }
-  GWEN_Buffer_free(tbuf);
-
-  /* period */
-  switch (AB_Transaction_GetPeriod(t)) {
-  case AB_Transaction_PeriodMonthly:
-    s="M";
-    break;
-  case AB_Transaction_PeriodWeekly:
-    s="W";
-    break;
-  default:
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unsupported period %d",
-              AB_Transaction_GetPeriod(t));
-    return GWEN_ERROR_INVALID;
-  }
-  GWEN_DB_SetCharValue(dbArgs,
-                       GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "details/xperiod",
-                       s);
-
-  /* cycle */
-  GWEN_DB_SetIntValue(dbArgs,
-                      GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "details/cycle",
-                      AB_Transaction_GetCycle(t));
-
-  /* execution day */
-  GWEN_DB_SetIntValue(dbArgs,
-                      GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "details/executionDay",
-                      AB_Transaction_GetExecutionDay(t));
-
-
-  /* SET fiId, if present */
-  s=AB_Transaction_GetFiId(t);
-  if (s) {
-    GWEN_DB_SetCharValue(dbArgs,
-                         GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "fiId",
-                         AB_Transaction_GetFiId(t));
-  }
-
-  return 0;
-}

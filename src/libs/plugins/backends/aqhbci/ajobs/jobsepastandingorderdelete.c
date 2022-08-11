@@ -13,13 +13,10 @@
 
 
 #include "jobsepastandingorderdelete_l.h"
-#include "jobsepastandingordercreate_l.h"
 #include "jobtransferbase_l.h"
 
 
 
-
-/* --------------------------------------------------------------- FUNCTION */
 
 AH_JOB *AH_Job_SepaStandingOrderDelete_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 {
@@ -36,7 +33,7 @@ AH_JOB *AH_Job_SepaStandingOrderDelete_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCO
   AH_Job_SetSupportedCommand(j, AB_Transaction_CommandSepaDeleteStandingOrder);
 
   /* overwrite some virtual functions (use those from AH_Job_SepaStandingOrderCreate)  */
-  AH_Job_SetPrepareFn(j, AH_Job_SepaStandingOrderCreate_Prepare);
+  AH_Job_SetPrepareFn(j, AH_Job_TransferBase_Prepare_SepaStandingOrder);
   AH_Job_SetAddChallengeParamsFn(j, AH_Job_TransferBase_AddChallengeParams35);
   AH_Job_SetGetLimitsFn(j, AH_Job_TransferBase_GetLimits_SepaStandingOrder);
   AH_Job_SetHandleCommandFn(j, AH_Job_TransferBase_HandleCommand_SepaStandingOrder);

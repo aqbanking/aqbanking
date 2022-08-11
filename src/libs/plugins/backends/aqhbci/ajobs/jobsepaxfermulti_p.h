@@ -29,11 +29,6 @@ struct AH_JOB_SEPAXFERMULTI {
   char *localIban;
 
 };
-static void GWENHYWFAR_CB AH_Job_SepaTransferMulti_FreeData(void *bp, void *p);
-
-static int AH_Job_SepaTransferMulti_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
-
-static int AH_Job_SepaTransferMulti_Prepare(AH_JOB *j);
 
 
 #endif /* AH_JOBSEPAXFERMULTI_P_H */
