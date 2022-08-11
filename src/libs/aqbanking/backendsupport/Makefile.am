@@ -102,7 +102,8 @@ extra_sources=\
   provider_account.c \
   provider_accspec.c \
   provider_user.c \
-  provider_queues.c
+  provider_queues.c \
+  provider_utils.c
 
 
 

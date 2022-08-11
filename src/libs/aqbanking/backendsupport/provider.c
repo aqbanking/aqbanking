@@ -524,6 +524,7 @@ void AB_Plugin_Provider_SetFactoryFn(GWEN_PLUGIN *pl, AB_PLUGIN_PROVIDER_FACTORY
 #include "provider_accspec.c"
 #include "provider_user.c"
 #include "provider_queues.c"
+#include "provider_utils.c"
 
 
 

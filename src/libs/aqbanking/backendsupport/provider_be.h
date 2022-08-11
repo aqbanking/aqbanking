@@ -584,6 +584,18 @@ void AB_Provider_FreeUsersAndAccountsFromUserQueueList(AB_PROVIDER *pro, AB_USER
 
 
 
+/** @name General Utility Functions
+ *
+ */
+/*@{*/
+
+void AB_Provider_DumpTransactionsIfDebug(const AB_IMEXPORTER_ACCOUNTINFO *ai, const char *logdomain);
+
+
+/*@}*/
+
+
+
 
 typedef AB_PROVIDER *(*AB_PLUGIN_PROVIDER_FACTORY_FN)(GWEN_PLUGIN *pl, AB_BANKING *ab);
 
