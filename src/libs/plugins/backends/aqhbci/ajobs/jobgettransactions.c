@@ -44,7 +44,6 @@ static int _jobApi_ProcessForCreditCard(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 static int _jobApi_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
 static int _jobApi_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t);
 
-static void _mergeContextsSetTypeAndFreeSrc(AB_IMEXPORTER_ACCOUNTINFO *destAccountInfo, AB_IMEXPORTER_CONTEXT *srcContext, int ty);
 static int _readTransIntoAccountInfo(AH_JOB *j,
                                      AB_IMEXPORTER_ACCOUNTINFO *ai,
                                      const char *docType,
@@ -151,49 +150,10 @@ int _readTransIntoAccountInfo(AH_JOB *j,
     AB_ImExporterContext_free(tempContext);
     return rv;
   }
-  _mergeContextsSetTypeAndFreeSrc(ai, tempContext, ty);
+
+  AB_Provider_MergeContextsSetTypeAndFreeSrc(ai, tempContext, ty);
 
   return 0;
-}
-
-
-
-void _mergeContextsSetTypeAndFreeSrc(AB_IMEXPORTER_ACCOUNTINFO *destAccountInfo, AB_IMEXPORTER_CONTEXT *srcContext, int ty)
-{
-  AB_IMEXPORTER_ACCOUNTINFO *srcAccountInfo;
-
-  /* copy data from temporary context to real context */
-  srcAccountInfo=AB_ImExporterContext_GetFirstAccountInfo(srcContext);
-  while (srcAccountInfo) {
-    AB_TRANSACTION_LIST *tl;
-    AB_BALANCE_LIST *bl;
-
-    /* move transactions, set transaction type */
-    tl=AB_ImExporterAccountInfo_GetTransactionList(srcAccountInfo);
-    if (tl) {
-      AB_TRANSACTION *t;
-
-      while ((t=AB_Transaction_List_First(tl))) {
-        AB_Transaction_List_Del(t);
-        AB_Transaction_SetType(t, ty);
-        AB_ImExporterAccountInfo_AddTransaction(destAccountInfo, t);
-      }
-    }
-
-    /* move balances */
-    bl=AB_ImExporterAccountInfo_GetBalanceList(srcAccountInfo);
-    if (bl) {
-      AB_BALANCE *bal;
-
-      while ((bal=AB_Balance_List_First(bl))) {
-        AB_Balance_List_Del(bal);
-        AB_ImExporterAccountInfo_AddBalance(destAccountInfo, bal);
-      }
-    }
-
-    srcAccountInfo=AB_ImExporterAccountInfo_List_Next(srcAccountInfo);
-  }
-  AB_ImExporterContext_free(srcContext);
 }
 
 
