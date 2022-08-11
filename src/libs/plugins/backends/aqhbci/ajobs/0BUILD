@@ -55,7 +55,6 @@
       accountjob_l.h
       accountjob_p.h
       jobgetbalance_l.h
-      jobgetbalance_p.h
       jobgettransactions_l.h
       jobgettrans_camt_l.h
       jobforeignxferwh_l.h
