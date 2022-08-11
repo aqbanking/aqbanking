@@ -39,3 +39,43 @@ void AB_Provider_DumpTransactionsIfDebug(const AB_IMEXPORTER_ACCOUNTINFO *ai, co
 
 
 
+void AB_Provider_MergeContextsSetTypeAndFreeSrc(AB_IMEXPORTER_ACCOUNTINFO *destAccountInfo, AB_IMEXPORTER_CONTEXT *srcContext, int ty)
+{
+  AB_IMEXPORTER_ACCOUNTINFO *srcAccountInfo;
+
+  /* copy data from temporary context to real context */
+  srcAccountInfo=AB_ImExporterContext_GetFirstAccountInfo(srcContext);
+  while (srcAccountInfo) {
+    AB_TRANSACTION_LIST *tl;
+    AB_BALANCE_LIST *bl;
+
+    /* move transactions, set transaction type */
+    tl=AB_ImExporterAccountInfo_GetTransactionList(srcAccountInfo);
+    if (tl) {
+      AB_TRANSACTION *t;
+
+      while ((t=AB_Transaction_List_First(tl))) {
+        AB_Transaction_List_Del(t);
+        AB_Transaction_SetType(t, ty);
+        AB_ImExporterAccountInfo_AddTransaction(destAccountInfo, t);
+      }
+    }
+
+    /* move balances */
+    bl=AB_ImExporterAccountInfo_GetBalanceList(srcAccountInfo);
+    if (bl) {
+      AB_BALANCE *bal;
+
+      while ((bal=AB_Balance_List_First(bl))) {
+        AB_Balance_List_Del(bal);
+        AB_ImExporterAccountInfo_AddBalance(destAccountInfo, bal);
+      }
+    }
+
+    srcAccountInfo=AB_ImExporterAccountInfo_List_Next(srcAccountInfo);
+  }
+  AB_ImExporterContext_free(srcContext);
+}
+
+
+

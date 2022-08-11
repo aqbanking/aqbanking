@@ -591,6 +591,12 @@ void AB_Provider_FreeUsersAndAccountsFromUserQueueList(AB_PROVIDER *pro, AB_USER
 
 void AB_Provider_DumpTransactionsIfDebug(const AB_IMEXPORTER_ACCOUNTINFO *ai, const char *logdomain);
 
+/**
+ * This function takes all data from the given srcContext and writes it into the given destAccountInfo.
+ * Transactions will get the given type ty. Destroys srcContext.
+ */
+void AB_Provider_MergeContextsSetTypeAndFreeSrc(AB_IMEXPORTER_ACCOUNTINFO *destAccountInfo, AB_IMEXPORTER_CONTEXT *srcContext, int ty);
+
 
 /*@}*/
 
