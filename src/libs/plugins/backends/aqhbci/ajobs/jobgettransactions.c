@@ -13,7 +13,7 @@
 #endif
 
 
-#include "jobgettransactions_p.h"
+#include "jobgettransactions_l.h"
 #include "aqhbci/aqhbci_l.h"
 #include "accountjob_l.h"
 #include "aqhbci/joblayer/job_l.h"
@@ -32,10 +32,19 @@
 #include <errno.h>
 
 
-GWEN_INHERIT(AH_JOB, AH_JOB_GETTRANSACTIONS);
 
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
 
+static int _jobApi_ProcessForBankAccount(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
+static int _jobApi_ProcessForCreditCard(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 
+static int _jobApi_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
+static int _jobApi_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t);
+
+static void _mergeContextsSetTypeAndFreeSrc(AB_IMEXPORTER_ACCOUNTINFO *destAccountInfo, AB_IMEXPORTER_CONTEXT *srcContext, int ty);
 static int _readTransIntoAccountInfo(AH_JOB *j,
                                      AB_IMEXPORTER_ACCOUNTINFO *ai,
                                      const char *docType,
@@ -51,11 +60,16 @@ static void _dumpTransactions(const AB_IMEXPORTER_ACCOUNTINFO *ai);
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+
+
 AH_JOB *AH_Job_GetTransactions_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 {
   AH_JOB *j;
-  AH_JOB_GETTRANSACTIONS *aj;
   GWEN_DB_NODE *dbArgs;
   GWEN_DB_NODE *updgroup;
 
@@ -82,48 +96,30 @@ AH_JOB *AH_Job_GetTransactions_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc
   if (!j)
     return 0;
 
-  GWEN_NEW_OBJECT(AH_JOB_GETTRANSACTIONS, aj);
-  GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_GETTRANSACTIONS, j, aj, AH_Job_GetTransactions_FreeData);
-
   AH_Job_SetSupportedCommand(j, AB_Transaction_CommandGetTransactions);
 
   /* overwrite some virtual functions */
   if (useCreditCardJob)
-    AH_Job_SetProcessFn(j, AH_Job_GetTransactionsCreditCard_Process);
+    AH_Job_SetProcessFn(j, _jobApi_ProcessForCreditCard);
   else
-    AH_Job_SetProcessFn(j, AH_Job_GetTransactions_Process);
+    AH_Job_SetProcessFn(j, _jobApi_ProcessForBankAccount);
 
-  AH_Job_SetGetLimitsFn(j, AH_Job_GetTransactions_GetLimits);
-  AH_Job_SetHandleCommandFn(j, AH_Job_GetTransactions_HandleCommand);
+  AH_Job_SetGetLimitsFn(j, _jobApi_GetLimits);
+  AH_Job_SetHandleCommandFn(j, _jobApi_HandleCommand);
   AH_Job_SetHandleResultsFn(j, AH_Job_HandleResults_Empty);
 
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);
   assert(dbArgs);
   if (useCreditCardJob)
-    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
-                         "accountNumber", AB_Account_GetAccountNumber(account));
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountNumber", AB_Account_GetAccountNumber(account));
   else
-    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
-                         "allAccounts", "N");
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "allAccounts", "N");
   return j;
 }
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-void GWENHYWFAR_CB AH_Job_GetTransactions_FreeData(void *bp, void *p)
-{
-  AH_JOB_GETTRANSACTIONS *aj;
-
-  aj=(AH_JOB_GETTRANSACTIONS *)p;
-
-  GWEN_FREE_OBJECT(aj);
-}
-
-
-
-/* --------------------------------------------------------------- FUNCTION */
 int _readTransIntoAccountInfo(AH_JOB *j,
                               AB_IMEXPORTER_ACCOUNTINFO *ai,
                               const char *docType,
@@ -133,7 +129,6 @@ int _readTransIntoAccountInfo(AH_JOB *j,
 {
   AB_PROVIDER *pro;
   AB_IMEXPORTER_CONTEXT *tempContext;
-  AB_IMEXPORTER_ACCOUNTINFO *tempAccountInfo;
   int rv;
 
   assert(j);
@@ -148,61 +143,61 @@ int _readTransIntoAccountInfo(AH_JOB *j,
   GWEN_Text_DumpString((const char *) ptr, len, 2);
 #endif
 
-  rv=AB_Banking_ImportFromBufferLoadProfile(AB_Provider_GetBanking(pro),
-                                            "swift",
-                                            tempContext,
-                                            docType,
-                                            NULL,
-                                            ptr,
-                                            len);
+  rv=AB_Banking_ImportFromBufferLoadProfile(AB_Provider_GetBanking(pro), "swift", tempContext, docType, NULL, ptr, len);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_ImExporterContext_free(tempContext);
     return rv;
   }
-
-  /* copy data from temporary context to real context */
-  tempAccountInfo=AB_ImExporterContext_GetFirstAccountInfo(tempContext);
-  while (tempAccountInfo) {
-    AB_TRANSACTION_LIST *tl;
-    AB_BALANCE_LIST *bl;
-
-    /* move transactions, set transaction type */
-    tl=AB_ImExporterAccountInfo_GetTransactionList(tempAccountInfo);
-    if (tl) {
-      AB_TRANSACTION *t;
-
-      while ((t=AB_Transaction_List_First(tl))) {
-        AB_Transaction_List_Del(t);
-        AB_Transaction_SetType(t, ty);
-        AB_ImExporterAccountInfo_AddTransaction(ai, t);
-      }
-    }
-
-    /* move balances */
-    bl=AB_ImExporterAccountInfo_GetBalanceList(tempAccountInfo);
-    if (bl) {
-      AB_BALANCE *bal;
-
-      while ((bal=AB_Balance_List_First(bl))) {
-        AB_Balance_List_Del(bal);
-        AB_ImExporterAccountInfo_AddBalance(ai, bal);
-      }
-    }
-
-    tempAccountInfo=AB_ImExporterAccountInfo_List_Next(tempAccountInfo);
-  }
-  AB_ImExporterContext_free(tempContext);
+  _mergeContextsSetTypeAndFreeSrc(ai, tempContext, ty);
 
   return 0;
 }
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+void _mergeContextsSetTypeAndFreeSrc(AB_IMEXPORTER_ACCOUNTINFO *destAccountInfo, AB_IMEXPORTER_CONTEXT *srcContext, int ty)
 {
-  AH_JOB_GETTRANSACTIONS *aj;
+  AB_IMEXPORTER_ACCOUNTINFO *srcAccountInfo;
+
+  /* copy data from temporary context to real context */
+  srcAccountInfo=AB_ImExporterContext_GetFirstAccountInfo(srcContext);
+  while (srcAccountInfo) {
+    AB_TRANSACTION_LIST *tl;
+    AB_BALANCE_LIST *bl;
+
+    /* move transactions, set transaction type */
+    tl=AB_ImExporterAccountInfo_GetTransactionList(srcAccountInfo);
+    if (tl) {
+      AB_TRANSACTION *t;
+
+      while ((t=AB_Transaction_List_First(tl))) {
+        AB_Transaction_List_Del(t);
+        AB_Transaction_SetType(t, ty);
+        AB_ImExporterAccountInfo_AddTransaction(destAccountInfo, t);
+      }
+    }
+
+    /* move balances */
+    bl=AB_ImExporterAccountInfo_GetBalanceList(srcAccountInfo);
+    if (bl) {
+      AB_BALANCE *bal;
+
+      while ((bal=AB_Balance_List_First(bl))) {
+        AB_Balance_List_Del(bal);
+        AB_ImExporterAccountInfo_AddBalance(destAccountInfo, bal);
+      }
+    }
+
+    srcAccountInfo=AB_ImExporterAccountInfo_List_Next(srcAccountInfo);
+  }
+  AB_ImExporterContext_free(srcContext);
+}
+
+
+
+int _jobApi_ProcessForBankAccount(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AB_ACCOUNT *a;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
   GWEN_DB_NODE *dbResponses;
@@ -211,10 +206,6 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
   int rv;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Processing JobGetTransactions");
-
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETTRANSACTIONS, j);
-  assert(aj);
 
   a=AH_AccountJob_GetAccount(j);
   assert(a);
@@ -233,8 +224,6 @@ int AH_Job_GetTransactions_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     AH_Job_SetStatus(j, AH_JobStatusError);
     return rv;
   }
-  GWEN_Buffer_Rewind(tbooked);
-  GWEN_Buffer_Rewind(tnoted);
 
   if (getenv("AQHBCI_LOGBOOKED"))
     _appendBufferToFile("/tmp/booked.mt", GWEN_Buffer_GetStart(tbooked), GWEN_Buffer_GetUsedBytes(tbooked));
@@ -339,9 +328,8 @@ int _parseTransData(AH_JOB *j,
 
 
 
-int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+int _jobApi_ProcessForCreditCard(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 {
-  AH_JOB_GETTRANSACTIONS *aj;
   AB_ACCOUNT *a;
   AB_IMEXPORTER_ACCOUNTINFO *ai;
   AB_USER *u;
@@ -352,10 +340,6 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
   int rv;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Processing JobGetTransactionsCreditCard");
-
-  assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETTRANSACTIONS, j);
-  assert(aj);
 
   tbooked=GWEN_Buffer_new(0, 1024, 0, 1);
   tnoted=GWEN_Buffer_new(0, 1024, 0, 1);
@@ -511,8 +495,7 @@ int AH_Job_GetTransactionsCreditCard_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *c
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetTransactions_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits)
+int _jobApi_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits)
 {
   AB_TRANSACTION_LIMITS *tl;
   GWEN_DB_NODE *dbParams;
@@ -529,8 +512,7 @@ int AH_Job_GetTransactions_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits)
 
 
 
-/* --------------------------------------------------------------- FUNCTION */
-int AH_Job_GetTransactions_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t)
+int _jobApi_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t)
 {
   const GWEN_DATE *da;
 
@@ -581,7 +563,6 @@ void _appendBufferToFile(const char *fname, const char *ptr, uint32_t length)
     }
   }
 }
-
 
 
 

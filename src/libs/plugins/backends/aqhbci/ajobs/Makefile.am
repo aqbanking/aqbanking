@@ -18,7 +18,6 @@ noinst_HEADERS=\
   jobgetbalance_l.h \
   jobgetbalance_p.h \
   jobgettransactions_l.h \
-  jobgettransactions_p.h \
   jobgettrans_camt_l.h \
   jobforeignxferwh_l.h \
   jobforeignxferwh_p.h \
