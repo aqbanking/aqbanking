@@ -364,7 +364,7 @@ int AH_Job_TransferBase_HandleCommand_SepaUndated(AH_JOB *j, const AB_TRANSACTIO
   AB_USER *u;
   uint32_t uflags;
 
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging args");
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Handling command");
 
   ab=AH_Job_GetBankingApi(j);
   assert(ab);
@@ -430,7 +430,7 @@ int AH_Job_TransferBase_HandleCommand_SepaDated(AH_JOB *j, const AB_TRANSACTION 
   AB_USER *u;
   uint32_t uflags;
 
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging args");
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Handling command");
 
   ab=AH_Job_GetBankingApi(j);
   assert(ab);
@@ -504,7 +504,7 @@ int AH_Job_TransferBase_HandleCommand_SepaDatedDebit(AH_JOB *j, const AB_TRANSAC
   AB_USER *u;
   uint32_t uflags;
 
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging args");
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Handling command");
 
   ab=AH_Job_GetBankingApi(j);
   assert(ab);
@@ -579,7 +579,7 @@ int AH_Job_TransferBase_HandleCommand_SepaStandingOrder(AH_JOB *j, const AB_TRAN
   uint32_t uflags;
   const char *s;
 
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Exchanging args");
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Handling command");
 
   ab=AH_Job_GetBankingApi(j);
   assert(ab);
