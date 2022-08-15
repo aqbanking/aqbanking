@@ -11,6 +11,12 @@
 /* This file is included by banking.c */
 
 
+static int _checkStringForSepaCharset(const char *s, int restricted);
+static int _checkStringForAlNum(const char *s, int lcase);
+static int _checkFieldAgainstLimits(const char *fieldName, const char *s, int maxs, int mustNotBeEmpty);
+
+
+
 
 int AB_Banking_CheckTransactionAgainstLimits_Purpose(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim)
 {
@@ -92,60 +98,18 @@ int AB_Banking_CheckTransactionAgainstLimits_Purpose(const AB_TRANSACTION *t, co
 
 int AB_Banking_CheckTransactionAgainstLimits_Names(const AB_TRANSACTION *t, const AB_TRANSACTION_LIMITS *lim)
 {
-  int maxs;
-  const char *s;
+  int rv;
 
-  /* check remote name */
-  if (lim)
-    maxs=AB_TransactionLimits_GetMaxLenRemoteName(lim);
-  else
-    maxs=0;
-
-  s=AB_Transaction_GetRemoteName(t);
-  if (s && *s) {
-    int l;
-    GWEN_BUFFER *tbuf;
-
-    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    AB_ImExporter_Utf8ToDta(s, -1, tbuf);
-    GWEN_Text_CondenseBuffer(tbuf);
-    l=GWEN_Buffer_GetUsedBytes(tbuf);
-    if (maxs>0 && l>maxs) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many chars in remote name (%d>%d)", l, maxs);
-      GWEN_Buffer_free(tbuf);
-      return GWEN_ERROR_INVALID;
-    }
-    GWEN_Buffer_free(tbuf);
-  }
-  else {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing remote name");
-    return GWEN_ERROR_INVALID;
+  rv=_checkFieldAgainstLimits(AB_Transaction_GetRemoteName(t), "remote name", lim?AB_TransactionLimits_GetMaxLenRemoteName(lim):0, 1);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
   }
 
-  /* check local name */
-  if (lim)
-    maxs=AB_TransactionLimits_GetMaxLenLocalName(lim);
-  else
-    maxs=0;
-  s=AB_Transaction_GetLocalName(t);
-  if (s && *s) {
-    int l;
-    GWEN_BUFFER *tbuf;
-
-    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    AB_ImExporter_Utf8ToDta(s, -1, tbuf);
-    GWEN_Text_CondenseBuffer(tbuf);
-    l=GWEN_Buffer_GetUsedBytes(tbuf);
-    if (maxs>0 && l>maxs) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many chars in local name (%d>%d)", l, maxs);
-      GWEN_Buffer_free(tbuf);
-      return GWEN_ERROR_INVALID;
-    }
-    GWEN_Buffer_free(tbuf);
-  }
-  else {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing local name");
-    return GWEN_ERROR_INVALID;
+  rv=_checkFieldAgainstLimits(AB_Transaction_GetLocalName(t), "remote name", lim?AB_TransactionLimits_GetMaxLenLocalName(lim):0, 1);
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    return rv;
   }
 
   return 0;
@@ -419,7 +383,7 @@ int AB_Banking_CheckTransactionAgainstLimits_Sequence(const AB_TRANSACTION *t, c
 
 
 
-static int _checkStringForSepaCharset(const char *s, int restricted)
+int _checkStringForSepaCharset(const char *s, int restricted)
 {
   char ascii_chars[]="'&*$%:?,-(+.)/ "; /* last is a blank! */
   const char *ascii;
@@ -500,7 +464,7 @@ static int _checkStringForSepaCharset(const char *s, int restricted)
  * other than "A"-"Z", "a"-"z" and "0"-"9".
  * We don't use isalnum here because I'm not sure how that function handles UTF-8 chars with umlauts...
  */
-static int _checkStringForAlNum(const char *s, int lcase)
+int _checkStringForAlNum(const char *s, int lcase)
 {
   assert(s);
   while (*s) {
@@ -513,6 +477,35 @@ static int _checkStringForAlNum(const char *s, int lcase)
       return GWEN_ERROR_BAD_DATA;
     }
     s++;
+  }
+
+  return 0;
+}
+
+
+
+int _checkFieldAgainstLimits(const char *fieldName, const char *s, int maxs, int mustNotBeEmpty)
+{
+  if (s && *s) {
+    int l;
+    GWEN_BUFFER *tbuf;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    AB_ImExporter_Utf8ToDta(s, -1, tbuf);
+    GWEN_Text_CondenseBuffer(tbuf);
+    l=GWEN_Buffer_GetUsedBytes(tbuf);
+    if (maxs>0 && l>maxs) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Too many chars in %s (%d>%d)", fieldName, l, maxs);
+      GWEN_Buffer_free(tbuf);
+      return GWEN_ERROR_INVALID;
+    }
+    GWEN_Buffer_free(tbuf);
+  }
+  else {
+    if (mustNotBeEmpty) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing %s", fieldName);
+      return GWEN_ERROR_INVALID;
+    }
   }
 
   return 0;
@@ -698,7 +691,6 @@ void AB_Banking_AddJobInfoToBuffer(const AB_TRANSACTION *t, GWEN_BUFFER *buf)
     GWEN_Buffer_AppendString(buf, sName?sName:(sIban?sIban:sAccountNum));
   }
 }
-
 
 
 
