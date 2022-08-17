@@ -72,6 +72,7 @@
       dlg_newaccount_p.h
       dlg_newuser_be.h
       dlg_newuser_p.h
+      w_profilelist.h
     </headers>
   
   
@@ -89,6 +90,7 @@
       dlg_usertype_pagedefault.c
       dlg_newaccount.c
       dlg_newuser.c
+      w_profilelist.c
     </sources>
 
 

@@ -29,7 +29,8 @@ noinst_HEADERS=\
   dlg_newaccount_be.h \
   dlg_newaccount_p.h \
   dlg_newuser_be.h \
-  dlg_newuser_p.h
+  dlg_newuser_p.h \
+  w_profilelist.h
 
 libabdialogs_la_SOURCES=\
   dlg_importer.c \
@@ -42,7 +43,8 @@ libabdialogs_la_SOURCES=\
   dlg_setup_newuser.c \
   dlg_usertype_pagedefault.c \
   dlg_newaccount.c \
-  dlg_newuser.c
+  dlg_newuser.c \
+  w_profilelist.c
 
 
 dlgdatadir=$(aqbanking_pkgdatadir)/dialogs
