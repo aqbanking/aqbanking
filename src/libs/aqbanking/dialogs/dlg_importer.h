@@ -16,7 +16,6 @@
 #include <aqbanking/backendsupport/imexporter.h>
 
 #include <gwenhywfar/dialog.h>
-#include <gwenhywfar/db.h>
 
 
 

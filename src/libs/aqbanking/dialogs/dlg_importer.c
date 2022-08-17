@@ -13,6 +13,7 @@
 #endif
 
 #include "dlg_importer_p.h"
+#include "w_importerlist.h"
 #include "w_profilelist.h"
 
 #include "aqbanking/i18n_l.h"
@@ -21,7 +22,6 @@
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>
-#include <gwenhywfar/pathmanager.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/gui.h>
 
@@ -53,8 +53,6 @@ static int _determineSelectedProfile(GWEN_DIALOG *dlg);
 
 static void _updateImporterList(GWEN_DIALOG *dlg);
 static void _updateProfileList(GWEN_DIALOG *dlg);
-
-static void _selectImporter(GWEN_DIALOG *dlg, const char *importerName);
 
 static int _editProfile(GWEN_DIALOG *dlg);
 static int _newProfile(GWEN_DIALOG *dlg);
@@ -199,6 +197,8 @@ void AB_ImporterDialog_Init(GWEN_DIALOG *dlg)
   GWEN_DB_NODE *dbPrefs;
   int i;
 
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Init");
+
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_IMPORTER_DIALOG, dlg);
   assert(xdlg);
@@ -333,6 +333,8 @@ void AB_ImporterDialog_Fini(GWEN_DIALOG *dlg)
   int i;
   GWEN_DB_NODE *dbPrefs;
 
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Fini");
+
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_IMPORTER_DIALOG, dlg);
   assert(xdlg);
@@ -357,68 +359,16 @@ void AB_ImporterDialog_Fini(GWEN_DIALOG *dlg)
 
 void _updateImporterList(GWEN_DIALOG *dlg)
 {
-  GWEN_PLUGIN_DESCRIPTION_LIST2 *il;
   AB_IMPORTER_DIALOG *xdlg;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_IMPORTER_DIALOG, dlg);
   assert(xdlg);
 
-  if (xdlg->importerName==NULL)
-    _determineSelectedImporter(dlg);
+  AB_ImporterListWidget_UpdateList(dlg, "wiz_importer_list", xdlg->banking);
 
-  GWEN_Dialog_SetIntProperty(dlg, "wiz_importer_list", GWEN_DialogProperty_ClearValues, 0, 0, 0);
-  il=AB_Banking_GetImExporterDescrs(xdlg->banking);
-  if (il) {
-    GWEN_PLUGIN_DESCRIPTION_LIST2_ITERATOR *ilit;
-
-    ilit=GWEN_PluginDescription_List2_First(il);
-    if (ilit) {
-      GWEN_PLUGIN_DESCRIPTION *pd;
-      GWEN_BUFFER *tbuf;
-
-      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-      pd=GWEN_PluginDescription_List2Iterator_Data(ilit);
-      while (pd) {
-        const char *s;
-
-        s=GWEN_PluginDescription_GetName(pd);
-        if (s && *s) {
-          GWEN_Buffer_AppendString(tbuf, s);
-          GWEN_Buffer_AppendString(tbuf, "\t");
-          s=GWEN_PluginDescription_GetShortDescr(pd);
-          if (s && *s)
-            GWEN_Buffer_AppendString(tbuf, s);
-          GWEN_Dialog_SetCharProperty(dlg,
-                                      "wiz_importer_list",
-                                      GWEN_DialogProperty_AddValue,
-                                      0,
-                                      GWEN_Buffer_GetStart(tbuf),
-                                      0);
-          GWEN_Buffer_Reset(tbuf);
-        }
-        pd=GWEN_PluginDescription_List2Iterator_Next(ilit);
-      }
-
-      GWEN_Buffer_free(tbuf);
-      GWEN_PluginDescription_List2Iterator_free(ilit);
-    }
-    GWEN_PluginDescription_List2_free(il);
-  }
-  GWEN_Dialog_SetIntProperty(dlg, "wiz_importer_list", GWEN_DialogProperty_Sort, 0, 0, 0);
   if (xdlg->importerName)
-    _selectImporter(dlg, xdlg->importerName);
-}
-
-
-
-void _selectImporter(GWEN_DIALOG *dlg, const char *importerName)
-{
-  int idx;
-
-  idx=GWEN_Dialog_ListGetItemMatchingFirstColumn(dlg, "wiz_importer_list", importerName);
-  if (idx>=0)
-    GWEN_Dialog_SetIntProperty(dlg, "wiz_importer_list", GWEN_DialogProperty_Value, 0, idx, 0);
+    AB_ImporterListWidget_SelectImporter(dlg, "wiz_importer_list", xdlg->importerName);
 }
 
 
@@ -426,7 +376,6 @@ void _selectImporter(GWEN_DIALOG *dlg, const char *importerName)
 int _determineSelectedImporter(GWEN_DIALOG *dlg)
 {
   AB_IMPORTER_DIALOG *xdlg;
-  int rv;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_IMPORTER_DIALOG, dlg);
@@ -436,18 +385,11 @@ int _determineSelectedImporter(GWEN_DIALOG *dlg)
   free(xdlg->importerName);
   xdlg->importerName=NULL;
 
-  /* get current value */
-  rv=GWEN_Dialog_GetIntProperty(dlg, "wiz_importer_list", GWEN_DialogProperty_Value, 0, -1);
-  DBG_NOTICE(0, "Selected value: %d", rv);
-  if (rv!=-1) {
-    xdlg->importerName=GWEN_Dialog_ListGetFirstColumnData(dlg, "wiz_importer_list", rv);
-    if (xdlg->importerName) {
-      DBG_NOTICE(0, "Selected importer [%s]", xdlg->importerName);
-      return 0;
-    }
-  }
+  xdlg->importerName=AB_ImporterListWidget_GetSelectedImporter(dlg, "wiz_importer_list");
+  if (xdlg->importerName==NULL)
+    return GWEN_ERROR_NOT_FOUND;
 
-  return GWEN_ERROR_NOT_FOUND;
+  return 0;
 }
 
 
@@ -460,7 +402,9 @@ void _updateProfileList(GWEN_DIALOG *dlg)
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_IMPORTER_DIALOG, dlg);
   assert(xdlg);
 
-  AB_ProfileListWidget_UpdateProfileList(dlg, "wiz_profile_list", xdlg->banking, xdlg->importerName);
+  AB_ProfileListWidget_UpdateList(dlg, "wiz_profile_list", xdlg->banking, xdlg->importerName);
+  if (xdlg->profileName)
+    AB_ProfileListWidget_SelectProfile(dlg, "wiz_profile_list", xdlg->profileName);
 }
 
 
@@ -571,7 +515,7 @@ int AB_ImporterDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards)
       rv=_determineSelectedProfile(dlg);
       if (rv<0) {
         /* no profile... */
-        DBG_ERROR(0, "No profile");
+        DBG_INFO(AQBANKING_LOGDOMAIN, "No profile");
       }
       else {
         rv=AB_Banking_ImportFromFileLoadProfile(xdlg->banking,
@@ -581,9 +525,11 @@ int AB_ImporterDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards)
                                                 NULL,
                                                 xdlg->fileName);
         if (rv<0) {
-          /* TODO: show error message */
-          DBG_ERROR(0, "Error importing file: %d", rv);
-          AB_ImExporterContext_Clear(xdlg->context);
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Error importing file: %d", rv);
+	  GWEN_Gui_ShowError(I18N("Error"),
+			     I18N("Error importing file (%d: %s), please see log files for details"),
+			     GWEN_Error_SimpleToString(rv));
+	  AB_ImExporterContext_Clear(xdlg->context);
         }
         else {
           DBG_NOTICE(0, "Import ok.");
@@ -824,7 +770,7 @@ int _newProfile(GWEN_DIALOG *dlg)
 
 int AB_ImporterDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
 {
-  DBG_NOTICE(0, "Activated: %s", sender);
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Activated: %s", sender);
   if (strcasecmp(sender, "wiz_prev_button")==0)
     return AB_ImporterDialog_Previous(dlg);
   else if (strcasecmp(sender, "wiz_next_button")==0)
@@ -870,7 +816,7 @@ int AB_ImporterDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
         GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
     }
     else {
-      DBG_NOTICE(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     }
     GWEN_Buffer_free(pathBuffer);
     return GWEN_DialogEvent_ResultNotHandled;
