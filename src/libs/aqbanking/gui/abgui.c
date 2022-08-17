@@ -424,6 +424,8 @@ int GWENHYWFAR_CB AB_Gui_ReadDialogPrefs(GWEN_GUI *gui,
 {
   AB_GUI *xgui;
 
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Reading dialog preferences for \"%s\"", groupName);
+
   assert(gui);
   xgui=GWEN_INHERIT_GETDATA(GWEN_GUI, AB_GUI, gui);
   assert(xgui);
@@ -467,6 +469,8 @@ int GWENHYWFAR_CB AB_Gui_WriteDialogPrefs(GWEN_GUI *gui,
                                           GWEN_DB_NODE *db)
 {
   AB_GUI *xgui;
+
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Writing dialog preferences for \"%s\"", groupName);
 
   assert(gui);
   xgui=GWEN_INHERIT_GETDATA(GWEN_GUI, AB_GUI, gui);
