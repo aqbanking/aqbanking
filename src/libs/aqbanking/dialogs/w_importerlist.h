@@ -17,7 +17,7 @@
 #include <gwenhywfar/dialog.h>
 
 
-/** @name Helper Functions for Lists of Im-/Exporter Profiles
+/** @name Helper Functions for Lists of Im-/Exporters
  *
  */
 /*@{*/
