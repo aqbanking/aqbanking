@@ -16,15 +16,9 @@
 
 #include "aqbanking/i18n_l.h"
 
-#include <aqbanking/banking_be.h>
-
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>
-#include <gwenhywfar/pathmanager.h>
 #include <gwenhywfar/debug.h>
-#include <gwenhywfar/gui.h>
-
-#include <assert.h>
 
 
 
@@ -37,7 +31,7 @@ void AB_ProfileListWidget_Init(GWEN_DIALOG *dlg, const char *widgetName)
 
 
 
-void AB_ProfileListWidget_UpdateProfileList(GWEN_DIALOG *dlg, const char *widgetName, AB_BANKING *banking, const char *importerName)
+void AB_ProfileListWidget_UpdateList(GWEN_DIALOG *dlg, const char *widgetName, AB_BANKING *banking, const char *importerName)
 {
   char *selectedProfile;
 
@@ -74,9 +68,11 @@ void AB_ProfileListWidget_UpdateProfileList(GWEN_DIALOG *dlg, const char *widget
       GWEN_Buffer_free(tbuf);
       GWEN_DB_Group_free(db);
     }
-    GWEN_Dialog_SetIntProperty(dlg, "wiz_profile_list", GWEN_DialogProperty_Sort, 0, 0, 0);
-    if (selectedProfile)
+    GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_Sort, 0, 0, 0);
+    if (selectedProfile) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Re-selecting profile \"%s\"", selectedProfile);
       AB_ProfileListWidget_SelectProfile(dlg, widgetName, selectedProfile);
+    }
   }
   if (selectedProfile)
     free(selectedProfile);
