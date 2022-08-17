@@ -13,10 +13,8 @@
 
 
 #include <aqbanking/banking.h>
-#include <aqbanking/backendsupport/imexporter.h>
 
 #include <gwenhywfar/dialog.h>
-#include <gwenhywfar/db.h>
 
 
 /** @name Helper Functions for Lists of Im-/Exporter Profiles
@@ -43,7 +41,7 @@ void AB_ProfileListWidget_Init(GWEN_DIALOG *dlg, const char *widgetName);
  * @param banking pointer to used AqBanking object
  * @param importerName name of the AqBanking import module for which profiles are to be loaded
  */
-void AB_ProfileListWidget_UpdateProfileList(GWEN_DIALOG *dlg, const char *widgetName, AB_BANKING *banking, const char *importerName);
+void AB_ProfileListWidget_UpdateList(GWEN_DIALOG *dlg, const char *widgetName, AB_BANKING *banking, const char *importerName);
 
 /**
  * Select the given profile.
