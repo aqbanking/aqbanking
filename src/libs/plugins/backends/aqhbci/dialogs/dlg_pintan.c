@@ -52,6 +52,11 @@
 static int _reallyDoIt(GWEN_DIALOG *dlg, AB_USER *u, uint32_t pid);
 static int _selectTanMethod(GWEN_DIALOG *dlg, AB_USER *u, int doLock);
 
+static int _getCertificate(AB_PROVIDER *pro, AB_USER *u, uint32_t pid);
+static int _getBankInfoAnon(AB_PROVIDER *pro, AB_USER *u, uint32_t pid);
+static int _getSystemId(AB_PROVIDER *pro, AB_USER *u, uint32_t pid);
+static int _getAccountList(AB_PROVIDER *pro, AB_USER *u, uint32_t pid);
+
 
 
 
@@ -904,37 +909,83 @@ int _reallyDoIt(GWEN_DIALOG *dlg, AB_USER *u, uint32_t pid)
 {
   AH_PINTAN_DIALOG *xdlg;
   int rv;
-  AB_IMEXPORTER_CONTEXT *ctx;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_PINTAN_DIALOG, dlg);
   assert(xdlg);
 
-
-  /* get certificate */
-  DBG_NOTICE(0, "Getting certs (%08x)", AH_User_GetFlags(u));
-  GWEN_Gui_ProgressLog(pid,
-                       GWEN_LoggerLevel_Notice,
-                       I18N("Retrieving SSL certificate"));
-  rv=AH_Provider_GetCert(xdlg->provider, u, 0, 1, 0);
+  rv=_getCertificate(xdlg->provider, u, pid);
   if (rv<0) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
-  rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
+  rv=_getBankInfoAnon(xdlg->provider, u, pid);
+  if (rv<0) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  rv=_getSystemId(xdlg->provider, u, pid);
+  if (rv<0) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  /* select TAN method */
+  rv=_selectTanMethod(dlg, u, 0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
+  rv=_getAccountList(xdlg->provider, u, pid);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+int _getCertificate(AB_PROVIDER *pro, AB_USER *u, uint32_t pid)
+{
+  int rv;
+
+  DBG_NOTICE(0, "Getting cert (%08x)", AH_User_GetFlags(u));
+  GWEN_Gui_ProgressLog(pid,
+                       GWEN_LoggerLevel_Notice,
+                       I18N("Retrieving SSL certificate"));
+  rv=AH_Provider_GetCert(pro, u, 0, 1, 0);
+  if (rv<0) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+  rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
+  if (rv==GWEN_ERROR_USER_ABORTED) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+int _getBankInfoAnon(AB_PROVIDER *pro, AB_USER *u, uint32_t pid)
+{
+  AB_IMEXPORTER_CONTEXT *ctx;
+  int rv;
 
   /* get bank info (for SCA) */
   DBG_NOTICE(0, "Getting generic bank info");
   GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice, "");
   GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice, I18N("Retrieving generic bank info (SCA)"));
+
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetBankInfo(xdlg->provider, u, ctx, 0 /* without HKTAN */, 0, 1, 0);
+  rv=AH_Provider_GetBankInfo(pro, u, ctx, 0 /* without HKTAN */, 0, 1, 0);
   if (rv<0) {
     AB_ImExporterContext_free(ctx);
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting bank info (%d), ignoring", rv);
@@ -950,13 +1001,21 @@ int _reallyDoIt(GWEN_DIALOG *dlg, AB_USER *u, uint32_t pid)
     return rv;
   }
 
+  return 0;
+}
 
-  /* get system id */
+
+
+int _getSystemId(AB_PROVIDER *pro, AB_USER *u, uint32_t pid)
+{
+  AB_IMEXPORTER_CONTEXT *ctx;
+  int rv;
+
   DBG_NOTICE(0, "Getting sysid");
   GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice, "");
   GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice, I18N("Retrieving system id"));
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetSysId(xdlg->provider, u, ctx, 0, 1, 0);
+  rv=AH_Provider_GetSysId(pro, u, ctx, 0, 1, 0);
   if (rv<0) {
     AB_ImExporterContext_free(ctx);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -970,21 +1029,22 @@ int _reallyDoIt(GWEN_DIALOG *dlg, AB_USER *u, uint32_t pid)
     return rv;
   }
 
+  return 0;
+}
 
-  /* select TAN method */
-  rv=_selectTanMethod(dlg, u, 0);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
 
+
+int _getAccountList(AB_PROVIDER *pro, AB_USER *u, uint32_t pid)
+{
+  AB_IMEXPORTER_CONTEXT *ctx;
+  int rv;
 
   /* get account list */
   DBG_NOTICE(0, "Getting account list");
   GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice, "");
   GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice, I18N("Retrieving account list"));
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetAccounts(xdlg->provider, u, ctx, 0, 1, 0);
+  rv=AH_Provider_GetAccounts(pro, u, ctx, 0, 1, 0);
   if (rv<0) {
     AB_ImExporterContext_free(ctx);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -998,9 +1058,10 @@ int _reallyDoIt(GWEN_DIALOG *dlg, AB_USER *u, uint32_t pid)
     return rv;
   }
 
-
   return 0;
 }
+
+
 
 
 
