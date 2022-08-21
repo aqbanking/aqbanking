@@ -20,6 +20,7 @@
                5.1.   Building from the Tar File
                5.2.   Building from GIT
                5.3.   Building the API Documentation
+               5.4.   Building using gwbuild
                6.   Windows Registry Keys Used
                6.1.   Software\\AqBanking\\Paths\\pkgdatadir
                6.2.   Software\\AqBanking\\Paths\\sysconfdir
@@ -109,7 +110,7 @@ which Gwenhywfar is available.
 
 This includes (but is not limited to): 
  - Linux (of course ;-)
- - Windows (WIN32 platforms, such as Windows95 up to Windows XP)
+ - Windows
  - MacOSX 10.5 and newer
  - most POSIX systems (such as the BSDs) should also be supported, 
    however, this is untested
@@ -150,7 +151,7 @@ United States, Canada and maybe in the United Kingdom.
 ----------
 
 EBICS is the successor of the German banking protocol FTAM. It is used in commercial
-environments. The tool AqBanking-CLI comes with optional support for this protocol.
+environments.
 
 
 3.4. Paypal
@@ -191,7 +192,6 @@ These applications fully or partially support AqBanking:
  - Gnucash (https://www.gnucash.org/)
  - KMyMoney (https://www.kmymoney.org/)
  - OrgaMon (https://www.orgamon.org/)
- - Pecunia 0.2 (https://www.pecuniabanking.de/Pecunia/Home.html)
 
 The aqbanking package also includes several command-line tools
 (aqbanking-tool, aqhbci-tool).
@@ -239,7 +239,7 @@ Compilation hints for specific platforms:
 #> make -fMakefile.cvs
 #> ./configure
 #> make typedefs
-#> make types
+#> make typefiles
 
 and continue as described in "5.1. Building from the Tar File".
 
@@ -491,6 +491,6 @@ AqBanking6:
 - Includes:                    - some header files have been moved to subfolders (e.g. aqbanking/value.h -> aqbanking/types/value.h>)
                                  If your compiler complains about missing headers try "aqbanking/types/" instead of "aqbanking".
 
-Martin Preuss, Hamburg/Germany, 2021/02/19
+Martin Preuss, Hamburg/Germany, 2022/08/21
 
 
