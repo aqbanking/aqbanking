@@ -1232,7 +1232,6 @@ esac
 #
 
 AC_CONFIG_FILES([
-  mksymlinks.sh
   admin/Makefile
   doc/Makefile
   m4/Makefile
