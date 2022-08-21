@@ -62,12 +62,16 @@ static void _dialogInit(GWEN_DIALOG *dlg);
 static void _dialogFini(GWEN_DIALOG *dlg);
 static int _dialogNext(GWEN_DIALOG *dlg);
 static int _dialogPrevious(GWEN_DIALOG *dlg);
+static int _dialogEnterPage(GWEN_DIALOG *dlg, int page, int forwards);
 
 static int GWENHYWFAR_CB _dlgApi_SignalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
 static int _handleSignalActivated(GWEN_DIALOG *dlg, const char *sender);
 static int _handleSignalActivatedBankCode(GWEN_DIALOG *dlg);
 static int _handleSignalActivatedSpecial(GWEN_DIALOG *dlg);
 static int _handleSignalValueChanged(GWEN_DIALOG *dlg, const char *sender);
+
+static int _getBankPageData(GWEN_DIALOG *dlg);
+static int _getUserPageData(GWEN_DIALOG *dlg);
 
 static void _setBankCode(GWEN_DIALOG *dlg, const char *s);
 static void _setBankName(GWEN_DIALOG *dlg, const char *s);
@@ -390,7 +394,7 @@ void _dialogFini(GWEN_DIALOG *dlg)
 
 
 
-int AH_PinTanDialog_GetBankPageData(GWEN_DIALOG *dlg)
+int _getBankPageData(GWEN_DIALOG *dlg)
 {
   AH_PINTAN_DIALOG *xdlg;
   const char *s;
@@ -448,7 +452,7 @@ int AH_PinTanDialog_GetBankPageData(GWEN_DIALOG *dlg)
 
 
 
-int AH_PinTanDialog_GetUserPageData(GWEN_DIALOG *dlg)
+int _getUserPageData(GWEN_DIALOG *dlg)
 {
   AH_PINTAN_DIALOG *xdlg;
   const char *s;
@@ -505,7 +509,7 @@ int AH_PinTanDialog_GetUserPageData(GWEN_DIALOG *dlg)
 
 
 
-int AH_PinTanDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards)
+int _dialogEnterPage(GWEN_DIALOG *dlg, int page, int forwards)
 {
   AH_PINTAN_DIALOG *xdlg;
   int rv;
@@ -522,7 +526,7 @@ int AH_PinTanDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards)
 
   case PAGE_BANK:
     GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
-    rv=AH_PinTanDialog_GetBankPageData(dlg);
+    rv=_getBankPageData(dlg);
     if (rv<0)
       GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
     else
@@ -532,7 +536,7 @@ int AH_PinTanDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards)
 
   case PAGE_USER:
     GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
-    rv=AH_PinTanDialog_GetUserPageData(dlg);
+    rv=_getUserPageData(dlg);
     if (rv<0)
       GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
     else
@@ -643,7 +647,7 @@ int _addUserAndSetupWithBankServer(GWEN_DIALOG *dlg)
                               I18N("The user has been successfully setup."),
                               0);
   GWEN_Gui_ProgressEnd(pid);
-  AH_PinTanDialog_EnterPage(dlg, PAGE_END, 1);
+  _dialogEnterPage(dlg, PAGE_END, 1);
 
   xdlg->user=u;
 
@@ -879,7 +883,7 @@ int _dialogNext(GWEN_DIALOG *dlg)
   }
   else if (page<PAGE_END) {
     page++;
-    return AH_PinTanDialog_EnterPage(dlg, page, 1);
+    return _dialogEnterPage(dlg, page, 1);
   }
   else if (page==PAGE_END)
     return GWEN_DialogEvent_ResultAccept;
@@ -901,7 +905,7 @@ int _dialogPrevious(GWEN_DIALOG *dlg)
   page=GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1);
   if (page>PAGE_BEGIN) {
     page--;
-    return AH_PinTanDialog_EnterPage(dlg, page, 0);
+    return _dialogEnterPage(dlg, page, 0);
   }
 
   return GWEN_DialogEvent_ResultHandled;
@@ -1002,7 +1006,7 @@ int _handleSignalActivatedBankCode(GWEN_DIALOG *dlg)
 
   GWEN_Dialog_free(dlg2);
 
-  if (AH_PinTanDialog_GetBankPageData(dlg)<0)
+  if (_getBankPageData(dlg)<0)
     GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
   else
     GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
@@ -1086,14 +1090,14 @@ int _handleSignalValueChanged(GWEN_DIALOG *dlg, const char *sender)
     int rv;
 
     if (GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1)==PAGE_BANK) {
-      rv=AH_PinTanDialog_GetBankPageData(dlg);
+      rv=_getBankPageData(dlg);
       if (rv<0)
         GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
       else
         GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
     }
     else if (GWEN_Dialog_GetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, -1)==PAGE_USER) {
-      rv=AH_PinTanDialog_GetUserPageData(dlg);
+      rv=_getUserPageData(dlg);
       if (rv<0)
         GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
       else
