@@ -347,6 +347,7 @@ int GWENHYWFAR_CB AH_NewUserDialog_SignalHandler(GWEN_DIALOG *dlg,
   case GWEN_DialogEvent_TypeClose:
 
   case GWEN_DialogEvent_TypeLast:
+  default:
     return GWEN_DialogEvent_ResultNotHandled;
 
   }
