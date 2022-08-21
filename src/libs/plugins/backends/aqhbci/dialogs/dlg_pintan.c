@@ -931,13 +931,16 @@ int _reallyDoIt(GWEN_DIALOG *dlg, AB_USER *u, uint32_t pid)
 
   /* get bank info (for SCA) */
   DBG_NOTICE(0, "Getting generic bank info");
+  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice, "");
   GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice, I18N("Retrieving generic bank info (SCA)"));
   ctx=AB_ImExporterContext_new();
   rv=AH_Provider_GetBankInfo(xdlg->provider, u, ctx, 0 /* without HKTAN */, 0, 1, 0);
   if (rv<0) {
     AB_ImExporterContext_free(ctx);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting bank info (%d), ignoring", rv);
+    GWEN_Gui_ProgressLog(pid,
+                         GWEN_LoggerLevel_Notice,
+                         I18N("This step failed but that's okay, some banks just don't support it."));
   }
   AB_ImExporterContext_free(ctx);
 
@@ -950,6 +953,7 @@ int _reallyDoIt(GWEN_DIALOG *dlg, AB_USER *u, uint32_t pid)
 
   /* get system id */
   DBG_NOTICE(0, "Getting sysid");
+  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice, "");
   GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice, I18N("Retrieving system id"));
   ctx=AB_ImExporterContext_new();
   rv=AH_Provider_GetSysId(xdlg->provider, u, ctx, 0, 1, 0);
@@ -977,6 +981,7 @@ int _reallyDoIt(GWEN_DIALOG *dlg, AB_USER *u, uint32_t pid)
 
   /* get account list */
   DBG_NOTICE(0, "Getting account list");
+  GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice, "");
   GWEN_Gui_ProgressLog(pid, GWEN_LoggerLevel_Notice, I18N("Retrieving account list"));
   ctx=AB_ImExporterContext_new();
   rv=AH_Provider_GetAccounts(xdlg->provider, u, ctx, 0, 1, 0);
@@ -1271,6 +1276,7 @@ int GWENHYWFAR_CB AH_PinTanDialog_SignalHandler(GWEN_DIALOG *dlg,
   case GWEN_DialogEvent_TypeClose:
 
   case GWEN_DialogEvent_TypeLast:
+  default:
     return GWEN_DialogEvent_ResultNotHandled;
 
   }
