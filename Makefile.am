@@ -6,7 +6,7 @@ EXTRA_DIST=AUTHORS COPYING ChangeLog INSTALL NEWS README \
  aqbanking.iss.in aqbanking.iss \
  Doxyfile.in \
  i18nsources \
- mksymlinks.sh.in mksymlinks.sh Makefile.cvs
+ Makefile.cvs
 
 idatadir=${datadir}/doc/aqbanking
 idata_DATA=AUTHORS COPYING ChangeLog README
@@ -214,15 +214,8 @@ srpm: $(PACKAGE).spec dist
 	if [ `rpm --version | awk '{ print $$3 }'` > /dev/null ]; then rpmbuild="rpmbuild"; fi && \
 	$$rpmbuild --nodeps -ts $(PACKAGE)-$(VERSION).tar.gz
 
-BUILT_SOURCES = $(iheader_HEADERS) sl-headers
+BUILT_SOURCES = $(iheader_HEADERS)
 CLEANFILES += $(BUILT_SOURCES)
-
-symlinks: mksymlinks.sh
-#	${SHELL} mksymlinks.sh $(srcdir) $(builddir)
-
-sl-headers: mksymlinks.sh
-	$(MAKE) -C src built_sources
-#	${SHELL} mksymlinks.sh $(srcdir) $(builddir)
 
 # Call this to have Qt's uic files and glade files cleaned up from
 # bad elements
