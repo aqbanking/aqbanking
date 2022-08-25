@@ -1,5 +1,21 @@
 <?xml?>
 
+<!-- ***************************************************************************
+ begin       : Sun Apr 11 2021
+ copyright   : (C) 2022 by Martin Preuss
+ email       : martin@libchipcard.de
+
+ ***************************************************************************
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
+ ***************************************************************************/
+
+  This is a build file for gwbuild, a build system that comes with libgwenhywfar,
+  see https://www.aquamaniac.de/rdm/projects/aqbanking/wiki/Gwbuild
+  
+  It is not meant as a replacement for other build systems (like the currently used autotools, cmake etc.) but rather
+  as an addition created, maintained and used almost exclusively by myself.
+-->
 
 <gwbuild>
 
