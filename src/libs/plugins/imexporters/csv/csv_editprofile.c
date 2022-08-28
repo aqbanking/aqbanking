@@ -168,40 +168,25 @@ GWEN_DIALOG *AB_CSV_EditProfileDialog_new(AB_IMEXPORTER *ie,
   AB_BANKING *ab;
   GWEN_DIALOG *dlg;
   AB_CSV_EDIT_PROFILE_DIALOG *xdlg;
-  GWEN_BUFFER *fbuf;
-  int rv;
 
   assert(ie);
   assert(dbProfile);
 
   ab=AB_ImExporter_GetBanking(ie);
-  dlg=GWEN_Dialog_new("ab_csv_edit_profile");
+
+  dlg=GWEN_Dialog_CreateAndLoadWithPath("ab_csv_edit_profile",
+                                        AB_PM_LIBNAME,
+                                        AB_PM_DATADIR,
+                                        "aqbanking/imexporters/csv/dialogs/csv_editprofile.dlg");
+  if (dlg==NULL) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog \"ab_csv_edit_profile\".");
+    return NULL;
+  }
+
   GWEN_NEW_OBJECT(AB_CSV_EDIT_PROFILE_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AB_CSV_EDIT_PROFILE_DIALOG, dlg, xdlg,
                        AB_CSV_EditProfileDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AB_CSV_EditProfileDialog_SignalHandler);
-
-  /* get path of dialog description file */
-  fbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-                               "aqbanking/imexporters/csv/dialogs/csv_editprofile.dlg",
-                               fbuf);
-  if (rv<0) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Dialog description file not found (%d).", rv);
-    GWEN_Buffer_free(fbuf);
-    GWEN_Dialog_free(dlg);
-    return NULL;
-  }
-
-  /* read dialog from dialog description file */
-  rv=GWEN_Dialog_ReadXmlFile(dlg, GWEN_Buffer_GetStart(fbuf));
-  if (rv<0) {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d).", rv);
-    GWEN_Buffer_free(fbuf);
-    GWEN_Dialog_free(dlg);
-    return NULL;
-  }
-  GWEN_Buffer_free(fbuf);
 
   xdlg->banking=ab;
   xdlg->imExporter=ie;
@@ -844,6 +829,8 @@ int GWENHYWFAR_CB AB_CSV_EditProfileDialog_SignalHandler(GWEN_DIALOG *dlg,
   case GWEN_DialogEvent_TypeEnabled:
   case GWEN_DialogEvent_TypeDisabled:
   case GWEN_DialogEvent_TypeClose:
+  case GWEN_DialogEvent_TypeKeyPressed:
+  case GWEN_DialogEvent_TypeKeyReleased:
 
   case GWEN_DialogEvent_TypeLast:
     return GWEN_DialogEvent_ResultNotHandled;
