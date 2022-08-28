@@ -28,7 +28,12 @@ static /*@null@*/AB_IMEXPORTER_LIST *ab_imexporters=NULL;
 #define AB_DBIO_FOLDER "dbio"
 
 
-
+/* TODO: Directly create plugins and pluginDescr and add those to the plugin managers.
+ * Don't setup paths here because they are no longer needed after we switched from loaded to
+ * directly added plugins.
+ * Start wirh dbio plugin "swift".
+ * GWEN_PLUGIN_MANAGER: Add flag "DONT_LOAD"
+ */
 int AB_Banking_PluginSystemInit(void)
 {
   if (ab_plugin_init_count==0) {
