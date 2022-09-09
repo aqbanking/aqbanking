@@ -8,7 +8,8 @@ bin_PROGRAMS=\
   aqbanking-cli\
   aqhbci-tool4 \
   aqpaypal-tool \
-  aqebics-tool
+  aqebics-tool \
+  aqofxconnect-tool
 
 aqbanking_cli_LDADD= \
   $(aqbanking_internal_libs) \
@@ -44,6 +45,7 @@ aqbanking_cli_LDFLAGS=
 aqhbci_tool4_LDFLAGS=
 aqpaypal_tool_LDFLAGS=
 aqebics_tool_LDFLAGS=
+aqofxconnect_tool_LDFLAGS=
 #-Wl,-static
 
 DEFS += -DLOCALEDIR=\"$(localedir)\" -DAQBANKING_CLI_VERSION_STRING=\"@AQBANKING_CLI_VERSION_STRING@\"
@@ -69,7 +71,10 @@ aqebics_tool_LDADD= \
   $(aqbanking_internal_libs) \
   $(gwenhywfar_libs)
 
-
+aqofxconnect_tool_SOURCES=aqofxconnect-tool.c
+aqofxconnect_tool_LDADD= \
+  $(aqbanking_internal_libs) \
+  $(gwenhywfar_libs)
 
 
 if IS_WINDOWS
@@ -78,12 +83,12 @@ aqbanking_cli_LDFLAGS+=-mconsole
 aqhbci_tool4_LDFLAGS+=-mconsole
 aqpaypal_tool_LDFLAGS+=-mconsole
 aqebics_tool_LDFLAGS+=-mconsole
-
+aqofxconnect_tool_LDFLAGS+=-mconsole
 
 endif
 
 sources:
-	for f in $(aqbanking_cli_SOURCES) $(aqhbci_tool4_SOURCES) $(aqpaypal_tool_SOURCES) $(aqebics_tool_SOURCES); do \
+	for f in $(aqbanking_cli_SOURCES) $(aqhbci_tool4_SOURCES) $(aqpaypal_tool_SOURCES) $(aqebics_tool_SOURCES); $(aqofxconnect_tool_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
 	done
 

@@ -234,5 +234,43 @@
     </ifVarMatches>
   </target>
 
-  
+  <target type="Program" name="aqofxconnect-tool" install="$(bindir)" >
+    <includes type="c" >
+      $(gmp_cflags)
+      $(gwenhywfar_cflags)
+      -I$(topsrcdir)/src/libs
+      -I$(topbuilddir)/src/libs
+      -I$(topbuilddir)
+    </includes>
+
+    <includes type="tm2" >
+      --include=$(topsrcdir)/src/libs/aqbanking/typemaker2/c
+      --include=$(topbuilddir)/src/libs/aqbanking/typemaker2/c
+      --include=$(builddir)
+      --include=$(srcdir)
+    </includes>
+
+    <define name="AQBANKING_FINTS_VERSION_STRING" value="$(AQBANKING_VERSION_STRING)" quoted="TRUE" />
+    <setVar name="local/cflags">$(visibility_cflags)</setVar>
+    <sources>aqofxconnect-tool.c</sources>
+    <useTargets>aqbanking</useTargets>
+    <ifVarMatches name="GWBUILD_LIBTYPE"     value="sharedlib" >
+      <then>
+        <libraries>
+          $(gwenhywfar_libs)
+        </libraries>
+      </then>
+      <else>
+        <libraries>
+          $(gmp_libs)
+          $(gwenhywfar_libs)
+          $(xmlsec_libs)
+          $(xslt_libs)
+          $(xml_libs)
+          $(zlib_libs)
+        </libraries>
+      </else>
+    </ifVarMatches>
+  </target>
+
 </gwbuild>
