@@ -92,17 +92,19 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg, uint32_t flags, GWEN_DB_NODE 
 
   /* customer reference (M) */
   rv=_readTextUntilSlashOrEndReturnLength(&p, &bleft, data, "customerReference", flags);
-  if (rv<1) {
-    DBG_WARN(AQBANKING_LOGDOMAIN, "Missing customer reference (%s)", p);
-    GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, "SWIFT: Missing customer reference");
-    return (rv<0)?rv:GWEN_ERROR_GENERIC;
-  }
-  else {
+  if (rv>0) {
     const char *s;
 
     s=GWEN_DB_GetCharValue(data, "customerReference", 0, NULL);
     if (s && strcasecmp(s, "NONREF")==0)
       GWEN_DB_DeleteVar(data, "customerReference");
+  }
+  else if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d) [%s]", rv, p);
+    return rv;
+  }
+  else {
+    DBG_WARN(AQBANKING_LOGDOMAIN, "Missing customer reference (%s), ignoring", p);
   }
 
   /* bank reference (K) */
