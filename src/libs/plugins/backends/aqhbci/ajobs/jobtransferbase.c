@@ -1192,7 +1192,7 @@ void _setLimitsExecDaysOfWeek(AB_TRANSACTION_LIMITS *lim, GWEN_DB_NODE *dbParams
     }
   }
   else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid empty param starting with [%s])", s);
+    AB_TransactionLimits_SetAllowWeekly(lim, -1);
   }
 }
 
