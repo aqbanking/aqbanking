@@ -90,7 +90,7 @@ static void createUserListBoxString(const AB_USER *u, GWEN_BUFFER *tbuf)
 
   /* column 1 */
   uid=AB_User_GetUniqueId(u);
-  snprintf(numbuf, sizeof(numbuf)-1, "%06d", uid);
+  snprintf(numbuf, sizeof(numbuf)-1, "%09d", uid);
   numbuf[sizeof(numbuf)-1]=0;
   GWEN_Buffer_AppendString(tbuf, numbuf);
   GWEN_Buffer_AppendString(tbuf, "\t");
@@ -135,7 +135,7 @@ static void createAccountListBoxString(const AB_ACCOUNT *a, GWEN_BUFFER *tbuf)
 
   /* column 1 */
   uid=AB_Account_GetUniqueId(a);
-  snprintf(numbuf, sizeof(numbuf)-1, "%06d", uid);
+  snprintf(numbuf, sizeof(numbuf)-1, "%09d", uid);
   numbuf[sizeof(numbuf)-1]=0;
   GWEN_Buffer_AppendString(tbuf, numbuf);
   GWEN_Buffer_AppendString(tbuf, "\t");
@@ -190,7 +190,7 @@ uint32_t AB_SetupDialog_GetCurrentId(GWEN_DIALOG *dlg, const char *comboBoxName)
     if (currentText && *currentText) {
       unsigned long int uid=0;
 
-      if (1==sscanf(currentText, "%06lu", &uid)) {
+      if (1==sscanf(currentText, "%09lu", &uid)) {
         DBG_ERROR(AQBANKING_LOGDOMAIN, "Got id \"%lu id from \"%s\"", uid, currentText);
         return (uint32_t) uid;
       }
