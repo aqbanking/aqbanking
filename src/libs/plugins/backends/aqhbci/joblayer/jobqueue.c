@@ -358,8 +358,6 @@ void AH_JobQueue_DumpJobList(const AH_JOBQUEUE *jq, FILE *f, unsigned int insert
 {
   uint32_t k;
   AH_JOB *j;
-  GWEN_STRINGLISTENTRY *se;
-
 
   for (k=0; k<insert; k++)
     fprintf(f, " ");
