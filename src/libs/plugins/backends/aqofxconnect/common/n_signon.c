@@ -107,7 +107,6 @@ int _getAndStoreCredentials(GWEN_XMLNODE *xmlSignonRq, const char *sUserId)
 {
   char userpass[64];
   GWEN_BUFFER *nbuf;
-  int rv;
   char msg[]=I18S("Please enter the password for user %s"
 		  "<html>"
 		  "Please enter the password for user <b>%s</b>"

@@ -247,6 +247,8 @@ int GWENHYWFAR_CB _signalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, cons
   case GWEN_DialogEvent_TypeLast:
     return GWEN_DialogEvent_ResultNotHandled;
 
+  default:
+    break;
   }
 
   return GWEN_DialogEvent_ResultNotHandled;
