@@ -7,6 +7,18 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+
+#include "aqhbci/msglayer/msgcrypt_pintan.h"
+#include "aqhbci/banking/user_l.h"
+
+#include "aqbanking/i18n_l.h"
+#include "aqbanking/banking_be.h"
+
+
 
 /* ------------------------------------------------------------------------------------------------
  * forward declarations
@@ -87,7 +99,7 @@ int AH_MsgPinTan_PrepareCryptoSeg(AH_MSG *hmsg,
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "key/keyversion", 0);
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "secProfile/code", "PIN");
 
-  if (hmsg->itanMethod==999) {
+  if (AH_Msg_GetItanMethod(hmsg)==999) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Using itanMethod 999");
   }
 
@@ -97,7 +109,7 @@ int AH_MsgPinTan_PrepareCryptoSeg(AH_MSG *hmsg,
                         "secProfile/version", 1);
   else
                         */
-  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "secProfile/version", (hmsg->itanMethod==999)?1:2);
+  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "secProfile/version", (AH_Msg_GetItanMethod(hmsg)==999)?1:2);
 
   return 0;
 }
@@ -107,6 +119,7 @@ int AH_MsgPinTan_PrepareCryptoSeg(AH_MSG *hmsg,
 
 int AH_Msg_SignPinTan(AH_MSG *hmsg, GWEN_UNUSED GWEN_BUFFER *rawBuf, const char *signer)
 {
+  AH_DIALOG *dlg;
   AH_HBCI *h;
   int rv;
   char ctrlref[15];
@@ -114,9 +127,10 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg, GWEN_UNUSED GWEN_BUFFER *rawBuf, const char 
   AB_USER *su;
 
   assert(hmsg);
-  h=AH_Dialog_GetHbci(hmsg->dialog);
+  dlg=AH_Msg_GetDialog(hmsg);
+  h=AH_Dialog_GetHbci(dlg);
   assert(h);
-  e=AH_Dialog_GetMsgEngine(hmsg->dialog);
+  e=AH_Dialog_GetMsgEngine(dlg);
   assert(e);
   GWEN_MsgEngine_SetMode(e, "pintan");
 
@@ -134,7 +148,9 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg, GWEN_UNUSED GWEN_BUFFER *rawBuf, const char 
 
   { /* create and insert signature head */
     GWEN_BUFFER *hbuf;
+    GWEN_BUFFER *msgBuffer;
 
+    msgBuffer=AH_Msg_GetBuffer(hmsg);
     hbuf=_pinTanCreateSigHead(hmsg, su, e, ctrlref);
     if (hbuf==NULL) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here");
@@ -142,16 +158,18 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg, GWEN_UNUSED GWEN_BUFFER *rawBuf, const char 
     }
     /* insert new SigHead at beginning of message buffer */
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Inserting signature head");
-    GWEN_Buffer_Rewind(hmsg->buffer);
-    GWEN_Buffer_InsertBytes(hmsg->buffer,
+    GWEN_Buffer_Rewind(msgBuffer);
+    GWEN_Buffer_InsertBytes(msgBuffer,
                             GWEN_Buffer_GetStart(hbuf),
                             GWEN_Buffer_GetUsedBytes(hbuf));
     GWEN_Buffer_free(hbuf);
   }
 
-  { /* create and appendsignature tail */
+  { /* create and append signature tail */
     GWEN_BUFFER *hbuf;
+    GWEN_BUFFER *msgBuffer;
 
+    msgBuffer=AH_Msg_GetBuffer(hmsg);
     hbuf=_pinTanCreateSigTail(hmsg, su, e, ctrlref);
     if (hbuf==NULL) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here");
@@ -160,7 +178,7 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg, GWEN_UNUSED GWEN_BUFFER *rawBuf, const char 
 
     /* append sigtail */
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Appending signature tail");
-    if (GWEN_Buffer_AppendBuffer(hmsg->buffer, hbuf)) {
+    if (GWEN_Buffer_AppendBuffer(msgBuffer, hbuf)) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here");
       GWEN_Buffer_free(hbuf);
       return GWEN_ERROR_MEMORY_FULL;
@@ -170,8 +188,8 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg, GWEN_UNUSED GWEN_BUFFER *rawBuf, const char 
     GWEN_Buffer_free(hbuf);
   }
   /* adjust segment numbers (for next signature and message tail */
-  hmsg->firstSegment--;
-  hmsg->lastSegment++;
+  AH_Msg_DecFirstSegment(hmsg);
+  AH_Msg_IncLastSegment(hmsg);
 
   return 0;
 }
@@ -180,6 +198,7 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg, GWEN_UNUSED GWEN_BUFFER *rawBuf, const char 
 
 int AH_Msg_EncryptPinTan(AH_MSG *hmsg)
 {
+  AH_DIALOG *dlg;
   AH_HBCI *h;
   GWEN_DB_NODE *cfg;
   GWEN_BUFFER *hbuf;
@@ -187,15 +206,16 @@ int AH_Msg_EncryptPinTan(AH_MSG *hmsg)
   const char *p;
   GWEN_MSGENGINE *e;
   AB_USER *u;
+  GWEN_BUFFER *msgBuffer;
 
   assert(hmsg);
-  h=AH_Dialog_GetHbci(hmsg->dialog);
+  dlg=AH_Msg_GetDialog(hmsg);
+  h=AH_Dialog_GetHbci(dlg);
   assert(h);
-  e=AH_Dialog_GetMsgEngine(hmsg->dialog);
+  e=AH_Dialog_GetMsgEngine(dlg);
   assert(e);
   GWEN_MsgEngine_SetMode(e, "pintan");
-
-  u=AH_Dialog_GetDialogOwner(hmsg->dialog);
+  u=AH_Dialog_GetDialogOwner(dlg);
 
   /* buffer for final message */
   hbuf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -213,7 +233,7 @@ int AH_Msg_EncryptPinTan(AH_MSG *hmsg)
   }
 
   /* store system id */
-  if (!hmsg->noSysId)
+  if (!AH_Msg_NoSysId(hmsg))
     p=AH_User_GetSystemId(u);
   else
     p=NULL;
@@ -232,12 +252,13 @@ int AH_Msg_EncryptPinTan(AH_MSG *hmsg)
 
 
   /* create cryptdata */
+  msgBuffer=AH_Msg_GetBuffer(hmsg);
   cfg=GWEN_DB_Group_new("cryptdata");
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "head/seq", 999);
   GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT,
                       "cryptdata",
-                      GWEN_Buffer_GetStart(hmsg->buffer),
-                      GWEN_Buffer_GetUsedBytes(hmsg->buffer));
+                      GWEN_Buffer_GetStart(msgBuffer),
+                      GWEN_Buffer_GetUsedBytes(msgBuffer));
 
   rv=_pinTanGenerateAndAddSegment(e, "CryptData", cfg, hbuf);
   if (rv<0) {
@@ -249,9 +270,7 @@ int AH_Msg_EncryptPinTan(AH_MSG *hmsg)
   GWEN_DB_Group_free(cfg);
 
   /* replace existing buffer by encrypted one */
-  GWEN_Buffer_free(hmsg->buffer);
-  hmsg->buffer=hbuf;
-
+  AH_Msg_SetBuffer(hmsg, hbuf);
   return 0;
 }
 
@@ -260,6 +279,7 @@ int AH_Msg_EncryptPinTan(AH_MSG *hmsg)
 
 int AH_Msg_DecryptPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr)
 {
+  AH_DIALOG *dlg;
   AH_HBCI *h;
   GWEN_BUFFER *mbuf;
   uint32_t l;
@@ -272,14 +292,15 @@ int AH_Msg_DecryptPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr)
   GWEN_DB_NODE *ndata=NULL;
   const char *crypterId;
 
-  assert(hmsg);
-  h=AH_Dialog_GetHbci(hmsg->dialog);
+  dlg=AH_Msg_GetDialog(hmsg);
+  h=AH_Dialog_GetHbci(dlg);
   assert(h);
-  e=AH_Dialog_GetMsgEngine(hmsg->dialog);
+  e=AH_Dialog_GetMsgEngine(dlg);
   assert(e);
   GWEN_MsgEngine_SetMode(e, "pintan");
+  u=AH_Dialog_GetDialogOwner(dlg);
+  GWEN_MsgEngine_SetMode(e, "pintan");
 
-  u=AH_Dialog_GetDialogOwner(hmsg->dialog);
 //  uFlags=AH_User_GetFlags(u);
 
   peerId=AH_User_GetPeerId(u);
@@ -326,10 +347,9 @@ int AH_Msg_DecryptPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr)
   AH_Msg_SetCrypterId(hmsg, crypterId);
 
   /* store new buffer inside message */
-  GWEN_Buffer_free(hmsg->origbuffer);
-  hmsg->origbuffer=hmsg->buffer;
+  AH_Msg_ExchangeBufferWithOrigBuffer(hmsg);
   GWEN_Buffer_Rewind(mbuf);
-  hmsg->buffer=mbuf;
+  AH_Msg_SetBuffer(hmsg, mbuf);
 
   return 0;
 }
@@ -338,6 +358,7 @@ int AH_Msg_DecryptPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr)
 
 int AH_Msg_VerifyPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr)
 {
+  AH_DIALOG *dlg;
   AH_HBCI *h;
   GWEN_LIST *sigheads;
   GWEN_LIST *sigtails;
@@ -351,9 +372,10 @@ int AH_Msg_VerifyPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr)
   AB_USER *u;
 
   assert(hmsg);
-  h=AH_Dialog_GetHbci(hmsg->dialog);
+  dlg=AH_Msg_GetDialog(hmsg);
+  h=AH_Dialog_GetHbci(dlg);
   assert(h);
-  u=AH_Dialog_GetDialogOwner(hmsg->dialog);
+  u=AH_Dialog_GetDialogOwner(dlg);
   assert(u);
 
   /* let's go */
@@ -521,6 +543,7 @@ int AH_Msg_VerifyPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr)
 
 GWEN_BUFFER *_pinTanCreateSigHead(AH_MSG *hmsg, AB_USER *su, GWEN_MSGENGINE *e, const char *ctrlref)
 {
+  AH_DIALOG *dlg;
   uint32_t uFlags;
   GWEN_DB_NODE *cfg;
   GWEN_BUFFER *hbuf;
@@ -528,6 +551,7 @@ GWEN_BUFFER *_pinTanCreateSigHead(AH_MSG *hmsg, AB_USER *su, GWEN_MSGENGINE *e, 
   const char *p;
   int rv;
 
+  dlg=AH_Msg_GetDialog(hmsg);
   hbuf=GWEN_Buffer_new(0, 256, 0, 1);
   cfg=GWEN_DB_Group_new("sighead");
 
@@ -536,7 +560,7 @@ GWEN_BUFFER *_pinTanCreateSigHead(AH_MSG *hmsg, AB_USER *su, GWEN_MSGENGINE *e, 
   /* for iTAN mode: set selected mode (Sicherheitsfunktion, kodiert) */
   tm=AH_Msg_GetItanMethod(hmsg);
   if (tm==0) {
-    tm=AH_Dialog_GetItanMethod(hmsg->dialog);
+    tm=AH_Dialog_GetItanMethod(dlg);
     if (tm)
       /* this is needed by AH_MsgPinTan_PrepareCryptoSeg */
       AH_Msg_SetItanMethod(hmsg, tm);
@@ -567,7 +591,7 @@ GWEN_BUFFER *_pinTanCreateSigHead(AH_MSG *hmsg, AB_USER *su, GWEN_MSGENGINE *e, 
   }
 
   /* store system id */
-  if (!hmsg->noSysId)
+  if (!AH_Msg_NoSysId(hmsg))
     p=AH_User_GetSystemId(su);
   else
     p=NULL;
@@ -577,7 +601,7 @@ GWEN_BUFFER *_pinTanCreateSigHead(AH_MSG *hmsg, AB_USER *su, GWEN_MSGENGINE *e, 
     GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "function", tm);
 
   /* create SigHead */
-  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "head/seq", hmsg->firstSegment-1);
+  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "head/seq", AH_Msg_GetFirstSegment(hmsg)-1);
   GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "signseq", 1);
 
   /* create signature head segment */
@@ -607,7 +631,7 @@ GWEN_BUFFER *_pinTanCreateSigTail(AH_MSG *hmsg, AB_USER *su, GWEN_MSGENGINE *e, 
   hbuf=GWEN_Buffer_new(0, 256, 0, 1);
   cfg=GWEN_DB_Group_new("sigtail");
 
-  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "head/seq", hmsg->lastSegment+1);
+  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "head/seq", AH_Msg_GetLastSegment(hmsg)+1);
   GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT, "signature", "NOSIGNATURE", 11);
   GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "ctrlref", ctrlref);
 
@@ -626,11 +650,11 @@ GWEN_BUFFER *_pinTanCreateSigTail(AH_MSG *hmsg, AB_USER *su, GWEN_MSGENGINE *e, 
   memset(pin, 0, sizeof(pin));
 
   /* handle tan */
-  if (hmsg->needTan) {
+  if (AH_Msg_GetNeedTan(hmsg)) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "This queue needs a TAN");
-    if (hmsg->usedTan) {
+    if (AH_Msg_GetTan(hmsg)) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Using existing TAN");
-      GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "tan", hmsg->usedTan);
+      GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "tan", AH_Msg_GetTan(hmsg));
     }
     else {
       char tan[16];

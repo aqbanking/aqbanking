@@ -7,6 +7,22 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+
+
+#include "msgcrypt_rxh_decrypt.h"
+#include "msgcrypt_rxh_common.h"
+
+#include "aqbanking/i18n_l.h"
+#include "aqbanking/banking_be.h"
+
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/cryptkeysym.h>
+#include <gwenhywfar/padd.h>
+
 
 
 /* ------------------------------------------------------------------------------------------------
@@ -17,6 +33,14 @@
 static GWEN_CRYPT_KEY *_rxhDecrypt_ExtractMessageKey(AH_MSG *hmsg, int rxhProtocol, GWEN_DB_NODE *grHead);
 static GWEN_BUFFER *_rxhDecrypt_GetDecryptedMessage(GWEN_CRYPT_KEY *sk, int rxhProtocol, const uint8_t *pSource,
                                                     uint32_t lSource);
+static GWEN_CRYPT_TOKEN *_getAndOpenCryptToken(AH_HBCI *h, AB_USER *u, uint32_t gid);
+static const GWEN_CRYPT_TOKEN_KEYINFO *_getDecipherKeyInfo(AB_USER *u, GWEN_CRYPT_TOKEN *ct, uint32_t gid);
+static uint32_t _prepareEncryptedKeyBuffer(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
+					   const uint8_t *srcPtr, uint32_t srcLen, uint8_t *destPtr, uint32_t destLen);
+static const uint8_t *_decryptAndUnpaddKey(GWEN_CRYPT_TOKEN *ct, uint32_t keyId, int decKeySize,
+					   const uint8_t *srcPtr, uint32_t srcLen,
+					   uint8_t *destPtr, uint32_t destLen,
+					   uint32_t gid);
 
 
 
@@ -29,6 +53,7 @@ static GWEN_BUFFER *_rxhDecrypt_GetDecryptedMessage(GWEN_CRYPT_KEY *sk, int rxhP
 
 int AH_Msg_DecryptRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
 {
+  AH_DIALOG *dlg;
   AH_HBCI *h;
   GWEN_BUFFER *mbuf;
   uint32_t l;
@@ -39,33 +64,18 @@ int AH_Msg_DecryptRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
   GWEN_DB_NODE *ndata=NULL;
   const char *crypterId;
   RXH_PARAMETER *rxh_parameter;
-  int rxhVersion;
 
   assert(hmsg);
-  h=AH_Dialog_GetHbci(hmsg->dialog);
+  dlg=AH_Msg_GetDialog(hmsg);
+  h=AH_Dialog_GetHbci(dlg);
   assert(h);
-
-  u=AH_Dialog_GetDialogOwner(hmsg->dialog);
+  u=AH_Dialog_GetDialogOwner(dlg);
 
   /* get correct parameters */
-  rxhVersion = AH_User_GetRdhType(u);
-  switch (AH_User_GetCryptMode(u)) {
-  case AH_CryptMode_Rdh:
-    rxh_parameter=rdh_parameter[rxhVersion];
-    if (rxh_parameter == NULL) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Profile RDH%d is not supported!", rxhVersion);
-      return AB_ERROR_NOT_INIT;
-    }
-    break;
-  case AH_CryptMode_Rah:
-    rxh_parameter=rah_parameter[rxhVersion];
-    if (rxh_parameter == NULL) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Profile RAH%d is not supported!", rxhVersion);
-      return AB_ERROR_NOT_INIT;
-    }
-    break;
-  default:
-    return GWEN_ERROR_INTERNAL;
+  rxh_parameter=AH_MsgRxh_GetParameters(AH_User_GetCryptMode(u), AH_User_GetRdhType(u));
+  if (rxh_parameter==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here");
+    return GWEN_ERROR_GENERIC;
   }
 
   /* get encrypted session key */
@@ -109,10 +119,9 @@ int AH_Msg_DecryptRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
   AH_Msg_SetCrypterId(hmsg, crypterId);
 
   /* store new buffer inside message */
-  GWEN_Buffer_free(hmsg->origbuffer);
-  hmsg->origbuffer=hmsg->buffer;
+  AH_Msg_ExchangeBufferWithOrigBuffer(hmsg);
   GWEN_Buffer_Rewind(mbuf);
-  hmsg->buffer=mbuf;
+  AH_Msg_SetBuffer(hmsg, mbuf);
 
   return 0;
 }
@@ -121,45 +130,88 @@ int AH_Msg_DecryptRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
 
 GWEN_CRYPT_KEY *_rxhDecrypt_ExtractMessageKey(AH_MSG *hmsg, int rxhProtocol, GWEN_DB_NODE *grCryptHead)
 {
+  AH_DIALOG *dlg;
   AH_HBCI *h;
   uint32_t l;
-  int rv;
   const uint8_t *p;
   AB_USER *u;
   //  uint32_t uFlags;
   GWEN_CRYPT_TOKEN *ct;
-  const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
-  const char *sTokenType;
-  const char *sTokenName;
   const GWEN_CRYPT_TOKEN_KEYINFO *ki;
   uint32_t keyId;
-  GWEN_CRYPT_KEY *sk=NULL;
-  uint8_t decKey[AH_MSGRXH_MAXKEYBUF+64];
-  uint32_t gid;
-  uint8_t decKeySize;
-
-
-  u=AH_Dialog_GetDialogOwner(hmsg->dialog);
+  uint32_t gid=0;
 
   assert(hmsg);
-  h=AH_Dialog_GetHbci(hmsg->dialog);
+  dlg=AH_Msg_GetDialog(hmsg);
+  h=AH_Dialog_GetHbci(dlg);
   assert(h);
-  gid=0;
+  u=AH_Dialog_GetDialogOwner(dlg);
 
+  ct=_getAndOpenCryptToken(h, u, gid);
+  if (ct==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here");
+    return NULL;
+  }
+
+  ki=_getDecipherKeyInfo(u, ct, gid);
+  if (ki==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here");
+    return NULL;
+  }
+  keyId=GWEN_Crypt_Token_KeyInfo_GetId(ki);
+
+  /* get encrypted session key */
+  p=GWEN_DB_GetBinValue(grCryptHead, "CryptAlgo/MsgKey", 0, 0, 0, &l);
+  if (p && l) {
+    uint8_t encKey[AH_MSGRXH_MAXKEYBUF+64];
+    uint8_t decKey[AH_MSGRXH_MAXKEYBUF+64];
+    int ksize;
+    uint8_t decKeySize;
+    GWEN_CRYPT_KEY *sk=NULL;
+
+    switch (rxhProtocol) {
+      case AH_CryptMode_Rdh: decKeySize=16; break;
+      case AH_CryptMode_Rah: decKeySize=32; break;
+      default: return NULL;
+    }
+
+    ksize=_prepareEncryptedKeyBuffer(ki, p, l, encKey, sizeof(encKey));
+    p=_decryptAndUnpaddKey(ct, keyId, decKeySize, encKey, ksize, decKey, sizeof(decKey), gid);
+    if (p==NULL) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here");
+      return NULL;
+    }
+
+    switch (rxhProtocol) {
+      case AH_CryptMode_Rdh: sk=GWEN_Crypt_KeyDes3K_fromData(GWEN_Crypt_CryptMode_Cbc, 24, p, 16); break;
+      case AH_CryptMode_Rah: sk=GWEN_Crypt_KeyAes256_fromData(GWEN_Crypt_CryptMode_Cbc, 32, p, 32); break;
+      default: sk=NULL; break;
+    }
+    if (sk==NULL) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create DES key from data");
+      return NULL;
+    }
+    return sk;
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing message key");
+    return NULL;
+  }
+}
+
+
+
+GWEN_CRYPT_TOKEN *_getAndOpenCryptToken(AH_HBCI *h, AB_USER *u, uint32_t gid)
+{
+  GWEN_CRYPT_TOKEN *ct=NULL;
+  int rv;
 
   /* get crypt token of signer */
-  rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),
-                              AH_User_GetTokenType(u),
-                              AH_User_GetTokenName(u),
-                              &ct);
+  rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h), AH_User_GetTokenType(u), AH_User_GetTokenName(u), &ct);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Could not get crypt token for user \"%s\" (%d)", AB_User_GetUserId(u), rv);
     return NULL;
   }
-
-  /* get token info for logging */
-  sTokenType=GWEN_Crypt_Token_GetTypeName(ct);
-  sTokenName=GWEN_Crypt_Token_GetTokenName(ct);
 
   /* open CryptToken if necessary */
   if (!GWEN_Crypt_Token_IsOpen(ct)) {
@@ -170,12 +222,28 @@ GWEN_CRYPT_KEY *_rxhDecrypt_ExtractMessageKey(AH_MSG *hmsg, int rxhProtocol, GWE
       return NULL;
     }
   }
+  return ct;
+}
+
+
+
+const GWEN_CRYPT_TOKEN_KEYINFO *_getDecipherKeyInfo(AB_USER *u, GWEN_CRYPT_TOKEN *ct, uint32_t gid)
+{
+  const char *sTokenType;
+  const char *sTokenName;
+  const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
+  const GWEN_CRYPT_TOKEN_KEYINFO *ki;
+  uint32_t keyId;
+
+  /* get token info for logging */
+  sTokenType=GWEN_Crypt_Token_GetTypeName(ct);
+  sTokenName=GWEN_Crypt_Token_GetTokenName(ct);
 
   /* get context and key info */
   ctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), gid);
   if (ctx==NULL) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Context %d not found on crypt token [%s:%s]", AH_User_GetTokenContextId(u), sTokenType,
-             sTokenName);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Context %d not found on crypt token [%s:%s]",
+	     AH_User_GetTokenContextId(u), sTokenType, sTokenName);
     return NULL;
   }
 
@@ -186,88 +254,71 @@ GWEN_CRYPT_KEY *_rxhDecrypt_ExtractMessageKey(AH_MSG *hmsg, int rxhProtocol, GWE
     return NULL;
   }
 
-  /* get encrypted session key */
-  p=GWEN_DB_GetBinValue(grCryptHead, "CryptAlgo/MsgKey", 0, 0, 0, &l);
-  if (p && l) {
-    uint32_t elen;
-    GWEN_CRYPT_PADDALGO *algo;
-    uint8_t encKey[AH_MSGRXH_MAXKEYBUF+64];
-    int ksize;
+  return ki;
+}
 
-    ksize=GWEN_Crypt_Token_KeyInfo_GetKeySize(ki);
-    if (ksize<l) {
-      DBG_WARN(AQHBCI_LOGDOMAIN, "Keyinfo keysize is smaller than size of transmitted key, adjusting");
-      ksize=l;
-    }
-    assert(ksize<=AH_MSGRXH_MAXKEYBUF);
 
-    /* fill encoded key with 0 to the total length of our private key */
-    memset(encKey, 0, sizeof(encKey));
-    memmove(encKey+(ksize-l), p, l);
 
-    algo=GWEN_Crypt_PaddAlgo_new(GWEN_Crypt_PaddAlgoId_None);
-    elen=sizeof(decKey);
+uint32_t _prepareEncryptedKeyBuffer(const GWEN_CRYPT_TOKEN_KEYINFO *ki,
+				    const uint8_t *srcPtr, uint32_t srcLen, uint8_t *destPtr, uint32_t destLen)
+{
+  uint32_t keySize;
 
-    rv=GWEN_Crypt_Token_Decipher(ct, keyId, algo, encKey, ksize, decKey, &elen, gid);
+  keySize=GWEN_Crypt_Token_KeyInfo_GetKeySize(ki);
+  if (keySize<srcLen) {
+    DBG_WARN(AQHBCI_LOGDOMAIN, "Keyinfo keysize is smaller than size of transmitted key, adjusting");
+    keySize=srcLen;
+  }
+  assert(keySize<=AH_MSGRXH_MAXKEYBUF);
+  
+  /* fill encoded key with 0 to the total length of our private key */
+  memset(destPtr, 0, destLen);
+  memmove(destPtr+(keySize-srcLen), srcPtr, srcLen);
+  return keySize;
+}
 
-    GWEN_Crypt_PaddAlgo_free(algo);
-    if (rv) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      return NULL;
-    }
 
-    switch (rxhProtocol) {
-    case AH_CryptMode_Rdh:
-      decKeySize=16;
-      break;
-    case AH_CryptMode_Rah:
-      decKeySize=32;
-      break;
-    default:
-      return NULL;
-    }
 
-    /* unpadd and generate key */
-    if (elen<decKeySize) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Decrypted data too small for a key (%d < %d)", elen, decKeySize);
-      return NULL;
-    }
-    p=decKey+(elen-decKeySize);
+const uint8_t *_decryptAndUnpaddKey(GWEN_CRYPT_TOKEN *ct, uint32_t keyId, int decKeySize,
+				    const uint8_t *srcPtr, uint32_t srcLen,
+				    uint8_t *destPtr, uint32_t destLen,
+				    uint32_t gid)
+{
+  const uint8_t *p;
+  uint32_t decodedLen;
+  GWEN_CRYPT_PADDALGO *algo;
+  int rv;
+
+  algo=GWEN_Crypt_PaddAlgo_new(GWEN_Crypt_PaddAlgoId_None);
+  decodedLen=destLen;
+  rv=GWEN_Crypt_Token_Decipher(ct, keyId, algo, srcPtr, srcLen, destPtr, &decodedLen, gid);
+  GWEN_Crypt_PaddAlgo_free(algo);
+  if (rv) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return NULL;
+  }
+  
+  /* unpadd */
+  if (decodedLen<decKeySize) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Decrypted data too small for a key (%d < %d)", decodedLen, decKeySize);
+    return NULL;
+  }
+  p=destPtr+(decodedLen-decKeySize);
 
 #if 0
     DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "DES key provided in message (padded key size=%d, unpadded keysize=%d, keyPos=%d):",
-              elen, decKeySize, (elen-decKeySize));
-    GWEN_Text_LogString((const char *)decKey, elen, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error);
+	      "DES key provided in message (padded key size=%d, unpadded keysize=%d, keyPos=%d):",
+	      decodedLen, decKeySize, (decodedLen-decKeySize));
+    GWEN_Text_LogString((const char *)destPtr, decodedLen, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error);
 #endif
 
-    switch (rxhProtocol) {
-    case AH_CryptMode_Rdh:
-      sk=GWEN_Crypt_KeyDes3K_fromData(GWEN_Crypt_CryptMode_Cbc, 24, p, 16);
-      break;
-    case AH_CryptMode_Rah:
-      sk=GWEN_Crypt_KeyAes256_fromData(GWEN_Crypt_CryptMode_Cbc, 32, p, 32);
-      break;
-    default:
-      return NULL;
-    }
-    if (sk==NULL) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create DES key from data");
-      return NULL;
-    }
-  }
-  else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing message key");
-    return NULL;
-  }
-
-  return sk;
+  return p;
 }
 
 
 
 GWEN_BUFFER *_rxhDecrypt_GetDecryptedMessage(GWEN_CRYPT_KEY *sk, int rxhProtocol, const uint8_t *pSource,
-                                             uint32_t lSource)
+					     uint32_t lSource)
 {
   GWEN_BUFFER *mbuf;
   int rv;

@@ -67,8 +67,6 @@ struct AH_MSG {
 };
 
 
-static void AH_Msg_SetPin(AH_MSG *hmsg, const char *s);
-
 static int AH_Msg_AddMsgTail(AH_MSG *hmsg);
 static int AH_Msg_AddMsgHead(AH_MSG *hmsg);
 

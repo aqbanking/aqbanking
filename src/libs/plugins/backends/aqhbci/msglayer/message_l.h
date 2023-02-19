@@ -37,6 +37,9 @@ GWEN_BUFFER *AH_Msg_GetBuffer(AH_MSG *hmsg);
 GWEN_BUFFER *AH_Msg_TakeBuffer(AH_MSG *hmsg);
 void AH_Msg_SetBuffer(AH_MSG *hmsg, GWEN_BUFFER *bf);
 
+void AH_Msg_ExchangeBufferWithOrigBuffer(AH_MSG *hmsg);
+
+
 unsigned int AH_Msg_GetMsgNum(const AH_MSG *hmsg);
 
 unsigned int AH_Msg_GetMsgRef(const AH_MSG *hmsg);
@@ -84,6 +87,13 @@ void AH_Msg_SetSignSeqOne(AH_MSG *hmsg, int i);
 
 unsigned int AH_Msg_GetCurrentSegmentNumber(AH_MSG *hmsg);
 
+unsigned int AH_Msg_GetFirstSegment(const AH_MSG *hmsg);
+void AH_Msg_DecFirstSegment(AH_MSG *hmsg);
+
+unsigned int AH_Msg_GetLastSegment(const AH_MSG *hmsg);
+void AH_Msg_IncLastSegment(AH_MSG *hmsg);
+
+
 unsigned int AH_Msg_AddNode(AH_MSG *hmsg,
                             GWEN_XMLNODE *node,
                             GWEN_DB_NODE *data);
@@ -128,6 +138,7 @@ const char *AH_Msg_GetExpectedCrypter(const AH_MSG *msg);
 void AH_Msg_SetExpectedCrypter(AH_MSG *msg, const char *s);
 
 const char *AH_Msg_GetPin(const AH_MSG *msg);
+void AH_Msg_SetPin(AH_MSG *hmsg, const char *s);
 
 #endif /* AH_MESSAGE_L_H */
 

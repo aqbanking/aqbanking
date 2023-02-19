@@ -7,55 +7,31 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+
+
+#include "msgcrypt_rxh_common.h"
+#include "msgcrypt_rxh_decrypt.h"
+#include "aqhbci/banking/user_l.h"
+
+#include "aqbanking/i18n_l.h"
+#include "aqbanking/banking_be.h"
+
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/cryptkeysym.h>
+#include <gwenhywfar/padd.h>
+
+
+#include "msgcrypt_rxh_common.h"
+
+
 #include <gwenhywfar/text.h>
 
-#define AH_MSGRXH_MAXKEYBUF 4096
 
-typedef enum {
-  AH_Opmode_None=0,
-  AH_Opmode_Cbc=2,
-  AH_Opmode_Iso9796_1=16,
-  AH_Opmode_Iso9796_2=17,
-  AH_Opmode_Rsa_Pkcs1_v1_5=18,
-  AH_Opmode_Rsa_Pss=19,
-  AH_Opmode_Retail_MAC=999
-} AH_OPMODE;
 
-typedef enum {
-  AH_HashAlg_None=0,
-  AH_HashAlg_Sha1=1,
-  AH_HashAlg_Sha256=3,
-  AH_HashAlg_Sha256Sha256=6,
-  AH_HashAlg_Ripmed160=999
-} AH_HASH_ALG;
-
-typedef enum {
-  AH_SignAlg_DES=1,
-  AH_SignAlg_RSA=10
-} AH_SIGN_ALG;
-
-typedef enum {
-  AH_CryptAlg_2_Key_Triple_Des=13,
-  AH_CryptAlg_AES256=14
-} AH_CRYPT_ALG;
-
-typedef enum {
-  AH_UsageSign_None=0,
-  AH_UsageSign_OwnerSigning=6
-} AH_USAGE_SIGN;
-
-typedef struct {
-  AH_CRYPT_MODE protocol;
-  uint8_t       protocolVersion;
-  AH_SIGN_ALG   signAlgo;         /* Signaturalgorithmus, kodiert */
-  AH_OPMODE     opmodSignS;       /* Operationsmodus bei Signatur (Signierschluessel) */
-  AH_OPMODE     opmodSignD;       /* Operationsmodus bei Signatur (Signaturschluessel) */
-  AH_USAGE_SIGN usageSign;        /* Verwendung des Signaturalgorithmus */
-  AH_HASH_ALG   hashAlgS;         /* Hashalgorithmus, kodiert (Signierschluessel) */
-  AH_HASH_ALG   hashAlgD;         /* Hashalgorithmus, kodiert (Signaturschluessel) */
-  AH_CRYPT_ALG  cryptAlg;         /* Verschluesselungsalgorithmus, kodiert */
-  AH_OPMODE     opmodCrypt;       /* Operationsmodus bei Verschluesselung */
-} RXH_PARAMETER;
 
 RXH_PARAMETER  rdh1_parameter= {
   AH_CryptMode_Rdh,
@@ -239,6 +215,38 @@ RXH_PARAMETER *rah_parameter[11]= {
 
 };
 
+
+
+
+RXH_PARAMETER *AH_MsgRxh_GetParameters(AH_CRYPT_MODE cryptMode, int rxhVersion)
+{
+  RXH_PARAMETER *rxh_parameter=NULL;
+
+  switch (cryptMode) {
+  case AH_CryptMode_Rdh:
+    rxh_parameter=rdh_parameter[rxhVersion];
+    if (rxh_parameter == NULL) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Profile RDH%d is not supported!", rxhVersion);
+      return NULL;
+    }
+    break;
+  case AH_CryptMode_Rah:
+    rxh_parameter=rah_parameter[rxhVersion];
+    if (rxh_parameter == NULL) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Profile RAH%d is not supported!", rxhVersion);
+      return NULL;
+    }
+    break;
+  default:
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown profile %s%d", AH_CryptMode_toString(cryptMode), rxhVersion);
+    return NULL;
+  }
+
+  return rxh_parameter;
+}
+
+
+
 static
 GWEN_CRYPT_KEY *AH_MsgRxh_VerifyInitialSignKey(GWEN_CRYPT_TOKEN *ct,
                                                const GWEN_CRYPT_TOKEN_CONTEXT *ctx,
@@ -330,15 +338,17 @@ GWEN_CRYPT_KEY *AH_MsgRxh_VerifyInitialSignKey(GWEN_CRYPT_TOKEN *ct,
   return bpk;
 }
 
-static int AH_MsgRxh_PrepareCryptoSeg(AH_MSG *hmsg,
-                                      AB_USER *u,
-                                      RXH_PARAMETER *rxh_parameter,
-                                      int keyNum,
-                                      int keyVer,
-                                      const GWEN_CRYPT_TOKEN_KEYINFO *ki,
-                                      GWEN_DB_NODE *cfg,
-                                      int crypt,
-                                      int createCtrlRef)
+
+
+int AH_MsgRxh_PrepareCryptoSeg(AH_MSG *hmsg,
+                               AB_USER *u,
+                               RXH_PARAMETER *rxh_parameter,
+                               int keyNum,
+                               int keyVer,
+                               const GWEN_CRYPT_TOKEN_KEYINFO *ki,
+                               GWEN_DB_NODE *cfg,
+                               int crypt,
+                               int createCtrlRef)
 {
   char sdate[9];
   char stime[7];
@@ -442,15 +452,17 @@ static int AH_MsgRxh_PrepareCryptoSeg(AH_MSG *hmsg,
   return 0;
 }
 
-int AH_Msg_SignRxh(AH_MSG *hmsg,
-                   GWEN_BUFFER *rawBuf,
-                   const char *signer)
+
+
+int AH_Msg_SignRxh(AH_MSG *hmsg, GWEN_BUFFER *rawBuf, const char *signer)
 {
+  AH_DIALOG *dlg;
   AH_HBCI *h;
   GWEN_XMLNODE *node;
   GWEN_DB_NODE *cfg;
   GWEN_BUFFER *sigbuf;
   GWEN_BUFFER *hbuf;
+  GWEN_BUFFER *msgBuffer;
   unsigned int l;
   int rv;
   char ctrlref[15];
@@ -468,6 +480,9 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
   AB_USER *su;
 
   assert(hmsg);
+  dlg=AH_Msg_GetDialog(hmsg);
+  h=AH_Dialog_GetHbci(dlg);
+  assert(h);
 
   su=AH_Msg_GetUser(hmsg, signer);
   if (!su) {
@@ -477,9 +492,7 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
     return GWEN_ERROR_NOT_FOUND;
   }
 
-  h=AH_Dialog_GetHbci(hmsg->dialog);
-  assert(h);
-  e=AH_Dialog_GetMsgEngine(hmsg->dialog);
+  e=AH_Dialog_GetMsgEngine(dlg);
   assert(e);
 
   /* get correct parameters */
@@ -602,10 +615,8 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
 
 
   /* store system id */
-  if (hmsg->noSysId) {
-    GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-                         "SecDetails/SecId", "0");
-  }
+  if (AH_Msg_NoSysId(hmsg))
+    GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", "0");
   else {
     /* store CID if we use a card */
     const uint8_t *cidData;
@@ -638,7 +649,7 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
 
   /* create SigHead */
   hbuf=GWEN_Buffer_new(0, 128+GWEN_Buffer_GetUsedBytes(rawBuf), 0, 1);
-  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "head/seq", hmsg->firstSegment-1);
+  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "head/seq", AH_Msg_GetFirstSegment(hmsg)-1);
   if (AH_Msg_SignSeqOne(hmsg)) {
     GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "signseq", 1);
   }
@@ -800,15 +811,16 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Signing done");
 
   /* insert new SigHead at beginning of message buffer */
+  msgBuffer=AH_Msg_GetBuffer(hmsg);
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Inserting signature head");
-  GWEN_Buffer_Rewind(hmsg->buffer);
-  GWEN_Buffer_InsertBytes(hmsg->buffer, GWEN_Buffer_GetStart(hbuf), l);
+  GWEN_Buffer_Rewind(msgBuffer);
+  GWEN_Buffer_InsertBytes(msgBuffer, GWEN_Buffer_GetStart(hbuf), l);
 
   /* create sigtail */
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Completing signature tail");
   cfg=GWEN_DB_Group_new("sigtail");
   GWEN_Buffer_Reset(hbuf);
-  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "head/seq", hmsg->lastSegment+1);
+  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "head/seq", AH_Msg_GetLastSegment(hmsg)+1);
   /* store to DB */
   GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT,
                       "signature",
@@ -835,7 +847,7 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
 
   /* append sigtail */
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Appending signature tail");
-  if (GWEN_Buffer_AppendBuffer(hmsg->buffer, hbuf)) {
+  if (GWEN_Buffer_AppendBuffer(msgBuffer, hbuf)) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here");
     GWEN_Buffer_free(hbuf);
     GWEN_DB_Group_free(cfg);
@@ -847,19 +859,23 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
   GWEN_DB_Group_free(cfg);
 
   /* adjust segment numbers (for next signature and message tail */
-  hmsg->firstSegment--;
-  hmsg->lastSegment++;
+  AH_Msg_DecFirstSegment(hmsg);
+  AH_Msg_IncLastSegment(hmsg);
 
   return 0;
 }
 
+
+
 int AH_Msg_EncryptRxh(AH_MSG *hmsg)
 {
+  AH_DIALOG *dlg;
   AH_HBCI *h;
   GWEN_XMLNODE *node;
   GWEN_DB_NODE *cfg;
   GWEN_BUFFER *mbuf;
   GWEN_BUFFER *hbuf;
+  GWEN_BUFFER *msgBuffer;
   uint32_t l;
   int rv;
   const char *p;
@@ -875,37 +891,23 @@ int AH_Msg_EncryptRxh(AH_MSG *hmsg)
   uint32_t gid;
   uint8_t sessionKeySize;
   RXH_PARAMETER *rxh_parameter;
-  int rxhVersion;
 
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "RXH-encrypting message");
 
-  u=AH_Dialog_GetDialogOwner(hmsg->dialog);
+  assert(hmsg);
+  dlg=AH_Msg_GetDialog(hmsg);
+  h=AH_Dialog_GetHbci(dlg);
+  assert(h);
+  u=AH_Dialog_GetDialogOwner(dlg);
 
   /* get correct parameters */
-  rxhVersion = AH_User_GetRdhType(u);
-  switch (AH_User_GetCryptMode(u)) {
-  case AH_CryptMode_Rdh:
-    rxh_parameter=rdh_parameter[rxhVersion];
-    if (rxh_parameter == NULL) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Profile RDH%d is not supported!", rxhVersion);
-      return AB_ERROR_NOT_INIT;
-    }
-    break;
-  case AH_CryptMode_Rah:
-    rxh_parameter=rah_parameter[rxhVersion];
-    if (rxh_parameter == NULL) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Profile RDH%d is not supported!", rxhVersion);
-      return AB_ERROR_NOT_INIT;
-    }
-    break;
-  default:
-    return GWEN_ERROR_INTERNAL;
+  rxh_parameter=AH_MsgRxh_GetParameters(AH_User_GetCryptMode(u), AH_User_GetRdhType(u));
+  if (rxh_parameter==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here");
+    return GWEN_ERROR_GENERIC;
   }
 
-  assert(hmsg);
-  h=AH_Dialog_GetHbci(hmsg->dialog);
-  assert(h);
-  e=AH_Dialog_GetMsgEngine(hmsg->dialog);
+  e=AH_Dialog_GetMsgEngine(dlg);
   assert(e);
   GWEN_MsgEngine_SetMode(e, AH_CryptMode_toString(rxh_parameter->protocol));
   //GWEN_MsgEngine_SetMode(e,"rdh");
@@ -969,7 +971,7 @@ int AH_Msg_EncryptRxh(AH_MSG *hmsg)
   switch (rxh_parameter->protocol) {
   case AH_CryptMode_Rdh:
     DBG_INFO(AQHBCI_LOGDOMAIN, "Padding message with ANSI X9.23");
-    rv=GWEN_Padd_PaddWithAnsiX9_23(hmsg->buffer);
+    rv=GWEN_Padd_PaddWithAnsiX9_23(AH_Msg_GetBuffer(hmsg));
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error padding message with ANSI X9.23 (%d)", rv);
       return rv;
@@ -996,7 +998,7 @@ int AH_Msg_EncryptRxh(AH_MSG *hmsg)
 
   case AH_CryptMode_Rah:
     DBG_INFO(AQHBCI_LOGDOMAIN, "Padding message with ZKA method");
-    rv=GWEN_Padd_PaddWithZka(hmsg->buffer);
+    rv=GWEN_Padd_PaddWithZka(AH_Msg_GetBuffer(hmsg));
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN,
                "Error padding message with ZKA padding (%d)", rv);
@@ -1017,11 +1019,13 @@ int AH_Msg_EncryptRxh(AH_MSG *hmsg)
     return GWEN_ERROR_INTERNAL;
   }
   /* encrypt message with that session key */
-  mbuf=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(hmsg->buffer), 0, 1);
-  l=GWEN_Buffer_GetUsedBytes(hmsg->buffer);
+  msgBuffer=AH_Msg_GetBuffer(hmsg);
+  l=GWEN_Buffer_GetUsedBytes(msgBuffer);
+  mbuf=GWEN_Buffer_new(0, l, 0, 1);
+  l=GWEN_Buffer_GetUsedBytes(msgBuffer);
   rv=GWEN_Crypt_Key_Encipher(sk,
-                             (uint8_t *)GWEN_Buffer_GetStart(hmsg->buffer),
-                             GWEN_Buffer_GetUsedBytes(hmsg->buffer),
+                             (uint8_t *)GWEN_Buffer_GetStart(msgBuffer),
+                             GWEN_Buffer_GetUsedBytes(msgBuffer),
                              (uint8_t *)GWEN_Buffer_GetPosPointer(mbuf),
                              &l);
   if (rv<0) {
@@ -1116,10 +1120,8 @@ int AH_Msg_EncryptRxh(AH_MSG *hmsg)
   }
 
   /* store system id */
-  if (hmsg->noSysId) {
-    GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-                         "SecDetails/SecId", "0");
-  }
+  if (AH_Msg_NoSysId(hmsg))
+    GWEN_DB_SetCharValue(cfg, GWEN_DB_FLAGS_DEFAULT, "SecDetails/SecId", "0");
   else {
     /* store CID if we use a card */
     const uint8_t *cidData;
@@ -1179,8 +1181,7 @@ int AH_Msg_EncryptRxh(AH_MSG *hmsg)
   }
 
   /* replace existing buffer by encrypted one */
-  GWEN_Buffer_free(hmsg->buffer);
-  hmsg->buffer=hbuf;
+  AH_Msg_SetBuffer(hmsg, hbuf);
   GWEN_DB_Group_free(cfg);
 
   return 0;
@@ -1337,6 +1338,7 @@ int AH_MsgRxh__Verify_Internal(GWEN_CRYPT_KEY *k,
 
 int AH_Msg_VerifyRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
 {
+  AH_DIALOG *dlg;
   AH_HBCI *h;
   GWEN_LIST *sigheads;
   GWEN_LIST *sigtails;
@@ -1352,47 +1354,29 @@ int AH_Msg_VerifyRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
   const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   int ksize;
   int rv;
-  uint32_t gid;
+  uint32_t gid=0;
   uint32_t hashLen;
   AH_HASH_ALG hashAlg;
   AH_OPMODE opMode;
-  uint8_t rxhVersion;
   RXH_PARAMETER *rxh_parameter;
   GWEN_CRYPT_KEY *bankPubSignKey;
+  GWEN_BUFFER *msgBuffer;
 
-  /* get correct parameters */
-  u=AH_Dialog_GetDialogOwner(hmsg->dialog);
+  assert(hmsg);
+  dlg=AH_Msg_GetDialog(hmsg);
+  h=AH_Dialog_GetHbci(dlg);
+  assert(h);
+  u=AH_Dialog_GetDialogOwner(dlg);
   assert(u);
 
-  rxhVersion = AH_User_GetRdhType(u);
-  switch (AH_User_GetCryptMode(u)) {
-  case AH_CryptMode_Rdh:
-    rxh_parameter=rdh_parameter[rxhVersion];
-    if (rxh_parameter == NULL) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Profile RDH%d is not supported!", rxhVersion);
-      return AB_ERROR_NOT_INIT;
-    }
-    break;
-  case AH_CryptMode_Rah:
-    rxh_parameter=rah_parameter[rxhVersion];
-    if (rxh_parameter == NULL) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Profile RDH%d is not supported!", rxhVersion);
-      return AB_ERROR_NOT_INIT;
-    }
-    break;
-  default:
-    return GWEN_ERROR_INTERNAL;
+  rxh_parameter=AH_MsgRxh_GetParameters(AH_User_GetCryptMode(u), AH_User_GetRdhType(u));
+  if (rxh_parameter==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here");
+    return GWEN_ERROR_GENERIC;
   }
-  assert(hmsg);
-  h=AH_Dialog_GetHbci(hmsg->dialog);
-  assert(h);
 
-
-  gid=0;
-
-
-  hashAlg = rxh_parameter->hashAlgS;
-  opMode= rxh_parameter->opmodSignS;
+  hashAlg=rxh_parameter->hashAlgS;
+  opMode=rxh_parameter->opmodSignS;
 
   /* get crypt token of signer */
   rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),
@@ -1573,7 +1557,8 @@ int AH_Msg_VerifyRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
   }
 
   /* ok, now verify all signatures */
-  dataStart=GWEN_Buffer_GetStart(hmsg->buffer)+dataBegin;
+  msgBuffer=AH_Msg_GetBuffer(hmsg);
+  dataStart=GWEN_Buffer_GetStart(msgBuffer)+dataBegin;
   for (i=0; i< GWEN_List_GetSize(sigtails); i++) {
     GWEN_DB_NODE *sighead;
     GWEN_DB_NODE *sigtail;
@@ -1617,7 +1602,7 @@ int AH_Msg_VerifyRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
       GWEN_MDIGEST *md;
 
       /* hash sighead + data */
-      p=(const uint8_t *)GWEN_Buffer_GetStart(hmsg->buffer);
+      p=(const uint8_t *)GWEN_Buffer_GetStart(msgBuffer);
       p+=GWEN_DB_GetIntValue(sighead,
                              "segment/pos",
                              0,
@@ -1779,8 +1764,5 @@ int AH_Msg_VerifyRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
   GWEN_List_free(sigtails);
   return 0;
 }
-
-
-#include "msgcrypt_rxh_decrypt.c"
 
 

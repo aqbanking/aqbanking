@@ -7,6 +7,20 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+
+#include "aqhbci/msglayer/msgcrypt_ddv.h"
+
+#include "aqbanking/i18n_l.h"
+#include "aqbanking/banking_be.h"
+
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/cryptkeysym.h>
+#include <gwenhywfar/padd.h>
+
 
 
 int AH_MsgDdv_PrepareCryptoSeg(AH_MSG *hmsg,
@@ -101,11 +115,13 @@ int AH_Msg_SignDdv(AH_MSG *hmsg,
                    GWEN_BUFFER *rawBuf,
                    const char *signer)
 {
+  AH_DIALOG *dlg;
   AH_HBCI *h;
   GWEN_XMLNODE *node;
   GWEN_DB_NODE *cfg;
   GWEN_BUFFER *sigbuf;
   GWEN_BUFFER *hbuf;
+  GWEN_BUFFER *msgBuffer;
   unsigned int l;
   int rv;
   char ctrlref[15];
@@ -117,16 +133,15 @@ int AH_Msg_SignDdv(AH_MSG *hmsg,
   const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
   const GWEN_CRYPT_TOKEN_KEYINFO *ki;
   uint32_t keyId;
-  uint32_t gid;
+  uint32_t gid=0;
 
   assert(hmsg);
-  h=AH_Dialog_GetHbci(hmsg->dialog);
+  dlg=AH_Msg_GetDialog(hmsg);
+  h=AH_Dialog_GetHbci(dlg);
   assert(h);
-  e=AH_Dialog_GetMsgEngine(hmsg->dialog);
+  e=AH_Dialog_GetMsgEngine(dlg);
   assert(e);
   GWEN_MsgEngine_SetMode(e, "ddv");
-
-  gid=0;
 
   su=AH_Msg_GetUser(hmsg, signer);
   if (!su) {
@@ -262,11 +277,8 @@ int AH_Msg_SignDdv(AH_MSG *hmsg,
 
   /* create SigHead */
   hbuf=GWEN_Buffer_new(0, 128+GWEN_Buffer_GetUsedBytes(rawBuf), 0, 1);
-  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-                      "head/seq", hmsg->firstSegment-1);
-  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-                      "signseq",
-                      GWEN_Crypt_Token_KeyInfo_GetSignCounter(ki));
+  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "head/seq", AH_Msg_GetFirstSegment(hmsg)-1);
+  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "signseq", GWEN_Crypt_Token_KeyInfo_GetSignCounter(ki));
 
   /* create signature head segment */
   rv=GWEN_MsgEngine_CreateMessageFromNode(e, node, hbuf, cfg);
@@ -336,16 +348,16 @@ int AH_Msg_SignDdv(AH_MSG *hmsg,
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Signing done");
 
   /* insert new SigHead at beginning of message buffer */
+  msgBuffer=AH_Msg_GetBuffer(hmsg);
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Inserting signature head");
-  GWEN_Buffer_Rewind(hmsg->buffer);
-  GWEN_Buffer_InsertBytes(hmsg->buffer, GWEN_Buffer_GetStart(hbuf), l);
+  GWEN_Buffer_Rewind(msgBuffer);
+  GWEN_Buffer_InsertBytes(msgBuffer, GWEN_Buffer_GetStart(hbuf), l);
 
   /* create sigtail */
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Completing signature tail");
   cfg=GWEN_DB_Group_new("sigtail");
   GWEN_Buffer_Reset(hbuf);
-  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT,
-                      "head/seq", hmsg->lastSegment+1);
+  GWEN_DB_SetIntValue(cfg, GWEN_DB_FLAGS_DEFAULT, "head/seq", AH_Msg_GetLastSegment(hmsg)+1);
   /* store to DB */
   GWEN_DB_SetBinValue(cfg, GWEN_DB_FLAGS_DEFAULT,
                       "signature",
@@ -377,7 +389,7 @@ int AH_Msg_SignDdv(AH_MSG *hmsg,
 
   /* append sigtail */
   DBG_DEBUG(AQHBCI_LOGDOMAIN, "Appending signature tail");
-  if (GWEN_Buffer_AppendBuffer(hmsg->buffer, hbuf)) {
+  if (GWEN_Buffer_AppendBuffer(msgBuffer, hbuf)) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here");
     GWEN_Buffer_free(hbuf);
     GWEN_DB_Group_free(cfg);
@@ -389,8 +401,8 @@ int AH_Msg_SignDdv(AH_MSG *hmsg,
   GWEN_DB_Group_free(cfg);
 
   /* adjust segment numbers (for next signature and message tail */
-  hmsg->firstSegment--;
-  hmsg->lastSegment++;
+  AH_Msg_DecFirstSegment(hmsg);
+  AH_Msg_IncLastSegment(hmsg);
 
   return 0;
 }
@@ -399,6 +411,7 @@ int AH_Msg_SignDdv(AH_MSG *hmsg,
 
 int AH_Msg_EncryptDdv(AH_MSG *hmsg)
 {
+  AH_DIALOG *dlg;
   AH_HBCI *h;
   GWEN_XMLNODE *node;
   GWEN_DB_NODE *cfg;
@@ -416,19 +429,19 @@ int AH_Msg_EncryptDdv(AH_MSG *hmsg)
   const GWEN_CRYPT_TOKEN_KEYINFO *ki;
   uint32_t keyId;
   GWEN_CRYPT_KEY *sk;
+  GWEN_BUFFER *msgBuffer;
   uint8_t encKey[16];
-  uint32_t gid;
+  uint32_t gid=0;
 
   assert(hmsg);
-  h=AH_Dialog_GetHbci(hmsg->dialog);
+  dlg=AH_Msg_GetDialog(hmsg);
+  h=AH_Dialog_GetHbci(dlg);
   assert(h);
-  e=AH_Dialog_GetMsgEngine(hmsg->dialog);
+  e=AH_Dialog_GetMsgEngine(dlg);
   assert(e);
   GWEN_MsgEngine_SetMode(e, "ddv");
+  u=AH_Dialog_GetDialogOwner(dlg);
 
-  gid=0;
-
-  u=AH_Dialog_GetDialogOwner(hmsg->dialog);
 //  uFlags=AH_User_GetFlags(u);
 
   peerId=AH_User_GetPeerId(u);
@@ -485,7 +498,7 @@ int AH_Msg_EncryptDdv(AH_MSG *hmsg)
     return GWEN_ERROR_NOT_FOUND;
   }
 
-  rv=GWEN_Padd_PaddWithAnsiX9_23(hmsg->buffer);
+  rv=GWEN_Padd_PaddWithAnsiX9_23(AH_Msg_GetBuffer(hmsg));
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
              "Error padding message with ANSI X9.23 (%d)", rv);
@@ -500,11 +513,12 @@ int AH_Msg_EncryptDdv(AH_MSG *hmsg)
   }
 
   /* encrypt message with that session key */
-  mbuf=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(hmsg->buffer), 0, 1);
-  l=GWEN_Buffer_GetUsedBytes(hmsg->buffer);
+  msgBuffer=AH_Msg_GetBuffer(hmsg);
+  mbuf=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(msgBuffer), 0, 1);
+  l=GWEN_Buffer_GetUsedBytes(msgBuffer);
   rv=GWEN_Crypt_Key_Encipher(sk,
-                             (uint8_t *)GWEN_Buffer_GetStart(hmsg->buffer),
-                             GWEN_Buffer_GetUsedBytes(hmsg->buffer),
+                             (uint8_t *)GWEN_Buffer_GetStart(msgBuffer),
+                             GWEN_Buffer_GetUsedBytes(msgBuffer),
                              (uint8_t *)GWEN_Buffer_GetPosPointer(mbuf),
                              &l);
   if (rv<0) {
@@ -651,8 +665,7 @@ int AH_Msg_EncryptDdv(AH_MSG *hmsg)
   }
 
   /* replace existing buffer by encrypted one */
-  GWEN_Buffer_free(hmsg->buffer);
-  hmsg->buffer=hbuf;
+  AH_Msg_SetBuffer(hmsg, hbuf);
   GWEN_DB_Group_free(cfg);
 
   return 0;
@@ -663,6 +676,7 @@ int AH_Msg_EncryptDdv(AH_MSG *hmsg)
 
 int AH_Msg_DecryptDdv(AH_MSG *hmsg, GWEN_DB_NODE *gr)
 {
+  AH_DIALOG *dlg;
   AH_HBCI *h;
   GWEN_BUFFER *mbuf;
   uint32_t l;
@@ -681,18 +695,16 @@ int AH_Msg_DecryptDdv(AH_MSG *hmsg, GWEN_DB_NODE *gr)
   GWEN_DB_NODE *nhead=NULL;
   GWEN_DB_NODE *ndata=NULL;
   const char *crypterId;
-  uint32_t gid;
+  uint32_t gid=0;
 
   assert(hmsg);
-  h=AH_Dialog_GetHbci(hmsg->dialog);
+  dlg=AH_Msg_GetDialog(hmsg);
+  h=AH_Dialog_GetHbci(dlg);
   assert(h);
-  e=AH_Dialog_GetMsgEngine(hmsg->dialog);
+  e=AH_Dialog_GetMsgEngine(dlg);
   assert(e);
   GWEN_MsgEngine_SetMode(e, "ddv");
-
-  gid=0;
-
-  u=AH_Dialog_GetDialogOwner(hmsg->dialog);
+  u=AH_Dialog_GetDialogOwner(dlg);
 //  uFlags=AH_User_GetFlags(u);
 
   peerId=AH_User_GetPeerId(u);
@@ -847,10 +859,9 @@ int AH_Msg_DecryptDdv(AH_MSG *hmsg, GWEN_DB_NODE *gr)
   AH_Msg_SetCrypterId(hmsg, crypterId);
 
   /* store new buffer inside message */
-  GWEN_Buffer_free(hmsg->origbuffer);
-  hmsg->origbuffer=hmsg->buffer;
+  AH_Msg_ExchangeBufferWithOrigBuffer(hmsg);
   GWEN_Buffer_Rewind(mbuf);
-  hmsg->buffer=mbuf;
+  AH_Msg_SetBuffer(hmsg, mbuf);
 
   return 0;
 }
@@ -859,6 +870,7 @@ int AH_Msg_DecryptDdv(AH_MSG *hmsg, GWEN_DB_NODE *gr)
 
 int AH_Msg_VerifyDdv(AH_MSG *hmsg, GWEN_DB_NODE *gr)
 {
+  AH_DIALOG *dlg;
   AH_HBCI *h;
   GWEN_LIST *sigheads;
   GWEN_LIST *sigtails;
@@ -875,15 +887,15 @@ int AH_Msg_VerifyDdv(AH_MSG *hmsg, GWEN_DB_NODE *gr)
   const GWEN_CRYPT_TOKEN_KEYINFO *ki;
   uint32_t keyId;
   int rv;
-  uint32_t gid;
+  uint32_t gid=0;
+  GWEN_BUFFER *msgBuffer;
 
   assert(hmsg);
-  h=AH_Dialog_GetHbci(hmsg->dialog);
+  dlg=AH_Msg_GetDialog(hmsg);
+  h=AH_Dialog_GetHbci(dlg);
   assert(h);
-  u=AH_Dialog_GetDialogOwner(hmsg->dialog);
+  u=AH_Dialog_GetDialogOwner(dlg);
   assert(u);
-
-  gid=0;
 
   /* get crypt token of signer */
   rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),
@@ -1048,7 +1060,8 @@ int AH_Msg_VerifyDdv(AH_MSG *hmsg, GWEN_DB_NODE *gr)
   }
 
   /* ok, now verify all signatures */
-  dataStart=GWEN_Buffer_GetStart(hmsg->buffer)+dataBegin;
+  msgBuffer=AH_Msg_GetBuffer(hmsg);
+  dataStart=GWEN_Buffer_GetStart(msgBuffer)+dataBegin;
   for (i=0; i< GWEN_List_GetSize(sigtails); i++) {
     GWEN_DB_NODE *sighead;
     GWEN_DB_NODE *sigtail;
@@ -1092,7 +1105,7 @@ int AH_Msg_VerifyDdv(AH_MSG *hmsg, GWEN_DB_NODE *gr)
       GWEN_MDIGEST *md;
 
       /* hash sighead + data */
-      p=(const uint8_t *)GWEN_Buffer_GetStart(hmsg->buffer);
+      p=(const uint8_t *)GWEN_Buffer_GetStart(msgBuffer);
       p+=GWEN_DB_GetIntValue(sighead,
                              "segment/pos",
                              0,

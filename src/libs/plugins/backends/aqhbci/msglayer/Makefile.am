@@ -12,11 +12,6 @@ AM_CPPFLAGS = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_i
 
 
 EXTRA_DIST=\
-  msgcrypt.c \
-  msgcrypt_ddv.c \
-  msgcrypt_rxh_common.c \
-  msgcrypt_rxh_decrypt.c \
-  msgcrypt_pintan.c \
   dialog_hbci.c \
   dialog_https.c
 
@@ -36,6 +31,10 @@ noinst_HEADERS=\
  hbci-updates_p.h \
  message_l.h \
  message_p.h \
+ msgcrypt_ddv.h \
+ msgcrypt_rxh_common.h \
+ msgcrypt_rxh_decrypt.h \
+ msgcrypt_pintan.h \
  msgengine_l.h \
  msgengine_p.h \
  msgengine.h
@@ -49,6 +48,10 @@ libhbcimsg_la_SOURCES=\
  hbci.c \
  hbci-updates.c \
  message.c \
+ msgcrypt_ddv.c \
+ msgcrypt_rxh_common.c \
+ msgcrypt_rxh_decrypt.c \
+ msgcrypt_pintan.c \
  msgengine.c
 
 sources:

@@ -68,6 +68,10 @@
       msgengine_l.h
       msgengine_p.h
       msgengine.h
+      msgcrypt_rxh_common.h
+      msgcrypt_rxh_decrypt.h
+      msgcrypt_ddv.h
+      msgcrypt_pintan.h
     </headers>
   
   
@@ -79,6 +83,10 @@
       hbci.c
       hbci-updates.c
       message.c
+      msgcrypt_rxh_common.c
+      msgcrypt_rxh_decrypt.c
+      msgcrypt_ddv.c
+      msgcrypt_pintan.c
       msgengine.c
     </sources>
 
@@ -86,11 +94,6 @@
     </data>
 
     <extradist>
-      msgcrypt.c
-      msgcrypt_ddv.c
-      msgcrypt_rxh_common.c
-      msgcrypt_rxh_decrypt.c
-      msgcrypt_pintan.c
       dialog_hbci.c
       dialog_https.c
     </extradist>
