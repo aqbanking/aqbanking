@@ -176,6 +176,8 @@ int GWENHYWFAR_CB AH_ChooseUserTypeDialog_SignalHandler(GWEN_DIALOG *dlg,
   case GWEN_DialogEvent_TypeLast:
     return GWEN_DialogEvent_ResultNotHandled;
 
+  default:
+    break;
   }
 
   return GWEN_DialogEvent_ResultNotHandled;
