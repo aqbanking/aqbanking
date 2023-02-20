@@ -35,6 +35,7 @@ noinst_HEADERS=\
  msgcrypt_rxh_common.h \
  msgcrypt_rxh_decrypt.h \
  msgcrypt_pintan.h \
+ msgcrypt_pintan_verify.h \
  msgengine_l.h \
  msgengine_p.h \
  msgengine.h
@@ -52,6 +53,7 @@ libhbcimsg_la_SOURCES=\
  msgcrypt_rxh_common.c \
  msgcrypt_rxh_decrypt.c \
  msgcrypt_pintan.c \
+ msgcrypt_pintan_verify.c \
  msgengine.c
 
 sources:
