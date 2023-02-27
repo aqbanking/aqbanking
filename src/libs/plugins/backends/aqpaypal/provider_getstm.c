@@ -69,10 +69,14 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
     AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
     return GWEN_ERROR_INVALID;
   }
-
   GWEN_Buffer_AppendString(tbuf, "&startdate=");
   GWEN_Date_toStringWithTemplate(da, "YYYY-MM-DDT00:00:00Z", tbuf);
-  //testing: GWEN_Buffer_AppendString(tbuf, "&enddate=2016-01-01T00:00:00Z");
+
+  da=AB_Transaction_GetLastDate(j);
+  if (da) {
+    GWEN_Buffer_AppendString(tbuf, "&enddate=");
+    GWEN_Date_toStringWithTemplate(da, "YYYY-MM-DDT23:59:59Z", tbuf);
+  }
 
   /* send and receive */
   AB_Transaction_SetStatus(j, AB_Transaction_StatusSending);
@@ -83,7 +87,6 @@ int APY_Provider_ExecGetTrans(AB_PROVIDER *pro,
     AB_Transaction_SetStatus(j, AB_Transaction_StatusError);
     return GWEN_ERROR_GENERIC;
   }
-
   GWEN_Buffer_free(tbuf);
 
   /* handle response */
