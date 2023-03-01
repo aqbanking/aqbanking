@@ -2,7 +2,7 @@
 
 <!-- ***************************************************************************
  begin       : Sun Apr 11 2021
- copyright   : (C) 2022 by Martin Preuss
+ copyright   : (C) 2023 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -19,8 +19,8 @@
 
 <gwbuild>
 
-  <project name="aqbanking" version="6.5.3.0-stable"
-           so_current="49" so_age="5" so_revision="3"
+  <project name="aqbanking" version="6.5.4.0-stable"
+           so_current="49" so_age="5" so_revision="4"
            write_config_h="TRUE"
            >
 
@@ -252,7 +252,6 @@
     <extradist>
       AUTHORS
       COPYING
-      ChangeLog
       INSTALL
       NEWS
       README
