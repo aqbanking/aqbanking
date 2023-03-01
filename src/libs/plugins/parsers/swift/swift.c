@@ -914,6 +914,17 @@ GWEN_DATE *_dateFromYMD(int dateYear, int dateMonth, int dateDay)
     /* subtract a day to get the last day in FEB */
     GWEN_Date_SubDays(dt, 1);
   }
+  else if (dateDay==29 && dateMonth==2 && !GWEN_Date_IsLeapYear(dateYear)) {
+    /* date is Feb 29 outside a leap year, this date is invalid.
+     * However, at least Hamburger Sparkasse uses this on 2023/02/28 to mark the end of Feb 2023 */
+    dateDay=28;
+    dateMonth=2;
+    dt=GWEN_Date_fromGregorian(dateYear, dateMonth, dateDay);
+    if (dt==NULL) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Bad date %04d/%02d/%02d", dateYear, dateMonth, dateDay);
+      return NULL;
+    }
+  }
   else {
     dt=GWEN_Date_fromGregorian(dateYear, dateMonth, dateDay);
     if (dt==NULL) {
