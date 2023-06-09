@@ -466,6 +466,7 @@ int AB_ImporterDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards)
   switch (page) {
   case PAGE_BEGIN:
     GWEN_Dialog_SetIntProperty(dlg, "wiz_prev_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+    GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
     GWEN_Dialog_SetIntProperty(dlg, "wiz_stack", GWEN_DialogProperty_Value, 0, page, 0);
     return GWEN_DialogEvent_ResultHandled;
 
@@ -782,6 +783,13 @@ int AB_ImporterDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
   }
   else if (strcasecmp(sender, "wiz_importer_list")==0) {
     if (_determineSelectedImporter(dlg)<0)
+      GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
+    else
+      GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
+  }
+
+  else if (strcasecmp(sender, "wiz_profile_list")==0) {
+    if (_determineSelectedProfile(dlg)<0)
       GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
     else
       GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
