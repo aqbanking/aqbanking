@@ -312,11 +312,17 @@ int _encryptMessageKey(GWEN_CRYPT_KEY *ek,
     return GWEN_ERROR_GENERIC;
   }
 
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Raw message key:");
+  GWEN_Text_LogString(GWEN_Buffer_GetStart(skbuf), GWEN_Buffer_GetUsedBytes(skbuf), AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Info);
+
   rv=_paddMessageKey(skbuf, rParams, GWEN_Crypt_Key_GetKeySize(ek));
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Padded raw message key:");
+  GWEN_Text_LogString(GWEN_Buffer_GetStart(skbuf), GWEN_Buffer_GetUsedBytes(skbuf), AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Info);
 
   rv=GWEN_Crypt_Key_Encipher(ek, (const uint8_t *) GWEN_Buffer_GetStart(skbuf), elen, encKeyBufferPtr, &elen);
   if (rv<0) {
@@ -325,6 +331,9 @@ int _encryptMessageKey(GWEN_CRYPT_KEY *ek,
     return rv;
   }
   GWEN_Buffer_free(skbuf);
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Message key encrypted with bank public encryption key:");
+  GWEN_Text_LogString((const char*) encKeyBufferPtr, elen, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Info);
 
   return elen;
 }
