@@ -53,8 +53,6 @@ GWEN_LIST_FUNCTIONS(AH_MSG, AH_Msg);
  * ------------------------------------------------------------------------------------------------
  */
 
-static void AH_Msg_SetPin(AH_MSG *hmsg, const char *s);
-
 static int AH_Msg_AddMsgTail(AH_MSG *hmsg);
 static int AH_Msg_AddMsgHead(AH_MSG *hmsg);
 
@@ -2017,7 +2015,6 @@ const char *AH_Msg_GetCrypterId(const AH_MSG *hmsg)
 
 
 #include "msgcrypt_ddv.c"
-#include "msgcrypt_pintan.c"
 #include "msgcrypt.c"
 
 

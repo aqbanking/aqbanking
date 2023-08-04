@@ -128,6 +128,7 @@ const char *AH_Msg_GetExpectedCrypter(const AH_MSG *msg);
 void AH_Msg_SetExpectedCrypter(AH_MSG *msg, const char *s);
 
 const char *AH_Msg_GetPin(const AH_MSG *msg);
+void AH_Msg_SetPin(AH_MSG *hmsg, const char *s);
 
 #endif /* AH_MESSAGE_L_H */
 

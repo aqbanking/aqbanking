@@ -1,11 +1,25 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2004 by Martin Preuss
+    copyright   : (C) 2023 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
+
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#include "msgcrypt_pintan.h"
+#include "message_p.h"
+
+#include "aqhbci/aqhbci_l.h"
+#include "aqhbci/banking/user_l.h"
+
+#include <gwenhywfar/debug.h>
+
+
 
 
 /* ------------------------------------------------------------------------------------------------
@@ -13,19 +27,17 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-
 static GWEN_BUFFER *_pinTanCreateSigHead(AH_MSG *hmsg, AB_USER *su, GWEN_MSGENGINE *e, const char *ctrlref);
 static GWEN_BUFFER *_pinTanCreateSigTail(AH_MSG *hmsg, AB_USER *su, GWEN_MSGENGINE *e, const char *ctrlref);
 static int _pinTanGenerateAndAddSegment(GWEN_MSGENGINE *e, const char *segName, GWEN_DB_NODE *cfg, GWEN_BUFFER *hbuf);
 static int _createCtrlRef(char *ctrlref, int len);
 
 
+
 /* ------------------------------------------------------------------------------------------------
  * implementations
  * ------------------------------------------------------------------------------------------------
  */
-
-
 
 int AH_MsgPinTan_PrepareCryptoSeg(AH_MSG *hmsg,
                                   AB_USER *u,
@@ -107,15 +119,12 @@ int AH_MsgPinTan_PrepareCryptoSeg(AH_MSG *hmsg,
 
 int AH_Msg_SignPinTan(AH_MSG *hmsg, GWEN_UNUSED GWEN_BUFFER *rawBuf, const char *signer)
 {
-  AH_HBCI *h;
   int rv;
   char ctrlref[15];
   GWEN_MSGENGINE *e;
   AB_USER *su;
 
   assert(hmsg);
-  h=AH_Dialog_GetHbci(hmsg->dialog);
-  assert(h);
   e=AH_Dialog_GetMsgEngine(hmsg->dialog);
   assert(e);
   GWEN_MsgEngine_SetMode(e, "pintan");
@@ -149,7 +158,7 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg, GWEN_UNUSED GWEN_BUFFER *rawBuf, const char 
     GWEN_Buffer_free(hbuf);
   }
 
-  { /* create and appendsignature tail */
+  { /* create and append signature tail */
     GWEN_BUFFER *hbuf;
 
     hbuf=_pinTanCreateSigTail(hmsg, su, e, ctrlref);
