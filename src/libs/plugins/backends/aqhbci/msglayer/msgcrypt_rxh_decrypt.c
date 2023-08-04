@@ -7,6 +7,25 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#include "msgcrypt_rxh_decrypt.h"
+#include "msgcrypt_rxh_common.h"
+#include "message_p.h"
+
+#include "aqhbci/aqhbci_l.h"
+
+#include <gwenhywfar/gwenhywfar.h>
+#include <gwenhywfar/debug.h>
+#include <gwenhywfar/misc.h>
+#include <gwenhywfar/cryptkeysym.h>
+#include <gwenhywfar/padd.h>
+#include <gwenhywfar/gui.h>
+
+#include <aqbanking/banking_be.h>
+
 
 
 /* ------------------------------------------------------------------------------------------------
@@ -14,9 +33,8 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-static GWEN_CRYPT_KEY *_rxhDecrypt_ExtractMessageKey(AH_MSG *hmsg, int rxhProtocol, GWEN_DB_NODE *grHead);
-static GWEN_BUFFER *_rxhDecrypt_GetDecryptedMessage(GWEN_CRYPT_KEY *sk, int rxhProtocol, const uint8_t *pSource,
-                                                    uint32_t lSource);
+static GWEN_CRYPT_KEY *_extractMessageKey(AH_MSG *hmsg, int rxhProtocol, GWEN_DB_NODE *grHead);
+static GWEN_BUFFER *_getDecryptedMessage(GWEN_CRYPT_KEY *sk, int rxhProtocol, const uint8_t *pSource, uint32_t lSource);
 
 
 
@@ -24,8 +42,6 @@ static GWEN_BUFFER *_rxhDecrypt_GetDecryptedMessage(GWEN_CRYPT_KEY *sk, int rxhP
  * implementations
  * ------------------------------------------------------------------------------------------------
  */
-
-
 
 int AH_Msg_DecryptRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
 {
@@ -38,8 +54,7 @@ int AH_Msg_DecryptRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
   GWEN_DB_NODE *nhead=NULL;
   GWEN_DB_NODE *ndata=NULL;
   const char *crypterId;
-  RXH_PARAMETER *rxh_parameter;
-  int rxhVersion;
+  const RXH_PARAMETER *rxh_parameter;
 
   assert(hmsg);
   h=AH_Dialog_GetHbci(hmsg->dialog);
@@ -47,26 +62,7 @@ int AH_Msg_DecryptRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
 
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
 
-  /* get correct parameters */
-  rxhVersion = AH_User_GetRdhType(u);
-  switch (AH_User_GetCryptMode(u)) {
-  case AH_CryptMode_Rdh:
-    rxh_parameter=rdh_parameter[rxhVersion];
-    if (rxh_parameter == NULL) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Profile RDH%d is not supported!", rxhVersion);
-      return AB_ERROR_NOT_INIT;
-    }
-    break;
-  case AH_CryptMode_Rah:
-    rxh_parameter=rah_parameter[rxhVersion];
-    if (rxh_parameter == NULL) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Profile RAH%d is not supported!", rxhVersion);
-      return AB_ERROR_NOT_INIT;
-    }
-    break;
-  default:
-    return GWEN_ERROR_INTERNAL;
-  }
+  rxh_parameter=AH_MsgRxh_GetParameters(AH_User_GetCryptMode(u), AH_User_GetRdhType(u));
 
   /* get encrypted session key */
   nhead=GWEN_DB_GetGroup(gr, GWEN_DB_FLAGS_DEFAULT | GWEN_PATH_FLAGS_NAMEMUSTEXIST, "CryptHead");
@@ -75,7 +71,7 @@ int AH_Msg_DecryptRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
     return GWEN_ERROR_BAD_DATA;
   }
 
-  sk=_rxhDecrypt_ExtractMessageKey(hmsg, rxh_parameter->protocol, nhead);
+  sk=_extractMessageKey(hmsg, rxh_parameter->protocol, nhead);
   if (sk==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing message key");
     return GWEN_ERROR_BAD_DATA;
@@ -96,7 +92,7 @@ int AH_Msg_DecryptRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
   }
 
   /* decrypt data */
-  mbuf=_rxhDecrypt_GetDecryptedMessage(sk, rxh_parameter->protocol, p, l);
+  mbuf=_getDecryptedMessage(sk, rxh_parameter->protocol, p, l);
   if (mbuf==NULL) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Could not decipher with DES session key.");
     GWEN_Crypt_Key_free(sk);
@@ -119,7 +115,7 @@ int AH_Msg_DecryptRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
 
 
 
-GWEN_CRYPT_KEY *_rxhDecrypt_ExtractMessageKey(AH_MSG *hmsg, int rxhProtocol, GWEN_DB_NODE *grCryptHead)
+GWEN_CRYPT_KEY *_extractMessageKey(AH_MSG *hmsg, int rxhProtocol, GWEN_DB_NODE *grCryptHead)
 {
   AH_HBCI *h;
   uint32_t l;
@@ -266,8 +262,7 @@ GWEN_CRYPT_KEY *_rxhDecrypt_ExtractMessageKey(AH_MSG *hmsg, int rxhProtocol, GWE
 
 
 
-GWEN_BUFFER *_rxhDecrypt_GetDecryptedMessage(GWEN_CRYPT_KEY *sk, int rxhProtocol, const uint8_t *pSource,
-                                             uint32_t lSource)
+GWEN_BUFFER *_getDecryptedMessage(GWEN_CRYPT_KEY *sk, int rxhProtocol, const uint8_t *pSource, uint32_t lSource)
 {
   GWEN_BUFFER *mbuf;
   int rv;

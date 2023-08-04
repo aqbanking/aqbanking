@@ -67,38 +67,6 @@ struct AH_MSG {
 };
 
 
-static void AH_Msg_SetPin(AH_MSG *hmsg, const char *s);
-
-static int AH_Msg_AddMsgTail(AH_MSG *hmsg);
-static int AH_Msg_AddMsgHead(AH_MSG *hmsg);
-
-static int AH_Msg_ReadSegment(AH_MSG *hmsg,
-                              GWEN_MSGENGINE *e,
-                              const char *gtype,
-                              GWEN_BUFFER *mbuf,
-                              GWEN_DB_NODE *gr,
-                              unsigned int flags);
-static int AH_Msg_ReadMessage(AH_MSG *hmsg,
-                              GWEN_MSGENGINE *e,
-                              const char *gtype,
-                              GWEN_BUFFER *mbuf,
-                              GWEN_DB_NODE *gr,
-                              unsigned int flags);
-static int AH_Msg_SequenceCheck(GWEN_DB_NODE *gr);
-
-
-static int AH_Msg__Sign(AH_MSG *hmsg, GWEN_BUFFER *rawBuf, const char *signer);
-static int AH_Msg__Encrypt(AH_MSG *hmsg);
-static int AH_Msg__Decrypt(AH_MSG *hmsg, GWEN_DB_NODE *gr);
-static int AH_Msg__Verify(AH_MSG *hmsg, GWEN_DB_NODE *gr);
-
-static int AH_Msg__AnonHnsha(const char *psegment,
-                             unsigned int slen,
-                             GWEN_SYNCIO *sio);
-static int AH_Msg__AnonHkpae(const char *psegment,
-                             unsigned int slen,
-                             GWEN_SYNCIO *sio);
-
 
 #endif /* AH_MESSAGE_P_H */
 
