@@ -12,6 +12,7 @@
 #endif
 
 #include "msgcrypt_rxh_common.h"
+#include "msgcrypt.h"
 #include "message_p.h"
 
 #include "aqhbci/aqhbci_l.h"
@@ -258,95 +259,77 @@ const RXH_PARAMETER *AH_MsgRxh_GetParameters(AH_CRYPT_MODE cryptMode, int rxhVer
 
 
 
-static GWEN_CRYPT_KEY *AH_MsgRxh_VerifyInitialSignKey(GWEN_CRYPT_TOKEN *ct,
-                                                      const GWEN_CRYPT_TOKEN_CONTEXT *ctx,
-                                                      AB_USER *user,
-                                                      GWEN_DB_NODE *gr)
+GWEN_CRYPT_TOKEN *AH_MsgRxh_GetOpenCryptToken(AH_MSG *hmsg)
 {
+  AH_HBCI *h;
+  AB_USER *u;
+  GWEN_CRYPT_TOKEN *ct;
+  int rv;
+  uint32_t gid;
 
-  GWEN_DB_NODE *dbCurr;
-  int haveKey=0;
-  int verified;
-  GWEN_CRYPT_KEY *bpk = NULL;
+  h=AH_Dialog_GetHbci(hmsg->dialog);
+  assert(h);
+  u=AH_Dialog_GetDialogOwner(hmsg->dialog);
+  assert(u);
+  gid=0;
 
-  /* search for "GetKeyResponse" */
-  haveKey=0;
-  dbCurr=GWEN_DB_GetFirstGroup(gr);
-  while (dbCurr) {
-    GWEN_DB_NODE *dbKeyResponse;
-    const char *s;
+  /* get crypt token of signer */
+  rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h), AH_User_GetTokenType(u), AH_User_GetTokenName(u), &ct);
+  if (rv) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Could not get crypt token for user \"%s\" (%d)", AB_User_GetUserId(u), rv);
+    return NULL;
+  }
 
-    if (strcasecmp(GWEN_DB_GroupName(dbCurr), "GetKeyResponse")==0) {
-      unsigned int bs;
-      const uint8_t *p;
-      dbKeyResponse=dbCurr;
-      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Got this key response:");
-      if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Debug)
-        GWEN_DB_Dump(dbKeyResponse, 2);
+  /* open CryptToken if necessary */
+  if (!GWEN_Crypt_Token_IsOpen(ct)) {
+    GWEN_Crypt_Token_AddModes(ct, GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN);
+    rv=GWEN_Crypt_Token_Open(ct, 0, gid);
+    if (rv) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Could not open crypt token for user \"%s\" (%d)", AB_User_GetUserId(u), rv);
+      return NULL;
+    }
+  }
 
-      p=GWEN_DB_GetBinValue(dbKeyResponse, "key/modulus", 0, 0, 0, &bs);
-
-      if (!p || !bs) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "No modulus");
-        return NULL;
-      }
-      else {
-        /* :TODO: if no key hash is on the card, check if a certificate was sent with the
-         * key and verify that, if not, ask the user for the INI-Letter
-         */
-        const uint8_t *exponent;
-        unsigned int expLen;
-        int msgKeyNum;
-        int msgKeyVer;
-        uint16_t sentModulusLength;
-        int keySize;
-
-        exponent=GWEN_DB_GetBinValue(dbKeyResponse, "key/exponent", 0, 0, 0, &expLen);
-        sentModulusLength=bs;
-        /* skip zero bytes if any */
-        while (bs && *p==0) {
-          p++;
-          bs--;
-        }
-
-        /* calculate key size in bytes */
-        if (bs<=96)
-          keySize=96;
-        else {
-          keySize=bs;
-        }
-
-        s=GWEN_DB_GetCharValue(dbKeyResponse, "keyname/keytype", 0, "V");
-        msgKeyNum=GWEN_DB_GetIntValue(dbKeyResponse, "keyname/keynum", 0, 0);
-        msgKeyVer=GWEN_DB_GetIntValue(dbKeyResponse, "keyname/keyversion", 0, 0);
-
-
-
-        if (strcasecmp(s, "S")==0) {
-          bpk=GWEN_Crypt_KeyRsa_fromModExp(keySize, p, bs, exponent, expLen);
-          GWEN_Crypt_Key_SetKeyNumber(bpk, msgKeyNum);
-          GWEN_Crypt_Key_SetKeyVersion(bpk, msgKeyVer);
-          verified=AH_User_VerifyInitialKey(ct, ctx, user, bpk, sentModulusLength, "sign");
-          if (verified==1) {
-            GWEN_Crypt_KeyRsa_AddFlags(bpk, GWEN_CRYPT_KEYRSA_FLAGS_ISVERIFIED);
-            AH_User_SetBankPubSignKey(user, bpk);
-            /* reload */
-            bpk=AH_User_GetBankPubSignKey(user);
-          }
-          else {
-            return NULL;
-          }
-
-        }
-      }
-      haveKey++;
-    } /* if we have one */
-    dbCurr=GWEN_DB_GetNextGroup(dbCurr);
-  } /* while */
-
-
-  return bpk;
+  return ct;
 }
+
+
+
+const GWEN_CRYPT_TOKEN_CONTEXT *AH_MsgRxh_GetUserContext(AH_MSG *hmsg)
+{
+  AH_HBCI *h;
+  AB_USER *u;
+  GWEN_CRYPT_TOKEN *ct;
+  const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
+  uint32_t gid;
+
+  h=AH_Dialog_GetHbci(hmsg->dialog);
+  assert(h);
+  u=AH_Dialog_GetDialogOwner(hmsg->dialog);
+  assert(u);
+  gid=0;
+
+  ct=AH_MsgRxh_GetOpenCryptToken(hmsg);
+  if (ct==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here");
+    return NULL;
+  }
+
+  /* get context and key info */
+  ctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), gid);
+  if (ctx==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN,
+             "Context %d not found on crypt token [%s:%s]",
+             AH_User_GetTokenContextId(u),
+             GWEN_Crypt_Token_GetTypeName(ct),
+             GWEN_Crypt_Token_GetTokenName(ct));
+    return NULL;
+  }
+
+  return ctx;
+}
+
+
 
 int AH_MsgRxh_PrepareCryptoSeg(AH_MSG *hmsg,
                                AB_USER *u,
@@ -871,596 +854,6 @@ int AH_Msg_SignRxh(AH_MSG *hmsg,
   return 0;
 }
 
-static
-int AH_MsgRxh__Verify_Internal(GWEN_CRYPT_KEY *k,
-                               GWEN_CRYPT_PADDALGO *a,
-                               const uint8_t *pInData,
-                               uint32_t inLen,
-                               const uint8_t *pSignatureData,
-                               uint32_t signatureLen)
-{
 
-  int rv;
-  GWEN_CRYPT_PADDALGOID aid;
-
-  aid=GWEN_Crypt_PaddAlgo_GetId(a);
-
-  if (aid==GWEN_Crypt_PaddAlgoId_Iso9796_2 ||
-      aid==GWEN_Crypt_PaddAlgoId_Pkcs1_2 ||
-      aid==GWEN_Crypt_PaddAlgoId_Pkcs1_Pss_Sha256) {
-    GWEN_BUFFER *tbuf;
-    uint32_t l;
-
-    /* these algos add random numbers, we must use encrypt fn here and
-     * compare the decrypted and unpadded data with the source data */
-    tbuf=GWEN_Buffer_new(0, signatureLen+16, 0, 0);
-    l=GWEN_Buffer_GetMaxUnsegmentedWrite(tbuf);
-    rv=GWEN_Crypt_Key_Encipher(k,
-                               pSignatureData, signatureLen,
-                               (uint8_t *)GWEN_Buffer_GetStart(tbuf),
-                               &l);
-    if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      GWEN_Buffer_free(tbuf);
-      return rv;
-    }
-    GWEN_Buffer_IncrementPos(tbuf, l);
-    GWEN_Buffer_AdjustUsedBytes(tbuf);
-
-    if (aid==GWEN_Crypt_PaddAlgoId_Pkcs1_Pss_Sha256) {
-      int nbits;
-      uint8_t *modPtr;
-      /* nasty hack, do something better later */
-      uint8_t modBuffer[AH_MSGRXH_MAXKEYBUF];
-      uint32_t modLen;
-      GWEN_MDIGEST *md;
-
-      modPtr=&modBuffer[0];
-      modLen=AH_MSGRXH_MAXKEYBUF;
-      /* calculate real number of bits */
-      rv=GWEN_Crypt_KeyRsa_GetModulus(k, modPtr, &modLen);
-
-      nbits=modLen*8;
-      while (modLen && *modPtr==0) {
-        nbits-=8;
-        modLen--;
-        modPtr++;
-      }
-      if (modLen) {
-        uint8_t b=*modPtr;
-        int i;
-        uint8_t mask=0x80;
-
-        for (i=0; i<8; i++) {
-          if (b & mask)
-            break;
-          nbits--;
-          mask>>=1;
-        }
-      }
-
-      if (nbits==0) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Empty modulus");
-        GWEN_Buffer_free(tbuf);
-        return GWEN_ERROR_GENERIC;
-      }
-
-      md=GWEN_MDigest_Sha256_new();
-      rv=GWEN_Padd_VerifyPkcs1Pss((const uint8_t *) GWEN_Buffer_GetStart(tbuf),
-                                  GWEN_Buffer_GetUsedBytes(tbuf),
-                                  nbits,
-                                  pInData, inLen,
-                                  inLen,
-                                  md);
-      GWEN_MDigest_free(md);
-      if (rv<0) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Error verifying this data:");
-        GWEN_Buffer_Dump(tbuf, 2);
-        GWEN_Buffer_free(tbuf);
-        return rv;
-      }
-    }
-    else {
-      rv=GWEN_Padd_UnapplyPaddAlgo(a, tbuf);
-      if (rv<0) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-        GWEN_Buffer_free(tbuf);
-        return rv;
-      }
-      l=GWEN_Buffer_GetUsedBytes(tbuf);
-
-      if (l!=inLen) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Signature length doesn't match");
-        GWEN_Buffer_free(tbuf);
-        return GWEN_ERROR_VERIFY;
-      }
-      if (memcmp(pInData, GWEN_Buffer_GetStart(tbuf), l)!=0) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Signature doesn't match:");
-        GWEN_Buffer_free(tbuf);
-        return GWEN_ERROR_VERIFY;
-      }
-    }
-    GWEN_Buffer_free(tbuf);
-  }
-  else {
-    GWEN_BUFFER *srcBuf;
-
-    /* copy to a buffer for padding */
-    srcBuf=GWEN_Buffer_new(0, inLen, 0, 0);
-    GWEN_Buffer_AppendBytes(srcBuf, (const char *)pInData, inLen);
-
-    /* padd according to given algo */
-    rv=GWEN_Padd_ApplyPaddAlgo(a, srcBuf);
-    if (rv) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      GWEN_Buffer_free(srcBuf);
-      return rv;
-    }
-
-    /* verify with key */
-    rv=GWEN_Crypt_Key_Verify(k,
-                             (const uint8_t *)GWEN_Buffer_GetStart(srcBuf),
-                             GWEN_Buffer_GetUsedBytes(srcBuf),
-                             pSignatureData,
-                             signatureLen);
-    GWEN_Buffer_free(srcBuf);
-    if (rv) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
-  }
-
-
-
-  return 0;
-}
-
-
-
-int AH_Msg_VerifyRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
-{
-  AH_HBCI *h;
-  GWEN_LIST *sigheads;
-  GWEN_LIST *sigtails;
-  GWEN_DB_NODE *n;
-  int nonSigHeads;
-  int nSigheads;
-  unsigned int dataBegin;
-  char *dataStart;
-  unsigned int dataLength;
-  unsigned int i;
-  AB_USER *u;
-  GWEN_CRYPT_TOKEN *ct;
-  const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
-  int ksize;
-  int rv;
-  uint32_t gid;
-  uint32_t hashLen;
-  AH_HASH_ALG hashAlg;
-  AH_OPMODE opMode;
-  uint8_t rxhVersion;
-  const RXH_PARAMETER *rxh_parameter;
-  GWEN_CRYPT_KEY *bankPubSignKey;
-
-  /* get correct parameters */
-  u=AH_Dialog_GetDialogOwner(hmsg->dialog);
-  assert(u);
-
-  rxhVersion = AH_User_GetRdhType(u);
-  switch (AH_User_GetCryptMode(u)) {
-  case AH_CryptMode_Rdh:
-    rxh_parameter=rdh_parameter[rxhVersion];
-    if (rxh_parameter == NULL) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Profile RDH%d is not supported!", rxhVersion);
-      return AB_ERROR_NOT_INIT;
-    }
-    break;
-  case AH_CryptMode_Rah:
-    rxh_parameter=rah_parameter[rxhVersion];
-    if (rxh_parameter == NULL) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Profile RDH%d is not supported!", rxhVersion);
-      return AB_ERROR_NOT_INIT;
-    }
-    break;
-  default:
-    return GWEN_ERROR_INTERNAL;
-  }
-  assert(hmsg);
-  h=AH_Dialog_GetHbci(hmsg->dialog);
-  assert(h);
-
-
-  gid=0;
-
-
-  hashAlg = rxh_parameter->hashAlgS;
-  opMode= rxh_parameter->opmodSignS;
-
-  /* get crypt token of signer */
-  rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h),
-                              AH_User_GetTokenType(u),
-                              AH_User_GetTokenName(u),
-                              &ct);
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Could not get crypt token for user \"%s\" (%d)",
-             AB_User_GetUserId(u), rv);
-    return rv;
-  }
-
-  /* open CryptToken if necessary */
-  if (!GWEN_Crypt_Token_IsOpen(ct)) {
-    GWEN_Crypt_Token_AddModes(ct, GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN);
-    rv=GWEN_Crypt_Token_Open(ct, 0, gid);
-    if (rv) {
-      DBG_INFO(AQHBCI_LOGDOMAIN,
-               "Could not open crypt token for user \"%s\" (%d)",
-               AB_User_GetUserId(u), rv);
-      return rv;
-    }
-  }
-
-  /* get context and key info */
-  ctx=GWEN_Crypt_Token_GetContext(ct,
-                                  AH_User_GetTokenContextId(u),
-                                  gid);
-  if (ctx==NULL) {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Context %d not found on crypt token [%s:%s]",
-             AH_User_GetTokenContextId(u),
-             GWEN_Crypt_Token_GetTypeName(ct),
-             GWEN_Crypt_Token_GetTokenName(ct));
-    return GWEN_ERROR_NOT_FOUND;
-  }
-
-  /* let's go */
-  sigheads=GWEN_List_new();
-
-  /* enumerate signature heads */
-  nonSigHeads=0;
-  nSigheads=0;
-  n=GWEN_DB_GetFirstGroup(gr);
-  while (n) {
-    if (strcasecmp(GWEN_DB_GroupName(n), "SigHead")==0) {
-      /* found a signature head */
-      if (nonSigHeads) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN,
-                  "Found some unsigned parts at the beginning");
-        GWEN_List_free(sigheads);
-        return GWEN_ERROR_BAD_DATA;
-      }
-      GWEN_List_PushBack(sigheads, n);
-      nSigheads++;
-    }
-    else if (strcasecmp(GWEN_DB_GroupName(n), "MsgHead")!=0) {
-      if (nSigheads)
-        break;
-      nonSigHeads++;
-    }
-    n=GWEN_DB_GetNextGroup(n);
-  } /* while */
-
-  if (!n) {
-    if (nSigheads) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN,
-                "Found Signature heads but no other segments");
-      GWEN_List_free(sigheads);
-      return GWEN_ERROR_BAD_DATA;
-    }
-    DBG_DEBUG(AQHBCI_LOGDOMAIN, "No signatures");
-    GWEN_List_free(sigheads);
-    return 0;
-  }
-
-  /* only now we need the verify key */
-  /* the public sign key is not on the RDH card, but exchanged in the
-   * initial key exchange and resides in the user information
-   */
-  bankPubSignKey=AH_User_GetBankPubSignKey(u);
-  if (bankPubSignKey==NULL) {
-    /* this may be the first message with the public keys from the bank server,
-     * if its signed, the key is transmitted in the message and my be verified with
-     * different methods ([HBCI] B.3.1.3, case A):
-     * * the zka card contains the hash in EF_NOTEPAD
-     * * a certificate is sent with the message to verify
-     * * INI letter
-     *
-     * check message for "S"-KEy, look up if there is a hash on the chip card
-     */
-    bankPubSignKey=AH_MsgRxh_VerifyInitialSignKey(ct, ctx, u, gr);
-
-    if (bankPubSignKey==NULL) {
-      DBG_INFO(AQHBCI_LOGDOMAIN,
-               "No public bank sign key for user [%s]",
-               AB_User_GetUserName(u));
-      return GWEN_ERROR_NOT_FOUND;
-    }
-  }
-
-  ksize=GWEN_Crypt_Key_GetKeySize(bankPubSignKey);
-  assert(ksize<=AH_MSGRXH_MAXKEYBUF);
-
-  /* store begin of signed data */
-  dataBegin=GWEN_DB_GetIntValue(n, "segment/pos", 0, 0);
-  if (!dataBegin) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No position specifications in segment");
-    GWEN_List_free(sigheads);
-    return GWEN_ERROR_BAD_DATA;
-  }
-
-  /* now get first signature tail */
-  while (n) {
-    if (strcasecmp(GWEN_DB_GroupName(n), "SigTail")==0) {
-      unsigned int currpos;
-
-      /* found a signature tail */
-      currpos=GWEN_DB_GetIntValue(n, "segment/pos", 0, 0);
-      if (!currpos || dataBegin>currpos) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad position specification in Signature tail");
-        GWEN_List_free(sigheads);
-        return GWEN_ERROR_BAD_DATA;
-      }
-      dataLength=currpos-dataBegin;
-      break;
-    }
-    n=GWEN_DB_GetNextGroup(n);
-  } /* while */
-
-  if (!n) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No signature tail found");
-    GWEN_List_free(sigheads);
-    return GWEN_ERROR_BAD_DATA;
-  }
-
-  sigtails=GWEN_List_new();
-  while (n) {
-    if (strcasecmp(GWEN_DB_GroupName(n), "SigTail")!=0)
-      break;
-    GWEN_List_PushBack(sigtails, n);
-    n=GWEN_DB_GetNextGroup(n);
-  } /* while */
-
-  if (!n) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Message tail expected");
-    GWEN_List_free(sigheads);
-    GWEN_List_free(sigtails);
-    return GWEN_ERROR_BAD_DATA;
-  }
-
-  if (strcasecmp(GWEN_DB_GroupName(n), "MsgTail")!=0) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unexpected segment (msg tail expected)");
-    GWEN_List_free(sigheads);
-    GWEN_List_free(sigtails);
-    return GWEN_ERROR_BAD_DATA;
-  }
-
-  n=GWEN_DB_GetNextGroup(n);
-  if (n) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unexpected segment (end expected)");
-    GWEN_List_free(sigheads);
-    GWEN_List_free(sigtails);
-    return GWEN_ERROR_BAD_DATA;
-  }
-
-  if (GWEN_List_GetSize(sigheads)!=
-      GWEN_List_GetSize(sigtails)) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "Number of signature heads (%d) does not match "
-              "number of signature tails (%d)",
-              GWEN_List_GetSize(sigheads),
-              GWEN_List_GetSize(sigtails));
-    GWEN_List_free(sigheads);
-    GWEN_List_free(sigtails);
-    return GWEN_ERROR_BAD_DATA;
-  }
-
-  /* ok, now verify all signatures */
-  dataStart=GWEN_Buffer_GetStart(hmsg->buffer)+dataBegin;
-  for (i=0; i< GWEN_List_GetSize(sigtails); i++) {
-    GWEN_DB_NODE *sighead;
-    GWEN_DB_NODE *sigtail;
-    const uint8_t *p;
-    uint32_t l;
-    int rv;
-    uint8_t hash[32];
-    const char *signerId;
-
-    /* get signature tail */
-    sigtail=(GWEN_DB_NODE *)GWEN_List_GetBack(sigtails);
-
-    /* get corresponding signature head */
-    sighead=(GWEN_DB_NODE *)GWEN_List_GetFront(sigheads);
-
-    if (!sighead || !sigtail) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN,
-                "No signature head/tail left (internal error)");
-      GWEN_List_free(sigheads);
-      GWEN_List_free(sigtails);
-      return GWEN_ERROR_INTERNAL;
-    }
-
-    GWEN_List_PopBack(sigtails);
-    GWEN_List_PopFront(sigheads);
-
-    signerId=GWEN_DB_GetCharValue(sighead, "key/userid", 0,
-                                  I18N("unknown"));
-
-    /* some checks */
-    if (strcasecmp(GWEN_DB_GetCharValue(sighead, "ctrlref", 0, ""),
-                   GWEN_DB_GetCharValue(sigtail, "ctrlref", 0, ""))!=0) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Non-matching signature tail");
-      GWEN_List_free(sigheads);
-      GWEN_List_free(sigtails);
-      return GWEN_ERROR_BAD_DATA;
-    }
-
-    /* hash signature head and data */
-    if (1) {
-      GWEN_MDIGEST *md;
-
-      /* hash sighead + data */
-      p=(const uint8_t *)GWEN_Buffer_GetStart(hmsg->buffer);
-      p+=GWEN_DB_GetIntValue(sighead,
-                             "segment/pos",
-                             0,
-                             0);
-      l=GWEN_DB_GetIntValue(sighead,
-                            "segment/length",
-                            0,
-                            0);
-      switch (hashAlg) {
-      case AH_HashAlg_Sha1:
-        md=GWEN_MDigest_Sha1_new();
-        break;
-      case AH_HashAlg_Sha256:
-      case AH_HashAlg_Sha256Sha256:
-        md=GWEN_MDigest_Sha256_new();
-        break;
-      case AH_HashAlg_Ripmed160:
-        md=GWEN_MDigest_Rmd160_new();
-        break;
-      default:
-        md=NULL;
-      }
-
-      /* first round */
-      rv=GWEN_MDigest_Begin(md);
-      if (rv==0)
-        /* digest signature head */
-        rv=GWEN_MDigest_Update(md, p, l);
-      if (rv==0)
-        /* digest data */
-        rv=GWEN_MDigest_Update(md, (const uint8_t *)dataStart, dataLength);
-      if (rv==0)
-        rv=GWEN_MDigest_End(md);
-      if (rv<0) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Hash error (%d)", rv);
-        GWEN_MDigest_free(md);
-        GWEN_List_free(sigheads);
-        GWEN_List_free(sigtails);
-        return rv;
-      }
-      memmove(hash,
-              GWEN_MDigest_GetDigestPtr(md),
-              GWEN_MDigest_GetDigestSize(md));
-
-      /* second round */
-      if (hashAlg==AH_HashAlg_Sha256Sha256) {
-        uint8_t hash1[32];
-        memmove(hash1,
-                hash,
-                GWEN_MDigest_GetDigestSize(md));
-        rv=GWEN_MDigest_Begin(md);
-        if (rv==0)
-          /* digest signature head */
-          rv=GWEN_MDigest_Update(md, hash1, sizeof(hash1));
-        if (rv==0)
-          rv=GWEN_MDigest_End(md);
-        if (rv<0) {
-          DBG_ERROR(AQHBCI_LOGDOMAIN, "Hash error (%d)", rv);
-          GWEN_MDigest_free(md);
-          GWEN_List_free(sigheads);
-          GWEN_List_free(sigtails);
-          return rv;
-        }
-        memmove(hash,
-                GWEN_MDigest_GetDigestPtr(md),
-                GWEN_MDigest_GetDigestSize(md));
-      }
-      hashLen=GWEN_MDigest_GetDigestSize(md);
-      GWEN_MDigest_free(md);
-    }
-
-    /* verify signature */
-    p=GWEN_DB_GetBinValue(sigtail, "signature", 0, 0, 0, &l);
-
-    if (p && l) {
-
-      GWEN_CRYPT_PADDALGO *algo;
-
-      switch (opMode) {
-      case AH_Opmode_Iso9796_1:
-        algo=GWEN_Crypt_PaddAlgo_new(GWEN_Crypt_PaddAlgoId_Iso9796_1A4);
-        GWEN_Crypt_PaddAlgo_SetPaddSize(algo, GWEN_Crypt_Key_GetKeySize(bankPubSignKey));
-        break;
-
-      case AH_Opmode_Iso9796_2:
-        algo=GWEN_Crypt_PaddAlgo_new(GWEN_Crypt_PaddAlgoId_Iso9796_2);
-        GWEN_Crypt_PaddAlgo_SetPaddSize(algo, GWEN_Crypt_Key_GetKeySize(bankPubSignKey));
-        break;
-
-      case AH_Opmode_Rsa_Pkcs1_v1_5:
-        algo=GWEN_Crypt_PaddAlgo_new(GWEN_Crypt_PaddAlgoId_Pkcs1_2);
-        GWEN_Crypt_PaddAlgo_SetPaddSize(algo, GWEN_Crypt_Key_GetKeySize(bankPubSignKey));
-        break;
-
-      case AH_Opmode_Rsa_Pss:
-        algo=GWEN_Crypt_PaddAlgo_new(GWEN_Crypt_PaddAlgoId_Pkcs1_Pss_Sha256);
-        GWEN_Crypt_PaddAlgo_SetPaddSize(algo, GWEN_Crypt_Key_GetKeySize(bankPubSignKey));
-        break;
-      default:
-        return GWEN_ERROR_INTERNAL;
-      }
-
-      rv=AH_MsgRxh__Verify_Internal(bankPubSignKey, algo,
-                                    hash, hashLen, p, l);
-      GWEN_Crypt_PaddAlgo_free(algo);
-
-      if (rv) {
-        if (rv==GWEN_ERROR_NO_KEY) {
-          DBG_ERROR(AQHBCI_LOGDOMAIN,
-                    "Unable to verify signature of user \"%s\" (no key)",
-                    signerId);
-          GWEN_Gui_ProgressLog(gid,
-                               GWEN_LoggerLevel_Error,
-                               I18N("Unable to verify signature (no key)"));
-        }
-        else {
-          GWEN_BUFFER *tbuf;
-
-          tbuf=GWEN_Buffer_new(0, hashLen, 0, 1);
-          if (rv==GWEN_ERROR_VERIFY) {
-            DBG_ERROR(AQHBCI_LOGDOMAIN,
-                      "Invalid signature of user \"%s\"", signerId);
-            GWEN_Gui_ProgressLog(gid,
-                                 GWEN_LoggerLevel_Error,
-                                 I18N("Invalid signature!!!"));
-            GWEN_Buffer_AppendString(tbuf, "!");
-          }
-          else {
-            GWEN_Gui_ProgressLog(gid,
-                                 GWEN_LoggerLevel_Error,
-                                 I18N("Could not verify signature"));
-            DBG_ERROR(AQHBCI_LOGDOMAIN,
-                      "Could not verify data with medium of user \"%s\" (%d)",
-                      AB_User_GetUserId(u), rv);
-            GWEN_Buffer_AppendString(tbuf, "?");
-          }
-
-          GWEN_Buffer_AppendString(tbuf, signerId);
-          AH_Msg_AddSignerId(hmsg, GWEN_Buffer_GetStart(tbuf));
-          GWEN_Buffer_free(tbuf);
-        }
-      }
-      else {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Message signed by \"%s\"", signerId);
-        AH_Msg_AddSignerId(hmsg, signerId);
-      }
-    }
-    else {
-      DBG_DEBUG(AQHBCI_LOGDOMAIN, "No signature");
-      GWEN_List_free(sigheads);
-      GWEN_List_free(sigtails);
-      return GWEN_ERROR_BAD_DATA;
-    }
-
-    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Verification done");
-  } /* for */
-
-  GWEN_List_free(sigheads);
-  GWEN_List_free(sigtails);
-  return 0;
-}
 
 

@@ -67,6 +67,8 @@ typedef struct {
 
 
 const RXH_PARAMETER *AH_MsgRxh_GetParameters(AH_CRYPT_MODE cryptMode, int rxhVersion);
+GWEN_CRYPT_TOKEN *AH_MsgRxh_GetOpenCryptToken(AH_MSG *hmsg);
+const GWEN_CRYPT_TOKEN_CONTEXT *AH_MsgRxh_GetUserContext(AH_MSG *hmsg);
 
 
 int AH_MsgRxh_PrepareCryptoSeg(AH_MSG *hmsg,

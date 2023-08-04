@@ -34,7 +34,6 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-static const GWEN_CRYPT_TOKEN_CONTEXT *_getUserContext(AH_MSG *hmsg);
 static int _paddMessageAccordingToParams(GWEN_BUFFER *buffer, const RXH_PARAMETER *rParams);
 static GWEN_CRYPT_KEY *_genMsgKeyAccordingToParams(const RXH_PARAMETER *rParams);
 static GWEN_BUFFER *_encryptMessageIntoReturnedBuffer(GWEN_CRYPT_KEY *sk, const uint8_t *msgPtr, uint32_t msgLen);
@@ -94,7 +93,7 @@ int AH_Msg_EncryptRxh(AH_MSG *hmsg)
   assert(e);
   GWEN_MsgEngine_SetMode(e, AH_CryptMode_toString(rParams->protocol));
 
-  ctx=_getUserContext(hmsg);
+  ctx=AH_MsgRxh_GetUserContext(hmsg);
   if (ctx==NULL) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting user context");
     return GWEN_ERROR_GENERIC;
@@ -153,54 +152,6 @@ int AH_Msg_EncryptRxh(AH_MSG *hmsg)
   hmsg->buffer=hbuf;
 
   return 0;
-}
-
-
-
-const GWEN_CRYPT_TOKEN_CONTEXT *_getUserContext(AH_MSG *hmsg)
-{
-  AH_HBCI *h;
-  AB_USER *u;
-  GWEN_CRYPT_TOKEN *ct;
-  const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
-  int rv;
-  uint32_t gid;
-
-  h=AH_Dialog_GetHbci(hmsg->dialog);
-  assert(h);
-  u=AH_Dialog_GetDialogOwner(hmsg->dialog);
-  assert(u);
-  gid=0;
-
-  /* get crypt token of signer */
-  rv=AB_Banking_GetCryptToken(AH_HBCI_GetBankingApi(h), AH_User_GetTokenType(u), AH_User_GetTokenName(u), &ct);
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Could not get crypt token for user \"%s\" (%d)", AB_User_GetUserId(u), rv);
-    return NULL;
-  }
-
-  /* open CryptToken if necessary */
-  if (!GWEN_Crypt_Token_IsOpen(ct)) {
-    GWEN_Crypt_Token_AddModes(ct, GWEN_CRYPT_TOKEN_MODE_DIRECT_SIGN);
-    rv=GWEN_Crypt_Token_Open(ct, 0, gid);
-    if (rv) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Could not open crypt token for user \"%s\" (%d)", AB_User_GetUserId(u), rv);
-      return NULL;
-    }
-  }
-
-  /* get context and key info */
-  ctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), gid);
-  if (ctx==NULL) {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-             "Context %d not found on crypt token [%s:%s]",
-             AH_User_GetTokenContextId(u),
-             GWEN_Crypt_Token_GetTypeName(ct),
-             GWEN_Crypt_Token_GetTokenName(ct));
-    return NULL;
-  }
-
-  return ctx;
 }
 
 

@@ -68,6 +68,7 @@
       msgcrypt_rxh_common.h
       msgcrypt_rxh_encrypt.h
       msgcrypt_rxh_decrypt.h
+      msgcrypt_rxh_verify.h
       msgcrypt_pintan.h
       msgengine_l.h
       msgengine_p.h
@@ -86,6 +87,7 @@
       msgcrypt_rxh_common.c
       msgcrypt_rxh_encrypt.c
       msgcrypt_rxh_decrypt.c
+      msgcrypt_rxh_verify.c
       msgcrypt_pintan.c
       msgengine.c
     </sources>
