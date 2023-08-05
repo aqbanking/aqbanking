@@ -46,14 +46,12 @@ static int _digestSigHeadAndData(GWEN_MDIGEST *md,
 				 const uint8_t *signedDataPtr, uint32_t signedDataLength,
 				 uint8_t *destHashBuffer32Bytes);
 static int _verifyAllSignatures(AH_MSG *hmsg,
-				const RXH_PARAMETER *rParams,
-				GWEN_CRYPT_KEY *bankPubSignKey,
+                                GWEN_DB_NODE *dbParsedMsg,
 				GWEN_LIST *sigheads,
 				GWEN_LIST *sigtails,
 				unsigned int signedDataBeginPos,
-				unsigned int signedDataLength,
-				uint32_t gid);
-static void _addSignerAccordingToVerifyResult(AH_MSG *hmsg, AB_USER *u, const char *signerId, int rv, uint32_t gid);
+				unsigned int signedDataLength);
+static void _addSignerAccordingToVerifyResult(AH_MSG *hmsg, AB_USER *u, const char *signerId, int rv);
 static int _verifySignatureAgainstHash(GWEN_CRYPT_KEY *k,
 				       AH_OPMODE opMode,
 				       const uint8_t *pInData,
@@ -70,7 +68,8 @@ static int _verifyInternal(GWEN_CRYPT_KEY *k,
 static GWEN_CRYPT_KEY *_verifyInitialSignKey(GWEN_CRYPT_TOKEN *ct,
                                              const GWEN_CRYPT_TOKEN_CONTEXT *ctx,
                                              AB_USER *user,
-                                             GWEN_DB_NODE *gr);
+                                             GWEN_DB_NODE *dbParsedMsg);
+static GWEN_CRYPT_KEY *_getBankPubSignKey(AH_MSG *hmsg, GWEN_DB_NODE *dbParsedMsg);
 
 
 
@@ -79,140 +78,44 @@ static GWEN_CRYPT_KEY *_verifyInitialSignKey(GWEN_CRYPT_TOKEN *ct,
  * ------------------------------------------------------------------------------------------------
  */
 
-int AH_Msg_VerifyRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr)
+int AH_Msg_VerifyRxh(AH_MSG *hmsg, GWEN_DB_NODE *dbParsedMsg)
 {
-  AH_HBCI *h;
-  GWEN_LIST *sigheads;
-  GWEN_LIST *sigtails;
-  unsigned int signedDataBeginPos;
-  unsigned int signedDataLength;
-  AB_USER *u;
-  GWEN_CRYPT_TOKEN *ct;
-  const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
-  int ksize;
-  uint32_t gid=0;
-  const RXH_PARAMETER *rParams;
-  GWEN_CRYPT_KEY *bankPubSignKey;
   int rv;
 
-  assert(hmsg);
-  h=AH_Dialog_GetHbci(hmsg->dialog);
-  assert(h);
-  u=AH_Dialog_GetDialogOwner(hmsg->dialog);
-  assert(u);
-
-  rParams=AH_MsgRxh_GetParameters(AH_User_GetCryptMode(u), AH_User_GetRdhType(u));
-  if (rParams==NULL) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "No matching RxH parameters");
-    return GWEN_ERROR_GENERIC;
-  }
-
-  ct=AH_MsgRxh_GetOpenCryptToken(hmsg);
-  if (ct==NULL) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here");
-    return GWEN_ERROR_GENERIC;
-  }
-
-  ctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), gid);
-  if (ctx==NULL) {
-    DBG_INFO(AQHBCI_LOGDOMAIN,
-	     "Context %d not found on crypt token [%s:%s]",
-	     AH_User_GetTokenContextId(u),
-	     GWEN_Crypt_Token_GetTypeName(ct),
-	     GWEN_Crypt_Token_GetTokenName(ct));
-    return GWEN_ERROR_GENERIC;
-  }
-
-  sigheads=GWEN_List_new();
-  sigtails=GWEN_List_new();
-  rv=AH_Msg_SampleSignHeadsAndTailsFromDecodedMsg(gr, sigheads, sigtails);
+  rv=AH_Msg_VerifyWithCallback(hmsg, dbParsedMsg, _verifyAllSignatures);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    GWEN_List_free(sigtails);
-    GWEN_List_free(sigheads);
     return rv;
   }
-
-  if (GWEN_List_GetSize(sigheads)==0) {
-    DBG_DEBUG(AQHBCI_LOGDOMAIN, "No signatures");
-    GWEN_List_free(sigtails);
-    GWEN_List_free(sigheads);
-    return 0;
-  }
-
-  rv=AH_Msg_GetStartPosOfSignedData(sigheads);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    GWEN_List_free(sigtails);
-    GWEN_List_free(sigheads);
-    return GWEN_ERROR_GENERIC;
-  }
-  signedDataBeginPos=(unsigned int) rv;
-
-  rv=AH_Msg_GetFirstPosBehindSignedData(sigtails);
-  if (rv<0 || ((unsigned int)rv)<signedDataBeginPos) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    GWEN_List_free(sigtails);
-    GWEN_List_free(sigheads);
-    return GWEN_ERROR_GENERIC;
-  }
-  signedDataLength=((unsigned int) rv)-signedDataBeginPos;
-
-
-  /* only now we need the verify key */
-  /* the public sign key is not on the RDH card, but exchanged in the
-   * initial key exchange and resides in the user information
-   */
-  bankPubSignKey=AH_User_GetBankPubSignKey(u);
-  if (bankPubSignKey==NULL) {
-    /* this may be the first message with the public keys from the bank server,
-     * if its signed, the key is transmitted in the message and my be verified with
-     * different methods ([HBCI] B.3.1.3, case A):
-     * * the zka card contains the hash in EF_NOTEPAD
-     * * a certificate is sent with the message to verify
-     * * INI letter
-     *
-     * check message for "S"-KEy, look up if there is a hash on the chip card
-     */
-    bankPubSignKey=_verifyInitialSignKey(ct, ctx, u, gr);
-    if (bankPubSignKey==NULL) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "No public bank sign key for user [%s]", AB_User_GetUserName(u));
-      return GWEN_ERROR_NOT_FOUND;
-    }
-  }
-
-  ksize=GWEN_Crypt_Key_GetKeySize(bankPubSignKey);
-  assert(ksize<=AH_MSGRXH_MAXKEYBUF);
-
-  /* ok, now verify all signatures */
-  rv=_verifyAllSignatures(hmsg, rParams, bankPubSignKey, sigheads, sigtails, signedDataBeginPos, signedDataLength, gid);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    GWEN_List_free(sigheads);
-    GWEN_List_free(sigtails);
-    return rv;
-  }
-
-  GWEN_List_free(sigheads);
-  GWEN_List_free(sigtails);
   return 0;
 }
 
 
 
-int _verifyAllSignatures(AH_MSG *hmsg, 
-			 const RXH_PARAMETER *rParams,
-			 GWEN_CRYPT_KEY *bankPubSignKey,
+int _verifyAllSignatures(AH_MSG *hmsg,
+                         GWEN_DB_NODE *dbParsedMsg,
 			 GWEN_LIST *sigheads,
 			 GWEN_LIST *sigtails,
 			 unsigned int signedDataBeginPos,
-			 unsigned int signedDataLength,
-			 uint32_t gid)
+                         unsigned int signedDataLength)
 {
   int i;
   AB_USER *u;
+  GWEN_CRYPT_KEY *bankPubSignKey;
+  const RXH_PARAMETER *rParams;
 
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
+  rParams=AH_MsgRxh_GetParameters(AH_User_GetCryptMode(u), AH_User_GetRdhType(u));
+  if (rParams==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No matching RxH parameters");
+    return GWEN_ERROR_GENERIC;
+  }
+  bankPubSignKey=_getBankPubSignKey(hmsg, dbParsedMsg);
+  if (bankPubSignKey==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here");
+    return GWEN_ERROR_GENERIC;
+  }
+
   for (i=0; i< GWEN_List_GetSize(sigtails); i++) {
     GWEN_DB_NODE *sighead;
     GWEN_DB_NODE *sigtail;
@@ -248,7 +151,7 @@ int _verifyAllSignatures(AH_MSG *hmsg,
     p=GWEN_DB_GetBinValue(sigtail, "signature", 0, 0, 0, &l);
     if (p && l) {
       rv=_verifySignatureAgainstHash(bankPubSignKey, rParams->opmodSignS, hash, hashLen, p, l);
-      _addSignerAccordingToVerifyResult(hmsg, u, signerId, rv, gid);
+      _addSignerAccordingToVerifyResult(hmsg, u, signerId, rv);
     }
     else {
       DBG_DEBUG(AQHBCI_LOGDOMAIN, "No signature");
@@ -263,12 +166,12 @@ int _verifyAllSignatures(AH_MSG *hmsg,
 
 
 
-void _addSignerAccordingToVerifyResult(AH_MSG *hmsg, AB_USER *u, const char *signerId, int rv, uint32_t gid)
+void _addSignerAccordingToVerifyResult(AH_MSG *hmsg, AB_USER *u, const char *signerId, int rv)
 {
   if (rv) {
     if (rv==GWEN_ERROR_NO_KEY) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Unable to verify signature of user \"%s\" (no key)", signerId);
-      GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Error, I18N("Unable to verify signature (no key)"));
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Unable to verify signature (no key)"));
     }
     else {
       GWEN_BUFFER *tbuf;
@@ -276,11 +179,11 @@ void _addSignerAccordingToVerifyResult(AH_MSG *hmsg, AB_USER *u, const char *sig
       tbuf=GWEN_Buffer_new(0, 32, 0, 1);
       if (rv==GWEN_ERROR_VERIFY) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid signature of user \"%s\"", signerId);
-	GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Error, I18N("Invalid signature!!!"));
+	GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Invalid signature!!!"));
 	GWEN_Buffer_AppendString(tbuf, "!");
       }
       else {
-	GWEN_Gui_ProgressLog(gid, GWEN_LoggerLevel_Error, I18N("Could not verify signature"));
+	GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Could not verify signature"));
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not verify data with medium of user \"%s\" (%d)", AB_User_GetUserId(u), rv);
 	GWEN_Buffer_AppendString(tbuf, "?");
       }
@@ -584,7 +487,7 @@ int _verifyInternal(GWEN_CRYPT_KEY *k,
 GWEN_CRYPT_KEY *_verifyInitialSignKey(GWEN_CRYPT_TOKEN *ct,
                                       const GWEN_CRYPT_TOKEN_CONTEXT *ctx,
                                       AB_USER *user,
-                                      GWEN_DB_NODE *gr)
+                                      GWEN_DB_NODE *dbParsedMsg)
 {
 
   GWEN_DB_NODE *dbCurr;
@@ -594,7 +497,7 @@ GWEN_CRYPT_KEY *_verifyInitialSignKey(GWEN_CRYPT_TOKEN *ct,
 
   /* search for "GetKeyResponse" */
   haveKey=0;
-  dbCurr=GWEN_DB_GetFirstGroup(gr);
+  dbCurr=GWEN_DB_GetFirstGroup(dbParsedMsg);
   while (dbCurr) {
     GWEN_DB_NODE *dbKeyResponse;
     const char *s;
@@ -665,6 +568,64 @@ GWEN_CRYPT_KEY *_verifyInitialSignKey(GWEN_CRYPT_TOKEN *ct,
   } /* while */
 
   return bpk;
+}
+
+
+
+GWEN_CRYPT_KEY *_getBankPubSignKey(AH_MSG *hmsg, GWEN_DB_NODE *dbParsedMsg)
+{
+  AB_USER *u;
+  GWEN_CRYPT_TOKEN *ct;
+  const GWEN_CRYPT_TOKEN_CONTEXT *ctx;
+  GWEN_CRYPT_KEY *bankPubSignKey;
+
+  u=AH_Dialog_GetDialogOwner(hmsg->dialog);
+
+  ct=AH_MsgRxh_GetOpenCryptToken(hmsg);
+  if (ct==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here");
+    return NULL;
+  }
+
+  ctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), 0);
+  if (ctx==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN,
+	     "Context %d not found on crypt token [%s:%s]",
+	     AH_User_GetTokenContextId(u),
+	     GWEN_Crypt_Token_GetTypeName(ct),
+	     GWEN_Crypt_Token_GetTokenName(ct));
+    return NULL;
+  }
+
+  /* only now we need the verify key */
+  /* the public sign key is not on the RDH card, but exchanged in the
+   * initial key exchange and resides in the user information
+   */
+  bankPubSignKey=AH_User_GetBankPubSignKey(u);
+  if (bankPubSignKey==NULL) {
+    /* this may be the first message with the public keys from the bank server,
+     * if its signed, the key is transmitted in the message and my be verified with
+     * different methods ([HBCI] B.3.1.3, case A):
+     * * the zka card contains the hash in EF_NOTEPAD
+     * * a certificate is sent with the message to verify
+     * * INI letter
+     *
+     * check message for "S"-KEy, look up if there is a hash on the chip card
+     */
+    bankPubSignKey=_verifyInitialSignKey(ct, ctx, u, dbParsedMsg);
+    if (bankPubSignKey==NULL) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "No public bank sign key for user [%s]", AB_User_GetUserName(u));
+      return NULL;
+    }
+  }
+
+  if (GWEN_Crypt_Key_GetKeySize(bankPubSignKey)>AH_MSGRXH_MAXKEYBUF) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Size of banks public crypt key too large (%d > %d)",
+              GWEN_Crypt_Key_GetKeySize(bankPubSignKey), AH_MSGRXH_MAXKEYBUF);
+    return NULL;
+  }
+
+  return bankPubSignKey;
 }
 
 

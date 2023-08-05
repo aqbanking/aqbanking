@@ -28,11 +28,11 @@
  */
 
 static int _verifyAllSignatures(AH_MSG *hmsg,
+                                GWEN_DB_NODE *dbParsedMsg,
                                 GWEN_LIST *sigheads,
                                 GWEN_LIST *sigtails,
                                 unsigned int signedDataBeginPos,
-                                unsigned int signedDataLength,
-                                uint32_t gid);
+                                unsigned int signedDataLength);
 
 
 
@@ -43,83 +43,28 @@ static int _verifyAllSignatures(AH_MSG *hmsg,
 
 
 
-int AH_Msg_VerifyPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr)
+int AH_Msg_VerifyPinTan(AH_MSG *hmsg, GWEN_DB_NODE *dbParsedMsg)
 {
-  AH_HBCI *h;
-  GWEN_LIST *sigheads;
-  GWEN_LIST *sigtails;
-  unsigned int signedDataBeginPos;
-  unsigned int signedDataLength;
-  AB_USER *u;
-  uint32_t gid=0;
   int rv;
 
-  assert(hmsg);
-  h=AH_Dialog_GetHbci(hmsg->dialog);
-  assert(h);
-  u=AH_Dialog_GetDialogOwner(hmsg->dialog);
-  assert(u);
-
-  sigheads=GWEN_List_new();
-  sigtails=GWEN_List_new();
-  rv=AH_Msg_SampleSignHeadsAndTailsFromDecodedMsg(gr, sigheads, sigtails);
+  rv=AH_Msg_VerifyWithCallback(hmsg, dbParsedMsg, _verifyAllSignatures);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    GWEN_List_free(sigtails);
-    GWEN_List_free(sigheads);
     return rv;
   }
-
-  if (GWEN_List_GetSize(sigheads)==0) {
-    DBG_DEBUG(AQHBCI_LOGDOMAIN, "No signatures");
-    GWEN_List_free(sigtails);
-    GWEN_List_free(sigheads);
-    return 0;
-  }
-
-  rv=AH_Msg_GetStartPosOfSignedData(sigheads);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    GWEN_List_free(sigtails);
-    GWEN_List_free(sigheads);
-    return GWEN_ERROR_GENERIC;
-  }
-  signedDataBeginPos=(unsigned int) rv;
-
-  rv=AH_Msg_GetFirstPosBehindSignedData(sigtails);
-  if (rv<0 || ((unsigned int)rv)<signedDataBeginPos) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    GWEN_List_free(sigtails);
-    GWEN_List_free(sigheads);
-    return GWEN_ERROR_GENERIC;
-  }
-  signedDataLength=((unsigned int) rv)-signedDataBeginPos;
-
-
-  /* ok, now verify all signatures */
-  rv=_verifyAllSignatures(hmsg, sigheads, sigtails, signedDataBeginPos, signedDataLength, gid);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    GWEN_List_free(sigheads);
-    GWEN_List_free(sigtails);
-    return rv;
-  }
-
-  GWEN_List_free(sigheads);
-  GWEN_List_free(sigtails);
   return 0;
 }
 
 
 
 int _verifyAllSignatures(AH_MSG *hmsg, 
+                         GWEN_DB_NODE *dbParsedMsg,
 			 GWEN_LIST *sigheads,
 			 GWEN_LIST *sigtails,
 			 unsigned int signedDataBeginPos,
-			 unsigned int signedDataLength,
-			 uint32_t gid)
+			 unsigned int signedDataLength)
 {
-  /* not much to do here */
+  /* in PINTAN mode there is no crypto stuff on the HBCI layer */
   return 0;
 }
 
