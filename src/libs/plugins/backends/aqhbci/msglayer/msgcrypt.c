@@ -13,6 +13,7 @@
 #include "msgcrypt_rxh_decrypt.h"
 #include "msgcrypt_rxh_encrypt.h"
 #include "msgcrypt_pintan.h"
+#include "msgcrypt_pintan_verify.h"
 
 
 
