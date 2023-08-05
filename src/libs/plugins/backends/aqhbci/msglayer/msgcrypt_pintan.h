@@ -21,7 +21,6 @@ int AH_MsgPinTan_PrepareCryptoSeg(AH_MSG *hmsg,
 int AH_Msg_SignPinTan(AH_MSG *hmsg, GWEN_UNUSED GWEN_BUFFER *rawBuf, const char *signer);
 int AH_Msg_EncryptPinTan(AH_MSG *hmsg);
 int AH_Msg_DecryptPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr);
-int AH_Msg_VerifyPinTan(AH_MSG *hmsg, GWEN_DB_NODE *gr);
 
 
 #endif
