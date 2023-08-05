@@ -14,6 +14,7 @@
 #include "msgcrypt_rxh_encrypt.h"
 #include "msgcrypt_pintan.h"
 #include "msgcrypt_pintan_verify.h"
+#include "msgcrypt_pintan_sign.h"
 
 
 
@@ -122,7 +123,7 @@ int AH_Msg__Verify(AH_MSG *hmsg, GWEN_DB_NODE *gr)
 /* helper functions */
 
 
-int AH_Msg_SampleSignHeadsAndTailsFromDecodedMsg(GWEN_DB_NODE *gr, GWEN_LIST *sigheads, GWEN_LIST *sigtails)
+int AH_Msg_SampleSigHeadsAndTailsFromDecodedMsg(GWEN_DB_NODE *gr, GWEN_LIST *sigheads, GWEN_LIST *sigtails)
 {
   GWEN_DB_NODE *n;
 
@@ -278,7 +279,7 @@ int AH_Msg_VerifyWithCallback(AH_MSG *hmsg, GWEN_DB_NODE *dbParsedMsg, AH_MSG_VE
 
   sigheads=GWEN_List_new();
   sigtails=GWEN_List_new();
-  rv=AH_Msg_SampleSignHeadsAndTailsFromDecodedMsg(dbParsedMsg, sigheads, sigtails);
+  rv=AH_Msg_SampleSigHeadsAndTailsFromDecodedMsg(dbParsedMsg, sigheads, sigtails);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_List_free(sigtails);
@@ -328,6 +329,22 @@ int AH_Msg_VerifyWithCallback(AH_MSG *hmsg, GWEN_DB_NODE *dbParsedMsg, AH_MSG_VE
 
 
 
+int AH_Msg_CreateCtrlRef(char *ctrlref, int len)
+{
+  struct tm *lt;
+  time_t tt;
+
+  tt=time(0);
+  lt=localtime(&tt); // TODO: free later?
+
+  /* create control reference */
+  if (!strftime(ctrlref, len, "%Y%m%d%H%M%S", lt)) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "CtrlRef string too long");
+    return GWEN_ERROR_INTERNAL;
+  }
+  //ctrlref[len-1]=0;
+  return 0;
+}
 
 
 

@@ -2013,6 +2013,27 @@ const char *AH_Msg_GetCrypterId(const AH_MSG *hmsg)
 
 
 
+int AH_Msg_GenerateAndAddSegment(GWEN_MSGENGINE *e, const char *segName, GWEN_DB_NODE *cfg, GWEN_BUFFER *hbuf)
+{
+  GWEN_XMLNODE *node;
+  int rv;
+
+  node=GWEN_MsgEngine_FindNodeByPropertyStrictProto(e, "SEG", "id", 0, segName);
+  if (!node) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Segment \"%s\" not found", segName);
+    return GWEN_ERROR_NOT_FOUND;
+  }
+
+  rv=GWEN_MsgEngine_CreateMessageFromNode(e, node, hbuf, cfg);
+  if (rv) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Could not create CryptHead (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
 
 #include "msgcrypt_ddv.c"
 #include "msgcrypt.c"

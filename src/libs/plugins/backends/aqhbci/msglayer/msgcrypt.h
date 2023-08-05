@@ -15,10 +15,11 @@
 #include <gwenhywfar/list.h>
 
 
-int AH_Msg_SampleSignHeadsAndTailsFromDecodedMsg(GWEN_DB_NODE *gr, GWEN_LIST *sigheads, GWEN_LIST *sigtails);
+int AH_Msg_SampleSigHeadsAndTailsFromDecodedMsg(GWEN_DB_NODE *gr, GWEN_LIST *sigheads, GWEN_LIST *sigtails);
 int AH_Msg_GetStartPosOfSignedData(const GWEN_LIST *sigheads);
 int AH_Msg_GetFirstPosBehindSignedData(const GWEN_LIST *sigtails);
 
+int AH_Msg_CreateCtrlRef(char *ctrlref, int len);
 
 
 typedef int (*AH_MSG_VERIFY_SIGNATURES_FN)(AH_MSG *hmsg,

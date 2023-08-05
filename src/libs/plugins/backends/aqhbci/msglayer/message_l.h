@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2023 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -18,6 +18,7 @@ GWEN_LIST_FUNCTION_DEFS(AH_MSG, AH_Msg);
 #include "dialog_l.h"
 
 #include <gwenhywfar/xml.h>
+#include <gwenhywfar/msgengine.h>
 
 
 AH_MSG *AH_Msg_new(AH_DIALOG *dlg);
@@ -129,6 +130,9 @@ void AH_Msg_SetExpectedCrypter(AH_MSG *msg, const char *s);
 
 const char *AH_Msg_GetPin(const AH_MSG *msg);
 void AH_Msg_SetPin(AH_MSG *hmsg, const char *s);
+
+int AH_Msg_GenerateAndAddSegment(GWEN_MSGENGINE *e, const char *segName, GWEN_DB_NODE *cfg, GWEN_BUFFER *hbuf);
+
 
 #endif /* AH_MESSAGE_L_H */
 
