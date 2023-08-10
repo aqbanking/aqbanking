@@ -15,6 +15,7 @@
 #include "msgcrypt_pintan.h"
 #include "msgcrypt_pintan_verify.h"
 #include "msgcrypt_pintan_sign.h"
+#include "msgcrypt_pintan_encrypt.h"
 
 
 
