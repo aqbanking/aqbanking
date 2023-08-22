@@ -211,13 +211,15 @@ int AH_Msg_GetStartPosOfSignedData(const GWEN_LIST *sigheads)
 
     segBegin=GWEN_DB_GetIntValue(n, "segment/pos", 0, 0);
     if (!segBegin) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "No position specification in segment");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "No position specification in segment:");
+      GWEN_DB_Dump(n, 2);
       return GWEN_ERROR_BAD_DATA;
     }
 
     segLen=GWEN_DB_GetIntValue(n, "segment/length", 0, 0);
     if (!segLen) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "No length specification in segment");
+      GWEN_DB_Dump(n, 2);
       return GWEN_ERROR_BAD_DATA;
     }
 
@@ -277,6 +279,9 @@ int AH_Msg_VerifyWithCallback(AH_MSG *hmsg, GWEN_DB_NODE *dbParsedMsg, AH_MSG_VE
   assert(h);
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
   assert(u);
+
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "Verifying message with these segments:");
+  GWEN_DB_Dump(dbParsedMsg, 2);
 
   sigheads=GWEN_List_new();
   sigtails=GWEN_List_new();
