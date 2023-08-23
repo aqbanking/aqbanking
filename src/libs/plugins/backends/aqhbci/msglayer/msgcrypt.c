@@ -210,16 +210,9 @@ int AH_Msg_GetStartPosOfSignedData(const GWEN_LIST *sigheads)
     int segLen;
 
     segBegin=GWEN_DB_GetIntValue(n, "segment/pos", 0, 0);
-    if (!segBegin) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "No position specification in segment:");
-      GWEN_DB_Dump(n, 2);
-      return GWEN_ERROR_BAD_DATA;
-    }
-
     segLen=GWEN_DB_GetIntValue(n, "segment/length", 0, 0);
     if (!segLen) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "No length specification in segment");
-      GWEN_DB_Dump(n, 2);
       return GWEN_ERROR_BAD_DATA;
     }
 
@@ -243,11 +236,6 @@ int AH_Msg_GetFirstPosBehindSignedData(const GWEN_LIST *sigtails)
     int segLen;
 
     segBegin=GWEN_DB_GetIntValue(n, "segment/pos", 0, 0);
-    if (!segBegin) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "No position specification in segment");
-      return GWEN_ERROR_BAD_DATA;
-    }
-
     segLen=GWEN_DB_GetIntValue(n, "segment/length", 0, 0);
     if (!segLen) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "No length specification in segment");
