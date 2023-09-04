@@ -247,13 +247,14 @@ int _encryptMessageKey(GWEN_CRYPT_KEY *ek,
                        const GWEN_CRYPT_KEY *sk,
                        uint8_t *encKeyBufferPtr, uint32_t encKeyBufferSize)
 {
+  uint32_t encryptionKeySizeInBytes;
   uint32_t elen;
   GWEN_BUFFER *skbuf;
   int rv;
 
-  elen=GWEN_Crypt_Key_GetKeySize(ek);
-  if (encKeyBufferSize<elen) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "destination buffer too small (%d < %d)", encKeyBufferSize, elen);
+  encryptionKeySizeInBytes=GWEN_Crypt_Key_GetKeySize(ek);
+  if (encKeyBufferSize<encryptionKeySizeInBytes) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "destination buffer too small (%d < %d)", encKeyBufferSize, encryptionKeySizeInBytes);
     return GWEN_ERROR_GENERIC;
   }
 
@@ -275,6 +276,7 @@ int _encryptMessageKey(GWEN_CRYPT_KEY *ek,
   DBG_INFO(AQHBCI_LOGDOMAIN, "Padded raw message key:");
   GWEN_Text_LogString(GWEN_Buffer_GetStart(skbuf), GWEN_Buffer_GetUsedBytes(skbuf), AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Info);
 
+  elen=encryptionKeySizeInBytes;
   rv=GWEN_Crypt_Key_Encipher(ek, (const uint8_t *) GWEN_Buffer_GetStart(skbuf), elen, encKeyBufferPtr, &elen);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -285,6 +287,21 @@ int _encryptMessageKey(GWEN_CRYPT_KEY *ek,
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Message key encrypted with bank public encryption key:");
   GWEN_Text_LogString((const char*) encKeyBufferPtr, elen, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Info);
+
+  if (elen<encryptionKeySizeInBytes) {
+    uint32_t delta;
+
+    delta=encryptionKeySizeInBytes-elen;
+    DBG_INFO(AQHBCI_LOGDOMAIN,
+	     "Encrypted message key is smaller than banks encryption key (%d < %d), inserting %d zeroes",
+	     elen, encryptionKeySizeInBytes, delta);
+    memmove(encKeyBufferPtr+delta, encKeyBufferPtr, elen);
+    memset(encKeyBufferPtr, 0, delta);
+    elen=encryptionKeySizeInBytes;
+
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Message key encrypted with bank public encryption key after inserting zeroes:");
+    GWEN_Text_LogString((const char*) encKeyBufferPtr, elen, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Info);
+  }
 
   return elen;
 }
