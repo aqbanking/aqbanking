@@ -224,11 +224,17 @@ GWEN_CRYPT_KEY *_extractMessageKey(AH_MSG *hmsg, int rxhProtocol, GWEN_DB_NODE *
     }
 
     /* unpadd and generate key */
-    if (elen<decKeySize) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Decrypted data too small for a key (%d < %d)", elen, decKeySize);
-      return NULL;
+    if (elen>decKeySize) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "DEBUG: Decrypted data larger than keysize (%d > %d), skipping bytes", elen, decKeySize);
+      p=decKey+(elen-decKeySize);
+      elen=decKeySize;
     }
-    p=decKey+(elen-decKeySize);
+    else {
+      if (elen<decKeySize) {
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "DEBUG: Decrypted data smaller than keysize (%d < %d)", elen, decKeySize);
+      }
+      p=decKey;
+    }
 
 #if 0
     DBG_ERROR(AQHBCI_LOGDOMAIN,
@@ -239,10 +245,10 @@ GWEN_CRYPT_KEY *_extractMessageKey(AH_MSG *hmsg, int rxhProtocol, GWEN_DB_NODE *
 
     switch (rxhProtocol) {
     case AH_CryptMode_Rdh:
-      sk=GWEN_Crypt_KeyDes3K_fromData(GWEN_Crypt_CryptMode_Cbc, 24, p, 16);
+      sk=GWEN_Crypt_KeyDes3K_fromData(GWEN_Crypt_CryptMode_Cbc, 24, p, (elen<decKeySize)?elen:decKeySize);
       break;
     case AH_CryptMode_Rah:
-      sk=GWEN_Crypt_KeyAes256_fromData(GWEN_Crypt_CryptMode_Cbc, 32, p, 32);
+      sk=GWEN_Crypt_KeyAes256_fromData(GWEN_Crypt_CryptMode_Cbc, 32, p, (elen<decKeySize)?elen:decKeySize);
       break;
     default:
       return NULL;
