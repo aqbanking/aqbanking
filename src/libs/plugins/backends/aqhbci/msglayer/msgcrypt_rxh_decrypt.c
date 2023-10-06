@@ -298,11 +298,11 @@ GWEN_CRYPT_KEY *_mkMessageKeyFromDecryptedData(int rxhProtocol, uint8_t *ptrDecr
 
     delta=expectedMsgKeySize-lenDecryptedMsgKey;
     if (delta>AH_MSG_DECRYPTRXH_MAXOFFSET) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Decrypted data smaller is way too small (%d < %d), aborting", lenDecryptedMsgKey, expectedMsgKeySize);
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Decrypted data is way too small (%d < %d), aborting", lenDecryptedMsgKey, expectedMsgKeySize);
       return NULL;
     }
     else {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Decrypted data smaller than keysize (%d < %d)", lenDecryptedMsgKey, expectedMsgKeySize);
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Decrypted data smaller than keysize (%d < %d), adapting", lenDecryptedMsgKey, expectedMsgKeySize);
       ptrDecryptedMsgKey-=delta;
       lenDecryptedMsgKey=expectedMsgKeySize;
     }
