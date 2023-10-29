@@ -1,0 +1,10 @@
+<plugin name="aqgivve" type="provider" i18n="aqbanking" >
+  <version>@AQBANKING_VERSION_STRING@</version>
+  <author>Rico Rommel(rico@bierrommel.de)</author>
+  <short>GivveCard backend</short>
+  <descr>
+    This backend allows importing transaction from Givve Cards.
+  </descr>
+</plugin>
+
+

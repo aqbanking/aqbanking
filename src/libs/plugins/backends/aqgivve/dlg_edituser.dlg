@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/***************************************************************************
+ copyright   : (C) 2023 by Rico Rommel                   
+ email       : rico@bierrommel.de               
+
+ ***************************************************************************
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
+ ***************************************************************************/
+-->
+
+<dialog type="dialog" name="ag_new_user" i18n="aqbanking"
+        flags="decorShrinkable decorStretchable decorMaximize decorMinimize decorClose decorMenu" >
+  <widget type="vlayout" flags="fillX fillY" >
+    <widget type="gridlayout" flags="fillX fillY" columns="2">
+      <widget type="label" text="User Name" />
+      <widget type="lineEdit" name="username_edit" columns="40" flags="fillX" />
+      <widget type="label" text="User ID" />
+      <widget type="lineEdit" name="userid_edit" columns="40" flags="fillX" />
+    </widget>
+    <widget type="hLine" flags="fillX" />
+    <widget type="hlayout" flags="fillX equalWidth" >
+        <widget type="pushButton" text="Next" name="next_button" flags="default" />
+        <widget type="pushButton" text="Abort"  name="abort_button" />
+    </widget>
+  </widget>
+</dialog>

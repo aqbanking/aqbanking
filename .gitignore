@@ -50,3 +50,5 @@ system.h
 test-driver
 version.h
 patches/
+.kdev4/
+*.kdev4

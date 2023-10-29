@@ -35,6 +35,9 @@
 # include "src/libs/plugins/backends/aqfints/banking/provider.h"
 #endif
 
+#ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQGIVVE
+# include "src/libs/plugins/backends/aqgivve/provider.h"
+#endif
 
 
 /* ------------------------------------------------------------------------------------------------
@@ -133,6 +136,16 @@ AB_PROVIDER *AB_Banking__CreateInternalProvider(AB_BANKING *ab, const char *modn
 
       DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] compiled-in", modname);
       pro=AF_Provider_new(ab);
+      return pro;
+    }
+#endif
+
+#ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQGIVVE
+    if (strcasecmp(modname, "aqgivve")==0) {
+      AB_PROVIDER *pro;
+
+      DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] compiled-in", modname);
+      pro=AG_Provider_new(ab);
       return pro;
     }
 #endif

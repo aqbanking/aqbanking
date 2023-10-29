@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog type="dialog" name="add_cards" i18n="aqbanking" flags="decorShrinkable decorStretchable decorMaximize decorMinimize decorClose decorMenu">
+    <widget type="vlayout" flags="fillX fillY" >
+        <widget type="listBox" name="cardlistbox" title="available cards" flags="fillX fillY"/>
+        <widget type="hLine" flags="fillX" />
+        <widget type="hlayout" flags="fillX equalWidth" >
+            <widget type="pushButton" text="add card as account" name="add_button" flags="default" />
+            <widget type="pushButton" text="close" name="close_button"/>
+        </widget>
+    </widget>
+</dialog>

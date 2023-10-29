@@ -238,7 +238,7 @@ AC_ARG_WITH(backends,
 )
 
 if test "$aqbanking_backends" = "all"; then
-  aqbanking_backends="aqhbci aqofxconnect aqebics aqpaypal aqnone"
+  aqbanking_backends="aqhbci aqofxconnect aqebics aqpaypal aqnone aqgivve"
 fi
 
 for f in ${aqbanking_backends}; do
@@ -272,6 +272,11 @@ for f in ${aqbanking_backends}; do
       aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqnone"
       aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqnone/libaqnone.la"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQNONE, 1, [plugin availability])
+      ;;
+    aqgivve)
+      aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqgivve"
+      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqgivve/libaqgivve.la"
+      AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQGIVVE, 1, [plugin availability])
       ;;
     *)
       AC_MSG_ERROR("ERROR: Unknown plugin $f")
@@ -1325,6 +1330,8 @@ AC_CONFIG_FILES([
   src/libs/plugins/backends/aqpaypal/control/Makefile
   src/libs/plugins/backends/aqnone/Makefile
   src/libs/plugins/backends/aqnone/aqnone.xml
+  src/libs/plugins/backends/aqgivve/Makefile
+  src/libs/plugins/backends/aqgivve/aqgivve.xml
   src/libs/plugins/backends/aqebics/Makefile
   src/libs/plugins/backends/aqebics/aqebics.xml
   src/libs/plugins/backends/aqebics/client/Makefile

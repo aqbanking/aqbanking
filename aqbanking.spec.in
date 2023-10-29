@@ -260,6 +260,8 @@ make install-strip \
 ### The aqnone files
 %{_libdir}/libaqnone.so.*
 %{aq_plugindir}/providers/aqnone.*
+%{_libdir}/libaqgivve.so.*
+%{aq_plugindir}/providers/aqgivve.*
 
 %files devel
 %defattr(-,root,root)
@@ -270,6 +272,7 @@ make install-strip \
 %{_libdir}/libaqbanking.so
 %{_libdir}/libaqhbci.so
 %{_libdir}/libaqnone.so
+%{_libdir}/libaqgivve.so
 %{_libdir}/pkgconfig/%{name}.pc
 %{_datadir}/aclocal
 ### The aqhbci files
