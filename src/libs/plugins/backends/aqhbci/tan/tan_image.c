@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Sat Sep 14 2019
-    copyright   : (C) 2019 by Martin Preuss
+    copyright   : (C) 2023 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -13,7 +13,6 @@
 
 #include "tan_image.h"
 
-
 #include <gwenhywfar/misc.h>
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
@@ -21,8 +20,10 @@
 
 
 
-
-/* forward declarations */
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 static int _getTan(AH_TAN_MECHANISM *tanMechanism,
                    AB_USER *u,
@@ -33,17 +34,16 @@ static int _getTan(AH_TAN_MECHANISM *tanMechanism,
                    char *passwordBuffer,
                    int passwordMinLen,
                    int passwordMaxLen);
-
-
-static int _extractAndSetMimeTypeAndImageData(const uint8_t *challengePtr,
-                                              uint32_t challengeLen,
-                                              GWEN_DB_NODE *dbMethodParams);
-
+static int _extractAndSetMimeTypeAndImageData(const uint8_t *challengePtr, uint32_t challengeLen, GWEN_DB_NODE *dbMethodParams);
+static int _readTagHeader(const uint8_t **pBufferPointer, int *pBufferLen, int *pTagLen, int tagNum);
+static void _readTagIntoDbAsString(const uint8_t *p, int tagLen, GWEN_DB_NODE *db, const char *varName);
 
 
 
-/* implementation */
-
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 AH_TAN_MECHANISM *AH_TanMechanism_Image_new(const AH_TAN_METHOD *tanMethod, int tanMethodId)
 {
@@ -142,51 +142,25 @@ int _getTan(AH_TAN_MECHANISM *tanMechanism,
 
 
 
-int _extractAndSetMimeTypeAndImageData(const uint8_t *challengePtr,
-                                       uint32_t challengeLen,
-                                       GWEN_DB_NODE *dbMethodParams)
+int _extractAndSetMimeTypeAndImageData(const uint8_t *challengePtr, uint32_t challengeLen, GWEN_DB_NODE *dbMethodParams)
 {
   int len;
   const uint8_t *p;
   int tagLen;
+  int rv;
 
-  /* set bin:challenge, char:mimetype */
-
+  /* set bin:imageData, char:mimetype */
   p=challengePtr;
   len=challengeLen;
 
-  if (len<2) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "invalid data length in TAG1 (remaining data length: %d)", len);
-    return GWEN_ERROR_BAD_DATA;
-  }
-
   /* read 1st tag: mimetype */
-  tagLen=(p[0]<<8)+p[1];
-  p+=2;
-  len-=2;
-  if (len<tagLen) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "invalid tag length %d (remaining data length: %d)", tagLen, len);
-    return GWEN_ERROR_BAD_DATA;
+  rv=_readTagHeader(&p, &len, &tagLen, 1);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
   }
   if (tagLen) {
-    char *mimeType;
-    int i;
-
-    mimeType=(char *) malloc(tagLen+1);
-    assert(mimeType);
-    memmove(mimeType, p, tagLen);
-    mimeType[tagLen]=0;
-
-    for (i=(tagLen-1); i>0; i--) {
-      if (mimeType[i]==32)
-	mimeType[i]=0;
-      else
-	break;
-    }
-
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Image mimetype: \"%s\"", mimeType);
-    GWEN_DB_SetCharValue(dbMethodParams, GWEN_DB_FLAGS_OVERWRITE_VARS, "mimeType", mimeType);
-    free(mimeType);
+    _readTagIntoDbAsString(p, tagLen, dbMethodParams, "mimeType");
     p+=tagLen;
     len-=tagLen;
   }
@@ -195,19 +169,11 @@ int _extractAndSetMimeTypeAndImageData(const uint8_t *challengePtr,
     return GWEN_ERROR_NO_DATA;
   }
 
-
   /* read 2nd tag: image data */
-  if (len<2) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "invalid data length in TAG2 (remaining data length: %d)", len);
-    return GWEN_ERROR_BAD_DATA;
-  }
-
-  tagLen=(p[0]<<8)+p[1];
-  p+=2;
-  len-=2;
-  if (len<tagLen) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "invalid tag length %d (remaining data length: %d)", tagLen, len);
-    return GWEN_ERROR_BAD_DATA;
+  rv=_readTagHeader(&p, &len, &tagLen, 2);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
   }
   if (tagLen) {
     GWEN_DB_SetBinValue(dbMethodParams, GWEN_DB_FLAGS_OVERWRITE_VARS, "imageData", p, tagLen);
@@ -221,6 +187,56 @@ int _extractAndSetMimeTypeAndImageData(const uint8_t *challengePtr,
 
   /* ignore rest if any */
   return 0;
+}
+
+
+
+int _readTagHeader(const uint8_t **pBufferPointer, int *pBufferLen, int *pTagLen, int tagNum)
+{
+  int len;
+  const uint8_t *p;
+  int tagLen;
+
+  len=*pBufferLen;
+  p=*pBufferPointer;
+  if (len<2) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "TAG %d: invalid data length (remaining data length: %d)", tagNum, len);
+    return GWEN_ERROR_BAD_DATA;
+  }
+  tagLen=(p[0]<<8)+p[1];
+  p+=2;
+  len-=2;
+  if (len<tagLen) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "TAG %d: invalid tag length %d (remaining data length: %d)", tagNum, tagLen, len);
+    return GWEN_ERROR_BAD_DATA;
+  }
+  *pBufferPointer=p;
+  *pBufferLen=len;
+  *pTagLen=tagLen;
+  return 0;
+}
+
+
+void _readTagIntoDbAsString(const uint8_t *p, int tagLen, GWEN_DB_NODE *db, const char *varName)
+{
+  char *stringValue;
+  int i;
+
+  stringValue=(char *) malloc(tagLen+1);
+  assert(stringValue);
+  memmove(stringValue, p, tagLen);
+  stringValue[tagLen]=0;
+
+  for (i=(tagLen-1); i>0; i--) {
+    if (stringValue[i]==32)
+      stringValue[i]=0;
+    else
+      break;
+  }
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "%s: \"%s\"", varName, stringValue);
+  GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, varName, stringValue);
+  free(stringValue);
 }
 
 
