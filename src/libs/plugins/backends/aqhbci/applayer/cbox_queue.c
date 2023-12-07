@@ -520,17 +520,17 @@ int _performDialogQueue(AH_OUTBOX_CBOX *cbox, AH_JOBQUEUE *jq)
 
         DBG_INFO(AQHBCI_LOGDOMAIN, "User-selected TAN job version is 6 or newer (%d)", selectedTanVersion);
 
-        /* check for PSD2: HKTAN version 6 available? if so -> use that */
-        jTan=AH_Job_Tan_new(provider, user, 4, 6);
+        /* check for PSD2: HKTAN version >= 6 available? if so -> use that */
+        jTan=AH_Job_Tan_new(provider, user, 4, selectedTanVersion);
         if (jTan) {
           AH_Job_free(jTan);
-          DBG_INFO(AQHBCI_LOGDOMAIN, "TAN job version 6 is available");
+          DBG_INFO(AQHBCI_LOGDOMAIN, "TAN job version %d is available", selectedTanVersion);
           DBG_NOTICE(AQHBCI_LOGDOMAIN, "Using PSD2 code for dialog job");
           AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_NEEDTAN);
           AH_Dialog_AddFlags(dlg, AH_DIALOG_FLAGS_SCA);
         }
         else {
-          DBG_NOTICE(AQHBCI_LOGDOMAIN, "Not using PSD2 code: HKTAN version 6 not supported by the bank");
+          DBG_NOTICE(AQHBCI_LOGDOMAIN, "Not using PSD2 code: HKTAN version %d not supported by the bank", selectedTanVersion);
         }
       }
       else {

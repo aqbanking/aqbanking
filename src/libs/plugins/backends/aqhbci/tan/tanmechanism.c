@@ -36,6 +36,7 @@ static TAN_MAP_ENTRY _zkaNameMap[]= {
   {"HHD",       AB_BANKING_TANMETHOD_TEXT},
   {"mobileTAN", AB_BANKING_TANMETHOD_TEXT},
   {"photoTAN",  AB_BANKING_TANMETHOD_PHOTOTAN},
+  {"Decoupled", AB_BANKING_TANMETHOD_DECOUPLED},
   {NULL,        0}
 };
 
@@ -47,6 +48,7 @@ static TAN_MAP_ENTRY _methodIdMap[]= {
   {"HHD1.*OPT",  AB_BANKING_TANMETHOD_CHIPTAN_OPTIC},
   {"HHD1.*USB",  AB_BANKING_TANMETHOD_CHIPTAN_USB},
   {"HHD1.*QR",   AB_BANKING_TANMETHOD_CHIPTAN_QR},
+  {"Decoupled.*",AB_BANKING_TANMETHOD_DECOUPLED},
 
   {NULL,        0}
 };
@@ -56,6 +58,8 @@ static TAN_MAP_ENTRY _methodIdMap[]= {
 static TAN_MAP_ENTRY _methodNameMap[]= {
   {"*photo*",     AB_BANKING_TANMETHOD_PHOTOTAN},
   {"chipTAN-QR",  AB_BANKING_TANMETHOD_CHIPTAN_QR},
+  {"Decoupled.*", AB_BANKING_TANMETHOD_DECOUPLED},
+  {"pushTAN 2.0", AB_BANKING_TANMETHOD_DECOUPLED},
   {NULL,        0}
 };
 
@@ -204,6 +208,7 @@ AH_TAN_MECHANISM *AH_TanMechanism_Factory(const AH_TAN_METHOD *tanMethod, int pr
     DBG_INFO(AQHBCI_LOGDOMAIN, "Using TAN mechanism \"chipTAN USB\"");   /* USB_TAN */
     tanMechanism= AH_TanMechanism_ChipTanUSB_new(tanMethod, id);      /* USB_TAN */
     break;                                  /* USB_TAN */
+  case AB_BANKING_TANMETHOD_DECOUPLED:
   case AB_BANKING_TANMETHOD_CHIPTAN:
   case AB_BANKING_TANMETHOD_TEXT:
   default:
