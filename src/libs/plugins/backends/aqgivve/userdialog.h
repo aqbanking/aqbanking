@@ -20,8 +20,5 @@ GWEN_DIALOG *AG_GetEditUserDialog (AB_PROVIDER *pro, AB_USER *u);
 GWEN_DIALOG *AG_GetNewUserDialog (AB_PROVIDER *pro, int i);
 
 
-static void GWENHYWFAR_CB AG_UserDialog_FreeData(void *bp, void *p);
-
-
 #endif
 

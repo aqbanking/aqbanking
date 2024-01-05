@@ -12,6 +12,8 @@
 #include <aqbanking/banking.h>
 #include "provider.h"
 
+
+
 AG_META *AG_META_new()
 {
   AG_META *m = (AG_META *)malloc(sizeof(AG_META));
@@ -23,10 +25,14 @@ AG_META *AG_META_new()
   return m;
 }
 
+
+
 void AG_META_free(AG_META *meta)
 {
   free(meta);
 }
+
+
 
 int AG_META_GetCurrentPage(AG_META *meta)
 {
@@ -38,12 +44,15 @@ int AG_META_GetCurrentPage(AG_META *meta)
   }
 }
 
+
+
 void AG_META_SetCurrentPage(AG_META *meta, int cp)
 {
   if (meta) {
     meta->page_size = cp;
   }
 }
+
 
 
 int AG_META_GetPageSize(AG_META *meta)
@@ -57,12 +66,15 @@ int AG_META_GetPageSize(AG_META *meta)
 }
 
 
+
 void AG_META_SetPageSize(AG_META *meta, int ps)
 {
   if (meta) {
     meta->page_size = ps;
   }
 }
+
+
 
 int AG_META_GetTotalEntries(AG_META *meta)
 {
@@ -74,12 +86,16 @@ int AG_META_GetTotalEntries(AG_META *meta)
   }
 }
 
+
+
 void AG_META_SetTotalEntries(AG_META *meta, int te)
 {
   if (meta) {
     meta->total_entries = te;
   }
 }
+
+
 
 int AG_META_GetTotalPages(AG_META *meta)
 {
@@ -91,12 +107,16 @@ int AG_META_GetTotalPages(AG_META *meta)
   }
 }
 
+
+
 void AG_META_SetTotalPages(AG_META *meta, int tp)
 {
   if (meta) {
     meta->page_size = tp;
   }
 }
+
+
 
 AG_META *AG_META_FromJsonElem(GWEN_JSON_ELEM *meta_elem)
 {
@@ -142,4 +162,6 @@ AG_META *AG_META_FromJsonElem(GWEN_JSON_ELEM *meta_elem)
 
   return m;
 }
+
+
 

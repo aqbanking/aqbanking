@@ -8,7 +8,7 @@
  ***************************************************************************/
 
 #include "provider.h"
-#include "provider_request_p.h"
+#include "provider_request.h"
 #include "gwenhywfar/json.h"
 #include "gwenhywfar/json_read.h"
 #include "meta.h"
@@ -17,6 +17,25 @@
 #include <gwenhywfar/gui.h>
 #include <ctype.h>
 
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static GWEN_DATE *parseDate(const char *date_str);
+static AB_VALUE *parseMoney (GWEN_JSON_ELEM *value_elem);
+static AB_BALANCE *parseBalance(GWEN_JSON_ELEM *balance_elem);
+static AB_TRANSACTION *parseTransaction(GWEN_JSON_ELEM *data_elem);
+static char *createDateFilter( const GWEN_DATE *date, const char *op);
+static GWEN_JSON_ELEM *getElement(GWEN_JSON_ELEM *parent, char *key);
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * code
+ * ------------------------------------------------------------------------------------------------
+ */
 
 GWEN_INHERIT(GWEN_HTTP_SESSION, AG_HTTP_SESSION_HEADER);
 

@@ -10,6 +10,8 @@
 #include "voucher_p.h"
 #include <string.h>
 
+
+
 AG_VOUCHER *AG_VOUCHER_new(const char *id, AG_VOUCHEROWNER *o)
 {
   AG_VOUCHER *c = malloc(sizeof(AG_VOUCHER));
@@ -23,6 +25,8 @@ AG_VOUCHER *AG_VOUCHER_new(const char *id, AG_VOUCHEROWNER *o)
   return c;
 }
 
+
+
 void AG_VOUCHER_SetID(AG_VOUCHER *card, const char *id)
 {
   if (card) {
@@ -31,12 +35,15 @@ void AG_VOUCHER_SetID(AG_VOUCHER *card, const char *id)
 }
 
 
+
 void AG_VOUCHER_SetOwner(AG_VOUCHER *card, AG_VOUCHEROWNER *o)
 {
   if (card) {
     card->owner = o;
   }
 }
+
+
 
 void AG_VOUCHER_free(AG_VOUCHER *card)
 {
@@ -47,6 +54,8 @@ void AG_VOUCHER_free(AG_VOUCHER *card)
   }
 }
 
+
+
 const char *AG_VOUCHER_GetID(AG_VOUCHER *card)
 {
   char *id = NULL;
@@ -55,6 +64,8 @@ const char *AG_VOUCHER_GetID(AG_VOUCHER *card)
   }
   return id;
 }
+
+
 
 const AG_VOUCHEROWNER *AG_VOUCHER_GetOwner(const AG_VOUCHER *card)
 {
@@ -65,4 +76,5 @@ const AG_VOUCHEROWNER *AG_VOUCHER_GetOwner(const AG_VOUCHER *card)
   }
   return o;
 }
+
 

@@ -23,6 +23,30 @@
 #include "userdialog.h"
 #include "provider_request.h"
 
+
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static int AG_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
+static int AG_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
+
+static int AG_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx);
+static int AG_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doLock);
+
+static void AG_Provider_AddTransactionLimit(int limit, AB_TRANSACTION_LIMITS_LIST *tll);
+static int AG_Provider_ExecGetBal(AB_PROVIDER *pro, AB_IMEXPORTER_ACCOUNTINFO *ai, AB_ACCOUNT *account, char *token);
+static int AG_Provider_ExecGetTrans(AB_PROVIDER *pro, AB_IMEXPORTER_ACCOUNTINFO *ai, AB_ACCOUNT *account, AB_TRANSACTION *j, char *token);
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * code
+ * ------------------------------------------------------------------------------------------------
+ */
+
 GWEN_INHERIT(AB_PROVIDER, AG_PROVIDER);
 
 
@@ -53,6 +77,8 @@ AB_PROVIDER *AG_Provider_new(AB_BANKING *ab)
 
   return pro;
 }
+
+
 
 int AG_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx)
 {
@@ -86,8 +112,12 @@ int AG_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORT
 
         AB_ACCOUNT *a=AB_AccountQueue_GetAccount(aq);
 
-        AB_IMEXPORTER_ACCOUNTINFO *ai=AB_ImExporterContext_GetOrAddAccountInfo(ctx, AB_Account_GetUniqueId(a),
-                                                                               AB_Account_GetIban(a), AB_Account_GetBankCode(a), AB_Account_GetAccountNumber(a), AB_Account_GetAccountType(a));
+        AB_IMEXPORTER_ACCOUNTINFO *ai=AB_ImExporterContext_GetOrAddAccountInfo(ctx,
+                                                                               AB_Account_GetUniqueId(a),
+                                                                               AB_Account_GetIban(a),
+                                                                               AB_Account_GetBankCode(a),
+                                                                               AB_Account_GetAccountNumber(a),
+                                                                               AB_Account_GetAccountType(a));
 
         AB_TRANSACTION_LIST2 *tl2 = AB_AccountQueue_GetTransactionList(aq);
 
@@ -131,9 +161,11 @@ int AG_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORT
 }
 
 
+
 void AG_Provider_FreeData(void *bp, void *p)
 {
 }
+
 
 
 int AG_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData)
@@ -154,6 +186,7 @@ int AG_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData)
 }
 
 
+
 AB_USER *AG_Provider_CreateUserObject(AB_PROVIDER *pro)
 {
   AB_USER *u;
@@ -165,6 +198,8 @@ AB_USER *AG_Provider_CreateUserObject(AB_PROVIDER *pro)
 
   return u;
 }
+
+
 
 AB_ACCOUNT *AG_Provider_CreateAccountObject(AB_PROVIDER *pro)
 {
@@ -179,6 +214,8 @@ AB_ACCOUNT *AG_Provider_CreateAccountObject(AB_PROVIDER *pro)
   return a;
 }
 
+
+
 void AG_Provider_AddTransactionLimit(int limit, AB_TRANSACTION_LIMITS_LIST *tll)
 {
   AB_TRANSACTION_LIMITS *balance_limits=AB_TransactionLimits_new();
@@ -186,6 +223,7 @@ void AG_Provider_AddTransactionLimit(int limit, AB_TRANSACTION_LIMITS_LIST *tll)
   AB_TransactionLimits_SetMaxLinesPurpose(balance_limits, 1);
   AB_TransactionLimits_List_Add(balance_limits, tll);
 }
+
 
 
 int AG_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doLock)
@@ -201,6 +239,8 @@ int AG_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doL
   return 0;
 }
 
+
+
 int AG_Provider_ExecGetBal(AB_PROVIDER *pro, AB_IMEXPORTER_ACCOUNTINFO *ai, AB_ACCOUNT *account, char *token)
 {
   AB_BALANCE *bal = AG_Provider_Request_GetBalance(account, token);
@@ -212,8 +252,9 @@ int AG_Provider_ExecGetBal(AB_PROVIDER *pro, AB_IMEXPORTER_ACCOUNTINFO *ai, AB_A
 
 }
 
-int AG_Provider_ExecGetTrans(AB_PROVIDER *pro, AB_IMEXPORTER_ACCOUNTINFO *ai, AB_ACCOUNT *account, AB_TRANSACTION *j,
-                             char *token)
+
+
+int AG_Provider_ExecGetTrans(AB_PROVIDER *pro, AB_IMEXPORTER_ACCOUNTINFO *ai, AB_ACCOUNT *account, AB_TRANSACTION *j, char *token)
 {
 
   AB_TRANSACTION_LIST *list = AG_Provider_Request_GetTransactions(account, AB_Transaction_GetFirstDate(j),
@@ -233,3 +274,6 @@ int AG_Provider_ExecGetTrans(AB_PROVIDER *pro, AB_IMEXPORTER_ACCOUNTINFO *ai, AB
   }
   return 0;
 }
+
+
+

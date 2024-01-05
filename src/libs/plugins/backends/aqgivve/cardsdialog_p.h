@@ -21,15 +21,6 @@ struct AG_CARDS_DIALOG {
 };
 
 
-int AG_CardsDialog_init ( GWEN_DIALOG *dlg );
-static int GWENHYWFAR_CB AG_CardsDialog_SignalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
-int AG_CardsDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender);
-int AG_CardsDialog_AddAccount(GWEN_DIALOG *dlg);
-
-
-
-static void GWENHYWFAR_CB AG_CardsDialog_FreeData(void *bp, void *p);
-
 #endif
 
 

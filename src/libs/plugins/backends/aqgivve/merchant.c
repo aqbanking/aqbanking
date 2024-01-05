@@ -9,12 +9,16 @@
 
 #include "merchant_p.h"
 
+
+
 AG_MERCHANT *AG_MERCHANT_new()
 {
   AG_MERCHANT *m = malloc(sizeof(AG_MERCHANT));
   m->name = NULL;
   return m;
 }
+
+
 
 void AG_MERCHANT_SetName(AG_MERCHANT *m, const char *name)
 {
@@ -27,6 +31,8 @@ void AG_MERCHANT_SetName(AG_MERCHANT *m, const char *name)
   }
 }
 
+
+
 void AG_MERCHANT_free(AG_MERCHANT *m)
 {
   if (m) {
@@ -38,6 +44,8 @@ void AG_MERCHANT_free(AG_MERCHANT *m)
   }
 }
 
+
+
 const char *AG_MERCHANT_GetName(AG_MERCHANT *m)
 {
   char *name = NULL;
@@ -46,6 +54,8 @@ const char *AG_MERCHANT_GetName(AG_MERCHANT *m)
   }
   return name;
 }
+
+
 
 AG_MERCHANT *AG_MERCHANT_FromJsonElem(GWEN_JSON_ELEM *meta_elem)
 {
@@ -74,3 +84,5 @@ AG_MERCHANT *AG_MERCHANT_FromJsonElem(GWEN_JSON_ELEM *meta_elem)
   }
   return m;
 }
+
+

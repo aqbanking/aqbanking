@@ -12,11 +12,27 @@
 #include <aqbanking/banking_be.h>
 
 
-static void GWENHYWFAR_CB AG_CardsDialog_FreeData(void *bp, void *p);
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static void GWENHYWFAR_CB _freeData(void *bp, void *p);
+static int _dlgInit ( GWEN_DIALOG *dlg );
+static int GWENHYWFAR_CB _dlgSignalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
+static int _dlgHandleActivated(GWEN_DIALOG *dlg, const char *sender);
+static int _addAccount(GWEN_DIALOG *dlg);
 
 
+
+/* ------------------------------------------------------------------------------------------------
+ * code
+ * ------------------------------------------------------------------------------------------------
+ */
 
 GWEN_INHERIT(GWEN_DIALOG, AG_CARDS_DIALOG);
+
+
 
 GWEN_DIALOG *AG_CardsDialog_new(AB_PROVIDER *pro, AB_USER *user, AG_VOUCHERLIST *card_list)
 {
@@ -24,19 +40,30 @@ GWEN_DIALOG *AG_CardsDialog_new(AB_PROVIDER *pro, AB_USER *user, AG_VOUCHERLIST 
   GWEN_DIALOG *dlg;
   dlg=GWEN_Dialog_CreateAndLoadWithPath("carddialog", AB_PM_LIBNAME, AB_PM_DATADIR,
                                         "aqbanking/backends/aqgivve/dialogs/dlg_cardselect.dlg");
-  GWEN_Dialog_SetSignalHandler(dlg, AG_CardsDialog_SignalHandler);
+  GWEN_Dialog_SetSignalHandler(dlg, _dlgSignalHandler);
 
   GWEN_NEW_OBJECT(AG_CARDS_DIALOG, xdlg);
-  GWEN_INHERIT_SETDATA(GWEN_DIALOG, AG_CARDS_DIALOG, dlg, xdlg, AG_CardsDialog_FreeData);
+  GWEN_INHERIT_SETDATA(GWEN_DIALOG, AG_CARDS_DIALOG, dlg, xdlg, _freeData);
 
   xdlg->cardlist = card_list;
   xdlg->provider = pro;
   xdlg->user = user;
   return dlg;
-
 }
 
-int AG_CardsDialog_init(GWEN_DIALOG *dlg)
+
+
+void _freeData(void *bp, void *p)
+{
+  AG_CARDS_DIALOG *xdlg;
+
+  xdlg=(AG_CARDS_DIALOG*) p;
+  GWEN_FREE_OBJECT(xdlg);
+}
+
+
+
+int _dlgInit(GWEN_DIALOG *dlg)
 {
   GWEN_Dialog_SetCharProperty(dlg, "cardlistbox", GWEN_DialogProperty_Title, 0, "Cards", 0);
 
@@ -55,13 +82,15 @@ int AG_CardsDialog_init(GWEN_DIALOG *dlg)
   return GWEN_DialogEvent_ResultHandled;
 }
 
-int AG_CardsDialog_SignalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
+
+
+int _dlgSignalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
 {
   switch (t) {
   case  GWEN_DialogEvent_TypeInit :
-    return AG_CardsDialog_init(dlg);
+    return _dlgInit(dlg);
   case GWEN_DialogEvent_TypeActivated:
-    return AG_CardsDialog_HandleActivated(dlg, sender);
+    return _dlgHandleActivated(dlg, sender);
   default:
     break;
   }
@@ -70,10 +99,12 @@ int AG_CardsDialog_SignalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, cons
 
 }
 
-int AG_CardsDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+
+
+int _dlgHandleActivated(GWEN_DIALOG *dlg, const char *sender)
 {
   if (strcasecmp(sender, "add_button") == 0) {
-    return AG_CardsDialog_AddAccount(dlg);
+    return _addAccount(dlg);
   }
   else if (strcasecmp(sender, "close_button") == 0) {
     return GWEN_DialogEvent_ResultAccept;
@@ -83,11 +114,8 @@ int AG_CardsDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
 }
 
 
-void AG_CardsDialog_FreeData(void *bp, void *p)
-{
-}
 
-int AG_CardsDialog_AddAccount(GWEN_DIALOG *dlg)
+int _addAccount(GWEN_DIALOG *dlg)
 {
   int index=GWEN_Dialog_GetIntProperty(dlg, "cardlistbox", GWEN_DialogProperty_Value, 0, -1);
   if (index >= 0) {
@@ -139,3 +167,6 @@ int AG_CardsDialog_AddAccount(GWEN_DIALOG *dlg)
   }
   return GWEN_DialogEvent_ResultHandled;
 }
+
+
+

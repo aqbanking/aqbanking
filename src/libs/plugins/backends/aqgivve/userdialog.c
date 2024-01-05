@@ -16,6 +16,24 @@
 #include "voucherlist.h"
 
 
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static void GWENHYWFAR_CB AG_UserDialog_FreeData(void *bp, void *p);
+static int GWENHYWFAR_CB AG_UserDialog_SignalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
+static int AG_UserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender);
+static int AG_UserDialog_AddUser(GWEN_DIALOG *dlg);
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * code
+ * ------------------------------------------------------------------------------------------------
+ */
+
 GWEN_INHERIT(GWEN_DIALOG, AG_USER_DIALOG);
 
 void AG_UserDialog_FreeData(void *bp, void *p)

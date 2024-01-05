@@ -9,6 +9,8 @@
 
 #include "voucherlist_p.h"
 
+
+
 AG_VOUCHERLIST *AG_VOUCHERLIST_new()
 {
   AG_VOUCHERLIST *l = malloc(sizeof(AG_VOUCHERLIST));
@@ -17,6 +19,8 @@ AG_VOUCHERLIST *AG_VOUCHERLIST_new()
 
   return l;
 }
+
+
 
 void AG_VOUCHERLIST_free(AG_VOUCHERLIST *list, int free_vouchers)
 {
@@ -32,6 +36,8 @@ void AG_VOUCHERLIST_free(AG_VOUCHERLIST *list, int free_vouchers)
   }
 }
 
+
+
 void AG_VOUCHERLIST_AddCard(AG_VOUCHERLIST *list, AG_VOUCHER *card)
 {
   if (list && card) {
@@ -42,6 +48,8 @@ void AG_VOUCHERLIST_AddCard(AG_VOUCHERLIST *list, AG_VOUCHER *card)
   }
 }
 
+
+
 int AG_VOUCHERLIST_Get_TotalEntries(AG_VOUCHERLIST *list)
 {
   int t = 0;
@@ -50,6 +58,7 @@ int AG_VOUCHERLIST_Get_TotalEntries(AG_VOUCHERLIST *list)
   }
   return t;
 }
+
 
 
 AG_VOUCHER *AG_VOUCHERLIST_Get_Card_By_ID(AG_VOUCHERLIST *list, const char *id)
@@ -75,6 +84,8 @@ AG_VOUCHER *AG_VOUCHERLIST_Get_Card_By_ID(AG_VOUCHERLIST *list, const char *id)
 
 }
 
+
+
 AG_VOUCHER *AG_VOUCHERLIST_Get_Card_By_Index(AG_VOUCHERLIST *list, int index)
 {
   AG_VOUCHER *res = NULL;
@@ -85,3 +96,5 @@ AG_VOUCHER *AG_VOUCHERLIST_Get_Card_By_Index(AG_VOUCHERLIST *list, int index)
   }
   return res;
 }
+
+

@@ -9,6 +9,8 @@
 
 #include "voucherowner_p.h"
 
+
+
 AG_VOUCHEROWNER *AG_VOUCHEROWNER_new(const char *name)
 {
   AG_VOUCHEROWNER *o = malloc(sizeof(AG_VOUCHEROWNER));
@@ -16,6 +18,8 @@ AG_VOUCHEROWNER *AG_VOUCHEROWNER_new(const char *name)
   AG_VOUCHEROWNER_SetName(o, name);
   return o;
 }
+
+
 
 void AG_VOUCHEROWNER_SetName(AG_VOUCHEROWNER *o, const char *name)
 {
@@ -28,6 +32,8 @@ void AG_VOUCHEROWNER_SetName(AG_VOUCHEROWNER *o, const char *name)
   }
 }
 
+
+
 void AG_VOUCHEROWNER_free(AG_VOUCHEROWNER *o)
 {
   if (o) {
@@ -38,6 +44,8 @@ void AG_VOUCHEROWNER_free(AG_VOUCHEROWNER *o)
   }
 }
 
+
+
 const char *AG_VOUCHEROWNER_GetName(const AG_VOUCHEROWNER *o)
 {
   char *name = NULL;
@@ -46,3 +54,4 @@ const char *AG_VOUCHEROWNER_GetName(const AG_VOUCHEROWNER *o)
   }
   return name;
 }
+
