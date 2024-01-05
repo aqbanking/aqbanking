@@ -21,7 +21,7 @@ AG_VOUCHERLIST *AG_Provider_Request_GetVoucherList(char *token);
 AB_TRANSACTION_LIST *AG_Provider_Request_GetTransactions(AB_ACCOUNT *account,
                                                          const GWEN_DATE *start_date,
                                                          const GWEN_DATE *end_date,
-                                                         char *token);
-AB_BALANCE *AG_Provider_Request_GetBalance(AB_ACCOUNT *account, char* token );
+                                                         const char *token);
+AB_BALANCE *AG_Provider_Request_GetBalance(AB_ACCOUNT *account, const char* token );
 
 #endif

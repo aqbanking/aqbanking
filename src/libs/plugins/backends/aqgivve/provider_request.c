@@ -35,7 +35,7 @@ static AB_VALUE *_parseMoney(GWEN_JSON_ELEM *value_elem);
 static AB_BALANCE *_parseBalance(GWEN_JSON_ELEM *balance_elem);
 static AB_TRANSACTION *_parseTransaction(GWEN_JSON_ELEM *data_elem);
 static char *_createDateFilter(const GWEN_DATE *date, const char *op);
-static GWEN_JSON_ELEM *_getElement(GWEN_JSON_ELEM *parent, char *key);
+static GWEN_JSON_ELEM *_getElement(GWEN_JSON_ELEM *parent, const char *key);
 
 
 
@@ -288,7 +288,7 @@ AG_VOUCHERLIST *AG_Provider_Request_GetVoucherList(char *token)
 
 
 
-AB_BALANCE *AG_Provider_Request_GetBalance(AB_ACCOUNT *account, char *token)
+AB_BALANCE *AG_Provider_Request_GetBalance(AB_ACCOUNT *account, const char *token)
 {
 
   const char *id = AB_Account_GetAccountNumber(account);
@@ -330,8 +330,10 @@ AB_BALANCE *AG_Provider_Request_GetBalance(AB_ACCOUNT *account, char *token)
 
 
 
-AB_TRANSACTION_LIST *AG_Provider_Request_GetTransactions(AB_ACCOUNT *account, const GWEN_DATE *start_date,
-                                                         const GWEN_DATE *end_date, char *token)
+AB_TRANSACTION_LIST *AG_Provider_Request_GetTransactions(AB_ACCOUNT *account,
+                                                         const GWEN_DATE *start_date,
+                                                         const GWEN_DATE *end_date,
+                                                         const char *token)
 {
   int total_pages = 1;
   int current_page = 1;
@@ -541,7 +543,7 @@ char *_createDateFilter(const GWEN_DATE *date, const char *op)
 
 
 
-GWEN_JSON_ELEM *_getElement(GWEN_JSON_ELEM *parent, char *key)
+GWEN_JSON_ELEM *_getElement(GWEN_JSON_ELEM *parent, const char *key)
 {
   GWEN_JSON_ELEM *json_el = NULL;
 
