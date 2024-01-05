@@ -136,8 +136,8 @@ int AB_Provider_ReadAccounts(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accountList)
         AB_Account_free(a);
       }
       else {
-	AB_Account_SetProvider(a, pro);
-	AB_Account_SetBackendName(a, AB_Provider_GetName(pro));
+        AB_Account_SetProvider(a, pro);
+        AB_Account_SetBackendName(a, AB_Provider_GetName(pro));
         if (1) {
           int i;
 

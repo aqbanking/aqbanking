@@ -19,9 +19,9 @@
 
 
 int AH_Control_GetTargetAcc(AB_PROVIDER *pro,
-                          GWEN_DB_NODE *dbArgs,
-                          int argc,
-                          char **argv)
+                            GWEN_DB_NODE *dbArgs,
+                            int argc,
+                            char **argv)
 {
   GWEN_DB_NODE *db;
   AB_ACCOUNT *a=NULL;

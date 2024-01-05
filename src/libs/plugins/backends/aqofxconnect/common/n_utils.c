@@ -138,22 +138,22 @@ char *AO_Provider_Util_GenerateUuid()
   rawUuid[6]=0x40 | (rawUuid[6] & 0xf);  /* mark as randomly generated */
   rawUuid[8]=0x80 | (rawUuid[8] & 0x3f); /* set high nibble to 8, 9, A or B */
 
-  returnBuffer=(char*) malloc(37);
+  returnBuffer=(char *) malloc(37);
   assert(returnBuffer);
 
-  GWEN_Text_ToHex((const char*) rawUuid, 4, returnBuffer, 9);
+  GWEN_Text_ToHex((const char *) rawUuid, 4, returnBuffer, 9);
   returnBuffer[8]='-';
 
-  GWEN_Text_ToHex((const char*) rawUuid+4, 2, returnBuffer+9, 5);
+  GWEN_Text_ToHex((const char *) rawUuid+4, 2, returnBuffer+9, 5);
   returnBuffer[13]='-';
 
-  GWEN_Text_ToHex((const char*) rawUuid+6, 2, returnBuffer+14, 5);
+  GWEN_Text_ToHex((const char *) rawUuid+6, 2, returnBuffer+14, 5);
   returnBuffer[18]='-';
 
-  GWEN_Text_ToHex((const char*) rawUuid+8, 2, returnBuffer+19, 5);
+  GWEN_Text_ToHex((const char *) rawUuid+8, 2, returnBuffer+19, 5);
   returnBuffer[23]='-';
 
-  GWEN_Text_ToHex((const char*) rawUuid+10, 6, returnBuffer+24, 13);
+  GWEN_Text_ToHex((const char *) rawUuid+10, 6, returnBuffer+24, 13);
   returnBuffer[36]=0;
 
   return returnBuffer;

@@ -36,28 +36,28 @@
  */
 
 static int _genHashForSigHeadAndSignedData(AH_MSG *hmsg,
-					   unsigned int signedDataPos, unsigned int signedDataLength,
-					   AH_HASH_ALG hashAlg,
-					   GWEN_DB_NODE *sighead, GWEN_DB_NODE *sigtail,
-					   uint8_t *destHashBuffer32Bytes);
+                                           unsigned int signedDataPos, unsigned int signedDataLength,
+                                           AH_HASH_ALG hashAlg,
+                                           GWEN_DB_NODE *sighead, GWEN_DB_NODE *sigtail,
+                                           uint8_t *destHashBuffer32Bytes);
 static GWEN_MDIGEST *_getDigestorForAlgo(AH_HASH_ALG hashAlg);
 static int _digestSigHeadAndData(GWEN_MDIGEST *md,
-				 const uint8_t *sigHeadPtr, uint32_t sigHeadLen,
-				 const uint8_t *signedDataPtr, uint32_t signedDataLength,
-				 uint8_t *destHashBuffer32Bytes);
+                                 const uint8_t *sigHeadPtr, uint32_t sigHeadLen,
+                                 const uint8_t *signedDataPtr, uint32_t signedDataLength,
+                                 uint8_t *destHashBuffer32Bytes);
 static int _verifyAllSignatures(AH_MSG *hmsg,
                                 GWEN_DB_NODE *dbParsedMsg,
-				GWEN_LIST *sigheads,
-				GWEN_LIST *sigtails,
-				unsigned int signedDataBeginPos,
-				unsigned int signedDataLength);
+                                GWEN_LIST *sigheads,
+                                GWEN_LIST *sigtails,
+                                unsigned int signedDataBeginPos,
+                                unsigned int signedDataLength);
 static void _addSignerAccordingToVerifyResult(AH_MSG *hmsg, AB_USER *u, const char *signerId, int rv);
 static int _verifySignatureAgainstHash(GWEN_CRYPT_KEY *k,
-				       AH_OPMODE opMode,
-				       const uint8_t *pInData,
-				       uint32_t inLen,
-				       const uint8_t *pSignatureData,
-				       uint32_t signatureLen);
+                                       AH_OPMODE opMode,
+                                       const uint8_t *pInData,
+                                       uint32_t inLen,
+                                       const uint8_t *pSignatureData,
+                                       uint32_t signatureLen);
 
 static int _verifyInternal(GWEN_CRYPT_KEY *k,
                            GWEN_CRYPT_PADDALGO *a,
@@ -94,9 +94,9 @@ int AH_Msg_VerifyRxh(AH_MSG *hmsg, GWEN_DB_NODE *dbParsedMsg)
 
 int _verifyAllSignatures(AH_MSG *hmsg,
                          GWEN_DB_NODE *dbParsedMsg,
-			 GWEN_LIST *sigheads,
-			 GWEN_LIST *sigtails,
-			 unsigned int signedDataBeginPos,
+                         GWEN_LIST *sigheads,
+                         GWEN_LIST *sigtails,
+                         unsigned int signedDataBeginPos,
                          unsigned int signedDataLength)
 {
   int i;
@@ -140,7 +140,8 @@ int _verifyAllSignatures(AH_MSG *hmsg,
     }
 
     /* hash signature head and data */
-    rv=_genHashForSigHeadAndSignedData(hmsg, signedDataBeginPos, signedDataLength, rParams->hashAlgS, sighead, sigtail, hash);
+    rv=_genHashForSigHeadAndSignedData(hmsg, signedDataBeginPos, signedDataLength, rParams->hashAlgS, sighead, sigtail,
+                                       hash);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -175,17 +176,17 @@ void _addSignerAccordingToVerifyResult(AH_MSG *hmsg, AB_USER *u, const char *sig
     }
     else {
       GWEN_BUFFER *tbuf;
-  
+
       tbuf=GWEN_Buffer_new(0, 32, 0, 1);
       if (rv==GWEN_ERROR_VERIFY) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid signature of user \"%s\"", signerId);
-	GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Invalid signature!!!"));
-	GWEN_Buffer_AppendString(tbuf, "!");
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid signature of user \"%s\"", signerId);
+        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Invalid signature!!!"));
+        GWEN_Buffer_AppendString(tbuf, "!");
       }
       else {
-	GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Could not verify signature"));
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not verify data with medium of user \"%s\" (%d)", AB_User_GetUserId(u), rv);
-	GWEN_Buffer_AppendString(tbuf, "?");
+        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Could not verify signature"));
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not verify data with medium of user \"%s\" (%d)", AB_User_GetUserId(u), rv);
+        GWEN_Buffer_AppendString(tbuf, "?");
       }
       GWEN_Buffer_AppendString(tbuf, signerId);
       AH_Msg_AddSignerId(hmsg, GWEN_Buffer_GetStart(tbuf));
@@ -201,10 +202,10 @@ void _addSignerAccordingToVerifyResult(AH_MSG *hmsg, AB_USER *u, const char *sig
 
 
 int _genHashForSigHeadAndSignedData(AH_MSG *hmsg,
-				    unsigned int signedDataPos, unsigned int signedDataLength,
-				    AH_HASH_ALG hashAlg,
-				    GWEN_DB_NODE *sighead, GWEN_DB_NODE *sigtail,
-				    uint8_t *destHashBuffer32Bytes)
+                                    unsigned int signedDataPos, unsigned int signedDataLength,
+                                    AH_HASH_ALG hashAlg,
+                                    GWEN_DB_NODE *sighead, GWEN_DB_NODE *sigtail,
+                                    uint8_t *destHashBuffer32Bytes)
 {
   GWEN_MDIGEST *md;
   const uint8_t *signedDataPtr;
@@ -256,20 +257,24 @@ int _genHashForSigHeadAndSignedData(AH_MSG *hmsg,
 GWEN_MDIGEST *_getDigestorForAlgo(AH_HASH_ALG hashAlg)
 {
   switch (hashAlg) {
-  case AH_HashAlg_Sha1:           return GWEN_MDigest_Sha1_new();
+  case AH_HashAlg_Sha1:
+    return GWEN_MDigest_Sha1_new();
   case AH_HashAlg_Sha256:
-  case AH_HashAlg_Sha256Sha256:   return GWEN_MDigest_Sha256_new();
-  case AH_HashAlg_Ripmed160:      return GWEN_MDigest_Rmd160_new();
-  default:                        return NULL;
+  case AH_HashAlg_Sha256Sha256:
+    return GWEN_MDigest_Sha256_new();
+  case AH_HashAlg_Ripmed160:
+    return GWEN_MDigest_Rmd160_new();
+  default:
+    return NULL;
   }
 }
 
 
 
 int _digestSigHeadAndData(GWEN_MDIGEST *md,
-			  const uint8_t *sigHeadPtr, uint32_t sigHeadLen,
-			  const uint8_t *signedDataPtr, uint32_t signedDataLength,
-			  uint8_t *destHashBuffer32Bytes)
+                          const uint8_t *sigHeadPtr, uint32_t sigHeadLen,
+                          const uint8_t *signedDataPtr, uint32_t signedDataLength,
+                          uint8_t *destHashBuffer32Bytes)
 {
   int rv;
 
@@ -295,11 +300,11 @@ int _digestSigHeadAndData(GWEN_MDIGEST *md,
 
 
 int _verifySignatureAgainstHash(GWEN_CRYPT_KEY *k,
-				AH_OPMODE opMode,
-				const uint8_t *pInData,
-				uint32_t inLen,
-				const uint8_t *pSignatureData,
-				uint32_t signatureLen)
+                                AH_OPMODE opMode,
+                                const uint8_t *pInData,
+                                uint32_t inLen,
+                                const uint8_t *pSignatureData,
+                                uint32_t signatureLen)
 {
   GWEN_CRYPT_PADDALGO *algo;
   int rv;
@@ -309,17 +314,17 @@ int _verifySignatureAgainstHash(GWEN_CRYPT_KEY *k,
     algo=GWEN_Crypt_PaddAlgo_new(GWEN_Crypt_PaddAlgoId_Iso9796_1A4);
     GWEN_Crypt_PaddAlgo_SetPaddSize(algo, GWEN_Crypt_Key_GetKeySize(k));
     break;
-  
+
   case AH_Opmode_Iso9796_2:
     algo=GWEN_Crypt_PaddAlgo_new(GWEN_Crypt_PaddAlgoId_Iso9796_2);
     GWEN_Crypt_PaddAlgo_SetPaddSize(algo, GWEN_Crypt_Key_GetKeySize(k));
     break;
-  
+
   case AH_Opmode_Rsa_Pkcs1_v1_5:
     algo=GWEN_Crypt_PaddAlgo_new(GWEN_Crypt_PaddAlgoId_Pkcs1_2);
     GWEN_Crypt_PaddAlgo_SetPaddSize(algo, GWEN_Crypt_Key_GetKeySize(k));
     break;
-  
+
   case AH_Opmode_Rsa_Pss:
     algo=GWEN_Crypt_PaddAlgo_new(GWEN_Crypt_PaddAlgoId_Pkcs1_Pss_Sha256);
     GWEN_Crypt_PaddAlgo_SetPaddSize(algo, GWEN_Crypt_Key_GetKeySize(k));
@@ -327,7 +332,7 @@ int _verifySignatureAgainstHash(GWEN_CRYPT_KEY *k,
   default:
     return GWEN_ERROR_INTERNAL;
   }
-  
+
   rv=_verifyInternal(k, algo, pInData, inLen, pSignatureData, signatureLen);
   GWEN_Crypt_PaddAlgo_free(algo);
   if (rv<0) {
@@ -590,10 +595,10 @@ GWEN_CRYPT_KEY *_getBankPubSignKey(AH_MSG *hmsg, GWEN_DB_NODE *dbParsedMsg)
   ctx=GWEN_Crypt_Token_GetContext(ct, AH_User_GetTokenContextId(u), 0);
   if (ctx==NULL) {
     DBG_INFO(AQHBCI_LOGDOMAIN,
-	     "Context %d not found on crypt token [%s:%s]",
-	     AH_User_GetTokenContextId(u),
-	     GWEN_Crypt_Token_GetTypeName(ct),
-	     GWEN_Crypt_Token_GetTokenName(ct));
+             "Context %d not found on crypt token [%s:%s]",
+             AH_User_GetTokenContextId(u),
+             GWEN_Crypt_Token_GetTypeName(ct),
+             GWEN_Crypt_Token_GetTokenName(ct));
     return NULL;
   }
 

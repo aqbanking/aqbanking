@@ -116,11 +116,11 @@ int AH_Provider_CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, int
     break;
 
   case AB_Transaction_CommandSepaInternalTransfer:
-      mj=AH_Job_SepaInternalTransfer_new(pro, mu, ma);
-      if (!mj) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Job not supported with this account");
-        return GWEN_ERROR_NOT_AVAILABLE;
-      }
+    mj=AH_Job_SepaInternalTransfer_new(pro, mu, ma);
+    if (!mj) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
     break;
 
   case AB_Transaction_CommandSepaDebitNote:
@@ -238,8 +238,8 @@ int AH_Provider_CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, int
       DBG_INFO(AQHBCI_LOGDOMAIN, "Job GetEStatements not supported with this account, trying GetEStatements2");
       mj=AH_Job_GetEStatements2_new(pro, mu, ma);
       if (!mj) {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "Neither job GetEStatements nor GetEStatements2 supported with this account");
-	return GWEN_ERROR_NOT_AVAILABLE;
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Neither job GetEStatements nor GetEStatements2 supported with this account");
+        return GWEN_ERROR_NOT_AVAILABLE;
       }
     }
     break;

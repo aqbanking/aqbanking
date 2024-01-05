@@ -610,8 +610,8 @@ GWEN_XMLNODE *AB_ImExporterXML_ReadXmlFromSio(AB_IMEXPORTER *ie, GWEN_SYNCIO *si
 
 
 int AB_ImExporterXML_ImportDb(GWEN_UNUSED AB_IMEXPORTER *ie,
-			      AB_IMEXPORTER_CONTEXT *ctx,
-			      GWEN_DB_NODE *dbData)
+                              AB_IMEXPORTER_CONTEXT *ctx,
+                              GWEN_DB_NODE *dbData)
 {
 
   _readAccountsFromDb(ctx, dbData);
@@ -699,15 +699,15 @@ int _readSecuritiesFromDb(AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *dbData)
 
       s=GWEN_DB_GetCharValue(dbSecurity, "unitPriceDate", 0, NULL);
       if (s && *s) {
-	GWEN_TIME *ti;
+        GWEN_TIME *ti;
 
-	ti=GWEN_Time_fromString(s, "YYYYMMDDhhmmss");
-	if (ti==NULL) {
-	  DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value for unitPriceDate: %s", s);
-	  return GWEN_ERROR_GENERIC;
-	}
-	AB_Security_SetUnitPriceDate(sec, ti);
-	GWEN_Time_free(ti);
+        ti=GWEN_Time_fromString(s, "YYYYMMDDhhmmss");
+        if (ti==NULL) {
+          DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad value for unitPriceDate: %s", s);
+          return GWEN_ERROR_GENERIC;
+        }
+        AB_Security_SetUnitPriceDate(sec, ti);
+        GWEN_Time_free(ti);
       }
       AB_ImExporterContext_AddSecurity(ctx, sec);
     }

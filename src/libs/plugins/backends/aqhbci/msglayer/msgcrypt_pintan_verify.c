@@ -57,12 +57,12 @@ int AH_Msg_VerifyPinTan(AH_MSG *hmsg, GWEN_DB_NODE *dbParsedMsg)
 
 
 
-int _verifyAllSignatures(AH_MSG *hmsg, 
+int _verifyAllSignatures(AH_MSG *hmsg,
                          GWEN_DB_NODE *dbParsedMsg,
-			 GWEN_LIST *sigheads,
-			 GWEN_LIST *sigtails,
-			 unsigned int signedDataBeginPos,
-			 unsigned int signedDataLength)
+                         GWEN_LIST *sigheads,
+                         GWEN_LIST *sigtails,
+                         unsigned int signedDataBeginPos,
+                         unsigned int signedDataLength)
 {
   /* in PINTAN mode there is no crypto stuff on the HBCI layer */
   return 0;

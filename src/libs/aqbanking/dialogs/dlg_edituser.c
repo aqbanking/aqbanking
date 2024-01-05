@@ -46,7 +46,8 @@ GWEN_DIALOG *AB_EditUserDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock)
   GWEN_DIALOG *dlg;
   AB_EDIT_USER_DIALOG *xdlg;
 
-  dlg=GWEN_Dialog_CreateAndLoadWithPath("ab_edit_user", AB_PM_LIBNAME, AB_PM_DATADIR, "aqbanking/dialogs/dlg_edituser.dlg");
+  dlg=GWEN_Dialog_CreateAndLoadWithPath("ab_edit_user", AB_PM_LIBNAME, AB_PM_DATADIR,
+                                        "aqbanking/dialogs/dlg_edituser.dlg");
   if (dlg==NULL) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog \"ab_edit_user\".");
     return NULL;

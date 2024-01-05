@@ -841,7 +841,8 @@ GWEN_DATE *AHB_SWIFT_ReadDateYYMMDD(const char **pCurrentChar, unsigned int *pBy
 
 
 
-GWEN_DATE *AHB_SWIFT_ReadDateMMDDWithReference(const char **pCurrentChar, unsigned int *pBytesLeft, const GWEN_DATE *refDate)
+GWEN_DATE *AHB_SWIFT_ReadDateMMDDWithReference(const char **pCurrentChar, unsigned int *pBytesLeft,
+                                               const GWEN_DATE *refDate)
 {
   const char *p;
   unsigned int bleft;

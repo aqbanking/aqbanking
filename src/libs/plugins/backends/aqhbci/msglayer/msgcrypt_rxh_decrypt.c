@@ -44,10 +44,11 @@
 static GWEN_CRYPT_KEY *_extractMessageKeyFromCryptHead(AH_MSG *hmsg, int rxhProtocol, GWEN_DB_NODE *grHead);
 static const GWEN_CRYPT_TOKEN_KEYINFO *_retrieveDecryptKeyInfoFromCryptToken(AB_USER *u, GWEN_CRYPT_TOKEN *ct);
 static GWEN_CRYPT_KEY *_decryptMessageKey(int rxhProtocol,
-					  GWEN_CRYPT_TOKEN *ct,
-					  uint32_t idDecryptUserKey, int sizeDecryptUserKey,
-					  const uint8_t *ptrRawEncryptedMsgKey, uint32_t lenRawEncryptedMsgKey);
-static GWEN_CRYPT_KEY *_mkMessageKeyFromDecryptedData(int rxhProtocol, uint8_t *ptrDecryptedMsgKey, uint32_t lenDecryptedMsgKey);
+                                          GWEN_CRYPT_TOKEN *ct,
+                                          uint32_t idDecryptUserKey, int sizeDecryptUserKey,
+                                          const uint8_t *ptrRawEncryptedMsgKey, uint32_t lenRawEncryptedMsgKey);
+static GWEN_CRYPT_KEY *_mkMessageKeyFromDecryptedData(int rxhProtocol, uint8_t *ptrDecryptedMsgKey,
+                                                      uint32_t lenDecryptedMsgKey);
 static GWEN_BUFFER *_getDecryptedMessage(GWEN_CRYPT_KEY *sk, int rxhProtocol, const uint8_t *pSource, uint32_t lSource);
 
 
@@ -165,7 +166,8 @@ GWEN_CRYPT_KEY *_extractMessageKeyFromCryptHead(AH_MSG *hmsg, int rxhProtocol, G
   if (ptrRawEncryptedMsgKey && lenRawEncryptedMsgKey) {
     GWEN_CRYPT_KEY *sk;
 
-    sk=_decryptMessageKey(rxhProtocol, ct, idDecryptUserKey, sizeDecryptUserKey, ptrRawEncryptedMsgKey, lenRawEncryptedMsgKey);
+    sk=_decryptMessageKey(rxhProtocol, ct, idDecryptUserKey, sizeDecryptUserKey, ptrRawEncryptedMsgKey,
+                          lenRawEncryptedMsgKey);
     if (sk==NULL) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create message key from data");
       return NULL;
@@ -223,9 +225,9 @@ const GWEN_CRYPT_TOKEN_KEYINFO *_retrieveDecryptKeyInfoFromCryptToken(AB_USER *u
 
 
 GWEN_CRYPT_KEY *_decryptMessageKey(int rxhProtocol,
-				   GWEN_CRYPT_TOKEN *ct,
-				   uint32_t idDecryptUserKey, int sizeDecryptUserKey,
-				   const uint8_t *ptrRawEncryptedMsgKey, uint32_t lenRawEncryptedMsgKey)
+                                   GWEN_CRYPT_TOKEN *ct,
+                                   uint32_t idDecryptUserKey, int sizeDecryptUserKey,
+                                   const uint8_t *ptrRawEncryptedMsgKey, uint32_t lenRawEncryptedMsgKey)
 {
   int rv;
   GWEN_CRYPT_PADDALGO *algo;
@@ -251,9 +253,9 @@ GWEN_CRYPT_KEY *_decryptMessageKey(int rxhProtocol,
 
   algo=GWEN_Crypt_PaddAlgo_new(GWEN_Crypt_PaddAlgoId_None);
   rv=GWEN_Crypt_Token_Decipher(ct, idDecryptUserKey, algo,
-			       bufEncryptedKey, sizeDecryptUserKey,
-			       ptrDecryptedMsgKey, &lenDecryptedMsgKey,
-			       0);
+                               bufEncryptedKey, sizeDecryptUserKey,
+                               ptrDecryptedMsgKey, &lenDecryptedMsgKey,
+                               0);
   GWEN_Crypt_PaddAlgo_free(algo);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -271,7 +273,8 @@ GWEN_CRYPT_KEY *_decryptMessageKey(int rxhProtocol,
 
 
 
-GWEN_CRYPT_KEY *_mkMessageKeyFromDecryptedData(int rxhProtocol, uint8_t *ptrDecryptedMsgKey, uint32_t lenDecryptedMsgKey)
+GWEN_CRYPT_KEY *_mkMessageKeyFromDecryptedData(int rxhProtocol, uint8_t *ptrDecryptedMsgKey,
+                                               uint32_t lenDecryptedMsgKey)
 {
   uint8_t expectedMsgKeySize;
   GWEN_CRYPT_KEY *sk;
@@ -289,7 +292,8 @@ GWEN_CRYPT_KEY *_mkMessageKeyFromDecryptedData(int rxhProtocol, uint8_t *ptrDecr
 
   /* unpadd and generate key */
   if (lenDecryptedMsgKey>expectedMsgKeySize) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Decrypted data larger than keysize (%d > %d), skipping bytes", lenDecryptedMsgKey, expectedMsgKeySize);
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Decrypted data larger than keysize (%d > %d), skipping bytes", lenDecryptedMsgKey,
+              expectedMsgKeySize);
     ptrDecryptedMsgKey+=(lenDecryptedMsgKey-expectedMsgKeySize);
     lenDecryptedMsgKey=expectedMsgKeySize;
   }
@@ -298,11 +302,13 @@ GWEN_CRYPT_KEY *_mkMessageKeyFromDecryptedData(int rxhProtocol, uint8_t *ptrDecr
 
     delta=expectedMsgKeySize-lenDecryptedMsgKey;
     if (delta>AH_MSG_DECRYPTRXH_MAXOFFSET) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Decrypted data is way too small (%d < %d), aborting", lenDecryptedMsgKey, expectedMsgKeySize);
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Decrypted data is way too small (%d < %d), aborting", lenDecryptedMsgKey,
+                expectedMsgKeySize);
       return NULL;
     }
     else {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Decrypted data smaller than keysize (%d < %d), adapting", lenDecryptedMsgKey, expectedMsgKeySize);
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Decrypted data smaller than keysize (%d < %d), adapting", lenDecryptedMsgKey,
+                expectedMsgKeySize);
       ptrDecryptedMsgKey-=delta;
       lenDecryptedMsgKey=expectedMsgKeySize;
     }
@@ -310,8 +316,8 @@ GWEN_CRYPT_KEY *_mkMessageKeyFromDecryptedData(int rxhProtocol, uint8_t *ptrDecr
 
 #if 0
   DBG_ERROR(AQHBCI_LOGDOMAIN,
-	    "DES key provided in message (padded key size=%d, unpadded keysize=%d, keyPos=%d):",
-	    lenDecryptedMsgKey, expectedMsgKeySize, (lenDecryptedMsgKey-expectedMsgKeySize));
+            "DES key provided in message (padded key size=%d, unpadded keysize=%d, keyPos=%d):",
+            lenDecryptedMsgKey, expectedMsgKeySize, (lenDecryptedMsgKey-expectedMsgKeySize));
   GWEN_Text_LogString((const char *)ptrDecryptedMsgKey, lenDecryptedMsgKey, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error);
 #endif
 
@@ -378,10 +384,10 @@ GWEN_BUFFER *_getDecryptedMessage(GWEN_CRYPT_KEY *sk, int rxhProtocol, const uin
     keyData=GWEN_Crypt_KeySym_GetKeyDataPtr(sk);
     keyLen=GWEN_Crypt_KeySym_GetKeyDataLen(sk);
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Key data (rxhProtocol: %d):", rxhProtocol);
-    GWEN_Text_LogString((const char*) keyData, keyLen, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error);
+    GWEN_Text_LogString((const char *) keyData, keyLen, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error);
 
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Encrypted data:");
-    GWEN_Text_LogString((const char*) pSource, lSource, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error);
+    GWEN_Text_LogString((const char *) pSource, lSource, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error);
 
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Decrypted data (after unpadding):");
     GWEN_Text_LogString(GWEN_Buffer_GetStart(mbuf),

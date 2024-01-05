@@ -68,7 +68,8 @@ GWEN_DIALOG *AB_ImporterDialog_new(AB_BANKING *ab, AB_IMEXPORTER_CONTEXT *ctx, c
   GWEN_DIALOG *dlg;
   AB_IMPORTER_DIALOG *xdlg;
 
-  dlg=GWEN_Dialog_CreateAndLoadWithPath("ab_importwizard", AB_PM_LIBNAME, AB_PM_DATADIR, "aqbanking/dialogs/dlg_importer.dlg");
+  dlg=GWEN_Dialog_CreateAndLoadWithPath("ab_importwizard", AB_PM_LIBNAME, AB_PM_DATADIR,
+                                        "aqbanking/dialogs/dlg_importer.dlg");
   if (dlg==NULL) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog \"ab_importwizard\".");
     return NULL;
@@ -526,10 +527,10 @@ int AB_ImporterDialog_EnterPage(GWEN_DIALOG *dlg, int page, int forwards)
                                                 xdlg->fileName);
         if (rv<0) {
           DBG_ERROR(AQBANKING_LOGDOMAIN, "Error importing file: %d", rv);
-	  GWEN_Gui_ShowError(I18N("Error"),
-			     I18N("Error importing file (%d: %s), please see log files for details"),
-			     GWEN_Error_SimpleToString(rv));
-	  AB_ImExporterContext_Clear(xdlg->context);
+          GWEN_Gui_ShowError(I18N("Error"),
+                             I18N("Error importing file (%d: %s), please see log files for details"),
+                             GWEN_Error_SimpleToString(rv));
+          AB_ImExporterContext_Clear(xdlg->context);
         }
         else {
           DBG_NOTICE(0, "Import ok.");
@@ -685,7 +686,7 @@ int _editProfile(GWEN_DIALOG *dlg)
       if (proname && *proname) {
         int idx;
 
-	idx=GWEN_Dialog_ListGetItemMatchingFirstColumn(dlg, "wiz_profile_list", proname);
+        idx=GWEN_Dialog_ListGetItemMatchingFirstColumn(dlg, "wiz_profile_list", proname);
         if (idx>=0) {
           GWEN_Dialog_SetIntProperty(dlg, "wiz_profile_list", GWEN_DialogProperty_Value, 0, idx, 1);
           _determineSelectedProfile(dlg);

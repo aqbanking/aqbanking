@@ -85,7 +85,8 @@ int AH_Msg_SignPinTan(AH_MSG *hmsg, GWEN_UNUSED GWEN_BUFFER *rawBuf, const char 
 
 
 int _createAndInsertSigHead(AH_MSG *hmsg, AB_USER *su, GWEN_MSGENGINE *e, const char *ctrlref)
-{ /* create and insert signature head */
+{
+  /* create and insert signature head */
   GWEN_BUFFER *hbuf;
 
   hbuf=_pinTanCreateSigHead(hmsg, su, e, ctrlref);

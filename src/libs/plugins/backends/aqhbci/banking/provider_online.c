@@ -1267,9 +1267,9 @@ int AH_Provider_GetAccountSepaInfo(AB_PROVIDER *pro,
 }
 
 int AH_Provider_GetTargetAccount(AB_PROVIDER *pro,
-                                   AB_ACCOUNT *a,
-                                   AB_IMEXPORTER_CONTEXT *ctx,
-                                   int withProgress, int nounmount, int doLock)
+                                 AB_ACCOUNT *a,
+                                 AB_IMEXPORTER_CONTEXT *ctx,
+                                 int withProgress, int nounmount, int doLock)
 {
   AB_BANKING *ab;
   AH_HBCI *h;

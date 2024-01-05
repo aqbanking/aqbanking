@@ -109,7 +109,8 @@ int _prepareTodoJobs(AH_JOB_LIST *todoJobs, AH_JOB_LIST *finishedJobs)
     else {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Skip job \"%s\" for its status \"%s\" (%d)",
                AH_Job_GetName(j), AH_Job_StatusName(st), st);
-      AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Skip job due to status(%s)", AH_Job_StatusName(st));
+      AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Skip job due to status(%s)",
+                                AH_Job_StatusName(st));
       AH_Job_SetStatus(j, AH_JobStatusError);
       AH_Job_List_Del(j);
       AH_Job_List_Add(j, finishedJobs);

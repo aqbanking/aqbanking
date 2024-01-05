@@ -42,7 +42,8 @@ GWEN_DIALOG *AB_SelectBackendDialog_new(AB_BANKING *ab, const char *text)
   GWEN_DIALOG *dlg;
   AB_SELECTBACKEND_DIALOG *xdlg;
 
-  dlg=GWEN_Dialog_CreateAndLoadWithPath("ab_selectbackend", AB_PM_LIBNAME, AB_PM_DATADIR, "aqbanking/dialogs/dlg_selectbackend.dlg");
+  dlg=GWEN_Dialog_CreateAndLoadWithPath("ab_selectbackend", AB_PM_LIBNAME, AB_PM_DATADIR,
+                                        "aqbanking/dialogs/dlg_selectbackend.dlg");
   if (dlg==NULL) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog \"ab_selectbackend\".");
     return NULL;

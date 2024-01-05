@@ -539,12 +539,12 @@ unsigned int _countTodoJobs(AH_OUTBOX *ob)
           AH_JOB *j;
 
           j=AH_Job_List_First(jl);
-	  while (j) {
-	    if (!(AH_Job_GetFlags(j) & AH_JOB_FLAGS_OUTBOX))
-	      cnt++;
+          while (j) {
+            if (!(AH_Job_GetFlags(j) & AH_JOB_FLAGS_OUTBOX))
+              cnt++;
 
-	    j=AH_Job_List_Next(j);
-	  } /* while */
+            j=AH_Job_List_Next(j);
+          } /* while */
         }
       }
       jq=AH_JobQueue_List_Next(jq);

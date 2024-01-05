@@ -134,7 +134,7 @@ AH_JOB *_createJob(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account, const char
   AH_JOB *j;
 
   j=AH_AccountJob_new(jobName, pro, u, account);
-  if (!j) 
+  if (!j)
     return NULL;
 
   AH_Job_SetSupportedCommand(j, AB_Transaction_CommandGetEStatements);
@@ -193,15 +193,15 @@ int _process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
       if (dbXA)
         dbXA=GWEN_DB_GetGroup(dbXA, GWEN_PATH_FLAGS_NAMEMUSTEXIST, responseName);
       if (dbXA) {
-	AB_DOCUMENT *doc;
+        AB_DOCUMENT *doc;
 
-	doc=_createDocFromResponseDb(j, dbXA, ++runningDocNumber);
-	if (doc) {
-	  AB_Document_SetOwnerId(doc, AB_Account_GetUniqueId(acc));
-	  if (iea==NULL)
+        doc=_createDocFromResponseDb(j, dbXA, ++runningDocNumber);
+        if (doc) {
+          AB_Document_SetOwnerId(doc, AB_Account_GetUniqueId(acc));
+          if (iea==NULL)
             iea=AB_Provider_GetOrAddAccountInfoForAccount(ctx, acc);
-	  AB_ImExporterAccountInfo_AddEStatement(iea, doc);
-	}
+          AB_ImExporterAccountInfo_AddEStatement(iea, doc);
+        }
       }
     }
 
@@ -217,20 +217,20 @@ AB_DOCUMENT *_createDocFromResponseDb(AH_JOB *j, GWEN_DB_NODE *dbResponse, int r
 {
   const void *p;
   unsigned int bs;
-  
+
   p=GWEN_DB_GetBinValue(dbResponse, "eStatement", 0, 0, 0, &bs);
   if (p && bs) {
     AB_DOCUMENT *doc;
     char *docId;
     int rv;
-  
+
     /* TODO: base64-decode if necessary */
-  
+
     /* add eStatement (PDF) to imExporterContext */
     doc=AB_Document_new();
     AB_Document_SetData(doc, p, bs);
     AB_Document_SetMimeType(doc, "application/pdf");
-  
+
     docId=AH_Job_GenerateIdFromDateTimeAndJobId(j, runningDocNumber);
     if (docId) {
       AB_Document_SetId(doc, docId);
@@ -301,8 +301,8 @@ int _writeDocToDataDirAndStorePath(AH_JOB *j, AB_DOCUMENT *doc, const char *file
 
   /* path exists, file does not, write file now */
   rv=GWEN_SyncIo_Helper_WriteFile(GWEN_Buffer_GetStart(pathBuffer),
-				  AB_Document_GetDataPtr(doc),
-				  AB_Document_GetDataLen(doc));
+                                  AB_Document_GetDataPtr(doc),
+                                  AB_Document_GetDataLen(doc));
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     GWEN_Buffer_free(pathBuffer);

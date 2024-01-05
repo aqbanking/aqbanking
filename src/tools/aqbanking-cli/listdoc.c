@@ -101,7 +101,7 @@ int listDoc(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
         if (doc && (flags & LISTDOC_FLAGS_SHOW_ACCOUNT))
           _printAccount(iea);
 
-        while(doc) {
+        while (doc) {
           _printDoc(doc, flags);
           doc=AB_Document_List_Next(doc);
         }

@@ -149,7 +149,7 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
           curr=GWEN_DB_GetCharValue(dbSaldo, "value/currency", 0, 0);
           if (curr) {
             AHB_SWIFT_SetCharValue(dbTemplate, flags,
-                                    "value/currency", curr);
+                                   "value/currency", curr);
           }
           if (strcasecmp(id, "60F")==0)
             GWEN_DB_SetCharValue(dbSaldo, GWEN_DB_FLAGS_OVERWRITE_VARS, "type", "final");
@@ -183,43 +183,43 @@ int AHB_SWIFT940_Import(AHB_SWIFT_TAG_LIST *tl,
 
         }
         else if (strcasecmp(id, "61")==0) {
-	  const char *s;
+          const char *s;
 
-	  if (!dbDay) {
-	    DBG_WARN(AQBANKING_LOGDOMAIN, "Your bank does not send an opening saldo");
-	    dbDay=GWEN_DB_GetGroup(data, GWEN_PATH_FLAGS_CREATE_GROUP, "day");
+          if (!dbDay) {
+            DBG_WARN(AQBANKING_LOGDOMAIN, "Your bank does not send an opening saldo");
+            dbDay=GWEN_DB_GetGroup(data, GWEN_PATH_FLAGS_CREATE_GROUP, "day");
           }
 
           DBG_INFO(AQBANKING_LOGDOMAIN, "Creating new transaction");
           dbTransaction=GWEN_DB_GetGroup(dbDay, GWEN_PATH_FLAGS_CREATE_GROUP, "transaction");
-	  GWEN_DB_AddGroupChildren(dbTransaction, dbTemplate);
+          GWEN_DB_AddGroupChildren(dbTransaction, dbTemplate);
 
-	  if (AHB_SWIFT940_Parse_61(tg, flags, dbTransaction, cfg)) {
+          if (AHB_SWIFT940_Parse_61(tg, flags, dbTransaction, cfg)) {
             DBG_INFO(AQBANKING_LOGDOMAIN, "Error in tag");
             GWEN_DB_Group_free(dbTemplate);
             GWEN_Gui_ProgressEnd(progressId);
             return -1;
-	  }
-	  s=GWEN_DB_GetCharValue(dbTransaction, "date", 0, NULL);
-	  if (!(s && *s)) {
-	    if (strcasecmp(dateFallback, "balanceDate")==0) {
-	      if (sDate && *sDate)
-		GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS, "date", sDate);
-	      else {
-		s=GWEN_DB_GetCharValue(dbTransaction, "valutaDate", 0, NULL);
-		if (s && *s)
-		  GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS, "date", s);
-	      }
-	    }
-	    else if (strcasecmp(dateFallback, "valutaDate")==0) {
-	      s=GWEN_DB_GetCharValue(dbTransaction, "valutaDate", 0, NULL);
-	      if (s && *s)
-		GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS, "date", s);
-	    }
-	    else if (strcasecmp(dateFallback, "none")==0) {
-	      /* leave date empty */
-	    }
-	  }
+          }
+          s=GWEN_DB_GetCharValue(dbTransaction, "date", 0, NULL);
+          if (!(s && *s)) {
+            if (strcasecmp(dateFallback, "balanceDate")==0) {
+              if (sDate && *sDate)
+                GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS, "date", sDate);
+              else {
+                s=GWEN_DB_GetCharValue(dbTransaction, "valutaDate", 0, NULL);
+                if (s && *s)
+                  GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS, "date", s);
+              }
+            }
+            else if (strcasecmp(dateFallback, "valutaDate")==0) {
+              s=GWEN_DB_GetCharValue(dbTransaction, "valutaDate", 0, NULL);
+              if (s && *s)
+                GWEN_DB_SetCharValue(dbTransaction, GWEN_DB_FLAGS_OVERWRITE_VARS, "date", s);
+            }
+            else if (strcasecmp(dateFallback, "none")==0) {
+              /* leave date empty */
+            }
+          }
         }
         else if (strcasecmp(id, "86")==0) {
           if (!dbTransaction) {

@@ -376,12 +376,12 @@ void AB_Banking_LogMsgForJobId(const AB_BANKING *ab, uint32_t jobId, const char 
     char *p;
     int maxUnsegmentedWrite;
     int rv;
-  
+
     bf=GWEN_Buffer_new(0, 256, 0, 1);
-  
+
     maxUnsegmentedWrite=GWEN_Buffer_GetMaxUnsegmentedWrite(bf);
     p=GWEN_Buffer_GetStart(bf)+GWEN_Buffer_GetPos(bf);
-  
+
     /* prepare list for va_arg */
     va_start(list, fmt);
     rv=vsnprintf(p, maxUnsegmentedWrite, fmt, list);
@@ -439,10 +439,10 @@ void _logMsgForJobId(const AB_BANKING *ab, uint32_t jobId, const char *msg)
   pathBuffer=GWEN_Buffer_new(0, 256, 0, 1);
   GWEN_Buffer_AppendString(pathBuffer, ab->dataDir);
   GWEN_Buffer_AppendString(pathBuffer, GWEN_DIR_SEPARATOR_S "jobs" GWEN_DIR_SEPARATOR_S);
-  GWEN_Buffer_AppendArgs(pathBuffer, "%02x/", (unsigned int) (jobId>>24) & 0xff);
-  GWEN_Buffer_AppendArgs(pathBuffer, "%02x/", (unsigned int) (jobId>>16) & 0xff);
-  GWEN_Buffer_AppendArgs(pathBuffer, "%02x/", (unsigned int) (jobId>>8) & 0xff);
-  GWEN_Buffer_AppendArgs(pathBuffer, "%02x.log", (unsigned int) (jobId & 0xff));
+  GWEN_Buffer_AppendArgs(pathBuffer, "%02x/", (unsigned int)(jobId>>24) & 0xff);
+  GWEN_Buffer_AppendArgs(pathBuffer, "%02x/", (unsigned int)(jobId>>16) & 0xff);
+  GWEN_Buffer_AppendArgs(pathBuffer, "%02x/", (unsigned int)(jobId>>8) & 0xff);
+  GWEN_Buffer_AppendArgs(pathBuffer, "%02x.log", (unsigned int)(jobId & 0xff));
   rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(pathBuffer), GWEN_PATH_FLAGS_VARIABLE | GWEN_PATH_FLAGS_CHECKROOT);
   if (rv<0) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
@@ -456,9 +456,9 @@ void _logMsgForJobId(const AB_BANKING *ab, uint32_t jobId, const char *msg)
   f=fopen(GWEN_Buffer_GetStart(pathBuffer), "a");
   if (f==NULL) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-	      "Error opening/creating logfile \"%s\": %s",
-	      GWEN_Buffer_GetStart(pathBuffer),
-	      strerror(errno));
+              "Error opening/creating logfile \"%s\": %s",
+              GWEN_Buffer_GetStart(pathBuffer),
+              strerror(errno));
     GWEN_Buffer_free(pathBuffer);
     return;
   }

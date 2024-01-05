@@ -123,19 +123,19 @@ AB_DOCUMENT_LIST2 *_getMatchingDocuments(AB_IMEXPORTER_CONTEXT *ctx, const char 
       AB_DOCUMENT *doc;
 
       doc=AB_Document_List_First(docList);
-      while(doc) {
-	if (wantedDocId) {
-	  const char *docId;
+      while (doc) {
+        if (wantedDocId) {
+          const char *docId;
 
-	  docId=AB_Document_GetId(doc);
-	  if (docId && *docId) {
-	    if (GWEN_Text_ComparePattern(docId, wantedDocId, 0)!=-1)
-	      AB_Document_List2_PushBack(docList2, doc);
-	  }
-	}
-	else
-	  AB_Document_List2_PushBack(docList2, doc);
-	doc=AB_Document_List_Next(doc);
+          docId=AB_Document_GetId(doc);
+          if (docId && *docId) {
+            if (GWEN_Text_ComparePattern(docId, wantedDocId, 0)!=-1)
+              AB_Document_List2_PushBack(docList2, doc);
+          }
+        }
+        else
+          AB_Document_List2_PushBack(docList2, doc);
+        doc=AB_Document_List_Next(doc);
       }
     }
 
@@ -161,7 +161,7 @@ int _exportDocuments(const AB_DOCUMENT_LIST2 *docList, const char *dest, uint32_
     AB_DOCUMENT *doc;
 
     doc=AB_Document_List2Iterator_Data(it);
-    while(doc) {
+    while (doc) {
       const char *docId;
       int rv;
 
@@ -169,14 +169,14 @@ int _exportDocuments(const AB_DOCUMENT_LIST2 *docList, const char *dest, uint32_
 
       rv=_ensureDocData(doc);
       if (rv<0) {
-	DBG_INFO(NULL, "Error ensuring data for document \"%s\"", docId?docId:"<no id>");
-	return rv;
+        DBG_INFO(NULL, "Error ensuring data for document \"%s\"", docId?docId:"<no id>");
+        return rv;
       }
 
       rv=_writeDoc(doc, dest, flags);
       if (rv<0) {
-	DBG_INFO(NULL, "here (%d)", rv);
-	return rv;
+        DBG_INFO(NULL, "here (%d)", rv);
+        return rv;
       }
       doc=AB_Document_List2Iterator_Next(it);
     } /* while */
@@ -212,12 +212,12 @@ int _writeDoc(const AB_DOCUMENT *doc, const char *dest, uint32_t flags)
     GWEN_Buffer_AppendString(pathBuffer, ".pdf");
 
     rv=GWEN_SyncIo_Helper_WriteFile(GWEN_Buffer_GetStart(pathBuffer),
-				    AB_Document_GetDataPtr(doc),
-				    AB_Document_GetDataLen(doc));
+                                    AB_Document_GetDataPtr(doc),
+                                    AB_Document_GetDataLen(doc));
     if (rv<0) {
       DBG_INFO(NULL, "Error writing data for document \"%s\" to \"%s\"",
-	       docId?docId:"<no id>",
-	       GWEN_Buffer_GetStart(pathBuffer));
+               docId?docId:"<no id>",
+               GWEN_Buffer_GetStart(pathBuffer));
       GWEN_Buffer_free(pathBuffer);
       return rv;
     }
@@ -225,12 +225,12 @@ int _writeDoc(const AB_DOCUMENT *doc, const char *dest, uint32_t flags)
   }
   else {
     rv=GWEN_SyncIo_Helper_WriteFile(dest,
-				    AB_Document_GetDataPtr(doc),
-				    AB_Document_GetDataLen(doc));
+                                    AB_Document_GetDataPtr(doc),
+                                    AB_Document_GetDataLen(doc));
     if (rv<0) {
       DBG_INFO(NULL, "Error writing data for document \"%s\" to \"%s\"",
-	       docId?docId:"<no id>",
-	       dest);
+               docId?docId:"<no id>",
+               dest);
       return rv;
     }
     return 0;
@@ -257,13 +257,13 @@ int _ensureDocData(AB_DOCUMENT *doc)
       dbuf=GWEN_Buffer_new(0, 256, 0, 1);
       rv=GWEN_SyncIo_Helper_ReadFile(filePath, dbuf);
       if (rv<0) {
-	DBG_ERROR(NULL, "Could not read source file \"%s\" (%d)", filePath, rv);
-	GWEN_Buffer_free(dbuf);
-	return rv;
+        DBG_ERROR(NULL, "Could not read source file \"%s\" (%d)", filePath, rv);
+        GWEN_Buffer_free(dbuf);
+        return rv;
       }
       AB_Document_SetData(doc,
-			  (const uint8_t*) GWEN_Buffer_GetStart(dbuf),
-			  GWEN_Buffer_GetUsedBytes(dbuf));
+                          (const uint8_t *) GWEN_Buffer_GetStart(dbuf),
+                          GWEN_Buffer_GetUsedBytes(dbuf));
       GWEN_Buffer_free(dbuf);
       return 0;
     }

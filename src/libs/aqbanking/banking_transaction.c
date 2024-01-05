@@ -100,13 +100,15 @@ int AB_Banking_CheckTransactionAgainstLimits_Names(const AB_TRANSACTION *t, cons
 {
   int rv;
 
-  rv=_checkFieldAgainstLimits(AB_Transaction_GetRemoteName(t), "remote name", lim?AB_TransactionLimits_GetMaxLenRemoteName(lim):0, 1);
+  rv=_checkFieldAgainstLimits(AB_Transaction_GetRemoteName(t), "remote name",
+                              lim?AB_TransactionLimits_GetMaxLenRemoteName(lim):0, 1);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
-  rv=_checkFieldAgainstLimits(AB_Transaction_GetLocalName(t), "remote name", lim?AB_TransactionLimits_GetMaxLenLocalName(lim):0, 1);
+  rv=_checkFieldAgainstLimits(AB_Transaction_GetLocalName(t), "remote name",
+                              lim?AB_TransactionLimits_GetMaxLenLocalName(lim):0, 1);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;

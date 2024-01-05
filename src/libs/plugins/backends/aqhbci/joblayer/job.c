@@ -1649,10 +1649,10 @@ char *AH_Job_GenerateIdFromDateTimeAndJobId(const AH_JOB *j, int runningNumber)
   GWEN_Time_GetBrokenDownTime(ti, &hours, &mins, &secs);
   GWEN_Time_free(ti);
 
-  string31=(char*) malloc(31);
+  string31=(char *) malloc(31);
   /* YYYYMMDDhhmmssJJJJJJJJRRRRRRRR */
   rv=snprintf(string31, 31, "%04d%02d%02d%02d%02d%02d%08x%08x",
-	      year, month+1, days, hours, mins, secs, j->id, runningNumber);
+              year, month+1, days, hours, mins, secs, j->id, runningNumber);
   if (rv<0 || rv>30) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Error on snprintf (%d)", rv);
     free(string31);

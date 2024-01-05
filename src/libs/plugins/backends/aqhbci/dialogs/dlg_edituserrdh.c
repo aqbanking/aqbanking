@@ -541,7 +541,7 @@ int AH_EditUserRdhDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg)
   assert(xdlg);
 
   dlg2=AB_SelectBankInfoDialog_new(xdlg->banking, "de", GWEN_Dialog_GetCharProperty(dlg, "bankCodeEdit",
-                                                                                    GWEN_DialogProperty_Value, 0, NULL));
+                                   GWEN_DialogProperty_Value, 0, NULL));
   if (dlg2==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create dialog");
     GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Could create dialog, maybe incomplete installation?"));

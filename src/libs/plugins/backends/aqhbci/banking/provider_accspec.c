@@ -35,7 +35,7 @@ AB_REFERENCE_ACCOUNT *_copyRefAccountCb(AB_REFERENCE_ACCOUNT *ra, void *user_dat
 static int _updateAccountSpecWithUserAndAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_ACCOUNT_SPEC *as);
 static void _copyAccountToAccountSpec(const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC *as);
 static int _updateAccountSpecWithRefAccounts(AB_PROVIDER *pro, AB_ACCOUNT *a,
-    AB_ACCOUNT_SPEC *as);
+                                             AB_ACCOUNT_SPEC *as);
 
 
 /* ------------------------------------------------------------------------------------------------
@@ -161,25 +161,26 @@ AB_ACCOUNT_SPEC *_createAccountSpecWithUserAndAccount(AB_PROVIDER *pro, AB_USER 
 
 AB_REFERENCE_ACCOUNT *_copyRefAccountCb(AB_REFERENCE_ACCOUNT *ra, void *user_data)
 {
-    AB_ACCOUNT_SPEC *as = (AB_ACCOUNT_SPEC *) user_data;
-    AB_REFERENCE_ACCOUNT *ra_new = AB_ReferenceAccount_dup(ra);
-    AB_AccountSpec_AddReferenceAccount(as,ra_new);
-    return NULL;
+  AB_ACCOUNT_SPEC *as = (AB_ACCOUNT_SPEC *) user_data;
+  AB_REFERENCE_ACCOUNT *ra_new = AB_ReferenceAccount_dup(ra);
+  AB_AccountSpec_AddReferenceAccount(as, ra_new);
+  return NULL;
 }
 
 int _updateAccountSpecWithRefAccounts(AB_PROVIDER *pro, AB_ACCOUNT *a,
-    AB_ACCOUNT_SPEC *as) {
+                                      AB_ACCOUNT_SPEC *as)
+{
 
   int rv;
   AB_ACCOUNT_SPEC *as_old = NULL;
   AB_REFERENCE_ACCOUNT_LIST *ral = NULL;
   /* copy reference accounts */
   rv = AB_Banking_GetAccountSpecByUniqueId(AB_Provider_GetBanking(pro),
-      AB_Account_GetUniqueId(a), &as_old);
+                                           AB_Account_GetUniqueId(a), &as_old);
   if (rv >= 0) {
     /* we have an account spec alread, copy the reference account list to the new one */
     ral = AB_AccountSpec_GetRefAccountList(as_old);
-    AB_ReferenceAccount_List_ForEach(ral, _copyRefAccountCb, (void*) as);
+    AB_ReferenceAccount_List_ForEach(ral, _copyRefAccountCb, (void *) as);
     AB_AccountSpec_free(as_old);
   }
 

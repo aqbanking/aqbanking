@@ -35,7 +35,8 @@ static int _readBookingKey(const char **pCurrentChar, unsigned int *pBytesLeft, 
 static int _tryReadExtraAmountTag(const char **pCurrentChar, unsigned int *pBytesLeft,
                                   const char *tagName,
                                   GWEN_DB_NODE *data, const char *groupName);
-static int _readAmountFromExtraLine(const char **pCurrentChar, unsigned int *pBytesLeft, GWEN_DB_NODE *data, const char *groupName);
+static int _readAmountFromExtraLine(const char **pCurrentChar, unsigned int *pBytesLeft, GWEN_DB_NODE *data,
+                                    const char *groupName);
 
 static int _readTextAfterDoubleSlashesReturnLength(const char **pCurrentChar, unsigned int *pBytesLeft,
                                                    GWEN_DB_NODE *data, const char *varName, uint32_t flags);
@@ -135,18 +136,18 @@ int AHB_SWIFT940_Parse_61(const AHB_SWIFT_TAG *tg, uint32_t flags, GWEN_DB_NODE 
         }
       }
       if (rv<1) { /* no CHGS, try next */
-	if (readExtraData61) {
-	  /* add extra data to purpose lines */
-	  AHB_SWIFT_SetCharValue(data, GWEN_DB_FLAGS_DEFAULT, "purpose", p);
-	  return 0;
-	}
-	else {
-	  /* we should read the remainder of the line because that might contain important data
-	   * for non-German users (see example file in bug #262), but where to store? */
-	  DBG_WARN(AQBANKING_LOGDOMAIN, "Unknown/unstructured extra data, ignoring for now (%s)", p);
-	  /* probably skip "/" if any */
-	  return 0;
-	}
+        if (readExtraData61) {
+          /* add extra data to purpose lines */
+          AHB_SWIFT_SetCharValue(data, GWEN_DB_FLAGS_DEFAULT, "purpose", p);
+          return 0;
+        }
+        else {
+          /* we should read the remainder of the line because that might contain important data
+           * for non-German users (see example file in bug #262), but where to store? */
+          DBG_WARN(AQBANKING_LOGDOMAIN, "Unknown/unstructured extra data, ignoring for now (%s)", p);
+          /* probably skip "/" if any */
+          return 0;
+        }
       }
     } /* while */
   } /* if there is extra data */
@@ -338,7 +339,8 @@ int _tryReadExtraAmountTag(const char **pCurrentChar, unsigned int *pBytesLeft,
 
 
 
-int _readAmountFromExtraLine(const char **pCurrentChar, unsigned int *pBytesLeft, GWEN_DB_NODE *data, const char *groupName)
+int _readAmountFromExtraLine(const char **pCurrentChar, unsigned int *pBytesLeft, GWEN_DB_NODE *data,
+                             const char *groupName)
 {
   const char *p;
   unsigned int bleft;

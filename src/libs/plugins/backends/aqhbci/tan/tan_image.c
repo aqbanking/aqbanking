@@ -34,7 +34,8 @@ static int _getTan(AH_TAN_MECHANISM *tanMechanism,
                    char *passwordBuffer,
                    int passwordMinLen,
                    int passwordMaxLen);
-static int _extractAndSetMimeTypeAndImageData(const uint8_t *challengePtr, uint32_t challengeLen, GWEN_DB_NODE *dbMethodParams);
+static int _extractAndSetMimeTypeAndImageData(const uint8_t *challengePtr, uint32_t challengeLen,
+                                              GWEN_DB_NODE *dbMethodParams);
 static int _readTagHeader(const uint8_t **pBufferPointer, int *pBufferLen, int *pTagLen, int tagNum);
 static void _readTagIntoDbAsString(const uint8_t *p, int tagLen, GWEN_DB_NODE *db, const char *varName);
 

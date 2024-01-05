@@ -36,11 +36,11 @@ static int _addSupportedCamtFormats(AH_JOB *j, GWEN_DB_NODE *dbArgs);
 static int _readBooked(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai, GWEN_DB_NODE *dbBooked);
 static int _readTransactionsFromResponse(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai, GWEN_DB_NODE *dbXA);
 static int _readTransactions(AH_JOB *j,
-			     AB_IMEXPORTER_ACCOUNTINFO *ai,
-			     const char *docType,
-			     int ty,
-			     const uint8_t *ptr,
-			     uint32_t len);
+                             AB_IMEXPORTER_ACCOUNTINFO *ai,
+                             const char *docType,
+                             int ty,
+                             const uint8_t *ptr,
+                             uint32_t len);
 
 
 
@@ -290,11 +290,11 @@ int _readBooked(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai, GWEN_DB_NODE *dbBooked
 
 
 int _readTransactions(AH_JOB *j,
-		      AB_IMEXPORTER_ACCOUNTINFO *ai,
-		      const char *docType,
-		      int ty,
-		      const uint8_t *ptr,
-		      uint32_t len)
+                      AB_IMEXPORTER_ACCOUNTINFO *ai,
+                      const char *docType,
+                      int ty,
+                      const uint8_t *ptr,
+                      uint32_t len)
 {
   AB_PROVIDER *pro;
   AB_IMEXPORTER_CONTEXT *tempContext;

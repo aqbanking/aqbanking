@@ -39,7 +39,8 @@ void AB_Provider_DumpTransactionsIfDebug(const AB_IMEXPORTER_ACCOUNTINFO *ai, co
 
 
 
-void AB_Provider_MergeContextsSetTypeAndFreeSrc(AB_IMEXPORTER_ACCOUNTINFO *destAccountInfo, AB_IMEXPORTER_CONTEXT *srcContext, int ty)
+void AB_Provider_MergeContextsSetTypeAndFreeSrc(AB_IMEXPORTER_ACCOUNTINFO *destAccountInfo,
+                                                AB_IMEXPORTER_CONTEXT *srcContext, int ty)
 {
   AB_IMEXPORTER_ACCOUNTINFO *srcAccountInfo;
 
@@ -83,11 +84,11 @@ AB_IMEXPORTER_ACCOUNTINFO *AB_Provider_GetOrAddAccountInfoForAccount(AB_IMEXPORT
 {
   if (a)
     return AB_ImExporterContext_GetOrAddAccountInfo(ctx,
-						    AB_Account_GetUniqueId(a),
-						    AB_Account_GetIban(a),
-						    AB_Account_GetBankCode(a),
-						    AB_Account_GetAccountNumber(a),
-						    AB_Account_GetAccountType(a));
+                                                    AB_Account_GetUniqueId(a),
+                                                    AB_Account_GetIban(a),
+                                                    AB_Account_GetBankCode(a),
+                                                    AB_Account_GetAccountNumber(a),
+                                                    AB_Account_GetAccountType(a));
   else
     return AB_ImExporterContext_GetOrAddAccountInfo(ctx, 0, NULL, NULL, NULL, AB_AccountType_Unknown);
 }

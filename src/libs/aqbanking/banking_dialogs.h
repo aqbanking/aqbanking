@@ -30,23 +30,23 @@ extern "C" {
       GWEN_DIALOG *dlg;
       AB_IMEXPORTER_CONTEXT *ctx;
       int rv;
-  
+
       ctx=AB_ImExporterContext_new();
       dlg=AB_Banking_CreateImporterDialog(ab, ctx, "This is a simple finish message.");
       if (dbg=NULL) {
-	fprintf(stderr, "Could not create dialog\n");
-	AB_ImExporterContext_free(ctx);
-	return NULL;
+        fprintf(stderr, "Could not create dialog\n");
+        AB_ImExporterContext_free(ctx);
+        return NULL;
       }
       GWEN_Dialog_SetWidgetText(dlg, "", "My Selected Window Title");
       rv=GWEN_Gui_ExecDialog(dlg, 0);
       if (rv==0) {
-	fprintf(stderr, "Rejected.\n");
-	GWEN_Dialog_free(dlg);
-	AB_ImExporterContext_free(ctx);
-	return NULL;
+        fprintf(stderr, "Rejected.\n");
+        GWEN_Dialog_free(dlg);
+        AB_ImExporterContext_free(ctx);
+        return NULL;
       }
-  
+
       GWEN_Dialog_free(dlg);
       return ctx;
    }

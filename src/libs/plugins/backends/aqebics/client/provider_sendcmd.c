@@ -74,7 +74,8 @@ int EBC_Provider__SendUserQueue(AB_PROVIDER *pro, AB_USERQUEUE *uq, AB_IMEXPORTE
     AB_ACCOUNTQUEUE *aq;
     int rv;
 
-    GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info, I18N("Locking customer \"%lu\""), (unsigned long int) AB_User_GetUniqueId(u));
+    GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info, I18N("Locking customer \"%lu\""),
+                          (unsigned long int) AB_User_GetUniqueId(u));
     rv=AB_Provider_BeginExclUseUser(pro, u);
     if (rv<0) {
       DBG_INFO(AQEBICS_LOGDOMAIN, "Could not lock user [%lu] (%d)", (unsigned long int) AB_User_GetUniqueId(u), rv);

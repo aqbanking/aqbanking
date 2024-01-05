@@ -404,18 +404,22 @@ void _jobReadFromDescriptorNode(AH_JOB *j, GWEN_XMLNODE *jobNode)
     AH_Job_AddFlags(j, AH_JOB_FLAGS_SINGLE);
     j->msgNode=msgNode;
     AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(msgNode, "sign", 1)!=0)?(AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN):0);
-    AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(msgNode, "crypt", 1)!=0)?(AH_JOB_FLAGS_NEEDCRYPT | AH_JOB_FLAGS_CRYPT):0);
+    AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(msgNode, "crypt",
+                                                    1)!=0)?(AH_JOB_FLAGS_NEEDCRYPT | AH_JOB_FLAGS_CRYPT):0);
     AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(msgNode, "needtan", 0)!=0)?AH_JOB_FLAGS_NEEDTAN:0);
-    AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(msgNode, "nosysid", 0)!=0)?(AH_JOB_FLAGS_NOSYSID | AH_JOB_FLAGS_SINGLE):0);
+    AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(msgNode, "nosysid",
+                                                    0)!=0)?(AH_JOB_FLAGS_NOSYSID | AH_JOB_FLAGS_SINGLE):0);
     AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(msgNode, "signseqone", 0)!=0)?AH_JOB_FLAGS_SIGNSEQONE:0);
     AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(msgNode, "noitan", 0)!=0)?AH_JOB_FLAGS_NOITAN:0);
   } /* if msgNode */
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Single message job");
     AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(jobNode, "sign", 1)!=0)?(AH_JOB_FLAGS_NEEDSIGN | AH_JOB_FLAGS_SIGN):0);
-    AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(jobNode, "crypt", 1)!=0)?(AH_JOB_FLAGS_NEEDCRYPT | AH_JOB_FLAGS_CRYPT):0);
+    AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(jobNode, "crypt",
+                                                    1)!=0)?(AH_JOB_FLAGS_NEEDCRYPT | AH_JOB_FLAGS_CRYPT):0);
     AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(jobNode, "needtan", 0)!=0)?AH_JOB_FLAGS_NEEDTAN:0);
-    AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(jobNode, "nosysid", 0)!=0)?(AH_JOB_FLAGS_NOSYSID | AH_JOB_FLAGS_SINGLE):0);
+    AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(jobNode, "nosysid",
+                                                    0)!=0)?(AH_JOB_FLAGS_NOSYSID | AH_JOB_FLAGS_SINGLE):0);
     AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(jobNode, "signseqone", 0)!=0)?AH_JOB_FLAGS_SIGNSEQONE:0);
     AH_Job_AddFlags(j, (GWEN_XMLNode_GetIntProperty(jobNode, "noitan", 0)!=0)?AH_JOB_FLAGS_NOITAN:0);
   }

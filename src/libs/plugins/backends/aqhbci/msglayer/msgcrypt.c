@@ -153,7 +153,7 @@ int AH_Msg_SampleSigHeadsAndTailsFromDecodedMsg(GWEN_DB_NODE *gr, GWEN_LIST *sig
   }
 
   /* find first signature tail */
-  while(n) {
+  while (n) {
     if (strcasecmp(GWEN_DB_GroupName(n), "SigTail")==0)
       break;
     n=GWEN_DB_GetNextGroup(n);

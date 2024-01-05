@@ -127,10 +127,10 @@ void _parseAndProbablyAddDescriptor(const char *sName, const char *family, int v
 
         /* store name of selected profile */
         AB_SwiftDescr_SetAlias2(descrFromList, sName);
-	DBG_INFO(AQHBCI_LOGDOMAIN,
-		 "Adding matching profile [%s] (%s)",
-		 AB_SwiftDescr_GetAlias1(tmpDescr),
-		 AB_SwiftDescr_GetAlias2(tmpDescr));
+        DBG_INFO(AQHBCI_LOGDOMAIN,
+                 "Adding matching profile [%s] (%s)",
+                 AB_SwiftDescr_GetAlias1(tmpDescr),
+                 AB_SwiftDescr_GetAlias2(tmpDescr));
         /* copy to return list */
         descrCopy=AB_SwiftDescr_dup(descrFromList);
         AB_SwiftDescr_List_Add(descrCopy, returnDescrList);
@@ -219,8 +219,8 @@ AB_SWIFT_DESCR_LIST *AH_Job_GetSwiftDescriptorsSupportedByUser(AH_JOB *j, const 
       }
       else {
         DBG_INFO(AQHBCI_LOGDOMAIN,
-		 "Could not create SWIFT descriptor from string \"%s\" (job \"%s\"), ignoring",
-		 s, AH_Job_GetName(j));
+                 "Could not create SWIFT descriptor from string \"%s\" (job \"%s\"), ignoring",
+                 s, AH_Job_GetName(j));
       }
     }
 

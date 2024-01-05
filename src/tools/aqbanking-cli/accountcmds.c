@@ -265,7 +265,7 @@ void _dumpLimitList(const AB_TRANSACTION_LIMITS_LIST *limitList)
 
     lim=AB_TransactionLimits_List_First(limitList);
     if (lim) {
-      while(lim) {
+      while (lim) {
         fprintf(stdout, "  %s\n", AB_Transaction_Command_toString(AB_TransactionLimits_GetCommand(lim)));
         lim=AB_TransactionLimits_List_Next(lim);
       }

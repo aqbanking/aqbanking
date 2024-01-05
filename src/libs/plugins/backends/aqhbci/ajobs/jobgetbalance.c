@@ -154,7 +154,7 @@ AB_VALUE *_readAmountFromResponseDb(GWEN_DB_NODE *dbBalance)
       AB_Value_Negate(value);
     }
     else if (strcasecmp(p, "C")==0 || strcasecmp(p, "RD")==0) {
-        /* nothing to do */
+      /* nothing to do */
     }
     else {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad debit mark \"%s\"", p);

@@ -21,8 +21,9 @@
 
 GWEN_INHERIT(AH_JOB, AH_JOB_GETTARGETACC)
 
-AH_JOB* AH_Job_GetTargetAccount_new(AB_PROVIDER *pro, AB_USER *u,
-    AB_ACCOUNT *acc) {
+AH_JOB *AH_Job_GetTargetAccount_new(AB_PROVIDER *pro, AB_USER *u,
+                                    AB_ACCOUNT *acc)
+{
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
   AH_JOB_GETTARGETACC *jd;
@@ -32,13 +33,13 @@ AH_JOB* AH_Job_GetTargetAccount_new(AB_PROVIDER *pro, AB_USER *u,
   j = AH_Job_new("JobGetAccountTargetAccount", pro, u, 0, 0);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN,
-        "JobGetAccountTargetAccount not supported, should not happen");
+              "JobGetAccountTargetAccount not supported, should not happen");
     return 0;
   }
 
   GWEN_NEW_OBJECT(AH_JOB_GETTARGETACC, jd);
   GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_GETTARGETACC, j, jd,
-      AH_Job_GetTargetAccount_FreeData)
+                       AH_Job_GetTargetAccount_FreeData)
   AH_Job_SetProcessFn(j, AH_Job_GetTargetAccount_Process);
 
   jd->account = acc;
@@ -67,14 +68,16 @@ AH_JOB* AH_Job_GetTargetAccount_new(AB_PROVIDER *pro, AB_USER *u,
   return j;
 }
 
-void GWENHYWFAR_CB AH_Job_GetTargetAccount_FreeData(void *bp, void *p) {
+void GWENHYWFAR_CB AH_Job_GetTargetAccount_FreeData(void *bp, void *p)
+{
   AH_JOB_GETTARGETACC *jd;
 
-  jd = (AH_JOB_GETTARGETACC*) p;
+  jd = (AH_JOB_GETTARGETACC *) p;
   GWEN_FREE_OBJECT(jd);
 }
 
-int AH_Job_GetTargetAccount_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
+int AH_Job_GetTargetAccount_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+{
   AH_JOB_GETTARGETACC *jd;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
@@ -123,7 +126,7 @@ int AH_Job_GetTargetAccount_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
     }
 
     dbXA = GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST,
-        "data/GetAccountTargetAccountResponse");
+                            "data/GetAccountTargetAccountResponse");
     if (dbXA) {
       const char *reqIban;
       const char *reqBic;
@@ -141,7 +144,7 @@ int AH_Job_GetTargetAccount_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
       AB_REFERENCE_ACCOUNT *ra;
       /* check if we have a structure with an "account" group" */
       GWEN_DB_NODE *dbTargetAccount = GWEN_DB_FindFirstGroup(dbXA,
-          "targetAccount");
+                                                             "targetAccount");
       uniqueAccountId = AB_Account_GetUniqueId(jd->account);
       rv = AB_Banking_GetAccountSpecByUniqueId(ab, uniqueAccountId, &as);
 
@@ -151,26 +154,27 @@ int AH_Job_GetTargetAccount_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
         reqIban = GWEN_DB_GetCharValue(dbTargetAccount, "account/iban", 0, 0);
         reqBic = GWEN_DB_GetCharValue(dbTargetAccount, "account/bic", 0, 0);
         reqAccountId = GWEN_DB_GetCharValue(dbTargetAccount,
-            "account/accountid", 0, 0);
+                                            "account/accountid", 0, 0);
         reqAccountSubId = GWEN_DB_GetCharValue(dbTargetAccount,
-            "account/accountsubid", 0, 0);
+                                               "account/accountsubid", 0, 0);
         reqCountry = GWEN_DB_GetCharValue(dbTargetAccount, "account/country", 0,
-            0);
+                                          0);
         reqBankCode = GWEN_DB_GetCharValue(dbTargetAccount, "account/bankcode",
-            0, 0);
+                                           0, 0);
         reqOwnerName = GWEN_DB_GetCharValue(dbTargetAccount, "rcvName1", 0, 0);
         reqAddtlOwnerName = GWEN_DB_GetCharValue(dbTargetAccount, "rcvName2", 0,
-            0);
+                                                 0);
         reqAccountType = GWEN_DB_GetIntValue(dbTargetAccount, "accType", 0, 0);
         reqAccDescription = GWEN_DB_GetCharValue(dbTargetAccount,
-            "accDescription", 0, 0);
+                                                 "accDescription", 0, 0);
         ral = AB_AccountSpec_GetRefAccountList(as);
         if (ral == NULL) {
           ra = NULL;
-        } else {
+        }
+        else {
           ra = AB_ReferenceAccount_List_FindFirst(ral, reqIban, reqBic,
-              reqAccountId, reqAccountSubId, reqCountry, reqBankCode,
-              reqOwnerName, reqAccDescription);
+                                                  reqAccountId, reqAccountSubId, reqCountry, reqBankCode,
+                                                  reqOwnerName, reqAccDescription);
         }
         if (ra == NULL) {
           AB_REFERENCE_ACCOUNT *new_ra = AB_ReferenceAccount_new();
@@ -190,36 +194,38 @@ int AH_Job_GetTargetAccount_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
         /* check if the internal transfer is already part of the transaction limits, if not, add them */
         {
           AB_TRANSACTION_LIMITS *limits =
-              AB_AccountSpec_GetTransactionLimitsForCommand(as,
-                  AB_Transaction_CommandSepaInternalTransfer);
+            AB_AccountSpec_GetTransactionLimitsForCommand(as,
+                                                          AB_Transaction_CommandSepaInternalTransfer);
           if (limits == NULL) {
             AH_JOB *j = NULL;
             AB_TRANSACTION_LIMITS_LIST *tll =
-                AB_AccountSpec_GetTransactionLimitsList(as);
+              AB_AccountSpec_GetTransactionLimitsList(as);
             DBG_INFO(AQHBCI_LOGDOMAIN,
-                "Creating transaction limits for job \"%s\"",
-                AB_Transaction_Command_toString(
-                    AB_Transaction_CommandSepaInternalTransfer));
+                     "Creating transaction limits for job \"%s\"",
+                     AB_Transaction_Command_toString(
+                       AB_Transaction_CommandSepaInternalTransfer));
             DBG_INFO(AQHBCI_LOGDOMAIN, "- creating job");
             rv = AH_Provider_CreateHbciJob(pro, u, jd->account,
-                AB_Transaction_CommandSepaInternalTransfer, &j);
+                                           AB_Transaction_CommandSepaInternalTransfer, &j);
             if (rv < 0) {
               if (rv == GWEN_ERROR_NOT_AVAILABLE) {
                 DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" is not available",
-                    AB_Transaction_Command_toString(
-                        AB_Transaction_CommandSepaInternalTransfer));
-              } else {
+                           AB_Transaction_Command_toString(
+                             AB_Transaction_CommandSepaInternalTransfer));
+              }
+              else {
                 DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
                 return rv;
               }
-            } else {
+            }
+            else {
               DBG_INFO(AQHBCI_LOGDOMAIN, "- getting limits");
               rv = AH_Job_GetLimits(j, &limits);
               if (rv < 0) {
                 DBG_INFO(AQHBCI_LOGDOMAIN,
-                    "Error getting limits for job \"%s\": %d",
-                    AB_Transaction_Command_toString(
-                        AB_Transaction_CommandSepaInternalTransfer), rv);
+                         "Error getting limits for job \"%s\": %d",
+                         AB_Transaction_Command_toString(
+                           AB_Transaction_CommandSepaInternalTransfer), rv);
                 AH_Job_free(j);
                 return rv;
               }
@@ -230,7 +236,7 @@ int AH_Job_GetTargetAccount_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx) {
           }
         }
         dbTargetAccount = GWEN_DB_FindNextGroup(dbTargetAccount,
-            "targetAccount");
+                                                "targetAccount");
 
       } /* while (dbTargetAccount) */
 

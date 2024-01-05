@@ -166,11 +166,11 @@ int _performQueue(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jq)
       DBG_INFO(AQHBCI_LOGDOMAIN, "No more jobs left");
       break;
     }
-    else { 
+    else {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Handling TODO jobs");
       jq=jqTodo;
       /* jq now contains all jobs to be executed */
-        
+
       /* Execute NEXT send-recv round, synchrounously. */
       rv=AH_OutboxCBox_SendAndRecvQueue(cbox, dlg, jq);
       if (rv) {
@@ -208,8 +208,8 @@ AH_JOBQUEUE *_createAckQueueFromTodoList(AB_USER *user, AH_JOB_LIST *jl, uint32_
 
     if (AH_Job_GetStatus(j)==AH_JobStatusAnswered) {
       /* Should we send an acknowledgement for the previously executed job? */
-      const void* ackCode = NULL;
-      AH_JOB* jAck = NULL;
+      const void *ackCode = NULL;
+      AH_JOB *jAck = NULL;
       unsigned int lenAckCode = 0;
       GWEN_DB_NODE *args = AH_Job_GetArguments(j);
 
@@ -218,11 +218,11 @@ AH_JOBQUEUE *_createAckQueueFromTodoList(AB_USER *user, AH_JOB_LIST *jl, uint32_
                jobName);
       ackCode = GWEN_DB_GetBinValue(args, "_tmpAckCode", 0, 0, 0, &lenAckCode);
       if (ackCode != NULL && lenAckCode > 0) {
-         jAck = AH_Job_Acknowledge_new(AH_Job_GetProvider(j), AH_Job_GetUser(j), ackCode, lenAckCode);
-         DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" received acknowledge code, prepare acknowledge job", jobName);
-         if (GWEN_DB_DeleteVar(args, "_tmpAckCode")) {
-           DBG_DEBUG(AQHBCI_LOGDOMAIN, "Temporary acknowledge code removed");
-         }
+        jAck = AH_Job_Acknowledge_new(AH_Job_GetProvider(j), AH_Job_GetUser(j), ackCode, lenAckCode);
+        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" received acknowledge code, prepare acknowledge job", jobName);
+        if (GWEN_DB_DeleteVar(args, "_tmpAckCode")) {
+          DBG_DEBUG(AQHBCI_LOGDOMAIN, "Temporary acknowledge code removed");
+        }
       }
       else {
         DBG_DEBUG(AQHBCI_LOGDOMAIN, "Job \"%s\" didn't receive an acknowledge code, no acknowledge job needed.", jobName);
@@ -286,9 +286,10 @@ AH_JOBQUEUE *_createNextQueueFromTodoList(AB_USER *user, AH_JOB_LIST *jl, uint32
 
     if (AH_Job_GetStatus(j)==AH_JobStatusAnswered) {
       DBG_INFO(AQHBCI_LOGDOMAIN,
-	       "Job \"%s\" with status \"answered\", checking whether it needs to be re-enqueued",
-	       jobName);
-      AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Job status \"answered\", checking for re-enqueing");
+               "Job \"%s\" with status \"answered\", checking whether it needs to be re-enqueued",
+               jobName);
+      AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j),
+                                "Job status \"answered\", checking for re-enqueing");
       /* prepare job for next message
        * (if attachpoint or multi-message job)
        */
@@ -304,7 +305,7 @@ AH_JOBQUEUE *_createNextQueueFromTodoList(AB_USER *user, AH_JOB_LIST *jl, uint32
           AH_Job_SetStatus(j, AH_JobStatusError);
         }
         else {
-	  AH_Job_Log(j, GWEN_LoggerLevel_Info, "Job re-enqueued (multi-message job)");
+          AH_Job_Log(j, GWEN_LoggerLevel_Info, "Job re-enqueued (multi-message job)");
           AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Job successfuly re-enqueued (multi-msg job)");
           j=NULL; /* mark that this job has been dealt with */
         }
@@ -332,8 +333,8 @@ AH_JOBQUEUE *_createNextQueueFromTodoList(AB_USER *user, AH_JOB_LIST *jl, uint32
 
     else {
       DBG_WARN(AQHBCI_LOGDOMAIN, "Job \"%s\" has unexpected status \"%s\" (%d)",
-	       jobName,
-	       AH_Job_StatusName(AH_Job_GetStatus(j)),
+               jobName,
+               AH_Job_StatusName(AH_Job_GetStatus(j)),
                AH_Job_GetStatus(j));
       AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Job status \"%s\", unexpected",
                                 AH_Job_StatusName(AH_Job_GetStatus(j)));

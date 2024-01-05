@@ -47,7 +47,8 @@ GWEN_DIALOG *AB_SelectBankInfoDialog_new(AB_BANKING *ab,
   GWEN_DIALOG *dlg;
   AB_SELECTBANKINFO_DIALOG *xdlg;
 
-  dlg=GWEN_Dialog_CreateAndLoadWithPath("ab_selectbankinfo", AB_PM_LIBNAME, AB_PM_DATADIR, "aqbanking/dialogs/dlg_selectbankinfo.dlg");
+  dlg=GWEN_Dialog_CreateAndLoadWithPath("ab_selectbankinfo", AB_PM_LIBNAME, AB_PM_DATADIR,
+                                        "aqbanking/dialogs/dlg_selectbankinfo.dlg");
   if (dlg==NULL) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog \"ab_selectbankinfo\".");
     return NULL;

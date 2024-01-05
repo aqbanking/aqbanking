@@ -32,7 +32,8 @@ static int _parseResponse(AB_PROVIDER *pro, const char *s, GWEN_DB_NODE *db);
 
 
 
-GWEN_DB_NODE *APY_Provider_SendRequestParseResponse(AB_PROVIDER *pro, AB_USER *u, const char *requestString, const char *jobName)
+GWEN_DB_NODE *APY_Provider_SendRequestParseResponse(AB_PROVIDER *pro, AB_USER *u, const char *requestString,
+                                                    const char *jobName)
 {
   GWEN_HTTP_SESSION *sess;
   GWEN_BUFFER *tbuf;
@@ -57,7 +58,7 @@ GWEN_DB_NODE *APY_Provider_SendRequestParseResponse(AB_PROVIDER *pro, AB_USER *u
     _logToFile("paypal.log", "Sending", jobName, requestString, strlen(requestString));
 
   /* send request */
-  rv=GWEN_HttpSession_SendPacket(sess, "POST", (const uint8_t*) requestString, strlen(requestString));
+  rv=GWEN_HttpSession_SendPacket(sess, "POST", (const uint8_t *) requestString, strlen(requestString));
   if (rv<0) {
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
     GWEN_HttpSession_Fini(sess);
@@ -170,19 +171,19 @@ void _logToFile(const char *fileName, const char *direction, const char *jobName
     fprintf(f, "%s (%s)\n", direction?direction:"<no direction>", jobName?jobName:"<no info>");
     if (ptr && len>0) {
       if (1!=fwrite(ptr, len, 1, f)) {
-	DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-	fclose(f);
+        DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+        fclose(f);
       }
       else {
-	if (fclose(f)) {
-	  DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
-	}
+        if (fclose(f)) {
+          DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+        }
       }
     }
     else {
       fprintf(f, "Empty data.\n");
       if (fclose(f)) {
-	DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
+        DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d: %s)", errno, strerror(errno));
       }
     }
   }

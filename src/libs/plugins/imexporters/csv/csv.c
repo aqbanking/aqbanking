@@ -196,7 +196,7 @@ int _importFromGroup(AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *db, GWEN_DB_NODE 
     if (_groupNameMatches(GWEN_DB_GroupName(dbT), dbParams)) {
       /* possibly merge in/out values */
       if (splitValueInOut)
-	_unsplitInOutValue(dbT, commaThousands, commaDecimal);
+        _unsplitInOutValue(dbT, commaThousands, commaDecimal);
 
       if (GWEN_DB_GetCharValue(dbT, "value/value", 0, NULL) || GWEN_DB_GetCharValue(dbT, "units", 0, NULL)) {
         AB_TRANSACTION *t;
@@ -208,18 +208,18 @@ int _importFromGroup(AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *db, GWEN_DB_NODE 
           return GWEN_ERROR_GENERIC;
         }
 
-	_collectPurposeStrings(t, dbT);
-	_readValues(t, dbT, commaThousands, commaDecimal);
-	_readDates(t, dbT, dateFormat);
+        _collectPurposeStrings(t, dbT);
+        _readValues(t, dbT, commaThousands, commaDecimal);
+        _readDates(t, dbT, dateFormat);
 
-	if (usePosNegField)
-	  _translateValuesSign(t, dbT, dbParams);
+        if (usePosNegField)
+          _translateValuesSign(t, dbT, dbParams);
 
-	if (switchLocalRemote)
-	  _switchLocalRemoteAccordingToSign(t, switchOnNegative);
+        if (switchLocalRemote)
+          _switchLocalRemoteAccordingToSign(t, switchOnNegative);
 
-	if (AB_Transaction_GetType(t)<=AB_Transaction_TypeNone)
-	  AB_Transaction_SetType(t, defaultType);
+        if (AB_Transaction_GetType(t)<=AB_Transaction_TypeNone)
+          AB_Transaction_SetType(t, defaultType);
 
         DBG_DEBUG(AQBANKING_LOGDOMAIN, "Adding transaction");
         AB_ImExporterContext_AddTransaction(ctx, t);
@@ -298,13 +298,13 @@ void _collectPurposeStrings(AB_TRANSACTION *t, GWEN_DB_NODE *dbT)
   p=GWEN_DB_GetCharValue(dbT, "purpose", 1, 0); /* "1" is correct here! */
   if (p) {
     int i;
-  
+
     /* there are multiple purpose lines, read them properly */
     AB_Transaction_SetPurpose(t, NULL);
     for (i=0; i<99; i++) {
       p=GWEN_DB_GetCharValue(dbT, "purpose", i, NULL);
       if (p && *p)
-	AB_Transaction_AddPurposeLine(t, p);
+        AB_Transaction_AddPurposeLine(t, p);
     }
   }
 }
@@ -362,27 +362,27 @@ void _readDates(AB_TRANSACTION *t, GWEN_DB_NODE *dbT, const char *dateFormat)
   p=GWEN_DB_GetCharValue(dbT, "date", 0, 0);
   if (p) {
     GWEN_DATE *da;
-  
+
     da=GWEN_Date_fromStringWithTemplate(p, dateFormat);
     if (da)
       AB_Transaction_SetDate(t, da);
     GWEN_Date_free(da);
   }
-  
+
   p=GWEN_DB_GetCharValue(dbT, "valutaDate", 0, 0);
   if (p) {
     GWEN_DATE *da;
-  
+
     da=GWEN_Date_fromStringWithTemplate(p, dateFormat);
     if (da)
       AB_Transaction_SetValutaDate(t, da);
     GWEN_Date_free(da);
   }
-  
+
   p=GWEN_DB_GetCharValue(dbT, "mandateDate", 0, 0);
   if (p) {
     GWEN_DATE *dt;
-  
+
     dt=GWEN_Date_fromStringWithTemplate(p, dateFormat);
     if (dt) {
       AB_Transaction_SetMandateDate(t, dt);
@@ -392,7 +392,7 @@ void _readDates(AB_TRANSACTION *t, GWEN_DB_NODE *dbT, const char *dateFormat)
   p=GWEN_DB_GetCharValue(dbT, "firstDate", 0, 0);
   if (p) {
     GWEN_DATE *da;
-  
+
     da=GWEN_Date_fromStringWithTemplate(p, dateFormat);
     if (da)
       AB_Transaction_SetFirstDate(t, da);
@@ -401,7 +401,7 @@ void _readDates(AB_TRANSACTION *t, GWEN_DB_NODE *dbT, const char *dateFormat)
   p=GWEN_DB_GetCharValue(dbT, "lastDate", 0, 0);
   if (p) {
     GWEN_DATE *da;
-  
+
     da=GWEN_Date_fromStringWithTemplate(p, dateFormat);
     if (da)
       AB_Transaction_SetLastDate(t, da);
@@ -410,7 +410,7 @@ void _readDates(AB_TRANSACTION *t, GWEN_DB_NODE *dbT, const char *dateFormat)
   p=GWEN_DB_GetCharValue(dbT, "nextDate", 0, 0);
   if (p) {
     GWEN_DATE *da;
-  
+
     da=GWEN_Date_fromStringWithTemplate(p, dateFormat);
     if (da)
       AB_Transaction_SetNextDate(t, da);
@@ -419,7 +419,7 @@ void _readDates(AB_TRANSACTION *t, GWEN_DB_NODE *dbT, const char *dateFormat)
   p=GWEN_DB_GetCharValue(dbT, "unitPriceDate", 0, NULL);
   if (p) {
     GWEN_DATE *da;
-  
+
     da=GWEN_Date_fromStringWithTemplate(p, dateFormat);
     if (da)
       AB_Transaction_SetUnitPriceDate(t, da);
@@ -512,7 +512,7 @@ int _mustNegate(GWEN_DB_NODE *dbT, GWEN_DB_NODE *dbParams)
 
   defaultIsPositive=GWEN_DB_GetIntValue(dbParams, "defaultIsPositive", 0, 1);
   posNegFieldName=GWEN_DB_GetCharValue(dbParams, "posNegFieldName", 0, "posNeg");
-  
+
   /* get positive/negative mark */
   s=GWEN_DB_GetCharValue(dbT, posNegFieldName, 0, 0);
   if (s) {
@@ -524,10 +524,10 @@ int _mustNegate(GWEN_DB_NODE *dbT, GWEN_DB_NODE *dbParams)
 
       patt=GWEN_DB_GetCharValue(dbParams, "positiveValues", j, 0);
       if (!patt)
-	break;
+        break;
       if (-1!=GWEN_Text_ComparePattern(s, patt, 0)) {
-          /* value already is positive, keep it that way */
-	return 0;
+        /* value already is positive, keep it that way */
+        return 0;
       }
     } /* for */
 
@@ -536,9 +536,9 @@ int _mustNegate(GWEN_DB_NODE *dbT, GWEN_DB_NODE *dbParams)
 
       patt=GWEN_DB_GetCharValue(dbParams, "negativeValues", j, 0);
       if (!patt)
-	break;
+        break;
       if (-1!=GWEN_Text_ComparePattern(s, patt, 0))
-	return 1;
+        return 1;
     } /* for */
   }
 
@@ -554,7 +554,7 @@ int _mustNegate(GWEN_DB_NODE *dbT, GWEN_DB_NODE *dbParams)
 void _switchLocalRemoteAccordingToSign(AB_TRANSACTION *t, int switchOnNegative)
 {
   const AB_VALUE *pv;
-  
+
   /* value must be negated, because default is negative */
   pv=AB_Transaction_GetValue(t);
   if (pv) {
@@ -562,26 +562,26 @@ void _switchLocalRemoteAccordingToSign(AB_TRANSACTION *t, int switchOnNegative)
       const char *s;
       GWEN_BUFFER *b1;
       GWEN_BUFFER *b2;
-  
+
       /* need to switch local/remote name */
       b1=GWEN_Buffer_new(0, 64, 0, 1);
       b2=GWEN_Buffer_new(0, 64, 0, 1);
-  
+
       /* get data */
       s=AB_Transaction_GetLocalName(t);
       if (s && *s)
-	GWEN_Buffer_AppendString(b1, s);
+        GWEN_Buffer_AppendString(b1, s);
       s=AB_Transaction_GetRemoteName(t);
       if (s && *s)
-	GWEN_Buffer_AppendString(b2, s);
-  
+        GWEN_Buffer_AppendString(b2, s);
+
       /* set reverse */
       if (GWEN_Buffer_GetUsedBytes(b1))
-	AB_Transaction_SetRemoteName(t, GWEN_Buffer_GetStart(b1));
-  
+        AB_Transaction_SetRemoteName(t, GWEN_Buffer_GetStart(b1));
+
       if (GWEN_Buffer_GetUsedBytes(b2))
-	AB_Transaction_SetLocalName(t, GWEN_Buffer_GetStart(b2));
-  
+        AB_Transaction_SetLocalName(t, GWEN_Buffer_GetStart(b2));
+
       /* cleanup */
       GWEN_Buffer_free(b2);
       GWEN_Buffer_free(b1);
@@ -595,7 +595,7 @@ int _groupNameMatches(const char *groupName, GWEN_DB_NODE *dbParams)
 {
   int i;
   const char *p;
-  
+
   for (i=0; ; i++) {
     p=GWEN_DB_GetCharValue(dbParams, "groupNames", i, NULL);
     if (!p)
@@ -603,12 +603,12 @@ int _groupNameMatches(const char *groupName, GWEN_DB_NODE *dbParams)
     if (strcasecmp(groupName, p)==0)
       return 1;
   } /* for */
-  
+
   if (i==0) {
     /* no names given, check default */
     if ((strcasecmp(groupName, "transaction")==0) ||
-	(strcasecmp(groupName, "debitnote")==0) ||
-	(strcasecmp(groupName, "line")==0))
+        (strcasecmp(groupName, "debitnote")==0) ||
+        (strcasecmp(groupName, "line")==0))
       return 1;
   }
 

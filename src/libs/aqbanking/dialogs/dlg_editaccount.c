@@ -49,7 +49,8 @@ GWEN_DIALOG *AB_EditAccountDialog_new(AB_PROVIDER *pro, AB_ACCOUNT *a, int doLoc
   GWEN_DIALOG *dlg;
   AB_EDIT_ACCOUNT_DIALOG *xdlg;
 
-  dlg=GWEN_Dialog_CreateAndLoadWithPath("ab_edit_account", AB_PM_LIBNAME, AB_PM_DATADIR, "aqbanking/dialogs/dlg_editaccount.dlg");
+  dlg=GWEN_Dialog_CreateAndLoadWithPath("ab_edit_account", AB_PM_LIBNAME, AB_PM_DATADIR,
+                                        "aqbanking/dialogs/dlg_editaccount.dlg");
   if (dlg==NULL) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog \"ab_edit_account\".");
     return NULL;

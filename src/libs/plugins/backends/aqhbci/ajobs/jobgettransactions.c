@@ -50,7 +50,8 @@ static int _readTransIntoAccountInfo(AH_JOB *j,
                                      int ty,
                                      const uint8_t *ptr,
                                      uint32_t len);
-static int _readCheckAndConcatTransDataFromResponses(AH_JOB *j, GWEN_DB_NODE *dbResponses, GWEN_BUFFER *tbooked, GWEN_BUFFER *tnoted);
+static int _readCheckAndConcatTransDataFromResponses(AH_JOB *j, GWEN_DB_NODE *dbResponses, GWEN_BUFFER *tbooked,
+                                                     GWEN_BUFFER *tnoted);
 static int _parseTransData(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai,
                            const uint8_t *ptrBooked, uint32_t lenBooked,
                            const uint8_t *ptrNoted, uint32_t lenNoted);
@@ -211,7 +212,8 @@ int _jobApi_ProcessForBankAccount(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 
 
 
-int _readCheckAndConcatTransDataFromResponses(AH_JOB *j, GWEN_DB_NODE *dbResponses, GWEN_BUFFER *tbooked, GWEN_BUFFER *tnoted)
+int _readCheckAndConcatTransDataFromResponses(AH_JOB *j, GWEN_DB_NODE *dbResponses, GWEN_BUFFER *tbooked,
+                                              GWEN_BUFFER *tnoted)
 {
   GWEN_DB_NODE *dbCurr;
   int rv;
@@ -262,7 +264,7 @@ int _parseTransData(AH_JOB *j,
   /* read booked transactions */
   if (ptrBooked && lenBooked) {
     rv=_readTransIntoAccountInfo(j, ai, "fints940", AB_Transaction_TypeStatement, ptrBooked, lenBooked);
-    if (rv<0){
+    if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error parsing booked transactions (%d)", rv);
       return rv;
     }
@@ -379,12 +381,12 @@ AB_TRANSACTION *_readCreditCardTransactionFromResponse(AB_USER *u, AB_ACCOUNT *a
       break;
     GWEN_StringList_AppendString(purpose, p, 0, 0);
   }
-  
+
   /* read reference */
   ref=GWEN_DB_GetCharValue(dbTransaction, "reference", 0, 0);
   if (ref)
     GWEN_StringList_AppendString(purpose, ref, 0, 0);
-  
+
   t=AB_Transaction_new();
   if (ref)
     AB_Transaction_SetFiId(t, ref);

@@ -1114,9 +1114,9 @@ void _setLimitsCycleMonth(AB_TRANSACTION_LIMITS *lim, GWEN_DB_NODE *dbParams)
     while (*s) {
       /* read 2-digit number */
       if (isdigit(*s) && isdigit(s[1]))
-	AB_TransactionLimits_ValuesCycleMonthAdd(lim, ((int)((s[0]-'0')*10))+((int)(s[1]-'0')));
+        AB_TransactionLimits_ValuesCycleMonthAdd(lim, ((int)((s[0]-'0')*10))+((int)(s[1]-'0')));
       else {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params [%s]", s);
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params [%s]", s);
       }
       s+=2;
     } /* while */
@@ -1138,9 +1138,9 @@ void _setLimitsExecDaysOfMonth(AB_TRANSACTION_LIMITS *lim, GWEN_DB_NODE *dbParam
     while (*s) {
       /* read 2-digit number */
       if (isdigit(*s) && isdigit(s[1]))
-	AB_TransactionLimits_ValuesExecutionDayMonthAdd(lim, ((int)((s[0]-'0')*10))+((int)(s[1]-'0')));
+        AB_TransactionLimits_ValuesExecutionDayMonthAdd(lim, ((int)((s[0]-'0')*10))+((int)(s[1]-'0')));
       else {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params [%s]", s);
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params [%s]", s);
       }
       s+=2;
     } /* while */
@@ -1161,9 +1161,9 @@ void _setLimitsCycleWeek(AB_TRANSACTION_LIMITS *lim, GWEN_DB_NODE *dbParams)
     while (*s) {
       /* read 2-digit number */
       if (isdigit(*s) && isdigit(s[1]))
-	AB_TransactionLimits_ValuesCycleWeekAdd(lim, ((int)((s[0]-'0')*10))+((int)(s[1]-'0')));
+        AB_TransactionLimits_ValuesCycleWeekAdd(lim, ((int)((s[0]-'0')*10))+((int)(s[1]-'0')));
       else {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params [%s]", s);
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params [%s]", s);
       }
       s+=2;
     } /* while */
@@ -1184,9 +1184,9 @@ void _setLimitsExecDaysOfWeek(AB_TRANSACTION_LIMITS *lim, GWEN_DB_NODE *dbParams
   if (s && *s) {
     while (*s) {
       if (isdigit(*s))
-	AB_TransactionLimits_ValuesExecutionDayWeekAdd(lim, (int)((*s)-'0')); /* 1-digit number */
+        AB_TransactionLimits_ValuesExecutionDayWeekAdd(lim, (int)((*s)-'0')); /* 1-digit number */
       else {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params [%s]", s);
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Invalid number in params [%s]", s);
       }
       s++;
     }

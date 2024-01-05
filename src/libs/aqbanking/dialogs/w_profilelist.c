@@ -31,7 +31,8 @@ void AB_ProfileListWidget_Init(GWEN_DIALOG *dlg, const char *widgetName)
 
 
 
-void AB_ProfileListWidget_UpdateList(GWEN_DIALOG *dlg, const char *widgetName, AB_BANKING *banking, const char *importerName)
+void AB_ProfileListWidget_UpdateList(GWEN_DIALOG *dlg, const char *widgetName, AB_BANKING *banking,
+                                     const char *importerName)
 {
   char *selectedProfile;
 

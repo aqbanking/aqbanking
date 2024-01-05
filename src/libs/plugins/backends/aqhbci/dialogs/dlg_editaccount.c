@@ -286,53 +286,53 @@ void _createTargetAccountListBoxString(const AB_REFERENCE_ACCOUNT *ra, GWEN_BUFF
 
 void AH_EditAccountDialog_RebuildTargetAccountList(GWEN_DIALOG *dlg)
 {
- AH_EDIT_ACCOUNT_DIALOG *xdlg;
- int i;
- AB_ACCOUNT_SPEC *as=NULL;
+  AH_EDIT_ACCOUNT_DIALOG *xdlg;
+  int i;
+  AB_ACCOUNT_SPEC *as=NULL;
 
- assert(dlg);
- xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_ACCOUNT_DIALOG, dlg);
- assert(xdlg);
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_ACCOUNT_DIALOG, dlg);
+  assert(xdlg);
 
- /* target account list */
- i=0;
- GWEN_Dialog_SetIntProperty(dlg, "targetAccountListBox", GWEN_DialogProperty_ClearValues, 0, 0, 0);
+  /* target account list */
+  i=0;
+  GWEN_Dialog_SetIntProperty(dlg, "targetAccountListBox", GWEN_DialogProperty_ClearValues, 0, 0, 0);
 
- AB_Banking_GetAccountSpecByUniqueId(AB_Provider_GetBanking(xdlg->provider),
-				     AB_Account_GetUniqueId(xdlg->account),
-				     &as);
- if (as) {
-   AB_REFERENCE_ACCOUNT_LIST *ral;
-   AB_REFERENCE_ACCOUNT *ra;
+  AB_Banking_GetAccountSpecByUniqueId(AB_Provider_GetBanking(xdlg->provider),
+                                      AB_Account_GetUniqueId(xdlg->account),
+                                      &as);
+  if (as) {
+    AB_REFERENCE_ACCOUNT_LIST *ral;
+    AB_REFERENCE_ACCOUNT *ra;
 
-   ral=AB_AccountSpec_GetRefAccountList(as);
-   if (AB_ReferenceAccount_List_GetCount(ral)) {
-     GWEN_BUFFER *tbuf;
+    ral=AB_AccountSpec_GetRefAccountList(as);
+    if (AB_ReferenceAccount_List_GetCount(ral)) {
+      GWEN_BUFFER *tbuf;
 
-     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+      tbuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-     ra=AB_ReferenceAccount_List_First(ral);
-     while (ra) {
-       _createTargetAccountListBoxString(ra, tbuf);
-       GWEN_Dialog_SetCharProperty(dlg,
-				   "targetAccountListBox",
-				   GWEN_DialogProperty_AddValue,
-				   0,
-				   GWEN_Buffer_GetStart(tbuf),
-				   0);
-       i++;
-       GWEN_Buffer_Reset(tbuf);
+      ra=AB_ReferenceAccount_List_First(ral);
+      while (ra) {
+        _createTargetAccountListBoxString(ra, tbuf);
+        GWEN_Dialog_SetCharProperty(dlg,
+                                    "targetAccountListBox",
+                                    GWEN_DialogProperty_AddValue,
+                                    0,
+                                    GWEN_Buffer_GetStart(tbuf),
+                                    0);
+        i++;
+        GWEN_Buffer_Reset(tbuf);
 
-       ra=AB_ReferenceAccount_List_Next(ra);
-     }
-     GWEN_Buffer_free(tbuf);
-   } /* if account list not empty */
-   AB_AccountSpec_free(as);
- }
+        ra=AB_ReferenceAccount_List_Next(ra);
+      }
+      GWEN_Buffer_free(tbuf);
+    } /* if account list not empty */
+    AB_AccountSpec_free(as);
+  }
 
- GWEN_Dialog_SetIntProperty(dlg, "targetAccountListBox", GWEN_DialogProperty_Sort, 0, 0, 0);
- if (i)
-   GWEN_Dialog_SetIntProperty(dlg, "targetAccountListBox", GWEN_DialogProperty_Value, 0, 0, 0);
+  GWEN_Dialog_SetIntProperty(dlg, "targetAccountListBox", GWEN_DialogProperty_Sort, 0, 0, 0);
+  if (i)
+    GWEN_Dialog_SetIntProperty(dlg, "targetAccountListBox", GWEN_DialogProperty_Value, 0, 0, 0);
 }
 
 
@@ -684,9 +684,9 @@ void AH_EditAccountDialog_Fini(GWEN_DIALOG *dlg)
     if (j!=GWEN_DialogSortDirection_None) {
       GWEN_DB_SetIntValue(dbPrefs, GWEN_DB_FLAGS_OVERWRITE_VARS, "target_account_list_sortbycolumn", i);
       GWEN_DB_SetIntValue(dbPrefs,
-			  GWEN_DB_FLAGS_OVERWRITE_VARS,
-			  "target_account_list_sortdir",
-			  (j==GWEN_DialogSortDirection_Up)?1:0);
+                          GWEN_DB_FLAGS_OVERWRITE_VARS,
+                          "target_account_list_sortdir",
+                          (j==GWEN_DialogSortDirection_Up)?1:0);
       break;
     }
   }
@@ -908,11 +908,11 @@ int AH_EditAccountDialog_HandleActivatedTargetAcc(GWEN_DIALOG *dlg)
 
   ctx=AB_ImExporterContext_new();
   rv=AH_Provider_GetTargetAccount(xdlg->provider,
-                                    xdlg->account,
-                                    ctx,
-                                    1,   /* withProgress */
-                                    0,   /* nounmount */
-                                    xdlg->doLock);
+                                  xdlg->account,
+                                  ctx,
+                                  1,   /* withProgress */
+                                  0,   /* nounmount */
+                                  xdlg->doLock);
   AB_ImExporterContext_free(ctx);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);

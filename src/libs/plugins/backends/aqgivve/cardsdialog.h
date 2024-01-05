@@ -19,7 +19,6 @@ typedef struct AG_CARDS_DIALOG AG_CARDS_DIALOG;
 
 
 GWEN_DIALOG *AG_CardsDialog_new (AB_PROVIDER *pro, AB_USER *user, AG_VOUCHERLIST *card_list);
-static void GWENHYWFAR_CB AG_CardsDialog_FreeData(void *bp, void *p);
 
 #endif
 

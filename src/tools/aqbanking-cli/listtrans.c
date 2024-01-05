@@ -323,8 +323,10 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
     GWEN_Buffer_AppendString(ubuf, " $(customerReference)   : Customer reference\n");
     GWEN_Buffer_AppendString(ubuf, " $(bankReference)       : Bank reference\n");
     GWEN_Buffer_AppendString(ubuf, " $(endToEndReference)   : SEPA end to end reference\n");
-    GWEN_Buffer_AppendString(ubuf, " $(ultimateCreditor)    : Ultimate creditor e.g. when payment handled by a service provider\n");
-    GWEN_Buffer_AppendString(ubuf, " $(ultimateDebtor)      : Ultimate debitor e.g. when payment handled by a service provider\n");
+    GWEN_Buffer_AppendString(ubuf,
+                             " $(ultimateCreditor)    : Ultimate creditor e.g. when payment handled by a service provider\n");
+    GWEN_Buffer_AppendString(ubuf,
+                             " $(ultimateDebtor)      : Ultimate debitor e.g. when payment handled by a service provider\n");
     GWEN_Buffer_AppendString(ubuf, "\n");
 
     GWEN_Buffer_AppendString(ubuf, "Variables used with debit notes:\n");

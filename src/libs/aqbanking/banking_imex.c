@@ -65,9 +65,9 @@
 
 
 static GWEN_DB_NODE *_getProfileFromFileOrSystem(AB_BANKING *ab,
-						 const char *importerName,
-						 const char *profileName,
-						 const char *profileFile);
+                                                 const char *importerName,
+                                                 const char *profileName,
+                                                 const char *profileFile);
 
 
 
@@ -1206,9 +1206,9 @@ GWEN_DB_NODE *_getProfileFromFileOrSystem(AB_BANKING *ab,
 
   if (dbProfile==NULL) {
     DBG_ERROR(GWEN_LOGDOMAIN, "Unable to load profile for imexporter \"%s\" (file=%s, name=%s)",
-	      importerName,
-	      profileFile?profileFile:"-none-",
-	      profileName?profileName:"-none");
+              importerName,
+              profileFile?profileFile:"-none-",
+              profileName?profileName:"-none");
   }
 
   return dbProfile;
