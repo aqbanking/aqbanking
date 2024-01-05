@@ -68,8 +68,8 @@
 
 
     <option id="backends" type="stringlist" definePrefix="AQBANKING_WITH_PLUGIN_BACKEND_" >
-      <choices>aqhbci aqofxconnect aqebics aqpaypal aqfints aqnone</choices>
-      <alias name="all">aqhbci aqofxconnect aqebics aqpaypal aqnone</alias>
+      <choices>aqhbci aqofxconnect aqebics aqpaypal aqfints aqgivve aqnone</choices>
+      <alias name="all">aqhbci aqofxconnect aqebics aqpaypal aqgivve aqnone</alias>
       <default>all</default>
     </option>
 <!--    <define name="AQBANKING_WITH_PLUGIN_BACKEND_AQNONE" value="1" quoted="FALSE" /> -->

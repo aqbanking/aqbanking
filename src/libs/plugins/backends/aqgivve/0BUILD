@@ -2,15 +2,17 @@
 
 <gwbuild>
 
-  <target type="ConvenienceLibrary" name="abbackends" >
+  <target type="ConvenienceLibrary" name="aqgivve" >
 
     <includes type="c" >
       $(gmp_cflags)
       $(gwenhywfar_cflags)
+      -I$(builddir)
+      -I$(srcdir)
+      -I$(builddir)/..
+      -I$(srcdir)/..
       -I$(topsrcdir)/src/libs
       -I$(topbuilddir)/src/libs
-      -I$(topbuilddir)/src/libs/plugins/file
-      -I$(topsrcdir)/src/libs/plugins/file
       -I$(topbuilddir)
       -I$(topsrcdir)
     </includes>
@@ -48,40 +50,58 @@
     <headers dist="true" >
       $(local/built_headers_pub)
 
+      cardsdialog.h
+      cardsdialog_p.h
+      merchant.h
+      merchant_p.h
+      meta.h
+      meta_p.h
+      provider_p.h
+      provider.h
+      provider_request.h
+      provider_request_p.h
+      userdialog.h
+      userdialog_p.h
+      voucher.h
+      voucher_p.h
+      voucherlist.h
+      voucherlist_p.h
+      voucherowner.h
+      voucherowner_p.h
     </headers>
   
   
     <sources>
       $(local/typefiles)
 
-      dummy.c
+      cardsdialog.c
+      merchant.c
+      meta.c
+      provider.c
+      provider_request.c
+      userdialog.c
+      voucher.c
+      voucherlist.c
+      voucherowner.c
     </sources>
 
 
+    <data install="$(pkgdatadir)/backends/aqgivve/dialogs" >
+      dlg_edituser.dlg
+      dlg_cardselect.dlg
+    </data>
+
+
     <useTargets>
-      aqhbci
-      aqnone
-      aqofxconnect
-      aqpaypal
-      aqebics
-      aqfints
-      aqgivve
     </useTargets>
 
     <subdirs>
-      aqhbci
-      aqnone
-      aqofxconnect
-      aqpaypal
-      aqebics
-      aqfints
-      aqgivve
     </subdirs>
 
-  
-  
     <extradist>
     </extradist>
+
+    <writeFile name="aqgivve.xml" install="$(aqbanking_plugin_installdir)/providers" />
 
 
   </target>
