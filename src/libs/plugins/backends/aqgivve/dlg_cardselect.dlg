@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/***************************************************************************
+ copyright   : (C) 2023 by Rico Rommel                   
+ email       : rico@bierrommel.de               
+
+ ***************************************************************************
+ * This file is part of the project "AqBanking".                           *
+ * Please see toplevel file COPYING of that project for license details.   *
+ ***************************************************************************/
+-->
+
 <dialog type="dialog" name="add_cards" i18n="aqbanking" flags="decorShrinkable decorStretchable decorMaximize decorMinimize decorClose decorMenu">
     <widget type="vlayout" flags="fillX fillY" >
         <widget type="listBox" name="cardlistbox" title="available cards" flags="fillX fillY"/>

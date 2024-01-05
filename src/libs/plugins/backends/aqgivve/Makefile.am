@@ -18,6 +18,7 @@ noinst_HEADERS=\
 	provider_p.h \
 	provider.h \
 	provider_request.h \
+	provider_request_p.h \
 	userdialog.h \
 	userdialog_p.h \
 	voucher.h \

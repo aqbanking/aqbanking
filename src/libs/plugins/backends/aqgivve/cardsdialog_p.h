@@ -14,6 +14,8 @@
 #include "cardsdialog.h"
 #include <aqbanking/backendsupport/provider_be.h>
 
+
+
 struct AG_CARDS_DIALOG {
   AB_PROVIDER *provider;
     AG_VOUCHERLIST *cardlist;

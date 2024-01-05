@@ -16,19 +16,12 @@
 #include "voucherlist.h"
 #include "gwenhywfar/json.h"
 
-typedef struct AG_HTTP_SESSION_HEADER AG_HTTP_SESSION_HEADER;
+char *AG_Provider_Request_GetToken(AB_USER *user);
+AG_VOUCHERLIST *AG_Provider_Request_GetVoucherList(char *token);
+AB_TRANSACTION_LIST *AG_Provider_Request_GetTransactions(AB_ACCOUNT *account,
+                                                         const GWEN_DATE *start_date,
+                                                         const GWEN_DATE *end_date,
+                                                         char *token);
+AB_BALANCE *AG_Provider_Request_GetBalance(AB_ACCOUNT *account, char* token );
 
-struct AG_HTTP_SESSION_HEADER {
-    GWEN_DB_NODE *header;
-    char *url;
-};
-
-GWEN_JSON_ELEM *AG_Http_Request_Send (char *method, char *url, GWEN_DB_NODE *header_params, char *send_data_buf);
-char *AG_Provider_Request_GetToken (AB_USER *user);
-AG_VOUCHERLIST *AG_Provider_Request_GetVoucherList (char *token);
-AB_TRANSACTION_LIST *AG_Provider_Request_GetTransactions (AB_ACCOUNT *account, const GWEN_DATE *start_date, const GWEN_DATE *end_date, char *token);
-AB_BALANCE *AG_Provider_Request_GetBalance (AB_ACCOUNT *account, char* token );
-
-static void GWENHYWFAR_CB AG_Http_SessionFreeData(void *bp, void *p);
-int GWENHYWFAR_CB AG_HttpSession_InitSyncIo(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio);
 #endif

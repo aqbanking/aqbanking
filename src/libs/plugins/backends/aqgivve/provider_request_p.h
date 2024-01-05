@@ -7,19 +7,19 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef AG_MERCHANT_P_H
-#define AG_MERCHANT_P_H
+#ifndef AG_PROVIDER_REQUEST_P_H
+#define AG_PROVIDER_REQUEST_P_H
 
-#include "provider.h"
-#include "merchant.h"
+#include "provider_request.h"
+#include "gwenhywfar/json.h"
 
 
-
-struct AG_MERCHANT {
-  char *name;
+typedef struct AG_HTTP_SESSION_HEADER AG_HTTP_SESSION_HEADER;
+struct AG_HTTP_SESSION_HEADER {
+  GWEN_DB_NODE *header;
+  char *url;
 };
 
 
+
 #endif
-
-

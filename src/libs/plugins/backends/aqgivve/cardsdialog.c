@@ -7,6 +7,10 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #include "cardsdialog_p.h"
 #include <gwenhywfar/gui.h>
 #include <aqbanking/banking_be.h>

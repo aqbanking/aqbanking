@@ -7,8 +7,11 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 #include "provider.h"
-#include "provider_request.h"
+#include "provider_request_p.h"
 #include "gwenhywfar/json.h"
 #include "gwenhywfar/json_read.h"
 #include "meta.h"
@@ -23,12 +26,16 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-static GWEN_DATE *parseDate(const char *date_str);
-static AB_VALUE *parseMoney (GWEN_JSON_ELEM *value_elem);
-static AB_BALANCE *parseBalance(GWEN_JSON_ELEM *balance_elem);
-static AB_TRANSACTION *parseTransaction(GWEN_JSON_ELEM *data_elem);
-static char *createDateFilter( const GWEN_DATE *date, const char *op);
-static GWEN_JSON_ELEM *getElement(GWEN_JSON_ELEM *parent, char *key);
+static void GWENHYWFAR_CB _freeData(void *bp, void *p);
+static GWEN_JSON_ELEM *_sendRequest(char *method, char *url, GWEN_DB_NODE *header_params, char *send_data_buf);
+
+static int GWENHYWFAR_CB _cbInitSyncIo(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio);
+static GWEN_DATE *_parseDate(const char *date_str);
+static AB_VALUE *_parseMoney(GWEN_JSON_ELEM *value_elem);
+static AB_BALANCE *_parseBalance(GWEN_JSON_ELEM *balance_elem);
+static AB_TRANSACTION *_parseTransaction(GWEN_JSON_ELEM *data_elem);
+static char *_createDateFilter(const GWEN_DATE *date, const char *op);
+static GWEN_JSON_ELEM *_getElement(GWEN_JSON_ELEM *parent, char *key);
 
 
 
@@ -39,13 +46,16 @@ static GWEN_JSON_ELEM *getElement(GWEN_JSON_ELEM *parent, char *key);
 
 GWEN_INHERIT(GWEN_HTTP_SESSION, AG_HTTP_SESSION_HEADER);
 
-void AG_Http_SessionFreeData(void *bp, void *p)
+
+
+void _freeData(void *bp, void *p)
 {
   free(p);
 }
 
 
-int AG_HttpSession_InitSyncIo(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio)
+
+int _cbInitSyncIo(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio)
 {
   AG_HTTP_SESSION_HEADER *xsess;
 
@@ -69,11 +79,12 @@ int AG_HttpSession_InitSyncIo(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio)
     var = GWEN_DB_GetNextVar(var);
   }
 
-
   return 0;
 }
 
-GWEN_JSON_ELEM *AG_Http_Request_Send(char *method, char *url, GWEN_DB_NODE *header_params, char *send_data_buf)
+
+
+GWEN_JSON_ELEM *_sendRequest(char *method, char *url, GWEN_DB_NODE *header_params, char *send_data_buf)
 {
   char *url_base = "https://www.givve.com";
 
@@ -98,13 +109,12 @@ GWEN_JSON_ELEM *AG_Http_Request_Send(char *method, char *url, GWEN_DB_NODE *head
 
   AG_HTTP_SESSION_HEADER *xsess;
   GWEN_NEW_OBJECT(AG_HTTP_SESSION_HEADER, xsess);
-
-  GWEN_INHERIT_SETDATA(GWEN_HTTP_SESSION, AG_HTTP_SESSION_HEADER, sess, xsess, AG_Http_SessionFreeData);
+  GWEN_INHERIT_SETDATA(GWEN_HTTP_SESSION, AG_HTTP_SESSION_HEADER, sess, xsess, _freeData);
 
   xsess->header = header_params;
   xsess->url = url;
 
-  GWEN_HttpSession_SetInitSyncIoFn(sess, AG_HttpSession_InitSyncIo);
+  GWEN_HttpSession_SetInitSyncIoFn(sess, _cbInitSyncIo);
 
   rv = GWEN_HttpSession_Init(sess);
   if (rv < 0) {
@@ -140,6 +150,8 @@ GWEN_JSON_ELEM *AG_Http_Request_Send(char *method, char *url, GWEN_DB_NODE *head
 
 }
 
+
+
 char *AG_Provider_Request_GetToken(AB_USER *user)
 {
   char *token = NULL;
@@ -165,16 +177,12 @@ char *AG_Provider_Request_GetToken(AB_USER *user)
   GWEN_DB_SetCharValue(header, GWEN_DB_FLAGS_OVERWRITE_VARS, "Accept", "application/json");
   GWEN_DB_SetCharValue(header, GWEN_DB_FLAGS_OVERWRITE_VARS, "Accept-Version", "v2");
   GWEN_DB_SetCharValue(header, GWEN_DB_FLAGS_OVERWRITE_VARS, "Content-Type", "application/json");
-  GWEN_JSON_ELEM *json_root = AG_Http_Request_Send("POST", "/api/authorizations", header, request);
-
+  GWEN_JSON_ELEM *json_root = _sendRequest("POST", "/api/authorizations", header, request);
 
   if (json_root) {
-
-    GWEN_JSON_ELEM *json_data = getElement(json_root, "data");
+    GWEN_JSON_ELEM *json_data = _getElement(json_root, "data");
 
     if (json_data) {
-
-
       GWEN_JSON_ELEM *json_token_type = GWEN_JsonElement_GetElementByPath(json_data, "token_type", 0);
       GWEN_JSON_ELEM *json_token = GWEN_JsonElement_GetElementByPath(json_data, "access_token", 0);
 
@@ -184,8 +192,6 @@ char *AG_Provider_Request_GetToken(AB_USER *user)
 
         size_t token_max_len = strlen(token_type_str) + strlen(token_str) + 5;
         token = malloc(token_max_len);
-
-
 
         strncpy(token, token_type_str, token_max_len);
         strcat(token, " ");
@@ -212,6 +218,8 @@ char *AG_Provider_Request_GetToken(AB_USER *user)
   return token;
 }
 
+
+
 AG_VOUCHERLIST *AG_Provider_Request_GetVoucherList(char *token)
 {
 
@@ -231,19 +239,19 @@ AG_VOUCHERLIST *AG_Provider_Request_GetVoucherList(char *token)
 
     snprintf(path, sizeof(path) - 1, "/api/vouchers?page[number]=%d",  current_page);
 
-    GWEN_JSON_ELEM *json_root = AG_Http_Request_Send("GET", path, header, NULL);
+    GWEN_JSON_ELEM *json_root = _sendRequest("GET", path, header, NULL);
 
     if (json_root) {
 
       //Get number of entries
-      AG_META *meta = AG_META_FromJsonElem(getElement(json_root, "meta"));
+      AG_META *meta = AG_META_FromJsonElem(_getElement(json_root, "meta"));
 
 
       if (meta) {
         int total_entries = AG_META_GetTotalEntries(meta);
         AG_META_free(meta);
 
-        GWEN_JSON_ELEM *json_data = getElement(json_root, "data");
+        GWEN_JSON_ELEM *json_data = _getElement(json_root, "data");
         if (json_data && (total_entries > 0)) {
           int n = 0;
           GWEN_JSON_ELEM *json_card = GWEN_JsonElement_Tree2_GetFirstChild(json_data);
@@ -278,6 +286,8 @@ AG_VOUCHERLIST *AG_Provider_Request_GetVoucherList(char *token)
   return card_list;
 }
 
+
+
 AB_BALANCE *AG_Provider_Request_GetBalance(AB_ACCOUNT *account, char *token)
 {
 
@@ -291,18 +301,18 @@ AB_BALANCE *AG_Provider_Request_GetBalance(AB_ACCOUNT *account, char *token)
   GWEN_DB_SetCharValue(header, GWEN_DB_FLAGS_OVERWRITE_VARS, "Accept", "application/json");
   GWEN_DB_SetCharValue(header, GWEN_DB_FLAGS_OVERWRITE_VARS, "Accept-Version", "v2");
   GWEN_DB_SetCharValue(header, GWEN_DB_FLAGS_OVERWRITE_VARS, "Authorization", token);
-  GWEN_JSON_ELEM *json_root = AG_Http_Request_Send("GET", path, header, NULL);
+  GWEN_JSON_ELEM *json_root = _sendRequest("GET", path, header, NULL);
 
   AB_BALANCE *bal = NULL;
 
   if (json_root) {
-    GWEN_JSON_ELEM *json_data = getElement(json_root, "data");
+    GWEN_JSON_ELEM *json_data = _getElement(json_root, "data");
     if (json_data) {
-      bal = parseBalance(GWEN_JsonElement_GetElementByPath(json_data, "balance", 0));
+      bal = _parseBalance(GWEN_JsonElement_GetElementByPath(json_data, "balance", 0));
       if (bal) {
         GWEN_JSON_ELEM *json_date = GWEN_JsonElement_GetElementByPath(json_data, "updated_at", 0);
         if (json_date) {
-          AB_Balance_SetDate(bal, parseDate(GWEN_JsonElement_GetData(json_date)));
+          AB_Balance_SetDate(bal, _parseDate(GWEN_JsonElement_GetData(json_date)));
           GWEN_JsonElement_free(json_date);
         }
 
@@ -317,6 +327,8 @@ AB_BALANCE *AG_Provider_Request_GetBalance(AB_ACCOUNT *account, char *token)
   return bal;
 
 }
+
+
 
 AB_TRANSACTION_LIST *AG_Provider_Request_GetTransactions(AB_ACCOUNT *account, const GWEN_DATE *start_date,
                                                          const GWEN_DATE *end_date, char *token)
@@ -336,8 +348,8 @@ AB_TRANSACTION_LIST *AG_Provider_Request_GetTransactions(AB_ACCOUNT *account, co
 
   while (current_page <= total_pages) {
 
-    char *filter_start = createDateFilter(start_date, "$gte");
-    char *filter_end = createDateFilter(end_date, "$lte");
+    char *filter_start = _createDateFilter(start_date, "$gte");
+    char *filter_end = _createDateFilter(end_date, "$lte");
 
     snprintf(path, sizeof(path) - 1, "/api/vouchers/%s/transactions/?page[number]=%d&filter[status][$in]=Settled%s%s", id,
              current_page, filter_start, filter_end);
@@ -345,10 +357,10 @@ AB_TRANSACTION_LIST *AG_Provider_Request_GetTransactions(AB_ACCOUNT *account, co
     free(filter_start);
     free(filter_end);
 
-    GWEN_JSON_ELEM *json_root = AG_Http_Request_Send("GET", path, header, NULL);
+    GWEN_JSON_ELEM *json_root = _sendRequest("GET", path, header, NULL);
 
     if (json_root) {
-      GWEN_JSON_ELEM *json_meta = getElement(json_root, "meta");
+      GWEN_JSON_ELEM *json_meta = _getElement(json_root, "meta");
       if (json_meta) {
         AG_META *meta = AG_META_FromJsonElem(json_meta);
 
@@ -360,13 +372,13 @@ AB_TRANSACTION_LIST *AG_Provider_Request_GetTransactions(AB_ACCOUNT *account, co
 
       }
 
-      GWEN_JSON_ELEM *json_data = getElement(json_root, "data");
+      GWEN_JSON_ELEM *json_data = _getElement(json_root, "data");
 
       if (json_data) {
         GWEN_JSON_ELEM *json_transaction = GWEN_JsonElement_Tree2_GetFirstChild(json_data);
         while (json_transaction) {
 
-          AB_TRANSACTION *t = parseTransaction(json_transaction);
+          AB_TRANSACTION *t = _parseTransaction(json_transaction);
 
 
           if (t) {
@@ -381,14 +393,15 @@ AB_TRANSACTION_LIST *AG_Provider_Request_GetTransactions(AB_ACCOUNT *account, co
     current_page++;
   }
 
-
   return trans_list;
 }
 
-AB_BALANCE *parseBalance(GWEN_JSON_ELEM *balance_elem)
+
+
+AB_BALANCE *_parseBalance(GWEN_JSON_ELEM *balance_elem)
 {
   AB_BALANCE *bal = NULL;
-  AB_VALUE *vc = parseMoney(balance_elem);
+  AB_VALUE *vc = _parseMoney(balance_elem);
   if (vc) {
     bal=AB_Balance_new();
     AB_Balance_SetType(bal, AB_Balance_TypeBooked);
@@ -398,7 +411,9 @@ AB_BALANCE *parseBalance(GWEN_JSON_ELEM *balance_elem)
   return bal;
 }
 
-GWEN_DATE *parseDate(const char *date_str)
+
+
+GWEN_DATE *_parseDate(const char *date_str)
 {
   GWEN_DATE *date =NULL;
   char *buf = strdup(date_str);
@@ -410,12 +425,11 @@ GWEN_DATE *parseDate(const char *date_str)
   }
   free(buf);
   return date;
-
-
-
 }
 
-AB_VALUE *parseMoney(GWEN_JSON_ELEM *value_elem)
+
+
+AB_VALUE *_parseMoney(GWEN_JSON_ELEM *value_elem)
 {
   AB_VALUE *val = NULL;
 
@@ -436,12 +450,14 @@ AB_VALUE *parseMoney(GWEN_JSON_ELEM *value_elem)
 
 }
 
-AB_TRANSACTION *parseTransaction(GWEN_JSON_ELEM *data_elem)
+
+
+AB_TRANSACTION *_parseTransaction(GWEN_JSON_ELEM *data_elem)
 {
   AB_TRANSACTION *t = AB_Transaction_new();
   GWEN_JSON_ELEM *json_amount = GWEN_JsonElement_GetElementByPath(data_elem, "amount", 0);
   if (json_amount) {
-    AB_VALUE *v = parseMoney(json_amount);
+    AB_VALUE *v = _parseMoney(json_amount);
     if (v) {
       AB_Transaction_SetValue(t, v);
     }
@@ -449,7 +465,7 @@ AB_TRANSACTION *parseTransaction(GWEN_JSON_ELEM *data_elem)
 
   GWEN_JSON_ELEM *json_date = GWEN_JsonElement_GetElementByPath(data_elem, "booked_at", 0);
   if (json_date) {
-    GWEN_DATE *d = parseDate(GWEN_JsonElement_GetData(json_date));
+    GWEN_DATE *d = _parseDate(GWEN_JsonElement_GetData(json_date));
     if (d) {
       AB_Transaction_SetDate(t, d);
       AB_Transaction_SetValutaDate(t, d);
@@ -463,7 +479,7 @@ AB_TRANSACTION *parseTransaction(GWEN_JSON_ELEM *data_elem)
 
   GWEN_JSON_ELEM *json_fee = GWEN_JsonElement_GetElementByPath(data_elem, "fixed_fee", 0);
   if (json_fee) {
-    AB_VALUE *v = parseMoney(json_fee);
+    AB_VALUE *v = _parseMoney(json_fee);
     if (v) {
       AB_Transaction_SetFees(t, v);
     }
@@ -497,16 +513,16 @@ AB_TRANSACTION *parseTransaction(GWEN_JSON_ELEM *data_elem)
     }
   }
 
-
   AB_Transaction_SetStatus(t, AB_Transaction_StatusAccepted);
   AB_Transaction_SetType(t, AB_Transaction_TypeStatement);
   AB_Transaction_SetSubType(t, AB_Transaction_SubTypeNone);
 
-
   return t;
 }
 
-char *createDateFilter(const GWEN_DATE *date, const char *op)
+
+
+char *_createDateFilter(const GWEN_DATE *date, const char *op)
 {
   char *filter = malloc(60);
   if (date && op) {
@@ -523,7 +539,9 @@ char *createDateFilter(const GWEN_DATE *date, const char *op)
   return filter;
 }
 
-GWEN_JSON_ELEM *getElement(GWEN_JSON_ELEM *parent, char *key)
+
+
+GWEN_JSON_ELEM *_getElement(GWEN_JSON_ELEM *parent, char *key)
 {
   GWEN_JSON_ELEM *json_el = NULL;
 
@@ -540,3 +558,5 @@ GWEN_JSON_ELEM *getElement(GWEN_JSON_ELEM *parent, char *key)
 
   return json_el;
 }
+
+

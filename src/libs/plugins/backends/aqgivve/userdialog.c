@@ -7,6 +7,10 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #include "userdialog_p.h"
 #include <aqbanking/banking_be.h>
 #include <gwenhywfar/gui.h>
@@ -22,10 +26,10 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-static void GWENHYWFAR_CB AG_UserDialog_FreeData(void *bp, void *p);
-static int GWENHYWFAR_CB AG_UserDialog_SignalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
-static int AG_UserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender);
-static int AG_UserDialog_AddUser(GWEN_DIALOG *dlg);
+static void GWENHYWFAR_CB _freeData(void *bp, void *p);
+static int GWENHYWFAR_CB _dlgSignalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
+static int _dlgHandleActivated(GWEN_DIALOG *dlg, const char *sender);
+static int _addUser(GWEN_DIALOG *dlg);
 
 
 
@@ -36,7 +40,9 @@ static int AG_UserDialog_AddUser(GWEN_DIALOG *dlg);
 
 GWEN_INHERIT(GWEN_DIALOG, AG_USER_DIALOG);
 
-void AG_UserDialog_FreeData(void *bp, void *p)
+
+
+void _freeData(void *bp, void *p)
 {
 }
 
@@ -50,16 +56,18 @@ GWEN_DIALOG *AG_GetNewUserDialog(AB_PROVIDER *pro, int i)
 
   dlg=GWEN_Dialog_CreateAndLoadWithPath("ag_new_user", AB_PM_LIBNAME, AB_PM_DATADIR,
                                         "aqbanking/backends/aqgivve/dialogs/dlg_edituser.dlg");
-  GWEN_Dialog_SetSignalHandler(dlg, AG_UserDialog_SignalHandler);
+  GWEN_Dialog_SetSignalHandler(dlg, _dlgSignalHandler);
 
   GWEN_NEW_OBJECT(AG_USER_DIALOG, xdlg);
-  GWEN_INHERIT_SETDATA(GWEN_DIALOG, AG_USER_DIALOG, dlg, xdlg, AG_UserDialog_FreeData);
+  GWEN_INHERIT_SETDATA(GWEN_DIALOG, AG_USER_DIALOG, dlg, xdlg, _freeData);
 
   xdlg->provider = pro;
   xdlg->user = NULL;
   /* done */
   return dlg;
 }
+
+
 
 GWEN_DIALOG *AG_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u)
 {
@@ -69,10 +77,10 @@ GWEN_DIALOG *AG_GetEditUserDialog(AB_PROVIDER *pro, AB_USER *u)
     xdlg->user = u;
   }
 
-
   return dlg;
-
 }
+
+
 
 int AG_Provider_EditUserDialog_init(GWEN_DIALOG *dlg)
 {
@@ -86,16 +94,17 @@ int AG_Provider_EditUserDialog_init(GWEN_DIALOG *dlg)
     }
   }
   return GWEN_DialogEvent_ResultHandled;
-
 }
 
-int AG_UserDialog_SignalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
+
+
+int _dlgSignalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
 {
   switch (t) {
   case  GWEN_DialogEvent_TypeInit :
     return AG_Provider_EditUserDialog_init(dlg);
   case GWEN_DialogEvent_TypeActivated:
-    return AG_UserDialog_HandleActivated(dlg, sender);
+    return _dlgHandleActivated(dlg, sender);
   default:
     break;
   }
@@ -104,7 +113,9 @@ int AG_UserDialog_SignalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const
 
 }
 
-int AG_UserDialog_AddUser(GWEN_DIALOG *dlg)
+
+
+int _addUser(GWEN_DIALOG *dlg)
 {
   AG_USER_DIALOG *xdlg;
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AG_USER_DIALOG, dlg);
@@ -148,14 +159,16 @@ int AG_UserDialog_AddUser(GWEN_DIALOG *dlg)
     free(token);
     free(u_id);
     free(u_name);
-    return GWEN_DialogEvent_ResultAccept;
   }
+  return GWEN_DialogEvent_ResultAccept;
 }
 
-int AG_UserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
+
+
+int _dlgHandleActivated(GWEN_DIALOG *dlg, const char *sender)
 {
   if (strcasecmp(sender, "next_button") ==0) {
-    return AG_UserDialog_AddUser(dlg);
+    return _addUser(dlg);
   }
   else if (strcasecmp(sender, "abort_button") == 0) {
     return GWEN_DialogEvent_ResultReject;
@@ -164,4 +177,5 @@ int AG_UserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
 
   return GWEN_DialogEvent_ResultReject;
 }
+
 
