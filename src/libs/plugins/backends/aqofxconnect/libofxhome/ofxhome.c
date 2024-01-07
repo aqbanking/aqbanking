@@ -80,7 +80,7 @@ int OfxHome_DownloadSpecs(OFXHOME *ofh, OH_INSTITUTE_SPEC_LIST *sl)
   GWEN_XMLNODE *n;
 
   /* prepare session */
-  sess=GWEN_HttpSession_new("http://www.ofxhome.com/api.php?all=yes", "http", 80);
+  sess=GWEN_HttpSession_new("https://www.ofxhome.com/api.php?all=yes", "https", 443);
   rv=OfxHome_SetupHttpSession(ofh, sess);
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
@@ -365,10 +365,10 @@ int OfxHome_DownloadData(OFXHOME *ofh, int fid, OH_INSTITUTE_DATA **pData)
   OH_INSTITUTE_DATA *od;
 
   /* prepare session */
-  snprintf(urlbuf, sizeof(urlbuf)-1, "http://www.ofxhome.com/api.php?lookup=%d", fid);
+  snprintf(urlbuf, sizeof(urlbuf)-1, "https://www.ofxhome.com/api.php?lookup=%d", fid);
   urlbuf[sizeof(urlbuf)-1]=0;
 
-  sess=GWEN_HttpSession_new(urlbuf, "http", 80);
+  sess=GWEN_HttpSession_new(urlbuf, "https", 443);
   rv=OfxHome_SetupHttpSession(ofh, sess);
   if (rv<0) {
     DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
