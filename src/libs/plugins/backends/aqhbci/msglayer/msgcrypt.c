@@ -268,7 +268,7 @@ int AH_Msg_VerifyWithCallback(AH_MSG *hmsg, GWEN_DB_NODE *dbParsedMsg, AH_MSG_VE
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
   assert(u);
 
-#if 0
+#if 1
   DBG_ERROR(AQHBCI_LOGDOMAIN, "Verifying message with these segments:");
   GWEN_DB_Dump(dbParsedMsg, 2);
 #endif
