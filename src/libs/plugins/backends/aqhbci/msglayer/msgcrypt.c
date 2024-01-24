@@ -131,6 +131,7 @@ int AH_Msg_SampleSigHeadsAndTailsFromDecodedMsg(GWEN_DB_NODE *gr, GWEN_LIST *sig
   n=GWEN_DB_GetFirstGroup(gr);
   if (n && strcasecmp(GWEN_DB_GroupName(n), "MsgHead")==0)
     n=GWEN_DB_GetNextGroup(n);                             /* skip MsgHead, if any */
+
   while (n) {
     if (strcasecmp(GWEN_DB_GroupName(n), "SigHead")==0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Adding signature head");
@@ -141,15 +142,14 @@ int AH_Msg_SampleSigHeadsAndTailsFromDecodedMsg(GWEN_DB_NODE *gr, GWEN_LIST *sig
     n=GWEN_DB_GetNextGroup(n);
   } /* while */
 
+  if (GWEN_List_GetSize(sigheads)<1) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No signatures");
+    return 0;
+  }
+
   if (n==NULL) {
-    if (GWEN_List_GetSize(sigheads)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Found signature heads but no other segments");
-      return GWEN_ERROR_BAD_DATA;
-    }
-    else {
-      DBG_DEBUG(AQHBCI_LOGDOMAIN, "No signatures");
-      return 0;
-    }
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Found signature heads but no other segments");
+    return GWEN_ERROR_BAD_DATA;
   }
 
   /* find first signature tail */
