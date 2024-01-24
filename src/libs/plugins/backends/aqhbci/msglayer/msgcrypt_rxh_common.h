@@ -82,8 +82,6 @@ int AH_MsgRxh_PrepareCryptoSeg(AH_MSG *hmsg,
                                int createCtrlRef);
 
 int AH_Msg_SignRxh(AH_MSG *hmsg, GWEN_BUFFER *rawBuf, const char *signer);
-int AH_Msg_EncryptRxh(AH_MSG *hmsg);
-int AH_Msg_VerifyRxh(AH_MSG *hmsg, GWEN_DB_NODE *gr);
 
 
 
