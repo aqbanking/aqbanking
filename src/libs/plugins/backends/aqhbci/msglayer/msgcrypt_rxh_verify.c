@@ -496,12 +496,10 @@ GWEN_CRYPT_KEY *_verifyInitialSignKey(GWEN_CRYPT_TOKEN *ct,
 {
 
   GWEN_DB_NODE *dbCurr;
-  int haveKey=0;
   int verified;
   GWEN_CRYPT_KEY *bpk = NULL;
 
   /* search for "GetKeyResponse" */
-  haveKey=0;
   dbCurr=GWEN_DB_GetFirstGroup(dbParsedMsg);
   while (dbCurr) {
     GWEN_DB_NODE *dbKeyResponse;
@@ -567,7 +565,6 @@ GWEN_CRYPT_KEY *_verifyInitialSignKey(GWEN_CRYPT_TOKEN *ct,
           }
         }
       }
-      haveKey++;
     } /* if we have one */
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
   } /* while */

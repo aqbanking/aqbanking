@@ -487,9 +487,7 @@ int _sendAndRecvCustomerBoxes(AH_OUTBOX *ob)
 {
   AH_OUTBOX_CBOX *cbox;
   int rv;
-  int errors;
 
-  errors=0;
   while ((cbox=AH_OutboxCBox_List_First(ob->userBoxes))) {
     AB_USER *u;
 
@@ -500,8 +498,6 @@ int _sendAndRecvCustomerBoxes(AH_OUTBOX *ob)
     _finishCBox(ob, cbox);
     AH_OutboxCBox_List_Del(cbox);
     AH_OutboxCBox_free(cbox);
-    if (rv)
-      errors++;
     if (rv==GWEN_ERROR_USER_ABORTED) {
       _finishRemainingCustomerBoxes(ob);
       return rv;
