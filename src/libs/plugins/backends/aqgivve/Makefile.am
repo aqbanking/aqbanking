@@ -29,7 +29,7 @@ noinst_HEADERS=\
 	voucherowner_p.h
 
 # static plugin library
-noinst_LTLIBRARIES=libaqgivve.la 
+noinst_LTLIBRARIES=libaqgivve.la
 libaqgivve_la_SOURCES=\
 	cardsdialog.c \
 	merchant.c \
@@ -39,15 +39,15 @@ libaqgivve_la_SOURCES=\
 	userdialog.c \
 	voucher.c \
 	voucherlist.c \
-	voucherowner.c 
+	voucherowner.c
 
 dlgdatadir=$(aqbanking_pkgdatadir)/backends/aqgivve/dialogs
 dlgdata_DATA=\
 	dlg_edituser.dlg \
 	dlg_cardselect.dlg
 
-EXTRA_DIST=$(dlgdata_DATA)
-  
+EXTRA_DIST+=$(dlgdata_DATA)
+
 sources:
 	for f in $(libaqgivve_la_SOURCES); do \
 	  echo $(subdir)/$$f >>$(top_srcdir)/i18nsources; \
