@@ -22,6 +22,15 @@
 
 
 
+/* ------------------------------------------------------------------------------------------------
+ * definitions
+ * ------------------------------------------------------------------------------------------------
+ */
+
+#define AH_JOBQUEUE_CHECKADDR_RESULT_CONTAINS_TYPE 1
+#define AH_JOBQUEUE_CHECKADDR_RESULT_CONTAINS_ADDR 2
+
+
 
 /* ------------------------------------------------------------------------------------------------
  * forward declarations
@@ -32,6 +41,9 @@ static int _getJobGroup(GWEN_DB_NODE *dbJob, const char *groupName, GWEN_DB_NODE
 static void _readLanguages(GWEN_DB_NODE *dbRd, AH_BPD *bpd);
 static void _readVersions(GWEN_DB_NODE *dbRd, AH_BPD *bpd);
 static void _readCommParams(GWEN_DB_NODE *dbJob, AH_BPD *bpd);
+static void _checkCommParams(const AH_BPD *currentBpd, const AH_BPD *newBpd);
+static int _hasMatchingServerTypeAndAddr(const char *currentAddr, int currentType, const AH_BPD_ADDR_LIST *addrList);
+static void _logMatchingAddresses(const AH_BPD_ADDR_LIST *addrList, int currentType);
 static void _readPinTanBpd(GWEN_DB_NODE *dbJob, AH_BPD *bpd, int protocolVersion);
 static void _readBpdJobs(GWEN_DB_NODE *dbJob, AH_BPD *bpd, GWEN_MSGENGINE *msgEngine);
 static int _isBpdJobSegment(GWEN_MSGENGINE *msgEngine, const char *segmentName, int segmentVersion);
@@ -82,6 +94,7 @@ void AH_JobQueue_ReadBpd(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses)
     _readLanguages(dbBpd, bpd);
     _readVersions(dbBpd, bpd);
     _readCommParams(dbResponses, bpd);
+    _checkCommParams(AH_User_GetBpd(user), bpd);
     _readPinTanBpd(dbResponses, bpd, GWEN_MsgEngine_GetProtocolVersion(msgEngine));
     _readBpdJobs(dbResponses, bpd, msgEngine);
 
@@ -202,6 +215,90 @@ void _readCommParams(GWEN_DB_NODE *dbJob, AH_BPD *bpd)
       currService=GWEN_DB_FindNextGroup(currService, "service");
     }
   } /* if ComData found */
+}
+
+
+
+void _checkCommParams(const AH_BPD *currentBpd, const AH_BPD *newBpd)
+{
+  if (currentBpd && newBpd) {
+    const char *currentBankAddr;
+
+    currentBankAddr=AH_Bpd_GetBankAddr(currentBpd);
+    if (currentBankAddr && *currentBankAddr) {
+      const AH_BPD_ADDR_LIST *addrList;
+      int checkResult;
+    
+      addrList=AH_Bpd_GetAddrList(newBpd);
+      checkResult=_hasMatchingServerTypeAndAddr(currentBankAddr, AH_Bpd_GetAddrType(currentBpd), addrList);
+
+      if (checkResult & AH_JOBQUEUE_CHECKADDR_RESULT_CONTAINS_ADDR)
+        GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info, I18N("New bank info confirms current server address (%s)"), currentBankAddr);
+      else {
+        if (checkResult & AH_JOBQUEUE_CHECKADDR_RESULT_CONTAINS_TYPE) {
+          GWEN_Gui_ProgressLog2(0,
+                                GWEN_LoggerLevel_Warning,
+                                I18N("Bank server address changed (was: %s), please consider using one of the following:"),
+                                currentBankAddr);
+          _logMatchingAddresses(addrList, AH_Bpd_GetAddrType(currentBpd));
+        }
+        else {
+          GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning, I18N("New bank info no longer contains an appropriate server address"));
+        }
+      }
+    }
+    else {
+      DBG_DEBUG(AQHBCI_LOGDOMAIN, "No server address to check");
+    }
+  }
+}
+
+
+
+int _hasMatchingServerTypeAndAddr(const char *currentAddr, int currentType, const AH_BPD_ADDR_LIST *addrList)
+{
+  int result=0;
+
+  if (addrList) {
+    const AH_BPD_ADDR *ba;
+
+    ba=AH_BpdAddr_List_First(addrList);
+    while(ba) {
+      if (AH_BpdAddr_GetType(ba)==currentType) {
+        const char *newAddr;
+
+        result|=AH_JOBQUEUE_CHECKADDR_RESULT_CONTAINS_TYPE;
+        newAddr=AH_BpdAddr_GetAddr(ba);
+        if (newAddr && *newAddr && strcasecmp(currentAddr, newAddr)==0) {
+          result|=AH_JOBQUEUE_CHECKADDR_RESULT_CONTAINS_ADDR;
+          break;
+        }
+      }
+      ba=AH_BpdAddr_List_Next(ba);
+    }
+  }
+  return result;
+}
+
+
+
+void _logMatchingAddresses(const AH_BPD_ADDR_LIST *addrList, int currentType)
+{
+  if (addrList) {
+    const AH_BPD_ADDR *ba;
+
+    ba=AH_BpdAddr_List_First(addrList);
+    while(ba) {
+      if (AH_BpdAddr_GetType(ba)==currentType) {
+        const char *newAddr;
+
+        newAddr=AH_BpdAddr_GetAddr(ba);
+        if (newAddr && *newAddr)
+          GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning, "- %s", newAddr);
+      }
+      ba=AH_BpdAddr_List_Next(ba);
+    }
+  }
 }
 
 
