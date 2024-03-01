@@ -31,6 +31,7 @@
 static int _commitSystemData(AH_JOB *j, int doLock);
 static void _readSomeKnownSegments(AH_JOB *j, GWEN_DB_NODE *dbResponses);
 static void _readSegmentResult(AH_JOB *j, GWEN_DB_NODE *dbRd);
+static void _readTanMethodsFromResult(AB_USER *user, GWEN_DB_NODE *dbRes);
 static void _readSecurityProfile(AH_JOB *j, GWEN_DB_NODE *dbRd);
 static void _readBankMessage(AH_JOB *j, GWEN_DB_NODE *dbRd);
 
@@ -209,29 +210,36 @@ void _readSegmentResult(AH_JOB *j, GWEN_DB_NODE *dbRd)
 
       code=GWEN_DB_GetIntValue(dbRes, "resultcode", 0, 0);
       text=GWEN_DB_GetCharValue(dbRes, "text", 0, 0);
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Segment result: %d (%s)", code, text?text:"<none>");
-      if (code==3920) {
-        int i;
-
-        AH_User_ClearTanMethodList(user);
-        for (i=0; ; i++) {
-          int j;
-
-          j=GWEN_DB_GetIntValue(dbRes, "param", i, 0);
-          if (j==0)
-            break;
-          DBG_NOTICE(AQHBCI_LOGDOMAIN, "Adding allowed TAN method %d", j);
-          AH_User_AddTanMethod(user, j);
-        } /* for */
-        if (i==0) {
-          /* add single step if empty list */
-          DBG_INFO(AQHBCI_LOGDOMAIN, "No allowed TAN method reported, assuming 999");
-          AH_User_AddTanMethod(user, 999);
-        }
-      }
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Segment result: %d (%s)", code, text?text:"<none>");
+      if (code==3920)
+	_readTanMethodsFromResult(user, dbRes);
     } /* if result */
     dbRes=GWEN_DB_GetNextGroup(dbRes);
   } /* while */
+}
+
+
+
+void _readTanMethodsFromResult(AB_USER *user, GWEN_DB_NODE *dbRes)
+{
+  int i;
+  
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Reading supported TAN methods");
+  AH_User_ClearTanMethodList(user);
+  for (i=0; ; i++) {
+    int j;
+  
+    j=GWEN_DB_GetIntValue(dbRes, "param", i, 0);
+    if (j==0)
+      break;
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Adding allowed TAN method %d", j);
+    AH_User_AddTanMethod(user, j);
+  } /* for */
+  if (i==0) {
+    /* add single step if empty list */
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No allowed TAN method reported, assuming 999");
+    AH_User_AddTanMethod(user, 999);
+  }
 }
 
 
