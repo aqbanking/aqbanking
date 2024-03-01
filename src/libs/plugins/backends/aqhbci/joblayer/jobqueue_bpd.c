@@ -41,7 +41,9 @@ static int _getJobGroup(GWEN_DB_NODE *dbJob, const char *groupName, GWEN_DB_NODE
 static void _readLanguages(GWEN_DB_NODE *dbRd, AH_BPD *bpd);
 static void _readVersions(GWEN_DB_NODE *dbRd, AH_BPD *bpd);
 static void _readCommParams(GWEN_DB_NODE *dbJob, AH_BPD *bpd);
-static void _checkCommParams(const AH_BPD *currentBpd, const AH_BPD *newBpd);
+static void _checkCommParams(const AB_USER *user, const AH_BPD *newBpd);
+static GWEN_BUFFER *_normalizeUrlToBuffer(const char *urlString);
+static GWEN_BUFFER *_urlToBuffer(const GWEN_URL *url);
 static int _hasMatchingServerTypeAndAddr(const char *currentAddr, int currentType, const AH_BPD_ADDR_LIST *addrList);
 static void _logMatchingAddresses(const AH_BPD_ADDR_LIST *addrList, int currentType);
 static void _readPinTanBpd(GWEN_DB_NODE *dbJob, AH_BPD *bpd, int protocolVersion);
@@ -94,7 +96,7 @@ void AH_JobQueue_ReadBpd(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses)
     _readLanguages(dbBpd, bpd);
     _readVersions(dbBpd, bpd);
     _readCommParams(dbResponses, bpd);
-    _checkCommParams(AH_User_GetBpd(user), bpd);
+    _checkCommParams(user, bpd);
     _readPinTanBpd(dbResponses, bpd, GWEN_MsgEngine_GetProtocolVersion(msgEngine));
     _readBpdJobs(dbResponses, bpd, msgEngine);
 
@@ -219,19 +221,29 @@ void _readCommParams(GWEN_DB_NODE *dbJob, AH_BPD *bpd)
 
 
 
-void _checkCommParams(const AH_BPD *currentBpd, const AH_BPD *newBpd)
+void _checkCommParams(const AB_USER *user, const AH_BPD *newBpd)
 {
-  if (currentBpd && newBpd) {
-    const char *currentBankAddr;
+  if (user && newBpd) {
+    const GWEN_URL *url;
+    const AH_BPD_ADDR_LIST *addrList;
+    int checkResult;
+  
+    addrList=AH_Bpd_GetAddrList(newBpd);
 
-    currentBankAddr=AH_Bpd_GetBankAddr(currentBpd);
-    if (currentBankAddr && *currentBankAddr) {
-      const AH_BPD_ADDR_LIST *addrList;
-      int checkResult;
-    
-      addrList=AH_Bpd_GetAddrList(newBpd);
-      checkResult=_hasMatchingServerTypeAndAddr(currentBankAddr, AH_Bpd_GetAddrType(currentBpd), addrList);
+    url=AH_User_GetServerUrl(user);
+    if (addrList && url) {
+      GWEN_BUFFER *ubuf;
+      const char *currentBankAddr;
+      int t;
 
+      ubuf=_urlToBuffer(url);
+      if (AH_User_GetCryptMode(user)==AH_CryptMode_Pintan)
+        t=AH_BPD_AddrTypeSSL;
+      else
+        t=AH_BPD_AddrTypeTCP;
+      currentBankAddr=GWEN_Buffer_GetStart(ubuf);
+
+      checkResult=_hasMatchingServerTypeAndAddr(GWEN_Buffer_GetStart(ubuf), t, addrList);
       if (checkResult & AH_JOBQUEUE_CHECKADDR_RESULT_CONTAINS_ADDR)
         GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Info, I18N("New bank info confirms current server address (%s)"), currentBankAddr);
       else {
@@ -240,17 +252,51 @@ void _checkCommParams(const AH_BPD *currentBpd, const AH_BPD *newBpd)
                                 GWEN_LoggerLevel_Warning,
                                 I18N("Bank server address changed (was: %s), please consider using one of the following:"),
                                 currentBankAddr);
-          _logMatchingAddresses(addrList, AH_Bpd_GetAddrType(currentBpd));
+          _logMatchingAddresses(addrList, t);
         }
         else {
           GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Warning, I18N("New bank info no longer contains an appropriate server address"));
         }
       }
-    }
-    else {
-      DBG_DEBUG(AQHBCI_LOGDOMAIN, "No server address to check");
+      GWEN_Buffer_free(ubuf);
     }
   }
+}
+
+
+
+GWEN_BUFFER *_urlToBuffer(const GWEN_URL *url)
+{
+  GWEN_BUFFER *ubuf;
+  const char *s;
+
+  ubuf=GWEN_Buffer_new(0, 256, 0, 1);
+  s=GWEN_Url_GetServer(url);
+  if (s && *s)
+    GWEN_Buffer_AppendString(ubuf, s);
+  s=GWEN_Url_GetPath(url);
+  if (s && *s)
+    GWEN_Buffer_AppendString(ubuf, s);
+  return ubuf;
+}
+
+
+
+GWEN_BUFFER *_normalizeUrlToBuffer(const char *urlString)
+{
+  if (urlString) {
+    GWEN_URL *url;
+
+    url=GWEN_Url_fromString(urlString);
+    if (url) {
+      GWEN_BUFFER *ubuf;
+
+      ubuf=_urlToBuffer(url);
+      GWEN_Url_free(url);
+      return ubuf;
+    }
+  }
+  return NULL;
 }
 
 
@@ -269,9 +315,13 @@ int _hasMatchingServerTypeAndAddr(const char *currentAddr, int currentType, cons
 
         result|=AH_JOBQUEUE_CHECKADDR_RESULT_CONTAINS_TYPE;
         newAddr=AH_BpdAddr_GetAddr(ba);
-        if (newAddr && *newAddr && strcasecmp(currentAddr, newAddr)==0) {
-          result|=AH_JOBQUEUE_CHECKADDR_RESULT_CONTAINS_ADDR;
-          break;
+        if (newAddr && *newAddr) {
+          GWEN_BUFFER *newAddrBuf;
+
+          newAddrBuf=_normalizeUrlToBuffer(newAddr);
+          if (newAddrBuf && strcasecmp(currentAddr, GWEN_Buffer_GetStart(newAddrBuf))==0)
+            result|=AH_JOBQUEUE_CHECKADDR_RESULT_CONTAINS_ADDR;
+          GWEN_Buffer_free(newAddrBuf);
         }
       }
       ba=AH_BpdAddr_List_Next(ba);
