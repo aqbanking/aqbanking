@@ -103,6 +103,7 @@ int _verifyAllSignatures(AH_MSG *hmsg,
   AB_USER *u;
   GWEN_CRYPT_KEY *bankPubSignKey;
   const RXH_PARAMETER *rParams;
+  int signatureCount;
 
   u=AH_Dialog_GetDialogOwner(hmsg->dialog);
   rParams=AH_MsgRxh_GetParameters(AH_User_GetCryptMode(u), AH_User_GetRdhType(u));
@@ -116,7 +117,8 @@ int _verifyAllSignatures(AH_MSG *hmsg,
     return GWEN_ERROR_GENERIC;
   }
 
-  for (i=0; i< GWEN_List_GetSize(sigtails); i++) {
+  signatureCount=GWEN_List_GetSize(sigtails);
+  for (i=0; i<signatureCount; i++) {
     GWEN_DB_NODE *sighead;
     GWEN_DB_NODE *sigtail;
     const uint8_t *p;
