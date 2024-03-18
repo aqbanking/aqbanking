@@ -444,7 +444,8 @@ int _letUserConfirmApproval(AH_OUTBOX_CBOX *cbox, const char *challenge)
 			   I18N("Confirm"),
 			   I18N("Abort"),
 			   NULL,
-			   0);
+                           0);
+    GWEN_Buffer_free(guiBuf);
     if (rv!=1) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Not confirming TAN (%d)", rv);
       return GWEN_ERROR_USER_ABORTED;
