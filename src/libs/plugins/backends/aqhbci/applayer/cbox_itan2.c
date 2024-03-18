@@ -35,8 +35,8 @@
 
 static int _sendTanAndReceiveResponseProc2(AH_OUTBOX_CBOX *cbox,
                                            AH_DIALOG *dlg,
-                                           AH_JOBQUEUE *qJob,
-                                           AH_JOB *jTan1);
+                                           AH_JOBQUEUE *jobQueueNeedingTan,
+                                           AH_JOB *tanJobFromFirstStage);
 static int _sendTanAndReceiveResponseProcS(AH_OUTBOX_CBOX *cbox,
 					   AH_DIALOG *dlg,
 					   AH_JOBQUEUE *jobQueueNeedingTan,
@@ -53,8 +53,14 @@ static int _inputTanForQueueWithChallenges(AH_OUTBOX_CBOX *cbox,
 					   const char *challengeHhd,
 					   AH_JOBQUEUE *jobQueue2);
 static int _letUserConfirmApproval(AH_OUTBOX_CBOX *cbox, const char *challenge);
-static AH_JOB *_createTanJobStage2(AB_PROVIDER *provider, AH_DIALOG *dlg, const AH_JOB *jobNeedingTan, const AH_JOB *tanJobFromFirstStage);
-static AH_JOB *_createTanJobDecoupledStageS(AB_PROVIDER *provider, AH_DIALOG *dlg, const AH_JOB *jobNeedingTan, const AH_JOB *tanJobFromFirstStage);
+static AH_JOB *_createTanJobStage2(AB_PROVIDER *provider,
+				   AH_DIALOG *dlg,
+				   const AH_JOB *jobNeedingTan,
+				   const AH_JOB *tanJobFromFirstStage);
+static AH_JOB *_createTanJobDecoupledStageS(AB_PROVIDER *provider,
+					    AH_DIALOG *dlg,
+					    const AH_JOB *jobNeedingTan,
+					    const AH_JOB *tanJobFromFirstStage);
 static AH_MSG *_encodeTanJobStage2(AH_DIALOG *dlg, AH_JOBQUEUE *jobQueue2, AH_JOB *jobNeedingTan);
 static int _setupTanJobStage2OrS(AH_JOB *tanJob2, const AH_JOB *jobNeedingTan, const AH_JOB *tanJobFromFirstStage);
 static void _dispatchJobSegResultsToQueue(AH_JOB *job, AH_JOBQUEUE *qJob);
@@ -72,6 +78,7 @@ static void _dispatchJobMsgResultsToQueue(AH_JOB *job, AH_JOBQUEUE *qJob);
 int AH_OutboxCBox_SendAndReceiveQueueWithTan2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jobQueueNeedingTan)
 {
   int rv;
+  AH_OUTBOX *outbox;
   AB_PROVIDER *provider;
   AH_JOB *jobNeedingTan;
   AH_JOB *tanJobForFirstStage;
@@ -79,14 +86,10 @@ int AH_OutboxCBox_SendAndReceiveQueueWithTan2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *d
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Sending job with TAN (process variant 2)");
 
+  outbox=AH_OutboxCBox_GetOutbox(cbox);
   provider=AH_OutboxCBox_GetProvider(cbox);
-
-  assert(jobQueueNeedingTan);
-  assert(AH_JobQueue_GetCount(jobQueueNeedingTan)==1);
   jobNeedingTan=AH_JobQueue_GetFirstJob(jobQueueNeedingTan);
-  assert(jobNeedingTan);
   u=AH_Job_GetUser(jobNeedingTan);
-  assert(u);
 
   /* don't need a TAN for this particular message, just a HKTAN segment */
   AH_JobQueue_SubFlags(jobQueueNeedingTan, AH_JOBQUEUE_FLAGS_NEEDTAN);
@@ -122,6 +125,13 @@ int AH_OutboxCBox_SendAndReceiveQueueWithTan2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *d
 
   /* send original job with HKTAN, receive response and dispatch it to those jobs */
   rv=AH_OutboxCBox_SendAndRecvQueueNoTan(cbox, dlg, jobQueueNeedingTan);
+  if (rv) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Processing TAN job from first stage");
+  rv=AH_Job_Process(tanJobForFirstStage, AH_Outbox_GetImExContext(outbox));
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -192,7 +202,6 @@ int _sendTanAndReceiveResponseProc2(AH_OUTBOX_CBOX *cbox,
                                     AH_JOBQUEUE *jobQueueNeedingTan,
                                     AH_JOB *tanJobFromFirstStage)
 {
-  AH_OUTBOX *outbox;
   AB_PROVIDER *provider;
   int rv;
   AH_JOB *jobNeedingTan;
@@ -203,16 +212,7 @@ int _sendTanAndReceiveResponseProc2(AH_OUTBOX_CBOX *cbox,
   assert(tanJobFromFirstStage);
 
   provider=AH_OutboxCBox_GetProvider(cbox);
-  outbox=AH_OutboxCBox_GetOutbox(cbox);
-
   jobNeedingTan=AH_JobQueue_GetFirstJob(jobQueueNeedingTan);
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Processing job \"%s\"", AH_Job_GetName(tanJobFromFirstStage));
-  rv=AH_Job_Process(tanJobFromFirstStage, AH_Outbox_GetImExContext(outbox));
-  if (rv) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
 
   /* prepare second message (the one with the TAN) */
   jobQueue2=AH_JobQueue_fromQueue(jobQueueNeedingTan);
@@ -269,27 +269,14 @@ int _sendTanAndReceiveResponseProcS(AH_OUTBOX_CBOX *cbox,
                                     AH_JOBQUEUE *jobQueueNeedingTan,
                                     AH_JOB *tanJobFromFirstStage)
 {
-  AH_OUTBOX *outbox;
   AB_PROVIDER *provider;
   int rv;
   AH_JOB *jobNeedingTan;
   AH_JOBQUEUE *jobQueue2;
   AH_JOB *tanJob2;
 
-  assert(jobQueueNeedingTan);
-  assert(tanJobFromFirstStage);
-
   provider=AH_OutboxCBox_GetProvider(cbox);
-  outbox=AH_OutboxCBox_GetOutbox(cbox);
-
   jobNeedingTan=AH_JobQueue_GetFirstJob(jobQueueNeedingTan);
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Processing job \"%s\"", AH_Job_GetName(tanJobFromFirstStage));
-  rv=AH_Job_Process(tanJobFromFirstStage, AH_Outbox_GetImExContext(outbox));
-  if (rv) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
 
   /* prepare second message (the one with the TAN) */
   jobQueue2=AH_JobQueue_fromQueue(jobQueueNeedingTan);
