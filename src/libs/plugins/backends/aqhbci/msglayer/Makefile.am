@@ -33,6 +33,7 @@ noinst_HEADERS=\
  hbci-updates_p.h \
  message_l.h \
  message_p.h \
+ msgcrypt.h \
  msgcrypt_rxh_common.h \
  msgcrypt_rxh_encrypt.h \
  msgcrypt_rxh_decrypt.h \
