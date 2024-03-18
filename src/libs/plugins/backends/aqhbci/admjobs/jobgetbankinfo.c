@@ -123,7 +123,7 @@ int _process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
       if (tanSegVersion>tanMaxVersion)
         tanMaxVersion=tanSegVersion;
 
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Found an TAN segment definition (version %d)", tanSegVersion);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Found a TAN segment definition (version %d)", tanSegVersion);
     }
     dbCurr=GWEN_DB_FindNextGroup(dbCurr, "HITANS");
   }
