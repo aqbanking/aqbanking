@@ -48,7 +48,10 @@ AH_JOB *AH_Job_Tan_new(AB_PROVIDER *pro, AB_USER *u, int process, int jobVersion
   dbParams=AH_Job_GetParams(j);
   assert(dbParams);
 
-  GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "process", process);
+  if (process=='S')
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "process", "S");
+  else
+    GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "process", process);
   if (process==1 || process==2)
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "moreTans", "N");
 
