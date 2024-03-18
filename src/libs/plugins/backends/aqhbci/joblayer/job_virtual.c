@@ -27,7 +27,7 @@ int AH_Job_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
   assert(j);
   assert(j->usage);
 
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Processing job \"%s\" (%llu)", AH_Job_GetName(j), (unsigned long long int) AH_Job_GetId(j));
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Processing job \"%s\" (%llu)", AH_Job_GetName(j), (unsigned long long int) AH_Job_GetId(j));
 
   AH_Job_SampleResults(j);
 
