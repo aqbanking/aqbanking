@@ -436,35 +436,35 @@ int _letUserConfirmApproval(AH_OUTBOX_CBOX *cbox, AH_JOB *jobNeedingTan, const c
 
     guiBuf=GWEN_Buffer_new(0, 256, 0, 1);
     GWEN_Buffer_AppendArgs(guiBuf,
-                           I18N("Decoupled TAN method, you will have to send a TAN using your smart phone app (%s).\n"
-                                "Please click \"TAN has been sent\" after sending TAN for user %s at %s.\n"
+                           I18N("Decoupled TAN method, you will have to approve this communication using your smart phone app.\n"
+                                "Please click \"Approved\" afterwards (%s, user %s at %s.\n"
                                 "\n"
                                 "Message from bank server regarding this process:\n"
                                 "%s\n"),
                            AH_Job_GetCode(jobNeedingTan),
-                           sUserName,
-                           sBankName,
+                           sUserName?sUserName:"",
+                           sBankName?sBankName:"",
                            challenge);
 
     GWEN_Buffer_AppendString(guiBuf, "<html>");
     GWEN_Buffer_AppendArgs(guiBuf,
                            I18N("<html>"
-                                "<p>Decoupled TAN method, you will have to send a TAN using your smart phone app (%s).</p>"
-                                "<p>Please click <b><i>TAN has been sent</i></b> <i>after</i> sending TAN for user %s at %s.</p>"
+                                "<p>Decoupled TAN method, you will have to approve this communication using your smart phone app.</p>"
+                                "<p>Please click <b><i>Approved</i></b> <i>afterwards</i> (%s, user %s at %s).</p>"
                                 "<p>Message from bank server regarding this process:</p>"
                                 "<p>%s</p>"
                                 "</html>"),
                            AH_Job_GetCode(jobNeedingTan),
-                           sUserName,
-                           sBankName,
+                           sUserName?sUserName:"",
+                           sBankName?sBankName:"",
                            challenge);
 
     AB_BankInfo_free(bankInfo);
 
     rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_INFO | GWEN_GUI_MSG_FLAGS_CONFIRM_B1 | GWEN_GUI_MSG_FLAGS_SEVERITY_NORMAL,
-			   I18N("Decoupled Mode: Waiting for TAN"),
+			   I18N("Decoupled Mode: Waiting for Approval"),
 			   GWEN_Buffer_GetStart(guiBuf),
-			   I18N("TAN has been sent"),
+			   I18N("Approved"),
 			   I18N("Abort"),
 			   NULL,
                            0);
