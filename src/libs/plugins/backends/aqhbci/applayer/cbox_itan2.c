@@ -299,7 +299,6 @@ int _sendTanAndReceiveResponseProcS(AH_OUTBOX_CBOX *cbox,
     AH_JobQueue_free(jobQueue2);
     return GWEN_ERROR_GENERIC;
   }
-  AH_Job_LogFlags(tanJob2, "TAN job");
 
   rv=AH_JobQueue_AddJob(jobQueue2, tanJob2);
   if (rv) {
@@ -308,7 +307,6 @@ int _sendTanAndReceiveResponseProcS(AH_OUTBOX_CBOX *cbox,
     AH_JobQueue_free(jobQueue2);
     return rv;
   }
-  AH_Job_LogFlags(tanJob2, "TAN job");
 
   rv=_sendTanQueue2AndDispatchResponse(cbox, dlg, jobQueueNeedingTan, tanJobFromFirstStage, jobQueue2);
   if (rv<0) {
@@ -316,7 +314,6 @@ int _sendTanAndReceiveResponseProcS(AH_OUTBOX_CBOX *cbox,
     AH_JobQueue_free(jobQueue2);
     return rv;
   }
-  AH_Job_LogFlags(tanJob2, "TAN job");
 
   if (AH_Job_HasResultWithCode(tanJob2, 3956) || AH_Job_HasResultWithCode(tanJob2, 3956)) { /* decoupled */
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Decoupled (3956), still waiting for user to approve transaction externally");
@@ -475,7 +472,6 @@ AH_JOB *_createTanJobStage2(AB_PROVIDER *provider, AH_DIALOG *dlg, const AH_JOB 
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
     return NULL;
   }
-  AH_Job_LogFlags(tanJob2, "TAN job");
 
   rv=_setupTanJobStage2OrS(tanJob2, jobNeedingTan, tanJobFromFirstStage);
   if (rv<0) {
@@ -504,7 +500,6 @@ AH_JOB *_createTanJobDecoupledStageS(AB_PROVIDER *provider, AH_DIALOG *dlg, cons
     return NULL;
   }
   AH_Job_SubFlags(tanJob2, AH_JOB_FLAGS_NEEDTAN);
-  AH_Job_LogFlags(tanJob2, "TAN job");
 
   rv=_setupTanJobStage2OrS(tanJob2, jobNeedingTan, tanJobFromFirstStage);
   if (rv<0) {
@@ -512,7 +507,6 @@ AH_JOB *_createTanJobDecoupledStageS(AB_PROVIDER *provider, AH_DIALOG *dlg, cons
     AH_Job_free(tanJob2);
     return NULL;
   }
-  AH_Job_LogFlags(tanJob2, "TAN job");
 
   return tanJob2;
 }
@@ -572,7 +566,6 @@ AH_MSG *_encodeTanJobStage2(AH_DIALOG *dlg, AH_JOBQUEUE *jobQueue2, AH_JOB *jobN
   }
 
   /* store used TAN in original job (if any) */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Storing TAN in job [%s]", AH_Job_GetName(jobNeedingTan));
   AH_Job_SetUsedTan(jobNeedingTan, AH_Msg_GetTan(msg2));
 
   if (AH_Job_GetStatus(tanJob2)==AH_JobStatusEncoded) {
