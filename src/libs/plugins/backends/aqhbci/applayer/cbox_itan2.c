@@ -437,13 +437,13 @@ int _letUserConfirmApproval(AH_OUTBOX_CBOX *cbox, AH_JOB *jobNeedingTan, const c
     guiBuf=GWEN_Buffer_new(0, 256, 0, 1);
     GWEN_Buffer_AppendArgs(guiBuf,
                            I18N("Decoupled TAN method, you will have to approve this communication using your smart phone app.\n"
-                                "Please click \"Approved\" afterwards (%s, user %s at %s.\n"
+                                "Please click \"Approved\" afterwards (%s, user %s at %s).\n"
                                 "\n"
                                 "Message from bank server regarding this process:\n"
                                 "%s\n"),
                            AH_Job_GetCode(jobNeedingTan),
-                           sUserName?sUserName:"",
-                           sBankName?sBankName:"",
+                           sUserName?sUserName:"<no user id>",
+                           sBankName?sBankName:"<no bank name>",
                            challenge);
 
     GWEN_Buffer_AppendString(guiBuf, "<html>");
@@ -455,8 +455,8 @@ int _letUserConfirmApproval(AH_OUTBOX_CBOX *cbox, AH_JOB *jobNeedingTan, const c
                                 "<p>%s</p>"
                                 "</html>"),
                            AH_Job_GetCode(jobNeedingTan),
-                           sUserName?sUserName:"",
-                           sBankName?sBankName:"",
+                           sUserName?sUserName:"<no user id>",
+                           sBankName?sBankName:"<no bank name>",
                            challenge);
 
     AB_BankInfo_free(bankInfo);
