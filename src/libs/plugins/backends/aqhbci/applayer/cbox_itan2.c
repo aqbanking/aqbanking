@@ -281,6 +281,8 @@ int _sendTanAndReceiveResponseProcS(AH_OUTBOX_CBOX *cbox,
   /* prepare second message (the one with the TAN) */
   jobQueue2=AH_JobQueue_fromQueue(jobQueueNeedingTan);
   AH_JobQueue_SetReferenceQueue(jobQueue2, jobQueueNeedingTan);
+  /* we don't need a TAN with this queue, either, because the TAN is conveyed externally via app */
+  AH_JobQueue_SubFlags(jobQueueNeedingTan, AH_JOBQUEUE_FLAGS_NEEDTAN);
 
   rv=_letUserConfirmApproval(cbox, AH_Job_Tan_GetChallenge(tanJobFromFirstStage));
   if (rv<0) {
