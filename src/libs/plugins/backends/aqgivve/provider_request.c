@@ -339,7 +339,7 @@ AB_TRANSACTION_LIST *AG_Provider_Request_GetTransactions(AB_ACCOUNT *account,
   int current_page = 1;
   char path[512];
 
-  AB_TRANSACTION_LIST *trans_list = AB_Account_List_new();
+  AB_TRANSACTION_LIST *trans_list = AB_Transaction_List_new();
 
   const char *id = AB_Account_GetAccountNumber(account);
 
