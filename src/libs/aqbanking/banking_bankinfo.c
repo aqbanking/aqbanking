@@ -80,9 +80,8 @@ AB_BANKINFO_PLUGIN *AB_Banking_GetBankInfoPlugin(AB_BANKING *ab, const char *cou
   if (bip)
     return bip;
   bip=AB_Banking_CreateImBankInfoPlugin(ab, country);
-  if (bip)
-    return bip;
-  bip=AB_Banking_LoadBankInfoPlugin(ab, country);
+  if (bip==NULL)
+    bip=AB_Banking_LoadBankInfoPlugin(ab, country);
   if (bip)
     AB_BankInfoPlugin_List_Add(bip, ab_bankInfoPlugins);
 

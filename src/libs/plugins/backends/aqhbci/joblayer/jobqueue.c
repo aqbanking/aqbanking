@@ -193,6 +193,7 @@ AH_JOBQUEUE *AH_JobQueue_fromQueue(AH_JOBQUEUE *oldq)
   assert(oldq);
 
   jq=AH_JobQueue_new(oldq->user);
+  GWEN_StringList_free(jq->signers);
   jq->signers=GWEN_StringList_dup(oldq->signers);
   jq->secProfile=oldq->secProfile;
   jq->secClass=oldq->secClass;

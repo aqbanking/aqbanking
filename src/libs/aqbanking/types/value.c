@@ -51,9 +51,9 @@ AB_VALUE *AB_Value_new(void)
 void AB_Value_free(AB_VALUE *v)
 {
   if (v) {
+    GWEN_LIST_FINI(AB_VALUE, v);
     mpq_clear(v->value);
     free(v->currency);
-    GWEN_LIST_FINI(AB_VALUE, v);
     GWEN_FREE_OBJECT(v);
   }
 }
