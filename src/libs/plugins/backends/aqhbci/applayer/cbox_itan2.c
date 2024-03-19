@@ -496,6 +496,7 @@ AH_JOB *_createTanJobStage2(AB_PROVIDER *provider, AH_DIALOG *dlg, const AH_JOB 
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
     return NULL;
   }
+  AH_Job_AddFlags(tanJob2, AH_JOB_FLAGS_NEEDTAN);
 
   rv=_setupTanJobStage2OrS(tanJob2, jobNeedingTan, tanJobFromFirstStage);
   if (rv<0) {
