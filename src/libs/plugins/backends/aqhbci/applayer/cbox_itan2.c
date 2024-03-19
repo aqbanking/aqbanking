@@ -282,7 +282,7 @@ int _sendTanAndReceiveResponseProcS(AH_OUTBOX_CBOX *cbox,
   jobQueue2=AH_JobQueue_fromQueue(jobQueueNeedingTan);
   AH_JobQueue_SetReferenceQueue(jobQueue2, jobQueueNeedingTan);
   /* we don't need a TAN with this queue, either, because the TAN is conveyed externally via app */
-  AH_JobQueue_SubFlags(jobQueueNeedingTan, AH_JOBQUEUE_FLAGS_NEEDTAN);
+  AH_JobQueue_SubFlags(jobQueue2, AH_JOBQUEUE_FLAGS_NEEDTAN);
 
   rv=_letUserConfirmApproval(cbox, AH_Job_Tan_GetChallenge(tanJobFromFirstStage));
   if (rv<0) {
@@ -299,6 +299,7 @@ int _sendTanAndReceiveResponseProcS(AH_OUTBOX_CBOX *cbox,
     AH_JobQueue_free(jobQueue2);
     return GWEN_ERROR_GENERIC;
   }
+  AH_Job_LogFlags(tanJob2, "TAN job");
 
   rv=AH_JobQueue_AddJob(jobQueue2, tanJob2);
   if (rv) {
@@ -307,6 +308,7 @@ int _sendTanAndReceiveResponseProcS(AH_OUTBOX_CBOX *cbox,
     AH_JobQueue_free(jobQueue2);
     return rv;
   }
+  AH_Job_LogFlags(tanJob2, "TAN job");
 
   rv=_sendTanQueue2AndDispatchResponse(cbox, dlg, jobQueueNeedingTan, tanJobFromFirstStage, jobQueue2);
   if (rv<0) {
@@ -314,6 +316,7 @@ int _sendTanAndReceiveResponseProcS(AH_OUTBOX_CBOX *cbox,
     AH_JobQueue_free(jobQueue2);
     return rv;
   }
+  AH_Job_LogFlags(tanJob2, "TAN job");
 
   if (AH_Job_HasResultWithCode(tanJob2, 3956) || AH_Job_HasResultWithCode(tanJob2, 3956)) { /* decoupled */
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Decoupled (3956), still waiting for user to approve transaction externally");
@@ -346,7 +349,6 @@ int _sendTanQueue2AndDispatchResponse(AH_OUTBOX_CBOX *cbox,
   msg2=_encodeTanJobStage2(dlg, jobQueue2, jobNeedingTan);
   if (msg2==NULL) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here");
-    AH_JobQueue_free(jobQueue2);
     return GWEN_ERROR_GENERIC;
   }
 
@@ -473,6 +475,7 @@ AH_JOB *_createTanJobStage2(AB_PROVIDER *provider, AH_DIALOG *dlg, const AH_JOB 
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
     return NULL;
   }
+  AH_Job_LogFlags(tanJob2, "TAN job");
 
   rv=_setupTanJobStage2OrS(tanJob2, jobNeedingTan, tanJobFromFirstStage);
   if (rv<0) {
@@ -500,12 +503,16 @@ AH_JOB *_createTanJobDecoupledStageS(AB_PROVIDER *provider, AH_DIALOG *dlg, cons
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Job HKTAN not available");
     return NULL;
   }
+  AH_Job_SubFlags(tanJob2, AH_JOB_FLAGS_NEEDTAN);
+  AH_Job_LogFlags(tanJob2, "TAN job");
+
   rv=_setupTanJobStage2OrS(tanJob2, jobNeedingTan, tanJobFromFirstStage);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Job_free(tanJob2);
     return NULL;
   }
+  AH_Job_LogFlags(tanJob2, "TAN job");
 
   return tanJob2;
 }
@@ -520,7 +527,6 @@ int _setupTanJobStage2OrS(AH_JOB *tanJob2, const AH_JOB *jobNeedingTan, const AH
 
   AH_Job_Tan_SetReference(tanJob2, AH_Job_Tan_GetReference(tanJobFromFirstStage));
   AH_Job_Tan_SetTanMediumId(tanJob2, AH_User_GetTanMediumId(u));
-  AH_Job_AddFlags(tanJob2, AH_JOB_FLAGS_NEEDTAN);
 
   /* copy signers */
   if (AH_Job_GetFlags(jobNeedingTan) & AH_JOB_FLAGS_SIGN) {
@@ -544,7 +550,7 @@ AH_MSG *_encodeTanJobStage2(AH_DIALOG *dlg, AH_JOBQUEUE *jobQueue2, AH_JOB *jobN
   tanJob2=AH_JobQueue_GetFirstJob(jobQueue2);
 
   msg2=AH_Msg_new(dlg);
-  AH_Msg_SetNeedTan(msg2, 1);
+  AH_Msg_SetNeedTan(msg2, (AH_JobQueue_GetFlags(jobQueue2) & AH_JOBQUEUE_FLAGS_NEEDTAN)?1:0);
   AH_Msg_SetItanMethod(msg2, 0);
   AH_Msg_SetItanHashMode(msg2, 0);
   AH_Msg_SetTan(msg2, AH_JobQueue_GetUsedTan(jobQueue2));
@@ -558,7 +564,6 @@ AH_MSG *_encodeTanJobStage2(AH_DIALOG *dlg, AH_JOBQUEUE *jobQueue2, AH_JOB *jobN
 
   /* encode HKTAN message */
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding queue");
-  AH_Msg_SetNeedTan(msg2, 1);
   rv=AH_Msg_EncodeMsg(msg2);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -582,7 +587,7 @@ AH_MSG *_encodeTanJobStage2(AH_DIALOG *dlg, AH_JOBQUEUE *jobQueue2, AH_JOB *jobN
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "jTAN2 not encoded? (%d)", AH_Job_GetStatus(tanJob2));
   }
-  return 0;
+  return msg2;
 }
 
 

@@ -236,7 +236,7 @@ int _setupNeedTanAndSignersAndCrypter(AH_JOB *j, AH_MSG *msg, int doCopySigners)
   else {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Jobs doesn't need a TAN");
   }
-  AH_Msg_SetNeedTan(msg, (AH_Job_GetFlags(j) & AH_JOB_FLAGS_NEEDTAN));
+  AH_Msg_SetNeedTan(msg, (AH_Job_GetFlags(j) & AH_JOB_FLAGS_NEEDTAN)?1:0);
 
   if (doCopySigners) {
     /* copy signers */

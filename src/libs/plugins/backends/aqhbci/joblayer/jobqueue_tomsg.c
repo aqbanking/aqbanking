@@ -105,7 +105,7 @@ int _messageSetupWithCryptoAndTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *msg, 
   if (sTan && *sTan)
     AH_Msg_SetTan(msg, sTan);
 
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Adding queue to message (flags: %08x)", AH_JobQueue_GetFlags(jq));
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding queue to message (flags: %08x)", AH_JobQueue_GetFlags(jq));
 
   if (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Queue needs a TAN");
@@ -113,9 +113,9 @@ int _messageSetupWithCryptoAndTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *msg, 
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Queue doesn't need a TAN");
   }
-  AH_Msg_SetNeedTan(msg, (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN));
-  AH_Msg_SetNoSysId(msg, (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NOSYSID));
-  AH_Msg_SetSignSeqOne(msg, (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_SIGNSEQONE));
+  AH_Msg_SetNeedTan(msg, (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN)?1:0);
+  AH_Msg_SetNoSysId(msg, (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NOSYSID)?1:0);
+  AH_Msg_SetSignSeqOne(msg, (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_SIGNSEQONE)?1:0);
 
   /* copy signers */
   if (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_SIGN) {

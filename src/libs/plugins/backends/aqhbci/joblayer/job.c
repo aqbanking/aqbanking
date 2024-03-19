@@ -541,6 +541,18 @@ void AH_Job_SubFlags(AH_JOB *j, uint32_t f)
 
 
 
+void AH_Job_LogFlags(const AH_JOB *j, const char *msg)
+{
+  GWEN_BUFFER *bufFlags;
+
+  bufFlags=GWEN_Buffer_new(0, 128, 0, 1);
+  _flagsToBuffer(j->flags, bufFlags);
+  DBG_INFO(AQHBCI_LOGDOMAIN, "%s [job \"%s\", flags %08x: %s]", msg?msg:"", j->name, j->flags, GWEN_Buffer_GetStart(bufFlags));
+  GWEN_Buffer_free(bufFlags);
+}
+
+
+
 GWEN_DB_NODE *AH_Job_GetParams(const AH_JOB *j)
 {
   assert(j);

@@ -72,6 +72,8 @@ AH_JOB *AH_Job_new(const char *name,
     /* always make jobs single when in PIN/TAN mode */
     AH_Job_AddFlags(j, AH_JOB_FLAGS_SINGLE);
 
+  AH_Job_LogFlags(j, "Creating job");
+
   /* setup message engine */
   e=AH_User_GetMsgEngine(u);
   assert(e);
