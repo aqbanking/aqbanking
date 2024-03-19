@@ -436,8 +436,9 @@ int _letUserConfirmApproval(AH_OUTBOX_CBOX *cbox, AH_JOB *jobNeedingTan, const c
 
     guiBuf=GWEN_Buffer_new(0, 256, 0, 1);
     GWEN_Buffer_AppendArgs(guiBuf,
-                           I18N("Decoupled TAN method, you will have to approve this communication using your smart phone app.\n"
-                                "Please click \"Approved\" afterwards (%s, user %s at %s).\n"
+                           I18N("Your approval for this communication with your bank server is required.\n"
+                                "Please use your smart phone app for this\n"
+                                "and click \"Approved\" afterwards (%s, user %s at %s).\n"
                                 "\n"
                                 "Message from bank server regarding this process:\n"
                                 "%s\n"),
@@ -449,15 +450,16 @@ int _letUserConfirmApproval(AH_OUTBOX_CBOX *cbox, AH_JOB *jobNeedingTan, const c
     GWEN_Buffer_AppendString(guiBuf, "<html>");
     GWEN_Buffer_AppendArgs(guiBuf,
                            I18N("<html>"
-                                "<p>Decoupled TAN method, you will have to approve this communication using your smart phone app.</p>"
-                                "<p>Please click <b><i>Approved</i></b> <i>afterwards</i> (%s, user %s at %s).</p>"
+                                "<p>Your approval for this communication with your bank server is required.</p>"
+                                "<p>Please use your smart phone app for this "
+                                "and click <b><i>Approved</i></b> <i>afterwards</i> (%s, user %s at %s).</p>"
                                 "<p>Message from bank server regarding this process:</p>"
                                 "<p>%s</p>"
                                 "</html>"),
                            AH_Job_GetCode(jobNeedingTan),
-                           sUserName?sUserName:"<no user id>",
-                           sBankName?sBankName:"<no bank name>",
-                           challenge);
+                           sUserName?sUserName:"no user id",
+                           sBankName?sBankName:"no bank name",
+                           challenge?challenge:"no message");
 
     AB_BankInfo_free(bankInfo);
 
