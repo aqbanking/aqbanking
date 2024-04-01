@@ -6,6 +6,7 @@
   <data DIST="TRUE" install="$(pkgdatadir)/imexporters/xml/profiles" >
     default.conf
     camt_052_001_02.conf
+    camt_053_001_02.conf
     camt_053_001_04.conf
     pain_001_003_03.conf
     pain_001_001_03.conf
