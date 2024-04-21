@@ -156,7 +156,7 @@ int _addAccount(GWEN_DIALOG *dlg)
 
         snprintf(account_name, account_name_len, "GivveCard %s", owner_name);
 
-        account = AG_Provider_CreateAccountObject(xdlg->provider);
+        account = AB_Provider_CreateAccountObject(xdlg->provider);
         AB_Provider_AddAccount(xdlg->provider, account, 1);
         AB_Account_SetUserId(account, AB_User_GetUniqueId(xdlg->user));
         AB_Account_SetOwnerName(account, owner_name);
