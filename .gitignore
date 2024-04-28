@@ -52,3 +52,4 @@ version.h
 patches/
 .kdev4/
 *.kdev4
+aqbanking-cli.vg
