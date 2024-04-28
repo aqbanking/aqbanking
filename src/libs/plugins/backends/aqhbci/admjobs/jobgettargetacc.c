@@ -66,10 +66,13 @@ void GWENHYWFAR_CB _freeData(void *bp, void *p)
 int _cbProcess(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 {
   AH_JOB_GETTARGETACC *jd;
+  AB_ACCOUNT_SPEC *as;
   GWEN_DB_NODE *dbResponses;
   GWEN_DB_NODE *dbCurr;
   AB_BANKING *ab;
   AB_PROVIDER *pro;
+  uint32_t uniqueAccountId;
+  int rv;
 
   assert(j);
   jd = GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETTARGETACC, j);
@@ -89,38 +92,48 @@ int _cbProcess(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
   pro = AH_Job_GetProvider(j);
   assert(pro);
 
+  uniqueAccountId=AB_Account_GetUniqueId(AH_AccountJob_GetAccount(j));
+  rv=AB_Banking_GetAccountSpecByUniqueId(ab, uniqueAccountId, &as);
+  if (rv<0) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No account spec for account, SNH!");
+    return GWEN_ERROR_INTERNAL;
+  }
+
+  /* check if the internal transfer is already part of the transaction limits, if not, add them */
+  if (AB_AccountSpec_GetTransactionLimitsForCommand(as, AB_Transaction_CommandSepaInternalTransfer)==NULL) {
+    rv=_createTransactionLimits(j, as);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      AB_AccountSpec_free(as);
+      return rv;
+    }
+  }
+
   /* search for "GetAccountTargetAccountResponse" */
   dbCurr = GWEN_DB_GetFirstGroup(dbResponses);
   while (dbCurr) {
     GWEN_DB_NODE *dbXA;
-    int rv;
 
     rv = AH_Job_CheckEncryption(j, dbCurr);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (encryption)");
       AH_Job_SetStatus(j, AH_JobStatusError);
+      AB_AccountSpec_free(as);
       return rv;
     }
     rv = AH_Job_CheckSignature(j, dbCurr);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (signature)");
       AH_Job_SetStatus(j, AH_JobStatusError);
+      AB_AccountSpec_free(as);
       return rv;
     }
 
     dbXA = GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/GetAccountTargetAccountResponse");
     if (dbXA) {
-      uint32_t uniqueAccountId;
-      AB_ACCOUNT_SPEC *as;
       GWEN_DB_NODE *dbTargetAccount;
 
       /* check if we have a structure with an "account" group" */
-      uniqueAccountId = AB_Account_GetUniqueId(AH_AccountJob_GetAccount(j));
-      rv = AB_Banking_GetAccountSpecByUniqueId(ab, uniqueAccountId, &as);
-      if (rv<0) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "No account spec for account, SNH!");
-	return GWEN_ERROR_INTERNAL;
-      }
 
       dbTargetAccount = GWEN_DB_FindFirstGroup(dbXA, "targetAccount");
       while (dbTargetAccount) {
@@ -129,27 +142,24 @@ int _cbProcess(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 	ra=_getOrCreateReferenceAccount(as, dbTargetAccount);
 	if (ra==NULL) {
 	  DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting reference account from response segment");
+	  AB_AccountSpec_free(as);
 	  return GWEN_ERROR_GENERIC;
-	}
-
-        /* check if the internal transfer is already part of the transaction limits, if not, add them */
-	if (AB_AccountSpec_GetTransactionLimitsForCommand(as, AB_Transaction_CommandSepaInternalTransfer)==NULL) {
-	  rv=_createTransactionLimits(j, as);
-	  if (rv<0) {
-	    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-	    return rv;
-	  }
 	}
 
 	dbTargetAccount = GWEN_DB_FindNextGroup(dbTargetAccount, "targetAccount");
       } /* while (dbTargetAccount) */
 
-      rv = AB_Banking_WriteAccountSpec(AB_Provider_GetBanking(pro), as);
-      AB_AccountSpec_free(as);
+      rv=AB_Banking_WriteAccountSpec(AB_Provider_GetBanking(pro), as);
+      if (rv<0) {
+	DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+	AB_AccountSpec_free(as);
+	return rv;
+      }
     } /* if (dbXA) */
     dbCurr = GWEN_DB_GetNextGroup(dbCurr);
   } /* while dbCurr */
 
+  AB_AccountSpec_free(as);
   return 0;
 }
 
