@@ -83,9 +83,8 @@ int sepaInternalTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc,
 
     iban = GWEN_DB_GetCharValue(db, "remoteIBAN", 0, NULL);
     refAccountName = GWEN_DB_GetCharValue(db, "remoteAccountName", 0, NULL);
-    if (iban != NULL && refAccountName != NULL) {
-      ra = AB_ReferenceAccount_List_FindFirst(ral, iban, NULL, NULL, NULL, NULL,
-                                              NULL, NULL, refAccountName);
+    if (iban != NULL /* && refAccountName != NULL */) {
+      ra = AB_ReferenceAccount_List_FindFirst(ral, iban, NULL, NULL, NULL, NULL, NULL, NULL, refAccountName);
     }
     if (ra == NULL) {
       ra = _chooseReferenceAccount(ral);
