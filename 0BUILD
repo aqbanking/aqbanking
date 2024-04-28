@@ -165,7 +165,7 @@
 
     <!-- dependencies ( pkg-config and libs) -->
     <dependencies>
-      <dep id="gwenhywfar" name="gwenhywfar" minversion="5.8.2.1" required="TRUE" >
+      <dep id="gwenhywfar" name="gwenhywfar" minversion="5.11.2" required="TRUE" >
         <variables>plugindir gwengui-gtk3</variables>
       </dep>
 

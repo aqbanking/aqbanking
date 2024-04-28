@@ -448,8 +448,8 @@ AC_SUBST(aqbanking_plugins_bankinfo_libs)
 #
 
 # Variable used in aqbanking-config.cmake
-AC_SUBST(GWENHYWFAR_MINIMUM_VERSION, "5.8.2.1")
-AC_GWENHYWFAR(5,8,2,1)
+AC_SUBST(GWENHYWFAR_MINIMUM_VERSION, "5.11.2.0")
+AC_GWENHYWFAR(5,11,2,0)
 
 all_includes="$all_includes $gwenhywfar_includes"
 
