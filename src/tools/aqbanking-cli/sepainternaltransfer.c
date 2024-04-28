@@ -22,14 +22,14 @@
 
 /* forward declarations */
 #define ACC_CHOOSER_INPUT_SIZE 10
-static GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc,
-                                      char **argv);
-static AB_REFERENCE_ACCOUNT *_chooseReferenceAccount(
-  AB_REFERENCE_ACCOUNT_LIST *ral);
+static GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv);
+/* static AB_REFERENCE_ACCOUNT *_chooseReferenceAccount(AB_REFERENCE_ACCOUNT_LIST *ral); */
+static int _ensureRemoteAccountInfo(GWEN_DB_NODE *db, AB_ACCOUNT_SPEC *as);
 
-int sepaInternalTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc,
-                         char **argv)
-{
+
+
+int sepaInternalTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
+  {
   GWEN_DB_NODE *db;
   AB_ACCOUNT_SPEC *as;
 
@@ -37,7 +37,6 @@ int sepaInternalTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc,
   int rvExec = 0;
   const char *ctxFile;
   AB_TRANSACTION *t;
-  AB_REFERENCE_ACCOUNT_LIST *ral;
   int noCheck;
 
   /* parse command line arguments */
@@ -65,47 +64,11 @@ int sepaInternalTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc,
     return 2;
   }
 
-  /* get the target account */
-  ral = AB_AccountSpec_GetRefAccountList(as);
-
-  /* transfer arguments */
-  if (AB_ReferenceAccount_List_GetCount(ral) == 0) {
-    DBG_ERROR(0,
-              "No reference accounts defined, maybe you need to run 'aqhbci-tool4 gettargetacc'");
+  rv=_ensureRemoteAccountInfo(db, as);
+  if (rv!=0) {
+    DBG_ERROR(NULL, "Incomplete data for remote account, maybe you need to run 'aqhbci-tool4 gettargetacc'");
     AB_Banking_Fini(ab);
     return 2;
-  }
-  else {
-    AB_REFERENCE_ACCOUNT *ra=NULL;
-    const char *iban;
-    const char *refAccountName;
-    const char *ownerName;
-
-    iban = GWEN_DB_GetCharValue(db, "remoteIBAN", 0, NULL);
-    refAccountName = GWEN_DB_GetCharValue(db, "remoteAccountName", 0, NULL);
-    if (iban != NULL /* && refAccountName != NULL */) {
-      ra = AB_ReferenceAccount_List_FindFirst(ral, iban, NULL, NULL, NULL, NULL, NULL, NULL, refAccountName);
-    }
-    if (ra == NULL) {
-      ra = _chooseReferenceAccount(ral);
-      if (ra == NULL) {
-        DBG_ERROR(0, "No reference account chosen, abort");
-        AB_Banking_Fini(ab);
-        return 2;
-      }
-    }
-    /* transfer reference account info to the argument db */
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteIban",
-                         AB_ReferenceAccount_GetIban(ra));
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteBic",
-                         AB_ReferenceAccount_GetBic(ra));
-    ownerName=GWEN_DB_GetCharValue(db, "remoteName", 0, NULL);
-    if (!(ownerName && *ownerName)) {
-      ownerName=AB_ReferenceAccount_GetOwnerName(ra);
-      if (!(ownerName && *ownerName))
-        ownerName=AB_AccountSpec_GetOwnerName(as);
-      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteName", ownerName);
-    }
   }
 
   /* create transaction from arguments */
@@ -173,6 +136,71 @@ int sepaInternalTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc,
 
   return rvExec;
 }
+
+
+
+int _ensureRemoteAccountInfo(GWEN_DB_NODE *db, AB_ACCOUNT_SPEC *as)
+{
+  const char *remoteIban;
+  const char *remoteBic;
+  const char *remoteName;
+  const char *refAccountName;
+
+  remoteIban=GWEN_DB_GetCharValue(db, "remoteIban", 0, NULL);
+  remoteBic=GWEN_DB_GetCharValue(db, "remoteBic", 0, NULL);
+  remoteName=GWEN_DB_GetCharValue(db, "remoteName", 0, NULL);
+  refAccountName=GWEN_DB_GetCharValue(db, "remoteAccountName", 0, NULL);
+
+  if (!(remoteIban && *remoteIban && remoteBic && *remoteBic && remoteName && *remoteName)) {
+    AB_REFERENCE_ACCOUNT_LIST *ral;
+    AB_REFERENCE_ACCOUNT *ra=NULL;
+
+    ral=AB_AccountSpec_GetRefAccountList(as);
+    if (!(ral && AB_ReferenceAccount_List_GetCount(ral))) {
+      DBG_ERROR(NULL, "No reference accounts defined, maybe you need to run 'aqhbci-tool4 gettargetacc'");
+      return 2;
+    }
+
+    if ((remoteIban && *remoteIban) || (refAccountName && *refAccountName)) {
+      ra=AB_ReferenceAccount_List_FindFirst(ral, remoteIban, NULL, NULL, NULL, NULL, NULL, NULL, refAccountName);
+      if (ra) {
+        if (!(remoteIban && *remoteIban)) {
+          remoteIban=AB_ReferenceAccount_GetIban(ra);
+          if (!(remoteIban && *remoteIban)) {
+            DBG_ERROR(NULL, "No IBAN in reference account and none given.");
+            return 2;
+          }
+          GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteIban", remoteIban);
+        }
+        if (!(remoteBic && *remoteBic)) {
+          remoteBic=AB_ReferenceAccount_GetBic(ra);
+          if (!(remoteBic && *remoteBic)) {
+            DBG_ERROR(NULL, "No BIC in reference account and none given.");
+            return 2;
+          }
+          GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteBic", remoteBic);
+        }
+        if (!(remoteName && *remoteName)) {
+          remoteName=AB_ReferenceAccount_GetOwnerName(ra);
+          if (!(remoteName && *remoteName))
+            remoteName=AB_AccountSpec_GetOwnerName(as);
+          if (!(remoteName && *remoteName)) {
+            DBG_ERROR(NULL, "No remote name in reference account and none given.");
+            return 2;
+          }
+          GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteName", remoteName);
+        }
+      }
+      else {
+        DBG_ERROR(NULL, "No matching reference account found");
+        return 2;
+      }
+    }
+  }
+  return 0;
+}
+
+
 
 /* parse command line */
 GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
@@ -269,7 +297,19 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
       "iban", /* long option */
       "Specify the iban of your account", /* short description */
       "Specify the iban of your account" /* long description */
-    }, {
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT,  /* flags */
+      GWEN_ArgsType_Char,             /* type */
+      "remoteBIC",                /* name */
+      0,                             /* minnum */
+      1,                             /* maxnum */
+      0,                             /* short option */
+      "rbic",                       /* long option */
+      "Specify the remote SWIFT BIC",/* short description */
+      "Specify the remote SWIFT BIC" /* long description */
+    },
+    {
       GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
       GWEN_ArgsType_Char, /* type */
       "remoteIBAN", /* name */
@@ -279,7 +319,8 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
       "riban", /* long option */
       "Specify the remote IBAN", /* short description */
       "Specify the remote IBAN" /* long description */
-    }, {
+    },
+    {
       GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
       GWEN_ArgsType_Char, /* type */
       "value", /* name */
@@ -299,7 +340,19 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
       "name", /* long option */
       "Specify your name", /* short description */
       "Specify your name" /* long description */
-    }, {
+    },
+    {
+      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+      GWEN_ArgsType_Char,            /* type */
+      "remoteName",                 /* name */
+      1,                            /* minnum */
+      2,                            /* maxnum */
+      0,                            /* short option */
+      "rname",                      /* long option */
+      "Specify the remote name",    /* short description */
+      "Specify the remote name"     /* long description */
+    },
+    {
       GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
       GWEN_ArgsType_Char, /* type */
       "purpose", /* name */
@@ -366,6 +419,8 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
   return db;
 }
 
+
+#if 0
 AB_REFERENCE_ACCOUNT *_chooseReferenceAccount(AB_REFERENCE_ACCOUNT_LIST *ral)
 {
   AB_REFERENCE_ACCOUNT *ra = NULL;
@@ -428,4 +483,6 @@ AB_REFERENCE_ACCOUNT *_chooseReferenceAccount(AB_REFERENCE_ACCOUNT_LIST *ral)
   return ra;
 
 }
+#endif
+
 
