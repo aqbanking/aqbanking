@@ -76,12 +76,13 @@ int sepaInternalTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc,
     return 2;
   }
   else {
-    AB_REFERENCE_ACCOUNT *ra;
-    const char *iban = GWEN_DB_GetCharValue(db, "remoteIBAN", 0, 0);
-    const char *refAccountName = GWEN_DB_GetCharValue(db, "remoteAccountName", 0, 0);
+    AB_REFERENCE_ACCOUNT *ra=NULL;
+    const char *iban;
+    const char *refAccountName;
     const char *ownerName;
 
-    ra = NULL;
+    iban = GWEN_DB_GetCharValue(db, "remoteIBAN", 0, NULL);
+    refAccountName = GWEN_DB_GetCharValue(db, "remoteAccountName", 0, NULL);
     if (iban != NULL && refAccountName != NULL) {
       ra = AB_ReferenceAccount_List_FindFirst(ral, iban, NULL, NULL, NULL, NULL,
                                               NULL, NULL, refAccountName);
@@ -100,11 +101,12 @@ int sepaInternalTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc,
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteBic",
                          AB_ReferenceAccount_GetBic(ra));
     ownerName=GWEN_DB_GetCharValue(db, "remoteName", 0, NULL);
-    if (!(ownerName && *ownerName))
+    if (!(ownerName && *ownerName)) {
       ownerName=AB_ReferenceAccount_GetOwnerName(ra);
-    if (!(ownerName && *ownerName))
-      ownerName=AB_AccountSpec_GetOwnerName(as);
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteName", ownerName);
+      if (!(ownerName && *ownerName))
+        ownerName=AB_AccountSpec_GetOwnerName(as);
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteName", ownerName);
+    }
   }
 
   /* create transaction from arguments */
