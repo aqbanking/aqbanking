@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue Oct 12 2021
- copyright   : (C) 2021 by Stefan Bayer, Martin Preuss
+ copyright   : (C) 2024 by Stefan Bayer, Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -21,15 +21,28 @@
 #include <aqbanking/types/refaccount.h>
 #include <aqbanking/types/transactionlimits.h>
 
+
+
 GWEN_INHERIT(AH_JOB, AH_JOB_GETTARGETACC)
 
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 static void GWENHYWFAR_CB _freeData(void *bp, void *p);
 static int _cbProcess(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 static AB_REFERENCE_ACCOUNT *_getOrCreateReferenceAccount(AB_ACCOUNT_SPEC *as, GWEN_DB_NODE *dbTargetAccount);
 static int _createTransactionLimits(const AH_JOB *j, AB_ACCOUNT_SPEC *as);
+static int _parseResponses(AH_JOB *j, AB_ACCOUNT_SPEC *as);
 
 
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 AH_JOB *AH_Job_GetTargetAccount_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc)
 {
@@ -67,8 +80,6 @@ int _cbProcess(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 {
   AH_JOB_GETTARGETACC *jd;
   AB_ACCOUNT_SPEC *as;
-  GWEN_DB_NODE *dbResponses;
-  GWEN_DB_NODE *dbCurr;
   AB_BANKING *ab;
   AB_PROVIDER *pro;
   uint32_t uniqueAccountId;
@@ -82,9 +93,6 @@ int _cbProcess(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     return 0;
 
   jd->scanned = 1;
-
-  dbResponses = AH_Job_GetResponses(j);
-  assert(dbResponses);
 
   ab = AH_Job_GetBankingApi(j);
   assert(ab);
@@ -109,57 +117,75 @@ int _cbProcess(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     }
   }
 
-  /* search for "GetAccountTargetAccountResponse" */
-  dbCurr = GWEN_DB_GetFirstGroup(dbResponses);
-  while (dbCurr) {
-    GWEN_DB_NODE *dbXA;
+  rv=_parseResponses(j, as);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_AccountSpec_free(as);
+    return rv;
+  }
 
-    rv = AH_Job_CheckEncryption(j, dbCurr);
-    if (rv) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (encryption)");
-      AH_Job_SetStatus(j, AH_JobStatusError);
-      AB_AccountSpec_free(as);
-      return rv;
-    }
-    rv = AH_Job_CheckSignature(j, dbCurr);
-    if (rv) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (signature)");
-      AH_Job_SetStatus(j, AH_JobStatusError);
-      AB_AccountSpec_free(as);
-      return rv;
-    }
-
-    dbXA = GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/GetAccountTargetAccountResponse");
-    if (dbXA) {
-      GWEN_DB_NODE *dbTargetAccount;
-
-      /* check if we have a structure with an "account" group" */
-
-      dbTargetAccount = GWEN_DB_FindFirstGroup(dbXA, "targetAccount");
-      while (dbTargetAccount) {
-	AB_REFERENCE_ACCOUNT *ra;
-
-	ra=_getOrCreateReferenceAccount(as, dbTargetAccount);
-	if (ra==NULL) {
-	  DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting reference account from response segment");
-	  AB_AccountSpec_free(as);
-	  return GWEN_ERROR_GENERIC;
-	}
-
-	dbTargetAccount = GWEN_DB_FindNextGroup(dbTargetAccount, "targetAccount");
-      } /* while (dbTargetAccount) */
-
-      rv=AB_Banking_WriteAccountSpec(AB_Provider_GetBanking(pro), as);
-      if (rv<0) {
-	DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-	AB_AccountSpec_free(as);
-	return rv;
-      }
-    } /* if (dbXA) */
-    dbCurr = GWEN_DB_GetNextGroup(dbCurr);
-  } /* while dbCurr */
+  rv=AB_Banking_WriteAccountSpec(AB_Provider_GetBanking(pro), as);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AB_AccountSpec_free(as);
+    return rv;
+  }
 
   AB_AccountSpec_free(as);
+  return 0;
+}
+
+
+
+int _parseResponses(AH_JOB *j, AB_ACCOUNT_SPEC *as)
+{
+  GWEN_DB_NODE *dbResponses;
+
+  dbResponses = AH_Job_GetResponses(j);
+  if (dbResponses) {
+    GWEN_DB_NODE *dbCurr;
+
+    /* search for "GetAccountTargetAccountResponse" */
+    dbCurr = GWEN_DB_GetFirstGroup(dbResponses);
+    while (dbCurr) {
+      GWEN_DB_NODE *dbXA;
+      int rv;
+  
+      rv = AH_Job_CheckEncryption(j, dbCurr);
+      if (rv) {
+	DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (encryption)");
+	AH_Job_SetStatus(j, AH_JobStatusError);
+	return rv;
+      }
+      rv = AH_Job_CheckSignature(j, dbCurr);
+      if (rv) {
+	DBG_INFO(AQHBCI_LOGDOMAIN, "Compromised security (signature)");
+	AH_Job_SetStatus(j, AH_JobStatusError);
+	return rv;
+      }
+  
+      dbXA = GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/GetAccountTargetAccountResponse");
+      if (dbXA) {
+	GWEN_DB_NODE *dbTargetAccount;
+  
+	/* check if we have a structure with an "account" group" */
+  
+	dbTargetAccount = GWEN_DB_FindFirstGroup(dbXA, "targetAccount");
+	while (dbTargetAccount) {
+	  AB_REFERENCE_ACCOUNT *ra;
+  
+	  ra=_getOrCreateReferenceAccount(as, dbTargetAccount);
+	  if (ra==NULL) {
+	    DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting reference account from response segment");
+	    return GWEN_ERROR_GENERIC;
+	  }
+  
+	  dbTargetAccount = GWEN_DB_FindNextGroup(dbTargetAccount, "targetAccount");
+	} /* while (dbTargetAccount) */
+      } /* if (dbXA) */
+      dbCurr = GWEN_DB_GetNextGroup(dbCurr);
+    } /* while dbCurr */
+  }
   return 0;
 }
 
