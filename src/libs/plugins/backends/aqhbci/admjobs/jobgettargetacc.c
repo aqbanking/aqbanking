@@ -15,6 +15,8 @@
 
 #include "aqhbci/joblayer/job_crypt.h"
 #include "aqhbci/banking/provider_job.h"
+#include "aqhbci/ajobs//accountjob_l.h"
+
 #include <aqbanking/backendsupport/account.h>
 #include <aqbanking/types/refaccount.h>
 #include <aqbanking/types/transactionlimits.h>
@@ -32,12 +34,10 @@ static int _createTransactionLimits(AH_JOB *j, AB_ACCOUNT_SPEC *as);
 AH_JOB *AH_Job_GetTargetAccount_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc)
 {
   AH_JOB *j;
-  GWEN_DB_NODE *dbArgs;
   AH_JOB_GETTARGETACC *jd;
-  const char *s;
 
   assert(u);
-  j = AH_Job_new("JobGetAccountTargetAccount", pro, u, 0, 0);
+  j=AH_AccountJob_new("JobGetAccountTargetAccount", pro, u, acc);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "JobGetAccountTargetAccount not supported, should not happen");
     return NULL;
@@ -46,24 +46,6 @@ AH_JOB *AH_Job_GetTargetAccount_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *ac
   GWEN_NEW_OBJECT(AH_JOB_GETTARGETACC, jd);
   GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_GETTARGETACC, j, jd, _freeData)
   AH_Job_SetProcessFn(j, _cbProcess);
-
-  jd->account = acc;
-
-  /* set arguments */
-  dbArgs = AH_Job_GetArguments(j);
-  assert(dbArgs);
-
-  s = AB_Account_GetAccountNumber(jd->account);
-  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountId", (s && *s)?s:NULL);
-
-  s = AB_Account_GetSubAccountId(jd->account);
-  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountSubId", (s && *s)?s:NULL);
-
-  s = AB_Account_GetIban(jd->account);
-  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "iban", (s && *s)?s:NULL);
-
-  s = AB_Account_GetBic(jd->account);
-  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "bic", (s && *s)?s:NULL);
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "JobGetAccountTargetAccount created");
   return j;
@@ -133,7 +115,7 @@ int _cbProcess(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
       GWEN_DB_NODE *dbTargetAccount;
 
       /* check if we have a structure with an "account" group" */
-      uniqueAccountId = AB_Account_GetUniqueId(jd->account);
+      uniqueAccountId = AB_Account_GetUniqueId(AH_AccountJob_GetAccount(j));
       rv = AB_Banking_GetAccountSpecByUniqueId(ab, uniqueAccountId, &as);
       if (rv<0) {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "No account spec for account, SNH!");
@@ -231,7 +213,6 @@ AB_REFERENCE_ACCOUNT *_getOrCreateReferenceAccount(AB_ACCOUNT_SPEC *as, GWEN_DB_
 
 int _createTransactionLimits(AH_JOB *j, AB_ACCOUNT_SPEC *as)
 {
-  AH_JOB_GETTARGETACC *jd;
   AB_PROVIDER *pro;
   AB_USER *u;
   AB_TRANSACTION_LIMITS *limits;
@@ -239,7 +220,6 @@ int _createTransactionLimits(AH_JOB *j, AB_ACCOUNT_SPEC *as)
   AB_TRANSACTION_LIMITS_LIST *tll;
   int rv;
 
-  jd=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_GETTARGETACC, tmpJob);
   u=AH_Job_GetUser(j);
   pro=AH_Job_GetProvider(j);
 
@@ -248,7 +228,7 @@ int _createTransactionLimits(AH_JOB *j, AB_ACCOUNT_SPEC *as)
 	   "Creating transaction limits for job \"%s\"",
 	   AB_Transaction_Command_toString(AB_Transaction_CommandSepaInternalTransfer));
   DBG_INFO(AQHBCI_LOGDOMAIN, "- creating job");
-  rv = AH_Provider_CreateHbciJob(pro, u, jd->account, AB_Transaction_CommandSepaInternalTransfer, &tmpJob);
+  rv = AH_Provider_CreateHbciJob(pro, u, AH_AccountJob_GetAccount(j), AB_Transaction_CommandSepaInternalTransfer, &tmpJob);
   if (rv < 0) {
     if (rv == GWEN_ERROR_NOT_AVAILABLE) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" is not available",

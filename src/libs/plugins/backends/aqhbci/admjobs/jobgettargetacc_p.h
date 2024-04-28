@@ -18,7 +18,6 @@
 
 typedef struct AH_JOB_GETTARGETACC AH_JOB_GETTARGETACC;
 struct AH_JOB_GETTARGETACC {
-  AB_ACCOUNT *account;
   int scanned;
 };
 
