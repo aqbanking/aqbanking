@@ -22,6 +22,7 @@
 
 /* forward declarations */
 #define ACC_CHOOSER_INPUT_SIZE 10
+#define REMOTE_NAME_INPUT_SIZE 35
 static GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc,
                                       char **argv);
 static AB_REFERENCE_ACCOUNT *_chooseReferenceAccount(
@@ -80,6 +81,8 @@ int sepaInternalTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc,
     const char *iban = GWEN_DB_GetCharValue(db, "remoteIBAN", 0, 0);
     const char *refAccountName = GWEN_DB_GetCharValue(db, "remoteAccountName",
                                                       0, 0);
+    const char *remoteName = GWEN_DB_GetCharValue(db, "remoteName", 0, 0);
+    const char *remoteNameConfig;
     ra = NULL;
     if (iban != NULL && refAccountName != NULL) {
       ra = AB_ReferenceAccount_List_FindFirst(ral, iban, NULL, NULL, NULL, NULL,
@@ -98,9 +101,54 @@ int sepaInternalTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc,
                          AB_ReferenceAccount_GetIban(ra));
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteBic",
                          AB_ReferenceAccount_GetBic(ra));
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteName",
-                         AB_ReferenceAccount_GetOwnerName(ra));
+    remoteNameConfig = AB_ReferenceAccount_GetOwnerName(ra);
+    /* check if a remote name was in the config */
+    if ( remoteNameConfig == NULL )
+    {
+    	/* no, check if one was given at the command line */
+    	if ( remoteName != NULL )
+    	{
+    		/* there is one, use it */
+    		GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteName",
+    				remoteName);
+    	}
+    	else
+    	{
+    		char remoteNameBuffer[REMOTE_NAME_INPUT_SIZE];
+    		GWEN_BUFFER *ubuf;
+    		uint32_t flags=0;
+
+    		ubuf = GWEN_Buffer_new(0, 8096, 0, 1);
+
+    		GWEN_Buffer_AppendString(ubuf, I18N("Remote Name missing"));
+
+    		GWEN_Gui_InputBox(flags, I18N("Provide a remote name"),
+    				GWEN_Buffer_GetStart(ubuf), remoteNameBuffer, 0,
+					REMOTE_NAME_INPUT_SIZE - 1, 0);
+    	    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteName",
+    		    	remoteNameBuffer);
+
+    		GWEN_Buffer_free(ubuf);
+    	}
+
+    }
+    else
+    {
+    	/* no, check if one was given at the command line */
+    	if ( remoteName != NULL )
+    	{
+    		/* there is one, use it */
+    		GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteName",
+    				remoteName);
+    	}
+    	else
+    	{
+    	    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_OVERWRITE_VARS, "remoteName",
+    		    	remoteNameConfig);
+    	}
+    }
   }
+
 
   /* create transaction from arguments */
   t = mkSepaTransfer(db, AB_Transaction_CommandSepaInternalTransfer);
@@ -232,7 +280,7 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
       NULL, /* short option */
       "raccname", /* long option */
       "specify the reference account name", /* short description */
-      "specify the reference account number" /* long description */
+      "specify the reference account name" /* long description */
     }, {
       GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
       GWEN_ArgsType_Char, /* type */
@@ -293,7 +341,18 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
       "name", /* long option */
       "Specify your name", /* short description */
       "Specify your name" /* long description */
-    }, {
+    },{
+	  GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
+	  GWEN_ArgsType_Char, /* type */
+	  "remoteName", /* name */
+	  0, /* minnum */
+	  1, /* maxnum */
+	  0, /* short option */
+	  "rname", /* long option */
+	  "Specify the remote name", /* short description */
+	  "Specify the remote name" /* long description */
+    },
+	{
       GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
       GWEN_ArgsType_Char, /* type */
       "purpose", /* name */
@@ -422,4 +481,6 @@ AB_REFERENCE_ACCOUNT *_chooseReferenceAccount(AB_REFERENCE_ACCOUNT_LIST *ral)
   return ra;
 
 }
+
+
 
