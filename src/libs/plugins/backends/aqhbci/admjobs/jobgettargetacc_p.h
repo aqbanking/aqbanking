@@ -21,9 +21,6 @@ struct AH_JOB_GETTARGETACC {
   AB_ACCOUNT *account;
   int scanned;
 };
-static void GWENHYWFAR_CB AH_Job_GetTargetAccount_FreeData(void *bp, void *p);
-
-static int AH_Job_GetTargetAccount_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 
 
 
