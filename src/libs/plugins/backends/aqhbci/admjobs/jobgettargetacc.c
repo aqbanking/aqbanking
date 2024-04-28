@@ -180,7 +180,6 @@ AB_REFERENCE_ACCOUNT *_getOrCreateReferenceAccount(AB_ACCOUNT_SPEC *as, GWEN_DB_
   AB_REFERENCE_ACCOUNT_LIST *refAccountList;
   AB_REFERENCE_ACCOUNT *refAccount=NULL;
 
-  /* get unique id of the target account */
   reqIban = GWEN_DB_GetCharValue(dbTargetAccount, "account/iban", 0, NULL);
   reqBic = GWEN_DB_GetCharValue(dbTargetAccount, "account/bic", 0, NULL);
   reqAccountId = GWEN_DB_GetCharValue(dbTargetAccount, "account/accountid", 0, NULL);
@@ -188,6 +187,7 @@ AB_REFERENCE_ACCOUNT *_getOrCreateReferenceAccount(AB_ACCOUNT_SPEC *as, GWEN_DB_
   reqCountry = GWEN_DB_GetCharValue(dbTargetAccount, "account/country", 0, NULL);
   reqBankCode = GWEN_DB_GetCharValue(dbTargetAccount, "account/bankcode", 0, NULL);
   reqOwnerName = GWEN_DB_GetCharValue(dbTargetAccount, "rcvName1", 0, NULL);
+  /* make sure there is a remote name in the account (this could also be done later upon sending an internal transfer) */
   if (!(reqOwnerName && *reqOwnerName))
     reqOwnerName=AB_AccountSpec_GetOwnerName(as);
   reqAddtlOwnerName = GWEN_DB_GetCharValue(dbTargetAccount, "rcvName2", 0, NULL);
