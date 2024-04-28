@@ -34,7 +34,7 @@ GWEN_INHERIT(AH_JOB, AH_JOB_GETTARGETACC)
 static void GWENHYWFAR_CB _freeData(void *bp, void *p);
 static int _cbProcess(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 static AB_REFERENCE_ACCOUNT *_getOrCreateReferenceAccount(AB_ACCOUNT_SPEC *as, GWEN_DB_NODE *dbTargetAccount);
-static int _createTransactionLimits(const AH_JOB *j, AB_ACCOUNT_SPEC *as);
+static int _createTransactionLimitsForSepaInternalTransfer(const AH_JOB *j, AB_ACCOUNT_SPEC *as);
 static int _parseResponses(AH_JOB *j, AB_ACCOUNT_SPEC *as);
 
 
@@ -109,7 +109,7 @@ int _cbProcess(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 
   /* check if the internal transfer is already part of the transaction limits, if not, add them */
   if (AB_AccountSpec_GetTransactionLimitsForCommand(as, AB_Transaction_CommandSepaInternalTransfer)==NULL) {
-    rv=_createTransactionLimits(j, as);
+    rv=_createTransactionLimitsForSepaInternalTransfer(j, as);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       AB_AccountSpec_free(as);
@@ -247,7 +247,7 @@ AB_REFERENCE_ACCOUNT *_getOrCreateReferenceAccount(AB_ACCOUNT_SPEC *as, GWEN_DB_
 
 
 
-int _createTransactionLimits(const AH_JOB *j, AB_ACCOUNT_SPEC *as)
+int _createTransactionLimitsForSepaInternalTransfer(const AH_JOB *j, AB_ACCOUNT_SPEC *as)
 {
   AB_PROVIDER *pro;
   AB_USER *u;
