@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Thu Apr 15 2010
- copyright   : (C) 2018 by Martin Preuss
+ copyright   : (C) 2024 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -24,16 +24,6 @@ struct AH_EDIT_ACCOUNT_DIALOG {
   AB_ACCOUNT *account;
   int doLock;
 };
-
-
-static void GWENHYWFAR_CB AH_EditAccountDialog_FreeData(void *bp, void *p);
-
-static int GWENHYWFAR_CB AH_EditAccountDialog_SignalHandler(GWEN_DIALOG *dlg,
-                                                            GWEN_DIALOG_EVENTTYPE t,
-                                                            const char *sender);
-
-
-
 
 
 #endif
