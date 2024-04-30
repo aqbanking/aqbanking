@@ -55,7 +55,7 @@
       <widget type="gridLayout" columns="2" flags="fillX" >
 
         <widget type="label" text="Country" />
-        <widget type="lineEdit" name="countryEdit"  columns="20" flags="fillX readOnly" />
+        <widget type="lineEdit" name="countryEdit"  columns="20" flags="fillX" />
 
         <widget type="label" text="Bank Code" flags="noWordWrap" />
         <widget type="hlayout" flags="fillX " >
