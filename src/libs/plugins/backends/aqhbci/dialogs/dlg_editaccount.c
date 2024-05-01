@@ -356,7 +356,7 @@ int _handleActivatedBankCode(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE
 
   dlg2=AB_SelectBankInfoDialog_new(xdlg->banking, "de", NULL);
   if (dlg2==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create dialog");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create dialog");
     return GWEN_DialogEvent_ResultHandled;
   }
 
@@ -410,7 +410,7 @@ int _handleActivatedOk(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE t, GW
 
     rv=AB_Provider_BeginExclUseAccount(xdlg->provider, xdlg->account);
     if (rv<0) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Unable to lock account. Maybe already in use?"));
       return GWEN_DialogEvent_ResultHandled;
     }
@@ -423,7 +423,7 @@ int _handleActivatedOk(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE t, GW
 
     rv=AB_Provider_EndExclUseAccount(xdlg->provider, xdlg->account, 0);
     if (rv<0) {
-      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Unable to unlock account."));
       AB_Provider_EndExclUseAccount(xdlg->provider, xdlg->account, 1);
       return GWEN_DialogEvent_ResultHandled;
