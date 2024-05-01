@@ -29,7 +29,13 @@ noinst_HEADERS=\
   dlg_importkeyfile_l.h dlg_importkeyfile_p.h \
   dlg_choose_usertype_l.h dlg_choose_usertype_p.h \
   dlg_editaccount_l.h dlg_editaccount_p.h \
-  dlg_pintan_tanmode_l.h dlg_pintan_tanmode_p.h
+  dlg_pintan_tanmode_l.h dlg_pintan_tanmode_p.h \
+  w_hbciversioncombo.h \
+  w_accounttypecombo.h \
+  w_usercombo.h \
+  w_tanmethodcombo.h \
+  w_utils.h
+
 
 libaqhbci_dlgs_la_SOURCES=\
   dlg_edituserddv.c \
@@ -46,7 +52,12 @@ libaqhbci_dlgs_la_SOURCES=\
   dlg_newuser.c \
   dlg_choose_usertype.c \
   dlg_editaccount.c \
-  dlg_pintan_tanmode.c
+  dlg_pintan_tanmode.c \
+  w_hbciversioncombo.c \
+  w_accounttypecombo.c \
+  w_usercombo.c \
+  w_tanmethodcombo.c \
+  w_utils.c
 
 
 dlgdatadir=$(aqbanking_pkgdatadir)/backends/aqhbci/dialogs
