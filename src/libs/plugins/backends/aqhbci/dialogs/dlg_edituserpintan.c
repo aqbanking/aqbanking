@@ -13,8 +13,11 @@
 #endif
 
 #include "dlg_edituserpintan_p.h"
+#include "w_hbciversioncombo.h"
+#include "w_tanmethodcombo.h"
+#include "w_utils.h"
+
 #include "banking/provider_l.h"
-#include "aqbanking/i18n_l.h"
 
 #include "aqhbci/banking/user.h"
 #include "aqhbci/banking/provider.h"
@@ -23,6 +26,7 @@
 #include <aqbanking/backendsupport/user.h>
 #include <aqbanking/banking_be.h>
 #include <aqbanking/dialogs/dlg_selectbankinfo.h>
+#include "aqbanking/i18n_l.h"
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/misc.h>
@@ -65,15 +69,12 @@ typedef void (*_USER_SETCHARVALUE_FN)(AB_USER *user, const char *s);
  * ------------------------------------------------------------------------------------------------
  */
 
-
 static void GWENHYWFAR_CB _freeData(void *bp, void *p);
 
 static int GWENHYWFAR_CB _dlgApi_signalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
 
 static int _saveUser(GWEN_DIALOG *dlg);
 
-static int _createTanMethodString(const AH_TAN_METHOD *tm, GWEN_BUFFER *tbuf);
-static void _tanMethodsComboRebuild(GWEN_DIALOG *dlg);
 static void _removeAllSpaces(uint8_t *s);
 static int _fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet);
 static int _handleInit(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
@@ -91,31 +92,15 @@ static int _handleValueChanged(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const 
 
 static void _setModified(GWEN_DIALOG *dlg, int enabled);
 
-static void _toGui(GWEN_DIALOG *dlg, const AB_USER *user);
-
-/*static int _tanMethodsComboFindMethodById(GWEN_DIALOG *dlg, const char *widgetName, int id);*/
-/*static void _tanMethodsComboSetCurrent(GWEN_DIALOG *dlg, const char *widgetName, int id);*/
-static int _tanMethodsComboGetCurrent(GWEN_DIALOG *dlg, const char *widgetName);
+static void _toGui(GWEN_DIALOG *dlg, AB_USER *user);
 
 static void _tanMechanismComboSetup(GWEN_DIALOG *dlg, const char *widgetName);
 static void _tanMechanismComboSetCurrent(GWEN_DIALOG *dlg, const char *widgetName, int t);
 static int _tanMechanismComboGetCurrent(GWEN_DIALOG *dlg, const char *widgetName);
 
-static void _hbciVersionComboSetup(GWEN_DIALOG *dlg, const char *widgetName);
-static void _hbciVersionComboSetCurrent(GWEN_DIALOG *dlg, const char *widgetName, int v);
-static int _hbciVersionComboGetCurrent(GWEN_DIALOG *dlg, const char *widgetName);
-
 static void _httpVersionComboSetup(GWEN_DIALOG *dlg, const char *widgetName);
 static void _httpVersionComboSetCurrent(GWEN_DIALOG *dlg, const char *widgetName, int v);
 static int _httpVersionComboGetCurrent(GWEN_DIALOG *dlg, const char *widgetName);
-
-static void _userToGuiText(GWEN_DIALOG *dlg, const char *widgetName, const AB_USER *user, _USER_GETCHARVALUE_FN fn);
-static int _guiTextToUserDeleSpaces(GWEN_DIALOG *dlg, const char *widgetName,
-                                    AB_USER *user, _USER_SETCHARVALUE_FN fn,
-                                    const char *errMsgIfMissing);
-static int _guiTextToUserKeepSpaces(GWEN_DIALOG *dlg, const char *widgetName,
-                                    AB_USER *user, _USER_SETCHARVALUE_FN fn,
-                                    const char *errMsgIfMissing);
 
 static void _userFlagsToGui(GWEN_DIALOG *dlg, uint32_t flags);
 static uint32_t _userFlagsFromGui(GWEN_DIALOG *dlg);
@@ -126,7 +111,6 @@ static uint32_t _userFlagsFromGui(GWEN_DIALOG *dlg);
  * static vars
  * ------------------------------------------------------------------------------------------------
  */
-
 
 GWEN_INHERIT(GWEN_DIALOG, AH_EDIT_USER_PINTAN_DIALOG)
 
@@ -222,7 +206,7 @@ int _handleInit(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
 
   _tanMechanismComboSetup(dlg, "tanMechanismCombo");
 
-  _hbciVersionComboSetup(dlg, "hbciVersionCombo");
+  AH_Widget_HbciVersionComboSetup(dlg, "hbciVersionCombo");
   _httpVersionComboSetup(dlg, "httpVersionCombo");
 
   GWEN_Dialog_SetCharProperty(dlg, "tanMediumIdEdit", GWEN_DialogProperty_ToolTip, 0,
@@ -247,20 +231,21 @@ int _handleInit(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
 
 
 
-void _toGui(GWEN_DIALOG *dlg, const AB_USER *user)
+void _toGui(GWEN_DIALOG *dlg, AB_USER *user)
 {
   const GWEN_URL *gu;
 
-  _tanMethodsComboRebuild(dlg);
+  AH_Widget_TanMethodComboRebuild(dlg, "tanMethodCombo", AH_User_GetTanMethodDescriptions(user));
+  AH_Widget_TanMethodComboSetCurrent(dlg, "tanMethodCombo", AH_User_GetSelectedTanMethod(user));
 
-  _userToGuiText(dlg, "userNameEdit",    user, AB_User_GetUserName);
-  _userToGuiText(dlg, "bankCodeEdit",    user, AB_User_GetBankCode);
-  _userToGuiText(dlg, "userIdEdit",      user, AB_User_GetUserId);
-  _userToGuiText(dlg, "customerIdEdit",  user, AB_User_GetCustomerId);
-  _userToGuiText(dlg, "tanMediumIdEdit", user, AH_User_GetTanMediumId);
+  AH_Widget_UserToGuiText(dlg, "userNameEdit",    user, AB_User_GetUserName);
+  AH_Widget_UserToGuiText(dlg, "bankCodeEdit",    user, AB_User_GetBankCode);
+  AH_Widget_UserToGuiText(dlg, "userIdEdit",      user, AB_User_GetUserId);
+  AH_Widget_UserToGuiText(dlg, "customerIdEdit",  user, AB_User_GetCustomerId);
+  AH_Widget_UserToGuiText(dlg, "tanMediumIdEdit", user, AH_User_GetTanMediumId);
 
   _tanMechanismComboSetCurrent(dlg, "tanMechanismCombo", AH_User_GetSelectedTanInputMechanism(user));
-  _hbciVersionComboSetCurrent(dlg, "hbciVersionCombo", AH_User_GetHbciVersion(user));
+  AH_Widget_HbciVersionComboSetCurrent(dlg, "hbciVersionCombo", AH_User_GetHbciVersion(user));
   _httpVersionComboSetCurrent(dlg, "httpVersionCombo", ((AH_User_GetHttpVMajor(user))<<8)+AH_User_GetHttpVMinor(user));
 
   _userFlagsToGui(dlg, AH_User_GetFlags(user));
@@ -284,11 +269,11 @@ int _fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
   const char *s;
   int i;
 
-  if (_guiTextToUserKeepSpaces(dlg, "userNameEdit",    u, AB_User_SetUserName,    NULL)<0 ||
-      _guiTextToUserDeleSpaces(dlg, "bankCodeEdit",    u, AB_User_SetBankCode,    NULL)<0 ||
-      _guiTextToUserKeepSpaces(dlg, "userIdEdit",      u, AB_User_SetUserId,      quiet?NULL:I18N("Missing user id"))<0 ||
-      _guiTextToUserKeepSpaces(dlg, "customerIdEdit",  u, AB_User_SetCustomerId,  NULL)<0 ||
-      _guiTextToUserKeepSpaces(dlg, "tanMediumIdEdit", u, AH_User_SetTanMediumId, NULL)<0) {
+  if (AH_Widget_GuiTextToUserKeepSpaces(dlg, "userNameEdit",    u, AB_User_SetUserName,    NULL)<0 ||
+      AH_Widget_GuiTextToUserDeleSpaces(dlg, "bankCodeEdit",    u, AB_User_SetBankCode,    NULL)<0 ||
+      AH_Widget_GuiTextToUserKeepSpaces(dlg, "userIdEdit",      u, AB_User_SetUserId,      quiet?NULL:I18N("Missing user id"))<0 ||
+      AH_Widget_GuiTextToUserKeepSpaces(dlg, "customerIdEdit",  u, AB_User_SetCustomerId,  NULL)<0 ||
+      AH_Widget_GuiTextToUserKeepSpaces(dlg, "tanMediumIdEdit", u, AH_User_SetTanMediumId, NULL)<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here");
     return GWEN_ERROR_INVALID;
   }
@@ -296,7 +281,7 @@ int _fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
   if (u)
     AB_User_SetCountry(u, "de");
 
-  AH_User_SetHbciVersion(u, _hbciVersionComboGetCurrent(dlg, "hbciVersionCombo"));
+  AH_User_SetHbciVersion(u, AH_Widget_HbciVersionComboGetCurrent(dlg, "hbciVersionCombo"));
 
   i=_httpVersionComboGetCurrent(dlg, "httpVersionCombo");
   AH_User_SetHttpVMajor(u, ((i>>8) & 0xff));
@@ -304,7 +289,7 @@ int _fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
 
   AH_User_SetSelectedTanInputMechanism(u, _tanMechanismComboGetCurrent(dlg, "tanMechanismCombo"));
 
-  i=_tanMethodsComboGetCurrent(dlg, "tanMethodCombo");
+  i=AH_Widget_TanMethodComboGetCurrent(dlg, "tanMethodCombo");
   if (i>0) {
     AH_User_SetSelectedTanMethod(u, i);
   }
@@ -677,136 +662,6 @@ int GWENHYWFAR_CB _dlgApi_signalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE 
 
 
 
-#if 0
-int _tanMethodsComboFindMethodById(GWEN_DIALOG *dlg, const char *widgetName, int id)
-{
-  int idx;
-
-  for (idx=0; ; idx++) {
-    const char *s;
-
-    s=GWEN_Dialog_GetCharProperty(dlg, widgetName, GWEN_DialogProperty_Value, idx, NULL);
-    if (s && *s) {
-      int currentId;
-
-      if (1==sscanf(s, "%u", &currentId) && currentId==id)
-        return idx;
-    }
-    else
-      break;
-  } /* for */
-
-  return -1;
-}
-
-
-
-void _tanMethodsComboSetCurrent(GWEN_DIALOG *dlg, const char *widgetName, int id)
-{
-  if (id) {
-    int idx;
-
-    idx=_tanMethodsComboFindMethodById(dlg, widgetName, id);
-    if (idx>=0)
-      GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_Value, 0, idx, 0);
-  }
-}
-#endif
-
-
-
-int _tanMethodsComboGetCurrent(GWEN_DIALOG *dlg, const char *widgetName)
-{
-  int idx;
-
-  idx=GWEN_Dialog_GetIntProperty(dlg, widgetName,  GWEN_DialogProperty_Value, 0, -1);
-  if (idx>=0) {
-    const char *s;
-
-    s=GWEN_Dialog_GetCharProperty(dlg, widgetName, GWEN_DialogProperty_Value, idx, NULL);
-    if (s && *s) {
-      int currentId;
-
-      if (1==sscanf(s, "%u", &currentId))
-        return currentId;
-    }
-  }
-
-  return 0;
-}
-
-
-void _tanMethodsComboRebuild(GWEN_DIALOG *dlg)
-{
-  AH_EDIT_USER_PINTAN_DIALOG *xdlg;
-  const AH_TAN_METHOD_LIST *ctl;
-
-  assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_PINTAN_DIALOG, dlg);
-  assert(xdlg);
-
-  ctl=AH_User_GetTanMethodDescriptions(xdlg->user);
-
-  /* setup tanmethod combo */
-  GWEN_Dialog_SetIntProperty(dlg, "tanMethodCombo", GWEN_DialogProperty_ClearValues, 0, 0, 0);
-  GWEN_Dialog_SetCharProperty(dlg, "tanMethodCombo", GWEN_DialogProperty_AddValue, 0, I18N("-- select --"), 0);
-  if (ctl) {
-    AH_TAN_METHOD *tm;
-    GWEN_BUFFER *tbuf;
-    int i;
-    int idx;
-    int selectedMethod;
-    int tjv;
-    int tfn;
-
-    selectedMethod=AH_User_GetSelectedTanMethod(xdlg->user);
-    tjv=selectedMethod / 1000;
-    tfn=selectedMethod % 1000;
-    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    idx=-1;
-    i=1;
-    tm=AH_TanMethod_List_First(ctl);
-    while (tm) {
-      if (_createTanMethodString(tm, tbuf)==0) {
-        if (AH_TanMethod_GetFunction(tm)==tfn && AH_TanMethod_GetGvVersion(tm)==tjv)
-          idx=i;
-        GWEN_Dialog_SetCharProperty(dlg, "tanMethodCombo", GWEN_DialogProperty_AddValue, 0, GWEN_Buffer_GetStart(tbuf), 0);
-        i++;
-      }
-      GWEN_Buffer_Reset(tbuf);
-
-      tm=AH_TanMethod_List_Next(tm);
-    }
-    GWEN_Buffer_free(tbuf);
-    if (idx>=0)
-      /* chooses selected entry in combo box */
-      GWEN_Dialog_SetIntProperty(dlg, "tanMethodCombo", GWEN_DialogProperty_Value, 0, idx, 0);
-  }
-}
-
-
-
-int _createTanMethodString(const AH_TAN_METHOD *tm, GWEN_BUFFER *tbuf)
-{
-  const char *s;
-
-  GWEN_Buffer_AppendArgs(tbuf, "%d - ", (AH_TanMethod_GetGvVersion(tm)*1000)+AH_TanMethod_GetFunction(tm));
-  GWEN_Buffer_AppendArgs(tbuf, "%d", AH_TanMethod_GetFunction(tm));
-
-  s=AH_TanMethod_GetMethodName(tm);
-  if (!(s && *s))
-    s=AH_TanMethod_GetMethodId(tm);
-  if (s && *s)
-    GWEN_Buffer_AppendArgs(tbuf, " - %s", s);
-
-  /* add HKTAN version */
-  GWEN_Buffer_AppendArgs(tbuf, " (Version %d)", AH_TanMethod_GetGvVersion(tm));
-
-  return 0;
-}
-
-
-
 void _tanMechanismComboSetup(GWEN_DIALOG *dlg, const char *widgetName)
 {
   const GWEN_DIALOG_PROPERTY addValue=GWEN_DialogProperty_AddValue;
@@ -858,46 +713,6 @@ int _tanMechanismComboGetCurrent(GWEN_DIALOG *dlg, const char *widgetName)
     case 4:  return AB_BANKING_TANMETHOD_PHOTOTAN;
     case 5:  return AB_BANKING_TANMETHOD_CHIPTAN_USB;
     default: return AB_BANKING_TANMETHOD_TEXT;
-  }
-}
-
-
-
-void _hbciVersionComboSetup(GWEN_DIALOG *dlg, const char *widgetName)
-{
-  const GWEN_DIALOG_PROPERTY addValue=GWEN_DialogProperty_AddValue;
-  const GWEN_DIALOG_PROPERTY clrValue=GWEN_DialogProperty_ClearValues;
-
-  GWEN_Dialog_SetIntProperty(dlg,  widgetName, clrValue, 0, 0, 0);
-  GWEN_Dialog_SetCharProperty(dlg, widgetName, addValue, 0, I18N("-- select --"), 0);
-  GWEN_Dialog_SetCharProperty(dlg, widgetName, addValue, 0, "2.20", 0);
-  GWEN_Dialog_SetCharProperty(dlg, widgetName, addValue, 0, "3.0", 0);
-}
-
-
-
-void _hbciVersionComboSetCurrent(GWEN_DIALOG *dlg, const char *widgetName, int v)
-{
-  const GWEN_DIALOG_PROPERTY setValue=GWEN_DialogProperty_Value;
-
-  switch (v) {
-    case 220: GWEN_Dialog_SetIntProperty(dlg, widgetName, setValue, 0, 1, 0); break;
-    case 300: GWEN_Dialog_SetIntProperty(dlg, widgetName, setValue, 0, 2, 0); break;
-    default:  GWEN_Dialog_SetIntProperty(dlg, widgetName, setValue, 0, 2, 0); break;
-  }
-}
-
-
-
-int _hbciVersionComboGetCurrent(GWEN_DIALOG *dlg, const char *widgetName)
-{
-  int idx;
-
-  idx=GWEN_Dialog_GetIntProperty(dlg, widgetName, GWEN_DialogProperty_Value, 0, -1);
-  switch(idx) {
-    case 1:  return 220;
-    case 2:  return 300;
-    default: return 300;
   }
 }
 
@@ -967,81 +782,6 @@ uint32_t _userFlagsFromGui(GWEN_DIALOG *dlg)
   return flags;
 }
 
-
-
-
-void _userToGuiText(GWEN_DIALOG *dlg, const char *widgetName, const AB_USER *user, _USER_GETCHARVALUE_FN fn)
-{
-  const char *s;
-
-  s=fn(user);
-  GWEN_Dialog_SetCharProperty(dlg, widgetName, GWEN_DialogProperty_Value, 0, s?s:"", 0);
-}
-
-
-
-int _guiTextToUserDeleSpaces(GWEN_DIALOG *dlg, const char *widgetName,
-                             AB_USER *user, _USER_SETCHARVALUE_FN fn,
-                             const char *errMsgIfMissing)
-{
-  const char *s;
-
-  s=GWEN_Dialog_GetCharProperty(dlg, widgetName, GWEN_DialogProperty_Value, 0, NULL);
-  if (s && *s) {
-    GWEN_BUFFER *tbuf;
-
-    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    GWEN_Buffer_AppendString(tbuf, s);
-    GWEN_Text_CondenseBuffer(tbuf);
-    _removeAllSpaces((uint8_t *)GWEN_Buffer_GetStart(tbuf));
-    if (user)
-      fn(user, GWEN_Buffer_GetStart(tbuf));
-    GWEN_Buffer_free(tbuf);
-  }
-  else {
-    DBG_ERROR(NULL, "Missing input from widget %s", widgetName);
-    if (errMsgIfMissing) {
-      GWEN_Gui_ShowError(I18N("Error on Input"), "%s", errMsgIfMissing);
-      GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_Focus, 0, 1, 0);
-      return GWEN_ERROR_INVALID;
-    }
-    if (user)
-      fn(user, NULL);
-  }
-  return 0;
-}
-
-
-
-int _guiTextToUserKeepSpaces(GWEN_DIALOG *dlg, const char *widgetName,
-                             AB_USER *user, _USER_SETCHARVALUE_FN fn,
-                             const char *errMsgIfMissing)
-{
-  const char *s;
-
-  s=GWEN_Dialog_GetCharProperty(dlg, widgetName, GWEN_DialogProperty_Value, 0, NULL);
-  if (s && *s) {
-    GWEN_BUFFER *tbuf;
-
-    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    GWEN_Buffer_AppendString(tbuf, s);
-    GWEN_Text_CondenseBuffer(tbuf);
-    if (user)
-      fn(user, GWEN_Buffer_GetStart(tbuf));
-    GWEN_Buffer_free(tbuf);
-  }
-  else {
-    DBG_ERROR(NULL, "Missing input from widget %s", widgetName);
-    if (errMsgIfMissing) {
-      GWEN_Gui_ShowError(I18N("Error on Input"), "%s", errMsgIfMissing);
-      GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_Focus, 0, 1, 0);
-      return GWEN_ERROR_INVALID;
-    }
-    if (user)
-      fn(user, NULL);
-  }
-  return 0;
-}
 
 
 
