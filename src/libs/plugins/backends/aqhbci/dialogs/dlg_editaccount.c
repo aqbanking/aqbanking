@@ -61,16 +61,16 @@ struct _DIALOG_SIGNAL_ENTRY {
 };
 
 
+typedef const char*(*_ACCOUNT_GETCHARVALUE_FN)(const AB_ACCOUNT *acc);
+typedef void (*_ACCOUNT_SETCHARVALUE_FN)(AB_ACCOUNT *acc, const char *s);
+
+
 
 
 /* ------------------------------------------------------------------------------------------------
  * forward declarations
  * ------------------------------------------------------------------------------------------------
  */
-
-typedef const char*(*_ACCOUNT_GETCHARVALUE_FN)(const AB_ACCOUNT *acc);
-typedef void (*_ACCOUNT_SETCHARVALUE_FN)(AB_ACCOUNT *acc, const char *s);
-
 
 static void GWENHYWFAR_CB _freeData(void *bp, void *p);
 static int GWENHYWFAR_CB _dlgApi_signalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
@@ -99,7 +99,7 @@ static int _handleDialogInit(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const ch
 static int _handleDialogFini(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
 static int _handleActivatedBankCode(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
 static int _handleActivatedOk(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
-static int _handleActivatedReject(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE t, GWEN_UNUSED const char *sender);
+static int _handleActivatedReject(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
 static int _handleActivatedSepa(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
 static int _handleActivatedTargetAcc(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
 
@@ -120,7 +120,7 @@ static int _guiTextToAccountKeepSpaces(GWEN_DIALOG *dlg, const char *widgetName,
 
 GWEN_INHERIT(GWEN_DIALOG, AH_EDIT_ACCOUNT_DIALOG)
 
-const _DIALOG_SIGNAL_ENTRY _signalMap[]={
+static _DIALOG_SIGNAL_ENTRY _signalMap[]={
   {NULL,                 GWEN_DialogEvent_TypeInit, _handleDialogInit},
   {NULL,                 GWEN_DialogEvent_TypeFini, _handleDialogFini},
   {"bankCodeButton",     GWEN_DialogEvent_TypeActivated, _handleActivatedBankCode},
@@ -197,13 +197,8 @@ void _toGui(GWEN_DIALOG *dlg, const AB_ACCOUNT *account)
 
 int _fromGui(GWEN_DIALOG *dlg, AB_ACCOUNT *a, int quiet)
 {
-  AH_EDIT_ACCOUNT_DIALOG *xdlg;
   AB_ACCOUNT_TYPE t;
   uint32_t uid;
-
-  assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_ACCOUNT_DIALOG, dlg);
-  assert(xdlg);
 
   if (_guiTextToAccountDeleSpaces(dlg, "accountNumberEdit", a, AB_Account_SetAccountNumber, NULL)<0 ||
       _guiTextToAccountKeepSpaces(dlg, "accountNameEdit",   a, AB_Account_SetAccountName, NULL)<0 ||
@@ -544,6 +539,8 @@ int _guiTextToAccountDeleSpaces(GWEN_DIALOG *dlg, const char *widgetName,
       GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_Focus, 0, 1, 0);
       return GWEN_ERROR_INVALID;
     }
+    if (acc)
+      fn(acc, NULL);
   }
   return 0;
 }
@@ -574,6 +571,8 @@ int _guiTextToAccountKeepSpaces(GWEN_DIALOG *dlg, const char *widgetName,
       GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_Focus, 0, 1, 0);
       return GWEN_ERROR_INVALID;
     }
+    if (acc)
+      fn(acc, NULL);
   }
   return 0;
 }
@@ -769,7 +768,7 @@ void _accountTypeComboSetup(GWEN_DIALOG *dlg, const char *widgetName)
   const GWEN_DIALOG_PROPERTY addValue=GWEN_DialogProperty_AddValue;
   const GWEN_DIALOG_PROPERTY clrValue=GWEN_DialogProperty_ClearValues;
 
-  GWEN_Dialog_SetIntProperty(dlg, widgetName, clrValue, 0, 0, 0);
+  GWEN_Dialog_SetIntProperty(dlg,  widgetName, clrValue, 0, 0, 0);
   GWEN_Dialog_SetCharProperty(dlg, widgetName, addValue, 0, I18N("unknown"), 0);
   GWEN_Dialog_SetCharProperty(dlg, widgetName, addValue, 0, I18N("Bank Account"), 0);
   GWEN_Dialog_SetCharProperty(dlg, widgetName, addValue, 0, I18N("Credit Card Account"), 0);
