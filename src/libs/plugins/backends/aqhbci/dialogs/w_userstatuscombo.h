@@ -1,6 +1,6 @@
 /***************************************************************************
- begin       : Thu Jul 08 2010
- copyright   : (C) 2018 by Martin Preuss
+ begin       : Wed May 01 2024
+ copyright   : (C) 2024 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -8,29 +8,17 @@
  * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
-#ifndef AQHBCI_DLG_EDITUSER_RDH_P_H
-#define AQHBCI_DLG_EDITUSER_RDH_P_H
+#ifndef AQHBCI_WIDGET_USERSTATUSCOMBO_H
+#define AQHBCI_WIDGET_USERSTATUSCOMBO_H
 
 
-#include "dlg_edituserrdh_l.h"
-
-#include "aqhbci/banking/user.h"
+#include <gwenhywfar/dialog.h>
 
 
-
-typedef struct AH_EDIT_USER_RDH_DIALOG AH_EDIT_USER_RDH_DIALOG;
-struct AH_EDIT_USER_RDH_DIALOG {
-  AB_BANKING *banking;
-  AB_PROVIDER *provider;
-
-  AB_USER *user;
-  int doLock;
-  int modified;
-};
-
-
+void AH_Widget_UserStatusComboSetup(GWEN_DIALOG *dlg, const char *widgetName);
+void AH_Widget_UserStatusComboSetCurrent(GWEN_DIALOG *dlg, const char *widgetName, int v);
+int AH_Widget_UserStatusComboGetCurrent(GWEN_DIALOG *dlg, const char *widgetName);
 
 
 
 #endif
-

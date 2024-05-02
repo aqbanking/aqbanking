@@ -14,9 +14,12 @@
 
 #include "w_utils.h"
 
+#include "aqhbci/aqhbci.h"
+
 #include "aqbanking/i18n_l.h"
 
 #include <gwenhywfar/gui.h>
+
 
 
 static void _removeAllSpaces(uint8_t *s);
@@ -190,6 +193,37 @@ void _removeAllSpaces(uint8_t *s)
   *d=0;
 }
 
+
+
+GWEN_URL *AH_Widget_GuiTextToUrl(GWEN_DIALOG *dlg, const char *widgetName, int defaultPort)
+{
+  const char *s;
+
+  s=GWEN_Dialog_GetCharProperty(dlg, widgetName, GWEN_DialogProperty_Value, 0, NULL);
+  if (s && *s) {
+    GWEN_BUFFER *tbuf;
+    GWEN_URL *gu;
+
+    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendString(tbuf, s);
+    GWEN_Text_CondenseBuffer(tbuf);
+    _removeAllSpaces((uint8_t *)GWEN_Buffer_GetStart(tbuf));
+    gu=GWEN_Url_fromString(GWEN_Buffer_GetStart(tbuf));
+    if (gu==NULL) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Invalid URL string: [%s]", s);
+      GWEN_Buffer_free(tbuf);
+      return NULL;
+    }
+
+    /* set port to 3000 if not set */
+    if (GWEN_Url_GetPort(gu)==0)
+      GWEN_Url_SetPort(gu, defaultPort);
+    GWEN_Buffer_free(tbuf);
+    return gu;
+  }
+
+  return NULL;
+}
 
 
 

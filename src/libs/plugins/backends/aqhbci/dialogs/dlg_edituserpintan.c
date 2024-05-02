@@ -59,9 +59,6 @@ struct _DIALOG_SIGNAL_ENTRY {
   _DIALOG_SIGNAL_HANDLER_FN handlerFn;
 };
 
-typedef const char*(*_USER_GETCHARVALUE_FN)(const AB_USER *user);
-typedef void (*_USER_SETCHARVALUE_FN)(AB_USER *user, const char *s);
-
 
 
 /* ------------------------------------------------------------------------------------------------
@@ -75,7 +72,6 @@ static int GWENHYWFAR_CB _dlgApi_signalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVE
 
 static int _saveUser(GWEN_DIALOG *dlg);
 
-static void _removeAllSpaces(uint8_t *s);
 static int _fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet);
 static int _handleInit(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
 static int _handleFini(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
@@ -266,8 +262,8 @@ void _toGui(GWEN_DIALOG *dlg, AB_USER *user)
 
 int _fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
 {
-  const char *s;
   int i;
+  GWEN_URL *gu;
 
   if (AH_Widget_GuiTextToUserKeepSpaces(dlg, "userNameEdit",    u, AB_User_SetUserName,    NULL)<0 ||
       AH_Widget_GuiTextToUserDeleSpaces(dlg, "bankCodeEdit",    u, AB_User_SetBankCode,    NULL)<0 ||
@@ -281,7 +277,8 @@ int _fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
   if (u)
     AB_User_SetCountry(u, "de");
 
-  AH_User_SetHbciVersion(u, AH_Widget_HbciVersionComboGetCurrent(dlg, "hbciVersionCombo"));
+  if (u)
+    AH_User_SetHbciVersion(u, AH_Widget_HbciVersionComboGetCurrent(dlg, "hbciVersionCombo"));
 
   i=_httpVersionComboGetCurrent(dlg, "httpVersionCombo");
   AH_User_SetHttpVMajor(u, ((i>>8) & 0xff));
@@ -302,28 +299,16 @@ int _fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
     }
   }
 
-  s=GWEN_Dialog_GetCharProperty(dlg, "urlEdit", GWEN_DialogProperty_Value, 0, NULL);
-  if (s && *s) {
-    GWEN_BUFFER *tbuf;
-    GWEN_URL *gu;
-
-    tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-    GWEN_Buffer_AppendString(tbuf, s);
-    GWEN_Text_CondenseBuffer(tbuf);
-    _removeAllSpaces((uint8_t *)GWEN_Buffer_GetStart(tbuf));
-    gu=GWEN_Url_fromString(GWEN_Buffer_GetStart(tbuf));
-    if (gu==NULL) {
-      if (!quiet) {
-        GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Invalid URL"));
-        GWEN_Buffer_free(tbuf);
-        return GWEN_ERROR_BAD_DATA;
-      }
+  gu=AH_Widget_GuiTextToUrl(dlg, "urlEdit", 443);
+  if (gu==NULL) {
+    if (!quiet) {
+      GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Invalid URL"));
+      return GWEN_ERROR_BAD_DATA;
     }
-    if (u)
-      AH_User_SetServerUrl(u, gu);
-    GWEN_Url_free(gu);
-    GWEN_Buffer_free(tbuf);
   }
+  if (u)
+    AH_User_SetServerUrl(u, gu);
+  GWEN_Url_free(gu);
 
   AH_User_SetFlags(u, _userFlagsFromGui(dlg));
 
@@ -780,22 +765,6 @@ uint32_t _userFlagsFromGui(GWEN_DIALOG *dlg)
     flags|=AH_USER_FLAGS_TAN_OMIT_SMS_ACCOUNT;
 
   return flags;
-}
-
-
-
-
-void _removeAllSpaces(uint8_t *s)
-{
-  uint8_t *d;
-
-  d=s;
-  while (*s) {
-    if (*s>33)
-      *(d++)=*s;
-    s++;
-  }
-  *d=0;
 }
 
 

@@ -16,6 +16,7 @@
 #include <aqbanking/backendsupport/account.h>
 
 #include <gwenhywfar/dialog.h>
+#include <gwenhywfar/url.h>
 
 
 
@@ -43,6 +44,8 @@ int AH_Widget_GuiTextToAccountDeleSpaces(GWEN_DIALOG *dlg, const char *widgetNam
 int AH_Widget_GuiTextToAccountKeepSpaces(GWEN_DIALOG *dlg, const char *widgetName,
                                          AB_ACCOUNT *acc, AH_WIDGET_ACCOUNT_SETCHARVALUE_FN fn,
                                          const char *errMsgIfMissing);
+
+GWEN_URL *AH_Widget_GuiTextToUrl(GWEN_DIALOG *dlg, const char *widgetName, int defaultPort);
 
 
 #endif

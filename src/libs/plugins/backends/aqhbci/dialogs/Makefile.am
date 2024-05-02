@@ -34,6 +34,8 @@ noinst_HEADERS=\
   w_accounttypecombo.h \
   w_usercombo.h \
   w_tanmethodcombo.h \
+  w_rdhversioncombo.h \
+  w_userstatuscombo.h \
   w_utils.h
 
 
@@ -57,6 +59,8 @@ libaqhbci_dlgs_la_SOURCES=\
   w_accounttypecombo.c \
   w_usercombo.c \
   w_tanmethodcombo.c \
+  w_rdhversioncombo.c \
+  w_userstatuscombo.c \
   w_utils.c
 
 
