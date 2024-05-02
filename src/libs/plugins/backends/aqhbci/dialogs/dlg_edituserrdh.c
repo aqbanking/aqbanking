@@ -305,17 +305,11 @@ int _handleFini(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
 
   /* store dialog width */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
-  GWEN_DB_SetIntValue(dbPrefs,
-                      GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "dialog_width",
-                      i);
+  GWEN_DB_SetIntValue(dbPrefs, GWEN_DB_FLAGS_OVERWRITE_VARS, "dialog_width", i);
 
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
-  GWEN_DB_SetIntValue(dbPrefs,
-                      GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "dialog_height",
-                      i);
+  GWEN_DB_SetIntValue(dbPrefs, GWEN_DB_FLAGS_OVERWRITE_VARS, "dialog_height", i);
   return GWEN_DialogEvent_ResultHandled;
 }
 
@@ -455,16 +449,18 @@ int _handleActivatedGetSysId(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const ch
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_RDH_DIALOG, dlg);
   assert(xdlg);
 
+  if (xdlg->modified) {
+    GWEN_Gui_ShowError(I18N("User Modified"), "%s", I18N("Please apply current changes first."));
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetSysId(xdlg->provider,
-                          xdlg->user,
-                          ctx,
-                          1,   /* withProgress */
-                          0,   /* nounmount */
-                          xdlg->doLock);
+  rv=AH_Provider_GetSysId(xdlg->provider, xdlg->user, ctx, DLG_WITHPROGRESS, DLG_UMOUNT, xdlg->doLock);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
   }
+
+  _toGui(dlg, xdlg->user);
 
   AB_ImExporterContext_free(ctx);
   return GWEN_DialogEvent_ResultHandled;
@@ -482,16 +478,18 @@ int _handleActivatedGetAccounts(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_RDH_DIALOG, dlg);
   assert(xdlg);
 
+  if (xdlg->modified) {
+    GWEN_Gui_ShowError(I18N("User Modified"), "%s", I18N("Please apply current changes first."));
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetAccounts(xdlg->provider,
-                             xdlg->user,
-                             ctx,
-                             1,   /* withProgress */
-                             0,   /* nounmount */
-                             xdlg->doLock);
+  rv=AH_Provider_GetAccounts(xdlg->provider, xdlg->user, ctx, DLG_WITHPROGRESS, DLG_UMOUNT, xdlg->doLock);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
   }
+
+  _toGui(dlg, xdlg->user);
 
   AB_ImExporterContext_free(ctx);
   return GWEN_DialogEvent_ResultHandled;
@@ -513,12 +511,7 @@ int _handleActivatedIniLetter(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const c
 
   /* add HTML version of the INI letter */
   GWEN_Buffer_AppendString(tbuf, "<html>");
-  rv=AH_Provider_GetIniLetterHtml(xdlg->provider,
-                                  xdlg->user,
-                                  0,
-                                  0,
-                                  tbuf,
-                                  1);
+  rv=AH_Provider_GetIniLetterHtml(xdlg->provider, xdlg->user, 0, 0, tbuf, 1);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     // TODO: show error message
@@ -530,12 +523,7 @@ int _handleActivatedIniLetter(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const c
 
 
   /* add ASCII version of the INI letter for frontends which don't support HTML */
-  rv=AH_Provider_GetIniLetterTxt(xdlg->provider,
-                                 xdlg->user,
-                                 0,
-                                 0,
-                                 tbuf,
-                                 0);
+  rv=AH_Provider_GetIniLetterTxt(xdlg->provider, xdlg->user, 0, 0, tbuf, 0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     // TODO: show error message
@@ -560,7 +548,7 @@ int _handleActivatedIniLetter(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const c
                     0);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    // TODO: show error message
+    GWEN_Gui_ShowError(I18N("Error"), I18N("Error creating INI-Letter (%d)"), rv);
     GWEN_Buffer_free(tbuf);
     return GWEN_DialogEvent_ResultHandled;
   }
