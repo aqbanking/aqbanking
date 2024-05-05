@@ -790,7 +790,6 @@ int _getBankInfoAnon(AB_PROVIDER *pro, AB_USER *u, uint32_t pid)
   ctx=AB_ImExporterContext_new();
   rv=AH_Provider_GetBankInfo(pro, u, ctx, 0 /* without HKTAN */, 0, 1, 0);
   if (rv<0) {
-    AB_ImExporterContext_free(ctx);
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting bank info (%d), ignoring", rv);
     GWEN_Gui_ProgressLog(pid,
                          GWEN_LoggerLevel_Notice,
