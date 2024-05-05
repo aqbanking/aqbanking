@@ -49,7 +49,7 @@ void AH_Widget_RdhVersionComboSetCurrent(GWEN_DIALOG *dlg, const char *widgetNam
   int cryptMode;
   int version;
 
-  cryptMode=(v>>16);
+  cryptMode=(v>>8);
   version=v & 0xff;
 
   if (cryptMode==AH_CryptMode_Rdh) {
