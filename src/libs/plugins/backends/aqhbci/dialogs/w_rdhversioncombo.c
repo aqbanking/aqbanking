@@ -58,13 +58,12 @@ void AH_Widget_RdhVersionComboSetCurrent(GWEN_DIALOG *dlg, const char *widgetNam
       case 1:  GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_Value, 0, 1, 0);  break;
       case 2:  GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_Value, 0, 2, 0);  break;
       case 3:  GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_Value, 0, 3, 0);  break;
-      case 4:  GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_Value, 0, 4, 0);  break;
-      case 5:  GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_Value, 0, 5, 0);  break;
-      case 6:  GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_Value, 0, 6, 0);  break;
-      case 7:  GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_Value, 0, 7, 0);  break;
-      case 8:  GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_Value, 0, 8, 0);  break;
-      case 9:  GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_Value, 0, 9, 0);  break;
-      case 10: GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_Value, 0, 10, 0); break;
+      case 5:  GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_Value, 0, 4, 0);  break;
+      case 6:  GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_Value, 0, 5, 0);  break;
+      case 7:  GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_Value, 0, 6, 0);  break;
+      case 8:  GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_Value, 0, 7, 0);  break;
+      case 9:  GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_Value, 0, 8, 0);  break;
+      case 10: GWEN_Dialog_SetIntProperty(dlg, widgetName, GWEN_DialogProperty_Value, 0, 9, 0); break;
       default: break;
     }
   }
