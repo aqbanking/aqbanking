@@ -59,12 +59,22 @@ GWEN_DIALOG *AH_ZkaCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct)
   AH_ZKACARD_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
   int rv;
+  uint32_t pid;
 
   dlg=GWEN_Dialog_new("ah_setup_zkacard");
   GWEN_NEW_OBJECT(AH_ZKACARD_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AH_ZKACARD_DIALOG, dlg, xdlg,
                        AH_ZkaCardDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AH_ZkaCardDialog_SignalHandler);
+
+  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_DELAY |
+                             GWEN_GUI_PROGRESS_ALLOW_EMBED |
+                             GWEN_GUI_PROGRESS_SHOW_PROGRESS |
+                             GWEN_GUI_PROGRESS_SHOW_ABORT,
+                             I18N("Getting context list"),
+                             I18N("The context list is read from the card."),
+                             1,
+                             0);
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -73,6 +83,7 @@ GWEN_DIALOG *AH_ZkaCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct)
                                fbuf);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
+    GWEN_Gui_ProgressEnd(pid);
     GWEN_Buffer_free(fbuf);
     GWEN_Dialog_free(dlg);
     return NULL;
@@ -82,6 +93,7 @@ GWEN_DIALOG *AH_ZkaCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct)
   rv=GWEN_Dialog_ReadXmlFile(dlg, GWEN_Buffer_GetStart(fbuf));
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d).", rv);
+    GWEN_Gui_ProgressEnd(pid);
     GWEN_Buffer_free(fbuf);
     GWEN_Dialog_free(dlg);
     return NULL;
@@ -102,6 +114,7 @@ GWEN_DIALOG *AH_ZkaCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct)
       rv=GWEN_Crypt_Token_Open(ct, 0, 0);
       if (rv<0) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Error opening token (%d)", rv);
+        GWEN_Gui_ProgressEnd(pid);
         GWEN_Gui_ShowError(I18N("Error"), I18N("Could not contact card. Maybe removed? (%d)"), rv);
         GWEN_Dialog_free(dlg);
         return NULL;
@@ -112,6 +125,7 @@ GWEN_DIALOG *AH_ZkaCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct)
     rv=GWEN_Crypt_Token_GetContextIdList(ct, idList, &idCount, 0);
     if (rv<0) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not read context id list");
+      GWEN_Gui_ProgressEnd(pid);
       GWEN_Dialog_free(dlg);
       GWEN_Gui_ShowError(I18N("Error"), I18N("Could not read context id list from card (%d)"), rv);
       return NULL;
@@ -137,6 +151,7 @@ GWEN_DIALOG *AH_ZkaCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct)
   xdlg->cryptMode = AH_CryptMode_Rdh;
   xdlg->flags= AH_USER_FLAGS_BANK_DOESNT_SIGN | AH_USER_FLAGS_BANK_USES_SIGNSEQ;
 
+  GWEN_Gui_ProgressEnd(pid);
   /* done */
   return dlg;
 }
