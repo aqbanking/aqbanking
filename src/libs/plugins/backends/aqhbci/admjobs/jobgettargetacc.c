@@ -226,8 +226,6 @@ AB_REFERENCE_ACCOUNT *_getOrCreateReferenceAccount(AB_ACCOUNT_SPEC *as, GWEN_DB_
 							       reqCountry, reqBankCode,
 							       "*", reqAccDescription):NULL;
   if (refAccount == NULL) {
-    AB_REFERENCE_ACCOUNT *refAccount;
-
     refAccount = AB_ReferenceAccount_new();
     AB_ReferenceAccount_SetIban(refAccount, reqIban);
     AB_ReferenceAccount_SetBic(refAccount, reqBic);
