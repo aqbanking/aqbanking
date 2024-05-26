@@ -1,5 +1,5 @@
 /***************************************************************************
- begin       : Thu Apr 15 2010
+ begin       : Wed May 01 2024
  copyright   : (C) 2024 by Martin Preuss
  email       : martin@aqbanking.de
 
@@ -8,23 +8,21 @@
  * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
-#ifndef AQHBCI_EDITACCOUNT_DIALOG_P_H
-#define AQHBCI_EDITACCOUNT_DIALOG_P_H
+#ifndef AQHBCI_WIDGET_RDHVERSIONCOMBO_H
+#define AQHBCI_WIDGET_RDHVERSIONCOMBO_H
 
 
-#include "dlg_editaccount_l.h"
+#include <gwenhywfar/dialog.h>
 
 
+void AH_Widget_RdhVersionComboSetup(GWEN_DIALOG *dlg, const char *widgetName);
+void AH_Widget_RdhVersionComboSetCurrent(GWEN_DIALOG *dlg, const char *widgetName, int v);
 
-typedef struct AH_EDIT_ACCOUNT_DIALOG AH_EDIT_ACCOUNT_DIALOG;
-struct AH_EDIT_ACCOUNT_DIALOG {
-  AB_BANKING *banking;
-  AB_PROVIDER *provider;
+/**
+ * Return selected RDH/RAH version (bits 0-7) and crypt mode (bit 8-15)
+ */
+int AH_Widget_RdhVersionComboGetCurrent(GWEN_DIALOG *dlg, const char *widgetName);
 
-  AB_ACCOUNT *account;
-  int doLock;
-};
 
 
 #endif
-

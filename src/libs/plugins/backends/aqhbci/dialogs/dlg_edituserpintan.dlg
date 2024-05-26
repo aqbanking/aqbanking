@@ -99,6 +99,7 @@
       <widget type="pushButton" text="Help"     name="helpButton" />
       <widget type="hspacer" flags="fillX" />
       <widget type="pushButton" text="Ok"     name="okButton" flags="default" />
+      <widget type="pushButton" text="Apply"  name="applyButton" />
       <widget type="pushButton" text="Abort"  name="abortButton" />
     </widget>
 

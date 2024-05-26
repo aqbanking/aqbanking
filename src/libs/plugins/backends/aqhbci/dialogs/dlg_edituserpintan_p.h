@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Thu Jul 08 2010
- copyright   : (C) 2018 by Martin Preuss
+ copyright   : (C) 2024 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -25,18 +25,8 @@ struct AH_EDIT_USER_PINTAN_DIALOG {
 
   AB_USER *user;
   int doLock;
-
-  AH_TAN_METHOD_LIST *tanMethodList;
+  int modified;
 };
-
-
-static void GWENHYWFAR_CB AH_EditUserPinTanDialog_FreeData(void *bp, void *p);
-
-static int GWENHYWFAR_CB AH_EditUserPinTanDialog_SignalHandler(GWEN_DIALOG *dlg,
-                                                               GWEN_DIALOG_EVENTTYPE t,
-                                                               const char *sender);
-
-
 
 
 

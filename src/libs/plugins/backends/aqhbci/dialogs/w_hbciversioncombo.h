@@ -1,5 +1,5 @@
 /***************************************************************************
- begin       : Thu Apr 15 2010
+ begin       : Wed May 01 2024
  copyright   : (C) 2024 by Martin Preuss
  email       : martin@aqbanking.de
 
@@ -8,23 +8,17 @@
  * Please see toplevel file COPYING of that project for license details.   *
  ***************************************************************************/
 
-#ifndef AQHBCI_EDITACCOUNT_DIALOG_P_H
-#define AQHBCI_EDITACCOUNT_DIALOG_P_H
+#ifndef AQHBCI_WIDGET_HBCIVERSIONCOMBO_H
+#define AQHBCI_WIDGET_HBCIVERSIONCOMBO_H
 
 
-#include "dlg_editaccount_l.h"
+#include <gwenhywfar/dialog.h>
 
 
+void AH_Widget_HbciVersionComboSetup(GWEN_DIALOG *dlg, const char *widgetName);
+void AH_Widget_HbciVersionComboSetCurrent(GWEN_DIALOG *dlg, const char *widgetName, int v);
+int AH_Widget_HbciVersionComboGetCurrent(GWEN_DIALOG *dlg, const char *widgetName);
 
-typedef struct AH_EDIT_ACCOUNT_DIALOG AH_EDIT_ACCOUNT_DIALOG;
-struct AH_EDIT_ACCOUNT_DIALOG {
-  AB_BANKING *banking;
-  AB_PROVIDER *provider;
-
-  AB_ACCOUNT *account;
-  int doLock;
-};
 
 
 #endif
-
