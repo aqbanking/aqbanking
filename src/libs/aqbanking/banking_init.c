@@ -35,9 +35,8 @@ static void _defineSysconfPaths(void);
 static void _defineDataPaths(void);
 static void _defineWizardPaths(void);
 static void _bindLocale(void);
-static int _createBankinfoPluginManager(void);
-static int _createProviderPluginManager(void);
-static int _createImexporterPluginManager(void);
+static int _createPluginManangers(void);
+static GWEN_PLUGIN_MANAGER *_createPluginManager(const char *pluginName, const char *winRegKey, const char *pluginFolder);
 static int _addPathsForDbioPlugins(void);
 static void _setupLogging(void);
 
@@ -205,10 +204,14 @@ int _pluginSystemInit(void)
     _defineDataPaths();
     _defineWizardPaths();
 
-    if (_createBankinfoPluginManager()<0   ||
-        _createProviderPluginManager()<0   ||
-        _createImexporterPluginManager()<0 ||
-        _addPathsForDbioPlugins()<0) {
+    rv=_createPluginManangers();
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+
+    rv=_addPathsForDbioPlugins();
+    if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
@@ -455,121 +458,58 @@ void _bindLocale(void)
 
 
 
-int _createBankinfoPluginManager(void)
+int _createPluginManangers(void)
 {
-  GWEN_PLUGIN_MANAGER *pm;
-  int rv;
-
-  DBG_INFO(AQBANKING_LOGDOMAIN, "Registering bankinfo plugin manager");
-  pm=GWEN_PluginManager_new("bankinfo", AB_PM_LIBNAME);
-  rv=GWEN_PluginManager_Register(pm);
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not register bankinfo plugin manager (%d)", rv);
-    return rv;
+  ab_pluginManagerBankInfo=_createPluginManager("bankinfo",
+                                                AB_BANKING_REGKEY_BANKINFODIR,
+                                                AQBANKING_PLUGINS DIRSEP AB_BANKINFO_PLUGIN_FOLDER);
+  if (ab_pluginManagerBankInfo==NULL) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+    return GWEN_ERROR_GENERIC;
   }
 
-  GWEN_PluginManager_AddPathFromWinReg(pm,
-                                       AB_PM_LIBNAME,
-                                       AB_BANKING_REGKEY_PATHS,
-                                       AB_BANKING_REGKEY_BANKINFODIR);
-#if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
-  /* add folder relative to EXE */
-  GWEN_PluginManager_AddRelPath(pm,
-                                AB_PM_LIBNAME,
-                                AQBANKING_PLUGINS
-                                DIRSEP
-                                AB_BANKINFO_PLUGIN_FOLDER,
-                                GWEN_PathManager_RelModeExe);
-#else
-  /* add absolute folder */
-  GWEN_PluginManager_AddPath(pm,
-                             AB_PM_LIBNAME,
-                             AQBANKING_PLUGINS
-                             DIRSEP
-                             AB_BANKINFO_PLUGIN_FOLDER);
-#endif
-  ab_pluginManagerBankInfo=pm;
+  ab_pluginManagerProvider=_createPluginManager("provider",
+                                                AB_BANKING_REGKEY_PROVIDERDIR,
+                                                AQBANKING_PLUGINS DIRSEP AB_PROVIDER_FOLDER);
+  if (ab_pluginManagerProvider==NULL) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  ab_pluginManagerImExporter=_createPluginManager("imexporter",
+                                                  AB_BANKING_REGKEY_IMPORTERDIR,
+                                                  AQBANKING_PLUGINS DIRSEP AB_IMEXPORTER_FOLDER);
+  if (ab_pluginManagerImExporter==NULL) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here");
+    return GWEN_ERROR_GENERIC;
+  }
   return 0;
 }
 
 
 
-int _createProviderPluginManager(void)
+GWEN_PLUGIN_MANAGER *_createPluginManager(const char *pluginName, const char *winRegKey, const char *pluginFolder)
 {
   GWEN_PLUGIN_MANAGER *pm;
   int rv;
 
-  /* create provider plugin manager */
-  DBG_INFO(AQBANKING_LOGDOMAIN, "Registering provider plugin manager");
-  pm=GWEN_PluginManager_new("provider", AB_PM_LIBNAME);
+  DBG_INFO(AQBANKING_LOGDOMAIN, "Registering %s plugin manager", pluginName);
+  pm=GWEN_PluginManager_new(pluginName, AB_PM_LIBNAME);
   rv=GWEN_PluginManager_Register(pm);
   if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not register provider plugin manager (%d)", rv);
-    return rv;
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not register %s plugin manager (%d)", pluginName, rv);
+    return NULL;
   }
 
-  GWEN_PluginManager_AddPathFromWinReg(pm,
-                                       AB_PM_LIBNAME,
-                                       AB_BANKING_REGKEY_PATHS,
-                                       AB_BANKING_REGKEY_PROVIDERDIR);
+  GWEN_PluginManager_AddPathFromWinReg(pm, AB_PM_LIBNAME, AB_BANKING_REGKEY_PATHS, winRegKey);
 #if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
   /* add folder relative to EXE */
-  GWEN_PluginManager_AddRelPath(pm,
-                                AB_PM_LIBNAME,
-                                AQBANKING_PLUGINS
-                                DIRSEP
-                                AB_PROVIDER_FOLDER,
-                                GWEN_PathManager_RelModeExe);
+  GWEN_PluginManager_AddRelPath(pm, AB_PM_LIBNAME, pluginFolder, GWEN_PathManager_RelModeExe);
 #else
   /* add absolute folder */
-  GWEN_PluginManager_AddPath(pm,
-                             AB_PM_LIBNAME,
-                             AQBANKING_PLUGINS
-                             DIRSEP
-                             AB_PROVIDER_FOLDER);
+  GWEN_PluginManager_AddPath(pm, AB_PM_LIBNAME, pluginFolder);
 #endif
-  ab_pluginManagerProvider=pm;
-  return 0;
-}
-
-
-
-int _createImexporterPluginManager(void)
-{
-  GWEN_PLUGIN_MANAGER *pm;
-  int rv;
-
-  /* create imexporters plugin manager */
-  DBG_INFO(AQBANKING_LOGDOMAIN, "Registering imexporters plugin manager");
-  pm=GWEN_PluginManager_new("imexporter", AB_PM_LIBNAME);
-  rv=GWEN_PluginManager_Register(pm);
-  if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not register imexporters plugin manager (%d)", rv);
-    return rv;
-  }
-
-  GWEN_PluginManager_AddPathFromWinReg(pm,
-                                       AB_PM_LIBNAME,
-                                       AB_BANKING_REGKEY_PATHS,
-                                       AB_BANKING_REGKEY_IMPORTERDIR);
-#if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
-  /* add folder relative to EXE */
-  GWEN_PluginManager_AddRelPath(pm,
-                                AB_PM_LIBNAME,
-                                AQBANKING_PLUGINS
-                                DIRSEP
-                                AB_IMEXPORTER_FOLDER,
-                                GWEN_PathManager_RelModeExe);
-#else
-  /* add absolute folder */
-  GWEN_PluginManager_AddPath(pm,
-                             AB_PM_LIBNAME,
-                             AQBANKING_PLUGINS
-                             DIRSEP
-                             AB_IMEXPORTER_FOLDER);
-#endif
-  ab_pluginManagerImExporter=pm;
-  return 0;
+  return pm;
 }
 
 
