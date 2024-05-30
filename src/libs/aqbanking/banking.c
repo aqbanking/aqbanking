@@ -259,13 +259,13 @@ int AB_Banking_GetNamedUniqueId(AB_BANKING *ab, const char *idName, int startAtS
 }
 
 
-
+#if 0
 GWEN_CONFIGMGR *AB_Banking_GetConfigMgr(AB_BANKING *ab)
 {
   assert(ab);
   return ab->configMgr;
 }
-
+#endif
 
 
 const char *AB_Banking_GetAppName(const AB_BANKING *ab)

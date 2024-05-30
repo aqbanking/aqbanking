@@ -66,6 +66,8 @@ static int _sendProviderQueues(AB_BANKING *ab,
                                AB_PROVIDERQUEUE_LIST *pql,
                                AB_IMEXPORTER_CONTEXT *ctx,
                                uint32_t pid);
+static GWEN_CRYPT_TOKEN *_findCryptToken(AB_BANKING *ab, const char *tname, const char *cname);
+static GWEN_CRYPT_TOKEN *_createCryptTokenObject(AB_BANKING *ab, const char *tname, const char *cname);
 
 
 
@@ -312,25 +314,51 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetProviderDescrs(AB_BANKING *ab)
 
 
 
-int AB_Banking_GetCryptToken(AB_BANKING *ab,
-                             const char *tname,
-                             const char *cname,
-                             GWEN_CRYPT_TOKEN **pCt)
+int AB_Banking_GetCryptToken(AB_BANKING *ab, const char *tname, const char *cname, GWEN_CRYPT_TOKEN **pCt)
 {
   GWEN_CRYPT_TOKEN *ct=NULL;
-  GWEN_CRYPT_TOKEN_LIST2_ITERATOR *it;
 
   assert(ab);
-
   assert(pCt);
 
   if (!tname || !cname) {
     DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Error in your configuration: TokenType \"%s\" or TokenName \"%s\" is NULL. Maybe you need to remove your configuration and create it again? Aborting.",
+              "Error in your configuration: TokenType \"%s\" or TokenName \"%s\" is NULL. "
+              "Maybe you need to remove your configuration and create it again? Aborting.",
               tname ? tname : "NULL",
               cname ? cname : "NULL");
-    return GWEN_ERROR_IO;
+    return GWEN_ERROR_GENERIC;
   }
+
+  ct=_findCryptToken(ab, tname, cname);
+  if (ct==NULL) {
+    ct=_createCryptTokenObject(ab, tname, cname);
+    if (ct==0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create crypt token");
+      return GWEN_ERROR_IO;
+    }
+
+    if (GWEN_Gui_GetFlags(GWEN_Gui_GetGui()) & GWEN_GUI_FLAGS_NONINTERACTIVE) {
+      /* in non-interactive mode, so don't use the secure pin input of card readers because
+       * that wouldn't give us a chance to inject the pin via a pinfile
+       */
+      GWEN_Crypt_Token_AddModes(ct, GWEN_CRYPT_TOKEN_MODE_FORCE_PIN_ENTRY);
+    }
+
+    /* add to internal list */
+    GWEN_Crypt_Token_List2_PushBack(ab->cryptTokenList, ct);
+  }
+
+  *pCt=ct;
+  return 0;
+}
+
+
+
+GWEN_CRYPT_TOKEN *_findCryptToken(AB_BANKING *ab, const char *tname, const char *cname)
+{
+  GWEN_CRYPT_TOKEN *ct=NULL;
+  GWEN_CRYPT_TOKEN_LIST2_ITERATOR *it;
 
   it=GWEN_Crypt_Token_List2_First(ab->cryptTokenList);
   if (it) {
@@ -352,41 +380,37 @@ int AB_Banking_GetCryptToken(AB_BANKING *ab,
     GWEN_Crypt_Token_List2Iterator_free(it);
   }
 
-  if (ct==NULL) {
-    GWEN_PLUGIN_MANAGER *pm;
-    GWEN_PLUGIN *pl;
+  return ct;
+}
 
-    /* get crypt token */
-    pm=GWEN_PluginManager_FindPluginManager(GWEN_CRYPT_TOKEN_PLUGIN_TYPENAME);
-    if (pm==0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "CryptToken plugin manager not found");
-      return GWEN_ERROR_INTERNAL;
-    }
 
-    pl=GWEN_PluginManager_GetPlugin(pm, tname);
-    if (pl==0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Plugin \"%s\" not found", tname);
-      return GWEN_ERROR_NOT_FOUND;
-    }
 
-    ct=GWEN_Crypt_Token_Plugin_CreateToken(pl, cname);
-    if (ct==0) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create crypt token");
-      return GWEN_ERROR_IO;
-    }
+GWEN_CRYPT_TOKEN *_createCryptTokenObject(AB_BANKING *ab, const char *tname, const char *cname)
+{
+  GWEN_PLUGIN_MANAGER *pm;
+  GWEN_PLUGIN *pl;
+  GWEN_CRYPT_TOKEN *ct;
 
-    if (GWEN_Gui_GetFlags(GWEN_Gui_GetGui()) & GWEN_GUI_FLAGS_NONINTERACTIVE)
-      /* in non-interactive mode, so don't use the secure pin input of card readers because
-       * that wouldn't give us a chance to inject the pin via a pinfile
-       */
-      GWEN_Crypt_Token_AddModes(ct, GWEN_CRYPT_TOKEN_MODE_FORCE_PIN_ENTRY);
-
-    /* add to internal list */
-    GWEN_Crypt_Token_List2_PushBack(ab->cryptTokenList, ct);
+  /* get crypt token */
+  pm=GWEN_PluginManager_FindPluginManager(GWEN_CRYPT_TOKEN_PLUGIN_TYPENAME);
+  if (pm==0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "CryptToken plugin manager not found");
+    return NULL;
   }
 
-  *pCt=ct;
-  return 0;
+  pl=GWEN_PluginManager_GetPlugin(pm, tname);
+  if (pl==NULL) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Plugin \"%s\" not found", tname);
+    return NULL;
+  }
+
+  ct=GWEN_Crypt_Token_Plugin_CreateToken(pl, cname);
+  if (ct==0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not create crypt token");
+    return NULL;
+  }
+
+  return ct;
 }
 
 
