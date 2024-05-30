@@ -30,29 +30,6 @@ AB_BANKINFO_PLUGIN *AB_Banking_CreateImBankInfoPlugin(AB_BANKING *ab, const char
 
 
 
-AB_BANKINFO_PLUGIN *AB_Banking_LoadBankInfoPlugin(AB_BANKING *ab, const char *modname)
-{
-  GWEN_PLUGIN *pl;
-
-  pl=GWEN_PluginManager_GetPlugin(ab_pluginManagerBankInfo, modname);
-  if (pl) {
-    AB_BANKINFO_PLUGIN *bip;
-
-    bip=AB_Plugin_BankInfo_Factory(pl, ab);
-    if (!bip) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN, "Error in plugin [%s]: No bank info created", modname);
-      return NULL;
-    }
-    return bip;
-  }
-  else {
-    DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] not found", modname);
-    return NULL;
-  }
-}
-
-
-
 AB_BANKINFO_PLUGIN *AB_Banking_FindBankInfoPlugin(AB_BANKING *ab, const char *country)
 {
   AB_BANKINFO_PLUGIN *bip;
@@ -80,8 +57,6 @@ AB_BANKINFO_PLUGIN *AB_Banking_GetBankInfoPlugin(AB_BANKING *ab, const char *cou
   if (bip)
     return bip;
   bip=AB_Banking_CreateImBankInfoPlugin(ab, country);
-  if (bip==NULL)
-    bip=AB_Banking_LoadBankInfoPlugin(ab, country);
   if (bip)
     AB_BankInfoPlugin_List_Add(bip, ab_bankInfoPlugins);
 
