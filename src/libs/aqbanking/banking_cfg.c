@@ -10,6 +10,22 @@
 
 
 
+static int _readGroupsFromStringList(GWEN_CONFIGMGR *configMgr,
+				     const GWEN_STRINGLIST *sl,
+				     const char *groupName,
+				     const char *uidField,
+				     const char *matchVar,
+				     const char *matchVal,
+				     GWEN_DB_NODE *dbRoot);
+static GWEN_DB_NODE *_lockReadUnlockGroup(GWEN_CONFIGMGR *configMgr, const char *groupName, const char *t);
+static int _addOrFreeGroup(GWEN_DB_NODE *dbAll, GWEN_DB_NODE *db, const char *uidField, const char *matchVar, const char *matchVal);
+static int _chkConfigMgrAndMkIdFromGroupAndUniqueId(GWEN_CONFIGMGR *configMgr,
+						    const char *groupName,
+						    uint32_t uniqueId,
+						    char *ptrIdBuf, int lenIdBuf);
+
+
+
 int AB_Banking__GetConfigManager(AB_BANKING *ab, const char *dname)
 {
   GWEN_BUFFER *buf;
@@ -402,20 +418,11 @@ int AB_Banking_ReadConfigGroup(const AB_BANKING *ab,
 
   assert(ab);
 
-  /* check for config manager (created by AB_Banking_Init) */
-  if (ab->configMgr==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "No config manager (maybe the gwenhywfar plugins are not installed?");
-    return GWEN_ERROR_GENERIC;
-  }
-
-
-  /* make config manager id from given unique id */
-  rv=GWEN_ConfigMgr_MkUniqueIdFromId(ab->configMgr, groupName, uniqueId, 0, idBuf, sizeof(idBuf)-1);
+  rv=_chkConfigMgrAndMkIdFromGroupAndUniqueId(ab->configMgr, groupName, uniqueId, idBuf, sizeof(idBuf));
   if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to create a unique id for config group (%d)", rv);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
-  idBuf[sizeof(idBuf)-1]=0;
 
   rv=AB_Banking_ReadNamedConfigGroup(ab, groupName, idBuf, doLock, doUnlock, pDb);
   if (rv<0) {
@@ -435,22 +442,11 @@ int AB_Banking_HasConfigGroup(const AB_BANKING *ab,
   int rv;
   char idBuf[256];
 
-  assert(ab);
-
-  /* check for config manager (created by AB_Banking_Init) */
-  if (ab->configMgr==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "No config manager (maybe the gwenhywfar plugins are not installed?");
-    return GWEN_ERROR_GENERIC;
-  }
-
-
-  /* make config manager id from given unique id */
-  rv=GWEN_ConfigMgr_MkUniqueIdFromId(ab->configMgr, groupName, uniqueId, 0, idBuf, sizeof(idBuf)-1);
+  rv=_chkConfigMgrAndMkIdFromGroupAndUniqueId(ab->configMgr, groupName, uniqueId, idBuf, sizeof(idBuf));
   if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to create a unique id for config group (%d)", rv);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
-  idBuf[sizeof(idBuf)-1]=0;
 
   rv=GWEN_ConfigMgr_HasGroup(ab->configMgr, groupName, idBuf);
   if (rv<0) {
@@ -476,20 +472,11 @@ int AB_Banking_WriteConfigGroup(AB_BANKING *ab,
   assert(ab);
   assert(db);
 
-  /* check for config manager (created by AB_Banking_Init) */
-  if (ab->configMgr==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "No config manager (maybe the gwenhywfar plugins are not installed?");
-    return GWEN_ERROR_GENERIC;
-  }
-
-
-  /* make config manager id from given unique id */
-  rv=GWEN_ConfigMgr_MkUniqueIdFromId(ab->configMgr, groupName, uniqueId, 0, idBuf, sizeof(idBuf)-1);
+  rv=_chkConfigMgrAndMkIdFromGroupAndUniqueId(ab->configMgr, groupName, uniqueId, idBuf, sizeof(idBuf));
   if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to create a unique id for config group (%d)", rv);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
-  idBuf[sizeof(idBuf)-1]=0;
 
   rv=AB_Banking_WriteNamedConfigGroup(ab, groupName, idBuf, doLock, doUnlock, db);
   if (rv<0) {
@@ -509,19 +496,11 @@ int AB_Banking_DeleteConfigGroup(AB_BANKING *ab, const char *groupName, uint32_t
 
   assert(ab);
 
-  /* check for config manager (created by AB_Banking_Init) */
-  if (ab->configMgr==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "No config manager (maybe the gwenhywfar plugins are not installed?");
-    return GWEN_ERROR_GENERIC;
-  }
-
-  /* make config manager id from given unique id */
-  rv=GWEN_ConfigMgr_MkUniqueIdFromId(ab->configMgr, groupName, uniqueId, 0, idBuf, sizeof(idBuf)-1);
+  rv=_chkConfigMgrAndMkIdFromGroupAndUniqueId(ab->configMgr, groupName, uniqueId, idBuf, sizeof(idBuf));
   if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to create a unique id for config group (%d)", rv);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
-  idBuf[sizeof(idBuf)-1]=0;
 
   /* unlock group */
   rv=GWEN_ConfigMgr_DeleteGroup(ab->configMgr, groupName, idBuf);
@@ -542,19 +521,11 @@ int AB_Banking_UnlockConfigGroup(AB_BANKING *ab, const char *groupName, uint32_t
 
   assert(ab);
 
-  /* check for config manager (created by AB_Banking_Init) */
-  if (ab->configMgr==NULL) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "No config manager (maybe the gwenhywfar plugins are not installed?");
-    return GWEN_ERROR_GENERIC;
-  }
-
-  /* make config manager id from given unique id */
-  rv=GWEN_ConfigMgr_MkUniqueIdFromId(ab->configMgr, groupName, uniqueId, 0, idBuf, sizeof(idBuf)-1);
+  rv=_chkConfigMgrAndMkIdFromGroupAndUniqueId(ab->configMgr, groupName, uniqueId, idBuf, sizeof(idBuf));
   if (rv<0) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to create a unique id for config group (%d)", rv);
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
-  idBuf[sizeof(idBuf)-1]=0;
 
   /* unlock group */
   rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, groupName, idBuf);
@@ -585,99 +556,152 @@ int AB_Banking_ReadConfigGroups(const AB_BANKING *ab,
     GWEN_StringList_free(sl);
     return rv;
   }
-  if (GWEN_StringList_Count(sl)) {
-    GWEN_DB_NODE *dbAll;
-    GWEN_STRINGLISTENTRY *se;
-    int ignoredGroups=0;
-
-    dbAll=GWEN_DB_Group_new("all");
-
-    se=GWEN_StringList_FirstEntry(sl);
-    while (se) {
-      const char *t;
-      GWEN_DB_NODE *db=NULL;
-
-      t=GWEN_StringListEntry_Data(se);
-      assert(t);
-
-      /* lock before reading */
-      rv=GWEN_ConfigMgr_LockGroup(ab->configMgr, groupName, t);
-      if (rv<0) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock config group \"%s\" (%d), ignoring", t, rv);
-        ignoredGroups++;
-      }
-      else {
-        rv=GWEN_ConfigMgr_GetGroup(ab->configMgr, groupName, t, &db);
-        if (rv<0) {
-          DBG_WARN(AQBANKING_LOGDOMAIN, "Could not load group [%s] (%d), ignoring", t, rv);
-          GWEN_ConfigMgr_UnlockGroup(ab->configMgr, groupName, t);
-          ignoredGroups++;
-        }
-        else {
-          int doAdd=1;
-
-          /* unlock after reading */
-          rv=GWEN_ConfigMgr_UnlockGroup(ab->configMgr, groupName, t);
-          if (rv<0) {
-            DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not unlock group [%s] (%d)", t, rv);
-          }
-
-          assert(db);
-          GWEN_DB_GroupRename(db, t);
-          if (doAdd && uidField && *uidField) {
-            int v;
-
-            v=GWEN_DB_GetIntValue(db, uidField, 0, 0);
-            if (v==0)
-              doAdd=0;
-          }
-
-          if (doAdd && matchVar && *matchVar) {
-            const char *s;
-
-            s=GWEN_DB_GetCharValue(db, matchVar, 0, NULL);
-            if (s && *s) {
-              if (strcasecmp(s, matchVal)!=0)
-                doAdd=0;
-            }
-            else {
-              if (matchVal && *matchVal)
-                doAdd=0;
-            }
-          }
-
-          if (doAdd)
-            GWEN_DB_AddGroup(dbAll, db);
-          else
-            GWEN_DB_Group_free(db);
-        } /* if getGroup ok */
-      } /* if locking ok */
-      se=GWEN_StringListEntry_Next(se);
-    } /* while se */
-
-    if (GWEN_DB_Groups_Count(dbAll)) {
-      *pDb=dbAll;
-      if (ignoredGroups) {
-        GWEN_StringList_free(sl);
-        return GWEN_ERROR_PARTIAL;
-      }
-      GWEN_StringList_free(sl);
-      return 0;
-    }
-    else {
-      DBG_WARN(AQBANKING_LOGDOMAIN, "No matching config groups found");
-      GWEN_DB_Group_free(dbAll);
-      GWEN_StringList_free(sl);
-      return GWEN_ERROR_NOT_FOUND;
-    }
+  if (GWEN_StringList_Count(sl)<1) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No config groups found for \"%s\"", groupName);
+    GWEN_StringList_free(sl);
+    return GWEN_ERROR_NOT_FOUND;
   }
-  GWEN_StringList_free(sl);
+  else {
+    GWEN_DB_NODE *dbRoot;
 
-  DBG_INFO(AQBANKING_LOGDOMAIN, "No account specs found");
-  return GWEN_ERROR_NOT_FOUND;
+    dbRoot=GWEN_DB_Group_new("all");
+    rv=_readGroupsFromStringList(ab->configMgr, sl, groupName, uidField, matchVar, matchVal, dbRoot);
+    GWEN_StringList_free(sl);
+    if (rv<0 && rv!=GWEN_ERROR_PARTIAL) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      GWEN_DB_Group_free(dbRoot);
+      return rv;
+    }
+    *pDb=dbRoot;
+    return rv;
+  }
 }
 
 
+
+int _readGroupsFromStringList(GWEN_CONFIGMGR *configMgr, 
+			      const GWEN_STRINGLIST *sl,
+			      const char *groupName,
+			      const char *uidField,
+			      const char *matchVar,
+			      const char *matchVal,
+			      GWEN_DB_NODE *dbRoot)
+{
+  GWEN_STRINGLISTENTRY *se;
+  int ignoredGroups=0;
+  int addedGroups=0;
+
+  se=GWEN_StringList_FirstEntry(sl);
+  while (se) {
+    const char *t;
+    GWEN_DB_NODE *db=NULL;
+
+    t=GWEN_StringListEntry_Data(se);
+    assert(t);
+
+    db=_lockReadUnlockGroup(configMgr, groupName, t);
+    if (db==NULL) {
+      ignoredGroups++;
+    }
+    else {
+      int rv;
+
+      rv=_addOrFreeGroup(dbRoot, db, uidField, matchVar, matchVal);
+      if (rv==1) {
+	DBG_DEBUG(AQBANKING_LOGDOMAIN, "Added group %s/%s", groupName, t);
+	addedGroups++;
+      }
+    } /* if group */
+    se=GWEN_StringListEntry_Next(se);
+  } /* while se */
+
+  if (ignoredGroups)
+    return GWEN_ERROR_PARTIAL;
+
+  return addedGroups?0:GWEN_ERROR_NOT_FOUND;
+}
+
+
+
+GWEN_DB_NODE *_lockReadUnlockGroup(GWEN_CONFIGMGR *configMgr, const char *groupName, const char *subgroupName)
+{
+  GWEN_DB_NODE *db=NULL;
+  int rv;
+
+  /* lock before reading */
+  rv=GWEN_ConfigMgr_LockGroup(configMgr, groupName, subgroupName);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to lock config group \"%s/%s\" (%d), ignoring", groupName, subgroupName, rv);
+    return NULL;
+  }
+  else {
+    rv=GWEN_ConfigMgr_GetGroup(configMgr, groupName, subgroupName, &db);
+    if (rv<0) {
+      DBG_WARN(AQBANKING_LOGDOMAIN, "Could not load group [%s/%s] (%d), ignoring", groupName, subgroupName, rv);
+      GWEN_ConfigMgr_UnlockGroup(configMgr, groupName, subgroupName);
+      return NULL;
+    }
+    /* unlock after reading */
+    rv=GWEN_ConfigMgr_UnlockGroup(configMgr, groupName, subgroupName);
+    if (rv<0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not unlock group [%s/%s] (%d)", groupName, subgroupName, rv);
+    }
+    GWEN_DB_GroupRename(db, subgroupName);
+
+    return db;
+  } /* if locking ok */
+}
+
+
+
+int _addOrFreeGroup(GWEN_DB_NODE *dbAll, GWEN_DB_NODE *db, const char *uidField, const char *matchVar, const char *matchVal)
+{
+  int doAdd=1;
+  
+  if (doAdd && uidField && *uidField && GWEN_DB_GetIntValue(db, uidField, 0, 0)==0)
+    doAdd=0;
+  
+  if (doAdd && matchVar && *matchVar) {
+    const char *s;
+  
+    s=GWEN_DB_GetCharValue(db, matchVar, 0, NULL);
+    if (!(s && *s && strcasecmp(s, matchVal)==0))
+      doAdd=0;
+  }
+  
+  if (doAdd)
+    GWEN_DB_AddGroup(dbAll, db);
+  else
+    GWEN_DB_Group_free(db);
+
+  return doAdd;
+}
+
+
+
+int _chkConfigMgrAndMkIdFromGroupAndUniqueId(GWEN_CONFIGMGR *configMgr,
+					     const char *groupName,
+					     uint32_t uniqueId,
+					     char *ptrIdBuf, int lenIdBuf)
+{
+  int rv;
+
+  /* check for config manager (created by AB_Banking_Init) */
+  if (configMgr==NULL) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "No config manager (maybe the gwenhywfar plugins are not installed?");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  /* make config manager id from given unique id */
+  rv=GWEN_ConfigMgr_MkUniqueIdFromId(configMgr, groupName, uniqueId, 0, ptrIdBuf, lenIdBuf-1);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Unable to create a unique id for config group (%d)", rv);
+    return rv;
+  }
+  ptrIdBuf[lenIdBuf-1]=0;
+
+  return rv;
+}
 
 
 
