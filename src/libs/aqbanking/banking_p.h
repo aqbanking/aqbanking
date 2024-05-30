@@ -97,12 +97,6 @@ static AB_BANKINFO_PLUGIN *AB_Banking_FindBankInfoPlugin(AB_BANKING *ab, const c
 static AB_BANKINFO_PLUGIN *AB_Banking_GetBankInfoPlugin(AB_BANKING *ab, const char *country);
 
 
-static int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,
-                                              const char *path,
-                                              GWEN_DB_NODE *db,
-                                              int isGlobal);
-
-
 static int AB_Banking__TransformIban(const char *iban, int len, char *newIban, int maxLen);
 
 

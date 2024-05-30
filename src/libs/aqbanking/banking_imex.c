@@ -57,13 +57,16 @@
 # include "src/libs/plugins/imexporters/camt/camt.h"
 #endif
 
-
 #ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_XML
 # include "src/libs/plugins/imexporters/xml/xml.h"
 #endif
 
 
 
+static int _readGlobalProfilesForImExporterFromFolder(AB_BANKING *ab, const char *name, const char *path, GWEN_DB_NODE *dbRoot);
+static int _readUserProfilesForImExporter(AB_BANKING *ab, const char *name, GWEN_DB_NODE *dbRoot);
+static int _readImExporterProfiles(AB_BANKING *ab, const char *path, GWEN_DB_NODE *dbRoot, int isGlobal);
+static int _readAndAddProfileFile(const char *fname, GWEN_DB_NODE *dbRoot, int isGlobal);
 static GWEN_DB_NODE *_getProfileFromFileOrSystem(AB_BANKING *ab,
                                                  const char *importerName,
                                                  const char *profileName,
@@ -643,120 +646,150 @@ GWEN_PLUGIN_DESCRIPTION_LIST2 *AB_Banking_GetImExporterDescrs(AB_BANKING *ab)
 
 
 
-int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,
-                                       const char *path,
-                                       GWEN_DB_NODE *db,
-                                       int isGlobal)
+int _readGlobalProfilesForImExporterFromFolder(AB_BANKING *ab, const char *name, const char *path, GWEN_DB_NODE *dbRoot)
 {
-  GWEN_DIRECTORY *d;
-  GWEN_BUFFER *nbuf;
-  char nbuffer[64];
-  unsigned int pathLen;
+  GWEN_BUFFER *buf;
+  int rv;
 
-  if (!path)
-    path="";
+  buf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendString(buf, path);
+  GWEN_Buffer_AppendString(buf, DIRSEP "aqbanking" DIRSEP AB_IMEXPORTER_FOLDER DIRSEP);
+  rv=GWEN_Text_EscapeToBufferTolerant(name, buf);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad name for importer/exporter (%d)", rv);
+    GWEN_Buffer_free(buf);
+    return rv;
+  }
+  GWEN_Buffer_AppendString(buf, DIRSEP "profiles");
+  rv=_readImExporterProfiles(ab, GWEN_Buffer_GetStart(buf), dbRoot, 1);
+  if (rv && rv!=GWEN_ERROR_NOT_FOUND) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error reading profiles for \"%s\" from \"%s\" (%d)", name, path, rv);
+    GWEN_Buffer_free(buf);
+    return rv;
+  }
+  GWEN_Buffer_free(buf);
+  return rv;
+}
 
-  /* create path */
-  nbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  GWEN_Buffer_AppendString(nbuf, path);
-  pathLen=GWEN_Buffer_GetUsedBytes(nbuf);
 
-  d=GWEN_Directory_new();
-  if (GWEN_Directory_Open(d, GWEN_Buffer_GetStart(nbuf))) {
-    DBG_INFO(AQBANKING_LOGDOMAIN,
-             "Path \"%s\" is not available",
-             GWEN_Buffer_GetStart(nbuf));
-    GWEN_Buffer_free(nbuf);
-    GWEN_Directory_free(d);
+
+int _readUserProfilesForImExporter(AB_BANKING *ab, const char *name, GWEN_DB_NODE *dbRoot)
+{
+  GWEN_BUFFER *buf;
+  int rv;
+
+  buf=GWEN_Buffer_new(0, 256, 0, 1);
+  rv=AB_Banking_GetUserDataDir(ab, buf);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not get user data dir (%d)", rv);
+    GWEN_Buffer_free(buf);
+    return rv;
+  }
+  GWEN_Buffer_AppendString(buf, DIRSEP AB_IMEXPORTER_FOLDER DIRSEP);
+  rv=GWEN_Text_EscapeToBufferTolerant(name, buf);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad name for importer/exporter (%d)", rv);
+    GWEN_Buffer_free(buf);
+    return rv;
+  }
+  GWEN_Buffer_AppendString(buf, DIRSEP "profiles");
+
+  rv=_readImExporterProfiles(ab, GWEN_Buffer_GetStart(buf), dbRoot, 0);
+  if (rv && rv!=GWEN_ERROR_NOT_FOUND) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Error reading users profiles");
+    GWEN_Buffer_free(buf);
+    return rv;
+  }
+  GWEN_Buffer_free(buf);
+  return rv;
+}
+
+
+
+int _readImExporterProfiles(AB_BANKING *ab, const char *path, GWEN_DB_NODE *dbRoot, int isGlobal)
+{
+  GWEN_STRINGLIST *slFiles;
+  int rv;
+
+  slFiles=GWEN_StringList_new();
+  rv=GWEN_Directory_GetMatchingFilesRecursively(path, slFiles, "*.conf");
+  if (rv<0) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_StringList_free(slFiles);
+    return rv;
+  }
+  if (GWEN_StringList_Count(slFiles)<1) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "No profiles found in \"%s\"", path);
+    GWEN_StringList_free(slFiles);
     return GWEN_ERROR_NOT_FOUND;
   }
+  else {
+    GWEN_STRINGLISTENTRY *se;
 
-  while (!GWEN_Directory_Read(d,
-                              nbuffer,
-                              sizeof(nbuffer))) {
-    if (strcmp(nbuffer, ".") &&
-        strcmp(nbuffer, "..")) {
-      int nlen;
+    se=GWEN_StringList_FirstEntry(slFiles);
+    while (se) {
+      const char *t;
 
-      nlen=strlen(nbuffer);
-      if (nlen>4) {
-        if (strcasecmp(nbuffer+nlen-5, ".conf")==0) {
-          struct stat st;
+      t=GWEN_StringListEntry_Data(se);
+      if (t) {
+        rv=_readAndAddProfileFile(t, dbRoot, isGlobal);
+        if (rv<0) {
+          DBG_INFO(AQBANKING_LOGDOMAIN, "Error reading profile file \"%s\" (%d), ignoring.", t, rv);
+        }
+      }
+      se=GWEN_StringListEntry_Next(se);
+    }
+    GWEN_StringList_free(slFiles);
+    return 0;
+  }
+}
 
-          GWEN_Buffer_Crop(nbuf, 0, pathLen);
-          GWEN_Buffer_SetPos(nbuf, pathLen);
-          GWEN_Buffer_AppendString(nbuf, DIRSEP);
-          GWEN_Buffer_AppendString(nbuf, nbuffer);
 
-          if (stat(GWEN_Buffer_GetStart(nbuf), &st)) {
-            DBG_ERROR(AQBANKING_LOGDOMAIN, "stat(%s): %s",
-                      GWEN_Buffer_GetStart(nbuf),
-                      strerror(errno));
-          }
-          else {
-            if (!S_ISDIR(st.st_mode)) {
-              GWEN_DB_NODE *dbT;
 
-              dbT=GWEN_DB_Group_new("profile");
-              if (GWEN_DB_ReadFile(dbT,
-                                   GWEN_Buffer_GetStart(nbuf),
-                                   GWEN_DB_FLAGS_DEFAULT |
-                                   GWEN_PATH_FLAGS_CREATE_GROUP)) {
-                DBG_ERROR(AQBANKING_LOGDOMAIN,
-                          "Could not read file \"%s\"",
-                          GWEN_Buffer_GetStart(nbuf));
-              }
-              else {
-                const char *s;
-
-                s=GWEN_DB_GetCharValue(dbT, "name", 0, 0);
-                if (!s) {
-                  DBG_ERROR(AQBANKING_LOGDOMAIN,
-                            "Bad file \"%s\" (no name)",
-                            GWEN_Buffer_GetStart(nbuf));
-                }
-                else {
-                  GWEN_DB_NODE *dbTarget;
-                  DBG_INFO(AQBANKING_LOGDOMAIN,
-                           "File \"%s\" contains profile \"%s\"",
-                           GWEN_Buffer_GetStart(nbuf), s);
-
-                  dbTarget=GWEN_DB_GetGroup(db,
-                                            GWEN_DB_FLAGS_OVERWRITE_GROUPS,
-                                            s);
-                  assert(dbTarget);
-                  GWEN_DB_AddGroupChildren(dbTarget, dbT);
-                  GWEN_DB_SetIntValue(dbTarget, GWEN_DB_FLAGS_OVERWRITE_VARS, "isGlobal", isGlobal);
-                  GWEN_DB_SetCharValue(dbTarget, GWEN_DB_FLAGS_OVERWRITE_VARS, "fileName", nbuffer);
-                } /* if name */
-              } /* if file successfully read */
-              GWEN_DB_Group_free(dbT);
-            } /* if !dir */
-          } /* if stat was ok */
-        } /* if conf */
-      } /* if name has more than 4 chars */
-    } /* if not "." and not ".." */
-  } /* while */
-  GWEN_Directory_Close(d);
-  GWEN_Directory_free(d);
-  GWEN_Buffer_free(nbuf);
-
+int _readAndAddProfileFile(const char *fname, GWEN_DB_NODE *dbRoot, int isGlobal)
+{
+  GWEN_DB_NODE *dbT;
+  int rv;
+  
+  dbT=GWEN_DB_Group_new("profile");
+  rv=GWEN_DB_ReadFile(dbT, fname, GWEN_DB_FLAGS_DEFAULT | GWEN_PATH_FLAGS_CREATE_GROUP);
+  if (rv<0) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not read file \"%s\" (%d)", fname, rv);
+    GWEN_DB_Group_free(dbT);
+    return rv;
+  }
+  else {
+    const char *s;
+  
+    s=GWEN_DB_GetCharValue(dbT, "name", 0, 0);
+    if (!s) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad file \"%s\" (no profile name)", fname);
+    }
+    else {
+      GWEN_DB_NODE *dbTarget;
+      DBG_INFO(AQBANKING_LOGDOMAIN, "File \"%s\" contains profile \"%s\"", fname, s);
+  
+      dbTarget=GWEN_DB_GetGroup(dbRoot, GWEN_DB_FLAGS_OVERWRITE_GROUPS, s);
+      assert(dbTarget);
+      GWEN_DB_AddGroupChildren(dbTarget, dbT);
+      GWEN_DB_SetIntValue(dbTarget, GWEN_DB_FLAGS_OVERWRITE_VARS, "isGlobal", isGlobal);
+      GWEN_DB_SetCharValue(dbTarget, GWEN_DB_FLAGS_OVERWRITE_VARS, "fileName", fname);
+    } /* if name */
+  } /* if file successfully read */
+  GWEN_DB_Group_free(dbT);
   return 0;
 }
 
 
 
-GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
-                                               const char *name)
+GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab, const char *name)
 {
-  GWEN_BUFFER *buf;
-  GWEN_DB_NODE *db;
+  GWEN_DB_NODE *dbRoot;
   int rv;
   GWEN_STRINGLIST *sl;
   GWEN_STRINGLISTENTRY *sentry;
 
-  buf=GWEN_Buffer_new(0, 256, 0, 1);
-  db=GWEN_DB_Group_new("profiles");
+  dbRoot=GWEN_DB_Group_new("profiles");
 
   sl=AB_Banking_GetGlobalDataDirs();
   assert(sl);
@@ -767,75 +800,28 @@ GWEN_DB_NODE *AB_Banking_GetImExporterProfiles(AB_BANKING *ab,
   while (sentry) {
     const char *pkgdatadir;
 
-    pkgdatadir = GWEN_StringListEntry_Data(sentry);
+    pkgdatadir=GWEN_StringListEntry_Data(sentry);
     assert(pkgdatadir);
 
-    /* read global profiles */
-    GWEN_Buffer_AppendString(buf, pkgdatadir);
-    GWEN_Buffer_AppendString(buf,
-                             DIRSEP
-                             "aqbanking"
-                             DIRSEP
-                             AB_IMEXPORTER_FOLDER
-                             DIRSEP);
-    if (GWEN_Text_EscapeToBufferTolerant(name, buf)) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-                "Bad name for importer/exporter");
+    rv=_readGlobalProfilesForImExporterFromFolder(ab, name, pkgdatadir, dbRoot);
+    if (rv<0 && rv!=GWEN_ERROR_NOT_FOUND) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       GWEN_StringList_free(sl);
-      GWEN_DB_Group_free(db);
-      GWEN_Buffer_free(buf);
+      GWEN_DB_Group_free(dbRoot);
       return 0;
     }
-    GWEN_Buffer_AppendString(buf, DIRSEP "profiles");
-    rv=AB_Banking__ReadImExporterProfiles(ab,
-                                          GWEN_Buffer_GetStart(buf),
-                                          db,
-                                          1);
-    if (rv && rv!=GWEN_ERROR_NOT_FOUND) {
-      DBG_ERROR(AQBANKING_LOGDOMAIN,
-                "Error reading global profiles");
-      GWEN_StringList_free(sl);
-      GWEN_DB_Group_free(db);
-      GWEN_Buffer_free(buf);
-      return 0;
-    }
-    GWEN_Buffer_Reset(buf);
     sentry=GWEN_StringListEntry_Next(sentry);
   }
   GWEN_StringList_free(sl);
 
-  /* read local user profiles */
-  if (AB_Banking_GetUserDataDir(ab, buf)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not get user data dir");
-    GWEN_DB_Group_free(db);
-    GWEN_Buffer_free(buf);
+  rv=_readUserProfilesForImExporter(ab, name, dbRoot);
+  if (rv<0 && rv!=GWEN_ERROR_NOT_FOUND) {
+    DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_DB_Group_free(dbRoot);
     return 0;
   }
-  GWEN_Buffer_AppendString(buf, DIRSEP AB_IMEXPORTER_FOLDER DIRSEP);
-  if (GWEN_Text_EscapeToBufferTolerant(name, buf)) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Bad name for importer/exporter");
-    GWEN_DB_Group_free(db);
-    GWEN_Buffer_free(buf);
-    return 0;
-  }
-  GWEN_Buffer_AppendString(buf, DIRSEP "profiles");
 
-  rv=AB_Banking__ReadImExporterProfiles(ab,
-                                        GWEN_Buffer_GetStart(buf),
-                                        db,
-                                        0);
-  if (rv && rv!=GWEN_ERROR_NOT_FOUND) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Error reading users profiles");
-    GWEN_DB_Group_free(db);
-    GWEN_Buffer_free(buf);
-    return 0;
-  }
-  GWEN_Buffer_free(buf);
-
-  return db;
+  return dbRoot;
 }
 
 
