@@ -35,7 +35,7 @@ static void _defineSysconfPaths(void);
 static void _defineDataPaths(void);
 static void _defineWizardPaths(void);
 static void _bindLocale(void);
-static int _createPluginManangers(void);
+static int _createPluginManagers(void);
 static GWEN_PLUGIN_MANAGER *_createPluginManager(const char *pluginName, const char *winRegKey, const char *pluginFolder);
 static int _addPathsForDbioPlugins(void);
 static void _setupLogging(void);
@@ -204,7 +204,7 @@ int _pluginSystemInit(void)
     _defineDataPaths();
     _defineWizardPaths();
 
-    rv=_createPluginManangers();
+    rv=_createPluginManagers();
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -458,7 +458,7 @@ void _bindLocale(void)
 
 
 
-int _createPluginManangers(void)
+int _createPluginManagers(void)
 {
   ab_pluginManagerBankInfo=_createPluginManager("bankinfo",
                                                 AB_BANKING_REGKEY_BANKINFODIR,
