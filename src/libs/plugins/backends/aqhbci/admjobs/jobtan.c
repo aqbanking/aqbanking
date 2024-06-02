@@ -52,7 +52,7 @@ AH_JOB *AH_Job_Tan_new(AB_PROVIDER *pro, AB_USER *u, int process, int jobVersion
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "process", "S");
   else
     GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "process", process);
-  if (process==1 || process==2)
+  if (process==1 || process==2 || process=='S')
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "moreTans", "N");
 
   /* set tanmedium id (if any) */
