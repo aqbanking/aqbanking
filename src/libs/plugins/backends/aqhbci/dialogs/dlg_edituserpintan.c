@@ -2,6 +2,8 @@
  begin       : Thu Jul 08 2010
  copyright   : (C) 2024 by Martin Preuss
  email       : martin@aqbanking.de
+ copyright   : (C) 2024 by Thomas Baumgart
+ email       : thb@net-bembel.de
 
  ***************************************************************************
  * This file is part of the project "AqBanking".                           *
@@ -262,8 +264,9 @@ void _toGui(GWEN_DIALOG *dlg, AB_USER *user)
 
 int _fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
 {
-  int i;
   GWEN_URL *gu;
+
+  assert(dlg);
 
   if (AH_Widget_GuiTextToUserKeepSpaces(dlg, "userNameEdit",    u, AB_User_SetUserName,    NULL)<0 ||
       AH_Widget_GuiTextToUserDeleSpaces(dlg, "bankCodeEdit",    u, AB_User_SetBankCode,    NULL)<0 ||
@@ -274,43 +277,39 @@ int _fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
     return GWEN_ERROR_INVALID;
   }
 
-  if (u)
-    AB_User_SetCountry(u, "de");
+  const int httpVersion = _httpVersionComboGetCurrent(dlg, "httpVersionCombo");
+  const int tanMethod = AH_Widget_TanMethodComboGetCurrent(dlg, "tanMethodCombo");
 
-  if (u)
-    AH_User_SetHbciVersion(u, AH_Widget_HbciVersionComboGetCurrent(dlg, "hbciVersionCombo"));
-
-  i=_httpVersionComboGetCurrent(dlg, "httpVersionCombo");
-  AH_User_SetHttpVMajor(u, ((i>>8) & 0xff));
-  AH_User_SetHttpVMinor(u, (i & 0xff));
-
-  AH_User_SetSelectedTanInputMechanism(u, _tanMechanismComboGetCurrent(dlg, "tanMechanismCombo"));
-
-  i=AH_Widget_TanMethodComboGetCurrent(dlg, "tanMethodCombo");
-  if (i>0) {
-    AH_User_SetSelectedTanMethod(u, i);
-  }
-  else {
+  if (tanMethod == 0) {
     if (!quiet) {
       GWEN_Gui_ShowError(I18N("Error on Input"), "%s", I18N("Please select tan method."));
       GWEN_Dialog_SetIntProperty(dlg, "tanMethodCombo", GWEN_DialogProperty_Focus, 0, 1, 0);
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Missing tan method");
-      return GWEN_ERROR_INVALID;
     }
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Missing tan method");
+    return GWEN_ERROR_INVALID;
   }
 
   gu=AH_Widget_GuiTextToUrl(dlg, "urlEdit", 443);
   if (gu==NULL) {
     if (!quiet) {
       GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Invalid URL"));
-      return GWEN_ERROR_BAD_DATA;
     }
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Invalid URL");
+    return GWEN_ERROR_BAD_DATA;
   }
-  if (u)
-    AH_User_SetServerUrl(u, gu);
-  GWEN_Url_free(gu);
 
-  AH_User_SetFlags(u, _userFlagsFromGui(dlg));
+  if (u) {
+    AB_User_SetCountry(u, "de");
+    AH_User_SetHbciVersion(u, AH_Widget_HbciVersionComboGetCurrent(dlg, "hbciVersionCombo"));
+    AH_User_SetHttpVMajor(u, ((httpVersion >> 8) & 0xff));
+    AH_User_SetHttpVMinor(u, (httpVersion & 0xff));
+    AH_User_SetSelectedTanInputMechanism(u, _tanMechanismComboGetCurrent(dlg, "tanMechanismCombo"));
+    AH_User_SetSelectedTanMethod(u, tanMethod);
+    AH_User_SetServerUrl(u, gu);
+    AH_User_SetFlags(u, _userFlagsFromGui(dlg));
+  }
+
+  GWEN_Url_free(gu);
 
   return 0;
 }
