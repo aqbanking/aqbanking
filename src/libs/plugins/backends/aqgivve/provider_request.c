@@ -48,14 +48,14 @@ GWEN_INHERIT(GWEN_HTTP_SESSION, AG_HTTP_SESSION_HEADER);
 
 
 
-void _freeData(void *bp, void *p)
+void GWENHYWFAR_CB _freeData(void *bp, void *p)
 {
   free(p);
 }
 
 
 
-int _cbInitSyncIo(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio)
+int GWENHYWFAR_CB _cbInitSyncIo(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio)
 {
   AG_HTTP_SESSION_HEADER *xsess;
 

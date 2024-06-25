@@ -57,7 +57,7 @@ GWEN_DIALOG *AG_CardsDialog_new(AB_PROVIDER *pro, AB_USER *user, AG_VOUCHERLIST 
 
 
 
-void _freeData(void *bp, void *p)
+void GWENHYWFAR_CB _freeData(void *bp, void *p)
 {
   AG_CARDS_DIALOG *xdlg;
 
@@ -88,7 +88,7 @@ int _dlgInit(GWEN_DIALOG *dlg)
 
 
 
-int _dlgSignalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
+int GWENHYWFAR_CB _dlgSignalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
 {
   switch (t) {
   case  GWEN_DialogEvent_TypeInit :

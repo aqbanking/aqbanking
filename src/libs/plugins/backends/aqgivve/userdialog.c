@@ -42,7 +42,7 @@ GWEN_INHERIT(GWEN_DIALOG, AG_USER_DIALOG);
 
 
 
-void _freeData(void *bp, void *p)
+void GWENHYWFAR_CB _freeData(void *bp, void *p)
 {
 }
 
@@ -98,7 +98,7 @@ int AG_Provider_EditUserDialog_init(GWEN_DIALOG *dlg)
 
 
 
-int _dlgSignalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
+int GWENHYWFAR_CB _dlgSignalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
 {
   switch (t) {
   case  GWEN_DialogEvent_TypeInit :
