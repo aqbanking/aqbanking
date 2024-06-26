@@ -266,8 +266,8 @@ int AH_ImExporterQ43_ReadDocument(AB_IMEXPORTER *ie,
 
         /* extract valuta date */
         y=((p[16]-'0')*10)+(p[17]-'0');
-        m=((p[18]-'0')*10)+(p[18]-'0');
-        d=((p[19]-'0')*10)+(p[20]-'0');
+        m=((p[18]-'0')*10)+(p[19]-'0');
+        d=((p[20]-'0')*10)+(p[21]-'0');
         if (y>YEAR_2000_CUTOFF)
           y+=1900;
         else
