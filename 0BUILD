@@ -19,8 +19,8 @@
 
 <gwbuild>
 
-  <project name="aqbanking" version="6.5.11-beta"
-           so_current="49" so_age="5" so_revision="11"
+  <project name="aqbanking" version="6.5.12-beta"
+           so_current="49" so_age="5" so_revision="12"
            write_config_h="TRUE"
            >
 
