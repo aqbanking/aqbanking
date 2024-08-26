@@ -48,6 +48,7 @@ static TAN_MAP_ENTRY _methodIdMap[]= {
   {"HHD1.*OPT",  AB_BANKING_TANMETHOD_CHIPTAN_OPTIC},
   {"HHD1.*USB",  AB_BANKING_TANMETHOD_CHIPTAN_USB},
   {"HHD1.*QR",   AB_BANKING_TANMETHOD_CHIPTAN_QR},
+  {"Q1S",        AB_BANKING_TANMETHOD_CHIPTAN_QR},
   {"Decoupled.*", AB_BANKING_TANMETHOD_DECOUPLED},
 
   {NULL,        0}
@@ -161,8 +162,10 @@ AH_TAN_MECHANISM *AH_TanMechanism_Factory(const AH_TAN_METHOD *tanMethod, int pr
   int id;
   AH_TAN_MECHANISM *tanMechanism=NULL;
 
-  if (preselectedId)
+  if (preselectedId) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Using preselected id %d", preselectedId);
     id=preselectedId;
+  }
   else
     id=_getTanMethodIdForTanMethod(tanMethod);
   if (id==0) {
@@ -211,8 +214,12 @@ AH_TAN_MECHANISM *AH_TanMechanism_Factory(const AH_TAN_METHOD *tanMethod, int pr
   case AB_BANKING_TANMETHOD_DECOUPLED:
   case AB_BANKING_TANMETHOD_CHIPTAN:
   case AB_BANKING_TANMETHOD_TEXT:
-  default:
     DBG_INFO(AQHBCI_LOGDOMAIN, "Using TAN mechanism \"text\"");
+    tanMechanism=AH_TanMechanism_Text_new(tanMethod, id);
+    break;
+
+  default:
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Defaulting to TAN mechanism \"text\" (id=%d)", id);
     tanMechanism=AH_TanMechanism_Text_new(tanMethod, id);
     break;
   }
@@ -249,6 +256,7 @@ int _getTanMethodIdForTanMethod(const AH_TAN_METHOD *tanMethod)
   if (sName && *sName) {
     int id;
 
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Searching \"%s\" in ZKA map", sName);
     id=_getTanMethodIdFromString(sName, _zkaNameMap);
     if (id>0)
       return id;
@@ -259,6 +267,7 @@ int _getTanMethodIdForTanMethod(const AH_TAN_METHOD *tanMethod)
   if (sName && *sName) {
     int id;
 
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Searching \"%s\" in method id map", sName);
     id=_getTanMethodIdFromString(sName, _methodIdMap);
     if (id>0)
       return id;
@@ -269,6 +278,7 @@ int _getTanMethodIdForTanMethod(const AH_TAN_METHOD *tanMethod)
   if (sName && *sName) {
     int id;
 
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Searching \"%s\" in method name map", sName);
     id=_getTanMethodIdFromString(sName, _methodNameMap);
     if (id>0)
       return id;
