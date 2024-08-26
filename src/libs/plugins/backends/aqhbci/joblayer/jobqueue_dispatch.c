@@ -89,11 +89,14 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db)
   jobQueueFlags=AH_JobQueue_GetFlags(jq);
 
   if (jobQueueFlags & (AH_JOBQUEUE_FLAGS_ACCESS_PROBLEM | AH_JOBQUEUE_FLAGS_DIALOG_ABORTED)) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Dialog logically aborted by peer, assuming bad PIN");
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Dialog logically aborted by peer");
+    return GWEN_ERROR_ABORTED;
+  }
+
+  if (jobQueueFlags & AH_JOBQUEUE_FLAGS_BAD_PIN) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Bad PIN reported by peer");
     if (AH_JobQueue_GetUsedPin(jq)) {
-      GWEN_Gui_ProgressLog(guiid,
-                           GWEN_LoggerLevel_Info,
-                           I18N("Dialog aborted by bank, assuming bad PIN"));
+      GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Info, I18N("Peer reported bad PIN"));
       AH_User_SetPinStatus(AH_JobQueue_GetUser(jq), AH_JobQueue_GetUsedPin(jq), GWEN_Gui_PasswordStatus_Bad);
     }
     return GWEN_ERROR_ABORTED;
