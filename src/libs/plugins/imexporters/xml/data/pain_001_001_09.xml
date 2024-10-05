@@ -1,0 +1,131 @@
+
+<!--
+/***************************************************************************
+    begin       : Sat Apr 04 2020
+    copyright   : (C) 2020 by Martin Preuss
+    email       : martin@libchipcard.de
+    ernstkl: derived this from pain.001.001.03 by manually comparing
+    the spec documents => sole change required: BIC is called BICFI now
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+ 
+ This file can be used to import a PAIN.001.001.09 file.
+ 
+-->
+
+
+<Schema documentType="sepa">
+
+  <DocMatches>
+    <Match path="Document@xmlns">*pain.001.001.09*</Match>
+  </DocMatches>
+
+
+  <Import>
+  
+    <XmlIfPathExists                                                path="Document/CstmrCdtTrfInitn">
+      <XmlEnter                                                     path="Document/CstmrCdtTrfInitn">
+        <XmlIfPathExists                                            path="GrpHdr">
+          <XmlEnter                                                 path="GrpHdr">
+            <DbSetCharValue           name="numberOfTransactions"   path="NbOfTxs"/>
+            <DbSetCharValue           name="controlSum"             path="CtrlSum"/>
+          </XmlEnter>
+        </XmlIfPathExists>
+
+        <XmlForEvery                  name="PmtInf">
+          <DbCreateAndEnterGroup      name="paymentGroup">
+            <DbSetCharValue           name="numberOfTransactions"   path="NbOfTxs"/>
+            <DbSetCharValue           name="controlSum"             path="CtrlSum"/>
+            <DbSetCharValue           name="requestedExecutionDate" path="ReqdExctnDt" type="date" template="YYYY-MM-DD" />
+            <DbSetCharValue           name="ownerName"              path="Dbtr/Nm"/>
+            <DbSetCharValue           name="iban"                   path="DbtrAcct/Id/IBAN"/>
+            <DbSetCharValue           name="bic"                    path="DbtrAgt/FinInstnId/BICFI"/>
+
+
+            <XmlForEvery              name="CdtTrfTxInf">
+              <DbCreateAndEnterGroup  name="transaction">
+                <DbSetCharValue       name="type"                   value="transfer" />
+                <DbSetCharValue       name="endToEndReference"      path="PmtId/EndToEndId"/>
+                <DbSetCharValue       name="value_value"            path="Amt/InstdAmt" />
+                <DbSetCharValue       name="value_currency"         path="Amt/InstdAmt@Ccy" />
+                <DbSetCharValue       name="remoteBic"              path="CdtrAgt/FinInstnId/BICFI"/>
+                <DbSetCharValue       name="remoteName"             path="Cdtr/Nm"/>
+                <DbSetCharValue       name="remoteIban"             path="CdtrAcct/Id/IBAN"/>
+  
+                <!-- purpose lines -->
+                <XmlIfPathExists                                    path="RmtInf">
+                  <XmlEnter                                         path="RmtInf">
+                    <XmlForEvery      name="Ustrd">
+                      <DbSetCharValue name="purpose"                path="." mode="append" delimiter="\n"/>
+                    </XmlForEvery>
+                  </XmlEnter> <!-- RmtInf -->
+                </XmlIfPathExists>
+              </DbCreateAndEnterGroup> <!-- transaction -->
+            </XmlForEvery> <!-- CdtTrfTxInf -->
+          </DbCreateAndEnterGroup>  <!-- paymentGroup -->
+        </XmlForEvery> <!-- PmtInf -->
+  
+      </XmlEnter> <!-- Document/CstmrCdtTrfInitn -->
+  
+    </XmlIfPathExists> <!-- Document/CstmrCdtTrfInitn -->
+  
+  </Import>
+
+
+  <Export>
+    <XmlCreateAndEnterElement path="Document">
+      <XmlSetCharValue path=".@xmlns" value="urn:iso:std:iso:20022:tech:xsd:pain.001.001.09" />
+      <XmlSetCharValue path=".@xmlns:xsi" value="http://www.w3.org/2001/XMLSchema-instance" />
+      <XmlSetCharValue path=".@xsi:schemaLocation" value="urn:iso:std:iso:20022:tech:xsd:pain.001.001.09 pain.001.001.09.xsd" />
+
+      <XmlCreateAndEnterElement path="CstmrCdtTrfInitn">
+        
+        <XmlCreateAndEnterElement       path="GrpHdr">
+          <XmlSetCharValue              path="MsgId"                  name="messageId" />
+          <XmlSetCharValue              path="CreDtTm"                name="messageDateTime" />
+          <XmlSetCharValue              path="NbOfTxs"                name="numberOfTransactions" />
+          <XmlSetCharValue              path="CtrlSum"                name="controlSum" />
+          <XmlSetCharValue              path="InitgPty/Nm"            name="initiatorName" />
+        </XmlCreateAndEnterElement>
+
+        <DbForEvery name="paymentGroup">
+          <XmlCreateAndEnterElement     path="PmtInf">
+            <XmlSetCharValue            path="PmtInfId"               name="paymentInfoId" />
+            <XmlSetCharValue            path="PmtMtd"                 value="TRF" />
+            <XmlSetCharValue            path="BtchBookg"              name="batchBooking" />
+            <XmlSetCharValue            path="NbOfTxs"                name="numberOfTransactions" />
+            <XmlSetCharValue            path="CtrlSum"                name="controlSum" />
+            <XmlSetCharValue            path="PmtTpInf/SvcLvl/Cd"     value="SEPA" />
+            <XmlSetCharValue            path="ReqdExctnDt"            name="requestedExecutionDate" type="date" template="YYYY-MM-DD" />
+            <XmlSetCharValue            path="Dbtr/Nm"                name="ownerName" />
+            <XmlSetCharValue            path="DbtrAcct/Id/IBAN"       name="iban" />
+            <XmlSetCharValue            path="DbtrAgt/FinInstnId/BICFI" name="bic" />
+            <XmlSetCharValue            path="ChrgBr"                 value="SLEV" />
+
+            <DbForEvery                                               name="transaction">
+              <XmlCreateAndEnterElement path="CdtTrfTxInf">
+                <DbIfHasCharData                                      name="endToEndReference">
+                  <XmlSetCharValue      path="PmtId/EndToEndId"       name="endToEndReference" />
+                </DbIfHasCharData>
+                <DbIfNotHasCharData                                   name="endToEndReference">
+                  <XmlSetCharValue      path="PmtId/EndToEndId"       value="NOTPROVIDED" />
+                </DbIfNotHasCharData>
+                <XmlSetCharValue        path="Amt/InstdAmt"           name="value_value" />
+                <XmlSetCharValue        path="Amt/InstdAmt@Ccy"       name="value_currency" />
+                <XmlSetCharValue        path="CdtrAgt/FinInstnId/BICFI" name="remoteBic" />
+                <XmlSetCharValue        path="Cdtr/Nm"                name="remoteName" />
+                <XmlSetCharValue        path="CdtrAcct/Id/IBAN"       name="remoteIban" />
+                <XmlSetCharValue        path="RmtInf/Ustrd"           name="purpose" />
+              </XmlCreateAndEnterElement>
+            </DbForEvery>
+          </XmlCreateAndEnterElement>
+        </DbForEvery>
+      </XmlCreateAndEnterElement>
+    </XmlCreateAndEnterElement>
+  </Export>
+
+
+</Schema>
+
