@@ -402,7 +402,7 @@
 
       <member name="version3" type="int" maxlen="4">
         <descr>
-          Second part of the version (i.e. the "03" in "pain.001.002.03")
+          Third part of the version (i.e. the "03" in "pain.001.002.03")
         </descr>
         <default>0</default>
         <preset>0</preset>
