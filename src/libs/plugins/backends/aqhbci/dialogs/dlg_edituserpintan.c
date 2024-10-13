@@ -446,6 +446,7 @@ int _saveUser(GWEN_DIALOG *dlg)
     }
   }
 
+  xdlg->modified=0;
   return 0;
 }
 
