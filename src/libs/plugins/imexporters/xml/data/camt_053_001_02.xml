@@ -10,6 +10,7 @@
  ***************************************************************************/
  
  This file can be used to import a CAMT.053.001.02 file.
+ This file has been tested with an export from ASNBNL21
  
 -->
 
@@ -271,7 +272,6 @@
                   <!-- transaction text -->
                   <XmlIfHasCharData path="AddtlNtryInf">
                     <DbSetCharValue name="transactionText" path="AddtlNtryInf"/>
-                    <DbSetCharValue name="purpose" mode="append" delimiter="\n" path="AddtlNtryInf"/>
                   </XmlIfHasCharData>
     
                   
