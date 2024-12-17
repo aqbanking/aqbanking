@@ -35,6 +35,7 @@
     onvista-trans.conf
     onvista-prices.conf
     onvista-account.conf
+    comdirect-prices.conf
   </data>
 
 </gwbuild>
