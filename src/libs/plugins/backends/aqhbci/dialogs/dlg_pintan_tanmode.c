@@ -176,7 +176,7 @@ int _fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
   int i;
 
   i=AH_Widget_TanMethodComboGetCurrent(dlg, "tanMethodCombo");
-  if (i>0)
+  if (u && i>0)
     AH_User_SetSelectedTanMethod(u, i);
 
   return 0;
