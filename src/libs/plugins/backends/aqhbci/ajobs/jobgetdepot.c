@@ -38,8 +38,9 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-static int AH_Job_GetDepot_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
-static int AH_Job_GetDepot_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
+static int _jobApi_prepare(AH_JOB *j);
+static int _jobApi_process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
+static int _jobApi_getLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
 
 static GWEN_BUFFER *_sampleDepotInfo(AH_JOB *j, GWEN_DB_NODE *dbResponses);
 static int _readDepotInfo(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx, const uint8_t *ptr, uint32_t len);
@@ -67,8 +68,10 @@ AH_JOB *AH_Job_GetDepot_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
   AH_Job_SetSupportedCommand(j, AB_Transaction_CommandGetDepot);
 
   /* overwrite some virtual functions */
-  AH_Job_SetProcessFn(j, AH_Job_GetDepot_Process);
-  AH_Job_SetGetLimitsFn(j, AH_Job_GetDepot_GetLimits);
+  AH_Job_SetPrepareFn(j, _jobApi_prepare);
+  AH_Job_SetProcessFn(j, _jobApi_process);
+  AH_Job_SetGetLimitsFn(j, _jobApi_getLimits);
+  AH_Job_SetHandleCommandFn(j, AH_Job_HandleCommand_Accept);
   AH_Job_SetHandleResultsFn(j, AH_Job_HandleResults_Empty);
 
   return j;
@@ -76,7 +79,27 @@ AH_JOB *AH_Job_GetDepot_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 
 
 
-int AH_Job_GetDepot_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
+int _jobApi_prepare(AH_JOB *j)
+{
+  GWEN_DB_NODE *dbArgs;
+  GWEN_DB_NODE *dbParams;
+  const char *s;
+
+  dbArgs=AH_Job_GetArguments(j);
+  dbParams=AH_Job_GetParams(j);
+  s=GWEN_DB_GetCharValue(dbParams, "CurrencySelectionAllowed", 0, 0);
+  if (s && !strcmp(s, "J"))
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "currency", "EUR");
+  s=GWEN_DB_GetCharValue(dbParams, "QualitySelectionAllowed", 0, 0);
+  if (s && !strcmp(s, "J"))
+    GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "quality", 2);
+
+  return 0;
+}
+
+
+
+int _jobApi_process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 {
   AB_ACCOUNT *a;
   GWEN_DB_NODE *dbResponses;
@@ -214,7 +237,7 @@ int _readDepotInfo(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx, const uint8_t *ptr, ui
 
 
 
-int AH_Job_GetDepot_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits)
+int _jobApi_getLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits)
 {
   AB_TRANSACTION_LIMITS *tl;
 
