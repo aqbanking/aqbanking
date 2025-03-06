@@ -39,7 +39,8 @@ noinst_HEADERS=\
   jobsepastandingorderdelete_l.h \
   jobgetestatements_l.h \
   jobgetdepot_l.h \
-  jobsepainternalxfer_l.h
+  jobsepainternalxfer_l.h \
+  jobsepaxferdatedsingle_l.h
 
 libhbciaccjobs_la_SOURCES=\
   accountjob.c \
@@ -62,7 +63,8 @@ libhbciaccjobs_la_SOURCES=\
   jobsepastandingorderdelete.c \
   jobgetestatements.c \
   jobgetdepot.c \
-  jobsepainternalxfer.c 
+  jobsepainternalxfer.c  \
+  jobsepaxferdatedsingle.c
 
 
 sources:
@@ -93,7 +95,9 @@ xmlfiles=\
   $(srcdir)/jobgetestatements.xml \
   $(srcdir)/jobgetestatements2.xml \
   $(srcdir)/jobgetdepot.xml \
-  $(srcdir)/jobsepainternalxfer.xml
+  $(srcdir)/jobsepainternalxfer.xml \
+  $(srcdir)/jobsepaxferdatedsingle.xml
+
 
 EXTRA_DIST=$(xmlfiles)
 

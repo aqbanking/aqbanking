@@ -110,6 +110,13 @@ int AH_Job_TransferBase_HandleCommand_SepaStandingOrder(AH_JOB *j, const AB_TRAN
 int AH_Job_TransferBase_Prepare_SepaStandingOrder(AH_JOB *j);
 
 
+
+/**
+ * Prepare a SEPA transfer order job (create, modify).
+ */
+int AH_Job_TransferBase_Prepare_SepaTransfer(AH_JOB *j);
+
+
 /**
  * Add challenge parameters type 29 (used in dated transfers/debit notes).
  */

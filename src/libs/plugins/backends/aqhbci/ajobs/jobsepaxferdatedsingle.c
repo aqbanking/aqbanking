@@ -1,21 +1,20 @@
 /***************************************************************************
-    begin       : Tue Dec 31 2013
-    copyright   : (C) 2018 by Martin Preuss
+    begin       : Mon Mar 01 2004
+    copyright   : (C) 2025 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
 
 
-#include "jobsepaxfersingle_l.h"
+#include "jobsepacor1datedsinglecreate_l.h"
 #include "jobtransferbase_l.h"
-#include "aqhbci_l.h"
+#include "aqhbci/aqhbci_l.h"
 #include "accountjob_l.h"
 #include "aqhbci/joblayer/job_l.h"
 #include "aqhbci/banking/user_l.h"
@@ -31,48 +30,41 @@
 
 
 
-/* ------------------------------------------------------------------------------------------------
- * forward declarations
- * ------------------------------------------------------------------------------------------------
- */
-
-static int _jobApi_AddChallengeParams09(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
+static int _jobApi_AddChallengeParams23(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
 
 
 
-/* ------------------------------------------------------------------------------------------------
- * implementations
- * ------------------------------------------------------------------------------------------------
- */
-
-
-
-AH_JOB *AH_Job_SepaTransferSingle_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
+AH_JOB *AH_Job_SepaTransferDatedSingleCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 {
   AH_JOB *j;
+  GWEN_DB_NODE *dbArgs;
 
-  j=AH_Job_TransferBase_new("JobSepaTransferSingle",
-                            AB_Transaction_TypeTransfer,
+  j=AH_Job_TransferBase_new("JobSepaTransferDatedSingle",
+                            AB_Transaction_TypeDebitNote,
                             AB_Transaction_SubTypeStandard,
                             pro, u, account);
   if (!j)
     return 0;
 
-  AH_Job_SetChallengeClass(j, 9);
-  AH_Job_SetSupportedCommand(j, AB_Transaction_CommandSepaTransfer);
+  AH_Job_SetChallengeClass(j, 23);
+  AH_Job_SetSupportedCommand(j, AB_Transaction_CommandSepaCreateDatedTransfer);
 
   /* overwrite some virtual functions */
   AH_Job_SetPrepareFn(j, AH_Job_TransferBase_Prepare_SepaTransfer);
-  AH_Job_SetAddChallengeParamsFn(j, _jobApi_AddChallengeParams09);
-  AH_Job_SetHandleCommandFn(j, AH_Job_TransferBase_HandleCommand_SepaUndated);
-  AH_Job_SetGetLimitsFn(j, AH_Job_TransferBase_GetLimits_SepaUndated);
+  AH_Job_SetAddChallengeParamsFn(j, _jobApi_AddChallengeParams23);
+  AH_Job_SetGetLimitsFn(j, AH_Job_TransferBase_GetLimits_SepaDated);
+  AH_Job_SetHandleCommandFn(j, AH_Job_TransferBase_HandleCommand_SepaDated);
+
+  /* set some known arguments */
+  dbArgs=AH_Job_GetArguments(j);
+  assert(dbArgs);
 
   return j;
 }
 
 
 
-int _jobApi_AddChallengeParams09(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod)
+int _jobApi_AddChallengeParams23(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod)
 {
   const AB_TRANSACTION *t;
   const char *s;
@@ -96,9 +88,7 @@ int _jobApi_AddChallengeParams09(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod
     int rv;
 
     DBG_ERROR(AQHBCI_LOGDOMAIN, "TAN version is 1.4.x");
-    rv=AH_HHD14_AddChallengeParams_09(j,
-                                      AB_Transaction_GetValue(t),
-                                      AB_Transaction_GetRemoteIban(t));
+    rv=AH_HHD14_AddChallengeParams_23(j, AB_Transaction_GetValue(t), AB_Transaction_GetRemoteIban(t), AB_Transaction_GetDate(t));
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;

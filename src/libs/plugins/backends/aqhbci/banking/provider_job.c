@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2025 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -18,6 +18,7 @@
 #include "aqhbci/ajobs/jobgettrans_camt_l.h"
 #include "aqhbci/ajobs/jobloadcellphone_l.h"
 #include "aqhbci/ajobs/jobsepaxfersingle_l.h"
+#include "aqhbci/ajobs/jobsepaxferdatedsingle_l.h"
 #include "aqhbci/ajobs/jobsepainternalxfer_l.h"
 #include "aqhbci/ajobs/jobsepaxfermulti_l.h"
 #include "aqhbci/ajobs/jobsepadebitdatedsinglecreate_l.h"
@@ -114,6 +115,21 @@ int AH_Provider_CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, int
       }
     }
     break;
+
+  case AB_Transaction_CommandSepaCreateDatedTransfer:
+    mj=AH_Job_SepaTransferDatedSingleCreate_new(pro, mu, ma);
+    if (!mj) {
+      DBG_WARN(AQHBCI_LOGDOMAIN, "Job \"SepaTransferDatedSingle\" not supported with this account");
+
+      /* try multi transfer next */
+      mj=AH_Job_SepaTransferMulti_new(pro, mu, ma);
+      if (!mj) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"SepaTransferMulti\" not supported with this account");
+        return GWEN_ERROR_NOT_AVAILABLE;
+      }
+    }
+    break;
+
 
   case AB_Transaction_CommandSepaInternalTransfer:
     mj=AH_Job_SepaInternalTransfer_new(pro, mu, ma);

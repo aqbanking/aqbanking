@@ -70,6 +70,7 @@
       jobsepaxfermulti_p.h
       jobsepaxfersingle_l.h
       jobsepadebitsingle_l.h
+      jobsepaxferdatedsingle_l.h
       jobsepacor1datedsinglecreate_l.h
       jobtransferbase_l.h jobtransferbase_p.h
       jobsepastandingordercreate_l.h 
@@ -96,6 +97,7 @@
       jobsepacor1datedmulticreate.c
       jobsepaxfermulti.c
       jobsepaxfersingle.c
+      jobsepaxferdatedsingle.c
       jobsepadebitsingle.c
       jobsepacor1datedsinglecreate.c
       jobtransferbase.c
@@ -131,6 +133,7 @@
       jobsepaxfermulti.xml
       jobsepaxfersingle.xml
       jobsepadebitsingle.xml
+      jobsepaxferdatedsingle.xml
       jobsepacor1datedsinglecreate.xml
       jobsepastandingordercreate.xml
       jobsepastandingorderget.xml
@@ -155,6 +158,7 @@
         jobsepaxfermulti.xml
         jobsepaxfersingle.xml
         jobsepadebitsingle.xml
+        jobsepaxferdatedsingle.xml
         jobsepacor1datedsinglecreate.xml
         jobsepastandingordercreate.xml
         jobsepastandingorderget.xml
