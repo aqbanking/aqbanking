@@ -38,7 +38,7 @@
           <DbCreateAndEnterGroup      name="paymentGroup">
             <DbSetCharValue           name="numberOfTransactions"   path="NbOfTxs"/>
             <DbSetCharValue           name="controlSum"             path="CtrlSum"/>
-            <DbSetCharValue           name="requestedExecutionDate" path="ReqdExctnDt" type="date" template="YYYY-MM-DD" />
+            <DbSetCharValue           name="requestedExecutionDate" path="ReqdExctnDt/Dt" type="date" template="YYYY-MM-DD" />
             <DbSetCharValue           name="ownerName"              path="Dbtr/Nm"/>
             <DbSetCharValue           name="iban"                   path="DbtrAcct/Id/IBAN"/>
             <DbSetCharValue           name="bic"                    path="DbtrAgt/FinInstnId/BICFI"/>
@@ -98,7 +98,7 @@
             <XmlSetCharValue            path="NbOfTxs"                name="numberOfTransactions" />
             <XmlSetCharValue            path="CtrlSum"                name="controlSum" />
             <XmlSetCharValue            path="PmtTpInf/SvcLvl/Cd"     value="SEPA" />
-            <XmlSetCharValue            path="ReqdExctnDt"            name="requestedExecutionDate" type="date" template="YYYY-MM-DD" />
+            <XmlSetCharValue            path="ReqdExctnDt/Dt"         name="requestedExecutionDate" type="date" template="YYYY-MM-DD" />
             <XmlSetCharValue            path="Dbtr/Nm"                name="ownerName" />
             <XmlSetCharValue            path="DbtrAcct/Id/IBAN"       name="iban" />
             <XmlSetCharValue            path="DbtrAgt/FinInstnId/BICFI" name="bic" />
