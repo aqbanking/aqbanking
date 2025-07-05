@@ -64,7 +64,7 @@ extern "C" {
  * @param ctx pointer to the import context to receive the content of the
  *   imported file (not taken over, the caller remains owner of the object)
  * @param finishedMessage message to show on the last page of the assistent
- *   (i.e. the page which is shown after a successfull import into the given
+ *   (i.e. the page which is shown after a successful import into the given
  *    import context).
  */
 AQBANKING_API
@@ -86,7 +86,7 @@ GWEN_DIALOG *AB_Banking_CreateImporterDialog(AB_BANKING *ab,
  * @param ctx pointer to the import context to receive the content of the
  *   imported file
  * @param finishedMessage message to show on the last page of the assistent
- *   (i.e. the page which is shown after a successfull import into the given
+ *   (i.e. the page which is shown after a successful import into the given
  *    import context).
  * @param dbPrefs GWEN_DB_NODE where presets are stored (see above)
  */

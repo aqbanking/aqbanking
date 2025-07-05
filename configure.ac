@@ -528,7 +528,7 @@ AC_SUBST(gmp_libs)
 
 ###-------------------------------------------------------------------------
 #
-# OS dependant settings
+# OS dependent settings
 #
 
 # Common settings; can be overridden per-OS below.
@@ -702,13 +702,13 @@ AC_CHECK_PROG(XGETTEXT,xgettext,xgettext, missing)
 MAKE_I18N_FILES="yes"
 if test "$XGETTEXT" = "missing"; then
   MAKE_I18N_FILES="no"
-  AC_MSG_WARN([xgettext is missing. Locale suport is disabled.])
+  AC_MSG_WARN([xgettext is missing. Locale support is disabled.])
 fi
 
 AC_PATH_PROG([MSGFMT], [msgfmt], [missing])
 if test "$MSGFMT" = "missing"; then
   MAKE_I18N_FILES="no"
-  AC_MSG_WARN([msgfmt is missing. Locale suport is disabled.])
+  AC_MSG_WARN([msgfmt is missing. Locale support is disabled.])
 else
   # check for --qt argument of msgfmt
   AC_MSG_CHECKING(whether msgfmt understands --qt)

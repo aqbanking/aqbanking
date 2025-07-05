@@ -149,7 +149,7 @@ int main(int argc, char **argv)
         } /* while transactions */
         ai=AB_ImExporterAccountInfo_List_Next(ai);
       } /* while ai */
-    } /* if executeQueue successfull */
+    } /* if executeQueue successful */
 
     /* free im-/exporter context */
     AB_ImExporterContext_free(ctx);

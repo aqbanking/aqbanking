@@ -55,7 +55,7 @@ int main(int argc, char **argv)
    */
   ab=AB_Banking_new("tutorial1", 0, 0);
 
-  /* This function initializes AqBanking. It is only after successfull return
+  /* This function initializes AqBanking. It is only after successful return
    * from this function that any other AqBanking function may be used.
    */
   rv=AB_Banking_Init(ab);

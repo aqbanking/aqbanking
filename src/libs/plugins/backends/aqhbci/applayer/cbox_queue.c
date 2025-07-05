@@ -306,7 +306,7 @@ AH_JOBQUEUE *_createNextQueueFromTodoList(AB_USER *user, AH_JOB_LIST *jl, uint32
         }
         else {
           AH_Job_Log(j, GWEN_LoggerLevel_Info, "Job re-enqueued (multi-message job)");
-          AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Job successfuly re-enqueued (multi-msg job)");
+          AB_Banking_LogMsgForJobId(AH_Job_GetBankingApi(j), AH_Job_GetId(j), "Job successfully re-enqueued (multi-msg job)");
           j=NULL; /* mark that this job has been dealt with */
         }
       } /* if more messages */

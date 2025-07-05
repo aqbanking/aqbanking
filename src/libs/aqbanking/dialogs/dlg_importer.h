@@ -43,7 +43,7 @@ extern "C" {
  * imported file
  *
  * @param finishedMessage message to show on the last page of the assistent
- *   (i.e. the page which is shown after a successfull import into the given
+ *   (i.e. the page which is shown after a successful import into the given
  *    import context).
  */
 GWEN_DIALOG *AB_ImporterDialog_new(AB_BANKING *ab,

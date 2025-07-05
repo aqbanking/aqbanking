@@ -17,7 +17,7 @@ dnl     have_kde3 - set to "yes" if KDE3 exists
 dnl     kde3_includes - CFLAGS for includes (-I)
 dnl     kde3_include_dir - path to includes
 dnl     kde3_libs - LDFLAGS for linking the kde3 libraries (-L)
-dnl     kde3_app - kde3 apps given as the argument to this funtion
+dnl     kde3_app - kde3 apps given as the argument to this function
 dnl     kde3_install_dir - install directory for kde3 applications
 dnl   Defines:
 dnl     HAVE_KDE3
@@ -47,7 +47,7 @@ else
 
 dnl check for QT3
 AQ_CHECK_QT3("$kde3_local_lforce")
-AC_MSG_CHECKING(if qt3 version is fully useable)
+AC_MSG_CHECKING(if qt3 version is fully usable)
 if test "$have_qt3" != "yes"; then
    	kde3_libs=""
    	kde3_includes=""
@@ -199,7 +199,7 @@ dnl TODO: AC_TRY_RUN, check whether kdeversion.h has matching versions
 fi
 
 
-dnl end of if QT3 is useable
+dnl end of if QT3 is usable
 fi
 
 dnl end of if "$enable_kdeapps"
