@@ -81,22 +81,23 @@ AH_JOB *AH_AccountJob_new(const char *name,
   dbArgs=AH_Job_GetArguments(j);
   assert(dbArgs);
 
-  s=AB_Account_GetAccountNumber(account);
-  if (s && *s) {
-    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountId", s);
-    sAccountNumOrIban=s;
+  if (AH_User_GetFlags(u) & AH_USER_FLAGS_SEPA_ALLOWNATIONALACCSPEC) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Adding national account specs for SEPA jobs");
+    s=AB_Account_GetAccountNumber(account);
+    if (s && *s) {
+      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountId", s);
+      sAccountNumOrIban=s;
+    }
+  
+    s=AB_Account_GetSubAccountId(account);
+    if (s && *s)
+      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountSubId", s);
+  
+    s=AB_Account_GetBankCode(account);
+    if (s && *s)
+      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "bankCode", s);
+    GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "country", 280);
   }
-
-  s=AB_Account_GetSubAccountId(account);
-  if (s && *s)
-    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountSubId", s);
-
-  s=AB_Account_GetBankCode(account);
-  if (s && *s)
-    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "bankCode", s);
-
-  GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
-                      "country", 280);
 
   /* new for SEPA jobs */
   s=AB_Account_GetIban(account);

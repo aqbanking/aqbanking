@@ -89,6 +89,8 @@ void AH_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "useStrictSepaCharset");
   if (flags & AH_USER_FLAGS_VERIFY_NO_BANKSIGNKEY)
     GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "verifyNoBankSignKey");
+  if (flags & AH_USER_FLAGS_SEPA_ALLOWNATIONALACCSPEC)
+    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "sepaAllowNationalAccSpec");
 }
 
 
@@ -118,6 +120,8 @@ uint32_t AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name)
       fl|=AH_USER_FLAGS_TAN_OMIT_SMS_ACCOUNT;
     else if (strcasecmp(s, "useStrictSepaCharset")==0)
       fl|=AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET;
+    else if (strcasecmp(s, "sepaAllowNationalAccSpec")==0)
+      fl|=AH_USER_FLAGS_SEPA_ALLOWNATIONALACCSPEC;
     else if (strcasecmp(s, "tlsIgnPrematureClose")==0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Flag \"tlsIgnPrematureClose\" is default now, ignoring.");
     }

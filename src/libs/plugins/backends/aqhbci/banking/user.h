@@ -79,6 +79,11 @@ extern "C" {
  */
 #define AH_USER_FLAGS_VERIFY_NO_BANKSIGNKEY     0x00002000
 
+/**
+ * This flag is set if HISPAS data in BPD job allows for national account spec (e.g. "BankCode",
+ * "AccountId") in SEPA jobs (otherwise only IBAN and BIC are allowed)
+ */
+#define AH_USER_FLAGS_SEPA_ALLOWNATIONALACCSPEC 0x00004000
 /*@}*/
 
 

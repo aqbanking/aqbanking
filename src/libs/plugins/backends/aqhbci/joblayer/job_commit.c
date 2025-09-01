@@ -34,6 +34,7 @@ static void _readSegmentResult(AH_JOB *j, GWEN_DB_NODE *dbRd);
 static void _readTanMethodsFromResult(AB_USER *user, GWEN_DB_NODE *dbRes);
 static void _readSecurityProfile(AH_JOB *j, GWEN_DB_NODE *dbRd);
 static void _readBankMessage(AH_JOB *j, GWEN_DB_NODE *dbRd);
+static void _readSepaInfo(AH_JOB *j, GWEN_DB_NODE *dbRd);
 
 
 
@@ -182,6 +183,12 @@ void _readSomeKnownSegments(AH_JOB *j, GWEN_DB_NODE *dbResponses)
         AH_User_SetUpdVersion(user, GWEN_DB_GetIntValue(dbRd, "version", 0, 0));
       }
 
+      else if (strcasecmp(GWEN_DB_GroupName(dbRd), "HISPAS")==0) {
+        /* SEPA data found */
+	DBG_NOTICE(AQHBCI_LOGDOMAIN, "Found HISPAS");
+	_readSepaInfo(j, dbRd);
+      }
+
       else if (strcasecmp(GWEN_DB_GroupName(dbRd), "BankMsg")==0) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "Reading bank message");
         _readBankMessage(j, dbRd);
@@ -191,6 +198,26 @@ void _readSomeKnownSegments(AH_JOB *j, GWEN_DB_NODE *dbResponses)
     } /* if response data found */
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
   } /* while */
+}
+
+
+
+void _readSepaInfo(AH_JOB *j, GWEN_DB_NODE *dbRd)
+{
+  AB_USER *user;
+  GWEN_DB_NODE *dbRes;
+  const char *s;
+
+  user=AH_Job_GetUser(j);
+  s=GWEN_DB_GetCharValue(dbRd, "AllowNationalAccountSpec", 0, "N");
+  if (s && (strcasecmp(s, "J")==0)) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Bank allows national account spec in SEPA jobs");
+    AH_User_AddFlags(user, AH_USER_FLAGS_SEPA_ALLOWNATIONALACCSPEC);
+  }
+  else {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Bank forbids national account spec in SEPA jobs");
+    AH_User_SubFlags(user, AH_USER_FLAGS_SEPA_ALLOWNATIONALACCSPEC);
+  }
 }
 
 
