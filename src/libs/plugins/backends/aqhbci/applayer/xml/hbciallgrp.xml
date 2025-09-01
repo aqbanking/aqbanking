@@ -65,20 +65,20 @@
     <!-- "Kontoverbindung international - nur international" -->
     <ELEM name="iban" type="ascii" minnum="0" />
     <ELEM name="bic" type="ascii" minnum="0" />
-    <ELEM name="nop1_accountid" type="ascii" minnum="0" />
-    <ELEM name="nop2_accountsubid" type="ascii" minnum="0" />
-    <ELEM name="nop3_country" type="num" maxsize="3" minnum="0" />
-    <ELEM name="nop4_bankcode" type="ascii" maxsize="30" minnum="0" />
+    <ELEM name="accountid" type="ascii" minnum="0" />
+    <ELEM name="accountsubid" type="ascii" minnum="0" />
+    <ELEM name="country" type="num" maxsize="3" minnum="0" />
+    <ELEM name="bankcode" type="ascii" maxsize="30" minnum="0" />
   </GROUPdef>
 
   <GROUPdef id="kti_i_forced_sepa" delimiter=":" version="1">
     <!-- "Kontoverbindung international - nur international" -->
     <ELEM name="iban"              type="ascii" minnum="1" />
     <ELEM name="bic"               type="ascii" minnum="0" />
-    <ELEM name="nop1_accountid"    type="ascii" minnum="0" />
-    <ELEM name="nop2_accountsubid" type="ascii" minnum="0" />
-    <ELEM name="nop3_country"      type="num"   maxsize="3" minnum="0" />
-    <ELEM name="nop4_bankcode"     type="ascii" maxsize="30" minnum="0" />
+    <ELEM name="accountid"    type="ascii" minnum="0" />
+    <ELEM name="accountsubid" type="ascii" minnum="0" />
+    <ELEM name="country"      type="num"   maxsize="3" minnum="0" />
+    <ELEM name="bankcode"     type="ascii" maxsize="30" minnum="0" />
   </GROUPdef>
 
 
