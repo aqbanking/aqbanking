@@ -15,7 +15,7 @@
 
 #include "jobgetdepot_l.h"
 #include "aqhbci_l.h"
-#include "accountjob_l.h"
+#include "accountjob_ntl.h"
 #include "aqhbci/joblayer/job_l.h"
 #include "aqhbci/joblayer/job_swift.h"
 #include "aqhbci/joblayer/job_crypt.h"
@@ -58,7 +58,7 @@ AH_JOB *AH_Job_GetDepot_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
   AH_JOB *j;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Trying to create depot job");
-  j=AH_AccountJob_new("JobGetDepot", pro, u, account);
+  j=AH_NationalAccountJob_new("JobGetDepot", pro, u, account);
   if (!j) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Depot job not found");
     return NULL;

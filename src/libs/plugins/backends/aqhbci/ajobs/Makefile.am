@@ -15,6 +15,7 @@ noinst_LTLIBRARIES=libhbciaccjobs.la
 noinst_HEADERS=\
   accountjob_l.h \
   accountjob_p.h \
+  accountjob_ntl.h \
   jobgetbalance_l.h \
   jobgettransactions_l.h \
   jobgettrans_camt_l.h \
@@ -43,6 +44,7 @@ noinst_HEADERS=\
 
 libhbciaccjobs_la_SOURCES=\
   accountjob.c \
+  accountjob_ntl.c \
   jobgetbalance.c \
   jobgettransactions.c \
   jobgettrans_camt.c \
