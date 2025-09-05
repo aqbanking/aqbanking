@@ -265,6 +265,8 @@ void _toGui(GWEN_DIALOG *dlg, AB_USER *user)
 int _fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
 {
   GWEN_URL *gu;
+  int httpVersion;
+  int tanMethod;
 
   assert(dlg);
 
@@ -277,8 +279,8 @@ int _fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
     return GWEN_ERROR_INVALID;
   }
 
-  const int httpVersion = _httpVersionComboGetCurrent(dlg, "httpVersionCombo");
-  const int tanMethod = AH_Widget_TanMethodComboGetCurrent(dlg, "tanMethodCombo");
+  httpVersion = _httpVersionComboGetCurrent(dlg, "httpVersionCombo");
+  tanMethod = AH_Widget_TanMethodComboGetCurrent(dlg, "tanMethodCombo");
 
   if (tanMethod == 0) {
     if (!quiet) {
