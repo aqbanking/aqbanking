@@ -86,6 +86,7 @@ AH_JOB *AH_Job_GetTransactionsCAMT_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT 
   }
 
   /* set some known arguments */
+  AH_AccountJob_WriteNationalAccountInfoToArgs(j);
   GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "allAccounts", "N");
   return j;
 }

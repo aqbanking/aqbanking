@@ -118,20 +118,9 @@ AH_JOB *AH_Job_GetTransactions_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc
   else {
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "allAccounts", "N");
     if (AH_Job_GetSegmentVersion(j)<7) {
-      const char *s;
-
       /* HKKAZ ver 7 and higher use IBAN and BIC, older segments use accountId and bankCode  */
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Adding national account specs for HKKAZ version <7");
-      s=AB_Account_GetAccountNumber(account);
-      if (s && *s)
-	GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountId", s);
-      s=AB_Account_GetSubAccountId(account);
-      if (s && *s)
-	GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountSubId", s);
-      s=AB_Account_GetBankCode(account);
-      if (s && *s)
-	GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "bankCode", s);
-      GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "country", 280);
+      AH_AccountJob_WriteNationalAccountInfoToArgs(j);
     }
   }
   return j;

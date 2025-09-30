@@ -25,6 +25,8 @@ int AH_AccountJob_IsAccountJob(const AH_JOB *j);
 
 AB_ACCOUNT *AH_AccountJob_GetAccount(const AH_JOB *j);
 
+void AH_AccountJob_WriteNationalAccountInfoToArgs(AH_JOB *j);
+
 
 #endif /* AH_ACCOUNTJOBS_L_H */
 

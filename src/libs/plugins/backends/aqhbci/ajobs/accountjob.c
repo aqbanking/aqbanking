@@ -155,6 +155,29 @@ int AH_AccountJob_IsAccountJob(const AH_JOB *j)
 
 
 
+void AH_AccountJob_WriteNationalAccountInfoToArgs(AH_JOB *j)
+{
+  const char *s;
+  AB_ACCOUNT *account;
+  GWEN_DB_NODE *dbArgs;
+
+  account=AH_AccountJob_GetAccount(j);
+  dbArgs=AH_Job_GetArguments(j);
+
+  s=AB_Account_GetAccountNumber(account);
+  if (s && *s)
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountId", s);
+  s=AB_Account_GetSubAccountId(account);
+  if (s && *s)
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountSubId", s);
+  s=AB_Account_GetBankCode(account);
+  if (s && *s)
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "bankCode", s);
+  GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "country", 280);
+}
+
+
+
 int _getJobVersionToUse(const char *name, AB_USER *u, const AB_ACCOUNT *account)
 {
   int jobVersion=0;
