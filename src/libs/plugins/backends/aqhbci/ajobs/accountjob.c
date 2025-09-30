@@ -158,7 +158,7 @@ int AH_AccountJob_IsAccountJob(const AH_JOB *j)
 void AH_AccountJob_WriteNationalAccountInfoToArgs(AH_JOB *j)
 {
   const char *s;
-  AB_ACCOUNT *account;
+  const AB_ACCOUNT *account;
   GWEN_DB_NODE *dbArgs;
 
   account=AH_AccountJob_GetAccount(j);
