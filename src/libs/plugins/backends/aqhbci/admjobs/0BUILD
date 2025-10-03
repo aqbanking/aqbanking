@@ -62,6 +62,7 @@
       jobunblockpin_l.h
       jobacknowledge_l.h
       jobgettargetacc_l.h jobgettargetacc_p.h
+      jobvpa.h
       jobvpp.h jobvpp_p.h
     </headers>
   
@@ -79,6 +80,7 @@
       jobunblockpin.c
       jobacknowledge.c
       jobgettargetacc.c
+      jobvpa.c
       jobvpp.c
     </sources>
 
@@ -104,6 +106,7 @@
       jobunblockpin.xml
       jobacknowledge.xml
       jobgettargetacc.xml
+      jobvpa.xml
       jobvpp.xml
       jobvoo.xml
     </extradist>
@@ -121,6 +124,7 @@
         jobunblockpin.xml
         jobacknowledge.xml
         jobgettargetacc.xml
+        jobvpa.xml
         jobvpp.xml
         jobvoo.xml
       </input>

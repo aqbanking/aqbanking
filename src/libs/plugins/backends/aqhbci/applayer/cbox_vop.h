@@ -7,21 +7,16 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
+#ifndef AH_OUTBOX_CBOX_VOP_H
+#define AH_OUTBOX_CBOX_VOP_H
 
-#ifndef AH_JOBVPP_H
-#define AH_JOBVPP_H
 
-
-#include "aqhbci/aqhbci_l.h"
-#include "aqhbci/joblayer/job_l.h"
+#include "aqhbci/applayer/cbox.h"
 
 
 
-AH_JOB *AH_Job_VPP_new(AB_PROVIDER *pro, AB_USER *u, int jobVersion);
+int AH_OutboxCBox_SendAndReceiveJobWithTanAndVpp(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *transactionJob);
 
-const char *AH_Job_VPP_GetVopId(const AH_JOB *j);
-
-int AH_Job_VPP_IsNeededForCode(const AH_JOB *j, const char *code);
 
 
 #endif

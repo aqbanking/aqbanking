@@ -8,8 +8,8 @@
  ***************************************************************************/
 
 
-#ifndef AH_JOBVPP_H
-#define AH_JOBVPP_H
+#ifndef AH_JOBVPA_H
+#define AH_JOBVPA_H
 
 
 #include "aqhbci/aqhbci_l.h"
@@ -17,11 +17,8 @@
 
 
 
-AH_JOB *AH_Job_VPP_new(AB_PROVIDER *pro, AB_USER *u, int jobVersion);
+AH_JOB *AH_Job_VPA_new(AB_PROVIDER *pro, AB_USER *u, int jobVersion, const char *vopId);
 
-const char *AH_Job_VPP_GetVopId(const AH_JOB *j);
-
-int AH_Job_VPP_IsNeededForCode(const AH_JOB *j, const char *code);
 
 
 #endif

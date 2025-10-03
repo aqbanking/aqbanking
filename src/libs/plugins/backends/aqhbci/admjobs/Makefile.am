@@ -23,6 +23,7 @@ noinst_HEADERS=\
   jobunblockpin_l.h \
   jobacknowledge_l.h \
   jobgettargetacc_l.h jobgettargetacc_p.h \
+  jobvpa.h \
   jobvpp.h jobvpp_p.h
 
 
@@ -37,6 +38,7 @@ libhbciadmjobs_la_SOURCES=\
   jobunblockpin.c \
   jobacknowledge.c \
   jobgettargetacc.c \
+  jobvpa.c \
   jobvpp.c
 
 
@@ -60,7 +62,9 @@ xmlfiles=\
   $(srcdir)/jobunblockpin.xml \
   $(srcdir)/jobacknowledge.xml \
   $(srcdir)/jobgettargetacc.xml \
-  $(srcdir)/jobvop.xml
+  $(srcdir)/jobvpa.xml \
+  $(srcdir)/jobvpp.xml \
+  $(srcdir)/jobvoo.xml
 
 
 EXTRA_DIST=$(xmlfiles)

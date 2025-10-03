@@ -728,6 +728,14 @@ void AH_Job_SetStatus(AH_JOB *j, AH_JOB_STATUS st)
 
 
 
+void AH_Job_SetJobStatusOnMatch(AH_JOB *j, AH_JOB_STATUS matchSt, AH_JOB_STATUS newSt)
+{
+  if (matchSt==AH_JobStatusAll || j->status==matchSt)
+    AH_Job_SetStatus(j, newSt);
+}
+
+
+
 void AH_Job_AddSigner(AH_JOB *j, const char *s)
 {
   GWEN_BUFFER *lbuf;
@@ -1290,6 +1298,7 @@ int AH_Job_HasResultWithCode(const AH_JOB *j, int wantedCode)
 
   return 0; /* no iTAN response */
 }
+
 
 
 

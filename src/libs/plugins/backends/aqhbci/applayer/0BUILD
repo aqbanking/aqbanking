@@ -67,6 +67,7 @@
       cbox_dialog.h
       cbox_prepare.h
       cbox_queue.h
+      cbox_vop.h
     </headers>
   
   
@@ -87,6 +88,7 @@
       cbox_itan2.c
       cbox_prepare.c
       cbox_queue.c
+      cbox_vop.c
     </sources>
 
     <data install="$(aqbanking_plugin_installdir)/providers" >

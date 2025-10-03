@@ -12,6 +12,29 @@
 
 <SEGs>
 
+  <!-- Kundennachricht -->
+  <SEGdef id="VooRequest" code="HKVOO" version="1" delimiter="+" terminator="'">
+    <GROUP name="head"             type="SegHead"   />
+
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+
+
+
+  <SEGdef id="VooResponse" code="HIVOO" version="1" delimiter="+" terminator="'">
+    <GROUP name="head"                 type="SegHead" />
+    <ELEM  name="vopId"                type="bin"       minnum="0" />
+    <ELEM  name="vopMsg"               type="ascii"     minnum="0" maxnum="1" />
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+
 
   <SEGdef code="HIVOOS" version="1" delimiter="+" terminator="'" isbpdjob="1">
     <GROUP name="head" type="SegHead"  />
@@ -30,7 +53,6 @@
       <VALUE path="head/code">%code</VALUE>
       <VALUE path="head/version">%version</VALUE>
       <VALUE path="securityClass">1</VALUE>
-      <VALUE path="hashMethod">1</VALUE>
     </VALUES>
   </SEGdef>
 
@@ -40,6 +62,23 @@
 
 
 <JOBs>
+
+  <JOBdef id="JobVoo"
+          code="HKVOO"
+          params="HIVOOS"
+          version="1"
+          crypt="1"
+          sign="1"
+          needBPD="1"
+          response="VooResponse"
+  >
+    <SEG type="VooRequest" version="1" />
+
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </JOBdef>
 
 </JOBs>
 

@@ -38,7 +38,7 @@ GWEN_INHERIT(AH_JOB, AH_JOB_VPP);
 
 
 
-AH_JOB *AH_Job_VPP_new(AB_PROVIDER *pro, AB_USER *u, int process, int jobVersion)
+AH_JOB *AH_Job_VPP_new(AB_PROVIDER *pro, AB_USER *u, int jobVersion)
 {
   AH_JOB *j;
   AH_JOB_VPP *aj;
@@ -163,6 +163,47 @@ int _cbProcess(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
   return 0;
 }
 
+
+
+const char *AH_Job_VPP_GetVopId(const AH_JOB *j)
+{
+  AH_JOB_VPP *aj;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_VPP, j);
+  assert(aj);
+
+  return aj->vopId;
+}
+
+
+
+int AH_Job_VPP_IsNeededForCode(const AH_JOB *j, const char *code)
+{
+  GWEN_DB_NODE *dbParams;
+  GWEN_DB_NODE *dbRequiredForJobs;
+
+  dbParams=AH_Job_GetParams(j);
+  assert(dbParams);
+  dbRequiredForJobs=GWEN_DB_GetGroup(dbParams, GWEN_PATH_FLAGS_PATHMUSTEXIST, "VopRequiredForJobs");
+  if (dbRequiredForJobs) {
+    int i;
+
+    for(i=0; i<99; i++) {
+      const char *s;
+
+      s=GWEN_DB_GetCharValue(dbParams, "", 0, NULL);
+      if (!(s && *s))
+        break;
+      else {
+        if (strcasecmp(s, code)==0)
+          return 1;
+      }
+    }
+  }
+
+  return 0;
+}
 
 
 
