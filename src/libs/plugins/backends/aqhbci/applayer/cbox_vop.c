@@ -144,14 +144,17 @@ int _handleStage1(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_JOB 
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
-  AH_Job_Process(vppJob, AH_Outbox_GetImExContext(outbox));
+  if (vppJob)
+    AH_Job_Process(vppJob, AH_Outbox_GetImExContext(outbox));
   AH_Job_Process(tanJob1, AH_Outbox_GetImExContext(outbox));
 
-  /* repeat sending HKVPP as long as the bank sends an attach point */
-  rv=(AH_Job_GetFlags(vppJob) & AH_JOB_FLAGS_HASATTACHPOINT)?_repeatJobUntilNoAttachPoint(cbox, dlg, vppJob):0;
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
+  if (vppJob) {
+    /* repeat sending HKVPP as long as the bank sends an attach point */
+    rv=(AH_Job_GetFlags(vppJob) & AH_JOB_FLAGS_HASATTACHPOINT)?_repeatJobUntilNoAttachPoint(cbox, dlg, vppJob):0;
+    if (rv) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
   }
 
   /*
@@ -265,6 +268,7 @@ int _sendTanAndReceiveResponseProcS(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
   int rv;
   AH_JOBQUEUE *jobQueue;
   AH_JOB *tanJob2;
+  AH_JOB *vpaJob=NULL;
   AB_USER *user;
 
   provider=AH_OutboxCBox_GetProvider(cbox);
@@ -276,16 +280,26 @@ int _sendTanAndReceiveResponseProcS(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
     return rv;
   }
 
+  /* possibly create VPA job */
+  if (vppJob) {
+    vpaJob=_createVpaJob(provider, user, vppJob);
+    if (vpaJob==NULL) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here");
+      return GWEN_ERROR_GENERIC;
+    }
+  }
+
   /* prepare HKTAN (process type 2) */
   tanJob2=_createTanJobDecoupledStageS(provider, dlg, workJob, tanJob1);
   if (tanJob2==NULL) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here");
+    AH_Job_free(vppJob);
     AH_Job_free(tanJob2);
     return GWEN_ERROR_GENERIC;
   }
 
   /* prepare second message (the one with the TAN) */
-  jobQueue=_createQueueForStageS(user, tanJob2, vppJob);
+  jobQueue=_createQueueForStageS(user, tanJob2, vpaJob);
   rv=AH_JobQueue_AddJob(jobQueue, tanJob2);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
