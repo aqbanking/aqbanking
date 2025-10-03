@@ -26,6 +26,9 @@
 #include <ctype.h>
 
 
+/* this file will become obsolete as soon as cbox_vop works */
+
+
 
 /* ------------------------------------------------------------------------------------------------
  * forward declarations
@@ -73,7 +76,6 @@ static void _dispatchJobMsgResultsToQueue(AH_JOB *job, AH_JOBQUEUE *qJob);
  * implementations
  * ------------------------------------------------------------------------------------------------
  */
-
 
 int AH_OutboxCBox_SendAndReceiveQueueWithTan2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jobQueueNeedingTan)
 {
@@ -551,7 +553,6 @@ int _setupTanJobStage2OrS(AH_JOB *tanJob2, const AH_JOB *jobNeedingTan, const AH
   if (AH_Job_GetFlags(jobNeedingTan) & AH_JOB_FLAGS_SIGN) {
     if (AH_Job_AddSigners(tanJob2, AH_Job_GetSigners(jobNeedingTan))<1) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Signatures needed but no signer given");
-      AH_Job_free(tanJob2);
       return GWEN_ERROR_GENERIC;
     }
   }
