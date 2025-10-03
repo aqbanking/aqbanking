@@ -1,0 +1,48 @@
+ <!--
+/***************************************************************************
+    begin       : Fri Oct 3 2025
+    copyright   : (C) 2025 by Martin Preuss
+    email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+  -->
+
+
+<SEGs>
+
+
+  <SEGdef code="HIVOOS" version="1" delimiter="+" terminator="'" isbpdjob="1">
+    <GROUP name="head" type="SegHead"  />
+    <ELEM  name="jobspermsg" type="num" maxsize="3" />
+    <ELEM  name="minsigs" type="num" maxsize="1" />
+    <ELEM  name="securityClass" type="num" size="1" />
+
+    <GROUP delimiter=":" terminator="">
+      <ELEM name="textIsStructured"                type="an"    maxsize="2" />
+      <GROUP name="VooAllowedForJobs" delimiter=":" terminator="" >
+        <ELEM name="Job" type="ascii" maxsize="6" minnum="0" maxnum="99" />
+      </GROUP>
+    </GROUP>
+
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="securityClass">1</VALUE>
+      <VALUE path="hashMethod">1</VALUE>
+    </VALUES>
+  </SEGdef>
+
+
+</SEGs>
+
+
+
+<JOBs>
+
+</JOBs>
+
+
+
+
