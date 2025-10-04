@@ -1,6 +1,10 @@
 Next:
 =====
 
+- bankinfo:
+  - build also in gwbuild
+
+
 - HBCI:
   - when TAN is requested on GetAccounts:
     - dispatch response to first message, not to TAN request (#244)!

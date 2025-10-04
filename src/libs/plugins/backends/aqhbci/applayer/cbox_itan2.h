@@ -15,8 +15,8 @@
 
 
 
-int AH_OutboxCBox_SendAndReceiveQueueWithTan2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *qJob);
-int AH_OutboxCBox_SendAndReceiveJobWithTan2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *job);
+//int AH_OutboxCBox_SendAndReceiveQueueWithTan2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *qJob);
+//int AH_OutboxCBox_SendAndReceiveJobWithTan2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *job);
 
 
 #endif

@@ -20,6 +20,7 @@
 AH_JOB *AH_Job_VPP_new(AB_PROVIDER *pro, AB_USER *u, int jobVersion);
 
 const char *AH_Job_VPP_GetVopId(const AH_JOB *j);
+const char *AH_Job_VPP_GetVopMsg(const AH_JOB *j);
 
 int AH_Job_VPP_IsNeededForCode(const AH_JOB *j, const char *code);
 

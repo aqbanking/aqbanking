@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2019 by Martin Preuss
+    copyright   : (C) 2025 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -15,6 +15,8 @@
 
 
 int AH_OutboxCBox_OpenDialog(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t jqFlags);
+int AH_OutboxCBox_OpenDialogWithJob(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *jDlg);
+
 int AH_OutboxCBox_CloseDialog(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t jqFlags);
 
 

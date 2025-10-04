@@ -14,7 +14,7 @@
 #include "aqhbci/applayer/cbox.h"
 
 
-int AH_OutboxCBox_Prepare(AH_OUTBOX_CBOX *cbox);
+//int AH_OutboxCBox_Prepare(AH_OUTBOX_CBOX *cbox);
 
 
 

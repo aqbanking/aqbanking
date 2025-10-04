@@ -22,22 +22,20 @@
 
 
 
-int AH_OutboxCBox_OpenDialog_Hbci(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t jqFlags)
+int AH_OutboxCBox_OpenDialog_Hbci(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t jFlags)
 {
   AB_PROVIDER *provider;
   AB_USER *user;
-  AH_JOBQUEUE *jqDlgOpen;
   AH_JOB *jDlgOpen;
   int rv;
-
-  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating dialog open request");
 
   provider=AH_OutboxCBox_GetProvider(cbox);
   user=AH_OutboxCBox_GetUser(cbox);
 
   AH_Dialog_SetItanProcessType(dlg, 0);
 
-  if ((jqFlags & AH_JOBQUEUE_FLAGS_CRYPT) || (jqFlags & AH_JOBQUEUE_FLAGS_SIGN)) {
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating dialog open request");
+  if ((jFlags & AH_JOB_FLAGS_CRYPT) || (jFlags & AH_JOB_FLAGS_SIGN)) {
     /* sign and crypt, not anonymous */
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating non-anonymous dialog open request");
     jDlgOpen=AH_Job_new("JobDialogInit", provider, user, 0, 0);
@@ -45,13 +43,13 @@ int AH_OutboxCBox_OpenDialog_Hbci(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create job JobDialogInit");
       return GWEN_ERROR_GENERIC;
     }
-    if (jqFlags & AH_JOBQUEUE_FLAGS_SIGN)
+    if (jFlags & AH_JOB_FLAGS_SIGN)
       AH_Job_AddSigner(jDlgOpen, AB_User_GetUserId(user));
     AH_Dialog_SubFlags(dlg, AH_DIALOG_FLAGS_ANONYMOUS);
 
     if (AH_User_GetCryptMode(user)==AH_CryptMode_Pintan) {
       if (AH_User_HasTanMethodOtherThan(user, 999) &&
-          !(jqFlags & AH_JOBQUEUE_FLAGS_NOITAN)) {
+          !(jFlags & AH_JOB_FLAGS_NOITAN)) {
         /* only use itan if any other mode than singleStep is available
          * and the job queue does not request non-ITAN mode
          */
@@ -74,21 +72,45 @@ int AH_OutboxCBox_OpenDialog_Hbci(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t
     AH_Dialog_AddFlags(dlg, AH_DIALOG_FLAGS_ANONYMOUS);
   }
 
-  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("Opening dialog"));
-  jqDlgOpen=AH_JobQueue_new(user);
-  AH_JobQueue_AddFlags(jqDlgOpen, AH_JOBQUEUE_FLAGS_OUTBOX);
-  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Enqueueing dialog open request");
-  if (AH_JobQueue_AddJob(jqDlgOpen, jDlgOpen)!=AH_JobQueueAddResultOk) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not add single job to queue");
+  rv=AH_OutboxCBox_OpenDialogWithJob_Hbci(cbox, dlg, jDlgOpen);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Job_free(jDlgOpen);
-    AH_JobQueue_free(jqDlgOpen);
-    return GWEN_ERROR_GENERIC;
+    return rv;
+  }
+  AH_Job_free(jDlgOpen);
+
+  return rv;
+}
+
+
+
+int AH_OutboxCBox_OpenDialogWithJob_Hbci(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *jDlgOpen)
+{
+  AB_USER *user;
+  int rv;
+
+  user=AH_OutboxCBox_GetUser(cbox);
+
+  AH_Dialog_SetItanProcessType(dlg, 0);
+
+  if (AH_User_GetCryptMode(user)==AH_CryptMode_Pintan) {
+    if (AH_User_HasTanMethodOtherThan(user, 999) && !(AH_Job_GetFlags(jDlgOpen) & AH_JOB_FLAGS_NOITAN)) {
+      /* only use itan if any other mode than singleStep is available
+       * and the job queue does not request non-ITAN mode */
+      rv=AH_OutboxCBox_SelectItanMode(cbox, dlg);
+      if (rv) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+        return rv;
+      }
+    }
   }
 
-  rv=AH_OutboxCBox_SendAndRecvQueue(cbox, dlg, jqDlgOpen);
+  GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("Opening dialog"));
+
+  rv=AH_OutboxCBox_SendAndReceiveJobNoTan(cbox, dlg, jDlgOpen);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not exchange message");
-    AH_JobQueue_free(jqDlgOpen);
     return rv;
   }
   if (AH_Job_HasErrors(jDlgOpen)) {
@@ -99,18 +121,19 @@ int AH_OutboxCBox_OpenDialog_Hbci(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t
       /* do not call AH_Job_CommitSystemData() here, the iTAN modes have already
        * been caught by AH_JobQueue_DispatchMessage()
         AH_Job_CommitSystemData(jDlgOpen); */
-      AH_JobQueue_free(jqDlgOpen);
       return 1;
     }
     else {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Error opening dialog, aborting");
-      AH_JobQueue_free(jqDlgOpen);
       return GWEN_ERROR_GENERIC;
     }
   }
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Dialog open request done");
   rv=AH_Job_CommitSystemData(jDlgOpen, 0);
-  AH_JobQueue_free(jqDlgOpen);
+  if (rv) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
   return rv;
 }
 

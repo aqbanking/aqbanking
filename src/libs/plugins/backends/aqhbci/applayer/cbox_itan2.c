@@ -35,7 +35,7 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-
+#if 0
 static int _sendTanAndReceiveResponseProc2(AH_OUTBOX_CBOX *cbox,
                                            AH_DIALOG *dlg,
                                            AH_JOBQUEUE *jobQueueNeedingTan,
@@ -708,5 +708,6 @@ void _dispatchJobMsgResultsToQueue(AH_JOB *job, AH_JOBQUEUE *qJob)
 }
 
 
+#endif
 
 

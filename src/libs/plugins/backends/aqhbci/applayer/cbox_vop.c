@@ -46,12 +46,11 @@ static int _handleStage1(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, 
 static int _handleStage2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_JOB *vppJob, AH_JOB *workJob);
 static int _sendTanAndReceiveResponseProc2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_JOB *vppJob, AH_JOB *workJob);
 static int _sendTanAndReceiveResponseProcS(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_JOB *vppJob, AH_JOB *workJob);
-static AH_MSG *_encodeTanJobStage2(AH_DIALOG *dlg, AH_JOBQUEUE *jobQueue, AH_JOB *workJob);
-static int _sendTanQueueAndDispatchResponse(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *workJob, AH_JOBQUEUE *jobQueue);
+static int _sendAndRecvQueue(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jobQueue);
 static int _repeatJobUntilNoAttachPoint(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *j);
 static AH_JOBQUEUE *_createQueueForStage1(AB_USER *user, AH_JOB *tanJob, AH_JOB *vppJob, AH_JOB *workJob);
-static AH_JOBQUEUE *_createQueueForStage2(AB_USER *user, AH_JOB *tanJob2, AH_JOB *vpaJob);
-static AH_JOBQUEUE *_createQueueForStageS(AB_USER *user, AH_JOB *tanJobS, AH_JOB *vpaJob);
+static AH_JOBQUEUE *_createQueueForStage2(AB_USER *user, AH_JOB *tanJob2, AH_JOB *vppJob, AH_JOB *vpaJob, AH_JOB *workJob);
+static AH_JOBQUEUE *_createQueueForStageS(AB_USER *user, AH_JOB *tanJobS);
 static int _setupTanJobStage2OrS(AH_JOB *tanJob2, const AH_JOB *workJob, const AH_JOB *tanJob1);
 static AH_JOB *_createTanJobStage1(AB_PROVIDER *provider, AB_USER *user, int jobVersion, const AH_JOB *workJob);
 static AH_JOB *_createTanJobStage2(AB_PROVIDER *provider, AH_DIALOG *dlg, const AH_JOB *workJob, const AH_JOB *tanJob1);
@@ -82,6 +81,8 @@ int AH_OutboxCBox_SendAndReceiveJobWithTanAndVpp(AH_OUTBOX_CBOX *cbox, AH_DIALOG
   AH_JOB *tanJob1;
   AH_JOB *vppJob;
   int rv;
+
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "Called function with TAN and VPP handling");
 
   provider=AH_OutboxCBox_GetProvider(cbox);
   user=AH_OutboxCBox_GetUser(cbox);
@@ -136,7 +137,7 @@ int _handleStage1(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_JOB 
   }
 
   /* send HKVPP, transaction job and HKTAN, receive response and dispatch it to those jobs */
-  rv=AH_OutboxCBox_SendAndRecvQueueNoTan(cbox, dlg, jobQueue);
+  rv=_sendAndRecvQueue(cbox, dlg, jobQueue);
   AH_JobQueue_free(jobQueue);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -155,9 +156,17 @@ int _handleStage1(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_JOB 
     }
   }
 
-  /*
-   * TODO: show result of VPP, force user interaction or abort if questionable match
-   */
+  if (vppJob) {
+    const char *s;
+
+    s=AH_Job_VPP_GetVopMsg(vppJob);
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "VPP message: %s", s);
+
+    /*
+     * TODO: show result of VPP, force user interaction or abort if questionable match
+     */
+
+  }
 
   return 0;
 }
@@ -202,6 +211,7 @@ int _handleStage2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_JOB 
 
 int _sendTanAndReceiveResponseProc2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_JOB *vppJob, AH_JOB *workJob)
 {
+  AH_OUTBOX *outbox;
   AB_USER *user;
   AB_PROVIDER *provider;
   int rv;
@@ -209,6 +219,7 @@ int _sendTanAndReceiveResponseProc2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
   AH_JOB *tanJob2;
   AH_JOB *vpaJob=NULL;
 
+  outbox=AH_OutboxCBox_GetOutbox(cbox);
   provider=AH_OutboxCBox_GetProvider(cbox);
   user=AH_OutboxCBox_GetUser(cbox);
 
@@ -228,7 +239,7 @@ int _sendTanAndReceiveResponseProc2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
     return GWEN_ERROR_GENERIC;
   }
 
-  jobQueue=_createQueueForStage2(user, tanJob2, vpaJob);
+  jobQueue=_createQueueForStage2(user, tanJob2, vppJob, vpaJob, workJob);
   rv=_inputTanForQueueWithChallenges(cbox,
 				     dlg,
 				     AH_Job_Tan_GetChallenge(tanJob1),
@@ -241,13 +252,26 @@ int _sendTanAndReceiveResponseProc2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
     return rv;
   }
 
-  rv=_sendTanQueueAndDispatchResponse(cbox, dlg, workJob, jobQueue);
+  rv=_sendAndRecvQueue(cbox, dlg, jobQueue);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here");
     AH_Job_free(tanJob2);
     AH_JobQueue_free(jobQueue);
     return rv;
   }
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Processing job \"%s\"", AH_Job_GetName(tanJob2));
+  rv=AH_Job_Process(tanJob2, AH_Outbox_GetImExContext(outbox));
+  if (rv) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AH_Job_free(tanJob2);
+    AH_JobQueue_free(jobQueue);
+    return rv;
+  }
+
+  /* dispatch results from tanJob2 to workjob */
+  _copySegResultsToJob(tanJob2, workJob);
+  _copyMsgResultsToJob(tanJob2, workJob);
 
   /* store used TAN in original job (if any) */
   DBG_INFO(AQHBCI_LOGDOMAIN, "Storing TAN in job [%s]", AH_Job_GetName(workJob));
@@ -262,6 +286,7 @@ int _sendTanAndReceiveResponseProc2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
 
 int _sendTanAndReceiveResponseProcS(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_JOB *vppJob, AH_JOB *workJob)
 {
+  AH_OUTBOX *outbox;
   AB_PROVIDER *provider;
   int rv;
   AH_JOBQUEUE *jobQueue;
@@ -269,6 +294,7 @@ int _sendTanAndReceiveResponseProcS(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
   AH_JOB *vpaJob=NULL;
   AB_USER *user;
 
+  outbox=AH_OutboxCBox_GetOutbox(cbox);
   provider=AH_OutboxCBox_GetProvider(cbox);
   user=AH_OutboxCBox_GetUser(cbox);
 
@@ -297,23 +323,26 @@ int _sendTanAndReceiveResponseProcS(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
   }
 
   /* prepare second message (the one with the TAN) */
-  jobQueue=_createQueueForStageS(user, tanJob2, vpaJob);
-  rv=AH_JobQueue_AddJob(jobQueue, tanJob2);
-  if (rv) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AH_JobQueue_free(jobQueue);
-    AH_Job_free(tanJob2);
-    return rv;
-  }
+  jobQueue=_createQueueForStageS(user, tanJob2);
 
-  rv=_sendTanQueueAndDispatchResponse(cbox, dlg, workJob, jobQueue);
+  rv=_sendAndRecvQueue(cbox, dlg, jobQueue);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here");
     AH_JobQueue_free(jobQueue);
     return rv;
   }
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Processing job \"%s\"", AH_Job_GetName(tanJob2));
+  rv=AH_Job_Process(tanJob2, AH_Outbox_GetImExContext(outbox));
+  if (rv) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
 
-  if (AH_Job_HasResultWithCode(tanJob2, 3956) || AH_Job_HasResultWithCode(tanJob2, 3956)) { /* decoupled */
+  /* dispatch results from tanJob2 to workjob */
+  _copySegResultsToJob(tanJob2, workJob);
+  _copyMsgResultsToJob(tanJob2, workJob);
+
+  if (AH_Job_HasResultWithCode(tanJob2, 3956)) { /* decoupled */
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Decoupled (3956), still waiting for user to approve transaction externally");
     AH_JobQueue_free(jobQueue);
     return 1;
@@ -325,102 +354,25 @@ int _sendTanAndReceiveResponseProcS(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
 
 
 
-int _sendTanQueueAndDispatchResponse(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *workJob, AH_JOBQUEUE *jobQueue)
+int _sendAndRecvQueue(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jobQueue)
 {
-  AH_OUTBOX *outbox;
-  AH_JOB *tanJob2;
-  AH_MSG *msg;
   int rv;
 
-  outbox=AH_OutboxCBox_GetOutbox(cbox);
-  tanJob2=AH_JobQueue_GetFirstJob(jobQueue);               // TODO: jobTan2 is most likely not the first job!!
-
-  msg=_encodeTanJobStage2(dlg, jobQueue, workJob);
-  if (msg==NULL) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here");
-    return GWEN_ERROR_GENERIC;
-  }
-
-  rv=AH_OutboxCBox_SendMessage(cbox, dlg, msg);
+  rv=AH_OutboxCBox_SendQueue(cbox, dlg, jobQueue);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AH_Msg_free(msg);
     return rv;
   }
-  AH_Msg_free(msg);
+
   AH_JobQueue_SetJobStatusOnMatch(jobQueue, AH_JobStatusEncoded, AH_JobStatusSent);
 
-  /* receive response */
   rv=AH_OutboxCBox_RecvQueue(cbox, dlg, jobQueue);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
-  else {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Processing job \"%s\"", AH_Job_GetName(tanJob2));
-    rv=AH_Job_Process(tanJob2, AH_Outbox_GetImExContext(outbox));
-    if (rv) {
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
-
-    /* dispatch results from tanJob2 to workjob */
-    _copySegResultsToJob(tanJob2, workJob);        // TODO: problaby best not to do that here!!
-    _copyMsgResultsToJob(tanJob2, workJob);
-  }
 
   return 0;
-}
-
-
-
-AH_MSG *_encodeTanJobStage2(AH_DIALOG *dlg, AH_JOBQUEUE *jobQueue, AH_JOB *workJob)
-{
-  int rv;
-  AH_MSG *msg;
-  AH_JOB *tanJob2;
-
-  tanJob2=AH_JobQueue_GetFirstJob(jobQueue);    // TODO: jobTan2 is most likely not the first job!!
-                                                // send full queue, not only first job!!
-						// jobQueue contains TAN (if any)
-  msg=AH_Msg_new(dlg);
-  AH_Msg_SetNeedTan(msg, (AH_JobQueue_GetFlags(jobQueue) & AH_JOBQUEUE_FLAGS_NEEDTAN)?1:0);
-  AH_Msg_SetItanMethod(msg, 0);
-  AH_Msg_SetItanHashMode(msg, 0);
-  AH_Msg_SetTan(msg, AH_JobQueue_GetUsedTan(jobQueue));
-
-  rv=AH_OutboxCBox_JobToMessage(tanJob2, msg, 1);
-  if (rv) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AH_Msg_free(msg);
-    return NULL;
-  }
-
-  /* encode HKTAN message */
-  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Encoding queue");
-  rv=AH_Msg_EncodeMsg(msg);
-  if (rv) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    AH_Msg_free(msg);
-    return NULL;
-  }
-
-  /* store used TAN in original job (if any) */
-  AH_Job_SetUsedTan(workJob, AH_Msg_GetTan(msg));
-
-  if (AH_Job_GetStatus(tanJob2)==AH_JobStatusEncoded) {
-    AH_Job_SetMsgNum(tanJob2, AH_Msg_GetMsgNum(msg));
-    AH_Job_SetDialogId(tanJob2, AH_Dialog_GetDialogId(dlg));
-    /* store expected signer and crypter (if any) */
-    AH_Job_SetExpectedSigner(tanJob2, AH_Msg_GetExpectedSigner(msg));
-    AH_Job_SetExpectedCrypter(tanJob2, AH_Msg_GetExpectedCrypter(msg));
-    /* store TAN in TAN job */
-    AH_Job_SetUsedTan(tanJob2, AH_Msg_GetTan(msg));
-  }
-  else {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "jTAN2 not encoded? (%d)", AH_Job_GetStatus(tanJob2));
-  }
-  return msg;
 }
 
 
@@ -448,7 +400,7 @@ int _repeatJobUntilNoAttachPoint(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *j
       return rv;
     }
 
-    rv=AH_OutboxCBox_SendAndRecvQueueNoTan(cbox, dlg, jobQueue);
+    rv=_sendAndRecvQueue(cbox, dlg, jobQueue);
     AH_JobQueue_free(jobQueue);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -538,30 +490,23 @@ AH_JOBQUEUE *_createQueueForStage1(AB_USER *user, AH_JOB *tanJob, AH_JOB *vppJob
     return NULL;
   }
 
+  AH_JobQueue_SubFlags(jobQueue, AH_JOBQUEUE_FLAGS_NEEDTAN);
+
   return jobQueue;
 }
 
 
 
-AH_JOBQUEUE *_createQueueForStageS(AB_USER *user, AH_JOB *tanJobS, AH_JOB *vpaJob)
+AH_JOBQUEUE *_createQueueForStageS(AB_USER *user, AH_JOB *tanJobS)
 {
   AH_JOBQUEUE *jobQueue;
   int rv;
 
-  /* prepare second message (the one with the TAN) */
+  /* decoupled, only HKTAN needed */
+
   jobQueue=AH_JobQueue_new(user);
   /* we don't need a TAN with this queue, because the TAN is conveyed externally via cellphone app */
   AH_JobQueue_SubFlags(jobQueue, AH_JOBQUEUE_FLAGS_NEEDTAN);
-
-  if (vpaJob) {
-    AH_Job_Attach(vpaJob);
-    rv=AH_JobQueue_AddJob(jobQueue, vpaJob);
-    if (rv) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      AH_JobQueue_free(jobQueue);
-      return NULL;
-    }
-  }
 
   AH_Job_Attach(tanJobS);
   rv=AH_JobQueue_AddJob(jobQueue, tanJobS);
@@ -576,7 +521,7 @@ AH_JOBQUEUE *_createQueueForStageS(AB_USER *user, AH_JOB *tanJobS, AH_JOB *vpaJo
 
 
 
-AH_JOBQUEUE *_createQueueForStage2(AB_USER *user, AH_JOB *tanJob2, AH_JOB *vpaJob)
+AH_JOBQUEUE *_createQueueForStage2(AB_USER *user, AH_JOB *tanJob2, AH_JOB *vppJob, AH_JOB *vpaJob, AH_JOB *workJob)
 {
   AH_JOBQUEUE *jobQueue;
   int rv;
@@ -592,6 +537,19 @@ AH_JOBQUEUE *_createQueueForStage2(AB_USER *user, AH_JOB *tanJob2, AH_JOB *vpaJo
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       AH_JobQueue_free(jobQueue);
       return NULL;
+    }
+  }
+
+  if (vppJob && workJob) {
+    if (!AH_Job_HasResultWithCode(vppJob, 25)) {
+      /* result "MATCH" not found, need to add workJob again */
+      AH_Job_Attach(workJob);
+      rv=AH_JobQueue_AddJob(jobQueue, workJob);
+      if (rv) {
+	DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+	AH_JobQueue_free(jobQueue);
+	return NULL;
+      }
     }
   }
 
@@ -704,6 +662,9 @@ AH_JOB *_createVppJob(AB_PROVIDER *provider, AB_USER *user, const AH_JOB *workJo
   vppJob=AH_Job_VPP_new(provider, user, 0);
   if (vppJob) {
     if (AH_Job_VPP_IsNeededForCode(vppJob, AH_Job_GetCode(workJob))) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "VOP needed for job %s", AH_Job_GetCode(workJob));
+    }
+    else {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "VOP not needed for job %s", AH_Job_GetCode(workJob));
       AH_Job_free(vppJob);
       return NULL;

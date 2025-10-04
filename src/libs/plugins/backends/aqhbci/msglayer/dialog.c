@@ -268,6 +268,15 @@ int AH_Dialog_RecvMessage(AH_DIALOG *dlg, AH_MSG **pMsg)
 
 int AH_Dialog_SendPacket(AH_DIALOG *dlg, const char *buf, int blen)
 {
+
+#if 0
+/* DEBUG */
+DBG_ERROR(AQHBCI_LOGDOMAIN, "Would send this:");
+GWEN_Text_DumpString(buf, blen, 2);
+return GWEN_ERROR_INTERNAL;
+/* /DEBUG */
+#endif
+
   assert(dlg);
   if (AH_User_GetCryptMode(dlg->dialogOwner)==AH_CryptMode_Pintan)
     return AH_Dialog_SendPacket_Https(dlg, buf, blen);

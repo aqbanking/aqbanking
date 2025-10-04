@@ -43,7 +43,7 @@ static void _updateJobsAfterEncodingMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_
 
 AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg)
 {
-  return AH_JobQueue_ToMessageWithTan(jq, dlg, NULL);
+  return AH_JobQueue_ToMessageWithTan(jq, dlg, AH_JobQueue_GetUsedTan(jq));
 }
 
 

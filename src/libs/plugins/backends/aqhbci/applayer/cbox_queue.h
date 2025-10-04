@@ -15,6 +15,8 @@
 
 int AH_OutboxCBox_SendAndRecvBox(AH_OUTBOX_CBOX *cbox);
 
+int AH_OutboxCBox_SendAndReceiveJob(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *j);
+int AH_OutboxCBox_SendAndReceiveJobNoTan(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *j);
 
 int AH_OutboxCBox_SendAndRecvQueue(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jq);
 int AH_OutboxCBox_SendAndRecvQueueNoTan(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jq);

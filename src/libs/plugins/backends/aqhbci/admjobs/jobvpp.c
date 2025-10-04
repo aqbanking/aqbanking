@@ -178,6 +178,19 @@ const char *AH_Job_VPP_GetVopId(const AH_JOB *j)
 
 
 
+const char *AH_Job_VPP_GetVopMsg(const AH_JOB *j)
+{
+  AH_JOB_VPP *aj;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_VPP, j);
+  assert(aj);
+
+  return aj->vopMsg;
+}
+
+
+
 int AH_Job_VPP_IsNeededForCode(const AH_JOB *j, const char *code)
 {
   GWEN_DB_NODE *dbParams;

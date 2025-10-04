@@ -40,7 +40,6 @@
 static unsigned int _countTodoJobs(AH_OUTBOX *ob);
 static int _sendOutboxWithProbablyLockedUsers(AH_OUTBOX *ob);
 static AH_JOB *_findTransferJobInCheckJobList(const AH_JOB_LIST *jl, AB_USER *u, AB_ACCOUNT *a, const char *jobName);
-static int _prepare(AH_OUTBOX *ob);
 static void _finishCBox(AH_OUTBOX *ob, AH_OUTBOX_CBOX *cbox);
 static int _sendAndRecvCustomerBoxes(AH_OUTBOX *ob);
 static int _lockUsers(AH_OUTBOX *ob, AB_USER_LIST2 *lockedUsers);
@@ -193,26 +192,10 @@ AH_JOB *AH_Outbox_FindTransferJob(AH_OUTBOX *ob, AB_USER *u, AB_ACCOUNT *a, cons
   cbox=AH_OutboxCBox_List_First(ob->userBoxes);
   while (cbox) {
     if (AH_OutboxCBox_GetUser(cbox)==u) {
-      AH_JOBQUEUE *jq;
-
       /* check jobs in lists */
       j=_findTransferJobInCheckJobList(AH_OutboxCBox_GetTodoJobs(cbox), u, a, jobName);
       if (j)
         return j;
-
-      /* check jobs in queues */
-      jq=AH_JobQueue_List_First(AH_OutboxCBox_GetTodoQueues(cbox));
-      while (jq) {
-        const AH_JOB_LIST *jl;
-
-        jl=AH_JobQueue_GetJobList(jq);
-        if (jl) {
-          j=_findTransferJobInCheckJobList(jl, u, a, jobName);
-          if (j)
-            return j;
-        }
-        jq=AH_JobQueue_List_Next(jq);
-      } /* while */
     }
     else {
       DBG_WARN(AQHBCI_LOGDOMAIN, "Customer doesn't match");
@@ -240,12 +223,6 @@ int _sendOutboxWithProbablyLockedUsers(AH_OUTBOX *ob)
   }
 
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("AqHBCI started"));
-
-  rv=_prepare(ob);
-  if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error preparing jobs for sending.");
-    return rv;
-  }
 
   rv=_sendAndRecvCustomerBoxes(ob);
   if (rv) {
@@ -392,40 +369,6 @@ void AH_Outbox_AddJob(AH_OUTBOX *ob, AH_JOB *j)
 
 
 
-int _prepare(AH_OUTBOX *ob)
-{
-  AH_OUTBOX_CBOX *cbox;
-  unsigned int errors;
-
-  assert(ob);
-
-  errors=0;
-  cbox=AH_OutboxCBox_List_First(ob->userBoxes);
-  while (cbox) {
-    AB_USER *u;
-
-    u=AH_OutboxCBox_GetUser(cbox);
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing queues for customer \"%lu\"", (unsigned long int) AB_User_GetUniqueId(u));
-    if (AH_OutboxCBox_Prepare(cbox)) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Error preparing cbox");
-      errors++;
-    }
-    else {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing queues for customer \"%lu\": done", (unsigned long int) AB_User_GetUniqueId(u));
-    }
-    cbox=AH_OutboxCBox_List_Next(cbox);
-  } /* while */
-
-  if (errors) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "%d errors occurred", errors);
-    return GWEN_ERROR_GENERIC;
-  }
-
-  return 0;
-}
-
-
-
 void _finishCBox(AH_OUTBOX *ob, AH_OUTBOX_CBOX *cbox)
 {
   AH_JOB_LIST *jl;
@@ -518,33 +461,11 @@ unsigned int _countTodoJobs(AH_OUTBOX *ob)
   cnt=0;
   cbox=AH_OutboxCBox_List_First(ob->userBoxes);
   while (cbox) {
-    AH_JOBQUEUE_LIST *todoQueues;
     AH_JOB_LIST *todoJobs;
-    AH_JOBQUEUE *jq;
 
-    todoQueues=AH_OutboxCBox_GetTodoQueues(cbox);
     todoJobs=AH_OutboxCBox_GetTodoJobs(cbox);
-    cnt+=AH_Job_List_GetCount(todoJobs);
-    jq=AH_JobQueue_List_First(todoQueues);
-    while (jq) {
-      if (!(AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_OUTBOX)) {
-        const AH_JOB_LIST *jl;
-
-        jl=AH_JobQueue_GetJobList(jq);
-        if (jl) {
-          AH_JOB *j;
-
-          j=AH_Job_List_First(jl);
-          while (j) {
-            if (!(AH_Job_GetFlags(j) & AH_JOB_FLAGS_OUTBOX))
-              cnt++;
-
-            j=AH_Job_List_Next(j);
-          } /* while */
-        }
-      }
-      jq=AH_JobQueue_List_Next(jq);
-    } /* while */
+    if (todoJobs)
+      cnt+=AH_Job_List_GetCount(todoJobs);
     cbox=AH_OutboxCBox_List_Next(cbox);
   } /* while */
 
