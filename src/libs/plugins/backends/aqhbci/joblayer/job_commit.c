@@ -205,7 +205,6 @@ void _readSomeKnownSegments(AH_JOB *j, GWEN_DB_NODE *dbResponses)
 void _readSepaInfo(AH_JOB *j, GWEN_DB_NODE *dbRd)
 {
   AB_USER *user;
-  GWEN_DB_NODE *dbRes;
   const char *s;
 
   user=AH_Job_GetUser(j);

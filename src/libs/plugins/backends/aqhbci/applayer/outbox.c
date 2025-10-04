@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2025 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -17,7 +17,6 @@
 
 #include "aqhbci/ajobs/accountjob_l.h"
 
-#include "aqhbci/applayer/cbox_prepare.h"
 #include "aqhbci/applayer/cbox_queue.h"
 
 #include "aqbanking/i18n_l.h"

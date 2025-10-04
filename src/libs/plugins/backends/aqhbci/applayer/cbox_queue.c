@@ -30,6 +30,7 @@
 #include <assert.h>
 
 
+
 /* ------------------------------------------------------------------------------------------------
  * forward declarations
  * ------------------------------------------------------------------------------------------------
@@ -421,56 +422,6 @@ int AH_OutboxCBox_SendAndReceiveJobNoTan(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, A
     return rv;
   }
   AH_JobQueue_free(jobQueue);
-
-  return 0;
-}
-
-
-
-int AH_OutboxCBox_SendAndRecvQueueNoTan(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jq)
-{
-  int rv;
-
-  rv=AH_OutboxCBox_SendQueue(cbox, dlg, jq);
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Error sending queue");
-    return rv;
-  }
-
-  AH_JobQueue_SetJobStatusOnMatch(jq, AH_JobStatusEncoded, AH_JobStatusSent);
-
-  rv=AH_OutboxCBox_RecvQueue(cbox, dlg, jq);
-  if (rv) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Error receiving queue response");
-    return rv;
-  }
-
-  return 0;
-}
-
-
-
-int AH_OutboxCBox_SendAndRecvQueue(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jq)
-{
-  int rv;
-
-  if ((AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN) &&
-      AH_Dialog_GetItanProcessType(dlg)!=0) {
-    DBG_DEBUG(AQHBCI_LOGDOMAIN, "TAN mode");
-    rv=AH_OutboxCBox_SendAndReceiveQueueWithTan(cbox, dlg, jq);
-    if (rv) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
-  }
-  else {
-    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Normal mode");
-    rv=AH_OutboxCBox_SendAndRecvQueueNoTan(cbox, dlg, jq);
-    if (rv) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
-  }
 
   return 0;
 }

@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2019 by Martin Preuss
+    copyright   : (C) 2025 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -15,7 +15,6 @@
 
 #include "aqhbci/banking/provider_tan.h"
 #include "aqhbci/applayer/cbox_itan1.h"
-#include "aqhbci/applayer/cbox_itan2.h"
 
 #include "aqbanking/i18n_l.h"
 
@@ -76,28 +75,6 @@ int AH_OutboxCBox_JobToMessage(AH_JOB *j, AH_MSG *msg, int doCopySigners)
   }
 
   return 0;
-}
-
-
-int AH_OutboxCBox_SendAndReceiveQueueWithTan(AH_OUTBOX_CBOX *cbox,
-                                             AH_DIALOG *dlg,
-                                             AH_JOBQUEUE *qJob)
-{
-  int rv;
-  int process;
-
-  process=AH_Dialog_GetItanProcessType(dlg);
-  if (process==1)
-    rv=AH_OutboxCBox_Itan1(cbox, dlg, qJob);
-  else if (process==2)
-    rv=AH_OutboxCBox_SendAndReceiveQueueWithTan2(cbox, dlg, qJob);
-  else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-              "iTAN method %d not supported", process);
-    return GWEN_ERROR_INVALID;
-  }
-
-  return rv;
 }
 
 

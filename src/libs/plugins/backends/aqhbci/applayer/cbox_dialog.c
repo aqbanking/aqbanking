@@ -146,7 +146,6 @@ int AH_OutboxCBox_CloseDialog(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t jFl
 {
   AB_PROVIDER *provider;
   AB_USER *user;
-  AH_JOBQUEUE *jqDlgClose;
   AH_JOB *jDlgClose;
   GWEN_DB_NODE *db;
   uint32_t dlgFlags;
@@ -211,24 +210,15 @@ int AH_OutboxCBox_CloseDialog(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t jFl
     }
   }
 
-  jqDlgClose=AH_JobQueue_new(user);
-
-  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Adding dialog close request to queue");
-  if (AH_JobQueue_AddJob(jqDlgClose, jDlgClose)!=AH_JobQueueAddResultOk) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not add single job to queue");
-    AH_JobQueue_free(jqDlgClose);
-    return GWEN_ERROR_GENERIC;
-  }
-
-  rv=AH_OutboxCBox_SendAndRecvQueue(cbox, dlg, jqDlgClose);
+  rv=AH_OutboxCBox_SendAndReceiveJob(cbox, dlg, jDlgClose);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not exchange message");
-    AH_JobQueue_free(jqDlgClose);
+    AH_Job_free(jDlgClose);
     return rv;
   }
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Dialog closed");
   rv=AH_Job_CommitSystemData(jDlgClose, 0);
-  AH_JobQueue_free(jqDlgClose);
+  AH_Job_free(jDlgClose);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not commit system data");
     return rv;
