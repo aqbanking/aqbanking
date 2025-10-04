@@ -205,7 +205,7 @@ int AH_Job_VPP_IsNeededForCode(const AH_JOB *j, const char *code)
     for(i=0; i<99; i++) {
       const char *s;
 
-      s=GWEN_DB_GetCharValue(dbParams, "", 0, NULL);
+      s=GWEN_DB_GetCharValue(dbRequiredForJobs, "Job", i, NULL);
       if (!(s && *s))
         break;
       else {
