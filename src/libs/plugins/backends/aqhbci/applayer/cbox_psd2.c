@@ -13,7 +13,6 @@
 
 
 #include "aqhbci/applayer/cbox_psd2.h"
-
 #include "aqhbci/applayer/cbox_vop.h"
 
 #include "aqbanking/i18n_l.h"
