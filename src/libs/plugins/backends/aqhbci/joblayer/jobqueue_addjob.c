@@ -28,14 +28,14 @@
  */
 
 
-AH_JOBQUEUE_ADDRESULT _checkJobTypes(AH_JOBQUEUE *jq, AH_JOB *jobToAdd);
-AH_JOBQUEUE_ADDRESULT _checkJobFlags(AH_JOBQUEUE *jq, AH_JOB *jobToAdd);
-AH_JOBQUEUE_ADDRESULT _checkSigners(AH_JOBQUEUE *jq, AH_JOB *jobToAdd);
+static AH_JOBQUEUE_ADDRESULT _checkJobTypes(AH_JOBQUEUE *jq, AH_JOB *jobToAdd);
+static AH_JOBQUEUE_ADDRESULT _checkJobFlags(AH_JOBQUEUE *jq, AH_JOB *jobToAdd);
+static AH_JOBQUEUE_ADDRESULT _checkSigners(AH_JOBQUEUE *jq, AH_JOB *jobToAdd);
 
-int _countJobTypes(const AH_JOBQUEUE *jq, const AH_JOB *jobToAdd);
-int _countJobsOtherThanTan(const AH_JOBQUEUE *jq);
-int _countJobsOfType(const AH_JOBQUEUE *jq, const char *jobTypeName);
-int _list2HasAllEntriesOfList1(const GWEN_STRINGLIST *stringList1, const GWEN_STRINGLIST *stringList2);
+static int _countJobTypes(const AH_JOBQUEUE *jq, const AH_JOB *jobToAdd);
+static int _countJobsOfType(const AH_JOBQUEUE *jq, const char *jobTypeName);
+static int _list2HasAllEntriesOfList1(const GWEN_STRINGLIST *stringList1, const GWEN_STRINGLIST *stringList2);
+static int _isCountableJob(const char *s);
 
 
 
@@ -67,7 +67,7 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j)
     }
   }
   else {
-    if (strcasecmp(AH_Job_GetName(j), "JobTan")!=0) {
+    if (_isCountableJob(AH_Job_GetName(j))) {
       AH_JOBQUEUE_ADDRESULT jobQueueResult;
 
       jobQueueResult=_checkJobFlags(jq, j);
@@ -98,14 +98,14 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j)
           return AH_JobQueueAddResultJobLimit;
         }
       }
-    } /* if not JobTan */
+    } /* if not JobTan or VOP jobs */
   }
 
   /* update maximum security profile */
   if (AH_Job_GetSecurityProfile(j)>AH_JobQueue_GetSecProfile(jq))
     AH_JobQueue_SetSecProfile(jq, AH_Job_GetSecurityProfile(j));
 
-  if (strcasecmp(AH_Job_GetName(j), "JobTan")!=0) {
+  if (_isCountableJob(AH_Job_GetName(j))) {
     /* adjust queue flags according to current job */
     if (AH_Job_GetFlags(j) & AH_JOB_FLAGS_CRYPT)
       AH_JobQueue_AddFlags(jq, AH_JOBQUEUE_FLAGS_CRYPT);
@@ -127,7 +127,7 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j)
   AH_Job_List_Add(j, AH_JobQueue_GetJobList(jq));
   AH_Job_SetStatus(j, AH_JobStatusEnqueued);
 
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Job added to the queue (flags: %08x)", AH_JobQueue_GetFlags(jq));
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "Job added to the queue (flags: %08x)", AH_JobQueue_GetFlags(jq));
   return AH_JobQueueAddResultOk;
 }
 
@@ -180,12 +180,12 @@ int _countJobTypes(const AH_JOBQUEUE *jq, const AH_JOB *jobToAdd)
     const char *jobType;
 
     jobType=AH_Job_GetName(j);
-    if (strcasecmp(jobType, "JobTan")!=0)
+    if (_isCountableJob(jobType))
       GWEN_StringList_AppendString(jobTypeList, jobType, 0, 1);
     j=AH_Job_List_Next(j);
   } /* while */
 
-  if (strcasecmp(AH_Job_GetName(jobToAdd), "JobTan")!=0)
+  if (_isCountableJob(AH_Job_GetName(jobToAdd)))
     GWEN_StringList_AppendString(jobTypeList, AH_Job_GetName(jobToAdd), 0, 1);
 
   jobTypeCount=GWEN_StringList_Count(jobTypeList);
@@ -212,26 +212,9 @@ int _countJobsOfType(const AH_JOBQUEUE *jq, const char *jobTypeName)
 
 
 
-int _countJobsOtherThanTan(const AH_JOBQUEUE *jq)
-{
-  AH_JOB *j;
-  int jobCount=0;
-
-  j=AH_JobQueue_GetFirstJob(jq);
-  while (j) {
-    if (strcasecmp(AH_Job_GetName(j), "JobTan")!=0)
-      jobCount++;
-    j=AH_Job_List_Next(j);
-  } /* while */
-
-  return jobCount;
-}
-
-
-
 AH_JOBQUEUE_ADDRESULT _checkJobFlags(AH_JOBQUEUE *jq, AH_JOB *jobToAdd)
 {
-  if (strcasecmp(AH_Job_GetName(jobToAdd), "JobTan")!=0 && strcasecmp(AH_Job_GetName(jobToAdd), "JobAcknowledge")!=0) {
+  if (_isCountableJob(AH_Job_GetName(jobToAdd))) {
     uint32_t flagsInJobToAdd;
     uint32_t flagsInFirstJob;
     AH_JOB *firstJob;
@@ -301,5 +284,16 @@ int _list2HasAllEntriesOfList1(const GWEN_STRINGLIST *stringList1, const GWEN_ST
 
   return 1;
 }
+
+
+
+int _isCountableJob(const char *s)
+{
+  return !(strcasecmp(s, "JobTan")!=0 &&
+           strcasecmp(s, "JobVpp")!=0 &&
+           strcasecmp(s, "JobVpa")!=0 &&
+           strcasecmp(s, "JobAcknowledge")!=0);
+}
+
 
 
