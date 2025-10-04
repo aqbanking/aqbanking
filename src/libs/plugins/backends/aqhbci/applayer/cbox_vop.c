@@ -60,6 +60,7 @@ static AH_JOB *_createVppJob(AB_PROVIDER *provider, AB_USER *user, const AH_JOB 
 static AH_JOB *_createVpaJob(AB_PROVIDER *provider, AB_USER *user, const AH_JOB *vppJob);
 static void _copySegResultsToJob(const AH_JOB *srcJob, AH_JOB *destJob);
 static void _copyMsgResultsToJob(const AH_JOB *srcJob, AH_JOB *destJob);
+static void _copyResultsListToList(const AH_RESULT_LIST *srcList, AH_RESULT_LIST *destList, AH_JOB *destJob);
 static int _inputTanForQueueWithChallenges(AH_OUTBOX_CBOX *cbox,
 					   AH_DIALOG *dlg,
 					   const char *challenge,
@@ -86,9 +87,6 @@ int AH_OutboxCBox_SendAndReceiveJobWithTanAndVpp(AH_OUTBOX_CBOX *cbox, AH_DIALOG
   user=AH_OutboxCBox_GetUser(cbox);
 
   vppJob=_createVppJob(provider, user, workJob);
-  if (vppJob==NULL) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "VOP not available, ignoring (might lead to errors later!)");
-  }
   tanJob1=_createTanJobStage1(provider, user, AH_Dialog_GetTanJobVersion(dlg), workJob);
   if (tanJob1==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create TAN job, aborting");
@@ -235,7 +233,7 @@ int _sendTanAndReceiveResponseProc2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
 				     dlg,
 				     AH_Job_Tan_GetChallenge(tanJob1),
 				     AH_Job_Tan_GetHhdChallenge(tanJob1),
-				     jobQueue);
+				     jobQueue); /* sets usedTan in jobQueue */
   if (rv<0) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Job_free(tanJob2);
@@ -335,7 +333,7 @@ int _sendTanQueueAndDispatchResponse(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JO
   int rv;
 
   outbox=AH_OutboxCBox_GetOutbox(cbox);
-  tanJob2=AH_JobQueue_GetFirstJob(jobQueue);
+  tanJob2=AH_JobQueue_GetFirstJob(jobQueue);               // TODO: jobTan2 is most likely not the first job!!
 
   msg=_encodeTanJobStage2(dlg, jobQueue, workJob);
   if (msg==NULL) {
@@ -366,8 +364,8 @@ int _sendTanQueueAndDispatchResponse(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JO
       return rv;
     }
 
-    /* dispatch results from tanJob2 to all members of the queue */
-    _copySegResultsToJob(tanJob2, workJob);
+    /* dispatch results from tanJob2 to workjob */
+    _copySegResultsToJob(tanJob2, workJob);        // TODO: problaby best not to do that here!!
     _copyMsgResultsToJob(tanJob2, workJob);
   }
 
@@ -382,8 +380,9 @@ AH_MSG *_encodeTanJobStage2(AH_DIALOG *dlg, AH_JOBQUEUE *jobQueue, AH_JOB *workJ
   AH_MSG *msg;
   AH_JOB *tanJob2;
 
-  tanJob2=AH_JobQueue_GetFirstJob(jobQueue);
-
+  tanJob2=AH_JobQueue_GetFirstJob(jobQueue);    // TODO: jobTan2 is most likely not the first job!!
+                                                // send full queue, not only first job!!
+						// jobQueue contains TAN (if any)
   msg=AH_Msg_new(dlg);
   AH_Msg_SetNeedTan(msg, (AH_JobQueue_GetFlags(jobQueue) & AH_JOBQUEUE_FLAGS_NEEDTAN)?1:0);
   AH_Msg_SetItanMethod(msg, 0);
@@ -426,12 +425,6 @@ AH_MSG *_encodeTanJobStage2(AH_DIALOG *dlg, AH_JOBQUEUE *jobQueue, AH_JOB *workJ
 
 
 
-
-
-
-
-
-
 int _repeatJobUntilNoAttachPoint(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *j)
 {
   AH_OUTBOX *outbox;
@@ -471,58 +464,31 @@ int _repeatJobUntilNoAttachPoint(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *j
 
 void _copySegResultsToJob(const AH_JOB *srcJob, AH_JOB *destJob)
 {
-  AH_RESULT_LIST *rl;
-
   /* dispatch results from job to all members of the queue */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Dispatching results for from job %s to job %s", AH_Job_GetName(srcJob), AH_Job_GetName(destJob));
-
-  /* segment results */
-  rl=AH_Job_GetSegResults(srcJob);
-  if (rl) {
-    AH_RESULT *origRes;
-
-    origRes=AH_Result_List_First(rl);
-    if (origRes==NULL) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "No segment result in job HKTAN");
-    }
-    else {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "We have segment results in TAN job, setting status of all sent jobs to ANSWERED");
-      AH_Job_SetJobStatusOnMatch(destJob, AH_JobStatusSent, AH_JobStatusAnswered);
-    }
-    while (origRes) {
-      AH_RESULT *nr;
-
-      nr=AH_Result_dup(origRes);
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Adding result %d to job %s", AH_Result_GetCode(origRes), AH_Job_GetName(destJob));
-      AH_Result_List_Add(nr, AH_Job_GetSegResults(destJob));
-      origRes=AH_Result_List_Next(origRes);
-    } /* while origRes */
-  } /* if rl */
-  else {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "No segment results in HKTAN");
-  }
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Copying segment results from job %s to job %s", AH_Job_GetName(srcJob), AH_Job_GetName(destJob));
+  _copyResultsListToList(AH_Job_GetSegResults(srcJob), AH_Job_GetSegResults(destJob), destJob);
 }
 
 
 
 void _copyMsgResultsToJob(const AH_JOB *srcJob, AH_JOB *destJob)
 {
-  AH_RESULT_LIST *rl;
-
   /* dispatch results from job to all members of the queue */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Dispatching results for from job %s to job %s", AH_Job_GetName(srcJob), AH_Job_GetName(destJob));
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Copying message results from job %s to job %s", AH_Job_GetName(srcJob), AH_Job_GetName(destJob));
+  _copyResultsListToList(AH_Job_GetMsgResults(srcJob), AH_Job_GetMsgResults(destJob), destJob);
 
-  /* segment results */
-  rl=AH_Job_GetMsgResults(srcJob);
-  if (rl) {
+}
+
+
+
+void _copyResultsListToList(const AH_RESULT_LIST *srcList, AH_RESULT_LIST *destList, AH_JOB *destJob)
+{
+  if (srcList && destList) {
     AH_RESULT *origRes;
 
-    origRes=AH_Result_List_First(rl);
-    if (origRes==NULL) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "No segment result in job HKTAN");
-    }
-    else {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "We have segment results in TAN job, setting status of all sent jobs to ANSWERED");
+    origRes=AH_Result_List_First(srcList);
+    if (origRes) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "We have segment results in source job, setting status of all sent jobs to ANSWERED");
       AH_Job_SetJobStatusOnMatch(destJob, AH_JobStatusSent, AH_JobStatusAnswered);
     }
     while (origRes) {
@@ -530,18 +496,11 @@ void _copyMsgResultsToJob(const AH_JOB *srcJob, AH_JOB *destJob)
 
       nr=AH_Result_dup(origRes);
       DBG_INFO(AQHBCI_LOGDOMAIN, "Adding result %d to job %s", AH_Result_GetCode(origRes), AH_Job_GetName(destJob));
-      AH_Result_List_Add(nr, AH_Job_GetSegResults(destJob));
+      AH_Result_List_Add(nr, destList);
       origRes=AH_Result_List_Next(origRes);
     } /* while origRes */
-  } /* if rl */
-  else {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "No segment results in HKTAN");
-  }
+  } /* if srcList */
 }
-
-
-
-
 
 
 
@@ -591,7 +550,7 @@ AH_JOBQUEUE *_createQueueForStageS(AB_USER *user, AH_JOB *tanJobS, AH_JOB *vpaJo
 
   /* prepare second message (the one with the TAN) */
   jobQueue=AH_JobQueue_new(user);
-  /* we don't need a TAN with this queue, either, because the TAN is conveyed externally via app */
+  /* we don't need a TAN with this queue, because the TAN is conveyed externally via cellphone app */
   AH_JobQueue_SubFlags(jobQueue, AH_JOBQUEUE_FLAGS_NEEDTAN);
 
   if (vpaJob) {
@@ -671,6 +630,7 @@ AH_JOB *_createTanJobStage1(AB_PROVIDER *provider, AB_USER *user, int jobVersion
     rv=AH_Job_AddSigners(tanJob, AH_Job_GetSigners(workJob));
     if (rv<1) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Signatures needed but no signer given");
+      AH_Job_free(tanJob);
       return NULL;
     }
   }
@@ -742,12 +702,18 @@ AH_JOB *_createVppJob(AB_PROVIDER *provider, AB_USER *user, const AH_JOB *workJo
   AH_JOB *vppJob;
 
   vppJob=AH_Job_VPP_new(provider, user, 0);
-  if (vppJob && AH_Job_VPP_IsNeededForCode(vppJob, AH_Job_GetCode(workJob))) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "VOP not needed for job %s", AH_Job_GetCode(workJob));
-    AH_Job_free(vppJob);
+  if (vppJob) {
+    if (AH_Job_VPP_IsNeededForCode(vppJob, AH_Job_GetCode(workJob))) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "VOP not needed for job %s", AH_Job_GetCode(workJob));
+      AH_Job_free(vppJob);
+      return NULL;
+    }
+    return vppJob;
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "VOP not available");
     return NULL;
   }
-  return vppJob;
 }
 
 
