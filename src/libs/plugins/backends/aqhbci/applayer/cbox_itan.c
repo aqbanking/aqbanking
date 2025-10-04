@@ -14,7 +14,6 @@
 #include "aqhbci/applayer/cbox_itan.h"
 
 #include "aqhbci/banking/provider_tan.h"
-#include "aqhbci/applayer/cbox_itan1.h"
 
 #include "aqbanking/i18n_l.h"
 
@@ -38,12 +37,11 @@ static const AH_TAN_METHOD *_getAndCheckUserSelectedTanMethod(AB_USER *u, const 
 static const AH_TAN_METHOD *_getAndCheckAutoSelectedTanMethod(AB_USER *u, const AH_TAN_METHOD_LIST *tml);
 
 
+
 /* ------------------------------------------------------------------------------------------------
  * implementations
  * ------------------------------------------------------------------------------------------------
  */
-
-
 
 int AH_OutboxCBox_JobToMessage(AH_JOB *j, AH_MSG *msg, int doCopySigners)
 {

@@ -25,7 +25,6 @@ noinst_HEADERS=\
   cbox.h \
   cbox_p.h \
   cbox_itan.h \
-  cbox_itan1.h \
   cbox_send.h \
   cbox_recv.h \
   cbox_psd2.h \
@@ -45,7 +44,6 @@ libhbciapp_la_SOURCES=\
   cbox_hbci.c \
   cbox_dialog.c \
   cbox_itan.c \
-  cbox_itan1.c \
   cbox_queue.c
 
 
