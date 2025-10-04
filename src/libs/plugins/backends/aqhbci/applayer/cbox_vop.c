@@ -56,7 +56,7 @@ static AH_JOB *_createTanJobStage1(AB_PROVIDER *provider, AB_USER *user, int job
 static AH_JOB *_createTanJobStage2(AB_PROVIDER *provider, AH_DIALOG *dlg, const AH_JOB *workJob, const AH_JOB *tanJob1);
 static AH_JOB *_createTanJobDecoupledStageS(AB_PROVIDER *provider, AH_DIALOG *dlg, const AH_JOB *workJob, const AH_JOB *tanJob1);
 static AH_JOB *_createVppJob(AB_PROVIDER *provider, AB_USER *user, const AH_JOB *workJob);
-static AH_JOB *_createVpaJob(AB_PROVIDER *provider, AB_USER *user, const AH_JOB *vppJob);
+static AH_JOB *_createVpaJob(AB_PROVIDER *provider, AB_USER *user, const AH_JOB *vppJob, const AH_JOB *workJob);
 static void _copySegResultsToJob(const AH_JOB *srcJob, AH_JOB *destJob);
 static void _copyMsgResultsToJob(const AH_JOB *srcJob, AH_JOB *destJob);
 static void _copyResultsListToList(const AH_RESULT_LIST *srcList, AH_RESULT_LIST *destList, AH_JOB *destJob);
@@ -225,7 +225,7 @@ int _sendTanAndReceiveResponseProc2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
 
   /* possibly create VPA job */
   if (vppJob) {
-    vpaJob=_createVpaJob(provider, user, vppJob);
+    vpaJob=_createVpaJob(provider, user, vppJob, workJob);
     if (vpaJob==NULL) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here");
       return GWEN_ERROR_GENERIC;
@@ -291,7 +291,6 @@ int _sendTanAndReceiveResponseProcS(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
   int rv;
   AH_JOBQUEUE *jobQueue;
   AH_JOB *tanJob2;
-  AH_JOB *vpaJob=NULL;
   AB_USER *user;
 
   outbox=AH_OutboxCBox_GetOutbox(cbox);
@@ -304,20 +303,10 @@ int _sendTanAndReceiveResponseProcS(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
     return rv;
   }
 
-  /* possibly create VPA job */
-  if (vppJob) {
-    vpaJob=_createVpaJob(provider, user, vppJob);
-    if (vpaJob==NULL) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here");
-      return GWEN_ERROR_GENERIC;
-    }
-  }
-
   /* prepare HKTAN (process type 2) */
   tanJob2=_createTanJobDecoupledStageS(provider, dlg, workJob, tanJob1);
   if (tanJob2==NULL) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here");
-    AH_Job_free(vppJob);
     AH_Job_free(tanJob2);
     return GWEN_ERROR_GENERIC;
   }
@@ -394,7 +383,7 @@ int _repeatJobUntilNoAttachPoint(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *j
     AH_JobQueue_SubFlags(jobQueue, AH_JOBQUEUE_FLAGS_NEEDTAN);
     AH_Job_Attach(j);
     rv=AH_JobQueue_AddJob(jobQueue, j);
-    if (rv<0) {
+    if (rv!=AH_JobQueueAddResultOk) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       AH_JobQueue_free(jobQueue);
       return rv;
@@ -467,7 +456,7 @@ AH_JOBQUEUE *_createQueueForStage1(AB_USER *user, AH_JOB *tanJob, AH_JOB *vppJob
   if (vppJob) {
     AH_Job_Attach(vppJob);
     rv=AH_JobQueue_AddJob(jobQueue, vppJob);
-    if (rv<0) {
+    if (rv!=AH_JobQueueAddResultOk) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       AH_JobQueue_free(jobQueue);
       return NULL;
@@ -476,7 +465,7 @@ AH_JOBQUEUE *_createQueueForStage1(AB_USER *user, AH_JOB *tanJob, AH_JOB *vppJob
 
   AH_Job_Attach(workJob);
   rv=AH_JobQueue_AddJob(jobQueue, workJob);
-  if (rv<0) {
+  if (rv!=AH_JobQueueAddResultOk) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_JobQueue_free(jobQueue);
     return NULL;
@@ -484,7 +473,7 @@ AH_JOBQUEUE *_createQueueForStage1(AB_USER *user, AH_JOB *tanJob, AH_JOB *vppJob
 
   AH_Job_Attach(tanJob);
   rv=AH_JobQueue_AddJob(jobQueue, tanJob);
-  if (rv<0) {
+  if (rv!=AH_JobQueueAddResultOk) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_JobQueue_free(jobQueue);
     return NULL;
@@ -510,7 +499,7 @@ AH_JOBQUEUE *_createQueueForStageS(AB_USER *user, AH_JOB *tanJobS)
 
   AH_Job_Attach(tanJobS);
   rv=AH_JobQueue_AddJob(jobQueue, tanJobS);
-  if (rv) {
+  if (rv!=AH_JobQueueAddResultOk) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_JobQueue_free(jobQueue);
     return NULL;
@@ -533,7 +522,7 @@ AH_JOBQUEUE *_createQueueForStage2(AB_USER *user, AH_JOB *tanJob2, AH_JOB *vppJo
   if (vpaJob) {
     AH_Job_Attach(vpaJob);
     rv=AH_JobQueue_AddJob(jobQueue, vpaJob);
-    if (rv) {
+    if (rv!=AH_JobQueueAddResultOk) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       AH_JobQueue_free(jobQueue);
       return NULL;
@@ -545,7 +534,7 @@ AH_JOBQUEUE *_createQueueForStage2(AB_USER *user, AH_JOB *tanJob2, AH_JOB *vppJo
       /* result "MATCH" not found, need to add workJob again */
       AH_Job_Attach(workJob);
       rv=AH_JobQueue_AddJob(jobQueue, workJob);
-      if (rv) {
+      if (rv!=AH_JobQueueAddResultOk) {
 	DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
 	AH_JobQueue_free(jobQueue);
 	return NULL;
@@ -555,7 +544,7 @@ AH_JOBQUEUE *_createQueueForStage2(AB_USER *user, AH_JOB *tanJob2, AH_JOB *vppJo
 
   AH_Job_Attach(tanJob2);
   rv=AH_JobQueue_AddJob(jobQueue, tanJob2);
-  if (rv) {
+  if (rv!=AH_JobQueueAddResultOk) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_JobQueue_free(jobQueue);
     return NULL;
@@ -663,13 +652,24 @@ AH_JOB *_createVppJob(AB_PROVIDER *provider, AB_USER *user, const AH_JOB *workJo
   if (vppJob) {
     if (AH_Job_VPP_IsNeededForCode(vppJob, AH_Job_GetCode(workJob))) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "VOP needed for job %s", AH_Job_GetCode(workJob));
+      if (AH_Job_GetFlags(workJob) & AH_JOB_FLAGS_SIGN) {
+        int rv;
+
+        rv=AH_Job_AddSigners(vppJob, AH_Job_GetSigners(workJob));
+        if (rv<1) {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Signatures needed but no signer given");
+          AH_Job_free(vppJob);
+          return NULL;
+        }
+        AH_Job_AddFlags(vppJob, AH_JOB_FLAGS_SIGN);
+      }
+      return vppJob;
     }
     else {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "VOP not needed for job %s", AH_Job_GetCode(workJob));
       AH_Job_free(vppJob);
       return NULL;
     }
-    return vppJob;
   }
   else {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "VOP not available");
@@ -679,9 +679,26 @@ AH_JOB *_createVppJob(AB_PROVIDER *provider, AB_USER *user, const AH_JOB *workJo
 
 
 
-AH_JOB *_createVpaJob(AB_PROVIDER *provider, AB_USER *user, const AH_JOB *vppJob)
+AH_JOB *_createVpaJob(AB_PROVIDER *provider, AB_USER *user, const AH_JOB *vppJob, const AH_JOB *workJob)
 {
-  return AH_Job_VPA_new(provider, user, 0, AH_Job_VPP_GetVopId(vppJob));
+  AH_JOB *vpaJob;
+
+  vpaJob=AH_Job_VPA_new(provider, user, 0, AH_Job_VPP_GetVopId(vppJob));
+  if (vpaJob) {
+    /* copy signers */
+    if (AH_Job_GetFlags(workJob) & AH_JOB_FLAGS_SIGN) {
+      int rv;
+  
+      rv=AH_Job_AddSigners(vpaJob, AH_Job_GetSigners(workJob));
+      if (rv<1) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Signatures needed but no signer given");
+        AH_Job_free(vpaJob);
+        return NULL;
+      }
+      AH_Job_AddFlags(vpaJob, AH_JOB_FLAGS_SIGN);
+    }
+  }
+  return vpaJob;
 }
 
 
