@@ -52,7 +52,7 @@
           sign="1"
           needBPD="1"
   >
-    <SEG type="VppRequest" version="1" />
+    <SEG type="VpaRequest" version="1" />
 
     <VALUES>
       <VALUE path="head/code">%code</VALUE>

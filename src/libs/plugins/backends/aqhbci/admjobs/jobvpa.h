@@ -17,7 +17,7 @@
 
 
 
-AH_JOB *AH_Job_VPA_new(AB_PROVIDER *pro, AB_USER *u, int jobVersion, const char *vopId);
+AH_JOB *AH_Job_VPA_new(AB_PROVIDER *pro, AB_USER *u, int jobVersion, const uint8_t *ptrVopId, unsigned int lenVopId);
 
 
 

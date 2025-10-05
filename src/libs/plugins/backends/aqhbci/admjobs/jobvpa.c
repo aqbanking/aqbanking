@@ -31,7 +31,7 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-AH_JOB *AH_Job_VPA_new(AB_PROVIDER *pro, AB_USER *u, int jobVersion, const char *vopId)
+AH_JOB *AH_Job_VPA_new(AB_PROVIDER *pro, AB_USER *u, int jobVersion, const uint8_t *ptrVopId, unsigned int lenVopId)
 {
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
@@ -47,7 +47,13 @@ AH_JOB *AH_Job_VPA_new(AB_PROVIDER *pro, AB_USER *u, int jobVersion, const char 
   dbArgs=AH_Job_GetArguments(j);
   assert(dbArgs);
 
-  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "vopId", vopId);
+  if (ptrVopId && lenVopId) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Setting VOPID");
+    GWEN_DB_SetBinValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "vopId", ptrVopId, lenVopId);
+  }
+  else {
+    DBG_ERROR(NULL, "No VOPID");
+  }
 
   return j;
 }

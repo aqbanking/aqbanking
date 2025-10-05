@@ -81,7 +81,7 @@ void GWENHYWFAR_CB _freeData(void *bp, void *p)
 
   aj=(AH_JOB_VPP *)p;
   free(aj->pollingId);
-  free(aj->vopId);
+  free(aj->ptrVopId);
   free(aj->paymentStatusFormat);
   free(aj->vopMsg);
   GWEN_FREE_OBJECT(aj);
@@ -129,6 +129,8 @@ int _cbProcess(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     dbVppResponse=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/vppResponse");
     if (dbVppResponse) {
       const char *s;
+      const uint8_t *ptrVopId;
+      unsigned int lenVopId=0;
 
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Got a VPP response");
 //      if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
@@ -143,9 +145,16 @@ int _cbProcess(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
         GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "pollingId", s);
       }
 
-      s=GWEN_DB_GetCharValue(dbVppResponse, "vopId", 0, NULL);
-      free(aj->vopId);
-      aj->vopId=(s && *s)?strdup(s):NULL;
+      /* get VOP id */
+      ptrVopId=GWEN_DB_GetBinValue(dbVppResponse, "vopId", 0, NULL, 0, &lenVopId);
+      free(aj->ptrVopId);
+      aj->ptrVopId=NULL;
+      aj->lenVopId=0;
+      if (ptrVopId && lenVopId) {
+	aj->ptrVopId=(uint8_t*) malloc(lenVopId);
+	memmove(aj->ptrVopId, ptrVopId, lenVopId);
+	aj->lenVopId=lenVopId;
+      }
 
       s=GWEN_DB_GetCharValue(dbVppResponse, "paymentStatusFormat", 0, NULL);
       free(aj->paymentStatusFormat);
@@ -165,7 +174,7 @@ int _cbProcess(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 
 
 
-const char *AH_Job_VPP_GetVopId(const AH_JOB *j)
+const uint8_t *AH_Job_VPP_GetPtrVopId(const AH_JOB *j)
 {
   AH_JOB_VPP *aj;
 
@@ -173,7 +182,20 @@ const char *AH_Job_VPP_GetVopId(const AH_JOB *j)
   aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_VPP, j);
   assert(aj);
 
-  return aj->vopId;
+  return aj->ptrVopId;
+}
+
+
+
+unsigned int AH_Job_VPP_GetLenVopId(const AH_JOB *j)
+{
+  AH_JOB_VPP *aj;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_VPP, j);
+  assert(aj);
+
+  return aj->lenVopId;
 }
 
 

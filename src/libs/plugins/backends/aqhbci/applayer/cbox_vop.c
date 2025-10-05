@@ -682,8 +682,13 @@ AH_JOB *_createVppJob(AB_PROVIDER *provider, AB_USER *user, const AH_JOB *workJo
 AH_JOB *_createVpaJob(AB_PROVIDER *provider, AB_USER *user, const AH_JOB *vppJob, const AH_JOB *workJob)
 {
   AH_JOB *vpaJob;
+  const uint8_t *ptrVopId;
+  unsigned int lenVopId;
 
-  vpaJob=AH_Job_VPA_new(provider, user, 0, AH_Job_VPP_GetVopId(vppJob));
+  ptrVopId=AH_Job_VPP_GetPtrVopId(vppJob);
+  lenVopId=AH_Job_VPP_GetLenVopId(vppJob);
+
+  vpaJob=AH_Job_VPA_new(provider, user, 0, ptrVopId, lenVopId);
   if (vpaJob) {
     /* copy signers */
     if (AH_Job_GetFlags(workJob) & AH_JOB_FLAGS_SIGN) {

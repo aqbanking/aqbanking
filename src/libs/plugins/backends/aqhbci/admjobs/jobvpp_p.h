@@ -19,10 +19,11 @@
 typedef struct AH_JOB_VPP AH_JOB_VPP;
 struct AH_JOB_VPP {
   char *pollingId;
-  char *vopId;
   char *paymentStatusFormat;
   char *vopMsg;
 
+  uint8_t *ptrVopId;
+  unsigned int lenVopId;
 };
 
 
