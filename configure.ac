@@ -279,7 +279,7 @@ for f in ${aqbanking_backends}; do
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQGIVVE, 1, [plugin availability])
       ;;
     *)
-      AC_MSG_ERROR("ERROR: Unknown plugin $f")
+      AC_MSG_ERROR("ERROR: Unknown plugin '$f'")
       ;;
   esac
 done
@@ -369,7 +369,7 @@ for f in ${aqbanking_imexporters}; do
       AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_XML, 1, [plugin availability])
       ;;
     *)
-      AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
+      AC_MSG_ERROR("ERROR: Unknown plugin '$f'")
       ;;
   esac
 done
@@ -400,7 +400,7 @@ for f in ${aqbanking_parsers}; do
       aqbanking_plugins_parsers_dirs="$aqbanking_plugins_parsers_dirs swift"
       ;;
     *)
-      AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
+      AC_MSG_ERROR("ERROR: Unknown plugin '$f'")
       ;;
   esac
 done
@@ -432,7 +432,7 @@ for f in ${aqbanking_bankinfos}; do
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BANKINFO_DE, 1, [plugin availability])
       ;;
     *)
-      AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
+      AC_MSG_ERROR("ERROR: Unknown plugin '$f'")
       ;;
   esac
 done
