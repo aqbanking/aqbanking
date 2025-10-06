@@ -42,12 +42,6 @@ GWEN_INHERIT(GWEN_DIALOG, AG_USER_DIALOG);
 
 
 
-void GWENHYWFAR_CB _freeData(void *bp, void *p)
-{
-}
-
-
-
 GWEN_DIALOG *AG_GetNewUserDialog(AB_PROVIDER *pro, int i)
 {
 
@@ -65,6 +59,16 @@ GWEN_DIALOG *AG_GetNewUserDialog(AB_PROVIDER *pro, int i)
   xdlg->user = NULL;
   /* done */
   return dlg;
+}
+
+
+
+void GWENHYWFAR_CB _freeData(void *bp, void *p)
+{
+  AG_USER_DIALOG *xdlg;
+
+  xdlg=(AG_USER_DIALOG *) p;
+  GWEN_FREE_OBJECT(xdlg);
 }
 
 
