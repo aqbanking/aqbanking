@@ -26,6 +26,8 @@
 
 static void GWENHYWFAR_CB _freeData(void *bp, void *p);
 static int _cbProcess(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
+static void _sampleResultsFromVopResultGroup(AH_JOB *j, GWEN_DB_NODE *dbVppResponse);
+static void _applySingleVopResultToTransfer(AH_JOB *j, const char *sIban, const char *sResultString);
 
 
 
@@ -164,6 +166,8 @@ int _cbProcess(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
       free(aj->vopMsg);
       aj->vopMsg=(s && *s)?strdup(s):NULL;
 
+      _sampleResultsFromVopResultGroup(j, dbVppResponse);
+
       break; /* break loop, we found the vppResponse */
     } /* if "VppResponse" */
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
@@ -238,6 +242,67 @@ int AH_Job_VPP_IsNeededForCode(const AH_JOB *j, const char *code)
   }
 
   return 0;
+}
+
+
+
+void _sampleResultsFromVopResultGroup(AH_JOB *j, GWEN_DB_NODE *dbVppResponse)
+{
+  GWEN_DB_NODE *dbVppResult;
+
+  dbVppResult=GWEN_DB_FindFirstGroup(dbVppResponse, "vopResult");
+  if (dbVppResult) {
+    GWEN_BUFFER *dbuf;
+
+    dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    while (dbVppResult) {
+      const char *sIban;
+      const char *sResult;
+      const char *sAltName;
+
+      sIban=GWEN_DB_GetCharValue(dbVppResult, "iban", 0, NULL);
+      sResult=GWEN_DB_GetCharValue(dbVppResult, "result", 0, NULL);
+      sAltName=GWEN_DB_GetCharValue(dbVppResult, "alternativeRecipientName", 0, NULL);
+      if (sIban && sResult) {
+        if (strcasecmp(sResult, "RCVC")==0)
+          GWEN_Buffer_AppendByte(dbuf, '+');
+        else if (strcasecmp(sResult, "RVMC")==0)
+          GWEN_Buffer_AppendByte(dbuf, '*');
+        else if (strcasecmp(sResult, "RVNM")==0)
+          GWEN_Buffer_AppendByte(dbuf, '-');
+        else if (strcasecmp(sResult, "RVNA")==0)
+          GWEN_Buffer_AppendByte(dbuf, '!');
+        else if (strcasecmp(sResult, "PDNG")==0)
+          GWEN_Buffer_AppendByte(dbuf, '?');
+
+        GWEN_Buffer_AppendString(dbuf, sIban);
+        if (sAltName && *sAltName)
+          GWEN_Buffer_AppendArgs(dbuf, ":%s", sAltName);
+
+        _applySingleVopResultToTransfer(j, sIban, GWEN_Buffer_GetStart(dbuf));
+        GWEN_Buffer_Reset(dbuf);
+      }
+
+      dbVppResult=GWEN_DB_FindNextGroup(dbVppResult, "vopResult");
+    }
+    GWEN_Buffer_free(dbuf);
+  }
+}
+
+
+
+void _applySingleVopResultToTransfer(AH_JOB *j, const char *sIban, const char *sResultString)
+{
+  AB_TRANSACTION_LIST *transferList;
+
+  transferList=AH_Job_GetTransferList(j);
+  if (transferList) {
+    AB_TRANSACTION *t;
+
+    t=AB_Transaction_List_First(transferList);
+    if (t)
+      AB_Transaction_SetVopResult(t, sResultString);
+  }
 }
 
 

@@ -530,7 +530,7 @@ AH_JOBQUEUE *_createQueueForStage2(AB_USER *user, AH_JOB *tanJob2, AH_JOB *vppJo
   }
 
   if (vppJob && workJob) {
-    if (!AH_Job_HasResultWithCode(vppJob, 25)) {
+    if (!AH_Job_HasResultWithCode(vppJob, 25) && !!AH_Job_HasResultWithCode(vppJob, 20)) {
       /* result "MATCH" not found, need to add workJob again */
       AH_Job_Attach(workJob);
       rv=AH_JobQueue_AddJob(jobQueue, workJob);
