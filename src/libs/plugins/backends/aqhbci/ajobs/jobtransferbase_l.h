@@ -123,6 +123,17 @@ int AH_Job_TransferBase_AddChallengeParams29(AH_JOB *j, int hkTanVer, GWEN_DB_NO
 int AH_Job_TransferBase_AddChallengeParams35(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
 
 
+/**
+ * Sum-up transfers/debit notes stored in this job
+ */
+AB_VALUE *AH_Job_TransferBase_SumUpTransfers(const AH_JOB *j);
+
+
+/**
+ * Store given value in argument db of this job (e.g. to store the sum value as argument for the job).
+ */
+int AH_Job_TransferBase_StoreValueInArgs(AH_JOB *j, const AB_VALUE *v, const char *valueGroup);
+
 #endif /* AH_JOBTRANSFERBASE_L_H */
 
 

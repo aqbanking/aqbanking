@@ -174,86 +174,52 @@ int _jobApi_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod)
 
 int _jobApi_Prepare(AH_JOB *j)
 {
-  AH_JOB_CREATESEPAMULTICOR1 *aj;
-  GWEN_DB_NODE *dbArgs;
-  int rv;
-  AB_TRANSACTION *t;
-
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing transfers");
-
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing debit notes");
   assert(j);
-  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_CREATESEPAMULTICOR1, j);
-  assert(aj);
+  if (AH_Job_GetMsgNum(j)==0) { /* only when called for the first time */
+    AH_JOB_CREATESEPAMULTICOR1 *aj;
+    GWEN_DB_NODE *dbArgs;
+    int rv;
 
-  dbArgs=AH_Job_GetArguments(j);
+    aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_CREATESEPAMULTICOR1, j);
+    assert(aj);
+  
+    dbArgs=AH_Job_GetArguments(j);
 
-  /* calculate sum */
-  AB_Value_free(aj->sumValues);
-  aj->sumValues=AB_Value_new();
-  AB_Value_SetCurrency(aj->sumValues, "EUR");
-  t=AH_Job_GetFirstTransfer(j);
-  if (t==NULL) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
-    assert(t); /* debug */
-    return GWEN_ERROR_INTERNAL;
-  }
-  while (t) {
-    const AB_VALUE *v;
-
-    v=AB_Transaction_GetValue(t);
-    if (v)
-      AB_Value_AddValue(aj->sumValues, v);
-    t=AB_Transaction_List_Next(t);
-  }
-
-  /* select pain profile from group "008" */
-  rv=AH_Job_TransferBase_SelectPainProfile(j, 8);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  /* set singleBookingWanted */
-  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "singleBookingWanted", (aj->singleBookingAllowed)?"J":"N");
-
-  /* adjust parameters for COR1 transactions */
-  AH_Job_TransferBase_SetLocalInstrumentationCode(j, "COR1");
-
-  /* export transfers to SEPA */
-  rv=AH_Job_TransferBase_SepaExportTransactions(j);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  /* store sum value */
-  if (aj->sumValues) {
-    GWEN_DB_NODE *dbV;
-    GWEN_BUFFER *nbuf;
-    const char *s;
-
-    dbV=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_OVERWRITE_GROUPS, "totalSum");
-    assert(dbV);
-
-    nbuf=GWEN_Buffer_new(0, 32, 0, 1);
-    AB_Value_toHbciString(aj->sumValues, nbuf);
-    if (GWEN_Buffer_GetUsedBytes(nbuf)<1) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error in conversion");
-      GWEN_Buffer_free(nbuf);
-      return GWEN_ERROR_BAD_DATA;
+    /* calculate sum */
+    AB_Value_free(aj->sumValues);
+    aj->sumValues=AH_Job_TransferBase_SumUpTransfers(j);
+    if (aj->sumValues==NULL) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error summing up transfers.");
+      return GWEN_ERROR_INTERNAL;
     }
 
-    /* store value */
-    GWEN_DB_SetCharValue(dbV, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "value",
-                         GWEN_Buffer_GetStart(nbuf));
-    GWEN_Buffer_free(nbuf);
-
-    /* store currency */
-    s=AB_Value_GetCurrency(aj->sumValues);
-    if (!s)
-      s="EUR";
-    GWEN_DB_SetCharValue(dbV, GWEN_DB_FLAGS_OVERWRITE_VARS, "currency", s);
+    /* select pain profile from group "008" */
+    rv=AH_Job_TransferBase_SelectPainProfile(j, 8);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  
+    /* set singleBookingWanted */
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "singleBookingWanted", (aj->singleBookingAllowed)?"J":"N");
+  
+    /* adjust parameters for COR1 transactions */
+    AH_Job_TransferBase_SetLocalInstrumentationCode(j, "COR1");
+  
+    /* export transfers to SEPA */
+    rv=AH_Job_TransferBase_SepaExportTransactions(j);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  
+    /* store sum value */
+    rv=AH_Job_TransferBase_StoreValueInArgs(j, aj->sumValues, "totalSum");
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
   }
   return 0;
 }

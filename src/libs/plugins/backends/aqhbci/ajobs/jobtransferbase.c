@@ -1199,8 +1199,73 @@ void _setLimitsExecDaysOfWeek(AB_TRANSACTION_LIMITS *lim, GWEN_DB_NODE *dbParams
 
 
 
+AB_VALUE *AH_Job_TransferBase_SumUpTransfers(const AH_JOB *j)
+{
+  AB_TRANSACTION *t;
+  AB_VALUE *sum;
+
+  assert(j);
+  
+  sum=AB_Value_new();
+  AB_Value_SetCurrency(sum, "EUR");
+  t=AH_Job_GetFirstTransfer(j);
+  if (t==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
+    AB_Value_free(sum);
+    return NULL;
+  }
+  while (t) {
+    const AB_VALUE *v;
+  
+    v=AB_Transaction_GetValue(t);
+    if (v) {
+      const char *s;
+  
+      s=AB_Value_GetCurrency(v);
+      if (s && strcmp(s, "EUR")) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "EUR required in SEPA transactions (%s)", s);
+        AB_Value_free(sum);
+        return NULL;
+      }
+      AB_Value_AddValue(sum, v);
+    }
+    t=AB_Transaction_List_Next(t);
+  }
+
+  return sum;
+}
 
 
 
+int AH_Job_TransferBase_StoreValueInArgs(AH_JOB *j, const AB_VALUE *v, const char *valueGroup)
+{
+  GWEN_DB_NODE *dbArgs;
+  GWEN_DB_NODE *dbV;
+  GWEN_BUFFER *nbuf;
+  const char *s;
+
+  dbArgs=AH_Job_GetArguments(j);
+  dbV=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_OVERWRITE_GROUPS, valueGroup);
+  assert(dbV);
+
+  nbuf=GWEN_Buffer_new(0, 32, 0, 1);
+  AB_Value_toHbciString(v, nbuf);
+  if (GWEN_Buffer_GetUsedBytes(nbuf)<1) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error in conversion");
+    GWEN_Buffer_free(nbuf);
+    return GWEN_ERROR_BAD_DATA;
+  }
+
+  /* store value */
+  GWEN_DB_SetCharValue(dbV, GWEN_DB_FLAGS_OVERWRITE_VARS, "value", GWEN_Buffer_GetStart(nbuf));
+  GWEN_Buffer_free(nbuf);
+
+  /* store currency */
+  s=AB_Value_GetCurrency(v);
+  assert(s);
+  GWEN_DB_SetCharValue(dbV, GWEN_DB_FLAGS_OVERWRITE_VARS, "currency", s);
+
+  return 0;
+}
 
 
