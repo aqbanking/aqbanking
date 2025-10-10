@@ -26,6 +26,8 @@
 #include <gwenhywfar/mdigest.h>
 #include <gwenhywfar/gui.h>
 
+#include <unistd.h>
+
 
 
 /*
@@ -68,7 +70,7 @@ static int _repeatJobUntilNoAttachPoint(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH
 static AH_JOBQUEUE *_createQueueForStage1(AB_USER *user, AH_JOB *tanJob, AH_JOB *vppJob, AH_JOB *workJob);
 static AH_JOBQUEUE *_createQueueForStage2a(AB_USER *user, AH_JOB *tanJob2, AH_JOB *vppJob, AH_JOB *vpaJob, AH_JOB *workJob);
 static AH_JOBQUEUE *_createQueueForStage2b(AB_USER *user, AH_JOB *tanJob1, AH_JOB *vpaJob, AH_JOB *workJob);
-static AH_JOBQUEUE *_createQueueForStage2c(AB_USER *user, AH_JOB *tanJob1);
+static AH_JOBQUEUE *_createQueueForStage2c(AB_USER *user, AH_JOB *tanJob1, const AH_JOB *workJob);
 static AH_JOBQUEUE *_createQueueForStageS(AB_USER *user, AH_JOB *tanJobS);
 static int _setupTanJobStage2OrS(AH_JOB *tanJob2, const AH_JOB *workJob, const AH_JOB *tanJob1);
 static AH_JOB *_createTanJobStage1(AB_PROVIDER *provider, AB_USER *user, int jobVersion, const AH_JOB *workJob);
@@ -168,10 +170,13 @@ int _handleStage1(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_JOB 
 
   if (vppJob) {
     /* repeat sending HKVPP as long as the bank sends an attach point */
-    rv=(AH_Job_GetFlags(vppJob) & AH_JOB_FLAGS_HASATTACHPOINT)?_repeatJobUntilNoAttachPoint(cbox, dlg, vppJob):0;
-    if (rv) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      return rv;
+    if (AH_Job_GetFlags(vppJob) & AH_JOB_FLAGS_HASATTACHPOINT) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "VOP not finished, waiting...");
+      rv=_repeatJobUntilNoAttachPoint(cbox, dlg, vppJob);
+      if (rv) {
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+	return rv;
+      }
     }
   }
 
@@ -197,28 +202,29 @@ int _handleStage2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_JOB 
   int rv;
   int needVpa;
 
-  needVpa=(AH_Job_HasResultWithCode(workJob, 3091) || AH_Job_HasResultWithCode(tanJob1, 3091))?0:1;
+//  needVpa=(AH_Job_HasResultWithCode(workJob, 3091) || AH_Job_HasResultWithCode(tanJob1, 3091))?0:1;
+  needVpa=vppJob?(AH_Job_HasResultWithCode(vppJob, 3091)?00:1):0;
 
   /* handle HKTAN */
-  if (AH_Job_HasResultWithCode(workJob, 3076) || AH_Job_HasResultWithCode(tanJob1, 3076)) { /* SCA not needed */
+  if (AH_Job_HasResultWithCode(tanJob1, 3945)) { /* "Freigabe kann nicht erteilt werden" */
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "TAN job has result 3945");
+    rv=_sendHKVPAandHKXXXandHKTAN(cbox, dlg, vppJob, workJob);
+    if (rv<0) {
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+  else if (AH_Job_HasResultWithCode(tanJob1, 3076)) { /* SCA not needed */
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "No TAN needed");
     // TODO: send HKVPA if needed (shouldn't be necessary)
   }
-  else if (AH_Job_HasResultWithCode(workJob, 3955) || AH_Job_HasResultWithCode(tanJob1, 3955)) { /* decoupled */
+  else if (AH_Job_HasResultWithCode(tanJob1, 3955)) { /* decoupled */
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Decoupled (3955), waiting for user to approve transaction externally");
     do { /* loop until positive status response received */
       rv=_sendTanAndReceiveResponseProcS(cbox, dlg, tanJob1, needVpa?vppJob:NULL, workJob);
     } while (rv==1);
     if (rv!=0) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Error exchanging TAN status message (%d)", rv);
-      return rv;
-    }
-  }
-  else if (AH_Job_HasResultWithCode(tanJob1, 3945)) { /* "Freigabe kann nicht erteilt werden" */
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "TAN job has result 3945");
-    rv=_sendHKVPAandHKXXXandHKTAN(cbox, dlg, vppJob, workJob);
-    if (rv<0) {
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
   }
@@ -412,7 +418,7 @@ int _sendHKTANwithTAN(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_
     return GWEN_ERROR_GENERIC;
   }
 
-  jobQueue=_createQueueForStage2c(user, tanJob2);
+  jobQueue=_createQueueForStage2c(user, tanJob2, workJob);
   rv=_inputTanForQueueWithChallenges(cbox,
 				     dlg,
 				     AH_Job_Tan_GetChallenge(tanJob1),
@@ -554,6 +560,8 @@ int _repeatJobUntilNoAttachPoint(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *j
     AH_JOBQUEUE *jobQueue;
     int rv;
 
+    DBG_ERROR(NULL, "Job has attach point, waiting and sending again");
+    sleep(2); /* TODO: use select from GUI! */
     jobQueue=AH_JobQueue_new(user);
     AH_JobQueue_SubFlags(jobQueue, AH_JOBQUEUE_FLAGS_NEEDTAN);
     AH_Job_Attach(j);
@@ -692,7 +700,6 @@ AH_JOBQUEUE *_createQueueForStage2a(AB_USER *user, AH_JOB *tanJob2, AH_JOB *vppJ
 
   /* prepare second message (the one with the TAN) */
   jobQueue=AH_JobQueue_new(user);
-  AH_JobQueue_AddFlags(jobQueue, AH_JOBQUEUE_FLAGS_NEEDTAN);
 
   if (vpaJob) {
     AH_Job_Attach(vpaJob);
@@ -724,6 +731,8 @@ AH_JOBQUEUE *_createQueueForStage2a(AB_USER *user, AH_JOB *tanJob2, AH_JOB *vppJ
     AH_JobQueue_free(jobQueue);
     return NULL;
   }
+  AH_JobQueue_AddFlags(jobQueue, (AH_Job_GetFlags(workJob) & AH_JOB_FLAGS_CRYPT)?AH_JOBQUEUE_FLAGS_CRYPT:0);
+  AH_JobQueue_AddFlags(jobQueue, (AH_Job_GetFlags(workJob) & AH_JOB_FLAGS_SIGN)?AH_JOBQUEUE_FLAGS_SIGN:0);
 
   return jobQueue;
 }
@@ -772,14 +781,14 @@ AH_JOBQUEUE *_createQueueForStage2b(AB_USER *user, AH_JOB *tanJob1, AH_JOB *vpaJ
 
 
 
-AH_JOBQUEUE *_createQueueForStage2c(AB_USER *user, AH_JOB *tanJob1)
+AH_JOBQUEUE *_createQueueForStage2c(AB_USER *user, AH_JOB *tanJob1, const AH_JOB *workJob)
 {
   AH_JOBQUEUE *jobQueue;
   int rv;
 
-  /* prepare second message (with new TAN request process 4) */
+  /* prepare second message (with TAN process 2) */
   jobQueue=AH_JobQueue_new(user);
-  AH_JobQueue_SubFlags(jobQueue, AH_JOBQUEUE_FLAGS_NEEDTAN);
+  AH_JobQueue_AddFlags(jobQueue, AH_JOBQUEUE_FLAGS_NEEDTAN);
 
   AH_Job_Attach(tanJob1);
   rv=AH_JobQueue_AddJob(jobQueue, tanJob1);
@@ -789,7 +798,10 @@ AH_JOBQUEUE *_createQueueForStage2c(AB_USER *user, AH_JOB *tanJob1)
     return NULL;
   }
 
-  AH_JobQueue_SubFlags(jobQueue, AH_JOBQUEUE_FLAGS_NEEDTAN);
+  AH_JobQueue_AddFlags(jobQueue, AH_JOBQUEUE_FLAGS_NEEDTAN);
+
+  AH_JobQueue_AddFlags(jobQueue, (AH_Job_GetFlags(workJob) & AH_JOB_FLAGS_CRYPT)?AH_JOBQUEUE_FLAGS_CRYPT:0);
+  AH_JobQueue_AddFlags(jobQueue, (AH_Job_GetFlags(workJob) & AH_JOB_FLAGS_SIGN)?AH_JOBQUEUE_FLAGS_SIGN:0);
 
   return jobQueue;
 }
@@ -934,6 +946,10 @@ AH_JOB *_createVpaJob(AB_PROVIDER *provider, AB_USER *user, const AH_JOB *vppJob
 
   ptrVopId=AH_Job_VPP_GetPtrVopId(vppJob);
   lenVopId=AH_Job_VPP_GetLenVopId(vppJob);
+  if (!(ptrVopId && lenVopId)) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No VOP id!");
+    return NULL;
+  }
 
   vpaJob=AH_Job_VPA_new(provider, user, 0, ptrVopId, lenVopId);
   if (vpaJob) {
