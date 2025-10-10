@@ -26,6 +26,7 @@
 
 static void GWENHYWFAR_CB _freeData(void *bp, void *p);
 static int _cbProcess(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
+static int _cbPrepare(AH_JOB *j);
 static void _sampleResultsFromVopResultGroup(AH_JOB *j, GWEN_DB_NODE *dbVppResponse);
 static void _applySingleVopResultToTransfer(AH_JOB *j, const char *sIban, const char *sResultString);
 
@@ -59,6 +60,7 @@ AH_JOB *AH_Job_VPP_new(AB_PROVIDER *pro, AB_USER *u, int jobVersion)
   GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_VPP, j, aj, _freeData);
   /* overwrite some virtual functions */
   AH_Job_SetProcessFn(j, _cbProcess);
+  AH_Job_SetPrepareFn(j, _cbPrepare);
 
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);
@@ -82,11 +84,27 @@ void GWENHYWFAR_CB _freeData(void *bp, void *p)
   AH_JOB_VPP *aj;
 
   aj=(AH_JOB_VPP *)p;
-  free(aj->pollingId);
   free(aj->ptrVopId);
+  free(aj->ptrPollingId);
   free(aj->paymentStatusFormat);
   free(aj->vopMsg);
   GWEN_FREE_OBJECT(aj);
+}
+
+
+
+int _cbPrepare(AH_JOB *j)
+{
+  GWEN_DB_NODE *dbResponses;
+
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "Prepare function called");
+  dbResponses=AH_Job_GetResponses(j);
+  if (dbResponses) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Clearing responses");
+    GWEN_DB_ClearGroup(dbResponses, NULL);
+  }
+
+  return 0;
 }
 
 
@@ -131,31 +149,40 @@ int _cbProcess(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     dbVppResponse=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/vppResponse");
     if (dbVppResponse) {
       const char *s;
-      const uint8_t *ptrVopId;
-      unsigned int lenVopId=0;
+      const uint8_t *ptr;
+      unsigned int len=0;
 
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Got a VPP response");
-//      if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
+      //      if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
+      fprintf(stderr, "Response: \n"); // DEBUG
       GWEN_DB_Dump(dbVppResponse, 2);
 
-      s=GWEN_DB_GetCharValue(dbVppResponse, "pollingId", 0, 0);
-      free(aj->pollingId);
-      aj->pollingId=(s && *s)?strdup(s):NULL;
-      if (s && *s) {
-        /* write polling id for next message */
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Received polling id: %s", s);
-        GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "pollingId", s);
+      /* get VOP id */
+      ptr=GWEN_DB_GetBinValue(dbVppResponse, "vopId", 0, NULL, 0, &len);
+      if (ptr && len) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Received VOP id");
+        GWEN_DB_SetBinValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "vopId", ptr, len);
+        free(aj->ptrVopId);
+        aj->ptrVopId=(uint8_t*) malloc(len);
+        memmove(aj->ptrVopId, ptr, len);
+	aj->lenVopId=len;
+      }
+      else {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "No VOP id received");
       }
 
-      /* get VOP id */
-      ptrVopId=GWEN_DB_GetBinValue(dbVppResponse, "vopId", 0, NULL, 0, &lenVopId);
-      free(aj->ptrVopId);
-      aj->ptrVopId=NULL;
-      aj->lenVopId=0;
-      if (ptrVopId && lenVopId) {
-	aj->ptrVopId=(uint8_t*) malloc(lenVopId);
-	memmove(aj->ptrVopId, ptrVopId, lenVopId);
-	aj->lenVopId=lenVopId;
+      /* get polling id */
+      ptr=GWEN_DB_GetBinValue(dbVppResponse, "pollingId", 0, NULL, 0, &len);
+      if (ptr && len) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Received polling id");
+        GWEN_DB_SetBinValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "pollingId", ptr, len);
+        free(aj->ptrPollingId);
+        aj->ptrPollingId=(uint8_t*) malloc(len);
+	memmove(aj->ptrPollingId, ptr, len);
+	aj->lenPollingId=len;
+      }
+      else {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "No polling id received");
       }
 
       s=GWEN_DB_GetCharValue(dbVppResponse, "paymentStatusFormat", 0, NULL);

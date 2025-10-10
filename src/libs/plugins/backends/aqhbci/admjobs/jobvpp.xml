@@ -18,7 +18,7 @@
     <GROUP name="SupportedFormats" delimiter=":" terminator="" >
       <ELEM  name="format"         type="ascii" maxsize="256" minnum="0" maxnum="99" />
     </GROUP>
-    <ELEM name="pollingId"         type="ascii" minnum="0"   maxnum="1" />
+    <ELEM name="pollingId"         type="bin" minnum="0"   maxnum="1" />
     <ELEM name="numEntries"        type="num"   maxsize="2"  minnum="0" />
     <ELEM name="attach"            type="ascii" maxsize="35" minnum="0" />
 
@@ -34,7 +34,7 @@
     <GROUP name="head"                 type="SegHead" />
     <ELEM  name="vopId"                type="bin"       minnum="0" />
     <GROUP name="validUntil"           type="timespec" />
-    <ELEM  name="pollingId"            type="ascii"     minnum="0" maxnum="1" />
+    <ELEM  name="pollingId"            type="bin"       minnum="0" maxnum="1" />
     <ELEM  name="paymentStatusFormat"  type="ascii"     minnum="0" maxnum="1" />
     <ELEM  name="paymentStatusReport"  type="bin"       minnum="0" maxnum="1" />
     <GROUP name="vopResult"            type="vopResult" minnum="0" />
