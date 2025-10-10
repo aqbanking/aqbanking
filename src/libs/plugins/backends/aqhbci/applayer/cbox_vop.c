@@ -815,12 +815,18 @@ AH_JOB *_createTanJobStage1(AB_PROVIDER *provider, AB_USER *user, int jobVersion
   if (AH_Job_GetFlags(workJob) & AH_JOB_FLAGS_SIGN) {
     int rv;
 
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Signature needed");
+    AH_Job_AddFlags(tanJob, AH_JOB_FLAGS_SIGN);
     rv=AH_Job_AddSigners(tanJob, AH_Job_GetSigners(workJob));
     if (rv<1) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Signatures needed but no signer given");
       AH_Job_free(tanJob);
       return NULL;
     }
+  }
+  if (AH_Job_GetFlags(workJob) & AH_JOB_FLAGS_CRYPT) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Encryption needed");
+    AH_Job_AddFlags(tanJob, AH_JOB_FLAGS_CRYPT);
   }
 
   return tanJob;
@@ -960,10 +966,16 @@ int _setupTanJobStage2OrS(AH_JOB *tanJob2, const AH_JOB *workJob, const AH_JOB *
 
   /* copy signers */
   if (AH_Job_GetFlags(workJob) & AH_JOB_FLAGS_SIGN) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Signature needed");
+    AH_Job_AddFlags(tanJob2, AH_JOB_FLAGS_SIGN);
     if (AH_Job_AddSigners(tanJob2, AH_Job_GetSigners(workJob))<1) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Signatures needed but no signer given");
       return GWEN_ERROR_GENERIC;
     }
+  }
+  if (AH_Job_GetFlags(workJob) & AH_JOB_FLAGS_CRYPT) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Encryption needed");
+    AH_Job_AddFlags(tanJob2, AH_JOB_FLAGS_CRYPT);
   }
   return 0;
 }
