@@ -29,6 +29,7 @@
 
 
 static int _messageSetupWithCryptoAndTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *msg, const char *sTan);
+static int _prepareJobs(AH_JOBQUEUE *jq);
 static int _encodeJobs(AH_JOBQUEUE *jq, AH_MSG *msg);
 static void _updateJobsAfterEncodingMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *msg);
 
@@ -64,6 +65,13 @@ AH_MSG *AH_JobQueue_ToMessageWithTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, const char
 
   rv=_messageSetupWithCryptoAndTan(jq, dlg, msg, sTan);
   if (rv) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AH_Msg_free(msg);
+    return NULL;
+  }
+
+  rv=_prepareJobs(jq);
+  if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg);
     return NULL;
@@ -148,6 +156,35 @@ int _messageSetupWithCryptoAndTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *msg, 
 
 
 
+int _prepareJobs(AH_JOBQUEUE *jq)
+{
+  AH_JOB *j;
+
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "Preparing jobs");
+  j=AH_JobQueue_GetFirstJob(jq);
+  while (j) {
+    AH_JOB_STATUS st;
+
+    st=AH_Job_GetStatus(j);
+    /* only encode jobs which have not already been sent or which have no errors */
+    if (st==AH_JobStatusEnqueued) {
+      int rv;
+
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Preparing %s", AH_Job_GetName(j));
+      rv=AH_Job_Prepare(j);
+      if (rv<0) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Error preparing job %s (%d)", AH_Job_GetName(j), rv);
+        AH_Job_SetStatus(j, AH_JobStatusError);
+        return rv;
+      }
+    }
+    j=AH_Job_List_Next(j);
+  } /* while */
+
+  return 0;
+}
+
+
 int _encodeJobs(AH_JOBQUEUE *jq, AH_MSG *msg)
 {
   AH_JOB *j;
@@ -190,6 +227,7 @@ int _encodeJobs(AH_JOBQUEUE *jq, AH_MSG *msg)
       if (!lastSeg) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "Could not encode job \"%s\"", AH_Job_GetName(j));
         AH_Job_SetStatus(j, AH_JobStatusError);
+        return GWEN_ERROR_GENERIC;
       }
       else {
         AH_Job_SetFirstSegment(j, firstSeg);
