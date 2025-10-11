@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Wed Jan 08 2014
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2025 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -115,7 +115,6 @@ void GWENHYWFAR_CB _jobApi_FreeData(void *bp, void *p)
   aj=(AH_JOB_CREATESEPAMULTIDEBIT *)p;
 
   free(aj->fiid);
-  AB_Value_free(aj->sumValues);
 
   GWEN_FREE_OBJECT(aj);
 }
@@ -154,7 +153,7 @@ int _jobApi_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod)
     DBG_ERROR(AQHBCI_LOGDOMAIN, "TAN version is 1.4.x");
     rv=AH_HHD14_AddChallengeParams_32(j,
                                       AH_Job_GetTransferCount(j),
-                                      aj->sumValues,
+                                      AH_Job_TransferBase_GetSumValues(j),
                                       AB_Transaction_GetLocalIban(t),
                                       AB_Transaction_GetDate(t));
     if (rv<0) {

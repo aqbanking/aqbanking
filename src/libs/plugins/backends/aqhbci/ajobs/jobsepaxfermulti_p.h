@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Tue Dec 31 2013
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2025 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -24,10 +24,6 @@ typedef struct AH_JOB_SEPAXFERMULTI AH_JOB_SEPAXFERMULTI;
 struct AH_JOB_SEPAXFERMULTI {
   int sumFieldNeeded;
   int singleBookingAllowed;
-
-  AB_VALUE *sumValues;
-  char *localIban;
-
 };
 
 
