@@ -119,22 +119,24 @@ int _jobApi_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod)
 
 int _jobApi_Prepare(AH_JOB *j)
 {
-  int rv;
-
   DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing transfer");
+  assert(j);
+  if (AH_Job_GetMsgNum(j)==0) { /* only when called for the first time */
+    int rv;
 
-  /* select from pain group "008" */
-  rv=AH_Job_TransferBase_SelectPainProfile(j, 8);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
+    /* select from pain group "008" */
+    rv=AH_Job_TransferBase_SelectPainProfile(j, 8);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
 
-  /* export transfers to SEPA */
-  rv=AH_Job_TransferBase_SepaExportTransactions(j);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
+    /* export transfers to SEPA */
+    rv=AH_Job_TransferBase_SepaExportTransactions(j);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
   }
 
   return 0;

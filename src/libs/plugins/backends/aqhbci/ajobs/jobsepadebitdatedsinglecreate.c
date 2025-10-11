@@ -76,23 +76,25 @@ AH_JOB *AH_Job_SepaDebitDatedSingleCreate_new(AB_PROVIDER *pro, AB_USER *u, AB_A
 
 int _jobApi_Prepare(AH_JOB *j)
 {
-  int rv;
-
   DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing transfer");
-
-  /* select pain profile from group "008" */
-  rv=AH_Job_TransferBase_SelectPainProfile(j, 8);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
+  assert(j);
+  if (AH_Job_GetMsgNum(j)==0) { /* only when called for the first time */
+    int rv;
 
 
-  /* export transfers to SEPA */
-  rv=AH_Job_TransferBase_SepaExportTransactions(j);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
+    /* select pain profile from group "008" */
+    rv=AH_Job_TransferBase_SelectPainProfile(j, 8);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+
+    /* export transfers to SEPA */
+    rv=AH_Job_TransferBase_SepaExportTransactions(j);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
   }
 
   return 0;
