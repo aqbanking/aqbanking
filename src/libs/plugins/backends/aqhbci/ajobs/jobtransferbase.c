@@ -54,6 +54,9 @@ static void _setLimitsExecDaysOfMonth(AB_TRANSACTION_LIMITS *lim, GWEN_DB_NODE *
 static void _setLimitsCycleWeek(AB_TRANSACTION_LIMITS *lim, GWEN_DB_NODE *dbParams);
 static void _setLimitsExecDaysOfWeek(AB_TRANSACTION_LIMITS *lim, GWEN_DB_NODE *dbParams);
 
+static AB_VALUE *_sumUpTransfers(const AH_JOB *j);
+static int _storeValueInArgs(AH_JOB *j, const AB_VALUE *v, const char *valueGroup);
+
 
 
 /* ------------------------------------------------------------------------------------------------
@@ -97,6 +100,7 @@ void GWENHYWFAR_CB _freeData(void *bp, void *p)
   AH_JOB_TRANSFERBASE *aj;
 
   aj=(AH_JOB_TRANSFERBASE *)p;
+  AB_Value_free(aj->sumValues);
   free(aj->localInstrumentationCode);
   free(aj->profileName);
   free(aj->fiid);
@@ -115,6 +119,34 @@ const char *AH_Job_TransferBase_GetFiid(const AH_JOB *j)
   assert(aj);
 
   return aj->fiid;
+}
+
+
+
+AB_VALUE *AH_Job_TransferBase_GetSumValues(const AH_JOB *j)
+{
+  if (j) {
+    AH_JOB_TRANSFERBASE *aj;
+
+    aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j);
+    assert(aj);
+    return aj->sumValues;
+  }
+  return NULL;
+}
+
+
+
+void AH_Job_TransferBase_SetSumValues(AH_JOB *j, const AB_VALUE *v)
+{
+  if (j) {
+    AH_JOB_TRANSFERBASE *aj;
+
+    aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j);
+    assert(aj);
+    AB_Value_free(aj->sumValues);
+    aj->sumValues=v?AB_Value_dup(v):NULL;
+  }
 }
 
 
@@ -1198,8 +1230,64 @@ void _setLimitsExecDaysOfWeek(AB_TRANSACTION_LIMITS *lim, GWEN_DB_NODE *dbParams
 
 
 
+int AH_Job_TransferBase_Prepare(AH_JOB *j, int painProfile, const char *localInstrumentationCode, int singleBookingAllowed)
+{
+  AH_JOB_TRANSFERBASE *aj;
 
-AB_VALUE *AH_Job_TransferBase_SumUpTransfers(const AH_JOB *j)
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j);
+  assert(aj);
+
+  if (AH_Job_GetMsgNum(j)==0) { /* only when called for the first time */
+    GWEN_DB_NODE *dbArgs;
+    int rv;
+
+    dbArgs=AH_Job_GetArguments(j);
+
+    /* set singleBookingWanted */
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "singleBookingWanted", (singleBookingAllowed)?"J":"N");
+
+    /* calculate sum */
+    AB_Value_free(aj->sumValues);
+    aj->sumValues=_sumUpTransfers(j);
+    if (aj->sumValues==NULL) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error summing up transfers.");
+      return GWEN_ERROR_INTERNAL;
+    }
+
+    rv=AH_Job_TransferBase_SelectPainProfile(j, painProfile);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+
+    if (localInstrumentationCode && *localInstrumentationCode)
+      AH_Job_TransferBase_SetLocalInstrumentationCode(j, localInstrumentationCode);
+
+    /* export transfers to SEPA */
+    rv=AH_Job_TransferBase_SepaExportTransactions(j);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+
+    /* store sum value */
+    rv=_storeValueInArgs(j, aj->sumValues, "totalSum");
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job already prepared");
+  }
+  return 0;
+}
+
+
+
+
+AB_VALUE *_sumUpTransfers(const AH_JOB *j)
 {
   AB_TRANSACTION *t;
   AB_VALUE *sum;
@@ -1237,7 +1325,7 @@ AB_VALUE *AH_Job_TransferBase_SumUpTransfers(const AH_JOB *j)
 
 
 
-int AH_Job_TransferBase_StoreValueInArgs(AH_JOB *j, const AB_VALUE *v, const char *valueGroup)
+int _storeValueInArgs(AH_JOB *j, const AB_VALUE *v, const char *valueGroup)
 {
   GWEN_DB_NODE *dbArgs;
   GWEN_DB_NODE *dbV;

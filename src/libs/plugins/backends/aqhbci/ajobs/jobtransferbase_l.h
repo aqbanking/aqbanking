@@ -34,6 +34,10 @@ int AH_Job_TransferBase_SelectPainProfile(AH_JOB *j, int version1);
 
 void AH_Job_TransferBase_SetLocalInstrumentationCode(AH_JOB *j, const char *s);
 
+AB_VALUE *AH_Job_TransferBase_GetSumValues(const AH_JOB *j);
+void AH_Job_TransferBase_SetSumValues(AH_JOB *j, const AB_VALUE *v);
+
+
 
 /**
  * Export the transactions stored with this job and export them to SEPA using the
@@ -123,16 +127,8 @@ int AH_Job_TransferBase_AddChallengeParams29(AH_JOB *j, int hkTanVer, GWEN_DB_NO
 int AH_Job_TransferBase_AddChallengeParams35(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod);
 
 
-/**
- * Sum-up transfers/debit notes stored in this job
- */
-AB_VALUE *AH_Job_TransferBase_SumUpTransfers(const AH_JOB *j);
+int AH_Job_TransferBase_Prepare(AH_JOB *j, int painProfile, const char *localInstrumentationCode, int singleBookingAllowed);
 
-
-/**
- * Store given value in argument db of this job (e.g. to store the sum value as argument for the job).
- */
-int AH_Job_TransferBase_StoreValueInArgs(AH_JOB *j, const AB_VALUE *v, const char *valueGroup);
 
 #endif /* AH_JOBTRANSFERBASE_L_H */
 

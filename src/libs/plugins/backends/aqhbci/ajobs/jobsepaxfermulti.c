@@ -166,53 +166,13 @@ int _jobApi_AddChallengeParams(AH_JOB *j, int hkTanVer, GWEN_DB_NODE *dbMethod)
 
 int _jobApi_Prepare(AH_JOB *j)
 {
+  AH_JOB_SEPAXFERMULTI *aj;
+
   DBG_ERROR(AQHBCI_LOGDOMAIN, "Preparing transfers");
   assert(j);
-  if (AH_Job_GetMsgNum(j)==0) { /* only when called for the first time */
-    AH_JOB_SEPAXFERMULTI *aj;
-    GWEN_DB_NODE *dbArgs;
-    int rv;
-
-    aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_SEPAXFERMULTI, j);
-    assert(aj);
-
-    dbArgs=AH_Job_GetArguments(j);
-
-    /* set singleBookingWanted */
-    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "singleBookingWanted", (aj->singleBookingAllowed)?"J":"N");
-
-    /* calculate sum */
-    AB_Value_free(aj->sumValues);
-    aj->sumValues=AH_Job_TransferBase_SumUpTransfers(j);
-    if (aj->sumValues==NULL) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error summing up transfers.");
-      return GWEN_ERROR_INTERNAL;
-    }
-
-    rv=AH_Job_TransferBase_SelectPainProfile(j, 1);
-    if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
-
-    /* export transfers to SEPA */
-    rv=AH_Job_TransferBase_SepaExportTransactions(j);
-    if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
-
-    /* store sum value */
-    rv=AH_Job_TransferBase_StoreValueInArgs(j, aj->sumValues, "totalSum");
-    if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      return rv;
-    }
-  }
-  else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job already prepared");
-  }
-  return 0;
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_SEPAXFERMULTI, j);
+  assert(aj);
+  return AH_Job_TransferBase_Prepare(j, 1, NULL, aj->singleBookingAllowed);
 }
 
 
