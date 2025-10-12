@@ -273,6 +273,7 @@ int _sendTanAndReceiveResponseProc2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
   }
 
   jobQueue=_createQueueForStage2a(user, tanJob2, vppJob, vpaJob, workJob);
+  AH_JobQueue_AddFlags(jobQueue, AH_JOBQUEUE_FLAGS_NEEDTAN);
   rv=_inputTanForQueueWithChallenges(cbox,
 				     dlg,
 				     AH_Job_Tan_GetChallenge(tanJob1),
@@ -303,7 +304,7 @@ int _sendTanAndReceiveResponseProc2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
   }
 
   /* dispatch results from tanJob2 to workjob */
-  _copySegResultsToJob(tanJob2, workJob);
+  _copySegResultsToJob(tanJob2, workJob);    /* TODO: don't copy result, just set status */
   _copyMsgResultsToJob(tanJob2, workJob);
 
   /* store used TAN in original job (if any) */
@@ -419,6 +420,7 @@ int _sendHKTANwithTAN(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_
   }
 
   jobQueue=_createQueueForStage2c(user, tanJob2, workJob);
+  AH_JobQueue_AddFlags(jobQueue, AH_JOBQUEUE_FLAGS_NEEDTAN);
   rv=_inputTanForQueueWithChallenges(cbox,
 				     dlg,
 				     AH_Job_Tan_GetChallenge(tanJob1),
