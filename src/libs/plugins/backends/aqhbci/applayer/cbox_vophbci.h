@@ -7,15 +7,15 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef AH_OUTBOX_CBOX_VOP_H
-#define AH_OUTBOX_CBOX_VOP_H
+#ifndef AH_OUTBOX_CBOX_VOPHBCI_H
+#define AH_OUTBOX_CBOX_VOPHBCI_H
 
 
 #include "aqhbci/applayer/cbox.h"
 
 
 
-int AH_OutboxCBox_SendAndReceiveJobWithTanAndVpp(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *transactionJob);
+int AH_OutboxCBox_SendAndReceiveJobWithVpp(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *transactionJob);
 
 
 

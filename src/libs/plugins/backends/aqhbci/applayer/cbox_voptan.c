@@ -12,7 +12,7 @@
 #endif
 
 
-#include "aqhbci/applayer/cbox_vop.h"
+#include "aqhbci/applayer/cbox_voptan.h"
 
 #include "aqhbci/applayer/cbox_send.h"
 #include "aqhbci/applayer/cbox_recv.h"
@@ -914,7 +914,10 @@ AH_JOB *_createVppJob(AB_PROVIDER *provider, AB_USER *user, const AH_JOB *workJo
 
   vppJob=AH_Job_VPP_new(provider, user, 0);
   if (vppJob) {
-    if (AH_Job_VPP_IsNeededForCode(vppJob, AH_Job_GetCode(workJob))) {
+    const char *jobCode;
+
+    jobCode=AH_Job_GetCode(workJob);
+    if (jobCode && *jobCode && AH_Job_VPP_IsNeededForCode(vppJob, jobCode)) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "VOP needed for job %s", AH_Job_GetCode(workJob));
       if (AH_Job_GetFlags(workJob) & AH_JOB_FLAGS_SIGN) {
         int rv;

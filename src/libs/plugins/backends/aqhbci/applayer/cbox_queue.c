@@ -21,7 +21,8 @@
 #include "aqhbci/applayer/cbox_send.h"
 #include "aqhbci/applayer/cbox_recv.h"
 #include "aqhbci/applayer/cbox_dialog.h"
-#include "aqhbci/applayer/cbox_vop.h"
+#include "aqhbci/applayer/cbox_voptan.h"
+#include "aqhbci/applayer/cbox_vophbci.h"
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -365,21 +366,34 @@ int _sendJob(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *j)
 
 int AH_OutboxCBox_SendAndReceiveJob(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *j)
 {
-  if ((AH_Job_GetFlags(j) & AH_JOB_FLAGS_NEEDTAN) && AH_Dialog_GetItanProcessType(dlg)!=0) {
-    int rv;
+  AB_USER *user;
+  int rv;
 
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "TAN mode");
-    rv=AH_OutboxCBox_SendAndReceiveJobWithTanAndVpp(cbox, dlg, j);
-    if (rv<0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+  user=AH_OutboxCBox_GetUser(cbox);
+  if (AH_User_GetCryptMode(user)==AH_CryptMode_Pintan) {
+    /* PIN/TAN mode */
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "PIN/TAN mode");
+    if ((AH_Job_GetFlags(j) & AH_JOB_FLAGS_NEEDTAN) && AH_Dialog_GetItanProcessType(dlg)!=0) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "TAN mode");
+      rv=AH_OutboxCBox_SendAndReceiveJobWithTanAndVpp(cbox, dlg, j);
+      if (rv<0) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      }
+      return rv;
     }
-    return rv;
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "noTAN mode");
+      rv=AH_OutboxCBox_SendAndReceiveJobWithVpp(cbox, dlg, j);
+      if (rv<0) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      }
+      return rv;
+    }
   }
   else {
-    int rv;
-
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "noTAN mode");
-    rv=AH_OutboxCBox_SendAndReceiveJobNoTan(cbox, dlg, j);
+    /* HBCI mode (not PIN/TAN) */
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "HBCI mode");
+    rv=AH_OutboxCBox_SendAndReceiveJobWithVpp(cbox, dlg, j);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     }

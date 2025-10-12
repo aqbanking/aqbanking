@@ -64,7 +64,8 @@
       cbox_hbci.h
       cbox_dialog.h
       cbox_queue.h
-      cbox_vop.h
+      cbox_voptan.h
+      cbox_vophbci.h
     </headers>
   
   
@@ -82,7 +83,8 @@
       cbox_dialog.c
       cbox_itan.c
       cbox_queue.c
-      cbox_vop.c
+      cbox_voptan.c
+      cbox_vophbci.c
     </sources>
 
     <data install="$(aqbanking_plugin_installdir)/providers" >
