@@ -71,7 +71,7 @@ static AH_JOBQUEUE *_createQueueForStage1(AB_USER *user, AH_JOB *tanJob, AH_JOB 
 static AH_JOBQUEUE *_createQueueForStage2a(AB_USER *user, AH_JOB *tanJob2, AH_JOB *vppJob, AH_JOB *vpaJob, AH_JOB *workJob);
 static AH_JOBQUEUE *_createQueueForStage2b(AB_USER *user, AH_JOB *tanJob1, AH_JOB *vpaJob, AH_JOB *workJob);
 static AH_JOBQUEUE *_createQueueForStage2c(AB_USER *user, AH_JOB *tanJob1, const AH_JOB *workJob);
-static AH_JOBQUEUE *_createQueueForStageS(AB_USER *user, AH_JOB *tanJobS);
+static AH_JOBQUEUE *_createQueueForStageS(AB_USER *user, AH_JOB *tanJobS, AH_JOB *workJob);
 static int _setupTanJobStage2OrS(AH_JOB *tanJob2, const AH_JOB *workJob, const AH_JOB *tanJob1);
 static AH_JOB *_createTanJobStage1(AB_PROVIDER *provider, AB_USER *user, int jobVersion, const AH_JOB *workJob);
 static AH_JOB *_createTanJobStage2(AB_PROVIDER *provider, AH_DIALOG *dlg, const AH_JOB *workJob, const AH_JOB *tanJob1);
@@ -493,7 +493,7 @@ int _sendTanAndReceiveResponseProcS(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
   }
 
   /* prepare second message (the one with the TAN) */
-  jobQueue=_createQueueForStageS(user, tanJob2);
+  jobQueue=_createQueueForStageS(user, tanJob2, workJob);
 
   rv=_sendAndRecvQueue(cbox, dlg, jobQueue);
   if (rv<0) {
@@ -669,7 +669,7 @@ AH_JOBQUEUE *_createQueueForStage1(AB_USER *user, AH_JOB *tanJob, AH_JOB *vppJob
 
 
 
-AH_JOBQUEUE *_createQueueForStageS(AB_USER *user, AH_JOB *tanJobS)
+AH_JOBQUEUE *_createQueueForStageS(AB_USER *user, AH_JOB *tanJobS, AH_JOB *workJob)
 {
   AH_JOBQUEUE *jobQueue;
   int rv;
@@ -687,6 +687,9 @@ AH_JOBQUEUE *_createQueueForStageS(AB_USER *user, AH_JOB *tanJobS)
     AH_JobQueue_free(jobQueue);
     return NULL;
   }
+
+  AH_JobQueue_AddFlags(jobQueue, (AH_Job_GetFlags(workJob) & AH_JOB_FLAGS_CRYPT)?AH_JOBQUEUE_FLAGS_CRYPT:0);
+  AH_JobQueue_AddFlags(jobQueue, (AH_Job_GetFlags(workJob) & AH_JOB_FLAGS_SIGN)?AH_JOBQUEUE_FLAGS_SIGN:0);
 
   return jobQueue;
 }
