@@ -13,6 +13,7 @@
 
 
 #include "aqhbci/applayer/cbox_voptan.h"
+#include "aqhbci/applayer/cbox_vopmsg.h"
 
 #include "aqhbci/applayer/cbox_send.h"
 #include "aqhbci/applayer/cbox_recv.h"
@@ -63,7 +64,6 @@ static int _handleStage2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, 
 static int _sendTanAndReceiveResponseProc2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_JOB *vppJob, AH_JOB *workJob);
 static int _sendHKVPAandHKXXXandHKTAN(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *vppJob, AH_JOB *workJob);
 static int _sendHKTANwithTAN(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_JOB *workJob);
-
 static int _sendTanAndReceiveResponseProcS(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_JOB *vppJob, AH_JOB *workJob);
 static int _sendAndRecvQueue(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jobQueue);
 static int _repeatJobUntilNoAttachPoint(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *j);
@@ -186,10 +186,23 @@ int _handleStage1(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_JOB 
     s=AH_Job_VPP_GetVopMsg(vppJob);
     DBG_ERROR(AQHBCI_LOGDOMAIN, "VPP message: %s", s);
 
-    /*
-     * TODO: show result of VPP, force user interaction or abort if questionable match
-     */
-
+    if (AH_Job_HasResultWithCode(vppJob, 25)) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Result of VOP: Names match.");
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("Result of VOP: Names match."));
+    }
+    else if (AH_Job_HasResultWithCode(vppJob, 9210)) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Result of VOP: Transaction rejected (e.g. non-existent IBAN).");
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("Result of VOP: Transaction rejected (e.g. non-existent IBAN)."));
+    }
+    else if (AH_Job_HasResultWithCode(vppJob, 3090)) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Let user accept or reject VOP result");
+      rv=AH_OutboxCBox_LetUserConfirmVopResult(cbox, workJob, s);
+      if (rv<0) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Aborted by user (%d)", rv);
+        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Aborted by user."));
+        return rv;
+      }
+    }
   }
 
   return 0;

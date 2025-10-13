@@ -32,7 +32,8 @@ noinst_HEADERS=\
   cbox_dialog.h \
   cbox_queue.h \
   cbox_voptan.h \
-  cbox_vophbci.h
+  cbox_vophbci.h \
+  cbox_vopmsg.h
 
 
 libhbciapp_la_SOURCES=\
@@ -48,7 +49,8 @@ libhbciapp_la_SOURCES=\
   cbox_itan.c \
   cbox_queue.c \
   cbox_voptan.c \
-  cbox_vophbci.c
+  cbox_vophbci.c \
+  cbox_vopmsg.c
 
 
 
