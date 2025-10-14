@@ -623,6 +623,16 @@
     <ELEM name="param" type="ascii" maxsize="999" minnum="0" maxnum="99"/>
   </GROUPdef>
 
+
+  <GROUPdef id="vopResult" delimiter=":" terminator="" version="1">
+    <ELEM name="iban"                     type="ascii" minnum="1" />
+    <ELEM name="additionalInfo"           type="ascii" minnum="0" />
+    <ELEM name="alternativeRecipientName" type="ascii" minnum="0" />
+    <ELEM name="otherId"                  type="ascii" minnum="0" />
+    <ELEM name="result"                   type="ascii" minnum="1" />
+    <ELEM name="reasonRvna"               type="ascii" minnum="0" />
+  </GROUPdef>
+
 </GROUPs>
 
 

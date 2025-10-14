@@ -58,8 +58,9 @@
 
       generic.c
     </sources>
-
-    <data install="$(pkgdatadir)/bankinfo" >
+                   
+    <data install="$(aqbanking_pkgdatadir)/bankinfo/de" >
+    
     </data>
 
     <useTargets>

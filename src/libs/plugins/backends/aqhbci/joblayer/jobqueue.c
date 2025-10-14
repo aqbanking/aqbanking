@@ -278,9 +278,7 @@ void AH_JobQueue_SetJobStatusOnMatch(AH_JOBQUEUE *jq,
 
   j=AH_Job_List_First(jq->jobs);
   while (j) {
-    if (matchSt==AH_JobStatusAll ||
-        AH_Job_GetStatus(j)==matchSt)
-      AH_Job_SetStatus(j, newSt);
+    AH_Job_SetJobStatusOnMatch(j, matchSt, newSt);
     j=AH_Job_List_Next(j);
   } /* while */
 }

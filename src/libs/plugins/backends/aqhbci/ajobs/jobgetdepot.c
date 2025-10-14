@@ -69,6 +69,7 @@ AH_JOB *AH_Job_GetDepot_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
   /* overwrite some virtual functions */
   AH_Job_SetProcessFn(j, AH_Job_GetDepot_Process);
   AH_Job_SetGetLimitsFn(j, AH_Job_GetDepot_GetLimits);
+  AH_Job_SetHandleCommandFn(j, AH_Job_HandleCommand_Accept);
   AH_Job_SetHandleResultsFn(j, AH_Job_HandleResults_Empty);
 
   return j;

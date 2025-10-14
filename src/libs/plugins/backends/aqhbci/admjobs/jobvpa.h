@@ -1,20 +1,23 @@
 /***************************************************************************
-    begin       : Mon Mar 01 2004
-    copyright   : (C) 2019 by Martin Preuss
+    begin       : Fri Oct 3 2025
+    copyright   : (C) 2025 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-#ifndef AH_OUTBOX_CBOX_PREPARE_H
-#define AH_OUTBOX_CBOX_PREPARE_H
+
+#ifndef AH_JOBVPA_H
+#define AH_JOBVPA_H
 
 
-#include "aqhbci/applayer/cbox.h"
+#include "aqhbci/aqhbci_l.h"
+#include "aqhbci/joblayer/job_l.h"
 
 
-int AH_OutboxCBox_Prepare(AH_OUTBOX_CBOX *cbox);
+
+AH_JOB *AH_Job_VPA_new(AB_PROVIDER *pro, AB_USER *u, int jobVersion, const uint8_t *ptrVopId, unsigned int lenVopId);
 
 
 

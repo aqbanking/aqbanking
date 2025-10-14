@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2019 by Martin Preuss
+    copyright   : (C) 2025 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -15,6 +15,8 @@
 
 
 int AH_OutboxCBox_OpenDialogPsd2_Proc2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg);
+
+int AH_OutboxCBox_OpenDialogPsd2WithJob_Proc2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *jDlgOpen);
 
 
 #endif

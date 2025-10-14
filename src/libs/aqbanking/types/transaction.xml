@@ -1813,6 +1813,31 @@
       </group>
 
 
+     <group title="Additional Data for Verification of Payee">
+
+        <descr>
+          <p>These properties are returned by the bank for transfers and debit notes after verifying payee names.</p>
+        </descr>
+
+        <member name="vopResult" type="char_ptr" maxlen="1024" >
+          <access>public</access>
+          <flags>own</flags>
+          <setflags>const dup</setflags>
+          <getflags>const</getflags>
+          <descr>
+            Result of VOP process:
+            - first byte: result (+=ok, -=not ok, *=close match, ?=pending, !=not verified)
+            - n bytes: tested iban
+            - if alternative name reported by bank:
+              - one byte ":"
+              - n bytes: alternative name of payee to be used in future transfers
+          </descr>
+        </member>
+
+      </group>
+
+
+
       <member name="memo" type="char_ptr" maxlen="1024" >
         <access>public</access>
         <flags>own with_hash</flags>

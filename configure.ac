@@ -17,10 +17,10 @@ AC_CONFIG_MACRO_DIRS([m4])
 
 AQBANKING_VERSION_MAJOR=6
 AQBANKING_VERSION_MINOR=6
-AQBANKING_VERSION_PATCHLEVEL=4
-AQBANKING_VERSION_BUILD=0
+AQBANKING_VERSION_PATCHLEVEL=99
+AQBANKING_VERSION_BUILD=1
 dnl "stable", "rcX", "betaX", "svn"
-AQBANKING_VERSION_TAG="stable"
+AQBANKING_VERSION_TAG="git"
 
 
 
@@ -35,7 +35,7 @@ AQBANKING_VERSION_TAG="stable"
 
 AQBANKING_SO_CURRENT=50
 AQBANKING_SO_AGE=6
-AQBANKING_SO_REVISION=4
+AQBANKING_SO_REVISION=99
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 
@@ -279,7 +279,7 @@ for f in ${aqbanking_backends}; do
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQGIVVE, 1, [plugin availability])
       ;;
     *)
-      AC_MSG_ERROR("ERROR: Unknown plugin $f")
+      AC_MSG_ERROR("ERROR: Unknown plugin '$f'")
       ;;
   esac
 done
@@ -369,7 +369,7 @@ for f in ${aqbanking_imexporters}; do
       AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_XML, 1, [plugin availability])
       ;;
     *)
-      AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
+      AC_MSG_ERROR("ERROR: Unknown plugin '$f'")
       ;;
   esac
 done
@@ -400,7 +400,7 @@ for f in ${aqbanking_parsers}; do
       aqbanking_plugins_parsers_dirs="$aqbanking_plugins_parsers_dirs swift"
       ;;
     *)
-      AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
+      AC_MSG_ERROR("ERROR: Unknown plugin '$f'")
       ;;
   esac
 done
@@ -432,7 +432,7 @@ for f in ${aqbanking_bankinfos}; do
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BANKINFO_DE, 1, [plugin availability])
       ;;
     *)
-      AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
+      AC_MSG_ERROR("ERROR: Unknown plugin '$f'")
       ;;
   esac
 done

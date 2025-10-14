@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2019 by Martin Preuss
+    copyright   : (C) 2025 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -17,8 +17,6 @@
 
 
 int AH_OutboxCBox_JobToMessage(AH_JOB *j, AH_MSG *msg, int doCopySigners);
-
-int AH_OutboxCBox_SendAndReceiveQueueWithTan(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *qJob);
 
 int AH_OutboxCBox_SelectItanMode(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg);
 void AH_OutboxCBox_CopyJobResultsToJobList(const AH_JOB *j, const AH_JOB_LIST *qjl);

@@ -63,7 +63,7 @@ int AH_Job_Prepare(AH_JOB *j)
     return j->prepareFn(j);
   else {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "No prepareFn set");
-    return GWEN_ERROR_NOT_SUPPORTED;
+    return 0;
   }
 }
 
