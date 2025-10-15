@@ -211,6 +211,11 @@ The aqbanking package also includes several command-line tools
 
 (the last step most probably requires you to be root)
 
+In case of an error on "make" you might want to try this after ./configure:
+#> make typedefs
+#> make typefiles
+
+
 Compilation hints for specific platforms:
 
 - For FreeBSD and potentially other non-Linux platform, it might be
