@@ -97,7 +97,11 @@ int AH_OutboxCBox_OpenDialogWithJob(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
   user=AH_OutboxCBox_GetUser(cbox);
 
   if (AH_User_GetCryptMode(user)==AH_CryptMode_Pintan) {
-    if (AH_Job_GetFlags(jDlg) & AH_JOB_FLAGS_SIGN) {
+    uint32_t jobFlags;
+
+    jobFlags=AH_Job_GetFlags(jDlg);
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job has NOITAN flag, not using TAN-based dialog");
+    if ((jobFlags & AH_JOB_FLAGS_SIGN) && !(jobFlags & AH_JOB_FLAGS_NOITAN)) {
       int selectedTanVersion;
 
       selectedTanVersion=AH_User_GetSelectedTanMethod(user)/1000;
