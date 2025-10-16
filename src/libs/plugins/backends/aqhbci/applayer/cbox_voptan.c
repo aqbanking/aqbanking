@@ -219,8 +219,9 @@ int _handleStage2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_JOB 
   needVpa=vppJob?(AH_Job_HasResultWithCode(vppJob, 3091)?00:1):0;
 
   /* handle HKTAN */
-  if (AH_Job_HasResultWithCode(tanJob1, 3945)) { /* "Freigabe kann nicht erteilt werden" */
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "TAN job has result 3945");
+  if (AH_Job_HasResultWithCode(tanJob1, 3945) ||  /* "Freigabe kann nicht erteilt werden" */
+      (AH_Job_HasResultWithCode(vppJob, 3090))) { /* "Ergebnis Namensabgleich pruefen" */
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "TAN job has result 3945 or VPP job has result 3090");
     rv=_sendHKVPAandHKXXXandHKTAN(cbox, dlg, vppJob, workJob);
     if (rv<0) {
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
