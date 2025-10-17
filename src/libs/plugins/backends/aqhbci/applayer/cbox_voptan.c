@@ -184,7 +184,7 @@ int _handleStage1(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_JOB 
     const char *s;
 
     s=AH_Job_VPP_GetVopMsg(vppJob);
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "VPP message: %s", s);
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "VPP message: %s", s?s:"<no msg>");
 
     if (AH_Job_HasResultWithCode(vppJob, 25)) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Result of VOP: Names match.");
@@ -195,13 +195,15 @@ int _handleStage1(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_JOB 
       GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("Result of VOP: Transaction rejected (e.g. non-existent IBAN)."));
     }
     else if (AH_Job_HasResultWithCode(vppJob, 3090)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Let user accept or reject VOP result");
-      rv=AH_OutboxCBox_LetUserConfirmVopResult(cbox, workJob, s);
-      if (rv<0) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Aborted by user (%d)", rv);
-        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Aborted by user."));
-        return rv;
-      }
+      /* if (s && *s) { */
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Let user accept or reject VOP result");
+        rv=AH_OutboxCBox_LetUserConfirmVopResult(cbox, workJob, s);
+        if (rv<0) {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Aborted by user (%d)", rv);
+          GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Aborted by user."));
+          return rv;
+        }
+     /* } */
     }
   }
 

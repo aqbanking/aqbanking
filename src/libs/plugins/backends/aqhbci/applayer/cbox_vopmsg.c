@@ -54,7 +54,7 @@ int AH_OutboxCBox_LetUserConfirmVopResult(AH_OUTBOX_CBOX *cbox, AH_JOB *workJob,
                               "to you. Always make sure you have the correct payee in your transfers!"),
                          sUserName?sUserName:"<no user id>",
                          sBankName?sBankName:"<no bank name>",
-                         sMsg?sMsg:"<no msg from bank>",
+                         sMsg?sMsg:I18N("<no msg from bank>"),
                          AH_Job_GetCode(workJob));
 
   AB_BankInfo_free(bankInfo);
