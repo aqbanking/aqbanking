@@ -245,6 +245,7 @@ int _sendDialogJob(AH_OUTBOX_CBOX *cbox, AH_JOB *j)
 
   /* open connection */
   dlg=AH_Dialog_new(user, provider);
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "Connecting for job \"%s\"", AH_Job_GetName(j));
   rv=AH_Dialog_Connect(dlg);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Could not begin a dialog for customer \"%s\" (%d)", AB_User_GetCustomerId(user), rv);
@@ -253,6 +254,7 @@ int _sendDialogJob(AH_OUTBOX_CBOX *cbox, AH_JOB *j)
     return rv;
   }
 
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "Sending dialog job \"%s\"", AH_Job_GetName(j));
   rv=AH_OutboxCBox_OpenDialogWithJob(cbox, dlg, j);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -262,6 +264,7 @@ int _sendDialogJob(AH_OUTBOX_CBOX *cbox, AH_JOB *j)
   }
 
   /* close dialog */
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "Closing dialog for job \"%s\"", AH_Job_GetName(j));
   rv=AH_OutboxCBox_CloseDialog(cbox, dlg, jFlags);
   if (rv) {
     AH_Dialog_Disconnect(dlg);
@@ -270,7 +273,7 @@ int _sendDialogJob(AH_OUTBOX_CBOX *cbox, AH_JOB *j)
   }
 
   /* close connection */
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Closing connection");
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "Disconnecting for job \"%s\"", AH_Job_GetName(j));
   AH_Dialog_Disconnect(dlg);
   AH_Dialog_free(dlg);
 
