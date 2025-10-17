@@ -12,6 +12,57 @@
 
 <SEGs>
 
+ <SEGdef id="sync" 
+         code="HKSYN" 
+         version="3"
+         delimiter="+" 
+         terminator="'"
+ >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="mode" type="num" maxsize="1" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+
+ <SEGdef id="syncresponse" 
+         code="HISYN" 
+         version="3"
+         delimiter="+" 
+         terminator="'"
+ >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="systemid" type="ascii" minnum="0" hide="1" trustlevel="3"/>
+   <ELEM name="msgnum" type="num" minnum="0" maxsize="4" />
+   <ELEM name="signum" type="num" minnum="0" maxsize="16" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+
+ <SEGdef id="syncresponse" 
+         code="HISYN" 
+         version="4"
+         delimiter="+" 
+         terminator="'"
+ >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="systemid" type="ascii" minnum="0" hide="1" trustlevel="3"/>
+   <ELEM name="msgnum" type="num" minnum="0" maxsize="4" />
+   <ELEM name="signum" type="num" minnum="0" maxsize="16" />
+   <ELEM name="authnum" type="num" minnum="0" maxsize="16" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
 
 </SEGs>
 
@@ -21,76 +72,12 @@
 
   <JOBdef id="JobSync" 
           version="1" 
-          pversion="201"
-          crypt="1" 
-          sign="1" 
-          nosysid="1"
-          dlg="1" 
-          needsbpd="0" 
-          response="syncresponse"
-   >
-    <SEG type="Ident" name="ident" />
-    <SEG type="Prepare" name="prepare" />
-    <SEG type="Sync" name="sync" />
-
-    <VALUES>
-      <VALUE path="ident/systemId">0</VALUE>
-    </VALUES>
-  </JOBdef>
-
-
-
-  <JOBdef id="JobSync" 
-          version="1" 
-          pversion="210"
-          crypt="1" 
-          sign="1" 
-          nosysid="1"
-          dlg="1" 
-          needsbpd="0" 
-          response="syncresponse"
-   >
-    <SEG type="Ident" name="ident" />
-    <SEG type="Prepare" name="prepare" />
-    <SEG type="Sync" name="sync" />
-    <VALUES>
-      <VALUE path="ident/systemId">0</VALUE>
-    </VALUES>
-  </JOBdef>
- 
- 
- 
-  <JOBdef id="JobSync" 
-          version="1" 
-          pversion="220"
-          crypt="1" 
-          sign="1" 
-          dlg="1" 
-          nosysid="1"
-          needsbpd="0" 
-          response="syncresponse"
-   >
-    <SEG type="Ident" name="ident" />
-    <SEG type="Prepare" name="prepare" />
-    <SEG type="Sync" name="sync" />
-
-    <VALUES>
-      <VALUE path="ident/systemId">0</VALUE>
-    </VALUES>
- 
-  </JOBdef>
- 
- 
- 
-  <JOBdef id="JobSync" 
-          version="1" 
-          pversion="300"
           crypt="1" 
           sign="1" 
           dlg="1" 
           needsbpd="0" 
           nosysid="1"
-          noitan="1"
+          noitan="0"
           response="syncresponse"
    >
     <SEG type="Ident"   name="ident" />
