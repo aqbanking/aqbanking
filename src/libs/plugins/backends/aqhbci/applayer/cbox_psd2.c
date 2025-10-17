@@ -14,6 +14,7 @@
 
 #include "aqhbci/applayer/cbox_psd2.h"
 #include "aqhbci/applayer/cbox_voptan.h"
+#include "aqhbci/applayer/cbox_queue.h"
 
 #include "aqbanking/i18n_l.h"
 
@@ -75,7 +76,6 @@ int AH_OutboxCBox_OpenDialogPsd2WithJob_Proc2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *d
 
   if (AH_User_HasTanMethodOtherThan(user, 999)) {
     /* only use itan if any other mode than singleStep is available
-     * and the job queue does not request non-ITAN mode
      */
     rv=AH_OutboxCBox_SelectItanMode(cbox, dlg);
     if (rv) {
@@ -94,6 +94,34 @@ int AH_OutboxCBox_OpenDialogPsd2WithJob_Proc2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *d
   }
 
   rv=AH_OutboxCBox_SendAndReceiveJobWithTanAndVpp(cbox, dlg, jDlgOpen);
+  if (rv) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Dialog open request done.");
+  rv=AH_Job_CommitSystemData(jDlgOpen, 0);
+  if (rv) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+  return rv;
+}
+
+
+
+int AH_OutboxCBox_OpenDialogSingleStepWithJob(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *jDlgOpen)
+{
+  int rv;
+
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Handle dialog in singlestep mode");
+
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "Handle job \"%s\" in singlestep TAN mode.", AH_Job_GetName(jDlgOpen));
+  AH_Dialog_SetItanMethod(dlg, 999);
+  AH_Dialog_SetItanProcessType(dlg, 1);
+  AH_Dialog_SetTanJobVersion(dlg, 0);
+
+  rv=AH_OutboxCBox_SendAndReceiveJobNoTan(cbox, dlg, jDlgOpen);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;

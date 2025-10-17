@@ -18,6 +18,7 @@ int AH_OutboxCBox_OpenDialogPsd2_Proc2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg);
 
 int AH_OutboxCBox_OpenDialogPsd2WithJob_Proc2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *jDlgOpen);
 
+int AH_OutboxCBox_OpenDialogSingleStepWithJob(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *jDlgOpen);
 
 #endif
 
