@@ -99,46 +99,59 @@ int AH_OutboxCBox_OpenDialogWithJob(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
   if (AH_User_GetCryptMode(user)==AH_CryptMode_Pintan) {
     uint32_t jobFlags;
 
-    DBG_INFO(AQHBCI_LOGDOMAIN, "CryptMode is PINTAN");
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "CryptMode is PINTAN");
     jobFlags=AH_Job_GetFlags(jDlg);
-    if ((jobFlags & AH_JOB_FLAGS_SIGN) && !(jobFlags & AH_JOB_FLAGS_NOITAN)) {
-      int selectedTanVersion;
-
-      selectedTanVersion=AH_User_GetSelectedTanMethod(user)/1000;
-
-      if (selectedTanVersion>=6) {
-        AH_JOB *jTan;
-
-        DBG_INFO(AQHBCI_LOGDOMAIN, "User-selected TAN job version is 6 or newer (%d)", selectedTanVersion);
-
-        /* check for PSD2: HKTAN version >= 6 available? if so -> use that */
-        jTan=AH_Job_Tan_new(provider, user, 4, selectedTanVersion);
-        if (jTan) {
-          AH_Job_free(jTan);
-          DBG_INFO(AQHBCI_LOGDOMAIN, "TAN job version is available");
-          DBG_NOTICE(AQHBCI_LOGDOMAIN, "Using PSD2 code to init dialog");
-          rv=AH_OutboxCBox_OpenDialogPsd2WithJob_Proc2(cbox, dlg, jDlg);
-          if (rv!=0) {
-            DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-            return rv;
-          }
+    if (jobFlags & AH_JOB_FLAGS_SIGN) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Signature needed");
+      if (jobFlags & AH_JOB_FLAGS_NOITAN) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"%s\" has noITAN flag", AH_Job_GetName(jDlg));
+        rv=AH_OutboxCBox_OpenDialogSingleStepWithJob(cbox, dlg, jDlg);
+        if (rv!=0) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
           return rv;
         }
-        else {
-          DBG_NOTICE(AQHBCI_LOGDOMAIN, "Not using PSD2 code: HKTAN version %d not supported by the bank", selectedTanVersion);
-        }
+        return rv;
       }
       else {
-        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Not using PSD2 code: User selected HKTAN version lesser than 6.");
+        int selectedTanVersion;
+
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"%s\" doesn't have noITAN flag", AH_Job_GetName(jDlg));
+        selectedTanVersion=AH_User_GetSelectedTanMethod(user)/1000;
+
+        if (selectedTanVersion>=6) {
+          AH_JOB *jTan;
+
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "User-selected TAN job version is 6 or newer (%d)", selectedTanVersion);
+
+          /* check for PSD2: HKTAN version >= 6 available? if so -> use that */
+          jTan=AH_Job_Tan_new(provider, user, 4, selectedTanVersion);
+          if (jTan) {
+            AH_Job_free(jTan);
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "TAN job version is available");
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "Using PSD2 code to init dialog");
+            rv=AH_OutboxCBox_OpenDialogPsd2WithJob_Proc2(cbox, dlg, jDlg);
+            if (rv!=0) {
+              DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+              return rv;
+            }
+            return rv;
+          }
+          else {
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "Not using PSD2 code: HKTAN version %d not supported by the bank", selectedTanVersion);
+          }
+        }
+        else {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Not using PSD2 code: User selected HKTAN version lesser than 6.");
+        }
       }
-    }
+    } /* if sign */
     else {
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Not using PSD2 code: Jobs doesn't need a signature (or has noITAN flag).");
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Not using PSD2 code: Jobs doesn't need a signature (or has noITAN flag).");
     }
   }
 
   /* fall back */
-  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Using standard HBCI code to init dialog");
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "Using standard HBCI code to init dialog");
   rv=AH_OutboxCBox_OpenDialogWithJob_Hbci(cbox, dlg, jDlg);
   if (rv!=0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
