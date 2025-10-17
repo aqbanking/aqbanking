@@ -99,14 +99,13 @@ int AH_OutboxCBox_OpenDialogWithJob(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
   if (AH_User_GetCryptMode(user)==AH_CryptMode_Pintan) {
     uint32_t jobFlags;
 
+    DBG_INFO(AQHBCI_LOGDOMAIN, "CryptMode is PINTAN");
     jobFlags=AH_Job_GetFlags(jDlg);
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job has NOITAN flag, not using TAN-based dialog");
     if ((jobFlags & AH_JOB_FLAGS_SIGN) && !(jobFlags & AH_JOB_FLAGS_NOITAN)) {
       int selectedTanVersion;
 
       selectedTanVersion=AH_User_GetSelectedTanMethod(user)/1000;
 
-      DBG_INFO(AQHBCI_LOGDOMAIN, "CryptMode is PINTAN");
       if (selectedTanVersion>=6) {
         AH_JOB *jTan;
 
@@ -134,7 +133,7 @@ int AH_OutboxCBox_OpenDialogWithJob(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
       }
     }
     else {
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Not using PSD2 code: Jobs doesn't need a signature.");
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Not using PSD2 code: Jobs doesn't need a signature (or has noITAN flag).");
     }
   }
 
