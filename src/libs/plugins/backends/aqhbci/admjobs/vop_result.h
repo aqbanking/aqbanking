@@ -31,6 +31,11 @@ enum {
 };
 
 
+int AH_VopResultCode_fromString(const char *sResult);
+const char *AH_VopResultCode_toString(int i);
+
+
+
 AH_VOP_RESULT *AH_VopResult_new();
 void AH_VopResult_free(AH_VOP_RESULT *vr);
 

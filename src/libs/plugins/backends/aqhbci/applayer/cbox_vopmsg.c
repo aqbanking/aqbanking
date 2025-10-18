@@ -14,13 +14,19 @@
 
 #include "aqhbci/applayer/cbox_vopmsg.h"
 
+#include "aqbanking/types/transaction.h"
 #include "aqbanking/i18n_l.h"
 
 #include <gwenhywfar/gui.h>
 
 
 
-int AH_OutboxCBox_LetUserConfirmVopResult(AH_OUTBOX_CBOX *cbox, AH_JOB *workJob, const char *sMsg)
+static AB_TRANSACTION_VOPRESULT _vopResultCodeToTransactionVopResult(int i);
+
+
+
+
+int AH_OutboxCBox_LetUserConfirmVopResult(AH_OUTBOX_CBOX *cbox, AH_JOB *workJob, AH_JOB *vppJob, const char *sMsg)
 {
   AB_PROVIDER *provider;
   AB_BANKING *ab;
@@ -74,6 +80,76 @@ int AH_OutboxCBox_LetUserConfirmVopResult(AH_OUTBOX_CBOX *cbox, AH_JOB *workJob,
 
   return 0;
 }
+
+
+
+void AH_OutboxCBox_ApplyVopResultsToTransfers(AH_JOB *workJob, const AH_VOP_RESULT_LIST *vrList)
+{
+  if (vrList) {
+    AB_TRANSACTION_LIST *transferList;
+  
+    transferList=AH_Job_GetTransferList(workJob);
+    if (transferList) {
+      AB_TRANSACTION *t;
+  
+      t=AB_Transaction_List_First(transferList);
+      while(t) {
+        const char *sRemoteIban;
+        const char *sRemoteName;
+  
+        sRemoteName=AB_Transaction_GetRemoteName(t);
+        sRemoteIban=AB_Transaction_GetRemoteIban(t);
+        if (sRemoteIban && *sRemoteIban) {
+          const AH_VOP_RESULT *vr;
+  
+          vr=AH_VopResult_List_GetByIbanAndName(vrList, sRemoteIban, sRemoteName);
+          if (vr) {
+            const char *sAltName;
+            int resultCode;
+  
+            sAltName=AH_VopResult_GetAltRemoteName(vr);
+            resultCode=AH_VopResult_GetResult(vr);
+            if (sAltName) {
+              DBG_ERROR(AQHBCI_LOGDOMAIN,
+                        "Result for transfer: %s: \"%s\" -> \"%s\" (%s)",
+                        sRemoteIban, sRemoteName?sRemoteName:"<no name>", sAltName?sAltName:"<no name>",
+                        AH_VopResultCode_toString(resultCode));
+            }
+            else {
+              DBG_ERROR(AQHBCI_LOGDOMAIN, "Result for transfer: %s (%s)", sRemoteIban, AH_VopResultCode_toString(resultCode));
+            }
+            AB_Transaction_SetVopResult(t, _vopResultCodeToTransactionVopResult(resultCode));
+            AB_Transaction_SetUltimateCreditor(t, sAltName);
+          }
+          else {
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "No result found for transfer, assuming okay");
+            AB_Transaction_SetVopResult(t, AB_Transaction_VopResultNone);
+          }
+        }
+  
+        t=AB_Transaction_List_Next(t);
+      }
+    }
+  }
+}
+
+
+
+AB_TRANSACTION_VOPRESULT _vopResultCodeToTransactionVopResult(int i)
+{
+  switch(i) {
+  case AH_VopResultCodeNone:         return AB_Transaction_VopResultNone;
+  case AH_VopResultCodeMatch:        return AB_Transaction_VopResultMatch;
+  case AH_VopResultCodeCloseMatch:   return AB_Transaction_VopResultCloseMatch;
+  case AH_VopResultCodeNoMatch:      return AB_Transaction_VopResultNoMatch;
+  case AH_VopResultCodeNotAvailable: return AB_Transaction_VopResultNotAvailable;
+  case AH_VopResultCodePending:      return AB_Transaction_VopResultPending;
+  default:                           return AB_Transaction_VopResultNone;
+  }
+}
+
+
+
 
 
 

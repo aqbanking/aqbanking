@@ -145,7 +145,6 @@ const AH_VOP_RESULT *AH_VopResult_List_GetByIbanAndName(const AH_VOP_RESULT_LIST
 
     vr=AH_VopResult_List_First(vrList);
     while(vr) {
-
       if ((sIban && vr->remoteIban && strcasecmp(vr->remoteIban, sIban)==0) &&
           (sRemoteName==NULL || (vr->remoteName && strcasecmp(vr->remoteName, sRemoteName)==0)))
         return vr;
@@ -155,6 +154,41 @@ const AH_VOP_RESULT *AH_VopResult_List_GetByIbanAndName(const AH_VOP_RESULT_LIST
 
   return NULL;
 }
+
+
+
+int AH_VopResultCode_fromString(const char *sResult)
+{
+  if (strcasecmp(sResult, "RCVC")==0)
+    return AH_VopResultCodeMatch;
+  else if (strcasecmp(sResult, "RVMC")==0)
+    return AH_VopResultCodeCloseMatch;
+  else if (strcasecmp(sResult, "RVNM")==0)
+    return AH_VopResultCodeNoMatch;
+  else if (strcasecmp(sResult, "RVNA")==0)
+    return AH_VopResultCodeNotAvailable;
+  else if (strcasecmp(sResult, "PDNG")==0)
+    return AH_VopResultCodePending;
+  else
+    return AH_VopResultCodeNone;
+
+}
+
+
+
+const char *AH_VopResultCode_toString(int i)
+{
+  switch(i) {
+  case AH_VopResultCodeNone:         return "none";
+  case AH_VopResultCodeMatch:        return "RCVC";
+  case AH_VopResultCodeCloseMatch:   return "RVMC";
+  case AH_VopResultCodeNoMatch:      return "RVNM";
+  case AH_VopResultCodeNotAvailable: return "RVNA";
+  case AH_VopResultCodePending:      return "PDNG";
+  default:                           return "none";
+  }
+}
+
 
 
 

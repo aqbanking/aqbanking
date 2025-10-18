@@ -89,6 +89,12 @@ int AH_OutboxCBox_SendAndReceiveJobWithVpp(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg,
     }
   }
 
+  if (vppJob) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Applying VOP results to transfers");
+    AH_OutboxCBox_ApplyVopResultsToTransfers(workJob, AH_Job_VPP_GetResultList(vppJob));
+  }
+
+
   AH_Job_free(vppJob);
   return 0;
 }
@@ -148,7 +154,7 @@ int _handleStage1(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *vppJob, AH_JOB *
     }
     else if (AH_Job_HasResultWithCode(vppJob, 3090)) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Let user accept or reject VOP result");
-      rv=AH_OutboxCBox_LetUserConfirmVopResult(cbox, workJob, s);
+      rv=AH_OutboxCBox_LetUserConfirmVopResult(cbox, workJob, vppJob, s);
       if (rv<0) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Aborted by user (%d)", rv);
         GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Aborted by user."));
