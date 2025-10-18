@@ -14,10 +14,11 @@
 
 #include "aqhbci/aqhbci_l.h"
 #include "aqhbci/joblayer/job_l.h"
+#include "aqhbci/admjobs/vop_result.h"
 
 
 
-AH_JOB *AH_Job_VPP_new(AB_PROVIDER *pro, AB_USER *u, int jobVersion);
+AH_JOB *AH_Job_VPP_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account, int jobVersion);
 
 const char *AH_Job_VPP_GetVopId(const AH_JOB *j);
 const char *AH_Job_VPP_GetVopMsg(const AH_JOB *j);
@@ -26,6 +27,9 @@ int AH_Job_VPP_IsNeededForCode(const AH_JOB *j, const char *code);
 
 const uint8_t *AH_Job_VPP_GetPtrVopId(const AH_JOB *j);
 unsigned int AH_Job_VPP_GetLenVopId(const AH_JOB *j);
+
+
+const AH_VOP_RESULT_LIST *AH_Job_VPP_GetResultList(const AH_JOB *j);
 
 
 #endif

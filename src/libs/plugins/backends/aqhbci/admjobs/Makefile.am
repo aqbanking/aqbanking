@@ -24,7 +24,8 @@ noinst_HEADERS=\
   jobacknowledge_l.h \
   jobgettargetacc_l.h jobgettargetacc_p.h \
   jobvpa.h \
-  jobvpp.h jobvpp_p.h
+  jobvpp.h jobvpp_p.h \
+  vop_result.h vop_result_p.h
 
 
 libhbciadmjobs_la_SOURCES=\
@@ -39,7 +40,8 @@ libhbciadmjobs_la_SOURCES=\
   jobacknowledge.c \
   jobgettargetacc.c \
   jobvpa.c \
-  jobvpp.c
+  jobvpp.c \
+  vop_result.c
 
 
 

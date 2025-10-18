@@ -21,6 +21,7 @@
 #include "aqhbci/admjobs/jobtan_l.h"
 #include "aqhbci/admjobs/jobvpp.h"
 #include "aqhbci/admjobs/jobvpa.h"
+#include "aqhbci/ajobs/accountjob_l.h"
 
 #include "aqbanking/i18n_l.h"
 
@@ -927,8 +928,10 @@ AH_JOB *_createTanJobDecoupledStageS(AB_PROVIDER *provider, AH_DIALOG *dlg, cons
 AH_JOB *_createVppJob(AB_PROVIDER *provider, AB_USER *user, const AH_JOB *workJob)
 {
   AH_JOB *vppJob;
+  AB_ACCOUNT *account;
 
-  vppJob=AH_Job_VPP_new(provider, user, 0);
+  account=AH_AccountJob_IsAccountJob(workJob)?AH_AccountJob_GetAccount(workJob):NULL;
+  vppJob=AH_Job_VPP_new(provider, user, account, 0);
   if (vppJob) {
     const char *jobCode;
 

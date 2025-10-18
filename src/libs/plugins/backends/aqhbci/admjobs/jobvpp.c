@@ -7,7 +7,6 @@
  *          Please see toplevel file COPYING for license details           *
  ***************************************************************************/
 
-
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
@@ -27,8 +26,15 @@
 static void GWENHYWFAR_CB _freeData(void *bp, void *p);
 static int _cbProcess(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 static int _cbPrepare(AH_JOB *j);
-static void _sampleResultsFromVopResultGroup(AH_JOB *j, GWEN_DB_NODE *dbVppResponse);
-static void _applySingleVopResultToTransfer(AH_JOB *j, const char *sIban, const char *sResultString);
+static void _readVopResultGroup(AH_JOB *j, AH_JOB_VPP *aj, AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *dbVppResponse);
+static AB_TRANSACTION_VOPRESULT _codeToVopResult(const char *s);
+static void _readVopId(AH_JOB_VPP *aj, GWEN_DB_NODE *dbArgs, GWEN_DB_NODE *dbVppResponse);
+static void _readPollingId(AH_JOB_VPP *aj, GWEN_DB_NODE *dbArgs, GWEN_DB_NODE *dbVppResponse);
+static void _readPmtStatusReport(AH_JOB *j, AH_JOB_VPP *aj, AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *dbVppResponse);
+static void _importCorrections(AH_JOB *j, AH_JOB_VPP *aj, AB_IMEXPORTER_CONTEXT *ctx, AB_TRANSACTION_LIST *transactionList);
+static AB_IMEXPORTER_ACCOUNTINFO *_getOrAddAccountInfo(AH_JOB_VPP *aj, AB_IMEXPORTER_CONTEXT *ctx, const AB_TRANSACTION *t);
+static AB_TRANSACTION_LIST *_pmtStatusReportToTransactionList(AH_JOB *j,  const uint8_t *dataPtr, uint32_t dataLen);
+static AB_IMEXPORTER_CONTEXT *_dataToContext(AH_JOB *j,  const uint8_t *dataPtr, uint32_t dataLen);
 
 
 
@@ -41,7 +47,7 @@ GWEN_INHERIT(AH_JOB, AH_JOB_VPP);
 
 
 
-AH_JOB *AH_Job_VPP_new(AB_PROVIDER *pro, AB_USER *u, int jobVersion)
+AH_JOB *AH_Job_VPP_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account, int jobVersion)
 {
   AH_JOB *j;
   AH_JOB_VPP *aj;
@@ -58,6 +64,10 @@ AH_JOB *AH_Job_VPP_new(AB_PROVIDER *pro, AB_USER *u, int jobVersion)
 
   GWEN_NEW_OBJECT(AH_JOB_VPP, aj);
   GWEN_INHERIT_SETDATA(AH_JOB, AH_JOB_VPP, j, aj, _freeData);
+
+  aj->account=account;
+  aj->resultList=AH_VopResult_List_new();
+
   /* overwrite some virtual functions */
   AH_Job_SetProcessFn(j, _cbProcess);
   AH_Job_SetPrepareFn(j, _cbPrepare);
@@ -84,6 +94,7 @@ void GWENHYWFAR_CB _freeData(void *bp, void *p)
   AH_JOB_VPP *aj;
 
   aj=(AH_JOB_VPP *)p;
+  AH_VopResult_List_free(aj->resultList);
   free(aj->ptrVopId);
   free(aj->ptrPollingId);
   free(aj->paymentStatusFormat);
@@ -149,41 +160,14 @@ int _cbProcess(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     dbVppResponse=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/vppResponse");
     if (dbVppResponse) {
       const char *s;
-      const uint8_t *ptr;
-      unsigned int len=0;
 
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Got a VPP response");
       //      if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
       fprintf(stderr, "Response: \n"); // DEBUG
       GWEN_DB_Dump(dbVppResponse, 2);
 
-      /* get VOP id */
-      ptr=GWEN_DB_GetBinValue(dbVppResponse, "vopId", 0, NULL, 0, &len);
-      if (ptr && len) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Received VOP id");
-        GWEN_DB_SetBinValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "vopId", ptr, len);
-        free(aj->ptrVopId);
-        aj->ptrVopId=(uint8_t*) malloc(len);
-        memmove(aj->ptrVopId, ptr, len);
-	aj->lenVopId=len;
-      }
-      else {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "No VOP id received");
-      }
-
-      /* get polling id */
-      ptr=GWEN_DB_GetBinValue(dbVppResponse, "pollingId", 0, NULL, 0, &len);
-      if (ptr && len) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Received polling id");
-        GWEN_DB_SetBinValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "pollingId", ptr, len);
-        free(aj->ptrPollingId);
-        aj->ptrPollingId=(uint8_t*) malloc(len);
-	memmove(aj->ptrPollingId, ptr, len);
-	aj->lenPollingId=len;
-      }
-      else {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "No polling id received");
-      }
+      _readVopId(aj, dbArgs, dbVppResponse);
+      _readPollingId(aj, dbArgs, dbVppResponse);
 
       s=GWEN_DB_GetCharValue(dbVppResponse, "paymentStatusFormat", 0, NULL);
       free(aj->paymentStatusFormat);
@@ -193,7 +177,8 @@ int _cbProcess(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
       free(aj->vopMsg);
       aj->vopMsg=(s && *s)?strdup(s):NULL;
 
-      _sampleResultsFromVopResultGroup(j, dbVppResponse);
+      _readVopResultGroup(j, aj, ctx, dbVppResponse);
+      _readPmtStatusReport(j, aj, ctx, dbVppResponse);
 
       break; /* break loop, we found the vppResponse */
     } /* if "VppResponse" */
@@ -244,6 +229,19 @@ const char *AH_Job_VPP_GetVopMsg(const AH_JOB *j)
 
 
 
+const AH_VOP_RESULT_LIST *AH_Job_VPP_GetResultList(const AH_JOB *j)
+{
+  AH_JOB_VPP *aj;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_VPP, j);
+  assert(aj);
+
+  return aj->resultList;
+}
+
+
+
 int AH_Job_VPP_IsNeededForCode(const AH_JOB *j, const char *code)
 {
   GWEN_DB_NODE *dbParams;
@@ -273,64 +271,235 @@ int AH_Job_VPP_IsNeededForCode(const AH_JOB *j, const char *code)
 
 
 
-void _sampleResultsFromVopResultGroup(AH_JOB *j, GWEN_DB_NODE *dbVppResponse)
+void _readVopResultGroup(AH_JOB *j, AH_JOB_VPP *aj, AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *dbVppResponse)
 {
   GWEN_DB_NODE *dbVppResult;
 
   dbVppResult=GWEN_DB_FindFirstGroup(dbVppResponse, "vopResult");
   if (dbVppResult) {
-    GWEN_BUFFER *dbuf;
+    AB_IMEXPORTER_ACCOUNTINFO *ai=NULL;
 
-    dbuf=GWEN_Buffer_new(0, 256, 0, 1);
     while (dbVppResult) {
       const char *sIban;
       const char *sResult;
       const char *sAltName;
+      AB_TRANSACTION_VOPRESULT vopResult;
 
       sIban=GWEN_DB_GetCharValue(dbVppResult, "iban", 0, NULL);
       sResult=GWEN_DB_GetCharValue(dbVppResult, "result", 0, NULL);
+      vopResult=sResult?_codeToVopResult(sResult):AB_Transaction_VopResultNone;
       sAltName=GWEN_DB_GetCharValue(dbVppResult, "alternativeRecipientName", 0, NULL);
-      if (sIban && sResult) {
-        if (strcasecmp(sResult, "RCVC")==0)
-          GWEN_Buffer_AppendByte(dbuf, '+');
-        else if (strcasecmp(sResult, "RVMC")==0)
-          GWEN_Buffer_AppendByte(dbuf, '*');
-        else if (strcasecmp(sResult, "RVNM")==0)
-          GWEN_Buffer_AppendByte(dbuf, '-');
-        else if (strcasecmp(sResult, "RVNA")==0)
-          GWEN_Buffer_AppendByte(dbuf, '!');
-        else if (strcasecmp(sResult, "PDNG")==0)
-          GWEN_Buffer_AppendByte(dbuf, '?');
+      if (sIban && sResult && sAltName && vopResult!=AB_Transaction_VopResultPending) {
+	AB_TRANSACTION *t;
+	AB_TRANSACTION_VOPRESULT vopResult;
 
-        GWEN_Buffer_AppendString(dbuf, sIban);
-        if (sAltName && *sAltName)
-          GWEN_Buffer_AppendArgs(dbuf, ":%s", sAltName);
-
-        _applySingleVopResultToTransfer(j, sIban, GWEN_Buffer_GetStart(dbuf));
-        GWEN_Buffer_Reset(dbuf);
+	vopResult=_codeToVopResult(sResult);
+	t=AB_Transaction_new();
+	AB_Transaction_SetVopResult(t, vopResult);
+	AB_Transaction_SetRemoteIban(t, sIban);
+	AB_Transaction_SetUltimateCreditor(t, sAltName);
+	AB_Transaction_SetType(t, AB_Transaction_TypeCorrection);
+	AB_Transaction_SetSubType(t, AB_Transaction_SubTypeNone);
+	if (ai==NULL)
+	  ai=_getOrAddAccountInfo(aj, ctx, t);
+	AB_ImExporterAccountInfo_AddTransaction(ai, t);
       }
 
       dbVppResult=GWEN_DB_FindNextGroup(dbVppResult, "vopResult");
     }
-    GWEN_Buffer_free(dbuf);
   }
 }
 
 
 
-void _applySingleVopResultToTransfer(AH_JOB *j, const char *sIban, const char *sResultString)
+void _readVopId(AH_JOB_VPP *aj, GWEN_DB_NODE *dbArgs, GWEN_DB_NODE *dbVppResponse)
 {
-  AB_TRANSACTION_LIST *transferList;
-
-  transferList=AH_Job_GetTransferList(j);
-  if (transferList) {
-    AB_TRANSACTION *t;
-
-    t=AB_Transaction_List_First(transferList);
-    if (t)
-      AB_Transaction_SetVopResult(t, sResultString);
+  const uint8_t *ptr;
+  unsigned int len=0;
+  
+  /* get VOP id */
+  ptr=GWEN_DB_GetBinValue(dbVppResponse, "vopId", 0, NULL, 0, &len);
+  if (ptr && len) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Received VOP id");
+    GWEN_DB_SetBinValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "vopId", ptr, len);
+    free(aj->ptrVopId);
+    aj->ptrVopId=(uint8_t*) malloc(len);
+    memmove(aj->ptrVopId, ptr, len);
+    aj->lenVopId=len;
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No VOP id received");
   }
 }
+
+
+
+void _readPollingId(AH_JOB_VPP *aj, GWEN_DB_NODE *dbArgs, GWEN_DB_NODE *dbVppResponse)
+{
+  const uint8_t *ptr;
+  unsigned int len=0;
+  
+  /* get polling id */
+  ptr=GWEN_DB_GetBinValue(dbVppResponse, "pollingId", 0, NULL, 0, &len);
+  if (ptr && len) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Received polling id");
+    GWEN_DB_SetBinValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "pollingId", ptr, len);
+    free(aj->ptrPollingId);
+    aj->ptrPollingId=(uint8_t*) malloc(len);
+    memmove(aj->ptrPollingId, ptr, len);
+    aj->lenPollingId=len;
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No polling id received");
+  }
+}
+
+
+
+void _readPmtStatusReport(AH_JOB *j, AH_JOB_VPP *aj, AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *dbVppResponse)
+{
+  const uint8_t *ptr;
+  unsigned int len=0;
+
+  ptr=GWEN_DB_GetBinValue(dbVppResponse, "paymentStatusReport", 0, NULL, 0, &len);
+  if (ptr && len) {
+    AB_TRANSACTION_LIST *transactionList;
+
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Received statement status report");
+
+    transactionList=_pmtStatusReportToTransactionList(j,  ptr, len);
+    if (transactionList) {
+      _importCorrections(j, aj, ctx, transactionList);
+      AB_Transaction_List_free(transactionList);
+    }
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No polling id received");
+  }
+}
+
+
+
+void _importCorrections(AH_JOB *j, AH_JOB_VPP *aj, AB_IMEXPORTER_CONTEXT *ctx, AB_TRANSACTION_LIST *transactionList)
+{
+  AB_TRANSACTION *t;
+
+  t=AB_Transaction_List_First(transactionList);
+  if (t) {
+    AB_IMEXPORTER_ACCOUNTINFO *ai;
+
+    ai=_getOrAddAccountInfo(aj, ctx, t);
+    while(t) {
+      AB_TRANSACTION *tNext;
+
+      tNext=AB_Transaction_List_Next(t);
+      AB_Transaction_List_Del(t);
+      AB_Transaction_SetType(t, AB_Transaction_TypeCorrection);
+      AB_Transaction_SetSubType(t, AB_Transaction_SubTypeNone);
+      AB_ImExporterAccountInfo_AddTransaction(ai, t);
+      t=tNext;
+    }
+  }
+}
+
+
+
+AB_IMEXPORTER_ACCOUNTINFO *_getOrAddAccountInfo(AH_JOB_VPP *aj, AB_IMEXPORTER_CONTEXT *ctx, const AB_TRANSACTION *t)
+{
+  AB_IMEXPORTER_ACCOUNTINFO *ai;
+
+  if (aj->account)
+    ai=AB_Provider_GetOrAddAccountInfoForAccount(ctx, aj->account);
+  else {
+    ai=AB_ImExporterAccountInfo_new();
+    if (t)
+      AB_ImExporterAccountInfo_FillFromTransaction(ai, t);
+    AB_ImExporterContext_AddAccountInfo(ctx, ai);
+  }
+  return ai;
+}
+
+
+
+AB_TRANSACTION_LIST *_pmtStatusReportToTransactionList(AH_JOB *j, const uint8_t *dataPtr, uint32_t dataLen)
+{
+  AB_IMEXPORTER_CONTEXT *ioc;
+
+  ioc=_dataToContext(j, dataPtr, dataLen);
+  if (ioc) {
+    AB_TRANSACTION_LIST *transactionList;
+    AB_IMEXPORTER_ACCOUNTINFO *ai;
+
+    transactionList=AB_Transaction_List_new();
+    ai=AB_ImExporterContext_GetFirstAccountInfo(ioc);
+    while(ai) {
+      AB_TRANSACTION *t;
+
+      t=AB_ImExporterAccountInfo_GetFirstTransaction(ai, 0, 0);
+      while(t) {
+        AB_TRANSACTION *tNext;
+
+        tNext=AB_Transaction_List_Next(t);
+        AB_Transaction_List_Del(t);
+        AB_Transaction_List_Add(t, transactionList);
+        t=tNext;
+      }
+
+      ai=AB_ImExporterAccountInfo_List_Next(ai);
+    }
+
+    AB_ImExporterContext_free(ioc);
+    if (AB_Transaction_List_GetCount(transactionList)<1) {
+      AB_Transaction_List_free(transactionList);
+      return NULL;
+    }
+    return transactionList;
+  }
+
+  return NULL;
+}
+
+
+
+AB_IMEXPORTER_CONTEXT *_dataToContext(AH_JOB *j,  const uint8_t *dataPtr, uint32_t dataLen)
+{
+  AB_BANKING *ab;
+  GWEN_DB_NODE *dbProfile;
+  AB_IMEXPORTER_CONTEXT *ioc;
+  int rv;
+
+  ioc=AB_ImExporterContext_new();
+  ab=AH_Job_GetBankingApi(j);
+  dbProfile=AB_Banking_GetImExporterProfile(ab, "xml", "default");
+  rv=AB_Banking_ImportFromBuffer(ab, "xml", ioc, dataPtr, dataLen, dbProfile);
+  if (rv<0) {
+    AB_ImExporterContext_free(ioc);
+    GWEN_DB_Group_free(dbProfile);
+    return NULL;
+  }
+
+  GWEN_DB_Group_free(dbProfile);
+  return ioc;
+}
+
+
+
+AB_TRANSACTION_VOPRESULT _codeToVopResult(const char *sResult)
+{
+  if (strcasecmp(sResult, "RCVC")==0)
+    return AB_Transaction_VopResultMatch;
+  else if (strcasecmp(sResult, "RVMC")==0)
+    return AB_Transaction_VopResultCloseMatch;
+  else if (strcasecmp(sResult, "RVNM")==0)
+    return AB_Transaction_VopResultNoMatch;
+  else if (strcasecmp(sResult, "RVNA")==0)
+    return AB_Transaction_VopResultNotAvailable;
+  else if (strcasecmp(sResult, "PDNG")==0)
+    return AB_Transaction_VopResultPending;
+  else
+    return AB_Transaction_VopResultNone;
+}
+
 
 
 

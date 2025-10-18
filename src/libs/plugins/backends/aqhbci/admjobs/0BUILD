@@ -64,6 +64,7 @@
       jobgettargetacc_l.h jobgettargetacc_p.h
       jobvpa.h
       jobvpp.h jobvpp_p.h
+      vop_result.h vop_result_p.h
     </headers>
   
   
@@ -82,6 +83,7 @@
       jobgettargetacc.c
       jobvpa.c
       jobvpp.c
+      vop_result.c
     </sources>
 
     <data install="$(aqbanking_plugin_installdir)/providers" >

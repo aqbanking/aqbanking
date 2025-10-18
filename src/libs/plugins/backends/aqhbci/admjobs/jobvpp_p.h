@@ -18,6 +18,7 @@
 
 typedef struct AH_JOB_VPP AH_JOB_VPP;
 struct AH_JOB_VPP {
+  AB_ACCOUNT *account;
   char *paymentStatusFormat;
   char *vopMsg;
 
@@ -26,6 +27,8 @@ struct AH_JOB_VPP {
 
   uint8_t *ptrPollingId;
   unsigned int lenPollingId;
+
+  AH_VOP_RESULT_LIST *resultList;
 };
 
 
