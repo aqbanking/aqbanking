@@ -77,7 +77,7 @@
           dlg="1" 
           needsbpd="0" 
           nosysid="1"
-          noitan="0"
+          noitan="1"
           response="syncresponse"
    >
     <SEG type="Ident"   name="ident" />
