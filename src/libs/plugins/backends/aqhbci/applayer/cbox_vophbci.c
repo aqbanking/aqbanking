@@ -151,6 +151,7 @@ int _handleStage1(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *vppJob, AH_JOB *
     else if (AH_Job_HasResultWithCode(vppJob, 9210)) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Result of VOP: Transaction rejected (e.g. non-existent IBAN).");
       GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("Result of VOP: Transaction rejected (e.g. non-existent IBAN)."));
+      return GWEN_ERROR_GENERIC;
     }
     else if (AH_Job_HasResultWithCode(vppJob, 3090)) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Let user accept or reject VOP result");
