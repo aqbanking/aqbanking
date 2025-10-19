@@ -202,7 +202,7 @@ int _handleStage1(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_JOB 
       return GWEN_ERROR_GENERIC;
     }
     else if (AH_Job_HasResultWithCode(vppJob, 3090)) {
-      /* if (s && *s) { */
+      if (s && *s) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Let user accept or reject VOP result");
         rv=AH_OutboxCBox_LetUserConfirmVopResult(cbox, workJob, vppJob, s);
         if (rv<0) {
@@ -210,7 +210,7 @@ int _handleStage1(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_JOB 
           GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Aborted by user."));
           return rv;
         }
-     /* } */
+      }
     }
   }
 
