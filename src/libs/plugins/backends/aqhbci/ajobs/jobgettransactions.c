@@ -87,12 +87,19 @@ AH_JOB *AH_Job_GetTransactions_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc
         useCreditCardJob = 1;
         break;
       }
+      if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKKKU")==0) {
+        useCreditCardJob = 2;
+        break;
+      }
       n=GWEN_DB_GetNextGroup(n);
     } /* while */
   } /* if updgroup for the given account found */
+  DBG_INFO(AQHBCI_LOGDOMAIN, ">>>transactions>>>>>>> useCreditCardJob = %d", useCreditCardJob);
 
-  if (useCreditCardJob)
+  if (useCreditCardJob == 1)
     j=AH_AccountJob_new("JobGetTransactionsCreditCard", pro, u, account);
+  else if (useCreditCardJob == 2)
+    j=AH_AccountJob_new("JobGetTransactionsCreditCard2", pro, u, account);
   else
     j=AH_AccountJob_new("JobGetTransactions", pro, u, account);
   if (!j)
@@ -332,6 +339,9 @@ int _jobApi_ProcessForCreditCard(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     }
 
     dbXA=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/transactionscreditcard");
+    if (!dbXA) {
+      dbXA=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/TransactionsCreditCard2");
+    }
     if (dbXA) {
       GWEN_DB_NODE *dbT;
 

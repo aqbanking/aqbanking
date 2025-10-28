@@ -1,6 +1,36 @@
 
 
 <SEGs>
+ <!-- 
+  --------------------------------------------------------------------
+   Geschaeftsvorfall: Saldenabfrage (Version 1)
+  --------------------------------------------------------------------- 
+ -->
+
+ <!-- Kundennachricht -->
+ <SEGdef id="GetBalanceCreditCard2" code="HKKKS" version="1" delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="kti" version="1" />
+   <ELEM name="accountNumber" type="AN" maxsize="30" />
+   <ELEM name="accountSubId" type="AN" maxsize="30" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+ <!-- Banknachricht -->
+ <SEGdef id="BalanceCreditCard2" code="HIKKS" version="1" delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <ELEM name="accountNumber" type="AN" maxsize="30" />
+   <ELEM name="accountSubId" type="AN" />
+   <GROUP type="saldo" name="booked" minnum="0" version="1" />
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
 
  <!-- 
   --------------------------------------------------------------------
@@ -293,6 +323,19 @@
 
 <JOBs>
 
+ <!--  Geschaeftsvorfall: Saldenabfrage (Version 1) -->
+ <JOBdef id="JobGetBalanceCreditCard2" 
+         code="HKKKS"
+         version="1" 
+         crypt="1" 
+         sign="1" 
+         needBPD="1" 
+         response="BalanceCreditCard2" 
+         attachable="1" 
+         single="1" >
+   <SEG type="GetBalanceCreditCard2" version="1" />
+ </JOBdef>
+
  <!--  Geschaeftsvorfall: Saldenabfrage (Version 3) -->
  <JOBdef 
  		id="JobGetBalance" 
@@ -386,17 +429,3 @@
  </JOBdef>
 
 </JOBs>
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -72,6 +72,50 @@
     <ELEM name="reference" type="an" maxsize="30" /> <!-- This 16-digit number is called Referenz in the web UI -->
   </GROUPdef>
 
+ <!-- 
+   ***********************************************************************
+                                FinTS3.0
+   ***********************************************************************
+ -->
+
+ <GROUPdef id="creditcardtransaction2" delimiter=":" terminator="" version="1">
+    <ELEM   name="accountNumber"  type="an"    maxsize="30" />
+    <ELEM   name="valutaDate"     type="date"  minsize="8" maxsize="8" minnum="0" />
+    <ELEM   name="date"           type="date"  minsize="8" maxsize="8" minnum="0" />
+    <ELEM   name="processedDate"  type="date"  minsize="8" maxsize="8" minnum="0" />
+    <ELEM   name="valueDate"      type="date"  minsize="8" maxsize="8" minnum="0" />
+    <GROUP  name="valueForeign"   type="btg"   trustlevel="4" version="1" />
+    <ELEM   name="valueForeignCD" type="an"    maxsize="1" />
+    <ELEM   name="exchangeRate"   type="an"    maxsize="30" />
+    <GROUP  name="value"          type="btg"   trustlevel="4" version="1" />
+    <ELEM   name="debitmark"      type="alpha" minsize="1"  maxsize="1" />
+    <ELEM   name="purpose"        type="an"    maxsize="50" />
+    <ELEM   name="purpose"        type="an"    maxsize="50" />
+    <ELEM   name="purpose"        type="an"    maxsize="50" />
+    <ELEM   name="purpose"        type="an"    maxsize="50" />
+    <ELEM   name="purpose"        type="an"    maxsize="50" />
+    <ELEM   name="purpose"        type="an"    maxsize="50" />
+    <ELEM   name="purpose"        type="an"    maxsize="50" />
+    <ELEM   name="purpose"        type="an"    maxsize="50" />
+    <ELEM   name="purpose"        type="an"    maxsize="50" />
+    <ELEM   name="reference"      type="an"    maxsize="140" />
+    <ELEM   name="terminalId"     type="an"    maxsize="35" />
+    <ELEM   name="bookedJN"       type="an"    maxsize="1" />
+    <ELEM   name="bookingRef"     type="an"    maxsize="50" />
+    <ELEM   name="keyFees"        type="an"    maxsize="4" />
+    <ELEM   name="bookingType"    type="an"    maxsize="30" />
+    <ELEM   name="feeAndRef"      type="an"    maxsize="40" />
+    <ELEM   name="aeeRef"         type="an"    maxsize="40" />
+    <ELEM   name="unknown7"       type="an"    maxsize="50" />
+  </GROUPdef>
+
+ <GROUPdef id="paraCreditTrans2" delimiter=":" terminator="" version="1">
+    <ELEM   name="storageTime"    type="num"  maxsize="4" />
+    <ELEM   name="nmbrEntriesJN"  type="an"   maxsize="1" />
+    <ELEM   name="periodsJN"      type="an"   maxsize="1" />
+    <ELEM   name="ktvNeededJN"    type="an"   maxsize="1" />
+ </GROUPdef>
+
 </GROUPs>
 
 
@@ -421,6 +465,51 @@
  </SEGdef>
 
 
+ <!-- Kundennachricht -->
+ <SEGdef id="GetTransactionsCreditCard2" code="HKKKU" params="HIKKUS" version="1" delimiter="+" terminator="'" >
+   <GROUP name="head"         type="SegHead"  />
+   <GROUP                     type="kti"  version="1" />
+   <ELEM  name="accountId"    type="an"   maxsize="30" />
+   <ELEM  name="accountSubId" type="AN"   maxsize="30" />
+   <ELEM  name="fromDate"     type="date" minsize="8" maxsize="8" minnum="0" />
+   <ELEM  name="toDate"       type="date" minsize="8" maxsize="8" minnum="0" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+  </SEGdef>
+
+ <!-- Banknachricht -->
+ <SEGdef id="TransactionsCreditCard2" code="HIKKU" version="1" delimiter="+" terminator="'" >
+   <GROUP name="head"         type="SegHead" />
+   <ELEM  name="accountId"    type="an"                     maxsize="30" />
+   <ELEM  name="accountSubId" type="an" />
+   <GROUP name="booked"       type="saldo"                  minnum="0" version="1" />
+   <ELEM  name="bookedDate"   type="date"                   minsize="8" maxsize="8" minnum="0" />
+   <ELEM  name="bookedNext"   type="date"                   minsize="8" maxsize="8" minnum="0" />
+   <GROUP name="entries"      type="creditcardtransaction2" minnum="0" maxnum="999" version="1" /> <!-- 999 is just some big number -->
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HIKKUS" version="1" isbpdjob="1"
+         delimiter="+" terminator="'" >
+   <GROUP name="head"        type="SegHead" />
+   <ELEM  name="nmbrEntries" type="num" maxsize="3" />
+   <ELEM  name="nmbrSigs"    type="num" maxsize="1" />
+   <ELEM  name="secClass"    type="num" maxsize="1" />
+   <GROUP name="paraCredit"  type="paraCreditTrans2" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
 </SEGs>
 
 
@@ -574,16 +663,24 @@
    </VALUES>
  </JOBdef>
 
+ <JOBdef 
+    id="JobGetTransactionsCreditCard2" 
+    code="HKKKU" params="HIKKUS"
+    version="1" 
+    crypt="1" 
+    sign="1" 
+    needBPD="1"
+    response="TransactionsCreditCard2"
+    attachable="1"
+    single="1"
+   >
+   <SEG type="GetTransactionsCreditCard2" version="1" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </JOBdef>
 
 
 </JOBs>
-
-
-
-
-
-
-
-
-
-

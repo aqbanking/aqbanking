@@ -73,6 +73,11 @@ AH_JOB *AH_Job_GetBalance_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
         break;
       }
 
+      if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKKKS")==0) {
+        useCreditCardJob = 2;
+        break;
+      }
+      
       if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKWPD")==0) {
         useInvestmentJob = 1;
         break;
@@ -81,8 +86,10 @@ AH_JOB *AH_Job_GetBalance_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
     } /* while */
   } /* if updgroup for the given account found */
 
-  if (useCreditCardJob)
+  if (useCreditCardJob == 1)
     j=AH_AccountJob_new("JobGetBalanceCreditCard", pro, u, account);
+  else if (useCreditCardJob == 2)
+    j=AH_AccountJob_new("JobGetBalanceCreditCard2", pro, u, account);
   else if (useInvestmentJob)
     j=AH_AccountJob_new("JobGetBalanceInvestment", pro, u, account);
   else
@@ -242,6 +249,8 @@ int _jobApi_ProcessBankAccount(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     dbBalance=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/balance");
     if (!dbBalance)
       dbBalance=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/balancecreditcard");
+    if (!dbBalance)
+      dbBalance=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/balancecreditcard2");
     if (dbBalance) {
       GWEN_DB_NODE *dbT;
       AB_ACCOUNT *a;
