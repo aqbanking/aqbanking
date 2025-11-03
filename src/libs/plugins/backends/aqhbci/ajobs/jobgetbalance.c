@@ -528,6 +528,13 @@ int _readSecurities(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx, const char *docType, 
         AB_Security_SetUnitPriceDate(asec, gt);
     }
 
+    p=GWEN_DB_GetCharValue(dbSecurity, "unitPriceDateTime", 0, NULL);
+    if (p) {
+      gt=GWEN_Time_fromString(p, "YYYYMMDDhhmmss");
+      if (gt)
+        AB_Security_SetUnitPriceDate(asec, gt);
+    }
+
     AB_ImExporterContext_AddSecurity(ctx, asec);
 
     GWEN_Time_free(gt);

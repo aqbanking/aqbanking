@@ -254,12 +254,15 @@ int AHB_SWIFT535_Parse_90B(const AHB_SWIFT_TAG *tg,
 
       dbuf=GWEN_Buffer_new(0, 32, 0, 1);
       GWEN_Buffer_AppendString(dbuf, p);
-      if (sCurrency) {
-        GWEN_Buffer_AppendByte(dbuf, ':');
-        GWEN_Buffer_AppendBytes(dbuf, sCurrency, 3); /* auto terminated with ZERO by GWEN_BUFFER */
-      }
-      AHB_SWIFT__SetCharValue535(data, flags, "unitPriceValue", GWEN_Buffer_GetStart(dbuf));
+      AHB_SWIFT__SetCharValue535(data, flags, "unitPriceValue/value", GWEN_Buffer_GetStart(dbuf));
       GWEN_Buffer_free(dbuf);
+
+      if (sCurrency) {
+	dbuf=GWEN_Buffer_new(0, 32, 0, 1);
+	GWEN_Buffer_AppendBytes(dbuf, sCurrency, 3); /* auto terminated with ZERO by GWEN_BUFFER */
+	AHB_SWIFT__SetCharValue535(data, flags, "unitPriceValue/currency", GWEN_Buffer_GetStart(dbuf));
+	GWEN_Buffer_free(dbuf);
+      }
     }
   }
   else {
@@ -302,6 +305,56 @@ int AHB_SWIFT535_Parse_98A(const AHB_SWIFT_TAG *tg,
 
     GWEN_DB_SetCharValue(data, GWEN_DB_FLAGS_DEFAULT, "unitPriceDate", GWEN_Date_GetString(dt));
     GWEN_Date_free(dt);
+  }
+
+  return 0;
+}
+
+
+// get date and time of security price
+int AHB_SWIFT535_Parse_98C(const AHB_SWIFT_TAG *tg,
+                           uint32_t flags,
+                           GWEN_DB_NODE *data,
+                           GWEN_DB_NODE *cfg)
+{
+  char *p;
+  int year, month, day;
+  int hour, minute, second;
+  GWEN_TIME *dt;
+  GWEN_BUFFER *bufdt;
+
+  p=(char *)AHB_SWIFT_Tag_GetData(tg);
+  assert(p);
+
+  while (*p && *p==32)
+    p++;
+  if (*p==0) {
+    DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 98C is empty");
+    return 0;
+  }
+
+  // get date and time
+  if (strncasecmp(p, ":PRIC//", 7)==0) {
+    p+=7;
+    if (sscanf(p, "%4d%2d%2d", &year, &month, &day)!=3) {
+      DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 98C: Cannot read date");
+      return 0;
+    }
+    p+=8;
+    if (sscanf(p, "%2d%2d%2d", &hour, &minute, &second)!=3) {
+      DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 98C: Cannot read time");
+      return 0;
+    }
+    dt=GWEN_Time_new(year, month-1, day, hour, minute, second, 0);
+    assert(dt);
+
+    bufdt=GWEN_Buffer_new(0, 32, 0, 1);
+    GWEN_Time_toString(dt, "YYYYMMDDhhmmss", bufdt);
+    
+    GWEN_DB_SetCharValue(data, GWEN_DB_FLAGS_DEFAULT, "unitPriceDateTime", GWEN_Buffer_GetStart(bufdt));
+    
+    GWEN_Buffer_free(bufdt);
+    GWEN_Time_free(dt);
   }
 
   return 0;
@@ -443,6 +496,14 @@ int AHB_SWIFT535_Import(AHB_SWIFT_TAG_LIST *tl,
 
       else if (strcasecmp(id, "98A")==0) { /* date of security price*/
         if (AHB_SWIFT535_Parse_98A(tg, flags, dbSecurity, cfg)) {
+          DBG_WARN(AQBANKING_LOGDOMAIN, "Error in tag %s", id);
+          GWEN_Gui_ProgressEnd(progressId);
+          return -1;
+        }
+      }
+
+      else if (strcasecmp(id, "98C")==0) { /* date and time of security price*/
+        if (AHB_SWIFT535_Parse_98C(tg, flags, dbSecurity, cfg)) {
           DBG_WARN(AQBANKING_LOGDOMAIN, "Error in tag %s", id);
           GWEN_Gui_ProgressEnd(progressId);
           return -1;
