@@ -55,6 +55,8 @@ void AH_VopResult_SetAltRemoteName(AH_VOP_RESULT *vr, const char *s);
 int AH_VopResult_GetResult(const AH_VOP_RESULT *vr);
 void AH_VopResult_SetResult(AH_VOP_RESULT *vr, int i);
 
+void AH_VopResult_Log(const AH_VOP_RESULT *vr, const char *logDomain, GWEN_LOGGER_LEVEL lv);
+
 
 const AH_VOP_RESULT *AH_VopResult_List_GetByIbanAndName(const AH_VOP_RESULT_LIST *vrList,
                                                         const char *sIban,

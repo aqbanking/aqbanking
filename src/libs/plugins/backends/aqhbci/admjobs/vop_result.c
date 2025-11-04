@@ -191,5 +191,27 @@ const char *AH_VopResultCode_toString(int i)
 
 
 
+void AH_VopResult_Log(const AH_VOP_RESULT *vr, const char *logDomain, GWEN_LOGGER_LEVEL lv)
+{
+  if (vr) {
+    GWEN_BUFFER *mbuf;
+    const char *sResultText;
+
+    sResultText=AH_VopResultCode_toString(vr->result);
+    mbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    GWEN_Buffer_AppendArgs(mbuf,
+                           "VOP Result: %s (BIC: %s, rIBAN: %s, rNAME: %s, aNAME: %s)",
+                           sResultText,
+                           (vr->localBic)?(vr->localBic):"<empty>",
+                           (vr->remoteIban)?(vr->remoteIban):"<empty>",
+                           (vr->remoteName)?(vr->remoteName):"<empty>",
+                           (vr->altRemoteName)?(vr->altRemoteName):"<empty>");
+    GWEN_Logger_Log(logDomain, lv, GWEN_Buffer_GetStart(mbuf));
+    GWEN_Buffer_free(mbuf);
+  }
+}
+
+
+
 
 

@@ -337,6 +337,7 @@ void _readVopResultGroup(AH_JOB *j, AH_JOB_VPP *aj, GWEN_DB_NODE *dbVppResponse)
       AH_VopResult_SetResult(vr, vopResultCode);
       AH_VopResult_List_Add(vr, aj->resultList);
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Added VOP result");
+      AH_VopResult_Log(vr, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error); /* use ERROR for now */
     }
 
     dbVppResult=GWEN_DB_FindNextGroup(dbVppResult, "vopResult");
@@ -393,6 +394,7 @@ void _addResultsFromTransactionList(AH_JOB *j, AH_JOB_VPP *aj, AB_TRANSACTION_LI
 	AH_VopResult_SetResult(vr, vopResultCode);
 	AH_VopResult_List_Add(vr, aj->resultList);
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Added VOP result");
+        AH_VopResult_Log(vr, AQHBCI_LOGDOMAIN, GWEN_LoggerLevel_Error); /* use ERROR for now */
       }
       else {
 	DBG_ERROR(AQHBCI_LOGDOMAIN, "Not adding incomplete VOP result (pending)");

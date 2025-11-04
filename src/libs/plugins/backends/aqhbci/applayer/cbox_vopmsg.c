@@ -21,6 +21,7 @@
 
 
 
+static void _applyVopResultToTransaction(const AH_VOP_RESULT *vr, const char *sRemoteIban, const char *sRemoteName, AB_TRANSACTION *t);
 static AB_TRANSACTION_VOPRESULT _vopResultCodeToTransactionVopResult(int i);
 
 
@@ -91,46 +92,59 @@ void AH_OutboxCBox_ApplyVopResultsToTransfers(AH_JOB *workJob, const AH_VOP_RESU
     transferList=AH_Job_GetTransferList(workJob);
     if (transferList) {
       AB_TRANSACTION *t;
-  
+
       t=AB_Transaction_List_First(transferList);
       while(t) {
-        const char *sRemoteIban;
-        const char *sRemoteName;
-  
-        sRemoteName=AB_Transaction_GetRemoteName(t);
-        sRemoteIban=AB_Transaction_GetRemoteIban(t);
-        if (sRemoteIban && *sRemoteIban) {
-          const AH_VOP_RESULT *vr;
-  
-          vr=AH_VopResult_List_GetByIbanAndName(vrList, sRemoteIban, sRemoteName);
-          if (vr) {
-            const char *sAltName;
-            int resultCode;
-  
-            sAltName=AH_VopResult_GetAltRemoteName(vr);
-            resultCode=AH_VopResult_GetResult(vr);
-            if (sAltName) {
-              DBG_ERROR(AQHBCI_LOGDOMAIN,
-                        "Result for transfer: %s: \"%s\" -> \"%s\" (%s)",
-                        sRemoteIban, sRemoteName?sRemoteName:"<no name>", sAltName?sAltName:"<no name>",
-                        AH_VopResultCode_toString(resultCode));
-            }
-            else {
-              DBG_ERROR(AQHBCI_LOGDOMAIN, "Result for transfer: %s (%s)", sRemoteIban, AH_VopResultCode_toString(resultCode));
-            }
-            AB_Transaction_SetVopResult(t, _vopResultCodeToTransactionVopResult(resultCode));
-            AB_Transaction_SetUltimateCreditor(t, sAltName);
-          }
-          else {
-            DBG_ERROR(AQHBCI_LOGDOMAIN, "No result found for transfer, assuming okay");
-            AB_Transaction_SetVopResult(t, AB_Transaction_VopResultNone);
-          }
-        }
-  
-        t=AB_Transaction_List_Next(t);
+	const char *sRemoteIban;
+	const char *sRemoteName;
+	const AH_VOP_RESULT *vr;
+
+	sRemoteName=AB_Transaction_GetRemoteName(t);
+	sRemoteIban=AB_Transaction_GetRemoteIban(t);
+	if (AB_Transaction_List_GetCount(transferList)==1) {
+	  /* single transfer in job, so the result MUST be for that */
+	  vr=AH_VopResult_List_First(vrList);
+	  _applyVopResultToTransaction(vr, sRemoteIban, sRemoteName, t);
+	}
+	else if (sRemoteIban && *sRemoteIban) {
+	  vr=AH_VopResult_List_GetByIbanAndName(vrList, sRemoteIban, sRemoteName);
+	  if (vr)
+	    _applyVopResultToTransaction(vr, sRemoteIban, sRemoteName, t);
+	  else {
+	    DBG_ERROR(AQHBCI_LOGDOMAIN, "No result found for transfer, assuming okay");
+	    AB_Transaction_SetVopResult(t, AB_Transaction_VopResultNone);
+	  }
+	}
+
+	t=AB_Transaction_List_Next(t);
       }
     }
   }
+}
+
+
+
+void _applyVopResultToTransaction(const AH_VOP_RESULT *vr, const char *sRemoteIban, const char *sRemoteName, AB_TRANSACTION *t)
+{
+  const char *sAltName;
+  int resultCode;
+  
+  sAltName=AH_VopResult_GetAltRemoteName(vr);
+  resultCode=AH_VopResult_GetResult(vr);
+  if (sAltName) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+	      "Result for transfer: %s: \"%s\" -> \"%s\" (%s)",
+	      sRemoteIban?sRemoteIban:"<no iban>", sRemoteName?sRemoteName:"<no name>", sAltName?sAltName:"<no name>",
+	      AH_VopResultCode_toString(resultCode));
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+	      "Result for transfer: %s (%s)",
+	      sRemoteIban?sRemoteIban:"<no iban>",
+	      AH_VopResultCode_toString(resultCode));
+  }
+  AB_Transaction_SetVopResult(t, _vopResultCodeToTransactionVopResult(resultCode));
+  AB_Transaction_SetUltimateCreditor(t, sAltName);
 }
 
 
