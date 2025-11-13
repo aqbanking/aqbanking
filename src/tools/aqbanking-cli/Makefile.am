@@ -29,6 +29,7 @@ aqbanking_cli_SOURCES= \
   export.c \
   listaccs.c \
   listbal.c \
+  listconfdir.c \
   listprofiles.c \
   listtrans.c \
   listdoc.c \

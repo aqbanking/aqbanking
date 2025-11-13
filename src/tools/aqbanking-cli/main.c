@@ -189,6 +189,9 @@ int main(int argc, char **argv)
     cmdAddHelpStr(ubuf, "listbal",
                   I18N("Export balances from a context file."));
 
+    cmdAddHelpStr(ubuf, "listconfdir",
+                  I18N("Print the configuration directory path"));
+
     cmdAddHelpStr(ubuf, "listtrans",
                   I18N("List transactions or transfers from a context file."));
 
@@ -330,6 +333,9 @@ int main(int argc, char **argv)
     }
     else if (strcasecmp(cmd, "listbal")==0) {
       rv=listBal(ab, db, argc, argv);
+    }
+    else if (strcasecmp(cmd, "listconfdir")==0) {
+      rv=listConfDir(ab, db, argc, argv);
     }
     else if (strcasecmp(cmd, "listtrans")==0) {
       rv=listTrans(ab, db, argc, argv);
