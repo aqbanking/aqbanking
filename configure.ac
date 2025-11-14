@@ -1252,6 +1252,7 @@ AC_CONFIG_FILES([
   src/libs/aqbanking/typemaker2/c/Makefile
   src/libs/aqbanking/backendsupport/Makefile
   src/libs/aqbankingpp/Makefile
+  src/libs/cli/Makefile
   src/libs/plugins/Makefile
   src/libs/plugins/bankinfo/Makefile
   src/libs/plugins/bankinfo/de/Makefile

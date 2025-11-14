@@ -1,5 +1,5 @@
-DIST_SUBDIRS=aqbanking aqbankingpp plugins
-SUBDIRS=aqbanking plugins
+DIST_SUBDIRS=cli aqbanking aqbankingpp plugins
+SUBDIRS=cli aqbanking plugins
 
 AM_CPPFLAGS = $(gwenhywfar_includes) -I$(aqbanking_symlinkdir)
 
@@ -10,7 +10,8 @@ libaqbanking_la_SOURCES= dummy.c
 libaqbanking_la_LDFLAGS = -no-undefined -version-info @AQBANKING_SO_CURRENT@:@AQBANKING_SO_REVISION@:@AQBANKING_SO_AGE@
 libaqbanking_la_LIBADD= $(gwenhywfar_libs) $(gmp_libs) $(i18n_libs) $(AQEBICS_LIBS) \
   aqbanking/libaqbanking_base.la \
-  plugins/libabplugins.la
+  plugins/libabplugins.la \
+  cli/libaqcli.la
 
 
 
