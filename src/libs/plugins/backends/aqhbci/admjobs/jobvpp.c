@@ -269,6 +269,20 @@ int AH_Job_VPP_IsNeededForCode(const AH_JOB *j, const char *code)
 
 
 
+int AH_Job_VPP_IsResponseStructured(const AH_JOB *j)
+{
+  GWEN_DB_NODE *dbParams;
+  const char *s;
+
+  dbParams=AH_Job_GetParams(j);
+  assert(dbParams);
+  s=GWEN_DB_GetCharValue(dbParams, "textIsStructured", 0, "N");
+  return (s && *s && toupper(*s)=='J')?1:0;
+}
+
+
+
+
 void _readVopId(AH_JOB_VPP *aj, GWEN_DB_NODE *dbArgs, GWEN_DB_NODE *dbVppResponse)
 {
   const uint8_t *ptr;

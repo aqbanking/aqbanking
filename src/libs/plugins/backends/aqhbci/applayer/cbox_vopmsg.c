@@ -111,7 +111,7 @@ void AH_OutboxCBox_ApplyVopResultsToTransfers(AH_JOB *workJob, const AH_VOP_RESU
 	  if (vr)
 	    _applyVopResultToTransaction(vr, sRemoteIban, sRemoteName, t);
 	  else {
-	    DBG_ERROR(AQHBCI_LOGDOMAIN, "No result found for transfer, assuming okay");
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "No result found for transfer involving %s, assuming okay", sRemoteIban);
 	    AB_Transaction_SetVopResult(t, AB_Transaction_VopResultNone);
 	  }
 	}

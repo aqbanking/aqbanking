@@ -24,6 +24,7 @@ const char *AH_Job_VPP_GetVopId(const AH_JOB *j);
 const char *AH_Job_VPP_GetVopMsg(const AH_JOB *j);
 
 int AH_Job_VPP_IsNeededForCode(const AH_JOB *j, const char *code);
+int AH_Job_VPP_IsResponseStructured(const AH_JOB *j);
 
 const uint8_t *AH_Job_VPP_GetPtrVopId(const AH_JOB *j);
 unsigned int AH_Job_VPP_GetLenVopId(const AH_JOB *j);
