@@ -57,6 +57,7 @@ AH_JOB *AH_Job_GetBalance_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 {
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
+  int useRegularAccountJob=0;
   int useCreditCardJob=0;
   int useInvestmentJob=0;
   GWEN_DB_NODE *updgroup;
@@ -68,6 +69,11 @@ AH_JOB *AH_Job_GetBalance_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 
     n=GWEN_DB_GetFirstGroup(updgroup);
     while (n) {
+      if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKSAL")==0) {
+        useRegularAccountJob = 1;
+        break;
+      }
+
       if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "DKKKS")==0) {
         useCreditCardJob = 1;
         break;
@@ -92,10 +98,12 @@ AH_JOB *AH_Job_GetBalance_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
     j=AH_AccountJob_new("JobGetBalanceCreditCard2", pro, u, account);
   else if (useInvestmentJob)
     j=AH_AccountJob_new("JobGetBalanceInvestment", pro, u, account);
-  else
+  else if (useRegularAccountJob)
     j=AH_AccountJob_new("JobGetBalance", pro, u, account);
-  if (!j)
+  else {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "No UPD available for JobGetBalance");
     return 0;
+  }
 
   AH_Job_SetSupportedCommand(j, AB_Transaction_CommandGetBalance);
 

@@ -75,7 +75,9 @@ AH_JOB *AH_Job_GetTransactions_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc
   GWEN_DB_NODE *dbArgs;
   GWEN_DB_NODE *updgroup;
 
+  int useRegularAccountJob=0;
   int useCreditCardJob = 0;
+  int useInvestmentJob=0;
 
   //Check if we should use DKKKU
   updgroup=AH_User_GetUpdForAccount(u, account);
@@ -83,6 +85,10 @@ AH_JOB *AH_Job_GetTransactions_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc
     GWEN_DB_NODE *n;
     n=GWEN_DB_GetFirstGroup(updgroup);
     while (n) {
+      if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKKAZ")==0) {
+        useRegularAccountJob = 1;
+        break;
+      }
       if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "DKKKU")==0) {
         useCreditCardJob = 1;
         break;
@@ -91,19 +97,28 @@ AH_JOB *AH_Job_GetTransactions_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc
         useCreditCardJob = 2;
         break;
       }
+      if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKWDU")==0) {
+        useInvestmentJob = 1;
+        break;
+      }
       n=GWEN_DB_GetNextGroup(n);
     } /* while */
   } /* if updgroup for the given account found */
-  DBG_INFO(AQHBCI_LOGDOMAIN, ">>>transactions>>>>>>> useCreditCardJob = %d", useCreditCardJob);
 
   if (useCreditCardJob == 1)
     j=AH_AccountJob_new("JobGetTransactionsCreditCard", pro, u, account);
   else if (useCreditCardJob == 2)
     j=AH_AccountJob_new("JobGetTransactionsCreditCard2", pro, u, account);
-  else
-    j=AH_AccountJob_new("JobGetTransactions", pro, u, account);
-  if (!j)
+  else if (useInvestmentJob) {
+    DBG_WARN(AQHBCI_LOGDOMAIN, "HKWDU available, but not yet implemented for JobGetTransactions");
     return 0;
+  }
+  else if (useRegularAccountJob)
+    j=AH_AccountJob_new("JobGetTransactions", pro, u, account);
+  else {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "No UPD available for JobGetTransactions");
+    return 0;
+  }
 
   AH_Job_SetSupportedCommand(j, AB_Transaction_CommandGetTransactions);
 
@@ -120,6 +135,7 @@ AH_JOB *AH_Job_GetTransactions_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc
   /* set some known arguments */
   dbArgs=AH_Job_GetArguments(j);
   assert(dbArgs);
+ 
   if (useCreditCardJob) {
       /* GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountNumber", AB_Account_GetAccountNumber(account)); */
       AH_AccountJob_WriteNationalAccountInfoToArgs(j);
