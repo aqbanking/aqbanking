@@ -361,12 +361,18 @@ int _jobApi_ProcessInvestmentAccount(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     dbBalance=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/BalanceInvestment");
 
     if (dbBalance) {
+      AB_ACCOUNT *a;
+      AB_IMEXPORTER_ACCOUNTINFO *ai;
       const void *p;
       unsigned int bs;
 
       DBG_NOTICE(AQHBCI_LOGDOMAIN, "Got a balance");
       if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
         GWEN_DB_Dump(dbBalance, 2);
+
+      a=AH_AccountJob_GetAccount(j);
+      assert(a);
+      ai=AB_Provider_GetOrAddAccountInfoForAccount(ctx, a);
 
       p=GWEN_DB_GetBinValue(dbBalance, "booked", 0, 0, 0, &bs);
       if (p && bs)
