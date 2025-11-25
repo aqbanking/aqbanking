@@ -34,8 +34,8 @@ static AB_ACCOUNT_SPEC *_createAccountSpecWithUserAndAccount(AB_PROVIDER *pro, A
 AB_REFERENCE_ACCOUNT *_copyRefAccountCb(AB_REFERENCE_ACCOUNT *ra, void *user_data);
 static int _updateAccountSpecWithUserAndAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a, AB_ACCOUNT_SPEC *as);
 static void _copyAccountToAccountSpec(const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC *as);
-static int _updateAccountSpecWithRefAccounts(AB_PROVIDER *pro, AB_ACCOUNT *a,
-                                             AB_ACCOUNT_SPEC *as);
+static int _updateAccountSpecWithRefAccounts(AB_PROVIDER *pro, AB_ACCOUNT *a, AB_ACCOUNT_SPEC *as);
+static int _addAccountLimitsForJobType(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc, AB_TRANSACTION_LIMITS_LIST *tll, int jobType);
 
 
 /* ------------------------------------------------------------------------------------------------
@@ -265,37 +265,63 @@ int _createTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT 
 
   i=0;
   while (jobList[i]!=AB_Transaction_CommandUnknown) {
-    AH_JOB *j=NULL;
-    AB_TRANSACTION_LIMITS *limits=NULL;
-
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Creating transaction limits for job \"%s\"", AB_Transaction_Command_toString(jobList[i]));
-    DBG_INFO(AQHBCI_LOGDOMAIN, "- creating job");
-    rv=AH_Provider_CreateHbciJob(pro, u, acc, jobList[i], &j);
+    rv=_addAccountLimitsForJobType(pro, u, acc, tll, jobList[i]);
     if (rv<0) {
-      if (rv==GWEN_ERROR_NOT_AVAILABLE) {
-        DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" is not available", AB_Transaction_Command_toString(jobList[i]));
-      }
-      else {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-        return rv;
-      }
-    }
-    else {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "- getting limits");
-      rv=AH_Job_GetLimits(j, &limits);
-      if (rv<0) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting limits for job \"%s\": %d", AB_Transaction_Command_toString(jobList[i]), rv);
-        AH_Job_free(j);
-        return rv;
-      }
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "- adding limits");
-      AB_TransactionLimits_List_Add(limits, tll);
-      AH_Job_free(j);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     }
     i++;
   } /* while i */
 
   return 0;
 }
+
+
+
+int _addAccountLimitsForJobType(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc, AB_TRANSACTION_LIMITS_LIST *tll, int jobType)
+{
+  AH_JOB *j=NULL;
+  AB_TRANSACTION_LIMITS *limits=NULL;
+  int rv;
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Creating transaction limits for job \"%s\"", AB_Transaction_Command_toString(jobType));
+  DBG_INFO(AQHBCI_LOGDOMAIN, "- creating job");
+  rv=AH_Provider_CreateHbciJob(pro, u, acc, jobType, &j);
+  if (rv<0) {
+    if (rv==GWEN_ERROR_NOT_AVAILABLE) {
+      if (jobType==AB_Transaction_CommandGetTransactions) {
+	if (AH_Account_GetFlags(acc) & AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD) {
+	  DBG_WARN(AQHBCI_LOGDOMAIN, "Job getTransaction not available, please try clearing flag \"PreferCamtDownload\"");
+	}
+	else {
+	  DBG_WARN(AQHBCI_LOGDOMAIN, "Job getTransaction not available, please try setting flag \"PreferCamtDownload\"");
+	}
+      }
+      else {
+	DBG_NOTICE(AQHBCI_LOGDOMAIN, "Job \"%s\" is not available", AB_Transaction_Command_toString(jobType));
+      }
+    }
+    else {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+  else {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "- getting limits");
+    rv=AH_Job_GetLimits(j, &limits);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting limits for job \"%s\": %d", AB_Transaction_Command_toString(jobType), rv);
+      AH_Job_free(j);
+      return rv;
+    }
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "- adding limits");
+    AB_TransactionLimits_List_Add(limits, tll);
+    AH_Job_free(j);
+  }
+
+  return 0;
+}
+
+
+
 
 
