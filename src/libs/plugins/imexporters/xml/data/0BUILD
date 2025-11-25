@@ -3,6 +3,13 @@
 
 <gwbuild>
 
+
+  <!-- please note:
+       remember to create and add profile files in ../profiles for SEPA formats
+       added here  (at least for CAMT and PAIN files), otherwise they might not get picked up by AqHBCI
+       (especially by code that calls AB_Banking_GetSwiftDescriptorsForImExporter())!
+  -->
+
   <data DIST="TRUE" install="$(pkgdatadir)/imexporters/xml/data" >
     camt_052_001_02.xml
     camt_052_001_08.xml
