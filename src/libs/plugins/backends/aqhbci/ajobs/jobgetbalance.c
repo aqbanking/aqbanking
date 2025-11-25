@@ -362,7 +362,7 @@ int _jobApi_ProcessInvestmentAccount(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 
     if (dbBalance) {
       AB_ACCOUNT *a;
-      AB_IMEXPORTER_ACCOUNTINFO *ai;
+      /*AB_IMEXPORTER_ACCOUNTINFO *ai;*/
       const void *p;
       unsigned int bs;
 
@@ -372,7 +372,7 @@ int _jobApi_ProcessInvestmentAccount(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
 
       a=AH_AccountJob_GetAccount(j);
       assert(a);
-      ai=AB_Provider_GetOrAddAccountInfoForAccount(ctx, a);
+      /*ai=*/AB_Provider_GetOrAddAccountInfoForAccount(ctx, a);
 
       p=GWEN_DB_GetBinValue(dbBalance, "booked", 0, 0, 0, &bs);
       if (p && bs)
