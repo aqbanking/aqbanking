@@ -5,8 +5,10 @@ profilesdir = $(aqbanking_pkgdatadir)/imexporters/xml/profiles
 profiles_DATA=\
   default.conf \
   camt_052_001_02.conf \
+  camt_052_001_08.conf \
   camt_053_001_02.conf \
   camt_053_001_04.conf \
+  camt_053_001_08.conf \
   pain_001_003_03.conf \
   pain_001_001_03.conf \
   pain_001_001_09.conf \
