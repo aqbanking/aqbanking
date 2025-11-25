@@ -14,12 +14,15 @@
 #include "provider_accspec.h"
 
 #include <aqbanking/banking_be.h>
+#include "aqbanking/i18n_l.h"
 
 #include "aqhbci/banking/provider_l.h"
 #include "aqhbci/banking/provider_job.h"
 #include "aqhbci/joblayer/job_l.h"
 #include "aqhbci/tan/tanmethod.h"
 #include "aqhbci/msglayer/hbci_l.h"
+
+#include <gwenhywfar/gui.h>
 
 
 
@@ -290,10 +293,16 @@ int _addAccountLimitsForJobType(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc, A
     if (rv==GWEN_ERROR_NOT_AVAILABLE) {
       if (jobType==AB_Transaction_CommandGetTransactions) {
 	if (AH_Account_GetFlags(acc) & AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD) {
-	  DBG_WARN(AQHBCI_LOGDOMAIN, "Job getTransaction not available, please try clearing flag \"PreferCamtDownload\"");
+	  DBG_WARN(AQHBCI_LOGDOMAIN, "Job getTransaction not available, please try clearing account flag \"PreferCamtDownload\"");
+	  GWEN_Gui_ProgressLog(0,
+			       GWEN_LoggerLevel_Warning,
+			       I18N("Job GetTransaction not available, please try clearing account flag \"PreferCamtDownload\""));
 	}
 	else {
-	  DBG_WARN(AQHBCI_LOGDOMAIN, "Job getTransaction not available, please try setting flag \"PreferCamtDownload\"");
+	  DBG_WARN(AQHBCI_LOGDOMAIN, "Job getTransaction not available, please try setting account flag \"PreferCamtDownload\"");
+	  GWEN_Gui_ProgressLog(0,
+			       GWEN_LoggerLevel_Warning,
+			       I18N("Job GetTransaction not available, please try setting account flag \"PreferCamtDownload\""));
 	}
       }
       else {
