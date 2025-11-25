@@ -5,6 +5,7 @@
 
   <data DIST="TRUE" install="$(pkgdatadir)/imexporters/xml/data" >
     camt_052_001_02.xml
+    camt_052_001_08.xml
     camt_053_001_02.xml
     camt_053_001_04.xml
     camt_053_001_08.xml
