@@ -253,7 +253,7 @@
                   
                   
                   <!-- purpose lines -->
-                  <XmlIfPathExists path="NtryDtls/TxDtls//RmtInf">
+                  <XmlIfPathExists path="NtryDtls/TxDtls/RmtInf">
     
                     <XmlEnter path="NtryDtls/TxDtls/RmtInf">
                       <XmlIfHasCharData path="Ustrd"> <!-- ugly hack to avoid err msg -->
