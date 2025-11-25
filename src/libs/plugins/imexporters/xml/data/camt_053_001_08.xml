@@ -122,6 +122,7 @@
         
                 <DbCreateAndEnterGroup name="transaction">
   
+                  <!-- preset -->
                   <DbSetCharValue name="type" value="statement" />
           
                   <XmlIfCharDataMatches path="Sts/Cd" pattern="BOOK">
@@ -138,18 +139,18 @@
                   <XmlIfHasCharData path="ValDt/Dt">
                     <DbSetCharValue name="valutaDate" path="ValDt/Dt" type="date" template="YYYY-MM-DD" />
                   </XmlIfHasCharData>
-          
     
                   <!-- endToEndReference -->
                   <XmlIfHasCharData path="NtryDtls/TxDtls/Refs/EndToEndId">
                     <DbSetCharValue name="endToEndReference" path="NtryDtls/TxDtls/Refs/EndToEndId"/>
                   </XmlIfHasCharData>
           
+                  <!-- bank reference -->
+                  <XmlIfHasCharData path="AcctSvcrRef">
+                    <DbSetCharValue name="bankReference" path="AcctSvcrRef"/>
+                  </XmlIfHasCharData>
     
                   <!-- unique transaction id -->
-                  <XmlIfHasCharData path="AcctSvcrRef">
-                    <DbSetCharValue name="transactionId" path="AcctSvcrRef"/>
-                  </XmlIfHasCharData>
                   <XmlIfCharDataMatches path="NtryDtls/TxDtls/Refs/Prtry/Tp" pattern="FI-UMSATZ-ID">
                     <DbSetCharValue name="fiId" path="NtryDtls/TxDtls/Refs/Prtry/Ref"/>
                   </XmlIfCharDataMatches>
