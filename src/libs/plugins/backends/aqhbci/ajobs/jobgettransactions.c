@@ -34,6 +34,21 @@
 
 
 /* ------------------------------------------------------------------------------------------------
+ * types
+ * ------------------------------------------------------------------------------------------------
+ */
+
+enum {
+  AH_JOB_GETTRANS_NONE=0,
+  AH_JOB_GETTRANS_HKKAZ,
+  AH_JOB_GETTRANS_DKKKU,
+  AH_JOB_GETTRANS_HKKKU,
+  AH_JOB_GETTRANS_HKWDU
+};
+
+
+
+/* ------------------------------------------------------------------------------------------------
  * forward declarations
  * ------------------------------------------------------------------------------------------------
  */
@@ -43,6 +58,12 @@ static int _jobApi_ProcessForCreditCard(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
 
 static int _jobApi_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
 static int _jobApi_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t);
+
+static AH_JOB *_createJob_HKKAZ(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account);
+static AH_JOB *_createJob_DKKKU(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account);
+static AH_JOB *_createJob_HKKKU(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account);
+static AH_JOB *_createJob_HKWDU(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account);
+static int _determineJobToUse(AB_USER *u, AB_ACCOUNT *account);
 
 static int _readTransIntoAccountInfo(AH_JOB *j,
                                      AB_IMEXPORTER_ACCOUNTINFO *ai,
@@ -71,90 +92,134 @@ static void _appendBufferToFile(const char *fname, const char *ptr, uint32_t len
 
 AH_JOB *AH_Job_GetTransactions_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 {
+  int jobType;
+
+  jobType=_determineJobToUse(u, account);
+  switch(jobType) {
+  case AH_JOB_GETTRANS_HKKAZ: return _createJob_HKKAZ(pro, u, account);
+  case AH_JOB_GETTRANS_DKKKU: return _createJob_DKKKU(pro, u, account);
+  case AH_JOB_GETTRANS_HKKKU: return _createJob_HKKKU(pro, u, account);
+  case AH_JOB_GETTRANS_HKWDU: return _createJob_HKWDU(pro, u, account);
+  default:
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "No FinTS job (GetTransaction) available for this account");
+    return NULL;
+  }
+}
+
+
+
+AH_JOB *_createJob_HKKAZ(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
+{
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
+
+  j=AH_AccountJob_new("JobGetTransactions", pro, u, account);
+  if (j==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"JobGetTransactions\" not available");
+    return NULL;
+  }
+
+  /* set virtual functions */
+  AH_Job_SetProcessFn(j, _jobApi_ProcessForBankAccount);
+  AH_Job_SetGetLimitsFn(j, _jobApi_GetLimits);
+  AH_Job_SetHandleCommandFn(j, _jobApi_HandleCommand);
+  AH_Job_SetHandleResultsFn(j, AH_Job_HandleResults_Empty);
+
+  AH_Job_SetSupportedCommand(j, AB_Transaction_CommandGetTransactions);
+
+  dbArgs=AH_Job_GetArguments(j);
+  GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "allAccounts", "N");
+  if (AH_Job_GetSegmentVersion(j)<7) {
+    /* HKKAZ ver 7 and higher use IBAN and BIC, older segments use accountId and bankCode  */
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Adding national account specs for HKKAZ version <7");
+    AH_AccountJob_WriteNationalAccountInfoToArgs(j);
+  }
+
+  return j;
+}
+
+
+
+AH_JOB *_createJob_DKKKU(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
+{
+  AH_JOB *j;
+
+  j=AH_AccountJob_new("JobGetTransactionsCreditCard", pro, u, account);
+  if (j==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"JobGetTransactionsCreditCard\" not available");
+    return NULL;
+  }
+
+  AH_Job_SetProcessFn(j, _jobApi_ProcessForCreditCard);
+  AH_Job_SetGetLimitsFn(j, _jobApi_GetLimits);
+  AH_Job_SetHandleCommandFn(j, _jobApi_HandleCommand);
+  AH_Job_SetHandleResultsFn(j, AH_Job_HandleResults_Empty);
+
+  AH_Job_SetSupportedCommand(j, AB_Transaction_CommandGetTransactions);
+
+  AH_AccountJob_WriteNationalAccountInfoToArgs(j);
+
+  return j;
+}
+
+
+
+AH_JOB *_createJob_HKKKU(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
+{
+  AH_JOB *j;
+
+  j=AH_AccountJob_new("JobGetTransactionsCreditCard2", pro, u, account);
+  if (j==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Job \"JobGetTransactionsCreditCard2\" not available");
+    return NULL;
+  }
+
+  AH_Job_SetProcessFn(j, _jobApi_ProcessForCreditCard);
+  AH_Job_SetGetLimitsFn(j, _jobApi_GetLimits);
+  AH_Job_SetHandleCommandFn(j, _jobApi_HandleCommand);
+  AH_Job_SetHandleResultsFn(j, AH_Job_HandleResults_Empty);
+
+  AH_Job_SetSupportedCommand(j, AB_Transaction_CommandGetTransactions);
+
+  AH_AccountJob_WriteNationalAccountInfoToArgs(j);
+
+  return j;
+}
+
+
+
+AH_JOB *_createJob_HKWDU(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
+{
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "HKWDU available, but not yet implemented for JobGetTransactions");
+  return NULL;
+}
+
+
+
+int _determineJobToUse(AB_USER *u, AB_ACCOUNT *account)
+{
   GWEN_DB_NODE *updgroup;
 
-  int useRegularAccountJob=0;
-  int useCreditCardJob = 0;
-  int useInvestmentJob=0;
-
-  //Check if we should use DKKKU
   updgroup=AH_User_GetUpdForAccount(u, account);
   if (updgroup) {
     GWEN_DB_NODE *n;
     n=GWEN_DB_GetFirstGroup(updgroup);
     while (n) {
-      if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKKAZ")==0) {
-	useRegularAccountJob = 1;
-	break;
-      }
-      if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "DKKKU")==0) {
-	useCreditCardJob = 1;
-	break;
-      }
-      if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKKKU")==0) {
-	useCreditCardJob = 2;
-	break;
-      }
-      if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKWDU")==0) {
-	useInvestmentJob = 1;
-	break;
-      }
+      if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKKAZ")==0)
+	return AH_JOB_GETTRANS_HKKAZ;
+      else if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "DKKKU")==0)
+	return AH_JOB_GETTRANS_DKKKU;
+      else if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKKKU")==0)
+	return AH_JOB_GETTRANS_HKKKU;
+      else if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKWDU")==0)
+	return AH_JOB_GETTRANS_HKWDU;
       n=GWEN_DB_GetNextGroup(n);
     } /* while */
   } /* if updgroup for the given account found */
 
-  if (useCreditCardJob==1)
-    j=AH_AccountJob_new("JobGetTransactionsCreditCard", pro, u, account);
-  else if (useCreditCardJob==2)
-    j=AH_AccountJob_new("JobGetTransactionsCreditCard2", pro, u, account);
-  else if (useInvestmentJob) {
-    DBG_WARN(AQHBCI_LOGDOMAIN, "HKWDU available, but not yet implemented for JobGetTransactions");
-    return NULL;
-  }
-  else if (useRegularAccountJob)
-    j=AH_AccountJob_new("JobGetTransactions", pro, u, account);
-  else {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "No UPD available for JobGetTransactions");
-    return NULL;
-  }
-
-  if (j==NULL) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Job not created");
-    return NULL;
-  }
-
-  AH_Job_SetSupportedCommand(j, AB_Transaction_CommandGetTransactions);
-
-  /* overwrite some virtual functions */
-  if (useCreditCardJob)
-    AH_Job_SetProcessFn(j, _jobApi_ProcessForCreditCard);
-  else
-    AH_Job_SetProcessFn(j, _jobApi_ProcessForBankAccount);
-
-  AH_Job_SetGetLimitsFn(j, _jobApi_GetLimits);
-  AH_Job_SetHandleCommandFn(j, _jobApi_HandleCommand);
-  AH_Job_SetHandleResultsFn(j, AH_Job_HandleResults_Empty);
-
-  /* set some known arguments */
-  dbArgs=AH_Job_GetArguments(j);
-  assert(dbArgs);
- 
-  if (useCreditCardJob) {
-    /* GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountNumber", AB_Account_GetAccountNumber(account)); */
-    AH_AccountJob_WriteNationalAccountInfoToArgs(j);
-  }
-  else {
-    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "allAccounts", "N");
-    if (AH_Job_GetSegmentVersion(j)<7) {
-      /* HKKAZ ver 7 and higher use IBAN and BIC, older segments use accountId and bankCode  */
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Adding national account specs for HKKAZ version <7");
-      AH_AccountJob_WriteNationalAccountInfoToArgs(j);
-    }
-  }
-  return j;
+  return AH_JOB_GETTRANS_NONE;
 }
+
 
 
 
