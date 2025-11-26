@@ -86,38 +86,43 @@ AH_JOB *AH_Job_GetTransactions_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc
     n=GWEN_DB_GetFirstGroup(updgroup);
     while (n) {
       if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKKAZ")==0) {
-        useRegularAccountJob = 1;
-        break;
+	useRegularAccountJob = 1;
+	break;
       }
       if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "DKKKU")==0) {
-        useCreditCardJob = 1;
-        break;
+	useCreditCardJob = 1;
+	break;
       }
       if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKKKU")==0) {
-        useCreditCardJob = 2;
-        break;
+	useCreditCardJob = 2;
+	break;
       }
       if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKWDU")==0) {
-        useInvestmentJob = 1;
-        break;
+	useInvestmentJob = 1;
+	break;
       }
       n=GWEN_DB_GetNextGroup(n);
     } /* while */
   } /* if updgroup for the given account found */
 
-  if (useCreditCardJob == 1)
+  if (useCreditCardJob==1)
     j=AH_AccountJob_new("JobGetTransactionsCreditCard", pro, u, account);
-  else if (useCreditCardJob == 2)
+  else if (useCreditCardJob==2)
     j=AH_AccountJob_new("JobGetTransactionsCreditCard2", pro, u, account);
   else if (useInvestmentJob) {
     DBG_WARN(AQHBCI_LOGDOMAIN, "HKWDU available, but not yet implemented for JobGetTransactions");
-    return 0;
+    return NULL;
   }
   else if (useRegularAccountJob)
     j=AH_AccountJob_new("JobGetTransactions", pro, u, account);
   else {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "No UPD available for JobGetTransactions");
-    return 0;
+    return NULL;
+  }
+
+  if (j==NULL) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Job not created");
+    return NULL;
   }
 
   AH_Job_SetSupportedCommand(j, AB_Transaction_CommandGetTransactions);
@@ -137,8 +142,8 @@ AH_JOB *AH_Job_GetTransactions_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acc
   assert(dbArgs);
  
   if (useCreditCardJob) {
-      /* GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountNumber", AB_Account_GetAccountNumber(account)); */
-      AH_AccountJob_WriteNationalAccountInfoToArgs(j);
+    /* GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountNumber", AB_Account_GetAccountNumber(account)); */
+    AH_AccountJob_WriteNationalAccountInfoToArgs(j);
   }
   else {
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "allAccounts", "N");
