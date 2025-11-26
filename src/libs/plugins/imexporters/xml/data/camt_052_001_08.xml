@@ -291,7 +291,6 @@
                   <!-- transaction text -->
                   <XmlIfHasCharData path="AddtlNtryInf">
                     <DbSetCharValue name="transactionText" path="AddtlNtryInf"/>
-                    <DbSetCharValue name="purpose" mode="append" delimiter="\n" path="AddtlNtryInf"/>
                   </XmlIfHasCharData>
                   
                 </DbCreateAndEnterGroup> <!-- transaction --> 
