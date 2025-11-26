@@ -205,14 +205,19 @@ int _determineJobToUse(AB_USER *u, AB_ACCOUNT *account)
     GWEN_DB_NODE *n;
     n=GWEN_DB_GetFirstGroup(updgroup);
     while (n) {
-      if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKKAZ")==0)
-	return AH_JOB_GETTRANS_HKKAZ;
-      else if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "DKKKU")==0)
-	return AH_JOB_GETTRANS_DKKKU;
-      else if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKKKU")==0)
-	return AH_JOB_GETTRANS_HKKKU;
-      else if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKWDU")==0)
-	return AH_JOB_GETTRANS_HKWDU;
+      const char *s;
+
+      s=GWEN_DB_GetCharValue(n, "job", 0, NULL);
+      if (s && *s) {
+	if (strcasecmp(s, "HKKAZ")==0)
+	  return AH_JOB_GETTRANS_HKKAZ;
+	else if (strcasecmp(s, "DKKKU")==0)
+	  return AH_JOB_GETTRANS_DKKKU;
+	else if (strcasecmp(s, "HKKKU")==0)
+	  return AH_JOB_GETTRANS_HKKKU;
+	else if (strcasecmp(s, "HKWDU")==0)
+	  return AH_JOB_GETTRANS_HKWDU;
+      }
       n=GWEN_DB_GetNextGroup(n);
     } /* while */
   } /* if updgroup for the given account found */
