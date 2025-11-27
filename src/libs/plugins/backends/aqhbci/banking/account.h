@@ -49,7 +49,12 @@ extern "C" {
 #define AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD         0x00000040
 
 
-#define AH_BANK_FLAGS_DEFAULT 0
+/**
+ * 2025/11/27: added flag AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD since most banks
+ *             should now provide CAMT download, some banks even removed the
+ *             possibility to download SWIFT MT940 docs, so CAMT should now be default.
+ */
+#define AH_BANK_FLAGS_DEFAULT AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD
 
 /*@}*/
 
