@@ -336,7 +336,8 @@ int _sendJob(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *j)
 
   /* handle attach points and multi-msg jobs */
   while(!_jobIsDone(j)) {
-    rv=AH_OutboxCBox_SendAndReceiveJobWithTanAndVpp(cbox, dlg, j);
+    //AH_OutboxCBox_SendAndReceiveJobWithTanAndVpp(cbox, dlg, j);
+    rv=AH_OutboxCBox_SendAndReceiveJob(cbox, dlg, j);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
@@ -354,7 +355,8 @@ int _sendJob(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *j)
       return rv;
     }
 
-    rv=AH_OutboxCBox_SendAndReceiveJobWithTanAndVpp(cbox, dlg, jAck);
+    //rv=AH_OutboxCBox_SendAndReceiveJobWithTanAndVpp(cbox, dlg, jAck);
+    rv=AH_OutboxCBox_SendAndReceiveJob(cbox, dlg, jAck);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       AH_Job_free(jAck);
