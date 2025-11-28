@@ -18,49 +18,42 @@
 
 
 
-int AH_Control_GetAccSepa(AB_PROVIDER *pro,
-                          GWEN_DB_NODE *dbArgs,
-                          int argc,
-                          char **argv)
+/* ------------------------------------------------------------------------------------------------
+ * defs
+ * ------------------------------------------------------------------------------------------------
+ */
+
+#define A_ARG GWEN_ARGS_FLAGS_HAS_ARGUMENT
+#define A_END (GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST)
+#define A_CHAR GWEN_ArgsType_Char
+#define A_INT GWEN_ArgsType_Int
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+static AB_USER *_getUserFromUidOrAid(GWEN_DB_NODE *db);
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+int AH_Control_GetAccSepa(AB_PROVIDER *pro, GWEN_DB_NODE *dbArgs, int argc, char **argv)
 {
   GWEN_DB_NODE *db;
-  AB_ACCOUNT *a=NULL;
+  AB_USER *u=NULL;
   int rv;
-  uint32_t aid;
   const GWEN_ARGS args[]= {
-    {
-      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-      GWEN_ArgsType_Int,           /* type */
-      "accountId",                 /* name */
-      0,                            /* minnum */
-      1,                            /* maxnum */
-      "a",                          /* short option */
-      "account",                   /* long option */
-      "Specify the unique id of the account",    /* short description */
-      "Specify the unique id of the account"     /* long description */
-    },
-    {
-      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-      GWEN_ArgsType_Char,           /* type */
-      "flags",                      /* name */
-      0,                            /* minnum */
-      99,                            /* maxnum */
-      "f",                          /* short option */
-      "flags",                   /* long option */
-      "Specify the user flags",    /* short description */
-      "Specify the user flags"     /* long description */
-    },
-    {
-      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-      GWEN_ArgsType_Int,            /* type */
-      "help",                       /* name */
-      0,                            /* minnum */
-      0,                            /* maxnum */
-      "h",                          /* short option */
-      "help",                       /* long option */
-      "Show this help screen",      /* short description */
-      "Show this help screen"       /* long description */
-    }
+    /* flags type    name         min max s    long       short_descr, long_descr */
+    { A_ARG, A_INT,  "userId",    0,  1,  "u", "user",    "Specify unique user id", NULL},
+    { A_ARG, A_INT,  "accountId", 0,  1,  "a", "account", "Specify unique id of account", NULL},
+    { A_END, A_INT,  "help",      0,  0, "h",  "help",    "Show this help screen", NULL}
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
@@ -85,38 +78,77 @@ int AH_Control_GetAccSepa(AB_PROVIDER *pro,
     return 0;
   }
 
-  /* check aid */
-  aid=(uint32_t) GWEN_DB_GetIntValue(db, "accountId", 0, 0);
-  if (aid==0) {
-    fprintf(stderr, "ERROR: Invalid or missing unique account id\n");
+  u=_getUserFromUidOrAid(db);
+  if (u==NULL) {
     return 1;
-  }
-
-  /* get account */
-  rv=AB_Provider_HasAccount(pro, aid);
-  if (rv<0) {
-    fprintf(stderr, "ERROR: Account with id %lu not found\n", (unsigned long int) aid);
-    return 2;
-  }
-  rv=AB_Provider_GetAccount(pro, aid, 1, 1, &a);
-  if (rv<0) {
-    fprintf(stderr, "ERROR: Account with id %lu not found\n", (unsigned long int) aid);
-    return 2;
   }
   else {
     AB_IMEXPORTER_CONTEXT *ctx;
 
     ctx=AB_ImExporterContext_new();
-    rv=AH_Provider_GetAccountSepaInfo(pro, a, ctx, 1, 0, 1);
+    rv=AH_Provider_GetAccountSepaInfo(pro, u, ctx, 1, 0, 1);
     if (rv<0) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not execute outbox.\n");
-      AB_Account_free(a);
+      AB_User_free(u);
       return 4;
     }
   }
-  AB_Account_free(a);
+  AB_User_free(u);
 
   return 0;
+}
+
+
+
+
+AB_USER *_getUserFromUidOrAid(GWEN_DB_NODE *db)
+{
+  uint32_t uid;
+
+  uid=(uint32_t) GWEN_DB_GetIntValue(db, "userId", 0, 0);
+  if (uid==0) {
+    uint32_t aid;
+    AB_ACCOUNT *a;
+
+    aid=(uint32_t) GWEN_DB_GetIntValue(db, "accountId", 0, 0);
+    if (aid==0) {
+      fprintf(stderr, "ERROR: Neither unique user id nor unique account id given\n");
+      return 1;
+    }
+  
+    /* get account */
+    rv=AB_Provider_HasAccount(pro, aid);
+    if (rv<0) {
+      fprintf(stderr, "ERROR: Account with id %lu not found\n", (unsigned long int) aid);
+      return 2;
+    }
+    rv=AB_Provider_GetAccount(pro, aid, 1, 1, &a);
+    if (rv<0) {
+      fprintf(stderr, "ERROR: Account with id %lu not found\n", (unsigned long int) aid);
+      return 2;
+    }
+
+    uid=AB_Account_GetUserId(a);
+    if (uid==0) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "No user for this account");
+      AB_Account_free(a);
+      return 2;
+    }
+    AB_Account_free(a);
+  }
+
+  rv=AB_Provider_HasUser(pro, uid);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) uid);
+    return 2;
+  }
+  rv=AB_Provider_GetUser(pro, uid, 1, 1, &u);
+  if (rv<0) {
+    fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) uid);
+    return 2;
+  }
+
+  return u;
 }
 
 
