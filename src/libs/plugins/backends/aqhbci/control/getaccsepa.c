@@ -35,7 +35,7 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-static AB_USER *_getUserFromUidOrAid(GWEN_DB_NODE *db);
+static AB_USER *_getUserFromUidOrAid(AB_PROVIDER *pro, GWEN_DB_NODE *db);
 
 
 
@@ -78,7 +78,7 @@ int AH_Control_GetAccSepa(AB_PROVIDER *pro, GWEN_DB_NODE *dbArgs, int argc, char
     return 0;
   }
 
-  u=_getUserFromUidOrAid(db);
+  u=_getUserFromUidOrAid(pro, db);
   if (u==NULL) {
     return 1;
   }
@@ -101,9 +101,11 @@ int AH_Control_GetAccSepa(AB_PROVIDER *pro, GWEN_DB_NODE *dbArgs, int argc, char
 
 
 
-AB_USER *_getUserFromUidOrAid(GWEN_DB_NODE *db)
+AB_USER *_getUserFromUidOrAid(AB_PROVIDER *pro, GWEN_DB_NODE *db)
 {
   uint32_t uid;
+  AB_USER *u=NULL;
+  int rv;
 
   uid=(uint32_t) GWEN_DB_GetIntValue(db, "userId", 0, 0);
   if (uid==0) {
@@ -113,26 +115,26 @@ AB_USER *_getUserFromUidOrAid(GWEN_DB_NODE *db)
     aid=(uint32_t) GWEN_DB_GetIntValue(db, "accountId", 0, 0);
     if (aid==0) {
       fprintf(stderr, "ERROR: Neither unique user id nor unique account id given\n");
-      return 1;
+      return NULL;
     }
   
     /* get account */
     rv=AB_Provider_HasAccount(pro, aid);
     if (rv<0) {
       fprintf(stderr, "ERROR: Account with id %lu not found\n", (unsigned long int) aid);
-      return 2;
+      return NULL;
     }
     rv=AB_Provider_GetAccount(pro, aid, 1, 1, &a);
     if (rv<0) {
       fprintf(stderr, "ERROR: Account with id %lu not found\n", (unsigned long int) aid);
-      return 2;
+      return NULL;
     }
 
     uid=AB_Account_GetUserId(a);
     if (uid==0) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "No user for this account");
       AB_Account_free(a);
-      return 2;
+      return NULL;
     }
     AB_Account_free(a);
   }
@@ -140,12 +142,12 @@ AB_USER *_getUserFromUidOrAid(GWEN_DB_NODE *db)
   rv=AB_Provider_HasUser(pro, uid);
   if (rv<0) {
     fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) uid);
-    return 2;
+    return NULL;
   }
   rv=AB_Provider_GetUser(pro, uid, 1, 1, &u);
   if (rv<0) {
     fprintf(stderr, "ERROR: User with id %lu not found\n", (unsigned long int) uid);
-    return 2;
+    return NULL;
   }
 
   return u;
