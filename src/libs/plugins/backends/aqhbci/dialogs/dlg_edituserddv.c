@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Thu Jul 08 2010
- copyright   : (C) 2018 by Martin Preuss
+ copyright   : (C) 2025 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -39,7 +39,7 @@
 
 /* for improved readability */
 #define DLG_WITHPROGRESS 1
-#define DLG_UMOUNT       0
+#define DLG_NOUMOUNT     0
 #define DLG_DIALOGFILE   "aqbanking/backends/aqhbci/dialogs/dlg_edituserddv.dlg"
 
 
@@ -53,7 +53,6 @@ GWEN_DIALOG *AH_EditUserDdvDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock)
 {
   GWEN_DIALOG *dlg;
   AH_EDIT_USER_DDV_DIALOG *xdlg;
-  int rv;
 
   dlg=GWEN_Dialog_CreateAndLoadWithPath("ah_edit_user_ddv", AB_PM_LIBNAME, AB_PM_DATADIR, DLG_DIALOGFILE);
 
@@ -442,8 +441,8 @@ static int AH_EditUserDdvDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg)
   rv=AH_Provider_GetAccounts(xdlg->provider,
                              xdlg->user,
                              ctx,
-                             1,   /* withProgress */
-                             0,   /* nounmount */
+                             DLG_WITHPROGRESS,   /* withProgress */
+                             DLG_NOUMOUNT,   /* nounmount */
                              xdlg->doLock);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -467,14 +466,10 @@ int _handleActivatedSepa(GWEN_DIALOG *dlg)
 
 
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetAccountSepaInfo(xdlg->provider, xdlg->user, ctx, DLG_WITHPROGRESS, DLG_UMOUNT, xdlg->doLock);
+  rv=AH_Provider_GetAccountSepaInfo(xdlg->provider, xdlg->user, ctx, DLG_WITHPROGRESS, DLG_NOUMOUNT, xdlg->doLock);
   AB_ImExporterContext_free(ctx);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-  }
-  else {
-    /* update dialog */
-    _toGui(dlg, xdlg->account);
   }
 
   return GWEN_DialogEvent_ResultHandled;
@@ -488,6 +483,8 @@ int AH_EditUserDdvDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
     return AH_EditUserDdvDialog_HandleActivatedBankCode(dlg);
   else if (strcasecmp(sender, "getAccountsButton")==0)
     return AH_EditUserDdvDialog_HandleActivatedGetAccounts(dlg);
+  else if (strcasecmp(sender, "getSepaButton")==0)
+    return _handleActivatedSepa(dlg);
   else if (strcasecmp(sender, "okButton")==0)
     return AH_EditUserDdvDialog_HandleActivatedOk(dlg);
   else if (strcasecmp(sender, "abortButton")==0)
