@@ -111,7 +111,6 @@ static _DIALOG_SIGNAL_ENTRY _signalMap[]={
   {"bankCodeButton",     GWEN_DialogEvent_TypeActivated, _handleActivatedBankCode},
   {"okButton",           GWEN_DialogEvent_TypeActivated, _handleActivatedOk},
   {"abortButton",        GWEN_DialogEvent_TypeActivated, _handleActivatedReject},
-  {"getSepaButton",      GWEN_DialogEvent_TypeActivated, _handleActivatedSepa},
   {"getTargetAccButton", GWEN_DialogEvent_TypeActivated, _handleActivatedTargetAcc},
 
   {NULL, 0, NULL}
@@ -425,32 +424,6 @@ int _handleActivatedOk(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE t, GW
 int _handleActivatedReject(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE t, GWEN_UNUSED const char *sender)
 {
   return GWEN_DialogEvent_ResultReject;
-}
-
-
-
-int _handleActivatedSepa(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE t, GWEN_UNUSED const char *sender)
-{
-  AH_EDIT_ACCOUNT_DIALOG *xdlg;
-  int rv;
-  AB_IMEXPORTER_CONTEXT *ctx;
-
-  assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_ACCOUNT_DIALOG, dlg);
-  assert(xdlg);
-
-  ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetAccountSepaInfo(xdlg->provider, xdlg->account, ctx, DLG_WITHPROGRESS, DLG_UMOUNT, xdlg->doLock);
-  AB_ImExporterContext_free(ctx);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-  }
-  else {
-    /* update dialog */
-    _toGui(dlg, xdlg->account);
-  }
-
-  return GWEN_DialogEvent_ResultHandled;
 }
 
 
