@@ -37,6 +37,11 @@
 #define DIALOG_MINWIDTH  200
 #define DIALOG_MINHEIGHT 200
 
+/* for improved readability */
+#define DLG_WITHPROGRESS 1
+#define DLG_UMOUNT       0
+#define DLG_DIALOGFILE   "aqbanking/backends/aqhbci/dialogs/dlg_edituserddv.dlg"
+
 
 
 GWEN_INHERIT(GWEN_DIALOG, AH_EDIT_USER_DDV_DIALOG)
@@ -48,36 +53,14 @@ GWEN_DIALOG *AH_EditUserDdvDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock)
 {
   GWEN_DIALOG *dlg;
   AH_EDIT_USER_DDV_DIALOG *xdlg;
-  GWEN_BUFFER *fbuf;
   int rv;
 
-  dlg=GWEN_Dialog_new("ah_edit_user_ddv");
+  dlg=GWEN_Dialog_CreateAndLoadWithPath("ah_edit_user_ddv", AB_PM_LIBNAME, AB_PM_DATADIR, DLG_DIALOGFILE);
+
   GWEN_NEW_OBJECT(AH_EDIT_USER_DDV_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AH_EDIT_USER_DDV_DIALOG, dlg, xdlg,
                        AH_EditUserDdvDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AH_EditUserDdvDialog_SignalHandler);
-
-  /* get path of dialog description file */
-  fbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-                               "aqbanking/backends/aqhbci/dialogs/dlg_edituserddv.dlg",
-                               fbuf);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
-    GWEN_Buffer_free(fbuf);
-    GWEN_Dialog_free(dlg);
-    return NULL;
-  }
-
-  /* read dialog from dialog description file */
-  rv=GWEN_Dialog_ReadXmlFile(dlg, GWEN_Buffer_GetStart(fbuf));
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d).", rv);
-    GWEN_Buffer_free(fbuf);
-    GWEN_Dialog_free(dlg);
-    return NULL;
-  }
-  GWEN_Buffer_free(fbuf);
 
   /* preset */
   xdlg->provider=pro;
@@ -467,6 +450,33 @@ static int AH_EditUserDdvDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg)
   }
 
   AB_ImExporterContext_free(ctx);
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
+int _handleActivatedSepa(GWEN_DIALOG *dlg)
+{
+  AH_EDIT_USER_DDV_DIALOG *xdlg;
+  int rv;
+  AB_IMEXPORTER_CONTEXT *ctx;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_DDV_DIALOG, dlg);
+  assert(xdlg);
+
+
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_GetAccountSepaInfo(xdlg->provider, xdlg->user, ctx, DLG_WITHPROGRESS, DLG_UMOUNT, xdlg->doLock);
+  AB_ImExporterContext_free(ctx);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+  }
+  else {
+    /* update dialog */
+    _toGui(dlg, xdlg->account);
+  }
+
   return GWEN_DialogEvent_ResultHandled;
 }
 
