@@ -76,13 +76,6 @@
       
     </widget>
 
-    <widget type="groupBox" text="Special Actions" flags="fillX" >
-      <widget type="gridLayout" columns="2" flags="fillX equalWidth" >
-        <widget type="pushButton" text="Get SEPA Info" name="getSepaButton" />
-       
-      </widget>
-    </widget>     <!-- groupBox -->
-
     <widget type="groupBox" text="Sepa Internal Transfer Target Accounts" flags="fillX fillY" >
       <widget type="vlayout" flags="fillX fillY" >
         <widget type="listBox" name="targetAccountListBox" flags="fillX fillY" />
