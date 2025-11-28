@@ -172,6 +172,7 @@
           sign="1" 
           needBPD="1" 
           response="GetAccountSepaInfoResponse"
+          attachable="1"
           single="0"
   >
     <SEG type="GetAccountSepaInfo" version="1" />
@@ -186,6 +187,7 @@
           sign="1" 
           needBPD="1" 
           response="GetAccountSepaInfoResponse"
+          attachable="1"
           single="0"
   >
     <SEG type="GetAccountSepaInfo" version="2" />
@@ -199,6 +201,7 @@
           sign="1" 
           needBPD="1" 
           response="GetAccountSepaInfoResponse"
+          attachable="1"
           single="0"
   >
     <SEG type="GetAccountSepaInfo" version="3" />

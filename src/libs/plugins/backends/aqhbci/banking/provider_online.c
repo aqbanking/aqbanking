@@ -1201,14 +1201,13 @@ int AH_Provider_UnblockPin(AB_PROVIDER *pro,
 
 
 int AH_Provider_GetAccountSepaInfo(AB_PROVIDER *pro,
-                                   AB_ACCOUNT *a,
+                                   AB_USER *u,
                                    AB_IMEXPORTER_CONTEXT *ctx,
                                    int withProgress, int nounmount, int doLock)
 {
   AB_BANKING *ab;
   AH_HBCI *h;
   AH_OUTBOX *ob;
-  uint32_t uid;
   int rv;
 
   assert(pro);
@@ -1222,32 +1221,17 @@ int AH_Provider_GetAccountSepaInfo(AB_PROVIDER *pro,
 
   ob=AH_Outbox_new(pro);
 
-  uid=AB_Account_GetUserId(a);
-  if (uid==0) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No user for this account");
-  }
-  else {
-    AB_USER *u;
+  AH_JOB *job;
 
-    rv=AB_Provider_GetUser(pro, uid, 1, 1, &u);
-    if (rv<0) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Unknown user for this account");
-    }
-    else {
-      AH_JOB *job;
-
-      /* TODO: store user to free it later */
-      job=AH_Job_GetAccountSepaInfo_new(pro, u, a);
-      if (!job) {
-        DBG_WARN(AQHBCI_LOGDOMAIN, "Job not supported with this account");
-        AH_Outbox_free(ob);
-        return GWEN_ERROR_GENERIC;
-      }
-      AH_Job_AddSigner(job, AB_User_GetUserId(u));
-      AH_Outbox_AddJob(ob, job);
-      AH_Job_free(job);
-    }
+  job=AH_Job_GetAccountSepaInfo_new(pro, u);
+  if (!job) {
+    DBG_WARN(AQHBCI_LOGDOMAIN, "Job not supported with this account");
+    AH_Outbox_free(ob);
+    return GWEN_ERROR_GENERIC;
   }
+  AH_Job_AddSigner(job, AB_User_GetUserId(u));
+  AH_Outbox_AddJob(ob, job);
+  AH_Job_free(job);
 
   rv=AH_Outbox_Execute(ob, ctx, withProgress, nounmount, doLock);
   if (rv) {
@@ -1265,6 +1249,8 @@ int AH_Provider_GetAccountSepaInfo(AB_PROVIDER *pro,
 
   return 0;
 }
+
+
 
 int AH_Provider_GetTargetAccount(AB_PROVIDER *pro,
                                  AB_ACCOUNT *a,

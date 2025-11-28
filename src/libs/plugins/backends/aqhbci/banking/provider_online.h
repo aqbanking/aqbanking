@@ -163,15 +163,15 @@ int AH_Provider_UnblockPin(AB_PROVIDER *pro,
 
 
 /**
- * Request SEPA information for a given account. This info is then stored
+ * Request SEPA information for a given user. This info is then stored
  * within the AqBanking account information (IBAN, BIC).
  * @param pro pointer to the HBCI provider
- * @param a account for which the info is to be requested
+ * @param u user for which to get SEPA accounts
  * @param nounmount if !=0 then the user's medium is not unmounted in the end.
  *  This is used by setup wizards to avoid having to enter a pin too often.
  */
 int AH_Provider_GetAccountSepaInfo(AB_PROVIDER *pro,
-                                   AB_ACCOUNT *a,
+                                   AB_USER *u,
                                    AB_IMEXPORTER_CONTEXT *ctx,
                                    int withProgress, int nounmount, int doLock);
 
