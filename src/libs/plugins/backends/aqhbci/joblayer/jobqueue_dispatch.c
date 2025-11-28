@@ -761,8 +761,11 @@ void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWE
     if (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_IGNOREACCOUNTS) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Ignoring possibly received accounts");
     }
-    else
+    else {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Reading possibly received accounts and SEPA accounts");
       AH_JobQueue_ReadAccounts(jq, dbAllResponses);
+      AH_JobQueue_ReadSepaAccounts(jq, dbAllResponses);
+    }
 
     jqRun=jq;
     while (jqRun) {
