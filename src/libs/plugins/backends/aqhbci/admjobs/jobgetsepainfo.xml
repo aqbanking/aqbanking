@@ -17,7 +17,7 @@
   <SEGdef id="GetAccountSepaInfo" code="HKSPA" version="1"
           delimiter="+" terminator="'" >
     <GROUP type="SegHead" name="head" />
-    <GROUP type="ktv" version="2" />
+    <GROUP type="ktv" name="unused" version="2" minnum="0"  />
  
     <VALUES>
       <VALUE path="head/code">%code</VALUE>
@@ -63,7 +63,7 @@
   <SEGdef id="GetAccountSepaInfo" code="HKSPA" version="2"
           delimiter="+" terminator="'" >
     <GROUP type="SegHead" name="head" />
-    <GROUP type="ktv" version="2" />
+    <GROUP type="ktv" name="unused" version="2" minnum="0"  />
     <ELEM name="maxEntries" type="num" maxsize="4" minnum="0" />
     <ELEM name="attach" type="ascii" maxsize="35" minnum="0" />
  
@@ -113,7 +113,7 @@
   <SEGdef id="GetAccountSepaInfo" code="HKSPA" version="3"
           delimiter="+" terminator="'" >
     <GROUP type="SegHead" name="head" />
-    <GROUP type="ktv" version="2" />
+    <GROUP type="ktv" name="unused" version="2" minnum="0" />
     <ELEM name="maxEntries" type="num" maxsize="4" minnum="0" />
     <ELEM name="attach" type="ascii" maxsize="35" minnum="0" />
  
