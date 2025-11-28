@@ -51,7 +51,7 @@
 
 /* for improved readability */
 #define DLG_WITHPROGRESS 1
-#define DLG_UMOUNT       0
+#define DLG_NOUMOUNT       0
 #define DLG_DIALOGFILE   "aqbanking/backends/aqhbci/dialogs/dlg_edituserrdh.dlg"
 
 typedef int (*_DIALOG_SIGNAL_HANDLER_FN)(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
@@ -81,6 +81,7 @@ static int _handleActivatedApply(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, cons
 static int _handleActivatedReject(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
 static int _handleActivatedGetSysId(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
 static int _handleActivatedGetAccounts(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
+static int _handleActivatedGetSepaInfo(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
 static int _handleActivatedIniLetter(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
 static int _handleValueChanged(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
 static int _saveUser(GWEN_DIALOG *dlg);
@@ -101,6 +102,7 @@ static _DIALOG_SIGNAL_ENTRY _signalMap[]={
   {"bankCodeButton",       GWEN_DialogEvent_TypeActivated,    _handleActivatedBankCode},
   {"getSysIdButton",       GWEN_DialogEvent_TypeActivated,    _handleActivatedGetSysId},
   {"getAccountsButton",    GWEN_DialogEvent_TypeActivated,    _handleActivatedGetAccounts},
+  {"getSepaButton",        GWEN_DialogEvent_TypeActivated,    _handleActivatedGetSepaInfo},
   {"iniLetterButton",      GWEN_DialogEvent_TypeActivated,    _handleActivatedIniLetter},
 
   {"userNameEdit",         GWEN_DialogEvent_TypeValueChanged, _handleValueChanged},
@@ -455,7 +457,7 @@ int _handleActivatedGetSysId(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const ch
   }
 
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetSysId(xdlg->provider, xdlg->user, ctx, DLG_WITHPROGRESS, DLG_UMOUNT, xdlg->doLock);
+  rv=AH_Provider_GetSysId(xdlg->provider, xdlg->user, ctx, DLG_WITHPROGRESS, DLG_NOUMOUNT, xdlg->doLock);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
   }
@@ -484,7 +486,36 @@ int _handleActivatedGetAccounts(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const
   }
 
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetAccounts(xdlg->provider, xdlg->user, ctx, DLG_WITHPROGRESS, DLG_UMOUNT, xdlg->doLock);
+  rv=AH_Provider_GetAccounts(xdlg->provider, xdlg->user, ctx, DLG_WITHPROGRESS, DLG_NOUMOUNT, xdlg->doLock);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+  }
+
+  _toGui(dlg, xdlg->user);
+
+  AB_ImExporterContext_free(ctx);
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
+int _handleActivatedGetSepaInfo(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE t, GWEN_UNUSED const char *sender)
+{
+  AH_EDIT_USER_RDH_DIALOG *xdlg;
+  int rv;
+  AB_IMEXPORTER_CONTEXT *ctx;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_RDH_DIALOG, dlg);
+  assert(xdlg);
+
+  if (xdlg->modified) {
+    GWEN_Gui_ShowError(I18N("User Modified"), "%s", I18N("Please apply current changes first."));
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_GetAccountSepaInfo(xdlg->provider, xdlg->user, ctx, DLG_WITHPROGRESS, DLG_NOUMOUNT, xdlg->doLock);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
   }

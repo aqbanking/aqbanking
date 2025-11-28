@@ -84,10 +84,11 @@
     <widget type="groupBox" text="Special Actions" flags="fillX" >
       <widget type="gridLayout" columns="3" flags="fillX equalWidth" >
         <widget type="pushButton" text="Get Certificate" name="getCertButton" />
-        <widget type="pushButton" text="Get Bank Info" name="getBankInfoButton" />
-        <widget type="pushButton" text="Get System Id" name="getSysIdButton" />
-        <widget type="pushButton" text="Get iTAN Modes" name="getItanModesButton" />
-        <widget type="pushButton" text="Get Accounts" name="getAccountsButton" />
+        <widget type="pushButton" text="Get Bank Info"   name="getBankInfoButton" />
+        <widget type="pushButton" text="Get System Id"   name="getSysIdButton" />
+        <widget type="pushButton" text="Get iTAN Modes"  name="getItanModesButton" />
+        <widget type="pushButton" text="Get Accounts"    name="getAccountsButton" />
+        <widget type="pushButton" text="Get SEPA Info"   name="getSepaButton" />
       </widget>
     </widget>     <!-- groupBox -->
 

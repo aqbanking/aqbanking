@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Thu Jul 08 2010
- copyright   : (C) 2024 by Martin Preuss
+ copyright   : (C) 2025 by Martin Preuss
  email       : martin@aqbanking.de
  copyright   : (C) 2024 by Thomas Baumgart
  email       : thb@net-bembel.de
@@ -49,7 +49,7 @@
 
 /* for improved readability */
 #define DLG_WITHPROGRESS 1
-#define DLG_UMOUNT       0
+#define DLG_NOUMOUNT       0
 #define DLG_DIALOGFILE   "aqbanking/backends/aqhbci/dialogs/dlg_edituserpintan.dlg"
 
 
@@ -86,6 +86,7 @@ static int _handleActivatedGetSysId(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, c
 static int _handleActivatedGetBankInfo(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
 static int _handleActivatedGetItanModes(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
 static int _handleActivatedGetAccounts(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
+static int _handleActivatedGetSepaInfo(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
 static int _handleValueChanged(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
 
 static void _setModified(GWEN_DIALOG *dlg, int enabled);
@@ -121,6 +122,7 @@ static _DIALOG_SIGNAL_ENTRY _signalMap[]={
   {"getSysIdButton",      GWEN_DialogEvent_TypeActivated,    _handleActivatedGetSysId},
   {"getItanModesButton",  GWEN_DialogEvent_TypeActivated,    _handleActivatedGetItanModes},
   {"getAccountsButton",   GWEN_DialogEvent_TypeActivated,    _handleActivatedGetAccounts},
+  {"getSepaButton",       GWEN_DialogEvent_TypeActivated,    _handleActivatedGetSepaInfo},
 
   {"userNameEdit",        GWEN_DialogEvent_TypeValueChanged, _handleValueChanged},
   {"bankCodeEdit",        GWEN_DialogEvent_TypeValueChanged, _handleValueChanged},
@@ -279,10 +281,10 @@ int _fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
     return GWEN_ERROR_INVALID;
   }
 
-  httpVersion = _httpVersionComboGetCurrent(dlg, "httpVersionCombo");
-  tanMethod = AH_Widget_TanMethodComboGetCurrent(dlg, "tanMethodCombo");
+  httpVersion=_httpVersionComboGetCurrent(dlg, "httpVersionCombo");
+  tanMethod=AH_Widget_TanMethodComboGetCurrent(dlg, "tanMethodCombo");
 
-  if (tanMethod == 0) {
+  if (tanMethod==0) {
     if (!quiet) {
       GWEN_Gui_ShowError(I18N("Error on Input"), "%s", I18N("Please select tan method."));
       GWEN_Dialog_SetIntProperty(dlg, "tanMethodCombo", GWEN_DialogProperty_Focus, 0, 1, 0);
@@ -475,7 +477,7 @@ int _handleActivatedGetCert(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const cha
     return GWEN_DialogEvent_ResultHandled;
   }
 
-  rv=AH_Provider_GetCert(xdlg->provider, xdlg->user, DLG_WITHPROGRESS, DLG_UMOUNT, xdlg->doLock);
+  rv=AH_Provider_GetCert(xdlg->provider, xdlg->user, DLG_WITHPROGRESS, DLG_NOUMOUNT, xdlg->doLock);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
   }
@@ -501,7 +503,7 @@ int _handleActivatedGetSysId(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const ch
   }
 
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetSysId(xdlg->provider, xdlg->user, ctx, DLG_WITHPROGRESS, DLG_UMOUNT, xdlg->doLock);
+  rv=AH_Provider_GetSysId(xdlg->provider, xdlg->user, ctx, DLG_WITHPROGRESS, DLG_NOUMOUNT, xdlg->doLock);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
   }
@@ -535,7 +537,7 @@ int _handleActivatedGetBankInfo(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const
                              ctx,
                              0,   /* without TAN segment, maybe later add button for call with TAN segment */
                              DLG_WITHPROGRESS,
-                             DLG_UMOUNT,
+                             DLG_NOUMOUNT,
                              xdlg->doLock);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -565,7 +567,7 @@ int _handleActivatedGetItanModes(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, cons
   }
 
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetItanModes(xdlg->provider, xdlg->user, ctx, DLG_WITHPROGRESS, DLG_UMOUNT, xdlg->doLock);
+  rv=AH_Provider_GetItanModes(xdlg->provider, xdlg->user, ctx, DLG_WITHPROGRESS, DLG_NOUMOUNT, xdlg->doLock);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
   }
@@ -594,7 +596,36 @@ int _handleActivatedGetAccounts(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const
   }
 
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetAccounts(xdlg->provider, xdlg->user, ctx, DLG_WITHPROGRESS, DLG_UMOUNT, xdlg->doLock);
+  rv=AH_Provider_GetAccounts(xdlg->provider, xdlg->user, ctx, DLG_WITHPROGRESS, DLG_NOUMOUNT, xdlg->doLock);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+  }
+
+  _toGui(dlg, xdlg->user);
+
+  AB_ImExporterContext_free(ctx);
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
+int _handleActivatedGetSepaInfo(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE t, GWEN_UNUSED const char *sender)
+{
+  AH_EDIT_USER_PINTAN_DIALOG *xdlg;
+  int rv;
+  AB_IMEXPORTER_CONTEXT *ctx;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_PINTAN_DIALOG, dlg);
+  assert(xdlg);
+
+  if (xdlg->modified) {
+    GWEN_Gui_ShowError(I18N("User Modified"), "%s", I18N("Please apply current changes first."));
+    return GWEN_DialogEvent_ResultHandled;
+  }
+
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_GetAccountSepaInfo(xdlg->provider, xdlg->user, ctx, DLG_WITHPROGRESS, DLG_NOUMOUNT, xdlg->doLock);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
   }
