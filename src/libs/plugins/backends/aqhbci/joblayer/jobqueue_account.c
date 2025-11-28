@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Wed Jan 12 2022
-    copyright   : (C) 2022 by Martin Preuss
+    copyright   : (C) 2025 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -10,6 +10,7 @@
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
+
 
 
 #include "jobqueue_account.h"
@@ -32,13 +33,16 @@
 
 
 static AB_ACCOUNT_LIST *_readAccounts(AB_PROVIDER *pro, AB_USER *user, GWEN_DB_NODE *dbResponses);
+static AB_ACCOUNT_LIST *_readSepaAccounts(AB_PROVIDER *pro, AB_USER *user, GWEN_DB_NODE *dbResponses);
 static AB_ACCOUNT *_readAndSanitizeAccountData(AB_PROVIDER *pro, AH_BPD *bpd, GWEN_DB_NODE *dbAccountData);
+static AB_ACCOUNT *_readAccountSepaData(AB_PROVIDER *pro, GWEN_DB_NODE *dbAccountData);
 static void _removeEmpty(AB_ACCOUNT_LIST *accList);
 static void _matchAccountsWithStoredAccountsAndAssignStoredId(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accList);
 static uint32_t _findStored(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB_ACCOUNT_SPEC_LIST *asl);
-static void _addOrModify(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *acc);
-static void _possiblyReplaceUpdJobsForAccountInLockedUser(AB_USER *user, AB_ACCOUNT *storedAcc,
-                                                          GWEN_DB_NODE *dbTempUpd);
+static void _addOrModifyAccount(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *acc);
+static void _addOrModifySepaAccount(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *acc);
+
+static void _possiblyReplaceUpdJobsForAccountInLockedUser(AB_USER *user, AB_ACCOUNT *storedAcc, GWEN_DB_NODE *dbTempUpd);
 static AB_ACCOUNT *_getLoadedAndUpdatedOrCreatedAccount(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *acc);
 static void _possiblyUpdateAndWriteAccountSpec(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *storedAcc);
 static void _updateAccountInfo(AB_ACCOUNT *targetAccount, const AB_ACCOUNT *sourceAccount);
@@ -67,13 +71,43 @@ void AH_JobQueue_ReadAccounts(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses)
     _matchAccountsWithStoredAccountsAndAssignStoredId(pro, accList);
 
     /* now either add new accounts or modify existing ones */
-    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Adding new or modifying existing accounts");
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Adding new or modifying existing accounts");
     if (AB_Account_List_GetCount(accList)) {
       AB_ACCOUNT *acc;
 
       while ((acc=AB_Account_List_First(accList))) {
         AB_Account_List_Del(acc);
-        _addOrModify(pro, user, acc);
+        _addOrModifyAccount(pro, user, acc);
+        AB_Account_free(acc);
+      } /* while */
+    } /* if accounts */
+    AB_Account_List_free(accList);
+  }
+}
+
+
+
+void AH_JobQueue_ReadSepaAccounts(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses)
+{
+  AB_PROVIDER *pro;
+  AB_USER *user;
+  AB_ACCOUNT_LIST *accList;
+
+  user=AH_JobQueue_GetUser(jq);
+  pro=AB_User_GetProvider(user);
+  accList=_readSepaAccounts(pro, user, dbResponses);
+  if (accList) {
+    _removeEmpty(accList);
+    _matchAccountsWithStoredAccountsAndAssignStoredId(pro, accList);
+
+    /* now either add new accounts or modify existing ones */
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Adding new or modifying existing SEPA accounts");
+    if (AB_Account_List_GetCount(accList)) {
+      AB_ACCOUNT *acc;
+
+      while ((acc=AB_Account_List_First(accList))) {
+        AB_Account_List_Del(acc);
+        _addOrModifySepaAccount(pro, user, acc);
         AB_Account_free(acc);
       } /* while */
     } /* if accounts */
@@ -102,6 +136,35 @@ AB_ACCOUNT_LIST *_readAccounts(AB_PROVIDER *pro, AB_USER *user, GWEN_DB_NODE *db
       AB_Account_List_Add(acc, accList);
 
     dbCurr=GWEN_DB_FindNextGroup(dbCurr, "AccountData");
+  }
+
+  if (AB_Account_List_GetCount(accList)<1) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No account received.");
+    AB_Account_List_free(accList);
+    return NULL;
+  }
+
+  return accList;
+}
+
+
+
+AB_ACCOUNT_LIST *_readSepaAccounts(AB_PROVIDER *pro, AB_USER *user, GWEN_DB_NODE *dbResponses)
+{
+  AB_ACCOUNT_LIST *accList;
+  GWEN_DB_NODE *dbCurr;
+
+  accList=AB_Account_List_new();
+
+  dbCurr=GWEN_DB_FindFirstGroup(dbResponses, "GetAccountSepaInfoResponse");
+  while (dbCurr) {
+    AB_ACCOUNT *acc;
+
+    acc=_readAccountSepaData(pro, GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/GetAccountSepaInfoResponse"));
+    if (acc)
+      AB_Account_List_Add(acc, accList);
+
+    dbCurr=GWEN_DB_FindNextGroup(dbCurr, "GetAccountSepaInfoResponse");
   }
 
   if (AB_Account_List_GetCount(accList)<1) {
@@ -166,10 +229,39 @@ AB_ACCOUNT *_readAndSanitizeAccountData(AB_PROVIDER *pro, AH_BPD *bpd, GWEN_DB_N
 
 
 
+AB_ACCOUNT *_readAccountSepaData(AB_PROVIDER *pro, GWEN_DB_NODE *dbAccountData)
+{
+  if (dbAccountData) {
+    AB_ACCOUNT *acc;
+
+      /* account data found */
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Found SEPA account");
+    acc=AB_Provider_CreateAccountObject(pro);
+    assert(acc);
+
+    AB_Account_SetBankCode(acc, GWEN_DB_GetCharValue(dbAccountData, "bankCode", 0, NULL));
+    AB_Account_SetAccountNumber(acc, GWEN_DB_GetCharValue(dbAccountData, "accountId", 0, NULL));
+    AB_Account_SetSubAccountId(acc, GWEN_DB_GetCharValue(dbAccountData, "accountsubid", 0, NULL));
+    AB_Account_SetIban(acc, GWEN_DB_GetCharValue(dbAccountData, "iban", 0, NULL));
+    AB_Account_SetBic(acc, GWEN_DB_GetCharValue(dbAccountData, "bic", 0, NULL));
+
+    if (strcasecmp(GWEN_DB_GetCharValue(dbAccountData, "sepa", 0, "n"), "j")==0)
+      AH_Account_AddFlags(acc, AH_BANK_FLAGS_SEPA);
+    else
+      AH_Account_SubFlags(acc, AH_BANK_FLAGS_SEPA);
+
+    return acc;
+  }
+  else
+    return NULL;
+}
+
+
+
 static void _removeEmpty(AB_ACCOUNT_LIST *accList)
 {
   /* only keep accounts which have at least IBAN or bankcode and account number */
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Checking for empty accounts");
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Checking for empty accounts");
   if (AB_Account_List_GetCount(accList)) {
     AB_ACCOUNT *acc;
 
@@ -186,7 +278,7 @@ static void _removeEmpty(AB_ACCOUNT_LIST *accList)
       iban=AB_Account_GetIban(acc);
 
       if (!((iban && *iban) || (accountNum && *accountNum && bankCode && *bankCode))) {
-        DBG_DEBUG(AQHBCI_LOGDOMAIN, "Removing empty account from import list");
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Removing empty account from import list");
         AB_Account_List_Del(acc);
         AB_Account_free(acc);
       }
@@ -200,7 +292,7 @@ static void _removeEmpty(AB_ACCOUNT_LIST *accList)
 void _matchAccountsWithStoredAccountsAndAssignStoredId(AB_PROVIDER *pro, AB_ACCOUNT_LIST *accList)
 {
   /* find out which accounts are new */
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Checking for existing or to be added accounts");
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Checking for existing or to be added accounts");
   if (AB_Account_List_GetCount(accList)) {
     AB_BANKING *ab;
     AB_ACCOUNT_SPEC_LIST *accountSpecList=NULL;
@@ -286,7 +378,7 @@ static uint32_t _findStored(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB_ACCOUNT_
     uint32_t uniqueId;
 
     uniqueId=AB_AccountSpec_GetUniqueId(as);
-    DBG_DEBUG(AQHBCI_LOGDOMAIN, "Found a matching account (%lu)", (long unsigned int) uniqueId);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Found a matching account (%lu)", (long unsigned int) uniqueId);
     return uniqueId;
   }
 
@@ -294,7 +386,8 @@ static uint32_t _findStored(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB_ACCOUNT_
 }
 
 
-static void _addOrModify(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *acc)
+
+void _addOrModifyAccount(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *acc)
 {
   AB_ACCOUNT *storedAcc;
   GWEN_DB_NODE *dbTempUpd;
@@ -307,6 +400,17 @@ static void _addOrModify(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *acc)
   _possiblyUpdateAndWriteAccountSpec(pro, user, storedAcc);
 
   GWEN_DB_Group_free(dbTempUpd); /* is a copy, we need to free it */
+  AB_Account_free(storedAcc);
+}
+
+
+
+void _addOrModifySepaAccount(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *acc)
+{
+  AB_ACCOUNT *storedAcc;
+
+  storedAcc=_getLoadedAndUpdatedOrCreatedAccount(pro, user, acc);
+  _possiblyUpdateAndWriteAccountSpec(pro, user, storedAcc);
   AB_Account_free(storedAcc);
 }
 
@@ -470,6 +574,4 @@ void _updateAccountInfo(AB_ACCOUNT *targetAccount, const AB_ACCOUNT *sourceAccou
   /* use flags from new account */
   AH_Account_AddFlags(targetAccount, AH_Account_GetFlags(sourceAccount));
 }
-
-
 
