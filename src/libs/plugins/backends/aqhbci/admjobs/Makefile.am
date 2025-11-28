@@ -17,7 +17,7 @@ noinst_HEADERS=\
   jobsendkeys_l.h jobsendkeys_p.h \
   jobchangekeys_l.h jobchangekeys_p.h \
   jobtan_l.h jobtan_p.h \
-  jobgetsepainfo_l.h jobgetsepainfo_p.h \
+  jobgetsepainfo_l.h \
   jobgetsysid_l.h jobgetsysid_p.h \
   jobgetbankinfo_l.h jobgetbankinfo_p.h \
   jobunblockpin_l.h \
