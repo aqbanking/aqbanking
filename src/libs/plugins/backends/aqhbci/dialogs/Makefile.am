@@ -30,6 +30,7 @@ noinst_HEADERS=\
   dlg_choose_usertype_l.h dlg_choose_usertype_p.h \
   dlg_editaccount_l.h dlg_editaccount_p.h \
   dlg_pintan_tanmode_l.h dlg_pintan_tanmode_p.h \
+  dlg_vop.h \
   w_hbciversioncombo.h \
   w_accounttypecombo.h \
   w_usercombo.h \
@@ -55,6 +56,7 @@ libaqhbci_dlgs_la_SOURCES=\
   dlg_choose_usertype.c \
   dlg_editaccount.c \
   dlg_pintan_tanmode.c \
+  dlg_vop.c \
   w_hbciversioncombo.c \
   w_accounttypecombo.c \
   w_usercombo.c \
@@ -80,7 +82,8 @@ dlgdata_DATA=\
   dlg_newuser.dlg \
   dlg_choose_usertype.dlg \
   dlg_editaccount.dlg \
-  dlg_pintan_tanmode.dlg
+  dlg_pintan_tanmode.dlg \
+  dlg_vop.dlg
 
 
 dlgimagedir=$(aqbanking_pkgdatadir)/backends/aqhbci/dialogs
