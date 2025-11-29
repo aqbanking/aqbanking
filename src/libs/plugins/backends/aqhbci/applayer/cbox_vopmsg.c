@@ -13,6 +13,8 @@
 
 
 #include "aqhbci/applayer/cbox_vopmsg.h"
+#include "aqhbci/dialogs/dlg_vop.h"
+#include "aqhbci/admjobs/jobvpp.h"
 
 #include "aqbanking/types/transaction.h"
 #include "aqbanking/i18n_l.h"
@@ -23,6 +25,7 @@
 
 static void _applyVopResultToTransaction(const AH_VOP_RESULT *vr, const char *sRemoteIban, const char *sRemoteName, AB_TRANSACTION *t);
 static AB_TRANSACTION_VOPRESULT _vopResultCodeToTransactionVopResult(int i);
+static int _showSimpleGuiMessage(const char *sJobName, const char *sBankName, const char *sUserName, const char *sMsg);
 
 
 
@@ -32,54 +35,49 @@ int AH_OutboxCBox_LetUserConfirmVopResult(AH_OUTBOX_CBOX *cbox, AH_JOB *workJob,
   AB_PROVIDER *provider;
   AB_BANKING *ab;
   AB_USER *user;
-  GWEN_BUFFER *guiBuf;
   const char *sUserName;
-  const char *sBankName=NULL;
+  const char *sBankName;
+  const char *sJobName;
   AB_BANKINFO *bankInfo;
+  const AH_VOP_RESULT_LIST *resultList;
+  GWEN_DIALOG *dlg;
   int rv;
 
   provider=AH_OutboxCBox_GetProvider(cbox);
   ab=AB_Provider_GetBanking(provider);
   user=AH_OutboxCBox_GetUser(cbox);
   sUserName=AB_User_GetUserId(user);
+  sJobName=AH_Job_GetCode(workJob);
 
   /* find bank name */
   bankInfo=AB_Banking_GetBankInfo(ab, "de", "*", AB_User_GetBankCode(user));
-  if (bankInfo)
-    sBankName=AB_BankInfo_GetBankName(bankInfo);
+  sBankName=bankInfo?AB_BankInfo_GetBankName(bankInfo):NULL;
   if (!sBankName)
     sBankName=AB_User_GetBankCode(user);
 
-  guiBuf=GWEN_Buffer_new(0, 256, 0, 1);
-  GWEN_Buffer_AppendArgs(guiBuf,
-                         I18N("Result of Verification of Payee process at the bank (user %s at %s):\n"
-                              "%s\n"
-                              "\n"
-                              "If you still want to execute the job \"%s\" click \"Approve\".\n"
-                              "\n"
-                              "Please note that in that case the risk for executing the given job will move from the bank\n"
-                              "to you. Always make sure you have the correct payee in your transfers!"),
-                         sUserName?sUserName:"<no user id>",
-                         sBankName?sBankName:"<no bank name>",
-                         sMsg?sMsg:I18N("<no msg from bank>"),
-                         AH_Job_GetCode(workJob));
-
-  AB_BankInfo_free(bankInfo);
-
-  rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_INFO | GWEN_GUI_MSG_FLAGS_CONFIRM_B1 | GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
-                         I18N("Verification of Payee Result"),
-                         GWEN_Buffer_GetStart(guiBuf),
-                         I18N("Approve"),
-                         I18N("Abort"),
-                         NULL,
-                         0);
-  GWEN_Buffer_free(guiBuf);
-  if (rv!=1) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Not confirming payee(s) (%d)", rv);
-    return GWEN_ERROR_USER_ABORTED;
+  resultList=vppJob?AH_Job_VPP_GetResultList(vppJob):NULL;
+  dlg=AH_VopDialog_new(sJobName, sBankName, sUserName, sMsg, resultList);
+  if (dlg) {
+    rv=GWEN_Gui_ExecDialog(dlg, 0);
+    GWEN_Dialog_free(dlg);
+    if (rv==0) {
+      /* rejected */
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Rejected");
+      AB_BankInfo_free(bankInfo);
+      return GWEN_ERROR_USER_ABORTED;
+    }
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Accepted");
+      AB_BankInfo_free(bankInfo);
+      return 0;
+    }
   }
-
-  return 0;
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error creating dialog, trying simple dialog");
+    rv=_showSimpleGuiMessage(sJobName, sBankName, sUserName, sMsg);
+    AB_BankInfo_free(bankInfo);
+    return rv;
+  }
 }
 
 
@@ -162,6 +160,43 @@ AB_TRANSACTION_VOPRESULT _vopResultCodeToTransactionVopResult(int i)
   }
 }
 
+
+
+int _showSimpleGuiMessage(const char *sJobName, const char *sBankName, const char *sUserName, const char *sMsg)
+{
+  GWEN_BUFFER *guiBuf;
+  int rv;
+
+  guiBuf=GWEN_Buffer_new(0, 256, 0, 1);
+  GWEN_Buffer_AppendArgs(guiBuf,
+                         I18N("Result of Verification of Payee process at the bank (user %s at %s):\n"
+                              "%s\n"
+                              "\n"
+                              "If you still want to execute the job \"%s\" click \"Approve\".\n"
+                              "\n"
+                              "Please note that in that case the risk for executing the given job will move from the bank\n"
+                              "to you. Always make sure you have the correct payee in your transfers!"),
+                         sUserName?sUserName:"<no user id>",
+                         sBankName?sBankName:"<no bank name>",
+                         sMsg?sMsg:I18N("<no msg from bank>"),
+                         sJobName);
+
+  rv=GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_INFO | GWEN_GUI_MSG_FLAGS_CONFIRM_B1 | GWEN_GUI_MSG_FLAGS_SEVERITY_DANGEROUS,
+                         I18N("Verification of Payee Result"),
+                         GWEN_Buffer_GetStart(guiBuf),
+                         I18N("Approve"),
+                         I18N("Abort"),
+                         NULL,
+                         0);
+  GWEN_Buffer_free(guiBuf);
+  if (rv!=1) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Not confirming payee(s) (%d)", rv);
+    return GWEN_ERROR_USER_ABORTED;
+  }
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "User accepted.");
+  return 0;
+}
 
 
 
