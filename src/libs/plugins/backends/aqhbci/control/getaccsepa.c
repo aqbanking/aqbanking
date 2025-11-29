@@ -53,7 +53,7 @@ int AH_Control_GetAccSepa(AB_PROVIDER *pro, GWEN_DB_NODE *dbArgs, int argc, char
     /* flags type    name         min max s    long       short_descr, long_descr */
     { A_ARG, A_INT,  "userId",    0,  1,  "u", "user",    "Specify unique user id", NULL},
     { A_ARG, A_INT,  "accountId", 0,  1,  "a", "account", "Specify unique id of account", NULL},
-    { A_END, A_INT,  "help",      0,  0, "h",  "help",    "Show this help screen", NULL}
+    { A_END, A_INT,  "help",      0,  0,  "h", "help",    "Show this help screen", NULL}
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
