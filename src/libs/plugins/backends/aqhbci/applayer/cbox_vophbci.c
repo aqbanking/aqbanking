@@ -154,12 +154,17 @@ int _handleStage1(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *vppJob, AH_JOB *
       return GWEN_ERROR_GENERIC;
     }
     else if (AH_Job_HasResultWithCode(vppJob, 3090)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Let user accept or reject VOP result");
-      rv=AH_OutboxCBox_LetUserConfirmVopResult(cbox, workJob, vppJob, s);
-      if (rv<0) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Aborted by user (%d)", rv);
-        GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Aborted by user."));
-        return rv;
+      const AH_VOP_RESULT_LIST *resultList;
+
+      resultList=AH_Job_VPP_GetResultList(vppJob);
+      if ((s && *s) || (resultList && AH_VopResult_List_GetCount(resultList))) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Let user accept or reject VOP result");
+        rv=AH_OutboxCBox_LetUserConfirmVopResult(cbox, workJob, vppJob, s);
+        if (rv<0) {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Aborted by user (%d)", rv);
+          GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Aborted by user."));
+          return rv;
+        }
       }
     }
   }
