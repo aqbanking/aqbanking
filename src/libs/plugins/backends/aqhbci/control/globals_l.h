@@ -26,6 +26,7 @@
 
 #define I18N_NOOP(msg) msg
 
+
 #include "aqhbci/aqhbci.h"
 #include "aqhbci/banking/provider.h"
 #include "aqhbci/banking/provider_online.h"
@@ -40,6 +41,7 @@
 
 
 #include "control_l.h"
+
 
 
 int AH_Control_MkPinList(AB_PROVIDER *pro,
@@ -190,6 +192,11 @@ int AH_Control_LogFile(AB_PROVIDER *pro,
 
 
 int AH_Control_Test1(AB_PROVIDER *pro,
+                     GWEN_DB_NODE *dbArgs,
+                     int argc,
+                     char **argv);
+
+int AH_Control_Test2(AB_PROVIDER *pro,
                      GWEN_DB_NODE *dbArgs,
                      int argc,
                      char **argv);

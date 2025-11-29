@@ -95,6 +95,7 @@
       settanmechanism.c
       gettargetacc.c
       test.c
+      test2.c
     </sources>
 
     <data install="$(aqbanking_plugin_installdir)/providers" >

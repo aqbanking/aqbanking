@@ -305,6 +305,9 @@ int AH_Control(AB_PROVIDER *pro, int argc, char **argv)
   else if (strcasecmp(cmd, "test1")==0) {
     rv=AH_Control_Test1(pro, db, argc, argv);
   }
+  else if (strcasecmp(cmd, "test2")==0) {
+    rv=AH_Control_Test2(pro, db, argc, argv);
+  }
   else {
     fprintf(stderr, "ERROR: Unknown command \"%s\".\n", cmd);
     rv=1;
