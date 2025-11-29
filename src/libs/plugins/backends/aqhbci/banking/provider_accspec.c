@@ -264,16 +264,22 @@ int _createTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Creating transaction limits for account \"%u\"", (unsigned int)AB_Account_GetUniqueId(acc));
   DBG_INFO(AQHBCI_LOGDOMAIN,
            "You may see some messages like \"Job not supported with this account\" below, those are okay, please ignore");
-
+  DBG_INFO(AQHBCI_LOGDOMAIN, "============ Ignore below ============");
 
   i=0;
   while (jobList[i]!=AB_Transaction_CommandUnknown) {
-    rv=_addAccountLimitsForJobType(pro, u, acc, tll, jobList[i]);
+    int jobType;
+
+    jobType=jobList[i];
+    DBG_INFO(AQHBCI_LOGDOMAIN, "------------ %s ------------", AB_Transaction_Command_toString(jobType));
+
+    rv=_addAccountLimitsForJobType(pro, u, acc, tll, jobType);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     }
     i++;
   } /* while i */
+  DBG_INFO(AQHBCI_LOGDOMAIN, "============ Ignore above ============");
 
   return 0;
 }
