@@ -30,7 +30,7 @@ noinst_HEADERS=\
   dlg_choose_usertype_l.h dlg_choose_usertype_p.h \
   dlg_editaccount_l.h dlg_editaccount_p.h \
   dlg_pintan_tanmode_l.h dlg_pintan_tanmode_p.h \
-  dlg_vop.h \
+  dlg_vop.h dlg_vop_p.h \
   w_hbciversioncombo.h \
   w_accounttypecombo.h \
   w_usercombo.h \
