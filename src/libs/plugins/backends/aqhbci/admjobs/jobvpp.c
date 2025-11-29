@@ -342,6 +342,7 @@ void _readVopResultGroup(AH_JOB *j, AH_JOB_VPP *aj, GWEN_DB_NODE *dbVppResponse)
     sResult=GWEN_DB_GetCharValue(dbVppResult, "result", 0, NULL);
     vopResultCode=sResult?AH_VopResultCode_fromString(sResult):AH_VopResultCodeNone;
     sAltName=GWEN_DB_GetCharValue(dbVppResult, "alternativeRecipientName", 0, NULL);
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Found a vopResult group");
     if (vopResultCode!=AH_VopResultCodePending) {
       AH_VOP_RESULT *vr;
 
