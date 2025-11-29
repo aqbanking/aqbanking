@@ -1209,6 +1209,7 @@ int AH_Provider_GetAccountSepaInfo(AB_PROVIDER *pro,
   AH_HBCI *h;
   AH_OUTBOX *ob;
   int rv;
+  AH_JOB *job;
 
   assert(pro);
 
@@ -1220,8 +1221,6 @@ int AH_Provider_GetAccountSepaInfo(AB_PROVIDER *pro,
 
 
   ob=AH_Outbox_new(pro);
-
-  AH_JOB *job;
 
   job=AH_Job_GetAccountSepaInfo_new(pro, u);
   if (!job) {
