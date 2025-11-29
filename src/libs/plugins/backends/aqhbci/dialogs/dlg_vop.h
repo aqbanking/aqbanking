@@ -24,7 +24,9 @@ extern "C" {
 #endif
 
 
-GWEN_DIALOG *AH_VopDialog_new(const char *vopMsg, const AH_VOP_RESULT_LIST *resultList);
+GWEN_DIALOG *AH_VopDialog_new(const char *sJobName, const char *sBankName, const char *sUserName,
+                              const char *vopMsg,
+                              const AH_VOP_RESULT_LIST *resultList);
 
 
 #ifdef __cplusplus

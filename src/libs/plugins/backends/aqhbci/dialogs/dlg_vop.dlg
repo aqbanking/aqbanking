@@ -16,11 +16,15 @@
         i18n="aqbanking"
         flags="decorShrinkable decorStretchable decorMaximize decorMinimize decorClose decorMenu" >
 
-  <widget     type="vlayout"                             flags="fillX fillY" >
-    <widget   type="label"       name="introLabel"       flags="fillX" />
-    <widget   type="textBrowser" name="vopMsg"           flags="fillX fillY readOnly" />
-    <widget   type="listBox"     name="vopResultListBox" flags="fillX fillY" />
-
+  <widget     type="vlayout"                                               flags="fillX fillY" >
+    <widget   type="label"       name="introLabel"                         flags="fillX" />
+    <widget   type="groupBox"    text="VOP Message From Your Bank"         flags="fillX fillY" >
+      <widget type="textBrowser" name="vopMsg"                             flags="fillX fillY readOnly" />
+    </widget>
+    <widget   type="groupBox"    text="VOP Results Reported By Your Bank"  flags="fillX fillY" >
+      <widget type="listBox"     name="vopResultListBox" flags="fillX fillY" />
+    </widget>
+    
     <!-- dialog controls -->
     <widget   type="hLine"                               flags="fillX" />
     <widget   type="hlayout"                             flags="fillX equalWidth" >

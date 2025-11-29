@@ -68,6 +68,7 @@ static int _handleFini(GWEN_DIALOG *dlg);
 static int _handleActivatedAccept(GWEN_DIALOG *dlg);
 static int _handleActivatedReject(GWEN_DIALOG *dlg);
 
+static void _setIntroLabel(GWEN_DIALOG *dlg);
 static void _buildResultList(GWEN_DIALOG *dlg, const char *widgetName, const AH_VOP_RESULT_LIST *resultList);
 static void _vopMsgToGui(GWEN_DIALOG *dlg, const char *widgetName, const char *sVopMsg, int maxLen);
 static void _stringListToBufferPlain(const GWEN_STRINGLIST *sl, int maxLen, GWEN_BUFFER *tbuf);
@@ -102,7 +103,9 @@ static _DIALOG_SIGNAL_ENTRY _signalMap[]={
  * ------------------------------------------------------------------------------------------------
  */
 
-GWEN_DIALOG *AH_VopDialog_new(const char *vopMsg, const AH_VOP_RESULT_LIST *resultList)
+GWEN_DIALOG *AH_VopDialog_new(const char *jobName, const char *bankName, const char *userName,
+                              const char *vopMsg,
+                              const AH_VOP_RESULT_LIST *resultList)
 {
   GWEN_DIALOG *dlg;
   AH_VOP_DIALOG *xdlg;
@@ -119,6 +122,9 @@ GWEN_DIALOG *AH_VopDialog_new(const char *vopMsg, const AH_VOP_RESULT_LIST *resu
 
   xdlg->vopMsg=vopMsg?strdup(vopMsg):NULL;
   xdlg->resultList=resultList;
+  xdlg->jobName=jobName?strdup(jobName):NULL;
+  xdlg->bankName=bankName?strdup(bankName):NULL;
+  xdlg->userName=userName?strdup(userName):NULL;
 
   return dlg;
 }
@@ -130,6 +136,9 @@ void GWENHYWFAR_CB _freeData(void *bp, void *p)
   AH_VOP_DIALOG *xdlg;
 
   xdlg=(AH_VOP_DIALOG*) p;
+  free(xdlg->userName);
+  free(xdlg->bankName);
+  free(xdlg->jobName);
   free(xdlg->vopMsg);
   GWEN_FREE_OBJECT(xdlg);
 }
@@ -148,6 +157,9 @@ int _handleInit(GWEN_DIALOG *dlg)
 
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
+  GWEN_Dialog_SetCharProperty(dlg, "", GWEN_DialogProperty_Title, 0, I18N("Verification of Payee"), 0);
+
+  _setIntroLabel(dlg);
   _vopMsgToGui(dlg, ID_VOPMSG, xdlg->vopMsg, VOPMSG_MAXWIDTH_IN_CHARS);
 
   /* setup result list */
@@ -231,6 +243,48 @@ int GWENHYWFAR_CB _dlgApi_signalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE 
   }
 
   return GWEN_DialogEvent_ResultNotHandled;
+}
+
+
+
+void _setIntroLabel(GWEN_DIALOG *dlg)
+{
+  AH_VOP_DIALOG *xdlg;
+  GWEN_BUFFER *guiBuf;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_VOP_DIALOG, dlg);
+  assert(xdlg);
+
+  guiBuf=GWEN_Buffer_new(0, 256, 0, 1);
+
+  GWEN_Buffer_AppendArgs(guiBuf,
+    I18N("These are the results of the <i>Verification of Payee</i> process at the bank (user %s at %s).\n"
+         "FinTS specifications and your bank require us to show this dialog.\n"
+         "If your bank provided a message it will be included below (the formatting probably had to be\n"
+         "changed but otherwise the message was not altered).\n"
+         "Sometimes there are no results reported by the bank, in that case the result list below is empty.\n"
+         "\n"
+         "If you still want to execute the job \"%s\" click \"Accept\".\n"
+
+         "<html>"
+         "<p>These are the results of the Verification of Payee process at the bank (user <i>%s</i> at <i>%s</i>).</p>"
+         "<p>FinTS specifications and your bank require us to show this dialog.</p>"
+         "<p>If your bank provided a message it will be included below (the formatting probably had to be "
+         "changed but otherwise the message was not altered).</p>"
+         "<p>Sometimes there are no results reported by the bank, in that case the result list below is empty.</p>"
+         "<p>If you still want to execute the job <b>%s</b> click <b>Accept</b>.</p>"
+         "</html>"
+        ),
+    xdlg->userName?xdlg->userName:I18N("<no user id>"),
+    xdlg->bankName?xdlg->bankName:I18N("<no bank name>"),
+    xdlg->jobName?xdlg->jobName:I18N("<no job name>"),
+    xdlg->userName?xdlg->userName:I18N("<no user id>"),
+    xdlg->bankName?xdlg->bankName:I18N("<no bank name>"),
+    xdlg->jobName?xdlg->jobName:I18N("<no job name>"));
+
+  GWEN_Dialog_SetCharProperty(dlg, "introLabel", GWEN_DialogProperty_Title, 0, GWEN_Buffer_GetStart(guiBuf), 0);
+  GWEN_Buffer_free(guiBuf);
 }
 
 
@@ -379,7 +433,9 @@ void _stringListToBufferHtml(const GWEN_STRINGLIST *sl, GWEN_BUFFER *tbuf)
           /* html element */
           if (strcasecmp(s, "<br>")==0 ||
               strcasecmp(s, "<p>")==0 ||
-              strcasecmp(s, "</p>")==0) {
+              strcasecmp(s, "</p>")==0 ||
+              strcasecmp(s, "<b>")==0 ||
+              strcasecmp(s, "</b>")==0) {
             GWEN_Buffer_AppendString(tbuf, s);
           }
           else {

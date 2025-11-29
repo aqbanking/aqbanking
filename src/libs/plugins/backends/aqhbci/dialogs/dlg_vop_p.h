@@ -18,6 +18,9 @@ typedef struct AH_VOP_DIALOG AH_VOP_DIALOG;
 struct AH_VOP_DIALOG {
   const AH_VOP_RESULT_LIST *resultList;
   char *vopMsg;
+  char *jobName;
+  char *bankName;
+  char *userName;
 };
 
 
