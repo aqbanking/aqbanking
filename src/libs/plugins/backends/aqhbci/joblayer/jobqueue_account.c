@@ -46,6 +46,7 @@ static void _possiblyReplaceUpdJobsForAccountInLockedUser(AB_USER *user, AB_ACCO
 static AB_ACCOUNT *_getLoadedAndUpdatedOrCreatedAccount(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *acc);
 static void _possiblyUpdateAndWriteAccountSpec(AB_PROVIDER *pro, AB_USER *user, AB_ACCOUNT *storedAcc);
 static void _updateAccountInfo(AB_ACCOUNT *targetAccount, const AB_ACCOUNT *sourceAccount);
+static void _logAccount(const char *msg, const AB_ACCOUNT *acc);
 
 
 
@@ -76,6 +77,7 @@ void AH_JobQueue_ReadAccounts(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses)
       AB_ACCOUNT *acc;
 
       while ((acc=AB_Account_List_First(accList))) {
+        _logAccount("Handling account", acc);
         AB_Account_List_Del(acc);
         _addOrModifyAccount(pro, user, acc);
         AB_Account_free(acc);
@@ -105,6 +107,7 @@ void AH_JobQueue_ReadSepaAccounts(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses)
       AB_ACCOUNT *acc;
 
       while ((acc=AB_Account_List_First(accList))) {
+        _logAccount("Handling SEPA account", acc);
         AB_Account_List_Del(acc);
         _addOrModifySepaAccount(pro, user, acc);
         AB_Account_free(acc);
@@ -131,8 +134,10 @@ AB_ACCOUNT_LIST *_readAccounts(AB_PROVIDER *pro, AB_USER *user, GWEN_DB_NODE *db
     AB_ACCOUNT *acc;
 
     acc=_readAndSanitizeAccountData(pro, bpd, GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/AccountData"));
-    if (acc)
+    if (acc) {
+      _logAccount("Adding account to import list", acc);
       AB_Account_List_Add(acc, accList);
+    }
 
     dbCurr=GWEN_DB_FindNextGroup(dbCurr, "AccountData");
   }
@@ -168,8 +173,10 @@ AB_ACCOUNT_LIST *_readSepaAccounts(AB_PROVIDER *pro, AB_USER *user, GWEN_DB_NODE
         AB_ACCOUNT *acc;
 
         acc=_readAccountSepaData(pro, dbAccount);
-        if (acc)
+        if (acc) {
+          _logAccount("Adding SEPA account to import list", acc);
           AB_Account_List_Add(acc, accList);
+        }
 
         dbAccount=GWEN_DB_FindNextGroup(dbAccount, "account");
       }
@@ -231,6 +238,7 @@ AB_ACCOUNT *_readAndSanitizeAccountData(AB_PROVIDER *pro, AH_BPD *bpd, GWEN_DB_N
     }
     AH_Account_SetDbTempUpd(acc, dbUpd);
 
+    _logAccount("Account read", acc);
     return acc;
   }
   else
@@ -279,6 +287,7 @@ AB_ACCOUNT *_readAccountSepaData(AB_PROVIDER *pro, GWEN_DB_NODE *dbAccountData)
     else
       AH_Account_SubFlags(acc, AH_BANK_FLAGS_SEPA);
 
+    _logAccount("SEPA account read", acc);
     return acc;
   }
   else
@@ -307,7 +316,7 @@ static void _removeEmpty(AB_ACCOUNT_LIST *accList)
       iban=AB_Account_GetIban(acc);
 
       if (!((iban && *iban) || (accountNum && *accountNum && bankCode && *bankCode))) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Removing empty account from import list");
+        _logAccount("Removing empty account from import list", acc);
         AB_Account_List_Del(acc);
         AB_Account_free(acc);
       }
@@ -344,9 +353,10 @@ void _matchAccountsWithStoredAccountsAndAssignStoredId(AB_PROVIDER *pro, AB_ACCO
         if (storedUid) {
           DBG_INFO(AQHBCI_LOGDOMAIN, "Found a matching account (%x, %lu)", storedUid, (long unsigned int) storedUid);
           AB_Account_SetUniqueId(acc, storedUid);
+          _logAccount("Found a matching account in storage, aid set", acc);
         }
         else {
-          DBG_INFO(AQHBCI_LOGDOMAIN, "No match found for account");
+          _logAccount("No match found for account", acc);
         }
 
         acc=AB_Account_List_Next(acc);
@@ -371,11 +381,7 @@ static uint32_t _findStored(AB_PROVIDER *pro, const AB_ACCOUNT *acc, AB_ACCOUNT_
   iban=AB_Account_GetIban(acc);
   accountType=AB_Account_GetAccountType(acc);
 
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Checking account [blz=%s, acc=%s, iban=%s, type=%d]",
-           bankCode?bankCode:"<none>",
-           accountNum?accountNum:"<none>",
-           iban?iban:"<none>",
-           accountType);
+  _logAccount("Looking for matching account in storage", acc);
 
   if (iban && *iban /*&& accountType>AB_AccountType_Unknown*/) {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "Comparing IBAN and old account specs");
@@ -500,6 +506,7 @@ AB_ACCOUNT *_getLoadedAndUpdatedOrCreatedAccount(AB_PROVIDER *pro, AB_USER *user
 
     /* account already exists, needs update */
     DBG_INFO(AQHBCI_LOGDOMAIN, "Account %u (%u) exists, modifying", (unsigned int) aid, (unsigned int)aid);
+    _logAccount("Account exists, modifying", acc);
     rv=AB_Provider_GetAccount(pro, aid, 1, 0, &storedAcc); /* lock, don't unlock */
     if (rv<0) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Error getting referred account (%d)", rv);
@@ -527,6 +534,7 @@ AB_ACCOUNT *_getLoadedAndUpdatedOrCreatedAccount(AB_PROVIDER *pro, AB_USER *user
 
     /* account is new, add it */
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Account is new, adding");
+    _logAccount("Account is new, adding", acc);
     AB_Account_SetUserId(acc, AB_User_GetUniqueId(user));
     rv=AB_Provider_AddAccount(pro, acc, 0); /* do not lock corresponding user because it already is locked! */
     if (rv<0) {
@@ -558,7 +566,7 @@ void _possiblyUpdateAndWriteAccountSpec(AB_PROVIDER *pro, AB_USER *user, AB_ACCO
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Updating account spec for account %u in user %u",
                (unsigned int) AB_Account_GetUniqueId(storedAcc),
                (unsigned int) AB_User_GetUniqueId(user));
-
+    _logAccount("Updating account spec",storedAcc);
     rv=AH_Provider_CreateAndWriteAccountSpecWithUserAndAccount(pro, user, storedAcc);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -609,9 +617,45 @@ void _updateAccountInfo(AB_ACCOUNT *targetAccount, const AB_ACCOUNT *sourceAccou
   if (s && *s)
     AB_Account_SetCurrency(targetAccount, s);
 
-  AB_Account_SetAccountType(targetAccount, AB_Account_GetAccountType(sourceAccount));
+  if (AB_Account_GetAccountType(sourceAccount)>AB_AccountType_Unknown)
+    AB_Account_SetAccountType(targetAccount, AB_Account_GetAccountType(sourceAccount));
 
   /* use flags from new account */
   AH_Account_AddFlags(targetAccount, AH_Account_GetFlags(sourceAccount));
 }
+
+
+
+void _logAccount(const char *msg, const AB_ACCOUNT *acc)
+{
+  if (acc) {
+    const char *sIban;
+    const char *sBic;
+    const char *sAccountId;
+    const char *sBankCode;
+    uint32_t aid;
+    int at;
+
+    sIban=AB_Account_GetIban(acc);
+    sBic=AB_Account_GetBic(acc);
+    sAccountId=AB_Account_GetAccountNumber(acc);
+    sBankCode=AB_Account_GetBankCode(acc);
+    aid=AB_Account_GetUniqueId(acc);
+    at=AB_Account_GetAccountType(acc);
+
+    DBG_INFO(AQHBCI_LOGDOMAIN,
+             "%s (iban=%s, bic=%s, nr=%s, blz=%s, t=%s(%d), aid=%d [%08x], flags=%08x)",
+             msg?msg:"<no msg>",
+             sIban?sIban:"<empty>",
+             sBic?sBic:"<empty>",
+             sAccountId?sAccountId:"<empty>",
+             sBankCode?sBankCode:"<empty>",
+             AB_AccountType_toChar(at),
+             at,
+             aid, aid,
+             AH_Account_GetFlags(acc));
+  }
+}
+
+
 
