@@ -202,7 +202,11 @@ int _handleStage1(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_JOB 
       return GWEN_ERROR_GENERIC;
     }
     else if (AH_Job_HasResultWithCode(vppJob, 3090)) {
-      if (s && *s) {
+      const AH_VOP_RESULT_LIST *resultList;
+
+      resultList=AH_Job_VPP_GetResultList(vppJob);
+      if ((s && *s) || (resultList && AH_VopResult_List_GetCount(resultList))) {
+        /* only show dialog if either bank message or result list available */
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Let user accept or reject VOP result");
         rv=AH_OutboxCBox_LetUserConfirmVopResult(cbox, workJob, vppJob, s);
         if (rv<0) {
