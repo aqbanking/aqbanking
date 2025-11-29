@@ -61,15 +61,14 @@ int AH_Control_Test2(AB_PROVIDER *pro, GWEN_DB_NODE *dbArgs, int argc, char **ar
   AH_VOP_RESULT_LIST *resultList;
   const char *sMsg=
     "This is a reminder from your bank just to tell you that you are "
-    "screwed\n"
-    "if you really allow me to send your money to THAT person "
+    "screwed if you really allow me to send your money to THAT person "
     "and that we won't help you get even a cent back.<br>"
-    "Oh and we will send this message every single time you try to transfer money "
-    "to anyone";
+    "Oh, and we will send this message every single time you try to transfer money "
+    "to anyone.";
 
   resultList=_createResultList();
 
-  dlg=AH_VopDialog_new(sMsg, resultList);
+  dlg=AH_VopDialog_new("Transfer", "Any bank", "Any user", sMsg, resultList);
   if (dlg) {
     int rv;
 
