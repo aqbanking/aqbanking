@@ -49,18 +49,32 @@ int AH_OutboxCBox_LetUserConfirmVopResult(AH_OUTBOX_CBOX *cbox, AH_JOB *workJob,
   sUserName=AB_User_GetUserId(user);
   sJobName=AH_Job_GetName(workJob);
 
+  resultList=vppJob?AH_Job_VPP_GetResultList(vppJob):NULL;
+  if (!(sMsg && *sMsg) && (resultList==NULL || (resultList && AH_VopResult_List_HasOnlyMatches(resultList)))) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Showing dialog is not really necessary here, but in beta phase we will show it anyway");
+    /*DBG_WARN(AQHBCI_LOGDOMAIN, "No msg, no non-matching results, silently accepting.");
+    return 0; */
+  }
+
   /* find bank name */
   bankInfo=AB_Banking_GetBankInfo(ab, "de", "*", AB_User_GetBankCode(user));
   sBankName=bankInfo?AB_BankInfo_GetBankName(bankInfo):NULL;
   if (!sBankName)
     sBankName=AB_User_GetBankCode(user);
 
-  resultList=vppJob?AH_Job_VPP_GetResultList(vppJob):NULL;
   dlg=AH_VopDialog_new(sJobName, sBankName, sUserName, sMsg, resultList);
   if (dlg) {
     rv=GWEN_Gui_ExecDialog(dlg, 0);
     GWEN_Dialog_free(dlg);
-    if (rv==0) {
+    if (rv<0) {
+      if (rv!=GWEN_ERROR_NOT_IMPLEMENTED) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+        AB_BankInfo_free(bankInfo);
+        return rv;
+      }
+      /* fall-through */
+    }
+    else if (rv==0) {
       /* rejected */
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Rejected");
       AB_BankInfo_free(bankInfo);
@@ -72,12 +86,11 @@ int AH_OutboxCBox_LetUserConfirmVopResult(AH_OUTBOX_CBOX *cbox, AH_JOB *workJob,
       return 0;
     }
   }
-  else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error creating dialog, trying simple dialog");
-    rv=_showSimpleGuiMessage(sJobName, sBankName, sUserName, sMsg);
-    AB_BankInfo_free(bankInfo);
-    return rv;
-  }
+
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "Error creating or running dialog, trying simple dialog");
+  rv=_showSimpleGuiMessage(sJobName, sBankName, sUserName, sMsg);
+  AB_BankInfo_free(bankInfo);
+  return rv;
 }
 
 
