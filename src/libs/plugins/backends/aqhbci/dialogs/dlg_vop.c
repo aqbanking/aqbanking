@@ -307,12 +307,16 @@ void _buildResultList(GWEN_DIALOG *dlg, const char *widgetName, const AH_VOP_RES
       const char *sResult=AH_VopResultCode_toGuiString(AH_VopResult_GetResult(vopResult));
       const char *sLocalBic=AH_VopResult_GetLocalBic(vopResult);
 
-      GWEN_Buffer_AppendArgs(tbuf, "%s\t%s\t%s\t%s\t%s",
-                             sResult?sResult:"",
-                             sRemoteIban?sRemoteIban:"",
-                             sRemoteName?sRemoteName:"",
-                             sAltRemoteName?sAltRemoteName:"",
-                             sLocalBic?sLocalBic:"");
+      GWEN_Buffer_AppendArgs(tbuf, "%s\t%s\t", sResult?sResult:"", sRemoteIban?sRemoteIban:"");
+      if (sRemoteName && *sRemoteName)
+	AB_Banking_Iso8859_1ToUtf8(sRemoteName, strlen(sRemoteName), tbuf);
+      GWEN_Buffer_AppendByte(tbuf, '\t');
+      if (sAltRemoteName && *sAltRemoteName)
+	AB_Banking_Iso8859_1ToUtf8(sAltRemoteName, strlen(sAltRemoteName), tbuf);
+      GWEN_Buffer_AppendByte(tbuf, '\t');
+      if (sLocalBic && *sLocalBic)
+	GWEN_Buffer_AppendString(tbuf, sLocalBic);
+
       GWEN_Dialog_SetCharProperty(dlg, widgetName, GWEN_DialogProperty_AddValue, 0, GWEN_Buffer_GetStart(tbuf), 0);
       GWEN_Buffer_Reset(tbuf);
       vopResult=AH_VopResult_List_Next(vopResult);
