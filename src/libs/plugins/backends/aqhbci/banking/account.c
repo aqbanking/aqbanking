@@ -222,10 +222,17 @@ uint32_t AH_Account_GetFlags(const AB_ACCOUNT *a)
 void AH_Account_SetFlags(AB_ACCOUNT *a, uint32_t flags)
 {
   AH_ACCOUNT *ae;
+  uint32_t aid;
 
   assert(a);
   ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
   assert(ae);
+
+  aid=AB_Account_GetUniqueId(a);
+  if (ae->flags!=flags) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Changing flags of account %d (%08x) to %08x, was %08x",
+              aid, aid, flags, ae->flags);
+  }
 
   ae->flags=flags;
 }
@@ -240,7 +247,7 @@ void AH_Account_AddFlags(AB_ACCOUNT *a, uint32_t flags)
   ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
   assert(ae);
 
-  ae->flags|=flags;
+  AH_Account_SetFlags(a, ae->flags|flags);
 }
 
 
@@ -254,6 +261,7 @@ void AH_Account_SubFlags(AB_ACCOUNT *a, uint32_t flags)
   assert(ae);
 
   ae->flags&=~flags;
+  AH_Account_SetFlags(a, (ae->flags&~flags));
 }
 
 
