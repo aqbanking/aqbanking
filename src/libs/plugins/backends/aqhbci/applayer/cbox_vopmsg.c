@@ -47,7 +47,7 @@ int AH_OutboxCBox_LetUserConfirmVopResult(AH_OUTBOX_CBOX *cbox, AH_JOB *workJob,
   ab=AB_Provider_GetBanking(provider);
   user=AH_OutboxCBox_GetUser(cbox);
   sUserName=AB_User_GetUserId(user);
-  sJobName=AH_Job_GetCode(workJob);
+  sJobName=AH_Job_GetName(workJob);
 
   /* find bank name */
   bankInfo=AB_Banking_GetBankInfo(ab, "de", "*", AB_User_GetBankCode(user));
