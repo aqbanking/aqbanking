@@ -15,6 +15,7 @@
 #include "./dlg_vop_p.h"
 
 #include "aqbanking/i18n_l.h"
+#include "aqbanking/banking_l.h"
 
 #include <ctype.h>
 
@@ -326,8 +327,13 @@ void _vopMsgToGui(GWEN_DIALOG *dlg, const char *widgetName, const char *sVopMsg,
 {
   if (sVopMsg) {
     GWEN_STRINGLIST *sl;
+    GWEN_BUFFER *ubuf;
 
-    sl=_htmlTextToStringList(sVopMsg);
+    ubuf=GWEN_Buffer_new(0, 256, 0, 1);
+    AB_Banking_Iso8859_1ToUtf8(sVopMsg, strlen(sVopMsg), ubuf);
+
+    sl=_htmlTextToStringList(GWEN_Buffer_GetStart(ubuf));
+    GWEN_Buffer_free(ubuf);
     if (sl) {
       GWEN_BUFFER *tbuf;
 
