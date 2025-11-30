@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aqbanking\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
-"POT-Creation-Date: 2025-11-30 13:44+0100\n"
+"POT-Creation-Date: 2025-11-30 16:56+0100\n"
 "PO-Revision-Date: 2021-02-16 22:35+0100\n"
 "Last-Translator: Christian Stimming <christian@cstimming.de>\n"
 "Language-Team: Deutsch <>\n"
@@ -2300,6 +2300,32 @@ msgstr "Schlüsselwechsel: Fehler"
 msgid "finish"
 msgstr "Fertig"
 
+#: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:197
+#: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:203
+msgid "none"
+msgstr ""
+
+#: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:198
+msgid "match"
+msgstr ""
+
+#: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:199
+msgid "close match"
+msgstr ""
+
+#: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:200
+#, fuzzy
+msgid "no match"
+msgstr "Schlüssel ungültig!"
+
+#: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:201
+msgid "not available"
+msgstr ""
+
+#: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:202
+msgid "pending"
+msgstr ""
+
 #: src/libs/plugins/backends/aqhbci/applayer/outbox.c:130
 msgid "Now the jobs are sent via their backends to the credit institutes."
 msgstr ""
@@ -3374,8 +3400,8 @@ msgstr "<keine Bankleitzahl>"
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_ddvcard.c:598
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_zkacard.c:614
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_importkeyfile.c:804
-#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:279
-#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:282
+#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:280
+#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:283
 msgid "<no user id>"
 msgstr "<keine Benutzerkennung>"
 
@@ -3842,19 +3868,19 @@ msgstr ""
 "Es konnte kein exklusiver Zugriff auf den Benutzer erreicht werden. "
 "Eventuell ist er schon in Benutzung?"
 
-#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:160
+#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:161
 msgid "Verification of Payee"
 msgstr ""
 
-#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:167
+#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:168
 msgid "Result\tRemote IBAN\tRemote Name\tCorrected Remote Name\tLocal BIC"
 msgstr ""
 
-#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:262
+#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:263
 #, c-format
 msgid ""
-"These are the results of the <i>Verification of Payee</i> process at the "
-"bank (user %s at %s).\n"
+"These are the results of the Verification of Payee process at the bank (user "
+"%s at %s).\n"
 "FinTS specifications and your bank require us to show this dialog.\n"
 "If your bank provided a message it will be included below (the formatting "
 "probably had to be\n"
@@ -3863,23 +3889,24 @@ msgid ""
 "list below is empty.\n"
 "\n"
 "If you still want to execute the job \"%s\" click \"Accept\".\n"
-"<html><p>These are the results of the Verification of Payee process at the "
-"bank (user <i>%s</i> at <i>%s</i>).</p><p>FinTS specifications and your bank "
-"require us to show this dialog.</p><p>If your bank provided a message it "
-"will be included below (the formatting probably had to be changed but "
-"otherwise the message was not altered).</p><p>Sometimes there are no results "
-"reported by the bank, in that case the result list below is empty.</p><p>If "
-"you still want to execute the job <b>%s</b> click <b>Accept</b>.</p></html>"
+"<html><p>These are the results of the <i>Verification of Payee</i> process "
+"at the bank (user <i>%s</i> at <i>%s</i>).</p><p>FinTS specifications and "
+"your bank require us to show this dialog.</p><p>If your bank provided a "
+"message it will be included below (the formatting probably had to be changed "
+"but otherwise the message was not altered).</p><p>Sometimes there are no "
+"results reported by the bank, in that case the result list below is empty.</"
+"p><p>If you still want to execute the job <b>%s</b> click <b>Accept</b>.</"
+"p></html>"
 msgstr ""
 
-#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:280
-#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:283
+#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:281
+#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:284
 #, fuzzy
 msgid "<no bank name>"
 msgstr "<keine Bankleitzahl>"
 
-#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:281
-#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:284
+#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:282
+#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:285
 msgid "<no job name>"
 msgstr ""
 
