@@ -518,9 +518,10 @@ const char *_readNextWordIntoBuffer(const char *s, GWEN_BUFFER *tbuf)
         s++;
     }
     else if (c>127) {
-      /* TODO: handle UTF8 */
-      GWEN_Buffer_AppendByte(tbuf, '_');
-      s++;
+      while(*s && (*s & 0x80)) {
+	GWEN_Buffer_AppendByte(tbuf, *s);
+	s++;
+      }
       charsAdded++;
     }
     else if (c=='<') {
