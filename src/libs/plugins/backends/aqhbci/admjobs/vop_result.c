@@ -157,6 +157,27 @@ const AH_VOP_RESULT *AH_VopResult_List_GetByIbanAndName(const AH_VOP_RESULT_LIST
 
 
 
+int AH_VopResult_List_HasOnlyMatches(const AH_VOP_RESULT_LIST *vrList)
+{
+  if (vrList) {
+    const AH_VOP_RESULT *vr;
+
+    vr=AH_VopResult_List_First(vrList);
+    while(vr) {
+      int code;
+
+      code=AH_VopResult_GetResult(vr);
+      if (code!=AH_VopResultCodeMatch)
+        return 0;
+      vr=AH_VopResult_List_Next(vr);
+    }
+  }
+
+  return 1;
+}
+
+
+
 int AH_VopResultCode_fromString(const char *sResult)
 {
   if (strcasecmp(sResult, "RCVC")==0)

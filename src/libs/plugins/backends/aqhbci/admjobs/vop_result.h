@@ -63,7 +63,7 @@ const AH_VOP_RESULT *AH_VopResult_List_GetByIbanAndName(const AH_VOP_RESULT_LIST
                                                         const char *sIban,
                                                         const char *sRemoteName);
 
-
+int AH_VopResult_List_HasOnlyMatches(const AH_VOP_RESULT_LIST *vrList);
 
 #endif
 
