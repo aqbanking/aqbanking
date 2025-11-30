@@ -260,7 +260,7 @@ void _setIntroLabel(GWEN_DIALOG *dlg)
   guiBuf=GWEN_Buffer_new(0, 256, 0, 1);
 
   GWEN_Buffer_AppendArgs(guiBuf,
-    I18N("These are the results of the <i>Verification of Payee</i> process at the bank (user %s at %s).\n"
+    I18N("These are the results of the Verification of Payee process at the bank (user %s at %s).\n"
          "FinTS specifications and your bank require us to show this dialog.\n"
          "If your bank provided a message it will be included below (the formatting probably had to be\n"
          "changed but otherwise the message was not altered).\n"
@@ -269,7 +269,7 @@ void _setIntroLabel(GWEN_DIALOG *dlg)
          "If you still want to execute the job \"%s\" click \"Accept\".\n"
 
          "<html>"
-         "<p>These are the results of the Verification of Payee process at the bank (user <i>%s</i> at <i>%s</i>).</p>"
+         "<p>These are the results of the <i>Verification of Payee</i> process at the bank (user <i>%s</i> at <i>%s</i>).</p>"
          "<p>FinTS specifications and your bank require us to show this dialog.</p>"
          "<p>If your bank provided a message it will be included below (the formatting probably had to be "
          "changed but otherwise the message was not altered).</p>"
