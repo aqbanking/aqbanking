@@ -303,7 +303,7 @@ void _buildResultList(GWEN_DIALOG *dlg, const char *widgetName, const AH_VOP_RES
       const char *sRemoteIban=AH_VopResult_GetRemoteIban(vopResult);
       const char *sRemoteName=AH_VopResult_GetRemoteName(vopResult);
       const char *sAltRemoteName=AH_VopResult_GetAltRemoteName(vopResult);
-      const char *sResult=AH_VopResultCode_toString(AH_VopResult_GetResult(vopResult));
+      const char *sResult=AH_VopResultCode_toGuiString(AH_VopResult_GetResult(vopResult));
       const char *sLocalBic=AH_VopResult_GetLocalBic(vopResult);
 
       GWEN_Buffer_AppendArgs(tbuf, "%s\t%s\t%s\t%s\t%s",

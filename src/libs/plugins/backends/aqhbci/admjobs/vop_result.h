@@ -33,6 +33,7 @@ enum {
 
 int AH_VopResultCode_fromString(const char *sResult);
 const char *AH_VopResultCode_toString(int i);
+const char *AH_VopResultCode_toGuiString(int i);
 
 
 

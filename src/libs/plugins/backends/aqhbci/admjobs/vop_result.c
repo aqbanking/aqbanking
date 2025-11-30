@@ -191,6 +191,21 @@ const char *AH_VopResultCode_toString(int i)
 
 
 
+const char *AH_VopResultCode_toGuiString(int i)
+{
+  switch(i) {
+  case AH_VopResultCodeNone:         return I18N("none");
+  case AH_VopResultCodeMatch:        return I18N("match");
+  case AH_VopResultCodeCloseMatch:   return I18N("close match");
+  case AH_VopResultCodeNoMatch:      return I18N("no match");
+  case AH_VopResultCodeNotAvailable: return I18N("not available");
+  case AH_VopResultCodePending:      return I18N("pending");
+  default:                           return I18N("none");
+  }
+}
+
+
+
 void AH_VopResult_Log(const AH_VOP_RESULT *vr, const char *logDomain, GWEN_LOGGER_LEVEL lv)
 {
   if (vr) {
