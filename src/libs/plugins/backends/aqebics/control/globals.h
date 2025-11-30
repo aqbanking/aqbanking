@@ -17,6 +17,7 @@
 
 #include "aqbanking/banking_be.h"
 #include "aqbanking/i18n_l.h"
+#include "cli/helper.h"
 
 #include <gwenhywfar/args.h>
 #include <gwenhywfar/buffer.h>

@@ -48,22 +48,14 @@ int chkIban(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
-  rv=GWEN_Args_Check(argc, argv, 1,
-                     0 /*GWEN_ARGS_MODE_ALLOW_FREEPARAM*/,
-                     args,
-                     db);
+  rv=AB_Cmd_Handle_Args(argc, argv, args, db);
   if (rv==GWEN_ARGS_RESULT_ERROR) {
-    fprintf(stderr, "ERROR: Could not parse arguments\n");
     return 1;
   }
   else if (rv==GWEN_ARGS_RESULT_HELP) {
     GWEN_BUFFER *ubuf;
 
     ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
-    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutType_Txt)) {
-      fprintf(stderr, "ERROR: Could not create help string\n");
-      return 1;
-    }
     fprintf(stdout,
             I18N("This command checks the given combination of account id\n"
                  "and bank code for validity.\n"

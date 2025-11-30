@@ -23,7 +23,7 @@
 int AH_Control_ChangeKeys(AB_PROVIDER *pro, GWEN_DB_NODE *dbArgs, int argc, char **argv)
 {
   GWEN_DB_NODE *db = NULL;
-  int res = 0;
+  int rv = 0;
   uint32_t uid = 0;
   AB_USER *u = NULL;
 
@@ -59,21 +59,12 @@ int AH_Control_ChangeKeys(AB_PROVIDER *pro, GWEN_DB_NODE *dbArgs, int argc, char
     }
   };
 
-  db = GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
-  if (!db || ((res = GWEN_Args_Check(argc, argv, 1, 0, args, db)) == GWEN_ARGS_RESULT_ERROR)) {
-    fprintf(stderr, "ERROR: Could not parse arguments\n");
+  db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
+  rv=AB_Cmd_Handle_Args(argc, argv, args, db);
+  if (rv==GWEN_ARGS_RESULT_ERROR) {
     return 1;
   }
-
-  if (res == GWEN_ARGS_RESULT_HELP) {
-    GWEN_BUFFER *b = GWEN_Buffer_new(0, 1024, 0, 1);
-    if (GWEN_Args_Usage(args, b, GWEN_ArgsOutType_Txt)) {
-      fprintf(stderr, "ERROR: Could not create help string\n");
-      return 1;
-    }
-    // TODO: help text default args
-    fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(b));
-    GWEN_Buffer_free(b);
+  else if (rv==GWEN_ARGS_RESULT_HELP) {
     return 0;
   }
 
@@ -87,8 +78,8 @@ int AH_Control_ChangeKeys(AB_PROVIDER *pro, GWEN_DB_NODE *dbArgs, int argc, char
     return -1;
   }
 
-  res = AH_Provider_ChangeUserKeys(pro, u, db, 1, 0, 0);
+  rv = AH_Provider_ChangeUserKeys(pro, u, db, 1, 0, 0);
 
   AB_User_free(u);
-  return res;
+  return rv;
 }

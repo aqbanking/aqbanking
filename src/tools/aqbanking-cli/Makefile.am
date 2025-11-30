@@ -13,7 +13,9 @@ bin_PROGRAMS=\
 
 aqbanking_cli_LDADD= \
   $(aqbanking_internal_libs) \
-  $(gwenhywfar_libs) -lstdc++
+  $(gwenhywfar_libs) \
+  $(aqcli_libs) \
+  -lstdc++
 
 aqbanking_cli_SOURCES= \
   main.c \
@@ -58,22 +60,26 @@ noinst_HEADERS=globals.h
 aqhbci_tool4_SOURCES=aqhbci-tool.c
 aqhbci_tool4_LDADD= \
   $(aqbanking_internal_libs) \
+  $(aqcli_libs) \
   $(gwenhywfar_libs)
 
 
 aqpaypal_tool_SOURCES=aqpaypal-tool.c
 aqpaypal_tool_LDADD= \
   $(aqbanking_internal_libs) \
+  $(aqcli_libs) \
   $(gwenhywfar_libs)
 
 aqebics_tool_SOURCES=aqebics-tool.c
 aqebics_tool_LDADD= \
   $(aqbanking_internal_libs) \
+  $(aqcli_libs) \
   $(gwenhywfar_libs)
 
 aqofxconnect_tool_SOURCES=aqofxconnect-tool.c
 aqofxconnect_tool_LDADD= \
   $(aqbanking_internal_libs) \
+  $(aqcli_libs) \
   $(gwenhywfar_libs)
 
 

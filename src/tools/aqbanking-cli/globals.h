@@ -14,6 +14,7 @@
 
 #include <aqbanking/banking.h>
 #include <aqbanking/types/account_spec.h>
+#include <cli/helper.h>
 
 #include <gwenhywfar/args.h>
 #include <gwenhywfar/buffer.h>
@@ -142,6 +143,7 @@ int import(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int exportCtx(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int listAccs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int listBal(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
+int listConfDir(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
 int listTrans(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int listDoc(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);
 int getDoc(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv);

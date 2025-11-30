@@ -33,6 +33,7 @@
 
 #include <aqbanking/banking.h>
 #include <aqbanking/banking_be.h>
+#include <cli/helper.h>
 
 #include <gwenhywfar/args.h>
 #include <gwenhywfar/buffer.h>

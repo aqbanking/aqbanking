@@ -72,12 +72,8 @@ int AH_Control_AddsubAccountFlags(AB_PROVIDER *pro,
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
-  rv=GWEN_Args_Check(argc, argv, 1,
-                     0 /*GWEN_ARGS_MODE_ALLOW_FREEPARAM*/,
-                     args,
-                     db);
+  rv=AB_Cmd_Handle_Args(argc, argv, args, db);
   if (rv==GWEN_ARGS_RESULT_ERROR) {
-    fprintf(stderr, "ERROR: Could not parse arguments\n");
     return 1;
   }
   else if (rv==GWEN_ARGS_RESULT_HELP) {
@@ -86,11 +82,6 @@ int AH_Control_AddsubAccountFlags(AB_PROVIDER *pro,
     int i;
 
     ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
-    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutType_Txt)) {
-      fprintf(stderr, "ERROR: Could not create help string\n");
-      return 1;
-    }
-
     dbTmp=GWEN_DB_Group_new("flagGroup");
     AH_Account_Flags_toDb(dbTmp, "flags", 0xffffffff);
     GWEN_Buffer_AppendString(ubuf, "\nThe following flags are recognized:\n");

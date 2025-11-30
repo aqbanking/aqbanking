@@ -14,6 +14,7 @@
 
 #include <aqofxconnect/aqofxconnect.h>
 
+#include <cli/helper.h>
 #include <aqbanking/backendsupport/provider.h>
 
 

@@ -14,6 +14,7 @@
 #include <aqpaypal/aqpaypal.h>
 
 #include <aqbanking/banking.h>
+#include <cli/helper.h>
 #include <gwenhywfar/db.h>
 
 
