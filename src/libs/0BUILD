@@ -59,6 +59,7 @@
     <useTargets>
       aqbanking_base
       abplugins
+      abcli
     </useTargets>
 
     <libraries>
@@ -74,6 +75,7 @@
     <subdirs>
       aqbanking
       plugins
+      cli
     </subdirs>
 
 
