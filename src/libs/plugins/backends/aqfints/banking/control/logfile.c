@@ -18,6 +18,7 @@
 #include "parser/parser.h"
 #include "parser/parser_dump.h"
 #include "banking/provider_l.h"
+#include "cli/helper.h"
 
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/syncio_file.h>
