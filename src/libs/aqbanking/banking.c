@@ -489,20 +489,22 @@ void AB_Banking_Iso8859_1ToUtf8(const char *p, int size, GWEN_BUFFER *buf)
       break;
 
     c=(unsigned char)(*(p++));
-    if (c<32 || c==127)
-      c=32;
-    else {
-      /* Dirty hack to support Unicode code points */
-      /* U+00A0..U+00FF already in UTF-8 encoding. */
-      /* E.g. German Umlaute from Consorsbank      */
-      unsigned int c2 = (unsigned char)(*p);
-      if ((c & ~0x01)==0xC2 && (c2 & ~0x3F)==0x80) {
-        GWEN_Buffer_AppendByte(buf, c);
-        c=(unsigned char)(*(p++));
-      }
-      else if (c & 0x80) {
-        GWEN_Buffer_AppendByte(buf, 0xc0 | c>>6);
-        c &= ~0x40;
+    if (c!=10) { // keep linefeed as is
+      if (c<32 || c==127)
+        c=32;
+      else {
+        /* Dirty hack to support Unicode code points */
+        /* U+00A0..U+00FF already in UTF-8 encoding. */
+        /* E.g. German Umlaute from Consorsbank      */
+        unsigned int c2 = (unsigned char)(*p);
+        if ((c & ~0x01)==0xC2 && (c2 & ~0x3F)==0x80) {
+          GWEN_Buffer_AppendByte(buf, c);
+          c=(unsigned char)(*(p++));
+        }
+        else if (c & 0x80) {
+          GWEN_Buffer_AppendByte(buf, 0xc0 | c>>6);
+          c &= ~0x40;
+        }
       }
     }
     GWEN_Buffer_AppendByte(buf, c);
