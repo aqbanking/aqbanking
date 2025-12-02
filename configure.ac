@@ -17,7 +17,7 @@ AC_CONFIG_MACRO_DIRS([m4])
 
 AQBANKING_VERSION_MAJOR=6
 AQBANKING_VERSION_MINOR=7
-AQBANKING_VERSION_PATCHLEVEL=14
+AQBANKING_VERSION_PATCHLEVEL=15
 AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
 AQBANKING_VERSION_TAG="beta"
@@ -35,7 +35,7 @@ AQBANKING_VERSION_TAG="beta"
 
 AQBANKING_SO_CURRENT=51
 AQBANKING_SO_AGE=7
-AQBANKING_SO_REVISION=14
+AQBANKING_SO_REVISION=15
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 
@@ -1320,7 +1320,6 @@ AC_CONFIG_FILES([
   src/libs/plugins/backends/aqhbci/version.h
   src/libs/plugins/backends/aqofxconnect/Makefile
   src/libs/plugins/backends/aqofxconnect/aqofxconnect.xml
-  src/libs/plugins/backends/aqofxconnect/libofxhome/Makefile
   src/libs/plugins/backends/aqofxconnect/v1/Makefile
   src/libs/plugins/backends/aqofxconnect/v2/Makefile
   src/libs/plugins/backends/aqofxconnect/control/Makefile
