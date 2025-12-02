@@ -74,8 +74,8 @@ static void _buildResultList(GWEN_DIALOG *dlg, const char *widgetName, const AH_
 static void _vopMsgToGui(GWEN_DIALOG *dlg, const char *widgetName, const char *sVopMsg, int maxLen);
 static void _stringListToBufferPlain(const GWEN_STRINGLIST *sl, int maxLen, GWEN_BUFFER *tbuf);
 static void _stringListToBufferHtml(const GWEN_STRINGLIST *sl, GWEN_BUFFER *tbuf);
-static GWEN_STRINGLIST *_htmlTextToStringList(const char *s);
-static const char *_readNextWordIntoBuffer(const char *s, GWEN_BUFFER *tbuf);
+static GWEN_STRINGLIST *_htmlTextToStringList(const uint8_t *s);
+static const uint8_t *_readNextWordIntoBuffer(const uint8_t *s, GWEN_BUFFER *tbuf);
 
 
 
@@ -336,7 +336,7 @@ void _vopMsgToGui(GWEN_DIALOG *dlg, const char *widgetName, const char *sVopMsg,
     ubuf=GWEN_Buffer_new(0, 256, 0, 1);
     AB_Banking_Iso8859_1ToUtf8(sVopMsg, strlen(sVopMsg), ubuf);
 
-    sl=_htmlTextToStringList(GWEN_Buffer_GetStart(ubuf));
+    sl=_htmlTextToStringList((const uint8_t*) GWEN_Buffer_GetStart(ubuf));
     GWEN_Buffer_free(ubuf);
     if (sl) {
       GWEN_BUFFER *tbuf;
@@ -465,7 +465,7 @@ void _stringListToBufferHtml(const GWEN_STRINGLIST *sl, GWEN_BUFFER *tbuf)
 
 
 
-GWEN_STRINGLIST *_htmlTextToStringList(const char *s)
+GWEN_STRINGLIST *_htmlTextToStringList(const uint8_t *s)
 {
   if (s && *s) {
     GWEN_STRINGLIST *sl;
@@ -474,7 +474,7 @@ GWEN_STRINGLIST *_htmlTextToStringList(const char *s)
     sl=GWEN_StringList_new();
     tbuf=GWEN_Buffer_new(0, 64, 0, 1);
     while(*s) {
-      const char *t;
+      const uint8_t *t;
 
       t=_readNextWordIntoBuffer(s, tbuf);
       if (t!=s) {
@@ -499,13 +499,13 @@ GWEN_STRINGLIST *_htmlTextToStringList(const char *s)
 
 
 
-const char *_readNextWordIntoBuffer(const char *s, GWEN_BUFFER *tbuf)
+const uint8_t *_readNextWordIntoBuffer(const uint8_t *s, GWEN_BUFFER *tbuf)
 {
   int wordFinished=0;
   int charsAdded=0;
 
   while(*s && !wordFinished) {
-    char c;
+    uint8_t c;
 
     c=*s;
     if (c==10) {
@@ -540,7 +540,7 @@ const char *_readNextWordIntoBuffer(const char *s, GWEN_BUFFER *tbuf)
         wordFinished=1;
       }
       else {
-        const char *t=s;
+        const uint8_t *t=s;
 
         while(*t && *t!='>') {
           GWEN_Buffer_AppendByte(tbuf, *(t++));
