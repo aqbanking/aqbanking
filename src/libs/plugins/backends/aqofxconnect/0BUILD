@@ -80,7 +80,6 @@
       ofxdccommon
       ofxdccontrol
       ofxdcdialogs
-      ofxhome
       ofxdcv1
       ofxdcv2
     </useTargets>
@@ -90,7 +89,6 @@
       common
       control
       dialogs
-      libofxhome
       v1
       v2
     </subdirs>

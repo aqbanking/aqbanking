@@ -2,7 +2,7 @@
 
 <!--
 /***************************************************************************
- copyright   : (C) 2010 by Martin Preuss
+ copyright   : (C) 2025 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -46,10 +46,7 @@
           <widget type="gridLayout" columns="2" flags="fillX" >
     
             <widget type="label" text="Bank Name" />
-            <widget type="hlayout" flags="fillX" >
-              <widget type="lineEdit" name="wiz_bankname_edit" columns="40" flags="fillX" />
-              <widget type="pushButton" text="Select" name="wiz_bank_button" />
-            </widget>
+            <widget type="lineEdit" name="wiz_bankname_edit" columns="40" flags="fillX" />
             
             <widget type="label" text="Broker Id" />
             <widget type="lineEdit" name="wiz_brokerid_edit" columns="40" flags="fillX" />

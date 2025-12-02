@@ -63,7 +63,6 @@ static int AO_NewUserDialog_UndoIt(GWEN_DIALOG *dlg);
 static int AO_NewUserDialog_Next(GWEN_DIALOG *dlg);
 static int AO_NewUserDialog_Previous(GWEN_DIALOG *dlg);
 static int AO_NewUserDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg);
-static int AO_NewUserDialog_HandleActivatedBankSelect(GWEN_DIALOG *dlg);
 static int AO_NewUserDialog_HandleActivatedApp(GWEN_DIALOG *dlg);
 static int AO_NewUserDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg);
 static int AO_NewUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender);

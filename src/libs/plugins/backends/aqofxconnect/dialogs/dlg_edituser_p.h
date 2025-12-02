@@ -62,7 +62,6 @@ static int AO_EditUserDialog_GetUserPageData(GWEN_DIALOG *dlg);
 static int AO_EditUserDialog_GetAppPageData(GWEN_DIALOG *dlg);
 static int AO_EditUserDialog_FromGui(GWEN_DIALOG *dlg);
 static int AO_EditUserDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg);
-static int AO_EditUserDialog_HandleActivatedBankSelect(GWEN_DIALOG *dlg);
 static int AO_EditUserDialog_HandleActivatedApp(GWEN_DIALOG *dlg);
 static int AO_EditUserDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg);
 static int AO_EditUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender);
