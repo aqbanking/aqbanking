@@ -1,0 +1,8 @@
+<?xml?>
+
+<tm2>
+  <typedef id="OH_INSTITUTE_SPEC" type="pointer" lang="c" extends="struct_base">
+    <identifier>OH_INSTITUTE_SPEC</identifier>
+    <prefix>OH_InstituteSpec</prefix>
+  </typedef>
+</tm2>
