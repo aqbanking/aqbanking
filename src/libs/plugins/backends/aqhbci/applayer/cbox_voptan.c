@@ -372,7 +372,7 @@ int _sendHKVPAandHKXXXandHKTAN(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *vpp
     }
   }
 
-  /* prepare HKTAN again (stage1 is correct here, that's  process type 4 to request a chalenge again) */
+  /* prepare HKTAN again (stage1 is correct here, that's  process type 4 to request a challenge again) */
   tanJob1=_createTanJobStage1(provider, user, AH_Dialog_GetTanJobVersion(dlg), workJob);
   if (tanJob1==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "here");
@@ -399,24 +399,30 @@ int _sendHKVPAandHKXXXandHKTAN(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *vpp
   }
   AH_JobQueue_free(jobQueue);
 
-  if (AH_Job_HasResultWithCode(tanJob1, 3955)) { /* decoupled */
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Decoupled (3955), waiting for user to approve transaction externally");
-    do { /* loop until positive status response received */
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Waiting for user approval of the transfer");
-      rv=_sendTanAndReceiveResponseProcS(cbox, dlg, tanJob1, NULL, workJob);
-    } while (rv==1);
-    if (rv!=0) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error exchanging TAN status message (%d)", rv);
-      return rv;
-    }
+  /* only send TAN challenge request if bank says it wants it! */
+  if (AH_Job_HasResultWithCode(tanJob1, 3076)) { /* SCA not needed */
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "No TAN needed, stage 2 done.");
   }
   else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Sending TAN challenge response");
-    rv=_sendHKTANwithTAN(cbox, dlg, tanJob1, workJob);
-    if (rv) {
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-      AH_Job_free(tanJob1);
-      return rv;
+    if (AH_Job_HasResultWithCode(tanJob1, 3955)) { /* decoupled */
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Decoupled (3955), waiting for user to approve transaction externally");
+      do { /* loop until positive status response received */
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "Waiting for user approval of the transfer");
+	rv=_sendTanAndReceiveResponseProcS(cbox, dlg, tanJob1, NULL, workJob);
+      } while (rv==1);
+      if (rv!=0) {
+	DBG_ERROR(AQHBCI_LOGDOMAIN, "Error exchanging TAN status message (%d)", rv);
+	return rv;
+      }
+    }
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Sending TAN challenge response");
+      rv=_sendHKTANwithTAN(cbox, dlg, tanJob1, workJob);
+      if (rv) {
+	DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+	AH_Job_free(tanJob1);
+	return rv;
+      }
     }
   }
   AH_Job_free(tanJob1);
