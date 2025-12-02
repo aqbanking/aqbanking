@@ -115,9 +115,10 @@
     </extradist>
 
 
+    <!--
     <writeFile name="version.h" />
     <writeFile name="system.h" />
-    
+    -->
 
   </target>
   

@@ -325,6 +325,9 @@
 
     <writeFile name="aqbanking.pc" install="$(libdir)/pkgconfig" />
 
+    <writeFile name="src/libs/aqbanking/version.h" />
+    <writeFile name="src/libs/aqbanking/system.h" />
+
   </project>
   
 </gwbuild>
