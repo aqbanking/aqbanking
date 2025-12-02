@@ -80,6 +80,7 @@
 
     <useTargets>
       aqbanking
+      abcli
     </useTargets>
 
     <ifVarMatches name="GWBUILD_LIBTYPE"     value="sharedlib" >
@@ -132,7 +133,7 @@
     <define name="AQBANKING_FINTS_VERSION_STRING" value="$(AQBANKING_VERSION_STRING)" quoted="TRUE" />
     <setVar name="local/cflags">$(visibility_cflags)</setVar>
     <sources>aqhbci-tool.c</sources>
-    <useTargets>aqbanking</useTargets>
+    <useTargets>aqbanking abcli</useTargets>
     <ifVarMatches name="GWBUILD_LIBTYPE"     value="sharedlib" >
       <then>
         <libraries>
@@ -173,7 +174,7 @@
     <define name="AQBANKING_FINTS_VERSION_STRING" value="$(AQBANKING_VERSION_STRING)" quoted="TRUE" />
     <setVar name="local/cflags">$(visibility_cflags)</setVar>
     <sources>aqpaypal-tool.c</sources>
-    <useTargets>aqbanking</useTargets>
+    <useTargets>aqbanking abcli</useTargets>
     <ifVarMatches name="GWBUILD_LIBTYPE"     value="sharedlib" >
       <then>
         <libraries>
@@ -214,7 +215,7 @@
     <define name="AQBANKING_FINTS_VERSION_STRING" value="$(AQBANKING_VERSION_STRING)" quoted="TRUE" />
     <setVar name="local/cflags">$(visibility_cflags)</setVar>
     <sources>aqebics-tool.c</sources>
-    <useTargets>aqbanking</useTargets>
+    <useTargets>aqbanking abcli </useTargets>
     <ifVarMatches name="GWBUILD_LIBTYPE"     value="sharedlib" >
       <then>
         <libraries>
@@ -253,7 +254,7 @@
     <define name="AQBANKING_FINTS_VERSION_STRING" value="$(AQBANKING_VERSION_STRING)" quoted="TRUE" />
     <setVar name="local/cflags">$(visibility_cflags)</setVar>
     <sources>aqofxconnect-tool.c</sources>
-    <useTargets>aqbanking</useTargets>
+    <useTargets>aqbanking abcli</useTargets>
     <ifVarMatches name="GWBUILD_LIBTYPE"     value="sharedlib" >
       <then>
         <libraries>
