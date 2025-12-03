@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: aqbanking\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
 "POT-Creation-Date: 2025-12-03 18:10+0100\n"
-"PO-Revision-Date: 2025-12-03 18:08+0100\n"
+"PO-Revision-Date: 2025-12-03 18:19+0100\n"
 "Last-Translator: Martin Preuss <martin@aqbanking.de>\n"
 "Language-Team: German <kde-i18n-de@kde.org>\n"
 "Language: de\n"
@@ -16,8 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bits\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
 "X-Generator: Lokalize 22.12.3\n"
-"X-Poedit-Basepath: /home/martin/projekte/c/aqbanking/aqbanking-git/"
-"aqbanking\n"
+"X-Poedit-Basepath: /home/martin/projekte/c/aqbanking/aqbanking-git/aqbanking\n"
 
 #: src/libs/aqbanking/banking_online.c:504
 #, c-format
@@ -2524,7 +2523,7 @@ msgid "Approved"
 msgstr "Bestätigen"
 
 #: src/libs/plugins/backends/aqhbci/applayer/cbox_vopmsg.c:185
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "Result of Verification of Payee process at the bank (user %s at %s):\n"
 "%s\n"
@@ -2535,30 +2534,46 @@ msgid ""
 "from the bank\n"
 "to you. Always make sure you have the correct payee in your transfers!"
 msgstr ""
+"Ergebnis der Zahlungsempfängerprüfung durch die Bank (Benutzer %s bei %s):\n"
+"%s\n"
+"Falls Sie den Auftrag \"%s\" ausführen wollen klicken Sie  \"Bestätigen\".\n"
+"\n"
+"Bitte beachten Sie, dass in diesem Fall das Risiko für diesen Auftrag auf Sie"
+" übergeht. "
+"Achten Sie immer auf den korrekten Zahlungsempfänger in Ihren Überweisungen!"
 
 #: src/libs/plugins/backends/aqhbci/applayer/cbox_vopmsg.c:194
+#, fuzzy
 msgid "<no msg from bank>"
-msgstr ""
+msgstr "<keine Mitteilung>"
 
 #: src/libs/plugins/backends/aqhbci/applayer/cbox_vopmsg.c:198
+#, fuzzy
 msgid "Verification of Payee Result"
-msgstr ""
+msgstr "Ergebnis der Zahlungsempfängerüberprüfung"
 
 #: src/libs/plugins/backends/aqhbci/applayer/cbox_vopmsg.c:200
+#, fuzzy
 msgid "Approve"
-msgstr ""
+msgstr "Bestätigen"
 
 #: src/libs/plugins/backends/aqhbci/banking/provider_accspec.c:305
+#, fuzzy
 msgid ""
 "Job GetTransaction not available, please try clearing account flag "
 "\"PreferCamtDownload\""
 msgstr ""
+"Auftrag \"Umsatzabruf\" nicht verfügbar, bitte versuchen Sie es erneut mir"
+" gelöschtem Flag \"PreferCamtDownload\"."
 
 #: src/libs/plugins/backends/aqhbci/banking/provider_accspec.c:311
+#, fuzzy
 msgid ""
 "Job GetTransaction not available, please try setting account flag "
 "\"PreferCamtDownload\""
 msgstr ""
+"Auftrag \"Umsatzabruf\" nicht verfügbar, bitte versuchen Sie es erneut mir"
+" gesetztem Flag \"PreferCamtDownload\"."
 
 #: src/libs/plugins/backends/aqhbci/banking/provider_dialogs.c:60
 msgid "Chipcard Error"
