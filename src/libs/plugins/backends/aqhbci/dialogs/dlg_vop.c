@@ -35,8 +35,10 @@
 #define VOPMSG_NEWLINE           "\n"
 
 /* IDs for dialog widgets */
+#define ID_SELF             ""
 #define ID_VOPMSG           "vopMsg"
 #define ID_VOPRESULTLISTBOX "vopResultListBox"
+#define ID_INTROLABEL       "introLabel"
 
 
 
@@ -158,7 +160,7 @@ int _handleInit(GWEN_DIALOG *dlg)
 
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
-  GWEN_Dialog_SetCharProperty(dlg, "", GWEN_DialogProperty_Title, 0, I18N("Verification of Payee"), 0);
+  GWEN_Dialog_SetCharProperty(dlg, ID_SELF, GWEN_DialogProperty_Title, 0, I18N("Verification of Payee"), 0);
 
   _setIntroLabel(dlg);
   _vopMsgToGui(dlg, ID_VOPMSG, xdlg->vopMsg, VOPMSG_MAXWIDTH_IN_CHARS);
@@ -172,12 +174,12 @@ int _handleInit(GWEN_DIALOG *dlg)
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
   if (i>=DIALOG_MINWIDTH)
-    GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, i, 0);
+    GWEN_Dialog_SetIntProperty(dlg, ID_SELF, GWEN_DialogProperty_Width, 0, i, 0);
 
   /* read height */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_height", 0, -1);
   if (i>=DIALOG_MINHEIGHT)
-    GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, i, 0);
+    GWEN_Dialog_SetIntProperty(dlg, ID_SELF, GWEN_DialogProperty_Height, 0, i, 0);
 
   /* read settings for result list box */
   GWEN_Dialog_ListReadColumnSettings(dlg, ID_VOPRESULTLISTBOX, "vop_result_list_", 5, 64, dbPrefs);
@@ -202,11 +204,11 @@ int _handleFini(GWEN_DIALOG *dlg)
   DBG_ERROR(AQHBCI_LOGDOMAIN, "fini");
 
   /* store dialog width */
-  i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
+  i=GWEN_Dialog_GetIntProperty(dlg, ID_SELF, GWEN_DialogProperty_Width, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs, GWEN_DB_FLAGS_OVERWRITE_VARS, "dialog_width", i);
 
   /* store dialog height */
-  i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
+  i=GWEN_Dialog_GetIntProperty(dlg, ID_SELF, GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs, GWEN_DB_FLAGS_OVERWRITE_VARS, "dialog_height", i);
 
   /* store settings for result list box */
@@ -284,7 +286,7 @@ void _setIntroLabel(GWEN_DIALOG *dlg)
     xdlg->bankName?xdlg->bankName:I18N("<no bank name>"),
     xdlg->jobName?xdlg->jobName:I18N("<no job name>"));
 
-  GWEN_Dialog_SetCharProperty(dlg, "introLabel", GWEN_DialogProperty_Title, 0, GWEN_Buffer_GetStart(guiBuf), 0);
+  GWEN_Dialog_SetCharProperty(dlg, ID_INTROLABEL, GWEN_DialogProperty_Title, 0, GWEN_Buffer_GetStart(guiBuf), 0);
   GWEN_Buffer_free(guiBuf);
 }
 
