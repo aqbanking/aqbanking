@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aqbanking\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
-"POT-Creation-Date: 2025-12-03 17:42+0100\n"
+"POT-Creation-Date: 2025-12-03 17:54+0100\n"
 "PO-Revision-Date: 2025-12-03 17:49+0100\n"
 "Last-Translator: Martin Preuss <martin@aqbanking.de>\n"
 "Language-Team: German <kde-i18n-de@kde.org>\n"
@@ -16,7 +16,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bits\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
 "X-Generator: Lokalize 22.12.3\n"
-"X-Poedit-Basepath: /home/martin/projekte/c/aqbanking/aqbanking-git/aqbanking\n"
+"X-Poedit-Basepath: /home/martin/projekte/c/aqbanking/aqbanking-git/"
+"aqbanking\n"
 
 #: src/libs/aqbanking/banking_online.c:504
 #, c-format
@@ -2300,28 +2301,28 @@ msgstr "Fertig"
 
 #: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:218
 #: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:224
-msgid "none"
+msgid "VOPResult|none"
 msgstr ""
 
 #: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:219
-msgid "match"
+msgid "VOPResult|match"
 msgstr ""
 
 #: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:220
-msgid "close match"
+msgid "VOPResult|close match"
 msgstr ""
 
 #: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:221
 #, fuzzy
-msgid "no match"
+msgid "VOPResult|no match"
 msgstr "Schlüssel ungültig!"
 
 #: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:222
-msgid "not available"
+msgid "VOPResult|not available"
 msgstr ""
 
 #: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:223
-msgid "pending"
+msgid "VOPResult|pending"
 msgstr ""
 
 #: src/libs/plugins/backends/aqhbci/applayer/outbox.c:130
@@ -3874,14 +3875,14 @@ msgstr "Zahlungsempfängerprüfung"
 msgid ""
 "No message provided by the bank.<html>No message provided by the bank.</html>"
 msgstr ""
-"Die Bank hat keine Mitteilung gesendet.<html>Die Bank hat keine Mitteilung"
-" gesendet</html>"
+"Die Bank hat keine Mitteilung gesendet.<html>Die Bank hat keine Mitteilung "
+"gesendet</html>"
 
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:179
 msgid "Result\tRemote IBAN\tRemote Name\tCorrected Remote Name\tLocal BIC"
 msgstr ""
-"Ergebnis\tEmpfänger IBAN\tEmpfängername\tKorrigierter Empfängername\tEigene"
-" BIC"
+"Ergebnis\tEmpfänger IBAN\tEmpfängername\tKorrigierter Empfängername\tEigene "
+"BIC"
 
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:274
 #, c-format
@@ -3895,12 +3896,9 @@ msgid ""
 msgstr ""
 "Ergebnis der Zahlungsempfängerprüfung (Benutzer %s bei %s).\n"
 "Falls Sie den Auftrag \"%s\" ausführen wollen, klicken Sie \"Akzeptieren\".\n"
-"<html> "
-"<p>Ergebnis der Zahlungsempfängerüberprüfung (Benutzer <i>%s</i> bei <i>%s</i"
-">).</p>"
-"<p>Falls Sie den Auftrag <b>%s</b> ausführen wollen, klicken Sie <b"
-">Akzeptieren</b>.</p>"
-"</html>"
+"<html> <p>Ergebnis der Zahlungsempfängerüberprüfung (Benutzer <i>%s</i> bei "
+"<i>%s</i>).</p><p>Falls Sie den Auftrag <b>%s</b> ausführen wollen, klicken "
+"Sie <b>Akzeptieren</b>.</p></html>"
 
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:283
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:286
