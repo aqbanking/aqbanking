@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aqbanking\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
-"POT-Creation-Date: 2025-12-03 17:54+0100\n"
+"POT-Creation-Date: 2025-12-03 18:10+0100\n"
 "PO-Revision-Date: 2025-12-03 18:08+0100\n"
 "Last-Translator: Martin Preuss <martin@aqbanking.de>\n"
 "Language-Team: German <kde-i18n-de@kde.org>\n"
@@ -16,7 +16,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bits\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
 "X-Generator: Lokalize 22.12.3\n"
-"X-Poedit-Basepath: /home/martin/projekte/c/aqbanking/aqbanking-git/aqbanking\n"
+"X-Poedit-Basepath: /home/martin/projekte/c/aqbanking/aqbanking-git/"
+"aqbanking\n"
 
 #: src/libs/aqbanking/banking_online.c:504
 #, c-format
@@ -2299,8 +2300,8 @@ msgid "finish"
 msgstr "Fertig"
 
 #: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:218
-#, fuzzy
 #: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:224
+#, fuzzy
 msgid "VOPResult|none"
 msgstr "kein Ergebnis"
 
@@ -2462,19 +2463,18 @@ msgstr ""
 "Sie eine neue"
 
 #: src/libs/plugins/backends/aqhbci/applayer/cbox_voptan.c:197
-#, fuzzy
 #: src/libs/plugins/backends/aqhbci/applayer/cbox_vophbci.c:149
+#, fuzzy
 msgid "Result of VOP: Names match."
 msgstr "Ergebnis der VOP: Übereinstimmung."
 
 #: src/libs/plugins/backends/aqhbci/applayer/cbox_voptan.c:201
-#, fuzzy
 #: src/libs/plugins/backends/aqhbci/applayer/cbox_vophbci.c:153
+#, fuzzy
 msgid "Result of VOP: Transaction rejected (e.g. non-existent IBAN)."
 msgstr "Ergebnis der VOP: Auftrag abgelehnt (z.B. falsche IBAN)"
 
 #: src/libs/plugins/backends/aqhbci/applayer/cbox_voptan.c:214
-#, fuzzy
 #: src/libs/plugins/backends/aqhbci/applayer/cbox_vophbci.c:165
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_pintan.c:623
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_ddvcard.c:884
@@ -2490,6 +2490,7 @@ msgstr "Ergebnis der VOP: Auftrag abgelehnt (z.B. falsche IBAN)"
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_newkeyfile.c:1157
 #: src/libs/plugins/backends/aqpaypal/dlg_newuser.c:777
 #: src/libs/plugins/backends/aqpaypal/dlg_newuser.c:789
+#, fuzzy
 msgid "Aborted by user."
 msgstr "Die Aktion wurde durch den Benutzer abgebrochen."
 
