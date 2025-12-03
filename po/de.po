@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aqbanking\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
-"POT-Creation-Date: 2025-11-30 16:56+0100\n"
+"POT-Creation-Date: 2025-12-03 17:42+0100\n"
 "PO-Revision-Date: 2021-02-16 22:35+0100\n"
 "Last-Translator: Christian Stimming <christian@cstimming.de>\n"
 "Language-Team: Deutsch <>\n"
@@ -202,7 +202,7 @@ msgstr "Die Datei wurde erfolgreich importiert."
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_zkacard.c:784
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_newkeyfile.c:739
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_importkeyfile.c:891
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:934
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:933
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_newkeyfile.c:912
 #: src/libs/plugins/backends/aqpaypal/dlg_newuser.c:674
 msgid "Next"
@@ -301,7 +301,6 @@ msgid "All Files (*)\tCSV Files (*csv;*.CSV)\t*.sta"
 msgstr "Alle Dateien (*)\tCSV-Dateien (*.csv;*.CSV)\t*.sta"
 
 #: src/libs/aqbanking/dialogs/dlg_selectbankinfo.c:374
-#: src/libs/plugins/backends/aqofxconnect/libofxhome/dlg_getinst.c:253
 msgid "Select a Bank"
 msgstr "Wählen Sie eine Bank"
 
@@ -411,8 +410,8 @@ msgstr "Wählen Sie Banking-Modul (Backend)"
 #: src/libs/plugins/backends/aqhbci/dialogs/w_hbciversioncombo.c:28
 #: src/libs/plugins/backends/aqhbci/dialogs/w_usercombo.c:47
 #: src/libs/plugins/backends/aqhbci/dialogs/w_tanmethodcombo.c:37
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:616
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:656
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:615
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:655
 msgid "-- select --"
 msgstr "-- auswählen --"
 
@@ -1974,19 +1973,19 @@ msgstr "Verbindung zur Bank wird beendet..."
 msgid "Disconnected."
 msgstr "Beendet."
 
-#: src/libs/plugins/backends/aqfints/banking/control/control.c:33
+#: src/libs/plugins/backends/aqfints/banking/control/control.c:34
 #: src/libs/plugins/backends/aqhbci/control/main.c:51
 #: src/libs/plugins/backends/aqebics/control/main.c:43
 msgid "Usage: "
 msgstr "Benutzung: "
 
-#: src/libs/plugins/backends/aqfints/banking/control/control.c:35
+#: src/libs/plugins/backends/aqfints/banking/control/control.c:36
 #: src/libs/plugins/backends/aqhbci/control/main.c:53
 #: src/libs/plugins/backends/aqebics/control/main.c:45
 msgid " COMMAND [LOCAL OPTIONS]\n"
 msgstr " KOMMANDO [KOMMANDO-OPTIONEN]\n"
 
-#: src/libs/plugins/backends/aqfints/banking/control/control.c:37
+#: src/libs/plugins/backends/aqfints/banking/control/control.c:38
 #: src/libs/plugins/backends/aqhbci/control/main.c:55
 #: src/libs/plugins/backends/aqebics/control/main.c:48
 msgid ""
@@ -1998,7 +1997,7 @@ msgstr ""
 "Kommandos:\n"
 "\n"
 
-#: src/libs/plugins/backends/aqfints/banking/control/control.c:39
+#: src/libs/plugins/backends/aqfints/banking/control/control.c:40
 msgid ""
 "  logfile:\n"
 "    Analyze log files\n"
@@ -2151,8 +2150,8 @@ msgstr "Für immer akzeptieren"
 #: src/libs/plugins/backends/aqhbci/admjobs/jobchangekeys.c:559
 #: src/libs/plugins/backends/aqhbci/admjobs/jobchangekeys.c:803
 #: src/libs/plugins/backends/aqhbci/admjobs/jobchangekeys.c:1158
-#: src/libs/plugins/backends/aqhbci/applayer/cbox_voptan.c:1124
-#: src/libs/plugins/backends/aqhbci/applayer/cbox_vopmsg.c:188
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_voptan.c:1130
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_vopmsg.c:201
 #: src/libs/plugins/backends/aqhbci/banking/user.c:2414
 #: src/libs/plugins/backends/aqhbci/banking/user.c:2480
 msgid "Abort"
@@ -2286,7 +2285,7 @@ msgstr "Server-Schlüssel importiert."
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_zkacard.c:790
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_newkeyfile.c:745
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_importkeyfile.c:897
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:941
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:940
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_newkeyfile.c:918
 #: src/libs/plugins/backends/aqpaypal/dlg_newuser.c:680
 msgid "Finish"
@@ -2300,29 +2299,29 @@ msgstr "Schlüsselwechsel: Fehler"
 msgid "finish"
 msgstr "Fertig"
 
-#: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:197
-#: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:203
+#: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:218
+#: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:224
 msgid "none"
 msgstr ""
 
-#: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:198
+#: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:219
 msgid "match"
 msgstr ""
 
-#: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:199
+#: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:220
 msgid "close match"
 msgstr ""
 
-#: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:200
+#: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:221
 #, fuzzy
 msgid "no match"
 msgstr "Schlüssel ungültig!"
 
-#: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:201
+#: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:222
 msgid "not available"
 msgstr ""
 
-#: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:202
+#: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:223
 msgid "pending"
 msgstr ""
 
@@ -2478,7 +2477,7 @@ msgstr ""
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_newkeyfile.c:1071
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_importkeyfile.c:1039
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_importkeyfile.c:1066
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:1049
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:1048
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_newkeyfile.c:1102
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_newkeyfile.c:1132
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_newkeyfile.c:1157
@@ -2487,7 +2486,7 @@ msgstr ""
 msgid "Aborted by user."
 msgstr "Die Aktion wurde durch den Benutzer abgebrochen."
 
-#: src/libs/plugins/backends/aqhbci/applayer/cbox_voptan.c:1093
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_voptan.c:1099
 #, c-format
 msgid ""
 "Your approval for this communication with your bank server is required.\n"
@@ -2498,7 +2497,7 @@ msgid ""
 "%s\n"
 msgstr ""
 
-#: src/libs/plugins/backends/aqhbci/applayer/cbox_voptan.c:1106
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_voptan.c:1112
 #, c-format
 msgid ""
 "<html><p>Your approval for this communication with your bank server is "
@@ -2507,15 +2506,15 @@ msgid ""
 "from bank server regarding this process:</p><p>%s</p></html>"
 msgstr ""
 
-#: src/libs/plugins/backends/aqhbci/applayer/cbox_voptan.c:1121
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_voptan.c:1127
 msgid "Decoupled Mode: Waiting for Approval"
 msgstr ""
 
-#: src/libs/plugins/backends/aqhbci/applayer/cbox_voptan.c:1123
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_voptan.c:1129
 msgid "Approved"
 msgstr ""
 
-#: src/libs/plugins/backends/aqhbci/applayer/cbox_vopmsg.c:172
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_vopmsg.c:185
 #, c-format
 msgid ""
 "Result of Verification of Payee process at the bank (user %s at %s):\n"
@@ -2528,15 +2527,15 @@ msgid ""
 "to you. Always make sure you have the correct payee in your transfers!"
 msgstr ""
 
-#: src/libs/plugins/backends/aqhbci/applayer/cbox_vopmsg.c:181
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_vopmsg.c:194
 msgid "<no msg from bank>"
 msgstr ""
 
-#: src/libs/plugins/backends/aqhbci/applayer/cbox_vopmsg.c:185
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_vopmsg.c:198
 msgid "Verification of Payee Result"
 msgstr ""
 
-#: src/libs/plugins/backends/aqhbci/applayer/cbox_vopmsg.c:187
+#: src/libs/plugins/backends/aqhbci/applayer/cbox_vopmsg.c:200
 msgid "Approve"
 msgstr ""
 
@@ -2869,7 +2868,7 @@ msgstr ""
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_zkacard.c:974
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_newkeyfile.c:1085
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_importkeyfile.c:1079
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:1063
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:1062
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_newkeyfile.c:1171
 #: src/libs/plugins/backends/aqpaypal/dlg_newuser.c:804
 #, c-format
@@ -3317,13 +3316,13 @@ msgid "The system id and a list of accounts will be retrieved."
 msgstr "Die Systemkennung und Kontenliste werden angefordert."
 
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_pintan.c:611
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:1024
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:1023
 #: src/libs/plugins/backends/aqpaypal/dlg_newuser.c:749
 msgid "Unable to lock users"
 msgstr "Für die Benutzer konnte kein exklusiver Zugriff erreicht werden"
 
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_pintan.c:763
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:1032
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:1031
 #: src/libs/plugins/backends/aqpaypal/dlg_newuser.c:759
 msgid "Retrieving SSL certificate"
 msgstr "Server-Zertifikat abrufen"
@@ -3400,8 +3399,8 @@ msgstr "<keine Bankleitzahl>"
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_ddvcard.c:598
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_zkacard.c:614
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_importkeyfile.c:804
-#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:280
-#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:283
+#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:282
+#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:285
 msgid "<no user id>"
 msgstr "<keine Benutzerkennung>"
 
@@ -3868,45 +3867,38 @@ msgstr ""
 "Es konnte kein exklusiver Zugriff auf den Benutzer erreicht werden. "
 "Eventuell ist er schon in Benutzung?"
 
-#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:161
+#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:164
 msgid "Verification of Payee"
 msgstr ""
 
-#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:168
+#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:172
+msgid ""
+"No message provided by the bank.<html>No message provided by the bank.</html>"
+msgstr ""
+
+#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:179
 msgid "Result\tRemote IBAN\tRemote Name\tCorrected Remote Name\tLocal BIC"
 msgstr ""
 
-#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:263
+#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:274
 #, c-format
 msgid ""
-"These are the results of the Verification of Payee process at the bank (user "
-"%s at %s).\n"
-"FinTS specifications and your bank require us to show this dialog.\n"
-"If your bank provided a message it will be included below (the formatting "
-"probably had to be\n"
-"changed but otherwise the message was not altered).\n"
-"Sometimes there are no results reported by the bank, in that case the result "
-"list below is empty.\n"
+"Results of the Verification of Payee process at the bank (user %s at %s).\n"
 "\n"
-"If you still want to execute the job \"%s\" click \"Accept\".\n"
-"<html><p>These are the results of the <i>Verification of Payee</i> process "
-"at the bank (user <i>%s</i> at <i>%s</i>).</p><p>FinTS specifications and "
-"your bank require us to show this dialog.</p><p>If your bank provided a "
-"message it will be included below (the formatting probably had to be changed "
-"but otherwise the message was not altered).</p><p>Sometimes there are no "
-"results reported by the bank, in that case the result list below is empty.</"
-"p><p>If you still want to execute the job <b>%s</b> click <b>Accept</b>.</"
-"p></html>"
+"If you want to execute the job \"%s\" click \"Accept\".\n"
+"<html><p>Results of the <i>Verification of Payee</i> process at the bank "
+"(user <i>%s</i> at <i>%s</i>).</p><p>If you want to execute the job <b>%s</"
+"b> click <b>Accept</b>.</p></html>"
 msgstr ""
 
-#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:281
-#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:284
+#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:283
+#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:286
 #, fuzzy
 msgid "<no bank name>"
 msgstr "<keine Bankleitzahl>"
 
-#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:282
-#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:285
+#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:284
+#: src/libs/plugins/backends/aqhbci/dialogs/dlg_vop.c:287
 msgid "<no job name>"
 msgstr ""
 
@@ -4327,20 +4319,6 @@ msgid "Could not unlock user \"%lu\""
 msgstr ""
 "Für den Benutzer %lu konnte der exklusive Zugriff nicht freigegeben werden"
 
-#: src/libs/plugins/backends/aqofxconnect/libofxhome/dlg_getinst.c:260
-msgid "Bank Name"
-msgstr "Bankname"
-
-#: src/libs/plugins/backends/aqofxconnect/libofxhome/dlg_getinst.c:273
-msgid ""
-"<html><p>Please start typing in the name of your bank. The list below will "
-"be updated to show matching banks.</p><p>Choose the bank from list below and "
-"click <b>ok</b>.</p></html>Please start typing in the name of your bank. The "
-"list\n"
-"below will be updated to show matching banks.\n"
-"Choose the bank from list below and click OK."
-msgstr ""
-
 #: src/libs/plugins/backends/aqofxconnect/common/io_network.c:67
 #, c-format
 msgid "Could not create connection (%d)"
@@ -4434,66 +4412,66 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:609
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:608
 msgid "OFX DirectConnect User Setup"
 msgstr "OFX DirectConnect Benutzereinrichtung"
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:741
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:759
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:771
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:783
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:815
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:827
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:859
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:871
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:886
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:740
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:758
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:770
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:782
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:814
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:826
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:858
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:870
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:885
 msgid "Missing Input"
 msgstr "Fehlende Eingabe"
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:741
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:740
 msgid "Please enter the name of your bank."
 msgstr "Bitte geben Sie den Namen der Bank ein."
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:759
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:758
 msgid "Please enter a valid FID code."
 msgstr "Bitte machen Sie eine Angabe zu FID."
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:771
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:770
 msgid "Please enter a valid ORG code."
 msgstr "Bitte machen Sie eine Angabe zu ORG."
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:783
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:782
 msgid "Please enter a server address."
 msgstr "Bitte geben Sie eine Server-Adresse ein."
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:815
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:814
 msgid "Please enter your name."
 msgstr "Bitte geben Sie Ihren Namen ein."
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:827
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:826
 msgid "Please enter your User ID."
 msgstr "Bitte geben Sie Ihre Benutzerkennung (User ID) ein."
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:859
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:871
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:858
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:870
 msgid "Please select a valid application to emulate."
 msgstr "Bitte wählen Sie eine Anwendung, die emuliert werden soll."
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:886
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:885
 msgid "Please enter a correct header version (default is 102)."
 msgstr "Bitte wählen Sie eine Header-Version (voreingestellt ist 102)."
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:579
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:578
 msgid "OFX DirectConnect Setup Wizard"
 msgstr "OFX DirectConnect Setup-Assistent"
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:590
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:589
 msgid ""
 "<html><p>This dialog assists you in setting up an OFX DirectConnect User.</"
 "p></html>This dialog assists you in setting up an OFX DirectConnect User."
 msgstr ""
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:601
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:600
 msgid ""
 "<html><p>Please enter your bank settings below.</p><p>Click the <b>Select</"
 "b> button to choose from a list of known banks. That will connect to <i>www."
@@ -4510,7 +4488,7 @@ msgid ""
 "the next user."
 msgstr ""
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:625
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:624
 msgid ""
 "<html><p>Please enter your user settings below.</p><p><i>User Name</i> is "
 "your real name, <i>User Id</i> is assigned to you by the bank after applying "
@@ -4523,7 +4501,7 @@ msgid ""
 "a value in your documents from the bank just leave it blank."
 msgstr ""
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:645
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:644
 msgid ""
 "<html><p>Please choose the application you want AqBanking to emulate. Not "
 "all banks support all applications and versions, you might have to try "
@@ -4533,7 +4511,7 @@ msgid ""
 "to try multiple settings."
 msgstr ""
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:684
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:683
 msgid ""
 "<html><p>We are now ready to create the user.</p><p>Click the <i>next</i> "
 "button to proceed or <i>abort</i> to abort.</p></html>We are now ready to "
@@ -4541,7 +4519,7 @@ msgid ""
 "Click the NEXT button to proceed or ABORT to abort."
 msgstr ""
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:697
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:696
 msgid ""
 "<html><p>The user has been successfully setup.</p><p>You can now try to "
 "retrieve the list of accounts the bank allows you to manage via OFX "
@@ -4555,11 +4533,11 @@ msgid ""
 "add the account manually."
 msgstr ""
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:1013
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:1012
 msgid "Setting Up OFX DirectConnect User"
 msgstr "Einrichtung eines OFX DirectConnect-Benutzers"
 
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:1014
+#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:1013
 msgid "The user will be created and the certificate retrieved."
 msgstr "Der Benutzer wird erstellt und das Zertifikat abgerufen."
 
@@ -4917,28 +4895,28 @@ msgstr "deaktiviert"
 
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_edituser.c:631
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_edituser.c:670
-#: src/libs/plugins/backends/aqebics/control/download.c:175
-#: src/libs/plugins/backends/aqebics/control/sendkeys.c:129
-#: src/libs/plugins/backends/aqebics/control/sendsignkey.c:113
-#: src/libs/plugins/backends/aqebics/control/getaccounts.c:98
-#: src/libs/plugins/backends/aqebics/control/getkeys.c:98
-#: src/libs/plugins/backends/aqebics/control/sendhpd.c:100
-#: src/libs/plugins/backends/aqebics/control/sendhkd.c:101
-#: src/libs/plugins/backends/aqebics/control/upload.c:136
-#: src/libs/plugins/backends/aqebics/control/getcert.c:98
+#: src/libs/plugins/backends/aqebics/control/download.c:162
+#: src/libs/plugins/backends/aqebics/control/sendkeys.c:116
+#: src/libs/plugins/backends/aqebics/control/sendsignkey.c:100
+#: src/libs/plugins/backends/aqebics/control/getaccounts.c:85
+#: src/libs/plugins/backends/aqebics/control/getkeys.c:85
+#: src/libs/plugins/backends/aqebics/control/sendhpd.c:87
+#: src/libs/plugins/backends/aqebics/control/sendhkd.c:88
+#: src/libs/plugins/backends/aqebics/control/upload.c:123
+#: src/libs/plugins/backends/aqebics/control/getcert.c:85
 msgid "Executing Request"
 msgstr "Aufträge werden ausgeführt"
 
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_edituser.c:632
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_edituser.c:671
-#: src/libs/plugins/backends/aqebics/control/download.c:176
-#: src/libs/plugins/backends/aqebics/control/sendkeys.c:130
-#: src/libs/plugins/backends/aqebics/control/sendsignkey.c:114
-#: src/libs/plugins/backends/aqebics/control/getkeys.c:99
-#: src/libs/plugins/backends/aqebics/control/sendhpd.c:101
-#: src/libs/plugins/backends/aqebics/control/sendhkd.c:102
-#: src/libs/plugins/backends/aqebics/control/upload.c:137
-#: src/libs/plugins/backends/aqebics/control/getcert.c:99
+#: src/libs/plugins/backends/aqebics/control/download.c:163
+#: src/libs/plugins/backends/aqebics/control/sendkeys.c:117
+#: src/libs/plugins/backends/aqebics/control/sendsignkey.c:101
+#: src/libs/plugins/backends/aqebics/control/getkeys.c:86
+#: src/libs/plugins/backends/aqebics/control/sendhpd.c:88
+#: src/libs/plugins/backends/aqebics/control/sendhkd.c:89
+#: src/libs/plugins/backends/aqebics/control/upload.c:124
+#: src/libs/plugins/backends/aqebics/control/getcert.c:86
 msgid "Now the request is send to the credit institute."
 msgstr "Der Auftrag wird nun an das Kreditinstitut gesendet."
 
@@ -5077,37 +5055,37 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/control/adduser.c:380
+#: src/libs/plugins/backends/aqebics/control/adduser.c:367
 msgid ""
 "Invalid protocol version.\n"
 "Possible versions are H002, H003 and H004.\n"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/control/createkeys.c:126
+#: src/libs/plugins/backends/aqebics/control/createkeys.c:113
 msgid "Creating keys"
 msgstr "Schlüssel erzeugen"
 
-#: src/libs/plugins/backends/aqebics/control/createkeys.c:127
+#: src/libs/plugins/backends/aqebics/control/createkeys.c:114
 msgid "Now the keys are created."
 msgstr "Die Schlüssel werden erstellt."
 
-#: src/libs/plugins/backends/aqebics/control/createtempkey.c:114
+#: src/libs/plugins/backends/aqebics/control/createtempkey.c:101
 msgid "Creating key"
 msgstr "Schlüssel erstellen"
 
-#: src/libs/plugins/backends/aqebics/control/createtempkey.c:115
+#: src/libs/plugins/backends/aqebics/control/createtempkey.c:102
 msgid "Now the temporary sign key is created."
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/control/download.c:192
+#: src/libs/plugins/backends/aqebics/control/download.c:179
 msgid "No download data"
 msgstr ""
 
-#: src/libs/plugins/backends/aqebics/control/getaccounts.c:99
+#: src/libs/plugins/backends/aqebics/control/getaccounts.c:86
 msgid "Now the request is sent to the credit institute."
 msgstr "Der Auftrag wird nun an das Kreditinstitut gesendet."
 
-#: src/libs/plugins/backends/aqebics/control/setebicsversion.c:115
+#: src/libs/plugins/backends/aqebics/control/setebicsversion.c:102
 msgid ""
 "Invalid protocol version.\n"
 "Possible versions are H002 and H003.\n"
@@ -5375,6 +5353,11 @@ msgstr "Zurück"
 #: src/libs/aqbanking/dialogs/dlg_selectbankinfo.dlg:23
 msgid "BIC"
 msgstr "BIC"
+
+#. type: Attribute 'text' of: <dialog><widget><widget><widget>
+#: src/libs/aqbanking/dialogs/dlg_selectbankinfo.dlg:26
+msgid "Bank Name"
+msgstr "Bankname"
 
 #. type: Attribute 'text' of: <dialog><widget><widget><widget>
 #: src/libs/aqbanking/dialogs/dlg_selectbankinfo.dlg:29
