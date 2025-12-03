@@ -39,6 +39,7 @@
 #define ID_VOPMSG           "vopMsg"
 #define ID_VOPRESULTLISTBOX "vopResultListBox"
 #define ID_INTROLABEL       "introLabel"
+#define ID_VSPLITTER        "vsplitter"
 
 
 
@@ -190,6 +191,12 @@ int _handleInit(GWEN_DIALOG *dlg)
   if (i>=DIALOG_MINHEIGHT)
     GWEN_Dialog_SetIntProperty(dlg, ID_SELF, GWEN_DialogProperty_Height, 0, i, 0);
 
+  /* read value of vsplitter */
+  i=GWEN_DB_GetIntValue(dbPrefs, "vsplitter", 0, -1);
+  i=(i>20)?i:20;
+  GWEN_Dialog_SetIntProperty(dlg, ID_VSPLITTER, GWEN_DialogProperty_Value, 0, i, 0);
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "vsplitter: %d", i);
+
   /* read settings for result list box */
   GWEN_Dialog_ListReadColumnSettings(dlg, ID_VOPRESULTLISTBOX, "vop_result_list_", 5, 64, dbPrefs);
 
@@ -219,6 +226,11 @@ int _handleFini(GWEN_DIALOG *dlg)
   /* store dialog height */
   i=GWEN_Dialog_GetIntProperty(dlg, ID_SELF, GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs, GWEN_DB_FLAGS_OVERWRITE_VARS, "dialog_height", i);
+
+  /* store value of vsplitter */
+  i=GWEN_Dialog_GetIntProperty(dlg, ID_VSPLITTER, GWEN_DialogProperty_Value, 0, -1);
+  GWEN_DB_SetIntValue(dbPrefs, GWEN_DB_FLAGS_OVERWRITE_VARS, "vsplitter", i);
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "vsplitter: %d", i);
 
   /* store settings for result list box */
   GWEN_Dialog_ListWriteColumnSettings(dlg, ID_VOPRESULTLISTBOX, "vop_result_list_", 5, 64, dbPrefs);
