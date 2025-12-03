@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: aqbanking\n"
 "Report-Msgid-Bugs-To: aqbanking-user@lists.aqbanking.de\n"
 "POT-Creation-Date: 2025-12-03 17:54+0100\n"
-"PO-Revision-Date: 2025-12-03 17:49+0100\n"
+"PO-Revision-Date: 2025-12-03 18:08+0100\n"
 "Last-Translator: Martin Preuss <martin@aqbanking.de>\n"
 "Language-Team: German <kde-i18n-de@kde.org>\n"
 "Language: de\n"
@@ -16,8 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bits\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
 "X-Generator: Lokalize 22.12.3\n"
-"X-Poedit-Basepath: /home/martin/projekte/c/aqbanking/aqbanking-git/"
-"aqbanking\n"
+"X-Poedit-Basepath: /home/martin/projekte/c/aqbanking/aqbanking-git/aqbanking\n"
 
 #: src/libs/aqbanking/banking_online.c:504
 #, c-format
@@ -2300,30 +2299,35 @@ msgid "finish"
 msgstr "Fertig"
 
 #: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:218
+#, fuzzy
 #: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:224
 msgid "VOPResult|none"
-msgstr ""
+msgstr "kein Ergebnis"
 
 #: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:219
+#, fuzzy
 msgid "VOPResult|match"
-msgstr ""
+msgstr "Übereinstimmung"
 
 #: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:220
+#, fuzzy
 msgid "VOPResult|close match"
-msgstr ""
+msgstr "nahezu Übereinstimmung"
 
 #: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:221
 #, fuzzy
 msgid "VOPResult|no match"
-msgstr "Schlüssel ungültig!"
+msgstr "keine Übereinstimmung"
 
 #: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:222
+#, fuzzy
 msgid "VOPResult|not available"
-msgstr ""
+msgstr "Prüfung nicht möglich"
 
 #: src/libs/plugins/backends/aqhbci/admjobs/vop_result.c:223
+#, fuzzy
 msgid "VOPResult|pending"
-msgstr ""
+msgstr "Prüfung läuft"
 
 #: src/libs/plugins/backends/aqhbci/applayer/outbox.c:130
 msgid "Now the jobs are sent via their backends to the credit institutes."
@@ -2458,16 +2462,19 @@ msgstr ""
 "Sie eine neue"
 
 #: src/libs/plugins/backends/aqhbci/applayer/cbox_voptan.c:197
+#, fuzzy
 #: src/libs/plugins/backends/aqhbci/applayer/cbox_vophbci.c:149
 msgid "Result of VOP: Names match."
-msgstr ""
+msgstr "Ergebnis der VOP: Übereinstimmung."
 
 #: src/libs/plugins/backends/aqhbci/applayer/cbox_voptan.c:201
+#, fuzzy
 #: src/libs/plugins/backends/aqhbci/applayer/cbox_vophbci.c:153
 msgid "Result of VOP: Transaction rejected (e.g. non-existent IBAN)."
-msgstr ""
+msgstr "Ergebnis der VOP: Auftrag abgelehnt (z.B. falsche IBAN)"
 
 #: src/libs/plugins/backends/aqhbci/applayer/cbox_voptan.c:214
+#, fuzzy
 #: src/libs/plugins/backends/aqhbci/applayer/cbox_vophbci.c:165
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_pintan.c:623
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_ddvcard.c:884
@@ -2511,8 +2518,9 @@ msgid "Decoupled Mode: Waiting for Approval"
 msgstr ""
 
 #: src/libs/plugins/backends/aqhbci/applayer/cbox_voptan.c:1129
+#, fuzzy
 msgid "Approved"
-msgstr ""
+msgstr "Bestätigen"
 
 #: src/libs/plugins/backends/aqhbci/applayer/cbox_vopmsg.c:185
 #, c-format
