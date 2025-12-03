@@ -153,6 +153,7 @@ int _handleInit(GWEN_DIALOG *dlg)
   AH_VOP_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
+  const char *s;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_VOP_DIALOG, dlg);
@@ -163,7 +164,15 @@ int _handleInit(GWEN_DIALOG *dlg)
   GWEN_Dialog_SetCharProperty(dlg, ID_SELF, GWEN_DialogProperty_Title, 0, I18N("Verification of Payee"), 0);
 
   _setIntroLabel(dlg);
-  _vopMsgToGui(dlg, ID_VOPMSG, xdlg->vopMsg, VOPMSG_MAXWIDTH_IN_CHARS);
+  s=xdlg->vopMsg;
+  if (s && *s)
+    _vopMsgToGui(dlg, ID_VOPMSG, xdlg->vopMsg, VOPMSG_MAXWIDTH_IN_CHARS);
+  else {
+    GWEN_Dialog_SetCharProperty(dlg, ID_VOPMSG, GWEN_DialogProperty_Value, 0,
+				I18N("No message provided by the bank."
+				     "<html>No message provided by the bank.</html>"),
+				0);
+  }
 
   /* setup result list */
   GWEN_Dialog_SetCharProperty(dlg, ID_VOPRESULTLISTBOX, GWEN_DialogProperty_Title, 0,
@@ -262,21 +271,12 @@ void _setIntroLabel(GWEN_DIALOG *dlg)
   guiBuf=GWEN_Buffer_new(0, 256, 0, 1);
 
   GWEN_Buffer_AppendArgs(guiBuf,
-    I18N("These are the results of the Verification of Payee process at the bank (user %s at %s).\n"
-         "FinTS specifications and your bank require us to show this dialog.\n"
-         "If your bank provided a message it will be included below (the formatting probably had to be\n"
-         "changed but otherwise the message was not altered).\n"
-         "Sometimes there are no results reported by the bank, in that case the result list below is empty.\n"
+    I18N("Results of the Verification of Payee process at the bank (user %s at %s).\n"
          "\n"
-         "If you still want to execute the job \"%s\" click \"Accept\".\n"
-
+         "If you want to execute the job \"%s\" click \"Accept\".\n"
          "<html>"
-         "<p>These are the results of the <i>Verification of Payee</i> process at the bank (user <i>%s</i> at <i>%s</i>).</p>"
-         "<p>FinTS specifications and your bank require us to show this dialog.</p>"
-         "<p>If your bank provided a message it will be included below (the formatting probably had to be "
-         "changed but otherwise the message was not altered).</p>"
-         "<p>Sometimes there are no results reported by the bank, in that case the result list below is empty.</p>"
-         "<p>If you still want to execute the job <b>%s</b> click <b>Accept</b>.</p>"
+         "<p>Results of the <i>Verification of Payee</i> process at the bank (user <i>%s</i> at <i>%s</i>).</p>"
+         "<p>If you want to execute the job <b>%s</b> click <b>Accept</b>.</p>"
          "</html>"
         ),
     xdlg->userName?xdlg->userName:I18N("<no user id>"),
@@ -368,9 +368,7 @@ void _stringListToBufferPlain(const GWEN_STRINGLIST *sl, int maxLen, GWEN_BUFFER
 
       s=GWEN_StringListEntry_Data(se);
       if (s && *s) {
-        DBG_ERROR(NULL, "Adding word [%s]", s);
         if (*s==10) {
-          DBG_ERROR(NULL, "Adding a forced new line");
           /* forced newline */
           GWEN_Buffer_AppendString(tbuf, VOPMSG_NEWLINE);
           currentWidth=0;
@@ -378,12 +376,10 @@ void _stringListToBufferPlain(const GWEN_STRINGLIST *sl, int maxLen, GWEN_BUFFER
         else if (*s=='<') {
           /* html element */
           if (strcasecmp(s, "<br>")==0) {
-            DBG_ERROR(NULL, "Adding a new line (because of <br>");
             GWEN_Buffer_AppendString(tbuf, VOPMSG_NEWLINE);
             currentWidth=0;
           }
           else if (strcasecmp(s, "<p>")==0 || strcasecmp(s, "</p>")==0) {
-            DBG_ERROR(NULL, "Adding a new line (because of <p> or </p>");
             GWEN_Buffer_AppendString(tbuf, VOPMSG_NEWLINE);
             currentWidth=0;
           }
