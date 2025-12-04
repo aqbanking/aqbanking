@@ -264,7 +264,7 @@ int _jobApi_ProcessBankAccount(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
       AB_ACCOUNT *a;
       AB_IMEXPORTER_ACCOUNTINFO *ai;
 
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Got a balance");
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Got a balance");
       if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
         GWEN_DB_Dump(dbBalance, 2);
 
@@ -366,7 +366,7 @@ int _jobApi_ProcessInvestmentAccount(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
       const void *p;
       unsigned int bs;
 
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Got a balance");
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Got a balance");
       if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
         GWEN_DB_Dump(dbBalance, 2);
 

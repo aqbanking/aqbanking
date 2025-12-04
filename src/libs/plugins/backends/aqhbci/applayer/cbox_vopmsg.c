@@ -51,9 +51,8 @@ int AH_OutboxCBox_LetUserConfirmVopResult(AH_OUTBOX_CBOX *cbox, AH_JOB *workJob,
 
   resultList=vppJob?AH_Job_VPP_GetResultList(vppJob):NULL;
   if (!(sMsg && *sMsg) && (resultList==NULL || (resultList && AH_VopResult_List_HasOnlyMatches(resultList)))) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Showing dialog is not really necessary here, but in beta phase we will show it anyway");
-    /*DBG_WARN(AQHBCI_LOGDOMAIN, "No msg, no non-matching results, silently accepting.");
-    return 0; */
+    DBG_WARN(AQHBCI_LOGDOMAIN, "No msg, no non-matching results, silently accepting.");
+    return 0;
   }
 
   /* find bank name */
@@ -68,7 +67,7 @@ int AH_OutboxCBox_LetUserConfirmVopResult(AH_OUTBOX_CBOX *cbox, AH_JOB *workJob,
     GWEN_Dialog_free(dlg);
     if (rv<0) {
       if (rv!=GWEN_ERROR_NOT_IMPLEMENTED) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+        DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
         AB_BankInfo_free(bankInfo);
         return rv;
       }
@@ -76,12 +75,12 @@ int AH_OutboxCBox_LetUserConfirmVopResult(AH_OUTBOX_CBOX *cbox, AH_JOB *workJob,
     }
     else if (rv==0) {
       /* rejected */
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Rejected");
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Rejected");
       AB_BankInfo_free(bankInfo);
       return GWEN_ERROR_USER_ABORTED;
     }
     else {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Accepted");
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Accepted");
       AB_BankInfo_free(bankInfo);
       return 0;
     }
@@ -122,7 +121,7 @@ void AH_OutboxCBox_ApplyVopResultsToTransfers(AH_JOB *workJob, const AH_VOP_RESU
 	  if (vr)
 	    _applyVopResultToTransaction(vr, sRemoteIban, sRemoteName, t);
 	  else {
-            DBG_ERROR(AQHBCI_LOGDOMAIN, "No result found for transfer involving %s, assuming okay", sRemoteIban);
+            DBG_INFO(AQHBCI_LOGDOMAIN, "No result found for transfer involving %s, assuming okay", sRemoteIban);
 	    AB_Transaction_SetVopResult(t, AB_Transaction_VopResultNone);
 	  }
 	}
@@ -143,16 +142,16 @@ void _applyVopResultToTransaction(const AH_VOP_RESULT *vr, const char *sRemoteIb
   sAltName=AH_VopResult_GetAltRemoteName(vr);
   resultCode=AH_VopResult_GetResult(vr);
   if (sAltName) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-	      "Result for transfer: %s: \"%s\" -> \"%s\" (%s)",
-	      sRemoteIban?sRemoteIban:"<no iban>", sRemoteName?sRemoteName:"<no name>", sAltName?sAltName:"<no name>",
-	      AH_VopResultCode_toString(resultCode));
+    DBG_INFO(AQHBCI_LOGDOMAIN,
+	     "Result for transfer: %s: \"%s\" -> \"%s\" (%s)",
+	     sRemoteIban?sRemoteIban:"<no iban>", sRemoteName?sRemoteName:"<no name>", sAltName?sAltName:"<no name>",
+	     AH_VopResultCode_toString(resultCode));
   }
   else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN,
-	      "Result for transfer: %s (%s)",
-	      sRemoteIban?sRemoteIban:"<no iban>",
-	      AH_VopResultCode_toString(resultCode));
+    DBG_INFO(AQHBCI_LOGDOMAIN,
+	     "Result for transfer: %s (%s)",
+	     sRemoteIban?sRemoteIban:"<no iban>",
+	     AH_VopResultCode_toString(resultCode));
   }
   AB_Transaction_SetVopResult(t, _vopResultCodeToTransactionVopResult(resultCode));
   AB_Transaction_SetUltimateCreditor(t, sAltName);
@@ -203,7 +202,7 @@ int _showSimpleGuiMessage(const char *sJobName, const char *sBankName, const cha
                          0);
   GWEN_Buffer_free(guiBuf);
   if (rv!=1) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Not confirming payee(s) (%d)", rv);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Not confirming payee(s) (%d)", rv);
     return GWEN_ERROR_USER_ABORTED;
   }
 

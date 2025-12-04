@@ -153,8 +153,10 @@ int _extractChallengeAndText(const char *sChallengeHhd,
       GWEN_Buffer_AppendString(bufChallenge, GWEN_Buffer_GetStart(cbuf));
       GWEN_Buffer_free(cbuf);
 
+#if 0
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Will use this challenge:");
       GWEN_Buffer_Dump(bufChallenge, 2);
+#endif
 
       /* extract text */
       if (GWEN_Buffer_GetUsedBytes(bufGuiText)>0)

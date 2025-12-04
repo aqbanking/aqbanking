@@ -118,7 +118,7 @@ int AH_Job_Tan_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     if (dbTanResponse) {
       const char *s;
 
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Got a TAN response");
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Got a TAN response");
       if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
         GWEN_DB_Dump(dbTanResponse, 2);
 

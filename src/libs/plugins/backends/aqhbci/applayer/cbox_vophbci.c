@@ -61,7 +61,7 @@ int AH_OutboxCBox_SendAndReceiveJobWithVpp(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg,
   AH_JOB *vppJob;
   int rv;
 
-  DBG_ERROR(AQHBCI_LOGDOMAIN, "Called function with VPP handling");
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Called function with VPP handling");
 
   provider=AH_OutboxCBox_GetProvider(cbox);
   user=AH_OutboxCBox_GetUser(cbox);
@@ -71,7 +71,7 @@ int AH_OutboxCBox_SendAndReceiveJobWithVpp(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg,
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No VPP job created");
   }
 
-  DBG_ERROR(AQHBCI_LOGDOMAIN, "Handling stage 1 for job %s", AH_Job_GetName(workJob));
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Handling stage 1 for job %s", AH_Job_GetName(workJob));
   rv=_handleStage1(cbox, dlg, vppJob, workJob);
   if (rv<0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -80,17 +80,17 @@ int AH_OutboxCBox_SendAndReceiveJobWithVpp(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg,
   }
 
   if (vppJob) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Handling stage 2 for job %s", AH_Job_GetName(workJob));
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Handling stage 2 for job %s", AH_Job_GetName(workJob));
     rv=_handleStage2(cbox, dlg, vppJob, workJob);
     if (rv<0) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       AH_Job_free(vppJob);
       return GWEN_ERROR_GENERIC;
     }
   }
 
   if (vppJob) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Applying VOP results to transfers");
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Applying VOP results to transfers");
     AH_OutboxCBox_ApplyVopResultsToTransfers(workJob, AH_Job_VPP_GetResultList(vppJob));
   }
 
@@ -113,7 +113,7 @@ int _handleStage1(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *vppJob, AH_JOB *
 
   jobQueue=_createQueueForStage1(user, vppJob, workJob);
   if (jobQueue==NULL) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "here");
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here");
     return GWEN_ERROR_GENERIC;
   }
 
@@ -121,7 +121,7 @@ int _handleStage1(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *vppJob, AH_JOB *
   rv=_sendAndRecvQueue(cbox, dlg, jobQueue);
   AH_JobQueue_free(jobQueue);
   if (rv) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
@@ -129,10 +129,11 @@ int _handleStage1(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *vppJob, AH_JOB *
     AH_Job_Process(vppJob, AH_Outbox_GetImExContext(outbox));
     /* repeat sending HKVPP as long as the bank sends an attach point */
     if (AH_Job_GetFlags(vppJob) & AH_JOB_FLAGS_HASATTACHPOINT) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "VOP not finished, waiting...");
+      DBG_INFO(AQHBCI_LOGDOMAIN, "VOP not finished, waiting...");
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("VOP pending, waiting..."));
       rv=_repeatJobUntilNoAttachPoint(cbox, dlg, vppJob);
       if (rv) {
-	DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+	DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
 	return rv;
       }
     }
@@ -142,15 +143,15 @@ int _handleStage1(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *vppJob, AH_JOB *
     const char *s;
 
     s=AH_Job_VPP_GetVopMsg(vppJob);
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "VPP message: %s", s);
+    DBG_DEBUG(AQHBCI_LOGDOMAIN, "VPP message: %s", s);
 
     if (AH_Job_HasResultWithCode(vppJob, 25)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Result of VOP: Names match.");
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Result of VOP: Names match.");
       GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("Result of VOP: Names match."));
     }
     else if (AH_Job_HasResultWithCode(vppJob, 9210)) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Result of VOP: Transaction rejected (e.g. non-existent IBAN).");
-      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("Result of VOP: Transaction rejected (e.g. non-existent IBAN)."));
+      GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Result of VOP: Transaction rejected (e.g. non-existent IBAN)."));
       return GWEN_ERROR_GENERIC;
     }
     else if (AH_Job_HasResultWithCode(vppJob, 3090)) {
@@ -158,7 +159,7 @@ int _handleStage1(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *vppJob, AH_JOB *
 
       resultList=AH_Job_VPP_GetResultList(vppJob);
       if ((s && *s) || (resultList && AH_VopResult_List_GetCount(resultList))) {
-        DBG_ERROR(AQHBCI_LOGDOMAIN, "Let user accept or reject VOP result");
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Let user accept or reject VOP result");
         rv=AH_OutboxCBox_LetUserConfirmVopResult(cbox, workJob, vppJob, s);
         if (rv<0) {
           DBG_ERROR(AQHBCI_LOGDOMAIN, "Aborted by user (%d)", rv);
@@ -191,7 +192,7 @@ int _handleStage2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *vppJob, AH_JOB *
   if (needVpa && vppJob) {
     vpaJob=_createVpaJob(provider, user, vppJob, workJob);
     if (vpaJob==NULL) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "here");
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here");
       return GWEN_ERROR_GENERIC;
     }
   }
@@ -199,7 +200,7 @@ int _handleStage2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *vppJob, AH_JOB *
   jobQueue=_createQueueForStage2(user, vppJob, vpaJob, workJob);
   rv=_sendAndRecvQueue(cbox, dlg, jobQueue);
   if (rv<0) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "here");
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here");
     AH_JobQueue_free(jobQueue);
     return rv;
   }
@@ -217,7 +218,7 @@ int _sendAndRecvQueue(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jobQueu
 
   rv=AH_OutboxCBox_SendQueue(cbox, dlg, jobQueue);
   if (rv) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
@@ -225,7 +226,7 @@ int _sendAndRecvQueue(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOBQUEUE *jobQueu
 
   rv=AH_OutboxCBox_RecvQueue(cbox, dlg, jobQueue);
   if (rv) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
   }
 
@@ -247,14 +248,14 @@ int _repeatJobUntilNoAttachPoint(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *j
     AH_JOBQUEUE *jobQueue;
     int rv;
 
-    DBG_ERROR(NULL, "Job has attach point, waiting and sending again");
+    DBG_INFO(NULL, "Job has attach point, waiting and sending again");
     sleep(2); /* TODO: use select from GUI! */
     jobQueue=AH_JobQueue_new(user);
     AH_JobQueue_SubFlags(jobQueue, AH_JOBQUEUE_FLAGS_NEEDTAN);
     AH_Job_Attach(j);
     rv=AH_JobQueue_AddJob(jobQueue, j);
     if (rv!=AH_JobQueueAddResultOk) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       AH_JobQueue_free(jobQueue);
       return rv;
     }
@@ -262,7 +263,7 @@ int _repeatJobUntilNoAttachPoint(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *j
     rv=_sendAndRecvQueue(cbox, dlg, jobQueue);
     AH_JobQueue_free(jobQueue);
     if (rv) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       return rv;
     }
     AH_Job_Process(j, AH_Outbox_GetImExContext(outbox));
@@ -285,7 +286,7 @@ AH_JOBQUEUE *_createQueueForStage1(AB_USER *user, AH_JOB *vppJob, AH_JOB *workJo
     AH_Job_Attach(vppJob);
     rv=AH_JobQueue_AddJob(jobQueue, vppJob);
     if (rv!=AH_JobQueueAddResultOk) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       AH_JobQueue_free(jobQueue);
       return NULL;
     }
@@ -294,7 +295,7 @@ AH_JOBQUEUE *_createQueueForStage1(AB_USER *user, AH_JOB *vppJob, AH_JOB *workJo
   AH_Job_Attach(workJob);
   rv=AH_JobQueue_AddJob(jobQueue, workJob);
   if (rv!=AH_JobQueueAddResultOk) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_JobQueue_free(jobQueue);
     return NULL;
   }
@@ -320,7 +321,7 @@ AH_JOBQUEUE *_createQueueForStage2(AB_USER *user, AH_JOB *vppJob, AH_JOB *vpaJob
     AH_Job_Attach(vpaJob);
     rv=AH_JobQueue_AddJob(jobQueue, vpaJob);
     if (rv!=AH_JobQueueAddResultOk) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       AH_JobQueue_free(jobQueue);
       return NULL;
     }
@@ -331,7 +332,7 @@ AH_JOBQUEUE *_createQueueForStage2(AB_USER *user, AH_JOB *vppJob, AH_JOB *vpaJob
     AH_Job_Attach(workJob);
     rv=AH_JobQueue_AddJob(jobQueue, workJob);
     if (rv!=AH_JobQueueAddResultOk) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       AH_JobQueue_free(jobQueue);
       return NULL;
     }
@@ -358,7 +359,7 @@ AH_JOB *_createVppJob(AB_PROVIDER *provider, AB_USER *user, const AH_JOB *workJo
 
     jobCode=AH_Job_GetCode(workJob);
     if (jobCode && *jobCode && AH_Job_VPP_IsNeededForCode(vppJob, jobCode)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "VOP needed for job %s", AH_Job_GetCode(workJob));
+      DBG_INFO(AQHBCI_LOGDOMAIN, "VOP needed for job %s", AH_Job_GetCode(workJob));
       if (AH_Job_GetFlags(workJob) & AH_JOB_FLAGS_SIGN) {
         int rv;
 
@@ -373,13 +374,13 @@ AH_JOB *_createVppJob(AB_PROVIDER *provider, AB_USER *user, const AH_JOB *workJo
       return vppJob;
     }
     else {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "VOP not needed for job %s", AH_Job_GetCode(workJob));
+      DBG_INFO(AQHBCI_LOGDOMAIN, "VOP not needed for job %s", AH_Job_GetCode(workJob));
       AH_Job_free(vppJob);
       return NULL;
     }
   }
   else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "VOP not available");
+    DBG_INFO(AQHBCI_LOGDOMAIN, "VOP not available");
     return NULL;
   }
 }

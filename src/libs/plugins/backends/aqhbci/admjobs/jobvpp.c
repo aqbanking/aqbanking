@@ -159,10 +159,9 @@ int _cbProcess(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     if (dbVppResponse) {
       const char *s;
 
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Got a VPP response");
-      //      if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
-      fprintf(stderr, "Response: \n"); // DEBUG
-      GWEN_DB_Dump(dbVppResponse, 2);
+      DBG_DEBUG(AQHBCI_LOGDOMAIN, "Got a VPP response");
+      if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
+        GWEN_DB_Dump(dbVppResponse, 2);
 
       _readVopId(aj, dbArgs, dbVppResponse);
       _readPollingId(aj, dbArgs, dbVppResponse);

@@ -357,7 +357,7 @@ void AH_Outbox_AddJob(AH_OUTBOX *ob, AH_JOB *j)
 
   cbox=_findCBox(ob, u);
   if (!cbox) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Creating CBox for customer \"%lu\"", (unsigned long int) AB_User_GetUniqueId(u));
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Creating CBox for customer \"%lu\"", (unsigned long int) AB_User_GetUniqueId(u));
     cbox=AH_OutboxCBox_new(ob->provider, u, ob);
     AH_OutboxCBox_List_Add(cbox, ob->userBoxes);
   }
