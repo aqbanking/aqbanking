@@ -506,6 +506,8 @@ void AB_SetupDialog_Init(GWEN_DIALOG *dlg)
   AB_SETUP_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
+  GWEN_BUFFER *buf;
+  int rv;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
@@ -547,6 +549,18 @@ void AB_SetupDialog_Init(GWEN_DIALOG *dlg)
                              0,
                              GWEN_Dialog_SelectionMode_Single,
                              0);
+  /* info */
+  buf=GWEN_Buffer_new(0, 1024, 0, 1);
+  rv=AB_Banking_GetUserDataDir(xdlg->banking, buf);
+  if (rv>=0) {
+    GWEN_Dialog_SetCharProperty(dlg,
+                                "configPath",
+                                GWEN_DialogProperty_Value,
+                                0,
+                                GWEN_Buffer_GetStart(buf),
+                                0);
+  }
+  GWEN_Buffer_free(buf);
 
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);

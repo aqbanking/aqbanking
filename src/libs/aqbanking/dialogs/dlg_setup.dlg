@@ -44,6 +44,15 @@
         </widget>
       </widget>
 
+      <!-- info page -->
+      <widget type="tabPage" text="Info" flags="fillX fillY" >
+        <widget type="gridLayout" columns="2" flags="fillX" >
+          <widget type="label" text="Configuration path" />
+          <widget type="lineEdit" name="configPath" columns="20" flags="fillX readOnly" />
+        </widget>
+        <widget type="vspacer" flags="fillY" />
+      </widget>
+
     </widget>
 
     <!-- wizard controls -->
