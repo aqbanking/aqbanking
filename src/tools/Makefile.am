@@ -1,7 +1,5 @@
 SUBDIRS=aqbanking-cli mkdeinfo
 
-aqcli_libs=${abs_top_builddir}/src/libs/cli/libaqcli.la
-
 sources:
 	for d in $(SUBDIRS); do \
 	  $(MAKE) -C $$d sources; \

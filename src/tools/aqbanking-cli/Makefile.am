@@ -4,6 +4,8 @@ AM_CPPFLAGS = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_i
 
 AM_CFLAGS=@visibility_cflags@
 
+aqcli_libs=${abs_top_builddir}/src/libs/cli/libaqcli.la
+
 bin_PROGRAMS=\
   aqbanking-cli\
   aqhbci-tool4 \
