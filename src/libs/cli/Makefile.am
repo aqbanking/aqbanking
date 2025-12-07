@@ -1,4 +1,4 @@
-AM_CPPFLAGS = $(gwenhywfar_includes) -I..
+AM_CPPFLAGS = $(gwenhywfar_includes) -I.. -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs
 
 noinst_LTLIBRARIES=libaqcli.la
 
