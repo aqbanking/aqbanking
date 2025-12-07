@@ -33,6 +33,8 @@ struct AH_JOBQUEUE {
   char *usedPin; /* used for checking bad pins in AH_JobQueue_DispatchMessage */
 
   AH_JOBQUEUE *referenceQueue;
+
+  GWEN_DB_NODE *dbAllResponses;
 };
 
 

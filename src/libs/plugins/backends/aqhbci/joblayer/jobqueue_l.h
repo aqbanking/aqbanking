@@ -124,6 +124,11 @@ AH_JOBQUEUE *AH_JobQueue_GetReferenceQueue(const AH_JOBQUEUE *jq);
 void AH_JobQueue_SetReferenceQueue(AH_JOBQUEUE *jq, AH_JOBQUEUE *refq);
 
 
+GWEN_DB_NODE *AH_JobQueue_GetDbAllResponses(const AH_JOBQUEUE *jq);
+void AH_JobQueue_AddToAllResponses(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponse);
+void AH_JobQueue_AddAllResponsesToJob(const AH_JOBQUEUE *jq, AH_JOB *j);
+
+
 #endif /* AH_JOBQUEUE_L_H */
 
 

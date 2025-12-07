@@ -67,6 +67,9 @@ void AH_JobQueue_free(AH_JOBQUEUE *jq)
       if (jq->referenceQueue)
         AH_JobQueue_free(jq->referenceQueue);
 
+      if (jq->dbAllResponses)
+	GWEN_DB_Group_free(jq->dbAllResponses);
+
       GWEN_LIST_FINI(AH_JOBQUEUE, jq);
       GWEN_FREE_OBJECT(jq);
     }
@@ -425,5 +428,49 @@ void AH_JobQueue_SetReferenceQueue(AH_JOBQUEUE *jq, AH_JOBQUEUE *refq)
 
 
 
+GWEN_DB_NODE *AH_JobQueue_GetDbAllResponses(const AH_JOBQUEUE *jq)
+{
+  assert(jq);
+  assert(jq->usage);
+
+  return jq->dbAllResponses;
+}
+
+
+
+void AH_JobQueue_AddToAllResponses(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponse)
+{
+  if (dbResponse) {
+    assert(jq);
+    assert(jq->usage);
+
+    if (jq->dbAllResponses==NULL)
+      jq->dbAllResponses=GWEN_DB_Group_new("dbAllReponses");
+    GWEN_DB_AddGroup(jq->dbAllResponses, GWEN_DB_Group_dup(dbResponse));
+  }
+}
+
+
+
+void AH_JobQueue_AddAllResponsesToJob(const AH_JOBQUEUE *jq, AH_JOB *j)
+{
+  if (j && jq && jq->dbAllResponses) {
+    GWEN_DB_NODE *dbCurr;
+    const char *sJobName;
+
+    sJobName=AH_Job_GetName(j);
+    dbCurr=GWEN_DB_GetFirstGroup(jq->dbAllResponses);
+    while(dbCurr) {
+      const char *sGroupName;
+
+      sGroupName=GWEN_DB_GroupName(dbCurr);
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Adding response \"%s\" to job \"%s\"",
+		 sGroupName?sGroupName:"<empty>",
+		 sJobName?sJobName:"<empty>");
+      AH_Job_AddResponse(j, GWEN_DB_Group_dup(dbCurr));
+      dbCurr=GWEN_DB_GetNextGroup(dbCurr);
+    }
+  }
+}
 
 

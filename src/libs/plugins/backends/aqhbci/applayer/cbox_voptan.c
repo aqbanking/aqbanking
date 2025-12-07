@@ -339,6 +339,9 @@ int _sendTanAndReceiveResponseProc2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
   DBG_INFO(AQHBCI_LOGDOMAIN, "Storing TAN in job [%s]", AH_Job_GetName(workJob));
   AH_Job_SetUsedTan(workJob, AH_JobQueue_GetUsedTan(jobQueue));
 
+  /* add all non-result response segments to workJob */
+  AH_JobQueue_AddAllResponsesToJob(jobQueue, workJob);
+
   AH_JobQueue_free(jobQueue);
 
   return 0;
@@ -398,6 +401,10 @@ int _sendHKVPAandHKXXXandHKTAN(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *vpp
     AH_JobQueue_free(jobQueue);
     return rv;
   }
+
+  /* add all non-result response segments to workJob */
+  AH_JobQueue_AddAllResponsesToJob(jobQueue, workJob);
+
   AH_JobQueue_free(jobQueue);
 
   /* only send TAN challenge request if bank says it wants it! */
@@ -494,6 +501,9 @@ int _sendHKTANwithTAN(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_
   DBG_INFO(AQHBCI_LOGDOMAIN, "Storing TAN in job [%s]", AH_Job_GetName(workJob));
   AH_Job_SetUsedTan(workJob, AH_JobQueue_GetUsedTan(jobQueue));
 
+  /* add all non-result response segments to workJob */
+  AH_JobQueue_AddAllResponsesToJob(jobQueue, workJob);
+
   AH_JobQueue_free(jobQueue);
 
   return 0;
@@ -547,6 +557,9 @@ int _sendTanAndReceiveResponseProcS(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
   /* dispatch results from tanJob2 to workjob */
   _copySegResultsToJob(tanJob2, workJob);
   _copyMsgResultsToJob(tanJob2, workJob);
+
+  /* add all non-result response segments to workJob */
+  AH_JobQueue_AddAllResponsesToJob(jobQueue, workJob);
 
   if (AH_Job_HasResultWithCode(tanJob2, 3956)) { /* decoupled */
     DBG_INFO(AQHBCI_LOGDOMAIN, "Decoupled (3956), still waiting for user to approve transaction externally");

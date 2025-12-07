@@ -640,6 +640,9 @@ GWEN_DB_NODE *_sampleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE
     GWEN_DB_AddGroup(dbData, GWEN_DB_Group_dup(dbCurr));
 
     GWEN_DB_AddGroup(dbAllResponses, dbPreparedJobResponse);
+
+    if (strcasecmp(GWEN_DB_GroupName(dbCurr), "SegResult")!=0 && strcasecmp(GWEN_DB_GroupName(dbCurr), "MsgResult")!=0)
+      AH_JobQueue_AddToAllResponses(jq, dbPreparedJobResponse); /* add all responses to queue */
     responsesAdded++;
 
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
