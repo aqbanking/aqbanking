@@ -29,6 +29,7 @@
 #define DIALOG_MINWIDTH  200
 #define DIALOG_MINHEIGHT 200
 
+#define DLG_NAME         "ah_vopmsg"
 #define DLG_DIALOGFILE   "aqbanking/backends/aqhbci/dialogs/dlg_vop.dlg"
 
 #define VOPMSG_MAXWIDTH_IN_CHARS 64
@@ -114,7 +115,7 @@ GWEN_DIALOG *AH_VopDialog_new(const char *jobName, const char *bankName, const c
   GWEN_DIALOG *dlg;
   AH_VOP_DIALOG *xdlg;
 
-  dlg=GWEN_Dialog_CreateAndLoadWithPath("ah_vopmsg", AB_PM_LIBNAME, AB_PM_DATADIR, DLG_DIALOGFILE);
+  dlg=GWEN_Dialog_CreateAndLoadWithPath(DLG_NAME, AB_PM_LIBNAME, AB_PM_DATADIR, DLG_DIALOGFILE);
   if (dlg==NULL) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here");
     return NULL;
