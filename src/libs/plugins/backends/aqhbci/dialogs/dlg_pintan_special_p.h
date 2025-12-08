@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Wed Apr 14 2010
- copyright   : (C) 2018 by Martin Preuss
+ copyright   : (C) 2025 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -30,14 +30,6 @@ struct AH_PINTAN_SPECIAL_DIALOG {
 
   char *tanMediumId;
 };
-
-
-static void GWENHYWFAR_CB AH_PinTanSpecialDialog_FreeData(void *bp, void *p);
-
-static int GWENHYWFAR_CB AH_PinTanSpecialDialog_SignalHandler(GWEN_DIALOG *dlg,
-                                                              GWEN_DIALOG_EVENTTYPE t,
-                                                              const char *sender);
-
 
 
 
