@@ -40,20 +40,57 @@
 
 
 /* ------------------------------------------------------------------------------------------------
- * defines, types
+ * defines
  * ------------------------------------------------------------------------------------------------
  */
 
-#define DIALOG_MINWIDTH  200
-#define DIALOG_MINHEIGHT 200
+#define DIALOG_MINWIDTH         200
+#define DIALOG_MINHEIGHT        200
 
 /* for improved readability */
-#define DLG_WITHPROGRESS 1
-#define DLG_NOUMOUNT       0
-#define DLG_DIALOGFILE   "aqbanking/backends/aqhbci/dialogs/dlg_edituserpintan.dlg"
+#define DLG_WITHPROGRESS        1
+#define DLG_NOUMOUNT            0
+#define DLG_NAME                "ah_edit_user_pintan"
+#define DLG_DIALOGFILE          "aqbanking/backends/aqhbci/dialogs/dlg_edituserpintan.dlg"
+
+/* IDs for dialog widgets */
+#define ID_SELF                 ""
+#define ID_USERNAME_EDIT        "userNameEdit"
+#define ID_BANKCODE_EDIT        "bankCodeEdit"
+#define ID_BANKCODE_BUTTON      "bankCodeButton"
+#define ID_USERID_EDIT          "userIdEdit"
+#define ID_CUSTOMERID_EDIT      "customerIdEdit"
+
+#define ID_URL_EDIT             "urlEdit"
+#define ID_HBCIVERSION_COMBO    "hbciVersionCombo"
+#define ID_HTTPVERSION_COMBO    "httpVersionCombo"
+#define ID_TANMETHOD_COMBO      "tanMethodCombo"
+#define ID_TANMECHANISM_COMBO   "tanMechanismCombo"
+#define ID_TANMEDIUMID_EDIT     "tanMediumIdEdit"
+
+#define ID_NOBASE64_CHECK       "noBase64Check"
+#define ID_OMITSMSACCOUNT_CHECK "omitSmsAccountCheck"
+
+#define ID_GETCERT_BUTTON       "getCertButton"
+#define ID_GETBANKINFO_BUTTON   "getBankInfoButton"
+#define ID_GETSYSID_BUTTON      "getSysIdButton"
+#define ID_GETITANMODES_BUTTON  "getItanModesButton"
+#define ID_GETACCOUNTS_BUTTON   "getAccountsButton"
+#define ID_GETSEPA_BUTTON       "getSepaButton"
+
+#define ID_HELP_BUTTON          "helpButton"
+#define ID_OK_BUTTON            "okButton"
+#define ID_APPLY_BUTTON         "applyButton"
+#define ID_ABORT_BUTTON         "abortButton"
 
 
-typedef int (*_DIALOG_SIGNAL_HANDLER_FN)(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
+
+/* ------------------------------------------------------------------------------------------------
+ * types
+ * ------------------------------------------------------------------------------------------------
+ */
+
+typedef int (*_DIALOG_SIGNAL_HANDLER_FN)(GWEN_DIALOG *dlg);
 typedef struct _DIALOG_SIGNAL_ENTRY _DIALOG_SIGNAL_ENTRY;
 struct _DIALOG_SIGNAL_ENTRY {
   const char *sender;
@@ -75,19 +112,19 @@ static int GWENHYWFAR_CB _dlgApi_signalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVE
 static int _saveUser(GWEN_DIALOG *dlg);
 
 static int _fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet);
-static int _handleInit(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
-static int _handleFini(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
-static int _handleActivatedBankCode(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
-static int _handleActivatedOk(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
-static int _handleActivatedApply(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
-static int _handleActivatedReject(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
-static int _handleActivatedGetCert(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
-static int _handleActivatedGetSysId(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
-static int _handleActivatedGetBankInfo(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
-static int _handleActivatedGetItanModes(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
-static int _handleActivatedGetAccounts(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
-static int _handleActivatedGetSepaInfo(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
-static int _handleValueChanged(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
+static int _handleInit(GWEN_DIALOG *dlg);
+static int _handleFini(GWEN_DIALOG *dlg);
+static int _handleActivatedBankCode(GWEN_DIALOG *dlg);
+static int _handleActivatedOk(GWEN_DIALOG *dlg);
+static int _handleActivatedApply(GWEN_DIALOG *dlg);
+static int _handleActivatedReject(GWEN_DIALOG *dlg);
+static int _handleActivatedGetCert(GWEN_DIALOG *dlg);
+static int _handleActivatedGetSysId(GWEN_DIALOG *dlg);
+static int _handleActivatedGetBankInfo(GWEN_DIALOG *dlg);
+static int _handleActivatedGetItanModes(GWEN_DIALOG *dlg);
+static int _handleActivatedGetAccounts(GWEN_DIALOG *dlg);
+static int _handleActivatedGetSepaInfo(GWEN_DIALOG *dlg);
+static int _handleValueChanged(GWEN_DIALOG *dlg);
 
 static void _setModified(GWEN_DIALOG *dlg, int enabled);
 
@@ -114,32 +151,32 @@ static uint32_t _userFlagsFromGui(GWEN_DIALOG *dlg);
 GWEN_INHERIT(GWEN_DIALOG, AH_EDIT_USER_PINTAN_DIALOG)
 
 static _DIALOG_SIGNAL_ENTRY _signalMap[]={
-  {NULL,                  GWEN_DialogEvent_TypeInit,         _handleInit},
-  {NULL,                  GWEN_DialogEvent_TypeFini,         _handleFini},
-  {"bankCodeButton",      GWEN_DialogEvent_TypeActivated,    _handleActivatedBankCode},
-  {"getCertButton",       GWEN_DialogEvent_TypeActivated,    _handleActivatedGetCert},
-  {"getBankInfoButton",   GWEN_DialogEvent_TypeActivated,    _handleActivatedGetBankInfo},
-  {"getSysIdButton",      GWEN_DialogEvent_TypeActivated,    _handleActivatedGetSysId},
-  {"getItanModesButton",  GWEN_DialogEvent_TypeActivated,    _handleActivatedGetItanModes},
-  {"getAccountsButton",   GWEN_DialogEvent_TypeActivated,    _handleActivatedGetAccounts},
-  {"getSepaButton",       GWEN_DialogEvent_TypeActivated,    _handleActivatedGetSepaInfo},
+  {NULL,                    GWEN_DialogEvent_TypeInit,         _handleInit},
+  {NULL,                    GWEN_DialogEvent_TypeFini,         _handleFini},
+  {ID_BANKCODE_BUTTON,      GWEN_DialogEvent_TypeActivated,    _handleActivatedBankCode},
+  {ID_GETCERT_BUTTON,       GWEN_DialogEvent_TypeActivated,    _handleActivatedGetCert},
+  {ID_GETBANKINFO_BUTTON,   GWEN_DialogEvent_TypeActivated,    _handleActivatedGetBankInfo},
+  {ID_GETSYSID_BUTTON,      GWEN_DialogEvent_TypeActivated,    _handleActivatedGetSysId},
+  {ID_GETITANMODES_BUTTON,  GWEN_DialogEvent_TypeActivated,    _handleActivatedGetItanModes},
+  {ID_GETACCOUNTS_BUTTON,   GWEN_DialogEvent_TypeActivated,    _handleActivatedGetAccounts},
+  {ID_GETSEPA_BUTTON,       GWEN_DialogEvent_TypeActivated,    _handleActivatedGetSepaInfo},
 
-  {"userNameEdit",        GWEN_DialogEvent_TypeValueChanged, _handleValueChanged},
-  {"bankCodeEdit",        GWEN_DialogEvent_TypeValueChanged, _handleValueChanged},
-  {"userIdEdit",          GWEN_DialogEvent_TypeValueChanged, _handleValueChanged},
-  {"customerIdEdit",      GWEN_DialogEvent_TypeValueChanged, _handleValueChanged},
-  {"tanMediumIdEdit",     GWEN_DialogEvent_TypeValueChanged, _handleValueChanged},
-  {"urlEdit",             GWEN_DialogEvent_TypeValueChanged, _handleValueChanged},
-  {"hbciVersionCombo",    GWEN_DialogEvent_TypeActivated,    _handleValueChanged},
-  {"httpVersionCombo",    GWEN_DialogEvent_TypeActivated,    _handleValueChanged},
-  {"tanMethodCombo",      GWEN_DialogEvent_TypeActivated,    _handleValueChanged},
-  {"tanMechanismCombo",   GWEN_DialogEvent_TypeActivated,    _handleValueChanged},
-  {"noBase64Check",       GWEN_DialogEvent_TypeActivated,    _handleValueChanged},
-  {"omitSmsAccountCheck", GWEN_DialogEvent_TypeActivated,    _handleValueChanged},
+  {ID_USERNAME_EDIT,        GWEN_DialogEvent_TypeValueChanged, _handleValueChanged},
+  {ID_BANKCODE_EDIT,        GWEN_DialogEvent_TypeValueChanged, _handleValueChanged},
+  {ID_USERID_EDIT,          GWEN_DialogEvent_TypeValueChanged, _handleValueChanged},
+  {ID_CUSTOMERID_EDIT,      GWEN_DialogEvent_TypeValueChanged, _handleValueChanged},
+  {ID_TANMEDIUMID_EDIT,     GWEN_DialogEvent_TypeValueChanged, _handleValueChanged},
+  {ID_URL_EDIT,             GWEN_DialogEvent_TypeValueChanged, _handleValueChanged},
+  {ID_HBCIVERSION_COMBO,    GWEN_DialogEvent_TypeActivated,    _handleValueChanged},
+  {ID_HTTPVERSION_COMBO,    GWEN_DialogEvent_TypeActivated,    _handleValueChanged},
+  {ID_TANMETHOD_COMBO,      GWEN_DialogEvent_TypeActivated,    _handleValueChanged},
+  {ID_TANMECHANISM_COMBO,   GWEN_DialogEvent_TypeActivated,    _handleValueChanged},
+  {ID_NOBASE64_CHECK,       GWEN_DialogEvent_TypeActivated,    _handleValueChanged},
+  {ID_OMITSMSACCOUNT_CHECK, GWEN_DialogEvent_TypeActivated,    _handleValueChanged},
 
-  {"okButton",            GWEN_DialogEvent_TypeActivated,    _handleActivatedOk},
-  {"applyButton",         GWEN_DialogEvent_TypeActivated,    _handleActivatedApply},
-  {"abortButton",         GWEN_DialogEvent_TypeActivated,    _handleActivatedReject},
+  {ID_OK_BUTTON,            GWEN_DialogEvent_TypeActivated,    _handleActivatedOk},
+  {ID_APPLY_BUTTON,         GWEN_DialogEvent_TypeActivated,    _handleActivatedApply},
+  {ID_ABORT_BUTTON,         GWEN_DialogEvent_TypeActivated,    _handleActivatedReject},
 
   {NULL, 0, NULL}
 };
@@ -156,7 +193,7 @@ GWEN_DIALOG *AH_EditUserPinTanDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLoc
   GWEN_DIALOG *dlg;
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
 
-  dlg=GWEN_Dialog_CreateAndLoadWithPath("ah_edit_user_pintan", AB_PM_LIBNAME, AB_PM_DATADIR, DLG_DIALOGFILE);
+  dlg=GWEN_Dialog_CreateAndLoadWithPath(DLG_NAME, AB_PM_LIBNAME, AB_PM_DATADIR, DLG_DIALOGFILE);
   if (dlg==NULL) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here");
     return NULL;
@@ -189,7 +226,7 @@ void GWENHYWFAR_CB _freeData(void *bp, void *p)
 
 
 
-int _handleInit(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
+int _handleInit(GWEN_DIALOG *dlg)
 {
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
@@ -202,14 +239,14 @@ int _handleInit(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   /* init */
-  GWEN_Dialog_SetCharProperty(dlg, "", GWEN_DialogProperty_Title, 0, I18N("Edit User"), 0);
+  GWEN_Dialog_SetCharProperty(dlg, ID_SELF, GWEN_DialogProperty_Title, 0, I18N("Edit User"), 0);
 
-  _tanMechanismComboSetup(dlg, "tanMechanismCombo");
+  _tanMechanismComboSetup(dlg, ID_TANMECHANISM_COMBO);
 
-  AH_Widget_HbciVersionComboSetup(dlg, "hbciVersionCombo");
-  _httpVersionComboSetup(dlg, "httpVersionCombo");
+  AH_Widget_HbciVersionComboSetup(dlg, ID_HBCIVERSION_COMBO);
+  _httpVersionComboSetup(dlg, ID_HTTPVERSION_COMBO);
 
-  GWEN_Dialog_SetCharProperty(dlg, "tanMediumIdEdit", GWEN_DialogProperty_ToolTip, 0,
+  GWEN_Dialog_SetCharProperty(dlg, ID_TANMEDIUMID_EDIT, GWEN_DialogProperty_ToolTip, 0,
                               I18N("For smsTAN or mTAN this is your mobile phone number. "
                                    "Please ask your bank for the necessary format of this number."),
                               0);
@@ -219,12 +256,12 @@ int _handleInit(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
   if (i>=DIALOG_MINWIDTH)
-    GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, i, 0);
+    GWEN_Dialog_SetIntProperty(dlg, ID_SELF, GWEN_DialogProperty_Width, 0, i, 0);
 
   /* read height */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_height", 0, -1);
   if (i>=DIALOG_MINHEIGHT)
-    GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, i, 0);
+    GWEN_Dialog_SetIntProperty(dlg, ID_SELF, GWEN_DialogProperty_Height, 0, i, 0);
 
   return GWEN_DialogEvent_ResultHandled;
 }
@@ -235,18 +272,18 @@ void _toGui(GWEN_DIALOG *dlg, AB_USER *user)
 {
   const GWEN_URL *gu;
 
-  AH_Widget_TanMethodComboRebuild(dlg, "tanMethodCombo", AH_User_GetTanMethodDescriptions(user));
-  AH_Widget_TanMethodComboSetCurrent(dlg, "tanMethodCombo", AH_User_GetSelectedTanMethod(user));
+  AH_Widget_TanMethodComboRebuild(dlg, ID_TANMETHOD_COMBO, AH_User_GetTanMethodDescriptions(user));
+  AH_Widget_TanMethodComboSetCurrent(dlg, ID_TANMETHOD_COMBO, AH_User_GetSelectedTanMethod(user));
 
-  AH_Widget_UserToGuiText(dlg, "userNameEdit",    user, AB_User_GetUserName);
-  AH_Widget_UserToGuiText(dlg, "bankCodeEdit",    user, AB_User_GetBankCode);
-  AH_Widget_UserToGuiText(dlg, "userIdEdit",      user, AB_User_GetUserId);
-  AH_Widget_UserToGuiText(dlg, "customerIdEdit",  user, AB_User_GetCustomerId);
-  AH_Widget_UserToGuiText(dlg, "tanMediumIdEdit", user, AH_User_GetTanMediumId);
+  AH_Widget_UserToGuiText(dlg, ID_USERNAME_EDIT,    user, AB_User_GetUserName);
+  AH_Widget_UserToGuiText(dlg, ID_BANKCODE_EDIT,    user, AB_User_GetBankCode);
+  AH_Widget_UserToGuiText(dlg, ID_USERID_EDIT,      user, AB_User_GetUserId);
+  AH_Widget_UserToGuiText(dlg, ID_CUSTOMERID_EDIT,  user, AB_User_GetCustomerId);
+  AH_Widget_UserToGuiText(dlg, ID_TANMEDIUMID_EDIT, user, AH_User_GetTanMediumId);
 
-  _tanMechanismComboSetCurrent(dlg, "tanMechanismCombo", AH_User_GetSelectedTanInputMechanism(user));
-  AH_Widget_HbciVersionComboSetCurrent(dlg, "hbciVersionCombo", AH_User_GetHbciVersion(user));
-  _httpVersionComboSetCurrent(dlg, "httpVersionCombo", ((AH_User_GetHttpVMajor(user))<<8)+AH_User_GetHttpVMinor(user));
+  _tanMechanismComboSetCurrent(dlg, ID_TANMECHANISM_COMBO, AH_User_GetSelectedTanInputMechanism(user));
+  AH_Widget_HbciVersionComboSetCurrent(dlg, ID_HBCIVERSION_COMBO, AH_User_GetHbciVersion(user));
+  _httpVersionComboSetCurrent(dlg, ID_HTTPVERSION_COMBO, ((AH_User_GetHttpVMajor(user))<<8)+AH_User_GetHttpVMinor(user));
 
   _userFlagsToGui(dlg, AH_User_GetFlags(user));
 
@@ -256,7 +293,7 @@ void _toGui(GWEN_DIALOG *dlg, AB_USER *user)
 
     tbuf=GWEN_Buffer_new(0, 256, 0, 1);
     GWEN_Url_toString(gu, tbuf);
-    GWEN_Dialog_SetCharProperty(dlg, "urlEdit", GWEN_DialogProperty_Value, 0, GWEN_Buffer_GetStart(tbuf), 0);
+    GWEN_Dialog_SetCharProperty(dlg, ID_URL_EDIT, GWEN_DialogProperty_Value, 0, GWEN_Buffer_GetStart(tbuf), 0);
     GWEN_Buffer_free(tbuf);
   }
   _setModified(dlg, 0);
@@ -272,28 +309,28 @@ int _fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
 
   assert(dlg);
 
-  if (AH_Widget_GuiTextToUserKeepSpaces(dlg, "userNameEdit",    u, AB_User_SetUserName,    NULL)<0 ||
-      AH_Widget_GuiTextToUserDeleSpaces(dlg, "bankCodeEdit",    u, AB_User_SetBankCode,    NULL)<0 ||
-      AH_Widget_GuiTextToUserKeepSpaces(dlg, "userIdEdit",      u, AB_User_SetUserId,      quiet?NULL:I18N("Missing user id"))<0 ||
-      AH_Widget_GuiTextToUserKeepSpaces(dlg, "customerIdEdit",  u, AB_User_SetCustomerId,  NULL)<0 ||
-      AH_Widget_GuiTextToUserKeepSpaces(dlg, "tanMediumIdEdit", u, AH_User_SetTanMediumId, NULL)<0) {
+  if (AH_Widget_GuiTextToUserKeepSpaces(dlg, ID_USERNAME_EDIT,    u, AB_User_SetUserName,    NULL)<0 ||
+      AH_Widget_GuiTextToUserDeleSpaces(dlg, ID_BANKCODE_EDIT,    u, AB_User_SetBankCode,    NULL)<0 ||
+      AH_Widget_GuiTextToUserKeepSpaces(dlg, ID_USERID_EDIT,      u, AB_User_SetUserId,      quiet?NULL:I18N("Missing user id"))<0 ||
+      AH_Widget_GuiTextToUserKeepSpaces(dlg, ID_CUSTOMERID_EDIT,  u, AB_User_SetCustomerId,  NULL)<0 ||
+      AH_Widget_GuiTextToUserKeepSpaces(dlg, ID_TANMEDIUMID_EDIT, u, AH_User_SetTanMediumId, NULL)<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here");
     return GWEN_ERROR_INVALID;
   }
 
-  httpVersion=_httpVersionComboGetCurrent(dlg, "httpVersionCombo");
-  tanMethod=AH_Widget_TanMethodComboGetCurrent(dlg, "tanMethodCombo");
+  httpVersion=_httpVersionComboGetCurrent(dlg, ID_HTTPVERSION_COMBO);
+  tanMethod=AH_Widget_TanMethodComboGetCurrent(dlg, ID_TANMETHOD_COMBO);
 
   if (tanMethod==0) {
     if (!quiet) {
       GWEN_Gui_ShowError(I18N("Error on Input"), "%s", I18N("Please select tan method."));
-      GWEN_Dialog_SetIntProperty(dlg, "tanMethodCombo", GWEN_DialogProperty_Focus, 0, 1, 0);
+      GWEN_Dialog_SetIntProperty(dlg, ID_TANMETHOD_COMBO, GWEN_DialogProperty_Focus, 0, 1, 0);
     }
     DBG_INFO(AQHBCI_LOGDOMAIN, "Missing tan method");
     return GWEN_ERROR_INVALID;
   }
 
-  gu=AH_Widget_GuiTextToUrl(dlg, "urlEdit", 443);
+  gu=AH_Widget_GuiTextToUrl(dlg, ID_URL_EDIT, 443);
   if (gu==NULL) {
     if (!quiet) {
       GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Invalid URL"));
@@ -304,10 +341,10 @@ int _fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
 
   if (u) {
     AB_User_SetCountry(u, "de");
-    AH_User_SetHbciVersion(u, AH_Widget_HbciVersionComboGetCurrent(dlg, "hbciVersionCombo"));
+    AH_User_SetHbciVersion(u, AH_Widget_HbciVersionComboGetCurrent(dlg, ID_HBCIVERSION_COMBO));
     AH_User_SetHttpVMajor(u, ((httpVersion >> 8) & 0xff));
     AH_User_SetHttpVMinor(u, (httpVersion & 0xff));
-    AH_User_SetSelectedTanInputMechanism(u, _tanMechanismComboGetCurrent(dlg, "tanMechanismCombo"));
+    AH_User_SetSelectedTanInputMechanism(u, _tanMechanismComboGetCurrent(dlg, ID_TANMECHANISM_COMBO));
     AH_User_SetSelectedTanMethod(u, tanMethod);
     AH_User_SetServerUrl(u, gu);
     AH_User_SetFlags(u, _userFlagsFromGui(dlg));
@@ -320,7 +357,7 @@ int _fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
 
 
 
-int _handleFini(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
+int _handleFini(GWEN_DIALOG *dlg)
 {
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
   int i;
@@ -333,11 +370,11 @@ int _handleFini(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   /* store dialog width */
-  i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
+  i=GWEN_Dialog_GetIntProperty(dlg, ID_SELF, GWEN_DialogProperty_Width, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs, GWEN_DB_FLAGS_OVERWRITE_VARS, "dialog_width", i);
 
   /* store dialog height */
-  i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
+  i=GWEN_Dialog_GetIntProperty(dlg, ID_SELF, GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs, GWEN_DB_FLAGS_OVERWRITE_VARS, "dialog_height", i);
 
   return GWEN_DialogEvent_ResultHandled;
@@ -345,7 +382,7 @@ int _handleFini(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
 
 
 
-int _handleActivatedBankCode(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
+int _handleActivatedBankCode(GWEN_DIALOG *dlg)
 {
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
   GWEN_DIALOG *dlg2;
@@ -375,7 +412,7 @@ int _handleActivatedBankCode(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const ch
       const char *s;
 
       s=AB_BankInfo_GetBankId(bi);
-      GWEN_Dialog_SetCharProperty(dlg, "bankCodeEdit", GWEN_DialogProperty_Value, 0, (s && *s)?s:"", 0);
+      GWEN_Dialog_SetCharProperty(dlg, ID_BANKCODE_EDIT, GWEN_DialogProperty_Value, 0, (s && *s)?s:"", 0);
     }
   }
   GWEN_Dialog_free(dlg2);
@@ -385,7 +422,7 @@ int _handleActivatedBankCode(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const ch
 
 
 
-int _handleActivatedOk(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
+int _handleActivatedOk(GWEN_DIALOG *dlg)
 {
   int rv;
 
@@ -397,7 +434,7 @@ int _handleActivatedOk(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *se
 
 
 
-int _handleActivatedApply(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
+int _handleActivatedApply(GWEN_DIALOG *dlg)
 {
   int rv;
 
@@ -456,14 +493,14 @@ int _saveUser(GWEN_DIALOG *dlg)
 
 
 
-int _handleActivatedReject(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE t, GWEN_UNUSED const char *sender)
+int _handleActivatedReject(GWEN_DIALOG *dlg)
 {
   return GWEN_DialogEvent_ResultReject;
 }
 
 
 
-int _handleActivatedGetCert(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
+int _handleActivatedGetCert(GWEN_DIALOG *dlg)
 {
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
   int rv;
@@ -487,7 +524,7 @@ int _handleActivatedGetCert(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const cha
 
 
 
-int _handleActivatedGetSysId(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
+int _handleActivatedGetSysId(GWEN_DIALOG *dlg)
 {
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
   int rv;
@@ -516,7 +553,7 @@ int _handleActivatedGetSysId(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const ch
 
 
 
-int _handleActivatedGetBankInfo(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
+int _handleActivatedGetBankInfo(GWEN_DIALOG *dlg)
 {
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
   int rv;
@@ -551,7 +588,7 @@ int _handleActivatedGetBankInfo(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const
 
 
 
-int _handleActivatedGetItanModes(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
+int _handleActivatedGetItanModes(GWEN_DIALOG *dlg)
 {
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
   int rv;
@@ -580,7 +617,7 @@ int _handleActivatedGetItanModes(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, cons
 
 
 
-int _handleActivatedGetAccounts(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
+int _handleActivatedGetAccounts(GWEN_DIALOG *dlg)
 {
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
   int rv;
@@ -609,7 +646,7 @@ int _handleActivatedGetAccounts(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const
 
 
 
-int _handleActivatedGetSepaInfo(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE t, GWEN_UNUSED const char *sender)
+int _handleActivatedGetSepaInfo(GWEN_DIALOG *dlg)
 {
   AH_EDIT_USER_PINTAN_DIALOG *xdlg;
   int rv;
@@ -638,7 +675,7 @@ int _handleActivatedGetSepaInfo(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTT
 
 
 
-int _handleValueChanged(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
+int _handleValueChanged(GWEN_DIALOG *dlg)
 {
   _setModified(dlg, 1);
   return GWEN_DialogEvent_ResultHandled;
@@ -655,7 +692,7 @@ void _setModified(GWEN_DIALOG *dlg, int enabled)
   assert(xdlg);
 
   xdlg->modified=enabled;
-  GWEN_Dialog_SetIntProperty(dlg, "applyButton", GWEN_DialogProperty_Enabled, 0, enabled, 0);
+  GWEN_Dialog_SetIntProperty(dlg, ID_APPLY_BUTTON, GWEN_DialogProperty_Enabled, 0, enabled, 0);
 }
 
 
@@ -667,7 +704,7 @@ int GWENHYWFAR_CB _dlgApi_signalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE 
   entry=_signalMap;
   while(entry->handlerFn) {
     if (entry->eventType==t && (entry->sender==NULL || (sender && strcasecmp(sender, entry->sender)==0))) {
-      return entry->handlerFn(dlg, t, sender);
+      return entry->handlerFn(dlg);
     }
     entry++;
   }
@@ -782,8 +819,8 @@ void _userFlagsToGui(GWEN_DIALOG *dlg, uint32_t flags)
 {
   const GWEN_DIALOG_PROPERTY setValue=GWEN_DialogProperty_Value;
 
-  GWEN_Dialog_SetIntProperty(dlg, "noBase64Check", setValue, 0, (flags & AH_USER_FLAGS_NO_BASE64)?1:0, 0);
-  GWEN_Dialog_SetIntProperty(dlg, "omitSmsAccountCheck", setValue, 0, (flags & AH_USER_FLAGS_TAN_OMIT_SMS_ACCOUNT)?1:0, 0);
+  GWEN_Dialog_SetIntProperty(dlg, ID_NOBASE64_CHECK, setValue, 0, (flags & AH_USER_FLAGS_NO_BASE64)?1:0, 0);
+  GWEN_Dialog_SetIntProperty(dlg, ID_OMITSMSACCOUNT_CHECK, setValue, 0, (flags & AH_USER_FLAGS_TAN_OMIT_SMS_ACCOUNT)?1:0, 0);
 }
 
 
@@ -792,9 +829,9 @@ uint32_t _userFlagsFromGui(GWEN_DIALOG *dlg)
 {
   uint32_t flags=0;
 
-  if (GWEN_Dialog_GetIntProperty(dlg, "noBase64Check", GWEN_DialogProperty_Value, 0, 0))
+  if (GWEN_Dialog_GetIntProperty(dlg, ID_NOBASE64_CHECK, GWEN_DialogProperty_Value, 0, 0))
     flags|=AH_USER_FLAGS_NO_BASE64;
-  if (GWEN_Dialog_GetIntProperty(dlg, "omitSmsAccountCheck", GWEN_DialogProperty_Value, 0, 0))
+  if (GWEN_Dialog_GetIntProperty(dlg, ID_OMITSMSACCOUNT_CHECK, GWEN_DialogProperty_Value, 0, 0))
     flags|=AH_USER_FLAGS_TAN_OMIT_SMS_ACCOUNT;
 
   return flags;
