@@ -37,8 +37,16 @@ int APY_Control_AddUser(AB_PROVIDER *pro,
                         GWEN_DB_NODE *dbArgs,
                         int argc,
                         char **argv);
+int APY_Control_DelUser(AB_PROVIDER *pro,
+                        GWEN_DB_NODE *dbArgs,
+                        int argc,
+                        char **argv);
 
 int APY_Control_AddAccount(AB_PROVIDER *pro,
+                           GWEN_DB_NODE *dbArgs,
+                           int argc,
+                           char **argv);
+int APY_Control_DelAccount(AB_PROVIDER *pro,
                            GWEN_DB_NODE *dbArgs,
                            int argc,
                            char **argv);

@@ -64,7 +64,9 @@
 
       main.c
       adduser.c
+      delaccount.c
       listaccounts.c
+      deluser.c
       listusers.c
       setsecrets.c
     </sources>
