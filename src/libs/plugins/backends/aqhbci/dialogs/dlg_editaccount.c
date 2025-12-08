@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Thu Apr 15 2010
- copyright   : (C) 2024 by Martin Preuss
+ copyright   : (C) 2025 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -40,7 +40,7 @@
 
 
 /* ------------------------------------------------------------------------------------------------
- * defines, types
+ * defines
  * ------------------------------------------------------------------------------------------------
  */
 
@@ -53,10 +53,44 @@
 /* for improved readability */
 #define DLG_WITHPROGRESS 1
 #define DLG_UMOUNT       0
+#define DLG_NAME         "ah_edit_account"
 #define DLG_DIALOGFILE   "aqbanking/backends/aqhbci/dialogs/dlg_editaccount.dlg"
 
+#define ID_SELF                        ""
+#define ID_ACCOUNTNUMBER_EDIT          "accountNumberEdit"
+#define ID_ACCOUNTNAME_EDIT            "accountNameEdit"
+#define ID_IBAN_EDIT                   "ibanEdit"
+#define ID_OWNERNAME_EDIT              "ownerNameEdit"
+#define ID_CURRENCY_EDIT               "currencyEdit"
+#define ID_ACCOUNTTYPE_COMBO           "accountTypeCombo"
+#define ID_PREFSINGLEXFER_CHECK        "preferSingleTransferCheck"
+#define ID_PREFSINGLEDEBIT_CHECK       "preferSingleDebitNoteCheck"
+#define ID_SEPAPREFSINGLEXFER_CHECK    "sepaPreferSingleTransferCheck"
+#define ID_SEPAPREFSINGLEDEBIT_CHECK   "sepaPreferSingleDebitNoteCheck"
+#define ID_PREFCAMTDOWNLOAD_CHECK      "preferCamtDownloadCheck"
 
-typedef int (*_DIALOG_SIGNAL_HANDLER_FN)(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
+#define ID_COUNTRY_EDIT                "countryEdit"
+#define ID_BANKCODE_EDIT               "bankCodeEdit"
+#define ID_BANKCODE_BUTTON             "bankCodeButton"
+#define ID_BANKNAME_EDIT               "bankNameEdit"
+#define ID_BIC_EDIT                    "bicEdit"
+#define ID_USER_COMBO                  "userCombo"
+
+#define ID_TARGETACCOUNT_LISTBOX       "targetAccountListBox"
+#define ID_GETTARGETACC_BUTTON         "getTargetAccButton"
+
+#define ID_HELP_BUTTON                 "helpButton"
+#define ID_OK_BUTTON                   "okButton"
+#define ID_ABORT_BUTTON                "abortButton"
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * types
+ * ------------------------------------------------------------------------------------------------
+ */
+
+typedef int (*_DIALOG_SIGNAL_HANDLER_FN)(GWEN_DIALOG *dlg);
 typedef struct _DIALOG_SIGNAL_ENTRY _DIALOG_SIGNAL_ENTRY;
 struct _DIALOG_SIGNAL_ENTRY {
   const char *sender;
@@ -88,12 +122,12 @@ static uint32_t _accountFlagsFromGui(GWEN_DIALOG *dlg);
 
 static void _toGui(GWEN_DIALOG *dlg, const AB_ACCOUNT *account);
 static int _fromGui(GWEN_DIALOG *dlg, AB_ACCOUNT *a, int quiet);
-static int _handleDialogInit(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
-static int _handleDialogFini(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
-static int _handleActivatedBankCode(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
-static int _handleActivatedOk(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
-static int _handleActivatedReject(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
-static int _handleActivatedTargetAcc(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
+static int _handleDialogInit(GWEN_DIALOG *dlg);
+static int _handleDialogFini(GWEN_DIALOG *dlg);
+static int _handleActivatedBankCode(GWEN_DIALOG *dlg);
+static int _handleActivatedOk(GWEN_DIALOG *dlg);
+static int _handleActivatedReject(GWEN_DIALOG *dlg);
+static int _handleActivatedTargetAcc(GWEN_DIALOG *dlg);
 
 
 
@@ -105,12 +139,12 @@ static int _handleActivatedTargetAcc(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, 
 GWEN_INHERIT(GWEN_DIALOG, AH_EDIT_ACCOUNT_DIALOG)
 
 static _DIALOG_SIGNAL_ENTRY _signalMap[]={
-  {NULL,                 GWEN_DialogEvent_TypeInit, _handleDialogInit},
-  {NULL,                 GWEN_DialogEvent_TypeFini, _handleDialogFini},
-  {"bankCodeButton",     GWEN_DialogEvent_TypeActivated, _handleActivatedBankCode},
-  {"okButton",           GWEN_DialogEvent_TypeActivated, _handleActivatedOk},
-  {"abortButton",        GWEN_DialogEvent_TypeActivated, _handleActivatedReject},
-  {"getTargetAccButton", GWEN_DialogEvent_TypeActivated, _handleActivatedTargetAcc},
+  {NULL,                   GWEN_DialogEvent_TypeInit, _handleDialogInit},
+  {NULL,                   GWEN_DialogEvent_TypeFini, _handleDialogFini},
+  {ID_BANKCODE_BUTTON,     GWEN_DialogEvent_TypeActivated, _handleActivatedBankCode},
+  {ID_OK_BUTTON,           GWEN_DialogEvent_TypeActivated, _handleActivatedOk},
+  {ID_ABORT_BUTTON,        GWEN_DialogEvent_TypeActivated, _handleActivatedReject},
+  {ID_GETTARGETACC_BUTTON, GWEN_DialogEvent_TypeActivated, _handleActivatedTargetAcc},
 
   {NULL, 0, NULL}
 };
@@ -127,7 +161,7 @@ GWEN_DIALOG *AH_EditAccountDialog_new(AB_PROVIDER *pro, AB_ACCOUNT *a, int doLoc
   GWEN_DIALOG *dlg;
   AH_EDIT_ACCOUNT_DIALOG *xdlg;
 
-  dlg=GWEN_Dialog_CreateAndLoadWithPath("ah_edit_account", AB_PM_LIBNAME, AB_PM_DATADIR, DLG_DIALOGFILE);
+  dlg=GWEN_Dialog_CreateAndLoadWithPath(DLG_NAME, AB_PM_LIBNAME, AB_PM_DATADIR, DLG_DIALOGFILE);
   if (dlg==NULL) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here");
     return NULL;
@@ -160,17 +194,17 @@ void GWENHYWFAR_CB _freeData(void *bp, void *p)
 
 void _toGui(GWEN_DIALOG *dlg, const AB_ACCOUNT *account)
 {
-  AH_Widget_AccountToGuiText(dlg, "bankCodeEdit",      account, AB_Account_GetBankCode);
-  AH_Widget_AccountToGuiText(dlg, "bankNameEdit",      account, AB_Account_GetBankName);
-  AH_Widget_AccountToGuiText(dlg, "bicEdit",           account, AB_Account_GetBic);
-  AH_Widget_AccountToGuiText(dlg, "accountNumberEdit", account, AB_Account_GetAccountNumber);
-  AH_Widget_AccountToGuiText(dlg, "accountNameEdit",   account, AB_Account_GetAccountName);
-  AH_Widget_AccountToGuiText(dlg, "ibanEdit",          account, AB_Account_GetIban);
-  AH_Widget_AccountToGuiText(dlg, "ownerNameEdit",     account, AB_Account_GetOwnerName);
-  AH_Widget_AccountToGuiText(dlg, "currencyEdit",      account, AB_Account_GetCurrency);
-  AH_Widget_AccountToGuiText(dlg, "countryEdit",       account, AB_Account_GetCountry);
-  AH_Widget_AccountTypeComboSetCurrent(dlg, "accountTypeCombo", AB_Account_GetAccountType(account));
-  AH_Widget_UserComboSetCurrent(dlg, "userCombo", AB_Account_GetUserId(account));
+  AH_Widget_AccountToGuiText(dlg, ID_BANKCODE_EDIT,      account, AB_Account_GetBankCode);
+  AH_Widget_AccountToGuiText(dlg, ID_BANKNAME_EDIT,      account, AB_Account_GetBankName);
+  AH_Widget_AccountToGuiText(dlg, ID_BIC_EDIT,           account, AB_Account_GetBic);
+  AH_Widget_AccountToGuiText(dlg, ID_ACCOUNTNUMBER_EDIT, account, AB_Account_GetAccountNumber);
+  AH_Widget_AccountToGuiText(dlg, ID_ACCOUNTNAME_EDIT,   account, AB_Account_GetAccountName);
+  AH_Widget_AccountToGuiText(dlg, ID_IBAN_EDIT,          account, AB_Account_GetIban);
+  AH_Widget_AccountToGuiText(dlg, ID_OWNERNAME_EDIT,     account, AB_Account_GetOwnerName);
+  AH_Widget_AccountToGuiText(dlg, ID_CURRENCY_EDIT,      account, AB_Account_GetCurrency);
+  AH_Widget_AccountToGuiText(dlg, ID_COUNTRY_EDIT,       account, AB_Account_GetCountry);
+  AH_Widget_AccountTypeComboSetCurrent(dlg, ID_ACCOUNTTYPE_COMBO, AB_Account_GetAccountType(account));
+  AH_Widget_UserComboSetCurrent(dlg, ID_USER_COMBO, AB_Account_GetUserId(account));
   _accountFlagsToGui(dlg, AH_Account_GetFlags(account));
 
   _targetAccountListBoxRebuild(dlg);
@@ -183,16 +217,16 @@ int _fromGui(GWEN_DIALOG *dlg, AB_ACCOUNT *a, int quiet)
   AB_ACCOUNT_TYPE t;
   uint32_t uid;
 
-  if (AH_Widget_GuiTextToAccountDeleSpaces(dlg, "accountNumberEdit", a, AB_Account_SetAccountNumber, NULL)<0 ||
-      AH_Widget_GuiTextToAccountKeepSpaces(dlg, "accountNameEdit",   a, AB_Account_SetAccountName,   NULL)<0 ||
-      AH_Widget_GuiTextToAccountDeleSpaces(dlg, "ibanEdit",          a, AB_Account_SetIban,          NULL)<0 ||
-      AH_Widget_GuiTextToAccountKeepSpaces(dlg, "ownerNameEdit",     a, AB_Account_SetOwnerName,
+  if (AH_Widget_GuiTextToAccountDeleSpaces(dlg, ID_ACCOUNTNUMBER_EDIT, a, AB_Account_SetAccountNumber, NULL)<0 ||
+      AH_Widget_GuiTextToAccountKeepSpaces(dlg, ID_ACCOUNTNAME_EDIT,   a, AB_Account_SetAccountName,   NULL)<0 ||
+      AH_Widget_GuiTextToAccountDeleSpaces(dlg, ID_IBAN_EDIT,          a, AB_Account_SetIban,          NULL)<0 ||
+      AH_Widget_GuiTextToAccountKeepSpaces(dlg, ID_OWNERNAME_EDIT,     a, AB_Account_SetOwnerName,
                                            quiet?NULL:I18N("Missing owner name"))<0 ||
-      AH_Widget_GuiTextToAccountKeepSpaces(dlg, "currencyEdit",      a, AB_Account_SetCurrency,      NULL)<0 ||
-      AH_Widget_GuiTextToAccountKeepSpaces(dlg, "countryEdit",       a, AB_Account_SetCountry,       NULL)<0 ||
-      AH_Widget_GuiTextToAccountDeleSpaces(dlg, "bankCodeEdit",      a, AB_Account_SetBankCode,      NULL)<0 ||
-      AH_Widget_GuiTextToAccountKeepSpaces(dlg, "bankNameEdit",      a, AB_Account_SetBankName,      NULL)<0 ||
-      AH_Widget_GuiTextToAccountDeleSpaces(dlg, "bicEdit",           a, AB_Account_SetBic,           NULL)<0) {
+      AH_Widget_GuiTextToAccountKeepSpaces(dlg, ID_CURRENCY_EDIT,      a, AB_Account_SetCurrency,      NULL)<0 ||
+      AH_Widget_GuiTextToAccountKeepSpaces(dlg, ID_COUNTRY_EDIT,       a, AB_Account_SetCountry,       NULL)<0 ||
+      AH_Widget_GuiTextToAccountDeleSpaces(dlg, ID_BANKCODE_EDIT,      a, AB_Account_SetBankCode,      NULL)<0 ||
+      AH_Widget_GuiTextToAccountKeepSpaces(dlg, ID_BANKNAME_EDIT,      a, AB_Account_SetBankName,      NULL)<0 ||
+      AH_Widget_GuiTextToAccountDeleSpaces(dlg, ID_BIC_EDIT,           a, AB_Account_SetBic,           NULL)<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here");
     return GWEN_ERROR_INVALID;
   }
@@ -203,16 +237,16 @@ int _fromGui(GWEN_DIALOG *dlg, AB_ACCOUNT *a, int quiet)
       AB_Account_GetAccountNumber(a)==NULL &&
       AB_Account_GetAccountName(a)==NULL) {
     GWEN_Gui_ShowError(I18N("Error on Input"), "%s", I18N("At least one of IBAN, account number or account name required."));
-    GWEN_Dialog_SetIntProperty(dlg, "ibanEdit", GWEN_DialogProperty_Focus, 0, 1, 0);
+    GWEN_Dialog_SetIntProperty(dlg, ID_IBAN_EDIT, GWEN_DialogProperty_Focus, 0, 1, 0);
     return GWEN_ERROR_INVALID;
   }
 
-  t=AH_Widget_AccountTypeComboGetCurrent(dlg, "accountTypeCombo");
+  t=AH_Widget_AccountTypeComboGetCurrent(dlg, ID_ACCOUNTTYPE_COMBO);
   if (t==AB_AccountType_Unknown || t==AB_AccountType_Invalid) {
     DBG_ERROR(NULL, "Account type not selected");
     if (!quiet) {
       GWEN_Gui_ShowError(I18N("Error on Input"), "%s", I18N("Please select account type."));
-      GWEN_Dialog_SetIntProperty(dlg, "accountTypeCombo", GWEN_DialogProperty_Focus, 0, 1, 0);
+      GWEN_Dialog_SetIntProperty(dlg, ID_ACCOUNTTYPE_COMBO, GWEN_DialogProperty_Focus, 0, 1, 0);
       return GWEN_ERROR_INVALID;
     }
   }
@@ -222,12 +256,12 @@ int _fromGui(GWEN_DIALOG *dlg, AB_ACCOUNT *a, int quiet)
   if (a)
     AH_Account_SetFlags(a, _accountFlagsFromGui(dlg));
 
-  uid=AH_Widget_UserComboGetCurrent(dlg, "userCombo");
+  uid=AH_Widget_UserComboGetCurrent(dlg, ID_USER_COMBO);
   if (uid==0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "User not selected");
     if (!quiet) {
       GWEN_Gui_ShowError(I18N("Error on Input"), "%s", I18N("Please select a user for this account"));
-      GWEN_Dialog_SetIntProperty(dlg, "userCombo", GWEN_DialogProperty_Focus, 0, 1, 0);
+      GWEN_Dialog_SetIntProperty(dlg, ID_USER_COMBO, GWEN_DialogProperty_Focus, 0, 1, 0);
       return GWEN_ERROR_INVALID;
     }
   }
@@ -246,7 +280,7 @@ int GWENHYWFAR_CB _dlgApi_signalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE 
   entry=_signalMap;
   while(entry->handlerFn) {
     if (entry->eventType==t && (entry->sender==NULL || (sender && strcasecmp(sender, entry->sender)==0))) {
-      return entry->handlerFn(dlg, t, sender);
+      return entry->handlerFn(dlg);
     }
     entry++;
   }
@@ -256,7 +290,7 @@ int GWENHYWFAR_CB _dlgApi_signalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE 
 
 
 
-int _handleDialogInit(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE t, GWEN_UNUSED const char *sender)
+int _handleDialogInit(GWEN_DIALOG *dlg)
 {
   AH_EDIT_ACCOUNT_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
@@ -269,33 +303,33 @@ int _handleDialogInit(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE t, GWE
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   /* init */
-  GWEN_Dialog_SetCharProperty(dlg, "", GWEN_DialogProperty_Title, 0, I18N("Edit Account"), 0);
+  GWEN_Dialog_SetCharProperty(dlg, ID_SELF, GWEN_DialogProperty_Title, 0, I18N("Edit Account"), 0);
 
-  AH_Widget_AccountTypeComboSetup(dlg, "accountTypeCombo");
-  _targetAccountListBoxSetup(dlg, "targetAccountListBox");
-  AH_Widget_UserComboRebuild(dlg, "userCombo", xdlg->provider);
+  AH_Widget_AccountTypeComboSetup(dlg, ID_ACCOUNTTYPE_COMBO);
+  _targetAccountListBoxSetup(dlg, ID_TARGETACCOUNT_LISTBOX);
+  AH_Widget_UserComboRebuild(dlg, ID_USER_COMBO, xdlg->provider);
 
   _toGui(dlg, xdlg->account);
 
   /* read account column widths */
-  GWEN_Dialog_ListReadColumnSettings(dlg, "targetAccountListBox", "target_account_list_", 2, TARGET_ACCOUNT_LIST_MINCOLWIDTH, dbPrefs);
+  GWEN_Dialog_ListReadColumnSettings(dlg, ID_TARGETACCOUNT_LISTBOX, "target_account_list_", 2, TARGET_ACCOUNT_LIST_MINCOLWIDTH, dbPrefs);
 
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
   if (i>=DIALOG_MINWIDTH)
-    GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, i, 0);
+    GWEN_Dialog_SetIntProperty(dlg, ID_SELF, GWEN_DialogProperty_Width, 0, i, 0);
 
   /* read height */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_height", 0, -1);
   if (i>=DIALOG_MINHEIGHT)
-    GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, i, 0);
+    GWEN_Dialog_SetIntProperty(dlg, ID_SELF, GWEN_DialogProperty_Height, 0, i, 0);
 
   return GWEN_DialogEvent_ResultHandled;
 }
 
 
 
-int _handleDialogFini(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE t, GWEN_UNUSED const char *sender)
+int _handleDialogFini(GWEN_DIALOG *dlg)
 {
   AH_EDIT_ACCOUNT_DIALOG *xdlg;
   int i;
@@ -308,14 +342,14 @@ int _handleDialogFini(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE t, GWE
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   /* store column widths of target account list */
-  GWEN_Dialog_ListWriteColumnSettings(dlg, "targetAccountListBox", "target_account_list_", 2, TARGET_ACCOUNT_LIST_MINCOLWIDTH, dbPrefs);
+  GWEN_Dialog_ListWriteColumnSettings(dlg, ID_TARGETACCOUNT_LISTBOX, "target_account_list_", 2, TARGET_ACCOUNT_LIST_MINCOLWIDTH, dbPrefs);
 
   /* store dialog width */
-  i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
+  i=GWEN_Dialog_GetIntProperty(dlg, ID_SELF, GWEN_DialogProperty_Width, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs, GWEN_DB_FLAGS_OVERWRITE_VARS, "dialog_width", i);
 
   /* store dialog height */
-  i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
+  i=GWEN_Dialog_GetIntProperty(dlg, ID_SELF, GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs, GWEN_DB_FLAGS_OVERWRITE_VARS, "dialog_height", i);
 
   return GWEN_DialogEvent_ResultHandled;
@@ -323,7 +357,7 @@ int _handleDialogFini(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE t, GWE
 
 
 
-int _handleActivatedBankCode(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE t, GWEN_UNUSED const char *sender)
+int _handleActivatedBankCode(GWEN_DIALOG *dlg)
 {
   AH_EDIT_ACCOUNT_DIALOG *xdlg;
   GWEN_DIALOG *dlg2;
@@ -353,13 +387,13 @@ int _handleActivatedBankCode(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE
       const char *s;
 
       s=AB_BankInfo_GetBankId(bi);
-      GWEN_Dialog_SetCharProperty(dlg, "bankCodeEdit", GWEN_DialogProperty_Value, 0, (s && *s)?s:"", 0);
+      GWEN_Dialog_SetCharProperty(dlg, ID_BANKCODE_EDIT, GWEN_DialogProperty_Value, 0, (s && *s)?s:"", 0);
 
       s=AB_BankInfo_GetBankName(bi);
-      GWEN_Dialog_SetCharProperty(dlg, "bankNameEdit", GWEN_DialogProperty_Value, 0, (s && *s)?s:"", 0);
+      GWEN_Dialog_SetCharProperty(dlg, ID_BANKNAME_EDIT, GWEN_DialogProperty_Value, 0, (s && *s)?s:"", 0);
 
       s=AB_BankInfo_GetBic(bi);
-      GWEN_Dialog_SetCharProperty(dlg, "bicEdit", GWEN_DialogProperty_Value, 0, (s && *s)?s:"", 0);
+      GWEN_Dialog_SetCharProperty(dlg, ID_BIC_EDIT, GWEN_DialogProperty_Value, 0, (s && *s)?s:"", 0);
     }
   }
   GWEN_Dialog_free(dlg2);
@@ -369,7 +403,7 @@ int _handleActivatedBankCode(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE
 
 
 
-int _handleActivatedOk(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE t, GWEN_UNUSED const char *sender)
+int _handleActivatedOk(GWEN_DIALOG *dlg)
 {
   AH_EDIT_ACCOUNT_DIALOG *xdlg;
   int rv;
@@ -420,7 +454,7 @@ int _handleActivatedOk(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE t, GW
 }
 
 
-int _handleActivatedReject(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE t, GWEN_UNUSED const char *sender)
+int _handleActivatedReject(GWEN_DIALOG *dlg)
 {
   return GWEN_DialogEvent_ResultReject;
 }
@@ -429,15 +463,15 @@ int _handleActivatedReject(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE t
 
 void _accountFlagsToGui(GWEN_DIALOG *dlg, uint32_t aflags)
 {
-  GWEN_Dialog_SetIntProperty(dlg, "preferSingleTransferCheck", GWEN_DialogProperty_Value, 0,
+  GWEN_Dialog_SetIntProperty(dlg, ID_PREFSINGLEXFER_CHECK, GWEN_DialogProperty_Value, 0,
                              (aflags & AH_BANK_FLAGS_PREFER_SINGLE_TRANSFER)?1:0, 0);
-  GWEN_Dialog_SetIntProperty(dlg, "preferSingleDebitNoteCheck", GWEN_DialogProperty_Value, 0,
+  GWEN_Dialog_SetIntProperty(dlg, ID_PREFSINGLEDEBIT_CHECK, GWEN_DialogProperty_Value, 0,
                              (aflags & AH_BANK_FLAGS_PREFER_SINGLE_DEBITNOTE)?1:0, 0);
-  GWEN_Dialog_SetIntProperty(dlg, "sepaPreferSingleTransferCheck", GWEN_DialogProperty_Value, 0,
+  GWEN_Dialog_SetIntProperty(dlg, ID_SEPAPREFSINGLEXFER_CHECK, GWEN_DialogProperty_Value, 0,
                              (aflags & AH_BANK_FLAGS_SEPA_PREFER_SINGLE_TRANSFER)?1:0, 0);
-  GWEN_Dialog_SetIntProperty(dlg, "sepaPreferSingleDebitNoteCheck", GWEN_DialogProperty_Value, 0,
+  GWEN_Dialog_SetIntProperty(dlg, ID_SEPAPREFSINGLEDEBIT_CHECK, GWEN_DialogProperty_Value, 0,
                              (aflags & AH_BANK_FLAGS_SEPA_PREFER_SINGLE_DEBITNOTE)?1:0, 0);
-  GWEN_Dialog_SetIntProperty(dlg, "preferCamtDownloadCheck", GWEN_DialogProperty_Value, 0,
+  GWEN_Dialog_SetIntProperty(dlg, ID_PREFCAMTDOWNLOAD_CHECK, GWEN_DialogProperty_Value, 0,
                              (aflags & AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD)?1:0, 0);
 }
 
@@ -447,22 +481,22 @@ uint32_t _accountFlagsFromGui(GWEN_DIALOG *dlg)
 {
   uint32_t aflags=0;
 
-  if (GWEN_Dialog_GetIntProperty(dlg, "preferSingleTransferCheck", GWEN_DialogProperty_Value, 0, 0))
+  if (GWEN_Dialog_GetIntProperty(dlg, ID_PREFSINGLEXFER_CHECK, GWEN_DialogProperty_Value, 0, 0))
     aflags|=AH_BANK_FLAGS_PREFER_SINGLE_TRANSFER;
-  if (GWEN_Dialog_GetIntProperty(dlg, "preferSingleDebitNoteCheck", GWEN_DialogProperty_Value, 0, 0))
+  if (GWEN_Dialog_GetIntProperty(dlg, ID_PREFSINGLEDEBIT_CHECK, GWEN_DialogProperty_Value, 0, 0))
     aflags|=AH_BANK_FLAGS_PREFER_SINGLE_DEBITNOTE;
-  if (GWEN_Dialog_GetIntProperty(dlg, "sepaPreferSingleTransferCheck", GWEN_DialogProperty_Value, 0, 0))
+  if (GWEN_Dialog_GetIntProperty(dlg, ID_SEPAPREFSINGLEXFER_CHECK, GWEN_DialogProperty_Value, 0, 0))
     aflags|=AH_BANK_FLAGS_SEPA_PREFER_SINGLE_TRANSFER;
-  if (GWEN_Dialog_GetIntProperty(dlg, "sepaPreferSingleDebitNoteCheck", GWEN_DialogProperty_Value, 0, 0))
+  if (GWEN_Dialog_GetIntProperty(dlg, ID_SEPAPREFSINGLEDEBIT_CHECK, GWEN_DialogProperty_Value, 0, 0))
     aflags|=AH_BANK_FLAGS_SEPA_PREFER_SINGLE_DEBITNOTE;
-  if (GWEN_Dialog_GetIntProperty(dlg, "preferCamtDownloadCheck", GWEN_DialogProperty_Value, 0, 0))
+  if (GWEN_Dialog_GetIntProperty(dlg, ID_PREFCAMTDOWNLOAD_CHECK, GWEN_DialogProperty_Value, 0, 0))
     aflags|=AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD;
   return aflags;
 }
 
 
 
-int _handleActivatedTargetAcc(GWEN_DIALOG *dlg, GWEN_UNUSED GWEN_DIALOG_EVENTTYPE t, GWEN_UNUSED const char *sender)
+int _handleActivatedTargetAcc(GWEN_DIALOG *dlg)
 {
   AH_EDIT_ACCOUNT_DIALOG *xdlg;
   int rv;
@@ -514,7 +548,7 @@ void _targetAccountListBoxRebuild(GWEN_DIALOG *dlg)
 
   /* target account list */
   i=0;
-  GWEN_Dialog_SetIntProperty(dlg, "targetAccountListBox", GWEN_DialogProperty_ClearValues, 0, 0, 0);
+  GWEN_Dialog_SetIntProperty(dlg, ID_TARGETACCOUNT_LISTBOX, GWEN_DialogProperty_ClearValues, 0, 0, 0);
 
   AB_Banking_GetAccountSpecByUniqueId(AB_Provider_GetBanking(xdlg->provider),
                                       AB_Account_GetUniqueId(xdlg->account),
@@ -533,7 +567,7 @@ void _targetAccountListBoxRebuild(GWEN_DIALOG *dlg)
       while (ra) {
         _createTargetAccountListBoxString(ra, tbuf);
         GWEN_Dialog_SetCharProperty(dlg,
-                                    "targetAccountListBox",
+                                    ID_TARGETACCOUNT_LISTBOX,
                                     GWEN_DialogProperty_AddValue,
                                     0,
                                     GWEN_Buffer_GetStart(tbuf),
@@ -548,9 +582,9 @@ void _targetAccountListBoxRebuild(GWEN_DIALOG *dlg)
     AB_AccountSpec_free(as);
   }
 
-  GWEN_Dialog_SetIntProperty(dlg, "targetAccountListBox", GWEN_DialogProperty_Sort, 0, 0, 0);
+  GWEN_Dialog_SetIntProperty(dlg, ID_TARGETACCOUNT_LISTBOX, GWEN_DialogProperty_Sort, 0, 0, 0);
   if (i)
-    GWEN_Dialog_SetIntProperty(dlg, "targetAccountListBox", GWEN_DialogProperty_Value, 0, 0, 0);
+    GWEN_Dialog_SetIntProperty(dlg, ID_TARGETACCOUNT_LISTBOX, GWEN_DialogProperty_Value, 0, 0, 0);
 }
 
 

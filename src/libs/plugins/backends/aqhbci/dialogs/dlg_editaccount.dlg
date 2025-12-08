@@ -13,83 +13,83 @@
 
 <dialog type="dialog" name="ah_edit_account" i18n="aqbanking"
         flags="decorShrinkable decorStretchable decorMaximize decorMinimize decorClose decorMenu" >
-  <widget type="vlayout" flags="fillX fillY" >
+  <widget         type="vlayout"                                                  flags="fillX fillY" >
 
-    <widget type="groupBox" text="Account Info" flags="fillX" >
-      <widget type="vlayout" flags="fillX fillY" >
-        <widget type="gridLayout" columns="2" flags="fillX" >
+    <widget       type="groupBox"   text="Account Info"                           flags="fillX" >
+      <widget     type="vlayout"                                                  flags="fillX fillY" >
+        <widget   type="gridLayout" columns="2"                                   flags="fillX" >
         
-          <widget type="label" text="Account Number" flags="noWordWrap" />
-          <widget type="lineEdit" name="accountNumberEdit" columns="20" flags="fillX" />
+          <widget type="label"      text="Account Number"                         flags="noWordWrap" />
+          <widget type="lineEdit"   name="accountNumberEdit" columns="20"         flags="fillX" />
     
-          <widget type="label" text="Account Name" flags="noWordWrap" />
-          <widget type="lineEdit" name="accountNameEdit" columns="20" flags="fillX" />
+          <widget type="label"      text="Account Name" flags="noWordWrap" />
+          <widget type="lineEdit"   name="accountNameEdit" columns="20"           flags="fillX" />
     
-          <widget type="label" text="IBAN" flags="noWordWrap" />
-          <widget type="lineEdit" name="ibanEdit" columns="20" flags="fillX" />
+          <widget type="label"      text="IBAN" flags="noWordWrap" />
+          <widget type="lineEdit"   name="ibanEdit" columns="20"                  flags="fillX" />
     
-          <widget type="label" text="Owner Name" flags="noWordWrap" />
-          <widget type="lineEdit" name="ownerNameEdit" columns="20" flags="fillX" />
+          <widget type="label"      text="Owner Name" flags="noWordWrap" />
+          <widget type="lineEdit"   name="ownerNameEdit" columns="20"             flags="fillX" />
     
-          <widget type="label" text="Currency" flags="noWordWrap" />
-          <widget type="lineEdit" name="currencyEdit"  columns="20" flags="fillX readOnly" />
+          <widget type="label"      text="Currency" flags="noWordWrap" />
+          <widget type="lineEdit"   name="currencyEdit"  columns="20"             flags="fillX readOnly" />
     
-          <widget type="label" text="Account Type" flags="noWordWrap" />
-          <widget type="comboBox" name="accountTypeCombo"  columns="20" flags="fillX readOnly" />
+          <widget type="label"      text="Account Type" flags="noWordWrap" />
+          <widget type="comboBox"   name="accountTypeCombo"  columns="20"         flags="fillX readOnly" />
   
         </widget>
 
-        <widget type="checkBox" name="preferSingleTransferCheck" text="Prefer Single Transfer" />
-        <widget type="checkBox" name="preferSingleDebitNoteCheck" text="Prefer Single Debit Note" />
+        <widget   type="checkBox"   name="preferSingleTransferCheck"      text="Prefer Single Transfer" />
+        <widget   type="checkBox"   name="preferSingleDebitNoteCheck"     text="Prefer Single Debit Note" />
 
-        <widget type="checkBox" name="sepaPreferSingleTransferCheck" text="Prefer Single SEPA Transfer" />
-        <widget type="checkBox" name="sepaPreferSingleDebitNoteCheck" text="Prefer Single SEPA Debit Note" />
+        <widget   type="checkBox"   name="sepaPreferSingleTransferCheck"  text="Prefer Single SEPA Transfer" />
+        <widget   type="checkBox"   name="sepaPreferSingleDebitNoteCheck" text="Prefer Single SEPA Debit Note" />
 
-        <widget type="checkBox" name="preferCamtDownloadCheck" text="Prefer Statement Download as CAMT" />
+        <widget   type="checkBox"   name="preferCamtDownloadCheck"        text="Prefer Statement Download as CAMT" />
       </widget>
 
     </widget>
 
-    <widget type="groupBox" text="Bank Info" flags="fillX" >
+    <widget       type="groupBox"   text="Bank Info"                              flags="fillX" >
 
-      <widget type="gridLayout" columns="2" flags="fillX" >
+      <widget     type="gridLayout" columns="2"                                   flags="fillX" >
 
-        <widget type="label" text="Country" />
-        <widget type="lineEdit" name="countryEdit"  columns="20" flags="fillX" />
+        <widget   type="label"      text="Country" />
+        <widget   type="lineEdit"   name="countryEdit"  columns="20"              flags="fillX" />
 
-        <widget type="label" text="Bank Code" flags="noWordWrap" />
-        <widget type="hlayout" flags="fillX " >
-          <widget type="lineEdit" name="bankCodeEdit" flags="fillX" />
+        <widget   type="label"      text="Bank Code"                              flags="noWordWrap" />
+        <widget   type="hlayout"                                                  flags="fillX " >
+          <widget type="lineEdit"   name="bankCodeEdit"                           flags="fillX" />
           <widget type="pushButton" name="bankCodeButton" text="Select" />
         </widget>
 
-        <widget type="label" text="Bank Name" flags="noWordWrap" />
-        <widget type="lineEdit" name="bankNameEdit" columns="20" flags="fillX" />
+        <widget   type="label"      text="Bank Name"                              flags="noWordWrap" />
+        <widget   type="lineEdit"   name="bankNameEdit" columns="20"              flags="fillX" />
 
-        <widget type="label" text="SWIFT BIC" flags="noWordWrap" />
-        <widget type="lineEdit" name="bicEdit" columns="20" flags="fillX" />
+        <widget   type="label"      text="SWIFT BIC"                              flags="noWordWrap" />
+        <widget   type="lineEdit"   name="bicEdit" columns="20"                   flags="fillX" />
 
-       <widget type="label" text="Selected User" />
-       <widget type="comboBox" name="userCombo"  columns="40" flags="fillX readOnly" />
+       <widget    type="label"      text="Selected User" />
+       <widget    type="comboBox"   name="userCombo"  columns="40"                flags="fillX readOnly" />
 
       </widget>
       
     </widget>
 
-    <widget type="groupBox" text="Sepa Internal Transfer Target Accounts" flags="fillX fillY" >
-      <widget type="vlayout" flags="fillX fillY" >
-        <widget type="listBox" name="targetAccountListBox" flags="fillX fillY" />
-        <widget type="pushButton" text="Get target accounts" name="getTargetAccButton" />
+    <widget       type="groupBox"   text="Sepa Internal Transfer Target Accounts" flags="fillX fillY" >
+      <widget     type="vlayout"                                                  flags="fillX fillY" >
+        <widget   type="listBox"    name="targetAccountListBox"                   flags="fillX fillY" />
+        <widget   type="pushButton" text="Get target accounts" name="getTargetAccButton" />
       </widget>
     </widget>     <!-- groupBox -->
     
     <!-- wizard controls -->
-    <widget type="hLine" flags="fillX" />
-    <widget type="hlayout" flags="fillX equalWidth" >
-      <widget type="pushButton" text="Help"     name="helpButton" />
-      <widget type="hspacer" flags="fillX" />
-      <widget type="pushButton" text="Ok"     name="okButton" flags="default" />
-      <widget type="pushButton" text="Abort"  name="abortButton" />
+    <widget       type="hLine"                                                    flags="fillX" />
+    <widget       type="hlayout"                                                  flags="fillX equalWidth" >
+      <widget     type="pushButton" text="Help"   name="helpButton" />
+      <widget     type="hspacer"                                                  flags="fillX" />
+      <widget     type="pushButton" text="Ok"     name="okButton"                 flags="default" />
+      <widget     type="pushButton" text="Abort"  name="abortButton" />
     </widget>
 
   </widget>
