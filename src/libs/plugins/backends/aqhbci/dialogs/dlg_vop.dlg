@@ -19,18 +19,14 @@
   <widget     type="vlayout"                                                 flags="fillX fillY" >
     <widget   type="label"         name="introLabel"                         flags="fillX" />
 
-<!-- Currently disabled because it is not yet implemented by all GUI frontends
     <widget   type="vsplitter"     name="vsplitter"                          flags="fillX fillY" >
--->
       <widget   type="groupBox"    text="VOP Message From Your Bank"         flags="fillX fillY" >
         <widget type="textBrowser" name="vopMsg"                             flags="fillX fillY readOnly" />
       </widget>
       <widget   type="groupBox"    text="VOP Results Reported By Your Bank"  flags="fillX fillY" >
         <widget type="listBox"     name="vopResultListBox" flags="fillX fillY" />
       </widget>
-<!--
     </widget>
--->
 
     <!-- dialog controls -->
     <widget   type="hLine"                               flags="fillX" />
