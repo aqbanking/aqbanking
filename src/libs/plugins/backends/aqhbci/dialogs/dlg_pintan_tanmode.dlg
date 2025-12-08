@@ -13,19 +13,19 @@
 
 <dialog type="dialog" name="ah_setup_pintan_tanmode" i18n="aqbanking"
         flags="decorShrinkable decorStretchable decorMaximize decorMinimize decorClose decorMenu" >
-  <widget type="vlayout" flags="fillX fillY" >
+  <widget     type="vlayout"                                        flags="fillX fillY" >
 
-    <widget type="label" name="messageLabel" flags="fillX fillY justifyLeft" />
+    <widget   type="label"      name="messageLabel"                 flags="fillX fillY justifyLeft" />
 
-    <widget type="label" text="Selected TAN Method" />
-    <widget type="comboBox" name="tanMethodCombo"  columns="20" flags="fillX" />
+    <widget   type="label"      text="Selected TAN Method" />
+    <widget   type="comboBox"   name="tanMethodCombo"  columns="20" flags="fillX" />
 
     <!-- dialog controls -->
-    <widget type="hLine" flags="fillX" />
-    <widget type="hlayout" flags="fillX equalWidth" >
-      <widget type="pushButton" text="Help"     name="helpButton" />
-      <widget type="hspacer" flags="fillX" />
-      <widget type="pushButton" text="Ok"     name="okButton" flags="default" />
+    <widget   type="hLine"                                          flags="fillX" />
+    <widget   type="hlayout"                                        flags="fillX equalWidth" >
+      <widget type="pushButton" text="Help"   name="helpButton" />
+      <widget type="hspacer"                                        flags="fillX" />
+      <widget type="pushButton" text="Ok"     name="okButton"       flags="default" />
       <widget type="pushButton" text="Abort"  name="abortButton" />
     </widget>
 
