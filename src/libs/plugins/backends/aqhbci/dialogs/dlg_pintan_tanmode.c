@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue Sep 17 2019
- copyright   : (C) 2019 by Martin Preuss
+ copyright   : (C) 2025 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -24,10 +24,39 @@
 #include <gwenhywfar/gui.h>
 
 
-#define DIALOG_MINWIDTH  200
-#define DIALOG_MINHEIGHT 100
 
-#define DLG_DIALOGFILE   "aqbanking/backends/aqhbci/dialogs/dlg_pintan_tanmode.dlg"
+/* ------------------------------------------------------------------------------------------------
+ * defines
+ * ------------------------------------------------------------------------------------------------
+ */
+
+#define DIALOG_MINWIDTH     200
+#define DIALOG_MINHEIGHT    100
+
+#define DLG_DIALOGFILE      "aqbanking/backends/aqhbci/dialogs/dlg_pintan_tanmode.dlg"
+
+/* IDs for dialog widgets */
+#define ID_SELF             ""
+#define ID_MESSAGE_LABEL    "messageLabel"
+#define ID_TANMETHOD_COMBO  "tanMethodCombo"
+#define ID_HELP_BUTTON      "helpButton"
+#define ID_OK_BUTTON        "okButton"
+#define ID_ABORT_BUTTON     "abortButton"
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * types
+ * ------------------------------------------------------------------------------------------------
+ */
+
+typedef int (*_DIALOG_SIGNAL_HANDLER_FN)(GWEN_DIALOG *dlg);
+typedef struct _DIALOG_SIGNAL_ENTRY _DIALOG_SIGNAL_ENTRY;
+struct _DIALOG_SIGNAL_ENTRY {
+  const char *sender;
+  GWEN_DIALOG_EVENTTYPE eventType;
+  _DIALOG_SIGNAL_HANDLER_FN handlerFn;
+};
 
 
 
@@ -36,12 +65,12 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-static void _init(GWEN_DIALOG *dlg);
-static void _fini(GWEN_DIALOG *dlg);
+static int _handleInit(GWEN_DIALOG *dlg);
+static int _handleFini(GWEN_DIALOG *dlg);
 
 static int _fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet);
-static int _handleActivated(GWEN_DIALOG *dlg, const char *sender);
-static int _handleActivatedOk(GWEN_DIALOG *dlg, const char *sender);
+static int _handleActivatedOk(GWEN_DIALOG *dlg);
+static int _handleActivatedAbort(GWEN_DIALOG *dlg);
 
 static void GWENHYWFAR_CB _freeData(void *bp, void *p);
 static int GWENHYWFAR_CB _signalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
@@ -49,17 +78,29 @@ static int GWENHYWFAR_CB _signalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE 
 
 
 /* ------------------------------------------------------------------------------------------------
- * implementations
+ * static vars
  * ------------------------------------------------------------------------------------------------
  */
-
-
-
 
 GWEN_INHERIT(GWEN_DIALOG, AH_PINTAN_TANMODE_DIALOG)
 
 
+static _DIALOG_SIGNAL_ENTRY _signalMap[]={
+  {NULL,                   GWEN_DialogEvent_TypeInit,         _handleInit},
+  {NULL,                   GWEN_DialogEvent_TypeFini,         _handleFini},
 
+  {ID_OK_BUTTON,           GWEN_DialogEvent_TypeActivated,    _handleActivatedOk},
+  {ID_ABORT_BUTTON,        GWEN_DialogEvent_TypeActivated,    _handleActivatedAbort},
+
+  {NULL, 0, NULL}
+};
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 GWEN_DIALOG *AH_PinTan_TanModeDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock)
 {
@@ -93,14 +134,12 @@ void GWENHYWFAR_CB _freeData(void *bp, void *p)
   AH_PINTAN_TANMODE_DIALOG *xdlg;
 
   xdlg=(AH_PINTAN_TANMODE_DIALOG *) p;
-
-
   GWEN_FREE_OBJECT(xdlg);
 }
 
 
 
-void _init(GWEN_DIALOG *dlg)
+int _handleInit(GWEN_DIALOG *dlg)
 {
   AH_PINTAN_TANMODE_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
@@ -112,10 +151,10 @@ void _init(GWEN_DIALOG *dlg)
 
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
-  GWEN_Dialog_SetCharProperty(dlg, "", GWEN_DialogProperty_Title, 0, I18N("Select TAN Mode"), 0);
+  GWEN_Dialog_SetCharProperty(dlg, ID_SELF, GWEN_DialogProperty_Title, 0, I18N("Select TAN Mode"), 0);
 
   GWEN_Dialog_SetCharProperty(dlg,
-                              "messageLabel",
+                              ID_MESSAGE_LABEL,
                               GWEN_DialogProperty_Title,
                               0,
                               I18N("<html>"
@@ -131,23 +170,24 @@ void _init(GWEN_DIALOG *dlg)
                               0);
 
 
-  AH_Widget_TanMethodComboRebuild(dlg, "tanMethodCombo", AH_User_GetTanMethodDescriptions(xdlg->user));
-  AH_Widget_TanMethodComboSetCurrent(dlg, "tanMethodCombo", AH_User_GetSelectedTanMethod(xdlg->user));
+  AH_Widget_TanMethodComboRebuild(dlg, ID_TANMETHOD_COMBO, AH_User_GetTanMethodDescriptions(xdlg->user));
+  AH_Widget_TanMethodComboSetCurrent(dlg, ID_TANMETHOD_COMBO, AH_User_GetSelectedTanMethod(xdlg->user));
 
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
   if (i>=DIALOG_MINWIDTH)
-    GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, i, 0);
+    GWEN_Dialog_SetIntProperty(dlg, ID_SELF, GWEN_DialogProperty_Width, 0, i, 0);
 
   /* read height */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_height", 0, -1);
   if (i>=DIALOG_MINHEIGHT)
-    GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, i, 0);
+    GWEN_Dialog_SetIntProperty(dlg, ID_SELF, GWEN_DialogProperty_Height, 0, i, 0);
+  return GWEN_DialogEvent_ResultHandled;
 }
 
 
 
-void _fini(GWEN_DIALOG *dlg)
+int _handleFini(GWEN_DIALOG *dlg)
 {
   AH_PINTAN_TANMODE_DIALOG *xdlg;
   int i;
@@ -161,12 +201,14 @@ void _fini(GWEN_DIALOG *dlg)
 
 
   /* store dialog width */
-  i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Width, 0, -1);
+  i=GWEN_Dialog_GetIntProperty(dlg, ID_SELF, GWEN_DialogProperty_Width, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs, GWEN_DB_FLAGS_OVERWRITE_VARS, "dialog_width", i);
 
   /* store dialog height */
-  i=GWEN_Dialog_GetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, -1);
+  i=GWEN_Dialog_GetIntProperty(dlg, ID_SELF, GWEN_DialogProperty_Height, 0, -1);
   GWEN_DB_SetIntValue(dbPrefs, GWEN_DB_FLAGS_OVERWRITE_VARS, "dialog_height", i);
+
+  return GWEN_DialogEvent_ResultHandled;
 }
 
 
@@ -175,7 +217,7 @@ int _fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
 {
   int i;
 
-  i=AH_Widget_TanMethodComboGetCurrent(dlg, "tanMethodCombo");
+  i=AH_Widget_TanMethodComboGetCurrent(dlg, ID_TANMETHOD_COMBO);
   if (u && i>0)
     AH_User_SetSelectedTanMethod(u, i);
 
@@ -186,36 +228,14 @@ int _fromGui(GWEN_DIALOG *dlg, AB_USER *u, int quiet)
 
 int GWENHYWFAR_CB _signalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
 {
-  AH_PINTAN_TANMODE_DIALOG *xdlg;
+  const _DIALOG_SIGNAL_ENTRY *entry;
 
-  assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_PINTAN_TANMODE_DIALOG, dlg);
-  assert(xdlg);
-
-  switch (t) {
-  case GWEN_DialogEvent_TypeInit:
-    _init(dlg);
-    return GWEN_DialogEvent_ResultHandled;;
-
-  case GWEN_DialogEvent_TypeFini:
-    _fini(dlg);
-    return GWEN_DialogEvent_ResultHandled;;
-
-  case GWEN_DialogEvent_TypeValueChanged:
-    return GWEN_DialogEvent_ResultHandled;;
-
-  case GWEN_DialogEvent_TypeActivated:
-    return _handleActivated(dlg, sender);
-
-  case GWEN_DialogEvent_TypeEnabled:
-  case GWEN_DialogEvent_TypeDisabled:
-  case GWEN_DialogEvent_TypeClose:
-
-  case GWEN_DialogEvent_TypeLast:
-    return GWEN_DialogEvent_ResultNotHandled;
-
-  default:
-    break;
+  entry=_signalMap;
+  while(entry->handlerFn) {
+    if (entry->eventType==t && (entry->sender==NULL || (sender && strcasecmp(sender, entry->sender)==0))) {
+      return entry->handlerFn(dlg);
+    }
+    entry++;
   }
 
   return GWEN_DialogEvent_ResultNotHandled;
@@ -223,7 +243,7 @@ int GWENHYWFAR_CB _signalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, cons
 
 
 
-int _handleActivatedOk(GWEN_DIALOG *dlg, const char *sender)
+int _handleActivatedOk(GWEN_DIALOG *dlg)
 {
   AH_PINTAN_TANMODE_DIALOG *xdlg;
   int rv;
@@ -266,18 +286,9 @@ int _handleActivatedOk(GWEN_DIALOG *dlg, const char *sender)
 
 
 
-int _handleActivated(GWEN_DIALOG *dlg, const char *sender)
+int _handleActivatedAbort(GWEN_DIALOG *dlg)
 {
-  DBG_NOTICE(0, "Activated: %s", sender);
-  if (strcasecmp(sender, "okButton")==0)
-    return _handleActivatedOk(dlg, sender);
-  else if (strcasecmp(sender, "abortButton")==0)
-    return GWEN_DialogEvent_ResultReject;
-  else if (strcasecmp(sender, "helpButton")==0) {
-    /* TODO: open a help dialog */
-  }
-
-  return GWEN_DialogEvent_ResultNotHandled;
+  return GWEN_DialogEvent_ResultReject;
 }
 
 
