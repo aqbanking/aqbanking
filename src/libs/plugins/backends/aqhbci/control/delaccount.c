@@ -1,7 +1,7 @@
 /***************************************************************************
  begin       : Thu Nov 06 2008
  copyright   : (C) 2008 by Patrick Prasse
- copyright   : (C) 2018 by Martin Preuss
+ copyright   : (C) 2025 by Martin Preuss
  email       : patrick-oss@prasse.info
 
  ***************************************************************************
@@ -23,11 +23,24 @@
 
 
 
+/* ------------------------------------------------------------------------------------------------
+ * defs
+ * ------------------------------------------------------------------------------------------------
+ */
 
-int AH_Control_DelAccount(AB_PROVIDER *pro,
-                          GWEN_DB_NODE *dbArgs,
-                          int argc,
-                          char **argv)
+#define A_ARG GWEN_ARGS_FLAGS_HAS_ARGUMENT
+#define A_END (GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST)
+#define A_CHAR GWEN_ArgsType_Char
+#define A_INT GWEN_ArgsType_Int
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * code
+ * ------------------------------------------------------------------------------------------------
+ */
+
+int AH_Control_DelAccount(AB_PROVIDER *pro, GWEN_DB_NODE *dbArgs, int argc, char **argv)
 {
   GWEN_DB_NODE *db;
   AB_ACCOUNT *a=NULL;
@@ -35,39 +48,10 @@ int AH_Control_DelAccount(AB_PROVIDER *pro,
   uint32_t aid;
   uint32_t pretend=0;
   const GWEN_ARGS args[]= {
-    {
-      GWEN_ARGS_FLAGS_HAS_ARGUMENT, /* flags */
-      GWEN_ArgsType_Int,           /* type */
-      "accountId",                 /* name */
-      0,                            /* minnum */
-      1,                            /* maxnum */
-      "a",                          /* short option */
-      "account",                   /* long option */
-      "Specify the unique id of the account",    /* short description */
-      "Specify the unique id of the account"     /* long description */
-    },
-    {
-      0, /* flags */
-      GWEN_ArgsType_Int,           /* type */
-      "pretend",                 /* name */
-      0,                            /* minnum */
-      1,                            /* maxnum */
-      "p",                          /* short option */
-      "pretend",                   /* long option */
-      "Only print account, don't delete",    /* short description */
-      "Only print account, don't delete"     /* long description */
-    },
-    {
-      GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */
-      GWEN_ArgsType_Int,            /* type */
-      "help",                       /* name */
-      0,                            /* minnum */
-      0,                            /* maxnum */
-      "h",                          /* short option */
-      "help",                       /* long option */
-      "Show this help screen",      /* short description */
-      "Show this help screen"       /* long description */
-    }
+    /* flags type    name         min max s    long       short_descr, long_descr */
+    { A_ARG, A_INT,  "accountId", 0,  1,  "a", "account", "Specify unique id of account", NULL},
+    { 0,     A_INT,  "pretend",   0,  1,  "p", "pretend", "Only print account, don't delete", NULL},
+    { A_END, A_INT,  "help",      0,  0,  "h", "help",    "Show this help screen", NULL}
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
