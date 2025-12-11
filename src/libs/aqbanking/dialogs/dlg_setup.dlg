@@ -47,6 +47,10 @@
       <!-- info page -->
       <widget type="tabPage" text="Info" flags="fillX fillY" >
         <widget type="gridLayout" columns="2" flags="fillX" >
+          <widget type="label" text="AqBanking version" />
+          <widget type="lineEdit" name="aqVersion" columns="20" flags="fillX readOnly" />
+          <widget type="label" text="Gwenhywfar version" />
+          <widget type="lineEdit" name="gwenVersion" columns="20" flags="fillX readOnly" />
           <widget type="label" text="Configuration path" />
           <widget type="lineEdit" name="configPath" columns="20" flags="fillX readOnly" />
         </widget>
