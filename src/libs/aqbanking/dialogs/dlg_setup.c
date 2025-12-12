@@ -513,22 +513,23 @@ void AB_SetupDialog_InfoPage(GWEN_DIALOG *dlg)
   buf=GWEN_Buffer_new(0, 32, 0, 1);
 
   AB_Banking_GetVersion(&vmajor, &vminor, &vpatchLevel, &vbuild);
-  GWEN_Buffer_AppendArgs(buf, "%d.%d.%d.%d\n", vmajor, vminor, vpatchLevel, vbuild);
+  GWEN_Buffer_AppendArgs(buf, "%d.%d.%d.%d", vmajor, vminor, vpatchLevel, vbuild);
   GWEN_Dialog_SetCharProperty(dlg,
 			      "aqVersion",
                               GWEN_DialogProperty_Value,
                               0,
                               GWEN_Buffer_GetStart(buf),
                               0);
-  GWEN_Version(&vmajor, &vminor, &vpatchLevel, &vbuild);
   GWEN_Buffer_Reset(buf);
-  GWEN_Buffer_AppendArgs(buf, "%d.%d.%d.%d\n", vmajor, vminor, vpatchLevel, vbuild);
+  GWEN_Version(&vmajor, &vminor, &vpatchLevel, &vbuild);
+  GWEN_Buffer_AppendArgs(buf, "%d.%d.%d.%d", vmajor, vminor, vpatchLevel, vbuild);
   GWEN_Dialog_SetCharProperty(dlg,
                               "gwenVersion",
                               GWEN_DialogProperty_Value,
                               0,
                               GWEN_Buffer_GetStart(buf),
                               0);
+  GWEN_Buffer_Reset(buf);
 
   rv=AB_Banking_GetUserDataDir(xdlg->banking, buf);
   if (rv>=0) {
