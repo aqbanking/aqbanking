@@ -510,19 +510,19 @@ void AB_SetupDialog_InfoPage(GWEN_DIALOG *dlg)
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
   assert(xdlg);
 
-  buf=GWEN_Buffer_new(0, 1024, 0, 1);
+  buf=GWEN_Buffer_new(0, 32, 0, 1);
 
   AB_Banking_GetVersion(&vmajor, &vminor, &vpatchLevel, &vbuild);
-  sprintf(GWEN_Buffer_GetStart(buf), "%d.%d.%d.%d\n", vmajor, vminor, vpatchLevel, vbuild);
+  GWEN_Buffer_AppendArgs(buf, "%d.%d.%d.%d\n", vmajor, vminor, vpatchLevel, vbuild);
   GWEN_Dialog_SetCharProperty(dlg,
-                              "aqVersion",
+			      "aqVersion",
                               GWEN_DialogProperty_Value,
                               0,
                               GWEN_Buffer_GetStart(buf),
                               0);
-
   GWEN_Version(&vmajor, &vminor, &vpatchLevel, &vbuild);
-  sprintf(GWEN_Buffer_GetStart(buf), "%d.%d.%d.%d\n", vmajor, vminor, vpatchLevel, vbuild);
+  GWEN_Buffer_Reset(buf);
+  GWEN_Buffer_AppendArgs(buf, "%d.%d.%d.%d\n", vmajor, vminor, vpatchLevel, vbuild);
   GWEN_Dialog_SetCharProperty(dlg,
                               "gwenVersion",
                               GWEN_DialogProperty_Value,
