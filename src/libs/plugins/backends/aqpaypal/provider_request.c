@@ -22,6 +22,9 @@
 #include <errno.h>
 
 
+/* #define AQPAYPAL_ENABLE_LOGTOFILE */
+
+
 
 /* ------------------------------------------------------------------------------------------------
  * forward declarations
@@ -30,9 +33,12 @@
 
 static GWEN_BUFFER *_sendAndReceive(GWEN_HTTP_SESSION *sess, const char *requestString, const char *jobName);
 static GWEN_HTTP_SESSION *_setupHttpSession(AB_PROVIDER *pro, AB_USER *u);
-static void _logToFile(const char *fileName, const char *direction, const char *jobName, const char *ptr, uint32_t len);
 static GWEN_DB_NODE *_parseAndCheckResponse(AB_PROVIDER *pro, const char *recvdData);
 static int _parseResponse(AB_PROVIDER *pro, const char *s, GWEN_DB_NODE *db);
+
+#ifdef AQPAYPAL_ENABLE_LOGTOFILE
+  static void _logToFile(const char *fileName, const char *direction, const char *jobName, const char *ptr, uint32_t len);
+#endif
 
 
 
@@ -151,8 +157,10 @@ GWEN_BUFFER *_sendAndReceive(GWEN_HTTP_SESSION *sess, const char *requestString,
   GWEN_BUFFER *tbuf;
   int rv;
 
+#ifdef AQPAYPAL_ENABLE_LOGTOFILE
   if (getenv("AQPAYPAL_LOG_COMM"))
     _logToFile("paypal.log", "Sending", jobName, requestString, strlen(requestString));
+#endif
 
   /* send request */
   rv=GWEN_HttpSession_SendPacket(sess, "POST", (const uint8_t *) requestString, strlen(requestString));
@@ -170,8 +178,10 @@ GWEN_BUFFER *_sendAndReceive(GWEN_HTTP_SESSION *sess, const char *requestString,
     return NULL;
   }
 
+#ifdef AQPAYPAL_ENABLE_LOGTOFILE
   if (getenv("AQPAYPAL_LOG_COMM"))
     _logToFile("paypal.log", "Received", jobName, GWEN_Buffer_GetStart(tbuf), GWEN_Buffer_GetUsedBytes(tbuf));
+#endif
 
   if (GWEN_Buffer_GetUsedBytes(tbuf))
     return tbuf;
@@ -181,6 +191,7 @@ GWEN_BUFFER *_sendAndReceive(GWEN_HTTP_SESSION *sess, const char *requestString,
 
 
 
+#ifdef AQPAYPAL_ENABLE_LOGTOFILE
 void _logToFile(const char *fileName, const char *direction, const char *jobName, const char *ptr, uint32_t len)
 {
   FILE *f;
@@ -208,6 +219,7 @@ void _logToFile(const char *fileName, const char *direction, const char *jobName
     }
   }
 }
+#endif
 
 
 
@@ -220,6 +232,7 @@ GWEN_DB_NODE *_parseAndCheckResponse(AB_PROVIDER *pro, const char *recvdData)
   dbResponse=GWEN_DB_Group_new("response");
   rv=_parseResponse(pro, recvdData, dbResponse);
 
+#ifdef AQPAYPAL_ENABLE_LOGTOFILE
   if (getenv("AQPAYPAL_LOG_COMM")) {
     static int debugCounter=0;
     char namebuf[64];
@@ -227,6 +240,7 @@ GWEN_DB_NODE *_parseAndCheckResponse(AB_PROVIDER *pro, const char *recvdData)
     snprintf(namebuf, sizeof(namebuf)-1, "paypal-%02x.db", debugCounter++);
     GWEN_DB_WriteFile(dbResponse, namebuf, GWEN_DB_FLAGS_DEFAULT);
   }
+#endif
 
   if (rv<0) {
     DBG_INFO(AQPAYPAL_LOGDOMAIN, "here (%d)", rv);
