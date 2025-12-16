@@ -213,6 +213,18 @@
                         </XmlEnter> <!-- RltdPties -->
                       </XmlIfPathExists>
     
+                      <XmlIfPathExists path="RltdAgts">
+                        <XmlEnter path="RltdAgts">
+                          <XmlIfHasCharData path="DbtrAgt/FinInstnId/BICFI">
+                            <DbSetCharValue name="localBic" path="DbtrAgt/FinInstnId/BICFI"/>
+                          </XmlIfHasCharData>
+
+                          <XmlIfHasCharData path="CdtrAgt/FinInstnId/BICFI">
+                            <DbSetCharValue name="remoteBic" path="CdtrAgt/FinInstnId/BICFI"/>
+                          </XmlIfHasCharData>
+                        </XmlEnter> <!-- RltdAgts -->
+                      </XmlIfPathExists>
+
                         <XmlIfHasCharData path="Amt">
                           <XmlIfHasCharData path="Amt@Ccy">
                             <DbCreateAndEnterTempGroup name="amount" >
@@ -259,6 +271,18 @@
                         </XmlEnter> <!-- RltdPties -->
                       </XmlIfPathExists>
               
+                      <XmlIfPathExists path="RltdAgts">
+                        <XmlEnter path="RltdAgts">
+                          <XmlIfHasCharData path="CdtrAgt/FinInstnId/BICFI">
+                            <DbSetCharValue name="localBic" path="CdtrAgt/FinInstnId/BICFI"/>
+                          </XmlIfHasCharData>
+
+                          <XmlIfHasCharData path="DbtrAgt/FinInstnId/BICFI">
+                            <DbSetCharValue name="remoteBic" path="DbtrAgt/FinInstnId/BICFI"/>
+                          </XmlIfHasCharData>
+                        </XmlEnter> <!-- RltdAgts -->
+                      </XmlIfPathExists>
+
                         <XmlIfHasCharData path="Amt">
                           <XmlIfHasCharData path="Amt@Ccy">
                             <DbCreateAndEnterTempGroup name="amount" >
