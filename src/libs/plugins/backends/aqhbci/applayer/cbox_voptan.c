@@ -242,7 +242,8 @@ int _handleStage2(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *tanJob1, AH_JOB 
       return rv;
     }
   }
-  else if (AH_Job_HasResultWithCode(tanJob1, 3076)) { /* SCA not needed */
+  else if (AH_Job_HasResultWithCode(tanJob1, 3076) ||
+           AH_Job_HasResultWithCode(workJob, 3076))  { /* SCA not needed; Consorsbank returns 3076 for HKIDN segment */
     DBG_INFO(AQHBCI_LOGDOMAIN, "No TAN needed");
     // TODO: send HKVPA if needed (shouldn't be necessary)
   }
