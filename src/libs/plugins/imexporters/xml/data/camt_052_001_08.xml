@@ -203,12 +203,12 @@
                               <DbSetCharValue name="remoteIban" path="CdtrAcct/Id/IBAN"/>
                             </XmlIfHasCharData>
                             
-                            <XmlIfHasCharData path="UltmtCdtr/Nm">
-                              <DbSetCharValue name="ultimateCreditor" path="UltmtCdtr/Nm"/>
+                            <XmlIfHasCharData path="UltmtCdtr/Pty/Nm">
+                              <DbSetCharValue name="ultimateCreditor" path="UltmtCdtr/Pty/Nm"/>
                             </XmlIfHasCharData>
         
-                            <XmlIfHasCharData path="UltmtDbtr/Nm">
-                              <DbSetCharValue name="ultimateDebitor" path="UltmtDbtr/Nm"/>
+                            <XmlIfHasCharData path="UltmtDbtr/Pty/Nm">
+                              <DbSetCharValue name="ultimateDebitor" path="UltmtDbtr/Pty/Nm"/>
                             </XmlIfHasCharData>
                         </XmlEnter> <!-- RltdPties -->
                       </XmlIfPathExists>
