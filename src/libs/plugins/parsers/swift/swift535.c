@@ -541,7 +541,7 @@ int AHB_SWIFT535_Import(AHB_SWIFT_TAG_LIST *tl,
     if (GWEN_Gui_ProgressAdvance(progressId, GWEN_GUI_PROGRESS_ONE)==
         GWEN_ERROR_USER_ABORTED) {
       GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                           I18N("Aborted by user"));
+                           I18N("Aborted by user."));
       GWEN_Gui_ProgressEnd(progressId);
       GWEN_DB_Group_free(dbTemplate);
       return GWEN_ERROR_USER_ABORTED;

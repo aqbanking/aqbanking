@@ -337,7 +337,7 @@ int AH_ImExporterSWIFT__ImportFromGroup(AB_IMEXPORTER_CONTEXT *ctx,
     if (GWEN_Gui_ProgressAdvance(progressId, GWEN_GUI_PROGRESS_ONE)==
         GWEN_ERROR_USER_ABORTED) {
       GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error,
-                           I18N("Aborted by user"));
+                           I18N("Aborted by user."));
       GWEN_Gui_ProgressEnd(progressId);
       return GWEN_ERROR_USER_ABORTED;
     }
