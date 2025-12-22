@@ -642,7 +642,7 @@ void EBC_NewKeyFileDialog_Init(GWEN_DIALOG *dlg)
                                    "<p>Click the <i>next</i> button to proceed or <i>abort</i> to abort.</p>"
                                    "</html>"
                                    "We are now ready to create the user and exchange keys with the server.\n"
-                                   "Click the \"next\" button to proceed or \"abort\" to abort."),
+                                   "Click the NEXT button to proceed or ABORT to abort."),
                               0);
 
   /* setup extro page */

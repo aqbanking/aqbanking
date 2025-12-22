@@ -12,6 +12,9 @@
 #endif
 #include "provider.h"
 #include "provider_request_p.h"
+
+#include <aqbanking/i18n_l.h>
+
 #include "gwenhywfar/json.h"
 #include "gwenhywfar/json_read.h"
 #include "meta.h"
@@ -162,10 +165,10 @@ char *AG_Provider_Request_GetToken(AB_USER *user)
   const char *identifier = AB_User_GetUserId(user);
 
   snprintf(text, sizeof(text)-1,
-           "Please enter the password for user %s\n<html>Please enter the password for user <i>%s</i></br></html>", identifier,
+           I18N("Please enter the password for user %s\n<html>Please enter the password for user <i>%s</i></br></html>"), identifier,
            identifier);
 
-  GWEN_Gui_GetPassword(0, pw_token, "Enter Password", text, pw, 4, sizeof(pw)-1, GWEN_Gui_PasswordMethod_Text, NULL, 0);
+  GWEN_Gui_GetPassword(0, pw_token, I18N("Enter Password"), text, pw, 4, sizeof(pw)-1, GWEN_Gui_PasswordMethod_Text, NULL, 0);
 
   char request[1024];
 
