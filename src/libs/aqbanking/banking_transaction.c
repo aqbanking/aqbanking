@@ -696,3 +696,35 @@ void AB_Banking_AddJobInfoToBuffer(const AB_TRANSACTION *t, GWEN_BUFFER *buf)
 
 
 
+GWEN_BUFFER *AB_Banking_ConstructMemoFromTemplate(const AB_TRANSACTION *t, const char *sTemplate)
+{
+  if (t && sTemplate && *sTemplate) {
+    GWEN_DB_NODE *dbT;
+    GWEN_BUFFER *dbuf;
+    int rv;
+
+    dbT=GWEN_DB_Group_new("transaction");
+    rv=AB_Transaction_toDb(t, dbT);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      GWEN_DB_Group_free(dbT);
+      return NULL;
+    }
+
+    dbuf=GWEN_Buffer_new(0, 256, 0, 1);
+    rv=GWEN_DB_ReplaceVars(dbT, sTemplate, dbuf);
+    if (rv<0) {
+      DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+      GWEN_Buffer_free(dbuf);
+      GWEN_DB_Group_free(dbT);
+      return NULL;
+    }
+    GWEN_DB_Group_free(dbT);
+
+    return dbuf;
+  }
+  /* missing data */
+  return NULL;
+}
+
+
