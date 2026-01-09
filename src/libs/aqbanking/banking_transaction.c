@@ -721,6 +721,8 @@ GWEN_BUFFER *AB_Banking_ConstructMemoFromTemplate(const AB_TRANSACTION *t, const
     }
     GWEN_DB_Group_free(dbT);
 
+    /* remove superfluous spaces */
+    GWEN_Text_CondenseBuffer(dbuf);
     return dbuf;
   }
   /* missing data */
