@@ -166,7 +166,7 @@ void AH_AccountJob_WriteNationalAccountInfoToArgs(AH_JOB *j)
 
   s=AB_Account_GetAccountNumber(account);
   if (s && *s)
-    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountId", s);
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountNumber", s);
   s=AB_Account_GetSubAccountId(account);
   if (s && *s)
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountSubId", s);
