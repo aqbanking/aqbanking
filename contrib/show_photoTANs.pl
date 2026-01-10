@@ -17,7 +17,7 @@ Usage:  perl show_photoTANs.pl [OPTION ...] [LOGFILES] [SHOW]
   Only the currently last picture in a logfile is shown.
   The picture must be closed to enable the search for the next picture.
   
-  © H. Ruprecht : usable according to GNU public license (no warrenty)
+  (c) H. Ruprecht : usable according to GNU public license (no warrenty)
 DESC
 
 my $defLogFiles = "~/.aqbanking/backends/aqhbci/data/banks/de/*/logs/*.log";
