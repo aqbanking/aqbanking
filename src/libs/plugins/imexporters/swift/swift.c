@@ -124,7 +124,7 @@ int AH_ImExporterSWIFT_Import(AB_IMEXPORTER *ie,
 
   /* transform DB to transactions */
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Debug,
-                       "Data imported, transforming to transactions");
+                       I18N("Data imported, transforming to transactions"));
   rv=AH_ImExporterSWIFT__ImportFromGroup(ctx, dbData, params);
   if (rv) {
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, "Error importing data");
