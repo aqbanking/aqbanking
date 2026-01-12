@@ -98,6 +98,28 @@ AQBANKING_API int AB_Banking_CheckTransactionForSepaConformity(const AB_TRANSACT
 AQBANKING_API void AB_Banking_FillTransactionFromAccountSpec(AB_TRANSACTION *t, const AB_ACCOUNT_SPEC *as);
 
 
+/**
+ * Construct data for a memo field in your finance application using a template.
+ *
+ * The template may contain text
+ * to always be written into the memo field and also refererences to fields of the AB_TRANSACTION object given.
+ * Typical variables are:
+ * - $(purpose): purpose field
+ * - $(purpose:32): purpose field (use max 32 chars of it)
+ * - $(transactionText): short description of the transaction ("Buchungstext")
+ * - $(remoteName): name of the other party in a transaction
+ * - $(remoteIban): iban of the other party in a transaction
+ * - $(customerReference)
+ * - $(bankReference)
+ * - $(endToEndReference)
+ * - any other field defined in src/libs/aqbanking/types/transaction.xml (NAME in XML elements <member name=NAME")
+ * @param t transaction for which to generate a memo
+ * @param sTemplate template string (e.g. "$(purpose) $(transactionText))
+ * @return GWEN_BUFFER containing the result (get a char pointer with GWEN_Buffer_GetStart(), release with GWEN_Buffer_free())
+ *         or NULL on error
+ */
+AQBANKING_API GWEN_BUFFER *AB_Banking_ConstructMemoFromTemplate(const AB_TRANSACTION *t, const char *sTemplate);
+
 /*@}*/
 
 

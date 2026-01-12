@@ -102,9 +102,13 @@ AH_JOB *AH_Job_GetBalance_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
     j=AH_AccountJob_new("JobGetBalance", pro, u, account);
   else {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "No UPD available for JobGetBalance");
-    return 0;
+    return NULL;
   }
-
+  if (j==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+	      "No GetBalance job available with this account, try toggling preferCamtDownload flag");
+    return NULL;
+  }
   AH_Job_SetSupportedCommand(j, AB_Transaction_CommandGetBalance);
 
   /* overwrite some virtual functions */
