@@ -33,6 +33,7 @@ static int _jobApi_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
 static int _jobApi_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t);
 
 static int _addSupportedCamtFormats(AH_JOB *j, GWEN_DB_NODE *dbArgs);
+static int _readCamtFormatsFromSwiftDescriptors(AH_JOB *j, GWEN_DB_NODE *dbArgs, int camtVersion);
 static int _readBooked(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai, GWEN_DB_NODE *dbBooked);
 static int _readTransactionsFromResponse(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai, GWEN_DB_NODE *dbXA);
 static int _readTransactions(AH_JOB *j,
@@ -197,59 +198,14 @@ int _jobApi_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t)
 
 int _addSupportedCamtFormats(AH_JOB *j, GWEN_DB_NODE *dbArgs)
 {
-  AB_SWIFT_DESCR_LIST *descrList;
   int foundAtLeastOneDescr=0;
 
-  descrList=AH_Job_GetSwiftDescriptorsSupportedByJob(j, NULL, "supportedFormat", "camt", 52);
-  if (descrList) {
-    AB_SWIFT_DESCR *descr;
-
-    descr=AB_SwiftDescr_List_First(descrList);
-    while (descr) {
-      const char *s;
-
-      s=AB_SwiftDescr_GetAlias2(descr);
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Adding supported CAMT format [%s]", s);
-      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "SupportedFormats/format", s);
-      foundAtLeastOneDescr=1;
-      descr=AB_SwiftDescr_List_Next(descr);
-    }
-    AB_SwiftDescr_List_free(descrList);
-  }
-
-  descrList=AH_Job_GetSwiftDescriptorsSupportedByJob(j, NULL, "supportedFormat", "camt", 53);
-  if (descrList) {
-    AB_SWIFT_DESCR *descr;
-
-    descr=AB_SwiftDescr_List_First(descrList);
-    while (descr) {
-      const char *s;
-
-      s=AB_SwiftDescr_GetAlias2(descr);
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Adding supported CAMT format [%s]", s);
-      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "SupportedFormats/format", s);
-      foundAtLeastOneDescr=1;
-      descr=AB_SwiftDescr_List_Next(descr);
-    }
-    AB_SwiftDescr_List_free(descrList);
-  }
-
-  descrList=AH_Job_GetSwiftDescriptorsSupportedByJob(j, NULL, "supportedFormat", "camt", 54);
-  if (descrList) {
-    AB_SWIFT_DESCR *descr;
-
-    descr=AB_SwiftDescr_List_First(descrList);
-    while (descr) {
-      const char *s;
-
-      s=AB_SwiftDescr_GetAlias2(descr);
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Adding supported CAMT format [%s]", s);
-      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "SupportedFormats/format", s);
-      foundAtLeastOneDescr=1;
-      descr=AB_SwiftDescr_List_Next(descr);
-    }
-    AB_SwiftDescr_List_free(descrList);
-  }
+  if (_readCamtFormatsFromSwiftDescriptors(j, dbArgs, 52))
+    foundAtLeastOneDescr=1;
+  if (_readCamtFormatsFromSwiftDescriptors(j, dbArgs, 53))
+    foundAtLeastOneDescr=1;
+  if (_readCamtFormatsFromSwiftDescriptors(j, dbArgs, 54))
+    foundAtLeastOneDescr=1;
 
   if (!foundAtLeastOneDescr) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No supported CAMT profile found, job not supported");
@@ -257,6 +213,33 @@ int _addSupportedCamtFormats(AH_JOB *j, GWEN_DB_NODE *dbArgs)
   }
 
   return 0;
+}
+
+
+
+int _readCamtFormatsFromSwiftDescriptors(AH_JOB *j, GWEN_DB_NODE *dbArgs, int camtVersion)
+{
+  AB_SWIFT_DESCR_LIST *descrList;
+  int foundAtLeastOneDescr=0;
+
+  descrList=AH_Job_GetSwiftDescriptorsSupportedByJob(j, NULL, "supportedFormat", "camt", camtVersion);
+  if (descrList) {
+    AB_SWIFT_DESCR *descr;
+
+    descr=AB_SwiftDescr_List_First(descrList);
+    while (descr) {
+      const char *s;
+
+      s=AB_SwiftDescr_GetAlias2(descr);
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Adding supported CAMT format [%s]", s);
+      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "SupportedFormats/format", s);
+      foundAtLeastOneDescr=1;
+      descr=AB_SwiftDescr_List_Next(descr);
+    }
+    AB_SwiftDescr_List_free(descrList);
+  }
+
+  return foundAtLeastOneDescr;
 }
 
 
