@@ -1041,7 +1041,7 @@
           <default>0</default>
           <preset>0</preset>
           <access>public</access>
-          <flags>with_hash with_getbymember</flags>
+          <flags>own with_hash with_getbymember</flags>
           <descr>
             This is an id assigned by the application only.
             This id is never changed by AqBanking.
