@@ -1042,6 +1042,7 @@
           <preset>0</preset>
           <access>public</access>
           <flags>own with_hash with_getbymember</flags>
+          <setflags>const dup</setflags>
           <descr>
             This is an id assigned by the application only.
             This id is never changed by AqBanking.
