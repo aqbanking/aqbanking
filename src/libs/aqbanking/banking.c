@@ -127,7 +127,7 @@ AB_BANKING *AB_Banking_new(const char *appName,
 
   GWEN_Buffer_free(nbuf);
 
-  {
+  if (!dname) {
     int rv;
 
     rv=AB_Banking_CopyOldSettingsFolderIfNeeded(ab);
