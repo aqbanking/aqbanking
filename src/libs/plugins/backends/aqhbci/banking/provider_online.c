@@ -16,6 +16,8 @@
 
 #include "aqhbci/banking/provider_l.h"
 #include "aqhbci/applayer/adminjobs_l.h"
+#include "aqhbci/applayer/outbox_l.h"
+#include "aqhbci/joblayer/job_l.h"
 #include "aqhbci/msglayer/dialog_l.h"
 
 #include "aqhbci/admjobs/jobgetkeys_l.h"
