@@ -35,7 +35,7 @@ extern "C" {
 /** Prefer single debit notes over multi debit notes for this account */
 #define AH_BANK_FLAGS_PREFER_SINGLE_DEBITNOTE 0x00000002
 
-/* for this account there are KTV2 information availabel (e.g. account sub id) */
+/* for this account there are KTV2 information available (e.g. account sub id) */
 #define AH_BANK_FLAGS_KTV2                    0x00000004
 
 /* this account can be used with SEPA jobs */

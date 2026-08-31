@@ -179,7 +179,7 @@ int AH_Job_Commit(AH_JOB *j, int doLock);
 
 /**
  * Check whether the results for this job contain warning 3920. In this
- * case the result must be commited.
+ * case the result must be committed.
  * @return 0 if there is no such result, !=0 otherwise
  */
 int AH_Job_HasItanResult(const AH_JOB *j);

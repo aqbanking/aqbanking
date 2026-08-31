@@ -752,7 +752,7 @@ int AH_ImExporterQIF_Import(AB_IMEXPORTER *ie,
       p++;
       if (strlen(p)>=(int)sizeof(lastSectionName)) {
         DBG_ERROR(AQBANKING_LOGDOMAIN,
-                  "Buffer too small. Internal error, should not occurr.");
+                  "Buffer too small. Internal error, should not occur.");
         abort();
       }
       strcpy(lastSectionName, p);

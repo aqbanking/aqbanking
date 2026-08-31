@@ -16,7 +16,7 @@ fixed.
 ===========================================================================
 
 This is the first beta release of AqBanking4. Now multiple applications can
-use AqBanking concurrently without interference. This was archieved by 
+use AqBanking concurrently without interference. This was achieved by 
 implementing a lock-and-reload mechanism which makes sure that the latest
 configuration is used in any case. AqBanking4 facilitates import of previous
 configurations by the application. The SWIFT parser has yet again been 
@@ -95,7 +95,7 @@ of a key file) the user is now always asked (no pin caching in this case).
 ===========================================================================
 
 This release improves support for FinTS3 (now transfers/debit notes work in
-Pin/Tan mode of FinTS3). The TAN method can now be choosen by the user (no 
+Pin/Tan mode of FinTS3). The TAN method can now be chosen by the user (no 
 GUI yet). Some bugs have been fixed and the CSV exporter now exports values
 in floating point format instead of rationals (however, rationals are still
 supported here).
@@ -346,7 +346,7 @@ This version requires Gwenhywfar3>=2.9.0beta and Libchipcard3>=3.1.0beta.
 ===========================================================================
 
 AqGeldKarte has been fixed and adapted to Libchipcard3 which is now required
-instead of Libchipcard2. The QBanking frontend is now less verbous, QT should
+instead of Libchipcard2. The QBanking frontend is now less verbose, QT should
 now be found on Darwin, too. Some other minor bugs have been fixed as well
 and the bank data files for Germany have been updated.
 
@@ -487,7 +487,7 @@ Nearly complete German translation is now provided.
                Released AqBanking - 1.9.2beta (2006-01-19)
 ===========================================================================
 
-This relese fixes a bug which made Gnucash unable to find the QT3 wizard.
+This release fixes a bug which made Gnucash unable to find the QT3 wizard.
 It also reintroduces support for OFX DirectConnect (yet untested, though).
 
 

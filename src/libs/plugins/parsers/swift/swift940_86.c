@@ -97,7 +97,7 @@ int AHB_SWIFT940_Parse_86(const AHB_SWIFT_TAG *tg, uint32_t flags, GWEN_DB_NODE 
     AHB_SWIFT_SubTag_List_free(stlist);
   } /* if isStructured */
   else {
-    /* unstructured :86:, simply store as mutliple purpose lines */
+    /* unstructured :86:, simply store as multiple purpose lines */
     _parseTransactionData(p, dbData, GWEN_DB_FLAGS_DEFAULT);
     _transformPurposeIntoOneString(dbData, flags);
   }
@@ -445,7 +445,7 @@ void _parseTransactionData(const char *p, GWEN_DB_NODE *dbData, uint32_t flags)
   char *pcopy=strdup(p);
   char *p1;
 
-  /* unstructured :86:, simply store as mutliple purpose lines */
+  /* unstructured :86:, simply store as multiple purpose lines */
   p1=pcopy;
   while (p1 && *p1) {
     char *p2;

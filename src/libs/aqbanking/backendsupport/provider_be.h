@@ -287,7 +287,7 @@ void AB_Provider_SetGetUserTypeDialogFn(AB_PROVIDER *pro, AB_PROVIDER_GET_USERTY
 /**
  * Read account given by its unique id.
  *
- * When reading the object it will be locked and/or unlocked as requestd.
+ * When reading the object it will be locked and/or unlocked as requested.
  * If both the parameters doLock and doUnlock are !=0 you can later call @ref AB_Provider_EndExclUseAccount on the
  * account object returned (if any).
  *
@@ -304,7 +304,7 @@ int AB_Provider_ReadAccount(AB_PROVIDER *pro, uint32_t uid, int doLock, int doUn
 /**
  * Get account given by its unique id.
  *
- * When reading the object it will be locked and/or unlocked as requestd.
+ * When reading the object it will be locked and/or unlocked as requested.
  * If both the parameters doLock and doUnlock are !=0 you can later call @ref AB_Provider_EndExclUseAccount on the
  * object returned (if any).
  *
@@ -434,7 +434,7 @@ AB_ACCOUNT_SPEC *AB_Provider_FindMatchingAccountSpec(AB_PROVIDER *pro, const AB_
 
 /**
  * This functions reads a user from the configuration database.
- * When reading the user object it will be locked and/or unlocked as requestd.
+ * When reading the user object it will be locked and/or unlocked as requested.
  * If both the parameters doLock and doUnlock are !=0 you can later call @ref AB_Provider_EndExclUseUser on the
  * user object returned (if any).
  *

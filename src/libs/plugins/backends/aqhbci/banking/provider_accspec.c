@@ -181,7 +181,7 @@ int _updateAccountSpecWithRefAccounts(AB_PROVIDER *pro, AB_ACCOUNT *a,
   rv = AB_Banking_GetAccountSpecByUniqueId(AB_Provider_GetBanking(pro),
                                            AB_Account_GetUniqueId(a), &as_old);
   if (rv >= 0) {
-    /* we have an account spec alread, copy the reference account list to the new one */
+    /* we have an account spec already, copy the reference account list to the new one */
     ral = AB_AccountSpec_GetRefAccountList(as_old);
     AB_ReferenceAccount_List_ForEach(ral, _copyRefAccountCb, (void *) as);
     AB_AccountSpec_free(as_old);

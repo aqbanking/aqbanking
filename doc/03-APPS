@@ -101,7 +101,7 @@ following steps (Example: Getting the balance of an account):
     You should always call this function to avoid data inconsistencies.
 
 12. Call AB_Banking_Fini
-    This releases all ressources assigned to AqBanking.
+    This releases all resources assigned to AqBanking.
     
     Please note that before calling this function you MUST free all AqBanking
     objects you own.

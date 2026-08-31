@@ -16,17 +16,17 @@
 
 
 /**
- * @return 1 if sType referes to a char type, 0 otherwise
+ * @return 1 if sType refers to a char type, 0 otherwise
  */
 int AQFINTS_Parser_IsCharType(const char *sType);
 
 /**
- * @return 1 if sType referes to an int type, 0 otherwise
+ * @return 1 if sType refers to an int type, 0 otherwise
  */
 int AQFINTS_Parser_IsIntType(const char *sType);
 
 /**
- * @return 1 if sType referes to a binary type, 0 otherwise
+ * @return 1 if sType refers to a binary type, 0 otherwise
  */
 int AQFINTS_Parser_IsBinType(const char *sType);
 

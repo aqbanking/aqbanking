@@ -425,7 +425,7 @@ int addUser(AB_PROVIDER *pro,
 
     rv=AB_Provider_AddUser(pro, user);
     if (rv<0) {
-      DBG_ERROR(AQEBICS_LOGDOMAIN, "Coud not add new user (%d)", rv);
+      DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not add new user (%d)", rv);
       AB_User_free(user);
       return 4;
     }

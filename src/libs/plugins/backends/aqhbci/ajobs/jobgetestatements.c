@@ -79,7 +79,7 @@ static int AH_Job_GetEstatements_HandleCommand(AH_JOB *j, const AB_TRANSACTION *
   /*
    * FinTS restriction (for both HKEKA and HKEKP):
    * Filtering by "Kontoauszugsnummer" and "Kontoauszugsjahr" is optionally allowed
-   * if "Kontoauszugsnummer erlaubt" (BPD) == "J". Else not allowd.
+   * if "Kontoauszugsnummer erlaubt" (BPD) == "J". Else not allowed.
    */
   s=GWEN_DB_GetCharValue(dbParams, "eStatementNumAllowed", 0, 0);
   if (s && !strcmp(s, "J")) {
@@ -114,7 +114,7 @@ static int AH_Job_GetEstatements_HandleCommand(AH_JOB *j, const AB_TRANSACTION *
   }
 
   /*
-   * If the user reqeusted to acknowledge this job,
+   * If the user requested to acknowledge this job,
    * and the bank also wants to acknowledge the job, flag it for acknowledgement.
    */
   if (AB_Transaction_GetAcknowledge(t) == AB_Transaction_AckJobsWithAckCode) {

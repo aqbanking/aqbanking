@@ -102,7 +102,7 @@ AQBANKING_API void AB_Banking_FillTransactionFromAccountSpec(AB_TRANSACTION *t, 
  * Construct data for a memo field in your finance application using a template.
  *
  * The template may contain text
- * to always be written into the memo field and also refererences to fields of the AB_TRANSACTION object given.
+ * to always be written into the memo field and also references to fields of the AB_TRANSACTION object given.
  * Typical variables are:
  * - $(purpose): purpose field
  * - $(purpose:32): purpose field (use max 32 chars of it)

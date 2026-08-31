@@ -235,7 +235,7 @@ int AB_ImExporterERI2__HandleRec1(GWEN_DB_NODE *dbT,
   AB_Transaction_SetLocalAccountNumber(t, p);
 
   /* strip leading P and zeroes from remoteaccountnumber
-     this CANNOT be done with lfiller="48" becaus of the P added
+     this CANNOT be done with lfiller="48" because of the P added
      to Postgiro accounts */
   p = GWEN_DB_GetCharValue(dbT, "remoteAccountNumber", 0, 0);
   p = AB_ImExporterERI2__StripPZero(p);

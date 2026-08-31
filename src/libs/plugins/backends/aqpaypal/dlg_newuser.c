@@ -500,7 +500,7 @@ void APY_NewUserDialog_Init(GWEN_DIALOG *dlg)
                                    "Click the \"next\" button to proceed or \"abort\" to abort.\n"
                                    "If you proceed you will be asked to enter a new password. This is the password\n"
                                    "for the credentials file described in previous steps.\n"
-                                   "Please be carefull to enter a sufficiently secure password."
+                                   "Please be careful to enter a sufficiently secure password."
                                   ),
                               0);
 
