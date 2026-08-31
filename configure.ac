@@ -745,7 +745,7 @@ else
   i18n_libs="-lintl"
 fi
 
-if test "$HAVE_I18N" != "NO"; then
+if test "$HAVE_I18N" != "no"; then
   AC_DEFINE_UNQUOTED(HAVE_I18N, 1, [whether I18N is available])
 fi
 
