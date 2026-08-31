@@ -554,6 +554,18 @@ esac
 AM_CONDITIONAL(IS_WINDOWS, [test "$OS_TYPE" = "windows"])
 
 
+AC_ARG_ENABLE(gui-callback-for-optical-tan,
+  [  --enable-gui-callback-for-optical-tan         make GUI run script to show optical TAN (default=yes)],
+  gui_callback_for_optical_tan="$enableval",
+  gui_callback_for_optical_tan="yes")
+AC_MSG_RESULT($gui_callback_for_optical_tan)
+
+if test "$gui_callback_for_optical_tan" != "no"; then
+  AC_DEFINE([HAVE_GUI_CALLBACK_FOR_OPTICAL_TAN], [1],
+            [whether GUI should run script to show optical tan image])
+fi
+
+
 
 ###-------------------------------------------------------------------------
 #
