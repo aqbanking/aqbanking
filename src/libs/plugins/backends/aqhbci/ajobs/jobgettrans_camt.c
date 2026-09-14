@@ -87,7 +87,12 @@ AH_JOB *AH_Job_GetTransactionsCAMT_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT 
   }
 
   /* set some known arguments */
-  AH_AccountJob_WriteNationalAccountInfoToArgs(j);
+  if ((AH_User_GetFlags(u) & AH_USER_FLAGS_SEPA_ALLOWNATIONALACCSPEC) ||
+      (AH_Account_GetFlags(account) & AH_BANK_FLAGS_GETTRANS_FORCE_NTLACCOUNTINFO)) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Adding national account specs for SEPA jobs");
+    AH_AccountJob_WriteNationalAccountInfoToArgs(j);
+  }
+
   GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "allAccounts", "N");
   return j;
 }
