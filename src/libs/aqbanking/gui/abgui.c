@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Thu Jun 18 2009
- copyright   : (C) 2009 by Martin Preuss
+ copyright   : (C) 2026 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,11 +26,35 @@
 #  include <io.h>
 #endif
 
-GWEN_INHERIT(GWEN_GUI, AB_GUI)
 
-#ifdef ENABLE_GUI_CALLBACK_FOR_OPTICAL_TAN
-static int GWENHYWFAR_CB getPasswordCli(GWEN_GUI                *gui,
-                                        uint32_t                 flags,
+
+/* ------------------------------------------------------------------------------------------------
+ * defines
+ * ------------------------------------------------------------------------------------------------
+ */
+
+# ifndef MAX_PATH
+#   define MAX_PATH 256
+# endif
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * forward declarations
+ * ------------------------------------------------------------------------------------------------
+ */
+
+GWEN_INHERIT(GWEN_GUI, AB_GUI)
+static void GWENHYWFAR_CB _freeData(void *bp, void *p);
+static int GWENHYWFAR_CB _checkCert(GWEN_GUI *gui, const GWEN_SSLCERTDESCR *cd, GWEN_SYNCIO *sio, uint32_t guiid);
+static int GWENHYWFAR_CB _writeDialogPrefs(GWEN_GUI *gui, const char *groupName, GWEN_DB_NODE *db);
+static int GWENHYWFAR_CB _readDialogPrefs(GWEN_GUI *gui,
+                                                const char *groupName,
+                                                const char *altName,
+                                                GWEN_DB_NODE **pDb);
+static int _hashPair(const char *token, const char *pin, GWEN_BUFFER *buf);
+static int GWENHYWFAR_CB _getPasswordCli(GWEN_GUI                *gui,
+					uint32_t                 flags,
                                         const char              *token,
                                         const char              *title,
                                         const char              *text,
@@ -39,131 +63,15 @@ static int GWENHYWFAR_CB getPasswordCli(GWEN_GUI                *gui,
                                         int                      maxLen,
                                         GWEN_GUI_PASSWORD_METHOD methodId,
                                         GWEN_DB_NODE            *methodParams,
-                                        uint32_t                 guiid)
-{
+					uint32_t                 guiid);
 
-# ifndef MAX_PATH
-#   define MAX_PATH 256
-# endif
 
-  const char *challenge;
-  char        imageFile [MAX_PATH];
-  int         ret;
-  AB_GUI     *xgui;
 
-  assert(gui);
-  xgui=GWEN_INHERIT_GETDATA(GWEN_GUI, AB_GUI, gui);
-  assert(xgui);
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
-  challenge = NULL;
-
-  if ((NULL != xgui->opticalTanTool)
-      && (0 != (flags & GWEN_GUI_INPUT_FLAGS_TAN))
-      && (GWEN_Gui_PasswordMethod_OpticalHHD == methodId)) {
-
-    int         tanMethod;
-    const char *mimeType;
-    const char *imageData;
-    uint32_t    imageSize;
-
-    tanMethod = GWEN_DB_GetIntValue(methodParams, "tanMethodId", 0,
-                                    AB_BANKING_TANMETHOD_TEXT);
-    switch (tanMethod) {
-    case AB_BANKING_TANMETHOD_CHIPTAN_OPTIC:
-      mimeType = "text/x-flickercode";
-      challenge = GWEN_DB_GetCharValue(methodParams, "challenge", 0, NULL);
-
-      if ((NULL == challenge) || ('\0' == challenge [0])) {
-        DBG_WARN(AQBANKING_LOGDOMAIN, "no flicker code found");
-        challenge = NULL;
-      }
-      break;
-
-    case AB_BANKING_TANMETHOD_CHIPTAN_QR:
-    case AB_BANKING_TANMETHOD_PHOTOTAN:
-      mimeType  = GWEN_DB_GetCharValue(methodParams, "mimeType",  0, NULL);
-      imageData = GWEN_DB_GetBinValue(methodParams, "imageData", 0, NULL,
-                                      0, &imageSize);
-
-      if ((NULL == mimeType) || (NULL == imageData) || (0 == imageSize)) {
-        DBG_WARN(AQBANKING_LOGDOMAIN, "no optical challenge found");
-      }
-      else {
-
-        int   fd;
-        FILE *fp;
-
-        GWEN_Directory_GetTmpDirectory(imageFile, sizeof(imageFile) - 14);
-
-#ifdef OS_WIN32
-
-        strncat(imageFile, "\\image.XXXXXX", 14);
-        mktemp(imageFile);
-        fp = fopen(imageFile, "wb");
-#else
-        strncat(imageFile, "/image.XXXXXX", 14);
-        fd = mkstemp(imageFile);
-        if (0 > fd) {
-          fp = NULL;
-        }
-        else {
-          fp = fdopen(fd, "wb");
-        }
-#endif
-        if (NULL == fp) {
-          DBG_ERROR(AQBANKING_LOGDOMAIN, "can't open %s", imageFile);
-        }
-        else {
-          if (imageSize != fwrite(imageData, 1, imageSize, fp)) {
-            DBG_ERROR(AQBANKING_LOGDOMAIN, "can't write %s", imageFile);
-          }
-          else {
-            challenge = imageFile;
-          }
-          fclose(fp);
-        }
-      }
-      break;
-
-    default:
-      mimeType  = NULL;
-      challenge = NULL;
-      break;
-    }
-
-    if ((NULL != mimeType) && (NULL != challenge)) {
-
-      size_t size;
-      char  *cmd;
-
-      size = strlen(xgui->opticalTanTool) + strlen(mimeType) + strlen(challenge) + 7;
-      cmd  = malloc(size);
-      if (NULL == cmd) {
-        DBG_ERROR(AQBANKING_LOGDOMAIN, "malloc (%u) failed",
-                  (unsigned int) size);
-      }
-      else {
-        snprintf(cmd, size, "%s \"%s\" \"%s\"",
-                 xgui->opticalTanTool, mimeType, challenge);
-
-        ret = system(cmd);
-        if (0 != ret) {
-          DBG_ERROR(AQBANKING_LOGDOMAIN, "system (%s) returned %d",
-                    cmd, ret);
-        }
-        free(cmd);
-      }
-    }
-  }
-
-  ret = xgui->getPasswordFn(gui, flags, token, title, text, buffer,
-                            minLen, maxLen, methodId, methodParams, guiid);
-  if (challenge == imageFile) {
-    remove(imageFile);
-  }
-  return (ret);
-}
-#endif
 
 
 GWEN_GUI *AB_Gui_new(AB_BANKING *ab)
@@ -173,12 +81,12 @@ GWEN_GUI *AB_Gui_new(AB_BANKING *ab)
 
   gui=GWEN_Gui_new();
   GWEN_NEW_OBJECT(AB_GUI, xgui);
-  GWEN_INHERIT_SETDATA(GWEN_GUI, AB_GUI, gui, xgui, AB_Gui_FreeData);
+  GWEN_INHERIT_SETDATA(GWEN_GUI, AB_GUI, gui, xgui, _freeData);
 
   xgui->banking=ab;
-  xgui->checkCertFn=GWEN_Gui_SetCheckCertFn(gui, AB_Gui_CheckCert);
-  xgui->readDialogPrefsFn=GWEN_Gui_SetReadDialogPrefsFn(gui, AB_Gui_ReadDialogPrefs);
-  xgui->writeDialogPrefsFn=GWEN_Gui_SetWriteDialogPrefsFn(gui, AB_Gui_WriteDialogPrefs);
+  xgui->checkCertFn=GWEN_Gui_SetCheckCertFn(gui, _checkCert);
+  xgui->readDialogPrefsFn=GWEN_Gui_SetReadDialogPrefsFn(gui, _readDialogPrefs);
+  xgui->writeDialogPrefsFn=GWEN_Gui_SetWriteDialogPrefsFn(gui, _writeDialogPrefs);
   xgui->getPasswordFn = NULL;
   xgui->opticalTanTool = NULL;
 
@@ -193,12 +101,12 @@ void AB_Gui_Extend(GWEN_GUI *gui, AB_BANKING *ab)
 
   assert(gui);
   GWEN_NEW_OBJECT(AB_GUI, xgui);
-  GWEN_INHERIT_SETDATA(GWEN_GUI, AB_GUI, gui, xgui, AB_Gui_FreeData);
+  GWEN_INHERIT_SETDATA(GWEN_GUI, AB_GUI, gui, xgui, _freeData);
 
   xgui->banking=ab;
-  xgui->checkCertFn=GWEN_Gui_SetCheckCertFn(gui, AB_Gui_CheckCert);
-  xgui->readDialogPrefsFn=GWEN_Gui_SetReadDialogPrefsFn(gui, AB_Gui_ReadDialogPrefs);
-  xgui->writeDialogPrefsFn=GWEN_Gui_SetWriteDialogPrefsFn(gui, AB_Gui_WriteDialogPrefs);
+  xgui->checkCertFn=GWEN_Gui_SetCheckCertFn(gui, _checkCert);
+  xgui->readDialogPrefsFn=GWEN_Gui_SetReadDialogPrefsFn(gui, _readDialogPrefs);
+  xgui->writeDialogPrefsFn=GWEN_Gui_SetWriteDialogPrefsFn(gui, _writeDialogPrefs);
   xgui->getPasswordFn = NULL;
   xgui->opticalTanTool = NULL;
 }
@@ -229,6 +137,7 @@ void AB_Gui_Unextend(GWEN_GUI *gui)
 }
 
 
+
 int AB_Gui_SetCliCallbackForOpticalTan(GWEN_GUI *gui, const char *tool)
 {
 #ifdef ENABLE_GUI_CALLBACK_FOR_OPTICAL_TAN
@@ -240,19 +149,18 @@ int AB_Gui_SetCliCallbackForOpticalTan(GWEN_GUI *gui, const char *tool)
   xgui=GWEN_INHERIT_GETDATA(GWEN_GUI, AB_GUI, gui);
   assert(xgui);
 
-  xgui->opticalTanTool = tool;
-  originalGetPassword = GWEN_Gui_SetGetPasswordFn(gui, getPasswordCli);
+  xgui->opticalTanTool=tool;
+  originalGetPassword=GWEN_Gui_SetGetPasswordFn(gui, _getPasswordCli);
 
-  if (NULL == xgui->getPasswordFn) {
-    xgui->getPasswordFn = originalGetPassword;
-  }
+  if (NULL==xgui->getPasswordFn)
+    xgui->getPasswordFn=originalGetPassword;
 #endif
   return 0;
 }
 
 
 
-void GWENHYWFAR_CB AB_Gui_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB _freeData(void *bp, void *p)
 {
   AB_GUI *xgui;
 
@@ -263,9 +171,7 @@ void GWENHYWFAR_CB AB_Gui_FreeData(void *bp, void *p)
 
 
 
-int AB_Gui__HashPair(const char *token,
-                     const char *pin,
-                     GWEN_BUFFER *buf)
+int _hashPair(const char *token, const char *pin, GWEN_BUFFER *buf)
 {
   GWEN_MDIGEST *md;
   int rv;
@@ -285,20 +191,14 @@ int AB_Gui__HashPair(const char *token,
     return rv;
   }
 
-  GWEN_Text_ToHexBuffer((const char *)GWEN_MDigest_GetDigestPtr(md),
-                        GWEN_MDigest_GetDigestSize(md),
-                        buf,
-                        0, 0, 0);
+  GWEN_Text_ToHexBuffer((const char *)GWEN_MDigest_GetDigestPtr(md), GWEN_MDigest_GetDigestSize(md), buf, 0, 0, 0);
   GWEN_MDigest_free(md);
   return 0;
 }
 
 
 
-
-int GWENHYWFAR_CB AB_Gui_CheckCert(GWEN_GUI *gui,
-                                   const GWEN_SSLCERTDESCR *cd,
-                                   GWEN_SYNCIO *sio, uint32_t guiid)
+int GWENHYWFAR_CB _checkCert(GWEN_GUI *gui, const GWEN_SSLCERTDESCR *cd, GWEN_SYNCIO *sio, uint32_t guiid)
 {
   AB_GUI *xgui;
   const char *hash;
@@ -306,8 +206,6 @@ int GWENHYWFAR_CB AB_Gui_CheckCert(GWEN_GUI *gui,
   GWEN_BUFFER *hbuf;
   int rv;
   int result=GWEN_ERROR_USER_ABORTED;
-
-  DBG_INFO(AQBANKING_LOGDOMAIN, "Called.");
 
   assert(gui);
   xgui=GWEN_INHERIT_GETDATA(GWEN_GUI, AB_GUI, gui);
@@ -317,7 +215,7 @@ int GWENHYWFAR_CB AB_Gui_CheckCert(GWEN_GUI *gui,
   status=GWEN_SslCertDescr_GetStatusText(cd);
 
   hbuf=GWEN_Buffer_new(0, 64, 0, 1);
-  AB_Gui__HashPair(hash, status, hbuf);
+  _hashPair(hash, status, hbuf);
 
   /* lock certificate data */
   rv=AB_Banking_LockSharedConfig(xgui->banking, "certs");
@@ -340,9 +238,7 @@ int GWENHYWFAR_CB AB_Gui_CheckCert(GWEN_GUI *gui,
     /* lookup cert or ask */
     i=GWEN_DB_GetIntValue(dbCerts, GWEN_Buffer_GetStart(hbuf), 0, 1);
     if (i==0) {
-      DBG_NOTICE(AQBANKING_LOGDOMAIN,
-                 "Automatically accepting certificate [%s]",
-                 hash);
+      DBG_NOTICE(AQBANKING_LOGDOMAIN, "Automatically accepting certificate [%s]", hash);
       result=0;
     }
     else {
@@ -357,29 +253,23 @@ int GWENHYWFAR_CB AB_Gui_CheckCert(GWEN_GUI *gui,
         fl=GWEN_SslCertDescr_GetStatusFlags(cd);
         if (fl==GWEN_SSL_CERT_FLAGS_OK) {
           if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_ACCEPTVALIDCERTS) {
-            DBG_NOTICE(AQBANKING_LOGDOMAIN,
-                       "Automatically accepting valid new certificate [%s]",
-                       hash);
+            DBG_NOTICE(AQBANKING_LOGDOMAIN, "Automatically accepting valid new certificate [%s]", hash);
             GWEN_Buffer_free(hbuf);
             AB_Banking_UnlockSharedConfig(xgui->banking, "certs");
             GWEN_DB_Group_free(dbCerts);
             return 0;
           }
           else {
-            DBG_NOTICE(AQBANKING_LOGDOMAIN,
-                       "Automatically rejecting certificate [%s] (noninteractive)",
-                       hash);
-            GWEN_Buffer_free(hbuf);
-            AB_Banking_UnlockSharedConfig(xgui->banking, "certs");
+	    DBG_NOTICE(AQBANKING_LOGDOMAIN, "Automatically rejecting certificate [%s] (noninteractive)", hash);
+	    GWEN_Buffer_free(hbuf);
+	    AB_Banking_UnlockSharedConfig(xgui->banking, "certs");
             GWEN_DB_Group_free(dbCerts);
             return GWEN_ERROR_USER_ABORTED;
           }
         } /* if cert is valid */
         else {
           if (GWEN_Gui_GetFlags(gui) & GWEN_GUI_FLAGS_REJECTINVALIDCERTS) {
-            DBG_NOTICE(AQBANKING_LOGDOMAIN,
-                       "Automatically rejecting invalid certificate [%s] (noninteractive)",
-                       hash);
+            DBG_NOTICE(AQBANKING_LOGDOMAIN, "Automatically rejecting invalid certificate [%s] (noninteractive)", hash);
             GWEN_Buffer_free(hbuf);
             AB_Banking_UnlockSharedConfig(xgui->banking, "certs");
             GWEN_DB_Group_free(dbCerts);
@@ -391,8 +281,7 @@ int GWENHYWFAR_CB AB_Gui_CheckCert(GWEN_GUI *gui,
       if (xgui->checkCertFn) {
         result=xgui->checkCertFn(gui, cd, sio, guiid);
         if (result==0) {
-          GWEN_DB_SetIntValue(dbCerts, GWEN_DB_FLAGS_OVERWRITE_VARS,
-                              GWEN_Buffer_GetStart(hbuf), result);
+          GWEN_DB_SetIntValue(dbCerts, GWEN_DB_FLAGS_OVERWRITE_VARS, GWEN_Buffer_GetStart(hbuf), result);
         }
       }
     }
@@ -422,10 +311,7 @@ int GWENHYWFAR_CB AB_Gui_CheckCert(GWEN_GUI *gui,
 
 
 
-int GWENHYWFAR_CB AB_Gui_ReadDialogPrefs(GWEN_GUI *gui,
-                                         const char *groupName,
-                                         const char *altName,
-                                         GWEN_DB_NODE **pDb)
+int GWENHYWFAR_CB _readDialogPrefs(GWEN_GUI *gui, const char *groupName, const char *altName, GWEN_DB_NODE **pDb)
 {
   AB_GUI *xgui;
 
@@ -449,9 +335,7 @@ int GWENHYWFAR_CB AB_Gui_ReadDialogPrefs(GWEN_GUI *gui,
     }
     GWEN_Buffer_AppendString(nbuf, groupName);
 
-    rv=AB_Banking_LoadSharedConfig(xgui->banking,
-                                   GWEN_Buffer_GetStart(nbuf),
-                                   &db);
+    rv=AB_Banking_LoadSharedConfig(xgui->banking, GWEN_Buffer_GetStart(nbuf), &db);
     if (rv<0) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(nbuf);
@@ -469,9 +353,7 @@ int GWENHYWFAR_CB AB_Gui_ReadDialogPrefs(GWEN_GUI *gui,
 
 
 
-int GWENHYWFAR_CB AB_Gui_WriteDialogPrefs(GWEN_GUI *gui,
-                                          const char *groupName,
-                                          GWEN_DB_NODE *db)
+int GWENHYWFAR_CB _writeDialogPrefs(GWEN_GUI *gui, const char *groupName, GWEN_DB_NODE *db)
 {
   AB_GUI *xgui;
 
@@ -495,20 +377,16 @@ int GWENHYWFAR_CB AB_Gui_WriteDialogPrefs(GWEN_GUI *gui,
     GWEN_Buffer_AppendString(nbuf, groupName);
 
     /* lock configuration */
-    rv=AB_Banking_LockSharedConfig(xgui->banking,
-                                   GWEN_Buffer_GetStart(nbuf));
+    rv=AB_Banking_LockSharedConfig(xgui->banking, GWEN_Buffer_GetStart(nbuf));
     if (rv==0) {
       /* save configuration */
-      rv=AB_Banking_SaveSharedConfig(xgui->banking,
-                                     GWEN_Buffer_GetStart(nbuf),
-                                     db);
+      rv=AB_Banking_SaveSharedConfig(xgui->banking, GWEN_Buffer_GetStart(nbuf), db);
       if (rv<0) {
-        DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+	DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       }
 
       /* unlock configuration */
-      rv=AB_Banking_UnlockSharedConfig(xgui->banking,
-                                       GWEN_Buffer_GetStart(nbuf));
+      rv=AB_Banking_UnlockSharedConfig(xgui->banking, GWEN_Buffer_GetStart(nbuf));
       if (rv<0) {
         DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
       }
@@ -517,6 +395,124 @@ int GWENHYWFAR_CB AB_Gui_WriteDialogPrefs(GWEN_GUI *gui,
   }
 
   return 0;
+}
+
+
+
+int GWENHYWFAR_CB _getPasswordCli(GWEN_GUI *gui,
+				  uint32_t flags,
+				  const char *token,
+				  const char *title,
+				  const char *text,
+				  char *buffer,
+				  int minLen,
+				  int maxLen,
+				  GWEN_GUI_PASSWORD_METHOD methodId,
+				  GWEN_DB_NODE *methodParams,
+				  uint32_t guiid)
+{
+#ifdef ENABLE_GUI_CALLBACK_FOR_OPTICAL_TAN
+  const char *challenge;
+  char imageFile [MAX_PATH];
+  int ret;
+  AB_GUI *xgui;
+
+  assert(gui);
+  xgui=GWEN_INHERIT_GETDATA(GWEN_GUI, AB_GUI, gui);
+  assert(xgui);
+
+  challenge=NULL;
+  if ((NULL!=xgui->opticalTanTool) &&
+      (0!=(flags & GWEN_GUI_INPUT_FLAGS_TAN)) &&
+      (GWEN_Gui_PasswordMethod_OpticalHHD==methodId)) {
+    int tanMethod;
+    const char *mimeType;
+    const char *imageData;
+    uint32_t imageSize;
+
+    tanMethod=GWEN_DB_GetIntValue(methodParams, "tanMethodId", 0, AB_BANKING_TANMETHOD_TEXT);
+    switch(tanMethod) {
+    case AB_BANKING_TANMETHOD_CHIPTAN_OPTIC:
+      mimeType="text/x-flickercode";
+      challenge=GWEN_DB_GetCharValue(methodParams, "challenge", 0, NULL);
+      if ((NULL==challenge) || ('\0'==challenge [0])) {
+	DBG_WARN(AQBANKING_LOGDOMAIN, "no flicker code found");
+	challenge=NULL;
+      }
+      break;
+
+    case AB_BANKING_TANMETHOD_CHIPTAN_QR:
+    case AB_BANKING_TANMETHOD_PHOTOTAN:
+      mimeType =GWEN_DB_GetCharValue(methodParams, "mimeType",  0, NULL);
+      imageData=GWEN_DB_GetBinValue(methodParams, "imageData", 0, NULL, 0, &imageSize);
+      if ((NULL == mimeType) || (NULL == imageData) || (0 == imageSize)) {
+        DBG_WARN(AQBANKING_LOGDOMAIN, "no optical challenge found");
+      }
+      else {
+	int fd;
+	FILE *fp;
+
+        GWEN_Directory_GetTmpDirectory(imageFile, sizeof(imageFile) - 14);
+#ifdef OS_WIN32
+        strncat(imageFile, "\\image.XXXXXX", 14);
+        mktemp(imageFile);
+        fp=fopen(imageFile, "wb");
+#else
+        strncat(imageFile, "/image.XXXXXX", 14);
+        fd = mkstemp(imageFile);
+	if (0>fd)
+	  fp=NULL;
+	else
+	  fp=fdopen(fd, "wb");
+#endif
+	if (NULL==fp) {
+	  DBG_ERROR(AQBANKING_LOGDOMAIN, "can't open %s", imageFile);
+	}
+	else {
+	  if (imageSize != fwrite(imageData, 1, imageSize, fp)) {
+	    DBG_ERROR(AQBANKING_LOGDOMAIN, "can't write %s", imageFile);
+	  }
+	  else
+	    challenge=imageFile;
+	  fclose(fp);
+	}
+      }
+      break;
+
+    default:
+      mimeType=NULL;
+      challenge=NULL;
+      break;
+    }
+
+    if ((NULL!=mimeType) && (NULL!=challenge)) {
+      size_t size;
+      char  *cmd;
+
+      size=strlen(xgui->opticalTanTool)+strlen(mimeType)+strlen(challenge)+7;
+      cmd=malloc(size);
+      if (NULL==cmd) {
+	DBG_ERROR(AQBANKING_LOGDOMAIN, "malloc (%u) failed", (unsigned int) size);
+      }
+      else {
+	snprintf(cmd, size, "%s \"%s\" \"%s\"", xgui->opticalTanTool, mimeType, challenge);
+        ret=system(cmd);
+        if (0!=ret) {
+	  DBG_ERROR(AQBANKING_LOGDOMAIN, "system (%s) returned %d", cmd, ret);
+	}
+	free(cmd);
+      }
+    }
+  }
+
+  ret=xgui->getPasswordFn(gui, flags, token, title, text, buffer, minLen, maxLen, methodId, methodParams, guiid);
+  if (challenge==imageFile)
+    remove(imageFile);
+  return ret;
+#else
+  DBG_ERROR(AQBANKING_LOGDOMAIN, "Compiled without support for OpticalTAN Callback");
+  return GWEN_ERROR_NOT_SUPPORTED;
+#endif
 }
 
 
