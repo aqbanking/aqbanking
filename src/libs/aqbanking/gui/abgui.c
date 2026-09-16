@@ -71,8 +71,6 @@ static int GWENHYWFAR_CB _getPasswordCli(GWEN_GUI *gui,
  * ------------------------------------------------------------------------------------------------
  */
 
-
-
 GWEN_GUI *AB_Gui_new(AB_BANKING *ab)
 {
   GWEN_GUI *gui;
@@ -128,7 +126,7 @@ void AB_Gui_Unextend(GWEN_GUI *gui)
   GWEN_Gui_SetReadDialogPrefsFn(gui, xgui->readDialogPrefsFn);
   GWEN_Gui_SetWriteDialogPrefsFn(gui, xgui->writeDialogPrefsFn);
 
-  if (NULL != xgui->getPasswordFn) {
+  if (NULL!=xgui->getPasswordFn) {
     GWEN_Gui_SetGetPasswordFn(gui, xgui->getPasswordFn);
   }
   GWEN_INHERIT_UNLINK(GWEN_GUI, AB_GUI, gui);
