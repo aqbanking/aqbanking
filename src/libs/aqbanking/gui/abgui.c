@@ -74,18 +74,9 @@ static int GWENHYWFAR_CB _getPasswordCli(GWEN_GUI *gui,
 GWEN_GUI *AB_Gui_new(AB_BANKING *ab)
 {
   GWEN_GUI *gui;
-  AB_GUI *xgui;
 
   gui=GWEN_Gui_new();
-  GWEN_NEW_OBJECT(AB_GUI, xgui);
-  GWEN_INHERIT_SETDATA(GWEN_GUI, AB_GUI, gui, xgui, _freeData);
-
-  xgui->banking=ab;
-  xgui->checkCertFn=GWEN_Gui_SetCheckCertFn(gui, _checkCert);
-  xgui->readDialogPrefsFn=GWEN_Gui_SetReadDialogPrefsFn(gui, _readDialogPrefs);
-  xgui->writeDialogPrefsFn=GWEN_Gui_SetWriteDialogPrefsFn(gui, _writeDialogPrefs);
-  xgui->getPasswordFn=NULL;
-  xgui->opticalTanTool=NULL;
+  AB_Gui_Extend(gui, ab);
 
   return gui;
 }
@@ -104,8 +95,8 @@ void AB_Gui_Extend(GWEN_GUI *gui, AB_BANKING *ab)
   xgui->checkCertFn=GWEN_Gui_SetCheckCertFn(gui, _checkCert);
   xgui->readDialogPrefsFn=GWEN_Gui_SetReadDialogPrefsFn(gui, _readDialogPrefs);
   xgui->writeDialogPrefsFn=GWEN_Gui_SetWriteDialogPrefsFn(gui, _writeDialogPrefs);
-  xgui->getPasswordFn = NULL;
-  xgui->opticalTanTool = NULL;
+  xgui->getPasswordFn=NULL;
+  xgui->opticalTanTool=NULL;
 }
 
 
