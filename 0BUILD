@@ -116,6 +116,14 @@
       <define name="ENABLE_LOCAL_INSTALL" value="1" />
     </ifVarMatches>
 
+    <option id="enable_callback_for_optical_tan" type="string">
+      <default>TRUE</default>
+      <choices>TRUE FALSE</choices>
+    </option>
+    <ifVarMatches name="option_enable_callback_for_optical_tan" value="TRUE" >
+      <define name="ENABLE_GUI_CALLBACK_FOR_OPTICAL_TAN" value="1" />
+    </ifVarMatches>
+
 
     <option id="debug" type="string">
       <default>TRUE</default>
