@@ -561,7 +561,7 @@ AC_ARG_ENABLE(gui-callback-for-optical-tan,
 AC_MSG_RESULT($gui_callback_for_optical_tan)
 
 if test "$gui_callback_for_optical_tan" != "no"; then
-  AC_DEFINE([HAVE_GUI_CALLBACK_FOR_OPTICAL_TAN], [1],
+  AC_DEFINE([ENABLE_GUI_CALLBACK_FOR_OPTICAL_TAN], [1],
             [whether GUI should run script to show optical tan image])
 fi
 

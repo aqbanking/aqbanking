@@ -28,7 +28,7 @@
 
 GWEN_INHERIT(GWEN_GUI, AB_GUI)
 
-#ifdef HAVE_GUI_CALLBACK_FOR_OPTICAL_TAN
+#ifdef ENABLE_GUI_CALLBACK_FOR_OPTICAL_TAN
 static int GWENHYWFAR_CB getPasswordCli(GWEN_GUI                *gui,
                                         uint32_t                 flags,
                                         const char              *token,
@@ -231,7 +231,7 @@ void AB_Gui_Unextend(GWEN_GUI *gui)
 
 int AB_Gui_SetCliCallbackForOpticalTan(GWEN_GUI *gui, const char *tool)
 {
-  #ifdef HAVE_GUI_CALLBACK_FOR_OPTICAL_TAN
+#ifdef ENABLE_GUI_CALLBACK_FOR_OPTICAL_TAN
   AB_GUI *xgui;
   GWEN_GUI_GETPASSWORD_FN originalGetPassword;
 
@@ -246,9 +246,10 @@ int AB_Gui_SetCliCallbackForOpticalTan(GWEN_GUI *gui, const char *tool)
   if (NULL == xgui->getPasswordFn) {
     xgui->getPasswordFn = originalGetPassword;
   }
-  #endif
+#endif
   return 0;
 }
+
 
 
 void GWENHYWFAR_CB AB_Gui_FreeData(void *bp, void *p)
