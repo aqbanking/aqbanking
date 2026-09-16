@@ -48,22 +48,21 @@ GWEN_INHERIT(GWEN_GUI, AB_GUI)
 static void GWENHYWFAR_CB _freeData(void *bp, void *p);
 static int GWENHYWFAR_CB _checkCert(GWEN_GUI *gui, const GWEN_SSLCERTDESCR *cd, GWEN_SYNCIO *sio, uint32_t guiid);
 static int GWENHYWFAR_CB _writeDialogPrefs(GWEN_GUI *gui, const char *groupName, GWEN_DB_NODE *db);
-static int GWENHYWFAR_CB _readDialogPrefs(GWEN_GUI *gui,
-                                                const char *groupName,
-                                                const char *altName,
-                                                GWEN_DB_NODE **pDb);
+static int GWENHYWFAR_CB _readDialogPrefs(GWEN_GUI *gui, const char *groupName, const char *altName, GWEN_DB_NODE **pDb);
 static int _hashPair(const char *token, const char *pin, GWEN_BUFFER *buf);
-static int GWENHYWFAR_CB _getPasswordCli(GWEN_GUI                *gui,
-					uint32_t                 flags,
-                                        const char              *token,
-                                        const char              *title,
-                                        const char              *text,
-                                        char                    *buffer,
-                                        int                      minLen,
-                                        int                      maxLen,
-                                        GWEN_GUI_PASSWORD_METHOD methodId,
-                                        GWEN_DB_NODE            *methodParams,
-					uint32_t                 guiid);
+#ifdef ENABLE_GUI_CALLBACK_FOR_OPTICAL_TAN
+static int GWENHYWFAR_CB _getPasswordCli(GWEN_GUI *gui,
+					 uint32_t flags,
+					 const char *token,
+					 const char *title,
+					 const char *text,
+					 char *buffer,
+					 int minLen,
+					 int maxLen,
+					 GWEN_GUI_PASSWORD_METHOD methodId,
+					 GWEN_DB_NODE *methodParams,
+					 uint32_t guiid);
+#endif
 
 
 
@@ -87,8 +86,8 @@ GWEN_GUI *AB_Gui_new(AB_BANKING *ab)
   xgui->checkCertFn=GWEN_Gui_SetCheckCertFn(gui, _checkCert);
   xgui->readDialogPrefsFn=GWEN_Gui_SetReadDialogPrefsFn(gui, _readDialogPrefs);
   xgui->writeDialogPrefsFn=GWEN_Gui_SetWriteDialogPrefsFn(gui, _writeDialogPrefs);
-  xgui->getPasswordFn = NULL;
-  xgui->opticalTanTool = NULL;
+  xgui->getPasswordFn=NULL;
+  xgui->opticalTanTool=NULL;
 
   return gui;
 }
@@ -151,7 +150,6 @@ int AB_Gui_SetCliCallbackForOpticalTan(GWEN_GUI *gui, const char *tool)
 
   xgui->opticalTanTool=tool;
   originalGetPassword=GWEN_Gui_SetGetPasswordFn(gui, _getPasswordCli);
-
   if (NULL==xgui->getPasswordFn)
     xgui->getPasswordFn=originalGetPassword;
 #endif
@@ -399,6 +397,7 @@ int GWENHYWFAR_CB _writeDialogPrefs(GWEN_GUI *gui, const char *groupName, GWEN_D
 
 
 
+#ifdef ENABLE_GUI_CALLBACK_FOR_OPTICAL_TAN
 int GWENHYWFAR_CB _getPasswordCli(GWEN_GUI *gui,
 				  uint32_t flags,
 				  const char *token,
@@ -411,7 +410,6 @@ int GWENHYWFAR_CB _getPasswordCli(GWEN_GUI *gui,
 				  GWEN_DB_NODE *methodParams,
 				  uint32_t guiid)
 {
-#ifdef ENABLE_GUI_CALLBACK_FOR_OPTICAL_TAN
   const char *challenge;
   char imageFile [MAX_PATH];
   int ret;
@@ -509,11 +507,8 @@ int GWENHYWFAR_CB _getPasswordCli(GWEN_GUI *gui,
   if (challenge==imageFile)
     remove(imageFile);
   return ret;
-#else
-  DBG_ERROR(AQBANKING_LOGDOMAIN, "Compiled without support for OpticalTAN Callback");
-  return GWEN_ERROR_NOT_SUPPORTED;
-#endif
 }
+#endif
 
 
 
