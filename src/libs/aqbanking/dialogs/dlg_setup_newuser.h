@@ -32,7 +32,7 @@ extern "C" {
 
 
 /**
- * Creates a user creation assistent.
+ * Creates a user creation assistant.
  *
  * @return pointer to the created dialog.
  *

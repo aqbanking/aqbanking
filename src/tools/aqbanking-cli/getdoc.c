@@ -77,7 +77,7 @@ int getDoc(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
     return 4;
   }
   if (AB_Document_List2_GetSize(docList2)>1 && !(flags & GETDOC_FLAGS_MULTI)) {
-    DBG_ERROR(NULL, "Ambigous arguments: Multiple matching documents but no -m flag given");
+    DBG_ERROR(NULL, "Ambiguous arguments: Multiple matching documents but no -m flag given");
     AB_Document_List2_free(docList2);
     return 4;
   }

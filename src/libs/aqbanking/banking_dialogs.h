@@ -57,13 +57,13 @@ extern "C" {
 
 
 /**
- * Creates a file import assistent dialog.
+ * Creates a file import assistant dialog.
  *
  * @return pointer to the created dialog.
  * @param banking pointer to the AqBanking object
  * @param ctx pointer to the import context to receive the content of the
  *   imported file (not taken over, the caller remains owner of the object)
- * @param finishedMessage message to show on the last page of the assistent
+ * @param finishedMessage message to show on the last page of the assistant
  *   (i.e. the page which is shown after a successful import into the given
  *    import context).
  */
@@ -85,7 +85,7 @@ GWEN_DIALOG *AB_Banking_CreateImporterDialog(AB_BANKING *ab,
  * @param banking pointer to the AqBanking object
  * @param ctx pointer to the import context to receive the content of the
  *   imported file
- * @param finishedMessage message to show on the last page of the assistent
+ * @param finishedMessage message to show on the last page of the assistant
  *   (i.e. the page which is shown after a successful import into the given
  *    import context).
  * @param dbPrefs GWEN_DB_NODE where presets are stored (see above)
@@ -99,7 +99,7 @@ GWEN_DIALOG *AB_Banking_CreateImporterDialogWithPresets(AB_BANKING *ab,
 /**
  * Gather presets from an importer dialog (see @ref AB_Banking_CreateImporterDialogWithPresets).
  *
- * The dialog must have been finished for this function to return any meaningfull values.
+ * The dialog must have been finished for this function to return any meaningful values.
  * Values empty in the gui (e.g. no selected profile or dialog aborted) will not be changed in @i dbPrefs.
  */
 AQBANKING_API

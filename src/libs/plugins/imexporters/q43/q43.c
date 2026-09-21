@@ -350,7 +350,7 @@ int AH_ImExporterQ43_ReadDocument(AB_IMEXPORTER *ie,
         break;
       }
 
-      case 33: { /* end of accunt record */
+      case 33: { /* end of account record */
         /* store current transaction if any */
         if (t) {
           AB_ImExporterAccountInfo_AddTransaction(iea, t);

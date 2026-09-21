@@ -16,7 +16,7 @@
 
 typedef struct AH_JOBQUEUE AH_JOBQUEUE;
 
-/** jobs in the queue need encrytion */
+/** jobs in the queue need encryption */
 #define AH_JOBQUEUE_FLAGS_CRYPT          0x00000001
 /** jobs in the queue need signature */
 #define AH_JOBQUEUE_FLAGS_SIGN           0x00000002

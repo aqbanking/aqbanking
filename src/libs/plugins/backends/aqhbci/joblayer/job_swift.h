@@ -19,7 +19,7 @@
 /**
  * Return SWIFT descriptors which are supported by both the job's BPD/UPD and the XML importer.
  *
- * @return list of supported descriptiors
+ * @return list of supported descriptors
  * @param j job object
  * @param paramDbGroupName db group within the job params db (below @ref AH_Job_GetParams)
  * @param paramDbVarName db variable within the job params db (below @ref AH_Job_GetParams)
@@ -35,7 +35,7 @@ AB_SWIFT_DESCR_LIST *AH_Job_GetSwiftDescriptorsSupportedByJob(AH_JOB *j,
 /**
  * Return SWIFT descriptors which are supported by both the user and the XML importer.
  *
- * @return list of supported descriptiors
+ * @return list of supported descriptors
  * @param j job object
  * @param family document family (e.g. "camt", "pain")
  * @param version1 major version (as "001" in pain.001.002.03). Please don't use leading zeros here!!

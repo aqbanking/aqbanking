@@ -65,7 +65,7 @@ AQFINTS_MESSAGE *AQFINTS_Session_DecodeMessage(AQFINTS_SESSION *sess, const uint
     return NULL;
   }
 
-  /* interprete segment list and extract data */
+  /* interpret segment list and extract data */
   DBG_DEBUG(AQFINTS_LOGDOMAIN, "Reading segment list into dbs");
   rv=AQFINTS_Parser_ReadSegmentListToDb(parser, segmentList);
   if (rv<0) {

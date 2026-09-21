@@ -269,7 +269,7 @@ int _checkAutoDecision(const GWEN_SSLCERTDESCR *cert)
   sFingerprint=GWEN_SslCertDescr_GetFingerPrint(cert);
 
   /* at this point the certificate was either not found or its status has changed,
-   * possibly ask the user how to preceed */
+   * possibly ask the user how to proceed */
   gui=GWEN_Gui_GetGui();
   assert(gui);
 

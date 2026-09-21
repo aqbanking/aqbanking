@@ -96,7 +96,7 @@ Currently there are plugins for the following formats:
 AqBanking supports plugins which allow lookup of
 bank code/ account id pair validity.
 
-Currently AqBanking provides informations about:
+Currently AqBanking provides information about:
 - ca 20,000 German banks
 
 
@@ -331,7 +331,7 @@ This folder is used to store importer/exporter plugins.
 
 This variable stores the loglevel to be used for AqBanking.
 Possible values are: emergency, alert, critical, error, warning, notice,
-info, debug and verbous. Each following log level includes the previous
+info, debug and verbose. Each following log level includes the previous
 one.
 
 
@@ -346,7 +346,7 @@ jobs. Otherwise job logs are only stored for jobs with a status other than
 ---------------------
 If this environment variable exists then the file "/tmp/booked.mt" is created
 upon reception of transactions via the job GetTransactions. This file then
-contains a SWIFT MT940 document which can be very helpfull in case there is
+contains a SWIFT MT940 document which can be very helpful in case there is
 a problem in the SWIFT parser.
 
 

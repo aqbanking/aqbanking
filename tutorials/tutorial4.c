@@ -110,7 +110,7 @@ int main(int argc, char **argv)
 
     /* execute the jobs which are in the given list (well, for this tutorial
      * there is only one job in the list, but the number is not limited).
-     * This effectivly sends all jobs to the respective backends/banks.
+     * This effectively sends all jobs to the respective backends/banks.
      * It only returns an error code (!=0) if there has been a problem
      * sending the jobs. */
     rv=AB_Banking_SendCommands(ab, cmdList, ctx);

@@ -33,7 +33,7 @@ extern "C" {
 
 
 /**
- * Creates a file import assistent.
+ * Creates a file import assistant.
  *
  * @return pointer to the created dialog.
  *
@@ -42,7 +42,7 @@ extern "C" {
  * @param ctx pointer to the import context to receive the content of the
  * imported file
  *
- * @param finishedMessage message to show on the last page of the assistent
+ * @param finishedMessage message to show on the last page of the assistant
  *   (i.e. the page which is shown after a successful import into the given
  *    import context).
  */
