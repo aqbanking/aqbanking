@@ -68,7 +68,7 @@ int AH_OutboxCBox_SendAndReceiveJobWithVpp(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg,
 
   vppJob=_createVppJob(provider, user, workJob);
   if (vppJob==NULL) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No VPP job created");
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No VPP job created");
   }
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Handling stage 1 for job %s", AH_Job_GetName(workJob));
@@ -150,7 +150,7 @@ int _handleStage1(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *vppJob, AH_JOB *
       GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("Result of VOP: Names match."));
     }
     else if (AH_Job_HasResultWithCode(vppJob, 9210)) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Result of VOP: Transaction rejected (e.g. non-existent IBAN).");
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Result of VOP: Transaction rejected (e.g. non-existent IBAN).");
       GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, I18N("Result of VOP: Transaction rejected (e.g. non-existent IBAN)."));
       return GWEN_ERROR_GENERIC;
     }

@@ -213,8 +213,8 @@ void AH_Account_SetFlags(AB_ACCOUNT *a, uint32_t flags)
 
   aid=AB_Account_GetUniqueId(a);
   if (ae->flags!=flags) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Changing flags of account %d (%08x) to %08x, was %08x",
-              aid, aid, flags, ae->flags);
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Changing flags of account %d (%08x) to %08x, was %08x",
+             aid, aid, flags, ae->flags);
   }
 
   ae->flags=flags;

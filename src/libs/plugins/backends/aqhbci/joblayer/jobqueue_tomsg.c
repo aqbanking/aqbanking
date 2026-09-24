@@ -160,7 +160,7 @@ int _prepareJobs(AH_JOBQUEUE *jq)
 {
   AH_JOB *j;
 
-  DBG_ERROR(AQHBCI_LOGDOMAIN, "Preparing jobs");
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing jobs");
   j=AH_JobQueue_GetFirstJob(jq);
   while (j) {
     AH_JOB_STATUS st;
@@ -170,7 +170,7 @@ int _prepareJobs(AH_JOBQUEUE *jq)
     if (st==AH_JobStatusEnqueued) {
       int rv;
 
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Preparing %s", AH_Job_GetName(j));
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing %s", AH_Job_GetName(j));
       rv=AH_Job_Prepare(j);
       if (rv<0) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Error preparing job %s (%d)", AH_Job_GetName(j), rv);

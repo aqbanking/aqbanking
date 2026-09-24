@@ -245,7 +245,7 @@ int _sendDialogJob(AH_OUTBOX_CBOX *cbox, AH_JOB *j)
 
   /* open connection */
   dlg=AH_Dialog_new(user, provider);
-  DBG_ERROR(AQHBCI_LOGDOMAIN, "Connecting for job \"%s\"", AH_Job_GetName(j));
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Connecting for job \"%s\"", AH_Job_GetName(j));
   rv=AH_Dialog_Connect(dlg);
   if (rv) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Could not begin a dialog for customer \"%s\" (%d)", AB_User_GetCustomerId(user), rv);
@@ -254,7 +254,7 @@ int _sendDialogJob(AH_OUTBOX_CBOX *cbox, AH_JOB *j)
     return rv;
   }
 
-  DBG_ERROR(AQHBCI_LOGDOMAIN, "Sending dialog job \"%s\"", AH_Job_GetName(j));
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Sending dialog job \"%s\"", AH_Job_GetName(j));
   rv=AH_OutboxCBox_OpenDialogWithJob(cbox, dlg, j);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -264,7 +264,7 @@ int _sendDialogJob(AH_OUTBOX_CBOX *cbox, AH_JOB *j)
   }
 
   /* close dialog */
-  DBG_ERROR(AQHBCI_LOGDOMAIN, "Closing dialog for job \"%s\"", AH_Job_GetName(j));
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Closing dialog for job \"%s\"", AH_Job_GetName(j));
   rv=AH_OutboxCBox_CloseDialog(cbox, dlg, jFlags);
   if (rv) {
     AH_Dialog_Disconnect(dlg);
@@ -273,7 +273,7 @@ int _sendDialogJob(AH_OUTBOX_CBOX *cbox, AH_JOB *j)
   }
 
   /* close connection */
-  DBG_ERROR(AQHBCI_LOGDOMAIN, "Disconnecting for job \"%s\"", AH_Job_GetName(j));
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Disconnecting for job \"%s\"", AH_Job_GetName(j));
   AH_Dialog_Disconnect(dlg);
   AH_Dialog_free(dlg);
 
@@ -319,7 +319,7 @@ int _sendJob(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *j)
   int rv;
   AH_JOB *jAck;
 
-  DBG_ERROR(AQHBCI_LOGDOMAIN, "Sending job %s", AH_Job_GetName(j));
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Sending job %s", AH_Job_GetName(j));
   rv=AH_Job_Prepare(j);
   if (rv<0 && rv!=GWEN_ERROR_NOT_SUPPORTED) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -377,9 +377,9 @@ int AH_OutboxCBox_SendAndReceiveJob(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
   user=AH_OutboxCBox_GetUser(cbox);
   if (AH_User_GetCryptMode(user)==AH_CryptMode_Pintan) {
     /* PIN/TAN mode */
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "PIN/TAN mode");
+    DBG_INFO(AQHBCI_LOGDOMAIN, "PIN/TAN mode");
     if ((AH_Job_GetFlags(j) & AH_JOB_FLAGS_NEEDTAN) && AH_Dialog_GetItanProcessType(dlg)!=0) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "TAN mode");
+      DBG_INFO(AQHBCI_LOGDOMAIN, "TAN mode");
       rv=AH_OutboxCBox_SendAndReceiveJobWithTanAndVpp(cbox, dlg, j);
       if (rv<0) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -387,7 +387,7 @@ int AH_OutboxCBox_SendAndReceiveJob(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
       return rv;
     }
     else {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "noTAN mode");
+      DBG_INFO(AQHBCI_LOGDOMAIN, "noTAN mode");
       rv=AH_OutboxCBox_SendAndReceiveJobWithVpp(cbox, dlg, j);
       if (rv<0) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -397,7 +397,7 @@ int AH_OutboxCBox_SendAndReceiveJob(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB
   }
   else {
     /* HBCI mode (not PIN/TAN) */
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "HBCI mode");
+    DBG_INFO(AQHBCI_LOGDOMAIN, "HBCI mode");
     rv=AH_OutboxCBox_SendAndReceiveJobWithVpp(cbox, dlg, j);
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);

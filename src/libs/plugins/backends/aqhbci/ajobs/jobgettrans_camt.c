@@ -236,7 +236,7 @@ int _readCamtFormatsFromSwiftDescriptors(AH_JOB *j, GWEN_DB_NODE *dbArgs, int ca
       const char *s;
 
       s=AB_SwiftDescr_GetAlias2(descr);
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Adding supported CAMT format [%s]", s);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Adding supported CAMT format [%s]", s);
       GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "SupportedFormats/format", s);
       foundAtLeastOneDescr=1;
       descr=AB_SwiftDescr_List_Next(descr);
