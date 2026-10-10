@@ -1512,6 +1512,9 @@ int AH_Msg_GetNeedTan(const AH_MSG *hmsg)
 void AH_Msg_SetNeedTan(AH_MSG *hmsg, int i)
 {
   assert(hmsg);
+  if (hmsg->needTan!=i) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Changing needTan to %d (was %d)", i, hmsg->needTan);
+  }
   hmsg->needTan=i;
 }
 

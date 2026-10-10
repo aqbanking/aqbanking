@@ -148,42 +148,9 @@ int main(int argc, char **argv)
   }
 
   db=GWEN_DB_Group_new("arguments");
-  rv=GWEN_Args_Check(argc, argv, 1,
-                     GWEN_ARGS_MODE_ALLOW_FREEPARAM |
-                     GWEN_ARGS_MODE_STOP_AT_FREEPARAM,
-                     args,
-                     db);
-  if (rv==GWEN_ARGS_RESULT_ERROR) {
-    fprintf(stderr, "ERROR: Could not parse arguments main\n");
-    GWEN_DB_Group_free(db);
+  rv = AB_App_Handle_Args(argc, argv, args, db);
+  if (rv == GWEN_ARGS_RESULT_ERROR) {
     return 1;
-  }
-  else if (rv==GWEN_ARGS_RESULT_HELP) {
-    GWEN_BUFFER *ubuf;
-
-    ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
-    GWEN_Buffer_AppendString(ubuf, I18N("This is version "));
-    GWEN_Buffer_AppendString(ubuf, AQBANKING_VERSION_STRING "\n");
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("Usage: "));
-    GWEN_Buffer_AppendString(ubuf, argv[0]);
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N(" [GLOBAL OPTIONS] COMMAND "
-                                  "[LOCAL OPTIONS]\n"));
-    GWEN_Buffer_AppendString(ubuf,
-                             I18N("\nGlobal Options:\n"));
-    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutType_Txt)) {
-      fprintf(stderr, "ERROR: Could not create help string\n");
-      GWEN_DB_Group_free(db);
-      return 1;
-    }
-
-    GWEN_Buffer_AppendString(ubuf, "\n");
-
-    fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(ubuf));
-    GWEN_Buffer_free(ubuf);
-
-    argc=0; /* only show help */
   }
   else if (rv>1) {
     argc-=rv-1;

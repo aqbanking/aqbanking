@@ -79,10 +79,7 @@ struct AB_BANKING {
 };
 
 
-int AB_Banking_PluginSystemInit(void);
-int AB_Banking_PluginSystemFini(void);
-
-GWEN_CONFIGMGR *AB_Banking_GetConfigMgr(AB_BANKING *ab);
+/* static GWEN_CONFIGMGR *AB_Banking_GetConfigMgr(AB_BANKING *ab); */
 
 
 static int AB_Banking__GetConfigManager(AB_BANKING *ab, const char *dname);
@@ -92,15 +89,8 @@ static AB_IMEXPORTER *AB_Banking_FindImExporter(AB_BANKING *ab, const char *name
 
 
 static AB_BANKINFO_PLUGIN *AB_Banking_CreateImBankInfoPlugin(AB_BANKING *ab, const char *modname);
-static AB_BANKINFO_PLUGIN *AB_Banking_LoadBankInfoPlugin(AB_BANKING *ab, const char *modname);
 static AB_BANKINFO_PLUGIN *AB_Banking_FindBankInfoPlugin(AB_BANKING *ab, const char *country);
 static AB_BANKINFO_PLUGIN *AB_Banking_GetBankInfoPlugin(AB_BANKING *ab, const char *country);
-
-
-static int AB_Banking__ReadImExporterProfiles(AB_BANKING *ab,
-                                              const char *path,
-                                              GWEN_DB_NODE *db,
-                                              int isGlobal);
 
 
 static int AB_Banking__TransformIban(const char *iban, int len, char *newIban, int maxLen);

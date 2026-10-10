@@ -176,7 +176,7 @@
                       <DbSetCharValue name="ultimateCreditor" path="RltdPties/UltmtCdtr/Nm"/>
                     </XmlIfHasCharData>
 
-                    <XmlIfHasCharData path="RltdPties/UltmtDbtrr/Nm">
+                    <XmlIfHasCharData path="RltdPties/UltmtDbtr/Nm">
                       <DbSetCharValue name="ultimateDebitor" path="RltdPties/UltmtDbtr/Nm"/>
                     </XmlIfHasCharData>
                     
@@ -217,7 +217,7 @@
                       <DbSetCharValue name="ultimateCreditor" path="RltdPties/UltmtCdtr/Nm"/>
                     </XmlIfHasCharData>
 
-                    <XmlIfHasCharData path="RltdPties/UltmtDbtrr/Nm">
+                    <XmlIfHasCharData path="RltdPties/UltmtDbtr/Nm">
                       <DbSetCharValue name="ultimateDebitor" path="RltdPties/UltmtDbtr/Nm"/>
                     </XmlIfHasCharData>
           
@@ -271,7 +271,6 @@
                   <!-- transaction text -->
                   <XmlIfHasCharData path="AddtlNtryInf">
                     <DbSetCharValue name="transactionText" path="AddtlNtryInf"/>
-                    <DbSetCharValue name="purpose" mode="append" delimiter="\n" path="AddtlNtryInf"/>
                   </XmlIfHasCharData>
     
                   

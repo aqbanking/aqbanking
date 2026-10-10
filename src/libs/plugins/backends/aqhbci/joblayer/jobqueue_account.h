@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Wed Jan 12 2022
-    copyright   : (C) 2022 by Martin Preuss
+    copyright   : (C) 2025 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -14,6 +14,7 @@
 
 
 void AH_JobQueue_ReadAccounts(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses);
+void AH_JobQueue_ReadSepaAccounts(AH_JOBQUEUE *jq, GWEN_DB_NODE *dbResponses);
 
 
 

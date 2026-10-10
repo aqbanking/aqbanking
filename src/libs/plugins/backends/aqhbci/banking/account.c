@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2026 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -21,6 +21,7 @@
 
 #include <aqbanking/banking_be.h>
 #include <aqbanking/backendsupport/account.h>
+#include <aqbanking/banking_l.h>
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/misc.h>
@@ -28,8 +29,33 @@
 #include <assert.h>
 
 
+/* ------------------------------------------------------------------------------------------------
+ * global vars/statics
+ * ------------------------------------------------------------------------------------------------
+ */
+
 GWEN_INHERIT(AB_ACCOUNT, AH_ACCOUNT)
 
+
+
+static AB_FLAGDEF _accountFlagDefs[]={
+  {AH_BANK_FLAGS_PREFER_SINGLE_TRANSFER,        "preferSingleTransfer"},
+  {AH_BANK_FLAGS_PREFER_SINGLE_DEBITNOTE,       "preferSingleDebitNote"},
+  {AH_BANK_FLAGS_KTV2,                          "ktv2"},
+  {AH_BANK_FLAGS_SEPA,                          "sepa"},
+  {AH_BANK_FLAGS_SEPA_PREFER_SINGLE_TRANSFER,   "sepaPreferSingleTransfer"},
+  {AH_BANK_FLAGS_SEPA_PREFER_SINGLE_DEBITNOTE,  "sepaPreferSingleDebitNote"},
+  {AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD,          "preferCamtDownload"},
+  {AH_BANK_FLAGS_GETTRANS_FORCE_NTLACCOUNTINFO, "getTransForceNtlAccountInfo"},
+  {0, NULL}
+};
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 AB_ACCOUNT *AH_Account_new(AB_PROVIDER *pro)
 {
@@ -149,59 +175,16 @@ AH_HBCI *AH_Account_GetHbci(const AB_ACCOUNT *a)
 
 
 
-void AH_Account_Flags_toDb(GWEN_DB_NODE *db, const char *name,
-                           uint32_t flags)
+void AH_Account_Flags_toDb(GWEN_DB_NODE *db, const char *name, uint32_t flags)
 {
-  GWEN_DB_DeleteVar(db, name);
-  if (flags & AH_BANK_FLAGS_PREFER_SINGLE_TRANSFER)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "preferSingleTransfer");
-  if (flags & AH_BANK_FLAGS_PREFER_SINGLE_DEBITNOTE)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "preferSingleDebitNote");
-  if (flags & AH_BANK_FLAGS_KTV2)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "ktv2");
-  if (flags & AH_BANK_FLAGS_SEPA)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "sepa");
-  if (flags & AH_BANK_FLAGS_SEPA_PREFER_SINGLE_TRANSFER)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "sepaPreferSingleTransfer");
-  if (flags & AH_BANK_FLAGS_SEPA_PREFER_SINGLE_DEBITNOTE)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "sepaPreferSingleDebitNote");
-  if (flags & AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "preferCamtDownload");
+  AB_Banking_FlagsToDb(db, _accountFlagDefs, name, flags);
 }
 
 
 
 uint32_t AH_Account_Flags_fromDb(GWEN_DB_NODE *db, const char *name)
 {
-  uint32_t fl=0;
-  int i;
-
-  for (i=0; ; i++) {
-    const char *s;
-
-    s=GWEN_DB_GetCharValue(db, name, i, 0);
-    if (!s)
-      break;
-    if (strcasecmp(s, "preferSingleTransfer")==0)
-      fl|=AH_BANK_FLAGS_PREFER_SINGLE_TRANSFER;
-    else if (strcasecmp(s, "preferSingleDebitNote")==0)
-      fl|=AH_BANK_FLAGS_PREFER_SINGLE_DEBITNOTE;
-    else if (strcasecmp(s, "ktv2")==0)
-      fl|=AH_BANK_FLAGS_KTV2;
-    else if (strcasecmp(s, "sepa")==0)
-      fl|=AH_BANK_FLAGS_SEPA;
-    else if (strcasecmp(s, "sepaPreferSingleTransfer")==0)
-      fl|=AH_BANK_FLAGS_SEPA_PREFER_SINGLE_TRANSFER;
-    else if (strcasecmp(s, "sepaPreferSingleDebitNote")==0)
-      fl|=AH_BANK_FLAGS_SEPA_PREFER_SINGLE_DEBITNOTE;
-    else if (strcasecmp(s, "preferCamtDownload")==0)
-      fl|=AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD;
-    else {
-      DBG_WARN(AQHBCI_LOGDOMAIN, "Unknown account flag \"%s\"", s);
-    }
-  }
-
-  return fl;
+  return AB_Banking_FlagsFromDb(db, _accountFlagDefs, name);
 }
 
 
@@ -222,10 +205,17 @@ uint32_t AH_Account_GetFlags(const AB_ACCOUNT *a)
 void AH_Account_SetFlags(AB_ACCOUNT *a, uint32_t flags)
 {
   AH_ACCOUNT *ae;
+  uint32_t aid;
 
   assert(a);
   ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
   assert(ae);
+
+  aid=AB_Account_GetUniqueId(a);
+  if (ae->flags!=flags) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Changing flags of account %d (%08x) to %08x, was %08x",
+             aid, aid, flags, ae->flags);
+  }
 
   ae->flags=flags;
 }
@@ -240,7 +230,7 @@ void AH_Account_AddFlags(AB_ACCOUNT *a, uint32_t flags)
   ae=GWEN_INHERIT_GETDATA(AB_ACCOUNT, AH_ACCOUNT, a);
   assert(ae);
 
-  ae->flags|=flags;
+  AH_Account_SetFlags(a, ae->flags|flags);
 }
 
 
@@ -254,6 +244,7 @@ void AH_Account_SubFlags(AB_ACCOUNT *a, uint32_t flags)
   assert(ae);
 
   ae->flags&=~flags;
+  AH_Account_SetFlags(a, (ae->flags&~flags));
 }
 
 

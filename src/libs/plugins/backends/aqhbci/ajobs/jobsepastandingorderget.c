@@ -207,6 +207,17 @@ AB_TRANSACTION *_readTransactionFromResponse(AH_JOB *j, GWEN_DB_NODE *dbXA)
         }
       }
 
+      s=GWEN_DB_GetCharValue(dbXA, "xlastExecutionDate", 0, NULL);
+      if (s && *s) {
+        GWEN_DATE *dt;
+
+        dt=GWEN_Date_fromStringWithTemplate(s, "YYYYMMDD");
+        if (dt) {
+          AB_Transaction_SetLastDate(t, dt);
+          GWEN_Date_free(dt);
+        }
+      }
+
       s=GWEN_DB_GetCharValue(dbXA, "xperiod", 0, NULL);
       AB_Transaction_SetPeriod(t, _getPeriod(s));
 

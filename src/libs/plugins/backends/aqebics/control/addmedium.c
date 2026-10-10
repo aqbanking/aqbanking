@@ -62,24 +62,11 @@ int addMedium(AB_BANKING *ab,
   };
 
   db=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_DEFAULT, "local");
-  rv=GWEN_Args_Check(argc, argv, 1,
-                     0 /*GWEN_ARGS_MODE_ALLOW_FREEPARAM*/,
-                     args,
-                     db);
+  rv=AB_Cmd_Handle_Args(argc, argv, args, db);
   if (rv==GWEN_ARGS_RESULT_ERROR) {
-    fprintf(stderr, "ERROR: Could not parse arguments\n");
     return 1;
   }
   else if (rv==GWEN_ARGS_RESULT_HELP) {
-    GWEN_BUFFER *ubuf;
-
-    ubuf=GWEN_Buffer_new(0, 1024, 0, 1);
-    if (GWEN_Args_Usage(args, ubuf, GWEN_ArgsOutTypeTXT)) {
-      fprintf(stderr, "ERROR: Could not create help string\n");
-      return 1;
-    }
-    fprintf(stderr, "%s\n", GWEN_Buffer_GetStart(ubuf));
-    GWEN_Buffer_free(ubuf);
     return 0;
   }
 

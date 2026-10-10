@@ -499,14 +499,56 @@ static void AB_SetupDialog_Reload(GWEN_DIALOG *dlg)
   AB_SetupDialog_AccountChanged(dlg);
 }
 
+void AB_SetupDialog_InfoPage(GWEN_DIALOG *dlg)
+{
+  AB_SETUP_DIALOG *xdlg;
+  GWEN_BUFFER *buf;
+  int rv;
+  int vmajor, vminor, vpatchLevel, vbuild;
 
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
+  assert(xdlg);
+
+  buf=GWEN_Buffer_new(0, 32, 0, 1);
+
+  AB_Banking_GetVersion(&vmajor, &vminor, &vpatchLevel, &vbuild);
+  GWEN_Buffer_AppendArgs(buf, "%d.%d.%d.%d", vmajor, vminor, vpatchLevel, vbuild);
+  GWEN_Dialog_SetCharProperty(dlg,
+			      "aqVersion",
+                              GWEN_DialogProperty_Value,
+                              0,
+                              GWEN_Buffer_GetStart(buf),
+                              0);
+  GWEN_Buffer_Reset(buf);
+  GWEN_Version(&vmajor, &vminor, &vpatchLevel, &vbuild);
+  GWEN_Buffer_AppendArgs(buf, "%d.%d.%d.%d", vmajor, vminor, vpatchLevel, vbuild);
+  GWEN_Dialog_SetCharProperty(dlg,
+                              "gwenVersion",
+                              GWEN_DialogProperty_Value,
+                              0,
+                              GWEN_Buffer_GetStart(buf),
+                              0);
+  GWEN_Buffer_Reset(buf);
+
+  rv=AB_Banking_GetUserDataDir(xdlg->banking, buf);
+  if (rv>=0) {
+    GWEN_Dialog_SetCharProperty(dlg,
+                                "configPath",
+                                GWEN_DialogProperty_Value,
+                                0,
+                                GWEN_Buffer_GetStart(buf),
+                                0);
+  }
+
+  GWEN_Buffer_free(buf);
+}
 
 void AB_SetupDialog_Init(GWEN_DIALOG *dlg)
 {
   AB_SETUP_DIALOG *xdlg;
   GWEN_DB_NODE *dbPrefs;
   int i;
-  int j;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
@@ -548,7 +590,9 @@ void AB_SetupDialog_Init(GWEN_DIALOG *dlg)
                              0,
                              GWEN_Dialog_SelectionMode_Single,
                              0);
-
+  /* info */
+  AB_SetupDialog_InfoPage(dlg);
+  
   /* read width */
   i=GWEN_DB_GetIntValue(dbPrefs, "dialog_width", 0, -1);
   if (i>=DIALOG_MINWIDTH)
@@ -560,30 +604,10 @@ void AB_SetupDialog_Init(GWEN_DIALOG *dlg)
     GWEN_Dialog_SetIntProperty(dlg, "", GWEN_DialogProperty_Height, 0, i, 0);
 
   /* read user column widths */
-  for (i=0; i<6; i++) {
-    j=GWEN_DB_GetIntValue(dbPrefs, "user_list_columns", i, -1);
-    if (j<USER_LIST_MINCOLWIDTH)
-      j=USER_LIST_MINCOLWIDTH;
-    GWEN_Dialog_SetIntProperty(dlg, "userListBox", GWEN_DialogProperty_ColumnWidth, i, j, 0);
-  }
-  /* get sort column */
-  i=GWEN_DB_GetIntValue(dbPrefs, "user_list_sortbycolumn", 0, -1);
-  j=GWEN_DB_GetIntValue(dbPrefs, "user_list_sortdir", 0, -1);
-  if (i>=0 && j>=0)
-    GWEN_Dialog_SetIntProperty(dlg, "userListBox", GWEN_DialogProperty_SortDirection, i, j, 0);
+  GWEN_Dialog_ListReadColumnSettings(dlg, "userListBox", "user_list_", 6, USER_LIST_MINCOLWIDTH, dbPrefs);
 
   /* read account column widths */
-  for (i=0; i<7; i++) {
-    j=GWEN_DB_GetIntValue(dbPrefs, "account_list_columns", i, -1);
-    if (j<ACCOUNT_LIST_MINCOLWIDTH)
-      j=ACCOUNT_LIST_MINCOLWIDTH;
-    GWEN_Dialog_SetIntProperty(dlg, "accountListBox", GWEN_DialogProperty_ColumnWidth, i, j, 0);
-  }
-  /* get sort column */
-  i=GWEN_DB_GetIntValue(dbPrefs, "account_list_sortbycolumn", 0, -1);
-  j=GWEN_DB_GetIntValue(dbPrefs, "account_list_sortdir", 0, -1);
-  if (i>=0 && j>=0)
-    GWEN_Dialog_SetIntProperty(dlg, "accountListBox", GWEN_DialogProperty_SortDirection, i, j, 0);
+  GWEN_Dialog_ListReadColumnSettings(dlg, "accountListBox", "account_list_", 7, ACCOUNT_LIST_MINCOLWIDTH, dbPrefs);
 
   /* activate providers */
   AB_SetupDialog_ActivateProviders(dlg);
@@ -591,8 +615,6 @@ void AB_SetupDialog_Init(GWEN_DIALOG *dlg)
   /* reload accounts and users */
   AB_SetupDialog_Reload(dlg);
 }
-
-
 
 void AB_SetupDialog_Fini(GWEN_DIALOG *dlg)
 {
@@ -624,76 +646,10 @@ void AB_SetupDialog_Fini(GWEN_DIALOG *dlg)
                       i);
 
   /* store column widths of user list */
-  GWEN_DB_DeleteVar(dbPrefs, "user_list_columns");
-  for (i=0; i<6; i++) {
-    int j;
+  GWEN_Dialog_ListWriteColumnSettings(dlg, "userListBox", "user_list_", 6, USER_LIST_MINCOLWIDTH, dbPrefs);
 
-    j=GWEN_Dialog_GetIntProperty(dlg, "userListBox", GWEN_DialogProperty_ColumnWidth, i, -1);
-    if (j<USER_LIST_MINCOLWIDTH)
-      j=USER_LIST_MINCOLWIDTH;
-    GWEN_DB_SetIntValue(dbPrefs,
-                        GWEN_DB_FLAGS_DEFAULT,
-                        "user_list_columns",
-                        j);
-  }
-  /* store column sorting of user list */
-  GWEN_DB_SetIntValue(dbPrefs,
-                      GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "user_list_sortbycolumn",
-                      -1);
-  for (i=0; i<6; i++) {
-    int j;
-
-    j=GWEN_Dialog_GetIntProperty(dlg, "userListBox", GWEN_DialogProperty_SortDirection, i,
-                                 GWEN_DialogSortDirection_None);
-    if (j!=GWEN_DialogSortDirection_None) {
-      GWEN_DB_SetIntValue(dbPrefs,
-                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "user_list_sortbycolumn",
-                          i);
-      GWEN_DB_SetIntValue(dbPrefs,
-                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "user_list_sortdir",
-                          (j==GWEN_DialogSortDirection_Up)?1:0);
-      break;
-    }
-  }
-
-  /* store column widths of account list */
-  GWEN_DB_DeleteVar(dbPrefs, "account_list_columns");
-  for (i=0; i<7; i++) {
-    int j;
-
-    j=GWEN_Dialog_GetIntProperty(dlg, "accountListBox", GWEN_DialogProperty_ColumnWidth, i, -1);
-    if (j<ACCOUNT_LIST_MINCOLWIDTH)
-      j=ACCOUNT_LIST_MINCOLWIDTH;
-    GWEN_DB_SetIntValue(dbPrefs,
-                        GWEN_DB_FLAGS_DEFAULT,
-                        "account_list_columns",
-                        j);
-  }
-  /* store column sorting */
-  GWEN_DB_SetIntValue(dbPrefs,
-                      GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "account_list_sortbycolumn",
-                      -1);
-  for (i=0; i<7; i++) {
-    int j;
-
-    j=GWEN_Dialog_GetIntProperty(dlg, "accountListBox", GWEN_DialogProperty_SortDirection, i,
-                                 GWEN_DialogSortDirection_None);
-    if (j!=GWEN_DialogSortDirection_None) {
-      GWEN_DB_SetIntValue(dbPrefs,
-                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "account_list_sortbycolumn",
-                          i);
-      GWEN_DB_SetIntValue(dbPrefs,
-                          GWEN_DB_FLAGS_OVERWRITE_VARS,
-                          "account_list_sortdir",
-                          (j==GWEN_DialogSortDirection_Up)?1:0);
-      break;
-    }
-  }
+  /* write account column widths */
+  GWEN_Dialog_ListWriteColumnSettings(dlg, "accountListBox", "account_list_", 7, ACCOUNT_LIST_MINCOLWIDTH, dbPrefs);
 }
 
 

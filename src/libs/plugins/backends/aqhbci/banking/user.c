@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2026 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -24,6 +24,7 @@
 
 #include "aqbanking/i18n_l.h"
 #include <aqbanking/banking_be.h>
+#include <aqbanking/banking_l.h>
 
 #include <gwenhywfar/debug.h>
 #include <gwenhywfar/text.h>
@@ -31,8 +32,35 @@
 #include <assert.h>
 
 
+
+/* ------------------------------------------------------------------------------------------------
+ * global vars/statics
+ * ------------------------------------------------------------------------------------------------
+ */
+
 GWEN_INHERIT(AB_USER, AH_USER)
 
+
+
+static AB_FLAGDEF _userFlagDefs[]={
+  {AH_USER_FLAGS_BANK_DOESNT_SIGN,          "bankDoesntSign"},
+  {AH_USER_FLAGS_BANK_USES_SIGNSEQ,         "bankUsesSignSeq"},
+  {AH_USER_FLAGS_IGNORE_UPD,                "ignoreUpd"},
+  {AH_USER_FLAGS_NO_BASE64,                 "noBase64"},
+  {AH_USER_FLAGS_KEEP_MULTIPLE_BLANKS,      "keepMultipleBlanks"},
+  {AH_USER_FLAGS_TAN_OMIT_SMS_ACCOUNT,      "omitSmsAccount"},
+  {AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET,   "useStrictSepaCharset"},
+  {AH_USER_FLAGS_VERIFY_NO_BANKSIGNKEY,     "verifyNoBankSignKey"},
+  {AH_USER_FLAGS_SEPA_ALLOWNATIONALACCSPEC, "sepaAllowNationalAccSpec"},
+  {0, NULL}
+};
+
+
+
+/* ------------------------------------------------------------------------------------------------
+ * implementations
+ * ------------------------------------------------------------------------------------------------
+ */
 
 const char *AH_User_Status_toString(AH_USER_STATUS st)
 {
@@ -72,63 +100,14 @@ AH_USER_STATUS AH_User_Status_fromString(const char *s)
 void AH_User_Flags_toDb(GWEN_DB_NODE *db, const char *name,
                         uint32_t flags)
 {
-  GWEN_DB_DeleteVar(db, name);
-  if (flags & AH_USER_FLAGS_BANK_DOESNT_SIGN)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "bankDoesntSign");
-  if (flags & AH_USER_FLAGS_BANK_USES_SIGNSEQ)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "bankUsesSignSeq");
-  if (flags & AH_USER_FLAGS_IGNORE_UPD)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "ignoreUpd");
-  if (flags & AH_USER_FLAGS_NO_BASE64)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "noBase64");
-  if (flags & AH_USER_FLAGS_KEEP_MULTIPLE_BLANKS)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "keepMultipleBlanks");
-  if (flags & AH_USER_FLAGS_TAN_OMIT_SMS_ACCOUNT)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "omitSmsAccount");
-  if (flags & AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "useStrictSepaCharset");
-  if (flags & AH_USER_FLAGS_VERIFY_NO_BANKSIGNKEY)
-    GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, name, "verifyNoBankSignKey");
+  AB_Banking_FlagsToDb(db, _userFlagDefs, name, flags);
 }
 
 
 
 uint32_t AH_User_Flags_fromDb(GWEN_DB_NODE *db, const char *name)
 {
-  uint32_t fl=0;
-  int i;
-
-  for (i=0; ; i++) {
-    const char *s;
-
-    s=GWEN_DB_GetCharValue(db, name, i, 0);
-    if (!s)
-      break;
-    if (strcasecmp(s, "bankDoesntSign")==0)
-      fl|=AH_USER_FLAGS_BANK_DOESNT_SIGN;
-    else if (strcasecmp(s, "bankUsesSignSeq")==0)
-      fl|=AH_USER_FLAGS_BANK_USES_SIGNSEQ;
-    else if (strcasecmp(s, "ignoreUpd")==0)
-      fl|=AH_USER_FLAGS_IGNORE_UPD;
-    else if (strcasecmp(s, "noBase64")==0)
-      fl|=AH_USER_FLAGS_NO_BASE64;
-    else if (strcasecmp(s, "keepMultipleBlanks")==0)
-      fl|=AH_USER_FLAGS_KEEP_MULTIPLE_BLANKS;
-    else if (strcasecmp(s, "omitSmsAccount")==0)
-      fl|=AH_USER_FLAGS_TAN_OMIT_SMS_ACCOUNT;
-    else if (strcasecmp(s, "useStrictSepaCharset")==0)
-      fl|=AH_USER_FLAGS_USE_STRICT_SEPA_CHARSET;
-    else if (strcasecmp(s, "tlsIgnPrematureClose")==0) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Flag \"tlsIgnPrematureClose\" is default now, ignoring.");
-    }
-    else if (strcasecmp(s, "verifyNoBankSignKey")==0)
-      fl|=AH_USER_FLAGS_VERIFY_NO_BANKSIGNKEY;
-    else {
-      DBG_WARN(AQHBCI_LOGDOMAIN, "Unknown user flag \"%s\"", s);
-    }
-  }
-
-  return fl;
+  return AB_Banking_FlagsFromDb(db, _userFlagDefs, name);
 }
 
 

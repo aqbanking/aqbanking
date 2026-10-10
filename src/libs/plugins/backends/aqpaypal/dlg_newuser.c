@@ -494,7 +494,7 @@ void APY_NewUserDialog_Init(GWEN_DIALOG *dlg)
                                    "<p>Click the <i>next</i> button to proceed or <i>abort</i> to abort.</p>"
                                    "<p>If you proceed you will be asked to enter a new password. This is the password "
                                    "for the credentials file described in previous steps.</p>"
-                                   "<p>Please be carefull to enter a sufficiently secure password</p>"
+                                   "<p>Please be careful to enter a sufficiently secure password</p>"
                                    "</html>"
                                    "We are now ready to create the user.\n"
                                    "Click the \"next\" button to proceed or \"abort\" to abort.\n"

@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Thu Jun 18 2009
- copyright   : (C) 2009 by Martin Preuss
+ copyright   : (C) 2026 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,23 +26,6 @@ struct AB_GUI {
   GWEN_GUI_GETPASSWORD_FN getPasswordFn;
   const char *opticalTanTool;
 };
-
-static void GWENHYWFAR_CB AB_Gui_FreeData(void *bp, void *p);
-static int AB_Gui__HashPair(const char *token,
-                            const char *pin,
-                            GWEN_BUFFER *buf);
-static int GWENHYWFAR_CB AB_Gui_CheckCert(GWEN_GUI *gui,
-                                          const GWEN_SSLCERTDESCR *cd,
-                                          GWEN_SYNCIO *sio, uint32_t guiid);
-
-static int GWENHYWFAR_CB AB_Gui_WriteDialogPrefs(GWEN_GUI *gui,
-                                                 const char *groupName,
-                                                 GWEN_DB_NODE *db);
-
-static int GWENHYWFAR_CB AB_Gui_ReadDialogPrefs(GWEN_GUI *gui,
-                                                const char *groupName,
-                                                const char *altName,
-                                                GWEN_DB_NODE **pDb);
 
 
 

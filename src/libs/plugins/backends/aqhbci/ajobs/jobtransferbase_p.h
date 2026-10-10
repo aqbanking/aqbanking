@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Tue Dec 31 2013
-    copyright   : (C) 2022 by Martin Preuss
+    copyright   : (C) 2025 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -24,6 +24,8 @@ struct AH_JOB_TRANSFERBASE {
   char *descriptor;
   char *profileName;
   char *localInstrumentationCode;
+
+  AB_VALUE *sumValues;
 };
 
 

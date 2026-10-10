@@ -51,9 +51,9 @@ AB_VALUE *AB_Value_new(void)
 void AB_Value_free(AB_VALUE *v)
 {
   if (v) {
+    GWEN_LIST_FINI(AB_VALUE, v);
     mpq_clear(v->value);
     free(v->currency);
-    GWEN_LIST_FINI(AB_VALUE, v);
     GWEN_FREE_OBJECT(v);
   }
 }
@@ -310,6 +310,22 @@ void AB_Value__toString(const AB_VALUE *v, GWEN_BUFFER *buf)
   p=GWEN_Buffer_GetPosPointer(buf);
   size=GWEN_Buffer_GetMaxUnsegmentedWrite(buf);
   rv=gmp_snprintf(p, size, "%Qi", v->value);
+  if (rv>=size) {
+    DBG_ERROR(AQBANKING_LOGDOMAIN,
+	      "rv>=size? Unexpected (rv=%d, size=%lu, strsize=%d)",
+	      rv, (long unsigned int) size, (int)AB_VALUE_STRSIZE);
+    GWEN_Buffer_AllocRoom(buf, rv+1);
+    p=GWEN_Buffer_GetPosPointer(buf);
+    size=GWEN_Buffer_GetMaxUnsegmentedWrite(buf);
+    rv=gmp_snprintf(p, size, "%Qi", v->value);
+    if (rv>=size) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN,
+		"still rv>=size? Unexpected (rv=%d, size=%lu, strsize=%d)",
+		rv, (long unsigned int) size, (int)AB_VALUE_STRSIZE);
+      assert(rv<size);
+    }
+
+  }
   assert(rv<size);
   GWEN_Buffer_IncrementPos(buf, rv);
   GWEN_Buffer_AdjustUsedBytes(buf);

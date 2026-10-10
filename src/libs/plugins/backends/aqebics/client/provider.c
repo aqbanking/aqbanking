@@ -404,7 +404,6 @@ int EBC_Provider_GenerateTimeStamp(GWEN_UNUSED AB_PROVIDER *pro,
                                    AB_USER *u,
                                    GWEN_BUFFER *buf)
 {
-  char timestamp[40];
   time_t ti;
   struct tm *t;
 
@@ -413,19 +412,9 @@ int EBC_Provider_GenerateTimeStamp(GWEN_UNUSED AB_PROVIDER *pro,
   if (EBC_User_GetFlags(u) & EBC_USER_FLAGS_TIMESTAMP_FIX1) {
   */
   t=gmtime(&ti);
-  snprintf(timestamp, sizeof(timestamp)-1,
-           "%04d-%02d-%02dT%02d:%02d:%02d.000Z",
-           t->tm_year+1900,
-           t->tm_mon+1,
-           t->tm_mday,
-           t->tm_hour,
-           t->tm_min,
-           t->tm_sec);
-  timestamp[sizeof(timestamp)-1]=0;
-  DBG_DEBUG(AQEBICS_LOGDOMAIN,
-            "Generated timestamp [%s]",
-            timestamp);
-  GWEN_Buffer_AppendString(buf, timestamp);
+  GWEN_Buffer_AppendArgs(buf,
+                         "%04d-%02d-%02dT%02d:%02d:%02d.000Z",
+                         t->tm_year+1900, t->tm_mon+1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
   /*
   }
   else {

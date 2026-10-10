@@ -1,5 +1,15 @@
+
+Some links for developers:
+- deprecated SEPA formats:
+  - https://www.ebics.de/de/datenformate/format-lifecycle
+
+
 Next:
 =====
+
+- bankinfo:
+  - build also in gwbuild
+
 
 - HBCI:
   - when TAN is requested on GetAccounts:

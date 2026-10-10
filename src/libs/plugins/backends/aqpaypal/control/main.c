@@ -85,8 +85,14 @@ int APY_Control(AB_PROVIDER *pro, int argc, char **argv)
   else if (strcasecmp(cmd, "listaccounts")==0) {
     rv=APY_Control_ListAccounts(pro, db, argc, argv);
   }
+  else if (strcasecmp(cmd, "delaccount")==0) {
+    rv=APY_Control_DelAccount(pro, db, argc, argv);
+  }
   else if (strcasecmp(cmd, "adduser")==0) {
     rv=APY_Control_AddUser(pro, db, argc, argv);
+  }
+  else if (strcasecmp(cmd, "deluser")==0) {
+    rv=APY_Control_DelUser(pro, db, argc, argv);
   }
   else if (strcasecmp(cmd, "setsecrets")==0) {
     rv=APY_Control_SetSecrets(pro, db, argc, argv);

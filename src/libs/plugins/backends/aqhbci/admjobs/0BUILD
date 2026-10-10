@@ -1,4 +1,4 @@
-<?xml?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <gwbuild>
 
@@ -56,12 +56,15 @@
       jobsendkeys_l.h jobsendkeys_p.h
       jobchangekeys_l.h jobchangekeys_p.h
       jobtan_l.h jobtan_p.h
-      jobgetsepainfo_l.h jobgetsepainfo_p.h
+      jobgetsepainfo_l.h
       jobgetsysid_l.h jobgetsysid_p.h
       jobgetbankinfo_l.h jobgetbankinfo_p.h
       jobunblockpin_l.h
       jobacknowledge_l.h
       jobgettargetacc_l.h jobgettargetacc_p.h
+      jobvpa.h
+      jobvpp.h jobvpp_p.h
+      vop_result.h vop_result_p.h
     </headers>
   
   
@@ -78,6 +81,9 @@
       jobunblockpin.c
       jobacknowledge.c
       jobgettargetacc.c
+      jobvpa.c
+      jobvpp.c
+      vop_result.c
     </sources>
 
     <data install="$(aqbanking_plugin_installdir)/providers" >
@@ -102,6 +108,9 @@
       jobunblockpin.xml
       jobacknowledge.xml
       jobgettargetacc.xml
+      jobvpa.xml
+      jobvpp.xml
+      jobvoo.xml
     </extradist>
 
 
@@ -117,6 +126,9 @@
         jobunblockpin.xml
         jobacknowledge.xml
         jobgettargetacc.xml
+        jobvpa.xml
+        jobvpp.xml
+        jobvoo.xml
       </input>
 
       <output>

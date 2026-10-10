@@ -46,6 +46,8 @@ static int _handleResults(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx);
  */
 static void _setStatusOnTransfersAndAddToCtx(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx, AB_TRANSACTION_STATUS status);
 
+static int _exportTransactions(const AH_JOB *j, const AH_JOB_TRANSFERBASE *aj);
+static GWEN_BUFFER *_exportTransactionsToBuffer(const AH_JOB *j, const AH_JOB_TRANSFERBASE *aj, GWEN_DB_NODE *dbProfile);
 static void _replaceCtrlCharsInPurpose(AB_TRANSACTION *t);
 static void _setProfileName(AH_JOB *j, const char *s);
 static void _setDescriptor(AH_JOB *j, const char *s);
@@ -53,6 +55,9 @@ static void _setLimitsCycleMonth(AB_TRANSACTION_LIMITS *lim, GWEN_DB_NODE *dbPar
 static void _setLimitsExecDaysOfMonth(AB_TRANSACTION_LIMITS *lim, GWEN_DB_NODE *dbParams);
 static void _setLimitsCycleWeek(AB_TRANSACTION_LIMITS *lim, GWEN_DB_NODE *dbParams);
 static void _setLimitsExecDaysOfWeek(AB_TRANSACTION_LIMITS *lim, GWEN_DB_NODE *dbParams);
+
+static AB_VALUE *_sumUpTransfers(const AH_JOB *j);
+static int _storeValueInArgs(AH_JOB *j, const AB_VALUE *v, const char *valueGroup);
 
 
 
@@ -97,6 +102,7 @@ void GWENHYWFAR_CB _freeData(void *bp, void *p)
   AH_JOB_TRANSFERBASE *aj;
 
   aj=(AH_JOB_TRANSFERBASE *)p;
+  AB_Value_free(aj->sumValues);
   free(aj->localInstrumentationCode);
   free(aj->profileName);
   free(aj->fiid);
@@ -119,30 +125,44 @@ const char *AH_Job_TransferBase_GetFiid(const AH_JOB *j)
 
 
 
+AB_VALUE *AH_Job_TransferBase_GetSumValues(const AH_JOB *j)
+{
+  if (j) {
+    AH_JOB_TRANSFERBASE *aj;
+
+    aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j);
+    assert(aj);
+    return aj->sumValues;
+  }
+  return NULL;
+}
+
+
+
+void AH_Job_TransferBase_SetSumValues(AH_JOB *j, const AB_VALUE *v)
+{
+  if (j) {
+    AH_JOB_TRANSFERBASE *aj;
+
+    aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j);
+    assert(aj);
+    AB_Value_free(aj->sumValues);
+    aj->sumValues=v?AB_Value_dup(v):NULL;
+  }
+}
+
+
+
 int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j)
 {
   AH_JOB_TRANSFERBASE *aj;
-  GWEN_DB_NODE *dbArgs;
-  AB_BANKING *ab;
-  const AB_TRANSACTION *t;
   int rv;
-  AB_ACCOUNT *a;
-  GWEN_DB_NODE *dbProfile;
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Exporting transaction");
 
   assert(j);
   aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j);
   assert(aj);
-
-  ab=AH_Job_GetBankingApi(j);
-  assert(ab);
-
-  dbArgs=AH_Job_GetArguments(j);
-  assert(dbArgs);
-
-  a=AH_AccountJob_GetAccount(j);
-  assert(a);
 
   if (aj->profileName==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No profile set. SNH!!");
@@ -155,30 +175,84 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j)
   }
 
   DBG_INFO(AQHBCI_LOGDOMAIN, "Using SEPA descriptor %s and profile %s", aj->descriptor, aj->profileName);
-  GWEN_Gui_ProgressLog2(0,
-                        GWEN_LoggerLevel_Notice,
-                        I18N("Using SEPA descriptor %s and profile %s"),
-                        aj->descriptor, aj->profileName);
-
-  dbProfile=AB_Banking_GetImExporterProfile(ab, "xml", aj->profileName);
-  if (dbProfile==NULL) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Profile \"%s\" not found.", aj->profileName);
-    return GWEN_ERROR_INTERNAL;
-  }
-
-  if (aj->localInstrumentationCode)
-    GWEN_DB_SetCharValue(dbProfile, GWEN_DB_FLAGS_OVERWRITE_VARS, "LocalInstrumentSEPACode", aj->localInstrumentationCode);
+  GWEN_Gui_ProgressLog2(0, GWEN_LoggerLevel_Notice, I18N("Using SEPA descriptor %s and profile %s"), aj->descriptor, aj->profileName);
 
   /* set data in job */
+  rv=_exportTransactions(j, aj);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+
+  return 0;
+}
+
+
+
+int _exportTransactions(const AH_JOB *j, const AH_JOB_TRANSFERBASE *aj)
+{
+  const AB_TRANSACTION *t;
+
   t=AH_Job_GetFirstTransfer(j);
   if (t) {
-    AB_IMEXPORTER_CONTEXT *ioc;
-    AB_TRANSACTION *cpy;
+    GWEN_DB_NODE *dbArgs;
+    AB_BANKING *ab;
+    GWEN_DB_NODE *dbProfile;
     GWEN_BUFFER *dbuf;
 
+    dbArgs=AH_Job_GetArguments(j);
+    ab=AH_Job_GetBankingApi(j);
+
+    dbProfile=AB_Banking_GetImExporterProfile(ab, "xml", aj->profileName);
+    if (dbProfile==NULL) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Profile \"%s\" not found.", aj->profileName);
+      return GWEN_ERROR_INTERNAL;
+    }
+
+    if (aj->localInstrumentationCode)
+      GWEN_DB_SetCharValue(dbProfile, GWEN_DB_FLAGS_OVERWRITE_VARS, "LocalInstrumentSEPACode", aj->localInstrumentationCode);
+
+    dbuf=_exportTransactionsToBuffer(j, aj, dbProfile);
+    if (dbuf==NULL) {
+      GWEN_DB_Group_free(dbProfile);
+      return GWEN_ERROR_GENERIC;
+    }
+
+    /* store descriptor */
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "descriptor", aj->descriptor);
+    /* store transfer */
+    GWEN_DB_SetBinValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "transfer", GWEN_Buffer_GetStart(dbuf), GWEN_Buffer_GetUsedBytes(dbuf));
+    GWEN_Buffer_free(dbuf);
+    GWEN_DB_Group_free(dbProfile);
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
+    return GWEN_ERROR_INTERNAL;
+  }
+  return 0;
+}
+
+
+
+GWEN_BUFFER *_exportTransactionsToBuffer(const AH_JOB *j, const AH_JOB_TRANSFERBASE *aj, GWEN_DB_NODE *dbProfile)
+{
+  const AB_TRANSACTION *t;
+
+  t=AH_Job_GetFirstTransfer(j);
+  if (t) {
+    AB_BANKING *ab;
+    AB_ACCOUNT *a;
+    AB_IMEXPORTER_CONTEXT *ioc;
+    GWEN_BUFFER *dbuf;
+    int rv;
+
+    ab=AH_Job_GetBankingApi(j);
+    a=AH_AccountJob_GetAccount(j);
     /* add copies of transfers */
     ioc=AB_ImExporterContext_new();
     while (t) {
+      AB_TRANSACTION *cpy;
+
       cpy=AB_Transaction_dup(t);
       _replaceCtrlCharsInPurpose(cpy);
       AB_Transaction_SetUniqueAccountId(cpy, AB_Account_GetUniqueId(a));
@@ -192,25 +266,15 @@ int AH_Job_TransferBase_SepaExportTransactions(AH_JOB *j)
     if (rv<0) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
       GWEN_Buffer_free(dbuf);
-      GWEN_DB_Group_free(dbProfile);
-      return rv;
+      return NULL;
     }
 
-    /* store descriptor */
-    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "descriptor", aj->descriptor);
-    /* store transfer */
-    GWEN_DB_SetBinValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "transfer", GWEN_Buffer_GetStart(dbuf),
-                        GWEN_Buffer_GetUsedBytes(dbuf));
-    GWEN_Buffer_free(dbuf);
-    GWEN_DB_Group_free(dbProfile);
+    return dbuf;
   }
   else {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
-    GWEN_DB_Group_free(dbProfile);
-    return GWEN_ERROR_INTERNAL;
+    return NULL;
   }
-
-  return 0;
 }
 
 
@@ -658,121 +722,99 @@ int AH_Job_TransferBase_HandleCommand_SepaStandingOrder(AH_JOB *j, const AB_TRAN
 
 int AH_Job_TransferBase_Prepare_SepaStandingOrder(AH_JOB *j)
 {
-  GWEN_DB_NODE *dbArgs;
-  int rv;
-  const GWEN_DATE *da;
-  GWEN_BUFFER *tbuf;
-  const char *s;
-  AB_TRANSACTION *t;
+  if (j && AH_Job_GetMsgNum(j)==0) { /* only when called for the first time */
+    GWEN_DB_NODE *dbArgs;
+    int rv;
+    const GWEN_DATE *da;
+    GWEN_BUFFER *tbuf;
+    const char *s;
+    AB_TRANSACTION *t;
+  
+    DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing transfer");
+  
+    dbArgs=AH_Job_GetArguments(j);
+  
+    t=AH_Job_GetFirstTransfer(j);
+    if (t==NULL) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
+      assert(t); /* debug */
+      return GWEN_ERROR_INTERNAL;
+    }
+  
+    /* select pain profile from group "001" */
+    rv=AH_Job_TransferBase_SelectPainProfile(j, 1);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  
+    /* export transfers to SEPA */
+    rv=AH_Job_TransferBase_SepaExportTransactions(j);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  
+    /* execution date */
+    tbuf=GWEN_Buffer_new(0, 16, 0, 1);
+    da=AB_Transaction_GetDate(t);
+    if (da) {
+      GWEN_Date_toStringWithTemplate(da, "YYYYMMDD", tbuf);
+      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "xnextExecutionDate", GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_Reset(tbuf);
+    }
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing execution date.");
+    }
+  
+    /* first execution date */
+    da=AB_Transaction_GetFirstDate(t);
+    if (da) {
+      GWEN_Date_toStringWithTemplate(da, "YYYYMMDD", tbuf);
+      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "details/xfirstExecutionDate", GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_Reset(tbuf);
+    }
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing first execution date.");
+    }
+  
+    /* last execution date */
+    da=AB_Transaction_GetLastDate(t);
+    if (da) {
+      GWEN_Date_toStringWithTemplate(da, "YYYYMMDD", tbuf);
+      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "details/xlastExecutionDate", GWEN_Buffer_GetStart(tbuf));
+    }
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing last execution date.");
+    }
+    GWEN_Buffer_free(tbuf);
+  
+    /* period */
+    switch (AB_Transaction_GetPeriod(t)) {
+    case AB_Transaction_PeriodMonthly:
+      s="M";
+      break;
+    case AB_Transaction_PeriodWeekly:
+      s="W";
+      break;
+    default:
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Unsupported period %d", AB_Transaction_GetPeriod(t));
+      return GWEN_ERROR_INVALID;
+    }
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "details/xperiod", s);
+  
+    /* cycle */
+    GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "details/cycle", AB_Transaction_GetCycle(t));
+  
+    /* execution day */
+    GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "details/executionDay", AB_Transaction_GetExecutionDay(t));
 
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing transfer");
-
-  dbArgs=AH_Job_GetArguments(j);
-
-  t=AH_Job_GetFirstTransfer(j);
-  if (t==NULL) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
-    assert(t); /* debug */
-    return GWEN_ERROR_INTERNAL;
+  
+    /* SET fiId, if present */
+    s=AB_Transaction_GetFiId(t);
+    if (s)
+      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "fiId", s);
   }
-
-  /* select pain profile from group "001" */
-  rv=AH_Job_TransferBase_SelectPainProfile(j, 1);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  /* export transfers to SEPA */
-  rv=AH_Job_TransferBase_SepaExportTransactions(j);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
-    return rv;
-  }
-
-  /* execution date */
-  tbuf=GWEN_Buffer_new(0, 16, 0, 1);
-  da=AB_Transaction_GetDate(t);
-  if (da) {
-    GWEN_Date_toStringWithTemplate(da, "YYYYMMDD", tbuf);
-    GWEN_DB_SetCharValue(dbArgs,
-                         GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "xnextExecutionDate",
-                         GWEN_Buffer_GetStart(tbuf));
-    GWEN_Buffer_Reset(tbuf);
-  }
-  else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing execution date.");
-  }
-
-  /* first execution date */
-  da=AB_Transaction_GetFirstDate(t);
-  if (da) {
-    GWEN_Date_toStringWithTemplate(da, "YYYYMMDD", tbuf);
-    GWEN_DB_SetCharValue(dbArgs,
-                         GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "details/xfirstExecutionDate",
-                         GWEN_Buffer_GetStart(tbuf));
-    GWEN_Buffer_Reset(tbuf);
-  }
-  else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing first execution date.");
-  }
-
-  /* last execution date */
-  da=AB_Transaction_GetLastDate(t);
-  if (da) {
-    GWEN_Date_toStringWithTemplate(da, "YYYYMMDD", tbuf);
-    GWEN_DB_SetCharValue(dbArgs,
-                         GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "details/xlastExecutionDate",
-                         GWEN_Buffer_GetStart(tbuf));
-  }
-  else {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Missing last execution date.");
-  }
-  GWEN_Buffer_free(tbuf);
-
-  /* period */
-  switch (AB_Transaction_GetPeriod(t)) {
-  case AB_Transaction_PeriodMonthly:
-    s="M";
-    break;
-  case AB_Transaction_PeriodWeekly:
-    s="W";
-    break;
-  default:
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Unsupported period %d",
-              AB_Transaction_GetPeriod(t));
-    return GWEN_ERROR_INVALID;
-  }
-  GWEN_DB_SetCharValue(dbArgs,
-                       GWEN_DB_FLAGS_OVERWRITE_VARS,
-                       "details/xperiod",
-                       s);
-
-  /* cycle */
-  GWEN_DB_SetIntValue(dbArgs,
-                      GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "details/cycle",
-                      AB_Transaction_GetCycle(t));
-
-  /* execution day */
-  GWEN_DB_SetIntValue(dbArgs,
-                      GWEN_DB_FLAGS_OVERWRITE_VARS,
-                      "details/executionDay",
-                      AB_Transaction_GetExecutionDay(t));
-
-
-  /* SET fiId, if present */
-  s=AB_Transaction_GetFiId(t);
-  if (s) {
-    GWEN_DB_SetCharValue(dbArgs,
-                         GWEN_DB_FLAGS_OVERWRITE_VARS,
-                         "fiId",
-                         AB_Transaction_GetFiId(t));
-  }
-
   return 0;
 }
 
@@ -1198,9 +1240,130 @@ void _setLimitsExecDaysOfWeek(AB_TRANSACTION_LIMITS *lim, GWEN_DB_NODE *dbParams
 
 
 
+int AH_Job_TransferBase_Prepare(AH_JOB *j, int painProfile, const char *localInstrumentationCode, int singleBookingAllowed)
+{
+  AH_JOB_TRANSFERBASE *aj;
+
+  assert(j);
+  aj=GWEN_INHERIT_GETDATA(AH_JOB, AH_JOB_TRANSFERBASE, j);
+  assert(aj);
+
+  if (AH_Job_GetMsgNum(j)==0) { /* only when called for the first time */
+    GWEN_DB_NODE *dbArgs;
+    int rv;
+
+    dbArgs=AH_Job_GetArguments(j);
+
+    /* set singleBookingWanted */
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "singleBookingWanted", (singleBookingAllowed)?"J":"N");
+
+    /* calculate sum */
+    AB_Value_free(aj->sumValues);
+    aj->sumValues=_sumUpTransfers(j);
+    if (aj->sumValues==NULL) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Error summing up transfers.");
+      return GWEN_ERROR_INTERNAL;
+    }
+
+    rv=AH_Job_TransferBase_SelectPainProfile(j, painProfile);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+
+    if (localInstrumentationCode && *localInstrumentationCode)
+      AH_Job_TransferBase_SetLocalInstrumentationCode(j, localInstrumentationCode);
+
+    /* export transfers to SEPA */
+    rv=AH_Job_TransferBase_SepaExportTransactions(j);
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+
+    /* store sum value */
+    rv=_storeValueInArgs(j, aj->sumValues, "totalSum");
+    if (rv<0) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
+  }
+  else {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Job already prepared");
+  }
+  return 0;
+}
 
 
 
 
+AB_VALUE *_sumUpTransfers(const AH_JOB *j)
+{
+  AB_TRANSACTION *t;
+  AB_VALUE *sum;
+
+  assert(j);
+  
+  sum=AB_Value_new();
+  AB_Value_SetCurrency(sum, "EUR");
+  t=AH_Job_GetFirstTransfer(j);
+  if (t==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No transaction in job");
+    AB_Value_free(sum);
+    return NULL;
+  }
+  while (t) {
+    const AB_VALUE *v;
+  
+    v=AB_Transaction_GetValue(t);
+    if (v) {
+      const char *s;
+  
+      s=AB_Value_GetCurrency(v);
+      if (s && strcmp(s, "EUR")) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "EUR required in SEPA transactions (%s)", s);
+        AB_Value_free(sum);
+        return NULL;
+      }
+      AB_Value_AddValue(sum, v);
+    }
+    t=AB_Transaction_List_Next(t);
+  }
+
+  return sum;
+}
+
+
+
+int _storeValueInArgs(AH_JOB *j, const AB_VALUE *v, const char *valueGroup)
+{
+  GWEN_DB_NODE *dbArgs;
+  GWEN_DB_NODE *dbV;
+  GWEN_BUFFER *nbuf;
+  const char *s;
+
+  dbArgs=AH_Job_GetArguments(j);
+  dbV=GWEN_DB_GetGroup(dbArgs, GWEN_DB_FLAGS_OVERWRITE_GROUPS, valueGroup);
+  assert(dbV);
+
+  nbuf=GWEN_Buffer_new(0, 32, 0, 1);
+  AB_Value_toHbciString(v, nbuf);
+  if (GWEN_Buffer_GetUsedBytes(nbuf)<1) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "Error in conversion");
+    GWEN_Buffer_free(nbuf);
+    return GWEN_ERROR_BAD_DATA;
+  }
+
+  /* store value */
+  GWEN_DB_SetCharValue(dbV, GWEN_DB_FLAGS_OVERWRITE_VARS, "value", GWEN_Buffer_GetStart(nbuf));
+  GWEN_Buffer_free(nbuf);
+
+  /* store currency */
+  s=AB_Value_GetCurrency(v);
+  assert(s);
+  GWEN_DB_SetCharValue(dbV, GWEN_DB_FLAGS_OVERWRITE_VARS, "currency", s);
+
+  return 0;
+}
 
 

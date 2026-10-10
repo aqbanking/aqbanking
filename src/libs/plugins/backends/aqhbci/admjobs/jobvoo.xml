@@ -1,0 +1,87 @@
+ <!--
+/***************************************************************************
+    begin       : Fri Oct 3 2025
+    copyright   : (C) 2025 by Martin Preuss
+    email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+  -->
+
+
+<SEGs>
+
+  <!-- Kundennachricht -->
+  <SEGdef id="VooRequest" code="HKVOO" version="1" delimiter="+" terminator="'">
+    <GROUP name="head"             type="SegHead"   />
+
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+
+
+
+  <SEGdef id="VooResponse" code="HIVOO" version="1" delimiter="+" terminator="'">
+    <GROUP name="head"                 type="SegHead" />
+    <ELEM  name="vopId"                type="bin"       minnum="0" />
+    <ELEM  name="vopMsg"               type="ascii"     minnum="0" maxnum="1" />
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+
+
+  <SEGdef code="HIVOOS" version="1" delimiter="+" terminator="'" isbpdjob="1">
+    <GROUP name="head" type="SegHead"  />
+    <ELEM  name="jobspermsg" type="num" maxsize="3" />
+    <ELEM  name="minsigs" type="num" maxsize="1" />
+    <ELEM  name="securityClass" type="num" size="1" />
+
+    <GROUP delimiter=":" terminator="">
+      <ELEM name="textIsStructured"                type="an"    maxsize="2" />
+      <GROUP name="VooAllowedForJobs" delimiter=":" terminator="" >
+        <ELEM name="Job" type="ascii" maxsize="6" minnum="0" maxnum="99" />
+      </GROUP>
+    </GROUP>
+
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+      <VALUE path="securityClass">1</VALUE>
+    </VALUES>
+  </SEGdef>
+
+
+</SEGs>
+
+
+
+<JOBs>
+
+  <JOBdef id="JobVoo"
+          code="HKVOO"
+          params="HIVOOS"
+          version="1"
+          crypt="1"
+          sign="1"
+          needBPD="1"
+          response="VooResponse"
+  >
+    <SEG type="VooRequest" version="1" />
+
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </JOBdef>
+
+</JOBs>
+
+
+
+

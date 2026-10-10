@@ -1,4 +1,4 @@
-<?xml?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 
 <gwbuild>
@@ -6,9 +6,13 @@
   <data DIST="TRUE" install="$(pkgdatadir)/imexporters/xml/profiles" >
     default.conf
     camt_052_001_02.conf
+    camt_052_001_08.conf
+    camt_053_001_02.conf
     camt_053_001_04.conf
+    camt_053_001_08.conf
     pain_001_003_03.conf
     pain_001_001_03.conf
+    pain_001_001_09.conf
     pain_008_003_02.conf
     pain_008_001_02.conf
     ofx1.conf

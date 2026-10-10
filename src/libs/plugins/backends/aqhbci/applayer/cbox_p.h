@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2025 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -26,7 +26,6 @@ struct AH_OUTBOX_CBOX {
   AH_OUTBOX *outbox;
   AB_PROVIDER *provider;
   AB_USER *user;
-  AH_JOBQUEUE_LIST *todoQueues;
 
   AH_JOB_LIST *todoJobs;
   AH_JOB_LIST *finishedJobs;

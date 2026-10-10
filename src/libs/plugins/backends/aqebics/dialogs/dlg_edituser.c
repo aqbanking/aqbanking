@@ -520,7 +520,7 @@ int EBC_EditUserDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg)
   dlg2=AB_SelectBankInfoDialog_new(xdlg->banking, "de", NULL);
   if (dlg2==NULL) {
     DBG_ERROR(AQEBICS_LOGDOMAIN, "Could not create dialog");
-    GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Could create dialog, maybe incomplete installation?"));
+    GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Could not create dialog, maybe incomplete installation?"));
     return GWEN_DialogEvent_ResultHandled;
   }
 

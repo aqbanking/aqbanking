@@ -57,7 +57,7 @@ GWEN_DIALOG *AG_CardsDialog_new(AB_PROVIDER *pro, AB_USER *user, AG_VOUCHERLIST 
 
 
 
-void _freeData(void *bp, void *p)
+void GWENHYWFAR_CB _freeData(void *bp, void *p)
 {
   AG_CARDS_DIALOG *xdlg;
 
@@ -88,7 +88,7 @@ int _dlgInit(GWEN_DIALOG *dlg)
 
 
 
-int _dlgSignalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
+int GWENHYWFAR_CB _dlgSignalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender)
 {
   switch (t) {
   case  GWEN_DialogEvent_TypeInit :
@@ -156,7 +156,7 @@ int _addAccount(GWEN_DIALOG *dlg)
 
         snprintf(account_name, account_name_len, "GivveCard %s", owner_name);
 
-        account = AG_Provider_CreateAccountObject(xdlg->provider);
+        account = AB_Provider_CreateAccountObject(xdlg->provider);
         AB_Provider_AddAccount(xdlg->provider, account, 1);
         AB_Account_SetUserId(account, AB_User_GetUniqueId(xdlg->user));
         AB_Account_SetOwnerName(account, owner_name);

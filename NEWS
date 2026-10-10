@@ -515,7 +515,7 @@ table which decreases application loading time).
 ===========================================================================
 
 This version fixes some network problems and cleans up the build system.
-It now allows to choose the transfer mode independantly for transfer orders
+It now allows to choose the transfer mode independently for transfer orders
 and debit notes.
 
 

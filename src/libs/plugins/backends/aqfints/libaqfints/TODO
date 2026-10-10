@@ -1,3 +1,43 @@
 Next:
 - upd_write (HIUPD, HIUPA)
 
+
+- _prepareCryptSeg()
+  - use securityProfile definition structs like in AqHBCI to simplify code
+    (see aqhbci/msglayer/msgcrypt_rxh_common.h)
+
+simplify session code like in aqhbci:
+- one job per message
+    because that's enforced by FinTS anyway
+    in most cases especially since VOP
+- no need for JobQueues (minus one layer!)
+- functions:
+  - openDialog()
+  - sendJob()
+    - can then handle stuff like PSD2, VOP
+    - internally used by open/closeDialog()
+  - closeDialog()
+
+- jobs:
+  - vars:
+    - name
+    - version
+    - requestSegmentName
+    - requestSegmentCode
+    - responseSegmentName
+    - responseSegmentCode
+    - bpdSegmentName
+    - bpdSegmentCode
+    - flags
+    - params
+    - args
+  - functions
+    - new()
+    - getBpd()
+    - getUpd()
+  - virtual functions
+    - prepare()
+    - process()
+    - isDone()
+      - look for attach points etc
+

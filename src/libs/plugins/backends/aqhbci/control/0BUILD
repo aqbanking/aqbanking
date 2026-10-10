@@ -1,4 +1,4 @@
-<?xml?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <gwbuild>
 
@@ -95,6 +95,7 @@
       settanmechanism.c
       gettargetacc.c
       test.c
+      test2.c
     </sources>
 
     <data install="$(aqbanking_plugin_installdir)/providers" >

@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Tue Aug 24 2010
- copyright   : (C) 2018 by Martin Preuss
+ copyright   : (C) 2025 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -16,7 +16,6 @@
 
 #include "dlg_edituser_p.h"
 #include "dlg_ofx_special_l.h"
-#include "aqofxconnect/libofxhome/dlg_getinst.h"
 #include <aqofxconnect/user.h>
 #include <aqofxconnect/provider.h>
 
@@ -1031,80 +1030,6 @@ int AO_EditUserDialog_HandleActivatedSpecial(GWEN_DIALOG *dlg)
 
 
 
-int AO_EditUserDialog_HandleActivatedBankSelect(GWEN_DIALOG *dlg)
-{
-  AO_EDITUSER_DIALOG *xdlg;
-  int rv;
-  GWEN_DIALOG *dlg2;
-  GWEN_BUFFER *tbuf;
-
-  assert(dlg);
-  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AO_EDITUSER_DIALOG, dlg);
-  assert(xdlg);
-
-  /* get data dir */
-  tbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=AB_Banking_GetProviderUserDataDir(xdlg->banking, "aqofxconnect", tbuf);
-  if (rv<0) {
-    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Buffer_free(tbuf);
-    return GWEN_DialogEvent_ResultHandled;
-  }
-  GWEN_Buffer_AppendString(tbuf, GWEN_DIR_SEPARATOR_S "ofxhome");
-
-  /* possibly create data folder */
-  rv=GWEN_Directory_GetPath(GWEN_Buffer_GetStart(tbuf), GWEN_PATH_FLAGS_CHECKROOT);
-  if (rv<0) {
-    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "here (%d)", rv);
-    GWEN_Buffer_free(tbuf);
-    return GWEN_DialogEvent_ResultHandled;
-  }
-
-  dlg2=OH_GetInstituteDialog_new(GWEN_Buffer_GetStart(tbuf), NULL);
-  GWEN_Buffer_free(tbuf);
-  if (dlg2==NULL) {
-    DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Could not create dialog");
-    return GWEN_DialogEvent_ResultHandled;
-  }
-  rv=GWEN_Gui_ExecDialog(dlg2, 0);
-  if (rv<=0) {
-    DBG_DEBUG(AQOFXCONNECT_LOGDOMAIN, "Dialog: rejected (%d)", rv);
-    return GWEN_DialogEvent_ResultHandled;
-  }
-  else {
-    const OH_INSTITUTE_DATA *od;
-
-    DBG_DEBUG(AQOFXCONNECT_LOGDOMAIN, "Dialog: rejected (%d)", rv);
-    od=OH_GetInstituteDialog_GetSelectedInstitute(dlg2);
-    if (od) {
-      const char *s;
-
-      s=OH_InstituteData_GetName(od);
-      if (s && *s)
-        GWEN_Dialog_SetCharProperty(dlg, "wiz_bankname_edit", GWEN_DialogProperty_Value, 0, s, 0);
-
-      s=OH_InstituteData_GetFid(od);
-      if (s && *s)
-        GWEN_Dialog_SetCharProperty(dlg, "wiz_fid_edit", GWEN_DialogProperty_Value, 0, s, 0);
-      s=OH_InstituteData_GetOrg(od);
-      if (s && *s)
-        GWEN_Dialog_SetCharProperty(dlg, "wiz_org_edit", GWEN_DialogProperty_Value, 0, s, 0);
-      s=OH_InstituteData_GetUrl(od);
-      if (s && *s)
-        GWEN_Dialog_SetCharProperty(dlg, "wiz_url_edit", GWEN_DialogProperty_Value, 0, s, 0);
-      rv=AO_EditUserDialog_GetBankPageData(dlg);
-      if (rv<0)
-        GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 0, 0);
-      else
-        GWEN_Dialog_SetIntProperty(dlg, "wiz_next_button", GWEN_DialogProperty_Enabled, 0, 1, 0);
-    }
-  }
-  GWEN_Dialog_free(dlg2);
-  return GWEN_DialogEvent_ResultHandled;
-}
-
-
-
 int AO_EditUserDialog_HandleActivatedApp(GWEN_DIALOG *dlg)
 {
   AO_EDITUSER_DIALOG *xdlg;
@@ -1191,8 +1116,6 @@ int AO_EditUserDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
     }
     return GWEN_DialogEvent_ResultAccept;
   }
-  else if (strcasecmp(sender, "wiz_bank_button")==0)
-    return AO_EditUserDialog_HandleActivatedBankSelect(dlg);
   else if (strcasecmp(sender, "wiz_app_combo")==0)
     return AO_EditUserDialog_HandleActivatedApp(dlg);
   else if (strcasecmp(sender, "wiz_special_button")==0)

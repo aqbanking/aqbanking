@@ -72,8 +72,9 @@
     <widget type="groupBox" text="Special Actions" flags="fillX" >
       <widget type="gridLayout" columns="3" flags="fillX equalWidth" >
         <widget type="pushButton" text="Get System Id" name="getSysIdButton" />
-        <widget type="pushButton" text="Get Accounts" name="getAccountsButton" />
-        <widget type="pushButton" text="Ini Letter" name="iniLetterButton" />
+        <widget type="pushButton" text="Get Accounts"  name="getAccountsButton" />
+        <widget type="pushButton" text="Get SEPA Info" name="getSepaButton" />
+        <widget type="pushButton" text="Ini Letter"    name="iniLetterButton" />
       </widget>
     </widget>     <!-- groupBox -->
 
@@ -85,6 +86,7 @@
       <widget type="pushButton" text="Help"     name="helpButton" />
       <widget type="hspacer" flags="fillX" />
       <widget type="pushButton" text="Ok"     name="okButton" flags="default" />
+      <widget type="pushButton" text="Apply"  name="applyButton" />
       <widget type="pushButton" text="Abort"  name="abortButton" />
     </widget>
 

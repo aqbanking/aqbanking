@@ -93,9 +93,9 @@ AB_SWIFT_DESCR_LIST *AH_Job_GetSwiftDescriptorsSupportedByJob(AH_JOB *j,
   AB_SwiftDescr_List_free(descrList);
 
   if (AB_SwiftDescr_List_GetCount(returnDescrList)==0) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No matching descriptors found for %s_%03d_* (job %s)",
-              family?family:"<none>", version1,
-              AH_Job_GetName(j));
+    DBG_INFO(AQHBCI_LOGDOMAIN, "No matching descriptors found for %s_%03d_* (job %s)",
+             family?family:"<none>", version1,
+             AH_Job_GetName(j));
     AB_SwiftDescr_List_free(returnDescrList);
     return NULL;
   }

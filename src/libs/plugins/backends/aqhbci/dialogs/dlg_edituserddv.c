@@ -1,6 +1,6 @@
 /***************************************************************************
  begin       : Thu Jul 08 2010
- copyright   : (C) 2018 by Martin Preuss
+ copyright   : (C) 2025 by Martin Preuss
  email       : martin@aqbanking.de
 
  ***************************************************************************
@@ -37,6 +37,11 @@
 #define DIALOG_MINWIDTH  200
 #define DIALOG_MINHEIGHT 200
 
+/* for improved readability */
+#define DLG_WITHPROGRESS 1
+#define DLG_NOUMOUNT     0
+#define DLG_DIALOGFILE   "aqbanking/backends/aqhbci/dialogs/dlg_edituserddv.dlg"
+
 
 
 GWEN_INHERIT(GWEN_DIALOG, AH_EDIT_USER_DDV_DIALOG)
@@ -48,36 +53,13 @@ GWEN_DIALOG *AH_EditUserDdvDialog_new(AB_PROVIDER *pro, AB_USER *u, int doLock)
 {
   GWEN_DIALOG *dlg;
   AH_EDIT_USER_DDV_DIALOG *xdlg;
-  GWEN_BUFFER *fbuf;
-  int rv;
 
-  dlg=GWEN_Dialog_new("ah_edit_user_ddv");
+  dlg=GWEN_Dialog_CreateAndLoadWithPath("ah_edit_user_ddv", AB_PM_LIBNAME, AB_PM_DATADIR, DLG_DIALOGFILE);
+
   GWEN_NEW_OBJECT(AH_EDIT_USER_DDV_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AH_EDIT_USER_DDV_DIALOG, dlg, xdlg,
                        AH_EditUserDdvDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AH_EditUserDdvDialog_SignalHandler);
-
-  /* get path of dialog description file */
-  fbuf=GWEN_Buffer_new(0, 256, 0, 1);
-  rv=GWEN_PathManager_FindFile(AB_PM_LIBNAME, AB_PM_DATADIR,
-                               "aqbanking/backends/aqhbci/dialogs/dlg_edituserddv.dlg",
-                               fbuf);
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
-    GWEN_Buffer_free(fbuf);
-    GWEN_Dialog_free(dlg);
-    return NULL;
-  }
-
-  /* read dialog from dialog description file */
-  rv=GWEN_Dialog_ReadXmlFile(dlg, GWEN_Buffer_GetStart(fbuf));
-  if (rv<0) {
-    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d).", rv);
-    GWEN_Buffer_free(fbuf);
-    GWEN_Dialog_free(dlg);
-    return NULL;
-  }
-  GWEN_Buffer_free(fbuf);
 
   /* preset */
   xdlg->provider=pro;
@@ -352,7 +334,7 @@ int AH_EditUserDdvDialog_HandleActivatedBankCode(GWEN_DIALOG *dlg)
   dlg2=AB_SelectBankInfoDialog_new(xdlg->banking, "de", NULL);
   if (dlg2==NULL) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not create dialog");
-    GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Could create dialog, maybe incomplete installation?"));
+    GWEN_Gui_ShowError(I18N("Error"), "%s", I18N("Could not create dialog, maybe incomplete installation?"));
     return GWEN_DialogEvent_ResultHandled;
   }
 
@@ -459,8 +441,8 @@ static int AH_EditUserDdvDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg)
   rv=AH_Provider_GetAccounts(xdlg->provider,
                              xdlg->user,
                              ctx,
-                             1,   /* withProgress */
-                             0,   /* nounmount */
+                             DLG_WITHPROGRESS,   /* withProgress */
+                             DLG_NOUMOUNT,   /* nounmount */
                              xdlg->doLock);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
@@ -472,12 +454,37 @@ static int AH_EditUserDdvDialog_HandleActivatedGetAccounts(GWEN_DIALOG *dlg)
 
 
 
+int _handleActivatedSepa(GWEN_DIALOG *dlg)
+{
+  AH_EDIT_USER_DDV_DIALOG *xdlg;
+  int rv;
+  AB_IMEXPORTER_CONTEXT *ctx;
+
+  assert(dlg);
+  xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_EDIT_USER_DDV_DIALOG, dlg);
+  assert(xdlg);
+
+
+  ctx=AB_ImExporterContext_new();
+  rv=AH_Provider_GetAccountSepaInfo(xdlg->provider, xdlg->user, ctx, DLG_WITHPROGRESS, DLG_NOUMOUNT, xdlg->doLock);
+  AB_ImExporterContext_free(ctx);
+  if (rv<0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+  }
+
+  return GWEN_DialogEvent_ResultHandled;
+}
+
+
+
 int AH_EditUserDdvDialog_HandleActivated(GWEN_DIALOG *dlg, const char *sender)
 {
   if (strcasecmp(sender, "bankCodeButton")==0)
     return AH_EditUserDdvDialog_HandleActivatedBankCode(dlg);
   else if (strcasecmp(sender, "getAccountsButton")==0)
     return AH_EditUserDdvDialog_HandleActivatedGetAccounts(dlg);
+  else if (strcasecmp(sender, "getSepaButton")==0)
+    return _handleActivatedSepa(dlg);
   else if (strcasecmp(sender, "okButton")==0)
     return AH_EditUserDdvDialog_HandleActivatedOk(dlg);
   else if (strcasecmp(sender, "abortButton")==0)

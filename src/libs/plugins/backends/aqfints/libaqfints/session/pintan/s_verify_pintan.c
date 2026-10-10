@@ -53,10 +53,12 @@ int AQFINTS_Session_VerifySegmentsPinTan(AQFINTS_SESSION *sess,
 
   sPin=GWEN_DB_GetCharValue(dbSigTail, "pin", 0, NULL);
 
-  rv=AQFINTS_Session_VerifyPin(sess, keyDescr, sPin);
-  if (rv<0) {
-    DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
-    return rv;
+  if (AQFINTS_Session_GetIsServer(sess)) {
+    rv=AQFINTS_Session_VerifyPin(sess, keyDescr, sPin);
+    if (rv<0) {
+      DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", rv);
+      return rv;
+    }
   }
 
   segment=segFirstSigned;

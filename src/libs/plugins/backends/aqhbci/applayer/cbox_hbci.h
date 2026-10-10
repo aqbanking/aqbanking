@@ -16,6 +16,8 @@
 
 int AH_OutboxCBox_OpenDialog_Hbci(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t jqFlags);
 
+int AH_OutboxCBox_OpenDialogWithJob_Hbci(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *jDlgOpen);
+
 
 #endif
 

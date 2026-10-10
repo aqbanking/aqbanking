@@ -37,8 +37,7 @@ DEFS += \
  -DLOCALEDIR=\"@aqbanking_locale_searchdir@\" \
  -DAQBANKING_PLUGINS=\"$(aqbanking_plugin_searchdir)\" \
  -DAQBANKING_SYSCONF_DIR=\"$(aqbanking_cfg_searchdir)\" \
- -DAQBANKING_DATA_DIR=\"$(aqbanking_data_searchdir)\" \
- -DCOMPILE_DATETIME=\"@DATETIME@\"
+ -DAQBANKING_DATA_DIR=\"$(aqbanking_data_searchdir)\"
 
 noinst_HEADERS=\
  banking_be.h \

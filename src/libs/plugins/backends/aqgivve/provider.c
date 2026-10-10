@@ -30,11 +30,16 @@
  * ------------------------------------------------------------------------------------------------
  */
 
+static void GWENHYWFAR_CB AG_Provider_FreeData(void *bp, void *p);
+
 static int AG_Provider_Init(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
 static int AG_Provider_Fini(AB_PROVIDER *pro, GWEN_DB_NODE *dbData);
 
 static int AG_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORTER_CONTEXT *ctx);
 static int AG_Provider_UpdateAccountSpec(AB_PROVIDER *pro, AB_ACCOUNT_SPEC *as, int doLock);
+
+static AB_ACCOUNT *AG_Provider_CreateAccountObject(AB_PROVIDER *pro);
+static AB_USER *AG_Provider_CreateUserObject(AB_PROVIDER *pro);
 
 static void AG_Provider_AddTransactionLimit(int limit, AB_TRANSACTION_LIMITS_LIST *tll);
 static int AG_Provider_ExecGetBal(AB_PROVIDER *pro, AB_IMEXPORTER_ACCOUNTINFO *ai, AB_ACCOUNT *account, char *token);
@@ -162,8 +167,12 @@ int AG_Provider_SendCommands(AB_PROVIDER *pro, AB_PROVIDERQUEUE *pq, AB_IMEXPORT
 
 
 
-void AG_Provider_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB AG_Provider_FreeData(void *bp, void *p)
 {
+  AG_PROVIDER *gp;
+
+  gp=(AG_PROVIDER*) p;
+  GWEN_FREE_OBJECT(gp);
 }
 
 

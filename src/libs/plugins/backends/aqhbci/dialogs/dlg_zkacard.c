@@ -59,12 +59,20 @@ GWEN_DIALOG *AH_ZkaCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct)
   AH_ZKACARD_DIALOG *xdlg;
   GWEN_BUFFER *fbuf;
   int rv;
+  uint32_t pid;
 
   dlg=GWEN_Dialog_new("ah_setup_zkacard");
   GWEN_NEW_OBJECT(AH_ZKACARD_DIALOG, xdlg);
   GWEN_INHERIT_SETDATA(GWEN_DIALOG, AH_ZKACARD_DIALOG, dlg, xdlg,
                        AH_ZkaCardDialog_FreeData);
   GWEN_Dialog_SetSignalHandler(dlg, AH_ZkaCardDialog_SignalHandler);
+
+  pid=GWEN_Gui_ProgressStart(GWEN_GUI_PROGRESS_ALLOW_SUBLEVELS |
+				     		 GWEN_GUI_PROGRESS_SHOW_PROGRESS,
+                             I18N("Getting context list"),
+                             I18N("The context list is read from the card."),
+							 GWEN_GUI_PROGRESS_NONE,
+                             0);
 
   /* get path of dialog description file */
   fbuf=GWEN_Buffer_new(0, 256, 0, 1);
@@ -73,6 +81,7 @@ GWEN_DIALOG *AH_ZkaCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct)
                                fbuf);
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Dialog description file not found (%d).", rv);
+    GWEN_Gui_ProgressEnd(pid);
     GWEN_Buffer_free(fbuf);
     GWEN_Dialog_free(dlg);
     return NULL;
@@ -82,6 +91,7 @@ GWEN_DIALOG *AH_ZkaCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct)
   rv=GWEN_Dialog_ReadXmlFile(dlg, GWEN_Buffer_GetStart(fbuf));
   if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d).", rv);
+    GWEN_Gui_ProgressEnd(pid);
     GWEN_Buffer_free(fbuf);
     GWEN_Dialog_free(dlg);
     return NULL;
@@ -102,6 +112,7 @@ GWEN_DIALOG *AH_ZkaCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct)
       rv=GWEN_Crypt_Token_Open(ct, 0, 0);
       if (rv<0) {
         DBG_ERROR(AQHBCI_LOGDOMAIN, "Error opening token (%d)", rv);
+        GWEN_Gui_ProgressEnd(pid);
         GWEN_Gui_ShowError(I18N("Error"), I18N("Could not contact card. Maybe removed? (%d)"), rv);
         GWEN_Dialog_free(dlg);
         return NULL;
@@ -112,6 +123,7 @@ GWEN_DIALOG *AH_ZkaCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct)
     rv=GWEN_Crypt_Token_GetContextIdList(ct, idList, &idCount, 0);
     if (rv<0) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not read context id list");
+      GWEN_Gui_ProgressEnd(pid);
       GWEN_Dialog_free(dlg);
       GWEN_Gui_ShowError(I18N("Error"), I18N("Could not read context id list from card (%d)"), rv);
       return NULL;
@@ -137,6 +149,7 @@ GWEN_DIALOG *AH_ZkaCardDialog_new(AB_PROVIDER *pro, GWEN_CRYPT_TOKEN *ct)
   xdlg->cryptMode = AH_CryptMode_Rdh;
   xdlg->flags= AH_USER_FLAGS_BANK_DOESNT_SIGN | AH_USER_FLAGS_BANK_USES_SIGNSEQ;
 
+  GWEN_Gui_ProgressEnd(pid);
   /* done */
   return dlg;
 }
@@ -637,6 +650,9 @@ void AH_ZkaCardDialog_Fini(GWEN_DIALOG *dlg)
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AH_ZKACARD_DIALOG, dlg);
   assert(xdlg);
 
+  /* session within the zkacard might still be open, close it */
+  AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(AH_Provider_GetHbci(xdlg->provider)));
+
   dbPrefs=GWEN_Dialog_GetPreferences(dlg);
 
   /* store dialog width */
@@ -854,9 +870,10 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg)
 
   /* get public bank server key */
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetServerKeys(xdlg->provider, u, ctx, 1, 0, 1);
+  rv=AH_Provider_GetServerKeys(xdlg->provider, u, ctx, 1, 1, 1);
   AB_ImExporterContext_free(ctx);
   if (rv) {
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(AH_Provider_GetHbci(xdlg->provider)));
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting server keys (%d)", rv);
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
@@ -872,9 +889,10 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg)
       withAuthKey=1;
     }
     ctx=AB_ImExporterContext_new();
-    rv=AH_Provider_SendUserKeys2(xdlg->provider, u, ctx, withAuthKey, 1, 0, 1);
+    rv=AH_Provider_SendUserKeys2(xdlg->provider, u, ctx, withAuthKey, 1, 1, 1);
     AB_ImExporterContext_free(ctx);
     if (rv) {
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(AH_Provider_GetHbci(xdlg->provider)));
       AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error sending user keys (%d)", rv);
       AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
@@ -888,9 +906,10 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg)
 
   if (xdlg->rdhVersion != 7) {
     ctx=AB_ImExporterContext_new();
-    rv=AH_Provider_GetSysId(xdlg->provider, u, ctx, 1, 0, 1);
+    rv=AH_Provider_GetSysId(xdlg->provider, u, ctx, 1, 1, 1);
     AB_ImExporterContext_free(ctx);
     if (rv) {
+      AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(AH_Provider_GetHbci(xdlg->provider)));
       AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
       DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting Kundensystem ID (%d)", rv);
       AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
@@ -918,10 +937,11 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg)
                        GWEN_LoggerLevel_Notice,
                        I18N("Retrieving account list"));
   ctx=AB_ImExporterContext_new();
-  rv=AH_Provider_GetAccounts(xdlg->provider, u, ctx, 0, 1, 0);
+  rv=AH_Provider_GetAccounts(xdlg->provider, u, ctx, 0, 0, 0);
   AB_ImExporterContext_free(ctx);
   if (rv<0) {
-    AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(AH_Provider_GetHbci(xdlg->provider)));
+	AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "Error getting accounts (%d)", rv);
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);
@@ -931,6 +951,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg)
 
   rv=GWEN_Gui_ProgressAdvance(pid, GWEN_GUI_PROGRESS_ONE);
   if (rv==GWEN_ERROR_USER_ABORTED) {
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(AH_Provider_GetHbci(xdlg->provider)));
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
@@ -952,6 +973,7 @@ int AH_ZkaCardDialog_DoIt(GWEN_DIALOG *dlg)
                           GWEN_LoggerLevel_Error,
                           I18N("Could not unlock user %s (%d)"),
                           AB_User_GetUserId(u), rv);
+	AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(AH_Provider_GetHbci(xdlg->provider)));
     AB_Provider_EndExclUseUser(xdlg->provider, u, 1);
     AB_Provider_DeleteUser(xdlg->provider, AB_User_GetUniqueId(u));
     GWEN_Gui_ProgressEnd(pid);

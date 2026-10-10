@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Tue Dec 31 2013
-    copyright   : (C) 2018 by Martin Preuss
+    copyright   : (C) 2025 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -25,10 +25,6 @@ struct AH_JOB_CREATESEPAMULTIDEBIT {
 
   int sumFieldNeeded;
   int singleBookingAllowed;
-
-  AB_VALUE *sumValues;
-  char *localIban;
-
 };
 
 

@@ -29,6 +29,7 @@
 
 
 static int _messageSetupWithCryptoAndTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *msg, const char *sTan);
+static int _prepareJobs(AH_JOBQUEUE *jq);
 static int _encodeJobs(AH_JOBQUEUE *jq, AH_MSG *msg);
 static void _updateJobsAfterEncodingMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *msg);
 
@@ -43,7 +44,7 @@ static void _updateJobsAfterEncodingMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_
 
 AH_MSG *AH_JobQueue_ToMessage(AH_JOBQUEUE *jq, AH_DIALOG *dlg)
 {
-  return AH_JobQueue_ToMessageWithTan(jq, dlg, NULL);
+  return AH_JobQueue_ToMessageWithTan(jq, dlg, AH_JobQueue_GetUsedTan(jq));
 }
 
 
@@ -64,6 +65,13 @@ AH_MSG *AH_JobQueue_ToMessageWithTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, const char
 
   rv=_messageSetupWithCryptoAndTan(jq, dlg, msg, sTan);
   if (rv) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    AH_Msg_free(msg);
+    return NULL;
+  }
+
+  rv=_prepareJobs(jq);
+  if (rv<0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     AH_Msg_free(msg);
     return NULL;
@@ -105,7 +113,7 @@ int _messageSetupWithCryptoAndTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *msg, 
   if (sTan && *sTan)
     AH_Msg_SetTan(msg, sTan);
 
-  DBG_DEBUG(AQHBCI_LOGDOMAIN, "Adding queue to message (flags: %08x)", AH_JobQueue_GetFlags(jq));
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Adding queue to message (flags: %08x)", AH_JobQueue_GetFlags(jq));
 
   if (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Queue needs a TAN");
@@ -113,9 +121,9 @@ int _messageSetupWithCryptoAndTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *msg, 
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Queue doesn't need a TAN");
   }
-  AH_Msg_SetNeedTan(msg, (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN));
-  AH_Msg_SetNoSysId(msg, (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NOSYSID));
-  AH_Msg_SetSignSeqOne(msg, (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_SIGNSEQONE));
+  AH_Msg_SetNeedTan(msg, (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NEEDTAN)?1:0);
+  AH_Msg_SetNoSysId(msg, (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_NOSYSID)?1:0);
+  AH_Msg_SetSignSeqOne(msg, (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_SIGNSEQONE)?1:0);
 
   /* copy signers */
   if (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_SIGN) {
@@ -146,6 +154,35 @@ int _messageSetupWithCryptoAndTan(AH_JOBQUEUE *jq, AH_DIALOG *dlg, AH_MSG *msg, 
   return 0;
 }
 
+
+
+int _prepareJobs(AH_JOBQUEUE *jq)
+{
+  AH_JOB *j;
+
+  DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing jobs");
+  j=AH_JobQueue_GetFirstJob(jq);
+  while (j) {
+    AH_JOB_STATUS st;
+
+    st=AH_Job_GetStatus(j);
+    /* only encode jobs which have not already been sent or which have no errors */
+    if (st==AH_JobStatusEnqueued) {
+      int rv;
+
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Preparing %s", AH_Job_GetName(j));
+      rv=AH_Job_Prepare(j);
+      if (rv<0) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Error preparing job %s (%d)", AH_Job_GetName(j), rv);
+        AH_Job_SetStatus(j, AH_JobStatusError);
+        return rv;
+      }
+    }
+    j=AH_Job_List_Next(j);
+  } /* while */
+
+  return 0;
+}
 
 
 int _encodeJobs(AH_JOBQUEUE *jq, AH_MSG *msg)
@@ -190,6 +227,7 @@ int _encodeJobs(AH_JOBQUEUE *jq, AH_MSG *msg)
       if (!lastSeg) {
         DBG_INFO(AQHBCI_LOGDOMAIN, "Could not encode job \"%s\"", AH_Job_GetName(j));
         AH_Job_SetStatus(j, AH_JobStatusError);
+        return GWEN_ERROR_GENERIC;
       }
       else {
         AH_Job_SetFirstSegment(j, firstSeg);

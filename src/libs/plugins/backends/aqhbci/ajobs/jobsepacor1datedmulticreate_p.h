@@ -26,10 +26,6 @@ struct AH_JOB_CREATESEPAMULTICOR1 {
 
   int sumFieldNeeded;
   int singleBookingAllowed;
-
-  AB_VALUE *sumValues;
-  char *localIban;
-
 };
 
 

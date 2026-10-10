@@ -46,6 +46,11 @@ int AHB_SWIFT535_Parse_98A(const AHB_SWIFT_TAG *tg,
                            GWEN_DB_NODE *data,
                            GWEN_DB_NODE *cfg);
 
+int AHB_SWIFT535_Parse_98C(const AHB_SWIFT_TAG *tg,
+                           uint32_t flags,
+                           GWEN_DB_NODE *data,
+                           GWEN_DB_NODE *cfg);
+
 int AHB_SWIFT535_Parse_93B(const AHB_SWIFT_TAG *tg,
                            uint32_t flags,
                            GWEN_DB_NODE *data,

@@ -4,6 +4,8 @@ AM_CPPFLAGS = -I$(top_srcdir)/src/libs -I$(top_builddir)/src/libs $(gwenhywfar_i
 
 AM_CFLAGS=@visibility_cflags@
 
+aqcli_libs=${abs_top_builddir}/src/libs/cli/libaqcli.la
+
 bin_PROGRAMS=\
   aqbanking-cli\
   aqhbci-tool4 \
@@ -13,7 +15,9 @@ bin_PROGRAMS=\
 
 aqbanking_cli_LDADD= \
   $(aqbanking_internal_libs) \
-  $(gwenhywfar_libs) -lstdc++
+  $(gwenhywfar_libs) \
+  $(aqcli_libs) \
+  -lstdc++
 
 aqbanking_cli_SOURCES= \
   main.c \
@@ -25,6 +29,7 @@ aqbanking_cli_SOURCES= \
   export.c \
   listaccs.c \
   listbal.c \
+  listconfdir.c \
   listprofiles.c \
   listtrans.c \
   listdoc.c \
@@ -58,22 +63,26 @@ noinst_HEADERS=globals.h
 aqhbci_tool4_SOURCES=aqhbci-tool.c
 aqhbci_tool4_LDADD= \
   $(aqbanking_internal_libs) \
+  $(aqcli_libs) \
   $(gwenhywfar_libs)
 
 
 aqpaypal_tool_SOURCES=aqpaypal-tool.c
 aqpaypal_tool_LDADD= \
   $(aqbanking_internal_libs) \
+  $(aqcli_libs) \
   $(gwenhywfar_libs)
 
 aqebics_tool_SOURCES=aqebics-tool.c
 aqebics_tool_LDADD= \
   $(aqbanking_internal_libs) \
+  $(aqcli_libs) \
   $(gwenhywfar_libs)
 
 aqofxconnect_tool_SOURCES=aqofxconnect-tool.c
 aqofxconnect_tool_LDADD= \
   $(aqbanking_internal_libs) \
+  $(aqcli_libs) \
   $(gwenhywfar_libs)
 
 

@@ -541,6 +541,18 @@ void AH_Job_SubFlags(AH_JOB *j, uint32_t f)
 
 
 
+void AH_Job_LogFlags(const AH_JOB *j, const char *msg)
+{
+  GWEN_BUFFER *bufFlags;
+
+  bufFlags=GWEN_Buffer_new(0, 128, 0, 1);
+  _flagsToBuffer(j->flags, bufFlags);
+  DBG_INFO(AQHBCI_LOGDOMAIN, "%s [job \"%s\", flags %08x: %s]", msg?msg:"", j->name, j->flags, GWEN_Buffer_GetStart(bufFlags));
+  GWEN_Buffer_free(bufFlags);
+}
+
+
+
 GWEN_DB_NODE *AH_Job_GetParams(const AH_JOB *j)
 {
   assert(j);
@@ -712,6 +724,14 @@ void AH_Job_SetStatus(AH_JOB *j, AH_JOB_STATUS st)
       } /* if (jit) */
     } /* if (j->commandList) */
   }
+}
+
+
+
+void AH_Job_SetJobStatusOnMatch(AH_JOB *j, AH_JOB_STATUS matchSt, AH_JOB_STATUS newSt)
+{
+  if (matchSt==AH_JobStatusAll || j->status==matchSt)
+    AH_Job_SetStatus(j, newSt);
 }
 
 
@@ -1281,6 +1301,7 @@ int AH_Job_HasResultWithCode(const AH_JOB *j, int wantedCode)
 
 
 
+
 AH_JOB *AH_Job__freeAll_cb(AH_JOB *j, void *userData)
 {
   assert(j);
@@ -1414,16 +1435,13 @@ void AH_Job_SetUsedTan(AH_JOB *j, const char *s)
 
 void AH_Job_Log(AH_JOB *j, GWEN_LOGGER_LEVEL ll, const char *txt)
 {
-  char buffer[32];
   GWEN_TIME *ti;
   GWEN_BUFFER *lbuf;
 
   assert(j);
 
   lbuf=GWEN_Buffer_new(0, 128, 0, 1);
-  snprintf(buffer, sizeof(buffer), "%02d", ll);
-  GWEN_Buffer_AppendString(lbuf, buffer);
-  GWEN_Buffer_AppendByte(lbuf, ':');
+  GWEN_Buffer_AppendArgs(lbuf, "%02d:", ll);
   ti=GWEN_CurrentTime();
   assert(ti);
   GWEN_Time_toString(ti, "YYYYMMDD:hhmmss:", lbuf);
@@ -1431,9 +1449,7 @@ void AH_Job_Log(AH_JOB *j, GWEN_LOGGER_LEVEL ll, const char *txt)
   GWEN_Text_EscapeToBufferTolerant(AH_PROVIDER_NAME, lbuf);
   GWEN_Buffer_AppendByte(lbuf, ':');
   GWEN_Text_EscapeToBufferTolerant(txt, lbuf);
-  GWEN_StringList_AppendString(j->log,
-                               GWEN_Buffer_GetStart(lbuf),
-                               0, 0);
+  GWEN_StringList_AppendString(j->log, GWEN_Buffer_GetStart(lbuf), 0, 0);
   GWEN_Buffer_free(lbuf);
 }
 

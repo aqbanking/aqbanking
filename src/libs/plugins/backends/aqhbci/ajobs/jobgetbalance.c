@@ -57,6 +57,7 @@ AH_JOB *AH_Job_GetBalance_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 {
   AH_JOB *j;
   GWEN_DB_NODE *dbArgs;
+  int useRegularAccountJob=0;
   int useCreditCardJob=0;
   int useInvestmentJob=0;
   GWEN_DB_NODE *updgroup;
@@ -68,11 +69,21 @@ AH_JOB *AH_Job_GetBalance_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
 
     n=GWEN_DB_GetFirstGroup(updgroup);
     while (n) {
+      if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKSAL")==0) {
+        useRegularAccountJob = 1;
+        break;
+      }
+
       if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "DKKKS")==0) {
         useCreditCardJob = 1;
         break;
       }
 
+      if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKKKS")==0) {
+        useCreditCardJob = 2;
+        break;
+      }
+      
       if (strcasecmp(GWEN_DB_GetCharValue(n, "job", 0, ""), "HKWPD")==0) {
         useInvestmentJob = 1;
         break;
@@ -81,15 +92,23 @@ AH_JOB *AH_Job_GetBalance_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
     } /* while */
   } /* if updgroup for the given account found */
 
-  if (useCreditCardJob)
+  if (useCreditCardJob == 1)
     j=AH_AccountJob_new("JobGetBalanceCreditCard", pro, u, account);
+  else if (useCreditCardJob == 2)
+    j=AH_AccountJob_new("JobGetBalanceCreditCard2", pro, u, account);
   else if (useInvestmentJob)
     j=AH_AccountJob_new("JobGetBalanceInvestment", pro, u, account);
-  else
+  else if (useRegularAccountJob)
     j=AH_AccountJob_new("JobGetBalance", pro, u, account);
-  if (!j)
-    return 0;
-
+  else {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "No UPD available for JobGetBalance");
+    return NULL;
+  }
+  if (j==NULL) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN,
+	      "No GetBalance job available with this account, try toggling preferCamtDownload flag");
+    return NULL;
+  }
   AH_Job_SetSupportedCommand(j, AB_Transaction_CommandGetBalance);
 
   /* overwrite some virtual functions */
@@ -106,8 +125,25 @@ AH_JOB *AH_Job_GetBalance_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account)
   assert(dbArgs);
   if (useCreditCardJob || useInvestmentJob)
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountNumber", AB_Account_GetAccountNumber(account));
-  else
+  else {
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "allAccounts", "N");
+    if (AH_Job_GetSegmentVersion(j)<7) {
+      const char *s;
+
+      /* HKSAL ver 7 and higher use IBAN and BIC, older segments use accountId and bankCode  */
+      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Adding national account specs for HKSAL version <7");
+      s=AB_Account_GetAccountNumber(account);
+      if (s && *s)
+	GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountId", s);
+      s=AB_Account_GetSubAccountId(account);
+      if (s && *s)
+	GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountSubId", s);
+      s=AB_Account_GetBankCode(account);
+      if (s && *s)
+	GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "bankCode", s);
+      GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "country", 280);
+    }
+  }
 
   return j;
 }
@@ -225,12 +261,14 @@ int _jobApi_ProcessBankAccount(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     dbBalance=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/balance");
     if (!dbBalance)
       dbBalance=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/balancecreditcard");
+    if (!dbBalance)
+      dbBalance=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/balancecreditcard2");
     if (dbBalance) {
       GWEN_DB_NODE *dbT;
       AB_ACCOUNT *a;
       AB_IMEXPORTER_ACCOUNTINFO *ai;
 
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Got a balance");
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Got a balance");
       if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
         GWEN_DB_Dump(dbBalance, 2);
 
@@ -327,12 +365,18 @@ int _jobApi_ProcessInvestmentAccount(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     dbBalance=GWEN_DB_GetGroup(dbCurr, GWEN_PATH_FLAGS_NAMEMUSTEXIST, "data/BalanceInvestment");
 
     if (dbBalance) {
+      AB_ACCOUNT *a;
+      /*AB_IMEXPORTER_ACCOUNTINFO *ai;*/
       const void *p;
       unsigned int bs;
 
-      DBG_NOTICE(AQHBCI_LOGDOMAIN, "Got a balance");
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Got a balance");
       if (GWEN_Logger_GetLevel(0)>=GWEN_LoggerLevel_Debug)
         GWEN_DB_Dump(dbBalance, 2);
+
+      a=AH_AccountJob_GetAccount(j);
+      assert(a);
+      /*ai=*/AB_Provider_GetOrAddAccountInfoForAccount(ctx, a);
 
       p=GWEN_DB_GetBinValue(dbBalance, "booked", 0, 0, 0, &bs);
       if (p && bs)
@@ -498,6 +542,13 @@ int _readSecurities(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx, const char *docType, 
     p=GWEN_DB_GetCharValue(dbSecurity, "unitPriceDate", 0, NULL);
     if (p) {
       gt=GWEN_Time_fromString(p, "YYYYMMDD");
+      if (gt)
+        AB_Security_SetUnitPriceDate(asec, gt);
+    }
+
+    p=GWEN_DB_GetCharValue(dbSecurity, "unitPriceDateTime", 0, NULL);
+    if (p) {
+      gt=GWEN_Time_fromString(p, "YYYYMMDDhhmmss");
       if (gt)
         AB_Security_SetUnitPriceDate(asec, gt);
     }

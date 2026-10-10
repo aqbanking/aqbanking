@@ -218,7 +218,7 @@ int _getIniLetterTxt1(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER 
                                      0);
     }
     if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) ||
         !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       kid=GWEN_Crypt_Token_Context_GetEncipherKeyId(cctx);
       if (kid) {
@@ -231,7 +231,7 @@ int _getIniLetterTxt1(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER 
       }
     }
     if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) ||
         !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
         AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
@@ -255,7 +255,7 @@ int _getIniLetterTxt1(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER 
                                      0);
     }
     if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) ||
         !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
         AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
@@ -511,7 +511,7 @@ int _getIniLetterHtml1(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER
                                      0);
     }
     if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) ||
         !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       kid=GWEN_Crypt_Token_Context_GetEncipherKeyId(cctx);
       if (kid) {
@@ -524,7 +524,7 @@ int _getIniLetterHtml1(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER
       }
     }
     if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) ||
         !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
         AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
@@ -548,7 +548,7 @@ int _getIniLetterHtml1(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER
                                      0);
     }
     if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) ||
         !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
         AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
@@ -825,7 +825,7 @@ int _getIniLetterTxt2(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER 
                                      0);
     }
     if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) ||
         !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       kid=GWEN_Crypt_Token_Context_GetEncipherKeyId(cctx);
       if (kid) {
@@ -838,7 +838,7 @@ int _getIniLetterTxt2(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER 
       }
     }
     if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) ||
         !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
         AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
@@ -862,7 +862,7 @@ int _getIniLetterTxt2(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER 
                                      0);
     }
     if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) ||
         !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
         AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
@@ -1158,7 +1158,7 @@ int _getIniLetterHtml2(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER
                                      0);
     }
     if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) ||
         !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       kid=GWEN_Crypt_Token_Context_GetEncipherKeyId(cctx);
       if (kid) {
@@ -1171,7 +1171,7 @@ int _getIniLetterHtml2(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER
       }
     }
     if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) ||
         !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
         AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));
@@ -1195,7 +1195,7 @@ int _getIniLetterHtml2(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER
                                      0);
     }
     if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) ||
         !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
         AB_Banking_ClearCryptTokenList(AH_HBCI_GetBankingApi(h));

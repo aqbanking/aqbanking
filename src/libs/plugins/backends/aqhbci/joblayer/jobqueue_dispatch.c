@@ -89,11 +89,14 @@ int AH_JobQueue_DispatchMessage(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db)
   jobQueueFlags=AH_JobQueue_GetFlags(jq);
 
   if (jobQueueFlags & (AH_JOBQUEUE_FLAGS_ACCESS_PROBLEM | AH_JOBQUEUE_FLAGS_DIALOG_ABORTED)) {
-    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Dialog logically aborted by peer, assuming bad PIN");
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Dialog logically aborted by peer");
+    return GWEN_ERROR_ABORTED;
+  }
+
+  if (jobQueueFlags & AH_JOBQUEUE_FLAGS_BAD_PIN) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Bad PIN reported by peer");
     if (AH_JobQueue_GetUsedPin(jq)) {
-      GWEN_Gui_ProgressLog(guiid,
-                           GWEN_LoggerLevel_Info,
-                           I18N("Dialog aborted by bank, assuming bad PIN"));
+      GWEN_Gui_ProgressLog(guiid, GWEN_LoggerLevel_Info, I18N("Peer reported bad PIN"));
       AH_User_SetPinStatus(AH_JobQueue_GetUser(jq), AH_JobQueue_GetUsedPin(jq), GWEN_Gui_PasswordStatus_Bad);
     }
     return GWEN_ERROR_ABORTED;
@@ -637,6 +640,9 @@ GWEN_DB_NODE *_sampleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE
     GWEN_DB_AddGroup(dbData, GWEN_DB_Group_dup(dbCurr));
 
     GWEN_DB_AddGroup(dbAllResponses, dbPreparedJobResponse);
+
+    if (strcasecmp(GWEN_DB_GroupName(dbCurr), "SegResult")!=0 && strcasecmp(GWEN_DB_GroupName(dbCurr), "MsgResult")!=0)
+      AH_JobQueue_AddToAllResponses(jq, dbPreparedJobResponse); /* add all responses to queue */
     responsesAdded++;
 
     dbCurr=GWEN_DB_GetNextGroup(dbCurr);
@@ -758,14 +764,19 @@ void _handleResponseSegments(AH_JOBQUEUE *jq, AH_MSG *msg, GWEN_DB_NODE *db, GWE
     if (AH_JobQueue_GetFlags(jq) & AH_JOBQUEUE_FLAGS_IGNOREACCOUNTS) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Ignoring possibly received accounts");
     }
-    else
+    else {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Reading possibly received accounts and SEPA accounts");
       AH_JobQueue_ReadAccounts(jq, dbAllResponses);
+      AH_JobQueue_ReadSepaAccounts(jq, dbAllResponses);
+    }
 
     jqRun=jq;
     while (jqRun) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Dispatching responses to queue %d", queueNum);
+#if 0
       if (GWEN_Logger_GetLevel(AQHBCI_LOGDOMAIN)>=GWEN_LoggerLevel_Info)
         AH_JobQueue_DumpJobList(jqRun, stderr, 2);
+#endif
       /* then dispatch to jobs in this and in reference queue */
       _dispatchResponsesToJobQueue(jqRun, dbAllResponses, (queueNum>0)?1:0);
       queueNum++;

@@ -33,6 +33,7 @@ static int _jobApi_GetLimits(AH_JOB *j, AB_TRANSACTION_LIMITS **pLimits);
 static int _jobApi_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t);
 
 static int _addSupportedCamtFormats(AH_JOB *j, GWEN_DB_NODE *dbArgs);
+static int _readCamtFormatsFromSwiftDescriptors(AH_JOB *j, GWEN_DB_NODE *dbArgs, int camtVersion);
 static int _readBooked(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai, GWEN_DB_NODE *dbBooked);
 static int _readTransactionsFromResponse(AH_JOB *j, AB_IMEXPORTER_ACCOUNTINFO *ai, GWEN_DB_NODE *dbXA);
 static int _readTransactions(AH_JOB *j,
@@ -86,6 +87,12 @@ AH_JOB *AH_Job_GetTransactionsCAMT_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT 
   }
 
   /* set some known arguments */
+  if ((AH_User_GetFlags(u) & AH_USER_FLAGS_SEPA_ALLOWNATIONALACCSPEC) ||
+      (AH_Account_GetFlags(account) & AH_BANK_FLAGS_GETTRANS_FORCE_NTLACCOUNTINFO)) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Adding national account specs for SEPA jobs");
+    AH_AccountJob_WriteNationalAccountInfoToArgs(j);
+  }
+
   GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "allAccounts", "N");
   return j;
 }
@@ -196,10 +203,31 @@ int _jobApi_HandleCommand(AH_JOB *j, const AB_TRANSACTION *t)
 
 int _addSupportedCamtFormats(AH_JOB *j, GWEN_DB_NODE *dbArgs)
 {
+  int foundAtLeastOneDescr=0;
+
+  if (_readCamtFormatsFromSwiftDescriptors(j, dbArgs, 52))
+    foundAtLeastOneDescr=1;
+  if (_readCamtFormatsFromSwiftDescriptors(j, dbArgs, 53))
+    foundAtLeastOneDescr=1;
+  if (_readCamtFormatsFromSwiftDescriptors(j, dbArgs, 54))
+    foundAtLeastOneDescr=1;
+
+  if (!foundAtLeastOneDescr) {
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "No supported CAMT profile found, job not supported");
+    return GWEN_ERROR_GENERIC;
+  }
+
+  return 0;
+}
+
+
+
+int _readCamtFormatsFromSwiftDescriptors(AH_JOB *j, GWEN_DB_NODE *dbArgs, int camtVersion)
+{
   AB_SWIFT_DESCR_LIST *descrList;
   int foundAtLeastOneDescr=0;
 
-  descrList=AH_Job_GetSwiftDescriptorsSupportedByJob(j, NULL, "supportedFormat", "camt", 52);
+  descrList=AH_Job_GetSwiftDescriptorsSupportedByJob(j, NULL, "supportedFormat", "camt", camtVersion);
   if (descrList) {
     AB_SWIFT_DESCR *descr;
 
@@ -208,7 +236,7 @@ int _addSupportedCamtFormats(AH_JOB *j, GWEN_DB_NODE *dbArgs)
       const char *s;
 
       s=AB_SwiftDescr_GetAlias2(descr);
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Adding supported CAMT format [%s]", s);
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Adding supported CAMT format [%s]", s);
       GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "SupportedFormats/format", s);
       foundAtLeastOneDescr=1;
       descr=AB_SwiftDescr_List_Next(descr);
@@ -216,12 +244,7 @@ int _addSupportedCamtFormats(AH_JOB *j, GWEN_DB_NODE *dbArgs)
     AB_SwiftDescr_List_free(descrList);
   }
 
-  if (!foundAtLeastOneDescr) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "No supported CAMT profile found, job not supported");
-    return GWEN_ERROR_GENERIC;
-  }
-
-  return 0;
+  return foundAtLeastOneDescr;
 }
 
 

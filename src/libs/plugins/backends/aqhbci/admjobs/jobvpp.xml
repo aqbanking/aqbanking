@@ -1,0 +1,107 @@
+ <!--
+/***************************************************************************
+    begin       : Fri Oct 3 2025
+    copyright   : (C) 2025 by Martin Preuss
+    email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+  -->
+
+
+<SEGs>
+
+  <!-- Kundennachricht -->
+  <SEGdef id="VppRequest" code="HKVPP" version="1" delimiter="+" terminator="'">
+    <GROUP name="head"             type="SegHead"   />
+    <GROUP name="SupportedFormats" delimiter=":" terminator="" >
+      <ELEM  name="format"         type="ascii" maxsize="256" minnum="0" maxnum="99" />
+    </GROUP>
+    <ELEM name="pollingId"         type="bin" minnum="0"   maxnum="1" />
+    <ELEM name="numEntries"        type="num"   maxsize="2"  minnum="0" />
+    <ELEM name="attach"            type="ascii" maxsize="35" minnum="0" />
+
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+
+
+
+  <SEGdef id="VppResponse" code="HIVPP" version="1" delimiter="+" terminator="'">
+    <GROUP name="head"                 type="SegHead" />
+    <ELEM  name="vopId"                type="bin"       minnum="0" />
+    <GROUP name="validUntil"           type="timespec" />
+    <ELEM  name="pollingId"            type="bin"       minnum="0" maxnum="1" />
+    <ELEM  name="paymentStatusFormat"  type="ascii"     minnum="0" maxnum="1" />
+    <ELEM  name="paymentStatusReport"  type="bin"       minnum="0" maxnum="1" />
+    <GROUP name="vopResult"            type="vopResult" minnum="0" />
+    <ELEM  name="vopMsg"               type="ascii"     minnum="0" maxnum="1" />
+    <ELEM  name="waitTime"             type="num"       minnum="0" />
+    
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+
+
+
+  <SEGdef code="HIVPPS" version="1" delimiter="+" terminator="'" isbpdjob="1">
+    <GROUP name="head"                             type="SegHead"  />
+    <ELEM  name="jobspermsg"                       type="num"   maxsize="3" />
+    <ELEM  name="minsigs"                          type="num"   maxsize="1" />
+    <ELEM  name="securityClass"                    type="num"   size="1" />
+
+    <GROUP delimiter=":" terminator="">
+      <ELEM   name="maxTransInfo"                    type="num"   maxsize="7" />
+      <ELEM   name="textIsStructured"                type="an"    maxsize="2" />
+      <ELEM   name="reportDeliveryType"              type="an"    maxsize="2" />
+      <ELEM   name="AllowMassPaymentWithSingleEntry" type="an"    maxsize="2" />
+      <ELEM   name="AllowNumEntries"                 type="an"    maxsize="2" />
+      <ELEM   name="paymentStatusFormat"             type="ascii" maxsize="1024" minnum="1" maxnum="1" />
+      <GROUP  name="VopRequiredForJobs" delimiter=":" terminator="" >
+        <ELEM name="Job"                             type="ascii" maxsize="6" minnum="0" maxnum="99" />
+      </GROUP>
+    </GROUP>
+
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </SEGdef>
+
+
+</SEGs>
+
+
+
+<JOBs>
+
+  <JOBdef id="JobVpp"
+          code="HKVPP"
+          params="HIVPPS"
+          version="1"
+          crypt="1"
+          sign="1"
+          needBPD="1"
+          response="VppResponse"
+          attachable="1"
+  >
+    <SEG type="VppRequest" version="1" />
+
+    <VALUES>
+      <VALUE path="head/code">%code</VALUE>
+      <VALUE path="head/version">%version</VALUE>
+    </VALUES>
+  </JOBdef>
+
+
+
+</JOBs>
+
+
+
+

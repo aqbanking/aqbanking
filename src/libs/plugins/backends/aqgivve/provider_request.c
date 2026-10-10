@@ -12,6 +12,9 @@
 #endif
 #include "provider.h"
 #include "provider_request_p.h"
+
+#include <aqbanking/i18n_l.h>
+
 #include "gwenhywfar/json.h"
 #include "gwenhywfar/json_read.h"
 #include "meta.h"
@@ -48,14 +51,14 @@ GWEN_INHERIT(GWEN_HTTP_SESSION, AG_HTTP_SESSION_HEADER);
 
 
 
-void _freeData(void *bp, void *p)
+void GWENHYWFAR_CB _freeData(void *bp, void *p)
 {
   free(p);
 }
 
 
 
-int _cbInitSyncIo(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio)
+int GWENHYWFAR_CB _cbInitSyncIo(GWEN_HTTP_SESSION *sess, GWEN_SYNCIO *sio)
 {
   AG_HTTP_SESSION_HEADER *xsess;
 
@@ -151,6 +154,21 @@ GWEN_JSON_ELEM *_sendRequest(char *method, char *url, GWEN_DB_NODE *header_param
 }
 
 
+GWEN_JSON_ELEM *_sendAuthRequest(char request[1024]) {
+
+  GWEN_DB_NODE *header = GWEN_DB_Group_new("header");
+
+  GWEN_DB_SetCharValue(header, GWEN_DB_FLAGS_OVERWRITE_VARS, "Accept", "application/json");
+  GWEN_DB_SetCharValue(header, GWEN_DB_FLAGS_OVERWRITE_VARS, "Accept-Version", "v2");
+  GWEN_DB_SetCharValue(header, GWEN_DB_FLAGS_OVERWRITE_VARS, "Content-Type", "application/json");
+
+  GWEN_JSON_ELEM *json_root = _sendRequest("POST", "/api/authorizations", header, request);
+
+  GWEN_DB_Group_free(header);
+
+  return json_root;
+}
+
 
 char *AG_Provider_Request_GetToken(AB_USER *user)
 {
@@ -162,22 +180,55 @@ char *AG_Provider_Request_GetToken(AB_USER *user)
   const char *identifier = AB_User_GetUserId(user);
 
   snprintf(text, sizeof(text)-1,
-           "Please enter the password for user %s\n<html>Please enter the password for user <i>%s</i></br></html>", identifier,
+           I18N("Please enter the password for user %s\n<html>Please enter the password for user <i>%s</i></br></html>"), identifier,
            identifier);
 
-  GWEN_Gui_GetPassword(0, pw_token, "Enter Password", text, pw, 4, sizeof(pw)-1, GWEN_Gui_PasswordMethod_Text, NULL, 0);
+  GWEN_Gui_GetPassword(0, pw_token, I18N("Enter Password"), text, pw, 4, sizeof(pw)-1, GWEN_Gui_PasswordMethod_Text, NULL, 0);
 
   char request[1024];
-
   snprintf(request, 1024, "{\"identifier\": \"%s\", \"password\": \"%s\", \"accessors\": [ \"voucher_owner\"]}",
            identifier, pw);
 
-  GWEN_DB_NODE *header = GWEN_DB_Group_new("header");
+  /*Send auth request with identifier, accessors and password*/
+  GWEN_JSON_ELEM *json_root = _sendAuthRequest(request);
 
-  GWEN_DB_SetCharValue(header, GWEN_DB_FLAGS_OVERWRITE_VARS, "Accept", "application/json");
-  GWEN_DB_SetCharValue(header, GWEN_DB_FLAGS_OVERWRITE_VARS, "Accept-Version", "v2");
-  GWEN_DB_SetCharValue(header, GWEN_DB_FLAGS_OVERWRITE_VARS, "Content-Type", "application/json");
-  GWEN_JSON_ELEM *json_root = _sendRequest("POST", "/api/authorizations", header, request);
+  /*Check if otp is required*/
+  if (json_root) {
+    GWEN_JSON_ELEM *json_data = _getElement(json_root, "data");
+
+    if (json_data) {
+
+      GWEN_JSON_ELEM *json_token_type = GWEN_JsonElement_GetElementByPath(json_data, "token_type", 0);
+      GWEN_JSON_ELEM *json_token = GWEN_JsonElement_GetElementByPath(json_data, "access_token", 0);
+      GWEN_JSON_ELEM *json_auth_status = GWEN_JsonElement_GetElementByPath(json_data, "auth_status", 0);
+
+      if (json_token_type && json_token && json_auth_status) {
+
+        const char *token_type_str = GWEN_JsonElement_GetData(json_token_type);
+        const char *token_str = GWEN_JsonElement_GetData(json_token);
+        const char *auth_status_str = GWEN_JsonElement_GetData(json_auth_status);
+
+        if ((strcmp(token_type_str, "null") == 0) && (strcmp(token_str, "null") == 0) && (strcmp(auth_status_str, "otp_required") == 0)) {
+
+          GWEN_JsonElement_free(json_token);
+          GWEN_JsonElement_free(json_token_type);
+          GWEN_JsonElement_free(json_auth_status);
+          GWEN_JsonElement_free(json_root);
+
+          char login_code[7];
+          GWEN_Gui_InputBox(GWEN_GUI_INPUT_FLAGS_SHOW | GWEN_GUI_INPUT_FLAGS_DIRECT, "Login-Code", I18N("Please enter the login-code you received via e-mail.\n<html>Please enter the login-code you received via e-mail.<br></html>"), login_code, 6,7, 0);
+
+          snprintf(request, 1024, "{\"identifier\": \"%s\", \"password\": \"%s\", \"accessors\": [ \"voucher_owner\"], \"otp\": \"%s\"}",
+               identifier, pw, login_code);
+
+        /*re-send auth request with otp*/
+        json_root = _sendAuthRequest(request);
+        }
+      }
+    }
+  }
+
+
 
   if (json_root) {
     GWEN_JSON_ELEM *json_data = _getElement(json_root, "data");
@@ -185,24 +236,30 @@ char *AG_Provider_Request_GetToken(AB_USER *user)
     if (json_data) {
       GWEN_JSON_ELEM *json_token_type = GWEN_JsonElement_GetElementByPath(json_data, "token_type", 0);
       GWEN_JSON_ELEM *json_token = GWEN_JsonElement_GetElementByPath(json_data, "access_token", 0);
+      GWEN_JSON_ELEM *json_auth_status = GWEN_JsonElement_GetElementByPath(json_data, "auth_status", 0);
 
-      if (json_token && json_token_type) {
-        const char *token_type_str = GWEN_JsonElement_GetData(json_token_type);
-        const char *token_str = GWEN_JsonElement_GetData(json_token);
+      if (json_token && json_token_type && json_auth_status) {
 
-        size_t token_max_len = strlen(token_type_str) + strlen(token_str) + 5;
-        token = malloc(token_max_len);
+        const char *auth_status_str = GWEN_JsonElement_GetData(json_auth_status);
 
-        strncpy(token, token_type_str, token_max_len);
-        strcat(token, " ");
-        strncat(token, token_str, token_max_len - strlen(token_type_str) -1) ;
+        if ((strcmp(auth_status_str, "authenticated") == 0)) {
+          const char *token_type_str = GWEN_JsonElement_GetData(json_token_type);
+          const char *token_str = GWEN_JsonElement_GetData(json_token);
 
-        token[0] = toupper(token[0]);
+          size_t token_max_len = strlen(token_type_str) + strlen(token_str) + 5;
+          token = malloc(token_max_len);
 
-        printf("token: %s", token);
+          strncpy(token, token_type_str, token_max_len);
+          strcat(token, " ");
+          strncat(token, token_str, token_max_len - strlen(token_type_str) -1) ;
+
+          token[0] = toupper(token[0]);
+
+        }
 
         GWEN_JsonElement_free(json_token);
         GWEN_JsonElement_free(json_token_type);
+        GWEN_JsonElement_free(json_auth_status);
       }
       GWEN_JsonElement_free(json_data);
 
@@ -212,9 +269,10 @@ char *AG_Provider_Request_GetToken(AB_USER *user)
   }
   if (!token) {
     DBG_INFO(AQGIVVE_LOGDOMAIN, "no token received ");
+    GWEN_Gui_MessageBox(GWEN_GUI_MSG_FLAGS_TYPE_ERROR, I18N("Error"), I18N("Failed to authenticate\nNo token received.<html>Failed to authenticate<br>No token received.</html>"),"OK",NULL,NULL, 0);
 
   }
-  GWEN_DB_Group_free(header);
+
   return token;
 }
 
@@ -339,7 +397,7 @@ AB_TRANSACTION_LIST *AG_Provider_Request_GetTransactions(AB_ACCOUNT *account,
   int current_page = 1;
   char path[512];
 
-  AB_TRANSACTION_LIST *trans_list = AB_Account_List_new();
+  AB_TRANSACTION_LIST *trans_list = AB_Transaction_List_new();
 
   const char *id = AB_Account_GetAccountNumber(account);
 

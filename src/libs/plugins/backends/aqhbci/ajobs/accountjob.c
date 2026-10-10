@@ -56,10 +56,15 @@ AH_JOB *AH_AccountJob_new(const char *name,
   const char *s;
   const char *sAccountNumOrIban=NULL;
   int jobVersion=0;
+  uint32_t uflags;
+  uint32_t aflags;
 
   assert(name);
   assert(u);
   assert(account);
+
+  uflags=AH_User_GetFlags(u);
+  aflags=AH_Account_GetFlags(account);
 
   /* this might later be removed, since all accounts should now have a suffix reported by the bank,
    * and if an account doesn't, it is just not needed anymore */
@@ -81,22 +86,24 @@ AH_JOB *AH_AccountJob_new(const char *name,
   dbArgs=AH_Job_GetArguments(j);
   assert(dbArgs);
 
-  s=AB_Account_GetAccountNumber(account);
-  if (s && *s) {
-    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountId", s);
-    sAccountNumOrIban=s;
+  if ((uflags & AH_USER_FLAGS_SEPA_ALLOWNATIONALACCSPEC) ||
+      (aflags & AH_BANK_FLAGS_GETTRANS_FORCE_NTLACCOUNTINFO)) {
+    DBG_NOTICE(AQHBCI_LOGDOMAIN, "Adding national account specs for SEPA jobs");
+    s=AB_Account_GetAccountNumber(account);
+    if (s && *s) {
+      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountId", s);
+      sAccountNumOrIban=s;
+    }
+
+    s=AB_Account_GetSubAccountId(account);
+    if (s && *s)
+      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountSubId", s);
+
+    s=AB_Account_GetBankCode(account);
+    if (s && *s)
+      GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "bankCode", s);
+    GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "country", 280);
   }
-
-  s=AB_Account_GetSubAccountId(account);
-  if (s && *s)
-    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountSubId", s);
-
-  s=AB_Account_GetBankCode(account);
-  if (s && *s)
-    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "bankCode", s);
-
-  GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_DEFAULT,
-                      "country", 280);
 
   /* new for SEPA jobs */
   s=AB_Account_GetIban(account);
@@ -150,6 +157,29 @@ void GWENHYWFAR_CB AH_AccountJob_FreeData(void *bp, void *p)
 int AH_AccountJob_IsAccountJob(const AH_JOB *j)
 {
   return GWEN_INHERIT_ISOFTYPE(AH_JOB, AH_ACCOUNTJOB, j);
+}
+
+
+
+void AH_AccountJob_WriteNationalAccountInfoToArgs(AH_JOB *j)
+{
+  const char *s;
+  const AB_ACCOUNT *account;
+  GWEN_DB_NODE *dbArgs;
+
+  account=AH_AccountJob_GetAccount(j);
+  dbArgs=AH_Job_GetArguments(j);
+
+  s=AB_Account_GetAccountNumber(account);
+  if (s && *s)
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountId", s);
+  s=AB_Account_GetSubAccountId(account);
+  if (s && *s)
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "accountSubId", s);
+  s=AB_Account_GetBankCode(account);
+  if (s && *s)
+    GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "bankCode", s);
+  GWEN_DB_SetIntValue(dbArgs, GWEN_DB_FLAGS_DEFAULT, "country", 280);
 }
 
 

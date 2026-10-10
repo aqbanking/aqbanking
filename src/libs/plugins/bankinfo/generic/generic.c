@@ -279,6 +279,7 @@ AB_BANKINFO *AB_BankInfoPluginGENERIC__SearchbyCode(AB_BANKINFO_PLUGIN *bip,
       }
     }
   }
+  GWEN_Buffer_free(pbuf);
   fclose(f);
   DBG_INFO(AQBANKING_LOGDOMAIN, "Bank %s not found", bankId);
   return 0;

@@ -111,7 +111,7 @@ ALL_LINGUAS = $(basename $(notdir $(shell ls $(srcdir)/po/*.po)))
 #ALL_LINGUAS = de
 
 # List of po files. Only necessary in the dependency of the catalogs
-# rule. For old make programs, you would simpy set this to an empty
+# rule. For old make programs, you would simply set this to an empty
 # variable.
 I18NLINGUAS = $(foreach lang,$(ALL_LINGUAS),$(srcdir)/po/$(lang).po)
 
@@ -131,12 +131,12 @@ po/$(PACKAGE).pot: i18nsources dlgsources pdsources $(I18NFILES)
 	    $(I18NFILES) ; \
 	fi
 	for i in $(DLGFILES); do \
-          po4a-gettextize -f xml -m $$i -p po/tmppot1 -o attributes=text && \
+          po4a-updatepo -f xml -m $$i -p po/tmppot1 -o attributes=text && \
 	  msghack -o po/tmppot2 --append po/tmppot po/tmppot1 && \
 	  mv po/tmppot2 po/tmppot; \
 	done
 	for i in $(PDFILES); do \
-          po4a-gettextize -f xml -m $$i -p po/tmppot1 -o wrap \
+          po4a-updatepo -f xml -m $$i -p po/tmppot1 -o wrap \
 	    -o translated="<plugin><short> <plugin><descr>" \
 	    -o untranslated="<plugin><version> <plugin><author>" \
 	    && \

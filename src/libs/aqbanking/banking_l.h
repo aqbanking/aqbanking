@@ -22,6 +22,26 @@
 
 
 
+typedef struct AB_FLAGDEF AB_FLAGDEF;
+struct AB_FLAGDEF {
+  uint32_t flagValue;          /* 0=end */
+  const char *flagString;
+};
+
+
+
+/* ========================================================================================================================
+ *                                                banking.c
+ * ========================================================================================================================
+ */
+
+void AB_Banking_Iso8859_1ToUtf8(const char *p, int size, GWEN_BUFFER *buf);
+
+uint32_t AB_Banking_FlagsFromDb(GWEN_DB_NODE *db, const AB_FLAGDEF *defs, const char *sVarName);
+void AB_Banking_FlagsToDb(GWEN_DB_NODE *db, const AB_FLAGDEF *defs, const char *sVarName, uint32_t flags);
+
+
+
 /* ========================================================================================================================
  *                                                banking_account.c
  * ========================================================================================================================

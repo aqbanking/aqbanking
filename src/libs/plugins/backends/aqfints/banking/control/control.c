@@ -16,6 +16,7 @@
 #include "logfile.h"
 
 #include "aqbanking/i18n_l.h"
+#include "cli/helper.h"
 
 #include <gwenhywfar/gwenhywfar.h>
 #include <gwenhywfar/db.h>

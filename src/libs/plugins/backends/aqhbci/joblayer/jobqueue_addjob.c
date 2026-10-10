@@ -67,6 +67,7 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j)
     }
   }
   else {
+#if 0
     if (strcasecmp(AH_Job_GetName(j), "JobTan")!=0) {
       AH_JOBQUEUE_ADDRESULT jobQueueResult;
 
@@ -99,6 +100,7 @@ AH_JOBQUEUE_ADDRESULT AH_JobQueue_AddJob(AH_JOBQUEUE *jq, AH_JOB *j)
         }
       }
     } /* if not JobTan */
+#endif
   }
 
   /* update maximum security profile */
@@ -231,7 +233,14 @@ int _countJobsOtherThanTan(const AH_JOBQUEUE *jq)
 
 AH_JOBQUEUE_ADDRESULT _checkJobFlags(AH_JOBQUEUE *jq, AH_JOB *jobToAdd)
 {
-  if (strcasecmp(AH_Job_GetName(jobToAdd), "JobTan")!=0 && strcasecmp(AH_Job_GetName(jobToAdd), "JobAcknowledge")!=0) {
+  const char *nameToAdd;
+
+  nameToAdd=AH_Job_GetName(jobToAdd);
+
+  if (strcasecmp(nameToAdd, "JobTan")!=0 &&
+      strcasecmp(nameToAdd, "JobVpp")!=0 &&
+      strcasecmp(nameToAdd, "JobVpa")!=0 &&
+      strcasecmp(nameToAdd, "JobAcknowledge")!=0) {
     uint32_t flagsInJobToAdd;
     uint32_t flagsInFirstJob;
     AH_JOB *firstJob;
@@ -242,7 +251,7 @@ AH_JOBQUEUE_ADDRESULT _checkJobFlags(AH_JOBQUEUE *jq, AH_JOB *jobToAdd)
     flagsInFirstJob=AH_Job_GetFlags(firstJob);
 
     if ((flagsInJobToAdd & AH_JOB_FLAGS_SINGLE) || (flagsInJobToAdd & AH_JOB_FLAGS_DLGJOB)) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "New jobs wants to be alone but queue is not empty");
+      DBG_INFO(AQHBCI_LOGDOMAIN, "New job %s wants to be alone but queue is not empty", nameToAdd);
       return AH_JobQueueAddResultQueueFull;
     }
 

@@ -1,0 +1,67 @@
+
+<!--
+/***************************************************************************
+    begin       : Fri Oct 17 2025
+    copyright   : (C) 2025 by Martin Preuss
+    email       : martin@libchipcard.de
+
+ ***************************************************************************
+ *          Please see toplevel file COPYING for license details           *
+ ***************************************************************************/
+ 
+ This file can be used to import a PAIN.002.001.10 file.
+ 
+-->
+
+
+<Schema>
+
+  <DocMatches>
+    <Match path="Document@xmlns">*pain.002.001.10</Match>
+  </DocMatches>
+
+
+  <Import>
+  
+    <XmlIfPathExists                                                path="Document/CstmrPmtStsRpt">
+      <XmlEnter                                                     path="Document/CstmrPmtStsRpt">
+        <XmlIfPathExists                                            path="GrpHdr">
+          <XmlEnter                                                 path="GrpHdr">
+            <DbSetTempCharValue         name="bic"                  path="DbtrAgt/FinInstnId/BICFI"/>
+          </XmlEnter>
+        </XmlIfPathExists>
+        
+        <XmlIfPathExists                                            path="OrgnlPmtInfAndSts">
+          <XmlEnter                                                 path="OrgnlPmtInfAndSts">
+            <DbCreateAndEnterGroup      name="account">
+              <DbSetCharValue           name="bic"                  value="$(bic)" />
+            
+              <XmlForEvery              name="TxInfAndSts">
+                <DbCreateAndEnterGroup  name="transaction">
+                  <DbSetCharValue       name="type"                   value="transfer" />
+                  <DbSetCharValue       name="endToEndReference"      path="OrgnlEndToEndId"/>
+                  <XmlIfPathExists                                    path="OrgnlTxRef">
+                    <XmlEnter                                         path="OrgnlTxRef">
+                      <DbSetCharValue   name="remoteIban"             path="CdtrAcct/Id/IBAN"/>
+                      <DbSetCharValue   name="remoteName"             path="Cdtr/Pty/Nm"/>
+                    </XmlEnter>
+                  </XmlIfPathExists>
+                  
+                  <DbSetCharValue       name="ultimateCreditor"       path="StsRsnInf/AddtlInf"/>
+                  <DbSetCharValue       name="transactionText"        path="TxSts"/>
+                </DbCreateAndEnterGroup> <!-- transaction -->
+              </XmlForEvery>
+            </DbCreateAndEnterGroup> <!-- account -->
+          
+          </XmlEnter>
+        </XmlIfPathExists>
+
+      </XmlEnter> <!-- Document/CstmrPmtStsRpt -->
+  
+    </XmlIfPathExists> <!-- Document/CstmrPmtStsRpt -->
+  
+  </Import>
+
+
+</Schema>
+

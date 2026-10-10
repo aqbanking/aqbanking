@@ -62,7 +62,8 @@
 
     <widget type="groupBox" text="Special Actions" flags="fillX" >
       <widget type="hLayout" flags="fillX" >
-        <widget type="pushButton" text="Get Accounts" name="getAccountsButton" />
+        <widget type="pushButton" text="Get Accounts"  name="getAccountsButton" />
+        <widget type="pushButton" text="Get SEPA Info" name="getSepaButton" />
         <widget type="hspacer" flags="fillX" />
       </widget>
     </widget>     <!-- groupBox -->

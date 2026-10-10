@@ -252,8 +252,10 @@ int _getTan(AH_TAN_MECHANISM *tanMechanism,
     GWEN_BUFFER *bufToken;
     GWEN_DB_NODE *dbTanMethod;
 
+#if 0
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Will use this challenge:");
     GWEN_Buffer_Dump(cbuf, 2);
+#endif
 
     dbMethodParams=GWEN_DB_Group_new("methodParams");
 

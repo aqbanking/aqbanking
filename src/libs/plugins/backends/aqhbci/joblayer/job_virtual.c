@@ -27,7 +27,7 @@ int AH_Job_Process(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
   assert(j);
   assert(j->usage);
 
-  DBG_INFO(AQHBCI_LOGDOMAIN, "Processing job \"%s\" (%llu)", AH_Job_GetName(j), (unsigned long long int) AH_Job_GetId(j));
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Processing job \"%s\" (%llu)", AH_Job_GetName(j), (unsigned long long int) AH_Job_GetId(j));
 
   AH_Job_SampleResults(j);
 
@@ -63,7 +63,7 @@ int AH_Job_Prepare(AH_JOB *j)
     return j->prepareFn(j);
   else {
     DBG_DEBUG(AQHBCI_LOGDOMAIN, "No prepareFn set");
-    return GWEN_ERROR_NOT_SUPPORTED;
+    return 0;
   }
 }
 
@@ -280,30 +280,35 @@ int AH_Job_HandleResults_Empty(AH_JOB *j, AB_IMEXPORTER_CONTEXT *ctx)
     tStatus=AB_Transaction_StatusError;
   }
   else {
-    int has10=0;
-    int has20=0;
+    int hasResultPending=0;
+    int hasResultExecuted=0;
+    int hasResultWarning=0;
 
     while (r) {
       int rcode;
 
       rcode=AH_Result_GetCode(r);
       if (rcode>=10 && rcode<=19) {
-        DBG_INFO(AQBANKING_LOGDOMAIN, "Has10: %d (%s)", rcode, AH_Result_GetText(r));
-        has10=1;
+	DBG_INFO(AQBANKING_LOGDOMAIN, "HBCI: Pending (%d, %s)", rcode, AH_Result_GetText(r));
+	hasResultPending=1;
       }
-      else if ((rcode>=20 && rcode <=29) || rcode==3010) {
-        DBG_INFO(AQBANKING_LOGDOMAIN, "Has20: %d (%s)", rcode, AH_Result_GetText(r));
-        has20=1;
+      else if (rcode>=20 && rcode <=29) {
+	DBG_INFO(AQBANKING_LOGDOMAIN, "HBCI: Executed (%d %s)", rcode, AH_Result_GetText(r));
+	hasResultExecuted=1;
+      }
+      else if (rcode>=3000 && rcode <=3999) {
+	DBG_INFO(AQBANKING_LOGDOMAIN, "HBCI: Warning (%d %s)", rcode, AH_Result_GetText(r));
+	hasResultWarning=1;
       }
       else {
-        DBG_INFO(AQBANKING_LOGDOMAIN, "Other: %d (%s)", rcode, AH_Result_GetText(r));
+	DBG_INFO(AQBANKING_LOGDOMAIN, "HBCI: Other (%d %s)", rcode, AH_Result_GetText(r));
       }
       r=AH_Result_List_Next(r);
     }
 
-    if (has20)
+    if (hasResultExecuted || hasResultWarning)
       tStatus=AB_Transaction_StatusAccepted;
-    else if (has10)
+    else if (hasResultPending)
       tStatus=AB_Transaction_StatusPending;
     else
       tStatus=AB_Transaction_StatusRejected;

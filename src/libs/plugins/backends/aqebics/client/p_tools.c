@@ -1053,7 +1053,7 @@ int EBC_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
                                      0);
     }
     if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) ||
         !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       kid=GWEN_Crypt_Token_Context_GetEncipherKeyId(ctx);
       if (kid) {
@@ -1066,7 +1066,7 @@ int EBC_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
       }
     }
     if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) ||
         !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
         AB_Banking_ClearCryptTokenList(ab);
@@ -1090,7 +1090,7 @@ int EBC_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
                                      0);
     }
     if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) ||
         !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
         AB_Banking_ClearCryptTokenList(ab);
@@ -1468,7 +1468,7 @@ int EBC_Provider_GetHiaLetterTxt(AB_PROVIDER *pro,
                                      0);
     }
     if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) ||
         !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
         AB_Banking_ClearCryptTokenList(ab);
@@ -1492,7 +1492,7 @@ int EBC_Provider_GetHiaLetterTxt(AB_PROVIDER *pro,
                                      0);
     }
     if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) ||
         !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
         AB_Banking_ClearCryptTokenList(ab);
@@ -1569,7 +1569,7 @@ int EBC_Provider_GetHiaLetterTxt(AB_PROVIDER *pro,
                                      0);
     }
     if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) ||
         !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
         AB_Banking_ClearCryptTokenList(ab);
@@ -1593,7 +1593,7 @@ int EBC_Provider_GetHiaLetterTxt(AB_PROVIDER *pro,
                                      0);
     }
     if (!ki ||
-        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) |
+        !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASMODULUS) ||
         !(GWEN_Crypt_Token_KeyInfo_GetFlags(ki) & GWEN_CRYPT_TOKEN_KEYFLAGS_HASEXPONENT)) {
       if (!nounmount)
         AB_Banking_ClearCryptTokenList(ab);

@@ -55,7 +55,8 @@ libhbcicontrol_la_SOURCES=\
  getbankinfo.c \
  settanmechanism.c \
  gettargetacc.c \
- test.c
+ test.c \
+ test2.c
 
 
 

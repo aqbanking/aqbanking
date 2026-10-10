@@ -1,6 +1,6 @@
 /***************************************************************************
     begin       : Mon Mar 01 2004
-    copyright   : (C) 2019 by Martin Preuss
+    copyright   : (C) 2025 by Martin Preuss
     email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -27,7 +27,7 @@
 
 int AH_OutboxCBox_OpenDialog(AH_OUTBOX_CBOX *cbox,
                              AH_DIALOG *dlg,
-                             uint32_t jqFlags)
+                             uint32_t jFlags)
 {
   AB_PROVIDER *provider;
   AB_USER *user;
@@ -74,7 +74,85 @@ int AH_OutboxCBox_OpenDialog(AH_OUTBOX_CBOX *cbox,
 
   /* fall back */
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Using standard HBCI code to init dialog");
-  rv=AH_OutboxCBox_OpenDialog_Hbci(cbox, dlg, jqFlags);
+  rv=AH_OutboxCBox_OpenDialog_Hbci(cbox, dlg, jFlags);
+  if (rv!=0) {
+    DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+    return rv;
+  }
+  return rv;
+}
+
+
+
+int AH_OutboxCBox_OpenDialogWithJob(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, AH_JOB *jDlg)
+{
+  AB_PROVIDER *provider;
+  AB_USER *user;
+  int rv;
+
+  assert(cbox);
+  assert(dlg);
+
+  provider=AH_OutboxCBox_GetProvider(cbox);
+  user=AH_OutboxCBox_GetUser(cbox);
+
+  if (AH_User_GetCryptMode(user)==AH_CryptMode_Pintan) {
+    uint32_t jobFlags;
+
+    DBG_ERROR(AQHBCI_LOGDOMAIN, "CryptMode is PINTAN");
+    jobFlags=AH_Job_GetFlags(jDlg);
+    if (jobFlags & AH_JOB_FLAGS_SIGN) {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Signature needed");
+      if (jobFlags & AH_JOB_FLAGS_NOITAN) {
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"%s\" has noITAN flag", AH_Job_GetName(jDlg));
+        rv=AH_OutboxCBox_OpenDialogSingleStepWithJob(cbox, dlg, jDlg);
+        if (rv!=0) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+          return rv;
+        }
+        return rv;
+      }
+      else {
+        int selectedTanVersion;
+
+        DBG_ERROR(AQHBCI_LOGDOMAIN, "Job \"%s\" doesn't have noITAN flag", AH_Job_GetName(jDlg));
+        selectedTanVersion=AH_User_GetSelectedTanMethod(user)/1000;
+
+        if (selectedTanVersion>=6) {
+          AH_JOB *jTan;
+
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "User-selected TAN job version is 6 or newer (%d)", selectedTanVersion);
+
+          /* check for PSD2: HKTAN version >= 6 available? if so -> use that */
+          jTan=AH_Job_Tan_new(provider, user, 4, selectedTanVersion);
+          if (jTan) {
+            AH_Job_free(jTan);
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "TAN job version is available");
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "Using PSD2 code to init dialog");
+            rv=AH_OutboxCBox_OpenDialogPsd2WithJob_Proc2(cbox, dlg, jDlg);
+            if (rv!=0) {
+              DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
+              return rv;
+            }
+            return rv;
+          }
+          else {
+            DBG_ERROR(AQHBCI_LOGDOMAIN, "Not using PSD2 code: HKTAN version %d not supported by the bank", selectedTanVersion);
+          }
+        }
+        else {
+          DBG_ERROR(AQHBCI_LOGDOMAIN, "Not using PSD2 code: User selected HKTAN version lesser than 6.");
+        }
+      }
+    } /* if sign */
+    else {
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Not using PSD2 code: Jobs doesn't need a signature (or has noITAN flag).");
+    }
+  }
+
+  /* fall back */
+  DBG_ERROR(AQHBCI_LOGDOMAIN, "Using standard HBCI code to init dialog");
+  rv=AH_OutboxCBox_OpenDialogWithJob_Hbci(cbox, dlg, jDlg);
   if (rv!=0) {
     DBG_INFO(AQHBCI_LOGDOMAIN, "here (%d)", rv);
     return rv;
@@ -85,11 +163,10 @@ int AH_OutboxCBox_OpenDialog(AH_OUTBOX_CBOX *cbox,
 
 
 
-int AH_OutboxCBox_CloseDialog(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t jqFlags)
+int AH_OutboxCBox_CloseDialog(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t jFlags)
 {
   AB_PROVIDER *provider;
   AB_USER *user;
-  AH_JOBQUEUE *jqDlgClose;
   AH_JOB *jDlgClose;
   GWEN_DB_NODE *db;
   uint32_t dlgFlags;
@@ -99,7 +176,7 @@ int AH_OutboxCBox_CloseDialog(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t jqF
   user=AH_OutboxCBox_GetUser(cbox);
 
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice, I18N("Closing dialog"));
-  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Sending dialog close request (flags=%08x)", jqFlags);
+  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Sending dialog close request (flags=%08x)", jFlags);
   dlgFlags=AH_Dialog_GetFlags(dlg);
   jDlgClose=AH_Job_new("JobDialogEnd", provider, user, 0, 0);
   if (!jDlgClose) {
@@ -123,7 +200,7 @@ int AH_OutboxCBox_CloseDialog(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t jqF
   }
   else {
     /* possibly sign job */
-    if (jqFlags & AH_JOBQUEUE_FLAGS_SIGN) {
+    if (jFlags & AH_JOB_FLAGS_SIGN) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Will sign dialog close request");
       AH_Job_AddSigner(jDlgClose, AB_User_GetUserId(user));
       AH_Job_AddFlags(jDlgClose, AH_JOB_FLAGS_SIGN | AH_JOB_FLAGS_NEEDSIGN);
@@ -134,7 +211,7 @@ int AH_OutboxCBox_CloseDialog(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t jqF
     }
 
     /* possibly encrypt job */
-    if (jqFlags & AH_JOBQUEUE_FLAGS_CRYPT) {
+    if (jFlags & AH_JOB_FLAGS_CRYPT) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Will encrypt dialog close request");
       AH_Job_AddFlags(jDlgClose, AH_JOB_FLAGS_CRYPT | AH_JOB_FLAGS_NEEDCRYPT);
     }
@@ -144,7 +221,7 @@ int AH_OutboxCBox_CloseDialog(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t jqF
     }
 
     /* possibly set NOITAN job */
-    if (jqFlags & AH_JOB_FLAGS_NOITAN) {
+    if (jFlags & AH_JOB_FLAGS_NOITAN) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Disable ITAN mode for dialog close request");
       AH_Job_AddFlags(jDlgClose, AH_JOB_FLAGS_NOITAN);
     }
@@ -154,24 +231,15 @@ int AH_OutboxCBox_CloseDialog(AH_OUTBOX_CBOX *cbox, AH_DIALOG *dlg, uint32_t jqF
     }
   }
 
-  jqDlgClose=AH_JobQueue_new(user);
-
-  DBG_NOTICE(AQHBCI_LOGDOMAIN, "Adding dialog close request to queue");
-  if (AH_JobQueue_AddJob(jqDlgClose, jDlgClose)!=AH_JobQueueAddResultOk) {
-    DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not add single job to queue");
-    AH_JobQueue_free(jqDlgClose);
-    return GWEN_ERROR_GENERIC;
-  }
-
-  rv=AH_OutboxCBox_SendAndRecvQueue(cbox, dlg, jqDlgClose);
+  rv=AH_OutboxCBox_SendAndReceiveJob(cbox, dlg, jDlgClose);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not exchange message");
-    AH_JobQueue_free(jqDlgClose);
+    AH_Job_free(jDlgClose);
     return rv;
   }
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "Dialog closed");
   rv=AH_Job_CommitSystemData(jDlgClose, 0);
-  AH_JobQueue_free(jqDlgClose);
+  AH_Job_free(jDlgClose);
   if (rv) {
     DBG_NOTICE(AQHBCI_LOGDOMAIN, "Could not commit system data");
     return rv;

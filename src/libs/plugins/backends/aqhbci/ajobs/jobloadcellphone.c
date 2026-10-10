@@ -15,7 +15,7 @@
 
 #include "jobloadcellphone_p.h"
 #include "aqhbci/aqhbci_l.h"
-#include "accountjob_l.h"
+#include "accountjob_ntl.h"
 #include "aqhbci/joblayer/job_l.h"
 
 #include <gwenhywfar/debug.h>
@@ -39,7 +39,7 @@ AH_JOB *AH_Job_LoadCellPhone_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *accou
   AH_JOB_LOADCELLPHONE *aj;
   GWEN_DB_NODE *dbArgs;
 
-  j=AH_AccountJob_new("JobLoadCellPhone", pro, u, account);
+  j=AH_NationalAccountJob_new("JobLoadCellPhone", pro, u, account);
   if (!j)
     return 0;
 

@@ -16,11 +16,11 @@ AC_CONFIG_MACRO_DIRS([m4])
 #
 
 AQBANKING_VERSION_MAJOR=6
-AQBANKING_VERSION_MINOR=5
-AQBANKING_VERSION_PATCHLEVEL=4
-AQBANKING_VERSION_BUILD=1
+AQBANKING_VERSION_MINOR=9
+AQBANKING_VERSION_PATCHLEVEL=2
+AQBANKING_VERSION_BUILD=0
 dnl "stable", "rcX", "betaX", "svn"
-AQBANKING_VERSION_TAG="beta"
+AQBANKING_VERSION_TAG="stable"
 
 
 
@@ -33,9 +33,9 @@ AQBANKING_VERSION_TAG="beta"
 # AqBanking
 #
 
-AQBANKING_SO_CURRENT=49
-AQBANKING_SO_AGE=5
-AQBANKING_SO_REVISION=4
+AQBANKING_SO_CURRENT=53
+AQBANKING_SO_AGE=9
+AQBANKING_SO_REVISION=2
 AQBANKING_SO_EFFECTIVE="`echo \$(($AQBANKING_SO_CURRENT-$AQBANKING_SO_AGE))`"
 
 
@@ -279,7 +279,7 @@ for f in ${aqbanking_backends}; do
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQGIVVE, 1, [plugin availability])
       ;;
     *)
-      AC_MSG_ERROR("ERROR: Unknown plugin $f")
+      AC_MSG_ERROR("ERROR: Unknown plugin '$f'")
       ;;
   esac
 done
@@ -369,7 +369,7 @@ for f in ${aqbanking_imexporters}; do
       AC_DEFINE(AQBANKING_WITH_PLUGIN_IMEXPORTER_XML, 1, [plugin availability])
       ;;
     *)
-      AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
+      AC_MSG_ERROR("ERROR: Unknown plugin '$f'")
       ;;
   esac
 done
@@ -400,7 +400,7 @@ for f in ${aqbanking_parsers}; do
       aqbanking_plugins_parsers_dirs="$aqbanking_plugins_parsers_dirs swift"
       ;;
     *)
-      AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
+      AC_MSG_ERROR("ERROR: Unknown plugin '$f'")
       ;;
   esac
 done
@@ -432,7 +432,7 @@ for f in ${aqbanking_bankinfos}; do
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BANKINFO_DE, 1, [plugin availability])
       ;;
     *)
-      AC_MSG_ERROR("ERROR: Unknown plugin \"$f\"")
+      AC_MSG_ERROR("ERROR: Unknown plugin '$f'")
       ;;
   esac
 done
@@ -448,8 +448,8 @@ AC_SUBST(aqbanking_plugins_bankinfo_libs)
 #
 
 # Variable used in aqbanking-config.cmake
-AC_SUBST(GWENHYWFAR_MINIMUM_VERSION, "5.8.2.1")
-AC_GWENHYWFAR(5,8,2,1)
+AC_SUBST(GWENHYWFAR_MINIMUM_VERSION, "5.14.0.0")
+AC_GWENHYWFAR(5,14,0,0)
 
 all_includes="$all_includes $gwenhywfar_includes"
 
@@ -528,7 +528,7 @@ AC_SUBST(gmp_libs)
 
 ###-------------------------------------------------------------------------
 #
-# OS dependant settings
+# OS dependent settings
 #
 
 # Common settings; can be overridden per-OS below.
@@ -552,6 +552,18 @@ case "$OS_TYPE" in
     	;;
 esac
 AM_CONDITIONAL(IS_WINDOWS, [test "$OS_TYPE" = "windows"])
+
+
+AC_ARG_ENABLE(gui-callback-for-optical-tan,
+  [  --enable-gui-callback-for-optical-tan         make GUI run script to show optical TAN (default=yes)],
+  gui_callback_for_optical_tan="$enableval",
+  gui_callback_for_optical_tan="yes")
+AC_MSG_RESULT($gui_callback_for_optical_tan)
+
+if test "$gui_callback_for_optical_tan" != "no"; then
+  AC_DEFINE([ENABLE_GUI_CALLBACK_FOR_OPTICAL_TAN], [1],
+            [whether GUI should run script to show optical tan image])
+fi
 
 
 
@@ -702,13 +714,13 @@ AC_CHECK_PROG(XGETTEXT,xgettext,xgettext, missing)
 MAKE_I18N_FILES="yes"
 if test "$XGETTEXT" = "missing"; then
   MAKE_I18N_FILES="no"
-  AC_MSG_WARN([xgettext is missing. Locale suport is disabled.])
+  AC_MSG_WARN([xgettext is missing. Locale support is disabled.])
 fi
 
 AC_PATH_PROG([MSGFMT], [msgfmt], [missing])
 if test "$MSGFMT" = "missing"; then
   MAKE_I18N_FILES="no"
-  AC_MSG_WARN([msgfmt is missing. Locale suport is disabled.])
+  AC_MSG_WARN([msgfmt is missing. Locale support is disabled.])
 else
   # check for --qt argument of msgfmt
   AC_MSG_CHECKING(whether msgfmt understands --qt)
@@ -745,7 +757,7 @@ else
   i18n_libs="-lintl"
 fi
 
-if test "$HAVE_I18N" != "NO"; then
+if test "$HAVE_I18N" != "no"; then
   AC_DEFINE_UNQUOTED(HAVE_I18N, 1, [whether I18N is available])
 fi
 
@@ -1252,6 +1264,7 @@ AC_CONFIG_FILES([
   src/libs/aqbanking/typemaker2/c/Makefile
   src/libs/aqbanking/backendsupport/Makefile
   src/libs/aqbankingpp/Makefile
+  src/libs/cli/Makefile
   src/libs/plugins/Makefile
   src/libs/plugins/bankinfo/Makefile
   src/libs/plugins/bankinfo/de/Makefile
@@ -1319,7 +1332,6 @@ AC_CONFIG_FILES([
   src/libs/plugins/backends/aqhbci/version.h
   src/libs/plugins/backends/aqofxconnect/Makefile
   src/libs/plugins/backends/aqofxconnect/aqofxconnect.xml
-  src/libs/plugins/backends/aqofxconnect/libofxhome/Makefile
   src/libs/plugins/backends/aqofxconnect/v1/Makefile
   src/libs/plugins/backends/aqofxconnect/v2/Makefile
   src/libs/plugins/backends/aqofxconnect/control/Makefile

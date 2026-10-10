@@ -1,8 +1,8 @@
-<?xml?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <!-- ***************************************************************************
  begin       : Sun Apr 11 2021
- copyright   : (C) 2023 by Martin Preuss
+ copyright   : (C) 2026 by Martin Preuss
  email       : martin@libchipcard.de
 
  ***************************************************************************
@@ -19,8 +19,8 @@
 
 <gwbuild>
 
-  <project name="aqbanking" version="6.5.4.1-beta"
-           so_current="49" so_age="5" so_revision="4"
+  <project name="aqbanking" version="6.9.2"
+           so_current="53" so_age="9" so_revision="2"
            write_config_h="TRUE"
            >
 
@@ -116,6 +116,14 @@
       <define name="ENABLE_LOCAL_INSTALL" value="1" />
     </ifVarMatches>
 
+    <option id="enable_callback_for_optical_tan" type="string">
+      <default>TRUE</default>
+      <choices>TRUE FALSE</choices>
+    </option>
+    <ifVarMatches name="option_enable_callback_for_optical_tan" value="TRUE" >
+      <define name="ENABLE_GUI_CALLBACK_FOR_OPTICAL_TAN" value="1" />
+    </ifVarMatches>
+
 
     <option id="debug" type="string">
       <default>TRUE</default>
@@ -165,7 +173,7 @@
 
     <!-- dependencies ( pkg-config and libs) -->
     <dependencies>
-      <dep id="gwenhywfar" name="gwenhywfar" minversion="5.8.2.1" required="TRUE" >
+      <dep id="gwenhywfar" name="gwenhywfar" minversion="5.14.0" required="TRUE" >
         <variables>plugindir gwengui-gtk3</variables>
       </dep>
 
@@ -324,6 +332,9 @@
 
 
     <writeFile name="aqbanking.pc" install="$(libdir)/pkgconfig" />
+
+    <writeFile name="src/libs/aqbanking/version.h" />
+    <writeFile name="src/libs/aqbanking/system.h" />
 
   </project>
   

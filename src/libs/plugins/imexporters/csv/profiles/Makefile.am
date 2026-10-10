@@ -11,6 +11,7 @@ profiles_DATA=default.conf aqmoney1.conf aqmoney2.conf \
   homebank.conf \
   onvista-trans.conf \
   onvista-prices.conf \
-  onvista-account.conf
+  onvista-account.conf \
+  comdirect-prices.conf
 
 EXTRA_DIST=$(profiles_DATA)

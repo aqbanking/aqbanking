@@ -25,14 +25,8 @@ struct AH_EDIT_USER_RDH_DIALOG {
 
   AB_USER *user;
   int doLock;
+  int modified;
 };
-
-
-static void GWENHYWFAR_CB AH_EditUserRdhDialog_FreeData(void *bp, void *p);
-
-static int GWENHYWFAR_CB AH_EditUserRdhDialog_SignalHandler(GWEN_DIALOG *dlg,
-                                                            GWEN_DIALOG_EVENTTYPE t,
-                                                            const char *sender);
 
 
 

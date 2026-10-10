@@ -1,6 +1,5 @@
 SUBDIRS=aqbanking-cli mkdeinfo
 
-
 sources:
 	for d in $(SUBDIRS); do \
 	  $(MAKE) -C $$d sources; \

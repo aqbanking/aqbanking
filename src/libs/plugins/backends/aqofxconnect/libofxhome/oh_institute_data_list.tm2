@@ -1,0 +1,8 @@
+<?xml?>
+
+<tm2>
+  <typedef id="OH_INSTITUTE_DATA_LIST" type="pointer" lang="c" extends="list1_base" basetype="OH_INSTITUTE_DATA">
+    <identifier>OH_INSTITUTE_DATA_LIST</identifier>
+    <prefix>OH_InstituteData_List</prefix>
+  </typedef>
+</tm2>

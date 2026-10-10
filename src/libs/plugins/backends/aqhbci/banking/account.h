@@ -48,6 +48,9 @@ extern "C" {
 /** prefer download of transactions as CAMT 052.001.02 (as opposed to SWIFT MT94x) */
 #define AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD         0x00000040
 
+/** force national account info for GetTransaction jobs */
+#define AH_BANK_FLAGS_GETTRANS_FORCE_NTLACCOUNTINFO 0x00000080
+
 
 #define AH_BANK_FLAGS_DEFAULT 0
 

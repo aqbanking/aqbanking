@@ -19,8 +19,10 @@ noinst_HEADERS=\
 libpaypalcontrol_la_SOURCES=\
  main.c \
  adduser.c \
+ delaccount.c \
  listaccounts.c \
  listusers.c \
+ deluser.c \
  setsecrets.c
 
 

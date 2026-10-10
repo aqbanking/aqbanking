@@ -77,6 +77,7 @@ GWEN_INHERIT_FUNCTIONS(AB_BANKING)
 
 
 static void _logMsgForJobId(const AB_BANKING *ab, uint32_t jobId, const char *msg);
+static const AB_FLAGDEF *_findFlagDefByString(const AB_FLAGDEF *defs, const char *s);
 
 
 
@@ -126,7 +127,7 @@ AB_BANKING *AB_Banking_new(const char *appName,
 
   GWEN_Buffer_free(nbuf);
 
-  {
+  if (!dname) {
     int rv;
 
     rv=AB_Banking_CopyOldSettingsFolderIfNeeded(ab);
@@ -259,13 +260,13 @@ int AB_Banking_GetNamedUniqueId(AB_BANKING *ab, const char *idName, int startAtS
 }
 
 
-
+#if 0
 GWEN_CONFIGMGR *AB_Banking_GetConfigMgr(AB_BANKING *ab)
 {
   assert(ab);
   return ab->configMgr;
 }
-
+#endif
 
 
 const char *AB_Banking_GetAppName(const AB_BANKING *ab)
@@ -477,5 +478,98 @@ void _logMsgForJobId(const AB_BANKING *ab, uint32_t jobId, const char *msg)
     GWEN_Time_free(ti);
   }
 }
+
+
+
+void AB_Banking_Iso8859_1ToUtf8(const char *p, int size, GWEN_BUFFER *buf)
+{
+  while (*p) {
+    unsigned int c;
+
+    if (!size)
+      break;
+
+    c=(unsigned char)(*(p++));
+    if (c!=10) { // keep linefeed as is
+      if (c<32 || c==127)
+        c=32;
+      else {
+        /* Dirty hack to support Unicode code points */
+        /* U+00A0..U+00FF already in UTF-8 encoding. */
+        /* E.g. German Umlaute from Consorsbank      */
+        unsigned int c2 = (unsigned char)(*p);
+        if ((c & ~0x01)==0xC2 && (c2 & ~0x3F)==0x80) {
+          GWEN_Buffer_AppendByte(buf, c);
+          c=(unsigned char)(*(p++));
+        }
+        else if (c & 0x80) {
+          GWEN_Buffer_AppendByte(buf, 0xc0 | c>>6);
+          c &= ~0x40;
+        }
+      }
+    }
+    GWEN_Buffer_AppendByte(buf, c);
+    if (size!=-1)
+      size--;
+  } /* while */
+}
+
+
+
+uint32_t AB_Banking_FlagsFromDb(GWEN_DB_NODE *db, const AB_FLAGDEF *defs, const char *sVarName)
+{
+  int i;
+  uint32_t flags=0;
+
+  for (i=0; ; i++) {
+    const char *s;
+
+    s=GWEN_DB_GetCharValue(db, sVarName, i, 0);
+    if (s && *s) {
+      const AB_FLAGDEF *currDef;
+
+      currDef=_findFlagDefByString(defs, s);
+      if (currDef)
+        flags|=currDef->flagValue;
+      else {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "Unknown flag \"%s\", ignoring", s);
+      }
+    }
+    else
+      break;
+  }
+
+  return flags;
+}
+
+
+
+void AB_Banking_FlagsToDb(GWEN_DB_NODE *db, const AB_FLAGDEF *defs, const char *sVarName, uint32_t flags)
+{
+  GWEN_DB_DeleteVar(db, sVarName);
+
+  while(defs && defs->flagValue) {
+    if (flags & defs->flagValue)
+      GWEN_DB_SetCharValue(db, GWEN_DB_FLAGS_DEFAULT, sVarName, defs->flagString);
+    defs++;
+  }
+}
+
+
+
+const AB_FLAGDEF *_findFlagDefByString(const AB_FLAGDEF *defs, const char *s)
+{
+  while(defs && defs->flagValue) {
+    if (defs->flagString && strcasecmp(defs->flagString, s)==0)
+      return defs;
+
+    defs++;
+  }
+  return NULL;
+}
+
+
+
+
 
 

@@ -101,7 +101,7 @@ int AH_ImExporterXMLDB_Import(AB_IMEXPORTER *ie,
 
   /* transform DB to transactions */
   GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Notice,
-                       "Data imported, transforming to transactions");
+                       I18N("Data imported, transforming to transactions"));
   AB_ImExporterContext_ReadDb(ctx, dbData);
 
   GWEN_DB_Group_free(dbData);
