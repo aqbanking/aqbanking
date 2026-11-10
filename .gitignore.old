@@ -90,7 +90,6 @@ src/libs/plugins/backends/aqhbci/aqhbci.xml
 src/libs/plugins/backends/aqhbci/hbci.xml
 src/libs/plugins/backends/aqhbci/header.xml
 src/libs/plugins/backends/aqnone/aqnone.xml
-src/libs/plugins/backends/aqofxconnect/aqofxconnect.xml
 src/libs/plugins/backends/aqpaypal/aqpaypal.xml
 src/libs/plugins/bankinfo/*/*.xml
 src/libs/plugins/bankinfo/generic/??/*.idx

@@ -19,10 +19,6 @@
 # include "src/libs/plugins/backends/aqhbci/banking/provider.h"
 #endif
 
-#ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQOFXCONNECT
-# include "src/libs/plugins/backends/aqofxconnect/provider.h"
-#endif
-
 #ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQPAYPAL
 # include "src/libs/plugins/backends/aqpaypal/provider.h"
 #endif
@@ -98,16 +94,6 @@ AB_PROVIDER *AB_Banking__CreateInternalProvider(AB_BANKING *ab, const char *modn
 
       DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] compiled-in", modname);
       pro=AN_Provider_new(ab);
-      return pro;
-    }
-#endif
-
-#ifdef AQBANKING_WITH_PLUGIN_BACKEND_AQOFXCONNECT
-    if (strcasecmp(modname, "aqofxconnect")==0) {
-      AB_PROVIDER *pro;
-
-      DBG_INFO(AQBANKING_LOGDOMAIN, "Plugin [%s] compiled-in", modname);
-      pro=AO_Provider_new(ab);
       return pro;
     }
 #endif
