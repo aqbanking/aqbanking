@@ -75,19 +75,21 @@ plugin basis.
 Currently there are plugins for the following formats:
 
 - Importers:
-  - DTAUS (German financial format)
   - SWIFT (MT940 and MT942)
   - OFX
   - CSV
+  - CAMT
   - OpenHBCI1 transactions
   - ERI
   - Q43
+  - YellowNet
   - XML (various formats like SEPA-PAIN, CAMT, OFX)
-  
-- Exporters
-  - DTAUS (German financial format)
+  - AqBanking context files (ctxfile, xmldb)
+
+- Exporters:
   - CSV
-  - XML (various formats like SEPA-PAIN, CAMT, OFX)
+  - SEPA-PAIN (credit transfers and direct debits)
+  - AqBanking context files (ctxfile, xmldb)
 
 
 1.3. Bank/Account Information
