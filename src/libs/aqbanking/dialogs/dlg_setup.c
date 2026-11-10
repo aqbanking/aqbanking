@@ -987,23 +987,14 @@ int AB_SetupDialog_AddAccount(GWEN_DIALOG *dlg)
 {
   AB_SETUP_DIALOG *xdlg;
   AB_PROVIDER *pro;
-  const char *s;
-  const char *initialProvider=NULL;
   uint32_t flags;
 
   assert(dlg);
   xdlg=GWEN_INHERIT_GETDATA(GWEN_DIALOG, AB_SETUP_DIALOG, dlg);
   assert(xdlg);
 
-  s=GWEN_I18N_GetCurrentLocale();
-  if (s && *s) {
-    if (strstr(s, "de_"))
-      initialProvider="aqhbci";
-    else
-      initialProvider="aqofxconnect";
-  }
   pro=AB_SelectBackend(xdlg->banking,
-                       initialProvider,
+                       "aqhbci",
                        I18N("Please select the online banking backend the new "
                             "account is to be created for."));
   if (pro==NULL) {
