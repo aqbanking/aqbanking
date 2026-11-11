@@ -1,0 +1,347 @@
+# Builds and tests AqBanking with autotools on Linux, macOS and Windows,
+# and builds it with gwbuild on Linux and macOS. Each build uses the
+# installation artifact that Gwenhywfar's CI uploaded for the same
+# runner, compiler and sanitizer setting: a tarball of the files that
+# "make install" installed.
+
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      gwen_repo:
+        description: Gwenhywfar repository on GitHub
+        default: aqbanking/gwenhywfar
+      gwen_ref:
+        description: Gwenhywfar branch or tag
+        default: master
+
+# A new commit in a pull request cancels the pull request's earlier run.
+# Every run started by a push or by hand is its own group and
+# runs to the end, so each pushed commit gets its own result.
+concurrency:
+  group: >-
+    ${{ github.workflow }}-${{ github.event_name == 'pull_request'
+    && github.ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  GWEN_REPO: ${{ inputs.gwen_repo || 'aqbanking/gwenhywfar' }}
+  GWEN_REF: ${{ inputs.gwen_ref || 'master' }}
+
+jobs:
+  # Resolves the Gwenhywfar branch or tag to one commit, so that every
+  # build of this run uses installation artifacts from the same
+  # Gwenhywfar CI run, and takes the build matrices from the variants.json
+  # of that run: one build for each installation artifact.
+  gwenhywfar:
+    runs-on: ubuntu-26.04
+    outputs:
+      sha: ${{ steps.lookup.outputs.sha }}
+      autotools: ${{ steps.matrix.outputs.autotools }}
+      autotools-msys2: ${{ steps.matrix.outputs.autotools-msys2 }}
+    steps:
+      - name: Look up Gwenhywfar commit
+        id: lookup
+        run: |
+          sha=$(git ls-remote "https://github.com/$GWEN_REPO" "$GWEN_REF" |
+                head -n 1 | cut -f 1)
+          [ -n "$sha" ] || { echo "No $GWEN_REF in $GWEN_REPO" >&2; exit 1; }
+          echo "Gwenhywfar: $GWEN_REF of $GWEN_REPO at $sha"
+          echo "sha=$sha" >>"$GITHUB_OUTPUT"
+      - name: Download Gwenhywfar's variants
+        uses: dawidd6/action-download-artifact@a92c7ae74cf1df8810783758581e485ac3aaa309 # v28
+        with:
+          github_token: ${{ github.token }}
+          repo: ${{ env.GWEN_REPO }}
+          workflow: ci.yml
+          commit: ${{ steps.lookup.outputs.sha }}
+          workflow_conclusion: completed
+          name: variants
+          path: ${{ runner.temp }}
+      - name: Build the matrices
+        id: matrix
+        run: |
+          for job in autotools autotools-msys2; do
+            echo "$job=$(jq -c --arg job "$job" \
+              '[.[] | select(.job == $job)]' "$RUNNER_TEMP/variants.json")"
+          done >>"$GITHUB_OUTPUT"
+
+  autotools:
+    name: >-
+      autotools (${{ matrix.os }},
+      ${{ matrix.cc }}${{ matrix.tls && format(', {0}', matrix.openssl || matrix.tls) || '' }}${{ matrix.sanitizer_flags && ', sanitizers' || '' }})
+    needs: gwenhywfar
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.gwenhywfar.outputs.autotools) }}
+    env:
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
+      GWEN_SHA: ${{ needs.gwenhywfar.outputs.sha }}
+      GWEN_ARTIFACT: ${{ matrix.artifact }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - &download-gwenhywfar
+        name: Download Gwenhywfar
+        uses: dawidd6/action-download-artifact@a92c7ae74cf1df8810783758581e485ac3aaa309 # v28
+        with:
+          github_token: ${{ github.token }}
+          repo: ${{ env.GWEN_REPO }}
+          workflow: ci.yml
+          commit: ${{ env.GWEN_SHA }}
+          workflow_conclusion: completed
+          name: ${{ env.GWEN_ARTIFACT }}
+          search_artifacts: true
+          path: ${{ runner.temp }}
+      # Gwenhywfar's CI installs into the runner's temp folder, so the
+      # paths in the installed files are valid here as well.
+      - &unpack-gwenhywfar
+        name: Unpack Gwenhywfar
+        run: |
+          temp=$RUNNER_TEMP
+          if command -v cygpath >/dev/null 2>&1; then
+            temp=$(cygpath -u "$RUNNER_TEMP")
+          fi
+          tar -C "$temp" -xzf "$temp/gwenhywfar.tar.gz"
+          # Makefile.cvs looks for gwenhywfar.m4 in ACLOCAL_FLAGS, and
+          # ./configure looks for gwenhywfar.pc in PKG_CONFIG_PATH.
+          {
+            echo "GWEN_PREFIX=$temp/gwenhywfar"
+            echo "ACLOCAL_FLAGS=-I $temp/gwenhywfar/share/aclocal"
+            echo "PKG_CONFIG_PATH=$temp/gwenhywfar/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+          } >>"$GITHUB_ENV"
+      # Gwenhywfar's CI scripts from the commit that built the installation
+      # artifact this job downloads: install-deps.sh installs the
+      # libraries that Gwenhywfar links against, and msvc-deps.sh prepares
+      # MinGW-built libraries for MSVC.
+      - &checkout-gwenhywfar-ci
+        name: Check out Gwenhywfar's CI scripts
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ env.GWEN_REPO }}
+          ref: ${{ env.GWEN_SHA }}
+          path: _gwenhywfar
+          sparse-checkout: .github/ci
+          persist-credentials: false
+      - &install-deps
+        name: Install dependencies
+        run: |
+          _gwenhywfar/.github/ci/install-deps.sh
+          .github/ci/install-deps.sh # aqbanking's
+      - &enable-sanitizers
+        name: Enable sanitizers
+        if: ${{ matrix.sanitizer_flags }}
+        run: |
+          {
+            echo "CFLAGS=${{ matrix.sanitizer_flags }}"
+            echo "CXXFLAGS=${{ matrix.sanitizer_flags }}"
+            echo "UBSAN_OPTIONS=print_stacktrace=1:halt_on_error=1"
+          } >>"$GITHUB_ENV"
+      - name: Bootstrap
+        run: make -f Makefile.cvs
+      - name: Configure
+        run: ./configure --prefix="$RUNNER_TEMP/aqbanking"
+      - name: make typedefs
+        run: make typedefs
+      - name: make typefiles
+        run: make typefiles
+      - name: Build
+        id: build
+        run: make -j"$(getconf _NPROCESSORS_ONLN)"
+      - name: make check
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: make -k -j"$(getconf _NPROCESSORS_ONLN)" check
+      - name: make install
+        id: install
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: make install
+      # "make distcheck" runs installcheck in the other builds.
+      - name: make installcheck
+        if: >-
+          ${{ !cancelled() && steps.install.outcome == 'success'
+          && matrix.sanitizer_flags }}
+        run: make installcheck VERBOSE=1
+      - name: make distcheck
+        if: >-
+          ${{ !cancelled() && steps.build.outcome == 'success'
+          && !matrix.sanitizer_flags }}
+        run: make -j"$(getconf _NPROCESSORS_ONLN)" distcheck
+      - name: Upload logs
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: logs-autotools-${{ matrix.os }}-${{ matrix.cc }}${{ matrix.sanitizer_flags && '-sanitizers' || '' }}
+          if-no-files-found: ignore
+          path: |
+            config.log
+            **/test-suite.log
+            **/*.trs
+
+  gwbuild:
+    name: gwbuild (${{ matrix.os }}, ${{ matrix.cc }})
+    needs: gwenhywfar
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # gwbuild has no link rules for macOS.
+        include:
+          - os: ubuntu-26.04
+            cc: gcc-15
+            cxx: g++-15
+          - os: ubuntu-24.04-arm
+            cc: gcc-14
+            cxx: g++-14
+    env:
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
+      GWEN_SHA: ${{ needs.gwenhywfar.outputs.sha }}
+      GWEN_ARTIFACT: gwenhywfar-autotools-${{ matrix.os }}-${{ matrix.cc }}-gnutls
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - *download-gwenhywfar
+      - *unpack-gwenhywfar
+      - name: Add gwbuild to PATH
+        run: echo "$GWEN_PREFIX/bin" >>"$GITHUB_PATH"
+      - *checkout-gwenhywfar-ci
+      - *install-deps
+      # The build folder is inside the source tree and named by a relative
+      # path, as in the example in README. The GUI tests are off, as in the
+      # autotools build.
+      - name: Set up build folder
+        run: |
+          mkdir build
+          cd build
+          gwbuild -s .. -Oenable_gui_tests=FALSE
+      - name: Prepare
+        working-directory: build
+        run: gwbuild -p
+      - name: Build typemaker2 sources
+        working-directory: build
+        run: gwbuild -B tm2builder
+      - name: Build
+        working-directory: build
+        run: gwbuild -j"$(getconf _NPROCESSORS_ONLN)"
+
+  # Windows builds in MSYS2, with the entries of Gwenhywfar's
+  # autotools-msys2 job. The MSVC jobs compile with cl.exe from Visual
+  # Studio and link against the MinGW-built libraries of MSYS2.
+  autotools-msys2:
+    name: >-
+      autotools-msys2 (${{ matrix.os }}, ${{ matrix.msystem }},
+      ${{ matrix.cc }}${{ matrix.tls && format(', {0}', matrix.openssl || matrix.tls) || '' }}${{ matrix.sanitizer_flags && ', sanitizers' || '' }})
+    needs: gwenhywfar
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.gwenhywfar.outputs.autotools-msys2) }}
+    defaults:
+      run:
+        shell: msys2 {0}
+    env:
+      GWEN_SHA: ${{ needs.gwenhywfar.outputs.sha }}
+      GWEN_ARTIFACT: ${{ matrix.artifact }}
+    steps:
+      - name: Keep line endings
+        shell: pwsh
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Set up MSVC
+        if: ${{ matrix.cc == 'msvc' }}
+        uses: ilammy/msvc-dev-cmd@v1.13.0
+        with:
+          arch: ${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.msystem }}
+          # The MSVC job needs the Visual Studio environment in PATH.
+          path-type: ${{ matrix.cc == 'msvc' && 'inherit' || 'minimal' }}
+          # The ChangeLog rule of a git checkout runs git.
+          install: make git
+          pacboy: >-
+            toolchain:p autotools:p pkgconf:p gettext-tools:p cmake:p
+            gnutls:p libgcrypt:p libgpg-error:p
+            gmp:p libxml2:p libxslt:p xmlsec:p
+      - *download-gwenhywfar
+      - *unpack-gwenhywfar
+      - name: Bootstrap
+        run: make -f Makefile.cvs
+      - *enable-sanitizers
+      - *checkout-gwenhywfar-ci
+      - name: Select MSVC tools
+        if: ${{ matrix.cc == 'msvc' }}
+        run: |
+          # /usr/bin/link (coreutils) would hide link.exe of MSVC.
+          rm -f /usr/bin/link.exe
+          [ -f ar-lib ] || cp "$(automake --print-libdir)/ar-lib" .
+          {
+            echo "CC=$PWD/compile cl -nologo"
+            echo "CXX=$PWD/compile cl -nologo"
+            echo "AR=$PWD/ar-lib lib"
+            echo "LD=link"
+            # lib.exe indexes its archives itself; binutils ranlib would
+            # rewrite them in a form that lib.exe misreads.
+            echo "RANLIB=:"
+          } >>"$GITHUB_ENV"
+          # MSVC import libraries, headers and pkg-config files of the
+          # MinGW-built libraries, in a prefix of their own.
+          # libgwenhywfar.la lists GnuTLS, libgcrypt and libgpg-error, and
+          # libtool links them into every program, so we must prepare
+          # them as well.
+          pacman -S --noconfirm --needed "${MINGW_PACKAGE_PREFIX}-tools"
+          _gwenhywfar/.github/ci/msvc-deps.sh "$PWD/_deps" \
+            gmp xmlsec1 libxml-2.0 libxslt zlib \
+            gnutls libgcrypt gpg-error
+          echo "MSVC_PKG_CONFIG_PATH=$PWD/_deps/lib/pkgconfig" >>"$GITHUB_ENV"
+      # The MSYS2 login profile resets PKG_CONFIG_PATH in every step, so
+      # we must pass it to ./configure.
+      - name: Configure
+        run: >-
+          ./configure --prefix="$(cygpath -u "$RUNNER_TEMP")/aqbanking"
+          PKG_CONFIG_PATH="$GWEN_PREFIX/lib/pkgconfig${MSVC_PKG_CONFIG_PATH:+:$MSVC_PKG_CONFIG_PATH}"
+      - name: make typedefs
+        run: make typedefs
+      - name: make typefiles
+        run: make typefiles
+      - name: Build
+        id: build
+        run: make -j"$(getconf _NPROCESSORS_ONLN)"
+      - name: make check
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: make -k -j"$(getconf _NPROCESSORS_ONLN)" check
+      - name: make install
+        id: install
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: make install
+      # Windows looks for DLLs in PATH, so we must add Gwenhywfar's DLL
+      # folder for the consumer test.
+      - name: make installcheck
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: PATH="$GWEN_PREFIX/bin:$PATH" make installcheck VERBOSE=1
+      - name: Upload logs
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: logs-autotools-msys2-${{ matrix.os }}-${{ matrix.msystem }}-${{ matrix.cc }}${{ matrix.sanitizer_flags && '-sanitizers' || '' }}
+          if-no-files-found: ignore
+          path: |
+            config.log
+            **/test-suite.log
+            **/*.trs
