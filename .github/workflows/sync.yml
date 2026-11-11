@@ -1,0 +1,43 @@
+name: Sync from upstream
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 */6 * * *'   # fallback if a hook call is lost
+
+permissions: {}
+
+concurrency:
+  group: sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-slim
+    steps:
+      - name: Set up SSH
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          echo 'github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl' > ~/.ssh/known_hosts
+
+      - name: Clone current state from GitHub
+        run: git clone --bare "https://github.com/$GITHUB_REPOSITORY.git" repo.git
+
+      - name: Fetch from upstream, dropping refs that upstream lacks
+        run: |
+          git -C repo.git fetch --prune "https://git.aquamaniac.de/git/${GITHUB_REPOSITORY#*/}" \
+            '+refs/heads/*:refs/heads/*' '+refs/tags/*:refs/tags/*'
+          # Stop if upstream returned no master, so a broken upstream
+          # response cannot empty the mirror.
+          git -C repo.git rev-parse --verify -q refs/heads/master
+
+      - name: Push to GitHub
+        env:
+          GIT_SSH_COMMAND: ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes
+        run: |
+          git -C repo.git push --prune "git@github.com:$GITHUB_REPOSITORY.git" \
+            '+refs/heads/*:refs/heads/*' '+refs/tags/*:refs/tags/*'
