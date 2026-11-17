@@ -207,6 +207,27 @@ else
 fi
 AC_SUBST(AQBANKING_IMPLIB_PREFIX)
 AC_SUBST(AQBANKING_IMPLIB_SUFFIX)
+# Prefix for the CMake package files in $libdir/cmake/<package>: relative
+# to their directory when libdir is inside the prefix, so that the
+# installation can move and native CMake on Windows sees no MSYS paths
+aqb_prefix=$prefix
+test "x$aqb_prefix" = xNONE && aqb_prefix=$ac_default_prefix
+aqb_libdir=`
+  prefix=$aqb_prefix
+  test "x$exec_prefix" = xNONE && exec_prefix=$prefix
+  eval aqb_dir="$libdir"
+  eval echo "$aqb_dir"`
+case $aqb_libdir in
+  "$aqb_prefix"/*)
+    aqb_up=`echo "${aqb_libdir#"$aqb_prefix"/}/cmake/x" | sed 's|[^/][^/]*|..|g'`
+    AQBANKING_CMAKE_PREFIX="\${CMAKE_CURRENT_LIST_DIR}/$aqb_up"
+    ;;
+  *)
+    AQBANKING_CMAKE_PREFIX=$aqb_prefix
+    ;;
+esac
+AC_SUBST(AQBANKING_CMAKE_PREFIX)
+AM_SUBST_NOTMAKE(AQBANKING_CMAKE_PREFIX)
 AC_PROG_CXX
 AC_PROG_CPP
 AC_PROG_INSTALL
