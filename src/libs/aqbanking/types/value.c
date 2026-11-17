@@ -202,7 +202,7 @@ AB_VALUE *AB_Value_fromString(const char *s)
   }
 
   /* set currency (if any) */
-  if (currency)
+  if (currency && *currency)
     v->currency=strdup(currency);
 
   /* temporary string no longer needed */
@@ -235,7 +235,7 @@ void AB_Value_SetCurrency(AB_VALUE *v, const char *s)
 {
   assert(v);
   free(v->currency);
-  if (s)
+  if (s && *s)
     v->currency=strdup(s);
   else
     v->currency=0;
