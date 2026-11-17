@@ -436,7 +436,9 @@ int GWENHYWFAR_CB _getPasswordCli(GWEN_GUI *gui,
         DBG_WARN(AQBANKING_LOGDOMAIN, "no optical challenge found");
       }
       else {
+#ifndef OS_WIN32
 	int fd;
+#endif
 	FILE *fp;
 
         GWEN_Directory_GetTmpDirectory(imageFile, sizeof(imageFile) - 14);
