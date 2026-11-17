@@ -20,6 +20,7 @@
 #include <gwenhywfar/text.h>
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/syncio_file.h>
+#include <gwenhywfar/fastbuffer.h>
 
 #include <errno.h>
 
@@ -611,6 +612,7 @@ int AB_BankInfoPluginGENERIC_AddByTemplate(AB_BANKINFO_PLUGIN *bip,
   GWEN_BUFFER *pbuf;
   uint32_t progressId;
   GWEN_SYNCIO *sio;
+  GWEN_FAST_BUFFER *fb;
   int rv;
 
   assert(bip);
@@ -643,6 +645,9 @@ int AB_BankInfoPluginGENERIC_AddByTemplate(AB_BANKINFO_PLUGIN *bip,
                                     GWEN_GUI_PROGRESS_NONE,
                                     0);
 
+  /* one buffer for the whole scan, so no data read ahead gets lost */
+  fb=GWEN_FastBuffer_new(1024, sio);
+
   for (;;) {
     GWEN_DB_NODE *dbT;
     AB_BANKINFO *bi;
@@ -654,6 +659,7 @@ int AB_BankInfoPluginGENERIC_AddByTemplate(AB_BANKINFO_PLUGIN *bip,
         GWEN_Gui_ProgressEnd(progressId);
         DBG_ERROR(AQBANKING_LOGDOMAIN,
                   "Aborted by user");
+        GWEN_FastBuffer_free(fb);
         GWEN_SyncIo_Disconnect(sio);
         GWEN_SyncIo_free(sio);
         GWEN_Buffer_free(pbuf);
@@ -662,15 +668,21 @@ int AB_BankInfoPluginGENERIC_AddByTemplate(AB_BANKINFO_PLUGIN *bip,
     }
 
     dbT=GWEN_DB_Group_new("bank");
-    if (GWEN_DB_ReadFromIo(dbT, sio,
-                           GWEN_DB_FLAGS_DEFAULT |
-                           GWEN_PATH_FLAGS_CREATE_GROUP |
-                           GWEN_DB_FLAGS_UNTIL_EMPTY_LINE)) {
+    rv=GWEN_DB_ReadFromFastBuffer(dbT, fb,
+                                  GWEN_DB_FLAGS_DEFAULT |
+                                  GWEN_PATH_FLAGS_CREATE_GROUP |
+                                  GWEN_DB_FLAGS_UNTIL_EMPTY_LINE);
+    if (rv==GWEN_ERROR_EOF) {
+      GWEN_DB_Group_free(dbT);
+      break;
+    }
+    if (rv<0) {
       DBG_ERROR(AQBANKING_LOGDOMAIN,
                 "Could not read from file \"%s\"",
                 GWEN_Buffer_GetStart(pbuf));
       GWEN_Gui_ProgressEnd(progressId);
       GWEN_DB_Group_free(dbT);
+      GWEN_FastBuffer_free(fb);
       GWEN_SyncIo_Disconnect(sio);
       GWEN_SyncIo_free(sio);
       GWEN_Buffer_free(pbuf);
@@ -692,6 +704,7 @@ int AB_BankInfoPluginGENERIC_AddByTemplate(AB_BANKINFO_PLUGIN *bip,
 
   GWEN_Gui_ProgressEnd(progressId);
 
+  GWEN_FastBuffer_free(fb);
   GWEN_SyncIo_Disconnect(sio);
   GWEN_SyncIo_free(sio);
   GWEN_Buffer_free(pbuf);
