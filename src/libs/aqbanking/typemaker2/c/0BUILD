@@ -3,8 +3,6 @@
 <gwbuild>
 
   <data install="$(pkgdatadir)/typemaker2/c" >
-    ab_account.tm2
-    ab_user.tm2
     ab_provider.tm2
     ab_value.tm2
     ab_value_list.tm2
