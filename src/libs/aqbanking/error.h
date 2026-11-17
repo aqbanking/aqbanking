@@ -25,11 +25,7 @@
 #  /* building AqBanking */
 #  if AQBANKING_SYS_IS_WINDOWS
 #    /* for windows */
-#    ifdef __declspec
-#      define AQBANKING_API __declspec (dllexport)
-#    else /* if __declspec */
-#      define AQBANKING_API
-#    endif /* if NOT __declspec */
+#    define AQBANKING_API __declspec (dllexport)
 #  else
 #    /* for non-win32 */
 #    ifdef GCC_WITH_VISIBILITY_ATTRIBUTE
@@ -42,11 +38,7 @@
 #  /* not building AqBanking */
 #  if AQBANKING_SYS_IS_WINDOWS
 #    /* for windows */
-#    ifdef __declspec
-#      define AQBANKING_API __declspec (dllimport)
-#    else /* if __declspec */
-#      define AQBANKING_API
-#    endif /* if NOT __declspec */
+#    define AQBANKING_API __declspec (dllimport)
 #  else
 #    /* for non-win32 */
 #    define AQBANKING_API
