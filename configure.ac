@@ -807,7 +807,7 @@ if test "$OS_TYPE" != "windows"; then
   AC_SEARCH_LIBS(gettext, intl, [], [HAVE_I18N="no"])
   i18n_libs="$LIBS"
   LIBS="$oldlibs"
-else
+elif test "$HAVE_I18N" != "no"; then
   i18n_libs="-lintl"
 fi
 
