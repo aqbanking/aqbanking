@@ -42,7 +42,7 @@
 
 GWEN_INHERIT(AH_JOB, AH_JOB_CHANGEKEYS)
 
-const char *fmtStr(char *buff, size_t buffLen, const char *fmt, ...)  __attribute__((format(printf, 3, 4)));
+const char *fmtStr(char *buff, size_t buffLen, const char *fmt, ...) GWEN_FORMAT(printf, 3, 4);
 const char *fmtStr(char *buff, size_t buffLen, const char *fmt, ...)
 {
   va_list args;
