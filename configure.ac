@@ -15,6 +15,10 @@ AH_BOTTOM([
 #ifdef _MSC_VER
 # define strcasecmp _stricmp
 # define strncasecmp _strnicmp
+
+/* MSVC has no ssize_t. */
+# include <basetsd.h>
+typedef SSIZE_T ssize_t;
 #endif
 ])
 
