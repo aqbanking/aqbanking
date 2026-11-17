@@ -16,8 +16,7 @@ bin_PROGRAMS=\
 aqbanking_cli_LDADD= \
   $(aqbanking_internal_libs) \
   $(gwenhywfar_libs) \
-  $(aqcli_libs) \
-  -lstdc++
+  $(aqcli_libs)
 
 aqbanking_cli_SOURCES= \
   main.c \
