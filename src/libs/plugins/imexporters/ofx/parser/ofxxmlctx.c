@@ -63,8 +63,8 @@ GWEN_XML_CONTEXT *AIO_OfxXmlCtx_new(uint32_t flags, AB_IMEXPORTER_CONTEXT *ioCon
 
 
 
-GWENHYWFAR_CB
-void AIO_OfxXmlCtx_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB
+AIO_OfxXmlCtx_FreeData(void *bp, void *p)
 {
   AIO_OFX_XMLCTX *xctx;
   AIO_OFX_GROUP *g;

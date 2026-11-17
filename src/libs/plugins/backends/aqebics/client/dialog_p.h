@@ -23,7 +23,7 @@ struct EBC_DIALOG {
   int dummy;
 };
 
-static GWENHYWFAR_CB void EBC_Dialog_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB EBC_Dialog_FreeData(void *bp, void *p);
 
 
 

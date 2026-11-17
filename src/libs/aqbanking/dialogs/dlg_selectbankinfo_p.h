@@ -27,7 +27,7 @@ struct AB_SELECTBANKINFO_DIALOG {
 };
 
 
-static GWENHYWFAR_CB void AB_SelectBankInfoDialog_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB AB_SelectBankInfoDialog_FreeData(void *bp, void *p);
 
 
 

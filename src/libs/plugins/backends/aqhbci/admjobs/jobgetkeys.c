@@ -77,7 +77,7 @@ AH_JOB *AH_Job_GetKeys_new(AB_PROVIDER *pro, AB_USER *u)
 
 
 
-void GWENHYWFAR_CB GWENHYWFAR_CB AH_Job_GetKeys_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB AH_Job_GetKeys_FreeData(void *bp, void *p)
 {
   AH_JOB_GETKEYS *jd;
 

@@ -178,8 +178,8 @@ AIO_OFX_GROUP *AIO_OfxGroup_STATUS_new(const char *groupName,
 
 
 
-GWENHYWFAR_CB
-void AIO_OfxGroup_STATUS_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB
+AIO_OfxGroup_STATUS_FreeData(void *bp, void *p)
 {
   AIO_OFX_GROUP_STATUS *xg;
 

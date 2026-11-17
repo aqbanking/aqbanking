@@ -47,7 +47,7 @@ GWEN_INHERIT(GWEN_DIALOG, AB_IMPORTER_DIALOG)
 
 
 
-static GWENHYWFAR_CB void _dlgApi_FreeData(void *bp, void *p);
+static void GWENHYWFAR_CB _dlgApi_FreeData(void *bp, void *p);
 static int _determineSelectedImporter(GWEN_DIALOG *dlg);
 static int _determineSelectedProfile(GWEN_DIALOG *dlg);
 
@@ -57,7 +57,7 @@ static void _updateProfileList(GWEN_DIALOG *dlg);
 static int _editProfile(GWEN_DIALOG *dlg);
 static int _newProfile(GWEN_DIALOG *dlg);
 
-static GWENHYWFAR_CB int _dlgApi_SignalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
+static int GWENHYWFAR_CB _dlgApi_SignalHandler(GWEN_DIALOG *dlg, GWEN_DIALOG_EVENTTYPE t, const char *sender);
 
 
 

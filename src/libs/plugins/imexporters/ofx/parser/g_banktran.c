@@ -61,8 +61,8 @@ AIO_OFX_GROUP *AIO_OfxGroup_BANKTRAN_new(const char *groupName,
 
 
 
-GWENHYWFAR_CB
-void AIO_OfxGroup_BANKTRAN_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB
+AIO_OfxGroup_BANKTRAN_FreeData(void *bp, void *p)
 {
   AIO_OFX_GROUP_BANKTRAN *xg;
 

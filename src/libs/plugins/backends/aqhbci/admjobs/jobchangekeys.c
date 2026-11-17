@@ -217,7 +217,7 @@ int8_t setKeyVersion(GWEN_CRYPT_TOKEN *ct, const GWEN_CRYPT_TOKEN_CONTEXT *ctx, 
 #define FJCK_DSTFILE    16
 #define FJCK_DSTFILE_EXISTS 32
 
-void GWENHYWFAR_CB GWENHYWFAR_CB AH_Job_ChangeKeys_FreeData(void *bp, void *p);
+void GWENHYWFAR_CB AH_Job_ChangeKeys_FreeData(void *bp, void *p);
 int AH_Job_ChangeKeys_NextMsg(AH_JOB *j);
 
 AH_JOB *AH_Job_ChangeKeys_new(AB_PROVIDER *pro, AB_USER *u, GWEN_DB_NODE *args, uint8_t *canceled)
@@ -886,7 +886,7 @@ int8_t parseResponse(AH_JOB *j)
   return res;
 }
 
-void GWENHYWFAR_CB GWENHYWFAR_CB AH_Job_ChangeKeys_FreeData(void *bp, void *p)
+void GWENHYWFAR_CB AH_Job_ChangeKeys_FreeData(void *bp, void *p)
 {
   AH_JOB_CHANGEKEYS *jd = (AH_JOB_CHANGEKEYS *)p;
   DBG_NOTICE(AQHBCI_LOGDOMAIN, "%s(): %p uTmp %p.", __FUNCTION__, jd, jd->uTmp);

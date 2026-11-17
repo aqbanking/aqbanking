@@ -53,14 +53,14 @@ enum {
 
 
 /* definitions for virtual functions (post) */
-typedef AQFINTS_MESSAGE *GWENHYWFAR_CB(*AQFINTS_SESSION_EXCHANGEMESSAGES_FN)(AQFINTS_SESSION *sess,
+typedef AQFINTS_MESSAGE *(GWENHYWFAR_CB *AQFINTS_SESSION_EXCHANGEMESSAGES_FN)(AQFINTS_SESSION *sess,
                                                                              AQFINTS_MESSAGE *messageOut);
 
-typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_FILLOUT_KEYDESCR_FN)(AQFINTS_SESSION *sess, AQFINTS_KEYDESCR *keyDescr,
+typedef int (GWENHYWFAR_CB *AQFINTS_SESSION_FILLOUT_KEYDESCR_FN)(AQFINTS_SESSION *sess, AQFINTS_KEYDESCR *keyDescr,
                                                                 int mode);
 
 
-typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_DECRYPT_SKEY_FN)(AQFINTS_SESSION *sess,
+typedef int (GWENHYWFAR_CB *AQFINTS_SESSION_DECRYPT_SKEY_FN)(AQFINTS_SESSION *sess,
                                                             const AQFINTS_KEYDESCR *keyDescr,
                                                             const AQFINTS_CRYPTPARAMS *cryptParams,
                                                             const uint8_t *pInData,
@@ -68,7 +68,7 @@ typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_DECRYPT_SKEY_FN)(AQFINTS_SESSION *ses
                                                             uint8_t *pOutData,
                                                             uint32_t *pOutLen);
 
-typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_ENCRYPT_SKEY_FN)(AQFINTS_SESSION *sess,
+typedef int (GWENHYWFAR_CB *AQFINTS_SESSION_ENCRYPT_SKEY_FN)(AQFINTS_SESSION *sess,
                                                             const AQFINTS_KEYDESCR *keyDescr,
                                                             const AQFINTS_CRYPTPARAMS *cryptParams,
                                                             const uint8_t *pInData,
@@ -76,7 +76,7 @@ typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_ENCRYPT_SKEY_FN)(AQFINTS_SESSION *ses
                                                             uint8_t *pOutData,
                                                             uint32_t *pOutLen);
 
-typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_SIGN_FN)(AQFINTS_SESSION *sess,
+typedef int (GWENHYWFAR_CB *AQFINTS_SESSION_SIGN_FN)(AQFINTS_SESSION *sess,
                                                     const AQFINTS_KEYDESCR *keyDescr,
                                                     const AQFINTS_CRYPTPARAMS *cryptParams,
                                                     const uint8_t *pInData,
@@ -88,7 +88,7 @@ typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_SIGN_FN)(AQFINTS_SESSION *sess,
 /**
  * GWEN_ERROR_TRY_AGAIN: retry after handling the message
  */
-typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_VERIFY_FN)(AQFINTS_SESSION *sess,
+typedef int (GWENHYWFAR_CB *AQFINTS_SESSION_VERIFY_FN)(AQFINTS_SESSION *sess,
                                                       const AQFINTS_KEYDESCR *keyDescr,
                                                       const AQFINTS_CRYPTPARAMS *cryptParams,
                                                       const uint8_t *pInData,
@@ -99,7 +99,7 @@ typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_VERIFY_FN)(AQFINTS_SESSION *sess,
 
 
 
-typedef int GWENHYWFAR_CB(*AQFINTS_SESSION_VERIFYPIN_FN)(AQFINTS_SESSION *sess, const AQFINTS_KEYDESCR *keyDescr,
+typedef int (GWENHYWFAR_CB *AQFINTS_SESSION_VERIFYPIN_FN)(AQFINTS_SESSION *sess, const AQFINTS_KEYDESCR *keyDescr,
                                                          const char *pin);
 
 /*@}*/
