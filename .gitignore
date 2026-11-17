@@ -53,3 +53,4 @@ patches/
 .kdev4/
 *.kdev4
 aqbanking-cli.vg
+checks/consumer/consumer-build

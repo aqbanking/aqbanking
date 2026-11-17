@@ -1,5 +1,5 @@
-SUBDIRS=admin doc m4 src po @TUTORIALS@
-DIST_SUBDIRS=admin doc m4 src po tutorials
+SUBDIRS=admin doc m4 src po checks @TUTORIALS@
+DIST_SUBDIRS=admin doc m4 src po checks tutorials
 
 EXTRA_DIST=AUTHORS COPYING ChangeLog INSTALL NEWS README \
  compat/msvc/strings.h \

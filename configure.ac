@@ -601,6 +601,7 @@ case "$OS_TYPE" in
     	;;
 esac
 AM_CONDITIONAL(IS_WINDOWS, [test "$OS_TYPE" = "windows"])
+AM_CONDITIONAL(IS_MSVC, [test "$aqb_cv_c_msvc" = "yes"])
 
 
 AC_ARG_ENABLE(gui-callback-for-optical-tan,
@@ -1300,6 +1301,8 @@ esac
 
 AC_CONFIG_FILES([
   admin/Makefile
+  checks/Makefile
+  checks/consumer/Makefile
   doc/Makefile
   m4/Makefile
   src/Makefile
